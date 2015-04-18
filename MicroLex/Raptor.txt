@@ -1,0 +1,73 @@
+# Micro lex description file
+#
+# Atoms definitions
+
+atom:integer=[-]?[0123456789]+
+atom:float=<integer>[.][0123456789]*
+
+atom:string=["][ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz_0123456789]*["]
+
+atom:inbloc={
+atom:outbloc=}
+atom:inparam=(
+atom:outparam=)
+atom:sep=,
+atom:set==
+
+
+# Keywords
+
+atom:once=once
+atom:loop=loop
+atom:opengl=opengl
+
+atom:RotateX=RotateX
+atom:RotateY=RotateY
+atom:RotateZ=RotateZ
+atom:Translate=Translate
+atom:Push=Push
+atom:Pop=Pop
+atom:Render=Render
+
+atom:linear=linear
+atom:quadric=quadric
+atom:cubic=cubic
+atom:cosine=cos
+atom:sine=sin
+
+# Time functions
+sequence:linear=<linear><inparam><float><sep><float><outparam>
+sequence:quadric=<quadric><inparam><float><sep><float><sep><float><outparam>
+sequence:cubic=<cubic><inparam><float><sep><float><sep><float><sep><float><outparam>
+sequence:cosine=<cosine><inparam><float><outparam>
+sequence:sine=<sine><inparam><float><outparam>
+
+alternate:proto={linear}{quadric}{cubic}{cosine}{sine}
+sequence:timefunction=<string><set>{proto}
+
+# Actions
+
+sequence:RotateX=<RotateX><inparam><float><outparam>
+sequence:RotateY=<RotateY><inparam><float><outparam>
+sequence:RotateZ=<RotateZ><inparam><float><outparam>
+sequence:Translate=<Translate><inparam><float><sep><float><sep><float><outparam>
+sequence:Push=<Push><inparam><outparam>
+sequence:Pop=<Pop><inparam><outparam>
+sequence:Render=<Render><inparam><outparam>
+
+# Frames structures
+
+alternate:action={RotateX}{RotateY}{RotateZ}{Translate}{Push}{Pop}{Render}
+alternate:targetobject=<opengl><string>
+sequence:targetaction={targetobject}{action}
+
+sequence:targetactions={targetaction}{targetactions}
+sequence:timefunctions={timefunction}{timefunctions}
+sequence:framesequence=<inbloc><integer><inbloc>{timefunctions}<outbloc><inbloc>{targetactions}<outbloc><outbloc>
+
+sequence:framesequences={framesequence}{framesequences}
+alternate:mode=<once><loop>
+
+# Main rule
+
+sequence:main=<float>{mode}{framesequences}

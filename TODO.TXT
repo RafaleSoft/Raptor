@@ -1,0 +1,123 @@
+- simd.cpp : appel a GetSystemInfo, migrer vers intrinsics
+	- linux : /proc/cpuinfo
+
+- tester EMBM avec un cube dans demo !!! ( bug de position a corriger )
+
+- supprimer des "friend" ?
+	p.ex. dans CRaptorDisplay et sous classes ...
+
+- TextureUnitSetp
+	- revoir le glBuildUnSetup
+	
+- Bumping:
+	- comment gérer le filtrage trilinéaire/anisotropique du normal map ?
+	- Comment paraméter le shader : EYE_SPACE / OBJECT_SPACE / Ambient occlusion
+	- Si normalMap non utilisé => Phong Shader
+	- Supprimer CBumppedGeometry => remplacer par le shader.
+	- Remplacer / améliorer par displacement map / parallax bump mapping
+	
+- Persistence:
+	- Utiliser CPersistenceClassID::narrow<T> là ou on downcaste
+	- Creer un RootPersitence pour stocker les statiques et l'affecter à un display
+	( permettre des espaces de noms différentes entre 2 displays).
+	
+- CRaptorDisplayConfig:
+	- faire un sync avec timer (VSync prend 50% CPU!)
+	- pas de validateConfig dans le cas des render buffers !!!
+	
+- RaptorServer:
+	- Rendre thread safe la gestion des clients
+		- en particulier la fermeture de connection dans readClients // writeClients
+	- Ajouter un mode verbose
+	- Tester WSAPoll au lieu de select
+	- Passer les sockets en UDP (pour le streaming uniquement ?)
+
+- RaptorCompute
+	- corriger Retain/Release sur les mem objects (c.f. test3)
+	
+- HDRFilter
+	- formule de composition ?
+- DOF Filter
+	- augmenter le bluring
+- Blur filter
+	- il semble que le niveau de blur soit plus bas que ce qu'il devrait être
+	(pas assez flou ... ?)
+	
+- Shaders
+	- Supprimer phong_0lights => optim réelle ? le code existant (phong.ps) est compatible
+- CGeometry::CRenderingModel
+	- simplifier ?
+
+- CParticle
+	- Exploiter les geometry shaders pour générer les quads à partir d'une position ponctuelle
+	- ParticleManager : renommer en factory ?
+	- SMP : si défini, créer des Engine jobs ?
+	- OpenCL + GPU computing
+	
+- CLight
+	- glow : volume rendering  ?
+	- projection: texture clamping, border fading ...
+	- le volume size ne devrait-il pas etre fonction de dmax ?
+	c'est le volume de l'objet lumière ! eventuellement, attacher un CObject3D
+	- statiques de light attributes (s_activeLights) => dans LightObserver ?
+	
+- COctree :
+	- la subdivision symétrique xyz ne balance pas bien l'arbre:
+	on se retrouve avec m_objects > TRESHOLD ( p.ex: 48 ! )
+	Voir comment gérer la partition binaire de l'espace selon une direction principale
+    
+- Ambient occlusion
+	- shader FSAO pour ambient occlusion
+	- terminer avec tous les types de primitives
+	- skipper les faces non visibles (normale transformée a un z negatif)
+	- la géométrie "référence" ne peut plus être transformée ? => recharger les textures
+	- constructeur de copie pour pouvoir récupérer le shader compilé
+	- gestion des coordsPointers/ClientState ... a revoir ? transferer a la geometry ?
+	- nombre de geometries occultantes ?
+	- remplacer RenderResult par RenderTexture ?
+
+- Noise Generator : améliorer et proposer plusieurs modèles.
+
+- Bug Microlex:
+	dans le cas d'un rule qui est un alternate d'alternate, il n'y a que le premier atome de de la premiere regle qui est selectionne.
+
+- Pb buffer display:
+	Les texture Generator ne font pas de UnBind !
+	Unbind : 3DEngine configuration is lost ( not restored to previous state : matrices, clipplanes, ... )
+
+- Collisions:
+	- Calculer les metaballs optimales
+	- algorithme d'intersection : CPU ? GPU ? Pourquoi pas Physx (Havok, accéléré par Intel)
+
+- Optimisations:
+	- clipping en SSE / OpenCL
+	- glGetFloatv : trop d'appels pour la modelview ( en particulier clipping )
+	- Créer des display lists pour le rendu des Light flare ? Il vaudrait mieux faire le lens flare en HDR
+	- Pipeline multithread
+	- NURBS : implémentation OpenCL ou shaders ou CPU.
+	- Rendering no environment: faire un pre rendu en depth pour accélérer le rendu full shaded
+
+- 3DScene :
+	- Fonctions add/remove, reporter également sur l'environnement
+	- Traiter le cas des lumières multiples dans les shaders et shadows ( ex : bump mapping, shadow volume .)
+	- Octrees statiques : comment traiter les mouvements d'objets ? ( remonter les objets au niveau supérieur )
+	- Pb : pour un mirror, les lumières ne sont pas mirrorées ( reproject ? )
+
+- Terminer shadow volumes:
+	- Clipping multithread !
+	- Shadow volume rendering / Soft Shadow Volume : 
+		technique de deferred shading
+	- determiner si viewer est inside/outside shadowVolume 
+	- depth volume clipping ( scissoring ? )
+	- determiner dynamiquement l'extrusion : partiellement fait, reste pb si shadow d'une instance dmax mal calculé ( prendre en compte la transformation )
+	- bbox CObject3DShadow
+	- CEnvironment : pourquoi un current Light ? (pour shadows)
+		supprimer dépendance à currentLight -> utiliser la lumière max du SceneObject (effective lights)
+	- CObject3DShadow : seul le premier contour est utilisé (c.f. m_pVisibleContours[0])
+
+- Soft shadow maps:
+	- problème de glitch : passer en unit cube ... 
+	- Modifier les shadow maps pour travailler avec un TMUSetup plutôt que de taper en dur sur le TMU courant.
+	- Corriger shadowmap dans demo
+	- Implementer OmniShadowMap
+

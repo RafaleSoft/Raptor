@@ -1,0 +1,24 @@
+copy BVector.h ..\SimdLib\BVector.h
+copy FVector.h ..\SimdLib\FVector.h
+copy GenericAlignedMatrix.h ..\SimdLib\GenericAlignedMatrix.h
+copy GenericAlignedVector.h ..\SimdLib\GenericAlignedVector.h
+copy GenericMatrix.h ..\SimdLib\GenericMatrix.h
+copy GenericVector.h ..\SimdLib\GenericVector.h
+copy GenericVectorArray.h ..\SimdLib\GenericVectorArray.h
+copy MMXBVector.h ..\SimdLib\MMXBVector.h
+copy MMXWVector.h ..\SimdLib\MMXWVector.h
+copy MMXWMatrix.h ..\SimdLib\MMXWMatrix.h
+copy SIMD.h ..\SimdLib\SIMD.h
+copy SSEFVector.h ..\SimdLib\SSEFVector.h
+copy SSEFMatrix.h ..\SimdLib\SSEFMatrix.h
+copy SSEFVectorArray.h ..\SimdLib\SSEFVectorArray.h
+copy WVector.h ..\SimdLib\WVector.h
+copy SIMDRegister.h ..\SimdLib\SIMDRegister.h
+copy Registers.h ..\SimdLib\Registers.h
+copy simdMacros.h ..\SimdLib\simdMacros.h
+
+copy SIMDRegister.cxx ..\SimdLib\SIMDRegister.cxx
+copy GenericVector.cxx ..\SimdLib\GenericVector.cxx
+copy GenericVectorArray.cxx ..\SimdLib\GenericVectorArray.cxx
+copy GenericAlignedVector.cxx ..\SimdLib\GenericAlignedVector.cxx
+copy GenericMatrix.cxx ..\SimdLib\GenericMatrix.cxx

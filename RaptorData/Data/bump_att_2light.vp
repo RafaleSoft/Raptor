@@ -1,0 +1,90 @@
+!!ARBvp1.0
+ATTRIB iPos = vertex.position;
+ATTRIB iNrml = vertex.normal;
+ATTRIB iTangent = vertex.attrib[6];
+ATTRIB iTexCoord = vertex.texcoord[0];
+
+TEMP biNormal;
+TEMP diffuse;
+TEMP specular;
+TEMP d1;
+TEMP s1;
+TEMP d2;
+TEMP s2;
+TEMP attResult;
+
+PARAM mvp[4] = { state.matrix.mvp };
+PARAM light1 = program.local[4];
+PARAM viewPos = program.local[5];
+PARAM att1 = program.local[6];
+PARAM light2 = program.local[7];
+PARAM att2 = program.local[8];
+
+OUTPUT oPos = result.position;
+OUTPUT oTex0 = result.texcoord[0];
+OUTPUT oTex1 = result.texcoord[1];
+OUTPUT oTex2 = result.texcoord[2];
+OUTPUT oTex3 = result.texcoord[3];
+OUTPUT oTex4 = result.texcoord[4];
+OUTPUT oTex5 = result.texcoord[5];
+
+DP4 oPos.x , mvp[0] , iPos;
+DP4 oPos.y , mvp[1] , iPos;
+DP4 oPos.z , mvp[2] , iPos;
+DP4 oPos.w, mvp[3] ,iPos;
+MOV oTex0 , iTexCoord;
+XPD biNormal, iNrml, iTangent;
+
+ADD diffuse, light1, -iPos;
+DP3 diffuse.w, diffuse, diffuse;
+MOV d1, diffuse.w;
+RSQ diffuse.w, diffuse.w;
+MOV s1, diffuse.w;
+MUL diffuse.xyz, diffuse.w, diffuse;
+DST attResult, d1, s1;
+DP3 attResult.w , attResult, att1;
+RCP oTex1.x, attResult.w;
+
+ADD specular, viewPos, -iPos;
+DP3 specular.w, specular, specular;
+RSQ specular.w, specular.w;
+MAD specular.xyz, specular.w, specular,diffuse;
+DP3 specular.w, specular, specular;
+RSQ specular.w, specular.w;
+MUL specular.xyz, specular.w, specular;
+DP3 d1.x, diffuse, iTangent;
+DP3 d1.y, diffuse, biNormal;
+DP3 d1.z, diffuse, iNrml;
+DP3 s1.x, specular, iTangent;
+DP3 s1.y, specular, biNormal;
+DP3 s1.z, specular, iNrml;
+MOV oTex2 , d1;
+MOV oTex3 , s1;
+
+ADD diffuse, light2, -iPos;
+DP3 diffuse.w, diffuse, diffuse;
+MOV d2, diffuse.w;
+RSQ diffuse.w, diffuse.w;
+MOV s2, diffuse.w;
+MUL diffuse.xyz, diffuse.w, diffuse;
+DST attResult, d2, s2;
+DP3 attResult.w , attResult, att2;
+RCP oTex1.y, attResult.w;
+
+ADD specular, viewPos, -iPos;
+DP3 specular.w, specular, specular;
+RSQ specular.w, specular.w;
+MAD specular.xyz, specular.w, specular,diffuse;
+DP3 specular.w, specular, specular;
+RSQ specular.w, specular.w;
+MUL specular.xyz, specular.w, specular;
+DP3 d2.x, diffuse, iTangent;
+DP3 d2.y, diffuse, biNormal;
+DP3 d2.z, diffuse, iNrml;
+DP3 s2.x, specular, iTangent;
+DP3 s2.y, specular, biNormal;
+DP3 s2.z, specular, iNrml;
+MOV oTex4 , d2;
+MOV oTex5 , s2;
+
+END

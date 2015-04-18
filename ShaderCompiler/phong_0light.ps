@@ -1,0 +1,9 @@
+#version 120
+uniform	sampler2D diffuseMap;
+
+void main (void)
+{
+	vec4 diffuse = gl_FrontLightModelProduct.sceneColor;
+    gl_FragColor = diffuse * texture2D(diffuseMap,vec2(gl_TexCoord[0].st));
+}
+
