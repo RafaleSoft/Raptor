@@ -1,0 +1,25 @@
+CCCFLAGS =  -DSIMD_NO_ASSEMBLY
+OUTPUT = Release
+INCDIRS = -I.
+
+all:	$(OUTPUT)/Microlex
+
+clean:
+	rm -f $(OUTPUT)/*.o $(OUTPUT)/Microlex
+
+SRC = \
+	Atoms.cpp \
+	Automat.cpp \
+	Config.cpp \
+	GenCode.cpp \
+	MicroLex.cpp \
+	Rules.cpp \
+	Streams.cpp
+
+OBJ = $(SRC:%.cpp=$(OUTPUT)/%.o)
+	
+$(OUTPUT)/Microlex:	$(OBJ) 
+	g++ $(OBJ) -o $(OUTPUT)/Microlex
+
+$(OBJ):	$(SRC)
+	g++ $(CCCFLAGS) $(INCDIRS) -c $(<D)/$(*F).cpp  -o $(OUTPUT)/$(@F)

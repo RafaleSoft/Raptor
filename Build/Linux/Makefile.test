@@ -1,0 +1,39 @@
+CCCFLAGS =  -DSIMD_NO_ASSEMBLY -DLINUX -DGL_MESA_shader_debug -g
+OUTPUT = Release
+INCDIRS = -I. -I$(RAPTOR_ROOT)/Redist/Include
+LIBDIRS = -L$(RAPTOR_ROOT)/Redist/Lib
+
+LIBRAPTOR = $(LIBDIRS) -lraptor 
+LIBRAPTORDATA = $(LIBDIRS) -lraptordata
+LIBRAPTORTOOLBOX = $(LIBDIRS) -lraptortoolbox
+LIBFREETYPE = -L../RaptorCore/Subsys/GlttLib -lttf
+LIBGLTT = -L../RaptorCore/Subsys/GlttLib -lgltt
+LIBGL = -L/usr/X11R6/lib -lGL -lGLU
+LIBJPEG = -L/usr/lib -ljpeg 
+LIBTIFF = -L../AddOns/TiffLib/lib -ltiff
+LIBPNG = -L../AddOns/pnglib/lib -lpng
+LIBXERCES = -L../AddOns/xercesc_2_7 -lxerces-c
+
+all:	$(OUTPUT)/Test
+
+clean:
+	rm -f $(OUTPUT)/*.o $(OUTPUT)/Test
+	mkdir -p $(OUTPUT)
+
+SRC = \
+	Test.cpp \
+	TestDoc.cpp \
+	ColorController.cpp
+
+OBJ = \
+	$(OUTPUT)/Test.o \
+	$(OUTPUT)/TestDoc.o \
+	$(OUTPUT)/ColorController.o
+
+
+$(OUTPUT)/Test:	$(OBJ) 
+	g++ $(OBJ) -o $(OUTPUT)/Test $(LIBRAPTORTOOLBOX) $(LIBRAPTOR) $(LIBGLTT) $(LIBFREETYPE) $(LIBRAPTORDATA) $(LIBGL) $(LIBJPEG) $(LIBTIFF) $(LIBPNG) $(LIBXERCES) -lpthread -mt
+
+$(OBJ):	$(SRC)
+	g++ $(CCCFLAGS) $(INCDIRS) -c $(<D)/$(*F).cpp  -o $(OUTPUT)/$(@F)
+

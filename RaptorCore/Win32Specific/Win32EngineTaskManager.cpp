@@ -217,7 +217,7 @@ bool CWin32EngineTaskManager::run(void)
 	//PulseEvent(processFrameEvt);
 	SetEvent(processFrameEvt);
 #else
-	Global::RAPTOR_CURRENT_STATUS& status = Global::get()->getCurrentStatus();
+	Global::RAPTOR_CURRENT_STATUS& status = Global::GetInstance().getCurrentStatus();
 
 	if (status.currentAnimator != NULL )
 	{

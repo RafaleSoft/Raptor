@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Optimized|Win32">
       <Configuration>Optimized</Configuration>
@@ -21,13 +21,11 @@
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v120</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v120</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -47,12 +45,9 @@
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)\$(ProjectName)\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Optimized|Win32'">$(Configuration)\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Optimized|Win32'">$(Configuration)\$(ProjectName)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Optimized|Win32'">$(Configuration)\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Optimized|Win32'">false</LinkIncremental>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Raptor</TargetName>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Midl>
@@ -66,10 +61,10 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <AdditionalIncludeDirectories>$(SolutionDir)\$(ProjectName);$(RAPTOR_ROOT)\Redist\Include;$(XERCES_INCLUDE_PATH);$(FREETYPE_INCLUDE_PATH);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
+      <AdditionalIncludeDirectories>$(SolutionDir)$(ProjectName);$(PLATFORM_SDK)\Include;$(RAPTOR_ROOT)\Redist\Include;$(XERCES_INCLUDE_PATH);$(FREETYPE_INCLUDE_PATH)%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;EXPORT_RAPTOR_CORE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -88,14 +83,12 @@
       <Culture>0x040c</Culture>
       <AdditionalIncludeDirectories>$(MSSdk)\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
-    <ProjectReference>
-      <LinkLibraryDependencies>false</LinkLibraryDependencies>
-    </ProjectReference>
+    <ProjectReference />
     <Link>
-      <AdditionalDependencies>RaptorData.lib;opengl32.lib;glu32.lib;simd.lib;$(FREETYPE_LIB_PATH)\freetype.lib;xerces-c_3.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>$(OutDir)Raptor.dll</OutputFile>
+      <AdditionalDependencies>RaptorData.lib;opengl32.lib;glu32.lib;simd.lib;freetype.lib;xerces-c_3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)$(TargetName).dll</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>$(SolutionDir)\$(ProjectName);$(XERCES_LIB_PATH);$(RAPTOR_ROOT)\Redist\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(XERCES_LIB_PATH);$(FREETYPE_LIB_PATH);$(PLATFORM_SDK)\Lib;$(RAPTOR_ROOT)\Redist\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <IgnoreSpecificDefaultLibraries>libcp;libc;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <ModuleDefinitionFile>
@@ -108,26 +101,23 @@
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention>
       </DataExecutionPrevention>
-      <ImportLibrary>$(OutDir)Raptor.lib</ImportLibrary>
       <TargetMachine>MachineX86</TargetMachine>
       <LinkStatus>
       </LinkStatus>
       <ProgramDatabaseFile>$(OutDir)Raptor.pdb</ProgramDatabaseFile>
-      <Version>
-      </Version>
+      <Version>$(RAPTOR_VERSION)</Version>
     </Link>
-    <Bscmake>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-    </Bscmake>
+    <Bscmake />
     <PostBuildEvent>
       <Message>Build redistribuable package</Message>
-      <Command>copy $(OutDir)\Raptor.lib "%RAPTOR_ROOT%\Redist\lib\"
-copy $(OutDir)\Raptor.dll "%RAPTOR_ROOT%\Redist\bin\"
+      <Command>copy  $(OutDir)$(TargetName).lib "%RAPTOR_ROOT%\Redist\lib\"
+copy  $(OutDir)$(TargetName).dll "%RAPTOR_ROOT%\Redist\bin\"
 copy "%RAPTOR_ROOT%\AddOns\xercesc_3_1\VC10\xerces-c_3_1.dll" "%RAPTOR_ROOT%\Redist\bin\"
-copy $(SolutionDir)$(ProjectName)\Subsys\ObjectModels\Raptor.xsd %RAPTOR_ROOT%\Redist\bin\
 copy $(SolutionDir)$(ProjectName)\Subsys\ObjectModels\RaptorMessages.xsd %RAPTOR_ROOT%\Redist\bin\
-cd $(SolutionDir)\$(ProjectName)
-$(SolutionDir)\$(ProjectName)\Subsys\Redist.bat
+copy $(SolutionDir)$(ProjectName)\Subsys\ObjectModels\Raptor.xsd %RAPTOR_ROOT%\Redist\bin\
+cd $(SolutionDir)$(ProjectName)
+Subsys\Redist.bat
+
 </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -210,29 +200,17 @@ Subsys\Redist.bat
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <None Include="..\..\RaptorCore\Subsys\ObjectModels\Basic.lex">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-    </None>
-    <None Include="..\..\RaptorCore\Subsys\ObjectModels\Commands.lex">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-    </None>
-    <None Include="..\..\RaptorCore\Subsys\ObjectModels\Expressions.lex">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-    </None>
+    <None Include="..\..\RaptorCore\Subsys\ObjectModels\Basic.lex" />
+    <None Include="..\..\RaptorCore\Subsys\ObjectModels\Commands.lex" />
+    <None Include="..\..\RaptorCore\Subsys\ObjectModels\Expressions.lex" />
     <CustomBuild Include="..\..\RaptorCore\Subsys\ObjectModels\Raptor.lex">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
       <FileType>Document</FileType>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">cd %(RelativeDir)
-%RAPTOR_ROOT%\Redist\Bin\MicroLex.exe -f %(Filename).lex -o RaptorScript -v
-</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(RelativeDir)\RaptorScript_lex.cpp;%(RelativeDir)\RaptorScript_lex.h;%(RelativeDir)\RaptorScript_tree.cpp;%(RelativeDir)\RaptorScript_tree.h;%(RelativeDir)\RaptorScript_yacc.cpp;%(RelativeDir)\RaptorScript_yacc.h</Outputs>
+"%RAPTOR_ROOT%\Redist\Bin\MicroLex.exe" -f %(FileName).lex -o RaptorScript -v</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(RelativeDir)RaptorScript_lex.cpp;%(RelativeDir)RaptorScript_lex.h;%(RelativeDir)RaptorScript_tree.cpp;%(RelativeDir)RaptorScript_tree.h;%(RelativeDir)RaptorScript_yacc.cpp;%(RelativeDir)RaptorScript_yacc.h;%(Outputs)</Outputs>
     </CustomBuild>
-    <None Include="..\..\RaptorCore\Subsys\ObjectModels\Shader.lex">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-    </None>
-    <None Include="..\..\RaptorCore\Subsys\Redist.bat">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-    </None>
+    <None Include="..\..\RaptorCore\Subsys\ObjectModels\Shader.lex" />
+    <None Include="..\..\RaptorCore\Subsys\Redist.bat" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\RaptorCore\Engine\3DEngine.cpp" />
@@ -267,14 +245,9 @@ Subsys\Redist.bat
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\GeometryEditor.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\GeometryPrimitive.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\GeometryProgram.cpp" />
-    <ClCompile Include="..\..\RaptorCore\GLHierarchy\GL2DFont.cpp" />
-    <ClCompile Include="..\..\RaptorCore\GLHierarchy\GL2DTextureFont.cpp" />
-    <ClCompile Include="..\..\RaptorCore\GLHierarchy\GL3DFont.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\GLFont.cpp" />
-    <ClCompile Include="..\..\RaptorCore\GLHierarchy\GLFontFactory.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\GLLayer.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\GLLod.cpp" />
-    <ClCompile Include="..\..\RaptorCore\GLHierarchy\GLVectorFont.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\Light.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\LightObserver.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\Material.cpp" />
@@ -310,9 +283,10 @@ Subsys\Redist.bat
     <ClCompile Include="..\..\RaptorCore\SSE_Engine\SSE_BoundingBox.cpp" />
     <ClCompile Include="..\..\RaptorCore\SSE_Engine\SSE_BumppedGeometry.cpp" />
     <ClCompile Include="..\..\RaptorCore\SSE_Engine\SSE_GLLayer.cpp" />
-    <ClCompile Include="..\..\RaptorCore\StdAfx.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
+    <ClCompile Include="..\..\RaptorCore\SSE_Engine\SSE_Object3DContour.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\StdAfx.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\3DSceneAttributes.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\3DSceneObject.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\3DSetItem.cpp" />
@@ -362,9 +336,7 @@ Subsys\Redist.bat
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\..\RaptorCore\Subsys\GeometryAllocator.cpp" />
-    <ClCompile Include="..\..\RaptorCore\Subsys\Hershey\Simplex.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
-    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\Hershey\Simplex.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\InternalProcs.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\Interpreters.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\KDTree.cxx">
@@ -422,19 +394,6 @@ Subsys\Redist.bat
     <ClCompile Include="..\..\RaptorCore\Win32Specific\Win32TimeObject.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Xsd Include="Subsys\ObjectModels\Raptor.xsd">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Optimized|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-    </Xsd>
-  </ItemGroup>
-  <ItemGroup>
-    <CustomBuild Include="..\..\RaptorCore\System\Glext.h">
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">cd $(SolutionDir)\$(ProjectName)\Subsys
-"%RAPTOR_ROOT%\Redist\bin\Builder.Net.exe" %(FullPath)
-copy $(SolutionDir)\$(ProjectName)\Subsys\CodeGeneration.h "%RAPTOR_ROOT%\Redist\Include\Subsys"</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(RelativeDir)\..\Subsys\CodeGeneration.h</Outputs>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Building OpenGL extensions</Message>
-    </CustomBuild>
     <ClInclude Include="..\..\RaptorCore\Engine\3DEngine.h" />
     <ClInclude Include="..\..\RaptorCore\Engine\3DEngineMatrix.h" />
     <ClInclude Include="..\..\RaptorCore\Engine\3DEngineTaskManager.h" />
@@ -467,14 +426,10 @@ copy $(SolutionDir)\$(ProjectName)\Subsys\CodeGeneration.h "%RAPTOR_ROOT%\Redist
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\GeometryEditor.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\GeometryPrimitive.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\GeometryProgram.h" />
-    <ClInclude Include="..\..\RaptorCore\GLHierarchy\GL2DFont.h" />
-    <ClInclude Include="..\..\RaptorCore\GLHierarchy\GL2DTextureFont.h" />
-    <ClInclude Include="..\..\RaptorCore\GLHierarchy\GL3DFont.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\GLFont.h" />
-    <ClInclude Include="..\..\RaptorCore\GLHierarchy\GLFontFactory.h" />
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\GLHierarchy.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\GLLayer.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\GLLod.h" />
-    <ClInclude Include="..\..\RaptorCore\GLHierarchy\GLVectorFont.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\Light.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\LightObserver.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\Material.h" />
@@ -566,6 +521,14 @@ copy $(SolutionDir)\$(ProjectName)\Subsys\CodeGeneration.h "%RAPTOR_ROOT%\Redist
     <ClInclude Include="..\..\RaptorCore\Subsys\XMLRaptorIO.h" />
     <ClInclude Include="..\..\RaptorCore\System\CGLTypes.h" />
     <ClInclude Include="..\..\RaptorCore\System\Color.h" />
+    <CustomBuild Include="..\..\RaptorCore\System\Glext.h">
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">cd $(SolutionDir)$(ProjectName)\Subsys
+%RAPTOR_ROOT%\Redist\bin\Builder.Net.exe %(FullPath)
+copy CodeGeneration.h %RAPTOR_ROOT%\Redist\Include\Subsys\
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)$(ProjectName)\Subsys\CodeGeneration.h</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Generate OpenGL extensions...</Message>
+    </CustomBuild>
     <ClInclude Include="..\..\RaptorCore\System\GLEXTMacros.h" />
     <ClInclude Include="..\..\RaptorCore\System\Global.h" />
     <ClInclude Include="..\..\RaptorCore\System\Memory.h" />
@@ -592,6 +555,22 @@ copy $(SolutionDir)\$(ProjectName)\Subsys\CodeGeneration.h "%RAPTOR_ROOT%\Redist
     <ClInclude Include="..\..\RaptorCore\Win32Specific\Win32Glext.h" />
     <ClInclude Include="..\..\RaptorCore\Win32Specific\Win32RaptorIO.h" />
     <ClInclude Include="..\..\RaptorCore\Win32Specific\Win32TimeObject.h" />
+    <ClInclude Include="Raptor.h">
+      <DependentUpon>Raptor.xsd</DependentUpon>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Xsd Include="..\..\RaptorCore\Subsys\ObjectModels\Raptor.xsd">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </Xsd>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="RaptorData.10.00.vcxproj">
+      <Project>{3eff7d8b-4e1b-4406-953d-55bee9be6848}</Project>
+    </ProjectReference>
+    <ProjectReference Include="simd.10.00.vcxproj">
+      <Project>{c1e2375a-aba6-4afc-96e5-1c116dfa65cd}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
