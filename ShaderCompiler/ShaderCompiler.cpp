@@ -391,7 +391,7 @@ int main(int argc, char* argv[])
         props->setLighting(CRenderingProperties::DISABLE);
 
         CRaptorConsole *pConsole = Raptor::GetConsole();
-        pConsole->glInit();
+        pConsole->glInit("",true);
         pConsole->showStatus(true);
 		pConsole->showFPS(true);
 		pConsole->showFrameTime(true);

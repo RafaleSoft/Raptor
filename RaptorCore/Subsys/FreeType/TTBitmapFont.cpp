@@ -16,7 +16,7 @@ TTBitmapFont::~TTBitmapFont()
 
 /////////////////////////////////////////////////////////////////////////////
 
-FTGlyphBitmap* TTBitmapFont::getBitmap( int ascii_code )
+FTGlyphBitmap* TTBitmapFont::getBitmap( int ascii_code ) const
 {
 	if( ascii_code < 0 || ascii_code > 255 )
 		return 0;

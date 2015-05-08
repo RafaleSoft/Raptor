@@ -23,7 +23,6 @@
 	
 - CRaptorDisplayConfig:
 	- faire un sync avec timer (VSync prend 50% CPU!)
-	- pas de validateConfig dans le cas des render buffers !!!
 	
 - RaptorServer:
 	- Rendre thread safe la gestion des clients

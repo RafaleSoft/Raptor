@@ -94,7 +94,7 @@
     <Link>
       <OutputFile>$(OutDir)RaptorData.dll</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>$(ZLIB_LIB_PATH);$(PLATFORM_SDK)\Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ZLIB_LIB_PATH);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ModuleDefinitionFile>
       </ModuleDefinitionFile>
       <GenerateDebugInformation>false</GenerateDebugInformation>

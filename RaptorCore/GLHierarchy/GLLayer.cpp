@@ -6,8 +6,8 @@
 #ifndef __RAPTOR_GLEXT_H__
 	#include "System/Glext.h"
 #endif
-#if !defined(AFX_GLFONT_H__D451FE62_5FE1_11D3_9142_BA23BC92E77C__INCLUDED_)
-	#include "GLFont.h"
+#if !defined(AFX_GL2DFONT_H__FE8026E7_74FD_46FC_A70F_D6927E565F8D__INCLUDED_)
+	#include "GLHierarchy/GL2DFont.h"
 #endif
 #if !defined(AFX_GLLAYER_H__12EA9DBD_DCDE_4C66_B607_DD32C023C8EF__INCLUDED_)
 	#include "GLLayer.h"
@@ -561,19 +561,17 @@ void CGLLayer::drawAPixels(unsigned int x0,unsigned int y0,unsigned int width,un
 
 void CGLLayer::drawText(int x0,int y0,
 						const std::string& text,
-						CGLFont *font,
+						CGL2DFont *font,
 						unsigned long color)
 {
-	TTBitmapFont *fnt = font->m_bmfont;
-	FTGlyphBitmap* gbitmap;
-	
+	const TTBitmapFont *fnt = font->getBitmapFont();
 	int px = x0;
 	unsigned int width;
 	unsigned int height;
 
 	for (unsigned int i=0;i<text.size();i++)
 	{
-		gbitmap = fnt->getBitmap(text[i]);
+		FTGlyphBitmap* gbitmap = fnt->getBitmap(text[i]);
 		width = gbitmap->getWidth();
 
 		if (width == 0)
@@ -617,12 +615,10 @@ void CGLLayer::drawText(int x0,int y0,
 
 void CGLLayer::drawAText(int x0,int y0,
 						 const std::string& text,
-						 CGLFont *font,
+						 CGL2DFont *font,
 						 unsigned long color)
 {
-	TTBitmapFont *fnt = font->m_bmfont;
-	FTGlyphBitmap* gbitmap;
-	
+	const TTBitmapFont *fnt = font->getBitmapFont();
 	int px = x0;
 	unsigned int width;
 	unsigned int height;
@@ -635,7 +631,7 @@ void CGLLayer::drawAText(int x0,int y0,
 
 	for (unsigned int i=0;i<text.size();i++)
 	{
-		gbitmap = fnt->getBitmap(text[i]);
+		FTGlyphBitmap* gbitmap = fnt->getBitmap(text[i]);
 		width = gbitmap->getWidth();
 
 		if (width == 0)

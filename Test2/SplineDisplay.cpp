@@ -9,7 +9,10 @@
 #include "System\CGLTypes.h"
 #include "Engine\3DPath.h"
 #include "Engine\3DScene.h"
+#include "GLHierarchy\GLFontFactory.h"
 #include "GLHierarchy\GLFont.h"
+#include "GLHierarchy\GL2DFont.h"
+#include "GLHierarchy\GL3DFont.h"
 #include "GLHierarchy\TextureSet.h"
 #include "GLHierarchy\TextureFactory.h"
 #include "Engine\ViewPoint.h"
@@ -92,17 +95,11 @@ void CSplineDisplay::Init()
 
 	bspline = sh;
 
-	font = new CGLFont("main_font");
-	font->create2D("Datas\\kld.ttf",20);
-	font->create3D("Datas\\kld.ttf",20,true,true);
-	font->glGenGlyphs(1,5,2.0f);
-	text = (font->glWriteList("Raptor",0)).handle;
-
-	float precision;
-	float extrusion;
-	float scale;
-
-	font->getGlyphSettings(precision,extrusion,scale,0);
+	CGL3DFont *font3d = CGLFontFactory::create3DFont("Datas\\kld.ttf", 20, true, true, "main_font_3d");
+	font = font3d;
+	font->glGenGlyphs(1, 5, 2.0f);
+	text = (font3d->glWriteList("Raptor",0)).handle;
+	font = CGLFontFactory::create2DFont("Datas\\kld.ttf", 20, "main_font");
 
 	vp = new CViewPoint();
     vp->setPosition(5.0,0.0,5.0,CViewPoint::EYE);

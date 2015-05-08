@@ -32,7 +32,6 @@ private:
 	C3DSet			*sponge;
 	CObject3DShadow	*contour;
 	CLight			*m_light;
-	CGLFont			*font;
 	CShadedGeometry	*fulltext;
     CShadedGeometry	*knot;
     C3DScene		*m_pScene;

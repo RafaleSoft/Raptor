@@ -95,7 +95,7 @@
       <AdditionalDependencies>RaptorData.lib;opengl32.lib;glu32.lib;simd.lib;$(FREETYPE_LIB_PATH)\freetype.lib;xerces-c_3.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)Raptor.dll</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>$(SolutionDir)\$(ProjectName);$(XERCES_LIB_PATH);$(PLATFORM_SDK)\Lib;$(RAPTOR_ROOT)\Redist\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)\$(ProjectName);$(XERCES_LIB_PATH);$(RAPTOR_ROOT)\Redist\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <IgnoreSpecificDefaultLibraries>libcp;libc;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <ModuleDefinitionFile>
@@ -267,9 +267,14 @@ Subsys\Redist.bat
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\GeometryEditor.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\GeometryPrimitive.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\GeometryProgram.cpp" />
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\GL2DFont.cpp" />
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\GL2DTextureFont.cpp" />
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\GL3DFont.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\GLFont.cpp" />
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\GLFontFactory.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\GLLayer.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\GLLod.cpp" />
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\GLVectorFont.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\Light.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\LightObserver.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\Material.cpp" />
@@ -462,10 +467,14 @@ Subsys\Redist.bat
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\GeometryEditor.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\GeometryPrimitive.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\GeometryProgram.h" />
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\GL2DFont.h" />
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\GL2DTextureFont.h" />
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\GL3DFont.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\GLFont.h" />
-    <ClInclude Include="..\..\RaptorCore\GLHierarchy\GLHierarchy.h" />
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\GLFontFactory.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\GLLayer.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\GLLod.h" />
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\GLVectorFont.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\Light.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\LightObserver.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\Material.h" />

@@ -7,8 +7,8 @@
 #if !defined(AFX_SSE_GLLAYER_H__6ED4D4AE_1B6E_4B5F_B9D5_144BD23B795B__INCLUDED_)
 	#include "SSE_GLLayer.h"
 #endif
-#if !defined(AFX_GLFONT_H__D451FE62_5FE1_11D3_9142_BA23BC92E77C__INCLUDED_)
-	#include "GLHierarchy/GLFont.h"
+#if !defined(AFX_GL2DFONT_H__FE8026E7_74FD_46FC_A70F_D6927E565F8D__INCLUDED_)
+	#include "GLHierarchy/GL2DFont.h"
 #endif
 
 #include "Subsys/FreeType/FTGlyphBitmap.h"
@@ -498,9 +498,9 @@ void CSSE_GLLayer::drawAPixels(unsigned int x0,unsigned int y0,unsigned int widt
 
 
 void CSSE_GLLayer::drawAText(int x0,int y0,const std::string& text,
-							 CGLFont *font,unsigned long color)
+							 CGL2DFont *font,unsigned long color)
 {
-	TTBitmapFont *fnt = font->m_bmfont;
+	const TTBitmapFont *fnt = font->getBitmapFont();
 	FTGlyphBitmap* gbitmap;
 	
 	int px = x0;

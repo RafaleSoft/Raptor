@@ -11,7 +11,6 @@
 
 #include "GenericDisplay.h"
 
-
 class CSplineDisplay : public CGenericDisplay
 {
 public:

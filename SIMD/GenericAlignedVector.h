@@ -74,7 +74,6 @@ public:
 	// dot product
 	CGenericAlignedVector<T> SIMD_CALL operator*  (const CGenericAlignedVector<T>&) const;
 	// scalar operations
-	//friend CGenericAlignedVector<T> SIMD_CALL operator*  (const T&, const CGenericAlignedVector<T>&);
 	CGenericAlignedVector<T> SIMD_CALL operator*  (const CGenericAlignedMatrix<T>&) const;
 	CGenericAlignedVector<T> SIMD_CALL operator*  (T) const;
 	CGenericAlignedVector<T> SIMD_CALL operator+  (const CGenericAlignedVector<T>&) const;

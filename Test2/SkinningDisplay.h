@@ -35,7 +35,6 @@ private:
 	CImageModifier	*modifier;
 	CTextureSet		*texture;
 	CGLLayer		*layer;
-	CGLFont			*font;
 
     CShader *skinning;
     CShaderProgram::CProgramParameters	params;

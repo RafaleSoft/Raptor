@@ -10,7 +10,7 @@
 #endif // _MSC_VER > 1000
 
 #include "GenericDisplay.h"
-
+#include "GLHierarchy/GLFontFactory.h"
 
 class CLodDisplay : public CGenericDisplay
 {
@@ -32,7 +32,7 @@ private:
 	CGLLod		*lod;
 	CMaterial	*material;
 	CGLLayer	*layer;
-	CGLFont		*font;
+	CGL2DFont	*font;
 
 	virtual void	ReInit();
 

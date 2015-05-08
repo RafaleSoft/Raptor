@@ -51,9 +51,8 @@ void CLodDisplay::Init()
 	lod = new CGLLod(NULL,"PLANE_LOD");
 
 	CPersistence *p = CPersistence::FindObject("main_font");
-
 	if (p->getId().isSubClassOf(CGLFont::CGLFontClassID::GetClassId()))
-		 font = (CGLFont *)p;
+		 font = (CGL2DFont *)p;
 
 	CShader *s = new CShader;
 	material = s->getMaterial();

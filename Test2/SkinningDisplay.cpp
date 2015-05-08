@@ -73,8 +73,9 @@ void CSkinningDisplay::Init()
 
 	p = CPersistence::FindObject("main_font");
 
+	CGL2DFont *font = NULL;
 	if (p->getId().isSubClassOf(CGLFont::CGLFontClassID::GetClassId()))
-		 font = (CGLFont *)p;
+		 font = (CGL2DFont *)p;
 
     CRaptorToolBox::SCENE_LOADER_OPTIONS options;
     CRaptorToolBox::load3DStudioScene("Datas\\Cylinder.3DS",set,&options);

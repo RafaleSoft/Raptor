@@ -16,7 +16,7 @@ public:
 
 	virtual ~TTBitmapFont();
 
-	FTGlyphBitmap* getBitmap( int ascii_code );
+	FTGlyphBitmap* getBitmap( int ascii_code ) const;
 
 private:
 	//!	Forbidden constructor

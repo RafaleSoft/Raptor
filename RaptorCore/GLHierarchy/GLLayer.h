@@ -20,7 +20,7 @@
 
 RAPTOR_NAMESPACE_BEGIN
 
-class CGLFont;
+class CGL2DFont;
 class CImageModifier;
 class CTextureObject;
 
@@ -73,8 +73,7 @@ public:
 	void drawLine(int x0,int y0,int x1,int y1,unsigned long color);
 	virtual void drawRectangle(unsigned int x0,unsigned int y0,unsigned int x1,unsigned int y1,unsigned long color);
 	void drawPixels(unsigned int x0,unsigned int y0,unsigned int width,unsigned int height,const unsigned char *pixels);
-	//		USE ONLY CGL_BITMAPFONT !!!
-	void drawText(int x0,int y0,const std::string& text,CGLFont *font,unsigned long color);
+	void drawText(int x0,int y0,const std::string& text,CGL2DFont *font,unsigned long color);
 
 	//	alpha blending extended routines:
 	// blending equation is src_color * src_alpha + dst_color * (1 - src_alpha)
@@ -86,9 +85,7 @@ public:
 	virtual void drawALine(int x0,int y0,int x1,int y1,unsigned long color);
 	virtual void drawARectangle(unsigned int x0,unsigned int y0,unsigned int x1,unsigned int y1,unsigned long color);
 	virtual void drawAPixels(unsigned int x0,unsigned int y0,unsigned int width,unsigned int height,const unsigned char *pixels);
-	//		USE ONLY CGL_BITMAPFONT !!!
-	virtual void drawAText(int x0,int y0,const std::string& text,CGLFont *font,unsigned long color);
-
+	virtual void drawAText(int x0,int y0,const std::string& text,CGL2DFont *font,unsigned long color);
 
 	//!	Sprites management : creates a new sprite or update an existing one
 	//!	@param spr : must have been loaded in its CTextureFactory Repository.

@@ -16,6 +16,7 @@
 
 RAPTOR_NAMESPACE_BEGIN
 
+
 #ifdef RAPTOR_SSE2_CODE_GENERATION
 
     class RAPTOR_API CSSE_GLLayer : public CGLLayer
@@ -43,7 +44,7 @@ RAPTOR_NAMESPACE_BEGIN
 		virtual void drawAPixels(unsigned int x0,unsigned int y0,unsigned int width,unsigned int height,const unsigned char *pixels);
 
 		//! Implements simd version of @see CGLLayer
-		void drawAText(int x0,int y0,const std::string& text,CGLFont *font,unsigned long color);
+		void drawAText(int x0,int y0,const std::string& text,CGL2DFont *font,unsigned long color);
 	};
 
 #endif

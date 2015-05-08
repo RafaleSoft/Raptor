@@ -23,7 +23,8 @@ Installer/Output
 x64/
 build/
 bld/
-[Bb]in/
+# Thrid-party COTS are in bin, so do not remove them
+#[Bb]in/
 [Oo]bj/
 
 # Roslyn cache directories

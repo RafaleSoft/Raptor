@@ -12,6 +12,15 @@
 #if !defined(AFX_GLFONT_H__D451FE62_5FE1_11D3_9142_BA23BC92E77C__INCLUDED_)
 	#include "GLHierarchy/GLFont.h"
 #endif
+#if !defined(AFX_GLFONTFACTORY_H__E18CD490_4CB0_4ECA_916D_85B155FF04C3__INCLUDED_)
+	#include "GLHierarchy/GLFontFactory.h"
+#endif
+#if !defined(AFX_GL2DTEXTUREFONT_H__7122B2F2_8D47_492F_8738_71FE06D8BA21__INCLUDED_)
+	#include "GLHierarchy/GL2DTextureFont.h"
+#endif
+#if !defined(AFX_GLVECTORFONT_H__C21ADBEA_705D_43EA_A45F_F016233F7507__INCLUDED_)
+	#include "GLHierarchy/GLVectorFont.h"
+#endif
 #if !defined(AFX_RAPTORDATAMANAGER_H__114BFB19_FA00_4E3E_879E_C9130043668E__INCLUDED_)
 	#include "DataManager/RaptorDataManager.h"
 #endif
@@ -350,8 +359,6 @@ void CRaptorConsole::displayHelp(void)
 void CRaptorConsole::glInit(const std::string &fontPath,bool useVectors)
 {
 	m_pInput = new CInputCollector<CRaptorConsole>(*this);
-
-	m_pFont = new CGLFont("console_font");
     m_bIsActive = false;
 	m_bUseVectors = useVectors;
 
@@ -364,8 +371,8 @@ void CRaptorConsole::glInit(const std::string &fontPath,bool useVectors)
 
 	if ((!filepath.empty()) && (!useVectors))
     {
-		if (!m_pFont->glCreateTexture(filepath,8,true) ||
-			!m_pFont->glGenGlyphs(1.0f,0.0f,1.0f))
+		m_pFont = CGLFontFactory::glCreateTextureFont(filepath,8,true,"console_font");
+		if ((NULL != m_pFont) && (!m_pFont->glGenGlyphs(1.0f,0.0f,1.0f)))
 		{
 			delete m_pFont;
 			m_pFont = NULL;
@@ -373,8 +380,8 @@ void CRaptorConsole::glInit(const std::string &fontPath,bool useVectors)
 	}
 	else
 	{
-		if (!m_pFont->createVector(filepath,8) || 
-			!m_pFont->glGenGlyphs(1.0f,0.0f,0.35f))
+		m_pFont = CGLFontFactory::createVectorFont(filepath,8,"console_font");
+		if ((NULL != m_pFont) && (!m_pFont->glGenGlyphs(1.0f,0.0f,0.35f)))
 		{
 			delete m_pFont;
 			m_pFont = NULL;
@@ -403,14 +410,14 @@ void CRaptorConsole::glWriteLine(const std::string& line,int x,int y)
 		m_pFont->glWrite(line,x,y);
 	else
 	{
+		m_pFont->selectCurrentGlyphset(0);
 		glPushMatrix();
-		glTranslatef(x,-y,0.0f);
 		glColor4fv(m_secondColor);
 		glLineWidth(3.0f);
-		m_pFont->glWrite(line,0);
+		m_pFont->glWrite(line,x,-y);
 		glColor4fv(m_color);
 		glLineWidth(1.1f);
-		m_pFont->glWrite(line,0);
+		m_pFont->glWrite(line,x,-y);
 		glPopMatrix();
 	}
 }

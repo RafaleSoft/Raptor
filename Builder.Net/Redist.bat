@@ -82,6 +82,11 @@ copy .\RaptorCore\GLHierarchy\BumppedGeometry.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\FragmentProgram.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\FragmentShader.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\GLFont.h Redist\Include\GLHierarchy
+copy .\RaptorCore\GLHierarchy\GL2DFont.h Redist\Include\GLHierarchy
+copy .\RaptorCore\GLHierarchy\GL2DTextureFont.h Redist\Include\GLHierarchy
+copy .\RaptorCore\GLHierarchy\GL3DFont.h Redist\Include\GLHierarchy
+copy .\RaptorCore\GLHierarchy\GLVectorFont.h Redist\Include\GLHierarchy
+copy .\RaptorCore\GLHierarchy\GLFontFactory.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\GLLayer.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\GLLod.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\Geometry.h Redist\Include\GLHierarchy

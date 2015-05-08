@@ -21,6 +21,8 @@
 #include "GLHierarchy\TextureFactoryConfig.h"
 #include "GLHierarchy\TextureObject.h"
 #include "GLHierarchy\GLFont.h"
+#include "GLHierarchy\GL3DFont.h"
+#include "GLHierarchy\GLFontFactory.h"
 #include "system/Raptor.h"
 #include "GLHierarchy/RenderingProperties.h"
 #include "Engine\ViewPoint.h"
@@ -108,13 +110,13 @@ void CShadowDisplay::Init()
 	m_light->setDiffuse(1.0f,1.0f,1.0f,1.0f);
 	m_light->setSpecular(1.0f,1.0f,1.0f,1.0f);
 
-	font = new CGLFont("main_font");
-	font->create3D("Datas\\kld.ttf",20,true,true);
-
+	
+	CGL3DFont *font = CGLFontFactory::create3DFont("Datas\\kld.ttf", 20, true, true, "main_font");
     fulltext = new CShadedGeometry("FONT_Geometry");
     *fulltext = *font->glBuildGeometry("Raptor",1,5,2.0f);
 	fulltext->scale(0.25f,0.25f,0.25f);
 	fulltext->translateAbsolute(0.0f,0.0f,0.0f);
+	delete font;
 
     CShader *textShader = fulltext->getShader();
     textShader->glGetTextureUnitsSetup()->setDiffuseMap(texture->getTexture(1));

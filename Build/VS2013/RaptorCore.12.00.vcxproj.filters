@@ -515,6 +515,21 @@
     <ClCompile Include="..\..\RaptorCore\Subsys\Hershey\Simplex.cpp">
       <Filter>Source Files\Subsys src\Hershey</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\GLFontFactory.cpp">
+      <Filter>Source Files\GLHierarchy src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\GL2DFont.cpp">
+      <Filter>Source Files\GLHierarchy src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\GL2DTextureFont.cpp">
+      <Filter>Source Files\GLHierarchy src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\GL3DFont.cpp">
+      <Filter>Source Files\GLHierarchy src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\GLVectorFont.cpp">
+      <Filter>Source Files\GLHierarchy src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Xsd Include="Subsys\ObjectModels\Raptor.xsd">
@@ -616,9 +631,6 @@
       <Filter>Header Files\GLHierarchy include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\GLFont.h">
-      <Filter>Header Files\GLHierarchy include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\RaptorCore\GLHierarchy\GLHierarchy.h">
       <Filter>Header Files\GLHierarchy include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\GLLayer.h">
@@ -980,6 +992,21 @@
     </ClInclude>
     <ClInclude Include="..\..\RaptorCore\Subsys\Hershey\Simplex.h">
       <Filter>Header Files\Subsys include\Hershey</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\GLFontFactory.h">
+      <Filter>Header Files\GLHierarchy include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\GL2DFont.h">
+      <Filter>Header Files\GLHierarchy include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\GL2DTextureFont.h">
+      <Filter>Header Files\GLHierarchy include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\GL3DFont.h">
+      <Filter>Header Files\GLHierarchy include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\GLVectorFont.h">
+      <Filter>Header Files\GLHierarchy include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
