@@ -1,0 +1,82 @@
+OUTPUT = Release
+INCDIRS = -I. -I../RaptorCore
+CCCFLAGS =  -DSIMD_NO_ASSEMBLY -DLINUX -DGL_MESA_shader_debug -g
+INCDIR_TIFF = -I../AddOns/TiffLib/include
+
+# Remove MESA options before all GL extensions are included.
+CCCFLAGS += -DGL_MESA_shader_object
+
+all:	$(OUTPUT)/libraptortoolbox.a $(OUTPUT)/libraptortoolbox.so
+
+clean:
+	rm -f $(OUTPUT)/*.o $(OUTPUT)/libraptortoolbox.*
+	rm -rf $(OUTPUT)
+	mkdir -p $(OUTPUT)
+
+SRC_BASE = \
+	Controllers.cpp \
+	Imaging.cpp \
+	Loaders.cpp \
+	Merge.cpp \
+	Renders.cpp \
+	BasicObjects.cpp
+
+SRC_IMAGING = \
+	Imaging/BMPImaging.cpp \
+	Imaging/ICOImaging.cpp \
+	Imaging/TGAImaging.cpp \
+	Imaging/JPGImaging.cpp \
+	Imaging/PNGImaging.cpp \
+	Imaging/TIFFImaging.cpp
+
+SRC_LOADERS = \
+	Loaders/3DSfile.cpp \
+	Loaders/OBJFile.cpp \
+	Loaders/OBJScript_lex.cpp \
+	Loaders/OBJScript_yacc.cpp \
+	Loaders/OBJScript_tree.cpp
+
+SRC_FILTERS = \
+	Filters/BlurFilter.cpp \
+	Filters/ColorControlFilter.cpp \
+	Filters/DOFFilter.cpp \
+	Filters/HDRFilter.cpp \
+	Filters/MagnifierFilter.cpp \
+	Filters/MBFilter.cpp
+
+SRC_CONTROLLERS = \
+	Controllers/ViewPointController.cpp
+
+OBJ_BASE = $(SRC_BASE:%.cpp=$(OUTPUT)/%.o)
+OBJ_IMAGING = $(SRC_IMAGING:Imaging%.cpp=$(OUTPUT)%.o)
+OBJ_LOADERS = $(SRC_LOADERS:Loaders%.cpp=$(OUTPUT)%.o)
+OBJ_FILTERS = $(SRC_FILTERS:Filters%.cpp=$(OUTPUT)%.o)
+OBJ_CONTROLLERS = $(SRC_CONTROLLERS:Controllers%.cpp=$(OUTPUT)%.o)
+ALL_OBJS = $(OBJ_BASE) $(OBJ_IMAGING) $(OBJ_FILTERS) $(OBJ_LOADERS) $(OBJ_CONTROLLERS)
+
+$(OUTPUT)/libraptortoolbox.a:  $(ALL_OBJS)
+	ar r $(OUTPUT)/libraptortoolbox.a $(ALL_OBJS)
+	cp $(OUTPUT)/libraptortoolbox.a $(RAPTOR_ROOT)/Redist/Lib
+
+$(OUTPUT)/libraptortoolbox.so:  $(ALL_OBJS)
+	ld -shared $(ALL_OBJS) -o $(OUTPUT)/libraptortoolbox.so 
+	cp $(OUTPUT)/libraptortoolbox.so $(RAPTOR_ROOT)/Redist/Bin
+
+$(OBJ_BASE): $(SRC_BASE)
+	g++ $(CCCFLAGS) $(INCDIRS) -c $(<D)/$(*F).cpp  -o $(OUTPUT)/$(@F)
+
+$(OBJ_FILTERS): $(SRC_FILTERS)
+	g++ $(CCCFLAGS) $(INCDIRS) -c $(<D)/$(*F).cpp  -o $(OUTPUT)/$(@F)
+
+$(OBJ_LOADERS): $(SRC_LOADERS)
+	g++ $(CCCFLAGS) $(INCDIRS) -c $(<D)/$(*F).cpp  -o $(OUTPUT)/$(@F)
+
+$(OBJ_IMAGING): $(SRC_IMAGING)
+	g++ $(CCCFLAGS) $(INCDIRS) $(INCDIR_TIFF) -c $(<D)/$(*F).cpp  -o $(OUTPUT)/$(@F)
+
+$(OBJ_CONTROLLERS): $(SRC_CONTROLLERS)
+	g++ $(CCCFLAGS) $(INCDIRS) -c $(<D)/$(*F).cpp  -o $(OUTPUT)/$(@F)
+
+Loaders/OBJScript_lex.cpp Loaders/OBJScript_yacc.cpp Loaders/OBJScript_tree.cpp : Loaders/OBJ.lex
+	cd Loaders; $(RAPTOR_ROOT)/Redist/Bin/Microlex -f OBJ.lex -o OBJScript -v; cd ..
+

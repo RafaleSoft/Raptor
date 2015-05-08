@@ -1,0 +1,133 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{8d8d3ea9-2568-4f7a-a355-2095cd0e6ebc}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+    <Filter Include="Header Files\CWnd include">
+      <UniqueIdentifier>{2b566488-e8a9-4d1a-b00f-6c9962520a99}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Dialog include">
+      <UniqueIdentifier>{52ef29ff-2ebb-4656-8e28-632fe44a9ee5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{2d9071fd-56cc-4f61-af6d-b293b68baefc}</UniqueIdentifier>
+      <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{74158dc4-9ce8-432a-af9f-ee635a86f35f}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Source Files\CWnd src">
+      <UniqueIdentifier>{d97e5743-5a24-4fcf-9186-2d3b4e34bb95}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Dialog src">
+      <UniqueIdentifier>{850f587e-2939-4358-958c-d2523178ff69}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\RaptorMFCExtension\CWnd\GLDocument.cpp">
+      <Filter>Source Files\CWnd src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorMFCExtension\CWnd\GLFrameWnd.cpp">
+      <Filter>Source Files\CWnd src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorMFCExtension\CWnd\GLMDIChildWnd.cpp">
+      <Filter>Source Files\CWnd src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorMFCExtension\CWnd\GLView.cpp">
+      <Filter>Source Files\CWnd src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorMFCExtension\CWnd\GLWnd.cpp">
+      <Filter>Source Files\CWnd src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorMFCExtension\CWnd\MultiGLWnd.cpp">
+      <Filter>Source Files\CWnd src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorMFCExtension\Dialog\AboutDialog.cpp">
+      <Filter>Source Files\Dialog src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorMFCExtension\Dialog\InitDialog.cpp">
+      <Filter>Source Files\Dialog src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorMFCExtension\Dialog\ObjectDialog.cpp">
+      <Filter>Source Files\Dialog src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorMFCExtension\Dialog\RaptorErrors.cpp">
+      <Filter>Source Files\Dialog src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorMFCExtension\Dialog\RaptorStatus.cpp">
+      <Filter>Source Files\Dialog src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorMFCExtension\Dialog\VideoSettings.cpp">
+      <Filter>Source Files\Dialog src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorMFCExtension\RaptorMFCApplication.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorMFCExtension\StdAfx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorMFCExtension\RaptorMFCExtension.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\RaptorMFCExtension\CWnd\GLDocument.h">
+      <Filter>Header Files\CWnd include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorMFCExtension\CWnd\GLFrameWnd.h">
+      <Filter>Header Files\CWnd include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorMFCExtension\CWnd\GLMDIChildWnd.h">
+      <Filter>Header Files\CWnd include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorMFCExtension\CWnd\GLView.h">
+      <Filter>Header Files\CWnd include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorMFCExtension\CWnd\GLWnd.h">
+      <Filter>Header Files\CWnd include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorMFCExtension\CWnd\MultiGLWnd.h">
+      <Filter>Header Files\CWnd include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorMFCExtension\Dialog\AboutDialog.h">
+      <Filter>Header Files\Dialog include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorMFCExtension\Dialog\InitDialog.h">
+      <Filter>Header Files\Dialog include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorMFCExtension\Dialog\ObjectDialog.h">
+      <Filter>Header Files\Dialog include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorMFCExtension\Dialog\RaptorErrors.h">
+      <Filter>Header Files\Dialog include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorMFCExtension\Dialog\RaptorStatus.h">
+      <Filter>Header Files\Dialog include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorMFCExtension\Dialog\VideoSettings.h">
+      <Filter>Header Files\Dialog include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorMFCExtension\RaptorMFCApplication.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorMFCExtension\resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorMFCExtension\StdAfx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\RaptorMFCExtension\res\RaptorMFCExtension.rc2">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\..\RaptorMFCExtension\RaptorMFCExtension.rc">
+      <Filter>Source Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>
