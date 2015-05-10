@@ -14,7 +14,10 @@ Redist/
 *_yacc.cpp
 *_yacc.h
 RaptorData.pck
+start.s3tc
 Installer/Output
+MicroLex/MicroLex.exe
+SIMD/simd.lib
 
 # Build results
 [Dd]ebug/
