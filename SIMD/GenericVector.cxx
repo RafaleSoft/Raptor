@@ -190,10 +190,10 @@ __inline CGenericVector<T,D>&	SIMD_CALL CGenericVector<T,D>::operator*= (const T
 template <class T,int D>
 __inline CGenericVector<T,D>&	SIMD_CALL CGenericVector<T,D>::operator*= (const CGenericMatrix<T>& m)
 {
-	float vx = m_vector[0]*m.m_matrix[0]+m_vector[1]*m.m_matrix[1]+m_vector[2]*m.m_matrix[2]+m_vector[3]*m.m_matrix[3];
-	float vy = m_vector[0]*m.m_matrix[4]+m_vector[1]*m.m_matrix[5]+m_vector[2]*m.m_matrix[6]+m_vector[3]*m.m_matrix[7];
-	float vz = m_vector[0]*m.m_matrix[8]+m_vector[1]*m.m_matrix[9]+m_vector[2]*m.m_matrix[10]+m_vector[3]*m.m_matrix[11];
-	m_vector[3] = m_vector[0]*m.m_matrix[12]+m_vector[1]*m.m_matrix[13]+m_vector[2]*m.m_matrix[14]+m_vector[3]*m.m_matrix[15];
+	float vx = m_vector[0]*m[0]+m_vector[1]*m[1]+m_vector[2]*m[2]+m_vector[3]*m[3];
+	float vy = m_vector[0]*m[4]+m_vector[1]*m[5]+m_vector[2]*m[6]+m_vector[3]*m[7];
+	float vz = m_vector[0]*m[8]+m_vector[1]*m[9]+m_vector[2]*m[10]+m_vector[3]*m[11];
+	m_vector[3] = m_vector[0]*m[12]+m_vector[1]*m[13]+m_vector[2]*m[14]+m_vector[3]*m[15];
     m_vector[2] = vz;
     m_vector[1] = vy;
     m_vector[0] = vx;
@@ -227,10 +227,10 @@ __inline CGenericVector<T,D> SIMD_CALL CGenericVector<T,D>::operator*  (const CG
 {
 	CGenericVector<T,D> v;
 
-	v.m_vector[0] = m_vector[0]*m.m_matrix[0]+m_vector[1]*m.m_matrix[4]+m_vector[2]*m.m_matrix[8]+m_vector[3]*m.m_matrix[12];
-	v.m_vector[1] = m_vector[0]*m.m_matrix[1]+m_vector[1]*m.m_matrix[5]+m_vector[2]*m.m_matrix[9]+m_vector[3]*m.m_matrix[13];
-	v.m_vector[2] = m_vector[0]*m.m_matrix[2]+m_vector[1]*m.m_matrix[6]+m_vector[2]*m.m_matrix[10]+m_vector[3]*m.m_matrix[14];
-	v.m_vector[3] = m_vector[0]*m.m_matrix[3]+m_vector[1]*m.m_matrix[7]+m_vector[2]*m.m_matrix[11]+m_vector[3]*m.m_matrix[15];
+	v.m_vector[0] = m_vector[0]*m[0]+m_vector[1]*m[4]+m_vector[2]*m[8]+m_vector[3]*m[12];
+	v.m_vector[1] = m_vector[0]*m[1]+m_vector[1]*m[5]+m_vector[2]*m[9]+m_vector[3]*m[13];
+	v.m_vector[2] = m_vector[0]*m[2]+m_vector[1]*m[6]+m_vector[2]*m[10]+m_vector[3]*m[14];
+	v.m_vector[3] = m_vector[0]*m[3]+m_vector[1]*m[7]+m_vector[2]*m[11]+m_vector[3]*m[15];
 
 	return v;
 };

@@ -148,7 +148,7 @@ bool CGLLod::addLevel(float fromDepth, CObject3D *obj)
 }
 
 
-__inline CObject3D* const CGLLod::glGetLod(void) const
+CObject3D* const CGLLod::glGetLod(void) const
 {
     CGenericMatrix<float> transform;
     glGetFloatv(GL_MODELVIEW_MATRIX,transform.matrix());

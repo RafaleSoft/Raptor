@@ -36,7 +36,7 @@ public:
 	CMMXWMatrix&  operator= ( const CGenericMatrix<unsigned short>& m )
 	{ 
 		for (int i=0;i<16;i++)
-			m_matrix[i]=m.m_matrix[i];
+			m_matrix[i]=m[i];
 		return *this; 
 	};
 
@@ -113,18 +113,7 @@ public:
 	};
 
 	CMMXWMatrix&	SIMD_CALL operator*= (const CMMXWMatrix& m);
-	
-	/*
-	CGenericMatrix<T>&	SIMD_CALL operator*= (const T& t);
-	
 
-	// binary operations
-	friend CGenericMatrix<T> SIMD_CALL operator*  (const CGenericMatrix<T>&, const CGenericMatrix<T>&);
-	friend CGenericMatrix<T> SIMD_CALL operator*  (const T&, const CGenericMatrix<T>&);
-	friend CGenericMatrix<T> SIMD_CALL operator*  (const CGenericMatrix<T>&, const T&);
-	friend CGenericMatrix<T> SIMD_CALL operator+  (const CGenericMatrix<T>&,const CGenericMatrix<T>&);
-	friend CGenericMatrix<T> SIMD_CALL operator-  (const CGenericMatrix<T>&,const CGenericMatrix<T>&);
-	*/
 };
 
 #endif // !defined(AFX_MMXWMATRIX_H__6CB7BBD5_103F_4C28_AA90_88AA8AD9E466__INCLUDED_)

@@ -90,13 +90,9 @@ public:
 	CGenericVector<T,D> SIMD_CALL operator*  (const CGenericMatrix<T,D>&) const;
 	CGenericVector<T,D> SIMD_CALL operator*  (T) const;
 	
-	friend class CMMXBVector;
-	friend class CMMXWVector;
-	friend class CGenericMatrix<T,D>;
 
 protected:
 	T m_vector[D];
-
 };
 
 

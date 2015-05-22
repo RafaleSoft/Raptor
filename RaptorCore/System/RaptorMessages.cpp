@@ -273,17 +273,18 @@ bool CRaptorMessages::LoadMessages(const std::string& fname)
 {
     CRaptorIO *m_pTranslator = CRaptorIO::Create(NULL,CRaptorIO::DISK_READ,CRaptorIO::ASCII_XML);
 
-	char shemaLocation[MAX_PATH];
-	if (NULL != getenv("RAPTOR_ROOT"))
+	stringstream shemaLocation;
+	char *raptor_root = getenv("RAPTOR_ROOT");
+	if (NULL != raptor_root)
 	{
-		strcpy(shemaLocation,getenv("RAPTOR_ROOT"));
-		strcat(shemaLocation,"/Redist/bin/RaptorMessages.xsd");
+		shemaLocation << raptor_root;
+		shemaLocation << "/Redist/bin/RaptorMessages.xsd";
 	}
 	else
-		strcpy(shemaLocation,"./RaptorMessages.xsd");
+		shemaLocation << "./RaptorMessages.xsd";
 
-	m_pTranslator->read(shemaLocation,0);
-	m_pTranslator->read((unsigned char*)fname.c_str(),0);
+	m_pTranslator->read((void*)shemaLocation.str().c_str(),0);
+	m_pTranslator->read((void*)fname.c_str(),0);
 
     string name;
 	*m_pTranslator >> name;

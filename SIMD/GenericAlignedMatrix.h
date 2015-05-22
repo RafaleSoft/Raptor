@@ -134,22 +134,6 @@ public:
 	CGenericAlignedMatrix<T> SIMD_CALL operator+  (const CGenericAlignedMatrix<T>&) const;
 	CGenericAlignedMatrix<T> SIMD_CALL operator-  (const CGenericAlignedMatrix<T>&) const;
     CGenericAlignedVector<T> SIMD_CALL operator*  (const CGenericAlignedVector<T>&) const;
-
-	// input/output
-	friend std::istream& operator>> (std::istream& i, CGenericAlignedMatrix<T>& m)
-	{ 
-		i>>m.m_matrix[0]>>m.m_matrix[1]>>m.m_matrix[2]>>m.m_matrix[3];
-		i>>m.m_matrix[4]>>m.m_matrix[5]>>m.m_matrix[6]>>m.m_matrix[7];
-		i>>m.m_matrix[8]>>m.m_matrix[9]>>m.m_matrix[10]>>m.m_matrix[11];
-		return i>>m.m_matrix[12]>>m.m_matrix[13]>>m.m_matrix[14]>>m.m_matrix[15];
-	};
-	friend std::ostream& operator<< (std::ostream& o, const CGenericAlignedMatrix<T>& m)
-	{ 
-        o<<m.m_matrix[0]<<" "<<m.m_matrix[1]<<" "<<m.m_matrix[2]<<" "<<m.m_matrix[3]<<std::endl;
-        o<<m.m_matrix[4]<<" "<<m.m_matrix[5]<<" "<<m.m_matrix[6]<<" "<<m.m_matrix[7]<<std::endl;
-        o<<m.m_matrix[8]<<" "<<m.m_matrix[9]<<" "<<m.m_matrix[10]<<" "<<m.m_matrix[11]<<std::endl;
-		return o<<m.m_matrix[12]<<" "<<m.m_matrix[13]<<" "<<m.m_matrix[14]<<" "<<m.m_matrix[15];
-	};
 };
 
 

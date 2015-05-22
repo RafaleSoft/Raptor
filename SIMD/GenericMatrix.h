@@ -59,11 +59,7 @@ public:
     CGenericMatrix<T,D> SIMD_CALL operator+  (const CGenericMatrix<T,D>&) const;
     CGenericMatrix<T,D> SIMD_CALL operator-  (const CGenericMatrix<T,D>&) const;
 
-
 protected:
-    friend class CMMXWMatrix;
-	friend class CGenericVector<T,D>;
-
 	T m_matrix[D*D];
 };
 
