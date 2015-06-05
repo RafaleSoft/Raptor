@@ -27,6 +27,9 @@
 #if !defined(AFX_MEMORY_H__81A6CA9A_4ED9_4260_B6E4_C03276C38DBC__INCLUDED_)
 	#include "System/Memory.h"
 #endif
+#if !defined(AFX_TEXELALLOCATOR_H__7C48808C_E838_4BE3_8B0E_286428BB7CF8__INCLUDED_)
+	#include "Subsys/TexelAllocator.h"
+#endif
 
 #include "Subsys/FreeType/FTGlyphBitmap.h"
 #include "Subsys/FreeType/TTBitmapFont.h"
@@ -39,11 +42,10 @@ static CGLLayer::CGLLayerClassID layerId;
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 CGLLayer::CGLLayer(int xpos,int ypos,unsigned int width,unsigned int height)
-	:CPersistence(layerId,"LAYER")
+	:CPersistence(layerId,"LAYER"),
+	m_bRebuild(true),m_bRedraw(false),
+	m_pPlane(NULL),m_pBuffer(NULL),m_pBufferPointer(NULL)
 {
-    m_bRebuild = true;
-    m_bRedraw = false;
-
 	layer.handle = 0;
 	layer.hClass = Global::COpenGLClassID::GetClassId().ID();
 
@@ -73,6 +75,12 @@ CGLLayer::CGLLayer(int xpos,int ypos,unsigned int width,unsigned int height)
 	//	allocate with padding for sse simplification
 	m_pBuffer = allocator.allocate(m_layerWidth*m_layerHeight*4+16); 
 
+	if (CTexelAllocator::GetInstance()->isMemoryRelocated())
+	{
+		CTexelAllocator *pAllocator = CTexelAllocator::GetInstance();
+		m_pBufferPointer = pAllocator->allocateTexels(m_layerWidth*m_layerHeight*4);
+	}
+
 	CATCH_GL_ERROR
 }
 
@@ -86,6 +94,11 @@ CGLLayer::~CGLLayer()
     {
         sprites[i].image->releaseReference();
     }
+	if (CTexelAllocator::GetInstance()->isMemoryRelocated())
+	{
+		CTexelAllocator *pAllocator = CTexelAllocator::GetInstance();
+		pAllocator->releaseTexels(m_pBufferPointer);
+	}
 }
 
 
@@ -236,11 +249,25 @@ void CGLLayer::glRender()
 	
     if (m_bRedraw)
     {
-        m_pPlane->glRender();
-        glTexSubImage2D(GL_TEXTURE_2D,
-						m_pPlane->getCurrentMipMapLevel(),
-						0, 0, m_layerWidth, m_layerHeight,
-						GL_RGBA, GL_UNSIGNED_BYTE, m_pBuffer);
+		m_pPlane->glRender();
+
+		if (CTexelAllocator::GetInstance()->isMemoryRelocated() &&
+			CTexelAllocator::GetInstance()->isMemoryLocked() &&
+			(NULL != m_pBufferPointer))
+		{
+			CTexelAllocator::GetInstance()->glCopyPointer(m_pBufferPointer,
+														  m_pBuffer,
+														  m_layerWidth*m_layerHeight*4);
+			glTexSubImage2D(GL_TEXTURE_2D,
+							m_pPlane->getCurrentMipMapLevel(),
+							0, 0, m_layerWidth, m_layerHeight,
+							GL_RGBA, GL_UNSIGNED_BYTE, m_pBufferPointer);
+		}
+		else
+			glTexSubImage2D(GL_TEXTURE_2D,
+							m_pPlane->getCurrentMipMapLevel(),
+							0, 0, m_layerWidth, m_layerHeight,
+							GL_RGBA, GL_UNSIGNED_BYTE, m_pBuffer);
         m_bRedraw = false;
     }
 

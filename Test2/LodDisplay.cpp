@@ -156,7 +156,7 @@ void CLodDisplay::Init()
 		g->setRenderingModel(l_model);
 		g = (CShadedGeometry*)(set->getChild(it++));
 	}
-	lod->addLevel(-600,set);
+	lod->addLevel(600,set);
 
 	//	Load level 2
     CRaptorToolBox::load3DStudioScene("Datas\\Zipplane3.3DS",set,&options);
@@ -170,7 +170,7 @@ void CLodDisplay::Init()
 		g->setRenderingModel(l_model);
 		g = (CShadedGeometry*)(set->getChild(it++));
 	}
-	lod->addLevel(-900,set);
+	lod->addLevel(900,set);
 
 	//	Load level 3
     CRaptorToolBox::load3DStudioScene("Datas\\Zipplane4.3DS",set,&options);
@@ -184,7 +184,7 @@ void CLodDisplay::Init()
 		g->setRenderingModel(l_model);
 		g = (CShadedGeometry*)(set->getChild(it++));
 	}
-	lod->addLevel(-1200,set);
+	lod->addLevel(1200,set);
 
 	//	Load level 4
     CRaptorToolBox::load3DStudioScene("Datas\\Zipplane5.3DS",set,&options);
@@ -198,7 +198,7 @@ void CLodDisplay::Init()
 		g->setRenderingModel(l_model);
 		g = (CShadedGeometry*)(set->getChild(it++));
 	}
-	lod->addLevel(-1600,set);
+	lod->addLevel(1600,set);
 
 	lod->rotationY(-60.0f);
 	lod->rotationX(60.0f);
@@ -245,48 +245,15 @@ void CLodDisplay::ReInit()
 void CLodDisplay::UnInit()
 {
 }
-/*
-void CLodDisplay::CountFaces(void)
-{
-	unsigned int nbFaces = 0;
-	unsigned int nbVertex = 0;
 
-	C3DSet *set = (C3DSet *)(lod->getObject());
-
-    C3DSet::C3DSetIterator it = set->getIterator();
-	CGeometry *g = (CGeometry*)(set->getChild(it++));
-	
-	while (g != NULL)
-	{
-		nbFaces += g->nbFace();
-		nbVertex += g->nbVertex();
-
-		g = (CGeometry*)(set->getChild(it++));
-	}
-
-	layer->clear(0xC0800000);
-
-	layer->drawText(5,70,"LOD info",font,0xC0FFFF00);
-
-    char text[32];
-	sprintf(text,"Faces: %u",nbFaces);
-	layer->drawText(5,40,text,font,0xC0FFFF00);
-	sprintf(text,"Vertex: %u",nbVertex);
-	layer->drawText(5,10,text,font,0xC0FFFF00);
-}
-*/
 void CLodDisplay::Display()
 {
 	if (reinit)
 		ReInit();
-//	CountFaces();
+
+	float dt = CTimeObject::GetGlobalTime();
 
     glEnable(GL_LIGHT0);
 
 	lod->translateAbsolute(0.0f,0.0f,-1300.0f + cos(TWO_PI * dt) * 1000);
-	
-//	layer->glRender();
-
-	dt+=0.002f;
-	if (dt>1.0) dt=0.0;
 }

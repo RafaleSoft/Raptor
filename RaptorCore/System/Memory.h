@@ -27,7 +27,7 @@ class CMemoryHeap;
 class RAPTOR_API CMemory
 {
 public:
-	class RAPTOR_API CBufferObject
+	class RAPTOR_API IBufferObject
     {
     public:
         typedef enum
@@ -37,7 +37,7 @@ public:
             PIXEL_STORAGE,
             PIXEL_SOURCE,
             NB_BUFFER_KIND
-        }   BUFFER_KIND; 
+        }   BUFFER_KIND;
 
         typedef enum
         {
@@ -46,40 +46,34 @@ public:
             DYNAMIC
         } BUFFER_MODE;
 
-		union
+		typedef union
 		{
 			void		*address;
 			unsigned int id;
-        } buffer;
+        } BUFFER_DATA;
 
 		//! Returns the size of the buffer.
-		size_t getSize(void) const
-		{ return m_size; };
+		virtual size_t getSize(void) const = 0;
 
 		//! Returns the buffer kind.
-		BUFFER_KIND getStorage(void) const
-		{ return m_storage; }
+		virtual BUFFER_KIND getStorage(void) const = 0;
 
 		//!	Returns a valid address of the buffer or NULL
 		//! ( in the case of NULL it is also the offset from
 		//! the currently bound VBO base address )
-		void*		 getBaseAddress(void) const;
+		virtual void* getBaseAddress(void) const = 0;
 
-    private:
-        friend class CMemory;
-        CBufferObject():m_size(0),m_storage(NB_BUFFER_KIND) 
-		{ buffer.id = 0; };
-        ~CBufferObject() {};
-        CBufferObject(const CBufferObject& ) {};
-        CBufferObject& operator=(const CBufferObject& ) { return *this; };
+		//! Returns a valid buffer id of the buffer of 0
+		virtual unsigned int getBufferId(void) const = 0;
 
-		//! The size of the buffer object
-		unsigned int	m_size;
+	protected:
+		IBufferObject() {};
+		virtual ~IBufferObject() {};
 
-		//! Indicates the data storage usage: vertex, pixels, ...
-        BUFFER_KIND		m_storage;
+	private:
+        IBufferObject(const IBufferObject& ) {};
+		IBufferObject& operator=(const IBufferObject& ) { return *this; };
 	};
-
 
 
     //! A helper class to handle typed allocation in heap and reuse garbaged blocs.
@@ -143,7 +137,7 @@ public:
 	//! @param dstOffset : the data offset within the destintation buffer ( vb )
 	//! @param src		 : a pointer to the data source
 	//! @param sz		 : the size of the data to be copied
-	void glSetBufferObjectData(CBufferObject &vb,unsigned int dstOffset,const void* src,size_t sz);
+	void glSetBufferObjectData(IBufferObject &vb,unsigned int dstOffset,const void* src,size_t sz);
 
     //!	Memory transfer method that should be used when copying data to and from a vertex buffer object.
 	//! This method might need a valid OpenGL context if VBO are supported.
@@ -151,14 +145,14 @@ public:
 	//! @param srcOffset : the data offset within the source buffer ( vb )
 	//! @param dst		 : a pointer to the data destination
 	//! @param sz		 : the size of the data to be copied
-	void glGetBufferObjectData(CBufferObject &vb,unsigned int srcOffset,void* dst,size_t sz);
+	void glGetBufferObjectData(IBufferObject &vb,unsigned int srcOffset,void* dst,size_t sz);
 
     //! This method creates a new buffer object :
     //! @param kind : selects a kind of buffer buffer ( vertex, pixel, memory ... )
     //! @param size : sets the size of the buffer and allocates uninitialized memory
     //! @return the newly allocated buffer object or NULL if allocation failed.
-    CBufferObject * glAllocateBufferObject( CBufferObject::BUFFER_KIND kind, 
-                                            CBufferObject::BUFFER_MODE mode,
+    IBufferObject * glAllocateBufferObject( IBufferObject::BUFFER_KIND kind,
+                                            IBufferObject::BUFFER_MODE mode,
                                             size_t size);
 
 
@@ -167,14 +161,14 @@ public:
 	//!	and parameter vb is set to NULL.
 	//!	@param vb : a valid buffer object
 	//!	@return false if buffer invalid or any error, true otherwise
-	bool glReleaseBufferObject(CBufferObject* &vb);
+	bool glReleaseBufferObject(IBufferObject* &vb);
 
     //! Activates the buffer object : vb is now the currently selected buffer for
     //! all subsequent calls related to the kind of buffer
-	bool glLockBufferObject(CBufferObject &vb);
+	bool glLockBufferObject(IBufferObject &vb);
 
     //! Deactivates the buffer object selected above.
-	bool glUnlockBufferObject(CBufferObject &vb);
+	bool glUnlockBufferObject(IBufferObject &vb);
 
 
 

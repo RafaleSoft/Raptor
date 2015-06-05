@@ -75,7 +75,7 @@ public:
 	//! This method creates a new buffer object wrapping a GL buffer.
 	//! @param glBuffer : a Raptor Core GL buffer
     //! @return the newly allocated buffer object or NULL if allocation failed.
-    CRaptorComputeMemory::CBufferObject* clCreateBuffer(CMemory::CBufferObject *glBuffer);
+    CRaptorComputeMemory::CBufferObject* clCreateBuffer(CMemory::IBufferObject *glBuffer);
 
 
 	//! This method deletes a buffer object allocate with cl

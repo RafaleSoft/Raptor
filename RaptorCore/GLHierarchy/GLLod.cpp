@@ -157,13 +157,12 @@ CObject3D* const CGLLod::glGetLod(void) const
     distance *= transform;
 
 	float d = sqrt(distance[12]*distance[12] + distance[13]*distance[13] + distance[14]*distance[14]);
-	int pos = 0;
-	int max = lods.size();
-	while ((pos < max) && (lods[pos].fromDepth<d))
-		pos++;
+	int pos = lods.size() - 1;
+	while ((pos >= 0) && (lods[pos].fromDepth > d))
+		pos--;
 
-	if (pos >= max)
-		pos = max - 1;
+	if (pos < 0)
+		pos = 0;
 
     return lods[pos].obj;
 }

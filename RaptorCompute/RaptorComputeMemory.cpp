@@ -160,7 +160,7 @@ CRaptorComputeMemory::clCreateBuffer(	size_t size,
 	return res;
 }
 
-CRaptorComputeMemory::CBufferObject* CRaptorComputeMemory::clCreateBuffer(CMemory::CBufferObject *glBuffer)
+CRaptorComputeMemory::CBufferObject* CRaptorComputeMemory::clCreateBuffer(CMemory::IBufferObject *glBuffer)
 {
 	CRaptorComputeMemory::CBufferObject *res = NULL;
 

@@ -136,6 +136,7 @@ private:
 
 	CTextureObject	*m_pPlane;
 	unsigned char	*m_pBuffer;
+	unsigned char	*m_pBufferPointer;
 };
 
 

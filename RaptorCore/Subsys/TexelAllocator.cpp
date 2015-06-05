@@ -109,8 +109,8 @@ bool CTexelAllocator::glInitMemory(unsigned int texelSize)
 
 	if (m_bRelocated)
 	{
-		relocatedTexels = CMemory::GetInstance()->glAllocateBufferObject(CMemory::CBufferObject::PIXEL_SOURCE,
-										                                 CMemory::CBufferObject::STREAM,
+		relocatedTexels = CMemory::GetInstance()->glAllocateBufferObject(CMemory::IBufferObject::PIXEL_SOURCE,
+										                                 CMemory::IBufferObject::STREAM,
 																		 texelSize+RELOCATE_OFFSET);
 
 		texels.size = texelSize;

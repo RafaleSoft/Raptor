@@ -26,8 +26,6 @@ public:
 
 
 private:
-	float		dt;
-
 	CGLLod		*lod;
 	CMaterial	*material;
 	CViewPoint	*vp;

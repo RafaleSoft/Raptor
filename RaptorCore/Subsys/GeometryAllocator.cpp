@@ -411,13 +411,13 @@ bool	CGeometryAllocator::glInitMemory(unsigned int indexSize,unsigned int coords
 	if (m_bRelocated)
 	{
 		vertices.size = coordsSize * sizeof(float);
-		relocatedVertices = CMemory::GetInstance()->glAllocateBufferObject(	CMemory::CBufferObject::VERTEX_BUFFER,
-																			CMemory::CBufferObject::STATIC,
+		relocatedVertices = CMemory::GetInstance()->glAllocateBufferObject(	CMemory::IBufferObject::VERTEX_BUFFER,
+																			CMemory::IBufferObject::STATIC,
 																			vertices.size+RELOCATE_OFFSET);
 		
 		faceIndexes.size = indexSize  * sizeof(unsigned short);
-		relocatedFaceIndexes = CMemory::GetInstance()->glAllocateBufferObject(	CMemory::CBufferObject::INDEX_BUFFER,
-																				CMemory::CBufferObject::STATIC,
+		relocatedFaceIndexes = CMemory::GetInstance()->glAllocateBufferObject(	CMemory::IBufferObject::INDEX_BUFFER,
+																				CMemory::IBufferObject::STATIC,
 																				faceIndexes.size+RELOCATE_OFFSET);
 		
 
