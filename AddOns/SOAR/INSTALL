@@ -1,0 +1,128 @@
+I. INTRODUCTION
+
+  SOAR has been designed to be portable to a number of platforms, including
+  Unix and Windows.  The sections below describe how to compile the software
+  for these two platforms.
+
+  A successful installation will produce the following binaries:
+
+    lib/libio     static library for reading and writing files
+    bin/png2geo   tool for converting PNG files to the internal GEO format
+    bin/soar      the SOAR visualization system
+
+  (These files will have extensions appropriate for the given operating
+  system.)  See "README" for documentation on running the executables.
+
+
+II. CONFIGURATION
+
+  SOAR has a number of configurable options that have to be set at
+  compile time.  By default, the options are set so as to provide
+  maximum code portability, possibly at the expense of performance and
+  functionality.
+
+  SOAR is configured via a set of configuration files located in the
+  "src" directory (the files with extension ".cfg").  Since Unix and
+  Windows differ significantly in how executables are compiled, there
+  are two system specific configuration files called "Unix.cfg" and
+  "Windows.cfg".
+
+  For Unix builds, edit the text file "Unix.cfg" in the src directory.
+  Choose your C compiler and its command line options.  A few example
+  compile lines have been included.  The macro LIB is used to select the
+  appropriate library subdirectory for linking on Irix, which supports
+  both 32- and 64-bit objects.  On other platforms, set LIB=lib.  Set
+  the include and link directories for libpng and X11.
+
+  For Windows builds, no changes should be necessary, although feel
+  free to modify the compiler settings in "Windows.cfg".  Note that this
+  distribution is set up to be compiled with the command line tool "nmake"
+  (see details on compilation below).
+
+  Other than the system specific compiler settings, there are a number
+  of configurable parameters that alter the behavior of SOAR.  These
+  parameters, which are specified using preprocessor macros, are found in
+  "Options.cfg".  After editing this file, the code will be compiled with
+  the given set of options, and recompilation (of all binaries, in general)
+  is necessary for changed options to take effect.  The following options
+  can be configured:
+
+  INDEX=<data indexing type>
+
+    As described in the papers, the height field data can be laid out on
+    disk (and in memory) in several different ways; different data layouts
+    result in different cache performance characteristics.  Currently only
+    two data layouts are supported; standard, row-major matrix layout
+    (linear indexing), and the interleaved quadtree layout described in the
+    papers (the most memory consuming scheme of them all).  While the linear
+    scheme is space-efficient, it leads to poor cache coherence.  The
+    interleaved quadtree layout, on the other hand, requires 66% more disk
+    space than the linear layout, but results in better cache and paging
+    performance.  The two layouts are specified by setting INDEX to one of
+    INDEX_LINEAR and INDEX_INTERLEAVED_QUADTREES.  Note that files written
+    by png2geo will be in one of these two formats, and after changing the
+    INDEX macro, both png2geo and soar have to be recompiled, and the height
+    field data must be processed for the given layout using png2geo.
+
+  WITH_FLOAT_MATH=<0/1>
+
+    The (old) C89 ANSI standard does not include support for single
+    precision floating point math (all math functions operate on "doubles"),
+    although C99 does, as do many earlier C implementations.  For example,
+    the double precision square root function sqrt() has a single precision
+    (float) counterpart sqrtf().  Since SOAR generally works in single
+    precision, it would benefit from the use of single precision math
+    functions.  If your implementation supports single precision math, use
+    WITH_FLOAT_MATH=1.  If this macro is zero, then appropriate C macros
+    will be defined that invoke the double precision functions (see the
+    header file common.h).
+
+  WITH_MEMORY_MAP=<0/1>
+
+    As described in the papers, for very large data sets it is possible to
+    "memory map" the terrain geometry file and have the operating system
+    page data in on demand.  If WITH_MEMORY_MAP is set to one, then memory
+    mapping will be used, and SOAR will start up virtually instantaneously.
+    Otherwise the entire height field will be allocated and read into
+    memory at startup.
+
+  WITH_STATS=<0/1>
+
+    Set this to zero to disable (one to enable) collection of statistics.
+    The only statistic affected by this macro is the number of triangles
+    in the terrain triangle strip, which is displayed in the lower left
+    corner of the window if enabled.  Counting the number of triangles
+    incurs a slight performance penalty, which is the reason for allowing
+    this feature to be disabled.
+
+
+III. UNIX INSTALLATION
+
+  To compile the libraries and executables, first go to the src directory
+  by typing
+
+    cd src
+
+  Edit the configuration file "Options.cfg" to set the compile time
+  configurable parameters.  Optionally, edit the file "Unix.cfg" to
+  specify compiler settings.  Then type
+
+    make -f Unix.mak cleanall
+    make -f Unix.mak
+
+  If the compilation fails, read the CONFIGURATION section above carefully;
+  it is possible that changing the compiler options will solve the problem.
+
+
+IV. WINDOWS INSTALLATION
+
+  To compile SOAR, first open up a DOS shell and go to the src directory
+  using the "cd" command.  Edit the configuration file "Options.cfg" to set
+  the compile time configurable parameters.  Then type
+
+    nmake /f Windows.mak cleanall
+    nmake /f Windows.mak
+
+  If the compilation fails, try changing the settings in "Windows.cfg".
+  If this does not solve the problem, read the section "CONFIGURATION"
+  above.
