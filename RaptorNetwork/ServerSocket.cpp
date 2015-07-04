@@ -190,7 +190,7 @@ bool CServerSocket::setBuffersSizes(size_t readBuffer,size_t writeBuffer)
 	return true;
 }
 
-bool CServerSocket::connect(const std::string& address,unsigned int port)
+bool CServerSocket::connect(const std::string& address,unsigned short port)
 {
 	if (getServer() == NULL)
 		return false;

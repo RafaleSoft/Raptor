@@ -34,7 +34,7 @@ void ClientCmdLine::Parse(int argc, char *argv[])
 		if ((!strcmp("-port",argv[i])) && (i+1 < argc))
 		{
 			i++;
-			port = atoi(argv[i++]);
+			port = (unsigned short)atoi(argv[i++]);
 		}
 		else if ((!strcmp("-host",argv[i])) && (i+1 < argc))
 		{
@@ -44,22 +44,22 @@ void ClientCmdLine::Parse(int argc, char *argv[])
 		else if ((!strcmp("-width",argv[i])) && (i+1 < argc))
 		{
 			i++;
-			width = (short)atoi(argv[i++]);
+			width = (unsigned short)atoi(argv[i++]);
 		}
 		else if ((!strcmp("-height",argv[i])) && (i+1 < argc))
 		{
 			i++;
-			height = (short)atoi(argv[i++]);
+			height = (unsigned short)atoi(argv[i++]);
 		}
 		else if ((!strcmp("-r_width",argv[i])) && (i+1 < argc))
 		{
 			i++;
-			r_width = (short)atoi(argv[i++]);
+			r_width = (unsigned short)atoi(argv[i++]);
 		}
 		else if ((!strcmp("-r_height",argv[i])) && (i+1 < argc))
 		{
 			i++;
-			r_height = (short)atoi(argv[i++]);
+			r_height = (unsigned short)atoi(argv[i++]);
 		}
 		else if ((!strcmp("-file",argv[i])) && (i+1 < argc))
 		{

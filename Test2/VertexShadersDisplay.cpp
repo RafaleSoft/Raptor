@@ -500,22 +500,6 @@ public:
 		fp->setProgramParameters(params2);
 	}
 
-	virtual void glRender(void)
-	{
-		CVertexShader *vs = m_pShader->glGetVertexShader();
-		vs->glRender();
-		CFragmentShader *fp = m_pShader->glGetFragmentShader();
-		fp->glRender();
-	}
-
-	virtual void Stop(void)
-	{
-		CVertexShader *vs = m_pShader->glGetVertexShader();
-		vs->glStop();
-		CFragmentShader *fp = m_pShader->glGetFragmentShader();
-		fp->glStop();
-	}
-
 private:
 	CShader					*m_pShader;
 	CShaderProgram::CProgramParameters	params;

@@ -138,7 +138,17 @@ bool CGLLod::addLevel(float fromDepth, CObject3D *obj)
 
 		//	Insertion
 		if (pos != lods.end())
+		{
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+			if (fromDepth == (*pos).fromDepth)
+			{
+				Raptor::GetErrorManager()->generateRaptorError(	CGLLod::CGLLodClassID::GetClassId(),
+																CRaptorErrorManager::RAPTOR_WARNING,
+																"Another object exists at requested depth, it may not be visible");
+			}
+#endif
 			lods.insert(pos,lod);
+		}
 		//	Add tail
 		else
 			lods.push_back(lod);
@@ -162,7 +172,14 @@ CObject3D* const CGLLod::glGetLod(void) const
 		pos--;
 
 	if (pos < 0)
+	{
 		pos = 0;
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+		Raptor::GetErrorManager()->generateRaptorError(	CGLLod::CGLLodClassID::GetClassId(),
+														CRaptorErrorManager::RAPTOR_WARNING,
+														"A lod level is missing.");
+#endif
+	}
 
     return lods[pos].obj;
 }

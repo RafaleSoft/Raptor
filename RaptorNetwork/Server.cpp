@@ -402,7 +402,7 @@ bool server_base_t::startClientService(const iosock_base_t &client)
 	return (0 != h_write);
 }
 
-bool server_base_t::startServer(const std::string& /*address*/,unsigned int)
+bool server_base_t::startServer(const std::string& /*address*/,unsigned short)
 {
 	return true;
 }

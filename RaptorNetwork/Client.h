@@ -24,10 +24,10 @@ public:
     CClient(Network::CLIENT_MODEL mode = Network::FDPLX_CLIENT);
 	virtual ~CClient();
 
-	bool connectToServer(const std::string& address="localhost",int port=1025);
+	bool connectToServer(const std::string& address="localhost",unsigned short port=1025);
 	bool disconnectServer(void);
 
-	virtual unsigned int  getPort() const {return m_socket.getPort();};
+	virtual unsigned short  getPort() const {return m_socket.getPort();};
 	virtual unsigned int  getAddr() const {return m_socket.getIP();};
 
 	void write(void *data,unsigned int size);
@@ -75,7 +75,7 @@ void CClient<ClientSocket_T>::read(void *&data,unsigned int& size)
 }
 
 template <class ClientSocket_T> 
-bool CClient<ClientSocket_T>::connectToServer(const std::string& address, int port)
+bool CClient<ClientSocket_T>::connectToServer(const std::string& address, unsigned short port)
 {
 	int nb_attempts = 0;
 	bool result = false;

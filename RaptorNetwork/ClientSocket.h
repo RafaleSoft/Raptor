@@ -22,7 +22,7 @@ public:
 	bool operator==(const iosock_base_t& rsh) const;
 
 	//! Implements connect
-	virtual bool connect(const std::string& address,unsigned int port);
+	virtual bool connect(const std::string& address,unsigned short port);
 
 	//! Implements accept
 	virtual bool connect(const iosock_base_t& rsh);

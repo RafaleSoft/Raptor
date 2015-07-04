@@ -384,68 +384,68 @@
     </Object3D>
 	</Object3DInstance>
     <Lod name="column0">
-        <Level depth="40.0" reference="Column_Set"/>
-        <Level depth="100.0" reference="ColumnLow_Set"/>
+        <Level depth="0.0" reference="Column_Set"/>
+        <Level depth="40.0" reference="ColumnLow_Set"/>
     </Lod>
     <Lod name="column1">
-        <Level depth="40.0" reference="Column_Set"/>
-        <Level depth="100.0" reference="ColumnLow_Set"/>
+        <Level depth="0.0" reference="Column_Set"/>
+        <Level depth="40.0" reference="ColumnLow_Set"/>
     </Lod>
     <Lod name="column2">
-        <Level depth="40.0" reference="Column_Set"/>
-        <Level depth="100.0" reference="ColumnLow_Set"/>
+        <Level depth="0.0" reference="Column_Set"/>
+        <Level depth="40.0" reference="ColumnLow_Set"/>
     </Lod>
     <Lod name="column3">
-        <Level depth="40.0" reference="Column_Set"/>
-        <Level depth="100.0" reference="ColumnLow_Set"/>
+        <Level depth="0.0" reference="Column_Set"/>
+        <Level depth="40.0" reference="ColumnLow_Set"/>
     </Lod>
     <Lod name="column4">
-        <Level depth="40.0" reference="Column_Set"/>
-        <Level depth="100.0" reference="ColumnLow_Set"/>
+        <Level depth="0.0" reference="Column_Set"/>
+        <Level depth="40.0" reference="ColumnLow_Set"/>
     </Lod>
     <Lod name="column5">
-        <Level depth="40.0" reference="Column_Set"/>
-        <Level depth="100.0" reference="ColumnLow_Set"/>
+        <Level depth="0.0" reference="Column_Set"/>
+        <Level depth="40.0" reference="ColumnLow_Set"/>
     </Lod>
     <Lod name="column6">
-        <Level depth="40.0" reference="Column_Set"/>
-        <Level depth="100.0" reference="ColumnLow_Set"/>
+        <Level depth="0.0" reference="Column_Set"/>
+        <Level depth="40.0" reference="ColumnLow_Set"/>
     </Lod>
     <Lod name="column7">
-        <Level depth="40.0" reference="Column_Set"/>
-        <Level depth="100.0" reference="ColumnLow_Set"/>
+        <Level depth="0.0" reference="Column_Set"/>
+        <Level depth="40.0" reference="ColumnLow_Set"/>
     </Lod>
     <Lod name="column8">
-        <Level depth="40.0" reference="Column_Set"/>
-        <Level depth="100.0" reference="ColumnLow_Set"/>
+        <Level depth="0.0" reference="Column_Set"/>
+        <Level depth="40.0" reference="ColumnLow_Set"/>
     </Lod>
     <Lod name="column9">
-        <Level depth="40.0" reference="Column_Set"/>
-        <Level depth="100.0" reference="ColumnLow_Set"/>
+        <Level depth="0.0" reference="Column_Set"/>
+        <Level depth="40.0" reference="ColumnLow_Set"/>
     </Lod>
     <Lod name="column10">
-        <Level depth="40.0" reference="Column_Set"/>
-        <Level depth="100.0" reference="ColumnLow_Set"/>
+        <Level depth="0.0" reference="Column_Set"/>
+        <Level depth="40.0" reference="ColumnLow_Set"/>
     </Lod>
     <Lod name="column11">
-        <Level depth="40.0" reference="Column_Set"/>
-        <Level depth="100.0" reference="ColumnLow_Set"/>
+        <Level depth="0.0" reference="Column_Set"/>
+        <Level depth="40.0" reference="ColumnLow_Set"/>
     </Lod>
     <Lod name="column12">
-        <Level depth="40.0" reference="Column_Set"/>
-        <Level depth="100.0" reference="ColumnLow_Set"/>
+        <Level depth="0.0" reference="Column_Set"/>
+        <Level depth="40.0" reference="ColumnLow_Set"/>
     </Lod>
     <Lod name="column13">
-        <Level depth="40.0" reference="Column_Set"/>
-        <Level depth="100.0" reference="ColumnLow_Set"/>
+        <Level depth="0.0" reference="Column_Set"/>
+        <Level depth="40.0" reference="ColumnLow_Set"/>
     </Lod>
     <Lod name="column14">
-        <Level depth="40.0" reference="Column_Set"/>
-        <Level depth="100.0" reference="ColumnLow_Set"/>
+        <Level depth="0.0" reference="Column_Set"/>
+        <Level depth="40.0" reference="ColumnLow_Set"/>
     </Lod>
     <Lod name="column15">
-        <Level depth="40.0" reference="Column_Set"/>
-        <Level depth="100.0" reference="ColumnLow_Set"/>
+        <Level depth="0.0" reference="Column_Set"/>
+        <Level depth="40.0" reference="ColumnLow_Set"/>
     </Lod>
 	<Update name="Raptor Demo">
 		<RenderingProperties texturing="1" lighting="1"/>

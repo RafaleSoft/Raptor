@@ -35,7 +35,7 @@ void ServerCmdLine::Parse(int argc, char *argv[])
 		if ((!strcmp("-port",argv[i])) && (i+1 < argc))
 		{
 			i++;
-			port = atoi(argv[i++]);
+			port = (unsigned short)(0xffff & atoi(argv[i++]));
 		}
 		else if ((!strcmp("-host",argv[i])) && (i+1 < argc))
 		{
