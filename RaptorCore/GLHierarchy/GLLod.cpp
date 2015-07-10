@@ -138,7 +138,17 @@ bool CGLLod::addLevel(float fromDepth, CObject3D *obj)
 
 		//	Insertion
 		if (pos != lods.end())
+		{
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+			if (fromDepth == (*pos).fromDepth)
+			{
+				Raptor::GetErrorManager()->generateRaptorError(	CGLLod::CGLLodClassID::GetClassId(),
+																CRaptorErrorManager::RAPTOR_WARNING,
+																"Another object exists at requested depth, it may not be visible");
+			}
+#endif
 			lods.insert(pos,lod);
+		}
 		//	Add tail
 		else
 			lods.push_back(lod);
@@ -148,7 +158,7 @@ bool CGLLod::addLevel(float fromDepth, CObject3D *obj)
 }
 
 
-__inline CObject3D* const CGLLod::glGetLod(void) const
+CObject3D* const CGLLod::glGetLod(void) const
 {
     CGenericMatrix<float> transform;
     glGetFloatv(GL_MODELVIEW_MATRIX,transform.matrix());
@@ -157,13 +167,19 @@ __inline CObject3D* const CGLLod::glGetLod(void) const
     distance *= transform;
 
 	float d = sqrt(distance[12]*distance[12] + distance[13]*distance[13] + distance[14]*distance[14]);
-	int pos = 0;
-	int max = lods.size();
-	while ((pos < max) && (lods[pos].fromDepth<d))
-		pos++;
+	int pos = lods.size() - 1;
+	while ((pos >= 0) && (lods[pos].fromDepth > d))
+		pos--;
 
-	if (pos >= max)
-		pos = max - 1;
+	if (pos < 0)
+	{
+		pos = 0;
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+		Raptor::GetErrorManager()->generateRaptorError(	CGLLod::CGLLodClassID::GetClassId(),
+														CRaptorErrorManager::RAPTOR_WARNING,
+														"A lod level is missing.");
+#endif
+	}
 
     return lods[pos].obj;
 }

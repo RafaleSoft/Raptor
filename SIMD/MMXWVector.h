@@ -222,13 +222,14 @@ public:
 	// linear systems
     // return = m * this
 	CMMXWVector& SIMD_CALL operator*  (const CMMXWMatrix& m) const;
-    // return = this * m
-	extern friend CMMXWVector& SIMD_CALL operator*  (const CMMXWVector& v, const CMMXWMatrix& m);
 	
 	// scalar operations
 	CMMXWVector& SIMD_CALL operator+  (const CMMXWVector& v2) const;
 	CMMXWVector& SIMD_CALL operator-  (const CMMXWVector& v2) const;
 };
+
+// return = v * m
+CMMXWVector& SIMD_CALL operator*  (const CMMXWVector& v, const CMMXWMatrix& m);
 
 #endif // !defined(AFX_MMXWVector_H__EDBB336A_5AF7_4AF0_9000_1F0F0CE7C0C0__INCLUDED_)
 

@@ -31,6 +31,7 @@ class RAPTOR_API Raptor
 {
 public:
 	static unsigned long GetVersion(void);
+	static const char* GetVersionString(void);
 
 	//!	Initialize the entire Raptor SDK. 
     //! This method must be called before any other method. It returns false

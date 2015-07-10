@@ -27,7 +27,7 @@ public:
 	};
 	CMMXBVector& operator= ( const CGenericVector<char,4>& v )
 	{ 
-		int t = *((int*)v.m_vector);
+		int t = *((int*)v.vector());
 		*((int*)m_vector) = t;
 		return *this;
 	};
@@ -114,13 +114,6 @@ public:
 			mov [edi+4],eax 
 		}
 	};
-
-	// input/output for special case : chars as signed bytes
-	friend std::istream& operator>> (std::istream& i, CMMXBVector& v)
-	{ return i>>v.m_vector[0]>>v.m_vector[1]>>v.m_vector[2]>>v.m_vector[3];};
-
-	friend std::ostream& operator<< (std::ostream& o, const CMMXBVector& v)
-	{ return o<<(short)v.m_vector[0]<<" "<<(short)v.m_vector[1]<<" "<<(short)v.m_vector[2]<<" "<<(short)v.m_vector[3];};
 
 	//	Real MMX Stuff starts here...
 	CMMXBVector& operator!()

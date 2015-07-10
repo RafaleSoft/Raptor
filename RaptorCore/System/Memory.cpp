@@ -121,35 +121,28 @@ public:
 
     CRaptorMutex     memoryMutex;
 
-    unsigned int currentBuffers[CMemory::CBufferObject::NB_BUFFER_KIND];
+    unsigned int currentBuffers[CMemory::IBufferObject::NB_BUFFER_KIND];
 };
 
 
-
-void* CMemory::CBufferObject::getBaseAddress(void) const
-{
-	if (buffer.id & 1) return NULL;
-	else return buffer.address;
-}
-
-static GLenum  BufferKindToGL(CMemory::CBufferObject::BUFFER_KIND kind)
+static GLenum  BufferKindToGL(CMemory::IBufferObject::BUFFER_KIND kind)
 {
 #if defined(GL_ARB_vertex_buffer_object)
     GLenum res = GL_ARRAY_BUFFER_ARB;
 
     switch(kind)
     {
-        case CMemory::CBufferObject::VERTEX_BUFFER:
+        case CMemory::IBufferObject::VERTEX_BUFFER:
             res = GL_ARRAY_BUFFER_ARB;
             break;
-        case CMemory::CBufferObject::INDEX_BUFFER:
+        case CMemory::IBufferObject::INDEX_BUFFER:
             res = GL_ELEMENT_ARRAY_BUFFER_ARB;
             break;
 #if defined(GL_ARB_pixel_buffer_object)
-        case CMemory::CBufferObject::PIXEL_STORAGE:
+        case CMemory::IBufferObject::PIXEL_STORAGE:
             res = GL_PIXEL_PACK_BUFFER_ARB;
             break;
-        case CMemory::CBufferObject::PIXEL_SOURCE:
+        case CMemory::IBufferObject::PIXEL_SOURCE:
             res = GL_PIXEL_UNPACK_BUFFER_ARB;
             break;
 #endif
@@ -164,30 +157,31 @@ static GLenum  BufferKindToGL(CMemory::CBufferObject::BUFFER_KIND kind)
 #endif
 }
 
-static GLenum  BufferModeToGL(CMemory::CBufferObject::BUFFER_KIND kind,CMemory::CBufferObject::BUFFER_MODE mode)
+static GLenum  BufferModeToGL(CMemory::IBufferObject::BUFFER_KIND kind,
+							  CMemory::IBufferObject::BUFFER_MODE mode)
 {
 #if defined(GL_ARB_vertex_buffer_object)
     GLenum res = GL_STATIC_DRAW_ARB;
 
     switch(kind)
     {
-        case CMemory::CBufferObject::VERTEX_BUFFER:
+        case CMemory::IBufferObject::VERTEX_BUFFER:
             res = GL_STATIC_DRAW_ARB;
             break;
-        case CMemory::CBufferObject::INDEX_BUFFER:
+        case CMemory::IBufferObject::INDEX_BUFFER:
             res = GL_STATIC_DRAW_ARB;
             break;
 #if defined(GL_ARB_pixel_buffer_object)
-        case CMemory::CBufferObject::PIXEL_STORAGE:
-            if (mode == CMemory::CBufferObject::STATIC) res = GL_STATIC_READ_ARB;
-            else if (mode == CMemory::CBufferObject::STREAM) res = GL_STREAM_READ_ARB;
-            else if (mode == CMemory::CBufferObject::DYNAMIC) res = GL_DYNAMIC_READ_ARB;
+        case CMemory::IBufferObject::PIXEL_STORAGE:
+            if (mode == CMemory::IBufferObject::STATIC) res = GL_STATIC_READ_ARB;
+            else if (mode == CMemory::IBufferObject::STREAM) res = GL_STREAM_READ_ARB;
+            else if (mode == CMemory::IBufferObject::DYNAMIC) res = GL_DYNAMIC_READ_ARB;
             else res = GL_STATIC_DRAW_ARB;
             break;
-        case CMemory::CBufferObject::PIXEL_SOURCE:
-            if (mode == CMemory::CBufferObject::STATIC) res = GL_STATIC_DRAW_ARB;
-            else if (mode == CMemory::CBufferObject::STREAM) res = GL_STREAM_DRAW_ARB;
-            else if (mode == CMemory::CBufferObject::DYNAMIC) res = GL_DYNAMIC_DRAW_ARB;
+        case CMemory::IBufferObject::PIXEL_SOURCE:
+            if (mode == CMemory::IBufferObject::STATIC) res = GL_STATIC_DRAW_ARB;
+            else if (mode == CMemory::IBufferObject::STREAM) res = GL_STREAM_DRAW_ARB;
+            else if (mode == CMemory::IBufferObject::DYNAMIC) res = GL_DYNAMIC_DRAW_ARB;
             else res = GL_DYNAMIC_DRAW_ARB;
             break;
 #endif
@@ -226,6 +220,55 @@ static bool IsBufferObjectValid(unsigned int buffer)
 #endif
 }
 
+class CBufferObject : public CMemory::IBufferObject
+{
+public:
+	CBufferObject():m_size(0),m_storage(NB_BUFFER_KIND)
+	{ m_buffer.id = 0; };
+
+	virtual size_t getSize(void) const;
+
+	virtual BUFFER_KIND getStorage(void) const;
+
+	virtual void* getBaseAddress(void) const;
+
+	virtual unsigned int getBufferId(void) const;
+
+	virtual ~CBufferObject() {};
+
+	//! The size of the buffer object
+	unsigned int	m_size;
+
+	//! Indicates the data storage usage: vertex, pixels, ...
+    BUFFER_KIND		m_storage;
+
+	//!	Actual data
+	BUFFER_DATA		m_buffer;
+};
+
+size_t CBufferObject::getSize(void) const
+{
+	return m_size;
+}
+
+inline CMemory::IBufferObject::BUFFER_KIND CBufferObject::getStorage(void) const
+{
+	return m_storage;
+}
+
+inline void* CBufferObject::getBaseAddress(void) const
+{
+	if (m_buffer.id & 1) return NULL;
+	else return m_buffer.address;
+}
+
+inline unsigned int CBufferObject::getBufferId(void) const
+{
+	if (m_buffer.id & 1) return (m_buffer.id >> 16);
+	else return 0;
+}
+
+
 RAPTOR_NAMESPACE_END
 //
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -246,7 +289,7 @@ CMemory::CMemory(void)
 	m_pHeap->garbageMaxSize = Global::GetInstance().getConfig().m_uiGarbageSize;
 
 
-    for (int i=0;i<CBufferObject::NB_BUFFER_KIND;i++)
+    for (int i=0;i<IBufferObject::NB_BUFFER_KIND;i++)
         m_pHeap->currentBuffers[i] = 0;
 }
 
@@ -266,8 +309,9 @@ CMemory::~CMemory()
 		else if (db.type == CMemoryHeap::AGP)
 		{
 			CBufferObject *vb = new CBufferObject();
-			vb->buffer.address = db.address;
-			glReleaseBufferObject(vb);
+			vb->m_buffer.address = db.address;
+			CMemory::IBufferObject *ib = vb;
+			glReleaseBufferObject(ib);
 		}
         else if (db.type == CMemoryHeap::MANAGED)
         {
@@ -321,7 +365,7 @@ void CMemory::setGarbageMaxSize(unsigned int maxSize) const
 	m_pHeap->garbageMaxSize = maxSize;
 }
 
-void CMemory::glSetBufferObjectData(CBufferObject &vb,unsigned int dstOffset,const void* src,size_t sz)
+void CMemory::glSetBufferObjectData(IBufferObject &vb,unsigned int dstOffset,const void* src,size_t sz)
 {
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 	if ((src == NULL) || (sz == 0))
@@ -336,54 +380,52 @@ void CMemory::glSetBufferObjectData(CBufferObject &vb,unsigned int dstOffset,con
 
 #ifdef GL_ARB_vertex_buffer_object
 	// Is it a VBO ?
-	if ((vb.buffer.id & 1) != 0)
-	{
-		unsigned int buffer = vb.buffer.id >> 16;
-		const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+	unsigned int buffer = vb.getBufferId();
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
-		if (IsBufferObjectValid(buffer))
+	if (IsBufferObjectValid(buffer))
 #else
-		if (buffer > 0)
+	if (buffer > 0)
 #endif
-		{
-            GLenum glStorage = BufferKindToGL(vb.m_storage);
+	{
+		const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+		IBufferObject::BUFFER_KIND storage = vb.getStorage();
+        GLenum glStorage = BufferKindToGL(storage);
 
-            if (m_pHeap->currentBuffers[vb.m_storage] != buffer)
-            {
-			    pExtensions->glBindBufferARB(glStorage,buffer);
-            }
-			
-			//	This call may be faster in the future.
-			pExtensions->glBufferSubDataARB(glStorage, dstOffset, sz, src);
-			/*
-			char *data = (char*)pExtensions->glMapBufferARB(glStorage,GL_WRITE_ONLY_ARB);
-            
-            if (data != NULL)
-            {
-			    memcpy(data + dstOffset,src,sz);
-            }
-			
-			pExtensions->glUnmapBufferARB(glStorage);
-			*/
-            //	0 should by to the "GL default" array model.
-            if (m_pHeap->currentBuffers[vb.m_storage] != buffer)
-            {
-		        pExtensions->glBindBufferARB(glStorage,0);
-                m_pHeap->currentBuffers[vb.m_storage] = 0;
-            }
-		}
+        if (m_pHeap->currentBuffers[storage] != buffer)
+        {
+		    pExtensions->glBindBufferARB(glStorage,buffer);
+        }
+		
+		//	This call may be faster in the future.
+		pExtensions->glBufferSubDataARB(glStorage, dstOffset, sz, src);
+		/*
+		char *data = (char*)pExtensions->glMapBufferARB(glStorage,GL_WRITE_ONLY_ARB);
+        
+        if (data != NULL)
+        {
+		    memcpy(data + dstOffset,src,sz);
+        }
+		
+		pExtensions->glUnmapBufferARB(glStorage);
+		*/
+        //	0 should by to the "GL default" array model.
+        if (m_pHeap->currentBuffers[storage] != buffer)
+        {
+	        pExtensions->glBindBufferARB(glStorage,0);
+            m_pHeap->currentBuffers[storage] = 0;
+        }
 	}
 	else
 #endif
 	{
-		memcpy((char*)vb.buffer.address + dstOffset,src,sz);
+		memcpy((char*)vb.getBaseAddress() + dstOffset,src,sz);
 	}
 
     CATCH_GL_ERROR
 }
 
 
-void CMemory::glGetBufferObjectData(CBufferObject &vb,unsigned int srcOffset,void* dst,size_t sz)
+void CMemory::glGetBufferObjectData(IBufferObject &vb,unsigned int srcOffset,void* dst,size_t sz)
 {
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 	if ((dst == NULL) || (sz == 0))
@@ -398,65 +440,63 @@ void CMemory::glGetBufferObjectData(CBufferObject &vb,unsigned int srcOffset,voi
 
 #ifdef GL_ARB_vertex_buffer_object
 	// Is it a VBO ?
-	if ((vb.buffer.id & 1) != 0)
+	unsigned int buffer = vb.getBufferId();
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+	if (IsBufferObjectValid(buffer))
+#else
+	if (buffer > 0)
+#endif
 	{
-		unsigned int buffer = vb.buffer.id >> 16;
 		const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
 		
-#ifdef RAPTOR_DEBUG_MODE_GENERATION
-		if (IsBufferObjectValid(buffer))
-#else
-		if (buffer > 0)
-#endif
-		{
-            GLenum glStorage = BufferKindToGL(vb.m_storage);
+		IBufferObject::BUFFER_KIND storage = vb.getStorage();
+        GLenum glStorage = BufferKindToGL(storage);
 
-			if (m_pHeap->currentBuffers[vb.m_storage] != buffer)
-            {
-			    pExtensions->glBindBufferARB(glStorage,buffer);
-            }
+		if (m_pHeap->currentBuffers[storage] != buffer)
+        {
+		    pExtensions->glBindBufferARB(glStorage,buffer);
+        }
 
 
-			//	This call may be faster in the future.
-			//	I have no explanation on the fact that everything is
-			//	veeeery slow after a call to that function !!!
-			//pExtensions->glGetBufferSubDataARB(glStorage, srcOffset, sz, dst);
-			char *data = (char*)pExtensions->glMapBufferARB(glStorage,GL_READ_ONLY_ARB);
-            
-            if (data != NULL)
-            {
-			    memcpy(dst,data + srcOffset,sz);
-            }
+		//	This call may be faster in the future.
+		//	I have no explanation on the fact that everything is
+		//	veeeery slow after a call to that function !!!
+		//pExtensions->glGetBufferSubDataARB(glStorage, srcOffset, sz, dst);
+		char *data = (char*)pExtensions->glMapBufferARB(glStorage,GL_READ_ONLY_ARB);
+        
+        if (data != NULL)
+        {
+		    memcpy(dst,data + srcOffset,sz);
+        }
 
-			pExtensions->glUnmapBufferARB(glStorage);
+		pExtensions->glUnmapBufferARB(glStorage);
 
-            //	0 should by to the "GL default" array model.
-		    if (m_pHeap->currentBuffers[vb.m_storage] != buffer)
-            {
-		        pExtensions->glBindBufferARB(glStorage,0);
-                m_pHeap->currentBuffers[vb.m_storage] = 0;
-            }
-		}
+        //	0 should by to the "GL default" array model.
+	    if (m_pHeap->currentBuffers[storage] != buffer)
+        {
+	        pExtensions->glBindBufferARB(glStorage,0);
+            m_pHeap->currentBuffers[storage] = 0;
+        }
 	}
 	else
 #endif
 	{
-		memcpy(dst,(char*)vb.buffer.address + srcOffset,sz);
+		memcpy(dst,(char*)vb.getBaseAddress() + srcOffset,sz);
 	}
 
     CATCH_GL_ERROR
 }
 
-CMemory::CBufferObject * CMemory::glAllocateBufferObject(	CMemory::CBufferObject::BUFFER_KIND kind, 
-															CBufferObject::BUFFER_MODE mode, 
-															size_t size)
+CMemory::IBufferObject * CMemory::glAllocateBufferObject(CMemory::IBufferObject::BUFFER_KIND kind, 
+														 IBufferObject::BUFFER_MODE mode, 
+														 size_t size)
 {
 	if (size == 0)
 	{
 		return NULL;
 	}
 
-    CMemory::CBufferObject * res = NULL;
+    CBufferObject * res = NULL;
 	const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
 
 #ifdef GL_ARB_vertex_buffer_object
@@ -486,8 +526,8 @@ CMemory::CBufferObject * CMemory::glAllocateBufferObject(	CMemory::CBufferObject
 			//	and store the memory type in the low part.
 			//	This format is odd enough to be sure it cannot
 			//	be an address.
-			res = new CMemory::CBufferObject;
-			res->buffer.id = ((buffer & 0xffff) << 16) + 1;
+			res = new CBufferObject;
+			res->m_buffer.id = ((buffer & 0xffff) << 16) + 1;
             res->m_size = size;
             res->m_storage = kind;
 
@@ -503,7 +543,7 @@ CMemory::CBufferObject * CMemory::glAllocateBufferObject(	CMemory::CBufferObject
             // BufferObjects when CMemory is destroyed to correctly call glReleaseBufferObject.
             // Besides, this id will uniquely identify an AGP block wheareas base addresses can be identical.
 			//db.address = (unsigned char*)res->getBaseAddress();
-            db.address = (unsigned char*)res->buffer.id;
+            db.address = (unsigned char*)res->m_buffer.id;
 			db.size = size;
 			db.usedBytes = size;
 
@@ -530,13 +570,13 @@ CMemory::CBufferObject * CMemory::glAllocateBufferObject(	CMemory::CBufferObject
         //! After this point, we are in critical section
         CRaptorLock lock(m_pHeap->memoryMutex);
 
-        res = new CMemory::CBufferObject;
+        res = new CBufferObject;
 
 		//	Allocate memory on AGP
         res->m_size = size;
         res->m_storage = kind;
-		res->buffer.address = pExtensions->wglAllocateMemoryNV(size,0.0f,0.0f,0.5f);
-		if (res->buffer.address == NULL)
+		res->m_buffer.address = pExtensions->wglAllocateMemoryNV(size,0.0f,0.0f,0.5f);
+		if (res->m_buffer.address == NULL)
 		{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 			Raptor::GetErrorManager()->generateRaptorError(	CPersistence::CPersistenceClassID::GetClassId(),
@@ -551,7 +591,7 @@ CMemory::CBufferObject * CMemory::glAllocateBufferObject(	CMemory::CBufferObject
 
 			CMemoryHeap::DATA_BLOC db;
 			db.type = CMemoryHeap::AGP;
-			db.address = (unsigned char*)res->buffer.address;
+			db.address = (unsigned char*)res->m_buffer.address;
 			db.size = size;
 			db.usedBytes = size;
 
@@ -567,7 +607,7 @@ CMemory::CBufferObject * CMemory::glAllocateBufferObject(	CMemory::CBufferObject
 	}
 }
 
-bool CMemory::glReleaseBufferObject(CBufferObject* &vb)
+bool CMemory::glReleaseBufferObject(IBufferObject* &vb)
 {
 	bool found = false;
 
@@ -577,10 +617,13 @@ bool CMemory::glReleaseBufferObject(CBufferObject* &vb)
 	vector<CMemoryHeap::DATA_BLOC>::iterator itr = m_pHeap->heap.begin();
 	while ((!found) && (itr != m_pHeap->heap.end()))
 	{
-        // The buffer address holds the unique id when it is an AGP bloc ( a BufferObject is always an AGP bloc )
-		//found = (((*itr).address == vb.getBaseAddress()) && ((*itr).type == CMemoryHeap::AGP));
-        found = ((*itr).address == vb->buffer.address);
-		if (!found) itr++;
+		unsigned char *addr = (*itr).address;
+        // The buffer address holds the unique id when it is an AGP bloc
+		//! ( a BufferObject is always an AGP bloc )
+		found = (((unsigned int)(addr) >> 16) == vb->getBufferId()) ||
+				(addr == vb->getBaseAddress());
+		if (!found)
+			itr++;
 	}
 
 	if (!found)
@@ -602,11 +645,14 @@ bool CMemory::glReleaseBufferObject(CBufferObject* &vb)
         return false;
 
 #if defined(GL_ARB_vertex_buffer_object)
-	if ((pExtensions->glDeleteBuffersARB != NULL) && ((vb->buffer.id & 1) != 0))
+	unsigned int buffer = vb->getBufferId();
+	if ((pExtensions->glDeleteBuffersARB != NULL) &&
+		(buffer > 0))
 	{
-		unsigned int buffer = (vb->buffer.id >> 16);
 		pExtensions->glDeleteBuffersARB(1,&buffer);
-		delete vb;
+		// This is ugly, need to review design
+		CBufferObject *cb = (CBufferObject*)vb;
+		delete cb;
 		vb = NULL;
 		return true;
 	}
@@ -625,10 +671,11 @@ bool CMemory::glReleaseBufferObject(CBufferObject* &vb)
 	}
 }
 
-bool CMemory::glLockBufferObject(CBufferObject &vb)
+bool CMemory::glLockBufferObject(IBufferObject &vb)
 {
-	if ((vb.buffer.address == NULL) || (vb.m_size == 0))
+	if (vb.getSize() == 0)
 		return false;
+	unsigned int buffer = vb.getBufferId();
 
 	const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
 
@@ -637,24 +684,25 @@ bool CMemory::glLockBufferObject(CBufferObject &vb)
     //! CThreadLock lock(m_pHeap->memoryMutex);
 
 #ifdef GL_ARB_vertex_buffer_object
-	if ((pExtensions->glBindBufferARB != NULL) && ((vb.buffer.id & 1) != 0))
+	if ((pExtensions->glBindBufferARB != NULL) &&
+		(buffer > 0))
 	{
-		unsigned int buffer = (vb.buffer.id >> 16);
-
-		GLenum glStorage = BufferKindToGL(vb.m_storage);
+		IBufferObject::BUFFER_KIND storage = vb.getStorage();
+		GLenum glStorage = BufferKindToGL(storage);
 
 		pExtensions->glBindBufferARB(glStorage,buffer);
 
-        m_pHeap->currentBuffers[vb.m_storage] = buffer;
+        m_pHeap->currentBuffers[storage] = buffer;
 
 		return true;
 	}
 	else 
 #endif
 #ifdef GL_NV_vertex_array_range
-	if (pExtensions->glVertexArrayRangeNV != NULL)
+	if ((pExtensions->glVertexArrayRangeNV != NULL) && 
+		(NULL != vb.getBaseAddress()))
 	{
-		pExtensions->glVertexArrayRangeNV(vb.m_size,vb.getBaseAddress());
+		pExtensions->glVertexArrayRangeNV(vb.getSize(),vb.getBaseAddress());
 		glEnableClientState(GL_VERTEX_ARRAY_RANGE_NV);
 		return true;
 	}
@@ -665,11 +713,12 @@ bool CMemory::glLockBufferObject(CBufferObject &vb)
 	}
 }
 
-bool CMemory::glUnlockBufferObject(CBufferObject &vb)
+bool CMemory::glUnlockBufferObject(IBufferObject &vb)
 {
-	if ((vb.buffer.address == NULL) || (vb.m_size == 0))
+	if (vb.getSize() == 0)
 		return false;
 
+	unsigned int buffer = vb.getBufferId();
 	const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
 
     //! This method could be called very often, lock/unlock 
@@ -677,14 +726,16 @@ bool CMemory::glUnlockBufferObject(CBufferObject &vb)
     //! CThreadLock lock(m_pHeap->memoryMutex);
 
 #ifdef GL_ARB_vertex_buffer_object
-	if ((pExtensions->glBindBufferARB != NULL) && ((vb.buffer.id & 1) != 0))
+	if ((pExtensions->glBindBufferARB != NULL) &&
+		(buffer > 0))
 	{
-        GLenum glStorage = BufferKindToGL(vb.m_storage);
+		IBufferObject::BUFFER_KIND storage = vb.getStorage();
+        GLenum glStorage = BufferKindToGL(storage);
 
 		//	0 should by to the "GL default" array model.
 		pExtensions->glBindBufferARB(glStorage,0);
 
-        m_pHeap->currentBuffers[vb.m_storage] = 0;
+        m_pHeap->currentBuffers[storage] = 0;
 
 		return true;
 	}

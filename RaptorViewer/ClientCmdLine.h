@@ -20,7 +20,7 @@ public:
     virtual void Parse(int argc, char *argv[]);
 
 	string	addrStr;
-    unsigned int port;
+    unsigned short port;
 	unsigned short width;
 	unsigned short height;
 	unsigned short r_width;

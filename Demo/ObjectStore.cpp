@@ -718,8 +718,8 @@ void CObjectStore::BuildObjects(void)
 		{
 			//CObject3DInstance *inst = new CObject3DInstance(m_groundTile);
 			CGLLod *inst = new CGLLod();
-			inst->addLevel(35.0f,m_groundTile);
-			inst->addLevel(100.0f, m_groundTileLow);
+			inst->addLevel(0.0f,m_groundTile);
+			inst->addLevel(35.0f, m_groundTileLow);
 			inst->translate(5.5f*(i-6),0,5.5f*(j-6));
 
 			m_ground->addChild(inst,pos);

@@ -307,7 +307,23 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\RaptorCore\GLHierarchy\GL2DFont.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\RaptorCore\GLHierarchy\GL2DTextureFont.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\RaptorCore\GLHierarchy\GL3DFont.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\..\RaptorCore\GLHierarchy\GLFont.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\RaptorCore\GLHierarchy\GLFontFactory.cpp"
 					>
 				</File>
 				<File
@@ -316,6 +332,10 @@
 				</File>
 				<File
 					RelativePath="..\..\RaptorCore\GLHierarchy\GLLod.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\RaptorCore\GLHierarchy\GLVectorFont.cpp"
 					>
 				</File>
 				<File
@@ -1125,7 +1145,23 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\RaptorCore\GLHierarchy\GL2DFont.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\RaptorCore\GLHierarchy\GL2DTextureFont.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\RaptorCore\GLHierarchy\GL3DFont.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\RaptorCore\GLHierarchy\GLFont.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\RaptorCore\GLHierarchy\GLFontFactory.h"
 					>
 				</File>
 				<File
@@ -1134,6 +1170,10 @@
 				</File>
 				<File
 					RelativePath="..\..\RaptorCore\GLHierarchy\GLLod.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\RaptorCore\GLHierarchy\GLVectorFont.h"
 					>
 				</File>
 				<File

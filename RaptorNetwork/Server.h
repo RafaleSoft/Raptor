@@ -45,7 +45,7 @@ public:
 
 	//!	Accessors
 	unsigned int getIP(void) const { return m_ip; };
-	unsigned int getPort(void) const { return m_port; };
+	unsigned short getPort(void) const { return m_port; };
 
 	server_base_t* getServer(void) const { return m_pServer; };
 	void setServer(server_base_t* pServer) { m_pServer = pServer; };
@@ -64,7 +64,7 @@ public:
 	//! Overridable operations
 	virtual bool onDataReceived(const void *data,size_t size) = 0;
 	virtual bool onReplyRequest(const void *&data,size_t &size) = 0;
-	virtual bool connect(const std::string& address,unsigned int port) = 0;
+	virtual bool connect(const std::string& address,unsigned short port) = 0;
 
 	//!	Compare connections
 	bool operator==(const iosock_base_t& rsh) const { return m_socket == rsh.m_socket; };
@@ -81,7 +81,7 @@ protected:
 	bool			m_useCRC;
 	unsigned int	m_socket;
 	unsigned int	m_ip;
-	unsigned int	m_port;
+	unsigned short	m_port;
 	server_base_t*	m_pServer;
 };
 
@@ -115,11 +115,11 @@ public:
 	unsigned int getHostAddr(unsigned int numAlias) const;
 
 	//!	Server status
-    virtual unsigned int  getPort() const = 0;
+    virtual unsigned short  getPort() const = 0;
 	virtual unsigned int  getAddr() const = 0;
 
 	//! Operations
-	virtual bool startServer(const std::string& address,unsigned int port);
+	virtual bool startServer(const std::string& address,unsigned short port);
 	virtual bool stopServer(void);
 
 	//!	read one connection from client socks
@@ -165,12 +165,12 @@ public:
 	CServer();
 	virtual ~CServer(void);
 
-	virtual unsigned int  getPort() const {return m_socket.getPort();};
+	virtual unsigned short  getPort() const {return m_socket.getPort();};
 	virtual unsigned int  getAddr() const {return m_socket.getIP();};
 
 	size_t getNumClients(void) const { return m_clients.GetSize(); };
 
-    virtual bool startServer(const std::string& address,unsigned int port);
+    virtual bool startServer(const std::string& address,unsigned short port);
 	virtual bool stopServer(void);
 
 	virtual void getClient(size_t numClient,ClientSocket_T*& r_iosock);
@@ -219,7 +219,7 @@ CServer<ServerSocket_T,ClientSocket_T>::~CServer(void)
 }
 
 template <class ServerSocket_T,class ClientSocket_T>
-bool CServer<ServerSocket_T,ClientSocket_T>::startServer(const std::string& address,unsigned int port)
+bool CServer<ServerSocket_T,ClientSocket_T>::startServer(const std::string& address,unsigned short port)
 {
 	m_socket.shutdown();
 	m_socket.close();

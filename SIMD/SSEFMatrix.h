@@ -79,12 +79,13 @@ public:
 	CSSEFMatrix& SIMD_CALL operator*=(const float& t);
 
 	// binary operations
-	friend CSSEFMatrix& SIMD_CALL operator*(const CSSEFMatrix& m1, const CSSEFMatrix& m2);
-	friend CSSEFMatrix& SIMD_CALL operator*(const float& v, const CSSEFMatrix& m);
-	friend CSSEFMatrix& SIMD_CALL operator*(const CSSEFMatrix& m, const float& v);
 	CSSEFMatrix& SIMD_CALL operator+(const CSSEFMatrix& m2) const;
 	CSSEFMatrix& SIMD_CALL operator-(const CSSEFMatrix& m2) const;
 };
+
+CSSEFMatrix& SIMD_CALL operator*(const CSSEFMatrix& m1, const CSSEFMatrix& m2);
+CSSEFMatrix& SIMD_CALL operator*(const float& v, const CSSEFMatrix& m);
+CSSEFMatrix& SIMD_CALL operator*(const CSSEFMatrix& m, const float& v);
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 // implementation

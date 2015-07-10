@@ -25,7 +25,6 @@
 
 
 GL_COORD_VERTEX LPOS;
-GL_COORD_VERTEX SHADING;
 const int TABLE_SIZE = 256;
 
 string waterShader = 
@@ -376,6 +375,9 @@ public:
 
 		glSetVertices(hcels*vcels);
 		glSetTexCoords(hcels*vcels);
+
+		glLockData();
+
 		for (int j=0;j<vcels;j++)
 			for (int i=0;i<hcels;i++)
 			{
@@ -383,6 +385,8 @@ public:
 				setTexCoord(i+j*hcels, 10 * (float)i / hcels , 10 * (float)j / vcels);
 				setNormal(i+j*hcels,0.0f,1.0f,0.0f,1.0f);
 			}
+
+		glUnLockData();
 
 		CGeometryPrimitive*	gp = createPrimitive(CGeometryPrimitive::TRIANGLE_STRIP);
 		gp->setIndexes(pos,m_indexes);
@@ -489,27 +493,11 @@ public:
 		CVertexShader *vs = m_pShader->glGetVertexShader();
 		vs->setProgramParameters(params);
 
-		params2.addParameter("",SHADING);
+		params2.addParameter("",GL_COORD_VERTEX(0.0f,0.6f,0.8f,0.8f));
 		params2.addParameter("",GL_COORD_VERTEX(8.0f,0.0f,0.0f,1.0f));
 
 		CFragmentShader *fp = m_pShader->glGetFragmentShader();
 		fp->setProgramParameters(params2);
-	}
-
-	virtual void glRender(void)
-	{
-		CVertexShader *vs = m_pShader->glGetVertexShader();
-		vs->glRender();
-		CFragmentShader *fp = m_pShader->glGetFragmentShader();
-		fp->glRender();
-	}
-
-	virtual void Stop(void)
-	{
-		CVertexShader *vs = m_pShader->glGetVertexShader();
-		vs->glStop();
-		CFragmentShader *fp = m_pShader->glGetFragmentShader();
-		fp->glStop();
 	}
 
 private:
@@ -759,7 +747,7 @@ public:
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 CVertexShadersDisplay::CVertexShadersDisplay():
-	dt(0),see(NULL),showBump(false),
+	see(NULL),showBump(false),
 	shaderModifier(NULL),pLight(NULL),
 	ground(NULL),tw(NULL)
 {
@@ -862,6 +850,8 @@ void CVertexShadersDisplay::Display()
 	if (reinit)
 		ReInit();
 
+	float dt = CTimeObject::GetGlobalTime();
+
 	tw->glRender(showBump);
 
 	glPushMatrix();
@@ -874,10 +864,6 @@ void CVertexShadersDisplay::Display()
 
 	GL_COORD_VERTEX lpos(1000.0f*cos(3000*dt*2*PI/180),500.0f,1000.0f*sin(3000*dt*2*PI/180),1.0f);
 	LPOS = lpos;
-	GL_COORD_VERTEX color(0.0f,0.6f,0.8f,0.8f);
-	SHADING = color;
-//	pLight->SetLightPosition(lpos);
-//	pLight->glRender();
 
 	glPushMatrix();
 		glTranslatef(0.0f,-200.0f,0.0f);
@@ -893,7 +879,4 @@ void CVertexShadersDisplay::Display()
     glPopAttrib();
 
 	glPopMatrix();
-
-	dt += 0.0001f;
-	if (dt > 1) dt = 0.0f;
 }

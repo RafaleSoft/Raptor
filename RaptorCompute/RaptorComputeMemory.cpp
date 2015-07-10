@@ -160,7 +160,7 @@ CRaptorComputeMemory::clCreateBuffer(	size_t size,
 	return res;
 }
 
-CRaptorComputeMemory::CBufferObject* CRaptorComputeMemory::clCreateBuffer(CMemory::CBufferObject *glBuffer)
+CRaptorComputeMemory::CBufferObject* CRaptorComputeMemory::clCreateBuffer(CMemory::IBufferObject *glBuffer)
 {
 	CRaptorComputeMemory::CBufferObject *res = NULL;
 
@@ -169,7 +169,7 @@ CRaptorComputeMemory::CBufferObject* CRaptorComputeMemory::clCreateBuffer(CMemor
 	if ((NULL == glBuffer) || (s_pContext.end() == itc))
 		return res;
 
-	if ((glBuffer->getSize() > 0) && (glBuffer->buffer.address != NULL))
+	if ((glBuffer->getSize() > 0) && (glBuffer->getBufferId() > 0))
 	{
 		cl_int errCode = CL_SUCCESS;
 		cl_mem buffer = NULL;
@@ -178,7 +178,7 @@ CRaptorComputeMemory::CBufferObject* CRaptorComputeMemory::clCreateBuffer(CMemor
 		// DYNAMIC / READ_WRITE ? STREAM / READ_ONLY ? ...
 		buffer = ::clCreateFromGLBuffer((*itc).second,
 										CL_MEM_READ_WRITE,
-										(glBuffer->buffer.id >> 16),
+										glBuffer->getBufferId(),
 										&errCode);
 
 		if (CL_SUCCESS == errCode)

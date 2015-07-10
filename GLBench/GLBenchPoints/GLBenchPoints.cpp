@@ -187,8 +187,8 @@ void Display::GLInitContext()
 	glClearColor(0.0f,0.0f,0.0f,0.0);
 	
     unsigned int vb_size = sizeof(GL_COORD_VERTEX) * MAX_VERTEX + sizeof(CColor::RGBA) * MAX_VERTEX;
-	CMemory::CBufferObject *vb = CMemory::GetInstance()->glAllocateBufferObject(CMemory::CBufferObject::VERTEX_BUFFER,
-																				CMemory::CBufferObject::STATIC,vb_size);
+	CMemory::IBufferObject *vb = CMemory::GetInstance()->glAllocateBufferObject(CMemory::IBufferObject::VERTEX_BUFFER,
+																				CMemory::IBufferObject::STATIC,vb_size);
 	if (vb != NULL)
 	{
 		unsigned int size = sizeof(GL_COORD_VERTEX) * MAX_VERTEX;
@@ -206,8 +206,8 @@ void Display::GLInitContext()
 	}
 
     vb_size = MAX_VERTEX * sizeof(GLuint);
-    CMemory::CBufferObject *vb2 = CMemory::GetInstance()->glAllocateBufferObject(CMemory::CBufferObject::INDEX_BUFFER,
-																				 CMemory::CBufferObject::STATIC,vb_size);
+    CMemory::IBufferObject *vb2 = CMemory::GetInstance()->glAllocateBufferObject(CMemory::IBufferObject::INDEX_BUFFER,
+																				 CMemory::IBufferObject::STATIC,vb_size);
     if (vb2 != NULL)
     {
         CMemory::GetInstance()->glSetBufferObjectData(*vb2,0,indexes,vb_size);

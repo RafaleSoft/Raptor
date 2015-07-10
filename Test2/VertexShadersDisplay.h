@@ -36,7 +36,6 @@ private:
 
     virtual void UnInit();
 
-	float			dt;
 	CObject3D		*see;
 	bool			showBump;
 

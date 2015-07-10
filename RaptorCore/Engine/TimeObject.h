@@ -46,7 +46,7 @@ public:
 	//! TIme helpers methods.
 	//!
 
-	//!	Returns the 'global time' of the current running process.
+	//!	Returns the 'global time' (in seconds) of the current running process.
 	static float RAPTOR_FASTCALL GetGlobalTime(void);
 
 	//!	Use this method to scale 'real time' time increments

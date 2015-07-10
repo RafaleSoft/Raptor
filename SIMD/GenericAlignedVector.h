@@ -79,20 +79,8 @@ public:
 	CGenericAlignedVector<T> SIMD_CALL operator+  (const CGenericAlignedVector<T>&) const;
 	CGenericAlignedVector<T> SIMD_CALL operator-  (const CGenericAlignedVector<T>&) const;
 
-
-	// input/output
-	friend std::istream& operator>> (std::istream& i, CGenericAlignedVector<T>& v)
-	{ return i>>v.m_vector[0]>>v.m_vector[1]>>v.m_vector[2]>>v.m_vector[3];};
-	friend std::ostream& operator<< (std::ostream& o, const CGenericAlignedVector<T>& v)
-	{ return o<<v.m_vector[0]<<" "<<v.m_vector[1]<<" "<<v.m_vector[2]<<" "<<v.m_vector[3];};
-
-	friend class CSSEFVector;
-	friend class CFloatVector;
-	friend class CGenericAlignedMatrix<T>;
-
 protected:
 	T *m_vector;
-
 };
 
 

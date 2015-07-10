@@ -48,8 +48,8 @@ protected:
 
 private:
 	bool			m_bAntialiased;
-	int				m_char_w = 0;
-	int				m_char_h = 0;
+	int				m_char_w;
+	int				m_char_h;
 	CTextureObject	*m_texture;
 };
 

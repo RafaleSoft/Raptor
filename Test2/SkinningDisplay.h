@@ -40,11 +40,10 @@ private:
     CShaderProgram::CProgramParameters	params;
     CShaderProgram::CProgramParameters	params2;
 
-	float				dt;
 	CTextureObject		*t;
 	CTextureObject		*t2;
 
-	void	Reload();
+	void	Reload(float dt);
 
 	virtual void ReInit();
 

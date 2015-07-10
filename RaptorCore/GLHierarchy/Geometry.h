@@ -45,7 +45,6 @@ public:
 			CGL_NORMALS			=0x4,
             CGL_TANGENTS		=0x8,
 			CGL_TEXTURE			=0x10,
-            // Not supported anymore, obsolete functionnality, rather use shaders
 			CGL_WEIGHT			=0x20,
 			CGL_COLORS			=0x40,
 			CGL_FOG				=0x80,

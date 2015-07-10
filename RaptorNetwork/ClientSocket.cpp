@@ -22,7 +22,7 @@ CClientSocket::CClientSocket(const iosock_base_t& sock)
 
 /////////////////////////////////////////////////////////////////////////////
 // CClientSocket member functions
-bool CClientSocket::connect(const std::string& address,unsigned int port)
+bool CClientSocket::connect(const std::string& address,unsigned short port)
 {
 	m_port = port;
 
@@ -82,7 +82,7 @@ bool CClientSocket::connect(const std::string& address,unsigned int port)
 
 	sockaddr_in s_in;
 	s_in.sin_family			= AF_INET;
-	s_in.sin_port			= htons((unsigned short)(m_port & 0xffff));
+	s_in.sin_port			= htons(m_port);
 
 	if ((address.length()>0) && isalpha(address[0]))
 	{

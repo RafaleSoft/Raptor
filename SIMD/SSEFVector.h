@@ -154,24 +154,20 @@ public:
 	//	this = m*this
 	CSSEFVector& SIMD_CALL operator*= (const CGenericAlignedMatrix<float>& m);
 
-	// binary operations
-	// cross product
-	friend CSSEFVector& SIMD_CALL operator^  (const CSSEFVector&, const CSSEFVector&);
-	// dot product
-	//friend CSSEFVector& SIMD_CALL operator%  (const CSSEFVector&, const CSSEFVector&);
-
-	// scalar operations
-	friend CSSEFVector& SIMD_CALL operator*  (const CSSEFVector&, const CSSEFVector&);
-	friend CSSEFVector& SIMD_CALL operator*  (const float&, const CSSEFVector&);
-	friend CSSEFVector& SIMD_CALL operator*  (const CSSEFVector&, const float&);
-	friend CSSEFVector& SIMD_CALL operator*  (const CSSEFMatrix&, const CSSEFVector&);
-	friend CSSEFVector& SIMD_CALL operator*  (const CSSEFVector&, const CSSEFMatrix&);
-	
 	CSSEFVector& SIMD_CALL operator+  (const CSSEFVector&) const;
     CSSEFVector& SIMD_CALL operator-  (const CSSEFVector&) const;
 
 
-};	
+};
+
+// cross product
+CSSEFVector& SIMD_CALL operator^  (const CSSEFVector&, const CSSEFVector&);
+// scalar operations
+CSSEFVector& SIMD_CALL operator*  (const CSSEFVector&, const CSSEFVector&);
+CSSEFVector& SIMD_CALL operator*  (const float&, const CSSEFVector&);
+CSSEFVector& SIMD_CALL operator*  (const CSSEFVector&, const float&);
+CSSEFVector& SIMD_CALL operator*  (const CSSEFMatrix&, const CSSEFVector&);
+CSSEFVector& SIMD_CALL operator*  (const CSSEFVector&, const CSSEFMatrix&);
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////

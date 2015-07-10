@@ -93,21 +93,6 @@ void CGLView::OnDraw(CDC* pDC)
 }
 
 /////////////////////////////////////////////////////////////////////////////
-// CGLView diagnostics
-
-#ifdef _DEBUG
-void CGLView::AssertValid() const
-{
-	CView::AssertValid();
-}
-
-void CGLView::Dump(CDumpContext& dc) const
-{
-	CView::Dump(dc);
-}
-#endif //_DEBUG
-
-/////////////////////////////////////////////////////////////////////////////
 // CGLView message handlers
 
 int CGLView::OnCreate(LPCREATESTRUCT lpCreateStruct) 

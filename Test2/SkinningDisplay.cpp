@@ -142,7 +142,10 @@ void CSkinningDisplay::Init()
 	layer->drawARectangle(50,50,100,100,0x800000FF);
 	layer->drawPoint(100,100,0xFFFFFFFF);
 
-	layer->drawAText(20,30,"version 2.16.2",font,0x80C0E000);
+	stringstream vrs;
+	vrs << "Version ";
+	vrs << Raptor::GetVersionString();
+	layer->drawAText(20,30,vrs.str(),font,0x80C0E000);
 
 	CTextureFactory &f = CTextureFactory::getDefaultFactory();
 	t2 = f.glCreateSprite(CTextureObject::CGL_COLOR24_ALPHA);
@@ -230,7 +233,7 @@ void CSkinningDisplay::UnInit()
 {
 }
 
-void CSkinningDisplay::Reload()
+void CSkinningDisplay::Reload(float dt)
 {
 	glPushMatrix();
 
@@ -256,6 +259,8 @@ void CSkinningDisplay::Display()
 	if (reinit)
 		ReInit();
 
+	float dt = CTimeObject::GetGlobalTime();
+	
 	CGenericMatrix<float> gm,gm2;
 	GL_MATRIX m;
 	RZ_MATRIX(m,2*cos(2*PI*dt)*180);
@@ -266,7 +271,6 @@ void CSkinningDisplay::Display()
 
     C3DEngine::Generic_to_MATRIX(params[0].matrix,gm);
     skinning->glGetVertexProgram("Skinning_VP")->setProgramParameters(params);
-    skinning->glGetFragmentProgram("Skinning_FP")->setProgramParameters(params2);
 
 	glPushMatrix();
 		glColor4f(1.0f,1.0f,1.0f,1.0f);
@@ -274,8 +278,5 @@ void CSkinningDisplay::Display()
 		layer->glRender();
 	glPopMatrix();
 
-	dt+=0.002f;
-	if (dt>1.0) dt=0.0;
-
-	Reload();
+	Reload(dt);
 }

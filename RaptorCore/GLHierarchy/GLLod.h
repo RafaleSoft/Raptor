@@ -27,9 +27,12 @@ public:
 	virtual ~CGLLod();
 
     //! This method adds a level to the lod. Objects should be correlated enough
-    //! @param fromDepth : distance from the viewpoint until which the level is viewable. After
-    //! that distance,  the next level is selected when during rendering, except if it is the last one.
-    //! @param obj : the object to be rendered and representing the level.
+	//! If distance is closer, the previous level if it exists is selected during rendering.
+	//!	A level is always needed for rendering and shall not interfere with near/far clipping:
+	//!	the first and last level will be rendered at 0 or infinite distance, even if the user
+	//! does not provide fromDepth equal to 0.
+    //! @param fromDepth : distance to the viewpoint from which the level is viewable.
+	//! @param obj : the object to be rendered and representing the level.
     //! @return false is case of an error, true otherwise.
 	virtual bool addLevel(float fromDepth, CObject3D *obj);
 

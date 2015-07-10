@@ -278,7 +278,7 @@ void CTextureUnitSetup::setEnvironmentMap(CTextureObject* to)
 
 bool CTextureUnitSetup::enableImageUnit(CTextureUnitSetup::TEXTURE_IMAGE_UNIT unit, bool enable)
 {
-    if (unit < nbUnits)
+    if ((unsigned int)unit < nbUnits)
     {
         useUnit[unit] = enable;
         return true;
@@ -289,14 +289,14 @@ bool CTextureUnitSetup::enableImageUnit(CTextureUnitSetup::TEXTURE_IMAGE_UNIT un
 
 CTextureUnitSetup::GL_TEXTURE_SHADER& CTextureUnitSetup::getTMUShader(CTextureUnitSetup::TEXTURE_IMAGE_UNIT unit)
 {
-    unsigned int numUnit = MIN(unit,nbUnits);
+    unsigned int numUnit = MIN((unsigned int)unit,nbUnits);
 
     return tmuShader[numUnit];
 }
 
 CTextureUnitSetup::GL_TEXTURE_COMBINER& CTextureUnitSetup::getTMUCombiner(TEXTURE_IMAGE_UNIT unit)
 {
-    unsigned int numUnit = MIN(unit,nbUnits);
+    unsigned int numUnit = MIN((unsigned int)unit,nbUnits);
 
     return tmuCombiner[numUnit];
 }
@@ -635,10 +635,13 @@ RAPTOR_HANDLE CTextureUnitSetup::glBuildUnSetup(void)
 		    if (glActiveTextureARB != NULL)
 			    glActiveTextureARB(GL_TEXTURE0_ARB+i);
 
-		    glDisable(GL_TEXTURE_2D);
+			glBindTexture(imageUnit[i]->target & 0xFFFF,0);
+		    glDisable(imageUnit[i]->target & 0xFFFF);
 
-		    // Unsetup of combiners ???
+		    // Unsetup of combiners
+			glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_REPLACE);
 
+			// Unsetup of shaders
 		    glDisable(GL_TEXTURE_GEN_S);
 		    glDisable(GL_TEXTURE_GEN_T);
 		    glDisable(GL_TEXTURE_GEN_R);
@@ -657,6 +660,7 @@ RAPTOR_HANDLE CTextureUnitSetup::glBuildUnSetup(void)
 		glActiveTextureARB(previousTMU);
 
 	#if defined(GL_NV_register_combiners)
+		// Unsetup of registers
 		if (use_register_combiners)
 		{
 			glDisable(GL_REGISTER_COMBINERS_NV);
@@ -829,7 +833,7 @@ bool CTextureUnitSetup::exportObject(CRaptorIO& o)
 		CPersistence::exportObject(o);
 
 		//	TMU objects
-		CTextureFactory	exportFactory;
+		//CTextureFactory	exportFactory;
         /*
 		if (use_tmu0)
 			o<<'y';

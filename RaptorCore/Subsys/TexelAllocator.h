@@ -102,7 +102,7 @@ private:
 	data_bloc	texels;
 
 	//!	If relocated, High Performance buffer object
-	CMemory::CBufferObject *relocatedTexels;
+	CMemory::IBufferObject *relocatedTexels;
 
 	//! Actual memory structure : bloc fragments of global allocated space
 	//!	IMPORTANT: The structure implementation requires a binary tree for template class map<>

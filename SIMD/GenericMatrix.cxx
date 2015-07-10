@@ -182,10 +182,10 @@ __inline CGenericVector<T,D> SIMD_CALL CGenericMatrix<T,D>::operator*  (const CG
 {
 	CGenericVector<T,D> v;
 
-	v.m_vector[0] = v1.m_vector[0]*m_matrix[0]+v1.m_vector[1]*m_matrix[1]+v1.m_vector[2]*m_matrix[2]+v1.m_vector[3]*m_matrix[3];
-	v.m_vector[1] = v1.m_vector[0]*m_matrix[4]+v1.m_vector[1]*m_matrix[5]+v1.m_vector[2]*m_matrix[6]+v1.m_vector[3]*m_matrix[7];
-	v.m_vector[2] = v1.m_vector[0]*m_matrix[8]+v1.m_vector[1]*m_matrix[9]+v1.m_vector[2]*m_matrix[10]+v1.m_vector[3]*m_matrix[11];
-	v.m_vector[3] = v1.m_vector[0]*m_matrix[12]+v1.m_vector[1]*m_matrix[13]+v1.m_vector[2]*m_matrix[14]+v1.m_vector[3]*m_matrix[15];
+	v[0] = v1[0]*m_matrix[0]+v1[1]*m_matrix[1]+v1[2]*m_matrix[2]+v1[3]*m_matrix[3];
+	v[1] = v1[0]*m_matrix[4]+v1[1]*m_matrix[5]+v1[2]*m_matrix[6]+v1[3]*m_matrix[7];
+	v[2] = v1[0]*m_matrix[8]+v1[1]*m_matrix[9]+v1[2]*m_matrix[10]+v1[3]*m_matrix[11];
+	v[3] = v1[0]*m_matrix[12]+v1[1]*m_matrix[13]+v1[2]*m_matrix[14]+v1[3]*m_matrix[15];
 
 	return v;
 };

@@ -75,7 +75,7 @@ public:
 
 	//!	Implements iosock_base_t connection service:
 	//!		a thread is started to manage all clients input
-	virtual bool connect(const std::string& address,unsigned int port);
+	virtual bool connect(const std::string& address,unsigned short port);
 
 	//!	Override @see iosock_base_t termination process.
 	//!		the listening thread is halted

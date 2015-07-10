@@ -10,7 +10,7 @@ const int COMMAND_HEADER = sizeof(CRaptorNetwork::SERVER_COMMAND);
 
 static CRaptorNetwork::SERVER_COMMAND RENDER_COMMAND =
 {
-	strlen("Render"),
+	(unsigned char)strlen("Render"),
 	0,
 	sizeof(CRaptorNetwork::SERVER_COMMAND),
 	"Render"
@@ -18,7 +18,7 @@ static CRaptorNetwork::SERVER_COMMAND RENDER_COMMAND =
 
 static CRaptorNetwork::SERVER_COMMAND STATUS_COMMAND =
 {
-	strlen("Status"),
+	(unsigned char)strlen("Status"),
 	0,
 	sizeof(CRaptorNetwork::SERVER_COMMAND),
 	"Status"
@@ -27,7 +27,7 @@ static CRaptorNetwork::SERVER_COMMAND STATUS_COMMAND =
 static CRaptorNetwork::SESSION_COMMAND OPEN_SESSION_COMMAND =
 {
 	{
-		strlen("OpenSession"),
+		(unsigned char)strlen("OpenSession"),
 		0,
 		sizeof(CRaptorNetwork::SESSION_COMMAND),
 		"OpenSession"

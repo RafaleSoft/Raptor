@@ -106,6 +106,11 @@ unsigned long Raptor::GetVersion(void)
 	return RAPTOR_VERSION;
 }
 
+const char* Raptor::GetVersionString(void)
+{
+	return RAPTOR_VERSION_STR;
+}
+
 int Raptor::glPurgeRaptor(bool count)
 {
 	//	Clean user objects

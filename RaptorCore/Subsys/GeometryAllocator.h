@@ -125,8 +125,8 @@ private:
 	data_bloc	vertices;
 
 	//!	If relocated, High Performance buffer object
-	CMemory::CBufferObject *relocatedFaceIndexes;
-	CMemory::CBufferObject *relocatedVertices;
+	CMemory::IBufferObject *relocatedFaceIndexes;
+	CMemory::IBufferObject *relocatedVertices;
 
 	//! Actual memory structure : bloc fragments of global allocated space
 	//!	IMPORTANT: The structure implementation requires a binary tree for template class map<>

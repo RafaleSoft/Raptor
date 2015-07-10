@@ -1,0 +1,174 @@
+I. INTRODUCTION
+
+  This is SOAR v1.11; a stripped-down C implementation of the terrain
+  visualization algorithms described in the papers
+
+    Visualization of Large Terrains Made Easy
+    Peter Lindstrom and Valerio Pascucci
+    Proceedings of IEEE Visualization 2001, pp. 63-370, 574, October 2001
+
+    Terrain Simplification Simplified:
+      A General Framework for View-Dependent Out-of-Core Visualization
+    Peter Lindstrom and Valerio Pascucci
+    IEEE Transactions on Visualization and Computer Graphics, to appear
+
+  Preprints of these papers can be obtained from
+
+    http://www.cc.gatech.edu/~lindstro/papers/visualization2001a/paper.pdf
+    http://www.cc.gatech.edu/~lindstro/papers/tvcg2002/paper.pdf
+
+  SOAR is an acronym for "Stateless, One-pass Adaptive Refinement," which
+  well summarizes the characteristics of the view-dependent mesh refinement
+  and rendering algorithm described in the papers.
+
+  SOAR is Copyright (c) 2002 University of California, LLNL.  See the
+  LICENSING section below for further details.
+
+  The source code provided here is mostly intended as documentation of the
+  algorithms.  It was deliberately designed to be a minimalistic, and to
+  a great extent portable, implementation that shows off the major features
+  of the algorithms.  As such, only basic support for simple navigation and
+  a small set of graphics modes and features are provided.  While the core
+  of this implementation is similar to the one used to generate the results
+  in the papers, it differs in at least one important way, in that there is
+  no support for multi-threading, i.e. refinement and rendering are done
+  sequentially.  Therefore, this implementation has performance
+  characteristics similar to the "single-threaded" results reported in the
+  papers, and is not as fast as the multi-threaded version.  This software
+  was developed on Silicon Graphics platforms, and any optimizations have
+  been targeted at SGI machines.  We'd welcome any suggestions on how to
+  speed things up on other platforms.
+
+  The bulk of the algorithms from the papers is contained in the files
+  index.h, refine.c, and morph.c; index.h contains macros relevant to the
+  different indexing schemes, while refine.c implements mesh refinement,
+  view frustum culling, and triangle stripping.  morph.c implements
+  refinement for geomorphed meshes.  Note that because we have assumed a
+  single-threaded, sequential mode of refinement and rendering, it does not
+  always make sense to first build a triangle strip in a memory buffer, and
+  then render it; these two tasks could easily be consolidated.  However,
+  this general approach is useful for some rendering tasks, such as when
+  wireframe is overlaid on top of the lit and/or textured terrain, which
+  requires multiple rendering passes of the same geometry.  In either case,
+  it may be possible to accelerate the rendering by eliminating triangle
+  strip buffering.
+
+  SOAR uses OpenGL (http://www.opengl.org) for graphics rendering and
+  GLUT (http://www.opengl.org/developers/documentation/glut) for the
+  user interface.  It reads elevation and texture files in the PNG format
+  (http://www.libpng.org).
+
+  SOAR is ANSI/ISO C89 compliant (well, except for a small set of system
+  specific calls such as mmap :)), and should compile using most ANSI C
+  compilers (e.g. gcc).  See "INSTALL" for compilation details.
+
+
+II. INSTALLATION
+
+  The text file "INSTALL" contains specific guidelines for compiling the
+  software.  This file also contains documentation on how to configure
+  SOAR to work with different data layout schemes, memory mapping, and
+  other system parameters.  You will need these or more recent versions
+  of the following libraries to compile SOAR:
+
+    OpenGL v1.1
+    GLUT v3
+    libpng v1.0.9
+    zlib v1.1.3
+
+
+III. RUNNING SOAR
+
+  SOAR accepts a terrain geometry file and an optional texture file.
+  The texture image must have dimensions that are powers of two, but
+  does not have to be square or match the dimensions of the height
+  field.  Currently, only 3-channel RGB textures are supported.  The
+  terrain geometry file can be created using the png2geo tool (see
+  section below on data preprocessing).  The usage for SOAR is as
+  follows:
+
+    soar [GLUT options] [texture] <geometry>
+
+  where "texture" is an optional PNG texture file, and "geometry" is
+  a required terrain elevation file in the GEO format discussed below.
+  SOAR is menu-driven, but also accepts the key strokes associated with
+  each menu entry.  To navigate, use the mouse: Push the left mouse
+  button to stop moving; hold the left button and drag up to increase
+  the forward speed; drag down to reverse.  Push the middle button and
+  drag to change the orientation.  The interface allows yaw (horizontal
+  rotation), pitch (vertical rotation), and roll (rotation about the gaze
+  direction) using only 2D motion.  To roll, middle-click away from
+  the window center (i.e. near the window edges) and drag perpendicularly,
+  e.g. click near the top of the window and drag left/right.  To yaw,
+  click near the vertical center of the window and drag left/right.  Click
+  near the horizontal center and drag up/down to pitch.  The right mouse
+  button activates the pop-up menus.
+
+  The information in the bottom left corner shows the number of rendered
+  frames per second, the number of rendered triangles (if this
+  compile-time option is enabled), and the error tolerance tau in number
+  of pixels.  Note that the frame rate will slow down if the window does
+  not have to be redrawn, e.g. when the viewpoint and orientation are
+  fixed.
+
+
+IV. TERRAIN DATA PREPROCESSING
+
+  Sample terrain elevation and texture files can be downloaded from
+
+    http://www.cc.gatech.edu/~lindstro/software/soar
+
+  In order to run SOAR, the elevation file must be processed and converted
+  to a GEO file using the accompanying png2geo tool.  Each pixel in the PNG
+  elevation file corresponds to the height above sea level at that point.
+  Preferably, the PNG elevation file should have a depth of 16 bits per
+  pixel to avoid excessive quantization, although 8-bit deep images are also
+  accepted.  The usage for png2geo is as follows:
+
+    png2geo <x-res> <y-res> <z-res> <png file> <geo file>
+
+  The first three arguments specify the resolution of the height field,
+  i.e. x-res is the inter-column spacing, y-res is the inter-row spacing,
+  and z-res is the spacing between consecutive pixel intensities in the
+  PNG image (that is, z denotes elevation).  Depending on the size of the
+  height field, png2geo may take a second to several minutes to complete.
+  Please do be patient; png2geo only has to be run once for any given data
+  set. :)  The output of png2geo, the GEO file, is in a format that SOAR
+  can process directly.  Note that this file can be considerably larger
+  than the PNG file (10-100 times larger is not uncommon).  Specifically,
+  for a height field with dimensions m x m, the linear indexing scheme
+  (see papers for details) requires 20 * (2 + m * m) bytes, while the
+  interleaved quadtree scheme requires roughly 100/3 * m * m bytes,
+  assuming m is of the form m = 2^n + 1 for some positive integer n.
+  Whereas the dimensions of the PNG input file do not have to be
+  (2^n + 1) x (2^n + 1), the GEO output file will be expanded to these
+  dimensions.
+
+
+V. BUGS
+
+  There are no known bugs in the current version.  Bugs in previous
+  versions:
+
+    v1.10:
+      - Missing memory allocation test in png2geo resulted in crash when
+        not enough memory was available.
+
+  Please report compiler warnings/errors and bugs to pl@llnl.gov.
+
+
+VI. LICENSING
+
+  This software is Copyright (c) 2002 University of California, LLNL.
+  It may be downloaded and used free of charge.  The text file "LICENSE"
+  contains further details on distribution and commercialization.
+
+
+VII. ADDITIONAL INFORMATION
+
+  Questions and comments on this implementation or the papers are welcome.
+  The authors can be contacted via e-mail at pl@llnl.gov or
+  pascucci@llnl.gov.  Further information, including answers to frequently
+  asked questions, is available on the SOAR home page:
+
+    http://www.cc.gatech.edu/~lindstro/software/soar
