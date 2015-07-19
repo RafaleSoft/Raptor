@@ -77,6 +77,14 @@ protected:
     CBumppedGeometry(	const std::string& name, 
 						const CPersistence::CPersistenceClassID &classID);
 
+	//!	Texture setups
+	CReference<CTextureObject>	diffuseMap;
+	CReference<CTextureObject>	normalMap;
+	CReference<CTextureObject>	envMap;
+
+	//! Shaders for various light configurations.
+	CShader*			m_pBumpShader;
+
 
 private:
 	//!	Implements CPersistence
@@ -85,19 +93,9 @@ private:
 	//!	Initialize shaders and observers
 	void init(void);
 
-	//!	Allocate space for dynamic normals, 
-	//! according to rendering model
-	void allocBumpColors();
-
 	//!	Configure internal shader texture unit setup
 	virtual void glSetTextureUnits(void);
 
-#ifdef RAPTOR_SSE_CODE_GENERATION
-	void setLightPositionDOT3SSE(void);
-#endif
-	void setLightPositionDOT3(void);
-
-	void glRenderDOT3();
     void glRenderEMBM();
 
     //!	A light observer to be notified from lightupdates.
@@ -126,19 +124,7 @@ private:
 	CColor::RGBA	S3;
 
 
-	//!	Texture setups
-	CReference<CTextureObject>	diffuseMap;
-	CReference<CTextureObject>	normalMap;
-    CReference<CTextureObject>	envMap;
-
-	//!	Diffuse Light vector coordinates
-	unsigned char		*bumpDiffusePx;
-
-	//!	Specular Light vector coordinates
-	unsigned char		*bumpSpecularPx;
-
     //! Shaders for various light configurations.
-    CShader*			m_pBumpShader;
 	static CShader*		m_pBumpShader2Lights;
     static CShader*		m_pBumpShaderAmbient;
 	static CShader*		m_pBumpShader3Lights;
