@@ -762,11 +762,6 @@ void CObjectStore::BuildObjects(void)
         l_model.addModel(CGeometry::CRenderingModel::CGL_SHADER_BUMP);
 		m_pBumpKnot->setRenderingModel(l_model);
     }
-	else if (Raptor::glIsExtensionSupported("GL_ARB_texture_env_dot3"))
-    {
-        l_model.addModel(CGeometry::CRenderingModel::CGL_DOT3_BUMP);
-		m_pBumpKnot->setRenderingModel(l_model);
-    }
 	else
     {
         CRaptorMessages * const msg = Raptor::GetMessages();

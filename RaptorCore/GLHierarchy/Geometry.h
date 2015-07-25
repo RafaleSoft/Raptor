@@ -49,14 +49,12 @@ public:
 			CGL_COLORS			=0x40,
 			CGL_FOG				=0x80,
 			CGL_FULLRENDER		=0xFF,	// CGL_FRONT_GEOMETRY|CGL_BACK_GEOMETRY|CGL_MATERIAL|
-																	// CGL_TEXTURE|CGL_WIREFRAME|CGL_COLORS|CGL_FOG
-			CGL_BUMP_MAPPING	=0x100,
-			CGL_DOT3_BUMP		=0x300,										
+										// CGL_TEXTURE|CGL_WIREFRAME|CGL_COLORS|CGL_FOG
 			CGL_SHADER_BUMP		=0x500,	//	Hints for GPU T&L bumping instead of CPU.
 			CGL_SHADER_EMBM		=0x900,	//	Very fast CPUs are much more effective than GPU
-																		//	when using SIMD extensions. But GPU T&L reduce bandwith
-																		//	Assumes nVidia Register combiners + texture shaders, 
-																		//	( or fragment programs ) + vertex programs
+										//	when using SIMD extensions. But GPU T&L reduce bandwith
+										//	Assumes nVidia Register combiners + texture shaders, 
+										//	( or fragment programs ) + vertex programs
 			CGL_LAST_MODEL		=0x1000
 		} MODEL;
 

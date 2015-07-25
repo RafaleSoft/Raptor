@@ -25,9 +25,6 @@
 #ifndef __INTERNAL_PROCS_H__
 	#include "Subsys/InternalProcs.h"
 #endif
-#ifndef __GLOBAL_H__
-	#include "System/Global.h"
-#endif
 #if !defined(AFX_LIGHT_H__AA8BABD6_059A_4939_A4B6_A0A036E12E1E__INCLUDED_)
 	#include "Light.h"
 #endif
@@ -54,6 +51,9 @@
 #endif
 #if !defined(AFX_REFERENCE_H__D29BE5EA_DA55_4BCA_A700_73E007EFE5F9__INCLUDED_)
 	#include "GLHierarchy/Reference.cxx"
+#endif
+#if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
+	#include "System/RaptorErrorManager.h"
 #endif
 
 
@@ -99,6 +99,18 @@ void CBumppedGeometry::init(void)
         m_pObserver = new CBumpLightObserver();
     else
         m_pObserver->addReference();
+
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+	if ((!Raptor::glIsExtensionSupported("GL_ARB_fragment_program")) ||
+		(!Raptor::glIsExtensionSupported("GL_ARB_vertex_program")) ||
+		(!Raptor::glIsExtensionSupported("GL_ARB_fragment_shader")) ||
+		(!Raptor::glIsExtensionSupported("GL_ARB_vertex_shader")))
+	{
+		Raptor::GetErrorManager()->generateRaptorError(	CBumppedGeometry::CBumppedGeometryClassID::GetClassId(),
+														CRaptorErrorManager::RAPTOR_WARNING,
+														CRaptorMessages::ID_NO_GPU_PROGRAM);
+	}
+#endif
 
 	m_pBumpShader = new CShader();
 	m_pBumpShader->registerDestruction(this);
@@ -172,45 +184,14 @@ void CBumppedGeometry::unLink(const CPersistence* p)
         m_pBumpShader3Lights = NULL;
 }
 
-void CBumppedGeometry::setDiffuseMap(CTextureObject* diffuse) 
-{ 
-	diffuseMap = diffuse;
-}
-
-void CBumppedGeometry::setNormalMap(CTextureObject* normal) 
-{ 
-    normalMap = normal;
-}
-
-void CBumppedGeometry::setEnvironmentMap(CTextureObject* environment) 
-{ 
-    envMap = environment;
-}
-
 void CBumppedGeometry::setRenderingModel(const CRenderingModel& model)
 {
-	if (model.hasModel(CRenderingModel::CGL_SHADER_BUMP) ||
-        model.hasModel(CRenderingModel::CGL_SHADER_EMBM))
-	{
-		const CGeometryEditor &pEditor = getEditor();
-        if (normals == NULL)
-            pEditor.genNormals(true);
-        else if (tangents == NULL)
-            pEditor.genNormals(false);
-		pEditor.genBinormals();
-
-#ifdef RAPTOR_DEBUG_MODE_GENERATION
-		if ((!Raptor::glIsExtensionSupported("GL_ARB_fragment_program")) ||
-			(!Raptor::glIsExtensionSupported("GL_ARB_vertex_program")) ||
-			(!Raptor::glIsExtensionSupported("GL_ARB_fragment_shader")) ||
-			(!Raptor::glIsExtensionSupported("GL_ARB_vertex_shader")))
-		{
-            Raptor::GetErrorManager()->generateRaptorError(	CBumppedGeometry::CBumppedGeometryClassID::GetClassId(),
-														 	CRaptorErrorManager::RAPTOR_WARNING,
-															CRaptorMessages::ID_NO_GPU_PROGRAM);
-		}
-#endif
-	}
+	const CGeometryEditor &pEditor = getEditor();
+    if (normals == NULL)
+        pEditor.genNormals(true);
+    else if (tangents == NULL)
+        pEditor.genNormals(false);
+	pEditor.genBinormals();
 
     //  render material normals is mandatory for this kind of geometry
     CRenderingModel l_model = model;
@@ -218,111 +199,55 @@ void CBumppedGeometry::setRenderingModel(const CRenderingModel& model)
     l_model.addModel(CRenderingModel::CGL_TANGENTS);
     CGeometry::setRenderingModel(l_model);
 
-	glBuildShader();
+	CVertexShader *vs = m_pBumpShader->glGetVertexShader("BUMP_ATT_VTX_SHADER");
+	vs = m_pBumpShader2Lights->glGetVertexShader("BUMP_ATT_VTX_SHADER_2LIGHTS");
+	vs = m_pBumpShaderAmbient->glGetVertexShader("BUMP_0LIGHT_VTX_SHADER");
+	vs = m_pBumpShader3Lights->glGetVertexShader("BUMP_ATT_VTX_SHADER_3LIGHTS");
 
-	CATCH_GL_ERROR
-}
-
-
-void CBumppedGeometry::glBuildShader(void)
-{
-	if (getRenderingModel().hasModel(CRenderingModel::CGL_SHADER_BUMP))
-	{
-        CVertexShader *vs = m_pBumpShader->glGetVertexShader("BUMP_ATT_VTX_SHADER");
-		vs = m_pBumpShader2Lights->glGetVertexShader("BUMP_ATT_VTX_SHADER_2LIGHTS");
-        vs = m_pBumpShaderAmbient->glGetVertexShader("BUMP_0LIGHT_VTX_SHADER");
-		vs = m_pBumpShader3Lights->glGetVertexShader("BUMP_ATT_VTX_SHADER_3LIGHTS");
-	}
-	else if (getRenderingModel().hasModel(CRenderingModel::CGL_SHADER_EMBM))
-	{
-		CVertexShader *vs = m_pBumpShader->glGetVertexShader("EMBM_VTX_SHADER");
-        vs = m_pBumpShaderAmbient->glGetVertexShader("EMBM_0LIGHT_VTX_SHADER");
-	}
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
-	else if (!getRenderingModel().hasModel(CRenderingModel::CGL_BUMP_MAPPING))
-        Raptor::GetErrorManager()->generateRaptorError(	CBumppedGeometry::CBumppedGeometryClassID::GetClassId(),
+	 if (!getRenderingModel().hasModel(CRenderingModel::CGL_SHADER_BUMP))
+		Raptor::GetErrorManager()->generateRaptorError(	CBumppedGeometry::CBumppedGeometryClassID::GetClassId(),
 														CRaptorErrorManager::RAPTOR_WARNING,
 														CRaptorMessages::ID_WRONG_RENDERING);
 #endif
 
-	glSetTextureUnits();
-
-	CATCH_GL_ERROR
-}
-
-
-void CBumppedGeometry::glSetTextureUnits(void)
-{
-	if ((normalMap == NULL) || (diffuseMap == NULL))
-	{
+	 if ((normalMap == NULL) || (diffuseMap == NULL))
+	 {
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
-		Raptor::GetErrorManager()->generateRaptorError(	CBumppedGeometry::CBumppedGeometryClassID::GetClassId(),
-										                CRaptorErrorManager::RAPTOR_WARNING,
+		 Raptor::GetErrorManager()->generateRaptorError(CBumppedGeometry::CBumppedGeometryClassID::GetClassId(),
+														CRaptorErrorManager::RAPTOR_WARNING,
 														CRaptorMessages::ID_TEXTURE_MISS);
 #endif
-		return;
+		 return;
 	}
 
-	if (getRenderingModel().hasModel(CRenderingModel::CGL_SHADER_EMBM))
-    {
-        if (envMap == NULL)
-	    {
-#ifdef RAPTOR_DEBUG_MODE_GENERATION
-	        Raptor::GetErrorManager()->generateRaptorError(	CBumppedGeometry::CBumppedGeometryClassID::GetClassId(),
-		    								                CRaptorErrorManager::RAPTOR_WARNING,
-			    											CRaptorMessages::ID_TEXTURE_MISS);
-#endif
-            return;
-        }
+	 CTextureUnitSetup *setup = m_pBumpShader->glGetTextureUnitsSetup();
+	 setup->setDiffuseMap(diffuseMap);
+	 setup->setNormalMap(normalMap);
 
-        CTextureUnitSetup *setup = m_pBumpShader->glGetTextureUnitsSetup();
-        setup->setDiffuseMap(diffuseMap);
-	    setup->setNormalMap(normalMap);
-	    setup->setEnvironmentMap(envMap);
-
-#if defined (GL_ARB_fragment_program)
-	    setup->useRegisterCombiners(false);
-	    setup->getTMUShader(CTextureUnitSetup::IMAGE_UNIT_0).shaderOperation = GL_NONE;
-	    setup->getTMUShader(CTextureUnitSetup::IMAGE_UNIT_1).shaderOperation = GL_NONE;
-	    setup->getTMUShader(CTextureUnitSetup::IMAGE_UNIT_2).shaderOperation = GL_NONE;
-	    setup->getTMUShader(CTextureUnitSetup::IMAGE_UNIT_3).shaderOperation = GL_NONE;
-
-	    CFragmentShader *fs = m_pBumpShader->glGetFragmentShader("EMBM_TEX_SHADER");
-        fs = m_pBumpShaderAmbient->glGetFragmentShader("EMBM_0LIGHT_TEX_SHADER");
-#endif
-    }
-	else if (getRenderingModel().hasModel(CRenderingModel::CGL_SHADER_BUMP))
-	{
-		CTextureUnitSetup *setup = m_pBumpShader->glGetTextureUnitsSetup();
-		setup->setDiffuseMap(diffuseMap);
-		setup->setNormalMap(normalMap);
-
-		if ((!Raptor::glIsExtensionSupported("GL_NV_register_combiners")) &&
-			(!Raptor::glIsExtensionSupported("GL_ARB_fragment_program")))
-		{
-			Raptor::GetErrorManager()->generateRaptorError(	CBumppedGeometry::CBumppedGeometryClassID::GetClassId(),
-                                                            CRaptorErrorManager::RAPTOR_WARNING,
-                                                            CRaptorMessages::ID_NO_GPU_PROGRAM);
-			return;
-		}
-		if (!Raptor::glIsExtensionSupported("GL_EXT_secondary_color"))
-		{
-			Raptor::GetErrorManager()->generateRaptorError(	CBumppedGeometry::CBumppedGeometryClassID::GetClassId(),
-                                                            CRaptorErrorManager::RAPTOR_WARNING,
-                                                            CRaptorMessages::ID_NO_GPU_PROGRAM);
-			return;
-		}
+	 if ((!Raptor::glIsExtensionSupported("GL_NV_register_combiners")) &&
+		 (!Raptor::glIsExtensionSupported("GL_ARB_fragment_program")))
+	 {
+		 Raptor::GetErrorManager()->generateRaptorError(CBumppedGeometry::CBumppedGeometryClassID::GetClassId(),
+														CRaptorErrorManager::RAPTOR_WARNING,
+														CRaptorMessages::ID_NO_GPU_PROGRAM);
+		 return;
+	 }
+	 if (!Raptor::glIsExtensionSupported("GL_EXT_secondary_color"))
+	 {
+		 Raptor::GetErrorManager()->generateRaptorError(CBumppedGeometry::CBumppedGeometryClassID::GetClassId(),
+														CRaptorErrorManager::RAPTOR_WARNING,
+														CRaptorMessages::ID_NO_GPU_PROGRAM);
+		 return;
+	 }
 
 #if defined (GL_ARB_fragment_program)
-
-		setup->useRegisterCombiners(false);
-        CFragmentShader *fs = m_pBumpShader->glGetFragmentShader("BUMP_ATT_TEX_SHADER");
-		fs = m_pBumpShader2Lights->glGetFragmentShader("BUMP_ATT_TEX_SHADER_2LIGHTS");
-        fs = m_pBumpShaderAmbient->glGetFragmentShader("BUMP_0LIGHT_TEX_SHADER");
-		fs = m_pBumpShader3Lights->glGetFragmentShader("BUMP_ATT_TEX_SHADER_3LIGHTS");
-
+	 setup->useRegisterCombiners(false);
+	 CFragmentShader *fs = m_pBumpShader->glGetFragmentShader("BUMP_ATT_TEX_SHADER");
+	 fs = m_pBumpShader2Lights->glGetFragmentShader("BUMP_ATT_TEX_SHADER_2LIGHTS");
+	 fs = m_pBumpShaderAmbient->glGetFragmentShader("BUMP_0LIGHT_TEX_SHADER");
+	 fs = m_pBumpShader3Lights->glGetFragmentShader("BUMP_ATT_TEX_SHADER_3LIGHTS");
 #endif
-	}
 
 	CATCH_GL_ERROR
 }
@@ -432,9 +357,7 @@ void CBumppedGeometry::glRender()
     m_pBumpShader->glRenderMaterial();
     // for debug  ambient : glColor4f(1.0f,0.0f,0.0f,1.0f);
 
-    if (getRenderingModel().hasModel(CRenderingModel::CGL_SHADER_EMBM))
-        glRenderEMBM();
-    else if ((!glIsEnabled(GL_LIGHTING)) || (numLights == 0))
+	if ((!glIsEnabled(GL_LIGHTING)) || (numLights == 0))
     {
 		m_pBumpShaderAmbient->glRender();
 
@@ -443,7 +366,7 @@ void CBumppedGeometry::glRender()
 
 		m_pBumpShaderAmbient->glStop();
     }
-	else if (getRenderingModel().hasModel(CRenderingModel::CGL_SHADER_BUMP))
+	else
 	{
 		CFragmentShader *fs = NULL;
 		CVertexShader *vs = NULL;
@@ -511,61 +434,7 @@ void CBumppedGeometry::glRender()
 #endif
 	}
 
-	Global::GetInstance().getCurrentStatus().iRenderedObjects++;
-	Global::GetInstance().getCurrentStatus().iRenderedTriangles += m_nbPolys;
-
 	CATCH_GL_ERROR
-}
-
-void CBumppedGeometry::glRenderEMBM()
-{
-    bool renderAmbient = (GL_TRUE == glIsEnabled(GL_LIGHTING));
-
-    if (getRenderingModel().hasModel(CRenderingModel::CGL_TEXTURE))
-    {
-        m_pBumpShader->glRenderTexture();
-    }
-
-    CVertexShader *vs = NULL;
-    CFragmentShader *fs = NULL;
-
-    if (!renderAmbient)
-    {
-        vs = m_pBumpShaderAmbient->glGetVertexShader();
-        vs->glRender();
-        glEnableClientState(GL_NORMAL_ARRAY);
-        glNormalPointer( GL_FLOAT , sizeof(GL_COORD_VERTEX) , normals);
-        fs = m_pBumpShaderAmbient->glGetFragmentShader();
-    }
-    else
-    {
-        vs = m_pBumpShader->glGetVertexShader();
-		vs->glRender();
-		vs->glProgramParameter(10,X);
-		vs->glProgramParameter(11,V);
-        vs->glProgramParameter(12,A);
-        fs = m_pBumpShader->glGetFragmentShader();
-    }
-	
-    fs->glRender();
-    CGeometry::glRenderGeometry();
-
-    const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
-    pExtensions->glActiveTextureARB(GL_TEXTURE3_ARB);
-#if defined(GL_ARB_texture_cube_map)
-	glDisable(GL_TEXTURE_CUBE_MAP_ARB);
-    glDisable(GL_TEXTURE_2D);
-#endif
-    pExtensions->glActiveTextureARB(GL_TEXTURE1_ARB);
-    glDisable(GL_TEXTURE_2D);
-	pExtensions->glActiveTextureARB(GL_TEXTURE0_ARB);
-    if (!renderAmbient)
-        glDisableClientState(GL_NORMAL_ARRAY);
-
-    vs->glStop();
-    fs->glStop();
-    
-    CATCH_GL_ERROR
 }
 
 

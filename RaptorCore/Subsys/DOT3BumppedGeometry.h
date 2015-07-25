@@ -19,11 +19,6 @@ public:
 	//!	Rendering is always done using the current rendering model.
 	virtual void glRender();
 
-	//!	Specific additional bump rendering properties
-	//!	to the CGeometry rendering model ( CGeometry::SetRenderingModel
-	//!	is called from this method, so only one set is necessary )
-	void setRenderingModel(const CRenderingModel& model);
-
 	//! Same as above .
 	CBumppedGeometry& operator=(const CDOT3BumppedGeometry &geo);
 
@@ -40,12 +35,7 @@ private:
 
 	//!	Configure internal shader texture unit setup
 	virtual void glSetTextureUnits(void);
-
-	//!	Allocate space for dynamic normals, 
-	//! according to rendering model
-	void allocBumpColors();
-
-
+	
 	//!	Diffuse Light vector coordinates
 	unsigned char		*bumpDiffusePx;
 

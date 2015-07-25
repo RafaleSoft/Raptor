@@ -7,29 +7,26 @@
 #ifndef __CGLTYPES_HPP__
     #include "System/CGLTypes.h"
 #endif
-
 #ifndef __RAPTOR_GLEXT_H__
 	#include "System/Glext.h"
 #endif
-
 #if !defined(AFX_GEOMETRYPRIMITIVE_H__890D2E18_2DAC_4094_AE20_BDF7D6FA5DBF__INCLUDED_)
 	#include "GeometryPrimitive.h"
 #endif
-
 #if !defined(AFX_GEOMETRYALLOCATOR_H__802B3C7A_43F7_46B2_A79E_DDDC9012D371__INCLUDED_)
 	#include "Subsys/GeometryAllocator.h"
 #endif
-
 #if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
 	#include "System/Raptor.h"
 #endif
-
 #if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
     #include "System/RaptorErrorManager.h"
 #endif
-
 #if !defined(AFX_GEOMETRY_H__B42ABB87_80E8_11D3_97C2_DE5C28000000__INCLUDED_)
 	#include "Geometry.h"
+#endif
+#ifndef __GLOBAL_H__
+	#include "System/Global.h"
 #endif
 
 RAPTOR_NAMESPACE
@@ -155,7 +152,12 @@ void CGeometryPrimitive::glRender(void)
 
 			break;
 		}
+		default:
+			break;
 	}
+
+	Global::GetInstance().getCurrentStatus().iRenderedObjects++;
+	Global::GetInstance().getCurrentStatus().iRenderedTriangles += m_size;
 
     CATCH_GL_ERROR
 }

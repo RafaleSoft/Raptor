@@ -220,11 +220,6 @@ void CTeapot::GLInitContext()
         l_model.addModel(CGeometry::CRenderingModel::CGL_SHADER_BUMP);
 		teapot->setRenderingModel(l_model);
     }
-	else if (Raptor::glIsExtensionSupported("GL_ARB_texture_env_dot3"))
-    {
-        l_model.addModel(CGeometry::CRenderingModel::CGL_DOT3_BUMP);
-		teapot->setRenderingModel(l_model);
-    }
 	else
 		Raptor::GetMessages()->displayMessage("Hardware unable to render bump mapping");
 
