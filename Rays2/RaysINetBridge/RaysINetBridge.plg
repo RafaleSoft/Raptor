@@ -1,0 +1,28 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: RaysINetBridge - Win32 Release--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\DOCUME~1\Fabrice\LOCALS~1\Temp\RSP177.tmp" with contents
+[
+/nologo /subsystem:windows /incremental:no /pdb:"Release/RaysINetBridge.pdb" /machine:I386 /out:"RaysINetBridge.exe" 
+.\Release\Inetsocket.obj
+.\Release\RaysINetBridge.obj
+.\Release\RaysINetBridgeDlg.obj
+.\Release\StdAfx.obj
+.\Release\RaysINetBridge.res
+]
+Creating command line "link.exe @C:\DOCUME~1\Fabrice\LOCALS~1\Temp\RSP177.tmp"
+<h3>Output Window</h3>
+Linking...
+
+
+
+<h3>Results</h3>
+RaysINetBridge.exe - 0 error(s), 0 warning(s)
+</pre>
+</body>
+</html>

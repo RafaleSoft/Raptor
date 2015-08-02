@@ -1,0 +1,35 @@
+"test"
+{
+	{
+		width = 256
+		height = 256
+		variance = 20
+		deflection = 4
+		defraction = 4
+		crease = 45
+	}
+
+	{
+		light "light0" = 
+		{
+			{ 400.0 , -400.0 , 400.0 , 1.0 },
+			{ 1.0 , 1.0 , 1.0 , 1.0 },
+			0.8
+		}
+		shading "shading0" = { 0.1 , 0.3 , 0.6 , 10 , 0.2 , 0.9 , 1.33 , none}
+		shading "shading1" = { 0.2 , 0.6 , 0.7 , 10 , 0.5 , 0.0 , 1.0 , none}
+		texture "texture0" = { "Start.tga" }
+		texture "texture1" = { "none" }
+	}
+
+	{
+		"teapot"
+		{
+			"shading1",
+			"texture1",
+			"texture1",
+			{ 0.8 , 0.8 , 0.8 , 0.2 },
+			import "teapot2.3DS"
+		}
+	}
+}

@@ -1,0 +1,87 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: RaysClient - Win32 Release--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\DOCUME~1\Fabrice\LOCALS~1\Temp\RSP25D.tmp" with contents
+[
+/nologo /MD /W3 /GX /Zi /Od /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /Fp"Release/RaysClient.pch" /Yu"stdafx.h" /Fo"Release/" /Fd"Release/" /FD /c 
+"F:\Rays2\Camera.cpp"
+"F:\Rays2\RenderObject.cpp"
+"F:\Rays2\RaysClient\ChildFrm.cpp"
+"F:\Rays2\RaysClient\ObjectView.cpp"
+"F:\Rays2\RaysClient\RaysClientDoc.cpp"
+"F:\Rays2\RaysClient\RaysClientView.cpp"
+"F:\Rays2\RaysClient\RaysClient.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\Fabrice\LOCALS~1\Temp\RSP25D.tmp" 
+Creating temporary file "C:\DOCUME~1\Fabrice\LOCALS~1\Temp\RSP25E.tmp" with contents
+[
+../Systemdll/Systemdll.lib ../SimdLib/simd.lib /nologo /subsystem:windows /incremental:no /pdb:"Release/RaysClient.pdb" /debug /machine:I386 /out:"RaysClient.exe" 
+.\Release\Camera.obj
+.\Release\RenderObject.obj
+.\Release\ChildFrm.obj
+.\Release\MainFrm.obj
+.\Release\ObjectView.obj
+.\Release\RaysClientDoc.obj
+.\Release\RaysClientView.obj
+.\Release\RaysClient.obj
+.\Release\StdAfx.obj
+.\Release\RaysClient.res
+]
+Creating command line "link.exe @C:\DOCUME~1\Fabrice\LOCALS~1\Temp\RSP25E.tmp"
+<h3>Output Window</h3>
+Compiling...
+Camera.cpp
+F:\Rays2\Camera.h(16) : error C2504: 'CRenderObject' : base class undefined
+RenderObject.cpp
+fatal error C1083: Cannot open source file: 'F:\Rays2\RenderObject.cpp': No such file or directory
+ChildFrm.cpp
+F:\Rays2\RaysClient\../Camera.h(16) : error C2504: 'CRenderObject' : base class undefined
+F:\Rays2\RaysClient\RaysClientDoc.h(33) : error C2143: syntax error : missing ';' before '*'
+F:\Rays2\RaysClient\RaysClientDoc.h(33) : error C2501: 'CRenderObject' : missing storage-class or type specifiers
+F:\Rays2\RaysClient\RaysClientDoc.h(33) : error C2501: 'Objects' : missing storage-class or type specifiers
+ObjectView.cpp
+F:\Rays2\RaysClient\../Camera.h(16) : error C2504: 'CRenderObject' : base class undefined
+F:\Rays2\RaysClient\RaysClientDoc.h(33) : error C2143: syntax error : missing ';' before '*'
+F:\Rays2\RaysClient\RaysClientDoc.h(33) : error C2501: 'CRenderObject' : missing storage-class or type specifiers
+F:\Rays2\RaysClient\RaysClientDoc.h(33) : error C2501: 'Objects' : missing storage-class or type specifiers
+RaysClientDoc.cpp
+F:\Rays2\RaysClient\../Camera.h(16) : error C2504: 'CRenderObject' : base class undefined
+F:\Rays2\RaysClient\RaysClientDoc.h(33) : error C2143: syntax error : missing ';' before '*'
+F:\Rays2\RaysClient\RaysClientDoc.h(33) : error C2501: 'CRenderObject' : missing storage-class or type specifiers
+F:\Rays2\RaysClient\RaysClientDoc.h(33) : error C2501: 'Objects' : missing storage-class or type specifiers
+F:\Rays2\RaysClient\RaysClientDoc.cpp(58) : error C2065: 'Objects' : undeclared identifier
+F:\Rays2\RaysClient\RaysClientDoc.cpp(58) : error C2109: subscript requires array or pointer type
+F:\Rays2\RaysClient\RaysClientDoc.cpp(58) : error C2541: delete : cannot delete objects that are not pointers
+F:\Rays2\RaysClient\RaysClientDoc.cpp(59) : error C2109: subscript requires array or pointer type
+F:\Rays2\RaysClient\RaysClientDoc.cpp(59) : error C2106: '=' : left operand must be l-value
+F:\Rays2\RaysClient\RaysClientDoc.cpp(143) : error C2109: subscript requires array or pointer type
+F:\Rays2\RaysClient\RaysClientDoc.cpp(143) : error C2440: '=' : cannot convert from 'class CCamera *' to 'int'
+        This conversion requires a reinterpret_cast, a C-style cast or function-style cast
+F:\Rays2\RaysClient\Parsing.cpp(78) : error C2109: subscript requires array or pointer type
+F:\Rays2\RaysClient\Parsing.cpp(78) : error C2440: '=' : cannot convert from 'class CCamera *' to 'int'
+        This conversion requires a reinterpret_cast, a C-style cast or function-style cast
+RaysClientView.cpp
+F:\Rays2\RaysClient\../Camera.h(16) : error C2504: 'CRenderObject' : base class undefined
+F:\Rays2\RaysClient\RaysClientDoc.h(33) : error C2143: syntax error : missing ';' before '*'
+F:\Rays2\RaysClient\RaysClientDoc.h(33) : error C2501: 'CRenderObject' : missing storage-class or type specifiers
+F:\Rays2\RaysClient\RaysClientDoc.h(33) : error C2501: 'Objects' : missing storage-class or type specifiers
+RaysClient.cpp
+F:\Rays2\RaysClient\../Camera.h(16) : error C2504: 'CRenderObject' : base class undefined
+F:\Rays2\RaysClient\RaysClientDoc.h(33) : error C2143: syntax error : missing ';' before '*'
+F:\Rays2\RaysClient\RaysClientDoc.h(33) : error C2501: 'CRenderObject' : missing storage-class or type specifiers
+F:\Rays2\RaysClient\RaysClientDoc.h(33) : error C2501: 'Objects' : missing storage-class or type specifiers
+Generating Code...
+Error executing cl.exe.
+
+
+
+<h3>Results</h3>
+RaysClient.exe - 31 error(s), 0 warning(s)
+</pre>
+</body>
+</html>

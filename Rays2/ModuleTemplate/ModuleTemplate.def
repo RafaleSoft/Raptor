@@ -1,0 +1,16 @@
+; ModuleTemplate.def : Declares the module parameters for the DLL.
+
+LIBRARY      "ModuleTemplate"
+DESCRIPTION  'ModuleTemplate Windows Dynamic Link Library'
+
+EXPORTS
+    InitModule				@1
+    GetModuleName			@2
+    GetModuleAuthor			@3
+    GetModuleDescription	@4
+    GetModuleType			@5
+	GetModuleVersion		@6
+    GetParameters			@7
+    SetParameters			@8
+
+    AfterEffect				@9
