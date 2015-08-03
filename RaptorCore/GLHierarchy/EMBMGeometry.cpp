@@ -119,13 +119,6 @@ void CEMBMGeometry::setRenderingModel(const CRenderingModel& model)
 	CVertexShader *vs = m_pBumpShader->glGetVertexShader("EMBM_VTX_SHADER");
 	vs = m_pBumpShaderAmbient->glGetVertexShader("EMBM_0LIGHT_VTX_SHADER");
 
-#ifdef RAPTOR_DEBUG_MODE_GENERATION
-	if (!getRenderingModel().hasModel(CRenderingModel::CGL_SHADER_EMBM))
-		Raptor::GetErrorManager()->generateRaptorError(	CBumppedGeometry::CBumppedGeometryClassID::GetClassId(),
-														CRaptorErrorManager::RAPTOR_WARNING,
-														CRaptorMessages::ID_WRONG_RENDERING);
-#endif
-
 	if ((normalMap == NULL) || (diffuseMap == NULL) || (envMap == NULL))
 	{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION

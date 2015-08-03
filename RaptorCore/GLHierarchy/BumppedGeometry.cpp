@@ -204,13 +204,6 @@ void CBumppedGeometry::setRenderingModel(const CRenderingModel& model)
 	vs = m_pBumpShaderAmbient->glGetVertexShader("BUMP_0LIGHT_VTX_SHADER");
 	vs = m_pBumpShader3Lights->glGetVertexShader("BUMP_ATT_VTX_SHADER_3LIGHTS");
 
-#ifdef RAPTOR_DEBUG_MODE_GENERATION
-	 if (!getRenderingModel().hasModel(CRenderingModel::CGL_SHADER_BUMP))
-		Raptor::GetErrorManager()->generateRaptorError(	CBumppedGeometry::CBumppedGeometryClassID::GetClassId(),
-														CRaptorErrorManager::RAPTOR_WARNING,
-														CRaptorMessages::ID_WRONG_RENDERING);
-#endif
-
 	 if ((normalMap == NULL) || (diffuseMap == NULL))
 	 {
 #ifdef RAPTOR_DEBUG_MODE_GENERATION

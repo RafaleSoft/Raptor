@@ -229,7 +229,6 @@ bool CObjectStore::IsAColumn(CGeometry *&g)
         CGeometry::CRenderingModel l_model(0);
         l_model.addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
         l_model.addModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
-        l_model.addModel(CGeometry::CRenderingModel::CGL_SHADER_BUMP);
         bump->setRenderingModel(l_model);
 
 		m_columnBump = bump;
@@ -756,13 +755,9 @@ void CObjectStore::BuildObjects(void)
     CGeometry::CRenderingModel l_model(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
     l_model.addModel(CGeometry::CRenderingModel::CGL_NORMALS);
     l_model.addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
+	m_pBumpKnot->setRenderingModel(l_model);
 
-	if (Raptor::glIsExtensionSupported("GL_ARB_vertex_program"))
-    {
-        l_model.addModel(CGeometry::CRenderingModel::CGL_SHADER_BUMP);
-		m_pBumpKnot->setRenderingModel(l_model);
-    }
-	else
+	if (!Raptor::glIsExtensionSupported("GL_ARB_vertex_program"))
     {
         CRaptorMessages * const msg = Raptor::GetMessages();
         msg->displayMessage("Hardware unable to render bump mapping");
