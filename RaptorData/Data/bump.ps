@@ -18,9 +18,10 @@ void main (void)
 	vec4 diffuse = gl_FrontLightModelProduct.sceneColor;
 	vec4 specular = vec4(0.0,0.0,0.0,0.0);
 
-	for (int numl=0 ; numl<MAX_LIGHTS ; numl++)
+	for (int i=0 ; i<MAX_LIGHTS ; i++)
 	{
-		if (lightEnable[numl] > 0)
+		int numl = lightEnable[i];
+		if (numl >= 0)
 		{
 			float att = lightDirs[numl].w;
 			diffuse += att * gl_FrontLightProduct[numl].ambient;

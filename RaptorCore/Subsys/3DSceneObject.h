@@ -47,7 +47,9 @@ public:
 						const vector<CLight*> &lights,
 						GLboolean proceedLights);
 
-    //! This method chooses the appropriate light for self object rendering
+    //! This method chooses the appropriate light for self object rendering.
+	//! The lights selected are the first and less then CLightAttributes::MAX_LIGHTS lights
+	//! that contribute to shading taking into account attenuation (> 1/256 rgba)
     void selectLights(const vector<CLight*> &lights,const CGenericMatrix<float>& transform);
 
     //! This method renders the selected lights.
@@ -74,21 +76,6 @@ public:
 		};
 	};
 
-    
-    //!  This structure is used to sort the lights ( comparing the reachable distance:
-    //! as the attenuation fuction has an always negative derivative and the function is < 1,
-    //! we can assume that if for a distance d the attenuation is higher the reachable distance
-    //! is then higher, and reciprocal.
-    struct lightCompare
-    {
-        CLight	*light;
-        float   d;
-
-        bool operator()(const lightCompare &l, const lightCompare &r) const
-        {
-            return (l.d < r.d);
-        };
-    };
 
     //!	Occlusion queries
 	unsigned int	visibilityQuery[NB_PASSES];

@@ -24,6 +24,7 @@ RAPTOR_NAMESPACE_BEGIN
 
 class CTextureObject;
 class CProjector;
+class CLight;
 
 class CLightAttributes  
 {
@@ -44,11 +45,18 @@ public:
     //! Remove an observer that was added with addObserver
 	static bool removeObserver(CLightObserver* observer);
 
+	//! Updates the order of active lights
+	static void setLightOrder(CLight* lights[CLightAttributes::MAX_LIGHTS]);
+
 	//! Returns the list of current active lights
 	static CLight** const getActiveLights(void) { return s_activeLights; };
 
-	//! Returns the list of current active lights
-	static bool* const getActiveGLLights(void) { return s_activeGLLights; };
+	//! Returns the packed ordered list of current active lights
+	static CLight** const getOrderedLights(void) { return s_orderedLights; };
+
+	//! Returns the packed list of active lights order
+	static int* const getLightOrder(void);
+
 
 
 private:
@@ -88,7 +96,8 @@ private:
 
 	static vector<CLightObserver*>	m_pObservers;
 	static CLight* s_activeLights[MAX_LIGHTS];
-	static bool s_activeGLLights[MAX_LIGHTS];
+	static CLight* s_orderedLights[MAX_LIGHTS];
+	static int s_lightOrder[MAX_LIGHTS];
 };
 
 RAPTOR_NAMESPACE_END

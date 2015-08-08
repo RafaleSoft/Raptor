@@ -1,4 +1,4 @@
-// BumppedGeometry.cpp: implementation of the CBumppedGeometry class.
+// EMBMGeometry.cpp: implementation of the CEMBMGeometry class.
 //
 //////////////////////////////////////////////////////////////////////
 #include "Subsys/CodeGeneration.h"

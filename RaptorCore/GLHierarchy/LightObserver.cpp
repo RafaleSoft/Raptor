@@ -37,7 +37,7 @@ CLightObserver::~CLightObserver()
 	CLightAttributes::removeObserver(this);
 }	
 
-CLight* CLightObserver::getLight(CGenericVector<float> location, unsigned int numLight)
+vector<CLight*> CLightObserver::sortLights(CGenericVector<float> location)
 {
 	CLight **ppLights = CLightAttributes::getActiveLights();
 
@@ -48,7 +48,7 @@ CLight* CLightObserver::getLight(CGenericVector<float> location, unsigned int nu
 		lc.light = ppLights[nLight];
 		if (lc.light != NULL)
 		{
-			lc.intensity = lc.light->getLightIntensity(location);
+			lc.intensity = lc.light->getLightAttenuation(location);
 			sortedLights.insert(lc);
 		}
 	}
@@ -58,9 +58,5 @@ CLight* CLightObserver::getLight(CGenericVector<float> location, unsigned int nu
 	while (it != sortedLights.end())
 		activeLights.push_back((*it++).light);
 
-
-    if (numLight >= activeLights.size())
-        return NULL;
-    else
-		return activeLights[numLight];
+	return activeLights;
 }

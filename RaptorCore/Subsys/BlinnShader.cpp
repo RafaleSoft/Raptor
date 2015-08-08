@@ -44,15 +44,9 @@ void CBlinnShader::glInit()
 
 void CBlinnShader::glRender(void)
 {
-#if defined(GL_ARB_shader_objects)
-	bool *pGLLights = CLightAttributes::getActiveGLLights();
-	int bLights[CLightAttributes::MAX_LIGHTS]  = {0,0,0,0,0,0,0,0};
-
-	for (unsigned int i=0;i<CLightAttributes::MAX_LIGHTS;i++)
-		bLights[i] = (pGLLights[i] ? 1 : 0);
-
 	CShader::glRender();
 
+#if defined(GL_ARB_shader_objects)
 	const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
 
 	if ((lightEnable < 0) || (diffuseMap < 0))
@@ -62,10 +56,12 @@ void CBlinnShader::glRender(void)
 		diffuseMap = pExtensions->glGetUniformLocationARB(program,"diffuseMap");
 	}
 
-	pExtensions->glUniform1iARB(diffuseMap,CTextureUnitSetup::IMAGE_UNIT_0);
-	pExtensions->glUniform1ivARB(lightEnable,CLightAttributes::MAX_LIGHTS,bLights);
-#else
-	CShader::glRender();
+	if (diffuseMap >= 0)
+		pExtensions->glUniform1iARB(diffuseMap,CTextureUnitSetup::IMAGE_UNIT_0);
+
+	int *bLights = CLightAttributes::getLightOrder();
+	if ((lightEnable >= 0) && (NULL != bLights))
+		pExtensions->glUniform1ivARB(lightEnable,CLightAttributes::MAX_LIGHTS,bLights);
 #endif
 }
 

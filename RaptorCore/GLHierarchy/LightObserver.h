@@ -37,6 +37,22 @@ public:
         SPOT
     } UPDATE_KIND;
 
+	//! This structure is used to sort the lights with their intensity:
+	//!	provided the light's intensity has been computed for the same position
+	//!	for all lights compared ( m_activeLights ), this structure is a simple 
+	//!	helper to sort items.
+	struct lightCompare
+	{
+		CLight	*light;
+		float	intensity;
+
+		bool operator()(const lightCompare &l, const lightCompare &r) const
+		{
+			return (l.intensity > r.intensity);
+		};
+	};
+
+
 	virtual ~CLightObserver();
 
 	//!	Must be implemented to handle light notification.
@@ -44,29 +60,15 @@ public:
 	//!	is called.
 	virtual void update(CLight *light,CLightObserver::UPDATE_KIND kind) = 0;
 
-	//! Returns a light specified by numLight where numLight is the ordered light number.
-    //! The order is defined by the relative intensity at location.
-    CLight* getLight(CGenericVector<float> location, unsigned int numLight=0);
+	//! Returns an orddered vector of less than CLightAttributes::MAX_LIGHTS lights,
+    //! the order is defined by the relative intensity at location provided.
+    vector<CLight*> sortLights(CGenericVector<float> location);
 
 
 protected:
     CLightObserver();
 
 private:
-	//! This structure is used to sort the lights with their intensity:
-    //!	provided the light's intensity has been computed for the same position
-	//!	for all lights compared ( m_activeLights ), this structure is a simple 
-	//!	helper to sort items.
-    struct lightCompare
-    {
-        CLight	*light;
-        float	intensity;
-
-        bool operator()(const lightCompare &l, const lightCompare &r) const
-        {
-            return (l.intensity > r.intensity);
-        };
-    };
 };
 
 

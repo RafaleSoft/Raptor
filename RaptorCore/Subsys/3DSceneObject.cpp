@@ -36,20 +36,16 @@ C3DSceneObject::PASS_KIND   C3DSceneObject::m_currentPass = FULL_PASS;
 //////////////////////////////////////////////////////////////////////
 
 C3DSceneObject::C3DSceneObject()
+	:z_span(-FLT_MAX), z_order(-FLT_MAX)
 {
-    unsigned int i=0;
-
-	for (i=0;i<NB_PASSES;i++)
+	for (unsigned int i = 0; i<NB_PASSES; i++)
 	{
 		visibilityQuery[i] = 0;
 		passVisibility[i] = -1;
 	}
 
-	for (i=0;i<CLightAttributes::MAX_LIGHTS;i++)
+	for (unsigned int i=0;i<CLightAttributes::MAX_LIGHTS;i++)
          effectiveLights[i] = NULL;
- 
-    z_span = -FLT_MAX;
-	z_order = -FLT_MAX;
 }
 
 C3DSceneObject::~C3DSceneObject()
@@ -85,6 +81,8 @@ void C3DSceneObject::glRenderLights(const vector<CLight*> &lights)
         else
             break;
     }
+
+	CLightAttributes::setLightOrder(effectiveLights);
 }
 
 void C3DSceneObject::glRenderBBoxOcclusion(unsigned int passNumber)
@@ -218,12 +216,12 @@ void C3DSceneObject::selectLights(const vector<CLight*> &lights,const CGenericMa
     CGenericVector<float> c = center;
     c *= transform;
 
-    multiset<lightCompare,lightCompare>	sortedLights;
+    multiset<CLightObserver::lightCompare,CLightObserver::lightCompare>	sortedLights;
 
     vector<CLight*>::const_iterator itl = lights.begin();
     while (itl != lights.end())
     {
-        lightCompare lc;
+		CLightObserver::lightCompare lc;
         lc.light = (*itl++);
 
         // light position in eye space
@@ -232,7 +230,7 @@ void C3DSceneObject::selectLights(const vector<CLight*> &lights,const CGenericMa
         //  Compare square distances instead of square roots : faster
         float dmax = lc.light->getLightDMax();
         dmax *= dmax;
-        lc.d = dmax;
+		lc.intensity = lc.light->getLightAttenuation(c);
         
 		float dd;
 
@@ -275,8 +273,8 @@ void C3DSceneObject::selectLights(const vector<CLight*> &lights,const CGenericMa
     }
 
     unsigned int flight = 0;
-    multiset<lightCompare,lightCompare>::reverse_iterator	it = sortedLights.rbegin();
-	while (it != sortedLights.rend() && flight < CLightAttributes::MAX_LIGHTS)
+	multiset<CLightObserver::lightCompare, CLightObserver::lightCompare>::const_iterator it = sortedLights.begin();
+	while (it != sortedLights.end() && flight < CLightAttributes::MAX_LIGHTS)
         effectiveLights[flight++] = (*it++).light;
 
 	while (flight<CLightAttributes::MAX_LIGHTS)

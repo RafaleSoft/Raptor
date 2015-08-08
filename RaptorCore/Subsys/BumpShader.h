@@ -12,6 +12,8 @@
 
 RAPTOR_NAMESPACE_BEGIN
 
+class CBumpLightObserver;
+
 
 class CBumpShader : public CShader
 {
@@ -32,6 +34,8 @@ private:
 	static int diffuseMap;
 	static int normalMap;
 	static int eyePos;
+
+	static CBumpLightObserver*	m_pObserver;
 };
 
 RAPTOR_NAMESPACE_END

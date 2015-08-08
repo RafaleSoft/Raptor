@@ -1,4 +1,4 @@
-// EMBMGeometry.h: interface for the CBumppedGeometry class.
+// EMBMGeometry.h: interface for the CEMBMGeometry class.
 //
 //////////////////////////////////////////////////////////////////////
 #if !defined(AFX_EMBMGEOMETRY_H__0270535E_F6CF_4C2B_9F52_3BDB34627468__INCLUDED_)

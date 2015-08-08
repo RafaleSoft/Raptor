@@ -171,14 +171,14 @@ void CProjector::glActivate(bool activate)
 #endif
 }
 
-void CProjector::setProjectorPosition(const CGenericVector<float>& position) 
+void CProjector::setPosition(const CGenericVector<float>& position) 
 { 
 	m_position = position;
 
 	solve();
 }
 
-void CProjector::setProjectorDirection(const CGenericVector<float>& direction) 
+void CProjector::setDirection(const CGenericVector<float>& direction) 
 { 
 	m_direction = direction;
     m_direction.Normalize();

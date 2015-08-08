@@ -10,9 +10,6 @@
 #if !defined(AFX_GEOMETRYEDITOR_H__2D77E428_ED3D_416B_8DE9_DABFD45A38A7__INCLUDED_)
     #include "GeometryEditor.h"
 #endif
-#if !defined(AFX_3DENGINE_H__DB24F018_80B9_11D3_97C1_FC2841000000__INCLUDED_)
-	#include "Engine/3DEngine.h"
-#endif
 #if !defined(AFX_SHADER_H__4D405EC2_7151_465D_86B6_1CA99B906777__INCLUDED_)
 	#include "Shader.h"
 #endif
@@ -277,9 +274,10 @@ unsigned int CBumppedGeometry::glUpdateLightPosition(void)
     getCenter(center);
 	CGenericVector<float> x(center.x,center.y,center.z,1.0f);
     x *= T;
-    CLight *pMainLight = m_pObserver->getLight(x,0);
-	if (pMainLight == NULL)
+	vector<CLight*> lights = m_pObserver->sortLights(x);
+	if (lights.size() < 1)
 		return numLights;
+	CLight *pMainLight = lights[0];
 
 	V.x = -(T[0]*T[3] + T[4]*T[7] + T[8]*T[11]);
 	V.y = -(T[1]*T[3] + T[5]*T[7] + T[9]*T[11]);
@@ -298,9 +296,9 @@ unsigned int CBumppedGeometry::glUpdateLightPosition(void)
     A.h = 0.0f;
 	S = pMainLight->getSpecular();
 
-	CLight *pSecondLight = m_pObserver->getLight(x,1);
-	if(pSecondLight != NULL)
+	if (lights.size() > 1)
 	{
+		CLight *pSecondLight = lights[1];
 		numLights++;
 		X2 = T * pSecondLight->getLightEyePosition();
 
@@ -312,9 +310,9 @@ unsigned int CBumppedGeometry::glUpdateLightPosition(void)
 		S2 = pSecondLight->getSpecular();
 	}
 
-	CLight *pThirdLight = m_pObserver->getLight(x,2);
-	if(pThirdLight != NULL)
+	if (lights.size() > 2)
 	{
+		CLight *pThirdLight = lights[2];
 		numLights++;
 		X3 = T * pThirdLight->getLightEyePosition();
 
@@ -396,7 +394,7 @@ void CBumppedGeometry::glRender()
 			fs->glRender();
 			fs->glProgramParameter(0,S);
 			fs->glProgramParameter(1,S2);
-			fs->glProgramParameter(1,S3);
+			fs->glProgramParameter(2,S3);
 
 			vs = m_pBumpShader3Lights->glGetVertexShader();
 			vs->glRender();
