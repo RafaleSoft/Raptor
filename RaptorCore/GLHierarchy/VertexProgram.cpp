@@ -39,6 +39,16 @@ CVertexProgram::CVertexProgram(const std::string& name):
     glInitShaders();
 }
 
+CVertexProgram::CVertexProgram(const CVertexProgram& shader)
+	:CUnifiedProgram(shader)
+{
+}
+
+CVertexProgram* CVertexProgram::glClone(void)
+{
+	return new CVertexProgram(*this);
+}
+
 CVertexProgram::~CVertexProgram()
 {
 #if defined(GL_ARB_vertex_shader)

@@ -17,19 +17,25 @@ RAPTOR_NAMESPACE_BEGIN
 class CPhongShader : public CShader
 {
 public:
+	//!	Default constructor.
 	CPhongShader(void);
+
+	//! Destructor.
 	virtual ~CPhongShader(void);
+
+	//!	Clone current shader, assigning the new name newShaderName
+	virtual CShader* glClone(const std::string& newShaderName) const;
 
 	//!	Implements base glRender.
 	virtual void glRender(void);
-	virtual void glStop(void);
 
 	//! Initialize all shadings, must be called before use.
 	void glInit();
 
 
 private:
-	CShader	*m_p3LightsTextured;
+	//!	Copy constructor for cloning.
+	CPhongShader(const CPhongShader& shader);
 
 	static int diffuseMap;
 	static int lightEnable;

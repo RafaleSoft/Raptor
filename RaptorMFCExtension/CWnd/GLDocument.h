@@ -12,20 +12,16 @@
 
 RAPTOR_NAMESPACE_BEGIN
 
+class CGLView;
+
 /////////////////////////////////////////////////////////////////////////////
 // CGLDocument document
 class RAPTOR_API CGLDocument :	public CDocument,
 								public CRenderEntryPoint
 {
-//	Construction/Destruction
-protected:
-	CGLDocument(CString name = "GL_DOCUMENT"); // protected constructor used by dynamic creation
-	DECLARE_DYNCREATE(CGLDocument)
 public:
 	virtual ~CGLDocument();
 
-// Implementation
-public:
 	//!	This method notifies all GLViews attached to this document
 	//!	that a rendering is required. This method is not usually called
 	//!	directly, indeed it is preferable to call glPostRedisplay() from
@@ -45,10 +41,22 @@ public:
 	//!	Shouldn't be called directly
 	virtual void GLDisplayFunc(int viewID);
 
-	//!	Returns the number of GLViews that will render this
-	//!	GLDocument
+
+	//! Attach a view to this document
+	//! @return : the view id of the new attachment
+	int attachView(const CGLView* view);
+
+	//!	Returns the number of GLViews that will render this GLDocument
 	int GetNbViews(void) const { return m_nbAttachedViews; };
 
+	//! Returns initialisation state
+	bool isInitialised(void) const { return m_initialised; };
+
+	//! Initialise the document, issuing at least a call to GLInitcontext if necessary.
+	//! This method shall be prefered to a direct call to GLInitContext since additional
+	//! data may need to be initialised in the future.
+	//! @return : false if already initialised.
+	bool glInitialize(void);
 
 	// Overrides
 	// ClassWizard generated virtual function overrides
@@ -68,12 +76,12 @@ protected:
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 
+	//	Construction/Destruction
+	CGLDocument(CString name = "GL_DOCUMENT"); // protected constructor used by dynamic creation
+	DECLARE_DYNCREATE(CGLDocument)
 
 private:
-	friend class CGLView;
-
 	bool		m_initialised;
-
 	int			m_nbAttachedViews;
 };
 

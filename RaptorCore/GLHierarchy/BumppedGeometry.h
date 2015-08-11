@@ -43,13 +43,17 @@ public:
 	virtual CShader	* const getShader(void) const { return m_pBumpShader; }
 
 	//!	Sets the texture map that will be used as the diffuse component of the bumpping.
-	void setDiffuseMap(CTextureObject* diffuse);
+	void setDiffuseMap(CTextureObject* diffuse)
+	{ diffuseMap = diffuse; }
 
     //! Same as above with normal
-	void setNormalMap(CTextureObject* normal);
+	void setNormalMap(CTextureObject* normal)
+	{ normalMap = normal; }
 
      //!	Sets the texture map that will be used as the environment component of the bumpping.
-    void setEnvironmentMap(CTextureObject* environment);
+    void setEnvironmentMap(CTextureObject* environment)
+	{ envMap = environment; }
+
 
 	//!	A copy operator.
 	//!	The specific bump data is copied, the geometry
@@ -65,10 +69,6 @@ public:
 
 
 protected:
-	//!	Builds the correct Vertex Shader.
-	//!	This method must derived for specific vertex shader construction
-	virtual void glBuildShader(void);
-
 	//!	Recomputes the bump colors ( dynamic normals ), according light position
 	//!	Returns the number of lights that are relevant in the current context.
 	virtual unsigned int glUpdateLightPosition(void);
@@ -76,6 +76,40 @@ protected:
     //! Specific constructor for derived classes
     CBumppedGeometry(	const std::string& name, 
 						const CPersistence::CPersistenceClassID &classID);
+
+	//!	Texture setups
+	CReference<CTextureObject>	diffuseMap;
+	CReference<CTextureObject>	normalMap;
+	CReference<CTextureObject>	envMap;
+
+	//! Shaders for various light configurations.
+	CShader*			m_pBumpShader;
+	//! Shaders for various light configurations.
+	static CShader*		m_pBumpShader2Lights;
+	static CShader*		m_pBumpShaderAmbient;
+	static CShader*		m_pBumpShader3Lights;
+
+	//	Coordinates for shader T&L:
+	//	- X is the light position relative to the object.
+	//	it is deduced from light's absolute position and the current transform.
+	//	- V is the viewer position relative to the object :
+	//	if the current transform is the matrix composed with
+	//	rotation R and translation T, V = -t(R).T ( t(R) denotes transpose of R
+	// - A is the light attenuation factors
+	// - S is the light's specular
+	GL_COORD_VERTEX	V;
+
+	CGenericVector<float>	X;
+	GL_COORD_VERTEX A;
+	CColor::RGBA	S;
+
+	CGenericVector<float>	X2;
+	GL_COORD_VERTEX A2;
+	CColor::RGBA	S2;
+
+	CGenericVector<float>	X3;
+	GL_COORD_VERTEX A3;
+	CColor::RGBA	S3;
 
 
 private:
@@ -85,64 +119,8 @@ private:
 	//!	Initialize shaders and observers
 	void init(void);
 
-	//!	Allocate space for dynamic normals, 
-	//! according to rendering model
-	void allocBumpColors();
-
-	//!	Configure internal shader texture unit setup
-	virtual void glSetTextureUnits(void);
-
-#ifdef RAPTOR_SSE_CODE_GENERATION
-	void setLightPositionDOT3SSE(void);
-#endif
-	void setLightPositionDOT3(void);
-
-	void glRenderDOT3();
-    void glRenderEMBM();
-
     //!	A light observer to be notified from lightupdates.
 	static CBumpLightObserver	*m_pObserver;
-
-    //	Coordinates for shader T&L:
-	//	- X is the light position relative to the object.
-	//	it is deduced from light's absolute position and the current transform.
-	//	- V is the viewer position relative to the object :
-	//	if the current transform is the matrix composed with
-	//	rotation R and translation T, V = -t(R).T ( t(R) denotes transpose of R
-    // - A is the light attenuation factors
-	// - S is the light's specular
-	GL_COORD_VERTEX	V;
-
-	CGenericVector<float>	X;
-    GL_COORD_VERTEX A;
-	CColor::RGBA	S;
-
-    CGenericVector<float>	X2;
-    GL_COORD_VERTEX A2;
-	CColor::RGBA	S2;
-
-	CGenericVector<float>	X3;
-    GL_COORD_VERTEX A3;
-	CColor::RGBA	S3;
-
-
-	//!	Texture setups
-	CReference<CTextureObject>	diffuseMap;
-	CReference<CTextureObject>	normalMap;
-    CReference<CTextureObject>	envMap;
-
-	//!	Diffuse Light vector coordinates
-	unsigned char		*bumpDiffusePx;
-
-	//!	Specular Light vector coordinates
-	unsigned char		*bumpSpecularPx;
-
-    //! Shaders for various light configurations.
-    CShader*			m_pBumpShader;
-	static CShader*		m_pBumpShader2Lights;
-    static CShader*		m_pBumpShaderAmbient;
-	static CShader*		m_pBumpShader3Lights;
-
 };
 
 RAPTOR_NAMESPACE_END

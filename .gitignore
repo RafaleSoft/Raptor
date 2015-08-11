@@ -24,7 +24,6 @@ SIMD/simd.lib
 [Dd]ebugPublic/
 [Rr]elease/
 x64/
-build/
 bld/
 # Thrid-party COTS are in bin, so do not remove them
 #[Bb]in/

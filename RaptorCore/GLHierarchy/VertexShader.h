@@ -44,11 +44,14 @@ public:
 	} GL_VERTEX_SHADER_CAPS;
 
 public:
+	//! Default constructor.
 	CVertexShader(const std::string& name="VERTEX_SHADER");
+
+	//!	Destructor.
 	virtual ~CVertexShader();
 
-    //! Returns true is this->class ID is a subclass of id
-    //virtual bool isSubClassOf(PERSISTENCE_CLASS_ID id) const;
+	//!	Clone this shader.
+	virtual CVertexShader* glClone();
 
     //! Implements base class status
     virtual bool isValid(void) const { return m_bValid; };
@@ -132,6 +135,12 @@ public:
 
 
 private:
+	//!	Forbidden operators
+	CVertexShader& operator=(const CVertexShader&);
+
+	//! Copy constructor.
+	CVertexShader(const CVertexShader& shader);
+
     //! Specific init of shader parameters
     virtual void	glInitShaders();
 

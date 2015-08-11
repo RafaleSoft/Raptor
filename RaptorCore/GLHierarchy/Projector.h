@@ -42,10 +42,10 @@ public:
     virtual void glActivate(bool activate);
 
     //! Defines the projector's position
-    void setProjectorPosition(const CGenericVector<float>& position);
+    void setPosition(const CGenericVector<float>& position);
 
     //! Defines the projector's direction
-    void setProjectorDirection(const CGenericVector<float>& direction);
+    void setDirection(const CGenericVector<float>& direction);
 
 	//! Configures the projection with both position & direction
 	void setProjector(	const CGenericVector<float>& position,

@@ -7,15 +7,12 @@
 #if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
 	#include "System/Raptor.h"
 #endif
-
 #ifndef __GLOBAL_H__
 	#include "System/Global.h"
 #endif
-
 #if !defined(AFX_FRAGMENTSHADER_H__66B3089A_2919_4678_9273_6CDEF7E5787F__INCLUDED_)
 	#include "FragmentShader.h"
 #endif
-
 #if !defined(AFX_RAPTOREXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
 	#include "System/RaptorExtensions.h"
 #endif
@@ -40,6 +37,17 @@ CFragmentShader::CFragmentShader(const std::string& name)
 	m_handle.hClass = CFragmentShader::CFragmentShaderClassID::GetClassId().ID();
 
     glInitShaders();
+}
+
+CFragmentShader::CFragmentShader(const CFragmentShader& shader)
+	:CShaderProgram(shader)
+{
+	m_bValid = shader.m_bValid;
+}
+
+CFragmentShader* CFragmentShader::glClone()
+{
+	return new CFragmentShader(*this);
 }
 
 CFragmentShader::~CFragmentShader()

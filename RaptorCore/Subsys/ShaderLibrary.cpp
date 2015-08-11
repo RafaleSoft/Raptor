@@ -50,8 +50,10 @@ RAPTOR_NAMESPACE_BEGIN
 static bool				s_initialized = false;
 static MapStringToPtr	s_factoryShaders;
 static const int		NB_MANDATORY_SHADERS = 16;
+static const std::string s_nullShaderName = "NULL_SHADER";
 
 CShaderLibrary *CShaderLibrary::m_pInstance = NULL;
+CShader *CShaderLibrary::m_pNullShader = NULL;
 
 RAPTOR_NAMESPACE_END
 
@@ -205,6 +207,8 @@ bool CShaderLibrary::glInitFactory(void)
 		CAOComputeShader *pAOComputeShader = new CAOComputeShader();
 		pAOComputeShader->glInit();
 	}
+
+	m_pNullShader = new CShader(s_nullShaderName);
 
 	return s_initialized;
 }

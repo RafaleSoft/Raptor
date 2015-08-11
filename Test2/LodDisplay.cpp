@@ -68,11 +68,11 @@ public:
 		m_pLayer->drawText(5,70,"LOD info",font,0xC0FFFF00);
 
 		stringstream face_str;
-		face_str << "Faces: " << nbFaces << ends;
+		face_str << "Faces: " << nbFaces;
 		m_pLayer->drawText(5,40,face_str.str(),font,0xC0FFFF00);
 		stringstream vrtx_str;
-		vrtx_str << "Vertex: " << nbVertex << ends;
-		m_pLayer->drawText(5,10,vrtx_str.str(),font,0xC0FFFF00);
+		vrtx_str << "Vertex: " << nbVertex;
+		m_pLayer->drawText(5, 10, vrtx_str.str(), font, 0xC0FFFF00);
 
 		m_pLayer->glRender();
 	};

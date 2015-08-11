@@ -61,7 +61,7 @@ BOOL CTest2App::InitInstance()
 
 	//	initialize Raptor classes and settings
     CRaptorConfig config;
-    config.m_bRelocation = false;
+    config.m_bRelocation = true;
     config.m_uiPolygons = 400000;
     config.m_uiVertices = 1000000;
 	config.m_uiTexels = 262144;

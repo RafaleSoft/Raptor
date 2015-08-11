@@ -27,6 +27,9 @@
 #if !defined(AFX_3DENGINEMATRIX_H__6CD1110E_1174_4f38_A452_30FB312022D0__INCLUDED_)
 	#include "Engine/3DEngineMatrix.h"
 #endif
+#if !defined(AFX_BUMPLIGHTOBSERVER_H__238FC166_A3BC_4D77_8FD4_0A42DB45280F__INCLUDED_)
+	#include "Subsys/BumpLightObserver.h"
+#endif
 
 
 RAPTOR_NAMESPACE
@@ -36,13 +39,27 @@ int CBumpShader::diffuseMap = -1;
 int CBumpShader::normalMap = -1;
 int CBumpShader::eyePos = -1;
 
+CBumpLightObserver *CBumpShader::m_pObserver = NULL;
+
+
 CBumpShader::CBumpShader(void)
 	:CShader("BUMP_SHADER")
 {
+	if (m_pObserver == NULL)
+		m_pObserver = new CBumpLightObserver();
+	else
+		m_pObserver->addReference();
 }
 
 CBumpShader::~CBumpShader(void)
 {
+	if (NULL != m_pObserver)
+	{
+		bool lastObject = (m_pObserver->getRefCount() == 1);
+		m_pObserver->releaseReference();
+		if (lastObject)
+			m_pObserver = NULL;
+	}
 }
 
 void CBumpShader::glInit(void)
@@ -66,42 +83,41 @@ void CBumpShader::glStop(void)
 
 void CBumpShader::glRender(void)
 {
+	CShader::glRender();
+
 #if defined(GL_ARB_shader_objects)
 	const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
-
-	bool *pGLLights = CLightAttributes::getActiveGLLights();
-	int bLights[CLightAttributes::MAX_LIGHTS] = {0,0,0,0,0,0,0,0};
-
-	for (unsigned int i=0;i<CLightAttributes::MAX_LIGHTS;i++)
-		bLights[i] = (pGLLights[i] ? 1 : 0);
-
-	CShader::glRender();
 	GLhandleARB program = pExtensions->glGetHandleARB(GL_PROGRAM_OBJECT_ARB);
 
-	if (lightEnable < 0)
-		lightEnable = pExtensions->glGetUniformLocationARB(program,"lightEnable");
-	pExtensions->glUniform1ivARB(lightEnable,CLightAttributes::MAX_LIGHTS,bLights);
+	if ((lightEnable < 0) || (diffuseMap < 0) || (normalMap < 0) || (eyePos < 0))
+	{
+		lightEnable = pExtensions->glGetUniformLocationARB(program, "lightEnable");
+		diffuseMap = pExtensions->glGetUniformLocationARB(program, "diffuseMap");
+		normalMap = pExtensions->glGetUniformLocationARB(program, "normalMap");
+		eyePos = pExtensions->glGetUniformLocationARB(program, "eyePos");
+	}
 
-	if (diffuseMap < 0)
-		diffuseMap = pExtensions->glGetUniformLocationARB(program,"diffuseMap");
-	pExtensions->glUniform1iARB(diffuseMap,CTextureUnitSetup::IMAGE_UNIT_0);
+	int *bLights = CLightAttributes::getLightOrder();
+	if ((lightEnable >= 0) && (NULL != bLights))
+		pExtensions->glUniform1ivARB(lightEnable,CLightAttributes::MAX_LIGHTS,bLights);
+		
+	if (diffuseMap >= 0)
+		pExtensions->glUniform1iARB(diffuseMap,CTextureUnitSetup::IMAGE_UNIT_0);
+		
+	if (normalMap >= 0)
+		pExtensions->glUniform1iARB(normalMap,CTextureUnitSetup::IMAGE_UNIT_1);
 
-	if (normalMap < 0)
-		normalMap = pExtensions->glGetUniformLocationARB(program,"normalMap");
-	pExtensions->glUniform1iARB(normalMap,CTextureUnitSetup::IMAGE_UNIT_1);
+	if (eyePos >= 0)
+	{
+		C3DEngineMatrix T;
+		glGetTransposeFloatv(GL_MODELVIEW_MATRIX, T);
+		GL_COORD_VERTEX V;
+		V.x = -(T[0] * T[3] + T[4] * T[7] + T[8] * T[11]);
+		V.y = -(T[1] * T[3] + T[5] * T[7] + T[9] * T[11]);
+		V.z = -(T[2] * T[3] + T[6] * T[7] + T[10] * T[11]);
+		V.h = 1.0f;
 
-	C3DEngineMatrix T;
-	glGetTransposeFloatv(GL_MODELVIEW_MATRIX,T);
-	GL_COORD_VERTEX V;
-	V.x = -(T[0]*T[3] + T[4]*T[7] + T[8]*T[11]);
-	V.y = -(T[1]*T[3] + T[5]*T[7] + T[9]*T[11]);
-	V.z = -(T[2]*T[3] + T[6]*T[7] + T[10]*T[11]);
-	V.h = 1.0f;
-
-	if (eyePos < 0)
-		eyePos = pExtensions->glGetUniformLocationARB(program,"eyePos");
-	pExtensions->glUniform4fvARB(eyePos,1,V);
-#else
-	CShader::glRender();
+		pExtensions->glUniform4fvARB(eyePos, 1, V);
+	}
 #endif
 }

@@ -23,6 +23,17 @@
 #include "ToolBox/BasicObjects.h"
 #include "ToolBox/Imaging.h"
 
+
+#if !defined(AFX_VERTEXPROGRAM_H__204F7213_B40B_4B6A_9BCA_828409871B68__INCLUDED_)
+	#include "GLHierarchy/VertexProgram.h"
+#endif
+#if !defined(AFX_FRAGMENTPROGRAM_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
+	#include "GLHierarchy/FragmentProgram.h"
+#endif
+#if !defined(AFX_RAPTOREXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
+	#include "System/RaptorExtensions.h"
+#endif
+
 RAPTOR_NAMESPACE
 
 
@@ -34,16 +45,6 @@ public:
 
 private:
 };
-
-#if !defined(AFX_VERTEXPROGRAM_H__204F7213_B40B_4B6A_9BCA_828409871B68__INCLUDED_)
-    #include "GLHierarchy/VertexProgram.h"
-#endif
-#if !defined(AFX_FRAGMENTPROGRAM_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
-    #include "GLHierarchy/FragmentProgram.h"
-#endif
-#if !defined(AFX_RAPTOREXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
-	#include "System/RaptorExtensions.h"
-#endif
 
 MySphere::MySphere()
 {

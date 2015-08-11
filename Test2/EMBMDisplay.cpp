@@ -13,7 +13,7 @@
 #include "GLHierarchy\TextureUnitSetup.h"
 #include "GLHierarchy\TextureObject.h"
 #include "GLHierarchy\SimpleObject.h"
-#include "GLHierarchy\BumppedGeometry.h"
+#include "GLHierarchy\EMBMGeometry.h"
 #include "Engine\3DScene.h"
 #include "System\RaptorDisplay.h"
 #include "EMBMDisplay.h"
@@ -109,13 +109,12 @@ void CEMBMDisplay::Init()
 	tf->LoadTexture(reflect,"Datas\\cube_ny.jpg",CGL_USER_MIPMAPPED|CGL_RGBA|CGL_CUBEMAP_NY);
 	tf->LoadTexture(reflect,"Datas\\cube_nz.jpg",CGL_USER_MIPMAPPED|CGL_RGBA|CGL_CUBEMAP_NZ);
 */
-	embm = new CBumppedGeometry();
+	embm = new CEMBMGeometry();
     *embm = *teapot;
 
     CGeometry::CRenderingModel l_model(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
     l_model.addModel(CGeometry::CRenderingModel::CGL_NORMALS);
     l_model.addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
-    l_model.addModel(CGeometry::CRenderingModel::CGL_SHADER_EMBM);
 
 	//embm->SetEnvironmentMap(reflect);
     embm->getShader()->setColor(0.2f,0.2f,0.2f,1.0f);

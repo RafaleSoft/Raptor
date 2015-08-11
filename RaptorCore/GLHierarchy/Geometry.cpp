@@ -64,10 +64,8 @@ const CPersistence::CPersistenceClassID& CGeometry::CGeometryClassID::GetClassId
 //////////////////////////////////////////////////////////////////////
 void CGeometry::CRenderingModel::addModel(MODEL model)
 {
-	unsigned int m = m_renderingModel | model;
-	m = (m & CGL_FULLRENDER) | ( m & 0x0F00);
-	if ((m > 0) & (m < CGL_LAST_MODEL))
-		m_renderingModel = m;
+	unsigned int m = ((m_renderingModel | model) & CGL_FULLRENDER);
+	m_renderingModel = m;
 }
 
 void CGeometry::CRenderingModel::removeModel(MODEL model)
@@ -77,15 +75,15 @@ void CGeometry::CRenderingModel::removeModel(MODEL model)
 
 CGeometry::CRenderingModel::CRenderingModel(unsigned int model)
 {
-	m_renderingModel = (model & CGL_FULLRENDER) | ( model & 0x0F00);
-	if ((m_renderingModel == 0) || (m_renderingModel >= CGL_LAST_MODEL))
+	m_renderingModel = (model & CGL_FULLRENDER);
+	if ((m_renderingModel == 0) || (m_renderingModel > CGL_FULLRENDER))
 		m_renderingModel = CGL_FRONT_GEOMETRY;
 }
 
 const CGeometry::CRenderingModel& CGeometry::CRenderingModel::operator=(const CGeometry::CRenderingModel& model)
 {
-	m_renderingModel = (model.m_renderingModel & CGL_FULLRENDER) | ( model.m_renderingModel & 0x0F00);
-	if ((m_renderingModel == 0) || (m_renderingModel >= CGL_LAST_MODEL))
+	m_renderingModel = (model.m_renderingModel & CGL_FULLRENDER);
+	if ((m_renderingModel == 0) || (m_renderingModel > CGL_FULLRENDER))
 		m_renderingModel = CGL_FRONT_GEOMETRY;
 	return *this;
 }

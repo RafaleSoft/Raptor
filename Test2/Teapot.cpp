@@ -188,17 +188,8 @@ void CTeapot::GLInitContext()
 
     CGeometry::CRenderingModel l_model(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
     l_model.addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
-	if (Raptor::glIsExtensionSupported("GL_ARB_vertex_program"))
-    {
-        l_model.addModel(CGeometry::CRenderingModel::CGL_SHADER_BUMP);
-		teapot->setRenderingModel(l_model);
-    }
-	else if (Raptor::glIsExtensionSupported("GL_ARB_texture_env_dot3"))
-    {
-        l_model.addModel(CGeometry::CRenderingModel::CGL_DOT3_BUMP);
-		teapot->setRenderingModel(l_model);
-    }
-	else
+	teapot->setRenderingModel(l_model);
+	if (!Raptor::glIsExtensionSupported("GL_ARB_vertex_program"))
 		Raptor::GetMessages()->displayMessage("Hardware unable to render bump mapping");
 
 	C3DEngine::Get3DEngine()->setCameraBBox(-1.0,-1.0,-1.0,1.0,1.0,1.0);

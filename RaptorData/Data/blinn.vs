@@ -4,8 +4,8 @@ const int MAX_LIGHTS = 3;
 uniform int lightEnable[gl_MaxLights];
 
 varying vec3 normal;
-varying	vec4 lightDirs[3];
-varying	vec3 halfVector[3];
+varying	vec4 lightDirs[MAX_LIGHTS];
+varying	vec3 halfVector[MAX_LIGHTS];
 
 void main (void)
 {
@@ -15,9 +15,10 @@ void main (void)
 	/*	This is true only for directional lights	*/
 	/*halfVector = gl_LightSource[0].halfVector.xyz;*/
 
-	for (int numl=0 ; numl<MAX_LIGHTS ; numl++)
+	for (int i=0 ; i<MAX_LIGHTS ; i++)
 	{
-		if (lightEnable[numl] > 0)
+		int numl = lightEnable[i];
+		if (numl >= 0)
 		{
 			vec3 ldir = vec3(gl_LightSource[numl].position) - ecPos;
 			lightDirs[numl].xyz = ldir;
