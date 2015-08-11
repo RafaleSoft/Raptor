@@ -127,13 +127,17 @@ CShaderProgram::CShaderProgram(const CPersistence::CPersistenceClassID& id,const
 {
 }
 
-CShaderProgram::CShaderProgram(const CShaderProgram&)
-    :CPersistence(shaderId,"")
+CShaderProgram::CShaderProgram(const CShaderProgram& shader)
+    :CPersistence(shaderId,shader.getName())
 {
+	m_handle = shader.m_handle;
+	m_bApplyParameters = shader.m_bApplyParameters;
+	m_parameters = shader.m_parameters;
 }
 
 CShaderProgram::~CShaderProgram()
 {
+	// TODO : Recycle handle
 }
 
 

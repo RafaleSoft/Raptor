@@ -41,6 +41,17 @@ CFragmentProgram::CFragmentProgram(const std::string& name):
     glInitShaders();
 }
 
+
+CFragmentProgram::CFragmentProgram(const CFragmentProgram& shader)
+	:CUnifiedProgram(shader)
+{
+}
+
+CFragmentProgram* CFragmentProgram::glClone()
+{
+	return new CFragmentProgram(*this);
+}
+
 CFragmentProgram::~CFragmentProgram()
 {
 #if defined(GL_ARB_fragment_shader)

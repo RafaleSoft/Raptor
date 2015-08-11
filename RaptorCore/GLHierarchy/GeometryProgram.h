@@ -41,8 +41,14 @@ public:
 
 
 public:
+	//!	Default constructor.
 	CGeometryProgram(const std::string& name="GEOMETRY_PROGRAM");
+
+	//! Destructor.
 	virtual ~CGeometryProgram();
+
+	//!	Clone this shader.
+	virtual CGeometryProgram* glClone();
 
     //! The real rendering cannot be performed here, as it relies on
     //! CShader program object invocation. Nevertheless, this method is
@@ -76,6 +82,12 @@ public:
 	DECLARE_CLASS_ID(CGeometryProgramClassID,"GeometryProgram",CShaderProgram)
 
 private:
+	//!	Forbidden operators
+	CGeometryProgram& operator=(const CGeometryProgram&);
+
+	//! Copy constructor.
+	CGeometryProgram(const CGeometryProgram& shader);
+
     //! Specific init of shader parameters
     virtual void	glInitShaders();
 };

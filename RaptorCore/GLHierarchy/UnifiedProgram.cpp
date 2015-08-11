@@ -35,6 +35,17 @@ CUnifiedProgram::CUnifiedProgram(const CPersistence::CPersistenceClassID &classI
     m_bValid = false;
 }
 
+
+CUnifiedProgram::CUnifiedProgram(const CUnifiedProgram& shader)
+	:CShaderProgram(shader)
+{
+	m_iMaxLocation = shader.m_iMaxLocation;
+	m_bReLinked = shader.m_bReLinked;
+	m_bValid = shader.m_bValid;
+	m_locations = shader.m_locations;
+}
+
+
 CUnifiedProgram::~CUnifiedProgram()
 {
 

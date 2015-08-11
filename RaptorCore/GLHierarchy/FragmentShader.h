@@ -52,8 +52,14 @@ public:
 
 
 public:
+	//!	Default Constructor.
 	CFragmentShader(const std::string& name="FRAGMENT_SHADER");
+
+	//!	Destructor.
 	virtual ~CFragmentShader();
+
+	//!	Clone this shader.
+	virtual CFragmentShader* glClone();
 
     //! Implements base class status
     virtual bool isValid(void) const { return m_bValid; };
@@ -90,6 +96,12 @@ public:
 
 
 private:
+	//!	Forbidden operators
+	CFragmentShader& operator=(const CFragmentShader&);
+
+	//! Copy constructor.
+	CFragmentShader(const CFragmentShader& shader);
+
     //! Specific init of shader parameters
     virtual void	glInitShaders();
 

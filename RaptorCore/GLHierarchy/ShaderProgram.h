@@ -180,7 +180,11 @@ public:
 
 
 protected:
+	//!	Base Constructor.
 	CShaderProgram(const CPersistence::CPersistenceClassID& id,const std::string& name="SHADER_PROGRAM");
+
+	//!	Copy constructor.
+	CShaderProgram(const CShaderProgram&);
 	
     //! Sub classes must call this method to initialise shader attributes.
     virtual void	glInitShaders();
@@ -200,7 +204,6 @@ protected:
 private:
     //! Denied operators
 	CShaderProgram();
-    CShaderProgram(const CShaderProgram&);
     CShaderProgram& operator=(const CShaderProgram& ) { return *this;};
 };
 

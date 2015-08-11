@@ -7,15 +7,12 @@
 #if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
 	#include "System/Raptor.h"
 #endif
-
 #if !defined(AFX_VERTEXSHADER_H__F2D3BBC6_87A1_4695_B667_2B8C3C4CF022__INCLUDED_)
 	#include "VertexShader.h"
 #endif
-
 #ifndef __GLOBAL_H__
 	#include "System/Global.h"
 #endif
-
 #if !defined(AFX_RAPTOREXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
 	#include "System/RaptorExtensions.h"
 #endif
@@ -40,6 +37,17 @@ CVertexShader::CVertexShader(const std::string& name)
 	m_handle.hClass = CVertexShader::CVertexShaderClassID::GetClassId().ID();
 
     glInitShaders();
+}
+
+CVertexShader::CVertexShader(const CVertexShader& shader)
+	:CShaderProgram(shader)
+{
+	m_bValid = shader.m_bValid;
+}
+
+CVertexShader* CVertexShader::glClone()
+{
+	return new CVertexShader(*this);
 }
 
 CVertexShader::~CVertexShader()
@@ -447,59 +455,64 @@ bool CVertexShader::glGetProgramStatus(void)
 	else
 		return false;
 
-	GL_VERTEX_SHADER_CAPS caps;
-	if (glGetProgramCaps(caps))
+	int value = 0;
+	pExtensions->glGetProgramivARB(GL_VERTEX_PROGRAM_ARB, GL_PROGRAM_UNDER_NATIVE_LIMITS_ARB, &value);
+	if (value < 1)
 	{
-		int value = 0;
-		pExtensions->glGetProgramivARB(GL_VERTEX_PROGRAM_ARB,GL_PROGRAM_INSTRUCTIONS_ARB,&value);
-		if (value > caps.max_instructions)
-			return false;
+		GL_VERTEX_SHADER_CAPS caps;
+		if (glGetProgramCaps(caps))
+		{
+			pExtensions->glGetProgramivARB(GL_VERTEX_PROGRAM_ARB, GL_PROGRAM_INSTRUCTIONS_ARB, &value);
+			if (value > caps.max_instructions)
+				return false;
 
-		pExtensions->glGetProgramivARB(GL_VERTEX_PROGRAM_ARB,GL_PROGRAM_NATIVE_INSTRUCTIONS_ARB,&value);
-		if (value > caps.max_native_instructions)
-			return false;
+			pExtensions->glGetProgramivARB(GL_VERTEX_PROGRAM_ARB, GL_PROGRAM_NATIVE_INSTRUCTIONS_ARB, &value);
+			if (value > caps.max_native_instructions)
+				return false;
 
-		pExtensions->glGetProgramivARB(GL_VERTEX_PROGRAM_ARB,GL_PROGRAM_TEMPORARIES_ARB,&value);
-		if (value > caps.max_temporaries)
-			return false;
+			pExtensions->glGetProgramivARB(GL_VERTEX_PROGRAM_ARB, GL_PROGRAM_TEMPORARIES_ARB, &value);
+			if (value > caps.max_temporaries)
+				return false;
 
-		pExtensions->glGetProgramivARB(GL_VERTEX_PROGRAM_ARB,GL_PROGRAM_NATIVE_TEMPORARIES_ARB,&value);
-		if (value > caps.max_native_temporaries)
-			return false;
+			pExtensions->glGetProgramivARB(GL_VERTEX_PROGRAM_ARB, GL_PROGRAM_NATIVE_TEMPORARIES_ARB, &value);
+			if (value > caps.max_native_temporaries)
+				return false;
 
-		pExtensions->glGetProgramivARB(GL_VERTEX_PROGRAM_ARB,GL_PROGRAM_PARAMETERS_ARB,&value);
-		if (value > caps.max_parameters)
-			return false;
+			pExtensions->glGetProgramivARB(GL_VERTEX_PROGRAM_ARB, GL_PROGRAM_PARAMETERS_ARB, &value);
+			if (value > caps.max_parameters)
+				return false;
 
-		pExtensions->glGetProgramivARB(GL_VERTEX_PROGRAM_ARB,GL_PROGRAM_NATIVE_PARAMETERS_ARB,&value);
-		if (value > caps.max_native_parameters)
-			return false;
+			pExtensions->glGetProgramivARB(GL_VERTEX_PROGRAM_ARB, GL_PROGRAM_NATIVE_PARAMETERS_ARB, &value);
+			if (value > caps.max_native_parameters)
+				return false;
 
-		pExtensions->glGetProgramivARB(GL_VERTEX_PROGRAM_ARB,GL_PROGRAM_ATTRIBS_ARB,&value);
-		if (value > caps.max_attribs)
-			return false;
+			pExtensions->glGetProgramivARB(GL_VERTEX_PROGRAM_ARB, GL_PROGRAM_ATTRIBS_ARB, &value);
+			if (value > caps.max_attribs)
+				return false;
 
-		pExtensions->glGetProgramivARB(GL_VERTEX_PROGRAM_ARB,GL_PROGRAM_NATIVE_ATTRIBS_ARB,&value);
-		if (value > caps.max_native_attribs)
-			return false;
+			pExtensions->glGetProgramivARB(GL_VERTEX_PROGRAM_ARB, GL_PROGRAM_NATIVE_ATTRIBS_ARB, &value);
+			if (value > caps.max_native_attribs)
+				return false;
 
-		pExtensions->glGetProgramivARB(GL_VERTEX_PROGRAM_ARB,GL_PROGRAM_ADDRESS_REGISTERS_ARB,&value);
-		if (value > caps.max_address_registers)
-			return false;
+			pExtensions->glGetProgramivARB(GL_VERTEX_PROGRAM_ARB, GL_PROGRAM_ADDRESS_REGISTERS_ARB, &value);
+			if (value > caps.max_address_registers)
+				return false;
 
-		pExtensions->glGetProgramivARB(GL_VERTEX_PROGRAM_ARB,GL_PROGRAM_NATIVE_ADDRESS_REGISTERS_ARB,&value);
-		if (value > caps.max_native_address_registers)
-			return false;
+			pExtensions->glGetProgramivARB(GL_VERTEX_PROGRAM_ARB, GL_PROGRAM_NATIVE_ADDRESS_REGISTERS_ARB, &value);
+			if (value > caps.max_native_address_registers)
+				return false;
 
-		pExtensions->glGetProgramivARB(GL_VERTEX_PROGRAM_ARB,GL_PROGRAM_UNDER_NATIVE_LIMITS_ARB,&value);
-		if (value < 1)
+			pExtensions->glGetProgramivARB(GL_VERTEX_PROGRAM_ARB, GL_PROGRAM_UNDER_NATIVE_LIMITS_ARB, &value);
+			if (value < 1)
+				return false;
+			return true;
+		}
+		else
 			return false;
-
-		return true;
 	}
 	else
 #endif
-		return false;
+		return true;
 }
 
 bool CVertexShader::glGetProgramCaps(GL_VERTEX_SHADER_CAPS& caps)

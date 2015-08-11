@@ -30,8 +30,18 @@ CPhongShader::CPhongShader(void)
 {
 }
 
+CPhongShader::CPhongShader(const CPhongShader& shader)
+	: CShader(shader)
+{
+}
+
 CPhongShader::~CPhongShader(void)
 {
+}
+
+CShader* CPhongShader::glClone(const std::string& newShaderName) const
+{
+	return new CPhongShader(*this);
 }
 
 void CPhongShader::glInit(void)

@@ -31,6 +31,16 @@ CBlinnShader::CBlinnShader(void)
 {
 }
 
+CBlinnShader::CBlinnShader(const CBlinnShader& shader)
+	: CShader(shader)
+{
+}
+
+CShader* CBlinnShader::glClone(const std::string& newShaderName) const
+{
+	return new CBlinnShader(*this);
+}
+
 CBlinnShader::~CBlinnShader(void)
 {
 }

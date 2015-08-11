@@ -30,13 +30,23 @@ const CPersistence::CPersistenceClassID& CGeometryProgram::CGeometryProgramClass
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CGeometryProgram::CGeometryProgram(const std::string& name):
-    CUnifiedProgram(geometryId,name)
+CGeometryProgram::CGeometryProgram(const std::string& name)
+	:CUnifiedProgram(geometryId,name)
 {
     m_handle.handle = 0;	// default openGL vertex processing pipeline
 	m_handle.hClass = CGeometryProgram::CGeometryProgramClassID::GetClassId().ID();
 
     glInitShaders();
+}
+
+CGeometryProgram::CGeometryProgram(const CGeometryProgram& shader)
+	:CUnifiedProgram(shader)
+{
+}
+
+CGeometryProgram* CGeometryProgram::glClone()
+{
+	return new CGeometryProgram(*this);
 }
 
 CGeometryProgram::~CGeometryProgram()

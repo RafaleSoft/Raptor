@@ -53,7 +53,6 @@
 	- projection: texture clamping, border fading ...
 	- le volume size ne devrait-il pas etre fonction de dmax ?
 	c'est le volume de l'objet lumière ! eventuellement, attacher un CObject3D
-	- statiques de light attributes (s_activeLights) => dans LightObserver ?
 	
 - COctree :
 	- la subdivision symétrique xyz ne balance pas bien l'arbre:

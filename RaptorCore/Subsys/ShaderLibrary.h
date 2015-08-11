@@ -18,7 +18,7 @@ RAPTOR_NAMESPACE_BEGIN
 
 class CVertexProgram;
 class CFragmentProgram;
-
+class CShader;
 
 //!
 //!	This class provides a library or shader sources.
@@ -39,6 +39,10 @@ public:
 	//!	Returns true if library is initialized, false
 	//!	if failed or already initialized.
 	bool glInitFactory(void);
+
+	//!	Returns the default null shader.
+	const CShader& getNullShader(void)
+	{ return *m_pNullShader; };
 
 	//! Returns les list on shaders names.
 	//! Each name refers to a corresponding object
@@ -74,6 +78,9 @@ private:
 
 	//! The instance.
 	static CShaderLibrary *m_pInstance;
+
+	//!	A default shader.
+	static CShader *m_pNullShader;
 	
 	//!	The list of programs
 	vector<PROGRAM>	m_programs;
