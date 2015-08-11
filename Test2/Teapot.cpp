@@ -79,33 +79,6 @@ void CTeapot::GLDisplayFunc(int )
 
 void CTeapot::GLInitContext()
 {
-/*
-	LARGE_INTEGER	frequency;
-	LARGE_INTEGER	l1,l2;
-	if (!QueryPerformanceFrequency(&frequency))
-		frequency.QuadPart=0;
-	GL_COORD_VERTEX r_min;
-	GL_COORD_VERTEX r_max;
-	GL_MATRIX m;
-	for (int i=0;i<16;i++) { m[i] = i; }
-	CSSE_BoundingBox sseb;
-	CBoundingBox bb;
-	sseb.Set(-1,-1,-1,1,1,1);
-	bb.Set(-1,-1,-1,1,1,1);
-	QueryPerformanceCounter(&l1); 
-	for (i=0;i<100000;i++)
-	{
-	//	bb.Get(r_min,r_max,m);
-	//	sseb.Get(r_min,r_max,m);
-   //     int tmu;
-   //     glGetIntegerv(GL_TEXTURE_BINDING_2D,&tmu);
-	}
-	QueryPerformanceCounter(&l2);
-	double nbl = 100000*((double)frequency.QuadPart)/(l2.QuadPart-l1.QuadPart);
-	LONGLONG g1 = (l2.QuadPart-l1.QuadPart);
-*/
-
-
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 
@@ -260,16 +233,16 @@ void CTeapot::GLInitContext()
 	projectionDisplay.Init();
 	displays[CTest2App::PROJECTIONDEMO] = &projectionDisplay;
 
+	lodDisplay.Init();
+	displays[CTest2App::LODDEMO] = &lodDisplay;
 	collisionDisplay.Init();
 	displays[CTest2App::COLLISIONDEMO] = &collisionDisplay;
 	ambientOcclusionDisplay.Init();
 	displays[CTest2App::AMBIENTOCCLUSIONDEMO] = &ambientOcclusionDisplay;
 
-	//lodDisplay.Init();
-	//vertexShadersDisplay.Init();
-
+	vertexShadersDisplay.Init();
+	displays[CTest2App::VRTXSHADERSDEMO] = &vertexShadersDisplay;
 	//embmDisplay.Init();
-
 
 	m_globalDisplay = CRaptorDisplay::GetCurrentDisplay();
 	CRenderingProperties *props = m_globalDisplay->getRenderingProperties();

@@ -25,11 +25,17 @@
 #if !defined(AFX_SHADER_H__4D405EC2_7151_465D_86B6_1CA99B906777__INCLUDED_)
 	#include "GLHierarchy/Shader.h"
 #endif
+#if !defined(AFX_FRAGMENTPROGRAM_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
+	#include "GLHierarchy/FragmentProgram.h"
+#endif
 #if !defined(AFX_FRAGMENTSHADER_H__66B3089A_2919_4678_9273_6CDEF7E5787F__INCLUDED_)
 	#include "GLHierarchy/FragmentShader.h"
 #endif
 #if !defined(AFX_VERTEXSHADER_H__F2D3BBC6_87A1_4695_B667_2B8C3C4CF022__INCLUDED_)
 	#include "GLHierarchy/VertexShader.h"
+#endif
+#if !defined(AFX_VERTEXPROGRAM_H__204F7213_B40B_4B6A_9BCA_828409871B68__INCLUDED_)
+	#include "GLHierarchy/VertexProgram.h"
 #endif
 #if !defined(AFX_TEXTUREFACTORYCONFIG_H__7A20D208_423F_4E02_AA4D_D736E0A7959F__INCLUDED_)
 	#include "GLHierarchy/TextureFactoryConfig.h"
@@ -38,6 +44,9 @@
 	#include "GLHierarchy/TextureSet.h"
 #endif
 
+//#define USE_VERTEX_PROGRAM 1
+
+static const int KERNEL_SIZE = 256;
 
 static const string kernel_vp = 
 "!!ARBvp1.0 \
@@ -54,7 +63,16 @@ DP4 oPos.w, mvp[3] ,iPos; \
 ADD oTex0, iTexCoord, ofs; \
 END";
 
-static const string xk_fp = 
+static const string kernel_vs = 
+"#version 120			\n\
+uniform vec4 offset;	\n\
+void main(void)			\n\
+{						\n\
+	gl_Position = ftransform();\n\
+	gl_TexCoord[0] = gl_MultiTexCoord0 + offset;\n\
+}";
+
+static const string xk_fp =
 "!!ARBfp1.0 \
 ATTRIB iTex0 = fragment.texcoord[0]; \
 PARAM one_plusx = program.local[0];\
@@ -81,6 +99,23 @@ TEX color, offset, texture[0] , 2D ; \
 MAD finalColor, color, factors.xxxx, colorsum; \
 MOV finalColor.w, size.w; \
 END"; 
+
+static const string xk_ps =
+"#version 120				\n\
+\n\
+uniform sampler2D color;	\n\
+uniform sampler2D factor;	\n\
+\n\
+uniform float size;			\n\
+void main(void)			\n\
+{						\n\
+	vec4 subpixels; \n\
+	/*vec4 subpixels = frac(size * gl_TexCoord[0]);*/ \n\
+	vec4 colors = texture2D(color,gl_TexCoord[0].xy); \n\
+	vec4 factors = texture2D(factor,subpixels.xy); \n\
+\n\
+	gl_FragColor = colors; \n\
+}";
 
 static const string yk_fp = 
 "!!ARBfp1.0 \
@@ -109,6 +144,23 @@ TEX color, offset, texture[0] , 2D ; \
 MAD finalColor, color, factors.xxxx, colorsum; \
 MOV finalColor.w, size.w; \
 END"; 
+
+static const string yk_ps =
+"#version 120				\n\
+\n\
+uniform sampler2D color;	\n\
+uniform sampler2D factor;	\n\
+\n\
+uniform float size;			\n\
+void main(void)			\n\
+{						\n\
+	vec4 subpixels; \n\
+	/*vec4 subpixels = frac(size * gl_TexCoord[0]);*/ \n\
+	vec4 colors = texture2D(color,gl_TexCoord[0].xy); \n\
+	vec4 factors = texture2D(factor,subpixels.yx); \n\
+\n\
+	gl_FragColor = colors; \n\
+}";
 
 
 //////////////////////////////////////////////////////////////////////
@@ -189,14 +241,20 @@ void CMagnifierFilter::glRenderFilter()
     colorInput->glRender();
 
     GL_COORD_VERTEX ofs(0.0, 0.5f * offsetParams.y, 0.0, 0.0);
-    m_pYKernelShader->glGetFragmentShader()->glRender();
-    m_pYKernelShader->glGetFragmentShader()->glProgramParameter(0,offsetParams);
+	CShaderProgram::CProgramParameters params;
+	params.addParameter("offset",ofs);
+#ifdef USE_VERTEX_PROGRAM
+	m_pYKernelShader->glGetVertexProgram()->setProgramParameters(params);
+#else
+    //m_pYKernelShader->glGetFragmentShader()->glProgramParameter(0,offsetParams);
+    //m_pYKernelShader->glGetFragmentShader()->glProgramParameter(1,sizeParams);
+	m_pYKernelShader->glGetVertexShader()->setProgramParameters(params);
+#endif
+	m_pYKernelShader->glRender();
+	m_pYKernelShader->glGetFragmentShader()->glProgramParameter(0,offsetParams);
     m_pYKernelShader->glGetFragmentShader()->glProgramParameter(1,sizeParams);
-    m_pYKernelShader->glGetVertexShader()->glRender();
-    m_pYKernelShader->glGetVertexShader()->glProgramParameter(0,ofs);
     glDrawBuffer();
-    m_pYKernelShader->glGetFragmentShader()->glStop();
-    m_pYKernelShader->glGetVertexShader()->glStop();
+	m_pYKernelShader->glStop();
 
     xBuffer->glUnBindDisplay();
 
@@ -216,14 +274,20 @@ void CMagnifierFilter::glRenderFilterOutput()
     xKernelPass->glRender();
 
     GL_COORD_VERTEX ofs2(0.5f * offsetParams.x, 0.0, 0.0, 0.0);
-    m_pXKernelShader->glGetFragmentShader()->glRender();
-    m_pXKernelShader->glGetFragmentShader()->glProgramParameter(0,offsetParams);
+	CShaderProgram::CProgramParameters params;
+	params.addParameter("offset",ofs2);
+#ifdef USE_VERTEX_PROGRAM
+	m_pXKernelShader->glGetVertexProgram()->setProgramParameters(params);
+#else
+    //m_pXKernelShader->glGetFragmentShader()->glProgramParameter(0,offsetParams);
+    //m_pXKernelShader->glGetFragmentShader()->glProgramParameter(1,sizeParams);
+	m_pXKernelShader->glGetVertexShader()->setProgramParameters(params);
+#endif
+	m_pXKernelShader->glRender();
+	m_pXKernelShader->glGetFragmentShader()->glProgramParameter(0,offsetParams);
     m_pXKernelShader->glGetFragmentShader()->glProgramParameter(1,sizeParams);
-    m_pXKernelShader->glGetVertexShader()->glRender();
-    m_pXKernelShader->glGetVertexShader()->glProgramParameter(0,ofs2);
     glDrawBuffer();
-    m_pXKernelShader->glGetFragmentShader()->glStop();
-    m_pXKernelShader->glGetVertexShader()->glStop();
+	m_pXKernelShader->glStop();
 
 	glBindTexture(GL_TEXTURE_2D,0);
 }
@@ -264,14 +328,14 @@ bool CMagnifierFilter::glInitFilter(void)
                                                    CTextureObject::CGL_OPAQUE,
                                                    CTextureObject::CGL_UNFILTERED);
 
-    kernelTexture->setSize(256,1);
+    kernelTexture->setSize(KERNEL_SIZE,1);
 
     kernelTexture->allocateTexels(CTextureObject::CGL_COLOR_FLOAT32_ALPHA);
 	float *kernel = kernelTexture->getFloatTexels(); 
 
-    for (unsigned int i=0; i<256 ; i++)
+    for (unsigned int i=0; i<KERNEL_SIZE ; i++)
     {
-        float x = i / 255.0f;
+        float x = i / ((float)KERNEL_SIZE - 1.0f);
         *kernel++ = (this->*kernelBuilder)(x+1,	kernelParams.x, kernelParams.y);
         *kernel++ = (this->*kernelBuilder)(x,	kernelParams.x, kernelParams.y);
         *kernel++ = (this->*kernelBuilder)(1-x,	kernelParams.x, kernelParams.y);
@@ -331,20 +395,36 @@ bool CMagnifierFilter::glInitFilter(void)
     sizeParams.h = 1.0f;
 
     m_pXKernelShader = new CShader("XKERNEL_SHADER");
-    CVertexShader *vs = m_pXKernelShader->glGetVertexShader("xk_vp");
+	m_pYKernelShader = new CShader("YKERNEL_SHADER");
+
+#ifdef USE_VERTEX_PROGRAM
+	CVertexProgram *vp = m_pXKernelShader->glGetVertexProgram("magnifier_vp");
+    bool res = vp->glLoadProgram(kernel_vs);
+	CFragmentProgram *ps = m_pXKernelShader->glGetFragmentProgram("xk_ps");
+    res = res && ps->glLoadProgram(xk_ps);
+	//CShaderProgram::CProgramParameters params;
+	//params.addParameter("offset",GL_COORD_VERTEX());
+	//vp->setProgramParameters(params);
+	res = res && m_pXKernelShader->glCompileShader();
+
+	vp = m_pYKernelShader->glGetVertexProgram("magnifier_vp");
+	ps = m_pYKernelShader->glGetFragmentProgram("yk_ps");
+    res = res && ps->glLoadProgram(yk_ps);
+	m_pYKernelShader->glCompileShader();
+#else
+    CVertexShader *vs = m_pXKernelShader->glGetVertexShader("magnifier_vp");
     bool res = vs->glLoadProgram(kernel_vp);
     CFragmentShader *fs = m_pXKernelShader->glGetFragmentShader("xk_fp");
     res = res && fs->glLoadProgram(xk_fp);
 
-    m_pYKernelShader = new CShader("YKERNEL_SHADER");
-    vs = m_pYKernelShader->glGetVertexShader("yk_vp");
-    res = res && vs->glLoadProgram(kernel_vp);
+    vs = m_pYKernelShader->glGetVertexShader("magnifier_vp");
     fs = m_pYKernelShader->glGetFragmentShader("yk_fp");
     res = res && fs->glLoadProgram(yk_fp);
+#endif
 
 	filterFactory.getConfig().useTextureResize(previousResize);
 
-    return true;
+    return res;
 }
 
  
