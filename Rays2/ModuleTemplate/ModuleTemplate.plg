@@ -1,0 +1,53 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: ModuleTemplate - Win32 Release--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating command line "rc.exe /l 0x40c /fo"Release/ModuleTemplate.res" /d "NDEBUG" /d "_AFXDLL" "F:\Rays2\ModuleTemplate\ModuleTemplate.rc"" 
+Creating temporary file "C:\DOCUME~1\Fabrice\LOCALS~1\Temp\RSP398.tmp" with contents
+[
+/nologo /MD /W3 /GX /Zi /Od /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_WINDLL" /D "_AFXDLL" /D "_USRDLL" /Fp"Release/ModuleTemplate.pch" /Yu"stdafx.h" /Fo"Release/" /Fd"Release/" /FD /c 
+"F:\Rays2\ModuleTemplate\ModuleTemplate.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\Fabrice\LOCALS~1\Temp\RSP398.tmp" 
+Creating temporary file "C:\DOCUME~1\Fabrice\LOCALS~1\Temp\RSP399.tmp" with contents
+[
+/nologo /MD /W3 /GX /Zi /Od /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_WINDLL" /D "_AFXDLL" /D "_USRDLL" /Fp"Release/ModuleTemplate.pch" /Yc"stdafx.h" /Fo"Release/" /Fd"Release/" /FD /c 
+"F:\Rays2\ModuleTemplate\StdAfx.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\Fabrice\LOCALS~1\Temp\RSP399.tmp" 
+Creating temporary file "C:\DOCUME~1\Fabrice\LOCALS~1\Temp\RSP39A.tmp" with contents
+[
+/nologo /subsystem:windows /dll /incremental:no /pdb:"Release/ModuleTemplate.pdb" /map:"Release/ModuleTemplate.map" /debug /machine:I386 /def:".\ModuleTemplate.def" /out:"ModuleTemplate.dll" /implib:"Release/ModuleTemplate.lib" 
+.\Release\ModuleTemplate.obj
+.\Release\StdAfx.obj
+.\Release\ModuleTemplate.res
+]
+Creating command line "link.exe @C:\DOCUME~1\Fabrice\LOCALS~1\Temp\RSP39A.tmp"
+<h3>Output Window</h3>
+Compiling resources...
+Compiling...
+StdAfx.cpp
+Compiling...
+ModuleTemplate.cpp
+Linking...
+   Creating library Release/ModuleTemplate.lib and object Release/ModuleTemplate.exp
+Creating temporary file "C:\DOCUME~1\Fabrice\LOCALS~1\Temp\RSP39E.bat" with contents
+[
+@echo off
+copy     ModuleTemplate.dll     ..\ModuleTester\
+]
+Creating command line "C:\DOCUME~1\Fabrice\LOCALS~1\Temp\RSP39E.bat"
+
+        1 fichier(s) copi‚(s).
+
+
+
+<h3>Results</h3>
+ModuleTemplate.dll - 0 error(s), 0 warning(s)
+</pre>
+</body>
+</html>

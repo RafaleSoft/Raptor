@@ -18,8 +18,8 @@
 	<Configurations>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
+			OutputDirectory="$(ConfigurationName)\"
+			IntermediateDirectory="$(ConfigurationName)\$(ProjectName)\"
 			ConfigurationType="1"
 			CharacterSet="0"
 			WholeProgramOptimization="1"
@@ -44,10 +44,11 @@
 				UseUnicodeResponseFiles="false"
 				Optimization="0"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="&quot;$(MSSdk)\Include&quot;;&quot;$(RAPTOR_ROOT)\Redist\Include&quot;"
+				AdditionalIncludeDirectories="$(RAPTOR_ROOT)\Redist\Include;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;INDEX=INDEX_LINEAR;WITH_FLOAT_MATH;WITH_STATS"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
+				OpenMP="true"
 				UsePrecompiledHeader="2"
 				WarningLevel="3"
 				DebugInformationFormat="3"
@@ -65,7 +66,7 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="Raptor.lib opengl32.lib"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="$(MSSdk)\Lib;$(RAPTOR_ROOT)\Redist\Lib"
+				AdditionalLibraryDirectories="$(RAPTOR_ROOT)\Redist\lib"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				OptimizeReferences="2"
@@ -94,6 +95,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="copy $(OutDir)\$(TargetFileName) &quot;%RAPTOR_ROOT%\Redist\bin&quot;"
 			/>
 		</Configuration>
 	</Configurations>
@@ -106,40 +108,31 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\DTEDReader.cpp"
+				RelativePath="..\..\SOAR2\DTEDReader.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\main.cpp"
-				>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="$(IntDir)\$(InputName)1.obj"
-						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath=".\SOARDoc.cpp"
+				RelativePath="..\..\SOAR2\main.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\SOARTerrainBase.cpp"
+				RelativePath="..\..\SOAR2\SOARDoc.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\SOARTerrainIndexed.cpp"
+				RelativePath="..\..\SOAR2\SOARTerrainBase.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\SOARTerrainMorphed.cpp"
+				RelativePath="..\..\SOAR2\SOARTerrainIndexed.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\StdAfx.cpp"
+				RelativePath="..\..\SOAR2\SOARTerrainMorphed.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\SOAR2\StdAfx.cpp"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -157,35 +150,35 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\common.h"
+				RelativePath="..\..\SOAR2\common.h"
 				>
 			</File>
 			<File
-				RelativePath=".\DTEDReader.h"
+				RelativePath="..\..\SOAR2\DTEDReader.h"
 				>
 			</File>
 			<File
-				RelativePath=".\index.h"
+				RelativePath="..\..\SOAR2\index.h"
 				>
 			</File>
 			<File
-				RelativePath=".\SOARDoc.h"
+				RelativePath="..\..\SOAR2\SOARDoc.h"
 				>
 			</File>
 			<File
-				RelativePath=".\SOARTerrainBase.h"
+				RelativePath="..\..\SOAR2\SOARTerrainBase.h"
 				>
 			</File>
 			<File
-				RelativePath=".\SOARTerrainIndexed.h"
+				RelativePath="..\..\SOAR2\SOARTerrainIndexed.h"
 				>
 			</File>
 			<File
-				RelativePath=".\SOARTerrainMorphed.h"
+				RelativePath="..\..\SOAR2\SOARTerrainMorphed.h"
 				>
 			</File>
 			<File
-				RelativePath=".\StdAfx.h"
+				RelativePath="..\..\SOAR2\StdAfx.h"
 				>
 			</File>
 		</Filter>
