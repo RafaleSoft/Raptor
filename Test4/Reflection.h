@@ -5,7 +5,7 @@
 
 RAPTOR_NAMESPACE
 
-class CReflection : public CBasicObjects::CRectMesh// CBumppedGeometry
+class CReflection : public CBasicObjects::CRectMesh
 {
 public:
     CReflection(float width,float height,int hcels,int vcels);

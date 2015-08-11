@@ -575,8 +575,6 @@ bool CShader::glCompileShader()
         // link
         if (!abort)
         {
-			
-
             pExtensions->glLinkProgramARB(m_shaderProgram.handle);
             GLint linkStatus = GL_FALSE;
             pExtensions->glGetObjectParameterivARB(m_shaderProgram.handle,GL_OBJECT_LINK_STATUS_ARB,&linkStatus);

@@ -14,9 +14,13 @@
 #ifndef __GLOBAL_H__
 	#include "System/Global.h"
 #endif
+#if !defined(AFX_MEMORY_H__81A6CA9A_4ED9_4260_B6E4_C03276C38DBC__INCLUDED_)
+	#include "System/Memory.h"
+#endif
 #if !defined(AFX_OBJECT3D_H__DB24F017_80B9_11D3_97C1_FC2841000000__INCLUDED_)
 	#include "GLHierarchy/Object3D.h"
 #endif
+
 
 RAPTOR_NAMESPACE_BEGIN
 
@@ -72,7 +76,8 @@ C3DSqueleton::C3DSqueleton(CObject3D *root,const std::string& name)
 	}
 	else
 	{
-		lp_bone bone_root = new bone;
+		void* mem = CMemory::GetInstance()->allocate(sizeof(bone), 1, 16);
+		lp_bone bone_root = new(mem) bone;
 
 		bone_root->is_locked = false;
 		bone_root->p_object = root;
@@ -169,7 +174,9 @@ object_link	*C3DSqueleton::addLink(bone *parent,
 	if (parent == NULL)
 		return NULL;
 
-	object_link	*lnk = new object_link;
+	void* mem = CMemory::GetInstance()->allocate(sizeof(object_link), 1, 16);
+	object_link *lnk = new(mem)object_link;
+
 
 	parent->links.push_back(lnk);
 
@@ -201,7 +208,8 @@ bone *C3DSqueleton::addBone(object_link *pivot,CVector4f & length,CObject3D *obj
 														CRaptorMessages::ID_LOST_LINK);
 	}
 
-	bone *b = new bone;
+	void* mem = CMemory::GetInstance()->allocate(sizeof(bone), 1, 16);
+	lp_bone b = new(mem)bone;
 
 	b->is_locked = false;
 	b->p_object = obj;

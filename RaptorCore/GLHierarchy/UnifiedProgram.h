@@ -20,6 +20,7 @@ RAPTOR_NAMESPACE_BEGIN
 class RAPTOR_API CUnifiedProgram : public CShaderProgram  
 {
 public:
+	//!	Destructor.
 	virtual ~CUnifiedProgram();
 
     //! Implements base class status
@@ -35,8 +36,12 @@ public:
 
 
 protected:
+	//!	Default Constructor.
     CUnifiedProgram(const CPersistence::CPersistenceClassID &classId, 
-		const std::string& name);
+					const std::string& name);
+
+	//! Copy constructor.
+	CUnifiedProgram(const CUnifiedProgram& shader);
 
     //! determine parameter compatibility : compare GLSL to Raptor kind 
     //! @return true if parameter can be assigned ( though they need conversion )
@@ -67,6 +72,9 @@ protected:
 
 
 private:
+	//!	Forbidden operators
+	CUnifiedProgram& operator=(const CUnifiedProgram&);
+
     //! factorize uniform settings
     void glParameter( unsigned int numParam,const float *v);
 

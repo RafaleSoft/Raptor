@@ -188,9 +188,6 @@
     <ClCompile Include="..\..\RaptorCore\SSE_Engine\SSE_BoundingBox.cpp">
       <Filter>Source Files\SSE_Engine src</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\RaptorCore\SSE_Engine\SSE_BumppedGeometry.cpp">
-      <Filter>Source Files\SSE_Engine src</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\RaptorCore\SSE_Engine\SSE_GLLayer.cpp">
       <Filter>Source Files\SSE_Engine src</Filter>
     </ClCompile>
@@ -528,6 +525,12 @@
       <Filter>Source Files\GLHierarchy src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\GLVectorFont.cpp">
+      <Filter>Source Files\GLHierarchy src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\DOT3BumppedGeometry.cpp">
+      <Filter>Source Files\Subsys src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\EMBMGeometry.cpp">
       <Filter>Source Files\GLHierarchy src</Filter>
     </ClCompile>
   </ItemGroup>
@@ -1006,6 +1009,12 @@
       <Filter>Header Files\GLHierarchy include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\GLVectorFont.h">
+      <Filter>Header Files\GLHierarchy include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\DOT3BumppedGeometry.h">
+      <Filter>Header Files\Subsys include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\EMBMGeometry.h">
       <Filter>Header Files\GLHierarchy include</Filter>
     </ClInclude>
   </ItemGroup>

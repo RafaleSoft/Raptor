@@ -65,11 +65,9 @@ void CAOComputeShader::glStop(void)
 
 void CAOComputeShader::glRender(void)
 {
+	CShader::glRender();
+
 #if defined(GL_ARB_shader_objects)
 	const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
-
-	CShader::glRender();
-#else
-	CShader::glRender();
 #endif
 }

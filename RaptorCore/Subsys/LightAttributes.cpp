@@ -14,7 +14,9 @@
 #if !defined(AFX_RAPTOREXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
 	#include "System/RaptorExtensions.h"
 #endif
-
+#if !defined(AFX_LIGHT_H__AA8BABD6_059A_4939_A4B6_A0A036E12E1E__INCLUDED_)
+	#include "GLHierarchy/Light.h"
+#endif
 
 
 RAPTOR_NAMESPACE_BEGIN
@@ -22,8 +24,12 @@ RAPTOR_NAMESPACE_BEGIN
 CLight* CLightAttributes::s_activeLights[MAX_LIGHTS] =
 { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };
 
-bool CLightAttributes::s_activeGLLights[MAX_LIGHTS] =
-{ false, false, false, false, false, false, false, false };
+int CLightAttributes::s_lightOrder[MAX_LIGHTS] =
+{ 0, 1, 2, 3, 4, 5, 6, 7 };
+
+CLight* CLightAttributes::s_orderedLights[MAX_LIGHTS] =
+{ NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };
+
 
 vector<CLightObserver*>	CLightAttributes::m_pObservers;
 
@@ -123,15 +129,9 @@ void CLightAttributes::notify(CLight* owner,CLightObserver::UPDATE_KIND kind)
 	if (m_hwMapping != 0)
 	{
 		if (CLightObserver::ACTIVATE == kind)
-		{
 			s_activeLights[m_hwMapping - GL_LIGHT0] = owner;
-			s_activeGLLights[m_hwMapping - GL_LIGHT0] = true;
-		}
 		else if (CLightObserver::DEACTIVATE == kind)
-		{
 			s_activeLights[m_hwMapping - GL_LIGHT0] = NULL;
-			s_activeGLLights[m_hwMapping - GL_LIGHT0] = false;
-		}
 	}
 
     vector<CLightObserver*>::const_iterator itr = m_pObservers.begin();
@@ -141,3 +141,35 @@ void CLightAttributes::notify(CLight* owner,CLightObserver::UPDATE_KIND kind)
     }
 }
 
+int* const CLightAttributes::getLightOrder(void)
+{
+	unsigned int lpos = 0;
+	for (unsigned int i = 0; i < CLightAttributes::MAX_LIGHTS; i++)
+	{
+		s_lightOrder[i] = -1;
+
+		// s_orderedLights is packed, but ensure the array is empty.
+		if (NULL == s_orderedLights[i])
+			continue;
+
+		for (unsigned int j = 0; j < CLightAttributes::MAX_LIGHTS; j++)
+		{
+			if (s_activeLights[j] == s_orderedLights[i])
+				s_lightOrder[lpos++] = j; // s_activeGLLights[j];
+		}
+	}
+
+	return s_lightOrder;
+};
+
+void CLightAttributes::setLightOrder(CLight* lights[CLightAttributes::MAX_LIGHTS])
+{
+	unsigned int lpos = 0;
+	for (unsigned int i = 0; i < CLightAttributes::MAX_LIGHTS; i++)
+	{
+		s_orderedLights[i] = NULL;
+		CLight* l = lights[i];
+		if ((NULL != l) && (l->isActive()))
+			s_orderedLights[lpos++] = l;
+	}
+}

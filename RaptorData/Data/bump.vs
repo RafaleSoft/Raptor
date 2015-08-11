@@ -33,9 +33,10 @@ void main (void)
 	eyedir.y = dot(ecPos,binormal);
 	eyedir.z = dot(ecPos,normal);
 
-	for (int numl=0 ; numl<MAX_LIGHTS ; numl++)
+	for (int i=0 ; i<MAX_LIGHTS ; i++)
 	{
-		if (lightEnable[numl] > 0)
+		int numl = lightEnable[i];
+		if (numl >= 0)
 		{
 #ifdef EYE_SPACE
 			// Compute lighting in eye space

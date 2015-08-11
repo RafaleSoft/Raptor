@@ -17,9 +17,6 @@
 #if !defined(AFX_AMBIENTOCCLUSIONSHADER_H__FA8234C4_82B1_49D3_ABAA_7FCE45EDDCAD__INCLUDED_)
 	#include "Subsys/AmbientOcclusionShader.h"
 #endif
-#if !defined(AFX_3DENGINE_H__DB24F018_80B9_11D3_97C1_FC2841000000__INCLUDED_)
-	#include "Engine/3DEngine.h"
-#endif
 #ifndef __GLOBAL_H__
 	#include "System/Global.h"
 #endif

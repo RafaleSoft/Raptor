@@ -36,8 +36,14 @@ public:
 	} GL_FRAGMENT_PROGRAM_CAPS;
 
 public:
+	//!	Default Constructor.
 	CFragmentProgram(const std::string& name="FRAGMENT_PROGRAM");
+
+	//!	Destructor.
 	virtual ~CFragmentProgram();
+
+	//!	Clone this shader.
+	virtual CFragmentProgram* glClone();
 
     //! The real rendering cannot be performed here, as it relies on
     //! CShader program object invocation. Nevertheless, this method is
@@ -74,6 +80,12 @@ public:
 
 
 private:
+	//!	Forbidden operators
+	CFragmentProgram& operator=(const CFragmentProgram&);
+
+	//! Copy constructor.
+	CFragmentProgram(const CFragmentProgram& shader);
+
     //! Specific init of shader parameters
     virtual void	glInitShaders();
 };

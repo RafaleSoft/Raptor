@@ -16,15 +16,25 @@ RAPTOR_NAMESPACE_BEGIN
 class CBlinnShader : public CShader
 {
 public:
+	//!	Default constructor.
 	CBlinnShader(void);
+
+	//! Destructor.
 	virtual ~CBlinnShader(void);
 
+	//!	Clone current shader, assigning the new name newShaderName
+	virtual CShader* glClone(const std::string& newShaderName) const;
+
+	//!	Implements base class.
 	virtual void glRender();
 
 	//! Initialize all shadings, must be called before use.
 	void glInit();
 
 private:
+	//!	Copy constructor for cloning.
+	CBlinnShader(const CBlinnShader& shader);
+
 	static int lightEnable;
 	static int diffuseMap;
 };

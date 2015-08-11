@@ -71,21 +71,22 @@ public:
     //! along with objects' transform, otherwise, be sure current viewpoint is not modified.
 	void RAPTOR_FASTCALL setLightPosition(const GL_COORD_VERTEX& position);
 
+	//! Returns 'absolute' light position set here above
+	GL_COORD_VERTEX RAPTOR_FASTCALL getLightPosition(void) const;
+
+	//! Returns the light's position in eye space : before clip projection.
+	const CGenericVector<float>& RAPTOR_FASTCALL getLightEyePosition(void) const;
+
+	//! Returns the light's position in eye clip space : projected in unit cube.
+	GL_COORD_VERTEX RAPTOR_FASTCALL getLightClipPosition(void) const;
+
+
     //! This method computes light's projection. Raptor scene will call this method only once per frame.
     //! Without a scene, this method must be called as soon as possible after the position is set
     //! because eye position as well as clip space position will be computed. Those values
     //! are fundamental for shadows or pixel lighting calculations.
     //! @param grab: if true, positions are computed using GL current matrices. if false, Raptor engine is used.
     void RAPTOR_FASTCALL glProject(bool grab = false);
-
-    //! Returns 'absolute' light position set here above
-	GL_COORD_VERTEX RAPTOR_FASTCALL getLightPosition(void) const;
-
-    //! Returns the light's position in eye space : before clip projection.
-    const CGenericVector<float>& RAPTOR_FASTCALL getLightEyePosition(void) const;
-
-    //! Returns the light's position in eye clip space : projected in unit cube.
-    GL_COORD_VERTEX RAPTOR_FASTCALL getLightClipPosition(void) const;
 
     //! Sets light direction for spot lights or directional lighting used in shadows,
     //! no matter in which coordinate system, it is a vector
@@ -120,10 +121,10 @@ public:
     //! Returns the distance at wich light's attenuation is equivalent to no lighting
     float RAPTOR_FASTCALL getLightDMax(void) const;
 
-    //! Returns the relative light intensity at a given position.
+    //! Returns the relative light attenuation at a given position.
     //! @param atPosition : where intensity is requested, in eye space coordinates
     //! @return attenuation factor in [0..1]
-    float getLightIntensity(CGenericVector<float> atPosition) const;
+	float getLightAttenuation(CGenericVector<float> atPosition) const;
 
     //!	Specifie the lens flare texture of the light
 	//!	Use size parameter to minify/magnify projection size

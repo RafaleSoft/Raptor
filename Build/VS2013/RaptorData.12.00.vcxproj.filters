@@ -105,9 +105,6 @@
     <None Include="..\..\RaptorData\Data\phong.vs">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="..\..\RaptorData\Data\phong_0light.vs">
-      <Filter>Shaders</Filter>
-    </None>
     <None Include="..\..\RaptorData\Data\AO.ps">
       <Filter>Shaders</Filter>
     </None>
@@ -118,9 +115,6 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="..\..\RaptorData\Data\phong.ps">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\..\RaptorData\Data\phong_0light.ps">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

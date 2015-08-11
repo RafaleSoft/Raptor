@@ -32,9 +32,8 @@ RAPTOR_NAMESPACE
 IMPLEMENT_DYNCREATE(CGLView, CView)
 
 CGLView::CGLView()
-	:m_viewID(-1),displayFps(false)
+	:m_viewID(-1), displayFps(false), m_pDisplay(NULL)
 {
-	m_pDisplay = NULL;
 }
 
 CGLView::~CGLView()
@@ -203,7 +202,7 @@ BOOL CGLView::OnEraseBkgnd(CDC* )
 
 void CGLView::OnInitialUpdate() 
 {
-	CClientDC dc(this) ;
+	CClientDC dc(this);
 	CGLDocument* pDoc = (CGLDocument* )GetDocument();
 
 	//	Select current rendering context
@@ -213,14 +212,10 @@ void CGLView::OnInitialUpdate()
 	m_pDisplay->glBindDisplay(display);
 
 	//	Initialise linked document if necessary
-	if (!pDoc->m_initialised)
-	{
-		pDoc->GLInitContext();
-		pDoc->m_initialised = true;
-	}
+	pDoc->glInitialize();
 
 	//	get view ID
-	m_viewID = pDoc->m_nbAttachedViews++;
+	m_viewID = pDoc->attachView(this);
 
 	CATCH_GL_ERROR
 

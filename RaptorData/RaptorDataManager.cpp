@@ -86,7 +86,7 @@ extern const char *blender_8x_Yvp;
 static bool doCompress = false;
 static const unsigned int CHUNK = 16384;
 static const unsigned int BUFFER = 1024;
-static const int NB_SHADERS = 68;
+static const int NB_SHADERS = 64;
 static unsigned char in[CHUNK];
 static unsigned char out[CHUNK];
 
@@ -486,8 +486,6 @@ const char * const *CRaptorDataManager::GetShaderList(void)
 	// PHONG LIGHTING
 	LOAD_SHADER("phong.vs","PPIXEL_PHONG_VTX_PROGRAM")
 	LOAD_SHADER("phong.ps","PPIXEL_PHONG_TEX_PROGRAM")
-	LOAD_SHADER("phong_0light.vs","PPIXEL_PHONG_VTX_PROGRAM_0LIGHTS")
-	LOAD_SHADER("phong_0light.ps","PPIXEL_PHONG_TEX_PROGRAM_0LIGHTS")
 	// BUMP LIGHTING
 	LOAD_SHADER("bump.vs","PPIXEL_BUMP_VTX_PROGRAM")
 	LOAD_SHADER("bump.ps","PPIXEL_BUMP_TEX_PROGRAM")

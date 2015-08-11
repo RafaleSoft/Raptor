@@ -257,7 +257,7 @@ GL_COORD_VERTEX RAPTOR_FASTCALL CLight::getLightClipPosition(void) const
 	return lpos; 
 }
 
-float CLight::getLightIntensity(CGenericVector<float> atPosition) const
+float CLight::getLightAttenuation(CGenericVector<float> atPosition) const
 {
     if (!m_pAttributes->m_spot)
         return 1.0f;
@@ -276,7 +276,7 @@ void RAPTOR_FASTCALL CLight::setLightPosition(const GL_COORD_VERTEX& position)
 { 
 	m_pAttributes->m_position = position;
 	if (m_pAttributes->pProjector)
-		m_pAttributes->pProjector->setProjectorPosition(m_pAttributes->m_position);
+		m_pAttributes->pProjector->setPosition(m_pAttributes->m_position);
 
     m_pAttributes->notify(this,CLightObserver::POSITION);
 }
@@ -285,7 +285,7 @@ void RAPTOR_FASTCALL CLight::setLightDirection(const GL_COORD_VERTEX& direction)
 { 
 	m_pAttributes->m_direction = direction;
 	if (m_pAttributes->pProjector)
-		m_pAttributes->pProjector->setProjectorDirection(m_pAttributes->m_direction);
+		m_pAttributes->pProjector->setDirection(m_pAttributes->m_direction);
 
 	m_pAttributes->m_direction.Normalize();
 }

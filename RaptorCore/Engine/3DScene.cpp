@@ -404,7 +404,7 @@ void C3DScene::glRender(void)
     }
 
 	glPopMatrix();
-
+	
     for (unsigned int i=0;i<requiredLights.size();i++)
     {
         m_pAttributes->m_pLights[i]->glRenderGlow();

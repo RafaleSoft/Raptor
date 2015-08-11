@@ -28,7 +28,7 @@ RAPTOR_NAMESPACE
 IMPLEMENT_DYNCREATE(CGLDocument, CDocument)
 
 CGLDocument::CGLDocument(CString name)
-:m_initialised(false),m_nbAttachedViews(0)
+	:m_initialised(false),m_nbAttachedViews(0)
 {
 }
 
@@ -106,4 +106,20 @@ void CGLDocument::GLDisplayFunc(int )
 void CGLDocument::glRender(void)
 {
 	UpdateAllViews(NULL);
+}
+
+bool CGLDocument::glInitialize(void)
+{
+	if (!m_initialised)
+	{
+		GLInitContext();
+		m_initialised = true;
+	}
+
+	return !m_initialised;
+}
+
+int CGLDocument::attachView(const CGLView* view)
+{
+	return m_nbAttachedViews++;
 }

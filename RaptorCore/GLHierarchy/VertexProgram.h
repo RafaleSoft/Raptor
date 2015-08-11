@@ -43,8 +43,14 @@ public:
 
 
 public:
+	//!	Default Constructor.
 	CVertexProgram(const std::string& name="VERTEX_PROGRAM");
+
+	//!	Destructor.
 	virtual ~CVertexProgram();
+
+	//!	Clone this shader.
+	virtual CVertexProgram* glClone();
 
     //! The real rendering cannot be performed here, as it relies on
     //! CShader program object invocation. Nevertheless, this method is
@@ -77,7 +83,14 @@ public:
 	//!	Implements CPersistence
 	DECLARE_CLASS_ID(CVertexProgramClassID,"VertexProgram",CShaderProgram)
 
+
 private:
+	//!	Forbidden operators
+	CVertexProgram& operator=(const CVertexProgram&);
+
+	//! Copy constructor.
+	CVertexProgram(const CVertexProgram& shader);
+
     //! Specific init of shader parameters
     virtual void	glInitShaders();
 };

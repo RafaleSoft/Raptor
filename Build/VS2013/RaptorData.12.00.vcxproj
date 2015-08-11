@@ -238,8 +238,6 @@ copy RaptorData.pck "%RAPTOR_ROOT%\Redist\bin\"
     <None Include="..\..\RaptorData\Data\embm_std.vp" />
     <None Include="..\..\RaptorData\Data\phong.ps" />
     <None Include="..\..\RaptorData\Data\phong.vs" />
-    <None Include="..\..\RaptorData\Data\phong_0light.ps" />
-    <None Include="..\..\RaptorData\Data\phong_0light.vs" />
     <None Include="..\..\RaptorData\Data\projection.fp" />
     <None Include="..\..\RaptorData\Data\rapsplsh.AVI" />
     <None Include="..\..\RaptorData\Data\shadowmap.fp" />

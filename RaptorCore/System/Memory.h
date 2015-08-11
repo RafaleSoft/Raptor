@@ -189,8 +189,8 @@ private:
 template <class T,int a>
 T* CMemory::Allocator<T,a>::allocate(unsigned int count)
 {
-    T* bloc = (T*)(CMemory::GetInstance()->allocate(sizeof(T),count,a));
-    return bloc;
+    void* bloc = CMemory::GetInstance()->allocate(sizeof(T),count,a);
+    return new(bloc) T;
 }
 
 RAPTOR_NAMESPACE_END

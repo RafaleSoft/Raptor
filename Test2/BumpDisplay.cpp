@@ -167,7 +167,6 @@ void CBumpDisplay::Init()
 	if (p->getId().isSubClassOf(CBumppedGeometry::CBumppedGeometryClassID::GetClassId()))
 		 teapot = (CBumppedGeometry *)p;
     //teapot->SetNormalMap(tt);
-	//teapot->SetRenderingModel(teapot->GetRenderingModel());
 
     //
     //  Light and its modifier

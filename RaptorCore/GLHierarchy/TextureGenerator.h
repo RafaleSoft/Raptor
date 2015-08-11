@@ -27,7 +27,7 @@ public:
         ANIMATED,
         STATIC
     } GENERATOR_KIND;
-public:
+
     CTextureGenerator():m_bEnabled(true) {};
 
     virtual ~CTextureGenerator() {};
