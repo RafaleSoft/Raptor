@@ -1,0 +1,45 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: Main - Win32 Release--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\DOCUME~1\Fabrice\LOCALS~1\Temp\RSP35.bat" with contents
+[
+@echo off
+copy ..\Workunit\Workunit.exe .
+copy ..\RaysServer\RaysServer.exe .
+copy ..\RaysInetBridge\RaysInetBridge.exe .
+copy ..\RaysDeamon\RaysDeamon.exe .
+copy ..\ModuleTester\ModuleTester.exe .
+copy ..\ModuleTemplate\ModuleTemplate.dll .
+copy ..\ModuleNoise\ModuleNoise.dll .
+copy ..\ModuleDOF\ModuleDOF.dll .
+copy ..\MiniRaysClient\MiniRaysClient.exe .
+copy ..\Raptor\bin\Raptor.dll .
+copy ..\Systemdll\Systemdll.dll .
+]
+Creating command line "C:\DOCUME~1\Fabrice\LOCALS~1\Temp\RSP35.bat"
+<h3>Output Window</h3>
+Performing Custom Build Step on .\RunRays.bat
+        1 fichier(s) copi‚(s).
+        1 fichier(s) copi‚(s).
+        1 fichier(s) copi‚(s).
+        1 fichier(s) copi‚(s).
+        1 fichier(s) copi‚(s).
+        1 fichier(s) copi‚(s).
+        1 fichier(s) copi‚(s).
+        1 fichier(s) copi‚(s).
+        1 fichier(s) copi‚(s).
+        1 fichier(s) copi‚(s).
+        1 fichier(s) copi‚(s).
+
+
+
+<h3>Results</h3>
+Main - 0 error(s), 0 warning(s)
+</pre>
+</body>
+</html>

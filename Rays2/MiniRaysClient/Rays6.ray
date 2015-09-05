@@ -1,0 +1,67 @@
+"test"
+{
+	config
+	{
+		width = 512
+		height = 512
+		variance = 0
+		deflection = 3
+		defraction = 3
+		crease = 45
+		object_plane = 10.0
+		focale = 50.0
+	}
+
+	shading
+	{
+		light "light0" = 
+		{
+			{ 20.0 , 20.0 , 20.0 , 1.0 },
+			{ 1.0 , 1.0 , 1.0 , 1.0 },
+			0.8,
+			{ 0.0 , 0.0 , 0.0 , 0.0 },
+			15.0,
+			spot_exp photon_map
+		}
+		shading "shading0" = { 0.1 , 0.3 , 0.6 , 10 , 0.2 , 0.9 , 1.6 , none}
+		shading "shading1" = { 0.2 , 0.6 , 0.7 , 10 , 0.5 , 0.0 , 1.0 , none}
+		shading "shading2" = { 0.1 , 0.5 , 1.0 , 50 , 1.0 , 0.0 , 1.0 , none}
+		texture "texture0" = { "Start.tga" }
+		texture "texture1" = { "none" }
+		texture "texture2" = { "Bump.tga" }
+		texture "texture3" = { "sky1.jpg" }
+		environment "background" = { "sky1.jpg" }
+	}
+
+	scene
+	{
+		"sphere"
+		{
+			"shading0",
+			"texture1",
+			"texture1",
+			{ 0.9 , 0.3 , 0.1 , 1.0 },
+			{ 0.0 , -2.0 , 0.0 , 1.0 },	
+			2.0
+		}
+		"plane"
+		{
+			"shading2",
+			"texture0",
+			"texture1",
+			{ 0.8 , 0.8 , 0.8 , 1.0 },
+			geometry
+			{
+				{ { -10.0, -4.0, -10.0, 1.0 } , { 0.0, 1.0, 0.0, 0.0 } }
+				{ { -10.0, -4.0, 10.0, 1.0 } , { 0.0, 0.0, 0.0, 0.0 } }
+				{ { 10.0, -4.0, 10.0, 1.0 } , { 1.0, 0.0, 0.0, 0.0 } }
+				{ { 10.0, -4.0, -10.0, 1.0 } , { 1.0, 1.0, 0.0, 0.0 } }
+			}
+			mesh
+			{
+				{ 0 , 1 , 2 }
+				{ 2 , 3 , 0 }
+			}
+		}
+	}
+}
