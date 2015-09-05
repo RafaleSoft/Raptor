@@ -9,10 +9,16 @@
 
 RAPTOR_NAMESPACE_BEGIN
 
+class CBumpLightObserver;
+
+
 class CDOT3BumppedGeometry : public CBumppedGeometry
 {
 public:
-	CDOT3BumppedGeometry();
+	//!	Default constructor.
+	CDOT3BumppedGeometry(const std::string& name);
+
+	//! Destructor.
 	virtual ~CDOT3BumppedGeometry();
 
 	//!	Rendering ( see base class )
@@ -34,8 +40,11 @@ private:
 	void setLightPositionDOT3(void);
 
 	//!	Configure internal shader texture unit setup
-	virtual void glSetTextureUnits(void);
+	virtual void setRenderingModel(const CRenderingModel& model);
 	
+	//!	A light observer to be notified from lightupdates.
+	static CBumpLightObserver	*m_pObserver;
+
 	//!	Diffuse Light vector coordinates
 	unsigned char		*bumpDiffusePx;
 

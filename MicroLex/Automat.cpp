@@ -75,7 +75,7 @@ void CAutomat::TerminateBranch(branch *&bb,atom *a)
 	else
 	{
 		cout << "Warning: atoms '" << a->Name() << "' and '";
-		cout << terminator->Name() << "' generate a conflict. Atom persed will be ";
+		cout << terminator->Name() << "' generate a conflict. Atom parsed will be ";
 		cout << terminator->Name() << endl;
 
 		delete bb;

@@ -286,7 +286,7 @@ void C3DScene::glRenderObjects(	const vector<C3DSceneObject*>& objects)
 								m_pAttributes->m_pLights,
 								proceedLights))
 			occludedObjects.push_back(sc);
-    }
+	}
 
 	if (!occludedObjects.empty())
 		C3DSceneObject::glComputeBBoxOcclusion(	m_pAttributes->m_iCurrentPass,

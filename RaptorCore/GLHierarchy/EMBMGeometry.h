@@ -15,10 +15,16 @@
 
 RAPTOR_NAMESPACE_BEGIN
 
+class CBumpLightObserver;
+
+
 class RAPTOR_API CEMBMGeometry : public CBumppedGeometry
 {
 public:
+	//!	Default constructor.
 	CEMBMGeometry(const std::string& name = "EMBM GEOMETRY");
+
+	//! Destructor.
 	virtual ~CEMBMGeometry();
 
 	//!	Rendering ( see base class )
@@ -30,6 +36,26 @@ public:
 	//!	is called from this method, so only one set is necessary )
 	virtual void setRenderingModel(const CRenderingModel& model);
 
+
+private:
+	//!	Recomputes the bump colors ( dynamic normals ), according light position
+	//!	Returns the number of lights that are relevant in the current context.
+	virtual unsigned int glUpdateLightPosition(void);
+
+	//!	Initialize shaders and observers
+	virtual void init(void);
+
+	//!	Implements CPersistence
+	virtual void unLink(const CPersistence* p);
+
+
+	//! Shaders for various light configurations.
+	static CShader*		m_pBumpShaderAmbient;
+	//static CShader*		m_pBumpShader2Lights;
+	//static CShader*		m_pBumpShader3Lights;
+
+	//!	A light observer to be notified from lightupdates.
+	static CBumpLightObserver	*m_pObserver;
 };
 
 RAPTOR_NAMESPACE_END

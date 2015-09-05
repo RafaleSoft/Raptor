@@ -38,6 +38,18 @@ public:
 	//! Notifies observers using the event kind
     void notify(CLight* owner, CLightObserver::UPDATE_KIND kind);
 
+	//!	Activates the light, assigning an available HW light id.
+	void glActivate(CLight* owner, bool spot);
+
+	//!	Deactivates the light, releasing the HW id.
+	void glDeActivate(void);
+
+
+
+	//!
+	//!	Global lighting management:
+	//!	maintain mapping between logical light and effective hardware light
+	//!
 
     //!	Add a light observer to the global list of observers
     static bool addObserver(CLightObserver* observer);
@@ -84,8 +96,6 @@ private:
     float				fGlowSize;
     unsigned int		m_uiGlow;
     bool				m_bRebuildGlow;
-
-	CProjector			*pProjector;
 
     float				m_fLightVolumeSize;
     unsigned int		m_volumeVisibility;

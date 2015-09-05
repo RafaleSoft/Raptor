@@ -176,10 +176,6 @@
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <None Include="Demo.cmd" />
-    <None Include="Demo.xml" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="..\..\Demo\Demo.h" />
     <ClInclude Include="..\..\Demo\DemoDoc.h" />
     <ClInclude Include="..\..\Demo\DemoMode.h" />
@@ -193,6 +189,14 @@
     <ClCompile Include="..\..\Demo\StdAfx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="..\..\Demo\Demo.xml">
+      <SubType>Designer</SubType>
+    </Xml>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\Demo\Demo.cmd" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

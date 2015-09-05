@@ -12,6 +12,7 @@
 	- Si normalMap non utilisé => Phong Shader
 	- Supprimer CBumppedGeometry => remplacer par le shader.
 	- Remplacer / améliorer par displacement map / parallax bump mapping
+	- Supprimer BumpLightObserver dans BumpShader, faire éventuellement un SimpleLightObserver
 	
 - Persistence:
 	- Utiliser CPersistenceClassID::narrow<T> là ou on downcaste
@@ -47,6 +48,7 @@
 	- ParticleManager : renommer en factory ?
 	- SMP : si défini, créer des Engine jobs ?
 	- OpenCL + GPU computing
+	- Positionner les setFactors sur le particle compute depuis l'import (c.f. demo.xml)
 	
 - CLight
 	- glow : volume rendering  ?
@@ -64,7 +66,6 @@
 	- terminer avec tous les types de primitives
 	- skipper les faces non visibles (normale transformée a un z negatif)
 	- la géométrie "référence" ne peut plus être transformée ? => recharger les textures
-	- constructeur de copie pour pouvoir récupérer le shader compilé
 	- gestion des coordsPointers/ClientState ... a revoir ? transferer a la geometry ?
 	- nombre de geometries occultantes ?
 	- remplacer RenderResult par RenderTexture ?

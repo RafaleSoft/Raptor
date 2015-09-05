@@ -53,36 +53,44 @@ C3DSceneObject::~C3DSceneObject()
 
 }
 
-void C3DSceneObject::glRenderLights(const vector<CLight*> &lights)
+void C3DSceneObject::glRenderLights(GLboolean proceedLights,const vector<CLight*> &lights)
 {
-    vector<CLight*>::const_iterator it = lights.begin();
-    while (it != lights.end())
-    {
-        CLight *pLight = (*it++);
-        if (pLight->isActive())
-        {
-			int lightPos = 0;
-			while ((lightPos < CLightAttributes::MAX_LIGHTS) &&
+	if (proceedLights)
+	{
+		vector<CLight*>::const_iterator it = lights.begin();
+		while (it != lights.end())
+		{
+			CLight *pLight = (*it++);
+			if (pLight->isActive())
+			{
+				int lightPos = 0;
+				while ((lightPos < CLightAttributes::MAX_LIGHTS) &&
 					(pLight != effectiveLights[lightPos++]));
-			if (lightPos == CLightAttributes::MAX_LIGHTS)
-				pLight->glDeActivate();
-        }
-    }
+				if (lightPos == CLightAttributes::MAX_LIGHTS)
+					pLight->glDeActivate();
+			}
+		}
 
-	for (unsigned int i=0;i<CLightAttributes::MAX_LIGHTS;i++)
-    {
-        CLight *pLight = effectiveLights[i];
-        if (pLight != NULL)
-        {
-            if (!pLight->isActive())
-                pLight->glActivate(true);
-            pLight->glRender();
-        }
-        else
-            break;
-    }
+		for (unsigned int i = 0; i < CLightAttributes::MAX_LIGHTS; i++)
+		{
+			CLight *pLight = effectiveLights[i];
+			if (pLight != NULL)
+			{
+				if (!pLight->isActive())
+					pLight->glActivate(true);
+				pLight->glRender();
+			}
+			else
+				break;
+		}
 
-	CLightAttributes::setLightOrder(effectiveLights);
+		CLightAttributes::setLightOrder(effectiveLights);
+	}
+	else
+	{
+		CLight *noLights[CLightAttributes::MAX_LIGHTS] = { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };
+		CLightAttributes::setLightOrder(noLights);
+	}
 }
 
 void C3DSceneObject::glRenderBBoxOcclusion(unsigned int passNumber)
@@ -146,8 +154,7 @@ bool C3DSceneObject::glRenderPass(	unsigned int passNumber,
 									const vector<CLight*> &lights,
 									GLboolean proceedLights)
 {
-	if (proceedLights)
-		glRenderLights(lights);
+	glRenderLights(proceedLights,lights);
 
 	bool ret = true;
     CObject3D *obj = (CObject3D*)(object.handle);
@@ -217,7 +224,6 @@ void C3DSceneObject::selectLights(const vector<CLight*> &lights,const CGenericMa
     c *= transform;
 
     multiset<CLightObserver::lightCompare,CLightObserver::lightCompare>	sortedLights;
-
     vector<CLight*>::const_iterator itl = lights.begin();
     while (itl != lights.end())
     {
@@ -231,8 +237,7 @@ void C3DSceneObject::selectLights(const vector<CLight*> &lights,const CGenericMa
         float dmax = lc.light->getLightDMax();
         dmax *= dmax;
 		lc.intensity = lc.light->getLightAttenuation(c);
-        
-		float dd;
+		float dd = 0.0f;
 
 #if defined(RAPTOR_SSE_CODE_GENERATION)
 		__m128 x = _mm_loadu_ps(xx.vector());

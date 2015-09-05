@@ -18,8 +18,14 @@ class CBumpLightObserver;
 class CBumpShader : public CShader
 {
 public:
+	//!	Default constructor.
 	CBumpShader(void);
+
+	//! Destructor.
 	virtual ~CBumpShader(void);
+
+	//!	Clone current shader, assigning the new name newShaderName
+	virtual CShader* glClone(const std::string& newShaderName) const;
 
 	//!	Implements base glRender.
 	virtual void glRender(void);
@@ -30,12 +36,15 @@ public:
 
 
 private:
+	//!	Copy constructor for cloning.
+	CBumpShader(const CBumpShader& shader);
+
 	static int lightEnable;
 	static int diffuseMap;
 	static int normalMap;
 	static int eyePos;
 
-	static CBumpLightObserver*	m_pObserver;
+	static CReference<CBumpLightObserver>	m_pObserver;
 };
 
 RAPTOR_NAMESPACE_END
