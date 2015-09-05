@@ -146,6 +146,7 @@
 				AdditionalDependencies="Ws2_32.lib "
 				Version="$(RAPTOR_VERSION)"
 				LinkIncremental="1"
+				AdditionalLibraryDirectories="$(PLATFORM_SDK)\lib"
 				GenerateDebugInformation="false"
 				SubSystem="2"
 				RandomizedBaseAddress="1"

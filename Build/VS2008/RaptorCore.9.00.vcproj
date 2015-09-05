@@ -283,6 +283,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\RaptorCore\GLHierarchy\EMBMGeometry.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\..\RaptorCore\GLHierarchy\FragmentProgram.cpp"
 					>
 				</File>
@@ -573,10 +577,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\RaptorCore\SSE_Engine\SSE_BumppedGeometry.cpp"
-					>
-				</File>
-				<File
 					RelativePath="..\..\RaptorCore\SSE_Engine\SSE_GLLayer.cpp"
 					>
 				</File>
@@ -651,6 +651,10 @@
 				</File>
 				<File
 					RelativePath="..\..\RaptorCore\Subsys\DefaultMipmapBuilder.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\RaptorCore\Subsys\DOT3BumppedGeometry.cpp"
 					>
 				</File>
 				<File
@@ -1118,6 +1122,10 @@
 				</File>
 				<File
 					RelativePath="..\..\RaptorCore\GLHierarchy\BumppedGeometry.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\RaptorCore\GLHierarchy\EMBMGeometry.h"
 					>
 				</File>
 				<File
@@ -1625,6 +1633,10 @@
 				</File>
 				<File
 					RelativePath="..\..\RaptorCore\Subsys\DefaultMipmapBuilder.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\RaptorCore\Subsys\DOT3BumppedGeometry.h"
 					>
 				</File>
 				<File

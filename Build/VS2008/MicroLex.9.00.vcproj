@@ -167,6 +167,7 @@
 				Name="VCLinkerTool"
 				Version="$(RAPTOR_VERSION)"
 				LinkIncremental="1"
+				AdditionalLibraryDirectories="$(PLATFORM_SDK)\lib"
 				GenerateDebugInformation="false"
 				SubSystem="1"
 				OptimizeReferences="2"

@@ -74,7 +74,7 @@
 				OutputFile="$(OutDir)\$(ProjectName).exe"
 				Version="$(RAPTOR_VERSION)"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="$(ZLIB_LIB_PATH)"
+				AdditionalLibraryDirectories="$(ZLIB_LIB_PATH);$(PLATFORM_SDK)\lib"
 				IgnoreDefaultLibraryNames=""
 				SubSystem="1"
 				RandomizedBaseAddress="1"

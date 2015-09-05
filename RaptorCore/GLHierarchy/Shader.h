@@ -140,12 +140,11 @@ public:
 
 
 protected:
+	CShader(const CShader&);
 	virtual ~CShader();
-
 
 private:
     //! Denied operators
-    CShader(const CShader&);
     CShader& operator=(const CShader&) { return *this; }
 
     //! Implements CPersistence
