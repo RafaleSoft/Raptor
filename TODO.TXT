@@ -21,7 +21,11 @@
 	
 - CRaptorDisplayConfig:
 	- faire un sync avec timer (VSync prend 50% CPU!)
-	
+
+- CShader:
+	- faire le glenderTexture (attention a prendre en charge l'utilisation automatique des
+	TMUs. n'activier et désactiver que le minimum, car coûteux')
+
 - RaptorServer:
 	- Rendre thread safe la gestion des clients
 		- en particulier la fermeture de connection dans readClients // writeClients
@@ -96,6 +100,7 @@
 	- Traiter le cas des lumières multiples dans les shaders et shadows ( ex : bump mapping, shadow volume .)
 	- Octrees statiques : comment traiter les mouvements d'objets ? ( remonter les objets au niveau supérieur )
 	- Pb : pour un mirror, les lumières ne sont pas mirrorées ( reproject ? )
+	- Mirror : ne pas activer de lighting et texturing si on est en DEPTH_PASS
 
 - Terminer shadow volumes:
 	- Clipping multithread !

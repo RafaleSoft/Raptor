@@ -95,11 +95,6 @@ void CBumpShader::glInit(void)
 	glCompileShader();
 }
 
-void CBumpShader::glStop(void)
-{
-	CShader::glStop();
-}
-
 void CBumpShader::glRender(void)
 {
 	CShader::glRender();

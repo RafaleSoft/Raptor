@@ -710,7 +710,7 @@ void CShader::glStop()
     if (m_shaderProgram.handle != 0)
     {
 #if defined(GL_ARB_shader_objects)
-		const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();    
+		const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
 		pExtensions->glUseProgramObjectARB(0);
 #endif
 	}
@@ -721,10 +721,16 @@ void CShader::glStop()
 		if (m_pFShader != NULL)
 			m_pFShader->glStop();
 	}
-	
+
+	//	This call generates too much load in GL client/server.
+	//	Derived classes shall implement own UnSetup until a more general
+	//	TMU resource allocation manager can be used
+	/*
 	if ((0 != m_textureUnitSetup.handle) &&
 		(0 != m_textureUnitUnSetup.handle))
-		glCallList(m_textureUnitUnSetup.handle);
+		if (CRenderingProperties::GetCurrentProperties()->getCurrentTexturing() == CRenderingProperties::ENABLE)
+			glCallList(m_textureUnitUnSetup.handle);
+	*/
 }
 
 bool CShader::glCompileShader()

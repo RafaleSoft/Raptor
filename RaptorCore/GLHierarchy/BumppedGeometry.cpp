@@ -43,7 +43,9 @@
 #if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
 	#include "System/RaptorErrorManager.h"
 #endif
-
+#if !defined(AFX_RENDERINGPROPERTIES_H__634BCF2B_84B4_47F2_B460_D7FDC0F3B698__INCLUDED_)
+	#include "RenderingProperties.h"
+#endif
 
 RAPTOR_NAMESPACE
 
@@ -187,13 +189,27 @@ void CBumppedGeometry::glRender()
 	if (!properties.isVisible())
 		return;
     
-	m_pBumpShader->glRenderMaterial();
-	m_pBumpShader->glRenderTexture();
+	CRenderingProperties *props = CRenderingProperties::GetCurrentProperties();
+	bool proceedLighting = (props->getCurrentLighting() == CRenderingProperties::ENABLE);
+	bool proceedTexturing = (props->getCurrentTexturing() == CRenderingProperties::ENABLE);
+
+	if (proceedLighting)
+		m_pBumpShader->glRenderMaterial();
+	if (proceedTexturing)
+		m_pBumpShader->glRenderTexture();
 	m_pBumpShader->glRender();
 	
 	glRenderGeometry();
 	
 	m_pBumpShader->glStop();
+
+	if (proceedTexturing)
+	{
+		const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+		pExtensions->glActiveTextureARB(GL_TEXTURE1_ARB);
+		glDisable(GL_TEXTURE_2D);
+		pExtensions->glActiveTextureARB(GL_TEXTURE0_ARB);
+	}
 	
 	CATCH_GL_ERROR
 }

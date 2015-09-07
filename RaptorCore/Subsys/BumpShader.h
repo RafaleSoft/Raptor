@@ -29,7 +29,6 @@ public:
 
 	//!	Implements base glRender.
 	virtual void glRender(void);
-	virtual void glStop(void);
 
 	//! Initialize all shadings, must be called before use.
 	void glInit();
