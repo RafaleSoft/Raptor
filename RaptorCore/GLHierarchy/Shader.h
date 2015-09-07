@@ -33,20 +33,25 @@ class CGeometryProgram;
 class RAPTOR_API CShader : public CPersistence, public CObjectReference
 {
 public:
+	//! Base constructor
 	CShader(const std::string& name = "SHADER");
 
-	//!	Returns existing or create a shader named shaderName
-	static CShader *glGetShader(const std::string& shaderName);
+	//!	Clone current shader, assigning the new name newShaderName
+	virtual CShader* glClone(const std::string& newShaderName) const;
 
-    //! Returns true is this->class ID is a subclass of id
-    //virtual bool isSubClassOf(PERSISTENCE_CLASS_ID id) const;
+	//!	Returns a an existing shader or the default Null Shader
+	//! if shaderName is not found or if shaderName is the name of a non-shader object.
+	//! @return the shader named shaderName or the dafault NullShader.
+	static const CShader& getShader(const std::string& shaderName);
 
     //! Applyies the shader, the shader must be compiled.
 	virtual void glRender(void);
+	//! Make the fixed GL pipeline the default shader.
     virtual void glStop(void);
 
     //! Generate the shader as a compiled object ( program objects / display lists ).
     //! The compile state must be correct to render the shader.
+	//! @return true if successfully compiled, false otherwise.
     bool glCompileShader(void); 
 
 
@@ -88,7 +93,7 @@ public:
 	bool hasTextureUnitSetup(void) const { return m_pTMUSetup != NULL; };
 
     //! Removes the TMUSetup if it has been created.
-    //! Returns true if a TMUSetup is deleted.
+    //! @return true if a TMUSetup is deleted.
     bool glRemoveTextureUnitSetup(void);
 
 	//!	Renders the internal texture unit setup if texturing is enabled,
@@ -105,12 +110,20 @@ public:
 	//!	Returns true if shader has a Vertex Shader already
 	bool hasVertexShader(void) const { return m_pVShader != NULL; };
 
+	//! Removes the vertex shader.
+	//! @return true if the vertex shader has been deleted
+	bool glRemoveVertexShader(void);
+
 	//!	Returns the fragment shader
 	//!	Allocate a new one if necessary
 	CFragmentShader * const glGetFragmentShader(const std::string& name = "");
 
 	//!	Returns true if shader has a Fragment Shader already
 	bool hasFragmentShader(void) const { return m_pFShader != NULL; };
+
+	//! Removes the fragment shader.
+	//! @return true if the fragment shader has been deleted
+	bool glRemoveFragmentShader(void);
 
     //!	Returns the vertex Program
 	//!	Allocate a new one if necessary
@@ -119,12 +132,20 @@ public:
 	//!	Returns true if Program has a Vertex Program already
 	bool hasVertexProgram(void) const { return m_pVProgram != NULL; };
 
+	//! Removes the vertex program.
+	//! @return true if the vertex program has been deleted
+	bool glRemoveVertexProgram(void);
+
 	//!	Returns the fragment Program
 	//!	Allocate a new one if necessary
 	CFragmentProgram * const glGetFragmentProgram(const std::string& name = "");
 
 	//!	Returns true if Program has a Fragment Program already
 	bool hasFragmentProgram(void) const { return m_pFProgram != NULL; };
+
+	//! Removes the fragment program.
+	//! @return true if the fragment program has been deleted
+	bool glRemoveFragmentProgram(void);
 
 	//!	Returns the geometry Program
 	//!	Allocate a new one if necessary
@@ -133,6 +154,10 @@ public:
 	//!	Returns true if Program has a Vertex Program already
 	bool hasGeometryProgram(void) const { return m_pGProgram != NULL; };
 
+	//! Removes the geometry program.
+	//! @return true if the geometry program has been deleted
+	bool glRemoveGeometryProgram(void);
+
 
 	//!	Streams : implement CPersistence
 	DECLARE_IO
@@ -140,12 +165,15 @@ public:
 
 
 protected:
+	//! Copy constructor.
+	CShader(const CShader&);
+
+	//! Destructor.
 	virtual ~CShader();
 
 
 private:
     //! Denied operators
-    CShader(const CShader&);
     CShader& operator=(const CShader&) { return *this; }
 
     //! Implements CPersistence
@@ -156,6 +184,7 @@ private:
 
     RAPTOR_HANDLE       m_shaderProgram;
 	RAPTOR_HANDLE		m_textureUnitSetup;
+	RAPTOR_HANDLE		m_textureUnitUnSetup;
 
 	CMaterial			*m_pMaterial;
 	CTextureUnitSetup	*m_pTMUSetup;

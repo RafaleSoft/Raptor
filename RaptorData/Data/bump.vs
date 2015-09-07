@@ -3,7 +3,7 @@
 //#define EYE_SPACE 1
 //#define AMBIENT_OCCLUSION 1
 
-const int MAX_LIGHTS = 3;
+const int MAX_LIGHTS = 5;
 
 attribute vec4 tangent;
 

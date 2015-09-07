@@ -53,13 +53,13 @@ bool CParticleCompute::installComputer(const std::string& computeModel)
 
 	// TODO : use getModelName made static instead of hard coded names
 	if (computeModel == "random")
-		CParticleManager::setComputeModel(new CRamdomParticle(),"random");
+		CParticleManager::setComputeModel(new CRamdomParticle(), computeModel);
 	else if (computeModel == "fire")
-		CParticleManager::setComputeModel(new CFireParticle(),"fire");
+		CParticleManager::setComputeModel(new CFireParticle(), computeModel);
 	else if (computeModel == "smoke")
-		CParticleManager::setComputeModel(new CSmokeParticle(),"smoke");
+		CParticleManager::setComputeModel(new CSmokeParticle(), computeModel);
 	else if (computeModel == "static")
-		CParticleManager::setComputeModel(new CStaticParticle(),"static");
+		CParticleManager::setComputeModel(new CStaticParticle(), computeModel);
 	else
 		ret = false;
 

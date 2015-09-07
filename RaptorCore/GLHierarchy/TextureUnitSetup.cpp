@@ -635,8 +635,11 @@ RAPTOR_HANDLE CTextureUnitSetup::glBuildUnSetup(void)
 		    if (glActiveTextureARB != NULL)
 			    glActiveTextureARB(GL_TEXTURE0_ARB+i);
 
-			glBindTexture(imageUnit[i]->target & 0xFFFF,0);
-		    glDisable(imageUnit[i]->target & 0xFFFF);
+			if (imageUnit[i] != NULL)
+			{
+				glBindTexture(imageUnit[i]->target & 0xFFFF, 0);
+				glDisable(imageUnit[i]->target & 0xFFFF);
+			}
 
 		    // Unsetup of combiners
 			glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_REPLACE);

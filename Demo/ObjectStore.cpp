@@ -103,28 +103,6 @@ static const char* ROCKSCULPT = "Datas\\lrock049.jpg";
 #define NB_STAIR_STEPS	50
 
 
-static const string PROJECTION_PROGRAM =
-"!!ARBfp1.0 \
-ATTRIB iTex0 = fragment.texcoord[0]; \
-ATTRIB iTex3 = fragment.texcoord[3]; \
-ATTRIB iLight = fragment.color.primary; \
-PARAM zero = { 0.0 , 0.0, 0.0, 1.0 }; \
-TEMP color; \
-TEMP projection; \
-TEMP cull; \
-TEMP blend; \
-OUTPUT finalColor = result.color; \
-TXP color, iTex0 , texture[0] , 2D ; \
-MOV blend.w, color.w; \
-MUL color, iLight, color; \
-TXP projection, iTex3 , texture[3] , 2D ; \
-MUL projection, projection, projection.w; \
-SLT cull, zero.x, iTex3.w; \
-MAD_SAT color, cull, projection, color; \
-MOV finalColor, color; \
-MOV finalColor.w, blend.w; \
-END";
-
 static float    LIGHT_AMBIENT=0.0f;
 
 //////////////////////////////////////////////////////////////////////

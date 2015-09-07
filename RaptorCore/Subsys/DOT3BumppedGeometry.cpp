@@ -26,14 +26,29 @@
 #ifndef __GLOBAL_H__
 	#include "System/Global.h"
 #endif
-
+#if !defined(AFX_3DENGINEMATRIX_H__6CD1110E_1174_4f38_A452_30FB312022D0__INCLUDED_)
+	#include "Engine/3DEngineMatrix.h"
+#endif
+#if !defined(AFX_BUMPLIGHTOBSERVER_H__238FC166_A3BC_4D77_8FD4_0A42DB45280F__INCLUDED_)
+	#include "BumpLightObserver.h"
+#endif
+#if !defined(AFX_LIGHT_H__AA8BABD6_059A_4939_A4B6_A0A036E12E1E__INCLUDED_)
+	#include "GLHierarchy/Light.h"
+#endif
 
 RAPTOR_NAMESPACE
 
+CBumpLightObserver* CDOT3BumppedGeometry::m_pObserver = NULL;
 
-CDOT3BumppedGeometry::CDOT3BumppedGeometry()
-	:bumpDiffusePx(NULL),bumpSpecularPx(NULL)
+
+CDOT3BumppedGeometry::CDOT3BumppedGeometry(const std::string& name)
+	:CBumppedGeometry(name),
+	bumpDiffusePx(NULL),bumpSpecularPx(NULL)
 {
+	if (m_pObserver == NULL)
+		m_pObserver = new CBumpLightObserver();
+	else
+		m_pObserver->addReference();
 }
 
 
@@ -41,6 +56,14 @@ CDOT3BumppedGeometry::~CDOT3BumppedGeometry()
 {
 	if (NULL != bumpDiffusePx)	delete[] bumpDiffusePx;
 	if (NULL != bumpSpecularPx)	delete[] bumpSpecularPx;
+
+	if (NULL != m_pObserver)
+	{
+		bool lastObject = (m_pObserver->getRefCount() == 1);
+		m_pObserver->releaseReference();
+		if (lastObject)
+			m_pObserver = NULL;
+	}
 }
 
 
@@ -55,8 +78,20 @@ CBumppedGeometry& CDOT3BumppedGeometry::operator=(const CDOT3BumppedGeometry &ge
 }
 
 
-void CDOT3BumppedGeometry::glSetTextureUnits(void)
+void CDOT3BumppedGeometry::setRenderingModel(const CRenderingModel& model)
 {
+	CBumppedGeometry::setRenderingModel(model);
+
+	//	Rendering requires separate specular & seconday color
+	if (!Raptor::glIsExtensionSupported("GL_EXT_secondary_color") ||
+		!Raptor::glIsExtensionSupported("GL_ARB_texture_env_dot3"))
+	{
+		Raptor::GetErrorManager()->generateRaptorError(	CBumppedGeometry::CBumppedGeometryClassID::GetClassId(),
+														CRaptorErrorManager::RAPTOR_WARNING,
+														CRaptorMessages::ID_NO_GPU_PROGRAM);
+		return;
+	}
+
 	//  Dot3 rendering needs normalMap on TMU0 !
 	CTextureUnitSetup *setup = m_pBumpShader->glGetTextureUnitsSetup();
 	setup->setDiffuseMap(normalMap);
@@ -75,35 +110,88 @@ void CDOT3BumppedGeometry::glSetTextureUnits(void)
 	setup->getTMUCombiner(CTextureUnitSetup::IMAGE_UNIT_1).src_rgb_0 = GL_TEXTURE;
 	setup->getTMUCombiner(CTextureUnitSetup::IMAGE_UNIT_1).src_rgb_1 = GL_PREVIOUS_ARB;
 #endif
-	setup->useRegisterCombiners(false);
 }
 
 
 unsigned int CDOT3BumppedGeometry::glUpdateLightPosition(void)
 {
-	int res = CBumppedGeometry::glUpdateLightPosition();
+	unsigned int numLights = 0;
+	C3DEngineMatrix T;
 
-	if (!m_pBumpShader->hasVertexShader())
+	glGetTransposeFloatv(GL_MODELVIEW_MATRIX, T);
+
+	GL_COORD_VERTEX center;
+	getCenter(center);
+	CGenericVector<float> x(center.x, center.y, center.z, 1.0f);
+	x *= T;
+	vector<CLight*> lights = m_pObserver->sortLights(x);
+	if (lights.size() < 1)
+		return numLights;
+	CLight *pMainLight = lights[0];
+
+	V.x = -(T[0] * T[3] + T[4] * T[7] + T[8] * T[11]);
+	V.y = -(T[1] * T[3] + T[5] * T[7] + T[9] * T[11]);
+	V.z = -(T[2] * T[3] + T[6] * T[7] + T[10] * T[11]);
+
+	T.Inverse();
+
+	numLights++;
+	X = T * pMainLight->getLightEyePosition();
+
+
+	GL_COORD_VERTEX att = pMainLight->getSpotParams();
+	A.x = att.z;
+	A.y = att.y;
+	A.z = att.x;
+	A.h = 0.0f;
+	S = pMainLight->getSpecular();
+
+	/*
+	if (lights.size() > 1)
+	{
+		CLight *pSecondLight = lights[1];
+		numLights++;
+		X2 = T * pSecondLight->getLightEyePosition();
+
+		att = pSecondLight->getSpotParams();
+		A2.x = att.z;
+		A2.y = att.y;
+		A2.z = att.x;
+		A2.h = 0.0f;
+		S2 = pSecondLight->getSpecular();
+	}
+	if (lights.size() > 2)
+	{
+		CLight *pThirdLight = lights[2];
+		numLights++;
+		X3 = T * pThirdLight->getLightEyePosition();
+
+		att = pThirdLight->getSpotParams();
+		A3.x = att.z;
+		A3.y = att.y;
+		A3.z = att.x;
+		A3.h = 0.0f;
+		S3 = pThirdLight->getSpecular();
+	}
+	*/
+	if (bumpDiffusePx == NULL)
 	{
 		if (bumpDiffusePx == NULL)
-		{
-			if (bumpDiffusePx == NULL)
-				bumpDiffusePx = new GLubyte[4 * m_nbVertex];
-			if (bumpSpecularPx == NULL)
-				bumpSpecularPx = new GLubyte[4 * m_nbVertex];
-		}
-
-#ifdef RAPTOR_SSE_CODE_GENERATION
-		if (Global::GetInstance().getCurrentStatus().forceSSE)
-			setLightPositionDOT3SSE();
-		else
-			setLightPositionDOT3();
-#else
-		setLightPositionDOT3();
-#endif
+			bumpDiffusePx = new GLubyte[4 * m_nbVertex];
+		if (bumpSpecularPx == NULL)
+			bumpSpecularPx = new GLubyte[4 * m_nbVertex];
 	}
 
-	return res;
+#ifdef RAPTOR_SSE_CODE_GENERATION
+	if (Global::GetInstance().getCurrentStatus().forceSSE)
+		setLightPositionDOT3SSE();
+	else
+		setLightPositionDOT3();
+#else
+	setLightPositionDOT3();
+#endif
+
+	return numLights;
 }
 
 
@@ -323,11 +411,11 @@ void CDOT3BumppedGeometry::setLightPositionDOT3SSE(void)
 		xmm1 = xmm0;
 		xmm2 = xmm0;
 		sse_shufps(XMM1_XMM0, SSE_R4_R1_R3_R2)
-			sse_shufps(XMM2_XMM0, SSE_R4_R2_R1_R3)
-			xmm1 += xmm0;
+		sse_shufps(XMM2_XMM0, SSE_R4_R2_R1_R3)
+		xmm1 += xmm0;
 		xmm1 += xmm2;
 		sse_rsqrtps(XMM2_XMM1)
-			xmm4 *= xmm2;
+		xmm4 *= xmm2;
 		xmm4.Save(diffuse);
 
 		d = diffuse.x * NORMAL(i).x + diffuse.y * NORMAL(i).y + diffuse.z * NORMAL(i).z;
@@ -350,11 +438,11 @@ void CDOT3BumppedGeometry::setLightPositionDOT3SSE(void)
 			xmm1 = xmm0;
 			xmm2 = xmm0;
 			sse_shufps(XMM1_XMM0, SSE_R4_R1_R3_R2)
-				sse_shufps(XMM2_XMM0, SSE_R4_R2_R1_R3)
-				xmm1 += xmm0;
+			sse_shufps(XMM2_XMM0, SSE_R4_R2_R1_R3)
+			xmm1 += xmm0;
 			xmm1 += xmm2;
 			sse_rsqrtps(XMM2_XMM1)
-				xmm3 *= xmm2;
+			xmm3 *= xmm2;
 			xmm3.Save(viewer);
 
 			d2 = viewer.x * NORMAL(i).x + viewer.y * NORMAL(i).y + viewer.z * NORMAL(i).z;

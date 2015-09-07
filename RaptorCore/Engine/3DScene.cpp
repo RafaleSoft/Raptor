@@ -286,7 +286,7 @@ void C3DScene::glRenderObjects(	const vector<C3DSceneObject*>& objects)
 								m_pAttributes->m_pLights,
 								proceedLights))
 			occludedObjects.push_back(sc);
-    }
+	}
 
 	if (!occludedObjects.empty())
 		C3DSceneObject::glComputeBBoxOcclusion(	m_pAttributes->m_iCurrentPass,
@@ -300,7 +300,6 @@ void C3DScene::glRenderObjects(	const vector<C3DSceneObject*>& objects)
 	//
     bool proceedMirrors = ((passKind == C3DSceneObject::DEPTH_PASS) || (passKind == C3DSceneObject::FULL_PASS))
                                         && (!m_pAttributes->m_bMirrorsRendered);
-	//proceedMirrors = false;
     for (i=0;i<m_pAttributes->m_pMirrors.size();i++)
     {
         CMirror *pMirror = m_pAttributes->m_pMirrors[i];

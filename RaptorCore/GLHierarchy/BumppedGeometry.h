@@ -21,14 +21,16 @@ RAPTOR_NAMESPACE_BEGIN
 
 class CLight;
 class CShader;
-class CBumpLightObserver;
 class CTextureObject;
 
 
 class RAPTOR_API CBumppedGeometry : public CGeometry  
 {
 public:
+	//!	Default constructor.
 	CBumppedGeometry(const std::string& name = "BUMPPED GEOMETRY");
+
+	//!	Destructor.
 	virtual ~CBumppedGeometry();
 
 	//!	Rendering ( see base class )
@@ -69,13 +71,12 @@ public:
 
 
 protected:
-	//!	Recomputes the bump colors ( dynamic normals ), according light position
-	//!	Returns the number of lights that are relevant in the current context.
-	virtual unsigned int glUpdateLightPosition(void);
-
     //! Specific constructor for derived classes
     CBumppedGeometry(	const std::string& name, 
 						const CPersistence::CPersistenceClassID &classID);
+
+	//!	Implements CPersistence
+	virtual void unLink(const CPersistence* p);
 
 	//!	Texture setups
 	CReference<CTextureObject>	diffuseMap;
@@ -84,10 +85,6 @@ protected:
 
 	//! Shaders for various light configurations.
 	CShader*			m_pBumpShader;
-	//! Shaders for various light configurations.
-	static CShader*		m_pBumpShader2Lights;
-	static CShader*		m_pBumpShaderAmbient;
-	static CShader*		m_pBumpShader3Lights;
 
 	//	Coordinates for shader T&L:
 	//	- X is the light position relative to the object.
@@ -102,7 +99,7 @@ protected:
 	CGenericVector<float>	X;
 	GL_COORD_VERTEX A;
 	CColor::RGBA	S;
-
+	/*
 	CGenericVector<float>	X2;
 	GL_COORD_VERTEX A2;
 	CColor::RGBA	S2;
@@ -110,17 +107,11 @@ protected:
 	CGenericVector<float>	X3;
 	GL_COORD_VERTEX A3;
 	CColor::RGBA	S3;
-
+	*/
 
 private:
-	//!	Implements CPersistence
-	void unLink(const CPersistence* p);
-
 	//!	Initialize shaders and observers
-	void init(void);
-
-    //!	A light observer to be notified from lightupdates.
-	static CBumpLightObserver	*m_pObserver;
+	virtual void init(void);
 };
 
 RAPTOR_NAMESPACE_END

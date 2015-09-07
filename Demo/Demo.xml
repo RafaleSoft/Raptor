@@ -19,7 +19,7 @@
       <Particle name="fire" systemSize="100" revive="1" pointSize="0.2" sprite="0" type="texture" model="fire">
           <Sprite set="MAIN_TEXTURES" texname="Datas\\Fire.tga"/>
       </Particle> 
-      <Particle name="smoke" systemSize ="100" revive="1" pointSize="0.3" sprite="0" scaleFactor="1.005" type="texture" model="smoke">
+      <Particle name="smoke" systemSize ="100" revive="1" pointSize="0.3" sprite="0" scaleFactor="3.0" type="texture" model="smoke">
           <FadeFactors x="1.0" y="1.0" z="1.0" h="1.0"/>
           <Sprite set="MAIN_TEXTURES" texname="Datas\\Smoke.tga"/> 
       </Particle>
@@ -45,143 +45,143 @@
 			<Shininess r="20.0" g="1.0" b="1.0" a="1.0"/>
 		</Material>
 	</Shader>
-    <Light name="mainlight" active="1" volumesize="2.0">
-        <Position x="0.0" y="2.0" z="20.0"/>
-        <Direction x="0.0" y="0.0" z="-1.0"/>
-        <Material>
-            <Ambient r="0.0" g="0.0" b="0.0" a="1.0"/>
-            <Diffuse r="1.0" g="1.0" b="1.0" a="1.0"/>
-            <Specular r="0.8" g="1.0" b="1.0" a="1.0"/>
-        </Material>
-        <Spot>
-            <Attenuation x="0.003" y="0.0" z="1.0" h="180"/>
-        </Spot>
-        <Flare set="MAIN_TEXTURES" texname="Datas\\LensFlare2.tga" size="10.0"/>
-        <Flare set="MAIN_TEXTURES" texname="Datas\\flare1.jpg" size="4.0"/>
-        <Flare set="MAIN_TEXTURES" texname="Datas\\flare3.jpg" size="2.5"/>
-        <Flare set="MAIN_TEXTURES" texname="Datas\\flare4.jpg" size="1.5"/>
-        <Flare set="MAIN_TEXTURES" texname="Datas\\flare5.jpg" size="0.8"/>
-        <Flare set="MAIN_TEXTURES" texname="Datas\\flare6.jpg" size="1.5"/>
-        <Flare set="MAIN_TEXTURES" texname="Datas\\flare7.jpg" size="3.5"/>
-        <Flare set="MAIN_TEXTURES" texname="Datas\\flare8.jpg" size="4.0"/>
-        <Flare set="MAIN_TEXTURES" texname="Datas\\flare10.jpg" size="3.5"/>
-    </Light>
-    <Light name="light0" active="1" volumesize="2.0">
-        <Position x="-2.75" y="12.2" z="-34.8"/>
-        <Direction x="0.0" y="1.0" z="0.0"/>
-        <Material>
-            <Ambient r="0.0" g="0.0" b="0.0" a="1.0"/>
-            <Diffuse r="1.0" g="1.0" b="1.0" a="1.0"/>
-            <Specular r="1.0" g="0.7" b="0.4" a="1.0"/>
-        </Material>
-        <Spot treshold="0.1">
-            <Attenuation x="0.05" y="0.0" z="1.0" h="180.0"/>
-        </Spot>
-        <Glow set="MAIN_TEXTURES" size="5.0" texname="Datas\\flare0.jpg"/>
-    </Light>
-    <Light name="light1" active="1" volumesize="2.0">
-        <Position x="29.55" y="12.2" z="-2.75"/>
-        <Direction x="0.0" y="1.0" z="0.0"/>
-        <Material>
-            <Ambient r="0.0" g="0.0" b="0.0" a="1.0"/>
-            <Diffuse r="1.0" g="1.0" b="1.0" a="1.0"/>
-            <Specular r="1.0" g="0.7" b="0.4" a="1.0"/>
-        </Material>
-        <Spot treshold="0.1">
-            <Attenuation x="0.05" y="0.0" z="1.0" h="180.0"/>
-        </Spot>
-        <Glow set="MAIN_TEXTURES" size="5.0" texname="Datas\\flare0.jpg"/>
-    </Light>
-    <Light name="light2" active="1" volumesize="2.0">
-        <Position x="-35.0" y="12.2" z="-2.75"/>
-        <Direction x="0.0" y="1.0" z="0.0"/>
-        <Material>
-            <Ambient r="0.0" g="0.0" b="0.0" a="1.0"/>
-            <Diffuse r="1.0" g="1.0" b="1.0" a="1.0"/>
-            <Specular r="1.0" g="0.7" b="0.4" a="1.0"/>
-        </Material>
-        <Spot treshold="0.1">
-            <Attenuation x="0.05" y="0.0" z="1.0" h="180.0"/>
-        </Spot>
-        <Glow set="MAIN_TEXTURES" size="5.0" texname="Datas\\flare0.jpg"/>
-    </Light>
-    <Light name="light3" active="1" volumesize="2.0">
-        <Position x="-2.75" y="12.2" z="30.55"/>
-        <Direction x="0.0" y="1.0" z="0.0"/>
-        <Material>
-            <Ambient r="0.0" g="0.0" b="0.0" a="1.0"/>
-            <Diffuse r="1.0" g="1.0" b="1.0" a="1.0"/>
-            <Specular r="1.0" g="0.7" b="0.4" a="1.0"/>
-        </Material>
-        <Spot treshold="0.1">
-            <Attenuation x="0.05" y="0.0" z="1.0" h="180.0"/>
-        </Spot>
-        <Glow set="MAIN_TEXTURES" size="5.0" texname="Datas\\flare0.jpg"/>
-    </Light>
-    <Light name="light4" active="1" volumesize="2.0">
-        <Position x="-12.5" y="12.2" z="-12.5"/>
-        <Direction x="0.0" y="1.0" z="0.0"/>
-        <Material>
-            <Ambient r="0.0" g="0.0" b="0.0" a="1.0"/>
-            <Diffuse r="1.0" g="1.0" b="1.0" a="1.0"/>
-            <Specular r="1.0" g="0.7" b="0.4" a="1.0"/>
-        </Material>
-        <Spot treshold="0.1">
-            <Attenuation x="0.05" y="0.0" z="1.0" h="180.0"/>
-        </Spot>
-        <Glow set="MAIN_TEXTURES" size="5.0" texname="Datas\\flare0.jpg"/>
-    </Light>
-    <Light name="light5" active="1" volumesize="2.0">
-        <Position x="7.5" y="12.2" z="-12.5"/>
-        <Direction x="0.0" y="1.0" z="0.0"/>
-        <Material>
-            <Ambient r="0.0" g="0.0" b="0.0" a="1.0"/>
-            <Diffuse r="1.0" g="1.0" b="1.0" a="1.0"/>
-            <Specular r="1.0" g="0.7" b="0.4" a="1.0"/>
-        </Material>
-        <Spot treshold="0.1">
-            <Attenuation x="0.05" y="0.0" z="1.0" h="180.0"/>
-        </Spot>
-        <Glow set="MAIN_TEXTURES" size="5.0" texname="Datas\\flare0.jpg"/>
-    </Light>
-    <Light name="light6" active="1" volumesize="2.0">
-        <Position x="7.5" y="12.2" z="7.5"/>
-        <Direction x="0.0" y="1.0" z="0.0"/>
-        <Material>
-            <Ambient r="0.0" g="0.0" b="0.0" a="1.0"/>
-            <Diffuse r="1.0" g="1.0" b="1.0" a="1.0"/>
-            <Specular r="1.0" g="0.7" b="0.4" a="1.0"/>
-        </Material>
-        <Spot treshold="0.1">
-            <Attenuation x="0.05" y="0.0" z="1.0" h="180.0"/>
-        </Spot>
-        <Glow set="MAIN_TEXTURES" size="5.0" texname="Datas\\flare0.jpg"/>
-    </Light>
-    <Light name="light7" active="1" volumesize="2.0">
-        <Position x="-12.5" y="12.2" z="7.5"/>
-        <Direction x="0.0" y="1.0" z="0.0"/>
-        <Material>
-            <Ambient r="0.0" g="0.0" b="0.0" a="1.0"/>
-            <Diffuse r="1.0" g="1.0" b="1.0" a="1.0"/>
-            <Specular r="1.0" g="0.7" b="0.4" a="1.0"/>
-        </Material>
-        <Spot treshold="0.1">
-            <Attenuation x="0.05" y="0.0" z="1.0" h="180.0"/>
-        </Spot>
-        <Glow set="MAIN_TEXTURES" size="5.0" texname="Datas\\flare0.jpg"/>
-    </Light> 
-    <ViewModifier name="KNOT_MODIFIER" object="BUMP_KNOT">
-        <Action action="Reset"/>
-        <Action action="AbsoluteTranslation">
-            <TimeFunction type="time_constant" a0="0.0"/>
-            <TimeFunction type="time_constant" a0="5.0"/>
-            <TimeFunction type="time_constant" a0="0.0"/>
-        </Action>
-        <Action action="Rotation">
-            <TimeFunction type="time_linear" a0="0.0" a1="72.0"/>
-            <TimeFunction type="time_linear" a0="5.0" a1="144.0"/>
-			<TimeFunction type="time_linear" a0="0.0" a1="216.0"/>
-		</Action>
+  <Light name="mainlight" active="1" volumesize="2.0">
+      <Position x="0.0" y="2.0" z="20.0"/>
+      <Direction x="0.0" y="0.0" z="-1.0"/>
+      <Material>
+          <Ambient r="0.0" g="0.0" b="0.0" a="1.0"/>
+          <Diffuse r="1.0" g="1.0" b="1.0" a="1.0"/>
+          <Specular r="0.8" g="1.0" b="1.0" a="1.0"/>
+      </Material>
+      <Spot>
+          <Attenuation x="0.003" y="0.0" z="1.0" h="180.0"/>
+      </Spot>
+      <Flare set="MAIN_TEXTURES" texname="Datas\\LensFlare2.tga" size="10.0"/>
+      <Flare set="MAIN_TEXTURES" texname="Datas\\flare1.jpg" size="4.0"/>
+      <Flare set="MAIN_TEXTURES" texname="Datas\\flare3.jpg" size="2.5"/>
+      <Flare set="MAIN_TEXTURES" texname="Datas\\flare4.jpg" size="1.5"/>
+      <Flare set="MAIN_TEXTURES" texname="Datas\\flare5.jpg" size="0.8"/>
+      <Flare set="MAIN_TEXTURES" texname="Datas\\flare6.jpg" size="1.5"/>
+      <Flare set="MAIN_TEXTURES" texname="Datas\\flare7.jpg" size="3.5"/>
+      <Flare set="MAIN_TEXTURES" texname="Datas\\flare8.jpg" size="4.0"/>
+      <Flare set="MAIN_TEXTURES" texname="Datas\\flare10.jpg" size="3.5"/>
+  </Light>
+  <Light name="light0" active="1" volumesize="2.0">
+      <Position x="-2.75" y="12.2" z="-34.8"/>
+      <Direction x="0.0" y="1.0" z="0.0"/>
+      <Material>
+          <Ambient r="0.0" g="0.0" b="0.0" a="1.0"/>
+          <Diffuse r="1.0" g="1.0" b="1.0" a="1.0"/>
+          <Specular r="1.0" g="0.7" b="0.4" a="1.0"/>
+      </Material>
+      <Spot treshold="0.1">
+          <Attenuation x="0.05" y="0.0" z="1.0" h="180.0"/>
+      </Spot>
+      <Glow set="MAIN_TEXTURES" size="5.0" texname="Datas\\flare0.jpg"/>
+  </Light>
+  <Light name="light1" active="1" volumesize="2.0">
+      <Position x="29.55" y="12.2" z="-2.75"/>
+      <Direction x="0.0" y="1.0" z="0.0"/>
+      <Material>
+          <Ambient r="0.0" g="0.0" b="0.0" a="1.0"/>
+          <Diffuse r="1.0" g="1.0" b="1.0" a="1.0"/>
+          <Specular r="1.0" g="0.7" b="0.4" a="1.0"/>
+      </Material>
+      <Spot treshold="0.1">
+          <Attenuation x="0.05" y="0.0" z="1.0" h="180.0"/>
+      </Spot>
+      <Glow set="MAIN_TEXTURES" size="5.0" texname="Datas\\flare0.jpg"/>
+  </Light>
+  <Light name="light2" active="1" volumesize="2.0">
+      <Position x="-35.0" y="12.2" z="-2.75"/>
+      <Direction x="0.0" y="1.0" z="0.0"/>
+      <Material>
+          <Ambient r="0.0" g="0.0" b="0.0" a="1.0"/>
+          <Diffuse r="1.0" g="1.0" b="1.0" a="1.0"/>
+          <Specular r="1.0" g="0.7" b="0.4" a="1.0"/>
+      </Material>
+      <Spot treshold="0.1">
+          <Attenuation x="0.05" y="0.0" z="1.0" h="180.0"/>
+      </Spot>
+      <Glow set="MAIN_TEXTURES" size="5.0" texname="Datas\\flare0.jpg"/>
+  </Light>
+  <Light name="light3" active="1" volumesize="2.0">
+      <Position x="-2.75" y="12.2" z="30.55"/>
+      <Direction x="0.0" y="1.0" z="0.0"/>
+      <Material>
+          <Ambient r="0.0" g="0.0" b="0.0" a="1.0"/>
+          <Diffuse r="1.0" g="1.0" b="1.0" a="1.0"/>
+          <Specular r="1.0" g="0.7" b="0.4" a="1.0"/>
+      </Material>
+      <Spot treshold="0.1">
+          <Attenuation x="0.05" y="0.0" z="1.0" h="180.0"/>
+      </Spot>
+      <Glow set="MAIN_TEXTURES" size="5.0" texname="Datas\\flare0.jpg"/>
+  </Light>
+  <Light name="light4" active="1" volumesize="2.0">
+      <Position x="-12.5" y="12.2" z="-12.5"/>
+      <Direction x="0.0" y="1.0" z="0.0"/>
+      <Material>
+          <Ambient r="0.0" g="0.0" b="0.0" a="1.0"/>
+          <Diffuse r="1.0" g="1.0" b="1.0" a="1.0"/>
+          <Specular r="1.0" g="0.7" b="0.4" a="1.0"/>
+      </Material>
+      <Spot treshold="0.1">
+          <Attenuation x="0.05" y="0.0" z="1.0" h="180.0"/>
+      </Spot>
+      <Glow set="MAIN_TEXTURES" size="5.0" texname="Datas\\flare0.jpg"/>
+  </Light>
+  <Light name="light5" active="1" volumesize="2.0">
+      <Position x="7.5" y="12.2" z="-12.5"/>
+      <Direction x="0.0" y="1.0" z="0.0"/>
+      <Material>
+          <Ambient r="0.0" g="0.0" b="0.0" a="1.0"/>
+          <Diffuse r="1.0" g="1.0" b="1.0" a="1.0"/>
+          <Specular r="1.0" g="0.7" b="0.4" a="1.0"/>
+      </Material>
+      <Spot treshold="0.1">
+          <Attenuation x="0.05" y="0.0" z="1.0" h="180.0"/>
+      </Spot>
+      <Glow set="MAIN_TEXTURES" size="5.0" texname="Datas\\flare0.jpg"/>
+  </Light>
+  <Light name="light6" active="1" volumesize="2.0">
+      <Position x="7.5" y="12.2" z="7.5"/>
+      <Direction x="0.0" y="1.0" z="0.0"/>
+      <Material>
+          <Ambient r="0.0" g="0.0" b="0.0" a="1.0"/>
+          <Diffuse r="1.0" g="1.0" b="1.0" a="1.0"/>
+          <Specular r="1.0" g="0.7" b="0.4" a="1.0"/>
+      </Material>
+      <Spot treshold="0.1">
+          <Attenuation x="0.05" y="0.0" z="1.0" h="180.0"/>
+      </Spot>
+      <Glow set="MAIN_TEXTURES" size="5.0" texname="Datas\\flare0.jpg"/>
+  </Light>
+  <Light name="light7" active="1" volumesize="2.0">
+      <Position x="-12.5" y="12.2" z="7.5"/>
+      <Direction x="0.0" y="1.0" z="0.0"/>
+      <Material>
+          <Ambient r="0.0" g="0.0" b="0.0" a="1.0"/>
+          <Diffuse r="1.0" g="1.0" b="1.0" a="1.0"/>
+          <Specular r="1.0" g="0.7" b="0.4" a="1.0"/>
+      </Material>
+      <Spot treshold="0.1">
+          <Attenuation x="0.05" y="0.0" z="1.0" h="180.0"/>
+      </Spot>
+      <Glow set="MAIN_TEXTURES" size="5.0" texname="Datas\\flare0.jpg"/>
+  </Light> 
+  <ViewModifier name="KNOT_MODIFIER" object="BUMP_KNOT">
+      <Action action="Reset"/>
+      <Action action="AbsoluteTranslation">
+          <TimeFunction type="time_constant" a0="0.0"/>
+          <TimeFunction type="time_constant" a0="5.0"/>
+          <TimeFunction type="time_constant" a0="0.0"/>
+      </Action>
+      <Action action="Rotation">
+        <TimeFunction type="time_linear" a0="0.0" a1="72.0"/>
+        <TimeFunction type="time_linear" a0="5.0" a1="144.0"/>
+			  <TimeFunction type="time_linear" a0="0.0" a1="216.0"/>
+		  </Action>
 	</ViewModifier>
 	<ViewModifier name="HEDRA_MODIFIER" object="Hedra">
 		<Action action="Reset"/>
@@ -201,7 +201,7 @@
 			<TimeFunction type="time_linear" a0="0.0" a1="216.0"/>
 		</Action>
 	</ViewModifier>
-    <LightModifier name="LIGHT_MODIFIER" light="mainlight">
+  <LightModifier name="LIGHT_MODIFIER" light="mainlight">
 		<Action action="Position">
 			<TimeFunction type="time_cosine" a0="0.0" a1="1.256" a2="20.0" a3="-2.5"/>
 			<TimeFunction type="time_constant" a0="2.0"/>
@@ -531,7 +531,7 @@
 			    <Object name="TopRoof_21"/>
 			    <Object name="TopRoof_22"/>
 			    <Object name="TopRoof_23"/>
-			    <Object name="column0"/>
+          <Object name="column0"/>
 			    <Object name="column1"/>
 			    <Object name="column2"/>
 			    <Object name="column3"/>
@@ -541,13 +541,13 @@
 			    <Object name="column7"/>
 			    <Object name="column8"/>
 			    <Object name="column9"/>
-			    <Object name="column10"/>
-			    <Object name="column11"/>
+          <Object name="column10"/>
+          <Object name="column11"/>
 			    <Object name="column12"/>
 			    <Object name="column13"/>
 			    <Object name="column14"/>
 			    <Object name="column15"/>
-			    <Object name="Ground_instance"/>
+          <Object name="Ground_instance"/>
 			    <Object name="BUMP_KNOT_VIEWMODIFIER"/>
 			    <Object name="Hedra_VIEWMODIFIER"/>
 			    <Object name="Torch00"/>
@@ -599,7 +599,7 @@
 				    <Point x="0.0" y="0.0" z="0.0" h="0.0"/>
 				    <Object name="Ground_instance"/>
 			    </Mirror>
-	      </Scene>
+        </Scene>
     </Update>
 	<Update name="BUMP_KNOT_VIEWMODIFIER">
 		<Object3D>
@@ -612,11 +612,11 @@
 		</Object3D>
 	</Update>
 	<Update name="Hedra">
-        <Geometry>
-            <RenderingModel front_geometry="1" normals="1"/>
-        </Geometry>
-        <Shader name="HEDRA_SHADER"/>
-        <RenderingProperties texturing="0" lighting="0" blending="1"/>
+    <Geometry>
+      <RenderingModel front_geometry="1" normals="1"/>
+    </Geometry>
+    <Shader name="HEDRA_SHADER"/>
+    <RenderingProperties texturing="0" lighting="0" blending="1"/>
 	</Update>
 	<Update name="Torch0">
 		<Geometry>
@@ -637,3 +637,4 @@
 		<Shader name="TORCH_SHADER"/>
 	</Update>
 </Data>
+  

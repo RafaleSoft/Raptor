@@ -174,7 +174,7 @@ void RAPTOR_FASTCALL CParticleManager::deltaTime(float dt)
 	int j = 0;
 	size_t jMax = m_pParticles.size();
 	// depends on compute time & nb processors available.
-	if (jMax > avgParallelTasks)
+	if (jMax >= avgParallelTasks)
 	{
 #pragma omp parallel for default(none) private (j) firstprivate(dt,jMax)
 		for (j=0;j<jMax;j++)
