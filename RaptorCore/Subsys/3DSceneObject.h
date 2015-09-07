@@ -37,8 +37,10 @@ public:
         FULL_PASS,
     } PASS_KIND;
 
-public:
+	//!	Default constructor.
 	C3DSceneObject();
+
+	//! Destructor.
 	virtual ~C3DSceneObject();
 
     //! this method renders the real object using the previous occlusion query
@@ -55,7 +57,8 @@ public:
     //! This method renders the selected lights.
     //! The list in parameter is the list of all lights that will be switched on or off, depending on the 
     //! list of effective lights for this object.
-    void glRenderLights(const vector<CLight*> &lights);
+	void glRenderLights(GLboolean proceedLights,
+						const vector<CLight*> &lights);
 
 		//! This method renders initial occlusion bbox 
 	void glRenderBBoxOcclusion(unsigned int passNumber);
@@ -84,11 +87,11 @@ public:
     //!	The 'real' embedded object
 	RAPTOR_HANDLE	object;
 
-    
 	//!	storage for z_ordering	( need multipass ? )
 	float			z_order;
     float			z_span;
 
+	//!	active lights for next rendering
 	CLight          *effectiveLights[CLightAttributes::MAX_LIGHTS];
 
     static PASS_KIND	m_currentPass;

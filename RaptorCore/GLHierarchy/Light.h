@@ -25,6 +25,7 @@ class CTextureObject;
 class CObject3D;
 class CProjector;
 
+
 class RAPTOR_API CLight : public CMaterial
 {
 public:
@@ -154,7 +155,8 @@ private:
 	//! Inherited to handle occlusion queries display resources
     virtual void unLink(const CPersistence*);
 
-	CLightAttributes		*m_pAttributes;
+	CLightAttributes	*m_pAttributes;
+	CProjector			*m_pProjector;
 
     bool importSpotParams(CRaptorIO& io);
     bool importGlowOrFlare(CRaptorIO& io,bool isFlare);

@@ -55,21 +55,18 @@ const CPersistence::CPersistenceClassID& CLight::CLightClassID::GetClassId(void)
 	return lightID;
 }
 
-CLight::CLight(const std::string& name):CMaterial(	CGL_NO_MATERIAL,
-													CGL_NO_MATERIAL,
-													CGL_NO_MATERIAL,
-													0.0,
-													CGL_NO_MATERIAL,
-													lightID,
-													name)
+CLight::CLight(const std::string& name)
+	:CMaterial(	CGL_NO_MATERIAL,CGL_NO_MATERIAL,CGL_NO_MATERIAL,
+				0.0, CGL_NO_MATERIAL, lightID, name),
+	m_pProjector(NULL)
 {
 	m_pAttributes = new CLightAttributes();
 }
 
 CLight::~CLight()
 {
-	if (m_pAttributes->pProjector != NULL)
-		m_pAttributes->pProjector->unregisterDestruction(this);
+	if (m_pProjector != NULL)
+		m_pProjector->unregisterDestruction(this);
 	
 	glDeActivate();
 
@@ -83,10 +80,10 @@ CLight::~CLight()
 
 void CLight::unLink(const CPersistence* obj)
 {
-    if (obj == static_cast<CPersistence*>(m_pAttributes->pProjector))
-    {
-        m_pAttributes->pProjector = NULL;
-    }
+	if (obj == static_cast<CPersistence*>(m_pProjector))
+		m_pProjector = NULL;
+	else
+		CMaterial::unLink(obj);
 }
 
 GL_COORD_VERTEX RAPTOR_FASTCALL CLight::getLightDirection(void) const 
@@ -113,7 +110,7 @@ void RAPTOR_FASTCALL CLight::setAttenuation(float quadratic,float linear, float 
     {
         if (b == 0)
             //  there is no solution with a single constant. return a large value
-            //  enough to reach every aobjects in a large scene.
+            //  enough to reach every object in a large scene.
             dmax = FLT_MAX; //constant;
         else
             dmax = MAX(0,-c / b);
@@ -150,30 +147,16 @@ void RAPTOR_FASTCALL CLight::setCutOff(float cutoff)
 { 
 	m_pAttributes->m_spotParams[3] = cutoff; 
 
-	if (m_pAttributes->pProjector)
-		m_pAttributes->pProjector->setCutOff(cutoff);
+	if (m_pProjector)
+		m_pProjector->setCutOff(cutoff);
 };
 
 
 void CLight::glActivate(bool spot)
 {
-	m_pAttributes->m_spot = spot;
-
-	if (m_pAttributes->m_hwMapping == 0)
-	{
-		m_pAttributes->m_hwMapping = GL_LIGHT0;
-
-		while ((m_pAttributes->m_hwMapping <= GL_LIGHT7) && (glIsEnabled(m_pAttributes->m_hwMapping)))
-			m_pAttributes->m_hwMapping++;
-
-		if (m_pAttributes->m_hwMapping <= GL_LIGHT7)
-			glEnable(m_pAttributes->m_hwMapping);
-		else
-			m_pAttributes->m_hwMapping = 0;
-
-		if (spot && (NULL != m_pAttributes->pProjector))
-			m_pAttributes->pProjector->glActivate(true);
-	}
+	m_pAttributes->glActivate(this,spot);
+	if (spot && (0 != m_pProjector))
+		m_pProjector->glActivate(true);
 
     m_pAttributes->notify(this,CLightObserver::ACTIVATE);
 
@@ -182,19 +165,10 @@ void CLight::glActivate(bool spot)
 
 void CLight::glDeActivate(void)
 {
+	m_pAttributes->glDeActivate();
+	if (0 != m_pProjector)
+		m_pProjector->glActivate(false);
 	m_pAttributes->notify(this,CLightObserver::DEACTIVATE);
-
-	if (0 != m_pAttributes->m_hwMapping)
-	{
-		glDisable(m_pAttributes->m_hwMapping);
-
-		if (m_pAttributes->m_spot && (NULL != m_pAttributes->pProjector))
-			m_pAttributes->pProjector->glActivate(false);
-
-		m_pAttributes->m_hwMapping = 0;
-	}
-
-	m_pAttributes->m_spot = false;
 
 	CATCH_GL_ERROR
 }
@@ -259,24 +233,19 @@ GL_COORD_VERTEX RAPTOR_FASTCALL CLight::getLightClipPosition(void) const
 
 float CLight::getLightAttenuation(CGenericVector<float> atPosition) const
 {
-    if (!m_pAttributes->m_spot)
-        return 1.0f;
-    else
-    {
-        CGenericVector<float> dst = atPosition - m_pAttributes->m_viewPosition;
+    CGenericVector<float> dst = atPosition - m_pAttributes->m_viewPosition;
 
-        float d = dst.Norm();
-        float att = 1.0f / ( m_pAttributes->m_spotParams[0]*d*d + m_pAttributes->m_spotParams[1]*d + m_pAttributes->m_spotParams[2] );
+    float d = dst.Norm();
+    float att = 1.0f / ( m_pAttributes->m_spotParams[0]*d*d + m_pAttributes->m_spotParams[1]*d + m_pAttributes->m_spotParams[2] );
 
-        return att;
-    }
+    return att;
 }
 
 void RAPTOR_FASTCALL CLight::setLightPosition(const GL_COORD_VERTEX& position) 
 { 
 	m_pAttributes->m_position = position;
-	if (m_pAttributes->pProjector)
-		m_pAttributes->pProjector->setPosition(m_pAttributes->m_position);
+	if (0 != m_pProjector)
+		m_pProjector->setPosition(m_pAttributes->m_position);
 
     m_pAttributes->notify(this,CLightObserver::POSITION);
 }
@@ -284,8 +253,8 @@ void RAPTOR_FASTCALL CLight::setLightPosition(const GL_COORD_VERTEX& position)
 void RAPTOR_FASTCALL CLight::setLightDirection(const GL_COORD_VERTEX& direction) 
 { 
 	m_pAttributes->m_direction = direction;
-	if (m_pAttributes->pProjector)
-		m_pAttributes->pProjector->setDirection(m_pAttributes->m_direction);
+	if (0 != m_pProjector)
+		m_pProjector->setDirection(m_pAttributes->m_direction);
 
 	m_pAttributes->m_direction.Normalize();
 }
@@ -310,10 +279,10 @@ void CLight::setGlow(CTextureObject *T, float size)
 
 void CLight::setProjector(CProjector *P)
 {
-	if (m_pAttributes->pProjector != NULL)
-		m_pAttributes->pProjector->unregisterDestruction(this);
+	if (m_pProjector != NULL)
+		m_pProjector->unregisterDestruction(this);
 
-	m_pAttributes->pProjector = P;
+	m_pProjector = P;
 	P->registerDestruction(this);
 }
 
@@ -342,8 +311,8 @@ void CLight::glRender(void)
 			glLightf(hwMapping,GL_LINEAR_ATTENUATION,m_pAttributes->m_spotParams[1]);
 			glLightf(hwMapping,GL_QUADRATIC_ATTENUATION,m_pAttributes->m_spotParams[0]);
 
-			if (m_pAttributes->pProjector != NULL)
-				m_pAttributes->pProjector->glRender();
+			if (m_pProjector != NULL)
+				m_pProjector->glRender();
 		}
 	}
 
@@ -661,7 +630,6 @@ bool CLight::importSpotParams(CRaptorIO& io)
 			io >> pos;
             setAttenuation(pos.x,pos.y, pos.z);
             setCutOff(pos.h);
-			m_pAttributes->m_spot = true;
         }
         else
 			io >> name;
@@ -720,8 +688,8 @@ bool CLight::importObject(CRaptorIO& io)
 	}
 	io >> name;
 
-    if (activate)
-        glActivate(m_pAttributes->m_spot);
+    //if (activate)
+    //    glActivate(m_pAttributes->m_spot);
 
 	return true;
 }

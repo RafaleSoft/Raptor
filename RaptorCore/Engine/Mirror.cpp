@@ -76,7 +76,7 @@ void CMirror::glClipRender(void)
     vector<CObject3D*>::const_iterator it = mirrorObjects.begin();
 
     while(it != mirrorObjects.end())
-        (*it++)->glClipRender();
+		(*it++)->glClipRender();
 }
 
 

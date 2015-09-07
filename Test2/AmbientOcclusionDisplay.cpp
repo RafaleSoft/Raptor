@@ -37,7 +37,7 @@ uniform sampler2D AOMap; \
 void main (void) \
 {\
 	gl_Position = ftransform(); \
-	vec2 tc = 0.5 * (vec2(1.0,1.0) + gl_MultiTexCoord2); \
+	vec2 tc = 0.5 * (vec2(1.0,1.0) + gl_MultiTexCoord2.xy); \
 	vec4 ao = texture2D(AOMap,tc); \
 	color = gl_Color.r - (1.0 - ao.r); \
 }\
@@ -227,7 +227,7 @@ void CAmbientOcclusionDisplay::Init()
 		//	Prepare Ambient occlusion
 		m_pTeapot->getEditor().genBinormals();
 		m_pTeapot->getRenderingModel().addModel(CGeometry::CRenderingModel::CGL_TANGENTS);
-		m_pTeapot->setShader(CShader::glGetShader("BUMP_SHADER"));
+		m_pTeapot->setShader(CShader::getShader("BUMP_SHADER").glClone("AO_BUMP"));
 		CTextureFactory &f = CTextureFactory::getDefaultFactory();
 		CTextureObject*	m_pTexture = f.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_ALPHA_TRANSPARENT,CTextureObject::CGL_BILINEAR);
 		f.glLoadTexture(m_pTexture,"Datas/MARBLE6.JPG");

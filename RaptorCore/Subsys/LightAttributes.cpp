@@ -17,6 +17,9 @@
 #if !defined(AFX_LIGHT_H__AA8BABD6_059A_4939_A4B6_A0A036E12E1E__INCLUDED_)
 	#include "GLHierarchy/Light.h"
 #endif
+#if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
+	#include "System/RaptorErrorManager.h"
+#endif
 
 
 RAPTOR_NAMESPACE_BEGIN
@@ -63,8 +66,6 @@ CLightAttributes::CLightAttributes()
     m_uiGlow = 0;
     m_bRebuildGlow = false;
 	m_uiFlare = 0;
-
-	pProjector = NULL;
 
     m_fLightVolumeSize = 0.0f;
     m_volumeVisibility = 0;
@@ -124,16 +125,48 @@ bool CLightAttributes::removeObserver(CLightObserver* observer)
 }
 
 
-void CLightAttributes::notify(CLight* owner,CLightObserver::UPDATE_KIND kind)
+void CLightAttributes::glActivate(CLight* owner, bool spot)
 {
-	if (m_hwMapping != 0)
+	m_spot = spot;
+
+	if (m_hwMapping == 0)
 	{
-		if (CLightObserver::ACTIVATE == kind)
-			s_activeLights[m_hwMapping - GL_LIGHT0] = owner;
-		else if (CLightObserver::DEACTIVATE == kind)
-			s_activeLights[m_hwMapping - GL_LIGHT0] = NULL;
+		m_hwMapping = GL_LIGHT0;
+
+		while ((m_hwMapping <= GL_LIGHT7) && (glIsEnabled(m_hwMapping)))
+			m_hwMapping++;
+
+		if (m_hwMapping <= GL_LIGHT7)
+			glEnable(m_hwMapping);
+		else
+			m_hwMapping = 0;
 	}
 
+	if (m_hwMapping != 0)
+		s_activeLights[m_hwMapping - GL_LIGHT0] = owner;
+	else
+		s_activeLights[m_hwMapping - GL_LIGHT0] = NULL;
+
+	CATCH_GL_ERROR
+}
+
+void CLightAttributes::glDeActivate(void)
+{
+	if (0 != m_hwMapping)
+	{
+		s_activeLights[m_hwMapping - GL_LIGHT0] = NULL;
+		glDisable(m_hwMapping);
+
+		m_hwMapping = 0;
+	}
+
+	m_spot = false;
+
+	CATCH_GL_ERROR
+}
+
+void CLightAttributes::notify(CLight* owner,CLightObserver::UPDATE_KIND kind)
+{
     vector<CLightObserver*>::const_iterator itr = m_pObservers.begin();
     while (itr != m_pObservers.end())
     {
@@ -155,7 +188,7 @@ int* const CLightAttributes::getLightOrder(void)
 		for (unsigned int j = 0; j < CLightAttributes::MAX_LIGHTS; j++)
 		{
 			if (s_activeLights[j] == s_orderedLights[i])
-				s_lightOrder[lpos++] = j; // s_activeGLLights[j];
+				s_lightOrder[lpos++] = j;
 		}
 	}
 

@@ -48,9 +48,11 @@ private:
 
 MySphere::MySphere()
 {
-	//setShader(CShader::glGetShader("BLINN_SHADER"));
-	//setShader(CShader::glGetShader("PHONG_SHADER"));
-	setShader(CShader::glGetShader("BUMP_SHADER"));
+	//CShader *pShader = CShader::getShader("BLINN_SHADER").glClone("BLINN");
+	//CShader *pShader = CShader::getShader("PHONG_SHADER").glClone("PHONG");
+	CShader *pShader = CShader::getShader("BUMP_SHADER").glClone("BUMP");
+
+	setShader(pShader);
 }
 
 
@@ -104,7 +106,7 @@ CTest5Doc::CTest5Doc(const RAPTOR_HANDLE& device,const char* title)
 	{
 		CRenderingProperties *props = m_pDisplay->getRenderingProperties();
 		//props->setWireframe(CRenderingProperties::ENABLE);
-		props->setCullFace(CRenderingProperties::DISABLE);
+		//props->setCullFace(CRenderingProperties::DISABLE);
 		props->setLighting(CRenderingProperties::ENABLE);
 		props->setTexturing(CRenderingProperties::ENABLE);
 

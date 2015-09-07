@@ -223,7 +223,6 @@ void CTeapot::GLInitContext()
 	displays[CTest2App::WARPINGDEMO] = &warpingDisplay;
 	projectionDisplay.Init();
 	displays[CTest2App::PROJECTIONDEMO] = &projectionDisplay;
-
 	lodDisplay.Init();
 	displays[CTest2App::LODDEMO] = &lodDisplay;
 	collisionDisplay.Init();

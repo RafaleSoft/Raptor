@@ -210,6 +210,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test5", "Build\VS2013\Test5
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{64510168-A359-4CB8-9176-B840B4B01459}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SOAR2", "Build\VS2013\SOAR2.vcxproj", "{0A91CB22-4E60-4129-8B9A-D9A391F5A1F1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -373,6 +375,12 @@ Global
 		{FDB74DC9-7AEB-4C57-BAAE-B7F188C512A6}.Optimized|Win32.Build.0 = Optimized|Win32
 		{FDB74DC9-7AEB-4C57-BAAE-B7F188C512A6}.Release|Win32.ActiveCfg = Release|Win32
 		{FDB74DC9-7AEB-4C57-BAAE-B7F188C512A6}.Release|Win32.Build.0 = Release|Win32
+		{0A91CB22-4E60-4129-8B9A-D9A391F5A1F1}.Debug|Win32.ActiveCfg = Release|Win32
+		{0A91CB22-4E60-4129-8B9A-D9A391F5A1F1}.Debug|Win32.Build.0 = Release|Win32
+		{0A91CB22-4E60-4129-8B9A-D9A391F5A1F1}.Optimized|Win32.ActiveCfg = Release|Win32
+		{0A91CB22-4E60-4129-8B9A-D9A391F5A1F1}.Optimized|Win32.Build.0 = Release|Win32
+		{0A91CB22-4E60-4129-8B9A-D9A391F5A1F1}.Release|Win32.ActiveCfg = Release|Win32
+		{0A91CB22-4E60-4129-8B9A-D9A391F5A1F1}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

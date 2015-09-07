@@ -41,9 +41,13 @@ public:
 
 
 protected:
+	//! Destructor.
     virtual ~CObjectReference() {};
 
 private:
+	//! Copy constructor.
+	CObjectReference(const CObjectReference&);
+
     //! The actual number of instance
     unsigned int    referenceCount;
 };

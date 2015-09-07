@@ -108,8 +108,8 @@ bool CAmbientOcclusionShader::glInitAOCompute(void)
     m_pAOBuffer->setViewPoint(NULL);
 	m_pAOBuffer->glBindDisplay(*pOutputTextures);
 
-	m_pAOcomputeRef = CShader::glGetShader("AOCOMPUTE_SHADER");
-	CTextureUnitSetup *AOdata = glGetTextureUnitsSetup("");
+	m_pAOcomputeRef = CShader::getShader("AOCOMPUTE_SHADER").glClone("AO_SHADER");
+	CTextureUnitSetup *AOdata = glGetTextureUnitsSetup();
 	AOdata->enableImageUnit(CTextureUnitSetup::IMAGE_UNIT_0,true);
 	AOdata->enableImageUnit(CTextureUnitSetup::IMAGE_UNIT_1,true);
 	AOdata->setDiffuseMap(m_pVertexMap);
