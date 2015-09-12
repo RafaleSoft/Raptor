@@ -41,6 +41,9 @@
 #if !defined(AFX_PROJECTOR_H__0AEE2092_215F_40FA_BBAE_7D8A2F5A482F__INCLUDED_)
     #include "GLHierarchy/Projector.h"
 #endif
+#if !defined(AFX_LIGHTGLOW_H__577C39B3_EE0B_4A07_8974_BC250BA2960A__INCLUDED_)
+    #include "LightGlow.h"
+#endif
 
 RAPTOR_NAMESPACE
 
@@ -58,7 +61,7 @@ const CPersistence::CPersistenceClassID& CLight::CLightClassID::GetClassId(void)
 CLight::CLight(const std::string& name)
 	:CMaterial(	CGL_NO_MATERIAL,CGL_NO_MATERIAL,CGL_NO_MATERIAL,
 				0.0, CGL_NO_MATERIAL, lightID, name),
-	m_pProjector(NULL)
+	m_pProjector(NULL),m_pGlow(NULL)
 {
 	m_pAttributes = new CLightAttributes();
 }
@@ -67,6 +70,8 @@ CLight::~CLight()
 {
 	if (m_pProjector != NULL)
 		m_pProjector->unregisterDestruction(this);
+	if (m_pGlow != NULL)
+		m_pGlow->unregisterDestruction(this);
 	
 	glDeActivate();
 
@@ -82,6 +87,8 @@ void CLight::unLink(const CPersistence* obj)
 {
 	if (obj == static_cast<CPersistence*>(m_pProjector))
 		m_pProjector = NULL;
+	else if (obj == static_cast<CPersistence*>(m_pGlow))
+		m_pGlow = NULL;
 	else
 		CMaterial::unLink(obj);
 }

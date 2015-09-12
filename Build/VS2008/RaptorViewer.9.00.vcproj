@@ -53,6 +53,7 @@
 				Optimization="0"
 				AdditionalIncludeDirectories="$(RAPTOR_ROOT)\Redist\Include;$(PLATFORM_SDK)\Include;..\RaptorServer"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
+				StringPooling="true"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="2"
 				PrecompiledHeaderThrough="stdafx.h"

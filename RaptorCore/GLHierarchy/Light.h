@@ -24,6 +24,7 @@ class CLightAttributes;
 class CTextureObject;
 class CObject3D;
 class CProjector;
+class CLightGlow;
 
 
 class RAPTOR_API CLight : public CMaterial
@@ -157,6 +158,7 @@ private:
 
 	CLightAttributes	*m_pAttributes;
 	CProjector			*m_pProjector;
+	CLightGlow			*m_pGlow;
 
     bool importSpotParams(CRaptorIO& io);
     bool importGlowOrFlare(CRaptorIO& io,bool isFlare);

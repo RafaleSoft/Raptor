@@ -347,6 +347,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\RaptorCore\GLHierarchy\LightGlow.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\..\RaptorCore\GLHierarchy\LightObserver.cpp"
 					>
 				</File>
@@ -1186,6 +1190,10 @@
 				</File>
 				<File
 					RelativePath="..\..\RaptorCore\GLHierarchy\Light.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\RaptorCore\GLHierarchy\LightGlow.h"
 					>
 				</File>
 				<File

@@ -50,6 +50,7 @@ class CGLLod;
 class CGeometry;
 class CGeometryPrimitive;
 class CLight;
+class CLightGlow;
 class CLightObserver;
 class CMaterial;
 class CObject3D;

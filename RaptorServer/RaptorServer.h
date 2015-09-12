@@ -14,10 +14,6 @@ class CServerTransport;
 class ServerCmdLine;
 
 
-#if !defined(AFX_RAPTORIO_H__87D52C27_9117_4675_95DC_6AD2CCD2E78D__INCLUDED_)
-	#include "System/RaptorIO.h"
-#endif
-
 RAPTOR_NAMESPACE
 
 

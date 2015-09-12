@@ -2,60 +2,36 @@
 //
 
 #include "stdafx.h"
-#include "RaysDeamon.h"
-#include "RaysDeamonDlg.h"
-#include "..\RaysCommandLine.h"
 
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
+#include "Subsys/CodeGeneration.h"
+
+#if !defined(AFX_NETWORK_H__AC9D546D_A00A_4BFC_AC0C_288BE137CD20__INCLUDED_)
+    #include "RaptorNetwork/Network.h"
 #endif
+
+#include "RaysDeamon.h"
+#include "..\RaysCommandLine.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
 // Const and globals
 
-//#define PROFILE	1
-
-CRaysDeamonApp Deamon;
-
-
-
-/////////////////////////////////////////////////////////////////////////////
-// CRaysDeamonApp
-
-BEGIN_MESSAGE_MAP(CRaysDeamonApp, CWinApp)
-	//{{AFX_MSG_MAP(CRaysDeamonApp)
-		// NOTE - the ClassWizard will add and remove mapping macros here.
-		//    DO NOT EDIT what you see in these blocks of generated code!
-	//}}AFX_MSG
-	ON_COMMAND(ID_HELP, CWinApp::OnHelp)
-END_MESSAGE_MAP()
-
-/////////////////////////////////////////////////////////////////////////////
-// CRaysDeamonApp construction
-
-CRaysDeamonApp::CRaysDeamonApp()
+int main(int argc, char* argv[])
 {
+#ifdef WIN32
+	if (!Network::initSocketLayer())
+		return 1;
+#endif
 
-}
+	ServerCmdLine commandLine;
+	commandLine.Parse(argc,argv);
 
-/////////////////////////////////////////////////////////////////////////////
-// CRaysDeamonApp initialization
-
-BOOL CRaysDeamonApp::InitInstance()
-{
-	if (!AfxSocketInit())
-	{
-		AfxMessageBox(IDP_SOCKETS_INIT_FAILED);
-		return FALSE;
-	}
-
-	AfxEnableControlContainer();
-
-	Enable3dControls();			// Call this when using MFC in a shared DLL
-
+	CRaptorServer	*p_Server = new CRaptorServer;
+    if (p_Server->Start(commandLine))
+		return (p_Server->Stop() ? 1 : 0);
+	else
+		return -1;
+/*
 	m_RaysServer = NULL;
 	m_Server = new CServer<CDSocket>;
 	
@@ -75,18 +51,43 @@ BOOL CRaysDeamonApp::InitInstance()
 		AfxMessageBox("Failed to start Rays Deamon");
 		return FALSE;
 	}
-
-	CRaysDeamonDlg dlg;
-	m_pMainWnd = &dlg;
-	
-	int nResponse = dlg.DoModal();
-	if (nResponse == IDOK)
-	{
-
-	}
-
-	return FALSE;
+*/
 }
+
+#ifdef WIN32
+int WINAPI WinMain(	HINSTANCE hInstance,  // handle to current instance
+					HINSTANCE hPrevInstance,  // handle to previous instance
+                    LPSTR lpCmdLine,      // pointer to command line
+                    int nCmdShow          // show state of window
+)
+{
+	/*
+	string cmdLine = lpCmdLine;
+	vector<string> args;
+
+	size_t pos = cmdLine.find_first_of(' ');
+	while (string::npos != pos)
+	{
+		args.push_back(cmdLine.substr(0,pos));
+		cmdLine = cmdLine.substr(pos+1);
+		pos = cmdLine.find_first_of(' ');
+	}
+	args.push_back(cmdLine);
+
+	const char **argv = new const char*[args.size()+1];
+	for (pos = 0;pos<args.size();pos++)
+		argv[pos] = args[pos].c_str();
+	argv[args.size()] = NULL;
+
+	char **c_argv = const_cast<char**>(argv);
+	int res = main(args.size(),c_argv);
+
+	delete [] argv;
+	*/
+	int res = main(__argc,__argv);
+    return res;
+}
+#endif
 
 
 void CRaysDeamonApp::ManageMsg(MSGSTRUCT& msg,unsigned char raw_data[])
@@ -94,12 +95,12 @@ void CRaysDeamonApp::ManageMsg(MSGSTRUCT& msg,unsigned char raw_data[])
 	switch(msg.msg_id)
 	{
 		case DMN_ACTIVE:
-			((CRaysDeamonDlg*)m_pMainWnd)->SetActive(true);
+			std::cout << "Rays2 Deamon active." << std::endl;
 			msg.msg_data[4] = m_Server->GetAddr();
 			m_RaysServer->Write(&msg,MSGSIZE);
 			break;
 		case DMN_INACTIVE:
-			((CRaysDeamonDlg*)m_pMainWnd)->SetActive(false);
+			std::cout << "Rays2 Deamon inactive." << std::endl;
 			break;
 		case DMN_DISPATCHJOB:
 			{
@@ -172,9 +173,12 @@ void CRaysDeamonApp::ManageMsg(MSGSTRUCT& msg,unsigned char raw_data[])
 				// now the job starts
 				::ResumeThread(pi.hThread);
 
-				CString pid;
-				pid.Format("Creating new WorkUnit: pid: %d, tid: %d",pi.dwProcessId,pi.dwThreadId);
-				((CRaysDeamonDlg*)m_pMainWnd)->DisplayInfo(pid);
+				stringstream pid;
+				pid << "Creating new WorkUnit: pid: ";
+				pid << pi.dwProcessId;
+				pid << ", tid: ";
+				pid << pi.dwThreadId;
+				std::cout << pid.str() << std::endl;
 			}
 			break;
 		case JOB_START:
@@ -220,9 +224,3 @@ void CRaysDeamonApp::ManageMsg(MSGSTRUCT& msg,unsigned char raw_data[])
 
 }
 
-int CRaysDeamonApp::ExitInstance() 
-{
-	delete m_Server;
-	
-	return CWinApp::ExitInstance();
-}

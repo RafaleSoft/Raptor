@@ -3,6 +3,8 @@
 
 #include "stdafx.h"
 
+#include "Subsys/CodeGeneration.h"
+
 #if !defined(AFX_RAPTORSERVER_H__713A4063_7F42_4900_B42D_6574E4FA796C__INCLUDED_)
     #include "RaptorServer.h"
 #endif
