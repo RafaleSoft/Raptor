@@ -92,11 +92,6 @@ private:
 	vector<flare_item>   mFlares;
 	unsigned int		m_uiFlare;
 
-    CReference<CTextureObject>	pGlow;
-    float				fGlowSize;
-    unsigned int		m_uiGlow;
-    bool				m_bRebuildGlow;
-
     float				m_fLightVolumeSize;
     unsigned int		m_volumeVisibility;
     unsigned int		m_visibilityQuery;

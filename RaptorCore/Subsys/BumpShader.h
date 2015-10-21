@@ -42,8 +42,6 @@ private:
 	static int diffuseMap;
 	static int normalMap;
 	static int eyePos;
-
-	static CReference<CBumpLightObserver>	m_pObserver;
 };
 
 RAPTOR_NAMESPACE_END

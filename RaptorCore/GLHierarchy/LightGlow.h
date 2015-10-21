@@ -22,17 +22,24 @@ RAPTOR_NAMESPACE_BEGIN
 
 class CTextureObject;
 
-class RAPTOR_API CLightGlow : 	public CPersistence
+class RAPTOR_API CLightGlow : public CPersistence
 {
 public:
 	CLightGlow(const std::string& name="LIGHTGLOW");
 	virtual ~CLightGlow(void);
 
+	//!	Glow rendering
+	void glRender(void);
+
 	//! Inherited from CPersistence
+	DECLARE_IO
 	DECLARE_CLASS_ID(CProjectorClassID,"Projector",CPersistence)
 
 private:
-	CReference<CTextureObject> m_pProjection;
+	unsigned int	m_uiGlow;
+	bool			m_bRebuildGlow;
+	float			m_glowSize;
+	CReference<CTextureObject> m_glow;
 };
 
 

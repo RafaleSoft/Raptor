@@ -3,6 +3,9 @@
 
 - tester EMBM avec un cube dans demo !!! ( bug de position a corriger )
 
+- Créer une classe de parsing de pramètres (template) générique:
+	- la déployer dans RaptorServer, RaptorViewer, RaysDeamon, ...
+	
 - supprimer des "friend" ?
 	p.ex. dans CRaptorDisplay et sous classes ...
 
@@ -12,8 +15,12 @@
 	- Si normalMap non utilisé => Phong Shader
 	- Supprimer CBumppedGeometry => remplacer par le shader.
 	- Remplacer / améliorer par displacement map / parallax bump mapping
-	- Supprimer BumpLightObserver dans BumpShader, faire éventuellement un SimpleLightObserver
 	
+- Supprimer BumpLightObserver dans EMBM/DOT3, faire éventuellement un SimpleLightObserver
+
+- RaptorToolBox:
+	- Mettre tous les statiques dans RaptorToolBox.h/cpp
+
 - Persistence:
 	- Utiliser CPersistenceClassID::narrow<T> là ou on downcaste
 	- Creer un RootPersitence pour stocker les statiques et l'affecter à un display
@@ -59,6 +66,7 @@
 	- projection: texture clamping, border fading ...
 	- le volume size ne devrait-il pas etre fonction de dmax ?
 	c'est le volume de l'objet lumière ! eventuellement, attacher un CObject3D
+	- selection de lumière dans 3DSceneObjet: si dans l'angle du cône !
 	
 - COctree :
 	- la subdivision symétrique xyz ne balance pas bien l'arbre:

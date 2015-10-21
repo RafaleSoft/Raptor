@@ -71,12 +71,13 @@ CLight::~CLight()
 	if (m_pProjector != NULL)
 		m_pProjector->unregisterDestruction(this);
 	if (m_pGlow != NULL)
+	{
 		m_pGlow->unregisterDestruction(this);
+		delete m_pGlow;
+	}
 	
 	glDeActivate();
 
-    if (m_pAttributes->m_uiGlow != 0)
-        glDeleteLists(m_pAttributes->m_uiGlow,1);
 	if (m_pAttributes->m_uiFlare != 0)
 		glDeleteLists(m_pAttributes->m_uiFlare,1);
 
@@ -276,12 +277,13 @@ void CLight::addLensFlare(CTextureObject* T,float size)
 	m_pAttributes->mFlares.push_back(flare);
 }
 
-void CLight::setGlow(CTextureObject *T, float size)
+void CLight::setGlow(CLightGlow *G)
 {
-    m_pAttributes->pGlow = T;
+	if (m_pGlow != NULL)
+		m_pGlow->unregisterDestruction(this);
 
-    m_pAttributes->fGlowSize = size;
-    m_pAttributes->m_bRebuildGlow = true;
+	m_pGlow = G;
+	G->registerDestruction(this);
 }
 
 void CLight::setProjector(CProjector *P)
@@ -328,57 +330,18 @@ void CLight::glRender(void)
 
 void CLight::glRenderGlow(void)
 {
-    if ((m_pAttributes->pGlow == NULL) || (m_pAttributes->fGlowSize <= 0))
+    if (NULL == m_pGlow)
         return;
 
-    glPushAttrib(GL_ENABLE_BIT);
 	glPushMatrix();
 	glLoadIdentity();
     glTranslatef(	m_pAttributes->m_viewPosition.X(),
 					m_pAttributes->m_viewPosition.Y(),
 					m_pAttributes->m_viewPosition.Z());
 
-    int	blendSrc;
-	int	blendDst;
-    glGetIntegerv(GL_BLEND_SRC,&blendSrc);
-	glGetIntegerv(GL_BLEND_DST,&blendDst);
+	m_pGlow->glRender();
 
-    m_pAttributes->pGlow->glRender();
-    float s = m_pAttributes->fGlowSize;
-
-    if (m_pAttributes->m_bRebuildGlow)
-    {
-        m_pAttributes->m_bRebuildGlow = false;
-        if (m_pAttributes->m_uiGlow > 0)
-            glDeleteLists(m_pAttributes->m_uiGlow,1);
-
-        m_pAttributes->m_uiGlow = glGenLists(1);
-        glNewList(m_pAttributes->m_uiGlow,GL_COMPILE_AND_EXECUTE);
-
-	        glDisable(GL_LIGHTING);
-            glEnable(GL_TEXTURE_2D);
-            glEnable(GL_BLEND);
-            glDepthMask(GL_FALSE);
-            glBlendFunc(GL_SRC_ALPHA,GL_ONE);
-	            
-            glBegin(GL_QUADS);
-	            glTexCoord2f(0.0f,0.0f);    glVertex3f(-s,-s,0.0f);
-	            glTexCoord2f(1.0f,0.0f);    glVertex3f(+s,-s,0.0f);
-	            glTexCoord2f(1.0f,1.0f);    glVertex3f(+s,+s,0.0f);
-	            glTexCoord2f(0.0f,1.0f);    glVertex3f(-s,+s,0.0f);
-            glEnd();
-
-            glDepthMask(GL_TRUE);
-        glEndList();
-    }
-    else if (m_pAttributes->m_uiGlow > 0)
-        glCallList(m_pAttributes->m_uiGlow);
-
-
-    glBlendFunc(blendSrc,blendDst);
-
-    glPopMatrix();
-    glPopAttrib();
+	glPopMatrix();
 }
 
 void CLight::glRenderFlare(void)
@@ -556,21 +519,10 @@ bool CLight::exportObject(CRaptorIO& o)
 {
 	CMaterial::exportObject(o);
 
-	o << m_pAttributes->m_position.X();
-	o << m_pAttributes->m_position.Y();
-	o << m_pAttributes->m_position.Z();
-	o << m_pAttributes->m_position.H();
-	o << m_pAttributes->m_direction.X();
-    o << m_pAttributes->m_direction.Y();
-    o << m_pAttributes->m_direction.Z();
-    o << m_pAttributes->m_direction.H();
-	o << m_pAttributes->m_spotParams;
-	o << m_pAttributes->m_hwMapping;
-
 	return true;
 }
 
-bool CLight::importGlowOrFlare(CRaptorIO& io,bool isFlare)
+bool CLight::importFlare(CRaptorIO& io)
 {
     string name;
     io >> name;
@@ -605,10 +557,7 @@ bool CLight::importGlowOrFlare(CRaptorIO& io,bool isFlare)
             CTextureObject *t = tset->getTexture(textureName);
             if (t != NULL)
             {
-                if (isFlare)
-                    addLensFlare(t,gSize);
-                else
-                    setGlow(t,gSize);
+				addLensFlare(t,gSize);
             }
         }
     }
@@ -685,18 +634,20 @@ bool CLight::importObject(CRaptorIO& io)
 		else if (data == "Spot")
             importSpotParams(io);
         else if (data == "Glow")
-            importGlowOrFlare(io,false);
+		{
+			if (NULL == m_pGlow)
+				m_pGlow = new CLightGlow;
+            m_pGlow->importObject(io);
+			m_pGlow->registerDestruction(this);
+		}
         else if (data == "Flare")
-            importGlowOrFlare(io,true);
+            importFlare(io);
 		else
 			io >> name;
 
 		data = io.getValueName();
 	}
 	io >> name;
-
-    //if (activate)
-    //    glActivate(m_pAttributes->m_spot);
 
 	return true;
 }

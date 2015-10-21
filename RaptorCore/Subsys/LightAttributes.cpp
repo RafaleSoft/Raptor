@@ -62,11 +62,6 @@ CLightAttributes::CLightAttributes()
     m_dMax = FLT_MAX;
     m_threshold = 256.0f;
 
-    fGlowSize = 0.0f;
-    m_uiGlow = 0;
-    m_bRebuildGlow = false;
-	m_uiFlare = 0;
-
     m_fLightVolumeSize = 0.0f;
     m_volumeVisibility = 0;
     m_visibilityQuery = 0;

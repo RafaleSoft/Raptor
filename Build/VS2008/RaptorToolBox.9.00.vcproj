@@ -247,6 +247,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\RaptorToolBox\CmdLineParser.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\RaptorToolBox\Controllers.cpp"
 				>
 			</File>
@@ -455,6 +459,10 @@
 			>
 			<File
 				RelativePath="..\..\RaptorToolBox\BasicObjects.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\RaptorToolBox\CmdLineParser.h"
 				>
 			</File>
 			<File

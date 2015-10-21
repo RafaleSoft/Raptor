@@ -296,7 +296,6 @@ void C3DScene::glRenderObjects(	const vector<C3DSceneObject*>& objects)
 	//
 	// Rendering 
     //  Third step : render mirrors with real objects in the scene
-    //  TODO : move mirror rendering to the upper level to manage better rendering state changes
 	//
     bool proceedMirrors = ((passKind == C3DSceneObject::DEPTH_PASS) || (passKind == C3DSceneObject::FULL_PASS))
                                         && (!m_pAttributes->m_bMirrorsRendered);

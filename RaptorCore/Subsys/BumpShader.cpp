@@ -27,14 +27,8 @@
 #if !defined(AFX_3DENGINEMATRIX_H__6CD1110E_1174_4f38_A452_30FB312022D0__INCLUDED_)
 	#include "Engine/3DEngineMatrix.h"
 #endif
-#if !defined(AFX_BUMPLIGHTOBSERVER_H__238FC166_A3BC_4D77_8FD4_0A42DB45280F__INCLUDED_)
-	#include "Subsys/BumpLightObserver.h"
-#endif
 #if !defined(AFX_TEXTUREOBJECT_H__D32B6294_B42B_4E6F_AB73_13B33C544AD0__INCLUDED_)
 	#include "GLHierarchy/TextureObject.h"
-#endif
-#if !defined(AFX_REFERENCE_H__D29BE5EA_DA55_4BCA_A700_73E007EFE5F9__INCLUDED_)
-	#include "GLHierarchy/Reference.cxx"
 #endif
 
 
@@ -45,20 +39,15 @@ int CBumpShader::diffuseMap = -1;
 int CBumpShader::normalMap = -1;
 int CBumpShader::eyePos = -1;
 
-CReference<CBumpLightObserver> CBumpShader::m_pObserver = NULL;
-
 
 CBumpShader::CBumpShader(void)
 	:CShader("BUMP_SHADER")
 {
-	if (m_pObserver == NULL)
-		m_pObserver = new CBumpLightObserver();
 }
 
 CBumpShader::CBumpShader(const CBumpShader& shader)
 	:CShader(shader)
 {
-	m_pObserver->addReference();
 }
 
 CShader* CBumpShader::glClone(const std::string& newShaderName) const
@@ -71,14 +60,6 @@ CShader* CBumpShader::glClone(const std::string& newShaderName) const
 
 CBumpShader::~CBumpShader(void)
 {
-	m_pObserver->releaseReference();
-
-	//! Manual handling of the last reference because of
-	//! a static reference
-	bool lastObject = (m_pObserver->getRefCount() == 0);
-	
-	if (lastObject)
-		m_pObserver = NULL;
 }
 
 void CBumpShader::glInit(void)

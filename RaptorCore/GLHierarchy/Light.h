@@ -133,7 +133,7 @@ public:
 	void addLensFlare(CTextureObject* T,float size);
 
     //! Specifies the glow texture of the light.
-    void setGlow(CTextureObject *T, float size);
+    void setGlow(CLightGlow *T);
 
 	//! Specifies the texture projector of the spot light.
     void setProjector(CProjector *P);
@@ -161,7 +161,7 @@ private:
 	CLightGlow			*m_pGlow;
 
     bool importSpotParams(CRaptorIO& io);
-    bool importGlowOrFlare(CRaptorIO& io,bool isFlare);
+    bool importFlare(CRaptorIO& io);
 };
 
 RAPTOR_NAMESPACE_END
