@@ -8,9 +8,11 @@
 #if !defined(AFX_NETWORK_H__AC9D546D_A00A_4BFC_AC0C_288BE137CD20__INCLUDED_)
     #include "RaptorNetwork/Network.h"
 #endif
+#if !defined(AFX_CMDLINEPARSER_H__D7D8768A_3D97_491F_8493_588972A3CF62__INCLUDED_)
+	#include "ToolBox/CmdLineParser.h"
+#endif
 
 #include "RaysDeamon.h"
-#include "..\RaysCommandLine.h"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -23,14 +25,27 @@ int main(int argc, char* argv[])
 		return 1;
 #endif
 
-	ServerCmdLine commandLine;
-	commandLine.Parse(argc,argv);
+	CCmdLineParser parser;
+	parser.addOption("port","p",(unsigned short)2048);
+	parser.addOption("width","w",(unsigned short)256);
+	parser.addOption("height","h",(unsigned short)256);
+	parser.addOption("host_addr","a","127.0.0.1");
+	parser.parse(argc,argv);
 
+	string addrStr = "127.0.0.1";
+	unsigned short port = 2048;
+	unsigned int width = 256;
+	unsigned int height = 256;
+	
+	parser.getValue("port",port);
+
+/*
 	CRaptorServer	*p_Server = new CRaptorServer;
     if (p_Server->Start(commandLine))
 		return (p_Server->Stop() ? 1 : 0);
 	else
 		return -1;
+*/
 /*
 	m_RaysServer = NULL;
 	m_Server = new CServer<CDSocket>;
@@ -89,7 +104,7 @@ int WINAPI WinMain(	HINSTANCE hInstance,  // handle to current instance
 }
 #endif
 
-
+/*
 void CRaysDeamonApp::ManageMsg(MSGSTRUCT& msg,unsigned char raw_data[])
 {
 	switch(msg.msg_id)
@@ -142,23 +157,23 @@ void CRaysDeamonApp::ManageMsg(MSGSTRUCT& msg,unsigned char raw_data[])
 										NULL,		// pointer to current directory name
 										&si,		// pointer to STARTUPINFO
 										&pi))		// pointer to PROCESS_INFORMATION
-					AfxMessageBox("Work Unit creation (CreateProcess) Failed !!!\nCheck Work Units registration in option dialog");
+					cout << "Work Unit creation (CreateProcess) Failed !!!\nCheck Work Units registration" << endl;
 
 
 				//	Will be used when high performance responsiveness will be required
-				/*
+				
 				// dispatching work units on available processors
-				if (lpWUReg->nbProcs>1)
-				{
-					CString tmpStr;
-					if (FALSE == SetProcessAffinityMask(pi.hProcess,	// handle to process
-													(DWORD)(1<<(i%nbProcs)))))			// process affinity mask
-					{
-						tmpStr = "Failed to set process affinity";
-						WriteMessage(IDS_SERVER_STRING,tmpStr);
-					}
-				}
-				*/
+				//if (lpWUReg->nbProcs>1)
+				//{
+				//	CString tmpStr;
+				//	if (FALSE == SetProcessAffinityMask(pi.hProcess,	// handle to process
+				//									(DWORD)(1<<(i%nbProcs)))))			// process affinity mask
+				//	{
+				//		tmpStr = "Failed to set process affinity";
+				//		WriteMessage(IDS_SERVER_STRING,tmpStr);
+				//	}
+				//}
+				
 				msg.msg_header = MSG_START;
 				msg.msg_id = DMN_DISPATCHJOB;
 				msg.msg_tail = MSG_END;
@@ -223,4 +238,4 @@ void CRaysDeamonApp::ManageMsg(MSGSTRUCT& msg,unsigned char raw_data[])
 		delete [] raw_data;
 
 }
-
+*/

@@ -3,8 +3,7 @@
 
 - tester EMBM avec un cube dans demo !!! ( bug de position a corriger )
 
-- Créer une classe de parsing de pramètres (template) générique:
-	- la déployer dans RaptorServer, RaptorViewer, RaysDeamon, ...
+- Déployer CCmndLineParser dans RaptorServer, RaptorViewer, ...
 	
 - supprimer des "friend" ?
 	p.ex. dans CRaptorDisplay et sous classes ...

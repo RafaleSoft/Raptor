@@ -197,6 +197,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SOAR2", "Build\VS2008\SOAR2.vcproj", "{0A91CB22-4E60-4129-8B9A-D9A391F5A1F1}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RaysDeamon", "Build\VS2008\RaysDeamon.9.00.vcproj", "{00A914E7-CB8F-497D-896B-557FA4E029B5}"
+	ProjectSection(ProjectDependencies) = postProject
+		{9DE3BD6F-6EAC-4917-AD42-31C50E6DC10E} = {9DE3BD6F-6EAC-4917-AD42-31C50E6DC10E}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
