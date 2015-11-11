@@ -20,7 +20,11 @@
 
 RAPTOR_NAMESPACE_BEGIN
 
-static CLightGlow::CPersistenceClassID lightglowId;
+static CLightGlow::CLightGlowClassID lightglowId;
+const CPersistence::CPersistenceClassID& CLightGlow::CLightGlowClassID::GetClassId(void)
+{
+	return lightglowId;
+}
 
 RAPTOR_NAMESPACE_END
 

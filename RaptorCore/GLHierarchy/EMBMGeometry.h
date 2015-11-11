@@ -51,8 +51,6 @@ private:
 
 	//! Shaders for various light configurations.
 	static CShader*		m_pBumpShaderAmbient;
-	//static CShader*		m_pBumpShader2Lights;
-	//static CShader*		m_pBumpShader3Lights;
 
 	//!	A light observer to be notified from lightupdates.
 	static CBumpLightObserver	*m_pObserver;

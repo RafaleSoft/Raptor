@@ -99,15 +99,6 @@ protected:
 	CGenericVector<float>	X;
 	GL_COORD_VERTEX A;
 	CColor::RGBA	S;
-	/*
-	CGenericVector<float>	X2;
-	GL_COORD_VERTEX A2;
-	CColor::RGBA	S2;
-
-	CGenericVector<float>	X3;
-	GL_COORD_VERTEX A3;
-	CColor::RGBA	S3;
-	*/
 
 private:
 	//!	Initialize shaders and observers

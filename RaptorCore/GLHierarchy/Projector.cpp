@@ -37,7 +37,11 @@
 
 RAPTOR_NAMESPACE_BEGIN
 
-static CProjector::CPersistenceClassID projectorId;
+static CProjector::CProjectorClassID projectorId;
+const CPersistence::CPersistenceClassID& CProjector::CProjectorClassID::GetClassId(void)
+{
+	return projectorId;
+}
 
 RAPTOR_NAMESPACE_END
 

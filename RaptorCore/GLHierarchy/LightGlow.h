@@ -33,7 +33,7 @@ public:
 
 	//! Inherited from CPersistence
 	DECLARE_IO
-	DECLARE_CLASS_ID(CProjectorClassID,"Projector",CPersistence)
+	DECLARE_CLASS_ID(CLightGlowClassID,"LightGlow",CPersistence)
 
 private:
 	unsigned int	m_uiGlow;
