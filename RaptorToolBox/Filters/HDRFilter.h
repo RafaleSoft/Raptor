@@ -49,22 +49,25 @@ private:
 	//! Implements base class
 	virtual void glRenderFilterOutput(void);
 
+	//!	Build all intermediate and final shaders
+	bool glBuildShaders(unsigned int width,unsigned int height);
+
 	//! HDR rendering attributes
     unsigned int    nLevels;
 	unsigned int	nBlurPass;
 	float			treshold;
 
-	//!	Downsizing of framebuffer to complute overall luminance
+	//!	Downsizing of framebuffer to compute overall luminance
 	CShaderProgram::CProgramParameters maxLuminanceParams;
     CRaptorDisplay  **m_pDownSizedDisplay;
     CTextureObject  **m_pDownSizedBuffer;
 	CTextureSet		**m_pDownSizedAttachments;
-	CFragmentShader *m_maxLuminance;
-    CFragmentShader *m_lastMaxLuminance;
+	CShader			*m_maxLuminance;
+    CShader			*m_lastMaxLuminance;
     
 	//! Extract high frequencies
 	CShaderProgram::CProgramParameters threshholdParams;
-    CFragmentShader *m_pTreshholdFreqs;
+    CShader *m_pTreshholdFreqs;
     CRaptorDisplay  *m_pDownHighFreqs;
     CTextureObject  *m_pDownHFBuffer;
 
@@ -78,9 +81,8 @@ private:
     CVertexShader   *m_pBlurYOffsets;
     CFragmentShader *m_pBlur;
 
-	//! Final image composition
-    CFragmentShader *m_pComposite;
-    CShaderProgram::CProgramParameters blenderWeights;
+	//! Final image composition with tone mapping
+    CShader *m_pComposite;
     
 	//! Initial display configuration used to build internal subdisplays
     CRaptorDisplayConfig rda;

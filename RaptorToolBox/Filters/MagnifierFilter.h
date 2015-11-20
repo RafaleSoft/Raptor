@@ -55,7 +55,16 @@ private:
 	//! Implements base class
 	virtual void glRenderFilterOutput(void);
 
+	//! Default available kernels: sinc
+    float sincKernel(float x,float A,float ) const;
 
+	//! Default available kernels: Mitchell & Netravelli
+    float mitchellNetravaliKernel(float x,float B,float C) const;
+
+	//!	Rebuild the kernel data in an RGBA texture.
+	void computeKernel(void);
+
+	bool			m_bRebuild;
     CTextureObject	*kernelTexture;
 
     CRaptorDisplay	*xBuffer;
@@ -68,11 +77,7 @@ private:
 	CShaderProgram::CProgramParameters v_params_y;
 	CShaderProgram::CProgramParameters f_params;
 
-    float (CMagnifierFilter::*kernelBuilder)(float x,float k1,float k2);
-
-    // Default available kernels
-    float sincKernel(float x,float A,float );
-    float mitchellNetravaliKernel(float x,float B,float C);
+    float (CMagnifierFilter::*kernelBuilder)(float x,float k1,float k2) const;
 };
 
 #endif // !defined(AFX_MAGNIFIERFILTER_H__3660D446_2F92_4D02_A795_BFF8336D61D2__INCLUDED_)

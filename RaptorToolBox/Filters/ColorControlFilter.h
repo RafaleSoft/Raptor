@@ -55,10 +55,7 @@ private:
 	//! Implements base class
 	virtual void glRenderFilterOutput(void);
 
-	bool			use_progams;
     CShader			*BWShader;
-    GL_COORD_VERTEX	bwParams;
-    CColor::RGBA	baseColor;
 	CShaderProgram::CProgramParameters	fp_params;
 };
 

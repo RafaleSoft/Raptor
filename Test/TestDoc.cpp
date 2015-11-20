@@ -147,14 +147,14 @@ void CTestDoc::GLInitContext(void)
 
 	CModifier::TIME_FUNCTION tz;
 	tz.timeFunction = CModifier::CGL_TIME_CONSTANT;
-	tz.a0 = 0.2f;
+	tz.a0 = 0.1f;
 	CModifier::TIME_FUNCTION tx;
 	tx.timeFunction = CModifier::CGL_TIME_CONSTANT;
-	tx.a0 = 0.3f;
+	tx.a0 = 0.15f;
 	CModifier::TIME_FUNCTION ty;
 	ty.timeFunction = CModifier::CGL_TIME_COSINE;
-	ty.a2 = 0.3f;
-	ty.a1 = 0.2f;
+	ty.a2 = 0.15f;
+	ty.a1 = 0.1f;
 	ty.a0 = 0;
 	vm->addAction(CViewModifier::ROTATE_VIEW,tx,ty,tz);
 
@@ -186,8 +186,8 @@ void CTestDoc::GLInitContext(void)
 
     CViewModifier *vm2 = new CViewModifier("test");
 	vm2->setObject(sponge);
-    tx.a0 = 0.03f;
-    tz.a0 = 0.02f;
+    tx.a0 = 0.015f;
+    tz.a0 = 0.01f;
 	vm2->addAction(CViewModifier::ROTATE_VIEW,tz,tx,ty);
 
 	CBasicObjects::CRectangle *background = new CBasicObjects::CRectangle;
@@ -234,7 +234,7 @@ void CTestDoc::GLInitContext(void)
 		bwf->enableFilter(false);
 	
 		mbf = new CMBFilter();
-		mbf->setPercentage(0.75f,0.75f,0.75f,1.0f);
+		mbf->setPercentage(0.95f,0.95f,0.95f,1.0f);
 		CRaptorDisplay::GetCurrentDisplay()->glBindDisplay(*mbf);	
 		mbf->enableFilter(false);
 
@@ -246,7 +246,6 @@ void CTestDoc::GLInitContext(void)
         pMag->setSizeFactors(16.0f,16.0f);
         pMag->enableFilter(true);
         pMag->setMitchellNetravaliKernel();
-        //CRaptorDisplay::GetCurrentDisplay()->glBindDisplay(*pMag);
     }
 #endif
 

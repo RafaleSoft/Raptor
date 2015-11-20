@@ -10,6 +10,9 @@
 #endif // _MSC_VER > 1000
 
 
+#if !defined(AFX_SHADERPROGRAM_H__936BEC73_3903_46CE_86C9_9CA0005B31F5__INCLUDED_)
+	#include "GLHierarchy/ShaderProgram.h"
+#endif
 #if !defined(AFX_RAPTORDISPLAYFILTER_H__805D8523_96EA_427B_ABEC_C39EE1BC094C__INCLUDED_)
     #include "System/RaptorDisplayFilter.h"
 #endif
@@ -48,7 +51,7 @@ private:
     CTextureGenerator	*m_pAccumulator;
 	CTextureSet			*m_pRenderTextures2;
 
-    CColor::RGBA		mbParams;
+	CShaderProgram::CProgramParameters f_params;
 };
 
 #endif // !defined(AFX_MBFILTER_H__53A619DD_DBAB_4709_9EAD_72C5D6C401E9__INCLUDED_)

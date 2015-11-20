@@ -13,9 +13,6 @@
 #if !defined(AFX_TEXTUREFACTORY_H__1B470EC4_4B68_11D3_9142_9A502CBADC6B__INCLUDED_)
 	#include "GLHierarchy/TextureFactory.h"
 #endif
-#if !defined(AFX_MAGNIFIERFILTER_H__3660D446_2F92_4D02_A795_BFF8336D61D2__INCLUDED_)
-    #include "MagnifierFilter.h"
-#endif
 #if !defined(AFX_RENDERINGPROPERTIES_H__634BCF2B_84B4_47F2_B460_D7FDC0F3B698__INCLUDED_)
 	#include "GLHierarchy/RenderingProperties.h"
 #endif
@@ -43,13 +40,79 @@
 #if !defined(AFX_TEXTURESET_H__26F3022D_70FE_414D_9479_F9CCD3DCD445__INCLUDED_)
 	#include "GLHierarchy/TextureSet.h"
 #endif
-
+#if !defined(AFX_MAGNIFIERFILTER_H__3660D446_2F92_4D02_A795_BFF8336D61D2__INCLUDED_)
+    #include "MagnifierFilter.h"
+#endif
 
 
 static const int KERNEL_SIZE = 256;
 
-#define USE_VERTEX_PROGRAM 1
-#ifndef USE_VERTEX_PROGRAM
+#if defined(GL_ARB_vertex_shader)
+	static const string kernel_vs = 
+	"#version 120			\n\
+	uniform vec4 center;	\n\
+	void main(void)			\n\
+	{						\n\
+		gl_Position = ftransform();\n\
+		gl_TexCoord[0] = gl_MultiTexCoord0 + center;\n\
+	}";
+
+	static const string xk_ps =
+	"#version 120				\n\
+	\n\
+	uniform sampler2D color;	\n\
+	uniform sampler2D factor;	\n\
+	\n\
+	uniform vec4 size;			\n\
+	uniform vec4 offset;		\n\
+	void main(void)			\n\
+	{						\n\
+		vec4 subpixels = fract(size * gl_TexCoord[0]); \n\
+		vec2 texcoord = gl_TexCoord[0].xy; \n\
+		vec4 factors = texture2D(factor,subpixels.xy); \n\
+	\n\
+		vec4 colors = texture2D(color,texcoord); \n\
+		vec4 colorsum = colors * factors.zzzz; \n\
+	\n\
+		colors = texture2D(color,texcoord + offset.xz); \n\
+		colorsum = colorsum + colors * factors.wwww; \n\
+	\n\
+		colors = texture2D(color,texcoord - offset.xz); \n\
+		colorsum = colorsum + colors * factors.yyyy; \n\
+	\n\
+		colors = texture2D(color,texcoord - offset.xz - offset.xz); \n\
+		gl_FragColor = colorsum + colors * factors.xxxx; \n\
+		gl_FragColor.w = 1.0; \n\
+	}";
+
+	static const string yk_ps =
+	"#version 120				\n\
+	\n\
+	uniform sampler2D color;	\n\
+	uniform sampler2D factor;	\n\
+	\n\
+	uniform vec4 size;			\n\
+	uniform vec4 offset;		\n\
+	void main(void)			\n\
+	{						\n\
+		vec4 subpixels = fract(size * gl_TexCoord[0]); \n\
+		vec2 texcoord = gl_TexCoord[0].xy; \n\
+		vec4 factors = texture2D(factor,subpixels.yx); \n\
+	\n\
+		vec4 colors = texture2D(color,texcoord); \n\
+		vec4 colorsum = colors * factors.zzzz; \n\
+	\n\
+		colors = texture2D(color,texcoord + offset.zy); \n\
+		colorsum = colorsum + colors * factors.wwww; \n\
+	\n\
+		colors = texture2D(color,texcoord - offset.zy); \n\
+		colorsum = colorsum + colors * factors.yyyy; \n\
+	\n\
+		colors = texture2D(color,texcoord - offset.zy - offset.zy); \n\
+		gl_FragColor = colorsum + colors * factors.xxxx; \n\
+		gl_FragColor.w = 1.0; \n\
+	}";
+#elif defined(GL_ARB_vertex_program)
 	static const string kernel_vp = 
 	"!!ARBvp1.0 \
 	ATTRIB iPos = vertex.position; \
@@ -119,72 +182,7 @@ static const int KERNEL_SIZE = 256;
 	TEX color, offset, texture[0] , 2D ; \
 	MAD finalColor, color, factors.xxxx, colorsum; \
 	MOV finalColor.w, size.w; \
-	END"; 
-#else
-	static const string kernel_vs = 
-	"#version 120			\n\
-	uniform vec4 center;	\n\
-	void main(void)			\n\
-	{						\n\
-		gl_Position = ftransform();\n\
-		gl_TexCoord[0] = gl_MultiTexCoord0 + center;\n\
-	}";
-
-	static const string xk_ps =
-	"#version 120				\n\
-	\n\
-	uniform sampler2D color;	\n\
-	uniform sampler2D factor;	\n\
-	\n\
-	uniform vec4 size;			\n\
-	uniform vec4 offset;		\n\
-	void main(void)			\n\
-	{						\n\
-		vec4 subpixels = fract(size * gl_TexCoord[0]); \n\
-		vec2 texcoord = gl_TexCoord[0].xy; \n\
-		vec4 factors = texture2D(factor,subpixels.xy); \n\
-	\n\
-		vec4 colors = texture2D(color,texcoord); \n\
-		vec4 colorsum = colors * factors.zzzz; \n\
-	\n\
-		colors = texture2D(color,texcoord + offset.xz); \n\
-		colorsum = colorsum + colors * factors.wwww; \n\
-	\n\
-		colors = texture2D(color,texcoord - offset.xz); \n\
-		colorsum = colorsum + colors * factors.yyyy; \n\
-	\n\
-		colors = texture2D(color,texcoord - offset.xz - offset.xz); \n\
-		gl_FragColor = colorsum + colors * factors.xxxx; \n\
-		gl_FragColor.w = 1.0; \n\
-	}";
-
-	static const string yk_ps =
-	"#version 120				\n\
-	\n\
-	uniform sampler2D color;	\n\
-	uniform sampler2D factor;	\n\
-	\n\
-	uniform vec4 size;			\n\
-	uniform vec4 offset;		\n\
-	void main(void)			\n\
-	{						\n\
-		vec4 subpixels = fract(size * gl_TexCoord[0]); \n\
-		vec2 texcoord = gl_TexCoord[0].xy; \n\
-		vec4 factors = texture2D(factor,subpixels.yx); \n\
-	\n\
-		vec4 colors = texture2D(color,texcoord); \n\
-		vec4 colorsum = colors * factors.zzzz; \n\
-	\n\
-		colors = texture2D(color,texcoord + offset.zy); \n\
-		colorsum = colorsum + colors * factors.wwww; \n\
-	\n\
-		colors = texture2D(color,texcoord - offset.zy); \n\
-		colorsum = colorsum + colors * factors.yyyy; \n\
-	\n\
-		colors = texture2D(color,texcoord - offset.zy - offset.zy); \n\
-		gl_FragColor = colorsum + colors * factors.xxxx; \n\
-		gl_FragColor.w = 1.0; \n\
-	}";
+	END";
 #endif
 
 //////////////////////////////////////////////////////////////////////
@@ -192,7 +190,7 @@ static const int KERNEL_SIZE = 256;
 //////////////////////////////////////////////////////////////////////
 
 CMagnifierFilter::CMagnifierFilter():
-    kernelTexture(NULL),
+    m_bRebuild(false),kernelTexture(NULL),
     xKernelPass(NULL),xBuffer(NULL),m_pXKernelShader(NULL),m_pYKernelShader(NULL)
 {
 	kernelBuilder = &CMagnifierFilter::sincKernel;
@@ -213,6 +211,7 @@ void CMagnifierFilter::setSincKernel(float A)
     kernelBuilder = &CMagnifierFilter::sincKernel;
     kernelParams.x = A;
     kernelParams.y = 0.0f;
+	m_bRebuild = true;
 }
 
 void CMagnifierFilter::setMitchellNetravaliKernel(float B, float C)
@@ -220,12 +219,13 @@ void CMagnifierFilter::setMitchellNetravaliKernel(float B, float C)
     kernelBuilder = &CMagnifierFilter::mitchellNetravaliKernel;
     kernelParams.x = B;
     kernelParams.y = C;
+	m_bRebuild = true;
 }
 
 //!
 //! Default installed kernels : sinc approximation & mitchell netravelli
 //!
-float CMagnifierFilter::sincKernel(float x,float A,float )
+float CMagnifierFilter::sincKernel(float x,float A,float ) const
 {
     float ax = fabs(x);
     if (ax < 1)
@@ -236,7 +236,7 @@ float CMagnifierFilter::sincKernel(float x,float A,float )
         return 0;
 }
 
-float CMagnifierFilter::mitchellNetravaliKernel(float x,float B,float C)
+float CMagnifierFilter::mitchellNetravaliKernel(float x,float B,float C) const
 {
     float ax = fabs(x);
     if (ax < 1)
@@ -245,6 +245,24 @@ float CMagnifierFilter::mitchellNetravaliKernel(float x,float B,float C)
         return ((-B - 6*C)*ax*ax*ax + (6*B + 30*C)*ax*ax +  (-12*B - 48*C)*ax + (8*B + 24*C)) / 6;
     else 
         return 0;
+}
+
+void CMagnifierFilter::computeKernel(void)
+{
+	CTextureFactory &filterFactory = CTextureFactory::getDefaultFactory();
+
+    kernelTexture->allocateTexels(CTextureObject::CGL_COLOR_FLOAT32_ALPHA);
+	float *kernel = kernelTexture->getFloatTexels(); 
+    for (unsigned int i=0; i<KERNEL_SIZE ; i++)
+    {
+        float x = i / ((float)KERNEL_SIZE - 1.0f);
+        *kernel++ = (this->*kernelBuilder)(x+1,	kernelParams.x, kernelParams.y);
+        *kernel++ = (this->*kernelBuilder)(x,	kernelParams.x, kernelParams.y);
+        *kernel++ = (this->*kernelBuilder)(1-x,	kernelParams.x, kernelParams.y);
+        *kernel++ = (this->*kernelBuilder)(2-x,	kernelParams.x, kernelParams.y);
+    }
+    filterFactory.glLoadTexture(kernelTexture,".buffer");
+	m_bRebuild = false;
 }
 
 void CMagnifierFilter::glRenderFilter()
@@ -258,13 +276,15 @@ void CMagnifierFilter::glRenderFilter()
     glActiveTextureARB(GL_TEXTURE1_ARB);
     glEnable(GL_TEXTURE_2D);
     kernelTexture->glRender();
+	if (m_bRebuild)
+		computeKernel();
     glActiveTextureARB(GL_TEXTURE0_ARB);
     colorInput->glRender();
 
-#ifdef USE_VERTEX_PROGRAM
+#if defined(GL_ARB_vertex_shader)
 	m_pYKernelShader->glGetVertexProgram()->setProgramParameters(v_params_y);
 	m_pYKernelShader->glGetFragmentProgram()->setProgramParameters(f_params);
-#else
+#elif defined(GL_ARB_vertex_program)
 	m_pYKernelShader->glGetVertexShader()->setProgramParameters(v_params_y);
 	m_pYKernelShader->glGetFragmentShader()->setProgramParameters(f_params);
 #endif
@@ -289,10 +309,10 @@ void CMagnifierFilter::glRenderFilterOutput()
     glActiveTextureARB(GL_TEXTURE0_ARB);
     xKernelPass->glRender();
 
-#ifdef USE_VERTEX_PROGRAM
+#if defined(GL_ARB_vertex_shader)
 	m_pXKernelShader->glGetVertexProgram()->setProgramParameters(v_params_x);
 	m_pXKernelShader->glGetFragmentProgram()->setProgramParameters(f_params);
-#else
+#elif defined(GL_ARB_vertex_program)
 	m_pXKernelShader->glGetVertexShader()->setProgramParameters(v_params_x);
 	m_pXKernelShader->glGetFragmentShader()->setProgramParameters(f_params);
 #endif
@@ -313,7 +333,6 @@ bool CMagnifierFilter::glInitFilter(void)
         kernelTexture->releaseReference();
 
 	CTextureFactory &filterFactory = CTextureFactory::getDefaultFactory();
-
 	bool previousResize = filterFactory.getConfig().useTextureResize();
 	filterFactory.getConfig().useTextureResize(false);
 
@@ -339,19 +358,7 @@ bool CMagnifierFilter::glInitFilter(void)
                                                    CTextureObject::CGL_OPAQUE,
                                                    CTextureObject::CGL_UNFILTERED);
     kernelTexture->setSize(KERNEL_SIZE,1);
-    kernelTexture->allocateTexels(CTextureObject::CGL_COLOR_FLOAT32_ALPHA);
-	float *kernel = kernelTexture->getFloatTexels(); 
-
-    for (unsigned int i=0; i<KERNEL_SIZE ; i++)
-    {
-        float x = i / ((float)KERNEL_SIZE - 1.0f);
-        *kernel++ = (this->*kernelBuilder)(x+1,	kernelParams.x, kernelParams.y);
-        *kernel++ = (this->*kernelBuilder)(x,	kernelParams.x, kernelParams.y);
-        *kernel++ = (this->*kernelBuilder)(1-x,	kernelParams.x, kernelParams.y);
-        *kernel++ = (this->*kernelBuilder)(2-x,	kernelParams.x, kernelParams.y);
-    }
-
-    filterFactory.glLoadTexture(kernelTexture,".buffer");
+    computeKernel();
 
     //! A buffer to render the first pass of the kernel
     //! ( the two available kernels are separable, so it is more efficient
@@ -416,7 +423,7 @@ bool CMagnifierFilter::glInitFilter(void)
     m_pXKernelShader = new CShader("XKERNEL_SHADER");
 	m_pYKernelShader = new CShader("YKERNEL_SHADER");
 
-#ifdef USE_VERTEX_PROGRAM
+#if defined(GL_ARB_vertex_shader)
 	CVertexProgram *vp = m_pXKernelShader->glGetVertexProgram("magnifier_vp");
     bool res = vp->glLoadProgram(kernel_vs);
 	CFragmentProgram *ps = m_pXKernelShader->glGetFragmentProgram("xk_ps");
@@ -430,7 +437,7 @@ bool CMagnifierFilter::glInitFilter(void)
 
 	f_params.addParameter("color",CTextureUnitSetup::IMAGE_UNIT_0);
 	f_params.addParameter("factor",CTextureUnitSetup::IMAGE_UNIT_1);
-#else
+#elif defined(GL_ARB_vertex_program)
     CVertexShader *vs = m_pXKernelShader->glGetVertexShader("magnifier_vp");
     bool res = vs->glLoadProgram(kernel_vp);
     CFragmentShader *fs = m_pXKernelShader->glGetFragmentShader("xk_fp");

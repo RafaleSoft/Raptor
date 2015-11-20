@@ -7,9 +7,6 @@
 #if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
 	#include "System/Raptor.h"
 #endif
-#if !defined(AFX_TEXTUREGENERATOR_H__214CB62C_FE2E_4737_9EA8_CE5D97F16093__INCLUDED_)
-    #include "GLHierarchy/TextureGenerator.h"
-#endif
 #if !defined(AFX_RAPTOREXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
     #include "System/RaptorExtensions.h"
 #endif
@@ -18,9 +15,6 @@
 #endif
 #if !defined(AFX_TEXTUREFACTORYCONFIG_H__7A20D208_423F_4E02_AA4D_D736E0A7959F__INCLUDED_)
 	#include "GLHierarchy/TextureFactoryConfig.h"
-#endif
-#if !defined(AFX_TEXTUREOBJECT_H__D32B6294_B42B_4E6F_AB73_13B33C544AD0__INCLUDED_)
-	#include "GLHierarchy/TextureObject.h"
 #endif
 #if !defined(AFX_TEXTURESET_H__26F3022D_70FE_414D_9479_F9CCD3DCD445__INCLUDED_)
 	#include "GLHierarchy/TextureSet.h"
@@ -31,8 +25,8 @@
 #if !defined(AFX_RENDERINGPROPERTIES_H__634BCF2B_84B4_47F2_B460_D7FDC0F3B698__INCLUDED_)
 	#include "GLHierarchy/RenderingProperties.h"
 #endif
-#if !defined(AFX_FRAGMENTSHADER_H__66B3089A_2919_4678_9273_6CDEF7E5787F__INCLUDED_)
-	#include "GLHierarchy/FragmentShader.h"
+#if !defined(AFX_FRAGMENTPROGRAM_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
+    #include "GLHierarchy/FragmentProgram.h"
 #endif
 #if !defined(AFX_MBFILTER_H__53A619DD_DBAB_4709_9EAD_72C5D6C401E9__INCLUDED_)
     #include "MBFilter.h"
@@ -51,7 +45,7 @@ public:
     virtual CTextureGenerator::GENERATOR_KIND    getKind(void) const { return CTextureGenerator::BUFFERED; };
 
     //! The fragment program to compute accumulation;
-    static const string accum_fp;
+    static const string accum_ps;
 
     //! Generation is switched each frame
     virtual void glGenerate(CTextureObject* t)
@@ -84,20 +78,17 @@ public:
     CTextureObject  *m_pPreviousColorAccum;
 };
 
-const string CAccumulator::accum_fp = 
-"!!ARBfp1.0 \
-ATTRIB iTex0 = fragment.texcoord[0]; \
-PARAM percentage = program.local[0]; \
-PARAM one = { 0.75, 0.75, 0.75, 1.0 };\
-TEMP color; \
-TEMP accum; \
-OUTPUT finalColor = result.color; \
-TEX color, iTex0, texture[0] , 2D ; \
-TEX accum, iTex0, texture[1] , 2D ; \
-SUB accum, accum, color; \
-MAD finalColor, accum, percentage, color; \
-MOV finalColor.w, one.w; \
-END"; 
+const string CAccumulator::accum_ps =
+"#version 120				\n\
+uniform sampler2D color;	\n\
+uniform sampler2D accum;	\n\
+uniform vec4 percentage;	\n\
+void main(void)			\n\
+{						\n\
+	vec4 c = texture2D(color,gl_TexCoord[0].xy); \n\
+	vec4 a = texture2D(accum,gl_TexCoord[0].xy); \n\
+	gl_FragColor = mix(c,a,percentage); \n\
+}";
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -107,10 +98,10 @@ CMBFilter::CMBFilter():
     m_pMotionBlurShader(NULL),m_pAccumulator(NULL),
 	m_pRenderTextures2(NULL)
 {
-    mbParams.r = 0.75f;
-    mbParams.g = 0.75f;
-    mbParams.b = 0.75f;
-    mbParams.a = 1.0f;
+	GL_COORD_VERTEX mbParams(0.75f,0.75f,0.75f,1.0f);
+	f_params.addParameter("percentage",mbParams);
+	f_params.addParameter("color",CTextureUnitSetup::IMAGE_UNIT_0);
+	f_params.addParameter("accum",CTextureUnitSetup::IMAGE_UNIT_1);
 }
 
 CMBFilter::~CMBFilter()
@@ -120,18 +111,17 @@ CMBFilter::~CMBFilter()
 
 void CMBFilter::setPercentage(float r,float g,float b,float a)
 {
-    mbParams.r = r;
-    mbParams.g = g;
-    mbParams.b = b;
-    mbParams.a = a;
+	GL_COORD_VERTEX mbParams(r,g,b,a);
+	f_params[0].vector = mbParams;
 }
 
 void CMBFilter::getPercentage(float &r,float &g,float &b,float &a)
 {
-    r = mbParams.r;
-    g = mbParams.g;
-    b = mbParams.b;
-    a = mbParams.a;
+	GL_COORD_VERTEX& mbParams = f_params[0].vector;
+    r = mbParams.x;
+    g = mbParams.y;
+    b = mbParams.z;
+    a = mbParams.h;
 }
 
 void CMBFilter::glDestroyFilter(void)
@@ -178,9 +168,10 @@ void CMBFilter::glRenderFilter()
     glActiveTextureARB(GL_TEXTURE0_ARB);
     getColorInput()->glRender();
 
-    m_pMotionBlurShader->glGetFragmentShader()->glRender();
-    m_pMotionBlurShader->glGetFragmentShader()->glProgramParameter(0,mbParams);
+	m_pMotionBlurShader->glGetFragmentProgram()->setProgramParameters(f_params);
+    m_pMotionBlurShader->glRender();
     glDrawBuffer();
+	m_pMotionBlurShader->glStop();
 
 	glBindTexture(GL_TEXTURE_2D,0);
     pAccum->pCurrentDisplay->glUnBindDisplay();
@@ -290,8 +281,9 @@ bool CMBFilter::glInitFilter(void)
 	}
 
     m_pMotionBlurShader = new CShader("MB_SHADER");
-    CFragmentShader *fs = m_pMotionBlurShader->glGetFragmentShader("mb_fp");
-    bool res = fs->glLoadProgram(CAccumulator::accum_fp);
+    CFragmentProgram *fs = m_pMotionBlurShader->glGetFragmentProgram("mb_fp");
+    bool res = fs->glLoadProgram(CAccumulator::accum_ps);
+	res = res && m_pMotionBlurShader->glCompileShader();
 
 	filterFactory.getConfig().useTextureResize(previousResize);
 
