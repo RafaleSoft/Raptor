@@ -44,14 +44,10 @@ public:
     //! As opposed to environmental reflexions, we define here a 'main direction'
     //! for a unique plane representing a mirror surfoce of the object holding this property.
     //! This can help a lot to optimize rendering of mirrors reflexions.
-    //! Reflexions are bounded to holding object  dimensions.
+    //! Reflexions are bounded to holding object dimensions.
     //! ( the parameter is the plane equation )
-    void RAPTOR_FASTCALL setMirrorPlane(const GL_COORD_VERTEX& planeNormal,
-										const GL_COORD_VERTEX& planePoint) 
-    {
-		m_planeNormal = planeNormal;
-		m_planePoint = planePoint;
-	};
+    void setMirrorPlane(const GL_COORD_VERTEX& planeNormal,
+						const GL_COORD_VERTEX& planePoint);
 
 private:
 	//! Forbid copy constructor
@@ -67,8 +63,7 @@ private:
     vector<CObject3D*>  mirrorObjects;
     
     //! The mirror plane is defined by the plane's normal and a point that belongs to the mirror.
-    GL_COORD_VERTEX m_planeNormal;
-    GL_COORD_VERTEX m_planePoint;
+	GL_MATRIX	m_mirror;
 
     //! The properties applyed for mirror rendering.
 	CRenderingProperties    *m_pProperties;

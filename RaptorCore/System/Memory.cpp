@@ -30,7 +30,9 @@
 #if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
     #include "System/RaptorErrorManager.h"
 #endif
-
+#if !defined(AFX_BUFFEROBJECT_H__FFF8C159_E959_496B_9962_0AF829E7FB4F__INCLUDED_)
+	#include "Subsys/BufferObject.h"
+#endif
 
 #ifdef WIN32
     #include <new.h>    // to support old platform prototypes, but not for a long time.
@@ -220,54 +222,6 @@ static bool IsBufferObjectValid(unsigned int buffer)
 #endif
 }
 
-class CBufferObject : public CMemory::IBufferObject
-{
-public:
-	CBufferObject():m_size(0),m_storage(NB_BUFFER_KIND)
-	{ m_buffer.id = 0; };
-
-	virtual size_t getSize(void) const;
-
-	virtual BUFFER_KIND getStorage(void) const;
-
-	virtual void* getBaseAddress(void) const;
-
-	virtual unsigned int getBufferId(void) const;
-
-	virtual ~CBufferObject() {};
-
-	//! The size of the buffer object
-	unsigned int	m_size;
-
-	//! Indicates the data storage usage: vertex, pixels, ...
-    BUFFER_KIND		m_storage;
-
-	//!	Actual data
-	BUFFER_DATA		m_buffer;
-};
-
-size_t CBufferObject::getSize(void) const
-{
-	return m_size;
-}
-
-inline CMemory::IBufferObject::BUFFER_KIND CBufferObject::getStorage(void) const
-{
-	return m_storage;
-}
-
-inline void* CBufferObject::getBaseAddress(void) const
-{
-	if (m_buffer.id & 1) return NULL;
-	else return m_buffer.address;
-}
-
-inline unsigned int CBufferObject::getBufferId(void) const
-{
-	if (m_buffer.id & 1) return (m_buffer.id >> 16);
-	else return 0;
-}
-
 
 RAPTOR_NAMESPACE_END
 //
@@ -389,6 +343,16 @@ void CMemory::glSetBufferObjectData(IBufferObject &vb,unsigned int dstOffset,con
 	{
 		const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
 		IBufferObject::BUFFER_KIND storage = vb.getStorage();
+		if (storage > IBufferObject::PIXEL_SOURCE)
+		{
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+			Raptor::GetErrorManager()->generateRaptorError(	CPersistence::CPersistenceClassID::GetClassId(),
+															CRaptorErrorManager::RAPTOR_WARNING,
+															"Buffer Object storage is not supported by RaptorCore CMemory");
+#endif
+			return;
+		}
+
         GLenum glStorage = BufferKindToGL(storage);
 
         if (m_pHeap->currentBuffers[storage] != buffer)
@@ -415,7 +379,7 @@ void CMemory::glSetBufferObjectData(IBufferObject &vb,unsigned int dstOffset,con
             m_pHeap->currentBuffers[storage] = 0;
         }
 	}
-	else
+	else if (NULL != vb.getBaseAddress())
 #endif
 	{
 		memcpy((char*)vb.getBaseAddress() + dstOffset,src,sz);
@@ -451,6 +415,15 @@ void CMemory::glGetBufferObjectData(IBufferObject &vb,unsigned int srcOffset,voi
 		
 		IBufferObject::BUFFER_KIND storage = vb.getStorage();
         GLenum glStorage = BufferKindToGL(storage);
+		if (storage > IBufferObject::PIXEL_SOURCE)
+		{
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+			Raptor::GetErrorManager()->generateRaptorError(	CPersistence::CPersistenceClassID::GetClassId(),
+															CRaptorErrorManager::RAPTOR_WARNING,
+															"Buffer Object storage is not supported by RaptorCore CMemory");
+#endif
+			return;
+		}
 
 		if (m_pHeap->currentBuffers[storage] != buffer)
         {
@@ -478,7 +451,7 @@ void CMemory::glGetBufferObjectData(IBufferObject &vb,unsigned int srcOffset,voi
             m_pHeap->currentBuffers[storage] = 0;
         }
 	}
-	else
+	else if (NULL != vb.getBaseAddress())
 #endif
 	{
 		memcpy(dst,(char*)vb.getBaseAddress() + srcOffset,sz);
@@ -488,7 +461,7 @@ void CMemory::glGetBufferObjectData(IBufferObject &vb,unsigned int srcOffset,voi
 }
 
 CMemory::IBufferObject * CMemory::glAllocateBufferObject(CMemory::IBufferObject::BUFFER_KIND kind, 
-														 IBufferObject::BUFFER_MODE mode, 
+														 CMemory::IBufferObject::BUFFER_MODE mode, 
 														 size_t size)
 {
 	if (size == 0)
@@ -609,6 +582,16 @@ CMemory::IBufferObject * CMemory::glAllocateBufferObject(CMemory::IBufferObject:
 
 bool CMemory::glReleaseBufferObject(IBufferObject* &vb)
 {
+	if (vb->getStorage() > IBufferObject::PIXEL_SOURCE)
+	{
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+		Raptor::GetErrorManager()->generateRaptorError(	CPersistence::CPersistenceClassID::GetClassId(),
+														CRaptorErrorManager::RAPTOR_WARNING,
+														"Buffer Object storage is not supported by RaptorCore CMemory");
+#endif
+		return false;
+	}
+
 	bool found = false;
 
     //! After this point, we are in critical section
@@ -673,6 +656,16 @@ bool CMemory::glReleaseBufferObject(IBufferObject* &vb)
 
 bool CMemory::glLockBufferObject(IBufferObject &vb)
 {
+	if (vb.getStorage() > IBufferObject::PIXEL_SOURCE)
+	{
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+		Raptor::GetErrorManager()->generateRaptorError(	CPersistence::CPersistenceClassID::GetClassId(),
+														CRaptorErrorManager::RAPTOR_WARNING,
+														"Buffer Object storage is not supported by RaptorCore CMemory");
+#endif
+		return false;
+	}
+
 	if (vb.getSize() == 0)
 		return false;
 	unsigned int buffer = vb.getBufferId();
@@ -715,6 +708,16 @@ bool CMemory::glLockBufferObject(IBufferObject &vb)
 
 bool CMemory::glUnlockBufferObject(IBufferObject &vb)
 {
+	if (vb.getStorage() > IBufferObject::PIXEL_SOURCE)
+	{
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+		Raptor::GetErrorManager()->generateRaptorError(	CPersistence::CPersistenceClassID::GetClassId(),
+														CRaptorErrorManager::RAPTOR_WARNING,
+														"Buffer Object storage is not supported by RaptorCore CMemory");
+#endif
+		return false;
+	}
+
 	if (vb.getSize() == 0)
 		return false;
 

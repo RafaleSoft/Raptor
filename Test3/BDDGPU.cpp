@@ -233,18 +233,18 @@ bool CBDDGPU::clBuild(CRaptorComputeJob &job)
 	CRaptorComputeMemory &mem = CRaptorComputeMemory::GetInstance(0,0);
 
 	cl_uint *buffers = (cl_uint*) calloc(m_size,sizeof(cl_uint));
-	CRaptorComputeMemory::CBufferObject* bufferFlags = mem.clCreateBuffer(sizeof(cl_uint)*m_size, buffers);
-	CRaptorComputeMemory::CBufferObject* bufferFlagsN = mem.clCreateBuffer(sizeof(cl_uint)*m_size, buffers);
-	CRaptorComputeMemory::CBufferObject* bufferSumPrefix = mem.clCreateBuffer(sizeof(cl_uint)*m_size,buffers);
-	CRaptorComputeMemory::CBufferObject* bufferSumPrefixN = mem.clCreateBuffer(sizeof(cl_uint)*m_size,buffers);
-	CRaptorComputeMemory::CBufferObject* buffer_RangO = mem.clCreateBuffer(sizeof(cl_uint)*m_size, buffers);
-	CRaptorComputeMemory::CBufferObject* buffer_Inter = mem.clCreateBuffer(sizeof(cl_uint)*m_size, buffers);
+	CRaptorComputeMemory::IBufferObject* bufferFlags = mem.clCreateBuffer(sizeof(cl_uint)*m_size, buffers);
+	CRaptorComputeMemory::IBufferObject* bufferFlagsN = mem.clCreateBuffer(sizeof(cl_uint)*m_size, buffers);
+	CRaptorComputeMemory::IBufferObject* bufferSumPrefix = mem.clCreateBuffer(sizeof(cl_uint)*m_size,buffers);
+	CRaptorComputeMemory::IBufferObject* bufferSumPrefixN = mem.clCreateBuffer(sizeof(cl_uint)*m_size,buffers);
+	CRaptorComputeMemory::IBufferObject* buffer_RangO = mem.clCreateBuffer(sizeof(cl_uint)*m_size, buffers);
+	CRaptorComputeMemory::IBufferObject* buffer_Inter = mem.clCreateBuffer(sizeof(cl_uint)*m_size, buffers);
 	free(buffers);
 
 	cl_uint NbBloc = m_size / NBE;
 	cl_uint *blocs = (cl_uint*) calloc(NbBloc,sizeof(cl_uint));
-	CRaptorComputeMemory::CBufferObject* bufferSumBloc = mem.clCreateBuffer(sizeof(cl_uint)*NbBloc, blocs);
-	CRaptorComputeMemory::CBufferObject* bufferSumBlocN = mem.clCreateBuffer(sizeof(cl_uint)*NbBloc, blocs);
+	CRaptorComputeMemory::IBufferObject* bufferSumBloc = mem.clCreateBuffer(sizeof(cl_uint)*NbBloc, blocs);
+	CRaptorComputeMemory::IBufferObject* bufferSumBlocN = mem.clCreateBuffer(sizeof(cl_uint)*NbBloc, blocs);
 	free(blocs);
 	
 	CRaptorComputeTask flagRaZ("Flag_RaZ",m_size,0);
@@ -259,7 +259,7 @@ bool CBDDGPU::clBuild(CRaptorComputeJob &job)
 	flagInitD.addParameter(debut);
 	flagInitD.addParameter(debut);
 
-	CRaptorComputeMemory::CBufferObject *localBuffer = new CRaptorComputeMemory::CBufferObject(NBE);
+	CRaptorComputeMemory::IBufferObject *localBuffer = mem.clCreateBuffer(NBE,NULL,CRaptorComputeMemory::IBufferObject::LOCAL_BUFFER);
 	CRaptorComputeTask scanGPU("ScanGPU",m_size,NBE/2);
 	scanGPU.addParameter(*bufferFlags);
 	scanGPU.addParameter(NBE);

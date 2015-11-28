@@ -15,7 +15,7 @@ public:
 	//! @param bo : a valid buffer object
 	//! @param userBuffer : a valid pointer to user (host) memory block where data will be received.
 	//!	If a user memory block is not supplied, the class will provide an internal one, unaccessible to the user.
-	CReadBufferTask(const CRaptorComputeMemory::CBufferObject &bo,
+	CReadBufferTask(const CRaptorComputeMemory::IBufferObject &bo,
 					P *userBuffer = NULL)
 		:CRaptorComputeTask("ReadBuffer",bo.getSize(),0),
 		m_pBuffer(userBuffer)

@@ -30,14 +30,13 @@ public:
 	class RAPTOR_API IBufferObject
     {
     public:
-        typedef enum
-        {
-            VERTEX_BUFFER,
-            INDEX_BUFFER,
-            PIXEL_STORAGE,
-            PIXEL_SOURCE,
-            NB_BUFFER_KIND
-        }   BUFFER_KIND;
+		typedef unsigned int BUFFER_KIND;
+        static const BUFFER_KIND VERTEX_BUFFER = 0;
+        static const BUFFER_KIND INDEX_BUFFER = 1;
+        static const BUFFER_KIND PIXEL_STORAGE = 2;
+        static const BUFFER_KIND PIXEL_SOURCE = 3;
+        static const BUFFER_KIND NB_BUFFER_KIND = 4;
+
 
         typedef enum
         {
@@ -59,11 +58,9 @@ public:
 		virtual BUFFER_KIND getStorage(void) const = 0;
 
 		//!	Returns a valid address of the buffer or NULL
-		//! ( in the case of NULL it is also the offset from
-		//! the currently bound VBO base address )
 		virtual void* getBaseAddress(void) const = 0;
 
-		//! Returns a valid buffer id of the buffer of 0
+		//! Returns a valid buffer id of the buffer or 0
 		virtual unsigned int getBufferId(void) const = 0;
 
 	protected:

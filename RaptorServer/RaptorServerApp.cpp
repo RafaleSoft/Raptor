@@ -8,11 +8,11 @@
 #if !defined(AFX_RAPTORSERVER_H__713A4063_7F42_4900_B42D_6574E4FA796C__INCLUDED_)
     #include "RaptorServer.h"
 #endif
-#if !defined(AFX_SERVERCMDLINE_H__3FAF402E_EBC9_4BEF_B369_8D2CBD677141__INCLUDED_)
-    #include "ServerCmdLine.h"
-#endif
 #if !defined(AFX_NETWORK_H__AC9D546D_A00A_4BFC_AC0C_288BE137CD20__INCLUDED_)
     #include "RaptorNetwork/Network.h"
+#endif
+#if !defined(AFX_CMDLINEPARSER_H__D7D8768A_3D97_491F_8493_588972A3CF62__INCLUDED_)
+	#include "ToolBox/CmdLineParser.h"
 #endif
 
 
@@ -24,11 +24,15 @@ int main(int argc, char* argv[])
 		return 1;
 #endif
 
-	ServerCmdLine commandLine;
-	commandLine.Parse(argc,argv);
+	CCmdLineParser parser;
+	parser.addOption("port","p",(unsigned short)2048);
+	parser.addOption("width","w",(unsigned short)256);
+	parser.addOption("height","h",(unsigned short)256);
+	parser.addOption("host_addr","a","127.0.0.1");
+	parser.parse(argc,argv);
 
 	CRaptorServer	*p_Server = new CRaptorServer;
-    if (p_Server->Start(commandLine))
+    if (p_Server->Start(parser))
 		return (p_Server->Stop() ? 1 : 0);
 	else
 		return -1;

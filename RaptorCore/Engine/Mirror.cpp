@@ -37,8 +37,7 @@ RAPTOR_NAMESPACE
 CMirror::CMirror()
 	:m_bApplied(false)
 {
-	m_planeNormal = GL_COORD_VERTEX();
-	m_planePoint = GL_COORD_VERTEX();
+	IDENT_MATRIX(m_mirror);
 
     m_pProperties = new CRenderingProperties();
     m_pProperties->setTexturing(CRenderingProperties::ENABLE);
@@ -79,37 +78,36 @@ void CMirror::glClipRender(void)
 		(*it++)->glClipRender();
 }
 
+void CMirror::setMirrorPlane(const GL_COORD_VERTEX& n,
+							 const GL_COORD_VERTEX& m) 
+{
+    m_mirror.rowx.x = (1 - 2 * n.x * n.x);
+    m_mirror.rowy.x = -2 * n.x * n.y;
+    m_mirror.rowz.x = -2 * n.x * n.z;
+
+    m_mirror.rowx.y = -2 * n.y * n.x;
+    m_mirror.rowy.y = (1 - 2 * n.y * n.y);
+    m_mirror.rowz.y = -2 * n.y * n.z;
+
+    m_mirror.rowx.z = -2 * n.z * n.x;
+    m_mirror.rowy.z = -2 * n.z * n.y;
+    m_mirror.rowz.z = (1 - 2 * n.z * n.z);
+
+    m_mirror.rowh.x = 2 * n.x * (n.x * m.x + n.y * m.y + n.z * m.z);
+    m_mirror.rowh.y = 2 * n.y * (n.x * m.x + n.y * m.y + n.z * m.z);
+    m_mirror.rowh.z = 2 * n.z * (n.x * m.x + n.y * m.y + n.z * m.z);
+    m_mirror.rowx.h = 0;
+    m_mirror.rowy.h = 0;
+    m_mirror.rowz.h = 0;
+    m_mirror.rowh.h = 1.0f;
+}
 
 void CMirror::glApplyMirror(bool apply)
 {
     if (!m_bApplied && apply)
     {
-        const GL_COORD_VERTEX& n = m_planeNormal;
-        const GL_COORD_VERTEX& m = m_planePoint;
-
-        GL_MATRIX   M;
-        M.rowx.x = (1 - 2 * n.x * n.x);
-        M.rowy.x = -2 * n.x * n.y;
-        M.rowz.x = -2 * n.x * n.z;
-
-        M.rowx.y = -2 * n.y * n.x;
-        M.rowy.y = (1 - 2 * n.y * n.y);
-        M.rowz.y = -2 * n.y * n.z;
-
-        M.rowx.z = -2 * n.z * n.x;
-        M.rowy.z = -2 * n.z * n.y;
-        M.rowz.z = (1 - 2 * n.z * n.z);
-
-        M.rowh.x = 2 * n.x * (n.x * m.x + n.y * m.y + n.z * m.z);
-        M.rowh.y = 2 * n.y * (n.x * m.x + n.y * m.y + n.z * m.z);
-        M.rowh.z = 2 * n.z * (n.x * m.x + n.y * m.y + n.z * m.z);
-        M.rowx.h = 0;
-        M.rowy.h = 0;
-        M.rowz.h = 0;
-        M.rowh.h = 1.0f;
-
         glPushMatrix();
-        glMultMatrixf(M);
+		glMultMatrixf(m_mirror);
         glCullFace(GL_FRONT);
 
 		m_pProperties->glPushProperties();

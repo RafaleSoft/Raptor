@@ -39,17 +39,11 @@
 - RaptorCompute
 	- corriger Retain/Release sur les mem objects (c.f. test3)
 	
-- Filtres:
-	- les shaders peuvent être statiques ... certains buffers aussi.
-- HDRFilter
-	- formule de composition ?
 - DOF Filter
 	- augmenter le bluring
 - Blur filter
 	- il semble que le niveau de blur soit plus bas que ce qu'il devrait être
 	(pas assez flou ... ?)
-- MBFilter:
-	- utilisation des DrawBuffers ? si R/W possible !
 	
 - CGeometry::CRenderingModel
 	- simplifier ?
@@ -106,7 +100,6 @@
 	- Fonctions add/remove, reporter également sur l'environnement
 	- Traiter le cas des lumières multiples dans les shaders et shadows ( ex : bump mapping, shadow volume .)
 	- Octrees statiques : comment traiter les mouvements d'objets ? ( remonter les objets au niveau supérieur )
-	- Pb : pour un mirror, les lumières ne sont pas mirrorées ( reproject ? )
 	- Mirror : ne pas activer de lighting et texturing si on est en DEPTH_PASS
 
 - Terminer shadow volumes:

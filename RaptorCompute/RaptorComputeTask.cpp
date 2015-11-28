@@ -114,24 +114,25 @@ void CRaptorComputeTask::setLocalSize(const size_t ls)
 	}
 }
 
-void CRaptorComputeTask::addParameter(const CRaptorComputeMemory::CBufferObject &bo)
+void CRaptorComputeTask::addParameter(const CRaptorComputeMemory::IBufferObject &bo)
 {
-	cl_mem buffer = (cl_mem)bo.data();
+	cl_mem buffer = (cl_mem)bo.getBaseAddress();
 
 	if (buffer != NULL)
 	{
+		bool isInterop = (bo.getStorage() == CRaptorComputeMemory::IBufferObject::INTEROP_COMPUTE_BUFFER);
 		cl_int res = ::clRetainMemObject(buffer);
-		m_parameters.push_back(new CBufferObjectParameter(buffer,bo.getSize(),bo.isInterop()));
+		m_parameters.push_back(new CBufferObjectParameter(buffer,bo.getSize(),isInterop));
 	}
-	else if (bo.getStorage() == CRaptorComputeMemory::CBufferObject::LOCAL_BUFFER)
+	else if (bo.getStorage() == CRaptorComputeMemory::IBufferObject::LOCAL_BUFFER)
 		m_parameters.push_back(new CBufferObjectParameter(buffer,bo.getSize()));
 }
 
-void CRaptorComputeTask::setParameter(size_t pos,const CRaptorComputeMemory::CBufferObject &bo)
+void CRaptorComputeTask::setParameter(size_t pos,const CRaptorComputeMemory::IBufferObject &bo)
 {
 	if (pos < m_parameters.size())
 	{
-		cl_mem buffer = (cl_mem)bo.data();
+		cl_mem buffer = (cl_mem)bo.getBaseAddress();
 
 		if ((buffer != NULL) && (m_parameters[pos]->isA(buffer)))
 		{

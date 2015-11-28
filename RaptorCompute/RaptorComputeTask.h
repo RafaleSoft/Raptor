@@ -96,7 +96,7 @@ public:
 	
 	//!	Specific handling to access to the buffer object pointer.
 	//! @param bo : a reference to a compute buffer object
-	void addParameter(const CRaptorComputeMemory::CBufferObject &bo);
+	void addParameter(const CRaptorComputeMemory::IBufferObject &bo);
 
 	//! @return the list of parameters of this task.
 	const std::vector<ParameterBase*>& getParameters(void) const
@@ -121,7 +121,7 @@ public:
 
 	//!	Specific handling to access to the buffer object pointer.
 	//! @param bo : a reference to a compute buffer object
-	void setParameter(size_t pos,const CRaptorComputeMemory::CBufferObject &bo);
+	void setParameter(size_t pos,const CRaptorComputeMemory::IBufferObject &bo);
 
 
 private:

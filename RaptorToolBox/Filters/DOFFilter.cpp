@@ -44,165 +44,70 @@
     #include "DOFFilter.h"
 #endif
 
-const static bool useShaders = false;
-
-static const string dof_vs = 
-"!!ARBvp1.0 \
-ATTRIB iPos = vertex.position; \
-ATTRIB iTexCoord = vertex.texcoord[0]; \
-PARAM mvp[4] = { state.matrix.mvp }; \
-PARAM offset = program.local[0]; \
-PARAM vector = program.local[1]; \
-TEMP pos; \
-OUTPUT oPos = result.position; \
-OUTPUT oTex0 = result.texcoord[0]; \
-OUTPUT oTex2 = result.texcoord[2]; \
-OUTPUT oTex3 = result.texcoord[3]; \
-OUTPUT oTex4 = result.texcoord[4]; \
-OUTPUT oTex5 = result.texcoord[5]; \
-OUTPUT oTex6 = result.texcoord[6]; \
-OUTPUT oTex7 = result.texcoord[7]; \
-DP4 oPos.x , mvp[0] , iPos; \
-DP4 oPos.y , mvp[1] , iPos; \
-DP4 oPos.z , mvp[2] , iPos; \
-DP4 oPos.w, mvp[3] ,iPos; \
-MOV oTex0, iTexCoord; \
-MAD oTex2 , offset.x, vector, iTexCoord ; \
-MAD oTex3 , offset.y, vector, iTexCoord ; \
-MAD oTex4 , offset.z, vector, iTexCoord ; \
-MAD oTex5 , -offset.x, vector, iTexCoord ; \
-MAD oTex6 , -offset.y, vector, iTexCoord ; \
-MAD oTex7 , -offset.z, vector, iTexCoord ; \
-END";
 
 
-
-static const string dof_fs = 
-"!!ARBfp1.0 \
-OPTION ARB_precision_hint_nicest; \
-ATTRIB iTex0 = fragment.texcoord[0]; \
-ATTRIB iTex2 = fragment.texcoord[2]; \
-ATTRIB iTex3 = fragment.texcoord[3]; \
-ATTRIB iTex4 = fragment.texcoord[4]; \
-ATTRIB iTex5 = fragment.texcoord[5]; \
-ATTRIB iTex6 = fragment.texcoord[6]; \
-ATTRIB iTex7 = fragment.texcoord[7]; \
-PARAM one = { 1.0, 1.0, 1.0, 1.0 }; \
-PARAM one2 = { 1.0, 1.0, 0.0, 0.0 }; \
-PARAM factor = { 0.125, 0.95, 50.0, 0.1666 }; \
-PARAM dofParams = program.local[0]; \
-TEMP color; \
-TEMP depth_base; \
-TEMP filter_base; \
-TEMP filter_CoC; \
-TEMP depth; \
-TEMP depth_factor; \
-TEMP depth_factor2; \
-OUTPUT finalColor = result.color; \
-TEX depth_base, iTex0, texture[1], 2D; \
-TEX filter_base, iTex0, texture[0] , 2D ; \
-TEX color, iTex2, texture[0] , 2D ; \
-TEX depth, iTex2, texture[1] , 2D ; \
-SGE depth_factor.x, depth, depth_base; \
-MUL filter_CoC, color, depth_factor.xxxx; \
-TEX color, iTex3, texture[0] , 2D ; \
-TEX depth, iTex3, texture[1] , 2D ; \
-SGE depth_factor.y, depth, depth_base; \
-MAD filter_CoC, color, depth_factor.yyyy, filter_CoC; \
-TEX color, iTex4, texture[0] , 2D ; \
-TEX depth, iTex4, texture[1] , 2D ; \
-SGE depth_factor.z, depth, depth_base; \
-MAD filter_CoC, color, depth_factor.zzzz, filter_CoC; \
-TEX color, iTex5, texture[0] , 2D ; \
-TEX depth, iTex5, texture[1] , 2D ; \
-SGE depth_factor.w, depth, depth_base; \
-MAD filter_CoC, color, depth_factor.wwww, filter_CoC; \
-TEX color, iTex6, texture[0] , 2D ; \
-TEX depth, iTex6, texture[1] , 2D ; \
-SGE depth_factor2.x, depth, depth_base; \
-MAD filter_CoC, color, depth_factor2.xxxx, filter_CoC; \
-TEX color, iTex7, texture[0] , 2D ; \
-TEX depth, iTex7, texture[1] , 2D ; \
-SGE depth_factor2.y, depth, depth_base; \
-MAD filter_CoC, color, depth_factor2.yyyy, filter_CoC; \
-DP4 depth_factor, depth_factor, one; \
-DP4 depth_factor2, depth_factor2, one2; \
-ADD depth_factor, depth_factor, depth_factor2; \
-#                           \
-# final equation     \
-#                           \n\
-SUB_SAT depth_base, depth_base, dofParams.yyyy; \
-MUL_SAT depth_base, depth_base, dofParams.zzzz; \
-MUL filter_CoC, filter_CoC, depth_base; \
-MUL depth_factor, depth_factor, factor.xxxx; \
-MUL depth_factor, depth_factor, -depth_base; \
-MAD filter_CoC, filter_CoC, factor.xxxx, filter_base; \
-MAD finalColor, filter_base, depth_factor, filter_CoC; \
-MOV finalColor.w, one.w; \
-END" ;
-
-
-
-static const string dof_vp =
-"uniform vec4 offset; \n\
-uniform vec4 vector; \n\
-void main (void) \n\
-{\n\
-    gl_TexCoord[0] = gl_MultiTexCoord0; \n\
-    gl_TexCoord[1] = gl_MultiTexCoord0 + offset.x*vector; \n\
-	gl_TexCoord[2] = gl_MultiTexCoord0 - offset.x*vector; \n\
-    gl_TexCoord[3] = gl_MultiTexCoord0 + offset.y*vector; \n\
-	gl_TexCoord[4] = gl_MultiTexCoord0 - offset.y*vector; \n\
-    gl_TexCoord[5] = gl_MultiTexCoord0 + offset.z*vector; \n\
-    gl_TexCoord[6] = gl_MultiTexCoord0 - offset.z*vector; \n\
-	gl_Position = ftransform(); \n\
-}\n\
-";
-
-static const string dof_fp = 
-"uniform sampler2D colorMap;\n\
-uniform sampler2D depthMap;\n\
-uniform vec4 dofParams; \n\
-const float CoC_mag = 2.66; \n\
-\n\
-void main (void) \n\
-{\n\
-	vec4 color_base  = texture2D(colorMap,gl_TexCoord[0].xy);\n\
-	float depth_base = texture2D(depthMap,gl_TexCoord[0].xy).r;\n\
-\n\
-	float CoC_radius = dofParams.z * CoC_mag * abs(depth_base - dofParams.y) / depth_base;\n\
-\n\
-	if (CoC_radius > 1.0) \n\
+#if defined(GL_ARB_vertex_shader)
+	static const string dof_vp =
+	"uniform vec4 offset; \n\
+	uniform vec4 vector; \n\
+	void main (void) \n\
 	{\n\
-		vec4 color = color_base;\n\
-		color += texture2D(colorMap,gl_TexCoord[1].xy);\n\
-		color += texture2D(colorMap,gl_TexCoord[2].xy);\n\
-		color_base = mix(color_base,color / 3.0,(CoC_radius - 1.0)); \n\
-//		color_base = vec4(1.0, 0.0, 0.0, 1.0); \n\
-\n\
-		if (CoC_radius > 2.0) \n\
-		{\n\
-			vec4 color2 = color; \n\
-			color2 += texture2D(colorMap,gl_TexCoord[3].xy);\n\
-			color2 += texture2D(colorMap,gl_TexCoord[4].xy);\n\
-			color_base = mix(color / 3.0,color2 / 5.0,(CoC_radius - 2.0)); \n\
-//			color_base = vec4(0.0, 1.0, 0.0, 1.0); \n\
-\n\
-			if (CoC_radius > 3.0) \n\
-			{\n\
-				vec4 color3 = color2; \n\
-				color3 += texture2D(colorMap,gl_TexCoord[5].xy);\n\
-				color3 += texture2D(colorMap,gl_TexCoord[6].xy);\n\
-				color_base = mix(color2 / 5.0,color3 / 7.0,(min(CoC_radius,4.0) - 3.0)); \n\
-//				color_base = vec4(0.0, 0.0, 1.0, 1.0); \n\
-			} \n\
-		}\n\
-\n\
+		gl_TexCoord[0] = gl_MultiTexCoord0; \n\
+		gl_TexCoord[1] = gl_MultiTexCoord0 + offset.x*vector; \n\
+		gl_TexCoord[2] = gl_MultiTexCoord0 - offset.x*vector; \n\
+		gl_TexCoord[3] = gl_MultiTexCoord0 + offset.y*vector; \n\
+		gl_TexCoord[4] = gl_MultiTexCoord0 - offset.y*vector; \n\
+		gl_TexCoord[5] = gl_MultiTexCoord0 + offset.z*vector; \n\
+		gl_TexCoord[6] = gl_MultiTexCoord0 - offset.z*vector; \n\
+		gl_Position = ftransform(); \n\
 	}\n\
-\n\
-	gl_FragColor = color_base; \n\
-}\n\
-";
+	";
+
+	//	C = A * m * |S2 - S1| / S2
+	static const string dof_fp = 
+	"uniform sampler2D colorMap;\n\
+	uniform sampler2D depthMap;\n\
+	uniform vec4 dofParams; \n\
+	const float CoC_mag = 2.66; \n\
+	\n\
+	void main (void) \n\
+	{\n\
+		vec4 color_base  = texture2D(colorMap,gl_TexCoord[0].xy);\n\
+		float depth_base = texture2D(depthMap,gl_TexCoord[0].xy).r;\n\
+	\n\
+		float CoC_radius = dofParams.z * CoC_mag * abs(depth_base - dofParams.y) / depth_base;\n\
+	\n\
+		if (CoC_radius > 1.0) \n\
+		{\n\
+			vec4 color = color_base;\n\
+			color += texture2D(colorMap,gl_TexCoord[1].xy);\n\
+			color += texture2D(colorMap,gl_TexCoord[2].xy);\n\
+			color_base = mix(color_base,color / 3.0,(CoC_radius - 1.0)); \n\
+	//		color_base = vec4(1.0, 0.0, 0.0, 1.0); \n\
+	\n\
+			if (CoC_radius > 2.0) \n\
+			{\n\
+				vec4 color2 = color; \n\
+				color2 += texture2D(colorMap,gl_TexCoord[3].xy);\n\
+				color2 += texture2D(colorMap,gl_TexCoord[4].xy);\n\
+				color_base = mix(color / 3.0,color2 / 5.0,(CoC_radius - 2.0)); \n\
+	//			color_base = vec4(0.0, 1.0, 0.0, 1.0); \n\
+	\n\
+				if (CoC_radius > 3.0) \n\
+				{\n\
+					vec4 color3 = color2; \n\
+					color3 += texture2D(colorMap,gl_TexCoord[5].xy);\n\
+					color3 += texture2D(colorMap,gl_TexCoord[6].xy);\n\
+					color_base = mix(color2 / 5.0,color3 / 7.0,(min(CoC_radius,4.0) - 3.0)); \n\
+	//				color_base = vec4(0.0, 0.0, 1.0, 1.0); \n\
+				} \n\
+			}\n\
+	\n\
+		}\n\
+	\n\
+		gl_FragColor = color_base; \n\
+	}\n\
+	";
 
 //	Depth of field color ( eq. fog ):
 //	Not applicable as a post processing if RenderBuffer is antialiased.
@@ -211,6 +116,102 @@ void main (void) \n\
 //	float f = smoothstep(dofParams.y,1.0,depth_base); \n\
 //	gl_FragColor = mix(dofColor,color_base,exp(-f*f));\n\
 
+#elif defined(GL_ARB_vertex_program)
+	static const string dof_vs = 
+	"!!ARBvp1.0 \
+	ATTRIB iPos = vertex.position; \
+	ATTRIB iTexCoord = vertex.texcoord[0]; \
+	PARAM mvp[4] = { state.matrix.mvp }; \
+	PARAM offset = program.local[0]; \
+	PARAM vector = program.local[1]; \
+	TEMP pos; \
+	OUTPUT oPos = result.position; \
+	OUTPUT oTex0 = result.texcoord[0]; \
+	OUTPUT oTex2 = result.texcoord[2]; \
+	OUTPUT oTex3 = result.texcoord[3]; \
+	OUTPUT oTex4 = result.texcoord[4]; \
+	OUTPUT oTex5 = result.texcoord[5]; \
+	OUTPUT oTex6 = result.texcoord[6]; \
+	OUTPUT oTex7 = result.texcoord[7]; \
+	DP4 oPos.x , mvp[0] , iPos; \
+	DP4 oPos.y , mvp[1] , iPos; \
+	DP4 oPos.z , mvp[2] , iPos; \
+	DP4 oPos.w, mvp[3] ,iPos; \
+	MOV oTex0, iTexCoord; \
+	MAD oTex2 , offset.x, vector, iTexCoord ; \
+	MAD oTex3 , offset.y, vector, iTexCoord ; \
+	MAD oTex4 , offset.z, vector, iTexCoord ; \
+	MAD oTex5 , -offset.x, vector, iTexCoord ; \
+	MAD oTex6 , -offset.y, vector, iTexCoord ; \
+	MAD oTex7 , -offset.z, vector, iTexCoord ; \
+	END";
+
+
+
+	static const string dof_fs = 
+	"!!ARBfp1.0 \
+	OPTION ARB_precision_hint_nicest; \
+	ATTRIB iTex0 = fragment.texcoord[0]; \
+	ATTRIB iTex2 = fragment.texcoord[2]; \
+	ATTRIB iTex3 = fragment.texcoord[3]; \
+	ATTRIB iTex4 = fragment.texcoord[4]; \
+	ATTRIB iTex5 = fragment.texcoord[5]; \
+	ATTRIB iTex6 = fragment.texcoord[6]; \
+	ATTRIB iTex7 = fragment.texcoord[7]; \
+	PARAM one = { 1.0, 1.0, 1.0, 1.0 }; \
+	PARAM one2 = { 1.0, 1.0, 0.0, 0.0 }; \
+	PARAM factor = { 0.125, 0.95, 50.0, 0.1666 }; \
+	PARAM dofParams = program.local[0]; \
+	TEMP color; \
+	TEMP depth_base; \
+	TEMP filter_base; \
+	TEMP filter_CoC; \
+	TEMP depth; \
+	TEMP depth_factor; \
+	TEMP depth_factor2; \
+	OUTPUT finalColor = result.color; \
+	TEX depth_base, iTex0, texture[1], 2D; \
+	TEX filter_base, iTex0, texture[0] , 2D ; \
+	TEX color, iTex2, texture[0] , 2D ; \
+	TEX depth, iTex2, texture[1] , 2D ; \
+	SGE depth_factor.x, depth, depth_base; \
+	MUL filter_CoC, color, depth_factor.xxxx; \
+	TEX color, iTex3, texture[0] , 2D ; \
+	TEX depth, iTex3, texture[1] , 2D ; \
+	SGE depth_factor.y, depth, depth_base; \
+	MAD filter_CoC, color, depth_factor.yyyy, filter_CoC; \
+	TEX color, iTex4, texture[0] , 2D ; \
+	TEX depth, iTex4, texture[1] , 2D ; \
+	SGE depth_factor.z, depth, depth_base; \
+	MAD filter_CoC, color, depth_factor.zzzz, filter_CoC; \
+	TEX color, iTex5, texture[0] , 2D ; \
+	TEX depth, iTex5, texture[1] , 2D ; \
+	SGE depth_factor.w, depth, depth_base; \
+	MAD filter_CoC, color, depth_factor.wwww, filter_CoC; \
+	TEX color, iTex6, texture[0] , 2D ; \
+	TEX depth, iTex6, texture[1] , 2D ; \
+	SGE depth_factor2.x, depth, depth_base; \
+	MAD filter_CoC, color, depth_factor2.xxxx, filter_CoC; \
+	TEX color, iTex7, texture[0] , 2D ; \
+	TEX depth, iTex7, texture[1] , 2D ; \
+	SGE depth_factor2.y, depth, depth_base; \
+	MAD filter_CoC, color, depth_factor2.yyyy, filter_CoC; \
+	DP4 depth_factor, depth_factor, one; \
+	DP4 depth_factor2, depth_factor2, one2; \
+	ADD depth_factor, depth_factor, depth_factor2; \
+	#                           \
+	# final equation     \
+	#                           \n\
+	SUB_SAT depth_base, depth_base, dofParams.yyyy; \
+	MUL_SAT depth_base, depth_base, dofParams.zzzz; \
+	MUL filter_CoC, filter_CoC, depth_base; \
+	MUL depth_factor, depth_factor, factor.xxxx; \
+	MUL depth_factor, depth_factor, -depth_base; \
+	MAD filter_CoC, filter_CoC, factor.xxxx, filter_base; \
+	MAD finalColor, filter_base, depth_factor, filter_CoC; \
+	MOV finalColor.w, one.w; \
+	END" ;
+#endif
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -225,6 +226,11 @@ CDOFFilter::CDOFFilter()
     dofParams.y = 0.95f;
     dofParams.z = 50.0f;
     dofParams.h = 0.0f;
+
+	vp_params.addParameter("offset",GL_COORD_VERTEX(0.0f , 0.0f , 0.0f , 0.0f));
+	vp_params.addParameter("vector",GL_COORD_VERTEX(0.0f , 0.0f , 0.0f , 0.0f));
+
+	fp_params.addParameter("dofParams",dofParams);
 }
 
 CDOFFilter::~CDOFFilter()
@@ -282,29 +288,20 @@ void CDOFFilter::glRenderFilter()
     glActiveTextureARB(GL_TEXTURE0_ARB);
     getColorInput()->glRender();
 
-	if (useShaders)
-	{
-		DOFShader->glRender();
-		DOFShader->glGetVertexShader()->glProgramParameter(0,vsParameter_Xoffset);
-		DOFShader->glGetVertexShader()->glProgramParameter(1,GL_COORD_VERTEX(1.0f,0.0f,0.0f,0.0f));
-		DOFShader->glGetFragmentShader()->glProgramParameter(0,dofParams);
-	}
-	else
-	{
-		vp_params[0].vector = vsParameter_Xoffset;
-		vp_params[1].vector = GL_COORD_VERTEX(1.0f,0.0f,0.0f,0.0f);
-		DOFShader->glGetVertexProgram()->setProgramParameters(vp_params);
+	vp_params[0].vector = vsParameter_Xoffset;
+	vp_params[1].vector = GL_COORD_VERTEX(1.0f,0.0f,0.0f,0.0f);
 
-		fp_params[0].sampler = CTextureUnitSetup::IMAGE_UNIT_0;
-		fp_params[1].sampler = CTextureUnitSetup::IMAGE_UNIT_1;
-		fp_params[2].vector = dofParams;
-		DOFShader->glGetFragmentProgram()->setProgramParameters(fp_params);
+#if defined(GL_ARB_vertex_shader)
+	fp_params[0].vector = dofParams;
+	DOFShader->glGetVertexProgram()->setProgramParameters(vp_params);
+	DOFShader->glGetFragmentProgram()->setProgramParameters(fp_params);
+#elif defined(GL_ARB_vertex_program)
+	DOFShader->glGetVertexShader()->setProgramParameters(vp_params);
+	DOFShader->glGetFragmentShader()->setProgramParameters(fp_params);
+#endif
 
-		DOFShader->glRender();
-	}
-
+	DOFShader->glRender();
     glDrawBuffer();
-
 	DOFShader->glStop();
 
     tmpDisplay->glUnBindDisplay();
@@ -321,29 +318,20 @@ void CDOFFilter::glRenderFilterOutput()
     glActiveTextureARB(GL_TEXTURE0_ARB);
     tmpTexture->glRender();
 
-	if (useShaders)
-	{
-		DOFShader->glRender();
-		DOFShader->glGetVertexShader()->glProgramParameter(0,vsParameter_Yoffset);
-		DOFShader->glGetVertexShader()->glProgramParameter(1,GL_COORD_VERTEX(0.0f,1.0f,0.0f,0.0f));
-		DOFShader->glGetFragmentShader()->glProgramParameter(0,dofParams);
-	}
-	else
-	{
-		vp_params[0].vector = vsParameter_Yoffset;
-		vp_params[1].vector = GL_COORD_VERTEX(0.0f,1.0f,0.0f,0.0f);
-		DOFShader->glGetVertexProgram()->setProgramParameters(vp_params);
+	vp_params[0].vector = vsParameter_Yoffset;
+	vp_params[1].vector = GL_COORD_VERTEX(0.0f,1.0f,0.0f,0.0f);
 
-		fp_params[0].sampler = CTextureUnitSetup::IMAGE_UNIT_0;
-		fp_params[1].sampler = CTextureUnitSetup::IMAGE_UNIT_1;
-		fp_params[2].vector = dofParams;
-		DOFShader->glGetFragmentProgram()->setProgramParameters(fp_params);
+#if defined(GL_ARB_vertex_shader)
+	fp_params[0].vector = dofParams;
+	DOFShader->glGetVertexProgram()->setProgramParameters(vp_params);
+	DOFShader->glGetFragmentProgram()->setProgramParameters(fp_params);
+#elif defined(GL_ARB_vertex_program)
+	DOFShader->glGetVertexShader()->setProgramParameters(vp_params);
+	DOFShader->glGetFragmentShader()->setProgramParameters(fp_params);
+#endif
 
-		DOFShader->glRender();
-	}
-
+	DOFShader->glRender();
     glDrawBuffer();
-
 	DOFShader->glStop();
 
 	glActiveTextureARB(GL_TEXTURE1_ARB);
@@ -446,44 +434,29 @@ void CDOFFilter::glInitShaders(void)
 	vsParameter_Yoffset.z = 3.0f * delta;
 	vsParameter_Yoffset.h = 0.0f;
 
-	if (useShaders)
+	// Create & load shaders to perform a 2 pass blur using depth value.
+#if defined(GL_ARB_vertex_shader)
+	CVertexProgram *vp = DOFShader->glGetVertexProgram("dof_vp");
+	bool res = vp->glLoadProgram(dof_vp);
+	if (res)
+		vp->setProgramParameters(vp_params);
+
+	CFragmentProgram *fp = DOFShader->glGetFragmentProgram("dof_fp");
+	res = res && fp->glLoadProgram(dof_fp);
+	if (res)
 	{
-		// Create & load shaders to perform a 2 pass blur using depth value.
-		CVertexShader *vs = DOFShader->glGetVertexShader("dof_vs");
-		bool res = vs->glLoadProgram(dof_vs);
-		CFragmentShader *fs = DOFShader->glGetFragmentShader("dof_fs");
-		res = res && fs->glLoadProgram(dof_fs);
-		if (res)
-		{
-			vs->glProgramParameter(0,vsParameter_Xoffset);
-			vs->glProgramParameter(1,GL_COORD_VERTEX(1.0f,0.0f,0.0f,0.0f));
-		}
+		fp_params.addParameter("colorMap",CTextureUnitSetup::IMAGE_UNIT_0);
+		fp_params.addParameter("depthMap",CTextureUnitSetup::IMAGE_UNIT_1);
+		fp->setProgramParameters(fp_params);
 	}
-	else
-	{
-		CVertexProgram *vp = DOFShader->glGetVertexProgram("dof_vp");
-		bool res = vp->glLoadProgram(dof_vp);
 
-		if (res)
-		{
-			vp_params.addParameter("offset",vsParameter_Xoffset);
-			vp_params.addParameter("vector",GL_COORD_VERTEX(0.0f , 0.0f , 0.0f , 0.0f));
-			vp->setProgramParameters(vp_params);
-		}
-
-		CFragmentProgram *fp = DOFShader->glGetFragmentProgram("dof_fp");
-		res &= fp->glLoadProgram(dof_fp);
-
-		if (res)
-		{
-			fp_params.addParameter("colorMap",CTextureUnitSetup::IMAGE_UNIT_0);
-			fp_params.addParameter("depthMap",CTextureUnitSetup::IMAGE_UNIT_1);
-			fp_params.addParameter("dofParams",GL_COORD_VERTEX(0.0f , 0.0f , 0.0f , 0.0f));
-			fp->setProgramParameters(fp_params);
-		}
-
-		res &= DOFShader->glCompileShader();
-	}
+	res = res && DOFShader->glCompileShader();
+#elif defined(GL_ARB_vertex_program)
+	CVertexShader *vs = DOFShader->glGetVertexShader("dof_vs");
+	bool res = vs->glLoadProgram(dof_vs);
+	CFragmentShader *fs = DOFShader->glGetFragmentShader("dof_fs");
+	res = res && fs->glLoadProgram(dof_fs);
+#endif
 }
 
 

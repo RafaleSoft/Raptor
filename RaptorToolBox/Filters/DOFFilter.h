@@ -27,7 +27,7 @@ public:
 
     //! Defines the Depth Of Field effect parameters:
     //! - percentageOfDepthFiltered : represents the percentage of the view volume depth that is filtered.
-    //! A value of 0.95 means that 95% of depth clear, and the 5% demaining is in the circle of confusion ( DOF ).
+    //! A value of 0.95 means that 95% of depth clear, and the 5% remaining is in the circle of confusion ( DOF ).
     //! - filterAmplitude : defines the speed at which the bluriness grows as depth increase.
     //! This value is multiplied by percentageOfDepthFiltered, which is 2.5 times faster than the value of 20,
     //! where bluriness is 100% at maximum depth.

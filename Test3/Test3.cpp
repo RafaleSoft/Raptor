@@ -120,8 +120,8 @@ void Test(cl_float4 *data,size_t NPoints)
 	pJob->clLoadProgramString(testinit);
 
 	CRaptorComputeMemory &mem = CRaptorComputeMemory::GetInstance(0,0);
-	CRaptorComputeMemory::CBufferObject *buffer = mem.clCreateBuffer(sizeof(cl_float4)*NPoints,data);
-	CRaptorComputeMemory::CBufferObject *tempbuffer = new CRaptorComputeMemory::CBufferObject(sizeof(cl_float4)*NPoints);
+	CRaptorComputeMemory::IBufferObject *buffer = mem.clCreateBuffer(sizeof(cl_float4)*NPoints,data);
+	CRaptorComputeMemory::IBufferObject *tempbuffer = mem.clCreateBuffer(sizeof(cl_float4)*NPoints,NULL,CRaptorComputeMemory::IBufferObject::LOCAL_BUFFER);
 
 	CRaptorComputeTask task("testinit",NPoints,NPoints);
 	task.addParameter(*buffer);
@@ -143,7 +143,7 @@ void BitonicGPU(cl_float4 *data,size_t NPoints)
 	pJob->clLoadProgramString(TriTest);
 
 	CRaptorComputeMemory &mem = CRaptorComputeMemory::GetInstance(0,0);
-	CRaptorComputeMemory::CBufferObject *buffer = mem.clCreateBuffer(sizeof(cl_float4)*NPoints,data);
+	CRaptorComputeMemory::IBufferObject *buffer = mem.clCreateBuffer(sizeof(cl_float4)*NPoints,data);
 
 	CRaptorComputeTask task("calculT",tailleB,0);
 	task.addParameter(*buffer);

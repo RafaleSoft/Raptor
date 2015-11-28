@@ -4,9 +4,6 @@
 
 #include "stdafx.h"
 
-#if !defined(AFX_SERVERCMDLINE_H__3FAF402E_EBC9_4BEF_B369_8D2CBD677141__INCLUDED_)
-    #include "ServerCmdLine.h"
-#endif
 #if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
     #include "System/Raptor.h"
 #endif
@@ -21,6 +18,9 @@
 #endif
 #if !defined(AFX_SERVERTRANSPORT_H__AC7E8C33_37A1_4BE2_8B73_B463DA99E328__INCLUDED_)
     #include "ServerTransport.h"
+#endif
+#if !defined(AFX_CMDLINEPARSER_H__D7D8768A_3D97_491F_8493_588972A3CF62__INCLUDED_)
+	#include "ToolBox/CmdLineParser.h"
 #endif
 
 using std::cout;
@@ -43,12 +43,17 @@ CRaptorServer::~CRaptorServer()
 }
 
 
-bool CRaptorServer::Start(const ServerCmdLine& cmdline)
+bool CRaptorServer::Start(const CCmdLineParser& cmdline)
 {
     if (m_pInstance == NULL)
         m_pInstance = CRaptorInstance::getInstance();
 
-	bool res = m_pInstance->start(cmdline.width,cmdline.height);
+	unsigned short width = 256;
+	unsigned short height = 256;
+	cmdline.getValue("width",width);
+	cmdline.getValue("height",height);
+
+	bool res = m_pInstance->start(width,height);
     if (res)
     {
 		RAPTOR_NO_ERROR(CPersistence::CPersistenceClassID::GetClassId(),
@@ -64,23 +69,27 @@ bool CRaptorServer::Start(const ServerCmdLine& cmdline)
 	if (m_pTransport == NULL)
         m_pTransport = new CServerTransport();
 
-	res = m_pTransport->startServer(cmdline.addrStr,cmdline.port);
+	char* addrStr = "127.0.0.1";
+	unsigned short port = 2048;
+	cmdline.getValue("port",port);
+	cmdline.getValue("host_addr",addrStr);
+	res = m_pTransport->startServer(addrStr,port);
     if (res)
     {
 		stringstream str;
 		str << "Raptor Server ready on port ";
-		str << cmdline.port;
+		str << port;
 		str << " at host ";
-		str << cmdline.addrStr.data();
+		str << addrStr;
 		RAPTOR_NO_ERROR(CPersistence::CPersistenceClassID::GetClassId(),str.str());
     }
     else
     {
 		stringstream str;
 		str << "Raptor Server couldn't be started on port ";
-		str << cmdline.port;
+		str << port;
 		str << " at host ";
-		str << cmdline.addrStr.data();
+		str << addrStr;
 		RAPTOR_FATAL(CPersistence::CPersistenceClassID::GetClassId(),str.str());
     }
 

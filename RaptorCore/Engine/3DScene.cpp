@@ -324,7 +324,7 @@ void C3DScene::glRenderObjects(	const vector<C3DSceneObject*>& objects)
 		      
                 if (!sc->glRenderPass(	m_pAttributes->m_iCurrentPass,
 										m_pAttributes->m_pLights,
-										false))
+										true))
 					occludedObjects.push_back(sc);
             }
 			if (!occludedObjects.empty())

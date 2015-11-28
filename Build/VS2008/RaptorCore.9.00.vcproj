@@ -1608,6 +1608,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\RaptorCore\Subsys\BufferObject.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\RaptorCore\Subsys\BumpLightObserver.h"
 					>
 				</File>

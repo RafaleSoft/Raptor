@@ -46,13 +46,13 @@ private:
 	unsigned int	m_nbKd;
 	unsigned int	m_nSteps;
 
-	CRaptorComputeMemory::CBufferObject *buffer_Data;
-	CRaptorComputeMemory::CBufferObject *buffer_Kd;
-	CRaptorComputeMemory::CBufferObject *buffer_RangId;
-	CRaptorComputeMemory::CBufferObject *buffer_IdOk;
+	CRaptorComputeMemory::IBufferObject *buffer_Data;
+	CRaptorComputeMemory::IBufferObject *buffer_Kd;
+	CRaptorComputeMemory::IBufferObject *buffer_RangId;
+	CRaptorComputeMemory::IBufferObject *buffer_IdOk;
 
-	CRaptorComputeMemory::CBufferObject* buffer_RangX;
-	CRaptorComputeMemory::CBufferObject* buffer_RangY;
+	CRaptorComputeMemory::IBufferObject* buffer_RangX;
+	CRaptorComputeMemory::IBufferObject* buffer_RangY;
 };
 
 #endif

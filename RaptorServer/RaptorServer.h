@@ -11,7 +11,7 @@
 
 class CRaptorInstance;
 class CServerTransport;
-class ServerCmdLine;
+class CCmdLineParser;
 
 
 RAPTOR_NAMESPACE
@@ -23,7 +23,7 @@ public:
 	CRaptorServer();
 	virtual ~CRaptorServer();
 
-    bool Start(	const ServerCmdLine& cmdline );
+    bool Start(	const CCmdLineParser& cmdline );
 	
     bool Stop(void);
 

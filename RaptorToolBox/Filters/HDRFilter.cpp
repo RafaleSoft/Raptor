@@ -84,6 +84,11 @@
 		gl_FragColor = vec4(LMax,LMax,LMax,0.0); \n\
 	}";
 
+	//	Luminance max is scaled to 1.0 to avoid darkening a scene
+	//	in the case where no pixels are above 1.0
+	//	The final luminance is applied to darken the whole scene
+	//	for the tone mapping in order to have the brightest parts
+	//	at 1.0. (L>1 => x 1/L is in range [0..1])
 	static const string lastLuminanceMax_ps = 
 	"#version 120				\n\
 	uniform sampler2D color;	\n\

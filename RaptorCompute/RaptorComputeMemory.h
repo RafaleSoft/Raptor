@@ -10,51 +10,22 @@ class RAPTORCOMPUTE_API CRaptorComputeMemory
 {
 public:
 	//	TODO: Use / Inherit Raptor::CMemory::CBufferObject
-	class RAPTORCOMPUTE_API CBufferObject
+	class RAPTORCOMPUTE_API IBufferObject : public CMemory::IBufferObject
     {
     public:
-        typedef enum
-        {
-			COMPUTE_BUFFER,
-			LOCAL_BUFFER,
-			IMAGE_BUFFER,
-            NB_BUFFER_KIND
-        }   BUFFER_KIND; 
+        static const BUFFER_KIND COMPUTE_BUFFER = 4;
+		static const BUFFER_KIND INTEROP_COMPUTE_BUFFER = 5;
+		static const BUFFER_KIND LOCAL_BUFFER = 6;
+		static const BUFFER_KIND IMAGE_BUFFER = 7;
+        static const BUFFER_KIND NB_BUFFER_KIND = 8;
 
-		//!	Local buffer constructor
-		CBufferObject(size_t sz)
-			:m_size(sz),address(NULL),m_storage(LOCAL_BUFFER),m_isInterop(false) {};
+    protected:
+        IBufferObject() {};
+        virtual ~IBufferObject() {};
 
-		void *data(void) const 
-		{ return address; };
-
-		size_t getSize(void) const
-		{ return m_size; };
-
-		BUFFER_KIND getStorage(void) const
-		{ return m_storage; }
-
-		bool isInterop(void) const
-		{ return m_isInterop; }
-
-    private:
-        friend class CRaptorComputeMemory;
-        CBufferObject():m_size(0),address(NULL),m_storage(COMPUTE_BUFFER),m_isInterop(false) {};
-        ~CBufferObject() {};
-        CBufferObject(const CBufferObject& ) {};
-		CBufferObject& operator=(const CBufferObject& ) {return *this; };
-
-		//!	An opaque pointer to the data
-		void		*address;
-
-        //! The size in bytes of the buffer object
-		size_t		m_size;
-
-		//! Indicates the data storage usage: vertex, pixels, ...
-        BUFFER_KIND m_storage;
-
-		//! Indicates that the buffer is linked to a GL buffer
-		bool		m_isInterop;
+	private:
+        IBufferObject(const IBufferObject& ) {};
+		IBufferObject& operator=(const IBufferObject& ) {return *this; };
 	};
 
 	//!	Single instance accessor.
@@ -68,21 +39,21 @@ public:
     //! @param size : sets the size in bytes of the buffer and allocates uninitialized memory
 	//! @param initialData : a pointer to data to initialize the buffer if necessary.
     //! @return the newly allocated buffer object or NULL if allocation failed.
-    CRaptorComputeMemory::CBufferObject* clCreateBuffer(size_t size,
+    CRaptorComputeMemory::IBufferObject* clCreateBuffer(size_t size,
 														void *initialData = NULL,
-														CRaptorComputeMemory::CBufferObject::BUFFER_KIND kind = CRaptorComputeMemory::CBufferObject::COMPUTE_BUFFER);
+														CRaptorComputeMemory::IBufferObject::BUFFER_KIND kind = CRaptorComputeMemory::IBufferObject::COMPUTE_BUFFER);
 
 	//! This method creates a new buffer object wrapping a GL buffer.
 	//! @param glBuffer : a Raptor Core GL buffer
     //! @return the newly allocated buffer object or NULL if allocation failed.
-    CRaptorComputeMemory::CBufferObject* clCreateBuffer(CMemory::IBufferObject *glBuffer);
+    CRaptorComputeMemory::IBufferObject* clCreateBuffer(CMemory::IBufferObject *glBuffer);
 
 
 	//! This method deletes a buffer object allocate with cl
 	//! @param bo : a buffer object created with the method above
 	//! @return false if buffer invalid or device error, true otherwise
 	//! Rq: the object pointed by bo is deleted, and bo set to NULL.
-	bool clDestroyBuffer(CRaptorComputeMemory::CBufferObject *&bo);
+	bool clDestroyBuffer(CRaptorComputeMemory::IBufferObject *&bo);
 
 
 private:
