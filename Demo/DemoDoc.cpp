@@ -316,6 +316,7 @@ void CDemoDoc::GLInitContext(void)
 
     dof = new CDOFFilter;
     dof->setDOFParams(0.85f, 10.0f);
+	dof->setBlurNbPass(4);
     pCurrentDisplay->glBindDisplay(*dof);
 	dof->releaseReference();
 

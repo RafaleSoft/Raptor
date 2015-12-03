@@ -78,6 +78,13 @@ void CMirror::glClipRender(void)
 		(*it++)->glClipRender();
 }
 
+//!	
+//!	Plane : point m and normal n
+//!	dot(mM,n) = HM =(x-m.x)*n.x + (y-m.y)*n.y + (z-m.z)*n.z
+//!	mM' = mM - 2*HM*n = (x-2*n.x)*HM
+//!						(y-2*n.y)*HM
+//!						(z-2*n.z)*HM
+//!	Rq: the matrix is column major (OpenGL default)
 void CMirror::setMirrorPlane(const GL_COORD_VERTEX& n,
 							 const GL_COORD_VERTEX& m) 
 {

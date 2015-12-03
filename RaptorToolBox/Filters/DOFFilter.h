@@ -39,6 +39,9 @@ public:
     //! Implements base class filter releaser
     virtual void glDestroyFilter(void);
 
+	//! Configure numbre of bluring passes for the high frequencies
+	//! (4 maximum passes)
+	void setBlurNbPass(unsigned int nb=1);
 
 private:
 	//! Fordibben destructor
@@ -53,13 +56,16 @@ private:
 	//!	Initializes the shaders
 	void glInitShaders(void);
 
-
+	unsigned int		m_nbBlur;
 	GL_COORD_VERTEX     vsParameter_Xoffset;
 	GL_COORD_VERTEX     vsParameter_Yoffset;
     GL_COORD_VERTEX     dofParams;
 
     CRaptorDisplay		*tmpDisplay;
     CTextureObject      *tmpTexture;
+	CRaptorDisplay		*tmpDisplay2;
+    CTextureObject      *tmpTexture2;
+	CTextureSet			*m_pRenderTextures2;
     CShader             *DOFShader;
 	CShaderProgram::CProgramParameters	vp_params;
 	CShaderProgram::CProgramParameters	fp_params;

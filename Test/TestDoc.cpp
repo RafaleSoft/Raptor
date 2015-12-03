@@ -57,7 +57,7 @@ CTestDoc::~CTestDoc()
 class Foreground : public CBasicObjects::CRectangle
 {
 public:
-	Foreground(CMagnifierFilter *mf):fgMag(mf)
+	Foreground(CMagnifierFilter *mf):fgMag(mf),status(mf->isEnabled())
 	{
 		CTextureFactory &fct = CTextureFactory::getDefaultFactory();
 		CTextureObject *T = fct.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA);
@@ -71,11 +71,24 @@ public:
 		CTextureUnitSetup *tmu = s->glGetTextureUnitsSetup();
 		tmu->setDiffuseMap(output);
 		tmu->glBuildSetup();
+
+		glRenderFilter();
 	};
 
 	virtual ~Foreground() {};
 
 	virtual void glRender()
+	{
+		if (status != fgMag->isEnabled())
+		{
+			status = !status;
+			glRenderFilter();
+		}
+		CShadedGeometry::glRender();
+	};
+
+private:
+	void glRenderFilter(void)
 	{
 		glMatrixMode(GL_PROJECTION);
 		glPushMatrix();
@@ -91,11 +104,9 @@ public:
 		glMatrixMode(GL_PROJECTION);
 		glPopMatrix();
 		glMatrixMode(GL_MODELVIEW);
-	
-		CShadedGeometry::glRender();
-	};
+	}
 
-private:
+	bool status;
 	CMagnifierFilter *fgMag;
 };
 

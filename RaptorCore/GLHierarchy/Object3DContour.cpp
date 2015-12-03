@@ -251,22 +251,15 @@ void CObject3DContour::prepareContour(void)
 	m_pContour->pContourNormals = (GL_COORD_VERTEX*)(CMemory::GetInstance()->allocate(sizeof(GL_COORD_VERTEX),nbNormals,16));
 
 	unsigned int p1,p2,p3;
-	unsigned int index = 0;
-
     m_pOrigin->glLockData();
 
-    unsigned int i = 0;
-	for (i=0;i<nbNormals;i++)
+	for (unsigned int i=0;i<nbNormals;i++)
 	{
-		p1 = m_pOrigin->polys[index];
-		p2 = m_pOrigin->polys[index+1];
-		p3 = m_pOrigin->polys[index+2];
-
+		m_pOrigin->getFace(i,p1,p2,p3);
 		C3DEngine::TriangleNormal(	m_pOrigin->VERTEX(p1),
 									m_pOrigin->VERTEX(p2),
 									m_pOrigin->VERTEX(p3),
 									m_pContour->pContourNormals[i]);
-		index += 3;
 	}
 
 	if (m_pContour->backfaces != NULL)
@@ -289,7 +282,7 @@ void CObject3DContour::prepareContour(void)
 	m_pContour->pContourVolume = new GL_COORD_VERTEX[m_pOrigin->nbVertex()*2];
 
 	m_pContour->contourVolumeSize = m_pOrigin->nbVertex();
-	for (i=0;i<m_pOrigin->nbVertex();i++)
+	for (unsigned int i=0;i<m_pOrigin->nbVertex();i++)
 	{
 		m_pContour->pContourVolume[i] = m_pOrigin->VERTEX(i);
 	}
@@ -297,7 +290,7 @@ void CObject3DContour::prepareContour(void)
     if (m_pContour->pContourFaces != NULL)
         delete [] m_pContour->pContourFaces;
     m_pContour->pContourFaces = new unsigned short [3*nbNormals];
-    for (i=0;i<3*nbNormals;i++)
+    for (unsigned int i=0;i<3*nbNormals;i++)
     {
         m_pContour->pContourFaces[i] = m_pOrigin->polys[i];
     }

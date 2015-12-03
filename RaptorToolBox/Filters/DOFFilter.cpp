@@ -220,7 +220,11 @@
 CDOFFilter::CDOFFilter()
     :DOFShader(NULL),
     tmpTexture(NULL),
-	tmpDisplay(NULL)
+	tmpDisplay(NULL),
+	tmpTexture2(NULL),
+	tmpDisplay2(NULL),
+	m_pRenderTextures2(NULL),
+	m_nbBlur(1)
 {
     dofParams.x = 0.0f;
     dofParams.y = 0.95f;
@@ -257,6 +261,21 @@ void CDOFFilter::glDestroyFilter(void)
         Raptor::glDestroyDisplay(tmpDisplay);
 		tmpDisplay = NULL;
 	}
+	if (tmpTexture2 != NULL)
+	{
+        tmpTexture2->releaseReference();
+		tmpTexture2 = NULL;
+	}
+    if (tmpDisplay2 != NULL)
+	{
+        Raptor::glDestroyDisplay(tmpDisplay2);
+		tmpDisplay2 = NULL;
+	}
+	if (m_pRenderTextures2 != NULL)
+	{
+        delete m_pRenderTextures2;
+		m_pRenderTextures2 = NULL;
+	}
 }
 
 void CDOFFilter::setDOFParams(float percentageOfDepthFiltered, float filterAmplitude)
@@ -272,6 +291,11 @@ void CDOFFilter::setDOFParams(float percentageOfDepthFiltered, float filterAmpli
     // set default value if parameter is out of bounds
     if (dofParams.z < 0)
         dofParams.z = 50.0f;
+}
+
+void CDOFFilter::setBlurNbPass(unsigned int nb)
+{
+	m_nbBlur = MAX(MIN(nb,4),1);
 }
 
 void CDOFFilter::glRenderFilter()
@@ -305,6 +329,52 @@ void CDOFFilter::glRenderFilter()
 	DOFShader->glStop();
 
     tmpDisplay->glUnBindDisplay();
+
+	for (unsigned int i=2;i<=m_nbBlur;i++)
+	{
+		//  Render Y-blur in current buffer
+		tmpDisplay2->glBindDisplay(noDevice);
+		tmpTexture->glRender();
+
+		vp_params[0].vector = vsParameter_Yoffset;
+		vp_params[1].vector = GL_COORD_VERTEX(0.0f,1.0f,0.0f,0.0f);
+
+	#if defined(GL_ARB_vertex_shader)
+		fp_params[0].vector = dofParams;
+		DOFShader->glGetVertexProgram()->setProgramParameters(vp_params);
+		DOFShader->glGetFragmentProgram()->setProgramParameters(fp_params);
+	#elif defined(GL_ARB_vertex_program)
+		DOFShader->glGetVertexShader()->setProgramParameters(vp_params);
+		DOFShader->glGetFragmentShader()->setProgramParameters(fp_params);
+	#endif
+
+		DOFShader->glRender();
+		glDrawBuffer();
+		DOFShader->glStop();
+		tmpDisplay2->glUnBindDisplay();
+
+		//  Render X-blur in pixel buffer
+		tmpDisplay->glBindDisplay(noDevice);
+		tmpTexture2->glRender();
+
+		vp_params[0].vector = vsParameter_Xoffset;
+		vp_params[1].vector = GL_COORD_VERTEX(1.0f,0.0f,0.0f,0.0f);
+
+#if defined(GL_ARB_vertex_shader)
+		fp_params[0].vector = dofParams;
+		DOFShader->glGetVertexProgram()->setProgramParameters(vp_params);
+		DOFShader->glGetFragmentProgram()->setProgramParameters(fp_params);
+#elif defined(GL_ARB_vertex_program)
+		DOFShader->glGetVertexShader()->setProgramParameters(vp_params);
+		DOFShader->glGetFragmentShader()->setProgramParameters(fp_params);
+#endif
+
+		DOFShader->glRender();
+		glDrawBuffer();
+		DOFShader->glStop();
+
+		tmpDisplay->glUnBindDisplay();
+	}
 }
 
 void CDOFFilter::glRenderFilterOutput()
@@ -312,11 +382,12 @@ void CDOFFilter::glRenderFilterOutput()
 	const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
 	PFN_GL_ACTIVE_TEXTURE_ARB_PROC glActiveTextureARB = pExtensions->glActiveTextureARB;
 
+	//  Render Y-blur in current buffer
 	glActiveTextureARB(GL_TEXTURE1_ARB);
-    glEnable(GL_TEXTURE_2D);
-    depthInput->glRender();
-    glActiveTextureARB(GL_TEXTURE0_ARB);
-    tmpTexture->glRender();
+	glEnable(GL_TEXTURE_2D);
+	depthInput->glRender();
+	glActiveTextureARB(GL_TEXTURE0_ARB);
+	tmpTexture->glRender();
 
 	vp_params[0].vector = vsParameter_Yoffset;
 	vp_params[1].vector = GL_COORD_VERTEX(0.0f,1.0f,0.0f,0.0f);
@@ -331,13 +402,13 @@ void CDOFFilter::glRenderFilterOutput()
 #endif
 
 	DOFShader->glRender();
-    glDrawBuffer();
+	glDrawBuffer();
 	DOFShader->glStop();
 
 	glActiveTextureARB(GL_TEXTURE1_ARB);
-    glBindTexture(GL_TEXTURE_2D,0);
-    glActiveTextureARB(GL_TEXTURE0_ARB);
-    glBindTexture(GL_TEXTURE_2D,0);
+	glBindTexture(GL_TEXTURE_2D,0);
+	glActiveTextureARB(GL_TEXTURE0_ARB);
+	glBindTexture(GL_TEXTURE_2D,0);
 }
 
 bool CDOFFilter::glInitFilter(void)
@@ -374,6 +445,8 @@ bool CDOFFilter::glInitFilter(void)
 
 	glInitShaders();	
 
+	m_pRenderTextures2 = new CTextureSet("DOF_BLUR_TSET");
+
     // Create temporary display and texture to perform the two pass z-blur.
 	CRaptorDisplayConfig state;
 	state.width = m_fXfactor * getColorInput()->getWidth();
@@ -391,6 +464,13 @@ bool CDOFFilter::glInitFilter(void)
 		filterFactory.glResizeTexture(tmpTexture,state.width,state.height);
 		tmpTexture->glUpdateClamping(CTextureObject::CGL_EDGECLAMP);
 		m_pRenderTextures->addTexture(tmpTexture);
+
+		tmpTexture2 = filterFactory.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,
+			                                        CTextureObject::CGL_OPAQUE,
+				                                    CTextureObject::CGL_UNFILTERED);
+		filterFactory.glResizeTexture(tmpTexture2,state.width,state.height);
+		tmpTexture2->glUpdateClamping(CTextureObject::CGL_EDGECLAMP);
+		m_pRenderTextures2->addTexture(tmpTexture2);
 	}
 
     tmpDisplay = Raptor::glCreateDisplay(state);
@@ -402,8 +482,20 @@ bool CDOFFilter::glInitFilter(void)
     rp->clear(CGL_NULL);
     tmpDisplay->setViewPoint(NULL);
 
+	tmpDisplay2 = Raptor::glCreateDisplay(state);
+    rp = tmpDisplay2->getRenderingProperties();
+    rp->setTexturing(CRenderingProperties::ENABLE);
+    rp->setCullFace(CRenderingProperties::DISABLE);
+    rp->setDepthTest(CRenderingProperties::DISABLE);
+    rp->setLighting(CRenderingProperties::DISABLE);
+    rp->clear(CGL_NULL);
+    tmpDisplay2->setViewPoint(NULL);
+
 	if (m_fModel == RENDER_BUFFER)
+	{
 		tmpDisplay->glBindDisplay(*m_pRenderTextures);
+		tmpDisplay2->glBindDisplay(*m_pRenderTextures2);
+	}
 
 	if (m_fModel == RENDER_TEXTURE)
 	{
@@ -411,6 +503,10 @@ bool CDOFFilter::glInitFilter(void)
 															CTextureObject::CGL_OPAQUE,
 															CTextureObject::CGL_UNFILTERED,
 															tmpDisplay);
+		tmpTexture2 = filterFactory.glCreateDynamicTexture(	CTextureObject::CGL_COLOR24_ALPHA,
+															CTextureObject::CGL_OPAQUE,
+															CTextureObject::CGL_UNFILTERED,
+															tmpDisplay2);
 	}
 
 	filterFactory.getConfig().useTextureResize(previousResize);

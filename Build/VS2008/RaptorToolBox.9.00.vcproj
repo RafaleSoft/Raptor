@@ -321,10 +321,6 @@
 					RelativePath="..\..\RaptorToolBox\Filters\MBFilter.cpp"
 					>
 				</File>
-				<File
-					RelativePath="..\..\RaptorToolBox\Filters\TextureFilter.cpp"
-					>
-				</File>
 			</Filter>
 			<Filter
 				Name="Imaging"
@@ -514,10 +510,6 @@
 				</File>
 				<File
 					RelativePath="..\..\RaptorToolBox\Filters\MBFilter.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\RaptorToolBox\Filters\TextureFilter.h"
 					>
 				</File>
 			</Filter>
