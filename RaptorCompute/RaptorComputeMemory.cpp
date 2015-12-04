@@ -18,9 +18,16 @@
 	class CComputeBufferObject : public CRaptorComputeMemory::IBufferObject
     {
     public:
+		//!	Compute buffer constructor
+		CComputeBufferObject():m_size(0),address(NULL),m_storage(COMPUTE_BUFFER)
+		{};
+
 		//!	Local buffer constructor
 		CComputeBufferObject(size_t sz)
 			:m_size(sz),address(NULL),m_storage(LOCAL_BUFFER) {};
+
+		//!	Destructor
+		virtual ~CComputeBufferObject() {};
 
 		void *data(void) const 
 		{ return address; };
@@ -37,13 +44,6 @@
 		unsigned int getBufferId(void) const
 		{ return 0; }
 
-    private:
-        friend class CRaptorComputeMemory;
-        CComputeBufferObject():m_size(0),address(NULL),m_storage(COMPUTE_BUFFER) {};
-        ~CComputeBufferObject() {};
-        CComputeBufferObject(const CComputeBufferObject& ) {};
-		CComputeBufferObject& operator=(const CComputeBufferObject& ) {return *this; };
-
 		//!	An opaque pointer to the data
 		void		*address;
 
@@ -52,6 +52,10 @@
 
 		//! Indicates the data storage usage: vertex, pixels, ...
         BUFFER_KIND m_storage;
+
+    private:
+        CComputeBufferObject(const CComputeBufferObject& ) {};
+		CComputeBufferObject& operator=(const CComputeBufferObject& ) {return *this; };
 	};
 
 
@@ -190,7 +194,7 @@ CRaptorComputeMemory::clCreateBuffer(	size_t size,
 
 	if (CL_SUCCESS == errcode)
 	{
-		res = new CComputeBufferObject;
+		res = new CComputeBufferObject();
 
 		res->address = buffer;
 		res->m_size = size;

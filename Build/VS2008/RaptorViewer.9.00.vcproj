@@ -76,7 +76,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Ws2_32.lib opengl32.lib glu32.lib Raptor.lib RaptorNetwork.lib"
+				AdditionalDependencies="Ws2_32.lib opengl32.lib glu32.lib Raptor.lib RaptorNetwork.lib RaptorToolBox.lib"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="$(RAPTOR_ROOT)\redist\lib;$(PLATFORM_SDK)\Lib;$(SolutionDir)\AddOns"
@@ -227,10 +227,6 @@
 			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 			>
 			<File
-				RelativePath="..\..\RaptorViewer\ClientCmdLine.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\..\RaptorViewer\RaptorClient.cpp"
 				>
 			</File>
@@ -259,10 +255,6 @@
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl"
 			>
-			<File
-				RelativePath="..\..\RaptorViewer\ClientCmdLine.h"
-				>
-			</File>
 			<File
 				RelativePath="..\..\RaptorViewer\RaptorClient.h"
 				>

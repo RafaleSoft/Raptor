@@ -6,8 +6,8 @@
 #if !defined(AFX_RAPTORSERVER_H__4595FAB9_F62A_4C9C_8356_9E204107AA14__INCLUDED_)
 	#include "RaptorClient.h"
 #endif
-#if !defined(AFX_CLIENTCMDLINE_H__D2547634_67C1_4608_8A82_6360CFBF4A42__INCLUDED_)
-	#include "ClientCmdLine.h"
+#if !defined(AFX_CMDLINEPARSER_H__D7D8768A_3D97_491F_8493_588972A3CF62__INCLUDED_)
+	#include "ToolBox/CmdLineParser.h"
 #endif
 
 
@@ -18,15 +18,28 @@ int main(int argc, char* argv[])
 		return -1;
 #endif
 
-	ClientCmdLine commandLine;
-	commandLine.Parse(argc,argv);
-	
+	unsigned short width = 320;
+	unsigned short height = 240;
+	char* file = "Demo.xml";
+	CCmdLineParser parser;
+	parser.addOption("port","p",(unsigned short)2048);
+	parser.addOption("width","w",width);
+	parser.addOption("height","h",height);
+	parser.addOption("r_width","rw",(unsigned short)256);
+	parser.addOption("r_height","rh",(unsigned short)256);
+	parser.addOption("file","f",file);
+	parser.addOption("host_addr","a","127.0.0.1");
+	parser.parse(argc,argv);
+
 	CRaptorClient	client;
-	if (client.start(commandLine))
+	if (client.start(parser))
 	{
-		if (client.load(commandLine.file))
+		parser.getValue("file",file);
+		if (client.load(file))
 		{
-			if (client.run(commandLine.width,commandLine.height))
+			parser.getValue("width",width);
+			parser.getValue("height",height);
+			if (client.run(width,height))
 			{
 				if (!client.stop())
 				{

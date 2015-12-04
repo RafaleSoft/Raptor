@@ -1612,10 +1612,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\RaptorCore\Subsys\BumpLightObserver.h"
-					>
-				</File>
-				<File
 					RelativePath="..\..\RaptorCore\Subsys\BumpShader.h"
 					>
 				</File>
@@ -1701,6 +1697,10 @@
 				</File>
 				<File
 					RelativePath="..\..\RaptorCore\Subsys\ShadowVolumeJob.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\RaptorCore\Subsys\SimpleLightObserver.h"
 					>
 				</File>
 				<File

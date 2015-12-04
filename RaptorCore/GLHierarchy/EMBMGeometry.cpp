@@ -31,8 +31,8 @@
 #if !defined(AFX_3DENGINEMATRIX_H__6CD1110E_1174_4f38_A452_30FB312022D0__INCLUDED_)
 	#include "Engine/3DEngineMatrix.h"
 #endif
-#if !defined(AFX_BUMPLIGHTOBSERVER_H__238FC166_A3BC_4D77_8FD4_0A42DB45280F__INCLUDED_)
-	#include "Subsys/BumpLightObserver.h"
+#if !defined(AFX_SIMPLELIGHTOBSERVER_H__238FC166_A3BC_4D77_8FD4_0A42DB45280F__INCLUDED_)
+	#include "Subsys/SimpleLightObserver.h"
 #endif
 #if !defined(AFX_LIGHT_H__AA8BABD6_059A_4939_A4B6_A0A036E12E1E__INCLUDED_)
 	#include "Light.h"
@@ -43,7 +43,7 @@ RAPTOR_NAMESPACE
 
 
 CShader* CEMBMGeometry::m_pBumpShaderAmbient = NULL;
-CBumpLightObserver* CEMBMGeometry::m_pObserver = NULL;
+CSimpleLightObserver* CEMBMGeometry::m_pObserver = NULL;
 
 
 CEMBMGeometry::CEMBMGeometry(const std::string& name)
@@ -98,7 +98,7 @@ void CEMBMGeometry::unLink(const CPersistence* p)
 void CEMBMGeometry::init(void)
 {
 	if (m_pObserver == NULL)
-		m_pObserver = new CBumpLightObserver();
+		m_pObserver = new CSimpleLightObserver();
 	else
 		m_pObserver->addReference();
 

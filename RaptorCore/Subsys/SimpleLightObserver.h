@@ -1,9 +1,9 @@
-// BumpLightObserver.h: interface for the CBumpLightObserver class.
+// SimpleLightObserver.h: interface for the CSimpleLightObserver class.
 //
 //////////////////////////////////////////////////////////////////////
 
-#if !defined(AFX_BUMPLIGHTOBSERVER_H__238FC166_A3BC_4D77_8FD4_0A42DB45280F__INCLUDED_)
-#define AFX_BUMPLIGHTOBSERVER_H__238FC166_A3BC_4D77_8FD4_0A42DB45280F__INCLUDED_
+#if !defined(AFX_SIMPLELIGHTOBSERVER_H__238FC166_A3BC_4D77_8FD4_0A42DB45280F__INCLUDED_)
+#define AFX_SIMPLELIGHTOBSERVER_H__238FC166_A3BC_4D77_8FD4_0A42DB45280F__INCLUDED_
 
 #if _MSC_VER > 1000
 #pragma once
@@ -20,10 +20,10 @@
 RAPTOR_NAMESPACE_BEGIN
 
 //! This class implements a multiple light observer suitable for bumping.
-class CBumpLightObserver : public CLightObserver, public CObjectReference
+class CSimpleLightObserver : public CLightObserver, public CObjectReference
 {
 public:
-	CBumpLightObserver() {};
+	CSimpleLightObserver() {};
 
     //! Implements @see CLightObserver update method.
     //! For bumping, this observer only retains active lights, ignoring all other events.
@@ -31,12 +31,12 @@ public:
 	{	};
 
 private:
-	virtual ~CBumpLightObserver() {};
+	virtual ~CSimpleLightObserver() {};
 };
 
 
 RAPTOR_NAMESPACE_END
 
 
-#endif // !defined(AFX_BUMPLIGHTOBSERVER_H__238FC166_A3BC_4D77_8FD4_0A42DB45280F__INCLUDED_)
+#endif // !defined(AFX_SIMPLELIGHTOBSERVER_H__238FC166_A3BC_4D77_8FD4_0A42DB45280F__INCLUDED_)
 

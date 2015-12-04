@@ -34,9 +34,6 @@ int main(int argc, char* argv[])
 
 	string addrStr = "127.0.0.1";
 	unsigned short port = 2048;
-	unsigned int width = 256;
-	unsigned int height = 256;
-	
 	parser.getValue("port",port);
 
 /*

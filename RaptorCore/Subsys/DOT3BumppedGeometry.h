@@ -9,7 +9,7 @@
 
 RAPTOR_NAMESPACE_BEGIN
 
-class CBumpLightObserver;
+class CSimpleLightObserver;
 
 
 class CDOT3BumppedGeometry : public CBumppedGeometry
@@ -43,7 +43,7 @@ private:
 	virtual void setRenderingModel(const CRenderingModel& model);
 	
 	//!	A light observer to be notified from lightupdates.
-	static CBumpLightObserver	*m_pObserver;
+	static CSimpleLightObserver	*m_pObserver;
 
 	//!	Diffuse Light vector coordinates
 	unsigned char		*bumpDiffusePx;

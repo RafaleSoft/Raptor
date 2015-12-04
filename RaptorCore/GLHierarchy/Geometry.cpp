@@ -1572,6 +1572,16 @@ float CGeometry::getFogCoord(unsigned int numvtx) const
 		return 0.0f;
 }
 
+void CGeometry::getCoord(unsigned int numvtx,GL_COORD_VERTEX &v) const
+{
+#if defined (DATA_EXTENDED)
+    if ((numvtx<m_nbVertex) && (geometry != NULL))
+#elif defined (DATA_PACKED)
+	if ((numvtx<m_nbVertex) && (vertex != NULL))
+#endif
+		v = VERTEX(numvtx);
+}
+
 void CGeometry::getVertex(unsigned int numvtx,GL_VERTEX_DATA &v) const
 {
 #if defined (DATA_EXTENDED)

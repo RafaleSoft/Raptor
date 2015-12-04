@@ -23,7 +23,7 @@
 RAPTOR_NAMESPACE
 
 class CServerImageRenderer;
-class ClientCmdLine;
+class CCmdLineParser;
 
 class CRaptorClient : public CRenderEntryPoint
 {
@@ -32,7 +32,7 @@ public:
 	virtual ~CRaptorClient(void);
 
 	//!	Server connection
-    bool start(const ClientCmdLine &cmdLine);
+    bool start(const CCmdLineParser &cmdLine);
 	
     bool stop(void);
 

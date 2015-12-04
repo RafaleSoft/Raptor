@@ -3,8 +3,6 @@
 
 - tester EMBM avec un cube dans demo !!! ( bug de position a corriger )
 
-- Déployer CCmndLineParser dans RaptorViewer
-	
 - supprimer des "friend" ?
 	p.ex. dans CRaptorDisplay et sous classes ...
 
@@ -15,8 +13,6 @@
 	- Supprimer CBumppedGeometry => remplacer par le shader.
 	- Remplacer / améliorer par displacement map / parallax bump mapping
 	
-- Supprimer BumpLightObserver dans EMBM/DOT3, faire éventuellement un SimpleLightObserver
-
 - Persistence:
 	- Utiliser CPersistenceClassID::narrow<T> là ou on downcaste
 	- Creer un RootPersitence pour stocker les statiques et l'affecter à un display
@@ -80,7 +76,6 @@
 
 - Pb buffer display:
 	Les texture Generator ne font pas de UnBind !
-	Unbind : 3DEngine configuration is lost ( not restored to previous state : matrices, clipplanes, ... )
 
 - Collisions:
 	- Calculer les metaballs optimales

@@ -35,7 +35,7 @@ public:
 		virtual bool parse(const char* argv)
 		{ return false; };
 
-	protected:
+	private:
 		string	m_name;
 		string	m_short;
 	};
@@ -52,7 +52,7 @@ public:
 
 		virtual ~CCommandLineOptionValue() {};
 
-		T getValue() const
+		T getValue(T* t) const
 		{ return m_value; };
 
 		void setValue(T t)
@@ -87,7 +87,7 @@ public:
 
 	//!	Retrive an option value by name.
 	template <class T>
-	bool getValue(const string& optionName,T &t);
+	bool getValue(const string& optionName,T &t) const;
 
 private:
 	vector<CCommandLineOption*> m_options;
@@ -113,7 +113,7 @@ bool CCmdLineParser::addOption(	const string &name,
 }
 
 template <class T>
-bool CCmdLineParser::getValue(const string& optionName,T& t)
+bool CCmdLineParser::getValue(const string& optionName,T& t) const
 {
 	for (unsigned int o=0;o<m_options.size();o++)
 	{
@@ -123,7 +123,7 @@ bool CCmdLineParser::getValue(const string& optionName,T& t)
 		{
 			//!	Need to avoid cast to check improper type.
 			CCommandLineOptionValue<T>* option = (CCommandLineOptionValue<T>*)cmdline;
-			t = option->getValue();
+			t = option->getValue((T*)0);
 			return true;
 		}
 	}
@@ -151,6 +151,13 @@ CCmdLineParser::CCommandLineOptionValue<const char*>::~CCommandLineOptionValue()
 }
 
 template <>
+bool CCmdLineParser::CCommandLineOptionValue<unsigned int>::parse(const char* argv)
+{
+	m_value = atoi(argv);
+	return true;
+}
+
+template <>
 bool CCmdLineParser::CCommandLineOptionValue<unsigned short>::parse(const char* argv)
 {
 	m_value = (unsigned short)(0xffff & atoi(argv));
@@ -163,8 +170,7 @@ bool CCmdLineParser::CCommandLineOptionValue<const char*>::parse(const char* arg
 	if (m_value != NULL)
 		free((void*)m_value);
 
-	char *option = (char*)m_value;
-	option = _strdup(argv);
+	m_value = _strdup(argv);
 
 	return true;
 }

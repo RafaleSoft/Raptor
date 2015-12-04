@@ -23,7 +23,7 @@ int main(int argc, char* argv[])
     config.m_bRelocation = true;
     config.m_uiPolygons = 1000000;
     config.m_uiVertices = 2000000;
-//	config.m_uiTexels = 2000000;
+	config.m_uiTexels = 2000000;
 
 	CRaptorDisplayConfig glcs;
 	glcs.width = 1024;

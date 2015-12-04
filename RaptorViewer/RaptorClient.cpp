@@ -3,8 +3,8 @@
 #if !defined(AFX_RAPTORSERVER_H__4595FAB9_F62A_4C9C_8356_9E204107AA14__INCLUDED_)
 	#include "RaptorClient.h"
 #endif
-#if !defined(AFX_CLIENTCMDLINE_H__D2547634_67C1_4608_8A82_6360CFBF4A42__INCLUDED_)
-	#include "ClientCmdLine.h"
+#if !defined(AFX_CMDLINEPARSER_H__D7D8768A_3D97_491F_8493_588972A3CF62__INCLUDED_)
+	#include "ToolBox/CmdLineParser.h"
 #endif
 	
 #if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
@@ -175,7 +175,7 @@ bool CRaptorClient::run(unsigned int width, unsigned int height)
 	return res;
 }
 
-bool CRaptorClient::start(const ClientCmdLine &cmdLine)
+bool CRaptorClient::start(const CCmdLineParser &cmdLine)
 {
 	//	initialize Raptor classes and settings
     CRaptorConfig config;
@@ -201,33 +201,37 @@ bool CRaptorClient::start(const ClientCmdLine &cmdLine)
 	if (m_Client == NULL)
 		m_Client = new CClient<CClientSocket>();
 
-	res = m_Client->connectToServer(cmdLine.addrStr,cmdLine.port);
+	char* addrStr = "127.0.0.1";
+	unsigned short port = 2048;
+	cmdLine.getValue("port",port);
+	cmdLine.getValue("host_addr",addrStr);
+	res = m_Client->connectToServer(addrStr,port);
 	if (res)
 	{
 		stringstream str;
 		str << "Raptor Viewer ready on port ";
-		str << cmdLine.port;
+		str << port;
 		str << " at host ";
-		str << cmdLine.addrStr.data();
+		str << addrStr;
 		RAPTOR_NO_ERROR(CPersistence::CPersistenceClassID::GetClassId(),str.str());
 	}
 	else
 	{
 		stringstream str;
 		str << "Raptor Viewer couldn't connect to server on port ";
-		str << cmdLine.port;
+		str << port;
 		str << " at host ";
-		str << cmdLine.addrStr.data();
+		str << addrStr;
 		RAPTOR_FATAL(CPersistence::CPersistenceClassID::GetClassId(),str.str());
 		return false;
 	}
 
 	CRaptorNetwork::SESSION_COMMAND cmd = CRaptorNetwork::getOpenSessionCommand();
-	cmd.width = cmdLine.r_width;
-	cmd.height = cmdLine.r_height;
+	cmdLine.getValue("r_width",cmd.width);
+	cmdLine.getValue("r_height",cmd.height);
 	m_Client->write((void*)&cmd,cmd.command.requestLen);
 
-	m_pImage = new CServerImageRenderer(cmdLine.r_width,cmdLine.r_height);
+	m_pImage = new CServerImageRenderer(cmd.width,cmd.height);
 
 	ULONG ui_threadID = 0;
 	m_hThread = CreateThread(	NULL,

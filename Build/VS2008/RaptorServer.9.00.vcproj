@@ -256,10 +256,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\RaptorServer\ServerCmdLine.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\..\RaptorServer\ServerTransport.cpp"
 				>
 			</File>
@@ -294,10 +290,6 @@
 			</File>
 			<File
 				RelativePath="..\..\RaptorServer\RaptorServerCompressor.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\RaptorServer\ServerCmdLine.h"
 				>
 			</File>
 			<File

@@ -159,6 +159,7 @@ public:
 	void getColor(unsigned  int numvtx,CColor::RGBA &v) const;
 	float getFogCoord(unsigned int numvtx) const;
 	void getFace(unsigned int numface,unsigned int &p1,unsigned int &p2,unsigned int &p3) const;
+	void getCoord(unsigned  int numvtx,GL_COORD_VERTEX &v) const;
 	void getNormal(unsigned  int numvtx,GL_COORD_VERTEX &v) const;
     void getTangent(unsigned  int numvtx,GL_COORD_VERTEX &v) const;
     void getBiNormal(unsigned  int numvtx,GL_COORD_VERTEX &v) const;
@@ -183,7 +184,6 @@ public:
 
 
 protected:
-	friend class CObject3DContour;	// for faster contour geometry generation
     friend class CGeometryEditor;
 
 	unsigned int	m_nbVertex;

@@ -29,8 +29,8 @@
 #if !defined(AFX_3DENGINEMATRIX_H__6CD1110E_1174_4f38_A452_30FB312022D0__INCLUDED_)
 	#include "Engine/3DEngineMatrix.h"
 #endif
-#if !defined(AFX_BUMPLIGHTOBSERVER_H__238FC166_A3BC_4D77_8FD4_0A42DB45280F__INCLUDED_)
-	#include "BumpLightObserver.h"
+#if !defined(AFX_SIMPLELIGHTOBSERVER_H__238FC166_A3BC_4D77_8FD4_0A42DB45280F__INCLUDED_)
+	#include "SimpleLightObserver.h"
 #endif
 #if !defined(AFX_LIGHT_H__AA8BABD6_059A_4939_A4B6_A0A036E12E1E__INCLUDED_)
 	#include "GLHierarchy/Light.h"
@@ -38,7 +38,7 @@
 
 RAPTOR_NAMESPACE
 
-CBumpLightObserver* CDOT3BumppedGeometry::m_pObserver = NULL;
+CSimpleLightObserver* CDOT3BumppedGeometry::m_pObserver = NULL;
 
 
 CDOT3BumppedGeometry::CDOT3BumppedGeometry(const std::string& name)
@@ -46,7 +46,7 @@ CDOT3BumppedGeometry::CDOT3BumppedGeometry(const std::string& name)
 	bumpDiffusePx(NULL),bumpSpecularPx(NULL)
 {
 	if (m_pObserver == NULL)
-		m_pObserver = new CBumpLightObserver();
+		m_pObserver = new CSimpleLightObserver();
 	else
 		m_pObserver->addReference();
 }

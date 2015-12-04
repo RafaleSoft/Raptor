@@ -15,7 +15,7 @@
 
 RAPTOR_NAMESPACE_BEGIN
 
-class CBumpLightObserver;
+class CSimpleLightObserver;
 
 
 class RAPTOR_API CEMBMGeometry : public CBumppedGeometry
@@ -53,7 +53,7 @@ private:
 	static CShader*		m_pBumpShaderAmbient;
 
 	//!	A light observer to be notified from lightupdates.
-	static CBumpLightObserver	*m_pObserver;
+	static CSimpleLightObserver	*m_pObserver;
 };
 
 RAPTOR_NAMESPACE_END
