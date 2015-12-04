@@ -33,9 +33,16 @@
 		<Child name="WallBloc"/>
 		<Child name="WallBack"/>
 	</Set>
+  <Set name="FireSet">
+    <Object3D>
+      <Properties transparent="1"  cast_shadow="0" receive_shadow="0"/>
+    </Object3D>
+    <Child name="smoke"/>
+    <Child name="fire"/>
+  </Set>
   <Shader name="HEDRA_SHADER">
     <Color r="0.2" g="1.0" b="1.0" a="0.2"/>
-  </Shader> 
+  </Shader>
 	<Shader name="TORCH_SHADER">
 		<Color r="1.0" g="1.0" b="1.0" a="1.0"/>
 		<Material>
@@ -261,22 +268,14 @@
 	<Object3DInstance name="Torch07"  reference="Torch_Set">
 		<RenderingProperties texturing="0" lighting="1"/>
 	</Object3DInstance>
-	<Object3DInstance name="Fire0" reference="smoke"/>
-	<Object3DInstance name="Fire1" reference="fire"/>
-	<Object3DInstance name="Fire2" reference="smoke"/>
-	<Object3DInstance name="Fire3" reference="fire"/>
-	<Object3DInstance name="Fire4" reference="smoke"/>
-	<Object3DInstance name="Fire5" reference="fire"/>
-	<Object3DInstance name="Fire6" reference="smoke"/>
-	<Object3DInstance name="Fire7" reference="fire"/>
-	<Object3DInstance name="Fire8" reference="smoke"/>
-	<Object3DInstance name="Fire9" reference="fire"/>
-	<Object3DInstance name="Fire10" reference="smoke"/>
-  <Object3DInstance name="Fire11" reference="fire"/>
-	<Object3DInstance name="Fire12" reference="smoke"/>
-  <Object3DInstance name="Fire13" reference="fire"/>
-  <Object3DInstance name="Fire14" reference="smoke"/>
-  <Object3DInstance name="Fire15" reference="fire"/>
+	<Object3DInstance name="Fire0" reference="FireSet"/>
+	<Object3DInstance name="Fire2" reference="FireSet"/>
+	<Object3DInstance name="Fire4" reference="FireSet"/>
+	<Object3DInstance name="Fire6" reference="FireSet"/>
+	<Object3DInstance name="Fire8" reference="FireSet"/>
+	<Object3DInstance name="Fire10" reference="FireSet"/>
+	<Object3DInstance name="Fire12" reference="FireSet"/>
+  <Object3DInstance name="Fire14" reference="FireSet"/>
 	<Object3DInstance name="Ground_instance" reference="Ground_set">
     <Object3D>
       <Properties cast_shadow="0" is_mirror="1"/>
@@ -558,6 +557,7 @@
 			    <Object name="Torch05"/>
 			    <Object name="Torch06"/>
 			    <Object name="Torch07"/>
+          <!--
 			    <Object name="Fire1"/>
 			    <Object name="Fire3"/>
           <Object name="Fire5"/>
@@ -566,6 +566,7 @@
           <Object name="Fire11"/>
           <Object name="Fire13"/>
           <Object name="Fire15"/>
+          -->
           <Object name="Fire0"/>
 			    <Object name="Fire2"/>
 			    <Object name="Fire4"/>
