@@ -117,35 +117,19 @@ rotation(-225.0, 0.0, 1.0, 0.0)
 translate(-13.0, 0.0, 8.0)
 select "Fire0"
 translate(-2.75,12.2,-34.9)
-select "Fire1"
-translate(-2.75,12.2,-34.9)
 select "Fire2"
-translate(29.15,12.2,-2.75)
-select "Fire3"
 translate(29.15,12.2,-2.75)
 select "Fire4"
 translate(-34.65,12.2,-2.75)
-select "Fire5"
-translate(-34.65,12.2,-2.75)
 select "Fire6"
-translate(-2.75,12.2,30.55)
-select "Fire7"
 translate(-2.75,12.2,30.55)
 select "Fire8"
 translate(-12.3,12.2,-12.3)
-select "Fire9"
-translate(-12.3,12.2,-12.3)
 select "Fire10"
-translate(7.3,12.2,-12.3)
-select "Fire11"
 translate(7.3,12.2,-12.3)
 select "Fire12"
 translate(7.3,12.2,7.3)
-select "Fire13"
-translate(7.3,12.2,7.3)
 select "Fire14"
-translate(-12.3,12.2,7.3)
-select "Fire15"
 translate(-12.3,12.2,7.3)
 select "WallSet"
 translate_absolute(0.0,0.0,0.0)
