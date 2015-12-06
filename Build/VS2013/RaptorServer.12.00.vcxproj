@@ -178,7 +178,6 @@
     <ClCompile Include="..\..\RaptorServer\RaptorServer.cpp" />
     <ClCompile Include="..\..\RaptorServer\RaptorServerApp.cpp" />
     <ClCompile Include="..\..\RaptorServer\RaptorServerCompressor.cpp" />
-    <ClCompile Include="..\..\RaptorServer\ServerCmdLine.cpp" />
     <ClCompile Include="..\..\RaptorServer\ServerTransport.cpp" />
     <ClCompile Include="..\..\RaptorServer\StdAfx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -189,7 +188,6 @@
     <ClInclude Include="..\..\RaptorServer\RaptorInstance.h" />
     <ClInclude Include="..\..\RaptorServer\RaptorServer.h" />
     <ClInclude Include="..\..\RaptorServer\RaptorServerCompressor.h" />
-    <ClInclude Include="..\..\RaptorServer\ServerCmdLine.h" />
     <ClInclude Include="..\..\RaptorServer\ServerTransport.h" />
     <ClInclude Include="..\..\RaptorServer\StdAfx.h" />
     <ClInclude Include="..\..\RaptorServer\YUVCompressor.h" />

@@ -139,8 +139,6 @@ void CLightAttributes::glActivate(CLight* owner, bool spot)
 
 	if (m_hwMapping != 0)
 		s_activeLights[m_hwMapping - GL_LIGHT0] = owner;
-	else
-		s_activeLights[m_hwMapping - GL_LIGHT0] = NULL;
 
 	CATCH_GL_ERROR
 }

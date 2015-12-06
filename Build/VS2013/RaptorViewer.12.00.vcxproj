@@ -86,7 +86,7 @@
       </Command>
     </PreLinkEvent>
     <Link>
-      <AdditionalDependencies>opengl32.lib;Raptor.lib;RaptorNetwork.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;Raptor.lib;RaptorNetwork.lib;RaptorToolbox.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>%(OutputFile)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>$(RAPTOR_ROOT)\redist\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -173,14 +173,12 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\RaptorViewer\ClientCmdLine.h" />
     <ClInclude Include="..\..\RaptorViewer\RaptorClient.h" />
     <ClInclude Include="..\..\RaptorViewer\RaptorViewer.h" />
     <ClInclude Include="..\..\RaptorViewer\ServerImageRenderer.h" />
     <ClInclude Include="..\..\RaptorViewer\StdAfx.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\RaptorViewer\ClientCmdLine.cpp" />
     <ClCompile Include="..\..\RaptorViewer\RaptorClient.cpp" />
     <ClCompile Include="..\..\RaptorViewer\RaptorViewer.cpp" />
     <ClCompile Include="..\..\RaptorViewer\ServerImageRenderer.cpp" />
