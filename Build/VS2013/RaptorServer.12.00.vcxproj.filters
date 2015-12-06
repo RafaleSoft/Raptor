@@ -23,9 +23,6 @@
     <ClCompile Include="..\..\RaptorServer\RaptorServerCompressor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\RaptorServer\ServerCmdLine.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\RaptorServer\ServerTransport.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -44,9 +41,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\RaptorServer\RaptorServerCompressor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\RaptorServer\ServerCmdLine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\RaptorServer\ServerTransport.h">

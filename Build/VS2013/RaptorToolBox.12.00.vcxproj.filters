@@ -110,9 +110,6 @@
     <ClCompile Include="..\..\RaptorToolBox\Filters\MBFilter.cpp">
       <Filter>Source Files\Filters</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\RaptorToolBox\Filters\TextureFilter.cpp">
-      <Filter>Source Files\Filters</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\RaptorToolBox\Imaging\BMPImaging.cpp">
       <Filter>Source Files\Imaging</Filter>
     </ClCompile>
@@ -139,6 +136,9 @@
     </ClCompile>
     <ClCompile Include="..\..\RaptorToolBox\Streaming\WMVStreaming.cpp">
       <Filter>Source Files\Streaming</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorToolBox\CmdLineParser.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -224,6 +224,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\RaptorToolBox\Streaming.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorToolBox\CmdLineParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -298,7 +298,7 @@ void C3DScene::glRenderObjects(	const vector<C3DSceneObject*>& objects)
     //  Third step : render mirrors with real objects in the scene
 	//
     bool proceedMirrors = ((passKind == C3DSceneObject::DEPTH_PASS) || (passKind == C3DSceneObject::FULL_PASS))
-                                        && (!m_pAttributes->m_bMirrorsRendered);
+                        && (!m_pAttributes->m_bMirrorsRendered);
     for (i=0;i<m_pAttributes->m_pMirrors.size();i++)
     {
         CMirror *pMirror = m_pAttributes->m_pMirrors[i];
@@ -339,6 +339,10 @@ void C3DScene::glRenderObjects(	const vector<C3DSceneObject*>& objects)
             
 			pMirror->glClipRender();
             m_pAttributes->m_bMirrorsRendered = true;
+
+			//	Need to deactivate lights because Objects above activated them
+			for (unsigned int i = 0; i < m_pAttributes->m_pLights.size(); i++)
+				m_pAttributes->m_pLights[i]->glDeActivate();
         }
         else if (((passKind == C3DSceneObject::AMBIENT_PASS) || (passKind == C3DSceneObject::LIGHT_PASS))
                     && (m_pAttributes->m_bMirrorsRendered))
@@ -378,9 +382,6 @@ void C3DScene::glRender(void)
     m_pAttributes->glMakeQueries();
 #endif
     m_pAttributes->prepareData();
-
-    if (m_pAttributes->m_pCurrentLight != NULL)
-        m_pAttributes->m_pCurrentLight->glActivate(true);
 
     vector<C3DSceneObject*> viewableObjects = m_pAttributes->glGetObjects();
     vector<CLight*>	requiredLights = m_pAttributes->glGetLights(viewableObjects);

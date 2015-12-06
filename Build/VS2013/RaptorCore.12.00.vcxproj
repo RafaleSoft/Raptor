@@ -277,6 +277,7 @@ Subsys\Redist.bat
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\GLLod.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\GLVectorFont.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\Light.cpp" />
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\LightGlow.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\LightObserver.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\Material.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\Object3D.cpp" />
@@ -478,6 +479,7 @@ copy $(SolutionDir)\$(ProjectName)\Subsys\CodeGeneration.h "%RAPTOR_ROOT%\Redist
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\GLLod.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\GLVectorFont.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\Light.h" />
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\LightGlow.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\LightObserver.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\Material.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\Object3D.h" />
