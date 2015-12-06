@@ -178,7 +178,11 @@ CGeometry::~CGeometry()
 	}
 
     if (m_pEditor != NULL)
-        delete m_pEditor;
+	{
+		CGeometryEditor *ed = m_pEditor;
+		m_pEditor = NULL;
+		ed->destroy();
+	}
 }
 
 void CGeometry::setRenderingModel(const CRenderingModel& model) 
@@ -1140,7 +1144,7 @@ bool CGeometry::removePrimitive(CGeometryPrimitive *primitive)
 	if (primitive == NULL)
 	{
 		for (unsigned int i=0;i<m_pPrimitives.size();i++)
-			delete m_pPrimitives[i];
+			m_pPrimitives[i]->releaseReference();
 		m_pPrimitives.clear();
 		return true;
 	}
@@ -1151,7 +1155,7 @@ bool CGeometry::removePrimitive(CGeometryPrimitive *primitive)
 		{
 			if (*it == primitive)
 			{
-				delete *it;
+				(*it)->releaseReference();
 				m_pPrimitives.erase(it);
 				return true;
 			}

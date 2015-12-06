@@ -33,6 +33,15 @@ public:
 		NB_TEXTURE_MODELS
 	} TEXTURE_MODEL;
 
+    //! Constructs a Geometry Editor for a geometry.
+	//!	If the geometry already has en editor, the constructed
+	//!	object will be attached and unusable.
+    CGeometryEditor(CGeometry *pGeometry);
+
+	//!	Destroy a geometry editor only if it is not
+	//!	attached to a CGeometry.
+	//! @return false if destruction failed.
+	bool destroy();
 
     //!		Geometry operations
 
@@ -95,11 +104,6 @@ public:
 
 
 private:
-	friend class CGeometry;
-
-    //! Returns the shared 
-    CGeometryEditor(CGeometry *pGeometry);
-
 	//! Forbidden destructor
 	virtual ~CGeometryEditor();
 

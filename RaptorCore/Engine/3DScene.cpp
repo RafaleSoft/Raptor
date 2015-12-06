@@ -345,7 +345,6 @@ void C3DScene::glRenderObjects(	const vector<C3DSceneObject*>& objects)
         {
             pMirror->glClipRender();
         }
-         
     }
 
     //

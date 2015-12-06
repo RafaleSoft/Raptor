@@ -35,10 +35,7 @@
 
 #include "ToolBox/BasicObjects.h"
 #include "ToolBox/Filters/DOFFilter.h"
-#include "ToolBox/Filters/ColorControlFilter.h"
-#include "ToolBox/Filters/MBFilter.h"
 #include "ToolBox/Filters/HDRFilter.h"
-#include "ToolBox/Filters/BlurFilter.h"
 
 
 static const float TIME_FACTOR = 1.0f;
@@ -54,7 +51,7 @@ class HeatSpots : public CRaptorDisplayFilter, public CGeometricModifier
 public:
     HeatSpots(int hcels = 50,int vcels = 50)
 		:CGeometricModifier(CGL_TIME_LINEAR,0,1,0,0,NULL,CModifier::CModifierClassID::GetClassId(),"HEAT_MODIFIER"),
-	     m_hcels(hcels+1), m_vcels(vcels+1),m_index(0),m_d_grid(NULL)
+	     m_hcels(hcels+1), m_vcels(vcels+1),m_index(0),m_d_grid(NULL),m_dt(0.0f)
     {   };
 
     virtual ~HeatSpots() { glDestroyFilter(); };
@@ -76,9 +73,8 @@ private:
     int			m_hcels;
 	int			m_vcels;
     int         m_index;
-
+	float		m_dt;
     vector<GL_COORD_VERTEX> m_spots;
-
 	float		*m_d_grid;
 };
 
@@ -87,6 +83,10 @@ void RAPTOR_FASTCALL HeatSpots::updateVertices(float dt,GL_COORD_VERTEX *vertice
 {
     if (m_d_grid == NULL)
         return;
+	m_dt = m_dt + dt;
+	if (m_dt < 0.04f)
+		return;
+	m_dt = 0.0f;
 
    	int offset = 2 * m_hcels * m_index;
 
@@ -324,24 +324,9 @@ void CDemoDoc::GLInitContext(void)
 	pCurrentDisplay->glQueryStatus(rda,GL_CONFIG_STATE_QUERY);
     rda.caption = "Raptor HDR Filter";
 	hdr = new CHDRFilter(rda);
-//    pCurrentDisplay->glBindDisplay(*hdr);
+    //pCurrentDisplay->glBindDisplay(*hdr);
 	hdr->setBlurNbPass(2);
-	hdr->setHFTreshold(0.2f);
-
-    CColorControlFilter *bwf = new CColorControlFilter;
-//    pCurrentDisplay->glBindDisplay(*bwf);
-    bwf->setColorBlend(1.1f,0.8f,0.7f,1.0f,0.65f);
-	bwf->releaseReference();
-
-    CMBFilter *mbf = new CMBFilter;
-    mbf->setPercentage(0.75f,0.75f,0.75f,1.0f);
-	//pCurrentDisplay->glBindDisplay(*mbf);
-	mbf->releaseReference();
-
-	CBlurFilter *pBlur = new CBlurFilter();
-	pBlur->setBlurModel(CBlurFilter::BLUR_GAUSSIAN);
-	pBlur->setBlurSize(9);
-    //CRaptorDisplay::GetCurrentDisplay()->glBindDisplay(*pBlur);
+	hdr->setHFTreshold(0.9f);
 }
 
 void CDemoDoc::glRender()

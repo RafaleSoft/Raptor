@@ -28,10 +28,27 @@ RAPTOR_NAMESPACE
 CGeometryEditor::CGeometryEditor(CGeometry *pGeometry)
 	:m_bMinimized(false),m_bSurfaceElements(false),m_pGeometry(pGeometry)
 {
+	if (NULL != m_pGeometry->m_pEditor)
+		m_pGeometry = NULL;
 }
 
 CGeometryEditor::~CGeometryEditor()
 {
+}
+
+bool CGeometryEditor::destroy()
+{
+	if (NULL != m_pGeometry)
+	{
+		if (NULL != m_pGeometry->m_pEditor)
+			return false;
+		else
+			delete this;
+	}
+	else
+		delete this;
+
+	return true;
 }
 
 #pragma warning (disable : 4711)	// automatic inline expansion for GenNormals

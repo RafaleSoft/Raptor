@@ -42,6 +42,8 @@ public:
 		HIGH_ORDER_SURFACE
 	} PRIMITIVE_KIND;
 
+	//!	Primitive constructor
+	CGeometryPrimitive(PRIMITIVE_KIND kind);
 
 	//! Renders the geometry
 	void glRender(void);
@@ -75,10 +77,6 @@ public:
 
 
 private:
-	friend class CGeometry;
-
-	CGeometryPrimitive(PRIMITIVE_KIND kind);
-
 	virtual ~CGeometryPrimitive();
 
 	PRIMITIVE_KIND	m_kind;
