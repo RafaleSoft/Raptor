@@ -43,17 +43,6 @@ const CPersistence::CPersistenceClassID& CPersistence::CPersistenceClassID::GetC
 	return persistenceID;
 }
 
-template <class T>
-T* CPersistence::CPersistenceClassID::narrow(const CPersistence *P) const
-{
-	if (P == NULL)
-		return NULL;
-	else if (T::TClassId::GetClassId().isSubClassOf(P->getId().GetClassId()))
-		return (T*)(P);
-	else
-		return NULL;
-}
-
 #pragma warning (default : 4711)	// automatic inline expansion warning
 
 RAPTOR_NAMESPACE_END

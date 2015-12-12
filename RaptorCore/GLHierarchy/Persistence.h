@@ -72,8 +72,6 @@ public:
 		unsigned int ID(void) const
 		{ return m_ID; };
 
-		template <class T> T* narrow(const CPersistence *P) const;
-
 		virtual const char* ClassName(void) const
 		{ return "Persistence"; };
 

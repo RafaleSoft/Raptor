@@ -5,6 +5,12 @@
 
 #include "Subsys/CodeGeneration.h"
 
+#if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
+    #include "System/Raptor.h"
+#endif
+#if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
+    #include "System/RaptorErrorManager.h"
+#endif
 #if !defined(AFX_NETWORK_H__AC9D546D_A00A_4BFC_AC0C_288BE137CD20__INCLUDED_)
     #include "RaptorNetwork/Network.h"
 #endif
@@ -32,75 +38,30 @@ int main(int argc, char* argv[])
 	parser.addOption("host_addr","a","127.0.0.1");
 	parser.parse(argc,argv);
 
-	string addrStr = "127.0.0.1";
-	unsigned short port = 2048;
-	parser.getValue("port",port);
-
-/*
-	CRaptorServer	*p_Server = new CRaptorServer;
-    if (p_Server->Start(commandLine))
-		return (p_Server->Stop() ? 1 : 0);
+	CRaysDeamon	*p_Server = new CRaysDeamon;
+    if (p_Server->start(parser))
+		return (p_Server->stopServer() ? 1 : 0);
 	else
 		return -1;
-*/
-/*
-	m_RaysServer = NULL;
-	m_Server = new CServer<CDSocket>;
-	
-	in_addr addr;
-	addr.S_un.S_addr = m_Server->GetHostAddr(0);
-
-	RaysCmdLine cmd;
-	ParseCommandLine(cmd);
-
-	if (cmd.addrStr.IsEmpty())
-	{
-		cmd.addrStr = inet_ntoa(addr);
-	}
-
-	if (!m_Server->StartServer(PORTBASE+1,LPCTSTR(cmd.addrStr)))
-	{
-		AfxMessageBox("Failed to start Rays Deamon");
-		return FALSE;
-	}
-*/
 }
 
-#ifdef WIN32
-int WINAPI WinMain(	HINSTANCE hInstance,  // handle to current instance
-					HINSTANCE hPrevInstance,  // handle to previous instance
-                    LPSTR lpCmdLine,      // pointer to command line
-                    int nCmdShow          // show state of window
-)
+CRaysDeamon::CRaysDeamon()
 {
-	/*
-	string cmdLine = lpCmdLine;
-	vector<string> args;
-
-	size_t pos = cmdLine.find_first_of(' ');
-	while (string::npos != pos)
-	{
-		args.push_back(cmdLine.substr(0,pos));
-		cmdLine = cmdLine.substr(pos+1);
-		pos = cmdLine.find_first_of(' ');
-	}
-	args.push_back(cmdLine);
-
-	const char **argv = new const char*[args.size()+1];
-	for (pos = 0;pos<args.size();pos++)
-		argv[pos] = args[pos].c_str();
-	argv[args.size()] = NULL;
-
-	char **c_argv = const_cast<char**>(argv);
-	int res = main(args.size(),c_argv);
-
-	delete [] argv;
-	*/
-	int res = main(__argc,__argv);
-    return res;
 }
-#endif
 
+CRaysDeamon::~CRaysDeamon()
+{
+}
+
+server_base_t::request_handler_t& CRaysDeamon::getRequestHandler(const iosock_base_t& client) const
+{
+	const server_base_t::request_handler_t* rq = this;
+	server_base_t::request_handler_t& handler = const_cast<server_base_t::request_handler_t&>(*rq);
+	return handler;
+}
+
+bool CRaysDeamon::handleRequest(request_handler_t::request_id id,const void *data,size_t size)
+{
 /*
 void CRaysDeamonApp::ManageMsg(MSGSTRUCT& msg,unsigned char raw_data[])
 {
@@ -236,3 +197,87 @@ void CRaysDeamonApp::ManageMsg(MSGSTRUCT& msg,unsigned char raw_data[])
 
 }
 */
+
+	return false;
+}
+
+bool CRaysDeamon::handleReply(request_handler_t::request_id id, const void *&data,size_t &size)
+{
+	return false;
+}
+
+bool CRaysDeamon::onClientClose(const CClientSocket &client)
+{
+	return false;
+}
+
+bool CRaysDeamon::start(const CCmdLineParser& cmdline )
+{
+	char* addrStr = "127.0.0.1";
+	unsigned short port = 2048;
+	cmdline.getValue("port",port);
+	cmdline.getValue("host_addr",addrStr);
+	bool res = startServer(addrStr,port);
+    if (res)
+    {
+		stringstream str;
+		str << "Raptor Server ready on port ";
+		str << port;
+		str << " at host ";
+		str << addrStr;
+		RAPTOR_NO_ERROR(CPersistence::CPersistenceClassID::GetClassId(),str.str());
+		return true;
+    }
+    else
+    {
+		stringstream str;
+		str << "Raptor Server couldn't be started on port ";
+		str << port;
+		str << " at host ";
+		str << addrStr;
+		RAPTOR_FATAL(CPersistence::CPersistenceClassID::GetClassId(),str.str());
+		return false;
+    }
+}
+
+	
+bool CRaysDeamon::stopServer(void)
+{
+	return CServer<CServerSocket,CClientSocket>::stopServer();
+}
+
+#ifdef WIN32
+int WINAPI WinMain(	HINSTANCE hInstance,  // handle to current instance
+					HINSTANCE hPrevInstance,  // handle to previous instance
+                    LPSTR lpCmdLine,      // pointer to command line
+                    int nCmdShow          // show state of window
+)
+{
+	/*
+	string cmdLine = lpCmdLine;
+	vector<string> args;
+
+	size_t pos = cmdLine.find_first_of(' ');
+	while (string::npos != pos)
+	{
+		args.push_back(cmdLine.substr(0,pos));
+		cmdLine = cmdLine.substr(pos+1);
+		pos = cmdLine.find_first_of(' ');
+	}
+	args.push_back(cmdLine);
+
+	const char **argv = new const char*[args.size()+1];
+	for (pos = 0;pos<args.size();pos++)
+		argv[pos] = args[pos].c_str();
+	argv[args.size()] = NULL;
+
+	char **c_argv = const_cast<char**>(argv);
+	int res = main(args.size(),c_argv);
+
+	delete [] argv;
+	*/
+	int res = main(__argc,__argv);
+    return res;
+}
+#endif
+

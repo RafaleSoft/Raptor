@@ -1,19 +1,7 @@
-// DeamonManager.cpp: implementation of the CDeamonManager class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #include "stdafx.h"
-#include "RaysServer.h"
 #include "DeamonManager.h"
-#include "DeamonSocket.h"
 
-#ifdef _DEBUG
-#undef THIS_FILE
-static char THIS_FILE[]=__FILE__;
-#define new DEBUG_NEW
-#endif
-
-
+/*
 UINT DeamonProcessor( LPVOID pParam )
 {
 	CDeamonManager *deamon = (CDeamonManager*)pParam;
@@ -47,68 +35,54 @@ UINT DeamonProcessor( LPVOID pParam )
 
 	return 0;
 }
-
+*/
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CDeamonManager::CDeamonManager(CRaysServerApp *server)
+CDeamonManager::CDeamonManager()
 {
 	m_counter = 0;
-	m_ownerServer = server;
-
+/*
 	m_deamonPoller = AfxBeginThread(DeamonProcessor, 
 									(void*)this, 
 									THREAD_PRIORITY_NORMAL, 
 									0, 
 									CREATE_SUSPENDED, 
 									NULL );
+*/
 }
 
 CDeamonManager::~CDeamonManager()
 {
 	//	Clear Registered workunits
-	int nbRWU = m_RegWorkUnits.GetSize();
+	int nbRWU = m_RegWorkUnits.size();
 	while (nbRWU > 0)
 	{
-		DestroyRegWorkUnit(0);
+		destroyRegWorkUnit(0);
 		nbRWU--;
 	}
 
 	if (nbRWU > 0)
 	{
-		AfxMessageBox("Some workunits were still working and could not be destroyed !");
+		System::Windows::Forms::MessageBox::Show("Some workunits were still working and could not be destroyed !",
+												 "Deamon Manager Error",
+												 System::Windows::Forms::MessageBoxButtons::OK,
+												 System::Windows::Forms::MessageBoxIcon::Exclamation );
 	}
-
-	// Clear workunits
-	POSITION pos = m_WorkUnits.GetStartPosition();
-	while (pos != NULL)
-	{
-		unsigned short WUID;
-		CDeamonManager::WORKUNITSTRUCT *lpWU = NULL;
-
-		m_WorkUnits.GetNextAssoc(pos,WUID,(void*&)lpWU);
-		if (lpWU != NULL)
-		{
-			m_WorkUnits.RemoveKey(WUID);
-			delete lpWU;
-		}
-	}
-
-	m_WorkUnits.RemoveAll();
 }
 
-bool CDeamonManager::DestroyRegWorkUnit(unsigned int numRegWU)
+bool CDeamonManager::destroyRegWorkUnit(unsigned int numRegWU)
 {
-	if (numRegWU >= (unsigned int)m_RegWorkUnits.GetSize())
+	if (numRegWU >= m_RegWorkUnits.size())
 		return false;
 
-	LPWUREGSTRUCT lpRegWU = (LPWUREGSTRUCT )m_RegWorkUnits.GetAt(numRegWU);
+	LPWUREGSTRUCT lpRegWU = m_RegWorkUnits[numRegWU];
 	if (lpRegWU->available != lpRegWU->nbProcs)
 		return false;
 
-	m_RegWorkUnits.RemoveAt(numRegWU);
+	m_RegWorkUnits.erase(m_RegWorkUnits.begin() + numRegWU);
 
 	if (lpRegWU->connection != NULL)
 	{
@@ -119,15 +93,16 @@ bool CDeamonManager::DestroyRegWorkUnit(unsigned int numRegWU)
 		msg.msg_size = 0;
 		msg.msg_tail = MSG_END;
 
-		CClient<CDeamonSocket> *client = (CClient<CDeamonSocket>*)(lpRegWU->connection);
-		client->Write(&msg,MSGSIZE);
-		delete client;
+		//CClient<CDeamonSocket> *client = (CClient<CDeamonSocket>*)(lpRegWU->connection);
+		//client->Write(&msg,MSGSIZE);
+		//delete client;
 	}
 
 	delete lpRegWU;
 	return true;
 }
 
+/*
 const CDeamonManager::WUREGSTRUCT * const CDeamonManager::CreateRegWorkUnit(CString wu,CString deamon)
 {
 	CDeamonManager::WUREGSTRUCT *lpRegWU = NULL;
@@ -159,13 +134,14 @@ const CDeamonManager::WUREGSTRUCT * const CDeamonManager::CreateRegWorkUnit(CStr
 
 	return lpRegWU;
 }
-
-
+*/
+/*
 void CDeamonManager::Run()
 {
 	m_deamonPoller->ResumeThread();
 }
-
+*/
+/*
 bool CDeamonManager::InstallPlugin(unsigned int IP,unsigned int port,unsigned int validDate,
 				   CString name,unsigned int size,unsigned char* plugin) const
 {
@@ -207,7 +183,8 @@ bool CDeamonManager::InstallPlugin(unsigned int IP,unsigned int port,unsigned in
 	else
 		return false;
 }
-
+*/
+/*
 void CDeamonManager::RegisterDeamon(int numDeamon)
 {
 	MSGSTRUCT	msg;
@@ -247,7 +224,8 @@ void CDeamonManager::RegisterDeamon(int numDeamon)
 		client->Write(&msg,MSGSIZE);
 	}
 }
-
+*/
+/*
 bool CDeamonManager::ActivateDeamon(unsigned int IPAddr) const
 {
 	int pos = 0;
@@ -267,7 +245,8 @@ bool CDeamonManager::ActivateDeamon(unsigned int IPAddr) const
 
 	return found;
 }
-
+*/
+/*
 bool CDeamonManager::DeActivateDeamon(unsigned int IPAddr) const
 {
 	int pos = 0;
@@ -290,26 +269,22 @@ bool CDeamonManager::DeActivateDeamon(unsigned int IPAddr) const
 
 	return found;
 }
+*/
 
-
-const CDeamonManager::WUREGSTRUCT * const CDeamonManager::GetRegWorkUnit(int numRegWU) const
+const CDeamonManager::WUREGSTRUCT * const CDeamonManager::getRegWorkUnit(unsigned int numRegWU) const
 {
-	if (numRegWU >= m_RegWorkUnits.GetSize())
+	if (numRegWU >= m_RegWorkUnits.size())
 		return NULL;
 	else
-		return ((CDeamonManager::WUREGSTRUCT *)m_RegWorkUnits.GetAt(numRegWU));
+		return m_RegWorkUnits[numRegWU];
 }
 
-const CDeamonManager::WORKUNITSTRUCT * const CDeamonManager::GetWorkUnit(unsigned short WUID) const
+const CDeamonManager::WORKUNITSTRUCT * const CDeamonManager::getWorkUnit(unsigned short WUID) const
 {
-	CDeamonManager::WORKUNITSTRUCT *lpWU = NULL;
-
-	if (0 != m_WorkUnits.Lookup(WUID,(void*&)lpWU))
-		return lpWU;
-	else
-		return NULL;
+	WORKUNITSTRUCT *lpWU = NULL;
+	return lpWU;
 }
-
+/*
 bool CDeamonManager::ReleaseWorkUnit(unsigned short WUID)
 {
 	CDeamonManager::WORKUNITSTRUCT *lpWU = NULL;
@@ -326,7 +301,8 @@ bool CDeamonManager::ReleaseWorkUnit(unsigned short WUID)
 	else
 		return false;
 }
-
+*/
+/*
 int CDeamonManager::AllocateWorkUnits(unsigned int requestedWU,const CDeamonManager::WORKUNITSTRUCT **&pListWU)
 {
 	int *sWU = SelectWorkUnits(requestedWU);
@@ -364,7 +340,8 @@ int CDeamonManager::AllocateWorkUnits(unsigned int requestedWU,const CDeamonMana
 
 	return max;
 }
-
+*/
+/*
 bool CDeamonManager::DestroyWorkUnit(unsigned short WUID)
 {
 	CDeamonManager::WORKUNITSTRUCT *lpWU = NULL;
@@ -378,7 +355,8 @@ bool CDeamonManager::DestroyWorkUnit(unsigned short WUID)
 	else
 		return false;
 }
-
+*/
+/*
 int* CDeamonManager::SelectWorkUnits(unsigned int requestedWU)
 {
 	if (m_RegWorkUnits.GetSize()==0)
@@ -406,8 +384,8 @@ int* CDeamonManager::SelectWorkUnits(unsigned int requestedWU)
 		return sWU;
 	}
 }
-
-
+*/
+/*
 void CDeamonManager::DisconnectDeamon(CString sname, unsigned int port) const
 {
 	int pos=0;
@@ -436,15 +414,15 @@ void CDeamonManager::DisconnectDeamon(CString sname, unsigned int port) const
 		lpRegWU->connection = NULL;
 	}
 }
+*/
 
-bool CDeamonManager::SetRegWUNbCPU(unsigned int nbWU,unsigned char nbCPU) const
+bool CDeamonManager::setRegWUNbCPU(unsigned int nbWU,unsigned char nbCPU) const
 {
-	if (nbWU < (unsigned int)m_RegWorkUnits.GetSize())
+	if (nbWU < m_RegWorkUnits.size())
 	{
-		LPWUREGSTRUCT lpRegWU = ((LPWUREGSTRUCT)m_RegWorkUnits.GetAt(nbWU));
+		LPWUREGSTRUCT lpRegWU = m_RegWorkUnits[nbWU];
 
 		int libre = lpRegWU->available;
-
 		if (nbCPU<(lpRegWU->nbProcs-libre))
 			return false;
 		else if ((nbCPU>0)&&(nbCPU<17))
@@ -462,11 +440,11 @@ bool CDeamonManager::SetRegWUNbCPU(unsigned int nbWU,unsigned char nbCPU) const
 		return false;
 }
 
-bool CDeamonManager::SetRegWUDeamon(unsigned int nbWU,CString deamonIP) const
+bool CDeamonManager::setRegWUDeamon(unsigned int nbWU,const std::string &deamonIP) const
 {
-	if (nbWU < (unsigned int)m_RegWorkUnits.GetSize())
+	if (nbWU < m_RegWorkUnits.size())
 	{
-		LPWUREGSTRUCT lpRegWU = ((LPWUREGSTRUCT)m_RegWorkUnits.GetAt(nbWU));
+		LPWUREGSTRUCT lpRegWU = m_RegWorkUnits[nbWU];
 		lpRegWU->deamonIP = deamonIP;
 		return true;
 	}
@@ -477,26 +455,11 @@ bool CDeamonManager::SetRegWUDeamon(unsigned int nbWU,CString deamonIP) const
 bool CDeamonManager::SetWUClient(unsigned short WUID,unsigned int clientID,void* connection) const
 {
 	CDeamonManager::WORKUNITSTRUCT *lpWU = NULL;
-
-	if (0 != m_WorkUnits.Lookup(WUID,(void*&)lpWU))
-	{
-		lpWU->clientID = clientID;
-		lpWU->connection = connection;
-		return true;
-	}
-	else
-		return false;
+	return false;
 }
 
 bool CDeamonManager::SetWUPercentage(unsigned short WUID,float percentage) const
 {
 	CDeamonManager::WORKUNITSTRUCT *lpWU = NULL;
-
-	if (0 != m_WorkUnits.Lookup(WUID,(void*&)lpWU))
-	{
-		lpWU->jobDone = percentage;
-		return true;
-	}
-	else
-		return false;
+	return false;
 }

@@ -84,7 +84,7 @@
 				AdditionalLibraryDirectories="$(RAPTOR_ROOT)\redist\lib;$(PLATFORM_SDK)\Lib;$(SolutionDir)\AddOns"
 				IgnoreDefaultLibraryNames="libcp.lib;libc.lib"
 				GenerateDebugInformation="true"
-				GenerateMapFile="true"
+				GenerateMapFile="false"
 				SubSystem="2"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"

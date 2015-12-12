@@ -4,6 +4,7 @@
 	Version="9,00"
 	Name="RaysDeamon"
 	ProjectGUID="{00A914E7-CB8F-497D-896B-557FA4E029B5}"
+	RootNamespace="RaysDeamon"
 	Keyword="MFCProj"
 	TargetFrameworkVersion="0"
 	>
@@ -75,7 +76,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="RaptorToolBox.lib RaptorNetwork.lib"
+				AdditionalDependencies="Raptor.lib RaptorToolBox.lib RaptorNetwork.lib"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="$(RAPTOR_ROOT)\redist\lib;$(PLATFORM_SDK)\Lib;$(SolutionDir)\AddOns"
@@ -107,6 +108,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="copy $(OutDir)\$(TargetFileName) &quot;%RAPTOR_ROOT%\Redist\bin&quot;"
 			/>
 		</Configuration>
 	</Configurations>
@@ -138,6 +140,10 @@
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl"
 			>
+			<File
+				RelativePath="..\..\Rays2\Messages.h"
+				>
+			</File>
 			<File
 				RelativePath="..\..\Rays2\RaysDeamon\RaysDeamon.h"
 				>

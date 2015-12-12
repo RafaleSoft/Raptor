@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9,00"
-	Name="Builder.Net"
-	ProjectGUID="{AFA656A5-B4B3-407B-8755-A59CF66CF24C}"
-	RootNamespace="BuilderNet"
+	Name="RaysServer"
+	ProjectGUID="{8BEC0374-E13F-46D0-BDA6-BF1208BA735A}"
+	RootNamespace="RaysServer"
 	Keyword="ManagedCProj"
 	TargetFrameworkVersion="196613"
 	>
@@ -17,6 +17,79 @@
 	</ToolFiles>
 	<Configurations>
 		<Configuration
+			Name="Debug|Win32"
+			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
+			ConfigurationType="1"
+			CharacterSet="1"
+			ManagedExtensions="2"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="0"
+				PreprocessorDefinitions="WIN32;_DEBUG"
+				RuntimeLibrary="3"
+				UsePrecompiledHeader="2"
+				WarningLevel="3"
+				DebugInformationFormat="3"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalDependencies="$(NoInherit)"
+				LinkIncremental="2"
+				GenerateDebugInformation="true"
+				AssemblyDebug="1"
+				SubSystem="2"
+				EntryPointSymbol="main"
+				TargetMachine="1"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+		</Configuration>
+		<Configuration
 			Name="Release|Win32"
 			OutputDirectory="$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)\$(ProjectName)\"
@@ -27,6 +100,8 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
+				Description="Export config file"
+				CommandLine="copy $(SolutionDir)Rays2\$(ProjectName)\RaysServer.config $(OutDir)"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -43,19 +118,16 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/MP"
-				Optimization="3"
-				InlineFunctionExpansion="2"
-				EnableIntrinsicFunctions="true"
-				FavorSizeOrSpeed="1"
 				AdditionalIncludeDirectories="$(RAPTOR_ROOT)\Redist\Include;$(PLATFORM_SDK)\include"
 				PreprocessorDefinitions="WIN32;NDEBUG"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="2"
-				WarningLevel="4"
-				DebugInformationFormat="0"
+				WarningLevel="3"
+				DebugInformationFormat="3"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
+				ResourceFileName="$(IntDir)\$(RootNamespace).$(InputName).resources"
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
@@ -65,10 +137,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="gdi32.lib opengl32.lib"
+				AdditionalDependencies="RaptorToolBox.lib RaptorNetwork.lib"
 				Version="$(RAPTOR_VERSION)"
-				AdditionalLibraryDirectories="$(PLATFORM_SDK)\lib"
-				GenerateDebugInformation="false"
+				AdditionalLibraryDirectories="$(RAPTOR_ROOT)\redist\lib;$(PLATFORM_SDK)\lib"
+				GenerateDebugInformation="true"
 				SubSystem="2"
 				EntryPointSymbol="main"
 				TargetMachine="1"
@@ -94,97 +166,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				Description="Copying Builder to Raptor redist path: $(RAPTOR_ROOT)\Redist\bin"
-				CommandLine="copy $(OutDir)\$(TargetFileName) &quot;%RAPTOR_ROOT%\Redist\bin\Builder.Net.exe&quot;&#x0D;&#x0A;"
-			/>
-		</Configuration>
-		<Configuration
-			Name="Optimized|Win32"
-			OutputDirectory="$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
-			ConfigurationType="1"
-			CharacterSet="1"
-			ManagedExtensions="1"
-			WholeProgramOptimization="1"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-			/>
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="3"
-				InlineFunctionExpansion="1"
-				EnableIntrinsicFunctions="true"
-				FavorSizeOrSpeed="1"
-				WholeProgramOptimization="false"
-				AdditionalIncludeDirectories="$(RAPTOR_ROOT)\Redist\Include"
-				PreprocessorDefinitions="WIN32;NDEBUG"
-				RuntimeLibrary="2"
-				EnableEnhancedInstructionSet="0"
-				UsePrecompiledHeader="2"
-				WarningLevel="4"
-				Detect64BitPortabilityProblems="false"
-				DebugInformationFormat="0"
-			/>
-			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
-			<Tool
-				Name="VCLinkerTool"
-				AdditionalDependencies="gdi32.lib opengl32.lib"
-				OutputFile="$(OutDir)\$(ProjectName).exe"
-				LinkIncremental="1"
-				AdditionalLibraryDirectories="$(RAPTOR_ROOT)\Redist\lib"
-				IgnoreDefaultLibraryNames=""
-				GenerateDebugInformation="false"
-				ProgramDatabaseFile="$(IntDir)\$(TargetName).pdb"
-				SubSystem="2"
-				OptimizeReferences="2"
-				EnableCOMDATFolding="2"
-				LinkTimeCodeGeneration="0"
-				EntryPointSymbol="main"
-				TargetMachine="1"
-			/>
-			<Tool
-				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCManifestTool"
-				OutputManifestFile="$(OutDir)\$(TargetFileName).embed.manifest"
-			/>
-			<Tool
-				Name="VCXDCMakeTool"
-			/>
-			<Tool
-				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
-				CommandLine="copy $(OutDir)\Builder.Net.exe &quot;%RAPTOR_ROOT%\Redist\bin\Builder.Net.exe&quot;&#x0D;&#x0A;copy $(OutDir)\Builder.Net.exe $(ProjectDir)&#x0D;&#x0A;"
+				CommandLine="copy $(OutDir)\$(TargetFileName) &quot;%RAPTOR_ROOT%\Redist\bin&quot;&#x0D;&#x0A;copy $(OutDir)\RaysServer.config &quot;%RAPTOR_ROOT%\Redist\bin&quot;"
 			/>
 		</Configuration>
 	</Configurations>
@@ -214,6 +196,11 @@
 			AssemblyName="System.Xml, Version=2.0.0.0, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL"
 			MinFrameworkVersion="131072"
 		/>
+		<AssemblyReference
+			RelativePath="System.configuration.dll"
+			AssemblyName="System.Configuration, Version=2.0.0.0, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL"
+			MinFrameworkVersion="131072"
+		/>
 	</References>
 	<Files>
 		<Filter
@@ -222,23 +209,27 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\..\Builder.Net\AssemblyInfo.cpp"
+				RelativePath="..\..\Rays2\RaysServer\AssemblyInfo.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\Builder.Net\Builder.Net.cpp"
+				RelativePath="..\..\Rays2\RaysServer\DeamonManager.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\Builder.Net\BuilderForm.cpp"
+				RelativePath="..\..\Rays2\RaysServer\RaysServer.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\Builder.Net\GLBuilder.cpp"
+				RelativePath="..\..\Rays2\RaysServer\RaysServerDlg.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\Builder.Net\stdafx.cpp"
+				RelativePath="..\..\Rays2\RaysServer\ServerTransport.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Rays2\RaysServer\stdafx.cpp"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -256,25 +247,51 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath="..\..\Builder.Net\BuilderForm.h"
+				RelativePath="..\..\Rays2\RaysServer\DeamonManager.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\Builder.Net\Form1.h"
+				RelativePath="..\..\Rays2\Messages.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Rays2\RaysServer\OptionsForm.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Rays2\RaysServer\OptionsForm.h"
 				FileType="3"
 				>
 				<File
-					RelativePath="..\..\Builder.Net\Form1.resx"
+					RelativePath="..\..\Rays2\RaysServer\OptionsForm.resx"
 					SubType="Designer"
 					>
 				</File>
 			</File>
 			<File
-				RelativePath="..\..\Builder.Net\GLBuilder.h"
+				RelativePath="..\..\Rays2\RaysServer\RaysServerDlg.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\Builder.Net\stdafx.h"
+				RelativePath="..\..\Rays2\RaysServer\RaysServerForm.h"
+				FileType="3"
+				>
+				<File
+					RelativePath="..\..\Rays2\RaysServer\RaysServerForm.resX"
+					SubType="Designer"
+					>
+				</File>
+			</File>
+			<File
+				RelativePath="..\..\Rays2\RaysServer\resource.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Rays2\RaysServer\ServerTransport.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Rays2\RaysServer\stdafx.h"
 				>
 			</File>
 		</Filter>
@@ -284,31 +301,22 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 			<File
-				RelativePath="..\..\Builder.Net\res\app.rc"
+				RelativePath="..\..\Rays2\RaysServer\app.ico"
 				>
 			</File>
 			<File
-				RelativePath="..\..\Builder.Net\res\Builder.ico"
+				RelativePath="..\..\Rays2\RaysServer\app.rc"
 				>
 			</File>
 			<File
-				RelativePath="..\..\Builder.Net\res\Raptor_logo_sml.bmp"
+				RelativePath="..\..\Rays2\RaysServer\Rays.ico"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Rays2\RaysServer\RaysServer.config"
 				>
 			</File>
 		</Filter>
-		<File
-			RelativePath="..\..\Builder.Net\Redist.bat"
-			>
-			<FileConfiguration
-				Name="Release|Win32"
-				>
-				<Tool
-					Name="VCCustomBuildTool"
-					CommandLine="$(InputPath)&#x0D;&#x0A;"
-					Outputs="$(InputDir)Redist.log"
-				/>
-			</FileConfiguration>
-		</File>
 	</Files>
 	<Globals>
 	</Globals>
