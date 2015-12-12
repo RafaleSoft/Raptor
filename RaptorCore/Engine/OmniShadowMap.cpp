@@ -93,6 +93,10 @@ void COmniShadowMap::unLinkEnvironment(void)
 	CATCH_GL_ERROR
 }
 
+void COmniShadowMap::addObject(C3DSceneObject* object)
+{
+}
+
 bool COmniShadowMap::glInitEnvironment(unsigned int width,unsigned int height)
 {
 #ifdef GL_ARB_texture_cube_map

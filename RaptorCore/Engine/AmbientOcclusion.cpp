@@ -90,38 +90,41 @@ bool CAmbientOcclusion::glInitEnvironment(unsigned int width,unsigned int height
 	return true;
 }
 
+void CAmbientOcclusion::addObject(C3DSceneObject* object)
+{
+	const RAPTOR_HANDLE& h = object->object;
+    CObject3D *obj = (CObject3D*)h.handle;
+
+	//	Manage only shadow receivers
+	if (!obj->getProperties().isReceiveShadow())
+		return;
+
+	if (obj->getId().isSubClassOf(CShadedGeometry::CShadedGeometryClassID::GetClassId()))
+	{
+		CShadedGeometry* shaded = (CShadedGeometry*)obj;
+		registerForAmbientOcclusion(shaded,NULL);
+    }
+	else if (obj->getId().isSubClassOf(C3DSet::C3DSetClassID::GetClassId()))
+	{
+		// TODO
+	}
+	else if (obj->getId().isSubClassOf(CObject3DInstance::CObject3DInstanceClassID::GetClassId()))
+	{
+		CObject3DInstance* inst = (CObject3DInstance*)obj;
+		CObject3D *object = inst->getObject();
+		if (object->getId().isSubClassOf(CShadedGeometry::CShadedGeometryClassID::GetClassId()))
+		{
+			CShadedGeometry* shaded = (CShadedGeometry*)object;
+			registerForAmbientOcclusion(shaded,inst);
+		}
+	}
+}
+
 void CAmbientOcclusion::initOcclusions(const vector<C3DSceneObject*>& objects)
 {
 	vector<C3DSceneObject*>::const_iterator itr = objects.begin();
 	while (itr != objects.end())
-	{
-		const RAPTOR_HANDLE& h = (*itr++)->object;
-        CObject3D *obj = (CObject3D*)h.handle;
-
-		//	Manage only shadow receivers
-		if (!obj->getProperties().isReceiveShadow())
-			continue;
-
-		if (obj->getId().isSubClassOf(CShadedGeometry::CShadedGeometryClassID::GetClassId()))
-		{
-			CShadedGeometry* shaded = (CShadedGeometry*)obj;
-			registerForAmbientOcclusion(shaded,NULL);
-        }
-		else if (obj->getId().isSubClassOf(C3DSet::C3DSetClassID::GetClassId()))
-		{
-			// TODO
-		}
-		else if (obj->getId().isSubClassOf(CObject3DInstance::CObject3DInstanceClassID::GetClassId()))
-		{
-			CObject3DInstance* inst = (CObject3DInstance*)obj;
-			CObject3D *object = inst->getObject();
-			if (object->getId().isSubClassOf(CShadedGeometry::CShadedGeometryClassID::GetClassId()))
-			{
-				CShadedGeometry* shaded = (CShadedGeometry*)object;
-				registerForAmbientOcclusion(shaded,inst);
-			}
-		}
-    }
+		addObject(*itr++);
 }
 
 bool CAmbientOcclusion::registerForAmbientOcclusion(CShadedGeometry* shaded,

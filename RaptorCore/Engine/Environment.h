@@ -65,6 +65,10 @@ public:
     //! Renders the environment generated texture to the current TMU
     virtual void glRenderTexture(void) = 0;
 
+	//! If the environnement is initialised with objects, 
+	//!	a additional object can be passed to updade the environment.
+    virtual void addObject(C3DSceneObject* object) = 0;
+
 
 protected:
 	//!	Environment sub classes shall use this rendering method

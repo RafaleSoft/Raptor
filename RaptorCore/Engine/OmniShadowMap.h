@@ -48,6 +48,8 @@ private:
 	//! Implements CEnvironment
 	virtual void unLinkEnvironment(void);
 
+	//! Implements CEnvironment
+	virtual void addObject(C3DSceneObject* object);
 
 	void glRenderMap(const CLight* currentLight,const vector<C3DSceneObject*>& objects);
 

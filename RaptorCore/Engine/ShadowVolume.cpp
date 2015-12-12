@@ -127,6 +127,45 @@ bool CShadowVolume::glInitEnvironment(unsigned int width,unsigned int height)
     return true;
 }
 
+void CShadowVolume::addObject(C3DSceneObject* object)
+{
+#if defined(RAPTOR_SMP_CODE_GENERATION)
+	Global::RAPTOR_CURRENT_STATUS &st = Global::GetInstance().getCurrentStatus();
+    C3DEngineTaskManager *taskManager = st.engineTaskMgr;
+#endif
+
+	// Compute all possible shadow volumes
+    CViewPoint *vp = CRaptorDisplay::GetCurrentDisplay()->getViewPoint();
+    float shadowExtrusion = C3DEngine::Get3DEngine()->getFarPlane();
+    if (vp != NULL)
+    {
+        float vv[6];
+        CViewPoint::VIEW_POINT_MODEL model;
+        vp->getViewVolume(	vv[0],vv[1],vv[2],vv[3],vv[4],vv[5],model);
+        shadowExtrusion = vv[5];
+    }
+
+	const RAPTOR_HANDLE& h = object->object;
+	CObject3D *obj = (CObject3D*)h.handle;
+	if (obj->getId().isSubClassOf(CGeometry::CGeometryClassID::GetClassId()) ||
+		obj->getId().isSubClassOf(C3DSet::C3DSetClassID::GetClassId()) ||
+		obj->getId().isSubClassOf(CObject3DInstance::CObject3DInstanceClassID::GetClassId()))
+	{
+        if (obj->getProperties().isCastShadow())
+        {
+            CObject3DShadow *volume = new CObject3DShadow(obj,CObject3DShadow::SHADOW_VOLUME);
+            volume->setShadowExtrusion(shadowExtrusion);
+			volume->addContainerNotifier(m_pObserver);
+            m_pVolumes.push_back(volume);
+
+#if defined(RAPTOR_SMP_CODE_GENERATION)
+            CEngineJob *job = volume->createJob(jobId);
+            taskManager->registerJob(job);
+#endif
+        }
+    }
+}
+
 void CShadowVolume::initVolumes(const vector<C3DSceneObject*>& objects)
 {
     clearShadowVolumes();
@@ -169,7 +208,6 @@ void CShadowVolume::initVolumes(const vector<C3DSceneObject*>& objects)
                 CEngineJob *job = volume->createJob(jobId);
                 taskManager->registerJob(job);
 #endif
-
             }
         }
     }

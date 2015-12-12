@@ -40,12 +40,16 @@ public:
 	CShadowMap(C3DScene& rScene);
 	virtual ~CShadowMap();
 
+	//!	Implements base class @see CEnvironment
     virtual ENVIRONMENT_KIND    getKind(void) const { return SHADOW_MAP; };
 
+	//!	Implements base class @see CEnvironment
     virtual bool glInitEnvironment(unsigned int width,unsigned int height);
 
+	//!	Implements base class @see CEnvironment
     virtual void glRender(const CLight* currentLight,const vector<C3DSceneObject*>& objects);
 
+	//!	Implements base class @see CEnvironment
     virtual void glRenderTexture(void);
 
 
@@ -64,6 +68,9 @@ private:
 	void glInitPixelBuffer(unsigned int width,unsigned int height);
 
 	void glInitRenderBuffer(unsigned int width,unsigned int height);
+
+	//! Implements CEnvironment
+	virtual void addObject(C3DSceneObject* object);
 
 
 	CGenericMatrix<float>	m_lightProjection;

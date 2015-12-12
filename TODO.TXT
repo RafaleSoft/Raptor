@@ -90,7 +90,6 @@
 	- Rendering no environment: faire un pre rendu en depth pour accélérer le rendu full shaded
 
 - 3DScene :
-	- Fonctions add/remove, reporter également sur l'environnement
 	- Traiter le cas des lumières multiples dans les shaders et shadows ( ex : bump mapping, shadow volume .)
 	- Octrees statiques : comment traiter les mouvements d'objets ? ( remonter les objets au niveau supérieur )
 	- Mirror : ne pas activer de lighting et texturing si on est en DEPTH_PASS

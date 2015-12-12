@@ -95,6 +95,10 @@ void CShadowMap::unLinkEnvironment(void)
 	CATCH_GL_ERROR
 }
 
+void CShadowMap::addObject(C3DSceneObject* object)
+{
+}
+
 bool CShadowMap::glInitEnvironment(unsigned int width,unsigned int height)
 {
     CRaptorDisplay *const pDisplay = CRaptorDisplay::GetCurrentDisplay();

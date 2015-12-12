@@ -58,6 +58,8 @@ private:
 	//! Implements CEnvironment
 	virtual void unLinkEnvironment(void);
 
+	//! Implements CEnvironment
+	virtual void addObject(C3DSceneObject* object);
 
 	//!	A helper method to preform a registration of a ShadedGeometry
 	bool registerForAmbientOcclusion(CShadedGeometry* shaded,

@@ -171,6 +171,8 @@ bool C3DScene::addObject(CObject3D *object)
 	sc->object = (RAPTOR_HANDLE)(*object);
 	m_pAttributes->m_pObjects.push_back(sc);
 
+	for (unsigned int i=0;i<m_pAttributes->m_pEnvironments.size();i++)
+		m_pAttributes->m_pEnvironments[i]->addObject(sc);
     return true;
 }
 
@@ -407,9 +409,6 @@ void C3DScene::glRender(void)
     {
         m_pAttributes->m_pLights[i]->glRenderGlow();
         m_pAttributes->m_pLights[i]->glRenderFlare();
-
-		//m_pAttributes->m_pLights[i]->glRenderLightBBox();
-
         m_pAttributes->m_pLights[i]->glDeActivate();
     }
 

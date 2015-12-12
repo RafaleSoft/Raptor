@@ -64,6 +64,9 @@ private:
 	//! The callback passed to the notifier
 	void notifyFromChild(CObject3D* child);
 
+	//! Implements CEnvironment
+	virtual void addObject(C3DSceneObject* object);
+
 	//! The job identifier wher using SMP
 	unsigned int	jobId;
 
