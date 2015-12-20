@@ -9,6 +9,7 @@
     #include "ServerTransport.h"
 #endif
 
+using namespace RaysServer;
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction

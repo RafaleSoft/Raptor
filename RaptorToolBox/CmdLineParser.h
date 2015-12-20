@@ -176,4 +176,20 @@ bool CCmdLineParser::CCommandLineOptionValue<const char*>::parse(const char* arg
 }
 
 
+template <>
+bool CCmdLineParser::CCommandLineOptionValue<vector<unsigned int>>::parse(const char* argv)
+{
+	m_value.push_back((unsigned int)(0xffff & atoi(argv)));
+	return true;
+}
+
+template <>
+bool CCmdLineParser::CCommandLineOptionValue<vector<string>>::parse(const char* argv)
+{
+	if (argv != NULL)
+		m_value.push_back(string(argv));
+
+	return true;
+}
+
 #endif // !defined(AFX_CMDLINEPARSER_H__D7D8768A_3D97_491F_8493_588972A3CF62__INCLUDED_)

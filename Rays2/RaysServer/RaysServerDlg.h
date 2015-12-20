@@ -2,10 +2,11 @@
 
 #include "RaysServerForm.h"
 
-class CServerTransport;
-class CDeamonManager;
 
 namespace RaysServer {
+
+	class CServerTransport;
+	class CDeamonManager;
 
 	public ref class RaysServerDlg : public RaysServerForm
 	{
@@ -16,7 +17,8 @@ namespace RaysServer {
 	protected:
 		virtual bool Start(int argc,char *argv[]) override;
 		virtual bool Quit(void) override;
-		virtual char* convertSystemString(System::String^ str) override;
+		virtual CDeamonManager* getDeamonManager() override
+		{ return m_pDeamonManager; };
 	
 	private:
 		bool	m_started;

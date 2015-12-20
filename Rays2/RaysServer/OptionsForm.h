@@ -1,5 +1,8 @@
 #pragma once
 
+#include "DeamonManager.h"
+#include "WUProperties.h"
+
 using namespace System;
 using namespace System::ComponentModel;
 using namespace System::Collections;
@@ -22,7 +25,7 @@ namespace RaysServer {
 	public ref class OptionsForm : public System::Windows::Forms::Form
 	{
 	public:
-		OptionsForm(void)
+		OptionsForm(CDeamonManager* mgr):m_pMgr(mgr)
 		{
 			InitializeComponent();
 			//
@@ -41,27 +44,39 @@ namespace RaysServer {
 				delete components;
 			}
 		}
+
+		void DisplayWorkUnits()
+		{
+			if (NULL != m_pMgr)
+			{
+				this->WorkUnits->Items->Clear();
+				for (unsigned int i=0;i<m_pMgr->getNbWorkUnits();i++)
+				{
+					const CDeamonManager::LPWORKUNITSTRUCT wu = m_pMgr->getWorkUnit(i);
+					String^ item = gcnew String(wu->deamonIP.c_str());
+					this->WorkUnits->Items->Add(item);
+				}
+			}
+		}
+
+	private: CDeamonManager* m_pMgr;
+
 	private: System::Windows::Forms::Label^  label1;
 	private: System::Windows::Forms::NumericUpDown^  CPUs;
-
-
 	private: System::Windows::Forms::RadioButton^  Idle;
 	private: System::Windows::Forms::RadioButton^  Normal;
-
-
 	private: System::Windows::Forms::RadioButton^  High;
 	private: System::Windows::Forms::RadioButton^  RealTime;
-
 	private: System::Windows::Forms::GroupBox^  groupBox1;
 	private: System::Windows::Forms::Label^  label2;
 	private: System::Windows::Forms::NumericUpDown^  Polling;
-
 	private: System::Windows::Forms::ListBox^  WorkUnits;
-
 	private: System::Windows::Forms::Label^  label3;
 	private: System::Windows::Forms::Button^  OK;
-	private: System::Windows::Forms::Button^  New;
-
+	private: System::Windows::Forms::ContextMenuStrip^  WUListContextMenu;
+	private: System::Windows::Forms::ToolStripMenuItem^  newWUMenuItem;
+	private: System::Windows::Forms::ToolStripMenuItem^  propertiesWUMenuItem;
+	private: System::Windows::Forms::ToolStripMenuItem^  deleteWUMenuItem;
 	private: System::ComponentModel::IContainer^  components;
 
 	protected: 
@@ -79,6 +94,7 @@ namespace RaysServer {
 		/// </summary>
 		void InitializeComponent(void)
 		{
+			this->components = (gcnew System::ComponentModel::Container());
 			this->label1 = (gcnew System::Windows::Forms::Label());
 			this->CPUs = (gcnew System::Windows::Forms::NumericUpDown());
 			this->Idle = (gcnew System::Windows::Forms::RadioButton());
@@ -89,12 +105,16 @@ namespace RaysServer {
 			this->label2 = (gcnew System::Windows::Forms::Label());
 			this->Polling = (gcnew System::Windows::Forms::NumericUpDown());
 			this->WorkUnits = (gcnew System::Windows::Forms::ListBox());
+			this->WUListContextMenu = (gcnew System::Windows::Forms::ContextMenuStrip(this->components));
+			this->newWUMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->propertiesWUMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->deleteWUMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->label3 = (gcnew System::Windows::Forms::Label());
 			this->OK = (gcnew System::Windows::Forms::Button());
-			this->New = (gcnew System::Windows::Forms::Button());
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->CPUs))->BeginInit();
 			this->groupBox1->SuspendLayout();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->Polling))->BeginInit();
+			this->WUListContextMenu->SuspendLayout();
 			this->SuspendLayout();
 			// 
 			// label1
@@ -108,11 +128,11 @@ namespace RaysServer {
 			// 
 			// CPUs
 			// 
-			this->CPUs->Location = System::Drawing::Point(196, 13);
+			this->CPUs->Location = System::Drawing::Point(115, 11);
 			this->CPUs->Maximum = System::Decimal(gcnew cli::array< System::Int32 >(4) {8, 0, 0, 0});
 			this->CPUs->Minimum = System::Decimal(gcnew cli::array< System::Int32 >(4) {1, 0, 0, 0});
 			this->CPUs->Name = L"CPUs";
-			this->CPUs->Size = System::Drawing::Size(70, 20);
+			this->CPUs->Size = System::Drawing::Size(40, 20);
 			this->CPUs->TabIndex = 1;
 			this->CPUs->Value = System::Decimal(gcnew cli::array< System::Int32 >(4) {1, 0, 0, 0});
 			// 
@@ -193,24 +213,56 @@ namespace RaysServer {
 			// 
 			// WorkUnits
 			// 
+			this->WorkUnits->ContextMenuStrip = this->WUListContextMenu;
 			this->WorkUnits->FormattingEnabled = true;
 			this->WorkUnits->Location = System::Drawing::Point(12, 136);
 			this->WorkUnits->Name = L"WorkUnits";
 			this->WorkUnits->Size = System::Drawing::Size(254, 95);
 			this->WorkUnits->TabIndex = 10;
 			// 
+			// WUListContextMenu
+			// 
+			this->WUListContextMenu->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(3) {this->newWUMenuItem, 
+				this->propertiesWUMenuItem, this->deleteWUMenuItem});
+			this->WUListContextMenu->Name = L"WUListContextMenu";
+			this->WUListContextMenu->Size = System::Drawing::Size(188, 70);
+			this->WUListContextMenu->Opening += gcnew System::ComponentModel::CancelEventHandler(this, &OptionsForm::WUContextMenuOpening);
+			// 
+			// newWUMenuItem
+			// 
+			this->newWUMenuItem->Name = L"newWUMenuItem";
+			this->newWUMenuItem->Size = System::Drawing::Size(187, 22);
+			this->newWUMenuItem->Text = L"New Deamon";
+			this->newWUMenuItem->Click += gcnew System::EventHandler(this, &OptionsForm::NewDeamon);
+			// 
+			// propertiesWUMenuItem
+			// 
+			this->propertiesWUMenuItem->Enabled = false;
+			this->propertiesWUMenuItem->Name = L"propertiesWUMenuItem";
+			this->propertiesWUMenuItem->Size = System::Drawing::Size(187, 22);
+			this->propertiesWUMenuItem->Text = L"Deamon Properties ...";
+			this->propertiesWUMenuItem->Click += gcnew System::EventHandler(this, &OptionsForm::DeamonProperties);
+			// 
+			// deleteWUMenuItem
+			// 
+			this->deleteWUMenuItem->Enabled = false;
+			this->deleteWUMenuItem->Name = L"deleteWUMenuItem";
+			this->deleteWUMenuItem->Size = System::Drawing::Size(187, 22);
+			this->deleteWUMenuItem->Text = L"Delete Deamon";
+			this->deleteWUMenuItem->Click += gcnew System::EventHandler(this, &OptionsForm::DeleteDeamon);
+			// 
 			// label3
 			// 
 			this->label3->AutoSize = true;
 			this->label3->Location = System::Drawing::Point(13, 117);
 			this->label3->Name = L"label3";
-			this->label3->Size = System::Drawing::Size(63, 13);
+			this->label3->Size = System::Drawing::Size(107, 13);
 			this->label3->TabIndex = 11;
-			this->label3->Text = L"Work Units:";
+			this->label3->Text = L"Registered deamons:";
 			// 
 			// OK
 			// 
-			this->OK->Location = System::Drawing::Point(287, 13);
+			this->OK->Location = System::Drawing::Point(191, 8);
 			this->OK->Name = L"OK";
 			this->OK->Size = System::Drawing::Size(75, 23);
 			this->OK->TabIndex = 12;
@@ -218,35 +270,27 @@ namespace RaysServer {
 			this->OK->UseVisualStyleBackColor = true;
 			this->OK->MouseClick += gcnew System::Windows::Forms::MouseEventHandler(this, &OptionsForm::OnOK);
 			// 
-			// New
-			// 
-			this->New->Location = System::Drawing::Point(287, 43);
-			this->New->Name = L"New";
-			this->New->Size = System::Drawing::Size(75, 23);
-			this->New->TabIndex = 13;
-			this->New->Text = L"New";
-			this->New->UseVisualStyleBackColor = true;
-			// 
 			// OptionsForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-			this->ClientSize = System::Drawing::Size(374, 245);
-			this->Controls->Add(this->New);
-			this->Controls->Add(this->OK);
+			this->ClientSize = System::Drawing::Size(279, 245);
 			this->Controls->Add(this->label3);
 			this->Controls->Add(this->WorkUnits);
 			this->Controls->Add(this->Polling);
+			this->Controls->Add(this->OK);
 			this->Controls->Add(this->label2);
 			this->Controls->Add(this->groupBox1);
-			this->Controls->Add(this->CPUs);
 			this->Controls->Add(this->label1);
+			this->Controls->Add(this->CPUs);
 			this->Name = L"OptionsForm";
 			this->Text = L"OptionsForm";
+			this->FormClosed += gcnew System::Windows::Forms::FormClosedEventHandler(this, &OptionsForm::OnFormClosed);
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->CPUs))->EndInit();
 			this->groupBox1->ResumeLayout(false);
 			this->groupBox1->PerformLayout();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->Polling))->EndInit();
+			this->WUListContextMenu->ResumeLayout(false);
 			this->ResumeLayout(false);
 			this->PerformLayout();
 
@@ -256,5 +300,36 @@ namespace RaysServer {
 private: System::Void OnOK(System::Object^  sender, System::Windows::Forms::MouseEventArgs^  e) {
 			 Close();
 		 }
-};
+private: System::Void WUContextMenuOpening(System::Object^  sender, System::ComponentModel::CancelEventArgs^  e) {
+			WUListContextMenu->Items[0]->Enabled = true;
+			int selection = WorkUnits->SelectedIndex;
+			WUListContextMenu->Items[1]->Enabled = (selection >= 0);
+			WUListContextMenu->Items[2]->Enabled = (selection >= 0);
+		 }
+private: System::Void NewDeamon(System::Object^  sender, System::EventArgs^  e) {
+			 WUProperties^ props = gcnew WUProperties(m_pMgr);
+			 props->FormClosed += gcnew System::Windows::Forms::FormClosedEventHandler(this, &OptionsForm::OnFormClosed);;
+			 this->Enabled = false;
+			 props->Show();
+		 }
+private: System::Void DeamonProperties(System::Object^  sender, System::EventArgs^  e) {
+			 WUProperties^ props = gcnew WUProperties(NULL);
+			 props->FormClosed += gcnew System::Windows::Forms::FormClosedEventHandler(this, &OptionsForm::OnFormClosed);;
+			 this->Enabled = false;
+			 props->Show();
+
+			 CDeamonManager::LPWORKUNITSTRUCT deamon = m_pMgr->getWorkUnit(WorkUnits->SelectedIndex);
+			 props->SetDeamon(deamon);
+		 }
+private: System::Void DeleteDeamon(System::Object^  sender, System::EventArgs^  e) {
+			 this->WorkUnits->SelectedItem;
+		 }
+	private: System::Void OnFormClosed(System::Object^  sender, System::Windows::Forms::FormClosedEventArgs^  e) {
+			 if (sender != this)
+			 {
+				 this->Enabled = true;
+				 DisplayWorkUnits();
+			 }
+		 }
+	};
 }

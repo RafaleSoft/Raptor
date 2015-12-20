@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include <windows.h>
-#include <vcclr.h>
 #include "RaysServerDlg.h"
 #include "Subsys/CodeGeneration.h"
 
@@ -21,6 +20,10 @@ RaysServerDlg::RaysServerDlg()
 {
 	m_pTransport = new CServerTransport();
 	m_pDeamonManager = new CDeamonManager();
+	if (m_pDeamonManager->getNbWorkUnits() > 0)
+		AddLog("Server initialized.");
+	else
+		AddLog("Server not ready, no Work Units registered !");
 }
 
 RaysServerDlg::~RaysServerDlg()
@@ -29,19 +32,6 @@ RaysServerDlg::~RaysServerDlg()
 		delete m_pTransport;
 	if (NULL != m_pDeamonManager)
 		delete m_pDeamonManager;
-}
-
-char* RaysServerDlg::convertSystemString(System::String^ str)
-{
-	pin_ptr<const wchar_t> wch = PtrToStringChars(str);
-
-	size_t convertedChars = 0;
-	size_t  sizeInBytes = ((str->Length + 1) * 2);
-	char    *ch = (char *)malloc(sizeInBytes);
-
-	wcstombs_s(&convertedChars, ch, sizeInBytes, wch, sizeInBytes);
-
-	return ch;
 }
 
 bool RaysServerDlg::Start(int argc,char *argv[])

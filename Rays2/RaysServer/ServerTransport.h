@@ -20,20 +20,23 @@
 #endif
 
 
-class CServerTransport : public CServer<CServerSocket,CClientSocket>
-{
-public:
-	CServerTransport();
-	virtual ~CServerTransport();
+namespace RaysServer {
 
-	virtual request_handler_t &getRequestHandler(const iosock_base_t& client) const;
+	class CServerTransport : public CServer<CServerSocket,CClientSocket>
+	{
+	public:
+		CServerTransport();
+		virtual ~CServerTransport();
 
-	virtual bool stopServer(void);
+		virtual request_handler_t &getRequestHandler(const iosock_base_t& client) const;
 
-	virtual bool onClientClose(const CClientSocket &client);
+		virtual bool stopServer(void);
 
-private:
-	server_base_t::request_handler_t *m_pHandler;
-};
+		virtual bool onClientClose(const CClientSocket &client);
+
+	private:
+		server_base_t::request_handler_t *m_pHandler;
+	};
+}
 
 #endif // !defined(AFX_SERVERTRANSPORT_H__AC7E8C33_37A1_4BE2_8B73_B463DA99E328__INCLUDED_)

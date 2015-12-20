@@ -88,16 +88,17 @@ public:
 								const std::string &str);
 
 	//!	Simple Marcros to raise errors.
-#define RAPTOR_NO_ERROR(cid,str)\
-	Raptor::GetErrorManager()->generateRaptorError(cid,CRaptorErrorManager::RAPTOR_NO_ERROR,str)
-#define RAPTOR_WARNING(cid,str)\
-	Raptor::GetErrorManager()->generateRaptorError(cid,CRaptorErrorManager::RAPTOR_WARNING,str)
-#define RAPTOR_ERROR(cid,str)\
-	Raptor::GetErrorManager()->generateRaptorError(cid,CRaptorErrorManager::RAPTOR_ERROR,str)
-#define RAPTOR_GLERROR(cid,str)\
-	Raptor::GetErrorManager()->generateRaptorError(cid,CRaptorErrorManager::RAPTOR_GL_ERROR,str)
-#define RAPTOR_FATAL(cid,str)\
-	Raptor::GetErrorManager()->generateRaptorError(cid,CRaptorErrorManager::RAPTOR_FATAL,str)
+#define RAPTOR_GEN_ERROR(cid,str,err)\
+	{\
+		CRaptorErrorManager* mgr = Raptor::GetErrorManager();\
+		if (NULL != mgr)\
+			mgr->generateRaptorError(cid,err,str);\
+	}
+#define RAPTOR_NO_ERROR(cid,str) RAPTOR_GEN_ERROR(cid,str,CRaptorErrorManager::RAPTOR_NO_ERROR)
+#define RAPTOR_WARNING(cid,str) RAPTOR_GEN_ERROR(cid,str,CRaptorErrorManager::RAPTOR_WARNING)
+#define RAPTOR_ERROR(cid,str) RAPTOR_GEN_ERROR(cid,str,CRaptorErrorManager::RAPTOR_ERROR)
+#define RAPTOR_GLERROR(cid,str) RAPTOR_GEN_ERROR(cid,str,CRaptorErrorManager::RAPTOR_GL_ERROR)
+#define RAPTOR_FATAL(cid,str) RAPTOR_GEN_ERROR(cid,str,CRaptorErrorManager::RAPTOR_FATAL)
 
 
     //!	Same as above. The message ID is one of the Raptor Message Base or user extension.

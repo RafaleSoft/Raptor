@@ -32,15 +32,40 @@ public:
 	CRaysDeamon();
 	virtual ~CRaysDeamon();
 
+	bool doExit(void) const { return m_bExit; };
 
 	bool start(	const CCmdLineParser& cmdline );
 	
 	virtual server_base_t::request_handler_t &getRequestHandler(const iosock_base_t& client) const;
 
+	//!	Implements Client close callback
+	virtual bool onClientClose(const CClientSocket &client);
+	
+	//!	Implements Server stop
 	virtual bool stopServer(void);
 
-	virtual bool onClientClose(const CClientSocket &client);
+	void requestExit() { m_bExit = true; };
 
+
+	typedef struct WORKUNITSTRUCT
+	{
+		std::string		path;
+		unsigned int	nbProcs;
+		unsigned int	nbProcsAvailable;
+		bool			active;
+		float			jobDone;	// percentage of job actually done
+		CClientSocket	*connection;// connection to the work unit
+	} work_unit_struct_t;
+
+	typedef struct Message_reg_t
+	{
+		MSGSTRUCT		msg;
+		unsigned char	*raw_data;
+	} MSGREGSTRUCT;
+	typedef MSGREGSTRUCT* LPMSGREGSTRUCT;
+
+	void addWorkUnit(const WORKUNITSTRUCT& wu)
+	{ m_WorkUnits.push_back(wu); }
 
 private:
 	//!	Implements Server request callback
@@ -48,6 +73,23 @@ private:
 
 	//! Implements Server reply request
 	virtual bool handleReply(request_handler_t::request_id id, const void *&data,size_t &size);
+
+	//!	Exit deamon request
+	bool	m_bExit;
+	
+	typedef struct request_t
+	{
+		request_handler_t::request_id id;
+		bool			reply;
+		size_t			size;
+		MSGSTRUCT		*msg;
+	} request;
+
+	//! Array of registered work units
+	vector<WORKUNITSTRUCT> m_WorkUnits;
+
+	//!	Replies queue
+	vector<request> m_replies;
 };
 
 #endif // !defined(AFX_RAYSDEAMON_H__1FD417A3_0293_47C1_B3C3_DD773362F2E1__INCLUDED_)

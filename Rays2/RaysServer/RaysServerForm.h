@@ -1,8 +1,11 @@
 #pragma once
 
 #include "OptionsForm.h"
+#include "RaysServerUtils.h"
 
 namespace RaysServer {
+
+	class CDeamonManager;
 
 	using namespace System;
 	using namespace System::ComponentModel;
@@ -26,9 +29,6 @@ namespace RaysServer {
 		RaysServerForm(void)
 		{
 			InitializeComponent();
-			//
-			//TODO : ajoutez ici le code du constructeur
-			//
 		}
 
 	protected:
@@ -41,6 +41,11 @@ namespace RaysServer {
 			{
 				delete components;
 			}
+		}
+
+		void AddLog(String^ log)
+		{
+			Log->Items->Add(log);
 		}
 
 	private: System::Windows::Forms::Button^  StartServer;
@@ -61,14 +66,12 @@ namespace RaysServer {
 	private: System::Windows::Forms::ProgressBar^  progressBar1;
 	private: System::Windows::Forms::ListBox^  Log;
 	private: System::Windows::Forms::Button^  button3;
-
-
 	private: System::ComponentModel::IContainer^  components;
 
 	protected:
 		virtual bool Start(int argc,char *argv[]) = 0;
 		virtual bool Quit(void) = 0;
-		virtual char* convertSystemString(System::String^ str) = 0;
+		virtual CDeamonManager* getDeamonManager() = 0;
 
 	private:
 		/// <summary>
@@ -292,6 +295,7 @@ namespace RaysServer {
 			this->Name = L"RaysServerForm";
 			this->Text = L"Rays Server v3.0";
 			this->Load += gcnew System::EventHandler(this, &RaysServerForm::RaysServer_Load);
+			this->FormClosed += gcnew System::Windows::Forms::FormClosedEventHandler(this, &RaysServerForm::OnFormClosed);
 			this->groupBox1->ResumeLayout(false);
 			this->groupBox1->PerformLayout();
 			this->groupBox2->ResumeLayout(false);
@@ -305,9 +309,9 @@ namespace RaysServer {
 				 int argc = 4;
 				 char *argv[4];
 				 argv[0] = "-p";
-				 argv[1] = convertSystemString(BasePort->Text);
+				 argv[1] = RaysServerUtils::convertSystemString(BasePort->Text);
 				 argv[2] = "-a";
-				 argv[3] = convertSystemString(Host->Text);
+				 argv[3] = RaysServerUtils::convertSystemString(Host->Text);
 				 if (Start(argc,argv))
 					this->StartServer->Text = L"Stop Server";
 				 else
@@ -341,9 +345,15 @@ private: System::Void RaysServer_Load(System::Object^  sender, System::EventArgs
 			}
 		 }
 private: System::Void OnOptions(System::Object^  sender, System::Windows::Forms::MouseEventArgs^  e) {
-			OptionsForm^ options = gcnew OptionsForm();
+			OptionsForm^ options = gcnew OptionsForm(getDeamonManager());
+			options->FormClosed += gcnew System::Windows::Forms::FormClosedEventHandler(this, &RaysServerForm::OnFormClosed);
+			this->Enabled = false;
 			options->Show();
 		 }
-};
+	private: System::Void OnFormClosed(System::Object^  sender, System::Windows::Forms::FormClosedEventArgs^  e) {
+			if (sender != this)
+				this->Enabled = true;
+		 }
+	};
 }
 

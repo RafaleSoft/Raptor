@@ -265,15 +265,15 @@
 #define ADD_MSG_STRING(msg,msgid) \
 	{\
 	if(msgid < OBJBASE)\
-		msg+=CString(JOB_STR[msgid-JOBBASE]);\
+		msg += JOB_STR[msgid-JOBBASE];\
 	else if(msgid < IMGBASE)\
-		msg+=CString(OBJ_STR[msgid-OBJBASE]);\
+		msg += OBJ_STR[msgid-OBJBASE];\
 	else if(msgid < ACKBASE)\
-		msg+=CString(IMG_STR[msgid-IMGBASE]);\
+		msg += IMG_STR[msgid-IMGBASE];\
 	else if(msgid < DMNBASE)\
-		msg+=CString(ACK_STR[msgid-ACKBASE]);\
+		msg += ACK_STR[msgid-ACKBASE];\
 	else if(msgid < MSGBASE)\
-		msg+=CString(DMN_STR[msgid-DMNBASE]);\
+		msg += DMN_STR[msgid-DMNBASE];\
 	}
 
 

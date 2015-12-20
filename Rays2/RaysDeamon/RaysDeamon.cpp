@@ -23,9 +23,49 @@
 
 /////////////////////////////////////////////////////////////////////////////
 // Const and globals
+static CRaysDeamon	*p_Server = NULL;
 
+BOOL CtrlHandler(DWORD fdwCtrlType)
+{
+	switch(fdwCtrlType)
+	{ 
+		// Handle the CTRL-C signal.
+		case CTRL_C_EVENT:
+		{
+			std::cout << "Deamon user exit requested by Ctrl-C. Exiting, bye!" << std::endl;
+			p_Server->requestExit();
+			return(TRUE);
+			break;
+		}
+		// CTRL-CLOSE: confirm that the user wants to exit.
+		case CTRL_CLOSE_EVENT:
+		{
+			std::cout << "Deamon user exit requested by Ctrl-close. Exiting, bye!" << std::endl;
+			p_Server->requestExit();
+			return(TRUE);
+			break;
+		}
+		// Pass other signals to the next handler.
+		case CTRL_BREAK_EVENT: 
+			return FALSE; 
+		case CTRL_LOGOFF_EVENT: 
+			return FALSE; 
+		case CTRL_SHUTDOWN_EVENT: 
+			return FALSE; 
+		default: 
+			return FALSE; 
+	} 
+} 
+
+/////////////////////////////////////////////////////////////////////////////
+//	Entry point
 int main(int argc, char* argv[])
 {
+	std::cout << std::endl;
+	std::cout << "        Rays Deamon.        " << std::endl;
+	std::cout << "----------------------------" << std::endl;
+	std::cout << std::endl;
+
 #ifdef WIN32
 	if (!Network::initSocketLayer())
 		return 1;
@@ -36,16 +76,60 @@ int main(int argc, char* argv[])
 	parser.addOption("width","w",(unsigned short)256);
 	parser.addOption("height","h",(unsigned short)256);
 	parser.addOption("host_addr","a","127.0.0.1");
+
+	vector<string> wus;
+	vector<unsigned int> cpus;
+	parser.addOption("work_unit","u",wus);
+	parser.addOption("cpu","c",cpus);
 	parser.parse(argc,argv);
 
-	CRaysDeamon	*p_Server = new CRaysDeamon;
-    if (p_Server->start(parser))
-		return (p_Server->stopServer() ? 1 : 0);
+	CRaysDeamon::WORKUNITSTRUCT wu;
+	parser.getValue("u",wus);
+	parser.getValue("c",cpus);
+	if (wus.size() > 0)
+	{
+		p_Server = new CRaysDeamon;
+		unsigned int cpu = 4;
+		if (cpus.size() > 0)
+			cpu = cpus[0];
+
+		wu.path = wus[0];
+		wu.nbProcs = cpu;
+		wu.nbProcsAvailable = cpu;
+		wu.connection = NULL;
+		wu.jobDone = 0;
+		wu.active = false;
+		p_Server->addWorkUnit(wu);
+	}
 	else
+	{
+		std::cout << "Deamon launched with no work units. Exiting, bye!" << std::endl;
 		return -1;
+	}
+
+	if (!SetConsoleCtrlHandler((PHANDLER_ROUTINE) CtrlHandler, TRUE))
+		std::cout << "Deamon launched with no work units. Exiting, bye!" << std::endl;
+		
+
+    if (!p_Server->start(parser))
+	{
+		std::cout << "Deamon failed to start. Exiting, bye!" << std::endl;
+		return -1;
+	}
+	else
+	{
+		while (!p_Server->doExit())
+			Sleep(500);
+		bool res = (p_Server->stopServer() ? 1 : 0);
+		delete p_Server;
+
+		std::cout << "Rays Deamon exiting with code " << res << ". Bye!" << std::endl;
+		return res;
+	}
 }
 
 CRaysDeamon::CRaysDeamon()
+	:m_bExit(false)
 {
 }
 
@@ -60,17 +144,54 @@ server_base_t::request_handler_t& CRaysDeamon::getRequestHandler(const iosock_ba
 	return handler;
 }
 
+
+bool CRaysDeamon::handleReply(request_handler_t::request_id id, const void *&data,size_t &size)
+{
+	request r;
+	r.id = 0;
+
+	if (m_replies.size() > 0)
+	{
+		vector<request>::const_iterator it = m_replies.begin();
+		do
+		{
+			r = *it++;
+		} while ((it != m_replies.end()) && (r.id != id));
+
+		if (r.id == id)
+		{
+			it--;
+			m_replies.erase(it);
+		}
+
+		data = r.msg;
+		size = r.size;
+	}
+
+	return false;
+}
+
 bool CRaysDeamon::handleRequest(request_handler_t::request_id id,const void *data,size_t size)
 {
-/*
-void CRaysDeamonApp::ManageMsg(MSGSTRUCT& msg,unsigned char raw_data[])
-{
-	switch(msg.msg_id)
+	request rq;
+	rq.id = id;
+	rq.reply = false;
+	rq.size = size;
+	rq.msg = (MSGSTRUCT*)new unsigned char[size];
+	memcpy(rq.msg,data,size);
+
+	unsigned char* raw_data = (unsigned char*)(rq.msg)+rq.msg->msg_size;
+
+	if (size > MSGSIZE)
+		std::cout << "Extra data on message ignored !" << std::endl;
+
+	switch(rq.msg->msg_id)
 	{
 		case DMN_ACTIVE:
 			std::cout << "Rays2 Deamon active." << std::endl;
-			msg.msg_data[4] = m_Server->GetAddr();
-			m_RaysServer->Write(&msg,MSGSIZE);
+			rq.msg->msg_data[4] = this->getAddr();
+			rq.reply = true;
+			m_replies.push_back(rq);
 			break;
 		case DMN_INACTIVE:
 			std::cout << "Rays2 Deamon inactive." << std::endl;
@@ -79,7 +200,7 @@ void CRaysDeamonApp::ManageMsg(MSGSTRUCT& msg,unsigned char raw_data[])
 			{
 				STARTUPINFO			si;
 				PROCESS_INFORMATION	pi;
-				char				WUID[MAX_PATH];
+				stringstream		WUID;
 				char				workUnit[MAX_PATH];
 
 				memset(&si,0,sizeof(STARTUPINFO));
@@ -87,11 +208,11 @@ void CRaysDeamonApp::ManageMsg(MSGSTRUCT& msg,unsigned char raw_data[])
 				si.cb = sizeof(STARTUPINFO);
 				si.lpTitle = "Rays 2 Workunit";
 
-				int		workUnitID = msg.msg_data[0];
-				int		serverPort = msg.msg_data[3];
-				DWORD	nbProcs = msg.msg_data[1];
-				DWORD	serverIP = msg.msg_data[2];
-				DWORD	priority = msg.msg_data[4];
+				int		workUnitID = rq.msg->msg_data[0];
+				int		serverPort = rq.msg->msg_data[3];
+				DWORD	nbProcs = rq.msg->msg_data[1];
+				DWORD	serverIP = rq.msg->msg_data[2];
+				DWORD	priority = rq.msg->msg_data[4];
 				DWORD	creationFlag = CREATE_SUSPENDED|CREATE_NEW_PROCESS_GROUP|CREATE_NEW_CONSOLE;
 
 #ifdef PROFILE
@@ -100,13 +221,13 @@ void CRaysDeamonApp::ManageMsg(MSGSTRUCT& msg,unsigned char raw_data[])
 				strcat(WUID,workUnit);
 				strcpy(workUnit,"PROFILE.EXE");
 #else
-				sprintf(WUID,"%d %d %d",workUnitID,serverPort,serverIP);
-				strcpy(workUnit,(const char*)raw_data);
+				WUID << workUnitID << " ";
+				WUID << serverPort << " ";
+				WUID << serverIP << " ";
 #endif
-
 				// creating work unit
-				if (0 == CreateProcess(	workUnit,	// pointer to name of executable module
-										WUID,		// pointer to command line string
+				if (0 == CreateProcess(	(const char*)raw_data,	// pointer to name of executable module
+										const_cast<char*>(WUID.str().c_str()),		// pointer to command line string
 										NULL,		// process security attributes
 										NULL,		// thread security attributes
 										TRUE,		// handle inheritance flag
@@ -132,16 +253,17 @@ void CRaysDeamonApp::ManageMsg(MSGSTRUCT& msg,unsigned char raw_data[])
 				//	}
 				//}
 				
-				msg.msg_header = MSG_START;
-				msg.msg_id = DMN_DISPATCHJOB;
-				msg.msg_tail = MSG_END;
-				msg.msg_size = 0;
-				msg.msg_data[0] = workUnitID;
-				msg.msg_data[1] = (DWORD)(pi.hProcess);
-				msg.msg_data[2] = (DWORD)(pi.hThread);
-				msg.msg_data[3] = pi.dwProcessId;
-				msg.msg_data[4] = pi.dwThreadId;
-				m_RaysServer->Write(&msg,MSGSIZE);
+				rq.msg->msg_header = MSG_START;
+				rq.msg->msg_id = DMN_DISPATCHJOB;
+				rq.msg->msg_tail = MSG_END;
+				rq.msg->msg_size = 0;
+				rq.msg->msg_data[0] = workUnitID;
+				rq.msg->msg_data[1] = (DWORD)(pi.hProcess);
+				rq.msg->msg_data[2] = (DWORD)(pi.hThread);
+				rq.msg->msg_data[3] = pi.dwProcessId;
+				rq.msg->msg_data[4] = pi.dwThreadId;
+				rq.reply = true;
+				m_replies.push_back(rq);
 				
 				// now the job starts
 				::ResumeThread(pi.hThread);
@@ -160,31 +282,45 @@ void CRaysDeamonApp::ManageMsg(MSGSTRUCT& msg,unsigned char raw_data[])
 			{
 				//	Install plugin only if not present.
 				//	future version will hanle plugin version
-				CFileFind ff;
-				CString pname = (const char*)(&raw_data[0]);
-				int len = pname.GetLength();
+				WIN32_FIND_DATA ffd;
+				HANDLE hFind = INVALID_HANDLE_VALUE;
+				string pname = (const char*)(&raw_data[0]);
 				bool install = false;
+				bool lastfile = false;
 
-				if (!ff.FindFile(LPCTSTR(pname)))
-					install = true;
-				else
+				hFind = FindFirstFile(pname.c_str(), &ffd);
+				lastfile = (INVALID_HANDLE_VALUE == hFind);
+
+				while (!install && !lastfile)
 				{
-					if (ff.FindNextFile())
-					{
-						CTime fileTime;
-						if (ff.GetLastWriteTime(fileTime))
-						{
-							install = (msg.msg_data[1] > fileTime.GetTime());
-						}
-					}
+					if (pname.compare(ffd.cFileName) &&
+						(rq.msg->msg_data[1] > ffd.ftLastWriteTime.dwLowDateTime))
+						install = true;
+					else
+						lastfile = !FindNextFile(hFind, &ffd);
 				}
 
 				if (install)
 				{
-					((CRaysDeamonDlg*)m_pMainWnd)->DisplayInfo("Installing plugin : " + pname);
-					CFile plugin(LPCTSTR(pname),CFile::modeCreate|CFile::modeWrite);
-					plugin.Write(raw_data + len + 1,msg.msg_size - len - 1);
-					plugin.Close();
+					std::cout << "Installing plugin : " << pname.c_str();
+					HANDLE f = CreateFile(	pname.c_str(),
+											GENERIC_WRITE,
+											0,	// access mode: exclusive
+											NULL,
+											CREATE_ALWAYS,
+											FILE_ATTRIBUTE_NORMAL,
+											NULL);
+					if (NULL != f)
+					{
+						size_t len = pname.length()+1;
+						DWORD written = 0;
+						BOOL b = WriteFile(f,raw_data+len,rq.msg->msg_size-len,&written,NULL);
+						
+						if (!b || (written != rq.msg->msg_size))
+							std::cout << "Error installing plugin !" << std::endl;
+							//	Delete file ?
+						CloseHandle(f);
+					}
 				}
 			}
 			break;
@@ -192,19 +328,9 @@ void CRaysDeamonApp::ManageMsg(MSGSTRUCT& msg,unsigned char raw_data[])
 			break;
 	}
 
-	if (raw_data!=NULL)
-		delete [] raw_data;
-
-}
-*/
-
 	return false;
 }
 
-bool CRaysDeamon::handleReply(request_handler_t::request_id id, const void *&data,size_t &size)
-{
-	return false;
-}
 
 bool CRaysDeamon::onClientClose(const CClientSocket &client)
 {
@@ -220,22 +346,20 @@ bool CRaysDeamon::start(const CCmdLineParser& cmdline )
 	bool res = startServer(addrStr,port);
     if (res)
     {
-		stringstream str;
-		str << "Raptor Server ready on port ";
-		str << port;
-		str << " at host ";
-		str << addrStr;
-		RAPTOR_NO_ERROR(CPersistence::CPersistenceClassID::GetClassId(),str.str());
+		std::cout << "Raptor Server ready on port ";
+		std::cout << port;
+		std::cout << " at host ";
+		std::cout << addrStr;
+		std::cout << std::endl;
 		return true;
     }
     else
     {
-		stringstream str;
-		str << "Raptor Server couldn't be started on port ";
-		str << port;
-		str << " at host ";
-		str << addrStr;
-		RAPTOR_FATAL(CPersistence::CPersistenceClassID::GetClassId(),str.str());
+		std::cout << "Raptor Server couldn't be started on port ";
+		std::cout << port;
+		std::cout << " at host ";
+		std::cout << addrStr;
+		std::cout << std::endl;
 		return false;
     }
 }
@@ -245,39 +369,4 @@ bool CRaysDeamon::stopServer(void)
 {
 	return CServer<CServerSocket,CClientSocket>::stopServer();
 }
-
-#ifdef WIN32
-int WINAPI WinMain(	HINSTANCE hInstance,  // handle to current instance
-					HINSTANCE hPrevInstance,  // handle to previous instance
-                    LPSTR lpCmdLine,      // pointer to command line
-                    int nCmdShow          // show state of window
-)
-{
-	/*
-	string cmdLine = lpCmdLine;
-	vector<string> args;
-
-	size_t pos = cmdLine.find_first_of(' ');
-	while (string::npos != pos)
-	{
-		args.push_back(cmdLine.substr(0,pos));
-		cmdLine = cmdLine.substr(pos+1);
-		pos = cmdLine.find_first_of(' ');
-	}
-	args.push_back(cmdLine);
-
-	const char **argv = new const char*[args.size()+1];
-	for (pos = 0;pos<args.size();pos++)
-		argv[pos] = args[pos].c_str();
-	argv[args.size()] = NULL;
-
-	char **c_argv = const_cast<char**>(argv);
-	int res = main(args.size(),c_argv);
-
-	delete [] argv;
-	*/
-	int res = main(__argc,__argv);
-    return res;
-}
-#endif
 
