@@ -67,6 +67,7 @@ namespace RaysServer {
 	private: System::Windows::Forms::Label^  NbProcessorsAvailable;
 	private: System::Windows::Forms::Label^  label4;
 	private: System::Windows::Forms::Button^  CloseProperties;
+	private: System::Windows::Forms::Button^  Cancel;
 
 
 
@@ -93,6 +94,7 @@ namespace RaysServer {
 			this->NbProcessorsAvailable = (gcnew System::Windows::Forms::Label());
 			this->label4 = (gcnew System::Windows::Forms::Label());
 			this->CloseProperties = (gcnew System::Windows::Forms::Button());
+			this->Cancel = (gcnew System::Windows::Forms::Button());
 			this->SuspendLayout();
 			// 
 			// textBox1
@@ -149,7 +151,7 @@ namespace RaysServer {
 			// label4
 			// 
 			this->label4->AutoSize = true;
-			this->label4->Location = System::Drawing::Point(13, 65);
+			this->label4->Location = System::Drawing::Point(12, 65);
 			this->label4->Name = L"label4";
 			this->label4->Size = System::Drawing::Size(123, 13);
 			this->label4->TabIndex = 4;
@@ -161,13 +163,24 @@ namespace RaysServer {
 			this->CloseProperties->Name = L"CloseProperties";
 			this->CloseProperties->Size = System::Drawing::Size(75, 23);
 			this->CloseProperties->TabIndex = 6;
-			this->CloseProperties->Text = L"Close";
+			this->CloseProperties->Text = L"Apply";
 			this->CloseProperties->UseVisualStyleBackColor = true;
 			this->CloseProperties->MouseClick += gcnew System::Windows::Forms::MouseEventHandler(this, &WUProperties::OnClose);
+			// 
+			// Cancel
+			// 
+			this->Cancel->Location = System::Drawing::Point(197, 38);
+			this->Cancel->Name = L"Cancel";
+			this->Cancel->Size = System::Drawing::Size(75, 23);
+			this->Cancel->TabIndex = 7;
+			this->Cancel->Text = L"Cancel";
+			this->Cancel->UseVisualStyleBackColor = true;
+			this->Cancel->MouseClick += gcnew System::Windows::Forms::MouseEventHandler(this, &WUProperties::OnCancel);
 			// 
 			// WUProperties
 			// 
 			this->ClientSize = System::Drawing::Size(284, 91);
+			this->Controls->Add(this->Cancel);
 			this->Controls->Add(this->CloseProperties);
 			this->Controls->Add(this->NbProcessorsAvailable);
 			this->Controls->Add(this->label4);
@@ -175,6 +188,7 @@ namespace RaysServer {
 			this->Controls->Add(this->label2);
 			this->Controls->Add(this->label1);
 			this->Controls->Add(this->DeamonIP);
+			this->FormBorderStyle = System::Windows::Forms::FormBorderStyle::FixedDialog;
 			this->Name = L"WUProperties";
 			this->Text = L"Deamon Properties";
 			this->ResumeLayout(false);
@@ -184,6 +198,7 @@ namespace RaysServer {
 #pragma endregion
 
 	private: System::Void OnClose(System::Object^  sender, System::Windows::Forms::MouseEventArgs^  e) {
+				bool regDeamon = true;
 				if (NULL != m_pMgr)
 				{
 					IPAddress^ address = IPAddress::Parse(this->DeamonIP->Text);
@@ -194,13 +209,26 @@ namespace RaysServer {
 					char    *ch = (char *)malloc(sizeInBytes);
 					wcstombs_s(&convertedChars, ch, sizeInBytes, wch, sizeInBytes);
 
-					m_pMgr->registerDeamon(std::string(ch));
+					this->Cursor = Cursors::WaitCursor;
+					regDeamon = m_pMgr->registerDeamon(std::string(ch));
+					this->Cursor = Cursors::Default;
 				}
-				Close();
+				if (!regDeamon)
+				{
+					MessageBox::Show(this,
+									"Unable to join deamon !",
+									"Error",
+									MessageBoxButtons::OK);
+				}
+				else
+					Close();
 			 }
 	private: System::Void ValidateIPAddress(System::Object^  sender, System::EventArgs^  e) {
 				 IPAddress^ address;
 				 this->CloseProperties->Enabled = IPAddress::TryParse(this->DeamonIP->Text,address);
+			 }
+	private: System::Void OnCancel(System::Object^  sender, System::Windows::Forms::MouseEventArgs^  e) {
+				 Close();
 			 }
 };
 }

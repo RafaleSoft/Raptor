@@ -19,6 +19,9 @@
 #if !defined(AFX_CLIENTSOCKET_H__A2920B8E_12E4_11D3_9142_D3B83905F198__INCLUDED_)
 	#include "RaptorNetwork/ClientSocket.h"
 #endif
+#if !defined(AFX_CLIENT_H__A2920B8F_12E4_11D3_9142_D3B83905F198__INCLUDED_)
+	#include "RaptorNetwork/Client.h"
+#endif
 
 RAPTOR_NAMESPACE
 
@@ -54,7 +57,7 @@ public:
 		unsigned int	nbProcsAvailable;
 		bool			active;
 		float			jobDone;	// percentage of job actually done
-		CClientSocket	*connection;// connection to the work unit
+		CClient<CClientSocket> *connection;// connection to the work unit
 	} work_unit_struct_t;
 
 	typedef struct Message_reg_t

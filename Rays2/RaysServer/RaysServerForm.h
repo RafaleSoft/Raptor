@@ -29,6 +29,13 @@ namespace RaysServer {
 		RaysServerForm(void)
 		{
 			InitializeComponent();
+			if (!RaysServerUtils::loadConfig())
+			{
+				MessageBox::Show(	this,
+									"Unable to load Rays Server configuration file !",
+									"Error",
+									MessageBoxButtons::OK);
+			}
 		}
 
 	protected:
@@ -37,6 +44,13 @@ namespace RaysServer {
 		/// </summary>
 		virtual ~RaysServerForm()
 		{
+			if (!RaysServerUtils::saveConfig())
+			{
+				MessageBox::Show(	this,
+									"Unable to save Rays Server configuration file !",
+									"Error",
+									MessageBoxButtons::OK);
+			}
 			if (components)
 			{
 				delete components;
@@ -291,6 +305,7 @@ namespace RaysServer {
 			this->Controls->Add(this->groupBox1);
 			this->Controls->Add(this->button2);
 			this->Controls->Add(this->StartServer);
+			this->FormBorderStyle = System::Windows::Forms::FormBorderStyle::FixedDialog;
 			this->Icon = (cli::safe_cast<System::Drawing::Icon^  >(resources->GetObject(L"$this.Icon")));
 			this->Name = L"RaysServerForm";
 			this->Text = L"Rays Server v3.0";
@@ -306,15 +321,15 @@ namespace RaysServer {
 		}
 #pragma endregion
 	private: System::Void OnStart(System::Object^  sender, System::EventArgs^  e) {
-				 int argc = 4;
-				 char *argv[4];
-				 argv[0] = "-p";
-				 argv[1] = RaysServerUtils::convertSystemString(BasePort->Text);
-				 argv[2] = "-a";
-				 argv[3] = RaysServerUtils::convertSystemString(Host->Text);
-				 if (Start(argc,argv))
+				int argc = 4;
+				char *argv[4];
+				argv[0] = "-p";
+				argv[1] = RaysServerUtils::convertSystemString(BasePort->Text);
+				argv[2] = "-a";
+				argv[3] = RaysServerUtils::convertSystemString(Host->Text);
+				if (Start(argc,argv))
 					this->StartServer->Text = L"Stop Server";
-				 else
+				else
 					this->StartServer->Text = L"Start Server";
 			 }
 private: System::Void OnQuit(System::Object^  sender, System::EventArgs^  e) {
@@ -336,13 +351,9 @@ private: System::Void OnHostChanged(System::Object^  sender, System::EventArgs^ 
 				 StartServer->Enabled = false;
 		}
 private: System::Void RaysServer_Load(System::Object^  sender, System::EventArgs^  e) {
-		 	System::Configuration::Configuration^ conf = System::Configuration::ConfigurationManager::OpenExeConfiguration(System::Configuration::ConfigurationUserLevel::None);
-			if (conf->HasFile)
-			{
-				System::Configuration::AppSettingsSection^ settings = conf->AppSettings;
-				BasePort->Text = settings->Settings["port"]->Value;
-				Host->Text = settings->Settings["host"]->Value;
-			}
+			RaysServerUtils::RAYS_CONFIG^ config = RaysServerUtils::getConfig();
+			BasePort->Text = config->port.ToString();
+			Host->Text = config->host;
 		 }
 private: System::Void OnOptions(System::Object^  sender, System::Windows::Forms::MouseEventArgs^  e) {
 			OptionsForm^ options = gcnew OptionsForm(getDeamonManager());

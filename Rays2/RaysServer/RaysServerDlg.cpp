@@ -3,9 +3,6 @@
 #include "RaysServerDlg.h"
 #include "Subsys/CodeGeneration.h"
 
-#if !defined(AFX_NETWORK_H__AC9D546D_A00A_4BFC_AC0C_288BE137CD20__INCLUDED_)
-    #include "RaptorNetwork/Network.h"
-#endif
 #if !defined(AFX_CMDLINEPARSER_H__D7D8768A_3D97_491F_8493_588972A3CF62__INCLUDED_)
 	#include "ToolBox/CmdLineParser.h"
 #endif
@@ -18,6 +15,13 @@ using namespace RaysServer;
 RaysServerDlg::RaysServerDlg()
 	:m_started(false),m_pTransport(NULL),m_pDeamonManager(NULL)
 {
+#ifdef WIN32
+	Network::setNbConnectAttempts(1);
+	if (!Network::initSocketLayer())
+		AddLog("Network layer not initialized properly.");
+#endif
+	RaysServerUtils::setLog(gcnew RaysServerDlg::RaysLogger(this));
+
 	m_pTransport = new CServerTransport();
 	m_pDeamonManager = new CDeamonManager();
 	if (m_pDeamonManager->getNbWorkUnits() > 0)
@@ -36,11 +40,6 @@ RaysServerDlg::~RaysServerDlg()
 
 bool RaysServerDlg::Start(int argc,char *argv[])
 {
-#ifdef WIN32
-	if (!Network::initSocketLayer())
-		return 1;
-#endif
-
 	if (!m_started)
 	{
 		char* addrStr = "127.0.0.1";

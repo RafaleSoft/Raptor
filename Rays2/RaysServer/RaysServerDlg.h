@@ -1,7 +1,7 @@
 #pragma once
 
 #include "RaysServerForm.h"
-
+#include "RaysServerUtils.h"
 
 namespace RaysServer {
 
@@ -21,6 +21,17 @@ namespace RaysServer {
 		{ return m_pDeamonManager; };
 	
 	private:
+		ref class RaysLogger : public RaysServerUtils::ILogger
+		{
+		public:
+			RaysLogger(RaysServerDlg^ userOutput):m_pLogger(userOutput) {};
+			virtual ~RaysLogger() {};
+			virtual void Log(System::String^ msg)
+			{ m_pLogger->AddLog(msg); }
+		private:
+			RaysServerDlg^ m_pLogger;
+		};
+
 		bool	m_started;
 		CServerTransport *m_pTransport;
 		CDeamonManager	*m_pDeamonManager;

@@ -9,6 +9,7 @@
     #include "ServerTransport.h"
 #endif
 
+#include "RaysServerUtils.h"
 using namespace RaysServer;
 
 //////////////////////////////////////////////////////////////////////
@@ -23,6 +24,15 @@ CServerTransport::CServerTransport()
 CServerTransport::~CServerTransport()
 {
 
+}
+
+void CServerTransport::userOutput(const std::string& msg) const
+{
+	RaysServerUtils::ILogger^ logger = RaysServerUtils::getLog();
+	System::String^ console_msg = gcnew System::String(msg.c_str());
+
+	logger->Log(console_msg);
+	System::Console::WriteLine(console_msg);
 }
 
 server_base_t::request_handler_t &CServerTransport::getRequestHandler(const iosock_base_t& client) const

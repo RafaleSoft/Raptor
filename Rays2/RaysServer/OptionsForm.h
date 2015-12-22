@@ -2,6 +2,7 @@
 
 #include "DeamonManager.h"
 #include "WUProperties.h"
+#include "RaysServerUtils.h"
 
 using namespace System;
 using namespace System::ComponentModel;
@@ -28,9 +29,7 @@ namespace RaysServer {
 		OptionsForm(CDeamonManager* mgr):m_pMgr(mgr)
 		{
 			InitializeComponent();
-			//
-			//TODO : ajoutez ici le code du constructeur
-			//
+			DisplayWorkUnits();
 		}
 
 	protected:
@@ -180,10 +179,10 @@ namespace RaysServer {
 			// 
 			// groupBox1
 			// 
-			this->groupBox1->Controls->Add(this->RealTime);
 			this->groupBox1->Controls->Add(this->Idle);
-			this->groupBox1->Controls->Add(this->High);
 			this->groupBox1->Controls->Add(this->Normal);
+			this->groupBox1->Controls->Add(this->High);
+			this->groupBox1->Controls->Add(this->RealTime);
 			this->groupBox1->Location = System::Drawing::Point(12, 39);
 			this->groupBox1->Name = L"groupBox1";
 			this->groupBox1->Size = System::Drawing::Size(254, 50);
@@ -283,8 +282,10 @@ namespace RaysServer {
 			this->Controls->Add(this->groupBox1);
 			this->Controls->Add(this->label1);
 			this->Controls->Add(this->CPUs);
+			this->FormBorderStyle = System::Windows::Forms::FormBorderStyle::FixedDialog;
 			this->Name = L"OptionsForm";
 			this->Text = L"OptionsForm";
+			this->Load += gcnew System::EventHandler(this, &OptionsForm::OptionsLoad);
 			this->FormClosed += gcnew System::Windows::Forms::FormClosedEventHandler(this, &OptionsForm::OnFormClosed);
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->CPUs))->EndInit();
 			this->groupBox1->ResumeLayout(false);
@@ -331,5 +332,12 @@ private: System::Void DeleteDeamon(System::Object^  sender, System::EventArgs^  
 				 DisplayWorkUnits();
 			 }
 		 }
-	};
+	private: System::Void OptionsLoad(System::Object^  sender, System::EventArgs^  e) {
+				RaysServerUtils::RAYS_CONFIG^ config = RaysServerUtils::getConfig();
+				this->CPUs->Value = System::Decimal(gcnew cli::array< System::Int32 >(4) {config->nb_wu_per_job, 0, 0, 0});
+				this->Polling->Value = System::Decimal(gcnew cli::array< System::Int32 >(4) {config->deamon_delay, 0, 0, 0});
+				System::Windows::Forms::RadioButton^ button = (System::Windows::Forms::RadioButton^)(this->groupBox1->Controls[config->wu_priority]);
+				button->Checked = true;
+			 }
+};
 }

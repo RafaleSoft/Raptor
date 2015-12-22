@@ -14,7 +14,8 @@ static const int SOCKET_SIZE = 2048;
 
 static const int HOSTNAME_SIZE = 64;
 
-static const int NB_CONNECT_ATTEMPTS = 10;
+static const int NB_CONNECT_ATTEMPTS_MAX = 16;
+static int NB_CONNECT_ATTEMPTS = 10;
 
 static const int SELECT_TIMEOUT = 1000;
 
@@ -46,6 +47,17 @@ int Network::getHostnameSize(void)
 int Network::getNbConnectAttempts(void)
 {
 	return NB_CONNECT_ATTEMPTS;
+}
+
+bool Network::setNbConnectAttempts(int nbAttempts)
+{
+	if ((nbAttempts > 0) && (nbAttempts < NB_CONNECT_ATTEMPTS_MAX))
+	{
+		NB_CONNECT_ATTEMPTS = nbAttempts;
+		return true;
+	}
+	else
+		return false;
 }
 
 int Network::getSelectTimeout(void)

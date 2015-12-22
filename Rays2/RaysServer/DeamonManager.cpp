@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "DeamonManager.h"
-
+#include "Subsys/CodeGeneration.h"
 
 /*
 UINT DeamonProcessor( LPVOID pParam )
@@ -86,22 +86,23 @@ bool CDeamonManager::destroyWorkUnit(unsigned int numWU)
 		return false;
 
 	m_WorkUnits.erase(m_WorkUnits.begin() + numWU);
+	bool bDisconnect = true;
 
 	if (lpWU->connection != NULL)
 	{
 		MSGSTRUCT			msg;
-
 		msg.msg_header = MSG_START;
 		msg.msg_id = DMN_INACTIVE;
 		msg.msg_size = 0;
 		msg.msg_tail = MSG_END;
 
-		lpWU->connection->safeWrite(&msg,MSGSIZE);
+		lpWU->connection->write(&msg,MSGSIZE);
+		bDisconnect = lpWU->connection->disconnectServer();
 		delete lpWU->connection;
 	}
 
 	delete lpWU;
-	return true;
+	return bDisconnect;
 }
 
 bool CDeamonManager::registerDeamon(const std::string& deamonIP)
@@ -117,18 +118,25 @@ bool CDeamonManager::registerDeamon(const std::string& deamonIP)
 			return false;
 	}
 
-	WU = new CDeamonManager::WORKUNITSTRUCT;
-	WU->workUnitID = m_counter++;
-	WU->jobDone = 0;
-	WU->nbProcs = 1;
-	WU->nbProcsAvailable = 1;
-	WU->active = false;
-	WU->deamonIP = deamonIP;
-	WU->connection = NULL;
-	
-	m_WorkUnits.push_back(WU);
-
-	return true;
+	CClient<CClientSocket> *connection = new CClient<CClientSocket>();
+	if (connection->connectToServer(deamonIP,PORTBASE+1))
+	{
+		WU = new CDeamonManager::WORKUNITSTRUCT;
+		WU->workUnitID = m_counter++;
+		WU->jobDone = 0;
+		WU->nbProcs = 1;
+		WU->nbProcsAvailable = 1;
+		WU->active = false;
+		WU->deamonIP = deamonIP;
+		WU->connection = connection;
+		m_WorkUnits.push_back(WU);
+		return true;
+	}
+	else
+	{
+		delete connection;
+		return false;
+	}
 }
 
 /*

@@ -34,6 +34,9 @@ namespace RaysServer {
 
 		virtual bool onClientClose(const CClientSocket &client);
 
+		virtual void userOutput(const std::string& msg) const;
+
+
 	private:
 		server_base_t::request_handler_t *m_pHandler;
 	};

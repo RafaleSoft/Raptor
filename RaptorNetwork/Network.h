@@ -29,16 +29,26 @@ public:
         FDPLX_CLIENT
     } CLIENT_MODEL;
 	
+	//!	Initialise the Network layer
+	static bool initSocketLayer();
+
 	//!
-	//!	Services
+	//!	Get Services
 	//!
 	static int getSocketSize(void);
 	static int getHostnameSize(void);
-	static int getNbConnectAttempts(void);
 	static int getSelectTimeout(void);
+	static int getNbConnectAttempts(void);
 
-	static bool initSocketLayer();
+	//!
+	//!	Set Services
+	//!	- NbConnectAttempts is limited to 16
+	//!
+	static bool setNbConnectAttempts(int nbAttemps);
 
+	//!	
+	//!	Utilities
+	//!
     static unsigned int sockNameToAddr(const std::string& address);
 
 	static string networkErrors(const std::string& extmsg);

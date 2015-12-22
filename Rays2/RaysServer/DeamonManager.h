@@ -10,6 +10,9 @@ using namespace std;
 #if !defined(AFX_CLIENTSOCKET_H__A2920B8E_12E4_11D3_9142_D3B83905F198__INCLUDED_)
     #include "RaptorNetwork/ClientSocket.h"
 #endif
+#if !defined(AFX_CLIENT_H__A2920B8F_12E4_11D3_9142_D3B83905F198__INCLUDED_)
+	#include "RaptorNetwork/Client.h"
+#endif
 
 namespace RaysServer {
 
@@ -24,7 +27,7 @@ namespace RaysServer {
 			unsigned int	nbProcsAvailable;
 			bool			active;
 			std::string		deamonIP;
-			CClientSocket	*connection;
+			CClient<CClientSocket> *connection;
 		} WORKUNITSTRUCT;
 		typedef WORKUNITSTRUCT* LPWORKUNITSTRUCT;
 	/*
