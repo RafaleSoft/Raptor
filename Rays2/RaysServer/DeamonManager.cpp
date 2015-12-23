@@ -44,7 +44,8 @@ using namespace RaysServer;
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CDeamonManager::CDeamonManager()
+CDeamonManager::CDeamonManager(server_base_t *server)
+	:m_pServer(server)
 {
 	m_counter = 0;
 /*
@@ -90,12 +91,13 @@ bool CDeamonManager::destroyWorkUnit(unsigned int numWU)
 
 	if (lpWU->connection != NULL)
 	{
-		MSGSTRUCT			msg;
+		MSGSTRUCT msg;
 		msg.msg_header = MSG_START;
 		msg.msg_id = DMN_INACTIVE;
 		msg.msg_size = 0;
 		msg.msg_tail = MSG_END;
 
+		//!	No reply expected for this message
 		lpWU->connection->write(&msg,MSGSIZE);
 		bDisconnect = lpWU->connection->disconnectServer();
 		delete lpWU->connection;
@@ -118,7 +120,7 @@ bool CDeamonManager::registerDeamon(const std::string& deamonIP)
 			return false;
 	}
 
-	CClient<CClientSocket> *connection = new CClient<CClientSocket>();
+	CDeamonClient *connection = new CDeamonClient(m_pServer);
 	if (connection->connectToServer(deamonIP,PORTBASE+1))
 	{
 		WU = new CDeamonManager::WORKUNITSTRUCT;

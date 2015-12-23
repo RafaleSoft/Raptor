@@ -19,6 +19,13 @@ namespace RaysServer {
 	class CDeamonManager
 	{
 	public:
+		class CDeamonClient : public CClient<CClientSocket>
+		{
+		public:
+			CDeamonClient(server_base_t *m_pServer)
+			{ m_socket.setServer(m_pServer); };
+		};
+
 		typedef struct work_unit_struct_t
 		{
 			unsigned int	workUnitID; // outer identifier ( server counter )
@@ -27,7 +34,7 @@ namespace RaysServer {
 			unsigned int	nbProcsAvailable;
 			bool			active;
 			std::string		deamonIP;
-			CClient<CClientSocket> *connection;
+			CDeamonClient	*connection;
 		} WORKUNITSTRUCT;
 		typedef WORKUNITSTRUCT* LPWORKUNITSTRUCT;
 	/*
@@ -50,7 +57,7 @@ namespace RaysServer {
 		//bool InstallPlugin(	unsigned int IP,unsigned int port,unsigned int validDate,
 		//					CString name,unsigned int size,unsigned char* plugin) const;
 
-		CDeamonManager();
+		CDeamonManager(server_base_t *server);
 		virtual ~CDeamonManager();
 
 		//	Create a new deamon (and retrieves its workunits)
@@ -87,7 +94,7 @@ namespace RaysServer {
 
 	private:
 		//friend UINT DeamonProcessor( LPVOID pParam );
-
+		server_base_t				*m_pServer;
 		vector<LPWORKUNITSTRUCT>	m_WorkUnits;	// array of registered work units
 		unsigned int				m_counter;		// unique work Unit ID counter
 

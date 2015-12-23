@@ -163,12 +163,20 @@ bool CRaysDeamon::handleReply(request_handler_t::request_id id, const void *&dat
 			it--;
 			m_replies.erase(it);
 		}
-
-		data = r.msg;
-		size = r.size;
+		else
+			return false;
+	}
+	else
+	{
+		//	A small delay to wait for a reply ?
+		//	A semaphore would be better
+		Sleep(1);
+		return false;
 	}
 
-	return false;
+	data = r.msg;
+	size = r.size;
+	return true;
 }
 
 bool CRaysDeamon::handleRequest(request_handler_t::request_id id,const void *data,size_t size)

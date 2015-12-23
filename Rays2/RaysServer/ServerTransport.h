@@ -8,6 +8,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include "../Messages.h"			// io messages IDs and structs
 
 #if !defined(AFX_SERVER_H__A2920B8C_12E4_11D3_9142_D3B83905F198__INCLUDED_)
     #include "RaptorNetwork/Server.h"
@@ -22,23 +23,49 @@
 
 namespace RaysServer {
 
-	class CServerTransport : public CServer<CServerSocket,CClientSocket>
+	class CServerTransport : public CServer<CServerSocket,CClientSocket>,
+							 public server_base_t::request_handler_t
 	{
 	public:
 		CServerTransport();
 		virtual ~CServerTransport();
 
+		//!	Returns this
 		virtual request_handler_t &getRequestHandler(const iosock_base_t& client) const;
 
+		//!	Stop Rays Server.
 		virtual bool stopServer(void);
 
-		virtual bool onClientClose(const CClientSocket &client);
-
+		//!	Implement base class.
 		virtual void userOutput(const std::string& msg) const;
 
 
 	private:
+		typedef struct request_t
+		{
+			request_handler_t::request_id id;
+			bool			reply;
+			size_t			size;
+			MSGSTRUCT		*msg;
+		} request;
+
+		//!	Implement base class.
+		virtual int onNewClient(const CClientSocket &client);
+
+		//!	Implement base class.
+		virtual bool onClientClose(const CClientSocket &client);
+
+		//!	Implements Server request callback
+		virtual bool handleRequest(request_handler_t::request_id id,const void *data,size_t size);
+
+		//! Implements Server reply request
+		virtual bool handleReply(request_handler_t::request_id id, const void *&data,size_t &size);
+
+		//!	A separate request handler for asynchronous processing.
 		server_base_t::request_handler_t *m_pHandler;
+
+		//!	Replies queue
+		vector<request> m_replies;
 	};
 }
 

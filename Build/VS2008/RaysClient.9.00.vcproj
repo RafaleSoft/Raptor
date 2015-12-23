@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9,00"
-	Name="RaysServer"
-	ProjectGUID="{8BEC0374-E13F-46D0-BDA6-BF1208BA735A}"
-	RootNamespace="RaysServer"
+	Name="RaysClient"
+	ProjectGUID="{C37F7493-F36D-45B3-8A91-E7D77013C2CF}"
+	RootNamespace="RaysClient"
 	Keyword="ManagedCProj"
 	TargetFrameworkVersion="196613"
 	>
@@ -96,12 +96,10 @@
 			ConfigurationType="1"
 			CharacterSet="1"
 			ManagedExtensions="1"
-			WholeProgramOptimization="0"
+			WholeProgramOptimization="1"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				Description="Export config file"
-				CommandLine="copy $(SolutionDir)Rays2\$(ProjectName)\RaysServer.config $(OutDir)"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -117,8 +115,6 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalOptions="/MP"
-				Optimization="0"
 				AdditionalIncludeDirectories="$(RAPTOR_ROOT)\Redist\Include;$(PLATFORM_SDK)\include"
 				PreprocessorDefinitions="WIN32;NDEBUG"
 				RuntimeLibrary="2"
@@ -139,6 +135,7 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="RaptorToolBox.lib RaptorNetwork.lib"
 				Version="$(RAPTOR_VERSION)"
+				LinkIncremental="1"
 				AdditionalLibraryDirectories="$(RAPTOR_ROOT)\redist\lib;$(PLATFORM_SDK)\lib"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -150,7 +147,6 @@
 			/>
 			<Tool
 				Name="VCManifestTool"
-				OutputManifestFile="$(OutDir)\$(TargetFileName).embed.manifest"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -166,7 +162,6 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy $(OutDir)\$(TargetFileName) &quot;%RAPTOR_ROOT%\Redist\bin&quot;&#x0D;&#x0A;copy $(OutDir)\RaysServer.config &quot;%RAPTOR_ROOT%\Redist\bin&quot;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>
@@ -214,35 +209,23 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\..\Rays2\RaysServer\AssemblyInfo.cpp"
+				RelativePath="..\..\Rays2\RaysClient\AssemblyInfo.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\Rays2\RaysServer\DeamonManager.cpp"
+				RelativePath="..\..\Rays2\RaysClient\RaysClient.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\Rays2\RaysServer\OptionsForm.cpp"
+				RelativePath="..\..\Rays2\RaysClient\RaysClientDlg.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\Rays2\RaysServer\RaysServer.cpp"
+				RelativePath="..\..\Rays2\RaysClient\RaysClientForm.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\Rays2\RaysServer\RaysServerDlg.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Rays2\RaysServer\RaysServerUtils.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Rays2\RaysServer\ServerTransport.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Rays2\RaysServer\stdafx.cpp"
+				RelativePath="..\..\Rays2\RaysClient\stdafx.cpp"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -253,10 +236,6 @@
 					/>
 				</FileConfiguration>
 			</File>
-			<File
-				RelativePath="..\..\Rays2\RaysServer\WUProperties.cpp"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="Fichiers d&apos;en-tête"
@@ -264,62 +243,25 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath="..\..\Rays2\RaysServer\DeamonManager.h"
+				RelativePath="..\..\Rays2\RaysClient\RaysClientDlg.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\Rays2\Messages.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Rays2\RaysServer\OptionsForm.h"
+				RelativePath="..\..\Rays2\RaysClient\RaysClientForm.h"
 				FileType="3"
 				>
 				<File
-					RelativePath="..\..\Rays2\RaysServer\OptionsForm.resx"
-					SubType="Designer"
+					RelativePath="..\..\Rays2\RaysClient\RaysClientForm.resx"
 					>
 				</File>
 			</File>
 			<File
-				RelativePath="..\..\Rays2\RaysServer\RaysServerDlg.h"
+				RelativePath="..\..\Rays2\RaysClient\resource.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\Rays2\RaysServer\RaysServerForm.h"
-				FileType="3"
+				RelativePath="..\..\Rays2\RaysClient\stdafx.h"
 				>
-				<File
-					RelativePath="..\..\Rays2\RaysServer\RaysServerForm.resX"
-					SubType="Designer"
-					>
-				</File>
-			</File>
-			<File
-				RelativePath="..\..\Rays2\RaysServer\RaysServerUtils.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Rays2\RaysServer\resource.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Rays2\RaysServer\ServerTransport.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Rays2\RaysServer\stdafx.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Rays2\RaysServer\WUProperties.h"
-				FileType="3"
-				>
-				<File
-					RelativePath="..\..\Rays2\RaysServer\WUProperties.resx"
-					SubType="Designer"
-					>
-				</File>
 			</File>
 		</Filter>
 		<Filter
@@ -328,19 +270,15 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 			<File
-				RelativePath="..\..\Rays2\RaysServer\app.ico"
+				RelativePath="..\..\Rays2\RaysClient\app.ico"
 				>
 			</File>
 			<File
-				RelativePath="..\..\Rays2\RaysServer\app.rc"
+				RelativePath="..\..\Rays2\RaysClient\app.rc"
 				>
 			</File>
 			<File
-				RelativePath="..\..\Rays2\RaysServer\Rays.ico"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Rays2\RaysServer\RaysServer.config"
+				RelativePath="..\..\Rays2\RaysClient\Rays.ico"
 				>
 			</File>
 		</Filter>

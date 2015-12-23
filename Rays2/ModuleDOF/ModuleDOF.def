@@ -1,6 +1,0 @@
-; ModuleDOF.def : Declares the module parameters for the DLL.
-
-LIBRARY      "ModuleDOF"
-DESCRIPTION  'ModuleDOF Windows Dynamic Link Library'
-
-EXPORTS

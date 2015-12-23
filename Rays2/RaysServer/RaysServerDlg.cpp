@@ -23,7 +23,7 @@ RaysServerDlg::RaysServerDlg()
 	RaysServerUtils::setLog(gcnew RaysServerDlg::RaysLogger(this));
 
 	m_pTransport = new CServerTransport();
-	m_pDeamonManager = new CDeamonManager();
+	m_pDeamonManager = new CDeamonManager(m_pTransport);
 	if (m_pDeamonManager->getNbWorkUnits() > 0)
 		AddLog("Server initialized.");
 	else
@@ -54,11 +54,19 @@ bool RaysServerDlg::Start(int argc,char *argv[])
 		parser.getValue("host_addr",addrStr);
 		if (m_pTransport->startServer(addrStr,port))
 			m_started = !m_started;
+		if (m_started)
+			AddLog("Server started. Listening ...");
+		else
+			AddLog("Server unable to start !");
 	}
 	else
 	{
 		if (m_pTransport->stopServer())
 			m_started = !m_started;
+		if (!m_started)
+			AddLog("Server stopped.");
+		else
+			AddLog("Server unable to stop !");
 	}
 
 	return m_started;

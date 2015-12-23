@@ -15,7 +15,7 @@ namespace RaysServer {
 	using namespace System::Drawing;
 
 	/// <summary>
-	/// Description résumée de Form1
+	/// Description résumée de RaysServerForm
 	///
 	/// AVERTISSEMENT : si vous modifiez le nom de cette classe, vous devrez modifier la
 	///          propriété 'Nom du fichier de ressources' de l'outil de compilation de ressource managée
@@ -191,7 +191,7 @@ namespace RaysServer {
 			this->BasePort->Size = System::Drawing::Size(100, 20);
 			this->BasePort->TabIndex = 2;
 			this->BasePort->Text = L"1024";
-			this->BasePort->TextChanged += gcnew System::EventHandler(this, &RaysServerForm::OnPortChanged);
+			this->BasePort->TextChanged += gcnew System::EventHandler(this, &RaysServerForm::OnHostChanged);
 			// 
 			// label2
 			// 
@@ -336,19 +336,11 @@ private: System::Void OnQuit(System::Object^  sender, System::EventArgs^  e) {
 			 if (Quit())
 				 this->Close();
 		 }
-private: System::Void OnPortChanged(System::Object^  sender, System::EventArgs^  e) {
-			 if ((BasePort->Text->Length > 0) &&
-				 (Host->Text->Length > 0))
-				 StartServer->Enabled = true;
-			 else
-				 StartServer->Enabled = false;
-		 }
 private: System::Void OnHostChanged(System::Object^  sender, System::EventArgs^  e) {
-			 if ((BasePort->Text->Length > 0) &&
-				 (Host->Text->Length > 0))
-				 StartServer->Enabled = true;
-			 else
-				 StartServer->Enabled = false;
+			IPAddress^ address;
+			StartServer->Enabled =	(BasePort->Text->Length > 0) &&
+									(Host->Text->Length > 0) &&
+									IPAddress::TryParse(Host->Text,address);
 		}
 private: System::Void RaysServer_Load(System::Object^  sender, System::EventArgs^  e) {
 			RaysServerUtils::RAYS_CONFIG^ config = RaysServerUtils::getConfig();

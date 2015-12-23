@@ -213,6 +213,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RaysServer", "Build\VS2008\
 		{00A914E7-CB8F-497D-896B-557FA4E029B5} = {00A914E7-CB8F-497D-896B-557FA4E029B5}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RaysClient", "Build\VS2008\RaysClient.9.00.vcproj", "{C37F7493-F36D-45B3-8A91-E7D77013C2CF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -394,6 +396,12 @@ Global
 		{8BEC0374-E13F-46D0-BDA6-BF1208BA735A}.Optimized|Win32.Build.0 = Release|Win32
 		{8BEC0374-E13F-46D0-BDA6-BF1208BA735A}.Release|Win32.ActiveCfg = Release|Win32
 		{8BEC0374-E13F-46D0-BDA6-BF1208BA735A}.Release|Win32.Build.0 = Release|Win32
+		{C37F7493-F36D-45B3-8A91-E7D77013C2CF}.Debug|Win32.ActiveCfg = Debug|Win32
+		{C37F7493-F36D-45B3-8A91-E7D77013C2CF}.Debug|Win32.Build.0 = Debug|Win32
+		{C37F7493-F36D-45B3-8A91-E7D77013C2CF}.Optimized|Win32.ActiveCfg = Release|Win32
+		{C37F7493-F36D-45B3-8A91-E7D77013C2CF}.Optimized|Win32.Build.0 = Release|Win32
+		{C37F7493-F36D-45B3-8A91-E7D77013C2CF}.Release|Win32.ActiveCfg = Release|Win32
+		{C37F7493-F36D-45B3-8A91-E7D77013C2CF}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

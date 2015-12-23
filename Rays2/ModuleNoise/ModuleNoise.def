@@ -1,6 +1,0 @@
-; ModuleNoise.def : Declares the module parameters for the DLL.
-
-LIBRARY      "ModuleNoise"
-DESCRIPTION  'ModuleNoise Windows Dynamic Link Library'
-
-EXPORTS
