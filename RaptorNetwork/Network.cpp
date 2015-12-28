@@ -20,6 +20,9 @@ static int NB_CONNECT_ATTEMPTS = 10;
 static const int SELECT_TIMEOUT = 1000;
 
 unsigned long Network::crc32Table[256];
+
+static unsigned int NB_LOGGERS = 0;
+const INetworkLogger * *Network::loggers = 0;
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -32,6 +35,20 @@ Network::Network()
 Network::~Network()
 {
 
+}
+
+void Network::addLogger(const INetworkLogger *logger)
+{
+	if (NULL == loggers)
+		loggers = new const INetworkLogger*[0];
+
+	const INetworkLogger * *new_loggers = new const INetworkLogger*[NB_LOGGERS + 1];
+	for (unsigned int i = 0; i < NB_LOGGERS; i++)
+		new_loggers[i] = loggers[i];
+	new_loggers[NB_LOGGERS++] = logger;
+
+	delete[] loggers;
+	loggers = new_loggers;
 }
 
 int Network::getSocketSize(void)
@@ -126,10 +143,10 @@ string Network::networkErrors(const std::string& extmsg)
 			msg = "WSA The specified port is not supported";
 			break;
 		case WSAEPROTOTYPE:
-			msg = "WSA The specified port is the wrong type for this socket.";
+			msg = "WSA The specified port is the wrong type for this socket";
 			break;
 		case WSAESOCKTNOSUPPORT:
-			msg = "WSA The specified socket type is not supported in this address family.";
+			msg = "WSA The specified socket type is not supported in this address family";
 			break;
 		case WSAEFAULT:
 			msg = "WSA Arguments not large enough";
@@ -153,7 +170,7 @@ string Network::networkErrors(const std::string& extmsg)
 			msg = "WSA Host unreacheable";
 			break;
 		case WSAECONNRESET:
-			msg = "WSA existing connection was forcibly closed by the remote host.";
+			msg = "WSA existing connection was forcibly closed by the remote host";
 			break;
 		default:
         {
@@ -163,8 +180,9 @@ string Network::networkErrors(const std::string& extmsg)
 			break;
         }
 	}
-	msg+="\n";
-    msg+=extmsg;
+	msg += ": ";
+    msg += extmsg;
+	msg += "\n";
 
 	return msg;
 }
@@ -186,7 +204,8 @@ unsigned int Network::sockNameToAddr(const std::string& address)
 	pos = pos2 + 1;pos2 = address.size();
 	unsigned int ip3 = atoi(address.substr(pos,pos2-pos).data());
 
-	unsigned int ip = (ip0 << 24) + (ip1 << 16) + (ip2 << 8) + ip3;
+	//unsigned int ip = (ip0 << 24) + (ip1 << 16) + (ip2 << 8) + ip3;
+	unsigned int ip = (ip3 << 24) + (ip2 << 16) + (ip1 << 8) + ip0;
 	return ip;
 }
 
@@ -232,3 +251,34 @@ unsigned long Network::getCRC(unsigned char *buffer,size_t size)
 	// Exclusive OR the result with the beginning value. 
 	return ulCRC ^ 0xffffffff; 
 } 
+
+void Network::userOutput(INetworkLogger::SEVERITY level, const std::string &msg)
+{
+	if (NB_LOGGERS > 0)
+	{
+		for (unsigned int i = 0; i < NB_LOGGERS; i++)
+			loggers[i]->Log(level, msg);
+	}
+	else
+	{
+		switch(level)
+		{
+			case INetworkLogger::NETWORK_DEBUG:
+				std::cout << "DEBUG ";
+				break;
+			case INetworkLogger::NETWORK_INFO:
+				std::cout << "INFO ";
+				break;
+			case INetworkLogger::NETWORK_WARNING:
+				std::cout << "WARNING ";
+				break;
+			case INetworkLogger::NETWORK_ERROR:
+				std::cout << "ERROR ";
+				break;
+			case INetworkLogger::NETWORK_FATAL:
+				std::cout << "FATAL ";
+				break;
+		}
+		std::cout << msg << std::endl;
+	}
+}

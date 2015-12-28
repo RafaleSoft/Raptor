@@ -36,9 +36,6 @@ namespace RaysServer {
 		//!	Stop Rays Server.
 		virtual bool stopServer(void);
 
-		//!	Implement base class.
-		virtual void userOutput(const std::string& msg) const;
-
 
 	private:
 		typedef struct request_t

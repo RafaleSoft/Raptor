@@ -396,15 +396,19 @@ public:
 	virtual ~See() {};
 };
 
-class ShaderModifier : public CGeometricModifier
+class ShaderModifier : public CModifier
 {
 public:
 	ShaderModifier(CShader *shader)
-		:CGeometricModifier(CModifier::CGL_TIME_CONSTANT,0,0,0,0,NULL,CModifier::CModifierClassID::GetClassId()),
+		:CModifier(CModifier::CGL_TIME_CONSTANT,0,0,0,0,NULL,CModifier::CModifierClassID::GetClassId()),
 		m_pShader(shader)
     { };
 
 	virtual ~ShaderModifier() {};
+	virtual MODIFIER_TYPE getType(void) const
+	{
+		return CModifier::CGL_GEOMETRIC_MODIFIER;
+	};
 
 	virtual void __fastcall deltaTime(float dt)
 	{

@@ -254,6 +254,7 @@ Subsys\Redist.bat
     <ClCompile Include="..\..\RaptorCore\Engine\OmniShadowMap.cpp" />
     <ClCompile Include="..\..\RaptorCore\Engine\ParticleManager.cpp" />
     <ClCompile Include="..\..\RaptorCore\Engine\Physics.cpp" />
+    <ClCompile Include="..\..\RaptorCore\Engine\ShaderModifier.cpp" />
     <ClCompile Include="..\..\RaptorCore\Engine\ShadowMap.cpp" />
     <ClCompile Include="..\..\RaptorCore\Engine\ShadowVolume.cpp" />
     <ClCompile Include="..\..\RaptorCore\Engine\TimeObject.cpp" />
@@ -456,6 +457,7 @@ copy $(SolutionDir)\$(ProjectName)\Subsys\CodeGeneration.h "%RAPTOR_ROOT%\Redist
     <ClInclude Include="..\..\RaptorCore\Engine\OmniShadowMap.h" />
     <ClInclude Include="..\..\RaptorCore\Engine\ParticleManager.h" />
     <ClInclude Include="..\..\RaptorCore\Engine\Physics.h" />
+    <ClInclude Include="..\..\RaptorCore\Engine\ShaderModifier.h" />
     <ClInclude Include="..\..\RaptorCore\Engine\ShadowMap.h" />
     <ClInclude Include="..\..\RaptorCore\Engine\ShadowVolume.h" />
     <ClInclude Include="..\..\RaptorCore\Engine\TimeObject.h" />
@@ -591,6 +593,7 @@ copy $(SolutionDir)\$(ProjectName)\Subsys\CodeGeneration.h "%RAPTOR_ROOT%\Redist
     <ClInclude Include="..\..\RaptorCore\System\RaptorRenderBufferDisplay.h" />
     <ClInclude Include="..\..\RaptorCore\System\RaptorScreenDisplay.h" />
     <ClInclude Include="..\..\RaptorCore\System\RenderEntryPoint.h" />
+    <ClInclude Include="..\..\RaptorCore\System\Version.h" />
     <ClInclude Include="..\..\RaptorCore\Win32Specific\Win32Application.h" />
     <ClInclude Include="..\..\RaptorCore\Win32Specific\Win32ContextManager.h" />
     <ClInclude Include="..\..\RaptorCore\Win32Specific\Win32EngineTaskManager.h" />

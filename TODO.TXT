@@ -107,6 +107,3 @@
 	- Modifier les shadow maps pour travailler avec un TMUSetup plutôt que de taper en dur sur le TMU courant.
 	- Corriger shadowmap dans demo
 	- Implementer OmniShadowMap
-
-- ServerSocket:
-	- parametre address de connect non utilise => remplacer INADDR_ANY

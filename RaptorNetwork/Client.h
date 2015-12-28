@@ -85,21 +85,21 @@ bool CClient<ClientSocket_T>::connectToServer(const std::string& address, unsign
 		result = m_socket.connect(address,port);
 		nb_attempts++;
 
-		if ((!result) && (m_socket.getServer() != NULL))
+		if (!result)
 		{
 			stringstream msg;
 			msg << "Connection failed, attempt ";
 			msg << nb_attempts;
 			msg << "/";
 			msg << Network::getNbConnectAttempts();
-			m_socket.getServer()->userOutput(msg.str());
+			Network::userOutput(INetworkLogger::NETWORK_WARNING,msg.str());
 		}
 	}
 
 	if (!result)
 	{
-		if (m_socket.getServer() != NULL)
-			m_socket.getServer()->userOutput(Network::networkErrors("Client sock connect failed"));
+		Network::userOutput(INetworkLogger::NETWORK_ERROR,
+							Network::networkErrors("Client sock connect failed"));
 		return false;
 	}
 

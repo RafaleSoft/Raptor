@@ -200,27 +200,30 @@ bool CServerSocket::connect(const std::string& address,unsigned short port)
 	m_socket = ::socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	if (INVALID_SOCKET == m_socket)
 	{
-		getServer()->userOutput(Network::networkErrors("Server sock create failed"));
+		Network::userOutput(INetworkLogger::NETWORK_ERROR,
+							Network::networkErrors("Server socket create failed"));
 		return false;
 	}
 
 	BOOL b = TRUE;
 	if (0 != ::setsockopt(m_socket,IPPROTO_TCP,TCP_NODELAY,(char*)&b,sizeof(bool)))
 	{
-		getServer()->userOutput(Network::networkErrors("Server sock tcp_nodelay failed"));
+		Network::userOutput(INetworkLogger::NETWORK_WARNING,
+							Network::networkErrors("Server socket tcp_nodelay failed"));
 		closesocket(m_socket);
 		m_socket = 0;
 		return false;
 	}
 
 	sockaddr_in s_in;
-	s_in.sin_addr.s_addr	= INADDR_ANY;
+	s_in.sin_addr.s_addr	= Network::sockNameToAddr(address); // INADDR_ANY;
 	s_in.sin_family			= AF_INET;
 	s_in.sin_port			= htons(m_port);
 
 	if (SOCKET_ERROR == bind(m_socket, (SOCKADDR *)&s_in, sizeof(s_in)))
 	{
-		getServer()->userOutput(Network::networkErrors("Server sock bind failed"));
+		Network::userOutput(INetworkLogger::NETWORK_ERROR,
+							Network::networkErrors("Server socket bind failed"));
 		closesocket(m_socket);
 		m_socket = 0;
 		return false;
@@ -229,24 +232,28 @@ bool CServerSocket::connect(const std::string& address,unsigned short port)
 	m_ip = getServer()->getHostAddr(0);
 
 	size_t tmpRead = 0;
-	if (0 == setsockopt(m_socket,SOL_SOCKET,SO_RCVBUF,(char *)&readBufferSize,sizeof(size_t)))
+	bool reportError = (0 != setsockopt(m_socket, SOL_SOCKET, SO_RCVBUF, (char *)&readBufferSize, sizeof(size_t)));
+	if (!reportError)
 	{
 		int	tmpSize = sizeof(size_t);
 		if (0 != getsockopt(m_socket,SOL_SOCKET,SO_RCVBUF,(char *)&tmpRead,&tmpSize))
-			getServer()->userOutput(Network::networkErrors("Server sock failed to update read buffer size"));
+			Network::userOutput(INetworkLogger::NETWORK_WARNING,
+								Network::networkErrors("Server socket failed to update read buffer size"));
 	}
-	else
-		getServer()->userOutput(Network::networkErrors("Server sock failed to update read buffer size"));
 
 	size_t tmpWrite = 0;
-	if (0 == setsockopt(m_socket,SOL_SOCKET,SO_SNDBUF,(char *)&writeBufferSize,sizeof(size_t)))
+	reportError = reportError && (0 != setsockopt(m_socket, SOL_SOCKET, SO_SNDBUF, (char *)&writeBufferSize, sizeof(size_t)));
+	if (!reportError)
 	{
 		int	tmpSize = sizeof(size_t);
 		if (0 != getsockopt(m_socket,SOL_SOCKET,SO_SNDBUF,(char *)&tmpWrite,&tmpSize))
-			getServer()->userOutput(Network::networkErrors("Server sock failed to update write buffer size"));
+			Network::userOutput(INetworkLogger::NETWORK_WARNING,
+								Network::networkErrors("Server socket failed to update write buffer size"));
 	}
-	else
-		getServer()->userOutput(Network::networkErrors("Server sock failed to update write buffer size"));
+
+	if (reportError || (tmpRead != readBufferSize) || (tmpWrite != writeBufferSize))
+		Network::userOutput(INetworkLogger::NETWORK_WARNING,
+		Network::networkErrors("Server socket failed to update read/write buffer size"));
 
 	// TODO check socket sizes were set according to user request.
 	listen(m_socket, 0);

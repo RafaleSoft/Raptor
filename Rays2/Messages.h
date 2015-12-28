@@ -171,15 +171,15 @@
 
 //	deamon communication
 
-//	DMN_ACTIVE
+//	DMN_STATUS
 //		in						out
-//	data 0 =	*				*
-//	data 1 =	*				*
-//	data 2 =	*				*
-//	data 3 =	*				*
+//	data 0 =	*			nbProcs
+//	data 1 =	*			nbProcsAvailable
+//	data 2 =	*			jobDone
+//	data 3 =	*			Nb running jobs
 //	data 4 =	*			IP addr
-#define DMN_ACTIVE		(DMNBASE	+	0x1)
-#define DMN_INACTIVE	(DMNBASE	+	0x2)
+#define DMN_STATUS		(DMNBASE	+	0x1)
+//#define DMN_INACTIVE	(DMNBASE	+	0x2)
 
 //	DMN_ACTIVE
 //		in						out
@@ -250,8 +250,8 @@
 	static const char * DMN_STR[] =
 	{
 		"DMNBASE",
-		"DMN_ACTIVE",
-		"DMN_INACTIVE",
+		"DMN_STATUS",
+		//"DMN_INACTIVE",
 		"DMN_DISPATCHJOB"
 	};
 #else

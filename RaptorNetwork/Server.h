@@ -140,8 +140,6 @@ public:
 	//!	This method handles connection failures, remove and delete client connection.
 	virtual bool clientFailure(const iosock_base_t &client) = 0;
 
-	//!	Access to message logging.
-	virtual void userOutput(const std::string& msg) const;
 
 protected:
 	server_base_t();
@@ -298,7 +296,8 @@ bool CServer<ServerSocket_T,ClientSocket_T>::clientFailure(const iosock_base_t &
 	if (pos != m_clients.size())
 	{
 		ClientSocket_T *pClient = m_clients[pos];
-		userOutput(Network::networkErrors("IOSock client failure: "));
+		Network::userOutput(INetworkLogger::NETWORK_ERROR,
+							Network::networkErrors("IOSock client failure: "));
 		pClient->shutdown();
 		pClient->close();
 

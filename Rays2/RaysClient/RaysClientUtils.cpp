@@ -2,8 +2,8 @@
 #include <vcclr.h>
 #include <windows.h>
 
-#if !defined(AFX_RAYSSERVERUTILS_H__1CC878E3_B301_4A19_8211_F3B5977D3781__INCLUDED_)
-	#include "RaysServerUtils.h"
+#if !defined(AFX_RAYSCLIENTUTILS_H__D5EDE275_AF42_4BF5_80F7_2C408934AEFF__INCLUDED_)
+	#include "RaysClientUtils.h"
 #endif
 #if !defined(AFX_NETWORKLOGGER_H__04F6649D_5560_45A7_8ED5_B5FC9354256C__INCLUDED_)
 	#include "RaptorNetwork/NetworkLogger.h"
@@ -13,7 +13,7 @@
 #endif
 
 
-using namespace RaysServer;
+using namespace RaysClient;
 using namespace System::Configuration;
 
 
@@ -48,7 +48,7 @@ public:
 
 		System::String^ console_msg = gcnew System::String(log.c_str());
 
-		RaysServerUtils::ILogger^ logger = RaysServerUtils::getLog();
+		RaysClientUtils::ILogger^ logger = RaysClientUtils::getLog();
 		if (nullptr != logger)
 			logger->Log(console_msg);
 
@@ -56,37 +56,33 @@ public:
 	}
 };
 
-static RaysServerUtils::RaysServerUtils()
+static RaysClientUtils::RaysClientUtils()
 {
 	INetworkLogger *logger = new LoggerWrapper();
 	Network::addLogger(logger);
-	rays_config = gcnew RaysServerUtils::RAYS_CONFIG;
+	rays_config = gcnew RaysClientUtils::RAYS_CONFIG;
 	m_logger = nullptr;
 }
 
-RaysServerUtils::ILogger^ RaysServerUtils::getLog()
+RaysClientUtils::ILogger^ RaysClientUtils::getLog()
 {
 	return m_logger;
 }
 
-RaysServerUtils::ILogger^ RaysServerUtils::setLog(ILogger^ logger)
+RaysClientUtils::ILogger^ RaysClientUtils::setLog(ILogger^ logger)
 {
-	RaysServerUtils::ILogger^ l = m_logger;
+	RaysClientUtils::ILogger^ l = m_logger;
 	m_logger = logger;
 	return l;
 }
 
-RaysServerUtils::RAYS_CONFIG::RAYS_CONFIG()
+RaysClientUtils::RAYS_CONFIG::RAYS_CONFIG()
 {
 	host = gcnew System::String("127.0.0.1");
 	port = 2048;
-	wu_priority = 1;
-	deamon_delay = 10;
-	nb_wu_per_job = 1;
-	deamons = gcnew System::Collections::ArrayList;
 }
 
-char* RaysServerUtils::convertSystemString(System::String^ str)
+char* RaysClientUtils::convertSystemString(System::String^ str)
 {
 	pin_ptr<const wchar_t> wch = PtrToStringChars(str);
 
@@ -99,7 +95,7 @@ char* RaysServerUtils::convertSystemString(System::String^ str)
 	return ch;
 }
 
-bool RaysServerUtils::loadConfig(void)
+bool RaysClientUtils::loadConfig(void)
 {
 	Configuration^ conf = ConfigurationManager::OpenExeConfiguration(System::Configuration::ConfigurationUserLevel::None);
 	if (conf->HasFile)
@@ -111,15 +107,6 @@ bool RaysServerUtils::loadConfig(void)
 		item = settings->Settings["host"];
 		if (nullptr != item)
 			rays_config->host = item->Value;
-		item = settings->Settings["wu_priority"];
-		if (nullptr != item)
-			rays_config->wu_priority = System::Int32::Parse(item->Value);
-		item = settings->Settings["deamon_delay"];
-		if (nullptr != item)
-			rays_config->deamon_delay = System::Int32::Parse(item->Value);
-		item = settings->Settings["nb_wu_per_job"];
-		if (nullptr != item)
-			rays_config->nb_wu_per_job = System::Int32::Parse(item->Value);
 
 		return true;
 	}
@@ -128,7 +115,7 @@ bool RaysServerUtils::loadConfig(void)
 }
 
 
-bool RaysServerUtils::saveConfig(void)
+bool RaysClientUtils::saveConfig(void)
 {
 	Configuration^ conf = ConfigurationManager::OpenExeConfiguration(ConfigurationUserLevel::None);
 	if (conf->HasFile)
@@ -146,24 +133,6 @@ bool RaysServerUtils::saveConfig(void)
 		else
 			settings->Settings->Add("host",rays_config->host);
 
-		item = settings->Settings["wu_priority"];
-		if (nullptr != item)
-			item->Value = rays_config->wu_priority.ToString();
-		else
-			settings->Settings->Add("wu_priority",rays_config->wu_priority.ToString());
-
-		item = settings->Settings["deamon_delay"];
-		if (nullptr != item)
-			item->Value = rays_config->deamon_delay.ToString();
-		else
-			settings->Settings->Add("deamon_delay",rays_config->deamon_delay.ToString());
-
-		item = settings->Settings["nb_wu_per_job"];
-		if (nullptr != item)
-			item->Value = rays_config->nb_wu_per_job.ToString();
-		else
-			settings->Settings->Add("nb_wu_per_job",rays_config->nb_wu_per_job.ToString());
-
 		conf->Save(ConfigurationSaveMode::Modified);
 		return true;
 	}
@@ -171,7 +140,7 @@ bool RaysServerUtils::saveConfig(void)
 	return false;
 }
 
-RaysServerUtils::RAYS_CONFIG^ RaysServerUtils::getConfig(void)
+RaysClientUtils::RAYS_CONFIG^ RaysClientUtils::getConfig(void)
 {
 	return rays_config;
 }

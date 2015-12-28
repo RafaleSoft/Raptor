@@ -81,36 +81,13 @@ int main(int argc, char* argv[])
 	vector<unsigned int> cpus;
 	parser.addOption("work_unit","u",wus);
 	parser.addOption("cpu","c",cpus);
-	parser.parse(argc,argv);
-
-	CRaysDeamon::WORKUNITSTRUCT wu;
-	parser.getValue("u",wus);
-	parser.getValue("c",cpus);
-	if (wus.size() > 0)
+	if (!parser.parse(argc,argv))
 	{
-		p_Server = new CRaysDeamon;
-		unsigned int cpu = 4;
-		if (cpus.size() > 0)
-			cpu = cpus[0];
-
-		wu.path = wus[0];
-		wu.nbProcs = cpu;
-		wu.nbProcsAvailable = cpu;
-		wu.connection = NULL;
-		wu.jobDone = 0;
-		wu.active = false;
-		p_Server->addWorkUnit(wu);
-	}
-	else
-	{
-		std::cout << "Deamon launched with no work units. Exiting, bye!" << std::endl;
+		std::cout << "Deamon failed to parse command line. Exiting, bye!" << std::endl;
 		return -1;
 	}
 
-	if (!SetConsoleCtrlHandler((PHANDLER_ROUTINE) CtrlHandler, TRUE))
-		std::cout << "Deamon launched with no work units. Exiting, bye!" << std::endl;
-		
-
+	p_Server = new CRaysDeamon;
     if (!p_Server->start(parser))
 	{
 		std::cout << "Deamon failed to start. Exiting, bye!" << std::endl;
@@ -118,6 +95,9 @@ int main(int argc, char* argv[])
 	}
 	else
 	{
+		if (!SetConsoleCtrlHandler((PHANDLER_ROUTINE)CtrlHandler, TRUE))
+			std::cout << "Failed to install deamon crtl handler. Exiting, bye!" << std::endl;
+
 		while (!p_Server->doExit())
 			Sleep(500);
 		bool res = (p_Server->stopServer() ? 1 : 0);
@@ -188,157 +168,191 @@ bool CRaysDeamon::handleRequest(request_handler_t::request_id id,const void *dat
 	rq.msg = (MSGSTRUCT*)new unsigned char[size];
 	memcpy(rq.msg,data,size);
 
-	unsigned char* raw_data = (unsigned char*)(rq.msg)+rq.msg->msg_size;
-
 	if (size > MSGSIZE)
 		std::cout << "Extra data on message ignored !" << std::endl;
 
 	switch(rq.msg->msg_id)
 	{
-		case DMN_ACTIVE:
-			std::cout << "Rays2 Deamon active." << std::endl;
+		case DMN_STATUS:
+		{
+			std::cout << "Rays2 Deamon status returned" << std::endl;
+			unsigned int nbProcs = 0;
+			unsigned int nbProcsAvailable = 0;
+			float jobDone = 0;
+			for (unsigned int i = 0; i < m_WorkUnits.size(); i++)
+			{
+				const CRaysDeamon::WORKUNITSTRUCT &w = m_WorkUnits[i];
+				nbProcs += w.nbProcs;
+				nbProcsAvailable += w.nbProcsAvailable;
+				jobDone += w.jobDone;
+			}
+			rq.msg->msg_header = MSG_START;
+			rq.msg->msg_id = DMN_STATUS;
+			rq.msg->msg_size = 0;
+			rq.msg->msg_tail = MSG_END;
+			rq.msg->msg_data[0] = nbProcs;
+			rq.msg->msg_data[1] = nbProcsAvailable;
+			rq.msg->msg_data[2] = (RAYS_MSG_ID)(floor(jobDone));
+			rq.msg->msg_data[3] = 0;
 			rq.msg->msg_data[4] = this->getAddr();
 			rq.reply = true;
 			m_replies.push_back(rq);
 			break;
-		case DMN_INACTIVE:
-			std::cout << "Rays2 Deamon inactive." << std::endl;
-			break;
+		}
 		case DMN_DISPATCHJOB:
-			{
-				STARTUPINFO			si;
-				PROCESS_INFORMATION	pi;
-				stringstream		WUID;
-				char				workUnit[MAX_PATH];
-
-				memset(&si,0,sizeof(STARTUPINFO));
-				memset(&pi,0,sizeof(PROCESS_INFORMATION));
-				si.cb = sizeof(STARTUPINFO);
-				si.lpTitle = "Rays 2 Workunit";
-
-				int		workUnitID = rq.msg->msg_data[0];
-				int		serverPort = rq.msg->msg_data[3];
-				DWORD	nbProcs = rq.msg->msg_data[1];
-				DWORD	serverIP = rq.msg->msg_data[2];
-				DWORD	priority = rq.msg->msg_data[4];
-				DWORD	creationFlag = CREATE_SUSPENDED|CREATE_NEW_PROCESS_GROUP|CREATE_NEW_CONSOLE;
-
-#ifdef PROFILE
-				strcpy(WUID," /E error.txt /A WorkUnit.exe");
-				sprintf(workUnit," %d %d %d",workUnitID,serverPort,serverIP);
-				strcat(WUID,workUnit);
-				strcpy(workUnit,"PROFILE.EXE");
-#else
-				WUID << workUnitID << " ";
-				WUID << serverPort << " ";
-				WUID << serverIP << " ";
-#endif
-				// creating work unit
-				if (0 == CreateProcess(	(const char*)raw_data,	// pointer to name of executable module
-										const_cast<char*>(WUID.str().c_str()),		// pointer to command line string
-										NULL,		// process security attributes
-										NULL,		// thread security attributes
-										TRUE,		// handle inheritance flag
-										creationFlag|priority,// creation flags
-										NULL,		// pointer to new environment block
-										NULL,		// pointer to current directory name
-										&si,		// pointer to STARTUPINFO
-										&pi))		// pointer to PROCESS_INFORMATION
-					cout << "Work Unit creation (CreateProcess) Failed !!!\nCheck Work Units registration" << endl;
-
-
-				//	Will be used when high performance responsiveness will be required
-				
-				// dispatching work units on available processors
-				//if (lpWUReg->nbProcs>1)
-				//{
-				//	CString tmpStr;
-				//	if (FALSE == SetProcessAffinityMask(pi.hProcess,	// handle to process
-				//									(DWORD)(1<<(i%nbProcs)))))			// process affinity mask
-				//	{
-				//		tmpStr = "Failed to set process affinity";
-				//		WriteMessage(IDS_SERVER_STRING,tmpStr);
-				//	}
-				//}
-				
-				rq.msg->msg_header = MSG_START;
-				rq.msg->msg_id = DMN_DISPATCHJOB;
-				rq.msg->msg_tail = MSG_END;
-				rq.msg->msg_size = 0;
-				rq.msg->msg_data[0] = workUnitID;
-				rq.msg->msg_data[1] = (DWORD)(pi.hProcess);
-				rq.msg->msg_data[2] = (DWORD)(pi.hThread);
-				rq.msg->msg_data[3] = pi.dwProcessId;
-				rq.msg->msg_data[4] = pi.dwThreadId;
-				rq.reply = true;
-				m_replies.push_back(rq);
-				
-				// now the job starts
-				::ResumeThread(pi.hThread);
-
-				stringstream pid;
-				pid << "Creating new WorkUnit: pid: ";
-				pid << pi.dwProcessId;
-				pid << ", tid: ";
-				pid << pi.dwThreadId;
-				std::cout << pid.str() << std::endl;
-			}
+		{
+			dispatchJob(rq);
 			break;
+		}
 		case JOB_START:
+		{
 			break;
+		}
 		case OBJ_PLUGIN:
-			{
-				//	Install plugin only if not present.
-				//	future version will hanle plugin version
-				WIN32_FIND_DATA ffd;
-				HANDLE hFind = INVALID_HANDLE_VALUE;
-				string pname = (const char*)(&raw_data[0]);
-				bool install = false;
-				bool lastfile = false;
-
-				hFind = FindFirstFile(pname.c_str(), &ffd);
-				lastfile = (INVALID_HANDLE_VALUE == hFind);
-
-				while (!install && !lastfile)
-				{
-					if (pname.compare(ffd.cFileName) &&
-						(rq.msg->msg_data[1] > ffd.ftLastWriteTime.dwLowDateTime))
-						install = true;
-					else
-						lastfile = !FindNextFile(hFind, &ffd);
-				}
-
-				if (install)
-				{
-					std::cout << "Installing plugin : " << pname.c_str();
-					HANDLE f = CreateFile(	pname.c_str(),
-											GENERIC_WRITE,
-											0,	// access mode: exclusive
-											NULL,
-											CREATE_ALWAYS,
-											FILE_ATTRIBUTE_NORMAL,
-											NULL);
-					if (NULL != f)
-					{
-						size_t len = pname.length()+1;
-						DWORD written = 0;
-						BOOL b = WriteFile(f,raw_data+len,rq.msg->msg_size-len,&written,NULL);
-						
-						if (!b || (written != rq.msg->msg_size))
-							std::cout << "Error installing plugin !" << std::endl;
-							//	Delete file ?
-						CloseHandle(f);
-					}
-				}
-			}
+		{
+			objPlugin(rq);
 			break;
+		}
 		default:
+		{
+			std::cout << "Rays2 Deamon does not handle message " << rq.msg->msg_id << std::endl;
+			return false;
 			break;
+		}
 	}
 
-	return false;
+	return true;
 }
 
+
+void CRaysDeamon::dispatchJob(request &rq)
+{
+	STARTUPINFO			si;
+	PROCESS_INFORMATION	pi;
+	stringstream		WUID;
+	char				workUnit[MAX_PATH];
+
+	memset(&si, 0, sizeof(STARTUPINFO));
+	memset(&pi, 0, sizeof(PROCESS_INFORMATION));
+	si.cb = sizeof(STARTUPINFO);
+	si.lpTitle = "Rays 2 Workunit";
+
+	int		workUnitID = rq.msg->msg_data[0];
+	int		serverPort = rq.msg->msg_data[3];
+	DWORD	nbProcs = rq.msg->msg_data[1];
+	DWORD	serverIP = rq.msg->msg_data[2];
+	DWORD	priority = rq.msg->msg_data[4];
+	DWORD	creationFlag = CREATE_SUSPENDED | CREATE_NEW_PROCESS_GROUP | CREATE_NEW_CONSOLE;
+
+#ifdef PROFILE
+	strcpy(WUID, " /E error.txt /A WorkUnit.exe");
+	sprintf(workUnit, " %d %d %d", workUnitID, serverPort, serverIP);
+	strcat(WUID, workUnit);
+	strcpy(workUnit, "PROFILE.EXE");
+#else
+	WUID << workUnitID << " ";
+	WUID << serverPort << " ";
+	WUID << serverIP << " ";
+#endif
+	// creating work unit
+	unsigned char* raw_data = (unsigned char*)(rq.msg) + rq.msg->msg_size;
+	if (0 == CreateProcess((const char*)raw_data,	// pointer to name of executable module
+							const_cast<char*>(WUID.str().c_str()),		// pointer to command line string
+							NULL,		// process security attributes
+							NULL,		// thread security attributes
+							TRUE,		// handle inheritance flag
+							creationFlag | priority,// creation flags
+							NULL,		// pointer to new environment block
+							NULL,		// pointer to current directory name
+							&si,		// pointer to STARTUPINFO
+							&pi))		// pointer to PROCESS_INFORMATION
+							cout << "Work Unit creation (CreateProcess) Failed !!!\nCheck Work Units registration" << endl;
+
+
+	//	Will be used when high performance responsiveness will be required
+
+	// dispatching work units on available processors
+	//if (lpWUReg->nbProcs>1)
+	//{
+	//	CString tmpStr;
+	//	if (FALSE == SetProcessAffinityMask(pi.hProcess,	// handle to process
+	//									(DWORD)(1<<(i%nbProcs)))))			// process affinity mask
+	//	{
+	//		tmpStr = "Failed to set process affinity";
+	//		WriteMessage(IDS_SERVER_STRING,tmpStr);
+	//	}
+	//}
+
+	rq.msg->msg_header = MSG_START;
+	rq.msg->msg_id = DMN_DISPATCHJOB;
+	rq.msg->msg_tail = MSG_END;
+	rq.msg->msg_size = 0;
+	rq.msg->msg_data[0] = workUnitID;
+	rq.msg->msg_data[1] = (DWORD)(pi.hProcess);
+	rq.msg->msg_data[2] = (DWORD)(pi.hThread);
+	rq.msg->msg_data[3] = pi.dwProcessId;
+	rq.msg->msg_data[4] = pi.dwThreadId;
+	rq.reply = true;
+	m_replies.push_back(rq);
+
+	// now the job starts
+	::ResumeThread(pi.hThread);
+
+	stringstream pid;
+	pid << "Creating new WorkUnit: pid: ";
+	pid << pi.dwProcessId;
+	pid << ", tid: ";
+	pid << pi.dwThreadId;
+	std::cout << pid.str() << std::endl;
+}
+
+void CRaysDeamon::objPlugin(request &rq)
+{
+	unsigned char* raw_data = (unsigned char*)(rq.msg) + rq.msg->msg_size;
+
+	//	Install plugin only if not present.
+	//	future version will hanle plugin version
+	WIN32_FIND_DATA ffd;
+	HANDLE hFind = INVALID_HANDLE_VALUE;
+	string pname = (const char*)(&raw_data[0]);
+	bool install = false;
+	bool lastfile = false;
+
+	hFind = FindFirstFile(pname.c_str(), &ffd);
+	lastfile = (INVALID_HANDLE_VALUE == hFind);
+
+	while (!install && !lastfile)
+	{
+		if (pname.compare(ffd.cFileName) &&
+			(rq.msg->msg_data[1] > ffd.ftLastWriteTime.dwLowDateTime))
+			install = true;
+		else
+			lastfile = !FindNextFile(hFind, &ffd);
+	}
+
+	if (install)
+	{
+		std::cout << "Installing plugin : " << pname.c_str();
+		HANDLE f = CreateFile(pname.c_str(),
+			GENERIC_WRITE,
+			0,	// access mode: exclusive
+			NULL,
+			CREATE_ALWAYS,
+			FILE_ATTRIBUTE_NORMAL,
+			NULL);
+		if (NULL != f)
+		{
+			size_t len = pname.length() + 1;
+			DWORD written = 0;
+			BOOL b = WriteFile(f, raw_data + len, rq.msg->msg_size - len, &written, NULL);
+
+			if (!b || (written != rq.msg->msg_size))
+				std::cout << "Error installing plugin !" << std::endl;
+			//	Delete file ?
+			CloseHandle(f);
+		}
+	}
+}
 
 bool CRaysDeamon::onClientClose(const CClientSocket &client)
 {
@@ -347,6 +361,35 @@ bool CRaysDeamon::onClientClose(const CClientSocket &client)
 
 bool CRaysDeamon::start(const CCmdLineParser& cmdline )
 {
+	vector<string> wus;
+	vector<unsigned int> cpus;
+	CRaysDeamon::WORKUNITSTRUCT wu;
+
+	cmdline.getValue("u", wus);
+	cmdline.getValue("c", cpus);
+	if (wus.size() > 0)
+	{
+		for (unsigned int i = 0; i < wus.size(); i++)
+		{
+			unsigned int cpu = 4;
+			if (i < cpus.size())
+				cpu = cpus[i];
+
+			wu.path = wus[i];
+			wu.nbProcs = cpu;
+			wu.nbProcsAvailable = cpu;
+			wu.connection = NULL;
+			wu.jobDone = 0;
+			wu.active = false;
+			m_WorkUnits.push_back(wu);
+		}
+	}
+	else
+	{
+		std::cout << "Deamon launched with no work units. Exiting, bye!" << std::endl;
+		return false;
+	}
+
 	char* addrStr = "127.0.0.1";
 	unsigned short port = 2048;
 	cmdline.getValue("port",port);
@@ -359,6 +402,13 @@ bool CRaysDeamon::start(const CCmdLineParser& cmdline )
 		std::cout << " at host ";
 		std::cout << addrStr;
 		std::cout << std::endl;
+	
+		std::cout << m_WorkUnits.size() << " work units available:" << std::endl;
+		for (unsigned int i = 0; i < m_WorkUnits.size(); i++)
+		{
+			const CRaysDeamon::WORKUNITSTRUCT &w = m_WorkUnits[i];
+			std::cout << "  WorkUnit " << i << ": " << w.nbProcs << " processors from " << w.path << std::endl;
+		}
 		return true;
     }
     else

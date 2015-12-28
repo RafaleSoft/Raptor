@@ -29,7 +29,8 @@ public:
         CGL_VIEW_MODIFIER,
         CGL_GEOMETRIC_MODIFIER,
         CGL_IMAGE_MODIFIER,
-        CGL_LIGHT_MODIFIER
+        CGL_LIGHT_MODIFIER,
+		CGL_SHADER_MODIFIER
     } MODIFIER_TYPE;
 
     //! Default time functions.

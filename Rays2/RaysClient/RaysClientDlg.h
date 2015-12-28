@@ -9,6 +9,11 @@
 
 #include "RaysClientForm.h"
 
+#if !defined(AFX_RAYSCLIENTUTILS_H__D5EDE275_AF42_4BF5_80F7_2C408934AEFF__INCLUDED_)
+	#include "RaysClientUtils.h"
+#endif
+
+
 namespace RaysClient {
 
 	public ref class RaysClientDlg : public RaysClientForm
@@ -20,21 +25,19 @@ namespace RaysClient {
 	protected:
 		virtual bool Start(int argc,char *argv[]) override;
 		virtual bool Quit(void) override;
-		virtual char* convertSystemString(System::String^ str) override;
 	
 	private:
-		/*
-		ref class RaysLogger : public RaysServerUtils::ILogger
+		ref class RaysLogger : public RaysClientUtils::ILogger
 		{
 		public:
-			RaysLogger(RaysServerDlg^ userOutput):m_pLogger(userOutput) {};
+			RaysLogger(RaysClientDlg^ userOutput) :m_pLogger(userOutput) {};
 			virtual ~RaysLogger() {};
 			virtual void Log(System::String^ msg)
 			{ m_pLogger->AddLog(msg); }
 		private:
-			RaysServerDlg^ m_pLogger;
+			RaysClientDlg^ m_pLogger;
 		};
-		*/
+
 		bool	m_started;
 		CClient<CClientSocket>	*m_raysClient;
 	};

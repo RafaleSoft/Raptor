@@ -86,20 +86,6 @@ protected:
 	//! Shaders for various light configurations.
 	CShader*			m_pBumpShader;
 
-	//	Coordinates for shader T&L:
-	//	- X is the light position relative to the object.
-	//	it is deduced from light's absolute position and the current transform.
-	//	- V is the viewer position relative to the object :
-	//	if the current transform is the matrix composed with
-	//	rotation R and translation T, V = -t(R).T ( t(R) denotes transpose of R
-	// - A is the light attenuation factors
-	// - S is the light's specular
-	GL_COORD_VERTEX	V;
-
-	CGenericVector<float>	X;
-	GL_COORD_VERTEX A;
-	CColor::RGBA	S;
-
 private:
 	//!	Initialize shaders and observers
 	virtual void init(void);

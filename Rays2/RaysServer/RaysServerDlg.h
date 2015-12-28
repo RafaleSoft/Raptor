@@ -1,7 +1,10 @@
 #pragma once
 
 #include "RaysServerForm.h"
-#include "RaysServerUtils.h"
+
+#if !defined(AFX_RAYSSERVERUTILS_H__1CC878E3_B301_4A19_8211_F3B5977D3781__INCLUDED_)
+	#include "RaysServerUtils.h"
+#endif
 
 namespace RaysServer {
 

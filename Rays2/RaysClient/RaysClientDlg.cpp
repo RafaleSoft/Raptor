@@ -18,7 +18,9 @@ RaysClientDlg::RaysClientDlg()
 	if (!Network::initSocketLayer())
 		AddLog("Network layer not initialized properly.");
 #endif
-	//RaysServerUtils::setLog(gcnew RaysServerDlg::RaysLogger(this));
+	
+	RaysClientUtils::setLog(gcnew RaysClientDlg::RaysLogger(this));
+
 	m_raysClient = new CClient<CClientSocket>();
 	AddLog("Rays Client initialized.");
 }
@@ -27,19 +29,6 @@ RaysClientDlg::~RaysClientDlg()
 {
 	if (NULL != m_raysClient)
 		delete m_raysClient;
-}
-
-char* RaysClientDlg::convertSystemString(System::String^ str)
-{
-	pin_ptr<const wchar_t> wch = PtrToStringChars(str);
-
-	size_t convertedChars = 0;
-	size_t  sizeInBytes = ((str->Length + 1) * 2);
-	char    *ch = (char *)malloc(sizeInBytes);
-
-	wcstombs_s(&convertedChars, ch, sizeInBytes, wch, sizeInBytes);
-
-	return ch;
 }
 
 bool RaysClientDlg::Start(int argc,char *argv[])

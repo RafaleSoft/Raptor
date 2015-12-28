@@ -68,6 +68,7 @@ copy .\RaptorCore\Engine\Environment.h Redist\Include\Engine
 copy .\RaptorCore\Engine\GeometricModifier.h Redist\Include\Engine
 copy .\RaptorCore\Engine\ImageModifier.h Redist\Include\Engine
 copy .\RaptorCore\Engine\LightModifier.h Redist\Include\Engine
+copy .\RaptorCore\Engine\ShaderModifier.h Redist\Include\Engine
 copy .\RaptorCore\Engine\Mirror.h Redist\Include\Engine
 copy .\RaptorCore\Engine\Modifier.h Redist\Include\Engine
 copy .\RaptorCore\Engine\ParticleManager.h Redist\Include\Engine
@@ -150,6 +151,7 @@ copy .\RaptorCore\System\RaptorExtensions.h Redist\Include\System
 copy .\RaptorCore\System\RaptorIO.h Redist\Include\System
 copy .\RaptorCore\System\RaptorMessages.h Redist\Include\System
 copy .\RaptorCore\System\RenderEntryPoint.h Redist\Include\System
+copy .\RaptorCore\System\Version.h Redist\Include\System
 
 ECHO       Win32:
 copy .\RaptorCore\Win32Specific\Win32Glext.h Redist\Include\Win32Specific
@@ -184,7 +186,6 @@ copy .\RaptorToolBox\Filters\DOFFilter.h Redist\Include\ToolBox\Filters
 copy .\RaptorToolBox\Filters\HDRFilter.h Redist\Include\ToolBox\Filters
 copy .\RaptorToolBox\Filters\MagnifierFilter.h Redist\Include\ToolBox\Filters
 copy .\RaptorToolBox\Filters\MBFilter.h Redist\Include\ToolBox\Filters
-copy .\RaptorToolBox\Filters\TextureFilter.h Redist\Include\ToolBox\Filters
 
 ECHO    Copying RaptorData files:
 copy .\RaptorData\RaptorDataManager.h Redist\Include\DataManager
@@ -199,6 +200,7 @@ copy .\Raptorcompute\ReadBufferTask.h Redist\Include\RaptorCompute
 ECHO    Copying RaptorNetwork files:
 copy .\RaptorNetwork\RaptorNetwork.h Redist\Include\RaptorNetwork
 copy .\RaptorNetwork\Network.h Redist\Include\RaptorNetwork
+copy .\RaptorNetwork\NetworkLogger.h Redist\Include\RaptorNetwork
 copy .\RaptorNetwork\Server.h Redist\Include\RaptorNetwork
 copy .\RaptorNetwork\ServerSocket.h Redist\Include\RaptorNetwork
 copy .\RaptorNetwork\Client.h Redist\Include\RaptorNetwork

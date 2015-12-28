@@ -26,15 +26,6 @@ CServerTransport::~CServerTransport()
 
 }
 
-void CServerTransport::userOutput(const std::string& msg) const
-{
-	RaysServerUtils::ILogger^ logger = RaysServerUtils::getLog();
-	System::String^ console_msg = gcnew System::String(msg.c_str());
-
-	logger->Log(console_msg);
-	System::Console::WriteLine(console_msg);
-}
-
 server_base_t::request_handler_t& CServerTransport::getRequestHandler(const iosock_base_t& client) const
 {
 	const server_base_t::request_handler_t* rq = this;
@@ -54,7 +45,7 @@ bool CServerTransport::handleRequest(request_handler_t::request_id id,const void
 	unsigned char* raw_data = (unsigned char*)(rq.msg)+rq.msg->msg_size;
 
 	if (size > MSGSIZE)
-		userOutput("Extra data on message ignored !");
+		Network::userOutput(INetworkLogger::NETWORK_WARNING,"Extra data on message ignored !");
 
 	switch(rq.msg->msg_id)
 	{

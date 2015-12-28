@@ -24,7 +24,7 @@ RaysServerDlg::RaysServerDlg()
 
 	m_pTransport = new CServerTransport();
 	m_pDeamonManager = new CDeamonManager(m_pTransport);
-	if (m_pDeamonManager->getNbWorkUnits() > 0)
+	if (m_pDeamonManager->getNbDeamons() > 0)
 		AddLog("Server initialized.");
 	else
 		AddLog("Server not ready, no Work Units registered !");

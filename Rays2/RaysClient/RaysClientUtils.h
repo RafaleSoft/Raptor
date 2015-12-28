@@ -1,8 +1,8 @@
-// ServerTransport.h: interface for the CServerTransport class.
+// RaysClientUtils.h: interface for the RaysClientUtils class.
 //
 //////////////////////////////////////////////////////////////////////
-#if !defined(AFX_RAYSSERVERUTILS_H__1CC878E3_B301_4A19_8211_F3B5977D3781__INCLUDED_)
-#define AFX_RAYSSERVERUTILS_H__1CC878E3_B301_4A19_8211_F3B5977D3781__INCLUDED_
+#if !defined(AFX_RAYSCLIENTUTILS_H__D5EDE275_AF42_4BF5_80F7_2C408934AEFF__INCLUDED_)
+#define AFX_RAYSCLIENTUTILS_H__D5EDE275_AF42_4BF5_80F7_2C408934AEFF__INCLUDED_
 
 #if _MSC_VER > 1000
 #pragma once
@@ -10,11 +10,9 @@
 
 #include "Subsys/CodeGeneration.h"
 
-namespace RaysServer {
+namespace RaysClient {
 
-	class CDeamonManager;
-
-	public ref class RaysServerUtils
+	public ref class RaysClientUtils
 	{
 	public:
 		ref class RAYS_CONFIG
@@ -25,10 +23,6 @@ namespace RaysServer {
 
 			System::String^	host;
 			System::Int32	port;
-			System::Int32	wu_priority;	// NORMAL_PRIORITY_CLASS = 1
-			System::Int32	deamon_delay;
-			System::Int32	nb_wu_per_job;
-			System::Collections::ArrayList^	deamons;
 		};
 
 		interface class ILogger
@@ -47,7 +41,7 @@ namespace RaysServer {
 		static bool saveConfig(void);
 
 		//!	Returns the server configuration structure (from file)
-		static RaysServerUtils::RAYS_CONFIG^ getConfig(void);
+		static RaysClientUtils::RAYS_CONFIG^ getConfig(void);
 
 		//!	Returns the current logger.
 		static ILogger^ getLog();
@@ -58,8 +52,8 @@ namespace RaysServer {
 
 
 	private:
-		static RaysServerUtils();
-		~RaysServerUtils() {};
+		static RaysClientUtils();
+		~RaysClientUtils() {};
 
 		//!	Server configuration for deamons management
 		static RAYS_CONFIG^	rays_config;
@@ -69,4 +63,4 @@ namespace RaysServer {
 	};
 }
 
-#endif // !defined(AFX_RAYSSERVERUTILS_H__1CC878E3_B301_4A19_8211_F3B5977D3781__INCLUDED_)
+#endif // !defined(AFX_RAYSCLIENTUTILS_H__D5EDE275_AF42_4BF5_80F7_2C408934AEFF__INCLUDED_)

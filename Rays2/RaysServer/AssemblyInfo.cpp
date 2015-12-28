@@ -12,9 +12,9 @@ using namespace System::Security::Permissions;
 // associées à un assembly.
 //
 [assembly:AssemblyTitleAttribute("RaysServer")];
-[assembly:AssemblyDescriptionAttribute("")];
+[assembly:AssemblyDescriptionAttribute("Rays raytracer Server")];
 [assembly:AssemblyConfigurationAttribute("")];
-[assembly:AssemblyCompanyAttribute("")];
+[assembly:AssemblyCompanyAttribute("Rafale Soft Inc. (c)")];
 [assembly:AssemblyProductAttribute("RaysServer")];
 [assembly:AssemblyCopyrightAttribute("Copyright (c)  2015")];
 [assembly:AssemblyTrademarkAttribute("")];
@@ -31,10 +31,12 @@ using namespace System::Security::Permissions;
 // Vous pouvez spécifier toutes les valeurs ou indiquer les numéros de révision et de build par défaut
 // en utilisant '*', comme indiqué ci-dessous :
 
-[assembly:AssemblyVersionAttribute("1.0.*")];
+#include "System/Version.h"
+
+[assembly:AssemblyVersionAttribute(RAPTOR_VERSION_STR)];
 
 [assembly:ComVisible(false)];
 
 [assembly:CLSCompliantAttribute(true)];
 
-[assembly:SecurityPermission(SecurityAction::RequestMinimum, UnmanagedCode = true)];
+//[assembly:SecurityPermission(SecurityAction::RequestMinimum, UnmanagedCode = true)];

@@ -35,19 +35,19 @@ public:
 	CRaysDeamon();
 	virtual ~CRaysDeamon();
 
-	bool doExit(void) const { return m_bExit; };
-
 	bool start(	const CCmdLineParser& cmdline );
 	
+	//!	Return this as request handler.
 	virtual server_base_t::request_handler_t &getRequestHandler(const iosock_base_t& client) const;
-
-	//!	Implements Client close callback
-	virtual bool onClientClose(const CClientSocket &client);
 	
-	//!	Implements Server stop
+	//!	Implements Server stop.
 	virtual bool stopServer(void);
 
+	//!	Request Deamon stop.
 	void requestExit() { m_bExit = true; };
+
+	//!	Return exit status.
+	bool doExit(void) const { return m_bExit; };
 
 
 	typedef struct WORKUNITSTRUCT
@@ -67,19 +67,8 @@ public:
 	} MSGREGSTRUCT;
 	typedef MSGREGSTRUCT* LPMSGREGSTRUCT;
 
-	void addWorkUnit(const WORKUNITSTRUCT& wu)
-	{ m_WorkUnits.push_back(wu); }
 
 private:
-	//!	Implements Server request callback
-	virtual bool handleRequest(request_handler_t::request_id id,const void *data,size_t size);
-
-	//! Implements Server reply request
-	virtual bool handleReply(request_handler_t::request_id id, const void *&data,size_t &size);
-
-	//!	Exit deamon request
-	bool	m_bExit;
-	
 	typedef struct request_t
 	{
 		request_handler_t::request_id id;
@@ -87,6 +76,25 @@ private:
 		size_t			size;
 		MSGSTRUCT		*msg;
 	} request;
+
+
+	//!	Implements Server request callback
+	virtual bool handleRequest(request_handler_t::request_id id,const void *data,size_t size);
+
+	//! Implements Server reply request
+	virtual bool handleReply(request_handler_t::request_id id, const void *&data,size_t &size);
+
+	//!	Implements Client close callback
+	virtual bool onClientClose(const CClientSocket &client);
+
+	//!	Process DMN_DISPATCHJOB
+	void dispatchJob(request &rq);
+
+	//!	Process DMN_DISPATCHJOB
+	void objPlugin(request &rq);
+
+	//!	Exit deamon request
+	bool	m_bExit;
 
 	//! Array of registered work units
 	vector<WORKUNITSTRUCT> m_WorkUnits;

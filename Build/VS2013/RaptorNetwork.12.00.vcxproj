@@ -114,6 +114,7 @@ copy RaptorNetwork.dll "%RAPTOR_ROOT%\Redist\bin\"
     <ClInclude Include="..\..\RaptorNetwork\Client.h" />
     <ClInclude Include="..\..\RaptorNetwork\ClientSocket.h" />
     <ClInclude Include="..\..\RaptorNetwork\Network.h" />
+    <ClInclude Include="..\..\RaptorNetwork\NetworkLogger.h" />
     <ClInclude Include="..\..\RaptorNetwork\RaptorNetwork.h" />
     <ClInclude Include="..\..\RaptorNetwork\Server.h" />
     <ClInclude Include="..\..\RaptorNetwork\ServerSocket.h" />

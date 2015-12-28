@@ -536,6 +536,9 @@
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\LightGlow.cpp">
       <Filter>Source Files\GLHierarchy src</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Engine\ShaderModifier.cpp">
+      <Filter>Source Files\Engine src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Xsd Include="Subsys\ObjectModels\Raptor.xsd">
@@ -1022,6 +1025,12 @@
     </ClInclude>
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\LightGlow.h">
       <Filter>Header Files\GLHierarchy include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\System\Version.h">
+      <Filter>Header Files\System include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Engine\ShaderModifier.h">
+      <Filter>Header Files\Engine include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

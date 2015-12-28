@@ -12,7 +12,7 @@ using namespace System::Security::Permissions;
 // associées à un assembly.
 //
 [assembly:AssemblyTitleAttribute("BuilderNet")];
-[assembly:AssemblyDescriptionAttribute("")];
+[assembly:AssemblyDescriptionAttribute("Raptor code generation Builder")];
 [assembly:AssemblyConfigurationAttribute("")];
 [assembly:AssemblyCompanyAttribute("Rafale Soft Inc.(c)")];
 [assembly:AssemblyProductAttribute("BuilderNet")];
@@ -31,10 +31,12 @@ using namespace System::Security::Permissions;
 // Vous pouvez spécifier toutes les valeurs ou indiquer les numéros de révision et de build par défaut
 // en utilisant '*', comme indiqué ci-dessous :
 
-[assembly:AssemblyVersionAttribute("1.0.*")];
+#include "System/Version.h"
+
+[assembly:AssemblyVersionAttribute(RAPTOR_VERSION_STR)];
 
 [assembly:ComVisible(false)];
 
 [assembly:CLSCompliantAttribute(true)];
 
-[assembly:SecurityPermission(SecurityAction::RequestMinimum, UnmanagedCode = true)];
+//[assembly:SecurityPermission(SecurityAction::RequestMinimum, UnmanagedCode = true)];

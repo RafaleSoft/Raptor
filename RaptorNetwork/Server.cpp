@@ -71,8 +71,8 @@ bool iosock_base_t::isClosing(void) const
 	
 	if (nb_read == SOCKET_ERROR)
 	{
-		if (m_pServer != NULL)
-			m_pServer->userOutput(Network::networkErrors("Client sock lost connection, cannot be read"));
+		Network::userOutput(INetworkLogger::NETWORK_ERROR,
+							Network::networkErrors("Client sock lost connection, cannot be read"));
 
 		//	Indeed socket may not be closing ...
 		return true;
@@ -117,8 +117,8 @@ bool iosock_base_t::write(const void *data,unsigned int size)
 		}
 		else if (nb_s == SOCKET_ERROR)	// connection failed
 		{
-			if (m_pServer != NULL)
-				m_pServer->userOutput(Network::networkErrors("Client sock lost connection, cannot be written"));
+			Network::userOutput(INetworkLogger::NETWORK_ERROR,
+								Network::networkErrors("Client sock lost connection, cannot be written"));
 			shutdown();
 			close();
 			return false;
@@ -175,8 +175,8 @@ bool iosock_base_t::read(void *data,unsigned int size)
 		}
 		else if (nb_r == SOCKET_ERROR)	// connection failed
 		{
-			if (m_pServer != NULL)
-				m_pServer->userOutput(Network::networkErrors("Client sock lost connection, cannot be read"));
+			Network::userOutput(INetworkLogger::NETWORK_ERROR,
+								Network::networkErrors("Client sock lost connection, cannot be read"));
 			shutdown();
 			close();
 			return false;
@@ -405,11 +405,6 @@ bool server_base_t::startClientService(const iosock_base_t &client)
 bool server_base_t::startServer(const std::string& /*address*/,unsigned short)
 {
 	return true;
-}
-
-void server_base_t::userOutput(const std::string& msg) const
-{
-	cout << "Raptor Server: " << msg << endl;
 }
 
 

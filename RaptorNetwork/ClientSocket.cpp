@@ -29,24 +29,16 @@ bool CClientSocket::connect(const std::string& address,unsigned short port)
 	m_socket = ::socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	if (INVALID_SOCKET == m_socket)
 	{
-		string msg = Network::networkErrors("Client sock create failed");
-		if (NULL != m_pServer)
-			m_pServer->userOutput(msg);
-		else
-			std::cout << msg.c_str() << std::endl;
-
+		Network::userOutput(INetworkLogger::NETWORK_ERROR,
+							Network::networkErrors("Client socket create failed"));
 		return false;
 	}
 
 	BOOL b = TRUE;
 	if (0 != ::setsockopt(m_socket,IPPROTO_TCP,TCP_NODELAY,(char*)&b,sizeof(bool)))
 	{
-		string msg = Network::networkErrors("Client sock tcp_nodelay failed");
-		if (NULL != m_pServer)
-			m_pServer->userOutput(msg);
-		else
-			std::cout << msg.c_str() << std::endl;
-
+		Network::userOutput(INetworkLogger::NETWORK_WARNING,
+							Network::networkErrors("Client socket tcp_nodelay failed"));
 		closesocket(m_socket);
 		m_socket = 0;
 		return false;
@@ -67,18 +59,13 @@ bool CClientSocket::connect(const std::string& address,unsigned short port)
 	{
 		int	tmpSize = sizeof(size_t);
 		if (0 != getsockopt(m_socket,SOL_SOCKET,SO_SNDBUF,(char *)&tmpWrite,&tmpSize))
-			string msg = Network::networkErrors("Server sock failed to update write buffer size");
+			Network::userOutput(INetworkLogger::NETWORK_WARNING,
+								Network::networkErrors("Client socket failed to update write buffer size"));
 	}
 
-	if (reportError)
-	{
-		string msg = Network::networkErrors("Server sock failed to update read/write buffer size");
-		if (NULL != m_pServer)
-			m_pServer->userOutput(msg);
-		else
-			std::cout << msg.c_str() << std::endl;
-	}
-
+	if (reportError || (tmpRead != readBufferSize) || (tmpWrite != writeBufferSize))
+		Network::userOutput(INetworkLogger::NETWORK_WARNING,
+							Network::networkErrors("Client socket failed to update read/write buffer size"));
 
 	sockaddr_in s_in;
 	s_in.sin_family			= AF_INET;
@@ -101,12 +88,8 @@ bool CClientSocket::connect(const std::string& address,unsigned short port)
 
 	if (SOCKET_ERROR == ::connect(m_socket,(SOCKADDR*) &s_in,sizeof(s_in)))
 	{
-		string msg = Network::networkErrors("Client sock connect failed");
-		if (NULL != m_pServer)
-			m_pServer->userOutput(msg);
-		else
-			std::cout << msg.c_str() << std::endl;
-
+		Network::userOutput(INetworkLogger::NETWORK_ERROR,
+							Network::networkErrors("Client socket connect failed"));
 		closesocket(m_socket);
 		m_socket = 0;
 		return false;

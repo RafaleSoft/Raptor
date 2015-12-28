@@ -32,6 +32,9 @@
     <ClInclude Include="..\..\RaptorNetwork\stdafx.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\RaptorNetwork\NetworkLogger.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\RaptorNetwork\ClientSocket.cpp">

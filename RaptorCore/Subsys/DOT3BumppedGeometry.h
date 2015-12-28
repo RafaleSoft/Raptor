@@ -30,6 +30,20 @@ public:
 
 
 private:
+	//	Coordinates for shader T&L:
+	//	- X is the light position relative to the object.
+	//	it is deduced from light's absolute position and the current transform.
+	//	- V is the viewer position relative to the object :
+	//	if the current transform is the matrix composed with
+	//	rotation R and translation T, V = -t(R).T ( t(R) denotes transpose of R
+	// - A is the light attenuation factors
+	// - S is the light's specular
+	GL_COORD_VERTEX	V;
+
+	CGenericVector<float>	X;
+	GL_COORD_VERTEX A;
+	CColor::RGBA	S;
+
 	//!	Recomputes the bump colors ( dynamic normals ), according light position
 	//!	Returns the number of lights that are relevant in the current context.
 	virtual unsigned int glUpdateLightPosition(void);

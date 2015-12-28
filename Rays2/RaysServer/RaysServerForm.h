@@ -5,14 +5,13 @@
 
 namespace RaysServer {
 
-	class CDeamonManager;
-
 	using namespace System;
 	using namespace System::ComponentModel;
 	using namespace System::Collections;
 	using namespace System::Windows::Forms;
 	using namespace System::Data;
 	using namespace System::Drawing;
+
 
 	/// <summary>
 	/// Description résumée de RaysServerForm
@@ -121,7 +120,7 @@ namespace RaysServer {
 			this->button3 = (gcnew System::Windows::Forms::Button());
 			this->groupBox1->SuspendLayout();
 			this->groupBox2->SuspendLayout();
-			(cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->JobID))->BeginInit();
+			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->JobID))->BeginInit();
 			this->SuspendLayout();
 			// 
 			// StartServer
@@ -279,6 +278,7 @@ namespace RaysServer {
 			// Log
 			// 
 			this->Log->FormattingEnabled = true;
+			this->Log->HorizontalScrollbar = true;
 			this->Log->Location = System::Drawing::Point(13, 212);
 			this->Log->Name = L"Log";
 			this->Log->Size = System::Drawing::Size(259, 69);
@@ -306,56 +306,41 @@ namespace RaysServer {
 			this->Controls->Add(this->button2);
 			this->Controls->Add(this->StartServer);
 			this->FormBorderStyle = System::Windows::Forms::FormBorderStyle::FixedDialog;
-			this->Icon = (cli::safe_cast<System::Drawing::Icon^  >(resources->GetObject(L"$this.Icon")));
+			this->Icon = (cli::safe_cast<System::Drawing::Icon^>(resources->GetObject(L"$this.Icon")));
 			this->Name = L"RaysServerForm";
 			this->Text = L"Rays Server v3.0";
-			this->Load += gcnew System::EventHandler(this, &RaysServerForm::RaysServer_Load);
 			this->FormClosed += gcnew System::Windows::Forms::FormClosedEventHandler(this, &RaysServerForm::OnFormClosed);
+			this->Load += gcnew System::EventHandler(this, &RaysServerForm::RaysServer_Load);
 			this->groupBox1->ResumeLayout(false);
 			this->groupBox1->PerformLayout();
 			this->groupBox2->ResumeLayout(false);
 			this->groupBox2->PerformLayout();
-			(cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->JobID))->EndInit();
+			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->JobID))->EndInit();
 			this->ResumeLayout(false);
 
 		}
 #pragma endregion
-	private: System::Void OnStart(System::Object^  sender, System::EventArgs^  e) {
-				int argc = 4;
-				char *argv[4];
-				argv[0] = "-p";
-				argv[1] = RaysServerUtils::convertSystemString(BasePort->Text);
-				argv[2] = "-a";
-				argv[3] = RaysServerUtils::convertSystemString(Host->Text);
-				if (Start(argc,argv))
-					this->StartServer->Text = L"Stop Server";
-				else
-					this->StartServer->Text = L"Start Server";
-			 }
-private: System::Void OnQuit(System::Object^  sender, System::EventArgs^  e) {
+	private: System::Void OnStart(System::Object^  sender, System::EventArgs^  e);
+	private: System::Void OnQuit(System::Object^  sender, System::EventArgs^  e) {
 			 if (Quit())
-				 this->Close();
+				 Close();
 		 }
-private: System::Void OnHostChanged(System::Object^  sender, System::EventArgs^  e) {
+	private: System::Void OnHostChanged(System::Object^  sender, System::EventArgs^  e) {
 			IPAddress^ address;
 			StartServer->Enabled =	(BasePort->Text->Length > 0) &&
 									(Host->Text->Length > 0) &&
 									IPAddress::TryParse(Host->Text,address);
 		}
-private: System::Void RaysServer_Load(System::Object^  sender, System::EventArgs^  e) {
-			RaysServerUtils::RAYS_CONFIG^ config = RaysServerUtils::getConfig();
-			BasePort->Text = config->port.ToString();
-			Host->Text = config->host;
-		 }
-private: System::Void OnOptions(System::Object^  sender, System::Windows::Forms::MouseEventArgs^  e) {
+	private: System::Void RaysServer_Load(System::Object^  sender, System::EventArgs^  e);
+	private: System::Void OnOptions(System::Object^  sender, System::Windows::Forms::MouseEventArgs^  e) {
 			OptionsForm^ options = gcnew OptionsForm(getDeamonManager());
 			options->FormClosed += gcnew System::Windows::Forms::FormClosedEventHandler(this, &RaysServerForm::OnFormClosed);
-			this->Enabled = false;
+			Enabled = false;
 			options->Show();
 		 }
 	private: System::Void OnFormClosed(System::Object^  sender, System::Windows::Forms::FormClosedEventArgs^  e) {
 			if (sender != this)
-				this->Enabled = true;
+				Enabled = true;
 		 }
 	};
 }
