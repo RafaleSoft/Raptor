@@ -9,7 +9,7 @@
 #ifndef __GENERIC_VECTOR_H__
 	#include "GenericVector.h"
 #endif
-//class CMatrix4f;
+
 #ifndef __MATRIX_4F_H__
 	#include "Matrix4f.h"
 #endif
@@ -17,17 +17,12 @@
 #pragma pack(push,16)
 class CVector4f //: public CGenericVector<float,4>
 {
-
 #if 0
-
-#define M_VECTOR *((__m128*)&m_vector)
-#define VECTOR(v) *((__m128*)&v.m_vector)
-
+	#define M_VECTOR *((__m128*)&m_vector)
+	#define VECTOR(v) *((__m128*)&v.m_vector)
 #else
-
-#define M_VECTOR m_vector
-#define VECTOR(v) v.m_vector
-
+	#define M_VECTOR m_vector
+	#define VECTOR(v) v.m_vector
 #endif
 
 public:
@@ -163,5 +158,6 @@ protected:
 	friend class CMatrix4f;
 	__m128 m_vector;
 };
+#pragma pack(pop)
 
 #endif

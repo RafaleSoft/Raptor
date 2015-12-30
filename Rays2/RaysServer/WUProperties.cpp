@@ -3,7 +3,7 @@
 
 using namespace RaysServer;
 
-System::Void WUProperties::OnClose(System::Object^  sender, System::Windows::Forms::MouseEventArgs^  e)
+System::Void WUProperties::OnClose(System::Object^ , System::Windows::Forms::MouseEventArgs^ )
 {
 	bool regDeamon = true;
 	if (NULL != m_pMgr)

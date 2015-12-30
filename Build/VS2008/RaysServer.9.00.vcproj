@@ -123,7 +123,7 @@
 				PreprocessorDefinitions="WIN32;NDEBUG"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="2"
-				WarningLevel="3"
+				WarningLevel="4"
 				DebugInformationFormat="3"
 			/>
 			<Tool
@@ -234,6 +234,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\Rays2\RaysServer\RaysServerForm.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\Rays2\RaysServer\RaysServerUtils.cpp"
 				>
 			</File>
@@ -327,14 +331,6 @@
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
-			<File
-				RelativePath="..\..\Rays2\RaysServer\app.ico"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Rays2\RaysServer\app.rc"
-				>
-			</File>
 			<File
 				RelativePath="..\..\Rays2\RaysServer\Rays.ico"
 				>

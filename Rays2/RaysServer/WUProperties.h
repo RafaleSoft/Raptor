@@ -192,11 +192,11 @@ namespace RaysServer {
 #pragma endregion
 
 	private: System::Void OnClose(System::Object^  sender, System::Windows::Forms::MouseEventArgs^  e);
-	private: System::Void ValidateIPAddress(System::Object^  sender, System::EventArgs^  e) {
+	private: System::Void ValidateIPAddress(System::Object^ , System::EventArgs^ ) {
 				 IPAddress^ address;
 				 this->CloseProperties->Enabled = IPAddress::TryParse(this->DeamonIP->Text,address);
 			 }
-	private: System::Void OnCancel(System::Object^  sender, System::Windows::Forms::MouseEventArgs^  e) {
+	private: System::Void OnCancel(System::Object^ , System::Windows::Forms::MouseEventArgs^ ) {
 				 Close();
 			 }
 };

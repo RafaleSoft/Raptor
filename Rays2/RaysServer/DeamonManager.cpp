@@ -13,7 +13,6 @@ DWORD __stdcall DeamonProcessor( LPVOID pParam )
 	while (!deamon->doExit())
 	{
 		deamon->UpdateDeamons();
-		//Sleep(deamon->getPollingDelay() * 1000);
 		WaitForSingleObject(m_pollerEvent, deamon->getPollingDelay() * 1000);
 	}
 

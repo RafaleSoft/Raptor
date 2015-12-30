@@ -12,9 +12,15 @@ System::Void RaysServerForm::OnStart(System::Object^  sender, System::EventArgs^
 	argv[2] = "-a";
 	argv[3] = RaysServerUtils::convertSystemString(Host->Text);
 	if (Start(argc, argv))
+	{
 		this->StartServer->Text = L"Stop Server";
+		this->QuitButton->Enabled = false;
+	}
 	else
+	{
 		this->StartServer->Text = L"Start Server";
+		this->QuitButton->Enabled = true;
+	}
 }
 
 System::Void RaysServerForm::RaysServer_Load(System::Object^  sender, System::EventArgs^  e)

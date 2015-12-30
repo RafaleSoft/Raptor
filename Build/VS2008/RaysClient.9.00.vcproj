@@ -100,6 +100,8 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
+				Description="Export config file"
+				CommandLine="copy $(SolutionDir)Rays2\$(ProjectName)\RaysClient.config $(OutDir)"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -162,6 +164,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="copy $(OutDir)\$(TargetFileName) &quot;%RAPTOR_ROOT%\Redist\bin&quot;&#x0D;&#x0A;copy $(OutDir)\RaysClient.config &quot;%RAPTOR_ROOT%\Redist\bin&quot;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>
@@ -225,6 +228,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\Rays2\RaysClient\RaysClientUtils.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\Rays2\RaysClient\stdafx.cpp"
 				>
 				<FileConfiguration
@@ -252,8 +259,13 @@
 				>
 				<File
 					RelativePath="..\..\Rays2\RaysClient\RaysClientForm.resx"
+					SubType="Designer"
 					>
 				</File>
+			</File>
+			<File
+				RelativePath="..\..\Rays2\RaysClient\RaysClientUtils.h"
+				>
 			</File>
 			<File
 				RelativePath="..\..\Rays2\RaysClient\resource.h"
@@ -270,15 +282,11 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 			<File
-				RelativePath="..\..\Rays2\RaysClient\app.ico"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Rays2\RaysClient\app.rc"
-				>
-			</File>
-			<File
 				RelativePath="..\..\Rays2\RaysClient\Rays.ico"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Rays2\RaysClient\RaysClient.config"
 				>
 			</File>
 		</Filter>

@@ -143,8 +143,12 @@ typedef __declspec( dllimport ) int (* INITMODULE)(void);
 typedef __declspec( dllimport ) int (* AFTEREFFECT)(void);
 typedef __declspec( dllimport ) int (* NORMAL)(float* point,float* normal);
 
-typedef struct PLUGIN_t
+class CPlugin
 {
+public:
+	CPlugin() {};
+	virtual ~CPlugin() {};
+
 	HINSTANCE			moduleInstance;
 	GETMODULEINFO		pGetModuleName;
 	GETMODULEINFO		pGetModuleAuthor;
@@ -156,6 +160,6 @@ typedef struct PLUGIN_t
 	SETPARAMETERS		pSetParameters;
 	AFTEREFFECT			pAfterEffect;
 	NORMAL				pNormal;
-} PLUGIN;
+};
 
 #endif // !defined(AFX_CAMERA_H__A20284B1_13FC_4604_9859_032740298CC0__INCLUDED_)

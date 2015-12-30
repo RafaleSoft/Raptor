@@ -1533,6 +1533,10 @@
 					RelativePath="..\..\RaptorCore\System\RenderEntryPoint.h"
 					>
 				</File>
+				<File
+					RelativePath="..\..\RaptorCore\System\Version.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="Win32Specific include"

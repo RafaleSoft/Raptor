@@ -1,7 +1,6 @@
 #ifndef _MESSAGES_H_
 #define _MESSAGES_H_
 
-#include "time.h"		// time_t ( JOBSTRUCT )
 
 /////////////////////////////////////////////////////////////////////////
 //	Constants
@@ -297,16 +296,16 @@ const unsigned int MSGSIZE = sizeof(MSGSTRUCT);
 
 typedef struct _rays_config_tag
 {
-	UINT	width;
-	UINT	height;
-	UINT	variance;
-	UINT	deflection;
-	UINT	defraction; 
-	UINT	crease;
-	float	focale;
-	float	object_plane;
-	UINT	photon_map;
-	char envtexname[MAX_STR_LEN];
+	unsigned int	width;
+	unsigned int	height;
+	unsigned int	variance;
+	unsigned int	deflection;
+	unsigned int	defraction; 
+	unsigned int	crease;
+	float			focale;
+	float			object_plane;
+	unsigned int	photon_map;
+	char			envtexname[MAX_STR_LEN];
 } rays_config_t;
 
 typedef struct _rays_plugin_tag
@@ -335,7 +334,7 @@ enum TRANSFORM_TYPE
 typedef struct _rays_transform_tag
 {
 	char			target[MAX_STR_LEN];
-	DWORD			transform;
+	unsigned long	transform;
 	rays_coord_t	coeffs;
 } rays_transform_t;
 
@@ -362,7 +361,7 @@ typedef struct _rays_light_tag
 	float			intensity;
 	rays_coord_t	direction;
 	float			cutoff;
-	DWORD			model;		// bitwise of LIGHT_MODEL
+	unsigned long	model;		// bitwise of LIGHT_MODEL
 } rays_light_t;
 
 

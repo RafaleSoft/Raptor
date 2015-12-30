@@ -43,5 +43,5 @@ protected:
 	friend class CVector4f;
 	//__m128 m_matrix[4];
 };
-
+#pragma pack(pop)
 #endif // __MATRIX_4F_H__

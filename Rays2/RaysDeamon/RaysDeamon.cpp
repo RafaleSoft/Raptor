@@ -2,7 +2,6 @@
 //
 
 #include "stdafx.h"
-
 #include "Subsys/CodeGeneration.h"
 
 #if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
@@ -238,22 +237,16 @@ void CRaysDeamon::dispatchJob(request &rq)
 	si.lpTitle = "Rays 2 Workunit";
 
 	int		workUnitID = rq.msg->msg_data[0];
-	int		serverPort = rq.msg->msg_data[3];
+	int		deamonPort = rq.msg->msg_data[3];
 	DWORD	nbProcs = rq.msg->msg_data[1];
-	DWORD	serverIP = rq.msg->msg_data[2];
+	DWORD	deamonIP = rq.msg->msg_data[2];
 	DWORD	priority = rq.msg->msg_data[4];
 	DWORD	creationFlag = CREATE_SUSPENDED | CREATE_NEW_PROCESS_GROUP | CREATE_NEW_CONSOLE;
 
-#ifdef PROFILE
-	strcpy(WUID, " /E error.txt /A WorkUnit.exe");
-	sprintf(workUnit, " %d %d %d", workUnitID, serverPort, serverIP);
-	strcat(WUID, workUnit);
-	strcpy(workUnit, "PROFILE.EXE");
-#else
-	WUID << workUnitID << " ";
-	WUID << serverPort << " ";
-	WUID << serverIP << " ";
-#endif
+	WUID << "-i " << workUnitID << " ";
+	WUID << "-p " << deamonPort << " ";
+	WUID << "-a " << deamonIP << " ";
+
 	// creating work unit
 	unsigned char* raw_data = (unsigned char*)(rq.msg) + rq.msg->msg_size;
 	if (0 == CreateProcess((const char*)raw_data,	// pointer to name of executable module

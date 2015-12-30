@@ -78,7 +78,8 @@ namespace RaysServer {
 	private: System::Windows::Forms::Label^  label6;
 	private: System::Windows::Forms::ProgressBar^  progressBar1;
 	private: System::Windows::Forms::ListBox^  Log;
-	private: System::Windows::Forms::Button^  button3;
+	private: System::Windows::Forms::Button^  QuitButton;
+
 	private: System::ComponentModel::IContainer^  components;
 
 	protected:
@@ -117,10 +118,10 @@ namespace RaysServer {
 			this->label5 = (gcnew System::Windows::Forms::Label());
 			this->label4 = (gcnew System::Windows::Forms::Label());
 			this->Log = (gcnew System::Windows::Forms::ListBox());
-			this->button3 = (gcnew System::Windows::Forms::Button());
+			this->QuitButton = (gcnew System::Windows::Forms::Button());
 			this->groupBox1->SuspendLayout();
 			this->groupBox2->SuspendLayout();
-			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->JobID))->BeginInit();
+			(cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->JobID))->BeginInit();
 			this->SuspendLayout();
 			// 
 			// StartServer
@@ -284,38 +285,38 @@ namespace RaysServer {
 			this->Log->Size = System::Drawing::Size(259, 69);
 			this->Log->TabIndex = 4;
 			// 
-			// button3
+			// QuitButton
 			// 
-			this->button3->Location = System::Drawing::Point(197, 89);
-			this->button3->Name = L"button3";
-			this->button3->Size = System::Drawing::Size(75, 23);
-			this->button3->TabIndex = 5;
-			this->button3->Text = L"Quit";
-			this->button3->UseVisualStyleBackColor = true;
-			this->button3->Click += gcnew System::EventHandler(this, &RaysServerForm::OnQuit);
+			this->QuitButton->Location = System::Drawing::Point(197, 89);
+			this->QuitButton->Name = L"QuitButton";
+			this->QuitButton->Size = System::Drawing::Size(75, 23);
+			this->QuitButton->TabIndex = 5;
+			this->QuitButton->Text = L"Quit";
+			this->QuitButton->UseVisualStyleBackColor = true;
+			this->QuitButton->Click += gcnew System::EventHandler(this, &RaysServerForm::OnQuit);
 			// 
 			// RaysServerForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->ClientSize = System::Drawing::Size(284, 287);
-			this->Controls->Add(this->button3);
+			this->Controls->Add(this->QuitButton);
 			this->Controls->Add(this->Log);
 			this->Controls->Add(this->groupBox2);
 			this->Controls->Add(this->groupBox1);
 			this->Controls->Add(this->button2);
 			this->Controls->Add(this->StartServer);
 			this->FormBorderStyle = System::Windows::Forms::FormBorderStyle::FixedDialog;
-			this->Icon = (cli::safe_cast<System::Drawing::Icon^>(resources->GetObject(L"$this.Icon")));
+			this->Icon = (cli::safe_cast<System::Drawing::Icon^  >(resources->GetObject(L"$this.Icon")));
 			this->Name = L"RaysServerForm";
 			this->Text = L"Rays Server v3.0";
-			this->FormClosed += gcnew System::Windows::Forms::FormClosedEventHandler(this, &RaysServerForm::OnFormClosed);
 			this->Load += gcnew System::EventHandler(this, &RaysServerForm::RaysServer_Load);
+			this->FormClosed += gcnew System::Windows::Forms::FormClosedEventHandler(this, &RaysServerForm::OnFormClosed);
 			this->groupBox1->ResumeLayout(false);
 			this->groupBox1->PerformLayout();
 			this->groupBox2->ResumeLayout(false);
 			this->groupBox2->PerformLayout();
-			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->JobID))->EndInit();
+			(cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->JobID))->EndInit();
 			this->ResumeLayout(false);
 
 		}
