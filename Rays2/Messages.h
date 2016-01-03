@@ -432,9 +432,9 @@ typedef struct _rays_composition_tag		//	the geometry and the mesh should
 
 typedef struct _rays_frame_tag
 {
-	int					nbCalls;
+	unsigned int		nbCalls;
 	rays_plugin_t		*calls;
-	int					nbTransforms;
+	unsigned int		nbTransforms;
 	rays_transform_t	*transforms;
 } rays_frame_t;
 

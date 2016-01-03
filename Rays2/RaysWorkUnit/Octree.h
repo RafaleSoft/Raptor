@@ -18,16 +18,16 @@
 class COctree : public CBoundingBox  
 {
 public:
-	COctree(unsigned int nbPolygons,CBoundingBox *size);
+	COctree(unsigned int nbPolygons,const CBoundingBox &size);
 	virtual ~COctree();
 
-	float Intersect( CGenericRay &ray,CArray<CTriangle*,CTriangle*&> &triangles );
+	float Intersect( CGenericRay &ray,vector<CTriangle*> &triangles );
 
 	bool Intersect( CTriangle *&t );
 
-	void AddTriangle(CArray<CTriangle*,CTriangle*&> &triangles,unsigned int i);
+	void AddTriangle(vector<CTriangle*> &triangles,unsigned int i);
 
-	bool Subdivide(CArray<CTriangle*,CTriangle*&> &triangles);
+	bool Subdivide(vector<CTriangle*> &triangles);
 
 	int GetNbChild(void);
 	int GetNbEmpty(void);
@@ -40,9 +40,8 @@ public:
 	static float	m_intersected;
 
 private:
-	CArray<COctree*,COctree*>	m_childs;
-
-	CDWordArray	m_subMesh;
+	vector<COctree*>	m_childs;
+	vector<unsigned int>	m_subMesh;
 
 	COctree	*m_childInterected[8];
 	float	m_childIntersections[8];

@@ -27,11 +27,11 @@ public:
 
 public:
 	virtual float FastIntersect( CGenericRay &ray );
-	virtual CWVector& GetLocalColor(const CGenericRay &ray);
+	virtual CColor::RGBA& GetLocalColor(const CGenericRay &ray);
 	
 protected:
 	CGenericVector<float>	tmpVect;
-	CWVector				tmpClr;
+	CColor::RGBA			tmpClr;
 
 	CBoundingBox			*bBox;
 

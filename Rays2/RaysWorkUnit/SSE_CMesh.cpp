@@ -128,7 +128,7 @@ void SSE_CMesh::ReBuildOctree(void)
 	if (m_root != NULL)
 		delete m_root;
 
-	m_root = new SSE_COctree(m_triangles.size(),bBox);
+	m_root = new SSE_COctree(m_triangles.size(),*bBox);
 
 	for (unsigned int i=0;i<m_triangles.size();i++)
 		m_root->AddTriangle(m_triangles,i);

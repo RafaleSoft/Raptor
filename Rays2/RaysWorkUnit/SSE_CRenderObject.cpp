@@ -19,10 +19,10 @@ CGenericRenderObject(std::string(base.name))
 	shading = base.shading;
 
 	//	color should be specified with coordinates clamped to [0..1]
-	color.Set(	(short)(0xFFFF * base.color.x),
-				(short)(0xFFFF * base.color.y),
-				(short)(0xFFFF * base.color.z),
-				(short)(0xFFFF * base.color.h));
+	color.r = base.color.x;
+	color.g = base.color.y;
+	color.b = base.color.z;
+	color.a = base.color.h;
 
 	m_pTexture = NULL;
 }
@@ -32,7 +32,7 @@ SSE_CRenderObject::~SSE_CRenderObject()
 	delete bBox;
 }
 
-CWVector& SSE_CRenderObject::GetLocalColor(const CGenericRay &ray)
+CColor::RGBA& SSE_CRenderObject::GetLocalColor(const CGenericRay &ray)
 {
 	if (m_pTexture != NULL)
 	{
@@ -108,9 +108,9 @@ CGenericVector<float>& SSE_CRenderObject::GetLocalNormal( const CGenericVector<f
 		//	Apply bump map perturbation
 		//
 		float bumpCoefs[4];
-		bumpCoefs[0] = DEUX_SUR_65535 * tmpClr.X() - 1.0f;
-		bumpCoefs[1] = DEUX_SUR_65535 * tmpClr.Y() - 1.0f;
-		bumpCoefs[2] = DEUX_SUR_65535 * tmpClr.Z() - 1.0f;
+		bumpCoefs[0] = DEUX_SUR_65535 * tmpClr.r - 1.0f;
+		bumpCoefs[1] = DEUX_SUR_65535 * tmpClr.g - 1.0f;
+		bumpCoefs[2] = DEUX_SUR_65535 * tmpClr.b - 1.0f;
 		
 		sqr = 1.0f / sqrt(bumpCoefs[0]*bumpCoefs[0] + bumpCoefs[1]*bumpCoefs[1] + bumpCoefs[2]*bumpCoefs[2]);
 		bumpCoefs[0] = bumpCoefs[0]*sqr;

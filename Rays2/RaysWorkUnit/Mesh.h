@@ -10,7 +10,7 @@
 #endif // _MSC_VER > 1000
 
 
-#include "WorkUnit.h"
+#include "RaysWorkUnit.h"
 #include "RenderObject.h"
 
 class CTriangle;
@@ -41,13 +41,9 @@ public:
 	void ReBuildNormals(float crease_angle);
 
 private:
-	CArray<CTriangle*,CTriangle*&>	
-						m_triangles;
-
-	CArray<CDWordArray*, CDWordArray*&>
-						m_normals;
-	CArray<rays_triangle_t,rays_triangle_t&>
-						m_indexes;
+	vector<CTriangle*> m_triangles;
+	vector<vector<unsigned int>*> m_normals;
+	vector<rays_triangle_t> m_indexes;
 	
 	int					m_idxIntersected;
 

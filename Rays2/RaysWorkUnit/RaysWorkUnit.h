@@ -19,6 +19,8 @@
 
 class CCmdLineParser;
 class CRaytracerData;
+class CGenericRenderObject;
+class CTexture;
 
 class CRaysWorkUnit : public CClient<CClientSocket>
 {
@@ -40,6 +42,8 @@ public:
 	{ return raytracer_data; };
 
 private:
+	void ProcessMsg(MSGSTRUCT& msg, unsigned char raw_data[]);
+
 	bool RunRaytrace(MSGSTRUCT& msg,unsigned char raw_data[]);
 	bool BuildSpheres(MSGSTRUCT& msg,unsigned char raw_data[]);
 	bool BuildLights(MSGSTRUCT& msg,unsigned char raw_data[]);
@@ -48,6 +52,11 @@ private:
 	bool BuildTextures(MSGSTRUCT& msg,unsigned char raw_data[]);
 	bool BuildPlugins(MSGSTRUCT& msg,unsigned char raw_data[]);
 	bool BuildFrames(MSGSTRUCT& msg,unsigned char raw_data[]);
+
+	//!	Helpers
+	bool GetRaytraceData();
+	void SetTextures(CGenericRenderObject* obj, rays_objectbase_t& base);
+	CTexture *GetTexture(const std::string& tname);
 
 	//!	Exit WorkUnit request
 	bool	m_bExit;

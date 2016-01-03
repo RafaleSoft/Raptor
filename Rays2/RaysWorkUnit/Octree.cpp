@@ -14,57 +14,61 @@ CGenericVector<float> COctree::tmpVect;
 unsigned int COctree::CALIBRATE_POLYGONS = 16;
 float COctree::m_intersected = HUGE_REAL;
 
-COctree::COctree(unsigned int nbPolygons,CBoundingBox *size):
+COctree::COctree(unsigned int nbPolygons,const CBoundingBox &size):
 m_idxIntersected(-1)
 {
-	Add(size);
+	add(size);
 
 	if (nbPolygons > CALIBRATE_POLYGONS)
 	{
 		int nbP = nbPolygons >> 3;
-		float xmin,ymin,zmin,xmax,ymax,zmax;
-		size->Get(xmin,ymin,zmin,xmax,ymax,zmax);
+		
+		float xmin = size.xMin();
+		float ymin = size.yMin();
+		float zmin = size.zMin();
+		float xmax = size.xMax();
+		float ymax = size.yMax();
+		float zmax = size.zMax();
 		
 		CBoundingBox bbox;
 		float half_x = 0.5f * (xmin + xmax);
 		float half_y = 0.5f * (ymin + ymax);
 		float half_z = 0.5f * (zmin + zmax);
 
-		bbox.Set(xmin,ymin,zmin,half_x,half_y,half_z);
-		m_childs.Add(new COctree(nbP,&bbox));
+		bbox.set(xmin,ymin,zmin,half_x,half_y,half_z);
+		m_childs.push_back(new COctree(nbP,bbox));
 
-		bbox.Set(half_x,ymin,zmin,xmax,half_y,half_z);
-		m_childs.Add(new COctree(nbP,&bbox));
+		bbox.set(half_x,ymin,zmin,xmax,half_y,half_z);
+		m_childs.push_back(new COctree(nbP,bbox));
 
-		bbox.Set(xmin,ymin,half_z,half_x,half_y,zmax);
-		m_childs.Add(new COctree(nbP,&bbox));
+		bbox.set(xmin,ymin,half_z,half_x,half_y,zmax);
+		m_childs.push_back(new COctree(nbP,bbox));
 
-		bbox.Set(half_x,ymin,half_z,xmax,half_y,zmax);
-		m_childs.Add(new COctree(nbP,&bbox));
+		bbox.set(half_x,ymin,half_z,xmax,half_y,zmax);
+		m_childs.push_back(new COctree(nbP,bbox));
 
-		bbox.Set(xmin,half_y,zmin,half_x,ymax,half_z);
-		m_childs.Add(new COctree(nbP,&bbox));
+		bbox.set(xmin,half_y,zmin,half_x,ymax,half_z);
+		m_childs.push_back(new COctree(nbP,bbox));
 
-		bbox.Set(half_x,half_y,zmin,xmax,ymax,half_z);
-		m_childs.Add(new COctree(nbP,&bbox));
+		bbox.set(half_x,half_y,zmin,xmax,ymax,half_z);
+		m_childs.push_back(new COctree(nbP,bbox));
 
-		bbox.Set(xmin,half_y,half_z,half_x,ymax,zmax);
-		m_childs.Add(new COctree(nbP,&bbox));
+		bbox.set(xmin,half_y,half_z,half_x,ymax,zmax);
+		m_childs.push_back(new COctree(nbP,bbox));
 
-		bbox.Set(half_x,half_y,half_z,xmax,ymax,zmax);
-		m_childs.Add(new COctree(nbP,&bbox));
+		bbox.set(half_x,half_y,half_z,xmax,ymax,zmax);
+		m_childs.push_back(new COctree(nbP,bbox));
 	}
 }
 
 COctree::~COctree()
 {
-	int nbChilds = m_childs.GetSize();
-
-	for (int i=0 ; i<nbChilds ; i++)
+	unsigned int nbChilds = m_childs.size();
+	for (unsigned int i=0 ; i<nbChilds ; i++)
 		delete m_childs[i];
 }
 
-float COctree::Intersect( CGenericRay &ray,CArray<CTriangle*,CTriangle*&> &triangles)
+float COctree::Intersect( CGenericRay &ray,vector<CTriangle*> &triangles)
 {
 	float	hit = HUGE_REAL;
 	float	t;
@@ -72,15 +76,17 @@ float COctree::Intersect( CGenericRay &ray,CArray<CTriangle*,CTriangle*&> &trian
 	m_idxIntersected = -1;
 
 	//	Intersect childs if there are any
-	int nbChilds = m_childs.GetSize();
+	unsigned int nbChilds = m_childs.size();
 
 	if (nbChilds > 0)
 	{
 		int pos = 0;
 
-		for (int i=0 ; i<nbChilds ; i++)
+		for (unsigned int i=0 ; i<nbChilds ; i++)
 		{
-			t = m_childs[i]->CBoundingBox::Intersect(ray);
+			GL_COORD_VERTEX O(ray.origin.X(), ray.origin.Y(), ray.origin.Z());
+			GL_COORD_VERTEX D(ray.direction.X(), ray.direction.Y(), ray.direction.Z());
+			t = m_childs[i]->CBoundingBox::intersect(O, D);
 
 			if (t < m_intersected)
 			{
@@ -140,11 +146,9 @@ float COctree::Intersect( CGenericRay &ray,CArray<CTriangle*,CTriangle*&> &trian
 	//	Otherwise, intersect triangles
 	else
 	{
-		int		j;
-
-		for (int i=0;i<m_subMesh.GetSize();i++)
+		for (unsigned int i=0;i<m_subMesh.size();i++)
 		{
-			j = m_subMesh[i];
+			unsigned int j = m_subMesh[i];
 			t = triangles[j]->Intersect(ray);
 			if ((1.0e-3 < t) && (t < hit))
 			{
@@ -160,60 +164,61 @@ float COctree::Intersect( CGenericRay &ray,CArray<CTriangle*,CTriangle*&> &trian
 bool COctree::Intersect( CTriangle *&t )
 {
 	//	First case : a vertex lies in the cube
-	if (IsInBox(t->a))
+	if (isInBox(t->a.X(), t->a.Y(), t->a.Z()))
 		return true;
-	if (IsInBox(t->b))
+	if (isInBox(t->b.X(), t->b.Y(), t->b.Z()))
 		return true;
-	if (IsInBox(t->c))
+	if (isInBox(t->c.X(), t->c.Y(), t->c.Z()))
 		return true;
 
 	//	Second case : an edge of the triangle intersects
 	//	the cube
-	CGenericRay	r;
 	float intersected=HUGE_REAL;
 
-	r.origin = t->a;
-	r.direction = t->b;
-	r.direction -= t->a;
-	intersected = CBoundingBox::Intersect(r);
+	{
+		GL_COORD_VERTEX O(t->a.X(), t->a.Y(), t->a.Z());
+		GL_COORD_VERTEX D(t->b.X() - t->a.X(), t->b.Y() - t->a.Y(), t->b.Z() - t->a.Z());
+		intersected = CBoundingBox::intersect(O, D);
+	}
 
 	if ((intersected >= 0.0f) && (intersected <= 1.0))
 		return true;
 
-	r.origin = t->b;
-	r.direction = t->c;
-	r.direction -= t->b;
-	intersected = CBoundingBox::Intersect(r);
+	{
+		GL_COORD_VERTEX O(t->b.X(), t->b.Y(), t->b.Z());
+		GL_COORD_VERTEX D(t->c.X() - t->b.X(), t->c.Y() - t->b.Y(), t->c.Z() - t->b.Z());
+		intersected = CBoundingBox::intersect(O, D);
+	}
 
 	if ((intersected >= 0.0f) && (intersected <= 1.0))
 		return true;
 
-	r.origin = t->c;
-	r.direction = t->a;
-	r.direction -= t->c;
-	intersected = CBoundingBox::Intersect(r);
+	{
+		GL_COORD_VERTEX O(t->c.X(), t->c.Y(), t->c.Z());
+		GL_COORD_VERTEX D(t->a.X() - t->c.X(), t->a.Y() - t->c.Y(), t->a.Z() - t->c.Z());
+		intersected = CBoundingBox::intersect(O, D);
+	}
 
 	if ((intersected >= 0.0f) && (intersected <= 1.0))
 		return true;
 
 	//	Third case : plane intersection
-
-
+	
 	return false;
 }
 
-void COctree::AddTriangle(CArray<CTriangle*,CTriangle*&> &triangles,unsigned int i)
+void COctree::AddTriangle(vector<CTriangle*> &triangles,unsigned int i)
 {
 	//	Add triangle to each child if they exist
 	CTriangle *&t = triangles[i];
 
-	int nbChilds = m_childs.GetSize();
+	unsigned int nbChilds = m_childs.size();
 
 	if (nbChilds > 0)
 	{
 		bool added = false;
 
-		for (int j=0 ; j<nbChilds ; j++)
+		for (unsigned int j=0 ; j<nbChilds ; j++)
 		{
 			if (m_childs[j]->Intersect(t))
 			{
@@ -223,25 +228,25 @@ void COctree::AddTriangle(CArray<CTriangle*,CTriangle*&> &triangles,unsigned int
 		}
 
 		if (!added)
-			COUT << "Triangle lost in Octree ! " << endl;
+			std::cout << "Triangle lost in Octree ! " << endl;
 	}
 	//	Add triangle to this
 	else
 	{
-		m_subMesh.Add(i);
+		m_subMesh.push_back(i);
 	}
 }
 
 
-bool COctree::Subdivide(CArray<CTriangle*,CTriangle*&> &triangles)
+bool COctree::Subdivide(vector<CTriangle*> &triangles)
 {
-	int nbChilds = m_childs.GetSize();
+	unsigned int nbChilds = m_childs.size();
 
 	if (nbChilds > 0)
 	{
 		bool res;
 
-		for (int i=0; i<nbChilds ; i++)
+		for (unsigned int i=0; i<nbChilds ; i++)
 			res |= m_childs[i]->Subdivide(triangles);
 
 		return res;
@@ -249,47 +254,49 @@ bool COctree::Subdivide(CArray<CTriangle*,CTriangle*&> &triangles)
 	else
 	{
 		//	Subdivide if necessary
-		if ((unsigned int)m_subMesh.GetSize() > CALIBRATE_POLYGONS)
+		if (m_subMesh.size() > CALIBRATE_POLYGONS)
 		{
-	//		COUT << "Subdivide octree: " << m_subMesh.GetSize() << " polygons" << endl;
-
-			float xmin,ymin,zmin,xmax,ymax,zmax;
-			this->Get(xmin,ymin,zmin,xmax,ymax,zmax);
+			float xmin = xMin();
+			float ymin = yMin();
+			float zmin = zMin();
+			float xmax = xMax();
+			float ymax = yMax();
+			float zmax = zMax();
 		
 			CBoundingBox bbox;
 			float half_x = 0.5f * (xmin + xmax);
 			float half_y = 0.5f * (ymin + ymax);
 			float half_z = 0.5f * (zmin + zmax);
 
-			bbox.Set(xmin,ymin,zmin,half_x,half_y,half_z);
-			m_childs.Add(new COctree(0,&bbox));
+			bbox.set(xmin,ymin,zmin,half_x,half_y,half_z);
+			m_childs.push_back(new COctree(0,bbox));
 
-			bbox.Set(half_x,ymin,zmin,xmax,half_y,half_z);
-			m_childs.Add(new COctree(0,&bbox));
+			bbox.set(half_x,ymin,zmin,xmax,half_y,half_z);
+			m_childs.push_back(new COctree(0,bbox));
 
-			bbox.Set(xmin,ymin,half_z,half_x,half_y,zmax);
-			m_childs.Add(new COctree(0,&bbox));
+			bbox.set(xmin,ymin,half_z,half_x,half_y,zmax);
+			m_childs.push_back(new COctree(0,bbox));
 
-			bbox.Set(half_x,ymin,half_z,xmax,half_y,zmax);
-			m_childs.Add(new COctree(0,&bbox));
+			bbox.set(half_x,ymin,half_z,xmax,half_y,zmax);
+			m_childs.push_back(new COctree(0,bbox));
 
-			bbox.Set(xmin,half_y,zmin,half_x,ymax,half_z);
-			m_childs.Add(new COctree(0,&bbox));
+			bbox.set(xmin,half_y,zmin,half_x,ymax,half_z);
+			m_childs.push_back(new COctree(0,bbox));
 
-			bbox.Set(half_x,half_y,zmin,xmax,ymax,half_z);
-			m_childs.Add(new COctree(0,&bbox));
+			bbox.set(half_x,half_y,zmin,xmax,ymax,half_z);
+			m_childs.push_back(new COctree(0,bbox));
 
-			bbox.Set(xmin,half_y,half_z,half_x,ymax,zmax);
-			m_childs.Add(new COctree(0,&bbox));
+			bbox.set(xmin,half_y,half_z,half_x,ymax,zmax);
+			m_childs.push_back(new COctree(0,bbox));
 
-			bbox.Set(half_x,half_y,half_z,xmax,ymax,zmax);
-			m_childs.Add(new COctree(0,&bbox));
+			bbox.set(half_x,half_y,half_z,xmax,ymax,zmax);
+			m_childs.push_back(new COctree(0,bbox));
 
 			//	Reinsert triangles after subdivision
-			for (int j=0; j<m_subMesh.GetSize();j++)
+			for (unsigned int j=0; j<m_subMesh.size();j++)
 				AddTriangle(triangles,m_subMesh[j]);
 			
-			m_subMesh.RemoveAll();
+			m_subMesh.clear();
 
 			return true;
 		}
@@ -301,13 +308,13 @@ bool COctree::Subdivide(CArray<CTriangle*,CTriangle*&> &triangles)
 
 int COctree::GetNbChild(void)
 {
-	int nbChilds = m_childs.GetSize();
+	unsigned int nbChilds = m_childs.size();
 
 	if (nbChilds > 0)
 	{
 		int res = 0;
 
-		for (int i=0;i<nbChilds;i++)
+		for (unsigned int i=0;i<nbChilds;i++)
 			res += m_childs[i]->GetNbChild();
 
 		return nbChilds + res;
@@ -318,20 +325,20 @@ int COctree::GetNbChild(void)
 
 int COctree::GetNbEmpty(void)
 {
-	int nbChilds = m_childs.GetSize();
+	unsigned int nbChilds = m_childs.size();
 
 	if (nbChilds > 0)
 	{
 		int res = 0;
 
-		for (int i=0;i<nbChilds;i++)
+		for (unsigned int i=0;i<nbChilds;i++)
 			res += m_childs[i]->GetNbEmpty();
 
 		return res;
 	}
 	else
 	{
-		if (m_subMesh.GetSize() > 0)
+		if (m_subMesh.size() > 0)
 			return 0;
 		else
 			return 1;
@@ -340,20 +347,20 @@ int COctree::GetNbEmpty(void)
 
 void COctree::RemoveEmpty(void)
 {
-	int nbChilds = m_childs.GetSize();
+	unsigned int nbChilds = m_childs.size();
 	bool to_delete = false;
 
 	if (nbChilds > 0)
 	{
-		for (int i=0;i<nbChilds;i++)
+		for (unsigned int i=0;i<nbChilds;i++)
 		{
-			int nbSubChilds = m_childs[i]->m_childs.GetSize();
+			unsigned int nbSubChilds = m_childs[i]->m_childs.size();
 
 			if (nbSubChilds > 0)
 				m_childs[i]->RemoveEmpty();
 			else
 			{
-				if (m_childs[i]->m_subMesh.GetSize() == 0)
+				if (m_childs[i]->m_subMesh.size() == 0)
 				{
 					to_delete = true;
 					delete m_childs[i];
@@ -368,7 +375,7 @@ void COctree::RemoveEmpty(void)
 			while (pos >= 0)
 			{
 				if (m_childs[pos] == NULL)
-					m_childs.RemoveAt(pos);
+					m_childs.erase(m_childs.begin() + pos);
 
 				pos--;
 			}
@@ -379,11 +386,11 @@ void COctree::RemoveEmpty(void)
 ostream& operator<< (ostream &out, const COctree &surf)
 {
 
-	out << "pere: nbPolygons = "  << surf.m_subMesh.GetSize() << endl;
+	out << "pere: nbPolygons = "  << surf.m_subMesh.size() << endl;
 
 	out << "fils:" << endl << "{" << endl;
 
-	int nbChilds = surf.m_childs.GetSize();
+	int nbChilds = surf.m_childs.size();
 
 	for (int i=0 ; i<nbChilds ; i++)
 	{

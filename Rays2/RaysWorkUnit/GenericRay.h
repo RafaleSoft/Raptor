@@ -9,6 +9,9 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include "stdafx.h"
+#include "Subsys/CodeGeneration.h"
+
 #include "Ray.h"
 #ifndef __GENERIC_VECTOR_H__
 	#include "SimdLib/GenericVector.h"
@@ -18,6 +21,7 @@
 #define		ORIGIN_OFFSET		28
 
 class CGenericLight;
+
 
 class CGenericRay : public CRay
 {
@@ -32,10 +36,10 @@ public:
 	CGenericRay();
 	virtual ~CGenericRay();
 
-	void Hit( const CRaytracerData& World , CWVector &c);
+	void Hit(CRaytracerData& World , CColor::RGBA &c);
 
 private:
-	virtual float Light_Hit( const CRaytracerData& World, CWVector &c,CGenericLight *light);
+	virtual float Light_Hit(CRaytracerData& World, CColor::RGBA &c, CGenericLight *light);
 };
 
 #endif // !defined(AFX_GENERICRAY_H__DA58263D_57F2_46F0_91FD_F217300CBC21__INCLUDED_)

@@ -19,7 +19,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-SSE_COctree::SSE_COctree(unsigned int nbPolygons,CSSE_BoundingBox *size):
+SSE_COctree::SSE_COctree(unsigned int nbPolygons,const CSSE_BoundingBox &size):
 m_idxIntersected(-1)
 {
 	add(size);
@@ -27,12 +27,12 @@ m_idxIntersected(-1)
 	if (nbPolygons > CALIBRATE_POLYGONS)
 	{
 		int nbP = nbPolygons >> 3;
-		float xmin = size->xMin();
-		float ymin = size->yMin();
-		float zmin = size->zMin();
-		float xmax = size->xMax();
-		float ymax = size->yMax();
-		float zmax = size->zMax();
+		float xmin = size.xMin();
+		float ymin = size.yMin();
+		float zmin = size.zMin();
+		float xmax = size.xMax();
+		float ymax = size.yMax();
+		float zmax = size.zMax();
 		
 		CSSE_BoundingBox bbox;
 		float half_x = 0.5f * (xmin + xmax);
@@ -40,28 +40,28 @@ m_idxIntersected(-1)
 		float half_z = 0.5f * (zmin + zmax);
 
 		bbox.set(xmin,ymin,zmin,half_x,half_y,half_z);
-		m_childs.push_back(new SSE_COctree(nbP,&bbox));
+		m_childs.push_back(new SSE_COctree(nbP,bbox));
 
 		bbox.set(half_x,ymin,zmin,xmax,half_y,half_z);
-		m_childs.push_back(new SSE_COctree(nbP,&bbox));
+		m_childs.push_back(new SSE_COctree(nbP,bbox));
 
 		bbox.set(xmin,ymin,half_z,half_x,half_y,zmax);
-		m_childs.push_back(new SSE_COctree(nbP,&bbox));
+		m_childs.push_back(new SSE_COctree(nbP,bbox));
 
 		bbox.set(half_x,ymin,half_z,xmax,half_y,zmax);
-		m_childs.push_back(new SSE_COctree(nbP,&bbox));
+		m_childs.push_back(new SSE_COctree(nbP,bbox));
 
 		bbox.set(xmin,half_y,zmin,half_x,ymax,half_z);
-		m_childs.push_back(new SSE_COctree(nbP,&bbox));
+		m_childs.push_back(new SSE_COctree(nbP,bbox));
 
 		bbox.set(half_x,half_y,zmin,xmax,ymax,half_z);
-		m_childs.push_back(new SSE_COctree(nbP,&bbox));
+		m_childs.push_back(new SSE_COctree(nbP,bbox));
 
 		bbox.set(xmin,half_y,half_z,half_x,ymax,zmax);
-		m_childs.push_back(new SSE_COctree(nbP,&bbox));
+		m_childs.push_back(new SSE_COctree(nbP,bbox));
 
 		bbox.set(half_x,half_y,half_z,xmax,ymax,zmax);
-		m_childs.push_back(new SSE_COctree(nbP,&bbox));
+		m_childs.push_back(new SSE_COctree(nbP,bbox));
 	}
 }
 
@@ -89,7 +89,9 @@ float SSE_COctree::Intersect( CGenericRay &ray,std::vector<SSE_CTriangle*> &tria
 
 		for (unsigned int i=0 ; i<nbChilds ; i++)
 		{
-			t = m_childs[i]->CSSE_BoundingBox::Intersect(ray);
+			GL_COORD_VERTEX O(ray.origin.X(), ray.origin.Y(), ray.origin.Z());
+			GL_COORD_VERTEX D(ray.direction.X(), ray.direction.Y(), ray.direction.Z());
+			t = m_childs[i]->CSSE_BoundingBox::intersect(O,D);
 
 			if (t < m_intersected)
 			{
@@ -178,29 +180,31 @@ bool SSE_COctree::Intersect( SSE_CTriangle *&t )
 
 	//	Second case : an edge of the triangle intersects
 	//	the cube
-	CGenericRay	r;
 	float intersected=HUGE_REAL;
 
-	r.origin = t->a;
-	r.direction = t->b;
-	r.direction -= t->a;
-	intersected = CSSE_BoundingBox::Intersect(r);
+	{
+		GL_COORD_VERTEX O(t->a.X(), t->a.Y(), t->a.Z());
+		GL_COORD_VERTEX D(t->b.X() - t->a.X(), t->b.Y() - t->a.Y(), t->b.Z() - t->a.Z());
+		intersected = CSSE_BoundingBox::intersect(O, D);
+	}
 
 	if ((intersected >= 0.0f) && (intersected <= 1.0))
 		return true;
 
-	r.origin = t->b;
-	r.direction = t->c;
-	r.direction -= t->b;
-	intersected = CSSE_BoundingBox::Intersect(r);
+	{
+		GL_COORD_VERTEX O(t->b.X(), t->b.Y(), t->b.Z());
+		GL_COORD_VERTEX D(t->c.X() - t->b.X(), t->c.Y() - t->b.Y(), t->c.Z() - t->b.Z());
+		intersected = CSSE_BoundingBox::intersect(O, D);
+	}
 
 	if ((intersected >= 0.0f) && (intersected <= 1.0))
 		return true;
 
-	r.origin = t->c;
-	r.direction = t->a;
-	r.direction -= t->c;
-	intersected = CSSE_BoundingBox::Intersect(r);
+	{
+		GL_COORD_VERTEX O(t->c.X(), t->c.Y(), t->c.Z());
+		GL_COORD_VERTEX D(t->a.X() - t->c.X(), t->a.Y() - t->c.Y(), t->a.Z() - t->c.Z());
+		intersected = CSSE_BoundingBox::intersect(O, D);
+	}
 
 	if ((intersected >= 0.0f) && (intersected <= 1.0))
 		return true;
@@ -275,28 +279,28 @@ bool SSE_COctree::Subdivide(std::vector<SSE_CTriangle*> &triangles)
 			float half_z = 0.5f * (zmin + zmax);
 
 			bbox.set(xmin,ymin,zmin,half_x,half_y,half_z);
-			m_childs.push_back(new SSE_COctree(0,&bbox));
+			m_childs.push_back(new SSE_COctree(0,bbox));
 
 			bbox.set(half_x,ymin,zmin,xmax,half_y,half_z);
-			m_childs.push_back(new SSE_COctree(0,&bbox));
+			m_childs.push_back(new SSE_COctree(0,bbox));
 
 			bbox.set(xmin,ymin,half_z,half_x,half_y,zmax);
-			m_childs.push_back(new SSE_COctree(0,&bbox));
+			m_childs.push_back(new SSE_COctree(0,bbox));
 
 			bbox.set(half_x,ymin,half_z,xmax,half_y,zmax);
-			m_childs.push_back(new SSE_COctree(0,&bbox));
+			m_childs.push_back(new SSE_COctree(0,bbox));
 
 			bbox.set(xmin,half_y,zmin,half_x,ymax,half_z);
-			m_childs.push_back(new SSE_COctree(0,&bbox));
+			m_childs.push_back(new SSE_COctree(0,bbox));
 
 			bbox.set(half_x,half_y,zmin,xmax,ymax,half_z);
-			m_childs.push_back(new SSE_COctree(0,&bbox));
+			m_childs.push_back(new SSE_COctree(0,bbox));
 
 			bbox.set(xmin,half_y,half_z,half_x,ymax,zmax);
-			m_childs.push_back(new SSE_COctree(0,&bbox));
+			m_childs.push_back(new SSE_COctree(0,bbox));
 
 			bbox.set(half_x,half_y,half_z,xmax,ymax,zmax);
-			m_childs.push_back(new SSE_COctree(0,&bbox));
+			m_childs.push_back(new SSE_COctree(0,bbox));
 
 			//	Reinsert triangles after subdivision
 			for (unsigned int j=0; j<m_subMesh.size();j++)

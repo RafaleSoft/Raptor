@@ -237,15 +237,15 @@ void CRaysDeamon::dispatchJob(request &rq)
 	si.lpTitle = "Rays 2 Workunit";
 
 	int		workUnitID = rq.msg->msg_data[0];
-	int		deamonPort = rq.msg->msg_data[3];
+	int		serverPort = rq.msg->msg_data[3];
 	DWORD	nbProcs = rq.msg->msg_data[1];
-	DWORD	deamonIP = rq.msg->msg_data[2];
+	DWORD	serverIP = rq.msg->msg_data[2];
 	DWORD	priority = rq.msg->msg_data[4];
 	DWORD	creationFlag = CREATE_SUSPENDED | CREATE_NEW_PROCESS_GROUP | CREATE_NEW_CONSOLE;
 
 	WUID << "-i " << workUnitID << " ";
-	WUID << "-p " << deamonPort << " ";
-	WUID << "-a " << deamonIP << " ";
+	WUID << "-p " << serverPort << " ";
+	WUID << "-a " << serverIP << " ";
 
 	// creating work unit
 	unsigned char* raw_data = (unsigned char*)(rq.msg) + rq.msg->msg_size;
@@ -390,7 +390,7 @@ bool CRaysDeamon::start(const CCmdLineParser& cmdline )
 	bool res = startServer(addrStr,port);
     if (res)
     {
-		std::cout << "Raptor Server ready on port ";
+		std::cout << "Deamon Server ready on port ";
 		std::cout << port;
 		std::cout << " at host ";
 		std::cout << addrStr;
@@ -406,7 +406,7 @@ bool CRaysDeamon::start(const CCmdLineParser& cmdline )
     }
     else
     {
-		std::cout << "Raptor Server couldn't be started on port ";
+		std::cout << "Deamon Server couldn't be started on port ";
 		std::cout << port;
 		std::cout << " at host ";
 		std::cout << addrStr;

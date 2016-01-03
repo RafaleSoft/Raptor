@@ -18,7 +18,7 @@ start.s3tc
 Installer/Output
 MicroLex/MicroLex.exe
 SIMD/simd.lib
-CodeGeneration.h
+RaptorCore/Subsys/CodeGeneration.h
 
 # Build results
 [Dd]ebug/

@@ -10,7 +10,16 @@
 #endif // _MSC_VER > 1000
 
 
+#if !defined(AFX_COLOR_H__3770AC59_0D0E_49EF_99C8_037268A33CE4__INCLUDED_)
+	#include "System/Color.h"
+#endif
+#ifndef __GENERIC_VECTOR_H__
+	#include "SimdLib/GenericVector.h"
+#endif
+RAPTOR_NAMESPACE
+
 class CTexture;
+
 
 class CEnvironment  
 {
@@ -21,15 +30,15 @@ public:
 
 	void SetTexture(CTexture *t) { m_pEnvironMap = t; };
 	CTexture*	GetTexture(void) const { return m_pEnvironMap; };
-	CWVector&		GetLocalColor(const CGenericVector<float>	&direction);
+	CColor::RGBA&	GetLocalColor(const CGenericVector<float>	&direction);
 
 private:
 	CEnvironment();
 
 	static CEnvironment	*m_pEnvironment;
 
-	CTexture	*m_pEnvironMap;
-	CWVector	tmpClr;
+	CTexture		*m_pEnvironMap;
+	CColor::RGBA	tmpClr;
 	CGenericVector<float> tmpVect;
 };
 

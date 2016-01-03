@@ -38,7 +38,7 @@ public:
 
 	//	Rendering parameters
 	rays_shading_t	shading;
-	CWVector		color;
+	CColor::RGBA	color;
 
 public:
 	CGenericRenderObject(const std::string& name);
@@ -62,7 +62,7 @@ public:
 	virtual float Intersect( CGenericRay &ray ) = 0 ;
 	virtual float FastIntersect( CGenericRay &ray ) = 0 ;
 
-	virtual CWVector& GetLocalColor(const CGenericRay &ray) = 0;
+	virtual CColor::RGBA& GetLocalColor(const CGenericRay &ray) = 0;
 	virtual CGenericVector<float>& GetTexel(const CGenericVector<float> &hit ) = 0;
 	virtual CGenericVector<float>& GetNormal( const CGenericVector<float> &hit );
 
@@ -82,7 +82,7 @@ protected:
 
 private:
 	CGenericVector<float>	tmpVect;
-	std::string					m_name;
+	std::string				m_name;
 };
 
 #endif // !defined(AFX_GENERICRENDEROBJECT_H__CC388141_715F_4FB4_9858_015088E7A9A8__INCLUDED_)

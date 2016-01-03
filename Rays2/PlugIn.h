@@ -146,8 +146,23 @@ typedef __declspec( dllimport ) int (* NORMAL)(float* point,float* normal);
 class CPlugin
 {
 public:
-	CPlugin() {};
+	CPlugin()
+	{
+		moduleInstance = 0;
+		pGetModuleName = 0;
+		pGetModuleAuthor = 0;
+		pGetModuleDescription = 0;
+		pGetModuleType = 0;
+		pGetModuleVersion = 0;
+		pInitModule = 0;
+		pGetParameters = 0;
+		pSetParameters = 0;
+		pAfterEffect = 0;
+		pNormal = 0;
+	};
 	virtual ~CPlugin() {};
+
+	bool OpenPlugin(const std::string& name);
 
 	HINSTANCE			moduleInstance;
 	GETMODULEINFO		pGetModuleName;

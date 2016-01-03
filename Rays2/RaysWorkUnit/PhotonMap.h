@@ -17,7 +17,7 @@ public:
 	typedef struct photon_t
 	{
 		float			position[4];
-		unsigned short	energy[4];
+		float			energy[4];
 		unsigned int	nb_neighbours;
 		unsigned int	*pNeighbours;
 	} photon;
@@ -28,7 +28,7 @@ public:
 	virtual ~CPhotonMap();
 
 	//	Add to the photon map the photons corresponding to the lightRay
-	void Hit( const CRaytracerData& World, CGenericRay& lightRay ,CWVector& sourceColor);
+	void Hit( CRaytracerData& World, CGenericRay& lightRay ,CColor::RGBA& sourceColor);
 
 	//	This function prepares the photon map
 	//	to repond to queries : GetDensity.
@@ -40,10 +40,10 @@ public:
 	photon GetPhoton(unsigned int numPhoton) const
 	{ if (numPhoton<photonsPerLight) return m_pPhotons[numPhoton]; else return m_pPhotons[0]; };
 
-	void GetDensity(const CGenericVector<float> position,CWVector& target) const;
+	void GetDensity(const CGenericVector<float> position,CColor::RGBA& target) const;
 
 	//	For DEBUG purpose only
-	void DumpPhotons(const char* name);
+	void DumpPhotons(const std::string& name);
 
 private:
 	unsigned int			photonsPerLight;

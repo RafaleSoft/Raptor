@@ -3,6 +3,8 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+#include "Subsys/CodeGeneration.h"
+
 #include "RaysWorkUnit.h"
 #include "Environment.h"
 #include "Raytracer.h"
@@ -18,10 +20,10 @@ CEnvironment	*CEnvironment::m_pEnvironment = NULL;
 CEnvironment::CEnvironment():
 	m_pEnvironMap(NULL)
 {
-	tmpClr.X(0);
-	tmpClr.Y(0);
-	tmpClr.Z(0);
-	tmpClr.H(65535);
+	tmpClr.r = 0;
+	tmpClr.g = 0;
+	tmpClr.b = 0;
+	tmpClr.a = 1.0;
 }
 
 CEnvironment::~CEnvironment()
@@ -40,7 +42,7 @@ CEnvironment* CEnvironment::GetInstance(void)
 	return m_pEnvironment;
 }
 
-CWVector& CEnvironment::GetLocalColor(const CGenericVector<float>	&direction)
+CColor::RGBA& CEnvironment::GetLocalColor(const CGenericVector<float>	&direction)
 {
 	if (m_pEnvironMap != NULL)
 	{
@@ -49,10 +51,10 @@ CWVector& CEnvironment::GetLocalColor(const CGenericVector<float>	&direction)
 		theta = (float)sqrt((direction.X() * direction.X()) + (direction.Z() * direction.Z()));
 		theta = (float)(atan2(direction.Y() , theta));
 
-		tmpVect.Y() = (float)(UN_SUR_2_PI * (M_PI + theta));
+		tmpVect.Y() = (float)(UN_SUR_2_PI * (PI + theta));
 		
 		theta = (float)atan2(direction.Z(),direction.X());
-		tmpVect.X() = (float)(UN_SUR_2_PI * (M_PI + theta));
+		tmpVect.X() = (float)(UN_SUR_2_PI * (PI + theta));
 
 		tmpVect.X() *= 2;
 		tmpVect.Y() *= 2;

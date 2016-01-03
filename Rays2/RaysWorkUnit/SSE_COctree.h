@@ -14,7 +14,7 @@
 class SSE_COctree : public CSSE_BoundingBox
 {
 public:
-	SSE_COctree(unsigned int nbPolygons,CSSE_BoundingBox *size);
+	SSE_COctree(unsigned int nbPolygons,const CSSE_BoundingBox &size);
 	virtual ~SSE_COctree();
 
 	float Intersect( CGenericRay &ray,std::vector<SSE_CTriangle*> &triangles );

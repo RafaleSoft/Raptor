@@ -9,6 +9,14 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#ifndef __GENERIC_VECTOR_H__
+	#include "SimdLib/GenericVector.h"
+#endif
+#if !defined(AFX_COLOR_H__3770AC59_0D0E_49EF_99C8_037268A33CE4__INCLUDED_)
+	#include "System/Color.h"
+#endif
+RAPTOR_NAMESPACE
+
 
 class CTexture  
 {
@@ -19,7 +27,7 @@ public:
 	void GetTexture(unsigned int &w,unsigned int &h,unsigned char *&data);
 	void SetTexture(unsigned int w,unsigned int h,unsigned char *data);
 
-	CWVector& GetMapColor(const CGenericVector<float> &texel);
+	CColor::RGBA& GetMapColor(const CGenericVector<float> &texel);
 
 private:
 
@@ -29,9 +37,7 @@ private:
 
 	unsigned char	*m_map;
 
-	CWVector		tmpColor;
-
-
+	CColor::RGBA	tmpColor;
 };
 
 #endif // !defined(AFX_TEXTURE_H__86A35E18_AD72_4A70_B7A8_2B547F23E591__INCLUDED_)

@@ -16,7 +16,6 @@
 
 /////////////////////////////////////////////////////////////////////////////
 // Const and globals
-unsigned int			ip;
 unsigned int			ID;
 static CRaysWorkUnit	*p_WU = NULL;
 
@@ -86,7 +85,7 @@ int main(int argc, char* argv[])
 
 	if (!parser.parse(argc,argv))
 	{
-		std::cout << "Deamon failed to parse command line. Exiting, bye!" << std::endl;
+		std::cout << "Rays Workunit failed to parse command line. Exiting, bye!" << std::endl;
 		return -1;
 	}
 
@@ -147,7 +146,7 @@ bool CRaysWorkUnit::start(const CCmdLineParser &cmdline)
 		write(&msg,MSGSIZE);
 	}
 	else
-		std::cout << "Unable to connect to deamon request !" << std::endl;
+		std::cout << "Unable to connect to server request !" << std::endl;
 
 	return false;
 }

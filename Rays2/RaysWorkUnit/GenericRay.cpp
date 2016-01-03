@@ -3,6 +3,8 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+#include "Subsys/CodeGeneration.h"
+
 #include "GenericRay.h"
 #include "GenericLight.h"
 #include "RenderObject.h"
@@ -10,19 +12,13 @@
 #include "Raytracer.h"
 #include "Environment.h"
 
-#ifdef _DEBUG
-#undef THIS_FILE
-static char THIS_FILE[]=__FILE__;
-#define new DEBUG_NEW
-#endif
-
 extern unsigned int	Ray_ID;
 
 //////////////////////////////////////////////////////////////////////
 // Helpers
 //////////////////////////////////////////////////////////////////////
 static CWVector color_buffer;
-__inline void __fastcall A_plus_x_B_saturate(CWVector &A,CWVector &B,float f)
+__inline void __fastcall A_plus_x_B_saturate(CColor::RGBA &A, CColor::RGBA &B, float f)
 {
 	color_buffer[1] = color_buffer[0] = (unsigned short)(255 * f);
 
@@ -45,7 +41,7 @@ __inline void __fastcall A_plus_x_B_saturate(CWVector &A,CWVector &B,float f)
 	}
 }
 
-__inline void __fastcall A_plus_x_B_plus_C_saturate(CWVector &A,CWVector &B,CWVector &C,float f)
+__inline void __fastcall A_plus_x_B_plus_C_saturate(CColor::RGBA &A, CColor::RGBA &B, CColor::RGBA &C, float f)
 {
 	color_buffer[1] = color_buffer[0] = (unsigned short)(255 * f);
 
@@ -89,22 +85,18 @@ CGenericRay::~CGenericRay()
 {
 }
 
-void CGenericRay::Hit( const CRaytracerData& world, CWVector &c)
+void CGenericRay::Hit(CRaytracerData& world, CColor::RGBA &c)
 {
-	CGenericRay	&light_ray = world->light_ray_levels[level+1];
-	CGenericRay	&reflected_ray = world->reflected_ray_levels[level+1];
-	CGenericRay	&refracted_ray = world->refracted_ray_levels[level+1];
+	CGenericRay	&light_ray = world.getLightRay(level+1);
+	CGenericRay	&reflected_ray = world.getReflectedRay(level+1);
+	CGenericRay	&refracted_ray = world.getRefractedRay(level+1);
 
-	CWVector	local_color;
-	CWVector	photon_color;
+	CColor::RGBA	local_color;
+	CColor::RGBA	photon_color;
 	
-	float		new_t, Gouraud, Phong ;
-	int			numSurfaces,numLight;
+	float			new_t, Gouraud, Phong ;
+	unsigned int	numSurfaces,numLight;
 	
-	c.Zero();
-	local_color.Zero();
-	photon_color.Zero();
-
 	// --- no surf. in list ? ---
 	if ( (numSurfaces = world.getNbObjects()) > 0 )
 	{
@@ -113,9 +105,9 @@ void CGenericRay::Hit( const CRaytracerData& world, CWVector &c)
 		CGenericRenderObject	*tmpSurface = NULL;
 
 		// --- loop: Intersection with all surfaces ---
-		for ( int i=0;i<numSurfaces; i++ ) 
+		for ( unsigned int i=0;i<numSurfaces; i++ ) 
 		{
-			tmpSurface = World->objects[i];
+			tmpSurface = world.getObject(i);
 
 			if ( HUGE_REAL > tmpSurface->FastIntersect( *this ) )
 			{
@@ -135,7 +127,7 @@ void CGenericRay::Hit( const CRaytracerData& world, CWVector &c)
 		if ( t < HUGE_REAL )
 		{
 			// --- compute the intersection point ---
-			hit = origin + (t * direction) ;
+			hit = origin + (direction * t) ;
 			hit.H(1);
 
 			// --- compute the normal ---
@@ -152,14 +144,14 @@ void CGenericRay::Hit( const CRaytracerData& world, CWVector &c)
 
 			// --- compute shading contribution of lights ---
 			Gouraud = Phong = 0.0f ;
-			numLight = World->lights.GetSize();
+			numLight = world.getNbLights();
 
 			float tmp;
 			float light_factor;
 
-			for ( i=0 ; i<numLight; i++ ) 
+			for ( unsigned int j=0 ; j<numLight; j++ ) 
 			{
-				CGenericLight *light = World->lights[i];
+				CGenericLight *light = world.getLight(j);
 
 				// --- prepare the light ray ---
 				light_ray.direction = light->position;
@@ -179,7 +171,7 @@ void CGenericRay::Hit( const CRaytracerData& world, CWVector &c)
 				light_ray.id = ++Ray_ID ;
 
 				// --- test light ray with all objets ---
-				light_factor = light_ray.Light_Hit(World, local_color,light ) ;	
+				light_factor = light_ray.Light_Hit(world, local_color,light ) ;	
 				if ( light_factor > 0.0 ) 
 				{
 					// --- facteur de Gouraud ---
@@ -189,7 +181,7 @@ void CGenericRay::Hit( const CRaytracerData& world, CWVector &c)
 					Gouraud += light_factor *  tmp;
 
 					// --- facteur de Phong ---
-					reflected_ray.direction = (tmp + tmp) * normal;
+					reflected_ray.direction = normal * (tmp + tmp);
 					reflected_ray.direction  -= light_ray.direction ;
 
 					tmp = -(reflected_ray.direction % direction);
@@ -209,11 +201,11 @@ void CGenericRay::Hit( const CRaytracerData& world, CWVector &c)
 			// ========================== REFLECTION ============================
 
 			// --- compute shading contribution from reflections ---
-			if ((surface->shading.reflection * fact > UN_SUR_255)&&(level < World->camera.reflection_depth))
+			if ((surface->shading.reflection * fact > UN_SUR_255)&&(level < world.getCamera().reflection_depth))
 			{
 				// --- prepare the light ray ---
 				tmp = direction % normal;
-				reflected_ray.direction = (-tmp - tmp) * normal;
+				reflected_ray.direction = normal * (-tmp - tmp);
 				reflected_ray.direction += direction;
 
 				reflected_ray.direction.Normalize();
@@ -224,7 +216,7 @@ void CGenericRay::Hit( const CRaytracerData& world, CWVector &c)
 				reflected_ray.n = n;
 
 				//	Recursively cast this ray to generate reflections
-				reflected_ray.Hit(World,local_color);
+				reflected_ray.Hit(world,local_color);
 
 				A_plus_x_B_saturate(	c,
 										local_color,
@@ -235,7 +227,7 @@ void CGenericRay::Hit( const CRaytracerData& world, CWVector &c)
 			// ========================== REFRACTION ============================
 
 			// --- compute shading contribution from refractions ---
-			if ((surface->shading.refraction * fact > UN_SUR_255) && (level < World->camera.refraction_depth)) 
+			if ((surface->shading.refraction * fact > UN_SUR_255) && (level < world.getCamera().refraction_depth)) 
 			{
 				float costheta1,costheta2,coef,n1,n2;
 				float n1n2,n2n1;
@@ -258,7 +250,7 @@ void CGenericRay::Hit( const CRaytracerData& world, CWVector &c)
 					{
 						costheta2 = (float)(sqrt(1 - (n1n2 * n1n2 * coef)));
 						coef = costheta2 - n1n2 * costheta1;
-						refracted_ray.direction = coef * normal + n1n2 * direction;
+						refracted_ray.direction = normal * coef + direction * n1n2;
 						refracted_ray.direction.Normalize();
 						refracted_ray.fact = surface->shading.refraction * fact ;
 					}
@@ -267,7 +259,7 @@ void CGenericRay::Hit( const CRaytracerData& world, CWVector &c)
 					else
 					{
 						refracted_ray.fact = surface->shading.refraction * fact ;
-						refracted_ray.direction = ((-2.0f*costheta1) * (normal));
+						refracted_ray.direction = normal * (-2.0f*costheta1);
 						refracted_ray.direction += direction;
 						refracted_ray.direction.Normalize();
 					}
@@ -283,8 +275,8 @@ void CGenericRay::Hit( const CRaytracerData& world, CWVector &c)
 					coef = n1n2 * costheta1 - costheta2;
 
 					refracted_ray.fact = surface->shading.refraction * fact ;
-					refracted_ray.direction = (coef * normal);
-					refracted_ray.direction += (n1n2 * direction);
+					refracted_ray.direction = (normal * coef);
+					refracted_ray.direction += (direction * n1n2);
 					refracted_ray.direction.Normalize();
 				}
 		
@@ -314,14 +306,14 @@ void CGenericRay::Hit( const CRaytracerData& world, CWVector &c)
 
 	//	alpha is set to 1.0
 	//	but maybe not necessary
-	c.H(65535);
+	c.a = 1.0f;
 }
 
-float CGenericRay::Light_Hit( const CRaytracerData& world, CWVector &c,CGenericLight *light)
+float CGenericRay::Light_Hit(CRaytracerData& world, CColor::RGBA &c, CGenericLight *light)
 {
 	float			fact = this->fact ;
 	float			t,k,d;
-	unsigned int	size=world.getNbObjects();
+	unsigned int	size = world.getNbObjects();
 	
 	CGenericRenderObject	*surface;
 
@@ -337,9 +329,9 @@ float CGenericRay::Light_Hit( const CRaytracerData& world, CWVector &c,CGenericL
 	this->direction.Normalize();
 
 	// --- loop once per surface --- 
-	for ( int i=0; i<size; i++ ) 
+	for ( unsigned int i=0; i<size; i++ ) 
 	{
-		surface = world->objects[i];
+		surface = world.getObject(i);
 
 	    // --- no self shadowing --- 
 	  //  if ( this->surface == surface )
@@ -356,20 +348,20 @@ float CGenericRay::Light_Hit( const CRaytracerData& world, CWVector &c,CGenericL
 	    //if ( t < 1.0f && t > 0.0f )
 		if ( t < N && t > 0.0f ) 
 		{
-			k=surface->shading.refraction;
+			k = surface->shading.refraction;
 			// --- if alpha-texture map ---
 			// --- if translucent material
 			
 			if ( k > 0.0f ) 
 			{
-				CWVector &lc = surface->GetLocalColor(*this);
+				CColor::RGBA &lc = surface->GetLocalColor(*this);
 				fact *= k;
 				d = surface->shading.diffuse * k;
 				
-				c *= (1 - d);
-				lc *= d;
-				c += lc;
-				
+				c.r = (1 - d) * c.r + d * lc.r;
+				c.g = (1 - d) * c.g + d * lc.g;
+				c.b = (1 - d) * c.b + d * lc.b;
+				c.a = (1 - d) * c.a + d * lc.a; // ???
 			}
 			else
 				return( 0 ) ;

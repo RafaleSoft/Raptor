@@ -1,9 +1,7 @@
 #include "stdafx.h"
-#include "WorkUnit.h"
-#include "WorkUnitDlg.h"
-#include <fstream.h>	// ofstream
-#include "..\systemdll\systemdll.h"
-#include "WUSocket.h"
+#include "Subsys/CodeGeneration.h"
+
+#include "RaysWorkUnit.h"
 #include "GenericLight.h"
 #include "Quadric.h"
 #include "Triangle.h"
@@ -12,124 +10,124 @@
 #include "Texture.h"
 #include "Environment.h"
 #include "Surfacer.h"
-#include "..\PlugIn.cxx"
+#include "..\PlugIn.h"
 
-//	for log/debug
-extern CClient<CWUSocket>		client;
-extern ofstream			COUT;
-extern RAYTRACERDATA	raytracer_data;
-extern UINT				Raytrace( LPVOID pParam );
-extern unsigned int		ip;
+extern DWORD			__stdcall Raytrace(LPVOID pParam);
 extern unsigned int		ID;
 
 static unsigned int		nbTextureLoad = 0;
 static unsigned int		nbPluginLoad = 0;
 
 
-void CWorkUnitApp::ProcessMsg(MSGSTRUCT& msg,unsigned char raw_data[])
+void CRaysWorkUnit::ProcessMsg(MSGSTRUCT& msg, unsigned char raw_data[])
 {
-	CString _msg;
 	bool acknowledge = true;
 	bool sendacknowledge = true;
 
-	_msg = "Receiving data from server";
-	WriteMessage(_msg);
-	COUT << "# Processing server Message:" << msg.msg_id << endl;
+	std::cout << "Receiving data from server" << std::endl;
+	std::cout << "# Processing server Message:" << msg.msg_id << endl;
 	switch(msg.msg_id)
 	{
 		case OBJ_DATA:
+		{
+			switch (msg.msg_data[1])
 			{
-				switch (msg.msg_data[1])
+				case OBJ_PLUGIN:
 				{
-					case OBJ_PLUGIN:
-						_msg = "Processing plugin objects";
-						WriteMessage(_msg);
-						acknowledge = BuildPlugins(msg,raw_data);
-						break;
-					case OBJ_CAMERA:
-						_msg = "Processing camera object";
-						WriteMessage(_msg);
-						acknowledge = BuildCamera(msg,raw_data);
-						break;
-					case OBJ_LIGHT:
-						_msg = "Processing light object";
-						WriteMessage(_msg);
-						acknowledge = BuildLights(msg,raw_data);
-						break;
-					case OBJ_SPHERE:
-						_msg = "Processing sphere object";
-						WriteMessage(_msg);
-						acknowledge = BuildSpheres(msg,raw_data);
-						break;
-					case OBJ_GEOMETRY:
-						_msg = "Processing geometry object";
-						WriteMessage(_msg);
-						acknowledge = BuildGeometries(msg,raw_data);
-						break;
-					case OBJ_FRAME:
-						_msg = "Processing scene frames";
-						WriteMessage(_msg);
-						acknowledge = BuildFrames(msg,raw_data);
-						break;
-					default:
-						{
-							COUT << "Unsupported object id" << msg.msg_data[1] << endl;
-
-							_msg = "Unsupported object id";
-							acknowledge = false,
-							WriteMessage(_msg);
-							_msg.Format("msg.id: %x - data[0]:%x - data[1]:%x",msg.msg_id,msg.msg_data[0],msg.msg_data[1]); 
-							WriteMessage(_msg);
-						}
+					std::cout << "Processing plugin objects" << std::endl;
+					acknowledge = BuildPlugins(msg, raw_data);
+					break;
 				}
-				_msg = "Data processed";
-				WriteMessage(_msg);
+				case OBJ_CAMERA:
+				{
+					std::cout << "Processing camera object" << std::endl;
+					acknowledge = BuildCamera(msg, raw_data);
+					break;
+				}
+				case OBJ_LIGHT:
+				{
+					std::cout << "Processing light object" << std::endl;
+					acknowledge = BuildLights(msg, raw_data);
+					break;
+				}
+				case OBJ_SPHERE:
+				{
+					std::cout << "Processing sphere object" << std::endl;
+					acknowledge = BuildSpheres(msg, raw_data);
+					break;
+				}
+				case OBJ_GEOMETRY:
+				{
+					std::cout << "Processing geometry object" << std::endl;
+					acknowledge = BuildGeometries(msg, raw_data);
+					break;
+				}
+				case OBJ_FRAME:
+				{
+					std::cout << "Processing scene frames" << std::endl;
+					acknowledge = BuildFrames(msg, raw_data);
+					break;
+				}
+				default:
+				{
+					std::cout << "Unsupported object id" << msg.msg_data[1] << endl;
+					acknowledge = false;
+					std::cout << "Unsupported object id";
+					std::cout << " msg.id: " << msg.msg_id;
+					std::cout << " - data[0]: " << msg.msg_data[0];
+					std::cout << " - data[1]: " << msg.msg_data[1] << std::endl;
+					break;
+				}
 			}
+			std::cout << "Data processed" << std::endl;
 			msg.msg_id = ACK_OBJ;
 			break;
+		}
 		case OBJ_TEXTURE:
-			_msg = "Processing texture object";
-			WriteMessage(_msg);
-			acknowledge = BuildTextures(msg,raw_data);
+		{
+			std::cout << "Processing texture object" << std::endl;
+			acknowledge = BuildTextures(msg, raw_data);
 			sendacknowledge = false;
 			break;
+		}
 		case JOB_RUN:
-			acknowledge = RunRaytrace(msg,raw_data);
+		{
+			acknowledge = RunRaytrace(msg, raw_data);
 			msg.msg_data[1] = JOB_RUN;
 			msg.msg_id = ACK_JOB;
 			break;
+		}
 		case ACK_NONE:
+		{
 			if (msg.msg_data[0] == OBJ_TEXTURE)
 			{
-				COUT << "Texture query failed" << endl;
-				_msg = "Server unable to execute request (wrong/none texture ?)";
-				WriteMessage(_msg);
-				//acknowledge = BuildTextures(msg,raw_data);
+				std::cout << "Texture query failed" << std::endl;
+				std::cout << "Server unable to execute request (wrong/none texture ?)" << std::endl;
 				if (nbTextureLoad > 0)
 					nbTextureLoad--;
 			}
 			else if (msg.msg_data[0] == OBJ_PLUGIN)
 			{
-				COUT << "Plugin query failed" << endl;
-				_msg = "Server unable to execute request (wrong/none plugin ?)";
-				WriteMessage(_msg);
-				//acknowledge = BuildTextures(msg,raw_data);
+				std::cout << "Plugin query failed" << std::endl;
+				std::cout << "Server unable to execute request (wrong/none plugin ?)" << std::endl;
 				if (nbPluginLoad > 0)
 					nbPluginLoad--;
 			}
 			sendacknowledge = false;
 			break;
+		}
 		default:
+		{
 			acknowledge = false;
-			_msg = "Unsupported message id";
-			WriteMessage(_msg);
-			COUT << "# Unsupported message ID: " << msg.msg_id << endl;
+			std::cout << "Unsupported message id" << std::endl;
+			std::cout << "# Unsupported message ID: " << msg.msg_id << std::endl;
 			break;
+		}
 	}
 
 	if (sendacknowledge)
 	{
-		COUT << "Sending aknowledgment..." << endl;
+		std::cout << "Sending aknowledgment..." << std::endl;
 
 		if (!acknowledge)
 			msg.msg_id = ACK_NONE;
@@ -137,143 +135,150 @@ void CWorkUnitApp::ProcessMsg(MSGSTRUCT& msg,unsigned char raw_data[])
 		msg.msg_size = 0;
 		// msg.msg_data[0] should contain jobID
 		msg.msg_data[2] = 0;
-		msg.msg_data[3] = client.GetPort();
-		msg.msg_data[4] = ip;
+		msg.msg_data[3] = getPort();
+		msg.msg_data[4] = getAddr();
 		msg.msg_tail = MSG_END;
 
-		COUT << "Acknowledge datas: " << msg.msg_header << " " << msg.msg_id << " " << msg.msg_size << " " << msg.msg_tail << endl;
-		client.Write(&msg,MSGSIZE);
+		std::cout << "Acknowledge datas: " << msg.msg_header << " " << msg.msg_id << " " << msg.msg_size << " " << msg.msg_tail << endl;
+		write(&msg,MSGSIZE);
 
-		COUT << "Acknowledge sent !" << endl;
+		std::cout << "Acknowledge sent !" << std::endl;
 	}
 
 	if (raw_data!=NULL)
 		delete [] raw_data;
 
-	COUT << "Data cleaned !" << endl;
+	std::cout << "Data cleaned !" << std::endl;
 
 	if (ACK_JOB == msg.msg_id)
 		GetRaytraceData();
 }
 
 
+bool CRaysWorkUnit::GetRaytraceData()
+{
+	std::cout << "Querying Raytrace additional datas... " << std::endl;
+
+	if (0 == raytracer_data->getNbTextures())
+		std::cout << "No data needed, rendering can start" << endl;
+	else
+	{
+		std::cout << "Data needed, querying to server" << endl;
+
+		std::string tname;
+		map<std::string, CTexture*>::const_iterator tpos = raytracer_data->getFirstTexture();
+		CTexture *texture = raytracer_data->getNextTexture(tpos, tname);
+		while (NULL != texture)
+		{
+			//	Query texture to server
+			size_t len = tname.length();
+			unsigned char *buffer = new unsigned char[len + MSGSIZE];
+			MSGSTRUCT msg;
+			msg.msg_header = MSG_START;
+			msg.msg_id = IMG_REQUEST;
+			msg.msg_size = len;
+			msg.msg_data[0] = OBJ_TEXTURE;
+			msg.msg_data[1] = 0;
+			msg.msg_data[2] = 0;
+			msg.msg_data[3] = getPort();
+			msg.msg_data[4] = getAddr();
+			msg.msg_tail = MSG_DATA;
+
+			std::cout << "Querying texture: " << tname << endl;
+
+			memcpy(buffer, &msg, MSGSIZE);
+			memcpy(buffer + MSGSIZE, tname.c_str(), len);
+			write(buffer, MSGSIZE + len);
+
+			delete[] buffer;
+
+			std::cout << "Query sent for texture " << tname << std::endl;
+			texture = raytracer_data->getNextTexture(tpos, tname);
+		}
+	}
+
+	//	Verifying plugins...
+	std::string pname;
+	map<std::string, CPlugin*>::const_iterator ppos = raytracer_data->getFirstPlugin();
+	CPlugin *plugin = raytracer_data->getNextPlugin(ppos, pname);
+	while (NULL != plugin)
+	{
+		if (plugin->moduleInstance == NULL)
+		{
+			if (!plugin->OpenPlugin(pname))
+				std::cout << "Unable to load plugin " << pname << endl;
+			else
+			{
+				nbPluginLoad--;
+				std::cout << "Plugin " << pname << " loaded. " << endl;
+			}
+		}
+	}
+
+	return true;
+}
+
+
+bool CRaysWorkUnit::BuildTextures(MSGSTRUCT& msg, unsigned char raw_data[])
+{
+	if (msg.msg_id != ACK_NONE)
+	{
+		std::cout << "Building Texture..." << endl;
+
+		int len = msg.msg_data[2];
+		char *tname = new char[len + 1];
+
+		memcpy(tname, &raw_data[0], len);
+		tname[len] = 0;
+
+		std::cout << "Downloading texture: " << tname << std::endl;
+		std::cout << "Texture name: " << tname << std::endl;
+		std::cout << "Texture size: " << msg.msg_size - len << std::endl;
+
+		CTexture *txt = raytracer_data->getTexture(tname);
+		if (NULL != txt)
+			txt->SetTexture(msg.msg_data[0], msg.msg_data[1], &raw_data[len]);
+		else
+			std::cout << "Internal error : texture object not created !" << std::endl;
+
+		std::cout << "Texture is built !" << std::endl;
+	}
+
+	if (nbTextureLoad > 0)
+		nbTextureLoad--;
+
+	std::cout << "Still need " << nbTextureLoad << " textures" << std::endl;
+	std::cout << "Still need " << nbPluginLoad << " plugins" << std::endl;
+
+	return ((nbPluginLoad == 0) && (nbTextureLoad == 0));
+}
+
 //////////////////////////////////////////////////////////////////////
 //
 //	Job start
 //
 //////////////////////////////////////////////////////////////////////
-bool CWorkUnitApp::RunRaytrace(MSGSTRUCT& msg,unsigned char raw_data[])
+bool CRaysWorkUnit::RunRaytrace(MSGSTRUCT& msg, unsigned char raw_data[])
 {
-	CString _msg;
+	std::cout << "Running raytracer ..." << endl;
 
-	//	is raytracer ready ?
-	COUT << "Running raytracer ..." << endl;
-	DWORD wait = WaitForSingleObject(HANDLE(raytracer_data.lock),RAYS_WAIT_TIMEOUT);
-	if ((wait == WAIT_TIMEOUT)||(wait == WAIT_ABANDONED))
-	{
-		COUT << "Renderer Busy !!!" << endl;
-		_msg.Format("Renderer busy !!!");
-		WriteMessage(_msg);
-		return false;
-	}
-	else
-	{
-		raytracer_data.lock->ResetEvent();
-
-		//	Rendering
-		raytracer_data.start = msg.msg_data[1];
-		raytracer_data.end = msg.msg_data[2];
-		COUT << "Raytrace initialisation... " << endl;
-		raytracer = AfxBeginThread(	Raytrace, 
-									(void*)&raytracer_data, 
-									THREAD_PRIORITY_NORMAL, 
-									0, 
-									CREATE_SUSPENDED, 
+	//	Rendering
+	raytracer_data->setStart(msg.msg_data[1]);
+	raytracer_data->setEnd(msg.msg_data[2]);
+	std::cout << "Raytrace initialisation... " << endl;
+	HANDLE raytracer = CreateThread(NULL,
+									0,
+									Raytrace,
+									(void*)&raytracer_data,
+									CREATE_SUSPENDED,
 									NULL );
-		_msg.Format("Rendering from scanline %d to %d ( %d x %d )",raytracer_data.start,raytracer_data.end,raytracer_data.camera.width,raytracer_data.camera.height);
-		WriteMessage(_msg);
+	std::cout << "Rendering from scanline " << raytracer_data->getStart();
+	std::cout << " to " << raytracer_data->getEnd();
+	std::cout << " ( " << raytracer_data->getCamera().width;
+	std::cout << " x " << raytracer_data->getCamera().height;
+	std::cout << ")" << std::endl;
 
-		dlg->SetTimer(1,2000,NULL);
-
-		raytracer_data.lock->SetEvent();
-		return true;
-	}
-}
-
-bool CWorkUnitApp::GetRaytraceData()
-{
-	//	Verifying textures downloading...
-	CString tname;
-	CTexture *txt;
-
-	CString _msg = "Querying Raytrace additional datas... ";
-	WriteMessage(_msg);
-
-	POSITION pos = raytracer_data.textures.GetStartPosition();
-	MSGSTRUCT msg;
-
-	if (pos == NULL)
-	{
-		COUT << "No data needed, jumping to rendering" << endl;
-		MSGSTRUCT msg;
-		msg.msg_id = ACK_NONE;
-		BuildTextures(msg,NULL);
-	}
-	else
-		COUT << "Data needed, querying to server" << endl;
-
-	while (pos != NULL)
-	{
-		raytracer_data.textures.GetNextAssoc( pos, tname, (void*&)txt );
-
-		//	Query texture to server
-		int len = tname.GetLength();
-		unsigned char *buffer = new unsigned char[len+MSGSIZE];
-		msg.msg_header = MSG_START;
-		msg.msg_id = IMG_REQUEST;
-		msg.msg_size = len;
-		msg.msg_data[0] = OBJ_TEXTURE;
-		msg.msg_data[1] = 0;
-		msg.msg_data[2] = 0;
-		msg.msg_data[3] = client.GetPort();
-		msg.msg_data[4] = ip;
-		msg.msg_tail = MSG_DATA;
-
-		COUT << "Querying texture: " << LPCTSTR(tname) << endl;
-
-		memcpy(buffer,&msg,MSGSIZE);
-		memcpy(buffer+MSGSIZE,LPCTSTR(tname),len);
-		client.Write(buffer,MSGSIZE+len);
-
-		delete [] buffer;
-
-		_msg = "Query sent for texture " + tname;
-		WriteMessage(_msg);
-	}
-
-	//	Verifying plugins...
-	pos = raytracer_data.plugins.GetStartPosition();
-	while (pos != NULL)
-	{
-		PLUGIN *p = NULL;
-		CString name;
-
-		raytracer_data.plugins.GetNextAssoc(pos,name,(void*&)p);
-		int deltaLoad = 0;
-
-		if (p->moduleInstance == NULL)
-		{
-			deltaLoad++;
-			*p = OpenPlugin(name);
-		}
-		if (p->moduleInstance == NULL)
-			COUT << "Unable to load plugin " << LPCTSTR(name) << endl;
-		else
-		{
-			nbPluginLoad -= deltaLoad;
-			COUT << "Plugin " << LPCTSTR(name) << " loaded. " << endl;
-		}
-	}
+	ResumeThread(raytracer);
 
 	return true;
 }
@@ -283,334 +288,174 @@ bool CWorkUnitApp::GetRaytraceData()
 //	Objects rebuilding
 //
 //////////////////////////////////////////////////////////////////////
-bool CWorkUnitApp::BuildCamera(MSGSTRUCT& msg,unsigned char raw_data[])
+bool CRaysWorkUnit::BuildCamera(MSGSTRUCT& msg, unsigned char raw_data[])
 {
-	//	is raytracer ready ?
-	DWORD wait = WaitForSingleObject(HANDLE(raytracer_data.lock),RAYS_WAIT_TIMEOUT);
-	if ((wait == WAIT_TIMEOUT)||(wait == WAIT_ABANDONED))
-	{
-		CString _msg = "Renderer busy !!!";
-		WriteMessage(_msg);
-		return false;
-	}
-	else
-	{
-		raytracer_data.lock->ResetEvent();
+	rays_config_t config;
+	memcpy(&config,raw_data,msg.msg_size);
 
-		rays_config_t config;
-		memcpy(&config,raw_data,msg.msg_size);
-							
-		raytracer_data.camera.width = config.width;
-		raytracer_data.camera.height = config.height;
-		raytracer_data.camera.variance = config.variance;
-		raytracer_data.camera.reflection_depth = config.deflection;
-		raytracer_data.camera.refraction_depth = config.defraction;
-		raytracer_data.camera.focale = config.focale;
-		raytracer_data.camera.object_plane = config.object_plane;
-		raytracer_data.camera.crease = (float)(PI_SUR_180 * config.crease);
-		raytracer_data.camera.photon_map = config.photon_map;
+	raytracer_data->updateCamera(config);
 
-		CTexture *txt = NULL;
-		CString tname = config.envtexname;
-COUT << "Env texture: " << config.envtexname << endl;
-		if (!tname.IsEmpty())
-			txt = GetTexture(tname);
-		CEnvironment::GetInstance()->SetTexture(txt);
+	CTexture *txt = NULL;
+	std::string tname = config.envtexname;
+	std::cout << "Env texture: " << config.envtexname << std::endl;
+	if (!tname.empty())
+		txt = raytracer_data->getTexture(tname);
+	CEnvironment::GetInstance()->SetTexture(txt);
 
-		raytracer_data.lock->SetEvent();
-		return true;
-	}
+	return true;
 }
 
 
-bool CWorkUnitApp::BuildLights(MSGSTRUCT& msg,unsigned char raw_data[])
+bool CRaysWorkUnit::BuildLights(MSGSTRUCT& msg, unsigned char raw_data[])
 {
-	//	is raytracer ready ?
-	DWORD wait = WaitForSingleObject(HANDLE(raytracer_data.lock),RAYS_WAIT_TIMEOUT);
-	if ((wait == WAIT_TIMEOUT)||(wait == WAIT_ABANDONED))
+	rays_light_t tlight;
+	unsigned int bufferpos=0;
+	unsigned int nblights = msg.msg_data[2];
+	CGenericLight *l;
+
+	for (unsigned int i=0;i<nblights;i++)
 	{
-		CString _msg = "Renderer busy !!!";
-		WriteMessage(_msg);
-		return false;
+		memcpy(&tlight,raw_data+bufferpos,sizeof(rays_light_t));
+		bufferpos+=sizeof(rays_light_t);
+		l = new CGenericLight(tlight);
+		raytracer_data->addLight(l);
+		std::cout << "light: " << tlight.position.x;
+		std::cout << "-" << tlight.position.y;
+		std::cout << "-" << tlight.position.z;
+		std::cout << "-" << tlight.intensity << std::endl;
+		std::cout << "Light added" << std::endl;
 	}
-	else
-	{
-		raytracer_data.lock->ResetEvent();
 
-		rays_light_t tlight;
-		unsigned int bufferpos=0;
-		unsigned int nblights = msg.msg_data[2];
-		CGenericLight *l;
-		CString _msg;
-
-		for (unsigned int i=0;i<nblights;i++)
-		{
-			memcpy(&tlight,raw_data+bufferpos,sizeof(rays_light_t));
-			bufferpos+=sizeof(rays_light_t);
-			l = new CGenericLight(tlight);
-			raytracer_data.lights.Add(l);
-			_msg.Format("light: %f-%f-%f-%f",tlight.position.x,tlight.position.y,tlight.position.z,tlight.intensity);
-			WriteMessage(_msg);
-			COUT << "Light added" << endl;
-		}
-
-		raytracer_data.lock->SetEvent();
-		return true;
-	}
+	return true;
 }
 
 
-bool CWorkUnitApp::BuildSpheres(MSGSTRUCT& msg,unsigned char raw_data[])
+bool CRaysWorkUnit::BuildSpheres(MSGSTRUCT& msg, unsigned char raw_data[])
 {
-	//	is raytracer ready ?
-	DWORD wait = WaitForSingleObject(HANDLE(raytracer_data.lock),RAYS_WAIT_TIMEOUT);
-	if ((wait == WAIT_TIMEOUT)||(wait == WAIT_ABANDONED))
+	rays_sphere_t tsphere;
+	unsigned int bufferpos=0;
+	unsigned int nbspheres = msg.msg_data[2];
+	CQuadric *q;
+
+	for (unsigned int i=0;i<nbspheres;i++)
 	{
-		CString _msg = "Renderer busy !!!";
-		WriteMessage(_msg);
-		return false;
+		memcpy(&tsphere,raw_data+bufferpos,sizeof(rays_sphere_t));
+		bufferpos+=sizeof(rays_sphere_t);
+
+		q = new CQuadric(tsphere);
+		SetTextures(q,tsphere.base);
+
+		raytracer_data->addObject(q);
+		std::cout << "sphere: " << tsphere.center.x << "-" << tsphere.center.y << "-";
+		std::cout << tsphere.center.z << "-" << tsphere.radius << std::endl;
+		std::cout << "Surface added" << std::endl;
 	}
-	else
-	{
-		raytracer_data.lock->ResetEvent();
 
-		rays_sphere_t tsphere;
-		unsigned int bufferpos=0;
-		unsigned int nbspheres = msg.msg_data[2];
-		CQuadric *q;
-		CString _msg;
-
-		for (unsigned int i=0;i<nbspheres;i++)
-		{
-			memcpy(&tsphere,raw_data+bufferpos,sizeof(rays_sphere_t));
-			bufferpos+=sizeof(rays_sphere_t);
-
-			q = new CQuadric(tsphere);
-			SetTextures(q,tsphere.base);
-
-			raytracer_data.objects.Add(q);
-			_msg.Format("sphere: %f-%f-%f-%f",tsphere.center.x,tsphere.center.y,tsphere.center.z,tsphere.radius);
-			WriteMessage(_msg);
-			COUT << "Surface added" << endl;
-		}
-
-		raytracer_data.lock->SetEvent();
-		return true;
-	}
+	return true;
 }
 
-bool CWorkUnitApp::BuildFrames(MSGSTRUCT& msg,unsigned char raw_data[])
+bool CRaysWorkUnit::BuildFrames(MSGSTRUCT& msg, unsigned char raw_data[])
 {
-	//	is raytracer ready ?
-	DWORD wait = WaitForSingleObject(HANDLE(raytracer_data.lock),RAYS_WAIT_TIMEOUT);
-	if ((wait == WAIT_TIMEOUT)||(wait == WAIT_ABANDONED))
+	unsigned int bufferpos=0;
+	unsigned int nbframes = msg.msg_data[2];
+
+	for (unsigned int i=0;i<nbframes;i++)
 	{
-		CString _msg = "Renderer busy !!!";
-		WriteMessage(_msg);
-		return false;
-	}
-	else
-	{
-		raytracer_data.lock->ResetEvent();
+		rays_frame_t *pFrame = new rays_frame_t;
 
-		unsigned int bufferpos=0;
-		unsigned int nbframes = msg.msg_data[2];
+		memcpy(pFrame,raw_data+bufferpos,sizeof(rays_frame_t));
+		bufferpos+=sizeof(rays_frame_t);
 
-		CString _msg;
+		raytracer_data->addFrame(pFrame);
 
-		for (unsigned int i=0;i<nbframes;i++)
+		pFrame->calls = new rays_plugin_t[pFrame->nbCalls];
+		for (unsigned int j=0;j<pFrame->nbCalls;j++)
 		{
-			rays_frame_t *pFrame = new rays_frame_t;
-
-			memcpy(pFrame,raw_data+bufferpos,sizeof(rays_frame_t));
-			bufferpos+=sizeof(rays_frame_t);
-
-			raytracer_data.frames.SetAt(i,pFrame);
-
-			pFrame->calls = new rays_plugin_t[pFrame->nbCalls];
-			for (int j=0;j<pFrame->nbCalls;j++)
-			{
-				memcpy(&(pFrame->calls[j]),raw_data+bufferpos,sizeof(rays_plugin_t));
-				bufferpos += sizeof(rays_plugin_t);
-			}
-
-			pFrame->transforms = new rays_transform_t[pFrame->nbTransforms];
-			for (j=0;j<pFrame->nbTransforms;j++)
-			{
-				memcpy(&(pFrame->transforms[j]),raw_data+bufferpos,sizeof(rays_transform_t));
-				bufferpos += sizeof(rays_transform_t);
-			}
-
-			_msg.Format("frame: %d",i);
-			WriteMessage(_msg);
-			COUT << "Frame added" << endl;
+			memcpy(&(pFrame->calls[j]),raw_data+bufferpos,sizeof(rays_plugin_t));
+			bufferpos += sizeof(rays_plugin_t);
 		}
 
-		raytracer_data.lock->SetEvent();
-		return true;
+		pFrame->transforms = new rays_transform_t[pFrame->nbTransforms];
+		for (unsigned int j=0;j<pFrame->nbTransforms;j++)
+		{
+			memcpy(&(pFrame->transforms[j]),raw_data+bufferpos,sizeof(rays_transform_t));
+			bufferpos += sizeof(rays_transform_t);
+		}
+
+		std::cout << "Frame: " << i << " added" << std::endl;
 	}
+
+	return true;
 }
 
 
-bool CWorkUnitApp::BuildGeometries(MSGSTRUCT& msg,unsigned char raw_data[])
+bool CRaysWorkUnit::BuildGeometries(MSGSTRUCT& msg, unsigned char raw_data[])
 {
-	//	is raytracer ready ?
-	DWORD wait = WaitForSingleObject(HANDLE(raytracer_data.lock),RAYS_WAIT_TIMEOUT);
-	if ((wait == WAIT_TIMEOUT)||(wait == WAIT_ABANDONED))
-	{
-		CString _msg = "Renderer busy !!!";
-		WriteMessage(_msg);
-		return false;
-	}
-	else
-	{
-		raytracer_data.lock->ResetEvent();
+	rays_composition_header_t tgeometry;
+	unsigned int bufferpos=0;
+	unsigned int size = 0;
+	unsigned int nbcomposition = msg.msg_data[2];
 
-		rays_composition_header_t tgeometry;
-		unsigned int bufferpos=0;
-		unsigned int size = 0;
-		unsigned int nbcomposition = msg.msg_data[2];
-		
-		CString		_msg;
-		CMesh		*m = NULL;
-		SSE_CMesh	*mm = NULL;
+	CMesh		*m = NULL;
+	SSE_CMesh	*mm = NULL;
 
-		for (unsigned int i=0;i<nbcomposition;i++)
+	for (unsigned int i=0;i<nbcomposition;i++)
+	{
+		memcpy(&tgeometry,raw_data+bufferpos,sizeof(rays_composition_header_t));
+		bufferpos+=sizeof(rays_composition_header_t);
+
+		tgeometry.geometry = new rays_vertex_t[tgeometry.geometrySize];
+		tgeometry.mesh = new rays_triangle_t[tgeometry.meshSize];
+
+		size = tgeometry.geometrySize * sizeof(rays_vertex_t);
+		memcpy(tgeometry.geometry,raw_data+bufferpos,size);
+		bufferpos += size;
+
+		size = tgeometry.meshSize * sizeof(rays_triangle_t);
+		memcpy(tgeometry.mesh,raw_data+bufferpos,size);
+		bufferpos += size;
+
+		std::cout << "Geometry size: " << tgeometry.geometrySize << endl;
+		std::cout << "Mesh size: " << tgeometry.meshSize << endl;
+		std::cout << "Creating mesh geometry..." << std::endl;
+
+		const CPU_INFO& cpu = getCPUINFO();
+		if (cpu.hasFeature(CPUINFO::SSE))
 		{
-			memcpy(&tgeometry,raw_data+bufferpos,sizeof(rays_composition_header_t));
-			bufferpos+=sizeof(rays_composition_header_t);
-
-			tgeometry.geometry = new rays_vertex_t[tgeometry.geometrySize];
-			tgeometry.mesh = new rays_triangle_t[tgeometry.meshSize];
-
-			size = tgeometry.geometrySize * sizeof(rays_vertex_t);
-			memcpy(tgeometry.geometry,raw_data+bufferpos,size);
-			bufferpos += size;
-
-			size = tgeometry.meshSize * sizeof(rays_triangle_t);
-			memcpy(tgeometry.mesh,raw_data+bufferpos,size);
-			bufferpos += size;
-
-			if (raytracer_data.use_sse)
-			{
-				mm = new SSE_CMesh(tgeometry);
-				SetTextures(mm,tgeometry.base);
-			}
-			else
-			{
-				m = new CMesh(tgeometry);
-				SetTextures(m,tgeometry.base);
-			}
-
-			COUT << "Geometry size: " << tgeometry.geometrySize << endl;
-			COUT << "Mesh size: " << tgeometry.meshSize << endl;
-
-			_msg = "Creating mesh geometry...";
-			WriteMessage(_msg);
-			if (raytracer_data.use_sse)
-			{
-				for (int j=0;j<tgeometry.meshSize;j++)
-					mm->AddTriangle(tgeometry.mesh[j],tgeometry.geometry);
-				raytracer_data.objects.Add(mm);
-			}
-			else
-			{
-				for (int j=0;j<tgeometry.meshSize;j++)
-					m->AddTriangle(tgeometry.mesh[j],tgeometry.geometry);
-				raytracer_data.objects.Add(m);
-			}
-
-			COUT << "Mesh geometry added" << endl;
-
-			delete [] tgeometry.geometry;
-			delete [] tgeometry.mesh;
-		}
-
-		COUT << "Build Geometries done !" << endl;
-
-		raytracer_data.lock->SetEvent();
-		return true;
-	}
-}
-
-bool CWorkUnitApp::BuildTextures(MSGSTRUCT& msg,unsigned char raw_data[])
-{
-	//	is raytracer ready ?
-	DWORD wait = WaitForSingleObject(HANDLE(raytracer_data.lock),RAYS_WAIT_TIMEOUT);
-	if ((wait == WAIT_TIMEOUT)||(wait == WAIT_ABANDONED))
-	{
-		CString _msg = "Renderer busy !!!";
-		WriteMessage(_msg);
-		return false;
-	}
-	else
-	{
-		raytracer_data.lock->ResetEvent();
-
-		if (msg.msg_id != ACK_NONE)
-		{
-			COUT << "Building Texture..." << endl;
-
-			int len = msg.msg_data[2];
-			char *tname = new char[len+1];
-
-			memcpy(tname,&raw_data[0],len);
-			tname[len] = 0;
-
-			CString _msg;
-			_msg.Format("Downloading texture: %s",tname);
-			WriteMessage(_msg);
-
-			COUT << "Texture name: " << tname << endl;
-			COUT << "Texture size: " << msg.msg_size - len << endl;
-
-			CTexture *txt = NULL;
-			if (0 != raytracer_data.textures.Lookup( tname, (void*&) txt))
-			{
-				txt->SetTexture(msg.msg_data[0],msg.msg_data[1],&raw_data[len]);
-			}
-			else
-			{
-				_msg = "Internal error : texture object not created !";
-				WriteMessage(_msg);
-			}
-
-			COUT << "Texture is built !" << endl;
-		}
-
-		if (nbTextureLoad > 0)
-			nbTextureLoad--;
-
-		COUT << "Still need " << nbTextureLoad << " textures" << endl;
-		COUT << "Still need " << nbPluginLoad << " plugins" << endl;
-
-		if (nbTextureLoad == 0)
-		{
-			COUT << "Raytrace start... " << endl;
-			if (nbPluginLoad > 0)
-			{
-				CString _msg = "WARNING : there still are some missing plugins. Check Rays2 install";
-				COUT <<  LPCTSTR(_msg) << endl;
-				WriteMessage(_msg);
-			}
-			raytracer->ResumeThread();
-			COUT << "Raytrace running... " << endl;
+			mm = new SSE_CMesh(tgeometry);
+			SetTextures(mm,tgeometry.base);
+			for (int j = 0; j<tgeometry.meshSize; j++)
+				mm->AddTriangle(tgeometry.mesh[j], tgeometry.geometry);
+			raytracer_data->addObject(mm);
 		}
 		else
-			raytracer_data.lock->SetEvent();
+		{
+			m = new CMesh(tgeometry);
+			SetTextures(m,tgeometry.base);
+			for (int j = 0; j<tgeometry.meshSize; j++)
+				m->AddTriangle(tgeometry.mesh[j], tgeometry.geometry);
+			raytracer_data->addObject(m);
+		}
 
-		return true;
+		std::cout << "Mesh geometry added" << endl;
+
+		delete [] tgeometry.geometry;
+		delete [] tgeometry.mesh;
 	}
+
+	std::cout << "Build Geometries done !" << endl;
+
+	return true;
 }
 
-void CWorkUnitApp::SetTextures(CGenericRenderObject* obj,rays_objectbase_t& base)
+void CRaysWorkUnit::SetTextures(CGenericRenderObject* obj,rays_objectbase_t& base)
 {
-	COUT << "Diffuse Texture type: " << base.texture.type << endl;
+	std::cout << "Diffuse Texture type: " << base.texture.type << std::endl;
 
 	CTexture *txt = GetTexture(base.texture.texture.name);
 	obj->SetTexture(txt);
 
-	COUT << "Normal Texture type: " << base.normal.type << endl;
+	std::cout << "Normal Texture type: " << base.normal.type << std::endl;
 
 	if (base.normal.type == MAP)
 	{
@@ -618,39 +463,33 @@ void CWorkUnitApp::SetTextures(CGenericRenderObject* obj,rays_objectbase_t& base
 		obj->SetNormalMap(txt);
 	}
 	else
-	{
 		obj->GetSurfacer(CGenericRenderObject::BUMP_USER)->InitNormalGenerator(base.normal.texture);
-	}
 }
 
-CTexture *CWorkUnitApp::GetTexture(CString tname)
+CTexture *CRaysWorkUnit::GetTexture(const std::string& tname)
 {
 	CTexture *txt = NULL;
 
-	CString _msg = "Querying texture: " + tname;
-	WriteMessage(_msg);
+	std::cout << "Querying texture: " << tname << std::endl;
 
-	if (tname.IsEmpty())
+	if (tname.empty())
 	{
-		COUT << "Texture unavailable ( empty )" << endl;
-		_msg = "Texture unavailable ( empty )";
-		WriteMessage(_msg);
+		std::cout << "Texture unavailable ( empty )" << std::endl;
 		return txt;
 	}
 
 	if (tname == "none")
 	{
-		COUT << "Texture unavailable ( none )" << endl;
-		_msg = "Texture unavailable ( none )";
-		WriteMessage(_msg);
+		std::cout << "Texture unavailable ( none )" << std::endl;
 		return txt;
 	}
 
-	if (0 == raytracer_data.textures.Lookup( tname, (void*&) txt))
+	txt = raytracer_data->getTexture(tname);
+	if (NULL == txt)
 	{
-		COUT << "Creating texture: " << LPCTSTR(tname) << endl;
+		std::cout << "Creating texture: " << tname << endl;
 		txt = new CTexture();
-		raytracer_data.textures.SetAt(tname,txt);
+		raytracer_data->addTexture(txt, tname);
 
 		nbTextureLoad++;
 	}
@@ -659,43 +498,36 @@ CTexture *CWorkUnitApp::GetTexture(CString tname)
 }
 
 
-bool CWorkUnitApp::BuildPlugins(MSGSTRUCT& msg,unsigned char raw_data[])
+bool CRaysWorkUnit::BuildPlugins(MSGSTRUCT& msg, unsigned char raw_data[])
 {
-	//	is raytracer ready ?
-	DWORD wait = WaitForSingleObject(HANDLE(raytracer_data.lock),RAYS_WAIT_TIMEOUT);
-	if ((wait == WAIT_TIMEOUT)||(wait == WAIT_ABANDONED))
+	unsigned int offset = 0;
+	unsigned int nbPlugin = msg.msg_data[2];
+
+	std::cout << "Nb plugins: " << nbPlugin << std::endl;
+
+	for (unsigned int i=0;i<nbPlugin;i++)
 	{
-		CString _msg = "Renderer busy !!!";
-		WriteMessage(_msg);
-		return false;
-	}
-	else
-	{
-		CString _msg;
-		raytracer_data.lock->ResetEvent();
+		rays_plugin_t plugin;
+		memcpy(&plugin,raw_data+offset,sizeof(rays_plugin_t));
+		std::cout << "Loading plugin : " << plugin.name << std::endl;
+		std::cout << "Plugin nbParams: " << plugin.nbParams << std::endl;
 
-		int offset = 0;
-		unsigned int nbPlugin = msg.msg_data[2];
-
-		COUT << "Nb plugins: " << nbPlugin << endl;
-
-		for (unsigned int i=0;i<nbPlugin;i++)
+		CPlugin *p = raytracer_data->getPlugin(plugin.name);
+		if (0 == p)
 		{
-			rays_plugin_t plugin;
-			memcpy(&plugin,raw_data+offset,sizeof(rays_plugin_t));
-			CString pname = plugin.name;
-			COUT << "Loading plugin : " << LPCTSTR(pname) << endl;
-			COUT << "Plugin nbParams: " << plugin.nbParams << endl;
+			p = new CPlugin;
+			p->OpenPlugin(plugin.name);
 
-			if (!LoadModule(pname))
+			raytracer_data->addPlugin(p,plugin.name);
+
+			if (NULL == p->moduleInstance)
 			{
-				_msg = "Unable to load module: " + pname;
-				WriteMessage(_msg);
+				std::cout << "Unable to load module: " << plugin.name << std::endl;
 				nbPluginLoad++;
 
 				//	Query module to server
-				int len = pname.GetLength();
-				unsigned char *buffer = new unsigned char[len+MSGSIZE];
+				int len = strlen(plugin.name);
+				unsigned char *buffer = new unsigned char[len + MSGSIZE];
 				msg.msg_header = MSG_START;
 				msg.msg_id = IMG_REQUEST;
 				msg.msg_size = len;
@@ -703,44 +535,24 @@ bool CWorkUnitApp::BuildPlugins(MSGSTRUCT& msg,unsigned char raw_data[])
 				msg.msg_data[0] = OBJ_PLUGIN;
 				msg.msg_data[1] = 0;
 				msg.msg_data[2] = 0;
-				msg.msg_data[3] = client.GetPort();
-				msg.msg_data[4] = ip;
+				msg.msg_data[3] = getPort();
+				msg.msg_data[4] = getAddr();
 				msg.msg_tail = MSG_DATA;
 
-				COUT << "Querying plugin: " << LPCTSTR(pname) << endl;
+				std::cout << "Querying plugin: " << plugin.name << endl;
 
-				memcpy(buffer,&msg,MSGSIZE);
-				memcpy(buffer+MSGSIZE,LPCTSTR(pname),len);
-				client.Write(buffer,MSGSIZE+len);
-				delete [] buffer;
+				memcpy(buffer, &msg, MSGSIZE);
+				memcpy(buffer + MSGSIZE, plugin.name, len);
+				write(buffer, MSGSIZE + len);
+				delete[] buffer;
 
 				msg.msg_data[0] = jobID;
 			}
-
-			offset += sizeof(rays_plugin_t);
 		}
-
-		COUT << "Build Plugins done !" << endl;
-
-		raytracer_data.lock->SetEvent();
-		return true;
+		offset += sizeof(rays_plugin_t);
 	}
-}
 
-bool CWorkUnitApp::LoadModule(CString name)
-{
-	PLUGIN *p = NULL;
+	std::cout << "Build Plugins done !" << endl;
 
-	if (0 == raytracer_data.plugins.Lookup(LPCTSTR(name),(void*&)p))
-	{
-		p = new PLUGIN;
-
-		*p = OpenPlugin(name);
-		
-		raytracer_data.plugins.SetAt(name,p);
-
-		return (p->moduleInstance != NULL);
-	}
-	else
-		return true;
+	return true;
 }

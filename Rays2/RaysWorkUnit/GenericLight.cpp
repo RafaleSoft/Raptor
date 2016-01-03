@@ -3,10 +3,12 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+#include "Subsys/CodeGeneration.h"
+
 #include "RaysWorkUnit.h"
 #include "GenericLight.h"
 #include "PhotonMap.h"
-
+#include "Raytracer.h"
 
 extern unsigned int	Ray_ID;
 
@@ -16,10 +18,10 @@ extern unsigned int	Ray_ID;
 CGenericLight::CGenericLight(rays_light_t &l)
 {
 	position.Set(l.position.x,l.position.y,l.position.z,l.position.h);
-	color.Set(	(short)(0xFFFF*l.color.x),
-				(short)(0xFFFF*l.color.y),
-				(short)(0xFFFF*l.color.z),
-				(short)(0xFFFF*l.color.h));
+	color.r = l.color.x;
+	color.g = l.color.y;
+	color.b = l.color.z;
+	color.a = l.color.h;
 	intensity = l.intensity;
 
 	direction.Set(	l.direction.x - l.position.x,
@@ -50,7 +52,7 @@ float CGenericLight::GetSpotCoefficient(const CGenericVector<float> &vector) con
 		if (cos_angle > cos(TO_RADIAN(cutOff)))
 		{
 			float angle = 0.25f * acos(cos_angle);
-			spot = exp(-angle * DEG);
+			spot = exp(TO_DEGREE(-angle));
 		}
 		else
 			spot = 0.0f;
@@ -59,10 +61,10 @@ float CGenericLight::GetSpotCoefficient(const CGenericVector<float> &vector) con
 	{
 		float n = vector.Norm();
 		float cos_angle = -(direction % vector) / n;
-		if (cos_angle > cos(cutOff * RAD))
+		if (cos_angle > cos(TO_RADIAN(cutOff)))
 		{
 			float angle = acos(cos_angle);
-			angle = angle * M_PI / (2.0f * cutOff * RAD);
+			angle = angle * PI / (TO_RADIAN(2.0f * cutOff));
 			spot = cos(angle);
 
 		}
@@ -71,7 +73,7 @@ float CGenericLight::GetSpotCoefficient(const CGenericVector<float> &vector) con
 	}
 	else if ((model & SPOT) == SPOT)
 	{
-		if (-(direction % vector) < cos(cutOff * RAD) * vector.Norm())
+		if (-(direction % vector) < cos(TO_RADIAN(cutOff)) * vector.Norm())
 			spot = 0.0f;
 	}
 	
@@ -79,7 +81,7 @@ float CGenericLight::GetSpotCoefficient(const CGenericVector<float> &vector) con
 }
 
 
-void CGenericLight::BuildPhotonMap(const CRaytracerData& World,unsigned int nbPhotons)
+void CGenericLight::BuildPhotonMap(CRaytracerData& World,unsigned int nbPhotons)
 {
 	if ((model & PHOTON_MAP) == PHOTON_MAP)
 	{
@@ -98,36 +100,36 @@ void CGenericLight::BuildPhotonMap(const CRaytracerData& World,unsigned int nbPh
 		float zmin = HUGE_REAL;
 		float zmax = -HUGE_REAL;
 
-		float cosCutOff = cos(cutOff * RAD);
-		float sinCutOff = sin(cutOff * RAD);
+		float cosCutOff = cos(TO_RADIAN(cutOff));
+		float sinCutOff = sin(TO_RADIAN(cutOff));
 
 		float angle = acos(direction.X());
 		if (asin(direction.X()) < 0)
 			angle = -angle;
-		float x = cos(cutOff * RAD + angle);
+		float x = cos(TO_RADIAN(cutOff) + angle);
 		if (x > xmax) xmax = x;
 		if (x < xmin) xmin = x;
-		x = cos(-cutOff * RAD + angle);
+		x = cos(TO_RADIAN(-cutOff) + angle);
 		if (x > xmax) xmax = x;
 		if (x < xmin) xmin = x;
 
 		angle = acos(direction.Y());
 		if (asin(direction.Y()) < 0)
 			angle = -angle;
-		x = cos(cutOff * RAD + angle);
+		x = cos(TO_RADIAN(cutOff) + angle);
 		if (x > ymax) ymax = x;
 		if (x < ymin) ymin = x;
-		x = cos(-cutOff * RAD + angle);
+		x = cos(TO_RADIAN(-cutOff) + angle);
 		if (x > ymax) ymax = x;
 		if (x < ymin) ymin = x;
 
 		angle = acos(direction.Z());
 		if (asin(direction.Z()) < 0)
 			angle = -angle;
-		x = cos(cutOff * RAD + angle);
+		x = cos(TO_RADIAN(cutOff) + angle);
 		if (x > zmax) zmax = x;
 		if (x < zmin) zmin = x;
-		x = cos(-cutOff * RAD + angle);
+		x = cos(TO_RADIAN(-cutOff) + angle);
 		if (x > zmax) zmax = x;
 		if (x < zmin) zmin = x;
 
@@ -159,30 +161,30 @@ void CGenericLight::BuildPhotonMap(const CRaytracerData& World,unsigned int nbPh
 			int percent = 100 * m_pPhotonMap->GetNbPhotons() / nbPhotons;
 			if (percent != oldPercent)
 			{
-				COUT << percent << " %" << endl;
+				std::cout << percent << " %" << std::endl;
 				oldPercent = percent;
 			}
 		}
 
 		m_pPhotonMap->BuildPhotonMap();
 
-COUT << "Photon map : nb photons = " << m_pPhotonMap->GetNbPhotons() << endl;
-COUT << "Photon map END" << endl;
+		std::cout << "Photon map : nb photons = " << m_pPhotonMap->GetNbPhotons() << std::endl;
+		std::cout << "Photon map END" << std::endl;
 		SavePhotonMap(World,"photonmap");
 	}
 	else
 	{
-COUT << "Light has no photon map specification" << endl;
+		std::cout << "Light has no photon map specification" << std::endl;
 	}
 }
 
-void CGenericLight::GetPhotonColor(const CGenericVector<float>& hit,CWVector& color)
+void CGenericLight::GetPhotonColor(const CGenericVector<float>& hit,CColor::RGBA& color)
 {
 	if (m_pPhotonMap != NULL)
 	{
 		m_pPhotonMap->GetDensity(hit,tmpColor);
 
-		CWVector &c = tmpColor;
+		CColor::RGBA &c = tmpColor;
 		__asm
 		{
 			mov edi,color
@@ -196,21 +198,22 @@ void CGenericLight::GetPhotonColor(const CGenericVector<float>& hit,CWVector& co
 	}
 }
 
-void CGenericLight::SavePhotonMap(const CRaytracerData& World,const char* name)
+void CGenericLight::SavePhotonMap(const CRaytracerData& World,const std::string& name)
 {
 	CGenericRay photonRay;
-	photonRay.origin = World->camera.origin;
-	unsigned char *photonMap = new unsigned char[World->camera.height*World->camera.width*4];
-	memset(photonMap,0,World->camera.height*World->camera.width*4);
+	const CCamera& camera = World.getCamera();
+	photonRay.origin = camera.origin;
+	unsigned char *photonMap = new unsigned char[camera.height*camera.width*4];
+	memset(photonMap,0,camera.height*camera.width*4);
 
 	/////////////////////////////////////////////////////////////////////////////
 	//	optical settings
 	//	1/P + 1/I = 1/F
 	//	P/I = S/s = grandissement
-	float			p_over_i = World->camera.object_plane / (World->camera.focale*0.001f) - 1.0f;
+	float			p_over_i = camera.object_plane / (camera.focale*0.001f) - 1.0f;
 	float			grand = p_over_i * DIM_FILM;
 	//float ouvert = (data->camera.aperture < 128.0f) ? (data->camera.focale*0.001f) / data->camera.aperture : 0.0f ;
-	float			scale = grand / World->camera.height ;	
+	float			scale = grand / camera.height ;	
 
 	int max = m_pPhotonMap->GetNbPhotons();
 	float x;
@@ -221,32 +224,32 @@ void CGenericLight::SavePhotonMap(const CRaytracerData& World,const char* name)
 		CPhotonMap::photon ph = m_pPhotonMap->GetPhoton(p);
 	
 		photonRay.direction = ph.position;
-		float t = World->camera.object_plane / (photonRay.origin.Z() - photonRay.direction.Z());
+		float t = camera.object_plane / (photonRay.origin.Z() - photonRay.direction.Z());
 
 		if (t > 0)
 		{
 			x = t * (photonRay.direction.X() - photonRay.origin.X());
 			y = t * (photonRay.direction.Y() - photonRay.origin.Y());
 
-			x = (x / scale) + (World->camera.width>>1);
-			y = (y / scale) + (World->camera.height>>1);
+			x = (x / scale) + (camera.width>>1);
+			y = (y / scale) + (camera.height>>1);
 
-			if ((x >= 0) && ( x < World->camera.width) &&
-				(y >= 0) && ( y < World->camera.height))
+			if ((x >= 0) && ( x < camera.width) &&
+				(y >= 0) && ( y < camera.height))
 			{
 				unsigned int ix = (floor(x)) * 4;
 				unsigned int iy = (floor(y)) * 4;
-				unsigned int offset = (unsigned int)(iy * World->camera.width + ix);
+				unsigned int offset = (unsigned int)(iy * camera.width + ix);
 
-				int val = photonMap[offset] + (ph.energy[0] >> 8);
+				int val = photonMap[offset] + ph.energy[0] * 255;
 				if (val > 255) val = 255;
 				photonMap[offset] = (unsigned char)(val & 0xff);
 
-				val = photonMap[offset+1] + (ph.energy[1] >> 8);
+				val = photonMap[offset+1] + ph.energy[1] * 255;
 				if (val > 255) val = 255;
 				photonMap[offset+1] = (unsigned char)(val & 0xff);
 
-				val = photonMap[offset+2] + (ph.energy[2] >> 8);
+				val = photonMap[offset+2] + ph.energy[2] * 255;
 				if (val > 255) val = 255;
 				photonMap[offset+2] = (unsigned char)(val & 0xff);
 
@@ -256,19 +259,21 @@ void CGenericLight::SavePhotonMap(const CRaytracerData& World,const char* name)
 	}
 
 	int numLight = 0;
-	for (int i=0;i<World->lights.GetSize();i++)
+	for (unsigned int i = 0; i<World.getNbLights(); i++)
 	{
-		if (World->lights[i] == this)
+		if (World.getLight(i) == this)
 			numLight = i;
 	}
-/*
-	CString txtname = name;
-	txtname.Format("%s_%d.txt",name,numLight);
-	m_pPhotonMap->DumpPhotons(LPCTSTR(txtname));
-*/
-	CString tganame = name;
-	tganame.Format("%s_%d.tga",name,numLight);
-	DumpImage(LPCTSTR(tganame),photonMap);
+
+	stringstream txtname;
+	txtname << name;
+	txtname << "_" << numLight << ".txt";
+	m_pPhotonMap->DumpPhotons(txtname.str());
+
+	stringstream tganame;
+	tganame << name;
+	tganame << "_" << numLight << ".tga";
+	//DumpImage(LPCTSTR(tganame),photonMap);
 
 	delete [] photonMap;
 }

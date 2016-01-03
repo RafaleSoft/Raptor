@@ -8,15 +8,15 @@
 
 //#include "GenericRay.h"
 #include "GenericLight.h"
-#include "GenericRenderObject.h"
+#include "RenderObject.h"
 #include "Texture.h"
-//#include "Triangle.h"
-//#include "Mesh.h"
-//#include "SSE_CMesh.h"
+#include "Triangle.h"
+#include "Mesh.h"
+#include "SSE_CMesh.h"
 //#include "SSE_BoundingBox.h"
-#include "Environment.h"
+//#include "Environment.h"
 //#include "PhotonMap.h"
-//#include "..\Plugin.h"
+#include "..\Plugin.h"
 
 #include "RaysWorkUnit.h"
 #include "Raytracer.h"
@@ -25,7 +25,7 @@
 // Raytracer data
 //
 unsigned int	Ray_ID = 0;
-CWVector		*colorImage;
+CColor::RGBA	*colorImage;
 
 CRaytracerData::CRaytracerData()
 {
@@ -42,8 +42,6 @@ CRaytracerData::CRaytracerData()
 	camera.crease = 0;
 	camera.photon_map = 200000;
 	
-	currentFrame = 0;
-
 	start = 0;
 	end = 0;
 	percent = 0;
@@ -75,14 +73,40 @@ CRaytracerData::~CRaytracerData()
 	}
 	plugins.clear();
 
-	delete [] image;
-	delete [] ZBuffer;
+	if (NULL != image)
+		delete [] image;
+	if (NULL != ZBuffer)
+		delete [] ZBuffer;
+}
+
+void CRaytracerData::allocateBuffer()
+{
+	if (NULL != ZBuffer)
+		delete[] ZBuffer;
+	ZBuffer = new float[(end - start)*camera.width];
+	if (NULL != image)
+		delete[] image;
+	image = new unsigned char[(end - start)*camera.width * 4];
+}
+
+void CRaytracerData::updateCamera(const rays_config_t &config)
+{
+	camera.width = config.width;
+	camera.height = config.height;
+	camera.variance = config.variance;
+	camera.reflection_depth = config.deflection;
+	camera.refraction_depth = config.defraction;
+	camera.focale = config.focale;
+	camera.object_plane = config.object_plane;
+	camera.crease = (float)(PI_SUR_180 * config.crease);
+	camera.photon_map = config.photon_map;
 }
 
 //
 //	Pack Image from 64bits colors to 32bits colors
 //
 /////////////////////////////////////////////////////////////////////////////
+/*
 void PackImage(int size,const CRaytracerData& raytracer_data)
 {
 	unsigned short *c1,*c2;
@@ -133,39 +157,39 @@ void PackImage(int size,const CRaytracerData& raytracer_data)
 	}
 	__asm emms;
 }
-
+*/
 /////////////////////////////////////////////////////////////////////////////
 // Variance : recursive addaptative subsampling for antialiasing
 //		and texture bilinear filtering
 //
-CWVector variance(float centerx,float centery,float scale,int depth,
-				  CGenericRay &r,const CRaytracerData& raytracer_data)
+CColor::RGBA variance(float centerx,float centery,float scale,int depth,
+					  CGenericRay &r,CRaytracerData& raytracer_data)
 {
 	if (depth  == 0 )
 	{
 		CGenericRay vray;
-		CWVector c;
+		CColor::RGBA c;
 
 		// preparation du rayon
 		vray.origin = r.origin;
 		vray.direction = -vray.origin;
 		vray.direction.X() += centerx;	
 		vray.direction.Y() += centery;
-		vray.direction.Z() = -raytracer_data.camera.object_plane ;
+		vray.direction.Z() = -raytracer_data.getCamera().object_plane ;
 		vray.direction.Normalize();
 		vray.n = r.n;
 		vray.level = r.level;
 		vray.fact = r.fact;
 		vray.id    = ++Ray_ID ;
-		vray.Hit(&raytracer_data,c);
+		vray.Hit(raytracer_data,c);
 
 		return c;
 	}
 	else
 	{
-		int variancelimit = raytracer_data.camera.variance;
-		CWVector m,v;
-		CWVector c1,c2,c3,c4;
+		int variancelimit = raytracer_data.getCamera().variance;
+		CColor::RGBA m,v;
+		CColor::RGBA c1,c2,c3,c4;
 		float f1,f2,f3,f4;
 
 		if ((variancelimit>0)||(depth==1))
@@ -265,7 +289,7 @@ CWVector variance(float centerx,float centery,float scale,int depth,
 			return m;
 
 		// test seuil
-		if (((v.X()>=variancelimit)||(v.Y()>=variancelimit)||(v.Z()>=variancelimit))&&(depth>1))
+		if (((v.r>=variancelimit)||(v.g>=variancelimit)||(v.b>=variancelimit))&&(depth>1))
 		{
 			c1=variance(centerx-scale,centery-scale,0.5f*scale,depth-1,r,raytracer_data);
 			c2=variance(centerx+scale,centery-scale,0.5f*scale,depth-1,r,raytracer_data);
@@ -319,46 +343,46 @@ CWVector variance(float centerx,float centery,float scale,int depth,
 //
 UINT RaytraceFrame( LPVOID pParam )
 {
-	UNREFERENCED_PARAMETER(pParam);
+	CRaytracerData &raytracer_data = *((CRaytracerData*)pParam);
 
 	/////////////////////////////////////////////////////////////////////////////
 	// loops controlers
-	int				startscanline = raytracer_data.start;
-	int				endscanline = raytracer_data.end;
-	int				i,j,k = 0;
-	bool			antialias = (raytracer_data.camera.variance > 0);
+	int				startscanline = raytracer_data.getStart();
+	int				endscanline = raytracer_data.getEnd();
+	bool			antialias = (raytracer_data.getCamera().variance > 0);
 	int				aliaslevel = 2;
 	float			x,y;
 
+	const CPU_INFO& cpu = getCPUINFO();
 	/////////////////////////////////////////////////////////////////////////////
 	// Init datas
-	for (i=0;i<raytracer_data.objects.size();i++)
+	for (unsigned int i=0;i<raytracer_data.getNbObjects();i++)
 	{
-		CGenericRenderObject *obj = raytracer_data.objects[i];
-		if (obj->InitPlugins())
+		CGenericRenderObject *obj = raytracer_data.getObject(i);
+		if (obj->InitPlugins(raytracer_data))
 		{
-			COUT << "Object plugins ready!" << endl;
+			std::cout << "Object plugins ready!" << std::endl;
 		}
 		else
 		{
-			COUT << "Some plugins are missing for objects!" << endl;
+			std::cout << "Some plugins are missing for objects!" << std::endl;
 		}
 
 		if (obj->GetType() == CRenderObject::MESH)
 		{
-			if (raytracer_data.use_sse)
+			if (cpu.hasFeature(CPUINFO::SSE))
 			{
-				COUT << "Building SSE octree..." << endl;
+				std::cout << "Building SSE octree..." << std::endl;
 				((SSE_CMesh*)obj)->ReBuildOctree();
-				COUT << "Computing SSE smoothing ... " << endl;
-				((SSE_CMesh*)obj)->ReBuildNormals((float)(cos(raytracer_data.camera.crease)));
+				std::cout << "Computing SSE smoothing ... " << std::endl;
+				((SSE_CMesh*)obj)->ReBuildNormals((float)(cos(raytracer_data.getCamera().crease)));
 			}
 			else
 			{
-				COUT << "Building octree..." << endl;
+				std::cout << "Building octree..." << std::endl;
 				((CMesh*)obj)->ReBuildOctree();
-				COUT << "Computing smoothing ... " << endl;
-				((CMesh*)obj)->ReBuildNormals((float)(cos(raytracer_data.camera.crease)));
+				std::cout << "Computing smoothing ... " << std::endl;
+				((CMesh*)obj)->ReBuildNormals((float)(cos(raytracer_data.getCamera().crease)));
 			}
 		}
 	}
@@ -367,18 +391,18 @@ UINT RaytraceFrame( LPVOID pParam )
 	//	optical settings
 	//	1/P + 1/I = 1/F
 	//	P/I = S/s = grandissement
-	float			p_over_i = raytracer_data.camera.object_plane / (raytracer_data.camera.focale*0.001f) - 1.0f;
+	float			p_over_i = raytracer_data.getCamera().object_plane / (raytracer_data.getCamera().focale*0.001f) - 1.0f;
 	float			grand = p_over_i * DIM_FILM;
 	//float ouvert = (data->camera.aperture < 128.0f) ? (data->camera.focale*0.001f) / data->camera.aperture : 0.0f ;
-	float			scale = grand / raytracer_data.camera.height ;
+	float			scale = grand / raytracer_data.getCamera().height ;
 
 
 	/////////////////////////////////////////////////////////////////////////////
 	//	photons
 	// generate the photon maps for each light
-	for (i=0;i<raytracer_data.lights.size();i++)
+	for (unsigned int i=0;i<raytracer_data.getNbLights();i++)
 	{
-		raytracer_data.lights[i]->BuildPhotonMap(&raytracer_data,raytracer_data.camera.photon_map);
+		raytracer_data.getLight(i)->BuildPhotonMap(raytracer_data,raytracer_data.getCamera().photon_map);
 	}
 	
 	/////////////////////////////////////////////////////////////////////////////
@@ -386,26 +410,26 @@ UINT RaytraceFrame( LPVOID pParam )
 	// --- transform ray eminating from viewpoint ---
 	CGenericRay		root;
 	CGenericRay		root_copy;
-	root_copy.origin = raytracer_data.camera.origin;
+	root_copy.origin = raytracer_data.getCamera().origin;
 	// --- camera displacement  ---
 	root_copy.direction.Set(-root_copy.origin.X(),
 							-root_copy.origin.Y(),
-							-raytracer_data.camera.object_plane, //raytracer_data.camera.object_plane-root_copy.origin.Z(),
+							-raytracer_data.getCamera().object_plane, //raytracer_data.camera.object_plane-root_copy.origin.Z(),
 							1.0);
 	root_copy.n = 1.0 ;
 	root_copy.level = 0 ;
 	root_copy.fact  = 1.0 ;
 	
-
-	y = (startscanline-(raytracer_data.camera.height>>1))*scale;
+	unsigned int k = 0;
+	y = (startscanline - (raytracer_data.getCamera().height >> 1))*scale;
 
 	// --- loop for each scan line ---
-	for (j=raytracer_data.end-1;j>=startscanline;j--)
+	for (int j=raytracer_data.getEnd()-1;j>=startscanline;j--)
 	{
-		x = -(raytracer_data.camera.width>>1)*scale;
+		x = -(int)(raytracer_data.getCamera().width >> 1)*scale;
 
 	    // --- loop for each pixel ---
-		for (i=0;i<raytracer_data.camera.width;i++)
+		for (unsigned int i = 0; i<raytracer_data.getCamera().width; i++)
 		{
 			root = root_copy;
 			// --- projete le point d'interet ds le plan focal ---
@@ -419,98 +443,93 @@ UINT RaytraceFrame( LPVOID pParam )
 			if (!antialias)
 			{
 				root.direction.Normalize() ;
-				root.Hit(&raytracer_data,colorImage[k]) ;
+				root.Hit(raytracer_data,colorImage[k]) ;
 			}
 			else
 			{
-				colorImage[k]=variance(x,y,0.25f*scale,aliaslevel,root);
+				colorImage[k]=variance(x,y,0.25f*scale,aliaslevel,root,raytracer_data);
 			}
 
 			if ((root.hit.Z() > 0.01f) || (root.hit.Z() < -0.01f))
-				raytracer_data.ZBuffer[k] = raytracer_data.camera.origin.Z() - root.hit.Z();
+				raytracer_data.getZBuffer()[k] = raytracer_data.getCamera().origin.Z() - root.hit.Z();
 			else
-				raytracer_data.ZBuffer[k] = 0.0f;
+				raytracer_data.getZBuffer()[k] = 0.0f;
 
 			k++;
 			x+=scale;
 		}	// width loop 
 
-		COUT << "Row " << j << "done." << endl;
+		std::cout << "Row " << j << "done." << std::endl;
 		y+=scale;
-		raytracer_data.percent = (endscanline-j)*10000/(endscanline-startscanline);
+		raytracer_data.setPercent((endscanline-j)*10000/(endscanline-startscanline));
 	}	// height loop
 
-	raytracer_data.percent = 10000 - 1;
+	raytracer_data.setPercent(10000 - 1);
 
-	PackImage(k);
-	delete [] colorImage;
+	//PackImage(k,raytracer_data);
 
-	raytracer_data.percent = 10000;
+	raytracer_data.setPercent(10000);
 
 	return 0;
 }
 
 
-UINT Raytrace( LPVOID pParam )
+DWORD __stdcall Raytrace(LPVOID pParam)
 {
-	UNREFERENCED_PARAMETER(pParam);
-
-	CEnvironment	*pEnvironment = CEnvironment::GetInstance();
+	CRaytracerData &raytracer_data = *((CRaytracerData*)pParam);
 
 	/////////////////////////////////////////////////////////////////////////////
 	// the computed data
-	raytracer_data.ZBuffer = new float[(raytracer_data.end-raytracer_data.start)*raytracer_data.camera.width];
-	colorImage = new CWVector[(raytracer_data.end-raytracer_data.start)*raytracer_data.camera.width];
-	raytracer_data.image = new unsigned char[(raytracer_data.end-raytracer_data.start)*raytracer_data.camera.width*4];
+	const CCamera& camera = raytracer_data.getCamera();
+	colorImage = new CColor::RGBA[(raytracer_data.getEnd() - raytracer_data.getStart())*camera.width];
+	raytracer_data.allocateBuffer();
 
 	/////////////////////////////////////////////////////////////////////////////
 	// render each frame
-	for (int j=0;j<raytracer_data.frames.GetCount();j++)
+	for (unsigned int j = 0; j<raytracer_data.getNbFrames(); j++)
 	{
 		//	
 		//	Prepare frame data:
 		//	- sub rays
 		for (int i=0;i<RAYS_MAX_LEVEL;i++)
 		{
-			raytracer_data.light_ray_levels[i].level = i;
-			raytracer_data.reflected_ray_levels[i].level = i;
-			raytracer_data.refracted_ray_levels[i].level = i;
+			raytracer_data.getLightRay(i).level = i;
+			raytracer_data.getReflectedRay(i).level = i;
+			raytracer_data.getRefractedRay(i).level = i;
 		}
 
 		//
 		//	- frame transforms
 		//
-		rays_frame_t *pFrame = NULL;
-		raytracer_data.frames.Lookup(j,(void*&)pFrame);
+		rays_frame_t *pFrame = raytracer_data.getFrame(j);
 
-		for (i=0;i<pFrame->nbTransforms;i++)
+		for (unsigned int i=0;i<pFrame->nbTransforms;i++)
 		{
 			rays_transform_t t = pFrame->transforms[i];
-			COUT << "Searching transform for " << t.target << endl;
+			std::cout << "Searching transform for " << t.target << std::endl;
 
-			CString name = t.target;
-			for (int k=0;k<raytracer_data.objects.GetSize();k++)
+			std::string name = t.target;
+			for (unsigned int k=0;k<raytracer_data.getNbObjects();k++)
 			{
-				CGenericRenderObject *obj = raytracer_data.objects[k];
-
+				CGenericRenderObject *obj = raytracer_data.getObject(k);
 				if (obj->GetName() == name)
 				{
 					switch(t.transform)
 					{
 						case SCALE:
 							obj->Scale(t.coeffs.x,t.coeffs.y,t.coeffs.z);
-							COUT << "Scaling object " << LPCTSTR(name);
-							COUT << " : " << t.coeffs.x << " " << t.coeffs.y << " " << t.coeffs.z << endl;
+							std::cout << "Scaling object " << name;
+							std::cout << " : " << t.coeffs.x << " " << t.coeffs.y << " " << t.coeffs.z << std::endl;
 							break;
 						case TRANSLATE:
 							obj->Translate(t.coeffs.x,t.coeffs.y,t.coeffs.z);
-							COUT << "Translating object " << LPCTSTR(name);
-							COUT << " : " << t.coeffs.x << " " << t.coeffs.y << " " << t.coeffs.z << endl;
+							std::cout << "Translating object " << name;
+							std::cout << " : " << t.coeffs.x << " " << t.coeffs.y << " " << t.coeffs.z << std::endl;
 							break;
 						case ROTATE:
 							obj->Rotate(t.coeffs.x,t.coeffs.y,t.coeffs.z,t.coeffs.h);
-							COUT << "Rotating object " << LPCTSTR(name);
-							COUT << " : " << t.coeffs.x << " " << t.coeffs.y << " " << t.coeffs.z << " " << t.coeffs.h << endl;
+							std::cout << "Rotating object " << name;
+							std::cout << " : " << t.coeffs.x << " " << t.coeffs.y << " " << t.coeffs.z << " " << t.coeffs.h << std::endl;
 							break;
 						default:
 							break;
@@ -522,23 +541,20 @@ UINT Raytrace( LPVOID pParam )
 		}
 
 		Ray_ID = 0;
-		CBoundingBox::nbIntersect = 0;
+		//CBoundingBox::nbIntersect = 0;
 
 		//
 		//	Render a frame
 		//
 		RaytraceFrame(pParam);
 
-		raytracer_data.lock->SetEvent();
+		std::cout << "Nb rays: " << Ray_ID << std::endl;
+		std::cout << "Nb triangle intersect: " << CTriangle::nbIntersect << std::endl;
+		//std::cout << "Nb bbox intersect: " << CBoundingBox::nbIntersect << std::endl;
 
-		COUT << "Nb rays: " << Ray_ID << endl;
-		COUT << "Nb triangle intersect: " << CTriangle::nbIntersect << endl;
-		COUT << "Nb bbox intersect: " << CBoundingBox::nbIntersect << endl;
-
-		COUT << "Frame " << raytracer_data.currentFrame << " done." << endl;
-		raytracer_data.currentFrame++;
+		std::cout << "Frame " << j << " done." << std::endl;
 	}
 
-	AfxEndThread(0);
+	delete[] colorImage;
 	return 0;
 }

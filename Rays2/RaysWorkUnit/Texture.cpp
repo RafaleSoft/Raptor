@@ -1,10 +1,12 @@
 // Texture.cpp: implementation of the CTexture class.
 //
 //////////////////////////////////////////////////////////////////////
-
 #include "stdafx.h"
-#include "Raytracer.h"
+#include "Subsys/CodeGeneration.h"
+
 #include "Texture.h"
+#include "Raytracer.h"
+
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -93,11 +95,13 @@ bcl:
 	__asm paddw mm0,mm2 \
 }
 
-CWVector& CTexture::GetMapColor(const CGenericVector<float> &texel)
+CColor::RGBA& CTexture::GetMapColor(const CGenericVector<float> &texel)
 {
 	if (m_map == NULL)
 	{
-		tmpColor.Zero();
+		tmpColor.r = tmpColor.g = tmpColor.b = 0;
+		tmpColor.a = 1.0f;
+
 		return tmpColor;
 	}
 
@@ -444,7 +448,7 @@ CWVector& CTexture::GetMapColor(const CGenericVector<float> &texel)
 		}
 	}
 
-	unsigned short *vect = tmpColor.vector();
+	float *vect = tmpColor.operator float *();
 	__asm
 	{
 		mov edi,vect
