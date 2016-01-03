@@ -62,9 +62,6 @@
     <ClCompile Include="..\..\RaptorToolBox\Filters\MBFilter.cpp">
       <Filter>Source Files\Filters</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\RaptorToolBox\Filters\TextureFilter.cpp">
-      <Filter>Source Files\Filters</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\RaptorToolBox\Imaging\BMPImaging.cpp">
       <Filter>Source Files\Imaging</Filter>
     </ClCompile>
@@ -140,6 +137,9 @@
     <ClCompile Include="..\..\RaptorToolBox\Loaders\3DSfile.cpp">
       <Filter>Source Files\Loaders</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\RaptorToolBox\CmdLineParser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\RaptorToolBox\Controllers\ViewPointController.h">
@@ -161,9 +161,6 @@
       <Filter>Header Files\Filters</Filter>
     </ClInclude>
     <ClInclude Include="..\..\RaptorToolBox\Filters\MBFilter.h">
-      <Filter>Header Files\Filters</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\RaptorToolBox\Filters\TextureFilter.h">
       <Filter>Header Files\Filters</Filter>
     </ClInclude>
     <ClInclude Include="..\..\RaptorToolBox\Imaging\BMPImaging.h">
@@ -227,6 +224,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\RaptorToolBox\Streaming.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorToolBox\CmdLineParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

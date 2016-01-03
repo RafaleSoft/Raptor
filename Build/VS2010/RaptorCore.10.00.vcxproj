@@ -239,6 +239,7 @@ Subsys\Redist.bat
     <ClCompile Include="..\..\RaptorCore\Engine\ViewPoint.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\3DSet.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\BumppedGeometry.cpp" />
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\EMBMGeometry.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\FragmentProgram.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\FragmentShader.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\Geometry.cpp" />
@@ -254,6 +255,7 @@ Subsys\Redist.bat
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\GLLod.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\GLVectorFont.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\Light.cpp" />
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\LightGlow.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\LightObserver.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\Material.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\Object3D.cpp" />
@@ -286,7 +288,6 @@ Subsys\Redist.bat
     <ClCompile Include="..\..\RaptorCore\Raptordll.cpp" />
     <ClCompile Include="..\..\RaptorCore\SSE_Engine\SSE_3DEngine.cpp" />
     <ClCompile Include="..\..\RaptorCore\SSE_Engine\SSE_BoundingBox.cpp" />
-    <ClCompile Include="..\..\RaptorCore\SSE_Engine\SSE_BumppedGeometry.cpp" />
     <ClCompile Include="..\..\RaptorCore\SSE_Engine\SSE_GLLayer.cpp" />
     <ClCompile Include="..\..\RaptorCore\SSE_Engine\SSE_Object3DContour.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
@@ -310,6 +311,7 @@ Subsys\Redist.bat
     <ClCompile Include="..\..\RaptorCore\Subsys\DefaultBumpmapLoader.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\DefaultImageScaler.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\DefaultMipmapBuilder.cpp" />
+    <ClCompile Include="..\..\RaptorCore\Subsys\DOT3BumppedGeometry.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\FreeType\FTEngine.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
@@ -425,6 +427,7 @@ Subsys\Redist.bat
     <ClInclude Include="..\..\RaptorCore\Engine\ViewPoint.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\3DSet.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\BumppedGeometry.h" />
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\EMBMGeometry.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\FragmentProgram.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\FragmentShader.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\Geometry.h" />
@@ -441,6 +444,7 @@ Subsys\Redist.bat
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\GLLod.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\GLVectorFont.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\Light.h" />
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\LightGlow.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\LightObserver.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\Material.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\Object3D.h" />
@@ -494,6 +498,7 @@ Subsys\Redist.bat
     <ClInclude Include="..\..\RaptorCore\Subsys\DefaultBumpmapLoader.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\DefaultImageScaler.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\DefaultMipmapBuilder.h" />
+    <ClInclude Include="..\..\RaptorCore\Subsys\DOT3BumppedGeometry.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\FreeType\FTEngine.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\FreeType\FTFace.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\FreeType\FTGlyph.h" />

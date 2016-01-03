@@ -1,0 +1,138 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectName>RaysWorkUnit</ProjectName>
+    <ProjectGuid>{25B491D1-ADD7-4079-A9B3-7A8F9464369A}</ProjectGuid>
+    <RootNamespace>RaysWorkUnit</RootNamespace>
+    <Keyword>MFCProj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.40219.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>.\Release/WorkUnit.tlb</TypeLibraryName>
+      <HeaderFileName>
+      </HeaderFileName>
+    </Midl>
+    <ClCompile>
+      <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>$(RAPTOR_ROOT)\Redist\Include;$(PLATFORM_SDK)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <OpenMPSupport>true</OpenMPSupport>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0c0a</Culture>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>simd.lib;RaptorCompute.lib;Raptor.lib;RaptorToolBox.lib;RaptorNetwork.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <Version>$(RAPTOR_VERSION)</Version>
+      <AdditionalLibraryDirectories>$(RAPTOR_ROOT)\redist\lib;$(PLATFORM_SDK)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\Release/WorkUnit.bsc</OutputFile>
+    </Bscmake>
+    <PostBuildEvent>
+      <Command>copy $(OutDir)$(TargetFileName) "%RAPTOR_ROOT%\Redist\bin"</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\Rays2\RaysWorkUnit\Environment.cpp" />
+    <ClCompile Include="..\..\Rays2\RaysWorkUnit\GenericLight.cpp" />
+    <ClCompile Include="..\..\Rays2\RaysWorkUnit\GenericRay.cpp" />
+    <ClCompile Include="..\..\Rays2\RaysWorkUnit\GenericRenderObject.cpp" />
+    <ClCompile Include="..\..\Rays2\RaysWorkUnit\Mesh.cpp" />
+    <ClCompile Include="..\..\Rays2\RaysWorkUnit\MsgProcessing.cpp" />
+    <ClCompile Include="..\..\Rays2\RaysWorkUnit\Octree.cpp" />
+    <ClCompile Include="..\..\Rays2\RaysWorkUnit\PhotonMap.cpp" />
+    <ClCompile Include="..\..\Rays2\RaysWorkUnit\PlugIn.cpp" />
+    <ClCompile Include="..\..\Rays2\RaysWorkUnit\Quadric.cpp" />
+    <ClCompile Include="..\..\Rays2\RaysWorkUnit\Ray.cpp" />
+    <ClCompile Include="..\RaysClientSocket.cxx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <ClCompile Include="..\..\Rays2\RaysWorkUnit\RaysWorkUnit.cpp" />
+    <ClCompile Include="..\..\Rays2\RaysWorkUnit\Raytracer.cpp" />
+    <ClCompile Include="..\..\Rays2\RaysWorkUnit\RenderObject.cpp" />
+    <ClCompile Include="..\..\Rays2\RaysWorkUnit\SSE_CMesh.cpp" />
+    <ClCompile Include="..\..\Rays2\RaysWorkUnit\SSE_COctree.cpp" />
+    <ClCompile Include="..\..\Rays2\RaysWorkUnit\SSE_CRenderObject.cpp" />
+    <ClCompile Include="..\..\Rays2\RaysWorkUnit\SSE_CTriangle.cpp" />
+    <ClCompile Include="..\..\Rays2\RaysWorkUnit\StdAfx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\Rays2\RaysWorkUnit\Surfacer.cpp" />
+    <ClCompile Include="..\..\Rays2\RaysWorkUnit\Texture.cpp" />
+    <ClCompile Include="..\..\Rays2\RaysWorkUnit\Triangle.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\Rays2\RaysWorkUnit\Environment.h" />
+    <ClInclude Include="..\..\Rays2\RaysWorkUnit\Mesh.h" />
+    <ClInclude Include="GenericLight.h" />
+    <ClInclude Include="..\..\Rays2\RaysWorkUnit\GenericRay.h" />
+    <ClInclude Include="..\..\Rays2\RaysWorkUnit\GenericRenderObject.h" />
+    <ClInclude Include="..\..\Rays2\Messages.h" />
+    <ClInclude Include="..\..\Rays2\RaysWorkUnit\Octree.h" />
+    <ClInclude Include="..\..\Rays2\RaysWorkUnit\PhotonMap.h" />
+    <ClInclude Include="..\..\Rays2\PlugIn.h" />
+    <ClInclude Include="..\..\Rays2\RaysWorkUnit\Quadric.h" />
+    <ClInclude Include="..\..\Rays2\RaysWorkUnit\Ray.h" />
+    <ClInclude Include="..\..\Rays2\RaysWorkUnit\RaysWorkUnit.h" />
+    <ClInclude Include="..\..\Rays2\RaysWorkUnit\Raytracer.h" />
+    <ClInclude Include="..\..\Rays2\RaysWorkUnit\RenderObject.h" />
+    <ClInclude Include="..\..\Rays2\RaysWorkUnit\SSE_CMesh.h" />
+    <ClInclude Include="..\..\Rays2\RaysWorkUnit\SSE_COctree.h" />
+    <ClInclude Include="..\..\Rays2\RaysWorkUnit\SSE_CRenderObject.h" />
+    <ClInclude Include="..\..\Rays2\RaysWorkUnit\SSE_CTriangle.h" />
+    <ClInclude Include="..\..\Rays2\RaysWorkUnit\StdAfx.h" />
+    <ClInclude Include="..\..\Rays2\RaysWorkUnit\Surfacer.h" />
+    <ClInclude Include="..\..\Rays2\RaysWorkUnit\Texture.h" />
+    <ClInclude Include="..\..\Rays2\RaysWorkUnit\Triangle.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\idr_rend.ico" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

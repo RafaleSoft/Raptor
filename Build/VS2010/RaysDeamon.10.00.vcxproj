@@ -7,8 +7,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectName>MicroLex</ProjectName>
-    <ProjectGuid>{5B79C3D0-E3B6-4B25-A447-8C2C1550E1DD}</ProjectGuid>
+    <ProjectName>RaysDeamon</ProjectName>
+    <ProjectGuid>{00A914E7-CB8F-497D-896B-557FA4E029B5}</ProjectGuid>
+    <RootNamespace>RaysDeamon</RootNamespace>
     <Keyword>MFCProj</Keyword>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -16,7 +17,6 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
     <CharacterSet>MultiByte</CharacterSet>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -27,81 +27,76 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+    <_ProjectFileVersion>10.0.40219.1</_ProjectFileVersion>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)\$(ProjectName)\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Midl>
-      <TypeLibraryName>.\Release/MicroLex.tlb</TypeLibraryName>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>.\Release/RaysDeamon.tlb</TypeLibraryName>
       <HeaderFileName>
       </HeaderFileName>
     </Midl>
     <ClCompile>
-      <Optimization>Full</Optimization>
-      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <WholeProgramOptimization>true</WholeProgramOptimization>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>Disabled</Optimization>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <AdditionalIncludeDirectories>$(RAPTOR_ROOT)\Redist\Include;$(PLATFORM_SDK)\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile>$(IntDir)$(TargetName).pch</PrecompiledHeaderOutputFile>
       <WarningLevel>Level4</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <DebugInformationFormat>
-      </DebugInformationFormat>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Culture>0x040c</Culture>
     </ResourceCompile>
     <Link>
-      <OutputFile>$(OutDir)$(ProjectName).exe</OutputFile>
+      <AdditionalDependencies>Raptor.lib;RaptorToolBox.lib;RaptorNetwork.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(RAPTOR_ROOT)\redist\lib;$(PLATFORM_SDK)\Lib;$(SolutionDir)\AddOns;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
-      <OptimizeReferences>true</OptimizeReferences>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention>
       </DataExecutionPrevention>
       <TargetMachine>MachineX86</TargetMachine>
-      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
-      <Version>$(RAPTOR_VERSION)</Version>
     </Link>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <OutputFile>.\Release/MicroLex.bsc</OutputFile>
+      <OutputFile>.\Release/RaysDeamon.bsc</OutputFile>
     </Bscmake>
     <PostBuildEvent>
-      <Command>copy $(TargetDir)$(TargetFileName) $(SolutionDir)$(ProjectName)</Command>
+      <Command>copy $(OutDir)$(TargetFileName) "%RAPTOR_ROOT%\Redist\bin"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\MicroLex\Automat.h" />
-    <ClInclude Include="..\..\MicroLex\Data.h" />
-    <ClInclude Include="..\..\MicroLex\MicroLex.h" />
-    <ClInclude Include="..\..\MicroLex\Resource.h" />
-    <ClInclude Include="..\..\MicroLex\StdAfx.h" />
+    <ClCompile Include="..\..\Rays2\RaysDeamon\RaysDeamon.cpp" />
+    <ClCompile Include="..\..\Rays2\RaysDeamon\StdAfx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\MicroLex\icon1.ico" />
+    <ClInclude Include="..\..\Rays2\Messages.h" />
+    <ClInclude Include="..\..\Rays2\RaysDeamon\RaysDeamon.h" />
+    <ClInclude Include="..\..\Rays2\RaysDeamon\Resource.h" />
+    <ClInclude Include="..\..\Rays2\RaysDeamon\StdAfx.h" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="..\..\MicroLex\MicroLex.rc" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\..\MicroLex\Atoms.cpp" />
-    <ClCompile Include="..\..\MicroLex\Automat.cpp" />
-    <ClCompile Include="..\..\MicroLex\Config.cpp" />
-    <ClCompile Include="..\..\MicroLex\GenCode.cpp" />
-    <ClCompile Include="..\..\MicroLex\MicroLex.cpp" />
-    <ClCompile Include="..\..\MicroLex\Rules.cpp" />
-    <ClCompile Include="..\..\MicroLex\StdAfx.cpp" />
-    <ClCompile Include="..\..\MicroLex\Streams.cpp" />
+    <None Include="..\..\Rays2\RaysDeamon\res\Rays.ico" />
+    <None Include="..\..\Rays2\RaysDeamon\res\RaysDeamon.ico" />
+    <None Include="..\..\Rays2\RaysDeamon\res\RaysDeamon.rc2" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

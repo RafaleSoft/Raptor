@@ -8,6 +8,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\SIMD\BVector.h" />
+    <ClInclude Include="..\..\SIMD\GenericAlignedMatrix.h" />
     <ClInclude Include="..\..\SIMD\GenericAlignedVector.h" />
     <ClInclude Include="..\..\SIMD\GenericMatrix.h" />
     <ClInclude Include="..\..\SIMD\GenericVector.h" />
@@ -115,7 +116,7 @@
       <OutputFile>.\Release/simd.bsc</OutputFile>
     </Bscmake>
     <PostBuildEvent>
-      <Command>copy $(OutDir)$(ProjectName).lib "%RAPTOR_ROOT%\Redist\lib\"</Command>
+      <Command>copy $(TargetDir)$(TargetFileName) $(SolutionDir)$(ProjectName)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

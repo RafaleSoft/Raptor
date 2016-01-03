@@ -190,6 +190,7 @@ copy OpenEXRLib\bin\vc9\zdll.dll "%RAPTOR_ROOT%\Redist\bin\zlib1.dll"
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\RaptorToolBox\BasicObjects.cpp" />
+    <ClCompile Include="..\..\RaptorToolBox\CmdLineParser.cpp" />
     <ClCompile Include="..\..\RaptorToolBox\Controllers.cpp" />
     <ClCompile Include="..\..\RaptorToolBox\Controllers\ViewPointController.cpp" />
     <ClCompile Include="..\..\RaptorToolBox\Filters\BlurFilter.cpp" />
@@ -198,7 +199,6 @@ copy OpenEXRLib\bin\vc9\zdll.dll "%RAPTOR_ROOT%\Redist\bin\zlib1.dll"
     <ClCompile Include="..\..\RaptorToolBox\Filters\HDRFilter.cpp" />
     <ClCompile Include="..\..\RaptorToolBox\Filters\MagnifierFilter.cpp" />
     <ClCompile Include="..\..\RaptorToolBox\Filters\MBFilter.cpp" />
-    <ClCompile Include="..\..\RaptorToolBox\Filters\TextureFilter.cpp" />
     <ClCompile Include="..\..\RaptorToolBox\Imaging.cpp" />
     <ClCompile Include="..\..\RaptorToolBox\Imaging\BMPImaging.cpp" />
     <ClCompile Include="..\..\RaptorToolBox\Imaging\ICOImaging.cpp" />
@@ -245,6 +245,7 @@ copy OpenEXRLib\bin\vc9\zdll.dll "%RAPTOR_ROOT%\Redist\bin\zlib1.dll"
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\RaptorToolBox\BasicObjects.h" />
+    <ClInclude Include="..\..\RaptorToolBox\CmdLineParser.h" />
     <ClInclude Include="..\..\RaptorToolBox\Controllers.h" />
     <ClInclude Include="..\..\RaptorToolBox\Controllers\ViewPointController.h" />
     <ClInclude Include="..\..\RaptorToolBox\Filters\BlurFilter.h" />
@@ -253,7 +254,6 @@ copy OpenEXRLib\bin\vc9\zdll.dll "%RAPTOR_ROOT%\Redist\bin\zlib1.dll"
     <ClInclude Include="..\..\RaptorToolBox\Filters\HDRFilter.h" />
     <ClInclude Include="..\..\RaptorToolBox\Filters\MagnifierFilter.h" />
     <ClInclude Include="..\..\RaptorToolBox\Filters\MBFilter.h" />
-    <ClInclude Include="..\..\RaptorToolBox\Filters\TextureFilter.h" />
     <ClInclude Include="..\..\RaptorToolBox\Imaging.h" />
     <ClInclude Include="..\..\RaptorToolBox\Imaging\BMPImaging.h" />
     <ClInclude Include="..\..\RaptorToolBox\Imaging\ICOImaging.h" />
