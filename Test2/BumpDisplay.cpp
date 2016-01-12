@@ -17,6 +17,7 @@
 #include "GLHierarchy\BumppedGeometry.h"
 #include "GLHierarchy\Object3DInstance.h"
 #include "GLHierarchy\RenderingProperties.h"
+#include "GLHierarchy\Shader.h"
 #include "Engine\ViewModifier.h"
 #include "Engine\LightModifier.h"
 #include "Engine\3DScene.h"
@@ -157,16 +158,13 @@ void CBumpDisplay::Init()
     noise.glGenerate(tt);
 
 	CTextureUnitSetup tmu;
-	//tmu.setDiffuseMap(t->getTexture(2));
-	//tmu.setNormalMap(t->GetTexture(0));
     tmu.setDiffuseMap(tt);
 	pbg->bg = tmu.glBuildSetup();
 
 	p = CPersistence::FindObject("Bump teapot");
-
 	if (p->getId().isSubClassOf(CBumppedGeometry::CBumppedGeometryClassID::GetClassId()))
 		 teapot = (CBumppedGeometry *)p;
-    //teapot->SetNormalMap(tt);
+	teapot->setNormalMap(tt);
 
     //
     //  Light and its modifier

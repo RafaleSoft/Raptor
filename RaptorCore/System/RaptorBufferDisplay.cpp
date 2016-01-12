@@ -270,10 +270,11 @@ bool CRaptorBufferDisplay::glBindDisplay(const RAPTOR_HANDLE& device)
         //  mipmapping level ).
         //  This else case lacks some tests : already bound ? / buffer valid ? / render target compatible ? ...
         //  ... so it might disappear or remain stricly internal.
-        else if ((device.hClass >= CGL_CUBEMAP_PX) && (device.hClass <= CGL_CUBEMAP_NZ))
+		else if ((device.hClass >= CTextureObject::CGL_CUBEMAP_PX) &&
+				 (device.hClass <= CTextureObject::CGL_CUBEMAP_NZ))
         {
             CContextManager *manager = CContextManager::GetInstance();
-            manager->glBindPBuffer(m_pBuffer - 1,device.hClass);
+            manager->glBindPBuffer(m_pBuffer - 1,(CTextureObject::CUBE_FACE)(device.hClass));
             res = true;
         }
         // Context already bound !!! Raise warning ?

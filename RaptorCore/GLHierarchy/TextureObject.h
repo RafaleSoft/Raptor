@@ -74,6 +74,16 @@ public:
 		CGL_EDGECLAMP
 	} CLAMP_MODE;
 
+	typedef enum
+	{
+		CGL_CUBEMAP_PX,
+		CGL_CUBEMAP_NX,
+		CGL_CUBEMAP_PY,
+		CGL_CUBEMAP_NY,
+		CGL_CUBEMAP_PZ,
+		CGL_CUBEMAP_NZ,
+		CGL_CUBEMAP_NONE
+	} CUBE_FACE;
 
 public:
     //!	Renders the textures : it is bound to the current active Texture Unit.
@@ -109,6 +119,14 @@ public:
     //! Selects the current mipmap level for image access ( loading, reading, ... )
     void selectMipMapLevel(unsigned int l) { level = l; };
     
+	//! Returns the actual selected cubemap face.
+    //! ( not the number of faces already loaded )
+    CUBE_FACE    getCurrentCubeFace(void) const;
+
+    //! Selects the current cubemap face for image access ( loading, reading, ... )
+    void selectCubeFace(CUBE_FACE face);
+
+
     //! Defines the size of the texel array ( texel wrapper ) for texture loading/updates/reading.
     //! Note that the server texture object will not be modified, only the factory is allowed
     //! to proceed a GL resize. If texels have been allocated and the new size do not match,

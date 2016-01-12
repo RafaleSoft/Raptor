@@ -120,6 +120,28 @@ void CBumppedGeometry::unLink(const CPersistence* p)
 		CGeometry::unLink(p);
 }
 
+void CBumppedGeometry::setDiffuseMap(CTextureObject* diffuse)
+{
+	// Check for null ?
+	diffuseMap = diffuse;
+	CTextureUnitSetup *setup = m_pBumpShader->glGetTextureUnitsSetup();
+	setup->setDiffuseMap(diffuseMap);
+}
+
+void CBumppedGeometry::setNormalMap(CTextureObject* normal)
+{
+	normalMap = normal;
+	CTextureUnitSetup *setup = m_pBumpShader->glGetTextureUnitsSetup();
+	setup->setNormalMap(normalMap);
+}
+
+void CBumppedGeometry::setEnvironmentMap(CTextureObject* environment)
+{
+	envMap = environment;
+	CTextureUnitSetup *setup = m_pBumpShader->glGetTextureUnitsSetup();
+	setup->setEnvironmentMap(envMap);
+}
+
 void CBumppedGeometry::setRenderingModel(const CRenderingModel& model)
 {
 	const CGeometryEditor &pEditor = getEditor();

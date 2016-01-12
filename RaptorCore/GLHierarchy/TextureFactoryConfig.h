@@ -20,7 +20,7 @@ public:
     //! This class defines an Image I/O service. The user can extend Raptor texture loading capabilities
     //! by implementing and registering a custom IO class into the TextureFactoryConfig.
     //! TextureFactories will dynamically request for an available ImageIO to load a texture.
-    class CImageIO
+    class IImageIO
     {
     public:
 		//!	Returns the kind of image managed ( common extension used for image type: e.g. jpg)
@@ -42,16 +42,16 @@ public:
         virtual bool storeImageFile(const std::string& fname,CTextureObject* const T) = 0;
 
     protected:
-        CImageIO() {};
-        virtual ~CImageIO() {};
-        CImageIO(const CImageIO&) {};
-        CImageIO& operator=(const CImageIO&) {};
+        IImageIO() {};
+        virtual ~IImageIO() {};
+        IImageIO(const IImageIO&) {};
+        IImageIO& operator=(const IImageIO&) {};
     };
 
     //! This class defines an Image Operation service. The user can extend Raptor texture loading capabilities
     //! by implementing and registering a custom Operator class into the TextureFactoryConfig. 
     //! Such an operator will be used during texture loading or/and generation phases.
-    class CImageOP
+    class IImageOP
     {
     public:
         //! This enum defines the standard operations available
@@ -76,14 +76,14 @@ public:
 							const CTextureFactoryConfig& config) const = 0;
 
     protected:
-        CImageOP() {};
-        virtual ~CImageOP() {}
-        CImageOP(const CImageOP&) {}
-        CImageOP& operator=(const CImageOP&) {};
+        IImageOP() {};
+        virtual ~IImageOP() {}
+        IImageOP(const IImageOP&) {}
+        IImageOP& operator=(const IImageOP&) {};
     };
 
 	//! This class is an interface to Texture Compressor Services
-	class CCompressor
+	class ICompressor
 	{
 	public:
 		virtual std::string getName(void) const = 0;
@@ -100,10 +100,10 @@ public:
 		virtual bool isCompressionSupported(unsigned int compressedFormat) const = 0;
 
 	protected:
-		CCompressor() {};
-		virtual ~CCompressor() {};
-		CCompressor(const CCompressor&) {};
-		CCompressor& operator=(const CCompressor&) {};
+		ICompressor() {};
+		virtual ~ICompressor() {};
+		ICompressor(const ICompressor&) {};
+		ICompressor& operator=(const ICompressor&) {};
 	};
 
 	//!	Defines the texel byte order format used by texture factories.
@@ -175,15 +175,15 @@ public:
 
     //! Returns the numCompressor texture compressor
     //! ( within the limit given above )
-	const CCompressor* getCompressor(unsigned int numCompressor);
-	const CCompressor* getCompressor(const std::string& name);
+	const ICompressor* getCompressor(unsigned int numCompressor);
+	const ICompressor* getCompressor(const std::string& name);
 
 	//! Defines the currently selected compressor.
-	void setCurrentCompressor(const CCompressor* compressor)
+	void setCurrentCompressor(const ICompressor* compressor)
 	{ m_pCurrentCompressor = compressor; };
 
 	//! Returns the currently selected compressor.
-	const CCompressor* getCurrentCompressor(void) const
+	const ICompressor* getCurrentCompressor(void) const
 	{ return m_pCurrentCompressor; };
 
 
@@ -194,20 +194,20 @@ public:
 	//!	The different imagers are choosen by the file extension when LoadTexture is called. 
     //! If there is already an imager for an extension, the one given here replaces the existing one.
 	//!	By default, there is only a buffer loader set. Some basics are provided by CRaptorToolBox
-	void setImageKindIO(CImageIO *imager);
+	void setImageKindIO(IImageIO *imager);
 
 	//!	Returns a loader given a file name or file extension.
 	//! The loader is one defined above.
-	CImageIO* const getImageKindIO(const std::string &extension) const;
+	IImageIO* const getImageKindIO(const std::string &extension) const;
 
 	//!	set an operator class for a specific kind of image (used mainly by LoadTexture ).
     //! If there is already an operator for a kind, the one given here replaces the existing one.
 	//!	By default, there is an operator defined for each kind. Some basics are provided by CRaptorToolBox
-	void setImageKindOP(CImageOP *op);
+	void setImageKindOP(IImageOP *op);
 
 	//!	Returns a loader given a file extension.
 	//! The loader is one defined above.
-    CImageOP* const getImageKindOP(CImageOP::OP_KIND kind) const;
+    IImageOP* const getImageKindOP(IImageOP::OP_KIND kind) const;
 
 
 
@@ -224,9 +224,9 @@ private:
 	int		m_nbCompressors;
 	//! Implementation dependant data : usable compressors
 	//int		*m_pCompressors;
-	CTextureFactoryConfig::CCompressor **m_pCompressors;
+	CTextureFactoryConfig::ICompressor **m_pCompressors;
 	//! Current selected compressor
-	const CCompressor	*m_pCurrentCompressor;
+	const ICompressor	*m_pCurrentCompressor;
 	//! Implementation dependant data : number of texture images per TMU
 	int		m_nbTextureImages;
 	//! Implementation dependant data : max level of anisotropy
@@ -234,8 +234,8 @@ private:
 	//! Implementation dependant data : non power of two textures are supported without resize
 	bool	m_bSupportResize;
 
-	map<std::string,CImageIO*>			IMAGE_KIND_IO;
-    map<CImageOP::OP_KIND,CImageOP*>	IMAGE_KIND_OP;
+	map<std::string,IImageIO*>			IMAGE_KIND_IO;
+    map<IImageOP::OP_KIND,IImageOP*>	IMAGE_KIND_OP;
 };
 
 RAPTOR_NAMESPACE_END

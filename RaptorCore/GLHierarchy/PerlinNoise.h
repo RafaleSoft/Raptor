@@ -15,6 +15,9 @@
 #ifndef __CGLTYPES_HPP__
     #include "System/CGLTypes.h"
 #endif
+#if !defined(AFX_TEXTUREFACTORYCONFIG_H__7A20D208_423F_4E02_AA4D_D736E0A7959F__INCLUDED_)
+	#include "GLHierarchy/TextureFactoryConfig.h"
+#endif
 
 
 RAPTOR_NAMESPACE_BEGIN
@@ -23,8 +26,10 @@ RAPTOR_NAMESPACE_BEGIN
 class RAPTOR_API CPerlinNoise : public CTextureGenerator  
 {
 public:
+	typedef CTextureFactoryConfig::IImageOP::OP_KIND OPS;
+
     //! The constructor specifies the texture model for this static generator.
-	CPerlinNoise(unsigned int mode = CGL_USER_MIPMAPPED);
+	CPerlinNoise(const CVaArray<OPS>& ops = CVaArray<OPS>());
 	virtual ~CPerlinNoise();
 
     //! Implementes a static texture generator
@@ -46,7 +51,7 @@ protected:
     float noise(float x, float y, float z);
 
 private:
-    unsigned int m_mode;
+    CVaArray<OPS> m_ImageOps;
     unsigned int *m_iPermutation;
 
     GL_COORD_VERTEX G[16];

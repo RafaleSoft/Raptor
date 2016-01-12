@@ -263,22 +263,25 @@ void COmniShadowMap::glRenderMap(const CLight* currentLight,const vector<C3DScen
 	m_pShadowCubeMap->glBindDisplay(display);
     //glColorMask(GL_FALSE,GL_FALSE,GL_FALSE,GL_FALSE);
 
-    unsigned int cubefaces[6] = { CGL_CUBEMAP_NZ, CGL_CUBEMAP_PX,
-                                  CGL_CUBEMAP_PZ, CGL_CUBEMAP_NX,
-                                  CGL_CUBEMAP_PY, CGL_CUBEMAP_NY };
+	unsigned int cubefaces[6] = {	CTextureObject::CGL_CUBEMAP_NZ,
+									CTextureObject::CGL_CUBEMAP_PX,
+									CTextureObject::CGL_CUBEMAP_PZ,
+									CTextureObject::CGL_CUBEMAP_NX,
+									CTextureObject::CGL_CUBEMAP_PY,
+									CTextureObject::CGL_CUBEMAP_NY };
 
-    float rotates[6][4] = {    { 180.0f, 0.0f, 0.0f, 1.0f }, 
-                                        { 180.0f, 0.0f, 0.0f, 1.0f },
-                                        { 180.0f, 0.0f, 0.0f, 1.0f },
-                                        { 180.0f, 0.0f, 0.0f, 1.0f },
-                                        { -90.0f, 1.0f, 0.0f, 0.0f },
-                                        { 90.0f, 1.0f, 0.0f, 0.0f } };
-    float rotates2[6][4] = {  { 0.0f, 0.0f, 0.0f, 0.0f },
-                                        { 90.0f, 0.0f, 1.0f, 0.0f },
-                                        { 180.0f, 0.0f, 1.0f, 0.0f },
-                                        { -90.0f, 0.0f, 1.0f, 0.0f },
-                                        { 0.0f, 0.0f, 0.0f, 0.0f },
-                                        { 0.0f, 0.0f, 0.0f, 0.0f } };
+    float rotates[6][4] = { { 180.0f, 0.0f, 0.0f, 1.0f }, 
+							{ 180.0f, 0.0f, 0.0f, 1.0f },
+							{ 180.0f, 0.0f, 0.0f, 1.0f },
+							{ 180.0f, 0.0f, 0.0f, 1.0f },
+							{ -90.0f, 1.0f, 0.0f, 0.0f },
+							{ 90.0f, 1.0f, 0.0f, 0.0f } };
+    float rotates2[6][4] = {{ 0.0f, 0.0f, 0.0f, 0.0f },
+							{ 90.0f, 0.0f, 1.0f, 0.0f },
+							{ 180.0f, 0.0f, 1.0f, 0.0f },
+							{ -90.0f, 0.0f, 1.0f, 0.0f },
+							{ 0.0f, 0.0f, 0.0f, 0.0f },
+							{ 0.0f, 0.0f, 0.0f, 0.0f } };
 
     glDisable(GL_TEXTURE_2D);
     glDisable(GL_LIGHTING);

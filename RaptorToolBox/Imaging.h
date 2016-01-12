@@ -20,10 +20,10 @@ class RAPTOR_API CImaging
 {
 public:
     //! Install image manipulators into current instance of Raptor
-    static bool installImagers(const CTextureFactory &factory) ;
+    static bool installImagers(CTextureFactory &factory) ;
 
     //! Install one selected image manipulator into current instance of Raptor
-	static bool installImager(const CTextureFactory &factory, const std::string& imageType);
+	static bool installImager(CTextureFactory &factory, const std::string& imageType);
 
 private:
     CImaging();

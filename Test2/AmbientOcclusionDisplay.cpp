@@ -234,7 +234,7 @@ void CAmbientOcclusionDisplay::Init()
 		CTextureUnitSetup *tus = m_pTeapot->getShader()->glGetTextureUnitsSetup();
 		tus->setDiffuseMap(m_pTexture);
 		m_pTexture = f.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_MULTIPLY,CTextureObject::CGL_BILINEAR);
-		f.glLoadTexture(m_pTexture,"Datas/BUMP4.TGA",CGL_USER_MIPMAPPED|CGL_NORMAL_MAP);
+		f.glLoadTexture(m_pTexture,"Datas/BUMP4.TGA");
 		//f.getConfig().setBumpAmplitude(4.0f);
 		//f.glLoadTexture(m_pTexture,"Datas/BlurCircle.TGA",CGL_USER_MIPMAPPED|CGL_CREATE_NORMAL_MAP);
 		//f.glExportTexture(m_pTexture,"testbmp.tga");

@@ -46,7 +46,7 @@
 
 RAPTOR_NAMESPACE
 
-class COpenGLCompressor : public CTextureFactoryConfig::CCompressor
+class COpenGLCompressor : public CTextureFactoryConfig::ICompressor
 {
 public:
 	COpenGLCompressor() {};
@@ -117,7 +117,7 @@ public:
 	}
 };
 
-class CNullCompressor : public CTextureFactoryConfig::CCompressor
+class CNullCompressor : public CTextureFactoryConfig::ICompressor
 {
 public:
 	CNullCompressor() {};
@@ -133,7 +133,7 @@ public:
 	{	return false; 	}
 };
 
-class CDXT1Compressor : public CTextureFactoryConfig::CCompressor
+class CDXT1Compressor : public CTextureFactoryConfig::ICompressor
 {
 public:
 	CDXT1Compressor() {};
@@ -181,7 +181,7 @@ public:
 	}
 };
 
-class CRGTCCompressor : public CTextureFactoryConfig::CCompressor
+class CRGTCCompressor : public CTextureFactoryConfig::ICompressor
 {
 public:
 	CRGTCCompressor() {};
@@ -228,7 +228,7 @@ public:
 	}
 };
 
-class CFXT1Compressor : public CTextureFactoryConfig::CCompressor
+class CFXT1Compressor : public CTextureFactoryConfig::ICompressor
 {
 public:
 	CFXT1Compressor() {};
@@ -261,7 +261,7 @@ public:
 	}
 };
 
-class CLATCCompressor : public CTextureFactoryConfig::CCompressor
+class CLATCCompressor : public CTextureFactoryConfig::ICompressor
 {
 public:
 	CLATCCompressor() {};
@@ -301,7 +301,7 @@ public:
 	}
 };
 
-class CBPTCCompressor : public CTextureFactoryConfig::CCompressor
+class CBPTCCompressor : public CTextureFactoryConfig::ICompressor
 {
 public:
 	CBPTCCompressor() {};
@@ -340,7 +340,7 @@ public:
 	}
 };
 
-class CASTCCompressor : public CTextureFactoryConfig::CCompressor
+class CASTCCompressor : public CTextureFactoryConfig::ICompressor
 {
 public:
 	CASTCCompressor() {};
@@ -401,7 +401,7 @@ public:
 };
 
 static const int MAX_COMPRESSORS = 8;
-static CTextureFactoryConfig::CCompressor *knownCompressors[MAX_COMPRESSORS] = 
+static CTextureFactoryConfig::ICompressor *knownCompressors[MAX_COMPRESSORS] = 
 {
 	new CNullCompressor(),
 	new COpenGLCompressor(),
@@ -438,14 +438,14 @@ CTextureFactoryConfig::CTextureFactoryConfig()
 
 	Global::RAPTOR_CURRENT_STATUS &status = Global::GetInstance().getCurrentStatus();
 
-	CImageIO *pIO = new CBufferImage();
+	IImageIO *pIO = new CBufferImage();
 	vector<std::string> exts = pIO->getImageKind();
 	for (size_t j=0;j<exts.size();j++)
-		IMAGE_KIND_IO.insert(map<std::string,CImageIO*>::value_type(exts[j],pIO));
+		IMAGE_KIND_IO.insert(map<std::string,IImageIO*>::value_type(exts[j],pIO));
 
-	IMAGE_KIND_OP.insert(map<CImageOP::OP_KIND,CImageOP*>::value_type(CImageOP::BUMPMAP_LOADER,status.pDefaultBumpmapLoader));
-	IMAGE_KIND_OP.insert(map<CImageOP::OP_KIND,CImageOP*>::value_type(CImageOP::IMAGE_SCALER,status.pDefaultImageScaler));
-	IMAGE_KIND_OP.insert(map<CImageOP::OP_KIND,CImageOP*>::value_type(CImageOP::MIPMAP_BUILDER,status.pDefaultMipmapBuilder));
+	IMAGE_KIND_OP.insert(map<IImageOP::OP_KIND,IImageOP*>::value_type(IImageOP::BUMPMAP_LOADER,status.pDefaultBumpmapLoader));
+	IMAGE_KIND_OP.insert(map<IImageOP::OP_KIND,IImageOP*>::value_type(IImageOP::IMAGE_SCALER,status.pDefaultImageScaler));
+	IMAGE_KIND_OP.insert(map<IImageOP::OP_KIND,IImageOP*>::value_type(IImageOP::MIPMAP_BUILDER,status.pDefaultMipmapBuilder));
 }
 
 CTextureFactoryConfig::~CTextureFactoryConfig()
@@ -505,7 +505,7 @@ bool CTextureFactoryConfig::glInit()
 				if (compressors[j])
 					m_nbCompressors++;
 
-			m_pCompressors = new CCompressor*[m_nbCompressors];
+			m_pCompressors = new ICompressor*[m_nbCompressors];
 			nbCompressors = 0;
 			for (int j=0;j<MAX_COMPRESSORS;j++)
 				if (compressors[j])
@@ -569,7 +569,7 @@ void CTextureFactoryConfig::useTextureResize(bool resize)
 }
 
 
-void CTextureFactoryConfig::setImageKindIO(CImageIO *imager)
+void CTextureFactoryConfig::setImageKindIO(IImageIO *imager)
 {
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
     if ((imager == NULL) || (imager->getImageKind().empty()))
@@ -588,11 +588,11 @@ void CTextureFactoryConfig::setImageKindIO(CImageIO *imager)
 		for (unsigned int i=0;i<extensionKind[j].size();i++)
 			ext += toupper(extensionKind[j][i]);
 
-		IMAGE_KIND_IO.insert(map<std::string,CImageIO*>::value_type(ext,imager));
+		IMAGE_KIND_IO.insert(map<std::string,IImageIO*>::value_type(ext,imager));
 	}
 }
 
-CTextureFactoryConfig::CImageIO* const CTextureFactoryConfig::getImageKindIO(const std::string &extension) const
+CTextureFactoryConfig::IImageIO* const CTextureFactoryConfig::getImageKindIO(const std::string &extension) const
 {
 	//	extract the right image loader
     string ext = extension;
@@ -604,7 +604,7 @@ CTextureFactoryConfig::CImageIO* const CTextureFactoryConfig::getImageKindIO(con
 	for (pos=0;pos<ext.size();pos++)
         ext[pos] = toupper(ext[pos]);
 
-	map<std::string,CImageIO*>::const_iterator itr = IMAGE_KIND_IO.find(ext);
+	map<std::string,IImageIO*>::const_iterator itr = IMAGE_KIND_IO.find(ext);
 	if (IMAGE_KIND_IO.end() != itr)
 		return (*itr).second;
 	else 
@@ -612,7 +612,7 @@ CTextureFactoryConfig::CImageIO* const CTextureFactoryConfig::getImageKindIO(con
 }
 
 
-void CTextureFactoryConfig::setImageKindOP(CImageOP *op)
+void CTextureFactoryConfig::setImageKindOP(IImageOP *op)
 {
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
     if (op == NULL)
@@ -624,13 +624,13 @@ void CTextureFactoryConfig::setImageKindOP(CImageOP *op)
 	}
 #endif
 
-	IMAGE_KIND_OP.insert(map<CImageOP::OP_KIND,CImageOP*>::value_type(op->getKind(),op));
+	IMAGE_KIND_OP.insert(map<IImageOP::OP_KIND,IImageOP*>::value_type(op->getKind(),op));
 }
 
 
-CTextureFactoryConfig::CImageOP* const CTextureFactoryConfig::getImageKindOP(CImageOP::OP_KIND kind) const
+CTextureFactoryConfig::IImageOP* const CTextureFactoryConfig::getImageKindOP(IImageOP::OP_KIND kind) const
 {
-    map<CImageOP::OP_KIND,CImageOP*>::const_iterator itr = IMAGE_KIND_OP.find(kind);
+    map<IImageOP::OP_KIND,IImageOP*>::const_iterator itr = IMAGE_KIND_OP.find(kind);
 	if (IMAGE_KIND_OP.end() != itr)
 		return (*itr).second;
 	else 
@@ -638,7 +638,7 @@ CTextureFactoryConfig::CImageOP* const CTextureFactoryConfig::getImageKindOP(CIm
 }
 
 
-const CTextureFactoryConfig::CCompressor* CTextureFactoryConfig::getCompressor(unsigned int numCompressor)
+const CTextureFactoryConfig::ICompressor* CTextureFactoryConfig::getCompressor(unsigned int numCompressor)
 {
 	
     if (m_nbCompressors < 0)
@@ -649,7 +649,7 @@ const CTextureFactoryConfig::CCompressor* CTextureFactoryConfig::getCompressor(u
 		return NULL;
 }
 
-const CTextureFactoryConfig::CCompressor* CTextureFactoryConfig::getCompressor(const std::string& name)
+const CTextureFactoryConfig::ICompressor* CTextureFactoryConfig::getCompressor(const std::string& name)
 {
 	for (int i=0;i<m_nbCompressors;i++)
 	{

@@ -18,7 +18,7 @@ RAPTOR_NAMESPACE_BEGIN
 
 class CTextureObject;
 
-class CDefaultBumpmapLoader : public CTextureFactoryConfig::CImageOP  
+class CDefaultBumpmapLoader : public CTextureFactoryConfig::IImageOP  
 {
 public:
     CDefaultBumpmapLoader();

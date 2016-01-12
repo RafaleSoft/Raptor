@@ -16,6 +16,9 @@
 #if !defined(AFX_OBJECTREFERENCE_H__0D47C721_2B2D_4163_AB88_BE1B4E08A84D__INCLUDED_)
 	#include "GLHierarchy/ObjectReference.h"
 #endif
+#if !defined(AFX_TEXTUREOBJECT_H__D32B6294_B42B_4E6F_AB73_13B33C544AD0__INCLUDED_)
+	#include "GLHierarchy/TextureObject.h"
+#endif
 
 
 RAPTOR_NAMESPACE_BEGIN
@@ -118,7 +121,7 @@ public:
     //! @return : true is destruction successfull, false in case of error (e.g. invalid buffer )
 	virtual bool glDestroyPBuffer(PIXEL_BUFFER_ID pbuffer) = 0;
 
-	virtual void glBindPBuffer(PIXEL_BUFFER_ID pbuffer,unsigned int selectBuffer = CGL_NULL) = 0;
+	virtual void glBindPBuffer(PIXEL_BUFFER_ID pbuffer,CTextureObject::CUBE_FACE selectBuffer = CTextureObject::CGL_CUBEMAP_NONE) = 0;
 
 	virtual bool glIsPBuffer(PIXEL_BUFFER_ID pbuffer) const = 0;
 

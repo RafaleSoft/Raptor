@@ -45,17 +45,13 @@ public:
 	virtual CShader	* const getShader(void) const { return m_pBumpShader; }
 
 	//!	Sets the texture map that will be used as the diffuse component of the bumpping.
-	void setDiffuseMap(CTextureObject* diffuse)
-	{ diffuseMap = diffuse; }
+	void setDiffuseMap(CTextureObject* diffuse);
 
     //! Same as above with normal
-	void setNormalMap(CTextureObject* normal)
-	{ normalMap = normal; }
+	void setNormalMap(CTextureObject* normal);
 
      //!	Sets the texture map that will be used as the environment component of the bumpping.
-    void setEnvironmentMap(CTextureObject* environment)
-	{ envMap = environment; }
-
+    void setEnvironmentMap(CTextureObject* environment);
 
 	//!	A copy operator.
 	//!	The specific bump data is copied, the geometry

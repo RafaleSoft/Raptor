@@ -246,8 +246,8 @@ RAPTOR_NAMESPACE
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CPerlinNoise::CPerlinNoise(unsigned int mode):
-    m_mode(mode)
+CPerlinNoise::CPerlinNoise(const CVaArray<OPS>& ops):
+    m_ImageOps(ops)
 {
     m_iPermutation = new unsigned int[PERMUTATION_SIZE+PERMUTATION_SIZE];
     srand(time(0));
@@ -383,7 +383,7 @@ void CPerlinNoise::glGenerate(CTextureObject* t)
         }
     }
 
-    f.glLoadTexture(t,".buffer",m_mode);
+    f.glLoadTexture(t,".buffer");
 
     CATCH_GL_ERROR
 }

@@ -93,21 +93,6 @@ typedef RAPTOR_HANDLE*	LP_RAPTOR_HANDLE;
 
 
 //////////////////////////////////////////////////////////////////////
-//	Texture objects
-#define	CGL_AUTO_MIPMAPPED		0x00002000
-#define CGL_USER_MIPMAPPED		0x00004000
-
-#define CGL_CUBEMAP_PX			0x0000C010
-#define CGL_CUBEMAP_NX			0x0000C020
-#define CGL_CUBEMAP_PY			0x0000C030
-#define CGL_CUBEMAP_NY			0x0000C040
-#define CGL_CUBEMAP_PZ			0x0000C050
-#define CGL_CUBEMAP_NZ			0x0000C060
-#define CGL_NORMAL_MAP			0x01000000
-#define CGL_CREATE_NORMAL_MAP	0x03000000
-
-
-//////////////////////////////////////////////////////////////////////
 //	Mathematical defines
 //
 #include <math.h>		//	Quite obvious
@@ -400,6 +385,54 @@ private:
 #elif defined(LINUX)
 	mutable sem_t _sem;
 #endif
+};
+
+//	Without C++11 and std::initialiser_list, and
+//	to avoid the ugly va_args
+template <class T>
+class CVaArray
+{
+public:
+	CVaArray() {};
+	CVaArray(T t1)
+	{ vaArray.push_back(t1); };
+	CVaArray(T t1,T t2)
+	{ vaArray.push_back(t1); vaArray.push_back(t2);};
+	CVaArray(T t1,T t2,T t3)
+	{ vaArray.push_back(t1); vaArray.push_back(t2); vaArray.push_back(t3); };
+	CVaArray(T t1,T t2,T t3,T t4)
+	{ vaArray.push_back(t1); vaArray.push_back(t2); vaArray.push_back(t3); vaArray.push_back(t4);};
+	CVaArray(T t1,T t2,T t3,T t4,T t5)
+	{ vaArray.push_back(t1); vaArray.push_back(t2); vaArray.push_back(t3); vaArray.push_back(t4); vaArray.push_back(t5);};
+	CVaArray(T t1,T t2,T t3,T t4,T t5,T t6)
+	{ vaArray.push_back(t1); vaArray.push_back(t2); vaArray.push_back(t3); vaArray.push_back(t4); vaArray.push_back(t5); vaArray.push_back(t6);};
+	CVaArray(T t1,T t2,T t3,T t4,T t5,T t6,T t7)
+	{ vaArray.push_back(t1); vaArray.push_back(t2); vaArray.push_back(t3); vaArray.push_back(t4); vaArray.push_back(t5); vaArray.push_back(t6); vaArray.push_back(t7);};
+	CVaArray(T t1,T t2,T t3,T t4,T t5,T t6,T t7,T t8)
+	{ vaArray.push_back(t1); vaArray.push_back(t2); vaArray.push_back(t3); vaArray.push_back(t4); vaArray.push_back(t5); vaArray.push_back(t6); vaArray.push_back(t7); vaArray.push_back(t8);};
+	// More can be added ... if needed
+
+	virtual ~CVaArray() {};
+
+	//!	Find the first value equal to t
+	bool hasValue(T t) const
+	{
+		bool has = false;
+		for (size_t i=0;i<vaArray.size() && !has;i++)
+			if (vaArray[i] == t)
+				has = true;
+		return has;
+	};
+
+	//!	Explicit
+	size_t size() const { return vaArray.size(); };
+
+	T operator[](unsigned int pos) const
+	{ return vaArray[pos]; }
+
+private:
+	//	Do not derive a vector because no virtual destructor !
+	std::vector<T> vaArray;
 };
 
 RAPTOR_NAMESPACE_END

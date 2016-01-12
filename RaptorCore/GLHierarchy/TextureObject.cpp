@@ -114,6 +114,32 @@ void CTextureObject::setSize(unsigned int width, unsigned int height, unsigned i
     }
 }
 
+CTextureObject::CUBE_FACE CTextureObject::getCurrentCubeFace(void) const
+{
+	GLuint t = (target & 0xFFFF);
+#if defined(GL_ARB_texture_cube_map)
+	if ((t >= GL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB) && (t <= GL_TEXTURE_CUBE_MAP_NEGATIVE_Z_ARB))
+		return (CTextureObject::CUBE_FACE)(t-GL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB);
+	else
+#endif
+		return CGL_CUBEMAP_NONE;
+}
+
+void CTextureObject::selectCubeFace(CUBE_FACE face)
+{
+#if defined(GL_ARB_texture_cube_map)
+	GLuint t = (target & 0xFFFF);
+
+	if ((t == GL_TEXTURE_CUBE_MAP_ARB) ||
+		((t >= GL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB) && (t <= GL_TEXTURE_CUBE_MAP_NEGATIVE_Z_ARB)))
+	{
+		if (face == CGL_CUBEMAP_NONE)
+			target = (target & 0xFFFF0000) + GL_TEXTURE_CUBE_MAP_ARB;
+		else
+			target = (target & 0xFFFF0000) + GL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB + (face - CGL_CUBEMAP_PX);
+	}
+#endif
+}
 
 unsigned char* CTextureObject::getTexels(void)
 {

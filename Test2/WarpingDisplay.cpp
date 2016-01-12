@@ -296,7 +296,7 @@ CGlassObject::CGlassObject(float width,float height,int hcels,int vcels)
 	CTextureObject* T = f.glCreateTexture( CTextureObject::CGL_COLOR24_ALPHA,
                                            CTextureObject::CGL_ALPHA_TRANSPARENT,
                                            CTextureObject::CGL_BILINEAR);
-	f.glLoadTexture(T,"Datas\\Bump2.tga",CGL_USER_MIPMAPPED);
+	f.glLoadTexture(T,"Datas\\Bump2.tga");
 
 	m_pShader = new CShader("GLASS_SHADER");
 	CTextureUnitSetup *pSetup = m_pShader->glGetTextureUnitsSetup();

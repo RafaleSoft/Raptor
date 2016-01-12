@@ -98,17 +98,6 @@ void CEMBMDisplay::Init()
 
 	p = CPersistence::FindObject("Bump light");
 	pbg->light = (CLight*)p;
-/*
-	CTextureObject *reflect = tf->CreateCubemap(CTextureFactory::CGL_MULTIPLY,
-												CTextureFactory::CGL_BILINEAR);
-	reflect->alpha = 255;
-	tf->LoadTexture(reflect,"Datas\\cube_px.jpg",CGL_USER_MIPMAPPED|CGL_RGBA|CGL_CUBEMAP_PX);
-	tf->LoadTexture(reflect,"Datas\\cube_py.jpg",CGL_USER_MIPMAPPED|CGL_RGBA|CGL_CUBEMAP_PY);
-	tf->LoadTexture(reflect,"Datas\\cube_pz.jpg",CGL_USER_MIPMAPPED|CGL_RGBA|CGL_CUBEMAP_PZ);
-	tf->LoadTexture(reflect,"Datas\\cube_nx.jpg",CGL_USER_MIPMAPPED|CGL_RGBA|CGL_CUBEMAP_NX);
-	tf->LoadTexture(reflect,"Datas\\cube_ny.jpg",CGL_USER_MIPMAPPED|CGL_RGBA|CGL_CUBEMAP_NY);
-	tf->LoadTexture(reflect,"Datas\\cube_nz.jpg",CGL_USER_MIPMAPPED|CGL_RGBA|CGL_CUBEMAP_NZ);
-*/
 	embm = new CEMBMGeometry();
     *embm = *teapot;
 
@@ -121,7 +110,7 @@ void CEMBMDisplay::Init()
     embm->setEnvironmentMap(tf->getTexture(4));
 	CTextureObject* normalMap = f.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_MULTIPLY,CTextureObject::CGL_BILINEAR);
 	normalMap->glSetTransparency(255);
-	f.glLoadTexture(normalMap,"Datas\\bump4.tga",CGL_USER_MIPMAPPED|CGL_NORMAL_MAP);
+	f.glLoadTexture(normalMap,"Datas\\bump4.tga");
 	embm->setNormalMap(normalMap);
     embm->setDiffuseMap(tf->getTexture(2));
 	embm->setRenderingModel(l_model);

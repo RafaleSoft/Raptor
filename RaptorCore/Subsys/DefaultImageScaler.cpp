@@ -34,7 +34,7 @@ CDefaultImageScaler::~CDefaultImageScaler()
 }
 
 bool CDefaultImageScaler::apply(CTextureObject* const src,
-								unsigned int innerFormat,
+								unsigned int,
 								unsigned int texelFormat,
 								unsigned int texelType,
 								const CTextureFactoryConfig& config) const

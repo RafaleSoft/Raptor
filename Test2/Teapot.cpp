@@ -27,6 +27,7 @@
 
 #include "ToolBox/RaptorToolBox.h"
 
+typedef raptor::CTextureFactoryConfig::IImageOP IImageOP;
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -120,10 +121,10 @@ void CTeapot::GLInitContext()
 		T = f.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_ALPHA_TRANSPARENT,CTextureObject::CGL_BILINEAR);
 		T->glSetTransparency(128);
 		CTextureFactoryConfig& config = f.getConfig();
-		const CTextureFactoryConfig::CCompressor *compressor = config.getCurrentCompressor();
+		const CTextureFactoryConfig::ICompressor *compressor = config.getCurrentCompressor();
 		if (0 < config.getNumCompressors())
 			config.setCurrentCompressor(config.getCompressor("OpenGL"));
-		f.glLoadTexture(T,"Datas\\start.tga",CGL_USER_MIPMAPPED);
+		f.glLoadTexture(T,"Datas\\start.tga");
 		t->addTexture(T);
 	
 	    if (Raptor::glIsExtensionSupported("GL_ARB_texture_compression"))
@@ -147,12 +148,19 @@ void CTeapot::GLInitContext()
 	{
 		T = f.glCreateCubemap(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_ALPHA_TRANSPARENT,CTextureObject::CGL_BILINEAR);
 		T->glSetTransparency(255);
-		f.glLoadTexture(T,"Datas\\start.tga",CGL_USER_MIPMAPPED|CGL_CUBEMAP_PX);
-		f.glLoadTexture(T,"Datas\\start.tga",CGL_USER_MIPMAPPED|CGL_CUBEMAP_PY);
-		f.glLoadTexture(T,"Datas\\start.tga",CGL_USER_MIPMAPPED|CGL_CUBEMAP_PZ);
-		f.glLoadTexture(T,"Datas\\start.tga",CGL_USER_MIPMAPPED|CGL_CUBEMAP_NX);
-		f.glLoadTexture(T,"Datas\\start.tga",CGL_USER_MIPMAPPED|CGL_CUBEMAP_NY);
-		f.glLoadTexture(T,"Datas\\start.tga",CGL_USER_MIPMAPPED|CGL_CUBEMAP_NZ);
+		T->selectCubeFace(CTextureObject::CGL_CUBEMAP_PX);
+		f.glLoadTexture(T,"Datas\\start.tga");
+		T->selectCubeFace(CTextureObject::CGL_CUBEMAP_PY);
+		f.glLoadTexture(T,"Datas\\start.tga");
+		T->selectCubeFace(CTextureObject::CGL_CUBEMAP_PZ);
+		f.glLoadTexture(T,"Datas\\start.tga");
+		T->selectCubeFace(CTextureObject::CGL_CUBEMAP_NX);
+		f.glLoadTexture(T,"Datas\\start.tga");
+		T->selectCubeFace(CTextureObject::CGL_CUBEMAP_NY);
+		f.glLoadTexture(T,"Datas\\start.tga");
+		T->selectCubeFace(CTextureObject::CGL_CUBEMAP_NZ);
+		f.glLoadTexture(T,"Datas\\start.tga");
+		T->selectCubeFace(CTextureObject::CGL_CUBEMAP_NONE);
 		t->addTexture(T);
 	}
 
@@ -182,7 +190,7 @@ void CTeapot::GLInitContext()
     s->getMaterial()->setShininess(10.0f);
 	teapot->setDiffuseMap(t->getTexture(0));
 	CTextureObject* normalMap = f.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_MULTIPLY,CTextureObject::CGL_BILINEAR);
-    f.glLoadTexture(normalMap,"Datas\\bump3.tga",CGL_USER_MIPMAPPED|CGL_CREATE_NORMAL_MAP);
+    f.glLoadTexture(normalMap,"Datas\\bump3.tga",CVaArray<CTextureFactoryConfig::IImageOP::OP_KIND>(CTextureFactoryConfig::IImageOP::BUMPMAP_LOADER));
 	teapot->setNormalMap(normalMap);
 	t->addTexture(normalMap);
 

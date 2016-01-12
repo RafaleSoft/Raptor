@@ -7,43 +7,30 @@
 #if !defined(AFX_TEXTUREFACTORY_H__1B470EC4_4B68_11D3_9142_9A502CBADC6B__INCLUDED_)
 	#include "TextureFactory.h"
 #endif
-
 #if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
 	#include "System/Raptor.h"
 #endif
-
 #if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
     #include "System/RaptorErrorManager.h"
 #endif
-
 #if !defined(AFX_RAPTOREXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
 	#include "System/RaptorExtensions.h"
 #endif
-
 #if !defined(AFX_RAPTORIO_H__87D52C27_9117_4675_95DC_6AD2CCD2E78D__INCLUDED_)
 	#include "System/RaptorIO.h"
 #endif
-
-#if !defined(AFX_TEXTUREFACTORYCONFIG_H__7A20D208_423F_4E02_AA4D_D736E0A7959F__INCLUDED_)
-	#include "TextureFactoryConfig.h"
-#endif
-
 #ifndef __INTERNAL_PROCS_H__
 	#include "Subsys/InternalProcs.h"
 #endif
-
 #if !defined(AFX_OBJECTFACTORY_H__7F891C52_9E32_489C_B09C_5E5803522D91__INCLUDED_)
 	#include "ObjectFactory.h"
 #endif
-
 #if !defined(AFX_MEMORY_H__81A6CA9A_4ED9_4260_B6E4_C03276C38DBC__INCLUDED_)
 	#include "System/Memory.h"
 #endif
-
 #if !defined(AFX_TEXELALLOCATOR_H__7C48808C_E838_4BE3_8B0E_286428BB7CF8__INCLUDED_)
 	#include "Subsys/TexelAllocator.h"
 #endif
-
 
 
 #ifdef WIN32
@@ -66,19 +53,14 @@ CTextureFactory *CTextureFactory::m_pDefault = NULL;
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 CTextureFactory::CTextureFactory(const std::string& name)
-	:CPersistence(factoryId,name),
-	m_pConfig(NULL)
+	:CPersistence(factoryId,name),mConfig()
 {
-	m_pConfig = new CTextureFactoryConfig();
-
-    if (m_pConfig->getNumCompressors() < 0)
-        m_pConfig->glInit();
+    if (mConfig.getNumCompressors() < 0)
+        mConfig.glInit();
 }
 
 CTextureFactory::~CTextureFactory(void)
 {
-	if (m_pConfig != NULL)
-		delete m_pConfig;
 	if (m_pDefault == this)
 		m_pDefault = NULL;
 }
@@ -97,7 +79,7 @@ CTextureFactory& CTextureFactory::getDefaultFactory()
 
 RAPTOR_HANDLE CTextureFactory::glPreloadTexture(CTextureObject* const T,
 												const std::string &fname,
-												unsigned int mode)
+												const CVaArray<CTextureFactoryConfig::IImageOP::OP_KIND>& ops)
 {
 	RAPTOR_HANDLE preload(0,NULL);
 
@@ -122,7 +104,7 @@ RAPTOR_HANDLE CTextureFactory::glPreloadTexture(CTextureObject* const T,
 		return preload;
 	}
 
-	CTextureFactoryConfig::CImageIO *imager = m_pConfig->getImageKindIO(fname);
+	CTextureFactoryConfig::IImageIO *imager = mConfig.getImageKindIO(fname);
 	if (imager != NULL)
 	{
 		if (imager->loadImageFile(fname,T))
@@ -135,19 +117,18 @@ RAPTOR_HANDLE CTextureFactory::glPreloadTexture(CTextureObject* const T,
 			P.inner_format = T->getSizedTexelType();
 			P.format = T->getBufferType();
 			P.src_format = T->getBufferTexelType();
-			P.mode = mode;
+			P.createNormalMap = ops.hasValue(CTextureFactoryConfig::IImageOP::BUMPMAP_LOADER);
+			P.autoMipmap = ops.hasValue(CTextureFactoryConfig::IImageOP::MIPMAP_BUILDER);
+			P.reScale = ops.hasValue(CTextureFactoryConfig::IImageOP::IMAGE_SCALER);
 
 			//	1)	Texture internal format
 			//
 			//	Handle normal maps for bumping
 			//
-			if ((mode & CGL_NORMAL_MAP) == CGL_NORMAL_MAP)
+			if (P.createNormalMap)
 			{
-				if ((mode & CGL_CREATE_NORMAL_MAP) == CGL_CREATE_NORMAL_MAP)
-				{
-                    CTextureFactoryConfig::CImageOP* op = m_pConfig->getImageKindOP(CTextureFactoryConfig::CImageOP::BUMPMAP_LOADER);
-					op->apply(T,P.inner_format,P.format,P.src_format,*m_pConfig);
-				}
+                CTextureFactoryConfig::IImageOP* op = mConfig.getImageKindOP(CTextureFactoryConfig::IImageOP::BUMPMAP_LOADER);
+				op->apply(T,P.inner_format,P.format,P.src_format,mConfig);
 			}
 
 			//
@@ -157,9 +138,9 @@ RAPTOR_HANDLE CTextureFactory::glPreloadTexture(CTextureObject* const T,
 			//
 #ifdef GL_ARB_texture_compression
 			//	use texture compression if possible
-			else if (NULL != m_pConfig->getCurrentCompressor())
+			else if (NULL != mConfig.getCurrentCompressor())
 			{
-				GLuint compressor = m_pConfig->getCurrentCompressor()->getFormat(P.inner_format);
+				GLuint compressor = mConfig.getCurrentCompressor()->getFormat(P.inner_format);
 				if (compressor != (GLuint)-1)
 					P.inner_format = compressor;
 			}
@@ -168,7 +149,7 @@ RAPTOR_HANDLE CTextureFactory::glPreloadTexture(CTextureObject* const T,
 
 			//	2)	Format of data to load
 			//
-			CTextureFactoryConfig::TEXEL_FORMAT texelFormat = m_pConfig->getTexelFormat();
+			CTextureFactoryConfig::TEXEL_FORMAT texelFormat = mConfig.getTexelFormat();
 			if (P.format == GL_RGBA)
 			{
 #if defined(GL_EXT_bgra)
@@ -192,26 +173,16 @@ RAPTOR_HANDLE CTextureFactory::glPreloadTexture(CTextureObject* const T,
 			//
 			//	Handle Image re-scaling
 			//
-            if (m_pConfig->useTextureResize())
+			if (mConfig.useTextureResize() || P.reScale)
             {
-                CTextureFactoryConfig::CImageOP* op = m_pConfig->getImageKindOP(CTextureFactoryConfig::CImageOP::IMAGE_SCALER);
-/* OGL call*/	op->apply(T,P.inner_format,P.format,P.src_format,*m_pConfig);
+                CTextureFactoryConfig::IImageOP* op = mConfig.getImageKindOP(CTextureFactoryConfig::IImageOP::IMAGE_SCALER);
+/* OGL call*/	op->apply(T,P.inner_format,P.format,P.src_format,mConfig);
             }
 
 			//
 			//	Handle cubemap textures
 			//
 			P.target = T->target & 0xFFFF;
-#if defined(GL_ARB_texture_cube_map)
-			if (P.target == GL_TEXTURE_CUBE_MAP_ARB)
-			{
-				P.target = (mode & 0x0000C070);
-				if ((P.target < CGL_CUBEMAP_PX) || (P.target > CGL_CUBEMAP_NZ))
-					P.target = GL_TEXTURE_2D;
-				else
-					P.target = GL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB + ((P.target - CGL_CUBEMAP_PX) >> 4);
-			}
-#endif
 			preload.handle = T->texname;
 			preload.hClass = 0;
 			m_preloads[T->texname] = P;
@@ -283,14 +254,13 @@ bool CTextureFactory::glLoadTexture(CTextureObject* const T,
     }
     else
 #endif
-	if (((P.mode & CGL_AUTO_MIPMAPPED) == CGL_AUTO_MIPMAPPED) &&
-		(T->getFilter() == CTextureObject::CGL_TRILINEAR))
+	if (P.autoMipmap && (T->getFilter() == CTextureObject::CGL_TRILINEAR))
 	{
-		CTextureFactoryConfig::CImageOP* op = m_pConfig->getImageKindOP(CTextureFactoryConfig::CImageOP::MIPMAP_BUILDER);
-		op->apply(T,P.inner_format,P.format,P.src_format,*m_pConfig);
+		CTextureFactoryConfig::IImageOP* op = mConfig.getImageKindOP(CTextureFactoryConfig::IImageOP::MIPMAP_BUILDER);
+		op->apply(T,P.inner_format,P.format,P.src_format,mConfig);
 	}
     //  The default case, at least load the texture.
-	else /*if ((mode&CGL_USER_MIPMAPPED) == CGL_USER_MIPMAPPED) */
+	else
 	{
 		glTexImage2D(	P.target,
 						T->level,P.inner_format,
@@ -310,7 +280,7 @@ bool CTextureFactory::glLoadTexture(CTextureObject* const T,
 
 bool CTextureFactory::glLoadTexture(CTextureObject* const T,
 									const std::string& fname,
-									unsigned int mode)
+									const CVaArray<CTextureFactoryConfig::IImageOP::OP_KIND>& ops)
 {
 	//	ensure we can do something ...
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
@@ -334,7 +304,7 @@ bool CTextureFactory::glLoadTexture(CTextureObject* const T,
 	}
 
 
-	CTextureFactoryConfig::CImageIO *imager = m_pConfig->getImageKindIO(fname);
+	CTextureFactoryConfig::IImageIO *imager = mConfig.getImageKindIO(fname);
 	if (imager != NULL)
 	{
 		if (imager->loadImageFile(fname,T))
@@ -352,13 +322,10 @@ bool CTextureFactory::glLoadTexture(CTextureObject* const T,
 			//
 			//	Handle normal maps for bumping
 			//
-			if ((mode & CGL_NORMAL_MAP) == CGL_NORMAL_MAP)
+			if (ops.hasValue(CTextureFactoryConfig::IImageOP::BUMPMAP_LOADER))
 			{
-				if ((mode & CGL_CREATE_NORMAL_MAP) == CGL_CREATE_NORMAL_MAP)
-				{
-                    CTextureFactoryConfig::CImageOP* op = m_pConfig->getImageKindOP(CTextureFactoryConfig::CImageOP::BUMPMAP_LOADER);
-                    op->apply(T,GL_INNER_FORMAT,GL_FORMAT,GL_SRC_FORMAT,*m_pConfig);
-				}
+                CTextureFactoryConfig::IImageOP* op = mConfig.getImageKindOP(CTextureFactoryConfig::IImageOP::BUMPMAP_LOADER);
+                op->apply(T,GL_INNER_FORMAT,GL_FORMAT,GL_SRC_FORMAT,mConfig);
 			}
 			//
 			//	Handle support for texture compression.
@@ -367,9 +334,9 @@ bool CTextureFactory::glLoadTexture(CTextureObject* const T,
 			//
 #ifdef GL_ARB_texture_compression
 			//	use texture compression if possible
-			else if (NULL != m_pConfig->getCurrentCompressor())
+			else if (NULL != mConfig.getCurrentCompressor())
 			{
-				GLuint compressor = m_pConfig->getCurrentCompressor()->getFormat(GL_INNER_FORMAT);
+				GLuint compressor = mConfig.getCurrentCompressor()->getFormat(GL_INNER_FORMAT);
 				if (compressor != (GLuint)-1)
 					GL_INNER_FORMAT = compressor;
 			}
@@ -378,7 +345,7 @@ bool CTextureFactory::glLoadTexture(CTextureObject* const T,
 
 			//	2)	Format of data to load
 			//
-			CTextureFactoryConfig::TEXEL_FORMAT texelFormat = m_pConfig->getTexelFormat();
+			CTextureFactoryConfig::TEXEL_FORMAT texelFormat = mConfig.getTexelFormat();
 			if (GL_FORMAT == GL_RGBA)
 			{
 #if defined(GL_EXT_bgra)
@@ -402,10 +369,11 @@ bool CTextureFactory::glLoadTexture(CTextureObject* const T,
 			//
 			//	Handle Image re-scaling
 			//
-            if (m_pConfig->useTextureResize() && (T->getDepth() == 0))
+            if ((mConfig.useTextureResize() || ops.hasValue(CTextureFactoryConfig::IImageOP::IMAGE_SCALER)) && 
+				(T->getDepth() == 0))
             {
-                CTextureFactoryConfig::CImageOP* op = m_pConfig->getImageKindOP(CTextureFactoryConfig::CImageOP::IMAGE_SCALER);
-                op->apply(T,GL_INNER_FORMAT,GL_FORMAT,GL_SRC_FORMAT,*m_pConfig);
+                CTextureFactoryConfig::IImageOP* op = mConfig.getImageKindOP(CTextureFactoryConfig::IImageOP::IMAGE_SCALER);
+                op->apply(T,GL_INNER_FORMAT,GL_FORMAT,GL_SRC_FORMAT,mConfig);
             }
 
 			//
@@ -413,16 +381,6 @@ bool CTextureFactory::glLoadTexture(CTextureObject* const T,
 			//
 			bool result = false;
 			GLuint target = T->target & 0xFFFF;
-#if defined(GL_ARB_texture_cube_map)
-			if (target == GL_TEXTURE_CUBE_MAP_ARB)
-			{
-				target = (mode & 0x0000C070);
-				if ((target < CGL_CUBEMAP_PX) || (target > CGL_CUBEMAP_NZ))
-					target = GL_TEXTURE_2D;
-				else
-					target = GL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB + ((target - CGL_CUBEMAP_PX) >> 4);
-			}
-#endif
 
 			//
 			//	Final processing :
@@ -440,14 +398,14 @@ bool CTextureFactory::glLoadTexture(CTextureObject* const T,
             }
             else
 #endif
-			if (((mode & CGL_AUTO_MIPMAPPED) == CGL_AUTO_MIPMAPPED) &&
+			if (ops.hasValue(CTextureFactoryConfig::IImageOP::MIPMAP_BUILDER) && 
 				(T->getFilter() == CTextureObject::CGL_TRILINEAR))
 			{
-				CTextureFactoryConfig::CImageOP* op = m_pConfig->getImageKindOP(CTextureFactoryConfig::CImageOP::MIPMAP_BUILDER);
-				result = op->apply(T,GL_INNER_FORMAT,GL_FORMAT,GL_SRC_FORMAT,*m_pConfig);
+				CTextureFactoryConfig::IImageOP* op = mConfig.getImageKindOP(CTextureFactoryConfig::IImageOP::MIPMAP_BUILDER);
+				result = op->apply(T,GL_INNER_FORMAT,GL_FORMAT,GL_SRC_FORMAT,mConfig);
 			}
             //  The default case, at least load the texture.
-			else /*if ((mode&CGL_USER_MIPMAPPED) == CGL_USER_MIPMAPPED) */
+			else
 			{
 				glTexImage2D(	target,
 								T->level,GL_INNER_FORMAT,
@@ -508,7 +466,7 @@ bool CTextureFactory::glResizeTexture( CTextureObject *T, unsigned int width, un
 
 
 	//!	Handle the case with unsupported rectangle texture
-	if (!m_pConfig->supportTextureResize())
+	if (!mConfig.supportTextureResize())
 	{
 		unsigned int w2 = width;
 		unsigned int h2 = height;
@@ -519,7 +477,7 @@ bool CTextureFactory::glResizeTexture( CTextureObject *T, unsigned int width, un
 
 		if ((w2 != width) || (h2 != height))
 		{
-			if (m_pConfig->useTextureResize())
+			if (mConfig.useTextureResize())
 			{
 				// It seems better to select the biggest size
 				//	because a too small texture may not satify
@@ -604,7 +562,7 @@ bool CTextureFactory::glExportTexture(CTextureObject *T,const std::string &fname
     if ((T->m_width == 0) || (T->m_height == 0))
         return false;
 
-	CTextureFactoryConfig::CImageIO *imager = m_pConfig->getImageKindIO(fname);
+	CTextureFactoryConfig::IImageIO *imager = mConfig.getImageKindIO(fname);
     bool res = true;
 	if (imager != NULL)
 	{
@@ -642,7 +600,7 @@ CTextureObject* const CTextureFactory::glCreateSprite(CTextureObject::TEXEL_TYPE
 	T->glUpdateFilter(CTextureObject::CGL_UNFILTERED);
 	T->glUpdateClamping(CTextureObject::CGL_CLAMP);
 	
-	glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_PRIORITY,m_pConfig->getCurrentPriority());
+	glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_PRIORITY,mConfig.getCurrentPriority());
 
 	CATCH_GL_ERROR
 
@@ -681,14 +639,14 @@ CTextureObject* const CTextureFactory::glCreateCubemap(  CTextureObject::TEXEL_T
 	T->glUpdateFilter(filter);
 	T->glUpdateClamping(CTextureObject::CGL_REPEAT);
 
-	glTexParameterf(T->target,GL_TEXTURE_PRIORITY,m_pConfig->getCurrentPriority());
+	glTexParameterf(T->target,GL_TEXTURE_PRIORITY,mConfig.getCurrentPriority());
 
 	// Is this usefull on a cube map ?
 #ifdef GL_EXT_texture_filter_anisotropic
-	if ((m_pConfig->getCurrentAnisotropy() > 1.0f) && (filter == CTextureObject::CGL_ANISOTROPIC))
+	if ((mConfig.getCurrentAnisotropy() > 1.0f) && (filter == CTextureObject::CGL_ANISOTROPIC))
     {
-		glTexParameterf(T->target,GL_TEXTURE_MAX_ANISOTROPY_EXT,m_pConfig->getCurrentAnisotropy());
-        T->aniso_level = m_pConfig->getCurrentAnisotropy();
+		glTexParameterf(T->target,GL_TEXTURE_MAX_ANISOTROPY_EXT,mConfig.getCurrentAnisotropy());
+        T->aniso_level = mConfig.getCurrentAnisotropy();
     }
 #endif
 
@@ -744,13 +702,13 @@ CTextureObject* const CTextureFactory::glCreateTexture( CTextureObject::TEXEL_TY
 	T->glUpdateFilter(filter);
 	T->glUpdateClamping(CTextureObject::CGL_REPEAT);
 	
-	glTexParameterf(T->target,GL_TEXTURE_PRIORITY,m_pConfig->getCurrentPriority());
+	glTexParameterf(T->target,GL_TEXTURE_PRIORITY,mConfig.getCurrentPriority());
 
 #ifdef GL_EXT_texture_filter_anisotropic
-	if ((m_pConfig->getCurrentAnisotropy() > 1.0f) && (filter == CTextureObject::CGL_ANISOTROPIC))
+	if ((mConfig.getCurrentAnisotropy() > 1.0f) && (filter == CTextureObject::CGL_ANISOTROPIC))
     {
-		glTexParameterf(T->target,GL_TEXTURE_MAX_ANISOTROPY_EXT,m_pConfig->getCurrentAnisotropy());
-        T->aniso_level = m_pConfig->getCurrentAnisotropy();
+		glTexParameterf(T->target,GL_TEXTURE_MAX_ANISOTROPY_EXT,mConfig.getCurrentAnisotropy());
+        T->aniso_level = mConfig.getCurrentAnisotropy();
     }
 #endif
 
@@ -795,13 +753,13 @@ CTextureObject* const CTextureFactory::glCreateRectangleTexture( CTextureObject:
 
 	T->glUpdateClamping(CTextureObject::CGL_EDGECLAMP);
 
-	glTexParameterf(T->target,GL_TEXTURE_PRIORITY,m_pConfig->getCurrentPriority());
+	glTexParameterf(T->target,GL_TEXTURE_PRIORITY,mConfig.getCurrentPriority());
 
 #ifdef GL_EXT_texture_filter_anisotropic
-	if ((m_pConfig->getCurrentAnisotropy() > 1.0f) && (filter == CTextureObject::CGL_ANISOTROPIC))
+	if ((mConfig.getCurrentAnisotropy() > 1.0f) && (filter == CTextureObject::CGL_ANISOTROPIC))
     {
-		glTexParameterf(T->target,GL_TEXTURE_MAX_ANISOTROPY_EXT,m_pConfig->getCurrentAnisotropy());
-        T->aniso_level = m_pConfig->getCurrentAnisotropy();
+		glTexParameterf(T->target,GL_TEXTURE_MAX_ANISOTROPY_EXT,mConfig.getCurrentAnisotropy());
+        T->aniso_level = mConfig.getCurrentAnisotropy();
     }
 #endif
 
@@ -853,7 +811,7 @@ CTextureObject* const CTextureFactory::glCreateDynamicTexture(CTextureObject::TE
 	//T->glUpdateClamping(CTextureObject::CGL_CLAMP);
 	T->glUpdateClamping(CTextureObject::CGL_EDGECLAMP);
 
-	glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_PRIORITY,m_pConfig->getCurrentPriority());
+	glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_PRIORITY,mConfig.getCurrentPriority());
 
     //  Initialise texture object with default value to store width & height
     //glTexImage2D(GL_TEXTURE_2D, 0, 4, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE,NULL);
@@ -901,7 +859,7 @@ CTextureObject* const CTextureFactory::glCreateVolumeTexture(CTextureObject::TEX
 	glTexParameteri(GL_TEXTURE_3D_EXT,GL_TEXTURE_WRAP_S,GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_3D_EXT,GL_TEXTURE_WRAP_T,GL_REPEAT);
     glTexParameteri(GL_TEXTURE_3D_EXT,GL_TEXTURE_WRAP_R_EXT,GL_REPEAT);
-	glTexParameterf(GL_TEXTURE_3D_EXT,GL_TEXTURE_PRIORITY,m_pConfig->getCurrentPriority());
+	glTexParameterf(GL_TEXTURE_3D_EXT,GL_TEXTURE_PRIORITY,mConfig.getCurrentPriority());
 
 	CATCH_GL_ERROR
 
@@ -975,15 +933,15 @@ bool CTextureFactory::glLoadCompressedTexture(CTextureObject* const T,const std:
 	//	If compressor available,
 	// load texture to GL proxy
 	int pos = 0;
-	while ((pos < m_pConfig->getNumCompressors()) && 
-		   (!m_pConfig->getCompressor(pos)->isCompressionSupported(params)))
+	while ((pos < mConfig.getNumCompressors()) && 
+		   (!mConfig.getCompressor(pos)->isCompressionSupported(params)))
 		pos++;
-	if (ret && (pos < m_pConfig->getNumCompressors()))
+	if (ret && (pos < mConfig.getNumCompressors()))
 	{
 		glBindTexture(GL_TEXTURE_2D,T->texname);
 		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_REPEAT);
-		glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_PRIORITY,m_pConfig->getCurrentPriority());
+		glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_PRIORITY,mConfig.getCurrentPriority());
 
 		Raptor::glGetExtensions()->glCompressedTexImage2DARB(GL_TEXTURE_2D,
 															 0,params,

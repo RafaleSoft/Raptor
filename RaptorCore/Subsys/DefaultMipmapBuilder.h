@@ -17,7 +17,7 @@ RAPTOR_NAMESPACE_BEGIN
 
 class CTextureObject;
 
-class CDefaultMipmapBuilder : public CTextureFactoryConfig::CImageOP  
+class CDefaultMipmapBuilder : public CTextureFactoryConfig::IImageOP  
 {
 public:
 	CDefaultMipmapBuilder();

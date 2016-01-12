@@ -176,7 +176,6 @@ bool CTextureSet::importTextureObject(CRaptorIO& io)
     CTextureObject::TEXTURE_FUNCTION function = CTextureObject::CGL_OPAQUE;
     CTextureObject::TEXTURE_FILTER filter = CTextureObject::CGL_UNFILTERED;
     CTextureObject::TEXEL_TYPE texelType = CTextureObject::CGL_COLOR24_ALPHA;
-    unsigned int mode = CGL_USER_MIPMAPPED;
     float transparency = -1.0f;
 	bool compressed = false;
 
@@ -226,7 +225,7 @@ bool CTextureSet::importTextureObject(CRaptorIO& io)
 	io >> name;
 
 	CTextureFactory &f = CTextureFactory::getDefaultFactory();
-	const CTextureFactoryConfig::CCompressor *oldCompressor  = f.getConfig().getCurrentCompressor();
+	const CTextureFactoryConfig::ICompressor *oldCompressor  = f.getConfig().getCurrentCompressor();
 	if ((compressed) && (0 < f.getConfig().getNumCompressors()))
 		f.getConfig().setCurrentCompressor(f.getConfig().getCompressor("OpenGL"));
 
@@ -237,7 +236,7 @@ bool CTextureSet::importTextureObject(CRaptorIO& io)
 		addTexture(T);
         if (transparency > 0)
             T->glSetTransparency(255 * transparency);
-        res = f.glLoadTexture(T,filename,mode);
+        res = f.glLoadTexture(T,filename);
     }
     
 	f.getConfig().setCurrentCompressor(oldCompressor);

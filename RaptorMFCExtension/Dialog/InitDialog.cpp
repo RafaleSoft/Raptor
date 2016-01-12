@@ -262,7 +262,7 @@ void CInitDialog::OnSelchangeCombo1()
 			if (pos < nbCompressors + 38)
 			{
 
-				const CTextureFactoryConfig::CCompressor *compressor = config.getCompressor(pos - 38);
+				const CTextureFactoryConfig::ICompressor *compressor = config.getCompressor(pos - 38);
 				Wnd->SetWindowText(CA2T(compressor->getName().c_str()));
 
 			}

@@ -248,10 +248,10 @@ void Display::GLInitContext()
 		T = f.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_MULTIPLY,CTextureObject::CGL_BILINEAR);
 		T->glSetTransparency(128);
 		CTextureFactoryConfig& config = f.getConfig();
-		const CTextureFactoryConfig::CCompressor *compressor = config.getCurrentCompressor();
+		const CTextureFactoryConfig::ICompressor *compressor = config.getCurrentCompressor();
 		if (0 < config.getNumCompressors())
 			config.setCurrentCompressor(config.getCompressor("OpenGL"));
-		f.glLoadTexture(T,"Datas\\M1_1024.jpg",CGL_USER_MIPMAPPED);
+		f.glLoadTexture(T,"Datas\\M1_1024.jpg");
 		config.setCurrentCompressor(compressor);
 	}
 	else

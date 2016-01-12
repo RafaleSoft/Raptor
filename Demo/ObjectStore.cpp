@@ -201,7 +201,7 @@ bool CObjectStore::IsAColumn(CGeometry *&g)
 		CTextureObject *normalMap = factory.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,
                                                             CTextureObject::CGL_MULTIPLY,
                                                             CTextureObject::CGL_TRILINEAR);
-        factory.glLoadTexture(normalMap,BUMP_0,CGL_AUTO_MIPMAPPED|CGL_NORMAL_MAP);
+		factory.glLoadTexture(normalMap,BUMP_0,CVaArray<CTextureFactoryConfig::IImageOP::OP_KIND>(CTextureFactoryConfig::IImageOP::MIPMAP_BUILDER));
 		bump->setNormalMap(normalMap);
 
         CGeometry::CRenderingModel l_model(0);
@@ -451,7 +451,7 @@ void CObjectStore::LoadModels(void)
 	CTextureFactoryConfig& config = factory.getConfig();
 	if (0 < config.getNumCompressors())
 	{
-		const CTextureFactoryConfig::CCompressor *compressor = config.getCompressor("DXT1");
+		const CTextureFactoryConfig::ICompressor *compressor = config.getCompressor("DXT1");
 		if (compressor == NULL)
 			compressor = config.getCompressor("OpenGL");
 
@@ -462,40 +462,40 @@ void CObjectStore::LoadModels(void)
 								CTextureObject::CGL_MULTIPLY,
 								CTextureObject::CGL_BILINEAR);
 	T->glSetTransparency(192);
-    factory.glLoadTexture(T,MARBLE_0,CGL_USER_MIPMAPPED);
+    factory.glLoadTexture(T,MARBLE_0);
 	m_textures->addTexture(T);
 
 	T = factory.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,
 								CTextureObject::CGL_MULTIPLY,
 								CTextureObject::CGL_BILINEAR);
 	T->glSetTransparency(255);
-	factory.glLoadTexture(T,MARBLE_1,CGL_USER_MIPMAPPED);
+	factory.glLoadTexture(T,MARBLE_1);
 	m_textures->addTexture(T);
 
 	T = factory.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,
 								CTextureObject::CGL_MULTIPLY,
 								CTextureObject::CGL_BILINEAR);
 	T->glSetTransparency(192);
-	factory.glLoadTexture(T,MARBLE_2,CGL_USER_MIPMAPPED);
+	factory.glLoadTexture(T,MARBLE_2);
 	m_textures->addTexture(T);
 
 	T = factory.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,
 								CTextureObject::CGL_MULTIPLY,
 								CTextureObject::CGL_BILINEAR);
 	T->glSetTransparency(255);
-	factory.glLoadTexture(T,MARBLE_3,CGL_USER_MIPMAPPED);
+	factory.glLoadTexture(T,MARBLE_3);
 	m_textures->addTexture(T);
 
 	T = factory.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,
 								CTextureObject::CGL_MULTIPLY,
 								CTextureObject::CGL_BILINEAR);
-	factory.glLoadTexture(T,MARBLE_4,CGL_USER_MIPMAPPED);
+	factory.glLoadTexture(T,MARBLE_4);
 	m_textures->addTexture(T);
 
 	T = factory.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,
 								CTextureObject::CGL_MULTIPLY,
 								CTextureObject::CGL_BILINEAR);
-	factory.glLoadTexture(T,MARBLE_5,CGL_USER_MIPMAPPED);
+	factory.glLoadTexture(T,MARBLE_5);
 	m_textures->addTexture(T);
     
     config.setCurrentAnisotropy(16.0f);
@@ -528,24 +528,24 @@ void CObjectStore::LoadModels(void)
 	T = factory.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,
 								CTextureObject::CGL_MULTIPLY,
 								CTextureObject::CGL_BILINEAR);
-	factory.glLoadTexture(T,MARBLE_2,CGL_USER_MIPMAPPED);
+	factory.glLoadTexture(T,MARBLE_2);
 	m_textures->addTexture(T);
 
 	T = factory.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,
 								CTextureObject::CGL_MULTIPLY,
 								CTextureObject::CGL_BILINEAR);
-	factory.glLoadTexture(T,FLARE_BASE,CGL_USER_MIPMAPPED);
+	factory.glLoadTexture(T,FLARE_BASE);
 	m_textures->addTexture(T);
 
 	T = factory.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,
 								CTextureObject::CGL_MULTIPLY, 
 								CTextureObject::CGL_BILINEAR);
 	T->glSetTransparency(255);
-	factory.glLoadTexture(T,OLDWOOD_1,CGL_USER_MIPMAPPED);
+	factory.glLoadTexture(T,OLDWOOD_1);
 	m_textures->addTexture(T);
 
     T = factory.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_MULTIPLY,CTextureObject::CGL_BILINEAR);
-	factory.glLoadTexture(T,ROCKSCULPT,CGL_USER_MIPMAPPED);
+	factory.glLoadTexture(T,ROCKSCULPT);
 	m_textures->addTexture(T);
 
     m_pRoofShader = new CShader("ROOF_SHADER");
@@ -706,18 +706,7 @@ void CObjectStore::BuildObjects(void)
 	//
 	//	The bumpped knot
 	//
-    
 	CTextureFactory &factory = CTextureFactory::getDefaultFactory();
- /*   CTextureObject *reflect = factory.CreateCubemap(CTextureFactory::CGL_MULTIPLY,CTextureFactory::CGL_BILINEAR);
-	reflect->alpha = 255;
-	factory.glLoadTexture(reflect,"Datas\\cube_px.jpg",CGL_USER_MIPMAPPED|CGL_RGBA|CGL_CUBEMAP_PX|CGL_COMPRESSED);
-	factory.glLoadTexture(reflect,"Datas\\cube_ny.jpg",CGL_USER_MIPMAPPED|CGL_RGBA|CGL_CUBEMAP_PY|CGL_COMPRESSED);
-	factory.glLoadTexture(reflect,"Datas\\cube_pz.jpg",CGL_USER_MIPMAPPED|CGL_RGBA|CGL_CUBEMAP_PZ|CGL_COMPRESSED);
-	factory.glLoadTexture(reflect,"Datas\\cube_nx.jpg",CGL_USER_MIPMAPPED|CGL_RGBA|CGL_CUBEMAP_NX|CGL_COMPRESSED);
-	factory.glLoadTexture(reflect,"Datas\\cube_py.jpg",CGL_USER_MIPMAPPED|CGL_RGBA|CGL_CUBEMAP_NY|CGL_COMPRESSED);
-	factory.glLoadTexture(reflect,"Datas\\cube_nz.jpg",CGL_USER_MIPMAPPED|CGL_RGBA|CGL_CUBEMAP_NZ|CGL_COMPRESSED);
-*/
-
 	m_pBumpKnot = new CBumppedGeometry("BUMP_KNOT");
 	*m_pBumpKnot = *m_knot;
 	m_pBumpKnot->getProperties().setClippingMethod(CObjectProperties::CLIP_BSPHERE);
@@ -726,7 +715,7 @@ void CObjectStore::BuildObjects(void)
     const CGeometryEditor &pEditor = m_pBumpKnot->getEditor();
 	pEditor.scaleTexCoords(48.0f,2.0f);
 	CTextureObject* normalMap = factory.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_MULTIPLY,CTextureObject::CGL_TRILINEAR);
-	factory.glLoadTexture(normalMap,BUMP_0,CGL_AUTO_MIPMAPPED|CGL_NORMAL_MAP);
+	factory.glLoadTexture(normalMap,BUMP_0,CVaArray<CTextureFactoryConfig::IImageOP::OP_KIND>(CTextureFactoryConfig::IImageOP::MIPMAP_BUILDER));
     m_pBumpKnot->setDiffuseMap(m_textures->getTexture(MARBLE5));
 	m_pBumpKnot->setNormalMap(normalMap);
 	

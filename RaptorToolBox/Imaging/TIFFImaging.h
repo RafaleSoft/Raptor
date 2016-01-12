@@ -16,7 +16,7 @@
 
 RAPTOR_NAMESPACE
 
-class CTIFFImaging :	public CTextureFactoryConfig::CImageIO
+class CTIFFImaging :	public CTextureFactoryConfig::IImageIO
 {
 public:
 	CTIFFImaging(void);

@@ -730,11 +730,11 @@ public:
 		T->glSetTransparency(255);
 
 		CTextureFactoryConfig& config = factory.getConfig();
-		const CTextureFactoryConfig::CCompressor *compressor = config.getCurrentCompressor();
+		const CTextureFactoryConfig::ICompressor *compressor = config.getCurrentCompressor();
 		if (0 < config.getNumCompressors())
 			config.setCurrentCompressor(config.getCompressor("OpenGL"));
 
-		factory.glLoadTexture(T,"Datas\\ciel_07.jpg",CGL_USER_MIPMAPPED);
+		factory.glLoadTexture(T,"Datas\\ciel_07.jpg");
 		tus->setDiffuseMap(T);
 	}
 
@@ -806,15 +806,22 @@ void CVertexShadersDisplay::Init()
 								CTextureObject::CGL_BILINEAR);
 	T->glSetTransparency(255);
 	CTextureFactoryConfig& config = factory.getConfig();
-	const CTextureFactoryConfig::CCompressor *compressor = config.getCurrentCompressor();
+	const CTextureFactoryConfig::ICompressor *compressor = config.getCurrentCompressor();
 	if (0 < config.getNumCompressors())
 		config.setCurrentCompressor(config.getCompressor("OpenGL"));
-	factory.glLoadTexture(T,"Datas\\ciel_07_small.jpg",CGL_CUBEMAP_PX|CGL_USER_MIPMAPPED);
-	factory.glLoadTexture(T,"Datas\\ciel_07_small.jpg",CGL_CUBEMAP_PY|CGL_USER_MIPMAPPED);
-	factory.glLoadTexture(T,"Datas\\ciel_07_small.jpg",CGL_CUBEMAP_PZ|CGL_USER_MIPMAPPED);
-	factory.glLoadTexture(T,"Datas\\ciel_07_small.jpg",CGL_CUBEMAP_NX|CGL_USER_MIPMAPPED);
-	factory.glLoadTexture(T,"Datas\\ciel_07_small.jpg",CGL_CUBEMAP_NY|CGL_USER_MIPMAPPED);
-	factory.glLoadTexture(T,"Datas\\ciel_07_small.jpg",CGL_CUBEMAP_NZ|CGL_USER_MIPMAPPED);
+	T->selectCubeFace(CTextureObject::CGL_CUBEMAP_PX);
+	factory.glLoadTexture(T,"Datas\\ciel_07_small.jpg");
+	T->selectCubeFace(CTextureObject::CGL_CUBEMAP_PY);
+	factory.glLoadTexture(T,"Datas\\ciel_07_small.jpg");
+	T->selectCubeFace(CTextureObject::CGL_CUBEMAP_PZ);
+	factory.glLoadTexture(T,"Datas\\ciel_07_small.jpg");
+	T->selectCubeFace(CTextureObject::CGL_CUBEMAP_NX);
+	factory.glLoadTexture(T,"Datas\\ciel_07_small.jpg");
+	T->selectCubeFace(CTextureObject::CGL_CUBEMAP_NY);
+	factory.glLoadTexture(T,"Datas\\ciel_07_small.jpg");
+	T->selectCubeFace(CTextureObject::CGL_CUBEMAP_NZ);
+	factory.glLoadTexture(T,"Datas\\ciel_07_small.jpg");
+	T->selectCubeFace(CTextureObject::CGL_CUBEMAP_NONE);
 	ts->setEnvironmentMap(T);
 
 	CVertexShader *vp = pShader->glGetVertexShader();

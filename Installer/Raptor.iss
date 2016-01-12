@@ -5,7 +5,7 @@
 
 [Setup]
 AppName=Raptor SDK
-AppVerName=Raptor SDK 2.16.4
+AppVerName=Raptor SDK 2.16.5
 DefaultDirName={pf}\Raptor
 DefaultGroupName=Raptor
 UninstallDisplayIcon={app}\MyProg.exe
@@ -13,8 +13,8 @@ Compression=lzma
 SolidCompression=yes
 VersionInfoCompany=Rafale Soft Inc.(c)
 VersionInfoProductName=Raptor SDK
-VersionInfoProductVersion=2.16.4.0
-VersionInfoVersion=2.16.4.0
+VersionInfoProductVersion=2.16.5.0
+VersionInfoVersion=2.16.5.0
 
 [Files]
 Source: "../*.sln";               DestDir: "{app}"
@@ -203,15 +203,10 @@ Source: "../Rays2/ModuleTemplate/*.*";              DestDir: "{app}/Rays2/Module
 Source: "../Rays2/ModuleTemplate/res/*.*";          DestDir: "{app}/Rays2/ModuleTemplate/res"
 Source: "../Rays2/ModuleTester/*.*";                DestDir: "{app}/Rays2/ModuleTester"
 Source: "../Rays2/RaysClient/*.*";                  DestDir: "{app}/Rays2/RaysClient"
-Source: "../Rays2/RaysClient/res/*.*";              DestDir: "{app}/Rays2/RaysClient/res"
 Source: "../Rays2/RaysDeamon/*.*";                  DestDir: "{app}/Rays2/RaysDeamon"
-Source: "../Rays2/RaysDeamon/res/*.*";              DestDir: "{app}/Rays2/RaysDeamon/res"
-Source: "../Rays2/RaysINetBridge/*.*";              DestDir: "{app}/Rays2/RaysINetBridge"
-Source: "../Rays2/RaysINetBridge/res/*.*";          DestDir: "{app}/Rays2/RaysINetBridge/res"
 Source: "../Rays2/RaysServer/*.*";                  DestDir: "{app}/Rays2/RaysServer"
-Source: "../Rays2/RaysServer/res/*.*";              DestDir: "{app}/Rays2/RaysServer/res"
-Source: "../Rays2/WorkUnit/*.*";                    DestDir: "{app}/Rays2/WorkUnit"
-Source: "../Rays2/WorkUnit/res/*.*";                DestDir: "{app}/Rays2/WorkUnit/res"
+Source: "../Rays2/RaysWorkUnit/*.*";                DestDir: "{app}/Rays2/WorkUnit"
+Source: "../Rays2/RaysWorkUnit/res/*.*";            DestDir: "{app}/Rays2/WorkUnit/res"
                       
 Source: "../ShaderCompiler/*.cpp";                  DestDir: "{app}/ShaderCompiler"
 Source: "../ShaderCompiler/*.h";                    DestDir: "{app}/ShaderCompiler"

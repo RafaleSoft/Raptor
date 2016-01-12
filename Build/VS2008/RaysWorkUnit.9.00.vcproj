@@ -131,28 +131,12 @@
 				>
 			</File>
 			<File
-				RelativePath="Mesh.cpp"
+				RelativePath="..\..\Rays2\RaysWorkUnit\Mesh.cpp"
 				>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="MsgProcessing.cpp"
+				RelativePath="..\..\Rays2\RaysWorkUnit\MsgProcessing.cpp"
 				>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\Rays2\RaysWorkUnit\Octree.cpp"
@@ -163,17 +147,8 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\Rays2\Plugin.cxx"
+				RelativePath="..\..\Rays2\RaysWorkUnit\PlugIn.cpp"
 				>
-				<FileConfiguration
-					Name="Release|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\Rays2\RaysWorkUnit\Quadric.cpp"
@@ -247,18 +222,6 @@
 			<File
 				RelativePath="..\..\Rays2\RaysWorkUnit\Triangle.cpp"
 				>
-			</File>
-			<File
-				RelativePath="WorkUnit.rc"
-				>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCResourceCompilerTool"
-						PreprocessorDefinitions=""
-					/>
-				</FileConfiguration>
 			</File>
 		</Filter>
 		<Filter

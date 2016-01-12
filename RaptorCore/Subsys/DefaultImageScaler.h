@@ -17,7 +17,7 @@ RAPTOR_NAMESPACE_BEGIN
 
 class CTextureObject;
 
-class CDefaultImageScaler : public CTextureFactoryConfig::CImageOP  
+class CDefaultImageScaler : public CTextureFactoryConfig::IImageOP  
 {
 public:
 	CDefaultImageScaler();

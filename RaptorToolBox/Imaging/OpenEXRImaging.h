@@ -16,7 +16,7 @@
 
 RAPTOR_NAMESPACE
 
-class COpenEXRImaging :	public CTextureFactoryConfig::CImageIO
+class COpenEXRImaging :	public CTextureFactoryConfig::IImageIO
 {
 public:
 	COpenEXRImaging(void);

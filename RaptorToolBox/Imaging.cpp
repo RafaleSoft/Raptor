@@ -50,7 +50,7 @@ CImaging::~CImaging()
 
 }
 
-bool CImaging::installImagers(const CTextureFactory &factory) 
+bool CImaging::installImagers(CTextureFactory &factory) 
 {
 	CTextureFactoryConfig &pConfig = factory.getConfig();
 
@@ -67,7 +67,7 @@ bool CImaging::installImagers(const CTextureFactory &factory)
     return true;
 }
 
-bool CImaging::installImager(const CTextureFactory &factory,const std::string& imageType)
+bool CImaging::installImager(CTextureFactory &factory,const std::string& imageType)
 {
     bool res = true;
 

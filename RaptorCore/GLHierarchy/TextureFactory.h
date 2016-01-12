@@ -17,21 +17,20 @@
 #ifndef __CGLTYPES_HPP__
 	#include "System/CGLTypes.h"
 #endif
-
 #if !defined(AFX_PERSISTENCE_H__5561BA28_831B_11D3_9142_EEB51CEBBDB0__INCLUDED_)
 	#include "GLHierarchy/Persistence.h"
 #endif
-
 #if !defined(AFX_TEXTUREOBJECT_H__D32B6294_B42B_4E6F_AB73_13B33C544AD0__INCLUDED_)
 	#include "GLHierarchy/TextureObject.h"
 #endif
-
+#if !defined(AFX_TEXTUREFACTORYCONFIG_H__7A20D208_423F_4E02_AA4D_D736E0A7959F__INCLUDED_)
+	#include "GLHierarchy/TextureFactoryConfig.h"
+#endif
 
 
 RAPTOR_NAMESPACE_BEGIN
 
 class CTextureGenerator;
-class CTextureFactoryConfig;
 
 
 class RAPTOR_API CTextureFactory : public CPersistence
@@ -44,7 +43,7 @@ public:
 	static CTextureFactory& getDefaultFactory();
 
 	//! Returns the common factory configuration
-	CTextureFactoryConfig& getConfig(void) const { return *m_pConfig; };
+	CTextureFactoryConfig& getConfig(void) { return mConfig; };
 
 
 	//!	Creates a 2D texture object with power of two dimensions ( much faster ! )
@@ -118,17 +117,17 @@ public:
 	//!	the depthmap can be of unsigned bytes, shorts, ints of floats using CGL_DEPTH_MAP8,
 	//! CGL_DEPTH_MAP16, CGL_DEPTH_MAP32 or CGL_DEPTH_MAPZ
 	//!	- the cubemap face index : CUBEMAP_PX,PY,PZ,NX,NY,or NZ
-	//! - the numeric format 
+	//! - the numeric format
 	bool glLoadTexture(	CTextureObject* const T,
 						const std::string &fname,
-						unsigned int mode = CGL_USER_MIPMAPPED);
+						const CVaArray<CTextureFactoryConfig::IImageOP::OP_KIND>& ops = CVaArray<CTextureFactoryConfig::IImageOP::OP_KIND>());
 
 	//! Same as above excepts that the texteure texels are only loaded in client memory,
 	//!	and not yet transfered to GL server memory.
 	//! A subsequent call to glLoadTexture will finalize texture loading.
 	RAPTOR_HANDLE glPreloadTexture(	CTextureObject* const T,
 									const std::string &fname,
-									unsigned int mode = CGL_USER_MIPMAPPED);
+									const CVaArray<CTextureFactoryConfig::IImageOP::OP_KIND>& ops = CVaArray<CTextureFactoryConfig::IImageOP::OP_KIND>());
 
 	//!	@param preload : the result of a texture preload
 	//!	@param mode : @see glLoadTexture
@@ -167,7 +166,7 @@ private:
 	CTextureFactory& operator=(const CTextureFactory& rsh) { return *this; };
 
 	//!	This factory configuration
-	CTextureFactoryConfig	*m_pConfig;
+	CTextureFactoryConfig	mConfig;
 
 	//!	A pointer to the default factory, initialized only if required.
 	static CTextureFactory *m_pDefault;
@@ -178,7 +177,9 @@ private:
 		unsigned int inner_format;
 		unsigned int format;
 		unsigned int src_format;
-		unsigned int mode;
+		bool createNormalMap;
+		bool autoMipmap;
+		bool reScale;
 	} TexturePreload;
 	map<unsigned int,TexturePreload>	m_preloads;
 };

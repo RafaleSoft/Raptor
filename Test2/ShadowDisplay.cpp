@@ -95,10 +95,10 @@ void CShadowDisplay::Init()
 	CTextureObject *T = f.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_MULTIPLY,CTextureObject::CGL_BILINEAR);
 	T->glSetTransparency(255);
 	CTextureFactoryConfig& config = f.getConfig();
-	const CTextureFactoryConfig::CCompressor *compressor = config.getCurrentCompressor();
+	const CTextureFactoryConfig::ICompressor *compressor = config.getCurrentCompressor();
 	if (0 < config.getNumCompressors())
 		config.setCurrentCompressor(config.getCompressor("OpenGL"));
-	f.glLoadTexture(T,"Datas\\start.tga",CGL_USER_MIPMAPPED);
+	f.glLoadTexture(T,"Datas\\start.tga");
     knotShader->glGetTextureUnitsSetup()->setDiffuseMap(T);
 
 	LL.Normalize();

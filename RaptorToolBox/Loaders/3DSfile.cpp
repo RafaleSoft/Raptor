@@ -1001,13 +1001,13 @@ bool RAPTOR_FASTCALL ProcessChunkAxxxH(long length)
 			fname = maxOptions.texturePath +"\\" + CurrentState.name;
 
 		bool result = false;
-		const CTextureFactoryConfig::CCompressor* compressor = NULL;
+		const CTextureFactoryConfig::ICompressor* compressor = NULL;
 		if ((maxOptions.compressTextures) && (0 < f.getConfig().getNumCompressors()))
 		{
 			compressor = f.getConfig().getCurrentCompressor();
 			f.getConfig().setCurrentCompressor(f.getConfig().getCompressor("OpenGL"));				
 		}
-        result = f.glLoadTexture(T,fname,CGL_USER_MIPMAPPED);
+        result = f.glLoadTexture(T,fname);
 		if (compressor != NULL)
 			f.getConfig().setCurrentCompressor(compressor);
 		if (result)

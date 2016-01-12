@@ -157,9 +157,9 @@ void CTest5Doc::GLInitContext(void)
 	CTextureUnitSetup *tus = obj->getShader()->glGetTextureUnitsSetup();
 	tus->setDiffuseMap(m_pTexture);
 	m_pTexture = f.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_MULTIPLY,CTextureObject::CGL_BILINEAR);
-    f.glLoadTexture(m_pTexture,"bump3.tga",CGL_USER_MIPMAPPED|CGL_CREATE_NORMAL_MAP);
+    f.glLoadTexture(m_pTexture,"bump3.tga",CVaArray<CTextureFactoryConfig::IImageOP::OP_KIND>(CTextureFactoryConfig::IImageOP::BUMPMAP_LOADER));
 	//f.getConfig().setBumpAmplitude(4.0f);
-	//f.glLoadTexture(m_pTexture,"BlurCircle.TGA",CGL_USER_MIPMAPPED|CGL_CREATE_NORMAL_MAP);
+	//f.glLoadTexture(m_pTexture,"BlurCircle.TGA",CGL_CREATE_NORMAL_MAP);
 	tus->setNormalMap(m_pTexture);
 
 	CMaterial *pMat = obj->getShader()->getMaterial();

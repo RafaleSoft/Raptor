@@ -33,7 +33,8 @@ CReflection::CReflection(float width,float height,int hcels,int vcels)
     config.setBumpAmplitude(3.0f);
     config.setCurrentAnisotropy(16.0f);
 
-    CPerlinNoise *pNoise = new CPerlinNoise(CGL_AUTO_MIPMAPPED|CGL_CREATE_NORMAL_MAP);
+	CPerlinNoise *pNoise = new CPerlinNoise(CVaArray<CTextureFactoryConfig::IImageOP::OP_KIND>(	CTextureFactoryConfig::IImageOP::MIPMAP_BUILDER,
+																								CTextureFactoryConfig::IImageOP::BUMPMAP_LOADER));
     CTextureObject *T = f.glCreateDynamicTexture(	CTextureObject::CGL_COLOR24_ALPHA,
 													CTextureObject::CGL_MULTIPLY,
 													CTextureObject::CGL_TRILINEAR,
@@ -49,7 +50,7 @@ CReflection::CReflection(float width,float height,int hcels,int vcels)
     T = f.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_MULTIPLY,CTextureObject::CGL_BILINEAR);
     T->glSetTransparency(230);
 
-    f.glLoadTexture(T,"Datas\\marble5.jpg",CGL_USER_MIPMAPPED);
+    f.glLoadTexture(T,"Datas\\marble5.jpg");
     tus->setDiffuseMap(T);
 
 	CGeometry::CRenderingModel model(	CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY |

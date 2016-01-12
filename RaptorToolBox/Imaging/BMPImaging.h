@@ -15,7 +15,7 @@
 
 RAPTOR_NAMESPACE
 
-class CBMPImaging :	public CTextureFactoryConfig::CImageIO
+class CBMPImaging :	public CTextureFactoryConfig::IImageIO
 {
 public:
 	CBMPImaging(void);

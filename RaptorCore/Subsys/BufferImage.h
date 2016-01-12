@@ -21,7 +21,7 @@ RAPTOR_NAMESPACE_BEGIN
 //! to load texture images.
 //!	loadImageFile does nothing, but assumes the user provides a buffer of texels, pointed by T->texels 
 //! and that T->width & T->height are properly set to the width and height of the image.
-class CBufferImage : public CTextureFactoryConfig::CImageIO  
+class CBufferImage : public CTextureFactoryConfig::IImageIO  
 {
 public:
 	virtual bool isOfKind(const std::string &kind) const { return ("BUFFER" == kind); }

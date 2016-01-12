@@ -16,7 +16,7 @@
 
 RAPTOR_NAMESPACE
 
-class CICOImaging :	public CTextureFactoryConfig::CImageIO
+class CICOImaging :	public CTextureFactoryConfig::IImageIO
 {
 public:
 	CICOImaging(void);

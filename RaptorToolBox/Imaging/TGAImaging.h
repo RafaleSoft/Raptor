@@ -16,7 +16,7 @@
 
 RAPTOR_NAMESPACE
 
-class CTGAImaging :	public CTextureFactoryConfig::CImageIO
+class CTGAImaging :	public CTextureFactoryConfig::IImageIO
 {
 public:
 	CTGAImaging(void);
