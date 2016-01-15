@@ -554,7 +554,7 @@ RAPTOR_HANDLE CTextureUnitSetup::glBuildSetup(void)
 			    // It is preferable not to render texture extensions in a display list.
 			    glEnable(imageUnit[i]->target & 0xFFFF);
                 // generators cannot be used in display lists
-                CTextureGenerator *G = imageUnit[i]->m_pTexelGenerator;
+				ITextureGenerator *G = imageUnit[i]->m_pTexelGenerator;
                 if (G != NULL)
                     G->enableGenerator(false);
 

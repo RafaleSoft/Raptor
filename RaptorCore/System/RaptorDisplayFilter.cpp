@@ -232,7 +232,7 @@ bool CRaptorDisplayFilter::glInitFilter(void)
 	{
 		if (colorInput == NULL)
 		{
-			if (colorExternalSource->getKind() != CTextureGenerator::BUFFERED)
+			if (colorExternalSource->getKind() != ITextureGenerator::BUFFERED)
 				return false;
 		}
 		else if (m_fModel == RENDER_TEXTURE)
@@ -307,17 +307,17 @@ void CRaptorDisplayFilter::setDepthInput(CTextureObject* pInput)
 
 
 
-void CRaptorDisplayFilter::setColorSource(CTextureGenerator* pSource)
+void CRaptorDisplayFilter::setColorSource(ITextureGenerator* pSource)
 {
     colorExternalSource = pSource;
 }
 
-void CRaptorDisplayFilter::setDepthSource(CTextureGenerator* pSource)
+void CRaptorDisplayFilter::setDepthSource(ITextureGenerator* pSource)
 {
     depthExternalSource = pSource;
 }
 
-CTextureGenerator*  CRaptorDisplayFilter::glCreateColorSource(void)
+ITextureGenerator*  CRaptorDisplayFilter::glCreateColorSource(void)
 {
 	if (colorInternalSource != NULL)
         return colorInternalSource;
@@ -343,7 +343,7 @@ CTextureGenerator*  CRaptorDisplayFilter::glCreateColorSource(void)
     return (colorInternalSource = pDisplay);
 }
 
-CTextureGenerator*  CRaptorDisplayFilter::glCreateDepthSource(void)
+ITextureGenerator*  CRaptorDisplayFilter::glCreateDepthSource(void)
 {
     return depthExternalSource;
 

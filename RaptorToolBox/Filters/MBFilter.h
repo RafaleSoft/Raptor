@@ -48,7 +48,7 @@ private:
 	virtual void glRenderFilterOutput(void);
 
     CShader             *m_pMotionBlurShader;
-    CTextureGenerator	*m_pAccumulator;
+    ITextureGenerator	*m_pAccumulator;
 	CTextureSet			*m_pRenderTextures2;
 
 	CShaderProgram::CProgramParameters f_params;

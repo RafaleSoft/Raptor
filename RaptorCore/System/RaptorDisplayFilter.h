@@ -21,7 +21,7 @@
 RAPTOR_NAMESPACE_BEGIN
 
 class CShader;
-class CTextureGenerator;
+class ITextureGenerator;
 class CTextureObject;
 class CTextureSet;
 
@@ -116,23 +116,23 @@ public:
 	//!
 
 	//! Assign the color source on which the filter has to proceed
-    void setColorSource(CTextureGenerator* pSource);
+    void setColorSource(ITextureGenerator* pSource);
 
     //! Assign the depth source on which the filter has to proceed.
     //! This source depends strongly on hardware capabilities for good performance,
     //! local memory blocs 
-    void setDepthSource(CTextureGenerator* pSource);
+    void setDepthSource(ITextureGenerator* pSource);
 
     //! Create an output texture generator. This output
     //! can then be given as the color source of the next filter.
     //! The default computes a color buffer matching colorSource config
     //! (@see CRaptorDisplayConfig )
-    virtual CTextureGenerator*  glCreateColorSource(void);
+    virtual ITextureGenerator*  glCreateColorSource(void);
 
     //! Create an output texture generator. This output
     //! can then be given as the depth source of the next filter.
     //! The default returns depthSource, user filters must return a valid value.
-    virtual CTextureGenerator*  glCreateDepthSource(void);
+    virtual ITextureGenerator*  glCreateDepthSource(void);
 
     //! Returns a generic pointer on the objet.
 	//! This is handle can be used for binding to a display.
@@ -171,10 +171,10 @@ protected:
 
 	CRaptorDisplayFilter	*m_pPreviousFilter;
 
-    CTextureGenerator	*colorExternalSource;
-    CTextureGenerator	*depthExternalSource;
-    CTextureGenerator	*colorInternalSource;
-    CTextureGenerator	*depthInternalSource;
+    ITextureGenerator	*colorExternalSource;
+    ITextureGenerator	*depthExternalSource;
+    ITextureGenerator	*colorInternalSource;
+    ITextureGenerator	*depthInternalSource;
 
 	CTextureObject		*colorInput;
 	CTextureObject		*depthInput;

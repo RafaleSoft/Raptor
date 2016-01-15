@@ -18,14 +18,14 @@ RAPTOR_NAMESPACE_BEGIN
 class CAnimatorStream;
 
 
-class CVideoStream : public CTextureGenerator  
+class CVideoStream : public ITextureGenerator  
 {
 public:
 	CVideoStream(CAnimatorStream *pStream,unsigned int nStream);
 	virtual ~CVideoStream();
 
     //! Returns the kind of render target texture generator.
-    virtual CTextureGenerator::GENERATOR_KIND    getKind(void) const { return CTextureGenerator::ANIMATED; };
+    virtual ITextureGenerator::GENERATOR_KIND    getKind(void) const { return ITextureGenerator::ANIMATED; };
 
     //! This method must be implemented in subclasses to produce 
     //! an array of texels and load the currently bound texture object.

@@ -30,7 +30,7 @@
 
 RAPTOR_NAMESPACE_BEGIN
 
-class CTextureGenerator;
+class ITextureGenerator;
 
 
 class RAPTOR_API CTextureFactory : public CPersistence
@@ -73,7 +73,7 @@ public:
     CTextureObject*		const glCreateDynamicTexture(	CTextureObject::TEXEL_TYPE type,
 														CTextureObject::TEXTURE_FUNCTION env_mode = CTextureObject::CGL_ALPHA_TRANSPARENT,
 														CTextureObject::TEXTURE_FILTER filter = CTextureObject::CGL_UNFILTERED,
-														CTextureGenerator* pGenerator = NULL);
+														ITextureGenerator* pGenerator = NULL);
 
 	//!	Creates a cubemap object
 	//! @param type : the type of texels of the texture ( server memory model )

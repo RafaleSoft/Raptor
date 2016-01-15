@@ -12,12 +12,9 @@
 
 RAPTOR_NAMESPACE_BEGIN
 
-class ITImeObjectImpl
+__interface ITImeObjectImpl
 {
 public:
-	ITImeObjectImpl() {};
-	virtual ~ITImeObjectImpl() {};
-
 	//!	Implements @see CTimeObject
 	virtual float deltaTime(void) = 0;
 

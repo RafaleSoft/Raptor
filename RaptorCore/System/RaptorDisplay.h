@@ -35,7 +35,7 @@ class CRenderingProperties;
 
 
 
-class RAPTOR_API CRaptorDisplay : public CPersistence, public CTextureGenerator
+class RAPTOR_API CRaptorDisplay : public CPersistence, public ITextureGenerator
 {
 public:
 	//! This method returns the current active display, or NULL if none is active.
@@ -143,7 +143,7 @@ public:
 
     //! Implements CTextureGenerator.
     //! This generator is not yet implemented.in this version
-    virtual CTextureGenerator::GENERATOR_KIND getKind(void) const { return CTextureGenerator::NONE; };
+    virtual ITextureGenerator::GENERATOR_KIND getKind(void) const { return ITextureGenerator::NONE; };
 
     //! Implements CTextureGenerator
     //! This class is virtual, generation is only implemented in subclasses

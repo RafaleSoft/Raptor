@@ -94,7 +94,7 @@ RAPTOR_HANDLE CTextureFactory::glPreloadTexture(CTextureObject* const T,
 	}
 #endif
 
-	if ((T->target >> 16) == CTextureGenerator::BUFFERED)
+	if ((T->target >> 16) == ITextureGenerator::BUFFERED)
 	{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
         Raptor::GetErrorManager()->generateRaptorError(	CTextureFactory::CTextureFactoryClassID::GetClassId(),
@@ -293,7 +293,7 @@ bool CTextureFactory::glLoadTexture(CTextureObject* const T,
 	}
 #endif
 
-	if ((T->target >> 16) == CTextureGenerator::BUFFERED)
+	if ((T->target >> 16) == ITextureGenerator::BUFFERED)
 	{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
         Raptor::GetErrorManager()->generateRaptorError(	CTextureFactory::CTextureFactoryClassID::GetClassId(),
@@ -775,7 +775,7 @@ CTextureObject* const CTextureFactory::glCreateRectangleTexture( CTextureObject:
 CTextureObject* const CTextureFactory::glCreateDynamicTexture(CTextureObject::TEXEL_TYPE type,
                                                               CTextureObject::TEXTURE_FUNCTION env_mode,
                                                               CTextureObject::TEXTURE_FILTER filter,
-														      CTextureGenerator* pGenerator)
+														      ITextureGenerator* pGenerator)
 {
 	if (pGenerator == NULL)
 	{
@@ -787,9 +787,9 @@ CTextureObject* const CTextureFactory::glCreateDynamicTexture(CTextureObject::TE
         return NULL;
 	}
 
-    if ((pGenerator->getKind() != CTextureGenerator::BUFFERED) && 
-        (pGenerator->getKind() != CTextureGenerator::ANIMATED) && 
-        (pGenerator->getKind() != CTextureGenerator::STATIC))
+    if ((pGenerator->getKind() != ITextureGenerator::BUFFERED) && 
+        (pGenerator->getKind() != ITextureGenerator::ANIMATED) && 
+        (pGenerator->getKind() != ITextureGenerator::STATIC))
         return NULL;
 
 	CTextureObject* T = new CTextureObject(type);

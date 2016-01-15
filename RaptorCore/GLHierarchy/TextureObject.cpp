@@ -93,8 +93,8 @@ void CTextureObject::glRender()
 	glBindTexture((target & 0xFFFF),texname);
 	glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,env_mode);
 
-	if (((target >> 16) == CTextureGenerator::BUFFERED) ||
-        ((target >> 16) == CTextureGenerator::ANIMATED))
+	if (((target >> 16) == ITextureGenerator::BUFFERED) ||
+        ((target >> 16) == ITextureGenerator::ANIMATED))
 	{
         m_pTexelGenerator->glGenerate(this);
     }

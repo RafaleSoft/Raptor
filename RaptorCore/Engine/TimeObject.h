@@ -14,7 +14,7 @@
 
 RAPTOR_NAMESPACE_BEGIN
 
-class ITImeObjectImpl;
+__interface ITImeObjectImpl;
 
 //!	CTimeObject class:
 //!	Implements a behaviour of a time dependant object.

@@ -17,7 +17,7 @@ class CTextureObject;
 
 //! This class defines the base class for all classes of texture generators:
 //! buffered, animated, static ... texture generators
-class RAPTOR_API CTextureGenerator  
+class RAPTOR_API ITextureGenerator  
 {
 public:
     typedef enum
@@ -28,9 +28,9 @@ public:
         STATIC
     } GENERATOR_KIND;
 
-    CTextureGenerator():m_bEnabled(true) {};
+    ITextureGenerator():m_bEnabled(true) {};
 
-    virtual ~CTextureGenerator() {};
+    virtual ~ITextureGenerator() {};
 
     //! Enable or disable texel generation
     void enableGenerator(bool enable) { m_bEnabled = enable; };
@@ -44,10 +44,10 @@ public:
     virtual void glGenerate(CTextureObject* ) = 0;
 
     //! This method returns the width of the generator
-    virtual unsigned int getGenerateWidth(void) const =0;
+    virtual unsigned int getGenerateWidth(void) const = 0;
 
     //! This method returns the height of the generator
-    virtual unsigned int getGenerateHeight(void) const =0;
+    virtual unsigned int getGenerateHeight(void) const = 0;
 
 
 protected:

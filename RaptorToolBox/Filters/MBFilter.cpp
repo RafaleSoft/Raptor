@@ -33,7 +33,7 @@
 #endif
 
 // Specific texture generator to flip between buffer display of previous frame
-class CAccumulator : public CTextureGenerator
+class CAccumulator : public ITextureGenerator
 {
 public:
     CAccumulator():
@@ -42,7 +42,7 @@ public:
     virtual ~CAccumulator() {};
 
     //! Implements TextureGenerator
-    virtual CTextureGenerator::GENERATOR_KIND    getKind(void) const { return CTextureGenerator::BUFFERED; };
+    virtual ITextureGenerator::GENERATOR_KIND    getKind(void) const { return ITextureGenerator::BUFFERED; };
 
     //! The fragment program to compute accumulation;
     static const string accum_ps;

@@ -55,8 +55,8 @@ public:
 						unsigned int xDst, unsigned int yDst, unsigned int widthDst, unsigned int heightDst,
 						CRaptorDisplay *pDst) const;
 
-    //! Implements CTextureGenerator
-    virtual CTextureGenerator::GENERATOR_KIND getKind(void) const { return CTextureGenerator::BUFFERED; };
+    //! Implements ITextureGenerator
+    virtual ITextureGenerator::GENERATOR_KIND getKind(void) const { return ITextureGenerator::BUFFERED; };
 
     //! Implements CTextureGenerator
     virtual void glGenerate(CTextureObject* );

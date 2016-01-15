@@ -18,7 +18,7 @@ RAPTOR_NAMESPACE_BEGIN
 
 class CTextureFactory;
 class CTextureUnitSetup;
-class CTextureGenerator;
+class ITextureGenerator;
 
 
 //	Base structure for CTexture class
@@ -244,7 +244,7 @@ private:
     float           aniso_level;
 
     //!	Render target used to provide texImage
-	CTextureGenerator  *m_pTexelGenerator;
+	ITextureGenerator  *m_pTexelGenerator;
 
     //! generation source dimensions
     int source[4];

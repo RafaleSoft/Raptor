@@ -13,7 +13,6 @@
 #include "GLHierarchy\TextureObject.h"
 #include "GLHierarchy\TextureUnitSetup.h"
 #include "GLHierarchy\TextureSet.h"
-#include "GLHierarchy\VertexShader.h"
 #include "GLHierarchy\BumppedGeometry.h"
 #include "GLHierarchy\Object3DInstance.h"
 #include "GLHierarchy\RenderingProperties.h"
@@ -34,30 +33,21 @@ public:
         setBoundingBox(GL_COORD_VERTEX(-70.0f,-50.0f,-50.1f,1.0f),GL_COORD_VERTEX(70.0f,50.0f,-50.0f,1.0f)); 
 
 		//	Use a default shader to create a simple geometry
-		CVertexShader s("GL_SHADER");
 		GL_COORD_VERTEX texCoord1(0,0,0,1);
 
 		list = glGenLists(1);
 		glNewList(list,GL_COMPILE);
 			glBegin(GL_QUADS);
 				glTexCoord2f(0.0f,0.0f);
-				texCoord1.x = -1.0; texCoord1.y = -1.0;
-				s.glMultiTexCoord(CVertexShader::TEXCOORD1,texCoord1);
 				glVertex3f(-70.0f,-50.0f,-50.0f);
 
 				glTexCoord2f(1.0f,0.0f);
-				texCoord1.x = 1.0; texCoord1.y = -1.0;
-				s.glMultiTexCoord(CVertexShader::TEXCOORD1,texCoord1);
 				glVertex3f(70.0f,-50.0f,-50.0f);
 
 				glTexCoord2f(1.0f,1.0f);
-				texCoord1.x = 1.0; texCoord1.y = 1.0;
-				s.glMultiTexCoord(CVertexShader::TEXCOORD1,texCoord1);
 				glVertex3f(70.0f,50.0f,-50.0f);
 
 				glTexCoord2f(0.0f,1.0f);
-				texCoord1.x = -1.0; texCoord1.y = 1.0;
-				s.glMultiTexCoord(CVertexShader::TEXCOORD1,texCoord1);
 				glVertex3f(-70.0f,50.0f,-50.0f);
 			glEnd();
 		glEndList();
@@ -153,7 +143,7 @@ void CBumpDisplay::Init()
                                             CTextureObject::CGL_BILINEAR);
 	CTextureFactoryConfig& config = f.getConfig();
 	config.setBumpAmplitude(3.5f);
-    CPerlinNoise noise;
+	CPerlinNoise noise = CPerlinNoise(); //CVaArray<CTextureFactoryConfig::IImageOP::OP_KIND>(CTextureFactoryConfig::IImageOP::BUMPMAP_LOADER));
     f.glResizeTexture(tt,512,512);
     noise.glGenerate(tt);
 
@@ -164,7 +154,7 @@ void CBumpDisplay::Init()
 	p = CPersistence::FindObject("Bump teapot");
 	if (p->getId().isSubClassOf(CBumppedGeometry::CBumppedGeometryClassID::GetClassId()))
 		 teapot = (CBumppedGeometry *)p;
-	teapot->setNormalMap(tt);
+	//teapot->setNormalMap(tt);
 
     //
     //  Light and its modifier

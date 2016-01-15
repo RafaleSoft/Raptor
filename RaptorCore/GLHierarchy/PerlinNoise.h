@@ -23,7 +23,7 @@
 RAPTOR_NAMESPACE_BEGIN
 
 
-class RAPTOR_API CPerlinNoise : public CTextureGenerator  
+class RAPTOR_API CPerlinNoise : public ITextureGenerator  
 {
 public:
 	typedef CTextureFactoryConfig::IImageOP::OP_KIND OPS;
@@ -34,7 +34,7 @@ public:
 
     //! Implementes a static texture generator
     //! @see base class CTextureGenerator
-    virtual CTextureGenerator::GENERATOR_KIND    getKind(void) const { return CTextureGenerator::STATIC; };
+    virtual ITextureGenerator::GENERATOR_KIND    getKind(void) const { return ITextureGenerator::STATIC; };
 
     //! This method 'loads' the texture with the generated noise
     //! @see base class CTextureGenerator

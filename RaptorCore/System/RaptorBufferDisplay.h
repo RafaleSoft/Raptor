@@ -53,7 +53,7 @@ public:
 
 
     //! Implements CTextureGenerator
-    virtual CTextureGenerator::GENERATOR_KIND getKind(void) const { return CTextureGenerator::BUFFERED; };
+    virtual ITextureGenerator::GENERATOR_KIND getKind(void) const { return ITextureGenerator::BUFFERED; };
 
     //! Implements CTextureGenerator
     virtual void glGenerate(CTextureObject* );

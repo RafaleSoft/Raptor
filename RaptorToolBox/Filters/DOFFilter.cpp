@@ -420,7 +420,7 @@ bool CDOFFilter::glInitFilter(void)
 	{
 		if (depthExternalSource == NULL)
 			return false;
-		if (depthExternalSource->getKind() != CTextureGenerator::BUFFERED)
+		if (depthExternalSource->getKind() != ITextureGenerator::BUFFERED)
 			return false;
 	}
 

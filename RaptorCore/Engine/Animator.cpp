@@ -147,9 +147,9 @@ bool CAnimator::recordFrame(void)
 	CATCH_GL_ERROR
 }
 
-CTextureGenerator * CAnimator::glStartPlayBack(const std::string& fname,bool loop) const
+ITextureGenerator * CAnimator::glStartPlayBack(const std::string& fname,bool loop) const
 {
-    CTextureGenerator *res = NULL;
+    ITextureGenerator *res = NULL;
 
     long nStream = -1;
     if (0 <= (nStream = m_pStream->glStartPlayBack(fname,loop)))

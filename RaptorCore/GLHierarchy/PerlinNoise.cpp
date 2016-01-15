@@ -303,6 +303,71 @@ unsigned int CPerlinNoise::getGenerateHeight(void) const
     // TODO
     return 0;
 }
+/*
+void CPerlinNoise::glGenerate(CTextureObject* t)
+{
+    if ((t == NULL) || (!m_bEnabled))
+        return;
+
+	CTextureFactory &f = CTextureFactory::getDefaultFactory();
+    t->allocateTexels();
+	unsigned char *data = t->getTexels();
+
+	unsigned int w = t->getWidth() / 2;
+	unsigned int h = t->getHeight() / 2;
+    
+	for (unsigned int j=0;j<h;j++)
+    {
+        for (unsigned int i=0;i<w;i++)
+        {
+            float n = 0.0f;
+            float frequency = 1.0f / 128.0f;
+            float amplitude = 1;
+            for (unsigned int k=0;k<8;k++)
+            {
+                n += amplitude * fabs(noise(i * frequency,j * frequency,0));
+
+                frequency *= 2;
+                amplitude *= 0.5f;
+            }
+
+            n = 128 * (1 - n);
+            if (n > 255 ) 
+                n = 255;
+            else if (n < 0) 
+                n = 0;
+
+			unsigned int offset = 4*(j*t->getWidth() + i);
+            data[offset] = n;
+            data[offset+1] = n;
+            data[offset+2] = n;
+            data[offset+3] = t->getTransparency();
+
+			offset = 4*((j+1)*t->getWidth() - i);
+			data[offset - 4] = n;
+            data[offset - 3] = n;
+            data[offset - 2] = n;
+            data[offset - 1] = t->getTransparency();
+
+			offset = 4*((t->getHeight()-j-1)*t->getWidth() + i);
+			data[offset] = n;
+            data[offset+1] = n;
+            data[offset+2] = n;
+            data[offset+3] = t->getTransparency();
+
+			offset = 4*((t->getHeight()-j)*t->getWidth() - i);
+			data[offset - 4] = n;
+            data[offset - 3] = n;
+            data[offset - 2] = n;
+            data[offset - 1] = t->getTransparency();
+        }
+    }
+
+    f.glLoadTexture(t,".buffer",m_ImageOps);
+
+    CATCH_GL_ERROR
+}
+*/
 
 void CPerlinNoise::glGenerate(CTextureObject* t)
 {
@@ -324,48 +389,48 @@ void CPerlinNoise::glGenerate(CTextureObject* t)
             float n = 0.0f;
             float frequency = 1;
             float amplitude = 1;
+			float base = 1.0f / 128.0f;
             for (unsigned int k=0;k<8;k++)
             {
-                float base = 1.0f / 128;
                 n += amplitude * fabs(noise(base * i * frequency,base * j * frequency,0));
 
                 frequency *= 2;
                 amplitude *= 0.5f;
             }
 			// NOISE 1: n = noise(16 * i / (float)w,16 * j /(float)h,0);
-			/* NOISE 2:
-			for (unsigned int k=0;k<8;k++)
-            {
-                float base = 1.0f / 32.0f;
-                n += amplitude * (noise(base * i * frequency,base * j * frequency,0));
+			// NOISE 2:
+			//for (unsigned int k=0;k<8;k++)
+            //{
+            //   float base = 1.0f / 32.0f;
+            //    n += amplitude * (noise(base * i * frequency,base * j * frequency,0));
 
-                frequency *= 2;
-                amplitude *= 0.5f;
-            }
-			*/
-			/* NOISE 3 : 
-			n = -0.5f;
-			amplitude = 0.5f;
-			for (unsigned int k=0;k<8;k++)
-            {
-                float base = 1.0f / 128.0f;
-                n += amplitude * fabs(noise(base * i * frequency,base * j * frequency,0.0f));
+            //  frequency *= 2;
+            //  amplitude *= 0.5f;
+            //}
+			
+			// NOISE 3 : 
+			//n = -0.5f;
+			//amplitude = 0.5f;
+			//for (unsigned int k=0;k<8;k++)
+            //{
+            //    float base = 1.0f / 128.0f;
+            //    n += amplitude * fabs(noise(base * i * frequency,base * j * frequency,0.0f));
 
-                frequency *= 2;
-                amplitude *= 0.5f;
-            }
-			*/
-			/* NOISE 4 :
-			float base = 1.0f / 128.0f;
-			for (unsigned int k=0;k<8;k++)
-            {
-                n += amplitude * fabs(noise(base * i * frequency,base * j * frequency,0.0f));
+            //    frequency *= 2;
+            //    amplitude *= 0.5f;
+            //}
+			
+			// NOISE 4 :
+			//float base = 1.0f / 128.0f;
+			//for (unsigned int k=0;k<8;k++)
+            //{
+            //    n += amplitude * fabs(noise(base * i * frequency,base * j * frequency,0.0f));
 
-                frequency *= 2;
-                amplitude *= 0.5f;
-            }
-			n = sin(-base * i + n);
-			*/
+            //    frequency *= 2;
+            //    amplitude *= 0.5f;
+            //}
+			//n = sin(-base * i + n);
+			//
 
             n = 128 * (1 - n);
             //if (n > 0) n = 256 * n;
@@ -383,10 +448,11 @@ void CPerlinNoise::glGenerate(CTextureObject* t)
         }
     }
 
-    f.glLoadTexture(t,".buffer");
+    f.glLoadTexture(t,".buffer",m_ImageOps);
 
     CATCH_GL_ERROR
 }
+
 
 float CPerlinNoise::noise(float x, float y, float z)
 {

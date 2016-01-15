@@ -25,7 +25,7 @@ RAPTOR_NAMESPACE_BEGIN
 class CTextureObject;
 
 
-class RAPTOR_API CImageModifier : public CModifier, public CTextureGenerator
+class RAPTOR_API CImageModifier : public CModifier, public ITextureGenerator
 {
 public:
     //! Predefined image modifier function kind
@@ -62,7 +62,7 @@ public:
     virtual CModifier::MODIFIER_TYPE getType(void) const { return CModifier::CGL_IMAGE_MODIFIER; };
 
     //!	Base implementation
-    virtual CTextureGenerator::GENERATOR_KIND    getKind(void) const { return CTextureGenerator::ANIMATED; };
+    virtual ITextureGenerator::GENERATOR_KIND    getKind(void) const { return ITextureGenerator::ANIMATED; };
 
     //! This method returns the width of the generator
     virtual unsigned int getGenerateWidth(void) const;

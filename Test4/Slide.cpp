@@ -96,7 +96,7 @@ void CSlide::setVideo(const string& vName)
 {
     CAnimator *pAnimator = CAnimator::GetAnimator();
 
-    CTextureGenerator *pGenerator = pAnimator->glStartPlayBack(vName,true);
+    ITextureGenerator *pGenerator = pAnimator->glStartPlayBack(vName,true);
 
     if (mVideo != NULL)
         mVideo->releaseReference();

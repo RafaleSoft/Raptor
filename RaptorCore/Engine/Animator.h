@@ -23,7 +23,7 @@ RAPTOR_NAMESPACE_BEGIN
 
 class CAnimatorStream;
 class CTextureObject;
-class CTextureGenerator;
+class ITextureGenerator;
 
 
 
@@ -185,7 +185,7 @@ public:
 	//!	Prepares a video stream for video animation
 	//!	This stream can be a source for animated textures.
     //!    @return : newly created texture generator for the stream or NULL if there were errors.
-	CTextureGenerator *glStartPlayBack(	const std::string& fname,
+	ITextureGenerator *glStartPlayBack(	const std::string& fname,
 										bool loop = false) const;
 
     //! Terminates a stream playback, releasing all allocated datas.

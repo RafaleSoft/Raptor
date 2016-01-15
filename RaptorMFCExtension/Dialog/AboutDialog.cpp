@@ -187,7 +187,7 @@ void CGLDisplay::GLInitContext()
 	glClearColor(SystemRed,SystemGreen,SystemBlue,0.0);
 
 	m_pAnimator = CAnimator::GetAnimator();
-	CTextureGenerator *pGenerator = m_pAnimator->glStartPlayBack(buffer.str().c_str(),true);
+	ITextureGenerator *pGenerator = m_pAnimator->glStartPlayBack(buffer.str().c_str(),true);
 
 	CTextureFactory f;
     m_pTxt = f.glCreateDynamicTexture(	CTextureObject::CGL_COLOR24_ALPHA,

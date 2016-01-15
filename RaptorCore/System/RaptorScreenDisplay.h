@@ -31,7 +31,7 @@ public:
 	virtual ~CRaptorScreenDisplay();
 
 	//! Implements CTextureGenerator
-    virtual CTextureGenerator::GENERATOR_KIND getKind(void) const { return CTextureGenerator::ANIMATED; };
+    virtual ITextureGenerator::GENERATOR_KIND getKind(void) const { return ITextureGenerator::ANIMATED; };
 
 	//! see base class
 	virtual bool glBindDisplay(const RAPTOR_HANDLE& device);
