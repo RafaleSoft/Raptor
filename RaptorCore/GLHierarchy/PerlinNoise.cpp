@@ -433,9 +433,6 @@ void CPerlinNoise::glGenerate(CTextureObject* t)
 			//
 
             n = 128 * (1 - n);
-            //if (n > 0) n = 256 * n;
-            //else n = 0;
-
             if (n > 255 ) 
                 n = 255;
             else if (n < 0) 

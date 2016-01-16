@@ -5,7 +5,7 @@
 
 [Setup]
 AppName=Raptor SDK
-AppVerName=Raptor SDK 2.16.5
+AppVerName=Raptor SDK 2.16.6
 DefaultDirName={pf}\Raptor
 DefaultGroupName=Raptor
 UninstallDisplayIcon={app}\MyProg.exe
@@ -13,8 +13,8 @@ Compression=lzma
 SolidCompression=yes
 VersionInfoCompany=Rafale Soft Inc.(c)
 VersionInfoProductName=Raptor SDK
-VersionInfoProductVersion=2.16.5.0
-VersionInfoVersion=2.16.5.0
+VersionInfoProductVersion=2.16.6.0
+VersionInfoVersion=2.16.6.0
 
 [Files]
 Source: "../*.sln";               DestDir: "{app}"
