@@ -172,8 +172,6 @@ bool CObjectStore::IsAColumn(CGeometry *&g)
         const CGeometryEditor &pEditor = g->getEditor();
 		pEditor.scaleTexCoords(4.0f,4.0f);
 
-//		geo->setShader(CShader::glGetShader("PHONG_SHADER"));
-
 		*geo->getShader()->getMaterial() = *m_material;
 		CTextureUnitSetup *tmuSetup = geo->getShader()->glGetTextureUnitsSetup();
 		tmuSetup->setDiffuseMap(m_textures->getTexture(MARBLE4));

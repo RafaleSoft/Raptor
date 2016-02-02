@@ -100,6 +100,7 @@ void CTeapot::GLInitContext()
 
 	CTextureFactory &f = CTextureFactory::getDefaultFactory();
 	t = new CTextureSet("main_textures");
+	CTextureFactoryConfig& config = f.getConfig();
 
 	CTextureObject*	T = f.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_ALPHA_TRANSPARENT,CTextureObject::CGL_BILINEAR);
 	T->glSetTransparency(128);
@@ -112,31 +113,22 @@ void CTeapot::GLInitContext()
 	f.glLoadTexture(T,"Datas\\marble.jpg");
 	t->addTexture(T);
 
+	T = f.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_ALPHA_TRANSPARENT,CTextureObject::CGL_BILINEAR);
+	T->glSetTransparency(128);
+	t->addTexture(T);
 #if defined(GL_ARB_texture_compression)
 	#if(0)
-        T = f.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_ALPHA_TRANSPARENT,CTextureObject::CGL_BILINEAR);
-		T->glSetTransparency(128);
 		f.glLoadCompressedTexture(T,"start.s3tc");
 	#else
-		T = f.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_ALPHA_TRANSPARENT,CTextureObject::CGL_BILINEAR);
-		T->glSetTransparency(128);
-		CTextureFactoryConfig& config = f.getConfig();
 		const CTextureFactoryConfig::ICompressor *compressor = config.getCurrentCompressor();
 		if (0 < config.getNumCompressors())
 			config.setCurrentCompressor(config.getCompressor("OpenGL"));
 		f.glLoadTexture(T,"Datas\\start.tga");
-		t->addTexture(T);
-	
 	    if (Raptor::glIsExtensionSupported("GL_ARB_texture_compression"))
-	    {
 		    f.glExportCompressedTexture("start.s3tc",T);
-	    }
     #endif
 #else
-	T = f.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_ALPHA_TRANSPARENT,CTextureObject::CGL_BILINEAR);
-	T->glSetTransparency(128);
 	f.glLoadTexture(T,"Datas\\start.tga");
-	t->addTexture(T);
 #endif
 
 	T = f.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_ALPHA_TRANSPARENT,CTextureObject::CGL_BILINEAR);
@@ -146,20 +138,25 @@ void CTeapot::GLInitContext()
 
 	if (Raptor::glIsExtensionSupported("GL_ARB_texture_cube_map"))
 	{
+#if defined(GL_ARB_texture_compression)
+		const CTextureFactoryConfig::ICompressor *compressor = config.getCurrentCompressor();
+		if (0 < config.getNumCompressors())
+			config.setCurrentCompressor(config.getCompressor("OpenGL"));
+#endif
 		T = f.glCreateCubemap(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_ALPHA_TRANSPARENT,CTextureObject::CGL_BILINEAR);
 		T->glSetTransparency(255);
 		T->selectCubeFace(CTextureObject::CGL_CUBEMAP_PX);
-		f.glLoadTexture(T,"Datas\\start.tga");
+		f.glLoadTexture(T,"Datas\\ciel_07_small.jpg");
 		T->selectCubeFace(CTextureObject::CGL_CUBEMAP_PY);
-		f.glLoadTexture(T,"Datas\\start.tga");
+		f.glLoadTexture(T,"Datas\\ciel_07_small.jpg");
 		T->selectCubeFace(CTextureObject::CGL_CUBEMAP_PZ);
-		f.glLoadTexture(T,"Datas\\start.tga");
+		f.glLoadTexture(T,"Datas\\ciel_07_small.jpg");
 		T->selectCubeFace(CTextureObject::CGL_CUBEMAP_NX);
-		f.glLoadTexture(T,"Datas\\start.tga");
+		f.glLoadTexture(T,"Datas\\ciel_07_small.jpg");
 		T->selectCubeFace(CTextureObject::CGL_CUBEMAP_NY);
-		f.glLoadTexture(T,"Datas\\start.tga");
+		f.glLoadTexture(T,"Datas\\ciel_07_small.jpg");
 		T->selectCubeFace(CTextureObject::CGL_CUBEMAP_NZ);
-		f.glLoadTexture(T,"Datas\\start.tga");
+		f.glLoadTexture(T,"Datas\\ciel_07_small.jpg");
 		T->selectCubeFace(CTextureObject::CGL_CUBEMAP_NONE);
 		t->addTexture(T);
 	}
@@ -171,7 +168,6 @@ void CTeapot::GLInitContext()
 	pDisplay->setViewPoint(vp);
 
 	teapot = new CBumppedGeometry("Bump teapot");
-
     CRaptorToolBox::load3DStudioScene("Datas\\Teapot.3DS",set,NULL);
 
 	set->scale(0.5f,0.5f,0.5f);
@@ -193,6 +189,7 @@ void CTeapot::GLInitContext()
     f.glLoadTexture(normalMap,"Datas\\bump3.tga",CVaArray<CTextureFactoryConfig::IImageOP::OP_KIND>(CTextureFactoryConfig::IImageOP::BUMPMAP_LOADER));
 	teapot->setNormalMap(normalMap);
 	t->addTexture(normalMap);
+	teapot->setEnvironmentMap(t->getTexture("Datas\\ciel_07_small.jpg"));
 
     CGeometry::CRenderingModel l_model(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
     l_model.addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
@@ -240,7 +237,6 @@ void CTeapot::GLInitContext()
 
 	vertexShadersDisplay.Init();
 	displays[CTest2App::VRTXSHADERSDEMO] = &vertexShadersDisplay;
-	//embmDisplay.Init();
 
 	m_globalDisplay = CRaptorDisplay::GetCurrentDisplay();
 	CRenderingProperties *props = m_globalDisplay->getRenderingProperties();

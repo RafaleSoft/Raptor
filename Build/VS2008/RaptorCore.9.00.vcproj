@@ -662,6 +662,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\RaptorCore\Subsys\EMBMShader.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\..\RaptorCore\Subsys\GeometryAllocator.cpp"
 					>
 				</File>
@@ -1649,6 +1653,10 @@
 				</File>
 				<File
 					RelativePath="..\..\RaptorCore\Subsys\DOT3BumppedGeometry.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\RaptorCore\Subsys\EMBMShader.h"
 					>
 				</File>
 				<File

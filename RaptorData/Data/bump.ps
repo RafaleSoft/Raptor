@@ -6,15 +6,37 @@ uniform int lightEnable[gl_MaxLights];
 uniform	sampler2D diffuseMap;
 uniform	sampler2D normalMap;
 
+#ifdef EMBM_RENDERING
+	uniform samplerCube	environmentMap;
+	varying vec3 eyevect;
+	varying vec3 normalvect;
+#endif
 
 varying vec4 lightDirs[MAX_LIGHTS];
 varying vec3 eyedir;
+
+
+vec3 fade(vec3 t)
+{
+  return t * t * t * (t * (t * 6 - 15) + 10); // new curve
+}
+
+//float perm(float x)
+//{
+//  return tex1D(permSampler, x / 256.0) * 256;
+//}
+//
+//float grad(float x, vec3 p)
+//{
+//  return dot(texture1D(gradSampler, x), p);
+//}
 
 
 void main (void)
 {
 	vec3 tn = vec3(texture2D(normalMap,vec2(gl_TexCoord[0].st)));
 	vec3 N = 2*tn - vec3(1.0,1.0,1.0);
+	//N = vec3(0.0,0.0,1.0);
 	vec4 diffuse = gl_FrontLightModelProduct.sceneColor;
 	vec4 specular = vec4(0.0,0.0,0.0,0.0);
 
@@ -36,11 +58,15 @@ void main (void)
 			}
 		}
 	}
-	
+
 #ifdef AMBIENT_OCCLUSION
 	// Provide ambient occlusion lightmaps
 	// from surrounding occluding geometries
 #endif
 
+#ifdef EMBM_RENDERING
+	vec3 r = reflect(-eyevect,normalvect);
+	specular = specular + diffuse * textureCube(environmentMap,r);
+#endif
 	gl_FragColor = specular + diffuse * texture2D(diffuseMap,vec2(gl_TexCoord[0].st));
 }

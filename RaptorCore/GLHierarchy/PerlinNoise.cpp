@@ -31,7 +31,7 @@ float interpolator(float t)
 
 __inline float lerp(float t, float a, float b)
 {
-    return (a + t * ( b - a));
+    return (a + t * (b - a));
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -260,7 +260,7 @@ CPerlinNoise::CPerlinNoise(const CVaArray<OPS>& ops):
 
     for (i=0;i<PERMUTATION_SIZE;i++)
     {
-        unsigned int j = rand()%PERMUTATION_SIZE;
+        unsigned int j = rand() % PERMUTATION_SIZE;
         unsigned int p = m_iPermutation[j];
         m_iPermutation[j] = m_iPermutation[i];
         m_iPermutation[i+PERMUTATION_SIZE] = m_iPermutation[i] = p;
@@ -387,12 +387,11 @@ void CPerlinNoise::glGenerate(CTextureObject* t)
             unsigned int offset = 4*(j*t->getHeight() + i);
 
             float n = 0.0f;
-            float frequency = 1;
+            float frequency = 1.0f / 128.0f;
             float amplitude = 1;
-			float base = 1.0f / 128.0f;
             for (unsigned int k=0;k<8;k++)
             {
-                n += amplitude * fabs(noise(base * i * frequency,base * j * frequency,0));
+                n += amplitude * fabs(noise(i * frequency,j * frequency,0));
 
                 frequency *= 2;
                 amplitude *= 0.5f;
@@ -467,11 +466,11 @@ float CPerlinNoise::noise(float x, float y, float z)
     unsigned int p_i0j0 = m_iPermutation[i0] + j0;
     unsigned int p_i1j0 = m_iPermutation[i0+1] + j0;
 
-    unsigned int p_i0j0k0 = m_iPermutation[p_i0j0]+k0;
-    unsigned int p_i1j0k0 = m_iPermutation[p_i1j0]+k0;
+    unsigned int p_i0j0k0 = m_iPermutation[p_i0j0] + k0;
+    unsigned int p_i1j0k0 = m_iPermutation[p_i1j0] + k0;
 
-    unsigned int p_i0j1k0 = m_iPermutation[p_i0j0+1]+k0;
-    unsigned int p_i1j1k0 = m_iPermutation[p_i1j0+1]+k0;
+    unsigned int p_i0j1k0 = m_iPermutation[p_i0j0+1] + k0;
+    unsigned int p_i1j1k0 = m_iPermutation[p_i1j0+1] + k0;
 
     float g_i0j0k0 = grad(p_i0j0k0,X,Y,Z);
     float g_i1j0k0 = grad(p_i1j0k0,X-1,Y,Z);
@@ -533,3 +532,65 @@ double noise(double x, double y, double z) {
    }
 */
 
+/*
+float3 fade(float3 t)
+{
+  return t * t * t * (t * (t * 6 - 15) + 10); // new curve
+//  return t * t * (3 - 2 * t); // old curve
+}
+
+float perm(float x)
+{
+  return tex1D(permSampler, x / 256.0) * 256;
+}
+
+float grad(float x, float3 p)
+{
+  return dot(tex1D(gradSampler, x), p);
+}
+
+// 3D version
+float inoise(float3 p)
+{
+
+  float3 P = fmod(floor(p), 256.0);
+
+  p -= floor(p);
+
+  float3 f = fade(p);
+
+
+  // HASH COORDINATES FOR 6 OF THE 8 CUBE CORNERS
+
+  float A = perm(P.x) + P.y;
+  float AA = perm(A) + P.z;
+  float AB = perm(A + 1) + P.z;
+  float B =  perm(P.x + 1) + P.y;
+  float BA = perm(B) + P.z;
+  float BB = perm(B + 1) + P.z;
+
+
+  // AND ADD BLENDED RESULTS FROM 8 CORNERS OF CUBE
+
+  return lerp(
+
+    lerp(lerp(grad(perm(AA), p),
+
+              grad(perm(BA), p + float3(-1, 0, 0)), f.x),
+
+         lerp(grad(perm(AB), p + float3(0, -1, 0)),
+
+              grad(perm(BB), p + float3(-1, -1, 0)), f.x), f.y),
+
+    lerp(lerp(grad(perm(AA + 1), p + float3(0, 0, -1)),
+
+              grad(perm(BA + 1), p + float3(-1, 0, -1)), f.x),
+
+         lerp(grad(perm(AB + 1), p + float3(0, -1, -1)),
+
+              grad(perm(BB + 1), p + float3(-1, -1, -1)), f.x), f.y),
+
+    f.z);
+
+}
+*/

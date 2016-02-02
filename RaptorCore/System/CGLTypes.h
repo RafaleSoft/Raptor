@@ -36,6 +36,7 @@ typedef struct RAPTOR_HANDLE
 
 	RAPTOR_HANDLE():hClass(0),handle(0) {}
     RAPTOR_HANDLE(unsigned int c,void* p):hClass(c),handle((unsigned int)p) {}
+	bool operator==(const RAPTOR_HANDLE &h) const { return (h.hClass==hClass)&&(h.handle==handle); }
 } RAPTOR_HANDLE;
 typedef RAPTOR_HANDLE*	LP_RAPTOR_HANDLE;
 

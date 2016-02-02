@@ -138,12 +138,24 @@ bool unzipfile(const char* fname, const char* outfile)
     if (ret != Z_OK)
         return false;
 
-	FILE *source = fopen(fname,"rb");
-	if (source == NULL)
+	FILE *source = NULL;
+#if defined(WIN32)
+	if (0 != fopen_s(&source,fname,"rb"))
+		return false;
+#elif defined(LINUX)
+	 source = fopen(fname,"rb");
+#endif
+	if (NULL == source)
 		return false;
 
-	FILE *dest = fopen(outfile,"wb");
-	if (dest == NULL)
+	FILE *dest = NULL;
+#if defined(WIN32)
+	if (0 != fopen_s(&dest,outfile,"wb"))
+		return false;
+#elif defined(LINUX)
+	 dest = fopen(outfile,"wb");
+#endif
+	if (NULL == dest)
 		return false;
 
     /* decompress until deflate stream ends or end of file */
@@ -220,7 +232,9 @@ CRaptorDataManager::~CRaptorDataManager()
     m_pInstance = NULL;
     if (package > 0)
         CLOSE(package);
-    clean(header);
+    package = 0;
+	packageheadpos = 0;
+	clean(header);
 }
 
 CRaptorDataManager  *CRaptorDataManager::getInstance(void)
@@ -233,6 +247,32 @@ CRaptorDataManager  *CRaptorDataManager::getInstance(void)
     return m_pInstance;
 }
 
+void CRaptorDataManager::ClearExports()
+{
+	if (package == 0)
+        openPackage(getPackPath());
+    if (package != 0)
+	{
+#if defined(WIN32)
+		char buffer[BUFFER];
+		GetEnvironmentVariable("TMP",buffer,BUFFER);
+		std::string filename = buffer;
+#elif defined(LINUX)
+		std::string filename = "/tmp";
+#endif
+		for (unsigned int k=0;k<header.nbFHeaders;k++)
+		{
+			std::string fname = filename + "/" + header.fHeaders[k].fname;
+			int res = _unlink(fname.data());
+
+			if (header.compression != Z_NO_COMPRESSION)
+			{
+				fname = fname + ".zip";
+				res = _unlink(fname.data());
+			}
+		}
+	}
+}
 
 bool CRaptorDataManager::openPackage(const std::string& pakName)
 {
@@ -288,6 +328,35 @@ bool CRaptorDataManager::openPackage(const std::string& pakName)
     return true;
 }
 
+std::string CRaptorDataManager::getPackPath()
+{
+	char buffer[BUFFER];
+	std::string pakpath = "./RaptorData.pck";
+#if defined(WIN32)
+    DWORD pakPath = GetEnvironmentVariable("RAPTOR_ROOT",buffer,BUFFER);
+    if (pakPath > 0)
+    {
+        pakpath = buffer;
+		string::size_type st = pakpath.find("\"");
+		while (string::npos != st)
+		{
+			pakpath.erase(st,1);
+			st = pakpath.find("\"");
+		}
+        pakpath += "/Redist/Bin/RaptorData.pck";
+    }
+#elif defined(LINUX)
+	char *pakPath = getenv("RAPTOR_ROOT");
+    if (pakPath != NULL)
+    {
+        pakpath = pakPath;
+        pakpath += "/Redist/Bin/RaptorData.pck";
+    }
+#endif
+
+	return pakpath;
+}
+
 std::string CRaptorDataManager::ExportFile(const std::string& fname,
 										   const std::string& path)
 {
@@ -323,33 +392,9 @@ std::string CRaptorDataManager::ExportFile(const std::string& fname,
 	}
 #endif
 
-
-    std::string pakpath = "./RaptorData.pck";
-#if defined(WIN32)
-    DWORD pakPath = GetEnvironmentVariable("RAPTOR_ROOT",buffer,BUFFER);
-    if (pakPath > 0)
-    {
-        pakpath = buffer;
-		string::size_type st = pakpath.find("\"");
-		while (string::npos != st)
-		{
-			pakpath.erase(st,1);
-			st = pakpath.find("\"");
-		}
-        pakpath += "/Redist/Bin/RaptorData.pck";
-    }
-#elif defined(LINUX)
-	char *pakPath = getenv("RAPTOR_ROOT");
-    if (pakPath != NULL)
-    {
-        pakpath = pakPath;
-        pakpath += "/Redist/Bin/RaptorData.pck";
-    }
-#endif
-
     bool res = true;
     if (package == 0)
-        res = openPackage(pakpath);
+        res = openPackage(getPackPath());
     if (!res)
         return "";
 

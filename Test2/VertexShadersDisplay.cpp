@@ -16,6 +16,7 @@
 #include "GLHierarchy\TextureFactory.h"
 #include "GLHierarchy\TextureFactoryConfig.h"
 #include "GLHierarchy\TextureObject.h"
+#include "GLHierarchy/TextureSet.h"
 #include "Engine\GeometricModifier.h"
 #include "GLHierarchy\3DSet.h"
 #include "GLHierarchy\Light.h"
@@ -717,7 +718,7 @@ private:
 class CSky : public CShadedGeometry
 {
 public:
-	CSky(float radius)
+	CSky()
 	{
 		CShader *sh = getShader();
 		CTextureUnitSetup* tus = sh->glGetTextureUnitsSetup();
@@ -801,27 +802,9 @@ void CVertexShadersDisplay::Init()
 	factory.glLoadTexture(T,"Datas\\water006.jpg");
 	ts->setDiffuseMap(T);
 
-	T = factory.glCreateCubemap(CTextureObject::CGL_COLOR24_ALPHA,
-								CTextureObject::CGL_OPAQUE,
-								CTextureObject::CGL_BILINEAR);
-	T->glSetTransparency(255);
-	CTextureFactoryConfig& config = factory.getConfig();
-	const CTextureFactoryConfig::ICompressor *compressor = config.getCurrentCompressor();
-	if (0 < config.getNumCompressors())
-		config.setCurrentCompressor(config.getCompressor("OpenGL"));
-	T->selectCubeFace(CTextureObject::CGL_CUBEMAP_PX);
-	factory.glLoadTexture(T,"Datas\\ciel_07_small.jpg");
-	T->selectCubeFace(CTextureObject::CGL_CUBEMAP_PY);
-	factory.glLoadTexture(T,"Datas\\ciel_07_small.jpg");
-	T->selectCubeFace(CTextureObject::CGL_CUBEMAP_PZ);
-	factory.glLoadTexture(T,"Datas\\ciel_07_small.jpg");
-	T->selectCubeFace(CTextureObject::CGL_CUBEMAP_NX);
-	factory.glLoadTexture(T,"Datas\\ciel_07_small.jpg");
-	T->selectCubeFace(CTextureObject::CGL_CUBEMAP_NY);
-	factory.glLoadTexture(T,"Datas\\ciel_07_small.jpg");
-	T->selectCubeFace(CTextureObject::CGL_CUBEMAP_NZ);
-	factory.glLoadTexture(T,"Datas\\ciel_07_small.jpg");
-	T->selectCubeFace(CTextureObject::CGL_CUBEMAP_NONE);
+	CPersistence *p = CPersistence::FindObject("main_textures");
+	CTextureSet	*tf = (CTextureSet*)p;
+	T = tf->getTexture("Datas\\ciel_07_small.jpg");
 	ts->setEnvironmentMap(T);
 
 	CVertexShader *vp = pShader->glGetVertexShader();
@@ -844,7 +827,7 @@ void CVertexShadersDisplay::Init()
 	ts->setNormalMap(tw->GetNormalMap());
 
 
-	sky = new CSky(2500);
+	sky = new CSky();
 	CGeometry* skydome = (CGeometry*)CPersistence::FindObject("SKYDOME");
 	*sky = *skydome;
     CGeometry::CRenderingModel l_model2(CGeometry::CRenderingModel::CGL_BACK_GEOMETRY);

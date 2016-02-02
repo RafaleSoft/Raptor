@@ -19,7 +19,7 @@ class CBumpShader : public CShader
 {
 public:
 	//!	Default constructor.
-	CBumpShader(void);
+	CBumpShader(const std::string &name = "BUMP_SHADER");
 
 	//! Destructor.
 	virtual ~CBumpShader(void);
@@ -34,14 +34,14 @@ public:
 	void glInit();
 
 
-private:
-	//!	Copy constructor for cloning.
-	CBumpShader(const CBumpShader& shader);
-
+protected:
 	static int lightEnable;
 	static int diffuseMap;
 	static int normalMap;
 	static int eyePos;
+
+	//!	Copy constructor for cloning.
+	CBumpShader(const CBumpShader& shader);
 };
 
 RAPTOR_NAMESPACE_END

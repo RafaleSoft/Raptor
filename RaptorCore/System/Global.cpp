@@ -157,6 +157,8 @@ bool Global::init(const CRaptorConfig& config)
 		CRaptorDataManager  *dataManager = CRaptorDataManager::getInstance();
 		if (dataManager != NULL)
 		{
+			//	Erase previous files in case of updates
+			dataManager->ClearExports();
 			string filepath = dataManager->ExportFile("RaptorMessages.xml");
 			if (!filepath.empty())
 				raptorStatus.messages->LoadMessages(filepath);
