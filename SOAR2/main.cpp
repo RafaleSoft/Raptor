@@ -31,7 +31,7 @@ int main(int argc, char* argv[])
     unsigned long v = Raptor::GetVersion();
 	ostrstream title;
     title << "SOAR 2 Raptor integration";
-    title << ((v>>24)&0xFF) << "." << ((v>>16)&0xFF) << "." << ((v>>8)&0xFF);
+	title << Raptor::GetVersionString();
     title << " Release test";
     title << ends;
 

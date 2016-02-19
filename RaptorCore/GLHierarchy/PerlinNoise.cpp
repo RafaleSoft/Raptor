@@ -19,6 +19,10 @@
 #if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
 	#include "System/Raptor.h"
 #endif
+#if !defined(AFX_MEMORY_H__81A6CA9A_4ED9_4260_B6E4_C03276C38DBC__INCLUDED_)
+	#include "System/Memory.h"
+#endif
+
 
 RAPTOR_NAMESPACE_BEGIN
 
@@ -247,7 +251,7 @@ RAPTOR_NAMESPACE
 //////////////////////////////////////////////////////////////////////
 
 CPerlinNoise::CPerlinNoise(const CVaArray<OPS>& ops):
-    m_ImageOps(ops)
+    m_ImageOps(ops),m_model(NOISE1),m_textureMirror(false),m_amplitude(1.0f)
 {
     m_iPermutation = new unsigned int[PERMUTATION_SIZE+PERMUTATION_SIZE];
     srand(time(0));
@@ -303,71 +307,6 @@ unsigned int CPerlinNoise::getGenerateHeight(void) const
     // TODO
     return 0;
 }
-/*
-void CPerlinNoise::glGenerate(CTextureObject* t)
-{
-    if ((t == NULL) || (!m_bEnabled))
-        return;
-
-	CTextureFactory &f = CTextureFactory::getDefaultFactory();
-    t->allocateTexels();
-	unsigned char *data = t->getTexels();
-
-	unsigned int w = t->getWidth() / 2;
-	unsigned int h = t->getHeight() / 2;
-    
-	for (unsigned int j=0;j<h;j++)
-    {
-        for (unsigned int i=0;i<w;i++)
-        {
-            float n = 0.0f;
-            float frequency = 1.0f / 128.0f;
-            float amplitude = 1;
-            for (unsigned int k=0;k<8;k++)
-            {
-                n += amplitude * fabs(noise(i * frequency,j * frequency,0));
-
-                frequency *= 2;
-                amplitude *= 0.5f;
-            }
-
-            n = 128 * (1 - n);
-            if (n > 255 ) 
-                n = 255;
-            else if (n < 0) 
-                n = 0;
-
-			unsigned int offset = 4*(j*t->getWidth() + i);
-            data[offset] = n;
-            data[offset+1] = n;
-            data[offset+2] = n;
-            data[offset+3] = t->getTransparency();
-
-			offset = 4*((j+1)*t->getWidth() - i);
-			data[offset - 4] = n;
-            data[offset - 3] = n;
-            data[offset - 2] = n;
-            data[offset - 1] = t->getTransparency();
-
-			offset = 4*((t->getHeight()-j-1)*t->getWidth() + i);
-			data[offset] = n;
-            data[offset+1] = n;
-            data[offset+2] = n;
-            data[offset+3] = t->getTransparency();
-
-			offset = 4*((t->getHeight()-j)*t->getWidth() - i);
-			data[offset - 4] = n;
-            data[offset - 3] = n;
-            data[offset - 2] = n;
-            data[offset - 1] = t->getTransparency();
-        }
-    }
-
-    f.glLoadTexture(t,".buffer",m_ImageOps);
-
-    CATCH_GL_ERROR
-}
-*/
 
 void CPerlinNoise::glGenerate(CTextureObject* t)
 {
@@ -376,79 +315,133 @@ void CPerlinNoise::glGenerate(CTextureObject* t)
 
 	CTextureFactory &f = CTextureFactory::getDefaultFactory();
     t->allocateTexels();
-	unsigned char *data = t->getTexels();
 
-	unsigned int w = t->getWidth();
-	unsigned int h = t->getHeight();
-    for (unsigned int i=0;i<w;i++)
-    {
-        for (unsigned int j=0;j<h;j++)
-        {
-            unsigned int offset = 4*(j*t->getHeight() + i);
+	if (m_model == NOISE4)
+	{
+		CMemory::Allocator<unsigned char> allocator;
+		unsigned char *hf_noise = allocator.allocate(64*64*4);
+		bool mirror = m_textureMirror;
+		m_textureMirror = true;
+		generateNoise(hf_noise,64,64,0,255);
 
-            float n = 0.0f;
-            float frequency = 1.0f / 128.0f;
-            float amplitude = 1;
-            for (unsigned int k=0;k<8;k++)
-            {
-                n += amplitude * fabs(noise(i * frequency,j * frequency,0));
+		m_textureMirror = mirror;
+		unsigned char *data = t->getTexels();
 
-                frequency *= 2;
-                amplitude *= 0.5f;
-            }
-			// NOISE 1: n = noise(16 * i / (float)w,16 * j /(float)h,0);
-			// NOISE 2:
-			//for (unsigned int k=0;k<8;k++)
-            //{
-            //   float base = 1.0f / 32.0f;
-            //    n += amplitude * (noise(base * i * frequency,base * j * frequency,0));
 
-            //  frequency *= 2;
-            //  amplitude *= 0.5f;
-            //}
-			
-			// NOISE 3 : 
-			//n = -0.5f;
-			//amplitude = 0.5f;
-			//for (unsigned int k=0;k<8;k++)
-            //{
-            //    float base = 1.0f / 128.0f;
-            //    n += amplitude * fabs(noise(base * i * frequency,base * j * frequency,0.0f));
 
-            //    frequency *= 2;
-            //    amplitude *= 0.5f;
-            //}
-			
-			// NOISE 4 :
-			//float base = 1.0f / 128.0f;
-			//for (unsigned int k=0;k<8;k++)
-            //{
-            //    n += amplitude * fabs(noise(base * i * frequency,base * j * frequency,0.0f));
-
-            //    frequency *= 2;
-            //    amplitude *= 0.5f;
-            //}
-			//n = sin(-base * i + n);
-			//
-
-            n = 128 * (1 - n);
-            if (n > 255 ) 
-                n = 255;
-            else if (n < 0) 
-                n = 0;
-
-            data[offset] = n;
-            data[offset+1] = n;
-            data[offset+2] = n;
-            data[offset+3] = t->getTransparency();
-        }
-    }
+		CMemory::GetInstance()->garbage(hf_noise);
+	}
+	else
+	{
+		unsigned char *data = t->getTexels();
+		generateNoise(data,t->getWidth(),t->getHeight(),t->getDepth(),t->getTransparency());
+	}
 
     f.glLoadTexture(t,".buffer",m_ImageOps);
 
     CATCH_GL_ERROR
 }
 
+void CPerlinNoise::generateNoise(unsigned char *data,
+								 unsigned int width,
+								 unsigned int height,
+								 unsigned int depth,
+								 unsigned int transparency)
+{
+	unsigned int w = width;
+	unsigned int h = height;
+	unsigned int d = MAX(depth,1);
+	if (m_textureMirror)
+	{
+		w = MAX(w >> 1,1);
+		h = MAX(h >> 1,1);
+		d = MAX(d >> 1,1);
+	}
+	
+	for (unsigned int l=0;l<d;l++)
+	{
+		for (unsigned int j=0;j<h;j++)
+		{
+			for (unsigned int i=0;i<w;i++)
+			{
+				float n = 0.0f;
+				float amplitude = m_amplitude;
+				switch (m_model)
+				{
+					case NOISE1:
+					{
+						float frequency = 1.0f / 128.0f;
+						
+						for (unsigned int k=0;k<8;k++)
+						{
+							n += amplitude * fabs(noise(i * frequency,j * frequency,l * frequency));
+							frequency *= 2;
+							amplitude *= 0.5f;
+						}
+						break;
+					}
+					case NOISE2:
+					{
+						float frequency = 4.0f / 128.0f;
+						for (unsigned int k=0;k<8;k++)
+						{
+							n += amplitude * (noise(i * frequency,j * frequency,l * frequency));
+							frequency *= 2;
+							amplitude *= 0.5f;
+						}
+						break;
+					}
+					case NOISE3:
+					case NOISE4:
+					{
+						float frequency = 4.0f / 128.0f;
+						for (unsigned int k=0;k<8;k++)
+						{
+							n += amplitude * (noise(i * frequency,j * frequency,l * frequency));
+							frequency *= 2;
+							amplitude *= 0.5f;
+						}
+						n = n - 1.0f;
+						break;
+					}
+				}
+
+				n = 128 * (1 - n);
+				if (n > 255 ) 
+					n = 255;
+				else if (n < 0) 
+					n = 0;
+
+				unsigned int offset = 4*((l*width + j)*height + i);
+				data[offset] = n;
+				data[offset+1] = n;
+				data[offset+2] = n;
+				data[offset+3] = transparency;
+
+				if (m_textureMirror)
+				{
+					offset = 4*((j+1)*width - i);
+					data[offset - 4] = n;
+					data[offset - 3] = n;
+					data[offset - 2] = n;
+					data[offset - 1] = transparency;
+
+					offset = 4*((height-j-1)*width + i);
+					data[offset] = n;
+					data[offset+1] = n;
+					data[offset+2] = n;
+					data[offset+3] = transparency;
+
+					offset = 4*((height-j)*width - i);
+					data[offset - 4] = n;
+					data[offset - 3] = n;
+					data[offset - 2] = n;
+					data[offset - 1] = transparency;
+				}
+			}
+		}
+	}
+}
 
 float CPerlinNoise::noise(float x, float y, float z)
 {
@@ -532,65 +525,3 @@ double noise(double x, double y, double z) {
    }
 */
 
-/*
-float3 fade(float3 t)
-{
-  return t * t * t * (t * (t * 6 - 15) + 10); // new curve
-//  return t * t * (3 - 2 * t); // old curve
-}
-
-float perm(float x)
-{
-  return tex1D(permSampler, x / 256.0) * 256;
-}
-
-float grad(float x, float3 p)
-{
-  return dot(tex1D(gradSampler, x), p);
-}
-
-// 3D version
-float inoise(float3 p)
-{
-
-  float3 P = fmod(floor(p), 256.0);
-
-  p -= floor(p);
-
-  float3 f = fade(p);
-
-
-  // HASH COORDINATES FOR 6 OF THE 8 CUBE CORNERS
-
-  float A = perm(P.x) + P.y;
-  float AA = perm(A) + P.z;
-  float AB = perm(A + 1) + P.z;
-  float B =  perm(P.x + 1) + P.y;
-  float BA = perm(B) + P.z;
-  float BB = perm(B + 1) + P.z;
-
-
-  // AND ADD BLENDED RESULTS FROM 8 CORNERS OF CUBE
-
-  return lerp(
-
-    lerp(lerp(grad(perm(AA), p),
-
-              grad(perm(BA), p + float3(-1, 0, 0)), f.x),
-
-         lerp(grad(perm(AB), p + float3(0, -1, 0)),
-
-              grad(perm(BB), p + float3(-1, -1, 0)), f.x), f.y),
-
-    lerp(lerp(grad(perm(AA + 1), p + float3(0, 0, -1)),
-
-              grad(perm(BA + 1), p + float3(-1, 0, -1)), f.x),
-
-         lerp(grad(perm(AB + 1), p + float3(0, -1, -1)),
-
-              grad(perm(BB + 1), p + float3(-1, -1, -1)), f.x), f.y),
-
-    f.z);
-
-}
-*/

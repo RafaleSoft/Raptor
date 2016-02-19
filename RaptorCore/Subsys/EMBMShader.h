@@ -37,7 +37,7 @@ public:
 				const std::string &bump_pixelshader);
 
 	//!	A state accessor to switch between strict bumping to environment bumping
-	void enableEmbm(bool enable) { m_bEnabled = enable; };
+	void enableEmbm(bool enable);
 
 	//!	Return current status.
 	bool isEnabled(void) const { return m_bEnabled; };

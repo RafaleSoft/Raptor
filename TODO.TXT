@@ -1,15 +1,12 @@
 - simd.cpp : appel a GetSystemInfo, migrer vers intrinsics
 	- linux : /proc/cpuinfo
 
-- tester EMBM avec un cube dans demo !!! ( bug de position a corriger )
-
 - supprimer des "friend" ?
 	p.ex. dans CRaptorDisplay et sous classes ...
 
 - Bumping:
 	- comment gérer le filtrage trilinéaire/anisotropique du normal map ?
 	- Comment paraméter le shader : EYE_SPACE / OBJECT_SPACE / Ambient occlusion
-	- Si normalMap non utilisé => Phong Shader
 	- Supprimer CBumppedGeometry => remplacer par le shader.
 	- Remplacer / améliorer par displacement map / parallax bump mapping
 	

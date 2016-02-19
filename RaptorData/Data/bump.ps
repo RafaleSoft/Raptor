@@ -4,39 +4,77 @@ const int MAX_LIGHTS = 5;
 
 uniform int lightEnable[gl_MaxLights];
 uniform	sampler2D diffuseMap;
-uniform	sampler2D normalMap;
+
+//#define TEXTURE_PERLIN
+
+#ifdef TEXTURE_PERLIN
+	uniform sampler3D normalMap;
+#else
+	uniform	sampler2D normalMap;
+#endif
 
 #ifdef EMBM_RENDERING
 	uniform samplerCube	environmentMap;
-	varying vec3 eyevect;
-	varying vec3 normalvect;
+	varying vec3 rr;
 #endif
 
 varying vec4 lightDirs[MAX_LIGHTS];
 varying vec3 eyedir;
 
 
-vec3 fade(vec3 t)
-{
-  return t * t * t * (t * (t * 6 - 15) + 10); // new curve
-}
+#ifdef PROCEDURAL_PERLIN
+	vec3 fade(vec3 t)
+	{
+	  return t * t * t * (t * (t * 6 - 15) + 10); // new curve
+	}
 
-//float perm(float x)
-//{
-//  return tex1D(permSampler, x / 256.0) * 256;
-//}
-//
-//float grad(float x, vec3 p)
-//{
-//  return dot(texture1D(gradSampler, x), p);
-//}
-
+	float perm(float x)
+	{
+		return tex1D(permSampler, x / 256.0) * 256;
+	}
+	
+	float grad(float x, vec3 p)
+	{
+		return dot(texture1D(gradSampler, x), p);
+	}
+	
+	float inoise(float3 p)
+	{
+		float3 P = fmod(floor(p), 256.0);
+		p -= floor(p);
+		float3 f = fade(p);
+	
+	// HASH COORDINATES FOR 6 OF THE 8 CUBE CORNERS
+		float A = perm(P.x) + P.y;
+		float AA = perm(A) + P.z;
+		float AB = perm(A + 1) + P.z;
+		float B =  perm(P.x + 1) + P.y;
+		float BA = perm(B) + P.z;
+		float BB = perm(B + 1) + P.z;
+	
+	// AND ADD BLENDED RESULTS FROM 8 CORNERS OF CUBE
+		return lerp(
+			lerp(lerp(grad(perm(AA), p),
+					  grad(perm(BA), p + float3(-1, 0, 0)), f.x),
+				 lerp(grad(perm(AB), p + float3(0, -1, 0)),
+					  grad(perm(BB), p + float3(-1, -1, 0)), f.x), f.y),
+			lerp(lerp(grad(perm(AA + 1), p + float3(0, 0, -1)),
+					  grad(perm(BA + 1), p + float3(-1, 0, -1)), f.x),
+				 lerp(grad(perm(AB + 1), p + float3(0, -1, -1)),
+					  grad(perm(BB + 1), p + float3(-1, -1, -1)), f.x), f.y),
+			f.z);
+	}
+#endif
 
 void main (void)
 {
+#ifdef TEXTURE_PERLIN
+	vec3 tn = vec3(texture3D(normalMap,vec3(gl_TexCoord[0].s,gl_TexCoord[0].t,0.0)));
+#else
 	vec3 tn = vec3(texture2D(normalMap,vec2(gl_TexCoord[0].st)));
+#endif
 	vec3 N = 2*tn - vec3(1.0,1.0,1.0);
-	//N = vec3(0.0,0.0,1.0);
+
 	vec4 diffuse = gl_FrontLightModelProduct.sceneColor;
 	vec4 specular = vec4(0.0,0.0,0.0,0.0);
 
@@ -65,8 +103,7 @@ void main (void)
 #endif
 
 #ifdef EMBM_RENDERING
-	vec3 r = reflect(-eyevect,normalvect);
-	specular = specular + diffuse * textureCube(environmentMap,r);
+	specular = specular + 0.2 * textureCube(environmentMap,rr);
 #endif
 	gl_FragColor = specular + diffuse * texture2D(diffuseMap,vec2(gl_TexCoord[0].st));
 }

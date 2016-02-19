@@ -13,8 +13,7 @@ varying vec4 lightDirs[MAX_LIGHTS];
 varying vec3 eyedir;
 
 #ifdef EMBM_RENDERING
-	varying vec3 eyevect;
-	varying vec3 normalvect;
+	varying vec3 rr;
 #endif
 
 uniform int lightEnable[gl_MaxLights];
@@ -35,15 +34,14 @@ void main (void)
 	vec3 ecPos = vec3(eyePos.xyz) - vec3(gl_Vertex.xyz);
 #endif
 
-#ifdef EMBM_RENDERING
-	eyevect = ecPos;
-	normalvect = normal;
-#endif
-
 	vec3 binormal = cross(normal,T);
 	eyedir.x = dot(ecPos,T);
 	eyedir.y = dot(ecPos,binormal);
 	eyedir.z = dot(ecPos,normal);
+
+#ifdef EMBM_RENDERING
+	rr = reflect(-ecPos,normal);
+#endif
 
 	for (int i=0 ; i<MAX_LIGHTS ; i++)
 	{

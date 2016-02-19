@@ -389,6 +389,12 @@ bool CShader::glRemoveTextureUnitSetup(void)
 			m_textureUnitSetup.handle = 0;
 			m_textureUnitSetup.hClass = 0;
 		}
+		if (m_textureUnitUnSetup.handle != 0)
+		{
+			glDeleteLists(m_textureUnitUnSetup.handle, 1);
+			m_textureUnitUnSetup.handle = 0;
+			m_textureUnitUnSetup.hClass = 0;
+		}
 
         CATCH_GL_ERROR
 
@@ -429,14 +435,11 @@ bool CShader::glRemoveVertexProgram(void)
 	else
 	{
 		m_pVProgram->unregisterDestruction(this);
+		RAPTOR_HANDLE handle(0, (void*)m_shaderProgram.handle);
+		m_pVProgram->glUnbindProgram(handle);
 
 		if (m_bDeleteVProgram)
-		{
-			RAPTOR_HANDLE handle(0, (void*)m_shaderProgram.handle);
-			m_pVProgram->glUnbindProgram(handle);
 			delete m_pVProgram;
-		}
-
 		m_pVProgram = NULL;
 		m_bDeleteVProgram = false;
 
@@ -524,14 +527,11 @@ bool CShader::glRemoveFragmentProgram(void)
 	else
 	{
 		m_pFProgram->unregisterDestruction(this);
+		RAPTOR_HANDLE handle(0, (void*)m_shaderProgram.handle);
+		m_pFProgram->glUnbindProgram(handle);
 
 		if (m_bDeleteFProgram)
-		{
-			RAPTOR_HANDLE handle(0, (void*)m_shaderProgram.handle);
-			m_pFProgram->glUnbindProgram(handle);
 			delete m_pFProgram;
-		}
-
 		m_pFProgram = NULL;
 		m_bDeleteFProgram = false;
 
@@ -619,14 +619,11 @@ bool CShader::glRemoveGeometryProgram(void)
 	else
 	{
 		m_pGProgram->unregisterDestruction(this);
+		RAPTOR_HANDLE handle(0, (void*)m_shaderProgram.handle);
+		m_pGProgram->glUnbindProgram(handle);
 
 		if (m_bDeleteGProgram)
-		{
-			RAPTOR_HANDLE handle(0, (void*)m_shaderProgram.handle);
-			m_pGProgram->glUnbindProgram(handle);
 			delete m_pGProgram;
-		}
-
 		m_pGProgram = NULL;
 		m_bDeleteGProgram = false;
 

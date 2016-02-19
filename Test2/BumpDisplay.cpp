@@ -132,29 +132,46 @@ void CBumpDisplay::Init()
 	CPersistence *p = CPersistence::FindObject("main_textures");
 
 	CTextureFactory &f = CTextureFactory::getDefaultFactory();
+	CTextureFactoryConfig& config = f.getConfig();
+	config.setBumpAmplitude(3.5f);
+
 	CTextureSet *t = NULL;
 	if (p->getId().isSubClassOf(CTextureSet::CTextureSetClassID::GetClassId()))
 		 t = (CTextureSet *)p;
 
 	BackGround *pbg = new BackGround();
+	CPerlinNoise noise = CPerlinNoise(CPerlinNoise::OPS(CTextureFactoryConfig::IImageOP::BUMPMAP_LOADER));
+	noise.setNoiseModel(CPerlinNoise::NOISE3);
+
 
     CTextureObject *tt = f.glCreateTexture( CTextureObject::CGL_COLOR24_ALPHA,
-                                            CTextureObject::CGL_ALPHA_TRANSPARENT,
-                                            CTextureObject::CGL_BILINEAR);
-	CTextureFactoryConfig& config = f.getConfig();
-	config.setBumpAmplitude(3.5f);
-	CPerlinNoise noise = CPerlinNoise(); //CVaArray<CTextureFactoryConfig::IImageOP::OP_KIND>(CTextureFactoryConfig::IImageOP::BUMPMAP_LOADER));
-    f.glResizeTexture(tt,512,512);
+											CTextureObject::CGL_ALPHA_TRANSPARENT,
+											CTextureObject::CGL_BILINEAR);
+												 
+	f.glResizeTexture(tt,512,512);
+	noise.generateMirrorTexture(true);
+/*
+	CTextureObject *tt = f.glCreateVolumeTexture(CTextureObject::CGL_COLOR24_ALPHA,
+												 CTextureObject::CGL_ALPHA_TRANSPARENT,
+												 CTextureObject::CGL_BILINEAR);
+	f.glResizeTexture(tt,256,256,256);
+*/
     noise.glGenerate(tt);
-
-	CTextureUnitSetup tmu;
-    tmu.setDiffuseMap(tt);
-	pbg->bg = tmu.glBuildSetup();
 
 	p = CPersistence::FindObject("Bump teapot");
 	if (p->getId().isSubClassOf(CBumppedGeometry::CBumppedGeometryClassID::GetClassId()))
 		 teapot = (CBumppedGeometry *)p;
-	//teapot->setNormalMap(tt);
+	teapot->setNormalMap(tt);
+
+	CTextureUnitSetup tmu;
+	CPerlinNoise noise2;
+	CTextureObject *tt2 = f.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,
+                                            CTextureObject::CGL_ALPHA_TRANSPARENT,
+                                            CTextureObject::CGL_BILINEAR);
+	f.glResizeTexture(tt2,512,512);
+    noise2.glGenerate(tt2);
+    tmu.setDiffuseMap(tt2);
+	pbg->bg = tmu.glBuildSetup();
 
     //
     //  Light and its modifier

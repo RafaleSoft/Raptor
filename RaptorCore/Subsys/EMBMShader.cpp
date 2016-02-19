@@ -65,7 +65,6 @@ CEMBMShader::~CEMBMShader(void)
 void CEMBMShader::glInit(const std::string &bump_vertexshader,
 						 const std::string &bump_pixelshader)
 {
-	//CVertexProgram *vp = glGetVertexProgram("PPIXEL_BUMP_VTX_PROGRAM");
 	//!	First create the program, to get it with the shader
 	//!	and unset auto delete shader
 	CVertexProgram *vp = new CVertexProgram("PPIXEL_EMBM_VTX_PROGRAM");
@@ -79,7 +78,8 @@ void CEMBMShader::glInit(const std::string &bump_vertexshader,
 	vp->glLoadProgram(embm_vertexshader);
 	vp->glStop();
 
-	vp = glGetVertexProgram("PPIXEL_EMBM_VTX_PROGRAM");
+	//vp = glGetVertexProgram("PPIXEL_EMBM_VTX_PROGRAM");
+	vp = glGetVertexProgram("PPIXEL_BUMP_VTX_PROGRAM");
 	CShaderProgram::CProgramParameters params;
 	params.addParameter("tangent",CShaderProgram::ADDITIONAL_PARAM1);
 	vp->setProgramParameters(params);
@@ -97,7 +97,8 @@ void CEMBMShader::glInit(const std::string &bump_vertexshader,
 	fp->glLoadProgram(embm_pixelshader);
 	fp->glStop();
 
-	fp = glGetFragmentProgram("PPIXEL_EMBM_TEX_PROGRAM");
+	//fp = glGetFragmentProgram("PPIXEL_EMBM_TEX_PROGRAM");
+	fp = glGetFragmentProgram("PPIXEL_BUMP_TEX_PROGRAM");
 	CShaderProgram::CProgramParameters params2;
 	fp->setProgramParameters(params2);
 
@@ -123,4 +124,36 @@ void CEMBMShader::glRender(void)
 			pExtensions->glUniform1iARB(environmentMap,CTextureUnitSetup::IMAGE_UNIT_3);
 	}
 #endif
+}
+
+void CEMBMShader::enableEmbm(bool enable)
+{
+	if (enable != m_bEnabled)
+	{
+		glRemoveVertexProgram();
+		glRemoveFragmentProgram();
+
+		CShaderProgram::CProgramParameters params;
+		params.addParameter("tangent",CShaderProgram::ADDITIONAL_PARAM1);
+		CShaderProgram::CProgramParameters params2;
+		CVertexProgram *vp = NULL;
+		CFragmentProgram *fp = NULL;
+	
+		if (enable)
+		{
+			vp = glGetVertexProgram("PPIXEL_EMBM_VTX_PROGRAM");
+			fp = glGetFragmentProgram("PPIXEL_EMBM_TEX_PROGRAM");
+		}
+		else
+		{
+			vp = glGetVertexProgram("PPIXEL_BUMP_VTX_PROGRAM");
+			fp = glGetFragmentProgram("PPIXEL_BUMP_TEX_PROGRAM");
+		}
+
+		vp->setProgramParameters(params);
+		fp->setProgramParameters(params2);
+
+		glCompileShader();
+		m_bEnabled = enable;
+	}
 }

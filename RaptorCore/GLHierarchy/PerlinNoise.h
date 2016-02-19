@@ -27,6 +27,13 @@ class RAPTOR_API CPerlinNoise : public ITextureGenerator
 {
 public:
 	typedef CTextureFactoryConfig::IImageOP::OP_KIND OPS;
+	typedef enum
+	{
+		NOISE1,
+		NOISE2,
+		NOISE3,
+		NOISE4
+	} NOISE_MODEL;
 
     //! The constructor specifies the texture model for this static generator.
 	CPerlinNoise(const CVaArray<OPS>& ops = CVaArray<OPS>());
@@ -46,16 +53,36 @@ public:
     //! This method returns the height of the generator
     virtual unsigned int getGenerateHeight(void) const;
 
+	//!	Provides noise generation control.
+	void setNoiseModel(NOISE_MODEL model) { m_model = model; };
+
+	//!	Configure noise amplitude
+	void setAmplitude(float amplitude) { m_amplitude = amplitude; };
+
+	//!	Gnerate a 'tileable' texture (mirrored in u & v)
+	void generateMirrorTexture(bool mirror) { m_textureMirror = mirror; };
+
 
 protected:
     float noise(float x, float y, float z);
 
 private:
-    CVaArray<OPS> m_ImageOps;
-    unsigned int *m_iPermutation;
+    CVaArray<OPS>	m_ImageOps;
+    unsigned int	*m_iPermutation;
+	NOISE_MODEL		m_model;
+	bool			m_textureMirror;
+	float			m_amplitude;
 
     GL_COORD_VERTEX G[16];
 
+	//!	Compute 2D/3D noise values in texture texels (data)
+	void generateNoise(	unsigned char *data,
+						unsigned int width,
+						unsigned int height,
+						unsigned int depth,
+						unsigned int transparency);
+
+	//!	Compute gradient : dot on unit cube vector selected by random hash
     float grad(unsigned int hash, float x, float y, float z);
 };
 
