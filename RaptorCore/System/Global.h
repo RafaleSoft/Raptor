@@ -33,7 +33,7 @@ class CDefaultImageScaler;
 class CDefaultMipmapBuilder;
 
 #ifdef WIN32
-#pragma warning(disable:4786)
+	#pragma warning(disable:4786)
 #endif
 
 
@@ -68,6 +68,7 @@ public:
         CRaptorDisplay			*defaultDisplay;
 		RAPTOR_HANDLE			defaultWindow;
 		long					defaultContext;
+		RAPTOR_HANDLE			vulkanModule;
 		vector<CRaptorDisplay*>	displays;
 		vector<CRenderEntryPoint*>	  renderEntryPoints;
 		vector<CRaptorConsole::CInputCollectorBase*>	inputCollectors;
@@ -109,6 +110,9 @@ public:
 
 	//! Emulates CPersistence for global opengl classes IDs & global namespace
 	DECLARE_CLASS_ID(COpenGLClassID,"OpenGL",CPersistence)
+
+	//! Emulates CPersistence for global vulkan classes IDs & global namespace
+	DECLARE_CLASS_ID(CVulkanClassID,"Vulkan",CPersistence)
 
 
 private:

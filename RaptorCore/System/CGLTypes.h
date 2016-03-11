@@ -9,6 +9,9 @@
 #ifndef __RAPTOR_GLEXT_H__
 	#include "System/Glext.h"
 #endif
+#ifndef __RAPTOR_VKEXT_H__
+	#include "System/vkext.h"
+#endif
 #if !defined(AFX_COLOR_H__3770AC59_0D0E_49EF_99C8_037268A33CE4__INCLUDED_)
 	#include "System/Color.h"
 #endif

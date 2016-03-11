@@ -116,7 +116,7 @@
 				Optimization="0"
 				EnableIntrinsicFunctions="true"
 				WholeProgramOptimization="false"
-				AdditionalIncludeDirectories="$(RAPTOR_ROOT)\Redist\Include;$(OPENCL_INCLUDE_PATH);$(PLATFORM_SDK)\include"
+				AdditionalIncludeDirectories="$(RAPTOR_ROOT)\Redist\Include;$(OPENCL_INCLUDE_PATH);$(PLATFORM_SDK)\include;$(VULKAN_INCLUDE_PATH)"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"

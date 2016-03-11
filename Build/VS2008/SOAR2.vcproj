@@ -44,7 +44,7 @@
 				UseUnicodeResponseFiles="false"
 				Optimization="0"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="$(RAPTOR_ROOT)\Redist\Include;$(PLATFORM_SDK)\include"
+				AdditionalIncludeDirectories="$(RAPTOR_ROOT)\Redist\Include;$(PLATFORM_SDK)\include;$(VULKAN_INCLUDE_PATH)"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;INDEX=INDEX_LINEAR;WITH_FLOAT_MATH;WITH_STATS"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"

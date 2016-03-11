@@ -6,17 +6,17 @@
 #if !defined(AFX_RAPTOREXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
 	#include "RaptorExtensions.h"
 #endif
-
 #ifndef __glext_macros_h_
 	#include "GLEXTMacros.h"
 #endif
-
 #if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
 	#include "Raptor.h"
 #endif
-
 #if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
     #include "RaptorErrorManager.h"
+#endif
+#ifndef __GLOBAL_H__
+	#include "System/Global.h"
 #endif
 
 
@@ -92,9 +92,92 @@ void CRaptorExtensions::glInitExtensions(void)
 	IMPLEMENT_GL_EXT_framebuffer_multisample(this)
 
     CATCH_GL_ERROR
-
+	
+	initVk();
+	
 	defaultInit();
 }
+
+#if defined(VK_VERSION_1_0)
+void CRaptorExtensions::initVk(void)
+{
+	VkResult res = VK_NOT_READY;
+
+#if defined(_WIN32)
+	CRaptorErrorManager *pErrMgr = Raptor::GetErrorManager();
+
+	HMODULE module = (HMODULE)Global::GetInstance().getCurrentStatus().vulkanModule.handle;
+	if (module != NULL)
+	{
+		vkCreateInstance = (PFN_vkCreateInstance)(GetProcAddress(module,"vkCreateInstance"));
+		vkDestroyInstance = (PFN_vkDestroyInstance)(GetProcAddress(module,"vkDestroyInstance"));
+		vkCreateDevice = (PFN_vkCreateDevice)(GetProcAddress(module,"vkCreateDevice"));
+		vkDestroyDevice = (PFN_vkDestroyDevice)(GetProcAddress(module,"vkDestroyDevice"));
+
+		vkEnumeratePhysicalDevices = (PFN_vkEnumeratePhysicalDevices)(GetProcAddress(module,"vkEnumeratePhysicalDevices"));
+		vkEnumerateInstanceExtensionProperties = (PFN_vkEnumerateInstanceExtensionProperties)(GetProcAddress(module,"vkEnumerateInstanceExtensionProperties"));
+		vkEnumerateDeviceExtensionProperties = (PFN_vkEnumerateDeviceExtensionProperties)(GetProcAddress(module," vkEnumerateDeviceExtensionProperties"));
+		vkEnumerateInstanceLayerProperties = (PFN_vkEnumerateInstanceLayerProperties)(GetProcAddress(module," vkEnumerateInstanceLayerProperties;"));
+		vkEnumerateDeviceLayerProperties = (PFN_vkEnumerateDeviceLayerProperties)(GetProcAddress(module," vkEnumerateDeviceLayerProperties;"));
+
+		vkGetPhysicalDeviceFeatures = (PFN_vkGetPhysicalDeviceFeatures)(GetProcAddress(module,"vkGetPhysicalDeviceFeatures"));
+		vkGetPhysicalDeviceProperties = (PFN_vkGetPhysicalDeviceProperties)(GetProcAddress(module,"vkGetPhysicalDeviceProperties"));
+		vkGetPhysicalDeviceFormatProperties = (PFN_vkGetPhysicalDeviceFormatProperties)(GetProcAddress(module,"vkGetPhysicalDeviceFormatProperties"));
+		vkGetPhysicalDeviceMemoryProperties = (PFN_vkGetPhysicalDeviceMemoryProperties)(GetProcAddress(module,"vkGetPhysicalDeviceMemoryProperties"));
+		vkGetPhysicalDeviceQueueFamilyProperties = (PFN_vkGetPhysicalDeviceQueueFamilyProperties)(GetProcAddress(module,"vkGetPhysicalDeviceQueueFamilyProperties"));
+		
+		res = ((NULL != vkCreateInstance) && (NULL != vkEnumerateInstanceExtensionProperties) ? VK_SUCCESS : VK_NOT_READY);
+	}
+#elif defined(LINUX)
+#endif
+
+	if (VK_SUCCESS != res)
+	{
+		pErrMgr->generateRaptorError(	Global::CVulkanClassID::GetClassId(),
+										CRaptorErrorManager::RAPTOR_ERROR,
+										"Unable to initialise Vulkan API");
+	}
+	else
+	{
+		VkInstanceCreateInfo instanceCreateInfo = {	VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO, // VkStructureType sType;
+											NULL,                                   // const void* pNext;
+											0,                                      // VkInstanceCreateFlags flags;
+											NULL,									// const VkApplicationInfo* pApplicationInfo;
+											0,                                      // uint32_t enabledLayerNameCount;
+											NULL,                                   // const char* const* ppEnabledLayerNames;
+											0,                                      // uint32_t enabledExtensionNameCount;
+											NULL};									// const char* const* ppEnabledExtensionNames;
+		VkInstance inst;
+		res = vkCreateInstance(&instanceCreateInfo, NULL, &inst);
+		if (VK_SUCCESS != res)
+			pErrMgr->vkGetError(res,__FILE__,__LINE__);
+		
+		if (VK_SUCCESS == res)
+		{
+			extensions += " VK_VERSION_1_0";
+			uint32_t pPropertyCount = 0;
+			res = vkEnumerateInstanceExtensionProperties(NULL,&pPropertyCount,NULL);
+			if ((VK_SUCCESS == res) && (pPropertyCount > 0))
+			{
+				VkExtensionProperties *pProperties = new VkExtensionProperties[pPropertyCount];
+				res = vkEnumerateInstanceExtensionProperties(NULL,&pPropertyCount,pProperties);
+				if (VK_SUCCESS == res)
+				{
+					for (uint32_t i=0;i<pPropertyCount;i++)
+					{
+						extensions += " ";
+						extensions += pProperties[i].extensionName;
+					}
+				}
+				delete [] pProperties;
+			}
+			if (VK_SUCCESS != res)
+				pErrMgr->vkGetError(res,__FILE__,__LINE__);
+			vkDestroyInstance(inst,NULL);
+		}
+	}
+}
+#endif
 
 void RAPTOR_APICALL glActiveTextureARB__default(GLenum target)
 {

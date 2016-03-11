@@ -200,6 +200,14 @@ CGLBuilder::CGLBuilder():
 	extension.active = false;	extension.kind = COREGL;	extension.extensionName = "GL_VERSION_4_4";
 	extensions.push_back(extension);
 
+	extension.dependencies.clear(); 
+	extension.active = false;	extension.kind = COREGL;	extension.extensionName = "GL_VERSION_4_5";
+	extensions.push_back(extension);
+
+	extension.dependencies.clear(); 
+	extension.active = false;	extension.kind = COREVK;	extension.extensionName = "VK_VERSION_1_0";
+	extensions.push_back(extension);
+
     extension.dependencies.clear(); 
 	extension.active = false;	extension.kind = ARB;	extension.extensionName = "GL_ARB_multitexture";
 	extensions.push_back(extension);
@@ -378,6 +386,61 @@ CGLBuilder::CGLBuilder():
 	extension.dependencies.clear();
     extension.active = false;	extension.kind = ARB;	extension.extensionName = "GL_ARB_geometry_shader4";
 	extension.dependencies.push_back("GL_VERSION_2_0");
+	extensions.push_back(extension);
+
+	extension.dependencies.clear(); 
+	extension.active = false;	extension.kind = VK;	extension.extensionName = "VK_KHR_surface";
+	extension.dependencies.push_back("VK_VERSION_1_0");
+	extensions.push_back(extension);
+
+	extension.dependencies.clear(); 
+	extension.active = false;	extension.kind = VK;	extension.extensionName = "VK_KHR_swapchain";
+	extension.dependencies.push_back("VK_VERSION_1_0");
+	extensions.push_back(extension);
+
+	extension.dependencies.clear(); 
+	extension.active = false;	extension.kind = VK;	extension.extensionName = "VK_KHR_display";
+	extension.dependencies.push_back("VK_VERSION_1_0");
+	extensions.push_back(extension);
+
+	extension.dependencies.clear(); 
+	extension.active = false;	extension.kind = VK;	extension.extensionName = "VK_KHR_display_swapchain";
+	extension.dependencies.push_back("VK_VERSION_1_0");
+	extensions.push_back(extension);
+
+	extension.dependencies.clear(); 
+	extension.active = false;	extension.kind = VK;	extension.extensionName = "VK_KHR_xlib_surface";
+	extension.dependencies.push_back("VK_VERSION_1_0");
+	extensions.push_back(extension);
+
+	extension.dependencies.clear(); 
+	extension.active = false;	extension.kind = VK;	extension.extensionName = "VK_KHR_xcb_surface";
+	extension.dependencies.push_back("VK_VERSION_1_0");
+	extensions.push_back(extension);
+
+	extension.dependencies.clear(); 
+	extension.active = false;	extension.kind = VK;	extension.extensionName = "VK_KHR_wayland_surface";
+	extension.dependencies.push_back("VK_VERSION_1_0");
+	extensions.push_back(extension);
+
+	extension.dependencies.clear(); 
+	extension.active = false;	extension.kind = VK;	extension.extensionName = "VK_KHR_mir_surface";
+	extension.dependencies.push_back("VK_VERSION_1_0");
+	extensions.push_back(extension);
+
+	extension.dependencies.clear(); 
+	extension.active = false;	extension.kind = VK;	extension.extensionName = "VK_KHR_android_surface";
+	extension.dependencies.push_back("VK_VERSION_1_0");
+	extensions.push_back(extension);
+
+	extension.dependencies.clear(); 
+	extension.active = false;	extension.kind = VK;	extension.extensionName = "VK_KHR_win32_surface";
+	extension.dependencies.push_back("VK_VERSION_1_0");
+	extensions.push_back(extension);
+
+	extension.dependencies.clear(); 
+	extension.active = false;	extension.kind = VK;	extension.extensionName = "VK_EXT_debug_report";
+	extension.dependencies.push_back("VK_VERSION_1_0");
 	extensions.push_back(extension);
 
 	extension.dependencies.clear(); 
@@ -764,6 +827,8 @@ string CGLBuilder::setVersion(const string &strVersion)
 		strResult += " GL_VERSION_4_3";
 	if ((majorVersion > 4) || ((majorVersion == 4) && (minorVersion >= 4)))
 		strResult += " GL_VERSION_4_4";
+	if ((majorVersion > 4) || ((majorVersion == 4) && (minorVersion >= 5)))
+		strResult += " GL_VERSION_4_5";
 
 	return strResult;
 }
@@ -830,7 +895,7 @@ bool CGLBuilder::writeHeader(const string& filename)
 	for (i=0;i<extensions.size();i++)
 	{
 		const EXTENSION& extension = extensions[i];
-		if ((extension.active) && (extension.kind == COREGL))
+		if ((extension.active) && ((extension.kind == COREGL) || (extension.kind == COREVK)))
 		{
 			header << "#ifndef " << extension.extensionName << "\n";
 			header << "	#define	" << extension.extensionName << "		1\n";
@@ -842,7 +907,7 @@ bool CGLBuilder::writeHeader(const string& filename)
 	for (i=0;i<extensions.size();i++)
 	{
 		const EXTENSION& extension = extensions[i];
-		if ((extension.active) && (extension.kind != CPU) && (extension.kind != COREGL))
+		if ((extension.active) && (extension.kind != CPU) && (extension.kind != COREGL) && (extension.kind != COREVK))
 		{
 			header << "#define ";
 			header << extension.extensionName;

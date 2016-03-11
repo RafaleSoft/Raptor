@@ -51,7 +51,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/MP"
 				Optimization="0"
-				AdditionalIncludeDirectories="$(RAPTOR_ROOT)\Redist\Include;$(SolutionDir)\RaptorCore\Subsys\xercesc_2_7;$(PLATFORM_SDK)\Include"
+				AdditionalIncludeDirectories="$(RAPTOR_ROOT)\Redist\Include;$(SolutionDir)\RaptorCore\Subsys\xercesc_2_7;$(PLATFORM_SDK)\Include;$(VULKAN_INCLUDE_PATH)"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="2"

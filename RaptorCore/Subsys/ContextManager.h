@@ -19,6 +19,9 @@
 #if !defined(AFX_TEXTUREOBJECT_H__D32B6294_B42B_4E6F_AB73_13B33C544AD0__INCLUDED_)
 	#include "GLHierarchy/TextureObject.h"
 #endif
+#if !defined(__RAPTOR_VKEXT_H__)
+	#include "vkext.h"
+#endif
 
 
 RAPTOR_NAMESPACE_BEGIN
@@ -51,6 +54,13 @@ public:
 	//! is returned to indicate that rdc has been modified.
 	//! If rdc is properly initialised, it is left unchanged and true is returned.
 	virtual bool validateConfig(CRaptorDisplayConfig& rdc);
+
+	//!	Initialise a global Vulkan instance and pysical devices for
+	//!	further logical devices queries.
+	//! @return false is vulkan library cannot be initialized, true otherwise.
+#if defined(VK_VERSION_1_0)
+	bool vkInitContext(void);
+#endif
 
 	//!	This method creates a "default' window for Raptor's internal use.
 	//!	It can also be used when the GUI API is used, for example
@@ -141,8 +151,16 @@ protected:
 private:
 	CTextureObject	*glBuildLogo(void);
 
+	//!	An extensions manager to access Vulkan API.
+#if defined(VK_VERSION_1_0)
+	CRaptorExtensions	*m_pExtensions;
+	VkInstance			m_globalInstance;
+	VkPhysicalDevice	*m_pPhysicalDevices;
+#endif
+
 	RAPTOR_HANDLE				m_logo;
 	CReference<CTextureObject>	m_pLogo;
+
 	static CContextManager	*p_manager;
 };
 

@@ -54,7 +54,7 @@
 				InlineFunctionExpansion="1"
 				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="1"
-				AdditionalIncludeDirectories="&quot;$(RAPTOR_ROOT)\Redist\Include&quot;;.\;&quot;$(SolutionDir)\GLBench\GLBenchModuleTemplate&quot;;&quot;$(MSSdk)\Include\mfc&quot;;&quot;$(PLATFORM_SDK)\Include&quot;"
+				AdditionalIncludeDirectories="&quot;$(RAPTOR_ROOT)\Redist\Include&quot;;.\;&quot;$(SolutionDir)\GLBench\GLBenchModuleTemplate&quot;;&quot;$(MSSdk)\Include\mfc&quot;;&quot;$(PLATFORM_SDK)\Include&quot;;&quot;$(VULKAN_INCLUDE_PATH)&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL"
 				StringPooling="true"
 				RuntimeLibrary="2"

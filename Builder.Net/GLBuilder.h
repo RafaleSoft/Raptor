@@ -21,7 +21,9 @@ public:
 	{
 		CPU,
 		COREGL,
+		COREVK,
 		ARB,
+		VK,
 		EXT,
 		NV,
         APPLE,

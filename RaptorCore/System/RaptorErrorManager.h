@@ -15,6 +15,9 @@
 #if !defined(AFX_RAPTORMESSAGES_H__55776166_2943_4D08_BFC8_65DFB74FD780__INCLUDED_)
     #include "System/RaptorMessages.h"
 #endif
+#if !defined(__RAPTOR_VKEXT_H__)
+	#include "vkext.h"
+#endif
 
 
 RAPTOR_NAMESPACE_BEGIN
@@ -31,6 +34,7 @@ public:
         RAPTOR_WARNING,
         RAPTOR_ERROR,
         RAPTOR_GL_ERROR,
+		RAPTOR_VK_ERROR,
         RAPTOR_FATAL
     } RAPTOR_ERROR_TYPE;
 
@@ -57,8 +61,11 @@ public:
 #if defined RAPTOR_DEBUG_MODE_GENERATION
 	#define	CATCH_GL_ERROR \
 		Raptor::GetErrorManager()->glGetError(__FILE__,__LINE__);
+	#define	CATCH_VK_ERROR(err) \
+		Raptor::GetErrorManager()->vkGetError(err,__FILE__,__LINE__);
 #else
 	#define	CATCH_GL_ERROR
+	#define	CATCH_VK_ERROR
 #endif
 
 
@@ -81,6 +88,9 @@ public:
 
     //! Intercepts openGL errors and manage them as RaptorErrors
 	void glGetError(const std::string& file,int line);
+
+	//! Text format Vulkan errors and manage them as RaptorErrors
+	void vkGetError(VkResult err, const std::string& file,int line);
 
     //!	Errors management  ( Need an active OpenGL Context )
 	void generateRaptorError(	const CPersistence::CPersistenceClassID& classID,

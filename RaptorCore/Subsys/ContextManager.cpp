@@ -23,6 +23,10 @@
 #if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
     #include "System/RaptorErrorManager.h"
 #endif
+#ifndef __GLOBAL_H__
+	#include "System/Global.h"
+#endif
+
 
 #if defined(_WIN32)
     #if !defined(AFX_WIN32CONTEXTMANAGER_H__A1D82397_7E92_4D01_A04D_782BCFD17689__INCLUDED_)
@@ -56,14 +60,29 @@ RAPTOR_NAMESPACE
 //////////////////////////////////////////////////////////////////////
 
 CContextManager::CContextManager()
+	:m_logo()
+#if defined(VK_VERSION_1_0)
+	,m_pExtensions(NULL)
+	,m_globalInstance(NULL)
+	,m_pPhysicalDevices(NULL)
+#endif
 {
-	m_logo.handle = 0;
-	m_logo.hClass = 0;
 }
 
 CContextManager::~CContextManager()
 {
 	p_manager = NULL;
+
+#if defined(VK_VERSION_1_0)
+	if (NULL != m_globalInstance)
+		m_pExtensions->vkDestroyInstance(m_globalInstance,NULL);
+
+	if (NULL != m_pExtensions)
+		delete m_pExtensions;
+
+	if (NULL != m_pPhysicalDevices)
+		delete [] m_pPhysicalDevices;
+#endif
 
 	glRemoveLogo();
 }
@@ -239,3 +258,94 @@ bool CContextManager::validateConfig(CRaptorDisplayConfig& rdc)
 
 	return res;
 }
+
+#if defined(VK_VERSION_1_0)
+bool CContextManager::vkInitContext(void)
+{
+	if (NULL == m_pExtensions)
+		m_pExtensions = new CRaptorExtensions("");
+	m_pExtensions->glInitExtensions();
+
+	CRaptorErrorManager *pErrMgr = Raptor::GetErrorManager();
+	VkResult res = VK_NOT_READY;
+	VkApplicationInfo applicationInfo = {	VK_STRUCTURE_TYPE_APPLICATION_INFO, NULL,
+											"Raptor", RAPTOR_VERSION,
+											"Raptor 3D Engine", RAPTOR_VERSION,
+											(1 << 22) + (0 && 12) + 3 };
+	VkInstanceCreateInfo instanceCreateInfo = {	VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO, // VkStructureType sType;
+												NULL,                                   // const void* pNext;
+												0,                                      // VkInstanceCreateFlags flags;
+												&applicationInfo,						// const VkApplicationInfo* pApplicationInfo;
+												0,                                      // uint32_t enabledLayerNameCount;
+												NULL,                                   // const char* const* ppEnabledLayerNames;
+												0,                                      // uint32_t enabledExtensionNameCount;
+												NULL};									// const char* const* ppEnabledExtensionNames;
+	res = m_pExtensions->vkCreateInstance(&instanceCreateInfo, NULL, &m_globalInstance);
+	if (VK_SUCCESS != res)
+		pErrMgr->vkGetError(res,__FILE__,__LINE__);
+	
+	//	Instance properties are already collected by CRaptorExtensions, skip it here.
+	/*
+	if (VK_SUCCESS == res)
+	{
+		uint32_t pPropertyCount = 0;
+		res = m_pExtensions->vkEnumerateInstanceExtensionProperties(NULL,&pPropertyCount,NULL);
+		if ((VK_SUCCESS == res) && (pPropertyCount > 0))
+		{
+			VkExtensionProperties *pProperties = new VkExtensionProperties[pPropertyCount];
+			res = m_pExtensions->vkEnumerateInstanceExtensionProperties(NULL,&pPropertyCount,pProperties);
+			if (VK_SUCCESS == res)
+			{
+				for (uint32_t i=0;i<pPropertyCount;i++)
+				{
+				}
+			}
+			delete [] pProperties;
+		}
+		if (VK_SUCCESS != res)
+			pErrMgr->vkGetError(res,__FILE__,__LINE__);
+	}*/
+
+	if (VK_SUCCESS == res)
+	{
+		uint32_t pPhysicalDeviceCount = 0;
+		res = m_pExtensions->vkEnumeratePhysicalDevices(m_globalInstance,&pPhysicalDeviceCount,NULL);
+		if ((VK_SUCCESS == res) && (pPhysicalDeviceCount > 0))
+		{
+			m_pPhysicalDevices = new VkPhysicalDevice[pPhysicalDeviceCount];
+			res = m_pExtensions->vkEnumeratePhysicalDevices(m_globalInstance,&pPhysicalDeviceCount,m_pPhysicalDevices);
+			if (VK_SUCCESS == res)
+			{
+				VkPhysicalDeviceProperties pProperties;
+				for (uint32_t i=0;i<pPhysicalDeviceCount;i++)
+				{
+					m_pExtensions->vkGetPhysicalDeviceProperties(m_pPhysicalDevices[i],&pProperties);
+
+					uint32_t pQueueFamilyPropertyCount = 0;
+					m_pExtensions->vkGetPhysicalDeviceQueueFamilyProperties(m_pPhysicalDevices[i],&pQueueFamilyPropertyCount,NULL);
+					if (pQueueFamilyPropertyCount > 0)
+					{
+						VkQueueFamilyProperties *pQueueFamilyProperties = new VkQueueFamilyProperties[pQueueFamilyPropertyCount];
+						m_pExtensions->vkGetPhysicalDeviceQueueFamilyProperties(m_pPhysicalDevices[i],&pQueueFamilyPropertyCount,pQueueFamilyProperties);
+						for (uint32_t i=0;i<pQueueFamilyPropertyCount;i++)
+						{
+							
+						}
+						delete [] pQueueFamilyProperties;
+					}
+				}
+			}
+		}
+		if (VK_SUCCESS != res)
+			pErrMgr->vkGetError(res,__FILE__,__LINE__);
+	}
+
+	if (VK_SUCCESS != res)
+	{
+		pErrMgr->generateRaptorError(	Global::CVulkanClassID::GetClassId(),
+										CRaptorErrorManager::RAPTOR_ERROR,
+										"Unable to initialise Vulkan API");
+	}
+	return (VK_SUCCESS == res);
+}
+#endif

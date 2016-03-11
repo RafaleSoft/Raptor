@@ -54,7 +54,7 @@
 				InlineFunctionExpansion="0"
 				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="1"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)$(ProjectName)&quot;;&quot;$(PLATFORM_SDK)\Include&quot;;&quot;$(RAPTOR_ROOT)\Redist\Include&quot;;&quot;$(XERCES_INCLUDE_PATH)&quot;;&quot;$(FREETYPE_INCLUDE_PATH)&quot;"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)$(ProjectName)&quot;;&quot;$(PLATFORM_SDK)\Include&quot;;&quot;$(RAPTOR_ROOT)\Redist\Include&quot;;&quot;$(XERCES_INCLUDE_PATH)&quot;;&quot;$(FREETYPE_INCLUDE_PATH)&quot;;&quot;$(VULKAN_INCLUDE_PATH)&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;EXPORT_RAPTOR_CORE"
 				StringPooling="true"
 				RuntimeLibrary="2"
@@ -1539,6 +1539,10 @@
 				</File>
 				<File
 					RelativePath="..\..\RaptorCore\System\Version.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\RaptorCore\System\vkext.h"
 					>
 				</File>
 			</Filter>

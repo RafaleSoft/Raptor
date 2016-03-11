@@ -40,6 +40,11 @@ const CPersistence::CPersistenceClassID& Global::COpenGLClassID::GetClassId(void
 {
 	return openglID;
 }
+static Global::CVulkanClassID vulkanID;
+const CPersistence::CPersistenceClassID& Global::CVulkanClassID::GetClassId(void)
+{
+	return vulkanID;
+}
 
 Global::Global()
 {
@@ -118,6 +123,14 @@ Global::~Global()
 	delete (raptorStatus.pDefaultImageScaler);
 	delete (raptorStatus.pDefaultMipmapBuilder);
 
+#if defined(_WIN32) && defined (VK_VERSION_1_0)
+	if (0 != raptorStatus.vulkanModule.handle)
+	{
+		HMODULE module = (HMODULE)raptorStatus.vulkanModule.handle;
+		FreeLibrary(module);
+	}
+#endif
+
 	raptorStatus.initialised = false;
 }
 
@@ -188,11 +201,31 @@ bool Global::init(const CRaptorConfig& config)
         if (raptorStatus.engineTaskMgr)
             raptorStatus.engineTaskMgr->initEngine();
 
-		CContextManager::GetInstance();
+		CContextManager *pContext = CContextManager::GetInstance();
 
 		raptorStatus.pDefaultBumpmapLoader = new CDefaultBumpmapLoader();
 		raptorStatus.pDefaultImageScaler = new CDefaultImageScaler();
 		raptorStatus.pDefaultMipmapBuilder = new CDefaultMipmapBuilder();
+
+		raptorStatus.vulkanModule.handle = 0;
+		raptorStatus.vulkanModule.hClass = 0;
+
+#if defined(_WIN32) && defined (VK_VERSION_1_0)
+		char buffer[MAX_PATH];
+		GetEnvironmentVariable("VULKAN_BIN_PATH",buffer,MAX_PATH);
+		std::string vkpath = buffer;
+		vkpath += "\\VULKAN-1.DLL";
+		HMODULE module = LoadLibrary(vkpath.c_str());
+		raptorStatus.vulkanModule.handle = (unsigned int)module;
+		if (NULL == module)
+		{
+			raptorStatus.errorMgr->generateRaptorError(	CVulkanClassID::GetClassId(),
+														CRaptorErrorManager::RAPTOR_VK_ERROR,
+														"Unable to load Vulkan module !");
+		}
+		else
+			pContext->vkInitContext();
+#endif
 
 		raptorStatus.initialised = true;
 	}
