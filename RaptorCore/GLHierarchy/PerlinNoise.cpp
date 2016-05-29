@@ -250,8 +250,9 @@ RAPTOR_NAMESPACE
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CPerlinNoise::CPerlinNoise(const CVaArray<OPS>& ops):
-    m_ImageOps(ops),m_model(NOISE1),m_textureMirror(false),m_amplitude(1.0f)
+CPerlinNoise::CPerlinNoise(const CVaArray<OPS>& ops)
+	:m_ImageOps(ops),m_model(NOISE1),m_textureMirror(false),
+	m_amplitude(1.0f),m_baseFrequency(1.0f/128.0f)
 {
     m_iPermutation = new unsigned int[PERMUTATION_SIZE+PERMUTATION_SIZE];
     srand(time(0));
@@ -315,27 +316,8 @@ void CPerlinNoise::glGenerate(CTextureObject* t)
 
 	CTextureFactory &f = CTextureFactory::getDefaultFactory();
     t->allocateTexels();
-
-	if (m_model == NOISE4)
-	{
-		CMemory::Allocator<unsigned char> allocator;
-		unsigned char *hf_noise = allocator.allocate(64*64*4);
-		bool mirror = m_textureMirror;
-		m_textureMirror = true;
-		generateNoise(hf_noise,64,64,0,255);
-
-		m_textureMirror = mirror;
-		unsigned char *data = t->getTexels();
-
-
-
-		CMemory::GetInstance()->garbage(hf_noise);
-	}
-	else
-	{
-		unsigned char *data = t->getTexels();
-		generateNoise(data,t->getWidth(),t->getHeight(),t->getDepth(),t->getTransparency());
-	}
+	unsigned char *data = t->getTexels();
+	generateNoise(data,t->getWidth(),t->getHeight(),t->getDepth(),t->getTransparency());
 
     f.glLoadTexture(t,".buffer",m_ImageOps);
 
@@ -370,7 +352,7 @@ void CPerlinNoise::generateNoise(unsigned char *data,
 				{
 					case NOISE1:
 					{
-						float frequency = 1.0f / 128.0f;
+						float frequency = m_baseFrequency;
 						
 						for (unsigned int k=0;k<8;k++)
 						{
@@ -382,7 +364,7 @@ void CPerlinNoise::generateNoise(unsigned char *data,
 					}
 					case NOISE2:
 					{
-						float frequency = 4.0f / 128.0f;
+						float frequency = 4.0f * m_baseFrequency;
 						for (unsigned int k=0;k<8;k++)
 						{
 							n += amplitude * (noise(i * frequency,j * frequency,l * frequency));
@@ -392,9 +374,8 @@ void CPerlinNoise::generateNoise(unsigned char *data,
 						break;
 					}
 					case NOISE3:
-					case NOISE4:
 					{
-						float frequency = 4.0f / 128.0f;
+						float frequency = 4.0f * m_baseFrequency;
 						for (unsigned int k=0;k<8;k++)
 						{
 							n += amplitude * (noise(i * frequency,j * frequency,l * frequency));

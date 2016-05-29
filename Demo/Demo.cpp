@@ -39,9 +39,7 @@ int main(int argc, char* argv[])
 						CGL_RENDER_FILTERED |
 						CGL_RENDER_BUFFER |
 						CGL_ANTIALIAS_4X;
-    glcs.frame_mode = CGL_NOSTATUS;
-	glcs.frame_mode |= CGL_DRAWLOGO;
-
+	glcs.draw_logo = true;
 	glcs.lightingState.lightModelSeparateSpecular = true;
 
     //	initialize Raptor classes and settings

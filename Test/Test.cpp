@@ -53,7 +53,6 @@ int main(int argc, char* argv[])
 						CGL_HARDWARE |
 						CGL_RENDER_FILTERED |
 						CGL_RENDER_BUFFER;
-    glcs.frame_mode = CGL_NOSTATUS;
 	//glcs.refresh_rate.sync_to_monitor = true;
  
     CRaptorDisplay *pDisplay = NULL;

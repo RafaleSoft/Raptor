@@ -72,6 +72,7 @@ private:
 	NOISE_MODEL		m_model;
 	bool			m_textureMirror;
 	float			m_amplitude;
+	float			m_baseFrequency;
 
     GL_COORD_VERTEX G[16];
 

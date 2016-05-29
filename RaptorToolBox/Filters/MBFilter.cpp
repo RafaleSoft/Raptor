@@ -216,7 +216,6 @@ bool CMBFilter::glInitFilter(void)
     state.width = colorInput->getWidth();
     state.height = colorInput->getHeight();
     state.display_mode = CGL_RENDER_TEXTURE | CGL_HARDWARE | CGL_RGBA ;
-    state.frame_mode = CGL_NOSTATUS;
 
 	CAccumulator *accumulator = new CAccumulator;
 

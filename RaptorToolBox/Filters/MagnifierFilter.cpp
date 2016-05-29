@@ -367,7 +367,6 @@ bool CMagnifierFilter::glInitFilter(void)
     state.width = m_fXfactor * colorInput->getWidth();
     state.height = m_fYfactor * colorInput->getHeight();
     state.display_mode = CGL_RENDER_TEXTURE | CGL_HARDWARE | CGL_RGBA ;
-    state.frame_mode = CGL_NOSTATUS;
 
 	if (m_fModel == RENDER_BUFFER)
 	{

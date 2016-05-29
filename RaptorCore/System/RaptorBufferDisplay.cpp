@@ -83,7 +83,8 @@ bool CRaptorBufferDisplay::glQueryStatus(CRaptorDisplayConfig &state,unsigned lo
     state.caption = cs.caption;
     state.refresh_rate = cs.refresh_rate;
     state.display_mode = cs.display_mode;
-    state.frame_mode = cs.frame_mode;
+    state.draw_logo = cs.draw_logo;
+	state.status_bar = cs.status_bar;
 
     return CRaptorDisplay::glQueryStatus(state,query);
 }

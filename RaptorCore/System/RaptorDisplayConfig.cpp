@@ -28,7 +28,8 @@ CRaptorDisplayConfig::CRaptorDisplayConfig()
 	refresh_rate.sync_to_monitor = false;
 	refresh_rate.fps = CGL_MAXREFRESHRATE;
 	display_mode = CGL_RGBA | CGL_DEPTH | CGL_DOUBLE;
-	frame_mode = 0;
+	draw_logo = false;
+	status_bar = false;
 
     hintState.perspectiveCorrection = GL_NICEST;    // specific for nice Raptor display
     hintState.fog = GL_DONT_CARE;

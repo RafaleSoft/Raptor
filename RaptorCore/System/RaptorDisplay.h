@@ -105,11 +105,6 @@ public:
 	//! except the basic config which can only be set at creation.
 	bool glApplyStatus(const CRaptorDisplayConfig &state,unsigned long query);
 
-	//!	Swap control management:
-	//!	Return true if swap control is enabled ( or supported by hardware ).
-	//! It also means that the frame rate asked at creation/binding can be maintained.
-	virtual bool hasSwapControl(void) const = 0;
-
 	//!	Return the number of frames rendered during the last second.
 	virtual float getFPS(void) const { return 0.0f; };
 

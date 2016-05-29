@@ -5,6 +5,20 @@
       <xs:attribute name="name" type="xs:string" />
     </xs:complexType>
   </xs:element>
+  <xs:element name="Object3D">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Properties" minOccurs="0" maxOccurs="1">
+          <xs:complexType>
+            <xs:attribute name="cast_shadow" type="xs:boolean" />
+            <xs:attribute name="is_mirror" type="xs:boolean" />
+            <xs:attribute name="transparent" type="xs:boolean" />
+            <xs:attribute name="receive_shadow" type="xs:boolean" />
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
   <xs:element name="TextureSet">
       <xs:complexType>
           <xs:sequence>
@@ -24,6 +38,7 @@
   <xs:element name="Set">
       <xs:complexType>
           <xs:sequence>
+              <xs:element ref="Object3D" minOccurs="0" maxOccurs="1" />
               <xs:element name="Child" minOccurs="0" maxOccurs="unbounded">
                   <xs:complexType>
                       <xs:attribute name="name" type="xs:string" />
@@ -192,20 +207,6 @@
       <xs:attribute name="volumesize" type="xs:float" />
     </xs:complexType>
   </xs:element>
-  <xs:element name="Object3D">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element name="Properties" minOccurs="0" maxOccurs="1">
-          <xs:complexType>
-            <xs:attribute name="cast_shadow" type="xs:boolean" />
-            <xs:attribute name="is_mirror" type="xs:boolean" />
-            <xs:attribute name="transparent" type="xs:boolean" />
-            <xs:attribute name="receive_shadow" type="xs:boolean" />
-          </xs:complexType>
-        </xs:element>
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
   <xs:element name="RenderingProperties">
     <xs:complexType>
       <xs:attribute name="texturing" type="xs:boolean" />
@@ -235,7 +236,7 @@
         <xs:attribute name="name" type="xs:string" />
         <xs:attribute name="object" type="xs:string" />
     </xs:complexType>
-</xs:element>
+  </xs:element>
   <xs:element name="LightModifier">
     <xs:complexType>
         <xs:sequence>
@@ -244,13 +245,13 @@
         <xs:attribute name="name" type="xs:string" />
         <xs:attribute name="light" type="xs:string" />
     </xs:complexType>
-</xs:element>
+  </xs:element>
   <xs:element name="Object3DInstance">
     <xs:complexType>
         <xs:sequence>
-            <xs:element ref="Shader" minOccurs="0" maxOccurs="unbounded" />
-            <xs:element ref="Object3D" minOccurs="0" maxOccurs="unbounded" />
-            <xs:element ref="RenderingProperties" minOccurs="0" maxOccurs="unbounded" />
+            <xs:element ref="Shader" minOccurs="0" maxOccurs="1" />
+            <xs:element ref="Object3D" minOccurs="0" maxOccurs="1" />
+            <xs:element ref="RenderingProperties" minOccurs="0" maxOccurs="1" />
         </xs:sequence>
         <xs:attribute name="name" type="xs:string" />
         <xs:attribute name="reference" type="xs:string" />

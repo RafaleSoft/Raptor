@@ -84,6 +84,14 @@ CTest5Doc::CTest5Doc(const RAPTOR_HANDLE& device,const char* title)
     config.m_uiPolygons = 200000;
     config.m_uiVertices = 500000;
     Raptor::glInitRaptor(config);
+/*
+CRaptorDisplayConfig pcs;
+pcs.display_mode = CGL_RENDER_VULKAN;
+CRaptorDisplay *d = Raptor::glCreateDisplay(pcs);
+RAPTOR_HANDLE noDevice(4,(void*)4);
+d->glBindDisplay(device);
+d->glUnBindDisplay();
+*/
 
 	CImaging::installImagers(CTextureFactory::getDefaultFactory());
 
@@ -97,7 +105,7 @@ CTest5Doc::CTest5Doc(const RAPTOR_HANDLE& device,const char* title)
 	glcs.y = 0;
 	glcs.caption = title;
 	glcs.display_mode = CGL_RGBA | CGL_DEPTH | CGL_DOUBLE | CGL_HARDWARE;
-    glcs.frame_mode = CGL_NOSTATUS | CGL_DRAWLOGO;
+	glcs.draw_logo = true;
 
 	m_pDisplay = Raptor::glCreateDisplay(glcs);
 
@@ -263,7 +271,6 @@ void CTest5Doc::GLInitContext(void)
 	glcs.y = 0;
 	glcs.caption = "RAPTOR_RENDER_BUFFER_DISPLAY";
 	glcs.display_mode = CGL_RGBA | CGL_DEPTH | CGL_RENDER_BUFFER;
-    glcs.frame_mode = CGL_NOSTATUS;
 	m_pDisplayBuffer = Raptor::glCreateDisplay(glcs);
 
 	vp = m_pDisplayBuffer->getViewPoint();

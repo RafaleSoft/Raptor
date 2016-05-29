@@ -354,7 +354,6 @@ bool CBlurFilter::glInitFilter(void)
     CRaptorDisplayConfig state;
 	state.width = m_fXfactor * colorInput->getWidth();
 	state.height = m_fYfactor * colorInput->getHeight();
-    state.frame_mode = CGL_NOSTATUS;
 	state.display_mode = CGL_HARDWARE | CGL_RGBA | CGL_RENDER_TEXTURE;
 
 	if (m_fModel == RENDER_BUFFER)

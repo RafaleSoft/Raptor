@@ -84,6 +84,8 @@ public:
 			status = !status;
 			glRenderFilter();
 		}
+		//if (fgMag->isEnabled())
+		//	glRenderFilter();
 		CShadedGeometry::glRender();
 	};
 

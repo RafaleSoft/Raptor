@@ -85,9 +85,7 @@ void CTeapot::GLInitContext()
 
 #if defined(GL_ARB_texture_compression)
 	if (Raptor::glIsExtensionSupported("GL_ARB_texture_compression"))
-	{
 		glHint(GL_TEXTURE_COMPRESSION_HINT_ARB,GL_NICEST);
-	}
 #endif
 
 	// point parameter settings
@@ -186,7 +184,7 @@ void CTeapot::GLInitContext()
     s->getMaterial()->setShininess(10.0f);
 	teapot->setDiffuseMap(t->getTexture(0));
 	CTextureObject* normalMap = f.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_MULTIPLY,CTextureObject::CGL_BILINEAR);
-    f.glLoadTexture(normalMap,"Datas\\bump3.tga",CVaArray<CTextureFactoryConfig::IImageOP::OP_KIND>(CTextureFactoryConfig::IImageOP::BUMPMAP_LOADER));
+    f.glLoadTexture(normalMap,"Datas\\bump3.tga",CTextureFactoryConfig::IImageOP::BUMPMAP_LOADER);
 	teapot->setNormalMap(normalMap);
 	t->addTexture(normalMap);
 	teapot->setEnvironmentMap(t->getTexture("Datas\\ciel_07_small.jpg"));

@@ -45,9 +45,6 @@ public:
 	//! Real implementation of the viewport resize
 	virtual void glResize(unsigned int sx,unsigned int sy,unsigned int ox, unsigned int oy);
 
-	//! see base class
-	virtual bool hasSwapControl(void) const { return m_swapControl; }
-
 	//!	Renders the display, if it has been bound.
 	//! Returns true if rendered without errors, false otherwise.
 	virtual bool glRender(void);
@@ -97,16 +94,20 @@ protected:
 	//! time to render scenes
 	float	rtime;
 
+	//!
 	//!	rendering rate management
-	bool			m_swapControl;
+	//!
 	unsigned long	m_framerate;
+	//!	Previous rendered second.
 	float	lastfreq;
+	//!	Previous rendered absolute time.
 	float	l1;
 	CAnimatorStream	*m_streamer;
 
 	CContextManager::RENDERING_CONTEXT_ID	m_context;
 	CContextManager::RENDERING_CONTEXT_ID	m_layerContext;
-						
+	
+	//!	Display configuration.
 	CRaptorDisplayConfig	cs;
 
 	

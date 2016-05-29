@@ -301,8 +301,6 @@ CHDRFilter::CHDRFilter(const CRaptorDisplayConfig &da)
 		rda.display_mode |= CGL_RENDER_BUFFER;
 #endif
 
-    rda.frame_mode = CGL_NOSTATUS;
-
 	nLevels = 0;
 	nBlurPass = 1;
 	treshold = 0.5;

@@ -199,7 +199,6 @@ bool CRaptorInstance::start(unsigned int width,unsigned int height)
 	glcs.display_mode = CGL_RGBA |
 						CGL_DOUBLE_SWAPEXCHANGE |
 						CGL_HARDWARE;
-	glcs.frame_mode = CGL_NOSTATUS;
 
 	if (!Raptor::glCheckDisplayConfig(glcs))
     {
@@ -418,7 +417,6 @@ bool CRaptorInstance::executeRequest(request &r)
 							CGL_HARDWARE;
 		glcs.display_mode |= CGL_RENDER_BUFFER;
 		//glcs.display_mode |= CGL_ANTIALIAS_4X;
-		glcs.frame_mode = CGL_NOSTATUS;
 		glcs.refresh_rate.fps = CGL_MAXREFRESHRATE;
 		s.display = Raptor::glCreateDisplay(glcs);
 		if (s.display == 0)

@@ -565,7 +565,6 @@ public:
 		attrs.caption = "texture waves";
 		attrs.refresh_rate;
 		attrs.display_mode = CGL_RGBA | CGL_HARDWARE | CGL_RENDER_TEXTURE;
-		attrs.frame_mode = CGL_NULL;
 
 		pBuffer = Raptor::glCreateDisplay(attrs);
 		RAPTOR_HANDLE handle;

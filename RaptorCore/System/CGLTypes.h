@@ -91,6 +91,7 @@ typedef RAPTOR_HANDLE*	LP_RAPTOR_HANDLE;
 #define CGL_ACCUM			    0x00002000
 #define CGL_RENDER_FILTERED	    0x00004000
 #define CGL_RENDER_BUFFER	    0x00008000
+#define CGL_RENDER_VULKAN	    0x00080000
 #define CGL_FLOAT               0x00010002 // float format is only used with rgba
 #define CGL_FLOAT_16			0x00030002
 #define CGL_FLOAT_32			0x00050002

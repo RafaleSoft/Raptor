@@ -192,7 +192,8 @@ bool CRaptorFilteredDisplay::glQueryStatus(CRaptorDisplayConfig &state,unsigned 
     state.caption = filter_cs.caption;
     state.refresh_rate = filter_cs.refresh_rate;
     state.display_mode = filter_cs.display_mode;
-    state.frame_mode = filter_cs.frame_mode;
+    state.status_bar = filter_cs.status_bar;
+	state.draw_logo = filter_cs.draw_logo;
 
     return CRaptorDisplay::glQueryStatus(state,query);
 }
@@ -235,7 +236,6 @@ bool CRaptorFilteredDisplay::glCreateRenderDisplay(void)
 		}
 
 		rda.display_mode = filter_cs.display_mode;
-		rda.frame_mode = CGL_NOSTATUS;
 
 		if ((rda.display_mode & CGL_ANTIALIAS) == CGL_ANTIALIAS)
 		{

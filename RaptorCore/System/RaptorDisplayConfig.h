@@ -24,14 +24,6 @@ public:
 	#define CGL_MINREFRESHRATE			1
 	#define CGL_MAXREFRESHRATE			255
 
-	//!	Frame management
-	//!	These constants are passed to the graphic context factory using attribute.frame_mode. 
-	//! They control the behaviour of the frame window displaying the current display.
-	#define CGL_NOSTATUS		0x0200
-	#define CGL_FULLSCREEN		0x0400
-	#define CGL_SHAREDC			0x0800
-	#define CGL_DRAWLOGO		0x1000
-
 	//	state query mode
 	#define GL_CONFIG_STATE_QUERY		0x1000
 	#define GL_CURRENT_STATE_QUERY		0x0001
@@ -284,14 +276,15 @@ public:
 	int				y;
 	int				width;
 	int				height;
-	string			caption;
+	bool			draw_logo;
+	bool			status_bar;
 	unsigned int	display_mode;
-	unsigned int	frame_mode;
 	struct
 	{
 		unsigned char	fps;
 		bool			sync_to_monitor;
 	} refresh_rate;
+	string			caption;
 
 	//	Current state
 	GL_CURRENT_STATE		currentState;

@@ -80,7 +80,7 @@ BOOL CGLObjectViewerApp::InitInstance()
 	glcs.y = 0;
 	glcs.caption = title.str();
 	glcs.display_mode = CGL_RGBA | CGL_DEPTH | CGL_DOUBLE | CGL_HARDWARE | CGL_ANTIALIAS_16X;
-    glcs.frame_mode = CGL_DRAWLOGO | CGL_NOSTATUS;
+	glcs.draw_logo = true;
     
 	CGLWnd::SetDefaultDisplayConfig(glcs);
 

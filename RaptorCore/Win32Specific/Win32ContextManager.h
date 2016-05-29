@@ -39,10 +39,10 @@ public:
     virtual bool glDestroyWindow(const RAPTOR_HANDLE& wnd);
 
 	//! @see base class
-	virtual RENDERING_CONTEXT_ID glCreateContext(const RAPTOR_HANDLE& device,int displayMode,bool global = false);
+	virtual RENDERING_CONTEXT_ID glCreateContext(const RAPTOR_HANDLE& device,int displayMode);
 
 	//! @see base class
-	virtual RENDERING_CONTEXT_ID glCreateExtendedContext(const RAPTOR_HANDLE& device,int displayMode,bool global = false);
+	virtual RENDERING_CONTEXT_ID glCreateExtendedContext(const RAPTOR_HANDLE& device,int displayMode);
 
 	//! @see base class
 	virtual RENDERING_CONTEXT_ID glGetCurrentContext(void) const { return m_currentContext; };
@@ -104,9 +104,6 @@ private:
 		PAINTSTRUCT			WIN32Paint;
 	    CRaptorExtensions*  pExtensions;
 	} context_t;
-
-	HGLRC					glGlobalRC;
-	HGLRC					glGlobalExtendedRC;
 
 	unsigned int			nbPBuffers;
 #if defined(WGL_ARB_pbuffer)

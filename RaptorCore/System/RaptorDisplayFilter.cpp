@@ -328,7 +328,6 @@ ITextureGenerator*  CRaptorDisplayFilter::glCreateColorSource(void)
     state.width = m_fXfactor * colorInput->getWidth();
     state.height = m_fYfactor * colorInput->getHeight();
     state.display_mode = CGL_RENDER_TEXTURE | CGL_HARDWARE | CGL_RGBA ;
-    state.frame_mode = CGL_NOSTATUS;
 
     CRaptorDisplay* pDisplay = Raptor::glCreateDisplay(state);
     CRenderingProperties *rp = pDisplay->getRenderingProperties();
@@ -360,7 +359,6 @@ CTextureObject*  CRaptorDisplayFilter::glCreateColorOutput(void)
 	CRaptorDisplayConfig state;
 	state.width = m_fXfactor * getColorInput()->getWidth();
 	state.height = m_fYfactor * getColorInput()->getHeight();
-    state.frame_mode = CGL_NOSTATUS;
 	state.display_mode = CGL_HARDWARE | CGL_RGBA | CGL_RENDER_TEXTURE;
 	state.display_mode |= CGL_RENDER_BUFFER;
 

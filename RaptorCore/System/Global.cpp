@@ -184,7 +184,6 @@ bool Global::init(const CRaptorConfig& config)
 #endif
 
 		// Initialises the main create struct for display settings
-		raptorStatus.defaultConfig.frame_mode = 0;
 		raptorStatus.defaultConfig.caption = "Raptor";
 		raptorStatus.defaultConfig.display_mode = GL_RGB;
 		raptorStatus.defaultConfig.height = 480;
@@ -241,7 +240,7 @@ void Global::setDefaultConfig(const CRaptorDisplayConfig& pcs)
 
 	raptorStatus.defaultConfig = pcs;
 
-	raptorStatus.runAsShareware |= ((pcs.frame_mode & CGL_DRAWLOGO) == CGL_DRAWLOGO);
+	raptorStatus.runAsShareware = raptorStatus.runAsShareware || pcs.draw_logo;
 
 	//	validates window position to be fully visible
 	//	if window not fully visible, hardware very slow...

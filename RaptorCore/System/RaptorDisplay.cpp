@@ -375,7 +375,6 @@ bool CRaptorDisplay::importObject(CRaptorIO& io)
 
 	da.caption = "Raptor Server";
 	da.display_mode = CGL_RGBA | CGL_SOFTWARE | CGL_DEPTH | CGL_DOUBLE;
-	da.frame_mode = CGL_NOSTATUS;
 	Global::GetInstance().setDefaultConfig(da);
 
 	return true;

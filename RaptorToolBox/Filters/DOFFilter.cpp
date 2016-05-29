@@ -452,7 +452,6 @@ bool CDOFFilter::glInitFilter(void)
 	state.width = m_fXfactor * getColorInput()->getWidth();
 	state.height = m_fYfactor * getColorInput()->getHeight();
     state.display_mode = CGL_RENDER_TEXTURE | CGL_HARDWARE | CGL_RGBA ;
-    state.frame_mode = CGL_NOSTATUS;
 
 	if (m_fModel == RENDER_BUFFER)
 	{

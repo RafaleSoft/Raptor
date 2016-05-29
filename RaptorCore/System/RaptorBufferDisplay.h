@@ -36,9 +36,6 @@ public:
 	//! see base class
 	virtual void glResize(unsigned int sx,unsigned int sy,unsigned int ox,unsigned int oy);
 
-	//! see base class
-	virtual bool hasSwapControl(void) const { return false; };
-
 	//!	Renders the display, if it has been bound.
 	//! Returns true if rendered without errors, false otherwise.
 	virtual bool glRender(void);

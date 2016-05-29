@@ -139,16 +139,12 @@ void CBumpDisplay::Init()
 	if (p->getId().isSubClassOf(CTextureSet::CTextureSetClassID::GetClassId()))
 		 t = (CTextureSet *)p;
 
-	BackGround *pbg = new BackGround();
-	CPerlinNoise noise = CPerlinNoise(CPerlinNoise::OPS(CTextureFactoryConfig::IImageOP::BUMPMAP_LOADER));
-	noise.setNoiseModel(CPerlinNoise::NOISE3);
-
-
     CTextureObject *tt = f.glCreateTexture( CTextureObject::CGL_COLOR24_ALPHA,
 											CTextureObject::CGL_ALPHA_TRANSPARENT,
 											CTextureObject::CGL_BILINEAR);
-												 
 	f.glResizeTexture(tt,512,512);
+	CPerlinNoise noise = CPerlinNoise(CTextureFactoryConfig::IImageOP::BUMPMAP_LOADER);
+	noise.setNoiseModel(CPerlinNoise::NOISE2);
 	noise.generateMirrorTexture(true);
 /*
 	CTextureObject *tt = f.glCreateVolumeTexture(CTextureObject::CGL_COLOR24_ALPHA,
@@ -171,6 +167,7 @@ void CBumpDisplay::Init()
 	f.glResizeTexture(tt2,512,512);
     noise2.glGenerate(tt2);
     tmu.setDiffuseMap(tt2);
+	BackGround *pbg = new BackGround();
 	pbg->bg = tmu.glBuildSetup();
 
     //

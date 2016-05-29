@@ -100,7 +100,7 @@ int CGLView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		return -1;
 
 	const CRaptorDisplayConfig& pcs = CGLWnd::GetDefaultDisplayConfig();
-	if ((pcs.frame_mode & CGL_NOSTATUS) != CGL_NOSTATUS)
+	if (pcs.status_bar)
 		displayFps = true;
 
 	CClientDC dc(this);

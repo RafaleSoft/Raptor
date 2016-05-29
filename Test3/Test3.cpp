@@ -400,7 +400,6 @@ int _tmain(int argc, _TCHAR* argv[])
 						//CGL_RENDER_FILTERED |
 						//CGL_RENDER_BUFFER | CGL_ANTIALIAS_8X;
 						//CGL_RENDER_BUFFER;
-    glcs.frame_mode = CGL_NOSTATUS;
 	//glcs.refresh_rate.fps = 12;
     RAPTOR_HANDLE wnd = Raptor::glCreateWindow(glcs,pDisplay);
 	pDisplay->glBindDisplay(wnd);

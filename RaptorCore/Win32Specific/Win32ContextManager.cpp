@@ -257,9 +257,6 @@ void CWin32ContextManager::getLastError(const std::string& file,int line) const
 
 CWin32ContextManager::CWin32ContextManager()
 {
-	glGlobalRC = NULL;
-	glGlobalExtendedRC = NULL;
-
 	nbPBuffers = 0;
 	nbContext = 0;
 
@@ -623,13 +620,14 @@ RAPTOR_HANDLE CWin32ContextManager::glCreateWindow(const CRaptorDisplayConfig& c
 			RECT rect2;
 			GetWindowRect(hwnd,&rect);
 			GetClientRect(hwnd,&rect2);
-			if ((pda.frame_mode & CGL_NOSTATUS) == CGL_NOSTATUS)
-				pDisplay->glResize(MAX(1,pda.width),MAX(1,pda.height),0,0);
-			else
+			if (pda.status_bar)
             {
                 int menuHeight = GetSystemMetrics(SM_CYMENU);
 				pDisplay->glResize(MAX(1,pda.width),pda.height+menuHeight,0,menuHeight);
             }
+			else
+				pDisplay->glResize(MAX(1,pda.width),MAX(1,pda.height),0,0);
+
 			if (!pDisplay->glUnBindDisplay())
 				id = -1;
 		}
@@ -668,8 +666,13 @@ bool CWin32ContextManager::glDestroyWindow(const RAPTOR_HANDLE& wnd)
 //	
 //	Standard OpenGL Rendering Context creation method
 //
-CContextManager::RENDERING_CONTEXT_ID CWin32ContextManager::glCreateContext(const RAPTOR_HANDLE& device,int displayMode,bool global)
+CContextManager::RENDERING_CONTEXT_ID CWin32ContextManager::glCreateContext(const RAPTOR_HANDLE& device,int displayMode)
 {
+	if (device.handle == 0)
+	{
+		RAPTOR_ERROR( Global::COpenGLClassID::GetClassId(),"Raptor cannot create a valid context on an Invalid device");
+		return -1;
+	}
 	if (nbContext >= MAX_CONTEXT)
 	{
 		RAPTOR_ERROR( Global::COpenGLClassID::GetClassId(),"Too many Rendering Context created");
@@ -679,7 +682,6 @@ CContextManager::RENDERING_CONTEXT_ID CWin32ContextManager::glCreateContext(cons
     HDC hDC = NULL;
     int pixelformat;
 	
-	HGLRC	defaultGLRC = NULL;
 	HGLRC	glhrc = NULL;
 	DWORD	flags = 0;
 	BYTE	alphabits = 0;
@@ -748,36 +750,27 @@ CContextManager::RENDERING_CONTEXT_ID CWin32ContextManager::glCreateContext(cons
 		return -1; 
 	}
 
-	defaultGLRC = wglCreateContext(hDC);
-	if (!defaultGLRC)
+	glhrc = wglCreateContext(hDC);
+	if (!glhrc)
 	{
 		RAPTOR_FATAL( Global::COpenGLClassID::GetClassId(),"Raptor Context Manager failed to create OpenGL context");
 		return -1;
 	}
 
-	if (global)
-	{
-		if (glGlobalRC == NULL)
-			glGlobalRC = defaultGLRC;
-		glhrc = glGlobalRC;
-	}
-	else
-	{	
-		glhrc = defaultGLRC;
-	}
-
     unsigned int pos = 0;
-	while ((pos < nbContext) && (pContext[pos].OGLContext != NULL))
+	while ((pos < MAX_CONTEXT) && (pContext[pos].OGLContext != NULL))
 		pos++;
 
-    context_t &context = pContext[pos];
+	// pos value is always valid because buffer overflow
+	//	is checked on method entry.
+	context_t &context = pContext[pos];
 	context.OGLContext = glhrc;
 	context.WIN32Window = NULL;
-    context.WIN32Context = NULL;
+	context.WIN32Context = NULL;
     
-    wglMakeCurrent(hDC, glhrc);
-    RENDERING_CONTEXT_ID	oldContext = m_currentContext;
-    m_currentContext = pos;
+	wglMakeCurrent(hDC, glhrc);
+	RENDERING_CONTEXT_ID	oldContext = m_currentContext;
+	m_currentContext = pos;
 
 	PFN_WGL_GET_EXTENSIONS_STRING_ARB_PROC wglGetExtensionsStringARB = (PFN_WGL_GET_EXTENSIONS_STRING_ARB_PROC)wglGetProcAddress("wglGetExtensionsStringARB");
 	std::string extensions = (const char*)glGetString(GL_EXTENSIONS);
@@ -789,7 +782,6 @@ CContextManager::RENDERING_CONTEXT_ID CWin32ContextManager::glCreateContext(cons
 	wglMakeCurrent(hDC,NULL);
 	 
 	nbContext++;
-	
 
     CATCH_WIN32_ERROR
 
@@ -800,7 +792,7 @@ CContextManager::RENDERING_CONTEXT_ID CWin32ContextManager::glCreateContext(cons
 //	
 //	Extended OpenGL Rendering Context creation method
 //
-CContextManager::RENDERING_CONTEXT_ID  CWin32ContextManager::glCreateExtendedContext(const RAPTOR_HANDLE& device,int displayMode,bool global)
+CContextManager::RENDERING_CONTEXT_ID  CWin32ContextManager::glCreateExtendedContext(const RAPTOR_HANDLE& device,int displayMode)
 {
     if (device.handle == 0)
 	{
@@ -814,19 +806,7 @@ CContextManager::RENDERING_CONTEXT_ID  CWin32ContextManager::glCreateExtendedCon
 		return -1;
 	}
 
-	HGLRC defaultGLRC = NULL;
 	HGLRC glhrc = NULL;
-
-    unsigned int pos = 0;
-	while ((pos < nbContext) && (pContext[pos].OGLContext != NULL))
-		pos++;
-
-    context_t &context = pContext[pos];
-	context.OGLContext = NULL;
-	context.WIN32Window = NULL;
-    context.WIN32Context = NULL;
-    context.pExtensions = NULL; 
-	nbContext++;
 		
 	//	Now, we are sure that the rendering context can be created,
 	//	try to create the extended rendering context
@@ -888,8 +868,7 @@ CContextManager::RENDERING_CONTEXT_ID  CWin32ContextManager::glCreateExtendedCon
 		if (( CRaptorExtensions::wglChoosePixelFormatARB(hDC, piAttribIList,NULL,1,&pixelformat,&nNumFormats) == 0 ) || (nNumFormats == 0))
 		{
 			RAPTOR_FATAL( Global::COpenGLClassID::GetClassId(),"Raptor Context Manager failed to choose EXT pixel format");
-			glhrc = defaultGLRC;
-			return -1; 
+			return -1;
 		}
 
 		PIXELFORMATDESCRIPTOR pfd;
@@ -904,18 +883,21 @@ CContextManager::RENDERING_CONTEXT_ID  CWin32ContextManager::glCreateExtendedCon
 		if (!glhrc)
 		{
 			RAPTOR_FATAL( Global::COpenGLClassID::GetClassId(),"Raptor Context Manager failed to create OpenGL EXT context");
-			glhrc = defaultGLRC;
+			return -1;
 		}
-		else if (defaultGLRC)
-			wglDeleteContext(defaultGLRC);
 
-		if (global)
-		{
-			if (glGlobalExtendedRC == NULL)
-				glGlobalExtendedRC = glhrc;
-			else
-				glhrc = glGlobalExtendedRC;
-		}
+		unsigned int pos = 0;
+		while ((pos < MAX_CONTEXT) && (pContext[pos].OGLContext != NULL))
+			pos++;
+
+		// pos value is always valid because buffer overflow
+		//	is checked on method entry.
+		context_t &context = pContext[pos];
+		context.OGLContext = NULL;
+		context.WIN32Window = NULL;
+		context.WIN32Context = NULL;
+		context.pExtensions = NULL; 
+		nbContext++;
 
 		wglMakeCurrent(hDC, glhrc);
 		RENDERING_CONTEXT_ID	oldContext = m_currentContext;
