@@ -4,6 +4,14 @@
 #define __RAPTOR_VKEXT_H__
 
 #include "vk_platform.h"
+
+//!	Provide Windows WSI
+#if defined(_WIN32)
+	#define VK_USE_PLATFORM_WIN32_KHR 1
+#elif defined(LINUX)
+	#define VK_USE_PLATFORM_XLIB_KHR 1
+#endif
+
 #include "vulkan.h"
 
 /*
@@ -16,6 +24,68 @@
 #endif
 
 #if defined(VK_VERSION_1_0)
+
+	#if !defined(DECLARE_VK_win32)
+		#if defined(VK_USE_PLATFORM_WIN32_KHR)
+			#define DECLARE_VK_win32(LINKAGE) \
+				LINKAGE PFN_vkCreateWin32SurfaceKHR	vkCreateWin32SurfaceKHR; \
+				LINKAGE PFN_vkGetPhysicalDeviceWin32PresentationSupportKHR	vkGetPhysicalDeviceWin32PresentationSupportKHR;
+		#else
+			#define DECLARE_VK_win32(LINKAGE)
+		#endif
+	#endif
+
+	#if !defined(DECLARE_VK_xlib)
+		#if defined(VK_USE_PLATFORM_XLIB_KHR)
+			#define DECLARE_VK_xlib(LINKAGE) \
+				LINKAGE PFN_vkCreateXlibSurfaceKHR	vkCreateXlibSurfaceKHR; \
+				LINKAGE PFN_vkGetPhysicalDeviceXlibPresentationSupportKHR	vkGetPhysicalDeviceXlibPresentationSupportKHR;
+		#else
+			#define DECLARE_VK_xlib(LINKAGE)
+		#endif
+	#endif
+
+	#if !defined(DECLARE_VK_KHR_surface)
+		#if defined(VK_KHR_surface)
+			#define DECLARE_VK_KHR_surface(LINKAGE) \
+				LINKAGE PFN_vkDestroySurfaceKHR vkDestroySurfaceKHR; \
+				LINKAGE PFN_vkGetPhysicalDeviceSurfaceSupportKHR vkGetPhysicalDeviceSurfaceSupportKHR; \
+				LINKAGE PFN_vkGetPhysicalDeviceSurfaceCapabilitiesKHR vkGetPhysicalDeviceSurfaceCapabilitiesKHR; \
+				LINKAGE PFN_vkGetPhysicalDeviceSurfaceFormatsKHR vkGetPhysicalDeviceSurfaceFormatsKHR; \
+				LINKAGE PFN_vkGetPhysicalDeviceSurfacePresentModesKHR vkGetPhysicalDeviceSurfacePresentModesKHR;
+		#else
+			#define DECLARE_VK_KHR_surface(LINKAGE)
+		#endif
+	#endif
+
+	#if !defined(DECLARE_VK_KHR_display)
+		#if defined(VK_KHR_display)
+			#define DECLARE_VK_KHR_display(LINKAGE) \
+				LINKAGE PFN_vkGetPhysicalDeviceDisplayPropertiesKHR vkGetPhysicalDeviceDisplayPropertiesKHR; \
+				LINKAGE PFN_vkGetPhysicalDeviceDisplayPlanePropertiesKHR vkGetPhysicalDeviceDisplayPlanePropertiesKHR; \
+				LINKAGE PFN_vkGetDisplayPlaneSupportedDisplaysKHR vkGetDisplayPlaneSupportedDisplaysKHR; \
+				LINKAGE PFN_vkGetDisplayModePropertiesKHR vkGetDisplayModePropertiesKHR; \
+				LINKAGE PFN_vkCreateDisplayModeKHR vkCreateDisplayModeKHR; \
+				LINKAGE PFN_vkGetDisplayPlaneCapabilitiesKHR vkGetDisplayPlaneCapabilitiesKHR; \
+				LINKAGE PFN_vkCreateDisplayPlaneSurfaceKHR vkCreateDisplayPlaneSurfaceKHR;
+		#else
+			#define DECLARE_VK_KHR_display(LINKAGE)
+		#endif
+	#endif
+
+	#if !defined(DECLARE_VK_KHR_swapchain)
+		#if defined(VK_KHR_swapchain)
+			#define DECLARE_VK_KHR_swapchain(LINKAGE) \
+			LINKAGE  PFN_vkCreateSwapchainKHR vkCreateSwapchainKHR; \
+			LINKAGE  PFN_vkDestroySwapchainKHR vkDestroySwapchainKHR; \
+			LINKAGE  PFN_vkGetSwapchainImagesKHR vkGetSwapchainImagesKHR; \
+			LINKAGE  PFN_vkAcquireNextImageKHR vkAcquireNextImageKHR; \
+			LINKAGE  PFN_vkQueuePresentKHR vkQueuePresentKHR;
+		#else
+			#define DECLARE_VK_KHR_swapchain(LINKAGE)
+		#endif
+	#endif
+
 
 	#ifndef DECLARE_VK_core
 	#define DECLARE_VK_core(LINKAGE) \

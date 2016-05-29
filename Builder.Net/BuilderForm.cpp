@@ -190,16 +190,55 @@ BuilderForm::BuilderForm(void)
 				
 				PFN_vkEnumerateInstanceExtensionProperties vkEnumerateInstanceExtensionProperties = 
 					(PFN_vkEnumerateInstanceExtensionProperties)(GetProcAddress(module,"vkEnumerateInstanceExtensionProperties"));
-				uint32_t pPropertyCount = 12;
-				VkExtensionProperties pProperties[12];
-				if (VK_SUCCESS == vkEnumerateInstanceExtensionProperties(NULL,&pPropertyCount,pProperties))
+				uint32_t pPropertyCount = 0;
+				if (VK_SUCCESS == vkEnumerateInstanceExtensionProperties(NULL,&pPropertyCount,NULL))
 				{
+					VkExtensionProperties *pProperties = new VkExtensionProperties[pPropertyCount];
+					vkEnumerateInstanceExtensionProperties(NULL,&pPropertyCount,pProperties);
 					for (uint32_t i=0;i<pPropertyCount;i++)
 					{
 						glextensions += " ";
 						glextensions += pProperties[i].extensionName;
 					}
+					delete [] pProperties;
 				}
+
+				if (VK_SUCCESS == res)
+				{
+					PFN_vkEnumeratePhysicalDevices vkEnumeratePhysicalDevices = 
+						(PFN_vkEnumeratePhysicalDevices)(GetProcAddress(module,"vkEnumeratePhysicalDevices"));
+
+					uint32_t pPhysicalDeviceCount = 0;
+					res = vkEnumeratePhysicalDevices(inst,&pPhysicalDeviceCount,NULL);
+					if ((VK_SUCCESS == res) && (pPhysicalDeviceCount > 0))
+					{
+						VkPhysicalDevice *m_pPhysicalDevices = new VkPhysicalDevice[pPhysicalDeviceCount];
+						res = vkEnumeratePhysicalDevices(inst,&pPhysicalDeviceCount,m_pPhysicalDevices);
+						if (VK_SUCCESS == res)
+						{
+							PFN_vkEnumerateDeviceExtensionProperties vkEnumerateDeviceExtensionProperties = 
+								(PFN_vkEnumerateDeviceExtensionProperties)(GetProcAddress(module,"vkEnumerateDeviceExtensionProperties"));
+							for (uint32_t i=0;i<pPhysicalDeviceCount;i++)
+							{
+								pPropertyCount = 0;
+								res = vkEnumerateDeviceExtensionProperties(m_pPhysicalDevices[i],NULL,&pPropertyCount,NULL);
+								if ((VK_SUCCESS == res) && (pPropertyCount > 0))
+								{
+									VkExtensionProperties* pProperties = new VkExtensionProperties[pPropertyCount];
+									res = vkEnumerateDeviceExtensionProperties(m_pPhysicalDevices[i],NULL,&pPropertyCount,pProperties);
+									for (uint32_t i=0;i<pPropertyCount;i++)
+									{
+										glextensions += " ";
+										glextensions += pProperties[i].extensionName;
+									}
+									delete [] pProperties;
+								}
+							}
+						}
+
+						delete [] m_pPhysicalDevices;
+					}
+				}		
 			
 				PFN_vkDestroyInstance vkDestroyInstance = (PFN_vkDestroyInstance)(GetProcAddress(module,"vkDestroyInstance"));
 				vkDestroyInstance(inst,NULL);

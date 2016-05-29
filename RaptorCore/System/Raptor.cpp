@@ -22,6 +22,9 @@
 #if !defined(AFX_RAPTORRENDERBUFFERDISPLAY_H__AC23F2BD_DAC5_4B9A_9F75_AD9A2CEEAE08__INCLUDED_)
 	#include "RaptorRenderBufferDisplay.h"
 #endif
+#if !defined(AFX_RAPTORVULKANDISPLAY_H__1D39CB77_CA4D_4A8F_90FA_F9C76774CE6F__INCLUDED_)
+	#include "RaptorVulkanDisplay.h"
+#endif
 #if !defined(AFX_3DENGINETASKMANAGER_H__04149C60_C594_4009_A2C9_F852497146A3__INCLUDED_)
     #include "Engine/3DEngineTaskManager.h"
 #endif
@@ -250,6 +253,8 @@ CRaptorDisplay* Raptor::glCreateDisplay(const CRaptorDisplayConfig& pcs)
 		pDisplay = new CRaptorRenderBufferDisplay(pcs);
 	else if ((display_mode & CGL_RENDER_TEXTURE ) == CGL_RENDER_TEXTURE)
 		pDisplay = new CRaptorBufferDisplay(pcs);
+	else if ((display_mode & CGL_RENDER_VULKAN ) == CGL_RENDER_VULKAN)
+		pDisplay = new CRaptorVulkanDisplay(pcs);
 	else
 		pDisplay = new CRaptorScreenDisplay(pcs);
 

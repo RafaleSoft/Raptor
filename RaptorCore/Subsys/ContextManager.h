@@ -55,11 +55,22 @@ public:
 	//! If rdc is properly initialised, it is left unchanged and true is returned.
 	virtual bool validateConfig(CRaptorDisplayConfig& rdc);
 
+
+#if defined(VK_VERSION_1_0)
 	//!	Initialise a global Vulkan instance and pysical devices for
 	//!	further logical devices queries.
 	//! @return false is vulkan library cannot be initialized, true otherwise.
-#if defined(VK_VERSION_1_0)
 	bool vkInitContext(void);
+
+	RENDERING_CONTEXT_ID vkCreateContext(const RAPTOR_HANDLE& device,int displayMode);
+
+	void vkDestroyContext(RENDERING_CONTEXT_ID ctx);
+
+	void vkMakeCurrentContext(const RAPTOR_HANDLE& device,RENDERING_CONTEXT_ID ctx);
+
+	void vkSwapBuffers(RENDERING_CONTEXT_ID ctx);
+
+	void vkSwapVSync(unsigned int framerate);
 #endif
 
 	//!	This method creates a "default' window for Raptor's internal use.
@@ -85,20 +96,19 @@ public:
 	//!	for which the context will be created.
 	//!	@param displayMode : the configuration of the requested display ( @see CRaptorDisplay
 	//!	and all the types in CGLTypes.h )
-	//!	@param global : if true, the context will be 'global', i.e. it will be shared among all Raptor instances.
 	//!    @return : 0 if creation successfull and then GL context is valid, any other value if an error occured.
-	virtual RENDERING_CONTEXT_ID glCreateContext(const RAPTOR_HANDLE& device,int displayMode,bool global = false) = 0;
+	virtual RENDERING_CONTEXT_ID glCreateContext(const RAPTOR_HANDLE& device,int displayMode) = 0;
 
 	//!	Same as above, excepted that the context will be 'extended' : i.e. all openGL
 	//! extended features will be accessible through wglExt.
-	virtual RENDERING_CONTEXT_ID glCreateExtendedContext(const RAPTOR_HANDLE& device,int displayMode,bool global = false) = 0;
+	virtual RENDERING_CONTEXT_ID glCreateExtendedContext(const RAPTOR_HANDLE& device,int displayMode) = 0;
 
 	//! Abstraction for rendering context access.
 	virtual RENDERING_CONTEXT_ID glGetCurrentContext(void) const = 0;
     
     //! Returns the device for the requested rendering context if it exists.
     //! The returned handle is null if ctx is invalid or if no context ctx is not bound to a device.
-    virtual RAPTOR_HANDLE getDevice(RENDERING_CONTEXT_ID ctx) const = 0;
+	virtual RAPTOR_HANDLE getDevice(CContextManager::RENDERING_CONTEXT_ID ctx) const;
 
     //! Returns the context for the requested device if it exists.
     //! The returned handle is null if device is invalid or if no context ctx is not bound to the requested device.
@@ -154,8 +164,33 @@ private:
 	//!	An extensions manager to access Vulkan API.
 #if defined(VK_VERSION_1_0)
 	CRaptorExtensions	*m_pExtensions;
+
 	VkInstance			m_globalInstance;
-	VkPhysicalDevice	*m_pPhysicalDevices;
+
+	unsigned int				m_nbPhysicalDevices;
+	VkPhysicalDevice			*m_pPhysicalDevices;
+	VkPhysicalDeviceProperties	*m_pProperties;
+	VkPhysicalDeviceFeatures	*m_pFeatures;
+
+	//unsigned int		m_nbDevices;
+
+	typedef struct
+	{
+		VkDevice			device;
+		VkCommandPool		commandPool;
+#ifdef VK_KHR_win32_surface
+		VkSurfaceKHR		surface;
+	#ifdef VK_KHR_swapchain
+		VkSwapchainKHR		swapChain;
+	#endif
+		uint32_t			currentImage;
+		VkImage				*pImages;
+#endif
+	} VK_CONTEXT;
+	VK_CONTEXT	*m_pVkContext;
+#endif
+#ifdef VK_KHR_swapchain
+	VkPresentModeKHR	presentMode;
 #endif
 
 	RAPTOR_HANDLE				m_logo;

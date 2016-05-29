@@ -1078,6 +1078,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\RaptorCore\System\RaptorVulkanDisplay.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\..\RaptorCore\System\RenderEntryPoint.cpp"
 					>
 				</File>
@@ -1531,6 +1535,10 @@
 				</File>
 				<File
 					RelativePath="..\..\RaptorCore\System\RaptorScreenDisplay.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\RaptorCore\System\RaptorVulkanDisplay.h"
 					>
 				</File>
 				<File

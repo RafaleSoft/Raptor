@@ -69,6 +69,10 @@ public:
 
 	//!	Vulkan specific extensions.
 	DECLARE_VK_core(DEFAULT_LINKAGE)
+	DECLARE_VK_win32(DEFAULT_LINKAGE)
+	DECLARE_VK_KHR_surface(DEFAULT_LINKAGE)
+	DECLARE_VK_KHR_display(DEFAULT_LINKAGE)
+	DECLARE_VK_KHR_swapchain(DEFAULT_LINKAGE)
 
 	//!	Initialise all extensions on drivers/hardware.
 	void glInitExtensions(void);
