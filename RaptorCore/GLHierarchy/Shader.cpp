@@ -141,67 +141,55 @@ CShader::CShader(const CShader& shader)
 	{
 		glRemoveTextureUnitSetup();
 		if (shader.m_bDeleteTMUSetup)
-		{
 			m_pTMUSetup = new CTextureUnitSetup(*shader.m_pTMUSetup);
-			m_pTMUSetup->registerDestruction(this);
-		}
 		else
 			m_pTMUSetup = shader.m_pTMUSetup;
+		m_pTMUSetup->registerDestruction(this);
 	}
 	if (NULL != shader.m_pVShader)
 	{
 		glRemoveVertexShader();
 		if (shader.m_bDeleteVShader)
-		{
 			m_pVShader = shader.m_pVShader->glClone();
-			m_pVShader->registerDestruction(this);
-		}
 		else
 			m_pVShader = shader.m_pVShader;
+		m_pVShader->registerDestruction(this);
 	}
 	if (NULL != shader.m_pFShader)
 	{
 		glRemoveFragmentShader();
 		if (shader.m_bDeleteFShader)
-		{
 			m_pFShader = shader.m_pFShader->glClone();
-			m_pFShader->registerDestruction(this);
-		}
 		else
 			m_pFShader = shader.m_pFShader;
+		m_pFShader->registerDestruction(this);
 	}
 	if (NULL != shader.m_pVProgram)
 	{
 		glRemoveVertexProgram();
 		if (shader.m_bDeleteVProgram)
-		{
 			m_pVProgram = shader.m_pVProgram->glClone();
-			m_pVProgram->registerDestruction(this);
-		}
 		else
 			m_pVProgram = shader.m_pVProgram;
+		m_pVProgram->registerDestruction(this);
 	}
 	if (NULL != shader.m_pFProgram)
 	{
 		glRemoveFragmentProgram();
 		if (shader.m_bDeleteFProgram)
-		{
 			m_pFProgram = shader.m_pFProgram->glClone();
-			m_pFProgram->registerDestruction(this);
-		}
 		else
 			m_pFProgram = shader.m_pFProgram;
+		m_pFProgram->registerDestruction(this);
 	}
 	if (NULL != shader.m_pGProgram)
 	{
 		glRemoveGeometryProgram();
 		if (shader.m_bDeleteGProgram)
-		{
 			m_pGProgram = shader.m_pGProgram->glClone();
-			m_pGProgram->registerDestruction(this);
-		}
 		else
 			m_pGProgram = shader.m_pGProgram;
+		m_pGProgram->registerDestruction(this);
 	}
 
 	if (0 != shader.m_shaderProgram.handle)
