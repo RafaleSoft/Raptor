@@ -380,7 +380,8 @@ extern "C" GLBENCH_API void Bench(CWnd *parent)
     caption << "Raptor Release GLBench : ";
 	caption << glCS.width << " " << glCS.height;
 	glCS.caption = caption.str();
-	glCS.display_mode = CGL_RGBA | CGL_DEPTH | CGL_DOUBLE | CGL_HARDWARE;
+	glCS.acceleration = CRaptorDisplayConfig::HARDWARE;
+	glCS.display_mode = CGL_RGBA | CGL_DEPTH | CGL_DOUBLE;
 	glCS.refresh_rate.fps = CGL_MAXREFRESHRATE;
 	GLDisplay->GLCreateWindow("OpenGL Context",parent,glCS);
 GLDisplay->glMakeCurrent();

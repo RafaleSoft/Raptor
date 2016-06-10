@@ -76,16 +76,7 @@ CRaptorBufferDisplay::~CRaptorBufferDisplay()
 
 bool CRaptorBufferDisplay::glQueryStatus(CRaptorDisplayConfig &state,unsigned long query) const
 {
-    state.x = cs.x;
-    state.y = cs.y;
-    state.width = cs.width;
-    state.height = cs.height;
-    state.caption = cs.caption;
-    state.refresh_rate = cs.refresh_rate;
-    state.display_mode = cs.display_mode;
-    state.draw_logo = cs.draw_logo;
-	state.status_bar = cs.status_bar;
-
+	state.copyBaseConfig(cs);
     return CRaptorDisplay::glQueryStatus(state,query);
 }
 

@@ -93,16 +93,7 @@ CRaptorScreenDisplay::~CRaptorScreenDisplay()
 
 bool CRaptorScreenDisplay::glQueryStatus(CRaptorDisplayConfig &state,unsigned long query) const
 {
-    state.x = cs.x;
-    state.y = cs.y;
-    state.width = cs.width;
-    state.height = cs.height;
-    state.caption = cs.caption;
-    state.refresh_rate = cs.refresh_rate;
-    state.display_mode = cs.display_mode;
-    state.status_bar = cs.status_bar;
-	state.draw_logo = cs.draw_logo;
-
+	state.copyBaseConfig(cs);
     return CRaptorDisplay::glQueryStatus(state,query);
 }
 
@@ -221,13 +212,13 @@ bool CRaptorScreenDisplay::glBindDisplay(const RAPTOR_HANDLE& device)
 			if (cs.refresh_rate.sync_to_monitor)
 				m_framerate = 0;
 
-			if ((cs.display_mode & CGL_SOFTWARE) == CGL_SOFTWARE)
+			if (CRaptorDisplayConfig::SOFTWARE == cs.acceleration)
 			{
-				m_context = CContextManager::GetInstance()->glCreateContext(device, cs.display_mode);
+				m_context = CContextManager::GetInstance()->glCreateContext(device, cs);
 
-				if (cs.display_mode & CGL_OVERLAY)
+				if (cs.overlay)
 				{
-					int res2 = CContextManager::GetInstance()->glCreateContext(device, cs.display_mode);
+					int res2 = CContextManager::GetInstance()->glCreateContext(device, cs);
 					if (res2 == -1)
 					{
 						Raptor::GetErrorManager()->generateRaptorError(	CRaptorDisplay::CRaptorDisplayClassID::GetClassId(),
@@ -239,7 +230,7 @@ bool CRaptorScreenDisplay::glBindDisplay(const RAPTOR_HANDLE& device)
 			else
 			{
 				// create the extended rendering context if possible
-				m_context = CContextManager::GetInstance()->glCreateExtendedContext(device, cs.display_mode);
+				m_context = CContextManager::GetInstance()->glCreateExtendedContext(device, cs);
 				if (m_context == -1)
 				{
 					Raptor::GetErrorManager()->generateRaptorError(	CRaptorDisplay::CRaptorDisplayClassID::GetClassId(),

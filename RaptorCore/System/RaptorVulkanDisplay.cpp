@@ -141,7 +141,7 @@ bool CRaptorVulkanDisplay::glBindDisplay(const RAPTOR_HANDLE& device)
 				m_framerate = 0;
 
 			manager->vkSwapVSync(m_framerate);
-			m_context = manager->vkCreateContext(device,0);
+			m_context = manager->vkCreateContext(device,cs);
 
 			RAPTOR_HANDLE device = manager->getDevice(m_context);
 

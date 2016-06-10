@@ -404,7 +404,8 @@ bool CContextManager::vkInitContext(void)
 	return (VK_SUCCESS == res);
 }
 
-CContextManager::RENDERING_CONTEXT_ID CContextManager::vkCreateContext(const RAPTOR_HANDLE& handle,int displayMode)
+CContextManager::RENDERING_CONTEXT_ID CContextManager::vkCreateContext(const RAPTOR_HANDLE& handle,
+																	   const CRaptorDisplayConfig& config)
 {
 	if (m_nbPhysicalDevices < 1)
 		return -1;

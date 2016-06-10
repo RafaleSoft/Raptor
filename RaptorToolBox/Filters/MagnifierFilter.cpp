@@ -366,7 +366,8 @@ bool CMagnifierFilter::glInitFilter(void)
     CRaptorDisplayConfig state;
     state.width = m_fXfactor * colorInput->getWidth();
     state.height = m_fYfactor * colorInput->getHeight();
-    state.display_mode = CGL_RENDER_TEXTURE | CGL_HARDWARE | CGL_RGBA ;
+	state.acceleration = CRaptorDisplayConfig::HARDWARE;
+    state.display_mode = CGL_RENDER_TEXTURE | CGL_RGBA ;
 
 	if (m_fModel == RENDER_BUFFER)
 	{

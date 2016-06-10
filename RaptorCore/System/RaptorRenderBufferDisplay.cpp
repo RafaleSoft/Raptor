@@ -249,16 +249,7 @@ bool CRaptorRenderBufferDisplay::glDetachBuffers()
 
 bool CRaptorRenderBufferDisplay::glQueryStatus(CRaptorDisplayConfig &state,unsigned long query) const
 {
-    state.x = cs.x;
-    state.y = cs.y;
-    state.width = cs.width;
-    state.height = cs.height;
-    state.caption = cs.caption;
-    state.refresh_rate = cs.refresh_rate;
-    state.display_mode = cs.display_mode;
-    state.draw_logo = cs.draw_logo;
-	state.status_bar = cs.status_bar;
-
+	state.copyBaseConfig(cs);
     return CRaptorDisplay::glQueryStatus(state,query);
 }
 
@@ -380,7 +371,7 @@ bool CRaptorRenderBufferDisplay::createFrameBuffer(void)
 			else if ((cs.display_mode & CGL_DEPTH_32) == CGL_DEPTH_32)
 				internalFormat = GL_DEPTH_COMPONENT32_ARB;
 #if defined(GL_EXT_packed_depth_stencil)
-			if ((cs.display_mode & CGL_STENCIL) == CGL_STENCIL)
+			if (cs.stencil)
 				internalFormat = GL_DEPTH24_STENCIL8_EXT;
 #endif
 
@@ -409,8 +400,7 @@ bool CRaptorRenderBufferDisplay::createFrameBuffer(void)
 		CATCH_GL_ERROR
 
 		// - create stencil render buffers
-		if (((cs.display_mode & CGL_STENCIL) == CGL_STENCIL) && 
-			((cs.display_mode & CGL_RENDER_DEPTHTEXTURE) != CGL_RENDER_DEPTHTEXTURE))
+		if ((cs.stencil) && ((cs.display_mode & CGL_RENDER_DEPTHTEXTURE) != CGL_RENDER_DEPTHTEXTURE))
 		{
 #if defined(GL_EXT_packed_depth_stencil)
 			if (((cs.display_mode & CGL_DEPTH_32) != 0) &&

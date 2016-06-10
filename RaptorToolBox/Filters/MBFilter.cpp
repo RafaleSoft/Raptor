@@ -215,7 +215,8 @@ bool CMBFilter::glInitFilter(void)
     CRaptorDisplayConfig state;
     state.width = colorInput->getWidth();
     state.height = colorInput->getHeight();
-    state.display_mode = CGL_RENDER_TEXTURE | CGL_HARDWARE | CGL_RGBA ;
+	state.acceleration = CRaptorDisplayConfig::HARDWARE;
+    state.display_mode = CGL_RENDER_TEXTURE | CGL_RGBA ;
 
 	CAccumulator *accumulator = new CAccumulator;
 

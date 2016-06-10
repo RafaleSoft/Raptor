@@ -46,6 +46,9 @@
 #if !defined(AFX_RAPTOREXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
 	#include "System/RaptorExtensions.h"
 #endif
+#if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
+    #include "RaptorErrorManager.h"
+#endif
 
 
 RAPTOR_NAMESPACE
@@ -141,6 +144,16 @@ int Raptor::glPurgeRaptor(bool count)
 				obj = CPersistence::Object((void*&)pos);
 				if (obj!=NULL)
 				{
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+		stringstream str;
+		str << "Deleting: ";
+		str << obj << " - ";
+		str << obj->getName();
+		str << ends;
+        Raptor::GetErrorManager()->generateRaptorError(	Global::COpenGLClassID::GetClassId(),
+														CRaptorErrorManager::RAPTOR_NO_ERROR,
+														str.str().c_str());
+#endif
 					pos = NULL;
 					delete obj;
 					//	We need to restart from first object
@@ -323,7 +336,8 @@ bool Raptor::glInitRaptor(const CRaptorConfig& config)
 	glCS.width = -1;
 	glCS.height = -1;
 	glCS.caption = "Raptor Default Display";
-	glCS.display_mode = CGL_RGBA  | CGL_GENERIC;
+	glCS.display_mode = CGL_RGBA;
+	glCS.acceleration = CRaptorDisplayConfig::GENERIC;
 	glCS.refresh_rate.fps = CGL_MAXREFRESHRATE;
 
     CRaptorDisplay *pDisplay = NULL;

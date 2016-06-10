@@ -165,7 +165,8 @@ void CShadowMap::glInitRenderBuffer(unsigned int width,unsigned int height)
 	CRaptorDisplayConfig cs;
 	cs.width = width;
 	cs.height = height;
-	cs.display_mode = CGL_RGBA | CGL_HARDWARE | CGL_RENDER_BUFFER | CGL_RENDER_TEXTURE | CGL_DEPTH | CGL_RENDER_DEPTHTEXTURE;
+	cs.display_mode = CGL_RGBA | CGL_RENDER_BUFFER | CGL_RENDER_TEXTURE | CGL_DEPTH | CGL_RENDER_DEPTHTEXTURE;
+	cs.acceleration = CRaptorDisplayConfig::HARDWARE;
     cs.caption = "SHADOW_MAP_DISPLAY";
 
 	m_pShadowMap = Raptor::glCreateDisplay(cs);
@@ -227,7 +228,8 @@ void CShadowMap::glInitPixelBuffer(unsigned int width,unsigned int height)
 	CRaptorDisplayConfig cs;
 	cs.width = width;
 	cs.height = height;
-	cs.display_mode = CGL_DEPTH | CGL_HARDWARE | CGL_RENDER_DEPTHTEXTURE;
+	cs.display_mode = CGL_DEPTH | CGL_RENDER_DEPTHTEXTURE;
+	cs.acceleration = CRaptorDisplayConfig::HARDWARE;
     cs.caption = "SHADOW_MAP_DISPLAY";
 
 	m_pShadowMap = Raptor::glCreateDisplay(cs);

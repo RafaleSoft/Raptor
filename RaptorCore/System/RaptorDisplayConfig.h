@@ -251,6 +251,12 @@ public:
 		CColor::RGBA	accumClearValue;
 	} GL_FRAME_STATE;
 
+	typedef enum
+	{
+		SOFTWARE,
+		GENERIC,
+		HARDWARE,
+	} GL_ACCELERATION;
 
 public:
 	CRaptorDisplayConfig();
@@ -269,6 +275,9 @@ public:
 	//! except the basic config which can only be set at creation.
 	bool glApplyConfig(unsigned long query) const;
 
+	//!	Copy base attributes and leaves OpenGL states unchanged.
+	//!	A whole copy is simply by using default copy operator.
+	void copyBaseConfig(const CRaptorDisplayConfig& config);
 
 
 public:
@@ -279,6 +288,9 @@ public:
 	bool			draw_logo;
 	bool			status_bar;
 	unsigned int	display_mode;
+	GL_ACCELERATION	acceleration;
+	bool			overlay;
+	bool			stencil;
 	struct
 	{
 		unsigned char	fps;

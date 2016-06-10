@@ -30,8 +30,11 @@ CRaptorDisplayConfig::CRaptorDisplayConfig()
 	display_mode = CGL_RGBA | CGL_DEPTH | CGL_DOUBLE;
 	draw_logo = false;
 	status_bar = false;
+	acceleration = GENERIC;
+	overlay = false;
+	stencil = false;
 
-    hintState.perspectiveCorrection = GL_NICEST;    // specific for nice Raptor display
+    hintState.perspectiveCorrection = GL_NICEST;
     hintState.fog = GL_DONT_CARE;
     hintState.lineSmooth = GL_DONT_CARE;
     hintState.pointSmooth = GL_DONT_CARE;
@@ -125,6 +128,22 @@ CRaptorDisplayConfig::CRaptorDisplayConfig()
 CRaptorDisplayConfig::~CRaptorDisplayConfig()
 {
 
+}
+
+void CRaptorDisplayConfig::copyBaseConfig(const CRaptorDisplayConfig& config)
+{
+	x = config.x;
+    y = config.y;
+    width = config.width;
+    height = config.height;
+    caption = config.caption;
+    refresh_rate = config.refresh_rate;
+    display_mode = config.display_mode;
+    draw_logo = config.draw_logo;
+	status_bar = config.status_bar;
+	acceleration = config.acceleration;
+	overlay = config.overlay;
+	stencil = config.stencil;
 }
 
 bool CRaptorDisplayConfig::glQueryConfig(unsigned long query)

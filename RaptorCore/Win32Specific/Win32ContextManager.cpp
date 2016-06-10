@@ -33,17 +33,19 @@ static const int MAX_CONTEXT = 16;
 
 //////////////////////////////////////////////////////////////////////
 //
-unsigned int defineAcceleration(unsigned int index,int mode,int *attribs)
+unsigned int defineAcceleration(unsigned int index,
+								CRaptorDisplayConfig::GL_ACCELERATION acceleration,
+								int *attribs)
 {
     unsigned int attribIndex = index;
 #if defined(WGL_ARB_pixel_format)
     attribs[attribIndex++] = WGL_ACCELERATION_ARB;
 
-    if ((mode & 0x0700) == CGL_SOFTWARE)  
+	if (CRaptorDisplayConfig::SOFTWARE == acceleration)
         attribs[attribIndex++] = WGL_NO_ACCELERATION_ARB;
-    else if ((mode & 0x0700) == CGL_GENERIC) 
+    else if (CRaptorDisplayConfig::GENERIC == acceleration)
         attribs[attribIndex++] = WGL_GENERIC_ACCELERATION_ARB;
-    else if ((mode & 0x0700) == CGL_HARDWARE) 
+    else if (CRaptorDisplayConfig::HARDWARE == acceleration) 
         attribs[attribIndex++] = WGL_FULL_ACCELERATION_ARB;
     else attribs[attribIndex++] = WGL_FULL_ACCELERATION_ARB;
 
@@ -159,11 +161,11 @@ unsigned int defineDepthBuffer(unsigned int index,int mode,int *attribs)
     return attribIndex;
 }
 
-unsigned int defineStencilBuffer(unsigned int index,int mode,int *attribs)
+unsigned int defineStencilBuffer(unsigned int index,bool stencil,int *attribs)
 {
     unsigned int attribIndex = index;
 #if defined(WGL_ARB_pixel_format)
-    if (mode & CGL_STENCIL)
+    if (stencil)
     {
 	    attribs[attribIndex++] = WGL_STENCIL_BITS_ARB;
 	    attribs[attribIndex++] = 8;
@@ -592,9 +594,9 @@ RAPTOR_HANDLE CWin32ContextManager::glCreateWindow(const CRaptorDisplayConfig& c
     device.hClass = DEVICE_CONTEXT_CLASS;
 
     RENDERING_CONTEXT_ID id;
-    if ((pda.display_mode & CGL_GENERIC) == CGL_GENERIC)
+	if (CRaptorDisplayConfig::GENERIC == pda.acceleration)
     {
-	    id = glCreateContext(device,pda.display_mode);
+	    id = glCreateContext(device,pda);
         pDisplay = NULL;
         if (id > -1)
 	    {
@@ -666,7 +668,8 @@ bool CWin32ContextManager::glDestroyWindow(const RAPTOR_HANDLE& wnd)
 //	
 //	Standard OpenGL Rendering Context creation method
 //
-CContextManager::RENDERING_CONTEXT_ID CWin32ContextManager::glCreateContext(const RAPTOR_HANDLE& device,int displayMode)
+CContextManager::RENDERING_CONTEXT_ID CWin32ContextManager::glCreateContext(const RAPTOR_HANDLE& device,
+																			const CRaptorDisplayConfig& config)
 {
 	if (device.handle == 0)
 	{
@@ -703,7 +706,7 @@ CContextManager::RENDERING_CONTEXT_ID CWin32ContextManager::glCreateContext(cons
 	if (0 == hDC)
 		return -1;
 	
-	int m_mode = displayMode;
+	int m_mode = config.display_mode;
 
 	if (m_mode & CGL_DOUBLE) flags = flags|PFD_DOUBLEBUFFER;
 	else flags = flags|PFD_DOUBLEBUFFER_DONTCARE;
@@ -714,8 +717,8 @@ CContextManager::RENDERING_CONTEXT_ID CWin32ContextManager::glCreateContext(cons
 	else flags = flags|PFD_DEPTH_DONTCARE;
 
 	if (m_mode & CGL_RGBA) alphabits=8;
-	if (m_mode & CGL_STENCIL) stencilbits=8;
-	if (m_mode & CGL_OVERLAY) overlaybits = 1;
+	if (config.stencil) stencilbits=8;
+	if (config.overlay) overlaybits = 1;
 	if (m_mode & CGL_ACCUM) accumbits = 64;
 
 	PIXELFORMATDESCRIPTOR
@@ -792,7 +795,8 @@ CContextManager::RENDERING_CONTEXT_ID CWin32ContextManager::glCreateContext(cons
 //	
 //	Extended OpenGL Rendering Context creation method
 //
-CContextManager::RENDERING_CONTEXT_ID  CWin32ContextManager::glCreateExtendedContext(const RAPTOR_HANDLE& device,int displayMode)
+CContextManager::RENDERING_CONTEXT_ID  CWin32ContextManager::glCreateExtendedContext(const RAPTOR_HANDLE& device,
+																					 const CRaptorDisplayConfig& config)
 {
     if (device.handle == 0)
 	{
@@ -841,26 +845,26 @@ CContextManager::RENDERING_CONTEXT_ID  CWin32ContextManager::glCreateExtendedCon
 
 		//	All this stuff .... is for OpenGL of course !!!
 		//	OGL acceleration
-        attribIndex = defineAcceleration(attribIndex, displayMode, piAttribIList);
+		attribIndex = defineAcceleration(attribIndex, config.acceleration, piAttribIList);
 
 		//	Draw with double buffer
-        attribIndex = defineDoubleBuffer(attribIndex,displayMode, piAttribIList);
+        attribIndex = defineDoubleBuffer(attribIndex,config.display_mode, piAttribIList);
 
 		//	RGB or RGBA are the only supported modes, because they are fun.
 		//	Paletted mode are so boring and slow and old fashioned ...
-        attribIndex = definePixels(attribIndex, displayMode, piAttribIList);
+        attribIndex = definePixels(attribIndex, config.display_mode, piAttribIList);
 
 		//	Use depth if requested
-        attribIndex = defineDepthBuffer(attribIndex, displayMode, piAttribIList);
+        attribIndex = defineDepthBuffer(attribIndex, config.display_mode, piAttribIList);
 		
 		//	Use stencil if requested
-        attribIndex = defineStencilBuffer(attribIndex, displayMode, piAttribIList);
+        attribIndex = defineStencilBuffer(attribIndex, config.stencil, piAttribIList);
 
 		//	Use accum buffer if requested
-        attribIndex = defineAccumBuffer(attribIndex, displayMode, piAttribIList);
+        attribIndex = defineAccumBuffer(attribIndex, config.display_mode, piAttribIList);
 
 		//	Use antialiasing if requested
-        attribIndex = defineSampleBuffer(attribIndex, displayMode, piAttribIList);
+        attribIndex = defineSampleBuffer(attribIndex, config.display_mode, piAttribIList);
 
 		//	Terminate the list and continue with the settings
 		UINT nNumFormats = 0;
@@ -968,7 +972,7 @@ CContextManager::RENDERING_CONTEXT_ID  CWin32ContextManager::glCreateExtendedCon
 
 		//	All this stuff .... is for OpenGL of course !!!
 		//	OGL acceleration
-        attribIndex  = defineAcceleration(attribIndex, pcs.display_mode, piAttribIList);
+        attribIndex  = defineAcceleration(attribIndex, pcs.acceleration, piAttribIList);
 		
 		// P Buffer do not support double buffering. Maybe future versions will do so.
 		//	Draw with double buffer

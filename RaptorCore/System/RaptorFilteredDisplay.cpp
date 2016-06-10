@@ -72,8 +72,8 @@ CRaptorFilteredDisplay::CRaptorFilteredDisplay(const CRaptorDisplayConfig& pcs)
     filter_cs = pcs;
     //  float pixels are not supported in a render to window context :-(
     cs.display_mode = (filter_cs.display_mode & (CGL_RGB|CGL_RGBA)) |
-                      (filter_cs.display_mode & CGL_DOUBLE) |
-                      (filter_cs.display_mode & (CGL_SOFTWARE|CGL_GENERIC|CGL_HARDWARE));
+                      (filter_cs.display_mode & CGL_DOUBLE);
+	cs.acceleration = filter_cs.acceleration;
 
     //  Impose texture rendering and single buffer. Disable multisample rendering
     if ((filter_cs.display_mode & CGL_RENDER_TEXTURE) != CGL_RENDER_TEXTURE)
@@ -101,7 +101,7 @@ CRaptorFilteredDisplay::CRaptorFilteredDisplay(const CRaptorDisplayConfig& pcs)
 	//	nVidia does not support separate Depth + Stencil framebuffers, except
 	//	in combination with EXT_packed_depth_stencil or pixel buffers
 #if !defined(GL_EXT_packed_depth_stencil)
-	if (((filter_cs.display_mode & CGL_STENCIL) == CGL_STENCIL) &&
+	if ((filter_cs.stencil) &&
 		((filter_cs.display_mode & CGL_DEPTH) == CGL_DEPTH) &&
 		((filter_cs.display_mode & CGL_RENDER_BUFFER) == CGL_RENDER_BUFFER))
 		filter_cs.display_mode  &= ~CGL_RENDER_BUFFER;
@@ -185,16 +185,7 @@ void CRaptorFilteredDisplay::unLink(const CPersistence* obj)
 
 bool CRaptorFilteredDisplay::glQueryStatus(CRaptorDisplayConfig &state,unsigned long query) const
 {
-    state.x = filter_cs.x;
-    state.y = filter_cs.y;
-    state.width = filter_cs.width;
-    state.height = filter_cs.height;
-    state.caption = filter_cs.caption;
-    state.refresh_rate = filter_cs.refresh_rate;
-    state.display_mode = filter_cs.display_mode;
-    state.status_bar = filter_cs.status_bar;
-	state.draw_logo = filter_cs.draw_logo;
-
+	state.copyBaseConfig(filter_cs);
     return CRaptorDisplay::glQueryStatus(state,query);
 }
 
@@ -280,7 +271,7 @@ bool CRaptorFilteredDisplay::glCreateRenderDisplay(void)
 			//!	interpolators will use a lower precision ( 8 bits )
 			//!	Bilinear filtering is necessary only for PCF shadow maps
 #if defined(GL_EXT_packed_depth_stencil)
-			if (((filter_cs.display_mode & CGL_STENCIL) == CGL_STENCIL) &&
+			if ((filter_cs.stencil) &&
 				((filter_cs.display_mode & CGL_DEPTH) == CGL_DEPTH))
 				T = f.glCreateTexture(	CTextureObject::CGL_DEPTH24_STENCIL8,
 										CTextureObject::CGL_OPAQUE,

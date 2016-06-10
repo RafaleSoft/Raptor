@@ -392,13 +392,13 @@ int _tmain(int argc, _TCHAR* argv[])
 	glcs.x = 700;
 	glcs.y = 20;
 	glcs.caption = "Raptor Compute";
+	glcs.acceleration = CRaptorDisplayConfig::HARDWARE;
+	glcs.stencil = true;
 	glcs.display_mode = CGL_RGBA | //CGL_FLOAT | 
 						CGL_DEPTH | 
-						CGL_DOUBLE | 
-						CGL_STENCIL |
-						CGL_HARDWARE;// | 
+						CGL_DOUBLE;
 						//CGL_RENDER_FILTERED |
-						//CGL_RENDER_BUFFER | CGL_ANTIALIAS_8X;
+						//CGL_ANTIALIAS_8X |
 						//CGL_RENDER_BUFFER;
 	//glcs.refresh_rate.fps = 12;
     RAPTOR_HANDLE wnd = Raptor::glCreateWindow(glcs,pDisplay);

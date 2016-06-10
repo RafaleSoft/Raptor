@@ -33,16 +33,20 @@ public:
 	virtual bool validateConfig(CRaptorDisplayConfig& rdc);
 
 	//! @see base class
-	virtual RAPTOR_HANDLE glCreateWindow(const CRaptorDisplayConfig &pcs,CRaptorDisplay *&pDisplay,RENDERING_CONTEXT_ID &ctx);
+	virtual RAPTOR_HANDLE glCreateWindow(	const CRaptorDisplayConfig &pcs,
+											CRaptorDisplay *&pDisplay,
+											RENDERING_CONTEXT_ID &ctx);
 
     //! @see base class
     virtual bool glDestroyWindow(const RAPTOR_HANDLE& wnd);
 
 	//! @see base class
-	virtual RENDERING_CONTEXT_ID glCreateContext(const RAPTOR_HANDLE& device,int displayMode);
+	virtual RENDERING_CONTEXT_ID glCreateContext(	const RAPTOR_HANDLE& device,
+													const CRaptorDisplayConfig& config);
 
 	//! @see base class
-	virtual RENDERING_CONTEXT_ID glCreateExtendedContext(const RAPTOR_HANDLE& device,int displayMode);
+	virtual RENDERING_CONTEXT_ID glCreateExtendedContext(	const RAPTOR_HANDLE& device,
+															const CRaptorDisplayConfig& config);
 
 	//! @see base class
 	virtual RENDERING_CONTEXT_ID glGetCurrentContext(void) const { return m_currentContext; };

@@ -62,7 +62,8 @@ public:
 	//! @return false is vulkan library cannot be initialized, true otherwise.
 	bool vkInitContext(void);
 
-	RENDERING_CONTEXT_ID vkCreateContext(const RAPTOR_HANDLE& device,int displayMode);
+	RENDERING_CONTEXT_ID vkCreateContext(	const RAPTOR_HANDLE& device,
+											const CRaptorDisplayConfig& config);
 
 	void vkDestroyContext(RENDERING_CONTEXT_ID ctx);
 
@@ -76,17 +77,19 @@ public:
 	//!	This method creates a "default' window for Raptor's internal use.
 	//!	It can also be used when the GUI API is used, for example
 	//! with full screen applications. This can help to minimise the size and dependencies of application.
-    //! Rq : if display_mode of attributes pcs contains CGL_GENERIC, a generic GL context will be created.
+    //! Rq : if pcs.acceleration is GENERIC, a generic GL context will be created.
     //! This kind of context are limited with regard to available extensions, but Raptor use it to create the very
     //! first GL context, which is necessary to load full driver extensions subsequently. User might never 
     //! need to specify a generic context for the window except on limited hardwares.
-    //! Finally, in case of requesting a CGL_GENERIC display_mode, the RENDERING_CONTEXT_ID is returned
+    //! Finally, in case of requesting a GENERIC acceleration, the RENDERING_CONTEXT_ID is returned
     //! in the third parameter. Otherwise, the parameter is left unmodified.
     //! @param pcs : a display configuration for which a window will be created.
-    //! @param pDisplay : a reference to a pointer that receive the display created for the window, or NULL if pcs contains CGL_GENERIC.
-    //! @param ctx : a reference to a variable what will receive the context id if pcs does not contain CGL_GENERIC
+    //! @param pDisplay : a reference to a pointer that receive the display created for the window, or NULL if pcs.acceleration is GENERIC.
+    //! @param ctx : a reference to a variable what will receive the context id if pcs.acceletation is not GENERIC
     //! @return : a handle to the window that can be used to bind the display for rendering.
-	virtual RAPTOR_HANDLE glCreateWindow(const CRaptorDisplayConfig &pcs,CRaptorDisplay *&pDisplay,RENDERING_CONTEXT_ID &ctx) = 0;
+	virtual RAPTOR_HANDLE glCreateWindow(	const CRaptorDisplayConfig &pcs,
+											CRaptorDisplay *&pDisplay,
+											RENDERING_CONTEXT_ID &ctx) = 0;
 
     //! Destroy a window created using the method here above.
     virtual bool glDestroyWindow(const RAPTOR_HANDLE& wnd) = 0;
@@ -97,11 +100,13 @@ public:
 	//!	@param displayMode : the configuration of the requested display ( @see CRaptorDisplay
 	//!	and all the types in CGLTypes.h )
 	//!    @return : 0 if creation successfull and then GL context is valid, any other value if an error occured.
-	virtual RENDERING_CONTEXT_ID glCreateContext(const RAPTOR_HANDLE& device,int displayMode) = 0;
+	virtual RENDERING_CONTEXT_ID glCreateContext(	const RAPTOR_HANDLE& device,
+													const CRaptorDisplayConfig& config) = 0;
 
 	//!	Same as above, excepted that the context will be 'extended' : i.e. all openGL
 	//! extended features will be accessible through wglExt.
-	virtual RENDERING_CONTEXT_ID glCreateExtendedContext(const RAPTOR_HANDLE& device,int displayMode) = 0;
+	virtual RENDERING_CONTEXT_ID glCreateExtendedContext(	const RAPTOR_HANDLE& device,
+															const CRaptorDisplayConfig& config) = 0;
 
 	//! Abstraction for rendering context access.
 	virtual RENDERING_CONTEXT_ID glGetCurrentContext(void) const = 0;

@@ -104,7 +104,8 @@ d->glUnBindDisplay();
 	glcs.x = 0;
 	glcs.y = 0;
 	glcs.caption = title;
-	glcs.display_mode = CGL_RGBA | CGL_DEPTH | CGL_DOUBLE | CGL_HARDWARE;
+	glcs.acceleration = CRaptorDisplayConfig::HARDWARE;
+	glcs.display_mode = CGL_RGBA | CGL_DEPTH | CGL_DOUBLE;
 	glcs.draw_logo = true;
 
 	m_pDisplay = Raptor::glCreateDisplay(glcs);

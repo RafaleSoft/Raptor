@@ -564,7 +564,8 @@ public:
 		attrs.height = TABLE_SIZE;
 		attrs.caption = "texture waves";
 		attrs.refresh_rate;
-		attrs.display_mode = CGL_RGBA | CGL_HARDWARE | CGL_RENDER_TEXTURE;
+		attrs.acceleration = CRaptorDisplayConfig::HARDWARE;
+		attrs.display_mode = CGL_RGBA | CGL_RENDER_TEXTURE;
 
 		pBuffer = Raptor::glCreateDisplay(attrs);
 		RAPTOR_HANDLE handle;

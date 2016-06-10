@@ -102,7 +102,8 @@ BOOL CInitDialog::OnInitDialog()
 		glCS.x = 0;
 		glCS.y = 0;
 		glCS.caption = "Raptor Release test";
-		glCS.display_mode = CGL_RGBA | CGL_DEPTH | CGL_DOUBLE | CGL_STENCIL;
+		glCS.stencil = true;
+		glCS.display_mode = CGL_RGBA | CGL_DEPTH | CGL_DOUBLE;
 		glCS.refresh_rate.fps = 75;
 		Context.GLCreateWindow("OpenGL Context",this,glCS);
 		Context.glMakeCurrent();
