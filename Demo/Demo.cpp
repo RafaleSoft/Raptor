@@ -32,13 +32,13 @@ int main(int argc, char* argv[])
 	glcs.y = 0;
 	glcs.caption = "Raptor Demo";
 	glcs.acceleration = CRaptorDisplayConfig::HARDWARE;
+	glcs.antialias = CRaptorDisplayConfig::ANTIALIAS_4X;
 	glcs.stencil = true;
     glcs.display_mode = CGL_FLOAT_16 |//*/ CGL_RGBA | 
 						CGL_DEPTH | 
 						CGL_DOUBLE_SWAPEXCHANGE | 
 						CGL_RENDER_FILTERED |
-						CGL_RENDER_BUFFER |
-						CGL_ANTIALIAS_4X;
+						CGL_RENDER_BUFFER;
 	glcs.draw_logo = true;
 	glcs.lightingState.lightModelSeparateSpecular = true;
 

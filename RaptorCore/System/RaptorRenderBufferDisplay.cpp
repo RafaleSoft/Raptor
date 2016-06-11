@@ -263,8 +263,8 @@ bool CRaptorRenderBufferDisplay::createFrameBuffer(void)
 
 	GLsizei nbSamples = 1;
 #if defined(GL_EXT_framebuffer_multisample)
-	if ((cs.display_mode & CGL_ANTIALIAS) == CGL_ANTIALIAS)
-		nbSamples = (cs.display_mode >> 28) + 1;
+	if (CRaptorDisplayConfig::ANTIALIAS_NONE != cs.antialias)
+		nbSamples = cs.getNbSamples();
 #endif
 
 	const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();

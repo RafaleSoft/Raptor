@@ -284,7 +284,7 @@ CTextureObject* CRaptorDisplayFilter::getColorOutput(void)
 	else if (m_pPreviousFilter != NULL)
 		return m_pPreviousFilter->getColorOutput();
 	else
-		return NULL;
+		return colorInput;
 }
 
 void CRaptorDisplayFilter::setColorInput(CTextureObject* pInput)

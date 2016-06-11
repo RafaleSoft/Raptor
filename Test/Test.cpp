@@ -46,11 +46,11 @@ int main(int argc, char* argv[])
 	glcs.y = 0;
 	glcs.caption = title.str();
 	glcs.acceleration = CRaptorDisplayConfig::HARDWARE;
+	glcs.antialias = CRaptorDisplayConfig::ANTIALIAS_4X;
 	glcs.stencil = true;
 	glcs.display_mode = CGL_FLOAT_16 |
 						CGL_DEPTH |
 						CGL_DOUBLE |
-						CGL_ANTIALIAS_4X |
 						CGL_RENDER_FILTERED |
 						CGL_RENDER_BUFFER;
 	//glcs.refresh_rate.sync_to_monitor = true;

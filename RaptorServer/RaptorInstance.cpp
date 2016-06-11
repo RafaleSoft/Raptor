@@ -417,7 +417,6 @@ bool CRaptorInstance::executeRequest(request &r)
 		glcs.display_mode = CGL_RGBA | 
 							CGL_DEPTH;
 		glcs.display_mode |= CGL_RENDER_BUFFER;
-		//glcs.display_mode |= CGL_ANTIALIAS_4X;
 		glcs.refresh_rate.fps = CGL_MAXREFRESHRATE;
 		s.display = Raptor::glCreateDisplay(glcs);
 		if (s.display == 0)

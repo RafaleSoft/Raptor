@@ -31,6 +31,7 @@ CRaptorDisplayConfig::CRaptorDisplayConfig()
 	draw_logo = false;
 	status_bar = false;
 	acceleration = GENERIC;
+	antialias = ANTIALIAS_NONE;
 	overlay = false;
 	stencil = false;
 
@@ -142,8 +143,40 @@ void CRaptorDisplayConfig::copyBaseConfig(const CRaptorDisplayConfig& config)
     draw_logo = config.draw_logo;
 	status_bar = config.status_bar;
 	acceleration = config.acceleration;
+	antialias = config.antialias;
 	overlay = config.overlay;
 	stencil = config.stencil;
+}
+
+unsigned int CRaptorDisplayConfig::getNbSamples(void) const
+{
+	unsigned int samples = 1;
+	switch(antialias)
+	{
+		case ANTIALIAS_2X:
+			samples = 2;
+			break;
+		case ANTIALIAS_4X:
+			samples = 4;
+			break;
+		case ANTIALIAS_5X:
+			samples = 5;
+			break;
+		case ANTIALIAS_6X:
+			samples = 6;
+			break;
+		case ANTIALIAS_8X:
+			samples = 8;
+			break;
+		case ANTIALIAS_16X:
+			samples = 16;
+			break;
+		default:
+			samples = 1;
+			break;
+	}
+
+	return samples;
 }
 
 bool CRaptorDisplayConfig::glQueryConfig(unsigned long query)

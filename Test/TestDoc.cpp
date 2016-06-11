@@ -244,11 +244,11 @@ void CTestDoc::GLInitContext(void)
 		CRaptorDisplay::GetCurrentDisplay()->glBindDisplay(*bwf);
 		bwf->setColorBlend(1.1f,0.8f,0.7f,1.0f,0.65f);
 		bwf->setCorrection(1.0f,1.0f);
-		bwf->enableFilter(false);
+		bwf->enableFilter(true);
 	
 		mbf = new CMBFilter();
 		mbf->setPercentage(0.95f,0.95f,0.95f,1.0f);
-		CRaptorDisplay::GetCurrentDisplay()->glBindDisplay(*mbf);	
+		CRaptorDisplay::GetCurrentDisplay()->glBindDisplay(*mbf);
 		mbf->enableFilter(false);
 
 		dof = new CDOFFilter();

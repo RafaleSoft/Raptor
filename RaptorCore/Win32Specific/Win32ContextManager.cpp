@@ -187,17 +187,17 @@ unsigned int defineAccumBuffer(unsigned int index,int mode,int *attribs)
     return attribIndex;
 }
 
-unsigned int defineSampleBuffer(unsigned int index,int mode,int *attribs)
+unsigned int defineSampleBuffer(unsigned int index,unsigned int nbSamples,int *attribs)
 {
     unsigned int attribIndex = index;
 #if defined(WGL_ARB_pixel_format)
 #if defined(GL_ARB_multisample)
-	if (mode & CGL_ANTIALIAS)
+	if (1 < nbSamples)
 	{
 		attribs[attribIndex++] = WGL_SAMPLE_BUFFERS_ARB;
 		attribs[attribIndex++] = 1;
 		attribs[attribIndex++] = WGL_SAMPLES_ARB;
-		attribs[attribIndex++] = ((mode & 0xF0000000) >> 28) + 1;
+		attribs[attribIndex++] = nbSamples;
 	}
 #endif
 #endif
@@ -864,7 +864,7 @@ CContextManager::RENDERING_CONTEXT_ID  CWin32ContextManager::glCreateExtendedCon
         attribIndex = defineAccumBuffer(attribIndex, config.display_mode, piAttribIList);
 
 		//	Use antialiasing if requested
-        attribIndex = defineSampleBuffer(attribIndex, config.display_mode, piAttribIList);
+        attribIndex = defineSampleBuffer(attribIndex, config.getNbSamples(), piAttribIList);
 
 		//	Terminate the list and continue with the settings
 		UINT nNumFormats = 0;
@@ -992,7 +992,7 @@ CContextManager::RENDERING_CONTEXT_ID  CWin32ContextManager::glCreateExtendedCon
         attribIndex = defineAccumBuffer(attribIndex, pcs.display_mode, piAttribIList);
 
 		//	Use antialiasing if requested
-        attribIndex = defineSampleBuffer(attribIndex, pcs.display_mode, piAttribIList);
+        attribIndex = defineSampleBuffer(attribIndex, pcs.antialias, piAttribIList);
 
 #ifdef WGL_ARB_render_texture
 		if ((m_mode & CGL_RENDER_TEXTURE) == CGL_RENDER_TEXTURE)

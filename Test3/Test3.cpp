@@ -302,7 +302,7 @@ void GLinterop(CRaptorDisplay *pDisplay,RAPTOR_HANDLE wnd)
 	
 	CParticleManager *pManager = new CParticleManager();
 	GalaxyModel *pModel = new GalaxyModel();
-	CParticle *pGalaxy = pManager->glCreateParticle(10000,true,CParticle::CGL_PARTICLE_POINT,CParticle::CGL_COLOR_BLEND,pModel,"GALAXY");
+	CParticle *pGalaxy = pManager->glCreateParticle(5000,true,CParticle::CGL_PARTICLE_POINT,CParticle::CGL_COLOR_BLEND,pModel,"GALAXY");
 	size_t sz = pGalaxy->getSize() * sizeof(CParticle::PARTICLE_ATTRIBUTE);
 	pManager->animate(true);
 
@@ -398,7 +398,6 @@ int _tmain(int argc, _TCHAR* argv[])
 						CGL_DEPTH | 
 						CGL_DOUBLE;
 						//CGL_RENDER_FILTERED |
-						//CGL_ANTIALIAS_8X |
 						//CGL_RENDER_BUFFER;
 	//glcs.refresh_rate.fps = 12;
     RAPTOR_HANDLE wnd = Raptor::glCreateWindow(glcs,pDisplay);

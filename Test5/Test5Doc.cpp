@@ -105,6 +105,7 @@ d->glUnBindDisplay();
 	glcs.y = 0;
 	glcs.caption = title;
 	glcs.acceleration = CRaptorDisplayConfig::HARDWARE;
+	//glcs.antialias = CRaptorDisplayConfig::ANTIALIAS_16X;
 	glcs.display_mode = CGL_RGBA | CGL_DEPTH | CGL_DOUBLE;
 	glcs.draw_logo = true;
 

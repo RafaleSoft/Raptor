@@ -62,7 +62,8 @@
 	- nombre de geometries occultantes ?
 	- remplacer RenderResult par RenderTexture ?
 
-- Noise Generator : améliorer et proposer plusieurs modèles.
+- Noise Generator : 
+	- Implémentation full shader
 
 - Bug Microlex:
 	dans le cas d'un rule qui est un alternate d'alternate, il n'y a que le premier atome de de la premiere regle qui est selectionne.

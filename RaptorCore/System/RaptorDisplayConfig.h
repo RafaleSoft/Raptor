@@ -258,6 +258,17 @@ public:
 		HARDWARE,
 	} GL_ACCELERATION;
 
+	typedef enum
+	{
+		ANTIALIAS_NONE,
+		ANTIALIAS_2X,
+		ANTIALIAS_4X,
+		ANTIALIAS_5X,
+		ANTIALIAS_6X,
+		ANTIALIAS_8X,
+		ANTIALIAS_16X
+	} GL_ANTIALIAS;
+
 public:
 	CRaptorDisplayConfig();
 	virtual ~CRaptorDisplayConfig();
@@ -279,6 +290,9 @@ public:
 	//!	A whole copy is simply by using default copy operator.
 	void copyBaseConfig(const CRaptorDisplayConfig& config);
 
+	//!	A helper to query the bumbe of samples for current config
+	unsigned int getNbSamples(void) const;
+
 
 public:
 	int				x;
@@ -289,6 +303,7 @@ public:
 	bool			status_bar;
 	unsigned int	display_mode;
 	GL_ACCELERATION	acceleration;
+	GL_ANTIALIAS	antialias;
 	bool			overlay;
 	bool			stencil;
 	struct

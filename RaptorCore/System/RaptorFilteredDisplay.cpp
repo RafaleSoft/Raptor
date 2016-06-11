@@ -70,10 +70,15 @@ CRaptorFilteredDisplay::CRaptorFilteredDisplay(const CRaptorDisplayConfig& pcs)
 	m_bBufferBound(false),m_pImageSet(NULL)
 {
     filter_cs = pcs;
+	cs.overlay = false;
+	cs.stencil = false;
     //  float pixels are not supported in a render to window context :-(
     cs.display_mode = (filter_cs.display_mode & (CGL_RGB|CGL_RGBA)) |
                       (filter_cs.display_mode & CGL_DOUBLE);
 	cs.acceleration = filter_cs.acceleration;
+	//	remove antialiasing : it is applying to the internal FSAA frame buffer and 
+	//	not onto the final screen display
+	cs.antialias = CRaptorDisplayConfig::ANTIALIAS_NONE;
 
     //  Impose texture rendering and single buffer. Disable multisample rendering
     if ((filter_cs.display_mode & CGL_RENDER_TEXTURE) != CGL_RENDER_TEXTURE)
@@ -83,8 +88,8 @@ CRaptorFilteredDisplay::CRaptorFilteredDisplay(const CRaptorDisplayConfig& pcs)
     if ((filter_cs.display_mode & CGL_DOUBLE) == CGL_DOUBLE)
         filter_cs.display_mode &= ~CGL_DOUBLE;
 #if !defined(GL_EXT_framebuffer_multisample) && !defined(GL_EXT_framebuffer_blit)
-    if ((filter_cs.display_mode & CGL_ANTIALIAS) == CGL_ANTIALIAS)
-        filter_cs.display_mode &= ~CGL_ANTIALIAS;
+	if (CRaptorDisplayConfig::ANTIALIAS_NONE != filter_cs.antialias)
+        filter_cs.antialias = ANTIALIAS_NONE;
 #endif
 
 	// Impose a precise default float format if not specified.
@@ -228,7 +233,7 @@ bool CRaptorFilteredDisplay::glCreateRenderDisplay(void)
 
 		rda.display_mode = filter_cs.display_mode;
 
-		if ((rda.display_mode & CGL_ANTIALIAS) == CGL_ANTIALIAS)
+		if (CRaptorDisplayConfig::ANTIALIAS_NONE != rda.antialias)
 		{
 			//	remove render to texture, we will use FSAA buffer only
 			CRaptorDisplayConfig FSAArda = rda;
@@ -240,7 +245,7 @@ bool CRaptorFilteredDisplay::glCreateRenderDisplay(void)
 			m_pFSAADisplay->registerDestruction(this);
 
 			//	'Real' display will no more need antialiasing.
-			rda.display_mode &= ~CGL_ANTIALIAS;
+			rda.antialias = CRaptorDisplayConfig::ANTIALIAS_NONE;
 		}
 
 		m_pDisplay = Raptor::glCreateDisplay(rda);
@@ -408,7 +413,7 @@ bool CRaptorFilteredDisplay::glBindDisplay(const RAPTOR_HANDLE& device)
 		m_bBufferBound = true;
 		RAPTOR_HANDLE noDevice;
 
-		if ((filter_cs.display_mode & CGL_ANTIALIAS) == CGL_ANTIALIAS)
+		if (CRaptorDisplayConfig::ANTIALIAS_NONE != filter_cs.antialias)
 			return m_pFSAADisplay->glBindDisplay(noDevice);
 		else
 			return m_pDisplay->glBindDisplay(noDevice);
@@ -509,6 +514,7 @@ void CRaptorFilteredDisplay::glRenderScene(void)
 		    m_pDisplay->glUnBindDisplay();
 	}
 
+	bool filterRendered = false;
     if (m_pFilters.size() > 0)
     {
 		bool lastfilter = false;
@@ -528,10 +534,14 @@ void CRaptorFilteredDisplay::glRenderScene(void)
 
             //  enable/disable state must be managed by the filter
 			if (filter->isEnabled())
+			{
 				filter->glRender();
+				filterRendered = true;
+			}
         }
     }
-    else
+
+	if (!filterRendered || m_pFilters.empty())
     {
 		CTextureObject *T = m_pImageSet->getTexture(0);
         T->glRender();
