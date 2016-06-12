@@ -371,7 +371,7 @@ bool CRaptorRenderBufferDisplay::createFrameBuffer(void)
 			else if ((cs.display_mode & CGL_DEPTH_32) == CGL_DEPTH_32)
 				internalFormat = GL_DEPTH_COMPONENT32_ARB;
 #if defined(GL_EXT_packed_depth_stencil)
-			if (cs.stencil)
+			if (cs.stencil_buffer)
 				internalFormat = GL_DEPTH24_STENCIL8_EXT;
 #endif
 
@@ -400,7 +400,8 @@ bool CRaptorRenderBufferDisplay::createFrameBuffer(void)
 		CATCH_GL_ERROR
 
 		// - create stencil render buffers
-		if ((cs.stencil) && ((cs.display_mode & CGL_RENDER_DEPTHTEXTURE) != CGL_RENDER_DEPTHTEXTURE))
+		if ((cs.stencil_buffer) &&
+			((cs.display_mode & CGL_RENDER_DEPTHTEXTURE) != CGL_RENDER_DEPTHTEXTURE))
 		{
 #if defined(GL_EXT_packed_depth_stencil)
 			if (((cs.display_mode & CGL_DEPTH_32) != 0) &&

@@ -244,10 +244,7 @@ bool CRaptorScreenDisplay::glBindDisplay(const RAPTOR_HANDLE& device)
 
 			
 			//  Display shading configuration
-			cs.glApplyConfig(	GL_PIXEL_STATE_QUERY|
-								GL_HINT_STATE_QUERY|
-								GL_LIGHT_STATE_QUERY|
-								GL_FRAME_STATE_QUERY);
+			cs.glApplyConfig(GL_PIXEL_STATE_QUERY|GL_HINT_STATE_QUERY|GL_LIGHT_STATE_QUERY|GL_FRAME_STATE_QUERY);
 
             bool res = CRaptorDisplay::glBindDisplay(device);
 			//glViewport(cs.x,cs.y,cs.width,cs.height);

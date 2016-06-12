@@ -353,7 +353,9 @@ BOOL CObjectDialog::OnInitDialog()
 		glCS.x = 0;
 		glCS.y = 0;
 		glCS.caption = "Raptor Release test";
-		glCS.display_mode = CGL_RGBA | CGL_DEPTH | CGL_DOUBLE;
+		glCS.double_buffer = true;
+		glCS.depth_buffer = true;
+		glCS.display_mode = CGL_RGBA | CGL_DEPTH;
 		Context.GLCreateWindow("OpenGL Context",this,glCS);
 		Context.glMakeCurrent();
 	}

@@ -71,22 +71,22 @@ CRaptorFilteredDisplay::CRaptorFilteredDisplay(const CRaptorDisplayConfig& pcs)
 {
     filter_cs = pcs;
 	cs.overlay = false;
-	cs.stencil = false;
+	cs.stencil_buffer = false;
     //  float pixels are not supported in a render to window context :-(
-    cs.display_mode = (filter_cs.display_mode & (CGL_RGB|CGL_RGBA)) |
-                      (filter_cs.display_mode & CGL_DOUBLE);
+    cs.display_mode = (filter_cs.display_mode & (CGL_RGB|CGL_RGBA));
+	cs.double_buffer = filter_cs.double_buffer;
 	cs.acceleration = filter_cs.acceleration;
 	//	remove antialiasing : it is applying to the internal FSAA frame buffer and 
 	//	not onto the final screen display
 	cs.antialias = CRaptorDisplayConfig::ANTIALIAS_NONE;
 
-    //  Impose texture rendering and single buffer. Disable multisample rendering
+    //  Impose texture rendering and single buffer.
+	//	Disable multisample rendering
     if ((filter_cs.display_mode & CGL_RENDER_TEXTURE) != CGL_RENDER_TEXTURE)
         filter_cs.display_mode |= CGL_RENDER_TEXTURE;
     if ((filter_cs.display_mode & CGL_RENDER_DEPTHTEXTURE) != CGL_RENDER_DEPTHTEXTURE)
         filter_cs.display_mode |= CGL_RENDER_DEPTHTEXTURE;
-    if ((filter_cs.display_mode & CGL_DOUBLE) == CGL_DOUBLE)
-        filter_cs.display_mode &= ~CGL_DOUBLE;
+    filter_cs.double_buffer = false;
 #if !defined(GL_EXT_framebuffer_multisample) && !defined(GL_EXT_framebuffer_blit)
 	if (CRaptorDisplayConfig::ANTIALIAS_NONE != filter_cs.antialias)
         filter_cs.antialias = ANTIALIAS_NONE;
@@ -276,7 +276,7 @@ bool CRaptorFilteredDisplay::glCreateRenderDisplay(void)
 			//!	interpolators will use a lower precision ( 8 bits )
 			//!	Bilinear filtering is necessary only for PCF shadow maps
 #if defined(GL_EXT_packed_depth_stencil)
-			if ((filter_cs.stencil) &&
+			if ((filter_cs.stencil_buffer) &&
 				((filter_cs.display_mode & CGL_DEPTH) == CGL_DEPTH))
 				T = f.glCreateTexture(	CTextureObject::CGL_DEPTH24_STENCIL8,
 										CTextureObject::CGL_OPAQUE,

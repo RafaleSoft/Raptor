@@ -393,10 +393,11 @@ int _tmain(int argc, _TCHAR* argv[])
 	glcs.y = 20;
 	glcs.caption = "Raptor Compute";
 	glcs.acceleration = CRaptorDisplayConfig::HARDWARE;
-	glcs.stencil = true;
+	glcs.double_buffer = true;
+	glcs.depth_buffer = true;
+	glcs.stencil_buffer = true;
 	glcs.display_mode = CGL_RGBA | //CGL_FLOAT | 
-						CGL_DEPTH | 
-						CGL_DOUBLE;
+						CGL_DEPTH;
 						//CGL_RENDER_FILTERED |
 						//CGL_RENDER_BUFFER;
 	//glcs.refresh_rate.fps = 12;

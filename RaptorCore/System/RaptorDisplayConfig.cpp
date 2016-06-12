@@ -27,13 +27,16 @@ CRaptorDisplayConfig::CRaptorDisplayConfig()
 	caption = "Raptor application";
 	refresh_rate.sync_to_monitor = false;
 	refresh_rate.fps = CGL_MAXREFRESHRATE;
-	display_mode = CGL_RGBA | CGL_DEPTH | CGL_DOUBLE;
+	display_mode = CGL_RGBA | CGL_DEPTH;
 	draw_logo = false;
 	status_bar = false;
 	acceleration = GENERIC;
 	antialias = ANTIALIAS_NONE;
+	swap_buffer = SWAP_UNDEFINED;
 	overlay = false;
-	stencil = false;
+	double_buffer = true;
+	depth_buffer = true;
+	stencil_buffer = false;
 
     hintState.perspectiveCorrection = GL_NICEST;
     hintState.fog = GL_DONT_CARE;
@@ -145,7 +148,10 @@ void CRaptorDisplayConfig::copyBaseConfig(const CRaptorDisplayConfig& config)
 	acceleration = config.acceleration;
 	antialias = config.antialias;
 	overlay = config.overlay;
-	stencil = config.stencil;
+	double_buffer = config.double_buffer;
+	depth_buffer = config.depth_buffer;
+	stencil_buffer = config.stencil_buffer;
+	swap_buffer = config.swap_buffer;
 }
 
 unsigned int CRaptorDisplayConfig::getNbSamples(void) const

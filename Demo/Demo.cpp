@@ -33,10 +33,12 @@ int main(int argc, char* argv[])
 	glcs.caption = "Raptor Demo";
 	glcs.acceleration = CRaptorDisplayConfig::HARDWARE;
 	glcs.antialias = CRaptorDisplayConfig::ANTIALIAS_4X;
-	glcs.stencil = true;
+	glcs.swap_buffer = CRaptorDisplayConfig::SWAP_EXCHANGE;
+	glcs.double_buffer = true;
+	glcs.depth_buffer = true;
+	glcs.stencil_buffer = true;
     glcs.display_mode = CGL_FLOAT_16 |//*/ CGL_RGBA | 
 						CGL_DEPTH | 
-						CGL_DOUBLE_SWAPEXCHANGE | 
 						CGL_RENDER_FILTERED |
 						CGL_RENDER_BUFFER;
 	glcs.draw_logo = true;
@@ -51,11 +53,11 @@ int main(int argc, char* argv[])
     if (!Raptor::glCheckDisplayConfig(glcs))
     {
         Raptor::GetMessages()->displayMessage("Some hardware features are missing. Will use lower config, disabling some effects");
-        glcs.display_mode = CGL_RGBA | CGL_DEPTH | CGL_DOUBLE | CGL_RENDER_FILTERED ;
+        glcs.display_mode = CGL_RGBA | CGL_DEPTH | CGL_RENDER_FILTERED ;
         if (!Raptor::glCheckDisplayConfig(glcs))
         {
             Raptor::GetMessages()->displayMessage("Some hardware features are missing. Will use minimal config, disabling all advanced effects");
-            glcs.display_mode = CGL_RGBA | CGL_DEPTH | CGL_DOUBLE;
+            glcs.display_mode = CGL_RGBA | CGL_DEPTH;
             if (!Raptor::glCheckDisplayConfig(glcs))
             {
                 Raptor::GetMessages()->displayMessage("Minimum required display config cannot be created. Sorry, demo will abort. Bye.");

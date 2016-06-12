@@ -42,7 +42,9 @@ int main(int argc, char* argv[])
 	glcs.y = 0;
 	glcs.caption = title.str();
 	glcs.acceleration = CRaptorDisplayConfig::HARDWARE;
-	glcs.display_mode = CGL_RGBA | CGL_DEPTH | CGL_DOUBLE;
+	glcs.double_buffer = true;
+	glcs.depth_buffer = true;
+	glcs.display_mode = CGL_RGBA | CGL_DEPTH;
  
     CRaptorDisplay *pDisplay = NULL;
     RAPTOR_HANDLE wnd = Raptor::glCreateWindow(glcs,pDisplay);

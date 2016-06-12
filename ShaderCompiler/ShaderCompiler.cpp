@@ -360,7 +360,9 @@ int main(int argc, char* argv[])
 	glcs.y = 0;
 	glcs.caption = title.str();
 	glcs.acceleration = CRaptorDisplayConfig::HARDWARE;
-	glcs.display_mode = CGL_RGBA| CGL_DEPTH | CGL_DOUBLE;
+	glcs.double_buffer = true;
+	glcs.depth_buffer = true;
+	glcs.display_mode = CGL_RGBA| CGL_DEPTH;
     glcs.refresh_rate.fps = 15; // enough, do not need full speed    
 
     CRaptorApplication  *app = new CRaptorMFCApplication();

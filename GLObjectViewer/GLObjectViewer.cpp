@@ -81,7 +81,9 @@ BOOL CGLObjectViewerApp::InitInstance()
 	glcs.caption = title.str();
 	glcs.acceleration = CRaptorDisplayConfig::HARDWARE;
 	glcs.antialias = CRaptorDisplayConfig::ANTIALIAS_16X;
-	glcs.display_mode = CGL_RGBA | CGL_DEPTH | CGL_DOUBLE;
+	glcs.double_buffer = true;
+	glcs.depth_buffer = true;
+	glcs.display_mode = CGL_RGBA | CGL_DEPTH;
 	glcs.draw_logo = true;
     
 	CGLWnd::SetDefaultDisplayConfig(glcs);

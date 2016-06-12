@@ -110,28 +110,33 @@ unsigned int definePixels(unsigned int index,int mode,int *attribs)
     return attribIndex;
 }
 
-unsigned int defineDoubleBuffer(unsigned int index,int mode,int *attribs)
+unsigned int defineDoubleBuffer(unsigned int index,
+								bool double_buffer,
+								CRaptorDisplayConfig::GL_SWAPBUFFER swap_buffer,
+								int *attribs)
 {
     unsigned int attribIndex = index;
 #if defined(WGL_ARB_pixel_format)
-    if ((mode & CGL_DOUBLE) == CGL_DOUBLE)
+    if (double_buffer)
     {
 	    attribs[attribIndex++] = WGL_DOUBLE_BUFFER_ARB;
 	    attribs[attribIndex++] = TRUE;
-        if ((mode & CGL_DOUBLE_SWAPCOPY) == CGL_DOUBLE_SWAPCOPY)
+		
+		if (CRaptorDisplayConfig::SWAP_COPY == swap_buffer)
         {
 	        attribs[attribIndex++] = WGL_SWAP_METHOD_ARB;
 	        attribs[attribIndex++] = WGL_SWAP_COPY_ARB;
         }
-        else if ((mode & CGL_DOUBLE_SWAPEXCHANGE) == CGL_DOUBLE_SWAPEXCHANGE)
+        else if (CRaptorDisplayConfig::SWAP_EXCHANGE == swap_buffer)
         {
 	        attribs[attribIndex++] = WGL_SWAP_METHOD_ARB;
 	        attribs[attribIndex++] = WGL_SWAP_EXCHANGE_ARB;
         }
-        else if ((mode & CGL_DOUBLE_SWAPUNDEF) == CGL_DOUBLE_SWAPUNDEF)
+        else if (CRaptorDisplayConfig::SWAP_UNDEFINED == swap_buffer)
         {
-	        attribs[attribIndex++] = WGL_SWAP_METHOD_ARB;
-	        attribs[attribIndex++] = WGL_SWAP_UNDEFINED_ARB;
+		//!	This swap model does not work (no pixel format available)
+	    //   attribs[attribIndex++] = WGL_SWAP_METHOD_ARB;
+	    //   attribs[attribIndex++] = WGL_SWAP_UNDEFINED_ARB;
         }
     }
 #endif
@@ -708,7 +713,7 @@ CContextManager::RENDERING_CONTEXT_ID CWin32ContextManager::glCreateContext(cons
 	
 	int m_mode = config.display_mode;
 
-	if (m_mode & CGL_DOUBLE) flags = flags|PFD_DOUBLEBUFFER;
+	if (config.double_buffer) flags = flags|PFD_DOUBLEBUFFER;
 	else flags = flags|PFD_DOUBLEBUFFER_DONTCARE;
 
 	if ((m_mode & CGL_DEPTH_32) == CGL_DEPTH_32) depthbits = 32;
@@ -717,7 +722,7 @@ CContextManager::RENDERING_CONTEXT_ID CWin32ContextManager::glCreateContext(cons
 	else flags = flags|PFD_DEPTH_DONTCARE;
 
 	if (m_mode & CGL_RGBA) alphabits=8;
-	if (config.stencil) stencilbits=8;
+	if (config.stencil_buffer) stencilbits=8;
 	if (config.overlay) overlaybits = 1;
 	if (m_mode & CGL_ACCUM) accumbits = 64;
 
@@ -848,7 +853,7 @@ CContextManager::RENDERING_CONTEXT_ID  CWin32ContextManager::glCreateExtendedCon
 		attribIndex = defineAcceleration(attribIndex, config.acceleration, piAttribIList);
 
 		//	Draw with double buffer
-        attribIndex = defineDoubleBuffer(attribIndex,config.display_mode, piAttribIList);
+		attribIndex = defineDoubleBuffer(attribIndex,config.display_mode,config.swap_buffer, piAttribIList);
 
 		//	RGB or RGBA are the only supported modes, because they are fun.
 		//	Paletted mode are so boring and slow and old fashioned ...
@@ -858,7 +863,7 @@ CContextManager::RENDERING_CONTEXT_ID  CWin32ContextManager::glCreateExtendedCon
         attribIndex = defineDepthBuffer(attribIndex, config.display_mode, piAttribIList);
 		
 		//	Use stencil if requested
-        attribIndex = defineStencilBuffer(attribIndex, config.stencil, piAttribIList);
+        attribIndex = defineStencilBuffer(attribIndex, config.stencil_buffer, piAttribIList);
 
 		//	Use accum buffer if requested
         attribIndex = defineAccumBuffer(attribIndex, config.display_mode, piAttribIList);
@@ -976,7 +981,7 @@ CContextManager::RENDERING_CONTEXT_ID  CWin32ContextManager::glCreateExtendedCon
 		
 		// P Buffer do not support double buffering. Maybe future versions will do so.
 		//	Draw with double buffer
-        attribIndex = defineDoubleBuffer(attribIndex,pcs.display_mode, piAttribIList);
+		attribIndex = defineDoubleBuffer(attribIndex,pcs.display_mode,pcs.swap_buffer, piAttribIList);
 
 		//	RGB or RGBA are the only supported modes, because they are fun.
 		//	Paletted mode are so boring and slow and old fashioned ...

@@ -47,10 +47,11 @@ int main(int argc, char* argv[])
 	glcs.caption = title.str();
 	glcs.acceleration = CRaptorDisplayConfig::HARDWARE;
 	glcs.antialias = CRaptorDisplayConfig::ANTIALIAS_4X;
-	glcs.stencil = true;
+	glcs.double_buffer = true;
+	glcs.depth_buffer = true;
+	glcs.stencil_buffer = true;
 	glcs.display_mode = CGL_FLOAT_16 |
 						CGL_DEPTH |
-						CGL_DOUBLE |
 						CGL_RENDER_FILTERED |
 						CGL_RENDER_BUFFER;
 	//glcs.refresh_rate.sync_to_monitor = true;
@@ -61,7 +62,7 @@ int main(int argc, char* argv[])
     if (wnd.handle == 0)
     {
         Raptor::GetMessages()->displayMessage("Sorry: Test cannot run : full display config is not supported, trying basic window...");
-        glcs.display_mode = CGL_RGBA| CGL_DEPTH | CGL_DOUBLE;
+        glcs.display_mode = CGL_RGBA| CGL_DEPTH;
         wnd = Raptor::glCreateWindow(glcs,pDisplay);
         if (wnd.handle == 0)
         {

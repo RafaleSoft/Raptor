@@ -269,6 +269,13 @@ public:
 		ANTIALIAS_16X
 	} GL_ANTIALIAS;
 
+	typedef enum
+	{
+		SWAP_UNDEFINED,
+		SWAP_COPY,
+		SWAP_EXCHANGE
+	} GL_SWAPBUFFER;
+
 public:
 	CRaptorDisplayConfig();
 	virtual ~CRaptorDisplayConfig();
@@ -304,8 +311,11 @@ public:
 	unsigned int	display_mode;
 	GL_ACCELERATION	acceleration;
 	GL_ANTIALIAS	antialias;
+	GL_SWAPBUFFER	swap_buffer;
 	bool			overlay;
-	bool			stencil;
+	bool			double_buffer;
+	bool			depth_buffer;
+	bool			stencil_buffer;
 	struct
 	{
 		unsigned char	fps;

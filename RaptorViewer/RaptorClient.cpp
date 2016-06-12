@@ -128,7 +128,10 @@ bool CRaptorClient::run(unsigned int width, unsigned int height)
 	glcs.y = 200;
 	glcs.caption = "Raptor Viewer";
 	glcs.acceleration = CRaptorDisplayConfig::HARDWARE;
-	glcs.display_mode = CGL_RGBA | CGL_DEPTH | CGL_DOUBLE;
+	glcs.double_buffer = true;
+	glcs.depth_buffer = true;
+	glcs.depth_buffer = true;
+	glcs.display_mode = CGL_RGBA | CGL_DEPTH;
 
 	m_window = Raptor::glCreateWindow(glcs,m_pDisplay);
 	if (m_window.handle == 0)
