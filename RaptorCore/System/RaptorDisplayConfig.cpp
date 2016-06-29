@@ -33,6 +33,7 @@ CRaptorDisplayConfig::CRaptorDisplayConfig()
 	acceleration = GENERIC;
 	antialias = ANTIALIAS_NONE;
 	swap_buffer = SWAP_UNDEFINED;
+	renderer = NATIVE;
 	overlay = false;
 	double_buffer = true;
 	depth_buffer = true;
@@ -147,11 +148,12 @@ void CRaptorDisplayConfig::copyBaseConfig(const CRaptorDisplayConfig& config)
 	status_bar = config.status_bar;
 	acceleration = config.acceleration;
 	antialias = config.antialias;
+	swap_buffer = config.swap_buffer;
+	renderer = config.renderer;
 	overlay = config.overlay;
 	double_buffer = config.double_buffer;
 	depth_buffer = config.depth_buffer;
 	stencil_buffer = config.stencil_buffer;
-	swap_buffer = config.swap_buffer;
 }
 
 unsigned int CRaptorDisplayConfig::getNbSamples(void) const

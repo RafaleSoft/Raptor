@@ -63,6 +63,9 @@ CRaptorBufferDisplay::CRaptorBufferDisplay(const CRaptorDisplayConfig& pcs)
 	m_previousContext = -1;
 
 	cs = pcs;
+	
+	//! P Buffer (nVidia + Win32) do not support double buffering. Maybe future versions will do so.
+	cs.double_buffer = false;
 }
 
 CRaptorBufferDisplay::~CRaptorBufferDisplay()

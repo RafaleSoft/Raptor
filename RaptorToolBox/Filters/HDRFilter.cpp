@@ -293,6 +293,8 @@ CHDRFilter::CHDRFilter(const CRaptorDisplayConfig &da)
     rda.refresh_rate.fps = CGL_MAXREFRESHRATE;
 	rda.acceleration = CRaptorDisplayConfig::HARDWARE;
 	rda.antialias = CRaptorDisplayConfig::ANTIALIAS_NONE;
+	rda.depth_buffer = false;
+	rda.double_buffer = false;
     rda.display_mode =	CGL_RENDER_TEXTURE | 
                         (da.display_mode & (CGL_RGB|CGL_RGBA|CGL_FLOAT));
 

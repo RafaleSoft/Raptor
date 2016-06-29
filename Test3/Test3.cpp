@@ -396,10 +396,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	glcs.double_buffer = true;
 	glcs.depth_buffer = true;
 	glcs.stencil_buffer = true;
-	glcs.display_mode = CGL_RGBA | //CGL_FLOAT | 
-						CGL_DEPTH;
-						//CGL_RENDER_FILTERED |
-						//CGL_RENDER_BUFFER;
+	glcs.display_mode = CGL_RGBA | CGL_DEPTH;
 	//glcs.refresh_rate.fps = 12;
     RAPTOR_HANDLE wnd = Raptor::glCreateWindow(glcs,pDisplay);
 	pDisplay->glBindDisplay(wnd);

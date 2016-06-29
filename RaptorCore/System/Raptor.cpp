@@ -260,15 +260,15 @@ CRaptorDisplay* Raptor::glCreateDisplay(const CRaptorDisplayConfig& pcs)
 
 	CRaptorDisplay *pDisplay = NULL;
 	
-	if ((display_mode & CGL_RENDER_FILTERED ) == CGL_RENDER_FILTERED)
+	if (CRaptorDisplayConfig::FILTERED == pcs.renderer)
 		pDisplay = new CRaptorFilteredDisplay(pcs);
 	else if ((display_mode & CGL_RENDER_BUFFER ) == CGL_RENDER_BUFFER)
 		pDisplay = new CRaptorRenderBufferDisplay(pcs);
 	else if ((display_mode & CGL_RENDER_TEXTURE ) == CGL_RENDER_TEXTURE)
 		pDisplay = new CRaptorBufferDisplay(pcs);
-	else if ((display_mode & CGL_RENDER_VULKAN ) == CGL_RENDER_VULKAN)
+	else if (CRaptorDisplayConfig::VULKAN == pcs.renderer)
 		pDisplay = new CRaptorVulkanDisplay(pcs);
-	else
+	else	// Native renderer
 		pDisplay = new CRaptorScreenDisplay(pcs);
 
 	Global::GetInstance().getCurrentStatus().displays.push_back(pDisplay);

@@ -6,9 +6,9 @@ uniform int lightEnable[gl_MaxLights];
 uniform	sampler2D diffuseMap;
 
 //#define TEXTURE_PERLIN
-#define PROCEDURAL_PERLIN
+//#define PROCEDURAL_PERLIN
 
-#ifdef TEXTURE_PERLIN
+#ifdef TEXTURE3D_PERLIN
 	uniform sampler3D normalMap;
 #else
 	uniform	sampler2D normalMap;
@@ -22,10 +22,26 @@ uniform	sampler2D diffuseMap;
 varying vec4 lightDirs[MAX_LIGHTS];
 varying vec3 eyedir;
 
+vec3 G[16] = vec3[16](	vec3(1.0,1.0,0.0),
+						vec3(-1.0,1.0,0.0),
+						vec3(1.0,-1.0,0.0),
+						vec3(-1.0,-1.0,0.0),
+						vec3(1.0,0.0,1.0),
+						vec3(-1.0,0.0,1.0),
+						vec3(1.0,0.0,-1.0),
+						vec3(-1.0,0.0,-1.0),
+						vec3(0.0,1.0,1.0),
+						vec3(0.0,-1.0,1.0),
+						vec3(0.0,1.0,-1.0),
+						vec3(0.0,-1.0,-1.0),
+						vec3(1.0,1.0,0.0),
+						vec3(-1.0,1.0,0.0),
+						vec3(0.0,-1.0,1.0),
+						vec3(0.0,-1.0,-1.0));
 
 #ifdef PROCEDURAL_PERLIN
 	uniform	sampler1D permSampler;
-	uniform	sampler1D gradSampler;
+	//uniform	sampler1D gradSampler;
 
 	vec3 fade(vec3 t)
 	{
@@ -39,14 +55,16 @@ varying vec3 eyedir;
 	
 	float grad(float x, vec3 p)
 	{
-		return dot(vec3(texture1D(gradSampler, x)), p);
+		int hash = int(mod(floor(x), 16.0));
+		return dot(G[hash],p);
+		//return dot(vec3(texture1D(gradSampler, x)), p);
 	}
 	
-	float inoise(vec3 p)
+	float inoise(vec3 pos)
 	{
-		vec3 P = mod(floor(p), 256.0);
-		p -= floor(p);
-		vec3 f = fade(p);
+		vec3 P = mod(floor(pos), 256.0);
+		pos -= floor(pos);
+		vec3 f = fade(pos);
 	
 	// HASH COORDINATES FOR 6 OF THE 8 CUBE CORNERS
 		float A = perm(P.x) + P.y;
@@ -57,26 +75,39 @@ varying vec3 eyedir;
 		float BB = perm(B + 1) + P.z;
 	
 	// AND ADD BLENDED RESULTS FROM 8 CORNERS OF CUBE
-		return mix(	mix(mix(grad(perm(AA), p),
-							grad(perm(BA), p + vec3(-1, 0, 0)), f.x),
-						mix(grad(perm(AB), p + vec3(0, -1, 0)),
-							grad(perm(BB), p + vec3(-1, -1, 0)), f.x), f.y),
-					mix(mix(grad(perm(AA + 1), p + vec3(0, 0, -1)),
-							grad(perm(BA + 1), p + vec3(-1, 0, -1)), f.x),
-						mix(grad(perm(AB + 1), p + vec3(0, -1, -1)),
-							grad(perm(BB + 1), p + vec3(-1, -1, -1)), f.x), f.y),
+		return mix(	mix(mix(grad(perm(AA), pos),
+							grad(perm(BA), pos + vec3(-1, 0, 0)), f.x),
+						mix(grad(perm(AB), pos + vec3(0, -1, 0)),
+							grad(perm(BB), pos + vec3(-1, -1, 0)), f.x), f.y),
+					mix(mix(grad(perm(AA + 1), pos + vec3(0, 0, -1)),
+							grad(perm(BA + 1), pos + vec3(-1, 0, -1)), f.x),
+						mix(grad(perm(AB + 1), pos + vec3(0, -1, -1)),
+							grad(perm(BB + 1), pos + vec3(-1, -1, -1)), f.x), f.y),
 					f.z);
 	}
 #endif
 
 void main (void)
 {
-#ifdef TEXTURE_PERLIN
+#ifdef TEXTURE3D_PERLIN
 	vec3 tn = vec3(texture3D(normalMap,vec3(gl_TexCoord[0].s,gl_TexCoord[0].t,0.0)));
 #else
 	vec3 tn = vec3(texture2D(normalMap,vec2(gl_TexCoord[0].st)));
 #endif
 	vec3 N = 2*tn - vec3(1.0,1.0,1.0);
+
+#ifdef PROCEDURAL_PERLIN
+	float frequency = 4.0 / 128.0;
+	float amplitude = 1.0;
+	vec3 pos = vec3(gl_TexCoord[0].xyz);
+	float n = 0.0;
+	for (int k=0 ; k<8 ; k++)
+	{
+		n = n + amplitude * inoise(frequency * pos);
+		frequency = frequency * 2.0;
+		amplitude = amplitude * 0.5;
+	}
+#endif
 
 	vec4 diffuse = gl_FrontLightModelProduct.sceneColor;
 	vec4 specular = vec4(0.0,0.0,0.0,0.0);
@@ -108,5 +139,6 @@ void main (void)
 #ifdef EMBM_RENDERING
 	specular = specular + 0.2 * textureCube(environmentMap,rr);
 #endif
+
 	gl_FragColor = specular + diffuse * texture2D(diffuseMap,vec2(gl_TexCoord[0].st));
 }

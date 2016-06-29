@@ -93,9 +93,7 @@ bool CAmbientOcclusionShader::glInitAOCompute(void)
 	cfg.width = m_pVertexMap->getWidth();
 	cfg.height = m_pVertexMap->getHeight();
 	cfg.acceleration = CRaptorDisplayConfig::HARDWARE;
-	cfg.display_mode =	CGL_FLOAT |
-						CGL_RENDER_TEXTURE |
-						CGL_RENDER_BUFFER;
+	cfg.display_mode =	CGL_FLOAT | CGL_RENDER_TEXTURE | CGL_RENDER_BUFFER;
 
     m_pAOBuffer = Raptor::glCreateDisplay(cfg);
     CRenderingProperties *rp = m_pAOBuffer->getRenderingProperties();

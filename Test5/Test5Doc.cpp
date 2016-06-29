@@ -86,7 +86,7 @@ CTest5Doc::CTest5Doc(const RAPTOR_HANDLE& device,const char* title)
     Raptor::glInitRaptor(config);
 /*
 CRaptorDisplayConfig pcs;
-pcs.display_mode = CGL_RENDER_VULKAN;
+pcs.renderer = CRaptorDisplayConfig::VULKAN;
 CRaptorDisplay *d = Raptor::glCreateDisplay(pcs);
 RAPTOR_HANDLE noDevice(4,(void*)4);
 d->glBindDisplay(device);

@@ -30,11 +30,20 @@
 #if !defined(AFX_TEXTUREOBJECT_H__D32B6294_B42B_4E6F_AB73_13B33C544AD0__INCLUDED_)
 	#include "GLHierarchy/TextureObject.h"
 #endif
+#if !defined(AFX_TEXTUREFACTORY_H__1B470EC4_4B68_11D3_9142_9A502CBADC6B__INCLUDED_)
+	#include "GLHierarchy/TextureFactory.h"
+#endif
 
 
 RAPTOR_NAMESPACE
 
 int CEMBMShader::environmentMap = -1;
+
+//#define PROCEDURAL_PERLIN
+#ifdef PROCEDURAL_PERLIN
+static CTextureObject *permutation = NULL;
+static int permSampler = -1;
+#endif
 
 
 CEMBMShader::CEMBMShader(void)
@@ -61,6 +70,7 @@ CShader* CEMBMShader::glClone(const std::string& newShaderName) const
 CEMBMShader::~CEMBMShader(void)
 {
 }
+
 
 void CEMBMShader::glInit(const std::string &bump_vertexshader,
 						 const std::string &bump_pixelshader)
@@ -103,6 +113,29 @@ void CEMBMShader::glInit(const std::string &bump_vertexshader,
 	fp->setProgramParameters(params2);
 
 	glCompileShader();
+
+#ifdef PROCEDURAL_PERLIN
+	CTextureFactory &filterFactory = CTextureFactory::getDefaultFactory();
+
+	//! 256 interpolated values are enough for good results.
+    //! For high quality filtering, future release may allow a user defined size.
+    permutation = filterFactory.glCreateTexture(CTextureObject::CGL_LIGHTMAP,
+												CTextureObject::CGL_OPAQUE,
+												CTextureObject::CGL_UNFILTERED);
+    permutation->setSize(512,1);
+	permutation->allocateTexels(CTextureObject::CGL_LIGHTMAP);
+	unsigned char* perm = permutation->getTexels();
+	for (unsigned int i=0;i<256;i++)
+		perm[i] = i;
+	for (unsigned int i=0;i<256;i++)
+	{
+		unsigned int j = rand() % 256;
+        unsigned int p = perm[j];
+        perm[j] = perm[i];
+        perm[i+256] = perm[i] = p;
+	}
+	filterFactory.glLoadTexture(permutation,".buffer");
+#endif
 }
 
 void CEMBMShader::glRender(void)
@@ -119,9 +152,25 @@ void CEMBMShader::glRender(void)
 			GLhandleARB program = pExtensions->glGetHandleARB(GL_PROGRAM_OBJECT_ARB);
 			environmentMap = pExtensions->glGetUniformLocationARB(program, "environmentMap");
 		}
-
 		if (environmentMap >= 0)
 			pExtensions->glUniform1iARB(environmentMap,CTextureUnitSetup::IMAGE_UNIT_3);
+
+#ifdef PROCEDURAL_PERLIN
+		if (permSampler < 0)
+		{
+			GLhandleARB program = pExtensions->glGetHandleARB(GL_PROGRAM_OBJECT_ARB);
+			permSampler = pExtensions->glGetUniformLocationARB(program, "permSampler");
+		}
+		if (permSampler >= 0)
+		{
+			GLint previousTMU = GL_TEXTURE0_ARB;
+			glGetIntegerv(GL_ACTIVE_TEXTURE_ARB,&previousTMU);
+			pExtensions->glActiveTextureARB(GL_TEXTURE4_ARB);
+			permutation->glRender();
+			pExtensions->glUniform1iARB(environmentMap,CTextureUnitSetup::IMAGE_UNIT_4);
+			pExtensions->glActiveTextureARB(previousTMU);
+		}
+#endif
 	}
 #endif
 }

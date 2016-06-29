@@ -276,6 +276,15 @@ public:
 		SWAP_EXCHANGE
 	} GL_SWAPBUFFER;
 
+	typedef enum
+	{
+		NATIVE,		// ScreenDisplay
+		FILTERED,
+		BUFFERED,
+		TEXTURE,
+		VULKAN
+	} GL_DISPLAY_RENDERER;
+
 public:
 	CRaptorDisplayConfig();
 	virtual ~CRaptorDisplayConfig();
@@ -312,6 +321,7 @@ public:
 	GL_ACCELERATION	acceleration;
 	GL_ANTIALIAS	antialias;
 	GL_SWAPBUFFER	swap_buffer;
+	GL_DISPLAY_RENDERER	renderer;
 	bool			overlay;
 	bool			double_buffer;
 	bool			depth_buffer;

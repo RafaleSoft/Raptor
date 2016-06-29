@@ -76,6 +76,7 @@ CRaptorFilteredDisplay::CRaptorFilteredDisplay(const CRaptorDisplayConfig& pcs)
     cs.display_mode = (filter_cs.display_mode & (CGL_RGB|CGL_RGBA));
 	cs.double_buffer = filter_cs.double_buffer;
 	cs.acceleration = filter_cs.acceleration;
+	cs.depth_buffer = filter_cs.depth_buffer;
 	//	remove antialiasing : it is applying to the internal FSAA frame buffer and 
 	//	not onto the final screen display
 	cs.antialias = CRaptorDisplayConfig::ANTIALIAS_NONE;
@@ -100,7 +101,7 @@ CRaptorFilteredDisplay::CRaptorFilteredDisplay(const CRaptorDisplayConfig& pcs)
 			filter_cs.display_mode |= CGL_FLOAT_16;
 	}
 
-    filter_cs.display_mode &= ~CGL_RENDER_FILTERED;
+	filter_cs.renderer = CRaptorDisplayConfig::NATIVE;
 
 	//	Check texture rendering capabilities:
 	//	nVidia does not support separate Depth + Stencil framebuffers, except
@@ -232,6 +233,9 @@ bool CRaptorFilteredDisplay::glCreateRenderDisplay(void)
 		}
 
 		rda.display_mode = filter_cs.display_mode;
+		rda.status_bar = false;
+		rda.renderer = CRaptorDisplayConfig::BUFFERED;
+		rda.double_buffer = filter_cs.double_buffer;
 
 		if (CRaptorDisplayConfig::ANTIALIAS_NONE != rda.antialias)
 		{

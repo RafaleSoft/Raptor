@@ -853,7 +853,7 @@ CContextManager::RENDERING_CONTEXT_ID  CWin32ContextManager::glCreateExtendedCon
 		attribIndex = defineAcceleration(attribIndex, config.acceleration, piAttribIList);
 
 		//	Draw with double buffer
-		attribIndex = defineDoubleBuffer(attribIndex,config.display_mode,config.swap_buffer, piAttribIList);
+		attribIndex = defineDoubleBuffer(attribIndex,config.double_buffer,config.swap_buffer, piAttribIList);
 
 		//	RGB or RGBA are the only supported modes, because they are fun.
 		//	Paletted mode are so boring and slow and old fashioned ...
@@ -981,7 +981,7 @@ CContextManager::RENDERING_CONTEXT_ID  CWin32ContextManager::glCreateExtendedCon
 		
 		// P Buffer do not support double buffering. Maybe future versions will do so.
 		//	Draw with double buffer
-		attribIndex = defineDoubleBuffer(attribIndex,pcs.display_mode,pcs.swap_buffer, piAttribIList);
+		attribIndex = defineDoubleBuffer(attribIndex,pcs.double_buffer,pcs.swap_buffer, piAttribIList);
 
 		//	RGB or RGBA are the only supported modes, because they are fun.
 		//	Paletted mode are so boring and slow and old fashioned ...
@@ -991,7 +991,7 @@ CContextManager::RENDERING_CONTEXT_ID  CWin32ContextManager::glCreateExtendedCon
         attribIndex = defineDepthBuffer(attribIndex, pcs.display_mode, piAttribIList);
 
 		//	Use stencil if requested
-        attribIndex = defineStencilBuffer(attribIndex, pcs.display_mode, piAttribIList);
+		attribIndex = defineStencilBuffer(attribIndex, pcs.stencil_buffer, piAttribIList);
 
 		//	Use accum buffer if requested
         attribIndex = defineAccumBuffer(attribIndex, pcs.display_mode, piAttribIList);
