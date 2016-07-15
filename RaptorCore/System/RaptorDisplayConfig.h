@@ -278,10 +278,11 @@ public:
 
 	typedef enum
 	{
-		NATIVE,		// ScreenDisplay
-		FILTERED,
-		BUFFERED,
-		TEXTURE,
+		NATIVE_GL,		// ScreenDisplay
+		RENDER_BUFFER_FILTER_CHAIN,
+		PIXEL_BUFFER_FILTER_CHAIN,
+		RENDER_BUFFER,
+		PIXEL_BUFFER,
 		VULKAN
 	} GL_DISPLAY_RENDERER;
 
@@ -322,10 +323,12 @@ public:
 	GL_ANTIALIAS	antialias;
 	GL_SWAPBUFFER	swap_buffer;
 	GL_DISPLAY_RENDERER	renderer;
+	bool			bind_to_texture;
 	bool			overlay;
 	bool			double_buffer;
 	bool			depth_buffer;
 	bool			stencil_buffer;
+	bool			accumulator_buffer;
 	struct
 	{
 		unsigned char	fps;

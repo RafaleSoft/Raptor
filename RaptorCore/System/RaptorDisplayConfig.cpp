@@ -33,11 +33,13 @@ CRaptorDisplayConfig::CRaptorDisplayConfig()
 	acceleration = GENERIC;
 	antialias = ANTIALIAS_NONE;
 	swap_buffer = SWAP_UNDEFINED;
-	renderer = NATIVE;
+	renderer = NATIVE_GL;
+	bind_to_texture = false;
 	overlay = false;
 	double_buffer = true;
 	depth_buffer = true;
 	stencil_buffer = false;
+	accumulator_buffer = false;
 
     hintState.perspectiveCorrection = GL_NICEST;
     hintState.fog = GL_DONT_CARE;
@@ -141,19 +143,22 @@ void CRaptorDisplayConfig::copyBaseConfig(const CRaptorDisplayConfig& config)
     y = config.y;
     width = config.width;
     height = config.height;
-    caption = config.caption;
-    refresh_rate = config.refresh_rate;
-    display_mode = config.display_mode;
     draw_logo = config.draw_logo;
 	status_bar = config.status_bar;
-	acceleration = config.acceleration;
+    display_mode = config.display_mode;
+    acceleration = config.acceleration;
 	antialias = config.antialias;
 	swap_buffer = config.swap_buffer;
 	renderer = config.renderer;
+	bind_to_texture = config.bind_to_texture;
 	overlay = config.overlay;
 	double_buffer = config.double_buffer;
 	depth_buffer = config.depth_buffer;
 	stencil_buffer = config.stencil_buffer;
+	accumulator_buffer = config.accumulator_buffer;
+
+	refresh_rate = config.refresh_rate;
+	caption = config.caption;
 }
 
 unsigned int CRaptorDisplayConfig::getNbSamples(void) const

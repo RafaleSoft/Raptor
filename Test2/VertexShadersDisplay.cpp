@@ -565,7 +565,8 @@ public:
 		attrs.caption = "texture waves";
 		attrs.refresh_rate;
 		attrs.acceleration = CRaptorDisplayConfig::HARDWARE;
-		attrs.display_mode = CGL_RGBA | CGL_RENDER_TEXTURE;
+		attrs.renderer = CRaptorDisplayConfig::PIXEL_BUFFER;
+		attrs.display_mode = CGL_RGBA;
 
 		pBuffer = Raptor::glCreateDisplay(attrs);
 		RAPTOR_HANDLE handle;

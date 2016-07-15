@@ -86,7 +86,7 @@ LRESULT CALLBACK WindowProc(  HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	        glcs.y = 0;
 	        glcs.caption = "Raptor";
 			glcs.acceleration = CRaptorDisplayConfig::HARDWARE;
-			glcs.renderer = CRaptorDisplayConfig::FILTERED;
+			glcs.renderer = CRaptorDisplayConfig::PIXEL_BUFFER_FILTER_CHAIN;
 			glcs.double_buffer = true;
 			glcs.depth_buffer = true;
 	        glcs.display_mode = CGL_FLOAT_16 | CGL_DEPTH;

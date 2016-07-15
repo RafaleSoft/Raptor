@@ -193,9 +193,10 @@ bool Raptor::glCheckDisplayConfig(const CRaptorDisplayConfig &pcs)
     bool valid = false;
     CContextManager *ctxMgr = CContextManager::GetInstance();
 
-    if ((pcs.display_mode & CGL_RENDER_TEXTURE ) == CGL_RENDER_TEXTURE)
+	if (pcs.renderer == CRaptorDisplayConfig::PIXEL_BUFFER)
     {
         // TODO
+		//	Also check texture binding ?
     }
     else
     {
@@ -260,11 +261,12 @@ CRaptorDisplay* Raptor::glCreateDisplay(const CRaptorDisplayConfig& pcs)
 
 	CRaptorDisplay *pDisplay = NULL;
 	
-	if (CRaptorDisplayConfig::FILTERED == pcs.renderer)
+	if ((CRaptorDisplayConfig::RENDER_BUFFER_FILTER_CHAIN == pcs.renderer) ||
+		(CRaptorDisplayConfig::PIXEL_BUFFER_FILTER_CHAIN == pcs.renderer))
 		pDisplay = new CRaptorFilteredDisplay(pcs);
-	else if ((display_mode & CGL_RENDER_BUFFER ) == CGL_RENDER_BUFFER)
+	else if (CRaptorDisplayConfig::RENDER_BUFFER == pcs.renderer)
 		pDisplay = new CRaptorRenderBufferDisplay(pcs);
-	else if ((display_mode & CGL_RENDER_TEXTURE ) == CGL_RENDER_TEXTURE)
+	else if (CRaptorDisplayConfig::PIXEL_BUFFER == pcs.renderer)
 		pDisplay = new CRaptorBufferDisplay(pcs);
 	else if (CRaptorDisplayConfig::VULKAN == pcs.renderer)
 		pDisplay = new CRaptorVulkanDisplay(pcs);

@@ -275,7 +275,7 @@ bool CRaptorRenderBufferDisplay::createFrameBuffer(void)
 		// further intialisations : 
 		// - create color render buffers if target is not a texture
 		if ( (((cs.display_mode & CGL_RGBA) == CGL_RGBA) || ((cs.display_mode & CGL_RGB) == CGL_RGB)) && 
-			((cs.display_mode & CGL_RENDER_TEXTURE) != CGL_RENDER_TEXTURE) )
+			!cs.bind_to_texture)
 		{
 			GLuint internalFormat = GL_NONE;
 			if ((cs.display_mode & CGL_RGBA) == CGL_RGBA)
@@ -360,8 +360,7 @@ bool CRaptorRenderBufferDisplay::createFrameBuffer(void)
 		CATCH_GL_ERROR
 
 		// - create depth render buffers
-		if (((cs.display_mode & CGL_DEPTH_32) != 0) &&
-			((cs.display_mode & CGL_RENDER_DEPTHTEXTURE) != CGL_RENDER_DEPTHTEXTURE))
+		if (((cs.display_mode & CGL_DEPTH_32) != 0) && !cs.bind_to_texture)
 		{
 			GLenum internalFormat = GL_DEPTH_COMPONENT;
 			if ((cs.display_mode & CGL_DEPTH_32) == CGL_DEPTH_16)
@@ -400,8 +399,7 @@ bool CRaptorRenderBufferDisplay::createFrameBuffer(void)
 		CATCH_GL_ERROR
 
 		// - create stencil render buffers
-		if ((cs.stencil_buffer) &&
-			((cs.display_mode & CGL_RENDER_DEPTHTEXTURE) != CGL_RENDER_DEPTHTEXTURE))
+		if ((cs.stencil_buffer) && !cs.bind_to_texture)
 		{
 #if defined(GL_EXT_packed_depth_stencil)
 			if (((cs.display_mode & CGL_DEPTH_32) != 0) &&
@@ -447,8 +445,7 @@ bool CRaptorRenderBufferDisplay::createFrameBuffer(void)
 	//!	except for multisampling
 	if (nbSamples == 1)
 	{
-		if (((cs.display_mode & CGL_RENDER_TEXTURE) == CGL_RENDER_TEXTURE) ||
-			((cs.display_mode & CGL_RENDER_DEPTHTEXTURE) == CGL_RENDER_DEPTHTEXTURE))
+		if (cs.bind_to_texture)
 		{
 			if (m_pAttachments == NULL)
 				return false;
@@ -478,10 +475,14 @@ bool CRaptorRenderBufferDisplay::glBindDisplay(const RAPTOR_HANDLE& device)
 		{
 			m_pAttachments = (CTextureSet*)device.handle;
 			m_pAttachments->registerDestruction(this);
+			cs.bind_to_texture = true;
 			return (m_pAttachments->getNbTexture() > 0);
 		}
 		else
+		{
+			cs.bind_to_texture = false;
 			return false;
+		}
 	}
 
 #if defined(GL_EXT_framebuffer_object)

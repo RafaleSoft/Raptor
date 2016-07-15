@@ -82,12 +82,10 @@ CRaptorFilteredDisplay::CRaptorFilteredDisplay(const CRaptorDisplayConfig& pcs)
 	cs.antialias = CRaptorDisplayConfig::ANTIALIAS_NONE;
 
     //  Impose texture rendering and single buffer.
-	//	Disable multisample rendering
-    if ((filter_cs.display_mode & CGL_RENDER_TEXTURE) != CGL_RENDER_TEXTURE)
-        filter_cs.display_mode |= CGL_RENDER_TEXTURE;
-    if ((filter_cs.display_mode & CGL_RENDER_DEPTHTEXTURE) != CGL_RENDER_DEPTHTEXTURE)
-        filter_cs.display_mode |= CGL_RENDER_DEPTHTEXTURE;
+	filter_cs.bind_to_texture = true;
     filter_cs.double_buffer = false;
+
+	//	Disable multisample rendering if not supported
 #if !defined(GL_EXT_framebuffer_multisample) && !defined(GL_EXT_framebuffer_blit)
 	if (CRaptorDisplayConfig::ANTIALIAS_NONE != filter_cs.antialias)
         filter_cs.antialias = ANTIALIAS_NONE;
@@ -101,7 +99,12 @@ CRaptorFilteredDisplay::CRaptorFilteredDisplay(const CRaptorDisplayConfig& pcs)
 			filter_cs.display_mode |= CGL_FLOAT_16;
 	}
 
-	filter_cs.renderer = CRaptorDisplayConfig::NATIVE;
+	if (CRaptorDisplayConfig::RENDER_BUFFER_FILTER_CHAIN == pcs.renderer)
+		filter_cs.renderer = CRaptorDisplayConfig::RENDER_BUFFER;
+	else if (CRaptorDisplayConfig::PIXEL_BUFFER_FILTER_CHAIN == pcs.renderer)
+		filter_cs.renderer = CRaptorDisplayConfig::PIXEL_BUFFER;
+	else
+		filter_cs.renderer = CRaptorDisplayConfig::RENDER_BUFFER;
 
 	//	Check texture rendering capabilities:
 	//	nVidia does not support separate Depth + Stencil framebuffers, except
@@ -109,8 +112,8 @@ CRaptorFilteredDisplay::CRaptorFilteredDisplay(const CRaptorDisplayConfig& pcs)
 #if !defined(GL_EXT_packed_depth_stencil)
 	if ((filter_cs.stencil) &&
 		((filter_cs.display_mode & CGL_DEPTH) == CGL_DEPTH) &&
-		((filter_cs.display_mode & CGL_RENDER_BUFFER) == CGL_RENDER_BUFFER))
-		filter_cs.display_mode  &= ~CGL_RENDER_BUFFER;
+		(filter_cs.renderer == CRaptorDisplayConfig::RENDER_BUFFER))
+		filter_cs.renderer = CRaptorDisplayConfig::PIXEL_BUFFER;
 #endif
 
 	CViewPoint *vp = CRaptorDisplay::getViewPoint();
@@ -227,21 +230,22 @@ bool CRaptorFilteredDisplay::glCreateRenderDisplay(void)
 		if (!Raptor::glIsExtensionSupported("WGL_ARB_render_texture"))
 		{
 			if (Raptor::glIsExtensionSupported("GL_EXT_framebuffer_object"))
-				filter_cs.display_mode |= CGL_RENDER_BUFFER;
+				filter_cs.renderer = CRaptorDisplayConfig::RENDER_BUFFER;
 			else
 				return false;
 		}
 
+		rda.bind_to_texture = filter_cs.bind_to_texture;
 		rda.display_mode = filter_cs.display_mode;
 		rda.status_bar = false;
-		rda.renderer = CRaptorDisplayConfig::BUFFERED;
+		rda.renderer = filter_cs.renderer;
 		rda.double_buffer = filter_cs.double_buffer;
 
 		if (CRaptorDisplayConfig::ANTIALIAS_NONE != rda.antialias)
 		{
 			//	remove render to texture, we will use FSAA buffer only
 			CRaptorDisplayConfig FSAArda = rda;
-			FSAArda.display_mode &= ~CGL_RENDER_TEXTURE;
+			FSAArda.bind_to_texture = false;
 
 			m_pFSAADisplay = Raptor::glCreateDisplay(FSAArda);
 			if (m_pFSAADisplay == NULL)
@@ -263,7 +267,7 @@ bool CRaptorFilteredDisplay::glCreateRenderDisplay(void)
 
 		//	Create the texture set for render buffer targets
 		//	Render to texture and render to depth texture are imposed.
-		if ((filter_cs.display_mode & CGL_RENDER_BUFFER) == CGL_RENDER_BUFFER)
+		if (CRaptorDisplayConfig::RENDER_BUFFER == filter_cs.renderer)
 		{
 			CTextureObject::TEXEL_TYPE texelType = CTextureObject::CGL_COLOR24_ALPHA;
 			if ((filter_cs.display_mode & CGL_FLOAT) == CGL_FLOAT)
@@ -361,8 +365,7 @@ bool CRaptorFilteredDisplay::glBindDisplay(const RAPTOR_HANDLE& device)
         if (device.handle != 0)
         {
             CRaptorDisplayFilter *shader = static_cast<CRaptorDisplayFilter*>((void*)device.handle);
-			bool useRenderBuffers = (filter_cs.display_mode & CGL_RENDER_BUFFER) == CGL_RENDER_BUFFER;
-
+			bool useRenderBuffers = (CRaptorDisplayConfig::RENDER_BUFFER == filter_cs.renderer);
 			if (useRenderBuffers)
 				shader->setFilterModel(CRaptorDisplayFilter::RENDER_BUFFER);
             

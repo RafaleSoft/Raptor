@@ -179,11 +179,11 @@ unsigned int defineStencilBuffer(unsigned int index,bool stencil,int *attribs)
     return attribIndex;
 }
 
-unsigned int defineAccumBuffer(unsigned int index,int mode,int *attribs)
+unsigned int defineAccumBuffer(unsigned int index,bool accumulator_buffer,int *attribs)
 {
     unsigned int attribIndex = index;
 #if defined(WGL_ARB_pixel_format)
-    if ((mode & CGL_ACCUM) == CGL_ACCUM)
+    if (accumulator_buffer)
     {
 	    attribs[attribIndex++] = WGL_ACCUM_BITS_ARB;
 	    attribs[attribIndex++] = 64;
@@ -724,7 +724,7 @@ CContextManager::RENDERING_CONTEXT_ID CWin32ContextManager::glCreateContext(cons
 	if (m_mode & CGL_RGBA) alphabits=8;
 	if (config.stencil_buffer) stencilbits=8;
 	if (config.overlay) overlaybits = 1;
-	if (m_mode & CGL_ACCUM) accumbits = 64;
+	if (config.accumulator_buffer) accumbits = 64;
 
 	PIXELFORMATDESCRIPTOR
 	pfd = { 
@@ -866,7 +866,7 @@ CContextManager::RENDERING_CONTEXT_ID  CWin32ContextManager::glCreateExtendedCon
         attribIndex = defineStencilBuffer(attribIndex, config.stencil_buffer, piAttribIList);
 
 		//	Use accum buffer if requested
-        attribIndex = defineAccumBuffer(attribIndex, config.display_mode, piAttribIList);
+        attribIndex = defineAccumBuffer(attribIndex, config.accumulator_buffer, piAttribIList);
 
 		//	Use antialiasing if requested
         attribIndex = defineSampleBuffer(attribIndex, config.getNbSamples(), piAttribIList);
@@ -994,20 +994,20 @@ CContextManager::RENDERING_CONTEXT_ID  CWin32ContextManager::glCreateExtendedCon
 		attribIndex = defineStencilBuffer(attribIndex, pcs.stencil_buffer, piAttribIList);
 
 		//	Use accum buffer if requested
-        attribIndex = defineAccumBuffer(attribIndex, pcs.display_mode, piAttribIList);
+        attribIndex = defineAccumBuffer(attribIndex, pcs.accumulator_buffer, piAttribIList);
 
 		//	Use antialiasing if requested
-        attribIndex = defineSampleBuffer(attribIndex, pcs.antialias, piAttribIList);
+        attribIndex = defineSampleBuffer(attribIndex, pcs.getNbSamples(), piAttribIList);
 
 #ifdef WGL_ARB_render_texture
-		if ((m_mode & CGL_RENDER_TEXTURE) == CGL_RENDER_TEXTURE)
+		if (pcs.bind_to_texture)
 		{
 			piAttribIList[attribIndex++] = WGL_BIND_TO_TEXTURE_RGBA_ARB;
             //piAttribIList[attribIndex++] = 0x20B4; //WGL_BIND_TO_TEXTURE_RECTANGLE_FLOAT_RGBA_NV
 			piAttribIList[attribIndex++] = TRUE;
 
 		#ifdef WGL_NV_render_depth_texture
-			if ((m_mode & CGL_RENDER_DEPTHTEXTURE) == CGL_RENDER_DEPTHTEXTURE)
+			if ((m_mode & CGL_DEPTH_32) != 0)
 			{
 				piAttribIList[attribIndex++] = WGL_BIND_TO_TEXTURE_DEPTH_NV;
 				piAttribIList[attribIndex++] = TRUE;
@@ -1036,7 +1036,7 @@ CContextManager::RENDERING_CONTEXT_ID  CWin32ContextManager::glCreateExtendedCon
 		int pBufferAttribs[10];
 		memset(pBufferAttribs,0,10*sizeof(int));
 #ifdef WGL_ARB_render_texture
-		if ((m_mode & CGL_RENDER_TEXTURE) == CGL_RENDER_TEXTURE)
+		if (pcs.bind_to_texture)
 		{
 			int idx = 0;
 			pBufferAttribs[idx++] = WGL_TEXTURE_FORMAT_ARB;
@@ -1045,16 +1045,14 @@ CContextManager::RENDERING_CONTEXT_ID  CWin32ContextManager::glCreateExtendedCon
 			pBufferAttribs[idx++] = WGL_TEXTURE_TARGET_ARB;
             if ((m_mode & CGL_RENDER_CUBETEXTURE) == CGL_RENDER_CUBETEXTURE)
                 pBufferAttribs[idx++] = WGL_TEXTURE_CUBE_MAP_ARB;
-            else if ((m_mode & CGL_RENDER_2DTEXTURE) == CGL_RENDER_2DTEXTURE)
-			    pBufferAttribs[idx++] = WGL_TEXTURE_2D_ARB;
-                //pBufferAttribs[idx++] = 0x20A2; //WGL_TEXTURE_RECTANGLE_NV
             else
                 pBufferAttribs[idx++] = WGL_TEXTURE_2D_ARB;
+			//pBufferAttribs[idx++] = 0x20A2; //WGL_TEXTURE_RECTANGLE_NV
 			//pBufferAttribs[idx++] = WGL_MIPMAP_TEXTURE_ARB;
 			//pBufferAttribs[idx++] = TRUE;
 
 		#ifdef WGL_NV_render_depth_texture
-			if ((m_mode & CGL_RENDER_DEPTHTEXTURE) == CGL_RENDER_DEPTHTEXTURE)
+			if ((m_mode & CGL_DEPTH_32) != 0)
 			{
 				pBufferAttribs[idx++] = WGL_DEPTH_TEXTURE_FORMAT_NV;
 				pBufferAttribs[idx++] = WGL_TEXTURE_DEPTH_COMPONENT_NV;

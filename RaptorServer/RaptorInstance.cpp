@@ -199,7 +199,7 @@ bool CRaptorInstance::start(unsigned int width,unsigned int height)
 	glcs.acceleration = CRaptorDisplayConfig::HARDWARE;
 	glcs.antialias = CRaptorDisplayConfig::ANTIALIAS_4X;
 	glcs.swap_buffer = CRaptorDisplayConfig::SWAP_EXCHANGE;
-	glcs.renderer = CRaptorDisplayConfig::FILTERED;
+	glcs.renderer = CRaptorDisplayConfig::RENDER_BUFFER_FILTER_CHAIN;
 	glcs.double_buffer = true;
 	glcs.depth_buffer = true;
 	glcs.stencil_buffer = true;
@@ -212,7 +212,7 @@ bool CRaptorInstance::start(unsigned int width,unsigned int height)
         if (!Raptor::glCheckDisplayConfig(glcs))
         {
             Raptor::GetMessages()->displayMessage("Some hardware features are missing. Will use minimal config, disabling all advanced effects");
-			glcs.renderer = CRaptorDisplayConfig::NATIVE;
+			glcs.renderer = CRaptorDisplayConfig::NATIVE_GL;
             if (!Raptor::glCheckDisplayConfig(glcs))
             {
                 Raptor::GetMessages()->displayMessage("Minimum required display config cannot be created. Sorry, demo will abort. Bye.");
@@ -420,7 +420,7 @@ bool CRaptorInstance::executeRequest(request &r)
 		glcs.acceleration = CRaptorDisplayConfig::HARDWARE;
 		glcs.display_mode = CGL_RGBA | 
 							CGL_DEPTH;
-		glcs.display_mode |= CGL_RENDER_BUFFER;
+		glcs.renderer = CRaptorDisplayConfig::RENDER_BUFFER;
 		glcs.refresh_rate.fps = CGL_MAXREFRESHRATE;
 		s.display = Raptor::glCreateDisplay(glcs);
 		if (s.display == 0)

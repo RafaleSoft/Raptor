@@ -216,13 +216,18 @@ bool CMBFilter::glInitFilter(void)
     state.width = colorInput->getWidth();
     state.height = colorInput->getHeight();
 	state.acceleration = CRaptorDisplayConfig::HARDWARE;
-    state.display_mode = CGL_RENDER_TEXTURE | CGL_RGBA ;
+	state.bind_to_texture = true;
+	state.depth_buffer = false;
+	state.double_buffer = false;
+	state.stencil_buffer = false;
+    state.display_mode = CGL_RGBA;
+	state.renderer = CRaptorDisplayConfig::PIXEL_BUFFER;
 
 	CAccumulator *accumulator = new CAccumulator;
 
 	if (m_fModel == RENDER_BUFFER)
 	{
-		state.display_mode |= CGL_RENDER_BUFFER;
+		state.renderer = CRaptorDisplayConfig::RENDER_BUFFER;
 
 		CTextureObject *T = NULL;
 		T = filterFactory.glCreateTexture(	CTextureObject::CGL_COLOR24_ALPHA,

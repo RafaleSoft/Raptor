@@ -274,7 +274,8 @@ void CTest5Doc::GLInitContext(void)
 	glcs.x = 0;
 	glcs.y = 0;
 	glcs.caption = "RAPTOR_RENDER_BUFFER_DISPLAY";
-	glcs.display_mode = CGL_RGBA | CGL_DEPTH | CGL_RENDER_BUFFER;
+	glcs.display_mode = CGL_RGBA | CGL_DEPTH;
+	glcs.renderer = CRaptorDisplayConfig::BUFFERED;
 	m_pDisplayBuffer = Raptor::glCreateDisplay(glcs);
 
 	vp = m_pDisplayBuffer->getViewPoint();

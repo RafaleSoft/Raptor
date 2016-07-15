@@ -327,8 +327,13 @@ ITextureGenerator*  CRaptorDisplayFilter::glCreateColorSource(void)
     CRaptorDisplayConfig state;
     state.width = m_fXfactor * colorInput->getWidth();
     state.height = m_fYfactor * colorInput->getHeight();
-    state.display_mode = CGL_RENDER_TEXTURE | CGL_RGBA ;
+    state.display_mode = CGL_RGBA;
+	state.bind_to_texture = true;
 	state.acceleration = CRaptorDisplayConfig::HARDWARE;
+	if (m_fModel == RENDER_BUFFER)
+		state.renderer = CRaptorDisplayConfig::RENDER_BUFFER;
+	else if (m_fModel == CRaptorDisplayFilter::RENDER_TEXTURE)
+		state.renderer = CRaptorDisplayConfig::PIXEL_BUFFER;
 
     CRaptorDisplay* pDisplay = Raptor::glCreateDisplay(state);
     CRenderingProperties *rp = pDisplay->getRenderingProperties();
@@ -361,8 +366,12 @@ CTextureObject*  CRaptorDisplayFilter::glCreateColorOutput(void)
 	state.width = m_fXfactor * getColorInput()->getWidth();
 	state.height = m_fYfactor * getColorInput()->getHeight();
 	state.acceleration = CRaptorDisplayConfig::HARDWARE;
-	state.display_mode = CGL_RGBA | CGL_RENDER_TEXTURE;
-	state.display_mode |= CGL_RENDER_BUFFER;
+	state.display_mode = CGL_RGBA;
+	state.bind_to_texture = true;
+	if (m_fModel == RENDER_BUFFER)
+		state.renderer = CRaptorDisplayConfig::RENDER_BUFFER;
+	else if (m_fModel == CRaptorDisplayFilter::RENDER_TEXTURE)
+		state.renderer = CRaptorDisplayConfig::PIXEL_BUFFER;
 
 	CTextureFactory &filterFactory = CTextureFactory::getDefaultFactory();
 	colorOutput = filterFactory.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,

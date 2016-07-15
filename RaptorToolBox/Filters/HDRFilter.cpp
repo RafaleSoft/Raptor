@@ -295,13 +295,15 @@ CHDRFilter::CHDRFilter(const CRaptorDisplayConfig &da)
 	rda.antialias = CRaptorDisplayConfig::ANTIALIAS_NONE;
 	rda.depth_buffer = false;
 	rda.double_buffer = false;
-    rda.display_mode =	CGL_RENDER_TEXTURE | 
-                        (da.display_mode & (CGL_RGB|CGL_RGBA|CGL_FLOAT));
+	rda.stencil_buffer = false;
+	rda.bind_to_texture = true;
+    rda.display_mode =	(da.display_mode & (CGL_RGB|CGL_RGBA|CGL_FLOAT));
+	rda.renderer = CRaptorDisplayConfig::PIXEL_BUFFER;
 
 #if defined(GL_EXT_framebuffer_object)
 	if ((Raptor::glIsExtensionSupported("GL_EXT_framebuffer_object")) &&
-		((da.display_mode & CGL_RENDER_BUFFER) == CGL_RENDER_BUFFER))
-		rda.display_mode |= CGL_RENDER_BUFFER;
+		(da.renderer == CRaptorDisplayConfig::RENDER_BUFFER))
+		rda.renderer = CRaptorDisplayConfig::RENDER_BUFFER;
 #endif
 
 	nLevels = 0;

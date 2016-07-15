@@ -452,11 +452,15 @@ bool CDOFFilter::glInitFilter(void)
 	state.width = m_fXfactor * getColorInput()->getWidth();
 	state.height = m_fYfactor * getColorInput()->getHeight();
 	state.acceleration = CRaptorDisplayConfig::HARDWARE;
-    state.display_mode = CGL_RENDER_TEXTURE | CGL_RGBA ;
+	state.bind_to_texture = true;
+	state.double_buffer = false;
+	state.depth_buffer = false;
+    state.display_mode = CGL_RGBA;
+	state.renderer = CRaptorDisplayConfig::PIXEL_BUFFER;
 
 	if (m_fModel == RENDER_BUFFER)
 	{
-		state.display_mode |= CGL_RENDER_BUFFER;
+		state.renderer = CRaptorDisplayConfig::RENDER_BUFFER;
 
 		tmpTexture = filterFactory.glCreateTexture(	CTextureObject::CGL_COLOR24_ALPHA,
 			                                        CTextureObject::CGL_OPAQUE,
