@@ -7,6 +7,8 @@
 #include "VertexShadersDisplay.h"
 #include "GLHierarchy\VertexShader.h"
 #include "GLHierarchy\FragmentShader.h"
+#include "GLHierarchy\VertexProgram.h"
+#include "GLHierarchy\FragmentProgram.h"
 #include "Engine\3DEngine.h"
 #include "Engine\3DScene.h"
 #include "Engine\ViewPoint.h"
@@ -24,8 +26,9 @@
 #include "GLHierarchy\ShadedGeometry.h"
 #include "GLHierarchy\RenderingProperties.h"
 
+#include "ToolBox/BasicObjects.h"
 
-GL_COORD_VERTEX LPOS;
+
 const int TABLE_SIZE = 256;
 
 string waterShader = 
@@ -344,58 +347,22 @@ MUL color, color, color.w; \
 MAD finalColor, color, half.xxxz, half.xxxw; \
 END" ;
 
-
-class See : public CShadedGeometry
-{
-public:
-	See(float width,float height,int hcels,int vcels)
-	{
-		float orgx = -width * 0.5f;
-		float orgy = -height * 0.5f;
-		float stepx = width / hcels;
-		float stepy = height / vcels;
-
-		unsigned short *m_indexes = new unsigned short[2 * hcels * vcels];
-
-		int pos = 0;
-		memset(m_indexes,0,2*hcels*vcels*sizeof(unsigned short));
-		for (int k=0;k<vcels-2;k+=2)
-		{
-            int i=0;
-			for (i=0;i<hcels;i++)
-				for (int j=k+1;j>=k;j--)
-				{
-					m_indexes[pos++] = hcels * j + i;
-				}
-			for (i=hcels-1;i>=0;i--)
-				for (int j=k+1;j<k+3;j++)
-				{
-					m_indexes[pos++] = hcels * j + i;
-				}
-		}
-
-		glSetVertices(hcels*vcels);
-		glSetTexCoords(hcels*vcels);
-
-		glLockData();
-
-		for (int j=0;j<vcels;j++)
-			for (int i=0;i<hcels;i++)
-			{
-				addVertex(orgx+i*stepx,0,-orgy-j*stepy,1.0f);
-				setTexCoord(i+j*hcels, 10 * (float)i / hcels , 10 * (float)j / vcels);
-				setNormal(i+j*hcels,0.0f,1.0f,0.0f,1.0f);
-			}
-
-		glUnLockData();
-
-		CGeometryPrimitive*	gp = createPrimitive(CGeometryPrimitive::TRIANGLE_STRIP);
-		gp->setIndexes(pos,m_indexes);
-		delete [] m_indexes;
-	}
-
-	virtual ~See() {};
-};
+string waterVertexProgram = 
+" \n\
+#version 120 \n\
+void main (void) \n\
+{ \n\
+	gl_Position = ftransform(); \n\
+} \n\
+";
+string waterFragmentProgram = 
+" \n\
+#version 120 \n\
+void main (void) \n\
+{ \n\
+	gl_FragColor = vec4(1.0,0.0,0.0,1.0); \n\
+} \n\
+";
 
 class ShaderModifier : public CModifier
 {
@@ -413,9 +380,14 @@ public:
 
 	virtual void __fastcall deltaTime(float dt)
 	{
-		float T = GetTime();
-	
+		float T = CTimeObject::GetGlobalTime();
+		GL_COORD_VERTEX LPOS(1000.0f*cos(dt*2*PI/180),500.0f,1000.0f*sin(dt*2*PI/180),1.0f);
+
+			
 		float sharpness = 1.0f; 
+
+		CShaderProgram::CProgramParameters	params;
+		CShaderProgram::CProgramParameters	params2;
 
 		GL_COORD_VERTEX xDir(0.0f, 0.866f, -0.866f, 0.0f);
 		GL_COORD_VERTEX zDir(-1.0f, -0.5f, -0.5f, -1.0f);
@@ -427,6 +399,7 @@ public:
 								2 * PI / L.z);
 		GL_COORD_VERTEX S(80,60,50,40);
 
+		T = GetTime();
 		GL_COORD_VERTEX phase(	S.x * T * freq.x, 
 								S.y * T * freq.y,
 								S.z * T * freq.z,
@@ -495,62 +468,23 @@ public:
 		params.addParameter("",kBz);
 		params.addParameter("",LPOS);
 
+#ifdef VERTEX_SHADER
 		CVertexShader *vs = m_pShader->glGetVertexShader();
 		vs->setProgramParameters(params);
-
+#endif
 		params2.addParameter("",GL_COORD_VERTEX(0.0f,0.6f,0.8f,0.8f));
 		params2.addParameter("",GL_COORD_VERTEX(8.0f,0.0f,0.0f,1.0f));
 
+#ifdef VERTEX_SHADER
 		CFragmentShader *fp = m_pShader->glGetFragmentShader();
 		fp->setProgramParameters(params2);
+#endif
 	}
 
 private:
 	CShader					*m_pShader;
-	CShaderProgram::CProgramParameters	params;
-	CShaderProgram::CProgramParameters	params2;
 };
 
-
-
-class SeeGround : public CSimpleObject
-{
-public:
-	SeeGround(	float width,float height,float scale,
-				CTextureObject *map)
-	:m_width(width),m_height(height),m_scale(scale)
-	{
-		CTextureUnitSetup setup;
-		setup.setDiffuseMap(map);
-		tmuSetup = setup.glBuildSetup();
-	};
-	virtual ~SeeGround() {};
-
-	virtual void glRender()
-	{
-		CRaptorDisplay::glRender(tmuSetup);
-		glColor4f(0.5f,0.5f,0.0f,1.0f);
-		glBegin(GL_QUADS);
-			glTexCoord2f(0.0f,m_scale);
-			glVertex3f(-m_scale * m_width, 0, -m_scale * m_height);
-
-			glTexCoord2f(0.0f,0.0f);
-			glVertex3f(-m_scale * m_width, 0, m_scale * m_height);
-
-			glTexCoord2f(m_scale,0.0f);
-			glVertex3f(m_scale * m_width, 0, m_scale * m_height);
-
-			glTexCoord2f(m_scale,m_scale);
-			glVertex3f(m_scale * m_width, 0, -m_scale * m_height);
-		glEnd();
-	}
-
-private:
-	float m_width;
-	float m_height;
-	float m_scale;
-	RAPTOR_HANDLE	tmuSetup;
-};
 
 class CTextureWaves : public CSimpleObject
 {
@@ -716,46 +650,13 @@ private:
 };
 
 
-class CSky : public CShadedGeometry
-{
-public:
-	CSky()
-	{
-		CShader *sh = getShader();
-		CTextureUnitSetup* tus = sh->glGetTextureUnitsSetup();
-
-		CTextureFactory &factory = CTextureFactory::getDefaultFactory();
-  		CTextureObject *T = factory.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,
-													CTextureObject::CGL_OPAQUE,
-													CTextureObject::CGL_BILINEAR);
-
-		T->glSetTransparency(255);
-
-		CTextureFactoryConfig& config = factory.getConfig();
-		const CTextureFactoryConfig::ICompressor *compressor = config.getCurrentCompressor();
-		if (0 < config.getNumCompressors())
-			config.setCurrentCompressor(config.getCompressor("OpenGL"));
-
-		factory.glLoadTexture(T,"Datas\\ciel_07.jpg");
-		tus->setDiffuseMap(T);
-	}
-
-	virtual ~CSky() {};
-
-	CSky& operator=(const CGeometry &g)
-	{
-		CShadedGeometry::operator=(g);
-		return *this;
-	}
-};
-
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 CVertexShadersDisplay::CVertexShadersDisplay():
-	see(NULL),showBump(false),
+	showBump(false),
 	shaderModifier(NULL),pLight(NULL),
-	ground(NULL),tw(NULL)
+	tw(NULL)
 {
 }
 
@@ -768,37 +669,30 @@ void CVertexShadersDisplay::UnInit()
 {
 }
 
-void CVertexShadersDisplay::ReInit()
-{
-	CGenericDisplay::ReInit();
-
-	if (shaderModifier)
-		shaderModifier->animate(true);
-
-    CRaptorDisplay* const pDisplay = CRaptorDisplay::GetCurrentDisplay();
-    CRenderingProperties *rp = pDisplay->getRenderingProperties();
-    rp->setTexturing(CRenderingProperties::ENABLE);
-}
-
 void CVertexShadersDisplay::Init()
 {
 	CGenericDisplay::Init();
 
 	CTextureFactory &factory = CTextureFactory::getDefaultFactory();
+	CTextureFactoryConfig& config = factory.getConfig();
+	const CTextureFactoryConfig::ICompressor *compressor = config.getCurrentCompressor();
+	if (0 < config.getNumCompressors())
+			config.setCurrentCompressor(config.getCompressor("OpenGL"));
 
-	See *water = new See(3000.0f,3000.0f,100,100);
-    CGeometry::CRenderingModel l_model(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
+	//	Create water object
+	CBasicObjects::CRectMesh *water = new CBasicObjects::CRectMesh();
+	water->setDimensions(3000.0f,3000.0f,100,100);
+	water->rotationX(-90.0f);
+	CGeometry::CRenderingModel l_model(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
     l_model.addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
 	water->setRenderingModel(l_model);
 
 	CShader *pShader = water->getShader();
-	see = water;
-
+	shaderModifier = new ShaderModifier(pShader);
 	CTextureUnitSetup *ts = pShader->glGetTextureUnitsSetup();
 	CTextureObject* T = factory.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,
 												CTextureObject::CGL_ALPHA_TRANSPARENT,
 												CTextureObject::CGL_BILINEAR);
-
 	T->glSetTransparency(128);
 	factory.glLoadTexture(T,"Datas\\water006.jpg");
 	ts->setDiffuseMap(T);
@@ -808,36 +702,81 @@ void CVertexShadersDisplay::Init()
 	T = tf->getTexture("Datas\\ciel_07_small.jpg");
 	ts->setEnvironmentMap(T);
 
-	CVertexShader *vp = pShader->glGetVertexShader();
-    string fullWaterShader = waterShader+waterShader2+waterShader3;
-	vp->glLoadProgram(fullWaterShader.data());
-	vp->glStop();
-	CFragmentShader *fp = pShader->glGetFragmentShader();
-	fp->glLoadProgram(waterFragments.data());
-	fp->glStop();
-
-	shaderModifier = new ShaderModifier(pShader);
-
-	T = factory.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_OPAQUE, CTextureObject::CGL_BILINEAR);
-	T->glSetTransparency(255);
-	factory.glLoadTexture(T,"Datas\\oldwood.jpg");
-
-	ground = new SeeGround(200.0f,200.0f,10.0f,T);
-
 	tw = new CTextureWaves();
 	ts->setNormalMap(tw->GetNormalMap());
 
+    string fullWaterShader = waterShader+waterShader2+waterShader3;
+#ifdef VERTEX_SHADER
+	CVertexShader *vs = pShader->glGetVertexShader();
+	vs->glLoadProgram(fullWaterShader);
+	vs->glStop();
+	CFragmentShader *fs = pShader->glGetFragmentShader();
+	fs->glLoadProgram(waterFragments);
+	fs->glStop();
+#else
+	CVertexProgram *vp = pShader->glGetVertexProgram();
+	vp->glLoadProgram(waterVertexProgram);
+	CFragmentProgram *fp = pShader->glGetFragmentProgram();
+	fp->glLoadProgram(waterFragmentProgram);
+	pShader->glCompileShader();
+	pShader->glStop();
+#endif
+	
+	//	Create see underwater object
+	T = factory.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_OPAQUE, CTextureObject::CGL_BILINEAR);
+	T->glSetTransparency(255);
+	factory.glLoadTexture(T,"Datas\\oldwood.jpg");
+	CBasicObjects::CRectangle *ground = new CBasicObjects::CRectangle();
+	ground->setDimensions(4000.0f,4000.0f);
+	ground->rotationX(-90.0f);
+	ground->translate(0.0f,-200.0f,0.0f);
+	CTextureUnitSetup *setup = ground->getShader()->glGetTextureUnitsSetup();
+	setup->setDiffuseMap(T);
 
-	sky = new CSky();
+	//	Create sky dome object
+	CShadedGeometry *sky = new CShadedGeometry();
 	CGeometry* skydome = (CGeometry*)CPersistence::FindObject("SKYDOME");
 	*sky = *skydome;
     CGeometry::CRenderingModel l_model2(CGeometry::CRenderingModel::CGL_BACK_GEOMETRY);
     l_model2.addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
 	sky->setRenderingModel(l_model2);
+	CShader *sh = sky->getShader();
+	CTextureUnitSetup* tus = sh->glGetTextureUnitsSetup();
+	T = factory.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_OPAQUE,CTextureObject::CGL_BILINEAR);
+	factory.glLoadTexture(T,"Datas\\ciel_07.jpg");
+	tus->setDiffuseMap(T);
 
-	pScene = new C3DScene("SHADER SCENE");
+	//	Build scene
+	view_point = new CViewPoint();
+    view_point->setPosition(0.0,150.0,1500.0,CViewPoint::EYE);
+    view_point->setPosition(0.0,0.0,0.0,CViewPoint::TARGET);
+	view_point->setViewVolume(-1.33f,1.33f,-1.0f,1.0f,1.0f,10000,CViewPoint::PERSPECTIVE);
+
+	C3DScene *pScene = new C3DScene("SHADER SCENE");
+	pScene->addObject(sky);
+	pScene->addObject(ground);
+	pScene->addObject(water);
+
+	CRaptorDisplay* pDisplay = CRaptorDisplay::GetCurrentDisplay();
+	pDisplay->addScene(pScene);
 }
 
+
+void CVertexShadersDisplay::ReInit()
+{
+	CGenericDisplay::ReInit();
+
+	if (shaderModifier)
+		shaderModifier->animate(true);
+
+    CRaptorDisplay* const pDisplay = CRaptorDisplay::GetCurrentDisplay();
+	pDisplay->selectScene("SHADER SCENE");
+	pDisplay->setViewPoint(view_point);
+    CRenderingProperties *rp = pDisplay->getRenderingProperties();
+	rp->setWireframe(CRenderingProperties::ENABLE);
+    rp->setTexturing(CRenderingProperties::ENABLE);
+	rp->setLighting(CRenderingProperties::ENABLE);
+}
 
 
 void CVertexShadersDisplay::Display()
@@ -845,33 +784,9 @@ void CVertexShadersDisplay::Display()
 	if (reinit)
 		ReInit();
 
-	float dt = CTimeObject::GetGlobalTime();
-
+/*
 	tw->glRender(showBump);
 
-	glPushMatrix();
-
-	glTranslatef(0.0f,0.0f,-1500.0f);
-	glRotatef(5.0f,1.0f,0.0f,0.0f);
 	glRotatef(dt*360.0,0.0f,1.0f,0.0f);
-
-	glColor4f(1.0f,1.0f,1.0f,1.0f);
-
-	GL_COORD_VERTEX lpos(1000.0f*cos(3000*dt*2*PI/180),500.0f,1000.0f*sin(3000*dt*2*PI/180),1.0f);
-	LPOS = lpos;
-
-	glPushMatrix();
-		glTranslatef(0.0f,-200.0f,0.0f);
-		ground->glRender();
-	glPopMatrix();
-
-
-	sky->glRender();
-
-    glPushAttrib(GL_ENABLE_BIT);
-    glEnable(GL_BLEND);
-	see->glRender();
-    glPopAttrib();
-
-	glPopMatrix();
+*/
 }

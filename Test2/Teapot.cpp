@@ -55,7 +55,8 @@ CTeapot::CTeapot()
     stopdemo(-1),m_globalDisplay(NULL),
 	//numdemo(CTest2App::PARTICLEDEMO)
 	//numdemo(CTest2App::AMBIENTOCCLUSIONDEMO)
-	numdemo(CTest2App::BUMPDEMO)
+	//numdemo(CTest2App::BUMPDEMO)
+	numdemo(CTest2App::VRTXSHADERSDEMO)
 {
 }
 

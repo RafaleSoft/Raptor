@@ -143,6 +143,9 @@ void CRaptorExtensions::initVk(void)
 		vkDestroyCommandPool = (PFN_vkDestroyCommandPool)(GETPROCADDRESS("vkDestroyCommandPool"));
 		vkGetDeviceQueue =  (PFN_vkGetDeviceQueue)(GETPROCADDRESS("vkGetDeviceQueue"));
 
+		vkCreateRenderPass = (PFN_vkCreateRenderPass)(GETPROCADDRESS("vkCreateRenderPass"));
+		vkDestroyRenderPass = (PFN_vkDestroyRenderPass)(GETPROCADDRESS("vkDestroyRenderPass"));
+
 		//	Surfaces and WSI
 #if defined(VK_KHR_surface)
 		vkDestroySurfaceKHR = (PFN_vkDestroySurfaceKHR)(GETPROCADDRESS("vkDestroySurfaceKHR"));

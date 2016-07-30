@@ -143,9 +143,9 @@ bool CRaptorVulkanDisplay::glBindDisplay(const RAPTOR_HANDLE& device)
 			manager->vkSwapVSync(m_framerate);
 			m_context = manager->vkCreateContext(device,cs);
 
-			RAPTOR_HANDLE device = manager->getDevice(m_context);
+			RAPTOR_HANDLE device = manager->CContextManager::getDevice(m_context);
 
-			VkFormat format;
+			VkFormat format = VK_FORMAT_B8G8R8A8_UNORM;
 			VkSampleCountFlagBits samples;
 			if (((cs.display_mode & CGL_RGBA) == CGL_RGBA) ||
 				((cs.display_mode & CGL_RGB) == CGL_RGB) ||
@@ -160,10 +160,10 @@ bool CRaptorVulkanDisplay::glBindDisplay(const RAPTOR_HANDLE& device)
 													VK_ATTACHMENT_STORE_OP_STORE,
 													VK_ATTACHMENT_LOAD_OP_CLEAR,
 													VK_ATTACHMENT_STORE_OP_DONT_CARE,
-													VK_IMAGE_LAYOUT_GENERAL, //	Is this correct ?
+													VK_IMAGE_LAYOUT_UNDEFINED, //	Is this correct ?
 													VK_IMAGE_LAYOUT_PRESENT_SRC_KHR }; // is this correct ?
-			VkAttachmentReference pColorAttachments;
-			VkAttachmentReference pDepthStencilAttachment;
+			VkAttachmentReference pColorAttachments = { 0, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL };
+			VkAttachmentReference pDepthStencilAttachment = { 0, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL };
 			VkSubpassDescription pSubpasses = {	0,
 												VK_PIPELINE_BIND_POINT_GRAPHICS,
 												0, NULL,
@@ -171,17 +171,30 @@ bool CRaptorVulkanDisplay::glBindDisplay(const RAPTOR_HANDLE& device)
 												NULL,
 												&pDepthStencilAttachment,
 												0, NULL };
-			VkRenderPassCreateInfo pCreateInfo = {	VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
-													NULL, 0,
-													1, &pAttachments,
-													1, &pSubpasses,
-													0, NULL /*const VkSubpassDependency* pDependencies*/ };
+			VkRenderPassCreateInfo pRenderPassCreateInfo = {VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
+															NULL, 0,
+															1, &pAttachments,
+															1, &pSubpasses,
+															0, NULL /*const VkSubpassDependency* pDependencies*/ };
 			VkRenderPass pRenderPass;
 
 			CRaptorErrorManager *pErrMgr = Raptor::GetErrorManager();
-			VkResult res = manager->glGetExtensions()->vkCreateRenderPass((VkDevice)device.handle,&pCreateInfo,NULL,&pRenderPass);
+			VkResult res = manager->glGetExtensions()->vkCreateRenderPass((VkDevice)device.handle,&pRenderPassCreateInfo,NULL,&pRenderPass);
 			if (VK_SUCCESS != res)
 				pErrMgr->vkGetError(res,__FILE__,__LINE__);
+			else
+			{
+				VkFramebufferCreateInfo pFrameBufferCreateInfo = {	VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
+																	NULL, 0,
+																	pRenderPass,
+																	0, NULL,
+																	cs.width, cs.height, 1 };
+
+				VkFramebuffer pFramebuffer;
+				res = manager->glGetExtensions()->vkCreateFramebuffer((VkDevice)device.handle,&pFrameBufferCreateInfo,NULL,&pFramebuffer);
+				if (VK_SUCCESS != res)
+					pErrMgr->vkGetError(res,__FILE__,__LINE__);
+			}
 		}
 
 		manager->vkMakeCurrentContext(device,m_context);

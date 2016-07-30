@@ -96,10 +96,9 @@ public:
 	SubBBoxData *clear(void) { SubBBoxData* tmp = m_tree; m_tree = NULL; return tmp;};
 	bool isFilled(int x,int y,int z);
 	bool fill(int x,int y,int z);
+	SubBBoxDepth getSize(void) const { return m_size; };
 
 private:
-	friend class CBoundingBox;
-
 	SubBBoxDepth	m_size;
 	SubBBoxData		*m_tree;
 

@@ -629,7 +629,7 @@ CContextManager::RENDERING_CONTEXT_ID CContextManager::vkCreateContext(const RAP
 												formats[0].format, formats[0].colorSpace,
 												pSurfaceCapabilities.currentExtent,
 												1,
-												VK_IMAGE_USAGE_TRANSFER_SRC_BIT, // ???
+												VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT , // ???
 												VK_SHARING_MODE_EXCLUSIVE,
 												0, NULL,
 												pSurfaceCapabilities.currentTransform, // VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR ?

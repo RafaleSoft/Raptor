@@ -242,16 +242,16 @@ void CBumpDisplay::Init()
     tz.a2 = 50.0f;       //  rz = 50.0 * cos ( 0.5 * t )
     vm->addAction(CViewModifier::ROTATE_VIEW,tx,ty,tz);
 
-	m_pScene = new C3DScene("BUMP_SCENE");
-	m_pScene->useZSort();
-    m_pScene->useSceneGlobalAmbient(CColor::RGBA(0.1f,0.1f,0.1f,1.0f));
-	m_pScene->addLight(pbg->light);
-    m_pScene->addLight(pbg->light2);
-	m_pScene->addObject(pbg);
-	m_pScene->addObject(vm->getObject());
+	C3DScene *pScene = new C3DScene("BUMP_SCENE");
+	pScene->useZSort();
+    pScene->useSceneGlobalAmbient(CColor::RGBA(0.1f,0.1f,0.1f,1.0f));
+	pScene->addLight(pbg->light);
+    pScene->addLight(pbg->light2);
+	pScene->addObject(pbg);
+	pScene->addObject(vm->getObject());
 
 	CRaptorDisplay* pDisplay = CRaptorDisplay::GetCurrentDisplay();
-	pDisplay->addScene(m_pScene);
+	pDisplay->addScene(pScene);
 }
 
 

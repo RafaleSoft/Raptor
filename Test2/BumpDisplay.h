@@ -30,7 +30,6 @@ private:
     virtual void UnInit();
 
 	CBumppedGeometry	*teapot;
-	C3DScene			*m_pScene;
     CLight				*m_pLight;
     CLight				*m_pLight2;
 };

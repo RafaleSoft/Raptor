@@ -548,6 +548,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\RaptorCore\Engine\ShaderModifier.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\..\RaptorCore\Engine\ShadowMap.cpp"
 					>
 				</File>
@@ -1395,6 +1399,10 @@
 				</File>
 				<File
 					RelativePath="..\..\RaptorCore\Engine\Physics.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\RaptorCore\Engine\ShaderModifier.h"
 					>
 				</File>
 				<File
