@@ -199,7 +199,7 @@ int CGLWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		Raptor::glDestroyDisplay(m_pDisplay);
 
 		CRaptorDisplayConfig cs = pcs;
-		cs.display_mode |= CGL_SOFTWARE;
+		cs.acceleration = CRaptorDisplayConfig::SOFTWARE;
 
 		m_pDisplay = Raptor::glCreateDisplay(cs);
 

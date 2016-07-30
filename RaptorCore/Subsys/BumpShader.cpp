@@ -40,8 +40,8 @@ int CBumpShader::normalMap = -1;
 int CBumpShader::eyePos = -1;
 
 
-CBumpShader::CBumpShader(void)
-	:CShader("BUMP_SHADER")
+CBumpShader::CBumpShader(const std::string &name)
+	:CShader(name)
 {
 }
 

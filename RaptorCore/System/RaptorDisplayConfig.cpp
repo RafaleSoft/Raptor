@@ -27,10 +27,21 @@ CRaptorDisplayConfig::CRaptorDisplayConfig()
 	caption = "Raptor application";
 	refresh_rate.sync_to_monitor = false;
 	refresh_rate.fps = CGL_MAXREFRESHRATE;
-	display_mode = CGL_RGBA | CGL_DEPTH | CGL_DOUBLE;
-	frame_mode = 0;
+	display_mode = CGL_RGBA | CGL_DEPTH;
+	draw_logo = false;
+	status_bar = false;
+	acceleration = GENERIC;
+	antialias = ANTIALIAS_NONE;
+	swap_buffer = SWAP_UNDEFINED;
+	renderer = NATIVE_GL;
+	bind_to_texture = false;
+	overlay = false;
+	double_buffer = true;
+	depth_buffer = true;
+	stencil_buffer = false;
+	accumulator_buffer = false;
 
-    hintState.perspectiveCorrection = GL_NICEST;    // specific for nice Raptor display
+    hintState.perspectiveCorrection = GL_NICEST;
     hintState.fog = GL_DONT_CARE;
     hintState.lineSmooth = GL_DONT_CARE;
     hintState.pointSmooth = GL_DONT_CARE;
@@ -124,6 +135,61 @@ CRaptorDisplayConfig::CRaptorDisplayConfig()
 CRaptorDisplayConfig::~CRaptorDisplayConfig()
 {
 
+}
+
+void CRaptorDisplayConfig::copyBaseConfig(const CRaptorDisplayConfig& config)
+{
+	x = config.x;
+    y = config.y;
+    width = config.width;
+    height = config.height;
+    draw_logo = config.draw_logo;
+	status_bar = config.status_bar;
+    display_mode = config.display_mode;
+    acceleration = config.acceleration;
+	antialias = config.antialias;
+	swap_buffer = config.swap_buffer;
+	renderer = config.renderer;
+	bind_to_texture = config.bind_to_texture;
+	overlay = config.overlay;
+	double_buffer = config.double_buffer;
+	depth_buffer = config.depth_buffer;
+	stencil_buffer = config.stencil_buffer;
+	accumulator_buffer = config.accumulator_buffer;
+
+	refresh_rate = config.refresh_rate;
+	caption = config.caption;
+}
+
+unsigned int CRaptorDisplayConfig::getNbSamples(void) const
+{
+	unsigned int samples = 1;
+	switch(antialias)
+	{
+		case ANTIALIAS_2X:
+			samples = 2;
+			break;
+		case ANTIALIAS_4X:
+			samples = 4;
+			break;
+		case ANTIALIAS_5X:
+			samples = 5;
+			break;
+		case ANTIALIAS_6X:
+			samples = 6;
+			break;
+		case ANTIALIAS_8X:
+			samples = 8;
+			break;
+		case ANTIALIAS_16X:
+			samples = 16;
+			break;
+		default:
+			samples = 1;
+			break;
+	}
+
+	return samples;
 }
 
 bool CRaptorDisplayConfig::glQueryConfig(unsigned long query)

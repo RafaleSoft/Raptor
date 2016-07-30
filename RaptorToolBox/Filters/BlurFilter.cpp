@@ -354,12 +354,16 @@ bool CBlurFilter::glInitFilter(void)
     CRaptorDisplayConfig state;
 	state.width = m_fXfactor * colorInput->getWidth();
 	state.height = m_fYfactor * colorInput->getHeight();
-    state.frame_mode = CGL_NOSTATUS;
-	state.display_mode = CGL_HARDWARE | CGL_RGBA | CGL_RENDER_TEXTURE;
+	state.acceleration = CRaptorDisplayConfig::HARDWARE;
+	state.display_mode = CGL_RGBA;
+	state.bind_to_texture = true;
+	state.depth_buffer = false;
+	state.double_buffer = false;
+	state.renderer = CRaptorDisplayConfig::PIXEL_BUFFER;
 
 	if (m_fModel == RENDER_BUFFER)
 	{
-		state.display_mode |= CGL_RENDER_BUFFER;
+		state.renderer = CRaptorDisplayConfig::RENDER_BUFFER;
 
 		xKernelPass = filterFactory.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,
 			                                        CTextureObject::CGL_OPAQUE,

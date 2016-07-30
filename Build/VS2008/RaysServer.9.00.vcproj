@@ -119,7 +119,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/MP"
 				Optimization="0"
-				AdditionalIncludeDirectories="$(RAPTOR_ROOT)\Redist\Include;$(PLATFORM_SDK)\include"
+				AdditionalIncludeDirectories="$(RAPTOR_ROOT)\Redist\Include;$(PLATFORM_SDK)\include;$(VULKAN_INCLUDE_PATH)"
 				PreprocessorDefinitions="WIN32;NDEBUG"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="2"

@@ -123,8 +123,8 @@ bool COmniShadowMap::glInitEnvironment(unsigned int width,unsigned int height)
 	CRaptorDisplayConfig cs;
 	cs.width = width;
 	cs.height = height;
-	//cs.display_mode = CGL_DEPTH |  CGL_HARDWARE | CGL_RENDER_CUBETEXTURE | CGL_RENDER_DEPTHTEXTURE;
-    cs.display_mode = /*CGL_FLOAT_16*/ CGL_RGBA |  CGL_DEPTH | CGL_HARDWARE | CGL_RENDER_CUBETEXTURE;
+    cs.display_mode = CGL_RGBA |  CGL_DEPTH | CGL_RENDER_CUBETEXTURE;
+	cs.acceleration = CRaptorDisplayConfig::HARDWARE;
 
 	m_pShadowCubeMap = Raptor::glCreateDisplay(cs);
     if (NULL == m_pShadowCubeMap)

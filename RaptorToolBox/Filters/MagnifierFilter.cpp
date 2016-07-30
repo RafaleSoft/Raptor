@@ -366,12 +366,16 @@ bool CMagnifierFilter::glInitFilter(void)
     CRaptorDisplayConfig state;
     state.width = m_fXfactor * colorInput->getWidth();
     state.height = m_fYfactor * colorInput->getHeight();
-    state.display_mode = CGL_RENDER_TEXTURE | CGL_HARDWARE | CGL_RGBA ;
-    state.frame_mode = CGL_NOSTATUS;
+	state.acceleration = CRaptorDisplayConfig::HARDWARE;
+	state.bind_to_texture = true;
+	state.double_buffer = false;
+	state.depth_buffer = false;
+    state.display_mode = CGL_RGBA;
+	state.renderer = CRaptorDisplayConfig::PIXEL_BUFFER;
 
 	if (m_fModel == RENDER_BUFFER)
 	{
-		state.display_mode |= CGL_RENDER_BUFFER;
+		state.renderer = CRaptorDisplayConfig::RENDER_BUFFER;
 
 		xKernelPass = filterFactory.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,
 			                                        CTextureObject::CGL_OPAQUE,

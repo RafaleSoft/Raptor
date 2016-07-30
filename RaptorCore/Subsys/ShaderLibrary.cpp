@@ -40,6 +40,9 @@
 #if !defined(AFX_BUMPSHADER_H__6201C4A1_1F09_41C4_836F_2AAC79D36A42__INCLUDED_)
 	#include "BumpShader.h"
 #endif
+#if !defined(AFX_EMBMSHADER_H__99A5AF45_D5C7_4F43_851C_A31FC52DB237__INCLUDED_)
+	#include "EMBMShader.h"
+#endif
 #if !defined(AFX_AOCOMPUTESHADER_H__7CD66380_1000_47A3_AA98_47E0EDBD728E__INCLUDED_)
 	#include "AOComputeShader.h"
 #endif
@@ -48,7 +51,7 @@
 RAPTOR_NAMESPACE_BEGIN
 
 static bool				s_initialized = false;
-static MapStringToPtr	s_factoryShaders;
+static map<std::string,std::string>	s_factoryShaders;
 static const int		NB_MANDATORY_SHADERS = 16;
 static const std::string s_nullShaderName = "NULL_SHADER";
 
@@ -76,11 +79,16 @@ void CShaderLibrary::destroy()
 
 CShaderLibrary::~CShaderLibrary()
 {
-	MapStringToPtr::iterator itr = s_factoryShaders.begin();
+	map<std::string,std::string>::iterator itr = s_factoryShaders.begin();
 	while (itr != s_factoryShaders.end())
 	{
-		CShaderProgram *program = (CShaderProgram *)((*itr).second);
-		delete program;
+		CPersistence *p = CPersistence::FindObject((*itr).first);
+		if (NULL != p)
+			if (p->getId().isSubClassOf(CShaderProgram::CShaderProgramClassID::GetClassId()))
+			{
+				CShaderProgram *program = (CShaderProgram *)p;
+				delete program;
+			}
 		itr++;
 	}
 
@@ -102,11 +110,11 @@ void CShaderLibrary::getFactoryShaders(vector<std::string> & res)
 {
 	res.clear();
 
-	MapStringToPtr::iterator itr = s_factoryShaders.begin();
+	map<std::string,std::string>::iterator itr = s_factoryShaders.begin();
 	while (itr != s_factoryShaders.end())
 	{
 		itr++;
-		res.push_back((*itr).first.data());
+		res.push_back((*itr).first);
 	}
 }
 
@@ -115,8 +123,7 @@ bool CShaderLibrary::glInitFactory(void)
 	if (s_initialized)
 		return false;
 
-	CRaptorDataManager  *dataManager = CRaptorDataManager::getInstance();
-
+	CRaptorDataManager *dataManager = CRaptorDataManager::getInstance();
 	const char * const *shader_source_library = dataManager->GetShaderList();
 
     if (shader_source_library == NULL)
@@ -155,10 +162,9 @@ bool CShaderLibrary::glInitFactory(void)
 			if (program != NULL)
 			{
 				program->glLoadProgram(fs);
-
 				program->glStop();
 
-				s_factoryShaders.insert(MapStringToPtr::value_type(fs_name,program));
+				s_factoryShaders.insert(map<std::string,std::string>::value_type(fs_name,fs));
 			}
 		}
 	}
@@ -204,6 +210,12 @@ bool CShaderLibrary::glInitFactory(void)
 		CBumpShader *pBumpShader = new CBumpShader();
 		pBumpShader->glInit();
 
+		CEMBMShader *pEMBMShader = new CEMBMShader();
+		map<std::string,std::string>::const_iterator it = s_factoryShaders.find("PPIXEL_BUMP_VTX_PROGRAM");
+		map<std::string,std::string>::const_iterator it2 = s_factoryShaders.find("PPIXEL_BUMP_TEX_PROGRAM");
+		pEMBMShader->glInit((*it).second,(*it2).second);
+		//s_factoryShaders.insert(map<std::string,std::string>::value_type("PPIXEL_EMBM_TEX_PROGRAM",embm_shader));
+
 		CAOComputeShader *pAOComputeShader = new CAOComputeShader();
 		pAOComputeShader->glInit();
 	}
@@ -213,14 +225,19 @@ bool CShaderLibrary::glInitFactory(void)
 	return s_initialized;
 }
 
-bool CShaderLibrary::registerProgram(CVertexProgram *vp, CFragmentProgram *fp,RAPTOR_HANDLE program)
+
+bool CShaderLibrary::registerProgram(CVertexProgram *vp,
+									 CFragmentProgram *fp,
+									 CGeometryProgram *gp,
+									 RAPTOR_HANDLE program)
 {
-	RAPTOR_HANDLE h = getRegisteredProgram(vp,fp);
+	RAPTOR_HANDLE h = getRegisteredProgram(vp,fp,gp);
 	if (h.handle == 0)
 	{
 		PROGRAM p;
 		p.vp = vp;
 		p.fp = fp;
+		p.gp = gp;
 		p.program = program;
 
 		m_programs.push_back(p);
@@ -231,7 +248,25 @@ bool CShaderLibrary::registerProgram(CVertexProgram *vp, CFragmentProgram *fp,RA
 		return false;
 }
 
-RAPTOR_HANDLE CShaderLibrary::getRegisteredProgram(CVertexProgram *vp, CFragmentProgram *fp)
+bool CShaderLibrary::unRegisterProgram(RAPTOR_HANDLE program)
+{
+	bool found = false;
+	vector<PROGRAM>::const_iterator it = m_programs.begin();
+	while (!found && (it != m_programs.end()))
+	{
+		const PROGRAM& p = *it;
+		found = (p.program == program);
+		if (!found) it++;
+	}
+
+	if (found)
+		m_programs.erase(it);
+	return found;
+}
+
+RAPTOR_HANDLE CShaderLibrary::getRegisteredProgram(CVertexProgram *vp,
+												   CFragmentProgram *fp,
+												   CGeometryProgram *gp)
 {
 	RAPTOR_HANDLE res(0,0);
 
@@ -240,7 +275,7 @@ RAPTOR_HANDLE CShaderLibrary::getRegisteredProgram(CVertexProgram *vp, CFragment
 	while (!found && (it != m_programs.end()))
 	{
 		const PROGRAM& p = *it++;
-		found = ((p.fp == fp) && (p.vp == vp));
+		found = ((p.fp == fp) && (p.vp == vp) && (p.gp == gp));
 
 		if (found)
 			res = p.program;

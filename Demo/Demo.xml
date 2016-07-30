@@ -557,16 +557,6 @@
 			    <Object name="Torch05"/>
 			    <Object name="Torch06"/>
 			    <Object name="Torch07"/>
-          <!--
-			    <Object name="Fire1"/>
-			    <Object name="Fire3"/>
-          <Object name="Fire5"/>
-          <Object name="Fire7"/>
-          <Object name="Fire9"/>
-          <Object name="Fire11"/>
-          <Object name="Fire13"/>
-          <Object name="Fire15"/>
-          -->
           <Object name="Fire0"/>
 			    <Object name="Fire2"/>
 			    <Object name="Fire4"/>

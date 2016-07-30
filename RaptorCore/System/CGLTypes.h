@@ -9,6 +9,9 @@
 #ifndef __RAPTOR_GLEXT_H__
 	#include "System/Glext.h"
 #endif
+#ifndef __RAPTOR_VKEXT_H__
+	#include "System/vkext.h"
+#endif
 #if !defined(AFX_COLOR_H__3770AC59_0D0E_49EF_99C8_037268A33CE4__INCLUDED_)
 	#include "System/Color.h"
 #endif
@@ -36,6 +39,7 @@ typedef struct RAPTOR_HANDLE
 
 	RAPTOR_HANDLE():hClass(0),handle(0) {}
     RAPTOR_HANDLE(unsigned int c,void* p):hClass(c),handle((unsigned int)p) {}
+	bool operator==(const RAPTOR_HANDLE &h) const { return (h.hClass==hClass)&&(h.handle==handle); }
 } RAPTOR_HANDLE;
 typedef RAPTOR_HANDLE*	LP_RAPTOR_HANDLE;
 
@@ -59,34 +63,13 @@ typedef RAPTOR_HANDLE*	LP_RAPTOR_HANDLE;
 #define CGL_NULL			    0x00000000
 #define CGL_RGB				    0x00000001
 #define CGL_RGBA			    0x00000002
-#define CGL_SINGLE			    0x00000004
-#define CGL_DOUBLE			    0x00000008
-#define CGL_DOUBLE_SWAPCOPY		0x00100008
-#define CGL_DOUBLE_SWAPEXCHANGE 0x00200008
-#define CGL_DOUBLE_SWAPUNDEF    0x00400008
 #define CGL_DEPTH_16		    0x00000010
 #define CGL_DEPTH_24		    0x00000020
 #define CGL_DEPTH_32		    0x00000030 // CGL_DEPTH_16 | CGL_DEPTH_24
 #define CGL_DEPTH			    CGL_DEPTH_24
 #define CGL_STENCIL			    0x00000040
-#define CGL_ANTIALIAS		    0x00000080
-#define CGL_ANTIALIAS_2X	    0x10000080
-#define CGL_ANTIALIAS_4X	    0x30000080
-#define CGL_ANTIALIAS_5X	    0x40000080
-#define CGL_ANTIALIAS_6X	    0x50000080
-#define CGL_ANTIALIAS_8X	    0x70000080
-#define CGL_ANTIALIAS_16X	    0xF0000080
-#define CGL_SOFTWARE		    0x00000100
-#define CGL_GENERIC			    0x00000200
-#define CGL_HARDWARE		    0x00000400
-#define CGL_OVERLAY			    0x00000800
-#define CGL_RENDER_TEXTURE	    0x00001000
-#define CGL_RENDER_2DTEXTURE	CGL_RENDER_TEXTURE
-#define CGL_RENDER_DEPTHTEXTURE	0x01001000
 #define CGL_RENDER_CUBETEXTURE	0x02001000
 #define CGL_ACCUM			    0x00002000
-#define CGL_RENDER_FILTERED	    0x00004000
-#define CGL_RENDER_BUFFER	    0x00008000
 #define CGL_FLOAT               0x00010002 // float format is only used with rgba
 #define CGL_FLOAT_16			0x00030002
 #define CGL_FLOAT_32			0x00050002

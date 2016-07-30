@@ -51,7 +51,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/MP"
 				Optimization="0"
-				AdditionalIncludeDirectories="$(SolutionDir)$(ProjectName);$(ZLIB_INCLUDE_PATH);$(PNGLIB_INCLUDE_PATH);$(OPENEXRLIB_INCLUDE_PATH);$(TIFFLIB_INCLUDE_PATH);$(JPEGLIB_INCLUDE_PATH);$(RAPTOR_ROOT)\Redist\Include;$(PLATFORM_SDK)\include"
+				AdditionalIncludeDirectories="$(SolutionDir)$(ProjectName);$(ZLIB_INCLUDE_PATH);$(PNGLIB_INCLUDE_PATH);$(OPENEXRLIB_INCLUDE_PATH);$(TIFFLIB_INCLUDE_PATH);$(JPEGLIB_INCLUDE_PATH);$(RAPTOR_ROOT)\Redist\Include;$(PLATFORM_SDK)\include;$(VULKAN_INCLUDE_PATH)"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;EXPORT_RAPTOR_CORE"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="2"

@@ -20,7 +20,7 @@
 RAPTOR_NAMESPACE_BEGIN
 
 class CLight;
-class CShader;
+class CEMBMShader;
 class CTextureObject;
 
 
@@ -42,7 +42,7 @@ public:
 	//!	is called from this method, so only one set is necessary )
 	virtual void setRenderingModel(const CRenderingModel& model);
 
-	virtual CShader	* const getShader(void) const { return m_pBumpShader; }
+	virtual CShader	* const getShader(void) const;
 
 	//!	Sets the texture map that will be used as the diffuse component of the bumpping.
 	void setDiffuseMap(CTextureObject* diffuse);
@@ -80,7 +80,7 @@ protected:
 	CReference<CTextureObject>	envMap;
 
 	//! Shaders for various light configurations.
-	CShader*			m_pBumpShader;
+	CEMBMShader* m_pBumpShader;
 
 private:
 	//!	Initialize shaders and observers

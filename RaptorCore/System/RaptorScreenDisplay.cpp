@@ -28,17 +28,11 @@
 #if !defined(AFX_3DENGINE_H__DB24F018_80B9_11D3_97C1_FC2841000000__INCLUDED_)
 	#include "Engine/3DEngine.h"
 #endif
-#if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
-    #include "RaptorErrorManager.h"
-#endif
 #if !defined(AFX_GEOMETRYALLOCATOR_H__802B3C7A_43F7_46B2_A79E_DDDC9012D371__INCLUDED_)
 	#include "Subsys/GeometryAllocator.h"
 #endif
 #if !defined(AFX_TEXELALLOCATOR_H__7C48808C_E838_4BE3_8B0E_286428BB7CF8__INCLUDED_)
 	#include "Subsys/TexelAllocator.h"
-#endif
-#if !defined(AFX_TEXTUREOBJECT_H__D32B6294_B42B_4E6F_AB73_13B33C544AD0__INCLUDED_)
-	#include "GLHierarchy/TextureObject.h"
 #endif
 #if !defined(AFX_GEOMETRY_H__B42ABB87_80E8_11D3_97C2_DE5C28000000__INCLUDED_)
 	#include "GLHierarchy/Geometry.h"
@@ -68,7 +62,6 @@ CRaptorScreenDisplay::CRaptorScreenDisplay(const CRaptorDisplayConfig& pcs)
 	m_context = -1;
 	m_layerContext = -1;
 
-	m_swapControl = false;
 	nbFramesPerSecond = 0;
 	m_framerate = 0;
 	lastfreq = 0;
@@ -100,15 +93,7 @@ CRaptorScreenDisplay::~CRaptorScreenDisplay()
 
 bool CRaptorScreenDisplay::glQueryStatus(CRaptorDisplayConfig &state,unsigned long query) const
 {
-    state.x = cs.x;
-    state.y = cs.y;
-    state.width = cs.width;
-    state.height = cs.height;
-    state.caption = cs.caption;
-    state.refresh_rate = cs.refresh_rate;
-    state.display_mode = cs.display_mode;
-    state.frame_mode = cs.frame_mode;
-
+	state.copyBaseConfig(cs);
     return CRaptorDisplay::glQueryStatus(state,query);
 }
 
@@ -227,15 +212,13 @@ bool CRaptorScreenDisplay::glBindDisplay(const RAPTOR_HANDLE& device)
 			if (cs.refresh_rate.sync_to_monitor)
 				m_framerate = 0;
 
-			bool global = (cs.frame_mode & CGL_SHAREDC) == CGL_SHAREDC;
-
-			if ((cs.display_mode & CGL_SOFTWARE) == CGL_SOFTWARE)
+			if (CRaptorDisplayConfig::SOFTWARE == cs.acceleration)
 			{
-				m_context = CContextManager::GetInstance()->glCreateContext(device, cs.display_mode, global);
+				m_context = CContextManager::GetInstance()->glCreateContext(device, cs);
 
-				if (cs.display_mode & CGL_OVERLAY)
+				if (cs.overlay)
 				{
-					int res2 = CContextManager::GetInstance()->glCreateContext(device, cs.display_mode);
+					int res2 = CContextManager::GetInstance()->glCreateContext(device, cs);
 					if (res2 == -1)
 					{
 						Raptor::GetErrorManager()->generateRaptorError(	CRaptorDisplay::CRaptorDisplayClassID::GetClassId(),
@@ -247,7 +230,7 @@ bool CRaptorScreenDisplay::glBindDisplay(const RAPTOR_HANDLE& device)
 			else
 			{
 				// create the extended rendering context if possible
-				m_context = CContextManager::GetInstance()->glCreateExtendedContext(device, cs.display_mode, global);
+				m_context = CContextManager::GetInstance()->glCreateExtendedContext(device, cs);
 				if (m_context == -1)
 				{
 					Raptor::GetErrorManager()->generateRaptorError(	CRaptorDisplay::CRaptorDisplayClassID::GetClassId(),
@@ -261,16 +244,13 @@ bool CRaptorScreenDisplay::glBindDisplay(const RAPTOR_HANDLE& device)
 
 			
 			//  Display shading configuration
-			cs.glApplyConfig(	GL_PIXEL_STATE_QUERY|
-								GL_HINT_STATE_QUERY|
-								GL_LIGHT_STATE_QUERY|
-								GL_FRAME_STATE_QUERY);
+			cs.glApplyConfig(GL_PIXEL_STATE_QUERY|GL_HINT_STATE_QUERY|GL_LIGHT_STATE_QUERY|GL_FRAME_STATE_QUERY);
 
             bool res = CRaptorDisplay::glBindDisplay(device);
 			//glViewport(cs.x,cs.y,cs.width,cs.height);
 			glViewport(0,0,cs.width,cs.height); // Viewport is relative to window !!!
 			
-			m_swapControl = CContextManager::GetInstance()->glSwapVSync(m_framerate);
+			bool hasSwapControl = CContextManager::GetInstance()->glSwapVSync(m_framerate);
 
 			//	Manage vertex/pixel buffer objects.
 			allocateResources();

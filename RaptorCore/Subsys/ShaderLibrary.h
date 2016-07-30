@@ -18,6 +18,7 @@ RAPTOR_NAMESPACE_BEGIN
 
 class CVertexProgram;
 class CFragmentProgram;
+class CGeometryProgram;
 class CShader;
 
 //!
@@ -52,20 +53,30 @@ public:
 
 	//!	Registers a program for future usage
 	//!	Returns false if program is already registered, true otherwise
-	bool registerProgram(CVertexProgram *vp, CFragmentProgram *fp,RAPTOR_HANDLE program);
+	bool registerProgram(	CVertexProgram *vp,
+							CFragmentProgram *fp,
+							CGeometryProgram *gp,
+							RAPTOR_HANDLE program);
+
+	//!	Unregisters a program
+	//!	Returns false if program is not registered, true otherwise
+	bool unRegisterProgram(RAPTOR_HANDLE program);
 
 	//!	Returns a previously registerd program.
 	//!	The handle may be invalid if the required combination is
 	//!	unknown in program list.
-	RAPTOR_HANDLE getRegisteredProgram(CVertexProgram *vp, CFragmentProgram *fp);
+	RAPTOR_HANDLE getRegisteredProgram(	CVertexProgram *vp,
+										CFragmentProgram *fp,
+										CGeometryProgram *gp);
 
 
 
 private:
 	typedef struct PROGRAM_t
 	{
-		CVertexProgram	*vp;
+		CVertexProgram		*vp;
 		CFragmentProgram	*fp;
+		CGeometryProgram	*gp;
 		RAPTOR_HANDLE	program;
 	} PROGRAM;
 

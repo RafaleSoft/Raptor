@@ -63,6 +63,9 @@ CRaptorBufferDisplay::CRaptorBufferDisplay(const CRaptorDisplayConfig& pcs)
 	m_previousContext = -1;
 
 	cs = pcs;
+	
+	//! P Buffer (nVidia + Win32) do not support double buffering. Maybe future versions will do so.
+	cs.double_buffer = false;
 }
 
 CRaptorBufferDisplay::~CRaptorBufferDisplay()
@@ -76,15 +79,7 @@ CRaptorBufferDisplay::~CRaptorBufferDisplay()
 
 bool CRaptorBufferDisplay::glQueryStatus(CRaptorDisplayConfig &state,unsigned long query) const
 {
-    state.x = cs.x;
-    state.y = cs.y;
-    state.width = cs.width;
-    state.height = cs.height;
-    state.caption = cs.caption;
-    state.refresh_rate = cs.refresh_rate;
-    state.display_mode = cs.display_mode;
-    state.frame_mode = cs.frame_mode;
-
+	state.copyBaseConfig(cs);
     return CRaptorDisplay::glQueryStatus(state,query);
 }
 

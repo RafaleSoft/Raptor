@@ -21,7 +21,9 @@ namespace BuilderNet {
 		void getData(void);
 
 		static System::String ^GL_Label = "CORE GL versions";
+		static System::String ^VK_Label = "CORE VK versions";
 		static System::String ^ARB_Label = "ARB extensions";
+		static System::String ^VK_KHR_Label = "VK extensions";
 		static System::String ^ATI_Label = "ATI extensions";
 		static System::String ^EXT_Label = "EXT extensions";
 		static System::String ^NV_Label = "nVidia extensions";

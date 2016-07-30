@@ -267,7 +267,9 @@ BOOL CAboutDialog::OnInitDialog()
 	glCS.x = 240;
 	glCS.y = 40;
 	glCS.caption = "Raptor Release test";
-	glCS.display_mode = CGL_RGBA | CGL_DEPTH | CGL_DOUBLE;
+	glCS.double_buffer = true;
+	glCS.depth_buffer = true;
+	glCS.display_mode = CGL_RGBA | CGL_DEPTH;
 	glCS.refresh_rate.fps = 75;
 	GLDisplay->GLCreateWindow("OpenGL Context",this,glCS);
 	GLDisplay->glMakeCurrent();

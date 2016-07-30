@@ -10,9 +10,6 @@
 #if !defined(AFX_GEOMETRYEDITOR_H__2D77E428_ED3D_416B_8DE9_DABFD45A38A7__INCLUDED_)
     #include "GeometryEditor.h"
 #endif
-#if !defined(AFX_SHADER_H__4D405EC2_7151_465D_86B6_1CA99B906777__INCLUDED_)
-	#include "Shader.h"
-#endif
 #if !defined(AFX_TEXTUREUNITSETUP_H__4A6ADC72_02E5_4F2A_931E_A736B6D6E0F0__INCLUDED_)
 	#include "TextureUnitSetup.h"
 #endif
@@ -27,6 +24,9 @@
 #endif
 #if !defined(AFX_FRAGMENTSHADER_H__66B3089A_2919_4678_9273_6CDEF7E5787F__INCLUDED_)
 	#include "FragmentShader.h"
+#endif
+#if !defined(AFX_EMBMSHADER_H__99A5AF45_D5C7_4F43_851C_A31FC52DB237__INCLUDED_)
+	#include "Subsys/EMBMShader.h"
 #endif
 #if !defined(AFX_RAPTOREXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
 	#include "System/RaptorExtensions.h"
@@ -46,6 +46,7 @@
 #if !defined(AFX_RENDERINGPROPERTIES_H__634BCF2B_84B4_47F2_B460_D7FDC0F3B698__INCLUDED_)
 	#include "RenderingProperties.h"
 #endif
+
 
 RAPTOR_NAMESPACE
 
@@ -92,7 +93,7 @@ void CBumppedGeometry::init(void)
 	}
 #endif
 	
-	m_pBumpShader = CShader::getShader("BUMP_SHADER").glClone("BUMP_GEOMETRY_SHADER");
+	m_pBumpShader = (CEMBMShader*)CShader::getShader("EMBM_SHADER").glClone("BUMP_GEOMETRY_SHADER");
 	m_pBumpShader->registerDestruction(this);
 
 	CATCH_GL_ERROR
@@ -120,6 +121,11 @@ void CBumppedGeometry::unLink(const CPersistence* p)
 		CGeometry::unLink(p);
 }
 
+CShader	* const CBumppedGeometry::getShader(void) const
+{
+	return m_pBumpShader;
+}
+
 void CBumppedGeometry::setDiffuseMap(CTextureObject* diffuse)
 {
 	// Check for null ?
@@ -140,6 +146,8 @@ void CBumppedGeometry::setEnvironmentMap(CTextureObject* environment)
 	envMap = environment;
 	CTextureUnitSetup *setup = m_pBumpShader->glGetTextureUnitsSetup();
 	setup->setEnvironmentMap(envMap);
+
+	m_pBumpShader->enableEmbm(envMap != NULL);
 }
 
 void CBumppedGeometry::setRenderingModel(const CRenderingModel& model)
@@ -211,25 +219,33 @@ void CBumppedGeometry::glRender()
 	if (!properties.isVisible())
 		return;
     
-	CRenderingProperties *props = CRenderingProperties::GetCurrentProperties();
-	bool proceedLighting = (props->getCurrentLighting() == CRenderingProperties::ENABLE);
-	bool proceedTexturing = (props->getCurrentTexturing() == CRenderingProperties::ENABLE);
-
-	if (proceedLighting)
+	if (m_pBumpShader != NULL)
+	{
 		m_pBumpShader->glRenderMaterial();
-	if (proceedTexturing)
 		m_pBumpShader->glRenderTexture();
-	m_pBumpShader->glRender();
+		m_pBumpShader->glRender();
+	}
 	
 	glRenderGeometry();
 	
-	m_pBumpShader->glStop();
+	if (m_pBumpShader != NULL)
+		m_pBumpShader->glStop();
 
-	if (proceedTexturing)
+	CRenderingProperties *props = CRenderingProperties::GetCurrentProperties();
+	if (props->getCurrentTexturing() == CRenderingProperties::ENABLE)
 	{
 		const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
 		pExtensions->glActiveTextureARB(GL_TEXTURE1_ARB);
 		glDisable(GL_TEXTURE_2D);
+
+#if defined(GL_ARB_texture_cube_map)
+		if (m_pBumpShader->isEnabled())
+		{
+			pExtensions->glActiveTextureARB(GL_TEXTURE3_ARB);
+			glDisable(GL_TEXTURE_CUBE_MAP_ARB);
+		}
+#endif
+
 		pExtensions->glActiveTextureARB(GL_TEXTURE0_ARB);
 	}
 	

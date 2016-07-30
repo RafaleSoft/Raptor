@@ -3,7 +3,7 @@
 #include <windows.h>
 #include <GL\gl.h>
 #include <vcclr.h>
-
+#include "vulkan.h"
 
 #if !defined(AFX_GLBUILDER_H__0F2DA94E_7293_494C_B936_8CB72098E626__INCLUDED_)
 #include "GLBuilder.h"
@@ -74,7 +74,9 @@ BuilderForm::BuilderForm(void)
 	tree->BeginUpdate();
 
 	TreeNode^ GL_root = tree->Nodes->Add(GL_Label);
+	TreeNode^ VK_root = tree->Nodes->Add(VK_Label);
 	TreeNode^ ARB_root = tree->Nodes->Add(ARB_Label);
+	TreeNode^ VK_KHR_root = tree->Nodes->Add(VK_KHR_Label);
 	TreeNode^ ATI_root = tree->Nodes->Add(ATI_Label);
 	TreeNode^ EXT_root = tree->Nodes->Add(EXT_Label);
 	TreeNode^ NV_root = tree->Nodes->Add(NV_Label);
@@ -96,8 +98,16 @@ BuilderForm::BuilderForm(void)
 				item = GL_root->Nodes->Add(str);
 				item->Tag = gcnew System::Int32(extension.kind);
 				break;
+			case CGLBuilder::COREVK:
+				item = VK_root->Nodes->Add(str);
+				item->Tag = gcnew System::Int32(extension.kind);
+				break;
 			case CGLBuilder::ARB:
 				item = ARB_root->Nodes->Add(str);
+				item->Tag = gcnew System::Int32(extension.kind);
+				break;
+			case CGLBuilder::VK:
+				item = VK_KHR_root->Nodes->Add(str);
 				item->Tag = gcnew System::Int32(extension.kind);
 				break;
 			case CGLBuilder::ATI:
@@ -148,22 +158,95 @@ BuilderForm::BuilderForm(void)
 
 		string glextensions = (const char*)glGetString(GL_EXTENSIONS);
 		string version = (const char*)glGetString(GL_VERSION);
-		/*
-		const size_t cSize = extensions.size()+1;
-		wchar_t *wc = new wchar_t[cSize];
-		mbstowcs (wc, extensions.data(), cSize);
-		String ^str = gcnew String(wc);
-		System::Windows::Forms::MessageBox::Show(str);
-		*/
+
 		pfnc _glGetExtensionsStringARB;
 		if (NULL != (_glGetExtensionsStringARB = (pfnc)wglGetProcAddress("wglGetExtensionsStringARB")))
 		{
 			string wgl_extensions = (const char*)_glGetExtensionsStringARB(dc);
 			glextensions += wgl_extensions;
 		}
+
+		wchar_t buffer[MAX_PATH];
+		GetEnvironmentVariable(L"VULKAN_BIN_PATH",(LPTSTR)buffer,MAX_PATH);
+		std::wstring vkpath = buffer;
+		vkpath += L"\\VULKAN-1.DLL";
+
+		HMODULE module = LoadLibrary(vkpath.c_str());
+		if (module != NULL)
+		{
+			PFN_vkCreateInstance vkCreateInstance = (PFN_vkCreateInstance)(GetProcAddress(module,"vkCreateInstance"));
+			VkInstanceCreateInfo instanceCreateInfo = {	VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO, // VkStructureType sType;
+														NULL,                                   // const void* pNext;
+														0,                                      // VkInstanceCreateFlags flags;
+														NULL,                                   // const VkApplicationInfo* pApplicationInfo;
+														0,                                      // uint32_t enabledLayerNameCount;
+														NULL,                                   // const char* const* ppEnabledLayerNames;
+														0,                                      // uint32_t enabledExtensionNameCount;
+														NULL};									// const char* const* ppEnabledExtensionNames;
+			VkInstance inst = NULL;
+			if (VK_SUCCESS == vkCreateInstance(&instanceCreateInfo, NULL, &inst))
+			{
+				glextensions += " VK_VERSION_1_0";
+				
+				PFN_vkEnumerateInstanceExtensionProperties vkEnumerateInstanceExtensionProperties = 
+					(PFN_vkEnumerateInstanceExtensionProperties)(GetProcAddress(module,"vkEnumerateInstanceExtensionProperties"));
+				uint32_t pPropertyCount = 0;
+				if (VK_SUCCESS == vkEnumerateInstanceExtensionProperties(NULL,&pPropertyCount,NULL))
+				{
+					VkExtensionProperties *pProperties = new VkExtensionProperties[pPropertyCount];
+					vkEnumerateInstanceExtensionProperties(NULL,&pPropertyCount,pProperties);
+					for (uint32_t i=0;i<pPropertyCount;i++)
+					{
+						glextensions += " ";
+						glextensions += pProperties[i].extensionName;
+					}
+					delete [] pProperties;
+				}
+
+				if (VK_SUCCESS == res)
+				{
+					PFN_vkEnumeratePhysicalDevices vkEnumeratePhysicalDevices = 
+						(PFN_vkEnumeratePhysicalDevices)(GetProcAddress(module,"vkEnumeratePhysicalDevices"));
+
+					uint32_t pPhysicalDeviceCount = 0;
+					res = vkEnumeratePhysicalDevices(inst,&pPhysicalDeviceCount,NULL);
+					if ((VK_SUCCESS == res) && (pPhysicalDeviceCount > 0))
+					{
+						VkPhysicalDevice *m_pPhysicalDevices = new VkPhysicalDevice[pPhysicalDeviceCount];
+						res = vkEnumeratePhysicalDevices(inst,&pPhysicalDeviceCount,m_pPhysicalDevices);
+						if (VK_SUCCESS == res)
+						{
+							PFN_vkEnumerateDeviceExtensionProperties vkEnumerateDeviceExtensionProperties = 
+								(PFN_vkEnumerateDeviceExtensionProperties)(GetProcAddress(module,"vkEnumerateDeviceExtensionProperties"));
+							for (uint32_t i=0;i<pPhysicalDeviceCount;i++)
+							{
+								pPropertyCount = 0;
+								res = vkEnumerateDeviceExtensionProperties(m_pPhysicalDevices[i],NULL,&pPropertyCount,NULL);
+								if ((VK_SUCCESS == res) && (pPropertyCount > 0))
+								{
+									VkExtensionProperties* pProperties = new VkExtensionProperties[pPropertyCount];
+									res = vkEnumerateDeviceExtensionProperties(m_pPhysicalDevices[i],NULL,&pPropertyCount,pProperties);
+									for (uint32_t i=0;i<pPropertyCount;i++)
+									{
+										glextensions += " ";
+										glextensions += pProperties[i].extensionName;
+									}
+									delete [] pProperties;
+								}
+							}
+						}
+
+						delete [] m_pPhysicalDevices;
+					}
+				}		
+			
+				PFN_vkDestroyInstance vkDestroyInstance = (PFN_vkDestroyInstance)(GetProcAddress(module,"vkDestroyInstance"));
+				vkDestroyInstance(inst,NULL);
+			}
+			FreeLibrary(module);
+		}
 		
 		bres = wglMakeCurrent(NULL, NULL);
-
 		bres = wglDeleteContext(glhrc);
 
 		glextensions += builder.setVersion(version);

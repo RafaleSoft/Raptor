@@ -296,11 +296,10 @@ void CAnimatorStream::glReleaseStreamBuffer(unsigned int nStream)
 		return;
 
 	VIDEO_STREAM *video = m_pCurrentStreams[nStream];
+	video->streamMutex.unlock();
 
 	if (m_bUseDMA)
 	{
-		video->streamMutex.unlock();
-
 		//	This call is not necessary since the texel allocator is locked by the display,
 		//	we keep it active for other stream data transfer.
 		//CTexelAllocator::GetInstance()->glLockMemory(false);
@@ -314,13 +313,15 @@ const unsigned char* const CAnimatorStream::glGetStreamBuffer(unsigned int nStre
 	if (nStream >= m_pCurrentStreams.size())
 		return NULL;
     
+	VIDEO_STREAM *video = m_pCurrentStreams[nStream];
+	video->streamMutex.lock();
+
 	if (!m_bUseDMA)
-		return m_pCurrentStreams[nStream]->streamBuffer;
+	{
+		return video->streamBuffer;
+	}
 	else
     {
-        VIDEO_STREAM *video = m_pCurrentStreams[nStream];
-		video->streamMutex.lock();
-
         if (video->streamBuffer != NULL)
         {
             unsigned int size = 3 * video->streamer->getWidth() * video->streamer->getHeight();

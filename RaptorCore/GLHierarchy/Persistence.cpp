@@ -108,6 +108,17 @@ CPersistence::CPersistence(const CPersistence::CPersistenceClassID &classID,
 
 CPersistence::~CPersistence()
 {
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+	stringstream msg;
+	msg << " deleting " << this << " - " << this->m_name;
+	Raptor::GetErrorManager()->generateRaptorError(	CPersistence::CPersistenceClassID::GetClassId(),
+													CRaptorErrorManager::RAPTOR_NO_ERROR,
+													msg.str());
+	Raptor::GetErrorManager()->generateRaptorError(	CPersistence::CPersistenceClassID::GetClassId(),
+													CRaptorErrorManager::RAPTOR_NO_ERROR,
+													"proceed...");
+#endif
+
     CRaptorLock lock(persistenceMutex);
     lockRegistration = true;
     lock.release();
@@ -213,9 +224,8 @@ void CPersistence::setName(const std::string &name)
 			else
 			{
                 char nb[32];
-			    sprintf(nb,"%d",atoi(p->m_name.data() + pos)+1);
-                p->m_name[pos+1] = 0;
-			    p->m_name += nb;
+			    sprintf(nb,"%d",atoi(p->m_name.data()+pos+1)+1);
+				p->m_name = p->m_name.substr(0,pos) + "#" + nb;
 			}
 			itr = objects.find(p->m_name);
 		}

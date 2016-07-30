@@ -121,12 +121,11 @@ int CGLFrameWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		return -1;      // fail to create
     }
 
-	unsigned int frameMode = CGLWnd::GetDefaultDisplayConfig().frame_mode;
-
+	bool status_bar = CGLWnd::GetDefaultDisplayConfig().status_bar;
 	if (CFrameWnd::OnCreate(lpCreateStruct) == -1)
 		return -1;
 
-	if ((frameMode & CGL_NOSTATUS) != CGL_NOSTATUS)
+	if (status_bar)
 	{
 		HINSTANCE hresource = AfxGetResourceHandle( );
 		AfxSetResourceHandle( RaptorMFCExtensionDLL.hResource ); 
@@ -193,12 +192,7 @@ void CGLFrameWnd::ShowFps(CCmdUI *pCmdUI)
 	const CRaptorDisplay* const pDisplay = pView->getDisplay();
 	
 	if (pDisplay != NULL) 
-	{
-		if (pDisplay->hasSwapControl())
-			s.Format(TEXT("Fps:%.1lf"), pDisplay->getRTFPS());
-		else
-			s.Format(TEXT("fps:%.1lf"), pDisplay->getFPS());
-	}
+		s.Format(TEXT("Fps:%.1lf"), pDisplay->getRTFPS());
 	else
 		s = "fps: n/a";
 	pCmdUI->SetText(s);
@@ -245,7 +239,7 @@ BOOL CGLFrameWnd::PreCreateWindow(CREATESTRUCT& cs)
 		m_menuHeight = GetSystemMetrics(SM_CYMENU);
 		cs.cy += m_menuHeight;
 	}
-	if ((GLCS.frame_mode & CGL_NOSTATUS) != CGL_NOSTATUS)
+	if (GLCS.status_bar)
 	{
 		cs.cy += GetSystemMetrics(SM_CYMENU) - 2;
 	}

@@ -101,7 +101,6 @@ void CGenericLight::BuildPhotonMap(CRaytracerData& World,unsigned int nbPhotons)
 		float zmax = -HUGE_REAL;
 
 		float cosCutOff = cos(TO_RADIAN(cutOff));
-		float sinCutOff = sin(TO_RADIAN(cutOff));
 
 		float angle = acos(direction.X());
 		if (asin(direction.X()) < 0)

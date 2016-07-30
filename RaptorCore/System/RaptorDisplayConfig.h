@@ -24,14 +24,6 @@ public:
 	#define CGL_MINREFRESHRATE			1
 	#define CGL_MAXREFRESHRATE			255
 
-	//!	Frame management
-	//!	These constants are passed to the graphic context factory using attribute.frame_mode. 
-	//! They control the behaviour of the frame window displaying the current display.
-	#define CGL_NOSTATUS		0x0200
-	#define CGL_FULLSCREEN		0x0400
-	#define CGL_SHAREDC			0x0800
-	#define CGL_DRAWLOGO		0x1000
-
 	//	state query mode
 	#define GL_CONFIG_STATE_QUERY		0x1000
 	#define GL_CURRENT_STATE_QUERY		0x0001
@@ -259,6 +251,40 @@ public:
 		CColor::RGBA	accumClearValue;
 	} GL_FRAME_STATE;
 
+	typedef enum
+	{
+		SOFTWARE,
+		GENERIC,
+		HARDWARE,
+	} GL_ACCELERATION;
+
+	typedef enum
+	{
+		ANTIALIAS_NONE,
+		ANTIALIAS_2X,
+		ANTIALIAS_4X,
+		ANTIALIAS_5X,
+		ANTIALIAS_6X,
+		ANTIALIAS_8X,
+		ANTIALIAS_16X
+	} GL_ANTIALIAS;
+
+	typedef enum
+	{
+		SWAP_UNDEFINED,
+		SWAP_COPY,
+		SWAP_EXCHANGE
+	} GL_SWAPBUFFER;
+
+	typedef enum
+	{
+		NATIVE_GL,		// ScreenDisplay
+		RENDER_BUFFER_FILTER_CHAIN,
+		PIXEL_BUFFER_FILTER_CHAIN,
+		RENDER_BUFFER,
+		PIXEL_BUFFER,
+		VULKAN
+	} GL_DISPLAY_RENDERER;
 
 public:
 	CRaptorDisplayConfig();
@@ -277,6 +303,12 @@ public:
 	//! except the basic config which can only be set at creation.
 	bool glApplyConfig(unsigned long query) const;
 
+	//!	Copy base attributes and leaves OpenGL states unchanged.
+	//!	A whole copy is simply by using default copy operator.
+	void copyBaseConfig(const CRaptorDisplayConfig& config);
+
+	//!	A helper to query the bumbe of samples for current config
+	unsigned int getNbSamples(void) const;
 
 
 public:
@@ -284,14 +316,25 @@ public:
 	int				y;
 	int				width;
 	int				height;
-	string			caption;
+	bool			draw_logo;
+	bool			status_bar;
 	unsigned int	display_mode;
-	unsigned int	frame_mode;
+	GL_ACCELERATION	acceleration;
+	GL_ANTIALIAS	antialias;
+	GL_SWAPBUFFER	swap_buffer;
+	GL_DISPLAY_RENDERER	renderer;
+	bool			bind_to_texture;
+	bool			overlay;
+	bool			double_buffer;
+	bool			depth_buffer;
+	bool			stencil_buffer;
+	bool			accumulator_buffer;
 	struct
 	{
 		unsigned char	fps;
 		bool			sync_to_monitor;
 	} refresh_rate;
+	string			caption;
 
 	//	Current state
 	GL_CURRENT_STATE		currentState;

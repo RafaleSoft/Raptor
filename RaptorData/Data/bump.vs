@@ -1,7 +1,9 @@
 #version 120
 
-//#define EYE_SPACE 1
+#ifdef EMBM_RENDERING
+	#define EYE_SPACE 1
 //#define AMBIENT_OCCLUSION 1
+#endif
 
 const int MAX_LIGHTS = 5;
 
@@ -9,6 +11,10 @@ attribute vec4 tangent;
 
 varying vec4 lightDirs[MAX_LIGHTS];
 varying vec3 eyedir;
+
+#ifdef EMBM_RENDERING
+	varying vec3 rr;
+#endif
 
 uniform int lightEnable[gl_MaxLights];
 uniform vec4 eyePos;
@@ -32,6 +38,10 @@ void main (void)
 	eyedir.x = dot(ecPos,T);
 	eyedir.y = dot(ecPos,binormal);
 	eyedir.z = dot(ecPos,normal);
+
+#ifdef EMBM_RENDERING
+	rr = reflect(-ecPos,normal);
+#endif
 
 	for (int i=0 ; i<MAX_LIGHTS ; i++)
 	{

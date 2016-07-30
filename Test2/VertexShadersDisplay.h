@@ -12,9 +12,7 @@
 #include "GenericDisplay.h"
 
 class ShaderModifier;
-class SeeGround;
 class CTextureWaves;
-class CSky;
 
 class CVertexShadersDisplay : public CGenericDisplay
 {
@@ -36,15 +34,13 @@ private:
 
     virtual void UnInit();
 
-	CObject3D		*see;
 	bool			showBump;
 
-	C3DScene		*pScene;
+	CViewPoint		*view_point;
+
 	ShaderModifier	*shaderModifier;
 	CLight			*pLight;
-	SeeGround		*ground;
 	CTextureWaves	*tw;
-	CSky			*sky;
 };
 
 #endif // !defined(AFX_VERTEXSHADERSDISPLAY_H__5039FA06_AF60_4E40_8C6D_4D454353B263__INCLUDED_)

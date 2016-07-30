@@ -302,7 +302,7 @@ void GLinterop(CRaptorDisplay *pDisplay,RAPTOR_HANDLE wnd)
 	
 	CParticleManager *pManager = new CParticleManager();
 	GalaxyModel *pModel = new GalaxyModel();
-	CParticle *pGalaxy = pManager->glCreateParticle(10000,true,CParticle::CGL_PARTICLE_POINT,CParticle::CGL_COLOR_BLEND,pModel,"GALAXY");
+	CParticle *pGalaxy = pManager->glCreateParticle(5000,true,CParticle::CGL_PARTICLE_POINT,CParticle::CGL_COLOR_BLEND,pModel,"GALAXY");
 	size_t sz = pGalaxy->getSize() * sizeof(CParticle::PARTICLE_ATTRIBUTE);
 	pManager->animate(true);
 
@@ -392,15 +392,11 @@ int _tmain(int argc, _TCHAR* argv[])
 	glcs.x = 700;
 	glcs.y = 20;
 	glcs.caption = "Raptor Compute";
-	glcs.display_mode = CGL_RGBA | //CGL_FLOAT | 
-						CGL_DEPTH | 
-						CGL_DOUBLE | 
-						CGL_STENCIL |
-						CGL_HARDWARE;// | 
-						//CGL_RENDER_FILTERED |
-						//CGL_RENDER_BUFFER | CGL_ANTIALIAS_8X;
-						//CGL_RENDER_BUFFER;
-    glcs.frame_mode = CGL_NOSTATUS;
+	glcs.acceleration = CRaptorDisplayConfig::HARDWARE;
+	glcs.double_buffer = true;
+	glcs.depth_buffer = true;
+	glcs.stencil_buffer = true;
+	glcs.display_mode = CGL_RGBA | CGL_DEPTH;
 	//glcs.refresh_rate.fps = 12;
     RAPTOR_HANDLE wnd = Raptor::glCreateWindow(glcs,pDisplay);
 	pDisplay->glBindDisplay(wnd);

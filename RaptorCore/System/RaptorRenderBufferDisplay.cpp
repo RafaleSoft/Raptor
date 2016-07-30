@@ -249,15 +249,7 @@ bool CRaptorRenderBufferDisplay::glDetachBuffers()
 
 bool CRaptorRenderBufferDisplay::glQueryStatus(CRaptorDisplayConfig &state,unsigned long query) const
 {
-    state.x = cs.x;
-    state.y = cs.y;
-    state.width = cs.width;
-    state.height = cs.height;
-    state.caption = cs.caption;
-    state.refresh_rate = cs.refresh_rate;
-    state.display_mode = cs.display_mode;
-    state.frame_mode = cs.frame_mode;
-
+	state.copyBaseConfig(cs);
     return CRaptorDisplay::glQueryStatus(state,query);
 }
 
@@ -271,8 +263,8 @@ bool CRaptorRenderBufferDisplay::createFrameBuffer(void)
 
 	GLsizei nbSamples = 1;
 #if defined(GL_EXT_framebuffer_multisample)
-	if ((cs.display_mode & CGL_ANTIALIAS) == CGL_ANTIALIAS)
-		nbSamples = (cs.display_mode >> 28) + 1;
+	if (CRaptorDisplayConfig::ANTIALIAS_NONE != cs.antialias)
+		nbSamples = cs.getNbSamples();
 #endif
 
 	const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
@@ -283,7 +275,7 @@ bool CRaptorRenderBufferDisplay::createFrameBuffer(void)
 		// further intialisations : 
 		// - create color render buffers if target is not a texture
 		if ( (((cs.display_mode & CGL_RGBA) == CGL_RGBA) || ((cs.display_mode & CGL_RGB) == CGL_RGB)) && 
-			((cs.display_mode & CGL_RENDER_TEXTURE) != CGL_RENDER_TEXTURE) )
+			!cs.bind_to_texture)
 		{
 			GLuint internalFormat = GL_NONE;
 			if ((cs.display_mode & CGL_RGBA) == CGL_RGBA)
@@ -368,8 +360,7 @@ bool CRaptorRenderBufferDisplay::createFrameBuffer(void)
 		CATCH_GL_ERROR
 
 		// - create depth render buffers
-		if (((cs.display_mode & CGL_DEPTH_32) != 0) &&
-			((cs.display_mode & CGL_RENDER_DEPTHTEXTURE) != CGL_RENDER_DEPTHTEXTURE))
+		if (((cs.display_mode & CGL_DEPTH_32) != 0) && !cs.bind_to_texture)
 		{
 			GLenum internalFormat = GL_DEPTH_COMPONENT;
 			if ((cs.display_mode & CGL_DEPTH_32) == CGL_DEPTH_16)
@@ -379,7 +370,7 @@ bool CRaptorRenderBufferDisplay::createFrameBuffer(void)
 			else if ((cs.display_mode & CGL_DEPTH_32) == CGL_DEPTH_32)
 				internalFormat = GL_DEPTH_COMPONENT32_ARB;
 #if defined(GL_EXT_packed_depth_stencil)
-			if ((cs.display_mode & CGL_STENCIL) == CGL_STENCIL)
+			if (cs.stencil_buffer)
 				internalFormat = GL_DEPTH24_STENCIL8_EXT;
 #endif
 
@@ -408,8 +399,7 @@ bool CRaptorRenderBufferDisplay::createFrameBuffer(void)
 		CATCH_GL_ERROR
 
 		// - create stencil render buffers
-		if (((cs.display_mode & CGL_STENCIL) == CGL_STENCIL) && 
-			((cs.display_mode & CGL_RENDER_DEPTHTEXTURE) != CGL_RENDER_DEPTHTEXTURE))
+		if ((cs.stencil_buffer) && !cs.bind_to_texture)
 		{
 #if defined(GL_EXT_packed_depth_stencil)
 			if (((cs.display_mode & CGL_DEPTH_32) != 0) &&
@@ -455,8 +445,7 @@ bool CRaptorRenderBufferDisplay::createFrameBuffer(void)
 	//!	except for multisampling
 	if (nbSamples == 1)
 	{
-		if (((cs.display_mode & CGL_RENDER_TEXTURE) == CGL_RENDER_TEXTURE) ||
-			((cs.display_mode & CGL_RENDER_DEPTHTEXTURE) == CGL_RENDER_DEPTHTEXTURE))
+		if (cs.bind_to_texture)
 		{
 			if (m_pAttachments == NULL)
 				return false;
@@ -486,10 +475,14 @@ bool CRaptorRenderBufferDisplay::glBindDisplay(const RAPTOR_HANDLE& device)
 		{
 			m_pAttachments = (CTextureSet*)device.handle;
 			m_pAttachments->registerDestruction(this);
+			cs.bind_to_texture = true;
 			return (m_pAttachments->getNbTexture() > 0);
 		}
 		else
+		{
+			cs.bind_to_texture = false;
 			return false;
+		}
 	}
 
 #if defined(GL_EXT_framebuffer_object)

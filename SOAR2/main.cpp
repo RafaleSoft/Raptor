@@ -31,7 +31,7 @@ int main(int argc, char* argv[])
     unsigned long v = Raptor::GetVersion();
 	ostrstream title;
     title << "SOAR 2 Raptor integration";
-    title << ((v>>24)&0xFF) << "." << ((v>>16)&0xFF) << "." << ((v>>8)&0xFF);
+	title << Raptor::GetVersionString();
     title << " Release test";
     title << ends;
 
@@ -41,9 +41,10 @@ int main(int argc, char* argv[])
 	glcs.x = 0;
 	glcs.y = 0;
 	glcs.caption = title.str();
-	glcs.display_mode = CGL_RGBA | CGL_DEPTH | CGL_DOUBLE | CGL_HARDWARE;
-    glcs.frame_mode = CGL_NOSTATUS;
-
+	glcs.acceleration = CRaptorDisplayConfig::HARDWARE;
+	glcs.double_buffer = true;
+	glcs.depth_buffer = true;
+	glcs.display_mode = CGL_RGBA | CGL_DEPTH;
  
     CRaptorDisplay *pDisplay = NULL;
     RAPTOR_HANDLE wnd = Raptor::glCreateWindow(glcs,pDisplay);

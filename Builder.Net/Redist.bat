@@ -136,7 +136,6 @@ ECHO       System:
 copy .\RaptorCore\System\CGLTypes.h Redist\Include\System
 copy .\RaptorCore\System\Color.h Redist\Include\System
 copy .\RaptorCore\System\Glext.h Redist\Include\System
-copy .\RaptorCore\System\GLEXTMacros.h Redist\Include\System
 copy .\RaptorCore\System\Memory.h Redist\Include\System
 copy .\RaptorCore\System\Raptor.h Redist\Include\System
 copy .\RaptorCore\System\RaptorApplication.h Redist\Include\System
@@ -152,6 +151,7 @@ copy .\RaptorCore\System\RaptorIO.h Redist\Include\System
 copy .\RaptorCore\System\RaptorMessages.h Redist\Include\System
 copy .\RaptorCore\System\RenderEntryPoint.h Redist\Include\System
 copy .\RaptorCore\System\Version.h Redist\Include\System
+copy .\RaptorCore\System\vkext.h Redist\Include\System
 
 ECHO       Win32:
 copy .\RaptorCore\Win32Specific\Win32Glext.h Redist\Include\Win32Specific

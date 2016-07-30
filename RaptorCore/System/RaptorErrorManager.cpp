@@ -225,3 +225,82 @@ void CRaptorErrorManager::glGetError(const std::string& file,int line)
 	}
 }
 
+void CRaptorErrorManager::vkGetError(VkResult err, const std::string& file,int line)
+{
+	GL_RAPTOR_ERROR r_err;
+
+	r_err.className = Global::CVulkanClassID::GetClassId().ClassName();
+	r_err.type = RAPTOR_VK_ERROR;
+
+	//	extract class name based on file name
+    string::size_type pos1 = file.rfind('\\');
+    string::size_type pos2 = file.rfind('.');
+	string r_file = file.substr(pos1+1,pos2-pos1-1);
+
+	stringstream r_line;
+    r_line << " [line:";
+    r_line << line;
+    r_line << "]";
+    r_line << ends;
+
+	switch (err)
+	{
+		case VK_SUCCESS:
+			r_err.error = "No error, success (class " + r_file + r_line.str() + ")";
+			break;
+		case VK_NOT_READY:
+			r_err.error = "Not ready (class " + r_file + r_line.str() + ")";
+			break;
+		case VK_TIMEOUT:
+			r_err.error = "Timeout (class " + r_file + r_line.str() + ")";
+			break;
+		case VK_EVENT_SET:
+			r_err.error = "Event Set (class " + r_file + r_line.str() + ")";
+			break;
+		case VK_EVENT_RESET:
+			r_err.error = "Event Reset (class " + r_file + r_line.str() + ")";
+			break;
+		case VK_INCOMPLETE:
+			r_err.error = "Incomplete (class " + r_file + r_line.str() + ")";
+			break;
+		case VK_ERROR_OUT_OF_HOST_MEMORY:
+			r_err.error = "Error Out of Host Memory (class " + r_file + r_line.str() + ")";
+			break;
+		case VK_ERROR_OUT_OF_DEVICE_MEMORY:
+			r_err.error = "Error Out of Host Memory (class " + r_file + r_line.str() + ")";
+			break;
+		case VK_ERROR_INITIALIZATION_FAILED:
+			r_err.error = "Error initialization failed (class " + r_file + r_line.str() + ")";
+			break;
+		case VK_ERROR_DEVICE_LOST:
+			r_err.error = "Error device lost (class " + r_file + r_line.str() + ")";
+			break;
+		case VK_ERROR_MEMORY_MAP_FAILED:
+			r_err.error = "Error memory map failed (class " + r_file + r_line.str() + ")";
+			break;
+		case VK_ERROR_LAYER_NOT_PRESENT:
+			r_err.error = "Error layer not present (class " + r_file + r_line.str() + ")";
+			break;
+		case VK_ERROR_EXTENSION_NOT_PRESENT:
+			r_err.error = "Error extension not present (class " + r_file + r_line.str() + ")";
+			break;
+		case VK_ERROR_FEATURE_NOT_PRESENT:
+			r_err.error = "Error feature not present (class " + r_file + r_line.str() + ")";
+			break;
+		case VK_ERROR_INCOMPATIBLE_DRIVER:
+			r_err.error = "Error incompatible driver (class " + r_file + r_line.str() + ")";
+			break;
+		case VK_ERROR_TOO_MANY_OBJECTS:
+			r_err.error = "Error too maby objects (class " + r_file + r_line.str() + ")";
+			break;
+		case VK_ERROR_FORMAT_NOT_SUPPORTED:
+			r_err.error = "Error format not supported (class " + r_file + r_line.str() + ")";
+			break;
+		default:
+			r_err.error = "Unknown Error (class " + r_file + r_line.str() + ")";
+			break;
+	}
+
+	addRaptorError(r_err);
+}
+

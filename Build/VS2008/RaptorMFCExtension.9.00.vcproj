@@ -53,7 +53,7 @@
 				Optimization="0"
 				InlineFunctionExpansion="1"
 				FavorSizeOrSpeed="1"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)$(ProjectName)&quot;;&quot;$(RAPTOR_ROOT)\Redist\Include&quot;;&quot;$(MSSdk)\Include\mfc&quot;;&quot;$(PLATFORM_SDK)\Include&quot;;&quot;$(MSSdk)\Include\atl&quot;"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)$(ProjectName)&quot;;&quot;$(RAPTOR_ROOT)\Redist\Include&quot;;&quot;$(MSSdk)\Include\mfc&quot;;&quot;$(PLATFORM_SDK)\Include&quot;;&quot;$(MSSdk)\Include\atl&quot;;&quot;$(VULKAN_INCLUDE_PATH)&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_AFXEXT;EXPORT_RAPTOR_CORE"
 				StringPooling="true"
 				RuntimeLibrary="2"

@@ -22,6 +22,9 @@
 #if !defined(AFX_RAPTORRENDERBUFFERDISPLAY_H__AC23F2BD_DAC5_4B9A_9F75_AD9A2CEEAE08__INCLUDED_)
 	#include "RaptorRenderBufferDisplay.h"
 #endif
+#if !defined(AFX_RAPTORVULKANDISPLAY_H__1D39CB77_CA4D_4A8F_90FA_F9C76774CE6F__INCLUDED_)
+	#include "RaptorVulkanDisplay.h"
+#endif
 #if !defined(AFX_3DENGINETASKMANAGER_H__04149C60_C594_4009_A2C9_F852497146A3__INCLUDED_)
     #include "Engine/3DEngineTaskManager.h"
 #endif
@@ -42,6 +45,9 @@
 #endif
 #if !defined(AFX_RAPTOREXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
 	#include "System/RaptorExtensions.h"
+#endif
+#if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
+    #include "RaptorErrorManager.h"
 #endif
 
 
@@ -138,6 +144,16 @@ int Raptor::glPurgeRaptor(bool count)
 				obj = CPersistence::Object((void*&)pos);
 				if (obj!=NULL)
 				{
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+		stringstream str;
+		str << "Deleting: ";
+		str << obj << " - ";
+		str << obj->getName();
+		str << ends;
+        Raptor::GetErrorManager()->generateRaptorError(	Global::COpenGLClassID::GetClassId(),
+														CRaptorErrorManager::RAPTOR_NO_ERROR,
+														str.str().c_str());
+#endif
 					pos = NULL;
 					delete obj;
 					//	We need to restart from first object
@@ -177,9 +193,10 @@ bool Raptor::glCheckDisplayConfig(const CRaptorDisplayConfig &pcs)
     bool valid = false;
     CContextManager *ctxMgr = CContextManager::GetInstance();
 
-    if ((pcs.display_mode & CGL_RENDER_TEXTURE ) == CGL_RENDER_TEXTURE)
+	if (pcs.renderer == CRaptorDisplayConfig::PIXEL_BUFFER)
     {
         // TODO
+		//	Also check texture binding ?
     }
     else
     {
@@ -244,13 +261,16 @@ CRaptorDisplay* Raptor::glCreateDisplay(const CRaptorDisplayConfig& pcs)
 
 	CRaptorDisplay *pDisplay = NULL;
 	
-	if ((display_mode & CGL_RENDER_FILTERED ) == CGL_RENDER_FILTERED)
+	if ((CRaptorDisplayConfig::RENDER_BUFFER_FILTER_CHAIN == pcs.renderer) ||
+		(CRaptorDisplayConfig::PIXEL_BUFFER_FILTER_CHAIN == pcs.renderer))
 		pDisplay = new CRaptorFilteredDisplay(pcs);
-	else if ((display_mode & CGL_RENDER_BUFFER ) == CGL_RENDER_BUFFER)
+	else if (CRaptorDisplayConfig::RENDER_BUFFER == pcs.renderer)
 		pDisplay = new CRaptorRenderBufferDisplay(pcs);
-	else if ((display_mode & CGL_RENDER_TEXTURE ) == CGL_RENDER_TEXTURE)
+	else if (CRaptorDisplayConfig::PIXEL_BUFFER == pcs.renderer)
 		pDisplay = new CRaptorBufferDisplay(pcs);
-	else
+	else if (CRaptorDisplayConfig::VULKAN == pcs.renderer)
+		pDisplay = new CRaptorVulkanDisplay(pcs);
+	else	// Native renderer
 		pDisplay = new CRaptorScreenDisplay(pcs);
 
 	Global::GetInstance().getCurrentStatus().displays.push_back(pDisplay);
@@ -318,7 +338,8 @@ bool Raptor::glInitRaptor(const CRaptorConfig& config)
 	glCS.width = -1;
 	glCS.height = -1;
 	glCS.caption = "Raptor Default Display";
-	glCS.display_mode = CGL_RGBA  | CGL_GENERIC;
+	glCS.display_mode = CGL_RGBA;
+	glCS.acceleration = CRaptorDisplayConfig::GENERIC;
 	glCS.refresh_rate.fps = CGL_MAXREFRESHRATE;
 
     CRaptorDisplay *pDisplay = NULL;
