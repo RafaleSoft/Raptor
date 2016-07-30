@@ -10,14 +10,14 @@
 #if !defined(AFX_GEOMETRYEDITOR_H__2D77E428_ED3D_416B_8DE9_DABFD45A38A7__INCLUDED_)
 	#include "GeometryEditor.h"
 #endif
-#if !defined(AFX_SHADER_H__4D405EC2_7151_465D_86B6_1CA99B906777__INCLUDED_)
-	#include "Shader.h"
-#endif
 #if !defined(AFX_VERTEXSHADER_H__F2D3BBC6_87A1_4695_B667_2B8C3C4CF022__INCLUDED_)
 	#include "VertexShader.h"
 #endif
 #if !defined(AFX_FRAGMENTSHADER_H__66B3089A_2919_4678_9273_6CDEF7E5787F__INCLUDED_)
 	#include "FragmentShader.h"
+#endif
+#if !defined(AFX_EMBMSHADER_H__99A5AF45_D5C7_4F43_851C_A31FC52DB237__INCLUDED_)
+	#include "Subsys/EMBMShader.h"
 #endif
 #if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
 	#include "System/RaptorErrorManager.h"
@@ -102,7 +102,7 @@ void CEMBMGeometry::init(void)
 	else
 		m_pObserver->addReference();
 
-	m_pBumpShader = new CShader("EMBM_SHADER");
+	m_pBumpShader = new CEMBMShader();
 	m_pBumpShader->registerDestruction(this);
 
 	if (m_pBumpShaderAmbient == NULL)

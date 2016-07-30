@@ -49,88 +49,93 @@ bool CDefaultBumpmapLoader::apply(CTextureObject* const src,
 		return false;
 
     float scale = config.getBumpAmplitude();
+	unsigned int transparency = src->getTransparency();
 
 	int w = src->getWidth();
 	int w_4 = w * 4;
 	int h = src->getHeight();
     int s = h * w_4;
+	int d = MAX(1,src->getDepth());
+	int v = s * d;
 
 	unsigned char *texturedata = src->getTexels();
 
     CMemory::Allocator<unsigned char> allocator;
-	unsigned char *bumpMap = allocator.allocate(s);
+	unsigned char *bumpMap = allocator.allocate(v);
 
-    int i = 0;
-    for (i=0;i<w_4*h;i+=4)
+    for (int i=0; i<v; i+=4)
 	    *((unsigned int*)(bumpMap + i)) = 0xFFFF7F7F;
 
-	for (i=0;i<w;i++)
+	for (int k=0; k<d; k++)
 	{
-		for (int j=0;j<h;j++)
+		for (int i=0; i<w; i++)
 		{
-			unsigned char r;
-			unsigned char r2;
-			int x=0,y=0,z=768;
-			int offset = j*w_4 + 4*i;
+			for (int j=0; j<h; j++)
+			{
+				unsigned char r;
+				unsigned char r2;
+				int x=0,y=0,z=768;
+				int offset = 4 * ((k*h + j)*w + i);
 
-            int left = offset-4;
-            int right = offset+4;
-            int up = offset-w_4;
-            int down = offset+w_4;
-            int upleft = offset-w_4-4;
-            int downleft = offset+w_4-4;
-            int upright = offset-w_4+4;
-            int downright = offset+w_4+4;
+				int left = offset-4;
+				int right = offset+4;
+				int up = offset-w_4;
+				int down = offset+w_4;
+				int upleft = offset-w_4-4;
+				int downleft = offset+w_4-4;
+				int upright = offset-w_4+4;
+				int downright = offset+w_4+4;
 
-            if (j==0)
-            {   up += s;    upleft += s;    upright += s;   }
-            else if (j == (h-1))
-            {   down -= s;  downleft -= s;  downright -= s; }
-			
+				if (j==0)
+				{   up += s;    upleft += s;    upright += s;   }
+				else if (j == (h-1))
+				{   down -= s;  downleft -= s;  downright -= s; }
+				
 
-            if (i==0)
-            {   left += w_4;    upleft += w_4;  downleft += w_4;    }
-            else if (i == (w-1))
-            {   right -= w_4;   upright -= w_4; downright -= w_4;   }
+				if (i==0)
+				{   left += w_4;    upleft += w_4;  downleft += w_4;    }
+				else if (i == (w-1))
+				{   right -= w_4;   upright -= w_4; downright -= w_4;   }
 
-			r = texturedata[offset];
+				r = texturedata[offset];
 
-			r2 = texturedata[left]; 
-			if (r2<r) x-=r-r2; else if (r2>r) x+=r2-r;
+				r2 = texturedata[left]; 
+				if (r2<r) x-=r-r2; else if (r2>r) x+=r2-r;
 
-			r2 = texturedata[right]; 
-			if (r2<r) x+=r-r2; else if (r2>r) x-=r2-r;
+				r2 = texturedata[right]; 
+				if (r2<r) x+=r-r2; else if (r2>r) x-=r2-r;
 
-			r2 = texturedata[up]; 
-			if (r2<r) y-=r-r2; else if (r2>r) y+=r2-r;
+				r2 = texturedata[up]; 
+				if (r2<r) y-=r-r2; else if (r2>r) y+=r2-r;
 
-			r2 = texturedata[down]; 
-			if (r2<r) y+=r-r2; else if (r2>r) y-=r2-r;
+				r2 = texturedata[down]; 
+				if (r2<r) y+=r-r2; else if (r2>r) y-=r2-r;
 
-			r2 = texturedata[upleft]; 
-			if (r2<r) {x-=(r-r2)/2;y-=(r-r2)/2;} else if (r2>r) {x+=(r2-r)/2;y+=(r2-r)/2;}
+				r2 = texturedata[upleft]; 
+				if (r2<r) {x-=(r-r2)/2;y-=(r-r2)/2;} else if (r2>r) {x+=(r2-r)/2;y+=(r2-r)/2;}
 
-			r2 = texturedata[downleft]; 
-			if (r2<r) {x-=(r-r2)/2;y+=(r-r2)/2;} else if (r2>r) {x+=(r2-r)/2;y-=(r2-r)/2;}
+				r2 = texturedata[downleft]; 
+				if (r2<r) {x-=(r-r2)/2;y+=(r-r2)/2;} else if (r2>r) {x+=(r2-r)/2;y-=(r2-r)/2;}
 
-			r2 = texturedata[upright]; 
-			if (r2<r) {x+=(r-r2)/2;y-=(r-r2)/2;} else if (r2>r) {x-=(r2-r)/2;y+=(r2-r)/2;}
+				r2 = texturedata[upright]; 
+				if (r2<r) {x+=(r-r2)/2;y-=(r-r2)/2;} else if (r2>r) {x-=(r2-r)/2;y+=(r2-r)/2;}
 
-			r2 = texturedata[downright]; 
-			if (r2<r) {x+=(r-r2)/2;y+=(r-r2)/2;} else if (r2>r) {x-=(r2-r)/2;y-=(r2-r)/2;}
+				r2 = texturedata[downright]; 
+				if (r2<r) {x+=(r-r2)/2;y+=(r-r2)/2;} else if (r2>r) {x-=(r2-r)/2;y-=(r2-r)/2;}
 
-            x *= scale; y *= scale;
-			if (abs(x)>abs(y)) z-=abs(x); else z-=abs(y);
+				x *= scale; y *= scale;
+				if (abs(x)>abs(y)) z-=abs(x); else z-=abs(y);
 
-			float n = 127.0f / (float)(sqrt((float)(x*x + y*y + z*z)));
-			bumpMap[offset++] = (unsigned char)(x * n + 128);
-			bumpMap[offset++] = (unsigned char)(y * n + 128);
-			bumpMap[offset++] = (unsigned char)(z * n + 128);
-			bumpMap[offset++] = src->getTransparency();
+				float n = 127.0f / (float)(sqrt((float)(x*x + y*y + z*z)));
+				bumpMap[offset++] = (unsigned char)(x * n + 128);
+				bumpMap[offset++] = (unsigned char)(y * n + 128);
+				bumpMap[offset++] = (unsigned char)(z * n + 128);
+				bumpMap[offset++] = transparency;
+			}
 		}
 	}
 
-    memcpy(texturedata,bumpMap,h * w_4);
+    memcpy(texturedata,bumpMap,v);
 
     CMemory::GetInstance()->garbage(bumpMap);
 

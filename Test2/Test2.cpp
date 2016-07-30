@@ -85,9 +85,14 @@ BOOL CTest2App::InitInstance()
 	glcs.x = 10;
 	glcs.y = 10;
 	glcs.caption = title;
-	glcs.display_mode = CGL_RGBA | CGL_DEPTH | CGL_DOUBLE | CGL_STENCIL | //CGL_ACCUM |*/
-						CGL_HARDWARE | CGL_ANTIALIAS_4X; 
-	glcs.frame_mode = CGL_DRAWLOGO;//| CGL_NOSTATUS;
+	glcs.acceleration = CRaptorDisplayConfig::HARDWARE;
+	glcs.antialias = CRaptorDisplayConfig::ANTIALIAS_4X;
+	glcs.double_buffer = true;
+	glcs.depth_buffer = true;
+	glcs.stencil_buffer = true;
+	glcs.display_mode = CGL_RGBA | CGL_DEPTH;
+	glcs.draw_logo = true;
+	glcs.status_bar = true;
 	glcs.refresh_rate.fps = CGL_MAXREFRESHRATE;
 	glcs.framebufferState.colorClearValue = CColor::RGBA(0.5f,0.6f,0.7f,1.0f);
 	glcs.hintState.pointSmooth = GL_NICEST;

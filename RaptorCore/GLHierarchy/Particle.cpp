@@ -98,7 +98,8 @@ void main (void) \n\
 ";
 
 static const std::string particle_gp_src =
-"#version 430 \n\
+"#version 120 \n\
+#extension GL_ARB_geometry_shader4 : enable \n\
 \n\
 layout(points) in; \n\
 layout(points, max_vertices=1) out; \n\

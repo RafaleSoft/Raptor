@@ -571,7 +571,7 @@ bool CBoundingBox::fillBSP(GL_COORD_VERTEX &v1,GL_COORD_VERTEX &v2,GL_COORD_VERT
 		float dz = zmax - zmin;
 
 		float div = 1.0f;
-		switch(bsp->m_size)
+		switch(bsp->getSize())
 		{
 			case DEPTH_1: div = div/2; break;
 			case DEPTH_2: div = div/4; break;
@@ -609,7 +609,7 @@ bool CBoundingBox::addToBSP(GL_COORD_VERTEX& vertex)
 		CSubBoundingBox	curbsp = *bsp;
 		SubBBoxLevel	level = 0;
 
-		while (curbsp.m_size > DEPTH_0)
+		while (curbsp.getSize() > DEPTH_0)
 		{
 			level = 0;
 
@@ -649,7 +649,7 @@ float CBoundingBox::renderBSP(void) const
 		int step = 2;
 
 		float div = 1.0f;
-		switch(bsp->m_size)
+		switch(bsp->getSize())
 		{
 			case DEPTH_1: step *= 2; break;
 			case DEPTH_2: step *= 4; break;

@@ -291,17 +291,20 @@ CHDRFilter::CHDRFilter(const CRaptorDisplayConfig &da)
     rda.x = 0;
     rda.y = 0;
     rda.refresh_rate.fps = CGL_MAXREFRESHRATE;
-    rda.display_mode =	CGL_RENDER_TEXTURE | 
-						CGL_HARDWARE |
-                        (da.display_mode & (CGL_RGB|CGL_RGBA|CGL_FLOAT));
+	rda.acceleration = CRaptorDisplayConfig::HARDWARE;
+	rda.antialias = CRaptorDisplayConfig::ANTIALIAS_NONE;
+	rda.depth_buffer = false;
+	rda.double_buffer = false;
+	rda.stencil_buffer = false;
+	rda.bind_to_texture = true;
+    rda.display_mode =	(da.display_mode & (CGL_RGB|CGL_RGBA|CGL_FLOAT));
+	rda.renderer = CRaptorDisplayConfig::PIXEL_BUFFER;
 
 #if defined(GL_EXT_framebuffer_object)
 	if ((Raptor::glIsExtensionSupported("GL_EXT_framebuffer_object")) &&
-		((da.display_mode & CGL_RENDER_BUFFER) == CGL_RENDER_BUFFER))
-		rda.display_mode |= CGL_RENDER_BUFFER;
+		(da.renderer == CRaptorDisplayConfig::RENDER_BUFFER))
+		rda.renderer = CRaptorDisplayConfig::RENDER_BUFFER;
 #endif
-
-    rda.frame_mode = CGL_NOSTATUS;
 
 	nLevels = 0;
 	nBlurPass = 1;

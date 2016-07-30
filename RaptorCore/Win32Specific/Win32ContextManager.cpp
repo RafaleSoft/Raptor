@@ -33,17 +33,19 @@ static const int MAX_CONTEXT = 16;
 
 //////////////////////////////////////////////////////////////////////
 //
-unsigned int defineAcceleration(unsigned int index,int mode,int *attribs)
+unsigned int defineAcceleration(unsigned int index,
+								CRaptorDisplayConfig::GL_ACCELERATION acceleration,
+								int *attribs)
 {
     unsigned int attribIndex = index;
 #if defined(WGL_ARB_pixel_format)
     attribs[attribIndex++] = WGL_ACCELERATION_ARB;
 
-    if ((mode & 0x0700) == CGL_SOFTWARE)  
+	if (CRaptorDisplayConfig::SOFTWARE == acceleration)
         attribs[attribIndex++] = WGL_NO_ACCELERATION_ARB;
-    else if ((mode & 0x0700) == CGL_GENERIC) 
+    else if (CRaptorDisplayConfig::GENERIC == acceleration)
         attribs[attribIndex++] = WGL_GENERIC_ACCELERATION_ARB;
-    else if ((mode & 0x0700) == CGL_HARDWARE) 
+    else if (CRaptorDisplayConfig::HARDWARE == acceleration) 
         attribs[attribIndex++] = WGL_FULL_ACCELERATION_ARB;
     else attribs[attribIndex++] = WGL_FULL_ACCELERATION_ARB;
 
@@ -108,28 +110,33 @@ unsigned int definePixels(unsigned int index,int mode,int *attribs)
     return attribIndex;
 }
 
-unsigned int defineDoubleBuffer(unsigned int index,int mode,int *attribs)
+unsigned int defineDoubleBuffer(unsigned int index,
+								bool double_buffer,
+								CRaptorDisplayConfig::GL_SWAPBUFFER swap_buffer,
+								int *attribs)
 {
     unsigned int attribIndex = index;
 #if defined(WGL_ARB_pixel_format)
-    if ((mode & CGL_DOUBLE) == CGL_DOUBLE)
+    if (double_buffer)
     {
 	    attribs[attribIndex++] = WGL_DOUBLE_BUFFER_ARB;
 	    attribs[attribIndex++] = TRUE;
-        if ((mode & CGL_DOUBLE_SWAPCOPY) == CGL_DOUBLE_SWAPCOPY)
+		
+		if (CRaptorDisplayConfig::SWAP_COPY == swap_buffer)
         {
 	        attribs[attribIndex++] = WGL_SWAP_METHOD_ARB;
 	        attribs[attribIndex++] = WGL_SWAP_COPY_ARB;
         }
-        else if ((mode & CGL_DOUBLE_SWAPEXCHANGE) == CGL_DOUBLE_SWAPEXCHANGE)
+        else if (CRaptorDisplayConfig::SWAP_EXCHANGE == swap_buffer)
         {
 	        attribs[attribIndex++] = WGL_SWAP_METHOD_ARB;
 	        attribs[attribIndex++] = WGL_SWAP_EXCHANGE_ARB;
         }
-        else if ((mode & CGL_DOUBLE_SWAPUNDEF) == CGL_DOUBLE_SWAPUNDEF)
+        else if (CRaptorDisplayConfig::SWAP_UNDEFINED == swap_buffer)
         {
-	        attribs[attribIndex++] = WGL_SWAP_METHOD_ARB;
-	        attribs[attribIndex++] = WGL_SWAP_UNDEFINED_ARB;
+		//!	This swap model does not work (no pixel format available)
+	    //   attribs[attribIndex++] = WGL_SWAP_METHOD_ARB;
+	    //   attribs[attribIndex++] = WGL_SWAP_UNDEFINED_ARB;
         }
     }
 #endif
@@ -159,11 +166,11 @@ unsigned int defineDepthBuffer(unsigned int index,int mode,int *attribs)
     return attribIndex;
 }
 
-unsigned int defineStencilBuffer(unsigned int index,int mode,int *attribs)
+unsigned int defineStencilBuffer(unsigned int index,bool stencil,int *attribs)
 {
     unsigned int attribIndex = index;
 #if defined(WGL_ARB_pixel_format)
-    if (mode & CGL_STENCIL)
+    if (stencil)
     {
 	    attribs[attribIndex++] = WGL_STENCIL_BITS_ARB;
 	    attribs[attribIndex++] = 8;
@@ -172,11 +179,11 @@ unsigned int defineStencilBuffer(unsigned int index,int mode,int *attribs)
     return attribIndex;
 }
 
-unsigned int defineAccumBuffer(unsigned int index,int mode,int *attribs)
+unsigned int defineAccumBuffer(unsigned int index,bool accumulator_buffer,int *attribs)
 {
     unsigned int attribIndex = index;
 #if defined(WGL_ARB_pixel_format)
-    if ((mode & CGL_ACCUM) == CGL_ACCUM)
+    if (accumulator_buffer)
     {
 	    attribs[attribIndex++] = WGL_ACCUM_BITS_ARB;
 	    attribs[attribIndex++] = 64;
@@ -185,17 +192,17 @@ unsigned int defineAccumBuffer(unsigned int index,int mode,int *attribs)
     return attribIndex;
 }
 
-unsigned int defineSampleBuffer(unsigned int index,int mode,int *attribs)
+unsigned int defineSampleBuffer(unsigned int index,unsigned int nbSamples,int *attribs)
 {
     unsigned int attribIndex = index;
 #if defined(WGL_ARB_pixel_format)
 #if defined(GL_ARB_multisample)
-	if (mode & CGL_ANTIALIAS)
+	if (1 < nbSamples)
 	{
 		attribs[attribIndex++] = WGL_SAMPLE_BUFFERS_ARB;
 		attribs[attribIndex++] = 1;
 		attribs[attribIndex++] = WGL_SAMPLES_ARB;
-		attribs[attribIndex++] = ((mode & 0xF0000000) >> 28) + 1;
+		attribs[attribIndex++] = nbSamples;
 	}
 #endif
 #endif
@@ -257,9 +264,6 @@ void CWin32ContextManager::getLastError(const std::string& file,int line) const
 
 CWin32ContextManager::CWin32ContextManager()
 {
-	glGlobalRC = NULL;
-	glGlobalExtendedRC = NULL;
-
 	nbPBuffers = 0;
 	nbContext = 0;
 
@@ -595,9 +599,9 @@ RAPTOR_HANDLE CWin32ContextManager::glCreateWindow(const CRaptorDisplayConfig& c
     device.hClass = DEVICE_CONTEXT_CLASS;
 
     RENDERING_CONTEXT_ID id;
-    if ((pda.display_mode & CGL_GENERIC) == CGL_GENERIC)
+	if (CRaptorDisplayConfig::GENERIC == pda.acceleration)
     {
-	    id = glCreateContext(device,pda.display_mode);
+	    id = glCreateContext(device,pda);
         pDisplay = NULL;
         if (id > -1)
 	    {
@@ -623,13 +627,14 @@ RAPTOR_HANDLE CWin32ContextManager::glCreateWindow(const CRaptorDisplayConfig& c
 			RECT rect2;
 			GetWindowRect(hwnd,&rect);
 			GetClientRect(hwnd,&rect2);
-			if ((pda.frame_mode & CGL_NOSTATUS) == CGL_NOSTATUS)
-				pDisplay->glResize(MAX(1,pda.width),MAX(1,pda.height),0,0);
-			else
+			if (pda.status_bar)
             {
                 int menuHeight = GetSystemMetrics(SM_CYMENU);
 				pDisplay->glResize(MAX(1,pda.width),pda.height+menuHeight,0,menuHeight);
             }
+			else
+				pDisplay->glResize(MAX(1,pda.width),MAX(1,pda.height),0,0);
+
 			if (!pDisplay->glUnBindDisplay())
 				id = -1;
 		}
@@ -668,8 +673,14 @@ bool CWin32ContextManager::glDestroyWindow(const RAPTOR_HANDLE& wnd)
 //	
 //	Standard OpenGL Rendering Context creation method
 //
-CContextManager::RENDERING_CONTEXT_ID CWin32ContextManager::glCreateContext(const RAPTOR_HANDLE& device,int displayMode,bool global)
+CContextManager::RENDERING_CONTEXT_ID CWin32ContextManager::glCreateContext(const RAPTOR_HANDLE& device,
+																			const CRaptorDisplayConfig& config)
 {
+	if (device.handle == 0)
+	{
+		RAPTOR_ERROR( Global::COpenGLClassID::GetClassId(),"Raptor cannot create a valid context on an Invalid device");
+		return -1;
+	}
 	if (nbContext >= MAX_CONTEXT)
 	{
 		RAPTOR_ERROR( Global::COpenGLClassID::GetClassId(),"Too many Rendering Context created");
@@ -679,7 +690,6 @@ CContextManager::RENDERING_CONTEXT_ID CWin32ContextManager::glCreateContext(cons
     HDC hDC = NULL;
     int pixelformat;
 	
-	HGLRC	defaultGLRC = NULL;
 	HGLRC	glhrc = NULL;
 	DWORD	flags = 0;
 	BYTE	alphabits = 0;
@@ -701,9 +711,9 @@ CContextManager::RENDERING_CONTEXT_ID CWin32ContextManager::glCreateContext(cons
 	if (0 == hDC)
 		return -1;
 	
-	int m_mode = displayMode;
+	int m_mode = config.display_mode;
 
-	if (m_mode & CGL_DOUBLE) flags = flags|PFD_DOUBLEBUFFER;
+	if (config.double_buffer) flags = flags|PFD_DOUBLEBUFFER;
 	else flags = flags|PFD_DOUBLEBUFFER_DONTCARE;
 
 	if ((m_mode & CGL_DEPTH_32) == CGL_DEPTH_32) depthbits = 32;
@@ -712,9 +722,9 @@ CContextManager::RENDERING_CONTEXT_ID CWin32ContextManager::glCreateContext(cons
 	else flags = flags|PFD_DEPTH_DONTCARE;
 
 	if (m_mode & CGL_RGBA) alphabits=8;
-	if (m_mode & CGL_STENCIL) stencilbits=8;
-	if (m_mode & CGL_OVERLAY) overlaybits = 1;
-	if (m_mode & CGL_ACCUM) accumbits = 64;
+	if (config.stencil_buffer) stencilbits=8;
+	if (config.overlay) overlaybits = 1;
+	if (config.accumulator_buffer) accumbits = 64;
 
 	PIXELFORMATDESCRIPTOR
 	pfd = { 
@@ -748,36 +758,27 @@ CContextManager::RENDERING_CONTEXT_ID CWin32ContextManager::glCreateContext(cons
 		return -1; 
 	}
 
-	defaultGLRC = wglCreateContext(hDC);
-	if (!defaultGLRC)
+	glhrc = wglCreateContext(hDC);
+	if (!glhrc)
 	{
 		RAPTOR_FATAL( Global::COpenGLClassID::GetClassId(),"Raptor Context Manager failed to create OpenGL context");
 		return -1;
 	}
 
-	if (global)
-	{
-		if (glGlobalRC == NULL)
-			glGlobalRC = defaultGLRC;
-		glhrc = glGlobalRC;
-	}
-	else
-	{	
-		glhrc = defaultGLRC;
-	}
-
     unsigned int pos = 0;
-	while ((pos < nbContext) && (pContext[pos].OGLContext != NULL))
+	while ((pos < MAX_CONTEXT) && (pContext[pos].OGLContext != NULL))
 		pos++;
 
-    context_t &context = pContext[pos];
+	// pos value is always valid because buffer overflow
+	//	is checked on method entry.
+	context_t &context = pContext[pos];
 	context.OGLContext = glhrc;
 	context.WIN32Window = NULL;
-    context.WIN32Context = NULL;
+	context.WIN32Context = NULL;
     
-    wglMakeCurrent(hDC, glhrc);
-    RENDERING_CONTEXT_ID	oldContext = m_currentContext;
-    m_currentContext = pos;
+	wglMakeCurrent(hDC, glhrc);
+	RENDERING_CONTEXT_ID	oldContext = m_currentContext;
+	m_currentContext = pos;
 
 	PFN_WGL_GET_EXTENSIONS_STRING_ARB_PROC wglGetExtensionsStringARB = (PFN_WGL_GET_EXTENSIONS_STRING_ARB_PROC)wglGetProcAddress("wglGetExtensionsStringARB");
 	std::string extensions = (const char*)glGetString(GL_EXTENSIONS);
@@ -789,7 +790,6 @@ CContextManager::RENDERING_CONTEXT_ID CWin32ContextManager::glCreateContext(cons
 	wglMakeCurrent(hDC,NULL);
 	 
 	nbContext++;
-	
 
     CATCH_WIN32_ERROR
 
@@ -800,7 +800,8 @@ CContextManager::RENDERING_CONTEXT_ID CWin32ContextManager::glCreateContext(cons
 //	
 //	Extended OpenGL Rendering Context creation method
 //
-CContextManager::RENDERING_CONTEXT_ID  CWin32ContextManager::glCreateExtendedContext(const RAPTOR_HANDLE& device,int displayMode,bool global)
+CContextManager::RENDERING_CONTEXT_ID  CWin32ContextManager::glCreateExtendedContext(const RAPTOR_HANDLE& device,
+																					 const CRaptorDisplayConfig& config)
 {
     if (device.handle == 0)
 	{
@@ -814,19 +815,7 @@ CContextManager::RENDERING_CONTEXT_ID  CWin32ContextManager::glCreateExtendedCon
 		return -1;
 	}
 
-	HGLRC defaultGLRC = NULL;
 	HGLRC glhrc = NULL;
-
-    unsigned int pos = 0;
-	while ((pos < nbContext) && (pContext[pos].OGLContext != NULL))
-		pos++;
-
-    context_t &context = pContext[pos];
-	context.OGLContext = NULL;
-	context.WIN32Window = NULL;
-    context.WIN32Context = NULL;
-    context.pExtensions = NULL; 
-	nbContext++;
 		
 	//	Now, we are sure that the rendering context can be created,
 	//	try to create the extended rendering context
@@ -861,26 +850,26 @@ CContextManager::RENDERING_CONTEXT_ID  CWin32ContextManager::glCreateExtendedCon
 
 		//	All this stuff .... is for OpenGL of course !!!
 		//	OGL acceleration
-        attribIndex = defineAcceleration(attribIndex, displayMode, piAttribIList);
+		attribIndex = defineAcceleration(attribIndex, config.acceleration, piAttribIList);
 
 		//	Draw with double buffer
-        attribIndex = defineDoubleBuffer(attribIndex,displayMode, piAttribIList);
+		attribIndex = defineDoubleBuffer(attribIndex,config.double_buffer,config.swap_buffer, piAttribIList);
 
 		//	RGB or RGBA are the only supported modes, because they are fun.
 		//	Paletted mode are so boring and slow and old fashioned ...
-        attribIndex = definePixels(attribIndex, displayMode, piAttribIList);
+        attribIndex = definePixels(attribIndex, config.display_mode, piAttribIList);
 
 		//	Use depth if requested
-        attribIndex = defineDepthBuffer(attribIndex, displayMode, piAttribIList);
+        attribIndex = defineDepthBuffer(attribIndex, config.display_mode, piAttribIList);
 		
 		//	Use stencil if requested
-        attribIndex = defineStencilBuffer(attribIndex, displayMode, piAttribIList);
+        attribIndex = defineStencilBuffer(attribIndex, config.stencil_buffer, piAttribIList);
 
 		//	Use accum buffer if requested
-        attribIndex = defineAccumBuffer(attribIndex, displayMode, piAttribIList);
+        attribIndex = defineAccumBuffer(attribIndex, config.accumulator_buffer, piAttribIList);
 
 		//	Use antialiasing if requested
-        attribIndex = defineSampleBuffer(attribIndex, displayMode, piAttribIList);
+        attribIndex = defineSampleBuffer(attribIndex, config.getNbSamples(), piAttribIList);
 
 		//	Terminate the list and continue with the settings
 		UINT nNumFormats = 0;
@@ -888,8 +877,7 @@ CContextManager::RENDERING_CONTEXT_ID  CWin32ContextManager::glCreateExtendedCon
 		if (( CRaptorExtensions::wglChoosePixelFormatARB(hDC, piAttribIList,NULL,1,&pixelformat,&nNumFormats) == 0 ) || (nNumFormats == 0))
 		{
 			RAPTOR_FATAL( Global::COpenGLClassID::GetClassId(),"Raptor Context Manager failed to choose EXT pixel format");
-			glhrc = defaultGLRC;
-			return -1; 
+			return -1;
 		}
 
 		PIXELFORMATDESCRIPTOR pfd;
@@ -904,18 +892,21 @@ CContextManager::RENDERING_CONTEXT_ID  CWin32ContextManager::glCreateExtendedCon
 		if (!glhrc)
 		{
 			RAPTOR_FATAL( Global::COpenGLClassID::GetClassId(),"Raptor Context Manager failed to create OpenGL EXT context");
-			glhrc = defaultGLRC;
+			return -1;
 		}
-		else if (defaultGLRC)
-			wglDeleteContext(defaultGLRC);
 
-		if (global)
-		{
-			if (glGlobalExtendedRC == NULL)
-				glGlobalExtendedRC = glhrc;
-			else
-				glhrc = glGlobalExtendedRC;
-		}
+		unsigned int pos = 0;
+		while ((pos < MAX_CONTEXT) && (pContext[pos].OGLContext != NULL))
+			pos++;
+
+		// pos value is always valid because buffer overflow
+		//	is checked on method entry.
+		context_t &context = pContext[pos];
+		context.OGLContext = NULL;
+		context.WIN32Window = NULL;
+		context.WIN32Context = NULL;
+		context.pExtensions = NULL; 
+		nbContext++;
 
 		wglMakeCurrent(hDC, glhrc);
 		RENDERING_CONTEXT_ID	oldContext = m_currentContext;
@@ -986,11 +977,11 @@ CContextManager::RENDERING_CONTEXT_ID  CWin32ContextManager::glCreateExtendedCon
 
 		//	All this stuff .... is for OpenGL of course !!!
 		//	OGL acceleration
-        attribIndex  = defineAcceleration(attribIndex, pcs.display_mode, piAttribIList);
+        attribIndex  = defineAcceleration(attribIndex, pcs.acceleration, piAttribIList);
 		
 		// P Buffer do not support double buffering. Maybe future versions will do so.
 		//	Draw with double buffer
-        attribIndex = defineDoubleBuffer(attribIndex,pcs.display_mode, piAttribIList);
+		attribIndex = defineDoubleBuffer(attribIndex,pcs.double_buffer,pcs.swap_buffer, piAttribIList);
 
 		//	RGB or RGBA are the only supported modes, because they are fun.
 		//	Paletted mode are so boring and slow and old fashioned ...
@@ -1000,23 +991,23 @@ CContextManager::RENDERING_CONTEXT_ID  CWin32ContextManager::glCreateExtendedCon
         attribIndex = defineDepthBuffer(attribIndex, pcs.display_mode, piAttribIList);
 
 		//	Use stencil if requested
-        attribIndex = defineStencilBuffer(attribIndex, pcs.display_mode, piAttribIList);
+		attribIndex = defineStencilBuffer(attribIndex, pcs.stencil_buffer, piAttribIList);
 
 		//	Use accum buffer if requested
-        attribIndex = defineAccumBuffer(attribIndex, pcs.display_mode, piAttribIList);
+        attribIndex = defineAccumBuffer(attribIndex, pcs.accumulator_buffer, piAttribIList);
 
 		//	Use antialiasing if requested
-        attribIndex = defineSampleBuffer(attribIndex, pcs.display_mode, piAttribIList);
+        attribIndex = defineSampleBuffer(attribIndex, pcs.getNbSamples(), piAttribIList);
 
 #ifdef WGL_ARB_render_texture
-		if ((m_mode & CGL_RENDER_TEXTURE) == CGL_RENDER_TEXTURE)
+		if (pcs.bind_to_texture)
 		{
 			piAttribIList[attribIndex++] = WGL_BIND_TO_TEXTURE_RGBA_ARB;
             //piAttribIList[attribIndex++] = 0x20B4; //WGL_BIND_TO_TEXTURE_RECTANGLE_FLOAT_RGBA_NV
 			piAttribIList[attribIndex++] = TRUE;
 
 		#ifdef WGL_NV_render_depth_texture
-			if ((m_mode & CGL_RENDER_DEPTHTEXTURE) == CGL_RENDER_DEPTHTEXTURE)
+			if ((m_mode & CGL_DEPTH_32) != 0)
 			{
 				piAttribIList[attribIndex++] = WGL_BIND_TO_TEXTURE_DEPTH_NV;
 				piAttribIList[attribIndex++] = TRUE;
@@ -1045,7 +1036,7 @@ CContextManager::RENDERING_CONTEXT_ID  CWin32ContextManager::glCreateExtendedCon
 		int pBufferAttribs[10];
 		memset(pBufferAttribs,0,10*sizeof(int));
 #ifdef WGL_ARB_render_texture
-		if ((m_mode & CGL_RENDER_TEXTURE) == CGL_RENDER_TEXTURE)
+		if (pcs.bind_to_texture)
 		{
 			int idx = 0;
 			pBufferAttribs[idx++] = WGL_TEXTURE_FORMAT_ARB;
@@ -1054,16 +1045,14 @@ CContextManager::RENDERING_CONTEXT_ID  CWin32ContextManager::glCreateExtendedCon
 			pBufferAttribs[idx++] = WGL_TEXTURE_TARGET_ARB;
             if ((m_mode & CGL_RENDER_CUBETEXTURE) == CGL_RENDER_CUBETEXTURE)
                 pBufferAttribs[idx++] = WGL_TEXTURE_CUBE_MAP_ARB;
-            else if ((m_mode & CGL_RENDER_2DTEXTURE) == CGL_RENDER_2DTEXTURE)
-			    pBufferAttribs[idx++] = WGL_TEXTURE_2D_ARB;
-                //pBufferAttribs[idx++] = 0x20A2; //WGL_TEXTURE_RECTANGLE_NV
             else
                 pBufferAttribs[idx++] = WGL_TEXTURE_2D_ARB;
+			//pBufferAttribs[idx++] = 0x20A2; //WGL_TEXTURE_RECTANGLE_NV
 			//pBufferAttribs[idx++] = WGL_MIPMAP_TEXTURE_ARB;
 			//pBufferAttribs[idx++] = TRUE;
 
 		#ifdef WGL_NV_render_depth_texture
-			if ((m_mode & CGL_RENDER_DEPTHTEXTURE) == CGL_RENDER_DEPTHTEXTURE)
+			if ((m_mode & CGL_DEPTH_32) != 0)
 			{
 				pBufferAttribs[idx++] = WGL_DEPTH_TEXTURE_FORMAT_NV;
 				pBufferAttribs[idx++] = WGL_TEXTURE_DEPTH_COMPONENT_NV;

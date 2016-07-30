@@ -124,7 +124,7 @@
 				Optimization="0"
 				EnableIntrinsicFunctions="true"
 				WholeProgramOptimization="false"
-				AdditionalIncludeDirectories="$(MSSdk)\Include;$(RAPTOR_ROOT)\redist\include;$(PLATFORM_SDK)\Include"
+				AdditionalIncludeDirectories="$(MSSdk)\Include;$(RAPTOR_ROOT)\redist\include;$(PLATFORM_SDK)\Include;$(VULKAN_INCLUDE_PATH)"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;EXPORT_RAPTOR_COMPUTE,_WIN32"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"

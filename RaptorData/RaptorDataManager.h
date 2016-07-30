@@ -43,6 +43,9 @@ public:
     //! Returns default the list of shaders embedded with Raptor
 	const char *const * GetShaderList(void);
 
+	//!	Remove all exported files from the package for a fresh update
+	void ClearExports();
+
 
 private:
     CRaptorDataManager();
@@ -50,6 +53,8 @@ private:
     bool openPackage(const std::string& pakName);
 
 	std::string readFile(const std::string &fname);
+
+	std::string getPackPath();
 
     static CRaptorDataManager  *m_pInstance;
 };

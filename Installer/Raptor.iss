@@ -24,6 +24,7 @@ Source: "../TODO.txt";            DestDir: "{app}"
 
 Source: "../AddOns/*.lib";            DestDir: "{app}/AddOns"
 Source: "../AddOns/*.pdb";            DestDir: "{app}/AddOns"
+Source: "../AddOns/usertype.dat";     DestDir: "{app}/AddOns"
 Source: "../AddOns/freetype-2.5.5/lib/*.*";          DestDir: "{app}/AddOns/libpng-1.6.16/lib"
 Source: "../AddOns/freetype-2.5.5/include/*.*";      DestDir: "{app}/AddOns/libpng-1.6.16/include"
 Source: "../AddOns/freetype-2.5.5/include/config/*.*";      DestDir: "{app}/AddOns/libpng-1.6.16/include/config"

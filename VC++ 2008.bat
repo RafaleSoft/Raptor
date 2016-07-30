@@ -1,4 +1,4 @@
-set RAPTOR_VERSION="2.16.3"
+set RAPTOR_VERSION="2.16.6"
 set RAPTOR_ROOT=E:\Share\Raptor
 set PATH=%PATH%;E:\Share\Raptor\Redist\bin
 set WMSDK=E:\WMSDK\WMFSDK95
@@ -35,6 +35,9 @@ set OPENEXRLIB_BIN_PATH=%RAPTOR_ROOT%\AddOns\OpenEXRLib\bin\vc9
 set OPENCL_INCLUDE_PATH=C:\Program Files (x86)\Intel\OpenCL SDK\2.0\include
 set OPENCL_LIB_PATH=C:\Program Files (x86)\Intel\OpenCL SDK\2.0\lib\x86
 set OPENCL_BIN_PATH=C:\Program Files (x86)\Intel\OpenCL SDK\2.0\bin\x86
+
+set VULKAN_INCLUDE_PATH=%RAPTOR_ROOT%\AddOns\vulkan\include
+set VULKAN_BIN_PATH=c:\windows\system32
 
 cd %RAPTOR_ROOT%
 

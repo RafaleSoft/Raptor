@@ -19,6 +19,10 @@
 #if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
 	#include "System/Raptor.h"
 #endif
+#if !defined(AFX_MEMORY_H__81A6CA9A_4ED9_4260_B6E4_C03276C38DBC__INCLUDED_)
+	#include "System/Memory.h"
+#endif
+
 
 RAPTOR_NAMESPACE_BEGIN
 
@@ -31,7 +35,7 @@ float interpolator(float t)
 
 __inline float lerp(float t, float a, float b)
 {
-    return (a + t * ( b - a));
+    return (a + t * (b - a));
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -246,8 +250,9 @@ RAPTOR_NAMESPACE
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CPerlinNoise::CPerlinNoise(const CVaArray<OPS>& ops):
-    m_ImageOps(ops)
+CPerlinNoise::CPerlinNoise(const CVaArray<OPS>& ops)
+	:m_ImageOps(ops),m_model(NOISE1),m_textureMirror(false),
+	m_amplitude(1.0f),m_baseFrequency(1.0f/128.0f)
 {
     m_iPermutation = new unsigned int[PERMUTATION_SIZE+PERMUTATION_SIZE];
     srand(time(0));
@@ -260,7 +265,7 @@ CPerlinNoise::CPerlinNoise(const CVaArray<OPS>& ops):
 
     for (i=0;i<PERMUTATION_SIZE;i++)
     {
-        unsigned int j = rand()%PERMUTATION_SIZE;
+        unsigned int j = rand() % PERMUTATION_SIZE;
         unsigned int p = m_iPermutation[j];
         m_iPermutation[j] = m_iPermutation[i];
         m_iPermutation[i+PERMUTATION_SIZE] = m_iPermutation[i] = p;
@@ -303,71 +308,6 @@ unsigned int CPerlinNoise::getGenerateHeight(void) const
     // TODO
     return 0;
 }
-/*
-void CPerlinNoise::glGenerate(CTextureObject* t)
-{
-    if ((t == NULL) || (!m_bEnabled))
-        return;
-
-	CTextureFactory &f = CTextureFactory::getDefaultFactory();
-    t->allocateTexels();
-	unsigned char *data = t->getTexels();
-
-	unsigned int w = t->getWidth() / 2;
-	unsigned int h = t->getHeight() / 2;
-    
-	for (unsigned int j=0;j<h;j++)
-    {
-        for (unsigned int i=0;i<w;i++)
-        {
-            float n = 0.0f;
-            float frequency = 1.0f / 128.0f;
-            float amplitude = 1;
-            for (unsigned int k=0;k<8;k++)
-            {
-                n += amplitude * fabs(noise(i * frequency,j * frequency,0));
-
-                frequency *= 2;
-                amplitude *= 0.5f;
-            }
-
-            n = 128 * (1 - n);
-            if (n > 255 ) 
-                n = 255;
-            else if (n < 0) 
-                n = 0;
-
-			unsigned int offset = 4*(j*t->getWidth() + i);
-            data[offset] = n;
-            data[offset+1] = n;
-            data[offset+2] = n;
-            data[offset+3] = t->getTransparency();
-
-			offset = 4*((j+1)*t->getWidth() - i);
-			data[offset - 4] = n;
-            data[offset - 3] = n;
-            data[offset - 2] = n;
-            data[offset - 1] = t->getTransparency();
-
-			offset = 4*((t->getHeight()-j-1)*t->getWidth() + i);
-			data[offset] = n;
-            data[offset+1] = n;
-            data[offset+2] = n;
-            data[offset+3] = t->getTransparency();
-
-			offset = 4*((t->getHeight()-j)*t->getWidth() - i);
-			data[offset - 4] = n;
-            data[offset - 3] = n;
-            data[offset - 2] = n;
-            data[offset - 1] = t->getTransparency();
-        }
-    }
-
-    f.glLoadTexture(t,".buffer",m_ImageOps);
-
-    CATCH_GL_ERROR
-}
-*/
 
 void CPerlinNoise::glGenerate(CTextureObject* t)
 {
@@ -377,79 +317,112 @@ void CPerlinNoise::glGenerate(CTextureObject* t)
 	CTextureFactory &f = CTextureFactory::getDefaultFactory();
     t->allocateTexels();
 	unsigned char *data = t->getTexels();
-
-	unsigned int w = t->getWidth();
-	unsigned int h = t->getHeight();
-    for (unsigned int i=0;i<w;i++)
-    {
-        for (unsigned int j=0;j<h;j++)
-        {
-            unsigned int offset = 4*(j*t->getHeight() + i);
-
-            float n = 0.0f;
-            float frequency = 1;
-            float amplitude = 1;
-			float base = 1.0f / 128.0f;
-            for (unsigned int k=0;k<8;k++)
-            {
-                n += amplitude * fabs(noise(base * i * frequency,base * j * frequency,0));
-
-                frequency *= 2;
-                amplitude *= 0.5f;
-            }
-			// NOISE 1: n = noise(16 * i / (float)w,16 * j /(float)h,0);
-			// NOISE 2:
-			//for (unsigned int k=0;k<8;k++)
-            //{
-            //   float base = 1.0f / 32.0f;
-            //    n += amplitude * (noise(base * i * frequency,base * j * frequency,0));
-
-            //  frequency *= 2;
-            //  amplitude *= 0.5f;
-            //}
-			
-			// NOISE 3 : 
-			//n = -0.5f;
-			//amplitude = 0.5f;
-			//for (unsigned int k=0;k<8;k++)
-            //{
-            //    float base = 1.0f / 128.0f;
-            //    n += amplitude * fabs(noise(base * i * frequency,base * j * frequency,0.0f));
-
-            //    frequency *= 2;
-            //    amplitude *= 0.5f;
-            //}
-			
-			// NOISE 4 :
-			//float base = 1.0f / 128.0f;
-			//for (unsigned int k=0;k<8;k++)
-            //{
-            //    n += amplitude * fabs(noise(base * i * frequency,base * j * frequency,0.0f));
-
-            //    frequency *= 2;
-            //    amplitude *= 0.5f;
-            //}
-			//n = sin(-base * i + n);
-			//
-
-            n = 128 * (1 - n);
-            if (n > 255 ) 
-                n = 255;
-            else if (n < 0) 
-                n = 0;
-
-            data[offset] = n;
-            data[offset+1] = n;
-            data[offset+2] = n;
-            data[offset+3] = t->getTransparency();
-        }
-    }
+	generateNoise(data,t->getWidth(),t->getHeight(),t->getDepth(),t->getTransparency());
 
     f.glLoadTexture(t,".buffer",m_ImageOps);
 
     CATCH_GL_ERROR
 }
 
+void CPerlinNoise::generateNoise(unsigned char *data,
+								 unsigned int width,
+								 unsigned int height,
+								 unsigned int depth,
+								 unsigned int transparency)
+{
+	unsigned int w = width;
+	unsigned int h = height;
+	unsigned int d = MAX(depth,1);
+	if (m_textureMirror)
+	{
+		w = MAX(w >> 1,1);
+		h = MAX(h >> 1,1);
+		d = MAX(d >> 1,1);
+	}
+	
+	for (unsigned int l=0;l<d;l++)
+	{
+		for (unsigned int j=0;j<h;j++)
+		{
+			for (unsigned int i=0;i<w;i++)
+			{
+				float n = 0.0f;
+				float amplitude = m_amplitude;
+				switch (m_model)
+				{
+					case NOISE1:
+					{
+						float frequency = m_baseFrequency;
+						
+						for (unsigned int k=0;k<8;k++)
+						{
+							n += amplitude * fabs(noise(i * frequency,j * frequency,l * frequency));
+							frequency *= 2;
+							amplitude *= 0.5f;
+						}
+						break;
+					}
+					case NOISE2:
+					{
+						float frequency = 4.0f * m_baseFrequency;
+						for (unsigned int k=0;k<8;k++)
+						{
+							n += amplitude * (noise(i * frequency,j * frequency,l * frequency));
+							frequency *= 2;
+							amplitude *= 0.5f;
+						}
+						break;
+					}
+					case NOISE3:
+					{
+						float frequency = 4.0f * m_baseFrequency;
+						for (unsigned int k=0;k<8;k++)
+						{
+							n += amplitude * (noise(i * frequency,j * frequency,l * frequency));
+							frequency *= 2;
+							amplitude *= 0.5f;
+						}
+						n = n - 1.0f;
+						break;
+					}
+				}
+
+				n = 128 * (1 - n);
+				if (n > 255 ) 
+					n = 255;
+				else if (n < 0) 
+					n = 0;
+
+				unsigned int offset = 4*((l*width + j)*height + i);
+				data[offset] = n;
+				data[offset+1] = n;
+				data[offset+2] = n;
+				data[offset+3] = transparency;
+
+				if (m_textureMirror)
+				{
+					offset = 4*((j+1)*width - i);
+					data[offset - 4] = n;
+					data[offset - 3] = n;
+					data[offset - 2] = n;
+					data[offset - 1] = transparency;
+
+					offset = 4*((height-j-1)*width + i);
+					data[offset] = n;
+					data[offset+1] = n;
+					data[offset+2] = n;
+					data[offset+3] = transparency;
+
+					offset = 4*((height-j)*width - i);
+					data[offset - 4] = n;
+					data[offset - 3] = n;
+					data[offset - 2] = n;
+					data[offset - 1] = transparency;
+				}
+			}
+		}
+	}
+}
 
 float CPerlinNoise::noise(float x, float y, float z)
 {
@@ -467,11 +440,11 @@ float CPerlinNoise::noise(float x, float y, float z)
     unsigned int p_i0j0 = m_iPermutation[i0] + j0;
     unsigned int p_i1j0 = m_iPermutation[i0+1] + j0;
 
-    unsigned int p_i0j0k0 = m_iPermutation[p_i0j0]+k0;
-    unsigned int p_i1j0k0 = m_iPermutation[p_i1j0]+k0;
+    unsigned int p_i0j0k0 = m_iPermutation[p_i0j0] + k0;
+    unsigned int p_i1j0k0 = m_iPermutation[p_i1j0] + k0;
 
-    unsigned int p_i0j1k0 = m_iPermutation[p_i0j0+1]+k0;
-    unsigned int p_i1j1k0 = m_iPermutation[p_i1j0+1]+k0;
+    unsigned int p_i0j1k0 = m_iPermutation[p_i0j0+1] + k0;
+    unsigned int p_i1j1k0 = m_iPermutation[p_i1j0+1] + k0;
 
     float g_i0j0k0 = grad(p_i0j0k0,X,Y,Z);
     float g_i1j0k0 = grad(p_i1j0k0,X-1,Y,Z);

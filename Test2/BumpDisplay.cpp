@@ -132,29 +132,43 @@ void CBumpDisplay::Init()
 	CPersistence *p = CPersistence::FindObject("main_textures");
 
 	CTextureFactory &f = CTextureFactory::getDefaultFactory();
+	CTextureFactoryConfig& config = f.getConfig();
+	config.setBumpAmplitude(3.5f);
+
 	CTextureSet *t = NULL;
 	if (p->getId().isSubClassOf(CTextureSet::CTextureSetClassID::GetClassId()))
 		 t = (CTextureSet *)p;
 
-	BackGround *pbg = new BackGround();
-
     CTextureObject *tt = f.glCreateTexture( CTextureObject::CGL_COLOR24_ALPHA,
-                                            CTextureObject::CGL_ALPHA_TRANSPARENT,
-                                            CTextureObject::CGL_BILINEAR);
-	CTextureFactoryConfig& config = f.getConfig();
-	config.setBumpAmplitude(3.5f);
-	CPerlinNoise noise = CPerlinNoise(); //CVaArray<CTextureFactoryConfig::IImageOP::OP_KIND>(CTextureFactoryConfig::IImageOP::BUMPMAP_LOADER));
-    f.glResizeTexture(tt,512,512);
+											CTextureObject::CGL_ALPHA_TRANSPARENT,
+											CTextureObject::CGL_BILINEAR);
+	f.glResizeTexture(tt,512,512);
+	CPerlinNoise noise = CPerlinNoise(CTextureFactoryConfig::IImageOP::BUMPMAP_LOADER);
+	noise.setNoiseModel(CPerlinNoise::NOISE2);
+	noise.generateMirrorTexture(true);
+/*
+	CTextureObject *tt = f.glCreateVolumeTexture(CTextureObject::CGL_COLOR24_ALPHA,
+												 CTextureObject::CGL_ALPHA_TRANSPARENT,
+												 CTextureObject::CGL_BILINEAR);
+	f.glResizeTexture(tt,256,256,256);
+*/
     noise.glGenerate(tt);
-
-	CTextureUnitSetup tmu;
-    tmu.setDiffuseMap(tt);
-	pbg->bg = tmu.glBuildSetup();
 
 	p = CPersistence::FindObject("Bump teapot");
 	if (p->getId().isSubClassOf(CBumppedGeometry::CBumppedGeometryClassID::GetClassId()))
 		 teapot = (CBumppedGeometry *)p;
-	//teapot->setNormalMap(tt);
+	teapot->setNormalMap(tt);
+
+	CTextureUnitSetup tmu;
+	CPerlinNoise noise2;
+	CTextureObject *tt2 = f.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,
+                                            CTextureObject::CGL_ALPHA_TRANSPARENT,
+                                            CTextureObject::CGL_BILINEAR);
+	f.glResizeTexture(tt2,512,512);
+    noise2.glGenerate(tt2);
+    tmu.setDiffuseMap(tt2);
+	BackGround *pbg = new BackGround();
+	pbg->bg = tmu.glBuildSetup();
 
     //
     //  Light and its modifier
@@ -228,16 +242,16 @@ void CBumpDisplay::Init()
     tz.a2 = 50.0f;       //  rz = 50.0 * cos ( 0.5 * t )
     vm->addAction(CViewModifier::ROTATE_VIEW,tx,ty,tz);
 
-	m_pScene = new C3DScene("BUMP_SCENE");
-	m_pScene->useZSort();
-    m_pScene->useSceneGlobalAmbient(CColor::RGBA(0.1f,0.1f,0.1f,1.0f));
-	m_pScene->addLight(pbg->light);
-    m_pScene->addLight(pbg->light2);
-	m_pScene->addObject(pbg);
-	m_pScene->addObject(vm->getObject());
+	C3DScene *pScene = new C3DScene("BUMP_SCENE");
+	pScene->useZSort();
+    pScene->useSceneGlobalAmbient(CColor::RGBA(0.1f,0.1f,0.1f,1.0f));
+	pScene->addLight(pbg->light);
+    pScene->addLight(pbg->light2);
+	pScene->addObject(pbg);
+	pScene->addObject(vm->getObject());
 
 	CRaptorDisplay* pDisplay = CRaptorDisplay::GetCurrentDisplay();
-	pDisplay->addScene(m_pScene);
+	pDisplay->addScene(pScene);
 }
 
 
