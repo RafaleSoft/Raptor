@@ -665,12 +665,13 @@ bool RaysClientData::initDataloader(void)
 	glcs.x = 0;
 	glcs.y = 0;
 	glcs.caption = "Rays Client";
-	glcs.display_mode = CGL_RGBA |
-						CGL_DEPTH |
-						CGL_DOUBLE_SWAPEXCHANGE |
-						CGL_HARDWARE;
-	glcs.frame_mode = CGL_NOSTATUS;
-	glcs.frame_mode |= CGL_DRAWLOGO;
+	glcs.acceleration = CRaptorDisplayConfig::HARDWARE;
+	glcs.swap_buffer = CRaptorDisplayConfig::SWAP_EXCHANGE;
+	glcs.double_buffer = true;
+	glcs.depth_buffer = true;
+	glcs.display_mode = CGL_RGBA;
+	glcs.draw_logo = true;
+	glcs.status_bar = false;
 
 	//	initialize Raptor classes and settings
 	m_bInitialised = Raptor::glInitRaptor(config);
