@@ -90,6 +90,11 @@ typedef struct lessString\n\
 } lessString;\n\
 typedef map<string,void*,lessString> MapStringToPtr;\n\
 RAPTOR_NAMESPACE_END\n\
+\n\
+// define linkage specifier for declarators \n\
+#define DEFAULT_LINKAGE \n\
+#define STATIC_LINKAGE        static \n\
+#define EXTERN_LINKAGE      extern \n\
 \n";
 
 static const char *NAMESPACE =

@@ -32,28 +32,38 @@ CRaptorIO::CRaptorIO(const char *streamName,CRaptorIO::IO_KIND kind)
 {
 	m_status = IO_FAILED;
 	m_kind = kind;
+	m_size = 0;
 
 	if (NULL != streamName)
 	{
 		switch(kind)
 		{
 			case DISK_READ:
+			{
 				m_inFile.open(streamName,ios_base::in|ios::binary);
+				m_inFile.seekg (0, ios_base::end);
+				m_size = m_inFile.tellg();
+				m_inFile.seekg (0, ios_base::beg);
 				if (m_inFile.good())
 					m_status = IO_OK;
 				break;
+			}
 			case DISK_WRITE:
+			{
 				m_outFile.open(streamName,ios::out|ios::binary);
 				if (m_outFile.good())
 					m_status = IO_OK;
 				break;
+			}
 			default:
+			{
 	#ifdef RAPTOR_DEBUG_MODE_GENERATION
 				Raptor::GetErrorManager()->generateRaptorError(	CPersistence::CPersistenceClassID::GetClassId(),
 																CRaptorErrorManager::RAPTOR_WARNING,
 																"RaptorIO do not support io kind!");
 	#endif
 				break;
+			}
 		}
 	}
 }
@@ -92,6 +102,23 @@ CRaptorIO* CRaptorIO::Create(const char *streamName,IO_KIND kind,CRaptorIO::IO_F
 
     return res;
 }
+
+unsigned int CRaptorIO::getSize(void) const
+{
+	if (getKind() == DISK_READ)
+		return m_size; 
+	else if (getKind() == DISK_WRITE)
+    {
+		if (m_outFile.good())
+			return 0;
+			//! Implementation use a non const method to return offset !!!
+			//return m_outFile.tellp();
+		else
+			return 0;
+	}
+	else
+		return 0;
+};
 
 //  Extensible io management
 std::string CRaptorIO::getValueName(void) const 

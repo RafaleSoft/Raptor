@@ -57,6 +57,9 @@ public:
     //! Returns the status of this IO
     IO_STATUS	getStatus(void) const { return m_status; };
 
+	//! Returns the size of this IO if available (not a stream)
+	unsigned int	getSize(void) const;
+
     //!  Extensible io management
 	virtual std::string getValueName(void) const;
 
@@ -108,7 +111,8 @@ public:
 protected:
 	CRaptorIO(const char *streamName,CRaptorIO::IO_KIND kind);
 
-    IO_STATUS   m_status;
+    IO_STATUS		m_status;
+	unsigned int	m_size;
 	std::ofstream	m_outFile;
 	std::ifstream	m_inFile;
 
