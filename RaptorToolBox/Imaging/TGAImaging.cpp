@@ -136,57 +136,57 @@ bool CTGAImaging::loadImageFile(const std::string& fname,CTextureObject* const T
 	for ( int i=0; i < w*h; i++ )
 	{
 		outcolor = *((long*)&outcolors[i_pos]);
+		unsigned int transparency = T->getTransparency();
 
 		switch(size)
 		{
 			case 2:
-				texturedata[t_pos] = (unsigned char)(((outcolor>>11)&0x1F)<<3);
-				texturedata[t_pos+1] = (unsigned char)(((outcolor>>5)&0x3F)<<2);
-				texturedata[t_pos+2] = (unsigned char)((outcolor&0x1F)<<3);
+			{
+				texturedata[t_pos] = (unsigned char)(((outcolor >> 11) & 0x1F) << 3);
+				texturedata[t_pos + 1] = (unsigned char)(((outcolor >> 5) & 0x3F) << 2);
+				texturedata[t_pos + 2] = (unsigned char)((outcolor & 0x1F) << 3);
 
-				if (T->getTransparency()>0)
-					texturedata[t_pos+3] = (unsigned char)(T->getTransparency() & 0xFF);
-				else if ((texturedata[t_pos]==0)&&(texturedata[t_pos+1]==0)&&(texturedata[t_pos+2]==0))
-					texturedata[t_pos+3]=0;
+				if (transparency > 0)
+					texturedata[t_pos + 3] = (unsigned char)(transparency & 0xFF);
+				else if ((texturedata[t_pos] == 0) && (texturedata[t_pos + 1] == 0) && (texturedata[t_pos + 2] == 0))
+					texturedata[t_pos + 3] = 0;
 
 				break;
+			}
 			case 3:
 			case 4:	// most 32 bits TGA images are defined with alpha as 0 !!!, so manage like 24bits
-#ifdef RAPTOR_SSE_CODE_GENERATION
-				__asm
-				{
-					lea edi,outcolor
-					mov eax, [edi]
-					bswap eax
-					shr eax, 8
-					mov [edi], eax
-				}
-#endif
+			{	// Colors are managed big endian in TGA:
+				//	from:	a b g r
+				//	to:		. r g b
+				//__asm { lea edi,outcolor ; mov eax, [edi]; bswap eax; shr eax, 8; mov [edi], eax }
 				*((unsigned int*)&texturedata[t_pos]) = outcolor;
-				
-				
-				if (T->getTransparency()>255)
+				unsigned char t = texturedata[t_pos];
+				texturedata[t_pos] = texturedata[t_pos + 2];
+				texturedata[t_pos + 2] = t;
+
+				if (transparency > 255)
 				{
-					if ((texturedata[t_pos]==0)&&(texturedata[t_pos+1]==0)&&(texturedata[t_pos+2]==0))
-						texturedata[t_pos+3]=0;
-					else 
-						texturedata[t_pos+3]=255;
+					if ((texturedata[t_pos] == 0) && (texturedata[t_pos + 1] == 0) && (texturedata[t_pos + 2] == 0))
+						texturedata[t_pos + 3] = 0;
+					else
+						texturedata[t_pos + 3] = 255;
 				}
-				else if (T->getTransparency()>0)
-					texturedata[t_pos+3] = (unsigned char)(T->getTransparency() & 0xFF);
-				else 
-				{	
-					texturedata[t_pos+3] =
-					(unsigned char)((texturedata[t_pos] + texturedata[t_pos+1] + texturedata[t_pos+2]) / 3);
+				else if (transparency > 0)
+					texturedata[t_pos + 3] = (unsigned char)(transparency & 0xFF);
+				else
+				{
+					texturedata[t_pos + 3] =
+						(unsigned char)((texturedata[t_pos] + texturedata[t_pos + 1] + texturedata[t_pos + 2]) / 3);
 				}
 
 				break;
+			}
 			default:
 				texturedata[t_pos] = 0xFF;
 				texturedata[t_pos+1] = 0xFF;
 				texturedata[t_pos+2] = 0xFF;
-				if (T->getTransparency()>0)
-					texturedata[t_pos+3] = (unsigned char)(T->getTransparency() & 0xFF);
+				if (transparency>0)
+					texturedata[t_pos + 3] = (unsigned char)(transparency & 0xFF);
 		}
 
 		t_pos += 4;

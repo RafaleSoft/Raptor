@@ -51,13 +51,14 @@ float CWin32TimeObject::deltaTime(void)
 
 void CWin32TimeObject::markTime(void* mark)
 {
+	map<void*, LARGE_INTEGER>::iterator it = _markers.find(mark);
+
 	LARGE_INTEGER markTime;
 	if (frequency.QuadPart > 0)
 		QueryPerformanceCounter(&markTime);
 	else
 		markTime.QuadPart = GetTickCount64();
 	
-	map<void*,LARGE_INTEGER>::iterator it = _markers.find(mark);
 	if (it != _markers.end())
 		(*it).second = markTime;
 	else
@@ -66,23 +67,22 @@ void CWin32TimeObject::markTime(void* mark)
 
 float CWin32TimeObject::deltaMarkTime(void* mark)
 {
+	LARGE_INTEGER markTime;
+	if (frequency.QuadPart > 0)
+		QueryPerformanceCounter(&markTime);
+	else
+		markTime.QuadPart = GetTickCount64();
+
 	float dt = 0.0f;
 
 	map<void*,LARGE_INTEGER>::iterator it = _markers.find(mark);
 	if (it != _markers.end())
-	{
-		LARGE_INTEGER markTime;
+	{	
 		LARGE_INTEGER &oldMarkTime = (*it).second;
 		if (frequency.QuadPart > 0)
-		{
-			QueryPerformanceCounter(&markTime);
 			dt = ((float)(markTime.QuadPart - oldMarkTime.QuadPart)) / ((float)frequency.QuadPart);
-		}
 		else
-		{
-			markTime.QuadPart = GetTickCount64();
 			dt = 0.001f * (markTime.QuadPart - oldMarkTime.QuadPart);
-		}
 		oldMarkTime = markTime;
 	}
 

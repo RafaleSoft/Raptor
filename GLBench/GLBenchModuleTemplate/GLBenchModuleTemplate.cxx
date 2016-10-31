@@ -4,6 +4,9 @@
 #include <strstream>
 #include "../Interface.h"
 
+#include "Engine/TimeObject.h"
+#include "MFCExtension/CWnd/GLWnd.h"
+
 result_bench_t results;
 
 static const char* AUTHOR = "Rafale Soft Inc.(c)";
@@ -31,7 +34,7 @@ extern "C" GLBENCH_API lp_result_bench_t GetBenchResult()
 	for (unsigned int i=0;i<results.nbItems;i++)
 	{
 		results.score += results.result_items[i].score;
-		results.rate += results.result_items[i].rate;
+		results.rate += results.result_items[i].fps_rate;
 	}
 
 	results.score /= results.nbItems;
@@ -52,11 +55,54 @@ extern "C" GLBENCH_API void InitModule()
 	for (unsigned int i=0;i<results.nbItems;i++)
 	{
 		results.result_items[i].description = RESULT_DESCRIPTION[i];
-		results.result_items[i].rate = 0;
+		results.result_items[i].fps_rate = 0;
+		results.result_items[i].fragment_rate = 0;
 		results.result_items[i].score = 0;
+		results.result_items[i].driver_overhead = 0;
 	}
 }
 
+class GLBenchDisplay : public CGLWnd
+{
+public:
+	GLBenchDisplay() : totalTime(0.0f), dt(0.0f)
+	{
+	};
+	virtual ~GLBenchDisplay()
+	{
+	};
+
+	virtual	void GLInitContext(void) = 0;
+	virtual void GLDisplayFunc(void) = 0;
+
+	float totalTime;
+	float dt;
+
+private:
+};
+
+
+void BenchStep(unsigned int step, unsigned int size,
+	float calibration, GLBenchDisplay *display,
+	unsigned int width, unsigned int height)
+{
+	unsigned int	nb = 0;
+	CTimeObject::markTime(0);
+
+	for (unsigned i = 0; i<size; i++)
+	{
+		display->SendMessage(WM_PAINT);
+		nb++;
+	}
+
+	float dt = CTimeObject::deltaMarkTime(0);
+
+	results.result_items[step].fps_rate = nb / dt;
+	results.result_items[step].driver_overhead = 100.0f * (1.0f - display->totalTime / (dt - calibration));
+	double megatexelspersec = nb / double(dt - calibration) * width * height / 1000000.0;
+	results.result_items[step].score = megatexelspersec;
+	results.result_items[step].fragment_rate = megatexelspersec;
+}
 
 
 #endif

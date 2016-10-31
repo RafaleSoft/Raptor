@@ -2,7 +2,6 @@ cd C:\OPENGL
 
 set RAPTOR_VERSION="2.16.6"
 set PLATFORM_SDK=C:\Program Files\Microsoft SDKs\Windows\v7.0
-set MSSdk=C:\Microsoft Platform SDK for Windows Server 2003 R2
 
 set RAPTOR_ROOT=C:\OPENGL\Raptor
 set PATH=%PATH%;%RAPTOR_ROOT%\Redist\bin

@@ -2,9 +2,7 @@
 //
 
 #include "StdAfx.h"
-
-#include "Engine/TimeObject.h"
-#include "MFCExtension/CWnd/GLWnd.h"
+#include "Subsys/CodeGeneration.h"
 
 RAPTOR_NAMESPACE
 
@@ -16,23 +14,15 @@ static char RESULT_DESCRIPTION[NB_RESULTS][256] =
 
 #include "GLBenchModuleTemplate.cxx"
 
-class Display : public CGLWnd
+class Display : public GLBenchDisplay
 {
 public:
-	Display();
+	Display() {};
 	virtual ~Display();
 
 	virtual	void GLInitContext(void);
 	virtual void GLDisplayFunc(void);
-
-private:
-	float dt;
 };
-
-Display::Display()
-{
-	dt = 0.0f;
-}
 
 Display::~Display()
 {
@@ -109,8 +99,10 @@ extern "C" GLBENCH_API void Bench(CWnd *parent)
 
 	float dt = CTimeObject::deltaMarkTime(parent);
 
-	results.result_items[0].rate = nb / dt;
+	results.result_items[0].fps_rate = nb / dt;
+	results.result_items[0].fragment_rate = 0;
 	results.result_items[0].score = (unsigned int)(floor)(nb / dt);
+	results.result_items[0].driver_overhead = 0;
 
 	GLDisplay->glMakeCurrent(false);
 

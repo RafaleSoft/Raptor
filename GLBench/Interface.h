@@ -23,9 +23,11 @@
 
 typedef struct result_item_t
 {
-	const char* description;
-	unsigned int score;
-	float	rate;
+	const char*		description;
+	unsigned int	score;
+	float			fragment_rate;
+	float			fps_rate;
+	float			driver_overhead;
 } result_item;
 typedef result_item_t	*lp_result_item_t;
 

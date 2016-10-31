@@ -292,7 +292,7 @@ extern "C" void GLBENCH_API Bench(CWnd *parent)
 	float bench_dt = CTimeObject::deltaMarkTime(parent);
 	int pointspersec = nb / bench_dt * MAX_VERTEX;
 
-	results.result_items[0].rate = nb / bench_dt;
+	results.result_items[0].fps_rate = nb / bench_dt;
 	results.result_items[0].score = pointspersec * SCORE_SCALE * SCORE_FACTOR;
 	stringstream desc;
 	desc << " " << pointspersec << " points / sec";
@@ -316,7 +316,7 @@ extern "C" void GLBENCH_API Bench(CWnd *parent)
 	bench_dt = CTimeObject::deltaMarkTime(parent);
 	pointspersec = nb / bench_dt * MAX_VERTEX;
 	
-	results.result_items[1].rate = nb / bench_dt;
+	results.result_items[1].fps_rate = nb / bench_dt;
 	results.result_items[1].score = pointspersec * SCORE_SCALE * SCORE_FACTOR_2;
 	desc.str("");
 	desc << " " << pointspersec << " colored points / sec";
@@ -351,7 +351,7 @@ extern "C" void GLBENCH_API Bench(CWnd *parent)
 	bench_dt = CTimeObject::deltaMarkTime(parent);
 	pointspersec = nb / bench_dt * MAX_VERTEX;
 	
-	results.result_items[2].rate = nb / bench_dt;
+	results.result_items[2].fps_rate = nb / bench_dt;
 	results.result_items[2].score = pointspersec * SCORE_SCALE * SCORE_FACTOR_3;
 	desc.str("");
 	desc << " " << pointspersec << " sized points (20 pixels) / sec";
@@ -387,7 +387,7 @@ extern "C" void GLBENCH_API Bench(CWnd *parent)
 	bench_dt = CTimeObject::deltaMarkTime(parent);
 	pointspersec = nb / bench_dt * MAX_VERTEX;
 
-	results.result_items[3].rate = nb / bench_dt;
+	results.result_items[3].fps_rate = nb / bench_dt;
 	results.result_items[3].score = pointspersec * SCORE_SCALE * SCORE_FACTOR_3;
 	desc.str("");
 	desc << " " << pointspersec << " blended sized points (32 pixels) / sec";
@@ -438,7 +438,7 @@ extern "C" void GLBENCH_API Bench(CWnd *parent)
 #endif
 	pointspersec = nb / bench_dt * MAX_VERTEX;
 
-	results.result_items[4].rate = nb / bench_dt;
+	results.result_items[4].fps_rate = nb / bench_dt;
 	results.result_items[4].score = pointspersec * SCORE_SCALE * SCORE_FACTOR_4;
 	desc.str("");
 	desc << " " << pointspersec << " blended sized point sprites (16*16 pixels) / sec";
