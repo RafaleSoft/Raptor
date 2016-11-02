@@ -47,22 +47,23 @@ CTextureObject *sprite = NULL;
 /////////////////////////////////////////////////////////////////////////////
 
 
-class Display : public CGLWnd
+class Display : public GLBenchDisplay
 {
 public:
 	Display();
 	virtual ~Display();
 
-	virtual	void GLInitContext(void);
-	virtual void GLDisplayFunc(void);
-
 	int draw;
+
 private:
+	virtual	void GLInitContext(void);
+	virtual void glDraw(void);
+
 	float dt;
 	void Draw(void);
 };
 
-Display::Display()
+Display::Display() : GLBenchDisplay()
 {
 	draw = 0;
 	dt = 0.0f;
@@ -81,7 +82,7 @@ void Display::Draw(void)
 //	glFlush();
 }
 
-void Display::GLDisplayFunc()
+void Display::glDraw()
 {
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
@@ -273,7 +274,6 @@ extern "C" void GLBENCH_API Bench(CWnd *parent)
 	glCS.display_mode = CGL_RGBA | CGL_DEPTH;
 	glCS.refresh_rate.fps = CGL_MAXREFRESHRATE; //CGL_75FPS;
 	GLDisplay->GLCreateWindow("OpenGL Context",parent,glCS);
-	GLDisplay->glMakeCurrent();
 
 	//
 	//	Bench base primitive

@@ -56,9 +56,7 @@ public:
 	Display();
 	virtual ~Display();
 
-	virtual	void GLInitContext(void);
-	virtual void GLDisplayFunc(void);
-
+	
 	int draw;
 	float viewScale;
 	CTextureSet *txt;
@@ -66,13 +64,14 @@ public:
 	RAPTOR_HANDLE setupHANDLE;
 
 private:
+	virtual	void GLInitContext(void);
+	virtual void glDraw(void);
+
 	GLuint	square;
 	GLuint	square2;
-	
-	void Draw(void);
 };
 
-Display::Display() :GLBenchDisplay()
+Display::Display() : GLBenchDisplay()
 {
 	draw = 0;
 	viewScale = 1.33f;
@@ -235,7 +234,7 @@ void Display::GLInitContext()
 }
 
 
-void Display::GLDisplayFunc()
+void Display::glDraw(void)
 {
 	if (draw == 4)
 	{
@@ -363,56 +362,21 @@ extern "C" GLBENCH_API void Bench(CWnd *parent)
 	glCS.refresh_rate.fps = CGL_MAXREFRESHRATE;
 	GLDisplay->GLCreateWindow("OpenGL Context",parent,glCS);
 
-	//	frame rate management
+	// Calibration;
 	unsigned int	resultCount = 0;
-	float	calibration;
-	CTextureObject *T = NULL;
-
-	//
-	//	Calibration
-	//
-	GLDisplay->draw = 6;
-	GLDisplay->totalTime = 0.0f;
-
-	int i = 0;
-	unsigned int nb = 0;
-	for (i = 0; i<LOOP_SIZE; i++)
-	{
-		GLDisplay->SendMessage(WM_PAINT);
-		nb++;
-	}
-
-	//
-	//	Swap buffers
-	//
-	GLDisplay->draw = 6;
-	GLDisplay->totalTime = 0.0f;
-	CTimeObject::markTime(parent);
-
-	for (i=0;i<LOOP_SIZE;i++)
-	{
-		GLDisplay->SendMessage(WM_PAINT);
-		nb++;
-	}
+	GLDisplay->glCalibrate(glCS.width, glCS.height);
 	
-	calibration = CTimeObject::deltaMarkTime(parent);
-
-	double megatexelspersec = (nb / calibration) * glCS.width * glCS.height / 1000000.0;
-	results.result_items[resultCount].fps_rate = nb / calibration;
-	results.result_items[resultCount].score = megatexelspersec;
-	results.result_items[resultCount].fragment_rate = megatexelspersec;
-
 	//
 	//	Pixel transfer rate : Draw Pixels
 	//
 	{
 		resultCount++;
-		nb = 0;
+		unsigned int nb = 0;
 		unsigned char *pixels = new unsigned char[2048*2048*4];
 
 GLDisplay->glMakeCurrent();
 		CTimeObject::markTime(parent);
-		for (i=0;i<LOOP_DRAWPIXELS;i++)
+		for (unsigned int i=0;i<LOOP_DRAWPIXELS;i++)
 		{
 			glDrawPixels(glCS.width,glCS.height,GL_RGBA,GL_UNSIGNED_BYTE,pixels);
 			nb++;
@@ -420,7 +384,7 @@ GLDisplay->glMakeCurrent();
 		float bench_dt = CTimeObject::deltaMarkTime(parent);
 GLDisplay->glMakeCurrent(false);
 
-		megatexelspersec = nb / bench_dt * glCS.width * glCS.height / 1000000.0;
+		double megatexelspersec = nb / bench_dt * glCS.width * glCS.height / 1000000.0;
 		results.result_items[resultCount].score = megatexelspersec;
 		results.result_items[resultCount].fps_rate = nb / bench_dt;
 		results.result_items[resultCount].fragment_rate = megatexelspersec;
@@ -430,9 +394,10 @@ GLDisplay->glMakeCurrent(false);
 	//
 	//	Pixel transfer rate : Texture Loading
 	//
+	CTextureObject *T = NULL;
 	{
 		resultCount++;
-		nb = 0;
+		unsigned int nb = 0;
 		CTextureFactory &factory = CTextureFactory::getDefaultFactory();
 		CTextureFactoryConfig &tfConfig = factory.getConfig();
 		tfConfig.setTexelFormat(CTextureFactoryConfig::BYTEORDER_RGBA);
@@ -447,7 +412,7 @@ GLDisplay->glMakeCurrent();
 		unsigned char *buffer = new unsigned char[maxSize*4*maxSize];
 
 		float bench_dt = 0.0f;
-		for (i=0;i<LOOP_LOADTEXTURE;i++)
+		for (unsigned int i=0;i<LOOP_LOADTEXTURE;i++)
 		{
 			T->allocateTexels();
 			CTimeObject::markTime(parent);
@@ -458,7 +423,7 @@ GLDisplay->glMakeCurrent();
 		
 GLDisplay->glMakeCurrent(false);
 
-		megatexelspersec = nb / bench_dt* maxSize * maxSize / 1000000.0;
+		double megatexelspersec = nb / bench_dt* maxSize * maxSize / 1000000.0;
 		results.result_items[resultCount].score = megatexelspersec;
 		results.result_items[resultCount].fps_rate = nb / bench_dt;
 		results.result_items[resultCount].fragment_rate = megatexelspersec;
@@ -470,7 +435,7 @@ GLDisplay->glMakeCurrent();
 		tfConfig.setTexelFormat(CTextureFactoryConfig::BYTEORDER_BGRA);
 		
 		bench_dt = 0.0f;
-		for (i=0;i<LOOP_LOADTEXTURE;i++)
+		for (unsigned int i=0;i<LOOP_LOADTEXTURE;i++)
 		{
 			T->allocateTexels();
 			CTimeObject::markTime(parent);
@@ -494,29 +459,29 @@ GLDisplay->glMakeCurrent(false);
 	//
 	resultCount++;
 	GLDisplay->draw = 4;
-	GLDisplay->totalTime = 0.0f;
-	BenchStep(resultCount,LOOP_SIZE,calibration,GLDisplay,glCS.width,glCS.height);
+	GLDisplay->resetTotalTime();
+	BenchStep(resultCount,LOOP_SIZE,GLDisplay);
 
 	//
 	//	Clear Z-buffer
 	//
 	resultCount++;
 	GLDisplay->draw = 5;
-	GLDisplay->totalTime = 0.0f;
-	BenchStep(resultCount,LOOP_SIZE,calibration,GLDisplay,glCS.width,glCS.height);
+	GLDisplay->resetTotalTime();
+	BenchStep(resultCount,LOOP_SIZE,GLDisplay);
 
 	//
 	//	Bench 256*256
 	//
 	resultCount++;
 	GLDisplay->draw = 0;
-	GLDisplay->totalTime = 0.0f;
+	GLDisplay->resetTotalTime();
 GLDisplay->glMakeCurrent(true);
 	T = GLDisplay->txt->getTexture(4);
 	T->glRender();
 GLDisplay->glMakeCurrent(false);
 
-	BenchStep(resultCount,LOOP_SIZE,calibration,GLDisplay,glCS.width,glCS.height);
+	BenchStep(resultCount,LOOP_SIZE,GLDisplay);
 
 	//
 	//	Bench 1024*1024
@@ -528,7 +493,7 @@ GLDisplay->glMakeCurrent(true);
 	T->glRender();
 GLDisplay->glMakeCurrent(false);
 
-	BenchStep(resultCount,LOOP_SIZE,calibration,GLDisplay,glCS.width,glCS.height);
+	BenchStep(resultCount,LOOP_SIZE,GLDisplay);
 
 	//
 	//	Bench 1024*1024 compressed
@@ -542,7 +507,7 @@ GLDisplay->glMakeCurrent(true);
 		T = GLDisplay->txt->getTexture(1);
 		T->glRender();
 GLDisplay->glMakeCurrent(false);
-		BenchStep(resultCount,LOOP_SIZE,calibration,GLDisplay,glCS.width,glCS.height);
+		BenchStep(resultCount,LOOP_SIZE,GLDisplay);
 	}
 
 
@@ -550,9 +515,9 @@ GLDisplay->glMakeCurrent(false);
 	//	Bench 1024*1024 uncompressed blended
 	//
 	resultCount++;
-	nb = 0;
+	unsigned int nb = 0;
 	GLDisplay->draw = 1;
-	GLDisplay->totalTime = 0.0f;
+	GLDisplay->resetTotalTime();
 
 GLDisplay->glMakeCurrent(true);
 	glClearColor(0.0f,0.0f,1.0f,1.0f);
@@ -563,7 +528,7 @@ GLDisplay->glMakeCurrent(true);
 	T->glRender();
 GLDisplay->glMakeCurrent(false);
 
-	BenchStep(resultCount,LOOP_SIZE,calibration,GLDisplay,glCS.width,glCS.height);
+	BenchStep(resultCount,LOOP_SIZE,GLDisplay);
 
 GLDisplay->glMakeCurrent(true);
 	glDisable(GL_BLEND);
@@ -583,7 +548,7 @@ GLDisplay->glMakeCurrent(true);
 	CRaptorDisplay::glRender(GLDisplay->setupHANDLE);
 GLDisplay->glMakeCurrent(false);
 
-	BenchStep(resultCount,LOOP_SIZE,calibration,GLDisplay,glCS.width,glCS.height);
+	BenchStep(resultCount,LOOP_SIZE,GLDisplay);
 
 
 	//
@@ -598,7 +563,7 @@ GLDisplay->glMakeCurrent(true);
 	CRaptorDisplay::glRender(setupHANDLE2);
 GLDisplay->glMakeCurrent(false);
 
-	BenchStep(resultCount,LOOP_SIZE,calibration,GLDisplay,glCS.width,glCS.height);
+	BenchStep(resultCount,LOOP_SIZE,GLDisplay);
 
 
 	//
@@ -615,7 +580,7 @@ GLDisplay->glMakeCurrent(true);
 GLDisplay->glMakeCurrent(false);
 
 		CTextureFactoryConfig &tfConfig = CTextureFactory::getDefaultFactory().getConfig();
-		BenchStep(resultCount,LOOP_SIZE,calibration,GLDisplay,glCS.width,glCS.height);
+		BenchStep(resultCount,LOOP_SIZE,GLDisplay);
 	}
 #endif
 
