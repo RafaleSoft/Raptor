@@ -64,7 +64,7 @@
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
-      <AdditionalIncludeDirectories>$(SolutionDir)$(ProjectName);$(PLATFORM_SDK)\Include;$(RAPTOR_ROOT)\Redist\Include;$(XERCES_INCLUDE_PATH);$(FREETYPE_INCLUDE_PATH)%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)$(ProjectName);$(PLATFORM_SDK)\Include;$(RAPTOR_ROOT)\Redist\Include;$(XERCES_INCLUDE_PATH);$(FREETYPE_INCLUDE_PATH);$(VULKAN_INCLUDE_PATH);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;EXPORT_RAPTOR_CORE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -312,6 +312,7 @@ Subsys\Redist.bat
     <ClCompile Include="..\..\RaptorCore\Subsys\DefaultImageScaler.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\DefaultMipmapBuilder.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\DOT3BumppedGeometry.cpp" />
+    <ClCompile Include="..\..\RaptorCore\Subsys\EMBMShader.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\FreeType\FTEngine.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
@@ -393,6 +394,7 @@ Subsys\Redist.bat
     <ClCompile Include="..\..\RaptorCore\System\RaptorMessages.cpp" />
     <ClCompile Include="..\..\RaptorCore\System\RaptorRenderBufferDisplay.cpp" />
     <ClCompile Include="..\..\RaptorCore\System\RaptorScreenDisplay.cpp" />
+    <ClCompile Include="..\..\RaptorCore\System\RaptorVulkanDisplay.cpp" />
     <ClCompile Include="..\..\RaptorCore\System\RenderEntryPoint.cpp" />
     <ClCompile Include="..\..\RaptorCore\Win32Specific\Win32Application.cpp" />
     <ClCompile Include="..\..\RaptorCore\Win32Specific\Win32ContextManager.cpp" />
@@ -499,6 +501,7 @@ Subsys\Redist.bat
     <ClInclude Include="..\..\RaptorCore\Subsys\DefaultImageScaler.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\DefaultMipmapBuilder.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\DOT3BumppedGeometry.h" />
+    <ClInclude Include="..\..\RaptorCore\Subsys\EMBMShader.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\FreeType\FTEngine.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\FreeType\FTFace.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\FreeType\FTGlyph.h" />
@@ -563,6 +566,7 @@ copy CodeGeneration.h %RAPTOR_ROOT%\Redist\Include\Subsys\
     <ClInclude Include="..\..\RaptorCore\System\RaptorMessages.h" />
     <ClInclude Include="..\..\RaptorCore\System\RaptorRenderBufferDisplay.h" />
     <ClInclude Include="..\..\RaptorCore\System\RaptorScreenDisplay.h" />
+    <ClInclude Include="..\..\RaptorCore\System\RaptorVulkanDisplay.h" />
     <ClInclude Include="..\..\RaptorCore\System\RenderEntryPoint.h" />
     <ClInclude Include="..\..\RaptorCore\Win32Specific\Win32Application.h" />
     <ClInclude Include="..\..\RaptorCore\Win32Specific\Win32ContextManager.h" />

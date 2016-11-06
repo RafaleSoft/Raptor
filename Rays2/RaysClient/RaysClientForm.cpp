@@ -28,6 +28,8 @@ System::Void RaysClientForm::OnOpenFile(System::Object^  sender, System::Windows
 	Enabled = false;
 	OpenFileDialog^ open = gcnew OpenFileDialog();
 	Windows::Forms::DialogResult result = open->ShowDialog(this);
+	for (int i = 0; i < open->FileNames->GetLength(0); i++)
+		LoadData(open->FileNames[i]->ToString());
 	Enabled = true;
 }
 

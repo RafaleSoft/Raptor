@@ -63,17 +63,25 @@ BOOL CGLBenchResultDlg::OnInitDialog()
 	CString format;
 	format.Format(TEXT("Score: %d"),m_pResults->score);
 	lb->AddString(format);
-	format.Format(TEXT("Avg. frame rate: %f fps"),m_pResults->rate);
+	format.Format(TEXT("Avg. frame rate: %.2f fps"),m_pResults->rate);
 	lb->AddString(format);
 	lb->AddString(TEXT(""));
-	
+	lb->AddString(TEXT("Results:"));
+	lb->AddString(TEXT(""));
+
 	for (unsigned int i=0;i<m_pResults->nbItems;i++)
 	{
-		lb->AddString(TEXT("Results:"));
 		lb->AddString(CA2T(m_pResults->result_items[i].description));
 		format.Format(TEXT("Score: %d"),m_pResults->result_items[i].score);
 		lb->AddString(format);
-		format.Format(TEXT("Frame rate: %f fps"),m_pResults->result_items[i].rate);
+		format.Format(TEXT("Frame rate: %.2f fps"),m_pResults->result_items[i].fps_rate);
+		lb->AddString(format);
+		format.Format(TEXT("Fragment rate: %.2f Mpixels/sec"), m_pResults->result_items[i].fragment_rate);
+		lb->AddString(format);
+		if (m_pResults->result_items[i].driver_overhead > 0)
+			format.Format(TEXT("Driver overhead: %.2f %%"), m_pResults->result_items[i].driver_overhead);
+		else
+			format.Format(TEXT("Driver overlap: %.2f %%"), -m_pResults->result_items[i].driver_overhead);
 		lb->AddString(format);
 		lb->AddString(TEXT(""));
 	}

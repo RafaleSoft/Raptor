@@ -539,6 +539,12 @@
     <ClCompile Include="..\..\RaptorCore\Engine\ShaderModifier.cpp">
       <Filter>Source Files\Engine src</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\EMBMShader.cpp">
+      <Filter>Source Files\Subsys src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\System\RaptorVulkanDisplay.cpp">
+      <Filter>Source Files\System src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Xsd Include="Subsys\ObjectModels\Raptor.xsd">
@@ -1031,6 +1037,12 @@
     </ClInclude>
     <ClInclude Include="..\..\RaptorCore\Engine\ShaderModifier.h">
       <Filter>Header Files\Engine include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\EMBMShader.h">
+      <Filter>Header Files\Subsys include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\System\RaptorVulkanDisplay.h">
+      <Filter>Header Files\System include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

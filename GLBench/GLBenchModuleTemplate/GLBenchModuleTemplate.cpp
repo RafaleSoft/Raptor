@@ -2,44 +2,39 @@
 //
 
 #include "StdAfx.h"
-
-#include "Engine/TimeObject.h"
-#include "MFCExtension/CWnd/GLWnd.h"
+#include "Subsys/CodeGeneration.h"
 
 RAPTOR_NAMESPACE
 
-static const size_t NB_RESULTS = 1;
+static const size_t NB_RESULTS = 2;
 static const char* NAME = "GLBench ModuleTemplate";
 static const char* DESCRIPTION = "GL Bench Module plug-in template";
 static char RESULT_DESCRIPTION[NB_RESULTS][256] = 
-{ "Bench module template" };
+{	"HAL Swap buffers: ",
+	"Bench module template"
+};
 
 #include "GLBenchModuleTemplate.cxx"
 
-class Display : public CGLWnd
+class Display : public GLBenchDisplay
 {
 public:
-	Display();
+	Display() {};
 	virtual ~Display();
 
-	virtual	void GLInitContext(void);
-	virtual void GLDisplayFunc(void);
-
 private:
-	float dt;
+	virtual	void GLInitContext(void);
+	virtual void glDraw(void);
 };
-
-Display::Display()
-{
-	dt = 0.0f;
-}
 
 Display::~Display()
 {
 }
 
-void Display::GLDisplayFunc()
+void Display::glDraw()
 {
+	CTimeObject::markTime(this);
+
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
 	glColor4f(dt/360.0,dt/360.0,1.0,1.0f);
@@ -57,6 +52,8 @@ void Display::GLDisplayFunc()
 	glEnd();
 
 	glPopMatrix();
+
+	totalTime += CTimeObject::deltaMarkTime(this);
 
 	dt += 1.0f;
 	if (dt > 360.0f)
@@ -94,23 +91,11 @@ extern "C" GLBENCH_API void Bench(CWnd *parent)
 	glCS.refresh_rate.fps = CGL_MAXREFRESHRATE;
 	GLDisplay->GLCreateWindow("OpenGL Context",parent,glCS);
 
+
 	GLDisplay->glMakeCurrent();
 
-	//	frame rate management
-	CTimeObject::markTime(parent);
-	
-	unsigned int	nb=0;
-	for (int i=0;i<1000;i++)
-	{
-		GLDisplay->Invalidate();
-		GLDisplay->SendMessage(WM_PAINT);
-		nb++;
-	}
-
-	float dt = CTimeObject::deltaMarkTime(parent);
-
-	results.result_items[0].rate = nb / dt;
-	results.result_items[0].score = (unsigned int)(floor)(nb / dt);
+	GLDisplay->glCalibrate(glCS.width, glCS.height);
+	BenchStep(1, 1000, GLDisplay);
 
 	GLDisplay->glMakeCurrent(false);
 

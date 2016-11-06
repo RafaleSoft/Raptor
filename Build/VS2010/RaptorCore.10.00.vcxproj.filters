@@ -536,6 +536,12 @@
     <ClCompile Include="..\..\RaptorCore\Subsys\DOT3BumppedGeometry.cpp">
       <Filter>Source Files\Subsys src</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\EMBMShader.cpp">
+      <Filter>Source Files\Subsys src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\System\RaptorVulkanDisplay.cpp">
+      <Filter>Source Files\System src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\RaptorCore\Raptordll.h">
@@ -1023,6 +1029,12 @@
     </ClInclude>
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\EMBMGeometry.h">
       <Filter>Header Files\GLHierarchy include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\EMBMShader.h">
+      <Filter>Header Files\Subsys include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\System\RaptorVulkanDisplay.h">
+      <Filter>Header Files\System include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

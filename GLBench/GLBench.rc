@@ -1,4 +1,4 @@
-//Microsoft Developer Studio generated resource script.
+// Microsoft Visual C++ generated resource script.
 //
 #include "resource.h"
 
@@ -16,10 +16,8 @@
 // French (France) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_FRA)
-#ifdef _WIN32
 LANGUAGE LANG_FRENCH, SUBLANG_FRENCH
 #pragma code_page(1252)
-#endif //_WIN32
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
@@ -27,18 +25,18 @@ LANGUAGE LANG_FRENCH, SUBLANG_FRENCH
 // TEXTINCLUDE
 //
 
-1 TEXTINCLUDE DISCARDABLE 
+1 TEXTINCLUDE 
 BEGIN
     "resource.h\0"
 END
 
-2 TEXTINCLUDE DISCARDABLE 
+2 TEXTINCLUDE 
 BEGIN
     "#include ""afxres.h""\r\n"
     "\0"
 END
 
-3 TEXTINCLUDE DISCARDABLE 
+3 TEXTINCLUDE 
 BEGIN
     "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
     "#define _AFX_NO_OLE_RESOURCES\r\n"
@@ -66,7 +64,7 @@ END
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDR_MAINFRAME           ICON    DISCARDABLE     "res\\GLBench.ico"
+IDR_MAINFRAME           ICON                    "res\\GLBench.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -74,14 +72,13 @@ IDR_MAINFRAME           ICON    DISCARDABLE     "res\\GLBench.ico"
 //
 
 IDD_GLBENCH_DIALOG DIALOGEX 0, 0, 317, 122
-STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 EXSTYLE WS_EX_APPWINDOW
 CAPTION "GLBench"
-FONT 8, "MS Sans Serif"
+FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "Quit",IDOK,261,7,50,14
-    LISTBOX         IDC_LIST,7,7,103,79,LBS_NOINTEGRALHEIGHT | WS_VSCROLL | 
-                    WS_TABSTOP
+    LISTBOX         IDC_LIST,7,7,103,79,LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
     GROUPBOX        "Module infos ...",IDC_STATIC,115,7,140,79
     LTEXT           "Author:",IDC_STATIC,120,20,34,10,SS_CENTERIMAGE
     LTEXT           "Name:",IDC_STATIC,120,30,34,10,SS_CENTERIMAGE
@@ -90,35 +87,27 @@ BEGIN
     LTEXT           ".",IDC_NAME,160,30,90,10,SS_CENTERIMAGE
     LTEXT           ".",IDC_DESCRIPTION,160,40,90,40
     PUSHBUTTON      "Bench",IDC_BENCH,261,25,50,14
-    CONTROL         132,IDC_STATIC,"Static",SS_BITMAP,7,87,101,34
-    CONTROL         130,IDC_STATIC,"Static",SS_BITMAP,169,87,85,28
-    LTEXT           "           Featuring: .........OpenGL 2.0........ ........Raptor 2.15.1.......",
-                    IDC_STATIC,94,87,73,28
-    CONTROL         "640x480",IDC_RADIO1,"Button",BS_AUTORADIOBUTTON,260,60,
-                    39,10
-    CONTROL         "800x600",IDC_RADIO2,"Button",BS_AUTORADIOBUTTON,260,70,
-                    43,10
-    CONTROL         "1024x768",IDC_RADIO3,"Button",BS_AUTORADIOBUTTON,260,80,
-                    47,10
-    CONTROL         "1280x1024",IDC_RADIO4,"Button",BS_AUTORADIOBUTTON,260,
-                    90,51,10
-    CONTROL         "Full Screen",IDC_RADIO5,"Button",BS_AUTORADIOBUTTON,260,
-                    100,51,10
+    CONTROL         IDB_BITMAP1,IDC_STATIC,"Static",SS_BITMAP,7,87,101,34
+    CONTROL         IDB_BITMAP2,IDC_STATIC,"Static",SS_BITMAP,169,87,85,28
+    LTEXT           "           Featuring: .........OpenGL 4.5........ ........Raptor 2.16.6.......",IDC_STATIC,94,87,73,28
+    CONTROL         "640x480",IDC_RADIO1,"Button",BS_AUTORADIOBUTTON,260,60,39,10
+    CONTROL         "800x600",IDC_RADIO2,"Button",BS_AUTORADIOBUTTON,260,70,43,10
+    CONTROL         "1024x768",IDC_RADIO3,"Button",BS_AUTORADIOBUTTON,260,80,47,10
+    CONTROL         "1280x1024",IDC_RADIO4,"Button",BS_AUTORADIOBUTTON,260,90,51,10
+    CONTROL         "Full Screen",IDC_RADIO5,"Button",BS_AUTORADIOBUTTON,260,100,51,10
     PUSHBUTTON      "Sys. Info",IDC_SYSINFO,261,40,50,14
 END
 
-IDD_BENCH_RESULTS DIALOG DISCARDABLE  0, 0, 248, 166
-STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+IDD_BENCH_RESULTS DIALOG 0, 0, 248, 166
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Bench Results"
 FONT 8, "MS Sans Serif"
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,191,7,50,14
-    LISTBOX         IDC_LIST,7,7,182,152,LBS_NOINTEGRALHEIGHT | WS_VSCROLL | 
-                    WS_HSCROLL | WS_TABSTOP
+    LISTBOX         IDC_LIST,7,7,182,152,LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_HSCROLL | WS_TABSTOP
 END
 
 
-#ifndef _MAC
 /////////////////////////////////////////////////////////////////////////////
 //
 // Version
@@ -141,15 +130,13 @@ BEGIN
     BEGIN
         BLOCK "040C04B0"
         BEGIN
-            VALUE "CompanyName", "\0"
-            VALUE "FileDescription", "Application MFC GLBench\0"
-            VALUE "FileVersion", "1, 0, 0, 1\0"
-            VALUE "InternalName", "GLBench\0"
-            VALUE "LegalCopyright", "Copyright (C) 2003\0"
-            VALUE "LegalTrademarks", "\0"
-            VALUE "OriginalFilename", "GLBench.EXE\0"
-            VALUE "ProductName", "Application GLBench\0"
-            VALUE "ProductVersion", "1, 0, 0, 1\0"
+            VALUE "FileDescription", "Application MFC GLBench"
+            VALUE "FileVersion", "1, 0, 0, 1"
+            VALUE "InternalName", "GLBench"
+            VALUE "LegalCopyright", "Copyright (C) 2003"
+            VALUE "OriginalFilename", "GLBench.EXE"
+            VALUE "ProductName", "Application GLBench"
+            VALUE "ProductVersion", "1, 0, 0, 1"
         END
     END
     BLOCK "VarFileInfo"
@@ -158,8 +145,6 @@ BEGIN
     END
 END
 
-#endif    // !_MAC
-
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -167,7 +152,7 @@ END
 //
 
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO DISCARDABLE 
+GUIDELINES DESIGNINFO
 BEGIN
     IDD_GLBENCH_DIALOG, DIALOG
     BEGIN
@@ -193,8 +178,8 @@ END
 // Bitmap
 //
 
-IDB_BITMAP2             BITMAP  DISCARDABLE     "res\\Raptor_logo_sml.bmp"
-IDB_BITMAP1             BITMAP  DISCARDABLE     "res\\OGL_logo_sml.bmp"
+IDB_BITMAP2             BITMAP                  "res\\Raptor_logo_sml.bmp"
+IDB_BITMAP1             BITMAP                  "res\\OGL_logo_sml.bmp"
 #endif    // French (France) resources
 /////////////////////////////////////////////////////////////////////////////
 
