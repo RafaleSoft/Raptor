@@ -35,7 +35,7 @@ protected:
 
 	CFrameWnd *benchWindow;
 
-	void LoadModules(void);
+	void LoadModules(const char* path);
 
 	// Generated message map functions
 	//{{AFX_MSG(CGLBenchDlg)

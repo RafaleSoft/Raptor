@@ -61,7 +61,11 @@ BOOL CGLBenchDlg::OnInitDialog()
 	SetIcon(m_hIcon, TRUE);			// Set big icon
 	SetIcon(m_hIcon, FALSE);		// Set small icon
 	
-	LoadModules();
+	LoadModules(0);
+	TCHAR buffer[MAX_PATH];
+	GetEnvironmentVariable(TEXT("RAPTOR_ROOT"),buffer,MAX_PATH);
+	strcat(buffer, TEXT("\\Redist\\bin"));
+	LoadModules(CT2A(buffer));
 
 	CButton *bt = (CButton *)(GetDlgItem(IDC_RADIO1));
 	bt->SetCheck(1);
@@ -106,12 +110,15 @@ HCURSOR CGLBenchDlg::OnQueryDragIcon()
 }
 
 
-void CGLBenchDlg::LoadModules(void)
+void CGLBenchDlg::LoadModules(const char* path)
 {
 	CListBox *lb = (CListBox *)(GetDlgItem(IDC_LIST));
 	CFileFind findFile;
 
-	BOOL res = findFile.FindFile( TEXT("*.dll") );
+	CString filepath = "*.dll";
+	if (NULL != path)
+		filepath = CString(path) + "\\*.dll";
+	BOOL res = findFile.FindFile( filepath );
 	
 	if (res != 0)
 	{
@@ -258,7 +265,7 @@ UINT Bench(LPVOID pParam)
 		rect.top = (screenHeight - height) / 2 - borderHeight;
 		rect.bottom = rect.top + height + borderHeight + borderHeight;
 
-		benchWindow.Create(NULL,TEXT("GL Bench"),WS_VISIBLE|WS_POPUP|WS_OVERLAPPED,rect,dlg,NULL,WS_EX_TOPMOST|WS_EX_TOPMOST,NULL);
+		benchWindow.Create(NULL,TEXT("GL Bench"),WS_VISIBLE|WS_POPUP|WS_OVERLAPPED,rect,dlg,NULL,WS_EX_TOPMOST,NULL);
 
 		CDC *dc=benchWindow.GetDC();
 		dc->SetBkMode(TRANSPARENT);								//	Tansparent background for cool text display

@@ -1,8 +1,7 @@
 cd C:\OPENGL
 
-set RAPTOR_VERSION="2.16.3"
+set RAPTOR_VERSION="2.16.6"
 set PLATFORM_SDK=C:\Program Files\Microsoft SDKs\Windows\v7.0
-set MSSdk=C:\Microsoft Platform SDK for Windows Server 2003 R2
 
 set RAPTOR_ROOT=C:\OPENGL\Raptor
 set PATH=%PATH%;%RAPTOR_ROOT%\Redist\bin
@@ -40,6 +39,9 @@ set OPENEXRLIB_BIN_PATH=%RAPTOR_ROOT%\AddOns\OpenEXRLib\bin\vc10
 SET OPENCL_INCLUDE_PATH=C:\Program Files (x86)\Intel\OpenCL SDK\3.0\include
 SET OPENCL_LIB_PATH=C:\Program Files (x86)\Intel\OpenCL SDK\3.0\lib\x86
 SET OPENCL_BIN_PATH=C:\Program Files (x86)\Intel\OpenCL SDK\3.0\bin\x86
+
+set VULKAN_INCLUDE_PATH=%RAPTOR_ROOT%\AddOns\vulkan\include
+set VULKAN_BIN_PATH=c:\windows\system32
 
 "C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\devenv.exe"
 

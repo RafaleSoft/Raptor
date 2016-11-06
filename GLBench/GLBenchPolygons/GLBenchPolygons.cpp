@@ -130,8 +130,10 @@ extern "C" void GLBENCH_API Bench(CWnd *parent)
 	}
 
 	float bench_dt = CTimeObject::deltaMarkTime(parent);
-	results.result_items[0].rate = nb / bench_dt;
+	results.result_items[0].fps_rate = nb / bench_dt;
+	results.result_items[0].fragment_rate = 0;
 	results.result_items[0].score = (unsigned int)(floor)(nb / bench_dt);
+	results.result_items[0].driver_overhead = 0;
 
 	GLDisplay->glMakeCurrent(false);
 

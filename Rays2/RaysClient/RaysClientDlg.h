@@ -9,12 +9,15 @@
 
 #include "RaysClientForm.h"
 
+
 #if !defined(AFX_RAYSCLIENTUTILS_H__D5EDE275_AF42_4BF5_80F7_2C408934AEFF__INCLUDED_)
 	#include "RaysClientUtils.h"
 #endif
 
 
 namespace RaysClient {
+
+	class RaysClientData;
 
 	public ref class RaysClientDlg : public RaysClientForm
 	{
@@ -25,6 +28,7 @@ namespace RaysClient {
 	protected:
 		virtual bool Start(int argc,char *argv[]) override;
 		virtual bool Quit(void) override;
+		virtual bool LoadData(String^ filename) override;
 	
 	private:
 		ref class RaysLogger : public RaysClientUtils::ILogger
@@ -39,6 +43,7 @@ namespace RaysClient {
 		};
 
 		bool	m_started;
+		RaysClientData			*m_pData;
 		CClient<CClientSocket>	*m_raysClient;
 	};
 }

@@ -33,6 +33,9 @@
     <ClCompile Include="..\..\Rays2\RaysClient\stdafx.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Rays2\RaysClient\RaysClientData.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Rays2\RaysClient\RaysClientDlg.h">
@@ -50,6 +53,9 @@
     <ClInclude Include="..\..\Rays2\RaysClient\stdafx.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Rays2\RaysClient\RaysClientData.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Rays2\RaysClient\Rays.ico">
@@ -58,5 +64,10 @@
     <None Include="..\..\Rays2\RaysClient\RaysClient.config">
       <Filter>Fichiers de ressources</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\Rays2\RaysClient\RaysClientForm.resx">
+      <Filter>Fichiers de ressources</Filter>
+    </EmbeddedResource>
   </ItemGroup>
 </Project>

@@ -201,3 +201,4 @@ FakesAssemblies/
 GeneratedArtifacts/
 _Pvt_Extensions/
 ModelManifest.xml
+/RaptorCore/Subsys/CodeGeneration.h

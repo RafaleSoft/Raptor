@@ -66,7 +66,7 @@
     <ClCompile>
       <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(SolutionDir)\$(ProjectName);$(ZLIB_INCLUDE_PATH);$(PNGLIB_INCLUDE_PATH);$(OPENEXRLIB_INCLUDE_PATH);$(TIFFLIB_INCLUDE_PATH);$(JPEGLIB_INCLUDE_PATH);$(RAPTOR_ROOT)\Redist\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\$(ProjectName);$(ZLIB_INCLUDE_PATH);$(PNGLIB_INCLUDE_PATH);$(OPENEXRLIB_INCLUDE_PATH);$(TIFFLIB_INCLUDE_PATH);$(JPEGLIB_INCLUDE_PATH);$(RAPTOR_ROOT)\Redist\Include;$(VULKAN_INCLUDE_PATH);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;EXPORT_RAPTOR_CORE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <PrecompiledHeader>Use</PrecompiledHeader>

@@ -69,12 +69,14 @@ namespace RaysClient {
 	private: System::Windows::Forms::TextBox^  port;
 
 	private: System::Windows::Forms::Label^  label2;
-	private: System::Windows::Forms::Button^  button1;
+	private: System::Windows::Forms::Button^  Open;
+
 	private: System::Windows::Forms::ListBox^  Log;
 
 	protected:
 		virtual bool Start(int argc,char *argv[]) = 0;
 		virtual bool Quit(void) = 0;
+		virtual bool LoadData(String^ filename) = 0;
 
 	private:
 		/// <summary>
@@ -98,7 +100,7 @@ namespace RaysClient {
 			this->Connect = (gcnew System::Windows::Forms::Button());
 			this->button2 = (gcnew System::Windows::Forms::Button());
 			this->Log = (gcnew System::Windows::Forms::ListBox());
-			this->button1 = (gcnew System::Windows::Forms::Button());
+			this->Open = (gcnew System::Windows::Forms::Button());
 			this->groupBox1->SuspendLayout();
 			this->SuspendLayout();
 			// 
@@ -182,22 +184,22 @@ namespace RaysClient {
 			this->Log->Size = System::Drawing::Size(311, 95);
 			this->Log->TabIndex = 2;
 			// 
-			// button1
+			// Open
 			// 
-			this->button1->Location = System::Drawing::Point(13, 65);
-			this->button1->Name = L"button1";
-			this->button1->Size = System::Drawing::Size(75, 23);
-			this->button1->TabIndex = 3;
-			this->button1->Text = L"Open...";
-			this->button1->UseVisualStyleBackColor = true;
-			this->button1->MouseClick += gcnew System::Windows::Forms::MouseEventHandler(this, &RaysClientForm::OnOpenFile);
+			this->Open->Location = System::Drawing::Point(13, 65);
+			this->Open->Name = L"Open";
+			this->Open->Size = System::Drawing::Size(75, 23);
+			this->Open->TabIndex = 3;
+			this->Open->Text = L"Open...";
+			this->Open->UseVisualStyleBackColor = true;
+			this->Open->MouseClick += gcnew System::Windows::Forms::MouseEventHandler(this, &RaysClientForm::OnOpenFile);
 			// 
 			// RaysClientForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->ClientSize = System::Drawing::Size(333, 235);
-			this->Controls->Add(this->button1);
+			this->Controls->Add(this->Open);
 			this->Controls->Add(this->Log);
 			this->Controls->Add(this->button2);
 			this->Controls->Add(this->groupBox1);

@@ -58,9 +58,11 @@ public:
         s << XMLString::transcode(exc.getMessage());
         s << " line: " << exc.getLineNumber();
         s << " pos: " << exc.getColumnNumber();
-        Raptor::GetErrorManager()->generateRaptorError(	CPersistence::CPersistenceClassID::GetClassId(),
-														CRaptorErrorManager::RAPTOR_WARNING,
-														s.str());
+		CRaptorErrorManager *pErrMgr = Raptor::GetErrorManager();
+		if (NULL != pErrMgr)
+			pErrMgr->generateRaptorError(	CPersistence::CPersistenceClassID::GetClassId(),
+											CRaptorErrorManager::RAPTOR_WARNING,
+											s.str());
     }
     virtual void error(const SAXParseException& exc)
     {
@@ -68,9 +70,11 @@ public:
         s << XMLString::transcode(exc.getMessage());
         s << " line: " << exc.getLineNumber();
         s << " pos: " << exc.getColumnNumber();
-        Raptor::GetErrorManager()->generateRaptorError(	CPersistence::CPersistenceClassID::GetClassId(),
-														CRaptorErrorManager::RAPTOR_ERROR,
-														s.str());
+		CRaptorErrorManager *pErrMgr = Raptor::GetErrorManager();
+		if (NULL != pErrMgr)
+			pErrMgr->generateRaptorError(	CPersistence::CPersistenceClassID::GetClassId(),
+											CRaptorErrorManager::RAPTOR_ERROR,
+											s.str());
     }
     virtual void fatalError(const SAXParseException& exc)
     {
@@ -78,9 +82,11 @@ public:
         s << XMLString::transcode(exc.getMessage());
         s << " line: " << exc.getLineNumber();
         s << " pos: " << exc.getColumnNumber();
-        Raptor::GetErrorManager()->generateRaptorError(	CPersistence::CPersistenceClassID::GetClassId(),
-														CRaptorErrorManager::RAPTOR_FATAL,
-														s.str());
+		CRaptorErrorManager *pErrMgr = Raptor::GetErrorManager();
+		if (NULL != pErrMgr)
+			pErrMgr->generateRaptorError(	CPersistence::CPersistenceClassID::GetClassId(),
+											CRaptorErrorManager::RAPTOR_FATAL,
+											s.str());
     }
     virtual void resetErrors() {};
 };
