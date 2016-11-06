@@ -304,6 +304,14 @@ CWin32ContextManager::~CWin32ContextManager()
 #if defined(WGL_ARB_pbuffer)
     delete [] pBuffers;
 #endif
+
+#if defined (VK_VERSION_1_0)
+	if (0 != vulkanModule.handle)
+	{
+		HMODULE module = (HMODULE)vulkanModule.handle;
+		FreeLibrary(module);
+	}
+#endif
 }
 
 const CRaptorExtensions *const CWin32ContextManager::glGetExtensions(void)
@@ -1270,3 +1278,60 @@ CContextManager::RENDERING_CONTEXT_ID  CWin32ContextManager::glCreateExtendedCon
 #endif  // #ifdef WGL_ARB_pbuffer
 
 
+#if defined(VK_VERSION_1_0)
+bool CWin32ContextManager::vkInit(void)
+{
+	char buffer[MAX_PATH];
+	GetEnvironmentVariable("VULKAN_BIN_PATH",buffer,MAX_PATH);
+	std::string vkpath = buffer;
+	vkpath += "\\VULKAN-1.DLL";
+	HMODULE module = LoadLibrary(vkpath.c_str());
+	vulkanModule.handle = (unsigned int)module;
+
+	if (NULL != module)
+	{
+		vkGetInstanceProcAddr = (PFN_vkGetInstanceProcAddr)(GetProcAddress(module,"vkGetInstanceProcAddr"));
+	
+		if (CContextManager::vkInit())
+		{
+			bool surface_rendering_supported =	(string::npos != instance_extensions.find("VK_KHR_surface") &&
+												string::npos != instance_extensions.find("VK_KHR_win32_surface"));
+			if (!surface_rendering_supported)
+			{
+				RAPTOR_ERROR(	Global::CVulkanClassID::GetClassId(),
+								"Vulkan API does not support rendering to surface");
+			}
+			return surface_rendering_supported;
+		}
+		return false;
+	}
+	return false;
+}
+
+bool CWin32ContextManager::vkCreateSurface(const RAPTOR_HANDLE& handle,RENDERING_CONTEXT_ID ctx)
+{
+	if (WINDOW_CLASS == handle.hClass)
+	{
+		HWND hWnd = (HWND)handle.handle;
+		HINSTANCE hInstance = (HINSTANCE)GetWindowLong(hWnd, GWL_HINSTANCE);
+		VkWin32SurfaceCreateInfoKHR createInfo = {	VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR,
+													NULL,0, //flags,
+													hInstance,hWnd };
+		VK_CONTEXT &context = m_pVkContext[ctx];
+
+		//!	Create the Surface
+		VkResult res = VK_NOT_READY;
+		res = context.vkCreateWin32SurfaceKHR(context.instance,&createInfo,NULL,&context.surface);
+		if (VK_SUCCESS != res)
+		{
+			RAPTOR_ERROR(	Global::CVulkanClassID::GetClassId(),
+							"Failed to create Vulkan rendering surface");
+			return false;
+		}
+		return true;
+	}
+	else
+		return false;
+}
+
+#endif

@@ -466,6 +466,10 @@
 					RelativePath="..\..\RaptorCore\GLHierarchy\VertexShader.cpp"
 					>
 				</File>
+				<File
+					RelativePath="..\..\RaptorCore\GLHierarchy\VulkanShaderStage.cpp"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="Engine src"
@@ -996,6 +1000,26 @@
 						</FileConfiguration>
 					</File>
 				</Filter>
+				<Filter
+					Name="Vulkan"
+					>
+					<File
+						RelativePath="..\..\RaptorCore\Subsys\Vulkan\VulkanDevice.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\RaptorCore\Subsys\Vulkan\VulkanMemory.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\RaptorCore\Subsys\Vulkan\VulkanPipeline.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\RaptorCore\Subsys\Vulkan\VulkanShader.cpp"
+						>
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="System src"
@@ -1318,6 +1342,10 @@
 				</File>
 				<File
 					RelativePath="..\..\RaptorCore\GLHierarchy\VertexShader.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\RaptorCore\GLHierarchy\VulkanShaderStage.h"
 					>
 				</File>
 			</Filter>
@@ -1816,6 +1844,26 @@
 					</File>
 					<File
 						RelativePath="..\..\RaptorCore\Subsys\FreeType\TTOutlineFont.h"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="Vulkan"
+					>
+					<File
+						RelativePath="..\..\RaptorCore\Subsys\Vulkan\VulkanDevice.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\RaptorCore\Subsys\Vulkan\VulkanMemory.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\RaptorCore\Subsys\Vulkan\VulkanPipeline.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\RaptorCore\Subsys\Vulkan\VulkanShader.h"
 						>
 					</File>
 				</Filter>

@@ -126,6 +126,7 @@ copy .\RaptorCore\GLHierarchy\TextureUnitSetup.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\UnifiedProgram.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\VertexProgram.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\VertexShader.h Redist\Include\GLHierarchy
+copy .\RaptorCore\GLHierarchy\VulkanShaderStage.h Redist\Include\GLHierarchy
 
 ECHO       SSE_Engine:
 copy .\RaptorCore\SSE_Engine\SSE_3DEngine.h Redist\Include\SSE_Engine

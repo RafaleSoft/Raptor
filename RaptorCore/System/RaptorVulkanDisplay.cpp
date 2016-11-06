@@ -21,10 +21,12 @@
 #if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
 	#include "System/Raptor.h"
 #endif
-#if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
-    #include "System/RaptorErrorManager.h"
+#if !defined(AFX_RAPTORVULKANPIPELINE_H__C2997B30_C6E2_4EF2_AFE3_FCD27AB5CBB7__INCLUDED_)
+	#include "Subsys/Vulkan/VulkanPipeline.h"
 #endif
-
+#if !defined(AFX_RAPTORVULKANSHADER_H__C188550F_1D1C_4531_B0A0_727CE9FF9450__INCLUDED_)
+	#include "Subsys/Vulkan/VulkanShader.h"
+#endif
 
 RAPTOR_NAMESPACE_BEGIN
 
@@ -52,6 +54,16 @@ CRaptorVulkanDisplay::CRaptorVulkanDisplay(const CRaptorDisplayConfig& pcs)
 CRaptorVulkanDisplay::~CRaptorVulkanDisplay(void)
 {
 	glUnBindDisplay();
+
+	if (0 < m_pipelines.size())
+	{
+		for (unsigned int i=0;i<m_pipelines.size();i++)
+		{
+			m_pipelines[i]->destroyPipeline();
+			delete m_pipelines[i];
+		}
+		m_pipelines.clear();
+	}
 	
 	CContextManager::GetInstance()->vkDestroyContext(m_context);
 }
@@ -65,12 +77,20 @@ bool CRaptorVulkanDisplay::glRender(void)
 {
 	if (m_context != -1)
 	{
+		CContextManager *manager = CContextManager::GetInstance();
+		CVulkanDevice &vk_device = manager->vkGetDevice(m_context);
+		//	cs.x & cs.y are window position, not pixel origin in layer
+		VkRect2D scissor = { {0, 0}, {cs.width,cs.height} };
+
 		CTimeObject::markTime(this);
 
         //m_pGAllocator->glLockMemory(true);
 		//m_pTAllocator->glLockMemory(true);
 
-		C3DScene *pScene = getRootScene();
+		CVulkanPipeline *pipeline = m_pipelines[0];
+		vk_device.vkBindPipeline(*pipeline,scissor,cs.framebufferState.colorClearValue);
+
+		//C3DScene *pScene = getRootScene();
 		//pScene->vkRender();
 
         //m_pGAllocator->glLockMemory(false);
@@ -128,6 +148,35 @@ void CRaptorVulkanDisplay::glGenerate(CTextureObject* )
 {
 }
 
+bool CRaptorVulkanDisplay::initPipelines(void)
+{
+	VkRect2D scissor = { {0, 0}, {cs.width,cs.height} };
+	CContextManager *manager = CContextManager::GetInstance();
+
+	CVulkanDevice &device = manager->vkGetDevice(m_context);
+	CVulkanShader *vshader = device.createShader();
+	CVulkanShader *fshader = device.createShader();
+	if (!vshader->loadShader("shader2.vert") ||
+		!fshader->loadShader("shader2.frag"))
+	{
+		return false;
+	}
+
+	CVulkanPipeline *pipeline = device.createPipeline();
+	m_pipelines.push_back(pipeline);
+	pipeline->addShader(vshader);
+	pipeline->addShader(fshader);
+	if (!pipeline->initPipeline(cs,scissor))
+	{
+		Raptor::GetErrorManager()->generateRaptorError(	bufferID,
+														CRaptorErrorManager::RAPTOR_FATAL,
+														CRaptorMessages::ID_CREATE_FAILED);
+		return false;
+	}
+
+	return true;
+}
+
 bool CRaptorVulkanDisplay::glBindDisplay(const RAPTOR_HANDLE& device)
 {
 	if (device.handle != CGL_NULL)
@@ -142,61 +191,23 @@ bool CRaptorVulkanDisplay::glBindDisplay(const RAPTOR_HANDLE& device)
 
 			manager->vkSwapVSync(m_framerate);
 			m_context = manager->vkCreateContext(device,cs);
-
-			RAPTOR_HANDLE device = manager->CContextManager::getDevice(m_context);
-
-			VkFormat format = VK_FORMAT_B8G8R8A8_UNORM;
-			VkSampleCountFlagBits samples;
-			if (((cs.display_mode & CGL_RGBA) == CGL_RGBA) ||
-				((cs.display_mode & CGL_RGB) == CGL_RGB) ||
-				((cs.display_mode & CGL_FLOAT_32) == CGL_FLOAT_32))
-				samples = VK_SAMPLE_COUNT_32_BIT;
-			else if ((cs.display_mode & CGL_FLOAT_16) == CGL_FLOAT_16)
-				samples = VK_SAMPLE_COUNT_16_BIT;
-
-			VkAttachmentDescription pAttachments = {0, // or 1 = VK_ATTACHMENT_DESCRIPTION_MAY_ALIAS_BIT
-													format,samples,
-													VK_ATTACHMENT_LOAD_OP_CLEAR,
-													VK_ATTACHMENT_STORE_OP_STORE,
-													VK_ATTACHMENT_LOAD_OP_CLEAR,
-													VK_ATTACHMENT_STORE_OP_DONT_CARE,
-													VK_IMAGE_LAYOUT_UNDEFINED, //	Is this correct ?
-													VK_IMAGE_LAYOUT_PRESENT_SRC_KHR }; // is this correct ?
-			VkAttachmentReference pColorAttachments = { 0, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL };
-			VkAttachmentReference pDepthStencilAttachment = { 0, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL };
-			VkSubpassDescription pSubpasses = {	0,
-												VK_PIPELINE_BIND_POINT_GRAPHICS,
-												0, NULL,
-												1, &pColorAttachments,
-												NULL,
-												&pDepthStencilAttachment,
-												0, NULL };
-			VkRenderPassCreateInfo pRenderPassCreateInfo = {VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
-															NULL, 0,
-															1, &pAttachments,
-															1, &pSubpasses,
-															0, NULL /*const VkSubpassDependency* pDependencies*/ };
-			VkRenderPass pRenderPass;
-
-			CRaptorErrorManager *pErrMgr = Raptor::GetErrorManager();
-			VkResult res = manager->glGetExtensions()->vkCreateRenderPass((VkDevice)device.handle,&pRenderPassCreateInfo,NULL,&pRenderPass);
-			if (VK_SUCCESS != res)
-				pErrMgr->vkGetError(res,__FILE__,__LINE__);
-			else
+			if (m_context == -1)
 			{
-				VkFramebufferCreateInfo pFrameBufferCreateInfo = {	VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
-																	NULL, 0,
-																	pRenderPass,
-																	0, NULL,
-																	cs.width, cs.height, 1 };
+				Raptor::GetErrorManager()->generateRaptorError(	bufferID,
+																CRaptorErrorManager::RAPTOR_FATAL,
+																CRaptorMessages::ID_CREATE_FAILED);
+				return false;
+			}
 
-				VkFramebuffer pFramebuffer;
-				res = manager->glGetExtensions()->vkCreateFramebuffer((VkDevice)device.handle,&pFrameBufferCreateInfo,NULL,&pFramebuffer);
-				if (VK_SUCCESS != res)
-					pErrMgr->vkGetError(res,__FILE__,__LINE__);
+			if (!initPipelines())
+			{
+				Raptor::GetErrorManager()->generateRaptorError(	bufferID,
+																CRaptorErrorManager::RAPTOR_FATAL,
+																CRaptorMessages::ID_CREATE_FAILED);
+				return false;
 			}
 		}
-
+		
 		manager->vkMakeCurrentContext(device,m_context);
 	}
 
@@ -205,9 +216,9 @@ bool CRaptorVulkanDisplay::glBindDisplay(const RAPTOR_HANDLE& device)
 
 bool CRaptorVulkanDisplay::glUnBindDisplay(void)
 {
-	RAPTOR_HANDLE device;
-	CContextManager *manager = CContextManager::GetInstance();
-	manager->vkMakeCurrentContext(device,m_context);
+	//RAPTOR_HANDLE device;
+	//CContextManager *manager = CContextManager::GetInstance();
+	//manager->vkMakeCurrentContext(device,m_context);
 
 	return CRaptorDisplay::glUnBindDisplay();
 }

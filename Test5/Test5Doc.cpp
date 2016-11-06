@@ -69,6 +69,8 @@ float lposz(float dt)
 	return 15 * (float)(sin(3*PI*dt*0.1)); //*sin(3*PI*dt*0.1));
 }
 
+//#define VULKAN_TEST 1
+
 CTest5Doc::CTest5Doc(const RAPTOR_HANDLE& device,const char* title)
 {
 	m_pDisplay = NULL;
@@ -84,20 +86,11 @@ CTest5Doc::CTest5Doc(const RAPTOR_HANDLE& device,const char* title)
     config.m_uiPolygons = 200000;
     config.m_uiVertices = 500000;
     Raptor::glInitRaptor(config);
-/*
-CRaptorDisplayConfig pcs;
-pcs.renderer = CRaptorDisplayConfig::VULKAN;
-CRaptorDisplay *d = Raptor::glCreateDisplay(pcs);
-RAPTOR_HANDLE noDevice(4,(void*)4);
-d->glBindDisplay(device);
-d->glUnBindDisplay();
-*/
 
 	CImaging::installImagers(CTextureFactory::getDefaultFactory());
 
 	RECT r;
 	GetClientRect((HWND)(device.handle),&r);
-
 	CRaptorDisplayConfig glcs;
 	glcs.width = r.right - r.left;
 	glcs.height = r.bottom - r.top;
@@ -106,6 +99,15 @@ d->glUnBindDisplay();
 	glcs.caption = title;
 	glcs.acceleration = CRaptorDisplayConfig::HARDWARE;
 	//glcs.antialias = CRaptorDisplayConfig::ANTIALIAS_16X;
+	glcs.framebufferState.colorClearValue = CColor::RGBA(0.5f,0.6f,0.7f,1.0f);
+
+#ifdef VULKAN_TEST
+	glcs.renderer = CRaptorDisplayConfig::VULKAN;
+	m_pDisplay = Raptor::glCreateDisplay(glcs);
+	bool res = m_pDisplay->glBindDisplay(device);
+	if (res)
+	{
+#else
 	glcs.double_buffer = true;
 	glcs.depth_buffer = true;
 	glcs.display_mode = CGL_RGBA | CGL_DEPTH;
@@ -128,7 +130,7 @@ d->glUnBindDisplay();
         pConsole->activateConsole(true);
 
         GLInitContext();
-
+#endif
 		m_pDisplay->glUnBindDisplay();
 	}
 }

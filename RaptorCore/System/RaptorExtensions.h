@@ -14,10 +14,6 @@
 	#include "Glext.h"
 #endif
 
-#if !defined(__RAPTOR_VKEXT_H__)
-	#include "vkext.h"
-#endif
-
 
 RAPTOR_NAMESPACE_BEGIN
 
@@ -67,13 +63,6 @@ public:
 	DECLARE_GL_EXT_framebuffer_blit(DEFAULT_LINKAGE)
 	DECLARE_GL_EXT_framebuffer_multisample(DEFAULT_LINKAGE)
 
-	//!	Vulkan specific extensions.
-	DECLARE_VK_core(DEFAULT_LINKAGE)
-	DECLARE_VK_win32(DEFAULT_LINKAGE)
-	DECLARE_VK_KHR_surface(DEFAULT_LINKAGE)
-	DECLARE_VK_KHR_display(DEFAULT_LINKAGE)
-	DECLARE_VK_KHR_swapchain(DEFAULT_LINKAGE)
-
 	//!	Initialise all extensions on drivers/hardware.
 	void glInitExtensions(void);
 	
@@ -89,11 +78,6 @@ public:
 	{ return extensions; }
 
 private:
-	//!	Initialise Vulkan library
-#if defined(VK_VERSION_1_0)
-	void initVk(void);
-#endif
-
 	//!	Provides default functions after InitExtensions has been done.
 	void defaultInit(void);
 	

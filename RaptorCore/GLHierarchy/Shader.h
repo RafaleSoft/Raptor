@@ -29,6 +29,7 @@ class CFragmentShader;
 class CVertexProgram;
 class CFragmentProgram;
 class CGeometryProgram;
+class CVulkanShaderStage;
 
 class RAPTOR_API CShader : public CPersistence, public CObjectReference
 {
@@ -159,6 +160,18 @@ public:
 	bool glRemoveGeometryProgram(void);
 
 
+	//!	Returns the geometry Program
+	//!	Allocate a new one if necessary
+	CVulkanShaderStage * const vkGetVulkanProgram(const std::string& name = "");
+
+	//!	Returns true if Program has a Vulkan Shader already
+	bool hasVulkanProgram(void) const { return m_pVulkanProgram != NULL; };
+
+	//! Removes the Vulkan program.
+	//! @return true if the Vulkan program has been deleted
+	bool vkRemoveVulkanProgram(void);
+
+
 	//!	Streams : implement CPersistence
 	DECLARE_IO
 	DECLARE_CLASS_ID(CShaderClassID,"Shader",CPersistence)
@@ -192,12 +205,14 @@ private:
     CVertexProgram      *m_pVProgram;
     CFragmentProgram    *m_pFProgram;
 	CGeometryProgram	*m_pGProgram;
+	CVulkanShaderStage	*m_pVulkanProgram;
 
 	bool				m_bDeleteVShader;
 	bool				m_bDeleteFShader;
     bool				m_bDeleteVProgram;
 	bool				m_bDeleteFProgram;
 	bool				m_bDeleteGProgram;
+	bool				m_bDeleteVulkanProgram;
 	bool				m_bDeleteTMUSetup;
 };
 
