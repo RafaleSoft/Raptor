@@ -19,18 +19,38 @@
 
 RAPTOR_NAMESPACE
 
+#if defined(VK_VERSION_1_0)
+	PFN_vkCreateShaderModule CVulkanShader::vkCreateShaderModule = VK_NULL_HANDLE;
+	PFN_vkDestroyShaderModule CVulkanShader::vkDestroyShaderModule = VK_NULL_HANDLE;
+#endif
+
 CVulkanShader::CVulkanShader(VkDevice d)
 #if defined(VK_VERSION_1_0)
 	:device(d),shader_module(VK_NULL_HANDLE),shader_stage(VK_SHADER_STAGE_ALL)
 #endif
 {
-#if defined(VK_VERSION_1_0)
-	vkCreateShaderModule = NULL;
-#endif
 }
 
 CVulkanShader::~CVulkanShader(void)
 {
+#if defined(VK_VERSION_1_0)
+	if (VK_NULL_HANDLE != shader_module)
+		vkDestroyShaderModule(device,shader_module,NULL);
+#endif
+}
+
+CVulkanShader* CVulkanShader::vkClone(void) const
+{
+	return new CVulkanShader(*this);
+}
+
+CVulkanShader::CVulkanShader(const CVulkanShader& shader)
+{
+#if defined(VK_VERSION_1_0)
+	device = shader.device;
+	shader_module = VK_NULL_HANDLE;
+	shader_stage = VK_SHADER_STAGE_ALL;
+#endif
 }
 
 bool CVulkanShader::loadShader(const std::string &filename)
@@ -44,7 +64,7 @@ bool CVulkanShader::loadShader(const std::string &filename)
 		// try to compile SPIR-V ?
 		//return false;
 	//}
-
+#if defined(VK_VERSION_1_0)
 	std::string fname = filename;
 	if ((std::string::npos != filename.find(".frag",filename.length()-5)) ||
 		(std::string::npos != filename.find("frag.spv",filename.length()-8)))
@@ -58,11 +78,15 @@ bool CVulkanShader::loadShader(const std::string &filename)
 	}
 
 	CRaptorIO *io = CRaptorIO::Create(fname.c_str(),CRaptorIO::DISK_READ);
+	if (NULL == io)
+		return false;
+
 	if (io->getStatus() == CRaptorIO::IO_OK)
 	{
 		size_t code_size = io->getSize();
 		uint32_t *code = new uint32_t[code_size/4];
 		io->read(code,code_size);
+		delete io;
 		
 		VkResult res = VK_NOT_READY;
 		CRaptorErrorManager *pErrMgr = Raptor::GetErrorManager();
@@ -85,4 +109,7 @@ bool CVulkanShader::loadShader(const std::string &filename)
 	}
 	else
 		return false;
+#else
+	return false;
+#endif
 }

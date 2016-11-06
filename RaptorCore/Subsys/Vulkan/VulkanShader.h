@@ -25,6 +25,9 @@ public:
 	CVulkanShader(VkDevice device);
 	virtual ~CVulkanShader(void);
 
+	//!	Clone this shader (not functional yet)
+	CVulkanShader* vkClone(void) const;
+
 	bool loadShader(const std::string &filename);
 
 	VkShaderModule getModule(void) const { return shader_module; };
@@ -33,10 +36,18 @@ public:
 
 
 #if defined(VK_VERSION_1_0)
-	PFN_vkCreateShaderModule vkCreateShaderModule;
+	//	On a per device basis, static linkage is incorrect
+	STATIC_LINKAGE PFN_vkCreateShaderModule vkCreateShaderModule;
+	STATIC_LINKAGE PFN_vkDestroyShaderModule vkDestroyShaderModule;
 #endif
 
 private:
+	//!	Forbidden operators
+	CVulkanShader& operator=(const CVulkanShader&);
+
+	//! Copy constructor.
+	CVulkanShader(const CVulkanShader& shader);
+
 #if defined(VK_VERSION_1_0)
 	VkDevice		device;
 	VkShaderModule	shader_module;

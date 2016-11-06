@@ -466,6 +466,10 @@
 					RelativePath="..\..\RaptorCore\GLHierarchy\VertexShader.cpp"
 					>
 				</File>
+				<File
+					RelativePath="..\..\RaptorCore\GLHierarchy\VulkanShaderStage.cpp"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="Engine src"
@@ -1338,6 +1342,10 @@
 				</File>
 				<File
 					RelativePath="..\..\RaptorCore\GLHierarchy\VertexShader.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\RaptorCore\GLHierarchy\VulkanShaderStage.h"
 					>
 				</File>
 			</Filter>

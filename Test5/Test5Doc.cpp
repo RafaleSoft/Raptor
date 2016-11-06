@@ -69,7 +69,7 @@ float lposz(float dt)
 	return 15 * (float)(sin(3*PI*dt*0.1)); //*sin(3*PI*dt*0.1));
 }
 
-#define VULKAN_TEST 1
+//#define VULKAN_TEST 1
 
 CTest5Doc::CTest5Doc(const RAPTOR_HANDLE& device,const char* title)
 {

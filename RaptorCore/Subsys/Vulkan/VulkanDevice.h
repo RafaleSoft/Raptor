@@ -27,49 +27,61 @@ class CVulkanShader;
 class CVulkanDevice
 {
 public:
+	static const unsigned int NB_RENDERING_RESOURCES = 3;
+
+
 	CVulkanDevice(void);
 	virtual ~CVulkanDevice(void);
 
 #if defined(VK_VERSION_1_0)
 	//!	Creates and initialise a logical device and linked resources
-	bool createDevice(const VkPhysicalDevice &device,
-					const VkPhysicalDeviceFeatures &features,
-					uint32_t graphicsQueueFamilyIndex,
-					uint32_t graphicsQueueCount,
-					uint32_t presentQueueFamilyIndex,
-					uint32_t presentQueueCount);
+	bool vkCreateLogicalDevice(	const VkPhysicalDevice &device,
+								const VkPhysicalDeviceFeatures &features,
+								uint32_t graphicsQueueFamilyIndex,
+								uint32_t graphicsQueueCount,
+								uint32_t presentQueueFamilyIndex,
+								uint32_t presentQueueCount);
 
 	//!	Creates and initialises the swap chain.
-	bool createSwapChain(VkSurfaceKHR surface,
-						VkSurfaceFormatKHR format,
-						VkSurfaceCapabilitiesKHR surfaceCapabilities,
-						VkPresentModeKHR presentMode,
-						uint32_t width,
-						uint32_t height);
+	bool vkCreateSwapChain(	VkSurfaceKHR surface,
+							VkSurfaceFormatKHR format,
+							VkSurfaceCapabilitiesKHR surfaceCapabilities,
+							VkPresentModeKHR presentMode,
+							uint32_t width,
+							uint32_t height);
 
+	//!	Provides a rendering image from swap chain for next frame render.
+	//!	Currently, only a single image per frame is managed.
+	//!	TODO : handle multiple acquired images.
 	bool acquireSwapChainImage(uint64_t timeout);
 	bool presentSwapChainImage();
 
 	//!	Creates and initialises a render pass
-	bool createRenderPass(	VkSurfaceFormatKHR format,
-							uint32_t nbSamples,
-							uint32_t width,
-							uint32_t height);
+	bool vkCreateRenderPassResources(	VkSurfaceFormatKHR format,
+										uint32_t nbSamples,
+										uint32_t width,
+										uint32_t height);
+
+	//!	Creates and initialise rendering resources for each rendering pass.
+	//!	Rendering resources are:
+	//!	- CommandBuffer
+	//!	- Semaphores for image available and rendering finished
+	//!	- Fence for queue submission
+	//!	- Framebuffer.
+	//!	NB_RENDERING_RESOURCES set of resources are created.
+	bool vkCreateRenderingResources(void);
 
 	CVulkanPipeline*	createPipeline(void) const;
 	CVulkanShader*		createShader(void) const;
 
 	//!	Binds the provided Pipeline to the current grahics command buffer
 	//!	and initialise the render pass.
-	bool bindPipeline(	const CVulkanPipeline& pipeline,
+	bool vkBindPipeline(const CVulkanPipeline& pipeline,
 						const VkRect2D& scissor,
 						const CColor::RGBA& clearColor);
 
-	bool unbindPipeline();
-
-
 	//! Destroy or Release all device linked Vulkan resources, including swap chain
-	bool destroyDevice(void);
+	bool vkDestroyLogicalDevice(void);
 
 
 	PFN_vkCreateDevice vkCreateDevice;
@@ -90,26 +102,34 @@ private:
 
 	VkCommandPool	graphicsCommandPool;
 	VkCommandPool	presentCommandPool;
-#ifdef VK_KHR_swapchain
-	VkSwapchainKHR		swapChain;
-	uint32_t			swapchainImageCount;
-	VkCommandBuffer		*graphicsCommandBuffer;
-	VkCommandBuffer		*presentCommandBuffer;
-	VkSemaphore			imageAvailableSemaphore;
-	VkSemaphore			renderingCompleteSemaphore;
-	uint32_t			currentImage;
-#endif
 	uint32_t		graphics_queueFamilyIndex;
 	uint32_t		present_queueFamilyIndex;
 
 	typedef struct
 	{
+		VkCommandBuffer	commandBuffer;
+		VkSemaphore		imageAvailableSemaphore;
+		VkSemaphore		renderingCompleteSemaphore;
+		VkFence			queueExecutionComplete;
+		VkFramebuffer	frameBuffer;
+	} VK_RENDERING_RESOURCE;
+	uint32_t			currentRenderingResources;
+	VK_RENDERING_RESOURCE	*renderingResources;
+	
+#ifdef VK_KHR_swapchain
+	VkSwapchainKHR		swapChain;
+	uint32_t			swapchainImageCount;
+	uint32_t			currentImage;
+#endif
+	
+	typedef struct
+	{
 		VkImage			image;
 		VkImageView		view;
-		VkFramebuffer	frameBuffer;
-	} VK_FRAMEBUFFER;
+		VkExtent2D		extent;
+	} VK_RENDERING_IMAGE;
 	VkRenderPass	renderPass;
-	VK_FRAMEBUFFER	*frameBuffers;
+	VK_RENDERING_IMAGE	*renderImages;
 #endif
 };
 

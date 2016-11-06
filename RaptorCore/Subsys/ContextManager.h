@@ -167,6 +167,7 @@ protected:
 #if defined(VK_VERSION_1_0)
 	RAPTOR_HANDLE		vulkanModule;
 	string				instance_extensions;
+	string				instance_layers;
 	DECLARE_VK_get_instance_proc_addr(DEFAULT_LINKAGE);
 	DECLARE_VK_global(DEFAULT_LINKAGE);
 
@@ -184,6 +185,7 @@ protected:
 		VkPhysicalDeviceProperties	*pProperties;
 		VkPhysicalDeviceFeatures	*pFeatures;
 		std::string					deviceExtensions;
+		std::string					deviceLayers;
 
 		uint32_t					physicalDevice;
 		CVulkanDevice				device;

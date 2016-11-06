@@ -58,6 +58,8 @@ public:
 	DECLARE_CLASS_ID(CRaptorVulkanDisplayClassID,"RaptorVulkanDisplay",CRaptorDisplay)
 
 private:
+	bool initPipelines(void);
+
 	std::vector<CVulkanPipeline*> m_pipelines;
 	CContextManager::RENDERING_CONTEXT_ID	m_context;
 

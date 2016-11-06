@@ -18,6 +18,12 @@
 #if !defined(AFX_RAPTORVULKANSHADER_H__C188550F_1D1C_4531_B0A0_727CE9FF9450__INCLUDED_)
 	#include "Subsys/Vulkan/VulkanShader.h"
 #endif
+#if !defined(AFX_RAPTORVULKANMEMORY_H__72256FF7_DBB9_4B9C_9BF7_C36F425CF811__INCLUDED_)
+	#include "Subsys/Vulkan/VulkanMemory.h"
+#endif
+#ifndef __GLOBAL_H__
+	#include "System/Global.h"
+#endif
 
 
 RAPTOR_NAMESPACE
@@ -26,19 +32,19 @@ CVulkanDevice::CVulkanDevice(void)
 {
 	device = VK_NULL_HANDLE;
 	renderPass = VK_NULL_HANDLE;
-	frameBuffers = NULL;
+	renderImages = NULL;
 	graphics_queueFamilyIndex = MAXUINT;
 	present_queueFamilyIndex = MAXUINT;
 	graphicsCommandPool = VK_NULL_HANDLE;
 	presentCommandPool = VK_NULL_HANDLE;
+
+	currentRenderingResources = 0;
+	renderingResources = NULL;
+
 #ifdef VK_KHR_swapchain
 	swapChain = VK_NULL_HANDLE;
-	imageAvailableSemaphore = VK_NULL_HANDLE;
-	renderingCompleteSemaphore = VK_NULL_HANDLE;
 	currentImage = MAXUINT;
 	swapchainImageCount = 0;
-	graphicsCommandBuffer = NULL;
-	presentCommandBuffer = NULL;
 #endif
 
 	vkCreateDevice = NULL;
@@ -52,6 +58,10 @@ CVulkanDevice::CVulkanDevice(void)
 	vkGetDeviceQueue = NULL;
 	vkCreateSemaphore = NULL;
 	vkDestroySemaphore = NULL;
+	vkCreateFence = NULL;
+	vkWaitForFences = NULL;
+	vkResetFences = NULL;
+	vkDestroyFence = NULL;
 	vkAllocateCommandBuffers = NULL;
 	vkFreeCommandBuffers = NULL;
 
@@ -76,6 +86,7 @@ CVulkanDevice::CVulkanDevice(void)
 	vkCmdBindPipeline = NULL;
 	vkBeginCommandBuffer = NULL;
 	vkEndCommandBuffer = NULL;
+	vkCmdBindVertexBuffers = NULL;
 	vkCmdDraw = NULL;
 
 	vkQueueSubmit = NULL;
@@ -92,15 +103,11 @@ CVulkanDevice::CVulkanDevice(void)
 
 CVulkanDevice::~CVulkanDevice(void)
 {
-	if (NULL != frameBuffers)
-		delete [] frameBuffers;
+	if (NULL != renderImages)
+		delete [] renderImages;
 
-#ifdef VK_KHR_swapchain
-	if (NULL != graphicsCommandBuffer)
-		delete [] graphicsCommandBuffer;
-	if (NULL != presentCommandBuffer)
-		delete [] presentCommandBuffer;
-#endif
+	if (NULL != renderingResources)
+		delete [] renderingResources;
 }
 
 CVulkanPipeline* CVulkanDevice::createPipeline(void) const
@@ -128,6 +135,7 @@ CVulkanShader* CVulkanDevice::createShader(void) const
 	{
 		CVulkanShader *shader = new CVulkanShader(device);
 		shader->vkCreateShaderModule = vkCreateShaderModule;
+		shader->vkDestroyShaderModule = vkDestroyShaderModule;
 
 		return shader;
 	}
@@ -139,12 +147,34 @@ CVulkanShader* CVulkanDevice::createShader(void) const
 bool CVulkanDevice::acquireSwapChainImage(uint64_t timeout)
 {
 	CRaptorErrorManager *pErrMgr = Raptor::GetErrorManager();
+	//! Only a single image is managed for the moment.
+	//!	Future improvement will manage several images per frame.
 	if (currentImage != MAXUINT)
-		return false;
+	{
+		pErrMgr->generateRaptorError(	Global::CVulkanClassID::GetClassId(),
+										CRaptorErrorManager::RAPTOR_WARNING,
+										"Vulkan Device aready has a rendering image available!");
+		return true;
+	}
 
 	VkResult res = VK_NOT_READY;
+
+	VK_RENDERING_RESOURCE &resource = renderingResources[currentRenderingResources];
+	res = vkWaitForFences(device, 1, &resource.queueExecutionComplete, VK_FALSE, timeout);
+	if(VK_SUCCESS != res)
+	{
+		pErrMgr->vkGetError(res,__FILE__,__LINE__);
+		return false;
+	}
+	vkResetFences(device, 1, &resource.queueExecutionComplete);
+	
 #ifdef VK_KHR_swapchain
-	res = vkAcquireNextImageKHR(device, swapChain, timeout,imageAvailableSemaphore, VK_NULL_HANDLE,&currentImage);
+	res = vkAcquireNextImageKHR(device,
+								swapChain,
+								timeout,
+								resource.imageAvailableSemaphore,
+								VK_NULL_HANDLE,
+								&currentImage);
 	switch (res)
 	{
 		case VK_SUCCESS:
@@ -162,6 +192,8 @@ bool CVulkanDevice::acquireSwapChainImage(uint64_t timeout)
 		}
 	}
 #endif
+	if (MAXUINT == currentImage)
+		return false;
 
 	return (VK_SUCCESS == res);
 }
@@ -171,19 +203,21 @@ bool CVulkanDevice::presentSwapChainImage()
 	if (MAXUINT == currentImage)
 		return false;
 
+	VK_RENDERING_RESOURCE &resource = renderingResources[currentRenderingResources];
+
 	VkQueue queue = VK_NULL_HANDLE;
 	// TODO: check queue index is below queueCount
 	vkGetDeviceQueue(device,graphics_queueFamilyIndex,currentImage,&queue);
 
-	VkPipelineStageFlags wait_dst_stage_mask = VK_PIPELINE_STAGE_TRANSFER_BIT;
+	VkPipelineStageFlags wait_dst_stage_mask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
 	VkSubmitInfo submit_info = {VK_STRUCTURE_TYPE_SUBMIT_INFO,
 								NULL,
-								1, &imageAvailableSemaphore,
+								1, &resource.imageAvailableSemaphore,
 								&wait_dst_stage_mask,
-								1, &graphicsCommandBuffer[currentImage],
-								1, &renderingCompleteSemaphore };
+								1, &resource.commandBuffer,
+								1, &resource.renderingCompleteSemaphore };
 								
-	VkResult res = vkQueueSubmit(queue, 1, &submit_info, VK_NULL_HANDLE );
+	VkResult res = vkQueueSubmit(queue, 1, &submit_info, resource.queueExecutionComplete);
 	CRaptorErrorManager *pErrMgr = Raptor::GetErrorManager();
 	if(VK_SUCCESS != res)
 	{
@@ -192,7 +226,7 @@ bool CVulkanDevice::presentSwapChainImage()
 	}
 
 	VkPresentInfoKHR presentInfo = {VK_STRUCTURE_TYPE_PRESENT_INFO_KHR, NULL,
-									1, &renderingCompleteSemaphore,
+									1, &resource.renderingCompleteSemaphore,
 									1, &swapChain,
 									&currentImage,
 									NULL};
@@ -217,14 +251,38 @@ bool CVulkanDevice::presentSwapChainImage()
 	}
 
 	currentImage = MAXUINT;
+	currentRenderingResources = (currentRenderingResources + 1) % NB_RENDERING_RESOURCES;
+	return (VK_SUCCESS == res);
 }
 
 
-bool CVulkanDevice::bindPipeline(const CVulkanPipeline& pipeline,
-								 const VkRect2D& scissor,
-								 const CColor::RGBA& clearColor)
+bool CVulkanDevice::vkBindPipeline(	const CVulkanPipeline& pipeline,
+									const VkRect2D& scissor,
+									const CColor::RGBA& clearColor)
 {
-	VkCommandBufferBeginInfo graphics_commandd_buffer_begin_info = {VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
+	// TODO : check currentRenderingResources is valid ?
+	if ((currentRenderingResources >= NB_RENDERING_RESOURCES) ||
+		(currentImage == MAXUINT))
+		return false;
+	VK_RENDERING_RESOURCE &resource = renderingResources[currentRenderingResources];
+	VK_RENDERING_IMAGE &image =  renderImages[currentImage];
+
+	if (VK_NULL_HANDLE != resource.frameBuffer)
+		vkDestroyFramebuffer(device,resource.frameBuffer,NULL);
+	VkFramebufferCreateInfo pFrameBufferCreateInfo = {	VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
+														NULL, 0,
+														renderPass,
+														1, &image.view,
+														image.extent.width,
+														image.extent.height, 1 };
+
+	CRaptorErrorManager *pErrMgr = Raptor::GetErrorManager();
+	VkResult res = vkCreateFramebuffer(device,&pFrameBufferCreateInfo,NULL,&resource.frameBuffer);
+	if (VK_SUCCESS != res)
+		pErrMgr->vkGetError(res,__FILE__,__LINE__);
+
+
+	VkCommandBufferBeginInfo graphics_command_buffer_begin_info = {VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
 																	NULL,
 																	VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT,
 																	NULL };
@@ -234,127 +292,179 @@ bool CVulkanDevice::bindPipeline(const CVulkanPipeline& pipeline,
 														0, // baseArrayLayer;
 														1};  // layerCount };
 
+
+	if (VK_SUCCESS != vkBeginCommandBuffer(	resource.commandBuffer,
+											&graphics_command_buffer_begin_info ))
+		return false;
+
+	if (graphics_queueFamilyIndex != present_queueFamilyIndex)
+	{
+		VkImageMemoryBarrier barrier_from_present_to_draw = {	VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
+																NULL,
+																VK_ACCESS_MEMORY_READ_BIT, // VkAccessFlagBits
+																VK_ACCESS_MEMORY_READ_BIT, //VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT, // VkAccessFlags
+																VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,	// VkImageLayout
+																VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,	// VkImageLayout
+																present_queueFamilyIndex,
+																graphics_queueFamilyIndex,
+																image.image,
+																image_subresource_range };
+		vkCmdPipelineBarrier(	resource.commandBuffer,
+								VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+								VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+								0, // VkDependencyFlags
+								0,
+								NULL, // const VkMemoryBarrier*
+								0,
+								NULL, // const VkBufferMemoryBarrier*
+								1, &barrier_from_present_to_draw );
+	}
+
 	VkClearValue clear_value;
 	clear_value.color.float32[0] = clearColor.r;
 	clear_value.color.float32[1] = clearColor.g;
 	clear_value.color.float32[2] = clearColor.b;
 	clear_value.color.float32[3] = clearColor.a;
+	VkRenderPassBeginInfo render_pass_begin_info = {	VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
+														NULL,
+														renderPass,
+														resource.frameBuffer,
+														scissor,
+														1, &clear_value	};
+	vkCmdBeginRenderPass(	resource.commandBuffer,
+							&render_pass_begin_info,
+							VK_SUBPASS_CONTENTS_INLINE );
 
-	for (uint32_t i=0;i<swapchainImageCount;i++)
+	vkCmdBindPipeline(	resource.commandBuffer,
+						VK_PIPELINE_BIND_POINT_GRAPHICS,
+						pipeline.getPipeline() );
+
+	//vkCmdSetViewport( command_buffer, 0, 1, &viewport );
+	//vkCmdSetScissor( command_buffer, 0, 1, &scissor );
+
+	VkDeviceSize offset = 0;
+
+	const std::vector<CVulkanMemory::IBufferObject*> &buffers = pipeline.getBuffers();
+	VkBuffer buffer = buffers[0]->getBuffer();
+	vkCmdBindVertexBuffers( resource.commandBuffer, 0, 1, &buffer, &offset );
+
+	vkCmdDraw( resource.commandBuffer, 4, 1, 0, 0 );
+
+	vkCmdEndRenderPass(resource.commandBuffer);
+
+	if (graphics_queueFamilyIndex != present_queueFamilyIndex)
 	{
-		if (VK_SUCCESS != vkBeginCommandBuffer(	graphicsCommandBuffer[i],
-												&graphics_commandd_buffer_begin_info ))
-			return false;
-
-		if (graphics_queueFamilyIndex != present_queueFamilyIndex)
-		{
-			VkImageMemoryBarrier barrier_from_present_to_draw = {	VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
-																	NULL,
-																	VK_ACCESS_MEMORY_READ_BIT, // VkAccessFlagBits
-																	VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT, // VkAccessFlags
-																	VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,	// VkImageLayout
-																	VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,	// VkImageLayout
-																	present_queueFamilyIndex,
-																	graphics_queueFamilyIndex,
-																	frameBuffers[i].image,
-																	image_subresource_range };
-			vkCmdPipelineBarrier(	graphicsCommandBuffer[i],
-									VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-									VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-									0, // VkDependencyFlags
-									0,
-									NULL, // const VkMemoryBarrier*
-									0,
-									NULL, // const VkBufferMemoryBarrier*
-									1, &barrier_from_present_to_draw );
-		}
-
-		VkRenderPassBeginInfo render_pass_begin_info = {	VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
-															NULL,
-															renderPass,
-															frameBuffers[i].frameBuffer,
-															scissor,
-															1, &clear_value	};
-		vkCmdBeginRenderPass(	graphicsCommandBuffer[i],
-								&render_pass_begin_info,
-								VK_SUBPASS_CONTENTS_INLINE );
-
-		vkCmdBindPipeline(	graphicsCommandBuffer[i],
-							VK_PIPELINE_BIND_POINT_GRAPHICS,
-							pipeline.getPipeline() );
-
-		vkCmdDraw( graphicsCommandBuffer[i], 3, 1, 0, 0 );
-
-		vkCmdEndRenderPass(graphicsCommandBuffer[i]);
-
-		if (graphics_queueFamilyIndex != present_queueFamilyIndex)
-		{
-			VkImageMemoryBarrier barrier_from_draw_to_present = {	VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
-																	NULL,
-																	VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT, // VkAccessFlags
-																	VK_ACCESS_MEMORY_READ_BIT, // VkAccessFlagBits
-																	VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,	// VkImageLayout
-																	VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,	// VkImageLayout
-																	graphics_queueFamilyIndex,
-																	present_queueFamilyIndex,
-																	frameBuffers[i].image,
-																	image_subresource_range };
-			vkCmdPipelineBarrier(	graphicsCommandBuffer[i],
-									VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-									VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
-									0, // VkDependencyFlags
-									0,
-									NULL, // const VkMemoryBarrier*
-									0,
-									NULL, // const VkBufferMemoryBarrier*
-									1, &barrier_from_draw_to_present );
-		}
-
-		if (VK_SUCCESS != vkEndCommandBuffer(graphicsCommandBuffer[i]))
-			return false;
+		VkImageMemoryBarrier barrier_from_draw_to_present = {	VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
+																NULL,
+																VK_ACCESS_MEMORY_READ_BIT, //VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT, // VkAccessFlags
+																VK_ACCESS_MEMORY_READ_BIT, // VkAccessFlagBits
+																VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,	// VkImageLayout
+																VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,	// VkImageLayout
+																graphics_queueFamilyIndex,
+																present_queueFamilyIndex,
+																image.image,
+																image_subresource_range };
+		vkCmdPipelineBarrier(	resource.commandBuffer,
+								VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+								VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
+								0, // VkDependencyFlags
+								0,
+								NULL, // const VkMemoryBarrier*
+								0,
+								NULL, // const VkBufferMemoryBarrier*
+								1, &barrier_from_draw_to_present );
 	}
+
+	if (VK_SUCCESS != vkEndCommandBuffer(resource.commandBuffer))
+		return false;
 
 	return true;
 }
 
-bool CVulkanDevice::unbindPipeline()
-{
-	for (uint32_t i=0;i<swapchainImageCount;i++)
-	{/*
-		vkCmdEndRenderPass(graphicsCommandBuffer[i]);
 
-		if (graphics_queueFamilyIndex != present_queueFamilyIndex)
+bool CVulkanDevice::vkCreateRenderingResources(void)
+{
+	renderingResources = new VK_RENDERING_RESOURCE[NB_RENDERING_RESOURCES];
+
+	VkCommandBuffer	*pCommandBuffer = new VkCommandBuffer[NB_RENDERING_RESOURCES];
+	VkCommandBufferAllocateInfo pCommandBufferInfo = {	VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
+														NULL,
+														graphicsCommandPool,
+														VK_COMMAND_BUFFER_LEVEL_PRIMARY,
+														NB_RENDERING_RESOURCES	};
+	
+	CRaptorErrorManager *pErrMgr = Raptor::GetErrorManager();
+	VkResult res = vkAllocateCommandBuffers(device,&pCommandBufferInfo,&pCommandBuffer[0]);
+	if (VK_SUCCESS != res)
+	{
+		pErrMgr->vkGetError(res,__FILE__,__LINE__);
+		return false;
+	}
+	else
+	{
+		VkSemaphoreCreateInfo pSemaphoreInfo = { VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO, NULL, 0};
+		VkFenceCreateInfo pFenceInfo = { VK_STRUCTURE_TYPE_FENCE_CREATE_INFO, NULL, VK_FENCE_CREATE_SIGNALED_BIT };
+		for (unsigned int i=0;i<NB_RENDERING_RESOURCES;i++)
 		{
-			VkImageMemoryBarrier barrier_from_draw_to_present = {	VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
-																	NULL,
-																	VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT, // VkAccessFlags
-																	VK_ACCESS_MEMORY_READ_BIT, // VkAccessFlagBits
-																	VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,	// VkImageLayout
-																	VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,	// VkImageLayout
-																	graphics_queueFamilyIndex,
-																	present_queueFamilyIndex,
-																	frameBuffers[i].image,
-																	image_subresource_range };
-			vkCmdPipelineBarrier(	graphicsCommandBuffer[i],
-									VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-									VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
-									0, // VkDependencyFlags
-									0,
-									NULL, // const VkMemoryBarrier*
-									0,
-									NULL, // const VkBufferMemoryBarrier*
-									1, &barrier_from_present_to_draw );
-		}*/
+			res = vkCreateSemaphore(device,
+									&pSemaphoreInfo,
+									NULL,
+									&renderingResources[i].imageAvailableSemaphore);
+			if (VK_SUCCESS != res)
+			{
+				pErrMgr->vkGetError(res,__FILE__,__LINE__);
+				return false;
+			}
+
+			res = vkCreateSemaphore(device,
+									&pSemaphoreInfo,
+									NULL,
+									&renderingResources[i].renderingCompleteSemaphore);
+			if (VK_SUCCESS != res)
+			{
+				pErrMgr->vkGetError(res,__FILE__,__LINE__);
+				return false;
+			}
+
+			res = vkCreateFence(device,
+								&pFenceInfo,
+								NULL,
+								&renderingResources[i].queueExecutionComplete);
+			if (VK_SUCCESS != res)
+			{
+				pErrMgr->vkGetError(res,__FILE__,__LINE__);
+				return false;
+			}
+
+			renderingResources[i].frameBuffer = VK_NULL_HANDLE;
+			renderingResources[i].commandBuffer = pCommandBuffer[i];
+		}
 	}
 
-	return false;
+	delete [] pCommandBuffer;
+/*
+	if (graphics_queueFamilyIndex != present_queueFamilyIndex)
+	{
+		presentCommandBuffer = new VkCommandBuffer[1];
+		pCommandBufferInfo.commandPool = presentCommandPool;
+		pCommandBufferInfo.commandBufferCount = 1;
+		res = vkAllocateCommandBuffers(device,&pCommandBufferInfo,&presentCommandBuffer[0]);
+		if (VK_SUCCESS != res)
+		{
+			pErrMgr->vkGetError(res,__FILE__,__LINE__);
+			return false;
+		}
+	}
+	else
+		presentCommandBuffer = graphicsCommandBuffer;
+*/
+	return true;
 }
 
-
-bool CVulkanDevice::createRenderPass(	VkSurfaceFormatKHR format,
-										uint32_t nbSamples,
-										uint32_t width,
-										uint32_t height)
+bool CVulkanDevice::vkCreateRenderPassResources(VkSurfaceFormatKHR format,
+												uint32_t nbSamples,
+												uint32_t width,
+												uint32_t height)
 {
 	VkSampleCountFlagBits samples = VK_SAMPLE_COUNT_1_BIT;
 	if (nbSamples == 2)
@@ -387,11 +497,27 @@ bool CVulkanDevice::createRenderPass(	VkSurfaceFormatKHR format,
 										NULL,
 										NULL, //&pDepthStencilAttachment,
 										0, NULL };
+	VkSubpassDependency dependencies[2] = {{VK_SUBPASS_EXTERNAL,
+											0,
+											VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
+											VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+											VK_ACCESS_MEMORY_READ_BIT,
+											VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+											VK_DEPENDENCY_BY_REGION_BIT},
+										   {0,
+											VK_SUBPASS_EXTERNAL,
+											VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+											VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
+											VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+											VK_ACCESS_MEMORY_READ_BIT,
+											VK_DEPENDENCY_BY_REGION_BIT}};
+
+
 	VkRenderPassCreateInfo pRenderPassCreateInfo = {VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
 													NULL, 0,
 													1, &pAttachments,
 													1, &pSubpasses,
-													0, NULL /*const VkSubpassDependency* pDependencies*/ };
+													2, &dependencies[0]};
 
 	CRaptorErrorManager *pErrMgr = Raptor::GetErrorManager();
 	VkResult res = vkCreateRenderPass(device,&pRenderPassCreateInfo,NULL,&renderPass);
@@ -407,14 +533,16 @@ bool CVulkanDevice::createRenderPass(	VkSurfaceFormatKHR format,
 		pErrMgr->vkGetError(res,__FILE__,__LINE__);
 	else
 	{
-		frameBuffers = new VK_FRAMEBUFFER[swapchainImageCount];
+		renderImages = new VK_RENDERING_IMAGE[swapchainImageCount];
 		for (uint32_t i=0;i<swapchainImageCount;i++)
 		{
-			frameBuffers[i].image = pImages[i];
+			renderImages[i].extent.width = width;
+			renderImages[i].extent.height = height;
+			renderImages[i].image = pImages[i];
 			VkImageViewCreateInfo image_view_create_info = {VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
 															NULL,
 															0,
-															frameBuffers[i].image,
+															renderImages[i].image,
 															VK_IMAGE_VIEW_TYPE_2D,
 															format.format,
 															{	VK_COMPONENT_SWIZZLE_IDENTITY,
@@ -427,42 +555,29 @@ bool CVulkanDevice::createRenderPass(	VkSurfaceFormatKHR format,
 																0,
 																1	} };
 			
-			res = vkCreateImageView( device, &image_view_create_info, NULL, &frameBuffers[i].view);
+			res = vkCreateImageView( device, &image_view_create_info, NULL, &renderImages[i].view);
 			if (VK_SUCCESS != res)
 				pErrMgr->vkGetError(res,__FILE__,__LINE__);
-
-			VkFramebufferCreateInfo pFrameBufferCreateInfo = {	VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
-																NULL, 0,
-																renderPass,
-																1, &frameBuffers[i].view,
-																width, height, 1 };
-
-			res = vkCreateFramebuffer(device,&pFrameBufferCreateInfo,NULL,&frameBuffers[i].frameBuffer);
-			if (VK_SUCCESS != res)
-				pErrMgr->vkGetError(res,__FILE__,__LINE__);
-		}
-	}
-
-	if (VK_SUCCESS != res)
-	{
-		if (NULL != frameBuffers)
-		{
-			for (uint32_t i=0;i<swapchainImageCount;i++)
-			{
-				vkDestroyFramebuffer(device,frameBuffers[i].frameBuffer,NULL);
-				vkDestroyImageView(device,frameBuffers[i].view,NULL);
-			}
-			delete [] frameBuffers;
-			frameBuffers = NULL;
 		}
 	}
 	if (NULL != pImages)
 		delete [] pImages;
 
+	if (VK_SUCCESS != res)
+	{
+		if (NULL != renderImages)
+		{
+			for (uint32_t i=0;i<swapchainImageCount;i++)
+				vkDestroyImageView(device,renderImages[i].view,NULL);
+			delete [] renderImages;
+			renderImages = NULL;
+		}
+	}
+
 	return (VK_SUCCESS == res);
 }
 
-bool CVulkanDevice::createSwapChain(VkSurfaceKHR surface,
+bool CVulkanDevice::vkCreateSwapChain(VkSurfaceKHR surface,
 									VkSurfaceFormatKHR format,
 									VkSurfaceCapabilitiesKHR surfaceCapabilities,
 									VkPresentModeKHR presentMode,
@@ -517,65 +632,22 @@ bool CVulkanDevice::createSwapChain(VkSurfaceKHR surface,
 		return false;
 	}
 
-	VkSemaphoreCreateInfo pSemaphoreInfo = { VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO, NULL, 0};
-	res = vkCreateSemaphore(device,&pSemaphoreInfo, NULL, &imageAvailableSemaphore);
-	if (VK_SUCCESS != res)
-	{
-		pErrMgr->vkGetError(res,__FILE__,__LINE__);
-		return false;
-	}
-
-	res = vkCreateSemaphore(device,&pSemaphoreInfo, NULL, &renderingCompleteSemaphore);
-	if (VK_SUCCESS != res)
-	{
-		pErrMgr->vkGetError(res,__FILE__,__LINE__);
-		return false;
-	}
-
 	res = vkGetSwapchainImagesKHR(	device, swapChain, &swapchainImageCount, NULL);
 	if ((VK_SUCCESS != res) || (swapchainImageCount == 0))
 	{
 		pErrMgr->vkGetError(res,__FILE__,__LINE__);
 		return false;
 	}
-	
-	graphicsCommandBuffer = new VkCommandBuffer[swapchainImageCount];
-	VkCommandBufferAllocateInfo pCommandBufferInfo = {	VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
-														NULL,
-														graphicsCommandPool,
-														VK_COMMAND_BUFFER_LEVEL_PRIMARY,
-														swapchainImageCount	};
-	res = vkAllocateCommandBuffers(device,&pCommandBufferInfo,graphicsCommandBuffer);
-	if (VK_SUCCESS != res)
-	{
-		pErrMgr->vkGetError(res,__FILE__,__LINE__);
-		return false;
-	}
-
-	if (graphics_queueFamilyIndex != present_queueFamilyIndex)
-	{
-		presentCommandBuffer = new VkCommandBuffer[1];
-		pCommandBufferInfo.commandPool = presentCommandPool;
-		pCommandBufferInfo.commandBufferCount = 1;
-		res = vkAllocateCommandBuffers(device,&pCommandBufferInfo,presentCommandBuffer);
-		if (VK_SUCCESS != res)
-		{
-			pErrMgr->vkGetError(res,__FILE__,__LINE__);
-			return false;
-		}
-	}
-	else
-		presentCommandBuffer = graphicsCommandBuffer;
 
 	return true;
 }
 
-bool CVulkanDevice::createDevice(const VkPhysicalDevice &physicalDevice,
-								const VkPhysicalDeviceFeatures &features,
-								uint32_t graphicsQueueFamilyIndex,
-								uint32_t graphicsQueueCount,
-								uint32_t presentQueueFamilyIndex,
-								uint32_t presentQueueCount)
+bool CVulkanDevice::vkCreateLogicalDevice(	const VkPhysicalDevice &physicalDevice,
+											const VkPhysicalDeviceFeatures &features,
+											uint32_t graphicsQueueFamilyIndex,
+											uint32_t graphicsQueueCount,
+											uint32_t presentQueueFamilyIndex,
+											uint32_t presentQueueCount)
 {
 	graphics_queueFamilyIndex = graphicsQueueFamilyIndex;
 	present_queueFamilyIndex = presentQueueFamilyIndex;
@@ -628,7 +700,9 @@ bool CVulkanDevice::createDevice(const VkPhysicalDevice &physicalDevice,
 		pErrMgr->vkGetError(res,__FILE__,__LINE__);
 		return false;
 	}
-		
+
+	if (!CVulkanMemory::manageDevice(physicalDevice,device))
+		return false;
 
 	vkDeviceWaitIdle = (PFN_vkDeviceWaitIdle)(vkGetDeviceProcAddr(device,"vkDeviceWaitIdle"));
 	vkDestroyDevice = (PFN_vkDestroyDevice)(vkGetDeviceProcAddr(device,"vkDestroyDevice"));
@@ -638,6 +712,10 @@ bool CVulkanDevice::createDevice(const VkPhysicalDevice &physicalDevice,
 	vkGetDeviceQueue = (PFN_vkGetDeviceQueue)(vkGetDeviceProcAddr(device,"vkGetDeviceQueue"));
 	vkCreateSemaphore = (PFN_vkCreateSemaphore)(vkGetDeviceProcAddr(device,"vkCreateSemaphore"));
 	vkDestroySemaphore = (PFN_vkDestroySemaphore)(vkGetDeviceProcAddr(device,"vkDestroySemaphore"));
+	vkCreateFence = (PFN_vkCreateFence)(vkGetDeviceProcAddr(device,"vkCreateFence"));
+	vkWaitForFences = (PFN_vkWaitForFences)(vkGetDeviceProcAddr(device,"vkWaitForFences"));
+	vkResetFences = (PFN_vkResetFences)(vkGetDeviceProcAddr(device,"vkResetFences"));
+	vkDestroyFence = (PFN_vkDestroyFence)(vkGetDeviceProcAddr(device,"vkDestroyFence"));
 	vkAllocateCommandBuffers = (PFN_vkAllocateCommandBuffers)(vkGetDeviceProcAddr(device,"vkAllocateCommandBuffers"));
 	vkFreeCommandBuffers = (PFN_vkFreeCommandBuffers)(vkGetDeviceProcAddr(device,"vkFreeCommandBuffers"));
 	vkCreateRenderPass = (PFN_vkCreateRenderPass)(vkGetDeviceProcAddr(device,"vkCreateRenderPass"));
@@ -661,6 +739,7 @@ bool CVulkanDevice::createDevice(const VkPhysicalDevice &physicalDevice,
 	vkCmdBindPipeline = (PFN_vkCmdBindPipeline)(vkGetDeviceProcAddr(device,"vkCmdBindPipeline"));
 	vkBeginCommandBuffer = (PFN_vkBeginCommandBuffer)(vkGetDeviceProcAddr(device,"vkBeginCommandBuffer"));
 	vkEndCommandBuffer = (PFN_vkEndCommandBuffer)(vkGetDeviceProcAddr(device,"vkEndCommandBuffer"));
+	vkCmdBindVertexBuffers = (PFN_vkCmdBindVertexBuffers)(vkGetDeviceProcAddr(device,"vkCmdBindVertexBuffers"));
 	vkCmdDraw = (PFN_vkCmdDraw)(vkGetDeviceProcAddr(device,"vkCmdDraw"));
 
 	vkQueueSubmit = (PFN_vkQueueSubmit)(vkGetDeviceProcAddr(device,"vkQueueSubmit"));
@@ -676,7 +755,7 @@ bool CVulkanDevice::createDevice(const VkPhysicalDevice &physicalDevice,
 
 	VkCommandPoolCreateInfo commandPoolCreateInfo = {VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
 													NULL,
-													VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,
+													VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT|VK_COMMAND_POOL_CREATE_TRANSIENT_BIT,
 													graphics_queueFamilyIndex };
 	res = vkCreateCommandPool(device, &commandPoolCreateInfo,NULL, &graphicsCommandPool);
 	if (VK_SUCCESS != res)
@@ -711,7 +790,7 @@ bool CVulkanDevice::createDevice(const VkPhysicalDevice &physicalDevice,
 	return true;
 }
 
-bool CVulkanDevice::destroyDevice(void)
+bool CVulkanDevice::vkDestroyLogicalDevice(void)
 {
 	if (VK_NULL_HANDLE == device)
 		return false;
@@ -724,52 +803,55 @@ bool CVulkanDevice::destroyDevice(void)
 		renderPass = VK_NULL_HANDLE;
 	}
 
-	if (NULL != frameBuffers)
+	if (NULL != renderImages)
 	{
 		for (uint32_t i=0;i<swapchainImageCount;i++)
 		{
-			vkDestroyFramebuffer(device,frameBuffers[i].frameBuffer,NULL);
-			vkDestroyImageView(device,frameBuffers[i].view,NULL);
+			//vkDestroyFramebuffer(device,frameBuffers[i].frameBuffer,NULL);
+			vkDestroyImageView(device,renderImages[i].view,NULL);
 		}
-		delete [] frameBuffers;
+		delete [] renderImages;
+	}
+
+	if (NULL != renderingResources)
+	{
+		for (unsigned int i=0;i<NB_RENDERING_RESOURCES;i++)
+		{
+			if (VK_NULL_HANDLE != &renderingResources[i].commandBuffer)
+				vkFreeCommandBuffers(device,graphicsCommandPool,1,&renderingResources[i].commandBuffer);
+
+			//if ((graphics_queueFamilyIndex != present_queueFamilyIndex) &&
+			//	(graphicsCommandPool != presentCommandPool) &&
+			//	(VK_NULL_HANDLE != presentCommandBuffer))
+			//	vkFreeCommandBuffers(device,presentCommandPool,1,&renderingResources[i].presentCommandBuffer);
+
+			if (VK_NULL_HANDLE != renderingResources[i].imageAvailableSemaphore)
+				vkDestroySemaphore(device,renderingResources[i].imageAvailableSemaphore,NULL);
+			if (VK_NULL_HANDLE != renderingResources[i].renderingCompleteSemaphore)
+				vkDestroySemaphore(device,renderingResources[i].renderingCompleteSemaphore,NULL);
+			if (VK_NULL_HANDLE != renderingResources[i].queueExecutionComplete)
+				vkDestroyFence(device,renderingResources[i].queueExecutionComplete,NULL);
+		}
+
+		delete [] renderingResources;
 	}
 
 	if (VK_NULL_HANDLE != graphicsCommandPool)
-	{
-		if (NULL != graphicsCommandBuffer)
-			vkFreeCommandBuffers(device,graphicsCommandPool,swapchainImageCount,graphicsCommandBuffer);
 		vkDestroyCommandPool(device,graphicsCommandPool,NULL);
-	}
 
 	if ((graphics_queueFamilyIndex != present_queueFamilyIndex) &&
 		(graphicsCommandPool != presentCommandPool) &&
 		(VK_NULL_HANDLE != presentCommandPool))
-	{
-		if (NULL != presentCommandBuffer)
-			vkFreeCommandBuffers(device,presentCommandPool,1,presentCommandBuffer);
 		vkDestroyCommandPool(device,presentCommandPool,NULL);
-	}
 
 	graphicsCommandPool = VK_NULL_HANDLE;
 	presentCommandPool = VK_NULL_HANDLE;
 
 #ifdef VK_KHR_swapchain
-	if (VK_NULL_HANDLE != imageAvailableSemaphore)
-		vkDestroySemaphore(device,imageAvailableSemaphore,NULL);
-	if (VK_NULL_HANDLE != renderingCompleteSemaphore)
-		vkDestroySemaphore(device,renderingCompleteSemaphore,NULL);
 	if (VK_NULL_HANDLE != swapChain)
 		vkDestroySwapchainKHR(device,swapChain,NULL);
 		// TODO: Check swap chain images life time
 	swapchainImageCount = 0;
-
-	if (graphicsCommandBuffer != NULL)
-		delete [] graphicsCommandBuffer;
-	graphicsCommandBuffer = NULL;
-	if ((graphics_queueFamilyIndex != present_queueFamilyIndex) &&
-		(presentCommandBuffer != NULL))
-		delete [] presentCommandBuffer;
-	presentCommandBuffer = NULL;
 #endif
 
 	vkDestroyDevice(device,NULL);

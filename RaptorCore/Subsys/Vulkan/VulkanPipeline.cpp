@@ -9,6 +9,9 @@
 #if !defined(AFX_RAPTORVULKANSHADER_H__C188550F_1D1C_4531_B0A0_727CE9FF9450__INCLUDED_)
 	#include "Subsys/Vulkan/VulkanShader.h"
 #endif
+#if !defined(AFX_RAPTORVULKANMEMORY_H__72256FF7_DBB9_4B9C_9BF7_C36F425CF811__INCLUDED_)
+	#include "Subsys/Vulkan/VulkanMemory.h"
+#endif
 #if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
 	#include "System/Raptor.h"
 #endif
@@ -91,7 +94,8 @@ bool CVulkanPipeline::destroyPipeline()
 	return true;
 }
 
-bool CVulkanPipeline::initPipeline()
+bool CVulkanPipeline::initPipeline(const CRaptorDisplayConfig& config,
+								   const VkRect2D& scissor)
 {
 	VkResult res = VK_NOT_READY;
 	CRaptorErrorManager *pErrMgr = Raptor::GetErrorManager();
@@ -113,25 +117,52 @@ bool CVulkanPipeline::initPipeline()
 		shaderStages[i] = shaderStage;
 	}
 
+	float VertexData[4*8] = 
+	{
+		-0.7f, -0.7f, 0.0f, 1.0f	,	1.0f, 0.0f, 0.0f, 0.0f,
+		-0.7f,  0.7f, 0.0f, 1.0f	,	0.0f, 1.0f, 0.0f, 0.0f,
+		 0.7f, -0.7f, 0.0f, 1.0f	,	0.0f, 0.0f, 1.0f, 0.0f,
+		 0.7f,  0.7f, 0.0f, 1.0f	,	0.3f, 0.3f, 0.3f, 0.0f
+	};
+	
+	CVulkanMemory& memory = CVulkanMemory::getInstance(device);
+	CVulkanMemory::IBufferObject *pBuffer = memory.vkCreateBufferObject(device,
+																		sizeof(VertexData),
+																		CVulkanMemory::IBufferObject::VERTEX_BUFFER);
+	m_buffers.push_back(pBuffer);
+	memory.vkSetBufferObjectData(device,*pBuffer,0,&VertexData[0],sizeof(VertexData));
+
+	VkVertexInputBindingDescription vertex_binding_description_info = {	0,	// binding number
+																		8*sizeof(float),	//stride
+																		VK_VERTEX_INPUT_RATE_VERTEX };
+	VkVertexInputAttributeDescription vertex_input_attribute_info[2] = {{	0,
+																			vertex_binding_description_info.binding,
+																			VK_FORMAT_R32G32B32A32_SFLOAT,
+																			0},
+																		 {	1,
+																			vertex_binding_description_info.binding,
+																			VK_FORMAT_R32G32B32A32_SFLOAT,
+																			4*sizeof(float)}};
+
+
 	VkPipelineVertexInputStateCreateInfo vertex_input_state_create_info = {	VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
 																			NULL,
-																			0,
-																			0, //vertexBindingDescriptionCount
-																			NULL, //VkVertexInputBindingDescription
-																			0,	//vertexAttributeDescriptionCount
-																			NULL }; // VkVertexInputAttributeDescription
+																			0,	//VkPipelineVertexInputStateCreateFlags
+																			1, //vertexBindingDescriptionCount
+																			&vertex_binding_description_info, //VkVertexInputBindingDescription
+																			2,	//vertexAttributeDescriptionCount
+																			&vertex_input_attribute_info[0] }; // VkVertexInputAttributeDescription
 
 
 
 	VkPipelineInputAssemblyStateCreateInfo input_assembly_state_create_info = {	VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO,
 																				NULL,
 																				0, //VkPipelineInputAssemblyStateCreateFlags
-																				VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
+																				//VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
+																				VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP,
 																				VK_FALSE };	//primitiveRestartEnable
 	//VkPipelineTessellationStateCreateInfo tesselation_state_create_info;
-
-	VkViewport viewport = {0, 0, 300, 300, 0.0f, 1.0f };
-	VkRect2D scissor = { {0,0}, {300,300} };
+	VkViewport viewport = {0, 0, config.width, config.height, 0.0f, 1.0f };
 	VkPipelineViewportStateCreateInfo  viewport_state_create_info = {	VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO,
 																		NULL,
 																		0,	//VkPipelineViewportStateCreateFlags
@@ -185,7 +216,13 @@ bool CVulkanPipeline::initPipeline()
 																			&color_blend_attachment_state,
 																			{ 0.0f, 0.0f, 0.0f, 0.0f }};
 
-	//VkPipelineDynamicStateCreateInfo dynamic_state_create_info;
+	//VkDynamicState dynamic_states[2] = {VK_DYNAMIC_STATE_VIEWPORT,
+	//									VK_DYNAMIC_STATE_SCISSOR }; 
+	//VkPipelineDynamicStateCreateInfo dynamic_state_create_info  = {	VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO,
+	//																NULL,
+	//																0,	// VkPipelineDynamicStateCreateFlags
+	//																2
+	//																&dynamic_states[0]};
 
 	VkPipelineLayoutCreateInfo layout_create_info = {	VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
 														NULL,
@@ -219,7 +256,7 @@ bool CVulkanPipeline::initPipeline()
 														&multisample_state_create_info, // const VkPipelineMultisampleStateCreateInfo *
 														NULL,	// const VkPipelineDepthStencilStateCreateInfo *
 														&color_blend_state_create_info, // const VkPipelineColorBlendStateCreateInfo *
-														NULL, // const VkPipelineDynamicStateCreateInfo *
+														NULL, //&dynamic_state_create_info, // const VkPipelineDynamicStateCreateInfo *
 														layout,// VkPipelineLayout
 														renderPass, // VkRenderPass
 														subpass,// uint32_t subpass 

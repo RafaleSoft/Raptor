@@ -77,10 +77,18 @@ bool CRaptorVulkanDisplay::glRender(void)
 {
 	if (m_context != -1)
 	{
+		CContextManager *manager = CContextManager::GetInstance();
+		CVulkanDevice &vk_device = manager->vkGetDevice(m_context);
+		//	cs.x & cs.y are window position, not pixel origin in layer
+		VkRect2D scissor = { {0, 0}, {cs.width,cs.height} };
+
 		CTimeObject::markTime(this);
 
         //m_pGAllocator->glLockMemory(true);
 		//m_pTAllocator->glLockMemory(true);
+
+		CVulkanPipeline *pipeline = m_pipelines[0];
+		vk_device.vkBindPipeline(*pipeline,scissor,cs.framebufferState.colorClearValue);
 
 		//C3DScene *pScene = getRootScene();
 		//pScene->vkRender();
@@ -140,6 +148,35 @@ void CRaptorVulkanDisplay::glGenerate(CTextureObject* )
 {
 }
 
+bool CRaptorVulkanDisplay::initPipelines(void)
+{
+	VkRect2D scissor = { {0, 0}, {cs.width,cs.height} };
+	CContextManager *manager = CContextManager::GetInstance();
+
+	CVulkanDevice &device = manager->vkGetDevice(m_context);
+	CVulkanShader *vshader = device.createShader();
+	CVulkanShader *fshader = device.createShader();
+	if (!vshader->loadShader("shader2.vert") ||
+		!fshader->loadShader("shader2.frag"))
+	{
+		return false;
+	}
+
+	CVulkanPipeline *pipeline = device.createPipeline();
+	m_pipelines.push_back(pipeline);
+	pipeline->addShader(vshader);
+	pipeline->addShader(fshader);
+	if (!pipeline->initPipeline(cs,scissor))
+	{
+		Raptor::GetErrorManager()->generateRaptorError(	bufferID,
+														CRaptorErrorManager::RAPTOR_FATAL,
+														CRaptorMessages::ID_CREATE_FAILED);
+		return false;
+	}
+
+	return true;
+}
+
 bool CRaptorVulkanDisplay::glBindDisplay(const RAPTOR_HANDLE& device)
 {
 	if (device.handle != CGL_NULL)
@@ -154,43 +191,21 @@ bool CRaptorVulkanDisplay::glBindDisplay(const RAPTOR_HANDLE& device)
 
 			manager->vkSwapVSync(m_framerate);
 			m_context = manager->vkCreateContext(device,cs);
-
 			if (m_context == -1)
 			{
-				Raptor::GetErrorManager()->generateRaptorError(	CRaptorDisplay::CRaptorDisplayClassID::GetClassId(),
+				Raptor::GetErrorManager()->generateRaptorError(	bufferID,
 																CRaptorErrorManager::RAPTOR_FATAL,
 																CRaptorMessages::ID_CREATE_FAILED);
 				return false;
 			}
-			else
+
+			if (!initPipelines())
 			{
-				CVulkanDevice &device = manager->vkGetDevice(m_context);
-				CVulkanShader *vshader = device.createShader();
-				CVulkanShader *fshader = device.createShader();
-				if (!vshader->loadShader("E:\\Share\\Raptor\\AddOns\\vulkan\\bin\\shader.vert") ||
-					!fshader->loadShader("E:\\Share\\Raptor\\AddOns\\vulkan\\bin\\shader.frag"))
-				{
-					return false;
-				}
-
-				CVulkanPipeline *pipeline = device.createPipeline();
-				m_pipelines.push_back(pipeline);
-				pipeline->addShader(vshader);
-				pipeline->addShader(fshader);
-				if (!pipeline->initPipeline())
-				{
-					Raptor::GetErrorManager()->generateRaptorError(	CRaptorDisplay::CRaptorDisplayClassID::GetClassId(),
-																	CRaptorErrorManager::RAPTOR_FATAL,
-																	CRaptorMessages::ID_CREATE_FAILED);
-					return false;
-				}
+				Raptor::GetErrorManager()->generateRaptorError(	bufferID,
+																CRaptorErrorManager::RAPTOR_FATAL,
+																CRaptorMessages::ID_CREATE_FAILED);
+				return false;
 			}
-
-			CVulkanDevice &vk_device = manager->vkGetDevice(m_context);
-			const CVulkanPipeline &pipeline = *m_pipelines[0];
-			//	cs.x & cs.y are window position, not pixel origin in layer
-			VkRect2D scissor = { {0, 0}, {cs.width,cs.height} };
-			vk_device.bindPipeline(pipeline,scissor,cs.framebufferState.colorClearValue);
 		}
 		
 		manager->vkMakeCurrentContext(device,m_context);

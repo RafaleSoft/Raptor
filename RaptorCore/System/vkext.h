@@ -102,9 +102,11 @@
 	#define DECLARE_VK_instance(LINKAGE) \
 		LINKAGE PFN_vkEnumeratePhysicalDevices vkEnumeratePhysicalDevices; \
 		LINKAGE PFN_vkEnumerateDeviceExtensionProperties vkEnumerateDeviceExtensionProperties; \
+		LINKAGE PFN_vkEnumerateDeviceLayerProperties vkEnumerateDeviceLayerProperties; \
 		LINKAGE PFN_vkGetPhysicalDeviceProperties vkGetPhysicalDeviceProperties; \
 		LINKAGE PFN_vkGetPhysicalDeviceFeatures vkGetPhysicalDeviceFeatures; \
 		LINKAGE PFN_vkGetPhysicalDeviceQueueFamilyProperties vkGetPhysicalDeviceQueueFamilyProperties; \
+		LINKAGE PFN_vkGetPhysicalDeviceMemoryProperties vkGetPhysicalDeviceMemoryProperties; \
 		LINKAGE PFN_vkDestroyInstance	vkDestroyInstance; \
 		LINKAGE PFN_vkCreateDevice vkCreateDevice; \
 		LINKAGE PFN_vkGetDeviceProcAddr vkGetDeviceProcAddr;
@@ -120,6 +122,10 @@
 		LINKAGE PFN_vkGetDeviceQueue vkGetDeviceQueue; \
 		LINKAGE PFN_vkCreateSemaphore vkCreateSemaphore; \
 		LINKAGE PFN_vkDestroySemaphore vkDestroySemaphore; \
+		LINKAGE PFN_vkCreateFence vkCreateFence; \
+		LINKAGE PFN_vkWaitForFences vkWaitForFences; \
+		LINKAGE PFN_vkResetFences vkResetFences; \
+		LINKAGE PFN_vkDestroyFence vkDestroyFence; \
 		LINKAGE PFN_vkAllocateCommandBuffers vkAllocateCommandBuffers; \
 		LINKAGE PFN_vkFreeCommandBuffers vkFreeCommandBuffers; \
 		LINKAGE PFN_vkCreateRenderPass vkCreateRenderPass; \
@@ -141,7 +147,21 @@
 		LINKAGE PFN_vkCmdBindPipeline vkCmdBindPipeline; \
 		LINKAGE PFN_vkBeginCommandBuffer vkBeginCommandBuffer; \
 		LINKAGE PFN_vkEndCommandBuffer vkEndCommandBuffer; \
+		LINKAGE PFN_vkCmdBindVertexBuffers vkCmdBindVertexBuffers; \
 		LINKAGE PFN_vkCmdDraw vkCmdDraw;
+	#endif
+
+	#if !defined(DECLARE_VK_device_memory)
+	#define DECLARE_VK_device_memory(LINKAGE) \
+		LINKAGE PFN_vkGetBufferMemoryRequirements vkGetBufferMemoryRequirements; \
+		LINKAGE PFN_vkCreateBuffer vkCreateBuffer; \
+		LINKAGE PFN_vkDestroyBuffer vkDestroyBuffer; \
+		LINKAGE PFN_vkAllocateMemory vkAllocateMemory; \
+		LINKAGE PFN_vkBindBufferMemory vkBindBufferMemory; \
+		LINKAGE PFN_vkFreeMemory vkFreeMemory; \
+		LINKAGE PFN_vkMapMemory vkMapMemory; \
+		LINKAGE PFN_vkFlushMappedMemoryRanges vkFlushMappedMemoryRanges; \
+		LINKAGE PFN_vkUnmapMemory vkUnmapMemory;
 	#endif
 
 	#if !defined(DECLARE_VK_queue)
@@ -152,30 +172,16 @@
 
 	#if !defined(DECLARE_VK_core)
 	#define DECLARE_VK_core(LINKAGE) \
-		LINKAGE PFN_vkEnumerateDeviceLayerProperties vkEnumerateDeviceLayerProperties; \
 		LINKAGE PFN_vkGetPhysicalDeviceFormatProperties vkGetPhysicalDeviceFormatProperties; \
-		LINKAGE PFN_vkGetPhysicalDeviceMemoryProperties vkGetPhysicalDeviceMemoryProperties; \
-		\
 		LINKAGE PFN_vkGetPhysicalDeviceImageFormatProperties vkGetPhysicalDeviceImageFormatProperties; \
-		LINKAGE PFN_vkAllocateMemory vkAllocateMemory; \
-		LINKAGE PFN_vkFreeMemory vkFreeMemory; \
-		LINKAGE PFN_vkMapMemory vkMapMemory; \
-		LINKAGE PFN_vkUnmapMemory vkUnmapMemory; \
-		LINKAGE PFN_vkFlushMappedMemoryRanges vkFlushMappedMemoryRanges; \
 		LINKAGE PFN_vkInvalidateMappedMemoryRanges vkInvalidateMappedMemoryRanges; \
 		LINKAGE PFN_vkGetDeviceMemoryCommitment vkGetDeviceMemoryCommitment; \
-		LINKAGE PFN_vkBindBufferMemory vkBindBufferMemory; \
 		LINKAGE PFN_vkBindImageMemory vkBindImageMemory; \
-		LINKAGE PFN_vkGetBufferMemoryRequirements vkGetBufferMemoryRequirements; \
 		LINKAGE PFN_vkGetImageMemoryRequirements vkGetImageMemoryRequirements; \
 		LINKAGE PFN_vkGetImageSparseMemoryRequirements vkGetImageSparseMemoryRequirements; \
 		LINKAGE PFN_vkGetPhysicalDeviceSparseImageFormatProperties vkGetPhysicalDeviceSparseImageFormatProperties; \
 		LINKAGE PFN_vkQueueBindSparse vkQueueBindSparse; \
-		LINKAGE PFN_vkCreateFence vkCreateFence; \
-		LINKAGE PFN_vkDestroyFence vkDestroyFence; \
-		LINKAGE PFN_vkResetFences vkResetFences; \
 		LINKAGE PFN_vkGetFenceStatus vkGetFenceStatus; \
-		LINKAGE PFN_vkWaitForFences vkWaitForFences; \
 		LINKAGE PFN_vkCreateEvent vkCreateEvent; \
 		LINKAGE PFN_vkDestroyEvent vkDestroyEvent; \
 		LINKAGE PFN_vkGetEventStatus vkGetEventStatus; \
@@ -184,8 +190,6 @@
 		LINKAGE PFN_vkCreateQueryPool vkCreateQueryPool; \
 		LINKAGE PFN_vkDestroyQueryPool vkDestroyQueryPool; \
 		LINKAGE PFN_vkGetQueryPoolResults vkGetQueryPoolResults; \
-		LINKAGE PFN_vkCreateBuffer vkCreateBuffer; \
-		LINKAGE PFN_vkDestroyBuffer vkDestroyBuffer; \
 		LINKAGE PFN_vkCreateBufferView vkCreateBufferView; \
 		LINKAGE PFN_vkDestroyBufferView vkDestroyBufferView; \
 		LINKAGE PFN_vkCreateImage vkCreateImage; \
@@ -218,7 +222,6 @@
 		LINKAGE PFN_vkCmdSetStencilReference vkCmdSetStencilReference; \
 		LINKAGE PFN_vkCmdBindDescriptorSets vkCmdBindDescriptorSets; \
 		LINKAGE PFN_vkCmdBindIndexBuffer vkCmdBindIndexBuffer; \
-		LINKAGE PFN_vkCmdBindVertexBuffers vkCmdBindVertexBuffers; \
 		LINKAGE PFN_vkCmdDrawIndexed vkCmdDrawIndexed; \
 		LINKAGE PFN_vkCmdDrawIndirect vkCmdDrawIndirect; \
 		LINKAGE PFN_vkCmdDrawIndexedIndirect vkCmdDrawIndexedIndirect; \
@@ -246,6 +249,13 @@
 		LINKAGE PFN_vkCmdPushConstants vkCmdPushConstants; \
 		LINKAGE PFN_vkCmdNextSubpass vkCmdNextSubpass; \
 		LINKAGE PFN_vkCmdExecuteCommands vkCmdExecuteCommands;
+	#endif
+
+	#if !defined(DECLARE_VK_debug)
+	#define DECLARE_VK_debug(LINKAGE) \
+		LINKAGE PFN_vkCreateDebugReportCallbackEXT vkCreateDebugReportCallbackEXT; \
+		LINKAGE PFN_vkDestroyDebugReportCallbackEXT vkDestroyDebugReportCallbackEXT; \
+		LINKAGE PFN_vkDebugReportMessageEXT vkDebugReportMessageEXT;
 	#endif
 #endif
 

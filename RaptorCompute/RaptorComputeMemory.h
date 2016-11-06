@@ -1,7 +1,9 @@
 #if !defined(AFX_RAPTOR_COMPUTE_MEMORY_H__525371EA_0090_40AA_9889_333824045A7A__INCLUDED_)
 #define AFX_RAPTOR_COMPUTE_MEMORY_H__525371EA_0090_40AA_9889_333824045A7A__INCLUDED_
 
-#include <System/Memory.h>
+#if !defined(AFX_MEMORY_H__81A6CA9A_4ED9_4260_B6E4_C03276C38DBC__INCLUDED_)
+	#include <System/Memory.h>
+#endif
 
 RAPTOR_NAMESPACE
 
@@ -9,7 +11,6 @@ RAPTOR_NAMESPACE
 class RAPTORCOMPUTE_API CRaptorComputeMemory
 {
 public:
-	//	TODO: Use / Inherit Raptor::CMemory::CBufferObject
 	class RAPTORCOMPUTE_API IBufferObject : public CMemory::IBufferObject
     {
     public:

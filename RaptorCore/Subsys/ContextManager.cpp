@@ -41,6 +41,12 @@
     #include "DataManager/RaptorDataManager.h"
 #endif
 
+#if defined(VK_VERSION_1_0)
+	#if !defined(AFX_RAPTORVULKANMEMORY_H__72256FF7_DBB9_4B9C_9BF7_C36F425CF811__INCLUDED_)
+		#include "Subsys/Vulkan/VulkanMemory.h"
+	#endif
+#endif
+
 
 RAPTOR_NAMESPACE_BEGIN
 
@@ -80,8 +86,15 @@ CContextManager::CContextManager()
 		ctxt.instance = VK_NULL_HANDLE;
 
 		ctxt.vkEnumeratePhysicalDevices = NULL;
+		ctxt.vkEnumerateDeviceExtensionProperties = NULL;
+		ctxt.vkEnumerateDeviceLayerProperties = NULL;
 		ctxt.vkGetPhysicalDeviceProperties = NULL;
 		ctxt.vkGetPhysicalDeviceFeatures = NULL;
+		ctxt.vkGetPhysicalDeviceQueueFamilyProperties = NULL;
+		ctxt.vkGetPhysicalDeviceMemoryProperties = NULL;
+		ctxt.vkDestroyInstance = NULL;
+		ctxt.vkCreateDevice = NULL;
+		ctxt.vkGetDeviceProcAddr = NULL;
 
 		ctxt.nbPhysicalDevices = 0;
 		ctxt.pPhysicalDevices = NULL;
@@ -297,46 +310,63 @@ bool CContextManager::validateConfig(CRaptorDisplayConfig& rdc)
 #if defined(VK_VERSION_1_0)
 bool CContextManager::vkInit(void)
 {
-	if (NULL != vkGetInstanceProcAddr)
+	if (NULL == vkGetInstanceProcAddr)
+		return false;
+	
+	vkEnumerateInstanceExtensionProperties = (PFN_vkEnumerateInstanceExtensionProperties)vkGetInstanceProcAddr(NULL,"vkEnumerateInstanceExtensionProperties");
+	vkEnumerateInstanceLayerProperties = (PFN_vkEnumerateInstanceLayerProperties)vkGetInstanceProcAddr(NULL,"vkEnumerateInstanceLayerProperties");
+	vkCreateInstance = (PFN_vkCreateInstance)vkGetInstanceProcAddr(NULL,"vkCreateInstance");
+
+	if ((NULL != vkEnumerateInstanceExtensionProperties) &&
+		(NULL != vkEnumerateInstanceLayerProperties) &&
+		(NULL != vkCreateInstance))
 	{
-		vkEnumerateInstanceExtensionProperties = (PFN_vkEnumerateInstanceExtensionProperties)vkGetInstanceProcAddr(NULL,"vkEnumerateInstanceExtensionProperties");
-		vkEnumerateInstanceLayerProperties = (PFN_vkEnumerateInstanceLayerProperties)vkGetInstanceProcAddr(NULL,"vkEnumerateInstanceLayerProperties");
-		vkCreateInstance = (PFN_vkCreateInstance)vkGetInstanceProcAddr(NULL,"vkCreateInstance");
+		VkResult res = VK_NOT_READY;
 
-		if ((NULL != vkEnumerateInstanceExtensionProperties) &&
-			(NULL != vkEnumerateInstanceLayerProperties) &&
-			(NULL != vkCreateInstance))
+		instance_extensions = "";
+		uint32_t pPropertyCount = 0;
+		res = vkEnumerateInstanceExtensionProperties(NULL,&pPropertyCount,NULL);
+		if ((VK_SUCCESS == res) && (pPropertyCount > 0))
 		{
-			VkResult res = VK_NOT_READY;
-
-			instance_extensions = "";
-			uint32_t pPropertyCount = 0;
-			res = vkEnumerateInstanceExtensionProperties(NULL,&pPropertyCount,NULL);
-			if ((VK_SUCCESS == res) && (pPropertyCount > 0))
+			VkExtensionProperties *pProperties = new VkExtensionProperties[pPropertyCount];
+			res = vkEnumerateInstanceExtensionProperties(NULL,&pPropertyCount,pProperties);
+			if (VK_SUCCESS == res)
 			{
-				VkExtensionProperties *pProperties = new VkExtensionProperties[pPropertyCount];
-				res = vkEnumerateInstanceExtensionProperties(NULL,&pPropertyCount,pProperties);
-				if (VK_SUCCESS == res)
+				for (uint32_t i=0;i<pPropertyCount;i++)
 				{
-					for (uint32_t i=0;i<pPropertyCount;i++)
-					{
-						instance_extensions += " ";
-						instance_extensions += pProperties[i].extensionName;
-					}
+					instance_extensions += " ";
+					instance_extensions += pProperties[i].extensionName;
 				}
-				delete [] pProperties;
 			}
-			CRaptorErrorManager *pErrMgr = Raptor::GetErrorManager();
-			if (VK_SUCCESS != res)
+			delete [] pProperties;
+		}
+
+		instance_layers = "";
+		uint32_t pLayerCount = 0;
+		res = vkEnumerateInstanceLayerProperties(&pLayerCount,NULL);
+		if ((VK_SUCCESS == res) && (pLayerCount > 0))
+		{
+			VkLayerProperties *pProperties = new VkLayerProperties[pLayerCount];
+			res = vkEnumerateInstanceLayerProperties(&pLayerCount,pProperties);
+			if (VK_SUCCESS == res)
 			{
-				pErrMgr->vkGetError(res,__FILE__,__LINE__);
-				return false;
+				for (uint32_t i=0;i<pLayerCount;i++)
+				{
+					instance_layers += " ";
+					instance_layers += pProperties[i].layerName;
+				}
 			}
-			else
-				return true;
+			delete [] pProperties;
+		}
+
+		CRaptorErrorManager *pErrMgr = Raptor::GetErrorManager();
+		if (VK_SUCCESS != res)
+		{
+			pErrMgr->vkGetError(res,__FILE__,__LINE__);
+			return false;
 		}
 		else
-			return false;
+			return true;
 	}
 	else
 		return false;
@@ -351,7 +381,7 @@ bool CContextManager::vkInitInstance(CContextManager::RENDERING_CONTEXT_ID ctx)
 	VkApplicationInfo applicationInfo = {	VK_STRUCTURE_TYPE_APPLICATION_INFO, NULL,
 											"Raptor", RAPTOR_VERSION,
 											"Raptor 3D Engine", RAPTOR_VERSION,
-											VK_API_VERSION };
+											VK_API_VERSION_1_0 };
 	
 	//	This is Win32 specific: use instance_extensions instead ?
 	const char* extensions[2] = { "VK_KHR_surface", "VK_KHR_win32_surface" };
@@ -381,15 +411,29 @@ bool CContextManager::vkInitInstance(CContextManager::RENDERING_CONTEXT_ID ctx)
 			if (VK_SUCCESS == res)
 			{
 				vk_ctx.vkEnumerateDeviceExtensionProperties = (PFN_vkEnumerateDeviceExtensionProperties)(vkGetInstanceProcAddr(vk_ctx.instance,"vkEnumerateDeviceExtensionProperties"));
+				vk_ctx.vkEnumerateDeviceLayerProperties = (PFN_vkEnumerateDeviceLayerProperties)(vkGetInstanceProcAddr(vk_ctx.instance,"vkEnumerateDeviceLayerProperties"));
 				vk_ctx.vkGetPhysicalDeviceProperties = (PFN_vkGetPhysicalDeviceProperties)(vkGetInstanceProcAddr(vk_ctx.instance,"vkGetPhysicalDeviceProperties"));
 				vk_ctx.vkGetPhysicalDeviceFeatures = (PFN_vkGetPhysicalDeviceFeatures)(vkGetInstanceProcAddr(vk_ctx.instance,"vkGetPhysicalDeviceFeatures"));
 				vk_ctx.vkGetPhysicalDeviceQueueFamilyProperties = (PFN_vkGetPhysicalDeviceQueueFamilyProperties)(vkGetInstanceProcAddr(vk_ctx.instance,"vkGetPhysicalDeviceQueueFamilyProperties"));
+				vk_ctx.vkGetPhysicalDeviceMemoryProperties = (PFN_vkGetPhysicalDeviceMemoryProperties)(vkGetInstanceProcAddr(vk_ctx.instance,"vkGetPhysicalDeviceMemoryProperties"));
+
 				vk_ctx.vkDestroyInstance = (PFN_vkDestroyInstance)(vkGetInstanceProcAddr(vk_ctx.instance,"vkDestroyInstance"));
 				vk_ctx.vkCreateDevice = (PFN_vkCreateDevice)(vkGetInstanceProcAddr(vk_ctx.instance,"vkCreateDevice"));
 				vk_ctx.vkGetDeviceProcAddr = (PFN_vkGetDeviceProcAddr)(vkGetInstanceProcAddr(vk_ctx.instance,"vkGetDeviceProcAddr"));
 
 				vk_ctx.device.vkCreateDevice = vk_ctx.vkCreateDevice;
 				vk_ctx.device.vkGetDeviceProcAddr = vk_ctx.vkGetDeviceProcAddr;
+
+				CVulkanMemory::vkGetBufferMemoryRequirements = (PFN_vkGetBufferMemoryRequirements)(vkGetInstanceProcAddr(vk_ctx.instance,"vkGetBufferMemoryRequirements"));
+				CVulkanMemory::vkCreateBuffer = (PFN_vkCreateBuffer)(vkGetInstanceProcAddr(vk_ctx.instance,"vkCreateBuffer"));
+				CVulkanMemory::vkDestroyBuffer = (PFN_vkDestroyBuffer)(vkGetInstanceProcAddr(vk_ctx.instance,"vkDestroyBuffer"));
+				CVulkanMemory::vkAllocateMemory = (PFN_vkAllocateMemory)(vkGetInstanceProcAddr(vk_ctx.instance,"vkAllocateMemory"));
+				CVulkanMemory::vkBindBufferMemory = (PFN_vkBindBufferMemory)(vkGetInstanceProcAddr(vk_ctx.instance,"vkBindBufferMemory"));
+				CVulkanMemory::vkFreeMemory = (PFN_vkFreeMemory)(vkGetInstanceProcAddr(vk_ctx.instance,"vkFreeMemory"));
+				CVulkanMemory::vkMapMemory = (PFN_vkMapMemory)(vkGetInstanceProcAddr(vk_ctx.instance,"vkMapMemory"));
+				CVulkanMemory::vkFlushMappedMemoryRanges = (PFN_vkFlushMappedMemoryRanges)(vkGetInstanceProcAddr(vk_ctx.instance,"vkFlushMappedMemoryRanges"));
+				CVulkanMemory::vkUnmapMemory = (PFN_vkUnmapMemory)(vkGetInstanceProcAddr(vk_ctx.instance,"vkUnmapMemory"));
+
 				
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
 				vk_ctx.vkCreateWin32SurfaceKHR = (PFN_vkCreateWin32SurfaceKHR)(vkGetInstanceProcAddr(vk_ctx.instance,"vkCreateWin32SurfaceKHR"));
@@ -426,6 +470,20 @@ bool CContextManager::vkInitInstance(CContextManager::RENDERING_CONTEXT_ID ctx)
 						{
 							vk_ctx.deviceExtensions += " ";
 							vk_ctx.deviceExtensions += pProperties[i].extensionName;
+						}
+						delete [] pProperties;
+					}
+
+					uint32_t pLayerCount = 0;
+					res = vk_ctx.vkEnumerateDeviceLayerProperties(device,&pLayerCount,NULL);
+					if ((VK_SUCCESS == res) && (pLayerCount > 0))
+					{
+						VkLayerProperties* pProperties = new VkLayerProperties[pLayerCount];
+						res = vk_ctx.vkEnumerateDeviceLayerProperties(device,&pLayerCount,pProperties);
+						for (uint32_t i=0;i<pLayerCount;i++)
+						{
+							vk_ctx.deviceLayers += " ";
+							vk_ctx.deviceLayers += pProperties[i].layerName;
 						}
 						delete [] pProperties;
 					}
@@ -549,7 +607,17 @@ bool CContextManager::vkInitDevice(CContextManager::RENDERING_CONTEXT_ID ctx,con
 
 		VkPhysicalDevice physicalDevice = vk_ctx.pPhysicalDevices[vk_ctx.physicalDevice];
 		VkPhysicalDeviceFeatures features = vk_ctx.pFeatures[vk_ctx.physicalDevice];
-		return vk_ctx.device.createDevice(physicalDevice,features,graphicsQueueFamilyIndex,queueCount,presentQueueFamilyIndex,1);
+
+		VkPhysicalDeviceMemoryProperties memory_properties;
+		vk_ctx.vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memory_properties );
+		CVulkanMemory& memory = CVulkanMemory::getInstance(	physicalDevice,
+															memory_properties);
+
+		return vk_ctx.device.vkCreateLogicalDevice(	physicalDevice,
+													features,
+													graphicsQueueFamilyIndex,
+													queueCount,
+													presentQueueFamilyIndex,1);
 	}
 	else
 		return false;
@@ -691,6 +759,7 @@ CContextManager::RENDERING_CONTEXT_ID CContextManager::vkCreateContext(const RAP
 		return -1;
 	}
 
+
 #ifdef VK_KHR_win32_surface
 	if (!vkInitSurface(ctx))
 	{
@@ -706,33 +775,39 @@ CContextManager::RENDERING_CONTEXT_ID CContextManager::vkCreateContext(const RAP
 
 #ifdef VK_KHR_swapchain
 	// Find a supported present mode and update requested/current present mode.
-	VkPresentModeKHR pMode = VK_PRESENT_MODE_MAX_ENUM;
+	VkPresentModeKHR pMode = VK_PRESENT_MODE_MAX_ENUM_KHR;
 	for (unsigned int i=0;i<context.pPresentModeCount;i++)
 		if (context.pPresentModes[i] == presentMode)
 			pMode = presentMode;
-	if (pMode == VK_PRESENT_MODE_MAX_ENUM)
+	if (pMode == VK_PRESENT_MODE_MAX_ENUM_KHR)
 		for (unsigned int i=0;i<context.pPresentModeCount;i++)
 			if (context.pPresentModes[i] == VK_PRESENT_MODE_MAILBOX_KHR)
 				pMode = VK_PRESENT_MODE_MAILBOX_KHR;
-	if (pMode == VK_PRESENT_MODE_MAX_ENUM)
+	if (pMode == VK_PRESENT_MODE_MAX_ENUM_KHR)
 		for (unsigned int i=0;i<context.pPresentModeCount;i++)
 			if (context.pPresentModes[i] == VK_PRESENT_MODE_FIFO_KHR)
 				pMode = VK_PRESENT_MODE_FIFO_KHR;
 	presentMode = pMode;
 
-	if (!context.device.createSwapChain(context.surface,format,context.surfaceCapabilities,presentMode,config.width,config.height))
+	if (!context.device.vkCreateSwapChain(context.surface,format,context.surfaceCapabilities,presentMode,config.width,config.height))
 	{
 		vkDestroyContext(ctx);
 		return -1;
 	}
 #endif
 
-	if (!context.device.createRenderPass(format,config.getNbSamples(),config.width,config.height))
+	if (!context.device.vkCreateRenderPassResources(format,config.getNbSamples(),config.width,config.height))
 	{
 		vkDestroyContext(ctx);
 		return -1;
 	}
 #endif
+
+	if (!context.device.vkCreateRenderingResources())
+	{
+		vkDestroyContext(ctx);
+		return -1;
+	}
 
 	return ctx;
 }
@@ -814,7 +889,7 @@ void CContextManager::vkDestroyContext(RENDERING_CONTEXT_ID ctx)
 	{
 		VK_CONTEXT& context = m_pVkContext[ctx];
 		
-		if (context.device.destroyDevice())
+		if (context.device.vkDestroyLogicalDevice())
 		{
 #ifdef VK_KHR_win32_surface
 			VkSurfaceKHR surface = context.surface;
