@@ -74,6 +74,8 @@ public:
 	void vkSwapBuffers(RENDERING_CONTEXT_ID ctx);
 
 	void vkSwapVSync(unsigned int framerate);
+
+	void vkResize(	RENDERING_CONTEXT_ID ctx,const CRaptorDisplayConfig& config);
 #endif
 
 	//!	This method creates a "default' window for Raptor's internal use.
@@ -209,6 +211,8 @@ private:
 #if defined(VK_VERSION_1_0)
 	bool vkInitInstance(RENDERING_CONTEXT_ID ctx);
 	bool vkInitDevice(RENDERING_CONTEXT_ID ctx,const CRaptorDisplayConfig& config);
+	bool vkCreateSwapChain(RENDERING_CONTEXT_ID ctx,uint32_t nbSamples,uint32_t width,uint32_t height);
+
 	//!	Creates a rendering surface for the window handle handle
 	//! @return false if surface creation failed
 	virtual bool vkCreateSurface(const RAPTOR_HANDLE& handle,RENDERING_CONTEXT_ID ctx) = 0;

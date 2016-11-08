@@ -384,14 +384,20 @@ bool CContextManager::vkInitInstance(CContextManager::RENDERING_CONTEXT_ID ctx)
 											VK_API_VERSION_1_0 };
 	
 	//	This is Win32 specific: use instance_extensions instead ?
+	uint32_t nbExtensions = 2;
+#if defined(RAPTOR_DEBUG_MODE_GENERATION) && defined(VK_EXT_debug_report)
+	nbExtensions = 3;
+	const char* extensions[3] = { "VK_KHR_surface", "VK_KHR_win32_surface", "VK_EXT_debug_report" };
+#else
 	const char* extensions[2] = { "VK_KHR_surface", "VK_KHR_win32_surface" };
+#endif
 	VkInstanceCreateInfo instanceCreateInfo = {	VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO, // VkStructureType sType;
 												NULL,                                   // const void* pNext;
 												0,                                      // VkInstanceCreateFlags flags;
 												&applicationInfo,						// const VkApplicationInfo* pApplicationInfo;
 												0,                                      // uint32_t enabledLayerNameCount;
 												NULL,                                   // const char* const* ppEnabledLayerNames;
-												2,                                      // uint32_t enabledExtensionNameCount;
+												nbExtensions,                           // uint32_t enabledExtensionNameCount;
 												extensions};							// const char* const* ppEnabledExtensionNames;
 
 	res = vkCreateInstance(&instanceCreateInfo, NULL, &vk_ctx.instance);
@@ -625,6 +631,31 @@ bool CContextManager::vkInitDevice(CContextManager::RENDERING_CONTEXT_ID ctx,con
 
 
 #ifdef VK_KHR_win32_surface
+void CContextManager::vkResize(	RENDERING_CONTEXT_ID ctx,const CRaptorDisplayConfig& config)
+{
+	VK_CONTEXT &context = m_pVkContext[ctx];
+
+	//!	 Collect new surface capabilities,
+	//! presumably the only this modified for a resize.
+	VkPhysicalDevice pPhysicalDevice = context.pPhysicalDevices[context.physicalDevice];
+	VkResult res = context.vkGetPhysicalDeviceSurfaceCapabilitiesKHR(pPhysicalDevice,
+																	context.surface,
+																	&context.surfaceCapabilities);
+	if (VK_SUCCESS != res)
+	{
+		RAPTOR_ERROR(	Global::CVulkanClassID::GetClassId(),
+						"Failed to obtain Vulkan surface capabilities");
+	}
+	else
+	{
+		if (!vkCreateSwapChain(ctx,config.getNbSamples(),config.width,config.height))
+		{
+			RAPTOR_ERROR(	Global::CVulkanClassID::GetClassId(),
+							"Failed to recreate Vulkan swap chain");
+		}
+	}
+}
+
 bool CContextManager::vkInitSurface(RENDERING_CONTEXT_ID ctx)
 {
 	VK_CONTEXT &context = m_pVkContext[ctx];
@@ -719,6 +750,54 @@ bool CContextManager::vkInitSurface(RENDERING_CONTEXT_ID ctx)
 #endif
 
 
+bool CContextManager::vkCreateSwapChain(RENDERING_CONTEXT_ID ctx,uint32_t nbSamples,uint32_t width,uint32_t height)
+{
+	VK_CONTEXT &context = m_pVkContext[ctx];
+
+	VkSurfaceFormatKHR format = { VK_FORMAT_R8G8B8A8_UNORM, VK_COLORSPACE_SRGB_NONLINEAR_KHR };
+	for (unsigned int i=0;i<context.pSurfaceFormatCount;i++)
+		if ((VK_FORMAT_R8G8B8A8_UNORM == context.pSurfaceFormats[i].format) ||
+			(VK_FORMAT_B8G8R8A8_UNORM == context.pSurfaceFormats[i].format))
+			format = context.pSurfaceFormats[i];
+
+#ifdef VK_KHR_swapchain
+	// Find a supported present mode and update requested/current present mode.
+	VkPresentModeKHR pMode = VK_PRESENT_MODE_MAX_ENUM_KHR;
+	for (unsigned int i=0;i<context.pPresentModeCount;i++)
+		if (context.pPresentModes[i] == presentMode)
+			pMode = presentMode;
+	if (pMode == VK_PRESENT_MODE_MAX_ENUM_KHR)
+		for (unsigned int i=0;i<context.pPresentModeCount;i++)
+			if (context.pPresentModes[i] == VK_PRESENT_MODE_MAILBOX_KHR)
+				pMode = VK_PRESENT_MODE_MAILBOX_KHR;
+	if (pMode == VK_PRESENT_MODE_MAX_ENUM_KHR)
+		for (unsigned int i=0;i<context.pPresentModeCount;i++)
+			if (context.pPresentModes[i] == VK_PRESENT_MODE_FIFO_KHR)
+				pMode = VK_PRESENT_MODE_FIFO_KHR;
+	presentMode = pMode;
+
+	if (!context.device.vkCreateSwapChain(	context.surface,
+											format,
+											context.surfaceCapabilities,
+											presentMode,
+											width,
+											height))
+		return false;
+#endif
+
+	if (!context.device.vkCreateRenderPassResources(format,
+													nbSamples,
+													width,
+													height))
+		return false;
+#endif
+
+	if (!context.device.vkCreateRenderingResources())
+		return false;
+
+	return true;
+}
+
 CContextManager::RENDERING_CONTEXT_ID CContextManager::vkCreateContext(const RAPTOR_HANDLE& handle,
 																	   const CRaptorDisplayConfig& config)
 {
@@ -767,43 +846,7 @@ CContextManager::RENDERING_CONTEXT_ID CContextManager::vkCreateContext(const RAP
 		return -1;
 	}
 
-	VkSurfaceFormatKHR format = { VK_FORMAT_R8G8B8A8_UNORM, VK_COLORSPACE_SRGB_NONLINEAR_KHR };
-	for (unsigned int i=0;i<context.pSurfaceFormatCount;i++)
-		if ((VK_FORMAT_R8G8B8A8_UNORM == context.pSurfaceFormats[i].format) ||
-			(VK_FORMAT_B8G8R8A8_UNORM == context.pSurfaceFormats[i].format))
-			format = context.pSurfaceFormats[i];
-
-#ifdef VK_KHR_swapchain
-	// Find a supported present mode and update requested/current present mode.
-	VkPresentModeKHR pMode = VK_PRESENT_MODE_MAX_ENUM_KHR;
-	for (unsigned int i=0;i<context.pPresentModeCount;i++)
-		if (context.pPresentModes[i] == presentMode)
-			pMode = presentMode;
-	if (pMode == VK_PRESENT_MODE_MAX_ENUM_KHR)
-		for (unsigned int i=0;i<context.pPresentModeCount;i++)
-			if (context.pPresentModes[i] == VK_PRESENT_MODE_MAILBOX_KHR)
-				pMode = VK_PRESENT_MODE_MAILBOX_KHR;
-	if (pMode == VK_PRESENT_MODE_MAX_ENUM_KHR)
-		for (unsigned int i=0;i<context.pPresentModeCount;i++)
-			if (context.pPresentModes[i] == VK_PRESENT_MODE_FIFO_KHR)
-				pMode = VK_PRESENT_MODE_FIFO_KHR;
-	presentMode = pMode;
-
-	if (!context.device.vkCreateSwapChain(context.surface,format,context.surfaceCapabilities,presentMode,config.width,config.height))
-	{
-		vkDestroyContext(ctx);
-		return -1;
-	}
-#endif
-
-	if (!context.device.vkCreateRenderPassResources(format,config.getNbSamples(),config.width,config.height))
-	{
-		vkDestroyContext(ctx);
-		return -1;
-	}
-#endif
-
-	if (!context.device.vkCreateRenderingResources())
+	if (!vkCreateSwapChain(ctx,config.getNbSamples(),config.width,config.height))
 	{
 		vkDestroyContext(ctx);
 		return -1;
@@ -845,7 +888,7 @@ void CContextManager::vkSwapBuffers(RENDERING_CONTEXT_ID ctx)
 			CRaptorErrorManager *pErrMgr = Raptor::GetErrorManager();
 			pErrMgr->generateRaptorError(	Global::CVulkanClassID::GetClassId(),
 											CRaptorErrorManager::RAPTOR_WARNING,
-											"Vulkan Device failed to subit and present rendering queue!");
+											"Vulkan Device failed to submit and present rendering queue!");
 
 			// onWindowSizeChanged()
 		}

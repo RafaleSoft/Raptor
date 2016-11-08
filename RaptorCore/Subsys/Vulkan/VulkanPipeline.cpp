@@ -216,13 +216,13 @@ bool CVulkanPipeline::initPipeline(const CRaptorDisplayConfig& config,
 																			&color_blend_attachment_state,
 																			{ 0.0f, 0.0f, 0.0f, 0.0f }};
 
-	//VkDynamicState dynamic_states[2] = {VK_DYNAMIC_STATE_VIEWPORT,
-	//									VK_DYNAMIC_STATE_SCISSOR }; 
-	//VkPipelineDynamicStateCreateInfo dynamic_state_create_info  = {	VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO,
-	//																NULL,
-	//																0,	// VkPipelineDynamicStateCreateFlags
-	//																2
-	//																&dynamic_states[0]};
+	VkDynamicState dynamic_states[2] = {VK_DYNAMIC_STATE_VIEWPORT,
+										VK_DYNAMIC_STATE_SCISSOR }; 
+	VkPipelineDynamicStateCreateInfo dynamic_state_create_info  = {	VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO,
+																	NULL,
+																	0,	// VkPipelineDynamicStateCreateFlags
+																	2
+																	&dynamic_states[0]};
 
 	VkPipelineLayoutCreateInfo layout_create_info = {	VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
 														NULL,
@@ -256,7 +256,7 @@ bool CVulkanPipeline::initPipeline(const CRaptorDisplayConfig& config,
 														&multisample_state_create_info, // const VkPipelineMultisampleStateCreateInfo *
 														NULL,	// const VkPipelineDepthStencilStateCreateInfo *
 														&color_blend_state_create_info, // const VkPipelineColorBlendStateCreateInfo *
-														NULL, //&dynamic_state_create_info, // const VkPipelineDynamicStateCreateInfo *
+														&dynamic_state_create_info, // const VkPipelineDynamicStateCreateInfo *
 														layout,// VkPipelineLayout
 														renderPass, // VkRenderPass
 														subpass,// uint32_t subpass 

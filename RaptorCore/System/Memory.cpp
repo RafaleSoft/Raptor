@@ -324,7 +324,7 @@ void CMemory::glSetBufferObjectData(IBufferObject &vb,unsigned int dstOffset,con
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 	if ((src == NULL) || (sz == 0))
 		return;
-	if (vb.m_size < (dstOffset + sz))
+	if (vb.getSize() < (dstOffset + sz))
 		return;
 #endif
 
@@ -394,7 +394,7 @@ void CMemory::glGetBufferObjectData(IBufferObject &vb,unsigned int srcOffset,voi
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 	if ((dst == NULL) || (sz == 0))
 		return;
-	if (vb.m_size < (srcOffset + sz))
+	if (vb.getSize() < (srcOffset + sz))
 		return;
 #endif
 

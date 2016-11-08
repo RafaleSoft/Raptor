@@ -27,6 +27,11 @@
 #if !defined(AFX_RAPTORVULKANSHADER_H__C188550F_1D1C_4531_B0A0_727CE9FF9450__INCLUDED_)
 	#include "Subsys/Vulkan/VulkanShader.h"
 #endif
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+	#if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
+		#include "System/RaptorErrorManager.h"
+	#endif
+#endif
 
 RAPTOR_NAMESPACE_BEGIN
 
@@ -71,6 +76,16 @@ CRaptorVulkanDisplay::~CRaptorVulkanDisplay(void)
 void CRaptorVulkanDisplay::glResize(unsigned int sx,unsigned int sy,
 									unsigned int ox, unsigned int oy)
 {
+	if (m_context != -1)
+	{
+		CContextManager *manager = CContextManager::GetInstance();
+		if ((sx != cs.width) || (sy != cs.height))
+		{
+			cs.width = sx;
+			cs.height = sy;
+			manager->vkResize(m_context,cs);
+		}
+	}
 }
 
 bool CRaptorVulkanDisplay::glRender(void)
@@ -123,8 +138,6 @@ bool CRaptorVulkanDisplay::glRender(void)
 		else
 			nbFramesPerSecond++;
 
-		CATCH_VK_ERROR
-
 		return true;
 	}
 	else
@@ -148,35 +161,6 @@ void CRaptorVulkanDisplay::glGenerate(CTextureObject* )
 {
 }
 
-bool CRaptorVulkanDisplay::initPipelines(void)
-{
-	VkRect2D scissor = { {0, 0}, {cs.width,cs.height} };
-	CContextManager *manager = CContextManager::GetInstance();
-
-	CVulkanDevice &device = manager->vkGetDevice(m_context);
-	CVulkanShader *vshader = device.createShader();
-	CVulkanShader *fshader = device.createShader();
-	if (!vshader->loadShader("shader2.vert") ||
-		!fshader->loadShader("shader2.frag"))
-	{
-		return false;
-	}
-
-	CVulkanPipeline *pipeline = device.createPipeline();
-	m_pipelines.push_back(pipeline);
-	pipeline->addShader(vshader);
-	pipeline->addShader(fshader);
-	if (!pipeline->initPipeline(cs,scissor))
-	{
-		Raptor::GetErrorManager()->generateRaptorError(	bufferID,
-														CRaptorErrorManager::RAPTOR_FATAL,
-														CRaptorMessages::ID_CREATE_FAILED);
-		return false;
-	}
-
-	return true;
-}
-
 bool CRaptorVulkanDisplay::glBindDisplay(const RAPTOR_HANDLE& device)
 {
 	if (device.handle != CGL_NULL)
@@ -198,14 +182,6 @@ bool CRaptorVulkanDisplay::glBindDisplay(const RAPTOR_HANDLE& device)
 																CRaptorMessages::ID_CREATE_FAILED);
 				return false;
 			}
-
-			if (!initPipelines())
-			{
-				Raptor::GetErrorManager()->generateRaptorError(	bufferID,
-																CRaptorErrorManager::RAPTOR_FATAL,
-																CRaptorMessages::ID_CREATE_FAILED);
-				return false;
-			}
 		}
 		
 		manager->vkMakeCurrentContext(device,m_context);
@@ -219,6 +195,33 @@ bool CRaptorVulkanDisplay::glUnBindDisplay(void)
 	//RAPTOR_HANDLE device;
 	//CContextManager *manager = CContextManager::GetInstance();
 	//manager->vkMakeCurrentContext(device,m_context);
+
+	if (m_pipelines.empty())
+	{
+		VkRect2D scissor = { {0, 0}, {cs.width,cs.height} };
+		CContextManager *manager = CContextManager::GetInstance();
+
+		CVulkanDevice &device = manager->vkGetDevice(m_context);
+		CVulkanShader *vshader = device.createShader();
+		CVulkanShader *fshader = device.createShader();
+		if (!vshader->loadShader("shader2.vert") ||
+			!fshader->loadShader("shader2.frag"))
+		{
+			return false;
+		}
+
+		CVulkanPipeline *pipeline = device.createPipeline();
+		m_pipelines.push_back(pipeline);
+		pipeline->addShader(vshader);
+		pipeline->addShader(fshader);
+		if (!pipeline->initPipeline(cs,scissor))
+		{
+			Raptor::GetErrorManager()->generateRaptorError(	bufferID,
+															CRaptorErrorManager::RAPTOR_FATAL,
+															CRaptorMessages::ID_CREATE_FAILED);
+			return false;
+		}
+	}
 
 	return CRaptorDisplay::glUnBindDisplay();
 }

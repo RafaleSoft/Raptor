@@ -15,6 +15,11 @@
 #if !defined(AFX_RAPTORMESSAGES_H__55776166_2943_4D08_BFC8_65DFB74FD780__INCLUDED_)
     #include "System/RaptorMessages.h"
 #endif
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+	#if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
+		#include "System/Raptor.h"
+	#endif
+#endif
 #if !defined(__RAPTOR_VKEXT_H__)
 	#include "System/vkext.h"
 #endif

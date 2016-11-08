@@ -16,6 +16,9 @@ HINSTANCE hInst;								// instance actuelle
 TCHAR szTitle[MAX_LOADSTRING];					// Le texte de la barre de titre
 TCHAR szWindowClass[MAX_LOADSTRING];			// le nom de la classe de fenêtre principale
 
+// Le point d'entree principal du rendu
+CTest5Doc *pDoc = NULL;
+
 // Pré-déclarations des fonctions incluses dans ce module de code :
 ATOM				MyRegisterClass(HINSTANCE hInstance);
 BOOL				InitInstance(HINSTANCE, int);
@@ -139,7 +142,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	char buffer[MAX_LOADSTRING];
 	int res = WideCharToMultiByte(CP_ACP,0,szTitle, -1,buffer,MAX_LOADSTRING,NULL,NULL);
 
-	CTest5Doc *pDoc = new CTest5Doc(device,buffer);
+	pDoc = new CTest5Doc(device,buffer);
 
 	ShowWindow(hWnd, nCmdShow);
 	UpdateWindow(hWnd);
@@ -164,34 +167,53 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 	switch (message)
 	{
-	case WM_COMMAND:
-		wmId    = LOWORD(wParam);
-		wmEvent = HIWORD(wParam);
-		// Analyse les sélections de menu :
-		switch (wmId)
+		case WM_COMMAND:
 		{
-		case IDM_ABOUT:
-			DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
+			wmId    = LOWORD(wParam);
+			wmEvent = HIWORD(wParam);
+			// Analyse les sélections de menu :
+			switch (wmId)
+			{
+			case IDM_ABOUT:
+				DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
+				break;
+			case IDM_EXIT:
+				DestroyWindow(hWnd);
+				break;
+			default:
+				return DefWindowProc(hWnd, message, wParam, lParam);
+			}
 			break;
-		case IDM_EXIT:
-			DestroyWindow(hWnd);
-			break;
-		default:
-			return DefWindowProc(hWnd, message, wParam, lParam);
 		}
-		break;
-	case WM_PAINT:
-		//Raptor::glRender();
-		BeginPaint(hWnd,&ps);
-		EndPaint(hWnd,&ps);
-		break;
-	case WM_ERASEBKGND:
-		break;
-	case WM_DESTROY:
-		PostQuitMessage(0);
-		break;
-	default:
-		return DefWindowProc(hWnd, message, wParam, lParam);
+		case WM_SIZE:
+		{
+			unsigned int nWidth = LOWORD(lParam);  // width of client area
+			unsigned int nHeight = HIWORD(lParam); // height of client area
+			pDoc->resize(nWidth,nHeight);
+			return DefWindowProc(hWnd, message, wParam, lParam);
+			break;
+		}
+		case WM_PAINT:
+		{
+			//Raptor::glRender();
+			BeginPaint(hWnd,&ps);
+			EndPaint(hWnd,&ps);
+			break;
+		}
+		case WM_ERASEBKGND:
+		{
+			break;
+		}
+		case WM_DESTROY:
+		{
+			PostQuitMessage(0);
+			break;
+		}
+		default:
+		{
+			return DefWindowProc(hWnd, message, wParam, lParam);
+			break;
+		}
 	}
 	return 0;
 }

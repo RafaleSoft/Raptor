@@ -105,9 +105,9 @@ void CVulkanMemory::vkSetBufferObjectData(VkDevice device,
 										  VkDeviceSize sz)
 {
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
-	if ((src == NULL) || (sz == 0))
+	if ((NULL == srcData) || (0 == sz))
 		return;
-	if (vb.m_size < (dstOffset + sz))
+	if (vb.getSize() < (dstOffset + sz))
 		return;
 #endif
 	void *vertex_buffer_memory_pointer = NULL;

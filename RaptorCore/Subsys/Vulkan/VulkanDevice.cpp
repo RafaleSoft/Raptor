@@ -87,6 +87,8 @@ CVulkanDevice::CVulkanDevice(void)
 	vkBeginCommandBuffer = NULL;
 	vkEndCommandBuffer = NULL;
 	vkCmdBindVertexBuffers = NULL;
+	vkCmdSetViewport = NULL;
+	vkCmdSetScissor = NULL;
 	vkCmdDraw = NULL;
 
 	vkQueueSubmit = NULL;
@@ -267,6 +269,8 @@ bool CVulkanDevice::vkBindPipeline(	const CVulkanPipeline& pipeline,
 	VK_RENDERING_RESOURCE &resource = renderingResources[currentRenderingResources];
 	VK_RENDERING_IMAGE &image =  renderImages[currentImage];
 
+	CRaptorErrorManager *pErrMgr = Raptor::GetErrorManager();
+
 	if (VK_NULL_HANDLE != resource.frameBuffer)
 		vkDestroyFramebuffer(device,resource.frameBuffer,NULL);
 	VkFramebufferCreateInfo pFrameBufferCreateInfo = {	VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
@@ -276,7 +280,6 @@ bool CVulkanDevice::vkBindPipeline(	const CVulkanPipeline& pipeline,
 														image.extent.width,
 														image.extent.height, 1 };
 
-	CRaptorErrorManager *pErrMgr = Raptor::GetErrorManager();
 	VkResult res = vkCreateFramebuffer(device,&pFrameBufferCreateInfo,NULL,&resource.frameBuffer);
 	if (VK_SUCCESS != res)
 		pErrMgr->vkGetError(res,__FILE__,__LINE__);
@@ -339,8 +342,9 @@ bool CVulkanDevice::vkBindPipeline(	const CVulkanPipeline& pipeline,
 						VK_PIPELINE_BIND_POINT_GRAPHICS,
 						pipeline.getPipeline() );
 
-	//vkCmdSetViewport( command_buffer, 0, 1, &viewport );
-	//vkCmdSetScissor( command_buffer, 0, 1, &scissor );
+	VkViewport viewport = {0, 0, scissor.extent.width, scissor.extent.height, 0.0f, 1.0f };
+	vkCmdSetViewport( resource.commandBuffer, 0, 1, &viewport );
+	vkCmdSetScissor( resource.commandBuffer, 0, 1, &scissor );
 
 	VkDeviceSize offset = 0;
 
@@ -384,6 +388,9 @@ bool CVulkanDevice::vkBindPipeline(	const CVulkanPipeline& pipeline,
 
 bool CVulkanDevice::vkCreateRenderingResources(void)
 {
+	if (NULL != renderingResources)
+		return false;
+
 	renderingResources = new VK_RENDERING_RESOURCE[NB_RENDERING_RESOURCES];
 
 	VkCommandBuffer	*pCommandBuffer = new VkCommandBuffer[NB_RENDERING_RESOURCES];
@@ -461,11 +468,15 @@ bool CVulkanDevice::vkCreateRenderingResources(void)
 	return true;
 }
 
+
 bool CVulkanDevice::vkCreateRenderPassResources(VkSurfaceFormatKHR format,
 												uint32_t nbSamples,
 												uint32_t width,
 												uint32_t height)
 {
+	if (NULL != renderImages)
+		return false;
+
 	VkSampleCountFlagBits samples = VK_SAMPLE_COUNT_1_BIT;
 	if (nbSamples == 2)
 		samples = VK_SAMPLE_COUNT_2_BIT;
@@ -624,13 +635,18 @@ bool CVulkanDevice::vkCreateSwapChain(VkSurfaceKHR surface,
 											composite, // VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR alpha ignored, final alpha set to 1
 											presentMode,
 											VK_TRUE,	// Hard clipping, no read back
-											VK_NULL_HANDLE };
-	res = vkCreateSwapchainKHR(device,&pCreateInfo,NULL,&swapChain);
+											swapChain };
+	VkSwapchainKHR newSwapChain = VK_NULL_HANDLE;
+	res = vkCreateSwapchainKHR(device,&pCreateInfo,NULL,&newSwapChain);
 	if (VK_SUCCESS != res)
 	{
 		pErrMgr->vkGetError(res,__FILE__,__LINE__);
 		return false;
 	}
+
+	if (VK_NULL_HANDLE != swapChain)
+		vkDestroySwapChain();
+	swapChain = newSwapChain;
 
 	res = vkGetSwapchainImagesKHR(	device, swapChain, &swapchainImageCount, NULL);
 	if ((VK_SUCCESS != res) || (swapchainImageCount == 0))
@@ -740,6 +756,8 @@ bool CVulkanDevice::vkCreateLogicalDevice(	const VkPhysicalDevice &physicalDevic
 	vkBeginCommandBuffer = (PFN_vkBeginCommandBuffer)(vkGetDeviceProcAddr(device,"vkBeginCommandBuffer"));
 	vkEndCommandBuffer = (PFN_vkEndCommandBuffer)(vkGetDeviceProcAddr(device,"vkEndCommandBuffer"));
 	vkCmdBindVertexBuffers = (PFN_vkCmdBindVertexBuffers)(vkGetDeviceProcAddr(device,"vkCmdBindVertexBuffers"));
+	vkCmdSetViewport = (PFN_vkCmdSetViewport)(vkGetDeviceProcAddr(device,"vkCmdSetViewport"));
+	vkCmdSetScissor = (PFN_vkCmdSetScissor)(vkGetDeviceProcAddr(device,"vkCmdSetScissor"));
 	vkCmdDraw = (PFN_vkCmdDraw)(vkGetDeviceProcAddr(device,"vkCmdDraw"));
 
 	vkQueueSubmit = (PFN_vkQueueSubmit)(vkGetDeviceProcAddr(device,"vkQueueSubmit"));
@@ -790,12 +808,45 @@ bool CVulkanDevice::vkCreateLogicalDevice(	const VkPhysicalDevice &physicalDevic
 	return true;
 }
 
-bool CVulkanDevice::vkDestroyLogicalDevice(void)
-{
-	if (VK_NULL_HANDLE == device)
-		return false;
 
-	vkDeviceWaitIdle(device);
+bool CVulkanDevice::vkDestroySwapChain()
+{
+	CRaptorErrorManager *pErrMgr = Raptor::GetErrorManager();
+	VkResult res = vkDeviceWaitIdle(device);
+	switch (res)
+	{
+		case VK_SUCCESS:
+			break;
+		case VK_ERROR_OUT_OF_HOST_MEMORY:
+		case VK_ERROR_OUT_OF_DEVICE_MEMORY:
+		case VK_ERROR_DEVICE_LOST:
+		{
+			pErrMgr->vkGetError(res,__FILE__,__LINE__);
+			return false;
+			break;
+		}
+		default:
+		{
+			pErrMgr->vkGetError(res,__FILE__,__LINE__);
+			return false;
+			break;
+		}
+	}
+
+#ifdef VK_KHR_swapchain
+	if (VK_NULL_HANDLE != swapChain)
+		vkDestroySwapchainKHR(device,swapChain,NULL);
+#endif
+
+	if (NULL != renderImages)
+	{
+		// Images should be cleared upon swap chain destruction
+		for (uint32_t i=0;i<swapchainImageCount;i++)
+			vkDestroyImageView(device,renderImages[i].view,NULL);
+		delete [] renderImages;
+		renderImages = NULL;
+	}
+	swapchainImageCount = 0;
 
 	if (VK_NULL_HANDLE != renderPass)
 	{
@@ -803,21 +854,15 @@ bool CVulkanDevice::vkDestroyLogicalDevice(void)
 		renderPass = VK_NULL_HANDLE;
 	}
 
-	if (NULL != renderImages)
-	{
-		for (uint32_t i=0;i<swapchainImageCount;i++)
-		{
-			//vkDestroyFramebuffer(device,frameBuffers[i].frameBuffer,NULL);
-			vkDestroyImageView(device,renderImages[i].view,NULL);
-		}
-		delete [] renderImages;
-	}
-
 	if (NULL != renderingResources)
 	{
 		for (unsigned int i=0;i<NB_RENDERING_RESOURCES;i++)
 		{
-			if (VK_NULL_HANDLE != &renderingResources[i].commandBuffer)
+			
+			if (VK_NULL_HANDLE != renderingResources[i].frameBuffer)
+				vkDestroyFramebuffer(device,renderingResources[i].frameBuffer,NULL);
+
+			if (VK_NULL_HANDLE != renderingResources[i].commandBuffer)
 				vkFreeCommandBuffers(device,graphicsCommandPool,1,&renderingResources[i].commandBuffer);
 
 			//if ((graphics_queueFamilyIndex != present_queueFamilyIndex) &&
@@ -834,7 +879,22 @@ bool CVulkanDevice::vkDestroyLogicalDevice(void)
 		}
 
 		delete [] renderingResources;
+		renderingResources = NULL;
 	}
+
+	currentRenderingResources = 0;
+	currentImage = MAXUINT;
+
+	return true;
+}
+
+bool CVulkanDevice::vkDestroyLogicalDevice(void)
+{
+	if (VK_NULL_HANDLE == device)
+		return false;
+
+	if (!vkDestroySwapChain())
+		return false;
 
 	if (VK_NULL_HANDLE != graphicsCommandPool)
 		vkDestroyCommandPool(device,graphicsCommandPool,NULL);
@@ -846,13 +906,6 @@ bool CVulkanDevice::vkDestroyLogicalDevice(void)
 
 	graphicsCommandPool = VK_NULL_HANDLE;
 	presentCommandPool = VK_NULL_HANDLE;
-
-#ifdef VK_KHR_swapchain
-	if (VK_NULL_HANDLE != swapChain)
-		vkDestroySwapchainKHR(device,swapChain,NULL);
-		// TODO: Check swap chain images life time
-	swapchainImageCount = 0;
-#endif
 
 	vkDestroyDevice(device,NULL);
 	device = VK_NULL_HANDLE;

@@ -69,7 +69,7 @@ float lposz(float dt)
 	return 15 * (float)(sin(3*PI*dt*0.1)); //*sin(3*PI*dt*0.1));
 }
 
-//#define VULKAN_TEST 1
+#define VULKAN_TEST 1
 
 CTest5Doc::CTest5Doc(const RAPTOR_HANDLE& device,const char* title)
 {
@@ -100,6 +100,10 @@ CTest5Doc::CTest5Doc(const RAPTOR_HANDLE& device,const char* title)
 	glcs.acceleration = CRaptorDisplayConfig::HARDWARE;
 	//glcs.antialias = CRaptorDisplayConfig::ANTIALIAS_16X;
 	glcs.framebufferState.colorClearValue = CColor::RGBA(0.5f,0.6f,0.7f,1.0f);
+	glcs.double_buffer = true;
+	glcs.depth_buffer = true;
+	glcs.display_mode = CGL_RGBA | CGL_DEPTH;
+	glcs.draw_logo = true;
 
 #ifdef VULKAN_TEST
 	glcs.renderer = CRaptorDisplayConfig::VULKAN;
@@ -108,13 +112,7 @@ CTest5Doc::CTest5Doc(const RAPTOR_HANDLE& device,const char* title)
 	if (res)
 	{
 #else
-	glcs.double_buffer = true;
-	glcs.depth_buffer = true;
-	glcs.display_mode = CGL_RGBA | CGL_DEPTH;
-	glcs.draw_logo = true;
-
 	m_pDisplay = Raptor::glCreateDisplay(glcs);
-
 	bool res = m_pDisplay->glBindDisplay(device);
     if (res)
 	{
@@ -137,6 +135,15 @@ CTest5Doc::CTest5Doc(const RAPTOR_HANDLE& device,const char* title)
 
 CTest5Doc::~CTest5Doc(void)
 {
+}
+
+void CTest5Doc::resize(unsigned int width, unsigned int height)
+{
+	if (m_pDisplay->glBindDisplay(m_device))
+    {
+        m_pDisplay->glResize(width,height,0,0);
+        m_pDisplay->glUnBindDisplay();
+    }
 }
 
 void CTest5Doc::glRender(void)

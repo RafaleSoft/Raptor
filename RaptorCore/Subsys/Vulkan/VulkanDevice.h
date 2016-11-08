@@ -50,11 +50,14 @@ public:
 							uint32_t width,
 							uint32_t height);
 
+	bool vkDestroySwapChain();
+
 	//!	Provides a rendering image from swap chain for next frame render.
 	//!	Currently, only a single image per frame is managed.
 	//!	TODO : handle multiple acquired images.
 	bool acquireSwapChainImage(uint64_t timeout);
 	bool presentSwapChainImage();
+	//bool resizeSwapChain(uint32_t width, uint32_t height);
 
 	//!	Creates and initialises a render pass
 	bool vkCreateRenderPassResources(	VkSurfaceFormatKHR format,
@@ -97,6 +100,7 @@ private:
 	DECLARE_VK_KHR_swapchain(DEFAULT_LINKAGE)
 	DECLARE_VK_device(DEFAULT_LINKAGE)
 	DECLARE_VK_queue(DEFAULT_LINKAGE)
+	DECLARE_VK_command_buffer(DEFAULT_LINKAGE)
 
 	VkDevice		device;
 
