@@ -231,7 +231,7 @@ CTextureObject* CContextManager::glBuildLogo(void)
 													CTextureObject::CGL_MULTIPLY,
 													CTextureObject::CGL_BILINEAR);
 
-    CRaptorDataManager  *dataManager = CRaptorDataManager::getInstance();
+    CRaptorDataManager  *dataManager = CRaptorDataManager::GetInstance();
     if (dataManager == NULL)
         return NULL;
 
@@ -400,7 +400,7 @@ bool CContextManager::vkInitInstance(CContextManager::RENDERING_CONTEXT_ID ctx)
 												nbExtensions,                           // uint32_t enabledExtensionNameCount;
 												extensions};							// const char* const* ppEnabledExtensionNames;
 
-	res = vkCreateInstance(&instanceCreateInfo, NULL, &vk_ctx.instance);
+	res = vkCreateInstance(&instanceCreateInfo, CVulkanMemory::GetAllocator(), &vk_ctx.instance);
 	if (VK_SUCCESS != res)
 		pErrMgr->vkGetError(res,__FILE__,__LINE__);
 
@@ -616,7 +616,7 @@ bool CContextManager::vkInitDevice(CContextManager::RENDERING_CONTEXT_ID ctx,con
 
 		VkPhysicalDeviceMemoryProperties memory_properties;
 		vk_ctx.vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memory_properties );
-		CVulkanMemory& memory = CVulkanMemory::getInstance(	physicalDevice,
+		CVulkanMemory& memory = CVulkanMemory::GetInstance(	physicalDevice,
 															memory_properties);
 
 		return vk_ctx.device.vkCreateLogicalDevice(	physicalDevice,
@@ -946,7 +946,7 @@ void CContextManager::vkDestroyContext(RENDERING_CONTEXT_ID ctx)
 		}
 
 		if (NULL != context.instance)
-			context.vkDestroyInstance(context.instance,NULL);
+			context.vkDestroyInstance(context.instance,CVulkanMemory::GetAllocator());
 
 		context.surface = VK_NULL_HANDLE;
 		context.instance = VK_NULL_HANDLE;

@@ -112,7 +112,7 @@ Global::~Global()
 
     delete CMemory::GetInstance();
 	delete CContextManager::GetInstance();
-    delete CRaptorDataManager::getInstance();
+    delete CRaptorDataManager::GetInstance();
 
     if (raptorStatus.messages != NULL)
         delete raptorStatus.messages;
@@ -159,7 +159,7 @@ bool Global::init(const CRaptorConfig& config)
 		raptorStatus.errorMgr = new CRaptorErrorManager();
 		raptorStatus.errorMgr->logToFile(config.m_logFile);
         raptorStatus.messages = new CRaptorMessages();
-		CRaptorDataManager  *dataManager = CRaptorDataManager::getInstance();
+		CRaptorDataManager  *dataManager = CRaptorDataManager::GetInstance();
 		if (dataManager != NULL)
 		{
 			//	Erase previous files in case of updates

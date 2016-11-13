@@ -20,11 +20,20 @@ RAPTOR_NAMESPACE_BEGIN
 
 class CMemoryHeap;
 
+class RAPTOR_API IDeviceMemoryManager
+{
+protected:
+	IDeviceMemoryManager() {};
+private:
+	IDeviceMemoryManager(const IDeviceMemoryManager&);
+	IDeviceMemoryManager& operator=(const IDeviceMemoryManager&);
+};
+
 //! This class is dedicated to specific memory management for:
 //!	- aligned data, which is essential for fast SIMD processing
 //!	- GPU memory for fast rendering of primitives, avoiding useless data copy from client to server.
 //! Aligned data should be used as frequently as possible to benefit using simd.lib
-class RAPTOR_API CMemory
+class RAPTOR_API CMemory : public IDeviceMemoryManager
 {
 public:
 	class RAPTOR_API IBufferObject
@@ -68,8 +77,8 @@ public:
 		virtual ~IBufferObject() {};
 
 	private:
-        IBufferObject(const IBufferObject& ) {};
-		IBufferObject& operator=(const IBufferObject& ) { return *this; };
+        IBufferObject(const IBufferObject& );
+		IBufferObject& operator=(const IBufferObject& );
 	};
 
 
@@ -107,7 +116,7 @@ public:
 
 	//!	Allocation method with aligned data
 	//! allocate count chuncks of size bytes, aligned with alignment
-	void *allocate(size_t size,unsigned int count,unsigned char alignment = 0) const;
+	void *allocate(size_t size,unsigned int count,size_t alignment = 0) const;
 
 	//!	Free aligned allocated memory only with Release method.
 	//!	Do not Release memory not allocated with Allocate
@@ -134,7 +143,9 @@ public:
 	//! @param dstOffset : the data offset within the destintation buffer ( vb )
 	//! @param src		 : a pointer to the data source
 	//! @param sz		 : the size of the data to be copied
-	void glSetBufferObjectData(IBufferObject &vb,unsigned int dstOffset,const void* src,size_t sz);
+	void glSetBufferObjectData(	CMemory::IBufferObject &vb,
+								unsigned int dstOffset,
+								const void* src,size_t sz);
 
     //!	Memory transfer method that should be used when copying data to and from a vertex buffer object.
 	//! This method might need a valid OpenGL context if VBO are supported.
@@ -142,14 +153,16 @@ public:
 	//! @param srcOffset : the data offset within the source buffer ( vb )
 	//! @param dst		 : a pointer to the data destination
 	//! @param sz		 : the size of the data to be copied
-	void glGetBufferObjectData(IBufferObject &vb,unsigned int srcOffset,void* dst,size_t sz);
+	void glGetBufferObjectData(	CMemory::IBufferObject &vb,
+								unsigned int srcOffset,
+								void* dst,size_t sz);
 
     //! This method creates a new buffer object :
     //! @param kind : selects a kind of buffer buffer ( vertex, pixel, memory ... )
     //! @param size : sets the size of the buffer and allocates uninitialized memory
     //! @return the newly allocated buffer object or NULL if allocation failed.
-    IBufferObject * glAllocateBufferObject( IBufferObject::BUFFER_KIND kind,
-                                            IBufferObject::BUFFER_MODE mode,
+	IBufferObject * glAllocateBufferObject( CMemory::IBufferObject::BUFFER_KIND kind,
+											CMemory::IBufferObject::BUFFER_MODE mode,
                                             size_t size);
 
 
@@ -158,14 +171,14 @@ public:
 	//!	and parameter vb is set to NULL.
 	//!	@param vb : a valid buffer object
 	//!	@return false if buffer invalid or any error, true otherwise
-	bool glReleaseBufferObject(IBufferObject* &vb);
+	bool glReleaseBufferObject(CMemory::IBufferObject* &vb);
 
     //! Activates the buffer object : vb is now the currently selected buffer for
     //! all subsequent calls related to the kind of buffer
-	bool glLockBufferObject(IBufferObject &vb);
+	bool glLockBufferObject(CMemory::IBufferObject &vb);
 
     //! Deactivates the buffer object selected above.
-	bool glUnlockBufferObject(IBufferObject &vb);
+	bool glUnlockBufferObject(CMemory::IBufferObject &vb);
 
 
 

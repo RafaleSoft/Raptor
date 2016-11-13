@@ -175,7 +175,7 @@ void CGLDisplay::GLInitContext()
     CRenderingProperties *props = pDisplay->getRenderingProperties();
     props->setTexturing(CRenderingProperties::ENABLE);
 
-    CRaptorDataManager  *dataManager = CRaptorDataManager::getInstance();
+    CRaptorDataManager  *dataManager = CRaptorDataManager::GetInstance();
     if (dataManager != NULL)
 		dataManager->ExportFile("rapsplsh.AVI","");
 

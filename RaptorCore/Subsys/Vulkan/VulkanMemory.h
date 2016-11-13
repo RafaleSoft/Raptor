@@ -25,6 +25,7 @@ RAPTOR_NAMESPACE_BEGIN
 class CVulkanMemory
 {
 public:
+#if defined(VK_VERSION_1_0)
 	class IBufferObject : public CMemory::IBufferObject
     {
 	public:
@@ -37,9 +38,24 @@ public:
         virtual ~IBufferObject() {};
 
 	private:
-        IBufferObject(const IBufferObject& ) {};
-		IBufferObject& operator=(const IBufferObject& ) {return *this; };
+        IBufferObject(const IBufferObject& );
+		IBufferObject& operator=(const IBufferObject& );
 	};
+
+	class IMemoryWrapper : public IDeviceMemoryManager
+	{
+	public:
+		virtual CVulkanMemory::IBufferObject* 
+			vkCreateBufferObject(	VkDeviceSize size,
+									CVulkanMemory::IBufferObject::BUFFER_KIND kind = CVulkanMemory::IBufferObject::VERTEX_BUFFER) const = 0;
+
+		
+		virtual void vkSetBufferObjectData(	const CVulkanMemory::IBufferObject &vb,
+											VkDeviceSize dstOffset,
+											const void* srcData,
+											VkDeviceSize sz) const = 0;
+	};
+
 
 	//! This method creates a new buffer object :
     //! @param kind : selects a kind of buffer buffer ( vertex, pixel, memory ... )
@@ -48,7 +64,7 @@ public:
     //! @return the newly allocated buffer object or NULL if allocation failed.
     CVulkanMemory::IBufferObject* vkCreateBufferObject(	VkDevice device,
 														VkDeviceSize size,
-														CVulkanMemory::IBufferObject::BUFFER_KIND kind = CVulkanMemory::IBufferObject::VERTEX_BUFFER);
+														CVulkanMemory::IBufferObject::BUFFER_KIND kind = CVulkanMemory::IBufferObject::VERTEX_BUFFER) const;
 
 	//!	This method destroys a buffer objet
 	bool vkDestroyBufferObject(VkDevice device, CVulkanMemory::IBufferObject* buffer);
@@ -57,22 +73,20 @@ public:
 								const CVulkanMemory::IBufferObject &vb,
 								VkDeviceSize dstOffset,
 								const void* srcData,
-								VkDeviceSize sz);
+								VkDeviceSize sz) const;
 
 
+	static CVulkanMemory::IMemoryWrapper* GetInstance(VkDevice physicalDevice);
 
-#if defined(VK_VERSION_1_0)
-	static CVulkanMemory& getInstance(VkDevice physicalDevice);
-
-	static CVulkanMemory& getInstance(VkPhysicalDevice physicalDevice,
+	static CVulkanMemory& GetInstance(VkPhysicalDevice physicalDevice,
 									  const VkPhysicalDeviceMemoryProperties &memory_properties);
 
-	static bool manageDevice(	VkPhysicalDevice physicalDevice,
+	static bool ManageDevice(	VkPhysicalDevice physicalDevice,
 								VkDevice device);
 
 	virtual ~CVulkanMemory(void);
 
-	VkAllocationCallbacks getAllocator(void) const;
+	static const VkAllocationCallbacks* GetAllocator(void);
 
 
 	DECLARE_VK_device_memory(STATIC_LINKAGE);
@@ -80,12 +94,11 @@ public:
 
 
 private:
-#if defined(VK_VERSION_1_0)
 	CVulkanMemory();
 	CVulkanMemory(const CVulkanMemory& );
 	CVulkanMemory& operator=(const CVulkanMemory&);
 
-
+#if defined(VK_VERSION_1_0)
 	//! The unique instances of the global manager (per physical device)
 	static std::map<VkPhysicalDevice,CVulkanMemory*>	s_pMemories;
 	static std::map<VkDevice,CVulkanMemory*>			s_pMemories2;

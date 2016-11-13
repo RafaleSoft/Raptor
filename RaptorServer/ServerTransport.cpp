@@ -27,13 +27,13 @@ CServerTransport::~CServerTransport()
 
 server_base_t::request_handler_t &CServerTransport::getRequestHandler(const iosock_base_t& client) const
 {
-	CRaptorInstance *pHandler = CRaptorInstance::getInstance();
+	CRaptorInstance *pHandler = CRaptorInstance::GetInstance();
 	return *pHandler;
 }
 
 bool CServerTransport::stopServer(void)
 {
-	CRaptorInstance *pHandler = CRaptorInstance::getInstance();
+	CRaptorInstance *pHandler = CRaptorInstance::GetInstance();
 	
 	if (pHandler->stop())
 	{
@@ -45,6 +45,6 @@ bool CServerTransport::stopServer(void)
 
 bool CServerTransport::onClientClose(const CClientSocket &client)
 {
-	CRaptorInstance *pHandler = CRaptorInstance::getInstance();
+	CRaptorInstance *pHandler = CRaptorInstance::GetInstance();
 	return pHandler->closeSession((request_handler_t::request_id)&client);
 }

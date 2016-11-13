@@ -25,8 +25,8 @@ public:
         virtual ~IBufferObject() {};
 
 	private:
-        IBufferObject(const IBufferObject& ) {};
-		IBufferObject& operator=(const IBufferObject& ) {return *this; };
+        IBufferObject(const IBufferObject& );
+		IBufferObject& operator=(const IBufferObject& );
 	};
 
 	//!	Single instance accessor.

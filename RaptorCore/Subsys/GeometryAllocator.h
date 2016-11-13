@@ -12,6 +12,9 @@
 #if !defined(AFX_MEMORY_H__81A6CA9A_4ED9_4260_B6E4_C03276C38DBC__INCLUDED_)
 	#include "System/Memory.h"
 #endif
+#if !defined(AFX_RAPTORVULKANMEMORY_H__72256FF7_DBB9_4B9C_9BF7_C36F425CF811__INCLUDED_)
+	#include "Subsys/Vulkan/VulkanMemory.h"
+#endif
 
 
 RAPTOR_NAMESPACE_BEGIN
@@ -30,8 +33,12 @@ public:
 	//! Destructor destroy all memory blocs created by this instance.
 	virtual ~CGeometryAllocator();
 
+	
 	//!	Initialize memory blocks
-	bool	glInitMemory(unsigned int indexSize,unsigned int coordsSize);
+	bool	glInitMemory(	IDeviceMemoryManager* pDeviceMemory,
+							unsigned int indexSize,unsigned int coordsSize);
+	bool	vkInitMemory(	IDeviceMemoryManager* pDeviceMemory,
+							unsigned int indexSize,unsigned int coordsSize);
 
 	//!	Try to use memory relocation is possible and return relocation status.
 	bool	glUseMemoryRelocation(void);
@@ -45,6 +52,8 @@ public:
 	//! Lock memory data and relocation so that no change can be made.
 	//! If data is relocated, High Performance memory blocks are activated on server
 	bool    glLockMemory(bool lock);
+
+	void	vkGetBindPoint(float* pVertices, VkBuffer &binding, VkDeviceSize& offset);
 
 	//! These methods are used to map pointers from GPU memory to client classic memory.
 	//! Returns: 
@@ -69,7 +78,9 @@ public:
 	//!	If size is 0, the dst memory size is recomputed, otherwise, size floats are copied.
 	//!	Rq: No other testing are performed ! ( no ckech is done to validate that dst is a bloc of size 'size' )
 	void glCopyPointer(float *dst, float *src, unsigned int size = 0);
+	void vkCopyPointer(float *dst, float *src, unsigned int size = 0);
 	void glCopyPointer(unsigned short *dst, unsigned short *src, unsigned int size = 0);
+	
 
 	//!	This method returns the address of a free block of the requested size, ( nb of indexes )
 	//!	or NULL if not enough space or other error.
@@ -86,6 +97,7 @@ public:
 	//!	Release the block allocated here above.
 	//! Returns false if block not found or if error.
 	bool	releaseVertices(float *index);
+
 
 
 private:
@@ -127,6 +139,10 @@ private:
 	//!	If relocated, High Performance buffer object
 	CMemory::IBufferObject *relocatedFaceIndexes;
 	CMemory::IBufferObject *relocatedVertices;
+
+	//!	Memory manager for the device hosting the display holding this allocator.
+	//! (Vulkan host memory is per device)
+	IDeviceMemoryManager	*deviceMemoryManager;
 
 	//! Actual memory structure : bloc fragments of global allocated space
 	//!	IMPORTANT: The structure implementation requires a binary tree for template class map<>

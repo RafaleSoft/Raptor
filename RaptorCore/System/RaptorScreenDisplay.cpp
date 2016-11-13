@@ -52,42 +52,28 @@ const CPersistence::CPersistenceClassID& CRaptorScreenDisplay::CRaptorScreenDisp
 //////////////////////////////////////////////////////////////////////
 
 CRaptorScreenDisplay::CRaptorScreenDisplay(const CRaptorDisplayConfig& pcs)
-    :CRaptorDisplay(bufferID,pcs.caption)
+    :CRaptorDisplay(bufferID,pcs.caption),cs(pcs),
+	fps(0.0f),ftime(0.0f),rtfps(0.0f),rtime(0.0f),
+	m_context(-1),m_layerContext(-1),
+	nbFramesPerSecond(0),m_framerate(0),lastfreq(0),
+    m_pGAllocator(NULL),m_pGOldAllocator(NULL),m_pTAllocator(NULL),m_pTOldAllocator(NULL)
 {
-	fps = 0.0f;
-	ftime = 0.0f;
-	rtfps = 0.0f;
-	rtime = 0.0f;
-
-	m_context = -1;
-	m_layerContext = -1;
-
-	nbFramesPerSecond = 0;
-	m_framerate = 0;
-	lastfreq = 0;
-
-	cs = pcs;
-
-    m_pGAllocator = NULL;
-    m_pGOldAllocator = NULL;
-	m_pTAllocator = NULL;
-    m_pTOldAllocator = NULL;
 }
 
 CRaptorScreenDisplay::~CRaptorScreenDisplay()
 {
-    if (m_pGOldAllocator != NULL)
-        CGeometryAllocator::SetCurrentInstance(m_pGOldAllocator);
-    if (m_pGAllocator != NULL)
-        delete m_pGAllocator;
+	if (m_pGOldAllocator != NULL)
+		CGeometryAllocator::SetCurrentInstance(m_pGOldAllocator);
+	if (m_pGAllocator != NULL)
+		delete m_pGAllocator;
 
 	if (m_pTOldAllocator != NULL)
-        CTexelAllocator::SetCurrentInstance(m_pTOldAllocator);
-    if (m_pTAllocator != NULL)
-        delete m_pTAllocator;
+		CTexelAllocator::SetCurrentInstance(m_pTOldAllocator);
+	if (m_pTAllocator != NULL)
+		delete m_pTAllocator;
 
 	glUnBindDisplay();
-	
+
 	CContextManager::GetInstance()->glDestroyContext(m_context);
 }
 
@@ -294,7 +280,7 @@ void CRaptorScreenDisplay::allocateResources(void)
 		{
 			relocResource = m_pGAllocator->glUseMemoryRelocation();
 			if (relocResource)
-				relocResource = m_pGAllocator->glInitMemory(config.m_uiPolygons,config.m_uiVertices);
+				relocResource = m_pGAllocator->glInitMemory(CMemory::GetInstance(),config.m_uiPolygons,config.m_uiVertices);
 			if (!relocResource)
 			{
 				Raptor::GetErrorManager()->generateRaptorError(	CGeometry::CGeometryClassID::GetClassId(),
@@ -320,7 +306,7 @@ void CRaptorScreenDisplay::allocateResources(void)
 	{
 		bool relocResource = true;
 		if ((config.m_uiPolygons > 0) || (config.m_uiVertices > 0))
-			relocResource &= m_pGAllocator->glInitMemory(config.m_uiPolygons,config.m_uiVertices);
+			relocResource &= m_pGAllocator->glInitMemory(CMemory::GetInstance(),config.m_uiPolygons,config.m_uiVertices);
 		if (config.m_uiTexels > 0)
 			relocResource &= m_pTAllocator->glInitMemory(config.m_uiTexels);
 

@@ -19,7 +19,7 @@
 
 RAPTOR_NAMESPACE_BEGIN
 
-
+class CGeometryAllocator;
 class CVulkanPipeline;
 
 class CRaptorVulkanDisplay : public CRaptorDisplay
@@ -37,6 +37,23 @@ public:
 
 	//!	Implements base class.
 	virtual bool glRender(void);
+
+	//!	Return the number of frames rendered during the last second.
+	virtual float getFPS(void) const { return fps; };
+
+	//!	Return the current frame rate : it is the time elapsed since previous
+	//!	call to glRender, which is always >= time required to render a frame.
+	//! So it vary a lot but is more likely to be the maximum instant frame rate 
+	//!	because it comprises the whole engine + system time.
+	virtual float getRTFPS(void) const { return rtfps; };
+
+	//!	Return the delay of a whole frame, including
+	//! buffer swapping and driver workload
+	virtual float getFrameTime(void) const { return ftime; };
+
+	//!	Return the render time of a single frame (likely to be realtime)
+	//! It measures only scene drawing without any deferred tasks
+	virtual float getRenderTime(void) const { return rtime; };
 
 	//!	Implements base class.
 	virtual void glResize(	unsigned int sx,unsigned int sy,
@@ -57,7 +74,11 @@ public:
 	//!	Implements CPersistence
 	DECLARE_CLASS_ID(CRaptorVulkanDisplayClassID,"RaptorVulkanDisplay",CRaptorDisplay)
 
+
+
 private:
+	void allocateResources(void);
+
 	std::vector<CVulkanPipeline*> m_pipelines;
 	CContextManager::RENDERING_CONTEXT_ID	m_context;
 
@@ -78,6 +99,13 @@ private:
 	float	lastfreq;
 	//!	Frame number in current second.
 	int		nbFramesPerSecond;
+
+
+	//!	Allocators are resources physically part of a graphic context,
+	//!	so they are managed by the screen display which is an abstraction
+	//!	of the graphical context
+    CGeometryAllocator  *m_pGAllocator;
+    CGeometryAllocator  *m_pGOldAllocator;
 };
 
 RAPTOR_NAMESPACE_END

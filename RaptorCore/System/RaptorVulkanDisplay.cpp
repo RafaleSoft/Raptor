@@ -32,6 +32,13 @@
 		#include "System/RaptorErrorManager.h"
 	#endif
 #endif
+#if !defined(AFX_GEOMETRYALLOCATOR_H__802B3C7A_43F7_46B2_A79E_DDDC9012D371__INCLUDED_)
+	#include "Subsys/GeometryAllocator.h"
+#endif
+#if !defined(AFX_GEOMETRY_H__B42ABB87_80E8_11D3_97C2_DE5C28000000__INCLUDED_)
+	#include "GLHierarchy/Geometry.h"
+#endif
+
 
 RAPTOR_NAMESPACE_BEGIN
 
@@ -58,6 +65,11 @@ CRaptorVulkanDisplay::CRaptorVulkanDisplay(const CRaptorDisplayConfig& pcs)
 
 CRaptorVulkanDisplay::~CRaptorVulkanDisplay(void)
 {
+	if (m_pGOldAllocator != NULL)
+		CGeometryAllocator::SetCurrentInstance(m_pGOldAllocator);
+	if (m_pGAllocator != NULL)
+		delete m_pGAllocator;
+
 	glUnBindDisplay();
 
 	if (0 < m_pipelines.size())
@@ -88,6 +100,8 @@ void CRaptorVulkanDisplay::glResize(unsigned int sx,unsigned int sy,
 	}
 }
 
+float *pVertices = NULL;
+
 bool CRaptorVulkanDisplay::glRender(void)
 {
 	if (m_context != -1)
@@ -102,8 +116,12 @@ bool CRaptorVulkanDisplay::glRender(void)
         //m_pGAllocator->glLockMemory(true);
 		//m_pTAllocator->glLockMemory(true);
 
+		VkBuffer binding = VK_NULL_HANDLE;
+		VkDeviceSize offset = 0;
+		m_pGAllocator->vkGetBindPoint(pVertices, binding, offset);
+
 		CVulkanPipeline *pipeline = m_pipelines[0];
-		vk_device.vkBindPipeline(*pipeline,scissor,cs.framebufferState.colorClearValue);
+		vk_device.vkBindPipeline(*pipeline,scissor,cs.framebufferState.colorClearValue,binding,offset);
 
 		//C3DScene *pScene = getRootScene();
 		//pScene->vkRender();
@@ -182,6 +200,9 @@ bool CRaptorVulkanDisplay::glBindDisplay(const RAPTOR_HANDLE& device)
 																CRaptorMessages::ID_CREATE_FAILED);
 				return false;
 			}
+
+			//	Manage vertex/pixel buffer objects.
+			allocateResources();
 		}
 		
 		manager->vkMakeCurrentContext(device,m_context);
@@ -192,16 +213,29 @@ bool CRaptorVulkanDisplay::glBindDisplay(const RAPTOR_HANDLE& device)
 
 bool CRaptorVulkanDisplay::glUnBindDisplay(void)
 {
-	//RAPTOR_HANDLE device;
-	//CContextManager *manager = CContextManager::GetInstance();
-	//manager->vkMakeCurrentContext(device,m_context);
-
 	if (m_pipelines.empty())
 	{
-		VkRect2D scissor = { {0, 0}, {cs.width,cs.height} };
-		CContextManager *manager = CContextManager::GetInstance();
 
+		CContextManager *manager = CContextManager::GetInstance();
 		CVulkanDevice &device = manager->vkGetDevice(m_context);
+
+
+float VertexData[4*8] = 
+{
+	-0.7f, -0.7f, 0.0f, 1.0f	,	1.0f, 0.0f, 0.0f, 0.0f,
+	-0.7f,  0.7f, 0.0f, 1.0f	,	0.0f, 1.0f, 0.0f, 0.0f,
+	 0.7f, -0.7f, 0.0f, 1.0f	,	0.0f, 0.0f, 1.0f, 0.0f,
+	 0.7f,  0.7f, 0.0f, 1.0f	,	0.3f, 0.3f, 0.3f, 0.0f
+};
+
+pVertices = m_pGAllocator->allocateVertices(32);
+m_pGAllocator->vkCopyPointer(pVertices,&VertexData[0],32);
+
+//CVulkanMemory::IMemoryWrapper* memory = device.getMemory();
+//pBuffer = memory->vkCreateBufferObject(sizeof(VertexData),CVulkanMemory::IBufferObject::VERTEX_BUFFER);
+//memory->vkSetBufferObjectData(*pBuffer,0,&VertexData[0],sizeof(VertexData));
+
+
 		CVulkanShader *vshader = device.createShader();
 		CVulkanShader *fshader = device.createShader();
 		if (!vshader->loadShader("shader2.vert") ||
@@ -214,7 +248,9 @@ bool CRaptorVulkanDisplay::glUnBindDisplay(void)
 		m_pipelines.push_back(pipeline);
 		pipeline->addShader(vshader);
 		pipeline->addShader(fshader);
-		if (!pipeline->initPipeline(cs,scissor))
+
+		
+		if (!pipeline->initPipeline())
 		{
 			Raptor::GetErrorManager()->generateRaptorError(	bufferID,
 															CRaptorErrorManager::RAPTOR_FATAL,
@@ -224,4 +260,41 @@ bool CRaptorVulkanDisplay::glUnBindDisplay(void)
 	}
 
 	return CRaptorDisplay::glUnBindDisplay();
+}
+
+
+void CRaptorVulkanDisplay::allocateResources(void)
+{
+    //  Ensure no current allocator.
+    m_pGOldAllocator = CGeometryAllocator::SetCurrentInstance(NULL);
+    m_pGAllocator = CGeometryAllocator::GetInstance();
+
+    const CRaptorConfig& config = Global::GetInstance().getConfig();
+	if ((!config.m_bRelocation) || (0 == config.m_uiVertices))
+    {
+		Raptor::GetErrorManager()->generateRaptorError(	CGeometry::CGeometryClassID::GetClassId(),
+														CRaptorErrorManager::RAPTOR_FATAL,
+	    		        								CRaptorMessages::ID_NO_RESOURCE);
+	}
+	else
+    {
+		CContextManager *manager = CContextManager::GetInstance();
+		CVulkanDevice &vk_device = manager->vkGetDevice(m_context);
+		CVulkanMemory::IMemoryWrapper* pDeviceMemory = vk_device.getMemory();
+
+		bool initAllocator = m_pGAllocator->vkInitMemory(pDeviceMemory,config.m_uiPolygons,config.m_uiVertices);
+		if (!initAllocator)
+		{
+			Raptor::GetErrorManager()->generateRaptorError(	CGeometry::CGeometryClassID::GetClassId(),
+															CRaptorErrorManager::RAPTOR_FATAL,
+    		        										CRaptorMessages::ID_NO_RESOURCE);
+		}
+    }
+
+    //! As the newly created context is made current, we must keep the
+    //! associated allocator as current, otherwise it will not be used until
+    //! a UnBind/Bind sequence is performed, which is unnecessary.
+    //CGeometryAllocator::SetCurrentInstance(oldAllocator);
+    if ((m_pGOldAllocator != m_pGAllocator) && (m_pGOldAllocator != NULL))
+        m_pGOldAllocator->glLockMemory(false);
 }

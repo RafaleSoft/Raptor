@@ -83,8 +83,8 @@ CTest5Doc::CTest5Doc(const RAPTOR_HANDLE& device,const char* title)
 	config.m_logFile = "Test5.log";
     config.m_bRelocation = true;
 	config.m_uiTexels = 2048*1024;
-    config.m_uiPolygons = 200000;
-    config.m_uiVertices = 500000;
+    config.m_uiPolygons = 20000;
+    config.m_uiVertices = 50000;
     Raptor::glInitRaptor(config);
 
 	CImaging::installImagers(CTextureFactory::getDefaultFactory());
@@ -99,7 +99,7 @@ CTest5Doc::CTest5Doc(const RAPTOR_HANDLE& device,const char* title)
 	glcs.caption = title;
 	glcs.acceleration = CRaptorDisplayConfig::HARDWARE;
 	//glcs.antialias = CRaptorDisplayConfig::ANTIALIAS_16X;
-	glcs.framebufferState.colorClearValue = CColor::RGBA(0.5f,0.6f,0.7f,1.0f);
+	//glcs.framebufferState.colorClearValue = CColor::RGBA(0.5f,0.6f,0.7f,1.0f);
 	glcs.double_buffer = true;
 	glcs.depth_buffer = true;
 	glcs.display_mode = CGL_RGBA | CGL_DEPTH;

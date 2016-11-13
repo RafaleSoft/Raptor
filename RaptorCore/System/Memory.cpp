@@ -749,7 +749,7 @@ bool CMemory::glUnlockBufferObject(IBufferObject &vb)
 	}
 }
 
-void *CMemory::allocate(size_t size,unsigned int count,unsigned char alignment) const
+void *CMemory::allocate(size_t size,unsigned int count,size_t alignment) const
 {
     //! After this point, we are in critical section
     CRaptorLock lock(m_pHeap->memoryMutex);

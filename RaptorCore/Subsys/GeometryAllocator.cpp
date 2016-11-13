@@ -17,6 +17,7 @@
 	#include "System/Global.h"
 #endif
 
+
 RAPTOR_NAMESPACE_BEGIN
 
 CGeometryAllocator	*CGeometryAllocator::m_pInstance = NULL;
@@ -35,7 +36,8 @@ RAPTOR_NAMESPACE
 
 CGeometryAllocator::CGeometryAllocator():
 	m_bRelocated(false),m_bLocked(false),
-	relocatedFaceIndexes(NULL),relocatedVertices(NULL)
+	relocatedFaceIndexes(NULL),relocatedVertices(NULL),
+	deviceMemoryManager(NULL)
 {
 	faceIndexes.address.us_address = NULL;
 	faceIndexes.size = 0;
@@ -93,6 +95,55 @@ bool	CGeometryAllocator::glUseMemoryRelocation(void)
 #else
 	return false;
 #endif
+}
+
+void CGeometryAllocator::vkGetBindPoint(float* pVertices, VkBuffer &binding, VkDeviceSize& offset)
+{
+	map<float*,unsigned int>::const_iterator blocPos = vertexBlocs.find(pVertices);
+		
+	if (blocPos != vertexBlocs.end())
+	{
+		CVulkanMemory::IBufferObject *pBuffer = static_cast<CVulkanMemory::IBufferObject*>(relocatedVertices);
+
+		binding = pBuffer->getBuffer();
+		offset = (VkDeviceSize)pVertices;
+	}
+	else
+	{
+		binding = VK_NULL_HANDLE;
+		offset = 0;
+	}
+}
+
+void CGeometryAllocator::vkCopyPointer(float *dst, float *src, unsigned int size)
+{
+	if ((!m_bRelocated) /*|| (m_bLocked)*/ || (src == NULL) || (dst == NULL))
+        return;
+
+	if (NULL == deviceMemoryManager)
+		return;
+
+	CVulkanMemory::IBufferObject *pBuffer = static_cast<CVulkanMemory::IBufferObject*>(relocatedVertices);
+	CVulkanMemory::IMemoryWrapper *pDeviceMemory = static_cast<CVulkanMemory::IMemoryWrapper*>(deviceMemoryManager);
+
+	if (size == 0)
+	{
+		// find memory bloc and map a copy to local memory.
+		map<float*,unsigned int>::const_iterator blocPos = vertexBlocs.find(dst);
+		if (blocPos != vertexBlocs.end())
+			pDeviceMemory->vkSetBufferObjectData(	*pBuffer,
+													(unsigned int)dst,
+													src,
+													(*blocPos).second);
+	}
+	else
+		// No ckech is done to validate that dst is a bloc of size 'size'
+		pDeviceMemory->vkSetBufferObjectData(	*pBuffer,
+												(unsigned int)dst,
+												src,
+												sizeof(float)*size);
+
+    CATCH_VK_ERROR
 }
 
 void CGeometryAllocator::glCopyPointer(float *dst, float *src, unsigned int size)
@@ -380,7 +431,8 @@ float *CGeometryAllocator::glDiscardPointer(float *pointer)
         return NULL;
 }
 
-bool	CGeometryAllocator::glInitMemory(unsigned int indexSize,unsigned int coordsSize)
+bool CGeometryAllocator::glInitMemory(IDeviceMemoryManager* pDeviceMemory,
+									  unsigned int indexSize,unsigned int coordsSize)
 {
     if (m_bLocked)
         return false;
@@ -391,6 +443,8 @@ bool	CGeometryAllocator::glInitMemory(unsigned int indexSize,unsigned int coords
 		return false;
 	if ((coordsSize == 0) || (!vertexBlocs.empty()))
 		return false;
+
+	deviceMemoryManager = pDeviceMemory;
 
     //  Allow user to allocate bloc size different from default.
 	if (faceIndexes.address.us_address != NULL)
@@ -433,6 +487,51 @@ bool	CGeometryAllocator::glInitMemory(unsigned int indexSize,unsigned int coords
 		vertices.size = coordsSize * sizeof(float);
 		return ((faceIndexes.address.us_address != NULL) && (vertices.address.f_address != NULL));
 	}
+}
+
+bool CGeometryAllocator::vkInitMemory(	IDeviceMemoryManager* pDeviceMemory,
+										unsigned int indexSize,unsigned int coordsSize)
+{
+    if (m_bLocked)
+        return false;
+
+	// Should there be several blocs ? No to be able to switch to relocatable blocs in AGP
+	// ( it is much faster to have only one bufferobject bound for RT rendering )
+	if ((indexSize == 0) || (!indexBlocs.empty()))
+		return false;
+	if ((coordsSize == 0) || (!vertexBlocs.empty()))
+		return false;
+
+	if (faceIndexes.address.us_address != NULL)
+    {
+		CMemory::GetInstance()->release(faceIndexes.address.us_address);
+        faceIndexes.address.us_address = NULL;
+    }
+	if (vertices.address.f_address != NULL)
+    {
+		CMemory::GetInstance()->release(vertices.address.f_address);
+        vertices.address.f_address = NULL;
+    }
+
+	deviceMemoryManager = pDeviceMemory;
+
+    //if (relocatedVertices != NULL)
+    //    CMemory::GetInstance()->glReleaseBufferObject(relocatedVertices);
+    //if (relocatedFaceIndexes != NULL)
+    //    CMemory::GetInstance()->glReleaseBufferObject(relocatedFaceIndexes);
+
+	m_bRelocated = true;
+	CVulkanMemory::IMemoryWrapper *deviceMemory = static_cast<CVulkanMemory::IMemoryWrapper*>(deviceMemoryManager);
+
+	vertices.size = coordsSize * sizeof(float);
+	relocatedVertices = deviceMemory->vkCreateBufferObject(	vertices.size+RELOCATE_OFFSET,
+															CVulkanMemory::IBufferObject::VERTEX_BUFFER);
+	
+	faceIndexes.size = indexSize  * sizeof(unsigned short);
+	relocatedFaceIndexes = deviceMemory->vkCreateBufferObject(	faceIndexes.size+RELOCATE_OFFSET,
+																CVulkanMemory::IBufferObject::INDEX_BUFFER);
+	
+	return ((relocatedFaceIndexes != NULL) && (relocatedVertices != NULL));
 }
 
 unsigned short	* const	CGeometryAllocator::allocateIndexes(unsigned short size)
