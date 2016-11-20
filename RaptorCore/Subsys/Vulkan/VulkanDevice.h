@@ -75,7 +75,7 @@ public:
 	bool vkCreateRenderingResources(void);
 
 	//! Returns the memory wrapper managing this device.
-	CVulkanMemory::IMemoryWrapper* getMemory(void) const { return pDeviceMemory; };
+	IDeviceMemoryManager* getMemory(void) const { return pDeviceMemory; };
 
 
 	CVulkanPipeline*	createPipeline(void) const;
@@ -86,7 +86,6 @@ public:
 	bool vkBindPipeline(const CVulkanPipeline& pipeline,
 						const VkRect2D& scissor,
 						const CColor::RGBA& clearColor,
-						VkBuffer binding,
 						VkDeviceSize offset);
 
 	//! Destroy or Release all device linked Vulkan resources, including swap chain
@@ -110,7 +109,7 @@ private:
 
 	VkDevice		device;
 
-	CVulkanMemory::IMemoryWrapper* pDeviceMemory;
+	CVulkanMemory::CVulkanMemoryWrapper* pDeviceMemory;
 
 	VkCommandPool	graphicsCommandPool;
 	VkCommandPool	presentCommandPool;

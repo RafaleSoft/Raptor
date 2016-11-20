@@ -339,7 +339,7 @@ extern "C" GLBENCH_API void Bench(CWnd *parent)
 	if (parent == NULL)
 		return;
 
-	CMemory::GetInstance()->setGarbageMaxSize(64000000);
+	CHostMemoryManager::GetInstance()->setGarbageMaxSize(64000000);
 	Display *GLDisplay = new Display;
 
 	RECT rect;

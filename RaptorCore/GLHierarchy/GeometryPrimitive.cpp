@@ -114,11 +114,11 @@ void CGeometryPrimitive::glRender(void)
 			float	*tp = NULL;
             glGetPointerv(GL_TEXTURE_COORD_ARRAY_POINTER,(void**)&tp);
 
-			if ((pAllocator->isMemoryRelocated()) && (pAllocator->isMemoryLocked()))
+			if (pAllocator->isMemoryLocked())
 			{
-				pAllocator->glLockMemory(false);
-				vp = pAllocator->glMapPointer(vp);
-				tp = pAllocator->glMapPointer(tp);
+				pAllocator->glvkLockMemory(false);
+				vp = pAllocator->glvkMapPointer(vp);
+				tp = pAllocator->glvkMapPointer(tp);
 			}
 
 			if (vp != NULL)
@@ -143,11 +143,11 @@ void CGeometryPrimitive::glRender(void)
 			glEvalMesh2(GL_FILL,0,m_uprecision,0,m_vprecision);
 			glFrontFace(GL_CCW);
 
-			if ((pAllocator->isMemoryRelocated()) && (!pAllocator->isMemoryLocked()))
+			if (!pAllocator->isMemoryLocked())
 			{
 				pAllocator->glDiscardPointer(vp);
 				pAllocator->glDiscardPointer(tp);
-				pAllocator->glLockMemory(true);
+				pAllocator->glvkLockMemory(true);
 			}
 
 			break;
@@ -186,7 +186,7 @@ void CGeometryPrimitive::setIndexes(unsigned short size,unsigned short* faces)
 			return;
 
 		if (CGeometryAllocator::GetInstance()->isMemoryRelocated())
-			CGeometryAllocator::GetInstance()->glCopyPointer(m_faces,faces,size);
+			CGeometryAllocator::GetInstance()->glvkCopyPointer(m_faces,faces,size);
 		else
 			memcpy(m_faces,faces,size*sizeof(unsigned short));
 	}
@@ -213,13 +213,13 @@ void CGeometryPrimitive::setIndexes(const vector<unsigned short> &faces)
 			return;
 
         if (CGeometryAllocator::GetInstance()->isMemoryRelocated())
-            m_faces = CGeometryAllocator::GetInstance()->glMapPointer(m_faces);
+            m_faces = CGeometryAllocator::GetInstance()->glvkMapPointer(m_faces);
 
 		for (unsigned short i=0;i<m_size;i++)
 			m_faces[i] = faces[i];
 
         if (CGeometryAllocator::GetInstance()->isMemoryRelocated())
-            m_faces = CGeometryAllocator::GetInstance()->glUnMapPointer(m_faces);
+            m_faces = CGeometryAllocator::GetInstance()->glvkUnMapPointer(m_faces);
 	}
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 	else
@@ -251,7 +251,7 @@ void CGeometryPrimitive::setIndexes(const vector<unsigned short> &polygonSizes,c
 			return;
 
 		if (CGeometryAllocator::GetInstance()->isMemoryRelocated())
-            m_faces = CGeometryAllocator::GetInstance()->glMapPointer(m_faces);
+            m_faces = CGeometryAllocator::GetInstance()->glvkMapPointer(m_faces);
 
 		unsigned short i=0;
 		for (i=0;i<m_size;i++)
@@ -261,7 +261,7 @@ void CGeometryPrimitive::setIndexes(const vector<unsigned short> &polygonSizes,c
 			m_polygons[i] = polygonSizes[i];
 
 		if (CGeometryAllocator::GetInstance()->isMemoryRelocated())
-            m_faces = CGeometryAllocator::GetInstance()->glUnMapPointer(m_faces);
+            m_faces = CGeometryAllocator::GetInstance()->glvkUnMapPointer(m_faces);
 	}
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 	else
@@ -282,7 +282,7 @@ void CGeometryPrimitive::getIndexes(unsigned short *faces)
 		else
 		{
 			if (CGeometryAllocator::GetInstance()->isMemoryRelocated())
-				m_faces = CGeometryAllocator::GetInstance()->glMapPointer(m_faces);
+				m_faces = CGeometryAllocator::GetInstance()->glvkMapPointer(m_faces);
 			
 			memcpy(faces,m_faces,m_size*sizeof(unsigned short));
 
@@ -319,7 +319,7 @@ void CGeometryPrimitive::getIndexes(vector<unsigned short> &polygonSizes,vector<
 				polygonSizes.push_back(m_polygons[i]);
 
 			if (CGeometryAllocator::GetInstance()->isMemoryRelocated())
-				m_faces = CGeometryAllocator::GetInstance()->glMapPointer(m_faces);
+				m_faces = CGeometryAllocator::GetInstance()->glvkMapPointer(m_faces);
 			
 			for (i=0;i<m_size;i++)
 				polygonIndexes.push_back(m_faces[i]);

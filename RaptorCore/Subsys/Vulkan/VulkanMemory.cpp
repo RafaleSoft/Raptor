@@ -6,6 +6,9 @@
 #if !defined(AFX_RAPTORVULKANMEMORY_H__72256FF7_DBB9_4B9C_9BF7_C36F425CF811__INCLUDED_)
 	#include "Subsys/Vulkan/VulkanMemory.h"
 #endif
+#if !defined(AFX_VULKANBUFFEROBJECT_H__A159E677_723F_4EED_84C0_D9446234A50B__INCLUDED_)
+	#include "Subsys/Vulkan/VulkanBufferObject.h"
+#endif
 #if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
 	#include "System/Raptor.h"
 #endif
@@ -20,85 +23,16 @@
 
 RAPTOR_NAMESPACE
 
-	class CVulkanBufferObject : public CVulkanMemory::IBufferObject
-    {
-    public:
-		//!	Compute buffer constructor
-		CVulkanBufferObject(VkBuffer buffer,VkDeviceMemory memory)
-			:m_size(0),address(NULL),m_storage(VERTEX_BUFFER),m_buffer(buffer),m_memory(memory)
-		{};
-
-		//!	Destructor
-		virtual ~CVulkanBufferObject() {};
-
-		void* getBaseAddress(void) const
-		{ return address; };
-
-		size_t getSize(void) const
-		{ return m_size; };
-
-		BUFFER_KIND getStorage(void) const
-		{ return m_storage; }
-
-		unsigned int getBufferId(void) const
-		{ return 0; }
-
-		VkDeviceMemory	getAddress(void) const
-		{ return m_memory; }
-
-		VkBuffer getBuffer(void) const
-		{ return m_buffer; }
-
-		//!	An opaque pointer to the data
-		void		*address;
-
-        //! The size in bytes of the buffer object
-		size_t		m_size;
-
-		//! Indicates the data storage usage: vertex, pixels, ...
-        BUFFER_KIND m_storage;
-
-    private:
-        CVulkanBufferObject(const CVulkanBufferObject& );
-		CVulkanBufferObject& operator=(const CVulkanBufferObject& );
-
-		VkBuffer		m_buffer;
-		VkDeviceMemory	m_memory;
-	};
-
-	class CVulkanMemoryWrapper : public CVulkanMemory::IMemoryWrapper
-	{
-	public:
-		CVulkanMemoryWrapper(const CVulkanMemory& m,VkDevice d)
-			:memory(m),device(d)
-		{};
-
-		virtual CVulkanMemory::IBufferObject*
-			vkCreateBufferObject(VkDeviceSize size,CVulkanMemory::IBufferObject::BUFFER_KIND kind) const
-		{
-			CVulkanMemory::IBufferObject* pBuffer = memory.vkCreateBufferObject(device,size,kind);
-			return pBuffer;
-		};
-
-		virtual void vkSetBufferObjectData(	const CVulkanMemory::IBufferObject &vb,
-											VkDeviceSize dstOffset,
-											const void* srcData,
-											VkDeviceSize sz) const
-		{
-			return memory.vkSetBufferObjectData(device,vb,dstOffset,srcData,sz);
-		};
-
-	private:
-		const CVulkanMemory& memory;
-		VkDevice device;
-	};
 
 //!
 //!	CVulkanMemory static variables and data
 //!
 std::map<VkPhysicalDevice,CVulkanMemory*>	CVulkanMemory::s_pMemories;
 std::map<VkDevice,CVulkanMemory*>			CVulkanMemory::s_pMemories2;
+
+
 CVulkanMemory CVulkanMemory::defaultMemory;
+
 PFN_vkGetBufferMemoryRequirements CVulkanMemory::vkGetBufferMemoryRequirements = VK_NULL_HANDLE;
 PFN_vkCreateBuffer CVulkanMemory::vkCreateBuffer = VK_NULL_HANDLE;
 PFN_vkDestroyBuffer CVulkanMemory::vkDestroyBuffer = VK_NULL_HANDLE;
@@ -110,12 +44,13 @@ PFN_vkFlushMappedMemoryRanges CVulkanMemory::vkFlushMappedMemoryRanges = VK_NULL
 PFN_vkUnmapMemory CVulkanMemory::vkUnmapMemory = VK_NULL_HANDLE;
 
 
+
 static void* VKAPI_PTR vkAllocationFunction(void* pUserData,
 											size_t size,
 											size_t alignment,
 											VkSystemAllocationScope allocationScope)
 {
-	CMemory *memory = CMemory::GetInstance();
+	CHostMemoryManager *memory = CHostMemoryManager::GetInstance();
 	void* pointer = memory->allocate(size,1,alignment);
 	return pointer;
 }
@@ -125,7 +60,7 @@ static void VKAPI_PTR vkFreeFunction(	void* pUserData,
 {
 	if (pMemory != NULL)
 	{
-		CMemory *memory = CMemory::GetInstance();
+		CHostMemoryManager *memory = CHostMemoryManager::GetInstance();
 		memory->garbage(pMemory);	// free strategy could use allocationScope
 	}
 	return;
@@ -146,7 +81,7 @@ static void VKAPI_PTR vkInternalAllocationNotification(	void* pUserData,
 														VkInternalAllocationType allocationType,
 														VkSystemAllocationScope allocationScope)
 {
-	CMemory *memory = CMemory::GetInstance();
+	CHostMemoryManager *memory = CHostMemoryManager::GetInstance();
 	return;
 }
 
@@ -155,7 +90,7 @@ static void VKAPI_PTR vkInternalFreeNotification(	void* pUserData,
 													VkInternalAllocationType allocationType,
 													VkSystemAllocationScope allocationScope)
 {
-	CMemory *memory = CMemory::GetInstance();
+	CHostMemoryManager *memory = CHostMemoryManager::GetInstance();
 	return;
 }
 
@@ -170,13 +105,116 @@ static VkAllocationCallbacks s_vulkanAllocator =
 };
 
 
+
+
+CVulkanMemory::CVulkanMemoryWrapper::CVulkanMemoryWrapper(const CVulkanMemory& m,VkDevice d)
+:memory(m),device(d)
+{
+	for (unsigned int i=0;i<IDeviceMemoryManager::IBufferObject::NB_BUFFER_KIND;i++)
+		currentBuffers[i] = NULL;
+}
+
+bool CVulkanMemory::CVulkanMemoryWrapper::relocationAvailable(void) const
+{
+	return (VK_NULL_HANDLE != device);
+}
+
+VkBuffer CVulkanMemory::CVulkanMemoryWrapper::getLockedBuffer(IDeviceMemoryManager::IBufferObject::BUFFER_KIND kind) const
+{
+	const CVulkanBufferObject* pBuffer = currentBuffers[kind];
+	if (NULL != pBuffer)
+		return pBuffer->getBuffer();
+	else
+		return VK_NULL_HANDLE;
+}
+
+IDeviceMemoryManager::IBufferObject *
+CVulkanMemory::CVulkanMemoryWrapper::createBufferObject(IDeviceMemoryManager::IBufferObject::BUFFER_KIND kind, 
+														IDeviceMemoryManager::IBufferObject::BUFFER_MODE mode, 
+														uint64_t size)
+{
+	CVulkanBufferObject* pBuffer = memory.vkCreateBufferObject(device,size,kind);
+	m_pBuffers[pBuffer] = pBuffer;
+	return pBuffer;
+}
+
+
+void CVulkanMemory::CVulkanMemoryWrapper::setBufferObjectData(	IDeviceMemoryManager::IBufferObject &bo,
+																uint64_t dstOffset,
+																const void* src,
+																uint64_t sz)
+{
+	const IDeviceMemoryManager::IBufferObject *pIBuffer = &bo;
+	std::map<const IDeviceMemoryManager::IBufferObject*,const CVulkanBufferObject*>::const_iterator it = m_pBuffers.find(pIBuffer);
+	if (m_pBuffers.end() == it)
+		return;
+	memory.vkSetBufferObjectData(device,*((*it).second),dstOffset,src,sz);
+}
+
+void CVulkanMemory::CVulkanMemoryWrapper::getBufferObjectData(	IDeviceMemoryManager::IBufferObject &vb,
+																uint64_t srcOffset,
+																void* dst,
+																uint64_t sz)
+{
+}
+
+
+bool CVulkanMemory::CVulkanMemoryWrapper::lockBufferObject(IDeviceMemoryManager::IBufferObject &bo)
+{
+	const IDeviceMemoryManager::IBufferObject *pIBuffer = &bo;
+	std::map<const IDeviceMemoryManager::IBufferObject*,const CVulkanBufferObject*>::const_iterator it = m_pBuffers.find(pIBuffer);
+	if (m_pBuffers.end() == it)
+		return false;
+
+	const CVulkanBufferObject * const pBuffer = (*it).second;
+	currentBuffers[pBuffer->getStorage()] = pBuffer;
+	return true;
+}
+
+bool CVulkanMemory::CVulkanMemoryWrapper::unlockBufferObject(IDeviceMemoryManager::IBufferObject &bo)
+{
+	const IDeviceMemoryManager::IBufferObject *pIBuffer = &bo;
+	std::map<const IDeviceMemoryManager::IBufferObject*,const CVulkanBufferObject*>::const_iterator it = m_pBuffers.find(pIBuffer);
+	if (m_pBuffers.end() == it)
+		return false;
+
+	const CVulkanBufferObject * const pBuffer = (*it).second;
+	if (currentBuffers[pBuffer->getStorage()] != pBuffer)
+		return false;
+	else
+		currentBuffers[pBuffer->getStorage()] = NULL;
+
+	return true;
+}
+
+bool CVulkanMemory::CVulkanMemoryWrapper::releaseBufferObject(IDeviceMemoryManager::IBufferObject* &bo)
+{
+	const IDeviceMemoryManager::IBufferObject *pIBuffer = bo;
+	std::map<const IDeviceMemoryManager::IBufferObject*,const CVulkanBufferObject*>::const_iterator it = m_pBuffers.find(pIBuffer);
+	if (m_pBuffers.end() == it)
+		return false;
+
+	const CVulkanBufferObject * const pBuffer = (*it).second;
+	if (memory.vkDestroyBufferObject(device,pBuffer))
+	{
+		m_pBuffers.erase(it);
+		delete pBuffer;
+		bo = NULL;
+		return true;
+	}
+	else
+		return false;
+}
+
+
+
 const VkAllocationCallbacks* CVulkanMemory::GetAllocator(void)
 {
 	return &s_vulkanAllocator;
 }
 
 void CVulkanMemory::vkSetBufferObjectData(VkDevice device,
-										  const CVulkanMemory::IBufferObject &vb,
+										  const CVulkanBufferObject &vb,
 										  VkDeviceSize dstOffset,
 										  const void* srcData,
 										  VkDeviceSize sz) const
@@ -238,34 +276,35 @@ void CVulkanMemory::vkSetBufferObjectData(VkDevice device,
 }
 
 bool CVulkanMemory::vkDestroyBufferObject(VkDevice device,
-										  CVulkanMemory::IBufferObject* buffer)
+										  const CVulkanBufferObject* pBuffer) const
 {
-	if (NULL == buffer)
-		return false;
-
-	VkDeviceMemory pMemory = buffer->getAddress();
+	VkDeviceMemory pMemory = pBuffer->getAddress();
 	if (VK_NULL_HANDLE != pMemory)
 		vkFreeMemory(device, pMemory, &s_vulkanAllocator);
 	else
 		return false;
 
-	VkBuffer pBuffer = VK_NULL_HANDLE;
-	vkDestroyBuffer(device,pBuffer,&s_vulkanAllocator);
+	VkBuffer vkuffer = pBuffer->getBuffer();
+	if (VK_NULL_HANDLE != vkuffer)
+		vkDestroyBuffer(device,vkuffer,&s_vulkanAllocator);
+	else
+		return false;
 
 	return true;
 }
 
-CVulkanMemory::IBufferObject* CVulkanMemory::vkCreateBufferObject(	VkDevice device,
-																	VkDeviceSize size,
-																	CVulkanMemory::IBufferObject::BUFFER_KIND kind) const
+
+CVulkanBufferObject* CVulkanMemory::vkCreateBufferObject(	VkDevice device,
+															VkDeviceSize size,
+															IDeviceMemoryManager::IBufferObject::BUFFER_KIND kind) const
 {
 	VkBufferUsageFlagBits flags = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
 	switch (kind)
 	{
-		case CVulkanMemory::IBufferObject::VERTEX_BUFFER:
+		case IDeviceMemoryManager::IBufferObject::VERTEX_BUFFER:
 			flags = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
 			break;
-		case CVulkanMemory::IBufferObject::INDEX_BUFFER:
+		case IDeviceMemoryManager::IBufferObject::INDEX_BUFFER:
 			flags = VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
 			break;
 		default:
@@ -348,7 +387,6 @@ CVulkanMemory::IBufferObject* CVulkanMemory::vkCreateBufferObject(	VkDevice devi
 	CVulkanBufferObject *pBuffer = new CVulkanBufferObject(buffer,pMemory);
 	pBuffer->m_size = size;
 	pBuffer->m_storage = kind;
-	pBuffer->address = 0;
 
 	return pBuffer;
 }
@@ -370,20 +408,28 @@ bool CVulkanMemory::ManageDevice(	VkPhysicalDevice physicalDevice,
 		return false;
 
 	map<VkPhysicalDevice,CVulkanMemory*>::iterator it = s_pMemories.find(physicalDevice);
-	if (it == s_pMemories.end())
+	if (s_pMemories.end() == it)
 		return false;
 
-	
-	if (s_pMemories2.end() != s_pMemories2.find(device))
-		return false;
+	map<VkDevice,CVulkanMemory*>::iterator it2 = s_pMemories2.find(device);
+	if (s_pMemories2.end() != it2)
+	{
+		//	Thie device is managed by another Memory object. Is this case possible ?
+		if ((*it).second != (*it2).second)
+			return false;
+		//	A Memory object exists for this device of this physical device.
+		else
+			return true;
+	}
 
+	//	Associate this device with Memory object of this physical device.
 	CVulkanMemory *pMem = (*it).second;
 	s_pMemories2[device] = pMem;
 
 	return true;
 }
 
-CVulkanMemory::IMemoryWrapper* CVulkanMemory::GetInstance(VkDevice device)
+CVulkanMemory::CVulkanMemoryWrapper* CVulkanMemory::CreateMemoryManager(VkDevice device)
 {
 	CVulkanMemory* pMemory = NULL;
 	map<VkDevice,CVulkanMemory*>::iterator it = s_pMemories2.find(device);

@@ -146,7 +146,7 @@ long CAnimatorStream::glStartPlayBack(const std::string& fname,bool loop)
 #ifdef GL_EXT_bgra
 			video->streamBuffer = NULL;
 #else
-			CMemory::Allocator<unsigned char> allocator;
+			CHostMemoryManager::Allocator<unsigned char> allocator;
 			video->streamBuffer = allocator.allocate(size); 
 
 			for (int i=0;i<size;i+=4)
@@ -201,7 +201,7 @@ void CAnimatorStream::endPlayBack(unsigned int nStream)
 			if (!m_bUseDMA)
 			{
 #ifndef GL_EXT_bgra
-				CMemory::GetInstance()->garbage((*it)->streamBuffer);
+				CHostMemoryManager::GetInstance()->garbage((*it)->streamBuffer);
 #endif
 			}
 			else
@@ -325,7 +325,7 @@ const unsigned char* const CAnimatorStream::glGetStreamBuffer(unsigned int nStre
         if (video->streamBuffer != NULL)
         {
             unsigned int size = 3 * video->streamer->getWidth() * video->streamer->getHeight();
-			CTexelAllocator::GetInstance()->glCopyPointer(video->bufferPointer,video->streamBuffer,size);
+			CTexelAllocator::GetInstance()->glvkCopyPointer(video->bufferPointer,video->streamBuffer,size);
         }
 
         //	This call is not necessary since the texel allocator is locked by the display,

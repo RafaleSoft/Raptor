@@ -87,6 +87,7 @@ CVulkanDevice::CVulkanDevice(void)
 	vkBeginCommandBuffer = NULL;
 	vkEndCommandBuffer = NULL;
 	vkCmdBindVertexBuffers = NULL;
+	vkCmdBindIndexBuffer = NULL;
 	vkCmdSetViewport = NULL;
 	vkCmdSetScissor = NULL;
 	vkCmdDraw = NULL;
@@ -261,7 +262,6 @@ bool CVulkanDevice::presentSwapChainImage()
 bool CVulkanDevice::vkBindPipeline(	const CVulkanPipeline& pipeline,
 									const VkRect2D& scissor,
 									const CColor::RGBA& clearColor,
-									VkBuffer binding,
 									VkDeviceSize offset)
 {
 	// TODO : check currentRenderingResources is valid ?
@@ -348,6 +348,7 @@ bool CVulkanDevice::vkBindPipeline(	const CVulkanPipeline& pipeline,
 	vkCmdSetViewport( resource.commandBuffer, 0, 1, &viewport );
 	vkCmdSetScissor( resource.commandBuffer, 0, 1, &scissor );
 
+	VkBuffer binding = pDeviceMemory->getLockedBuffer(IDeviceMemoryManager::IBufferObject::VERTEX_BUFFER);
 	vkCmdBindVertexBuffers( resource.commandBuffer, 0, 1, &binding, &offset );
 
 	vkCmdDraw( resource.commandBuffer, 4, 1, 0, 0 );
@@ -741,7 +742,7 @@ bool CVulkanDevice::vkCreateLogicalDevice(	const VkPhysicalDevice &physicalDevic
 	if (!CVulkanMemory::ManageDevice(physicalDevice,device))
 		return false;
 	else
-		pDeviceMemory = CVulkanMemory::GetInstance(device);
+		pDeviceMemory = CVulkanMemory::CreateMemoryManager(device);
 
 
 	vkDeviceWaitIdle = (PFN_vkDeviceWaitIdle)(vkGetDeviceProcAddr(device,"vkDeviceWaitIdle"));
@@ -780,6 +781,7 @@ bool CVulkanDevice::vkCreateLogicalDevice(	const VkPhysicalDevice &physicalDevic
 	vkBeginCommandBuffer = (PFN_vkBeginCommandBuffer)(vkGetDeviceProcAddr(device,"vkBeginCommandBuffer"));
 	vkEndCommandBuffer = (PFN_vkEndCommandBuffer)(vkGetDeviceProcAddr(device,"vkEndCommandBuffer"));
 	vkCmdBindVertexBuffers = (PFN_vkCmdBindVertexBuffers)(vkGetDeviceProcAddr(device,"vkCmdBindVertexBuffers"));
+	vkCmdBindIndexBuffer = (PFN_vkCmdBindIndexBuffer)(vkGetDeviceProcAddr(device,"vkCmdBindIndexBuffer"));
 	vkCmdSetViewport = (PFN_vkCmdSetViewport)(vkGetDeviceProcAddr(device,"vkCmdSetViewport"));
 	vkCmdSetScissor = (PFN_vkCmdSetScissor)(vkGetDeviceProcAddr(device,"vkCmdSetScissor"));
 	vkCmdDraw = (PFN_vkCmdDraw)(vkGetDeviceProcAddr(device,"vkCmdDraw"));

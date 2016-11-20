@@ -213,7 +213,7 @@ CRaptorComputeMemory::clCreateBuffer(	size_t size,
 }
 
 CRaptorComputeMemory::IBufferObject*
-CRaptorComputeMemory::clCreateBuffer(CMemory::IBufferObject *glBuffer)
+CRaptorComputeMemory::clCreateBuffer(IDeviceMemoryManager::IBufferObject *glBuffer)
 {
 	CComputeBufferObject *res = NULL;
 

@@ -76,7 +76,7 @@ C3DSqueleton::C3DSqueleton(CObject3D *root,const std::string& name)
 	}
 	else
 	{
-		void* mem = CMemory::GetInstance()->allocate(sizeof(bone), 1, 16);
+		void* mem = CHostMemoryManager::GetInstance()->allocate(sizeof(bone), 1, 16);
 		lp_bone bone_root = new(mem) bone;
 
 		bone_root->is_locked = false;
@@ -174,7 +174,7 @@ object_link	*C3DSqueleton::addLink(bone *parent,
 	if (parent == NULL)
 		return NULL;
 
-	void* mem = CMemory::GetInstance()->allocate(sizeof(object_link), 1, 16);
+	void* mem = CHostMemoryManager::GetInstance()->allocate(sizeof(object_link), 1, 16);
 	object_link *lnk = new(mem)object_link;
 
 
@@ -208,7 +208,7 @@ bone *C3DSqueleton::addBone(object_link *pivot,CVector4f & length,CObject3D *obj
 														CRaptorMessages::ID_LOST_LINK);
 	}
 
-	void* mem = CMemory::GetInstance()->allocate(sizeof(bone), 1, 16);
+	void* mem = CHostMemoryManager::GetInstance()->allocate(sizeof(bone), 1, 16);
 	lp_bone b = new(mem)bone;
 
 	b->is_locked = false;

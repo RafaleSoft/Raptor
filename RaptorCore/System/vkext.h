@@ -150,6 +150,7 @@
 		LINKAGE PFN_vkCmdEndRenderPass vkCmdEndRenderPass; \
 		LINKAGE PFN_vkCmdBindPipeline vkCmdBindPipeline; \
 		LINKAGE PFN_vkCmdBindVertexBuffers vkCmdBindVertexBuffers; \
+		LINKAGE PFN_vkCmdBindIndexBuffer vkCmdBindIndexBuffer; \
 		LINKAGE PFN_vkBeginCommandBuffer vkBeginCommandBuffer; \
 		LINKAGE PFN_vkEndCommandBuffer vkEndCommandBuffer; \
 		LINKAGE PFN_vkCmdSetViewport vkCmdSetViewport; \
@@ -225,7 +226,6 @@
 		LINKAGE PFN_vkCmdSetStencilWriteMask vkCmdSetStencilWriteMask; \
 		LINKAGE PFN_vkCmdSetStencilReference vkCmdSetStencilReference; \
 		LINKAGE PFN_vkCmdBindDescriptorSets vkCmdBindDescriptorSets; \
-		LINKAGE PFN_vkCmdBindIndexBuffer vkCmdBindIndexBuffer; \
 		LINKAGE PFN_vkCmdDrawIndexed vkCmdDrawIndexed; \
 		LINKAGE PFN_vkCmdDrawIndirect vkCmdDrawIndirect; \
 		LINKAGE PFN_vkCmdDrawIndexedIndirect vkCmdDrawIndexedIndirect; \

@@ -113,20 +113,16 @@ bool CRaptorVulkanDisplay::glRender(void)
 
 		CTimeObject::markTime(this);
 
-        //m_pGAllocator->glLockMemory(true);
+        m_pGAllocator->glvkLockMemory(true);
 		//m_pTAllocator->glLockMemory(true);
 
-		VkBuffer binding = VK_NULL_HANDLE;
-		VkDeviceSize offset = 0;
-		m_pGAllocator->vkGetBindPoint(pVertices, binding, offset);
-
 		CVulkanPipeline *pipeline = m_pipelines[0];
-		vk_device.vkBindPipeline(*pipeline,scissor,cs.framebufferState.colorClearValue,binding,offset);
+		vk_device.vkBindPipeline(*pipeline,scissor,cs.framebufferState.colorClearValue,(VkDeviceSize)pVertices);
 
 		//C3DScene *pScene = getRootScene();
 		//pScene->vkRender();
 
-        //m_pGAllocator->glLockMemory(false);
+        m_pGAllocator->glvkLockMemory(false);
 		//m_pTAllocator->glLockMemory(false);
 
 		rtime = CTimeObject::deltaMarkTime(this);
@@ -229,12 +225,7 @@ float VertexData[4*8] =
 };
 
 pVertices = m_pGAllocator->allocateVertices(32);
-m_pGAllocator->vkCopyPointer(pVertices,&VertexData[0],32);
-
-//CVulkanMemory::IMemoryWrapper* memory = device.getMemory();
-//pBuffer = memory->vkCreateBufferObject(sizeof(VertexData),CVulkanMemory::IBufferObject::VERTEX_BUFFER);
-//memory->vkSetBufferObjectData(*pBuffer,0,&VertexData[0],sizeof(VertexData));
-
+m_pGAllocator->glvkCopyPointer(pVertices,&VertexData[0],32);
 
 		CVulkanShader *vshader = device.createShader();
 		CVulkanShader *fshader = device.createShader();
@@ -280,9 +271,9 @@ void CRaptorVulkanDisplay::allocateResources(void)
     {
 		CContextManager *manager = CContextManager::GetInstance();
 		CVulkanDevice &vk_device = manager->vkGetDevice(m_context);
-		CVulkanMemory::IMemoryWrapper* pDeviceMemory = vk_device.getMemory();
+		IDeviceMemoryManager* pDeviceMemory = vk_device.getMemory();
 
-		bool initAllocator = m_pGAllocator->vkInitMemory(pDeviceMemory,config.m_uiPolygons,config.m_uiVertices);
+		bool initAllocator = m_pGAllocator->glvkInitMemory(pDeviceMemory,config.m_uiPolygons,config.m_uiVertices);
 		if (!initAllocator)
 		{
 			Raptor::GetErrorManager()->generateRaptorError(	CGeometry::CGeometryClassID::GetClassId(),
@@ -296,5 +287,5 @@ void CRaptorVulkanDisplay::allocateResources(void)
     //! a UnBind/Bind sequence is performed, which is unnecessary.
     //CGeometryAllocator::SetCurrentInstance(oldAllocator);
     if ((m_pGOldAllocator != m_pGAllocator) && (m_pGOldAllocator != NULL))
-        m_pGOldAllocator->glLockMemory(false);
+        m_pGOldAllocator->glvkLockMemory(false);
 }

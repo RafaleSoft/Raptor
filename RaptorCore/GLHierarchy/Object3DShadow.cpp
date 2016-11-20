@@ -442,7 +442,7 @@ void CObject3DShadow::glRenderShadowContour()
     const CObject3DContour::CONTOUR_VOLUME& scv = pContour->getContourVolume();
 
     if (CGeometryAllocator::GetInstance()->isMemoryRelocated())
-        CGeometryAllocator::GetInstance()->glLockMemory(false);
+        CGeometryAllocator::GetInstance()->glvkLockMemory(false);
 
 	glColor4f(1.0f,1.0f,1.0f,0.5f);
 	glEnableClientState(GL_VERTEX_ARRAY);
@@ -454,7 +454,7 @@ void CObject3DShadow::glRenderShadowContour()
 	glDisableClientState(GL_COLOR_ARRAY);
 
     if (CGeometryAllocator::GetInstance()->isMemoryRelocated())
-        CGeometryAllocator::GetInstance()->glLockMemory(true);
+        CGeometryAllocator::GetInstance()->glvkLockMemory(true);
 
     m_pAttributes->reBuild = true;
 
@@ -464,7 +464,7 @@ void CObject3DShadow::glRenderShadowContour()
 void CObject3DShadow::glRenderShadowVolume()
 {
     if (CGeometryAllocator::GetInstance()->isMemoryRelocated())
-        CGeometryAllocator::GetInstance()->glLockMemory(false);
+        CGeometryAllocator::GetInstance()->glvkLockMemory(false);
 
     CObject3DContour *pContour = m_pVisibleContours[0];
 	const CObject3DContour::CONTOUR_VOLUME& scv = pContour->getContourVolume();
@@ -572,7 +572,7 @@ void CObject3DShadow::glRenderShadowVolume()
 	}
 */
     if (CGeometryAllocator::GetInstance()->isMemoryRelocated())
-        CGeometryAllocator::GetInstance()->glLockMemory(true);
+        CGeometryAllocator::GetInstance()->glvkLockMemory(true);
 
     m_pAttributes->reBuild = true;
 

@@ -60,7 +60,7 @@ bool CDefaultBumpmapLoader::apply(CTextureObject* const src,
 
 	unsigned char *texturedata = src->getTexels();
 
-    CMemory::Allocator<unsigned char> allocator;
+    CHostMemoryManager::Allocator<unsigned char> allocator;
 	unsigned char *bumpMap = allocator.allocate(v);
 
     for (int i=0; i<v; i+=4)
@@ -137,7 +137,7 @@ bool CDefaultBumpmapLoader::apply(CTextureObject* const src,
 
     memcpy(texturedata,bumpMap,v);
 
-    CMemory::GetInstance()->garbage(bumpMap);
+    CHostMemoryManager::GetInstance()->garbage(bumpMap);
 
 	return true;
 }

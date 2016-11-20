@@ -89,7 +89,7 @@ LRESULT CALLBACK WindowProc(  HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			glcs.renderer = CRaptorDisplayConfig::PIXEL_BUFFER_FILTER_CHAIN;
 			glcs.double_buffer = true;
 			glcs.depth_buffer = true;
-	        glcs.display_mode = CGL_FLOAT_16 | CGL_DEPTH;
+	        glcs.display_mode = CGL_FLOAT_32 /*CGL_RGBA*/ | CGL_DEPTH;
 			glcs.draw_logo = true;
             pDisplay = Raptor::glCreateDisplay(glcs);
 

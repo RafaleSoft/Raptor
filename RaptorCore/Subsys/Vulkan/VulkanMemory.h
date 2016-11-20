@@ -19,41 +19,53 @@
 	#include <System/Memory.h>
 #endif
 
+
+
 RAPTOR_NAMESPACE_BEGIN
 
+class CVulkanBufferObject;
 
 class CVulkanMemory
 {
 public:
 #if defined(VK_VERSION_1_0)
-	class IBufferObject : public CMemory::IBufferObject
-    {
-	public:
-		//!	Returns the allocated memory pointer.
-		virtual VkDeviceMemory	getAddress(void) const = 0;
-		virtual VkBuffer getBuffer(void) const = 0;
-
-    protected:
-		IBufferObject() {};
-        virtual ~IBufferObject() {};
-
-	private:
-        IBufferObject(const IBufferObject& );
-		IBufferObject& operator=(const IBufferObject& );
-	};
-
-	class IMemoryWrapper : public IDeviceMemoryManager
+	class CVulkanMemoryWrapper : public IDeviceMemoryManager
 	{
 	public:
-		virtual CVulkanMemory::IBufferObject* 
-			vkCreateBufferObject(	VkDeviceSize size,
-									CVulkanMemory::IBufferObject::BUFFER_KIND kind = CVulkanMemory::IBufferObject::VERTEX_BUFFER) const = 0;
+		CVulkanMemoryWrapper(const CVulkanMemory& m,VkDevice d);
 
+		virtual bool relocationAvailable(void) const;
+
+		virtual IDeviceMemoryManager::IBufferObject *
+			createBufferObject(	IDeviceMemoryManager::IBufferObject::BUFFER_KIND kind, 
+								IDeviceMemoryManager::IBufferObject::BUFFER_MODE mode, 
+								uint64_t size);
+
+		virtual void setBufferObjectData(	IDeviceMemoryManager::IBufferObject &bo,
+											uint64_t dstOffset,
+											const void* src,
+											uint64_t sz);
+
+		virtual void getBufferObjectData(	IDeviceMemoryManager::IBufferObject &vb,
+											uint64_t srcOffset,
+											void* dst,
+											uint64_t sz);
+
+		virtual bool lockBufferObject(IDeviceMemoryManager::IBufferObject &bo);
+
+		virtual bool unlockBufferObject(IDeviceMemoryManager::IBufferObject &bo);
 		
-		virtual void vkSetBufferObjectData(	const CVulkanMemory::IBufferObject &vb,
-											VkDeviceSize dstOffset,
-											const void* srcData,
-											VkDeviceSize sz) const = 0;
+		virtual bool releaseBufferObject(IDeviceMemoryManager::IBufferObject* &bo);
+
+		VkBuffer getLockedBuffer(IDeviceMemoryManager::IBufferObject::BUFFER_KIND kind) const;
+
+
+	private:
+		const CVulkanMemory& memory;
+		VkDevice device;
+
+		std::map<const IDeviceMemoryManager::IBufferObject*,const CVulkanBufferObject*> m_pBuffers;
+		const CVulkanBufferObject* currentBuffers[IDeviceMemoryManager::IBufferObject::NB_BUFFER_KIND];
 	};
 
 
@@ -62,21 +74,21 @@ public:
     //! @param size : sets the size in bytes of the buffer and allocates uninitialized memory
 	//! @param initialData : a pointer to data to initialize the buffer if necessary.
     //! @return the newly allocated buffer object or NULL if allocation failed.
-    CVulkanMemory::IBufferObject* vkCreateBufferObject(	VkDevice device,
-														VkDeviceSize size,
-														CVulkanMemory::IBufferObject::BUFFER_KIND kind = CVulkanMemory::IBufferObject::VERTEX_BUFFER) const;
+    CVulkanBufferObject* vkCreateBufferObject(	VkDevice device,
+												VkDeviceSize size,
+												IDeviceMemoryManager::IBufferObject::BUFFER_KIND kind) const;
 
 	//!	This method destroys a buffer objet
-	bool vkDestroyBufferObject(VkDevice device, CVulkanMemory::IBufferObject* buffer);
+	bool vkDestroyBufferObject(VkDevice device, const CVulkanBufferObject* pBuffer) const;
 
 	void vkSetBufferObjectData(	VkDevice device,
-								const CVulkanMemory::IBufferObject &vb,
+								const CVulkanBufferObject &vb,
 								VkDeviceSize dstOffset,
 								const void* srcData,
 								VkDeviceSize sz) const;
 
 
-	static CVulkanMemory::IMemoryWrapper* GetInstance(VkDevice physicalDevice);
+	static CVulkanMemoryWrapper* CreateMemoryManager(VkDevice logicalDevice);
 
 	static CVulkanMemory& GetInstance(VkPhysicalDevice physicalDevice,
 									  const VkPhysicalDeviceMemoryProperties &memory_properties);

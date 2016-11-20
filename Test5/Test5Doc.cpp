@@ -126,9 +126,9 @@ CTest5Doc::CTest5Doc(const RAPTOR_HANDLE& device,const char* title)
         pConsole->glInit("",true);
         pConsole->showStatus(true);
         pConsole->activateConsole(true);
-
-        GLInitContext();
 #endif
+        //GLInitContext();
+
 		m_pDisplay->glUnBindDisplay();
 	}
 }
@@ -172,6 +172,8 @@ void CTest5Doc::GLInitContext(void)
 	obj->getEditor().scaleTexCoords(4.0f,4.0f);
 	obj->getRenderingModel().addModel(CGeometry::CRenderingModel::CGL_TANGENTS);
 
+#ifdef VULKAN_TEST
+#else
 	CTextureFactory &f = CTextureFactory::getDefaultFactory();
 	m_pTexture = f.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_ALPHA_TRANSPARENT,CTextureObject::CGL_BILINEAR);
 	f.glLoadTexture(m_pTexture,"earth.TGA");
@@ -275,6 +277,7 @@ void CTest5Doc::GLInitContext(void)
 	CTimeObject::setTimeFactor(1.0f);
 	CAnimator *pAnimator = new CAnimator();
 	CAnimator::SetAnimator(pAnimator);
+#endif
 
 /*
 	CRaptorDisplayConfig glcs;

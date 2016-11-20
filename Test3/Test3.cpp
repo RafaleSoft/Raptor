@@ -317,8 +317,8 @@ void GLinterop(CRaptorDisplay *pDisplay,RAPTOR_HANDLE wnd)
 	pApp->run();
 
 	/*
-	CMemory::CBufferObject *glBuffer = CMemory::GetInstance()->glAllocateBufferObject(	CMemory::CBufferObject::VERTEX_BUFFER,
-																						CMemory::CBufferObject::DYNAMIC,sz);
+	CHostMemoryManager::CBufferObject *glBuffer = CHostMemoryManager::GetInstance()->glAllocateBufferObject(	CHostMemoryManager::CBufferObject::VERTEX_BUFFER,
+																						CHostMemoryManager::CBufferObject::DYNAMIC,sz);
 	CParticle::PARTICLE_ATTRIBUTE *buf = new CParticle::PARTICLE_ATTRIBUTE[sz];
 	{
 		for (size_t i=0;i<sz;i++)
@@ -327,7 +327,7 @@ void GLinterop(CRaptorDisplay *pDisplay,RAPTOR_HANDLE wnd)
 			memcpy(&buf[i],&p,sizeof(CParticle::PARTICLE_ATTRIBUTE));
 		}
 	}
-	CMemory::GetInstance()->glSetBufferObjectData(*glBuffer,0,buf,sz);						
+	CHostMemoryManager::GetInstance()->glSetBufferObjectData(*glBuffer,0,buf,sz);						
 
 	CRaptorComputeMemory &mem = CRaptorComputeMemory::GetInstance(0,1);
 	CRaptorComputeMemory::CBufferObject* cBuffer = mem.clCreateBuffer(glBuffer);
@@ -363,7 +363,7 @@ void GLinterop(CRaptorDisplay *pDisplay,RAPTOR_HANDLE wnd)
 	//	Todo : add semaphore or callback to continue when results are available
 	//Sleep(1000);
 
-	CMemory::GetInstance()->glGetBufferObjectData(*glBuffer,0,buf,20*sizeof(GL_COORD_VERTEX));
+	CHostMemoryManager::GetInstance()->glGetBufferObjectData(*glBuffer,0,buf,20*sizeof(GL_COORD_VERTEX));
 	for (int i=0;i<20;i++)
 		cout << "buf[" << i << "]: " << buf[i].position.x << " " 
 			 << buf[i].position.y << " " << buf[i].position.z
@@ -372,7 +372,7 @@ void GLinterop(CRaptorDisplay *pDisplay,RAPTOR_HANDLE wnd)
 	
 	pJob->clDestroyJob();
 	mem.clDestroyBuffer(cBuffer);
-	CMemory::GetInstance()->glReleaseBufferObject(glBuffer);
+	CHostMemoryManager::GetInstance()->glReleaseBufferObject(glBuffer);
 	*/
 }
 

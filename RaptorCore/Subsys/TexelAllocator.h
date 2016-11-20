@@ -31,17 +31,16 @@ public:
 	virtual ~CTexelAllocator();
 
 	//!	Initialize memory blocks
-	bool	glInitMemory(unsigned int texelSize);
-
-	//!	Indicates if relocation is possible
-	bool	glUseMemoryRelocation(void);
+	bool	glvkInitMemory(	IDeviceMemoryManager* pDeviceMemory,
+							uint64_t texelSize);
 
     //! Returns the relocate state ( set with the method here above ).
-    bool    isMemoryRelocated(void) const { return m_bRelocated; };
+    bool    isMemoryRelocated(void) const
+	{ return ((NULL != deviceMemoryManager) && (relocatedTexels != NULL)); };
 
     //! Lock memory data and relocation so that no change can be made.
     //! If data is relocated, High Performance blocks are activated on server
-    bool    glLockMemory(bool lock);
+    bool    glvkLockMemory(bool lock);
 
 	//!	Returns the locking status of the data.
 	bool	isMemoryLocked(void) const { return m_bLocked; };
@@ -49,11 +48,11 @@ public:
 
 	//!	This method returns the address of a free block of the requested size, ( nb of texels )
 	//!	or NULL if not enough space or other error.
-	unsigned char*	const allocateTexels(unsigned int size);
+	unsigned char*	const allocateTexels(uint64_t size);
 
 	//!	This method returns the address of a free block of the requested size, ( nb of texels )
 	//!	or NULL if not enough space or other error.
-	float*	const allocateFloatTexels(unsigned int size);
+	float*	const allocateFloatTexels(uint64_t size);
 
 	//!	Release the block allocated here above.
 	//! @return: false if block not found or if error, true otherwise
@@ -66,10 +65,10 @@ public:
 	//!	@param size : the size of data to be copied that should always be less than the allocated size.
 	//!	If size is 0, the dst memory size is recomputed, otherwise, size floats are copied.
 	//!	Rq: No other testing are performed !
-    void glCopyPointer(unsigned char *dst, unsigned char *src, unsigned int size = 0);
+    void glvkCopyPointer(unsigned char *dst, unsigned char *src, uint64_t size = 0);
 
-	void *glMapPointer(void *pointer);
-	void *glUnMapPointer(void *pointer);
+	void *glvkMapPointer(void *pointer);
+	void *glvkUnMapPointer(void *pointer);
 
 
 private:
@@ -82,10 +81,9 @@ private:
 	static CTexelAllocator	*m_pInstance;
 
 	//!	The memory state
-	bool	m_bRelocated;
     bool    m_bLocked;
 
-	CMemory::Allocator<unsigned char> charAlloc;
+	CHostMemoryManager::Allocator<unsigned char> charAlloc;
 
 	typedef struct data_bloc_t
 	{
@@ -102,7 +100,11 @@ private:
 	data_bloc	texels;
 
 	//!	If relocated, High Performance buffer object
-	CMemory::IBufferObject *relocatedTexels;
+	IDeviceMemoryManager::IBufferObject *relocatedTexels;
+
+	//!	Memory manager for the device hosting the display holding this allocator.
+	//! (Vulkan host memory is per device)
+	IDeviceMemoryManager	*deviceMemoryManager;
 
 	//! Actual memory structure : bloc fragments of global allocated space
 	//!	IMPORTANT: The structure implementation requires a binary tree for template class map<>
