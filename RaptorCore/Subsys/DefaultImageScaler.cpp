@@ -61,7 +61,7 @@ bool CDefaultImageScaler::apply(CTextureObject* const src,
         //! Allocate a destination bloc for the scaled result
         if (pTexels != NULL)
         {
-            CMemory::Allocator<unsigned char> allocator;
+            CHostMemoryManager::Allocator<unsigned char> allocator;
             texels = allocator.allocate(powx*powy*4);
         }
         else
@@ -70,7 +70,7 @@ bool CDefaultImageScaler::apply(CTextureObject* const src,
 			float *pfTexels = src->getFloatTexels();
             if (pfTexels != NULL)
             {
-                CMemory::Allocator<float> allocator;
+                CHostMemoryManager::Allocator<float> allocator;
                 texels = allocator.allocate(powx*powy*4);
             }
             else
@@ -96,7 +96,7 @@ bool CDefaultImageScaler::apply(CTextureObject* const src,
 
         memcpy(pTexels,texels,powx*powy*4*elemSize);
 
-        CMemory::GetInstance()->garbage(texels);
+        CHostMemoryManager::GetInstance()->garbage(texels);
 	}
 
     return true;

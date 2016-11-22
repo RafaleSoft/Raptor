@@ -110,9 +110,9 @@ Global::~Global()
     //    glDestroyDisplay(status.defaultDisplay);
     CContextManager::GetInstance()->glDestroyWindow(raptorStatus.defaultWindow);
 
-    delete CMemory::GetInstance();
+    delete CHostMemoryManager::GetInstance();
 	delete CContextManager::GetInstance();
-    delete CRaptorDataManager::getInstance();
+    delete CRaptorDataManager::GetInstance();
 
     if (raptorStatus.messages != NULL)
         delete raptorStatus.messages;
@@ -122,14 +122,6 @@ Global::~Global()
 	delete (raptorStatus.pDefaultBumpmapLoader);
 	delete (raptorStatus.pDefaultImageScaler);
 	delete (raptorStatus.pDefaultMipmapBuilder);
-
-#if defined(_WIN32) && defined (VK_VERSION_1_0)
-	if (0 != raptorStatus.vulkanModule.handle)
-	{
-		HMODULE module = (HMODULE)raptorStatus.vulkanModule.handle;
-		FreeLibrary(module);
-	}
-#endif
 
 	raptorStatus.initialised = false;
 }
@@ -160,14 +152,14 @@ bool Global::init(const CRaptorConfig& config)
 		globalConfig = config; 
 
 		//	Initialise memory first
-		CMemory::GetInstance()->init();
-		CMemory::GetInstance()->setGarbageMaxSize(config.m_uiGarbageSize);
+		CHostMemoryManager::GetInstance()->init();
+		CHostMemoryManager::GetInstance()->setGarbageMaxSize(config.m_uiGarbageSize);
 
         //Initialize messages & errors
 		raptorStatus.errorMgr = new CRaptorErrorManager();
 		raptorStatus.errorMgr->logToFile(config.m_logFile);
         raptorStatus.messages = new CRaptorMessages();
-		CRaptorDataManager  *dataManager = CRaptorDataManager::getInstance();
+		CRaptorDataManager  *dataManager = CRaptorDataManager::GetInstance();
 		if (dataManager != NULL)
 		{
 			//	Erase previous files in case of updates
@@ -206,24 +198,13 @@ bool Global::init(const CRaptorConfig& config)
 		raptorStatus.pDefaultImageScaler = new CDefaultImageScaler();
 		raptorStatus.pDefaultMipmapBuilder = new CDefaultMipmapBuilder();
 
-		raptorStatus.vulkanModule.handle = 0;
-		raptorStatus.vulkanModule.hClass = 0;
-
-#if defined(_WIN32) && defined (VK_VERSION_1_0)
-		char buffer[MAX_PATH];
-		GetEnvironmentVariable("VULKAN_BIN_PATH",buffer,MAX_PATH);
-		std::string vkpath = buffer;
-		vkpath += "\\VULKAN-1.DLL";
-		HMODULE module = LoadLibrary(vkpath.c_str());
-		raptorStatus.vulkanModule.handle = (unsigned int)module;
-		if (NULL == module)
+#if defined (VK_VERSION_1_0)
+		if (!pContext->vkInit())
 		{
 			raptorStatus.errorMgr->generateRaptorError(	CVulkanClassID::GetClassId(),
 														CRaptorErrorManager::RAPTOR_VK_ERROR,
 														"Unable to load Vulkan module !");
 		}
-		else
-			pContext->vkInitContext();
 #endif
 
 		raptorStatus.initialised = true;

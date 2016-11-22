@@ -28,11 +28,6 @@ extern "C" {
 #endif
 
 
-// define linkage specifier for declarators
-#define DEFAULT_LINKAGE
-#define STATIC_LINKAGE        static
-#define EXTERN_LINKAGE      extern
-
 /*	GL VERSION 1.2	*/
 #if defined(GL_VERSION_1_2)
 	#define GL_UNSIGNED_BYTE_3_3_2            0x8032

@@ -194,12 +194,12 @@ RAPTOR_HANDLE CTextureFactory::glPreloadTexture(CTextureObject* const T,
 			if (T->getTexels() != NULL)
 			{
 				unsigned char *const texPointer = CTexelAllocator::GetInstance()->allocateTexels(size);
-				CTexelAllocator::GetInstance()->glCopyPointer(texPointer,T->getTexels(),size);
+				CTexelAllocator::GetInstance()->glvkCopyPointer(texPointer,T->getTexels(),size);
 			}
 			else if (T->getFloatTexels() != NULL)
 			{
 				float* const texPointer = CTexelAllocator::GetInstance()->allocateFloatTexels(size);
-				CTexelAllocator::GetInstance()->glCopyPointer(	(unsigned char *)texPointer,
+				CTexelAllocator::GetInstance()->glvkCopyPointer((unsigned char *)texPointer,
 																(unsigned char *)T->getFloatTexels(),
 																4*size);
 			}

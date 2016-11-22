@@ -17,6 +17,7 @@
 	#include "System/Global.h"
 #endif
 
+
 RAPTOR_NAMESPACE_BEGIN
 
 CGeometryAllocator	*CGeometryAllocator::m_pInstance = NULL;
@@ -34,8 +35,9 @@ RAPTOR_NAMESPACE
 //////////////////////////////////////////////////////////////////////
 
 CGeometryAllocator::CGeometryAllocator():
-	m_bRelocated(false),m_bLocked(false),
-	relocatedFaceIndexes(NULL),relocatedVertices(NULL)
+	m_bLocked(false),
+	relocatedFaceIndexes(NULL),relocatedVertices(NULL),
+	deviceMemoryManager(NULL)
 {
 	faceIndexes.address.us_address = NULL;
 	faceIndexes.size = 0;
@@ -47,14 +49,13 @@ CGeometryAllocator::CGeometryAllocator():
 CGeometryAllocator::~CGeometryAllocator()
 {
 	if (faceIndexes.address.us_address != NULL)
-		CMemory::GetInstance()->release(faceIndexes.address.us_address);
+		CHostMemoryManager::GetInstance()->release(faceIndexes.address.us_address);
 	if (vertices.address.f_address != NULL)
-		CMemory::GetInstance()->release(vertices.address.f_address);
+		CHostMemoryManager::GetInstance()->release(vertices.address.f_address);
 	if (relocatedFaceIndexes != NULL)
-		CMemory::GetInstance()->glReleaseBufferObject(relocatedFaceIndexes);
-
+		deviceMemoryManager->releaseBufferObject(relocatedFaceIndexes);
 	if (relocatedVertices != NULL)
-		CMemory::GetInstance()->glReleaseBufferObject(relocatedVertices);
+		deviceMemoryManager->releaseBufferObject(relocatedVertices);
 }
 
 CGeometryAllocator	*CGeometryAllocator::GetInstance(void)
@@ -76,82 +77,80 @@ CGeometryAllocator	*CGeometryAllocator::SetCurrentInstance(CGeometryAllocator* g
 	return pInstance;
 }
 
-bool	CGeometryAllocator::glUseMemoryRelocation(void)
+void CGeometryAllocator::glvkCopyPointer(float *dst, float *src, uint64_t size)
 {
-#if (defined(GL_ARB_vertex_buffer_object) || defined(GL_NV_vertex_array_range))
-	if (Raptor::glIsExtensionSupported("GL_ARB_vertex_buffer_object") || 
-		Raptor::glIsExtensionSupported("GL_NV_vertex_array_range"))
-	{
-		m_bRelocated = (indexBlocs.empty() && vertexBlocs.empty());
-
-		// TODO : call again init memory to allocate relocation pointers
-
-		return m_bRelocated;
-	}
-	else
-		return false;
-#else
-	return false;
-#endif
-}
-
-void CGeometryAllocator::glCopyPointer(float *dst, float *src, unsigned int size)
-{
-    if ((!m_bRelocated) /*|| (m_bLocked)*/ || (src == NULL) || (dst == NULL))
+    if ((NULL == deviceMemoryManager) || (NULL == relocatedVertices) || (NULL == src) || (NULL == dst))
         return;
 
-	if (size == 0)
+	if (0 == size)
 	{
 		// find memory bloc and map a copy to local memory.
 		map<float*,unsigned int>::const_iterator blocPos = vertexBlocs.find(dst);
 		if (blocPos != vertexBlocs.end())
-			CMemory::GetInstance()->glSetBufferObjectData(	*relocatedVertices,
-															(unsigned int)dst,
-															src,
-															(*blocPos).second);
+		{
+			deviceMemoryManager->setBufferObjectData(	*relocatedVertices,
+														(unsigned int)dst,
+														src,
+														(*blocPos).second);
+		}
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+		else
+		{
+			Raptor::GetErrorManager()->generateRaptorError(	CPersistence::CPersistenceClassID::GetClassId(),
+															CRaptorErrorManager::RAPTOR_WARNING,
+				                                            "The destination device buffer does not exist");
+		}
+#endif
 	}
 	else
 		// No ckech is done to validate that dst is a bloc of size 'size'
-		CMemory::GetInstance()->glSetBufferObjectData(	*relocatedVertices,
-														(unsigned int)dst,
-														src,
-														sizeof(float)*size);
+		deviceMemoryManager->setBufferObjectData(	*relocatedVertices,
+													(unsigned int)dst,
+													src,
+													sizeof(float)*size);
 
     CATCH_GL_ERROR
 }
 
-void CGeometryAllocator::glCopyPointer(unsigned short *dst, unsigned short *src, unsigned int size)
+void CGeometryAllocator::glvkCopyPointer(unsigned short *dst, unsigned short *src, uint64_t size)
 {
-    if ((!m_bRelocated) /*|| (m_bLocked)*/ || (src == NULL) || (dst == NULL))
+    if ((NULL == deviceMemoryManager) || (NULL == relocatedFaceIndexes) || (NULL == src) || (NULL == dst))
         return;
 
-	if (size == 0)
+	if (0 == size)
 	{
 		// find memory bloc and map a copy to local memory.
 		map<unsigned short*,unsigned int>::const_iterator blocPos = indexBlocs.find(dst);
 		if (blocPos != indexBlocs.end())
-			CMemory::GetInstance()->glSetBufferObjectData(	*relocatedFaceIndexes,
-															(unsigned int)dst,
-															src,
-															(*blocPos).second);
+		{
+			deviceMemoryManager->setBufferObjectData(	*relocatedFaceIndexes,
+														(unsigned int)dst,
+														src,
+														(*blocPos).second);
+		}
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+		else
+		{
+			Raptor::GetErrorManager()->generateRaptorError(	CPersistence::CPersistenceClassID::GetClassId(),
+															CRaptorErrorManager::RAPTOR_WARNING,
+				                                            "The destination device buffer does not exist");
+		}
+#endif
 	}
 	else
 		// No ckech is done to validate that dst is a bloc of size 'size'
-		CMemory::GetInstance()->glSetBufferObjectData(	*relocatedFaceIndexes,
-														(unsigned int)dst,
-														src,
-														sizeof(unsigned short)*size);
+		deviceMemoryManager->setBufferObjectData(	*relocatedFaceIndexes,
+													(unsigned int)dst,
+													src,
+													sizeof(unsigned short)*size);
 
     CATCH_GL_ERROR
 }
 
-unsigned short *CGeometryAllocator::glMapPointer(unsigned short *pointer)
+unsigned short *CGeometryAllocator::glvkMapPointer(unsigned short *pointer)
 {
-    if ((!m_bRelocated) || (m_bLocked))
+    if ((NULL == relocatedFaceIndexes) || (m_bLocked) || (NULL == pointer))
         return pointer;
-
-    if ((relocatedFaceIndexes == NULL) || (pointer == NULL))
-        return NULL;
 
     // already mapped ?
     if (indexReMap.find(pointer) != indexReMap.end())
@@ -165,10 +164,10 @@ unsigned short *CGeometryAllocator::glMapPointer(unsigned short *pointer)
         indexReMap[pointer] = localData;
         indexReMap[localData] = pointer;
 
-        CMemory::GetInstance()->glGetBufferObjectData(	*relocatedFaceIndexes,
-														(unsigned int)pointer,
-														localData,
-														(*blocPos).second);
+        deviceMemoryManager->getBufferObjectData(	*relocatedFaceIndexes,
+													(unsigned int)pointer,
+													localData,
+													(*blocPos).second);
         CATCH_GL_ERROR
 
         return localData;
@@ -177,13 +176,10 @@ unsigned short *CGeometryAllocator::glMapPointer(unsigned short *pointer)
         return NULL;
 }
 
-unsigned short *CGeometryAllocator::glUnMapPointer(unsigned short *pointer)
+unsigned short *CGeometryAllocator::glvkUnMapPointer(unsigned short *pointer)
 {
-    if (!m_bRelocated || m_bLocked)
+	if ((NULL == relocatedFaceIndexes) || (m_bLocked) || (NULL == pointer))
         return pointer;
-
-    if ((relocatedFaceIndexes == NULL)  || (pointer == NULL))
-        return NULL;
 
     // pointer has been mapped ?
     map<unsigned short*,unsigned short*>::iterator it = indexReMap.find(pointer);
@@ -209,12 +205,12 @@ unsigned short *CGeometryAllocator::glUnMapPointer(unsigned short *pointer)
 		// Here, serverData could be relocated to compress the data
 		// and limit the number of holes or fragmentation.
 		// As we have an array of free blocs, relocation could easily be done.
-        CMemory::GetInstance()->glSetBufferObjectData(	*relocatedFaceIndexes,
-														(unsigned int)serverData,
-														pointer,
-														(*blocPos).second);
+        deviceMemoryManager->setBufferObjectData(	*relocatedFaceIndexes,
+													(unsigned int)serverData,
+													pointer,
+													(*blocPos).second);
 
-        CMemory::GetInstance()->garbage(pointer);
+        CHostMemoryManager::GetInstance()->garbage(pointer);
 
         CATCH_GL_ERROR
 
@@ -226,11 +222,8 @@ unsigned short *CGeometryAllocator::glUnMapPointer(unsigned short *pointer)
 
 unsigned short *CGeometryAllocator::glDiscardPointer(unsigned short *pointer)
 {
-	if (!m_bRelocated || m_bLocked)
+	if ((relocatedFaceIndexes == NULL) || (m_bLocked) || (NULL == pointer))
         return pointer;
-
-    if ((relocatedFaceIndexes == NULL)  || (pointer == NULL))
-        return NULL;
 
     // pointer has been mapped ?
     map<unsigned short*,unsigned short*>::iterator it = indexReMap.find(pointer);
@@ -252,7 +245,7 @@ unsigned short *CGeometryAllocator::glDiscardPointer(unsigned short *pointer)
         //  Should check for errors.
         indexReMap.erase(it2);
         
-        CMemory::GetInstance()->garbage(pointer);
+        CHostMemoryManager::GetInstance()->garbage(pointer);
 
         CATCH_GL_ERROR
 
@@ -262,13 +255,10 @@ unsigned short *CGeometryAllocator::glDiscardPointer(unsigned short *pointer)
         return NULL;
 }
 
-float *CGeometryAllocator::glMapPointer(float *pointer)
+float *CGeometryAllocator::glvkMapPointer(float *pointer)
 {
-    if (!m_bRelocated || m_bLocked)
+	if ((NULL == relocatedVertices) || (m_bLocked) || (NULL == pointer))
         return pointer;
-
-    if ((relocatedVertices == NULL)  || (pointer == NULL))
-        return NULL;
 
     // already mapped ?
     if (vertexReMap.find(pointer) != vertexReMap.end())
@@ -282,10 +272,10 @@ float *CGeometryAllocator::glMapPointer(float *pointer)
         vertexReMap[pointer] = localData;
         vertexReMap[localData] = pointer;
 
-        CMemory::GetInstance()->glGetBufferObjectData(	*relocatedVertices,
-														(unsigned int)pointer,
-														localData,
-														(*blocPos).second);
+        deviceMemoryManager->getBufferObjectData(	*relocatedVertices,
+													(unsigned int)pointer,
+													localData,
+													(*blocPos).second);
         CATCH_GL_ERROR
 
         return localData;
@@ -294,13 +284,10 @@ float *CGeometryAllocator::glMapPointer(float *pointer)
         return NULL;
 }
 
-float *CGeometryAllocator::glUnMapPointer(float *pointer)
+float *CGeometryAllocator::glvkUnMapPointer(float *pointer)
 {
-    if (!m_bRelocated || m_bLocked)
+	if ((NULL == relocatedVertices) || (m_bLocked) || (NULL == pointer))
         return pointer;
-
-    if ((relocatedVertices == NULL) || (pointer == NULL))
-        return NULL;
 
     // pointer has been mapped ?
     map<float*,float*>::iterator it = vertexReMap.find(pointer);
@@ -326,12 +313,11 @@ float *CGeometryAllocator::glUnMapPointer(float *pointer)
 		// Here, serverData could be relocated to compress the data
 		// and limit the number of holes or fragmentation.
 		// As we have an array of free blocs, relocation could easily be done.
-        CMemory::GetInstance()->glSetBufferObjectData(	*relocatedVertices,
-														(unsigned int)serverData,
-														pointer,
-														(*blocPos).second);
-
-        CMemory::GetInstance()->garbage(pointer);
+        deviceMemoryManager->setBufferObjectData(	*relocatedVertices,
+													(unsigned int)serverData,
+													pointer,
+													(*blocPos).second);
+        CHostMemoryManager::GetInstance()->garbage(pointer);
 
         CATCH_GL_ERROR
 
@@ -343,11 +329,8 @@ float *CGeometryAllocator::glUnMapPointer(float *pointer)
 
 float *CGeometryAllocator::glDiscardPointer(float *pointer)
 {
-	if (!m_bRelocated || m_bLocked)
+	if ((relocatedVertices == NULL) || (m_bLocked) || (NULL == pointer))
         return pointer;
-
-    if ((relocatedVertices == NULL) || (pointer == NULL))
-        return NULL;
 
     // pointer has been mapped ?
     map<float*,float*>::iterator it = vertexReMap.find(pointer);
@@ -370,7 +353,7 @@ float *CGeometryAllocator::glDiscardPointer(float *pointer)
         //  Should check for errors.
         vertexReMap.erase(it2);
         
-        CMemory::GetInstance()->garbage(pointer);
+        CHostMemoryManager::GetInstance()->garbage(pointer);
 
         CATCH_GL_ERROR
 
@@ -380,7 +363,8 @@ float *CGeometryAllocator::glDiscardPointer(float *pointer)
         return NULL;
 }
 
-bool	CGeometryAllocator::glInitMemory(unsigned int indexSize,unsigned int coordsSize)
+bool CGeometryAllocator::glvkInitMemory(IDeviceMemoryManager* pDeviceMemory,
+										uint64_t indexSize,uint64_t coordsSize)
 {
     if (m_bLocked)
         return false;
@@ -392,35 +376,35 @@ bool	CGeometryAllocator::glInitMemory(unsigned int indexSize,unsigned int coords
 	if ((coordsSize == 0) || (!vertexBlocs.empty()))
 		return false;
 
+	deviceMemoryManager = pDeviceMemory;
+
     //  Allow user to allocate bloc size different from default.
 	if (faceIndexes.address.us_address != NULL)
     {
-		CMemory::GetInstance()->release(faceIndexes.address.us_address);
+		CHostMemoryManager::GetInstance()->release(faceIndexes.address.us_address);
         faceIndexes.address.us_address = NULL;
     }
 	if (vertices.address.f_address != NULL)
     {
-		CMemory::GetInstance()->release(vertices.address.f_address);
+		CHostMemoryManager::GetInstance()->release(vertices.address.f_address);
         vertices.address.f_address = NULL;
     }
     if (relocatedVertices != NULL)
-        CMemory::GetInstance()->glReleaseBufferObject(relocatedVertices);
+        deviceMemoryManager->releaseBufferObject(relocatedVertices);
     if (relocatedFaceIndexes != NULL)
-        CMemory::GetInstance()->glReleaseBufferObject(relocatedFaceIndexes);
+        deviceMemoryManager->releaseBufferObject(relocatedFaceIndexes);
 
-	if (m_bRelocated)
+	if ((NULL != deviceMemoryManager) && (deviceMemoryManager->relocationAvailable()))
 	{
 		vertices.size = coordsSize * sizeof(float);
-		relocatedVertices = CMemory::GetInstance()->glAllocateBufferObject(	CMemory::IBufferObject::VERTEX_BUFFER,
-																			CMemory::IBufferObject::STATIC,
-																			vertices.size+RELOCATE_OFFSET);
+		relocatedVertices = deviceMemoryManager->createBufferObject(IDeviceMemoryManager::IBufferObject::VERTEX_BUFFER,
+																	IDeviceMemoryManager::IBufferObject::STATIC,
+																	vertices.size+RELOCATE_OFFSET);
 		
 		faceIndexes.size = indexSize  * sizeof(unsigned short);
-		relocatedFaceIndexes = CMemory::GetInstance()->glAllocateBufferObject(	CMemory::IBufferObject::INDEX_BUFFER,
-																				CMemory::IBufferObject::STATIC,
-																				faceIndexes.size+RELOCATE_OFFSET);
-		
-
+		relocatedFaceIndexes = deviceMemoryManager->createBufferObject(	IDeviceMemoryManager::IBufferObject::INDEX_BUFFER,
+																		IDeviceMemoryManager::IBufferObject::STATIC,
+																		faceIndexes.size+RELOCATE_OFFSET);
         CATCH_GL_ERROR
 
 		return ((relocatedFaceIndexes != NULL) && (relocatedVertices != NULL));
@@ -483,7 +467,7 @@ unsigned short	* const	CGeometryAllocator::allocateIndexes(unsigned short size)
     }
 
     //  No NULL offset to distinguish nil pointers
-    if ((m_bRelocated) && ( currentAddress == NULL))
+    if ((NULL !=relocatedFaceIndexes) && (currentAddress == NULL))
         currentAddress = (unsigned short*)RELOCATE_OFFSET;
 
 	//	Address should be aligned on a 16byte boundary
@@ -524,9 +508,9 @@ bool	CGeometryAllocator::releaseIndexes(unsigned short *index)
 }
 
 
-float	* const	CGeometryAllocator::allocateVertices(unsigned int size)
+float * const CGeometryAllocator::allocateVertices(uint64_t size)
 {
-	if ((size == 0)  || (m_bLocked) || ((vertices.address.f_address == NULL) && (relocatedVertices == NULL)))
+	if ((0 == size)  || (m_bLocked) || ((NULL == vertices.address.f_address) && (NULL == relocatedVertices)))
 		return NULL;
 
 	// be it relocated or not, vertices can be the beginning or the memory block
@@ -573,7 +557,7 @@ float	* const	CGeometryAllocator::allocateVertices(unsigned int size)
     }
 
     //  No NULL offset to distinguish nil pointers
-    if ((m_bRelocated) && ( currentAddress == NULL))
+    if ((NULL != relocatedVertices) && (currentAddress == NULL))
         currentAddress = (float*)RELOCATE_OFFSET;
 
 	//	Address should be aligned on a 16byte boundary
@@ -584,7 +568,7 @@ float	* const	CGeometryAllocator::allocateVertices(unsigned int size)
 }
 
 
-bool	CGeometryAllocator::releaseVertices(float *index)
+bool CGeometryAllocator::releaseVertices(float *index)
 {
     if (m_bLocked)
         return false;
@@ -615,21 +599,21 @@ bool	CGeometryAllocator::releaseVertices(float *index)
 
 // Is the boolean 'm_bLocked' really necessary ?
 //	a 're-lock' can be harmless and could allow reentry...
-bool CGeometryAllocator::glLockMemory(bool lock)
+bool CGeometryAllocator::glvkLockMemory(bool lock)
 {
     bool res = true;
 
-    if ((m_bRelocated) && (relocatedVertices != NULL) && (relocatedFaceIndexes != NULL))
+    if ((NULL != deviceMemoryManager) && (relocatedVertices != NULL) && (relocatedFaceIndexes != NULL))
     {
         if (lock && !m_bLocked)
         {
-            CMemory::GetInstance()->glLockBufferObject(*relocatedVertices);
-            CMemory::GetInstance()->glLockBufferObject(*relocatedFaceIndexes);
+            deviceMemoryManager->lockBufferObject(*relocatedVertices);
+            deviceMemoryManager->lockBufferObject(*relocatedFaceIndexes);
         }
         else if (!lock && m_bLocked)
         {
-            CMemory::GetInstance()->glUnlockBufferObject(*relocatedVertices);
-            CMemory::GetInstance()->glUnlockBufferObject(*relocatedFaceIndexes);
+            deviceMemoryManager->unlockBufferObject(*relocatedVertices);
+            deviceMemoryManager->unlockBufferObject(*relocatedFaceIndexes);
         }
         else
             res = false;

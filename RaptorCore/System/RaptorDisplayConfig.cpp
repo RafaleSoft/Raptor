@@ -184,6 +184,9 @@ unsigned int CRaptorDisplayConfig::getNbSamples(void) const
 		case ANTIALIAS_16X:
 			samples = 16;
 			break;
+		case ANTIALIAS_32X:
+			samples = 32;
+			break;
 		default:
 			samples = 1;
 			break;

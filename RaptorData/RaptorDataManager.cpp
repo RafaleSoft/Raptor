@@ -237,7 +237,7 @@ CRaptorDataManager::~CRaptorDataManager()
 	clean(header);
 }
 
-CRaptorDataManager  *CRaptorDataManager::getInstance(void)
+CRaptorDataManager  *CRaptorDataManager::GetInstance(void)
 {
     if (m_pInstance == NULL)
     {

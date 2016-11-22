@@ -119,6 +119,8 @@ protected:
 	CTexelAllocator		*m_pTAllocator;
     CTexelAllocator		*m_pTOldAllocator;
 
+	IDeviceMemoryManager	*m_pDeviceMemory;
+
 private:
     virtual bool glQueryStatus(CRaptorDisplayConfig &state,unsigned long query) const;
 

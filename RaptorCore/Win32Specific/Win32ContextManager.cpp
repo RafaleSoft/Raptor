@@ -65,7 +65,9 @@ unsigned int definePixels(unsigned int index,int mode,int *attribs)
 #if defined(GL_ARB_color_buffer_float) || defined(WGL_ATI_pixel_format_float)
     if ((mode & CGL_FLOAT) == CGL_FLOAT)
     {
-        unsigned int bits = 16;
+		//!	Default to 32 bits, PBuffer pixel format is poorly supported
+		//! with FLOAT_16 pixel type (since nVidia 375.86)
+        unsigned int bits = 32;
         if ((mode & CGL_FLOAT_16) == CGL_FLOAT_16)
             bits = 16;
         else if ((mode & CGL_FLOAT_32) == CGL_FLOAT_32)
@@ -76,6 +78,8 @@ unsigned int definePixels(unsigned int index,int mode,int *attribs)
 #elif defined(WGL_ATI_pixel_format_float)
         attribs[attribIndex++] = WGL_TYPE_RGBA_FLOAT_ATI; // same value as above, but may be change
 #endif
+		attribs[attribIndex++] = WGL_COLOR_BITS_ARB;
+		attribs[attribIndex++] = bits * 3;
         attribs[attribIndex++] = WGL_RED_BITS_ARB; 
         attribs[attribIndex++] = bits;
         attribs[attribIndex++] = WGL_GREEN_BITS_ARB; 
@@ -303,6 +307,14 @@ CWin32ContextManager::~CWin32ContextManager()
 
 #if defined(WGL_ARB_pbuffer)
     delete [] pBuffers;
+#endif
+
+#if defined (VK_VERSION_1_0)
+	if (0 != vulkanModule.handle)
+	{
+		HMODULE module = (HMODULE)vulkanModule.handle;
+		FreeLibrary(module);
+	}
 #endif
 }
 
@@ -1027,7 +1039,7 @@ CContextManager::RENDERING_CONTEXT_ID  CWin32ContextManager::glCreateExtendedCon
 		//	Terminate the list and continue with the settings
 		UINT nNumFormats = 0;
 		int pixelformat;
-		if (( context.pExtensions->wglChoosePixelFormatARB(hdc, piAttribIList,NULL,1,&pixelformat,&nNumFormats) == 0 ) || (nNumFormats == 0))
+		if ((context.pExtensions->wglChoosePixelFormatARB(hdc, piAttribIList,NULL,1,&pixelformat,&nNumFormats) == 0 ) || (nNumFormats == 0))
 		{
 			RAPTOR_FATAL( Global::COpenGLClassID::GetClassId(),"Raptor failed to choose pixel format for PBuffer");
 			return 0; 
@@ -1270,3 +1282,60 @@ CContextManager::RENDERING_CONTEXT_ID  CWin32ContextManager::glCreateExtendedCon
 #endif  // #ifdef WGL_ARB_pbuffer
 
 
+#if defined(VK_VERSION_1_0)
+bool CWin32ContextManager::vkInit(void)
+{
+	char buffer[MAX_PATH];
+	GetEnvironmentVariable("VULKAN_BIN_PATH",buffer,MAX_PATH);
+	std::string vkpath = buffer;
+	vkpath += "\\VULKAN-1.DLL";
+	HMODULE module = LoadLibrary(vkpath.c_str());
+	vulkanModule.handle = (unsigned int)module;
+
+	if (NULL != module)
+	{
+		vkGetInstanceProcAddr = (PFN_vkGetInstanceProcAddr)(GetProcAddress(module,"vkGetInstanceProcAddr"));
+	
+		if (CContextManager::vkInit())
+		{
+			bool surface_rendering_supported =	(string::npos != instance_extensions.find("VK_KHR_surface") &&
+												string::npos != instance_extensions.find("VK_KHR_win32_surface"));
+			if (!surface_rendering_supported)
+			{
+				RAPTOR_ERROR(	Global::CVulkanClassID::GetClassId(),
+								"Vulkan API does not support rendering to surface");
+			}
+			return surface_rendering_supported;
+		}
+		return false;
+	}
+	return false;
+}
+
+bool CWin32ContextManager::vkCreateSurface(const RAPTOR_HANDLE& handle,RENDERING_CONTEXT_ID ctx)
+{
+	if (WINDOW_CLASS == handle.hClass)
+	{
+		HWND hWnd = (HWND)handle.handle;
+		HINSTANCE hInstance = (HINSTANCE)GetWindowLong(hWnd, GWL_HINSTANCE);
+		VkWin32SurfaceCreateInfoKHR createInfo = {	VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR,
+													NULL,0, //flags,
+													hInstance,hWnd };
+		VK_CONTEXT &context = m_pVkContext[ctx];
+
+		//!	Create the Surface
+		VkResult res = VK_NOT_READY;
+		res = context.vkCreateWin32SurfaceKHR(context.instance,&createInfo,NULL,&context.surface);
+		if (VK_SUCCESS != res)
+		{
+			RAPTOR_ERROR(	Global::CVulkanClassID::GetClassId(),
+							"Failed to create Vulkan rendering surface");
+			return false;
+		}
+		return true;
+	}
+	else
+		return false;
+}
+
+#endif

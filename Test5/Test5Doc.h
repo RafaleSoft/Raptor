@@ -19,6 +19,8 @@ public:
 
     virtual void glRender();
 
+	void resize(unsigned int width, unsigned int height);
+
 private:
 	CRaptorDisplay*	m_pDisplay;
 	CRaptorDisplay*	m_pDisplayBuffer;

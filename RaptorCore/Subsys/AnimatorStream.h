@@ -95,7 +95,7 @@ private:
 
 	//!	Switch to exploit GPU fast memory if available
 	bool	m_bUseDMA;
-    CMemory::IBufferObject   *memoryBuffer;
+    IDeviceMemoryManager::IBufferObject   *memoryBuffer;
 };
 
 RAPTOR_NAMESPACE_END

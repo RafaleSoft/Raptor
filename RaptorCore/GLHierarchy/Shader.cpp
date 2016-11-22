@@ -34,6 +34,9 @@
 #if !defined(AFX_SHADERLIBRARY_H__E2A8C35E_23A4_4AD1_8467_884E6B183B4F__INCLUDED_)
 	#include "Subsys/ShaderLibrary.h"
 #endif
+#if !defined(AFX_VULKANSHADERSTAGE_H__EF5769B8_470D_467F_9FDE_553142C81698__INCLUDED_)
+	#include "VulkanShaderStage.h"
+#endif
 #if !defined(AFX_PROJECTOR_H__0AEE2092_215F_40FA_BBAE_7D8A2F5A482F__INCLUDED_)
     #include "Projector.h"
 #endif
@@ -92,7 +95,7 @@ CShader::CShader(const std::string& name)
 	m_pTMUSetup(NULL),m_pMaterial(NULL),
     m_pVShader(NULL),m_pFShader(NULL),
     m_pVProgram(NULL),m_pFProgram(NULL),
-	m_pGProgram(NULL)
+	m_pGProgram(NULL),m_pVulkanProgram(NULL)
 {
 	m_textureUnitSetup.handle = 0;
 	m_textureUnitSetup.hClass = 0;
@@ -111,6 +114,7 @@ CShader::CShader(const std::string& name)
     m_bDeleteFProgram = false;
 	m_bDeleteVProgram = false;
 	m_bDeleteGProgram = false;
+	m_bDeleteVulkanProgram = false;
 	m_bDeleteTMUSetup = false;
 }
 
@@ -119,7 +123,7 @@ CShader::CShader(const CShader& shader)
 	m_pTMUSetup(NULL), m_pMaterial(NULL),
 	m_pVShader(NULL), m_pFShader(NULL),
 	m_pVProgram(NULL), m_pFProgram(NULL),
-	m_pGProgram(NULL)
+	m_pGProgram(NULL),m_pVulkanProgram(NULL)
 {
 	m_color = shader.m_color;
 	m_ambient = shader.m_ambient;
@@ -191,6 +195,15 @@ CShader::CShader(const CShader& shader)
 			m_pGProgram = shader.m_pGProgram;
 		m_pGProgram->registerDestruction(this);
 	}
+	if (NULL != shader.m_pVulkanProgram)
+	{
+		vkRemoveVulkanProgram();
+		if (shader.m_bDeleteVulkanProgram)
+			m_pVulkanProgram = shader.m_pVulkanProgram->vkClone();
+		else
+			m_pVulkanProgram = shader.m_pVulkanProgram;
+		m_pVulkanProgram->registerDestruction(this);
+	}
 
 	if (0 != shader.m_shaderProgram.handle)
 		glCompileShader();
@@ -200,6 +213,7 @@ CShader::CShader(const CShader& shader)
 	m_bDeleteVProgram = shader.m_bDeleteVProgram;
 	m_bDeleteFProgram = shader.m_bDeleteFProgram;
 	m_bDeleteGProgram = shader.m_bDeleteGProgram;
+	m_bDeleteVulkanProgram = shader.m_bDeleteVulkanProgram;
 	m_bDeleteTMUSetup = shader.m_bDeleteTMUSetup;
 }
 
@@ -216,7 +230,7 @@ CShader* CShader::glClone(const std::string& newShaderName) const
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 		Raptor::GetErrorManager()->generateRaptorError(	CShader::CShaderClassID::GetClassId(),
 														CRaptorErrorManager::RAPTOR_WARNING,
-														"Attempting to clone a shader with no final name")
+														"Attempting to clone a shader with no final name");
 #endif
 		new_shader->setName(getName());
 	}
@@ -273,6 +287,7 @@ CShader::~CShader()
 	glRemoveVertexProgram();
 	glRemoveFragmentProgram();
 	glRemoveGeometryProgram();
+	vkRemoveVulkanProgram();
 }
 
 void CShader::setAmbient(GLfloat r,GLfloat g,GLfloat b,GLfloat a) 
@@ -299,6 +314,8 @@ void CShader::unLink(const CPersistence* p)
         m_pFProgram = NULL;
 	else if (p == static_cast<CPersistence*>(m_pGProgram))
         m_pGProgram = NULL;
+	else if (p == static_cast<CPersistence*>(m_pVulkanProgram))
+		m_pVulkanProgram = NULL;
 }
 
 CMaterial * const CShader::getMaterial(void)
@@ -621,6 +638,52 @@ bool CShader::glRemoveGeometryProgram(void)
 	}
 }
 
+CVulkanShaderStage * const CShader::vkGetVulkanProgram(const std::string& name)
+{
+	if (m_pVulkanProgram == NULL) 
+	{
+		CShaderLibrary *lib = CShaderLibrary::GetInstance();
+		//lib->vkInitFactory();
+
+		CPersistence *pProgram = NULL;
+		if (!name.empty())
+			pProgram = CPersistence::FindObject(name);
+        if (pProgram == NULL)
+		{
+			m_pVulkanProgram = new CVulkanShaderStage(name);
+			m_bDeleteVulkanProgram = true;
+		}
+		else if (pProgram->getId().isSubClassOf(CVulkanShaderStage::CVulkanShaderStageClassID::GetClassId()))
+			m_pVulkanProgram = (CVulkanShaderStage*)pProgram;
+
+		m_pVulkanProgram->registerDestruction(this);
+
+        CATCH_GL_ERROR
+	}
+
+	return m_pVulkanProgram;
+}
+
+bool CShader::vkRemoveVulkanProgram(void)
+{
+	if (m_pVulkanProgram == NULL)
+		return false;
+	else
+	{
+		m_pVulkanProgram->unregisterDestruction(this);
+		// TODO : ressource linked to pipeline
+
+		if (m_bDeleteVulkanProgram)
+			delete m_pVulkanProgram;
+		m_pVulkanProgram = NULL;
+		m_bDeleteVulkanProgram = false;
+
+		CATCH_GL_ERROR
+
+		return true;
+	}
+}
+
 void CShader::glRenderMaterial(void)
 {
 	//if (glIsEnabled(GL_LIGHTING) == GL_TRUE)
@@ -789,9 +852,9 @@ bool CShader::glCompileShader()
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
         if (!abort)
         {
-            pExtensions->glValidateProgramARB(shaderProgram.handle);
+            pExtensions->glValidateProgramARB(m_shaderProgram.handle);
             GLint validateStatus = GL_FALSE;
-            pExtensions->glGetObjectParameterivARB(shaderProgram.handle,GL_OBJECT_VALIDATE_STATUS_ARB,&validateStatus);
+            pExtensions->glGetObjectParameterivARB(m_shaderProgram.handle,GL_OBJECT_VALIDATE_STATUS_ARB,&validateStatus);
             if (validateStatus == GL_FALSE)
                 abort = true;
         }
@@ -882,6 +945,11 @@ bool CShader::importObject(CRaptorIO& io)
 			glGetFragmentProgram();
 			m_pFProgram->importObject(io);
 		}
+		else if (data == "VulkanProgram")
+		{
+			vkGetVulkanProgram();
+			m_pVulkanProgram->importObject(io);
+		}
 		else
 			io >> name;
 		
@@ -891,6 +959,3 @@ bool CShader::importObject(CRaptorIO& io)
 
 	return true;
 }
-
-
-

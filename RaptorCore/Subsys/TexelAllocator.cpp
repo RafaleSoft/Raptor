@@ -34,7 +34,8 @@ RAPTOR_NAMESPACE
 //////////////////////////////////////////////////////////////////////
 
 CTexelAllocator::CTexelAllocator()
-	:m_bRelocated(false),m_bLocked(false),relocatedTexels(NULL)
+	:m_bLocked(false),relocatedTexels(NULL),
+	deviceMemoryManager(NULL)
 {
 	texels.address.uc_address = NULL;
 	texels.size = 0;
@@ -44,9 +45,9 @@ CTexelAllocator::CTexelAllocator()
 CTexelAllocator::~CTexelAllocator()
 {
 	if (texels.address.uc_address != NULL)
-		CMemory::GetInstance()->release(texels.address.uc_address);
+		CHostMemoryManager::GetInstance()->release(texels.address.uc_address);
 	if (relocatedTexels != NULL)
-		CMemory::GetInstance()->glReleaseBufferObject(relocatedTexels);
+		deviceMemoryManager->releaseBufferObject(relocatedTexels);
 }
 
 CTexelAllocator* CTexelAllocator::GetInstance(void)
@@ -70,25 +71,8 @@ CTexelAllocator	*CTexelAllocator::SetCurrentInstance(CTexelAllocator* texelAlloc
 }
 
 
-
-bool CTexelAllocator::glUseMemoryRelocation(void)
-{
-#if defined(GL_ARB_pixel_buffer_object)
-	if (Raptor::glIsExtensionSupported("GL_ARB_pixel_buffer_object"))
-	{
-		m_bRelocated = texelBlocs.empty();
-
-		return m_bRelocated;
-	}
-	else
-		return false;
-#else
-	return false;
-#endif
-}
-
-
-bool CTexelAllocator::glInitMemory(unsigned int texelSize)
+bool CTexelAllocator::glvkInitMemory(	IDeviceMemoryManager* pDeviceMemory,
+										uint64_t texelSize)
 {
     if (m_bLocked)
         return false;
@@ -98,23 +82,23 @@ bool CTexelAllocator::glInitMemory(unsigned int texelSize)
 	if ((texelSize == 0) || (!texelBlocs.empty()))
 		return false;
 
+	deviceMemoryManager = pDeviceMemory;
+
     //  Allow user to allocate bloc size different from default.
     if (texels.address.uc_address != NULL)
     {
-		CMemory::GetInstance()->release(texels.address.uc_address);
+		CHostMemoryManager::GetInstance()->release(texels.address.uc_address);
         texels.address.uc_address = NULL;
     }
     if (relocatedTexels != NULL)
-        CMemory::GetInstance()->glReleaseBufferObject(relocatedTexels);
+        deviceMemoryManager->releaseBufferObject(relocatedTexels);
 
-	if (m_bRelocated)
+	if ((NULL != deviceMemoryManager) && (deviceMemoryManager->relocationAvailable()))
 	{
-		relocatedTexels = CMemory::GetInstance()->glAllocateBufferObject(CMemory::IBufferObject::PIXEL_SOURCE,
-										                                 CMemory::IBufferObject::STREAM,
-																		 texelSize+RELOCATE_OFFSET);
-
 		texels.size = texelSize;
-
+		relocatedTexels = deviceMemoryManager->createBufferObject(	IDeviceMemoryManager::IBufferObject::PIXEL_SOURCE,
+																	IDeviceMemoryManager::IBufferObject::STREAM,
+																	texelSize+RELOCATE_OFFSET);
         CATCH_GL_ERROR
 
 		return (relocatedTexels != NULL);
@@ -128,19 +112,19 @@ bool CTexelAllocator::glInitMemory(unsigned int texelSize)
 }
 
 
-bool CTexelAllocator::glLockMemory(bool lock)
+bool CTexelAllocator::glvkLockMemory(bool lock)
 {
     bool res = true;
 
-    if ((m_bRelocated) && (relocatedTexels != NULL))
+    if ((NULL != deviceMemoryManager) && (relocatedTexels != NULL))
     {
         if (lock && !m_bLocked)
         {
-            CMemory::GetInstance()->glLockBufferObject(*relocatedTexels);
+            deviceMemoryManager->lockBufferObject(*relocatedTexels);
         }
         else if (!lock && m_bLocked)
         {
-            CMemory::GetInstance()->glUnlockBufferObject(*relocatedTexels);
+            deviceMemoryManager->unlockBufferObject(*relocatedTexels);
         }
         else
             res = false;
@@ -151,9 +135,9 @@ bool CTexelAllocator::glLockMemory(bool lock)
 }
 
 
-unsigned char*	const CTexelAllocator::allocateTexels(unsigned int size)
+unsigned char*	const CTexelAllocator::allocateTexels(uint64_t size)
 {
-	if ((size == 0)  || (m_bLocked) || ((texels.address.uc_address == NULL) && (relocatedTexels == NULL)))
+	if ((0 == size)  || (m_bLocked) || ((NULL == texels.address.uc_address) && (NULL == relocatedTexels)))
 		return NULL;
 
 	// be it relocated or not, texels can be the beginning or the memory block
@@ -203,7 +187,7 @@ unsigned char*	const CTexelAllocator::allocateTexels(unsigned int size)
     }
 
     //  No NULL offset to distinguish nil pointers
-    if ((m_bRelocated) && ( currentAddress == NULL))
+    if ((NULL != relocatedTexels) && (currentAddress == NULL))
         currentAddress = (unsigned char*)RELOCATE_OFFSET;
 
 	//	Address should be aligned on a 16byte boundary
@@ -215,7 +199,7 @@ unsigned char*	const CTexelAllocator::allocateTexels(unsigned int size)
 	return db.address.uc_address;
 }
 
-float*	const CTexelAllocator::allocateFloatTexels(unsigned int size)
+float*	const CTexelAllocator::allocateFloatTexels(uint64_t size)
 {
 	float *fTexels = (float*)allocateTexels(size*sizeof(float));
 	return fTexels;
@@ -251,39 +235,47 @@ bool CTexelAllocator::releaseTexels(void *tex)
 }
 
 
-void CTexelAllocator::glCopyPointer(unsigned char *dst, unsigned char *src, unsigned int size)
+void CTexelAllocator::glvkCopyPointer(unsigned char *dst, unsigned char *src, uint64_t size)
 {
-	if ((!m_bRelocated) /*|| (m_bLocked)*/ || (src == NULL) || (dst == NULL))
+	if ((NULL == deviceMemoryManager) || (NULL == relocatedTexels) || (NULL == src) || (NULL == dst))
         return;
 
-	if (size == 0)
+	if (0 == size)
 	{
 		// find memory bloc and map a copy to local memory.
 		map<void*,data_bloc>::const_iterator blocPos = texelBlocs.find(dst);
 		if (blocPos != texelBlocs.end())
-			CMemory::GetInstance()->glSetBufferObjectData(	*relocatedTexels,
-															(unsigned int)dst,
-															src,
-															(*blocPos).second.size);
-	}
-	else
-		CMemory::GetInstance()->glSetBufferObjectData(	*relocatedTexels,
+		{
+			deviceMemoryManager->setBufferObjectData(	*relocatedTexels,
 														(unsigned int)dst,
 														src,
-														size);
+														(*blocPos).second.size);
+		}
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+		else
+		{
+			Raptor::GetErrorManager()->generateRaptorError(	CPersistence::CPersistenceClassID::GetClassId(),
+															CRaptorErrorManager::RAPTOR_WARNING,
+				                                            "The destination device buffer does not exist");
+		}
+#endif
+	}
+	else
+		// No ckech is done to validate that dst is a bloc of size 'size'
+		deviceMemoryManager->setBufferObjectData(	*relocatedTexels,
+													(unsigned int)dst,
+													src,
+													size);
 
 	CATCH_GL_ERROR
 }
 
 
 
-void *CTexelAllocator::glMapPointer(void *pointer)
+void *CTexelAllocator::glvkMapPointer(void *pointer)
 {
-    if (!m_bRelocated || m_bLocked)
+    if ((NULL == relocatedTexels) || (m_bLocked) || (NULL == pointer))
         return pointer;
-
-    if ((relocatedTexels == NULL)  || (pointer == NULL))
-        return NULL;
 
     // already mapped ?
     if (texelReMap.find(pointer) != texelReMap.end())
@@ -299,10 +291,10 @@ void *CTexelAllocator::glMapPointer(void *pointer)
         texelReMap[pointer] = localData;
         texelReMap[localData] = pointer;
 
-        CMemory::GetInstance()->glGetBufferObjectData(	*relocatedTexels,
-														(unsigned int)pointer,
-														localData,
-														sz);
+        deviceMemoryManager->getBufferObjectData(	*relocatedTexels,
+													(unsigned int)pointer,
+													localData,
+													sz);
         CATCH_GL_ERROR
 
         return localData;
@@ -311,13 +303,10 @@ void *CTexelAllocator::glMapPointer(void *pointer)
         return NULL;
 }
 
-void *CTexelAllocator::glUnMapPointer(void *pointer)
+void *CTexelAllocator::glvkUnMapPointer(void *pointer)
 {
-    if (!m_bRelocated || m_bLocked)
+    if ((NULL == relocatedTexels) || (m_bLocked) || (NULL == pointer))
         return pointer;
-
-    if ((relocatedTexels == NULL) || (pointer == NULL))
-        return NULL;
 
     // pointer has been mapped ?
     map<void*,void*>::iterator it = texelReMap.find(pointer);
@@ -343,12 +332,12 @@ void *CTexelAllocator::glUnMapPointer(void *pointer)
 		// Here, serverData could be relocated to compress the data
 		// and limit the number of holes or fragmentation.
 		// As we have an array of free blocs, relocation could easily be done.
-        CMemory::GetInstance()->glSetBufferObjectData(	*relocatedTexels,
-														(unsigned int)serverData,
-														pointer,
-														(*blocPos).second.size);
+        deviceMemoryManager->setBufferObjectData(	*relocatedTexels,
+													(unsigned int)serverData,
+													pointer,
+													(*blocPos).second.size);
 
-        CMemory::GetInstance()->garbage(pointer);
+        CHostMemoryManager::GetInstance()->garbage(pointer);
 
         CATCH_GL_ERROR
 

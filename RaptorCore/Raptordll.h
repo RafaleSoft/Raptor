@@ -84,7 +84,7 @@ class CSSE_BoundingBox;
 class CSSE_Object3DContour;
 
 // System section
-class CMemory;
+class CHostMemoryManager;
 class Raptor;
 class CRaptorApplication;
 class CRaptorConsole;

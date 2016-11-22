@@ -393,7 +393,8 @@ bool CRaptorDisplay::importObject(CRaptorIO& io)
 bool CRaptorDisplay::glQueryStatus(CRaptorDisplayConfig &state,unsigned long query) const
 {
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
-	if ((m_pCurrentDisplay == NULL) || (m_pCurrentDisplay != this))
+	if (((m_pCurrentDisplay == NULL) || (m_pCurrentDisplay != this)) &&
+		 (GL_CONFIG_STATE_QUERY != query))
 	{
 		Raptor::GetErrorManager()->generateRaptorError(Global::COpenGLClassID::GetClassId(),
                                                        CRaptorErrorManager::RAPTOR_WARNING,
@@ -407,7 +408,8 @@ bool CRaptorDisplay::glQueryStatus(CRaptorDisplayConfig &state,unsigned long que
 bool CRaptorDisplay::glApplyStatus(const CRaptorDisplayConfig& state,unsigned long query)
 {
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
-	if ((m_pCurrentDisplay == NULL) || (m_pCurrentDisplay != this))
+	if (((m_pCurrentDisplay == NULL) || (m_pCurrentDisplay != this)) &&
+		(GL_CONFIG_STATE_QUERY != query))
 	{
 		Raptor::GetErrorManager()->generateRaptorError(Global::COpenGLClassID::GetClassId(),
                                                        CRaptorErrorManager::RAPTOR_WARNING,
