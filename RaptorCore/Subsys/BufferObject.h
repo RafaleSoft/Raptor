@@ -10,11 +10,16 @@
 RAPTOR_NAMESPACE_BEGIN
 
 
-class CBufferObject : public CMemory::IBufferObject
+class CBufferObject : public IDeviceMemoryManager::IBufferObject
 {
 public:
+	//!	OpenGL buffer objet constructor
 	CBufferObject():m_size(0),m_storage(NB_BUFFER_KIND)
 	{ m_buffer.id = 0; };
+
+	//!	Destructor
+	virtual ~CBufferObject() {};
+
 
 	virtual size_t getSize(void) const;
 
@@ -24,8 +29,7 @@ public:
 
 	virtual unsigned int getBufferId(void) const;
 
-	virtual ~CBufferObject() {};
-
+	
 	//! The size of the buffer object
 	unsigned int	m_size;
 
@@ -41,7 +45,7 @@ size_t CBufferObject::getSize(void) const
 	return m_size;
 }
 
-inline CMemory::IBufferObject::BUFFER_KIND CBufferObject::getStorage(void) const
+inline IDeviceMemoryManager::IBufferObject::BUFFER_KIND CBufferObject::getStorage(void) const
 {
 	return m_storage;
 }

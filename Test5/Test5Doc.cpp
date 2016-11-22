@@ -69,7 +69,7 @@ float lposz(float dt)
 	return 15 * (float)(sin(3*PI*dt*0.1)); //*sin(3*PI*dt*0.1));
 }
 
-//#define VULKAN_TEST 1
+#define VULKAN_TEST 1
 
 CTest5Doc::CTest5Doc(const RAPTOR_HANDLE& device,const char* title)
 {
@@ -83,8 +83,8 @@ CTest5Doc::CTest5Doc(const RAPTOR_HANDLE& device,const char* title)
 	config.m_logFile = "Test5.log";
     config.m_bRelocation = true;
 	config.m_uiTexels = 2048*1024;
-    config.m_uiPolygons = 200000;
-    config.m_uiVertices = 500000;
+    config.m_uiPolygons = 20000;
+    config.m_uiVertices = 50000;
     Raptor::glInitRaptor(config);
 
 	CImaging::installImagers(CTextureFactory::getDefaultFactory());
@@ -99,7 +99,11 @@ CTest5Doc::CTest5Doc(const RAPTOR_HANDLE& device,const char* title)
 	glcs.caption = title;
 	glcs.acceleration = CRaptorDisplayConfig::HARDWARE;
 	//glcs.antialias = CRaptorDisplayConfig::ANTIALIAS_16X;
-	glcs.framebufferState.colorClearValue = CColor::RGBA(0.5f,0.6f,0.7f,1.0f);
+	//glcs.framebufferState.colorClearValue = CColor::RGBA(0.5f,0.6f,0.7f,1.0f);
+	glcs.double_buffer = true;
+	glcs.depth_buffer = true;
+	glcs.display_mode = CGL_RGBA | CGL_DEPTH;
+	glcs.draw_logo = true;
 
 #ifdef VULKAN_TEST
 	glcs.renderer = CRaptorDisplayConfig::VULKAN;
@@ -108,13 +112,7 @@ CTest5Doc::CTest5Doc(const RAPTOR_HANDLE& device,const char* title)
 	if (res)
 	{
 #else
-	glcs.double_buffer = true;
-	glcs.depth_buffer = true;
-	glcs.display_mode = CGL_RGBA | CGL_DEPTH;
-	glcs.draw_logo = true;
-
 	m_pDisplay = Raptor::glCreateDisplay(glcs);
-
 	bool res = m_pDisplay->glBindDisplay(device);
     if (res)
 	{
@@ -128,15 +126,24 @@ CTest5Doc::CTest5Doc(const RAPTOR_HANDLE& device,const char* title)
         pConsole->glInit("",true);
         pConsole->showStatus(true);
         pConsole->activateConsole(true);
-
-        GLInitContext();
 #endif
+        //GLInitContext();
+
 		m_pDisplay->glUnBindDisplay();
 	}
 }
 
 CTest5Doc::~CTest5Doc(void)
 {
+}
+
+void CTest5Doc::resize(unsigned int width, unsigned int height)
+{
+	if (m_pDisplay->glBindDisplay(m_device))
+    {
+        m_pDisplay->glResize(width,height,0,0);
+        m_pDisplay->glUnBindDisplay();
+    }
 }
 
 void CTest5Doc::glRender(void)
@@ -165,6 +172,8 @@ void CTest5Doc::GLInitContext(void)
 	obj->getEditor().scaleTexCoords(4.0f,4.0f);
 	obj->getRenderingModel().addModel(CGeometry::CRenderingModel::CGL_TANGENTS);
 
+#ifdef VULKAN_TEST
+#else
 	CTextureFactory &f = CTextureFactory::getDefaultFactory();
 	m_pTexture = f.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_ALPHA_TRANSPARENT,CTextureObject::CGL_BILINEAR);
 	f.glLoadTexture(m_pTexture,"earth.TGA");
@@ -268,6 +277,7 @@ void CTest5Doc::GLInitContext(void)
 	CTimeObject::setTimeFactor(1.0f);
 	CAnimator *pAnimator = new CAnimator();
 	CAnimator::SetAnimator(pAnimator);
+#endif
 
 /*
 	CRaptorDisplayConfig glcs;

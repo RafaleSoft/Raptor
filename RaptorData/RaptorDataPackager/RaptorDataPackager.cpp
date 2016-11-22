@@ -22,6 +22,55 @@ static unsigned char in[CHUNK];
 static unsigned char out[CHUNK];
 
 
+#if defined(WIN32)
+	#include <share.h>
+	static FILE *msdn_fopen(const char *filename,const char *mode)
+	{
+		if ((NULL == filename) || (NULL == mode))
+			return NULL;
+		FILE* pFile = NULL;
+		errno_t err = fopen_s(&pFile,filename,mode);
+		if (0 == err)
+			return pFile;
+		else
+			return NULL;
+	}
+	static char *msdn_strcpy(char * destination, const char * source, size_t sizeInBytes)
+	{
+		errno_t err = strcpy_s(destination,sizeInBytes,source);
+		if (0 == err)
+			return destination;
+		else
+			return NULL;
+	}
+	static char *msdn_strcat(char * destination, const char * source, size_t sizeInBytes)
+	{
+		errno_t err = strcat_s(destination,sizeInBytes,source);
+		if (0 == err)
+			return destination;
+		else
+			return NULL;
+	}
+	static int msdn_open(const char *filename,int oflag,int pmode)
+	{
+		int pfh = -1;
+		errno_t err = _sopen_s(&pfh,filename,oflag,_SH_DENYRW,pmode);
+		if (0 == err)
+			return pfh;
+		else
+			return -1;
+	}
+	#define FOPEN(a,b) msdn_fopen(a,b)
+	#define STRCPY(a,b,s) msdn_strcpy(a,b,s)
+	#define STRCAT(a,b,s) msdn_strcat(a,b,s)
+	#define OPEN(f,o,m) msdn_open(f,o,m)
+#elif defined(LINUX)
+	#define FOPEN(a,b) fopen(a,b)
+	#define STRCPY(a,b,s) strcpy(a,b)
+	#define STRCAT(a,b,s) strcat(a,b)
+	#define OPEN(f,o,m) open(f,o,m)
+#endif
+
 void clean(PackageHeader_t &header)
 {
 	if (NULL != header.fHeaders)
@@ -59,11 +108,11 @@ bool zipfile(const char* fname, const char* outfile, int level)
     if (ret != Z_OK)
         return false;
 
-	FILE *source = fopen(fname,"rb");
+	FILE *source = FOPEN(fname,"rb");
 	if (source == NULL)
 		return false;
 
-	FILE *dest = fopen(outfile,"wb");
+	FILE *dest = FOPEN(outfile,"wb");
 	if (dest == NULL)
 		return false;
 
@@ -133,11 +182,11 @@ bool unzipfile(const char* fname, const char* outfile)
     if (ret != Z_OK)
         return false;
 
-	FILE *source = fopen(fname,"rb");
+	FILE *source = FOPEN(fname,"rb");
 	if (source == NULL)
 		return false;
 
-	FILE *dest = fopen(outfile,"wb");
+	FILE *dest = FOPEN(outfile,"wb");
 	if (dest == NULL)
 		return false;
 
@@ -263,8 +312,9 @@ int main(int argc, char* argv[])
 			if (header.compression != Z_NO_COMPRESSION)
 			{
 				char zfname[_MAX_PATH];
-				strcpy(zfname,argv[argpos]);
-				strcat(zfname,".zip");
+				memset(zfname,0,_MAX_PATH);
+				STRCPY(zfname,argv[argpos],_MAX_PATH);
+				STRCAT(zfname,".zip",_MAX_PATH);
 				if (zipfile(argv[argpos],zfname,header.compression))
 				{
 					res = _stat(zfname,&filestatus);
@@ -309,7 +359,7 @@ int main(int argc, char* argv[])
     printf("\nCreating package %s...\n",header.pckName);
     
 
-    int package = _open(header.pckName,_O_CREAT|_O_TRUNC|_O_WRONLY|_O_BINARY,_S_IREAD);
+    int package = OPEN(header.pckName,_O_CREAT|_O_TRUNC|_O_WRONLY|_O_BINARY,_S_IREAD);
     if (package < 0)
     {
         printf("Failed to create package file, exiting.\n");
@@ -344,12 +394,12 @@ int main(int argc, char* argv[])
 		char *fname = header.fHeaders[l].fname;
 		if (header.compression != Z_NO_COMPRESSION)
 		{
-			strcpy(zfname,header.fHeaders[l].fname);
-			strcat(zfname,".zip");
+			STRCPY(zfname,header.fHeaders[l].fname,_MAX_PATH);
+			STRCAT(zfname,".zip",_MAX_PATH);
 			fname = zfname;
 		}
 
-        int src = _open(fname,_O_BINARY|_O_RDONLY);
+        int src = OPEN(fname,_O_BINARY|_O_RDONLY,_S_IWRITE);
         if ( src < 0)
         {
             printf("Failed to read package data %s, exiting.\n",fname);

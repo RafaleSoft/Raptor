@@ -230,7 +230,7 @@ CShader* CShader::glClone(const std::string& newShaderName) const
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 		Raptor::GetErrorManager()->generateRaptorError(	CShader::CShaderClassID::GetClassId(),
 														CRaptorErrorManager::RAPTOR_WARNING,
-														"Attempting to clone a shader with no final name")
+														"Attempting to clone a shader with no final name");
 #endif
 		new_shader->setName(getName());
 	}
@@ -852,9 +852,9 @@ bool CShader::glCompileShader()
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
         if (!abort)
         {
-            pExtensions->glValidateProgramARB(shaderProgram.handle);
+            pExtensions->glValidateProgramARB(m_shaderProgram.handle);
             GLint validateStatus = GL_FALSE;
-            pExtensions->glGetObjectParameterivARB(shaderProgram.handle,GL_OBJECT_VALIDATE_STATUS_ARB,&validateStatus);
+            pExtensions->glGetObjectParameterivARB(m_shaderProgram.handle,GL_OBJECT_VALIDATE_STATUS_ARB,&validateStatus);
             if (validateStatus == GL_FALSE)
                 abort = true;
         }

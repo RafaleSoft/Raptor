@@ -110,9 +110,9 @@ Global::~Global()
     //    glDestroyDisplay(status.defaultDisplay);
     CContextManager::GetInstance()->glDestroyWindow(raptorStatus.defaultWindow);
 
-    delete CMemory::GetInstance();
+    delete CHostMemoryManager::GetInstance();
 	delete CContextManager::GetInstance();
-    delete CRaptorDataManager::getInstance();
+    delete CRaptorDataManager::GetInstance();
 
     if (raptorStatus.messages != NULL)
         delete raptorStatus.messages;
@@ -152,14 +152,14 @@ bool Global::init(const CRaptorConfig& config)
 		globalConfig = config; 
 
 		//	Initialise memory first
-		CMemory::GetInstance()->init();
-		CMemory::GetInstance()->setGarbageMaxSize(config.m_uiGarbageSize);
+		CHostMemoryManager::GetInstance()->init();
+		CHostMemoryManager::GetInstance()->setGarbageMaxSize(config.m_uiGarbageSize);
 
         //Initialize messages & errors
 		raptorStatus.errorMgr = new CRaptorErrorManager();
 		raptorStatus.errorMgr->logToFile(config.m_logFile);
         raptorStatus.messages = new CRaptorMessages();
-		CRaptorDataManager  *dataManager = CRaptorDataManager::getInstance();
+		CRaptorDataManager  *dataManager = CRaptorDataManager::GetInstance();
 		if (dataManager != NULL)
 		{
 			//	Erase previous files in case of updates

@@ -1,4 +1,4 @@
-// Memory.h: interface for the CMemory class.
+// Memory.h: interface for the CHostMemoryManager class and IDeviceMemoryManager interface
 //
 //////////////////////////////////////////////////////////////////////
 
@@ -20,11 +20,7 @@ RAPTOR_NAMESPACE_BEGIN
 
 class CMemoryHeap;
 
-//! This class is dedicated to specific memory management for:
-//!	- aligned data, which is essential for fast SIMD processing
-//!	- GPU memory for fast rendering of primitives, avoiding useless data copy from client to server.
-//! Aligned data should be used as frequently as possible to benefit using simd.lib
-class RAPTOR_API CMemory
+class RAPTOR_API IDeviceMemoryManager
 {
 public:
 	class RAPTOR_API IBufferObject
@@ -68,11 +64,85 @@ public:
 		virtual ~IBufferObject() {};
 
 	private:
-        IBufferObject(const IBufferObject& ) {};
-		IBufferObject& operator=(const IBufferObject& ) { return *this; };
+        IBufferObject(const IBufferObject& );
+		IBufferObject& operator=(const IBufferObject& );
 	};
 
+	virtual bool relocationAvailable(void) const = 0;
 
+    //
+    // Buffer Object Memory Management
+    //
+
+	//! This method creates a new buffer object :
+    //! @param kind : selects a kind of buffer buffer ( vertex, pixel, memory ... )
+    //! @param size : sets the size of the buffer and allocates uninitialized memory
+    //! @return the newly allocated buffer object or NULL if allocation failed.
+	virtual IDeviceMemoryManager::IBufferObject *
+			createBufferObject(	IDeviceMemoryManager::IBufferObject::BUFFER_KIND kind, 
+								IDeviceMemoryManager::IBufferObject::BUFFER_MODE mode, 
+								uint64_t size) = 0;
+
+	//! Activates the buffer object : bo is now the currently selected buffer for
+    //! all subsequent calls related to the kind of buffer
+	virtual bool lockBufferObject(IBufferObject &bo) = 0;
+
+	//! Deactivates the buffer object selected above.
+	virtual bool unlockBufferObject(IDeviceMemoryManager::IBufferObject &bo) = 0;
+
+
+	//!	Memory transfer method that should be used when copying data to and from a vertex buffer object.
+	//! This method might need a valid OpenGL context if VBO are supported.
+	//! @param bo		 : the vertex buffer to which data are copied
+	//! @param dstOffset : the data offset within the destintation buffer ( vb )
+	//! @param src		 : a pointer to the data source
+	//! @param sz		 : the size of the data to be copied
+	//! @return true if data correctly set to buffer.
+	virtual bool setBufferObjectData(	IDeviceMemoryManager::IBufferObject &bo,
+										uint64_t dstOffset,
+										const void* src,
+										uint64_t sz) = 0;
+
+	//!	Memory transfer method that should be used when copying data to and from a vertex buffer object.
+	//! This method might need a valid OpenGL context if VBO are supported.
+	//! @param bo		 : the vertex buffer from which data are read
+	//! @param srcOffset : the data offset within the source buffer ( vb )
+	//! @param dst		 : a pointer to the data destination
+	//! @param sz		 : the size of the data to be copied
+	//! @return true if data correctly retrieved from buffer.
+	virtual bool getBufferObjectData(	IDeviceMemoryManager::IBufferObject &bo,
+										uint64_t srcOffset,
+										void* dst,
+										uint64_t sz) = 0;
+
+	//!	This method releases a buffer object allocated with createBufferObject
+	//!	If buffer is valid and no error found during release, the buffer object is deleted 
+	//!	and parameter vb is set to NULL.
+	//!	@param bo : a valid buffer object
+	//!	@return false if buffer invalid or any error, true otherwise
+	virtual bool releaseBufferObject(	IDeviceMemoryManager::IBufferObject* &bo) = 0;
+
+
+
+protected:
+	IDeviceMemoryManager() {};
+
+private:
+	IDeviceMemoryManager(const IDeviceMemoryManager&);
+	IDeviceMemoryManager& operator=(const IDeviceMemoryManager&);
+};
+
+
+
+
+
+//! This class is dedicated to specific memory management for:
+//!	- aligned data, which is essential for fast SIMD processing
+//!	- GPU memory for fast rendering of primitives, avoiding useless data copy from client to server.
+//! Aligned data should be used as frequently as possible to benefit using simd.lib
+class RAPTOR_API CHostMemoryManager
+{
+public:
     //! A helper class to handle typed allocation in heap and reuse garbaged blocs.
     //! This helper is used because old platforms would not compile template member functions.
     //! The retreived block is finally cleared.
@@ -87,13 +157,13 @@ public:
 
 
 public:
-	virtual ~CMemory();
+	virtual ~CHostMemoryManager();
 
 	//!	Returns the unique instance of the memory manager.
 	//!	During creation, internal functions such as new handler
 	//! or specific GPU AGP memory allocators are NOT initialized.
 	//! This object is created by Raptor during glInitRaptor
-	static CMemory *GetInstance(void);
+	static CHostMemoryManager *GetInstance(void);
 
 	//!	Initialise memory management for Raptor.
 	//!	User do not need to call this method, it is done by Raptor
@@ -107,7 +177,7 @@ public:
 
 	//!	Allocation method with aligned data
 	//! allocate count chuncks of size bytes, aligned with alignment
-	void *allocate(size_t size,unsigned int count,unsigned char alignment = 0) const;
+	void *allocate(size_t size,unsigned int count,size_t alignment = 0) const;
 
 	//!	Free aligned allocated memory only with Release method.
 	//!	Do not Release memory not allocated with Allocate
@@ -122,61 +192,14 @@ public:
 	void setGarbageMaxSize(unsigned int maxSize) const;
 
 
-
-
-    //
-    // Buffer Object Memory Management
-    //
-
-	//!	Memory transfer method that should be used when copying data to and from a vertex buffer object.
-	//! This method might need a valid OpenGL context if VBO are supported.
-	//! @param vb		 : the vertex buffer to which data are copied
-	//! @param dstOffset : the data offset within the destintation buffer ( vb )
-	//! @param src		 : a pointer to the data source
-	//! @param sz		 : the size of the data to be copied
-	void glSetBufferObjectData(IBufferObject &vb,unsigned int dstOffset,const void* src,size_t sz);
-
-    //!	Memory transfer method that should be used when copying data to and from a vertex buffer object.
-	//! This method might need a valid OpenGL context if VBO are supported.
-	//! @param vb		 : the vertex buffer from which data are read
-	//! @param srcOffset : the data offset within the source buffer ( vb )
-	//! @param dst		 : a pointer to the data destination
-	//! @param sz		 : the size of the data to be copied
-	void glGetBufferObjectData(IBufferObject &vb,unsigned int srcOffset,void* dst,size_t sz);
-
-    //! This method creates a new buffer object :
-    //! @param kind : selects a kind of buffer buffer ( vertex, pixel, memory ... )
-    //! @param size : sets the size of the buffer and allocates uninitialized memory
-    //! @return the newly allocated buffer object or NULL if allocation failed.
-    IBufferObject * glAllocateBufferObject( IBufferObject::BUFFER_KIND kind,
-                                            IBufferObject::BUFFER_MODE mode,
-                                            size_t size);
-
-
-	//!	This method releases a buffer object allocated with glAllocateBufferObject
-	//!	If buffer is valid and no error found during release, the buffer object is deleted 
-	//!	and parameter vb is set to NULL.
-	//!	@param vb : a valid buffer object
-	//!	@return false if buffer invalid or any error, true otherwise
-	bool glReleaseBufferObject(IBufferObject* &vb);
-
-    //! Activates the buffer object : vb is now the currently selected buffer for
-    //! all subsequent calls related to the kind of buffer
-	bool glLockBufferObject(IBufferObject &vb);
-
-    //! Deactivates the buffer object selected above.
-	bool glUnlockBufferObject(IBufferObject &vb);
-
-
-
 private:
     //! Forbidden members
-	CMemory(void);
-    CMemory(const CMemory& ) {};
-    CMemory& operator=(const CMemory& ) { return *this; };
+	CHostMemoryManager(void);
+    CHostMemoryManager(const CHostMemoryManager& ) {};
+    CHostMemoryManager& operator=(const CHostMemoryManager& ) { return *this; };
 
     //! The only available instance
-	static CMemory	*s_pMemory;
+	static CHostMemoryManager	*s_pMemory;
 
     //! The heap managed
 	CMemoryHeap*	m_pHeap;
@@ -184,9 +207,9 @@ private:
 
 
 template <class T,int a>
-T* CMemory::Allocator<T,a>::allocate(unsigned int count)
+T* CHostMemoryManager::Allocator<T,a>::allocate(unsigned int count)
 {
-    void* bloc = CMemory::GetInstance()->allocate(sizeof(T),count,a);
+    void* bloc = CHostMemoryManager::GetInstance()->allocate(sizeof(T),count,a);
     return new(bloc) T;
 }
 

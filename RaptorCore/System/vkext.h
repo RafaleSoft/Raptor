@@ -140,14 +140,21 @@
 		LINKAGE PFN_vkCreatePipelineLayout vkCreatePipelineLayout; \
 		LINKAGE PFN_vkDestroyPipelineLayout vkDestroyPipelineLayout; \
 		LINKAGE PFN_vkCreateShaderModule vkCreateShaderModule; \
-		LINKAGE PFN_vkDestroyShaderModule vkDestroyShaderModule; \
+		LINKAGE PFN_vkDestroyShaderModule vkDestroyShaderModule;
+	#endif
+
+	#if	!defined(DECLARE_VK_command_buffer)
+	#define DECLARE_VK_command_buffer(LINKAGE) \
 		LINKAGE PFN_vkCmdPipelineBarrier vkCmdPipelineBarrier; \
 		LINKAGE PFN_vkCmdBeginRenderPass vkCmdBeginRenderPass; \
 		LINKAGE PFN_vkCmdEndRenderPass vkCmdEndRenderPass; \
 		LINKAGE PFN_vkCmdBindPipeline vkCmdBindPipeline; \
+		LINKAGE PFN_vkCmdBindVertexBuffers vkCmdBindVertexBuffers; \
+		LINKAGE PFN_vkCmdBindIndexBuffer vkCmdBindIndexBuffer; \
 		LINKAGE PFN_vkBeginCommandBuffer vkBeginCommandBuffer; \
 		LINKAGE PFN_vkEndCommandBuffer vkEndCommandBuffer; \
-		LINKAGE PFN_vkCmdBindVertexBuffers vkCmdBindVertexBuffers; \
+		LINKAGE PFN_vkCmdSetViewport vkCmdSetViewport; \
+		LINKAGE PFN_vkCmdSetScissor vkCmdSetScissor; \
 		LINKAGE PFN_vkCmdDraw vkCmdDraw;
 	#endif
 
@@ -211,8 +218,6 @@
 		LINKAGE PFN_vkUpdateDescriptorSets vkUpdateDescriptorSets; \
 		LINKAGE PFN_vkGetRenderAreaGranularity vkGetRenderAreaGranularity; \
 		LINKAGE PFN_vkResetCommandBuffer vkResetCommandBuffer; \
-		LINKAGE PFN_vkCmdSetViewport vkCmdSetViewport; \
-		LINKAGE PFN_vkCmdSetScissor vkCmdSetScissor; \
 		LINKAGE PFN_vkCmdSetLineWidth vkCmdSetLineWidth; \
 		LINKAGE PFN_vkCmdSetDepthBias vkCmdSetDepthBias; \
 		LINKAGE PFN_vkCmdSetBlendConstants vkCmdSetBlendConstants; \
@@ -221,7 +226,6 @@
 		LINKAGE PFN_vkCmdSetStencilWriteMask vkCmdSetStencilWriteMask; \
 		LINKAGE PFN_vkCmdSetStencilReference vkCmdSetStencilReference; \
 		LINKAGE PFN_vkCmdBindDescriptorSets vkCmdBindDescriptorSets; \
-		LINKAGE PFN_vkCmdBindIndexBuffer vkCmdBindIndexBuffer; \
 		LINKAGE PFN_vkCmdDrawIndexed vkCmdDrawIndexed; \
 		LINKAGE PFN_vkCmdDrawIndirect vkCmdDrawIndirect; \
 		LINKAGE PFN_vkCmdDrawIndexedIndirect vkCmdDrawIndexedIndirect; \

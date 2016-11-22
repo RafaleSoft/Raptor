@@ -1,6 +1,16 @@
 - simd.cpp : appel a GetSystemInfo, migrer vers intrinsics
 	- linux : /proc/cpuinfo
+	
+- CHostMemoryManager:
+	- ajouter capacité allocations/release dans un bloc prédéfini (data pool)
+	- MapPointer : ajouter un paramètre SyncData
 
+- CRaptorRenderBufferDisplay:
+	- mettre au point le format CGL_FLOAT_32 (creation des textures attachées)
+	
+- CGeometry / CGeometryPrimitive:
+	- créer un mode"BigGeometry" avec des indices de type uint32_t
+		
 - supprimer des "friend" ?
 	p.ex. dans CRaptorDisplay et sous classes ...
 

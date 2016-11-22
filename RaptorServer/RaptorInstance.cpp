@@ -69,7 +69,7 @@ CRaptorInstance::~CRaptorInstance()
     m_pInstance = NULL;
 }
 
-CRaptorInstance* CRaptorInstance::getInstance(void)
+CRaptorInstance* CRaptorInstance::GetInstance(void)
 {
     if (m_pInstance == NULL)
         m_pInstance = new CRaptorInstance();

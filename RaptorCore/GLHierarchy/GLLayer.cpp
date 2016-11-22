@@ -71,7 +71,7 @@ CGLLayer::CGLLayer(int xpos,int ypos,unsigned int width,unsigned int height)
 	//	Allocate RGBA8 pixel format only. Other formats can be available
 	//	depending on layer texture needs (floats ? require SSE2)
 	//	32 bytes alignment for SSE4/AVX
-	CMemory::Allocator<unsigned char,32> allocator;
+	CHostMemoryManager::Allocator<unsigned char,32> allocator;
 	//	allocate with padding for sse simplification
 	m_pBuffer = allocator.allocate(m_layerWidth*m_layerHeight*4+16); 
 
@@ -255,7 +255,7 @@ void CGLLayer::glRender()
 			CTexelAllocator::GetInstance()->isMemoryLocked() &&
 			(NULL != m_pBufferPointer))
 		{
-			CTexelAllocator::GetInstance()->glCopyPointer(m_pBufferPointer,
+			CTexelAllocator::GetInstance()->glvkCopyPointer(m_pBufferPointer,
 														  m_pBuffer,
 														  m_layerWidth*m_layerHeight*4);
 			glTexSubImage2D(GL_TEXTURE_2D,

@@ -123,7 +123,7 @@ bool CShaderLibrary::glInitFactory(void)
 	if (s_initialized)
 		return false;
 
-	CRaptorDataManager *dataManager = CRaptorDataManager::getInstance();
+	CRaptorDataManager *dataManager = CRaptorDataManager::GetInstance();
 	const char * const *shader_source_library = dataManager->GetShaderList();
 
     if (shader_source_library == NULL)

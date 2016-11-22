@@ -14,8 +14,8 @@
 #if !defined(__RAPTOR_VKEXT_H__)
 	#include "System/vkext.h"
 #endif
-#if !defined(AFX_COLOR_H__3770AC59_0D0E_49EF_99C8_037268A33CE4__INCLUDED_)
-	#include "System/Color.h"
+#if !defined(AFX_RAPTORVULKANMEMORY_H__72256FF7_DBB9_4B9C_9BF7_C36F425CF811__INCLUDED_)
+	#include "Subsys/Vulkan/VulkanMemory.h"
 #endif
 
 
@@ -50,11 +50,14 @@ public:
 							uint32_t width,
 							uint32_t height);
 
+	bool vkDestroySwapChain();
+
 	//!	Provides a rendering image from swap chain for next frame render.
 	//!	Currently, only a single image per frame is managed.
 	//!	TODO : handle multiple acquired images.
 	bool acquireSwapChainImage(uint64_t timeout);
 	bool presentSwapChainImage();
+	//bool resizeSwapChain(uint32_t width, uint32_t height);
 
 	//!	Creates and initialises a render pass
 	bool vkCreateRenderPassResources(	VkSurfaceFormatKHR format,
@@ -71,6 +74,10 @@ public:
 	//!	NB_RENDERING_RESOURCES set of resources are created.
 	bool vkCreateRenderingResources(void);
 
+	//! Returns the memory wrapper managing this device.
+	IDeviceMemoryManager* getMemory(void) const { return pDeviceMemory; };
+
+
 	CVulkanPipeline*	createPipeline(void) const;
 	CVulkanShader*		createShader(void) const;
 
@@ -78,7 +85,8 @@ public:
 	//!	and initialise the render pass.
 	bool vkBindPipeline(const CVulkanPipeline& pipeline,
 						const VkRect2D& scissor,
-						const CColor::RGBA& clearColor);
+						const CColor::RGBA& clearColor,
+						VkDeviceSize offset);
 
 	//! Destroy or Release all device linked Vulkan resources, including swap chain
 	bool vkDestroyLogicalDevice(void);
@@ -97,8 +105,11 @@ private:
 	DECLARE_VK_KHR_swapchain(DEFAULT_LINKAGE)
 	DECLARE_VK_device(DEFAULT_LINKAGE)
 	DECLARE_VK_queue(DEFAULT_LINKAGE)
+	DECLARE_VK_command_buffer(DEFAULT_LINKAGE)
 
 	VkDevice		device;
+
+	CVulkanMemory::CVulkanMemoryWrapper* pDeviceMemory;
 
 	VkCommandPool	graphicsCommandPool;
 	VkCommandPool	presentCommandPool;

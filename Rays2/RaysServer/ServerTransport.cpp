@@ -94,7 +94,7 @@ bool CServerTransport::handleReply(request_handler_t::request_id id, const void 
 
 bool CServerTransport::stopServer(void)
 {
-	//CRaptorInstance *pHandler = CRaptorInstance::getInstance();
+	//CRaptorInstance *pHandler = CRaptorInstance::GetInstance();
 	
 	if (true) //pHandler->stop())
 	{
@@ -111,7 +111,7 @@ int CServerTransport::onNewClient(const CClientSocket &client)
 
 bool CServerTransport::onClientClose(const CClientSocket &client)
 {
-	//CRaptorInstance *pHandler = CRaptorInstance::getInstance();
+	//CRaptorInstance *pHandler = CRaptorInstance::GetInstance();
 	//return pHandler->closeSession((request_handler_t::request_id)&client);
 	return false;
 }

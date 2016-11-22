@@ -14,9 +14,6 @@
 #if !defined(__RAPTOR_VKEXT_H__)
 	#include "System/vkext.h"
 #endif
-#if !defined(AFX_RAPTORVULKANMEMORY_H__72256FF7_DBB9_4B9C_9BF7_C36F425CF811__INCLUDED_)
-	#include "Subsys/Vulkan/VulkanMemory.h"
-#endif
 
 
 RAPTOR_NAMESPACE_BEGIN
@@ -31,15 +28,13 @@ public:
 					VkRenderPass renderPass);
 	virtual ~CVulkanPipeline(void);
 
-	bool initPipeline(	const CRaptorDisplayConfig& config,
-						const VkRect2D& scissor);
+	bool initPipeline();
 
 	bool destroyPipeline(void);
 
 	VkPipeline getPipeline(void) const { return pipeline; };
 
 	bool addShader(CVulkanShader* pShader);
-	const std::vector<CVulkanMemory::IBufferObject*>& getBuffers(void) const { return m_buffers; };
 
 
 #if defined(VK_VERSION_1_0)
@@ -48,7 +43,6 @@ public:
 
 private:
 	std::vector<CVulkanShader*> m_shaders;
-	std::vector<CVulkanMemory::IBufferObject*> m_buffers;
 
 #if defined(VK_VERSION_1_0)
 	VkDevice		device;

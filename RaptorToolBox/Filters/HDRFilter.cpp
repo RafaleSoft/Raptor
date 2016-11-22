@@ -297,7 +297,7 @@ CHDRFilter::CHDRFilter(const CRaptorDisplayConfig &da)
 	rda.double_buffer = false;
 	rda.stencil_buffer = false;
 	rda.bind_to_texture = true;
-    rda.display_mode =	(da.display_mode & (CGL_RGB|CGL_RGBA|CGL_FLOAT));
+    rda.display_mode =	(da.display_mode & (CGL_RGB|CGL_RGBA|CGL_FLOAT_32|CGL_FLOAT_16));
 	rda.renderer = CRaptorDisplayConfig::PIXEL_BUFFER;
 
 #if defined(GL_EXT_framebuffer_object)

@@ -136,6 +136,9 @@ void CRaptorErrorManager::addRaptorError(GL_RAPTOR_ERROR& err)
             case RAPTOR_GL_ERROR:
                 *m_pLogger << " - OpenGL error(";
                 break;
+			case RAPTOR_VK_ERROR:
+                *m_pLogger << " - Vulkan error(";
+                break;
             case RAPTOR_FATAL:
                 *m_pLogger << " - Fatal(";
                 break;

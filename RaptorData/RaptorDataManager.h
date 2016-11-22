@@ -28,7 +28,7 @@ using std::string;
 class RAPTORDATA_API CRaptorDataManager  
 {
 public:
-    static CRaptorDataManager  *getInstance(void);
+    static CRaptorDataManager  *GetInstance(void);
 
 	virtual ~CRaptorDataManager();
 

@@ -718,6 +718,10 @@
 					</FileConfiguration>
 				</File>
 				<File
+					RelativePath="..\..\RaptorCore\Subsys\OpenGLMemory.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\..\RaptorCore\Subsys\PhongShader.cpp"
 					>
 				</File>
@@ -1740,6 +1744,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\RaptorCore\Subsys\OpenGLMemory.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\RaptorCore\Subsys\PhongShader.h"
 					>
 				</File>
@@ -1850,6 +1858,10 @@
 				<Filter
 					Name="Vulkan"
 					>
+					<File
+						RelativePath="..\..\RaptorCore\Subsys\Vulkan\VulkanBufferObject.h"
+						>
+					</File>
 					<File
 						RelativePath="..\..\RaptorCore\Subsys\Vulkan\VulkanDevice.h"
 						>

@@ -228,12 +228,12 @@ bool CRaptorBufferDisplay::glBindDisplay(const RAPTOR_HANDLE& device)
 		bool res = false;
 		CGeometryAllocator *allocatorG = CGeometryAllocator::GetInstance();
 		bool bRelocGeometry = allocatorG->isMemoryLocked();
-		if (allocatorG->isMemoryRelocated() && bRelocGeometry)
-			allocatorG->glLockMemory(false);
+		if (bRelocGeometry)
+			allocatorG->glvkLockMemory(false);
 		CTexelAllocator *allocatorT = CTexelAllocator::GetInstance();
 		bool bRelocTexels = allocatorT->isMemoryLocked();
-		if (allocatorT->isMemoryRelocated() && bRelocTexels)
-			allocatorT->glLockMemory(false);
+		if (bRelocTexels)
+			allocatorT->glvkLockMemory(false);
 
 		// The current rendering context is saved for restoring after pBuffer is used
 		// Save the context only once, in case of using multiple Pixel Buffers
@@ -278,10 +278,10 @@ bool CRaptorBufferDisplay::glBindDisplay(const RAPTOR_HANDLE& device)
             res = false;
 		}
 
-		if (allocatorG->isMemoryRelocated() && bRelocGeometry)
-			allocatorG->glLockMemory(true);
-		if (allocatorT->isMemoryRelocated() && bRelocTexels)
-			allocatorT->glLockMemory(true);
+		if (bRelocGeometry)
+			allocatorG->glvkLockMemory(true);
+		if (bRelocTexels)
+			allocatorT->glvkLockMemory(true);
 
 		return res;
 	}
@@ -322,12 +322,12 @@ bool CRaptorBufferDisplay::glUnBindDisplay(void)
 	{
 		CGeometryAllocator *allocatorG = CGeometryAllocator::GetInstance();
 		bool bRelocGeometry = allocatorG->isMemoryLocked();
-		if (allocatorG->isMemoryRelocated() && bRelocGeometry)
-			allocatorG->glLockMemory(false);
+		if (bRelocGeometry)
+			allocatorG->glvkLockMemory(false);
 		CTexelAllocator *allocatorT = CTexelAllocator::GetInstance();
 		bool bRelocTexels = allocatorT->isMemoryLocked();
-		if (allocatorT->isMemoryRelocated() && bRelocTexels)
-			allocatorT->glLockMemory(false);
+		if (bRelocTexels)
+			allocatorT->glvkLockMemory(false);
 
 
         CRaptorDisplay::glUnBindDisplay();
@@ -366,10 +366,10 @@ bool CRaptorBufferDisplay::glUnBindDisplay(void)
         m_bindingStack.pop_back();
 		m_previousContext = -1;
 
-		if (allocatorG->isMemoryRelocated() && bRelocGeometry)
-			allocatorG->glLockMemory(true);
-		if (allocatorT->isMemoryRelocated() && bRelocTexels)
-			allocatorT->glLockMemory(true);
+		if (bRelocGeometry)
+			allocatorG->glvkLockMemory(true);
+		if (bRelocTexels)
+			allocatorT->glvkLockMemory(true);
 
 		return true;
 	}
