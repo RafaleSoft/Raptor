@@ -70,7 +70,7 @@ public:
 		Raptor::GetErrorManager()->vkGetError(err,__FILE__,__LINE__);
 #else
 	#define	CATCH_GL_ERROR
-	#define	CATCH_VK_ERROR
+	#define	CATCH_VK_ERROR(err)
 #endif
 
 

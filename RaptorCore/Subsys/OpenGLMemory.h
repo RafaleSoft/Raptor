@@ -34,11 +34,11 @@ public:
 								uint64_t size);
 	virtual bool lockBufferObject(IBufferObject &bo);
 	virtual bool unlockBufferObject(IDeviceMemoryManager::IBufferObject &bo);
-	virtual void setBufferObjectData(	IDeviceMemoryManager::IBufferObject &bo,
+	virtual bool setBufferObjectData(	IDeviceMemoryManager::IBufferObject &bo,
 										uint64_t dstOffset,
 										const void* src,
 										uint64_t sz);
-	virtual void getBufferObjectData(	IDeviceMemoryManager::IBufferObject &vb,
+	virtual bool getBufferObjectData(	IDeviceMemoryManager::IBufferObject &vb,
 										uint64_t srcOffset,
 										void* dst,
 										uint64_t sz);

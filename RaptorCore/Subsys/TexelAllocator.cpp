@@ -100,7 +100,6 @@ bool CTexelAllocator::glvkInitMemory(	IDeviceMemoryManager* pDeviceMemory,
 																	IDeviceMemoryManager::IBufferObject::STREAM,
 																	texelSize+RELOCATE_OFFSET);
         CATCH_GL_ERROR
-		CATCH_VK_ERROR
 
 		return (relocatedTexels != NULL);
 	}

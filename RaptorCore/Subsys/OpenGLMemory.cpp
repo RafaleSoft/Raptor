@@ -176,16 +176,16 @@ COpenGLMemory::createBufferObject(	IDeviceMemoryManager::IBufferObject::BUFFER_K
 	}
 }
 
-void COpenGLMemory::setBufferObjectData(IDeviceMemoryManager::IBufferObject &bo,
+bool COpenGLMemory::setBufferObjectData(IDeviceMemoryManager::IBufferObject &bo,
 										uint64_t dstOffset,
 										const void* src,
 										uint64_t sz)
 {
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 	if ((src == NULL) || (sz == 0))
-		return;
+		return false;
 	if (vb.getSize() < (dstOffset + sz))
-		return;
+		return false;
 #endif
 
     //! This method could be called very often per  frame, lock/unlock 
@@ -210,7 +210,7 @@ void COpenGLMemory::setBufferObjectData(IDeviceMemoryManager::IBufferObject &bo,
 															CRaptorErrorManager::RAPTOR_WARNING,
 															"Buffer Object storage is not supported by RaptorCore CHostMemoryManager");
 #endif
-			return;
+			return false;
 		}
 
         GLenum glStorage = BufferKindToGL(storage);
@@ -245,22 +245,21 @@ void COpenGLMemory::setBufferObjectData(IDeviceMemoryManager::IBufferObject &bo,
 		memcpy((char*)bo.getBaseAddress() + dstOffset,src,sz);
 	}
 
-    CATCH_GL_ERROR
+    CATCH_GL_ERROR;
+	return true;
 }
 
 
-void COpenGLMemory::getBufferObjectData(IDeviceMemoryManager::IBufferObject &vb,
+bool COpenGLMemory::getBufferObjectData(IDeviceMemoryManager::IBufferObject &vb,
 										uint64_t srcOffset,
 										void* dst,
 										uint64_t sz)
 {
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 	if ((dst == NULL) || (sz == 0))
-		return;
+		return false;
 	if (vb.getSize() < (srcOffset + sz))
-		return;
-	if (m_deviceHeap.end() == m_deviceHeap.find(&vb))
-		return;
+		return false;
 #endif
 
     //! This method could be called very often, lock/unlock 
@@ -287,7 +286,7 @@ void COpenGLMemory::getBufferObjectData(IDeviceMemoryManager::IBufferObject &vb,
 															CRaptorErrorManager::RAPTOR_WARNING,
 															"Buffer Object storage is not supported by RaptorCore CHostMemoryManager");
 #endif
-			return;
+			return false;
 		}
 
 		if (currentBuffers[storage] != buffer)
@@ -322,7 +321,8 @@ void COpenGLMemory::getBufferObjectData(IDeviceMemoryManager::IBufferObject &vb,
 		memcpy(dst,(char*)vb.getBaseAddress() + srcOffset,sz);
 	}
 
-    CATCH_GL_ERROR
+    CATCH_GL_ERROR;
+	return true;
 }
 
 bool COpenGLMemory::releaseBufferObject(IDeviceMemoryManager::IBufferObject* &vb)

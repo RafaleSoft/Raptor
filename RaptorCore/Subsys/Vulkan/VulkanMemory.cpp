@@ -139,7 +139,7 @@ CVulkanMemory::CVulkanMemoryWrapper::createBufferObject(IDeviceMemoryManager::IB
 }
 
 
-void CVulkanMemory::CVulkanMemoryWrapper::setBufferObjectData(	IDeviceMemoryManager::IBufferObject &bo,
+bool CVulkanMemory::CVulkanMemoryWrapper::setBufferObjectData(	IDeviceMemoryManager::IBufferObject &bo,
 																uint64_t dstOffset,
 																const void* src,
 																uint64_t sz)
@@ -147,15 +147,20 @@ void CVulkanMemory::CVulkanMemoryWrapper::setBufferObjectData(	IDeviceMemoryMana
 	const IDeviceMemoryManager::IBufferObject *pIBuffer = &bo;
 	std::map<const IDeviceMemoryManager::IBufferObject*,const CVulkanBufferObject*>::const_iterator it = m_pBuffers.find(pIBuffer);
 	if (m_pBuffers.end() == it)
-		return;
-	memory.vkSetBufferObjectData(device,*((*it).second),dstOffset,src,sz);
+		return false;
+	return memory.vkSetBufferObjectData(device,*((*it).second),dstOffset,src,sz);
 }
 
-void CVulkanMemory::CVulkanMemoryWrapper::getBufferObjectData(	IDeviceMemoryManager::IBufferObject &vb,
+bool CVulkanMemory::CVulkanMemoryWrapper::getBufferObjectData(	IDeviceMemoryManager::IBufferObject &bo,
 																uint64_t srcOffset,
 																void* dst,
 																uint64_t sz)
 {
+	const IDeviceMemoryManager::IBufferObject *pIBuffer = &bo;
+	std::map<const IDeviceMemoryManager::IBufferObject*,const CVulkanBufferObject*>::const_iterator it = m_pBuffers.find(pIBuffer);
+	if (m_pBuffers.end() == it)
+		return false;
+	return memory.vkGetBufferObjectData(device,*((*it).second),srcOffset,dst,sz);
 }
 
 
@@ -213,7 +218,37 @@ const VkAllocationCallbacks* CVulkanMemory::GetAllocator(void)
 	return &s_vulkanAllocator;
 }
 
-void CVulkanMemory::vkSetBufferObjectData(VkDevice device,
+bool CVulkanMemory::vkGetBufferObjectData(	VkDevice device,
+											const CVulkanBufferObject &vb,
+											VkDeviceSize srcOffset,
+											void* dst,
+											VkDeviceSize sz) const
+{
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+	if ((NULL == dst) || (0 == sz))
+		return false;
+	if (vb.getSize() < (srcOffset + sz))
+		return false;
+#endif
+	void *vertex_buffer_memory_pointer = NULL;
+	VkResult res = vkMapMemory(	device,
+								vb.getAddress(),
+								srcOffset,
+								sz,
+								0, 
+								&vertex_buffer_memory_pointer);
+	CATCH_VK_ERROR(res);
+	if (VK_SUCCESS != res)
+		return false;
+
+	memcpy(dst,vertex_buffer_memory_pointer, sz);
+
+	vkUnmapMemory(device, vb.getAddress());
+
+	return true;
+}
+
+bool CVulkanMemory::vkSetBufferObjectData(VkDevice device,
 										  const CVulkanBufferObject &vb,
 										  VkDeviceSize dstOffset,
 										  const void* srcData,
@@ -221,9 +256,9 @@ void CVulkanMemory::vkSetBufferObjectData(VkDevice device,
 {
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 	if ((NULL == srcData) || (0 == sz))
-		return;
+		return false;
 	if (vb.getSize() < (dstOffset + sz))
-		return;
+		return false;
 #endif
 	void *vertex_buffer_memory_pointer = NULL;
 	VkResult res = vkMapMemory(	device,
@@ -232,47 +267,28 @@ void CVulkanMemory::vkSetBufferObjectData(VkDevice device,
 								sz,
 								0, 
 								&vertex_buffer_memory_pointer);
-	if (VK_ERROR_MEMORY_MAP_FAILED == res)
-	{
-		RAPTOR_ERROR(	Global::CVulkanClassID::GetClassId(),
-						"Failed to map Buffer Objects to host memory for this device !");
-		return;
-	}
-	else if (VK_ERROR_OUT_OF_DEVICE_MEMORY == res)
-	{
-		RAPTOR_ERROR(	Global::CVulkanClassID::GetClassId(),
-						"Out of memory on this device !");
-		return;
-	}
-	else if (VK_ERROR_OUT_OF_HOST_MEMORY == res)
-	{
-		RAPTOR_ERROR(	Global::CVulkanClassID::GetClassId(),
-						"Out of memory on host !");
-		return;
-	}
+	CATCH_VK_ERROR(res);
+	if (VK_SUCCESS != res)
+		return false;
 
 	memcpy(vertex_buffer_memory_pointer, srcData, sz);
 
-	VkMappedMemoryRange flush_range = {	VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE,
-										NULL,
-										vb.getAddress(),
-										dstOffset,
-										sz }; // VK_WHOLE_SIZE
-	res = vkFlushMappedMemoryRanges(device, 1, &flush_range );
-	if (VK_ERROR_OUT_OF_DEVICE_MEMORY == res)
+	if (!vb.m_coherent)
 	{
-		RAPTOR_ERROR(	Global::CVulkanClassID::GetClassId(),
-						"Out of memory on this device !");
-		return;
-	}
-	else if (VK_ERROR_OUT_OF_HOST_MEMORY == res)
-	{
-		RAPTOR_ERROR(	Global::CVulkanClassID::GetClassId(),
-						"Out of memory on host !");
-		return;
+		VkMappedMemoryRange flush_range = {	VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE,
+											NULL,
+											vb.getAddress(),
+											dstOffset,
+											sz }; // VK_WHOLE_SIZE
+		res = vkFlushMappedMemoryRanges(device, 1, &flush_range );
+		CATCH_VK_ERROR(res);
+		if (VK_SUCCESS != res)
+			return false;
 	}
 
 	vkUnmapMemory(device, vb.getAddress());
+
+	return true;
 }
 
 bool CVulkanMemory::vkDestroyBufferObject(VkDevice device,
@@ -332,11 +348,14 @@ CVulkanBufferObject* CVulkanMemory::vkCreateBufferObject(	VkDevice device,
 	vkGetBufferMemoryRequirements( device, buffer, &buffer_memory_requirements );
 
 	VkDeviceMemory pMemory = VK_NULL_HANDLE;
+	bool needFlush = true;
 	for( uint32_t i = 0; i < memory_properties.memoryTypeCount; ++i )
 	{
 		if ((buffer_memory_requirements.memoryTypeBits & (1 << i)) && 
 			(memory_properties.memoryTypes[i].propertyFlags & VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT) )
-		{ 
+		{
+			if (memory_properties.memoryTypes[i].propertyFlags & VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)
+				needFlush = false;
 			 VkMemoryAllocateInfo memory_allocate_info = {	VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,     // VkStructureType                        sType 
 															NULL,                                    // const void                            *pNext 
 															buffer_memory_requirements.size,            // VkDeviceSize                           allocationSize 
@@ -387,6 +406,7 @@ CVulkanBufferObject* CVulkanMemory::vkCreateBufferObject(	VkDevice device,
 	CVulkanBufferObject *pBuffer = new CVulkanBufferObject(buffer,pMemory);
 	pBuffer->m_size = size;
 	pBuffer->m_storage = kind;
+	pBuffer->m_coherent = !needFlush;
 
 	return pBuffer;
 }

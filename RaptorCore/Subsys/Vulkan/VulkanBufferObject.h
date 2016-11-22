@@ -15,7 +15,7 @@ class CVulkanBufferObject : public IDeviceMemoryManager::IBufferObject
 public:
 	//!	Vulkan buffer objet constructor
 	CVulkanBufferObject(VkBuffer buffer,VkDeviceMemory memory)
-		:m_size(0),m_storage(VERTEX_BUFFER),m_buffer(buffer),m_address(memory)
+		:m_size(0),m_storage(VERTEX_BUFFER),m_buffer(buffer),m_address(memory),m_coherent(false)
 	{};
 
 	//!	Destructor
@@ -37,14 +37,14 @@ public:
 	VkBuffer getBuffer(void) const
 	{ return m_buffer; }
 
-	//!	An opaque pointer to the data
-	//void		*address;
-
     //! The size in bytes of the buffer object
 	size_t		m_size;
 
 	//! Indicates the data storage usage: vertex, pixels, ...
     BUFFER_KIND m_storage;
+
+	//!	Type of host visible memory (do not need flush)
+	bool		m_coherent;
 
 private:
     CVulkanBufferObject(const CVulkanBufferObject& );

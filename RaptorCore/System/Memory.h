@@ -97,7 +97,8 @@ public:
 	//! @param dstOffset : the data offset within the destintation buffer ( vb )
 	//! @param src		 : a pointer to the data source
 	//! @param sz		 : the size of the data to be copied
-	virtual void setBufferObjectData(	IDeviceMemoryManager::IBufferObject &bo,
+	//! @return true if data correctly set to buffer.
+	virtual bool setBufferObjectData(	IDeviceMemoryManager::IBufferObject &bo,
 										uint64_t dstOffset,
 										const void* src,
 										uint64_t sz) = 0;
@@ -108,7 +109,8 @@ public:
 	//! @param srcOffset : the data offset within the source buffer ( vb )
 	//! @param dst		 : a pointer to the data destination
 	//! @param sz		 : the size of the data to be copied
-	virtual void getBufferObjectData(	IDeviceMemoryManager::IBufferObject &bo,
+	//! @return true if data correctly retrieved from buffer.
+	virtual bool getBufferObjectData(	IDeviceMemoryManager::IBufferObject &bo,
 										uint64_t srcOffset,
 										void* dst,
 										uint64_t sz) = 0;

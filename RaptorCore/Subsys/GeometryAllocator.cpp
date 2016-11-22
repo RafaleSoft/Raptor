@@ -406,7 +406,6 @@ bool CGeometryAllocator::glvkInitMemory(IDeviceMemoryManager* pDeviceMemory,
 																		IDeviceMemoryManager::IBufferObject::STATIC,
 																		faceIndexes.size+RELOCATE_OFFSET);
         CATCH_GL_ERROR
-		CATCH_VK_ERROR
 
 		return ((relocatedFaceIndexes != NULL) && (relocatedVertices != NULL));
 	}

@@ -41,12 +41,12 @@ public:
 								IDeviceMemoryManager::IBufferObject::BUFFER_MODE mode, 
 								uint64_t size);
 
-		virtual void setBufferObjectData(	IDeviceMemoryManager::IBufferObject &bo,
+		virtual bool setBufferObjectData(	IDeviceMemoryManager::IBufferObject &bo,
 											uint64_t dstOffset,
 											const void* src,
 											uint64_t sz);
 
-		virtual void getBufferObjectData(	IDeviceMemoryManager::IBufferObject &vb,
+		virtual bool getBufferObjectData(	IDeviceMemoryManager::IBufferObject &vb,
 											uint64_t srcOffset,
 											void* dst,
 											uint64_t sz);
@@ -81,10 +81,24 @@ public:
 	//!	This method destroys a buffer objet
 	bool vkDestroyBufferObject(VkDevice device, const CVulkanBufferObject* pBuffer) const;
 
-	void vkSetBufferObjectData(	VkDevice device,
+	//!	This method work in 3 steps:
+	//!	- map the buffer objet to host memory
+	//!	- transfer data to a mapped buffer object
+	//!	- flushes and unmap the buffer object.
+	bool vkSetBufferObjectData(	VkDevice device,
 								const CVulkanBufferObject &vb,
 								VkDeviceSize dstOffset,
 								const void* srcData,
+								VkDeviceSize sz) const;
+
+	//!	This method work in 3 steps:
+	//!	- map the buffer objet to host memory
+	//!	- transfer data from a mapped buffer object
+	//!	- flushes and unmap the buffer object.
+	bool vkGetBufferObjectData(	VkDevice device,
+								const CVulkanBufferObject &vb,
+								VkDeviceSize srcOffset,
+								void* dst,
 								VkDeviceSize sz) const;
 
 
