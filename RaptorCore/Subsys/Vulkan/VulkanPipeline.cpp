@@ -15,7 +15,9 @@
 #if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
     #include "System/RaptorErrorManager.h"
 #endif
-
+#if !defined(AFX_RAPTORVULKANMEMORY_H__72256FF7_DBB9_4B9C_9BF7_C36F425CF811__INCLUDED_)
+	#include "Subsys/Vulkan/VulkanMemory.h"
+#endif
 
 RAPTOR_NAMESPACE
 
@@ -223,6 +225,7 @@ bool CVulkanPipeline::initPipeline()
 	VkPipeline basePipelineHandle = VK_NULL_HANDLE;
 	int32_t basePipelineIndex = -1;
 
+	CHostMemoryManager *pMemory = CHostMemoryManager::GetInstance();
 	VkGraphicsPipelineCreateInfo pipeline_create_info = {VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
 														NULL,	// const void *pNext 
 														VK_PIPELINE_CREATE_ALLOW_DERIVATIVES_BIT, // VkPipelineCreateFlags

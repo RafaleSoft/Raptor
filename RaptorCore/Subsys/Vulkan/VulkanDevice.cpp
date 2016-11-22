@@ -118,6 +118,7 @@ CVulkanPipeline* CVulkanDevice::createPipeline(void) const
 	if ((VK_NULL_HANDLE != device) &&
 		(VK_NULL_HANDLE != renderPass))
 	{
+		CHostMemoryManager *pMemory = CHostMemoryManager::GetInstance();
 		CVulkanPipeline *pipeline = new CVulkanPipeline(device,renderPass);
 
 		pipeline->vkCreateGraphicsPipelines = vkCreateGraphicsPipelines;

@@ -169,7 +169,7 @@ bool CRaptorMessages::importMessage(CRaptorIO& io,void *pmessages)
 
 	MSGS_IDS &objectMessages = *((MSGS_IDS*)pmessages);
 
-	MESSAGE_ID messageId;
+	MESSAGE_ID messageId = UNKNOWN_ID;
 	MSG_VAL	objectMessage;
 	string	id = "";
 	string	str = "";
@@ -228,9 +228,13 @@ bool CRaptorMessages::importMessage(CRaptorIO& io,void *pmessages)
 	}
 	io >> name;
 
-	objectMessages[messageId] = objectMessage;
-
-	return true;
+	if (UNKNOWN_ID != messageId)
+	{
+		objectMessages[messageId] = objectMessage;
+		return true;
+	}
+	else
+		return false;
 }
 
 bool CRaptorMessages::importClass(CRaptorIO& io,void *planguage)

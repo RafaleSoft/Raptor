@@ -625,8 +625,8 @@ void CObjectStore::LoadModels(void)
             CShadedGeometry *geo = static_cast<CShadedGeometry*>(g);
             CShader * const s = geo->getShader();
             *s->getMaterial() = *m_material;
-            CTextureUnitSetup *tmuSetup = s->glGetTextureUnitsSetup();
-	        tmuSetup->setDiffuseMap(m_textures->getTexture(BRICKS));
+            CTextureUnitSetup *wallTmuSetup = s->glGetTextureUnitsSetup();
+			wallTmuSetup->setDiffuseMap(m_textures->getTexture(BRICKS));
             const CGeometryEditor &pEditor = g->getEditor();
 		    pEditor.scaleTexCoords(2.0f,2.0f);
         }
@@ -635,8 +635,8 @@ void CObjectStore::LoadModels(void)
             CShadedGeometry *geo = static_cast<CShadedGeometry*>(g);
             CShader * const s = geo->getShader();
             *s->getMaterial() = *m_material;
-            CTextureUnitSetup *tmuSetup = s->glGetTextureUnitsSetup();
-	        tmuSetup->setDiffuseMap(m_textures->getTexture(BRICKS));
+            CTextureUnitSetup *wallTmuSetup = s->glGetTextureUnitsSetup();
+			wallTmuSetup->setDiffuseMap(m_textures->getTexture(BRICKS));
             const CGeometryEditor &pEditor = g->getEditor();
 		    pEditor.scaleTexCoords(2.0f,2.0f);
         }

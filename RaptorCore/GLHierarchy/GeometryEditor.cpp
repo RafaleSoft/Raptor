@@ -265,10 +265,13 @@ void CGeometryEditor::genSurfaceElements(void) const
         {
 			case CGeometryPrimitive::TRIANGLE:
 			{
-				p1 = faces[i];
-				p2 = faces[i+1];
-		        p3 = faces[i+2];
-				computeVertexArea(p1,p2,p3);
+				for (i = 0; i < size - 2; i++)
+				{
+					p1 = faces[i];
+					p2 = faces[i + 1];
+					p3 = faces[i + 2];
+					computeVertexArea(p1, p2, p3);
+				}
 				break;
 			}
 			case CGeometryPrimitive::TRIANGLE_STRIP:

@@ -73,6 +73,12 @@
     <Filter Include="Header Files\Subsys include\Hershey">
       <UniqueIdentifier>{a56710d9-53b2-4868-8668-861c9349b34c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Subsys src\Vulkan">
+      <UniqueIdentifier>{c23dceae-2176-4741-83ab-440c3bd55eec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Subsys include\Vulkan">
+      <UniqueIdentifier>{02a65b1a-6e1a-4080-9a83-f6139c1cc147}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\RaptorCore\Subsys\ObjectModels\Basic.lex">
@@ -544,6 +550,24 @@
     </ClCompile>
     <ClCompile Include="..\..\RaptorCore\System\RaptorVulkanDisplay.cpp">
       <Filter>Source Files\System src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\Vulkan\VulkanDevice.cpp">
+      <Filter>Source Files\Subsys src\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\Vulkan\VulkanMemory.cpp">
+      <Filter>Source Files\Subsys src\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\Vulkan\VulkanPipeline.cpp">
+      <Filter>Source Files\Subsys src\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\Vulkan\VulkanShader.cpp">
+      <Filter>Source Files\Subsys src\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\VulkanShaderStage.cpp">
+      <Filter>Source Files\GLHierarchy src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\OpenGLMemory.cpp">
+      <Filter>Source Files\Subsys src</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1043,6 +1067,27 @@
     </ClInclude>
     <ClInclude Include="..\..\RaptorCore\System\RaptorVulkanDisplay.h">
       <Filter>Header Files\System include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\Vulkan\VulkanBufferObject.h">
+      <Filter>Header Files\Subsys include\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\Vulkan\VulkanDevice.h">
+      <Filter>Header Files\Subsys include\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\Vulkan\VulkanMemory.h">
+      <Filter>Header Files\Subsys include\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\Vulkan\VulkanPipeline.h">
+      <Filter>Header Files\Subsys include\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\Vulkan\VulkanShader.h">
+      <Filter>Header Files\Subsys include\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\VulkanShaderStage.h">
+      <Filter>Header Files\GLHierarchy include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\OpenGLMemory.h">
+      <Filter>Header Files\Subsys include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

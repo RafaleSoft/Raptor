@@ -270,7 +270,7 @@ CShader::~CShader()
         GLhandleARB *pHandles = new GLhandleARB[maxCount];
         pExtensions->glGetAttachedObjectsARB(m_shaderProgram.handle, maxCount,&count, pHandles);
 
-        for (GLsizei i=0;i<count;i++)
+        for (GLsizei i=0;((i<count) && (i<maxCount));i++)
             pExtensions->glDetachObjectARB(m_shaderProgram.handle, pHandles[i]);
 
         pExtensions->glDeleteObjectARB(m_shaderProgram.handle);

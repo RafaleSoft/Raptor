@@ -347,7 +347,8 @@ bool CContextManager::vkInit(void)
 		if ((VK_SUCCESS == res) && (pLayerCount > 0))
 		{
 			VkLayerProperties *pProperties = new VkLayerProperties[pLayerCount];
-			res = vkEnumerateInstanceLayerProperties(&pLayerCount,pProperties);
+			uint32_t nbLayerCount = pLayerCount;
+			res = vkEnumerateInstanceLayerProperties(&nbLayerCount,pProperties);
 			if (VK_SUCCESS == res)
 			{
 				for (uint32_t i=0;i<pLayerCount;i++)
@@ -472,10 +473,10 @@ bool CContextManager::vkInitInstance(CContextManager::RENDERING_CONTEXT_ID ctx)
 					{
 						VkExtensionProperties* pProperties = new VkExtensionProperties[pPropertyCount];
 						res = vk_ctx.vkEnumerateDeviceExtensionProperties(device,NULL,&pPropertyCount,pProperties);
-						for (uint32_t i=0;i<pPropertyCount;i++)
+						for (uint32_t j=0;j<pPropertyCount;j++)
 						{
 							vk_ctx.deviceExtensions += " ";
-							vk_ctx.deviceExtensions += pProperties[i].extensionName;
+							vk_ctx.deviceExtensions += pProperties[j].extensionName;
 						}
 						delete [] pProperties;
 					}
@@ -485,11 +486,12 @@ bool CContextManager::vkInitInstance(CContextManager::RENDERING_CONTEXT_ID ctx)
 					if ((VK_SUCCESS == res) && (pLayerCount > 0))
 					{
 						VkLayerProperties* pProperties = new VkLayerProperties[pLayerCount];
-						res = vk_ctx.vkEnumerateDeviceLayerProperties(device,&pLayerCount,pProperties);
-						for (uint32_t i=0;i<pLayerCount;i++)
+						uint32_t nbLayerCount = pLayerCount;
+						res = vk_ctx.vkEnumerateDeviceLayerProperties(device, &nbLayerCount, pProperties);
+						for (uint32_t j=0;j<pLayerCount;j++)
 						{
 							vk_ctx.deviceLayers += " ";
-							vk_ctx.deviceLayers += pProperties[i].layerName;
+							vk_ctx.deviceLayers += pProperties[j].layerName;
 						}
 						delete [] pProperties;
 					}
@@ -540,7 +542,8 @@ bool CContextManager::vkInitDevice(CContextManager::RENDERING_CONTEXT_ID ctx,con
 			if (pQueueFamilyPropertyCount > 0)
 			{
 				VkQueueFamilyProperties *pQueueFamilyProperties = new VkQueueFamilyProperties[pQueueFamilyPropertyCount];
-				vk_ctx.vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice,&pQueueFamilyPropertyCount,pQueueFamilyProperties);
+				uint32_t nbQueueFamilyProperties = pQueueFamilyPropertyCount;
+				vk_ctx.vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &nbQueueFamilyProperties, pQueueFamilyProperties);
 				
 				for (uint32_t j=0;j<pQueueFamilyPropertyCount;j++)
 				{
