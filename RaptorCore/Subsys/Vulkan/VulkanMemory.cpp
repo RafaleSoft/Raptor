@@ -20,7 +20,6 @@
 #endif
 
 
-
 RAPTOR_NAMESPACE
 
 
@@ -44,7 +43,6 @@ PFN_vkFlushMappedMemoryRanges CVulkanMemory::vkFlushMappedMemoryRanges = VK_NULL
 PFN_vkUnmapMemory CVulkanMemory::vkUnmapMemory = VK_NULL_HANDLE;
 
 
-
 static void* VKAPI_PTR vkAllocationFunction(void* pUserData,
 											size_t size,
 											size_t alignment,
@@ -62,6 +60,7 @@ static void VKAPI_PTR vkFreeFunction(	void* pUserData,
 	{
 		CHostMemoryManager *memory = CHostMemoryManager::GetInstance();
 		memory->garbage(pMemory);	// free strategy could use allocationScope
+		//memory->release(pMemory);
 	}
 	return;
 }
@@ -73,7 +72,10 @@ static void* VKAPI_PTR vkReallocationFunction(	void* pUserData,
 												VkSystemAllocationScope allocationScope)
 {
 	vkFreeFunction(pUserData,pOriginal);
-	return vkAllocationFunction(pUserData,size,alignment,allocationScope);
+	if (size > 0)
+		return vkAllocationFunction(pUserData,size,alignment,allocationScope);
+	else
+		return pOriginal;
 }
 
 static void VKAPI_PTR vkInternalAllocationNotification(	void* pUserData,

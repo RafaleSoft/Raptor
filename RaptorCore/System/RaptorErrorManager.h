@@ -130,8 +130,8 @@ public:
 private:
     CRaptorIO    *m_pLogger;
 
-    vector<GL_RAPTOR_ERROR>	RaptorErrors;
-	vector<CRaptorErrorHandler*> RaptorErrorHandlers;
+	std:: vector<GL_RAPTOR_ERROR>	RaptorErrors;
+	std::vector<CRaptorErrorHandler*> RaptorErrorHandlers;
 };
 
 RAPTOR_NAMESPACE_END

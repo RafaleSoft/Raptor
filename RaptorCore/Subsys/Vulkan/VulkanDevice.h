@@ -86,7 +86,8 @@ public:
 	bool vkBindPipeline(const CVulkanPipeline& pipeline,
 						const VkRect2D& scissor,
 						const CColor::RGBA& clearColor,
-						VkDeviceSize offset);
+						VkDeviceSize offset,
+						VkDeviceSize offset2);
 
 	//! Destroy or Release all device linked Vulkan resources, including swap chain
 	bool vkDestroyLogicalDevice(void);

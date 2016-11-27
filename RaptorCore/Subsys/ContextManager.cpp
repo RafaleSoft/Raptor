@@ -401,7 +401,9 @@ bool CContextManager::vkInitInstance(CContextManager::RENDERING_CONTEXT_ID ctx)
 												nbExtensions,                           // uint32_t enabledExtensionNameCount;
 												extensions};							// const char* const* ppEnabledExtensionNames;
 
-	res = vkCreateInstance(&instanceCreateInfo, CVulkanMemory::GetAllocator(), &vk_ctx.instance);
+	res = vkCreateInstance(	&instanceCreateInfo,
+							CVulkanMemory::GetAllocator(), 
+							&vk_ctx.instance);
 	if (VK_SUCCESS != res)
 		pErrMgr->vkGetError(res,__FILE__,__LINE__);
 

@@ -59,7 +59,8 @@ RAPTOR_NAMESPACE
 
 CRaptorVulkanDisplay::CRaptorVulkanDisplay(const CRaptorDisplayConfig& pcs)
 	:CRaptorDisplay(bufferID,pcs.caption),
-	m_context(-1),cs(pcs),fps(0.0f),ftime(0.0f),rtfps(0.0f),rtime(0.0f)
+	m_context(-1),cs(pcs),fps(0.0f),ftime(0.0f),rtfps(0.0f),rtime(0.0f),
+	nbFramesPerSecond(0)
 {
 }
 
@@ -101,6 +102,7 @@ void CRaptorVulkanDisplay::glResize(unsigned int sx,unsigned int sy,
 }
 
 float *pVertices = NULL;
+unsigned short *pIndexes = NULL;
 
 bool CRaptorVulkanDisplay::glRender(void)
 {
@@ -117,7 +119,11 @@ bool CRaptorVulkanDisplay::glRender(void)
 		//m_pTAllocator->glLockMemory(true);
 
 		CVulkanPipeline *pipeline = m_pipelines[0];
-		vk_device.vkBindPipeline(*pipeline,scissor,cs.framebufferState.colorClearValue,(VkDeviceSize)pVertices);
+		vk_device.vkBindPipeline(	*pipeline,
+									scissor,
+									cs.framebufferState.colorClearValue,
+									(VkDeviceSize)pVertices,
+									(VkDeviceSize)pIndexes);
 
 		//C3DScene *pScene = getRootScene();
 		//pScene->vkRender();
@@ -204,7 +210,7 @@ bool CRaptorVulkanDisplay::glBindDisplay(const RAPTOR_HANDLE& device)
 		manager->vkMakeCurrentContext(device,m_context);
 	}
 
-	return CRaptorDisplay::glBindDisplay(device);
+	return true; //CRaptorDisplay::glBindDisplay(device);
 }
 
 bool CRaptorVulkanDisplay::glUnBindDisplay(void)
@@ -215,7 +221,6 @@ bool CRaptorVulkanDisplay::glUnBindDisplay(void)
 		CContextManager *manager = CContextManager::GetInstance();
 		CVulkanDevice &device = manager->vkGetDevice(m_context);
 
-
 float VertexData[4*8] = 
 {
 	-0.7f, -0.7f, 0.0f, 1.0f	,	1.0f, 0.0f, 0.0f, 0.0f,
@@ -223,9 +228,15 @@ float VertexData[4*8] =
 	 0.7f, -0.7f, 0.0f, 1.0f	,	0.0f, 0.0f, 1.0f, 0.0f,
 	 0.7f,  0.7f, 0.0f, 1.0f	,	0.3f, 0.3f, 0.3f, 0.0f
 };
+unsigned short VertexIndices[6] =
+{
+	3, 2, 0, 3, 0, 1
+};
 
 pVertices = m_pGAllocator->allocateVertices(32);
 m_pGAllocator->glvkCopyPointer(pVertices,&VertexData[0],32);
+pIndexes = m_pGAllocator->allocateIndexes(6);
+m_pGAllocator->glvkCopyPointer(pIndexes,&VertexIndices[0],6);
 
 		CVulkanShader *vshader = device.createShader();
 		CVulkanShader *fshader = device.createShader();
@@ -250,7 +261,7 @@ m_pGAllocator->glvkCopyPointer(pVertices,&VertexData[0],32);
 		}
 	}
 
-	return CRaptorDisplay::glUnBindDisplay();
+	return true; //CRaptorDisplay::glUnBindDisplay();
 }
 
 

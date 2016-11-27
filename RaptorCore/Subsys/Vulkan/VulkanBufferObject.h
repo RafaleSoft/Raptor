@@ -22,11 +22,9 @@ public:
 	virtual ~CVulkanBufferObject() {};
 
 
-	virtual size_t getSize(void) const;
+	virtual uint64_t getSize(void) const;
 
 	virtual BUFFER_KIND getStorage(void) const;
-
-	virtual void* getBaseAddress(void) const;
 
 	unsigned int getBufferId(void) const;
 
@@ -38,7 +36,7 @@ public:
 	{ return m_buffer; }
 
     //! The size in bytes of the buffer object
-	size_t		m_size;
+	uint64_t	m_size;
 
 	//! Indicates the data storage usage: vertex, pixels, ...
     BUFFER_KIND m_storage;
@@ -55,7 +53,7 @@ private:
 };
 
 
-size_t CVulkanBufferObject::getSize(void) const
+uint64_t CVulkanBufferObject::getSize(void) const
 {
 	return m_size;
 }
@@ -63,11 +61,6 @@ size_t CVulkanBufferObject::getSize(void) const
 inline IDeviceMemoryManager::IBufferObject::BUFFER_KIND CVulkanBufferObject::getStorage(void) const
 {
 	return m_storage;
-}
-
-inline void* CVulkanBufferObject::getBaseAddress(void) const
-{
-	return 0;
 }
 
 inline unsigned int CVulkanBufferObject::getBufferId(void) const

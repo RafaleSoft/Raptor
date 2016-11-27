@@ -84,7 +84,7 @@ bool CVulkanShader::loadShader(const std::string &filename)
 	if (io->getStatus() == CRaptorIO::IO_OK)
 	{
 		size_t code_size = io->getSize();
-		uint32_t *code = new uint32_t[code_size/4];
+		uint32_t *code = new uint32_t[code_size/4+1];
 		io->read(code,code_size);
 		delete io;
 		
@@ -100,6 +100,7 @@ bool CVulkanShader::loadShader(const std::string &filename)
 															  }; 
 
 		res = vkCreateShaderModule( device, &shader_module_create_info, NULL, &shader_module );
+		delete [] code;
 		if(VK_SUCCESS != res)
 		{
 			pErrMgr->vkGetError(res,__FILE__,__LINE__);

@@ -41,20 +41,11 @@ public:
             DYNAMIC
         } BUFFER_MODE;
 
-		typedef union
-		{
-			void		*address;
-			unsigned int id;
-        } BUFFER_DATA;
-
 		//! Returns the size of the buffer.
-		virtual size_t getSize(void) const = 0;
+		virtual uint64_t getSize(void) const = 0;
 
 		//! Returns the buffer kind.
 		virtual BUFFER_KIND getStorage(void) const = 0;
-
-		//!	Returns a valid address of the buffer or NULL
-		virtual void* getBaseAddress(void) const = 0;
 
 		//! Returns a valid buffer id of the buffer or 0
 		virtual unsigned int getBufferId(void) const = 0;
@@ -170,6 +161,9 @@ public:
 	//! as soon as possible for internal management
 	bool init(void);
 
+	//!	Excute real garbage and release operations
+	bool pack(void);
+
 
     //
     // Conventional Memory Management
@@ -190,6 +184,9 @@ public:
 	//!	Garbage maximum allowed size
 	//!	( @see CRaptorConfig for initial value )
 	void setGarbageMaxSize(unsigned int maxSize) const;
+
+	//!	Configure fered memory packing (garbage + release)
+	void setDeferedPacking(bool defered) const;
 
 
 private:

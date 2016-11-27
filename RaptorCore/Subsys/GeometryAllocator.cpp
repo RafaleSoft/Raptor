@@ -108,8 +108,6 @@ void CGeometryAllocator::glvkCopyPointer(float *dst, float *src, uint64_t size)
 													(unsigned int)dst,
 													src,
 													sizeof(float)*size);
-
-    CATCH_GL_ERROR
 }
 
 void CGeometryAllocator::glvkCopyPointer(unsigned short *dst, unsigned short *src, uint64_t size)
@@ -143,8 +141,6 @@ void CGeometryAllocator::glvkCopyPointer(unsigned short *dst, unsigned short *sr
 													(unsigned int)dst,
 													src,
 													sizeof(unsigned short)*size);
-
-    CATCH_GL_ERROR
 }
 
 unsigned short *CGeometryAllocator::glvkMapPointer(unsigned short *pointer)
@@ -168,8 +164,6 @@ unsigned short *CGeometryAllocator::glvkMapPointer(unsigned short *pointer)
 													(unsigned int)pointer,
 													localData,
 													(*blocPos).second);
-        CATCH_GL_ERROR
-
         return localData;
     }
     else
@@ -212,8 +206,6 @@ unsigned short *CGeometryAllocator::glvkUnMapPointer(unsigned short *pointer)
 
         CHostMemoryManager::GetInstance()->garbage(pointer);
 
-        CATCH_GL_ERROR
-
         return serverData;
     }
     else
@@ -247,8 +239,6 @@ unsigned short *CGeometryAllocator::glDiscardPointer(unsigned short *pointer)
         
         CHostMemoryManager::GetInstance()->garbage(pointer);
 
-        CATCH_GL_ERROR
-
         return serverData;
     }
     else
@@ -276,8 +266,6 @@ float *CGeometryAllocator::glvkMapPointer(float *pointer)
 													(unsigned int)pointer,
 													localData,
 													(*blocPos).second);
-        CATCH_GL_ERROR
-
         return localData;
     }
     else
@@ -319,8 +307,6 @@ float *CGeometryAllocator::glvkUnMapPointer(float *pointer)
 													(*blocPos).second);
         CHostMemoryManager::GetInstance()->garbage(pointer);
 
-        CATCH_GL_ERROR
-
         return serverData;
     }
     else
@@ -354,8 +340,6 @@ float *CGeometryAllocator::glDiscardPointer(float *pointer)
         vertexReMap.erase(it2);
         
         CHostMemoryManager::GetInstance()->garbage(pointer);
-
-        CATCH_GL_ERROR
 
         return serverData;
     }
@@ -405,7 +389,6 @@ bool CGeometryAllocator::glvkInitMemory(IDeviceMemoryManager* pDeviceMemory,
 		relocatedFaceIndexes = deviceMemoryManager->createBufferObject(	IDeviceMemoryManager::IBufferObject::INDEX_BUFFER,
 																		IDeviceMemoryManager::IBufferObject::STATIC,
 																		faceIndexes.size+RELOCATE_OFFSET);
-        CATCH_GL_ERROR
 
 		return ((relocatedFaceIndexes != NULL) && (relocatedVertices != NULL));
 	}

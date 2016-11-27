@@ -1,6 +1,9 @@
 - simd.cpp : appel a GetSystemInfo, migrer vers intrinsics
 	- linux : /proc/cpuinfo
 	
+- CVulkanDevice:
+	- passer le scissor et viewport uniquement lors d'un resize
+	
 - CHostMemoryManager:
 	- ajouter capacité allocations/release dans un bloc prédéfini (data pool)
 	- MapPointer : ajouter un paramètre SyncData
