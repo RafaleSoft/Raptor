@@ -29,8 +29,8 @@ RAPTOR_NAMESPACE
 //////////////////////////////////////////////////////////////////////
 
 CRaptorErrorManager::CRaptorErrorManager()
+	:m_pLogger(NULL),RaptorErrors(),RaptorErrorHandlers()
 {
-    m_pLogger = NULL;
 }
 
 CRaptorErrorManager::~CRaptorErrorManager()
@@ -168,10 +168,12 @@ void CRaptorErrorManager::getRaptorError(unsigned int index,GL_RAPTOR_ERROR& err
 
 void CRaptorErrorManager::glGetError(const std::string& file,int line)
 {
-	GL_RAPTOR_ERROR r_err;
+	GLenum err = ::glGetError(); //GL_INVALID_OPERATION;
+	if (GL_NO_ERROR == err )
+		return;
 
 	GLenum prv_err = GL_NO_ERROR;
-	GLenum err = GL_INVALID_OPERATION;
+	GL_RAPTOR_ERROR r_err;
 	r_err.className = Global::COpenGLClassID::GetClassId().ClassName();
 	r_err.type = RAPTOR_GL_ERROR;
 
@@ -188,7 +190,7 @@ void CRaptorErrorManager::glGetError(const std::string& file,int line)
 
 	while ( GL_NO_ERROR != err )
 	{
-		err = ::glGetError();
+		//err = ::glGetError();
 
 		if ((err != GL_NO_ERROR) && (err == prv_err))
 		{
@@ -225,11 +227,15 @@ void CRaptorErrorManager::glGetError(const std::string& file,int line)
 			addRaptorError(r_err);
 
 		prv_err = err;
+		err = ::glGetError();
 	}
 }
 
 void CRaptorErrorManager::vkGetError(VkResult err, const std::string& file,int line)
 {
+	if (VK_SUCCESS == err)
+		return;
+
 	GL_RAPTOR_ERROR r_err;
 
 	r_err.className = Global::CVulkanClassID::GetClassId().ClassName();
@@ -304,6 +310,7 @@ void CRaptorErrorManager::vkGetError(VkResult err, const std::string& file,int l
 			break;
 	}
 
-	addRaptorError(r_err);
+	if (VK_SUCCESS != err)
+		addRaptorError(r_err);
 }
 

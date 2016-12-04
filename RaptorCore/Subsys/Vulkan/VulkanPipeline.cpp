@@ -15,7 +15,9 @@
 #if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
     #include "System/RaptorErrorManager.h"
 #endif
-
+#if !defined(AFX_RAPTORVULKANMEMORY_H__72256FF7_DBB9_4B9C_9BF7_C36F425CF811__INCLUDED_)
+	#include "Subsys/Vulkan/VulkanMemory.h"
+#endif
 
 RAPTOR_NAMESPACE
 
@@ -139,8 +141,7 @@ bool CVulkanPipeline::initPipeline()
 	VkPipelineInputAssemblyStateCreateInfo input_assembly_state_create_info = {	VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO,
 																				NULL,
 																				0, //VkPipelineInputAssemblyStateCreateFlags
-																				//VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
-																				VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP,
+																				VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
 																				VK_FALSE };	//primitiveRestartEnable
 	//VkPipelineTessellationStateCreateInfo tesselation_state_create_info;
 	VkPipelineViewportStateCreateInfo  viewport_state_create_info = {	VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO,
@@ -212,7 +213,10 @@ bool CVulkanPipeline::initPipeline()
 														0, //uint32_t pushConstantRangeCount
 														NULL }; //VkPushConstantRange     *pPushConstantRanges
 	
-	res = vkCreatePipelineLayout( device, &layout_create_info, NULL, &layout); 
+	res = vkCreatePipelineLayout(device,
+								&layout_create_info,
+								CVulkanMemory::GetAllocator(),
+								&layout); 
 	if (VK_SUCCESS != res)
 	{
 		pErrMgr->vkGetError(res,__FILE__,__LINE__);
@@ -223,6 +227,7 @@ bool CVulkanPipeline::initPipeline()
 	VkPipeline basePipelineHandle = VK_NULL_HANDLE;
 	int32_t basePipelineIndex = -1;
 
+	CHostMemoryManager *pMemory = CHostMemoryManager::GetInstance();
 	VkGraphicsPipelineCreateInfo pipeline_create_info = {VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
 														NULL,	// const void *pNext 
 														VK_PIPELINE_CREATE_ALLOW_DERIVATIVES_BIT, // VkPipelineCreateFlags
@@ -242,7 +247,11 @@ bool CVulkanPipeline::initPipeline()
 														subpass,// uint32_t subpass 
 														basePipelineHandle, // VkPipeline
 														basePipelineIndex }; //int32_t basePipelineIndex
-	res = vkCreateGraphicsPipelines( device, VK_NULL_HANDLE, 1, &pipeline_create_info, NULL, &pipeline );
+	res = vkCreateGraphicsPipelines(device,
+									VK_NULL_HANDLE,
+									1, &pipeline_create_info,
+									CVulkanMemory::GetAllocator(),
+									&pipeline );
 	if (VK_SUCCESS != res)
 	{
 		pErrMgr->vkGetError(res,__FILE__,__LINE__);

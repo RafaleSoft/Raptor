@@ -13,7 +13,7 @@ public:
 	{
 	public:
 		virtual ~ParameterBase() {};
-		virtual size_t size(void) const { return 0; };
+		virtual uint64_t size(void) const { return 0; };
 		virtual const void* addr(void) const { return NULL; };
 		virtual ParameterBase* clone(void) const { return NULL; };
 
@@ -36,7 +36,7 @@ public:
 		static const type_info& TypeId(void) { static P _p; return typeid(_p); };
 		virtual const type_info& getTypeId(void) const { return typeid(p); };
 
-		virtual size_t size(void) const { return sizeof(p); };
+		virtual uint64_t size(void) const { return sizeof(p); };
 		virtual const void* addr(void) const { return &p; };
 		virtual ParameterBase* clone(void) const
 		{ return new Parameter<P>(p); };

@@ -347,7 +347,8 @@ bool CContextManager::vkInit(void)
 		if ((VK_SUCCESS == res) && (pLayerCount > 0))
 		{
 			VkLayerProperties *pProperties = new VkLayerProperties[pLayerCount];
-			res = vkEnumerateInstanceLayerProperties(&pLayerCount,pProperties);
+			uint32_t nbLayerCount = pLayerCount;
+			res = vkEnumerateInstanceLayerProperties(&nbLayerCount,pProperties);
 			if (VK_SUCCESS == res)
 			{
 				for (uint32_t i=0;i<pLayerCount;i++)
@@ -400,7 +401,9 @@ bool CContextManager::vkInitInstance(CContextManager::RENDERING_CONTEXT_ID ctx)
 												nbExtensions,                           // uint32_t enabledExtensionNameCount;
 												extensions};							// const char* const* ppEnabledExtensionNames;
 
-	res = vkCreateInstance(&instanceCreateInfo, CVulkanMemory::GetAllocator(), &vk_ctx.instance);
+	res = vkCreateInstance(	&instanceCreateInfo,
+							CVulkanMemory::GetAllocator(), 
+							&vk_ctx.instance);
 	if (VK_SUCCESS != res)
 		pErrMgr->vkGetError(res,__FILE__,__LINE__);
 
@@ -472,10 +475,10 @@ bool CContextManager::vkInitInstance(CContextManager::RENDERING_CONTEXT_ID ctx)
 					{
 						VkExtensionProperties* pProperties = new VkExtensionProperties[pPropertyCount];
 						res = vk_ctx.vkEnumerateDeviceExtensionProperties(device,NULL,&pPropertyCount,pProperties);
-						for (uint32_t i=0;i<pPropertyCount;i++)
+						for (uint32_t j=0;j<pPropertyCount;j++)
 						{
 							vk_ctx.deviceExtensions += " ";
-							vk_ctx.deviceExtensions += pProperties[i].extensionName;
+							vk_ctx.deviceExtensions += pProperties[j].extensionName;
 						}
 						delete [] pProperties;
 					}
@@ -485,11 +488,12 @@ bool CContextManager::vkInitInstance(CContextManager::RENDERING_CONTEXT_ID ctx)
 					if ((VK_SUCCESS == res) && (pLayerCount > 0))
 					{
 						VkLayerProperties* pProperties = new VkLayerProperties[pLayerCount];
-						res = vk_ctx.vkEnumerateDeviceLayerProperties(device,&pLayerCount,pProperties);
-						for (uint32_t i=0;i<pLayerCount;i++)
+						uint32_t nbLayerCount = pLayerCount;
+						res = vk_ctx.vkEnumerateDeviceLayerProperties(device, &nbLayerCount, pProperties);
+						for (uint32_t j=0;j<pLayerCount;j++)
 						{
 							vk_ctx.deviceLayers += " ";
-							vk_ctx.deviceLayers += pProperties[i].layerName;
+							vk_ctx.deviceLayers += pProperties[j].layerName;
 						}
 						delete [] pProperties;
 					}
@@ -525,6 +529,7 @@ bool CContextManager::vkInitDevice(CContextManager::RENDERING_CONTEXT_ID ctx,con
 	uint32_t queueCount = 0;
 	uint32_t graphicsQueueFamilyIndex = MAXUINT;
 	uint32_t presentQueueFamilyIndex = MAXUINT;
+	uint32_t transferQueueFamilyIndex = MAXUINT;
 
 	//!	Find a device with graphic & win32 presentation support
 	for (unsigned int i=0; (i<maxd) && (vk_ctx.physicalDevice > maxd); i++)
@@ -540,7 +545,8 @@ bool CContextManager::vkInitDevice(CContextManager::RENDERING_CONTEXT_ID ctx,con
 			if (pQueueFamilyPropertyCount > 0)
 			{
 				VkQueueFamilyProperties *pQueueFamilyProperties = new VkQueueFamilyProperties[pQueueFamilyPropertyCount];
-				vk_ctx.vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice,&pQueueFamilyPropertyCount,pQueueFamilyProperties);
+				uint32_t nbQueueFamilyProperties = pQueueFamilyPropertyCount;
+				vk_ctx.vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &nbQueueFamilyProperties, pQueueFamilyProperties);
 				
 				for (uint32_t j=0;j<pQueueFamilyPropertyCount;j++)
 				{
@@ -565,7 +571,6 @@ bool CContextManager::vkInitDevice(CContextManager::RENDERING_CONTEXT_ID ctx,con
 
 					if ((pQueueFamilyProperties[j].queueCount > 0) &&
 						(VK_QUEUE_GRAPHICS_BIT == (VK_QUEUE_GRAPHICS_BIT & pQueueFamilyProperties[j].queueFlags)))
-					// && (VK_QUEUE_TRANSFER_BIT == (VK_QUEUE_TRANSFER_BIT & pQueueFamilyProperties[j].queueFlags)))
 					{
 						if ((pQueueFamilyProperties[j].queueCount > queueCount) || (graphicsQueueFamilyIndex == MAXUINT))
 						{
@@ -581,6 +586,9 @@ bool CContextManager::vkInitDevice(CContextManager::RENDERING_CONTEXT_ID ctx,con
 						}
 					}
 
+					if ((pQueueFamilyProperties[j].queueCount > 0) &&
+						(VK_QUEUE_TRANSFER_BIT == (VK_QUEUE_TRANSFER_BIT & pQueueFamilyProperties[j].queueFlags)))
+						transferQueueFamilyIndex = j;
 
 					if ((pQueueFamilyProperties[j].queueCount > 0) && (VK_TRUE == support) && (VK_TRUE == present_support))
 						presentQueueFamilyIndex = j;
@@ -589,7 +597,8 @@ bool CContextManager::vkInitDevice(CContextManager::RENDERING_CONTEXT_ID ctx,con
 					//!	For future : allow selection of device not for presentation if
 					//!	specificaly required.
 					if ((graphicsQueueFamilyIndex < MAXUINT) &&
-						(presentQueueFamilyIndex < MAXUINT))
+						(presentQueueFamilyIndex < MAXUINT) &&
+						(transferQueueFamilyIndex < MAXUINT))
 					{
 						vk_ctx.physicalDevice = i;
 						break;
@@ -623,7 +632,8 @@ bool CContextManager::vkInitDevice(CContextManager::RENDERING_CONTEXT_ID ctx,con
 													features,
 													graphicsQueueFamilyIndex,
 													queueCount,
-													presentQueueFamilyIndex,1);
+													presentQueueFamilyIndex,1,
+													transferQueueFamilyIndex,1);
 	}
 	else
 		return false;

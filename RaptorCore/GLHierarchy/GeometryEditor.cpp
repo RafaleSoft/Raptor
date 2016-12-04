@@ -169,8 +169,8 @@ float tl = ff * A_r2 / (1 + A_r2);	//ff * A / (r2 + A);
 	{
 		CGeometry *g = geometries[k];
 
-		g->vertex = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glDiscardPointer((float*)g->vertex));
-		g->normals = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glDiscardPointer((float*)g->normals));
+		g->vertex = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glvkUnMapPointer((float*)g->vertex,false));
+		g->normals = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glvkUnMapPointer((float*)g->normals,false));
 		g->colors = (CColor::RGBA*)(CGeometryAllocator::GetInstance()->glvkUnMapPointer((float*)g->colors));
 	}
 }
@@ -265,10 +265,13 @@ void CGeometryEditor::genSurfaceElements(void) const
         {
 			case CGeometryPrimitive::TRIANGLE:
 			{
-				p1 = faces[i];
-				p2 = faces[i+1];
-		        p3 = faces[i+2];
-				computeVertexArea(p1,p2,p3);
+				for (i = 0; i < size - 2; i++)
+				{
+					p1 = faces[i];
+					p2 = faces[i + 1];
+					p3 = faces[i + 2];
+					computeVertexArea(p1, p2, p3);
+				}
 				break;
 			}
 			case CGeometryPrimitive::TRIANGLE_STRIP:
@@ -369,9 +372,9 @@ void CGeometryEditor::genSurfaceElements(void) const
 	if ((CGeometryAllocator::GetInstance()->isMemoryRelocated()) &&
 		(!m_pGeometry->m_bDataLocked))
 	{
-		m_pGeometry->vertex = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glDiscardPointer((float*)m_pGeometry->vertex));
+		m_pGeometry->vertex = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glvkUnMapPointer((float*)m_pGeometry->vertex,false));
 		m_pGeometry->normals = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glvkUnMapPointer((float*)m_pGeometry->normals));
-		m_pGeometry->polys = (unsigned short*)(CGeometryAllocator::GetInstance()->glDiscardPointer(m_pGeometry->polys));
+		m_pGeometry->polys = (unsigned short*)(CGeometryAllocator::GetInstance()->glvkUnMapPointer(m_pGeometry->polys,false));
 		m_pGeometry->colors = (CColor::RGBA*)(CGeometryAllocator::GetInstance()->glvkUnMapPointer((float*)m_pGeometry->colors));
 	}
 
@@ -569,8 +572,8 @@ void CGeometryEditor::genNormals(bool rebuild) const
 		(!m_pGeometry->m_bDataLocked))
 	{
 		m_pGeometry->normals = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glvkUnMapPointer((float*)m_pGeometry->normals));
-		m_pGeometry->vertex = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glDiscardPointer((float*)m_pGeometry->vertex));
-		m_pGeometry->polys = (unsigned short*)(CGeometryAllocator::GetInstance()->glDiscardPointer(m_pGeometry->polys));
+		m_pGeometry->vertex = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glvkUnMapPointer((float*)m_pGeometry->vertex,false));
+		m_pGeometry->polys = (unsigned short*)(CGeometryAllocator::GetInstance()->glvkUnMapPointer(m_pGeometry->polys,false));
 	}
 }
 
@@ -614,7 +617,7 @@ void CGeometryEditor::genBinormals(void) const
         if ((CGeometryAllocator::GetInstance()->isMemoryRelocated()) &&
 			(!m_pGeometry->m_bDataLocked))
         {
-            m_pGeometry->normals = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glDiscardPointer((float*)m_pGeometry->normals));
+            m_pGeometry->normals = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glvkUnMapPointer((float*)m_pGeometry->normals,false));
             m_pGeometry->tangents = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glvkUnMapPointer((float*)m_pGeometry->tangents));
             m_pGeometry->binormals = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glvkUnMapPointer((float*)m_pGeometry->binormals));
         }
@@ -704,7 +707,7 @@ void CGeometryEditor::genTexCoords(	TEXTURE_MODEL model,
 			(!m_pGeometry->m_bDataLocked))
 		{
             m_pGeometry->texcoords = (GL_TEX_VERTEX*)(CGeometryAllocator::GetInstance()->glvkUnMapPointer((float*)m_pGeometry->texcoords));
-			m_pGeometry->vertex = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glDiscardPointer((float*)m_pGeometry->vertex));
+			m_pGeometry->vertex = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glvkUnMapPointer((float*)m_pGeometry->vertex,false));
 		}
     }
 }
@@ -1006,7 +1009,7 @@ void CGeometryEditor::minimize(void) const
     if (CGeometryAllocator::GetInstance()->isMemoryRelocated())
     {
         m_pGeometry->vertex = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glvkUnMapPointer((float*)m_pGeometry->vertex));
-        vrtx = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glDiscardPointer((float*)vrtx));
+        vrtx = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glvkUnMapPointer((float*)vrtx,false));
     }
 	CGeometryAllocator::GetInstance()->releaseVertices((float*)vrtx);
 #endif
@@ -1033,7 +1036,7 @@ void CGeometryEditor::strip(void) const
 #if defined (DATA_PACKED)
     if ((CGeometryAllocator::GetInstance()->isMemoryRelocated()) &&
 		(!m_pGeometry->m_bDataLocked))
-        m_pGeometry->polys = (unsigned short*)(CGeometryAllocator::GetInstance()->glDiscardPointer(m_pGeometry->polys));
+        m_pGeometry->polys = (unsigned short*)(CGeometryAllocator::GetInstance()->glvkUnMapPointer(m_pGeometry->polys,false));
 #endif
 
 	//	search for next strip elt

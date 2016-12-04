@@ -308,6 +308,7 @@ Subsys\Redist.bat
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\UnifiedProgram.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\VertexProgram.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\VertexShader.cpp" />
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\VulkanShaderStage.cpp" />
     <ClCompile Include="..\..\RaptorCore\Raptordll.cpp" />
     <ClCompile Include="..\..\RaptorCore\SSE_Engine\SSE_3DEngine.cpp" />
     <ClCompile Include="..\..\RaptorCore\SSE_Engine\SSE_BoundingBox.cpp" />
@@ -388,6 +389,7 @@ Subsys\Redist.bat
     <ClCompile Include="..\..\RaptorCore\Subsys\Octree.cxx">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\OpenGLMemory.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\PhongShader.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\PlayFrameJob.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\RegisterCombiner.cpp" />
@@ -397,6 +399,10 @@ Subsys\Redist.bat
     <ClCompile Include="..\..\RaptorCore\Subsys\Tesselator.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\TexelAllocator.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\VideoStream.cpp" />
+    <ClCompile Include="..\..\RaptorCore\Subsys\Vulkan\VulkanDevice.cpp" />
+    <ClCompile Include="..\..\RaptorCore\Subsys\Vulkan\VulkanMemory.cpp" />
+    <ClCompile Include="..\..\RaptorCore\Subsys\Vulkan\VulkanPipeline.cpp" />
+    <ClCompile Include="..\..\RaptorCore\Subsys\Vulkan\VulkanShader.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\XMLRaptorIO.cpp" />
     <ClCompile Include="..\..\RaptorCore\System\CGLTypes.cpp" />
     <ClCompile Include="..\..\RaptorCore\System\Color.cpp" />
@@ -512,6 +518,7 @@ copy $(SolutionDir)\$(ProjectName)\Subsys\CodeGeneration.h "%RAPTOR_ROOT%\Redist
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\UnifiedProgram.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\VertexProgram.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\VertexShader.h" />
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\VulkanShaderStage.h" />
     <ClInclude Include="..\..\RaptorCore\Raptordll.h" />
     <ClInclude Include="..\..\RaptorCore\SSE_Engine\SSE_3DEngine.h" />
     <ClInclude Include="..\..\RaptorCore\SSE_Engine\SSE_BoundingBox.h" />
@@ -563,6 +570,7 @@ copy $(SolutionDir)\$(ProjectName)\Subsys\CodeGeneration.h "%RAPTOR_ROOT%\Redist
     <ClInclude Include="..\..\RaptorCore\Subsys\ObjectModels\RaptorScript_tree.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\ObjectModels\RaptorScript_yacc.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\Octree.h" />
+    <ClInclude Include="..\..\RaptorCore\Subsys\OpenGLMemory.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\PhongShader.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\PlayFrameJob.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\RegisterCombiner.h" />
@@ -573,6 +581,11 @@ copy $(SolutionDir)\$(ProjectName)\Subsys\CodeGeneration.h "%RAPTOR_ROOT%\Redist
     <ClInclude Include="..\..\RaptorCore\Subsys\TexelAllocator.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\TimeObjectImpl.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\VideoStream.h" />
+    <ClInclude Include="..\..\RaptorCore\Subsys\Vulkan\VulkanBufferObject.h" />
+    <ClInclude Include="..\..\RaptorCore\Subsys\Vulkan\VulkanDevice.h" />
+    <ClInclude Include="..\..\RaptorCore\Subsys\Vulkan\VulkanMemory.h" />
+    <ClInclude Include="..\..\RaptorCore\Subsys\Vulkan\VulkanPipeline.h" />
+    <ClInclude Include="..\..\RaptorCore\Subsys\Vulkan\VulkanShader.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\XMLRaptorIO.h" />
     <ClInclude Include="..\..\RaptorCore\System\CGLTypes.h" />
     <ClInclude Include="..\..\RaptorCore\System\Color.h" />

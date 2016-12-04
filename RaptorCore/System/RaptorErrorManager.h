@@ -113,6 +113,7 @@ public:
 #define RAPTOR_WARNING(cid,str) RAPTOR_GEN_ERROR(cid,str,CRaptorErrorManager::RAPTOR_WARNING)
 #define RAPTOR_ERROR(cid,str) RAPTOR_GEN_ERROR(cid,str,CRaptorErrorManager::RAPTOR_ERROR)
 #define RAPTOR_GLERROR(cid,str) RAPTOR_GEN_ERROR(cid,str,CRaptorErrorManager::RAPTOR_GL_ERROR)
+#define RAPTOR_VKERROR(cid,str) RAPTOR_GEN_ERROR(cid,str,CRaptorErrorManager::RAPTOR_VK_ERROR)
 #define RAPTOR_FATAL(cid,str) RAPTOR_GEN_ERROR(cid,str,CRaptorErrorManager::RAPTOR_FATAL)
 
 
@@ -130,8 +131,8 @@ public:
 private:
     CRaptorIO    *m_pLogger;
 
-    vector<GL_RAPTOR_ERROR>	RaptorErrors;
-	vector<CRaptorErrorHandler*> RaptorErrorHandlers;
+	std:: vector<GL_RAPTOR_ERROR>	RaptorErrors;
+	std::vector<CRaptorErrorHandler*> RaptorErrorHandlers;
 };
 
 RAPTOR_NAMESPACE_END

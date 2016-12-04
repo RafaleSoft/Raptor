@@ -222,8 +222,7 @@ void C3DScene::glRenderObjects(	const vector<C3DSceneObject*>& objects)
     //
 	// Sort objects from viewPoint
 	//
-	unsigned int i=0;
-	for (i=0;i<objects.size();i++)
+	for (unsigned int i = 0; i<objects.size(); i++)
 	{
 		C3DSceneObject* const h = objects[i];
 		CObject3D* obj = (CObject3D*)h->object.handle;
@@ -267,7 +266,7 @@ void C3DScene::glRenderObjects(	const vector<C3DSceneObject*>& objects)
 	// Rendering 
     //  First step : undefined OGL display lists / Raptor handles
 	//
-    for (i=0;i<m_pAttributes->m_pHandles.size();i++)
+    for (unsigned int i=0;i<m_pAttributes->m_pHandles.size();i++)
 		glCallList(m_pAttributes->m_pHandles.at(i).handle);
 
 
@@ -301,7 +300,7 @@ void C3DScene::glRenderObjects(	const vector<C3DSceneObject*>& objects)
 	//
     bool proceedMirrors = ((passKind == C3DSceneObject::DEPTH_PASS) || (passKind == C3DSceneObject::FULL_PASS))
                         && (!m_pAttributes->m_bMirrorsRendered);
-    for (i=0;i<m_pAttributes->m_pMirrors.size();i++)
+    for (unsigned int i=0;i<m_pAttributes->m_pMirrors.size();i++)
     {
         CMirror *pMirror = m_pAttributes->m_pMirrors[i];
 
@@ -343,8 +342,8 @@ void C3DScene::glRenderObjects(	const vector<C3DSceneObject*>& objects)
             m_pAttributes->m_bMirrorsRendered = true;
 
 			//	Need to deactivate lights because Objects above activated them
-			for (unsigned int i = 0; i < m_pAttributes->m_pLights.size(); i++)
-				m_pAttributes->m_pLights[i]->glDeActivate();
+			for (unsigned int j = 0; j < m_pAttributes->m_pLights.size(); j++)
+				m_pAttributes->m_pLights[j]->glDeActivate();
         }
         else if (((passKind == C3DSceneObject::AMBIENT_PASS) || (passKind == C3DSceneObject::LIGHT_PASS))
                     && (m_pAttributes->m_bMirrorsRendered))

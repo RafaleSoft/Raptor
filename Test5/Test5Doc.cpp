@@ -36,6 +36,8 @@
 
 RAPTOR_NAMESPACE
 
+#define VULKAN_TEST 1
+
 
 class MySphere : public /*CBasicObjects::CIsocahedron*/ CBasicObjects::CGeoSphere
 {
@@ -48,11 +50,12 @@ private:
 
 MySphere::MySphere()
 {
+#ifndef VULKAN_TEST
 	//CShader *pShader = CShader::getShader("BLINN_SHADER").glClone("BLINN");
 	//CShader *pShader = CShader::getShader("PHONG_SHADER").glClone("PHONG");
 	CShader *pShader = CShader::getShader("BUMP_SHADER").glClone("BUMP");
-
 	setShader(pShader);
+#endif
 }
 
 
@@ -69,7 +72,7 @@ float lposz(float dt)
 	return 15 * (float)(sin(3*PI*dt*0.1)); //*sin(3*PI*dt*0.1));
 }
 
-#define VULKAN_TEST 1
+
 
 CTest5Doc::CTest5Doc(const RAPTOR_HANDLE& device,const char* title)
 {
@@ -127,7 +130,7 @@ CTest5Doc::CTest5Doc(const RAPTOR_HANDLE& device,const char* title)
         pConsole->showStatus(true);
         pConsole->activateConsole(true);
 #endif
-        //GLInitContext();
+        GLInitContext();
 
 		m_pDisplay->glUnBindDisplay();
 	}
@@ -172,7 +175,10 @@ void CTest5Doc::GLInitContext(void)
 	obj->getEditor().scaleTexCoords(4.0f,4.0f);
 	obj->getRenderingModel().addModel(CGeometry::CRenderingModel::CGL_TANGENTS);
 
+	C3DScene *pScene = m_pDisplay->getRootScene();
+
 #ifdef VULKAN_TEST
+	pScene->addObject(obj);
 #else
 	CTextureFactory &f = CTextureFactory::getDefaultFactory();
 	m_pTexture = f.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_ALPHA_TRANSPARENT,CTextureObject::CGL_BILINEAR);
@@ -229,7 +235,7 @@ void CTest5Doc::GLInitContext(void)
 	pLight3->setLightPosition(GL_COORD_VERTEX(10.0f,-10.0f,10.0f,1.0f));
 	pLight3->setLightDirection(GL_COORD_VERTEX(0.0f,0.0f,0.0f,1.0f));
 	
-	C3DScene *pScene = m_pDisplay->getRootScene();
+	
 	pScene->addObject(vm->getObject());
 	pScene->addLight(pLight);
 	pScene->addLight(pLight2);

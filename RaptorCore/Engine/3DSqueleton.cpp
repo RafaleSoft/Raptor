@@ -77,13 +77,16 @@ C3DSqueleton::C3DSqueleton(CObject3D *root,const std::string& name)
 	else
 	{
 		void* mem = CHostMemoryManager::GetInstance()->allocate(sizeof(bone), 1, 16);
-		lp_bone bone_root = new(mem) bone;
+		if (NULL != mem)
+		{
+			lp_bone bone_root = new(mem)bone;
 
-		bone_root->is_locked = false;
-		bone_root->p_object = root;
-		bone_root->length.Set(0,0,0,1);
+			bone_root->is_locked = false;
+			bone_root->p_object = root;
+			bone_root->length.Set(0, 0, 0, 1);
 
-		p_root = bone_root;
+			p_root = bone_root;
+		}
 	}
 }
 
@@ -175,22 +178,27 @@ object_link	*C3DSqueleton::addLink(bone *parent,
 		return NULL;
 
 	void* mem = CHostMemoryManager::GetInstance()->allocate(sizeof(object_link), 1, 16);
-	object_link *lnk = new(mem)object_link;
+	if (NULL != mem)
+	{
+		object_link *lnk = new(mem)object_link;
 
 
-	parent->links.push_back(lnk);
+		parent->links.push_back(lnk);
 
-	lnk->position = position;
-	lnk->axis = axis;
-	lnk->is_pivot = (type == PIVOT);
-	lnk->is_valid = false;
-	lnk->p_child = NULL;
-	lnk->p_parent = parent;
-	lnk->p_pivot = obj;
-	lnk->value = 0;
-	lnk->rendered = false;
+		lnk->position = position;
+		lnk->axis = axis;
+		lnk->is_pivot = (type == PIVOT);
+		lnk->is_valid = false;
+		lnk->p_child = NULL;
+		lnk->p_parent = parent;
+		lnk->p_pivot = obj;
+		lnk->value = 0;
+		lnk->rendered = false;
 
-	return lnk;
+		return lnk;
+	}
+	else
+		return NULL;
 }
 
 bone *C3DSqueleton::addBone(object_link *pivot,CVector4f & length,CObject3D *obj)
@@ -209,16 +217,21 @@ bone *C3DSqueleton::addBone(object_link *pivot,CVector4f & length,CObject3D *obj
 	}
 
 	void* mem = CHostMemoryManager::GetInstance()->allocate(sizeof(bone), 1, 16);
-	lp_bone b = new(mem)bone;
+	if (NULL != mem)
+	{
+		lp_bone b = new(mem)bone;
 
-	b->is_locked = false;
-	b->p_object = obj;
-	b->length = length;
-	b->rendered = false;
+		b->is_locked = false;
+		b->p_object = obj;
+		b->length = length;
+		b->rendered = false;
 
-	pivot->p_child = b;
+		pivot->p_child = b;
 
-	return b;
+		return b;
+	}
+	else
+		return NULL;
 }
 
 

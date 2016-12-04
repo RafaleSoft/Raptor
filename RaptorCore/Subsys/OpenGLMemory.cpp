@@ -54,31 +54,31 @@ bool COpenGLMemory::relocationAvailable(void) const
 #endif
 }
 
-
-/*
-bool COpenGLMemory::isBufferObjectValid(unsigned int buffer) const
-{
-#if defined(GL_ARB_vertex_buffer_object) || defined(GL_ARB_pixel_buffer_object)
-	const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
-
-	if (pExtensions->glIsBufferARB(buffer))
-		return true;
-	else
-	{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
-		Raptor::GetErrorManager()->generateRaptorError(	CPersistence::CPersistenceClassID::GetClassId(),
-														CRaptorErrorManager::RAPTOR_WARNING,
-			                                            "Buffer Object extension is not properly supported by your driver !");
-#endif
-		//	Here, we could also check all other glIsXXX to strengthen the check
-		if (buffer > 0)
+	bool COpenGLMemory::isBufferObjectValid(unsigned int buffer) const
+	{
+	#if defined(GL_ARB_vertex_buffer_object) || defined(GL_ARB_pixel_buffer_object)
+		const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+
+		if (pExtensions->glIsBufferARB(buffer))
 			return true;
 		else
-			return false;
+		{
+	#ifdef RAPTOR_DEBUG_MODE_GENERATION
+			Raptor::GetErrorManager()->generateRaptorError(	CPersistence::CPersistenceClassID::GetClassId(),
+															CRaptorErrorManager::RAPTOR_WARNING,
+															"Buffer Object extension is not properly supported by your driver !");
+	#endif
+			//	Here, we could also check all other glIsXXX to strengthen the check
+			if (buffer > 0)
+				return true;
+			else
+				return false;
+		}
+		CATCH_GL_ERROR
+	#endif
 	}
 #endif
-}
-*/
 
 IDeviceMemoryManager::IBufferObject *
 COpenGLMemory::createBufferObject(	IDeviceMemoryManager::IBufferObject::BUFFER_KIND kind, 
@@ -106,7 +106,7 @@ COpenGLMemory::createBufferObject(	IDeviceMemoryManager::IBufferObject::BUFFER_K
 		CATCH_GL_ERROR
 
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
-		if (IsBufferObjectValid(buffer))
+		if (isBufferObjectValid(buffer))
 #else
 		if (buffer > 0)
 #endif
@@ -116,7 +116,7 @@ COpenGLMemory::createBufferObject(	IDeviceMemoryManager::IBufferObject::BUFFER_K
 			//	This format is odd enough to be sure it cannot
 			//	be an address.
 			CBufferObject* pbuffer = new CBufferObject;
-			pbuffer->m_buffer.id = ((buffer & 0xffff) << 16) + 1;
+			pbuffer->m_buffer = ((buffer & 0xffff) << 16) + 1;
             pbuffer->m_size = size;
             pbuffer->m_storage = kind;
 
@@ -128,6 +128,7 @@ COpenGLMemory::createBufferObject(	IDeviceMemoryManager::IBufferObject::BUFFER_K
 
 			res = pbuffer;
 			m_deviceHeap[res] = pbuffer;
+			CATCH_GL_ERROR
 			return res;
 		}
 		else
@@ -138,42 +139,11 @@ COpenGLMemory::createBufferObject(	IDeviceMemoryManager::IBufferObject::BUFFER_K
 				                                            "The requested Buffer Object could not be allocated");
 #endif
 			return NULL;
-		}
-	}
-	// This should be the fastest possible chunck of memory for nVidia AGP
-	else 
-#endif
-#ifdef GL_NV_vertex_array_range
-	if (pExtensions->wglAllocateMemoryNV != NULL)
-	{
-        CBufferObject* pbuffer = new CBufferObject;
-
-		//	Allocate memory on AGP
-        pbuffer->m_size = size;
-        pbuffer->m_storage = kind;
-		pbuffer->m_buffer.address = pExtensions->wglAllocateMemoryNV(size,0.0f,0.0f,0.5f);
-		if (pbuffer->m_buffer.address == NULL)
-		{
-#ifdef RAPTOR_DEBUG_MODE_GENERATION
-			Raptor::GetErrorManager()->generateRaptorError(	CPersistence::CPersistenceClassID::GetClassId(),
-															CRaptorErrorManager::RAPTOR_WARNING,
-				                                            "The requested Buffer Object could not be allocated");
-#endif
-            delete pbuffer;
-			return NULL;
-		}
-		else
-		{
-			res = pbuffer;
-			m_deviceHeap[res] = pbuffer;
-			return res;
 		}
 	}
 	else
 #endif
-	{
 		return NULL;
-	}
 }
 
 bool COpenGLMemory::setBufferObjectData(IDeviceMemoryManager::IBufferObject &bo,
@@ -184,7 +154,7 @@ bool COpenGLMemory::setBufferObjectData(IDeviceMemoryManager::IBufferObject &bo,
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 	if ((src == NULL) || (sz == 0))
 		return false;
-	if (vb.getSize() < (dstOffset + sz))
+	if (bo.getSize() < (dstOffset + sz))
 		return false;
 #endif
 
@@ -196,7 +166,7 @@ bool COpenGLMemory::setBufferObjectData(IDeviceMemoryManager::IBufferObject &bo,
 	// Is it a VBO ?
 	unsigned int buffer = bo.getBufferId();
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
-	if (IsBufferObjectValid(buffer))
+	if (isBufferObjectValid(buffer))
 #else
 	if (buffer > 0)
 #endif
@@ -239,11 +209,9 @@ bool COpenGLMemory::setBufferObjectData(IDeviceMemoryManager::IBufferObject &bo,
             currentBuffers[storage] = 0;
         }
 	}
-	else if (NULL != bo.getBaseAddress())
+	else
 #endif
-	{
-		memcpy((char*)bo.getBaseAddress() + dstOffset,src,sz);
-	}
+		return false;
 
     CATCH_GL_ERROR;
 	return true;
@@ -270,7 +238,7 @@ bool COpenGLMemory::getBufferObjectData(IDeviceMemoryManager::IBufferObject &vb,
 	// Is it a VBO ?
 	unsigned int buffer = vb.getBufferId();
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
-	if (IsBufferObjectValid(buffer))
+	if (isBufferObjectValid(buffer))
 #else
 	if (buffer > 0)
 #endif
@@ -315,22 +283,28 @@ bool COpenGLMemory::getBufferObjectData(IDeviceMemoryManager::IBufferObject &vb,
             currentBuffers[storage] = 0;
         }
 	}
-	else if (NULL != vb.getBaseAddress())
+	else
 #endif
-	{
-		memcpy(dst,(char*)vb.getBaseAddress() + srcOffset,sz);
-	}
+		return false;
 
     CATCH_GL_ERROR;
+	return true;
+}
+
+bool COpenGLMemory::discardBufferObjectData(IDeviceMemoryManager::IBufferObject &bo,
+											uint64_t dstOffset,
+											uint64_t sz)
+{
 	return true;
 }
 
 bool COpenGLMemory::releaseBufferObject(IDeviceMemoryManager::IBufferObject* &vb)
 {
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
-	if (vb == HULL)
+	if (vb == NULL)
 		return false;
 #endif
+	CBufferObject *cb = NULL;
 	std::map<IDeviceMemoryManager::IBufferObject *,CBufferObject*>::const_iterator itr = m_deviceHeap.find(vb);
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 	if (m_deviceHeap.end() == itr)
@@ -342,7 +316,10 @@ bool COpenGLMemory::releaseBufferObject(IDeviceMemoryManager::IBufferObject* &vb
 	}
 	else
 #endif
+	{
+		cb = (*itr).second;
 		m_deviceHeap.erase(itr);
+	}
 
 	const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
     if (pExtensions == NULL)
@@ -354,7 +331,6 @@ bool COpenGLMemory::releaseBufferObject(IDeviceMemoryManager::IBufferObject* &vb
 		(buffer > 0))
 	{
 		pExtensions->glDeleteBuffersARB(1,&buffer);
-		CBufferObject *cb = (*itr).second;
 		delete cb;
 		vb = NULL;
 		return true;
@@ -410,16 +386,6 @@ bool COpenGLMemory::lockBufferObject(IBufferObject &bo)
 		return true;
 	}
 	else 
-#endif
-#ifdef GL_NV_vertex_array_range
-	if ((pExtensions->glVertexArrayRangeNV != NULL) && 
-		(NULL != bo.getBaseAddress()))
-	{
-		pExtensions->glVertexArrayRangeNV(bo.getSize(),bo.getBaseAddress());
-		glEnableClientState(GL_VERTEX_ARRAY_RANGE_NV);
-		return true;
-	}
-	else
 #endif
 	{
 		return false;

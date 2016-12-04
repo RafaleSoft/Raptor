@@ -67,8 +67,8 @@ public:
 	//!	Rq: No other testing are performed !
     void glvkCopyPointer(unsigned char *dst, unsigned char *src, uint64_t size = 0);
 
-	void *glvkMapPointer(void *pointer);
-	void *glvkUnMapPointer(void *pointer);
+	void *glvkMapPointer(void *pointer,bool syncData = true);
+	void *glvkUnMapPointer(void *pointer,bool syncData = true);
 
 
 private:
@@ -92,7 +92,7 @@ private:
 			unsigned char	*uc_address;
 			float			*f_address;
 		} address;
-		unsigned int	size;
+		uint64_t			size;
 	} data_bloc;
 
 

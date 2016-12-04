@@ -1008,6 +1008,10 @@
 					Name="Vulkan"
 					>
 					<File
+						RelativePath="..\..\RaptorCore\Subsys\Vulkan\VulkanCommandBuffer.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\..\RaptorCore\Subsys\Vulkan\VulkanDevice.cpp"
 						>
 					</File>
@@ -1860,6 +1864,10 @@
 					>
 					<File
 						RelativePath="..\..\RaptorCore\Subsys\Vulkan\VulkanBufferObject.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\RaptorCore\Subsys\Vulkan\VulkanCommandBuffer.h"
 						>
 					</File>
 					<File
