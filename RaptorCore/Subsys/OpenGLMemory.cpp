@@ -291,6 +291,13 @@ bool COpenGLMemory::getBufferObjectData(IDeviceMemoryManager::IBufferObject &vb,
 	return true;
 }
 
+bool COpenGLMemory::discardBufferObjectData(IDeviceMemoryManager::IBufferObject &bo,
+											uint64_t dstOffset,
+											uint64_t sz)
+{
+	return true;
+}
+
 bool COpenGLMemory::releaseBufferObject(IDeviceMemoryManager::IBufferObject* &vb)
 {
 #ifdef RAPTOR_DEBUG_MODE_GENERATION

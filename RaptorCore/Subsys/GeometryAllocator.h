@@ -56,12 +56,10 @@ public:
 	//!     - a new pointer otherwise, which should replace pointer for subsequent calls
 	//!		- discarding a pointer retrive the mapped pointer, but the data pointed 
 	//!			is discarded without copy.
-	unsigned short *glvkMapPointer(unsigned short *pointer);
-	unsigned short *glvkUnMapPointer(unsigned short *pointer);
-	unsigned short *glDiscardPointer(unsigned short *pointer);
-	float *glvkMapPointer(float *pointer);
-	float *glvkUnMapPointer(float *pointer);
-	float *glDiscardPointer(float *pointer);
+	unsigned short *glvkMapPointer(unsigned short *pointer, bool syncData = true);
+	unsigned short *glvkUnMapPointer(unsigned short *pointer, bool syncData = true);
+	float *glvkMapPointer(float *pointer, bool syncData = true);
+	float *glvkUnMapPointer(float *pointer, bool syncData = true);
 	
 
 	//! These methods allow data transfer to a relocated block when mapping/unmapping 
@@ -77,7 +75,7 @@ public:
 
 	//!	This method returns the address of a free block of the requested size, ( nb of indexes )
 	//!	or NULL if not enough space or other error.
-	unsigned short	* const	allocateIndexes(unsigned short size);
+	unsigned short	* const	allocateIndexes(uint64_t size);
 
 	//!	Release the block allocated here above.
 	//! Returns false if block not found or if error.
@@ -118,7 +116,7 @@ private:
 			float *f_address;
 		} address;
 		//	bloc size in bytes
-		unsigned int size;
+		uint64_t size;
 	} data_bloc;
 
 
@@ -138,8 +136,8 @@ private:
 
 	//! Actual memory structure : bloc fragments of global allocated space
 	//!	IMPORTANT: The structure implementation requires a binary tree for template class map<>
-	map<unsigned short*,unsigned int>	indexBlocs;
-	map<float*,unsigned int>			vertexBlocs;
+	map<unsigned short*,uint64_t>	indexBlocs;
+	map<float*,uint64_t>			vertexBlocs;
 
 	//! Free blocs for faster reallocation ( blocs are contained in actual memory structure )
 	vector<data_bloc>	freeIndexBlocs;

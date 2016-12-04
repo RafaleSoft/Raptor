@@ -42,6 +42,9 @@ public:
 										uint64_t srcOffset,
 										void* dst,
 										uint64_t sz);
+	virtual bool discardBufferObjectData(	IDeviceMemoryManager::IBufferObject &bo,
+											uint64_t dstOffset,
+											uint64_t sz);
 	virtual bool releaseBufferObject(IDeviceMemoryManager::IBufferObject* &vb);
 
 

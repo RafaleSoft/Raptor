@@ -40,7 +40,9 @@ public:
 								uint32_t graphicsQueueFamilyIndex,
 								uint32_t graphicsQueueCount,
 								uint32_t presentQueueFamilyIndex,
-								uint32_t presentQueueCount);
+								uint32_t presentQueueCount,
+								uint32_t transferQueueFamilyIndex,
+								uint32_t transferQueueCount);
 
 	//!	Creates and initialises the swap chain.
 	bool vkCreateSwapChain(	VkSurfaceKHR surface,
@@ -57,7 +59,6 @@ public:
 	//!	TODO : handle multiple acquired images.
 	bool acquireSwapChainImage(uint64_t timeout);
 	bool presentSwapChainImage();
-	//bool resizeSwapChain(uint32_t width, uint32_t height);
 
 	//!	Creates and initialises a render pass
 	bool vkCreateRenderPassResources(	VkSurfaceFormatKHR format,
@@ -73,6 +74,10 @@ public:
 	//!	- Framebuffer.
 	//!	NB_RENDERING_RESOURCES set of resources are created.
 	bool vkCreateRenderingResources(void);
+
+	//!	Transfer unsynchronised buffer object data to corresponding 
+	//!	device buffer objects. Buffer object data may already be synchronised.
+	bool vkSynchroniseBufferObjects(void);
 
 	//! Returns the memory wrapper managing this device.
 	IDeviceMemoryManager* getMemory(void) const { return pDeviceMemory; };
@@ -106,7 +111,6 @@ private:
 	DECLARE_VK_KHR_swapchain(DEFAULT_LINKAGE)
 	DECLARE_VK_device(DEFAULT_LINKAGE)
 	DECLARE_VK_queue(DEFAULT_LINKAGE)
-	DECLARE_VK_command_buffer(DEFAULT_LINKAGE)
 
 	VkDevice		device;
 
@@ -114,8 +118,10 @@ private:
 
 	VkCommandPool	graphicsCommandPool;
 	VkCommandPool	presentCommandPool;
+	VkCommandPool	transferCommandPool;
 	uint32_t		graphics_queueFamilyIndex;
 	uint32_t		present_queueFamilyIndex;
+	uint32_t		transfer_queueFamilyIndex;
 
 	typedef struct
 	{
@@ -124,7 +130,12 @@ private:
 		VkSemaphore		renderingCompleteSemaphore;
 		VkFence			queueExecutionComplete;
 		VkFramebuffer	frameBuffer;
+		VkQueue			queue;
 	} VK_RENDERING_RESOURCE;
+
+	VkCommandBuffer	transferBuffer;
+	VkQueue			transferQueue;
+
 	uint32_t			currentRenderingResources;
 	VK_RENDERING_RESOURCE	*renderingResources;
 	
@@ -140,6 +151,7 @@ private:
 		VkImageView		view;
 		VkExtent2D		extent;
 	} VK_RENDERING_IMAGE;
+
 	VkRenderPass	renderPass;
 	VK_RENDERING_IMAGE	*renderImages;
 #endif

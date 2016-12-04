@@ -59,6 +59,10 @@ public:
 		IBufferObject& operator=(const IBufferObject& );
 	};
 
+	//!
+	//!	This method returns true if relocation to device buffer objects
+	//!	is supported and initialised.
+	//!	@return true if relocation available
 	virtual bool relocationAvailable(void) const = 0;
 
     //
@@ -66,7 +70,7 @@ public:
     //
 
 	//! This method creates a new buffer object :
-    //! @param kind : selects a kind of buffer buffer ( vertex, pixel, memory ... )
+    //! @param kind : selects a kind of buffer ( vertex, pixel, memory ... )
     //! @param size : sets the size of the buffer and allocates uninitialized memory
     //! @return the newly allocated buffer object or NULL if allocation failed.
 	virtual IDeviceMemoryManager::IBufferObject *
@@ -82,7 +86,7 @@ public:
 	virtual bool unlockBufferObject(IDeviceMemoryManager::IBufferObject &bo) = 0;
 
 
-	//!	Memory transfer method that should be used when copying data to and from a vertex buffer object.
+	//!	Memory transfer method that should be used when copying data to and from a buffer object.
 	//! This method might need a valid OpenGL context if VBO are supported.
 	//! @param bo		 : the vertex buffer to which data are copied
 	//! @param dstOffset : the data offset within the destintation buffer ( vb )
@@ -94,7 +98,7 @@ public:
 										const void* src,
 										uint64_t sz) = 0;
 
-	//!	Memory transfer method that should be used when copying data to and from a vertex buffer object.
+	//!	Memory transfer method that should be used when copying data to and from a buffer object.
 	//! This method might need a valid OpenGL context if VBO are supported.
 	//! @param bo		 : the vertex buffer from which data are read
 	//! @param srcOffset : the data offset within the source buffer ( vb )
@@ -105,6 +109,17 @@ public:
 										uint64_t srcOffset,
 										void* dst,
 										uint64_t sz) = 0;
+
+	//!	Memory hint for cached data into host visible buffer object.
+	//! This method indicates areas of buffer object that can be reused for a more efficient sync
+	//! and possible reallocations to tightly compact the buffer data.
+	//! @param bo		 : the vertex buffer to which data are copied
+	//! @param dstOffset : the data offset within the host visible buffer ( vb )
+	//! @param sz		 : the size of the data to be discarded
+	//! @return true if data correctly uncached from buffer.
+	virtual bool discardBufferObjectData(	IDeviceMemoryManager::IBufferObject &bo,
+											uint64_t dstOffset,
+											uint64_t sz) = 0;
 
 	//!	This method releases a buffer object allocated with createBufferObject
 	//!	If buffer is valid and no error found during release, the buffer object is deleted 

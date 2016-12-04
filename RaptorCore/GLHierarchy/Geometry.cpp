@@ -1143,8 +1143,8 @@ bool CGeometry::removePrimitive(CGeometryPrimitive *primitive)
 {
 	if (primitive == NULL)
 	{
-		for (unsigned int i=0;i<m_pPrimitives.size();i++)
-			m_pPrimitives[i]->releaseReference();
+		for (unsigned int i=m_pPrimitives.size();i>0;i--)
+			m_pPrimitives[i-1]->releaseReference();
 		m_pPrimitives.clear();
 		return true;
 	}

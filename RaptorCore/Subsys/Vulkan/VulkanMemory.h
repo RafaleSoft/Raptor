@@ -24,6 +24,7 @@
 RAPTOR_NAMESPACE_BEGIN
 
 class CVulkanBufferObject;
+class CVulkanCommandBuffer;
 
 class CVulkanMemory
 {
@@ -34,37 +35,53 @@ public:
 	public:
 		CVulkanMemoryWrapper(const CVulkanMemory& m,VkDevice d);
 
+		//!	Implements @see IDeviceMemoryManager
 		virtual bool relocationAvailable(void) const;
 
+		//!	Implements @see IDeviceMemoryManager
 		virtual IDeviceMemoryManager::IBufferObject *
 			createBufferObject(	IDeviceMemoryManager::IBufferObject::BUFFER_KIND kind, 
 								IDeviceMemoryManager::IBufferObject::BUFFER_MODE mode, 
 								uint64_t size);
 
+		//!	Implements @see IDeviceMemoryManager
 		virtual bool setBufferObjectData(	IDeviceMemoryManager::IBufferObject &bo,
 											uint64_t dstOffset,
 											const void* src,
 											uint64_t sz);
 
+		//!	Implements @see IDeviceMemoryManager
 		virtual bool getBufferObjectData(	IDeviceMemoryManager::IBufferObject &vb,
 											uint64_t srcOffset,
 											void* dst,
 											uint64_t sz);
 
+		//!	Implements @see IDeviceMemoryManager
+		virtual bool discardBufferObjectData(	IDeviceMemoryManager::IBufferObject &bo,
+												uint64_t dstOffset,
+												uint64_t sz);
+
+		//!	Implements @see IDeviceMemoryManager
 		virtual bool lockBufferObject(IDeviceMemoryManager::IBufferObject &bo);
 
+		//!	Implements @see IDeviceMemoryManager
 		virtual bool unlockBufferObject(IDeviceMemoryManager::IBufferObject &bo);
 		
+		//!	Implements @see IDeviceMemoryManager
 		virtual bool releaseBufferObject(IDeviceMemoryManager::IBufferObject* &bo);
 
+
 		VkBuffer getLockedBuffer(IDeviceMemoryManager::IBufferObject::BUFFER_KIND kind) const;
+
+		bool needBufferObjectDataSynchro(void) const;
+		bool synchroniseBufferObjectData(const CVulkanCommandBuffer &commandBuffer);
 
 
 	private:
 		const CVulkanMemory& memory;
 		VkDevice device;
 
-		std::map<const IDeviceMemoryManager::IBufferObject*,const CVulkanBufferObject*> m_pBuffers;
+		std::map<const IDeviceMemoryManager::IBufferObject*,CVulkanBufferObject*> m_pBuffers;
 		const CVulkanBufferObject* currentBuffers[IDeviceMemoryManager::IBufferObject::NB_BUFFER_KIND];
 	};
 
@@ -79,14 +96,14 @@ public:
 												IDeviceMemoryManager::IBufferObject::BUFFER_KIND kind) const;
 
 	//!	This method destroys a buffer objet
-	bool vkDestroyBufferObject(VkDevice device, const CVulkanBufferObject* pBuffer) const;
+	bool vkDestroyBufferObject(VkDevice device, CVulkanBufferObject* pBuffer) const;
 
 	//!	This method work in 3 steps:
 	//!	- map the buffer objet to host memory
 	//!	- transfer data to a mapped buffer object
 	//!	- flushes and unmap the buffer object.
 	bool vkSetBufferObjectData(	VkDevice device,
-								const CVulkanBufferObject &vb,
+								CVulkanBufferObject &vb,
 								VkDeviceSize dstOffset,
 								const void* srcData,
 								VkDeviceSize sz) const;
@@ -123,6 +140,9 @@ private:
 	CVulkanMemory();
 	CVulkanMemory(const CVulkanMemory& );
 	CVulkanMemory& operator=(const CVulkanMemory&);
+
+	//! Find proper memory properties and allocate if found.
+	VkDeviceMemory allocateMemory(VkDevice device, VkBuffer buffer, VkMemoryPropertyFlagBits memory_type) const;
 
 #if defined(VK_VERSION_1_0)
 	//! The unique instances of the global manager (per physical device)

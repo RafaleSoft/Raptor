@@ -14,26 +14,23 @@ class CVulkanBufferObject : public IDeviceMemoryManager::IBufferObject
 {
 public:
 	//!	Vulkan buffer objet constructor
-	CVulkanBufferObject(VkBuffer buffer,VkDeviceMemory memory)
-		:m_size(0),m_storage(VERTEX_BUFFER),m_buffer(buffer),m_address(memory),m_coherent(false)
+	CVulkanBufferObject()
+		:m_size(0),m_storage(VERTEX_BUFFER),m_coherent(false),
+		m_buffer(0),m_address(0),m_deviceBuffer(0),m_deviceAddress(0)
 	{};
 
 	//!	Destructor
 	virtual ~CVulkanBufferObject() {};
 
-
+	//! Implements IDeviceMemoryManager::IBufferObject
 	virtual uint64_t getSize(void) const;
 
+	//! Implements IDeviceMemoryManager::IBufferObject
 	virtual BUFFER_KIND getStorage(void) const;
 
+	//! Implements IDeviceMemoryManager::IBufferObject
 	unsigned int getBufferId(void) const;
 
-
-	VkDeviceMemory	getAddress(void) const
-	{ return m_address; }
-
-	VkBuffer getBuffer(void) const
-	{ return m_buffer; }
 
     //! The size in bytes of the buffer object
 	uint64_t	m_size;
@@ -44,12 +41,19 @@ public:
 	//!	Type of host visible memory (do not need flush)
 	bool		m_coherent;
 
+	//!	Buffer and memory handles
+	VkBuffer		m_buffer;
+	VkDeviceMemory	m_address;
+	VkBuffer		m_deviceBuffer;
+	VkDeviceMemory	m_deviceAddress;
+
+	//! The array of unsynchronized host_visible vs. device local memory data chunks
+	std::vector<VkBufferCopy>	m_unsynchronizedData;
+
+
 private:
     CVulkanBufferObject(const CVulkanBufferObject& );
 	CVulkanBufferObject& operator=(const CVulkanBufferObject& );
-
-	VkBuffer		m_buffer;
-	VkDeviceMemory	m_address;
 };
 
 

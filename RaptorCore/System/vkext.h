@@ -155,6 +155,11 @@
 		LINKAGE PFN_vkEndCommandBuffer vkEndCommandBuffer; \
 		LINKAGE PFN_vkCmdSetViewport vkCmdSetViewport; \
 		LINKAGE PFN_vkCmdSetScissor vkCmdSetScissor; \
+		LINKAGE PFN_vkCmdCopyBuffer vkCmdCopyBuffer; \
+		LINKAGE PFN_vkCmdCopyImage vkCmdCopyImage; \
+		LINKAGE PFN_vkCmdBlitImage vkCmdBlitImage; \
+		LINKAGE PFN_vkCmdCopyBufferToImage vkCmdCopyBufferToImage; \
+		LINKAGE PFN_vkCmdCopyImageToBuffer vkCmdCopyImageToBuffer; \
 		LINKAGE PFN_vkCmdDraw vkCmdDraw; \
 		LINKAGE PFN_vkCmdDrawIndexed vkCmdDrawIndexed;
 	#endif
@@ -231,11 +236,6 @@
 		LINKAGE PFN_vkCmdDrawIndexedIndirect vkCmdDrawIndexedIndirect; \
 		LINKAGE PFN_vkCmdDispatch vkCmdDispatch; \
 		LINKAGE PFN_vkCmdDispatchIndirect vkCmdDispatchIndirect; \
-		LINKAGE PFN_vkCmdCopyBuffer vkCmdCopyBuffer; \
-		LINKAGE PFN_vkCmdCopyImage vkCmdCopyImage; \
-		LINKAGE PFN_vkCmdBlitImage vkCmdBlitImage; \
-		LINKAGE PFN_vkCmdCopyBufferToImage vkCmdCopyBufferToImage; \
-		LINKAGE PFN_vkCmdCopyImageToBuffer vkCmdCopyImageToBuffer; \
 		LINKAGE PFN_vkCmdUpdateBuffer vkCmdUpdateBuffer; \
 		LINKAGE PFN_vkCmdFillBuffer vkCmdFillBuffer; \
 		LINKAGE PFN_vkCmdClearColorImage vkCmdClearColorImage; \

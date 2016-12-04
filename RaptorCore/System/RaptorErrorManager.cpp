@@ -233,6 +233,9 @@ void CRaptorErrorManager::glGetError(const std::string& file,int line)
 
 void CRaptorErrorManager::vkGetError(VkResult err, const std::string& file,int line)
 {
+	if (VK_SUCCESS == err)
+		return;
+
 	GL_RAPTOR_ERROR r_err;
 
 	r_err.className = Global::CVulkanClassID::GetClassId().ClassName();

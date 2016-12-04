@@ -117,6 +117,8 @@ bool CRaptorVulkanDisplay::glRender(void)
 
         m_pGAllocator->glvkLockMemory(true);
 		//m_pTAllocator->glLockMemory(true);
+	
+		vk_device.vkSynchroniseBufferObjects();
 
 		CVulkanPipeline *pipeline = m_pipelines[0];
 		vk_device.vkBindPipeline(	*pipeline,

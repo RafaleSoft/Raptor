@@ -6,7 +6,9 @@
 	
 - CHostMemoryManager:
 	- ajouter capacité allocations/release dans un bloc prédéfini (data pool)
-	- MapPointer : ajouter un paramètre SyncData
+
+- CGeometryAllocator:
+	- currentAddress : utilisé en unsigned int => bug si uint64_t
 
 - CRaptorRenderBufferDisplay:
 	- mettre au point le format CGL_FLOAT_32 (creation des textures attachées)
