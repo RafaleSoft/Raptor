@@ -145,7 +145,7 @@ unsigned char*	const CTexelAllocator::allocateTexels(uint64_t size)
 
 	if (!texelBlocs.empty())
 	{
-		unsigned int maxSize = texels.size;
+		uint64_t maxSize = texels.size;
 		if (!freeTexelBlocs.empty())
 		{
 			bool reuse = false;
@@ -173,12 +173,12 @@ unsigned char*	const CTexelAllocator::allocateTexels(uint64_t size)
 		currentAddress = (*it).second.address.uc_address + (*it).second.size;
 	}
 
-	if ( ((unsigned int)currentAddress - (unsigned int)texels.address.uc_address) + size > texels.size)
+	if ( ((uint64_t)currentAddress - (uint64_t)texels.address.uc_address) + size > texels.size)
     {
 		stringstream err;
 		err << "Texel Allocator could not get enough memory:";
 		err << " missing ";
-		err << (((unsigned int)currentAddress - (unsigned int)texels.address.uc_address) + size) - texels.size;
+		err << (((uint64_t)currentAddress - (uint64_t)texels.address.uc_address) + size) - texels.size;
 		err << " bytes.";
 		Raptor::GetErrorManager()->generateRaptorError(	Global::COpenGLClassID::GetClassId(),
 														CRaptorErrorManager::RAPTOR_FATAL,
@@ -247,7 +247,7 @@ void CTexelAllocator::glvkCopyPointer(unsigned char *dst, unsigned char *src, ui
 		if (blocPos != texelBlocs.end())
 		{
 			deviceMemoryManager->setBufferObjectData(	*relocatedTexels,
-														(unsigned int)dst,
+														(uint64_t)dst,
 														src,
 														(*blocPos).second.size);
 		}
@@ -263,7 +263,7 @@ void CTexelAllocator::glvkCopyPointer(unsigned char *dst, unsigned char *src, ui
 	else
 		// No ckech is done to validate that dst is a bloc of size 'size'
 		deviceMemoryManager->setBufferObjectData(	*relocatedTexels,
-													(unsigned int)dst,
+													(uint64_t)dst,
 													src,
 													size);
 
@@ -272,7 +272,7 @@ void CTexelAllocator::glvkCopyPointer(unsigned char *dst, unsigned char *src, ui
 
 
 
-void *CTexelAllocator::glvkMapPointer(void *pointer)
+void *CTexelAllocator::glvkMapPointer(void *pointer,bool syncData)
 {
     if ((NULL == relocatedTexels) || (m_bLocked) || (NULL == pointer))
         return pointer;
@@ -285,16 +285,20 @@ void *CTexelAllocator::glvkMapPointer(void *pointer)
 	map<void*,data_bloc>::const_iterator blocPos = texelBlocs.find(pointer);
 	if (blocPos != texelBlocs.end())
     {
-		unsigned int sz = (*blocPos).second.size;
+		uint64_t sz = (*blocPos).second.size;
 		unsigned char* localData = charAlloc.allocate(sz);
 
         texelReMap[pointer] = localData;
         texelReMap[localData] = pointer;
 
-        deviceMemoryManager->getBufferObjectData(	*relocatedTexels,
-													(unsigned int)pointer,
-													localData,
-													sz);
+		if (syncData)
+		{
+			deviceMemoryManager->getBufferObjectData(	*relocatedTexels,
+														(uint64_t)pointer,
+														localData,
+														sz);
+		}
+
         CATCH_GL_ERROR
 
         return localData;
@@ -303,7 +307,7 @@ void *CTexelAllocator::glvkMapPointer(void *pointer)
         return NULL;
 }
 
-void *CTexelAllocator::glvkUnMapPointer(void *pointer)
+void *CTexelAllocator::glvkUnMapPointer(void *pointer,bool syncData)
 {
     if ((NULL == relocatedTexels) || (m_bLocked) || (NULL == pointer))
         return pointer;
@@ -329,13 +333,17 @@ void *CTexelAllocator::glvkUnMapPointer(void *pointer)
         //  Should check for errors.
         texelReMap.erase(it2);
 
-		// Here, serverData could be relocated to compress the data
-		// and limit the number of holes or fragmentation.
-		// As we have an array of free blocs, relocation could easily be done.
-        deviceMemoryManager->setBufferObjectData(	*relocatedTexels,
-													(unsigned int)serverData,
-													pointer,
-													(*blocPos).second.size);
+		if (syncData)
+		{
+			// Here, serverData could be relocated to compress the data
+			// and limit the number of holes or fragmentation.
+			// As we have an array of free blocs, relocation could easily be done.
+			deviceMemoryManager->setBufferObjectData(	*relocatedTexels,
+														(uint64_t)serverData,
+														pointer,
+														(*blocPos).second.size);
+
+		}
 
         CHostMemoryManager::GetInstance()->garbage(pointer);
 

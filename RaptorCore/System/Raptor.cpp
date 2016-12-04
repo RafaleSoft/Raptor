@@ -391,6 +391,9 @@ void Raptor::glRender(void)
     C3DEngineTaskManager *engine = raptorStatus.engineTaskMgr;
 	if (engine != NULL)
 		engine->run();
+
+	CHostMemoryManager *memory = CHostMemoryManager::GetInstance();
+	memory->pack();
 }
 
 bool Raptor::glQuitRaptor(void)

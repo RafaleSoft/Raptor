@@ -145,8 +145,8 @@ void CGeometryPrimitive::glRender(void)
 
 			if (!pAllocator->isMemoryLocked())
 			{
-				pAllocator->glDiscardPointer(vp);
-				pAllocator->glDiscardPointer(tp);
+				pAllocator->glvkUnMapPointer(vp,false);
+				pAllocator->glvkUnMapPointer(tp,false);
 				pAllocator->glvkLockMemory(true);
 			}
 
@@ -287,7 +287,7 @@ void CGeometryPrimitive::getIndexes(unsigned short *faces)
 			memcpy(faces,m_faces,m_size*sizeof(unsigned short));
 
 			if (CGeometryAllocator::GetInstance()->isMemoryRelocated())
-				m_faces = CGeometryAllocator::GetInstance()->glDiscardPointer(m_faces);
+				m_faces = CGeometryAllocator::GetInstance()->glvkUnMapPointer(m_faces,false);
 		}
     }
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
@@ -325,7 +325,7 @@ void CGeometryPrimitive::getIndexes(vector<unsigned short> &polygonSizes,vector<
 				polygonIndexes.push_back(m_faces[i]);
 
 			if (CGeometryAllocator::GetInstance()->isMemoryRelocated())
-				m_faces = CGeometryAllocator::GetInstance()->glDiscardPointer(m_faces);
+				m_faces = CGeometryAllocator::GetInstance()->glvkUnMapPointer(m_faces,false);
 		}
     }
 #ifdef RAPTOR_DEBUG_MODE_GENERATION

@@ -401,7 +401,9 @@ bool CContextManager::vkInitInstance(CContextManager::RENDERING_CONTEXT_ID ctx)
 												nbExtensions,                           // uint32_t enabledExtensionNameCount;
 												extensions};							// const char* const* ppEnabledExtensionNames;
 
-	res = vkCreateInstance(&instanceCreateInfo, CVulkanMemory::GetAllocator(), &vk_ctx.instance);
+	res = vkCreateInstance(	&instanceCreateInfo,
+							CVulkanMemory::GetAllocator(), 
+							&vk_ctx.instance);
 	if (VK_SUCCESS != res)
 		pErrMgr->vkGetError(res,__FILE__,__LINE__);
 
@@ -527,6 +529,7 @@ bool CContextManager::vkInitDevice(CContextManager::RENDERING_CONTEXT_ID ctx,con
 	uint32_t queueCount = 0;
 	uint32_t graphicsQueueFamilyIndex = MAXUINT;
 	uint32_t presentQueueFamilyIndex = MAXUINT;
+	uint32_t transferQueueFamilyIndex = MAXUINT;
 
 	//!	Find a device with graphic & win32 presentation support
 	for (unsigned int i=0; (i<maxd) && (vk_ctx.physicalDevice > maxd); i++)
@@ -568,7 +571,6 @@ bool CContextManager::vkInitDevice(CContextManager::RENDERING_CONTEXT_ID ctx,con
 
 					if ((pQueueFamilyProperties[j].queueCount > 0) &&
 						(VK_QUEUE_GRAPHICS_BIT == (VK_QUEUE_GRAPHICS_BIT & pQueueFamilyProperties[j].queueFlags)))
-					// && (VK_QUEUE_TRANSFER_BIT == (VK_QUEUE_TRANSFER_BIT & pQueueFamilyProperties[j].queueFlags)))
 					{
 						if ((pQueueFamilyProperties[j].queueCount > queueCount) || (graphicsQueueFamilyIndex == MAXUINT))
 						{
@@ -584,6 +586,9 @@ bool CContextManager::vkInitDevice(CContextManager::RENDERING_CONTEXT_ID ctx,con
 						}
 					}
 
+					if ((pQueueFamilyProperties[j].queueCount > 0) &&
+						(VK_QUEUE_TRANSFER_BIT == (VK_QUEUE_TRANSFER_BIT & pQueueFamilyProperties[j].queueFlags)))
+						transferQueueFamilyIndex = j;
 
 					if ((pQueueFamilyProperties[j].queueCount > 0) && (VK_TRUE == support) && (VK_TRUE == present_support))
 						presentQueueFamilyIndex = j;
@@ -592,7 +597,8 @@ bool CContextManager::vkInitDevice(CContextManager::RENDERING_CONTEXT_ID ctx,con
 					//!	For future : allow selection of device not for presentation if
 					//!	specificaly required.
 					if ((graphicsQueueFamilyIndex < MAXUINT) &&
-						(presentQueueFamilyIndex < MAXUINT))
+						(presentQueueFamilyIndex < MAXUINT) &&
+						(transferQueueFamilyIndex < MAXUINT))
 					{
 						vk_ctx.physicalDevice = i;
 						break;
@@ -626,7 +632,8 @@ bool CContextManager::vkInitDevice(CContextManager::RENDERING_CONTEXT_ID ctx,con
 													features,
 													graphicsQueueFamilyIndex,
 													queueCount,
-													presentQueueFamilyIndex,1);
+													presentQueueFamilyIndex,1,
+													transferQueueFamilyIndex,1);
 	}
 	else
 		return false;

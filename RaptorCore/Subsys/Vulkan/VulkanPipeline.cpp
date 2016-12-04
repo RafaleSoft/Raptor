@@ -141,8 +141,7 @@ bool CVulkanPipeline::initPipeline()
 	VkPipelineInputAssemblyStateCreateInfo input_assembly_state_create_info = {	VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO,
 																				NULL,
 																				0, //VkPipelineInputAssemblyStateCreateFlags
-																				//VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
-																				VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP,
+																				VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
 																				VK_FALSE };	//primitiveRestartEnable
 	//VkPipelineTessellationStateCreateInfo tesselation_state_create_info;
 	VkPipelineViewportStateCreateInfo  viewport_state_create_info = {	VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO,
@@ -214,7 +213,10 @@ bool CVulkanPipeline::initPipeline()
 														0, //uint32_t pushConstantRangeCount
 														NULL }; //VkPushConstantRange     *pPushConstantRanges
 	
-	res = vkCreatePipelineLayout( device, &layout_create_info, NULL, &layout); 
+	res = vkCreatePipelineLayout(device,
+								&layout_create_info,
+								CVulkanMemory::GetAllocator(),
+								&layout); 
 	if (VK_SUCCESS != res)
 	{
 		pErrMgr->vkGetError(res,__FILE__,__LINE__);
@@ -245,7 +247,11 @@ bool CVulkanPipeline::initPipeline()
 														subpass,// uint32_t subpass 
 														basePipelineHandle, // VkPipeline
 														basePipelineIndex }; //int32_t basePipelineIndex
-	res = vkCreateGraphicsPipelines( device, VK_NULL_HANDLE, 1, &pipeline_create_info, NULL, &pipeline );
+	res = vkCreateGraphicsPipelines(device,
+									VK_NULL_HANDLE,
+									1, &pipeline_create_info,
+									CVulkanMemory::GetAllocator(),
+									&pipeline );
 	if (VK_SUCCESS != res)
 	{
 		pErrMgr->vkGetError(res,__FILE__,__LINE__);

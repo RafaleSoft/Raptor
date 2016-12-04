@@ -42,6 +42,9 @@ public:
 										uint64_t srcOffset,
 										void* dst,
 										uint64_t sz);
+	virtual bool discardBufferObjectData(	IDeviceMemoryManager::IBufferObject &bo,
+											uint64_t dstOffset,
+											uint64_t sz);
 	virtual bool releaseBufferObject(IDeviceMemoryManager::IBufferObject* &vb);
 
 
@@ -52,6 +55,10 @@ private:
 	GLenum  BufferKindToGL(IDeviceMemoryManager::IBufferObject::BUFFER_KIND kind) const;
 	GLenum  BufferModeToGL(	IDeviceMemoryManager::IBufferObject::BUFFER_KIND kind,
 							IDeviceMemoryManager::IBufferObject::BUFFER_MODE mode) const;
+
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+	bool isBufferObjectValid(unsigned int buffer) const;
+#endif
 
 	unsigned int currentBuffers[IDeviceMemoryManager::IBufferObject::NB_BUFFER_KIND];
 };

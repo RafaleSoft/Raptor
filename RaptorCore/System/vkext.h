@@ -155,7 +155,13 @@
 		LINKAGE PFN_vkEndCommandBuffer vkEndCommandBuffer; \
 		LINKAGE PFN_vkCmdSetViewport vkCmdSetViewport; \
 		LINKAGE PFN_vkCmdSetScissor vkCmdSetScissor; \
-		LINKAGE PFN_vkCmdDraw vkCmdDraw;
+		LINKAGE PFN_vkCmdCopyBuffer vkCmdCopyBuffer; \
+		LINKAGE PFN_vkCmdCopyImage vkCmdCopyImage; \
+		LINKAGE PFN_vkCmdBlitImage vkCmdBlitImage; \
+		LINKAGE PFN_vkCmdCopyBufferToImage vkCmdCopyBufferToImage; \
+		LINKAGE PFN_vkCmdCopyImageToBuffer vkCmdCopyImageToBuffer; \
+		LINKAGE PFN_vkCmdDraw vkCmdDraw; \
+		LINKAGE PFN_vkCmdDrawIndexed vkCmdDrawIndexed;
 	#endif
 
 	#if !defined(DECLARE_VK_device_memory)
@@ -226,16 +232,10 @@
 		LINKAGE PFN_vkCmdSetStencilWriteMask vkCmdSetStencilWriteMask; \
 		LINKAGE PFN_vkCmdSetStencilReference vkCmdSetStencilReference; \
 		LINKAGE PFN_vkCmdBindDescriptorSets vkCmdBindDescriptorSets; \
-		LINKAGE PFN_vkCmdDrawIndexed vkCmdDrawIndexed; \
 		LINKAGE PFN_vkCmdDrawIndirect vkCmdDrawIndirect; \
 		LINKAGE PFN_vkCmdDrawIndexedIndirect vkCmdDrawIndexedIndirect; \
 		LINKAGE PFN_vkCmdDispatch vkCmdDispatch; \
 		LINKAGE PFN_vkCmdDispatchIndirect vkCmdDispatchIndirect; \
-		LINKAGE PFN_vkCmdCopyBuffer vkCmdCopyBuffer; \
-		LINKAGE PFN_vkCmdCopyImage vkCmdCopyImage; \
-		LINKAGE PFN_vkCmdBlitImage vkCmdBlitImage; \
-		LINKAGE PFN_vkCmdCopyBufferToImage vkCmdCopyBufferToImage; \
-		LINKAGE PFN_vkCmdCopyImageToBuffer vkCmdCopyImageToBuffer; \
 		LINKAGE PFN_vkCmdUpdateBuffer vkCmdUpdateBuffer; \
 		LINKAGE PFN_vkCmdFillBuffer vkCmdFillBuffer; \
 		LINKAGE PFN_vkCmdClearColorImage vkCmdClearColorImage; \

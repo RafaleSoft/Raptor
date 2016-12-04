@@ -96,21 +96,26 @@ public:
 	} DATA_BLOC;
 
 public:
-	CMemoryHeap() {};
+	CMemoryHeap():garbageSize(0),garbageMaxSize(0),m_bDeferedPacking(false) {};
 	~CMemoryHeap() {};
+
+	unsigned int	garbageSize;
+	unsigned int	garbageMaxSize;
+
+	bool			m_bDeferedPacking;
 
     //! Global memory allocations
 	//!	A heap map by addresses
-	map<void*,DATA_BLOC>	heap;
-	//map<void*,DATA_BLOC>	deviceHeap;
+	std::map<void*,DATA_BLOC>	heap;
 
     //! A storage for garbaged blocs. A set is used to be able
     //! to find the most appropriate bloc when needed
     //! ( the first having a size greater than the requested )
-    set<DATA_BLOC,DATA_BLOC>	garbage;
+	std::set<DATA_BLOC,DATA_BLOC>	garbage;
 
-	unsigned int	garbageSize;
-	unsigned int	garbageMaxSize;
+	std::vector<void*>	futureGarbage;
+	std::vector<void*>	futureRelease;
+
 
     CRaptorMutex     memoryMutex;
 };
@@ -199,6 +204,11 @@ void CHostMemoryManager::setGarbageMaxSize(unsigned int maxSize) const
 	m_pHeap->garbageMaxSize = maxSize;
 }
 
+void CHostMemoryManager::setDeferedPacking(bool defered) const
+{
+	m_pHeap->m_bDeferedPacking = defered;
+}
+
 void *CHostMemoryManager::allocate(size_t size,unsigned int count,size_t alignment) const
 {
     //! After this point, we are in critical section
@@ -207,7 +217,7 @@ void *CHostMemoryManager::allocate(size_t size,unsigned int count,size_t alignme
     bool found = false;
 	size_t requestedSize = size*count;
 	
-	set<CMemoryHeap::DATA_BLOC,CMemoryHeap::DATA_BLOC>::iterator itr = m_pHeap->garbage.begin();
+	std::set<CMemoryHeap::DATA_BLOC,CMemoryHeap::DATA_BLOC>::iterator itr = m_pHeap->garbage.begin();
 	while ((!found) && (itr != m_pHeap->garbage.end()))
 	{
         const CMemoryHeap::DATA_BLOC &db = (*itr);
@@ -235,7 +245,7 @@ void *CHostMemoryManager::allocate(size_t size,unsigned int count,size_t alignme
 	    char *pT = new char[size * count + align];
 
 	    //	align data
-	    void *data = (void*)( (int(pT) + align) & ~((int)(align-1)));
+	    void *data = (void*)((int(pT) + align) & ~((int)(align-1)));
 
 	    // store allocation offset
 #ifdef INITIALISE_MEMORY
@@ -266,11 +276,41 @@ void *CHostMemoryManager::allocate(size_t size,unsigned int count,size_t alignme
     }
 }
 
+bool CHostMemoryManager::pack(void)
+{
+	if (!m_pHeap->m_bDeferedPacking)
+		return false;
+
+    //! After this point, we are in critical section
+    CRaptorLock lock(m_pHeap->memoryMutex);
+	bool oldpack = m_pHeap->m_bDeferedPacking;
+	m_pHeap->m_bDeferedPacking = false;
+
+	std::vector<void*>::const_iterator it = m_pHeap->futureGarbage.begin();
+	while (m_pHeap->futureGarbage.end() != it)
+		garbage((*it++));
+	m_pHeap->futureGarbage.clear();
+
+	it = m_pHeap->futureRelease.begin();
+	while (m_pHeap->futureRelease.end() != it)
+		garbage((*it++));
+	m_pHeap->futureRelease.clear();
+
+	m_pHeap->m_bDeferedPacking = oldpack;
+
+	return true;
+}
 
 void CHostMemoryManager::release(void *data) const
 {
     //! After this point, we are in critical section
     CRaptorLock lock(m_pHeap->memoryMutex);
+
+	if (m_pHeap->m_bDeferedPacking)
+	{
+		m_pHeap->futureRelease.push_back(data);
+		return;
+	}
 
     //! Search to validate the bloc is allocated with alignment and exists
 	map<void*,CMemoryHeap::DATA_BLOC>::iterator itr = m_pHeap->heap.find(data);
@@ -297,8 +337,14 @@ void CHostMemoryManager::release(void *data) const
 
 void CHostMemoryManager::garbage(void *data) const
 {
-    //! After this point, we are in critical section
+	//! After this point, we are in critical section
     CRaptorLock lock(m_pHeap->memoryMutex);
+
+	if (m_pHeap->m_bDeferedPacking)
+	{
+		m_pHeap->futureGarbage.push_back(data);
+		return;
+	}
 
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 	bool found = false;
