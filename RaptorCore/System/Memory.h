@@ -31,7 +31,9 @@ public:
         static const BUFFER_KIND INDEX_BUFFER = 1;
         static const BUFFER_KIND PIXEL_STORAGE = 2;
         static const BUFFER_KIND PIXEL_SOURCE = 3;
-        static const BUFFER_KIND NB_BUFFER_KIND = 4;
+		static const BUFFER_KIND UNIFORM_BUFFER = 4;
+		static const BUFFER_KIND TEXTURE_BUFFER = 5;
+		static const BUFFER_KIND NB_BUFFER_KIND = 6;
 
 
         typedef enum

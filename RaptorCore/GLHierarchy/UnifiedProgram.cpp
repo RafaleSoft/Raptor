@@ -191,6 +191,25 @@ void CUnifiedProgram::glQueryUniformLocations(RAPTOR_HANDLE program)
     GLint count = 0;
 	pExtensions->glGetObjectParameterivARB(program.handle, GL_OBJECT_ACTIVE_UNIFORMS_ARB,&count);
 
+#if defined(GL_ARB_uniform_buffer_object)
+	GLint active_blocks_count = 0;
+	GLint active_uniform_max_length = 0;
+	pExtensions->glGetProgramivARB(program.handle, GL_ACTIVE_UNIFORM_BLOCKS_ARB, &active_blocks_count);
+	pExtensions->glGetProgramivARB(program.handle, GL_ACTIVE_UNIFORM_MAX_LENGTH, &active_uniform_max_length);
+
+	for (GLint i = 0; i < active_blocks_count; i++)
+	{
+		GLint active_uniforms = 0;
+		pExtensions->glGetActiveUniformBlockivARB(program.handle, i, GL_UNIFORM_BLOCK_ACTIVE_UNIFORMS_ARB, &active_uniforms);
+
+		const char* * uniformNames = new const char*[active_uniforms];
+		for (GLint j = 0; j < active_uniforms; j++)
+			uniformNames[j] = new const char[active_uniform_max_length];
+		GLuint* uniformIndices = new GLuint[active_uniforms];
+		pExtensions->glGetUniformIndicesARB(program.handle, active_uniforms, uniformNames, uniformIndices);
+	}
+#endif
+
 	// Loop over each of the active uniforms, and set their value
 	for (GLint i = 0; i < count; i++)
 	{

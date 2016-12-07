@@ -19,6 +19,7 @@
 	#include <System/Memory.h>
 #endif
 
+#include <list>
 
 
 RAPTOR_NAMESPACE_BEGIN
@@ -81,7 +82,7 @@ public:
 		const CVulkanMemory& memory;
 		VkDevice device;
 
-		std::map<const IDeviceMemoryManager::IBufferObject*,CVulkanBufferObject*> m_pBuffers;
+		std::list<pair<const IDeviceMemoryManager::IBufferObject*,CVulkanBufferObject*>> m_pBuffers;
 		const CVulkanBufferObject* currentBuffers[IDeviceMemoryManager::IBufferObject::NB_BUFFER_KIND];
 	};
 

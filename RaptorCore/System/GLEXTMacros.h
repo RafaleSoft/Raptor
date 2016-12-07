@@ -1375,6 +1375,40 @@
 	#endif
 #endif
 
+#ifndef IMPLEMENT_GL_ARB_uniform_buffer_object
+	#ifdef GL_ARB_uniform_buffer_object
+	#define IMPLEMENT_GL_ARB_uniform_buffer_object(target)\
+			if (Raptor::glIsExtensionSupported("GL_ARB_uniform_buffer_object"))\
+			{\
+				target->glGetUniformIndicesARB = (PFN_GL_GET_UNIFORM_INDICES_ARB_PROC)GET_PROC_ADDRESS("glGetUniformIndices");\
+				target->glGetActiveUniformsivARB = (PFN_GL_GET_ACTIVE_UNIFORMS_IV_ARB_PROC)GET_PROC_ADDRESS("glGetActiveUniformsiv");\
+				target->glGetActiveUniformNameARB = (PFN_GL_GET_ACTIVE_UNIFORM_NAME_ARB_PROC)GET_PROC_ADDRESS("glGetActiveUniformName");\
+				target->glGetUniformBlockIndexARB = (PFN_GL_GET_UNIFORM_BLOCK_INDEX_ARB_PROC)GET_PROC_ADDRESS("glGetUniformBlockIndex");\
+				target->glGetActiveUniformBlockivARB = (PFN_GL_GET_ACTIVE_UNIFORM_BLOCK_IV_ARB_PROC)GET_PROC_ADDRESS("glGetActiveUniformBlockiv");\
+				target->glGetActiveUniformBlockNameARB = (PFN_GL_GET_ACTIVE_UNIFORM_BLOCK_NAME_ARB_PROC)GET_PROC_ADDRESS("glGetActiveUniformBlockName");\
+				target->glBindBufferRangeARB = (PFN_GL_BIND_BUFFER_RANGE_ARB_PROC)GET_PROC_ADDRESS("glBindBufferRange");\
+				target->glBindBufferBaseARB = (PFN_GL_BIND_BUFFER_BASE_ARB_PROC)GET_PROC_ADDRESS("glBindBufferBase");\
+				target->glGetIntegeri_vARB = (PFN_GL_GET_INTEGERI_V_ARB_PROC)GET_PROC_ADDRESS("glGetIntegeri_v");\
+				target->glUniformBlockBindingARB = (PFN_GL_UNIFORM_BLOCK_BINDING_ARB_PROC)GET_PROC_ADDRESS("glUniformBlockBinding");\
+			}\
+			else\
+			{\
+				target->glGetUniformIndicesARB = NULL;\
+				target->glGetActiveUniformsivARB = NULL;\
+				target->glGetActiveUniformNameARB = NULL;\
+				target->glGetUniformBlockIndexARB = NULL;\
+				target->glGetActiveUniformBlockivARB = NULL;\
+				target->glGetActiveUniformBlockNameARB = NULL;\
+				target->glBindBufferRangeARB = NULL;\
+				target->glBindBufferBaseARB = NULL;\
+				target->glGetIntegeri_vARB = NULL;\
+				target->glUniformBlockBindingARB = NULL;\
+			}
+	#else
+		#define IMPLEMENT_GL_ARB_uniform_buffer_object(target)
+	#endif
+#endif
+
 
 #endif	// __glext_macros_h_
 

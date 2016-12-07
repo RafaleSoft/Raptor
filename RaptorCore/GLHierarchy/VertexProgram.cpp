@@ -289,11 +289,13 @@ bool CVertexProgram::glGetProgramCaps(GL_VERTEX_PROGRAM_CAPS& caps)
         caps.vertex_program_point_size = (bVal == GL_TRUE);
         glGetBooleanv(GL_VERTEX_PROGRAM_TWO_SIDE_ARB,&bVal);
         caps.vertex_program_two_side = (bVal == GL_TRUE);
-	
-		return true;
-#else
-		return false;
 #endif
+#if defined(GL_ARB_uniform_buffer_object)
+		glGetIntegerv(GL_MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS_ARB, &caps.max_combined_vertex_uniform_components);
+		glGetIntegerv(GL_MAX_UNIFORM_BLOCK_SIZE_ARB, &caps.max_uniform_block_size);
+		glGetIntegerv(GL_MAX_VERTEX_UNIFORM_BLOCKS_ARB, &caps.max_vertex_uniform_blocks);
+#endif
+		return true;
 	}
 	else
 		return false;

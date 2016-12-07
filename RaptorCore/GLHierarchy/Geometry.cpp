@@ -934,10 +934,6 @@ void CGeometry::glRenderGeometry()
 
 	const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
 
-#if defined(GL_EXT_compiled_vertex_array)
-	if (pExtensions->glLockArraysEXT != NULL)
-		pExtensions->glLockArraysEXT(0,m_nbVertex);
-#endif
 
 	//	Store arrays state + texture state
     CRenderingProperties *props = CRenderingProperties::GetCurrentProperties();
@@ -1080,11 +1076,6 @@ void CGeometry::glRenderGeometry()
 		}
 	}
 
-
-#if defined(GL_EXT_compiled_vertex_array)
-	if (pExtensions->glUnlockArraysEXT != NULL)
-		pExtensions->glUnlockArraysEXT();
-#endif
 
 	CATCH_GL_ERROR
 

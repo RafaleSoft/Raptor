@@ -15,6 +15,7 @@
 	
 - CGeometry / CGeometryPrimitive:
 	- créer un mode"BigGeometry" avec des indices de type uint32_t
+	- attention au GeometryAllocator lock/unlock (utilise la taille estimée des données!)
 		
 - supprimer des "friend" ?
 	p.ex. dans CRaptorDisplay et sous classes ...

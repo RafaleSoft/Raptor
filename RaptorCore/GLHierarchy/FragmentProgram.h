@@ -33,6 +33,7 @@ public:
         int		max_fragment_uniform_components;
         int		max_texture_coords;
 		int		max_texture_image_units;
+		int		max_fragment_uniform_blocks;
 	} GL_FRAGMENT_PROGRAM_CAPS;
 
 public:

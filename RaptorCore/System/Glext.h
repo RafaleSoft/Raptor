@@ -2807,6 +2807,72 @@ extern "C" {
 	#define GL_COMPRESSED_SRGB8_ALPHA8_ASTC_12x12_KHR  0x93DD
 #endif
 
+
+
+#if defined(GL_ARB_uniform_buffer_object)
+	#define GL_UNIFORM_BUFFER_ARB								0x8A11
+	#define GL_UNIFORM_BUFFER_BINDING_ARB						0x8A28
+	#define GL_UNIFORM_BUFFER_START_ARB							0x8A29
+	#define GL_UNIFORM_BUFFER_SIZE_ARB							0x8A2A
+	#define GL_MAX_VERTEX_UNIFORM_BLOCKS_ARB					0x8A2B
+	#define GL_MAX_GEOMETRY_UNIFORM_BLOCKS_ARB					0x8A2C
+	#define GL_MAX_FRAGMENT_UNIFORM_BLOCKS_ARB					0x8A2D
+	#define GL_MAX_COMBINED_UNIFORM_BLOCKS_ARB					0x8A2E
+	#define GL_MAX_UNIFORM_BUFFER_BINDINGS_ARB					0x8A2F
+	#define GL_MAX_UNIFORM_BLOCK_SIZE_ARB						0x8A30
+	#define GL_MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS_ARB		0x8A31
+	#define GL_MAX_COMBINED_GEOMETRY_UNIFORM_COMPONENTS_ARB		0x8A32
+	#define GL_MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS_ARB		0x8A33
+	#define GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT_ARB				0x8A34
+	#define GL_ACTIVE_UNIFORM_BLOCK_MAX_NAME_LENGTH_ARB			0x8A35
+	#define GL_ACTIVE_UNIFORM_BLOCKS_ARB						0x8A36
+	#define GL_UNIFORM_TYPE_ARB									0x8A37
+	#define GL_UNIFORM_SIZE_ARB									0x8A38
+	#define GL_UNIFORM_NAME_LENGTH_ARB							0x8A39
+	#define GL_UNIFORM_BLOCK_INDEX_ARB							0x8A3A
+	#define GL_UNIFORM_OFFSET_ARB								0x8A3B
+	#define GL_UNIFORM_ARRAY_STRIDE_ARB							0x8A3C
+	#define GL_UNIFORM_MATRIX_STRIDE_ARB						0x8A3D
+	#define GL_UNIFORM_IS_ROW_MAJOR_ARB							0x8A3E
+	#define GL_UNIFORM_BLOCK_BINDING_ARB						0x8A3F
+	#define GL_UNIFORM_BLOCK_DATA_SIZE_ARB						0x8A40
+	#define GL_UNIFORM_BLOCK_NAME_LENGTH_ARB					0x8A41
+	#define GL_UNIFORM_BLOCK_ACTIVE_UNIFORMS_ARB				0x8A42
+	#define GL_UNIFORM_BLOCK_ACTIVE_UNIFORM_INDICES_ARB			0x8A43
+	#define GL_UNIFORM_BLOCK_REFERENCED_BY_VERTEX_SHADER_ARB	0x8A44
+	#define GL_UNIFORM_BLOCK_REFERENCED_BY_GEOMETRY_SHADER_ARB	0x8A45
+	#define GL_UNIFORM_BLOCK_REFERENCED_BY_FRAGMENT_SHADER_ARB	0x8A46
+	#define GL_INVALID_INDEX_ARB								0xFFFFFFFFu
+
+	typedef GLvoid(RAPTOR_APICALL * PFN_GL_GET_UNIFORM_INDICES_ARB_PROC)(GLuint program, GLsizei uniformCount, const char* const * uniformNames, GLuint* uniformIndices);
+	typedef GLvoid(RAPTOR_APICALL * PFN_GL_GET_ACTIVE_UNIFORMS_IV_ARB_PROC)(GLuint program, GLsizei uniformCount, const GLuint* uniformIndices, GLenum pname, GLint* params);
+	typedef GLvoid(RAPTOR_APICALL * PFN_GL_GET_ACTIVE_UNIFORM_NAME_ARB_PROC)(GLuint program, GLuint uniformIndex, GLsizei bufSize, GLsizei* length, char* uniformName);
+	typedef GLuint(RAPTOR_APICALL * PFN_GL_GET_UNIFORM_BLOCK_INDEX_ARB_PROC)(GLuint program,const char* uniformBlockName);
+	typedef GLvoid(RAPTOR_APICALL * PFN_GL_GET_ACTIVE_UNIFORM_BLOCK_IV_ARB_PROC)(GLuint program, GLuint uniformBlockIndex, GLenum pname, GLint* params);
+	typedef GLvoid(RAPTOR_APICALL * PFN_GL_GET_ACTIVE_UNIFORM_BLOCK_NAME_ARB_PROC)(GLuint program, GLuint uniformBlockIndex, GLsizei bufSize, GLsizei* length, char* uniformBlockName);
+	typedef GLvoid(RAPTOR_APICALL * PFN_GL_BIND_BUFFER_RANGE_ARB_PROC)(GLenum target, GLuint index, GLuint buffer, GLintptrARB offset, GLsizeiptrARB size);
+	typedef GLvoid(RAPTOR_APICALL * PFN_GL_BIND_BUFFER_BASE_ARB_PROC)(GLenum target, GLuint index, GLuint buffer);
+	typedef GLvoid(RAPTOR_APICALL * PFN_GL_GET_INTEGERI_V_ARB_PROC)(GLenum target, GLuint index, GLint* data);
+	typedef GLvoid(RAPTOR_APICALL * PFN_GL_UNIFORM_BLOCK_BINDING_ARB_PROC)(GLuint program, GLuint uniformBlockIndex, GLuint uniformBlockBinding);
+
+	#ifndef DECLARE_GL_ARB_uniform_buffer_object
+	#define DECLARE_GL_ARB_uniform_buffer_object(LINKAGE) \
+		LINKAGE PFN_GL_GET_UNIFORM_INDICES_ARB_PROC glGetUniformIndicesARB; \
+		LINKAGE PFN_GL_GET_ACTIVE_UNIFORMS_IV_ARB_PROC glGetActiveUniformsivARB; \
+		LINKAGE PFN_GL_GET_ACTIVE_UNIFORM_NAME_ARB_PROC glGetActiveUniformNameARB; \
+		LINKAGE PFN_GL_GET_UNIFORM_BLOCK_INDEX_ARB_PROC glGetUniformBlockIndexARB; \
+		LINKAGE PFN_GL_GET_ACTIVE_UNIFORM_BLOCK_IV_ARB_PROC glGetActiveUniformBlockivARB; \
+		LINKAGE PFN_GL_GET_ACTIVE_UNIFORM_BLOCK_NAME_ARB_PROC glGetActiveUniformBlockNameARB; \
+		LINKAGE PFN_GL_BIND_BUFFER_RANGE_ARB_PROC glBindBufferRangeARB; \
+		LINKAGE PFN_GL_BIND_BUFFER_BASE_ARB_PROC glBindBufferBaseARB; \
+		LINKAGE PFN_GL_GET_INTEGERI_V_ARB_PROC glGetIntegeri_vARB; \
+		LINKAGE PFN_GL_UNIFORM_BLOCK_BINDING_ARB_PROC glUniformBlockBindingARB;
+	#endif
+#else
+	#define DECLARE_GL_ARB_uniform_buffer_object(LINKAGE)
+#endif
+
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //!
 //! WIN32 SPECIFIC

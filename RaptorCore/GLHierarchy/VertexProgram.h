@@ -39,6 +39,9 @@ public:
 		int		max_texture_coords;
 		bool	vertex_program_point_size;
 		bool	vertex_program_two_side;
+		int		max_combined_vertex_uniform_components;
+		int		max_uniform_block_size;
+		int		max_vertex_uniform_blocks;
 	} GL_VERTEX_PROGRAM_CAPS;
 
 

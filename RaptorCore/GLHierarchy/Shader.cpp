@@ -734,6 +734,8 @@ void CShader::glRender()
 {
     if (m_shaderProgram.handle != 0)
     {
+		//MAX_UNIFORM_BUFFER_BINDINGS
+
 #if defined(GL_ARB_shader_objects)
         const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
         pExtensions->glUseProgramObjectARB(m_shaderProgram.handle);

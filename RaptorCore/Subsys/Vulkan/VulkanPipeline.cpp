@@ -116,23 +116,28 @@ bool CVulkanPipeline::initPipeline()
 	}
 	
 	VkVertexInputBindingDescription vertex_binding_description_info = {	0,	// binding number
-																		8*sizeof(float),	//stride
+																		4*sizeof(float),	//stride
 																		VK_VERTEX_INPUT_RATE_VERTEX };
-	VkVertexInputAttributeDescription vertex_input_attribute_info[2] = {{	0,
+	VkVertexInputBindingDescription colors_binding_description_info = { 1,	// binding number
+																		4 * sizeof(float),	//stride
+																		VK_VERTEX_INPUT_RATE_VERTEX };
+	VkVertexInputBindingDescription bindings[2] = { vertex_binding_description_info, colors_binding_description_info };
+
+	VkVertexInputAttributeDescription vertex_input_attribute_info[2] = { {	0,
 																			vertex_binding_description_info.binding,
 																			VK_FORMAT_R32G32B32A32_SFLOAT,
-																			0},
-																		 {	1,
-																			vertex_binding_description_info.binding,
+																			0 },
+																		  { 1,
+																			colors_binding_description_info.binding,
 																			VK_FORMAT_R32G32B32A32_SFLOAT,
-																			4*sizeof(float)}};
+																			0 } }; // 4 * sizeof(float)
 
 
 	VkPipelineVertexInputStateCreateInfo vertex_input_state_create_info = {	VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
 																			NULL,
 																			0,	//VkPipelineVertexInputStateCreateFlags
-																			1, //vertexBindingDescriptionCount
-																			&vertex_binding_description_info, //VkVertexInputBindingDescription
+																			2, //vertexBindingDescriptionCount
+																			&bindings[0], //VkVertexInputBindingDescription
 																			2,	//vertexAttributeDescriptionCount
 																			&vertex_input_attribute_info[0] }; // VkVertexInputAttributeDescription
 
@@ -216,12 +221,10 @@ bool CVulkanPipeline::initPipeline()
 	res = vkCreatePipelineLayout(device,
 								&layout_create_info,
 								CVulkanMemory::GetAllocator(),
-								&layout); 
+								&layout);
+	CATCH_VK_ERROR(res);
 	if (VK_SUCCESS != res)
-	{
-		pErrMgr->vkGetError(res,__FILE__,__LINE__);
 		return false;
-	}
 
 	uint32_t subpass = 0;
 	VkPipeline basePipelineHandle = VK_NULL_HANDLE;
@@ -252,13 +255,11 @@ bool CVulkanPipeline::initPipeline()
 									1, &pipeline_create_info,
 									CVulkanMemory::GetAllocator(),
 									&pipeline );
+	delete[] shaderStages;
+
+	CATCH_VK_ERROR(res);
 	if (VK_SUCCESS != res)
-	{
-		pErrMgr->vkGetError(res,__FILE__,__LINE__);
 		return false;
-	}
-
-	delete [] shaderStages;
-
+	
 	return true;
 }

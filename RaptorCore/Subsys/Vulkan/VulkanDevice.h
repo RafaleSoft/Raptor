@@ -77,7 +77,9 @@ public:
 
 	//!	Transfer unsynchronised buffer object data to corresponding 
 	//!	device buffer objects. Buffer object data may already be synchronised.
-	bool vkSynchroniseBufferObjects(void);
+	//! @param blocking : if blocking is true, synchronisation will wait for complete queue execution.
+	//! @return true if synchronisation is successful
+	bool vkSynchroniseBufferObjects(bool blocking = false);
 
 	//! Returns the memory wrapper managing this device.
 	IDeviceMemoryManager* getMemory(void) const { return pDeviceMemory; };
@@ -91,7 +93,8 @@ public:
 	bool vkBindPipeline(const CVulkanPipeline& pipeline,
 						const VkRect2D& scissor,
 						const CColor::RGBA& clearColor,
-						VkDeviceSize offset,
+						VkDeviceSize offsetVertex,
+						VkDeviceSize offsetColors,
 						VkDeviceSize offset2);
 
 	//! Destroy or Release all device linked Vulkan resources, including swap chain
@@ -123,7 +126,7 @@ private:
 	uint32_t		present_queueFamilyIndex;
 	uint32_t		transfer_queueFamilyIndex;
 
-	typedef struct
+	typedef struct VK_RENDERING_RESOURCE_st
 	{
 		VkCommandBuffer	commandBuffer;
 		VkSemaphore		imageAvailableSemaphore;
@@ -145,7 +148,7 @@ private:
 	uint32_t			currentImage;
 #endif
 	
-	typedef struct
+	typedef struct VK_RENDERING_IMAGE_st
 	{
 		VkImage			image;
 		VkImageView		view;

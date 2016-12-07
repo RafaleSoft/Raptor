@@ -283,11 +283,11 @@ bool CGeometryProgram::glGetProgramCaps(GL_GEOMETRY_PROGRAM_CAPS& caps)
 		glGetIntegerv(GL_MAX_GEOMETRY_UNIFORM_COMPONENTS_ARB,&caps.max_geometry_uniform_components);
 		glGetIntegerv(GL_MAX_GEOMETRY_OUTPUT_VERTICES_ARB,&caps.max_geometry_output_vertices);
 		glGetIntegerv(GL_MAX_GEOMETRY_TOTAL_OUTPUT_COMPONENTS_ARB,&caps.max_geometry_total_output_components);
-
-		return true;
-#else
-		return false;
 #endif
+#if defined(GL_ARB_uniform_buffer_object)
+		glGetIntegerv(GL_MAX_GEOMETRY_UNIFORM_BLOCKS_ARB, &caps.max_geometry_uniform_blocks);
+#endif
+		return true;
 	}
 	else
 		return false;

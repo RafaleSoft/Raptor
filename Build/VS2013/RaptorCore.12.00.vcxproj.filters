@@ -569,6 +569,9 @@
     <ClCompile Include="..\..\RaptorCore\Subsys\OpenGLMemory.cpp">
       <Filter>Source Files\Subsys src</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\Vulkan\VulkanCommandBuffer.cpp">
+      <Filter>Source Files\Subsys src\Vulkan</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Xsd Include="Subsys\ObjectModels\Raptor.xsd">
@@ -1088,6 +1091,9 @@
     </ClInclude>
     <ClInclude Include="..\..\RaptorCore\Subsys\OpenGLMemory.h">
       <Filter>Header Files\Subsys include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\Vulkan\VulkanCommandBuffer.h">
+      <Filter>Header Files\Subsys include\Vulkan</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

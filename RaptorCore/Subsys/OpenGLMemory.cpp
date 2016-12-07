@@ -42,7 +42,8 @@ bool COpenGLMemory::relocationAvailable(void) const
 #if (defined(GL_ARB_vertex_buffer_object) || defined(GL_NV_vertex_array_range))
 	if (Raptor::glIsExtensionSupported("GL_ARB_vertex_buffer_object") || 
 		Raptor::glIsExtensionSupported("GL_NV_vertex_array_range") ||
-		Raptor::glIsExtensionSupported("GL_ARB_pixel_buffer_object"))
+		Raptor::glIsExtensionSupported("GL_ARB_pixel_buffer_object") ||
+		Raptor::glIsExtensionSupported("GL_ARB_uniform_buffer_object"))
 	{
 		// TODO: scan device memory and check available space
 		return true;
@@ -350,7 +351,7 @@ bool COpenGLMemory::releaseBufferObject(IDeviceMemoryManager::IBufferObject* &vb
 	}
 }
 
-bool COpenGLMemory::lockBufferObject(IBufferObject &bo)
+bool COpenGLMemory::lockBufferObject(IDeviceMemoryManager::IBufferObject &bo)
 {
 	if (bo.getStorage() > IDeviceMemoryManager::IBufferObject::PIXEL_SOURCE)
 	{
@@ -382,6 +383,17 @@ bool COpenGLMemory::lockBufferObject(IBufferObject &bo)
 		pExtensions->glBindBufferARB(glStorage,buffer);
 
         currentBuffers[storage] = buffer;
+
+//!	compiled vertex array locking is subject to deprecation
+#if defined(GL_EXT_compiled_vertex_array)
+		if (pExtensions->glLockArraysEXT != NULL)
+		{
+			if (IDeviceMemoryManager::IBufferObject::VERTEX_BUFFER == bo.getStorage())
+				pExtensions->glLockArraysEXT(0, bo.getSize()/4);	// floats
+			else if (IDeviceMemoryManager::IBufferObject::INDEX_BUFFER == bo.getStorage())
+				pExtensions->glLockArraysEXT(0, bo.getSize() / 2);	// unsigned short
+		}
+#endif
 
 		return true;
 	}
@@ -426,6 +438,12 @@ bool COpenGLMemory::unlockBufferObject(IDeviceMemoryManager::IBufferObject &bo)
 
         currentBuffers[storage] = 0;
 
+//!	compiled vertex array locking is subject to deprecation
+#if defined(GL_EXT_compiled_vertex_array)
+		if (pExtensions->glUnlockArraysEXT != NULL)
+			pExtensions->glUnlockArraysEXT();
+#endif
+
 		return true;
 	}
 	else 
@@ -456,6 +474,11 @@ GLenum  COpenGLMemory::BufferKindToGL(IDeviceMemoryManager::IBufferObject::BUFFE
         case IDeviceMemoryManager::IBufferObject::PIXEL_SOURCE:
             res = GL_PIXEL_UNPACK_BUFFER_ARB;
             break;
+#endif
+#if defined(GL_ARB_uniform_buffer_object)
+		case IDeviceMemoryManager::IBufferObject::UNIFORM_BUFFER:
+			res = GL_UNIFORM_BUFFER_ARB;
+			break;
 #endif
         default:
             res = GL_ARRAY_BUFFER_ARB;
@@ -496,6 +519,12 @@ GLenum  COpenGLMemory::BufferModeToGL(	IDeviceMemoryManager::IBufferObject::BUFF
             else res = GL_DYNAMIC_DRAW_ARB;
             break;
 #endif
+#if defined(GL_ARB_uniform_buffer_object)
+		case IDeviceMemoryManager::IBufferObject::UNIFORM_BUFFER:
+			res = GL_DYNAMIC_DRAW_ARB;
+			break;
+#endif
+
         default:
             res = GL_STATIC_DRAW_ARB;
             break;

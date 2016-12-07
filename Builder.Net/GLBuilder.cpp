@@ -694,6 +694,11 @@ CGLBuilder::CGLBuilder():
 	extension.active = false;	extension.kind = OES;	extension.extensionName = "GL_OES_compressed_paletted_texture";
 	extensions.push_back(extension);
 
+	extension.dependencies.clear();
+	extension.active = false;	extension.kind = ARB;	extension.extensionName = "GL_ARB_uniform_buffer_object";
+	extension.dependencies.push_back("GL_ARB_shader_objects");
+	extension.dependencies.push_back("GL_ARB_vertex_buffer_object");
+	extensions.push_back(extension);
 }
 
 CGLBuilder::~CGLBuilder()

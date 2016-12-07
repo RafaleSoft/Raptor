@@ -327,11 +327,11 @@ bool CFragmentProgram::glGetProgramCaps(GL_FRAGMENT_PROGRAM_CAPS& caps)
         glGetIntegerv(GL_MAX_FRAGMENT_UNIFORM_COMPONENTS_ARB,&caps.max_fragment_uniform_components);
         glGetIntegerv(GL_MAX_TEXTURE_COORDS_ARB,&caps.max_texture_coords);
         glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS_ARB,&caps.max_texture_image_units);
-
-		return true;
-#else
-		return false;
 #endif
+#if defined(GL_ARB_uniform_buffer_object)
+		glGetIntegerv(GL_MAX_FRAGMENT_UNIFORM_BLOCKS_ARB, &caps.max_fragment_uniform_blocks);
+#endif
+		return true;
 	}
 	else
 		return false;

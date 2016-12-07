@@ -39,7 +39,7 @@ ColorController::ColorController(CColorControlFilter* ccf,
 	pConsole->addItem(item);
 
 	{
-		float r,g,b,a;
+		float r=0,g=0,b=0,a=0;
 		if (mb != NULL)
 			mb->getPercentage(r,b,g,a);
 		stringstream str;
@@ -53,8 +53,8 @@ ColorController::ColorController(CColorControlFilter* ccf,
 	pConsole->addItem(item);
 
 	{
-		unsigned int s;
-		CBlurFilter::BLUR_MODEL m;
+		unsigned int s = 0;
+		CBlurFilter::BLUR_MODEL m = CBlurFilter::BLUR_BOX;
 		if (bf != NULL)
 		{
 			bf->getBlurSize(s);

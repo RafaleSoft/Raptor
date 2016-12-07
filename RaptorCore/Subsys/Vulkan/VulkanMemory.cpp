@@ -187,7 +187,8 @@ CVulkanMemory::CVulkanMemoryWrapper::createBufferObject(IDeviceMemoryManager::IB
 														uint64_t size)
 {
 	CVulkanBufferObject* pBuffer = memory.vkCreateBufferObject(device,size,kind);
-	m_pBuffers[pBuffer] = pBuffer;
+	pair<const IDeviceMemoryManager::IBufferObject*, CVulkanBufferObject*> p(pBuffer, pBuffer);
+	m_pBuffers.push_back(p);
 	return pBuffer;
 }
 
@@ -198,7 +199,14 @@ bool CVulkanMemory::CVulkanMemoryWrapper::setBufferObjectData(	IDeviceMemoryMana
 																uint64_t sz)
 {
 	const IDeviceMemoryManager::IBufferObject *pIBuffer = &bo;
-	std::map<const IDeviceMemoryManager::IBufferObject*,CVulkanBufferObject*>::iterator it = m_pBuffers.find(pIBuffer);
+	std::list<pair<const IDeviceMemoryManager::IBufferObject*, CVulkanBufferObject*>>::iterator it = m_pBuffers.begin();
+	while (it != m_pBuffers.end())
+	{
+		if ((*it).first == pIBuffer)
+			break;
+		else
+			it++;
+	}
 	if (m_pBuffers.end() == it)
 		return false;
 	return memory.vkSetBufferObjectData(device,*((*it).second),dstOffset,src,sz);
@@ -210,7 +218,14 @@ bool CVulkanMemory::CVulkanMemoryWrapper::getBufferObjectData(	IDeviceMemoryMana
 																uint64_t sz)
 {
 	const IDeviceMemoryManager::IBufferObject *pIBuffer = &bo;
-	std::map<const IDeviceMemoryManager::IBufferObject*,CVulkanBufferObject*>::const_iterator it = m_pBuffers.find(pIBuffer);
+	std::list<pair<const IDeviceMemoryManager::IBufferObject*, CVulkanBufferObject*>>::iterator it = m_pBuffers.begin();
+	while (it != m_pBuffers.end())
+	{
+		if ((*it).first == pIBuffer)
+			break;
+		else
+			it++;
+	}
 	if (m_pBuffers.end() == it)
 		return false;
 	return memory.vkGetBufferObjectData(device,*((*it).second),srcOffset,dst,sz);
@@ -221,7 +236,14 @@ bool CVulkanMemory::CVulkanMemoryWrapper::discardBufferObjectData(	IDeviceMemory
 																	uint64_t sz)
 {
 	const IDeviceMemoryManager::IBufferObject *pIBuffer = &bo;
-	std::map<const IDeviceMemoryManager::IBufferObject*,CVulkanBufferObject*>::const_iterator it = m_pBuffers.find(pIBuffer);
+	std::list<pair<const IDeviceMemoryManager::IBufferObject*, CVulkanBufferObject*>>::iterator it = m_pBuffers.begin();
+	while (it != m_pBuffers.end())
+	{
+		if ((*it).first == pIBuffer)
+			break;
+		else
+			it++;
+	}
 	if (m_pBuffers.end() == it)
 		return false;
 
@@ -248,7 +270,14 @@ bool CVulkanMemory::CVulkanMemoryWrapper::discardBufferObjectData(	IDeviceMemory
 bool CVulkanMemory::CVulkanMemoryWrapper::lockBufferObject(IDeviceMemoryManager::IBufferObject &bo)
 {
 	const IDeviceMemoryManager::IBufferObject *pIBuffer = &bo;
-	std::map<const IDeviceMemoryManager::IBufferObject*,CVulkanBufferObject*>::const_iterator it = m_pBuffers.find(pIBuffer);
+	std::list<pair<const IDeviceMemoryManager::IBufferObject*, CVulkanBufferObject*>>::iterator it = m_pBuffers.begin();
+	while (it != m_pBuffers.end())
+	{
+		if ((*it).first == pIBuffer)
+			break;
+		else
+			it++;
+	}
 	if (m_pBuffers.end() == it)
 		return false;
 
@@ -260,7 +289,14 @@ bool CVulkanMemory::CVulkanMemoryWrapper::lockBufferObject(IDeviceMemoryManager:
 bool CVulkanMemory::CVulkanMemoryWrapper::unlockBufferObject(IDeviceMemoryManager::IBufferObject &bo)
 {
 	const IDeviceMemoryManager::IBufferObject *pIBuffer = &bo;
-	std::map<const IDeviceMemoryManager::IBufferObject*,CVulkanBufferObject*>::const_iterator it = m_pBuffers.find(pIBuffer);
+	std::list<pair<const IDeviceMemoryManager::IBufferObject*, CVulkanBufferObject*>>::iterator it = m_pBuffers.begin();
+	while (it != m_pBuffers.end())
+	{
+		if ((*it).first == pIBuffer)
+			break;
+		else
+			it++;
+	}
 	if (m_pBuffers.end() == it)
 		return false;
 
@@ -276,7 +312,14 @@ bool CVulkanMemory::CVulkanMemoryWrapper::unlockBufferObject(IDeviceMemoryManage
 bool CVulkanMemory::CVulkanMemoryWrapper::releaseBufferObject(IDeviceMemoryManager::IBufferObject* &bo)
 {
 	const IDeviceMemoryManager::IBufferObject *pIBuffer = bo;
-	std::map<const IDeviceMemoryManager::IBufferObject*,CVulkanBufferObject*>::const_iterator it = m_pBuffers.find(pIBuffer);
+	std::list<pair<const IDeviceMemoryManager::IBufferObject*, CVulkanBufferObject*>>::iterator it = m_pBuffers.begin();
+	while (it != m_pBuffers.end())
+	{
+		if ((*it).first == pIBuffer)
+			break;
+		else
+			it++;
+	}
 	if (m_pBuffers.end() == it)
 		return false;
 
@@ -457,6 +500,9 @@ CVulkanBufferObject* CVulkanMemory::vkCreateBufferObject(	VkDevice device,
 			break;
 		case IDeviceMemoryManager::IBufferObject::PIXEL_SOURCE:
 			usage = VK_BUFFER_USAGE_UNIFORM_TEXEL_BUFFER_BIT;
+			break;
+		case IDeviceMemoryManager::IBufferObject::UNIFORM_BUFFER:
+			usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
 			break;
 		default:
 			usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;

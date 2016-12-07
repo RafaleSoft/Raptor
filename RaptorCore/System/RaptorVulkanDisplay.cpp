@@ -102,6 +102,7 @@ void CRaptorVulkanDisplay::glResize(unsigned int sx,unsigned int sy,
 }
 
 float *pVertices = NULL;
+float *pColors = NULL;
 unsigned short *pIndexes = NULL;
 
 bool CRaptorVulkanDisplay::glRender(void)
@@ -125,6 +126,7 @@ bool CRaptorVulkanDisplay::glRender(void)
 									scissor,
 									cs.framebufferState.colorClearValue,
 									(VkDeviceSize)pVertices,
+									(VkDeviceSize)pColors,
 									(VkDeviceSize)pIndexes);
 
 		//C3DScene *pScene = getRootScene();
@@ -223,20 +225,29 @@ bool CRaptorVulkanDisplay::glUnBindDisplay(void)
 		CContextManager *manager = CContextManager::GetInstance();
 		CVulkanDevice &device = manager->vkGetDevice(m_context);
 
-float VertexData[4*8] = 
+float VertexData[4 * 4] =
 {
-	-0.7f, -0.7f, 0.0f, 1.0f	,	1.0f, 0.0f, 0.0f, 0.0f,
-	-0.7f,  0.7f, 0.0f, 1.0f	,	0.0f, 1.0f, 0.0f, 0.0f,
-	 0.7f, -0.7f, 0.0f, 1.0f	,	0.0f, 0.0f, 1.0f, 0.0f,
-	 0.7f,  0.7f, 0.0f, 1.0f	,	0.3f, 0.3f, 0.3f, 0.0f
+	-0.7f, -0.7f, 0.0f, 1.0f,
+	-0.7f, 0.7f, 0.0f, 1.0f,
+	0.7f, -0.7f, 0.0f, 1.0f,
+	0.7f, 0.7f, 0.0f, 1.0f
+};
+float ColorData[4 * 4] =
+{
+	1.0f, 0.0f, 0.0f, 0.0f,
+	0.0f, 1.0f, 0.0f, 0.0f,
+	0.0f, 0.0f, 1.0f, 0.0f,
+	0.3f, 0.3f, 0.3f, 0.0f
 };
 unsigned short VertexIndices[6] =
 {
 	3, 2, 0, 3, 0, 1
 };
 
-pVertices = m_pGAllocator->allocateVertices(32);
-m_pGAllocator->glvkCopyPointer(pVertices,&VertexData[0],32);
+pVertices = m_pGAllocator->allocateVertices(16);
+m_pGAllocator->glvkCopyPointer(pVertices,&VertexData[0],16);
+pColors = m_pGAllocator->allocateVertices(16);
+m_pGAllocator->glvkCopyPointer(pColors, &ColorData[0], 16);
 pIndexes = m_pGAllocator->allocateIndexes(6);
 m_pGAllocator->glvkCopyPointer(pIndexes,&VertexIndices[0],6);
 

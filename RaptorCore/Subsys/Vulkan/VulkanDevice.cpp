@@ -245,7 +245,7 @@ bool CVulkanDevice::presentSwapChainImage()
 	return (VK_SUCCESS == res);
 }
 
-bool CVulkanDevice::vkSynchroniseBufferObjects(void)
+bool CVulkanDevice::vkSynchroniseBufferObjects(bool blocking)
 {
 	if (!pDeviceMemory->needBufferObjectDataSynchro())
 		return true;
@@ -263,28 +263,30 @@ bool CVulkanDevice::vkSynchroniseBufferObjects(void)
 								0, NULL };
 	VkResult res = vkQueueSubmit(transferQueue, 1, &submit_info, NULL );
 	CATCH_VK_ERROR(res);
-
-	res = vkQueueWaitIdle(transferQueue);
-	switch (res)
+	
+	if (blocking)
 	{
-		case VK_SUCCESS:
-			break;
-		case VK_ERROR_OUT_OF_HOST_MEMORY:
-		case VK_ERROR_OUT_OF_DEVICE_MEMORY:
-		case VK_ERROR_DEVICE_LOST:
+		res = vkQueueWaitIdle(transferQueue);
+		switch (res)
 		{
-			CATCH_VK_ERROR(res)
-			return false;
-			break;
-		}
-		default:
-		{
-			CATCH_VK_ERROR(res)
-			return false;
-			break;
+			case VK_SUCCESS:
+				break;
+			case VK_ERROR_OUT_OF_HOST_MEMORY:
+			case VK_ERROR_OUT_OF_DEVICE_MEMORY:
+			case VK_ERROR_DEVICE_LOST:
+			{
+				CATCH_VK_ERROR(res)
+					return false;
+				break;
+			}
+			default:
+			{
+				CATCH_VK_ERROR(res)
+					return false;
+				break;
+			}
 		}
 	}
-
 
 	return (VK_SUCCESS == res);
 
@@ -293,7 +295,8 @@ bool CVulkanDevice::vkSynchroniseBufferObjects(void)
 bool CVulkanDevice::vkBindPipeline(	const CVulkanPipeline& pipeline,
 									const VkRect2D& scissor,
 									const CColor::RGBA& clearColor,
-									VkDeviceSize offset,
+									VkDeviceSize offsetVertex,
+									VkDeviceSize offsetColors,
 									VkDeviceSize offset2)
 {
 	// TODO : check currentRenderingResources is valid ?
@@ -370,7 +373,9 @@ bool CVulkanDevice::vkBindPipeline(	const CVulkanPipeline& pipeline,
 
 
 	VkBuffer binding = pDeviceMemory->getLockedBuffer(IDeviceMemoryManager::IBufferObject::VERTEX_BUFFER);
-	CVulkanCommandBuffer::vkCmdBindVertexBuffers( resource.commandBuffer, 0, 1, &binding, &offset );
+	VkBuffer bindings[2] = { binding, binding };
+	VkDeviceSize offsets[2] = { offsetVertex, offsetColors };
+	CVulkanCommandBuffer::vkCmdBindVertexBuffers( resource.commandBuffer, 0, 2, &bindings[0], &offsets[0] );
 	VkBuffer binding2 = pDeviceMemory->getLockedBuffer(IDeviceMemoryManager::IBufferObject::INDEX_BUFFER);
 	CVulkanCommandBuffer::vkCmdBindIndexBuffer( resource.commandBuffer, binding2, offset2, VK_INDEX_TYPE_UINT16);
 
@@ -413,7 +418,7 @@ bool CVulkanDevice::vkCreateRenderingResources(void)
 	//!	Allocate a Queue and Command buffer for transfer operations
 	vkGetDeviceQueue(	device,
 						transfer_queueFamilyIndex,
-						0,
+						NB_RENDERING_RESOURCES,		// should not use a grphicsQueue here, but NB_RENDERING_RESOURCES+1+1 (present+transfer)
 						&transferQueue);
 	VkCommandBufferAllocateInfo pTransferBufferInfo = {	VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
 														NULL,

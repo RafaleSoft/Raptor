@@ -32,7 +32,7 @@ public:
 			createBufferObject(	IDeviceMemoryManager::IBufferObject::BUFFER_KIND kind, 
 								IDeviceMemoryManager::IBufferObject::BUFFER_MODE mode, 
 								uint64_t size);
-	virtual bool lockBufferObject(IBufferObject &bo);
+	virtual bool lockBufferObject(IDeviceMemoryManager::IBufferObject &bo);
 	virtual bool unlockBufferObject(IDeviceMemoryManager::IBufferObject &bo);
 	virtual bool setBufferObjectData(	IDeviceMemoryManager::IBufferObject &bo,
 										uint64_t dstOffset,
