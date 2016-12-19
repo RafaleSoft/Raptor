@@ -86,7 +86,7 @@ CObject3DContour::~CObject3DContour()
     delete m_pObserver;
 
 	if (m_pContour->pContourNormals != NULL)
-		CMemory::GetInstance()->release(m_pContour->pContourNormals);
+		CHostMemoryManager::GetInstance()->release(m_pContour->pContourNormals);
 
 	if (m_pContour->backfaces != NULL)
 		delete [] m_pContour->backfaces;
@@ -243,12 +243,12 @@ void CObject3DContour::init(C3DSet *set)
 void CObject3DContour::prepareContour(void)
 {
 	if (m_pContour->pContourNormals != NULL)
-		CMemory::GetInstance()->release(m_pContour->pContourNormals);
+		CHostMemoryManager::GetInstance()->release(m_pContour->pContourNormals);
 	
 	//	Here we could collect faces from a complex set of geometries
 	//	by computing the sum of the whole thing
 	unsigned int nbNormals = m_pOrigin->nbFace();
-	m_pContour->pContourNormals = (GL_COORD_VERTEX*)(CMemory::GetInstance()->allocate(sizeof(GL_COORD_VERTEX),nbNormals,16));
+	m_pContour->pContourNormals = (GL_COORD_VERTEX*)(CHostMemoryManager::GetInstance()->allocate(sizeof(GL_COORD_VERTEX),nbNormals,16));
 
 	GL_COORD_VERTEX v1,v2,v3;
 	unsigned int p1,p2,p3;

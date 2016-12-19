@@ -37,6 +37,7 @@ public:
 		int		max_geometry_uniform_components;
 		int		max_geometry_output_vertices;
 		int		max_geometry_total_output_components;
+		int		max_geometry_uniform_blocks;
 	} GL_GEOMETRY_PROGRAM_CAPS;
 
 

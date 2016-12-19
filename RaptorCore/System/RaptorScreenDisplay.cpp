@@ -34,8 +34,14 @@
 #if !defined(AFX_TEXELALLOCATOR_H__7C48808C_E838_4BE3_8B0E_286428BB7CF8__INCLUDED_)
 	#include "Subsys/TexelAllocator.h"
 #endif
+#if !defined(AFX_UNIFORMALLOCATOR_H__4DD62C99_E476_4FE5_AEE4_EEC71F7B0F38__INCLUDED_)
+	#include "Subsys/UniformAllocator.h"
+#endif
 #if !defined(AFX_GEOMETRY_H__B42ABB87_80E8_11D3_97C2_DE5C28000000__INCLUDED_)
 	#include "GLHierarchy/Geometry.h"
+#endif
+#if !defined(AFX_OPENGLMEMORY_H__C344567B_877F_4F43_8961_C4E59E3BBF7E__INCLUDED_)
+	#include "Subsys/OpenGLMemory.h"
 #endif
 
 
@@ -52,42 +58,40 @@ const CPersistence::CPersistenceClassID& CRaptorScreenDisplay::CRaptorScreenDisp
 //////////////////////////////////////////////////////////////////////
 
 CRaptorScreenDisplay::CRaptorScreenDisplay(const CRaptorDisplayConfig& pcs)
-    :CRaptorDisplay(bufferID,pcs.caption)
+    :CRaptorDisplay(bufferID,pcs.caption),cs(pcs),
+	fps(0.0f),ftime(0.0f),rtfps(0.0f),rtime(0.0f),
+	m_context(CContextManager::INVALID_CONTEXT),
+	m_layerContext(CContextManager::INVALID_CONTEXT),
+	m_framerate(0), lastfreq(0), l1(0), m_streamer(NULL),
+    m_pGAllocator(NULL),m_pGOldAllocator(NULL),
+	m_pTAllocator(NULL),m_pTOldAllocator(NULL),
+	m_pUAllocator(NULL), m_pUOldAllocator(NULL),
+	m_pDeviceMemory(NULL), nbFramesPerSecond(0)
 {
-	fps = 0.0f;
-	ftime = 0.0f;
-	rtfps = 0.0f;
-	rtime = 0.0f;
-
-	m_context = -1;
-	m_layerContext = -1;
-
-	nbFramesPerSecond = 0;
-	m_framerate = 0;
-	lastfreq = 0;
-
-	cs = pcs;
-
-    m_pGAllocator = NULL;
-    m_pGOldAllocator = NULL;
-	m_pTAllocator = NULL;
-    m_pTOldAllocator = NULL;
 }
 
 CRaptorScreenDisplay::~CRaptorScreenDisplay()
 {
-    if (m_pGOldAllocator != NULL)
-        CGeometryAllocator::SetCurrentInstance(m_pGOldAllocator);
-    if (m_pGAllocator != NULL)
-        delete m_pGAllocator;
+	if (NULL != m_pGOldAllocator)
+		CGeometryAllocator::SetCurrentInstance(m_pGOldAllocator);
+	if (NULL != m_pGAllocator)
+		delete m_pGAllocator;
 
-	if (m_pTOldAllocator != NULL)
-        CTexelAllocator::SetCurrentInstance(m_pTOldAllocator);
-    if (m_pTAllocator != NULL)
-        delete m_pTAllocator;
+	if (NULL != m_pTOldAllocator)
+		CTexelAllocator::SetCurrentInstance(m_pTOldAllocator);
+	if (NULL != m_pTAllocator)
+		delete m_pTAllocator;
+
+	if (NULL != m_pUOldAllocator)
+		CUniformAllocator::SetCurrentInstance(m_pUOldAllocator);
+	if (NULL != m_pUAllocator)
+		delete m_pUAllocator;
+
+	if (NULL != m_pDeviceMemory)
+		delete m_pDeviceMemory;
 
 	glUnBindDisplay();
-	
+
 	CContextManager::GetInstance()->glDestroyContext(m_context);
 }
 
@@ -200,7 +204,7 @@ bool CRaptorScreenDisplay::glBindDisplay(const RAPTOR_HANDLE& device)
 {
 	if (device.handle != CGL_NULL)
 	{
-		if (m_context == -1)
+		if (CContextManager::INVALID_CONTEXT == m_context)
 		{
             // last chance to get some valid display atributes
 			if (cs.display_mode == CGL_NULL)
@@ -219,7 +223,7 @@ bool CRaptorScreenDisplay::glBindDisplay(const RAPTOR_HANDLE& device)
 				if (cs.overlay)
 				{
 					int res2 = CContextManager::GetInstance()->glCreateContext(device, cs);
-					if (res2 == -1)
+					if (CContextManager::INVALID_CONTEXT == res2)
 					{
 						Raptor::GetErrorManager()->generateRaptorError(	CRaptorDisplay::CRaptorDisplayClassID::GetClassId(),
 																		CRaptorErrorManager::RAPTOR_FATAL,
@@ -231,7 +235,7 @@ bool CRaptorScreenDisplay::glBindDisplay(const RAPTOR_HANDLE& device)
 			{
 				// create the extended rendering context if possible
 				m_context = CContextManager::GetInstance()->glCreateExtendedContext(device, cs);
-				if (m_context == -1)
+				if (CContextManager::INVALID_CONTEXT == m_context)
 				{
 					Raptor::GetErrorManager()->generateRaptorError(	CRaptorDisplay::CRaptorDisplayClassID::GetClassId(),
 																	CRaptorErrorManager::RAPTOR_FATAL,
@@ -263,11 +267,15 @@ bool CRaptorScreenDisplay::glBindDisplay(const RAPTOR_HANDLE& device)
 
             m_pGOldAllocator = CGeometryAllocator::SetCurrentInstance(m_pGAllocator);
             if ((m_pGOldAllocator != m_pGAllocator) && (m_pGOldAllocator != NULL))
-                m_pGOldAllocator->glLockMemory(false);
+                m_pGOldAllocator->glvkLockMemory(false);
 
 			m_pTOldAllocator = CTexelAllocator::SetCurrentInstance(m_pTAllocator);
             if ((m_pTOldAllocator != m_pTAllocator) && (m_pTOldAllocator != NULL))
-                m_pTOldAllocator->glLockMemory(false);
+                m_pTOldAllocator->glvkLockMemory(false);
+
+			m_pUOldAllocator = CUniformAllocator::SetCurrentInstance(m_pUAllocator);
+			if ((m_pUOldAllocator != m_pUAllocator) && (m_pUOldAllocator != NULL))
+				m_pUOldAllocator->glvkLockMemory(false);
         }
 	}
 
@@ -281,20 +289,21 @@ void CRaptorScreenDisplay::allocateResources(void)
     //  Ensure no current allocator.
     m_pGOldAllocator = CGeometryAllocator::SetCurrentInstance(NULL);
 	m_pTOldAllocator = CTexelAllocator::SetCurrentInstance(NULL);
+	m_pUOldAllocator = CUniformAllocator::SetCurrentInstance(NULL);
 
     m_pGAllocator = CGeometryAllocator::GetInstance();
     m_pTAllocator = CTexelAllocator::GetInstance();
+	m_pUAllocator = CUniformAllocator::GetInstance();
 
     const CRaptorConfig& config = Global::GetInstance().getConfig();
+	bool relocResource = true;
     if (config.m_bRelocation)
     {
-		bool relocResource = true;
+		m_pDeviceMemory = new COpenGLMemory();
 
 		if ((config.m_uiPolygons > 0) || (config.m_uiVertices > 0))
 		{
-			relocResource = m_pGAllocator->glUseMemoryRelocation();
-			if (relocResource)
-				relocResource = m_pGAllocator->glInitMemory(config.m_uiPolygons,config.m_uiVertices);
+			relocResource = m_pGAllocator->glvkInitMemory(m_pDeviceMemory,config.m_uiPolygons,config.m_uiVertices);
 			if (!relocResource)
 			{
 				Raptor::GetErrorManager()->generateRaptorError(	CGeometry::CGeometryClassID::GetClassId(),
@@ -305,24 +314,34 @@ void CRaptorScreenDisplay::allocateResources(void)
 
 		if (config.m_uiTexels > 0)
 		{
-			relocResource = m_pTAllocator->glUseMemoryRelocation();
-			if (relocResource)
-				relocResource = m_pTAllocator->glInitMemory(config.m_uiTexels);
+			relocResource = m_pTAllocator->glvkInitMemory(m_pDeviceMemory, config.m_uiTexels);
 			if (!relocResource)
 			{
 				Raptor::GetErrorManager()->generateRaptorError(	CGeometry::CGeometryClassID::GetClassId(),
 																CRaptorErrorManager::RAPTOR_FATAL,
 	    		        										CRaptorMessages::ID_NO_RESOURCE);
+			}
+		}
+
+		if (config.m_uiUniforms > 0)
+		{
+			relocResource = m_pUAllocator->glvkInitMemory(m_pDeviceMemory, config.m_uiUniforms);
+			if (!relocResource)
+			{
+				Raptor::GetErrorManager()->generateRaptorError(	CGeometry::CGeometryClassID::GetClassId(),
+																CRaptorErrorManager::RAPTOR_FATAL,
+																CRaptorMessages::ID_NO_RESOURCE);
 			}
 		}
     }
 	else
 	{
-		bool relocResource = true;
 		if ((config.m_uiPolygons > 0) || (config.m_uiVertices > 0))
-			relocResource &= m_pGAllocator->glInitMemory(config.m_uiPolygons,config.m_uiVertices);
+			relocResource &= m_pGAllocator->glvkInitMemory(NULL,config.m_uiPolygons,config.m_uiVertices);
 		if (config.m_uiTexels > 0)
-			relocResource &= m_pTAllocator->glInitMemory(config.m_uiTexels);
+			relocResource &= m_pTAllocator->glvkInitMemory(NULL, config.m_uiTexels);
+		if (config.m_uiUniforms > 0)
+			relocResource &= m_pUAllocator->glvkInitMemory(NULL, config.m_uiUniforms);
 
 		if (!relocResource)
 		{
@@ -337,9 +356,11 @@ void CRaptorScreenDisplay::allocateResources(void)
     //! a UnBind/Bind sequence is performed, which is unnecessary.
     //CGeometryAllocator::SetCurrentInstance(oldAllocator);
     if ((m_pGOldAllocator != m_pGAllocator) && (m_pGOldAllocator != NULL))
-        m_pGOldAllocator->glLockMemory(false);
+        m_pGOldAllocator->glvkLockMemory(false);
 	if ((m_pTOldAllocator != m_pTAllocator) && (m_pTOldAllocator != NULL))
-        m_pTOldAllocator->glLockMemory(false);
+        m_pTOldAllocator->glvkLockMemory(false);
+	if ((m_pUOldAllocator != m_pUAllocator) && (m_pUOldAllocator != NULL))
+		m_pUOldAllocator->glvkLockMemory(false);
 }
 
 bool CRaptorScreenDisplay::glUnBindDisplay(void)
@@ -348,6 +369,8 @@ bool CRaptorScreenDisplay::glUnBindDisplay(void)
     m_pGOldAllocator = NULL;
 	CTexelAllocator::SetCurrentInstance(m_pTOldAllocator);
     m_pTOldAllocator = NULL;
+	CUniformAllocator::SetCurrentInstance(m_pUOldAllocator);
+	m_pUOldAllocator = NULL;
 
     CRaptorDisplay::glUnBindDisplay();
 
@@ -368,17 +391,19 @@ void CRaptorScreenDisplay::glRenderScene(void)
 
 bool CRaptorScreenDisplay::glRender(void)
 {
-	if (m_context != -1)
+	if (CContextManager::INVALID_CONTEXT != m_context)
 	{
 		CTimeObject::markTime(this);
 
-        m_pGAllocator->glLockMemory(true);
-		m_pTAllocator->glLockMemory(true);
+        m_pGAllocator->glvkLockMemory(true);
+		m_pTAllocator->glvkLockMemory(true);
+		m_pUAllocator->glvkLockMemory(true);
 
 		glRenderScene();
 
-        m_pGAllocator->glLockMemory(false);
-		m_pTAllocator->glLockMemory(false);
+        m_pGAllocator->glvkLockMemory(false);
+		m_pTAllocator->glvkLockMemory(false);
+		m_pUAllocator->glvkLockMemory(false);
 
 		rtime = CTimeObject::deltaMarkTime(this);
 

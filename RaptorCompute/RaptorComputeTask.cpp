@@ -15,6 +15,9 @@
 #if !defined(AFX_BUFFER_OBJECT_PARAMETER_H__58A06F22_D02F_4073_8F73_6C3FA9E8A9C6__INCLUDED_)
 	#include "BufferObjectParameter.h"
 #endif
+#if !defined(AFX_RAPTOR_COMPUTE_BUFFER_OBJECT_H__6AB1B061_4A89_4F5C_BCFE_01C26304A434__INCLUDED_)
+	#include "RaptorComputeBufferObject.h"
+#endif
 
 
 RAPTOR_NAMESPACE
@@ -116,31 +119,37 @@ void CRaptorComputeTask::setLocalSize(const size_t ls)
 
 void CRaptorComputeTask::addParameter(const CRaptorComputeMemory::IBufferObject &bo)
 {
-	cl_mem buffer = (cl_mem)bo.getBaseAddress();
-
-	if (buffer != NULL)
+	const CRaptorComputeBufferObject* cb = CRaptorComputeBufferObject::getBuffer(&bo);
+	if (NULL != cb)
 	{
-		bool isInterop = (bo.getStorage() == CRaptorComputeMemory::IBufferObject::INTEROP_COMPUTE_BUFFER);
-		cl_int res = ::clRetainMemObject(buffer);
-		m_parameters.push_back(new CBufferObjectParameter(buffer,bo.getSize(),isInterop));
+		cl_mem buffer = cb->address;
+		if (NULL != cb->address)
+		{
+			bool isInterop = (bo.getStorage() == CRaptorComputeMemory::IBufferObject::INTEROP_COMPUTE_BUFFER);
+			cl_int res = ::clRetainMemObject(cb->address);
+			m_parameters.push_back(new CBufferObjectParameter(buffer,bo.getSize(),isInterop));
+		}
+		else if (bo.getStorage() == CRaptorComputeMemory::IBufferObject::LOCAL_BUFFER)
+			m_parameters.push_back(new CBufferObjectParameter(buffer,bo.getSize()));
 	}
-	else if (bo.getStorage() == CRaptorComputeMemory::IBufferObject::LOCAL_BUFFER)
-		m_parameters.push_back(new CBufferObjectParameter(buffer,bo.getSize()));
 }
 
 void CRaptorComputeTask::setParameter(size_t pos,const CRaptorComputeMemory::IBufferObject &bo)
 {
 	if (pos < m_parameters.size())
 	{
-		cl_mem buffer = (cl_mem)bo.getBaseAddress();
-
-		if ((buffer != NULL) && (m_parameters[pos]->isA(buffer)))
+		const CRaptorComputeBufferObject* cb = CRaptorComputeBufferObject::getBuffer(&bo);
+		if (NULL != cb)
 		{
-			Parameter<cl_mem>* param = (Parameter<cl_mem>*)m_parameters[pos];
-			cl_int res = ::clReleaseMemObject(param->p);
-			res = ::clRetainMemObject(buffer);
+			cl_mem buffer = cb->address;
+			if ((buffer != NULL) && (m_parameters[pos]->isA(buffer)))
+			{
+				Parameter<cl_mem>* param = (Parameter<cl_mem>*)m_parameters[pos];
+				cl_int res = ::clReleaseMemObject(param->p);
+				res = ::clRetainMemObject(buffer);
 
-			((Parameter<cl_mem>*)m_parameters[pos])->p = buffer;
+				((Parameter<cl_mem>*)m_parameters[pos])->p = buffer;
+			}
 		}
 	}
 }

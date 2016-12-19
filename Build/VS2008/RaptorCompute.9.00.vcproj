@@ -241,6 +241,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\RaptorCompute\RaptorComputeBufferObject.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\RaptorCompute\RaptorComputeJob.h"
 				>
 			</File>

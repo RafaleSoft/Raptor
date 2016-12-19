@@ -21,6 +21,7 @@
     #include "GLHierarchy/ObjectProperties.h"
 #endif
 
+
 //#define RELOCATE_BBOX 1
 
 //////////////////////////////////////////////////////////////////////
@@ -68,6 +69,8 @@ virtual void glRender(void);
 
 
 RAPTOR_NAMESPACE_BEGIN
+
+class CVulkanCommandBuffer;
 
 class CObject3DContour;
 template <class T> class CContainerNotifier;
@@ -192,6 +195,7 @@ public:
 	//!	Derived classes should check the visibility flag
 	//! to eventually skip rendering
 	virtual void glRender(void)=0;
+	virtual void vkRender(CVulkanCommandBuffer& commandBuffer, VkBuffer vertexBinding, VkBuffer indexBinding) {};
 
 	//! Returns a generic pointer on the objet.
 	//! Use the global CRaptorDisplay::Render(RAPTOR_HANDLE) to

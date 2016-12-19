@@ -111,11 +111,10 @@ public:
 
 
 	//!	Bulk data initialisers. 
-	//!	If 2nd parameter pointer argument is null, these methods 
-	//!	reserve memory space for geometry data
-	//!	If 2nd parameter pointer argument is not null, geometry data
-	//!	is updated, memory must have been reserved, and the number
-	//!	of vertex attributes is not changed.
+	//!	If 2nd parameter pointer argument is null, these methods reserve memory space for geometry data
+	//!	If 2nd parameter pointer argument is not null, geometry data is updated, memory must have been reserved, 
+	//!		and the number of vertex attributes is not changed.
+	//!	In all methods, the number of items (nbV, nbN, nbT, ... ) is a multiple of the second parameter type.
 	void glSetVertices(unsigned int nbV, GL_COORD_VERTEX* vertices = NULL);
 	void glSetNormals(unsigned int nbN, GL_COORD_VERTEX* normals = NULL);
 	void glSetTexCoords(unsigned int nbT, GL_TEX_VERTEX* texcoords = NULL);
@@ -173,6 +172,7 @@ public:
 	//!
 	//! Manipulators
 	DECLARE_OBJECT3D_MANIPULATORS
+	virtual void vkRender(CVulkanCommandBuffer& commandBuffer, VkBuffer vertexBinding, VkBuffer indexBinding);
     //!
     //! Creates the list of contours for this objet.
     virtual vector<CObject3DContour*> createContours(void);

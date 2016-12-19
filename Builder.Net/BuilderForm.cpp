@@ -226,10 +226,10 @@ BuilderForm::BuilderForm(void)
 								{
 									VkExtensionProperties* pProperties = new VkExtensionProperties[pPropertyCount];
 									res = vkEnumerateDeviceExtensionProperties(m_pPhysicalDevices[i],NULL,&pPropertyCount,pProperties);
-									for (uint32_t i=0;i<pPropertyCount;i++)
+									for (uint32_t j=0;j<pPropertyCount;j++)
 									{
 										glextensions += " ";
-										glextensions += pProperties[i].extensionName;
+										glextensions += pProperties[j].extensionName;
 									}
 									delete [] pProperties;
 								}

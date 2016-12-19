@@ -49,6 +49,9 @@
 #if !defined(AFX_RENDERINGPROPERTIES_H__634BCF2B_84B4_47F2_B460_D7FDC0F3B698__INCLUDED_)
 	#include "RenderingProperties.h"
 #endif
+#if !defined(AFX_RAPTORVULKANCOMMANDBUFFER_H__0398BABD_747B_4DFE_94AA_B026BDBD03B1__INCLUDED_)
+	#include "Subsys/Vulkan/VulkanCommandBuffer.h"
+#endif
 
 RAPTOR_NAMESPACE
 
@@ -263,10 +266,10 @@ CGeometry& CGeometry::operator=(const CGeometry &geo)
     GL_COORD_VERTEX* geo_normals = geo.normals;
     if (pAllocator->isMemoryRelocated())
     {
-        vertex = (GL_COORD_VERTEX*)(pAllocator->glMapPointer((float*)vertex));
-        normals = (GL_COORD_VERTEX*)(pAllocator->glMapPointer((float*)normals));
-        geo_vertex = (GL_COORD_VERTEX*)(pAllocator->glMapPointer((float*)geo.vertex));
-        geo_normals = (GL_COORD_VERTEX*)(pAllocator->glMapPointer((float*)geo.normals));
+        vertex = (GL_COORD_VERTEX*)(pAllocator->glvkMapPointer((float*)vertex));
+        normals = (GL_COORD_VERTEX*)(pAllocator->glvkMapPointer((float*)normals));
+        geo_vertex = (GL_COORD_VERTEX*)(pAllocator->glvkMapPointer((float*)geo.vertex));
+        geo_normals = (GL_COORD_VERTEX*)(pAllocator->glvkMapPointer((float*)geo.normals));
     }
 	for (unsigned int i = 0; i<geo.m_nbVertex; i++)
 	{
@@ -275,10 +278,10 @@ CGeometry& CGeometry::operator=(const CGeometry &geo)
 	}
     if (pAllocator->isMemoryRelocated())
     {
-        vertex = (GL_COORD_VERTEX*)(pAllocator->glUnMapPointer((float*)vertex));
-        normals = (GL_COORD_VERTEX*)(pAllocator->glUnMapPointer((float*)normals));
-        pAllocator->glUnMapPointer((float*)geo_vertex);
-        pAllocator->glUnMapPointer((float*)geo_normals);
+        vertex = (GL_COORD_VERTEX*)(pAllocator->glvkUnMapPointer((float*)vertex));
+        normals = (GL_COORD_VERTEX*)(pAllocator->glvkUnMapPointer((float*)normals));
+        pAllocator->glvkUnMapPointer((float*)geo_vertex);
+        pAllocator->glvkUnMapPointer((float*)geo_normals);
     }
 
     //! Transfer texture coordinates
@@ -289,8 +292,8 @@ CGeometry& CGeometry::operator=(const CGeometry &geo)
 
         if (pAllocator->isMemoryRelocated())
         {
-            texcoords = (GL_TEX_VERTEX*)(pAllocator->glMapPointer((float*)texcoords));
-            geo_texcoords = (GL_TEX_VERTEX*)(pAllocator->glMapPointer((float*)geo.texcoords));
+            texcoords = (GL_TEX_VERTEX*)(pAllocator->glvkMapPointer((float*)texcoords));
+            geo_texcoords = (GL_TEX_VERTEX*)(pAllocator->glvkMapPointer((float*)geo.texcoords));
         }
 
 		for (unsigned int i = 0; i<m_nbVertex; i++)
@@ -298,8 +301,8 @@ CGeometry& CGeometry::operator=(const CGeometry &geo)
 
         if (pAllocator->isMemoryRelocated())
         {
-            texcoords = (GL_TEX_VERTEX*)(pAllocator->glUnMapPointer((float*)texcoords));
-            pAllocator->glUnMapPointer((float*)geo_texcoords);
+            texcoords = (GL_TEX_VERTEX*)(pAllocator->glvkUnMapPointer((float*)texcoords));
+            pAllocator->glvkUnMapPointer((float*)geo_texcoords);
         }
 	}
 
@@ -311,8 +314,8 @@ CGeometry& CGeometry::operator=(const CGeometry &geo)
 
         if (pAllocator->isMemoryRelocated())
         {
-            texcoords2 = (GL_TEX_VERTEX*)(pAllocator->glMapPointer((float*)texcoords2));
-            geo_texcoords = (GL_TEX_VERTEX*)(pAllocator->glMapPointer((float*)geo.texcoords2));
+            texcoords2 = (GL_TEX_VERTEX*)(pAllocator->glvkMapPointer((float*)texcoords2));
+            geo_texcoords = (GL_TEX_VERTEX*)(pAllocator->glvkMapPointer((float*)geo.texcoords2));
         }
 
 		for (unsigned int i = 0; i<m_nbVertex; i++)
@@ -320,8 +323,8 @@ CGeometry& CGeometry::operator=(const CGeometry &geo)
 
         if (pAllocator->isMemoryRelocated())
         {
-            texcoords2 = (GL_TEX_VERTEX*)(pAllocator->glUnMapPointer((float*)texcoords2));
-            pAllocator->glUnMapPointer((float*)geo_texcoords);
+            texcoords2 = (GL_TEX_VERTEX*)(pAllocator->glvkUnMapPointer((float*)texcoords2));
+            pAllocator->glvkUnMapPointer((float*)geo_texcoords);
         }
 	}
 
@@ -333,8 +336,8 @@ CGeometry& CGeometry::operator=(const CGeometry &geo)
 
         if (pAllocator->isMemoryRelocated())
         {
-            colors = (CColor::RGBA*)(pAllocator->glMapPointer((float*)colors));
-            geo_colors = (CColor::RGBA*)(pAllocator->glMapPointer((float*)geo.colors));
+            colors = (CColor::RGBA*)(pAllocator->glvkMapPointer((float*)colors));
+            geo_colors = (CColor::RGBA*)(pAllocator->glvkMapPointer((float*)geo.colors));
         }
 
 		for (unsigned int i = 0; i<m_nbVertex; i++)
@@ -342,8 +345,8 @@ CGeometry& CGeometry::operator=(const CGeometry &geo)
 
         if (pAllocator->isMemoryRelocated())
         {
-            colors = (CColor::RGBA*)(pAllocator->glUnMapPointer((float*)colors));
-            pAllocator->glUnMapPointer((float*)geo_colors);
+            colors = (CColor::RGBA*)(pAllocator->glvkUnMapPointer((float*)colors));
+            pAllocator->glvkUnMapPointer((float*)geo_colors);
         }
 	}
 #endif
@@ -355,8 +358,8 @@ CGeometry& CGeometry::operator=(const CGeometry &geo)
 
     if (pAllocator->isMemoryRelocated())
     {
-        polys = (unsigned short*)(pAllocator->glMapPointer(polys));
-        geo_polys = (unsigned short*)(pAllocator->glMapPointer(geo.polys));
+        polys = (unsigned short*)(pAllocator->glvkMapPointer(polys));
+        geo_polys = (unsigned short*)(pAllocator->glvkMapPointer(geo.polys));
     }
 
 	for (unsigned int i = 0; i<3 * m_nbPolys; i++)
@@ -364,8 +367,8 @@ CGeometry& CGeometry::operator=(const CGeometry &geo)
 
     if (pAllocator->isMemoryRelocated())
     {
-        polys = (unsigned short*)(pAllocator->glUnMapPointer(polys));
-        pAllocator->glUnMapPointer(geo_polys);
+        polys = (unsigned short*)(pAllocator->glvkUnMapPointer(polys));
+        pAllocator->glvkUnMapPointer(geo_polys);
     }
 
 
@@ -374,26 +377,26 @@ CGeometry& CGeometry::operator=(const CGeometry &geo)
 	{
 		fogcoords = pAllocator->allocateVertices(m_nbVertex);
         if (pAllocator->isMemoryRelocated())
-            fogcoords = pAllocator->glMapPointer(fogcoords);
+            fogcoords = pAllocator->glvkMapPointer(fogcoords);
 
 		for (unsigned int i = 0; i<m_nbVertex; i++)
 			fogcoords[i] = geo.fogcoords[i];
 
         if (pAllocator->isMemoryRelocated())
-            fogcoords = pAllocator->glUnMapPointer(fogcoords);
+            fogcoords = pAllocator->glvkUnMapPointer(fogcoords);
 	}
 
 	if (geo.weightcoords != NULL)
 	{
 		weightcoords = pAllocator->allocateVertices(m_nbVertex);
         if (pAllocator->isMemoryRelocated())
-            weightcoords = pAllocator->glMapPointer(weightcoords);
+            weightcoords = pAllocator->glvkMapPointer(weightcoords);
 
 		for (unsigned int i = 0; i<m_nbVertex; i++)
 			weightcoords[i] = geo.weightcoords[i];
 
         if (pAllocator->isMemoryRelocated())
-            weightcoords = pAllocator->glUnMapPointer(weightcoords);
+            weightcoords = pAllocator->glvkUnMapPointer(weightcoords);
 	}
 
 	m_renderingModel = geo.m_renderingModel;
@@ -432,7 +435,7 @@ void CGeometry::scale(float sx,float sy,float sz)
 
 #if defined(DATA_PACKED)
     if (CGeometryAllocator::GetInstance()->isMemoryRelocated())
-        vertex = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glMapPointer((float*)vertex));
+        vertex = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glvkMapPointer((float*)vertex));
 #endif
 
 	for(unsigned int i=0;i<m_nbVertex;i++)
@@ -444,7 +447,7 @@ void CGeometry::scale(float sx,float sy,float sz)
 
 #if defined(DATA_PACKED)
     if (CGeometryAllocator::GetInstance()->isMemoryRelocated())
-        vertex = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glUnMapPointer((float*)vertex));
+        vertex = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glvkUnMapPointer((float*)vertex));
 #endif
 }
 
@@ -457,7 +460,7 @@ void CGeometry::translateAbsolute(float tx,float ty,float tz)
 
 #if defined(DATA_PACKED)
     if (CGeometryAllocator::GetInstance()->isMemoryRelocated())
-        vertex = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glMapPointer((float*)vertex));
+        vertex = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glvkMapPointer((float*)vertex));
 #endif
 
 	for(unsigned int i=0;i<m_nbVertex;i++)
@@ -469,7 +472,7 @@ void CGeometry::translateAbsolute(float tx,float ty,float tz)
 
 #if defined(DATA_PACKED)
     if (CGeometryAllocator::GetInstance()->isMemoryRelocated())
-        vertex = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glUnMapPointer((float*)vertex));
+        vertex = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glvkUnMapPointer((float*)vertex));
 #endif
 }
 
@@ -479,7 +482,7 @@ void CGeometry::translate(float tx,float ty,float tz)
 
 #if defined(DATA_PACKED)
     if (CGeometryAllocator::GetInstance()->isMemoryRelocated())
-        vertex = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glMapPointer((float*)vertex));
+        vertex = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glvkMapPointer((float*)vertex));
 #endif
 
 	for(unsigned int i=0;i<m_nbVertex;i++)
@@ -491,7 +494,7 @@ void CGeometry::translate(float tx,float ty,float tz)
 
 #if defined(DATA_PACKED)
     if (CGeometryAllocator::GetInstance()->isMemoryRelocated())
-        vertex = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glUnMapPointer((float*)vertex));
+        vertex = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glvkUnMapPointer((float*)vertex));
 #endif
 }
 
@@ -515,8 +518,8 @@ void CGeometry::rotationX(float rx)
 #if defined(DATA_PACKED)
     if (CGeometryAllocator::GetInstance()->isMemoryRelocated())
     {
-        vertex = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glMapPointer((float*)vertex));
-        normals = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glMapPointer((float*)normals));
+        vertex = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glvkMapPointer((float*)vertex));
+        normals = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glvkMapPointer((float*)normals));
     }
 #endif
 
@@ -539,8 +542,8 @@ void CGeometry::rotationX(float rx)
 #if defined(DATA_PACKED)
     if (CGeometryAllocator::GetInstance()->isMemoryRelocated())
     {
-        vertex = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glUnMapPointer((float*)vertex));
-        normals = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glUnMapPointer((float*)normals));
+        vertex = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glvkUnMapPointer((float*)vertex));
+        normals = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glvkUnMapPointer((float*)normals));
     }
 #endif
 
@@ -567,8 +570,8 @@ void CGeometry::rotationY(float ry)
 #if defined(DATA_PACKED)
     if (CGeometryAllocator::GetInstance()->isMemoryRelocated())
     {
-        vertex = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glMapPointer((float*)vertex));
-        normals = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glMapPointer((float*)normals));
+        vertex = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glvkMapPointer((float*)vertex));
+        normals = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glvkMapPointer((float*)normals));
     }
 #endif
 
@@ -591,8 +594,8 @@ void CGeometry::rotationY(float ry)
 #if defined(DATA_PACKED)
     if (CGeometryAllocator::GetInstance()->isMemoryRelocated())
     {
-        vertex = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glUnMapPointer((float*)vertex));
-        normals = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glUnMapPointer((float*)normals));
+        vertex = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glvkUnMapPointer((float*)vertex));
+        normals = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glvkUnMapPointer((float*)normals));
     }
 #endif
 
@@ -619,8 +622,8 @@ void CGeometry::rotationZ(float rz)
 #if defined(DATA_PACKED)
     if (CGeometryAllocator::GetInstance()->isMemoryRelocated())
     {
-        vertex = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glMapPointer((float*)vertex));
-        normals = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glMapPointer((float*)normals));
+        vertex = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glvkMapPointer((float*)vertex));
+        normals = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glvkMapPointer((float*)normals));
     }
 #endif
 
@@ -643,8 +646,8 @@ void CGeometry::rotationZ(float rz)
 #if defined(DATA_PACKED)
     if (CGeometryAllocator::GetInstance()->isMemoryRelocated())
     {
-        vertex = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glUnMapPointer((float*)vertex));
-        normals = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glUnMapPointer((float*)normals));
+        vertex = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glvkUnMapPointer((float*)vertex));
+        normals = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glvkUnMapPointer((float*)normals));
     }
 #endif
 
@@ -668,8 +671,8 @@ void CGeometry::rotationX(float rx,float cy,float cz)
 #if defined(DATA_PACKED)
     if (CGeometryAllocator::GetInstance()->isMemoryRelocated())
     {
-        vertex = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glMapPointer((float*)vertex));
-        normals = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glMapPointer((float*)normals));
+        vertex = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glvkMapPointer((float*)vertex));
+        normals = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glvkMapPointer((float*)normals));
     }
 #endif
 
@@ -692,8 +695,8 @@ void CGeometry::rotationX(float rx,float cy,float cz)
 #if defined(DATA_PACKED)
     if (CGeometryAllocator::GetInstance()->isMemoryRelocated())
     {
-        vertex = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glUnMapPointer((float*)vertex));
-        normals = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glUnMapPointer((float*)normals));
+        vertex = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glvkUnMapPointer((float*)vertex));
+        normals = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glvkUnMapPointer((float*)normals));
     }
 #endif
 
@@ -718,8 +721,8 @@ void CGeometry::rotationY(float ry,float cx,float cz)
 #if defined(DATA_PACKED)
     if (CGeometryAllocator::GetInstance()->isMemoryRelocated())
     {
-        vertex = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glMapPointer((float*)vertex));
-        normals = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glMapPointer((float*)normals));
+        vertex = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glvkMapPointer((float*)vertex));
+        normals = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glvkMapPointer((float*)normals));
     }
 #endif
 
@@ -742,8 +745,8 @@ void CGeometry::rotationY(float ry,float cx,float cz)
 #if defined(DATA_PACKED)
     if (CGeometryAllocator::GetInstance()->isMemoryRelocated())
     {
-        vertex = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glUnMapPointer((float*)vertex));
-        normals = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glUnMapPointer((float*)normals));
+        vertex = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glvkUnMapPointer((float*)vertex));
+        normals = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glvkUnMapPointer((float*)normals));
     }
 #endif
 
@@ -768,8 +771,8 @@ void CGeometry::rotationZ(float rz,float cx,float cy)
 #if defined(DATA_PACKED)
     if (CGeometryAllocator::GetInstance()->isMemoryRelocated())
     {
-        vertex = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glMapPointer((float*)vertex));
-        normals = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glMapPointer((float*)normals));
+        vertex = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glvkMapPointer((float*)vertex));
+        normals = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glvkMapPointer((float*)normals));
     }
 #endif
 
@@ -792,8 +795,8 @@ void CGeometry::rotationZ(float rz,float cx,float cy)
 #if defined(DATA_PACKED)
     if (CGeometryAllocator::GetInstance()->isMemoryRelocated())
     {
-        vertex = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glUnMapPointer((float*)vertex));
-        normals = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glUnMapPointer((float*)normals));
+        vertex = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glvkUnMapPointer((float*)vertex));
+        normals = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glvkUnMapPointer((float*)normals));
     }
 #endif
 
@@ -817,8 +820,8 @@ void CGeometry::rotation(double angle,float ax,float ay,float az)
 #if defined(DATA_PACKED)
     if (CGeometryAllocator::GetInstance()->isMemoryRelocated())
     {
-        vertex = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glMapPointer((float*)vertex));
-        normals = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glMapPointer((float*)normals));
+        vertex = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glvkMapPointer((float*)vertex));
+        normals = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glvkMapPointer((float*)normals));
     }
 #endif
 
@@ -846,8 +849,8 @@ void CGeometry::rotation(double angle,float ax,float ay,float az)
 #if defined(DATA_PACKED)
     if (CGeometryAllocator::GetInstance()->isMemoryRelocated())
     {
-        vertex = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glUnMapPointer((float*)vertex));
-        normals = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glUnMapPointer((float*)normals));
+        vertex = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glvkUnMapPointer((float*)vertex));
+        normals = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glvkUnMapPointer((float*)normals));
     }
 #endif
 
@@ -871,8 +874,8 @@ void CGeometry::transform(GL_MATRIX &m)
 #if defined(DATA_PACKED)
     if (CGeometryAllocator::GetInstance()->isMemoryRelocated())
     {
-        vertex = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glMapPointer((float*)vertex));
-        normals = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glMapPointer((float*)normals));
+        vertex = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glvkMapPointer((float*)vertex));
+        normals = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glvkMapPointer((float*)normals));
     }
 #endif
 
@@ -900,8 +903,8 @@ void CGeometry::transform(GL_MATRIX &m)
 #if defined(DATA_PACKED)
     if (CGeometryAllocator::GetInstance()->isMemoryRelocated())
     {
-        vertex = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glUnMapPointer((float*)vertex));
-        normals = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glUnMapPointer((float*)normals));
+        vertex = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glvkUnMapPointer((float*)vertex));
+        normals = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glvkUnMapPointer((float*)normals));
     }
 #endif
 
@@ -911,6 +914,21 @@ void CGeometry::transform(GL_MATRIX &m)
 //////////////////////////////////////////////////////////////////////
 // Rendering
 //////////////////////////////////////////////////////////////////////
+void CGeometry::vkRender(CVulkanCommandBuffer& commandBuffer, VkBuffer vertexBinding, VkBuffer indexBinding)
+{
+	VkBuffer bindings[2] = { vertexBinding, vertexBinding };
+	VkDeviceSize offsets[2] = { (VkDeviceSize)&vertex[0], (VkDeviceSize)&colors[0] };
+	commandBuffer.vkCmdBindVertexBuffers(	commandBuffer.commandBuffer, 
+											0, 2, &bindings[0], &offsets[0]);
+
+	commandBuffer.vkCmdBindIndexBuffer(	commandBuffer.commandBuffer, 
+										indexBinding,
+										(VkDeviceSize)&polys[0],
+										VK_INDEX_TYPE_UINT16);
+
+	commandBuffer.vkCmdDrawIndexed(commandBuffer.commandBuffer, 3 * m_nbPolys, 1, 0, 0, 0);
+}
+
 void CGeometry::glRender()
 {
     if (!properties.isVisible())
@@ -934,10 +952,6 @@ void CGeometry::glRenderGeometry()
 
 	const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
 
-#if defined(GL_EXT_compiled_vertex_array)
-	if (pExtensions->glLockArraysEXT != NULL)
-		pExtensions->glLockArraysEXT(0,m_nbVertex);
-#endif
 
 	//	Store arrays state + texture state
     CRenderingProperties *props = CRenderingProperties::GetCurrentProperties();
@@ -1081,11 +1095,6 @@ void CGeometry::glRenderGeometry()
 	}
 
 
-#if defined(GL_EXT_compiled_vertex_array)
-	if (pExtensions->glUnlockArraysEXT != NULL)
-		pExtensions->glUnlockArraysEXT();
-#endif
-
 	CATCH_GL_ERROR
 
 #ifdef GL_EXT_fog_coord
@@ -1143,8 +1152,8 @@ bool CGeometry::removePrimitive(CGeometryPrimitive *primitive)
 {
 	if (primitive == NULL)
 	{
-		for (unsigned int i=0;i<m_pPrimitives.size();i++)
-			m_pPrimitives[i]->releaseReference();
+		for (unsigned int i=m_pPrimitives.size();i>0;i--)
+			m_pPrimitives[i-1]->releaseReference();
 		m_pPrimitives.clear();
 		return true;
 	}
@@ -1189,7 +1198,7 @@ void CGeometry::glSetPolygons(unsigned int nbP, unsigned short* polygons)
 		if (!pAllocator->isMemoryRelocated() || m_bDataLocked)
 			memcpy(polys,polygons,3*nbP*sizeof(unsigned short));
 		else
-			pAllocator->glCopyPointer(polys,polygons,3*nbP);
+			pAllocator->glvkCopyPointer(polys,polygons,3*nbP);
 		m_nbPolys = nbP;
 	}
 }
@@ -1221,7 +1230,7 @@ void CGeometry::glSetVertices(unsigned int nbV, GL_COORD_VERTEX* vertices)
 		if (!pAllocator->isMemoryRelocated() || m_bDataLocked)
 			memcpy(vertex,vertices,4*nbV*sizeof(float));
 		else
-			pAllocator->glCopyPointer(*vertex,*vertices,4*nbV);
+			pAllocator->glvkCopyPointer(*vertex,*vertices,4*nbV);
 		m_nbVertex = nbV;
 	}
 #endif
@@ -1236,7 +1245,7 @@ void CGeometry::glSetNormals(unsigned int nbN, GL_COORD_VERTEX* norms)
 		if (!pAllocator->isMemoryRelocated() || m_bDataLocked)
 			memcpy(normals,norms,4*nbN*sizeof(float));
 		else
-			pAllocator->glCopyPointer(*normals,*norms,4*nbN);
+			pAllocator->glvkCopyPointer(*normals,*norms,4*nbN);
 	}
 #endif
 }
@@ -1257,7 +1266,7 @@ void CGeometry::glSetTexCoords(unsigned int nbT, GL_TEX_VERTEX* texCoords)
 		if (!pAllocator->isMemoryRelocated() || m_bDataLocked)
 			memcpy(texcoords,texCoords,nbT*sizeof(GL_TEX_VERTEX));
 		else
-			pAllocator->glCopyPointer(*texcoords,*texCoords,2*nbT);
+			pAllocator->glvkCopyPointer(*texcoords,*texCoords,2*nbT);
 	}
 #endif
 }
@@ -1278,7 +1287,7 @@ void CGeometry::glSetTexCoords2(unsigned int nbT, GL_TEX_VERTEX* texCoords)
 		if (!pAllocator->isMemoryRelocated() || m_bDataLocked)
 			memcpy(texcoords2,texCoords,nbT*sizeof(GL_TEX_VERTEX));
 		else
-			pAllocator->glCopyPointer(*texcoords2,*texCoords,2*nbT);
+			pAllocator->glvkCopyPointer(*texcoords2,*texCoords,2*nbT);
 	}
 #endif
 }
@@ -1299,7 +1308,7 @@ void CGeometry::glSetWeights(unsigned int nbW, float* weights)
 		if (!pAllocator->isMemoryRelocated() || m_bDataLocked)
 			memcpy(weightcoords,weights,nbW*sizeof(float));
 		else
-			pAllocator->glCopyPointer(weightcoords,weights,nbW);
+			pAllocator->glvkCopyPointer(weightcoords,weights,nbW);
 	}
 #endif
 }
@@ -1318,9 +1327,9 @@ void CGeometry::glSetColors(unsigned int nbC, CColor::RGBA* rgbaColors)
 	{
 		CGeometryAllocator *pAllocator = CGeometryAllocator::GetInstance();
 		if (!pAllocator->isMemoryRelocated() || m_bDataLocked)
-			memcpy(normals,rgbaColors,4*nbC*sizeof(float));
+			memcpy(colors,rgbaColors,4*nbC*sizeof(float));
 		else
-			pAllocator->glCopyPointer(*colors,*rgbaColors,4*nbC);
+			pAllocator->glvkCopyPointer(*colors,*rgbaColors,4*nbC);
 	}
 #endif
 }
@@ -1333,32 +1342,32 @@ bool CGeometry::glLockData()
     if ((!pAllocator->isMemoryRelocated()) || (m_bDataLocked))
         return false;
 
-    vertex = (GL_COORD_VERTEX*)(pAllocator->glMapPointer((float*)vertex));
-    normals = (GL_COORD_VERTEX*)(pAllocator->glMapPointer((float*)normals));
+    vertex = (GL_COORD_VERTEX*)(pAllocator->glvkMapPointer((float*)vertex));
+    normals = (GL_COORD_VERTEX*)(pAllocator->glvkMapPointer((float*)normals));
     
 	if (texcoords != NULL)
-		texcoords = (GL_TEX_VERTEX*)(pAllocator->glMapPointer((float*)texcoords));
+		texcoords = (GL_TEX_VERTEX*)(pAllocator->glvkMapPointer((float*)texcoords));
 
 	if (texcoords2 != NULL)
-		texcoords2 = (GL_TEX_VERTEX*)(pAllocator->glMapPointer((float*)texcoords2));
+		texcoords2 = (GL_TEX_VERTEX*)(pAllocator->glvkMapPointer((float*)texcoords2));
     
 	if (colors != NULL)
-		colors = (CColor::RGBA*)(pAllocator->glMapPointer((float*)colors));
+		colors = (CColor::RGBA*)(pAllocator->glvkMapPointer((float*)colors));
 
 	if (tangents != NULL)
-		tangents = (GL_COORD_VERTEX*)(pAllocator->glMapPointer((float*)tangents));
+		tangents = (GL_COORD_VERTEX*)(pAllocator->glvkMapPointer((float*)tangents));
 
 	if (binormals != NULL)
-		binormals = (GL_COORD_VERTEX*)(pAllocator->glMapPointer((float*)binormals));
+		binormals = (GL_COORD_VERTEX*)(pAllocator->glvkMapPointer((float*)binormals));
     
 	if (weightcoords != NULL)
-		weightcoords = pAllocator->glMapPointer(weightcoords);
+		weightcoords = pAllocator->glvkMapPointer(weightcoords);
     
 	if (fogcoords != NULL)
-		fogcoords = pAllocator->glMapPointer(fogcoords);
+		fogcoords = pAllocator->glvkMapPointer(fogcoords);
 
 	if (polys != NULL)
-		polys = pAllocator->glMapPointer(polys);
+		polys = pAllocator->glvkMapPointer(polys);
 
     m_bDataLocked = true;
 
@@ -1380,32 +1389,32 @@ bool CGeometry::glUnLockData()
         if (m_bUpdateBBox)
             updateBBox();
 
-        vertex = (GL_COORD_VERTEX*)(pAllocator->glUnMapPointer((float*)vertex));
-        normals = (GL_COORD_VERTEX*)(pAllocator->glUnMapPointer((float*)normals));
+        vertex = (GL_COORD_VERTEX*)(pAllocator->glvkUnMapPointer((float*)vertex));
+        normals = (GL_COORD_VERTEX*)(pAllocator->glvkUnMapPointer((float*)normals));
 
 		if (texcoords != NULL)
-			texcoords = (GL_TEX_VERTEX*)(pAllocator->glUnMapPointer((float*)texcoords));
+			texcoords = (GL_TEX_VERTEX*)(pAllocator->glvkUnMapPointer((float*)texcoords));
 
 		if (texcoords2 != NULL)
-			texcoords2 = (GL_TEX_VERTEX*)(pAllocator->glUnMapPointer((float*)texcoords2));
+			texcoords2 = (GL_TEX_VERTEX*)(pAllocator->glvkUnMapPointer((float*)texcoords2));
         
 		if (colors != NULL)
-			colors = (CColor::RGBA*)(pAllocator->glUnMapPointer((float*)colors));
+			colors = (CColor::RGBA*)(pAllocator->glvkUnMapPointer((float*)colors));
 
 		if (tangents!= NULL)
-			tangents = (GL_COORD_VERTEX*)(pAllocator->glUnMapPointer((float*)tangents));
+			tangents = (GL_COORD_VERTEX*)(pAllocator->glvkUnMapPointer((float*)tangents));
         
 		if (binormals != NULL)
-			binormals = (GL_COORD_VERTEX*)(pAllocator->glUnMapPointer((float*)binormals));
+			binormals = (GL_COORD_VERTEX*)(pAllocator->glvkUnMapPointer((float*)binormals));
         
 		if (weightcoords != NULL)
-			weightcoords = pAllocator->glUnMapPointer(weightcoords);
+			weightcoords = pAllocator->glvkUnMapPointer(weightcoords);
         
 		if (fogcoords != NULL)
-			fogcoords = pAllocator->glUnMapPointer(fogcoords);
+			fogcoords = pAllocator->glvkUnMapPointer(fogcoords);
 
 		if (polys != NULL)
-			polys = pAllocator->glUnMapPointer(polys);
+			polys = pAllocator->glvkUnMapPointer(polys);
 
         m_bDataLocked = false;
     

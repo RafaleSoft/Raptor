@@ -209,7 +209,7 @@ void CParticle::glInitParticle(void)
 		if (pAllocator->isMemoryRelocated())
 		{
 			cachePointer = pAllocator->allocateVertices(CACHEPOINTER_SIZE);
-			pAllocator->glCopyPointer(cachePointer,(float*)&cache,CACHEPOINTER_SIZE);
+			pAllocator->glvkCopyPointer(cachePointer,(float*)&cache,CACHEPOINTER_SIZE);
 		}
 		else
 			cachePointer = &cache[0].coord.x;
@@ -292,7 +292,7 @@ void RAPTOR_FASTCALL CParticle::glRenderPoints(void)
 				memcpy(&cache[i].colors,&m_attributes[nbElt+i].color,sizeof(GL_COORD_VERTEX));
 			}
 
-			pAllocator->glCopyPointer(cachePointer,&cache[0].coord.x,CACHEPOINTER_SIZE);
+			pAllocator->glvkCopyPointer(cachePointer,&cache[0].coord.x,CACHEPOINTER_SIZE);
 			glDrawArrays(GL_POINTS, 0, CACHE_SIZE);
 
 			nbElt += CACHE_SIZE;
@@ -307,7 +307,7 @@ void RAPTOR_FASTCALL CParticle::glRenderPoints(void)
 				memcpy(&cache[i].colors,&m_attributes[nbElt+i].color,sizeof(GL_COORD_VERTEX));
 			}
 
-			pAllocator->glCopyPointer(cachePointer,&cache[0].coord.x,sizeof(CACHEELT)*sz/sizeof(float));
+			pAllocator->glvkCopyPointer(cachePointer,&cache[0].coord.x,sizeof(CACHEELT)*sz/sizeof(float));
 			glDrawArrays(GL_POINTS, 0, sz);
 		}
 	}
@@ -385,7 +385,7 @@ void RAPTOR_FASTCALL CParticle::glRenderLines(void)
 		{
 			CGeometryAllocator *pAllocator = CGeometryAllocator::GetInstance();
 			if (pAllocator->isMemoryRelocated())
-				pAllocator->glCopyPointer(cachePointer,&cache[0].coord.x,CACHEPOINTER_SIZE);
+				pAllocator->glvkCopyPointer(cachePointer,&cache[0].coord.x,CACHEPOINTER_SIZE);
 
 			glDrawArrays(GL_LINES, 0, CACHE_SIZE);
 			nbElt = 0;
@@ -396,7 +396,7 @@ void RAPTOR_FASTCALL CParticle::glRenderLines(void)
 	{
 		CGeometryAllocator *pAllocator = CGeometryAllocator::GetInstance();
 		if (pAllocator->isMemoryRelocated())
-			pAllocator->glCopyPointer(cachePointer,&cache[0].coord.x,sizeof(CACHEELT)*nbElt/sizeof(float));
+			pAllocator->glvkCopyPointer(cachePointer,&cache[0].coord.x,sizeof(CACHEELT)*nbElt/sizeof(float));
 
 		glDrawArrays(GL_LINES, 0, nbElt);
 		nbElt = 0;
@@ -530,7 +530,7 @@ void RAPTOR_FASTCALL CParticle::glRenderTextures(void)
 		{
 			CGeometryAllocator *pAllocator = CGeometryAllocator::GetInstance();
 			if (pAllocator->isMemoryRelocated())
-				pAllocator->glCopyPointer(cachePointer,&cache[0].coord.x,CACHEPOINTER_SIZE);
+				pAllocator->glvkCopyPointer(cachePointer,&cache[0].coord.x,CACHEPOINTER_SIZE);
 
 			glDrawArrays(GL_QUADS, 0, CACHE_SIZE);
 			//glDrawArrays(GL_POINTS, 0, CACHE_SIZE);
@@ -541,7 +541,7 @@ void RAPTOR_FASTCALL CParticle::glRenderTextures(void)
 	{
 		CGeometryAllocator *pAllocator = CGeometryAllocator::GetInstance();
 		if (pAllocator->isMemoryRelocated())
-			pAllocator->glCopyPointer(cachePointer,&cache[0].coord.x,sizeof(CACHEELT)*nbElt/sizeof(float));
+			pAllocator->glvkCopyPointer(cachePointer,&cache[0].coord.x,sizeof(CACHEELT)*nbElt/sizeof(float));
 
 		glDrawArrays(GL_QUADS, 0, nbElt);
 		//glDrawArrays(GL_POINTS, 0, nbElt);
@@ -646,7 +646,7 @@ void RAPTOR_FASTCALL CParticle::glRenderVolumes(void)
 		{
 			CGeometryAllocator *pAllocator = CGeometryAllocator::GetInstance();
 			if (pAllocator->isMemoryRelocated())
-				pAllocator->glCopyPointer(cachePointer,&cache[0].coord.x,CACHEPOINTER_SIZE);
+				pAllocator->glvkCopyPointer(cachePointer,&cache[0].coord.x,CACHEPOINTER_SIZE);
 
 			glDrawArrays(GL_QUADS, 0, CACHE_SIZE);
 			nbElt = 0;
@@ -656,7 +656,7 @@ void RAPTOR_FASTCALL CParticle::glRenderVolumes(void)
 	{
 		CGeometryAllocator *pAllocator = CGeometryAllocator::GetInstance();
 		if (pAllocator->isMemoryRelocated())
-			pAllocator->glCopyPointer(cachePointer,&cache[0].coord.x,sizeof(CACHEELT)*nbElt/sizeof(float));
+			pAllocator->glvkCopyPointer(cachePointer,&cache[0].coord.x,sizeof(CACHEELT)*nbElt/sizeof(float));
 
 		glDrawArrays(GL_QUADS, 0, nbElt);
 		nbElt = 0;
@@ -680,7 +680,7 @@ void CParticle::glRender()
     glDisable(GL_LIGHTING);
 
 	if (!CGeometryAllocator::GetInstance()->isMemoryRelocated())
-		CGeometryAllocator::GetInstance()->glLockMemory(false);
+		CGeometryAllocator::GetInstance()->glvkLockMemory(false);
 
 	// Render depending on particule material
 	switch(m_type)
@@ -746,7 +746,7 @@ void CParticle::glRender()
 	}
 
 	if (!CGeometryAllocator::GetInstance()->isMemoryRelocated())
-        CGeometryAllocator::GetInstance()->glLockMemory(true);
+        CGeometryAllocator::GetInstance()->glvkLockMemory(true);
 
 	glPopAttrib();
 

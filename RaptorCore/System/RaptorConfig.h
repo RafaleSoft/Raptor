@@ -41,20 +41,26 @@ public:
 	//!	Reserve memory space at global level for geometries.
 	//!	( by default, only 1000 polygons and 4000 vertices are reserved when Raptor is initialized )
 	//!
-    unsigned int	m_uiPolygons;
-    unsigned int	m_uiVertices;
+    size_t	m_uiPolygons;
+    size_t	m_uiVertices;
 
     //!
     //!	Reserve memory space at global level for pixel transfer
     //!	( texture loads, buffer reads, ... by default initialized to 16384 texels)
     //!
-    unsigned int	m_uiTexels;
+    size_t	m_uiTexels;
+
+	//!
+	//!	Reserve memory space at global level for uniform buffers
+	//!	( by default initialized to 1024 bytes)
+	//!
+	size_t	m_uiUniforms;
 
 	//!
 	//!	Reserve memory space for garbaged memory blocs.
 	//!	( by default, initialised to 1Mb )
 	//!
-	unsigned int	m_uiGarbageSize;
+	size_t	m_uiGarbageSize;
 
     //!
     //! This factor multiplies the size of the filtered displays to obtain more quality, allowing FSAA and other features.

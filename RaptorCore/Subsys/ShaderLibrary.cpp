@@ -46,6 +46,9 @@
 #if !defined(AFX_AOCOMPUTESHADER_H__7CD66380_1000_47A3_AA98_47E0EDBD728E__INCLUDED_)
 	#include "AOComputeShader.h"
 #endif
+#if !defined(AFX_CONTEXTMANAGER_H__F992F5F0_D8A5_475F_9777_B0EB30E7648E__INCLUDED_)
+	#include "Subsys/ContextManager.h"
+#endif
 
 
 RAPTOR_NAMESPACE_BEGIN
@@ -123,7 +126,11 @@ bool CShaderLibrary::glInitFactory(void)
 	if (s_initialized)
 		return false;
 
-	CRaptorDataManager *dataManager = CRaptorDataManager::getInstance();
+	CContextManager *manager = CContextManager::GetInstance();
+	if (CContextManager::INVALID_CONTEXT == manager->glGetCurrentContext())
+		return false;
+
+	CRaptorDataManager *dataManager = CRaptorDataManager::GetInstance();
 	const char * const *shader_source_library = dataManager->GetShaderList();
 
     if (shader_source_library == NULL)

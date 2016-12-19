@@ -21,8 +21,31 @@
 #if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
 	#include "System/Raptor.h"
 #endif
-#if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
-    #include "System/RaptorErrorManager.h"
+#if !defined(AFX_3DSCENE_H__E597E752_BAD4_415D_9C00_8C59D139D32B__INCLUDED_)
+	#include "Engine/3DScene.h"
+#endif
+#if !defined(AFX_RAPTORVULKANPIPELINE_H__C2997B30_C6E2_4EF2_AFE3_FCD27AB5CBB7__INCLUDED_)
+	#include "Subsys/Vulkan/VulkanPipeline.h"
+#endif
+#if !defined(AFX_RAPTORVULKANSHADER_H__C188550F_1D1C_4531_B0A0_727CE9FF9450__INCLUDED_)
+	#include "Subsys/Vulkan/VulkanShader.h"
+#endif
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+	#if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
+		#include "System/RaptorErrorManager.h"
+	#endif
+#endif
+#if !defined(AFX_GEOMETRYALLOCATOR_H__802B3C7A_43F7_46B2_A79E_DDDC9012D371__INCLUDED_)
+	#include "Subsys/GeometryAllocator.h"
+#endif
+#if !defined(AFX_TEXELALLOCATOR_H__7C48808C_E838_4BE3_8B0E_286428BB7CF8__INCLUDED_)
+	#include "Subsys/TexelAllocator.h"
+#endif
+#if !defined(AFX_UNIFORMALLOCATOR_H__4DD62C99_E476_4FE5_AEE4_EEC71F7B0F38__INCLUDED_)
+	#include "Subsys/UniformAllocator.h"
+#endif
+#if !defined(AFX_GEOMETRY_H__B42ABB87_80E8_11D3_97C2_DE5C28000000__INCLUDED_)
+	#include "GLHierarchy/Geometry.h"
 #endif
 
 
@@ -45,13 +68,44 @@ RAPTOR_NAMESPACE
 
 CRaptorVulkanDisplay::CRaptorVulkanDisplay(const CRaptorDisplayConfig& pcs)
 	:CRaptorDisplay(bufferID,pcs.caption),
-	m_context(-1),cs(pcs),fps(0.0f),ftime(0.0f),rtfps(0.0f),rtime(0.0f)
+	m_context(CContextManager::INVALID_CONTEXT), cs(pcs),
+	fps(0.0f),ftime(0.0f),rtfps(0.0f),rtime(0.0f),
+	l1(0),lastfreq(0),nbFramesPerSecond(0),
+	m_pGAllocator(NULL), m_pGOldAllocator(NULL),
+	m_pTAllocator(NULL), m_pTOldAllocator(NULL),
+	m_pUAllocator(NULL), m_pUOldAllocator(NULL)
 {
 }
 
 CRaptorVulkanDisplay::~CRaptorVulkanDisplay(void)
 {
+	if (m_pGOldAllocator != NULL)
+		CGeometryAllocator::SetCurrentInstance(m_pGOldAllocator);
+	if (m_pGAllocator != NULL)
+		delete m_pGAllocator;
+
+	if (NULL != m_pTOldAllocator)
+		CTexelAllocator::SetCurrentInstance(m_pTOldAllocator);
+	if (NULL != m_pTAllocator)
+		delete m_pTAllocator;
+
+	if (NULL != m_pUOldAllocator)
+		CUniformAllocator::SetCurrentInstance(m_pUOldAllocator);
+	if (NULL != m_pUAllocator)
+		delete m_pUAllocator;
+
+
 	glUnBindDisplay();
+
+	if (0 < m_pipelines.size())
+	{
+		for (unsigned int i=0;i<m_pipelines.size();i++)
+		{
+			m_pipelines[i]->destroyPipeline();
+			delete m_pipelines[i];
+		}
+		m_pipelines.clear();
+	}
 	
 	CContextManager::GetInstance()->vkDestroyContext(m_context);
 }
@@ -59,22 +113,44 @@ CRaptorVulkanDisplay::~CRaptorVulkanDisplay(void)
 void CRaptorVulkanDisplay::glResize(unsigned int sx,unsigned int sy,
 									unsigned int ox, unsigned int oy)
 {
+	if (CContextManager::INVALID_CONTEXT != m_context)
+	{
+		CContextManager *manager = CContextManager::GetInstance();
+		if ((sx != cs.width) || (sy != cs.height))
+		{
+			cs.width = sx;
+			cs.height = sy;
+			manager->vkResize(m_context,cs);
+		}
+	}
 }
 
 bool CRaptorVulkanDisplay::glRender(void)
 {
-	if (m_context != -1)
+	if (CContextManager::INVALID_CONTEXT != m_context)
 	{
+		CContextManager *manager = CContextManager::GetInstance();
+		CVulkanDevice &vk_device = manager->vkGetDevice(m_context);
+		//	cs.x & cs.y are window position, not pixel origin in layer
+		VkRect2D scissor = { {0, 0}, {cs.width,cs.height} };
+
 		CTimeObject::markTime(this);
 
-        //m_pGAllocator->glLockMemory(true);
+        m_pGAllocator->glvkLockMemory(true);
 		//m_pTAllocator->glLockMemory(true);
+		m_pUAllocator->glvkLockMemory(true);
+	
+		vk_device.vkSynchroniseBufferObjects();
 
 		C3DScene *pScene = getRootScene();
-		//pScene->vkRender();
 
-        //m_pGAllocator->glLockMemory(false);
+		vk_device.vkBindPipeline(	pScene,
+									scissor,
+									cs.framebufferState.colorClearValue);
+		
+        m_pGAllocator->glvkLockMemory(false);
 		//m_pTAllocator->glLockMemory(false);
+		m_pUAllocator->glvkLockMemory(false);
 
 		rtime = CTimeObject::deltaMarkTime(this);
 
@@ -102,8 +178,6 @@ bool CRaptorVulkanDisplay::glRender(void)
 		}
 		else
 			nbFramesPerSecond++;
-
-		CATCH_VK_ERROR
 
 		return true;
 	}
@@ -134,7 +208,7 @@ bool CRaptorVulkanDisplay::glBindDisplay(const RAPTOR_HANDLE& device)
 	{
 		CContextManager *manager = CContextManager::GetInstance();
 
-		if ((m_context == -1) && (WINDOW_CLASS == device.hClass))
+		if ((CContextManager::INVALID_CONTEXT == m_context) && (WINDOW_CLASS == device.hClass))
 		{
 			unsigned int m_framerate = cs.refresh_rate.fps;
 			if (cs.refresh_rate.sync_to_monitor)
@@ -142,72 +216,118 @@ bool CRaptorVulkanDisplay::glBindDisplay(const RAPTOR_HANDLE& device)
 
 			manager->vkSwapVSync(m_framerate);
 			m_context = manager->vkCreateContext(device,cs);
-
-			RAPTOR_HANDLE device = manager->CContextManager::getDevice(m_context);
-
-			VkFormat format = VK_FORMAT_B8G8R8A8_UNORM;
-			VkSampleCountFlagBits samples;
-			if (((cs.display_mode & CGL_RGBA) == CGL_RGBA) ||
-				((cs.display_mode & CGL_RGB) == CGL_RGB) ||
-				((cs.display_mode & CGL_FLOAT_32) == CGL_FLOAT_32))
-				samples = VK_SAMPLE_COUNT_32_BIT;
-			else if ((cs.display_mode & CGL_FLOAT_16) == CGL_FLOAT_16)
-				samples = VK_SAMPLE_COUNT_16_BIT;
-
-			VkAttachmentDescription pAttachments = {0, // or 1 = VK_ATTACHMENT_DESCRIPTION_MAY_ALIAS_BIT
-													format,samples,
-													VK_ATTACHMENT_LOAD_OP_CLEAR,
-													VK_ATTACHMENT_STORE_OP_STORE,
-													VK_ATTACHMENT_LOAD_OP_CLEAR,
-													VK_ATTACHMENT_STORE_OP_DONT_CARE,
-													VK_IMAGE_LAYOUT_UNDEFINED, //	Is this correct ?
-													VK_IMAGE_LAYOUT_PRESENT_SRC_KHR }; // is this correct ?
-			VkAttachmentReference pColorAttachments = { 0, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL };
-			VkAttachmentReference pDepthStencilAttachment = { 0, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL };
-			VkSubpassDescription pSubpasses = {	0,
-												VK_PIPELINE_BIND_POINT_GRAPHICS,
-												0, NULL,
-												1, &pColorAttachments,
-												NULL,
-												&pDepthStencilAttachment,
-												0, NULL };
-			VkRenderPassCreateInfo pRenderPassCreateInfo = {VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
-															NULL, 0,
-															1, &pAttachments,
-															1, &pSubpasses,
-															0, NULL /*const VkSubpassDependency* pDependencies*/ };
-			VkRenderPass pRenderPass;
-
-			CRaptorErrorManager *pErrMgr = Raptor::GetErrorManager();
-			VkResult res = manager->glGetExtensions()->vkCreateRenderPass((VkDevice)device.handle,&pRenderPassCreateInfo,NULL,&pRenderPass);
-			if (VK_SUCCESS != res)
-				pErrMgr->vkGetError(res,__FILE__,__LINE__);
-			else
+			if (CContextManager::INVALID_CONTEXT == m_context)
 			{
-				VkFramebufferCreateInfo pFrameBufferCreateInfo = {	VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
-																	NULL, 0,
-																	pRenderPass,
-																	0, NULL,
-																	cs.width, cs.height, 1 };
-
-				VkFramebuffer pFramebuffer;
-				res = manager->glGetExtensions()->vkCreateFramebuffer((VkDevice)device.handle,&pFrameBufferCreateInfo,NULL,&pFramebuffer);
-				if (VK_SUCCESS != res)
-					pErrMgr->vkGetError(res,__FILE__,__LINE__);
+				Raptor::GetErrorManager()->generateRaptorError(	bufferID,
+																CRaptorErrorManager::RAPTOR_FATAL,
+																CRaptorMessages::ID_CREATE_FAILED);
+				return false;
 			}
-		}
 
-		manager->vkMakeCurrentContext(device,m_context);
+			//	Manage vertex/pixel buffer objects.
+			allocateResources();
+
+			//!	We need a first make current context to set the active device
+			manager->vkMakeCurrentContext(device, m_context);
+		}
+		else
+		{
+			manager->vkMakeCurrentContext(device, m_context);
+
+			m_pGOldAllocator = CGeometryAllocator::SetCurrentInstance(m_pGAllocator);
+			if ((m_pGOldAllocator != m_pGAllocator) && (m_pGOldAllocator != NULL))
+				m_pGOldAllocator->glvkLockMemory(false);
+
+			//m_pTOldAllocator = CTexelAllocator::SetCurrentInstance(m_pTAllocator);
+			//if ((m_pTOldAllocator != m_pTAllocator) && (m_pTOldAllocator != NULL))
+			//	m_pTOldAllocator->glvkLockMemory(false);
+
+			m_pUOldAllocator = CUniformAllocator::SetCurrentInstance(m_pUAllocator);
+			if ((m_pUOldAllocator != m_pUAllocator) && (m_pUOldAllocator != NULL))
+				m_pUOldAllocator->glvkLockMemory(false);
+		}
 	}
 
-	return CRaptorDisplay::glBindDisplay(device);
+	return true; //CRaptorDisplay::glBindDisplay(device);
 }
 
 bool CRaptorVulkanDisplay::glUnBindDisplay(void)
 {
-	RAPTOR_HANDLE device;
-	CContextManager *manager = CContextManager::GetInstance();
-	manager->vkMakeCurrentContext(device,m_context);
+	CGeometryAllocator::SetCurrentInstance(m_pGOldAllocator);
+	m_pGOldAllocator = NULL;
+	//CTexelAllocator::SetCurrentInstance(m_pTOldAllocator);
+	//m_pTOldAllocator = NULL;
+	CUniformAllocator::SetCurrentInstance(m_pUOldAllocator);
+	m_pUOldAllocator = NULL;
 
-	return CRaptorDisplay::glUnBindDisplay();
+	CContextManager *manager = CContextManager::GetInstance();
+
+	RAPTOR_HANDLE device;
+	manager->vkMakeCurrentContext(device, CContextManager::INVALID_CONTEXT);
+
+	return true; //CRaptorDisplay::glUnBindDisplay();
+}
+
+
+void CRaptorVulkanDisplay::allocateResources(void)
+{
+    //  Ensure no current allocator.
+    m_pGOldAllocator = CGeometryAllocator::SetCurrentInstance(NULL);
+	//m_pTOldAllocator = CTexelAllocator::SetCurrentInstance(NULL);
+	m_pUOldAllocator = CUniformAllocator::SetCurrentInstance(NULL);
+
+    m_pGAllocator = CGeometryAllocator::GetInstance();
+	//m_pTAllocator = CTexelAllocator::GetInstance();
+	m_pUAllocator = CUniformAllocator::GetInstance();
+
+	CContextManager *manager = CContextManager::GetInstance();
+	CVulkanDevice &vk_device = manager->vkGetDevice(m_context);
+	IDeviceMemoryManager* pDeviceMemory = vk_device.getMemory();
+
+	//!	Vulkan will not work without buffer reallocation to device memory
+    const CRaptorConfig& config = Global::GetInstance().getConfig();
+	if ((!config.m_bRelocation) || (0 == config.m_uiVertices))
+    {
+		Raptor::GetErrorManager()->generateRaptorError(	CGeometry::CGeometryClassID::GetClassId(),
+														CRaptorErrorManager::RAPTOR_FATAL,
+	    		        								CRaptorMessages::ID_NO_RESOURCE);
+	}
+	else
+    {
+		bool initAllocator = m_pGAllocator->glvkInitMemory(pDeviceMemory,config.m_uiPolygons,config.m_uiVertices);
+		if (!initAllocator)
+		{
+			Raptor::GetErrorManager()->generateRaptorError(	CGeometry::CGeometryClassID::GetClassId(),
+															CRaptorErrorManager::RAPTOR_FATAL,
+    		        										CRaptorMessages::ID_NO_RESOURCE);
+		}
+    }
+
+	if ((!config.m_bRelocation) || (0 == config.m_uiUniforms))
+	{
+		Raptor::GetErrorManager()->generateRaptorError(	CGeometry::CGeometryClassID::GetClassId(),
+														CRaptorErrorManager::RAPTOR_FATAL,
+														CRaptorMessages::ID_NO_RESOURCE);
+	}
+	else
+	{
+		bool initAllocator = m_pUAllocator->glvkInitMemory(pDeviceMemory, config.m_uiUniforms);
+		if (!initAllocator)
+		{
+			Raptor::GetErrorManager()->generateRaptorError(	CGeometry::CGeometryClassID::GetClassId(),
+															CRaptorErrorManager::RAPTOR_FATAL,
+															CRaptorMessages::ID_NO_RESOURCE);
+		}
+	}
+
+    //! As the newly created context is made current, we must keep the
+    //! associated allocator as current, otherwise it will not be used until
+    //! a UnBind/Bind sequence is performed, which is unnecessary.
+    //CGeometryAllocator::SetCurrentInstance(oldAllocator);
+    if ((m_pGOldAllocator != m_pGAllocator) && (m_pGOldAllocator != NULL))
+        m_pGOldAllocator->glvkLockMemory(false);
+	//if ((m_pTOldAllocator != m_pTAllocator) && (m_pTOldAllocator != NULL))
+	//	m_pTOldAllocator->glvkLockMemory(false);
+	if ((m_pUOldAllocator != m_pUAllocator) && (m_pUOldAllocator != NULL))
+		m_pUOldAllocator->glvkLockMemory(false);
 }

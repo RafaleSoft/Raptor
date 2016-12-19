@@ -25,6 +25,7 @@ CRaptorConfig::CRaptorConfig():
     m_fSizeFactor(1.0f),
     m_bAutoDestroy(true),
     m_uiTexels(65536),
+	m_uiUniforms(1024),
 	m_uiGarbageSize(1024*1024),
 	m_logFile("Raptor.log"),
 	m_bCompute(false)

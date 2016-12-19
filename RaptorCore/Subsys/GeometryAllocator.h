@@ -12,6 +12,9 @@
 #if !defined(AFX_MEMORY_H__81A6CA9A_4ED9_4260_B6E4_C03276C38DBC__INCLUDED_)
 	#include "System/Memory.h"
 #endif
+#if !defined(AFX_RAPTORVULKANMEMORY_H__72256FF7_DBB9_4B9C_9BF7_C36F425CF811__INCLUDED_)
+	#include "Subsys/Vulkan/VulkanMemory.h"
+#endif
 
 
 RAPTOR_NAMESPACE_BEGIN
@@ -30,21 +33,21 @@ public:
 	//! Destructor destroy all memory blocs created by this instance.
 	virtual ~CGeometryAllocator();
 
+	
 	//!	Initialize memory blocks
-	bool	glInitMemory(unsigned int indexSize,unsigned int coordsSize);
-
-	//!	Try to use memory relocation is possible and return relocation status.
-	bool	glUseMemoryRelocation(void);
+	bool	glvkInitMemory(	IDeviceMemoryManager* pDeviceMemory,
+							uint64_t indexSize,uint64_t coordsSize);
 
 	//! Returns the relocate state ( set with the method here above ).
-	bool    isMemoryRelocated(void) const { return m_bRelocated; };
+	bool    isMemoryRelocated(void) const
+	{ return ((NULL != deviceMemoryManager) && (NULL != relocatedFaceIndexes) && (NULL != relocatedVertices)); };
 
 	//! Returns the lock state ( set with the method below ).
 	bool    isMemoryLocked(void) const { return m_bLocked; };
 
 	//! Lock memory data and relocation so that no change can be made.
 	//! If data is relocated, High Performance memory blocks are activated on server
-	bool    glLockMemory(bool lock);
+	bool    glvkLockMemory(bool lock);
 
 	//! These methods are used to map pointers from GPU memory to client classic memory.
 	//! Returns: 
@@ -53,27 +56,26 @@ public:
 	//!     - a new pointer otherwise, which should replace pointer for subsequent calls
 	//!		- discarding a pointer retrive the mapped pointer, but the data pointed 
 	//!			is discarded without copy.
-	unsigned short *glMapPointer(unsigned short *pointer);
-	unsigned short *glUnMapPointer(unsigned short *pointer);
-	unsigned short *glDiscardPointer(unsigned short *pointer);
-	float *glMapPointer(float *pointer);
-	float *glUnMapPointer(float *pointer);
-	float *glDiscardPointer(float *pointer);
+	unsigned short *glvkMapPointer(unsigned short *pointer, bool syncData = true);
+	unsigned short *glvkUnMapPointer(unsigned short *pointer, bool syncData = true);
+	float *glvkMapPointer(float *pointer, bool syncData = true);
+	float *glvkUnMapPointer(float *pointer, bool syncData = true);
 	
 
 	//! These methods allow data transfer to a relocated block when mapping/unmapping 
 	//! is not necessary ( i.e. only data copy )
 	//!	@param dst : the pointer returned by a previous call to allocateIndexes
-	//!	@param src : the conventional memory pointer to data to copy to GPU memory
+	//!	@param src : the conventional (host) memory pointer to data to copy to GPU memory
 	//!	@param size : the size of data to be copied that should always be less than the allocated size.
 	//!	If size is 0, the dst memory size is recomputed, otherwise, size floats are copied.
 	//!	Rq: No other testing are performed ! ( no ckech is done to validate that dst is a bloc of size 'size' )
-	void glCopyPointer(float *dst, float *src, unsigned int size = 0);
-	void glCopyPointer(unsigned short *dst, unsigned short *src, unsigned int size = 0);
+	void glvkCopyPointer(float *dst, float *src, uint64_t size = 0);
+	void glvkCopyPointer(unsigned short *dst, unsigned short *src, uint64_t size = 0);
+	
 
 	//!	This method returns the address of a free block of the requested size, ( nb of indexes )
 	//!	or NULL if not enough space or other error.
-	unsigned short	* const	allocateIndexes(unsigned short size);
+	unsigned short	* const	allocateIndexes(uint64_t size);
 
 	//!	Release the block allocated here above.
 	//! Returns false if block not found or if error.
@@ -81,11 +83,12 @@ public:
 
 	//!	This method returns the address of a free block of the requested size, ( nb of indexes )
 	//!	or NULL if not enough space or other error.
-	float	* const	allocateVertices(unsigned int size);
+	float	* const	allocateVertices(uint64_t size);
 
 	//!	Release the block allocated here above.
 	//! Returns false if block not found or if error.
 	bool	releaseVertices(float *index);
+
 
 
 private:
@@ -97,11 +100,10 @@ private:
 	//!	The unique allocator instance
 	static CGeometryAllocator	*m_pInstance;
 
-    CMemory::Allocator<unsigned short> shortAlloc;
-    CMemory::Allocator<float> floatAlloc;
+    CHostMemoryManager::Allocator<unsigned short> shortAlloc;
+    CHostMemoryManager::Allocator<float> floatAlloc;
 
 	//!	The memory state
-	bool	m_bRelocated;
     bool    m_bLocked;
 
 	//!	Structure for memory blocs
@@ -114,7 +116,7 @@ private:
 			float *f_address;
 		} address;
 		//	bloc size in bytes
-		unsigned int size;
+		uint64_t size;
 	} data_bloc;
 
 
@@ -125,13 +127,17 @@ private:
 	data_bloc	vertices;
 
 	//!	If relocated, High Performance buffer object
-	CMemory::IBufferObject *relocatedFaceIndexes;
-	CMemory::IBufferObject *relocatedVertices;
+	IDeviceMemoryManager::IBufferObject *relocatedFaceIndexes;
+	IDeviceMemoryManager::IBufferObject *relocatedVertices;
+
+	//!	Memory manager for the device hosting the display holding this allocator.
+	//! (Vulkan host memory is per device)
+	IDeviceMemoryManager	*deviceMemoryManager;
 
 	//! Actual memory structure : bloc fragments of global allocated space
 	//!	IMPORTANT: The structure implementation requires a binary tree for template class map<>
-	map<unsigned short*,unsigned int>	indexBlocs;
-	map<float*,unsigned int>			vertexBlocs;
+	map<unsigned short*,uint64_t>	indexBlocs;
+	map<float*,uint64_t>			vertexBlocs;
 
 	//! Free blocs for faster reallocation ( blocs are contained in actual memory structure )
 	vector<data_bloc>	freeIndexBlocs;

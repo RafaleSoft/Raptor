@@ -28,6 +28,7 @@ class CObject3D;
 class CRenderingProperties;
 class C3DSceneObject;
 class CMirror;
+class CVulkanCommandBuffer;
 
 
 class RAPTOR_API C3DScene : public CPersistence
@@ -42,7 +43,10 @@ public:
 
 	//!	Renders the whole scene.
 	virtual void glRender(void);
-
+	virtual void vkRender(	CVulkanCommandBuffer& commandBuffer,
+							VkBuffer vertexBinding,
+							VkBuffer indexBinding);
+	virtual void vkInitPipeline(void);
 	
     //! Defines the scene ambient intensity, which is multiplied by each object's material ambient.
     //! Global ambient is by default set for each display at 0.2, 0.2, 0.2, 1.0 (@see CRaptorDisplayConfig ).

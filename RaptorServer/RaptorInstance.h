@@ -27,7 +27,7 @@ class CRaptorInstance : public server_base_t::request_handler_t,
 						public CRenderEntryPoint
 {
 public:
-    static CRaptorInstance* getInstance(void);
+    static CRaptorInstance* GetInstance(void);
 	virtual ~CRaptorInstance();
 
 	//!	Starts a Raptor instance, performing all inits

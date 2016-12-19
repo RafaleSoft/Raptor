@@ -10,51 +10,47 @@
 RAPTOR_NAMESPACE_BEGIN
 
 
-class CBufferObject : public CMemory::IBufferObject
+class CBufferObject : public IDeviceMemoryManager::IBufferObject
 {
 public:
-	CBufferObject():m_size(0),m_storage(NB_BUFFER_KIND)
-	{ m_buffer.id = 0; };
+	//!	OpenGL buffer objet constructor
+	CBufferObject()
+		:m_size(0),m_storage(NB_BUFFER_KIND),m_buffer(0) { };
 
-	virtual size_t getSize(void) const;
+	//!	Destructor
+	virtual ~CBufferObject() {};
+
+
+	virtual uint64_t getSize(void) const;
 
 	virtual BUFFER_KIND getStorage(void) const;
 
-	virtual void* getBaseAddress(void) const;
-
 	virtual unsigned int getBufferId(void) const;
 
-	virtual ~CBufferObject() {};
-
+	
 	//! The size of the buffer object
-	unsigned int	m_size;
+	uint64_t		m_size;
 
 	//! Indicates the data storage usage: vertex, pixels, ...
     BUFFER_KIND		m_storage;
 
 	//!	Actual data
-	BUFFER_DATA		m_buffer;
+	unsigned int	m_buffer;
 };
 
-size_t CBufferObject::getSize(void) const
+uint64_t CBufferObject::getSize(void) const
 {
 	return m_size;
 }
 
-inline CMemory::IBufferObject::BUFFER_KIND CBufferObject::getStorage(void) const
+inline IDeviceMemoryManager::IBufferObject::BUFFER_KIND CBufferObject::getStorage(void) const
 {
 	return m_storage;
 }
 
-inline void* CBufferObject::getBaseAddress(void) const
-{
-	if (m_buffer.id & 1) return NULL;
-	else return m_buffer.address;
-}
-
 inline unsigned int CBufferObject::getBufferId(void) const
 {
-	if (m_buffer.id & 1) return (m_buffer.id >> 16);
+	if (m_buffer & 1) return (m_buffer >> 16);
 	else return 0;
 }
 

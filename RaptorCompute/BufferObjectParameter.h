@@ -8,7 +8,7 @@
 class CBufferObjectParameter : public CRaptorComputeTask::Parameter<cl_mem>
 {
 public:
-	CBufferObjectParameter(cl_mem &buffer,size_t size,bool acq = false)
+	CBufferObjectParameter(cl_mem &buffer,uint64_t size,bool acq = false)
 		:CRaptorComputeTask::Parameter<cl_mem>(buffer),
 		m_bufferSize(size),m_bAcquire(acq)
 	{ };
@@ -22,7 +22,7 @@ public:
 		else
 			return NULL;
 	};
-	virtual size_t size(void) const 
+	virtual uint64_t size(void) const 
 	{
 		if (p != NULL)
 			return sizeof(p);
@@ -39,8 +39,8 @@ public:
 	{ return m_bAcquire; };
 
 private:
-	size_t	m_bufferSize;
-	bool	m_bAcquire;
+	uint64_t	m_bufferSize;
+	bool		m_bAcquire;
 };
 
 #endif

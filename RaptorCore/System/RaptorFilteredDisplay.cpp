@@ -265,6 +265,7 @@ bool CRaptorFilteredDisplay::glCreateRenderDisplay(void)
 		m_pImageSet = new CTextureSet();
 		m_pImageSet->registerDestruction(this);
 
+
 		//	Create the texture set for render buffer targets
 		//	Render to texture and render to depth texture are imposed.
 		if (CRaptorDisplayConfig::RENDER_BUFFER == filter_cs.renderer)
@@ -311,6 +312,9 @@ bool CRaptorFilteredDisplay::glCreateRenderDisplay(void)
 			//  - Create the rendering display texture, which is also the main subdisplay when there are no filters,
 			//  - a spare display texture, which is used to alternate rendering with the main display when there are
 			//  several filters chained ( adds ability to use the previous render in a TMU source )
+			//
+			//	Rq: for PBuffers, the final texture format is determined by the PBuffer pixelFormat,
+			//	so the texelType here is not necessary.
 			CTextureObject *T = f.glCreateDynamicTexture(	CTextureObject::CGL_COLOR24_ALPHA,
 															CTextureObject::CGL_OPAQUE,
 															CTextureObject::CGL_BILINEAR,
@@ -572,8 +576,8 @@ bool CRaptorFilteredDisplay::glRender(void)
 
     //! Memory will be locked also in CRaptorScreenDisplay, but it is harmless,
     //! once it is locked, it is kept unchanged.
-    m_pGAllocator->glLockMemory(true);
-	m_pTAllocator->glLockMemory(true);
+    m_pGAllocator->glvkLockMemory(true);
+	m_pTAllocator->glvkLockMemory(true);
 
 	CRaptorScreenDisplay::glRenderScene();
 

@@ -34,6 +34,7 @@
 	#include "System/RaptorErrorManager.h"
 #endif
 
+
 RAPTOR_NAMESPACE
 
 
@@ -111,10 +112,10 @@ void CAmbientOcclusion::addObject(C3DSceneObject* object)
 	else if (obj->getId().isSubClassOf(CObject3DInstance::CObject3DInstanceClassID::GetClassId()))
 	{
 		CObject3DInstance* inst = (CObject3DInstance*)obj;
-		CObject3D *object = inst->getObject();
-		if (object->getId().isSubClassOf(CShadedGeometry::CShadedGeometryClassID::GetClassId()))
+		CObject3D *o = inst->getObject();
+		if (o->getId().isSubClassOf(CShadedGeometry::CShadedGeometryClassID::GetClassId()))
 		{
-			CShadedGeometry* shaded = (CShadedGeometry*)object;
+			CShadedGeometry* shaded = (CShadedGeometry*)o;
 			registerForAmbientOcclusion(shaded,inst);
 		}
 	}

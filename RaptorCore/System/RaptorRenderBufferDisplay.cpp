@@ -144,14 +144,14 @@ bool CRaptorRenderBufferDisplay::glAttachBuffers()
 #if defined(GL_EXT_framebuffer_object)
 	if (m_pAttachments != NULL)
 	{
-		GLint max = 0;
-		glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS_EXT ,&max);
+		GLint maxAttachments = 0;
+		glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS_EXT ,&maxAttachments);
 		 
 		const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
 		unsigned int nbtextures = m_pAttachments->getNbTexture();
 
 		GLuint colorAttachment = GL_COLOR_ATTACHMENT0_EXT;
-		for (unsigned int i=0;i<MIN(nbtextures,max);i++)
+		for (unsigned int i=0;i<MIN(nbtextures,(unsigned int)abs(max(0,maxAttachments)));i++)
 		{
 			CTextureObject *T = m_pAttachments->getTexture(i);
 			unsigned int target = T->target & 0xFFFF;
@@ -195,13 +195,13 @@ bool CRaptorRenderBufferDisplay::glDetachBuffers()
 #if defined(GL_EXT_framebuffer_object)
 	if (m_pAttachments != NULL)
 	{
-		GLint max = 0;
-		glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS_EXT ,&max);
+		GLint maxAttachments = 0;
+		glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS_EXT ,&maxAttachments);
 
 		const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
 		unsigned int nbtextures = m_pAttachments->getNbTexture();
 
-		for (unsigned int i=0;i<MIN(nbtextures,max);i++)
+		for (unsigned int i=0;i<MIN(nbtextures,(unsigned int)abs(max(0,maxAttachments)));i++)
 		{
 			CTextureObject *T = m_pAttachments->getTexture(i);
 			unsigned int target = T->target & 0xFFFF;
@@ -728,18 +728,14 @@ bool CRaptorRenderBufferDisplay::glRender(void)
 
 	// If memory locked, an unlock would be necessary to 
 	//	lock for this display.
-	if (allocatorG->isMemoryRelocated())
-		allocatorG->glLockMemory(true);
-	if (allocatorT->isMemoryRelocated())
-		allocatorT->glLockMemory(true);
+	allocatorG->glvkLockMemory(true);
+	allocatorT->glvkLockMemory(true);
 
 	C3DScene *pScene = getRootScene();
 	pScene->glRender();
 
-	if (allocatorG->isMemoryRelocated())
-		allocatorG->glLockMemory(false);
-	if (allocatorT->isMemoryRelocated())
-		allocatorT->glLockMemory(false);
+	allocatorG->glvkLockMemory(false);
+	allocatorT->glvkLockMemory(false);
 
     return true;
 }

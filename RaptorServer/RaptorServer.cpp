@@ -46,7 +46,7 @@ CRaptorServer::~CRaptorServer()
 bool CRaptorServer::Start(const CCmdLineParser& cmdline)
 {
     if (m_pInstance == NULL)
-        m_pInstance = CRaptorInstance::getInstance();
+        m_pInstance = CRaptorInstance::GetInstance();
 
 	unsigned short width = 256;
 	unsigned short height = 256;

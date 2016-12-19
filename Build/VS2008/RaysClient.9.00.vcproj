@@ -117,7 +117,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="$(RAPTOR_ROOT)\Redist\Include;$(PLATFORM_SDK)\include"
+				AdditionalIncludeDirectories="$(RAPTOR_ROOT)\Redist\Include;$(PLATFORM_SDK)\include;$(VULKAN_INCLUDE_PATH)"
 				PreprocessorDefinitions="WIN32;NDEBUG"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="2"
@@ -135,7 +135,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="RaptorToolBox.lib RaptorNetwork.lib"
+				AdditionalDependencies="Raptor.lib RaptorToolBox.lib RaptorNetwork.lib"
 				Version="$(RAPTOR_VERSION)"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="$(RAPTOR_ROOT)\redist\lib;$(PLATFORM_SDK)\lib"
@@ -220,6 +220,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\Rays2\RaysClient\RaysClientData.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\Rays2\RaysClient\RaysClientDlg.cpp"
 				>
 			</File>
@@ -249,6 +253,10 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
+			<File
+				RelativePath="..\..\Rays2\RaysClient\RaysClientData.h"
+				>
+			</File>
 			<File
 				RelativePath="..\..\Rays2\RaysClient\RaysClientDlg.h"
 				>

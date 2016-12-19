@@ -68,7 +68,6 @@ public:
         CRaptorDisplay			*defaultDisplay;
 		RAPTOR_HANDLE			defaultWindow;
 		long					defaultContext;
-		RAPTOR_HANDLE			vulkanModule;
 		vector<CRaptorDisplay*>	displays;
 		vector<CRenderEntryPoint*>	  renderEntryPoints;
 		vector<CRaptorConsole::CInputCollectorBase*>	inputCollectors;

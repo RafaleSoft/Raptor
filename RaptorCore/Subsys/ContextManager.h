@@ -19,8 +19,8 @@
 #if !defined(AFX_TEXTUREOBJECT_H__D32B6294_B42B_4E6F_AB73_13B33C544AD0__INCLUDED_)
 	#include "GLHierarchy/TextureObject.h"
 #endif
-#if !defined(__RAPTOR_VKEXT_H__)
-	#include "vkext.h"
+#if !defined(AFX_RAPTORVULKANDEVICE_H__2FDEDD40_444E_4CC2_96AA_CBF9E79C3ABE__INCLUDED_)
+	#include "Subsys/Vulkan/VulkanDevice.h"
 #endif
 
 
@@ -36,6 +36,7 @@ class CContextManager
 public:
 	typedef     unsigned long   PIXEL_BUFFER_ID;
 	typedef     long            RENDERING_CONTEXT_ID;
+	static const RENDERING_CONTEXT_ID INVALID_CONTEXT;
 
 public:
 	//!	Acces to the unique instance.
@@ -60,10 +61,12 @@ public:
 	//!	Initialise a global Vulkan instance and pysical devices for
 	//!	further logical devices queries.
 	//! @return false is vulkan library cannot be initialized, true otherwise.
-	bool vkInitContext(void);
+	virtual bool vkInit(void);
 
 	RENDERING_CONTEXT_ID vkCreateContext(	const RAPTOR_HANDLE& device,
 											const CRaptorDisplayConfig& config);
+
+	CVulkanDevice& vkGetDevice(RENDERING_CONTEXT_ID ctx) const;
 
 	void vkDestroyContext(RENDERING_CONTEXT_ID ctx);
 
@@ -72,6 +75,8 @@ public:
 	void vkSwapBuffers(RENDERING_CONTEXT_ID ctx);
 
 	void vkSwapVSync(unsigned int framerate);
+
+	void vkResize(RENDERING_CONTEXT_ID ctx,const CRaptorDisplayConfig& config);
 #endif
 
 	//!	This method creates a "default' window for Raptor's internal use.
@@ -162,34 +167,39 @@ protected:
 
     void glRemoveLogo(void);
 
-
-private:
-	CTextureObject	*glBuildLogo(void);
+#if defined(VK_VERSION_1_0)
+	RAPTOR_HANDLE		vulkanModule;
+	string				instance_extensions;
+	string				instance_layers;
+	DECLARE_VK_get_instance_proc_addr(DEFAULT_LINKAGE);
+	DECLARE_VK_global(DEFAULT_LINKAGE);
 
 	//!	An extensions manager to access Vulkan API.
-#if defined(VK_VERSION_1_0)
-	CRaptorExtensions	*m_pExtensions;
-
-	VkInstance			m_globalInstance;
-
-	unsigned int				m_nbPhysicalDevices;
-	VkPhysicalDevice			*m_pPhysicalDevices;
-	VkPhysicalDeviceProperties	*m_pProperties;
-	VkPhysicalDeviceFeatures	*m_pFeatures;
-
-	//unsigned int		m_nbDevices;
-
 	typedef struct
 	{
-		VkDevice			device;
-		VkCommandPool		commandPool;
-#ifdef VK_KHR_win32_surface
-		VkSurfaceKHR		surface;
-	#ifdef VK_KHR_swapchain
-		VkSwapchainKHR		swapChain;
-	#endif
-		uint32_t			currentImage;
-		VkImage				*pImages;
+		DECLARE_VK_instance(DEFAULT_LINKAGE)
+		DECLARE_VK_win32(DEFAULT_LINKAGE)
+		DECLARE_VK_xlib(DEFAULT_LINKAGE)
+		DECLARE_VK_KHR_surface(DEFAULT_LINKAGE)
+
+		VkInstance					instance;
+		unsigned int				nbPhysicalDevices;
+		VkPhysicalDevice			*pPhysicalDevices;
+		VkPhysicalDeviceProperties	*pProperties;
+		VkPhysicalDeviceFeatures	*pFeatures;
+		std::string					deviceExtensions;
+		std::string					deviceLayers;
+
+		uint32_t					physicalDevice;
+		CVulkanDevice				device;
+		
+#ifdef VK_KHR_surface
+		VkSurfaceKHR				surface;
+		VkSurfaceCapabilitiesKHR	surfaceCapabilities;
+		uint32_t					pSurfaceFormatCount;
+		VkSurfaceFormatKHR			*pSurfaceFormats;
+		uint32_t					pPresentModeCount;
+		VkPresentModeKHR			*pPresentModes;
 #endif
 	} VK_CONTEXT;
 	VK_CONTEXT	*m_pVkContext;
@@ -197,6 +207,31 @@ private:
 #ifdef VK_KHR_swapchain
 	VkPresentModeKHR	presentMode;
 #endif
+
+private:
+#if defined(VK_VERSION_1_0)
+	//!	Initialise a Vulkan instance, collects physical devices, etensions & properties.
+	bool vkInitInstance(RENDERING_CONTEXT_ID ctx);
+
+	//!	Initialise a Vulkan logical device and all necessary queue families.
+	bool vkInitDevice(RENDERING_CONTEXT_ID ctx,const CRaptorDisplayConfig& config);
+
+	//!	Create a swap chain from the surface properties and initialise all rendering resources.
+	bool vkCreateSwapChain(RENDERING_CONTEXT_ID ctx,uint32_t nbSamples,uint32_t width,uint32_t height);
+
+	//!	Creates a rendering surface for the window handle handle
+	//! @return false if surface creation failed
+	virtual bool vkCreateSurface(const RAPTOR_HANDLE& handle,RENDERING_CONTEXT_ID ctx) = 0;
+
+#ifdef VK_KHR_surface
+	//!	Collects all physical device properties to use surface formats and modes
+	bool vkInitSurface(RENDERING_CONTEXT_ID ctx);
+#endif
+
+	CRaptorExtensions	*m_pExtensions;
+#endif
+
+	CTextureObject	*glBuildLogo(void);
 
 	RAPTOR_HANDLE				m_logo;
 	CReference<CTextureObject>	m_pLogo;

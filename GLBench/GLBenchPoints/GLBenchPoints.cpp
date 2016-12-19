@@ -10,6 +10,7 @@
 #include "GLHierarchy/TextureFactory.h"
 #include "GLHierarchy/TextureObject.h"
 #include "GLHierarchy/VertexShader.h"
+#include "GLHierarchy/Geometry.h"
 
 
 RAPTOR_NAMESPACE
@@ -39,9 +40,8 @@ static char RESULT_DESCRIPTION[NB_RESULTS][256] =
 #define SCORE_FACTOR_3		1.5
 #define SCORE_FACTOR_4		5
 
-GL_COORD_VERTEX	*vertex = NULL;
-CColor::RGBA *colors = NULL;
-GLuint *indexes = NULL;
+
+
 CTextureObject *sprite = NULL;
 //
 /////////////////////////////////////////////////////////////////////////////
@@ -58,15 +58,17 @@ public:
 private:
 	virtual	void GLInitContext(void);
 	virtual void glDraw(void);
+	void Draw(void);
 
 	float dt;
-	void Draw(void);
+	CGeometry	*m_points;
 };
 
 Display::Display() : GLBenchDisplay()
 {
 	draw = 0;
 	dt = 0.0f;
+	m_points = NULL;
 }
 
 Display::~Display()
@@ -76,8 +78,9 @@ Display::~Display()
 
 void Display::Draw(void)
 {
-	for (int i=0;i<MAX_VERTEX;i+=500000)
-		glDrawElements( GL_POINTS, 500000, GL_UNSIGNED_INT,indexes+i);
+	m_points->glRender();
+	//for (int i=0;i<MAX_VERTEX;i+=500000)
+	//	glDrawElements( GL_POINTS, 500000, GL_UNSIGNED_INT,indexes+i);
     //glDrawElements( GL_POINTS, MAX_VERTEX, GL_UNSIGNED_INT,&indexes[0]);
 //	glFlush();
 }
@@ -118,9 +121,9 @@ void Display::glDraw()
 
 void Display::GLInitContext()
 {
-	vertex = (GL_COORD_VERTEX*)(CMemory::GetInstance()->allocate(sizeof(GL_COORD_VERTEX),MAX_VERTEX,16));
-	colors = (CColor::RGBA*)(CMemory::GetInstance()->allocate(sizeof(CColor::RGBA),MAX_VERTEX,16));
-	indexes = (GLuint*)(CMemory::GetInstance()->allocate(sizeof(GLuint),MAX_VERTEX,16));
+	GL_COORD_VERTEX	*vertex = (GL_COORD_VERTEX*)(CHostMemoryManager::GetInstance()->allocate(sizeof(GL_COORD_VERTEX),MAX_VERTEX,16));
+	CColor::RGBA *colors = (CColor::RGBA*)(CHostMemoryManager::GetInstance()->allocate(sizeof(CColor::RGBA),MAX_VERTEX,16));
+	GLushort *indexes = (GLushort*)(CHostMemoryManager::GetInstance()->allocate(sizeof(GLushort),MAX_VERTEX,16));
 
     int i = 0;
 	for (i=0;i<MAX_VERTEX;i++)
@@ -187,44 +190,23 @@ void Display::GLInitContext()
 
 	glClearColor(0.0f,0.0f,0.0f,0.0);
 	
-    unsigned int vb_size = sizeof(GL_COORD_VERTEX) * MAX_VERTEX + sizeof(CColor::RGBA) * MAX_VERTEX;
-	CMemory::IBufferObject *vb = CMemory::GetInstance()->glAllocateBufferObject(CMemory::IBufferObject::VERTEX_BUFFER,
-																				CMemory::IBufferObject::STATIC,vb_size);
-	if (vb != NULL)
-	{
-		unsigned int size = sizeof(GL_COORD_VERTEX) * MAX_VERTEX;
-		CMemory::GetInstance()->glSetBufferObjectData(*vb,0,vertex,size);
-		CMemory::GetInstance()->release(vertex);
-		vertex = (GL_COORD_VERTEX*)vb->getBaseAddress();
+	m_points = new CGeometry("BenchPoints");
+	CGeometry::CRenderingModel model(	CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY|
+										CGeometry::CRenderingModel::CGL_COLORS);
+	m_points->setRenderingModel(model);
 
-		unsigned int freePos = size;
-		size = sizeof(GL_COORD_VERTEX) * MAX_VERTEX;
-		CMemory::GetInstance()->glSetBufferObjectData(*vb,freePos,colors,size);
-		CMemory::GetInstance()->release(colors);
-		colors = (CColor::RGBA*)((unsigned char*)vb->getBaseAddress()+freePos);
+	m_points->glSetVertices(MAX_VERTEX,NULL);
+	m_points->glSetColors(MAX_VERTEX,NULL);
+	m_points->glSetVertices(MAX_VERTEX,vertex);
+	m_points->glSetColors(MAX_VERTEX,colors);
 
-		CMemory::GetInstance()->glLockBufferObject(*vb);
-	}
+	CGeometryPrimitive*	pointsPrimitive = m_points->createPrimitive(CGeometryPrimitive::POINT);
+	pointsPrimitive->setIndexes(MAX_VERTEX,indexes);
 
-    vb_size = MAX_VERTEX * sizeof(GLuint);
-    CMemory::IBufferObject *vb2 = CMemory::GetInstance()->glAllocateBufferObject(CMemory::IBufferObject::INDEX_BUFFER,
-																				 CMemory::IBufferObject::STATIC,vb_size);
-    if (vb2 != NULL)
-    {
-        CMemory::GetInstance()->glSetBufferObjectData(*vb2,0,indexes,vb_size);
-		CMemory::GetInstance()->release(indexes);
-		indexes = (GLuint*)vb->getBaseAddress();
+	CHostMemoryManager::GetInstance()->release(vertex);
+	CHostMemoryManager::GetInstance()->release(colors);
+	CHostMemoryManager::GetInstance()->release(indexes);
 
-        CMemory::GetInstance()->glLockBufferObject(*vb2);
-    }
-
-	glVertexPointer( 3 , GL_FLOAT , sizeof(GL_COORD_VERTEX) , vertex);
-	glColorPointer( 3 , GL_FLOAT , sizeof(CColor::RGBA) , colors);
-	glEnableClientState(GL_VERTEX_ARRAY);
-
-#if defined(GL_EXT_compiled_vertex_array)
-//	glLockArraysEXT(0,MAX_VERTEX);
-#endif
 
 	CTextureFactory &txt = CTextureFactory::getDefaultFactory();
 
@@ -449,11 +431,6 @@ extern "C" void GLBENCH_API Bench(CWnd *parent)
 	//	Bench done, release everything
 	//
 	GLDisplay->glMakeCurrent();
-
-	CMemory::GetInstance()->release(vertex);
-	CMemory::GetInstance()->release(colors);
-	CMemory::GetInstance()->release(indexes);
-
 
 	GLDisplay->glMakeCurrent(false);
 	GLDisplay->DestroyWindow();

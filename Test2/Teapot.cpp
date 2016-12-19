@@ -119,7 +119,7 @@ void CTeapot::GLInitContext()
 	#if(0)
 		f.glLoadCompressedTexture(T,"start.s3tc");
 	#else
-		const CTextureFactoryConfig::ICompressor *compressor = config.getCurrentCompressor();
+		//const CTextureFactoryConfig::ICompressor *compressor = config.getCurrentCompressor();
 		if (0 < config.getNumCompressors())
 			config.setCurrentCompressor(config.getCompressor("OpenGL"));
 		f.glLoadTexture(T,"Datas\\start.tga");
@@ -138,7 +138,7 @@ void CTeapot::GLInitContext()
 	if (Raptor::glIsExtensionSupported("GL_ARB_texture_cube_map"))
 	{
 #if defined(GL_ARB_texture_compression)
-		const CTextureFactoryConfig::ICompressor *compressor = config.getCurrentCompressor();
+		//const CTextureFactoryConfig::ICompressor *compressor = config.getCurrentCompressor();
 		if (0 < config.getNumCompressors())
 			config.setCurrentCompressor(config.getCompressor("OpenGL"));
 #endif

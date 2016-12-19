@@ -12,56 +12,49 @@
 #if !defined(AFX_RAPTOR_COMPUTE_TASK_H__F05CF7F9_151A_4760_885A_19FF9C648278__INCLUDED_)
 	#include "RaptorComputeTask.h"
 #endif
-
-
-
-	class CComputeBufferObject : public CRaptorComputeMemory::IBufferObject
-    {
-    public:
-		//!	Compute buffer constructor
-		CComputeBufferObject():m_size(0),address(NULL),m_storage(COMPUTE_BUFFER)
-		{};
-
-		//!	Local buffer constructor
-		CComputeBufferObject(size_t sz)
-			:m_size(sz),address(NULL),m_storage(LOCAL_BUFFER) {};
-
-		//!	Destructor
-		virtual ~CComputeBufferObject() {};
-
-		void *data(void) const 
-		{ return address; };
-
-		void* getBaseAddress(void) const
-		{ return address; };
-
-		size_t getSize(void) const
-		{ return m_size; };
-
-		BUFFER_KIND getStorage(void) const
-		{ return m_storage; }
-
-		unsigned int getBufferId(void) const
-		{ return 0; }
-
-		//!	An opaque pointer to the data
-		void		*address;
-
-        //! The size in bytes of the buffer object
-		size_t		m_size;
-
-		//! Indicates the data storage usage: vertex, pixels, ...
-        BUFFER_KIND m_storage;
-
-    private:
-        CComputeBufferObject(const CComputeBufferObject& ) {};
-		CComputeBufferObject& operator=(const CComputeBufferObject& ) {return *this; };
-	};
+#if !defined(AFX_RAPTOR_COMPUTE_BUFFER_OBJECT_H__6AB1B061_4A89_4F5C_BCFE_01C26304A434__INCLUDED_)
+	#include "RaptorComputeBufferObject.h"
+#endif
 
 
 #include <sstream>
 
-map<unsigned int,CRaptorComputeMemory*>	CRaptorComputeMemory::s_pMemories;
+const CRaptorComputeBufferObject* CRaptorComputeBufferObject::getBuffer(const CRaptorComputeMemory::IBufferObject *bo)
+{
+	std::map<const CRaptorComputeMemory::IBufferObject*,const CRaptorComputeBufferObject*>::iterator it = 
+		CRaptorComputeBufferObject::s_pBuffers.find(bo);
+	if (CRaptorComputeBufferObject::s_pBuffers.end() == it)
+		return NULL;
+	else
+		return (*it).second;
+}
+
+bool CRaptorComputeBufferObject::addBuffer(const CRaptorComputeBufferObject* cb)
+{
+	const CRaptorComputeMemory::IBufferObject* bo = cb;
+	std::map<const CRaptorComputeMemory::IBufferObject*,const CRaptorComputeBufferObject*>::iterator it = 
+		CRaptorComputeBufferObject::s_pBuffers.find(bo);
+	if (CRaptorComputeBufferObject::s_pBuffers.end() == it)
+		return false;
+	else
+		s_pBuffers[bo] = cb;
+	return true;
+}
+
+bool CRaptorComputeBufferObject::removeBuffer(const CRaptorComputeMemory::IBufferObject *bo)
+{
+	std::map<const CRaptorComputeMemory::IBufferObject*,const CRaptorComputeBufferObject*>::iterator it = 
+		CRaptorComputeBufferObject::s_pBuffers.find(bo);
+	if (CRaptorComputeBufferObject::s_pBuffers.end() == it)
+		return false;
+	else
+		s_pBuffers.erase(it);
+	return true;
+}
+
+
+std::map<const CRaptorComputeMemory::IBufferObject*,const CRaptorComputeBufferObject*> CRaptorComputeBufferObject::s_pBuffers;
+std::map<unsigned int,CRaptorComputeMemory*>	CRaptorComputeMemory::s_pMemories;
 static map<unsigned int,cl_context>	s_pContext;
 
 typedef struct Buffer_Mem_Link_t
@@ -152,11 +145,11 @@ CRaptorComputeMemory::clCreateBuffer(	size_t size,
 										void *initialData,
 										CRaptorComputeMemory::IBufferObject::BUFFER_KIND kind)
 {
-	CComputeBufferObject *res = NULL;
+	CRaptorComputeBufferObject *res = NULL;
 
 	if (CRaptorComputeMemory::IBufferObject::LOCAL_BUFFER == kind)
 	{
-		res = new CComputeBufferObject(size);
+		res = new CRaptorComputeBufferObject(size);
 		return res;
 	}
 	
@@ -194,7 +187,7 @@ CRaptorComputeMemory::clCreateBuffer(	size_t size,
 
 	if (CL_SUCCESS == errcode)
 	{
-		res = new CComputeBufferObject();
+		res = new CRaptorComputeBufferObject();
 
 		res->address = buffer;
 		res->m_size = size;
@@ -207,15 +200,16 @@ CRaptorComputeMemory::clCreateBuffer(	size_t size,
 
 		//	TODO : use current context instead
 		maxAllocatable -= size;
+		CRaptorComputeBufferObject::addBuffer(res);
 	}
 
 	return res;
 }
 
 CRaptorComputeMemory::IBufferObject*
-CRaptorComputeMemory::clCreateBuffer(CMemory::IBufferObject *glBuffer)
+CRaptorComputeMemory::clCreateBuffer(IDeviceMemoryManager::IBufferObject *glBuffer)
 {
-	CComputeBufferObject *res = NULL;
+	CRaptorComputeBufferObject *res = NULL;
 
 	static map<unsigned int,cl_context>::iterator itc = s_pContext.find(mID);
 
@@ -236,7 +230,7 @@ CRaptorComputeMemory::clCreateBuffer(CMemory::IBufferObject *glBuffer)
 
 		if (CL_SUCCESS == errCode)
 		{
-			res = new CComputeBufferObject;
+			res = new CRaptorComputeBufferObject();
 
 			res->address = buffer;
 			res->m_size = glBuffer->getSize();
@@ -249,6 +243,7 @@ CRaptorComputeMemory::clCreateBuffer(CMemory::IBufferObject *glBuffer)
 
 			//	TODO : use current context instead
 			maxAllocatable -= glBuffer->getSize();
+			CRaptorComputeBufferObject::addBuffer(res);
 		}
 	}
 
@@ -257,10 +252,14 @@ CRaptorComputeMemory::clCreateBuffer(CMemory::IBufferObject *glBuffer)
 
 bool CRaptorComputeMemory::clDestroyBuffer(CRaptorComputeMemory::IBufferObject *&bo)
 {
-	if ((bo->getBaseAddress() != NULL) && (bo->getSize() > 0))
+	const CRaptorComputeBufferObject* cb = CRaptorComputeBufferObject::getBuffer(bo);
+	if (NULL == cb)
+		return false;
+
+	if ((cb->address != NULL) && (cb->getSize() > 0))
 	{
 		cl_uint memcount = 0;
-		::clGetMemObjectInfo (	(cl_mem)bo->getBaseAddress(),
+		::clGetMemObjectInfo (	cb->address,
 								CL_MEM_REFERENCE_COUNT,
 								sizeof(cl_uint),
 								&memcount,
@@ -273,14 +272,14 @@ bool CRaptorComputeMemory::clDestroyBuffer(CRaptorComputeMemory::IBufferObject *
 		}
 		else
 		{
-			cl_int res = ::clReleaseMemObject ((cl_mem)bo->getBaseAddress());
+			cl_int res = ::clReleaseMemObject(cb->address);
 			//	TODO : use current context instead
-			if ((res == CL_SUCCESS) && (bo->getBaseAddress() == NULL))
+			if ((res == CL_SUCCESS) && (cb->address == NULL))
 			{
-				maxAllocatable += bo->getSize();
-				CComputeBufferObject *cb = (CComputeBufferObject*)bo;
+				maxAllocatable += cb->getSize();
 				delete cb;
 				bo = NULL;
+				CRaptorComputeBufferObject::removeBuffer(bo);
 			}
 			return (res == CL_SUCCESS);
 		}
@@ -288,9 +287,9 @@ bool CRaptorComputeMemory::clDestroyBuffer(CRaptorComputeMemory::IBufferObject *
 	else if ((bo->getStorage() == IBufferObject::LOCAL_BUFFER) && 
 			(bo->getSize() > 0))
 	{
-		CComputeBufferObject *cb = (CComputeBufferObject*)bo;
 		delete cb;
 		bo = NULL;
+		CRaptorComputeBufferObject::removeBuffer(bo);
 		return true;
 	}
 	else

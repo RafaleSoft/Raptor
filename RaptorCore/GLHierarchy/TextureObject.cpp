@@ -182,7 +182,7 @@ float* CTextureObject::getFloatTexels(void)
 void CTextureObject::releaseTexels(void)
 {
 	if (texels != NULL)
-		CMemory::GetInstance()->garbage(texels);
+		CHostMemoryManager::GetInstance()->garbage(texels);
 
 	texels = NULL;
 }
@@ -208,7 +208,7 @@ void CTextureObject::allocateTexels(TEXEL_TYPE type)
 			case CGL_LIGHTMAP16_ALPHA:
 			case CGL_DEPTH24_STENCIL8:
 			{
-				CMemory::Allocator<unsigned char> allocator;
+				CHostMemoryManager::Allocator<unsigned char> allocator;
 				texels = allocator.allocate(size); 
 				break;
 			}
@@ -221,7 +221,7 @@ void CTextureObject::allocateTexels(TEXEL_TYPE type)
 			case CGL_DEPTH24:
 			case CGL_DEPTH32:
 			{
-				CMemory::Allocator<float> allocator;
+				CHostMemoryManager::Allocator<float> allocator;
 				texels = allocator.allocate(size);
 				break;
 			}

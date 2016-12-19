@@ -90,6 +90,15 @@ public:
 	virtual bool glReleaseTexImageARB(PIXEL_BUFFER_ID pbuffer,int iBuffer);
 
 
+#if defined(VK_VERSION_1_0)
+	//! @see base class
+	virtual bool vkInit(void);
+	//! @see base class
+	virtual bool vkCreateSurface(const RAPTOR_HANDLE& handle,RENDERING_CONTEXT_ID ctx);
+#endif
+
+
+
 private:
 #if defined(WGL_ARB_pbuffer)
 	typedef struct pbuffer_tag

@@ -348,14 +348,14 @@ void CShadowMapDisplay::Init()
 
 
 	CGenericVector<float> LL(-1.0f,-1.0f,0.0f,1.0f);
-	GL_COORD_VERTEX S(8.0f,8.0f,0.0f,1.0f);
+	GL_COORD_VERTEX SS(8.0f,8.0f,0.0f,1.0f);
 	LL.Normalize();
     GL_COORD_VERTEX L(LL.X(),LL.Y(),LL.Z(),LL.H());
 
 	glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER ,GL_FALSE);
 
 	m_light = new CLight();
-	m_light->setLightPosition(S);
+	m_light->setLightPosition(SS);
 	m_light->setLightDirection(L);
 	m_light->setAmbient(0.2f,0.2f,0.2f,1.0f);
 	m_light->setDiffuse(0.8f,0.8f,0.8f,0.8f);

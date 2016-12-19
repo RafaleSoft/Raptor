@@ -1,6 +1,26 @@
 - simd.cpp : appel a GetSystemInfo, migrer vers intrinsics
 	- linux : /proc/cpuinfo
+	
+-CVulkanMemory:
+	- initialiser une bloc mémoire pour l'application (vertex et index buffers bindés sur la même allocation)
+	- Factoriser les allocators (Geometry, Texel, Uniform)
 
+-CVulkanCommandBuffer:
+	- rendre privée les mathodes et attribut commandbuffer
+
+- CHostMemoryManager:
+	- ajouter capacité allocations/release dans un bloc prédéfini (data pool)
+
+- CGeometryAllocator:
+	- currentAddress : utilisé en unsigned int => bug si uint64_t
+
+- CRaptorRenderBufferDisplay:
+	- mettre au point le format CGL_FLOAT_32 (creation des textures attachées)
+	
+- CGeometry / CGeometryPrimitive:
+	- créer un mode"BigGeometry" avec des indices de type uint32_t
+	- attention au GeometryAllocator lock/unlock (utilise la taille estimée des données!)
+		
 - supprimer des "friend" ?
 	p.ex. dans CRaptorDisplay et sous classes ...
 

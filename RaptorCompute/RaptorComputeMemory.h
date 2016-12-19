@@ -1,7 +1,9 @@
 #if !defined(AFX_RAPTOR_COMPUTE_MEMORY_H__525371EA_0090_40AA_9889_333824045A7A__INCLUDED_)
 #define AFX_RAPTOR_COMPUTE_MEMORY_H__525371EA_0090_40AA_9889_333824045A7A__INCLUDED_
 
-#include <System/Memory.h>
+#if !defined(AFX_MEMORY_H__81A6CA9A_4ED9_4260_B6E4_C03276C38DBC__INCLUDED_)
+	#include <System/Memory.h>
+#endif
 
 RAPTOR_NAMESPACE
 
@@ -9,8 +11,7 @@ RAPTOR_NAMESPACE
 class RAPTORCOMPUTE_API CRaptorComputeMemory
 {
 public:
-	//	TODO: Use / Inherit Raptor::CMemory::CBufferObject
-	class RAPTORCOMPUTE_API IBufferObject : public CMemory::IBufferObject
+	class RAPTORCOMPUTE_API IBufferObject : public IDeviceMemoryManager::IBufferObject
     {
     public:
         static const BUFFER_KIND COMPUTE_BUFFER = 4;
@@ -24,8 +25,8 @@ public:
         virtual ~IBufferObject() {};
 
 	private:
-        IBufferObject(const IBufferObject& ) {};
-		IBufferObject& operator=(const IBufferObject& ) {return *this; };
+        IBufferObject(const IBufferObject& );
+		IBufferObject& operator=(const IBufferObject& );
 	};
 
 	//!	Single instance accessor.
@@ -46,7 +47,7 @@ public:
 	//! This method creates a new buffer object wrapping a GL buffer.
 	//! @param glBuffer : a Raptor Core GL buffer
     //! @return the newly allocated buffer object or NULL if allocation failed.
-    CRaptorComputeMemory::IBufferObject* clCreateBuffer(CMemory::IBufferObject *glBuffer);
+    CRaptorComputeMemory::IBufferObject* clCreateBuffer(IDeviceMemoryManager::IBufferObject *glBuffer);
 
 
 	//! This method deletes a buffer object allocate with cl

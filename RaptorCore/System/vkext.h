@@ -86,52 +86,132 @@
 		#endif
 	#endif
 
+	#if !defined(DECLARE_VK_get_instance_proc_addr)
+	#define DECLARE_VK_get_instance_proc_addr(LINKAGE) \
+		LINKAGE PFN_vkGetInstanceProcAddr vkGetInstanceProcAddr;
+	#endif
 
-	#ifndef DECLARE_VK_core
-	#define DECLARE_VK_core(LINKAGE) \
-		LINKAGE PFN_vkCreateInstance	vkCreateInstance; \
+	#if !defined(DECLARE_VK_global)
+	#define DECLARE_VK_global(LINKAGE) \
+		LINKAGE PFN_vkEnumerateInstanceExtensionProperties vkEnumerateInstanceExtensionProperties; \
+		LINKAGE PFN_vkEnumerateInstanceLayerProperties vkEnumerateInstanceLayerProperties; \
+		LINKAGE PFN_vkCreateInstance	vkCreateInstance;
+	#endif
+
+	#if !defined(DECLARE_VK_instance)
+	#define DECLARE_VK_instance(LINKAGE) \
+		LINKAGE PFN_vkEnumeratePhysicalDevices vkEnumeratePhysicalDevices; \
+		LINKAGE PFN_vkEnumerateDeviceExtensionProperties vkEnumerateDeviceExtensionProperties; \
+		LINKAGE PFN_vkEnumerateDeviceLayerProperties vkEnumerateDeviceLayerProperties; \
+		LINKAGE PFN_vkGetPhysicalDeviceProperties vkGetPhysicalDeviceProperties; \
+		LINKAGE PFN_vkGetPhysicalDeviceFeatures vkGetPhysicalDeviceFeatures; \
+		LINKAGE PFN_vkGetPhysicalDeviceQueueFamilyProperties vkGetPhysicalDeviceQueueFamilyProperties; \
+		LINKAGE PFN_vkGetPhysicalDeviceMemoryProperties vkGetPhysicalDeviceMemoryProperties; \
 		LINKAGE PFN_vkDestroyInstance	vkDestroyInstance; \
 		LINKAGE PFN_vkCreateDevice vkCreateDevice; \
-		LINKAGE PFN_vkDestroyDevice vkDestroyDevice; \
-		LINKAGE PFN_vkEnumeratePhysicalDevices vkEnumeratePhysicalDevices; \
-		LINKAGE PFN_vkEnumerateInstanceExtensionProperties vkEnumerateInstanceExtensionProperties; \
-		LINKAGE PFN_vkEnumerateDeviceExtensionProperties vkEnumerateDeviceExtensionProperties; \
-		LINKAGE PFN_vkEnumerateInstanceLayerProperties vkEnumerateInstanceLayerProperties; \
-		LINKAGE PFN_vkEnumerateDeviceLayerProperties vkEnumerateDeviceLayerProperties; \
-		LINKAGE PFN_vkGetPhysicalDeviceFeatures vkGetPhysicalDeviceFeatures; \
-		LINKAGE PFN_vkGetPhysicalDeviceFormatProperties vkGetPhysicalDeviceFormatProperties; \
-		LINKAGE PFN_vkGetPhysicalDeviceMemoryProperties vkGetPhysicalDeviceMemoryProperties; \
-		LINKAGE PFN_vkGetPhysicalDeviceProperties vkGetPhysicalDeviceProperties; \
-		LINKAGE PFN_vkGetPhysicalDeviceQueueFamilyProperties vkGetPhysicalDeviceQueueFamilyProperties; \
-		\
-		LINKAGE PFN_vkGetPhysicalDeviceImageFormatProperties vkGetPhysicalDeviceImageFormatProperties; \
-		LINKAGE PFN_vkGetInstanceProcAddr vkGetInstanceProcAddr;\
-		LINKAGE PFN_vkGetDeviceProcAddr vkGetDeviceProcAddr; \
-		LINKAGE PFN_vkGetDeviceQueue vkGetDeviceQueue; \
-		LINKAGE PFN_vkQueueSubmit vkQueueSubmit; \
-		LINKAGE PFN_vkQueueWaitIdle vkQueueWaitIdle; \
+		LINKAGE PFN_vkGetDeviceProcAddr vkGetDeviceProcAddr;
+	#endif
+
+	#if !defined(DECLARE_VK_device)
+	#define DECLARE_VK_device(LINKAGE) \
 		LINKAGE PFN_vkDeviceWaitIdle vkDeviceWaitIdle; \
+		LINKAGE PFN_vkDestroyDevice vkDestroyDevice; \
+		LINKAGE PFN_vkCreateCommandPool vkCreateCommandPool; \
+		LINKAGE PFN_vkDestroyCommandPool vkDestroyCommandPool; \
+		LINKAGE PFN_vkResetCommandPool vkResetCommandPool; \
+		LINKAGE PFN_vkGetDeviceQueue vkGetDeviceQueue; \
+		LINKAGE PFN_vkCreateSemaphore vkCreateSemaphore; \
+		LINKAGE PFN_vkDestroySemaphore vkDestroySemaphore; \
+		LINKAGE PFN_vkCreateFence vkCreateFence; \
+		LINKAGE PFN_vkWaitForFences vkWaitForFences; \
+		LINKAGE PFN_vkResetFences vkResetFences; \
+		LINKAGE PFN_vkDestroyFence vkDestroyFence; \
+		LINKAGE PFN_vkAllocateCommandBuffers vkAllocateCommandBuffers; \
+		LINKAGE PFN_vkFreeCommandBuffers vkFreeCommandBuffers; \
+		LINKAGE PFN_vkCreateRenderPass vkCreateRenderPass; \
+		LINKAGE PFN_vkDestroyRenderPass vkDestroyRenderPass; \
+		LINKAGE PFN_vkCreateImageView vkCreateImageView; \
+		LINKAGE PFN_vkDestroyImageView vkDestroyImageView; \
+		LINKAGE PFN_vkCreateFramebuffer vkCreateFramebuffer; \
+		LINKAGE PFN_vkDestroyFramebuffer vkDestroyFramebuffer;
+	#endif
+
+	#if !defined(DECLARE_VK_pipeline)
+	#define DECLARE_VK_pipeline(LINKAGE) \
+		LINKAGE PFN_vkCreateGraphicsPipelines vkCreateGraphicsPipelines; \
+		LINKAGE PFN_vkCreateComputePipelines vkCreateComputePipelines; \
+		LINKAGE PFN_vkDestroyPipeline vkDestroyPipeline; \
+		LINKAGE PFN_vkCreatePipelineLayout vkCreatePipelineLayout; \
+		LINKAGE PFN_vkDestroyPipelineLayout vkDestroyPipelineLayout; \
+		LINKAGE PFN_vkCreateShaderModule vkCreateShaderModule; \
+		LINKAGE PFN_vkDestroyShaderModule vkDestroyShaderModule; \
+		LINKAGE PFN_vkCreateDescriptorSetLayout vkCreateDescriptorSetLayout; \
+		LINKAGE PFN_vkDestroyDescriptorSetLayout vkDestroyDescriptorSetLayout; \
+		LINKAGE PFN_vkGetImageSubresourceLayout vkGetImageSubresourceLayout; \
+		LINKAGE PFN_vkCreatePipelineCache vkCreatePipelineCache; \
+		LINKAGE PFN_vkDestroyPipelineCache vkDestroyPipelineCache; \
+		LINKAGE PFN_vkGetPipelineCacheData vkGetPipelineCacheData; \
+		LINKAGE PFN_vkMergePipelineCaches vkMergePipelineCaches; \
+		LINKAGE PFN_vkCreateDescriptorPool vkCreateDescriptorPool; \
+		LINKAGE PFN_vkDestroyDescriptorPool vkDestroyDescriptorPool; \
+		LINKAGE PFN_vkResetDescriptorPool vkResetDescriptorPool; \
+		LINKAGE PFN_vkAllocateDescriptorSets vkAllocateDescriptorSets; \
+		LINKAGE PFN_vkFreeDescriptorSets vkFreeDescriptorSets; \
+		LINKAGE PFN_vkUpdateDescriptorSets vkUpdateDescriptorSets;
+	#endif
+
+	#if	!defined(DECLARE_VK_command_buffer)
+	#define DECLARE_VK_command_buffer(LINKAGE) \
+		LINKAGE PFN_vkCmdPipelineBarrier vkCmdPipelineBarrier; \
+		LINKAGE PFN_vkCmdBeginRenderPass vkCmdBeginRenderPass; \
+		LINKAGE PFN_vkCmdEndRenderPass vkCmdEndRenderPass; \
+		LINKAGE PFN_vkCmdBindPipeline vkCmdBindPipeline; \
+		LINKAGE PFN_vkCmdBindVertexBuffers vkCmdBindVertexBuffers; \
+		LINKAGE PFN_vkCmdBindIndexBuffer vkCmdBindIndexBuffer; \
+		LINKAGE PFN_vkBeginCommandBuffer vkBeginCommandBuffer; \
+		LINKAGE PFN_vkEndCommandBuffer vkEndCommandBuffer; \
+		LINKAGE PFN_vkCmdSetViewport vkCmdSetViewport; \
+		LINKAGE PFN_vkCmdSetScissor vkCmdSetScissor; \
+		LINKAGE PFN_vkCmdCopyBuffer vkCmdCopyBuffer; \
+		LINKAGE PFN_vkCmdCopyImage vkCmdCopyImage; \
+		LINKAGE PFN_vkCmdBlitImage vkCmdBlitImage; \
+		LINKAGE PFN_vkCmdCopyBufferToImage vkCmdCopyBufferToImage; \
+		LINKAGE PFN_vkCmdCopyImageToBuffer vkCmdCopyImageToBuffer; \
+		LINKAGE PFN_vkCmdDraw vkCmdDraw; \
+		LINKAGE PFN_vkCmdDrawIndexed vkCmdDrawIndexed;
+	#endif
+
+	#if !defined(DECLARE_VK_device_memory)
+	#define DECLARE_VK_device_memory(LINKAGE) \
+		LINKAGE PFN_vkGetBufferMemoryRequirements vkGetBufferMemoryRequirements; \
+		LINKAGE PFN_vkCreateBuffer vkCreateBuffer; \
+		LINKAGE PFN_vkDestroyBuffer vkDestroyBuffer; \
 		LINKAGE PFN_vkAllocateMemory vkAllocateMemory; \
+		LINKAGE PFN_vkBindBufferMemory vkBindBufferMemory; \
 		LINKAGE PFN_vkFreeMemory vkFreeMemory; \
 		LINKAGE PFN_vkMapMemory vkMapMemory; \
-		LINKAGE PFN_vkUnmapMemory vkUnmapMemory; \
 		LINKAGE PFN_vkFlushMappedMemoryRanges vkFlushMappedMemoryRanges; \
+		LINKAGE PFN_vkUnmapMemory vkUnmapMemory;
+	#endif
+
+	#if !defined(DECLARE_VK_queue)
+	#define DECLARE_VK_queue(LINKAGE) \
+		LINKAGE PFN_vkQueueSubmit vkQueueSubmit; \
+		LINKAGE PFN_vkQueueWaitIdle vkQueueWaitIdle;
+	#endif
+
+	#if !defined(DECLARE_VK_core)
+	#define DECLARE_VK_core(LINKAGE) \
+		LINKAGE PFN_vkGetPhysicalDeviceFormatProperties vkGetPhysicalDeviceFormatProperties; \
+		LINKAGE PFN_vkGetPhysicalDeviceImageFormatProperties vkGetPhysicalDeviceImageFormatProperties; \
 		LINKAGE PFN_vkInvalidateMappedMemoryRanges vkInvalidateMappedMemoryRanges; \
 		LINKAGE PFN_vkGetDeviceMemoryCommitment vkGetDeviceMemoryCommitment; \
-		LINKAGE PFN_vkBindBufferMemory vkBindBufferMemory; \
 		LINKAGE PFN_vkBindImageMemory vkBindImageMemory; \
-		LINKAGE PFN_vkGetBufferMemoryRequirements vkGetBufferMemoryRequirements; \
 		LINKAGE PFN_vkGetImageMemoryRequirements vkGetImageMemoryRequirements; \
 		LINKAGE PFN_vkGetImageSparseMemoryRequirements vkGetImageSparseMemoryRequirements; \
 		LINKAGE PFN_vkGetPhysicalDeviceSparseImageFormatProperties vkGetPhysicalDeviceSparseImageFormatProperties; \
 		LINKAGE PFN_vkQueueBindSparse vkQueueBindSparse; \
-		LINKAGE PFN_vkCreateFence vkCreateFence; \
-		LINKAGE PFN_vkDestroyFence vkDestroyFence; \
-		LINKAGE PFN_vkResetFences vkResetFences; \
 		LINKAGE PFN_vkGetFenceStatus vkGetFenceStatus; \
-		LINKAGE PFN_vkWaitForFences vkWaitForFences; \
-		LINKAGE PFN_vkCreateSemaphore vkCreateSemaphore; \
-		LINKAGE PFN_vkDestroySemaphore vkDestroySemaphore; \
 		LINKAGE PFN_vkCreateEvent vkCreateEvent; \
 		LINKAGE PFN_vkDestroyEvent vkDestroyEvent; \
 		LINKAGE PFN_vkGetEventStatus vkGetEventStatus; \
@@ -140,52 +220,14 @@
 		LINKAGE PFN_vkCreateQueryPool vkCreateQueryPool; \
 		LINKAGE PFN_vkDestroyQueryPool vkDestroyQueryPool; \
 		LINKAGE PFN_vkGetQueryPoolResults vkGetQueryPoolResults; \
-		LINKAGE PFN_vkCreateBuffer vkCreateBuffer; \
-		LINKAGE PFN_vkDestroyBuffer vkDestroyBuffer; \
 		LINKAGE PFN_vkCreateBufferView vkCreateBufferView; \
 		LINKAGE PFN_vkDestroyBufferView vkDestroyBufferView; \
 		LINKAGE PFN_vkCreateImage vkCreateImage; \
 		LINKAGE PFN_vkDestroyImage vkDestroyImage; \
-		LINKAGE PFN_vkGetImageSubresourceLayout vkGetImageSubresourceLayout; \
-		LINKAGE PFN_vkCreateImageView vkCreateImageView; \
-		LINKAGE PFN_vkDestroyImageView vkDestroyImageView; \
-		LINKAGE PFN_vkCreateShaderModule vkCreateShaderModule; \
-		LINKAGE PFN_vkDestroyShaderModule vkDestroyShaderModule; \
-		LINKAGE PFN_vkCreatePipelineCache vkCreatePipelineCache; \
-		LINKAGE PFN_vkDestroyPipelineCache vkDestroyPipelineCache; \
-		LINKAGE PFN_vkGetPipelineCacheData vkGetPipelineCacheData; \
-		LINKAGE PFN_vkMergePipelineCaches vkMergePipelineCaches; \
-		LINKAGE PFN_vkCreateGraphicsPipelines vkCreateGraphicsPipelines; \
-		LINKAGE PFN_vkCreateComputePipelines vkCreateComputePipelines; \
-		LINKAGE PFN_vkDestroyPipeline vkDestroyPipeline; \
-		LINKAGE PFN_vkCreatePipelineLayout vkCreatePipelineLayout; \
-		LINKAGE PFN_vkDestroyPipelineLayout vkDestroyPipelineLayout; \
 		LINKAGE PFN_vkCreateSampler vkCreateSampler; \
 		LINKAGE PFN_vkDestroySampler vkDestroySampler; \
-		LINKAGE PFN_vkCreateDescriptorSetLayout vkCreateDescriptorSetLayout; \
-		LINKAGE PFN_vkDestroyDescriptorSetLayout vkDestroyDescriptorSetLayout; \
-		LINKAGE PFN_vkCreateDescriptorPool vkCreateDescriptorPool; \
-		LINKAGE PFN_vkDestroyDescriptorPool vkDestroyDescriptorPool; \
-		LINKAGE PFN_vkResetDescriptorPool vkResetDescriptorPool; \
-		LINKAGE PFN_vkAllocateDescriptorSets vkAllocateDescriptorSets; \
-		LINKAGE PFN_vkFreeDescriptorSets vkFreeDescriptorSets; \
-		LINKAGE PFN_vkUpdateDescriptorSets vkUpdateDescriptorSets; \
-		LINKAGE PFN_vkCreateFramebuffer vkCreateFramebuffer; \
-		LINKAGE PFN_vkDestroyFramebuffer vkDestroyFramebuffer; \
-		LINKAGE PFN_vkCreateRenderPass vkCreateRenderPass; \
-		LINKAGE PFN_vkDestroyRenderPass vkDestroyRenderPass; \
 		LINKAGE PFN_vkGetRenderAreaGranularity vkGetRenderAreaGranularity; \
-		LINKAGE PFN_vkCreateCommandPool vkCreateCommandPool; \
-		LINKAGE PFN_vkDestroyCommandPool vkDestroyCommandPool; \
-		LINKAGE PFN_vkResetCommandPool vkResetCommandPool; \
-		LINKAGE PFN_vkAllocateCommandBuffers vkAllocateCommandBuffers; \
-		LINKAGE PFN_vkFreeCommandBuffers vkFreeCommandBuffers; \
-		LINKAGE PFN_vkBeginCommandBuffer vkBeginCommandBuffer; \
-		LINKAGE PFN_vkEndCommandBuffer vkEndCommandBuffer; \
 		LINKAGE PFN_vkResetCommandBuffer vkResetCommandBuffer; \
-		LINKAGE PFN_vkCmdBindPipeline vkCmdBindPipeline; \
-		LINKAGE PFN_vkCmdSetViewport vkCmdSetViewport; \
-		LINKAGE PFN_vkCmdSetScissor vkCmdSetScissor; \
 		LINKAGE PFN_vkCmdSetLineWidth vkCmdSetLineWidth; \
 		LINKAGE PFN_vkCmdSetDepthBias vkCmdSetDepthBias; \
 		LINKAGE PFN_vkCmdSetBlendConstants vkCmdSetBlendConstants; \
@@ -194,19 +236,10 @@
 		LINKAGE PFN_vkCmdSetStencilWriteMask vkCmdSetStencilWriteMask; \
 		LINKAGE PFN_vkCmdSetStencilReference vkCmdSetStencilReference; \
 		LINKAGE PFN_vkCmdBindDescriptorSets vkCmdBindDescriptorSets; \
-		LINKAGE PFN_vkCmdBindIndexBuffer vkCmdBindIndexBuffer; \
-		LINKAGE PFN_vkCmdBindVertexBuffers vkCmdBindVertexBuffers; \
-		LINKAGE PFN_vkCmdDraw vkCmdDraw; \
-		LINKAGE PFN_vkCmdDrawIndexed vkCmdDrawIndexed; \
 		LINKAGE PFN_vkCmdDrawIndirect vkCmdDrawIndirect; \
 		LINKAGE PFN_vkCmdDrawIndexedIndirect vkCmdDrawIndexedIndirect; \
 		LINKAGE PFN_vkCmdDispatch vkCmdDispatch; \
 		LINKAGE PFN_vkCmdDispatchIndirect vkCmdDispatchIndirect; \
-		LINKAGE PFN_vkCmdCopyBuffer vkCmdCopyBuffer; \
-		LINKAGE PFN_vkCmdCopyImage vkCmdCopyImage; \
-		LINKAGE PFN_vkCmdBlitImage vkCmdBlitImage; \
-		LINKAGE PFN_vkCmdCopyBufferToImage vkCmdCopyBufferToImage; \
-		LINKAGE PFN_vkCmdCopyImageToBuffer vkCmdCopyImageToBuffer; \
 		LINKAGE PFN_vkCmdUpdateBuffer vkCmdUpdateBuffer; \
 		LINKAGE PFN_vkCmdFillBuffer vkCmdFillBuffer; \
 		LINKAGE PFN_vkCmdClearColorImage vkCmdClearColorImage; \
@@ -216,17 +249,21 @@
 		LINKAGE PFN_vkCmdSetEvent vkCmdSetEvent; \
 		LINKAGE PFN_vkCmdResetEvent vkCmdResetEvent; \
 		LINKAGE PFN_vkCmdWaitEvents vkCmdWaitEvents; \
-		LINKAGE PFN_vkCmdPipelineBarrier vkCmdPipelineBarrier; \
 		LINKAGE PFN_vkCmdBeginQuery vkCmdBeginQuery; \
 		LINKAGE PFN_vkCmdEndQuery vkCmdEndQuery; \
 		LINKAGE PFN_vkCmdResetQueryPool vkCmdResetQueryPool; \
 		LINKAGE PFN_vkCmdWriteTimestamp vkCmdWriteTimestamp; \
 		LINKAGE PFN_vkCmdCopyQueryPoolResults vkCmdCopyQueryPoolResults; \
 		LINKAGE PFN_vkCmdPushConstants vkCmdPushConstants; \
-		LINKAGE PFN_vkCmdBeginRenderPass vkCmdBeginRenderPass; \
 		LINKAGE PFN_vkCmdNextSubpass vkCmdNextSubpass; \
-		LINKAGE PFN_vkCmdEndRenderPass vkCmdEndRenderPass; \
 		LINKAGE PFN_vkCmdExecuteCommands vkCmdExecuteCommands;
+	#endif
+
+	#if !defined(DECLARE_VK_debug)
+	#define DECLARE_VK_debug(LINKAGE) \
+		LINKAGE PFN_vkCreateDebugReportCallbackEXT vkCreateDebugReportCallbackEXT; \
+		LINKAGE PFN_vkDestroyDebugReportCallbackEXT vkDestroyDebugReportCallbackEXT; \
+		LINKAGE PFN_vkDebugReportMessageEXT vkDebugReportMessageEXT;
 	#endif
 #endif
 

@@ -14,6 +14,7 @@
 #include "GLHierarchy/Shader.h"
 #include "GLHierarchy/ShaderProgram.h"
 #include "GLHierarchy/VertexShader.h"
+#include "GLHierarchy/VulkanShaderStage.h"
 #include "GLHierarchy/TextureFactory.h"
 #include "GLHierarchy/TextureFactoryConfig.h"
 #include "GLHierarchy/TextureObject.h"
@@ -36,6 +37,8 @@
 
 RAPTOR_NAMESPACE
 
+#define VULKAN_TEST 1
+
 
 class MySphere : public /*CBasicObjects::CIsocahedron*/ CBasicObjects::CGeoSphere
 {
@@ -48,11 +51,12 @@ private:
 
 MySphere::MySphere()
 {
+#ifndef VULKAN_TEST
 	//CShader *pShader = CShader::getShader("BLINN_SHADER").glClone("BLINN");
 	//CShader *pShader = CShader::getShader("PHONG_SHADER").glClone("PHONG");
 	CShader *pShader = CShader::getShader("BUMP_SHADER").glClone("BUMP");
-
 	setShader(pShader);
+#endif
 }
 
 
@@ -69,6 +73,8 @@ float lposz(float dt)
 	return 15 * (float)(sin(3*PI*dt*0.1)); //*sin(3*PI*dt*0.1));
 }
 
+
+
 CTest5Doc::CTest5Doc(const RAPTOR_HANDLE& device,const char* title)
 {
 	m_pDisplay = NULL;
@@ -81,23 +87,14 @@ CTest5Doc::CTest5Doc(const RAPTOR_HANDLE& device,const char* title)
 	config.m_logFile = "Test5.log";
     config.m_bRelocation = true;
 	config.m_uiTexels = 2048*1024;
-    config.m_uiPolygons = 200000;
-    config.m_uiVertices = 500000;
+    config.m_uiPolygons = 20000;
+    config.m_uiVertices = 50000;
     Raptor::glInitRaptor(config);
-/*
-CRaptorDisplayConfig pcs;
-pcs.renderer = CRaptorDisplayConfig::VULKAN;
-CRaptorDisplay *d = Raptor::glCreateDisplay(pcs);
-RAPTOR_HANDLE noDevice(4,(void*)4);
-d->glBindDisplay(device);
-d->glUnBindDisplay();
-*/
 
 	CImaging::installImagers(CTextureFactory::getDefaultFactory());
 
 	RECT r;
 	GetClientRect((HWND)(device.handle),&r);
-
 	CRaptorDisplayConfig glcs;
 	glcs.width = r.right - r.left;
 	glcs.height = r.bottom - r.top;
@@ -106,13 +103,20 @@ d->glUnBindDisplay();
 	glcs.caption = title;
 	glcs.acceleration = CRaptorDisplayConfig::HARDWARE;
 	//glcs.antialias = CRaptorDisplayConfig::ANTIALIAS_16X;
+	//glcs.framebufferState.colorClearValue = CColor::RGBA(0.5f,0.6f,0.7f,1.0f);
 	glcs.double_buffer = true;
 	glcs.depth_buffer = true;
 	glcs.display_mode = CGL_RGBA | CGL_DEPTH;
 	glcs.draw_logo = true;
 
+#ifdef VULKAN_TEST
+	glcs.renderer = CRaptorDisplayConfig::VULKAN;
 	m_pDisplay = Raptor::glCreateDisplay(glcs);
-
+	bool res = m_pDisplay->glBindDisplay(device);
+	if (res)
+	{
+#else
+	m_pDisplay = Raptor::glCreateDisplay(glcs);
 	bool res = m_pDisplay->glBindDisplay(device);
     if (res)
 	{
@@ -126,7 +130,7 @@ d->glUnBindDisplay();
         pConsole->glInit("",true);
         pConsole->showStatus(true);
         pConsole->activateConsole(true);
-
+#endif
         GLInitContext();
 
 		m_pDisplay->glUnBindDisplay();
@@ -135,6 +139,15 @@ d->glUnBindDisplay();
 
 CTest5Doc::~CTest5Doc(void)
 {
+}
+
+void CTest5Doc::resize(unsigned int width, unsigned int height)
+{
+	if (m_pDisplay->glBindDisplay(m_device))
+    {
+        m_pDisplay->glResize(width,height,0,0);
+        m_pDisplay->glUnBindDisplay();
+    }
 }
 
 void CTest5Doc::glRender(void)
@@ -163,6 +176,52 @@ void CTest5Doc::GLInitContext(void)
 	obj->getEditor().scaleTexCoords(4.0f,4.0f);
 	obj->getRenderingModel().addModel(CGeometry::CRenderingModel::CGL_TANGENTS);
 
+	C3DScene *pScene = m_pDisplay->getRootScene();
+
+	//CShader *shader = new CShader("uniforms-shader");
+	//CVertexProgram *p = shader->glGetVertexProgram("uniforms");
+	//CRaptorIO *shdr = CRaptorIO::Create("shader3.vert",CRaptorIO::DISK_READ);
+	//p->glLoadProgramFromStream(*shdr);
+	//bool res = shader->glCompileShader();
+
+#ifdef VULKAN_TEST
+	CShadedGeometry *geo = new CShadedGeometry("VULKAN_GEOMETRY");
+	geo->glSetVertices(4,NULL);
+	geo->glSetColors(4, NULL);
+	geo->glSetPolygons(2, NULL);
+	GL_COORD_VERTEX VertexData[4] =
+	{
+		{ -0.7f, -0.7f, 0.0f, 1.0f },
+		{ -0.7f, 0.7f, 0.0f, 1.0f },
+		{ 0.7f, -0.7f, 0.0f, 1.0f },
+		{ 0.7f, 0.7f, 0.0f, 1.0f }
+	};
+	CColor::RGBA ColorData[4] =
+	{
+		{ 1.0f, 0.0f, 0.0f, 0.0f },
+		{ 0.0f, 1.0f, 0.0f, 0.0f },
+		{ 0.0f, 0.0f, 1.0f, 0.0f },
+		{ 0.3f, 0.3f, 0.3f, 0.0f }
+	};
+	unsigned short VertexIndices[6] =
+	{
+		3, 2, 0, 3, 0, 1
+	};
+	geo->glSetVertices(4,VertexData);
+	geo->glSetColors(4,ColorData);
+	geo->glSetPolygons(2,VertexIndices);
+
+	CShader* s = geo->getShader();
+	CVulkanShaderStage *ss = s->vkGetVulkanProgram();
+	ss->vkLoadShader("shader3.vert");
+	ss->vkLoadShader("shader3.frag");
+	CGenericMatrix<float> modelView;
+	modelView.Ident();
+	ss->vkSetData(modelView.matrix(), 4 * 4 * sizeof(float));
+
+	pScene->addObject(geo);
+	pScene->vkInitPipeline();
+#else
 	CTextureFactory &f = CTextureFactory::getDefaultFactory();
 	m_pTexture = f.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_ALPHA_TRANSPARENT,CTextureObject::CGL_BILINEAR);
 	f.glLoadTexture(m_pTexture,"earth.TGA");
@@ -218,7 +277,7 @@ void CTest5Doc::GLInitContext(void)
 	pLight3->setLightPosition(GL_COORD_VERTEX(10.0f,-10.0f,10.0f,1.0f));
 	pLight3->setLightDirection(GL_COORD_VERTEX(0.0f,0.0f,0.0f,1.0f));
 	
-	C3DScene *pScene = m_pDisplay->getRootScene();
+	
 	pScene->addObject(vm->getObject());
 	pScene->addLight(pLight);
 	pScene->addLight(pLight2);
@@ -266,6 +325,7 @@ void CTest5Doc::GLInitContext(void)
 	CTimeObject::setTimeFactor(1.0f);
 	CAnimator *pAnimator = new CAnimator();
 	CAnimator::SetAnimator(pAnimator);
+#endif
 
 /*
 	CRaptorDisplayConfig glcs;

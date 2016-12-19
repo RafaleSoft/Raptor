@@ -1,4 +1,4 @@
-// Memory.cpp: implementation of the CMemory class.
+// Memory.cpp: implementation of the CHostMemoryManager class.
 //
 //////////////////////////////////////////////////////////////////////
 
@@ -30,9 +30,6 @@
 #if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
     #include "System/RaptorErrorManager.h"
 #endif
-#if !defined(AFX_BUFFEROBJECT_H__FFF8C159_E959_496B_9962_0AF829E7FB4F__INCLUDED_)
-	#include "Subsys/BufferObject.h"
-#endif
 
 #ifdef WIN32
     #include <new.h>    // to support old platform prototypes, but not for a long time.
@@ -49,8 +46,9 @@
 RAPTOR_NAMESPACE_BEGIN
 
 static const float WASTE_SPACE_TRESHOLD = 0.1f;	//	Allow 10% of wasted space in reallocated blocs
+//#define INITIALISE_MEMORY 1					//	Enable allocated memory initialisation
 
-CMemory	*CMemory::s_pMemory = NULL;
+CHostMemoryManager	*CHostMemoryManager::s_pMemory = NULL;
 
 #ifndef WIN32
     typedef new_handler _PNH;
@@ -82,20 +80,11 @@ static _PNH __oldNewHandler = NULL;
 class CMemoryHeap
 {
 public:
-	typedef enum MEMORY_TYPE_t
-	{
-		MAIN,
-		MANAGED,
-		AGP,
-		NB_MEMORY_TYPE
-	} MEMORY_TYPE;
-
 	typedef struct DATA_BLOC_t
 	{
         unsigned char   *address;
 		size_t	        size;
 		size_t			usedBytes;
-		MEMORY_TYPE		type;
 
         bool operator()(const DATA_BLOC_t& lsh,const DATA_BLOC_t& rsh)
         {
@@ -107,120 +96,29 @@ public:
 	} DATA_BLOC;
 
 public:
-	CMemoryHeap() {};
+	CMemoryHeap():garbageSize(0),garbageMaxSize(0),m_bDeferedPacking(false) {};
 	~CMemoryHeap() {};
-
-    //! Global memory allocations
-	vector<DATA_BLOC>	heap;
-
-    //! A storage for garbaged blocs. A set is used to be able
-    //! to find the most appropriate bloc when needed
-    //! ( the first having a size greater than the requested )
-    set<DATA_BLOC,DATA_BLOC>	garbage;
 
 	unsigned int	garbageSize;
 	unsigned int	garbageMaxSize;
 
+	bool			m_bDeferedPacking;
+
+    //! Global memory allocations
+	//!	A heap map by addresses
+	std::map<void*,DATA_BLOC>	heap;
+
+    //! A storage for garbaged blocs. A set is used to be able
+    //! to find the most appropriate bloc when needed
+    //! ( the first having a size greater than the requested )
+	std::set<DATA_BLOC,DATA_BLOC>	garbage;
+
+	std::vector<void*>	futureGarbage;
+	std::vector<void*>	futureRelease;
+
+
     CRaptorMutex     memoryMutex;
-
-    unsigned int currentBuffers[CMemory::IBufferObject::NB_BUFFER_KIND];
 };
-
-
-static GLenum  BufferKindToGL(CMemory::IBufferObject::BUFFER_KIND kind)
-{
-#if defined(GL_ARB_vertex_buffer_object)
-    GLenum res = GL_ARRAY_BUFFER_ARB;
-
-    switch(kind)
-    {
-        case CMemory::IBufferObject::VERTEX_BUFFER:
-            res = GL_ARRAY_BUFFER_ARB;
-            break;
-        case CMemory::IBufferObject::INDEX_BUFFER:
-            res = GL_ELEMENT_ARRAY_BUFFER_ARB;
-            break;
-#if defined(GL_ARB_pixel_buffer_object)
-        case CMemory::IBufferObject::PIXEL_STORAGE:
-            res = GL_PIXEL_PACK_BUFFER_ARB;
-            break;
-        case CMemory::IBufferObject::PIXEL_SOURCE:
-            res = GL_PIXEL_UNPACK_BUFFER_ARB;
-            break;
-#endif
-        default:
-            res = GL_ARRAY_BUFFER_ARB;
-            break;
-    }
-
-    return res;
-#else
-    return CGL_NULL;
-#endif
-}
-
-static GLenum  BufferModeToGL(CMemory::IBufferObject::BUFFER_KIND kind,
-							  CMemory::IBufferObject::BUFFER_MODE mode)
-{
-#if defined(GL_ARB_vertex_buffer_object)
-    GLenum res = GL_STATIC_DRAW_ARB;
-
-    switch(kind)
-    {
-        case CMemory::IBufferObject::VERTEX_BUFFER:
-            res = GL_STATIC_DRAW_ARB;
-            break;
-        case CMemory::IBufferObject::INDEX_BUFFER:
-            res = GL_STATIC_DRAW_ARB;
-            break;
-#if defined(GL_ARB_pixel_buffer_object)
-        case CMemory::IBufferObject::PIXEL_STORAGE:
-            if (mode == CMemory::IBufferObject::STATIC) res = GL_STATIC_READ_ARB;
-            else if (mode == CMemory::IBufferObject::STREAM) res = GL_STREAM_READ_ARB;
-            else if (mode == CMemory::IBufferObject::DYNAMIC) res = GL_DYNAMIC_READ_ARB;
-            else res = GL_STATIC_DRAW_ARB;
-            break;
-        case CMemory::IBufferObject::PIXEL_SOURCE:
-            if (mode == CMemory::IBufferObject::STATIC) res = GL_STATIC_DRAW_ARB;
-            else if (mode == CMemory::IBufferObject::STREAM) res = GL_STREAM_DRAW_ARB;
-            else if (mode == CMemory::IBufferObject::DYNAMIC) res = GL_DYNAMIC_DRAW_ARB;
-            else res = GL_DYNAMIC_DRAW_ARB;
-            break;
-#endif
-        default:
-            res = GL_STATIC_DRAW_ARB;
-            break;
-    }
-
-    return res;
-#else
-    return CGL_NULL;
-#endif
-}
-
-
-static bool IsBufferObjectValid(unsigned int buffer)
-{
-#if defined(GL_ARB_vertex_buffer_object) || defined(GL_ARB_pixel_buffer_object)
-	const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
-
-	if (pExtensions->glIsBufferARB(buffer))
-		return true;
-	else
-	{
-#ifdef RAPTOR_DEBUG_MODE_GENERATION
-		Raptor::GetErrorManager()->generateRaptorError(	CPersistence::CPersistenceClassID::GetClassId(),
-														CRaptorErrorManager::RAPTOR_WARNING,
-			                                            "Buffer Object extension is not properly supported by your driver !");
-#endif
-		//	Here, we could also check all other glIsXXX to strengthen the check
-		if (buffer > 0)
-			return true;
-		else
-			return false;
-	}
-#endif
-}
 
 
 RAPTOR_NAMESPACE_END
@@ -235,45 +133,32 @@ RAPTOR_NAMESPACE
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CMemory::CMemory(void)
+CHostMemoryManager::CHostMemoryManager(void)
 {
 	m_pHeap = new CMemoryHeap;
 
 	m_pHeap->garbageSize = 0;
 	m_pHeap->garbageMaxSize = Global::GetInstance().getConfig().m_uiGarbageSize;
-
-
-    for (int i=0;i<IBufferObject::NB_BUFFER_KIND;i++)
-        m_pHeap->currentBuffers[i] = 0;
 }
 
-CMemory::~CMemory()
+CHostMemoryManager::~CHostMemoryManager()
 {
     //! Gather garbage blocs:
     set<CMemoryHeap::DATA_BLOC,CMemoryHeap::DATA_BLOC>::const_iterator itr = m_pHeap->garbage.begin();
-    while (itr != m_pHeap->garbage.end())
-        m_pHeap->heap.push_back((*itr++));
-
-	while (m_pHeap->heap.size() > 0)
+    while (m_pHeap->garbage.end() != itr)
 	{
-		CMemoryHeap::DATA_BLOC& db = m_pHeap->heap[0];
-
-		if (db.type == CMemoryHeap::MAIN)
-			release(db.address);
-		else if (db.type == CMemoryHeap::AGP)
-		{
-			CBufferObject *vb = new CBufferObject();
-			vb->m_buffer.address = db.address;
-			CMemory::IBufferObject *ib = vb;
-			glReleaseBufferObject(ib);
-		}
-        else if (db.type == CMemoryHeap::MANAGED)
-        {
-            // reverse a garbage bloc to normal heap bloc and deallocate it.
-            db.type = CMemoryHeap::MAIN;
-			release(db.address);
-        }
+		const CMemoryHeap::DATA_BLOC& db = (*itr++);
+		release(db.address);
 	}
+	m_pHeap->garbage.clear();
+
+	map<void*,CMemoryHeap::DATA_BLOC>::const_iterator itr2 = m_pHeap->heap.begin();
+	while (m_pHeap->heap.end() != itr2)
+	{
+		const CMemoryHeap::DATA_BLOC& db = (*itr2++).second;
+		release(db.address);
+	}
+	m_pHeap->heap.clear();
 
 	delete m_pHeap;
 
@@ -288,17 +173,17 @@ CMemory::~CMemory()
 #endif
 }
 
-CMemory *CMemory::GetInstance(void)
+CHostMemoryManager *CHostMemoryManager::GetInstance(void)
 {
 	if (s_pMemory == NULL)
 	{
-		s_pMemory = new CMemory;
+		s_pMemory = new CHostMemoryManager;
 	}
 
 	return s_pMemory;
 }
 
-bool CMemory::init(void)
+bool CHostMemoryManager::init(void)
 {
 	if (__oldNewHandler == NULL)
 	{
@@ -314,460 +199,39 @@ bool CMemory::init(void)
 		return false;
 }
 
-void CMemory::setGarbageMaxSize(unsigned int maxSize) const
+void CHostMemoryManager::setGarbageMaxSize(unsigned int maxSize) const
 {
 	m_pHeap->garbageMaxSize = maxSize;
 }
 
-void CMemory::glSetBufferObjectData(IBufferObject &vb,unsigned int dstOffset,const void* src,size_t sz)
+void CHostMemoryManager::setDeferedPacking(bool defered) const
 {
-#ifdef RAPTOR_DEBUG_MODE_GENERATION
-	if ((src == NULL) || (sz == 0))
-		return;
-	if (vb.m_size < (dstOffset + sz))
-		return;
-#endif
-
-    //! This method could be called very often per  frame, lock/unlock 
-    //! could be very expensive, so I will try to lock at a higher level
-    //! CThreadLock lock(m_pHeap->memoryMutex);
-
-#ifdef GL_ARB_vertex_buffer_object
-	// Is it a VBO ?
-	unsigned int buffer = vb.getBufferId();
-#ifdef RAPTOR_DEBUG_MODE_GENERATION
-	if (IsBufferObjectValid(buffer))
-#else
-	if (buffer > 0)
-#endif
-	{
-		const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
-		IBufferObject::BUFFER_KIND storage = vb.getStorage();
-		if (storage > IBufferObject::PIXEL_SOURCE)
-		{
-#ifdef RAPTOR_DEBUG_MODE_GENERATION
-			Raptor::GetErrorManager()->generateRaptorError(	CPersistence::CPersistenceClassID::GetClassId(),
-															CRaptorErrorManager::RAPTOR_WARNING,
-															"Buffer Object storage is not supported by RaptorCore CMemory");
-#endif
-			return;
-		}
-
-        GLenum glStorage = BufferKindToGL(storage);
-
-        if (m_pHeap->currentBuffers[storage] != buffer)
-        {
-		    pExtensions->glBindBufferARB(glStorage,buffer);
-        }
-		
-		//	This call may be faster in the future.
-		pExtensions->glBufferSubDataARB(glStorage, dstOffset, sz, src);
-		/*
-		char *data = (char*)pExtensions->glMapBufferARB(glStorage,GL_WRITE_ONLY_ARB);
-        
-        if (data != NULL)
-        {
-		    memcpy(data + dstOffset,src,sz);
-        }
-		
-		pExtensions->glUnmapBufferARB(glStorage);
-		*/
-        //	0 should by to the "GL default" array model.
-        if (m_pHeap->currentBuffers[storage] != buffer)
-        {
-	        pExtensions->glBindBufferARB(glStorage,0);
-            m_pHeap->currentBuffers[storage] = 0;
-        }
-	}
-	else if (NULL != vb.getBaseAddress())
-#endif
-	{
-		memcpy((char*)vb.getBaseAddress() + dstOffset,src,sz);
-	}
-
-    CATCH_GL_ERROR
+	m_pHeap->m_bDeferedPacking = defered;
 }
 
-
-void CMemory::glGetBufferObjectData(IBufferObject &vb,unsigned int srcOffset,void* dst,size_t sz)
-{
-#ifdef RAPTOR_DEBUG_MODE_GENERATION
-	if ((dst == NULL) || (sz == 0))
-		return;
-	if (vb.m_size < (srcOffset + sz))
-		return;
-#endif
-
-    //! This method could be called very often, lock/unlock 
-    //! could be very expensive, so I will try to lock at a higher level
-    //! CThreadLock lock(m_pHeap->memoryMutex);
-
-#ifdef GL_ARB_vertex_buffer_object
-	// Is it a VBO ?
-	unsigned int buffer = vb.getBufferId();
-#ifdef RAPTOR_DEBUG_MODE_GENERATION
-	if (IsBufferObjectValid(buffer))
-#else
-	if (buffer > 0)
-#endif
-	{
-		const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
-		
-		IBufferObject::BUFFER_KIND storage = vb.getStorage();
-        GLenum glStorage = BufferKindToGL(storage);
-		if (storage > IBufferObject::PIXEL_SOURCE)
-		{
-#ifdef RAPTOR_DEBUG_MODE_GENERATION
-			Raptor::GetErrorManager()->generateRaptorError(	CPersistence::CPersistenceClassID::GetClassId(),
-															CRaptorErrorManager::RAPTOR_WARNING,
-															"Buffer Object storage is not supported by RaptorCore CMemory");
-#endif
-			return;
-		}
-
-		if (m_pHeap->currentBuffers[storage] != buffer)
-        {
-		    pExtensions->glBindBufferARB(glStorage,buffer);
-        }
-
-
-		//	This call may be faster in the future.
-		//	I have no explanation on the fact that everything is
-		//	veeeery slow after a call to that function !!!
-		//pExtensions->glGetBufferSubDataARB(glStorage, srcOffset, sz, dst);
-		char *data = (char*)pExtensions->glMapBufferARB(glStorage,GL_READ_ONLY_ARB);
-        
-        if (data != NULL)
-        {
-		    memcpy(dst,data + srcOffset,sz);
-        }
-
-		pExtensions->glUnmapBufferARB(glStorage);
-
-        //	0 should by to the "GL default" array model.
-	    if (m_pHeap->currentBuffers[storage] != buffer)
-        {
-	        pExtensions->glBindBufferARB(glStorage,0);
-            m_pHeap->currentBuffers[storage] = 0;
-        }
-	}
-	else if (NULL != vb.getBaseAddress())
-#endif
-	{
-		memcpy(dst,(char*)vb.getBaseAddress() + srcOffset,sz);
-	}
-
-    CATCH_GL_ERROR
-}
-
-CMemory::IBufferObject * CMemory::glAllocateBufferObject(CMemory::IBufferObject::BUFFER_KIND kind, 
-														 CMemory::IBufferObject::BUFFER_MODE mode, 
-														 size_t size)
-{
-	if (size == 0)
-	{
-		return NULL;
-	}
-
-    CBufferObject * res = NULL;
-	const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
-
-#ifdef GL_ARB_vertex_buffer_object
-	//	This should be the fastest memory bloc for
-	//	OpenGL 1.4.1 drivers
-	if (pExtensions->glGenBuffersARB != NULL)
-	{
-        //! After this point, we are in critical section
-        CRaptorLock lock(m_pHeap->memoryMutex);
-
-		GLenum glStorage = BufferKindToGL(kind);
-        GLenum glMode = BufferModeToGL(kind,mode);
-
-		unsigned int buffer = 0;
-		pExtensions->glGenBuffersARB(1,&buffer);
-		pExtensions->glBindBufferARB(glStorage,buffer);
-
-		CATCH_GL_ERROR
-
-#ifdef RAPTOR_DEBUG_MODE_GENERATION
-		if (IsBufferObjectValid(buffer))
-#else
-		if (buffer > 0)
-#endif
-		{
-        	//	Store the buffer in the high part
-			//	and store the memory type in the low part.
-			//	This format is odd enough to be sure it cannot
-			//	be an address.
-			res = new CBufferObject;
-			res->m_buffer.id = ((buffer & 0xffff) << 16) + 1;
-            res->m_size = size;
-            res->m_storage = kind;
-
-			//	Allocate uninitialised data space
-			pExtensions->glBufferDataARB(glStorage,size,NULL,glMode);
-
-            //	0 should by to the "GL default" array model.
-		    pExtensions->glBindBufferARB(glStorage,0);
-
-			CMemoryHeap::DATA_BLOC db;
-			db.type = CMemoryHeap::AGP;
-            // Store the id instead of the base address because we need to recreate
-            // BufferObjects when CMemory is destroyed to correctly call glReleaseBufferObject.
-            // Besides, this id will uniquely identify an AGP block wheareas base addresses can be identical.
-			//db.address = (unsigned char*)res->getBaseAddress();
-            db.address = (unsigned char*)res->m_buffer.id;
-			db.size = size;
-			db.usedBytes = size;
-
-			m_pHeap->heap.push_back(db);
-
-			return res;
-		}
-		else
-		{
-#ifdef RAPTOR_DEBUG_MODE_GENERATION
-			Raptor::GetErrorManager()->generateRaptorError(	CPersistence::CPersistenceClassID::GetClassId(),
-															CRaptorErrorManager::RAPTOR_WARNING,
-				                                            "The requested Buffer Object could not be allocated");
-#endif
-			return NULL;
-		}
-	}
-	// This should be the fastest possible chunck of memory for nVidia AGP
-	else 
-#endif
-#ifdef GL_NV_vertex_array_range
-	if (pExtensions->wglAllocateMemoryNV != NULL)
-	{
-        //! After this point, we are in critical section
-        CRaptorLock lock(m_pHeap->memoryMutex);
-
-        res = new CBufferObject;
-
-		//	Allocate memory on AGP
-        res->m_size = size;
-        res->m_storage = kind;
-		res->m_buffer.address = pExtensions->wglAllocateMemoryNV(size,0.0f,0.0f,0.5f);
-		if (res->m_buffer.address == NULL)
-		{
-#ifdef RAPTOR_DEBUG_MODE_GENERATION
-			Raptor::GetErrorManager()->generateRaptorError(	CPersistence::CPersistenceClassID::GetClassId(),
-															CRaptorErrorManager::RAPTOR_WARNING,
-				                                            "The requested Buffer Object could not be allocated");
-#endif
-            delete res;
-			return NULL;
-		}
-		else
-		{
-
-			CMemoryHeap::DATA_BLOC db;
-			db.type = CMemoryHeap::AGP;
-			db.address = (unsigned char*)res->m_buffer.address;
-			db.size = size;
-			db.usedBytes = size;
-
-			m_pHeap->heap.push_back(db);
-
-			return res;
-		}
-	}
-	else
-#endif
-	{
-		return NULL;
-	}
-}
-
-bool CMemory::glReleaseBufferObject(IBufferObject* &vb)
-{
-	if (vb->getStorage() > IBufferObject::PIXEL_SOURCE)
-	{
-#ifdef RAPTOR_DEBUG_MODE_GENERATION
-		Raptor::GetErrorManager()->generateRaptorError(	CPersistence::CPersistenceClassID::GetClassId(),
-														CRaptorErrorManager::RAPTOR_WARNING,
-														"Buffer Object storage is not supported by RaptorCore CMemory");
-#endif
-		return false;
-	}
-
-	bool found = false;
-
-    //! After this point, we are in critical section
-    CRaptorLock lock(m_pHeap->memoryMutex);
-
-	vector<CMemoryHeap::DATA_BLOC>::iterator itr = m_pHeap->heap.begin();
-	while ((!found) && (itr != m_pHeap->heap.end()))
-	{
-		unsigned char *addr = (*itr).address;
-        // The buffer address holds the unique id when it is an AGP bloc
-		//! ( a BufferObject is always an AGP bloc )
-		found = (((unsigned int)(addr) >> 16) == vb->getBufferId()) ||
-				(addr == vb->getBaseAddress());
-		if (!found)
-			itr++;
-	}
-
-	if (!found)
-	{
-#ifdef RAPTOR_DEBUG_MODE_GENERATION
-		Raptor::GetErrorManager()->generateRaptorError(	CPersistence::CPersistenceClassID::GetClassId(),
-														CRaptorErrorManager::RAPTOR_WARNING,
-                                                        "You are trying to free a block that was not properly allocated");
-#endif
-		return false;
-	}
-	else
-	{
-		m_pHeap->heap.erase(itr);
-	}
-
-	const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
-    if (pExtensions == NULL)
-        return false;
-
-#if defined(GL_ARB_vertex_buffer_object)
-	unsigned int buffer = vb->getBufferId();
-	if ((pExtensions->glDeleteBuffersARB != NULL) &&
-		(buffer > 0))
-	{
-		pExtensions->glDeleteBuffersARB(1,&buffer);
-		// This is ugly, need to review design
-		CBufferObject *cb = (CBufferObject*)vb;
-		delete cb;
-		vb = NULL;
-		return true;
-	}
-#elif defined(GL_NV_vertex_array_range)
-	if ((pExtensions->wglFreeMemoryNV != NULL) && (vb->buffer.address == NULL))
-	{
-		pExtensions->wglFreeMemoryNV(vb->buffer.address);
-		delete vb;
-		vb = NULL;
-		return true;
-	}
-#endif
-	else
-	{
-		return false;
-	}
-}
-
-bool CMemory::glLockBufferObject(IBufferObject &vb)
-{
-	if (vb.getStorage() > IBufferObject::PIXEL_SOURCE)
-	{
-#ifdef RAPTOR_DEBUG_MODE_GENERATION
-		Raptor::GetErrorManager()->generateRaptorError(	CPersistence::CPersistenceClassID::GetClassId(),
-														CRaptorErrorManager::RAPTOR_WARNING,
-														"Buffer Object storage is not supported by RaptorCore CMemory");
-#endif
-		return false;
-	}
-
-	if (vb.getSize() == 0)
-		return false;
-	unsigned int buffer = vb.getBufferId();
-
-	const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
-
-    //! This method could be called very often, lock/unlock 
-    //! could be very expensive, so I will try to lock at a higher level
-    //! CThreadLock lock(m_pHeap->memoryMutex);
-
-#ifdef GL_ARB_vertex_buffer_object
-	if ((pExtensions->glBindBufferARB != NULL) &&
-		(buffer > 0))
-	{
-		IBufferObject::BUFFER_KIND storage = vb.getStorage();
-		GLenum glStorage = BufferKindToGL(storage);
-
-		pExtensions->glBindBufferARB(glStorage,buffer);
-
-        m_pHeap->currentBuffers[storage] = buffer;
-
-		return true;
-	}
-	else 
-#endif
-#ifdef GL_NV_vertex_array_range
-	if ((pExtensions->glVertexArrayRangeNV != NULL) && 
-		(NULL != vb.getBaseAddress()))
-	{
-		pExtensions->glVertexArrayRangeNV(vb.getSize(),vb.getBaseAddress());
-		glEnableClientState(GL_VERTEX_ARRAY_RANGE_NV);
-		return true;
-	}
-	else
-#endif
-	{
-		return false;
-	}
-}
-
-bool CMemory::glUnlockBufferObject(IBufferObject &vb)
-{
-	if (vb.getStorage() > IBufferObject::PIXEL_SOURCE)
-	{
-#ifdef RAPTOR_DEBUG_MODE_GENERATION
-		Raptor::GetErrorManager()->generateRaptorError(	CPersistence::CPersistenceClassID::GetClassId(),
-														CRaptorErrorManager::RAPTOR_WARNING,
-														"Buffer Object storage is not supported by RaptorCore CMemory");
-#endif
-		return false;
-	}
-
-	if (vb.getSize() == 0)
-		return false;
-
-	unsigned int buffer = vb.getBufferId();
-	const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
-
-    //! This method could be called very often, lock/unlock 
-    //! could be very expensive, so I will try to lock at a higher level
-    //! CThreadLock lock(m_pHeap->memoryMutex);
-
-#ifdef GL_ARB_vertex_buffer_object
-	if ((pExtensions->glBindBufferARB != NULL) &&
-		(buffer > 0))
-	{
-		IBufferObject::BUFFER_KIND storage = vb.getStorage();
-        GLenum glStorage = BufferKindToGL(storage);
-
-		//	0 should by to the "GL default" array model.
-		pExtensions->glBindBufferARB(glStorage,0);
-
-        m_pHeap->currentBuffers[storage] = 0;
-
-		return true;
-	}
-	else 
-#endif
-	{
-		return false;
-	}
-}
-
-void *CMemory::allocate(size_t size,unsigned int count,unsigned char alignment) const
+void *CHostMemoryManager::allocate(size_t size,unsigned int count,size_t alignment) const
 {
     //! After this point, we are in critical section
     CRaptorLock lock(m_pHeap->memoryMutex);
 
     bool found = false;
 	size_t requestedSize = size*count;
-	set<CMemoryHeap::DATA_BLOC,CMemoryHeap::DATA_BLOC>::iterator itr = m_pHeap->garbage.begin();
-
+	
+	std::set<CMemoryHeap::DATA_BLOC,CMemoryHeap::DATA_BLOC>::iterator itr = m_pHeap->garbage.begin();
 	while ((!found) && (itr != m_pHeap->garbage.end()))
 	{
         const CMemoryHeap::DATA_BLOC &db = (*itr);
 
-		found = (	(db.size >= requestedSize) && 
-					(db.type == CMemoryHeap::MANAGED) &&
-					((db.size - requestedSize) < WASTE_SPACE_TRESHOLD*db.size)	);
-
-		if (!found) 
-            itr++;
+		if (db.size >= requestedSize)
+		{
+			size_t treshold = requestedSize + WASTE_SPACE_TRESHOLD*db.size;
+			if (db.size >= treshold)
+				break;
+			else
+				found = true;
+		}
+		else
+			itr++;
 	}
 
     if (!found)
@@ -781,55 +245,78 @@ void *CMemory::allocate(size_t size,unsigned int count,unsigned char alignment) 
 	    char *pT = new char[size * count + align];
 
 	    //	align data
-	    void *data = (void*)( (int(pT) + align) & ~((int)(align-1)));
+	    void *data = (void*)((int(pT) + align) & ~((int)(align-1)));
 
 	    // store allocation offset
+#ifdef INITIALISE_MEMORY
         memset(pT,0,size * count + align);
+#endif
         *((unsigned char*)data-1) = 0xff & ((unsigned int)(data) - (unsigned int)(pT));
 
 	    CMemoryHeap::DATA_BLOC db;
-	    db.type = CMemoryHeap::MAIN;
 	    db.address = (unsigned char*)data;
 	    db.size = requestedSize;
 		db.usedBytes = requestedSize;
 
-	    m_pHeap->heap.push_back(db);
+		m_pHeap->heap[db.address] = db;
         return data;
     }
     else
     {
         CMemoryHeap::DATA_BLOC db = (*itr);
-        db.type = CMemoryHeap::MAIN;
 		db.usedBytes = requestedSize;
-        m_pHeap->heap.push_back(db);
+		m_pHeap->heap[db.address] = db;
         m_pHeap->garbage.erase(itr);
 		m_pHeap->garbageSize -= db.size;
+#ifdef INITIALISE_MEMORY
         memset(db.address,0,db.size);
+#endif
 		
         return db.address;
     }
 }
 
+bool CHostMemoryManager::pack(void)
+{
+	if (!m_pHeap->m_bDeferedPacking)
+		return false;
 
-void CMemory::release(void *data) const
+    //! After this point, we are in critical section
+    CRaptorLock lock(m_pHeap->memoryMutex);
+	bool oldpack = m_pHeap->m_bDeferedPacking;
+	m_pHeap->m_bDeferedPacking = false;
+
+	std::vector<void*>::const_iterator it = m_pHeap->futureGarbage.begin();
+	while (m_pHeap->futureGarbage.end() != it)
+		garbage((*it++));
+	m_pHeap->futureGarbage.clear();
+
+	it = m_pHeap->futureRelease.begin();
+	while (m_pHeap->futureRelease.end() != it)
+		garbage((*it++));
+	m_pHeap->futureRelease.clear();
+
+	m_pHeap->m_bDeferedPacking = oldpack;
+
+	return true;
+}
+
+void CHostMemoryManager::release(void *data) const
 {
     //! After this point, we are in critical section
     CRaptorLock lock(m_pHeap->memoryMutex);
 
-	bool found = false;
-
-    //! Search to validate the bloc is allocated with alignment and exists
-	vector<CMemoryHeap::DATA_BLOC>::iterator itr = m_pHeap->heap.begin();
-	while ((!found) && (itr != m_pHeap->heap.end()))
+	if (m_pHeap->m_bDeferedPacking)
 	{
-        CMemoryHeap::DATA_BLOC &db = (*itr);
-		found = ((db.address == data) && (db.type == CMemoryHeap::MAIN));
-
-		if (!found) 
-            itr++;
+		m_pHeap->futureRelease.push_back(data);
+		return;
 	}
 
-	if (!found)
+    //! Search to validate the bloc is allocated with alignment and exists
+	map<void*,CMemoryHeap::DATA_BLOC>::iterator itr = m_pHeap->heap.find(data);
+	if (m_pHeap->heap.end() != itr)
+		m_pHeap->heap.erase(itr);
+	else
 	{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 		Raptor::GetErrorManager()->generateRaptorError(CPersistence::CPersistenceClassID::GetClassId(),
@@ -837,10 +324,6 @@ void CMemory::release(void *data) const
                                                        "You are trying to free a block that was not properly allocated");
 #endif
 		return;
-	}
-	else
-	{
-		m_pHeap->heap.erase(itr);
 	}
 
 	unsigned char *pT = (unsigned char*)data;
@@ -852,28 +335,31 @@ void CMemory::release(void *data) const
 	delete [] pT;
 }
 
-void CMemory::garbage(void *data) const
+void CHostMemoryManager::garbage(void *data) const
 {
-    //! After this point, we are in critical section
+	//! After this point, we are in critical section
     CRaptorLock lock(m_pHeap->memoryMutex);
-    bool found = false;
 
-    //! Search to validate the bloc is allocated with alignment and exists
-	vector<CMemoryHeap::DATA_BLOC>::iterator itr = m_pHeap->heap.begin();
-	while (!found && (itr != m_pHeap->heap.end()))
+	if (m_pHeap->m_bDeferedPacking)
 	{
-        CMemoryHeap::DATA_BLOC &db = (*itr);
-		if ((db.address == data) && (db.type == CMemoryHeap::MAIN))
-        {
-            db.type = CMemoryHeap::MANAGED;
-            found = true;
-            m_pHeap->garbage.insert(db);
-			m_pHeap->garbageSize += db.size;
-            m_pHeap->heap.erase(itr);
-        }
+		m_pHeap->futureGarbage.push_back(data);
+		return;
+	}
 
-        if (!found)
-            itr++;
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+	bool found = false;
+#endif
+    //! Search to validate the bloc is allocated with alignment and exists
+	map<void*,CMemoryHeap::DATA_BLOC>::iterator itr = m_pHeap->heap.find(data);
+	if (m_pHeap->heap.end() != itr)
+	{
+        CMemoryHeap::DATA_BLOC &db = (*itr).second;
+        m_pHeap->garbage.insert(db);
+		m_pHeap->garbageSize += db.size;
+        m_pHeap->heap.erase(itr);
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+		found = true;
+#endif
 	}
 
 	if (m_pHeap->garbageSize > m_pHeap->garbageMaxSize)
@@ -909,7 +395,3 @@ void CMemory::garbage(void *data) const
 	}
 #endif
 }
-
-
-
-

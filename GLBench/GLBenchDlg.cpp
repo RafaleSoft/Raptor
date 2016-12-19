@@ -64,7 +64,7 @@ BOOL CGLBenchDlg::OnInitDialog()
 	LoadModules(0);
 	TCHAR buffer[MAX_PATH];
 	GetEnvironmentVariable(TEXT("RAPTOR_ROOT"),buffer,MAX_PATH);
-	StrCat(buffer, TEXT("\\Redist\\bin"));
+	_tcscpy(buffer, TEXT("\\Redist\\bin"));
 	LoadModules(CT2A(buffer));
 
 	CButton *bt = (CButton *)(GetDlgItem(IDC_RADIO1));

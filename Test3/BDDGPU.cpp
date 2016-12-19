@@ -460,23 +460,23 @@ bool CBDDGPU::clBuild(CRaptorComputeJob &job)
 	if (res)
 	{
 		const cl_uint *data = readBuffer.getResult();
-		for (size_t i=0;i<m_size;i++)
-			cout << data[i] << " ";
+		for (size_t j=0;j<m_size;j++)
+			cout << data[j] << " ";
 		cout << endl;
 
 		const cl_uint *data2 = readBuffer2.getResult();
-		for (size_t i=0;i<m_size;i++)
-			cout << data2[i] << " ";
+		for (size_t j=0;j<m_size;j++)
+			cout << data2[j] << " ";
 		cout << endl;
 		
 		const cl_uint *data3 = readBuffer3.getResult();
-		for (size_t i=0;i<NbBloc;i++)
-			cout << data3[i] << " ";
+		for (size_t j=0;j<NbBloc;j++)
+			cout << data3[j] << " ";
 		cout << endl;
 
 		const cl_uint *data4 = readBuffer4.getResult();
-		for (size_t i=0;i<m_size;i++)
-			cout << data4[i] << " ";
+		for (size_t j=0;j<m_size;j++)
+			cout << data4[j] << " ";
 		cout << endl;
 	}
 

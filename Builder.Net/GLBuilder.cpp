@@ -73,6 +73,19 @@ static const char *STL =
 	#pragma warning( disable : 4251)    // DLL interface required for STL exports \n\
 #endif \n\
 \n\n\
+//	Standard sized int types \n\
+#if defined(_MSC_VER) && (_MSC_VER < 1600) \n\
+	typedef signed   __int8  int8_t;	\n\
+	typedef unsigned __int8  uint8_t;	\n\
+	typedef signed   __int16 int16_t;	\n\
+	typedef unsigned __int16 uint16_t;	\n\
+	typedef signed   __int32 int32_t;	\n\
+	typedef unsigned __int32 uint32_t;	\n\
+	typedef signed   __int64 int64_t;	\n\
+	typedef unsigned __int64 uint64_t;	\n\
+#else	\n\
+	#include <stdint.h>	\n\
+#endif\n\n\
 //	Standard Template Library Headers used for Raptor\n\
 #include <string> \n\
 #include <vector> \n\
@@ -90,6 +103,11 @@ typedef struct lessString\n\
 } lessString;\n\
 typedef map<string,void*,lessString> MapStringToPtr;\n\
 RAPTOR_NAMESPACE_END\n\
+\n\
+// define linkage specifier for declarators \n\
+#define DEFAULT_LINKAGE \n\
+#define STATIC_LINKAGE        static \n\
+#define EXTERN_LINKAGE      extern \n\
 \n";
 
 static const char *NAMESPACE =
@@ -689,6 +707,11 @@ CGLBuilder::CGLBuilder():
 	extension.active = false;	extension.kind = OES;	extension.extensionName = "GL_OES_compressed_paletted_texture";
 	extensions.push_back(extension);
 
+	extension.dependencies.clear();
+	extension.active = false;	extension.kind = ARB;	extension.extensionName = "GL_ARB_uniform_buffer_object";
+	extension.dependencies.push_back("GL_ARB_shader_objects");
+	extension.dependencies.push_back("GL_ARB_vertex_buffer_object");
+	extensions.push_back(extension);
 }
 
 CGLBuilder::~CGLBuilder()
