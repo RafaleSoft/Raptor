@@ -56,6 +56,7 @@ public:
     bool glCompileShader(void); 
 
 
+
     //!
     //! Material configuration
     //!

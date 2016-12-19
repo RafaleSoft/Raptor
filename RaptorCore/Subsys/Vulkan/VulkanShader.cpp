@@ -6,6 +6,9 @@
 #if !defined(AFX_RAPTORVULKANSHADER_H__C188550F_1D1C_4531_B0A0_727CE9FF9450__INCLUDED_)
 	#include "Subsys/Vulkan/VulkanShader.h"
 #endif
+#if !defined(AFX_RAPTORVULKANMEMORY_H__72256FF7_DBB9_4B9C_9BF7_C36F425CF811__INCLUDED_)
+	#include "Subsys/Vulkan/VulkanMemory.h"
+#endif
 #if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
 	#include "System/Raptor.h"
 #endif
@@ -20,15 +23,21 @@
 RAPTOR_NAMESPACE
 
 #if defined(VK_VERSION_1_0)
-	PFN_vkCreateShaderModule CVulkanShader::vkCreateShaderModule = VK_NULL_HANDLE;
-	PFN_vkDestroyShaderModule CVulkanShader::vkDestroyShaderModule = VK_NULL_HANDLE;
+	//PFN_vkCreateShaderModule CVulkanShader::vkCreateShaderModule = VK_NULL_HANDLE;
+	//PFN_vkDestroyShaderModule CVulkanShader::vkDestroyShaderModule = VK_NULL_HANDLE;
 #endif
 
-CVulkanShader::CVulkanShader(VkDevice d)
+CVulkanShader::CVulkanShader(VkDevice d, PFN_vkGetDeviceProcAddr vkGetDeviceProcAddr)
 #if defined(VK_VERSION_1_0)
-	:device(d),shader_module(VK_NULL_HANDLE),shader_stage(VK_SHADER_STAGE_ALL)
+	: device(d),
+	shader_module(VK_NULL_HANDLE),
+	shader_stage(VK_SHADER_STAGE_ALL)
 #endif
 {
+	vkCreateShaderModule = (PFN_vkCreateShaderModule)(vkGetDeviceProcAddr(device, "vkCreateShaderModule"));
+	vkDestroyShaderModule = (PFN_vkDestroyShaderModule)(vkGetDeviceProcAddr(device, "vkDestroyShaderModule"));
+	vkCreateDescriptorPool = (PFN_vkCreateDescriptorPool)(vkGetDeviceProcAddr(device, "vkCreateDescriptorPool"));
+	vkDestroyDescriptorPool = (PFN_vkDestroyDescriptorPool)(vkGetDeviceProcAddr(device, "vkDestroyDescriptorPool"));
 }
 
 CVulkanShader::~CVulkanShader(void)
@@ -43,6 +52,19 @@ CVulkanShader* CVulkanShader::vkClone(void) const
 {
 	return new CVulkanShader(*this);
 }
+
+VkPipelineShaderStageCreateInfo CVulkanShader::getShaderStage() const
+{
+	VkPipelineShaderStageCreateInfo shaderStage = { VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
+													NULL,
+													0, //VkPipelineShaderStageCreateFlags               
+													shader_stage,
+													shader_module,
+													"main",
+													NULL };	// VkSpecializationInfo
+	return shaderStage;
+}
+
 
 CVulkanShader::CVulkanShader(const CVulkanShader& shader)
 {

@@ -20,35 +20,36 @@ RAPTOR_NAMESPACE_BEGIN
 
 class CRaptorDisplayConfig;
 class CVulkanShader;
+class CVulkanShaderStage;
 
 class CVulkanPipeline
 {
 public:
 	CVulkanPipeline(VkDevice device,
-					VkRenderPass renderPass);
+					VkRenderPass renderPass,
+					PFN_vkGetDeviceProcAddr vkGetDeviceProcAddr);
 	virtual ~CVulkanPipeline(void);
 
-	bool initPipeline();
+	bool initPipeline(const CVulkanShaderStage& shaderStages);
 
 	bool destroyPipeline(void);
 
 	VkPipeline getPipeline(void) const { return pipeline; };
 
-	bool addShader(CVulkanShader* pShader);
-
 
 #if defined(VK_VERSION_1_0)
-	DECLARE_VK_device(DEFAULT_LINKAGE)
+	DECLARE_VK_pipeline(DEFAULT_LINKAGE)
 #endif
 
 private:
-	std::vector<CVulkanShader*> m_shaders;
-
 #if defined(VK_VERSION_1_0)
 	VkDevice		device;
 	VkRenderPass	renderPass;
 	VkPipeline		pipeline;
+	VkDescriptorSetLayout descriptor_set_layout;
 	VkPipelineLayout layout;
+	VkDescriptorPool	descriptor_pool;
+	VkDescriptorSet		descriptor_set;
 #endif
 };
 

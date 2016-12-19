@@ -885,14 +885,12 @@ bool CShader::glCompileShader()
 
 		if (!abort)
 			CShaderLibrary::GetInstance()->registerProgram(m_pVProgram,m_pFProgram,m_pGProgram,m_shaderProgram);
-
         return !abort;
 #endif
     }
     
     return false;
 }
-
 
 bool CShader::exportObject(CRaptorIO& o)
 {

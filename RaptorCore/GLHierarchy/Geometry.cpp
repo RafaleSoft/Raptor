@@ -49,6 +49,9 @@
 #if !defined(AFX_RENDERINGPROPERTIES_H__634BCF2B_84B4_47F2_B460_D7FDC0F3B698__INCLUDED_)
 	#include "RenderingProperties.h"
 #endif
+#if !defined(AFX_RAPTORVULKANCOMMANDBUFFER_H__0398BABD_747B_4DFE_94AA_B026BDBD03B1__INCLUDED_)
+	#include "Subsys/Vulkan/VulkanCommandBuffer.h"
+#endif
 
 RAPTOR_NAMESPACE
 
@@ -911,6 +914,21 @@ void CGeometry::transform(GL_MATRIX &m)
 //////////////////////////////////////////////////////////////////////
 // Rendering
 //////////////////////////////////////////////////////////////////////
+void CGeometry::vkRender(CVulkanCommandBuffer& commandBuffer, VkBuffer vertexBinding, VkBuffer indexBinding)
+{
+	VkBuffer bindings[2] = { vertexBinding, vertexBinding };
+	VkDeviceSize offsets[2] = { (VkDeviceSize)&vertex[0], (VkDeviceSize)&colors[0] };
+	commandBuffer.vkCmdBindVertexBuffers(	commandBuffer.commandBuffer, 
+											0, 2, &bindings[0], &offsets[0]);
+
+	commandBuffer.vkCmdBindIndexBuffer(	commandBuffer.commandBuffer, 
+										indexBinding,
+										(VkDeviceSize)&polys[0],
+										VK_INDEX_TYPE_UINT16);
+
+	commandBuffer.vkCmdDrawIndexed(commandBuffer.commandBuffer, 3 * m_nbPolys, 1, 0, 0, 0);
+}
+
 void CGeometry::glRender()
 {
     if (!properties.isVisible())

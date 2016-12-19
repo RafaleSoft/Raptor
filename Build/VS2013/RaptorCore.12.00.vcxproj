@@ -398,6 +398,7 @@ Subsys\Redist.bat
     <ClCompile Include="..\..\RaptorCore\Subsys\SubBoundingBox.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\Tesselator.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\TexelAllocator.cpp" />
+    <ClCompile Include="..\..\RaptorCore\Subsys\UniformAllocator.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\VideoStream.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\Vulkan\VulkanCommandBuffer.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\Vulkan\VulkanDevice.cpp" />
@@ -581,6 +582,7 @@ copy $(SolutionDir)\$(ProjectName)\Subsys\CodeGeneration.h "%RAPTOR_ROOT%\Redist
     <ClInclude Include="..\..\RaptorCore\Subsys\Tesselator.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\TexelAllocator.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\TimeObjectImpl.h" />
+    <ClInclude Include="..\..\RaptorCore\Subsys\UniformAllocator.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\VideoStream.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\Vulkan\VulkanBufferObject.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\Vulkan\VulkanCommandBuffer.h" />
@@ -613,6 +615,7 @@ copy $(SolutionDir)\$(ProjectName)\Subsys\CodeGeneration.h "%RAPTOR_ROOT%\Redist
     <ClInclude Include="..\..\RaptorCore\System\RaptorVulkanDisplay.h" />
     <ClInclude Include="..\..\RaptorCore\System\RenderEntryPoint.h" />
     <ClInclude Include="..\..\RaptorCore\System\Version.h" />
+    <ClInclude Include="..\..\RaptorCore\System\vkext.h" />
     <ClInclude Include="..\..\RaptorCore\Win32Specific\Win32Application.h" />
     <ClInclude Include="..\..\RaptorCore\Win32Specific\Win32ContextManager.h" />
     <ClInclude Include="..\..\RaptorCore\Win32Specific\Win32EngineTaskManager.h" />

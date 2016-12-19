@@ -34,6 +34,11 @@ public:
 	virtual void glProgramParameter(unsigned int numParam,
 									const CColor::RGBA &v);
 
+	//! Computes and returns and size required to allocate a uniform
+	//! buffer object backing uniform blocks
+	//! @return the required size in bytes.
+	uint64_t glGetBufferMemoryRequirements(RAPTOR_HANDLE program);
+
 
 protected:
 	//!	Default Constructor.

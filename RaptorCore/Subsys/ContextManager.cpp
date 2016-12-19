@@ -51,6 +51,7 @@
 RAPTOR_NAMESPACE_BEGIN
 
 	CContextManager *CContextManager::p_manager = NULL;
+	const CContextManager::RENDERING_CONTEXT_ID CContextManager::INVALID_CONTEXT = -1;
 
 RAPTOR_NAMESPACE_END
 //
@@ -102,7 +103,17 @@ CContextManager::CContextManager()
 		ctxt.pFeatures = NULL;
 		ctxt.physicalDevice = MAXUINT;
 
-#ifdef VK_KHR_win32_surface
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
+		ctxt.vkCreateWin32SurfaceKHR = NULL;
+		ctxt.vkGetPhysicalDeviceWin32PresentationSupportKHR = NULL;
+#endif
+#ifdef VK_KHR_surface
+		ctxt.vkDestroySurfaceKHR = NULL;
+		ctxt.vkGetPhysicalDeviceSurfaceSupportKHR = NULL;
+		ctxt.vkGetPhysicalDeviceSurfaceCapabilitiesKHR = NULL;
+		ctxt.vkGetPhysicalDeviceSurfaceFormatsKHR = NULL;
+		ctxt.vkGetPhysicalDeviceSurfacePresentModesKHR = NULL;
+
 		ctxt.surface = VK_NULL_HANDLE;
 		ctxt.pSurfaceFormatCount = 0;
 		ctxt.pSurfaceFormats = NULL;
@@ -640,7 +651,7 @@ bool CContextManager::vkInitDevice(CContextManager::RENDERING_CONTEXT_ID ctx,con
 }
 
 
-#ifdef VK_KHR_win32_surface
+#ifdef VK_KHR_surface
 void CContextManager::vkResize(	RENDERING_CONTEXT_ID ctx,const CRaptorDisplayConfig& config)
 {
 	VK_CONTEXT &context = m_pVkContext[ctx];
@@ -818,7 +829,7 @@ CContextManager::RENDERING_CONTEXT_ID CContextManager::vkCreateContext(const RAP
 	if (nbInstances >= MAX_CONTEXT)
 	{
 		RAPTOR_ERROR( Global::CVulkanClassID::GetClassId(),"Too many Vulkan Context created");
-		return -1;
+		return CContextManager::INVALID_CONTEXT;
 	}
 
 	//	Here, at least one instance slot is available, so no further check
@@ -830,7 +841,7 @@ CContextManager::RENDERING_CONTEXT_ID CContextManager::vkCreateContext(const RAP
 	if (!vkInitInstance(ctx))
 	{
 		vkDestroyContext(ctx);
-		return -1;
+		return CContextManager::INVALID_CONTEXT;
 	}
 
 	if (WINDOW_CLASS == handle.hClass)
@@ -838,28 +849,28 @@ CContextManager::RENDERING_CONTEXT_ID CContextManager::vkCreateContext(const RAP
 		if (!vkCreateSurface(handle,ctx))
 		{
 			vkDestroyContext(ctx);
-			return -1;
+			return CContextManager::INVALID_CONTEXT;
 		}
 	}
 
 	if (!vkInitDevice(ctx,config))
 	{
 		vkDestroyContext(ctx);
-		return -1;
+		return CContextManager::INVALID_CONTEXT;
 	}
 
 
-#ifdef VK_KHR_win32_surface
+#ifdef VK_KHR_surface
 	if (!vkInitSurface(ctx))
 	{
 		vkDestroyContext(ctx);
-		return -1;
+		return CContextManager::INVALID_CONTEXT;
 	}
 
 	if (!vkCreateSwapChain(ctx,config.getNbSamples(),config.width,config.height))
 	{
 		vkDestroyContext(ctx);
-		return -1;
+		return CContextManager::INVALID_CONTEXT;
 	}
 
 	return ctx;
@@ -878,13 +889,19 @@ void CContextManager::vkMakeCurrentContext(const RAPTOR_HANDLE& device,RENDERING
 			if (!context.device.acquireSwapChainImage(timeout))
 			{
 				CRaptorErrorManager *pErrMgr = Raptor::GetErrorManager();
-				pErrMgr->generateRaptorError(	Global::CVulkanClassID::GetClassId(),
-												CRaptorErrorManager::RAPTOR_WARNING,
-												"Vulkan Device failed to provide rendering Image!");
+				pErrMgr->generateRaptorError(Global::CVulkanClassID::GetClassId(),
+					CRaptorErrorManager::RAPTOR_WARNING,
+					"Vulkan Device failed to provide rendering Image!");
 
 				// onWindowSizeChanged()
 			}
+			else
+				CVulkanDevice::setCurrentDevice(&context.device);
 		}
+	}
+	else
+	{
+		CVulkanDevice::setCurrentDevice(NULL);
 	}
 }
 
@@ -944,7 +961,7 @@ void CContextManager::vkDestroyContext(RENDERING_CONTEXT_ID ctx)
 		
 		if (context.device.vkDestroyLogicalDevice())
 		{
-#ifdef VK_KHR_win32_surface
+#ifdef VK_KHR_surface
 			VkSurfaceKHR surface = context.surface;
 			if (VK_NULL_HANDLE != surface)
 				context.vkDestroySurfaceKHR(context.instance,surface,NULL);

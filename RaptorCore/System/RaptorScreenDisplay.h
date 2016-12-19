@@ -21,6 +21,7 @@ RAPTOR_NAMESPACE_BEGIN
 
 class CGeometryAllocator;
 class CTexelAllocator;
+class CUniformAllocator;
 class CAnimatorStream;
 
 //! This class implements an OGL display for direct screen rendering
@@ -118,6 +119,8 @@ protected:
     CGeometryAllocator  *m_pGOldAllocator;
 	CTexelAllocator		*m_pTAllocator;
     CTexelAllocator		*m_pTOldAllocator;
+	CUniformAllocator	*m_pUAllocator;
+	CUniformAllocator	*m_pUOldAllocator;
 
 	IDeviceMemoryManager	*m_pDeviceMemory;
 

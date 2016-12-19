@@ -133,14 +133,31 @@
 		LINKAGE PFN_vkCreateImageView vkCreateImageView; \
 		LINKAGE PFN_vkDestroyImageView vkDestroyImageView; \
 		LINKAGE PFN_vkCreateFramebuffer vkCreateFramebuffer; \
-		LINKAGE PFN_vkDestroyFramebuffer vkDestroyFramebuffer; \
+		LINKAGE PFN_vkDestroyFramebuffer vkDestroyFramebuffer;
+	#endif
+
+	#if !defined(DECLARE_VK_pipeline)
+	#define DECLARE_VK_pipeline(LINKAGE) \
 		LINKAGE PFN_vkCreateGraphicsPipelines vkCreateGraphicsPipelines; \
 		LINKAGE PFN_vkCreateComputePipelines vkCreateComputePipelines; \
 		LINKAGE PFN_vkDestroyPipeline vkDestroyPipeline; \
 		LINKAGE PFN_vkCreatePipelineLayout vkCreatePipelineLayout; \
 		LINKAGE PFN_vkDestroyPipelineLayout vkDestroyPipelineLayout; \
 		LINKAGE PFN_vkCreateShaderModule vkCreateShaderModule; \
-		LINKAGE PFN_vkDestroyShaderModule vkDestroyShaderModule;
+		LINKAGE PFN_vkDestroyShaderModule vkDestroyShaderModule; \
+		LINKAGE PFN_vkCreateDescriptorSetLayout vkCreateDescriptorSetLayout; \
+		LINKAGE PFN_vkDestroyDescriptorSetLayout vkDestroyDescriptorSetLayout; \
+		LINKAGE PFN_vkGetImageSubresourceLayout vkGetImageSubresourceLayout; \
+		LINKAGE PFN_vkCreatePipelineCache vkCreatePipelineCache; \
+		LINKAGE PFN_vkDestroyPipelineCache vkDestroyPipelineCache; \
+		LINKAGE PFN_vkGetPipelineCacheData vkGetPipelineCacheData; \
+		LINKAGE PFN_vkMergePipelineCaches vkMergePipelineCaches; \
+		LINKAGE PFN_vkCreateDescriptorPool vkCreateDescriptorPool; \
+		LINKAGE PFN_vkDestroyDescriptorPool vkDestroyDescriptorPool; \
+		LINKAGE PFN_vkResetDescriptorPool vkResetDescriptorPool; \
+		LINKAGE PFN_vkAllocateDescriptorSets vkAllocateDescriptorSets; \
+		LINKAGE PFN_vkFreeDescriptorSets vkFreeDescriptorSets; \
+		LINKAGE PFN_vkUpdateDescriptorSets vkUpdateDescriptorSets;
 	#endif
 
 	#if	!defined(DECLARE_VK_command_buffer)
@@ -207,21 +224,8 @@
 		LINKAGE PFN_vkDestroyBufferView vkDestroyBufferView; \
 		LINKAGE PFN_vkCreateImage vkCreateImage; \
 		LINKAGE PFN_vkDestroyImage vkDestroyImage; \
-		LINKAGE PFN_vkGetImageSubresourceLayout vkGetImageSubresourceLayout; \
-		LINKAGE PFN_vkCreatePipelineCache vkCreatePipelineCache; \
-		LINKAGE PFN_vkDestroyPipelineCache vkDestroyPipelineCache; \
-		LINKAGE PFN_vkGetPipelineCacheData vkGetPipelineCacheData; \
-		LINKAGE PFN_vkMergePipelineCaches vkMergePipelineCaches; \
 		LINKAGE PFN_vkCreateSampler vkCreateSampler; \
 		LINKAGE PFN_vkDestroySampler vkDestroySampler; \
-		LINKAGE PFN_vkCreateDescriptorSetLayout vkCreateDescriptorSetLayout; \
-		LINKAGE PFN_vkDestroyDescriptorSetLayout vkDestroyDescriptorSetLayout; \
-		LINKAGE PFN_vkCreateDescriptorPool vkCreateDescriptorPool; \
-		LINKAGE PFN_vkDestroyDescriptorPool vkDestroyDescriptorPool; \
-		LINKAGE PFN_vkResetDescriptorPool vkResetDescriptorPool; \
-		LINKAGE PFN_vkAllocateDescriptorSets vkAllocateDescriptorSets; \
-		LINKAGE PFN_vkFreeDescriptorSets vkFreeDescriptorSets; \
-		LINKAGE PFN_vkUpdateDescriptorSets vkUpdateDescriptorSets; \
 		LINKAGE PFN_vkGetRenderAreaGranularity vkGetRenderAreaGranularity; \
 		LINKAGE PFN_vkResetCommandBuffer vkResetCommandBuffer; \
 		LINKAGE PFN_vkCmdSetLineWidth vkCmdSetLineWidth; \

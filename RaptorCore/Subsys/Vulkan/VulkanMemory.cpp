@@ -86,7 +86,7 @@ static void VKAPI_PTR vkInternalAllocationNotification(	void* pUserData,
 														VkInternalAllocationType allocationType,
 														VkSystemAllocationScope allocationScope)
 {
-	CHostMemoryManager *memory = CHostMemoryManager::GetInstance();
+	//CHostMemoryManager *memory = CHostMemoryManager::GetInstance();
 	return;
 }
 
@@ -95,7 +95,7 @@ static void VKAPI_PTR vkInternalFreeNotification(	void* pUserData,
 													VkInternalAllocationType allocationType,
 													VkSystemAllocationScope allocationScope)
 {
-	CHostMemoryManager *memory = CHostMemoryManager::GetInstance();
+	//CHostMemoryManager *memory = CHostMemoryManager::GetInstance();
 	return;
 }
 
@@ -459,7 +459,6 @@ bool CVulkanMemory::vkDestroyBufferObject(VkDevice device,
 	return true;
 }
 
-bool needFlush = true;
 CVulkanBufferObject* CVulkanMemory::vkCreateBufferObject(	VkDevice device,
 															VkDeviceSize size,
 															IDeviceMemoryManager::IBufferObject::BUFFER_KIND kind) const
@@ -524,20 +523,12 @@ CVulkanBufferObject* CVulkanMemory::vkCreateBufferObject(	VkDevice device,
 	}
 
 	//!
-	//!	Allocate host visible memory
+	//!	Allocate host visible memory & device local memory
 	//!
-	needFlush = true;
+	m_bNeedFlush = true;
 	VkDeviceMemory pMemory = allocateMemory(device, buffer,VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
-	if (VK_NULL_HANDLE == pMemory)
-		vkDestroyBuffer(device, buffer, &s_vulkanAllocator);
-
-	//!
-	//!	Allocate host visible memory
-	//!
 	VkDeviceMemory pDeviceMemory = allocateMemory(device, device_buffer,VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-	if (VK_NULL_HANDLE == pDeviceMemory)
-		vkDestroyBuffer(device, device_buffer, &s_vulkanAllocator);
-
+	
 	if ((VK_NULL_HANDLE != pMemory) && (VK_NULL_HANDLE != pDeviceMemory))
 	{
 		CVulkanBufferObject *pBuffer = new CVulkanBufferObject();
@@ -547,18 +538,25 @@ CVulkanBufferObject* CVulkanMemory::vkCreateBufferObject(	VkDevice device,
 		pBuffer->m_deviceAddress = pDeviceMemory;
 		pBuffer->m_size = size;
 		pBuffer->m_storage = kind;
-		pBuffer->m_coherent = !needFlush;
+		pBuffer->m_coherent = !m_bNeedFlush;
 		return pBuffer;
 	}
 	else
+	{
+		if (VK_NULL_HANDLE == pMemory)
+			vkDestroyBuffer(device, buffer, &s_vulkanAllocator);
+		if (VK_NULL_HANDLE == pDeviceMemory)
+			vkDestroyBuffer(device, device_buffer, &s_vulkanAllocator);
+
 		return NULL;
+	}
 }
 
 VkDeviceMemory CVulkanMemory::allocateMemory(VkDevice device, VkBuffer buffer, VkMemoryPropertyFlagBits memory_type) const
 {
 	VkResult res = VK_NOT_READY;
 	VkMemoryRequirements buffer_memory_requirements;
-	vkGetBufferMemoryRequirements( device, buffer, &buffer_memory_requirements );
+	vkGetBufferMemoryRequirements(device, buffer, &buffer_memory_requirements );
 
 	VkDeviceMemory pMemory = VK_NULL_HANDLE;
 	for( uint32_t i = 0; i < memory_properties.memoryTypeCount; ++i )
@@ -567,13 +565,13 @@ VkDeviceMemory CVulkanMemory::allocateMemory(VkDevice device, VkBuffer buffer, V
 			(memory_properties.memoryTypes[i].propertyFlags & memory_type) )
 		{
 			if (memory_properties.memoryTypes[i].propertyFlags & VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)
-				needFlush = false;
+				m_bNeedFlush = false;
 			 VkMemoryAllocateInfo memory_allocate_info = {	VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,     // VkStructureType                        sType 
 															NULL,                                    // const void                            *pNext 
 															buffer_memory_requirements.size,            // VkDeviceSize                           allocationSize 
 															i };// uint32_t                               memoryTypeIndex 
 
-			VkResult res = vkAllocateMemory( device, &memory_allocate_info, &s_vulkanAllocator, &pMemory );
+			VkResult res = vkAllocateMemory(device, &memory_allocate_info, &s_vulkanAllocator, &pMemory );
 			if( VK_SUCCESS == res )
 				break;
 			else 

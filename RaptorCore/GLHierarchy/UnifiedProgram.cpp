@@ -126,6 +126,88 @@ void CUnifiedProgram::glProgramParameter(unsigned int numParam,GL_HIRES_COORD_VE
 }
 */
 
+
+uint64_t CUnifiedProgram::glGetBufferMemoryRequirements(RAPTOR_HANDLE program)
+{
+	if (program.handle == 0)
+		return 0;
+
+	uint64_t uniform_size = 0;
+
+#if defined(GL_ARB_uniform_buffer_object)
+	const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+
+	GLint active_blocks_count = 0;
+	GLint active_uniform_max_length = 0;
+	pExtensions->glGetProgramivARB(program.handle, GL_ACTIVE_UNIFORM_BLOCKS_ARB, &active_blocks_count);
+	pExtensions->glGetProgramivARB(program.handle, GL_ACTIVE_UNIFORM_MAX_LENGTH, &active_uniform_max_length);
+
+	for (GLint i = 0; i < active_blocks_count; i++)
+	{
+		GLint block_size = 0;
+		pExtensions->glGetActiveUniformBlockivARB(program.handle, i, GL_UNIFORM_BLOCK_DATA_SIZE_ARB, &block_size);
+
+		uniform_size += block_size;
+
+		/*
+		GLint active_uniforms = 0;
+		pExtensions->glGetActiveUniformBlockivARB(m_shaderProgram.handle, i, GL_UNIFORM_BLOCK_ACTIVE_UNIFORMS_ARB, &active_uniforms);
+
+		const char* * uniformNames = new const char*[active_uniforms];
+		for (GLint j = 0; j < active_uniforms; j++)
+		uniformNames[j] = new const char[active_uniform_max_length];
+		GLuint* uniformIndices = new GLuint[active_uniforms];
+		pExtensions->glGetUniformIndicesARB(m_shaderProgram.handle, active_uniforms, uniformNames, uniformIndices);
+		*/
+	}
+#endif
+
+	return uniform_size;
+}
+
+/*
+
+GLuint err = glGetError();
+while (GL_NO_ERROR != err)
+err = glGetError();
+
+GLuint uniformBlockIndex = pExtensions->glGetUniformBlockIndexARB(m_shaderProgram.handle, "UniformBufferObject");
+GLsizei uniformBlockSize = 0;
+pExtensions->glGetActiveUniformBlockivARB(	m_shaderProgram.handle, uniformBlockIndex,
+GL_UNIFORM_BLOCK_DATA_SIZE_ARB,
+&uniformBlockSize);
+
+GLsizei length = 0;
+char uniformBlockName[256];
+pExtensions->glGetActiveUniformBlockNameARB(m_shaderProgram.handle, uniformBlockIndex,
+256, &length,uniformBlockName);
+
+//pExtensions->glUniformBlockBindingARB(m_shaderProgram.handle, uniformBlockIndex, 0);
+err = glGetError();
+
+GLint active_blocks_count = 0;
+GLint active_uniform_max_length = 0;
+pExtensions->glGetProgramivARB(m_shaderProgram.handle, GL_ACTIVE_UNIFORM_BLOCKS_ARB, &active_blocks_count);
+err = glGetError();
+
+pExtensions->glGetProgramivARB(m_shaderProgram.handle, GL_ACTIVE_UNIFORM_BLOCK_MAX_NAME_LENGTH_ARB, &active_uniform_max_length);
+err = glGetError();
+
+const char* const names[1] = { "view" };
+GLuint index[1];
+pExtensions->glGetUniformIndicesARB(m_shaderProgram.handle, 1, names, index);
+GLint offset = -1;
+pExtensions->glGetActiveUniformsivARB(m_shaderProgram.handle, 1, index, GL_UNIFORM_OFFSET_ARB, &offset);
+GLint singleSize = -1;
+pExtensions->glGetActiveUniformsivARB(m_shaderProgram.handle, 1, index, GL_UNIFORM_SIZE_ARB, &singleSize);
+GLint singleType = -1;
+pExtensions->glGetActiveUniformsivARB(m_shaderProgram.handle, 1, index, GL_UNIFORM_TYPE_ARB, &singleType);
+
+err = glGetError();
+
+uint64_t size = m_pVProgram->glGetBufferMemoryRequirements(m_shaderProgram);
+*/
+
 bool CUnifiedProgram::matchKind(unsigned int shaderKind, CProgramParameters::PARAMETER_KIND parameterKind)
 {
 #if defined(GL_ARB_shader_objects)
@@ -190,25 +272,6 @@ void CUnifiedProgram::glQueryUniformLocations(RAPTOR_HANDLE program)
     // Query the number of active uniforms
     GLint count = 0;
 	pExtensions->glGetObjectParameterivARB(program.handle, GL_OBJECT_ACTIVE_UNIFORMS_ARB,&count);
-
-#if defined(GL_ARB_uniform_buffer_object)
-	GLint active_blocks_count = 0;
-	GLint active_uniform_max_length = 0;
-	pExtensions->glGetProgramivARB(program.handle, GL_ACTIVE_UNIFORM_BLOCKS_ARB, &active_blocks_count);
-	pExtensions->glGetProgramivARB(program.handle, GL_ACTIVE_UNIFORM_MAX_LENGTH, &active_uniform_max_length);
-
-	for (GLint i = 0; i < active_blocks_count; i++)
-	{
-		GLint active_uniforms = 0;
-		pExtensions->glGetActiveUniformBlockivARB(program.handle, i, GL_UNIFORM_BLOCK_ACTIVE_UNIFORMS_ARB, &active_uniforms);
-
-		const char* * uniformNames = new const char*[active_uniforms];
-		for (GLint j = 0; j < active_uniforms; j++)
-			uniformNames[j] = new const char[active_uniform_max_length];
-		GLuint* uniformIndices = new GLuint[active_uniforms];
-		pExtensions->glGetUniformIndicesARB(program.handle, active_uniforms, uniformNames, uniformIndices);
-	}
-#endif
 
 	// Loop over each of the active uniforms, and set their value
 	for (GLint i = 0; i < count; i++)

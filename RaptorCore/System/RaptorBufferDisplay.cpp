@@ -60,7 +60,7 @@ CRaptorBufferDisplay::CRaptorBufferDisplay(const CRaptorDisplayConfig& pcs)
 	m_pBuffer = 0;
 	m_bBoundToTexture = false;
 
-	m_previousContext = -1;
+	m_previousContext = CContextManager::INVALID_CONTEXT;
 
 	cs = pcs;
 	
@@ -86,7 +86,7 @@ bool CRaptorBufferDisplay::glQueryStatus(CRaptorDisplayConfig &state,unsigned lo
 bool CRaptorBufferDisplay::glGrab(unsigned int x, unsigned int y, unsigned int width, unsigned int height, unsigned char* &data,unsigned int& size) const
 {
     //! If buffer is bound, read pixels directly
-    if (m_previousContext != -1)
+	if (CContextManager::INVALID_CONTEXT != m_previousContext)
     {
         int grab_x = x;
         int grab_y = y;
@@ -162,7 +162,7 @@ void CRaptorBufferDisplay::glGenerate(CTextureObject* T)
 	{
 		// Assert the buffer is not bound
 		// to ensure a correct 'texture rendering'
-		if (m_previousContext == -1)
+		if (CContextManager::INVALID_CONTEXT == m_previousContext)
 		{
 			m_bBoundToTexture = true;
 			GLuint buffer = WGL_FRONT_LEFT_ARB;
@@ -198,7 +198,7 @@ bool CRaptorBufferDisplay::glBindDisplay(const RAPTOR_HANDLE& device)
 	{
 		CContextManager *manager = CContextManager::GetInstance();
 
-		if (manager->glGetCurrentContext() == -1)
+		if (CContextManager::INVALID_CONTEXT == manager->glGetCurrentContext())
 		{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 			Raptor::GetErrorManager()->generateRaptorError(	Global::COpenGLClassID::GetClassId(),
@@ -237,7 +237,7 @@ bool CRaptorBufferDisplay::glBindDisplay(const RAPTOR_HANDLE& device)
 
 		// The current rendering context is saved for restoring after pBuffer is used
 		// Save the context only once, in case of using multiple Pixel Buffers
-		if (m_previousContext == -1)
+		if (CContextManager::INVALID_CONTEXT == m_previousContext)
 		{
 			// Remove texture binding because writing is incompatible
 			// with texturing. Explicit unbinding can be avoided for
@@ -316,7 +316,7 @@ bool CRaptorBufferDisplay::glUnBindDisplay(void)
 		return true;
 	}
 	// Buffer already unbound or error during binding
-	else if (m_previousContext == -1)
+	else if (CContextManager::INVALID_CONTEXT == m_previousContext)
 		return false;
 	else
 	{
@@ -364,7 +364,7 @@ bool CRaptorBufferDisplay::glUnBindDisplay(void)
         }
 
         m_bindingStack.pop_back();
-		m_previousContext = -1;
+		m_previousContext = CContextManager::INVALID_CONTEXT;
 
 		if (bRelocGeometry)
 			allocatorG->glvkLockMemory(true);

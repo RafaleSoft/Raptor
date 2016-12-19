@@ -20,6 +20,8 @@
 RAPTOR_NAMESPACE_BEGIN
 
 class CGeometryAllocator;
+class CTexelAllocator;
+class CUniformAllocator;
 class CVulkanPipeline;
 
 class CRaptorVulkanDisplay : public CRaptorDisplay
@@ -106,6 +108,10 @@ private:
 	//!	of the graphical context
     CGeometryAllocator  *m_pGAllocator;
     CGeometryAllocator  *m_pGOldAllocator;
+	CTexelAllocator		*m_pTAllocator;
+	CTexelAllocator		*m_pTOldAllocator;
+	CUniformAllocator	*m_pUAllocator;
+	CUniformAllocator	*m_pUOldAllocator;
 };
 
 RAPTOR_NAMESPACE_END

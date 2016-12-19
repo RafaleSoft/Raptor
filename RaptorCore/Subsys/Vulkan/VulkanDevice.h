@@ -23,6 +23,7 @@ RAPTOR_NAMESPACE_BEGIN
 
 class CVulkanPipeline;
 class CVulkanShader;
+class C3DScene;
 
 class CVulkanDevice
 {
@@ -32,6 +33,10 @@ public:
 
 	CVulkanDevice(void);
 	virtual ~CVulkanDevice(void);
+
+	//!	Store the current device, activated from context glMakeCurrentCurrent
+	static bool setCurrentDevice(CVulkanDevice* current);
+	static CVulkanDevice* getCurrentDevice();
 
 #if defined(VK_VERSION_1_0)
 	//!	Creates and initialise a logical device and linked resources
@@ -90,12 +95,9 @@ public:
 
 	//!	Binds the provided Pipeline to the current grahics command buffer
 	//!	and initialise the render pass.
-	bool vkBindPipeline(const CVulkanPipeline& pipeline,
+	bool vkBindPipeline(C3DScene *pScene,
 						const VkRect2D& scissor,
-						const CColor::RGBA& clearColor,
-						VkDeviceSize offsetVertex,
-						VkDeviceSize offsetColors,
-						VkDeviceSize offset2);
+						const CColor::RGBA& clearColor);
 
 	//! Destroy or Release all device linked Vulkan resources, including swap chain
 	bool vkDestroyLogicalDevice(void);
@@ -116,6 +118,7 @@ private:
 	DECLARE_VK_queue(DEFAULT_LINKAGE)
 
 	VkDevice		device;
+	static CVulkanDevice	*pCurrentDevice;
 
 	CVulkanMemory::CVulkanMemoryWrapper* pDeviceMemory;
 
@@ -128,11 +131,12 @@ private:
 
 	typedef struct VK_RENDERING_RESOURCE_st
 	{
-		VkCommandBuffer	commandBuffer;
+		std::vector<VkCommandBuffer>	commandBuffers;
 		VkSemaphore		imageAvailableSemaphore;
 		VkSemaphore		renderingCompleteSemaphore;
 		VkFence			queueExecutionComplete;
 		VkFramebuffer	frameBuffer;
+		VkImageView		linkedView;
 		VkQueue			queue;
 	} VK_RENDERING_RESOURCE;
 

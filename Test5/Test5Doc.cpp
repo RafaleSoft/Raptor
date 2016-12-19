@@ -14,6 +14,7 @@
 #include "GLHierarchy/Shader.h"
 #include "GLHierarchy/ShaderProgram.h"
 #include "GLHierarchy/VertexShader.h"
+#include "GLHierarchy/VulkanShaderStage.h"
 #include "GLHierarchy/TextureFactory.h"
 #include "GLHierarchy/TextureFactoryConfig.h"
 #include "GLHierarchy/TextureObject.h"
@@ -177,8 +178,49 @@ void CTest5Doc::GLInitContext(void)
 
 	C3DScene *pScene = m_pDisplay->getRootScene();
 
+	//CShader *shader = new CShader("uniforms-shader");
+	//CVertexProgram *p = shader->glGetVertexProgram("uniforms");
+	//CRaptorIO *shdr = CRaptorIO::Create("shader3.vert",CRaptorIO::DISK_READ);
+	//p->glLoadProgramFromStream(*shdr);
+	//bool res = shader->glCompileShader();
+
 #ifdef VULKAN_TEST
-	pScene->addObject(obj);
+	CShadedGeometry *geo = new CShadedGeometry("VULKAN_GEOMETRY");
+	geo->glSetVertices(4,NULL);
+	geo->glSetColors(4, NULL);
+	geo->glSetPolygons(2, NULL);
+	GL_COORD_VERTEX VertexData[4] =
+	{
+		{ -0.7f, -0.7f, 0.0f, 1.0f },
+		{ -0.7f, 0.7f, 0.0f, 1.0f },
+		{ 0.7f, -0.7f, 0.0f, 1.0f },
+		{ 0.7f, 0.7f, 0.0f, 1.0f }
+	};
+	CColor::RGBA ColorData[4] =
+	{
+		{ 1.0f, 0.0f, 0.0f, 0.0f },
+		{ 0.0f, 1.0f, 0.0f, 0.0f },
+		{ 0.0f, 0.0f, 1.0f, 0.0f },
+		{ 0.3f, 0.3f, 0.3f, 0.0f }
+	};
+	unsigned short VertexIndices[6] =
+	{
+		3, 2, 0, 3, 0, 1
+	};
+	geo->glSetVertices(4,VertexData);
+	geo->glSetColors(4,ColorData);
+	geo->glSetPolygons(2,VertexIndices);
+
+	CShader* s = geo->getShader();
+	CVulkanShaderStage *ss = s->vkGetVulkanProgram();
+	ss->vkLoadShader("shader3.vert");
+	ss->vkLoadShader("shader3.frag");
+	CGenericMatrix<float> modelView;
+	modelView.Ident();
+	ss->vkSetData(modelView.matrix(), 4 * 4 * sizeof(float));
+
+	pScene->addObject(geo);
+	pScene->vkInitPipeline();
 #else
 	CTextureFactory &f = CTextureFactory::getDefaultFactory();
 	m_pTexture = f.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_ALPHA_TRANSPARENT,CTextureObject::CGL_BILINEAR);

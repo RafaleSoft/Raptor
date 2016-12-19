@@ -206,7 +206,7 @@ bool Raptor::glCheckDisplayConfig(const CRaptorDisplayConfig &pcs)
         pcs2.height = -1;
 
         CRaptorDisplay *pDisplay = NULL;
-        CContextManager::RENDERING_CONTEXT_ID ctx = -1;
+		CContextManager::RENDERING_CONTEXT_ID ctx = CContextManager::INVALID_CONTEXT;
         RAPTOR_HANDLE wnd = ctxMgr->glCreateWindow(pcs2,pDisplay,ctx);
         if (wnd.handle != 0)
         {
@@ -237,7 +237,7 @@ RAPTOR_HANDLE Raptor::glCreateWindow(const CRaptorDisplayConfig& pcs,CRaptorDisp
     CContextManager *ctxMgr = CContextManager::GetInstance();
     if (ctxMgr != NULL)
     {
-        CContextManager::RENDERING_CONTEXT_ID ctx = -1;
+		CContextManager::RENDERING_CONTEXT_ID ctx = CContextManager::INVALID_CONTEXT;
         result = ctxMgr->glCreateWindow(pcs,pDisplay,ctx);
     }
     return result;
@@ -344,7 +344,7 @@ bool Raptor::glInitRaptor(const CRaptorConfig& config)
 
     CRaptorDisplay *pDisplay = NULL;
     CContextManager *ctxMgr = CContextManager::GetInstance();
-    CContextManager::RENDERING_CONTEXT_ID ctx = -1;
+	CContextManager::RENDERING_CONTEXT_ID ctx = CContextManager::INVALID_CONTEXT;
 	RAPTOR_HANDLE wnd = ctxMgr->glCreateWindow(glCS,pDisplay,ctx);
 
 	Global::RAPTOR_CURRENT_STATUS& status = rGlobal.getCurrentStatus();

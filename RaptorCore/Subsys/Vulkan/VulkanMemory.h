@@ -152,6 +152,7 @@ private:
 	static CVulkanMemory defaultMemory;
 
 	VkPhysicalDeviceMemoryProperties	memory_properties;
+	mutable bool m_bNeedFlush;
 #endif
 };
 

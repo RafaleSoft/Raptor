@@ -22,7 +22,7 @@ RAPTOR_NAMESPACE_BEGIN
 class CVulkanShader
 {
 public:
-	CVulkanShader(VkDevice device);
+	CVulkanShader(VkDevice device, PFN_vkGetDeviceProcAddr vkGetDeviceProcAddr);
 	virtual ~CVulkanShader(void);
 
 	//!	Clone this shader (not functional yet)
@@ -30,15 +30,19 @@ public:
 
 	bool loadShader(const std::string &filename);
 
-	VkShaderModule getModule(void) const { return shader_module; };
+	//VkShaderModule getModule(void) const { return shader_module; };
 
-	VkShaderStageFlagBits getStage(void) const { return shader_stage; };
+	//VkShaderStageFlagBits getStage(void) const { return shader_stage; };
+
+	VkPipelineShaderStageCreateInfo getShaderStage() const;
 
 
 #if defined(VK_VERSION_1_0)
 	//	On a per device basis, static linkage is incorrect
-	STATIC_LINKAGE PFN_vkCreateShaderModule vkCreateShaderModule;
-	STATIC_LINKAGE PFN_vkDestroyShaderModule vkDestroyShaderModule;
+	DEFAULT_LINKAGE PFN_vkCreateShaderModule vkCreateShaderModule;
+	DEFAULT_LINKAGE PFN_vkDestroyShaderModule vkDestroyShaderModule;
+	DEFAULT_LINKAGE PFN_vkCreateDescriptorPool vkCreateDescriptorPool;
+	DEFAULT_LINKAGE PFN_vkDestroyDescriptorPool vkDestroyDescriptorPool;
 #endif
 
 private:

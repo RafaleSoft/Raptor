@@ -27,7 +27,9 @@
 #ifndef __GLOBAL_H__
 	#include "System/Global.h"
 #endif
-
+#if !defined(AFX_3DSCENE_H__E597E752_BAD4_415D_9C00_8C59D139D32B__INCLUDED_)
+	#include "Engine/3DScene.h"
+#endif
 
 RAPTOR_NAMESPACE
 
@@ -67,22 +69,12 @@ CVulkanDevice::CVulkanDevice(void)
 	vkDestroyFence = NULL;
 	vkAllocateCommandBuffers = NULL;
 	vkFreeCommandBuffers = NULL;
-
 	vkCreateRenderPass = NULL;
 	vkDestroyRenderPass = NULL;
 	vkCreateImageView = NULL;
 	vkDestroyImageView = NULL;
-
 	vkCreateFramebuffer = NULL;
 	vkDestroyFramebuffer = NULL;
-	vkCreateGraphicsPipelines = NULL;
-	vkCreateComputePipelines = NULL;
-	vkDestroyPipeline = NULL;
-	vkCreatePipelineLayout = NULL;
-	vkDestroyPipelineLayout = NULL;
-	vkCreateShaderModule = NULL;
-	vkDestroyShaderModule = NULL;
-
 	vkQueueSubmit = NULL;
 	vkQueueWaitIdle = NULL;
 
@@ -104,20 +96,34 @@ CVulkanDevice::~CVulkanDevice(void)
 		delete [] renderingResources;
 }
 
+CVulkanDevice	*CVulkanDevice::pCurrentDevice = NULL;
+
+bool CVulkanDevice::setCurrentDevice(CVulkanDevice* current)
+{
+	if (NULL != pCurrentDevice)
+	{
+		if (NULL != current)
+			return false;
+		else
+			pCurrentDevice = NULL;
+	}
+	else
+		pCurrentDevice = current;
+
+	return true;
+}
+
+CVulkanDevice* CVulkanDevice::getCurrentDevice()
+{
+	return pCurrentDevice;
+}
+
 CVulkanPipeline* CVulkanDevice::createPipeline(void) const
 {
 	if ((VK_NULL_HANDLE != device) &&
 		(VK_NULL_HANDLE != renderPass))
 	{
-		CHostMemoryManager *pMemory = CHostMemoryManager::GetInstance();
-		CVulkanPipeline *pipeline = new CVulkanPipeline(device,renderPass);
-
-		pipeline->vkCreateGraphicsPipelines = vkCreateGraphicsPipelines;
-		pipeline->vkCreateComputePipelines = vkCreateComputePipelines;
-		pipeline->vkDestroyPipeline = vkDestroyPipeline;
-		pipeline->vkCreatePipelineLayout = vkCreatePipelineLayout;
-		pipeline->vkDestroyPipelineLayout = vkDestroyPipelineLayout;
-
+		CVulkanPipeline *pipeline = new CVulkanPipeline(device,renderPass,vkGetDeviceProcAddr);
 		return pipeline;
 	}
 	else
@@ -128,10 +134,7 @@ CVulkanShader* CVulkanDevice::createShader(void) const
 {
 	if (VK_NULL_HANDLE != device)
 	{
-		CVulkanShader *shader = new CVulkanShader(device);
-		shader->vkCreateShaderModule = vkCreateShaderModule;
-		shader->vkDestroyShaderModule = vkDestroyShaderModule;
-
+		CVulkanShader *shader = new CVulkanShader(device, vkGetDeviceProcAddr);
 		return shader;
 	}
 	else
@@ -205,7 +208,7 @@ bool CVulkanDevice::presentSwapChainImage()
 								NULL,
 								1, &resource.imageAvailableSemaphore,
 								&wait_dst_stage_mask,
-								1, &resource.commandBuffer,
+								1, &resource.commandBuffers[0],
 								1, &resource.renderingCompleteSemaphore };
 								
 	VkResult res = vkQueueSubmit(resource.queue, 1, &submit_info, resource.queueExecutionComplete);
@@ -222,24 +225,8 @@ bool CVulkanDevice::presentSwapChainImage()
 									NULL};
 
 	res = vkQueuePresentKHR(resource.queue,&presentInfo);
-	switch (res)
-	{
-		case VK_SUCCESS:
-			break;
-		case VK_ERROR_OUT_OF_DATE_KHR:
-		case VK_SUBOPTIMAL_KHR:
-		{
-			//	onWindowSizeChanged()
-			CATCH_VK_ERROR(res)
-			break;
-		}
-		default:
-		{
-			CATCH_VK_ERROR(res)
-			break;
-		}
-	}
-
+	CATCH_VK_ERROR(res)
+	
 	currentImage = MAXUINT;
 	currentRenderingResources = (currentRenderingResources + 1) % NB_RENDERING_RESOURCES;
 	return (VK_SUCCESS == res);
@@ -267,37 +254,16 @@ bool CVulkanDevice::vkSynchroniseBufferObjects(bool blocking)
 	if (blocking)
 	{
 		res = vkQueueWaitIdle(transferQueue);
-		switch (res)
-		{
-			case VK_SUCCESS:
-				break;
-			case VK_ERROR_OUT_OF_HOST_MEMORY:
-			case VK_ERROR_OUT_OF_DEVICE_MEMORY:
-			case VK_ERROR_DEVICE_LOST:
-			{
-				CATCH_VK_ERROR(res)
-					return false;
-				break;
-			}
-			default:
-			{
-				CATCH_VK_ERROR(res)
-					return false;
-				break;
-			}
-		}
+		CATCH_VK_ERROR(res)
 	}
 
 	return (VK_SUCCESS == res);
 
 }
 
-bool CVulkanDevice::vkBindPipeline(	const CVulkanPipeline& pipeline,
+bool CVulkanDevice::vkBindPipeline(	C3DScene *pScene,
 									const VkRect2D& scissor,
-									const CColor::RGBA& clearColor,
-									VkDeviceSize offsetVertex,
-									VkDeviceSize offsetColors,
-									VkDeviceSize offset2)
+									const CColor::RGBA& clearColor)
 {
 	// TODO : check currentRenderingResources is valid ?
 	if ((currentRenderingResources >= NB_RENDERING_RESOURCES) ||
@@ -306,105 +272,37 @@ bool CVulkanDevice::vkBindPipeline(	const CVulkanPipeline& pipeline,
 	VK_RENDERING_RESOURCE &resource = renderingResources[currentRenderingResources];
 	VK_RENDERING_IMAGE &image =  renderImages[currentImage];
 
-	if (VK_NULL_HANDLE != resource.frameBuffer)
-		vkDestroyFramebuffer(device,resource.frameBuffer,NULL);
-	VkFramebufferCreateInfo pFrameBufferCreateInfo = {	VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
-														NULL, 0,
-														renderPass,
-														1, &image.view,
-														image.extent.width,
-														image.extent.height, 1 };
+	bool bResize = false;
+	if ((image.view != resource.linkedView) && (VK_NULL_HANDLE != resource.frameBuffer))
+	{
+		vkDestroyFramebuffer(device, resource.frameBuffer, NULL);
+		resource.frameBuffer = VK_NULL_HANDLE;
+		resource.linkedView = VK_NULL_HANDLE;
+	}
+	if (VK_NULL_HANDLE == resource.frameBuffer)
+	{
+		resource.linkedView = image.view;
+		VkFramebufferCreateInfo pFrameBufferCreateInfo = { VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
+															NULL, 0,
+															renderPass,
+															1, &image.view,
+															image.extent.width,
+															image.extent.height, 1 };
 
-	VkResult res = vkCreateFramebuffer(device,&pFrameBufferCreateInfo,NULL,&resource.frameBuffer);
-	CATCH_VK_ERROR(res)
+		VkResult res = vkCreateFramebuffer(device, &pFrameBufferCreateInfo, NULL, &resource.frameBuffer);
+		bResize = true;
+		CATCH_VK_ERROR(res)
+	}
 
-
-	VkImageSubresourceRange image_subresource_range = {	VK_IMAGE_ASPECT_COLOR_BIT,
-														0, // baseMipLevel;
-														1, // levelCount;
-														0, // baseArrayLayer;
-														1};  // layerCount };
-
-	CVulkanCommandBuffer displayList(resource.commandBuffer,scissor);
+	CVulkanCommandBuffer displayList(resource.commandBuffers[0],scissor);
+	if (bResize)
+		displayList.resize();
+	displayList.imageBarrier(present_queueFamilyIndex, graphics_queueFamilyIndex, image.image);
+	displayList.renderPass(renderPass, resource.frameBuffer, clearColor);
 	
-
-	if (graphics_queueFamilyIndex != present_queueFamilyIndex)
-	{
-		VkImageMemoryBarrier barrier_from_present_to_draw = {	VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
-																NULL,
-																VK_ACCESS_MEMORY_READ_BIT, // VkAccessFlagBits
-																VK_ACCESS_MEMORY_READ_BIT, //VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT, // VkAccessFlags
-																VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,	// VkImageLayout
-																VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,	// VkImageLayout
-																present_queueFamilyIndex,
-																graphics_queueFamilyIndex,
-																image.image,
-																image_subresource_range };
-		CVulkanCommandBuffer::vkCmdPipelineBarrier(	resource.commandBuffer,
-													VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-													VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-													0, // VkDependencyFlags
-													0,
-													NULL, // const VkMemoryBarrier*
-													0,
-													NULL, // const VkBufferMemoryBarrier*
-													1, &barrier_from_present_to_draw );
-	}
-
-	VkClearValue clear_value;
-	clear_value.color.float32[0] = clearColor.r;
-	clear_value.color.float32[1] = clearColor.g;
-	clear_value.color.float32[2] = clearColor.b;
-	clear_value.color.float32[3] = clearColor.a;
-	VkRenderPassBeginInfo render_pass_begin_info = {	VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
-														NULL,
-														renderPass,
-														resource.frameBuffer,
-														scissor,
-														1, &clear_value	};
-
-	CVulkanCommandBuffer::vkCmdBeginRenderPass(	resource.commandBuffer,
-												&render_pass_begin_info,
-												VK_SUBPASS_CONTENTS_INLINE );
-
-	CVulkanCommandBuffer::vkCmdBindPipeline(resource.commandBuffer,
-											VK_PIPELINE_BIND_POINT_GRAPHICS,
-											pipeline.getPipeline() );
-
-
 	VkBuffer binding = pDeviceMemory->getLockedBuffer(IDeviceMemoryManager::IBufferObject::VERTEX_BUFFER);
-	VkBuffer bindings[2] = { binding, binding };
-	VkDeviceSize offsets[2] = { offsetVertex, offsetColors };
-	CVulkanCommandBuffer::vkCmdBindVertexBuffers( resource.commandBuffer, 0, 2, &bindings[0], &offsets[0] );
 	VkBuffer binding2 = pDeviceMemory->getLockedBuffer(IDeviceMemoryManager::IBufferObject::INDEX_BUFFER);
-	CVulkanCommandBuffer::vkCmdBindIndexBuffer( resource.commandBuffer, binding2, offset2, VK_INDEX_TYPE_UINT16);
-
-	CVulkanCommandBuffer::vkCmdDrawIndexed(resource.commandBuffer, 6, 1, 0, 0, 0);
-
-	CVulkanCommandBuffer::vkCmdEndRenderPass(resource.commandBuffer);
-
-	if (graphics_queueFamilyIndex != present_queueFamilyIndex)
-	{
-		VkImageMemoryBarrier barrier_from_draw_to_present = {	VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
-																NULL,
-																VK_ACCESS_MEMORY_READ_BIT, //VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT, // VkAccessFlags
-																VK_ACCESS_MEMORY_READ_BIT, // VkAccessFlagBits
-																VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,	// VkImageLayout
-																VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,	// VkImageLayout
-																graphics_queueFamilyIndex,
-																present_queueFamilyIndex,
-																image.image,
-																image_subresource_range };
-		CVulkanCommandBuffer::vkCmdPipelineBarrier(	resource.commandBuffer,
-													VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-													VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
-													0, // VkDependencyFlags
-													0,
-													NULL, // const VkMemoryBarrier*
-													0,
-													NULL, // const VkBufferMemoryBarrier*
-													1, &barrier_from_draw_to_present );
-	}
+	pScene->vkRender(displayList,binding,binding2);
 
 	return true;
 }
@@ -486,7 +384,8 @@ bool CVulkanDevice::vkCreateRenderingResources(void)
 			}
 
 			renderingResources[i].frameBuffer = VK_NULL_HANDLE;
-			renderingResources[i].commandBuffer = pCommandBuffer[i];
+			renderingResources[i].linkedView = VK_NULL_HANDLE;
+			renderingResources[i].commandBuffers.push_back(pCommandBuffer[i]);
 
 			vkGetDeviceQueue(	device,
 								graphics_queueFamilyIndex,
@@ -842,14 +741,6 @@ bool CVulkanDevice::vkCreateLogicalDevice(	const VkPhysicalDevice &physicalDevic
 	vkCreateFramebuffer = (PFN_vkCreateFramebuffer)(vkGetDeviceProcAddr(device,"vkCreateFramebuffer"));
 	vkDestroyFramebuffer = (PFN_vkDestroyFramebuffer)(vkGetDeviceProcAddr(device,"vkDestroyFramebuffer"));
 
-	vkCreateGraphicsPipelines = (PFN_vkCreateGraphicsPipelines)(vkGetDeviceProcAddr(device,"vkCreateGraphicsPipelines"));
-	vkCreateComputePipelines = (PFN_vkCreateComputePipelines)(vkGetDeviceProcAddr(device,"vkCreateComputePipelines"));
-	vkDestroyPipeline = (PFN_vkDestroyPipeline)(vkGetDeviceProcAddr(device,"vkDestroyPipeline"));
-	vkCreatePipelineLayout = (PFN_vkCreatePipelineLayout)(vkGetDeviceProcAddr(device,"vkCreatePipelineLayout"));
-	vkDestroyPipelineLayout = (PFN_vkDestroyPipelineLayout)(vkGetDeviceProcAddr(device,"vkDestroyPipelineLayout"));
-	vkCreateShaderModule = (PFN_vkCreateShaderModule)(vkGetDeviceProcAddr(device,"vkCreateShaderModule"));
-	vkDestroyShaderModule = (PFN_vkDestroyShaderModule)(vkGetDeviceProcAddr(device,"vkDestroyShaderModule"));
-
 	CVulkanCommandBuffer::vkCmdPipelineBarrier = (PFN_vkCmdPipelineBarrier)(vkGetDeviceProcAddr(device,"vkCmdPipelineBarrier"));
 	CVulkanCommandBuffer::vkCmdBeginRenderPass = (PFN_vkCmdBeginRenderPass)(vkGetDeviceProcAddr(device,"vkCmdBeginRenderPass"));
 	CVulkanCommandBuffer::vkCmdEndRenderPass = (PFN_vkCmdEndRenderPass)(vkGetDeviceProcAddr(device,"vkCmdEndRenderPass"));
@@ -1032,34 +923,35 @@ bool CVulkanDevice::vkDestroySwapChain()
 	{
 		for (unsigned int i=0;i<NB_RENDERING_RESOURCES;i++)
 		{
-			
-			if (VK_NULL_HANDLE != renderingResources[i].frameBuffer)
+			VK_RENDERING_RESOURCE& rr = renderingResources[i];
+			if (VK_NULL_HANDLE != rr.frameBuffer)
 				vkDestroyFramebuffer(	device,
-										renderingResources[i].frameBuffer,
-										CVulkanMemory::GetAllocator());
+										rr.frameBuffer,
+										NULL);
 
-			if (VK_NULL_HANDLE != renderingResources[i].commandBuffer)
+			if (VK_NULL_HANDLE != rr.commandBuffers[0])
 				vkFreeCommandBuffers(	device,
 										graphicsCommandPool,
 										1,
-										&renderingResources[i].commandBuffer);
+										&rr.commandBuffers[0]);
+			rr.commandBuffers.clear();
 
 			//if ((graphics_queueFamilyIndex != present_queueFamilyIndex) &&
 			//	(graphicsCommandPool != presentCommandPool) &&
 			//	(VK_NULL_HANDLE != presentCommandBuffer))
 			//	vkFreeCommandBuffers(device,presentCommandPool,1,&renderingResources[i].presentCommandBuffer);
 
-			if (VK_NULL_HANDLE != renderingResources[i].imageAvailableSemaphore)
+			if (VK_NULL_HANDLE != rr.imageAvailableSemaphore)
 				vkDestroySemaphore(	device,
-									renderingResources[i].imageAvailableSemaphore,
+									rr.imageAvailableSemaphore,
 									CVulkanMemory::GetAllocator());
-			if (VK_NULL_HANDLE != renderingResources[i].renderingCompleteSemaphore)
+			if (VK_NULL_HANDLE != rr.renderingCompleteSemaphore)
 				vkDestroySemaphore(	device,
-									renderingResources[i].renderingCompleteSemaphore,
+									rr.renderingCompleteSemaphore,
 									CVulkanMemory::GetAllocator());
-			if (VK_NULL_HANDLE != renderingResources[i].queueExecutionComplete)
+			if (VK_NULL_HANDLE != rr.queueExecutionComplete)
 				vkDestroyFence(	device,
-								renderingResources[i].queueExecutionComplete,
+								rr.queueExecutionComplete,
 								CVulkanMemory::GetAllocator());
 		}
 

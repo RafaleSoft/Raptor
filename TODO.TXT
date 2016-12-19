@@ -1,9 +1,13 @@
 - simd.cpp : appel a GetSystemInfo, migrer vers intrinsics
 	- linux : /proc/cpuinfo
 	
-- CVulkanDevice:
-	- passer le scissor et viewport uniquement lors d'un resize
-	
+-CVulkanMemory:
+	- initialiser une bloc mémoire pour l'application (vertex et index buffers bindés sur la même allocation)
+	- Factoriser les allocators (Geometry, Texel, Uniform)
+
+-CVulkanCommandBuffer:
+	- rendre privée les mathodes et attribut commandbuffer
+
 - CHostMemoryManager:
 	- ajouter capacité allocations/release dans un bloc prédéfini (data pool)
 

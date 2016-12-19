@@ -36,6 +36,7 @@ class CContextManager
 public:
 	typedef     unsigned long   PIXEL_BUFFER_ID;
 	typedef     long            RENDERING_CONTEXT_ID;
+	static const RENDERING_CONTEXT_ID INVALID_CONTEXT;
 
 public:
 	//!	Acces to the unique instance.
@@ -75,7 +76,7 @@ public:
 
 	void vkSwapVSync(unsigned int framerate);
 
-	void vkResize(	RENDERING_CONTEXT_ID ctx,const CRaptorDisplayConfig& config);
+	void vkResize(RENDERING_CONTEXT_ID ctx,const CRaptorDisplayConfig& config);
 #endif
 
 	//!	This method creates a "default' window for Raptor's internal use.
@@ -192,7 +193,7 @@ protected:
 		uint32_t					physicalDevice;
 		CVulkanDevice				device;
 		
-#ifdef VK_KHR_win32_surface
+#ifdef VK_KHR_surface
 		VkSurfaceKHR				surface;
 		VkSurfaceCapabilitiesKHR	surfaceCapabilities;
 		uint32_t					pSurfaceFormatCount;
@@ -209,14 +210,21 @@ protected:
 
 private:
 #if defined(VK_VERSION_1_0)
+	//!	Initialise a Vulkan instance, collects physical devices, etensions & properties.
 	bool vkInitInstance(RENDERING_CONTEXT_ID ctx);
+
+	//!	Initialise a Vulkan logical device and all necessary queue families.
 	bool vkInitDevice(RENDERING_CONTEXT_ID ctx,const CRaptorDisplayConfig& config);
+
+	//!	Create a swap chain from the surface properties and initialise all rendering resources.
 	bool vkCreateSwapChain(RENDERING_CONTEXT_ID ctx,uint32_t nbSamples,uint32_t width,uint32_t height);
 
 	//!	Creates a rendering surface for the window handle handle
 	//! @return false if surface creation failed
 	virtual bool vkCreateSurface(const RAPTOR_HANDLE& handle,RENDERING_CONTEXT_ID ctx) = 0;
-#ifdef VK_KHR_win32_surface
+
+#ifdef VK_KHR_surface
+	//!	Collects all physical device properties to use surface formats and modes
 	bool vkInitSurface(RENDERING_CONTEXT_ID ctx);
 #endif
 
