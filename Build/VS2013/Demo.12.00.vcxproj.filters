@@ -37,9 +37,6 @@
     <ClCompile Include="..\..\Demo\ObjectStore.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Demo\StdAfx.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="..\..\Demo\Demo.xml" />

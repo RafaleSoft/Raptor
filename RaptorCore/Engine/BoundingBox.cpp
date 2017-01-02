@@ -71,17 +71,16 @@ void CBoundingBox::set(float r_xmin,float r_ymin,float r_zmin,float r_xmax,float
 
 void CBoundingBox::get(GL_COORD_VERTEX& r_min,GL_COORD_VERTEX& r_max) const
 {
-	r_min.x = xmin ;
-	r_min.y = ymin ;
-	r_min.z = zmin ;
-	r_min.h = 1.0f ;
+	r_min.x = xmin;
+	r_min.y = ymin;
+	r_min.z = zmin;
+	r_min.h = 1.0f;
 
-	r_max.x = xmax ;
-	r_max.y = ymax ;
-	r_max.z = zmax ;
-	r_max.h = 1.0f ;
+	r_max.x = xmax;
+	r_max.y = ymax;
+	r_max.z = zmax;
+	r_max.h = 1.0f;
 }
-
 
 void CBoundingBox::get(GL_COORD_VERTEX &r_min,GL_COORD_VERTEX &r_max,const GL_MATRIX &m) const
 {

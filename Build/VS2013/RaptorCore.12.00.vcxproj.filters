@@ -101,9 +101,6 @@
     <ClCompile Include="..\..\RaptorCore\Raptordll.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\RaptorCore\StdAfx.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\RaptorCore\Win32Specific\Win32Application.cpp">
       <Filter>Source Files\Win32Specific src</Filter>
     </ClCompile>

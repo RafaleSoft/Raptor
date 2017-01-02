@@ -24,14 +24,12 @@ RAPTOR_NAMESPACE_BEGIN
 	{
 	public:
 		CSSE_BoundingBox();
-		// boundingbox is used in operations, so we want to register
-		//	the object in the persistence
 		CSSE_BoundingBox(const CSSE_BoundingBox &r_box);	
 		virtual ~CSSE_BoundingBox();
 
 		//	Adding a bounding extends this to the minimum bounding box
 		//	that contains this and r_box
-		virtual void add(const CBoundingBox & r_box);
+		virtual void add(const CSSE_BoundingBox & r_box);
 
 		CSSE_BoundingBox operator+(const CSSE_BoundingBox& r_box);
 		CSSE_BoundingBox& operator=(const CSSE_BoundingBox& r_box);
@@ -43,14 +41,12 @@ RAPTOR_NAMESPACE_BEGIN
 
 		//	Intersect generates the minimum BBox containing
 		//	the intersection of this and r_box
-		CSSE_BoundingBox intersect(CSSE_BoundingBox& r_box ) const;
-		void intersect(CSSE_BoundingBox& r_box );
+		void intersect(const CSSE_BoundingBox& r_box);
 
 		virtual void scale(float sx,float sy,float sz);
 		virtual void translate(float tx,float ty,float tz);
 		
 		virtual bool isInBox(CGenericVector<float>& r_point) const;
-		virtual bool isInBox(float x,float y,float z) const;
 
 
 		virtual float intersect(GL_COORD_VERTEX &origin,GL_COORD_VERTEX &direction) const;

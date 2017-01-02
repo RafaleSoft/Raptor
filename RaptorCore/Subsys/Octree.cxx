@@ -78,7 +78,7 @@ void COctree<USER_DATA_t>::compress(void)
         {
 	        const BASETREE_ITEM &item = (*it++);
             const CBoundingBox * const bbox = item.pObject->boundingBox();
-             tmpBox.add(*bbox);
+            tmpBox += *bbox;
         }
         CBoundingBox::operator=(tmpBox);
     }
@@ -88,13 +88,13 @@ void COctree<USER_DATA_t>::compress(void)
         CBoundingBox tmpBox;
         tmpBox.set(FLT_MAX,FLT_MAX,FLT_MAX,-FLT_MAX,-FLT_MAX,-FLT_MAX);
         for (i=0 ; i<8 && child[i] != NULL ;  i++)
-            tmpBox.add(*child[i]);
+            tmpBox += *child[i];
         RAPTOR_TYPENAME vector<BASETREE_ITEM>::const_iterator it = CBaseTree<USER_DATA_t>::m_objects.begin();
         while (it != CBaseTree<USER_DATA_t>::m_objects.end())
         {
 	        const BASETREE_ITEM &item = (*it++);
             const CBoundingBox * const bbox = item.pObject->boundingBox();
-             tmpBox.add(*bbox);
+			tmpBox += *bbox;
         }
         CBoundingBox::operator=(tmpBox);
 
@@ -108,7 +108,7 @@ void COctree<USER_DATA_t>::compress(void)
             {
 	            const BASETREE_ITEM &item = (*it++);
                 const CBoundingBox * const bbox = item.pObject->boundingBox();
-                 tmpBox.add(*bbox);
+                tmpBox += *bbox;
             }
 	        child[i]->CBoundingBox::operator=(tmpBox);
             child[i]->CBaseTree<USER_DATA_t>::m_objects = CBaseTree<USER_DATA_t>::m_objects;

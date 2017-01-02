@@ -183,12 +183,11 @@
     <ClInclude Include="..\..\Demo\StdAfx.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Demo\Demo.cpp" />
-    <ClCompile Include="..\..\Demo\DemoDoc.cpp" />
-    <ClCompile Include="..\..\Demo\ObjectStore.cpp" />
-    <ClCompile Include="..\..\Demo\StdAfx.cpp">
+    <ClCompile Include="..\..\Demo\Demo.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="..\..\Demo\DemoDoc.cpp" />
+    <ClCompile Include="..\..\Demo\ObjectStore.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="..\..\Demo\Demo.xml">

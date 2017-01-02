@@ -58,64 +58,28 @@ void CContourAttributes::extrude(const GL_COORD_VERTEX &pos,float extrusion)
 	}
 	else
 	{
-		CGenericVector<float> lightVect;
-		unsigned int contour_size = contourVolumeSize;
-
 #ifdef RAPTOR_SSE_CODE_GENERATION
-		float H[4] = { 0, 0, 0, 1.0f };
-		const GL_COORD_VERTEX* v = &pContourVolume[0];
-		const GL_COORD_VERTEX* v_ext = &pContourVolume[contourVolumeSize];
-
-		__asm
+		__m128 p = _mm_loadu_ps(pos.operator const float *());
+		__m128 e = _mm_load1_ps(&extrusion);
+		e.m128_f32[3] = 0.0f;
+		for (unsigned int i = 0; i<contourVolumeSize; i++)
 		{
-			lea esi,H
-			sse_loadups(XMM7_ESI)
-			lea esi,contour_size
-			mov ecx,[esi]
-			lea edi,extrusion
-			sse_loadss(XMM6_EDI)
-			sse_shufps(XMM6_XMM6,0)
-			mov esi,pos
-			sse_loadups(XMM5_ESI)
+			__m128 v = _mm_loadu_ps(pContourVolume[i].operator const float *());
+			__m128 v_ext = _mm_loadu_ps(pContourVolume[i + contourVolumeSize].operator const float *());
 
-			// load
-			mov esi,v
-			mov edi,v_ext
+			__m128 lightvect = _mm_sub_ps(v, p);
+			// SSE4.1 dot product
+			__m128 norm = _mm_dp_ps(lightvect, lightvect, 0xff);
+			norm = _mm_mul_ps(e,_mm_rsqrt_ps(norm));
 
-		loop_extrude:
-			sse_loadups(XMM0_ESI)		// xmm0 = V
-			sse_loadaps(XMM4_XMM0)		// xmm4 = v
-			sse_subps(XMM0_XMM5)		// xmm0 = v - pos
-			sse_loadaps(XMM3_XMM0)		// xmm3 = v - pos
-
-			// norm
-			sse_mulps(XMM0_XMM0)	
-			sse_loadaps(XMM1_XMM0)
-			sse_loadaps(XMM2_XMM0)
-			sse_shufps(XMM1_XMM0,SSE_R4_R1_R3_R2)
-			sse_shufps(XMM2_XMM0,SSE_R4_R2_R1_R3)
-			sse_addps(XMM1_XMM0)
-			sse_addps(XMM1_XMM2)
-			sse_addps(XMM1_XMM7)
-			sse_rsqrtps(XMM2_XMM1)		// xmm2 = 1 / sqrt((v - pos) * (v - pos))
-
-			// extrude
-			sse_mulps(XMM2_XMM6)		// xmm2 = extrusion / norm(v-pos)
-			sse_mulps(XMM2_XMM3)		// xmm2 = (v - pos) * extrusion / norm(v-pos)
-			sse_addps(XMM2_XMM4)		// xmm2 = xmm2 + v
-
-			// store
-			sse_storeups(XMM2_EDI)
-			add esi,16
-			add edi,16
-			dec ecx
-			jnz loop_extrude
+			_mm_storeu_ps(pContourVolume[i + contourVolumeSize].operator float *(),_mm_add_ps(v,_mm_mul_ps(lightvect,norm)));
 		}
 #else
-		for (int i=0;i<contour_size;i++)
+		CGenericVector<float> lightVect;
+		for (unsigned int i=0;i<contourVolumeSize;i++)
 		{
 			GL_COORD_VERTEX& v = pContourVolume[i];
-			GL_COORD_VERTEX& v_ext = pContourVolume[i+contour_size];
+			GL_COORD_VERTEX& v_ext = pContourVolume[i+contourVolumeSize];
 
 			lightVect.Set(	v.x - pos.x, v.y - pos.y, v.z - pos.z, 	1.0f);
 			float norm = extrusion / sqrt(lightVect.X()*lightVect.X() + lightVect.Y()*lightVect.Y() + lightVect.Z()*lightVect.Z());

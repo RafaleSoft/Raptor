@@ -519,18 +519,11 @@ bool CRaptorRenderBufferDisplay::glBindDisplay(const RAPTOR_HANDLE& device)
 
 bool CRaptorRenderBufferDisplay::glUnBindDisplay(void)
 {
+	if (m_framebuffer == 0)
+		return false;
+
 #if defined(GL_EXT_framebuffer_object)
 	const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
-
-	// TODO : check last binding is self !!!
-	m_bindingStack.pop_back();
-	if (m_bindingStack.size() == 0)
-		pExtensions->glBindFramebufferEXT(GL_FRAMEBUFFER_EXT,0);
-	else
-	{
-		int previousBinding = m_bindingStack.back();
-		pExtensions->glBindFramebufferEXT(GL_FRAMEBUFFER_EXT,previousBinding);
-	}
 
 	bool res = CRaptorDisplay::glUnBindDisplay();
 	glPopAttrib();	// Viewport
@@ -539,6 +532,29 @@ bool CRaptorRenderBufferDisplay::glUnBindDisplay(void)
 	glMatrixMode(GL_MODELVIEW);
 	glPopMatrix();
 	// Todo : 3DEngine configuration is lost here ?
+
+	if (m_bindingStack.size() > 0)
+	{
+		int previousBinding = m_bindingStack.back();
+		m_bindingStack.pop_back();
+
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+		if (previousBinding != m_framebuffer)
+		{
+			Raptor::GetErrorManager()->generateRaptorError(	Global::COpenGLClassID::GetClassId(),
+															CRaptorErrorManager::RAPTOR_ERROR,
+															"Raptor Render Buffer Display bind/unbind mismatch");
+		}
+#endif
+	}
+
+	if (m_bindingStack.size() == 0)
+		pExtensions->glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+	else
+	{
+		int previousBinding = m_bindingStack.back();
+		pExtensions->glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, previousBinding);
+	}
 
 	return res;
 #else

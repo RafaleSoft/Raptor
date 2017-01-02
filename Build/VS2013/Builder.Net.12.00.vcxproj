@@ -130,14 +130,12 @@ copy $(OutDir)Builder.Net.exe $(ProjectDir)
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Builder.Net\AssemblyInfo.cpp" />
+    <ClCompile Include="..\..\Builder.Net\AssemblyInfo.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\..\Builder.Net\Builder.Net.cpp" />
     <ClCompile Include="..\..\Builder.Net\BuilderForm.cpp" />
     <ClCompile Include="..\..\Builder.Net\GLBuilder.cpp" />
-    <ClCompile Include="..\..\Builder.Net\stdafx.cpp">
-      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectDir)$(IntDir)$(TargetName).pch</PrecompiledHeaderOutputFile>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Builder.Net\BuilderForm.h" />

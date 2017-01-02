@@ -52,6 +52,7 @@ public:
 	//	Adding a bounding extends this to the minimum bounding box
 	//	that contains this and r_box
 	virtual void add(const CBoundingBox & r_box);
+
 	//	Extends this so that the point r_x,r_y,r_z is
 	//	contained in this
 	void extendTo(float r_x,float r_y,float r_z);

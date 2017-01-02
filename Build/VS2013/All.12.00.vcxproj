@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="..\..\TODO.TXT" />
+    <None Include="..\..\TODO.TXT" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectName>All</ProjectName>

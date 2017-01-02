@@ -267,6 +267,9 @@ void CUnifiedProgram::glQueryUniformLocations(RAPTOR_HANDLE program)
     const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
 
     pExtensions->glGetObjectParameterivARB(program.handle,GL_OBJECT_ACTIVE_UNIFORM_MAX_LENGTH_ARB,&attrMaxLength);
+	//	Predefined uniforms are not taken into account ! (e.g. gl_ModelViewProjectionMatrix)
+	//	So, take a bit of space.
+	attrMaxLength = MAX(32, attrMaxLength);
     GLcharARB *name = new GLcharARB[attrMaxLength];
 
     // Query the number of active uniforms
@@ -319,6 +322,7 @@ void CUnifiedProgram::glQueryAttributeLocations(RAPTOR_HANDLE program)
     const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
 
     pExtensions->glGetObjectParameterivARB(program.handle,GL_OBJECT_ACTIVE_ATTRIBUTE_MAX_LENGTH_ARB,&attrMaxLength);
+	attrMaxLength = MAX(32, attrMaxLength);
     GLcharARB *name = new GLcharARB[attrMaxLength];
 
     // Query the number of active attributes

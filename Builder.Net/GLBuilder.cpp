@@ -65,12 +65,14 @@ static const char *STL =
     #define RAPTOR_TYPENAME typename\n\
 #endif\n\n\
 #if defined(_WIN32) \n\
-    #pragma warning( disable : 4786)    //  dbug info too large \n\
-    #pragma warning( disable : 4100)  \n\
-    #pragma warning( disable : 4511)    // copy ctor not generated \n\
-    #pragma warning( disable : 4512)    // assign operator not generated \n\
-    #pragma warning( disable : 4663)    // C++ language changes \n\
-	#pragma warning( disable : 4251)    // DLL interface required for STL exports \n\
+    #pragma warning(disable: 4786)    //  dbug info too large \n\
+    #pragma warning(disable: 4100)  \n\
+	#pragma warning(disable: 4244)	\n\
+    #pragma warning(disable: 4511)    // copy ctor not generated \n\
+    #pragma warning(disable: 4512)    // assign operator not generated \n\
+    #pragma warning(disable: 4663)    // C++ language changes \n\
+	#pragma warning(disable: 4251)    // DLL interface required for STL exports \n\
+	#pragma warning(disable: 4275)    // deriving exported class from non-exported \n\
 #endif \n\
 \n\n\
 //	Standard sized int types \n\

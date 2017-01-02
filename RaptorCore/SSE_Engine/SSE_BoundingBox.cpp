@@ -45,104 +45,63 @@ RAPTOR_NAMESPACE
 	{
 	}
 
-
-	void CSSE_BoundingBox::add(const CBoundingBox & r_box)
+	void CSSE_BoundingBox::add(const CSSE_BoundingBox & r_box)
 	{
-		__asm
-		{
-			mov edi,r_box
-			mov esi,this
+		__m128 min = _mm_loadu_ps(&xmin);
+		__m128 max = _mm_loadu_ps(&xmax);
 
-			sse_loadupsofs(XMM1_EDI,VMIN_OFFSET)	//	xmm1 = r_box->vmin
-			sse_loadupsofs(XMM3_ESI,VMIN_OFFSET)	//	xmm3 = this->vmin
-			sse_loadupsofs(XMM2_EDI,VMAX_OFFSET)	//	xmm2 = r_box->vmax
-			sse_loadupsofs(XMM4_ESI,VMAX_OFFSET)	//	xmm4 = this->vmax
-
-			sse_minps(XMM1_XMM3)
-			sse_maxps(XMM2_XMM4)
-			sse_storeupsofs(XMM1_ESI,VMIN_OFFSET)
-			sse_storeupsofs(XMM2_ESI,VMAX_OFFSET)
-		}
+		_mm_storeu_ps(&xmin, _mm_min_ps(_mm_loadu_ps(&r_box.xmin), min));
+		_mm_storeu_ps(&xmax, _mm_max_ps(_mm_loadu_ps(&r_box.xmax), max));
 	}
-
 
 	CSSE_BoundingBox CSSE_BoundingBox::operator+(const CSSE_BoundingBox& r_box)
 	{
+		__m128 min = _mm_loadu_ps(&xmin);
+		__m128 max = _mm_loadu_ps(&xmax);
+
 		CSSE_BoundingBox b;
 
-		__asm
-		{
-			mov edi,r_box
-			mov esi,this
-
-			sse_loadupsofs(XMM1_EDI,VMIN_OFFSET)	//	xmm1 = r_box->vmin
-			sse_loadupsofs(XMM3_ESI,VMIN_OFFSET)	//	xmm3 = this->vmin
-			sse_loadupsofs(XMM2_EDI,VMAX_OFFSET)	//	xmm2 = r_box->vmax
-			sse_loadupsofs(XMM4_ESI,VMAX_OFFSET)	//	xmm4 = this->vmax
-
-			sse_minps(XMM1_XMM3)
-			sse_maxps(XMM2_XMM4)
-
-			lea esi,b
-
-			sse_storeupsofs(XMM1_ESI,VMIN_OFFSET)
-			sse_storeupsofs(XMM2_ESI,VMAX_OFFSET)
-		}
+		_mm_storeu_ps(&b.xmin, _mm_min_ps(_mm_loadu_ps(&r_box.xmin), min));
+		_mm_storeu_ps(&b.xmax, _mm_max_ps(_mm_loadu_ps(&r_box.xmax), max));
 
 		return b;
 	}
 
 	CSSE_BoundingBox& CSSE_BoundingBox::operator+=(const CSSE_BoundingBox& r_box)
 	{
-		__asm
-		{
-			mov edi,r_box
-			mov esi,this
+		__m128 min = _mm_loadu_ps(&xmin);
+		__m128 max = _mm_loadu_ps(&xmax);
 
-			sse_loadupsofs(XMM1_EDI,VMIN_OFFSET)	//	xmm1 = r_box->vmin
-			sse_loadupsofs(XMM3_ESI,VMIN_OFFSET)	//	xmm3 = this->vmin
-			sse_loadupsofs(XMM2_EDI,VMAX_OFFSET)	//	xmm2 = r_box->vmax
-			sse_loadupsofs(XMM4_ESI,VMAX_OFFSET)	//	xmm4 = this->vmax
+		_mm_storeu_ps(&xmin, _mm_min_ps(_mm_loadu_ps(&r_box.xmin), min));
+		_mm_storeu_ps(&xmax, _mm_max_ps(_mm_loadu_ps(&r_box.xmax), max));
 
-			sse_minps(XMM1_XMM3)
-			sse_maxps(XMM2_XMM4)
-			sse_storeupsofs(XMM1_ESI,VMIN_OFFSET)
-			sse_storeupsofs(XMM2_ESI,VMAX_OFFSET)
-
-			mov eax,esi
-		}
+		return *this;
 	}
 
 	CSSE_BoundingBox& CSSE_BoundingBox ::operator=(const CSSE_BoundingBox& r_box)
 	{
-		__asm
-		{
-			mov edi,r_box
-			mov esi,this
+		_mm_storeu_ps(&xmin, _mm_loadu_ps(&r_box.xmin));
+		_mm_storeu_ps(&xmax, _mm_loadu_ps(&r_box.xmax));
 
-			sse_loadupsofs(XMM1_EDI,VMIN_OFFSET)	//	xmm1 = r_box->vmin
-			sse_loadupsofs(XMM2_EDI,VMAX_OFFSET)	//	xmm2 = r_box->vmax
-		
-			sse_storeupsofs(XMM1_ESI,VMIN_OFFSET)
-			sse_storeupsofs(XMM2_ESI,VMAX_OFFSET)
-
-			mov eax,esi
-		}
+		return *this;
 	}
 
 	void CSSE_BoundingBox::scale(float sx,float sy,float sz)
 	{
-		float cx = (xmin+xmax)*0.5f;
-		float cy = (ymin+ymax)*0.5f;
-		float cz = (zmin+zmax)*0.5f;
+		__m128 scale = _mm_set_ps(1.0f, sz, sy, sx);
+		__m128 half = { 0.5f, 0.5f, 0.5f, 0.5f };
 
-		xmin = (xmin - cx) * sx + cx;
-		ymin = (ymin - cy) * sy + cy;
-		zmin = (zmin - cz) * sz + cz;
+		__m128 min = _mm_loadu_ps(&xmin);
+		__m128 max = _mm_loadu_ps(&xmax);
 
-		xmax = (xmax - cx) * sx + cx;
-		ymax = (ymax - cy) * sy + cy;
-		zmax = (zmax - cz) * sz + cz;
+		// c = 0.5 * (min + max)
+		__m128 c = _mm_mul_ps(half,_mm_add_ps(min,max));
+
+		// min = scale * (min - c) + c
+		_mm_storeu_ps(&xmin, _mm_add_ps(_mm_mul_ps(_mm_sub_ps(min, c), scale), c));
+
+		// max = scale * (max - c) + c
+		_mm_storeu_ps(&xmax, _mm_add_ps(_mm_mul_ps(_mm_sub_ps(max, c), scale), c));
 	}
 
 	void CSSE_BoundingBox::translate(float tx,float ty,float tz)
@@ -162,44 +121,17 @@ RAPTOR_NAMESPACE
 			(zmax == r_box.zmax) );
 	}
 
-	CSSE_BoundingBox CSSE_BoundingBox::intersect(CSSE_BoundingBox& r_box ) const
+	void CSSE_BoundingBox::intersect(const CSSE_BoundingBox& r_box)
 	{
-		CSSE_BoundingBox b;
+		__m128 min = _mm_loadu_ps(&xmin);
+		__m128 max = _mm_loadu_ps(&xmax);
 
-		b.xmin = MAX(xmin,r_box.xmin);
-		b.xmax = MIN(xmax,r_box.xmax);
-		if (b.xmin>b.xmax)
-			return CSSE_BoundingBox();	// nul bounding box
+		min = _mm_max_ps(_mm_loadu_ps(&r_box.xmin), min);
+		max = _mm_min_ps(_mm_loadu_ps(&r_box.xmax), max);
+		__m128 cmp = _mm_cmple_ps(min, max);
 
-		b.ymin = MAX(ymin,r_box.ymin);
-		b.ymax = MIN(ymax,r_box.ymax);
-		if (b.ymin>b.ymax)
-			return CSSE_BoundingBox();
-
-		b.zmin = MAX(zmin,r_box.zmin);
-		b.zmax = MIN(zmax,r_box.zmax);
-		if (b.zmin>b.zmax)
-			return CSSE_BoundingBox();
-
-		return b;
-	}
-
-	void CSSE_BoundingBox::intersect(CSSE_BoundingBox& r_box )
-	{
-		xmin = MAX(xmin,r_box.xmin);
-		xmax = MIN(xmax,r_box.xmax);
-		if (xmin>xmax)
-			xmin = xmax = 0;
-
-		ymin = MAX(ymin,r_box.ymin);
-		ymax = MIN(ymax,r_box.ymax);
-		if (ymin>ymax)
-			ymin = ymax = 0;
-
-		zmin = MAX(zmin,r_box.zmin);
-		zmax = MIN(zmax,r_box.zmax);
-		if (zmin>zmax)
-			zmin = zmax = 0;
+		_mm_storeu_ps(&xmin, _mm_and_ps(cmp, min));
+		_mm_storeu_ps(&xmax, _mm_and_ps(cmp, max));
 	}
 
 	bool CSSE_BoundingBox::isInBox(CGenericVector<float>& r_point) const
@@ -212,19 +144,6 @@ RAPTOR_NAMESPACE
 			(ymax>=r_point.Y()) &&
 			(zmax>=r_point.Z()) );
 	}
-
-	bool CSSE_BoundingBox::isInBox(float x,float y,float z) const
-	{
-		return (
-			(xmin<=x) &&
-			(ymin<=y) &&
-			(zmin<=z) &&
-			(xmax>=x) &&
-			(ymax>=y) &&
-			(zmax>=z) );
-	}
-
-
 
 	float CSSE_BoundingBox::intersect(GL_COORD_VERTEX &origin,GL_COORD_VERTEX &direction) const
 	{	
@@ -440,96 +359,5 @@ RAPTOR_NAMESPACE
 			sse_storeups(XMM5_EDI)
 		}
 	}
-/*
-	void CSSE_BoundingBox::GetP(GL_COORD_VERTEX &r_min,GL_COORD_VERTEX &r_max,GL_MATRIX &m) const
-	{
-		//	On transpose la matrice pour travailler en colonne
-		// ( moins d'operations )
-		GL_MATRIX M = m;
-		float t = M[1]; M[1] = M[4]; M[4] = t;
-		t = M[2]; M[2] = M[8] ; M[8] = t;
-		t = M[3]; M[3] = M[12] ; M[12] = t;
-		t = M[6]; M[6] = M[9] ; M[9] = t;
-		t = M[7]; M[7] = M[13] ; M[13] = t;
-		t = M[11]; M[11] = M[14] ; M[14] = t;
-
-		GL_COORD_VERTEX vxmin(xmin,xmin,xmin,xmin);
-		GL_COORD_VERTEX vxmax(xmax,xmax,xmax,xmax);
-		GL_COORD_VERTEX vymin(ymin,ymin,ymin,ymin);
-		GL_COORD_VERTEX vymax(ymax,ymax,ymax,ymax);
-		GL_COORD_VERTEX vzmin(zmin,zmin,zmin,zmin);
-		GL_COORD_VERTEX vzmax(zmax,zmax,zmax,zmax);
-
-		__asm
-		{
-			lea esi,vxmin
-			lea edi,M
-
-			sse_loadups(XMM2_ESI)			// xmm2 = vxmin
-			sse_loadups(XMM0_EDI)			// xmm0 = 1ère ligne [x0..x3]
-			sse_loadupsofs(XMM3_EDI,48)		// xmm3 = 3ème ligne [w0..w3]
-			sse_rcpps(XMM3_XMM3)			// xmm3 = 1 / w
-			
-			sse_mulps(XMM2_XMM0)
-			lea esi,vxmax
-			sse_loadaps(XMM6_XMM2)			// xmm2 = backup(xmm6)
-			sse_loadups(XMM7_ESI)			// xmm3 = vxmax
-			sse_mulps(XMM7_XMM0)
-
-			sse_minps(XMM6_XMM7)			// xmm6 = min(xmin)
-			sse_maxps(XMM7_XMM2)			// xmm7 = max(xmax)
-			
-			sse_loadaps(XMM4_XMM6)			// xmm4 = min result
-			sse_loadaps(XMM5_XMM7)			// xmm5 = max result
-
-			///
-
-			lea esi,vymin
-			sse_loadups(XMM2_ESI)			// xmm2 = vymin
-			sse_loadupsofs(XMM0_EDI,16)		// xmm0 = 2ème ligne [y0..y3]
-
-			sse_mulps(XMM2_XMM0)
-			lea esi,vymax
-			sse_loadaps(XMM6_XMM2)			// xmm2 = backup(xmm6)
-			sse_loadups(XMM7_ESI)			// xmm3 = vymax
-			sse_mulps(XMM7_XMM0)
-
-			sse_minps(XMM6_XMM7)			// xmm6 = min(ymin)
-			sse_maxps(XMM7_XMM2)			// xmm7 = max(ymax)
-			
-			sse_addps(XMM4_XMM6)			// xmm4 = min result
-			sse_addps(XMM5_XMM7)			// xmm5 = max result
-
-			///
-
-			lea esi,vzmin
-			sse_loadups(XMM2_ESI)			// xmm2 = vzmin
-			sse_loadupsofs(XMM0_EDI,32)		// xmm0 = 3ème ligne [z0..z3]
-
-			sse_mulps(XMM2_XMM0)
-			lea esi,vzmax
-			sse_loadaps(XMM6_XMM2)			// xmm2 = backup(xmm6)
-			sse_loadups(XMM7_ESI)			// xmm3 = vzmax
-			sse_mulps(XMM7_XMM0)
-
-			sse_minps(XMM6_XMM7)			// xmm6 = min(zmin)
-			sse_maxps(XMM7_XMM2)			// xmm7 = max(zmax)
-			
-			sse_addps(XMM4_XMM6)			// xmm4 = min result
-			sse_addps(XMM5_XMM7)			// xmm5 = max result
-
-			///
-
-			sse_loadupsofs(XMM0_EDI,48)		// xmm0 = 3ème ligne [w0..w3]
-			sse_addps(XMM4_XMM0)			// xmm4 = min result
-			sse_addps(XMM5_XMM0)			// xmm5 = max result
-
-			mov esi,r_min
-			mov edi,r_max
-			sse_storeups(XMM4_ESI)
-			sse_storeups(XMM5_EDI)
-		}
-	}
-*/
 #endif	// RAPTOR_SSE_CODE_GENERATION
 

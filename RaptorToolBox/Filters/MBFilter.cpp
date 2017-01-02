@@ -181,14 +181,11 @@ void CMBFilter::glRenderFilterOutput()
 {
     //  Render final buffer
     CAccumulator *pAccum = (CAccumulator*)m_pAccumulator;
-
+	
 	pAccum->m_pCurrentColorAccum->glRender();
     glDrawBuffer();
 
 	glBindTexture(GL_TEXTURE_2D,0);
-
-    pAccum->pCurrentDisplay->glUnBindDisplay();
-    pAccum->pPreviousDisplay->glUnBindDisplay();
 
     pAccum->switchDisplay();
 }

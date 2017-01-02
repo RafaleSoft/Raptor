@@ -13,8 +13,6 @@
 
     #define VC_EXTRALEAN		// Exclude rarely-used stuff from Windows headers
 
-	#pragma warning(disable: 4275)  // deriving exported class from non-exported
-	#pragma warning(disable: 4251)  // using non-exported as public in exported
 	#include <windows.h>
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.

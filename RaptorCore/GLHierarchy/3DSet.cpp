@@ -199,7 +199,7 @@ bool C3DSet::addChild (CObject3D *pObject, const C3DSetIterator& position)
             else
             {
                 CBoundingBox tmpBox = *boundingBox();
-                tmpBox.add(*pObject->boundingBox());
+                tmpBox += *pObject->boundingBox();
                 tmpBox.get(Min,Max);
             }
 
@@ -261,7 +261,7 @@ void C3DSet::rescanBBox(void)
 	{
         CObject3D *obj = it->getObject();
         if (obj != NULL)
-            tmpBox.add(*obj->boundingBox());
+			tmpBox += *obj->boundingBox();
 
 		it = it->getNextChild();
 	}

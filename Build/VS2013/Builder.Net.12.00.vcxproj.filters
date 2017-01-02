@@ -10,9 +10,6 @@
     <ClCompile Include="..\..\Builder.Net\BuilderForm.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Builder.Net\stdafx.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Builder.Net\GLBuilder.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
