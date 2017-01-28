@@ -4,6 +4,10 @@
 -CVulkanMemory:
 	- initialiser une bloc mémoire pour l'application (vertex et index buffers bindés sur la même allocation)
 	- Factoriser les allocators (Geometry, Texel, Uniform)
+	- fournir RELOCATE_OFFSET (buffer_memory_requirements) et éliminer la constante
+
+-CVulkanShader:
+	- Déplacer la gestion du descriptor pool à l'init de ShaderProgram
 
 -CVulkanCommandBuffer:
 	- rendre privée les mathodes et attribut commandbuffer

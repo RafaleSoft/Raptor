@@ -19,8 +19,9 @@
 RAPTOR_NAMESPACE_BEGIN
 
 class CLight;
-
-
+class CVulkanPipeline;
+class CObject3D;
+class CVulkanCommandBuffer;
 
 class C3DSceneObject  
 {
@@ -37,17 +38,24 @@ public:
         FULL_PASS,
     } PASS_KIND;
 
-	//!	Default constructor.
-	C3DSceneObject();
+	C3DSceneObject(CObject3D* obj);
 
 	//! Destructor.
 	virtual ~C3DSceneObject();
+
+	//!	Returns the 'real' embedded objet.
+	CObject3D* getObject(void) const;
 
     //! this method renders the real object using the previous occlusion query
     //! Up to NB_PASSES are managed.
     bool glRenderPass(	unsigned int passNumber,
 						const vector<CLight*> &lights,
 						GLboolean proceedLights);
+
+	void vkRender(	CVulkanCommandBuffer& commandBuffer,
+					VkBuffer vertexBinding,
+					VkBuffer indexBinding,
+					VkBuffer uniformBinding);
 
     //! This method chooses the appropriate light for self object rendering.
 	//! The lights selected are the first and less then CLightAttributes::MAX_LIGHTS lights
@@ -79,22 +87,31 @@ public:
 		};
 	};
 
-
-    //!	Occlusion queries
-	unsigned int	visibilityQuery[NB_PASSES];
-	int				passVisibility[NB_PASSES];
-
-    //!	The 'real' embedded object
-	RAPTOR_HANDLE	object;
-
 	//!	storage for z_ordering	( need multipass ? )
 	float			z_order;
-    float			z_span;
+	float			z_span;
+
+	static PASS_KIND	m_currentPass;
+
 
 	//!	active lights for next rendering
 	CLight          *effectiveLights[CLightAttributes::MAX_LIGHTS];
+	
+	//!	Occlusion queries
+	unsigned int	visibilityQuery[NB_PASSES];
+	int				passVisibility[NB_PASSES];
 
-    static PASS_KIND	m_currentPass;
+
+private:
+	//!	Default constructor.
+	C3DSceneObject();
+
+
+	//!	The 'real' embedded object
+	RAPTOR_HANDLE	object;
+
+	//!	Object's rendering pipeline
+	CVulkanPipeline *m_pPipeline;
 };
 
 RAPTOR_NAMESPACE_END

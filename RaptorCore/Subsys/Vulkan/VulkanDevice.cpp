@@ -258,13 +258,14 @@ bool CVulkanDevice::vkSynchroniseBufferObjects(bool blocking)
 	}
 
 	return (VK_SUCCESS == res);
-
 }
 
-bool CVulkanDevice::vkBindPipeline(	C3DScene *pScene,
-									const VkRect2D& scissor,
-									const CColor::RGBA& clearColor)
+bool CVulkanDevice::vkRender(	C3DScene *pScene,
+								const VkRect2D& scissor,
+								const CColor::RGBA& clearColor)
 {
+	vkSynchroniseBufferObjects();
+
 	// TODO : check currentRenderingResources is valid ?
 	if ((currentRenderingResources >= NB_RENDERING_RESOURCES) ||
 		(currentImage == MAXUINT))
@@ -302,7 +303,8 @@ bool CVulkanDevice::vkBindPipeline(	C3DScene *pScene,
 	
 	VkBuffer binding = pDeviceMemory->getLockedBuffer(IDeviceMemoryManager::IBufferObject::VERTEX_BUFFER);
 	VkBuffer binding2 = pDeviceMemory->getLockedBuffer(IDeviceMemoryManager::IBufferObject::INDEX_BUFFER);
-	pScene->vkRender(displayList,binding,binding2);
+	VkBuffer binding3 = pDeviceMemory->getLockedBuffer(IDeviceMemoryManager::IBufferObject::UNIFORM_BUFFER);
+	pScene->vkRender(displayList, binding, binding2, binding3);
 
 	return true;
 }
@@ -749,6 +751,7 @@ bool CVulkanDevice::vkCreateLogicalDevice(	const VkPhysicalDevice &physicalDevic
 	CVulkanCommandBuffer::vkEndCommandBuffer = (PFN_vkEndCommandBuffer)(vkGetDeviceProcAddr(device,"vkEndCommandBuffer"));
 	CVulkanCommandBuffer::vkCmdBindVertexBuffers = (PFN_vkCmdBindVertexBuffers)(vkGetDeviceProcAddr(device,"vkCmdBindVertexBuffers"));
 	CVulkanCommandBuffer::vkCmdBindIndexBuffer = (PFN_vkCmdBindIndexBuffer)(vkGetDeviceProcAddr(device,"vkCmdBindIndexBuffer"));
+	CVulkanCommandBuffer::vkCmdBindDescriptorSets = (PFN_vkCmdBindDescriptorSets)(vkGetDeviceProcAddr(device, "vkCmdBindDescriptorSets"));
 	CVulkanCommandBuffer::vkCmdSetViewport = (PFN_vkCmdSetViewport)(vkGetDeviceProcAddr(device,"vkCmdSetViewport"));
 	CVulkanCommandBuffer::vkCmdSetScissor = (PFN_vkCmdSetScissor)(vkGetDeviceProcAddr(device,"vkCmdSetScissor"));
 	CVulkanCommandBuffer::vkCmdCopyBuffer = (PFN_vkCmdCopyBuffer)(vkGetDeviceProcAddr(device,"vkCmdCopyBuffer"));

@@ -50,10 +50,21 @@ C3DSceneAttributes::C3DSceneAttributes(C3DScene *owner):
 
 C3DSceneAttributes::~C3DSceneAttributes()
 {
+	vector<C3DSceneObject*>::const_iterator it2 = m_pObjects.begin();
+	while (it2 != m_pObjects.end())
+		delete (*it2++);
+
     if (m_pSceneTree != NULL)
         delete m_pSceneTree;
 }
 
+void C3DSceneAttributes::addObjet(C3DSceneObject *sceneObject)
+{
+	m_pObjects.push_back(sceneObject);
+
+	for (unsigned int i = 0; i<m_pEnvironments.size(); i++)
+		m_pEnvironments[i]->addObject(sceneObject);
+}
 
 void C3DSceneAttributes::glMakeQueries(void)
 {
@@ -72,7 +83,7 @@ void C3DSceneAttributes::glMakeQueries(void)
 		    while (itr != m_pObjects.end())
 		    {
 			    C3DSceneObject* h = *itr++;
-				CObject3D* obj = (CObject3D*)h->object.handle;
+				CObject3D* obj = h->getObject();
 
 				if (obj->getProperties().getClippingMethod() == CObjectProperties::CLIP_BBOX_OCCLUSION)
 				    pExtensions->glGenQueriesARB(C3DSceneObject::NB_PASSES,&h->visibilityQuery[0]);
@@ -126,7 +137,7 @@ void C3DSceneAttributes::prepareData(void)
             vector<C3DSceneObject*>::const_iterator it = m_pObjects.begin();
             while (it != m_pObjects.end())
             {
-                CObject3D* obj = (CObject3D*)((*it)->object.handle);
+                CObject3D* obj = (*it)->getObject();
                 pTree->addObject(obj,(*it++));
             }
             pTree->compress();

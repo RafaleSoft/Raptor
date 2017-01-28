@@ -31,19 +31,17 @@ public:
 	//!	Clone the whole shader stage.
 	CVulkanShaderStage* vkClone(void) const;
 
-	//!	Returns the number of successfully loaded shader.
-	size_t getStageCount(void) const { return m_shaderStages.size(); };
-
 	//!	Returns the shader number numShader, or NULL if out of bounds.
-	CVulkanShader* getShader(size_t numShader) const;
+	CVulkanShader* getShader(void) const
+	{
+		return m_pShaderStages;
+	};
 
 	//!	Loads a shader stage.
 	bool vkLoadShader(const std::string& filename);
 
 	//!	Update uniform data
 	bool vkSetData(void *src, uint64_t size);
-
-	//bool updateDescriptors(VkDescriptorSet descriptorSet);
 
 	//! Inherited from CPersistence
     DECLARE_IO
@@ -55,7 +53,8 @@ private:
 	CVulkanShaderStage();
     CVulkanShaderStage& operator=(const CVulkanShaderStage& ) { return *this;};
 
-	std::vector<CVulkanShader*>	m_shaderStages;
+	//std::vector<CVulkanShader*>	m_shaderStages;
+	CVulkanShader*	m_pShaderStages;
 	unsigned char* uniforms;
 };
 

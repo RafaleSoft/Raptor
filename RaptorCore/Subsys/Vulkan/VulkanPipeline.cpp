@@ -30,34 +30,28 @@ CVulkanPipeline::CVulkanPipeline(	VkDevice d,
 									PFN_vkGetDeviceProcAddr vkGetDeviceProcAddr)
 #if defined(VK_VERSION_1_0)
 	: device(d), renderPass(r),
-	pipeline(VK_NULL_HANDLE),
-	descriptor_set_layout(VK_NULL_HANDLE),
-	layout(VK_NULL_HANDLE),
-	descriptor_pool(VK_NULL_HANDLE),
-	descriptor_set(VK_NULL_HANDLE)
+	pipeline(VK_NULL_HANDLE)
 #endif
 {
 #if defined(VK_VERSION_1_0)
 	vkCreateGraphicsPipelines = (PFN_vkCreateGraphicsPipelines)(vkGetDeviceProcAddr(device, "vkCreateGraphicsPipelines"));
 	vkCreateComputePipelines = (PFN_vkCreateComputePipelines)(vkGetDeviceProcAddr(device, "vkCreateComputePipelines"));
 	vkDestroyPipeline = (PFN_vkDestroyPipeline)(vkGetDeviceProcAddr(device, "vkDestroyPipeline"));
-	vkCreatePipelineLayout = (PFN_vkCreatePipelineLayout)(vkGetDeviceProcAddr(device, "vkCreatePipelineLayout"));
-	vkDestroyPipelineLayout = (PFN_vkDestroyPipelineLayout)(vkGetDeviceProcAddr(device, "vkDestroyPipelineLayout"));
-	vkCreateShaderModule = (PFN_vkCreateShaderModule)(vkGetDeviceProcAddr(device, "vkCreateShaderModule"));
-	vkDestroyShaderModule = (PFN_vkDestroyShaderModule)(vkGetDeviceProcAddr(device, "vkDestroyShaderModule"));
-	vkCreateDescriptorSetLayout = (PFN_vkCreateDescriptorSetLayout)(vkGetDeviceProcAddr(device, "vkCreateDescriptorSetLayout"));
-	vkDestroyDescriptorSetLayout = (PFN_vkDestroyDescriptorSetLayout)(vkGetDeviceProcAddr(device, "vkDestroyDescriptorSetLayout"));
+	vkCreateShaderModule = NULL;
+	vkDestroyShaderModule = NULL;
+	vkCreateDescriptorSetLayout = NULL;
+	vkDestroyDescriptorSetLayout = NULL;
 	vkGetImageSubresourceLayout = (PFN_vkGetImageSubresourceLayout)(vkGetDeviceProcAddr(device, "vkGetImageSubresourceLayout"));
 	vkCreatePipelineCache = (PFN_vkCreatePipelineCache)(vkGetDeviceProcAddr(device, "vkCreatePipelineCache"));
 	vkDestroyPipelineCache = (PFN_vkDestroyPipelineCache)(vkGetDeviceProcAddr(device, "vkDestroyPipelineCache"));
 	vkGetPipelineCacheData = (PFN_vkGetPipelineCacheData)(vkGetDeviceProcAddr(device, "vkGetPipelineCacheData"));
 	vkMergePipelineCaches = (PFN_vkMergePipelineCaches)(vkGetDeviceProcAddr(device, "vkMergePipelineCaches"));
-	vkCreateDescriptorPool = (PFN_vkCreateDescriptorPool)(vkGetDeviceProcAddr(device, "vkCreateDescriptorPool"));
-	vkDestroyDescriptorPool = (PFN_vkDestroyDescriptorPool)(vkGetDeviceProcAddr(device, "vkDestroyDescriptorPool"));
-	vkResetDescriptorPool = (PFN_vkResetDescriptorPool)(vkGetDeviceProcAddr(device, "vkResetDescriptorPool"));
-	vkAllocateDescriptorSets = (PFN_vkAllocateDescriptorSets)(vkGetDeviceProcAddr(device, "vkAllocateDescriptorSets"));
-	vkFreeDescriptorSets = (PFN_vkFreeDescriptorSets)(vkGetDeviceProcAddr(device, "vkFreeDescriptorSets"));
-	vkUpdateDescriptorSets = (PFN_vkUpdateDescriptorSets)(vkGetDeviceProcAddr(device, "vkUpdateDescriptorSets"));
+	vkCreateDescriptorPool = NULL;
+	vkDestroyDescriptorPool = NULL;
+	vkResetDescriptorPool = NULL;
+	vkAllocateDescriptorSets = NULL;
+	vkFreeDescriptorSets = NULL;
+	vkUpdateDescriptorSets = NULL;
 #endif
 }
 
@@ -70,20 +64,6 @@ bool CVulkanPipeline::destroyPipeline()
 {
 	if (VK_NULL_HANDLE == device)
 		return false;
-
-	if (VK_NULL_HANDLE != descriptor_set)
-		vkResetDescriptorPool(device, descriptor_pool, 0);
-
-	if (VK_NULL_HANDLE != descriptor_pool)
-		vkDestroyDescriptorPool(device, descriptor_pool, CVulkanMemory::GetAllocator());
-
-	if (VK_NULL_HANDLE == descriptor_set_layout)
-		return false;
-	vkDestroyDescriptorSetLayout(device, descriptor_set_layout, CVulkanMemory::GetAllocator());
-
-	if (VK_NULL_HANDLE == layout)
-		return false;
-	vkDestroyPipelineLayout(device, layout, CVulkanMemory::GetAllocator());
 
 	if (VK_NULL_HANDLE == pipeline)
 		return false;
@@ -98,26 +78,15 @@ bool CVulkanPipeline::initPipeline(const CVulkanShaderStage& shaderStages)
 	VkResult res = VK_NOT_READY;
 
 	//VkPipelineCache pipelineCache;
-	const uint32_t poolSizeCount = 1;
-	VkDescriptorPoolSize pPoolSizes[poolSizeCount] = { { VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1 } };
-	VkDescriptorPoolCreateInfo pool_create_info = { VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,
-													NULL,
-													0, //VkDescriptorPoolCreateFlagBits
-													1, // maxSets
-													poolSizeCount, // poolSizeCount
-													pPoolSizes };
-	res = vkCreateDescriptorPool(device, &pool_create_info, CVulkanMemory::GetAllocator(), &descriptor_pool);
-	CATCH_VK_ERROR(res);
-	if (VK_SUCCESS != res)
+
+	CVulkanShader* pShaderStage = shaderStages.getShader();
+	if (NULL == pShaderStage)
 		return false;
 
-	uint32_t stageCount = shaderStages.getStageCount();
+	size_t stageCount = pShaderStage->getStageCount();
 	VkPipelineShaderStageCreateInfo *shader_stages = new VkPipelineShaderStageCreateInfo[stageCount];
-	for (uint32_t i=0;i<stageCount;i++)
-	{
-		CVulkanShader* pShader = shaderStages.getShader(i);
-		shader_stages[i] = pShader->getShaderStage();
-	}
+	for (size_t i=0;i<stageCount;i++)
+		shader_stages[i] = pShaderStage->getShaderStage(i);
 	
 	VkVertexInputBindingDescription vertex_binding_description_info = {	0,	// binding number
 																		4*sizeof(float),	//stride
@@ -213,55 +182,10 @@ bool CVulkanPipeline::initPipeline(const CVulkanShaderStage& shaderStages)
 																	0,	// VkPipelineDynamicStateCreateFlags
 																	2,
 																	&dynamic_states[0]};
-
-	VkDescriptorSetLayoutBinding uboLayoutBinding = {	0, // binding
-														VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, // descriptorType
-														1, // descriptorCount
-														VK_SHADER_STAGE_VERTEX_BIT, // stageFlags
-														NULL };
-	VkDescriptorSetLayoutCreateInfo descriptor_set_layout_create_info = {	VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
-																			NULL,
-																			0,	// flags
-																			1,	// bingind count
-																			&uboLayoutBinding };
-	res = vkCreateDescriptorSetLayout(	device,
-										&descriptor_set_layout_create_info,
-										CVulkanMemory::GetAllocator(),
-										&descriptor_set_layout);
-	CATCH_VK_ERROR(res);
-	if (VK_SUCCESS != res)
-		return false;
-
-	VkDescriptorSetAllocateInfo descriptor_allocate_info = {VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,
-															NULL,
-															descriptor_pool,
-															1, //descriptorSetCount;
-															&descriptor_set_layout };
-	res = vkAllocateDescriptorSets(device, &descriptor_allocate_info, &descriptor_set);
-	//shaderStages->updateDescriptors(descriptor_set);
-
-
-	const uint32_t setLayoutCount = 1;
-	VkDescriptorSetLayout pSetLayouts[setLayoutCount] = { descriptor_set_layout };
-	VkPipelineLayoutCreateInfo layout_create_info = {	VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
-														NULL,
-														0,	// flags
-														setLayoutCount, // uint32_t setLayoutCount
-														pSetLayouts, //VkDescriptorSetLayout   *pSetLayouts
-														0, //uint32_t pushConstantRangeCount
-														NULL }; //VkPushConstantRange     *pPushConstantRanges
-	
-	res = vkCreatePipelineLayout(device,
-								&layout_create_info,
-								CVulkanMemory::GetAllocator(),
-								&layout);
-	CATCH_VK_ERROR(res);
-	if (VK_SUCCESS != res)
-		return false;
-
 	uint32_t subpass = 0;
 	VkPipeline basePipelineHandle = VK_NULL_HANDLE;
 	int32_t basePipelineIndex = -1;
+	VkPipelineLayout layout = pShaderStage->getPipelineLayout();
 
 	VkGraphicsPipelineCreateInfo pipeline_create_info = {VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
 														NULL,	// const void *pNext 

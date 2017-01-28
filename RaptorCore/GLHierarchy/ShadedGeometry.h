@@ -40,6 +40,10 @@ public:
 
 	//!	Renders the geometry shaded if it has one initialised.
 	virtual void glRender();
+	virtual void vkRender(CVulkanCommandBuffer& commandBuffer,
+						  VkBuffer vertexBinding,
+						  VkBuffer indexBinding,
+						  VkBuffer uniformBinding);
 
 	//!	Assignement to be able to create a shaded geometry from a base geometry.
 	//!	Shader is not modified of left uninitialised.

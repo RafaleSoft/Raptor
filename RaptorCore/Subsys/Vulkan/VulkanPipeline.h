@@ -37,6 +37,7 @@ public:
 	VkPipeline getPipeline(void) const { return pipeline; };
 
 
+
 #if defined(VK_VERSION_1_0)
 	DECLARE_VK_pipeline(DEFAULT_LINKAGE)
 #endif
@@ -46,10 +47,6 @@ private:
 	VkDevice		device;
 	VkRenderPass	renderPass;
 	VkPipeline		pipeline;
-	VkDescriptorSetLayout descriptor_set_layout;
-	VkPipelineLayout layout;
-	VkDescriptorPool	descriptor_pool;
-	VkDescriptorSet		descriptor_set;
 #endif
 };
 

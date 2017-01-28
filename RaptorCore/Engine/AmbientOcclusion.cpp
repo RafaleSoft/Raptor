@@ -93,8 +93,7 @@ bool CAmbientOcclusion::glInitEnvironment(unsigned int width,unsigned int height
 
 void CAmbientOcclusion::addObject(C3DSceneObject* object)
 {
-	const RAPTOR_HANDLE& h = object->object;
-    CObject3D *obj = (CObject3D*)h.handle;
+    CObject3D *obj = object->getObject();
 
 	//	Manage only shadow receivers
 	if (!obj->getProperties().isReceiveShadow())

@@ -145,8 +145,7 @@ void CShadowVolume::addObject(C3DSceneObject* object)
         shadowExtrusion = vv[5];
     }
 
-	const RAPTOR_HANDLE& h = object->object;
-	CObject3D *obj = (CObject3D*)h.handle;
+	CObject3D *obj = object->getObject();
 	if (obj->getId().isSubClassOf(CGeometry::CGeometryClassID::GetClassId()) ||
 		obj->getId().isSubClassOf(C3DSet::C3DSetClassID::GetClassId()) ||
 		obj->getId().isSubClassOf(CObject3DInstance::CObject3DInstanceClassID::GetClassId()))
@@ -191,8 +190,7 @@ void CShadowVolume::initVolumes(const vector<C3DSceneObject*>& objects)
     CObject3DShadow *volume = NULL;
 	while (itr != objects.end())
 	{
-		const RAPTOR_HANDLE& h = (*itr++)->object;
-        CObject3D *obj = (CObject3D*)h.handle;
+		CObject3D *obj = (*itr++)->getObject();
 		if (obj->getId().isSubClassOf(CGeometry::CGeometryClassID::GetClassId()) ||
 			obj->getId().isSubClassOf(C3DSet::C3DSetClassID::GetClassId()) ||
 			obj->getId().isSubClassOf(CObject3DInstance::CObject3DInstanceClassID::GetClassId()))
@@ -255,7 +253,7 @@ void CShadowVolume::glRender(const CLight* currentLight,const vector<C3DSceneObj
     while (itr != objects.end())
     {
         C3DSceneObject* const h = *itr++;
-		CObject3D* obj = (CObject3D*)(h->object.handle);
+		CObject3D* obj = h->getObject();
 
         bool cast = obj->getProperties().isCastShadow();
         bool receive = obj->getProperties().isReceiveShadow();

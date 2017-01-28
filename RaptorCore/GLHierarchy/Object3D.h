@@ -195,7 +195,12 @@ public:
 	//!	Derived classes should check the visibility flag
 	//! to eventually skip rendering
 	virtual void glRender(void)=0;
-	virtual void vkRender(CVulkanCommandBuffer& commandBuffer, VkBuffer vertexBinding, VkBuffer indexBinding) {};
+	virtual void vkRender(CVulkanCommandBuffer& commandBuffer,
+						  VkBuffer vertexBinding,
+						  VkBuffer indexBinding,
+						  VkBuffer uniformBinding)
+	{
+	};
 
 	//! Returns a generic pointer on the objet.
 	//! Use the global CRaptorDisplay::Render(RAPTOR_HANDLE) to

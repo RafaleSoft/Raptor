@@ -18,6 +18,8 @@
 
 RAPTOR_NAMESPACE_BEGIN
 
+class CVulkanCommandBuffer;
+
 
 class CVulkanShader
 {
@@ -28,21 +30,26 @@ public:
 	//!	Clone this shader (not functional yet)
 	CVulkanShader* vkClone(void) const;
 
+	void vkRender(CVulkanCommandBuffer &commandBuffer, VkBuffer uniformBuffer);
+
+	//!	Returns the number of shader stages loaded
+	size_t getStageCount() const { return m_shaderModules.size(); };
+
+	//!	Loads a shader stage.
+	//!	Checks are done in CVulkanShaderStage class
 	bool loadShader(const std::string &filename);
 
-	//VkShaderModule getModule(void) const { return shader_module; };
+	//!	Update uniform data
+	bool vkSetData(VkDeviceSize offset, VkDeviceSize size);
 
-	//VkShaderStageFlagBits getStage(void) const { return shader_stage; };
+	VkPipelineShaderStageCreateInfo getShaderStage(size_t stage) const;
 
-	VkPipelineShaderStageCreateInfo getShaderStage() const;
+	VkPipelineLayout getPipelineLayout();
 
 
 #if defined(VK_VERSION_1_0)
 	//	On a per device basis, static linkage is incorrect
-	DEFAULT_LINKAGE PFN_vkCreateShaderModule vkCreateShaderModule;
-	DEFAULT_LINKAGE PFN_vkDestroyShaderModule vkDestroyShaderModule;
-	DEFAULT_LINKAGE PFN_vkCreateDescriptorPool vkCreateDescriptorPool;
-	DEFAULT_LINKAGE PFN_vkDestroyDescriptorPool vkDestroyDescriptorPool;
+	DECLARE_VK_pipeline(DEFAULT_LINKAGE)
 #endif
 
 private:
@@ -53,9 +60,28 @@ private:
 	CVulkanShader(const CVulkanShader& shader);
 
 #if defined(VK_VERSION_1_0)
-	VkDevice		device;
-	VkShaderModule	shader_module;
-	VkShaderStageFlagBits shader_stage;
+	VkDevice					device;
+
+	//!	Descriptor sets management
+	static	VkDescriptorPool	descriptor_pool;
+	VkDescriptorSetLayout	descriptor_set_layout;
+	VkDescriptorSet			descriptor_set;
+	VkPipelineLayout		layout;
+
+	typedef struct SHADER_MODULE_t
+	{
+		VkShaderModule	shader_module;
+		VkShaderStageFlagBits shader_stage;
+	} SHADER_MODULE;
+
+	typedef struct DESCRIPTOR_DATA_t
+	{
+		VkDeviceSize offset;
+		VkDeviceSize size;
+	} DESCRIPTOR_DATA;
+
+	DESCRIPTOR_DATA			m_descriptorData;
+	vector<SHADER_MODULE>	m_shaderModules;
 #endif
 };
 

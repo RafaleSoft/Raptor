@@ -226,7 +226,7 @@ void COmniShadowMap::glRender(const CLight* currentLight,const vector<C3DSceneOb
     while (itr != objects.end())
     {
         C3DSceneObject* const h = *itr++;
-		CObject3D* obj = (CObject3D*)(h->object.handle);
+		CObject3D* obj = h->getObject();
 
         bool cast = obj->getProperties().isCastShadow();
         bool receive = obj->getProperties().isReceiveShadow();

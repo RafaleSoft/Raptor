@@ -49,6 +49,16 @@ public:
     //! Prepare data structures : octrees, light observers and so on.
 	void prepareData(void);
 
+	//! Adds an object to owner scene.
+	//!	Graphics pipeline is updated
+	void addObjet(C3DSceneObject *sceneObject);
+
+	//! Returns he appropriate list of objects extracted from octree )
+	const vector<C3DSceneObject*> &getAllObjects(void) const
+	{
+		return m_pObjects;
+	}
+
     //! Returns he appropriate list of objects extracted from octree )
     vector<C3DSceneObject*>	glGetObjects(void);
 
@@ -78,13 +88,13 @@ public:
     bool			m_bMirrorsRendered;
 	
     vector<RAPTOR_HANDLE>   m_pHandles;
-	vector<C3DSceneObject*>	m_pObjects;
     vector<CEnvironment*>	m_pEnvironments;
 	vector<CLight*>			m_pLights;
     vector<CMirror*>		m_pMirrors;
 	CLight*					m_pCurrentLight;
 
 private:
+	vector<C3DSceneObject*>		m_pObjects;
     CBaseTree<C3DSceneObject*>  *m_pSceneTree;
 };
 

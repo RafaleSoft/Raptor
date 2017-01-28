@@ -27,6 +27,7 @@ PFN_vkBeginCommandBuffer	CVulkanCommandBuffer::vkBeginCommandBuffer = NULL;
 PFN_vkEndCommandBuffer		CVulkanCommandBuffer::vkEndCommandBuffer = NULL;
 PFN_vkCmdBindVertexBuffers	CVulkanCommandBuffer::vkCmdBindVertexBuffers = NULL;
 PFN_vkCmdBindIndexBuffer	CVulkanCommandBuffer::vkCmdBindIndexBuffer = NULL;
+PFN_vkCmdBindDescriptorSets	CVulkanCommandBuffer::vkCmdBindDescriptorSets = NULL;
 PFN_vkCmdSetViewport		CVulkanCommandBuffer::vkCmdSetViewport = NULL;
 PFN_vkCmdSetScissor			CVulkanCommandBuffer::vkCmdSetScissor = NULL;
 PFN_vkCmdCopyBuffer			CVulkanCommandBuffer::vkCmdCopyBuffer;
