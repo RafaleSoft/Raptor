@@ -421,14 +421,10 @@ void RAPTOR_FASTCALL CParticle::glRenderTextures(void)
 
 	CGenericMatrix<float> transform;
 	glGetTransposeFloatv(GL_MODELVIEW_MATRIX,transform);
-
 	glPushMatrix();
 	glLoadIdentity();
 
 	CGenericVector<float> position;
-	float halfSize = 0.0f;
-	float Hx = 0.0f;
-	float Hy = 0.0f;
 	unsigned int nbElt = 0;
 
     glColor4f(1.0f,1.0f,1.0f,1.0f);
@@ -445,7 +441,7 @@ void RAPTOR_FASTCALL CParticle::glRenderTextures(void)
 	{
 		CParticle::PARTICLE_ATTRIBUTE &attrs = m_attributes[i];
 
-		halfSize = m_fPointSize * 0.5f * attrs.size;
+		float halfSize = m_fPointSize * 0.5f * attrs.size;
         float f = TO_RADIAN(attrs.angle);
         float cs = cos(f);
         float ss = sin(f);
@@ -456,50 +452,26 @@ void RAPTOR_FASTCALL CParticle::glRenderTextures(void)
         position.H(1.0f);
 		position *= transform;
 
-		Hx = halfSize * (cs - ss);
-		Hy = halfSize * (cs + ss);
+		float Hx = halfSize * (cs - ss);
+		float Hy = halfSize * (cs + ss);
 
-#ifndef RAPTOR_SSE_CODE_GENERATION
-		float *p = position.vector();
-        float Hs[8] = { Hx, Hy, 0, 0, Hy, -Hx, 0, 0 };
-        
-		__asm
-		{
-			lea ebx,nbElt
-			mov eax,[ebx]
-			shl eax,4			// eax = 4*nbElt
+#ifdef RAPTOR_SSE_CODE_GENERATION
+		__m128 colors = _mm_loadu_ps(c);
+		_mm_storeu_ps(cache[nbElt].colors, colors);
+		_mm_storeu_ps(cache[nbElt+1].colors, colors);
+		_mm_storeu_ps(cache[nbElt+2].colors, colors);
+		_mm_storeu_ps(cache[nbElt+3].colors, colors);
 
-			lea edi,colors
-			mov esi,c
-			add edi,eax			// edi = colors[4*nbElt]
+		float Hs[8] = { Hx, Hy, 0, -1.0f, Hy, -Hx, 0, 0 };
 
-			sse_loadups(XMM0_ESI)
-			sse_storeups(XMM0_EDI)
-			sse_storeupsofs(XMM0_EDI,16)
-			sse_storeupsofs(XMM0_EDI,32)
-			sse_storeupsofs(XMM0_EDI,48)
-
-			lea edi,coords
-			mov esi,p
-			add dword ptr [ebx],4	// nbElt += 4
-			add edi,eax				// edi = coords[4*nbElt]
-            
-            sse_loadups(XMM0_ESI)
-            lea esi, Hs
-            sse_loadups(XMM1_ESI)
-            sse_loadupsofs(XMM2_ESI,16)
-            sse_loadaps(XMM3_XMM0)
-            sse_loadaps(XMM4_XMM0)
-            sse_loadaps(XMM5_XMM0)
-            sse_addps(XMM3_XMM1)
-            sse_subps(XMM5_XMM2)
-            sse_subps(XMM4_XMM1)
-            sse_addps(XMM0_XMM2)
-            sse_storeups(XMM3_EDI)
-            sse_storeupsofs(XMM5_EDI,16)
-            sse_storeupsofs(XMM4_EDI,32)
-            sse_storeupsofs(XMM0_EDI,48)
-        }
+		__m128 pos = _mm_loadu_ps(position.vector());
+		__m128 hxy = _mm_loadu_ps(&Hs[0]);
+		_mm_storeu_ps(cache[nbElt].coord, _mm_add_ps(pos, hxy));
+		__m128 hxy2 = _mm_loadu_ps(&Hs[4]);
+		_mm_storeu_ps(cache[nbElt+1].coord, _mm_sub_ps(pos, hxy2));
+		_mm_storeu_ps(cache[nbElt+2].coord, _mm_sub_ps(pos, hxy));
+		_mm_storeu_ps(cache[nbElt+3].coord, _mm_add_ps(pos, hxy2));
+		cache[nbElt + 3].coord.h = 3.0; //position.H();
 #else
 		memcpy(&cache[nbElt].colors,c,4*sizeof(float));
 		memcpy(&cache[nbElt+1].colors,c,4*sizeof(float));
@@ -522,10 +494,9 @@ void RAPTOR_FASTCALL CParticle::glRenderTextures(void)
 		cache[nbElt+3].coord.y = position.Y() - Hx;
 		cache[nbElt+3].coord.z = position.Z();
 		cache[nbElt+3].coord.h = 3.0; //position.H();
-
-		nbElt += 4;
 #endif
 
+		nbElt += 4;
 		if (nbElt == CACHE_SIZE)
 		{
 			CGeometryAllocator *pAllocator = CGeometryAllocator::GetInstance();
@@ -576,9 +547,6 @@ void RAPTOR_FASTCALL CParticle::glRenderVolumes(void)
 	glLoadIdentity();
 
 	CGenericVector<float> position;
-	float halfSize = 0.0f;
-	float Hx = 0.0f;
-	float Hy = 0.0f;
 	unsigned int nbElt = 0;
 
 	glPushClientAttrib(GL_CLIENT_VERTEX_ARRAY_BIT);
@@ -594,7 +562,7 @@ void RAPTOR_FASTCALL CParticle::glRenderVolumes(void)
 	for(unsigned int i = 0; i < m_uiQuantity; i++)
 	{
 		CParticle::PARTICLE_ATTRIBUTE &attrs = m_attributes[i];
-		halfSize = m_fPointSize * 0.5f * attrs.size;
+		float halfSize = m_fPointSize * 0.5f * attrs.size;
         float f = TO_RADIAN(attrs.angle);
         float cs = cos(f);
         float ss = sin(f);
@@ -608,8 +576,8 @@ void RAPTOR_FASTCALL CParticle::glRenderVolumes(void)
 		// With this instruction, the compiler do not compute the last row of the previous
 		// vector * matrix product. Well, this suppose it is a smart compiler
 		position.H(1.0f);
-		Hx = halfSize * (cs - ss);
-		Hy = halfSize * (cs + ss);
+		float Hx = halfSize * (cs - ss);
+		float Hy = halfSize * (cs + ss);
 		//float angle = attrs.angle / 360.0f;
 		float angle = 1.0f - attrs.color.h;
 
