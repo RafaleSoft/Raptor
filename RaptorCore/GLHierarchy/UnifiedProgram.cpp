@@ -42,7 +42,6 @@ CUnifiedProgram::CUnifiedProgram(const CUnifiedProgram& shader)
 	m_iMaxLocation = shader.m_iMaxLocation;
 	m_bReLinked = shader.m_bReLinked;
 	m_bValid = shader.m_bValid;
-	m_locations = shader.m_locations;
 }
 
 
@@ -71,9 +70,9 @@ void CUnifiedProgram::glProgramParameter(unsigned int numParam,const CColor::RGB
 void CUnifiedProgram::glParameter(unsigned int numParam,const float *v)
 {
 #if defined(GL_ARB_shader_objects)
-	if (numParam < m_locations.size())
+	if (numParam < m_parameters.getNbParameters())
     {
-        GLint location = m_locations[numParam].locationIndex;
+		GLint location = m_parameters[numParam].locationIndex;
 		if (location == -1)
 		{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
@@ -297,8 +296,8 @@ void CUnifiedProgram::glQueryUniformLocations(RAPTOR_HANDLE program)
                         (pValue.kind != CProgramParameters::ATTRIBUTE) &&
                         matchKind(type,pValue.kind))
                     {
-                        m_locations[idx].locationIndex = location;
-                        m_locations[idx].locationType = type;
+						pValue.locationIndex = location;
+						pValue.locationType = type;
                     }
                 }
             }
@@ -353,11 +352,11 @@ void CUnifiedProgram::glQueryAttributeLocations(RAPTOR_HANDLE program)
                     {
                         // the location retrieved will only be used if the user value is invalid.
                         GL_VERTEX_ATTRIB userLocation = pValue.attribute;
-                        m_locations[idx].locationType = type;
-                        if ((userLocation < maxAttribs) && (userLocation != location))
-                            m_locations[idx].locationIndex = userLocation;
-                        else
-                            m_locations[idx].locationIndex = location;
+						pValue.locationType = type;
+						if ((userLocation < maxAttribs) && (userLocation != location))
+							pValue.locationIndex = userLocation;
+						else
+							pValue.locationIndex = location;
                     }
                 }
             }

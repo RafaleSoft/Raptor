@@ -61,14 +61,6 @@ protected:
     //! size of precomputed locations
     int m_iMaxLocation;
 
-    //! Parameter locations can be retrieven once per link and reused.
-    typedef struct location_t
-    {
-        int				locationIndex;
-        unsigned int	locationType;
-    } location;
-    vector<location> m_locations;
-
     //! Program has been re-linked, perform post processing again
     bool    m_bReLinked;
 

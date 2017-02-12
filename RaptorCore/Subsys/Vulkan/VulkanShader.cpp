@@ -276,6 +276,28 @@ bool CVulkanShader::loadShader(const std::string &filename)
 	{
 		module.shader_stage = VK_SHADER_STAGE_VERTEX_BIT;
 	}
+	else if ((std::string::npos != filename.find(".tesc", filename.length() - 5)) ||
+			 (std::string::npos != filename.find("tesc.spv", filename.length() - 8)))
+	{
+		module.shader_stage = VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT;
+	}
+	else if ((std::string::npos != filename.find(".tese", filename.length() - 5)) ||
+			 (std::string::npos != filename.find("tese.spv", filename.length() - 8)))
+	{
+		module.shader_stage = VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT;
+	}
+	else if ((std::string::npos != filename.find(".geom", filename.length() - 5)) ||
+			 (std::string::npos != filename.find("geom.spv", filename.length() - 8)))
+	{
+		module.shader_stage = VK_SHADER_STAGE_GEOMETRY_BIT;
+	}
+	else if ((std::string::npos != filename.find(".comp", filename.length() - 5)) ||
+			 (std::string::npos != filename.find("comp.spv", filename.length() - 8)))
+	{
+		module.shader_stage = VK_SHADER_STAGE_GEOMETRY_BIT;
+	}
+	else
+		return false;
 
 	CRaptorIO *io = CRaptorIO::Create(fname.c_str(),CRaptorIO::DISK_READ);
 	if (NULL == io)

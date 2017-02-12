@@ -73,6 +73,10 @@ public:
             //! The kind of parameter : depending on the kind, only one of the four values here under is valid
             PARAMETER_KIND		kind;
 
+			//! Parameter locations can be retrieven once per link and reused.
+			int				locationIndex;
+			unsigned int	locationType;
+
             //! User values : a vector, a matrix, an attribute of a texture image unit.
 			GL_COORD_VERTEX		vector;
 			GL_MATRIX			matrix;
@@ -106,6 +110,7 @@ public:
 
         //! Access to vector parameters.
 		PROGRAM_PARAMETER_VALUE& operator[](unsigned int v);
+		const PROGRAM_PARAMETER_VALUE& operator[](unsigned int v) const;
 
 		//! Parameters assignment.
 		CProgramParameters& operator=(const CProgramParameters& params);

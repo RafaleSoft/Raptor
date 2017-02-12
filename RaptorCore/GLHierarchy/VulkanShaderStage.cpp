@@ -41,8 +41,8 @@ RAPTOR_NAMESPACE_END
 RAPTOR_NAMESPACE
 
 CVulkanShaderStage::CVulkanShaderStage(const std::string& name)
-	:CPersistence(stageId, name), uniforms(NULL),
-	m_pShaderStages(NULL)
+	:CShaderProgram(stageId, name), m_bValid(false),
+	m_pShaderStages(NULL), uniforms(NULL)
 {
 }
 
@@ -69,6 +69,8 @@ bool CVulkanShaderStage::importObject(CRaptorIO& i)
 
 bool CVulkanShaderStage::vkLoadShader(const std::string& filename)
 {
+	m_bValid = false;
+
 	if (filename.empty())
 		return false;
 
@@ -84,12 +86,9 @@ bool CVulkanShaderStage::vkLoadShader(const std::string& filename)
 	}
 
 	if (NULL != m_pShaderStages)
-	{
-		m_pShaderStages->loadShader(filename);
-		return true;
-	}
-	else
-		return false;
+		m_bValid = m_pShaderStages->loadShader(filename);
+		
+	return m_bValid;
 }
 
 bool CVulkanShaderStage::vkSetData(void *src, uint64_t size)
