@@ -40,26 +40,21 @@ RAPTOR_NAMESPACE_END
 
 RAPTOR_NAMESPACE
 
-CVulkanShaderStage::CVulkanShaderStage(const std::string& name):
-CPersistence(stageId, name), uniforms(NULL)
+CVulkanShaderStage::CVulkanShaderStage(const std::string& name)
+	:CShaderProgram(stageId, name), m_bValid(false),
+	m_pShaderStages(NULL), uniforms(NULL)
 {
 }
 
 CVulkanShaderStage::~CVulkanShaderStage(void)
 {
+	if (NULL != m_pShaderStages)
+		delete m_pShaderStages;
 }
 
 CVulkanShaderStage* CVulkanShaderStage::vkClone(void) const
 {
 	return NULL;
-}
-
-CVulkanShader* CVulkanShaderStage::getShader(size_t numShader) const
-{
-	if (numShader >= m_shaderStages.size())
-		return NULL;
-
-	return m_shaderStages[numShader];
 }
 
 bool CVulkanShaderStage::exportObject(CRaptorIO& o)
@@ -74,23 +69,26 @@ bool CVulkanShaderStage::importObject(CRaptorIO& i)
 
 bool CVulkanShaderStage::vkLoadShader(const std::string& filename)
 {
+	m_bValid = false;
+
 	if (filename.empty())
 		return false;
 
-	CVulkanDevice* pDevice = CVulkanDevice::getCurrentDevice();
-	if (NULL != pDevice)
+	if (NULL == m_pShaderStages)
 	{
-		CVulkanShader* pShader = pDevice->createShader();
-		if (NULL != pShader)
+		CVulkanDevice* pDevice = CVulkanDevice::getCurrentDevice();
+		if (NULL != pDevice)
 		{
-			m_shaderStages.push_back(pShader);
-			return pShader->loadShader(filename);
+			CVulkanShader* pShader = pDevice->createShader();
+			if (NULL != pShader)
+				m_pShaderStages = pShader;
 		}
-		else
-			return true;
 	}
-	else
-		return false;
+
+	if (NULL != m_pShaderStages)
+		m_bValid = m_pShaderStages->loadShader(filename);
+		
+	return m_bValid;
 }
 
 bool CVulkanShaderStage::vkSetData(void *src, uint64_t size)
@@ -101,27 +99,9 @@ bool CVulkanShaderStage::vkSetData(void *src, uint64_t size)
 		uniforms = pUAllocator->allocateUniforms(size);
 
 	pUAllocator->glvkCopyPointer(uniforms, (unsigned char*)src, size);
-	return true;
-}
-/*
-bool CVulkanShaderStage::updateDescriptors(VkDescriptorSet descriptorSet)
-{
-	VkBuffer buffer;
-	VkDescriptorBufferInfo bufferInfo = { buffer, uniforms, range};
-
-	VkWriteDescriptorSet descriptorWrite = {VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
-											NULL,
-											descriptorSet,
-											0,	// dstBing
-											0,	// dstArrayElement
-											1,	// descriptorCount;
-											VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,	// descriptorType
-											NULL,
-											&bufferInfo,
-											NULL };
-	vkUpdateDescriptorSets(device, 1, &descriptorWrite, 0, NULL);
-
+	if (NULL != m_pShaderStages)
+		m_pShaderStages->vkSetData((VkDeviceSize)uniforms, size);
 
 	return true;
 }
-*/
+

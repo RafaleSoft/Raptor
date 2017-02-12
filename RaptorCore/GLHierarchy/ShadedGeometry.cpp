@@ -26,6 +26,12 @@
 #if !defined(AFX_FRAGMENTSHADER_H__66B3089A_2919_4678_9273_6CDEF7E5787F__INCLUDED_)
 	#include "FragmentShader.h"
 #endif
+#if !defined(AFX_VULKANSHADERSTAGE_H__EF5769B8_470D_467F_9FDE_553142C81698__INCLUDED_)
+	#include "VulkanShaderStage.h"
+#endif
+#if !defined(AFX_RAPTORVULKANSHADER_H__C188550F_1D1C_4531_B0A0_727CE9FF9450__INCLUDED_)
+	#include "Subsys/Vulkan/VulkanShader.h"
+#endif
 #if !defined(AFX_RENDERINGPROPERTIES_H__634BCF2B_84B4_47F2_B460_D7FDC0F3B698__INCLUDED_)
 	#include "RenderingProperties.h"
 #endif
@@ -156,6 +162,25 @@ void CShadedGeometry::overrideShading(const CRenderingProperties& override)
 
     //  prevent buffer clear
     m_pOverride ->clear(0);
+}
+
+void CShadedGeometry::vkRender(	CVulkanCommandBuffer& commandBuffer,
+								VkBuffer vertexBinding,
+								VkBuffer indexBinding,
+								VkBuffer uniformBinding)
+{
+	if (m_pShader != NULL)
+	{
+		if (m_pShader->hasVulkanProgram())
+		{
+			CVulkanShaderStage *ss = m_pShader->vkGetVulkanProgram();
+			CVulkanShader* pVulkanShader = ss->getShader();
+			if (NULL != pVulkanShader)
+				pVulkanShader->vkRender(commandBuffer, uniformBinding);
+		}
+	}
+
+	CGeometry::vkRender(commandBuffer, vertexBinding, indexBinding, uniformBinding);
 }
 
 void CShadedGeometry::glRender()

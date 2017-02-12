@@ -217,10 +217,10 @@ void CTest5Doc::GLInitContext(void)
 	ss->vkLoadShader("shader3.frag");
 	CGenericMatrix<float> modelView;
 	modelView.Ident();
-	ss->vkSetData(modelView.matrix(), 4 * 4 * sizeof(float));
-
+	
 	pScene->addObject(geo);
-	pScene->vkInitPipeline();
+	modelView[12] = 0.5f;
+	ss->vkSetData(modelView.matrix(), 4 * 4 * sizeof(float));
 #else
 	CTextureFactory &f = CTextureFactory::getDefaultFactory();
 	m_pTexture = f.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_ALPHA_TRANSPARENT,CTextureObject::CGL_BILINEAR);

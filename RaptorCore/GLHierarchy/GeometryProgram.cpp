@@ -78,7 +78,7 @@ void CGeometryProgram::glInitShaders()
 
     // ! The returned value is the number of individual component. Raptor always use vectors ...
     m_iMaxLocation = m_iMaxLocation / 4;
-	m_locations.clear();
+	m_parameters.clear();
 #endif
 
     CShaderProgram::glInitShaders();
@@ -97,13 +97,11 @@ void CGeometryProgram::glRender(void)
     if (m_bReLinked)
     {
    		size_t nbParams = m_parameters.getNbParameters();
-		m_locations.resize(nbParams);
 		for (size_t i=0;i<nbParams;i++)
         {
-            location_t l;
-            l.locationIndex = -1;
-            l.locationType = GL_FLOAT_VEC4_ARB;
-            m_locations[i] = l;
+			CShaderProgram::CProgramParameters::PROGRAM_PARAMETER_VALUE &pValue = m_parameters[i];
+			pValue.locationIndex = -1;
+			pValue.locationType = GL_FLOAT_VEC4_ARB;
         }
 
         const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
@@ -132,18 +130,18 @@ void CGeometryProgram::glRender(void)
         const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
         for (unsigned int idx = 0; idx < m_parameters.getNbParameters(); idx++)
         {
-            if (m_locations[idx].locationIndex >= 0)
+			CShaderProgram::CProgramParameters::PROGRAM_PARAMETER_VALUE &value = m_parameters[idx];
+			if (value.locationIndex >= 0)
             {
-				CProgramParameters::PROGRAM_PARAMETER_VALUE& value = m_parameters[idx];
                 switch(value.kind)
                 {
                     case CShaderProgram::CProgramParameters::VECTOR:
-                        pExtensions->glUniform4fvARB(	m_locations[idx].locationIndex,1,
-														value.vector);
+						pExtensions->glUniform4fvARB(	value.locationIndex, 
+														1, value.vector);
                         break;
                     case CShaderProgram::CProgramParameters::MATRIX:
-                        pExtensions->glUniformMatrix4fvARB(	m_locations[idx].locationIndex,1,GL_TRUE,
-															value.matrix);
+						pExtensions->glUniformMatrix4fvARB(	value.locationIndex, 
+															1, GL_TRUE, value.matrix);
                         break;
                     case CShaderProgram::CProgramParameters::ATTRIBUTE:
                         break;

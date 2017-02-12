@@ -914,7 +914,10 @@ void CGeometry::transform(GL_MATRIX &m)
 //////////////////////////////////////////////////////////////////////
 // Rendering
 //////////////////////////////////////////////////////////////////////
-void CGeometry::vkRender(CVulkanCommandBuffer& commandBuffer, VkBuffer vertexBinding, VkBuffer indexBinding)
+void CGeometry::vkRender(CVulkanCommandBuffer& commandBuffer,
+						 VkBuffer vertexBinding,
+						 VkBuffer indexBinding,
+						 VkBuffer uniformBinding)
 {
 	VkBuffer bindings[2] = { vertexBinding, vertexBinding };
 	VkDeviceSize offsets[2] = { (VkDeviceSize)&vertex[0], (VkDeviceSize)&colors[0] };

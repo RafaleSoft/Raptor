@@ -75,7 +75,7 @@ using namespace std;
 int ParseFile(void)
 {
 	//	Add predefined atoms : EOF
-	atom *a = new atom("eof",~0);
+	atom *a = new atom("eof",0xffffffff,(rule*)0,"");
 	string _eof;
 	_eof += ((char)EOF);
 	a->AddValidChars(_eof);

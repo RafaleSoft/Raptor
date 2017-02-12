@@ -11,8 +11,8 @@
 
 #include "Subsys/CodeGeneration.h"
 
-#if !defined(AFX_PERSISTENCE_H__5561BA28_831B_11D3_9142_EEB51CEBBDB0__INCLUDED_)
-	#include "Persistence.h"
+#if !defined(AFX_SHADERPROGRAM_H__936BEC73_3903_46CE_86C9_9CA0005B31F5__INCLUDED_)
+	#include "ShaderProgram.h"
 #endif
 
 
@@ -21,21 +21,56 @@ RAPTOR_NAMESPACE_BEGIN
 class CVulkanShader;
 
 
-class RAPTOR_API CVulkanShaderStage : public CPersistence
+class RAPTOR_API CVulkanShaderStage : public CShaderProgram
 {
 public:
 	CVulkanShaderStage(const std::string& name);
 
 	virtual ~CVulkanShaderStage(void);
 
+	//! Implements base class status
+	virtual bool isValid(void) const { return m_bValid; };
+
+	//! Implements base class
+	virtual bool glLoadProgram(const std::string &program)
+	{
+		return NULL;
+	};
+
+	//! Implements base class
+	virtual void glRender(void)
+	{
+	};
+
+	//! Implements base class
+	virtual void glStop(void)
+	{
+	};
+
+	//! Implements base class
+	virtual bool glGetProgramStatus(void)
+	{
+		return m_bValid;
+	};
+
+	virtual void glProgramParameter(unsigned int numParam,
+									const GL_COORD_VERTEX &v)
+	{
+	};
+
+	virtual void glProgramParameter(unsigned int numParam,
+									const CColor::RGBA &v)
+	{
+	};
+
 	//!	Clone the whole shader stage.
 	CVulkanShaderStage* vkClone(void) const;
 
-	//!	Returns the number of successfully loaded shader.
-	size_t getStageCount(void) const { return m_shaderStages.size(); };
-
 	//!	Returns the shader number numShader, or NULL if out of bounds.
-	CVulkanShader* getShader(size_t numShader) const;
+	CVulkanShader* getShader(void) const
+	{
+		return m_pShaderStages;
+	};
 
 	//!	Loads a shader stage.
 	bool vkLoadShader(const std::string& filename);
@@ -43,11 +78,9 @@ public:
 	//!	Update uniform data
 	bool vkSetData(void *src, uint64_t size);
 
-	//bool updateDescriptors(VkDescriptorSet descriptorSet);
-
 	//! Inherited from CPersistence
     DECLARE_IO
-	DECLARE_CLASS_ID(CVulkanShaderStageClassID,"VulkanShaderStage",CPersistence)
+	DECLARE_CLASS_ID(CVulkanShaderStageClassID, "VulkanShaderStage", CShaderProgram)
 
 
 private:
@@ -55,7 +88,13 @@ private:
 	CVulkanShaderStage();
     CVulkanShaderStage& operator=(const CVulkanShaderStage& ) { return *this;};
 
-	std::vector<CVulkanShader*>	m_shaderStages;
+	//! Valid status
+	bool    m_bValid;
+
+	//!	Vulkan shader modules
+	CVulkanShader*	m_pShaderStages;
+
+	//!	Uniform buffer
 	unsigned char* uniforms;
 };
 

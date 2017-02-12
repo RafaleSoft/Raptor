@@ -22,7 +22,7 @@ RAPTOR_NAMESPACE_BEGIN
 CUniformAllocator	*CUniformAllocator::m_pInstance = NULL;
 
 //  Add a constant offset to distinguish null ( unalocated ) pointers from actual memory blocs
-static const int    RELOCATE_OFFSET = 16;
+static const int    RELOCATE_OFFSET = 256;
 
 RAPTOR_NAMESPACE_END
 
@@ -65,7 +65,6 @@ CUniformAllocator	*CUniformAllocator::SetCurrentInstance(CUniformAllocator* unif
 
 	return pInstance;
 }
-
 
 bool CUniformAllocator::glvkInitMemory(	IDeviceMemoryManager* pDeviceMemory,
 										uint64_t uniformSize)

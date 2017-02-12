@@ -93,11 +93,11 @@ public:
 	CVulkanPipeline*	createPipeline(void) const;
 	CVulkanShader*		createShader(void) const;
 
-	//!	Binds the provided Pipeline to the current grahics command buffer
+	//!	Renders the 3DScene provided to the current grahics command buffer
 	//!	and initialise the render pass.
-	bool vkBindPipeline(C3DScene *pScene,
-						const VkRect2D& scissor,
-						const CColor::RGBA& clearColor);
+	bool vkRender(	C3DScene *pScene,
+					const VkRect2D& scissor,
+					const CColor::RGBA& clearColor);
 
 	//! Destroy or Release all device linked Vulkan resources, including swap chain
 	bool vkDestroyLogicalDevice(void);

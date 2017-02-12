@@ -57,7 +57,7 @@ private:
 };
 
 
-uint64_t CVulkanBufferObject::getSize(void) const
+inline uint64_t CVulkanBufferObject::getSize(void) const
 {
 	return m_size;
 }

@@ -58,15 +58,7 @@
 #if !defined(AFX_MIRROR_H__BA9C578A_40A8_451B_9EA3_C27CB04288FA__INCLUDED_)
     #include "Mirror.h"
 #endif
-#if !defined(AFX_RAPTORVULKANDEVICE_H__2FDEDD40_444E_4CC2_96AA_CBF9E79C3ABE__INCLUDED_)
-	#include "Subsys/Vulkan/VulkanDevice.h"
-#endif
-#if !defined(AFX_RAPTORVULKANPIPELINE_H__C2997B30_C6E2_4EF2_AFE3_FCD27AB5CBB7__INCLUDED_)
-	#include "Subsys/Vulkan/VulkanPipeline.h"
-#endif
-#if !defined(AFX_RAPTORVULKANCOMMANDBUFFER_H__0398BABD_747B_4DFE_94AA_B026BDBD03B1__INCLUDED_)
-	#include "Subsys/Vulkan/VulkanCommandBuffer.h"
-#endif
+
 
 #include <set>
 using std::set;
@@ -104,11 +96,7 @@ C3DScene::~C3DScene()
 
 	m_pAttributes->glResetQueries();
 
-	vector<C3DSceneObject*>::const_iterator it2 = m_pAttributes->m_pObjects.begin();
-	while (it2 != m_pAttributes->m_pObjects.end())
-		delete (*it2++);
-
-    delete m_pAttributes;
+	delete m_pAttributes;
 }
 
 void C3DScene::useZSort(bool use)
@@ -175,12 +163,9 @@ bool C3DScene::addObject(CObject3D *object)
     }
 #endif
 
-	C3DSceneObject *sc = new C3DSceneObject;
-	sc->object = (RAPTOR_HANDLE)(*object);
-	m_pAttributes->m_pObjects.push_back(sc);
+	C3DSceneObject *sc = new C3DSceneObject(object);
+	m_pAttributes->addObjet(sc);
 
-	for (unsigned int i=0;i<m_pAttributes->m_pEnvironments.size();i++)
-		m_pAttributes->m_pEnvironments[i]->addObject(sc);
     return true;
 }
 
@@ -233,7 +218,7 @@ void C3DScene::glRenderObjects(	const vector<C3DSceneObject*>& objects)
 	for (unsigned int i = 0; i<objects.size(); i++)
 	{
 		C3DSceneObject* const h = objects[i];
-		CObject3D* obj = (CObject3D*)h->object.handle;
+		CObject3D* obj = h->getObject();
 
         if (obj->getProperties().isTransparent())
             transparents.push_back(obj);
@@ -422,48 +407,15 @@ void C3DScene::glRender(void)
 	CATCH_GL_ERROR
 }
 
-#include "GLHierarchy/ShadedGeometry.h"
-#include "GLHierarchy/Shader.h"
-#include "GLHierarchy/VulkanShaderStage.h"
-static CVulkanPipeline *pipeline = NULL;
-void C3DScene::vkInitPipeline(void)
-{
-	CVulkanDevice *pDevice = CVulkanDevice::getCurrentDevice();
-	pipeline = pDevice->createPipeline();
 
+void C3DScene::vkRender(CVulkanCommandBuffer& commandBuffer,
+						VkBuffer vertexBinding,
+						VkBuffer indexBinding,
+						VkBuffer uniformBinding)
+{
 	vector<C3DSceneObject*> viewableObjects = m_pAttributes->glGetObjects();
-	CObject3D *obj = (CObject3D*)(viewableObjects[0]->object.handle);
-	CShadedGeometry *sg = (CShadedGeometry *)obj;
-
-	CShader* s = sg->getShader();
-	CVulkanShaderStage *ss = s->vkGetVulkanProgram();
-	
-	if (!pipeline->initPipeline(*ss))
-	{
-		Raptor::GetErrorManager()->generateRaptorError(	C3DScene::C3DSceneClassID::GetClassId(),
-														CRaptorErrorManager::RAPTOR_FATAL,
-														CRaptorMessages::ID_CREATE_FAILED);
-	}
-}
-
-void C3DScene::vkRender(CVulkanCommandBuffer& commandBuffer, VkBuffer vertexBinding, VkBuffer indexBinding)
-{
-	VkPipeline pipe = pipeline->getPipeline();
-	if (VK_NULL_HANDLE != pipe)
-	{
-		commandBuffer.vkCmdBindPipeline(commandBuffer.commandBuffer,
-										VK_PIPELINE_BIND_POINT_GRAPHICS,
-										pipeline->getPipeline());
-
-		vector<C3DSceneObject*> viewableObjects = m_pAttributes->glGetObjects();
-		for (unsigned int i = 0; i < viewableObjects.size(); i++)
-		{
-			C3DSceneObject* const h = viewableObjects[i];
-			CObject3D* obj = (CObject3D*)h->object.handle;
-
-			obj->vkRender(commandBuffer, vertexBinding, indexBinding);
-		}
-	}
+	for (unsigned int i = 0; i < viewableObjects.size(); i++)
+		viewableObjects[i]->vkRender(commandBuffer, vertexBinding, indexBinding, uniformBinding);
 }
 
 
@@ -520,7 +472,7 @@ bool C3DScene::glManageEnvironment(CEnvironment::ENVIRONMENT_KIND kind,unsigned 
         {
             CShadowVolume* pSV = new CShadowVolume(*this);
 			pSV->glInitEnvironment(width,height);
-            pSV->initVolumes(m_pAttributes->m_pObjects);
+			pSV->initVolumes(m_pAttributes->getAllObjects());
             pEnv = pSV;
             break;
         }
@@ -528,7 +480,7 @@ bool C3DScene::glManageEnvironment(CEnvironment::ENVIRONMENT_KIND kind,unsigned 
         {
 			CAmbientOcclusion *pAO = new CAmbientOcclusion(*this);
 			pAO->glInitEnvironment(width,height);
-			pAO->initOcclusions(m_pAttributes->m_pObjects);
+			pAO->initOcclusions(m_pAttributes->getAllObjects());
 			pEnv = pAO;
 			break;
 		}

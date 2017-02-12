@@ -22,6 +22,24 @@
 #if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
     #include "System/RaptorErrorManager.h"
 #endif
+#if !defined(AFX_RAPTORVULKANDEVICE_H__2FDEDD40_444E_4CC2_96AA_CBF9E79C3ABE__INCLUDED_)
+	#include "Subsys/Vulkan/VulkanDevice.h"
+#endif
+#if !defined(AFX_RAPTORVULKANPIPELINE_H__C2997B30_C6E2_4EF2_AFE3_FCD27AB5CBB7__INCLUDED_)
+	#include "Subsys/Vulkan/VulkanPipeline.h"
+#endif
+#if !defined(AFX_RAPTORVULKANCOMMANDBUFFER_H__0398BABD_747B_4DFE_94AA_B026BDBD03B1__INCLUDED_)
+	#include "Subsys/Vulkan/VulkanCommandBuffer.h"
+#endif
+#if !defined(AFX_VULKANSHADERSTAGE_H__EF5769B8_470D_467F_9FDE_553142C81698__INCLUDED_)
+	#include "GLHierarchy/VulkanShaderStage.h"
+#endif
+#if !defined(AFX_SHADEDGEOMETRY_H__E56C66F7_2DF6_497B_AA0F_19DDC11390F9__INCLUDED_)
+	#include "GLHierarchy/ShadedGeometry.h"
+#endif
+#if !defined(AFX_SHADER_H__4D405EC2_7151_465D_86B6_1CA99B906777__INCLUDED_)
+	#include "GLHierarchy/Shader.h"
+#endif
 
 #include <set>      // to sort the lights
 
@@ -35,9 +53,11 @@ C3DSceneObject::PASS_KIND   C3DSceneObject::m_currentPass = FULL_PASS;
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-C3DSceneObject::C3DSceneObject()
-	:z_span(-FLT_MAX), z_order(-FLT_MAX)
+C3DSceneObject::C3DSceneObject(CObject3D* obj)
+	:m_pPipeline(NULL),z_span(-FLT_MAX), z_order(-FLT_MAX)
 {
+	object = (RAPTOR_HANDLE)(*obj);
+
 	for (unsigned int i = 0; i<NB_PASSES; i++)
 	{
 		visibilityQuery[i] = 0;
@@ -46,11 +66,60 @@ C3DSceneObject::C3DSceneObject()
 
 	for (unsigned int i=0;i<CLightAttributes::MAX_LIGHTS;i++)
          effectiveLights[i] = NULL;
+
+	CVulkanDevice *pDevice = CVulkanDevice::getCurrentDevice();
+	if (NULL != pDevice)
+	{
+		if (obj->getId().isSubClassOf(CShadedGeometry::CShadedGeometryClassID::GetClassId()))
+		{
+			m_pPipeline = pDevice->createPipeline();
+			CShadedGeometry *sg = (CShadedGeometry *)obj;
+			CShader* s = sg->getShader();
+			CVulkanShaderStage *ss = s->vkGetVulkanProgram();
+
+			if (!m_pPipeline->initPipeline(*ss))
+			{
+				Raptor::GetErrorManager()->generateRaptorError(	CShadedGeometry::CShadedGeometryClassID::GetClassId(),
+																CRaptorErrorManager::RAPTOR_FATAL,
+																"Failed to create vulkan pipeline object");
+			}
+		}
+	}
 }
 
 C3DSceneObject::~C3DSceneObject()
 {
+	if (NULL != m_pPipeline)
+		delete m_pPipeline;
+}		
 
+void C3DSceneObject::vkRender(	CVulkanCommandBuffer& commandBuffer,
+								VkBuffer vertexBinding,
+								VkBuffer indexBinding,
+								VkBuffer uniformBinding)
+{
+	if (NULL != m_pPipeline)
+	{
+		VkPipeline pipe = m_pPipeline->getPipeline();
+		commandBuffer.vkCmdBindPipeline(commandBuffer.commandBuffer,
+										VK_PIPELINE_BIND_POINT_GRAPHICS,
+										pipe);
+
+		CObject3D* obj = (CObject3D*)(object.handle);
+		obj->vkRender(commandBuffer, vertexBinding, indexBinding, uniformBinding);
+	}
+}
+
+CObject3D* C3DSceneObject::getObject(void) const
+{
+	CObject3D* obj = (CObject3D*)(object.handle);
+
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+	if (!obj->getId().isSubClassOf(CObject3D::CObject3DClassID::GetClassId()))
+		obj = NULL;
+#endif
+
+	return obj;
 }
 
 void C3DSceneObject::glRenderLights(GLboolean proceedLights,const vector<CLight*> &lights)

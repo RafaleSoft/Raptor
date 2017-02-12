@@ -82,7 +82,7 @@ void CFragmentProgram::glInitShaders()
 
     //  Raptor use vectors and the returned value above are single float components
     m_iMaxLocation = m_iMaxLocation / 4;
-    m_locations.clear();
+	m_parameters.clear();
 #endif
 
     CShaderProgram::glInitShaders();
@@ -102,13 +102,11 @@ void CFragmentProgram::glRender(void)
     if (m_bReLinked)
     {
         size_t nbParams = m_parameters.getNbParameters();
-		m_locations.resize(nbParams);
 		for (size_t i=0;i<nbParams;i++)
         {
-            location_t l;
-            l.locationIndex = -1;
-            l.locationType = GL_FLOAT_VEC4_ARB;
-            m_locations[i] = l;
+			CShaderProgram::CProgramParameters::PROGRAM_PARAMETER_VALUE &pValue = m_parameters[i];
+			pValue.locationIndex = -1;
+			pValue.locationType = GL_FLOAT_VEC4_ARB;
         }
 
         const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
@@ -137,33 +135,38 @@ void CFragmentProgram::glRender(void)
         const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
         for (unsigned int idx = 0; idx < m_parameters.getNbParameters(); idx++)
         {
-            if (m_locations[idx].locationIndex >= 0)
+			CShaderProgram::CProgramParameters::PROGRAM_PARAMETER_VALUE &value = m_parameters[idx];
+			if (value.locationIndex >= 0)
             {
-				CShaderProgram::CProgramParameters::PROGRAM_PARAMETER_VALUE &value = m_parameters[idx];
                 if (value.kind == CShaderProgram::CProgramParameters::VECTOR)
                 {
-                    switch (m_locations[idx].locationType)
+					switch (value.locationType)
                     {
                         case GL_FLOAT:
-                            pExtensions->glUniform1fvARB(m_locations[idx].locationIndex,1,
+							pExtensions->glUniform1fvARB(value.locationIndex,
+														 1,
                                                          value.vector);
                             break;
                         case GL_FLOAT_VEC2_ARB:
-                            pExtensions->glUniform2fvARB(m_locations[idx].locationIndex,1,
+							pExtensions->glUniform2fvARB(value.locationIndex,
+														 1,
                                                          value.vector);
                             break;
                         case GL_FLOAT_VEC3_ARB:
-                            pExtensions->glUniform3fvARB(m_locations[idx].locationIndex,1,
+							pExtensions->glUniform3fvARB(value.locationIndex,
+														 1,
                                                          value.vector);
                             break;
                         case GL_FLOAT_VEC4_ARB:
-                            pExtensions->glUniform4fvARB(m_locations[idx].locationIndex,1,
+							pExtensions->glUniform4fvARB(value.locationIndex,
+														 1,
                                                          value.vector);
                             break;
                         case GL_INT:
                         {
                             int val = value.vector.x;
-                            pExtensions->glUniform1iARB(m_locations[idx].locationIndex,val);
+							pExtensions->glUniform1iARB(value.locationIndex,
+														val);
                             break;
                         }
                         case GL_INT_VEC2_ARB:
@@ -171,7 +174,8 @@ void CFragmentProgram::glRender(void)
                             int val[2];
                             val[0] = value.vector.x;
                             val[1] = value.vector.y;
-                            pExtensions->glUniform2iARB(m_locations[idx].locationIndex, val[0], val[1]);
+							pExtensions->glUniform2iARB(value.locationIndex,
+														val[0], val[1]);
                             break;
                         }
                         case GL_INT_VEC3_ARB:
@@ -180,7 +184,8 @@ void CFragmentProgram::glRender(void)
                             val[0] = value.vector.x;
                             val[1] = value.vector.y;
                             val[2] = value.vector.z;
-                            pExtensions->glUniform3ivARB(m_locations[idx].locationIndex,1, &val[0]);
+							pExtensions->glUniform3ivARB(value.locationIndex,
+														 1, &val[0]);
                             break;
                         }
                         case GL_INT_VEC4_ARB:
@@ -190,18 +195,21 @@ void CFragmentProgram::glRender(void)
                             val[1] = value.vector.y;
                             val[2] = value.vector.z;
                             val[3] = value.vector.h;
-                            pExtensions->glUniform4ivARB(m_locations[idx].locationIndex,1, &val[0]);
+							pExtensions->glUniform4ivARB(value.locationIndex,
+														 1, &val[0]);
                             break;
                         }
                     }
                 }
                 else if (value.kind == CShaderProgram::CProgramParameters::SAMPLER)
                 {
-					pExtensions->glUniform1iARB(m_locations[idx].locationIndex, value.sampler);
+					pExtensions->glUniform1iARB(value.locationIndex,
+												value.sampler);
                 }
                 else if (value.kind == CShaderProgram::CProgramParameters::MATRIX)
                 {
-					pExtensions->glUniformMatrix4fvARB(m_locations[idx].locationIndex,1,GL_TRUE,value.matrix);
+					pExtensions->glUniformMatrix4fvARB(value.locationIndex,
+													   1,GL_TRUE,value.matrix);
                 }
                 else if (value.kind == CShaderProgram::CProgramParameters::ATTRIBUTE)
                 {
