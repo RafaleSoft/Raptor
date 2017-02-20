@@ -61,9 +61,6 @@ public:
 	//!	Clone this shader.
 	virtual CFragmentShader* glClone();
 
-    //! Implements base class status
-    virtual bool isValid(void) const { return m_bValid; };
-
     //! Implements subclass of CShaderProgram : loads a valid ASM shader code source
 	//!	@see CShaderProgram.
 	virtual bool glLoadProgram(const std::string &program);
@@ -104,8 +101,6 @@ private:
 
     //! Specific init of shader parameters
     virtual void	glInitShaders();
-
-    bool    m_bValid;
 };
 
 RAPTOR_NAMESPACE_END

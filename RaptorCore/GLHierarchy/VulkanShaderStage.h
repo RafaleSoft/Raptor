@@ -28,9 +28,6 @@ public:
 
 	virtual ~CVulkanShaderStage(void);
 
-	//! Implements base class status
-	virtual bool isValid(void) const { return m_bValid; };
-
 	//! Implements base class
 	virtual bool glLoadProgram(const std::string &program)
 	{
@@ -87,9 +84,6 @@ private:
 	//! Denied operators
 	CVulkanShaderStage();
     CVulkanShaderStage& operator=(const CVulkanShaderStage& ) { return *this;};
-
-	//! Valid status
-	bool    m_bValid;
 
 	//!	Vulkan shader modules
 	CVulkanShader*	m_pShaderStages;

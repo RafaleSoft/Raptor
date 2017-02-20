@@ -23,9 +23,6 @@ public:
 	//!	Destructor.
 	virtual ~CUnifiedProgram();
 
-    //! Implements base class status
-    virtual bool isValid(void) const { return m_bValid; };
-
     //! Loads a unique parameter immediately
     virtual void glProgramParameter(unsigned int numParam,
 									const GL_COORD_VERTEX &v);
@@ -64,9 +61,6 @@ protected:
     //! Program has been re-linked, perform post processing again
     bool    m_bReLinked;
 
-    //! Valid status
-    bool    m_bValid;
-
 
 private:
 	//!	Forbidden operators
@@ -74,7 +68,6 @@ private:
 
     //! factorize uniform settings
     void glParameter( unsigned int numParam,const float *v);
-
 };
 
 

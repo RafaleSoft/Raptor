@@ -206,26 +206,26 @@ void Display::GLInitContext()
 		{
 			// Bottom left corner
 			texCoord1.x = i / TX; texCoord1.y = j / TY;
-			s.glMultiTexCoord(CVertexShader::TEXCOORD1, texCoord1);
-			s.glMultiTexCoord(CVertexShader::TEXCOORD0, texCoord1);
+			s.glMultiTexCoord(CProgramParameters::TEXCOORD1, texCoord1);
+			s.glMultiTexCoord(CProgramParameters::TEXCOORD0, texCoord1);
 			glVertex3f(viewScale*(2.0f*i / TX - 1.0f), (2.0f*j / TY - 1.0f), -2.0f);
 
 			// Bottom right corner
 			texCoord1.x = (i + 1.0f) / TX; texCoord1.y = j / TY;
-			s.glMultiTexCoord(CVertexShader::TEXCOORD1, texCoord1);
-			s.glMultiTexCoord(CVertexShader::TEXCOORD0, texCoord1);
+			s.glMultiTexCoord(CProgramParameters::TEXCOORD1, texCoord1);
+			s.glMultiTexCoord(CProgramParameters::TEXCOORD0, texCoord1);
 			glVertex3f(viewScale*(2.0f*(i + 1) / TX - 1.0f), (2.0f*j / TY - 1.0f), -2.0f);
 
 			// Upper right corner
 			texCoord1.x = (i + 1.0f) / TX; texCoord1.y = (j + 1.0f) / TY;
-			s.glMultiTexCoord(CVertexShader::TEXCOORD1, texCoord1);
-			s.glMultiTexCoord(CVertexShader::TEXCOORD0, texCoord1);
+			s.glMultiTexCoord(CProgramParameters::TEXCOORD1, texCoord1);
+			s.glMultiTexCoord(CProgramParameters::TEXCOORD0, texCoord1);
 			glVertex3f(viewScale*(2.0f*(i + 1) / TX - 1.0f), (2.0f*(j + 1.0f) / TY - 1.0f), -2.0f);
 
 			// Upper left corner
 			texCoord1.x = i / TX; texCoord1.y = (j + 1.0f) / TY;
-			s.glMultiTexCoord(CVertexShader::TEXCOORD1, texCoord1);
-			s.glMultiTexCoord(CVertexShader::TEXCOORD0, texCoord1);
+			s.glMultiTexCoord(CProgramParameters::TEXCOORD1, texCoord1);
+			s.glMultiTexCoord(CProgramParameters::TEXCOORD0, texCoord1);
 			glVertex3f(viewScale*(2.0f*i / TX - 1.0f), (2.0f*(j + 1.0f) / TY - 1.0f), -2.0f);
 		}
 	}

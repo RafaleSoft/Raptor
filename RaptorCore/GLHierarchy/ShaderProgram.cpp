@@ -45,150 +45,23 @@ RAPTOR_NAMESPACE_END
 //////////////////////////////////////////////////////////////////////
 RAPTOR_NAMESPACE
 
-static CShaderProgram::CProgramParameters::PROGRAM_PARAMETER_VALUE noValue;
-
-CShaderProgram::CProgramParameters::PROGRAM_PARAMETER_VALUE& 
-	CShaderProgram::CProgramParameters::operator[](unsigned int v) 
-{
-	if (mValues.size() > v)
-		return mValues[v]; 
-	else
-	{
-		noValue.name = "";
-		noValue.kind = VECTOR;
-		noValue.locationIndex = -1;
-		noValue.locationType = GL_FLOAT_VEC4_ARB;
-		noValue.vector = GL_COORD_VERTEX(0.0f,0.0f,0.0f,1.0f);
-		IDENT_MATRIX(noValue.matrix);
-		noValue.attribute = POSITION;
-		noValue.sampler = CTextureUnitSetup::IMAGE_UNIT_0;
-		return noValue;
-	}
-}
-
-const CShaderProgram::CProgramParameters::PROGRAM_PARAMETER_VALUE&
-CShaderProgram::CProgramParameters::operator[](unsigned int v) const
-{
-	if (mValues.size() > v)
-		return mValues[v];
-	else
-	{
-		noValue.name = "";
-		noValue.kind = VECTOR;
-		noValue.locationIndex = -1;
-		noValue.locationType = GL_FLOAT_VEC4_ARB;
-		noValue.vector = GL_COORD_VERTEX(0.0f, 0.0f, 0.0f, 1.0f);
-		IDENT_MATRIX(noValue.matrix);
-		noValue.attribute = POSITION;
-		noValue.sampler = CTextureUnitSetup::IMAGE_UNIT_0;
-		return noValue;
-	}
-}
-
-bool CShaderProgram::CProgramParameters::addParameter(const std::string& name, const GL_COORD_VERTEX& vertex)
-{
-	PROGRAM_PARAMETER_VALUE value;
-	value.name = name;
-	value.kind = VECTOR;
-	value.vector = vertex;
-	value.locationIndex = -1;
-	value.locationType = GL_FLOAT_VEC4_ARB;
-
-	mValues.push_back(value);
-
-	return true;
-}
-
-bool CShaderProgram::CProgramParameters::addParameter(const std::string& name, const GL_MATRIX& matrix)
-{
-	PROGRAM_PARAMETER_VALUE value;
-	value.name = name;
-	value.kind = MATRIX;
-	value.matrix = matrix;
-	value.locationIndex = -1;
-	value.locationType = GL_FLOAT_VEC4_ARB;
-
-	mValues.push_back(value);
-
-	return true;
-}
-
-bool CShaderProgram::CProgramParameters::addParameter(const std::string& name, GL_VERTEX_ATTRIB attribute)
-{
-	PROGRAM_PARAMETER_VALUE value;
-	value.name = name;
-	value.kind = ATTRIBUTE;
-	value.attribute = attribute;
-	value.locationIndex = -1;
-	value.locationType = GL_FLOAT_VEC4_ARB;
-
-	mValues.push_back(value);
-
-	return true;
-}
-
-bool CShaderProgram::CProgramParameters::addParameter(const std::string& name, CTextureUnitSetup::TEXTURE_IMAGE_UNIT sampler)
-{
-	PROGRAM_PARAMETER_VALUE value;
-	value.name = name;
-	value.kind = SAMPLER;
-	value.sampler = sampler;
-	value.locationIndex = -1;
-	value.locationType = GL_FLOAT_VEC4_ARB;
-
-	mValues.push_back(value);
-
-	return true;
-}
-
-CShaderProgram::CProgramParameters& CShaderProgram::CProgramParameters::operator=(const CProgramParameters& params)
-{
-	// The case that is not handled is when
-	//	params is used to update only a part of currently registered parameters.
-	// TODO: try to solve by setting m_bRelinked = true when params has more parameters than mValues.
-	if (mValues.size() != params.getNbParameters())
-		mValues = params.mValues;
-
-	for (size_t i = 0; i < params.getNbParameters(); i++)
-	{
-		for (size_t j = 0; j < mValues.size(); j++)
-		{
-			if (mValues[j].name == params[i].name)
-			{
-				switch (mValues[j].kind)
-				{
-					case CProgramParameters::MATRIX:
-						mValues[j].matrix = params[i].matrix;
-						break;
-					case CProgramParameters::SAMPLER:
-						mValues[j].sampler = params[i].sampler;
-						break;
-					case CProgramParameters::VECTOR:
-						mValues[j].vector = params[i].vector;
-						break;
-					case CProgramParameters::ATTRIBUTE:
-						mValues[j].attribute = params[i].attribute;
-						break;
-				}
-			}
-		}
-	}
-
-	return *this;
-}
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 CShaderProgram::CShaderProgram(const CPersistence::CPersistenceClassID& id,const std::string& name):
 	CPersistence(id,name),
-	m_bApplyParameters(false)
+	m_bValid(false),
+	m_handle(),
+	m_bApplyParameters(false),
+	m_parameters()
 {
 }
 
 CShaderProgram::CShaderProgram(const CShaderProgram& shader)
     :CPersistence(shaderId,shader.getName())
 {
+	m_bValid = shader.m_bValid;
 	m_handle = shader.m_handle;
 	m_bApplyParameters = shader.m_bApplyParameters;
 	m_parameters = shader.m_parameters;

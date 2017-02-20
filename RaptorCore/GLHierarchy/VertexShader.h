@@ -12,7 +12,7 @@
 #include "Subsys/CodeGeneration.h"
 
 #if !defined(AFX_SHADERPROGRAM_H__936BEC73_3903_46CE_86C9_9CA0005B31F5__INCLUDED_)
-	#include "ShaderProgram.h"
+	#include "GLHierarchy/ShaderProgram.h"
 #endif
 
 
@@ -53,9 +53,6 @@ public:
 	//!	Clone this shader.
 	virtual CVertexShader* glClone();
 
-    //! Implements base class status
-    virtual bool isValid(void) const { return m_bValid; };
-
     //! Implements base class
 	//!	@see CShaderProgram.
 	virtual bool glLoadProgram(const std::string &program);
@@ -95,7 +92,7 @@ public:
 	void RAPTOR_FASTCALL glColor(const CColor::RGBA &c);
 	void RAPTOR_FASTCALL glSecondaryColorEXT(const CColor::RGBA &c);
 	void RAPTOR_FASTCALL glFogCoordEXT(float f);
-	void RAPTOR_FASTCALL glMultiTexCoord(GL_VERTEX_ATTRIB tmu, const GL_COORD_VERTEX &t);
+	void RAPTOR_FASTCALL glMultiTexCoord(CProgramParameters::GL_VERTEX_ATTRIB tmu, const GL_COORD_VERTEX &t);
 	
 	void RAPTOR_FASTCALL glAdditionalVertexParam(const GL_COORD_VERTEX &v);
 	void RAPTOR_FASTCALL glAdditionalVertexParam2(const GL_COORD_VERTEX &v);
@@ -107,11 +104,11 @@ public:
 	//!	with generic names ( vertex shaders do so, GL pipe not )
 	//! This function is easier to use because no sophisticated
 	//!	objets or structures are needed
-	void RAPTOR_FASTCALL glSetVertexAttribute(GL_VERTEX_ATTRIB attrib,
-										 float param1 = 0.0f,
-										 float param2 = 0.0f,
-										 float param3 = 0.0f,
-										 float param4 = 0.0f);
+	void RAPTOR_FASTCALL glSetVertexAttribute(	CProgramParameters::GL_VERTEX_ATTRIB attrib,
+												float param1 = 0.0f,
+												float param2 = 0.0f,
+												float param3 = 0.0f,
+												float param4 = 0.0f);
 
 
 	//!	The sum af all the above
@@ -121,7 +118,11 @@ public:
 	//!	This function is the equivalent of all the standard
 	//!	OpenGL client state pointer functions. The type of pointer
 	//!	is selected by the first parameter.
-	void RAPTOR_FASTCALL glVertexPointer(GL_VERTEX_ATTRIB numParam,GLint size,GLenum type,GLsizei stride, const void* pointer);
+	void RAPTOR_FASTCALL glVertexPointer(CProgramParameters::GL_VERTEX_ATTRIB numParam,
+										 GLint size,
+										 GLenum type,
+										 GLsizei stride,
+										 const void* pointer);
 
 	//!	Direct access to program parameters
 	void glProgramParameter(unsigned int numParam,const GL_COORD_VERTEX &v);
@@ -143,8 +144,6 @@ private:
 
     //! Specific init of shader parameters
     virtual void	glInitShaders();
-
-    bool    m_bValid;
 };
 
 RAPTOR_NAMESPACE_END

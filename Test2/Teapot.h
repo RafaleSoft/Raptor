@@ -23,7 +23,6 @@
 #include "ProjectionDisplay.h"
 #include "VertexShadersDisplay.h"
 #include "ShadowMapDisplay.h"
-#include "EMBMDisplay.h"
 #include "AmbientOcclusionDisplay.h"
 
 #include "MFCExtension/CWnd/GLDocument.h"
@@ -69,7 +68,6 @@ public:
 	CProjectionDisplay		projectionDisplay;
 	CVertexShadersDisplay	vertexShadersDisplay;
 	CShadowMapDisplay		shadowMapDisplay;
-	CEMBMDisplay			embmDisplay;
 	CAmbientOcclusionDisplay ambientOcclusionDisplay;
 
 public:

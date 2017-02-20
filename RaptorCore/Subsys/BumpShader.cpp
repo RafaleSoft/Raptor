@@ -65,12 +65,12 @@ CBumpShader::~CBumpShader(void)
 void CBumpShader::glInit(void)
 {
 	CVertexProgram *vp = glGetVertexProgram("PPIXEL_BUMP_VTX_PROGRAM");
-	CShaderProgram::CProgramParameters params;
-	params.addParameter("tangent",CShaderProgram::ADDITIONAL_PARAM1);
+	CProgramParameters params;
+	params.addParameter("tangent", CProgramParameters::ADDITIONAL_PARAM1);
 	vp->setProgramParameters(params);
 
 	CFragmentProgram *fp = glGetFragmentProgram("PPIXEL_BUMP_TEX_PROGRAM");
-	CShaderProgram::CProgramParameters params2;
+	CProgramParameters params2;
 	fp->setProgramParameters(params2);
 
 	glCompileShader();

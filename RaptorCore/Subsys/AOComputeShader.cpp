@@ -39,7 +39,7 @@ void CAOComputeShader::glInit(void)
 {
 	CVertexProgram *vs = glGetVertexProgram("AMBIENT_OCCLUSION_VTX_PROGRAM");
 	
-	CShaderProgram::CProgramParameters v_params;
+	CProgramParameters v_params;
 	GL_MATRIX Id;
 	IDENT_MATRIX(Id);
 	v_params.addParameter("vertexMat",Id);
@@ -48,7 +48,7 @@ void CAOComputeShader::glInit(void)
 
 	CFragmentProgram *fs = glGetFragmentProgram("AMBIENT_OCCLUSION_TEX_PROGRAM");
 
-	CShaderProgram::CProgramParameters f_params;
+	CProgramParameters f_params;
 	f_params.addParameter("posMap",CTextureUnitSetup::IMAGE_UNIT_0);
 	f_params.addParameter("normalMap",CTextureUnitSetup::IMAGE_UNIT_1);
 	f_params.addParameter("numRows",GL_COORD_VERTEX());

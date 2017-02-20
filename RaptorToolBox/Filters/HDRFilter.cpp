@@ -713,7 +713,7 @@ bool CHDRFilter::glBuildShaders(unsigned int width,unsigned int height)
     res = res && fp->glLoadProgram(composer_ps);
 	if (res)
 	{
-		CShaderProgram::CProgramParameters	fp_params;
+		CProgramParameters	fp_params;
 		fp_params.addParameter("color",CTextureUnitSetup::IMAGE_UNIT_0);
 		fp_params.addParameter("blur",CTextureUnitSetup::IMAGE_UNIT_1);
 		fp_params.addParameter("lwhite",CTextureUnitSetup::IMAGE_UNIT_2);

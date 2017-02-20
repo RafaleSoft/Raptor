@@ -69,11 +69,9 @@ void main (void) \n\
 {\n\
 	int t_index = int(gl_Vertex.w); \n\
 	gl_TexCoord[0] = tcoords[t_index]; \n\
-	/*gl_TexCoord[0] = vec4(0.5,0.5,0.5,1.0); */\n\
 	gl_FrontColor = gl_Color; \n\
 	vec4 pos = vec4(vec3(gl_Vertex.xyz),1.0); \n\
-	/*gl_Position = ftransform(); */ \n\
-	 gl_Position =  gl_ModelViewProjectionMatrix * pos; \n\
+	gl_Position =  gl_ModelViewProjectionMatrix * pos; \n\
 }\n\
 ";
 
@@ -190,8 +188,8 @@ void CParticle::glInitParticle(void)
 	{
 		m_pShader = new CShader(getName()+"_VOLUME_SHADER");
 		CVertexProgram *vp = m_pShader->glGetVertexProgram();
-		CShaderProgram::CProgramParameters params;
-		params.addParameter("texDepth",CShaderProgram::ADDITIONAL_PARAM1);
+		CProgramParameters params;
+		params.addParameter("texDepth", CProgramParameters::ADDITIONAL_PARAM1);
 		vp->setProgramParameters(params);
 
 		res = vp->glLoadProgram(particle2_vp_src);
@@ -552,12 +550,12 @@ void RAPTOR_FASTCALL CParticle::glRenderVolumes(void)
 	glPushClientAttrib(GL_CLIENT_VERTEX_ARRAY_BIT);
 	glEnableClientState(GL_COLOR_ARRAY);
 	glEnableClientState(GL_VERTEX_ARRAY);
-	pExtensions->glEnableVertexAttribArrayARB(CShaderProgram::ADDITIONAL_PARAM1);
+	pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::ADDITIONAL_PARAM1);
 	
 	CACHEELT_t* pCache = (CACHEELT_t*)cachePointer;
 	glVertexPointer(4, GL_FLOAT, sizeof(CACHEELT), &pCache[0].coord);
 	glColorPointer(4, GL_FLOAT, sizeof(CACHEELT), &pCache[0].colors);
-	pExtensions->glVertexAttribPointerARB(CShaderProgram::ADDITIONAL_PARAM1,1,GL_FLOAT,false,sizeof(CACHEELT),&pCache[0].texDepth);
+	pExtensions->glVertexAttribPointerARB(CProgramParameters::ADDITIONAL_PARAM1, 1, GL_FLOAT, false, sizeof(CACHEELT), &pCache[0].texDepth);
 
 	for(unsigned int i = 0; i < m_uiQuantity; i++)
 	{

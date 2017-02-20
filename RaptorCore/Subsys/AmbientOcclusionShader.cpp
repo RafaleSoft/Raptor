@@ -194,13 +194,13 @@ void CAmbientOcclusionShader::glRender()
 	C3DEngine::Generic_to_MATRIX(vertexMat,M);
 	C3DEngine::Generic_to_MATRIX(normalMat,M_inv);
 
-	CShaderProgram::CProgramParameters v_params;
+	CProgramParameters v_params;
 	v_params.addParameter("vertexMat",vertexMat);
 	v_params.addParameter("normalMat",normalMat);
 
 	// Prepare shader parameters: 
 	//	- texture maps
-	CShaderProgram::CProgramParameters f_params;
+	CProgramParameters f_params;
 	f_params.addParameter("posMap",CTextureUnitSetup::IMAGE_UNIT_0);
 	f_params.addParameter("normalMap",CTextureUnitSetup::IMAGE_UNIT_1);
 	f_params.addParameter("numRows",GL_COORD_VERTEX(m_occluders[0]->m_refNbVertex/64,0,0,0));

@@ -12,9 +12,10 @@
 #if !defined(AFX_RAPTORDISPLAYFILTER_H__805D8523_96EA_427B_ABEC_C39EE1BC094C__INCLUDED_)
     #include "System/RaptorDisplayFilter.h"
 #endif
-#if !defined(AFX_SHADERPROGRAM_H__936BEC73_3903_46CE_86C9_9CA0005B31F5__INCLUDED_)
-	#include "GLHierarchy/ShaderProgram.h"
+#if !defined(AFX_PROGRAMPARAMETERS_H__E28A74BB_DE78_470A_A8A2_5A3EBB3F4F90__INCLUDED_)
+	#include "GLHierarchy/ProgramParameters.h"
 #endif
+
 
 RAPTOR_NAMESPACE
 
@@ -56,7 +57,7 @@ private:
 	virtual void glRenderFilterOutput(void);
 
     CShader			*BWShader;
-	CShaderProgram::CProgramParameters	fp_params;
+	CProgramParameters	fp_params;
 };
 
 #endif // !defined(AFX_COLORCONTROLFILTER_H__CD5D6DA8_0CD8_43AD_A2BF_F9CE419A50FE__INCLUDED_)

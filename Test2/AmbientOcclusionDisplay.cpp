@@ -150,7 +150,7 @@ void CAmbientOcclusionDisplay::Init()
 	CVertexProgram *vp = AO_shader->glGetVertexProgram("AO_VP");
 	CFragmentProgram *fp = AO_shader->glGetFragmentProgram("AO_FP");
 
-	CShaderProgram::CProgramParameters ao_params;
+	CProgramParameters ao_params;
 	ao_params.addParameter("AOMap",CTextureUnitSetup::IMAGE_UNIT_2);
 	vp->setProgramParameters(ao_params);
 
@@ -162,7 +162,7 @@ void CAmbientOcclusionDisplay::Init()
 	vp = AO_shader2->glGetVertexProgram("AO_VP2");
 	fp = AO_shader2->glGetFragmentProgram("AO_FP2");
 
-	CShaderProgram::CProgramParameters ao_params2;
+	CProgramParameters ao_params2;
 	ao_params2.addParameter("diffuse",CTextureUnitSetup::IMAGE_UNIT_0);
 	fp->setProgramParameters(ao_params2);
 

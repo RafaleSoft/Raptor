@@ -533,9 +533,6 @@
     <ClCompile Include="..\..\RaptorCore\Subsys\DOT3BumppedGeometry.cpp">
       <Filter>Source Files\Subsys src</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\RaptorCore\GLHierarchy\EMBMGeometry.cpp">
-      <Filter>Source Files\GLHierarchy src</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\LightGlow.cpp">
       <Filter>Source Files\GLHierarchy src</Filter>
     </ClCompile>
@@ -571,6 +568,9 @@
     </ClCompile>
     <ClCompile Include="..\..\RaptorCore\Subsys\UniformAllocator.cpp">
       <Filter>Source Files\Subsys src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\ProgramParameters.cpp">
+      <Filter>Source Files\GLHierarchy src</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1053,9 +1053,6 @@
     <ClInclude Include="..\..\RaptorCore\Subsys\DOT3BumppedGeometry.h">
       <Filter>Header Files\Subsys include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\RaptorCore\GLHierarchy\EMBMGeometry.h">
-      <Filter>Header Files\GLHierarchy include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\LightGlow.h">
       <Filter>Header Files\GLHierarchy include</Filter>
     </ClInclude>
@@ -1100,6 +1097,9 @@
     </ClInclude>
     <ClInclude Include="..\..\RaptorCore\Subsys\UniformAllocator.h">
       <Filter>Header Files\Subsys include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\ProgramParameters.h">
+      <Filter>Header Files\GLHierarchy include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

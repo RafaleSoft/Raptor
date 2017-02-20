@@ -12,9 +12,13 @@
 #if !defined(AFX_RAPTORDISPLAYFILTER_H__805D8523_96EA_427B_ABEC_C39EE1BC094C__INCLUDED_)
     #include "System/RaptorDisplayFilter.h"
 #endif
-#if !defined(AFX_SHADERPROGRAM_H__936BEC73_3903_46CE_86C9_9CA0005B31F5__INCLUDED_)
-	#include "GLHierarchy/ShaderProgram.h"
+#if !defined(AFX_PROGRAMPARAMETERS_H__E28A74BB_DE78_470A_A8A2_5A3EBB3F4F90__INCLUDED_)
+	#include "GLHierarchy/ProgramParameters.h"
 #endif
+
+RAPTOR_NAMESPACE_BEGIN
+class CRaptorDisplay;
+RAPTOR_NAMESPACE_END
 
 
 RAPTOR_NAMESPACE
@@ -83,7 +87,7 @@ private:
 	vector<float>	m_gaussian_coeffs;
 	vector<float>	m_gaussian_offsets;
 	BLUR_MODEL		m_model;
-    CShaderProgram::CProgramParameters	params;
+    CProgramParameters	params;
 };
 
 #endif // !defined(AFX_BLURFILTER_H__46C7BB3A_6996_4E57_A387_A56F89777EF9__INCLUDED_)

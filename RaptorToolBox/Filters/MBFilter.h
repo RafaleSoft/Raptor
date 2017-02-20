@@ -51,7 +51,7 @@ private:
     ITextureGenerator	*m_pAccumulator;
 	CTextureSet			*m_pRenderTextures2;
 
-	CShaderProgram::CProgramParameters f_params;
+	CProgramParameters f_params;
 };
 
 #endif // !defined(AFX_MBFILTER_H__53A619DD_DBAB_4709_9EAD_72C5D6C401E9__INCLUDED_)

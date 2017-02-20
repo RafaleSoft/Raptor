@@ -996,12 +996,12 @@ void CGeometry::glRenderGeometry()
 	if (m_renderingModel.hasModel(CRenderingModel::CGL_TANGENTS) && proceedLighting)
 	{
         popTangentArray = true;
-        pExtensions->glEnableVertexAttribArrayARB(CShaderProgram::ADDITIONAL_PARAM1);
+		pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::ADDITIONAL_PARAM1);
 #if defined(DATA_EXTENDED)
         pExtensions->glVertexAttribPointerARB(CShaderProgram::ADDITIONAL_PARAM1,4,GL_FLOAT,false,sizeof(GL_VERTEX_DATA),&geometry[0].tangent);
 #elif defined(DATA_PACKED)
         if (tangents != NULL)
-		    pExtensions->glVertexAttribPointerARB(CShaderProgram::ADDITIONAL_PARAM1,4,GL_FLOAT,false,0,tangents);
+			pExtensions->glVertexAttribPointerARB(CProgramParameters::ADDITIONAL_PARAM1, 4, GL_FLOAT, false, 0, tangents);
 #endif
 	}
 #endif
@@ -1060,12 +1060,12 @@ void CGeometry::glRenderGeometry()
         else
 #else
         {
-            pExtensions->glEnableVertexAttribArrayARB(CShaderProgram::WEIGHTS);
+			pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::WEIGHTS);
 #if defined(DATA_EXTENDED)
             pExtensions->glVertexAttribPointerARB(CShaderProgram::WEIGHTS,1,GL_FLOAT,false,sizeof(GL_VERTEX_DATA),&geometry[0].weight);
 #elif defined(DATA_PACKED)
             if (weightcoords != NULL)
-		        pExtensions->glVertexAttribPointerARB(CShaderProgram::WEIGHTS,1,GL_FLOAT,false,0,weightcoords);
+				pExtensions->glVertexAttribPointerARB(CProgramParameters::WEIGHTS, 1, GL_FLOAT, false, 0, weightcoords);
 #endif
         }
 #endif
@@ -1125,7 +1125,7 @@ void CGeometry::glRenderGeometry()
     }
 #else
     if (popWeightArray)
-        pExtensions->glDisableVertexAttribArrayARB(CShaderProgram::WEIGHTS);
+		pExtensions->glDisableVertexAttribArrayARB(CProgramParameters::WEIGHTS);
 #endif
 #ifdef GL_EXT_fog_coord
     if (popFogArray)
@@ -1133,7 +1133,7 @@ void CGeometry::glRenderGeometry()
 #endif
 #if defined(GL_ARB_vertex_program)
     if (popTangentArray)
-        pExtensions->glDisableVertexAttribArrayARB(CShaderProgram::ADDITIONAL_PARAM1);
+		pExtensions->glDisableVertexAttribArrayARB(CProgramParameters::ADDITIONAL_PARAM1);
 #endif
 
 	Global::GetInstance().getCurrentStatus().iRenderedObjects++;

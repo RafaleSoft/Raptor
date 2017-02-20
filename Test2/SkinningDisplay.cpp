@@ -196,7 +196,7 @@ void main (void) \
         fp->glLoadProgram(skinning_fp_src))
 	{
 		params.addParameter("skinningMatrix",GL_MATRIX());
-		params.addParameter("weight",CShaderProgram::WEIGHTS);
+		params.addParameter("weight", CProgramParameters::WEIGHTS);
 
         params2.addParameter("diffuseMap",CTextureUnitSetup::IMAGE_UNIT_0);
 

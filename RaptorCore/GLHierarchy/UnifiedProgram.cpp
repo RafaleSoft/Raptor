@@ -351,7 +351,7 @@ void CUnifiedProgram::glQueryAttributeLocations(RAPTOR_HANDLE program)
                         matchKind(type,pValue.kind))
                     {
                         // the location retrieved will only be used if the user value is invalid.
-                        GL_VERTEX_ATTRIB userLocation = pValue.attribute;
+						CProgramParameters::GL_VERTEX_ATTRIB userLocation = pValue.attribute;
 						pValue.locationType = type;
 						if ((userLocation < maxAttribs) && (userLocation != location))
 							pValue.locationIndex = userLocation;

@@ -11,7 +11,7 @@
 
 #include "GenericDisplay.h"
 
-#include "GLHierarchy/ShaderProgram.h"
+#include "GLHierarchy/ProgramParameters.h"
 
 
 class CSkinningDisplay : public CGenericDisplay
@@ -37,8 +37,8 @@ private:
 	CGLLayer		*layer;
 
     CShader *skinning;
-    CShaderProgram::CProgramParameters	params;
-    CShaderProgram::CProgramParameters	params2;
+    CProgramParameters	params;
+    CProgramParameters	params2;
 
 	CTextureObject		*t;
 	CTextureObject		*t2;

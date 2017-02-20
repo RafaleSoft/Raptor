@@ -80,7 +80,6 @@ copy .\RaptorCore\Engine\ViewPoint.h Redist\Include\Engine
 ECHO       GLHierarchy:
 copy .\RaptorCore\GLHierarchy\3DSet.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\BumppedGeometry.h Redist\Include\GLHierarchy
-copy .\RaptorCore\GLHierarchy\EMBMGeometry.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\FragmentProgram.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\FragmentShader.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\GLFont.h Redist\Include\GLHierarchy
@@ -111,6 +110,7 @@ copy .\RaptorCore\GLHierarchy\Reference.cxx Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\Particle.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\PerlinNoise.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\Persistence.h Redist\Include\GLHierarchy
+copy .\RaptorCore\GLHierarchy\ProgramParameters.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\Projector.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\RenderingProperties.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\ShadedGeometry.h Redist\Include\GLHierarchy

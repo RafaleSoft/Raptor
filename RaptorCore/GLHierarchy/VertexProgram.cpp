@@ -101,7 +101,7 @@ void CVertexProgram::glRender(void)
 		size_t nbParams = m_parameters.getNbParameters();
 		for (size_t i=0;i<nbParams;i++)
         {
-			CShaderProgram::CProgramParameters::PROGRAM_PARAMETER_VALUE &pValue = m_parameters[i];
+			CProgramParameters::PROGRAM_PARAMETER_VALUE &pValue = m_parameters[i];
 			pValue.locationIndex = -1;
 			pValue.locationType = GL_FLOAT_VEC4_ARB;
         }
@@ -137,15 +137,15 @@ void CVertexProgram::glRender(void)
             {
                 switch(value.kind)
                 {
-                    case CShaderProgram::CProgramParameters::VECTOR:
+                    case CProgramParameters::VECTOR:
 						pExtensions->glUniform4fvARB(	value.locationIndex,
 														1,value.vector);
                         break;
-                    case CShaderProgram::CProgramParameters::MATRIX:
+                    case CProgramParameters::MATRIX:
 						pExtensions->glUniformMatrix4fvARB(	value.locationIndex,
 															1,GL_TRUE,value.matrix);
                         break;
-                    case CShaderProgram::CProgramParameters::ATTRIBUTE:
+                    case CProgramParameters::ATTRIBUTE:
                         break;
                     default:
                         break;

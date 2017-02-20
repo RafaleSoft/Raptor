@@ -41,7 +41,7 @@ RAPTOR_NAMESPACE_END
 RAPTOR_NAMESPACE
 
 CVulkanShaderStage::CVulkanShaderStage(const std::string& name)
-	:CShaderProgram(stageId, name), m_bValid(false),
+	:CShaderProgram(stageId, name),
 	m_pShaderStages(NULL), uniforms(NULL)
 {
 }

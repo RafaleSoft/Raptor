@@ -99,7 +99,7 @@ void RAPTOR_FASTCALL CVertexShader::glVertex(const GL_COORD_VERTEX &v)
 		glVertex4fv(v);
 #if defined(GL_ARB_vertex_program)
 	else if (m_bVertexReady)
-		pExtensions->glVertexAttrib4fvARB(POSITION,v);
+		pExtensions->glVertexAttrib4fvARB(CProgramParameters::POSITION, v);
 #endif
 
 	//A call within a display list generates an error !!!
@@ -112,7 +112,7 @@ void RAPTOR_FASTCALL CVertexShader::glVertexWeightEXT(float w)
 	if (m_bVertexReady)
 	{
 		const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
-		pExtensions->glVertexAttrib1fARB(WEIGHTS,w);
+		pExtensions->glVertexAttrib1fARB(CProgramParameters::WEIGHTS, w);
 	}
 #endif
 	CATCH_GL_ERROR
@@ -126,7 +126,7 @@ void RAPTOR_FASTCALL CVertexShader::glNormal(const GL_COORD_VERTEX &n)
 		glNormal3fv(n);
 #if defined(GL_ARB_vertex_program)
 	else if (m_bVertexReady)
-		pExtensions->glVertexAttrib4fvARB(NORMAL,n);
+		pExtensions->glVertexAttrib4fvARB(CProgramParameters::NORMAL, n);
 #endif
 
 	//A call within a display list generates an error !!!
@@ -141,7 +141,7 @@ void RAPTOR_FASTCALL CVertexShader::glColor(const CColor::RGBA &c)
 		glColor4fv(c);
 #if defined(GL_ARB_vertex_program)
 	else if (m_bVertexReady)
-		pExtensions->glVertexAttrib4fvARB(PRIMARY_COLOR,c);
+		pExtensions->glVertexAttrib4fvARB(CProgramParameters::PRIMARY_COLOR, c);
 #endif
 
 	//A call within a display list generates an error !!!
@@ -154,7 +154,7 @@ void RAPTOR_FASTCALL CVertexShader::glSecondaryColorEXT(const CColor::RGBA &c)
 	if (m_bVertexReady)
 	{
 		const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
-		pExtensions->glVertexAttrib4fvARB(SECONDARY_COLOR,c);
+		pExtensions->glVertexAttrib4fvARB(CProgramParameters::SECONDARY_COLOR, c);
 	}
 #endif
 
@@ -167,24 +167,24 @@ void RAPTOR_FASTCALL CVertexShader::glFogCoordEXT(float f)
 	if (m_bVertexReady)
 	{
 		const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
-		pExtensions->glVertexAttrib1fARB(FOG_COORDINATE,f);
+		pExtensions->glVertexAttrib1fARB(CProgramParameters::FOG_COORDINATE, f);
 	}
 #endif
 
 	CATCH_GL_ERROR
 }
 
-void RAPTOR_FASTCALL CVertexShader::glMultiTexCoord(GL_VERTEX_ATTRIB tmu, const GL_COORD_VERTEX &t)
+void RAPTOR_FASTCALL CVertexShader::glMultiTexCoord(CProgramParameters::GL_VERTEX_ATTRIB tmu, const GL_COORD_VERTEX &t)
 {
 	// Assert the tmu is valid
-	if (tmu < TEXCOORD0)
+	if (tmu < CProgramParameters::TEXCOORD0)
 		return;
 
 	const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
 	if (m_handle.handle == 0)
 	{
 #if defined(GL_ARB_multitexture)
-		pExtensions->glMultiTexCoord4fvARB(tmu-TEXCOORD0 + GL_TEXTURE0_ARB,t);
+		pExtensions->glMultiTexCoord4fvARB(tmu - CProgramParameters::TEXCOORD0 + GL_TEXTURE0_ARB, t);
 #else
 		glTexCoord4fv(t);
 #endif
@@ -204,7 +204,7 @@ void RAPTOR_FASTCALL CVertexShader::glAdditionalVertexParam(const GL_COORD_VERTE
 	if (m_bVertexReady)
 	{
 		const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
-		pExtensions->glVertexAttrib4fvARB(ADDITIONAL_PARAM1,v);
+		pExtensions->glVertexAttrib4fvARB(CProgramParameters::ADDITIONAL_PARAM1, v);
 	}
 #endif
 
@@ -217,7 +217,7 @@ void RAPTOR_FASTCALL CVertexShader::glAdditionalVertexParam2(const GL_COORD_VERT
 	if (m_bVertexReady)
 	{
 		const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
-		pExtensions->glVertexAttrib4fvARB(ADDITIONAL_PARAM2,v);
+		pExtensions->glVertexAttrib4fvARB(CProgramParameters::ADDITIONAL_PARAM2, v);
 	}
 #endif
 
@@ -249,7 +249,7 @@ void RAPTOR_FASTCALL CVertexShader::glVertex(const GL_VERTEX_DATA &v)
 	CATCH_GL_ERROR
 }
 
-void RAPTOR_FASTCALL CVertexShader::glVertexPointer(GL_VERTEX_ATTRIB numParam,GLint size,GLenum type,GLsizei stride, const void* pointer)
+void RAPTOR_FASTCALL CVertexShader::glVertexPointer(CProgramParameters::GL_VERTEX_ATTRIB numParam, GLint size, GLenum type, GLsizei stride, const void* pointer)
 {
 #if defined(GL_ARB_vertex_program)
 	if (m_bVertexReady)

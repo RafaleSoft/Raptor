@@ -386,8 +386,8 @@ public:
 			
 		float sharpness = 1.0f; 
 
-		CShaderProgram::CProgramParameters	params;
-		CShaderProgram::CProgramParameters	params2;
+		CProgramParameters	params;
+		CProgramParameters	params2;
 
 		GL_COORD_VERTEX xDir(0.0f, 0.866f, -0.866f, 0.0f);
 		GL_COORD_VERTEX zDir(-1.0f, -0.5f, -0.5f, -1.0f);

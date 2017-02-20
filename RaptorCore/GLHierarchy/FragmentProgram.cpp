@@ -104,7 +104,7 @@ void CFragmentProgram::glRender(void)
         size_t nbParams = m_parameters.getNbParameters();
 		for (size_t i=0;i<nbParams;i++)
         {
-			CShaderProgram::CProgramParameters::PROGRAM_PARAMETER_VALUE &pValue = m_parameters[i];
+			CProgramParameters::PROGRAM_PARAMETER_VALUE &pValue = m_parameters[i];
 			pValue.locationIndex = -1;
 			pValue.locationType = GL_FLOAT_VEC4_ARB;
         }
@@ -135,10 +135,10 @@ void CFragmentProgram::glRender(void)
         const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
         for (unsigned int idx = 0; idx < m_parameters.getNbParameters(); idx++)
         {
-			CShaderProgram::CProgramParameters::PROGRAM_PARAMETER_VALUE &value = m_parameters[idx];
+			CProgramParameters::PROGRAM_PARAMETER_VALUE &value = m_parameters[idx];
 			if (value.locationIndex >= 0)
             {
-                if (value.kind == CShaderProgram::CProgramParameters::VECTOR)
+                if (value.kind == CProgramParameters::VECTOR)
                 {
 					switch (value.locationType)
                     {
@@ -201,17 +201,17 @@ void CFragmentProgram::glRender(void)
                         }
                     }
                 }
-                else if (value.kind == CShaderProgram::CProgramParameters::SAMPLER)
+                else if (value.kind == CProgramParameters::SAMPLER)
                 {
 					pExtensions->glUniform1iARB(value.locationIndex,
 												value.sampler);
                 }
-                else if (value.kind == CShaderProgram::CProgramParameters::MATRIX)
+                else if (value.kind == CProgramParameters::MATRIX)
                 {
 					pExtensions->glUniformMatrix4fvARB(value.locationIndex,
 													   1,GL_TRUE,value.matrix);
                 }
-                else if (value.kind == CShaderProgram::CProgramParameters::ATTRIBUTE)
+                else if (value.kind == CProgramParameters::ATTRIBUTE)
                 {
                     // nothing to do : the attribute mapping is bound in glQueryAttributeLocations
                 }

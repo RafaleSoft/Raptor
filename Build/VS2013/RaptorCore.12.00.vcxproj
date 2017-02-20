@@ -262,7 +262,6 @@ Subsys\Redist.bat
     <ClCompile Include="..\..\RaptorCore\Engine\ViewPoint.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\3DSet.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\BumppedGeometry.cpp" />
-    <ClCompile Include="..\..\RaptorCore\GLHierarchy\EMBMGeometry.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\FragmentProgram.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\FragmentShader.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\Geometry.cpp" />
@@ -291,6 +290,7 @@ Subsys\Redist.bat
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\Particle.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\PerlinNoise.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\Persistence.cpp" />
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\ProgramParameters.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\Projector.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\Reference.cxx">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
@@ -474,7 +474,6 @@ copy $(SolutionDir)\$(ProjectName)\Subsys\CodeGeneration.h "%RAPTOR_ROOT%\Redist
     <ClInclude Include="..\..\RaptorCore\Engine\ViewPoint.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\3DSet.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\BumppedGeometry.h" />
-    <ClInclude Include="..\..\RaptorCore\GLHierarchy\EMBMGeometry.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\FragmentProgram.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\FragmentShader.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\Geometry.h" />
@@ -504,6 +503,7 @@ copy $(SolutionDir)\$(ProjectName)\Subsys\CodeGeneration.h "%RAPTOR_ROOT%\Redist
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\Particle.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\PerlinNoise.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\Persistence.h" />
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\ProgramParameters.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\Projector.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\RenderingProperties.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\ShadedGeometry.h" />
