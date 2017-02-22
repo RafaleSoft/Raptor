@@ -214,7 +214,13 @@ bool CFragmentShader::glLoadProgram(const std::string &program)
 			Raptor::GetErrorManager()->generateRaptorError(	CFragmentShader::CFragmentShaderClassID::GetClassId(),
 															CRaptorErrorManager::RAPTOR_WARNING,
 															CRaptorMessages::ID_NO_GPU_PROGRAM);
+			Raptor::GetErrorManager()->generateRaptorError(CFragmentShader::CFragmentShaderClassID::GetClassId(),
+														   CRaptorErrorManager::RAPTOR_WARNING,
+														   getName().data());
 		}
+
+		// Unbind program to avoid side effects
+		glStop();
 	}
 #endif
 

@@ -422,15 +422,18 @@ bool CVertexShader::glLoadProgram(const std::string &program)
 		}
 
 		m_bValid = ((err == GL_NO_ERROR) && glGetProgramStatus());
-        if (!m_bValid)
+		if (!m_bValid)
 		{
-            Raptor::GetErrorManager()->generateRaptorError(	CVertexShader::CVertexShaderClassID::GetClassId(),
-															CRaptorErrorManager::RAPTOR_WARNING,
-															CRaptorMessages::ID_NO_GPU_PROGRAM);
-			Raptor::GetErrorManager()->generateRaptorError(	CVertexShader::CVertexShaderClassID::GetClassId(),
-															CRaptorErrorManager::RAPTOR_WARNING,
-															getName().data());
+			Raptor::GetErrorManager()->generateRaptorError(CVertexShader::CVertexShaderClassID::GetClassId(),
+														   CRaptorErrorManager::RAPTOR_WARNING,
+														   CRaptorMessages::ID_NO_GPU_PROGRAM);
+			Raptor::GetErrorManager()->generateRaptorError(CVertexShader::CVertexShaderClassID::GetClassId(),
+														   CRaptorErrorManager::RAPTOR_WARNING,
+														   getName().data());
 		}
+		
+		// Unbind program to avoid side effects
+		glStop();
 	}
 #endif
 

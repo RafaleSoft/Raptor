@@ -86,81 +86,6 @@ void CVertexProgram::glInitShaders()
     CShaderProgram::glInitShaders();
 }
 
-void CVertexProgram::glStop(void)
-{
-}
-
-void CVertexProgram::glRender(void)
-{
-    if (m_handle.handle == 0)
-        return;
-
-#if defined(GL_ARB_vertex_shader)
-    if (m_bReLinked)
-    {
-		size_t nbParams = m_parameters.getNbParameters();
-		for (size_t i=0;i<nbParams;i++)
-        {
-			CProgramParameters::PROGRAM_PARAMETER_VALUE &pValue = m_parameters[i];
-			pValue.locationIndex = -1;
-			pValue.locationType = GL_FLOAT_VEC4_ARB;
-        }
-
-        const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
-        GLhandleARB program = pExtensions->glGetHandleARB(GL_PROGRAM_OBJECT_ARB);
-
-        if (program != 0)
-        {
-            glQueryUniformLocations(RAPTOR_HANDLE(0,(void*)program));
-
-            glQueryAttributeLocations(RAPTOR_HANDLE(0,(void*)program));
-            
-            m_bReLinked = false;
-        }
-    #ifdef RAPTOR_DEBUG_MODE_GENERATION
-        else
-        {
-            Raptor::GetErrorManager()->generateRaptorError(	CVertexProgram::CVertexProgramClassID::GetClassId(),
-															CRaptorErrorManager::RAPTOR_ERROR,
-															CRaptorMessages::ID_WRONG_RENDERING);
-        }
-    #endif
-    }
-
-    if (m_bApplyParameters)
-    {
-        const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
-        for (unsigned int idx = 0; idx < m_parameters.getNbParameters(); idx++)
-        {
-			CProgramParameters::PROGRAM_PARAMETER_VALUE& value = m_parameters[idx];
-			if (value.locationIndex >= 0)
-            {
-                switch(value.kind)
-                {
-                    case CProgramParameters::VECTOR:
-						pExtensions->glUniform4fvARB(	value.locationIndex,
-														1,value.vector);
-                        break;
-                    case CProgramParameters::MATRIX:
-						pExtensions->glUniformMatrix4fvARB(	value.locationIndex,
-															1,GL_TRUE,value.matrix);
-                        break;
-                    case CProgramParameters::ATTRIBUTE:
-                        break;
-                    default:
-                        break;
-                }
-            }
-        }
-
-        m_bApplyParameters = false;
-    } 
-#endif
-
-    CATCH_GL_ERROR
-}
-
-
 bool CVertexProgram::glLoadProgram(const std::string &program)
 {
     m_bValid = false;
@@ -230,7 +155,7 @@ bool CVertexProgram::glBindProgram(RAPTOR_HANDLE program)
 
 	for (unsigned int idx = 0; idx < m_parameters.getNbParameters(); idx++)
     {
-        CProgramParameters::PROGRAM_PARAMETER_VALUE& pValue = m_parameters[idx];
+		CProgramParameters::CParameterValue& pValue = m_parameters[idx];
         if (pValue.kind == CProgramParameters::ATTRIBUTE)
         {
             // the location retrieved will only be used if the user value is invalid.

@@ -23,6 +23,9 @@ public:
 	//!	Destructor.
 	virtual ~CUnifiedProgram();
 
+	//!	Load OpenGL parameters all at once
+	virtual void glRender(void);
+
     //! Loads a unique parameter immediately
     virtual void glProgramParameter(unsigned int numParam,
 									const GL_COORD_VERTEX &v);

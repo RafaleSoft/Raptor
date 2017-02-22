@@ -169,8 +169,6 @@ bool CShaderLibrary::glInitFactory(void)
 			if (program != NULL)
 			{
 				program->glLoadProgram(fs);
-				program->glStop();
-
 				s_factoryShaders.insert(map<std::string,std::string>::value_type(fs_name,fs));
 			}
 		}

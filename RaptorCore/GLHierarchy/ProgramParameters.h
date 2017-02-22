@@ -58,9 +58,64 @@ public:
 		SAMPLER
 	} PARAMETER_KIND;
 
-	//! This structure defines a parameter value
-	typedef struct PROGRAM_PARAMETER_VALUE_t
+	class ParameterBase
 	{
+	public:
+		virtual ~ParameterBase() {};
+		virtual uint64_t size(void) const { return 0; };
+		virtual const void* addr(void) const { return NULL; };
+		virtual ParameterBase* clone(void) const { return NULL; };
+
+		template <class T> bool isA(const T &t) const
+		{
+			return getTypeId() == Parameter<T>::TypeId();
+		};
+
+	protected:
+		ParameterBase() {};
+		ParameterBase(const ParameterBase&) {};
+		virtual const type_info& getTypeId(void) const { return typeid(void*); };
+	};
+
+	template <class P>
+	class Parameter : public CProgramParameters::ParameterBase
+	{
+	public:
+		Parameter(const P &param) :p(param) {};
+		virtual ~Parameter() {};
+
+		static const type_info& TypeId(void) { static P _p; return typeid(_p); };
+		virtual const type_info& getTypeId(void) const { return typeid(p); };
+
+		virtual uint64_t size(void) const { return sizeof(p); };
+		virtual const void* addr(void) const { return &p; };
+		virtual ParameterBase* clone(void) const
+		{
+			return new Parameter<P>(p);
+		};
+
+		Parameter<P>& operator=(const P &_p)
+		{
+			p = _p; return *this;
+		};
+
+	public:
+		P	p;
+	};
+
+	//! This structure defines a parameter value
+	class CParameterValue : public CProgramParameters::ParameterBase
+	{
+	public:
+		//!	Constructor
+		CParameterValue();
+		//!	Copy constructor
+		CParameterValue(const CParameterValue&);
+		//!	Assignment operator
+		CParameterValue& operator=(const CParameterValue&);
+		//!	Destructor
+		virtual ~CParameterValue();
+
 		//! The name of the value: it is matched to variables of the program ( @see GLSL )
 		string				name;
 		//! The kind of parameter : depending on the kind, only one of the four values here under is valid
@@ -75,7 +130,7 @@ public:
 		GL_MATRIX			matrix;
 		GL_VERTEX_ATTRIB	attribute;
 		CTextureUnitSetup::TEXTURE_IMAGE_UNIT	sampler;
-	} PROGRAM_PARAMETER_VALUE;
+	};
 
 public:
 	//! Default constructor. The parameter set is uninitialised, user
@@ -102,8 +157,8 @@ public:
 	bool addParameter(const std::string& name, CTextureUnitSetup::TEXTURE_IMAGE_UNIT sampler);
 
 	//! Access to vector parameters.
-	PROGRAM_PARAMETER_VALUE& operator[](unsigned int v);
-	const PROGRAM_PARAMETER_VALUE& operator[](unsigned int v) const;
+	CParameterValue& operator[](unsigned int v);
+	const CParameterValue& operator[](unsigned int v) const;
 
 	//! Parameters assignment.
 	CProgramParameters& operator=(const CProgramParameters& params);
@@ -112,7 +167,7 @@ private:
 	CProgramParameters(const CProgramParameters&) {};
 
 	//! There should not be a max value, it is inherited from  NV_vertex_program first drafts.
-	std::vector<PROGRAM_PARAMETER_VALUE> mValues;
+	std::vector<CParameterValue> mValues;
 };
 
 RAPTOR_NAMESPACE_END

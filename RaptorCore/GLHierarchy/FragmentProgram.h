@@ -46,14 +46,6 @@ public:
 	//!	Clone this shader.
 	virtual CFragmentProgram* glClone();
 
-    //! The real rendering cannot be performed here, as it relies on
-    //! CShader program object invocation. Nevertheless, this method is
-    //! necessary to perform 'after-link' steps ( such as uniform locations
-    virtual void glRender(void);
-
-    //! See base class
-    virtual void glStop(void);
-
     //! Loads an OpenGL 2.0 vertex shader program.
 	bool glLoadProgram(const std::string &program);
 

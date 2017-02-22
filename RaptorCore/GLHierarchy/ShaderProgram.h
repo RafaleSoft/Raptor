@@ -53,13 +53,6 @@ public:
 	//!	This behaviour is the same with vertex shaders
 	virtual void glRender(void) = 0;
 
-	//!	This method safely exists the vertex shader mode
-	//!
-	//!	TODO : backup program parameters and vertex state
-	//!		to enable a safe stop/restart to switch among
-	//!		various vertex programs
-	virtual void glStop(void) = 0;
-
 	//!	This method returns true if the program loaded fits
 	//!	within the capabilities computed in the method below.
 	//!	If result is true, it means the program will run properly

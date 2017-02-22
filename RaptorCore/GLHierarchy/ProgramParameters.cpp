@@ -7,6 +7,9 @@
 #if !defined(AFX_PROGRAMPARAMETERS_H__E28A74BB_DE78_470A_A8A2_5A3EBB3F4F90__INCLUDED_)
 	#include "GLHierarchy/ProgramParameters.h"
 #endif
+#if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
+	#include "System/RaptorErrorManager.h"
+#endif
 
 
 //////////////////////////////////////////////////////////////////////
@@ -14,52 +17,95 @@
 //////////////////////////////////////////////////////////////////////
 RAPTOR_NAMESPACE
 
-static CProgramParameters::PROGRAM_PARAMETER_VALUE noValue;
+static CProgramParameters::CParameterValue noValue;
 
-CProgramParameters::PROGRAM_PARAMETER_VALUE& CProgramParameters::operator[](unsigned int v)
+CProgramParameters::CParameterValue::CParameterValue()
+	:ParameterBase(),
+	name(""),
+	kind(VECTOR),
+	locationIndex(-1),
+	locationType(GL_FLOAT_VEC4_ARB),
+	vector(0.0f, 0.0f, 0.0f, 1.0f),
+	attribute(POSITION),
+	sampler(CTextureUnitSetup::IMAGE_UNIT_0)
+{
+	IDENT_MATRIX(noValue.matrix);
+}
+
+CProgramParameters::CParameterValue::CParameterValue(const CParameterValue& value)
+	:ParameterBase(),
+	name(value.name),
+	kind(value.kind),
+	locationIndex(value.locationIndex),
+	locationType(value.locationType),
+	vector(value.vector),
+	attribute(value.attribute),
+	sampler(value.sampler),
+	matrix(value.matrix)
+{
+}
+
+CProgramParameters::CParameterValue& CProgramParameters::CParameterValue::operator=(const CParameterValue& value)
+{
+	if (&value != this)
+	{
+		name = value.name;
+		kind = value.kind;
+		locationIndex = value.locationIndex;
+		locationType = value.locationType;
+		vector = value.vector;
+		attribute = value.attribute;
+		sampler = value.sampler;
+		matrix = value.matrix;
+	}
+
+	return *this;
+}
+
+CProgramParameters::CParameterValue::~CParameterValue()
+{
+}
+
+CProgramParameters::CParameterValue& CProgramParameters::operator[](unsigned int v)
 {
 	if (mValues.size() > v)
 		return mValues[v];
 	else
 	{
-		noValue.name = "";
-		noValue.kind = VECTOR;
-		noValue.locationIndex = -1;
-		noValue.locationType = GL_FLOAT_VEC4_ARB;
-		noValue.vector = GL_COORD_VERTEX(0.0f, 0.0f, 0.0f, 1.0f);
-		IDENT_MATRIX(noValue.matrix);
-		noValue.attribute = POSITION;
-		noValue.sampler = CTextureUnitSetup::IMAGE_UNIT_0;
+		noValue = CProgramParameters::CParameterValue();
 		return noValue;
 	}
 }
 
-const CProgramParameters::PROGRAM_PARAMETER_VALUE& CProgramParameters::operator[](unsigned int v) const
+const CProgramParameters::CParameterValue& CProgramParameters::operator[](unsigned int v) const
 {
 	if (mValues.size() > v)
 		return mValues[v];
 	else
 	{
-		noValue.name = "";
-		noValue.kind = VECTOR;
-		noValue.locationIndex = -1;
-		noValue.locationType = GL_FLOAT_VEC4_ARB;
-		noValue.vector = GL_COORD_VERTEX(0.0f, 0.0f, 0.0f, 1.0f);
-		IDENT_MATRIX(noValue.matrix);
-		noValue.attribute = POSITION;
-		noValue.sampler = CTextureUnitSetup::IMAGE_UNIT_0;
+		noValue = CProgramParameters::CParameterValue();
 		return noValue;
 	}
 }
 
 bool CProgramParameters::addParameter(const std::string& name, const GL_COORD_VERTEX& vertex)
 {
-	PROGRAM_PARAMETER_VALUE value;
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+	for (size_t i = 0; i < mValues.size(); i++)
+	{
+		if (mValues[i].name == name)
+		{
+			Raptor::GetErrorManager()->generateRaptorError(CPersistence::CPersistenceClassID::GetClassId(),
+														   CRaptorErrorManager::RAPTOR_WARNING,
+														   "Duplicate parameter name");
+			return false;
+		}
+	}
+#endif
+
+	CProgramParameters::CParameterValue value;
 	value.name = name;
-	value.kind = VECTOR;
 	value.vector = vertex;
-	value.locationIndex = -1;
-	value.locationType = GL_FLOAT_VEC4_ARB;
 
 	mValues.push_back(value);
 
@@ -68,12 +114,23 @@ bool CProgramParameters::addParameter(const std::string& name, const GL_COORD_VE
 
 bool CProgramParameters::addParameter(const std::string& name, const GL_MATRIX& matrix)
 {
-	PROGRAM_PARAMETER_VALUE value;
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+	for (size_t i = 0; i < mValues.size(); i++)
+	{
+		if (mValues[i].name == name)
+		{
+			Raptor::GetErrorManager()->generateRaptorError(CPersistence::CPersistenceClassID::GetClassId(),
+														   CRaptorErrorManager::RAPTOR_WARNING,
+														   "Duplicate parameter name");
+			return false;
+		}
+	}
+#endif
+
+	CParameterValue value;
 	value.name = name;
 	value.kind = MATRIX;
 	value.matrix = matrix;
-	value.locationIndex = -1;
-	value.locationType = GL_FLOAT_VEC4_ARB;
 
 	mValues.push_back(value);
 
@@ -82,12 +139,23 @@ bool CProgramParameters::addParameter(const std::string& name, const GL_MATRIX& 
 
 bool CProgramParameters::addParameter(const std::string& name, GL_VERTEX_ATTRIB attribute)
 {
-	PROGRAM_PARAMETER_VALUE value;
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+	for (size_t i = 0; i < mValues.size(); i++)
+	{
+		if (mValues[i].name == name)
+		{
+			Raptor::GetErrorManager()->generateRaptorError(CPersistence::CPersistenceClassID::GetClassId(),
+														   CRaptorErrorManager::RAPTOR_WARNING,
+														   "Duplicate parameter name");
+			return false;
+		}
+	}
+#endif
+
+	CParameterValue value;
 	value.name = name;
 	value.kind = ATTRIBUTE;
 	value.attribute = attribute;
-	value.locationIndex = -1;
-	value.locationType = GL_FLOAT_VEC4_ARB;
 
 	mValues.push_back(value);
 
@@ -96,12 +164,23 @@ bool CProgramParameters::addParameter(const std::string& name, GL_VERTEX_ATTRIB 
 
 bool CProgramParameters::addParameter(const std::string& name, CTextureUnitSetup::TEXTURE_IMAGE_UNIT sampler)
 {
-	PROGRAM_PARAMETER_VALUE value;
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+	for (size_t i = 0; i < mValues.size(); i++)
+	{
+		if (mValues[i].name == name)
+		{
+			Raptor::GetErrorManager()->generateRaptorError(CPersistence::CPersistenceClassID::GetClassId(),
+														   CRaptorErrorManager::RAPTOR_WARNING,
+														   "Duplicate parameter name");
+			return false;
+		}
+	}
+#endif
+
+	CParameterValue value;
 	value.name = name;
 	value.kind = SAMPLER;
 	value.sampler = sampler;
-	value.locationIndex = -1;
-	value.locationType = GL_FLOAT_VEC4_ARB;
 
 	mValues.push_back(value);
 

@@ -165,11 +165,11 @@ bool CRaptorComputeJob::run(bool waitCompletion)
 	vector<CRaptorComputeTask*>::iterator it = m_pTasks.begin();
 	while (it != m_pTasks.end())
 	{
-		const std::vector<CRaptorComputeTask::ParameterBase*>& params = (*it++)->getParameters();
+		const std::vector<CProgramParameters::ParameterBase*>& params = (*it++)->getParameters();
 		size_t i = 0;
 		for (i=0 ; (i<params.size()) ; i++)
 		{
-			const CRaptorComputeTask::ParameterBase *param = params[i];
+			const CProgramParameters::ParameterBase *param = params[i];
 			if (param->isA((cl_mem)0))
 			{
 				CBufferObjectParameter *bo = (CBufferObjectParameter*)param;
@@ -204,11 +204,11 @@ bool CRaptorComputeJob::run(bool waitCompletion)
 
 			if (kernel != NULL)
 			{
-				const std::vector<CRaptorComputeTask::ParameterBase*>& params = pTask->getParameters();
+				const std::vector<CProgramParameters::ParameterBase*>& params = pTask->getParameters();
 				size_t i = 0;
 				for (i=0 ; (i<params.size()) && (err == CL_SUCCESS) ; i++)
 				{
-					const CRaptorComputeTask::ParameterBase *param = params[i];
+					const CProgramParameters::ParameterBase *param = params[i];
 					err = ::clSetKernelArg(kernel, i, param->size(), param->addr());
 				}
 
@@ -250,12 +250,12 @@ bool CRaptorComputeJob::run(bool waitCompletion)
 			}
 			else if (!pTask->getName().compare("ReadBuffer"))
 			{
-				const std::vector<CRaptorComputeTask::ParameterBase*>& params = pTask->getParameters();
+				const std::vector<CProgramParameters::ParameterBase*>& params = pTask->getParameters();
 
-				CRaptorComputeTask::Parameter<cl_mem> &buffer = 
-					(CRaptorComputeTask::Parameter<cl_mem>&)(*params[0]);
-				CRaptorComputeTask::Parameter<void*> &dst = 
-					(CRaptorComputeTask::Parameter<void*>&)(*params[1]);
+				CProgramParameters::Parameter<cl_mem> &buffer =
+					(CProgramParameters::Parameter<cl_mem>&)(*params[0]);
+				CProgramParameters::Parameter<void*> &dst =
+					(CProgramParameters::Parameter<void*>&)(*params[1]);
 
 				cl_event task_evt;
 				cl_event *pevt = NULL;

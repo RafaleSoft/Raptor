@@ -218,6 +218,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SOAR2", "Build\VS2013\SOAR2.vcxproj", "{0A91CB22-4E60-4129-8B9A-D9A391F5A1F1}"
+	ProjectSection(ProjectDependencies) = postProject
+		{9DE3BD6F-6EAC-4917-AD42-31C50E6DC10E} = {9DE3BD6F-6EAC-4917-AD42-31C50E6DC10E}
+		{927010B2-7B6B-4C1E-95E7-55277DEA03E0} = {927010B2-7B6B-4C1E-95E7-55277DEA03E0}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RaysClient", "Build\VS2013\RaysClient.12.00.vcxproj", "{C37F7493-F36D-45B3-8A91-E7D77013C2CF}"
 	ProjectSection(ProjectDependencies) = postProject

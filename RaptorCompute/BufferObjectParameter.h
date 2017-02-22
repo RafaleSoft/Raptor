@@ -5,11 +5,11 @@
 	#include "RaptorComputeTask.h"
 #endif
 
-class CBufferObjectParameter : public CRaptorComputeTask::Parameter<cl_mem>
+class CBufferObjectParameter : public CProgramParameters::Parameter<cl_mem>
 {
 public:
 	CBufferObjectParameter(cl_mem &buffer,uint64_t size,bool acq = false)
-		:CRaptorComputeTask::Parameter<cl_mem>(buffer),
+		:CProgramParameters::Parameter<cl_mem>(buffer),
 		m_bufferSize(size),m_bAcquire(acq)
 	{ };
 

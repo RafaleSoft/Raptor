@@ -92,6 +92,137 @@ void CUnifiedProgram::glParameter(unsigned int numParam,const float *v)
     CATCH_GL_ERROR
 }
 
+void CUnifiedProgram::glRender(void)
+{
+	if (m_handle.handle == 0)
+		return;
+
+#if defined(GL_ARB_vertex_shader)
+	if (m_bReLinked)
+	{
+		size_t nbParams = m_parameters.getNbParameters();
+		for (size_t i = 0; i<nbParams; i++)
+		{
+			CProgramParameters::CParameterValue &pValue = m_parameters[i];
+			pValue.locationIndex = -1;
+			pValue.locationType = GL_FLOAT_VEC4_ARB;
+		}
+
+		const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+		GLhandleARB program = pExtensions->glGetHandleARB(GL_PROGRAM_OBJECT_ARB);
+
+		if (program != 0)
+		{
+			glQueryUniformLocations(RAPTOR_HANDLE(0, (void*)program));
+
+			glQueryAttributeLocations(RAPTOR_HANDLE(0, (void*)program));
+
+			m_bReLinked = false;
+		}
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+		else
+		{
+			Raptor::GetErrorManager()->generateRaptorError(CFragmentProgram::CFragmentProgramClassID::GetClassId(),
+														   CRaptorErrorManager::RAPTOR_ERROR,
+														   CRaptorMessages::ID_WRONG_RENDERING);
+		}
+#endif
+	}
+
+	if (!m_bApplyParameters)
+		return;
+
+	const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+	for (unsigned int idx = 0; idx < m_parameters.getNbParameters(); idx++)
+	{
+		CProgramParameters::CParameterValue &value = m_parameters[idx];
+		if (value.locationIndex >= 0)
+		{
+			if (value.kind == CProgramParameters::VECTOR)
+			{
+				switch (value.locationType)
+				{
+					case GL_FLOAT:
+						pExtensions->glUniform1fvARB(value.locationIndex,
+													 1,
+													 value.vector);
+						break;
+					case GL_FLOAT_VEC2_ARB:
+						pExtensions->glUniform2fvARB(value.locationIndex,
+													 1,
+													 value.vector);
+						break;
+					case GL_FLOAT_VEC3_ARB:
+						pExtensions->glUniform3fvARB(value.locationIndex,
+													 1,
+													 value.vector);
+						break;
+					case GL_FLOAT_VEC4_ARB:
+						pExtensions->glUniform4fvARB(value.locationIndex,
+													 1,
+													 value.vector);
+						break;
+					case GL_INT:
+					{
+						int val = value.vector.x;
+						pExtensions->glUniform1iARB(value.locationIndex,
+													val);
+						break;
+					}
+					case GL_INT_VEC2_ARB:
+					{
+						int val[2];
+						val[0] = value.vector.x;
+						val[1] = value.vector.y;
+						pExtensions->glUniform2iARB(value.locationIndex,
+													val[0], val[1]);
+						break;
+					}
+					case GL_INT_VEC3_ARB:
+					{
+						int val[3];
+						val[0] = value.vector.x;
+						val[1] = value.vector.y;
+						val[2] = value.vector.z;
+						pExtensions->glUniform3ivARB(value.locationIndex,
+													 1, &val[0]);
+						break;
+					}
+					case GL_INT_VEC4_ARB:
+					{
+						int val[4];
+						val[0] = value.vector.x;
+						val[1] = value.vector.y;
+						val[2] = value.vector.z;
+						val[3] = value.vector.h;
+						pExtensions->glUniform4ivARB(value.locationIndex,
+													 1, &val[0]);
+						break;
+					}
+				}
+			}
+			else if (value.kind == CProgramParameters::SAMPLER)
+			{
+				pExtensions->glUniform1iARB(value.locationIndex,
+											value.sampler);
+			}
+			else if (value.kind == CProgramParameters::MATRIX)
+			{
+				pExtensions->glUniformMatrix4fvARB(value.locationIndex,
+												   1, GL_TRUE, value.matrix);
+			}
+			else if (value.kind == CProgramParameters::ATTRIBUTE)
+			{
+				// nothing to do : the attribute mapping is bound in glQueryAttributeLocations
+			}
+		}
+	}
+#endif
+
+	m_bApplyParameters = false;
+	CATCH_GL_ERROR
+}
+
 /*
  *	The API is missing interface for doubles.
  *
@@ -290,7 +421,7 @@ void CUnifiedProgram::glQueryUniformLocations(RAPTOR_HANDLE program)
             {
                 for (unsigned int idx = 0; idx < m_parameters.getNbParameters(); idx++)
                 {
-                    CProgramParameters::PROGRAM_PARAMETER_VALUE& pValue = m_parameters[idx];
+					CProgramParameters::CParameterValue& pValue = m_parameters[idx];
 
                     if ((pValue.name == name) && 
                         (pValue.kind != CProgramParameters::ATTRIBUTE) &&
@@ -344,7 +475,7 @@ void CUnifiedProgram::glQueryAttributeLocations(RAPTOR_HANDLE program)
             {
                 for (unsigned int idx = 0; idx < m_parameters.getNbParameters(); idx++)
                 {
-                    CProgramParameters::PROGRAM_PARAMETER_VALUE& pValue = m_parameters[idx];
+					CProgramParameters::CParameterValue& pValue = m_parameters[idx];
 
                     if ((pValue.name == name) && 
                         (pValue.kind == CProgramParameters::ATTRIBUTE) &&

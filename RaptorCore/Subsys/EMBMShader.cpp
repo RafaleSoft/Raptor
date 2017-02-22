@@ -86,7 +86,6 @@ void CEMBMShader::glInit(const std::string &bump_vertexshader,
 		embm_vertexshader.insert(pos2+1,string("#define EMBM_RENDERING 1\n\n"));
 	}
 	vp->glLoadProgram(embm_vertexshader);
-	vp->glStop();
 
 	//vp = glGetVertexProgram("PPIXEL_EMBM_VTX_PROGRAM");
 	vp = glGetVertexProgram("PPIXEL_BUMP_VTX_PROGRAM");
@@ -105,7 +104,6 @@ void CEMBMShader::glInit(const std::string &bump_vertexshader,
 		embm_pixelshader.insert(pos2+1,string("#define EMBM_RENDERING 1\n\n"));
 	}
 	fp->glLoadProgram(embm_pixelshader);
-	fp->glStop();
 
 	//fp = glGetFragmentProgram("PPIXEL_EMBM_TEX_PROGRAM");
 	fp = glGetFragmentProgram("PPIXEL_BUMP_TEX_PROGRAM");
