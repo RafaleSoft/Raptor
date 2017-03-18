@@ -141,60 +141,28 @@ bool CVertexProgram::glLoadProgram(const std::string &program)
 
 bool CVertexProgram::glBindProgram(RAPTOR_HANDLE program)
 {
-#if defined(GL_ARB_vertex_shader)
-    if (program.handle == 0)
-        return false;
+#if defined(GL_ARB_shader_objects)
+	const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+	if (CUnifiedProgram::glBindProgram(program))
+	{
+		for (unsigned int idx = 0; idx < m_parameters.getNbParameters(); idx++)
+		{
+			CProgramParameters::CParameterValue& pValue = m_parameters[idx];
+			if (pValue.kind == CProgramParameters::ATTRIBUTE)
+			{
+				// the location retrieved will only be used if the user value is invalid.
+				pExtensions->glBindAttribLocationARB(program.handle, pValue.attribute, pValue.name.data());
+			}
+		}
 
-    const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
-    GLint value = 0;
-    pExtensions->glGetObjectParameterivARB(program.handle, GL_OBJECT_TYPE_ARB,&value);
-    if (value != GL_PROGRAM_OBJECT_ARB)
-        return false;
-
-    pExtensions->glAttachObjectARB(program.handle, m_handle.handle);
-
-	for (unsigned int idx = 0; idx < m_parameters.getNbParameters(); idx++)
-    {
-		CProgramParameters::CParameterValue& pValue = m_parameters[idx];
-        if (pValue.kind == CProgramParameters::ATTRIBUTE)
-        {
-            // the location retrieved will only be used if the user value is invalid.
-			pExtensions->glBindAttribLocationARB(program.handle,pValue.attribute,pValue.name.data());
-        }
-    }
-
-    CATCH_GL_ERROR
-
-    m_bReLinked = true;
-
-    return true;
-#else
-    return false;
+		CATCH_GL_ERROR
+			return true;
+	}
+	else
 #endif
+		return false;
 }
 
-
-bool CVertexProgram::glUnbindProgram(RAPTOR_HANDLE program)
-{
-#if defined(GL_ARB_vertex_shader)
-    if ((program.handle == 0) || (m_handle.handle == 0))
-        return false;
-
-    const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
-    GLint value = 0;
-    pExtensions->glGetObjectParameterivARB(program.handle, GL_OBJECT_TYPE_ARB,&value);
-    if (value != GL_PROGRAM_OBJECT_ARB)
-        return false;
-
-    pExtensions->glDetachObjectARB(program.handle, m_handle.handle);
-
-    CATCH_GL_ERROR
-
-    return true;
-#else
-    return false;
-#endif
-}
 
 bool CVertexProgram::glGetProgramCaps(GL_VERTEX_PROGRAM_CAPS& caps)
 {

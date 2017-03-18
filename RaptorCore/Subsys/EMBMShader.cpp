@@ -87,13 +87,7 @@ void CEMBMShader::glInit(const std::string &bump_vertexshader,
 	}
 	vp->glLoadProgram(embm_vertexshader);
 
-	//vp = glGetVertexProgram("PPIXEL_EMBM_VTX_PROGRAM");
-	vp = glGetVertexProgram("PPIXEL_BUMP_VTX_PROGRAM");
-	CProgramParameters params;
-	params.addParameter("tangent", CProgramParameters::ADDITIONAL_PARAM1);
-	vp->setProgramParameters(params);
-
-	//!	First create the program, to get it with the shader
+		//!	First create the program, to get it with the shader
 	//!	and unset auto delete shader
 	CFragmentProgram *fp = new CFragmentProgram("PPIXEL_EMBM_TEX_PROGRAM");
 	std::string embm_pixelshader = bump_pixelshader;
@@ -105,10 +99,8 @@ void CEMBMShader::glInit(const std::string &bump_vertexshader,
 	}
 	fp->glLoadProgram(embm_pixelshader);
 
-	//fp = glGetFragmentProgram("PPIXEL_EMBM_TEX_PROGRAM");
+	vp = glGetVertexProgram("PPIXEL_BUMP_VTX_PROGRAM");
 	fp = glGetFragmentProgram("PPIXEL_BUMP_TEX_PROGRAM");
-	CProgramParameters params2;
-	fp->setProgramParameters(params2);
 
 	glCompileShader();
 

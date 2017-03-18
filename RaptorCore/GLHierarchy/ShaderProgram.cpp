@@ -213,19 +213,27 @@ void CShaderProgram::setProgramParameters(const CProgramParameters &v)
     m_bApplyParameters = true;
 }
 
-bool CShaderProgram::glLoadProgramFromStream(CRaptorIO &stream)
+bool CShaderProgram::glLoadProgramFromFile(const std::string &program)
 {
-	string programstr;
+	CRaptorIO *shdr = CRaptorIO::Create(program, CRaptorIO::DISK_READ);
+	if (NULL == shdr)
+		return false;
 
-	while (stream.getStatus() == CRaptorIO::IO_OK)
+	if (shdr->getStatus() == CRaptorIO::IO_OK)
 	{
-		string line;
-		stream >> line;
-		if (stream.getStatus() == CRaptorIO::IO_OK)
-			programstr = programstr + line + "\n";
-	}
+		string programstr;
+		while (shdr->getStatus() == CRaptorIO::IO_OK)
+		{
+			string line;
+			*shdr >> line;
+			if (shdr->getStatus() == CRaptorIO::IO_OK)
+				programstr = programstr + line + "\n";
+		}
 
-	return glLoadProgram(programstr);
+		return glLoadProgram(programstr);
+	}
+	else
+		return false;
 }
 
 bool CShaderProgram::exportObject(CRaptorIO& o)

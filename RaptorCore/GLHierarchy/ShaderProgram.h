@@ -44,7 +44,7 @@ public:
 	virtual bool glLoadProgram(const std::string &program) = 0;
 
 	//!	Same behavior as above, but program source is external.
-	virtual bool glLoadProgramFromStream(CRaptorIO &stream);
+	virtual bool glLoadProgramFromFile(const std::string &program);
 
 	//!	The Render method has the typical bahaviour
 	//!	of all Raptor Render methods : if the object

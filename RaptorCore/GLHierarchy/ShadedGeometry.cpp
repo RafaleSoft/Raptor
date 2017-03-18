@@ -203,18 +203,14 @@ void CShadedGeometry::glRender()
 		if (getRenderingModel().hasModel(CRenderingModel::CGL_TEXTURE))
 		{
 		    m_pShader->glRenderTexture();
+			if (m_pAOShader != NULL)
+				((CAmbientOcclusionShader *)m_pAOShader)->glRenderResult();
 		}
 
 		// render shaders
 		m_pShader->glRender();
 	}
-
-	if ((m_pAOShader != NULL) &&
-		(getRenderingModel().hasModel(CRenderingModel::CGL_TEXTURE)))
-	{
-		((CAmbientOcclusionShader *)m_pAOShader)->glRenderResult();
-	}
-
+	
 	CATCH_GL_ERROR
 
 	glRenderGeometry();

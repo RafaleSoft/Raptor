@@ -58,19 +58,9 @@ public:
 	//!	Refer to official ARB documentation for detailed information on each capability item.
 	static bool glGetProgramCaps(GL_FRAGMENT_PROGRAM_CAPS& caps);
 
-    //! This method attaches the vertex program to a program object for
-    //! linking and validation. Checking is performed on the handle to accept only valid programs.
-    //! CShader use this method only when necessary
-    //! @return : true if binding is done without errors, false otherwise.
-    bool glBindProgram(RAPTOR_HANDLE program);
-
-    //! Symetric as above : detaches the vertex program from the program object, performing checking.
-    bool glUnbindProgram(RAPTOR_HANDLE program);
-
 	//!	Implements CPersistence
 	DECLARE_CLASS_ID(CFragmentProgramClassID,"FragmentProgram",CShaderProgram)
-
-
+	
 
 private:
 	//!	Forbidden operators

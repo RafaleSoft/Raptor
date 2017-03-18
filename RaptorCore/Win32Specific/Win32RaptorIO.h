@@ -20,7 +20,7 @@ RAPTOR_NAMESPACE_BEGIN
 class CWin32RaptorIO : public CRaptorIO  
 {
 public:
-	CWin32RaptorIO(const char *streamName,CRaptorIO::IO_KIND kind);
+	CWin32RaptorIO(const std::string& streamName, CRaptorIO::IO_KIND kind);
 	virtual ~CWin32RaptorIO() {};
 
 	//	Win32 EOL has 0xa followed by 0xd

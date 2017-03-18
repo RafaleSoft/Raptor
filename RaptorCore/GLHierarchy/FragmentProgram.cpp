@@ -141,53 +141,6 @@ bool CFragmentProgram::glLoadProgram(const std::string &program)
     return m_bValid;
 }
 
-bool CFragmentProgram::glBindProgram(RAPTOR_HANDLE program)
-{
-#if defined(GL_ARB_fragment_shader)
-    if (program.handle == 0)
-        return false;
-
-    const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
-    GLint value = 0;
-    pExtensions->glGetObjectParameterivARB(program.handle, GL_OBJECT_TYPE_ARB,&value);
-    if (value != GL_PROGRAM_OBJECT_ARB)
-        return false;
-
-    pExtensions->glAttachObjectARB(program.handle, m_handle.handle);
-
-    CATCH_GL_ERROR
-
-    m_bReLinked = true;
-
-    return true;
-#else
-    return false;
-#endif
-}
-
-
-bool CFragmentProgram::glUnbindProgram(RAPTOR_HANDLE program)
-{
-#if defined(GL_ARB_fragment_shader)
-    if ((program.handle == 0) || (m_handle.handle == 0))
-        return false;
-
-    const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
-    GLint value = 0;
-    pExtensions->glGetObjectParameterivARB(program.handle, GL_OBJECT_TYPE_ARB,&value);
-    if (value != GL_PROGRAM_OBJECT_ARB)
-        return false;
-
-    pExtensions->glDetachObjectARB(program.handle, m_handle.handle);
-
-    CATCH_GL_ERROR
-
-    return true;
-#else
-    return false;
-#endif
-}
-
 bool CFragmentProgram::glGetProgramCaps(GL_FRAGMENT_PROGRAM_CAPS& caps)
 {
 	if (m_bFragmentProgramReady)

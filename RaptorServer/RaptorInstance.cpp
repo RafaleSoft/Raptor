@@ -262,7 +262,7 @@ bool CRaptorInstance::start(unsigned int width,unsigned int height)
 		char shemaLocation[MAX_PATH];
 		strcpy(shemaLocation,getenv("RAPTOR_ROOT"));
 		strcat(shemaLocation,"/Redist/bin/Raptor.xsd");
-		m_pTranslator->read(shemaLocation,0);
+		m_pTranslator->parse(shemaLocation,0);
 	}
 
 	if (m_pCompressor == NULL)

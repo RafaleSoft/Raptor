@@ -34,6 +34,15 @@ public:
 	virtual void glProgramParameter(unsigned int numParam,
 									const CColor::RGBA &v);
 
+	//! This method attaches the vertex program to a program object for
+	//! linking and validation. Checking is performed on the handle to accept only valid programs.
+	//! CShader use this method only when necessary
+	//! @return : true if binding is done without errors, false otherwise.
+	virtual bool glBindProgram(RAPTOR_HANDLE program);
+
+	//! Symetric as above : detaches the vertex program from the program object, performing checking.
+	bool glUnbindProgram(RAPTOR_HANDLE program);
+
 	//! Computes and returns and size required to allocate a uniform
 	//! buffer object backing uniform blocks
 	//! @return the required size in bytes.

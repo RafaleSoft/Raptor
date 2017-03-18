@@ -275,8 +275,6 @@ CShader::~CShader()
 
         pExtensions->glDeleteObjectARB(m_shaderProgram.handle);
         delete [] pHandles;
-
-		CShaderLibrary::GetInstance()->unRegisterProgram(m_shaderProgram);
     }
 #endif
 
@@ -793,13 +791,6 @@ bool CShader::glCompileShader()
 {
     const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
 
-	RAPTOR_HANDLE program = CShaderLibrary::GetInstance()->getRegisteredProgram(m_pVProgram,m_pFProgram,m_pGProgram);
-	if (program.handle != 0)
-	{
-		m_shaderProgram = program;
-		return true;
-	}
-
     // First try to generate programs.
     // This step is mandatory and must succeed if there are programs.
     if ((m_pFProgram != NULL) || (m_pVProgram != NULL) || (m_pGProgram != NULL))
@@ -883,8 +874,6 @@ bool CShader::glCompileShader()
 
         CATCH_GL_ERROR
 
-		if (!abort)
-			CShaderLibrary::GetInstance()->registerProgram(m_pVProgram,m_pFProgram,m_pGProgram,m_shaderProgram);
         return !abort;
 #endif
     }

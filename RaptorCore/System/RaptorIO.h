@@ -48,7 +48,7 @@ public:
 
 public:
     //! The only way to create the appropriate IO handler.
-	static CRaptorIO* Create(const char *streamName,IO_KIND kind,IO_FORMAT format=ASCII_TEXT);
+	static CRaptorIO* Create(const std::string& streamName, IO_KIND kind, IO_FORMAT format = ASCII_TEXT);
 	virtual ~CRaptorIO();
 
     //! Returns the kind of this IO
@@ -93,9 +93,10 @@ public:
 	{ if (c_str != NULL) return this->operator<<(string(c_str)); else return *this; };
 
 	//!	Methods
-	virtual CRaptorIO& write(const void *data,unsigned int size);
-	virtual CRaptorIO& read(void *data,unsigned int size);
-	virtual CRaptorIO& seek(unsigned int size);
+	virtual CRaptorIO& write(const void *data,size_t size);
+	virtual CRaptorIO& read(void *data,size_t size);
+	virtual CRaptorIO& seek(size_t size);
+	virtual CRaptorIO& parse(const char *data,size_t size) { return *this; };
 
 
 	//!	structures I/O
@@ -109,7 +110,7 @@ public:
 	virtual CRaptorIO& operator>>(CColor::RGBA & c);
 
 protected:
-	CRaptorIO(const char *streamName,CRaptorIO::IO_KIND kind);
+	CRaptorIO(const std::string& streamName, CRaptorIO::IO_KIND kind);
 
     IO_STATUS		m_status;
 	unsigned int	m_size;

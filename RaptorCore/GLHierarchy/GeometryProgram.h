@@ -68,9 +68,6 @@ public:
     //! @return : true if binding is done without errors, false otherwise.
     bool glBindProgram(RAPTOR_HANDLE program);
 
-    //! Symetric as above : detaches the vertex program from the program object, performing checking.
-    bool glUnbindProgram(RAPTOR_HANDLE program);
-
 	//!	Implements CPersistence
 	DECLARE_CLASS_ID(CGeometryProgramClassID,"GeometryProgram",CShaderProgram)
 

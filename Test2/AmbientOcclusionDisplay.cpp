@@ -32,24 +32,24 @@
 
 
 string AO_vp_src =
-"varying float color; \
-uniform sampler2D AOMap; \
-void main (void) \
-{\
-	gl_Position = ftransform(); \
-	vec2 tc = 0.5 * (vec2(1.0,1.0) + gl_MultiTexCoord2.xy); \
-	vec4 ao = texture2D(AOMap,tc); \
-	color = gl_Color.r - (1.0 - ao.r); \
-}\
-";
+"#version 120 \n\
+uniform sampler2D AOMap; \n\
+varying float color; \n\
+void main (void) \n\
+{\n\
+	gl_Position = ftransform(); \n\
+	vec2 tc = 0.5 * (vec2(1.0,1.0) + gl_MultiTexCoord2.xy); \n\
+	vec4 ao = texture2D(AOMap,tc); \n\
+	color = gl_Color.r - (1.0 - ao.r); \n\
+}";
 
 string AO_fp_src = 
-"varying float color; \
-void main (void) \
-{\
-	gl_FragColor = vec4(color,color,color,1.0); \
-}\
-";
+"#version 120 \n\
+varying float color; \n\
+void main (void) \n\
+{\n\
+	gl_FragColor = vec4(color,color,color,1.0); \n\
+}";
 
 
 string AO_vp_src2 =
@@ -75,7 +75,7 @@ void main (void) \
 
 
 CAmbientOcclusionDisplay::CAmbientOcclusionDisplay(void)
-	:m_pTeapot(NULL),m_pMesh(NULL),m_pLight(NULL)
+	:m_pTeapot(NULL),m_pLight(NULL)
 {
 }
 
@@ -83,69 +83,10 @@ CAmbientOcclusionDisplay::~CAmbientOcclusionDisplay(void)
 {
 }
 
-class ShowAO : public CSimpleObject
-{
-public:
-	ShowAO(C3DScene* pScene)
-		:m_pScene(pScene) 
-    { 
-        getProperties().setCastShadow(false); 
-        getProperties().setReceiveShadow(false); 
-        setBoundingBox(GL_COORD_VERTEX(-1.0f,-1.0f,-10.0f,1.0f),GL_COORD_VERTEX(1.0f,1.0f,-1.0f,1.0f));
-    };
-
-	virtual ~ShowAO() {};
-
-	virtual void glRender();
-	virtual void glClipRender() 
-	{ 
-		glRender(); 
-	};
-
-private:
-	C3DScene* m_pScene;
-};
-
-void ShowAO::glRender()
-{
-	glPushAttrib(GL_ENABLE_BIT);
-
-	glDisable(GL_DEPTH_TEST);
-	glDisable(GL_CULL_FACE);
-
-	glMatrixMode(GL_PROJECTION);
-	glPushMatrix();
-	glLoadIdentity();
-	glOrtho(-1.33f,1.33f,-1.0f,1.0f,1.0,20.0);
-
-	glMatrixMode(GL_MODELVIEW);
-	glPushMatrix();
-	glLoadIdentity();
-	glDisable(GL_LIGHTING);
-	glColor4f(0.0f,0.0f,0.0f,1.0f);
-
-	CEnvironment *pEnv = m_pScene->getEnvironment(CEnvironment::AMBIENT_OCCLUSION);
-    pEnv->glRenderTexture();
-
-	glBegin(GL_QUADS);
-        glTexCoord2f(0.0f,0.0f);	glVertex3f(-1.33f,0.5f,-1.0f);
-		glTexCoord2f(1.0f,0.0f);	glVertex3f(-0.83f,0.5f,-1.0f);
-		glTexCoord2f(1.0f,1.0f);	glVertex3f(-0.83f,1.0f,-1.0f);
-		glTexCoord2f(0.0f,1.0f);	glVertex3f(-1.33f,1.0f,-1.0f);
-	glEnd();
-	
-	glPopMatrix();
-	glMatrixMode(GL_PROJECTION);
-	glPopMatrix();
-	glMatrixMode(GL_MODELVIEW);
-
-	glPopAttrib();
-}
-
 void CAmbientOcclusionDisplay::Init()
 {
 	CGenericDisplay::Init();
-
+	
 	CShader *AO_shader = new CShader("AO_SHADER");
 	CVertexProgram *vp = AO_shader->glGetVertexProgram("AO_VP");
 	CFragmentProgram *fp = AO_shader->glGetFragmentProgram("AO_FP");
@@ -157,19 +98,7 @@ void CAmbientOcclusionDisplay::Init()
 	bool res = vp->glLoadProgram(AO_vp_src);
 	res &= fp->glLoadProgram(AO_fp_src);
 	res &= AO_shader->glCompileShader();
-
-	CShader *AO_shader2 = new CShader("AO_SHADER2");
-	vp = AO_shader2->glGetVertexProgram("AO_VP2");
-	fp = AO_shader2->glGetFragmentProgram("AO_FP2");
-
-	CProgramParameters ao_params2;
-	ao_params2.addParameter("diffuse",CTextureUnitSetup::IMAGE_UNIT_0);
-	fp->setProgramParameters(ao_params2);
-
-	res = vp->glLoadProgram(AO_vp_src2);
-	res &= fp->glLoadProgram(AO_fp_src2);
-	res &= AO_shader2->glCompileShader();
-
+	
 	m_pLight = new CLight("AOLight");
     m_pLight->setAmbient(1.0f,1.0f,1.0f,1.0f);
     m_pLight->setDiffuse(1.0f,1.0f,1.0f,1.0f);
@@ -177,18 +106,12 @@ void CAmbientOcclusionDisplay::Init()
 	m_pLight->setLightPosition(GL_COORD_VERTEX(0.0,0.0,500.0,1.0));
 	m_pLight->setLightDirection(GL_COORD_VERTEX(0.0,0.0,0.0,1.0));
 
-	//CPersistence *p = CPersistence::FindObject("Teapot01");
 	CPersistence *p = CPersistence::FindObject("Knot");
-
 	if (p->getId().isSubClassOf(CGeometry::CGeometryClassID::GetClassId()))
 	{
-		CBasicObjects::CGeoSphere* sphere = new CBasicObjects::CGeoSphere();
-		sphere->setDimensions(5.0f,36,18);
-
 		m_pTeapot = new CShadedGeometry();
 		*m_pTeapot = *((CGeometry *)p);
 		m_pTeapot->translateAbsolute(0,0,0);
-		//m_pTeapot = sphere;
 	}
 	
 	if (m_pTeapot != NULL)
@@ -225,27 +148,30 @@ void CAmbientOcclusionDisplay::Init()
 
 
 		//	Prepare Ambient occlusion
+		
 		m_pTeapot->getEditor().genBinormals();
 		m_pTeapot->getRenderingModel().addModel(CGeometry::CRenderingModel::CGL_TANGENTS);
 		m_pTeapot->setShader(CShader::getShader("BUMP_SHADER").glClone("AO_BUMP"));
+		
 		CTextureFactory &f = CTextureFactory::getDefaultFactory();
 		CTextureObject*	m_pTexture = f.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_ALPHA_TRANSPARENT,CTextureObject::CGL_BILINEAR);
 		f.glLoadTexture(m_pTexture,"Datas/MARBLE6.JPG");
+		
 		CTextureUnitSetup *tus = m_pTeapot->getShader()->glGetTextureUnitsSetup();
 		tus->setDiffuseMap(m_pTexture);
 		m_pTexture = f.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_MULTIPLY,CTextureObject::CGL_BILINEAR);
 		f.glLoadTexture(m_pTexture,"Datas/BUMP4.TGA");
-		//f.getConfig().setBumpAmplitude(4.0f);
-		//f.glLoadTexture(m_pTexture,"Datas/BlurCircle.TGA",CGL_USER_MIPMAPPED|CGL_CREATE_NORMAL_MAP);
-		//f.glExportTexture(m_pTexture,"testbmp.tga");
 		tus->setNormalMap(m_pTexture);
+		tus->useRegisterCombiners(false);
+		
 		CMaterial *pMat = m_pTeapot->getShader()->getMaterial();
 		pMat->setAmbient(0.02f,0.02f,0.02f,1.0f);
 		pMat->setDiffuse(0.8f,0.8f,0.8f,1.0f);
 		pMat->setSpecular(0.7f,0.7f,0.7f,1.0f);
 		pMat->setEmission(0.0f,0.0f,0.0f,1.0f);
 		pMat->setShininess(20.0f);
-
+		
+		
 		CBasicObjects::CRectMesh *RMesh = new CBasicObjects::CRectMesh();
 		RMesh->setDimensions(20.0f,20.0f,50,50);
 
@@ -254,15 +180,12 @@ void CAmbientOcclusionDisplay::Init()
 		AOMesh->rotationX(-90.0f);
 		AOMesh->translateAbsolute(0.0f,-6.0f,-10.0f);
 		AOMesh->getEditor().genNormals(true);
-
 		AOMesh->setShader(AO_shader);
-		m_pMesh = AOMesh;
 
 		C3DScene *m_pScene = new C3DScene("AO_SCENE");
 		m_pScene->addObject(AOMesh);
 		m_pScene->addObject(m_pVM->getObject());
 		m_pScene->addLight(m_pLight);
-		m_pScene->addObject(new ShowAO(m_pScene));
 
 		CRaptorDisplay* pDisplay = CRaptorDisplay::GetCurrentDisplay();
 		pDisplay->addScene(m_pScene);

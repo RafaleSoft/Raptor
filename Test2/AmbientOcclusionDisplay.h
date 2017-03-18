@@ -32,7 +32,6 @@ private:
 
 	float dt;
 	CShadedGeometry	*m_pTeapot;
-	CShadedGeometry *m_pMesh;
 	CViewModifier	*m_pVM;
 	CLight			*m_pLight;
 };

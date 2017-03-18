@@ -690,8 +690,8 @@ bool RaysClientData::LoadData(const char* fname)
 	char shemaLocation[MAX_PATH];
 	strcpy(shemaLocation,getenv("RAPTOR_ROOT"));
 	strcat(shemaLocation,"/Redist/bin/Raptor.xsd");
-	m_pTranslator->read(shemaLocation,0);
-    m_pTranslator->read((char*)fname,0);
+	m_pTranslator->parse(shemaLocation,0);
+    m_pTranslator->parse(fname,0);
 
     string name;
 	*m_pTranslator >> name;

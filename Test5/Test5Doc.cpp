@@ -180,7 +180,6 @@ void CTest5Doc::GLInitContext(void)
 
 	//CShader *shader = new CShader("uniforms-shader");
 	//CVertexProgram *p = shader->glGetVertexProgram("uniforms");
-	//CRaptorIO *shdr = CRaptorIO::Create("shader3.vert",CRaptorIO::DISK_READ);
 	//p->glLoadProgramFromStream(*shdr);
 	//bool res = shader->glCompileShader();
 
