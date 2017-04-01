@@ -51,12 +51,12 @@ public:
 	};
 
 	virtual void glProgramParameter(unsigned int numParam,
-									const GL_COORD_VERTEX &v)
+									const GL_COORD_VERTEX &v) const
 	{
 	};
 
 	virtual void glProgramParameter(unsigned int numParam,
-									const CColor::RGBA &v)
+									const CColor::RGBA &v) const
 	{
 	};
 

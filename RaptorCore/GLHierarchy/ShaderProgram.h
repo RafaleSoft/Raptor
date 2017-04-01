@@ -64,11 +64,11 @@ public:
     //! The first parameter selects the program paramater, the second is the actual data.
     //! CAUTION : Accessing parameters directly is unsafe and should be avoided, except for performance issues.
 	virtual void glProgramParameter( unsigned int numParam,
-                                     const GL_COORD_VERTEX &v) = 0;
+                                     const GL_COORD_VERTEX &v) const = 0;
 
 	//! Same as above but passes a color instead of a geo vector
 	virtual void glProgramParameter( unsigned int numParam,
-                                     const CColor::RGBA &v) = 0;
+                                     const CColor::RGBA &v) const = 0;
 
     //! This method can be used to pass in the whole parameter set.
     //! They will be actually applied after a successfull link is issued.
@@ -76,7 +76,6 @@ public:
     void setProgramParameters(const CProgramParameters &v);
 
 	//! Inherited from CPersistence
-    DECLARE_IO
 	DECLARE_CLASS_ID(CShaderProgramClassID,"ShaderProgram",CPersistence)
 
 
@@ -87,21 +86,12 @@ protected:
 	//!	Copy constructor.
 	CShaderProgram(const CShaderProgram&);
 	
-    //! Sub classes must call this method to initialise shader attributes.
-    virtual void	glInitShaders();
-
 	//! Valid status
 	bool					m_bValid;
 
 	RAPTOR_HANDLE			m_handle;
 	bool					m_bApplyParameters;
 	CProgramParameters	    m_parameters;
-
-	static bool				m_bVertexReady;
-	static bool				m_bFragmentReady;
-    static bool				m_bVertexProgramReady;
-	static bool				m_bFragmentProgramReady;
-	static bool				m_bGeometryProgramReady;
 
 
 private:

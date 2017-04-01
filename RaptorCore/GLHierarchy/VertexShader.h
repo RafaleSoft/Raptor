@@ -125,9 +125,9 @@ public:
 										 const void* pointer);
 
 	//!	Direct access to program parameters
-	void glProgramParameter(unsigned int numParam,const GL_COORD_VERTEX &v);
-	void glProgramParameter(unsigned int numParam,const CColor::RGBA &v);
-	void glProgramParameter(unsigned int numParam,const CGenericVector<float> &v);
+	virtual void glProgramParameter(unsigned int numParam,const GL_COORD_VERTEX &v) const;
+	virtual void glProgramParameter(unsigned int numParam,const CColor::RGBA &v) const;
+	void glProgramParameter(unsigned int numParam,const CGenericVector<float> &v) const;
 
 
 	//! Implements CPersistence
@@ -144,6 +144,8 @@ private:
 
     //! Specific init of shader parameters
     virtual void	glInitShaders();
+
+	static bool		m_bVertexReady;
 };
 
 RAPTOR_NAMESPACE_END

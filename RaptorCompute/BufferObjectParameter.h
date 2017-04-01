@@ -5,11 +5,11 @@
 	#include "RaptorComputeTask.h"
 #endif
 
-class CBufferObjectParameter : public CProgramParameters::Parameter<cl_mem>
+class CBufferObjectParameter : public CProgramParameters::CParameter<cl_mem>
 {
 public:
 	CBufferObjectParameter(cl_mem &buffer,uint64_t size,bool acq = false)
-		:CProgramParameters::Parameter<cl_mem>(buffer),
+		:CProgramParameters::CParameter<cl_mem>(buffer),
 		m_bufferSize(size),m_bAcquire(acq)
 	{ };
 
@@ -29,7 +29,7 @@ public:
 		else
 			return m_bufferSize; 
 	};
-	virtual ParameterBase* clone(void) const 
+	virtual CParameterBase* clone(void) const 
 	{
 		cl_mem _p = p;
 		return new CBufferObjectParameter(_p,m_bufferSize,m_bAcquire); 

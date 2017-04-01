@@ -20,6 +20,7 @@
 #include <stdlib.h>	//	malloc
 RAPTOR_NAMESPACE
 
+bool CGeometryProgram::m_bGeometryProgramReady = false;
 static CGeometryProgram::CGeometryProgramClassID geometryId;
 const CPersistence::CPersistenceClassID& CGeometryProgram::CGeometryProgramClassID::GetClassId(void)
 {
@@ -71,17 +72,33 @@ CGeometryProgram::~CGeometryProgram()
 
 void CGeometryProgram::glInitShaders()
 {
-	m_iMaxLocation = 0;
-
-#if defined(GL_ARB_geometry_shader4)
-    glGetIntegerv(GL_MAX_GEOMETRY_UNIFORM_COMPONENTS_ARB,&m_iMaxLocation);
-
-    // ! The returned value is the number of individual component. Raptor always use vectors ...
-    m_iMaxLocation = m_iMaxLocation / 4;
 	m_parameters.clear();
-#endif
 
-    CShaderProgram::glInitShaders();
+	if (!m_bGeometryProgramReady)
+	{
+		if (Raptor::glIsExtensionSupported("GL_ARB_geometry_shader4"))
+		{
+#if defined(GL_ARB_geometry_shader4)
+			const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+			m_bGeometryProgramReady = (NULL != pExtensions->glCreateShaderObjectARB);
+#else
+			m_bGeometryProgramReady = false;
+#endif
+		}
+		else
+		{
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+			CRaptorMessages::MessageArgument arg;
+			arg.arg_sz = "GLSL geometry";
+			vector<CRaptorMessages::MessageArgument> args;
+			args.push_back(arg);
+			Raptor::GetErrorManager()->generateRaptorError(CShaderProgram::CShaderProgramClassID::GetClassId(),
+														   CRaptorErrorManager::RAPTOR_WARNING,
+														   CRaptorMessages::ID_NO_GPU_PROGRAM,
+														   args);
+#endif
+		}
+	}
 }
 
 bool CGeometryProgram::glLoadProgram(const std::string &program)
@@ -145,11 +162,12 @@ bool CGeometryProgram::glBindProgram(RAPTOR_HANDLE program)
 	{
 		for (unsigned int idx = 0; idx < m_parameters.getNbParameters(); idx++)
 		{
-			CProgramParameters::CParameterValue& pValue = m_parameters[idx];
-			if (pValue.kind == CProgramParameters::ATTRIBUTE)
+			const CProgramParameters::CParameterBase& value = m_parameters[idx];
+			CProgramParameters::GL_VERTEX_ATTRIB p;
+			if (value.isA(p))
 			{
-				// the location retrieved will only be used if the user value is invalid.
-				pExtensions->glBindAttribLocationARB(program.handle, pValue.attribute, pValue.name.data());
+				p = ((const CProgramParameters::CParameter<CProgramParameters::GL_VERTEX_ATTRIB>&)value).p;
+				pExtensions->glBindAttribLocationARB(program.handle, p, value.name().data());
 			}
 		}
 

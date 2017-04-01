@@ -57,6 +57,8 @@ private:
 	virtual void glRenderFilterOutput(void);
 
     CShader			*BWShader;
+	CProgramParameters::CParameter<GL_COORD_VERTEX> bwParams;
+	CProgramParameters::CParameter<GL_COORD_VERTEX> baseColor;
 	CProgramParameters	fp_params;
 };
 

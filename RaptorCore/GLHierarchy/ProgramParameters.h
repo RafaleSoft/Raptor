@@ -49,126 +49,172 @@ public:
 		TEXCOORD7
 	} GL_VERTEX_ATTRIB;
 
-	//! This type defines the kind of parameter value defined here under
-	typedef enum PARAMETER_KIND_t
-	{
-		VECTOR,
-		MATRIX,
-		ATTRIBUTE,
-		SAMPLER
-	} PARAMETER_KIND;
-
-	class ParameterBase
+	class CParameterBase
 	{
 	public:
-		virtual ~ParameterBase() {};
+		virtual ~CParameterBase() {};
+
 		virtual uint64_t size(void) const { return 0; };
 		virtual const void* addr(void) const { return NULL; };
-		virtual ParameterBase* clone(void) const { return NULL; };
+		virtual CParameterBase* clone(void) const { return NULL; };
+		virtual bool copy(const CParameterBase&) { return false; };
+
+
+		const std::string& name() const { return m_name; };
+		void name(const std::string& n) { m_name = n; };
+
+		virtual CParameterBase& operator=(const CParameterBase& p)
+		{
+			m_name = p.m_name;
+			locationIndex = p.locationIndex;
+			locationType = p.locationType;
+			return *this;
+		}
+
+		virtual size_t getTypeId(void) const
+		{
+			static size_t ti = typeid(void*).hash_code();
+			return ti;
+		}
 
 		template <class T> bool isA(const T &t) const
 		{
-			return getTypeId() == Parameter<T>::TypeId();
-		};
+			return getTypeId() == CParameter<T>::TypeId();
+		}
+
+		//! Parameter locations can be retrieved once per link and reused.
+		int				locationIndex;
+		unsigned int	locationType;
 
 	protected:
-		ParameterBase() {};
-		ParameterBase(const ParameterBase&) {};
-		virtual const type_info& getTypeId(void) const { return typeid(void*); };
+		CParameterBase() :m_name(""), locationIndex(-1), locationType(0) {};
+		CParameterBase(const CParameterBase& p)
+			:m_name(p.m_name),
+			locationIndex(p.locationIndex),
+			locationType(p.locationType) {};
+
+		//! The name of the value: it is matched to variables of the program ( @see GLSL )
+		string				m_name;
 	};
 
 	template <class P>
-	class Parameter : public CProgramParameters::ParameterBase
+	class CParameter : public CParameterBase
 	{
 	public:
-		Parameter(const P &param) :p(param) {};
-		virtual ~Parameter() {};
+		CParameter(const P &param) :p(param) {};
+		virtual ~CParameter() {};
 
-		static const type_info& TypeId(void) { static P _p; return typeid(_p); };
-		virtual const type_info& getTypeId(void) const { return typeid(p); };
+		static size_t TypeId(void) { static size_t ti = typeid(P).hash_code(); return ti; };
+		virtual size_t getTypeId(void) const { return CParameter<P>::TypeId(); };
 
 		virtual uint64_t size(void) const { return sizeof(p); };
 		virtual const void* addr(void) const { return &p; };
-		virtual ParameterBase* clone(void) const
+		virtual CParameterBase* clone(void) const
 		{
-			return new Parameter<P>(p);
+			CParameter<P> *param = new CParameter<P>(p);
+			*param = *this;
+			return param;
+		};
+		virtual bool copy(const CParameterBase& param)
+		{
+			// Should a safe 'isA' be used ? only if fast enough.
+			if (param.size() == sizeof(p))
+			{
+				p = ((const CParameter<P>&)param).p;
+				return true;
+			}
+			else
+				return false;
 		};
 
-		Parameter<P>& operator=(const P &_p)
+		CParameter<P>& operator=(const P &_p)
 		{
-			p = _p; return *this;
+			p = _p;
+			return *this;
 		};
+
+		CParameter<P>& operator=(const CParameter<P> &_p)
+		{
+			CParameterBase::operator=(_p);
+			p = _p.p;
+			return *this;
+		};
+
+		virtual CParameterBase& operator=(const CParameterBase& param)
+		{
+			//	Safe assignment
+			if (param.isA(p))
+				this->operator=((const CParameter<P>&)param);
+			return *this;
+		}
 
 	public:
 		P	p;
 	};
 
-	//! This structure defines a parameter value
-	class CParameterValue : public CProgramParameters::ParameterBase
-	{
-	public:
-		//!	Constructor
-		CParameterValue();
-		//!	Copy constructor
-		CParameterValue(const CParameterValue&);
-		//!	Assignment operator
-		CParameterValue& operator=(const CParameterValue&);
-		//!	Destructor
-		virtual ~CParameterValue();
-
-		//! The name of the value: it is matched to variables of the program ( @see GLSL )
-		string				name;
-		//! The kind of parameter : depending on the kind, only one of the four values here under is valid
-		PARAMETER_KIND		kind;
-
-		//! Parameter locations can be retrieven once per link and reused.
-		int				locationIndex;
-		unsigned int	locationType;
-
-		//! User values : a vector, a matrix, an attribute of a texture image unit.
-		GL_COORD_VERTEX		vector;
-		GL_MATRIX			matrix;
-		GL_VERTEX_ATTRIB	attribute;
-		CTextureUnitSetup::TEXTURE_IMAGE_UNIT	sampler;
-	};
 
 public:
 	//! Default constructor. The parameter set is uninitialised, user
 	//! must call the proper init method from the relevant shader.
-	CProgramParameters() :mValues() {};
-	virtual ~CProgramParameters() {};
+	CProgramParameters():m_parameters() {};
+	virtual ~CProgramParameters() {	clear(); };
 
 	//!	Remove all parameters
-	void clear(void) { mValues.clear(); }
+	void clear(void);
 
 	//! Number of paremeters
-	size_t getNbParameters(void) const { return mValues.size(); };
+	size_t getNbParameters(void) const { return m_parameters.size(); };
 
-	//! Add a vertex as a parameter
-	bool addParameter(const std::string& name, const GL_COORD_VERTEX& vertex);
+	//! Add a generic parameter
+	template <class param>
+	bool addParameter(const std::string& name, const param& param);
 
-	//! Add a matrix as a parameter
-	bool addParameter(const std::string& name, const GL_MATRIX& matrix);
-
-	//! Add an attribute as a parameter
-	bool addParameter(const std::string& name, GL_VERTEX_ATTRIB attrib);
-
-	//! Add a sampler as a parameter
-	bool addParameter(const std::string& name, CTextureUnitSetup::TEXTURE_IMAGE_UNIT sampler);
+	//! Add a base parameter
+	bool addParameter(const CParameterBase& param);
 
 	//! Access to vector parameters.
-	CParameterValue& operator[](unsigned int v);
-	const CParameterValue& operator[](unsigned int v) const;
+	CParameterBase& operator[](unsigned int v);
+	const CParameterBase& operator[](unsigned int v) const;
 
-	//! Parameters assignment.
+	//! Parameters assignment: only typed value is assigned, type and index are left unchanged
+	//!	Source and destination parameter set must have the same dimension, otherwise
+	//!	this set is reinitialised
 	CProgramParameters& operator=(const CProgramParameters& params);
+
+	//! Parameters assignment: updates typed values, based on identical parameter names
+	bool updateParameters(const CProgramParameters& params);
+
 
 private:
 	CProgramParameters(const CProgramParameters&) {};
 
-	//! There should not be a max value, it is inherited from  NV_vertex_program first drafts.
-	std::vector<CParameterValue> mValues;
+	//! Values of this parameter set.
+	std::vector<CProgramParameters::CParameterBase*>	m_parameters;
 };
+
+template <class P>
+bool CProgramParameters::addParameter(const std::string& name, const P& param)
+{
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+	for (size_t i = 0; i < m_parameters.size(); i++)
+	{
+		if (m_parameters[i]->name() == name)
+		{
+			Raptor::GetErrorManager()->generateRaptorError(CPersistence::CPersistenceClassID::GetClassId(),
+														   CRaptorErrorManager::RAPTOR_WARNING,
+														   "Duplicate parameter name");
+			return false;
+		}
+	}
+#endif
+
+	CProgramParameters::CParameter<P> *p = new CProgramParameters::CParameter<P>(param);
+	p->name(name);
+	m_parameters.push_back(p);
+
+	return false;
+}
+
 
 RAPTOR_NAMESPACE_END
 

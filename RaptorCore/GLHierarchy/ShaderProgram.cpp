@@ -26,11 +26,6 @@
 //////////////////////////////////////////////////////////////////////
 RAPTOR_NAMESPACE_BEGIN
 
-bool	CShaderProgram::m_bVertexReady = false;
-bool	CShaderProgram::m_bFragmentReady = false;
-bool	CShaderProgram::m_bVertexProgramReady = false;
-bool	CShaderProgram::m_bFragmentProgramReady = false;
-bool	CShaderProgram::m_bGeometryProgramReady = false;
 
 static CShaderProgram::CShaderProgramClassID shaderId;
 const CPersistence::CPersistenceClassID& CShaderProgram::CShaderProgramClassID::GetClassId(void)
@@ -73,140 +68,6 @@ CShaderProgram::~CShaderProgram()
 }
 
 
-void CShaderProgram::glInitShaders()
-{
-	if (!m_bVertexReady)
-	{
-		if (Raptor::glIsExtensionSupported("GL_ARB_vertex_program"))
-		{
-#if defined(GL_ARB_vertex_program)
-			const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
-			m_bVertexReady = pExtensions->glIsProgramARB != NULL;
-#else
-			m_bVertexReady = false;
-#endif
-		}
-		else
-		{
-#ifdef RAPTOR_DEBUG_MODE_GENERATION
-			CRaptorMessages::MessageArgument arg;
-            arg.arg_sz = "ASM vertex";
-            vector<CRaptorMessages::MessageArgument> args;
-            args.push_back(arg);
-			Raptor::GetErrorManager()->generateRaptorError(	CShaderProgram::CShaderProgramClassID::GetClassId(),
-															CRaptorErrorManager::RAPTOR_WARNING,
-															CRaptorMessages::ID_NO_GPU_PROGRAM,
-															args);
-#endif
-		}
-	}
-
-    if (!m_bVertexProgramReady)
-	{
-		if (Raptor::glIsExtensionSupported("GL_ARB_vertex_shader"))
-		{
-#if defined(GL_ARB_vertex_shader)
-			const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
-			m_bVertexProgramReady = pExtensions->glCreateShaderObjectARB != NULL;
-#else
-			m_bVertexProgramReady = false;
-#endif
-		}
-		else
-		{
-#ifdef RAPTOR_DEBUG_MODE_GENERATION
-			CRaptorMessages::MessageArgument arg;
-            arg.arg_sz = "GLSL vertex";
-            vector<CRaptorMessages::MessageArgument> args;
-            args.push_back(arg);
-			Raptor::GetErrorManager()->generateRaptorError(	CShaderProgram::CShaderProgramClassID::GetClassId(),
-															CRaptorErrorManager::RAPTOR_WARNING,
-															CRaptorMessages::ID_NO_GPU_PROGRAM,
-															args);
-#endif
-		}
-	}
-
-	if (!m_bFragmentReady)
-	{
-		if (Raptor::glIsExtensionSupported("GL_ARB_fragment_program"))
-		{
-#if defined(GL_ARB_fragment_program)
-			const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
-			m_bFragmentReady = pExtensions->glIsProgramARB != NULL;
-#else
-			m_bFragmentReady = false;
-#endif
-		}
-		else
-		{
-#ifdef RAPTOR_DEBUG_MODE_GENERATION
-			CRaptorMessages::MessageArgument arg;
-            arg.arg_sz = "ASM fragment";
-            vector<CRaptorMessages::MessageArgument> args;
-            args.push_back(arg);
-			Raptor::GetErrorManager()->generateRaptorError(	CShaderProgram::CShaderProgramClassID::GetClassId(),
-															CRaptorErrorManager::RAPTOR_WARNING,
-															CRaptorMessages::ID_NO_GPU_PROGRAM,
-															args);
-#endif
-		}
-	}
-
-    if (!m_bFragmentProgramReady)
-	{
-		if (Raptor::glIsExtensionSupported("GL_ARB_fragment_shader"))
-		{
-#if defined(GL_ARB_fragment_shader)
-			const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
-			m_bFragmentProgramReady = pExtensions->glCreateShaderObjectARB != NULL;
-#else
-			m_bFragmentProgramReady = false;
-#endif
-		}
-		else
-		{
-#ifdef RAPTOR_DEBUG_MODE_GENERATION
-			CRaptorMessages::MessageArgument arg;
-            arg.arg_sz = "GLSL fragment";
-            vector<CRaptorMessages::MessageArgument> args;
-            args.push_back(arg);
-			Raptor::GetErrorManager()->generateRaptorError(	CShaderProgram::CShaderProgramClassID::GetClassId(),
-															CRaptorErrorManager::RAPTOR_WARNING,
-															CRaptorMessages::ID_NO_GPU_PROGRAM,
-															args);
-#endif
-		}
-	}
-
-	if (!m_bGeometryProgramReady)
-	{
-		if (Raptor::glIsExtensionSupported("GL_ARB_geometry_shader4"))
-		{
-#if defined(GL_ARB_geometry_shader4)
-			const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
-			m_bGeometryProgramReady = pExtensions->glCreateShaderObjectARB != NULL;
-#else
-			m_bGeometryProgramReady = false;
-#endif
-		}
-		else
-		{
-#ifdef RAPTOR_DEBUG_MODE_GENERATION
-			CRaptorMessages::MessageArgument arg;
-            arg.arg_sz = "GLSL geometry";
-            vector<CRaptorMessages::MessageArgument> args;
-            args.push_back(arg);
-			Raptor::GetErrorManager()->generateRaptorError(	CShaderProgram::CShaderProgramClassID::GetClassId(),
-															CRaptorErrorManager::RAPTOR_WARNING,
-															CRaptorMessages::ID_NO_GPU_PROGRAM,
-															args);
-#endif
-		}
-	}
-}
-
-
 void CShaderProgram::setProgramParameters(const CProgramParameters &v)
 {
     m_parameters = v;
@@ -235,14 +96,3 @@ bool CShaderProgram::glLoadProgramFromFile(const std::string &program)
 	else
 		return false;
 }
-
-bool CShaderProgram::exportObject(CRaptorIO& o)
-{
-	return true;
-}
-
-bool CShaderProgram::importObject(CRaptorIO& i)
-{
-	return true;
-}
-

@@ -37,6 +37,7 @@ private:
 	CGLLayer		*layer;
 
     CShader *skinning;
+	CProgramParameters::CParameter<GL_MATRIX> skinningMatrix;
     CProgramParameters	params;
     CProgramParameters	params2;
 

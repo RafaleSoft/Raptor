@@ -55,7 +55,7 @@ public:
 	template <class C>
 	void addParameter(C c)
 	{
-		m_parameters.push_back(new CProgramParameters::Parameter<C>(c));
+		m_parameters.push_back(new CProgramParameters::CParameter<C>(c));
 	};
 	
 	//!	Specific handling to access to the buffer object pointer.
@@ -63,14 +63,14 @@ public:
 	void addParameter(const CRaptorComputeMemory::IBufferObject &bo);
 
 	//! @return the list of parameters of this task.
-	const std::vector<CProgramParameters::ParameterBase*>& getParameters(void) const
+	const std::vector<CProgramParameters::CParameterBase*>& getParameters(void) const
 	{ return m_parameters; };
 
 	//!	operator [] overload
 	//! @param pos : the index of the parameter to retrieve
 	//! @return the requested parameter, of nullParameter if invalid index.
 	template <class C>
-	CProgramParameters::Parameter<C>& operator[](size_t pos) const
+	CProgramParameters::CParameter<C>& operator[](size_t pos) const
 	{ if (pos < m_parameters.size()) return *m_parameters[pos]; else return nullParameter; };
 
 	template <class C>
@@ -79,7 +79,7 @@ public:
 		if (pos < m_parameters.size())
 		{
 			if (m_parameters[pos]->isA(c))
-				*((CProgramParameters::Parameter<C>*)m_parameters[pos]) = c;
+				*((CProgramParameters::CParameter<C>*)m_parameters[pos]) = c;
 		}
 	};
 
@@ -89,12 +89,12 @@ public:
 
 
 private:
-	static CProgramParameters::ParameterBase	nullParameter;
+	static CProgramParameters::CParameterBase	nullParameter;
 
 	const std::string m_name;
 	size_t	m_globalSize[4];
 	size_t	m_localSize[4];
-	std::vector<CProgramParameters::ParameterBase*>	m_parameters;
+	std::vector<CProgramParameters::CParameterBase*>	m_parameters;
 };
 
 

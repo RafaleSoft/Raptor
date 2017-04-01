@@ -54,9 +54,9 @@ CTeapot::CTeapot()
     :rx(0),ry(0),rz(0),currentDisplay(NULL),
     stopdemo(-1),m_globalDisplay(NULL),
 	//numdemo(CTest2App::PARTICLEDEMO)
-	//numdemo(CTest2App::AMBIENTOCCLUSIONDEMO)
+	numdemo(CTest2App::AMBIENTOCCLUSIONDEMO)
 	//numdemo(CTest2App::BUMPDEMO)
-	numdemo(CTest2App::VRTXSHADERSDEMO)
+	//numdemo(CTest2App::VRTXSHADERSDEMO)
 {
 }
 
@@ -215,26 +215,26 @@ void CTeapot::GLInitContext()
 	displays[CTest2App::BUMPDEMO] = &bumpDisplay;
 	splineDisplay.Init();
 	displays[CTest2App::SPLINEDEMO] = &splineDisplay;
-	skinningDisplay.Init();
+	//skinningDisplay.Init();
 	displays[CTest2App::SKINNINGDEMO] = &skinningDisplay;
-	particleDisplay.Init();
-	displays[CTest2App::PARTICLEDEMO] = &particleDisplay;	
+	//particleDisplay.Init();
+	displays[CTest2App::PARTICLEDEMO] = &particleDisplay;
 	shadowDisplay.Init();
 	displays[CTest2App::SHADOWDEMO] = &shadowDisplay;
-	shadowMapDisplay.Init();
+	//shadowMapDisplay.Init();
 	displays[CTest2App::SHADOWMAPDEMO] = &shadowMapDisplay;
-	warpingDisplay.Init();
+	//warpingDisplay.Init();
 	displays[CTest2App::WARPINGDEMO] = &warpingDisplay;
-	projectionDisplay.Init();
+	//projectionDisplay.Init();
 	displays[CTest2App::PROJECTIONDEMO] = &projectionDisplay;
-	lodDisplay.Init();
+	//lodDisplay.Init();
 	displays[CTest2App::LODDEMO] = &lodDisplay;
-	collisionDisplay.Init();
+	//collisionDisplay.Init();
 	displays[CTest2App::COLLISIONDEMO] = &collisionDisplay;
 	ambientOcclusionDisplay.Init();
 	displays[CTest2App::AMBIENTOCCLUSIONDEMO] = &ambientOcclusionDisplay;
 
-	vertexShadersDisplay.Init();
+	//vertexShadersDisplay.Init();
 	displays[CTest2App::VRTXSHADERSDEMO] = &vertexShadersDisplay;
 
 	m_globalDisplay = CRaptorDisplay::GetCurrentDisplay();

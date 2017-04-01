@@ -76,7 +76,7 @@ void CGeometry::CRenderingModel::removeModel(MODEL model)
 	m_renderingModel &= ~model;
 }
 
-CGeometry::CRenderingModel::CRenderingModel(unsigned int model)
+CGeometry::CRenderingModel::CRenderingModel(long model)
 {
 	m_renderingModel = (model & CGL_FULLRENDER);
 	if ((m_renderingModel == 0) || (m_renderingModel > CGL_FULLRENDER))

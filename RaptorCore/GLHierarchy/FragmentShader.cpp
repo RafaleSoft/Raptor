@@ -20,6 +20,7 @@
 
 RAPTOR_NAMESPACE
 
+bool CFragmentShader::m_bFragmentReady = false;
 static CFragmentShader::CFragmentShaderClassID fragmentId;
 const CPersistence::CPersistenceClassID& CFragmentShader::CFragmentShaderClassID::GetClassId(void)
 {
@@ -77,7 +78,31 @@ void CFragmentShader::glInitShaders()
 
     CATCH_GL_ERROR
 
-    CShaderProgram::glInitShaders();
+	if (!m_bFragmentReady)
+	{
+		if (Raptor::glIsExtensionSupported("GL_ARB_fragment_program"))
+		{
+#if defined(GL_ARB_fragment_program)
+			const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+			m_bFragmentReady = pExtensions->glIsProgramARB != NULL;
+#else
+			m_bFragmentReady = false;
+#endif
+		}
+		else
+		{
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+			CRaptorMessages::MessageArgument arg;
+			arg.arg_sz = "ASM fragment";
+			vector<CRaptorMessages::MessageArgument> args;
+			args.push_back(arg);
+			Raptor::GetErrorManager()->generateRaptorError(CShaderProgram::CShaderProgramClassID::GetClassId(),
+															CRaptorErrorManager::RAPTOR_WARNING,
+															CRaptorMessages::ID_NO_GPU_PROGRAM,
+															args);
+#endif
+		}
+	}
 }
 
 
@@ -136,8 +161,10 @@ void CFragmentShader::glRender(void)
 			{
 				for (unsigned int i=0;i<m_parameters.getNbParameters();i++)
 				{
-					pExtensions->glProgramLocalParameter4fvARB(	GL_FRAGMENT_PROGRAM_ARB,i,
-																m_parameters[i].vector);
+					const CProgramParameters::CParameterBase& param_value = m_parameters[i];
+					const GL_COORD_VERTEX &vector = ((const CProgramParameters::CParameter<GL_COORD_VERTEX>&)param_value).p;
+
+					pExtensions->glProgramLocalParameter4fvARB(	GL_FRAGMENT_PROGRAM_ARB, i, vector);
 				}
 				m_bApplyParameters = false;
 			}
@@ -316,7 +343,7 @@ const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
 	return false;
 }
 
-void CFragmentShader::glProgramParameter(unsigned int numParam,const GL_COORD_VERTEX &v)
+void CFragmentShader::glProgramParameter(unsigned int numParam,const GL_COORD_VERTEX &v) const
 {
 #if defined(GL_ARB_fragment_program)
 	if (m_bFragmentReady)
@@ -329,7 +356,7 @@ void CFragmentShader::glProgramParameter(unsigned int numParam,const GL_COORD_VE
 	CATCH_GL_ERROR
 }
 
-void CFragmentShader::glProgramParameter(unsigned int numParam,const CColor::RGBA &v)
+void CFragmentShader::glProgramParameter(unsigned int numParam,const CColor::RGBA &v) const
 {
 #if defined(GL_ARB_fragment_program)
 	if (m_bFragmentReady)

@@ -62,9 +62,7 @@ private:
 	void glInitShaders(void);
 
 	unsigned int		m_nbBlur;
-	GL_COORD_VERTEX     vsParameter_Xoffset;
-	GL_COORD_VERTEX     vsParameter_Yoffset;
-    GL_COORD_VERTEX     dofParams;
+	CProgramParameters::CParameter<GL_COORD_VERTEX> dofParams;
 
     CRaptorDisplay		*tmpDisplay;
     CTextureObject      *tmpTexture;
@@ -72,7 +70,8 @@ private:
     CTextureObject      *tmpTexture2;
 	CTextureSet			*m_pRenderTextures2;
     CShader             *DOFShader;
-	CProgramParameters	vp_params;
+	CProgramParameters	vp_paramsX;
+	CProgramParameters	vp_paramsY;
 	CProgramParameters	fp_params;
 };
 

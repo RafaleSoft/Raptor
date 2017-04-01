@@ -17,83 +17,42 @@
 //////////////////////////////////////////////////////////////////////
 RAPTOR_NAMESPACE
 
-static CProgramParameters::CParameterValue noValue;
+static CProgramParameters::CParameter<void*> noValue(0);
 
-CProgramParameters::CParameterValue::CParameterValue()
-	:ParameterBase(),
-	name(""),
-	kind(VECTOR),
-	locationIndex(-1),
-	locationType(GL_FLOAT_VEC4_ARB),
-	vector(0.0f, 0.0f, 0.0f, 1.0f),
-	attribute(POSITION),
-	sampler(CTextureUnitSetup::IMAGE_UNIT_0)
+CProgramParameters::CParameterBase& CProgramParameters::operator[](unsigned int v)
 {
-	IDENT_MATRIX(noValue.matrix);
-}
-
-CProgramParameters::CParameterValue::CParameterValue(const CParameterValue& value)
-	:ParameterBase(),
-	name(value.name),
-	kind(value.kind),
-	locationIndex(value.locationIndex),
-	locationType(value.locationType),
-	vector(value.vector),
-	attribute(value.attribute),
-	sampler(value.sampler),
-	matrix(value.matrix)
-{
-}
-
-CProgramParameters::CParameterValue& CProgramParameters::CParameterValue::operator=(const CParameterValue& value)
-{
-	if (&value != this)
-	{
-		name = value.name;
-		kind = value.kind;
-		locationIndex = value.locationIndex;
-		locationType = value.locationType;
-		vector = value.vector;
-		attribute = value.attribute;
-		sampler = value.sampler;
-		matrix = value.matrix;
-	}
-
-	return *this;
-}
-
-CProgramParameters::CParameterValue::~CParameterValue()
-{
-}
-
-CProgramParameters::CParameterValue& CProgramParameters::operator[](unsigned int v)
-{
-	if (mValues.size() > v)
-		return mValues[v];
+	if (m_parameters.size() > v)
+		return *(m_parameters[v]);
 	else
-	{
-		noValue = CProgramParameters::CParameterValue();
 		return noValue;
-	}
 }
 
-const CProgramParameters::CParameterValue& CProgramParameters::operator[](unsigned int v) const
+const CProgramParameters::CParameterBase& CProgramParameters::operator[](unsigned int v) const
 {
-	if (mValues.size() > v)
-		return mValues[v];
+	if (m_parameters.size() > v)
+		return *(m_parameters[v]);
 	else
-	{
-		noValue = CProgramParameters::CParameterValue();
 		return noValue;
-	}
 }
 
-bool CProgramParameters::addParameter(const std::string& name, const GL_COORD_VERTEX& vertex)
+void CProgramParameters::clear(void)
+{
+	for (size_t i = 0; i < m_parameters.size(); i++)
+	{
+		CProgramParameters::CParameterBase* param = m_parameters[i];
+		if (NULL != param)
+			delete param;
+	}
+
+	m_parameters.clear();
+}
+
+bool CProgramParameters::addParameter(const CParameterBase& param)
 {
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
-	for (size_t i = 0; i < mValues.size(); i++)
+	for (size_t i = 0; i < m_parameters.size(); i++)
 	{
-		if (mValues[i].name == name)
+		if (m_parameters[i]->name() == name)
 		{
 			Raptor::GetErrorManager()->generateRaptorError(CPersistence::CPersistenceClassID::GetClassId(),
 														   CRaptorErrorManager::RAPTOR_WARNING,
@@ -103,88 +62,8 @@ bool CProgramParameters::addParameter(const std::string& name, const GL_COORD_VE
 	}
 #endif
 
-	CProgramParameters::CParameterValue value;
-	value.name = name;
-	value.vector = vertex;
-
-	mValues.push_back(value);
-
-	return true;
-}
-
-bool CProgramParameters::addParameter(const std::string& name, const GL_MATRIX& matrix)
-{
-#ifdef RAPTOR_DEBUG_MODE_GENERATION
-	for (size_t i = 0; i < mValues.size(); i++)
-	{
-		if (mValues[i].name == name)
-		{
-			Raptor::GetErrorManager()->generateRaptorError(CPersistence::CPersistenceClassID::GetClassId(),
-														   CRaptorErrorManager::RAPTOR_WARNING,
-														   "Duplicate parameter name");
-			return false;
-		}
-	}
-#endif
-
-	CParameterValue value;
-	value.name = name;
-	value.kind = MATRIX;
-	value.matrix = matrix;
-
-	mValues.push_back(value);
-
-	return true;
-}
-
-bool CProgramParameters::addParameter(const std::string& name, GL_VERTEX_ATTRIB attribute)
-{
-#ifdef RAPTOR_DEBUG_MODE_GENERATION
-	for (size_t i = 0; i < mValues.size(); i++)
-	{
-		if (mValues[i].name == name)
-		{
-			Raptor::GetErrorManager()->generateRaptorError(CPersistence::CPersistenceClassID::GetClassId(),
-														   CRaptorErrorManager::RAPTOR_WARNING,
-														   "Duplicate parameter name");
-			return false;
-		}
-	}
-#endif
-
-	CParameterValue value;
-	value.name = name;
-	value.kind = ATTRIBUTE;
-	value.attribute = attribute;
-
-	mValues.push_back(value);
-
-	return true;
-}
-
-bool CProgramParameters::addParameter(const std::string& name, CTextureUnitSetup::TEXTURE_IMAGE_UNIT sampler)
-{
-#ifdef RAPTOR_DEBUG_MODE_GENERATION
-	for (size_t i = 0; i < mValues.size(); i++)
-	{
-		if (mValues[i].name == name)
-		{
-			Raptor::GetErrorManager()->generateRaptorError(CPersistence::CPersistenceClassID::GetClassId(),
-														   CRaptorErrorManager::RAPTOR_WARNING,
-														   "Duplicate parameter name");
-			return false;
-		}
-	}
-#endif
-
-	CParameterValue value;
-	value.name = name;
-	value.kind = SAMPLER;
-	value.sampler = sampler;
-
-	mValues.push_back(value);
-
-	return true;
+	m_parameters.push_back(param.clone());
+	return false;
 }
 
 CProgramParameters& CProgramParameters::operator=(const CProgramParameters& params)
@@ -192,33 +71,53 @@ CProgramParameters& CProgramParameters::operator=(const CProgramParameters& para
 	// The case that is not handled is when
 	//	params is used to update only a part of currently registered parameters.
 	// TODO: try to solve by setting m_bRelinked = true when params has more parameters than mValues.
-	if (mValues.size() != params.getNbParameters())
-		mValues = params.mValues;
-
-	for (size_t i = 0; i < params.getNbParameters(); i++)
+	if (m_parameters.size() != params.getNbParameters())
 	{
-		for (size_t j = 0; j < mValues.size(); j++)
+		for (size_t i = 0; i < m_parameters.size(); i++)
 		{
-			if (mValues[j].name == params[i].name)
+			CProgramParameters::CParameterBase* param = m_parameters[i];
+			if (NULL != param)
+				delete param;
+		}
+		m_parameters.clear();
+
+		for (size_t i = 0; i < params.m_parameters.size(); i++)
+			m_parameters.push_back(params.m_parameters[i]->clone());
+	}
+	else
+		for (size_t i = 0; i < params.m_parameters.size(); i++)
+		{
+			for (size_t j = 0; j < m_parameters.size(); j++)
 			{
-				switch (mValues[j].kind)
+				if (m_parameters[j]->name() == params.m_parameters[i]->name())
 				{
-					case CProgramParameters::MATRIX:
-						mValues[j].matrix = params[i].matrix;
-						break;
-					case CProgramParameters::SAMPLER:
-						mValues[j].sampler = params[i].sampler;
-						break;
-					case CProgramParameters::VECTOR:
-						mValues[j].vector = params[i].vector;
-						break;
-					case CProgramParameters::ATTRIBUTE:
-						mValues[j].attribute = params[i].attribute;
-						break;
+					m_parameters[j]->copy(*params.m_parameters[i]);
+					break;
 				}
+			}
+		}
+
+	return *this;
+}
+
+bool CProgramParameters::updateParameters(const CProgramParameters& params)
+{
+	if (m_parameters.empty() || (0 == params.getNbParameters()))
+		return false;
+
+	bool atLeastOneAssignment = false;
+	for (size_t i = 0; i < params.m_parameters.size(); i++)
+	{
+		for (size_t j = 0; j < m_parameters.size(); j++)
+		{
+			if (m_parameters[j]->name() == params.m_parameters[i]->name())
+			{
+				m_parameters[j]->copy(*params.m_parameters[i]);
+				atLeastOneAssignment = true;
+				break;
 			}
 		}
 	}
 
-	return *this;
+	return atLeastOneAssignment;
 }

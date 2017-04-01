@@ -51,6 +51,7 @@ private:
     ITextureGenerator	*m_pAccumulator;
 	CTextureSet			*m_pRenderTextures2;
 
+	CProgramParameters::CParameter<GL_COORD_VERTEX> mbParams;
 	CProgramParameters f_params;
 };
 

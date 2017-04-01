@@ -67,9 +67,9 @@ private:
 	//! HDR rendering attributes
     unsigned int    nLevels;
 	unsigned int	nBlurPass;
-	float			treshold;
 
 	//!	Downsizing of framebuffer to compute overall luminance
+	CProgramParameters::CParameter<GL_COORD_VERTEX> luminanceParams;
 	CProgramParameters maxLuminanceParams;
     CRaptorDisplay  **m_pDownSizedDisplay;
     CTextureObject  **m_pDownSizedBuffer;
@@ -78,7 +78,8 @@ private:
     CShader			*m_lastMaxLuminance;
     
 	//! Extract high frequencies
-	CProgramParameters threshholdParams;
+	CProgramParameters::CParameter<GL_COORD_VERTEX> thresholdParam;
+	CProgramParameters thresholdParams;
     CShader *m_pTreshholdFreqs;
     CRaptorDisplay  *m_pDownHighFreqs;
     CTextureObject  *m_pDownHFBuffer;

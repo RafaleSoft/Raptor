@@ -17,9 +17,9 @@
     #include "System/RaptorErrorManager.h"
 #endif
 
-#include <stdlib.h>	//	malloc
 RAPTOR_NAMESPACE
 
+bool CVertexProgram::m_bVertexProgramReady = false;
 static CVertexProgram::CVertexProgramClassID vertexId;
 const CPersistence::CPersistenceClassID& CVertexProgram::CVertexProgramClassID::GetClassId(void)
 {
@@ -71,19 +71,33 @@ CVertexProgram::~CVertexProgram()
 
 void CVertexProgram::glInitShaders()
 {
-	m_iMaxLocation = 0;
-
-#if defined(GL_ARB_vertex_shader)
-    glGetIntegerv(GL_MAX_VERTEX_UNIFORM_COMPONENTS_ARB,&m_iMaxLocation);
-
-    //! The returned value is the number of individual component.
-	//! Raptor always use vectors ...
-    m_iMaxLocation = m_iMaxLocation / 4;
-	//m_locations.clear();
 	m_parameters.clear();
-#endif
 
-    CShaderProgram::glInitShaders();
+	if (!m_bVertexProgramReady)
+	{
+		if (Raptor::glIsExtensionSupported("GL_ARB_vertex_shader"))
+		{
+#if defined(GL_ARB_vertex_shader)
+			const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+			m_bVertexProgramReady = (NULL != pExtensions->glCreateShaderObjectARB);
+#else
+			m_bVertexProgramReady = false;
+#endif
+		}
+		else
+		{
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+			CRaptorMessages::MessageArgument arg;
+			arg.arg_sz = "GLSL vertex";
+			vector<CRaptorMessages::MessageArgument> args;
+			args.push_back(arg);
+			Raptor::GetErrorManager()->generateRaptorError(CShaderProgram::CShaderProgramClassID::GetClassId(),
+														   CRaptorErrorManager::RAPTOR_WARNING,
+														   CRaptorMessages::ID_NO_GPU_PROGRAM,
+														   args);
+#endif
+		}
+	}
 }
 
 bool CVertexProgram::glLoadProgram(const std::string &program)
@@ -147,16 +161,17 @@ bool CVertexProgram::glBindProgram(RAPTOR_HANDLE program)
 	{
 		for (unsigned int idx = 0; idx < m_parameters.getNbParameters(); idx++)
 		{
-			CProgramParameters::CParameterValue& pValue = m_parameters[idx];
-			if (pValue.kind == CProgramParameters::ATTRIBUTE)
+			const CProgramParameters::CParameterBase& value = m_parameters[idx];
+			CProgramParameters::GL_VERTEX_ATTRIB p;
+			if (value.isA(p))
 			{
-				// the location retrieved will only be used if the user value is invalid.
-				pExtensions->glBindAttribLocationARB(program.handle, pValue.attribute, pValue.name.data());
+				p = ((const CProgramParameters::CParameter<CProgramParameters::GL_VERTEX_ATTRIB>&)value).p;
+				pExtensions->glBindAttribLocationARB(program.handle, p, value.name().data());
 			}
 		}
 
 		CATCH_GL_ERROR
-			return true;
+		return true;
 	}
 	else
 #endif

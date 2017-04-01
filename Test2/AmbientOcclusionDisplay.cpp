@@ -52,28 +52,6 @@ void main (void) \n\
 }";
 
 
-string AO_vp_src2 =
-"varying float color; \
-void main (void) \
-{\
-	gl_Position = ftransform(); \
-	gl_TexCoord[0] = gl_MultiTexCoord0; \
-	color = gl_Color.r; \
-}\
-";
-
-string AO_fp_src2 = 
-"varying float color; \
-uniform sampler2D diffuse; \
-void main (void) \
-{\
-	vec4 D = vec4(color,color,color,1.0); \
-	gl_FragColor = vec4(D.x,D.y,D.z,1.0); \
-}\
-";
-	//vec4 D = color * texture2D(diffuse,vec2(gl_TexCoord[0].st)); \
-
-
 CAmbientOcclusionDisplay::CAmbientOcclusionDisplay(void)
 	:m_pTeapot(NULL),m_pLight(NULL)
 {
@@ -92,7 +70,7 @@ void CAmbientOcclusionDisplay::Init()
 	CFragmentProgram *fp = AO_shader->glGetFragmentProgram("AO_FP");
 
 	CProgramParameters ao_params;
-	ao_params.addParameter("AOMap",CTextureUnitSetup::IMAGE_UNIT_2);
+	ao_params.addParameter("AOMap", CTextureUnitSetup::IMAGE_UNIT_2);
 	vp->setProgramParameters(ao_params);
 
 	bool res = vp->glLoadProgram(AO_vp_src);

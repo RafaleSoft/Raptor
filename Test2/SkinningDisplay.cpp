@@ -50,7 +50,8 @@ public:
 //////////////////////////////////////////////////////////////////////
 
 CSkinningDisplay::CSkinningDisplay()
-	:modifier(NULL),layer(NULL)
+	:modifier(NULL),layer(NULL),
+	skinningMatrix(GL_MATRIX())
 {
 
 }
@@ -174,9 +175,9 @@ varying vec3 normal; \
 attribute float weight; \
 void main (void) \
 {\
-gl_Position = gl_ModelViewProjectionMatrix * mix(gl_Vertex,(skinningMatrix * gl_Vertex),weight); \
-gl_TexCoord[0] = gl_MultiTexCoord0; \
-gl_FrontColor = gl_Color; \
+	gl_Position = gl_ModelViewProjectionMatrix * mix(gl_Vertex,(skinningMatrix * gl_Vertex),weight); \
+	gl_TexCoord[0] = gl_MultiTexCoord0; \
+	gl_FrontColor = gl_Color; \
 }\
 ";
     string skinning_fp_src = 
@@ -198,7 +199,7 @@ void main (void) \
 		params.addParameter("skinningMatrix",GL_MATRIX());
 		params.addParameter("weight", CProgramParameters::WEIGHTS);
 
-        params2.addParameter("diffuseMap",CTextureUnitSetup::IMAGE_UNIT_0);
+        //params2.addParameter("diffuseMap",CTextureUnitSetup::IMAGE_UNIT_0);
 
         skinning->glCompileShader();
 	}
@@ -269,7 +270,9 @@ void CSkinningDisplay::Display()
 	gm2 = m;
 	gm *= gm2;
 
-    C3DEngine::Generic_to_MATRIX(params[0].matrix,gm);
+	C3DEngine::Generic_to_MATRIX(skinningMatrix.p, gm);
+	CProgramParameters::CParameterBase &matrix = params[0];
+	matrix.copy(skinningMatrix);
     skinning->glGetVertexProgram("Skinning_VP")->setProgramParameters(params);
 
 	glPushMatrix();

@@ -22,6 +22,7 @@
 RAPTOR_NAMESPACE
 
 static const int MAX_UNIFORM_NAME_LENGTH = 256;
+bool CFragmentProgram::m_bFragmentProgramReady = false;
 static CFragmentProgram::CFragmentProgramClassID fragmentId;
 const CPersistence::CPersistenceClassID& CFragmentProgram::CFragmentProgramClassID::GetClassId(void)
 {
@@ -75,17 +76,33 @@ CFragmentProgram::~CFragmentProgram()
 
 void CFragmentProgram::glInitShaders()
 {
-    m_iMaxLocation = 0;
-
-#if defined(GL_ARB_fragment_shader)
-    glGetIntegerv(GL_MAX_FRAGMENT_UNIFORM_COMPONENTS_ARB,&m_iMaxLocation);
-
-    //  Raptor use vectors and the returned value above are single float components
-    m_iMaxLocation = m_iMaxLocation / 4;
 	m_parameters.clear();
-#endif
 
-    CShaderProgram::glInitShaders();
+	if (!m_bFragmentProgramReady)
+	{
+		if (Raptor::glIsExtensionSupported("GL_ARB_fragment_shader"))
+		{
+#if defined(GL_ARB_fragment_shader)
+			const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+			m_bFragmentProgramReady = (NULL != pExtensions->glCreateShaderObjectARB);
+#else
+			m_bFragmentProgramReady = false;
+#endif
+		}
+		else
+		{
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+			CRaptorMessages::MessageArgument arg;
+			arg.arg_sz = "GLSL fragment";
+			vector<CRaptorMessages::MessageArgument> args;
+			args.push_back(arg);
+			Raptor::GetErrorManager()->generateRaptorError(CShaderProgram::CShaderProgramClassID::GetClassId(),
+														   CRaptorErrorManager::RAPTOR_WARNING,
+														   CRaptorMessages::ID_NO_GPU_PROGRAM,
+														   args);
+#endif
+		}
+	}
 }
 
 bool CFragmentProgram::glLoadProgram(const std::string &program)
