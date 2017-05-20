@@ -30,7 +30,12 @@ public:
 	//!	Clone this shader (not functional yet)
 	CVulkanShader* vkClone(void) const;
 
-	void vkRender(CVulkanCommandBuffer &commandBuffer, VkBuffer uniformBuffer);
+	//!	Renders the shader, i.e. bind descriptor sets to current commandBuffer.
+	//!	If uniformBuffer && size, descriptor sets are updated to uniform buffer.
+	void vkRender(CVulkanCommandBuffer &commandBuffer,
+				  VkBuffer uniformBuffer,
+				  VkDeviceSize offset,
+				  VkDeviceSize size);
 
 	//!	Returns the number of shader stages loaded
 	size_t getStageCount() const { return m_shaderModules.size(); };
@@ -38,9 +43,6 @@ public:
 	//!	Loads a shader stage.
 	//!	Checks are done in CVulkanShaderStage class
 	bool loadShader(const std::string &filename);
-
-	//!	Update uniform data
-	bool vkSetData(VkDeviceSize offset, VkDeviceSize size);
 
 	VkPipelineShaderStageCreateInfo getShaderStage(size_t stage) const;
 

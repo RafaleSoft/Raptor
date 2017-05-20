@@ -19,7 +19,7 @@
 RAPTOR_NAMESPACE_BEGIN
 
 class CVulkanShader;
-
+class CVulkanCommandBuffer;
 
 class RAPTOR_API CVulkanShaderStage : public CShaderProgram
 {
@@ -39,6 +39,8 @@ public:
 	{
 	};
 
+	void vkRender(CVulkanCommandBuffer &commandBuffer, VkBuffer uniformBuffer);
+	
 	//! Implements base class
 	virtual void glStop(void)
 	{
@@ -60,6 +62,9 @@ public:
 	{
 	};
 
+	//!	@see CShaderProgram
+	virtual void setProgramParameters(const CProgramParameters &v);
+
 	//!	Clone the whole shader stage.
 	CVulkanShaderStage* vkClone(void) const;
 
@@ -72,8 +77,6 @@ public:
 	//!	Loads a shader stage.
 	bool vkLoadShader(const std::string& filename);
 
-	//!	Update uniform data
-	bool vkSetData(void *src, uint64_t size);
 
 	//! Inherited from CPersistence
     DECLARE_IO
@@ -84,6 +87,7 @@ private:
 	//! Denied operators
 	CVulkanShaderStage();
     CVulkanShaderStage& operator=(const CVulkanShaderStage& ) { return *this;};
+
 
 	//!	Vulkan shader modules
 	CVulkanShader*	m_pShaderStages;

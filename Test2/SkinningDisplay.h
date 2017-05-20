@@ -44,8 +44,6 @@ private:
 	CTextureObject		*t;
 	CTextureObject		*t2;
 
-	void	Reload(float dt);
-
 	virtual void ReInit();
 
     virtual void UnInit();

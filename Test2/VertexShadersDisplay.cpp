@@ -347,20 +347,95 @@ MUL color, color, color.w; \
 MAD finalColor, color, half.xxxz, half.xxxw; \
 END" ;
 
-string waterVertexProgram = 
+string waterVertexProgram =
 " \n\
 #version 120 \n\
+\n\
+uniform vec4 xDirs; \n\
+uniform vec4 zDirs; \n\
+uniform vec4 freq; \n\
+uniform vec4 phase; \n\
+uniform vec4 Q; \n\
+uniform vec4 A; \n\
+\n\
+uniform vec4 kNx; \n\
+uniform vec4 kNy; \n\
+uniform vec4 kNz; \n\
+uniform vec4 kTx; \n\
+uniform vec4 kTy; \n\
+uniform vec4 kTz; \n\
+uniform vec4 kBx; \n\
+uniform vec4 kBy; \n\
+uniform vec4 kBz; \n\
+\n\
+varying vec3 normal; \n\
+varying vec3 tangent; \n\
+varying vec3 binormal; \n\
+\n\
 void main (void) \n\
 { \n\
-	gl_Position = ftransform(); \n\
+	vec4 pos = gl_Vertex.xxxx * xDirs + gl_Vertex.zzzz * zDirs; \n\
+	pos = pos * freq + phase; \n\
+	vec4 C = cos(pos); \n\
+	vec4 S = sin(pos); \n\
+	vec4 waves = Q * C; \n\
+	\n\
+	vec4 P; \n\
+	P.x = gl_Vertex.x + dot(waves, xDirs); \n\
+	P.y = dot(S,A); \n\
+	P.z = gl_Vertex.z + dot(waves, zDirs); \n\
+	P.w = 1.0; \n\
+	gl_Position = gl_ModelViewProjectionMatrix * P; \n\
+	\n\
+	binormal.x = 1.0 - dot(kBx,S); \n\
+	binormal.y = dot(kBy,C); \n\
+	binormal.z = -dot(kBz,S); \n\
+	binormal = normalize(binormal); \n\
+	\n\
+	tangent.x = -dot(kTx,S); \n\
+	tangent.y = dot(kTy,C); \n\
+	tangent.z = 1.0 - dot(kTz,S); \n\
+	tangent = normalize(tangent); \n\
+	\n\
+	normal.x = -dot(kNx, C); \n\
+	normal.y = 1.0 - dot(kNy, S); \n\
+	normal.z = -dot(kNz, C); \n\
+	normal = cross(tangent,binormal); \n\
+	normal = normalize(normal); \n\
 } \n\
 ";
-string waterFragmentProgram = 
+
+/*
+binormal.x = 1.0 - dot(kBx,S);
+binormal.y = -dot(kBy,C);
+binormal.z = -dot(kBz,S);
+binormal = normalize(binormal);
+
+tangent.x = -dot(kTx,S);
+tangent.y = -dot(kTy,C);
+tangent.z = 1.0 - dot(kTz,S);
+tangent = normalize(tangent);
+
+normal.x = -dot(kNx, C);
+normal.y = 1.0 - dot(kNy, S);
+normal.z = -dot(kNz, C);
+normal = cross(tangent,binormal);
+normal = normalize(normal);
+*/
+
+string waterFragmentProgram =
 " \n\
 #version 120 \n\
+\n\
+varying vec3 normal; \n\
+varying vec3 tangent; \n\
+varying vec3 binormal; \n\
+\n\
 void main (void) \n\
 { \n\
-	gl_FragColor = vec4(1.0,0.0,0.0,1.0); \n\
+	vec3 lpos = vec3(0.0,1.0,0.0); \n\
+	float diffuse = dot(normal,lpos); \n\
+	gl_FragColor = vec4(diffuse,0.0,0.0,1.0); \n\
 } \n\
 ";
 
@@ -389,15 +464,17 @@ public:
 		CProgramParameters	params;
 		CProgramParameters	params2;
 
-		GL_COORD_VERTEX xDir(0.0f, 0.866f, -0.866f, 0.0f);
-		GL_COORD_VERTEX zDir(-1.0f, -0.5f, -0.5f, -1.0f);
-		GL_COORD_VERTEX A(10.0, 6.0, 4.0, 2.0);
-		GL_COORD_VERTEX L(200.0f, 250.0f, 300.0f, 350.0f);
+		//GL_COORD_VERTEX xDir(0.0f, 0.866f, -0.707f, 0.96f);
+		//GL_COORD_VERTEX zDir(-1.0f, -0.5f, -0.707f, -0.25f);
+		GL_COORD_VERTEX xDir(0.0f, 0.0f, 0.0f, 0.96f);
+		GL_COORD_VERTEX zDir(0.0f, 0.0f, 0.0f, -0.25f);
+		GL_COORD_VERTEX A(15.0, 5.0, 4.0, 30.0);
+		GL_COORD_VERTEX L(200.0f, 150.0f, 150.0f, 200.0f);
 		GL_COORD_VERTEX freq(	2 * PI / L.x, 
 								2 * PI / L.y, 
 								2 * PI / L.z, 
-								2 * PI / L.z);
-		GL_COORD_VERTEX S(80,60,50,40);
+								2 * PI / L.h);
+		GL_COORD_VERTEX S(40,60,50,80);
 
 		T = GetTime();
 		GL_COORD_VERTEX phase(	S.x * T * freq.x, 
@@ -405,72 +482,72 @@ public:
 								S.z * T * freq.z,
 								S.h * T * freq.h);
 
-		// Qi = 1 / ( wi . Ai )
+		// Qi = Q / ( wi . Ai * numWaves)
 		// Sum(Qi.wi.Ai) are slightly > 1 to create a small loop on crest, more funny.
-		GL_COORD_VERTEX Q(	sharpness / (2.5f * freq.x),
-							sharpness / (2.5f * freq.y),
-							sharpness / (2.5f * freq.z),
-							sharpness / (2.5f * freq.h));
+		GL_COORD_VERTEX Q(	1.0f / (2.5f * freq.x),
+							1.0f / (2.5f * freq.y),
+							1.0f / (2.5f * freq.z),
+							1.0f / (2.5f * freq.h));
 
-		GL_COORD_VERTEX kNx(	xDir.x * A.x * freq.x,
-								xDir.y * A.y * freq.y,
-								xDir.z * A.z * freq.z,
-								xDir.h * A.h * freq.h);
-		GL_COORD_VERTEX kNy(	sharpness * 0.25,
-								sharpness * 0.25,
-								sharpness * 0.25,
-								sharpness * 0.25);
-		GL_COORD_VERTEX kNz(	zDir.x * A.x * freq.x,
-								zDir.y * A.y * freq.y,
-								zDir.z * A.z * freq.z,
-								zDir.h * A.h * freq.h);
+		GL_COORD_VERTEX kNx(xDir.x * A.x * freq.x,
+							xDir.y * A.y * freq.y,
+							xDir.z * A.z * freq.z,
+							xDir.h * A.h * freq.h);
+		GL_COORD_VERTEX kNy(0.25, 0.25, 0.25, 0.25);
+		GL_COORD_VERTEX kNz(zDir.x * A.x * freq.x,
+							zDir.y * A.y * freq.y,
+							zDir.z * A.z * freq.z,
+							zDir.h * A.h * freq.h);
 
-		GL_COORD_VERTEX kTx(	sharpness * 0.25 * xDir.x * zDir.x,
-								sharpness * 0.25 * xDir.y * zDir.y,
-								sharpness * 0.25 * xDir.z * zDir.z,
-								sharpness * 0.25 * xDir.h * zDir.h);
-		GL_COORD_VERTEX kTy(	- kNz.x,
-								- kNz.y,
-								- kNz.z,
-								- kNz.h);
-		GL_COORD_VERTEX kTz(	sharpness * 0.25 * zDir.x * zDir.x,
-								sharpness * 0.25 * zDir.y * zDir.y,
-								sharpness * 0.25 * zDir.z * zDir.z,
-								sharpness * 0.25 * zDir.h * zDir.h);
+		GL_COORD_VERTEX kTx(0.25 * xDir.x * zDir.x,
+							0.25 * xDir.y * zDir.y,
+							0.25 * xDir.z * zDir.z,
+							0.25 * xDir.h * zDir.h);
+		GL_COORD_VERTEX kTy(zDir.x * A.x * freq.x,	// - kNz.x
+							zDir.y * A.y * freq.y,	// - kNz.y
+							zDir.z * A.z * freq.z,	// - kNz.z
+							zDir.h * A.h * freq.h);	// - kNz.h
+		GL_COORD_VERTEX kTz(0.25 * zDir.x * zDir.x,
+							0.25 * zDir.y * zDir.y,
+							0.25 * zDir.z * zDir.z,
+							0.25 * zDir.h * zDir.h);
 
-		GL_COORD_VERTEX kBx(	sharpness * 0.25 * xDir.x * xDir.x,
-								sharpness * 0.25 * xDir.y * xDir.y,
-								sharpness * 0.25 * xDir.z * xDir.z,
-								sharpness * 0.25 * xDir.h * xDir.h);
-		GL_COORD_VERTEX kBy(	- kNx.x,
-								- kNx.y,
-								- kNx.z,
-								- kNx.h);
-		GL_COORD_VERTEX kBz(	sharpness * 0.25 * xDir.x * zDir.x,
-								sharpness * 0.25 * xDir.y * zDir.y,
-								sharpness * 0.25 * xDir.z * zDir.z,
-								sharpness * 0.25 * xDir.h * zDir.h);
+		GL_COORD_VERTEX kBx(0.25 * xDir.x * xDir.x,
+							0.25 * xDir.y * xDir.y,
+							0.25 * xDir.z * xDir.z,
+							0.25 * xDir.h * xDir.h);
+		GL_COORD_VERTEX kBy(xDir.x * A.x * freq.x,	// - kNx.x
+							xDir.y * A.y * freq.y,	// - kNx.y
+							xDir.z * A.z * freq.z,	// - kNx.z
+							xDir.h * A.h * freq.h);	// - kNx.h
+		GL_COORD_VERTEX kBz(0.25 * xDir.x * zDir.x,
+							0.25 * xDir.y * zDir.y,
+							0.25 * xDir.z * zDir.z,
+							0.25 * xDir.h * zDir.h);
 
-		params.addParameter("",xDir);
-		params.addParameter("",zDir);
-		params.addParameter("",A);
-		params.addParameter("",freq);
-		params.addParameter("",phase);
-		params.addParameter("",Q);
-		params.addParameter("",kNx);
-		params.addParameter("",kNy);
-		params.addParameter("",kNz);
-		params.addParameter("",kTx);
-		params.addParameter("",kTy);
-		params.addParameter("",kTz);
-		params.addParameter("",kBx);
-		params.addParameter("",kBy);
-		params.addParameter("",kBz);
+		params.addParameter("xDirs",xDir);
+		params.addParameter("zDirs",zDir);
+		params.addParameter("A",A);
+		params.addParameter("freq",freq);
+		params.addParameter("phase",phase);
+		params.addParameter("Q",Q);
+		params.addParameter("kNx",kNx);
+		params.addParameter("kNy",kNy);
+		params.addParameter("kNz",kNz);
+		params.addParameter("kTx",kTx);
+		params.addParameter("kTy",kTy);
+		params.addParameter("kTz",kTz);
+		params.addParameter("kBx",kBx);
+		params.addParameter("kBy",kBy);
+		params.addParameter("kBz",kBz);
 		params.addParameter("",LPOS);
 
 #ifdef VERTEX_SHADER
 		CVertexShader *vs = m_pShader->glGetVertexShader();
 		vs->setProgramParameters(params);
+#else
+		CVertexProgram *vp = m_pShader->glGetVertexProgram();
+		vp->setProgramParameters(params);
 #endif
 		params2.addParameter("",GL_COORD_VERTEX(0.0f,0.6f,0.8f,0.8f));
 		params2.addParameter("",GL_COORD_VERTEX(8.0f,0.0f,0.0f,1.0f));
@@ -773,7 +850,7 @@ void CVertexShadersDisplay::ReInit()
 	pDisplay->selectScene("SHADER SCENE");
 	pDisplay->setViewPoint(view_point);
     CRenderingProperties *rp = pDisplay->getRenderingProperties();
-	rp->setWireframe(CRenderingProperties::ENABLE);
+	rp->setWireframe(CRenderingProperties::DISABLE);
     rp->setTexturing(CRenderingProperties::ENABLE);
 	rp->setLighting(CRenderingProperties::ENABLE);
 }

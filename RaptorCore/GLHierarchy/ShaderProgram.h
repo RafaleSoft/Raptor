@@ -72,8 +72,12 @@ public:
 
     //! This method can be used to pass in the whole parameter set.
     //! They will be actually applied after a successfull link is issued.
-    //! This method is safe and can be used in engine parallel pipe.
-    void setProgramParameters(const CProgramParameters &v);
+    virtual void setProgramParameters(const CProgramParameters &v);
+
+	//! This method can be used to upadte only a subset of the actual parameter set.
+	//! They will be actually applied after a successfull link is issued.
+	virtual void updateProgramParameters(const CProgramParameters &v);
+
 
 	//! Inherited from CPersistence
 	DECLARE_CLASS_ID(CShaderProgramClassID,"ShaderProgram",CPersistence)

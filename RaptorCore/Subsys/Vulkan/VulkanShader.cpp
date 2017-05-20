@@ -198,38 +198,28 @@ VkPipelineLayout CVulkanShader::getPipelineLayout()
 	return layout;
 }
 
-bool CVulkanShader::vkSetData(VkDeviceSize offset, VkDeviceSize size)
-{
-	m_descriptorData.offset = offset;
-	m_descriptorData.size = size;
-
-	VkDescriptorSetAllocateInfo descriptor_allocate_info = {VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,
-															NULL,
-															descriptor_pool,
-															1, //descriptorSetCount;
-															&descriptor_set_layout };
-
-	VkResult res = vkAllocateDescriptorSets(device, &descriptor_allocate_info, &descriptor_set);
-	CATCH_VK_ERROR(res);
-	if (VK_SUCCESS != res)
-		return VK_NULL_HANDLE;
-
-	return true;
-}
-
-static bool needUpdate = true;
-void CVulkanShader::vkRender(CVulkanCommandBuffer& commandBuffer, VkBuffer uniformBuffer)
+void CVulkanShader::vkRender(CVulkanCommandBuffer& commandBuffer,
+							 VkBuffer uniformBuffer,
+							 VkDeviceSize offset,
+							 VkDeviceSize size)
 {
 	if (VK_NULL_HANDLE == descriptor_set)
-		return;
-
-	if (needUpdate)
 	{
-		VkDescriptorBufferInfo bufferInfo = {	uniformBuffer,
-												m_descriptorData.offset,
-												m_descriptorData.size
-											};
+		VkDescriptorSetAllocateInfo descriptor_allocate_info = {VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,
+																NULL,
+																descriptor_pool,
+																1, //descriptorSetCount;
+																&descriptor_set_layout };
 
+		VkResult res = vkAllocateDescriptorSets(device, &descriptor_allocate_info, &descriptor_set);
+		CATCH_VK_ERROR(res);
+		if ((VK_SUCCESS != res) || (VK_NULL_HANDLE == descriptor_set))
+			return;
+	}
+	
+	if ((VK_NULL_HANDLE != uniformBuffer) && (size > 0))
+	{
+		VkDescriptorBufferInfo bufferInfo = {	uniformBuffer, offset, size };
 		VkWriteDescriptorSet descriptorWrite = {VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
 												NULL,
 												descriptor_set,
@@ -241,7 +231,6 @@ void CVulkanShader::vkRender(CVulkanCommandBuffer& commandBuffer, VkBuffer unifo
 												&bufferInfo,
 												NULL };
 		vkUpdateDescriptorSets(device, 1, &descriptorWrite, 0, NULL);
-		needUpdate = false;
 	}
 
 	commandBuffer.vkCmdBindDescriptorSets(	commandBuffer.commandBuffer,

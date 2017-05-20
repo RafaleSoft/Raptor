@@ -91,17 +91,55 @@ bool CVulkanShaderStage::vkLoadShader(const std::string& filename)
 	return m_bValid;
 }
 
-bool CVulkanShaderStage::vkSetData(void *src, uint64_t size)
+
+void CVulkanShaderStage::setProgramParameters(const CProgramParameters &v)
 {
-	CUniformAllocator*	pUAllocator = CUniformAllocator::GetInstance();
+	CShaderProgram::setProgramParameters(v);
 
-	if (NULL == uniforms)
-		uniforms = pUAllocator->allocateUniforms(size);
+	if ((m_bApplyParameters) && (NULL != m_pShaderStages))
+	{
+		CUniformAllocator*	pUAllocator = CUniformAllocator::GetInstance();
 
-	pUAllocator->glvkCopyPointer(uniforms, (unsigned char*)src, size);
-	if (NULL != m_pShaderStages)
-		m_pShaderStages->vkSetData((VkDeviceSize)uniforms, size);
+		if (NULL == uniforms)
+		{
+			uint64_t size = 0;
+			for (unsigned int idx = 0; idx < m_parameters.getNbParameters(); idx++)
+			{
+				const CProgramParameters::CParameterBase& param_value = m_parameters[idx];
+				size += param_value.size();
+			}
+			uniforms = pUAllocator->allocateUniforms(size);
+		}
 
-	return true;
+		// TODO : handle the case where parameter sets have different size:
+		//	release parameters + reallocate.
+		uint64_t totalsize = 0;
+		for (unsigned int idx = 0; idx < m_parameters.getNbParameters(); idx++)
+		{
+			const CProgramParameters::CParameterBase& param_value = m_parameters[idx];
+			uint64_t sz = param_value.size();
+			const void *addr = param_value.addr();
+
+			pUAllocator->glvkCopyPointer(uniforms+totalsize, (unsigned char*)addr, sz);
+			totalsize += sz;
+		}
+	}
 }
 
+void CVulkanShaderStage::vkRender(CVulkanCommandBuffer &commandBuffer, VkBuffer uniformBuffer)
+{
+	if (NULL != m_pShaderStages)
+	{
+		uint64_t size = 0;
+		if (m_bApplyParameters)
+		{
+			for (unsigned int idx = 0; idx < m_parameters.getNbParameters(); idx++)
+			{
+				const CProgramParameters::CParameterBase& param_value = m_parameters[idx];
+				size += param_value.size();
+			}
+			m_bApplyParameters = false;
+		}
+		m_pShaderStages->vkRender(commandBuffer, uniformBuffer, (VkDeviceSize)uniforms, size);
+	}
+}

@@ -74,6 +74,13 @@ void CShaderProgram::setProgramParameters(const CProgramParameters &v)
     m_bApplyParameters = true;
 }
 
+
+void CShaderProgram::updateProgramParameters(const CProgramParameters &v)
+{
+	m_parameters.updateParameters(v);
+	m_bApplyParameters = true;
+}
+
 bool CShaderProgram::glLoadProgramFromFile(const std::string &program)
 {
 	CRaptorIO *shdr = CRaptorIO::Create(program, CRaptorIO::DISK_READ);

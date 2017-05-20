@@ -174,9 +174,7 @@ void CShadedGeometry::vkRender(	CVulkanCommandBuffer& commandBuffer,
 		if (m_pShader->hasVulkanProgram())
 		{
 			CVulkanShaderStage *ss = m_pShader->vkGetVulkanProgram();
-			CVulkanShader* pVulkanShader = ss->getShader();
-			if (NULL != pVulkanShader)
-				pVulkanShader->vkRender(commandBuffer, uniformBinding);
+			ss->vkRender(commandBuffer, uniformBinding);
 		}
 	}
 
