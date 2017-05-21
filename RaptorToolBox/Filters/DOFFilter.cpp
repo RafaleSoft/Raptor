@@ -224,17 +224,16 @@ CDOFFilter::CDOFFilter()
 	tmpTexture2(NULL),
 	tmpDisplay2(NULL),
 	m_pRenderTextures2(NULL),
-	m_nbBlur(1)
+	m_nbBlur(1),
+	dofParams(GL_COORD_VERTEX(0.0f,0.95f,50.0f,0.0f))
 {
-    dofParams.x = 0.0f;
-    dofParams.y = 0.95f;
-    dofParams.z = 50.0f;
-    dofParams.h = 0.0f;
+	vp_paramsX.addParameter("offset", GL_COORD_VERTEX(0.0f, 0.0f, 0.0f, 0.0f));
+	vp_paramsX.addParameter("vector", GL_COORD_VERTEX(1.0f, 0.0f, 0.0f, 0.0f));
 
-	vp_params.addParameter("offset",GL_COORD_VERTEX(0.0f , 0.0f , 0.0f , 0.0f));
-	vp_params.addParameter("vector",GL_COORD_VERTEX(0.0f , 0.0f , 0.0f , 0.0f));
+	vp_paramsY.addParameter("offset", GL_COORD_VERTEX(0.0f, 0.0f, 0.0f, 0.0f));
+	vp_paramsY.addParameter("vector", GL_COORD_VERTEX(0.0f, 1.0f, 0.0f, 0.0f));
 
-	fp_params.addParameter("dofParams",dofParams);
+	fp_params.addParameter("dofParams",dofParams.p);
 }
 
 CDOFFilter::~CDOFFilter()
@@ -280,17 +279,19 @@ void CDOFFilter::glDestroyFilter(void)
 
 void CDOFFilter::setDOFParams(float percentageOfDepthFiltered, float filterAmplitude)
 {
-    dofParams.y = percentageOfDepthFiltered;
+    dofParams.p.y = percentageOfDepthFiltered;
 
     // set default value if parameter is out of bounds.
-    if ((dofParams.y < 0) || (dofParams.y > 1.0))
-        dofParams.y = 0.95f;
+    if ((dofParams.p.y < 0) || (dofParams.p.y > 1.0))
+        dofParams.p.y = 0.95f;
 
-    dofParams.z = filterAmplitude;
+    dofParams.p.z = filterAmplitude;
 
     // set default value if parameter is out of bounds
-    if (dofParams.z < 0)
-        dofParams.z = 50.0f;
+    if (dofParams.p.z < 0)
+        dofParams.p.z = 50.0f;
+
+	fp_params[0].copy(dofParams);
 }
 
 void CDOFFilter::setBlurNbPass(unsigned int nb)
@@ -312,15 +313,12 @@ void CDOFFilter::glRenderFilter()
     glActiveTextureARB(GL_TEXTURE0_ARB);
     getColorInput()->glRender();
 
-	vp_params[0].vector = vsParameter_Xoffset;
-	vp_params[1].vector = GL_COORD_VERTEX(1.0f,0.0f,0.0f,0.0f);
 
 #if defined(GL_ARB_vertex_shader)
-	fp_params[0].vector = dofParams;
-	DOFShader->glGetVertexProgram()->setProgramParameters(vp_params);
+	DOFShader->glGetVertexProgram()->setProgramParameters(vp_paramsX);
 	DOFShader->glGetFragmentProgram()->setProgramParameters(fp_params);
 #elif defined(GL_ARB_vertex_program)
-	DOFShader->glGetVertexShader()->setProgramParameters(vp_params);
+	DOFShader->glGetVertexShader()->setProgramParameters(vp_paramsX);
 	DOFShader->glGetFragmentShader()->setProgramParameters(fp_params);
 #endif
 
@@ -336,15 +334,11 @@ void CDOFFilter::glRenderFilter()
 		tmpDisplay2->glBindDisplay(noDevice);
 		tmpTexture->glRender();
 
-		vp_params[0].vector = vsParameter_Yoffset;
-		vp_params[1].vector = GL_COORD_VERTEX(0.0f,1.0f,0.0f,0.0f);
-
 	#if defined(GL_ARB_vertex_shader)
-		fp_params[0].vector = dofParams;
-		DOFShader->glGetVertexProgram()->setProgramParameters(vp_params);
+		DOFShader->glGetVertexProgram()->setProgramParameters(vp_paramsY);
 		DOFShader->glGetFragmentProgram()->setProgramParameters(fp_params);
 	#elif defined(GL_ARB_vertex_program)
-		DOFShader->glGetVertexShader()->setProgramParameters(vp_params);
+		DOFShader->glGetVertexShader()->setProgramParameters(vp_paramsY);
 		DOFShader->glGetFragmentShader()->setProgramParameters(fp_params);
 	#endif
 
@@ -357,15 +351,11 @@ void CDOFFilter::glRenderFilter()
 		tmpDisplay->glBindDisplay(noDevice);
 		tmpTexture2->glRender();
 
-		vp_params[0].vector = vsParameter_Xoffset;
-		vp_params[1].vector = GL_COORD_VERTEX(1.0f,0.0f,0.0f,0.0f);
-
 #if defined(GL_ARB_vertex_shader)
-		fp_params[0].vector = dofParams;
-		DOFShader->glGetVertexProgram()->setProgramParameters(vp_params);
+		DOFShader->glGetVertexProgram()->setProgramParameters(vp_paramsX);
 		DOFShader->glGetFragmentProgram()->setProgramParameters(fp_params);
 #elif defined(GL_ARB_vertex_program)
-		DOFShader->glGetVertexShader()->setProgramParameters(vp_params);
+		DOFShader->glGetVertexShader()->setProgramParameters(vp_paramsX);
 		DOFShader->glGetFragmentShader()->setProgramParameters(fp_params);
 #endif
 
@@ -389,15 +379,11 @@ void CDOFFilter::glRenderFilterOutput()
 	glActiveTextureARB(GL_TEXTURE0_ARB);
 	tmpTexture->glRender();
 
-	vp_params[0].vector = vsParameter_Yoffset;
-	vp_params[1].vector = GL_COORD_VERTEX(0.0f,1.0f,0.0f,0.0f);
-
 #if defined(GL_ARB_vertex_shader)
-	fp_params[0].vector = dofParams;
-	DOFShader->glGetVertexProgram()->setProgramParameters(vp_params);
+	DOFShader->glGetVertexProgram()->setProgramParameters(vp_paramsY);
 	DOFShader->glGetFragmentProgram()->setProgramParameters(fp_params);
 #elif defined(GL_ARB_vertex_program)
-	DOFShader->glGetVertexShader()->setProgramParameters(vp_params);
+	DOFShader->glGetVertexShader()->setProgramParameters(vp_paramsY);
 	DOFShader->glGetFragmentShader()->setProgramParameters(fp_params);
 #endif
 
@@ -524,22 +510,23 @@ void CDOFFilter::glInitShaders(void)
 	DOFShader = new CShader("DOF_SHADER");
 
 	float delta = 1.0f / depthInput->getWidth();
-	vsParameter_Xoffset.x = 1.0f * delta;
-	vsParameter_Xoffset.y = 2.0f * delta;
-	vsParameter_Xoffset.z = 3.0f * delta;
-	vsParameter_Xoffset.h = 0.0f;
+	GL_COORD_VERTEX     vsParameter_Xoffset(1.0f * delta, 2.0f * delta, 3.0f * delta, 0.0f);
+	CProgramParameters::CParameter<GL_COORD_VERTEX> px(vsParameter_Xoffset);
+	vp_paramsX[0].copy(px);
+
 	delta = 1.0f / depthInput->getHeight();
-	vsParameter_Yoffset.x = 1.0f * delta;
-	vsParameter_Yoffset.y = 2.0f * delta;
-	vsParameter_Yoffset.z = 3.0f * delta;
-	vsParameter_Yoffset.h = 0.0f;
+	GL_COORD_VERTEX     vsParameter_Yoffset(1.0f * delta, 2.0f * delta, 3.0f * delta, 0.0f);
+	CProgramParameters::CParameter<GL_COORD_VERTEX> py(vsParameter_Yoffset);
+	vp_paramsY[0].copy(py);
+
+	fp_params[0].copy(dofParams);
 
 	// Create & load shaders to perform a 2 pass blur using depth value.
 #if defined(GL_ARB_vertex_shader)
 	CVertexProgram *vp = DOFShader->glGetVertexProgram("dof_vp");
 	bool res = vp->glLoadProgram(dof_vp);
 	if (res)
-		vp->setProgramParameters(vp_params);
+		vp->setProgramParameters(vp_paramsX);
 
 	CFragmentProgram *fp = DOFShader->glGetFragmentProgram("dof_fp");
 	res = res && fp->glLoadProgram(dof_fp);

@@ -51,14 +51,6 @@ public:
 	//!	Clone this shader.
 	virtual CGeometryProgram* glClone();
 
-    //! The real rendering cannot be performed here, as it relies on
-    //! CShader program object invocation. Nevertheless, this method is
-    //! necessary to perform 'after-link' steps ( such as uniform locations
-    virtual void glRender(void);
-
-    //! See base class
-    virtual void glStop(void);
-
     //! Loads an OpenGL 2.0 vertex shader program.
 	virtual bool glLoadProgram(const std::string &program);
 
@@ -76,9 +68,6 @@ public:
     //! @return : true if binding is done without errors, false otherwise.
     bool glBindProgram(RAPTOR_HANDLE program);
 
-    //! Symetric as above : detaches the vertex program from the program object, performing checking.
-    bool glUnbindProgram(RAPTOR_HANDLE program);
-
 	//!	Implements CPersistence
 	DECLARE_CLASS_ID(CGeometryProgramClassID,"GeometryProgram",CShaderProgram)
 
@@ -91,6 +80,8 @@ private:
 
     //! Specific init of shader parameters
     virtual void	glInitShaders();
+
+	static bool		m_bGeometryProgramReady;
 };
 
 RAPTOR_NAMESPACE_END

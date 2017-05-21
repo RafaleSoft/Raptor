@@ -86,15 +86,8 @@ void CEMBMShader::glInit(const std::string &bump_vertexshader,
 		embm_vertexshader.insert(pos2+1,string("#define EMBM_RENDERING 1\n\n"));
 	}
 	vp->glLoadProgram(embm_vertexshader);
-	vp->glStop();
 
-	//vp = glGetVertexProgram("PPIXEL_EMBM_VTX_PROGRAM");
-	vp = glGetVertexProgram("PPIXEL_BUMP_VTX_PROGRAM");
-	CShaderProgram::CProgramParameters params;
-	params.addParameter("tangent",CShaderProgram::ADDITIONAL_PARAM1);
-	vp->setProgramParameters(params);
-
-	//!	First create the program, to get it with the shader
+		//!	First create the program, to get it with the shader
 	//!	and unset auto delete shader
 	CFragmentProgram *fp = new CFragmentProgram("PPIXEL_EMBM_TEX_PROGRAM");
 	std::string embm_pixelshader = bump_pixelshader;
@@ -105,12 +98,9 @@ void CEMBMShader::glInit(const std::string &bump_vertexshader,
 		embm_pixelshader.insert(pos2+1,string("#define EMBM_RENDERING 1\n\n"));
 	}
 	fp->glLoadProgram(embm_pixelshader);
-	fp->glStop();
 
-	//fp = glGetFragmentProgram("PPIXEL_EMBM_TEX_PROGRAM");
+	vp = glGetVertexProgram("PPIXEL_BUMP_VTX_PROGRAM");
 	fp = glGetFragmentProgram("PPIXEL_BUMP_TEX_PROGRAM");
-	CShaderProgram::CProgramParameters params2;
-	fp->setProgramParameters(params2);
 
 	glCompileShader();
 
@@ -182,9 +172,9 @@ void CEMBMShader::enableEmbm(bool enable)
 		glRemoveVertexProgram();
 		glRemoveFragmentProgram();
 
-		CShaderProgram::CProgramParameters params;
-		params.addParameter("tangent",CShaderProgram::ADDITIONAL_PARAM1);
-		CShaderProgram::CProgramParameters params2;
+		CProgramParameters params;
+		params.addParameter("tangent", CProgramParameters::ADDITIONAL_PARAM1);
+		CProgramParameters params2;
 		CVertexProgram *vp = NULL;
 		CFragmentProgram *fp = NULL;
 	

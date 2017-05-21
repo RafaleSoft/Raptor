@@ -107,7 +107,7 @@ RAPTOR_NAMESPACE
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CXMLRaptorIO::CXMLRaptorIO(const char *streamName,CRaptorIO::IO_KIND kind)
+CXMLRaptorIO::CXMLRaptorIO(const std::string& streamName, CRaptorIO::IO_KIND kind)
 	:CRaptorIO(streamName,kind),
 	xml_parser(NULL),nodePos(-1),currentNode(NULL),parentNode(NULL)
 {
@@ -264,18 +264,18 @@ CRaptorIO& CXMLRaptorIO::operator>>(std::string &s)
 }
 
 //	Methods
-CRaptorIO& CXMLRaptorIO::read(void *data,unsigned int size)  
+CRaptorIO& CXMLRaptorIO::parse(const char *data, size_t size)
 {
-    if ((xml_parser == NULL) || (data == NULL))
+    if ((xml_parser == NULL) || (NULL == data))
 	    return *this;
 
 	const char *shema = NULL;
 	if (0 == strcmp((const char*)data+strlen((const char*)data)-4,".xsd"))
 	{
 		string msg = "Raptor XMLIO will use noNamespaceShemaLocation file: ";
-		msg += (const char*)data;
+		msg += data;
 		RAPTOR_NO_ERROR(CPersistence::CPersistenceClassID::GetClassId(),msg.c_str());
-		xml_parser->setExternalNoNamespaceSchemaLocation((const char*)data);
+		xml_parser->setExternalNoNamespaceSchemaLocation(data);
 		return *this;
 	}
 
@@ -285,12 +285,12 @@ CRaptorIO& CXMLRaptorIO::read(void *data,unsigned int size)
     {
         if (getKind() == CRaptorIO::DISK_READ)
         {
-            LocalFileInputSource source(XMLString::transcode((const char*)data));
+            LocalFileInputSource source(XMLString::transcode(data));
             xml_parser->parse(source);
         }
         else if (getKind() == CRaptorIO::MEMORY)
         {
-	        MemBufInputSource source((const unsigned char*)data,size,"CXMLRaptorIO");
+	        MemBufInputSource source((unsigned char*)data,size,"CXMLRaptorIO");
             xml_parser->parse(source);
         }
     }
@@ -318,20 +318,19 @@ CRaptorIO& CXMLRaptorIO::read(void *data,unsigned int size)
     return *this; 
 }
 
-CRaptorIO& CXMLRaptorIO::write(const void *data,unsigned int size)  
-{ 
-	if (xml_parser == NULL)
-		return *this;
+CRaptorIO& CXMLRaptorIO::read(void *data, size_t size)
+{
+	return *this;
+}
 
+CRaptorIO& CXMLRaptorIO::write(const void *data, size_t size)
+{ 
 	return *this; 
 }
 
-CRaptorIO& CXMLRaptorIO::seek(unsigned int size)  
+CRaptorIO& CXMLRaptorIO::seek(size_t size)
 { 
-	if (xml_parser == NULL)
-		return *this;
-
-	return *this; 
+	return *this;
 }
 
 string CXMLRaptorIO::getValueName(void) const

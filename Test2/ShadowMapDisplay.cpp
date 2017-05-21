@@ -71,49 +71,49 @@ void Ground::glRender()
     glColor4f(1.0f,1.0f,1.0f,1.0f);
 	glBegin(GL_QUADS);
 		texCoord1.x = 0.0; texCoord1.y = 0.0;
-		s.glMultiTexCoord(CVertexShader::TEXCOORD1,texCoord1);
-		s.glMultiTexCoord(CVertexShader::TEXCOORD0,texCoord1);
+		s.glMultiTexCoord(CProgramParameters::TEXCOORD1, texCoord1);
+		s.glMultiTexCoord(CProgramParameters::TEXCOORD0, texCoord1);
 		s.glVertex(position);
 
 		texCoord1.x = 4.0; texCoord1.y = 0.0;
-		s.glMultiTexCoord(CVertexShader::TEXCOORD1,texCoord1);
-		s.glMultiTexCoord(CVertexShader::TEXCOORD0,texCoord1);
+		s.glMultiTexCoord(CProgramParameters::TEXCOORD1, texCoord1);
+		s.glMultiTexCoord(CProgramParameters::TEXCOORD0, texCoord1);
 		position.z = 20.0f;
 		s.glVertex(position);
 
 		texCoord1.x = 4.0; texCoord1.y = 4.0;
-		s.glMultiTexCoord(CVertexShader::TEXCOORD1,texCoord1);
-		s.glMultiTexCoord(CVertexShader::TEXCOORD0,texCoord1);
+		s.glMultiTexCoord(CProgramParameters::TEXCOORD1, texCoord1);
+		s.glMultiTexCoord(CProgramParameters::TEXCOORD0, texCoord1);
 		position.x = 20.0f;
 		s.glVertex(position);
 
 		texCoord1.x = 0.0; texCoord1.y = 4.0;
-		s.glMultiTexCoord(CVertexShader::TEXCOORD1,texCoord1);
-		s.glMultiTexCoord(CVertexShader::TEXCOORD0,texCoord1);
+		s.glMultiTexCoord(CProgramParameters::TEXCOORD1, texCoord1);
+		s.glMultiTexCoord(CProgramParameters::TEXCOORD0, texCoord1);
 		position.z = -20.0f;
 		s.glVertex(position);
 
         position.x = -20.0;
         texCoord1.x = 0.0; texCoord1.y = 0.0;
-		s.glMultiTexCoord(CVertexShader::TEXCOORD1,texCoord1);
-		s.glMultiTexCoord(CVertexShader::TEXCOORD0,texCoord1);
+		s.glMultiTexCoord(CProgramParameters::TEXCOORD1, texCoord1);
+		s.glMultiTexCoord(CProgramParameters::TEXCOORD0, texCoord1);
 		s.glVertex(position);
 
 		texCoord1.x = 4.0; texCoord1.y = 0.0;
-		s.glMultiTexCoord(CVertexShader::TEXCOORD1,texCoord1);
-		s.glMultiTexCoord(CVertexShader::TEXCOORD0,texCoord1);
+		s.glMultiTexCoord(CProgramParameters::TEXCOORD1, texCoord1);
+		s.glMultiTexCoord(CProgramParameters::TEXCOORD0, texCoord1);
 		position.x = 20.0f;
 		s.glVertex(position);
 
 		texCoord1.x = 4.0; texCoord1.y = 4.0;
-		s.glMultiTexCoord(CVertexShader::TEXCOORD1,texCoord1);
-		s.glMultiTexCoord(CVertexShader::TEXCOORD0,texCoord1);
+		s.glMultiTexCoord(CProgramParameters::TEXCOORD1, texCoord1);
+		s.glMultiTexCoord(CProgramParameters::TEXCOORD0, texCoord1);
 		position.y = 35.0f;
 		s.glVertex(position);
 
 		texCoord1.x = 0.0; texCoord1.y = 4.0;
-		s.glMultiTexCoord(CVertexShader::TEXCOORD1,texCoord1);
-		s.glMultiTexCoord(CVertexShader::TEXCOORD0,texCoord1);
+		s.glMultiTexCoord(CProgramParameters::TEXCOORD1, texCoord1);
+		s.glMultiTexCoord(CProgramParameters::TEXCOORD0, texCoord1);
 		position.x = -20.0f;
 		s.glVertex(position);
 
@@ -121,49 +121,49 @@ void Ground::glRender()
 //        glColor4f(1.0f,0.0f,0.0f,1.0f);
         position.y = -5.0; position.z = 20.0f;
         texCoord1.x = 0.0; texCoord1.y = 0.0;
-		s.glMultiTexCoord(CVertexShader::TEXCOORD1,texCoord1);
-		s.glMultiTexCoord(CVertexShader::TEXCOORD0,texCoord1);
+		s.glMultiTexCoord(CProgramParameters::TEXCOORD1, texCoord1);
+		s.glMultiTexCoord(CProgramParameters::TEXCOORD0, texCoord1);
 		s.glVertex(position);
 
 		texCoord1.x = 4.0; texCoord1.y = 0.0;
-		s.glMultiTexCoord(CVertexShader::TEXCOORD1,texCoord1);
-		s.glMultiTexCoord(CVertexShader::TEXCOORD0,texCoord1);
+		s.glMultiTexCoord(CProgramParameters::TEXCOORD1, texCoord1);
+		s.glMultiTexCoord(CProgramParameters::TEXCOORD0, texCoord1);
 		position.z = -20.0f;
 		s.glVertex(position);
 
 		texCoord1.x = 4.0; texCoord1.y = 4.0;
-		s.glMultiTexCoord(CVertexShader::TEXCOORD1,texCoord1);
-		s.glMultiTexCoord(CVertexShader::TEXCOORD0,texCoord1);
+		s.glMultiTexCoord(CProgramParameters::TEXCOORD1, texCoord1);
+		s.glMultiTexCoord(CProgramParameters::TEXCOORD0, texCoord1);
 		position.y = 35.0f;
 		s.glVertex(position);
 
 		texCoord1.x = 0.0; texCoord1.y = 4.0;
-		s.glMultiTexCoord(CVertexShader::TEXCOORD1,texCoord1);
-		s.glMultiTexCoord(CVertexShader::TEXCOORD0,texCoord1);
+		s.glMultiTexCoord(CProgramParameters::TEXCOORD1, texCoord1);
+		s.glMultiTexCoord(CProgramParameters::TEXCOORD0, texCoord1);
 		position.z = 20.0f;
 		s.glVertex(position);
 
         position.y = -5.0; position.z = -20.0f; position.x = 20.0f;
         texCoord1.x = 0.0; texCoord1.y = 0.0;
-		s.glMultiTexCoord(CVertexShader::TEXCOORD1,texCoord1);
-		s.glMultiTexCoord(CVertexShader::TEXCOORD0,texCoord1);
+		s.glMultiTexCoord(CProgramParameters::TEXCOORD1, texCoord1);
+		s.glMultiTexCoord(CProgramParameters::TEXCOORD0, texCoord1);
 		s.glVertex(position);
 
 		texCoord1.x = 4.0; texCoord1.y = 0.0;
-		s.glMultiTexCoord(CVertexShader::TEXCOORD1,texCoord1);
-		s.glMultiTexCoord(CVertexShader::TEXCOORD0,texCoord1);
+		s.glMultiTexCoord(CProgramParameters::TEXCOORD1, texCoord1);
+		s.glMultiTexCoord(CProgramParameters::TEXCOORD0, texCoord1);
 		position.z = 20.0f;
 		s.glVertex(position);
 
 		texCoord1.x = 4.0; texCoord1.y = 4.0;
-		s.glMultiTexCoord(CVertexShader::TEXCOORD1,texCoord1);
-		s.glMultiTexCoord(CVertexShader::TEXCOORD0,texCoord1);
+		s.glMultiTexCoord(CProgramParameters::TEXCOORD1, texCoord1);
+		s.glMultiTexCoord(CProgramParameters::TEXCOORD0, texCoord1);
 		position.y = 35.0f;
 		s.glVertex(position);
 
 		texCoord1.x = 0.0; texCoord1.y = 4.0;
-		s.glMultiTexCoord(CVertexShader::TEXCOORD1,texCoord1);
-		s.glMultiTexCoord(CVertexShader::TEXCOORD0,texCoord1);
+		s.glMultiTexCoord(CProgramParameters::TEXCOORD1, texCoord1);
+		s.glMultiTexCoord(CProgramParameters::TEXCOORD0, texCoord1);
 		position.z = -20.0f;
 		s.glVertex(position);
 

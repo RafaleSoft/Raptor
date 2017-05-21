@@ -96,10 +96,10 @@ void main(void)			\n\
 
 CMBFilter::CMBFilter():
     m_pMotionBlurShader(NULL),m_pAccumulator(NULL),
-	m_pRenderTextures2(NULL)
+	m_pRenderTextures2(NULL),
+	mbParams(GL_COORD_VERTEX(0.75f, 0.75f, 0.75f, 1.0f))
 {
-	GL_COORD_VERTEX mbParams(0.75f,0.75f,0.75f,1.0f);
-	f_params.addParameter("percentage",mbParams);
+	f_params.addParameter("percentage",mbParams.p);
 	f_params.addParameter("color",CTextureUnitSetup::IMAGE_UNIT_0);
 	f_params.addParameter("accum",CTextureUnitSetup::IMAGE_UNIT_1);
 }
@@ -111,17 +111,16 @@ CMBFilter::~CMBFilter()
 
 void CMBFilter::setPercentage(float r,float g,float b,float a)
 {
-	GL_COORD_VERTEX mbParams(r,g,b,a);
-	f_params[0].vector = mbParams;
+	mbParams.p = GL_COORD_VERTEX(r, g, b, a);
+	f_params[0].copy(mbParams);
 }
 
 void CMBFilter::getPercentage(float &r,float &g,float &b,float &a)
 {
-	GL_COORD_VERTEX& mbParams = f_params[0].vector;
-    r = mbParams.x;
-    g = mbParams.y;
-    b = mbParams.z;
-    a = mbParams.h;
+    r = mbParams.p.x;
+    g = mbParams.p.y;
+    b = mbParams.p.z;
+    a = mbParams.p.h;
 }
 
 void CMBFilter::glDestroyFilter(void)

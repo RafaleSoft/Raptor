@@ -13,10 +13,22 @@
 #if !defined(AFX_RAPTORDISPLAYFILTER_H__805D8523_96EA_427B_ABEC_C39EE1BC094C__INCLUDED_)
     #include "System/RaptorDisplayFilter.h"
 #endif
+#if !defined(AFX_RAPTORDISPLAYCONFIG_H__DA0759DF_6CF9_44A7_9ADE_D404FEEC2DDF__INCLUDED_)
+	#include "System/RaptorDisplayConfig.h"
+#endif
+#if !defined(AFX_PROGRAMPARAMETERS_H__E28A74BB_DE78_470A_A8A2_5A3EBB3F4F90__INCLUDED_)
+	#include "GLHierarchy/ProgramParameters.h"
+#endif
+
+
+RAPTOR_NAMESPACE_BEGIN
+class CRaptorDisplay;
+class CVertexShader;
+class CFragmentShader;
+RAPTOR_NAMESPACE_END
 
 
 RAPTOR_NAMESPACE
-
 
 class RAPTOR_API CHDRFilter : public CRaptorDisplayFilter  
 {
@@ -55,10 +67,10 @@ private:
 	//! HDR rendering attributes
     unsigned int    nLevels;
 	unsigned int	nBlurPass;
-	float			treshold;
 
 	//!	Downsizing of framebuffer to compute overall luminance
-	CShaderProgram::CProgramParameters maxLuminanceParams;
+	CProgramParameters::CParameter<GL_COORD_VERTEX> luminanceParams;
+	CProgramParameters maxLuminanceParams;
     CRaptorDisplay  **m_pDownSizedDisplay;
     CTextureObject  **m_pDownSizedBuffer;
 	CTextureSet		**m_pDownSizedAttachments;
@@ -66,13 +78,14 @@ private:
     CShader			*m_lastMaxLuminance;
     
 	//! Extract high frequencies
-	CShaderProgram::CProgramParameters threshholdParams;
+	CProgramParameters::CParameter<GL_COORD_VERTEX> thresholdParam;
+	CProgramParameters thresholdParams;
     CShader *m_pTreshholdFreqs;
     CRaptorDisplay  *m_pDownHighFreqs;
     CTextureObject  *m_pDownHFBuffer;
 
 	//! Downsizing blur of high frequencies threshold
-	CShaderProgram::CProgramParameters blurOffsets;
+	CProgramParameters blurOffsets;
 	CRaptorDisplay  *m_pDownBlurXDisplay;
     CRaptorDisplay  *m_pDownBlurYDisplay;
     CTextureObject  *m_pDownBlurXBuffer;

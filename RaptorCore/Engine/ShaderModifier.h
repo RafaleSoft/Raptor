@@ -15,8 +15,8 @@
 #if !defined(AFX_MODIFIER_H__BEAB48CC_47E5_4807_B18E_D2005795363F__INCLUDED_)
 	#include "Modifier.h"
 #endif
-#if !defined(AFX_SHADERPROGRAM_H__936BEC73_3903_46CE_86C9_9CA0005B31F5__INCLUDED_)
-	#include "GLHierarchy/ShaderProgram.h"
+#if !defined(AFX_PROGRAMPARAMETERS_H__E28A74BB_DE78_470A_A8A2_5A3EBB3F4F90__INCLUDED_)
+	#include "GLHierarchy/ProgramParameters.h"
 #endif
 
 
@@ -58,15 +58,15 @@ protected:
 private:
 	//!	Handler to be overloaded to declare an update
 	//!	of the managed vertex program/shader
-	virtual void RAPTOR_FASTCALL updateVertexParameters(float dt, CShaderProgram::CProgramParameters &v);
+	virtual void RAPTOR_FASTCALL updateVertexParameters(float dt, CProgramParameters &v);
 
 	//!	Handler to be overloaded to declare an update
 	//!	of the managed fragment program/shader
-	virtual void RAPTOR_FASTCALL updateFragmentParameters(float dt, CShaderProgram::CProgramParameters &v);
+	virtual void RAPTOR_FASTCALL updateFragmentParameters(float dt, CProgramParameters &v);
 
 	//!	Handler to be overloaded to declare an update
 	//!	of the managed geometry program/shader
-	virtual void RAPTOR_FASTCALL updateGeometryParameters(float dt, CShaderProgram::CProgramParameters &v);
+	virtual void RAPTOR_FASTCALL updateGeometryParameters(float dt, CProgramParameters &v);
 
 	//!	Compute physics resultant after dt time increment
 	//!	This method should not be called directly.

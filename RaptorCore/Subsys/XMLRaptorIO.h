@@ -23,7 +23,7 @@ RAPTOR_NAMESPACE_BEGIN
 class CXMLRaptorIO : public CRaptorIO  
 {
 public:
-    CXMLRaptorIO(const char *streamName,CRaptorIO::IO_KIND kind);
+	CXMLRaptorIO(const std::string& streamName, CRaptorIO::IO_KIND kind);
 	virtual ~CXMLRaptorIO();
 
 	//	Specific XML operations
@@ -53,11 +53,11 @@ public:
 	virtual CRaptorIO& operator>>(std::string& s)  ;
 
 	//	Methods
-	virtual CRaptorIO& write(const void *data,unsigned int size)  ;
-	virtual CRaptorIO& read(void *data,unsigned int size)  ;
-	virtual CRaptorIO& seek(unsigned int size) ;
-
-
+	virtual CRaptorIO& parse(const char *data, size_t size);
+	virtual CRaptorIO& write(const void *data, size_t size);
+	virtual CRaptorIO& read(void *data, size_t size);
+	virtual CRaptorIO& seek(size_t size);
+	
 	//	structures I/O
 	virtual CRaptorIO& operator<<(const GL_COORD_VERTEX_TAG & v)  ;
 	virtual CRaptorIO& operator>>(GL_COORD_VERTEX_TAG & v)  ;

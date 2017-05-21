@@ -61,9 +61,6 @@ public:
 	//!	Clone this shader.
 	virtual CFragmentShader* glClone();
 
-    //! Implements base class status
-    virtual bool isValid(void) const { return m_bValid; };
-
     //! Implements subclass of CShaderProgram : loads a valid ASM shader code source
 	//!	@see CShaderProgram.
 	virtual bool glLoadProgram(const std::string &program);
@@ -88,8 +85,8 @@ public:
 	static bool glGetProgramCaps(GL_FRAGMENT_SHADER_CAPS& caps);
 	
 	//!	Direct access to program parameters
-	void glProgramParameter(unsigned int numParam,const GL_COORD_VERTEX &v);
-	void glProgramParameter(unsigned int numParam,const CColor::RGBA &v);
+	virtual void glProgramParameter(unsigned int numParam,const GL_COORD_VERTEX &v) const;
+	virtual void glProgramParameter(unsigned int numParam,const CColor::RGBA &v) const;
 
 	//!	Implements CPersistence
 	DECLARE_CLASS_ID(CFragmentShaderClassID,"FragmentShader",CShaderProgram)
@@ -105,7 +102,7 @@ private:
     //! Specific init of shader parameters
     virtual void	glInitShaders();
 
-    bool    m_bValid;
+	static bool		m_bFragmentReady;
 };
 
 RAPTOR_NAMESPACE_END

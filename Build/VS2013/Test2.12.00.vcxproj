@@ -181,7 +181,6 @@
     <ClCompile Include="..\..\Test2\AmbientOcclusionDisplay.cpp" />
     <ClCompile Include="..\..\Test2\BumpDisplay.cpp" />
     <ClCompile Include="..\..\Test2\CollisionDisplay.cpp" />
-    <ClCompile Include="..\..\Test2\EMBMDisplay.cpp" />
     <ClCompile Include="..\..\Test2\GenericDisplay.cpp" />
     <ClCompile Include="..\..\Test2\LodDisplay.cpp" />
     <ClCompile Include="..\..\Test2\ParticleDisplay.cpp" />
@@ -214,7 +213,6 @@
     <ClInclude Include="..\..\Test2\AmbientOcclusionDisplay.h" />
     <ClInclude Include="..\..\Test2\BumpDisplay.h" />
     <ClInclude Include="..\..\Test2\CollisionDisplay.h" />
-    <ClInclude Include="..\..\Test2\EMBMDisplay.h" />
     <ClInclude Include="..\..\Test2\GenericDisplay.h" />
     <ClInclude Include="..\..\Test2\LodDisplay.h" />
     <ClInclude Include="..\..\Test2\ParticleDisplay.h" />

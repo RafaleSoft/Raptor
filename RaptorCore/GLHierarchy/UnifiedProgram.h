@@ -23,16 +23,25 @@ public:
 	//!	Destructor.
 	virtual ~CUnifiedProgram();
 
-    //! Implements base class status
-    virtual bool isValid(void) const { return m_bValid; };
+	//!	Load OpenGL parameters all at once
+	virtual void glRender(void);
 
     //! Loads a unique parameter immediately
     virtual void glProgramParameter(unsigned int numParam,
-									const GL_COORD_VERTEX &v);
+									const GL_COORD_VERTEX &v) const;
 
 	//! Same as above but passes a color instead of a geo vector
 	virtual void glProgramParameter(unsigned int numParam,
-									const CColor::RGBA &v);
+									const CColor::RGBA &v) const;
+
+	//! This method attaches the vertex program to a program object for
+	//! linking and validation. Checking is performed on the handle to accept only valid programs.
+	//! CShader use this method only when necessary
+	//! @return : true if binding is done without errors, false otherwise.
+	virtual bool glBindProgram(RAPTOR_HANDLE program);
+
+	//! Symetric as above : detaches the vertex program from the program object, performing checking.
+	bool glUnbindProgram(RAPTOR_HANDLE program);
 
 	//! Computes and returns and size required to allocate a uniform
 	//! buffer object backing uniform blocks
@@ -48,24 +57,14 @@ protected:
 	//! Copy constructor.
 	CUnifiedProgram(const CUnifiedProgram& shader);
 
-    //! determine parameter compatibility : compare GLSL to Raptor kind 
-    //! @return true if parameter can be assigned ( though they need conversion )
-    bool matchKind(unsigned int shaderKind, CProgramParameters::PARAMETER_KIND parameterKind);
-
     //! Updates locations of uniform variables
     void glQueryUniformLocations(RAPTOR_HANDLE program);
 
     //! Updates locations of attributes variables
     void glQueryAttributeLocations(RAPTOR_HANDLE program);
 
-    //! size of precomputed locations
-    int m_iMaxLocation;
-
     //! Program has been re-linked, perform post processing again
     bool    m_bReLinked;
-
-    //! Valid status
-    bool    m_bValid;
 
 
 private:
@@ -73,8 +72,7 @@ private:
 	CUnifiedProgram& operator=(const CUnifiedProgram&);
 
     //! factorize uniform settings
-    void glParameter( unsigned int numParam,const float *v);
-
+    void glParameter( unsigned int numParam,const float *v) const;
 };
 
 

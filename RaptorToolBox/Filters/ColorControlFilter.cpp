@@ -144,19 +144,12 @@
 //////////////////////////////////////////////////////////////////////
 
 CColorControlFilter::CColorControlFilter():
-    BWShader(NULL)
+    BWShader(NULL),
+	bwParams(GL_COORD_VERTEX(1.0f,1.0f,0.0f,1.0f)),
+	baseColor(GL_COORD_VERTEX(1.0f, 1.0f, 1.0f, 1.0f))
 {
-    GL_COORD_VERTEX	bwParams;
-    CColor::RGBA	baseColor;
-
-    bwParams.x = 1.0f;
-	bwParams.y = 1.0f;
-	bwParams.z = 0.0f;
-    bwParams.h = 1.0f;
-    baseColor.r = baseColor.b = baseColor.g = baseColor.a = 1.0f;
-
-	fp_params.addParameter("percentage",bwParams);
-	fp_params.addParameter("baseColor",GL_COORD_VERTEX(baseColor.r,baseColor.g,baseColor.b,baseColor.a));
+	fp_params.addParameter("percentage",bwParams.p);
+	fp_params.addParameter("baseColor", baseColor.p);
 }
 
 CColorControlFilter::~CColorControlFilter()
@@ -179,37 +172,33 @@ void CColorControlFilter::setColorBlend(float r,float g,float b,float a,float pe
 {
     // If we allow unclampped values, they can be used in a float buffer,
     // and we can also produce an overexpose filter.
-	CColor::RGBA	baseColor;
-	baseColor.r = r; //MIN(0.0f,MAX(1.0f,r));
-    baseColor.g = g; //MIN(0.0f,MAX(1.0f,g));
-    baseColor.b = b; //MIN(0.0f,MAX(1.0f,b));
-    baseColor.a = a; //MIN(0.0f,MAX(1.0f,a));
+	baseColor.p.x = r; //MIN(0.0f,MAX(1.0f,r));
+    baseColor.p.y = g; //MIN(0.0f,MAX(1.0f,g));
+    baseColor.p.z = b; //MIN(0.0f,MAX(1.0f,b));
+    baseColor.p.h = a; //MIN(0.0f,MAX(1.0f,a));
 
-	GL_COORD_VERTEX	bwParams = fp_params[0].vector;
 	if (percentage < 0.0f)
-        bwParams.x = 0.0f;
+        bwParams.p.x = 0.0f;
     else if (percentage > 1.0f)
-        bwParams.x = 1.0f;
+        bwParams.p.x = 1.0f;
     else
-        bwParams.x = percentage;
+        bwParams.p.x = percentage;
 
-	fp_params[0].vector = bwParams;
-	fp_params[1].vector = GL_COORD_VERTEX(baseColor.r,baseColor.g,baseColor.b,baseColor.a);
+	fp_params[0].copy(bwParams);
+	fp_params[1].copy(baseColor);
 }
 
 void CColorControlFilter::setCorrection(float brightness,float saturation)
 {
-	GL_COORD_VERTEX	bwParams = fp_params[0].vector;
-	bwParams.y = brightness;
-	bwParams.z = saturation;
-	fp_params[0].vector = bwParams;
+	bwParams.p.y = brightness;
+	bwParams.p.z = saturation;
+	fp_params[0].copy(bwParams);
 }
 
 void CColorControlFilter::getCorrection(float &brightness,float &saturation)
 {
-	GL_COORD_VERTEX	bwParams = fp_params[0].vector;
-	brightness = bwParams.y;
-	saturation = bwParams.z;
+	brightness = bwParams.p.y;
+	saturation = bwParams.p.z;
 }
 
 void CColorControlFilter::glRenderFilter()

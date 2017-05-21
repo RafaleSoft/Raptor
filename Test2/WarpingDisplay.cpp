@@ -46,22 +46,22 @@ public:
 			glBegin(GL_QUADS);
 				glTexCoord2d(0.0,0.0);
 				texCoord1.x = -1.0; texCoord1.y = -1.0;
-				s.glMultiTexCoord(CVertexShader::TEXCOORD1,texCoord1);
+				s.glMultiTexCoord(CProgramParameters::TEXCOORD1, texCoord1);
 				glVertex3d(-70.0,-50.0,0.0);
 
 				glTexCoord2d(1.0,0.0);
 				texCoord1.x = 1.0; texCoord1.y = -1.0;
-				s.glMultiTexCoord(CVertexShader::TEXCOORD1,texCoord1);
+				s.glMultiTexCoord(CProgramParameters::TEXCOORD1, texCoord1);
 				glVertex3d(70.0,-50.0,0.0);
 
 				glTexCoord2d(1.0,1.0);
 				texCoord1.x = 1.0; texCoord1.y = 1.0;
-				s.glMultiTexCoord(CVertexShader::TEXCOORD1,texCoord1);
+				s.glMultiTexCoord(CProgramParameters::TEXCOORD1, texCoord1);
 				glVertex3d(70.0,50.0,0.0);
 
 				glTexCoord2d(0.0,1.0);
 				texCoord1.x = -1.0; texCoord1.y = 1.0;
-				s.glMultiTexCoord(CVertexShader::TEXCOORD1,texCoord1);
+				s.glMultiTexCoord(CProgramParameters::TEXCOORD1, texCoord1);
 				glVertex3d(-70.0,50.0,0.0);
 			glEnd();
 		glEndList();
@@ -317,7 +317,7 @@ void main (void)						\n\
 
 	CFragmentProgram *fp = m_pShader->glGetFragmentProgram();
 	fp->glLoadProgram(program);
-	CShaderProgram::CProgramParameters params;
+	CProgramParameters params;
 	params.addParameter("diffuseMap",CTextureUnitSetup::IMAGE_UNIT_0);
 	params.addParameter("normalMap",CTextureUnitSetup::IMAGE_UNIT_1);
 	fp->setProgramParameters(params);
@@ -353,19 +353,19 @@ void CGlassObject::glRender()
 
 	glBegin(GL_QUADS);
 		glTexCoord2f(x_sz,y_sz);
-		s.glMultiTexCoord(CShaderProgram::TEXCOORD1,GL_COORD_VERTEX(1,1,0,1));
+		s.glMultiTexCoord(CProgramParameters::TEXCOORD1, GL_COORD_VERTEX(1, 1, 0, 1));
 		glVertex3f(-m_orgx,-m_orgy,0.0f);
 
 		glTexCoord2f(0,y_sz);
-		s.glMultiTexCoord(CShaderProgram::TEXCOORD1,GL_COORD_VERTEX(0,1,0,1));
+		s.glMultiTexCoord(CProgramParameters::TEXCOORD1, GL_COORD_VERTEX(0, 1, 0, 1));
 		glVertex3f(m_orgx,-m_orgy,0.0f);
 
 		glTexCoord2f(0,0);
-		s.glMultiTexCoord(CShaderProgram::TEXCOORD1,GL_COORD_VERTEX(0,0,0,1));
+		s.glMultiTexCoord(CProgramParameters::TEXCOORD1, GL_COORD_VERTEX(0, 0, 0, 1));
 		glVertex3f(m_orgx,m_orgy,0.0f);
 
 		glTexCoord2f(x_sz,0);
-		s.glMultiTexCoord(CShaderProgram::TEXCOORD1,GL_COORD_VERTEX(1,0,0,1));
+		s.glMultiTexCoord(CProgramParameters::TEXCOORD1, GL_COORD_VERTEX(1, 0, 0, 1));
 		glVertex3f(-m_orgx,m_orgy,0.0f);
 	glEnd();
 

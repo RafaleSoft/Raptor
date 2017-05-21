@@ -52,7 +52,7 @@ public:
 										// CGL_TEXTURE|CGL_WIREFRAME|CGL_COLORS|CGL_FOG
 		} MODEL;
 
-		CRenderingModel(unsigned int);
+		CRenderingModel(long);
 
 		//! Returns true if the model feature is set
 		bool RAPTOR_FASTCALL hasModel(MODEL model) const { return ((m_renderingModel & model) == model); };
@@ -68,7 +68,7 @@ public:
 
 	private:
 		CRenderingModel();
-		unsigned int	m_renderingModel;
+		long	m_renderingModel;
 	};
 
 

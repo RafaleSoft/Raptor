@@ -28,13 +28,13 @@ RAPTOR_NAMESPACE
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CRaptorIO::CRaptorIO(const char *streamName,CRaptorIO::IO_KIND kind)
+CRaptorIO::CRaptorIO(const std::string& streamName, CRaptorIO::IO_KIND kind)
 {
 	m_status = IO_FAILED;
 	m_kind = kind;
 	m_size = 0;
 
-	if (NULL != streamName)
+	if (!streamName.empty())
 	{
 		switch(kind)
 		{
@@ -84,8 +84,11 @@ CRaptorIO::~CRaptorIO()
 }
 
 
-CRaptorIO* CRaptorIO::Create(const char *streamName,IO_KIND kind,CRaptorIO::IO_FORMAT format)
+CRaptorIO* CRaptorIO::Create(const std::string& streamName, IO_KIND kind, CRaptorIO::IO_FORMAT format)
 {
+	if (streamName.empty())
+		return NULL;
+
     CRaptorIO *res = NULL;
 
 #if defined(_WIN32)
@@ -249,7 +252,7 @@ CRaptorIO& CRaptorIO::operator>>(GL_COORD_VERTEX_TAG & v)
 
 
 
-CRaptorIO& CRaptorIO::write(const void *data,unsigned int size)
+CRaptorIO& CRaptorIO::write(const void *data,size_t size)
 {
     m_status = IO_FAILED;
 
@@ -263,7 +266,7 @@ CRaptorIO& CRaptorIO::write(const void *data,unsigned int size)
 	return *this;
 }
 
-CRaptorIO& CRaptorIO::read(void *data,unsigned int size)
+CRaptorIO& CRaptorIO::read(void *data, size_t size)
 {
     m_status = IO_FAILED;
 
@@ -277,7 +280,7 @@ CRaptorIO& CRaptorIO::read(void *data,unsigned int size)
 	return *this;
 }
 
-CRaptorIO& CRaptorIO::seek(unsigned int size)
+CRaptorIO& CRaptorIO::seek(size_t size)
 {
     m_status = IO_FAILED;
 

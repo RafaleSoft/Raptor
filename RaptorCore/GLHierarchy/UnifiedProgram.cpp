@@ -30,7 +30,6 @@ RAPTOR_NAMESPACE
 CUnifiedProgram::CUnifiedProgram(const CPersistence::CPersistenceClassID &classId, const std::string& name):
     CShaderProgram(classId,name)
 {
-    m_iMaxLocation = -1;
     m_bReLinked = true;
     m_bValid = false;
 }
@@ -39,7 +38,6 @@ CUnifiedProgram::CUnifiedProgram(const CPersistence::CPersistenceClassID &classI
 CUnifiedProgram::CUnifiedProgram(const CUnifiedProgram& shader)
 	:CShaderProgram(shader)
 {
-	m_iMaxLocation = shader.m_iMaxLocation;
 	m_bReLinked = shader.m_bReLinked;
 	m_bValid = shader.m_bValid;
 }
@@ -50,7 +48,7 @@ CUnifiedProgram::~CUnifiedProgram()
 
 }
 
-void CUnifiedProgram::glProgramParameter(unsigned int numParam,const GL_COORD_VERTEX &v)
+void CUnifiedProgram::glProgramParameter(unsigned int numParam,const GL_COORD_VERTEX &v) const
 {
     if (m_handle.handle == 0)
         return;
@@ -58,7 +56,7 @@ void CUnifiedProgram::glProgramParameter(unsigned int numParam,const GL_COORD_VE
     glParameter(numParam,v);
 }
 
-void CUnifiedProgram::glProgramParameter(unsigned int numParam,const CColor::RGBA &v)
+void CUnifiedProgram::glProgramParameter(unsigned int numParam,const CColor::RGBA &v) const
 {
     if (m_handle.handle == 0)
         return;
@@ -67,12 +65,13 @@ void CUnifiedProgram::glProgramParameter(unsigned int numParam,const CColor::RGB
 }
 
 
-void CUnifiedProgram::glParameter(unsigned int numParam,const float *v)
+void CUnifiedProgram::glParameter(unsigned int numParam,const float *v) const
 {
 #if defined(GL_ARB_shader_objects)
 	if (numParam < m_parameters.getNbParameters())
     {
-		GLint location = m_parameters[numParam].locationIndex;
+		const CProgramParameters::CParameterBase& param_value = m_parameters[numParam];
+		GLint location = param_value.locationIndex;
 		if (location == -1)
 		{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
@@ -92,6 +91,179 @@ void CUnifiedProgram::glParameter(unsigned int numParam,const float *v)
     CATCH_GL_ERROR
 }
 
+
+bool CUnifiedProgram::glBindProgram(RAPTOR_HANDLE program)
+{
+#if defined(GL_ARB_shader_objects)
+	if (program.handle == 0)
+		return false;
+
+	const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+	GLint value = 0;
+	pExtensions->glGetObjectParameterivARB(program.handle, GL_OBJECT_TYPE_ARB, &value);
+	if (value != GL_PROGRAM_OBJECT_ARB)
+		return false;
+
+	pExtensions->glAttachObjectARB(program.handle, m_handle.handle);
+
+	CATCH_GL_ERROR
+
+	m_bReLinked = true;
+
+	return true;
+#else
+	return false;
+#endif
+}
+
+bool CUnifiedProgram::glUnbindProgram(RAPTOR_HANDLE program)
+{
+#if defined(GL_ARB_shader_objects)
+	if ((program.handle == 0) || (m_handle.handle == 0))
+		return false;
+
+	const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+	GLint value = 0;
+	pExtensions->glGetObjectParameterivARB(program.handle, GL_OBJECT_TYPE_ARB, &value);
+	if (value != GL_PROGRAM_OBJECT_ARB)
+		return false;
+
+	pExtensions->glDetachObjectARB(program.handle, m_handle.handle);
+
+	CATCH_GL_ERROR
+
+	return true;
+#else
+	return false;
+#endif
+}
+
+void CUnifiedProgram::glRender(void)
+{
+	if (m_handle.handle == 0)
+		return;
+
+#if defined(GL_ARB_vertex_shader)
+	if (m_bReLinked)
+	{
+		size_t nbParams = m_parameters.getNbParameters();
+		for (size_t i = 0; i<nbParams; i++)
+		{
+			CProgramParameters::CParameterBase& value = m_parameters[i];
+			value.locationIndex = -1;
+			value.locationType = GL_FLOAT_VEC4_ARB;
+		}
+
+		const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+		GLhandleARB program = pExtensions->glGetHandleARB(GL_PROGRAM_OBJECT_ARB);
+
+		if (program != 0)
+		{
+			glQueryUniformLocations(RAPTOR_HANDLE(0, (void*)program));
+			glQueryAttributeLocations(RAPTOR_HANDLE(0, (void*)program));
+			m_bReLinked = false;
+		}
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+		else
+		{
+			Raptor::GetErrorManager()->generateRaptorError(CFragmentProgram::CFragmentProgramClassID::GetClassId(),
+														   CRaptorErrorManager::RAPTOR_ERROR,
+														   CRaptorMessages::ID_WRONG_RENDERING);
+		}
+#endif
+	}
+
+	if (!m_bApplyParameters)
+		return;
+
+	CTextureUnitSetup::TEXTURE_IMAGE_UNIT sampler = CTextureUnitSetup::IMAGE_UNIT_0;
+	GL_COORD_VERTEX vector(0.0f, 0.0f, 0.0f, 0.0f);
+	GL_MATRIX matrix;
+
+	const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+	for (unsigned int idx = 0; idx < m_parameters.getNbParameters(); idx++)
+	{
+		const CProgramParameters::CParameterBase& param_value = m_parameters[idx];
+		if (param_value.locationIndex >= 0)
+		{
+			if (param_value.isA(vector))
+			{
+				vector = ((const CProgramParameters::CParameter<GL_COORD_VERTEX>&)param_value).p;
+				switch (param_value.locationType)
+				{
+					case GL_FLOAT:
+					{
+						pExtensions->glUniform1fvARB(param_value.locationIndex, 1, vector);
+						break;
+					}
+					case GL_FLOAT_VEC2_ARB:
+					{
+						pExtensions->glUniform2fvARB(param_value.locationIndex, 1, vector);
+						break;
+					}
+					case GL_FLOAT_VEC3_ARB:
+					{
+						pExtensions->glUniform3fvARB(param_value.locationIndex, 1, vector);
+						break;
+					}
+					case GL_FLOAT_VEC4_ARB:
+					{
+						pExtensions->glUniform4fvARB(param_value.locationIndex, 1, vector);
+						break;
+					}
+					case GL_INT:
+					{
+						int val = vector.x;
+						pExtensions->glUniform1iARB(param_value.locationIndex, val);
+						break;
+					}
+					case GL_INT_VEC2_ARB:
+					{
+						int val[2];
+						val[0] = vector.x;
+						val[1] = vector.y;
+						pExtensions->glUniform2iARB(param_value.locationIndex, val[0], val[1]);
+						break;
+					}
+					case GL_INT_VEC3_ARB:
+					{
+						int val[3];
+						val[0] = vector.x;
+						val[1] = vector.y;
+						val[2] = vector.z;
+						pExtensions->glUniform3ivARB(param_value.locationIndex,1, &val[0]);
+						break;
+					}
+					case GL_INT_VEC4_ARB:
+					{
+						int val[4];
+						val[0] = vector.x;
+						val[1] = vector.y;
+						val[2] = vector.z;
+						val[3] = vector.h;
+						pExtensions->glUniform4ivARB(param_value.locationIndex, 1, &val[0]);
+						break;
+					}
+				}
+			}
+			else if (param_value.isA(sampler))
+			{
+				sampler = ((const CProgramParameters::CParameter<CTextureUnitSetup::TEXTURE_IMAGE_UNIT>&)param_value).p;
+				pExtensions->glUniform1iARB(param_value.locationIndex, sampler);
+			}
+			else if (param_value.isA(matrix))
+			{
+				matrix = ((const CProgramParameters::CParameter<GL_MATRIX>&)param_value).p;
+				pExtensions->glUniformMatrix4fvARB(param_value.locationIndex, 1, GL_TRUE, matrix);
+			}
+		}
+	}
+#endif
+
+	m_bApplyParameters = false;
+	CATCH_GL_ERROR
+}
+
 /*
  *	The API is missing interface for doubles.
  *
@@ -101,8 +273,7 @@ void CUnifiedProgram::glProgramParameter(unsigned int numParam,GL_HIRES_COORD_VE
         return;
 
 #if defined(GL_ARB_shader_objects)
-    int param = numParam;
-    if (param < m_iMaxLocation)
+    if (numParam < m_parameters.getNbParameters())
     {
         GLint location = m_locations[numParam].locationIndex;
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
@@ -207,7 +378,7 @@ err = glGetError();
 uint64_t size = m_pVProgram->glGetBufferMemoryRequirements(m_shaderProgram);
 */
 
-bool CUnifiedProgram::matchKind(unsigned int shaderKind, CProgramParameters::PARAMETER_KIND parameterKind)
+bool isTypeVector(unsigned int shaderKind)
 {
 #if defined(GL_ARB_shader_objects)
     switch (shaderKind)
@@ -221,27 +392,7 @@ bool CUnifiedProgram::matchKind(unsigned int shaderKind, CProgramParameters::PAR
         case GL_INT_VEC3_ARB:
         case GL_INT_VEC4_ARB:
         {
-            return ((CProgramParameters::VECTOR == parameterKind) ||
-					(CProgramParameters::ATTRIBUTE == parameterKind));
-            break;
-        }
-        case GL_FLOAT_MAT2_ARB:
-        case GL_FLOAT_MAT3_ARB:
-        case GL_FLOAT_MAT4_ARB:
-        {
-            return (CProgramParameters::MATRIX == parameterKind);
-            break;
-        }
-        case GL_SAMPLER_1D_ARB:
-        case GL_SAMPLER_2D_ARB:
-        case GL_SAMPLER_3D_ARB:
-        case GL_SAMPLER_CUBE_ARB:
-        case GL_SAMPLER_1D_SHADOW_ARB:
-        case GL_SAMPLER_2D_SHADOW_ARB:
-        case GL_SAMPLER_2D_RECT_ARB:
-        case GL_SAMPLER_2D_RECT_SHADOW_ARB:
-        {
-            return (CProgramParameters::SAMPLER == parameterKind);
+            return true;
             break;
         }
         default:
@@ -255,6 +406,55 @@ bool CUnifiedProgram::matchKind(unsigned int shaderKind, CProgramParameters::PAR
 #endif
 }
 
+bool isTypeMatrix(unsigned int shaderKind)
+{
+#if defined(GL_ARB_shader_objects)
+	switch (shaderKind)
+	{
+		case GL_FLOAT_MAT2_ARB:
+		case GL_FLOAT_MAT3_ARB:
+		case GL_FLOAT_MAT4_ARB:
+		{
+			return true;
+			break;
+		}
+		default:
+		{
+			//  boolean values are not handled, they are too far from Raptor float vectors.
+			return false;
+		}
+	}
+#else
+	return false;
+#endif
+}
+bool isTypeSampler(unsigned int shaderKind)
+{
+#if defined(GL_ARB_shader_objects)
+	switch (shaderKind)
+	{
+		case GL_SAMPLER_1D_ARB:
+		case GL_SAMPLER_2D_ARB:
+		case GL_SAMPLER_3D_ARB:
+		case GL_SAMPLER_CUBE_ARB:
+		case GL_SAMPLER_1D_SHADOW_ARB:
+		case GL_SAMPLER_2D_SHADOW_ARB:
+		case GL_SAMPLER_2D_RECT_ARB:
+		case GL_SAMPLER_2D_RECT_SHADOW_ARB:
+		{
+			return true;
+			break;
+		}
+		default:
+		{
+			//  boolean values are not handled, they are too far from Raptor float vectors.
+			return false;
+		}
+	}
+#else
+	return false;
+#endif
+}
 void CUnifiedProgram::glQueryUniformLocations(RAPTOR_HANDLE program)
 {
     if (program.handle == 0)
@@ -290,14 +490,13 @@ void CUnifiedProgram::glQueryUniformLocations(RAPTOR_HANDLE program)
             {
                 for (unsigned int idx = 0; idx < m_parameters.getNbParameters(); idx++)
                 {
-                    CProgramParameters::PROGRAM_PARAMETER_VALUE& pValue = m_parameters[idx];
+					CProgramParameters::CParameterBase& value = m_parameters[idx];
 
-                    if ((pValue.name == name) && 
-                        (pValue.kind != CProgramParameters::ATTRIBUTE) &&
-                        matchKind(type,pValue.kind))
+					//! TODO : add type checking here
+					if (value.name() == name)
                     {
-						pValue.locationIndex = location;
-						pValue.locationType = type;
+						value.locationIndex = location;
+						value.locationType = type;
                     }
                 }
             }
@@ -344,19 +543,18 @@ void CUnifiedProgram::glQueryAttributeLocations(RAPTOR_HANDLE program)
             {
                 for (unsigned int idx = 0; idx < m_parameters.getNbParameters(); idx++)
                 {
-                    CProgramParameters::PROGRAM_PARAMETER_VALUE& pValue = m_parameters[idx];
-
-                    if ((pValue.name == name) && 
-                        (pValue.kind == CProgramParameters::ATTRIBUTE) &&
-                        matchKind(type,pValue.kind))
+					CProgramParameters::CParameterBase& value = m_parameters[idx];
+					CProgramParameters::GL_VERTEX_ATTRIB userLocation = CProgramParameters::POSITION;
+					if ((value.name() == name) && value.isA(userLocation) && isTypeVector(type))
                     {
+						userLocation = ((const CProgramParameters::CParameter<CProgramParameters::GL_VERTEX_ATTRIB>&)value).p;
+
                         // the location retrieved will only be used if the user value is invalid.
-                        GL_VERTEX_ATTRIB userLocation = pValue.attribute;
-						pValue.locationType = type;
+						value.locationType = type;
 						if ((userLocation < maxAttribs) && (userLocation != location))
-							pValue.locationIndex = userLocation;
+							value.locationIndex = userLocation;
 						else
-							pValue.locationIndex = location;
+							value.locationIndex = location;
                     }
                 }
             }

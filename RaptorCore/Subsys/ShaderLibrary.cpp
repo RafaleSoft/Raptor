@@ -169,8 +169,6 @@ bool CShaderLibrary::glInitFactory(void)
 			if (program != NULL)
 			{
 				program->glLoadProgram(fs);
-				program->glStop();
-
 				s_factoryShaders.insert(map<std::string,std::string>::value_type(fs_name,fs));
 			}
 		}
@@ -230,64 +228,5 @@ bool CShaderLibrary::glInitFactory(void)
 	m_pNullShader = new CShader(s_nullShaderName);
 
 	return s_initialized;
-}
-
-
-bool CShaderLibrary::registerProgram(CVertexProgram *vp,
-									 CFragmentProgram *fp,
-									 CGeometryProgram *gp,
-									 RAPTOR_HANDLE program)
-{
-	RAPTOR_HANDLE h = getRegisteredProgram(vp,fp,gp);
-	if (h.handle == 0)
-	{
-		PROGRAM p;
-		p.vp = vp;
-		p.fp = fp;
-		p.gp = gp;
-		p.program = program;
-
-		m_programs.push_back(p);
-
-		return true;
-	}
-	else
-		return false;
-}
-
-bool CShaderLibrary::unRegisterProgram(RAPTOR_HANDLE program)
-{
-	bool found = false;
-	vector<PROGRAM>::const_iterator it = m_programs.begin();
-	while (!found && (it != m_programs.end()))
-	{
-		const PROGRAM& p = *it;
-		found = (p.program == program);
-		if (!found) it++;
-	}
-
-	if (found)
-		m_programs.erase(it);
-	return found;
-}
-
-RAPTOR_HANDLE CShaderLibrary::getRegisteredProgram(CVertexProgram *vp,
-												   CFragmentProgram *fp,
-												   CGeometryProgram *gp)
-{
-	RAPTOR_HANDLE res(0,0);
-
-	bool found = false;
-	vector<PROGRAM>::const_iterator it = m_programs.begin();
-	while (!found && (it != m_programs.end()))
-	{
-		const PROGRAM& p = *it++;
-		found = ((p.fp == fp) && (p.vp == vp) && (p.gp == gp));
-
-		if (found)
-			res = p.program;
-	}
-
-	return res;
 }
 

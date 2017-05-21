@@ -1,6 +1,9 @@
 - simd.cpp : appel a GetSystemInfo, migrer vers intrinsics
 	- linux : /proc/cpuinfo
-	
+
+- BasicObjects:
+	- Ajouter un TextureQuad le plus simple possible
+
 -CVulkanMemory:
 	- initialiser une bloc mémoire pour l'application (vertex et index buffers bindés sur la même allocation)
 	- Factoriser les allocators (Geometry, Texel, Uniform)
@@ -8,6 +11,8 @@
 
 -CVulkanShader:
 	- Déplacer la gestion du descriptor pool à l'init de ShaderProgram
+	- Traiter le cas ou setProgramParameters fournit un set différents (destruction + reallocation)
+	- Déplacer la création du Pipeline après InitContext (C3DSCene::PrepareData ?)
 
 -CVulkanCommandBuffer:
 	- rendre privée les mathodes et attribut commandbuffer

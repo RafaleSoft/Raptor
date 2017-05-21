@@ -63,9 +63,9 @@ public:
 	bool	m_bUpdateVertexParameters;
 	bool	m_bUpdateFragmentParameters;
 	bool	m_bUpdateGeometryParameters;
-	CShaderProgram::CProgramParameters v;
-	CShaderProgram::CProgramParameters f;
-	CShaderProgram::CProgramParameters g;
+	CProgramParameters v;
+	CProgramParameters f;
+	CProgramParameters g;
 	CShader	*m_pShader;
 
 private:
@@ -158,7 +158,7 @@ void RAPTOR_FASTCALL CShaderModifier::deltaTime(float dt)
 	}
 }
 
-void RAPTOR_FASTCALL CShaderModifier::updateVertexParameters(float dt, CShaderProgram::CProgramParameters &v)
+void RAPTOR_FASTCALL CShaderModifier::updateVertexParameters(float dt, CProgramParameters &v)
 {
 	if (m_pWrapper != NULL)
 	{
@@ -166,7 +166,7 @@ void RAPTOR_FASTCALL CShaderModifier::updateVertexParameters(float dt, CShaderPr
 	}
 }
 
-void RAPTOR_FASTCALL CShaderModifier::updateFragmentParameters(float dt, CShaderProgram::CProgramParameters &v)
+void RAPTOR_FASTCALL CShaderModifier::updateFragmentParameters(float dt, CProgramParameters &v)
 {
 	if (m_pWrapper != NULL)
 	{
@@ -174,7 +174,7 @@ void RAPTOR_FASTCALL CShaderModifier::updateFragmentParameters(float dt, CShader
 	}
 }
 
-void RAPTOR_FASTCALL CShaderModifier::updateGeometryParameters(float dt, CShaderProgram::CProgramParameters &v)
+void RAPTOR_FASTCALL CShaderModifier::updateGeometryParameters(float dt, CProgramParameters &v)
 {
 	if (m_pWrapper != NULL)
 	{

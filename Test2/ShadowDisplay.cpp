@@ -73,23 +73,18 @@ void CShadowDisplay::Init()
 	sponge->rotationX(-90.0);
 	sponge->scale(0.3f,0.3f,0.3f);
 
-    CGeometry::CRenderingModel l_model(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
-    l_model.addModel(CGeometry::CRenderingModel::CGL_NORMALS);
-    l_model.addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
+	CGeometry::CRenderingModel l_model(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
+	l_model.addModel(CGeometry::CRenderingModel::CGL_NORMALS);
+	l_model.addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
 
-    C3DSet *setknot = NULL;
-    CRaptorToolBox::load3DStudioScene("Datas\\Knot.3DS",setknot,&options);
-    C3DSet::C3DSetIterator it = setknot->getIterator();
-    knot = (CShadedGeometry*)setknot->getChild(it++);
-    CShader *knotShader = knot->getShader();
-    knot->scale(0.1f,0.1f,0.1f);
-	knot->getEditor().scaleTexCoords(48.0f,2.0f);
-    knot->setRenderingModel(l_model);
-    knotShader->setColor(0.1f,0.1f,0.1f,1.0f);
-    knotShader->getMaterial()->setAmbient(0.5f,0.5f,0.5f,1.0f);
-    knotShader->getMaterial()->setDiffuse(0.7f,0.7f,0.7f,1.0f);
-    knotShader->getMaterial()->setSpecular(1.0f,1.0f,1.0f,1.0f);
-    knotShader->getMaterial()->setShininess(20.0f);
+	CShader *knotShader = NULL;
+	p = CPersistence::FindObject("Knot");
+	if (p->getId().isSubClassOf(CGeometry::CGeometryClassID::GetClassId()))
+	{
+		knot = (CShadedGeometry*)p;
+		knot->setRenderingModel(l_model);
+		knotShader = knot->getShader();
+	}
 
 	CTextureFactory &f = CTextureFactory::getDefaultFactory();
 	CTextureObject *T = f.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_MULTIPLY,CTextureObject::CGL_BILINEAR);
@@ -133,7 +128,7 @@ void CShadowDisplay::Init()
     //sponge->getProperties().setCastShadow(false);
     //m_pScene->addObject(sponge);
 
-	it = sponge->getIterator();
+	C3DSet::C3DSetIterator it = sponge->getIterator();
 	CShadedGeometry *g = (CShadedGeometry*)(sponge->getChild(it++));
 	while (g != NULL)
 	{

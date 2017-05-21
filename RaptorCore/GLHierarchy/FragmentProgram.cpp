@@ -22,6 +22,7 @@
 RAPTOR_NAMESPACE
 
 static const int MAX_UNIFORM_NAME_LENGTH = 256;
+bool CFragmentProgram::m_bFragmentProgramReady = false;
 static CFragmentProgram::CFragmentProgramClassID fragmentId;
 const CPersistence::CPersistenceClassID& CFragmentProgram::CFragmentProgramClassID::GetClassId(void)
 {
@@ -75,157 +76,34 @@ CFragmentProgram::~CFragmentProgram()
 
 void CFragmentProgram::glInitShaders()
 {
-    m_iMaxLocation = 0;
-
-#if defined(GL_ARB_fragment_shader)
-    glGetIntegerv(GL_MAX_FRAGMENT_UNIFORM_COMPONENTS_ARB,&m_iMaxLocation);
-
-    //  Raptor use vectors and the returned value above are single float components
-    m_iMaxLocation = m_iMaxLocation / 4;
 	m_parameters.clear();
+
+	if (!m_bFragmentProgramReady)
+	{
+		if (Raptor::glIsExtensionSupported("GL_ARB_fragment_shader"))
+		{
+#if defined(GL_ARB_fragment_shader)
+			const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+			m_bFragmentProgramReady = (NULL != pExtensions->glCreateShaderObjectARB);
+#else
+			m_bFragmentProgramReady = false;
 #endif
-
-    CShaderProgram::glInitShaders();
-}
-
-
-void CFragmentProgram::glStop(void)
-{
-}
-
-void CFragmentProgram::glRender(void)
-{
-    if (m_handle.handle == 0)
-        return;
-
-#if defined(GL_ARB_vertex_shader)
-    if (m_bReLinked)
-    {
-        size_t nbParams = m_parameters.getNbParameters();
-		for (size_t i=0;i<nbParams;i++)
-        {
-			CShaderProgram::CProgramParameters::PROGRAM_PARAMETER_VALUE &pValue = m_parameters[i];
-			pValue.locationIndex = -1;
-			pValue.locationType = GL_FLOAT_VEC4_ARB;
-        }
-
-        const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
-        GLhandleARB program = pExtensions->glGetHandleARB(GL_PROGRAM_OBJECT_ARB);
-
-        if (program != 0)
-        {
-            glQueryUniformLocations(RAPTOR_HANDLE(0,(void*)program));
-
-            glQueryAttributeLocations(RAPTOR_HANDLE(0,(void*)program));
-            
-            m_bReLinked = false;
-        }
-    #ifdef RAPTOR_DEBUG_MODE_GENERATION
-        else
-        {
-            Raptor::GetErrorManager()->generateRaptorError(	CFragmentProgram::CFragmentProgramClassID::GetClassId(),
-															CRaptorErrorManager::RAPTOR_ERROR,
-															CRaptorMessages::ID_WRONG_RENDERING);
-        }
-    #endif
-    }
-
-    if (m_bApplyParameters)
-    {
-        const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
-        for (unsigned int idx = 0; idx < m_parameters.getNbParameters(); idx++)
-        {
-			CShaderProgram::CProgramParameters::PROGRAM_PARAMETER_VALUE &value = m_parameters[idx];
-			if (value.locationIndex >= 0)
-            {
-                if (value.kind == CShaderProgram::CProgramParameters::VECTOR)
-                {
-					switch (value.locationType)
-                    {
-                        case GL_FLOAT:
-							pExtensions->glUniform1fvARB(value.locationIndex,
-														 1,
-                                                         value.vector);
-                            break;
-                        case GL_FLOAT_VEC2_ARB:
-							pExtensions->glUniform2fvARB(value.locationIndex,
-														 1,
-                                                         value.vector);
-                            break;
-                        case GL_FLOAT_VEC3_ARB:
-							pExtensions->glUniform3fvARB(value.locationIndex,
-														 1,
-                                                         value.vector);
-                            break;
-                        case GL_FLOAT_VEC4_ARB:
-							pExtensions->glUniform4fvARB(value.locationIndex,
-														 1,
-                                                         value.vector);
-                            break;
-                        case GL_INT:
-                        {
-                            int val = value.vector.x;
-							pExtensions->glUniform1iARB(value.locationIndex,
-														val);
-                            break;
-                        }
-                        case GL_INT_VEC2_ARB:
-                        {
-                            int val[2];
-                            val[0] = value.vector.x;
-                            val[1] = value.vector.y;
-							pExtensions->glUniform2iARB(value.locationIndex,
-														val[0], val[1]);
-                            break;
-                        }
-                        case GL_INT_VEC3_ARB:
-                        {
-                            int val[3];
-                            val[0] = value.vector.x;
-                            val[1] = value.vector.y;
-                            val[2] = value.vector.z;
-							pExtensions->glUniform3ivARB(value.locationIndex,
-														 1, &val[0]);
-                            break;
-                        }
-                        case GL_INT_VEC4_ARB:
-                        {
-                            int val[4];
-                            val[0] = value.vector.x;
-                            val[1] = value.vector.y;
-                            val[2] = value.vector.z;
-                            val[3] = value.vector.h;
-							pExtensions->glUniform4ivARB(value.locationIndex,
-														 1, &val[0]);
-                            break;
-                        }
-                    }
-                }
-                else if (value.kind == CShaderProgram::CProgramParameters::SAMPLER)
-                {
-					pExtensions->glUniform1iARB(value.locationIndex,
-												value.sampler);
-                }
-                else if (value.kind == CShaderProgram::CProgramParameters::MATRIX)
-                {
-					pExtensions->glUniformMatrix4fvARB(value.locationIndex,
-													   1,GL_TRUE,value.matrix);
-                }
-                else if (value.kind == CShaderProgram::CProgramParameters::ATTRIBUTE)
-                {
-                    // nothing to do : the attribute mapping is bound in glQueryAttributeLocations
-                }
-            }
-        }
-
-        m_bApplyParameters = false;
-    }  
+		}
+		else
+		{
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+			CRaptorMessages::MessageArgument arg;
+			arg.arg_sz = "GLSL fragment";
+			vector<CRaptorMessages::MessageArgument> args;
+			args.push_back(arg);
+			Raptor::GetErrorManager()->generateRaptorError(CShaderProgram::CShaderProgramClassID::GetClassId(),
+														   CRaptorErrorManager::RAPTOR_WARNING,
+														   CRaptorMessages::ID_NO_GPU_PROGRAM,
+														   args);
 #endif
-
-    CATCH_GL_ERROR
+		}
+	}
 }
-
-
 
 bool CFragmentProgram::glLoadProgram(const std::string &program)
 {
@@ -278,53 +156,6 @@ bool CFragmentProgram::glLoadProgram(const std::string &program)
     CATCH_GL_ERROR
 
     return m_bValid;
-}
-
-bool CFragmentProgram::glBindProgram(RAPTOR_HANDLE program)
-{
-#if defined(GL_ARB_fragment_shader)
-    if (program.handle == 0)
-        return false;
-
-    const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
-    GLint value = 0;
-    pExtensions->glGetObjectParameterivARB(program.handle, GL_OBJECT_TYPE_ARB,&value);
-    if (value != GL_PROGRAM_OBJECT_ARB)
-        return false;
-
-    pExtensions->glAttachObjectARB(program.handle, m_handle.handle);
-
-    CATCH_GL_ERROR
-
-    m_bReLinked = true;
-
-    return true;
-#else
-    return false;
-#endif
-}
-
-
-bool CFragmentProgram::glUnbindProgram(RAPTOR_HANDLE program)
-{
-#if defined(GL_ARB_fragment_shader)
-    if ((program.handle == 0) || (m_handle.handle == 0))
-        return false;
-
-    const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
-    GLint value = 0;
-    pExtensions->glGetObjectParameterivARB(program.handle, GL_OBJECT_TYPE_ARB,&value);
-    if (value != GL_PROGRAM_OBJECT_ARB)
-        return false;
-
-    pExtensions->glDetachObjectARB(program.handle, m_handle.handle);
-
-    CATCH_GL_ERROR
-
-    return true;
-#else
-    return false;
-#endif
 }
 
 bool CFragmentProgram::glGetProgramCaps(GL_FRAGMENT_PROGRAM_CAPS& caps)

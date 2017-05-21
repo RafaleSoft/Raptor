@@ -180,7 +180,6 @@ void CTest5Doc::GLInitContext(void)
 
 	//CShader *shader = new CShader("uniforms-shader");
 	//CVertexProgram *p = shader->glGetVertexProgram("uniforms");
-	//CRaptorIO *shdr = CRaptorIO::Create("shader3.vert",CRaptorIO::DISK_READ);
 	//p->glLoadProgramFromStream(*shdr);
 	//bool res = shader->glCompileShader();
 
@@ -210,17 +209,25 @@ void CTest5Doc::GLInitContext(void)
 	geo->glSetVertices(4,VertexData);
 	geo->glSetColors(4,ColorData);
 	geo->glSetPolygons(2,VertexIndices);
+	
 
 	CShader* s = geo->getShader();
 	CVulkanShaderStage *ss = s->vkGetVulkanProgram();
 	ss->vkLoadShader("shader3.vert");
 	ss->vkLoadShader("shader3.frag");
-	CGenericMatrix<float> modelView;
-	modelView.Ident();
+
+	CProgramParameters parameters;
+	GL_MATRIX M;
+	IDENT_MATRIX(M);
+	M[12] = 0.5f;
+	CProgramParameters::CParameter<GL_MATRIX> param(M);
+	param.name("modelview");
+	param.locationIndex = 0;
 	
+	parameters.addParameter(param);
+	ss->setProgramParameters(parameters);
+
 	pScene->addObject(geo);
-	modelView[12] = 0.5f;
-	ss->vkSetData(modelView.matrix(), 4 * 4 * sizeof(float));
 #else
 	CTextureFactory &f = CTextureFactory::getDefaultFactory();
 	m_pTexture = f.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_ALPHA_TRANSPARENT,CTextureObject::CGL_BILINEAR);

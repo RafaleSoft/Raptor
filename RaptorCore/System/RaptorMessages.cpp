@@ -275,7 +275,7 @@ bool CRaptorMessages::importClass(CRaptorIO& io,void *planguage)
 
 bool CRaptorMessages::LoadMessages(const std::string& fname)
 {
-    CRaptorIO *m_pTranslator = CRaptorIO::Create(NULL,CRaptorIO::DISK_READ,CRaptorIO::ASCII_XML);
+	CRaptorIO *m_pTranslator = CRaptorIO::Create(fname, CRaptorIO::DISK_READ, CRaptorIO::ASCII_XML);
 
 	stringstream shemaLocation;
 	char *raptor_root = getenv("RAPTOR_ROOT");
@@ -287,8 +287,8 @@ bool CRaptorMessages::LoadMessages(const std::string& fname)
 	else
 		shemaLocation << "./RaptorMessages.xsd";
 
-	m_pTranslator->read((void*)shemaLocation.str().c_str(),0);
-	m_pTranslator->read((void*)fname.c_str(),0);
+	m_pTranslator->parse(shemaLocation.str().c_str(), 0);
+	m_pTranslator->parse(fname.c_str(), 0);
 
     string name;
 	*m_pTranslator >> name;

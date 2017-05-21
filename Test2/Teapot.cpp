@@ -23,11 +23,11 @@
 #include "GLHierarchy/Shader.h"
 #include "GLHierarchy/VertexShader.h"
 #include "GLHierarchy/TextureObject.h"
+#include "GLHierarchy/ShadedGeometry.h"
+#include "GLHierarchy/GeometryEditor.h"
 #include "GLHierarchy/Material.h"
 
 #include "ToolBox/RaptorToolBox.h"
-
-typedef raptor::CTextureFactoryConfig::IImageOP IImageOP;
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -56,6 +56,8 @@ CTeapot::CTeapot()
 	//numdemo(CTest2App::PARTICLEDEMO)
 	//numdemo(CTest2App::AMBIENTOCCLUSIONDEMO)
 	//numdemo(CTest2App::BUMPDEMO)
+	//numdemo(CTest2App::VRTXSHADERSDEMO)
+	//numdemo(CTest2App::PARTICLEDEMO)
 	numdemo(CTest2App::VRTXSHADERSDEMO)
 {
 }
@@ -166,8 +168,12 @@ void CTeapot::GLInitContext()
     vp->glRenderViewPointModel();   // switch demo removes the view  point, so render here and forget
 	pDisplay->setViewPoint(vp);
 
+	CRaptorToolBox::SCENE_LOADER_OPTIONS options;
+	options.texturePath = "Datas";
+	options.compressTextures = true;
+
 	teapot = new CBumppedGeometry("Bump teapot");
-    CRaptorToolBox::load3DStudioScene("Datas\\Teapot.3DS",set,NULL);
+    CRaptorToolBox::load3DStudioScene("Datas\\Teapot.3DS",set,&options);
 
 	set->scale(0.5f,0.5f,0.5f);
 
@@ -198,18 +204,31 @@ void CTeapot::GLInitContext()
 
 	C3DEngine::Get3DEngine()->setCameraBBox(-1.0,-1.0,-1.0,1.0,1.0,1.0);
 
-	CRaptorToolBox::SCENE_LOADER_OPTIONS options;
-    CRaptorToolBox::load3DStudioScene("Datas\\Ball.3DS",set,&options);
+    CRaptorToolBox::load3DStudioScene("Datas\\Ball.3DS",set, &options);
     it = set->getIterator();
 	CGeometry *ball = (CGeometry*)(set->getChild(it++));
 	ball->scale(0.1f,0.1f,0.1f);
 	ball->getCenter(c);
 	ball->translate(-c.x,-c.y,-c.z);
 
-    CRaptorToolBox::load3DStudioScene("Datas\\SkyDome.3DS",set,NULL);
+	CRaptorToolBox::load3DStudioScene("Datas\\SkyDome.3DS", set, &options);
     it = set->getIterator();
 	CGeometry* g = (CGeometry*)(set->getChild(it++));
 	g->setName("SKYDOME");
+
+	C3DSet *setknot = NULL;
+	CRaptorToolBox::load3DStudioScene("Datas\\Knot.3DS", setknot, &options);
+	it = setknot->getIterator();
+	CShadedGeometry *knot = (CShadedGeometry*)setknot->getChild(it++);
+	CShader *knotShader = knot->getShader();
+	knot->scale(0.1f, 0.1f, 0.1f);
+	knot->getEditor().scaleTexCoords(48.0f, 2.0f);
+	knotShader->setColor(0.1f, 0.1f, 0.1f, 1.0f);
+	knotShader->getMaterial()->setAmbient(0.5f, 0.5f, 0.5f, 1.0f);
+	knotShader->getMaterial()->setDiffuse(0.7f, 0.7f, 0.7f, 1.0f);
+	knotShader->getMaterial()->setSpecular(1.0f, 1.0f, 1.0f, 1.0f);
+	knotShader->getMaterial()->setShininess(20.0f);
+
 
 	bumpDisplay.Init();
 	displays[CTest2App::BUMPDEMO] = &bumpDisplay;
@@ -217,19 +236,19 @@ void CTeapot::GLInitContext()
 	displays[CTest2App::SPLINEDEMO] = &splineDisplay;
 	skinningDisplay.Init();
 	displays[CTest2App::SKINNINGDEMO] = &skinningDisplay;
-	particleDisplay.Init();
-	displays[CTest2App::PARTICLEDEMO] = &particleDisplay;	
-	shadowDisplay.Init();
+	//particleDisplay.Init();
+	displays[CTest2App::PARTICLEDEMO] = &particleDisplay;
+	//shadowDisplay.Init();
 	displays[CTest2App::SHADOWDEMO] = &shadowDisplay;
-	shadowMapDisplay.Init();
+	//shadowMapDisplay.Init();
 	displays[CTest2App::SHADOWMAPDEMO] = &shadowMapDisplay;
-	warpingDisplay.Init();
+	//warpingDisplay.Init();
 	displays[CTest2App::WARPINGDEMO] = &warpingDisplay;
-	projectionDisplay.Init();
+	//projectionDisplay.Init();
 	displays[CTest2App::PROJECTIONDEMO] = &projectionDisplay;
-	lodDisplay.Init();
+	//lodDisplay.Init();
 	displays[CTest2App::LODDEMO] = &lodDisplay;
-	collisionDisplay.Init();
+	//collisionDisplay.Init();
 	displays[CTest2App::COLLISIONDEMO] = &collisionDisplay;
 	ambientOcclusionDisplay.Init();
 	displays[CTest2App::AMBIENTOCCLUSIONDEMO] = &ambientOcclusionDisplay;

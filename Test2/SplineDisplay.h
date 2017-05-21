@@ -27,7 +27,7 @@ public:
 
 private:
 	C3DPath				*path;
-	CGeometry			*bspline;
+	CShadedGeometry		*bspline;
 
 	unsigned int		text;
 	CGLFont				*font;
@@ -35,8 +35,6 @@ private:
 
 	//	viewpoint
 	CViewPoint			*vp;
-
-	float				dt;
 
 	virtual void ReInit();
 

@@ -25,15 +25,13 @@ public:
 
 	virtual operator CPersistence*(void) const = 0;
 
+	virtual void createType(void) = 0;
+
+	virtual void setType(CPersistence *) = 0;
+
 protected:
 	CPersistentObject() {};
 	virtual ~CPersistentObject() {};
-
-	friend class CObjectFactory;
-	virtual void createType(void) = 0;
-
-private:
-	virtual void setType(CPersistence *) = 0;
 };
 
 

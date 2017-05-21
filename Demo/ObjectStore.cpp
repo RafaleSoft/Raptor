@@ -743,8 +743,8 @@ void CObjectStore::BuildScene(void)
 	char shemaLocation[MAX_PATH];
 	strcpy(shemaLocation,getenv("RAPTOR_ROOT"));
 	strcat(shemaLocation,"/Redist/bin/Raptor.xsd");
-	m_pTranslator->read(shemaLocation,0);
-    m_pTranslator->read((unsigned char*)"Demo.xml",0);
+	m_pTranslator->parse(shemaLocation,0);
+    m_pTranslator->parse("Demo.xml",0);
 
     string name;
 	*m_pTranslator >> name;

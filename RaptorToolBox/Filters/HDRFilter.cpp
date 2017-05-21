@@ -286,6 +286,8 @@ static const float BLUR_BUFFER_SIZE_FACTOR = 0.125f;
 //////////////////////////////////////////////////////////////////////
 
 CHDRFilter::CHDRFilter(const CRaptorDisplayConfig &da)
+	:luminanceParams(GL_COORD_VERTEX(0.0f, 0.0f, 0.0f, 1.0f)),
+	thresholdParam(GL_COORD_VERTEX(1.0f, 0.5, 1.0f, 1.0f))
 {
     rda = da;
     rda.x = 0;
@@ -308,7 +310,6 @@ CHDRFilter::CHDRFilter(const CRaptorDisplayConfig &da)
 
 	nLevels = 0;
 	nBlurPass = 1;
-	treshold = 0.5;
 	m_pDownSizedBuffer = NULL;
 	m_pDownSizedDisplay = NULL;
 	m_pDownSizedAttachments = NULL;
@@ -336,9 +337,8 @@ void CHDRFilter::setBlurNbPass(unsigned int nb)
 
 void CHDRFilter::setHFTreshold(float t)
 {
-	treshold = MAX(0,t);
+	thresholdParam.p.y = MAX(0, t);
 }
-
 
 
 void CHDRFilter::glRenderFilter()
@@ -354,15 +354,16 @@ void CHDRFilter::glRenderFilter()
         m_pDownSizedDisplay[i]->glBindDisplay(nodevice);
         currentBuffer->glRender();
 
+		luminanceParams.p = GL_COORD_VERTEX(0.5f / currentBuffer->getWidth(),
+											0.5f / currentBuffer->getHeight(),
+											-0.5f / currentBuffer->getWidth(),
+											0.0f);
+		maxLuminanceParams[0].copy(luminanceParams);
+
         if (i < 2)
             glDrawBuffer();
         else if (i<nLevels-1)
         {
-            maxLuminanceParams[0].vector = GL_COORD_VERTEX(	0.5f / currentBuffer->getWidth(), 
-															0.5f / currentBuffer->getHeight() ,
-															-0.5f / currentBuffer->getWidth() ,
-															0.0f);
-
 #if defined(GL_ARB_vertex_shader)
 			m_maxLuminance->glGetFragmentProgram()->setProgramParameters(maxLuminanceParams);
 #elif defined(GL_ARB_vertex_program)
@@ -374,10 +375,6 @@ void CHDRFilter::glRenderFilter()
         }
         else
         {
-            maxLuminanceParams[0].vector = GL_COORD_VERTEX(	0.5f / currentBuffer->getWidth(), 
-															0.5f / currentBuffer->getHeight() ,
-															-0.5f / currentBuffer->getWidth() ,
-															0.0f);
 #if defined(GL_ARB_vertex_shader)
 			m_lastMaxLuminance->glGetFragmentProgram()->setProgramParameters(maxLuminanceParams);
 #elif defined(GL_ARB_vertex_program)
@@ -397,9 +394,9 @@ void CHDRFilter::glRenderFilter()
     //
     m_pDownHighFreqs->glBindDisplay(nodevice);
     m_pDownSizedBuffer[1]->glRender();
-	threshholdParams[1].vector = GL_COORD_VERTEX(1.0f, treshold, 1.0f, 1.0f);
+	thresholdParams[1].copy(thresholdParam);
 #if defined(GL_ARB_vertex_shader)
-	m_pTreshholdFreqs->glGetFragmentProgram()->setProgramParameters(threshholdParams);
+	m_pTreshholdFreqs->glGetFragmentProgram()->setProgramParameters(thresholdParams);
 #elif defined(GL_ARB_vertex_program)
     m_pTreshholdFreqs->glGetFragmentShader()->setProgramParameters(threshholdParams);
 #endif
@@ -688,18 +685,18 @@ bool CHDRFilter::glBuildShaders(unsigned int width,unsigned int height)
 
 
 	m_pTreshholdFreqs = new CShader("HDR_TRESHOLDS");
-	threshholdParams.addParameter("offset",	GL_COORD_VERTEX(1.0f / (width * 2.0f * BLUR_BUFFER_SIZE_FACTOR),
+	thresholdParams.addParameter("offset",	GL_COORD_VERTEX(1.0f / (width * 2.0f * BLUR_BUFFER_SIZE_FACTOR),
 											1.0f / (height * 2.0f * BLUR_BUFFER_SIZE_FACTOR),
 											-1.0f / (width * 2.0f * BLUR_BUFFER_SIZE_FACTOR),
 											0.0f));
-	threshholdParams.addParameter("treshhold",GL_COORD_VERTEX(1.0f, treshold, 1.0f, 1.0f));
+	thresholdParams.addParameter("treshhold", thresholdParam.p);
 #if defined(GL_ARB_vertex_shader)
 	CFragmentProgram *fp = m_pTreshholdFreqs->glGetFragmentProgram("treshhold2_fp");
     res = fp->glLoadProgram(treshhold2_ps);
 	if (res)
 	{
-		threshholdParams.addParameter("color",CTextureUnitSetup::IMAGE_UNIT_0);
-		fp->setProgramParameters(threshholdParams);
+		thresholdParams.addParameter("color",CTextureUnitSetup::IMAGE_UNIT_0);
+		fp->setProgramParameters(thresholdParams);
 	}
 	res = res && m_pTreshholdFreqs->glCompileShader();
 #elif defined(GL_ARB_vertex_program)
@@ -713,7 +710,7 @@ bool CHDRFilter::glBuildShaders(unsigned int width,unsigned int height)
     res = res && fp->glLoadProgram(composer_ps);
 	if (res)
 	{
-		CShaderProgram::CProgramParameters	fp_params;
+		CProgramParameters	fp_params;
 		fp_params.addParameter("color",CTextureUnitSetup::IMAGE_UNIT_0);
 		fp_params.addParameter("blur",CTextureUnitSetup::IMAGE_UNIT_1);
 		fp_params.addParameter("lwhite",CTextureUnitSetup::IMAGE_UNIT_2);
@@ -726,7 +723,7 @@ bool CHDRFilter::glBuildShaders(unsigned int width,unsigned int height)
 #endif
 
 	m_maxLuminance = new CShader("HDR_MAXLUMINANCE");
-	maxLuminanceParams.addParameter("offset",GL_COORD_VERTEX(0.0f,0.0f,0.0f,1.0f));
+	maxLuminanceParams.addParameter("offset", luminanceParams.p);
 #if defined(GL_ARB_vertex_shader)
 	fp = m_maxLuminance->glGetFragmentProgram("luminanceMax_fp");
 	res = res && fp->glLoadProgram(luminanceMax_ps);

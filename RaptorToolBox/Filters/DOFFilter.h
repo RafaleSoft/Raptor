@@ -14,11 +14,16 @@
 #if !defined(AFX_RAPTORDISPLAYFILTER_H__805D8523_96EA_427B_ABEC_C39EE1BC094C__INCLUDED_)
     #include "System/RaptorDisplayFilter.h"
 #endif
-#if !defined(AFX_SHADERPROGRAM_H__936BEC73_3903_46CE_86C9_9CA0005B31F5__INCLUDED_)
-	#include "GLHierarchy/ShaderProgram.h"
+#if !defined(AFX_PROGRAMPARAMETERS_H__E28A74BB_DE78_470A_A8A2_5A3EBB3F4F90__INCLUDED_)
+	#include "GLHierarchy/ProgramParameters.h"
 #endif
 
+RAPTOR_NAMESPACE_BEGIN
+class CRaptorDisplay;
+RAPTOR_NAMESPACE_END
+
 RAPTOR_NAMESPACE
+
 
 class RAPTOR_API CDOFFilter : public CRaptorDisplayFilter  
 {
@@ -57,9 +62,7 @@ private:
 	void glInitShaders(void);
 
 	unsigned int		m_nbBlur;
-	GL_COORD_VERTEX     vsParameter_Xoffset;
-	GL_COORD_VERTEX     vsParameter_Yoffset;
-    GL_COORD_VERTEX     dofParams;
+	CProgramParameters::CParameter<GL_COORD_VERTEX> dofParams;
 
     CRaptorDisplay		*tmpDisplay;
     CTextureObject      *tmpTexture;
@@ -67,8 +70,9 @@ private:
     CTextureObject      *tmpTexture2;
 	CTextureSet			*m_pRenderTextures2;
     CShader             *DOFShader;
-	CShaderProgram::CProgramParameters	vp_params;
-	CShaderProgram::CProgramParameters	fp_params;
+	CProgramParameters	vp_paramsX;
+	CProgramParameters	vp_paramsY;
+	CProgramParameters	fp_params;
 };
 
 #endif // !defined(AFX_DOFFILTER_H__A4FA0FE9_04AA_4887_9B4A_3CFAF930D840__INCLUDED_)

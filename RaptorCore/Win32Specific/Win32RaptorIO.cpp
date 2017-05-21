@@ -25,7 +25,7 @@ RAPTOR_NAMESPACE
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CWin32RaptorIO::CWin32RaptorIO(const char *streamName,CRaptorIO::IO_KIND kind)
+CWin32RaptorIO::CWin32RaptorIO(const std::string& streamName, CRaptorIO::IO_KIND kind)
 	:CRaptorIO(streamName,kind)
 {
     DWORD err = ::GetLastError();

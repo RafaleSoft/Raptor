@@ -19,7 +19,7 @@
 RAPTOR_NAMESPACE_BEGIN
 
 class CVulkanShader;
-
+class CVulkanCommandBuffer;
 
 class RAPTOR_API CVulkanShaderStage : public CShaderProgram
 {
@@ -27,9 +27,6 @@ public:
 	CVulkanShaderStage(const std::string& name);
 
 	virtual ~CVulkanShaderStage(void);
-
-	//! Implements base class status
-	virtual bool isValid(void) const { return m_bValid; };
 
 	//! Implements base class
 	virtual bool glLoadProgram(const std::string &program)
@@ -42,6 +39,8 @@ public:
 	{
 	};
 
+	void vkRender(CVulkanCommandBuffer &commandBuffer, VkBuffer uniformBuffer);
+	
 	//! Implements base class
 	virtual void glStop(void)
 	{
@@ -54,14 +53,17 @@ public:
 	};
 
 	virtual void glProgramParameter(unsigned int numParam,
-									const GL_COORD_VERTEX &v)
+									const GL_COORD_VERTEX &v) const
 	{
 	};
 
 	virtual void glProgramParameter(unsigned int numParam,
-									const CColor::RGBA &v)
+									const CColor::RGBA &v) const
 	{
 	};
+
+	//!	@see CShaderProgram
+	virtual void setProgramParameters(const CProgramParameters &v);
 
 	//!	Clone the whole shader stage.
 	CVulkanShaderStage* vkClone(void) const;
@@ -75,8 +77,6 @@ public:
 	//!	Loads a shader stage.
 	bool vkLoadShader(const std::string& filename);
 
-	//!	Update uniform data
-	bool vkSetData(void *src, uint64_t size);
 
 	//! Inherited from CPersistence
     DECLARE_IO
@@ -88,8 +88,6 @@ private:
 	CVulkanShaderStage();
     CVulkanShaderStage& operator=(const CVulkanShaderStage& ) { return *this;};
 
-	//! Valid status
-	bool    m_bValid;
 
 	//!	Vulkan shader modules
 	CVulkanShader*	m_pShaderStages;

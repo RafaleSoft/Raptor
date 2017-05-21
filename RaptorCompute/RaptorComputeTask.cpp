@@ -54,9 +54,9 @@ CRaptorComputeTask::CRaptorComputeTask(const CRaptorComputeTask& task)
 {
 	for (size_t i=0;i<task.m_parameters.size();i++)
 	{
-		ParameterBase *param = task.m_parameters[i];
+		CProgramParameters::CParameterBase *param = task.m_parameters[i];
 		if (param->isA((cl_mem)0))
-			::clRetainMemObject(((Parameter<cl_mem>*)param)->p);
+			::clRetainMemObject(((CProgramParameters::CParameter<cl_mem>*)param)->p);
 		
 		m_parameters.push_back(param->clone());
 	}
@@ -69,12 +69,12 @@ CRaptorComputeTask::~CRaptorComputeTask(void)
 {
 	while (!m_parameters.empty())
 	{
-		ParameterBase* param = m_parameters[0];
+		CProgramParameters::CParameterBase* param = m_parameters[0];
 		if (NULL != param)
 		{
 			m_parameters.erase(m_parameters.begin());
 			if (param->isA((cl_mem)0))
-				::clReleaseMemObject(((Parameter<cl_mem>*)param)->p);
+				::clReleaseMemObject(((CProgramParameters::CParameter<cl_mem>*)param)->p);
 
 			delete param;
 		}
@@ -144,11 +144,11 @@ void CRaptorComputeTask::setParameter(size_t pos,const CRaptorComputeMemory::IBu
 			cl_mem buffer = cb->address;
 			if ((buffer != NULL) && (m_parameters[pos]->isA(buffer)))
 			{
-				Parameter<cl_mem>* param = (Parameter<cl_mem>*)m_parameters[pos];
+				CProgramParameters::CParameter<cl_mem>* param = (CProgramParameters::CParameter<cl_mem>*)m_parameters[pos];
 				cl_int res = ::clReleaseMemObject(param->p);
 				res = ::clRetainMemObject(buffer);
 
-				((Parameter<cl_mem>*)m_parameters[pos])->p = buffer;
+				((CProgramParameters::CParameter<cl_mem>*)m_parameters[pos])->p = buffer;
 			}
 		}
 	}

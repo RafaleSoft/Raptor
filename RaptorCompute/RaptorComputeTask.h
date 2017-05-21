@@ -4,51 +4,13 @@
 #if !defined(AFX_RAPTOR_COMPUTE_MEMORY_H__525371EA_0090_40AA_9889_333824045A7A__INCLUDED_)
 	#include "RaptorComputeMemory.h"
 #endif
+#if !defined(AFX_PROGRAMPARAMETERS_H__E28A74BB_DE78_470A_A8A2_5A3EBB3F4F90__INCLUDED_)
+	#include "GLHierarchy/ProgramParameters.h"
+#endif
 
 // Cette classe est exportée de RaptorCompute.dll
 class RAPTORCOMPUTE_API CRaptorComputeTask
 {
-public:
-	class ParameterBase
-	{
-	public:
-		virtual ~ParameterBase() {};
-		virtual uint64_t size(void) const { return 0; };
-		virtual const void* addr(void) const { return NULL; };
-		virtual ParameterBase* clone(void) const { return NULL; };
-
-		template <class T> bool isA(const T &t) const
-		{ return getTypeId() == Parameter<T>::TypeId(); };
-
-	protected:
-		ParameterBase() {};
-		ParameterBase(const ParameterBase&) {};
-		virtual const type_info& getTypeId(void) const { return typeid(void*); };
-	};
-
-	template <class P>
-	class Parameter : public ParameterBase
-	{
-	public:
-		Parameter(const P &param):p(param) {};
-		virtual ~Parameter() {};
-
-		static const type_info& TypeId(void) { static P _p; return typeid(_p); };
-		virtual const type_info& getTypeId(void) const { return typeid(p); };
-
-		virtual uint64_t size(void) const { return sizeof(p); };
-		virtual const void* addr(void) const { return &p; };
-		virtual ParameterBase* clone(void) const
-		{ return new Parameter<P>(p); };
-
-		Parameter<P>& operator=(const P &_p)
-		{ p = _p; return *this; };
-
-	public:
-		P	p;
-	};
-
-
 public:
 	//!	Constructor
 	CRaptorComputeTask(	const std::string& name,
@@ -92,21 +54,23 @@ public:
 	//!	@param c : the parameter value to add
 	template <class C>
 	void addParameter(C c)
-	{ m_parameters.push_back(new Parameter<C>(c)); };
+	{
+		m_parameters.push_back(new CProgramParameters::CParameter<C>(c));
+	};
 	
 	//!	Specific handling to access to the buffer object pointer.
 	//! @param bo : a reference to a compute buffer object
 	void addParameter(const CRaptorComputeMemory::IBufferObject &bo);
 
 	//! @return the list of parameters of this task.
-	const std::vector<ParameterBase*>& getParameters(void) const
+	const std::vector<CProgramParameters::CParameterBase*>& getParameters(void) const
 	{ return m_parameters; };
 
 	//!	operator [] overload
 	//! @param pos : the index of the parameter to retrieve
 	//! @return the requested parameter, of nullParameter if invalid index.
 	template <class C>
-	Parameter<C>& operator[](size_t pos) const
+	CProgramParameters::CParameter<C>& operator[](size_t pos) const
 	{ if (pos < m_parameters.size()) return *m_parameters[pos]; else return nullParameter; };
 
 	template <class C>
@@ -115,7 +79,7 @@ public:
 		if (pos < m_parameters.size())
 		{
 			if (m_parameters[pos]->isA(c))
-				*((Parameter<C>*)m_parameters[pos]) = c; 
+				*((CProgramParameters::CParameter<C>*)m_parameters[pos]) = c;
 		}
 	};
 
@@ -125,12 +89,12 @@ public:
 
 
 private:
-	static ParameterBase	nullParameter;
+	static CProgramParameters::CParameterBase	nullParameter;
 
 	const std::string m_name;
 	size_t	m_globalSize[4];
 	size_t	m_localSize[4];
-	std::vector<ParameterBase*>	m_parameters;
+	std::vector<CProgramParameters::CParameterBase*>	m_parameters;
 };
 
 

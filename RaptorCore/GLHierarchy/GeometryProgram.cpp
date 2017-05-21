@@ -20,6 +20,7 @@
 #include <stdlib.h>	//	malloc
 RAPTOR_NAMESPACE
 
+bool CGeometryProgram::m_bGeometryProgramReady = false;
 static CGeometryProgram::CGeometryProgramClassID geometryId;
 const CPersistence::CPersistenceClassID& CGeometryProgram::CGeometryProgramClassID::GetClassId(void)
 {
@@ -71,93 +72,34 @@ CGeometryProgram::~CGeometryProgram()
 
 void CGeometryProgram::glInitShaders()
 {
-	m_iMaxLocation = 0;
-
-#if defined(GL_ARB_geometry_shader4)
-    glGetIntegerv(GL_MAX_GEOMETRY_UNIFORM_COMPONENTS_ARB,&m_iMaxLocation);
-
-    // ! The returned value is the number of individual component. Raptor always use vectors ...
-    m_iMaxLocation = m_iMaxLocation / 4;
 	m_parameters.clear();
-#endif
 
-    CShaderProgram::glInitShaders();
-}
-
-void CGeometryProgram::glStop(void)
-{
-}
-
-void CGeometryProgram::glRender(void)
-{
-    if (m_handle.handle == 0)
-        return;
-
+	if (!m_bGeometryProgramReady)
+	{
+		if (Raptor::glIsExtensionSupported("GL_ARB_geometry_shader4"))
+		{
 #if defined(GL_ARB_geometry_shader4)
-    if (m_bReLinked)
-    {
-   		size_t nbParams = m_parameters.getNbParameters();
-		for (size_t i=0;i<nbParams;i++)
-        {
-			CShaderProgram::CProgramParameters::PROGRAM_PARAMETER_VALUE &pValue = m_parameters[i];
-			pValue.locationIndex = -1;
-			pValue.locationType = GL_FLOAT_VEC4_ARB;
-        }
-
-        const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
-        GLhandleARB program = pExtensions->glGetHandleARB(GL_PROGRAM_OBJECT_ARB);
-
-        if (program != 0)
-        {
-            glQueryUniformLocations(RAPTOR_HANDLE(0,(void*)program));
-
-            glQueryAttributeLocations(RAPTOR_HANDLE(0,(void*)program));
-            
-            m_bReLinked = false;
-        }
-    #ifdef RAPTOR_DEBUG_MODE_GENERATION
-        else
-        {
-            Raptor::GetErrorManager()->generateRaptorError(	CGeometryProgram::CGeometryProgramClassID::GetClassId(),
-															CRaptorErrorManager::RAPTOR_ERROR,
-															CRaptorMessages::ID_WRONG_RENDERING);
-        }
-    #endif
-    }
-
-    if (m_bApplyParameters)
-    {
-        const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
-        for (unsigned int idx = 0; idx < m_parameters.getNbParameters(); idx++)
-        {
-			CShaderProgram::CProgramParameters::PROGRAM_PARAMETER_VALUE &value = m_parameters[idx];
-			if (value.locationIndex >= 0)
-            {
-                switch(value.kind)
-                {
-                    case CShaderProgram::CProgramParameters::VECTOR:
-						pExtensions->glUniform4fvARB(	value.locationIndex, 
-														1, value.vector);
-                        break;
-                    case CShaderProgram::CProgramParameters::MATRIX:
-						pExtensions->glUniformMatrix4fvARB(	value.locationIndex, 
-															1, GL_TRUE, value.matrix);
-                        break;
-                    case CShaderProgram::CProgramParameters::ATTRIBUTE:
-                        break;
-                    default:
-                        break;
-                }
-            }
-        }
-
-        m_bApplyParameters = false;
-    } 
+			const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+			m_bGeometryProgramReady = (NULL != pExtensions->glCreateShaderObjectARB);
+#else
+			m_bGeometryProgramReady = false;
 #endif
-
-    CATCH_GL_ERROR
+		}
+		else
+		{
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+			CRaptorMessages::MessageArgument arg;
+			arg.arg_sz = "GLSL geometry";
+			vector<CRaptorMessages::MessageArgument> args;
+			args.push_back(arg);
+			Raptor::GetErrorManager()->generateRaptorError(CShaderProgram::CShaderProgramClassID::GetClassId(),
+														   CRaptorErrorManager::RAPTOR_WARNING,
+														   CRaptorMessages::ID_NO_GPU_PROGRAM,
+														   args);
+#endif
+		}
+	}
 }
-
 
 bool CGeometryProgram::glLoadProgram(const std::string &program)
 {
@@ -214,60 +156,29 @@ bool CGeometryProgram::glLoadProgram(const std::string &program)
 
 bool CGeometryProgram::glBindProgram(RAPTOR_HANDLE program)
 {
-#if defined(GL_ARB_geometry_shader4)
-    if (program.handle == 0)
-        return false;
-
+#if defined(GL_ARB_shader_objects)
     const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
-    GLint value = 0;
-    pExtensions->glGetObjectParameterivARB(program.handle, GL_OBJECT_TYPE_ARB,&value);
-    if (value != GL_PROGRAM_OBJECT_ARB)
-        return false;
+	if (CUnifiedProgram::glBindProgram(program))
+	{
+		for (unsigned int idx = 0; idx < m_parameters.getNbParameters(); idx++)
+		{
+			const CProgramParameters::CParameterBase& value = m_parameters[idx];
+			CProgramParameters::GL_VERTEX_ATTRIB p;
+			if (value.isA(p))
+			{
+				p = ((const CProgramParameters::CParameter<CProgramParameters::GL_VERTEX_ATTRIB>&)value).p;
+				pExtensions->glBindAttribLocationARB(program.handle, p, value.name().data());
+			}
+		}
 
-    pExtensions->glAttachObjectARB(program.handle, m_handle.handle);
-
-	for (unsigned int idx = 0; idx < m_parameters.getNbParameters(); idx++)
-    {
-        CProgramParameters::PROGRAM_PARAMETER_VALUE& pValue = m_parameters[idx];
-        if (pValue.kind == CProgramParameters::ATTRIBUTE)
-        {
-            // the location retrieved will only be used if the user value is invalid.
-			pExtensions->glBindAttribLocationARB(program.handle,pValue.attribute,pValue.name.data());
-        }
-    }
-
-    CATCH_GL_ERROR
-
-    m_bReLinked = true;
-
-    return true;
-#else
-    return false;
+		CATCH_GL_ERROR
+		return true;
+	}
+	else
 #endif
+	   return false;
 }
 
-
-bool CGeometryProgram::glUnbindProgram(RAPTOR_HANDLE program)
-{
-#if defined(GL_ARB_geometry_shader4)
-    if ((program.handle == 0) || (m_handle.handle == 0))
-        return false;
-
-    const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
-    GLint value = 0;
-    pExtensions->glGetObjectParameterivARB(program.handle, GL_OBJECT_TYPE_ARB,&value);
-    if (value != GL_PROGRAM_OBJECT_ARB)
-        return false;
-
-    pExtensions->glDetachObjectARB(program.handle, m_handle.handle);
-
-    CATCH_GL_ERROR
-
-    return true;
-#else
-    return false;
-#endif
-}
 
 bool CGeometryProgram::glGetProgramCaps(GL_GEOMETRY_PROGRAM_CAPS& caps)
 {

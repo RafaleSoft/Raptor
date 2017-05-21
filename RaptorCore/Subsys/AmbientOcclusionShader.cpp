@@ -51,9 +51,10 @@ RAPTOR_NAMESPACE
 
 
 CAmbientOcclusionShader::CAmbientOcclusionShader(const std::string& name)
-	:CShader(name),m_refVertex(NULL),m_refNormal(NULL),
+	:CShader(name),
+	m_refNbVertex(0), m_refVertex(NULL), m_refNormal(NULL), m_refTexCoords(NULL),
 	m_pVertexMap(NULL),m_pNormalMap(NULL),m_pAOMap(NULL),m_pAOBuffer(NULL),
-	m_pAOcomputeRef(NULL)
+	m_pAOcomputeRef(NULL), m_tranformRef(NULL)
 {
 }
 
@@ -144,9 +145,14 @@ void CAmbientOcclusionShader::glRenderResult()
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 		glTexCoordPointer(2,GL_FLOAT,0,m_refTexCoords);
 
-		//glEnable(GL_TEXTURE_2D);
+		pExtensions->glActiveTextureARB(GL_TEXTURE2_ARB);
+		glEnable(GL_TEXTURE_2D);
 		m_pAOMap->glRender();
-/*
+		/*
+		CTextureFactory &f = CTextureFactory::getDefaultFactory();
+		f.glExportTexture(m_pAOMap, "AO_map.jpg");
+		*/
+		/*
 		{
 			CColor::RGBA *img = new CColor::RGBA[64*64];
 			glGetTexImage(GL_TEXTURE_2D,0,GL_RGBA,GL_FLOAT,img);
@@ -163,8 +169,9 @@ void CAmbientOcclusionShader::glRenderResult()
 			}
 			delete [] img;
 		}
-*/
+		*/
 		pExtensions->glClientActiveTextureARB(GL_TEXTURE0_ARB);
+		pExtensions->glActiveTextureARB(GL_TEXTURE0_ARB);
 	}
 }
 
@@ -194,13 +201,13 @@ void CAmbientOcclusionShader::glRender()
 	C3DEngine::Generic_to_MATRIX(vertexMat,M);
 	C3DEngine::Generic_to_MATRIX(normalMat,M_inv);
 
-	CShaderProgram::CProgramParameters v_params;
+	CProgramParameters v_params;
 	v_params.addParameter("vertexMat",vertexMat);
 	v_params.addParameter("normalMat",normalMat);
 
 	// Prepare shader parameters: 
 	//	- texture maps
-	CShaderProgram::CProgramParameters f_params;
+	CProgramParameters f_params;
 	f_params.addParameter("posMap",CTextureUnitSetup::IMAGE_UNIT_0);
 	f_params.addParameter("normalMap",CTextureUnitSetup::IMAGE_UNIT_1);
 	f_params.addParameter("numRows",GL_COORD_VERTEX(m_occluders[0]->m_refNbVertex/64,0,0,0));
