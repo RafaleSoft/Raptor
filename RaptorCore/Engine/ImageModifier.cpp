@@ -88,8 +88,11 @@ bool CImageModifier::setImage(const CTextureObject* image)
         m_pImage = const_cast<CTextureObject*>(image);
 
 	    //	Allocate buffers with a one pixel border
-	    m_pSrcBuffer = new unsigned char[(m_pImage->getWidth()) * (m_pImage->getHeight()+2) * 4];
-	    m_pDstBuffer = new unsigned char[(m_pImage->getWidth()) * (m_pImage->getHeight()+2) * 4];
+		size_t s = (m_pImage->getWidth()) * (m_pImage->getHeight() + 2) * 4;
+	    m_pSrcBuffer = new unsigned char[s];
+	    m_pDstBuffer = new unsigned char[s];
+		memset(m_pSrcBuffer, 0, s);
+		memset(m_pDstBuffer, 0, s);
 
 	    m_pBufferImage = &m_pSrcBuffer[m_pImage->getWidth() * 4];
     }

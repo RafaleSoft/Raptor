@@ -36,7 +36,7 @@ public:
 
 	//!	Adds a new objet to the instance set.
 	//! The transform supplied is relative to the previous object
-	void Instantiate(CObject3D * const instance,const GL_MATRIX &transform);
+	//void Instantiate(CObject3D * const instance,const GL_MATRIX &transform);
 
 	virtual void glRender();
 

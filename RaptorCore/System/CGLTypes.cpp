@@ -22,14 +22,14 @@ RAPTOR_NAMESPACE_BEGIN
 	{
 		CGenericMatrix<float> T;
 		glGetFloatv(e,T.matrix());
-		~T;
+		T.Transpose();
 		memcpy(m,T.matrix(),sizeof(GL_MATRIX));
 	}
 
 	void glGetTransposeFloatv(int e,CGenericMatrix<float> &m)
 	{
 		glGetFloatv(e,m.matrix());
-		~m;
+		m.Transpose();
 	}
 #endif
 

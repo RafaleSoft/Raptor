@@ -285,12 +285,12 @@ void C3DSceneObject::selectLights(const vector<CLight*> &lights,const CGenericMa
     GL_COORD_VERTEX r_min;
     GL_COORD_VERTEX center;
 
-	GL_MATRIX T;
-	memcpy(T,transform.matrix(),sizeof(GL_MATRIX));
-    bbox->get(r_min,r_max,T);
+	GL_MATRIX Transform;
+	memcpy(Transform, transform.matrix(), sizeof(GL_MATRIX));
+	bbox->get(r_min, r_max, Transform);
     bbox->getCenter(center);
     CGenericVector<float> c = center;
-    c *= transform;
+    c = c * transform; // T is transposed
 
     multiset<CLightObserver::lightCompare,CLightObserver::lightCompare>	sortedLights;
     vector<CLight*>::const_iterator itl = lights.begin();

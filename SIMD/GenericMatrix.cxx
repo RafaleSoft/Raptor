@@ -127,14 +127,12 @@ __inline CGenericMatrix<T,D>& SIMD_CALL CGenericMatrix<T,D>::operator+= (const C
 template <class T,int D>
 __inline CGenericMatrix<T,D>& SIMD_CALL CGenericMatrix<T,D>::operator*= (const CGenericMatrix<T,D>& m2)
 {
-	T t0,t1,t2,t3;
-
 	for (int j=0 ; j<D*D ; j+=D)
 	{
-		t0 = m_matrix[j];
-		t1 = m_matrix[j+1];
-		t2 = m_matrix[j+2];
-		t3 = m_matrix[j+3];
+		T t0 = m_matrix[j];
+		T t1 = m_matrix[j+1];
+		T t2 = m_matrix[j+2];
+		T t3 = m_matrix[j+3];
 
         m_matrix[j] = t0 * m2.m_matrix[0] + t1 * m2.m_matrix[4] + t2 * m2.m_matrix[8] + t3 * m2.m_matrix[12];
         m_matrix[j+1] = t0 * m2.m_matrix[1] + t1 * m2.m_matrix[5] + t2 * m2.m_matrix[9] + t3 * m2.m_matrix[13];
@@ -157,14 +155,13 @@ template <class T,int D>
 __inline CGenericMatrix<T,D> SIMD_CALL CGenericMatrix<T,D>::operator*  (const CGenericMatrix<T,D>& m2) const
 {
 	CGenericMatrix<T,D> m;
-	T t0,t1,t2,t3;
 
 	for (int j=0;j<D;j++)
 	{
-		t0 = m2.m_matrix[j];
-		t1 = m2.m_matrix[j+4];
-		t2 = m2.m_matrix[j+8];
-		t3 = m2.m_matrix[j+12];
+		T t0 = m2.m_matrix[j];
+		T t1 = m2.m_matrix[j+4];
+		T t2 = m2.m_matrix[j+8];
+		T t3 = m2.m_matrix[j+12];
 
 		for (int i=0;i<D*D;i+=D)
 		{

@@ -271,22 +271,7 @@ void CObject3DInstance::getTransform(CGenericMatrix<float> &T) const
 void CObject3DInstance::getBoundingBox(GL_COORD_VERTEX &min,GL_COORD_VERTEX &max) const
 {
 	if ( m_pReference != NULL)
-	{
-		const float *mm = (float*)&m_transform;
-		GL_MATRIX	transform;
-
-		transform[1] = mm[4];	transform[4] = mm[1];
-		transform[2] = mm[8];	transform[8] = mm[2];
-		transform[6] = mm[9];	transform[9] = mm[6];
-
-		transform[0] = mm[0];	transform[5] = mm[5];	transform[10] = mm[10];
-		transform[3] = mm[12];	transform[7] = mm[13];	transform[11] = mm[14];
-
-		transform[12] = transform[13] = transform[14] = 0.0f;
-		transform[15] = 1.0f;
-
-		m_pReference->boundingBox()->get(min,max,transform);
-	}
+		m_pReference->boundingBox()->get(min, max, m_transform);
 	else
 	{
 		min.x = min.y = min.z = 0.0f;
@@ -432,8 +417,8 @@ void CObject3DInstance::translate(float alpha,float beta,float gamma)
 void CObject3DInstance::translateAbsolute(float alpha,float beta,float gamma)
 {
 	translateCenter(alpha - m_transform.rowh.x,
-					        beta - m_transform.rowh.y,
-					        gamma - m_transform.rowh.z);
+					beta - m_transform.rowh.y,
+					gamma - m_transform.rowh.z);
 
 	m_transform.rowh.x=alpha;
 	m_transform.rowh.y=beta;

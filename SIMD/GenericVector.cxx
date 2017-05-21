@@ -206,8 +206,8 @@ __inline T SIMD_CALL CGenericVector<T,D>::operator% (const CGenericVector<T,D>& 
 {
 	//	scalar product operates on 3 coordinates
 	return	m_vector[0] * v2.m_vector[0] +
-			   m_vector[1] * v2.m_vector[1] +
-			   m_vector[2] * v2.m_vector[2];
+			m_vector[1] * v2.m_vector[1] +
+			m_vector[2] * v2.m_vector[2];
 			//v1.m_vector[3] * v2.m_vector[3];
 };
 

@@ -19,8 +19,6 @@ RAPTOR_NAMESPACE
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
-#pragma warning(disable : 4355)		// use of this pointer in constructor
-#pragma warning (disable : 4711)	// automatic inline expansion warning
 CBoundingBox::CBoundingBox()
 :bsp(NULL)
 {
@@ -452,7 +450,7 @@ float CBoundingBox::intersect(GL_COORD_VERTEX &origin,GL_COORD_VERTEX &direction
 	float t2;
 
 	// x interval
-	if (direction.x == 0.0)
+	if (direction.x == 0.0f)
 	{
 		if ((origin.x < xmin) || (origin.x > xmax))
 			return FLT_MAX;

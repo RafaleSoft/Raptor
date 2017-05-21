@@ -210,7 +210,7 @@ void C3DScene::glRenderObjects(	const vector<C3DSceneObject*>& objects)
     //! View point must be recomputed because engine modelview will be
     //! recomputed only on next viewpoint rendering.
     GL_MATRIX m;
-	glGetTransposeFloatv(GL_MODELVIEW_MATRIX,m);
+	glGetFloatv(GL_MODELVIEW_MATRIX, m);
         
     //
 	// Sort objects from viewPoint

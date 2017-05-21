@@ -201,6 +201,7 @@ vector<CLight*>	C3DSceneAttributes::glGetLights(const vector<C3DSceneObject*>& o
 	map<CLight*,CLight*> uniqueLights;
 
     CGenericMatrix<float> T = C3DEngine::Get3DEngine()->getModelview();
+	T.Transpose();
 
     vector<C3DSceneObject*>::const_iterator it = objects.begin();
     while (it != objects.end())

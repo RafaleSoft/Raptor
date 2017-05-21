@@ -41,7 +41,7 @@ CObject3DInstanceSet::~CObject3DInstanceSet()
 {
 
 }
-
+/*
 void CObject3DInstanceSet::Instantiate(CObject3D * const instance,const GL_MATRIX &transform)
 {
 	if (instance != NULL)
@@ -61,6 +61,7 @@ void CObject3DInstanceSet::Instantiate(CObject3D * const instance,const GL_MATRI
 		it.Transpose() *= m_finalTransform;
         GL_MATRIX _t;
         C3DEngine::Generic_to_MATRIX(_t,it);
+		// TODO: transpose
 		instance->boundingBox()->get(bMin,bMax,_t);
 
         tmpBox.extendTo(bMin.x,bMin.y,bMin.z);
@@ -75,6 +76,7 @@ void CObject3DInstanceSet::Instantiate(CObject3D * const instance,const GL_MATRI
 		m_pObjects.push_back(objectInstance);
 	}
 }
+*/
 
 void CObject3DInstanceSet::glRender(void)
 {
