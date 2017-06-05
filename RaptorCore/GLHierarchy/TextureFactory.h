@@ -99,6 +99,15 @@ public:
 	CTextureObject*		const glCreateSprite(CTextureObject::TEXEL_TYPE type);
 
 
+	//!	Creates a Vulkan image texture object.
+	//! @param type : the type of texels of the texture ( server memory model )
+	//! @param env_mode : is one of the TEXTURE_FUNCTION enum
+	//! @param filter : specifies the kind of texel sampler of the texture object
+	//! @return : the texture created or NULL if there has been an error
+	CTextureObject*		const vkCreateTexture(CTextureObject::TEXEL_TYPE type,
+											  CTextureObject::TEXTURE_FUNCTION env_mode = CTextureObject::CGL_ALPHA_TRANSPARENT,
+											  CTextureObject::TEXTURE_FILTER filter = CTextureObject::CGL_UNFILTERED);
+
 	//!	If .buffer extension is used,
 	//!	loadBUFFER does nothing, but assumes the user provides a buffer
 	//!	of pixels, pointed by T->pixels and that T->width & T->height are

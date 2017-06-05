@@ -126,9 +126,9 @@ bool CVulkanPipeline::initPipeline(const CVulkanShaderStage& shaderStages)
 																		NULL,
 																		0,	//VkPipelineViewportStateCreateFlags
 																		1,	//viewportCount;
-																		NULL, //&viewport,
+																		NULL, //&viewport, NULL == Dynamic
 																		1,	//scissorCount;
-																		NULL }; //&scissor };
+																		NULL }; //&scissor, NULL == Dynamic
 
 	VkPipelineRasterizationStateCreateInfo rasterization_state_create_info = {	VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO,
 																				NULL,

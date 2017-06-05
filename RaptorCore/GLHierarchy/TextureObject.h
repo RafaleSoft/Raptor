@@ -9,6 +9,9 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#ifndef __CGLTYPES_HPP__
+	#include "System/CGLTypes.h"
+#endif
 #if !defined(AFX_OBJECTREFERENCE_H__0D47C721_2B2D_4163_AB88_BE1B4E08A84D__INCLUDED_)
     #include "ObjectReference.h"
 #endif
@@ -219,8 +222,11 @@ private:
 	unsigned int	m_height;
     unsigned int	m_depth;
 
-    //! The texel type is stored only to avoid server calls to query internal format
+    //! The texture texel type is stored only to avoid server calls to query internal format
     TEXEL_TYPE      m_type;
+
+	//!	The buffer texel type for loading with format compatible to texture texel type
+	TEXEL_TYPE  m_bufferType;
 
     //! Aplha value. It is stored to be applyed before or after texture loading.
     unsigned int	m_alpha;
@@ -249,9 +255,11 @@ private:
     //! generation source dimensions
     int source[4];
 
-    //  Temporary data : might be null after texture loading to release client memory
-    TEXEL_TYPE  m_bufferType;
-    void *texels;
+    //!  Temporary data : might be null after texture loading to release client memory
+    void			*texels;
+
+	//!	Handle to vulkan image	
+	VkImage			vk_texname;
 };
 
 RAPTOR_NAMESPACE_END

@@ -85,24 +85,37 @@ void CViewPoint::setPosition(float x,float y,float z,VIEW_POINT_POSITION p)
     recomputeViewPoint();
 }
 
-void CViewPoint::setViewVolume(	float left,float right,
-								float bottom, float up,
-								float n, float f,
-								VIEW_POINT_MODEL m)
+void CViewPoint::setViewVolume(float left, float right,
+							   float bottom, float up,
+							   float n, float f,
+							   VIEW_POINT_MODEL m)
 {
-	viewVolume[0] = left;
-	viewVolume[1] = right;
-	viewVolume[2] = bottom;
-	viewVolume[3] = up;
-	viewVolume[4] = n;
-	viewVolume[5] = f;
-	model = m;
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+	if ((right == left) ||
+		(bottom == up) ||
+		(near == far))
+	{
+		Raptor::GetErrorManager()->generateRaptorError(C3DEngine::C3DEngineClassID::GetClassId(),
+													   CRaptorErrorManager::RAPTOR_ERROR,
+													   "Raptor View Point cannot resolve null view volume");
+	}
+	else
+#endif
+	{
+		viewVolume[0] = left;
+		viewVolume[1] = right;
+		viewVolume[2] = bottom;
+		viewVolume[3] = up;
+		viewVolume[4] = n;
+		viewVolume[5] = f;
+		model = m;
+	}
 }
 
 void CViewPoint::getViewVolume(	float &left,float &right,
-						                          float &bottom, float &up,
-						                          float &n, float &f,
-						                          VIEW_POINT_MODEL &m) const
+								float &bottom, float &up,
+								float &n, float &f,
+								VIEW_POINT_MODEL &m) const
 {
     left = viewVolume[0];
 	right = viewVolume[1];
@@ -111,6 +124,59 @@ void CViewPoint::getViewVolume(	float &left,float &right,
 	n = viewVolume[4];
 	f = viewVolume[5];
 	m = model;
+}
+
+void CViewPoint::getFrustum(CGenericMatrix<float, 4>& frustum) const
+{
+	frustum.Zero();
+
+	float l = viewVolume[0];
+	float r = viewVolume[1];
+	float b = viewVolume[2];
+	float t = viewVolume[3];
+	float n = viewVolume[4];
+	float f = viewVolume[5];
+
+	if (CViewPoint::PERSPECTIVE == model)
+	{
+		//	2.n / (r-l)		0		(r+l) / (r-l)		0
+		//		0		2.n / (t-b)	(t+b) / (t-b)		0
+		//		0			0		-(f+n) / (f-n)	-2.f.n / (f-n)
+		//		0			0			-1				0
+
+		frustum[0] = 2 * n / (r - l);
+		frustum[2] = (r + l) / (r - l);
+
+		frustum[5] = 2 * n / (t - b);
+		frustum[6] = (t + b) / (t - b);
+
+		frustum[10] = -(f + n) / (f - n);
+		frustum[11] = -2 * f * n / (f - n);
+
+		frustum[14] = -1;
+	}
+	else if (CViewPoint::ORTHOGRAPHIC == model)
+	{
+		//	2 / (r-l)		0			0			-(r+l) / (r-l)
+		//		0		2 / (t-b)		0			-(t+b) / (t-b)
+		//		0			0		-2 / (f-n)		-(f+n) / (f-n)
+		//		0			0			0				1
+		
+		frustum[0] = 2 / (r - l);
+		frustum[3] = -(r + l) / (r - l);
+
+		frustum[5] = 2 / (t - b);
+		frustum[7] = -(t + b) / (t - b);
+
+		frustum[10] = -2 / (f - n); 
+		frustum[11] = -(f + n) / (f - n);
+
+		frustum[15] = 1;
+	}
+	else
+	{
+		// Unreachable code
+	}
 }
 
 CGenericVector<float> CViewPoint::getPosition(VIEW_POINT_POSITION p) const
