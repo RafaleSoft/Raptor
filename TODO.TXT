@@ -1,5 +1,4 @@
-- simd.cpp : appel a GetSystemInfo, migrer vers intrinsics
-	- linux : /proc/cpuinfo
+- simd.cpp : appel a GetSystemInfo (linux : /proc/cpuinfo)
 
 - BasicObjects:
 	- Ajouter un TextureQuad le plus simple possible

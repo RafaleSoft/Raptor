@@ -113,8 +113,8 @@ bool COpenEXRImaging::loadImageFile(const std::string& fname,CTextureObject* con
 	{
 		Imf::RgbaInputFile file (fname.data());
 
-		const Imf::StringAttribute *comments =
-			file.header().findTypedAttribute <Imf::StringAttribute> ("origin");
+		//const Imf::StringAttribute *comments =
+		//	file.header().findTypedAttribute <Imf::StringAttribute> ("origin");
 		
 		Imath::Box2i dw = file.dataWindow();
 

@@ -310,5 +310,4 @@ void CSkinningDisplay::Display()
 
 	glColor4f(1.0f,1.0f,1.0f,1.0f);
 	layer->manageSprite(t2,75,75,dt*360);
-	//layer->glRender();
 }

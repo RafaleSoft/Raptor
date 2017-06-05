@@ -11,10 +11,6 @@
 	#include "GLHierarchy/Object3DInstance.h"
 #endif
 
-#ifndef __INTERNAL_PROCS_H__
-	#include "Subsys/InternalProcs.h"
-#endif
-
 
 #include <math.h>
 
@@ -38,6 +34,78 @@ RAPTOR_NAMESPACE_END
 
 
 RAPTOR_NAMESPACE
+
+/////////////////////////////////////////////////////////////////////////////
+//	Export a default physics behaviour : the standard PFD
+void defaultPfd(CPhysics *physics,
+				CGenericVector<float> &accel,
+				CGenericVector<float> &raccel)
+{
+	int nb = physics->getNbForces();
+
+	if (nb>0)
+	{
+		CPhysics::CForce *f = physics->getForce(0);
+
+
+		if (f->vector_attached)
+			accel = CPhysics::Rotation * f->vect;
+		else
+			accel = f->vect;
+
+		if (f->position_attached)
+			CPhysics::dV = ((CPhysics::Rotation * f->pos) - physics->G);
+		else
+			CPhysics::dV = (f->pos - physics->G);
+
+		raccel = (CPhysics::dV ^ accel);
+
+		if (nb>1)
+			for (int i = 1; i<nb; i++)
+			{
+				f = physics->getForce(i);
+
+				if (f->vector_attached)
+					accel += CPhysics::Rotation * f->vect;
+				else
+					accel += f->vect;
+
+				if (f->position_attached)
+					CPhysics::dV = ((CPhysics::Rotation * f->pos) - physics->G);
+				else
+					CPhysics::dV = (f->pos - physics->G);
+
+				if (f->vector_attached)
+					raccel += (CPhysics::dV ^ (CPhysics::Rotation * f->vect));
+				else
+					raccel += (CPhysics::dV ^ f->vect);
+			}
+
+		//	compute result :
+		//	- acceleration
+		//	- angular acceleration
+		float one_over_mass = 1 / physics->mass;
+		raccel.H(0.0f);
+		accel.H(0.0f);
+		accel *= one_over_mass;
+		raccel *= one_over_mass;
+
+		// now, remove the diracs
+		for (int i = nb - 1; i >= 0; i--)
+		{
+			f = physics->getForce(i);
+			if (f->dirac)
+			{
+				physics->removeForce(f);
+			}
+		}
+	}
+	else
+	{
+		accel.Zero();
+		raccel.Zero();
+	}
+}
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction

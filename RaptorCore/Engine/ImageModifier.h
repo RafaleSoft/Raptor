@@ -79,9 +79,6 @@ public:
 	bool selectModifierFunction(MODIFIER_STOCK_FNC fnc,unsigned long dwParam);
 	bool selectModifierFunction(RENDERING_MODIFIER fnc,unsigned long dwParam);
 
-    //! This method returns one of the predefined modifier functions
-	static MODIFIER_STOCK_FNC GetModifierFunction(RENDERING_MODIFIER fnc);
-
 	//!	Called by the framework to prepare modifier buffers
 	//!	before modifiers are applied
 	virtual void onPrepareBuffer(void) {};
@@ -115,6 +112,7 @@ private:
 
 	CTextureObject		*m_pImage;
     unsigned char       *m_pBufferImage;
+	unsigned char       *m_pBufferPointer;
 
 	unsigned char		*m_pSrcBuffer;
 	unsigned char		*m_pDstBuffer;

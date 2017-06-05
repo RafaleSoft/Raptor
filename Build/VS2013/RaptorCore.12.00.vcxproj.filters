@@ -359,9 +359,6 @@
     <ClCompile Include="..\..\RaptorCore\Subsys\GeometryAllocator.cpp">
       <Filter>Source Files\Subsys src</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\RaptorCore\Subsys\InternalProcs.cpp">
-      <Filter>Source Files\Subsys src</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\RaptorCore\Subsys\Interpreters.cpp">
       <Filter>Source Files\Subsys src</Filter>
     </ClCompile>
@@ -571,6 +568,9 @@
     </ClCompile>
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\ProgramParameters.cpp">
       <Filter>Source Files\GLHierarchy src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\ResourceAllocator.cpp">
+      <Filter>Source Files\Subsys src</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -840,9 +840,6 @@
     <ClInclude Include="..\..\RaptorCore\Subsys\GeometryAllocator.h">
       <Filter>Header Files\Subsys include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\RaptorCore\Subsys\InternalProcs.h">
-      <Filter>Header Files\Subsys include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\RaptorCore\Subsys\Interpreters.h">
       <Filter>Header Files\Subsys include</Filter>
     </ClInclude>
@@ -1100,6 +1097,9 @@
     </ClInclude>
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\ProgramParameters.h">
       <Filter>Header Files\GLHierarchy include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\ResourceAllocator.h">
+      <Filter>Header Files\Subsys include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

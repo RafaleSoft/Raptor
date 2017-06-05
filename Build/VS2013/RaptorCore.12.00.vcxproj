@@ -369,7 +369,6 @@ Subsys\Redist.bat
     <ClCompile Include="..\..\RaptorCore\Subsys\Hershey\Simplex.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\..\RaptorCore\Subsys\InternalProcs.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\Interpreters.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\KDTree.cxx">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
@@ -392,6 +391,7 @@ Subsys\Redist.bat
     <ClCompile Include="..\..\RaptorCore\Subsys\PhongShader.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\PlayFrameJob.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\RegisterCombiner.cpp" />
+    <ClCompile Include="..\..\RaptorCore\Subsys\ResourceAllocator.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\ShaderLibrary.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\ShadowVolumeJob.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\SubBoundingBox.cpp" />
@@ -561,7 +561,6 @@ copy $(SolutionDir)\$(ProjectName)\Subsys\CodeGeneration.h "%RAPTOR_ROOT%\Redist
     <ClInclude Include="..\..\RaptorCore\Subsys\FreeType\TTOutlineFont.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\GeometryAllocator.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\Hershey\Simplex.h" />
-    <ClInclude Include="..\..\RaptorCore\Subsys\InternalProcs.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\Interpreters.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\KDTree.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\LightAttributes.h" />
@@ -575,6 +574,7 @@ copy $(SolutionDir)\$(ProjectName)\Subsys\CodeGeneration.h "%RAPTOR_ROOT%\Redist
     <ClInclude Include="..\..\RaptorCore\Subsys\PhongShader.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\PlayFrameJob.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\RegisterCombiner.h" />
+    <ClInclude Include="..\..\RaptorCore\Subsys\ResourceAllocator.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\ShaderLibrary.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\ShadowVolumeJob.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\SubBoundingBox.h" />

@@ -17,9 +17,24 @@
 	#include "jpeglib.h"
 #endif
 
-#ifdef LINUX
+#if defined(WIN32)
+	#include <share.h>
+	static FILE *msdn_fopen(const char *filename,const char *mode)
+	{
+		if ((NULL == filename) || (NULL == mode))
+			return NULL;
+		FILE* pFile = NULL;
+		errno_t err = fopen_s(&pFile, filename, mode);
+		if (0 == err)
+			return pFile;
+		else
+			return NULL;
+	}
+	#define FOPEN(a,b) msdn_fopen(a,b)
+#elif LINUX
 	#include <stdio.h>
 	#include <string.h>
+	#define FOPEN(a,b) fopen(a,b)
 #endif
 
 
@@ -64,9 +79,10 @@ bool CJPGImaging::storeImageFile(const std::string& fname,CTextureObject* const 
 	cinfo.err = jpeg_std_error(&jerr);
 	jpeg_create_compress(&cinfo);
 
-    FILE			*outfile = NULL;
-	if ((outfile = fopen(fname.data(), "wb")) == NULL)
+    FILE *outfile = NULL;
+	if ((outfile = FOPEN(fname.data(), "wb")) == NULL)
 		return false;
+
     jpeg_stdio_dest(&cinfo, outfile);
 
     cinfo.image_width = T->getWidth();
@@ -86,7 +102,7 @@ bool CJPGImaging::storeImageFile(const std::string& fname,CTextureObject* const 
         int base_4 = (cinfo.image_height - cinfo.next_scanline - 1) * row_stride;
         int base_3 = 0;
 
-        for (int i=0;i<T->getWidth();i++)
+        for (unsigned int i=0;i<T->getWidth();i++)
         {
             row_pointer[0][base_3++] = texturedata[base_4++];
             row_pointer[0][base_3++] = texturedata[base_4++];
@@ -119,7 +135,7 @@ bool CJPGImaging::loadImageFile(const std::string& fname,CTextureObject* const T
 	jpeg_error_mgr			jerr;
 	
 
-	if ((infile = fopen(fname.data(), "rb")) == NULL)
+	if ((infile = FOPEN(fname.data(), "rb")) == NULL)
 		return false;
 
 	memset(&cinfo,0,sizeof(jpeg_decompress_struct));

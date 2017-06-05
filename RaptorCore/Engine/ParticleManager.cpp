@@ -7,9 +7,6 @@
 #if !defined(AFX_PARTICLEMANAGER_H__687B445A_C015_43DA_95A4_EC8AB1AED606__INCLUDED_)
     #include "ParticleManager.h"
 #endif
-#ifndef __INTERNAL_PROCS_H__
-	#include "Subsys/InternalProcs.h"
-#endif
 #ifndef __GLOBAL_H__
 	#include "System/Global.h"
 #endif
