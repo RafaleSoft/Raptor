@@ -72,6 +72,8 @@ public:
 						float &near, float &far,
 						VIEW_POINT_MODEL &m) const;
 
+	//! Return the projection matrix corresponding to the view volume
+	void getFrustum(CGenericMatrix<float, 4>& frustum) const;
 
 	//!
 	//!	Transforms

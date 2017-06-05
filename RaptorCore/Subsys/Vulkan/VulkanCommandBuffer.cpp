@@ -103,6 +103,9 @@ CVulkanCommandBuffer::~CVulkanCommandBuffer(void)
 
 void CVulkanCommandBuffer::resize()
 {
+	//!	zMin and zFar MUST be 0.0f and 1.0f
+	//! Otherwise, it has no effect or worse, not supported and renders anything
+	//!	This implies z clip coordinates of any vertex belongs to [0.0f..1.0f]
 	VkViewport viewport = { 0, 0, view_scissor.extent.width, view_scissor.extent.height, 0.0f, 1.0f };
 	vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
 	vkCmdSetScissor(commandBuffer, 0, 1, &view_scissor);

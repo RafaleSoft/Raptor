@@ -82,7 +82,7 @@ RAPTOR_HANDLE CTextureFactory::glPreloadTexture(CTextureObject* const T,
 
 	//	ensure we can do something ...
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
-	if ((T == NULL) || (!glIsTexture(T->texname)))
+	if ((T == NULL) || (!glIsTexture(T->texname) && (T->target != VK_IMAGE_TYPE_2D))
 	{
         Raptor::GetErrorManager()->generateRaptorError(	CTextureFactory::CTextureFactoryClassID::GetClassId(),
 														CRaptorErrorManager::RAPTOR_WARNING,
@@ -580,6 +580,39 @@ bool CTextureFactory::glExportTexture(CTextureObject *T,const std::string &fname
     CATCH_GL_ERROR
 
     return res;
+}
+
+CTextureObject* const CTextureFactory::vkCreateTexture(CTextureObject::TEXEL_TYPE type,
+													   CTextureObject::TEXTURE_FUNCTION env_mode,
+													   CTextureObject::TEXTURE_FILTER filter)
+{
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+	if ((type == CTextureObject::CGL_COLOR_FLOAT32) || (type == CTextureObject::CGL_COLOR_FLOAT32_ALPHA))
+	{
+		vector<CRaptorMessages::MessageArgument> args;
+		CRaptorMessages::MessageArgument arg;
+		arg.arg_sz = "2D Float32 Texture, use a Texture Rectangle instead.";
+		args.push_back(arg);
+		Raptor::GetErrorManager()->generateRaptorError(CTextureFactory::CTextureFactoryClassID::GetClassId(),
+													   CRaptorErrorManager::RAPTOR_WARNING,
+													   CRaptorMessages::ID_FORMAT_NOT_SUPPORTED, args);
+	}
+#endif
+
+	CTextureObject* T = new CTextureObject(type);
+
+	T->setFunction(env_mode);
+	T->target = VK_IMAGE_TYPE_2D;
+	T->m_filter = filter;
+
+#ifdef GL_EXT_texture_filter_anisotropic
+	if ((mConfig.getCurrentAnisotropy() > 1.0f) && (filter == CTextureObject::CGL_ANISOTROPIC))
+	{
+		T->aniso_level = mConfig.getCurrentAnisotropy();
+	}
+#endif
+
+	return T;
 }
 
 CTextureObject* const CTextureFactory::glCreateSprite(CTextureObject::TEXEL_TYPE type)
