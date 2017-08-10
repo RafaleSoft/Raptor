@@ -17,6 +17,8 @@ RAPTOR_NAMESPACE
 //////////////////////////////////////////////////////////////////////
 
 CResourceAllocator::CResourceAllocator()
+	:m_bLocked(false),
+	deviceMemoryManager(NULL)
 {
 }
 

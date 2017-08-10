@@ -810,9 +810,6 @@
     <ClInclude Include="..\..\RaptorCore\Subsys\BufferImage.h">
       <Filter>Header Files\Subsys include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\RaptorCore\Subsys\BumpLightObserver.h">
-      <Filter>Header Files\Subsys include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\RaptorCore\Subsys\BumpShader.h">
       <Filter>Header Files\Subsys include</Filter>
     </ClInclude>
@@ -1099,6 +1096,9 @@
       <Filter>Header Files\GLHierarchy include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\RaptorCore\Subsys\ResourceAllocator.h">
+      <Filter>Header Files\Subsys include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\BufferObject.h">
       <Filter>Header Files\Subsys include</Filter>
     </ClInclude>
   </ItemGroup>

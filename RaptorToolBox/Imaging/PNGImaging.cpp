@@ -15,6 +15,25 @@
 // libpng 1.2.32 support
 #include "png.h"
 
+#if defined(WIN32)
+#include <share.h>
+	static FILE *msdn_fopen(const char *filename, const char *mode)
+	{
+		if ((NULL == filename) || (NULL == mode))
+			return NULL;
+		FILE* pFile = NULL;
+		errno_t err = fopen_s(&pFile, filename, mode);
+		if (0 == err)
+			return pFile;
+		else
+			return NULL;
+	}
+	#define FOPEN(a,b) msdn_fopen(a,b)
+#elif LINUX
+	#include <stdio.h>
+	#include <string.h>
+	#define FOPEN(a,b) fopen(a,b)
+#endif
 
 CPNGImaging::CPNGImaging(void)
 {
@@ -50,7 +69,7 @@ bool CPNGImaging::loadImageFile(const std::string& fname,CTextureObject* const T
     png_infop       info_ptr = NULL;
     FILE *fp = NULL;
 
-    if ((fp = fopen(fname.data(), "rb")) == NULL)
+	if ((fp = FOPEN(fname.data(), "rb")) == NULL)
         return false;
 
     png_ptr = png_create_read_struct( PNG_LIBPNG_VER_STRING, NULL,NULL,NULL);

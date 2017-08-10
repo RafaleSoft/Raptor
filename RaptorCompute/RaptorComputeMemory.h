@@ -68,8 +68,8 @@ private:
 	unsigned int mID;
 
 	//!	Max memory sizes
-	unsigned __int64	maxSizes;
-	__int64				maxAllocatable;
+	uint64_t	maxSizes;
+	int64_t		maxAllocatable;
 };
 
 #endif

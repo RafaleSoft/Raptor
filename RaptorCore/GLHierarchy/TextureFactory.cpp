@@ -74,7 +74,7 @@ CTextureFactory& CTextureFactory::getDefaultFactory()
 
 
 
-RAPTOR_HANDLE CTextureFactory::glPreloadTexture(CTextureObject* const T,
+RAPTOR_HANDLE CTextureFactory::glvkPreloadTexture(CTextureObject* const T,
 												const std::string &fname,
 												const CVaArray<CTextureFactoryConfig::IImageOP::OP_KIND>& ops)
 {
@@ -111,9 +111,10 @@ RAPTOR_HANDLE CTextureFactory::glPreloadTexture(CTextureObject* const T,
 			//
 			T->m_name = fname.data();
 			TexturePreload P;
-			P.inner_format = T->getSizedTexelType();
-			P.format = T->getBufferType();
-			P.src_format = T->getBufferTexelType();
+			P.target = 0;
+			P.inner_format = T->getTexelFormat();
+			P.format = T->getBufferFormat();
+			P.src_format = T->getBufferType();
 			P.createNormalMap = ops.hasValue(CTextureFactoryConfig::IImageOP::BUMPMAP_LOADER);
 			P.autoMipmap = ops.hasValue(CTextureFactoryConfig::IImageOP::MIPMAP_BUILDER);
 			P.reScale = ops.hasValue(CTextureFactoryConfig::IImageOP::IMAGE_SCALER);
@@ -180,26 +181,39 @@ RAPTOR_HANDLE CTextureFactory::glPreloadTexture(CTextureObject* const T,
 			//	Handle cubemap textures
 			//
 			P.target = T->target & 0xFFFF;
-			preload.handle = T->texname;
+			preload.handle = (unsigned int)T;
 			preload.hClass = 0;
-			m_preloads[T->texname] = P;
+			m_preloads[T] = P;
 
 			//
 			// Store texels in a relocated chunk.
 			//
-			size_t size = 4 * T->getWidth() * T->getHeight() * MAX(1,T->getDepth());
-			if (T->getTexels() != NULL)
+			if (VK_IMAGE_TYPE_2D == T->target)
 			{
-				unsigned char *const texPointer = CTexelAllocator::GetInstance()->allocateTexels(size);
-				CTexelAllocator::GetInstance()->glvkCopyPointer(texPointer,T->getTexels(),size);
+				T->vk_texname =
+					CTexelAllocator::GetInstance()->vkAllocateTextureImage(	T->getWidth(),
+																			T->getHeight(),
+																			T->getDepth(),
+																			T->getTexelType());
 			}
-			else if (T->getFloatTexels() != NULL)
+			else
 			{
-				float* const texPointer = CTexelAllocator::GetInstance()->allocateFloatTexels(size);
-				CTexelAllocator::GetInstance()->glvkCopyPointer((unsigned char *)texPointer,
-																(unsigned char *)T->getFloatTexels(),
-																4*size);
+				size_t size = 4 * T->getWidth() * T->getHeight() * MAX(1, T->getDepth());
+				unsigned char *texPointer = NULL;
+				if (T->getTexels() != NULL)
+				{
+					texPointer = CTexelAllocator::GetInstance()->allocateTexels(size);
+					CTexelAllocator::GetInstance()->glvkCopyPointer(texPointer, T->getTexels(), size);
+				}
+				else if (T->getFloatTexels() != NULL)
+				{
+					texPointer = (unsigned char *)CTexelAllocator::GetInstance()->allocateFloatTexels(size);
+					CTexelAllocator::GetInstance()->glvkCopyPointer(texPointer,
+																	(unsigned char *)T->getFloatTexels(),
+																	4 * size);
+				}
 			}
+			
 			T->releaseTexels();
 
 			CATCH_GL_ERROR
@@ -219,14 +233,15 @@ RAPTOR_HANDLE CTextureFactory::glPreloadTexture(CTextureObject* const T,
 	return preload;
 }
 
-bool CTextureFactory::glLoadTexture(CTextureObject* const T, 
-									RAPTOR_HANDLE preload)
+
+bool CTextureFactory::glvkLoadTexture(	CTextureObject* const T,
+										RAPTOR_HANDLE preload)
 {
-	if (preload.handle == 0)
+	if ((NULL == T) || (preload.handle != (unsigned int)T))
 		return false;
 
 	TexturePreload P;
-	map<unsigned int,TexturePreload>::iterator it = m_preloads.find(preload.handle);
+	map<CTextureObject*, TexturePreload>::iterator it = m_preloads.find(T);
 	if (it == m_preloads.end())
 		return false;
 	else
@@ -235,36 +250,42 @@ bool CTextureFactory::glLoadTexture(CTextureObject* const T,
 		m_preloads.erase(it);
 	}
 
-	//
-	//	Final processing : 
-	//	- mipmapping generation
-	//	- image loading
-#if defined(GL_EXT_texture3D)
-    if (T->m_depth > 0)   // Texture Volumes
-    {
-        const CRaptorExtensions * const extensions = Raptor::glGetExtensions();
-        extensions->glTexImage3DEXT(P.target,0,
-									P.inner_format,
-                                    T->m_width,T->m_height,T->m_depth,
-									0,P.format,P.src_format,
-                                    T->texels);
-    }
-    else
-#endif
-	if (P.autoMipmap && (T->getFilter() == CTextureObject::CGL_TRILINEAR))
+	if (VK_IMAGE_TYPE_2D == T->target)
 	{
-		CTextureFactoryConfig::IImageOP* op = mConfig.getImageKindOP(CTextureFactoryConfig::IImageOP::MIPMAP_BUILDER);
-		op->apply(T,P.inner_format,P.format,P.src_format,mConfig);
 	}
-    //  The default case, at least load the texture.
 	else
 	{
-		glTexImage2D(	P.target,
-						T->level,P.inner_format,
-						T->m_width,T->m_height,
-						0,P.format,
-						P.src_format,
-						T->texels);
+		//
+		//	Final processing : 
+		//	- mipmapping generation
+		//	- image loading
+#if defined(GL_EXT_texture3D)
+		if (T->m_depth > 0)   // Texture Volumes
+		{
+			const CRaptorExtensions * const extensions = Raptor::glGetExtensions();
+			extensions->glTexImage3DEXT(P.target, 0,
+										P.inner_format,
+										T->m_width, T->m_height, T->m_depth,
+										0, P.format, P.src_format,
+										T->texels);
+		}
+		else
+#endif
+			if (P.autoMipmap && (T->getFilter() == CTextureObject::CGL_TRILINEAR))
+			{
+				CTextureFactoryConfig::IImageOP* op = mConfig.getImageKindOP(CTextureFactoryConfig::IImageOP::MIPMAP_BUILDER);
+				op->apply(T, P.inner_format, P.format, P.src_format, mConfig);
+			}
+			//  The default case, at least load the texture.
+			else
+			{
+				glTexImage2D(P.target,
+							 T->level, P.inner_format,
+							 T->m_width, T->m_height,
+							 0, P.format,
+							 P.src_format,
+							 T->texels);
+			}
 	}
 
 	CATCH_GL_ERROR
@@ -310,9 +331,9 @@ bool CTextureFactory::glLoadTexture(CTextureObject* const T,
 			//	Initialise texture attributes : main formats.
 			//
 			T->m_name = fname.data();
-			GLuint GL_INNER_FORMAT = T->getSizedTexelType();
-			GLuint GL_FORMAT = T->getBufferType();
-			GLuint GL_SRC_FORMAT = T->getBufferTexelType();
+			GLuint GL_INNER_FORMAT = T->getTexelFormat();
+			GLuint GL_FORMAT = T->getBufferFormat();
+			GLuint GL_SRC_FORMAT = T->getBufferType();
 
 
 			//	1)	Texture internal format
@@ -404,12 +425,19 @@ bool CTextureFactory::glLoadTexture(CTextureObject* const T,
             //  The default case, at least load the texture.
 			else
 			{
-				glTexImage2D(	target,
-								T->level,GL_INNER_FORMAT,
-								T->m_width,T->m_height,
-								0,GL_FORMAT,
-								GL_SRC_FORMAT,
-								T->texels);
+				if (VK_IMAGE_TYPE_2D == target)
+					T->vk_texname = CTexelAllocator::GetInstance()->vkAllocateTextureImage(	T->m_width,
+																							T->m_height,
+																							0,
+																							T->getTexelType(),
+																							T->getTexels());
+				else
+					glTexImage2D(	target,
+									T->level,GL_INNER_FORMAT,
+									T->m_width,T->m_height,
+									0,GL_FORMAT,
+									GL_SRC_FORMAT,
+									T->texels);
 				result = true;
 			}
             T->releaseTexels();
@@ -505,20 +533,20 @@ bool CTextureFactory::glResizeTexture( CTextureObject *T, unsigned int width, un
         if ((T->target & 0xFFFF) == GL_TEXTURE_1D)
 			glTexImage1D(	GL_TEXTURE_1D, 
 							T->getCurrentMipMapLevel(), 
-							T->getSizedTexelType(), 
+							T->getTexelFormat(),
 							width, 
 							0, 
-							T->getBufferType(), 
-							T->getBufferTexelType(),
+							T->getBufferFormat(),
+							T->getBufferType(),
 							NULL);
         else if ((T->target & 0xFFFF) == GL_TEXTURE_2D)
             glTexImage2D(	GL_TEXTURE_2D, 
 							T->getCurrentMipMapLevel(), 
-							T->getSizedTexelType(), 
+							T->getTexelFormat(),
 							width, height, 
 							0, 
-							T->getBufferType(), 
-							T->getBufferTexelType(),
+							T->getBufferFormat(),
+							T->getBufferType(),
 							NULL);
 #if defined(GL_EXT_texture3D)
         else if ((T->target & 0xFFFF) == GL_TEXTURE_3D_EXT)
@@ -526,13 +554,13 @@ bool CTextureFactory::glResizeTexture( CTextureObject *T, unsigned int width, un
             const CRaptorExtensions * const extensions = Raptor::glGetExtensions();
             extensions->glTexImage3DEXT(	GL_TEXTURE_3D_EXT, 
 											T->getCurrentMipMapLevel(), 
-											T->getSizedTexelType(), 
+											T->getTexelFormat(),
 											width, 
 											height, 
 											depth, 
 											0, 
-											T->getBufferType(), 
-											T->getBufferTexelType(),
+											T->getBufferFormat(),
+											T->getBufferType(),
 											NULL);
         }
 #endif

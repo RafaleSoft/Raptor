@@ -36,10 +36,15 @@ std::map<VkDevice,CVulkanMemory*>			CVulkanMemory::s_pMemories2;
 CVulkanMemory CVulkanMemory::defaultMemory;
 
 PFN_vkGetBufferMemoryRequirements CVulkanMemory::vkGetBufferMemoryRequirements = VK_NULL_HANDLE;
+PFN_vkGetImageMemoryRequirements CVulkanMemory::vkGetImageMemoryRequirements = VK_NULL_HANDLE;
+PFN_vkGetImageSparseMemoryRequirements CVulkanMemory::vkGetImageSparseMemoryRequirements = VK_NULL_HANDLE;
 PFN_vkCreateBuffer CVulkanMemory::vkCreateBuffer = VK_NULL_HANDLE;
 PFN_vkDestroyBuffer CVulkanMemory::vkDestroyBuffer = VK_NULL_HANDLE;
 PFN_vkAllocateMemory CVulkanMemory::vkAllocateMemory = VK_NULL_HANDLE;
 PFN_vkBindBufferMemory CVulkanMemory::vkBindBufferMemory = VK_NULL_HANDLE;
+PFN_vkCreateImage CVulkanMemory::vkCreateImage = VK_NULL_HANDLE;
+PFN_vkDestroyImage CVulkanMemory::vkDestroyImage = VK_NULL_HANDLE;
+PFN_vkBindImageMemory CVulkanMemory::vkBindImageMemory = VK_NULL_HANDLE;
 PFN_vkFreeMemory CVulkanMemory::vkFreeMemory = VK_NULL_HANDLE;
 PFN_vkMapMemory CVulkanMemory::vkMapMemory = VK_NULL_HANDLE;
 PFN_vkFlushMappedMemoryRanges CVulkanMemory::vkFlushMappedMemoryRanges = VK_NULL_HANDLE;
@@ -142,7 +147,7 @@ bool CVulkanMemory::CVulkanMemoryWrapper::needBufferObjectDataSynchro(void) cons
 		const CVulkanBufferObject* pBuffer = currentBuffers[i];
 		if (NULL != pBuffer)
 		{
-			const std::vector<VkBufferCopy> &sync = pBuffer->m_unsynchronizedData;
+			const std::vector<VkBufferCopy> &sync = pBuffer->m_unsynchronizedBuffers;
 			if (sync.size() > 0)
 			{
 				needSynchro = true;
@@ -163,7 +168,7 @@ bool CVulkanMemory::CVulkanMemoryWrapper::synchroniseBufferObjectData(const CVul
 		CVulkanBufferObject* pBuffer = const_cast<CVulkanBufferObject*>(currentBuffers[i]);
 		if (NULL != pBuffer)
 		{
-			std::vector<VkBufferCopy> &sync = pBuffer->m_unsynchronizedData;
+			std::vector<VkBufferCopy> &sync = pBuffer->m_unsynchronizedBuffers;
 			if (sync.size() > 0)
 			{
 				CVulkanCommandBuffer::vkCmdCopyBuffer(	commandBuffer.commandBuffer, 
@@ -173,6 +178,20 @@ bool CVulkanMemory::CVulkanMemoryWrapper::synchroniseBufferObjectData(const CVul
 														sync.data());
 
 				sync.clear();
+				res = true;
+			}
+
+			std::vector<VkBufferImageCopy> &sync2 = pBuffer->m_unsynchronizedImages;
+			if (sync2.size() > 0)
+			{
+				CVulkanCommandBuffer::vkCmdCopyBufferToImage( commandBuffer.commandBuffer,
+															  pBuffer->m_buffer,
+															  pBuffer->m_deviceBuffer,
+															  VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+															  sync2.size(),
+															  sync2.data());
+
+				sync2.clear();
 				res = true;
 			}
 		}
@@ -209,7 +228,36 @@ bool CVulkanMemory::CVulkanMemoryWrapper::setBufferObjectData(	IDeviceMemoryMana
 	}
 	if (m_pBuffers.end() == it)
 		return false;
-	return memory.vkSetBufferObjectData(device,*((*it).second),dstOffset,src,sz);
+	CVulkanBufferObject& vb = *((*it).second);
+	bool set_data = memory.vkSetBufferObjectData(device,vb,dstOffset,src,sz);
+
+	if (set_data)
+	{
+		if ((IDeviceMemoryManager::IBufferObject::PIXEL_SOURCE == vb.getStorage()) &&
+			(0 == vb.m_deviceBuffer))
+		{
+			std::map<VkDeviceSize, data_bloc>::iterator it = m_images.find(dstOffset);
+
+			VkBufferImageCopy outOfDate;
+			outOfDate.bufferImageHeight = 0;
+			outOfDate.bufferRowLength = 0;
+			outOfDate.bufferOffset = dstOffset;
+			outOfDate.imageOffset = { 0, 0, 0 };	//VkOffsset3D;
+			outOfDate.imageSubresource = { VK_IMAGE_ASPECT_COLOR_BIT, 1, 0, 1 };
+			outOfDate.imageExtent = { 0, 0, 0 };
+			vb.m_unsynchronizedImages.push_back(outOfDate);
+		}
+		else
+		{
+			VkBufferCopy outOfDate;
+			outOfDate.srcOffset = dstOffset;
+			outOfDate.dstOffset = dstOffset;
+			outOfDate.size = sz;
+			vb.m_unsynchronizedBuffers.push_back(outOfDate);
+		}
+	}
+
+	return set_data;
 }
 
 bool CVulkanMemory::CVulkanMemoryWrapper::getBufferObjectData(	IDeviceMemoryManager::IBufferObject &bo,
@@ -250,14 +298,14 @@ bool CVulkanMemory::CVulkanMemoryWrapper::discardBufferObjectData(	IDeviceMemory
 	CVulkanBufferObject &vb = *((*it).second);
 
 	bool erased = false;
-	std::vector<VkBufferCopy>::iterator it2 = vb.m_unsynchronizedData.begin();
-	while (it2 != vb.m_unsynchronizedData.end())
+	std::vector<VkBufferCopy>::iterator it2 = vb.m_unsynchronizedBuffers.begin();
+	while (it2 != vb.m_unsynchronizedBuffers.end())
 	{
 		VkBufferCopy &outOfDate = *it2;
 		erased = ((dstOffset == outOfDate.dstOffset) && (sz == outOfDate.size));
 		if (erased)
 		{
-			vb.m_unsynchronizedData.erase(it2);
+			vb.m_unsynchronizedBuffers.erase(it2);
 			break;
 		}
 		else
@@ -337,6 +385,92 @@ bool CVulkanMemory::CVulkanMemoryWrapper::releaseBufferObject(IDeviceMemoryManag
 
 
 
+VkImage CVulkanMemory::CVulkanMemoryWrapper::createImage(const VkImageCreateInfo &imageInfo,
+														 IDeviceMemoryManager::IBufferObject &bo,
+														 uint64_t srcOffset)
+{
+	if (VK_NULL_HANDLE != device)
+	{
+		const IDeviceMemoryManager::IBufferObject *pIBuffer = &bo;
+		std::list<pair<const IDeviceMemoryManager::IBufferObject*, CVulkanBufferObject*>>::iterator it = m_pBuffers.begin();
+		while (it != m_pBuffers.end())
+		{
+			if ((*it).first == pIBuffer)
+				break;
+			else
+				it++;
+		}
+		if (m_pBuffers.end() == it)
+			return VK_NULL_HANDLE;
+
+		CVulkanBufferObject * pBuffer = (*it).second;
+		if (VK_NULL_HANDLE == pBuffer->m_deviceAddress)
+		{
+			RAPTOR_ERROR(Global::CVulkanClassID::GetClassId(), "There is no allocated memory on given buffer object!");
+			return VK_NULL_HANDLE;
+		}
+
+
+		VkImage image = VK_NULL_HANDLE;
+
+		VkImageCreateInfo image_info = imageInfo;
+		image_info.usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+		image_info.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+		image_info.queueFamilyIndexCount = 0;
+		image_info.pQueueFamilyIndices = NULL;
+		image_info.initialLayout = VK_IMAGE_LAYOUT_PREINITIALIZED;
+
+		VkResult res = vkCreateImage(device, &image_info, &s_vulkanAllocator, &image);
+		if (VK_SUCCESS != res)
+		{
+			CATCH_VK_ERROR(res);
+			return VK_NULL_HANDLE;
+		}
+		else
+		{
+			VkMemoryRequirements image_memory_requirements;
+			vkGetImageMemoryRequirements(device, image, &image_memory_requirements);
+
+			VkDeviceSize offset = 0;
+			if (!m_images.empty())
+			{
+				std::map<VkImage, data_bloc>::iterator it = m_images.end();
+				it--;
+				data_bloc &db = (*it).second;
+
+				offset = db.address + db.size;
+				offset = (offset / image_memory_requirements.alignment) * image_memory_requirements.alignment;
+				offset = offset + image_memory_requirements.alignment;
+			}
+
+			//!
+			//!	Allocation is done on a per image basis.
+			//!
+			res = vkBindImageMemory(device, image, pBuffer->m_deviceAddress, offset);
+			if (VK_SUCCESS != res)
+			{
+				CATCH_VK_ERROR(res);
+				RAPTOR_ERROR(Global::CVulkanClassID::GetClassId(),"Allocated memory cannot be mapped to image!");
+				vkDestroyImage(device, image, &s_vulkanAllocator);
+				return VK_NULL_HANDLE;
+			}
+			else
+			{
+				//	Register image mapping into device memory.
+				data_bloc db;
+				db.image = image;
+				db.address = offset;
+				db.size = image_memory_requirements.size;
+				m_images[srcOffset] = db;
+			}
+		}
+		return image;
+	}
+	else
+		return VK_NULL_HANDLE;
+}
+
+
 const VkAllocationCallbacks* CVulkanMemory::GetAllocator(void)
 {
 	return &s_vulkanAllocator;
@@ -412,12 +546,6 @@ bool CVulkanMemory::vkSetBufferObjectData(VkDevice device,
 
 	vkUnmapMemory(device, vb.m_address);
 
-	VkBufferCopy outOfDate;
-	outOfDate.srcOffset = dstOffset;
-	outOfDate.dstOffset = dstOffset;
-	outOfDate.size = sz;
-	vb.m_unsynchronizedData.push_back(outOfDate);
-
 	return true;
 }
 
@@ -477,14 +605,14 @@ CVulkanBufferObject* CVulkanMemory::vkCreateBufferObject(	VkDevice device,
 	VkResult res = vkCreateBuffer(device, &buffer_create_info, &s_vulkanAllocator, &buffer);
 	if (VK_SUCCESS != res)
 	{
-		CRaptorErrorManager *pErrMgr = Raptor::GetErrorManager();
-		pErrMgr->vkGetError(res,__FILE__,__LINE__);
+		CATCH_VK_ERROR(res);
 		return NULL;
 	}
 
 	//!
 	//!	Select buffer usage
 	//!
+	bool allocateBuffer = true;
 	VkBufferUsageFlagBits usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
 	switch (kind)
 	{
@@ -499,6 +627,7 @@ CVulkanBufferObject* CVulkanMemory::vkCreateBufferObject(	VkDevice device,
 			break;
 		case IDeviceMemoryManager::IBufferObject::PIXEL_SOURCE:
 			usage = VK_BUFFER_USAGE_UNIFORM_TEXEL_BUFFER_BIT;
+			allocateBuffer = false;
 			break;
 		case IDeviceMemoryManager::IBufferObject::UNIFORM_BUFFER:
 			usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
@@ -512,22 +641,30 @@ CVulkanBufferObject* CVulkanMemory::vkCreateBufferObject(	VkDevice device,
 	//!	Create device local buffer for requested usage
 	//!
 	VkBuffer device_buffer = VK_NULL_HANDLE;
-	buffer_create_info.usage = (VkBufferUsageFlagBits)(usage | VK_BUFFER_USAGE_TRANSFER_DST_BIT);
-	res = vkCreateBuffer(device, &buffer_create_info, &s_vulkanAllocator, &device_buffer);
-	if (VK_SUCCESS != res)
+	if (allocateBuffer)
 	{
-		CRaptorErrorManager *pErrMgr = Raptor::GetErrorManager();
-		pErrMgr->vkGetError(res,__FILE__,__LINE__);
-		vkDestroyBuffer(device, buffer, &s_vulkanAllocator);
-		return NULL;
+		buffer_create_info.usage = (VkBufferUsageFlagBits)(usage | VK_BUFFER_USAGE_TRANSFER_DST_BIT);
+		res = vkCreateBuffer(device, &buffer_create_info, &s_vulkanAllocator, &device_buffer);
+		if (VK_SUCCESS != res)
+		{
+			CATCH_VK_ERROR(res);
+			vkDestroyBuffer(device, buffer, &s_vulkanAllocator);
+			return NULL;
+		}
 	}
 
 	//!
 	//!	Allocate host visible memory & device local memory
 	//!
 	m_bNeedFlush = true;
-	VkDeviceMemory pMemory = allocateMemory(device, buffer,VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
-	VkDeviceMemory pDeviceMemory = allocateMemory(device, device_buffer,VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+	VkDeviceSize alignment = 0;
+	VkDeviceSize device_alignment = 0;
+	VkDeviceMemory pMemory = allocateBufferMemory(device, buffer, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT,alignment);
+	VkDeviceMemory pDeviceMemory = VK_NULL_HANDLE;
+	if (allocateBuffer)
+		pDeviceMemory = allocateBufferMemory(device, device_buffer, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, device_alignment);
+	else
+		pDeviceMemory = allocateImageMemory(device, size, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, device_alignment);
 	
 	if ((VK_NULL_HANDLE != pMemory) && (VK_NULL_HANDLE != pDeviceMemory))
 	{
@@ -536,9 +673,10 @@ CVulkanBufferObject* CVulkanMemory::vkCreateBufferObject(	VkDevice device,
 		pBuffer->m_address = pMemory;
 		pBuffer->m_deviceBuffer = device_buffer;
 		pBuffer->m_deviceAddress = pDeviceMemory;
-		pBuffer->m_size = size;
+		pBuffer->m_size = size + alignment;
 		pBuffer->m_storage = kind;
 		pBuffer->m_coherent = !m_bNeedFlush;
+		pBuffer->m_granularity = alignment;
 		return pBuffer;
 	}
 	else
@@ -552,11 +690,15 @@ CVulkanBufferObject* CVulkanMemory::vkCreateBufferObject(	VkDevice device,
 	}
 }
 
-VkDeviceMemory CVulkanMemory::allocateMemory(VkDevice device, VkBuffer buffer, VkMemoryPropertyFlagBits memory_type) const
+VkDeviceMemory CVulkanMemory::allocateBufferMemory(VkDevice device,
+												   VkBuffer buffer,
+												   VkMemoryPropertyFlagBits memory_type,
+												   VkDeviceSize &alignment) const
 {
 	VkResult res = VK_NOT_READY;
 	VkMemoryRequirements buffer_memory_requirements;
 	vkGetBufferMemoryRequirements(device, buffer, &buffer_memory_requirements );
+	alignment = buffer_memory_requirements.alignment;
 
 	VkDeviceMemory pMemory = VK_NULL_HANDLE;
 	for( uint32_t i = 0; i < memory_properties.memoryTypeCount; ++i )
@@ -566,10 +708,10 @@ VkDeviceMemory CVulkanMemory::allocateMemory(VkDevice device, VkBuffer buffer, V
 		{
 			if (memory_properties.memoryTypes[i].propertyFlags & VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)
 				m_bNeedFlush = false;
-			 VkMemoryAllocateInfo memory_allocate_info = {	VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,     // VkStructureType                        sType 
-															NULL,                                    // const void                            *pNext 
-															buffer_memory_requirements.size,            // VkDeviceSize                           allocationSize 
-															i };// uint32_t                               memoryTypeIndex 
+			 VkMemoryAllocateInfo memory_allocate_info = {	VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,			// VkStructureType sType 
+															NULL,											// const void *pNext 
+															buffer_memory_requirements.size + alignment,	// VkDeviceSize allocationSize 
+															i };											// uint32_t memoryTypeIndex 
 
 			VkResult res = vkAllocateMemory(device, &memory_allocate_info, &s_vulkanAllocator, &pMemory );
 			if( VK_SUCCESS == res )
@@ -590,6 +732,74 @@ VkDeviceMemory CVulkanMemory::allocateMemory(VkDevice device, VkBuffer buffer, V
 			RAPTOR_ERROR(	Global::CVulkanClassID::GetClassId(),
 							"Allocated memory cannot be mapped to buffer!");
 			vkFreeMemory(device,pMemory,NULL);
+		}
+	}
+
+	return pMemory;
+}
+
+
+VkDeviceMemory CVulkanMemory::allocateImageMemory(VkDevice device,
+												  VkDeviceSize size,
+												  VkMemoryPropertyFlagBits memory_type,
+												  VkDeviceSize &alignment) const
+{
+	//!
+	//!	Use a 2D RGBA Image for initial allocation
+	//!	TODO: check memory_type is the same faot all image formats with the same usage (texture source for sampler)
+	//!
+	VkImageCreateInfo imageInfo = { VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
+									NULL,					// const void*
+									0,						// VkImageCreateFlags
+									VK_IMAGE_TYPE_2D,		// VkImageType
+									VK_FORMAT_R8G8B8A8_UNORM, // VkFormat
+									{ 1, 1, 1 },			// VkExtent3D
+									1,						//uint32_t mipLevels
+									1,						// uint32_t arrayLayers
+									VK_SAMPLE_COUNT_1_BIT,	// VkSampleCountFlagBits
+									VK_IMAGE_TILING_OPTIMAL,	// VkImageTiling
+									VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,		// VkImageUsageFlags
+									VK_SHARING_MODE_EXCLUSIVE,	// VkSharingMode
+									0,						// uint32_t  queueFamilyIndexCount
+									NULL,					// const uint32_t* pQueueFamilyIndices
+									VK_IMAGE_LAYOUT_PREINITIALIZED };	// VkImageLayout
+
+	VkResult res = VK_NOT_READY;
+	VkImage device_image = VK_NULL_HANDLE;
+	res = vkCreateImage(device, &imageInfo, &s_vulkanAllocator, &device_image);
+	if (VK_SUCCESS != res)
+	{
+		CATCH_VK_ERROR(res);
+		return NULL;
+	}
+		
+	VkMemoryRequirements image_memory_requirements;
+	vkGetImageMemoryRequirements(device, device_image, &image_memory_requirements);
+	alignment = image_memory_requirements.alignment;
+
+	vkDestroyImage(device, device_image, &s_vulkanAllocator);
+
+	VkDeviceMemory pMemory = VK_NULL_HANDLE;
+	for (uint32_t i = 0; i < memory_properties.memoryTypeCount; ++i)
+	{
+		if ((image_memory_requirements.memoryTypeBits & (1 << i)) &&
+			(memory_properties.memoryTypes[i].propertyFlags & memory_type))
+		{
+			if (memory_properties.memoryTypes[i].propertyFlags & VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)
+				m_bNeedFlush = false;
+			VkMemoryAllocateInfo memory_allocate_info = {	VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,     // VkStructureType sType 
+															NULL,										// const void *pNext 
+															size + alignment,							// VkDeviceSize allocationSize 
+															i };										// uint32_t memoryTypeIndex 
+
+			res = vkAllocateMemory(device, &memory_allocate_info, &s_vulkanAllocator, &pMemory);
+			if (VK_SUCCESS == res)
+				break;
+			else
+			{
+				CATCH_VK_ERROR(res);
+				pMemory = VK_NULL_HANDLE;
+			}
 		}
 	}
 

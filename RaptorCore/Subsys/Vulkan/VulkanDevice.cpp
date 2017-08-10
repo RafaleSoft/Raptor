@@ -141,7 +141,6 @@ CVulkanShader* CVulkanDevice::createShader(void) const
 		return NULL;
 }
 
-
 bool CVulkanDevice::acquireSwapChainImage(uint64_t timeout)
 {
 	//! Only a single image is managed for the moment.
@@ -742,6 +741,7 @@ bool CVulkanDevice::vkCreateLogicalDevice(	const VkPhysicalDevice &physicalDevic
 	vkDestroyImageView = (PFN_vkDestroyImageView)(vkGetDeviceProcAddr(device,"vkDestroyImageView"));
 	vkCreateFramebuffer = (PFN_vkCreateFramebuffer)(vkGetDeviceProcAddr(device,"vkCreateFramebuffer"));
 	vkDestroyFramebuffer = (PFN_vkDestroyFramebuffer)(vkGetDeviceProcAddr(device,"vkDestroyFramebuffer"));
+	
 
 	CVulkanCommandBuffer::vkCmdPipelineBarrier = (PFN_vkCmdPipelineBarrier)(vkGetDeviceProcAddr(device,"vkCmdPipelineBarrier"));
 	CVulkanCommandBuffer::vkCmdBeginRenderPass = (PFN_vkCmdBeginRenderPass)(vkGetDeviceProcAddr(device,"vkCmdBeginRenderPass"));

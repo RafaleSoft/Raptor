@@ -185,10 +185,15 @@
 	#if !defined(DECLARE_VK_device_memory)
 	#define DECLARE_VK_device_memory(LINKAGE) \
 		LINKAGE PFN_vkGetBufferMemoryRequirements vkGetBufferMemoryRequirements; \
+		LINKAGE PFN_vkGetImageMemoryRequirements vkGetImageMemoryRequirements; \
+		LINKAGE PFN_vkGetImageSparseMemoryRequirements vkGetImageSparseMemoryRequirements; \
 		LINKAGE PFN_vkCreateBuffer vkCreateBuffer; \
 		LINKAGE PFN_vkDestroyBuffer vkDestroyBuffer; \
 		LINKAGE PFN_vkAllocateMemory vkAllocateMemory; \
 		LINKAGE PFN_vkBindBufferMemory vkBindBufferMemory; \
+		LINKAGE PFN_vkCreateImage vkCreateImage; \
+		LINKAGE PFN_vkDestroyImage vkDestroyImage; \
+		LINKAGE PFN_vkBindImageMemory vkBindImageMemory; \
 		LINKAGE PFN_vkFreeMemory vkFreeMemory; \
 		LINKAGE PFN_vkMapMemory vkMapMemory; \
 		LINKAGE PFN_vkFlushMappedMemoryRanges vkFlushMappedMemoryRanges; \
@@ -207,9 +212,6 @@
 		LINKAGE PFN_vkGetPhysicalDeviceImageFormatProperties vkGetPhysicalDeviceImageFormatProperties; \
 		LINKAGE PFN_vkInvalidateMappedMemoryRanges vkInvalidateMappedMemoryRanges; \
 		LINKAGE PFN_vkGetDeviceMemoryCommitment vkGetDeviceMemoryCommitment; \
-		LINKAGE PFN_vkBindImageMemory vkBindImageMemory; \
-		LINKAGE PFN_vkGetImageMemoryRequirements vkGetImageMemoryRequirements; \
-		LINKAGE PFN_vkGetImageSparseMemoryRequirements vkGetImageSparseMemoryRequirements; \
 		LINKAGE PFN_vkGetPhysicalDeviceSparseImageFormatProperties vkGetPhysicalDeviceSparseImageFormatProperties; \
 		LINKAGE PFN_vkQueueBindSparse vkQueueBindSparse; \
 		LINKAGE PFN_vkGetFenceStatus vkGetFenceStatus; \
@@ -223,8 +225,6 @@
 		LINKAGE PFN_vkGetQueryPoolResults vkGetQueryPoolResults; \
 		LINKAGE PFN_vkCreateBufferView vkCreateBufferView; \
 		LINKAGE PFN_vkDestroyBufferView vkDestroyBufferView; \
-		LINKAGE PFN_vkCreateImage vkCreateImage; \
-		LINKAGE PFN_vkDestroyImage vkDestroyImage; \
 		LINKAGE PFN_vkCreateSampler vkCreateSampler; \
 		LINKAGE PFN_vkDestroySampler vkDestroySampler; \
 		LINKAGE PFN_vkGetRenderAreaGranularity vkGetRenderAreaGranularity; \

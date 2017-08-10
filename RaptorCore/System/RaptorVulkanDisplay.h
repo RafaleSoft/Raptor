@@ -81,7 +81,6 @@ public:
 private:
 	void allocateResources(void);
 
-	std::vector<CVulkanPipeline*> m_pipelines;
 	CContextManager::RENDERING_CONTEXT_ID	m_context;
 
 	//!	Display configuration.

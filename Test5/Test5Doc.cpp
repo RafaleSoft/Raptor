@@ -183,17 +183,20 @@ void CTest5Doc::GLInitContext(void)
 	//p->glLoadProgramFromStream(*shdr);
 	//bool res = shader->glCompileShader();
 
+	CTextureFactory &f = CTextureFactory::getDefaultFactory();
+
 #ifdef VULKAN_TEST
 	CShadedGeometry *geo = new CShadedGeometry("VULKAN_GEOMETRY");
 	geo->glSetVertices(4,NULL);
 	geo->glSetColors(4, NULL);
 	geo->glSetPolygons(2, NULL);
-	GL_COORD_VERTEX VertexData[4] =
+	GL_COORD_VERTEX VertexData[5] =
 	{
-		{ -0.7f, -0.7f, 0.0f, 1.0f },
-		{ -0.7f, 0.7f, 0.0f, 1.0f },
-		{ 0.7f, -0.7f, 0.0f, 1.0f },
-		{ 0.7f, 0.7f, 0.0f, 1.0f }
+		{ -0.7f, -0.7f, -2.0f, 1.0f },	// TODO : check / configure depth
+		{ -0.7f, 0.7f, -5.0f, 1.0f },
+		{ 0.7f, -0.7f, -1.5f, 1.0f },
+		{ 0.7f, 0.7f, -3.5f, 1.0f },
+		{ 0.0f, 0.0f, 0.1f, 1.0f }
 	};
 	CColor::RGBA ColorData[4] =
 	{
@@ -210,6 +213,10 @@ void CTest5Doc::GLInitContext(void)
 	geo->glSetColors(4,ColorData);
 	geo->glSetPolygons(2,VertexIndices);
 	
+	m_pTexture = f.vkCreateTexture(CTextureObject::CGL_COLOR24_ALPHA, CTextureObject::CGL_ALPHA_TRANSPARENT, CTextureObject::CGL_BILINEAR);
+	//RAPTOR_HANDLE p = f.glvkPreloadTexture(m_pTexture, "earth.TGA");
+	//f.glvkLoadTexture(m_pTexture, p);
+	f.glLoadTexture(m_pTexture, "earth.TGA");
 
 	CShader* s = geo->getShader();
 	CVulkanShaderStage *ss = s->vkGetVulkanProgram();
@@ -217,10 +224,31 @@ void CTest5Doc::GLInitContext(void)
 	ss->vkLoadShader("shader3.frag");
 
 	CProgramParameters parameters;
-	GL_MATRIX M;
-	IDENT_MATRIX(M);
-	M[12] = 0.5f;
-	CProgramParameters::CParameter<GL_MATRIX> param(M);
+	typedef struct 
+	{ 
+		GL_MATRIX M;
+		GL_MATRIX P;
+	} Transform_t;
+	Transform_t T;
+	
+	IDENT_MATRIX(T.M);
+	IDENT_MATRIX(T.P);
+	T.M[12] = 0.5f;
+	T.M[14] = -1.0f;
+	{
+		CGenericMatrix<float, 4> frustum;
+		m_pDisplay->getViewPoint()->getFrustum(frustum);
+
+		CGenericMatrix<float, 4> view;
+		view.Ident();
+		view[10] = 0.5f;
+		view[11] = 0.5f;
+		view *= frustum;
+
+		C3DEngine::Generic_to_MATRIX(T.P, view.Transpose());
+	}
+	
+	CProgramParameters::CParameter<Transform_t> param(T);
 	param.name("modelview");
 	param.locationIndex = 0;
 	
@@ -229,8 +257,7 @@ void CTest5Doc::GLInitContext(void)
 
 	pScene->addObject(geo);
 #else
-	CTextureFactory &f = CTextureFactory::getDefaultFactory();
-	m_pTexture = f.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_ALPHA_TRANSPARENT,CTextureObject::CGL_BILINEAR);
+	m_pTexture = f.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA, CTextureObject::CGL_ALPHA_TRANSPARENT, CTextureObject::CGL_BILINEAR);
 	f.glLoadTexture(m_pTexture,"earth.TGA");
 	CTextureUnitSetup *tus = obj->getShader()->glGetTextureUnitsSetup();
 	tus->setDiffuseMap(m_pTexture);

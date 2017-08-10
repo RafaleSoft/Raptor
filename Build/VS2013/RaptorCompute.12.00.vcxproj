@@ -110,6 +110,7 @@ copy $(OutDir)$(TargetName).dll "%RAPTOR_ROOT%\Redist\bin\"</Command>
   <ItemGroup>
     <ClInclude Include="..\..\RaptorCompute\BufferObjectParameter.h" />
     <ClInclude Include="..\..\RaptorCompute\RaptorCompute.h" />
+    <ClInclude Include="..\..\RaptorCompute\RaptorComputeBufferObject.h" />
     <ClInclude Include="..\..\RaptorCompute\RaptorComputeJob.h" />
     <ClInclude Include="..\..\RaptorCompute\RaptorComputeManager.h" />
     <ClInclude Include="..\..\RaptorCompute\RaptorComputeMemory.h" />

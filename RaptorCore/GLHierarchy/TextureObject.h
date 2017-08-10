@@ -153,6 +153,17 @@ public:
     //! Returns the generation dimensions set here above ( or default )
     void getGenerationSize(   int &posx, int &posy, int &width, int &height) const;
 
+	//!	Returns the sized format of the texels stored in device memory (texture)
+	unsigned int getTexelFormat(void) const;
+
+	//!	Returns the sized format of buffer in host memory to upload or download texels from server.
+	//!	(buffer is allocated with allocateTexels)
+	unsigned int getBufferFormat(void) const;
+
+	//! Returns the type of a texel componant in host buffer
+	//!	(buffer is allocated with allocateTexels)
+	unsigned int getBufferType(void) const;
+
     //! Request texture object texel data access.
     //! The pointer returned can be used to manually upload texels.
     //! After the texture has been uploaded to server-side, the returned pointer
@@ -202,12 +213,7 @@ private:
 
     //! This call is restricted to the factory or the TMUSetup
     void setFunction(TEXTURE_FUNCTION F);
-
-	//! A helper to select texel format from source buffer ( allocated for user's needs )
-	unsigned int getBufferTexelType(void) const;
-	unsigned int getBufferType(void) const;
-	unsigned int getSizedTexelType(void) const;
-
+	
 
 	friend class CTextureFactory;
 	friend class CTextureUnitSetup;
@@ -226,7 +232,7 @@ private:
     TEXEL_TYPE      m_type;
 
 	//!	The buffer texel type for loading with format compatible to texture texel type
-	TEXEL_TYPE  m_bufferType;
+	TEXEL_TYPE		m_bufferType;
 
     //! Aplha value. It is stored to be applyed before or after texture loading.
     unsigned int	m_alpha;

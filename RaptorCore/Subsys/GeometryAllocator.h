@@ -43,9 +43,6 @@ public:
 	bool    isMemoryRelocated(void) const
 	{ return ((NULL != deviceMemoryManager) && (NULL != relocatedFaceIndexes) && (NULL != relocatedVertices)); };
 
-	//! Returns the lock state ( set with the method below ).
-	bool    isMemoryLocked(void) const { return m_bLocked; };
-
 	//! Lock memory data and relocation so that no change can be made.
 	//! If data is relocated, High Performance memory blocks are activated on server
 	bool    glvkLockMemory(bool lock);
@@ -104,11 +101,8 @@ private:
     CHostMemoryManager::Allocator<unsigned short> shortAlloc;
     CHostMemoryManager::Allocator<float> floatAlloc;
 
-	//!	The memory state
-    bool    m_bLocked;
-
 	//!	Structure for memory blocs
-	typedef struct data_bloc_t
+	typedef struct data_bloc2_t
 	{
 		//	bloc address
 		union
@@ -118,22 +112,18 @@ private:
 		} address;
 		//	bloc size in bytes
 		uint64_t size;
-	} data_bloc;
+	} data_bloc2;
 
 
 	//!	Global array for geometry face indexes allocation.
-	data_bloc	faceIndexes;
+	data_bloc2	faceIndexes;
 
 	//!	Global array for geometry coordinates allocation.
-	data_bloc	vertices;
+	data_bloc2	vertices;
 
 	//!	If relocated, High Performance buffer object
 	IDeviceMemoryManager::IBufferObject *relocatedFaceIndexes;
 	IDeviceMemoryManager::IBufferObject *relocatedVertices;
-
-	//!	Memory manager for the device hosting the display holding this allocator.
-	//! (Vulkan host memory is per device)
-	IDeviceMemoryManager	*deviceMemoryManager;
 
 	//! Actual memory structure : bloc fragments of global allocated space
 	//!	IMPORTANT: The structure implementation requires a binary tree for template class map<>
@@ -141,8 +131,8 @@ private:
 	map<float*,uint64_t>			vertexBlocs;
 
 	//! Free blocs for faster reallocation ( blocs are contained in actual memory structure )
-	vector<data_bloc>	freeIndexBlocs;
-	vector<data_bloc>	freeVertexBlocs;
+	vector<data_bloc2>	freeIndexBlocs;
+	vector<data_bloc2>	freeVertexBlocs;
 
     //!  memory mappers from local memory to server memory
     map<unsigned short*,unsigned short*>    indexReMap;

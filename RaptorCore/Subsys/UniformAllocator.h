@@ -39,9 +39,6 @@ public:
 	//! If data is relocated, High Performance blocks are activated on server
 	bool    glvkLockMemory(bool lock);
 
-	//!	Returns the locking status of the data.
-	bool	isMemoryLocked(void) const { return m_bLocked; };
-
 	//!	This method returns the address of a free block of the requested size, ( nb of indexes )
 	//!	or NULL if not enough space or other error.
 	unsigned char * const allocateUniforms(uint64_t size);
@@ -59,22 +56,7 @@ private:
 
 	//!	The unique allocator instance
 	static CUniformAllocator	*m_pInstance;
-
-	//!	Memory manager for the device hosting the display holding this allocator.
-	//! (Vulkan host memory is per device)
-	IDeviceMemoryManager	*deviceMemoryManager;
 	
-	//!	The memory state
-	bool    m_bLocked;
-
-	CHostMemoryManager::Allocator<unsigned char> charAlloc;
-
-	typedef struct data_bloc_t
-	{
-		unsigned char	*address;
-		uint64_t		size;
-	} data_bloc;
-
 	//!	Global array for texel allocation when GPU relocation is not available
 	data_bloc	uniforms;
 

@@ -45,6 +45,10 @@ public:
 								IDeviceMemoryManager::IBufferObject::BUFFER_MODE mode, 
 								uint64_t size);
 
+		VkImage createImage(const VkImageCreateInfo &imageInfo,
+							IDeviceMemoryManager::IBufferObject &bo,
+							uint64_t srcOffset);
+
 		//!	Implements @see IDeviceMemoryManager
 		virtual bool setBufferObjectData(	IDeviceMemoryManager::IBufferObject &bo,
 											uint64_t dstOffset,
@@ -84,6 +88,14 @@ public:
 
 		std::list<pair<const IDeviceMemoryManager::IBufferObject*,CVulkanBufferObject*>> m_pBuffers;
 		const CVulkanBufferObject* currentBuffers[IDeviceMemoryManager::IBufferObject::NB_BUFFER_KIND];
+
+		typedef struct data_bloc_t
+		{
+			VkImage			image;
+			VkDeviceSize	address;
+			VkDeviceSize	size;
+		} data_bloc;
+		std::map<VkDeviceSize, data_bloc> m_images;
 	};
 
 
@@ -142,10 +154,20 @@ private:
 	CVulkanMemory(const CVulkanMemory& );
 	CVulkanMemory& operator=(const CVulkanMemory&);
 
-	//! Find proper memory properties and allocate if found.
-	VkDeviceMemory allocateMemory(VkDevice device, VkBuffer buffer, VkMemoryPropertyFlagBits memory_type) const;
-
 #if defined(VK_VERSION_1_0)
+	//! Find proper memory properties and if found allocate it to back a buffer.
+	VkDeviceMemory allocateBufferMemory(VkDevice device,
+										VkBuffer buffer,
+										VkMemoryPropertyFlagBits memory_type,
+										VkDeviceSize &alignment) const;
+
+	//! Same as above, but allocate memory backing images.
+	VkDeviceMemory allocateImageMemory(VkDevice device,
+									   VkDeviceSize size,
+									   VkMemoryPropertyFlagBits memory_type,
+									   VkDeviceSize &alignment) const;
+
+
 	//! The unique instances of the global manager (per physical device)
 	static std::map<VkPhysicalDevice,CVulkanMemory*>	s_pMemories;
 	static std::map<VkDevice,CVulkanMemory*>			s_pMemories2;

@@ -21,6 +21,27 @@ class CResourceAllocator
 public:
 	CResourceAllocator();
 	virtual ~CResourceAllocator();
+
+	//! Returns the lock state ( set with the method below ).
+	bool    isMemoryLocked(void) const { return m_bLocked; };
+
+
+protected:
+	typedef struct data_bloc_t
+	{
+		unsigned char	*address;
+		uint64_t		size;
+	} data_bloc;
+
+	//!	The memory state
+	bool    m_bLocked;
+
+	//!	A host allocator
+	CHostMemoryManager::Allocator<unsigned char> charAlloc;
+
+	//!	Memory manager for the device hosting the display holding this allocator.
+	//! (Vulkan host memory is per device)
+	IDeviceMemoryManager	*deviceMemoryManager;
 };
 
 

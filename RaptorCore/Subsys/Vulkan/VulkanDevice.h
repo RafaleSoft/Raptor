@@ -87,11 +87,11 @@ public:
 	bool vkSynchroniseBufferObjects(bool blocking = false);
 
 	//! Returns the memory wrapper managing this device.
-	IDeviceMemoryManager* getMemory(void) const { return pDeviceMemory; };
-
+	CVulkanMemory::CVulkanMemoryWrapper* getMemory(void) const { return pDeviceMemory; };
 
 	CVulkanPipeline*	createPipeline(void) const;
 	CVulkanShader*		createShader(void) const;
+
 
 	//!	Renders the 3DScene provided to the current grahics command buffer
 	//!	and initialise the render pass.

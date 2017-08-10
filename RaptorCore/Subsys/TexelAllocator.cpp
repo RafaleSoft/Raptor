@@ -13,6 +13,9 @@
 #if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
     #include "System/RaptorErrorManager.h"
 #endif
+#if !defined(AFX_RAPTORVULKANDEVICE_H__2FDEDD40_444E_4CC2_96AA_CBF9E79C3ABE__INCLUDED_)
+	#include "Subsys/Vulkan/VulkanDevice.h"
+#endif
 #ifndef __GLOBAL_H__
 	#include "System/Global.h"
 #endif
@@ -20,9 +23,6 @@
 RAPTOR_NAMESPACE_BEGIN
 
 CTexelAllocator	*CTexelAllocator::m_pInstance = NULL;
-
-//  Add a constant offset to distinguish null ( unalocated ) pointers from actual memory blocs
-static const int    RELOCATE_OFFSET = 16;
 
 RAPTOR_NAMESPACE_END
 
@@ -34,18 +34,17 @@ RAPTOR_NAMESPACE
 //////////////////////////////////////////////////////////////////////
 
 CTexelAllocator::CTexelAllocator()
-	:m_bLocked(false),relocatedTexels(NULL),
-	deviceMemoryManager(NULL)
+	:relocatedTexels(NULL)
 {
-	texels.address.uc_address = NULL;
+	texels.address = NULL;
 	texels.size = 0;
 }
 
 
 CTexelAllocator::~CTexelAllocator()
 {
-	if (texels.address.uc_address != NULL)
-		CHostMemoryManager::GetInstance()->release(texels.address.uc_address);
+	if (texels.address != NULL)
+		CHostMemoryManager::GetInstance()->release(texels.address);
 	if (relocatedTexels != NULL)
 		deviceMemoryManager->releaseBufferObject(relocatedTexels);
 }
@@ -85,10 +84,10 @@ bool CTexelAllocator::glvkInitMemory(	IDeviceMemoryManager* pDeviceMemory,
 	deviceMemoryManager = pDeviceMemory;
 
     //  Allow user to allocate bloc size different from default.
-    if (texels.address.uc_address != NULL)
+    if (texels.address != NULL)
     {
-		CHostMemoryManager::GetInstance()->release(texels.address.uc_address);
-        texels.address.uc_address = NULL;
+		CHostMemoryManager::GetInstance()->release(texels.address);
+        texels.address = NULL;
     }
     if (relocatedTexels != NULL)
         deviceMemoryManager->releaseBufferObject(relocatedTexels);
@@ -98,16 +97,16 @@ bool CTexelAllocator::glvkInitMemory(	IDeviceMemoryManager* pDeviceMemory,
 		texels.size = texelSize;
 		relocatedTexels = deviceMemoryManager->createBufferObject(	IDeviceMemoryManager::IBufferObject::PIXEL_SOURCE,
 																	IDeviceMemoryManager::IBufferObject::STREAM,
-																	texelSize+RELOCATE_OFFSET);
+																	texelSize);
         CATCH_GL_ERROR
 
 		return (relocatedTexels != NULL);
 	}
 	else
 	{
-        texels.address.uc_address = charAlloc.allocate(texelSize+RELOCATE_OFFSET);
+        texels.address = charAlloc.allocate(texelSize);
 		texels.size = texelSize;
-		return (texels.address.uc_address != NULL);
+		return (texels.address != NULL);
 	}
 }
 
@@ -134,14 +133,84 @@ bool CTexelAllocator::glvkLockMemory(bool lock)
     return res;
 }
 
+VkImage CTexelAllocator::vkAllocateTextureImage(uint64_t width,
+												uint64_t height,
+												uint64_t depth,
+												CTextureObject::TEXEL_TYPE format,
+												unsigned char* texels)
+{
+	VkImageCreateInfo imageInfo = {};
+	imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+	imageInfo.pNext = NULL;
+	imageInfo.flags = 0;
+
+	uint64_t size = width * height * MAX(1, depth);
+	//!
+	//! Select Image format
+	//!
+	switch (format)
+	{
+		case CTextureObject::CGL_COLOR24_ALPHA:
+			imageInfo.format = VK_FORMAT_R8G8B8A8_UNORM;
+			size = size * 4;
+			break;
+		case CTextureObject::CGL_COLOR24:
+			imageInfo.format = VK_FORMAT_R8G8B8_UNORM;
+			size = size * 3;
+			break;
+		default:
+			imageInfo.format = VK_FORMAT_R8G8B8A8_UNORM;
+			size = size * 4;
+			break;
+	}
+
+	imageInfo.extent.width = width;
+	imageInfo.extent.height = height;
+	imageInfo.extent.depth = depth;
+
+	//!
+	//! Select Image type
+	//!
+	if (0 == depth)
+	{
+		if (0 == height)
+			imageInfo.imageType = VK_IMAGE_TYPE_1D;
+		else
+			imageInfo.imageType = VK_IMAGE_TYPE_2D;
+	}
+	else
+		imageInfo.imageType = VK_IMAGE_TYPE_3D;
+
+	imageInfo.mipLevels = 1;
+	imageInfo.arrayLayers = 1;
+	imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
+	imageInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
+
+
+	VkImage image = VK_NULL_HANDLE;
+	CVulkanDevice *pDevice = CVulkanDevice::getCurrentDevice();
+	if (NULL != pDevice)
+	{
+		unsigned char *texpointer = this->allocateTexels(size);
+		VkDeviceSize offset = (VkDeviceSize)texpointer;
+
+		CVulkanMemory::CVulkanMemoryWrapper* memory = pDevice->getMemory();
+		image = memory->createImage(imageInfo, *relocatedTexels, offset);
+
+		if ((VK_NULL_HANDLE != image) && (NULL != texels))
+			glvkCopyPointer(texpointer, texels, size);
+	}
+
+	return image;
+}
 
 unsigned char*	const CTexelAllocator::allocateTexels(uint64_t size)
 {
-	if ((0 == size)  || (m_bLocked) || ((NULL == texels.address.uc_address) && (NULL == relocatedTexels)))
+	if ((0 == size)  || (m_bLocked) || ((NULL == texels.address) && (NULL == relocatedTexels)))
 		return NULL;
 
 	// be it relocated or not, texels can be the beginning or the memory block
-	unsigned char *currentAddress = texels.address.uc_address;
+	unsigned char *currentAddress = texels.address;
 
 	if (!texelBlocs.empty())
 	{
@@ -162,7 +231,7 @@ unsigned char*	const CTexelAllocator::allocateTexels(uint64_t size)
 			}
 			if (reuse)
 			{
-				unsigned char* addr = freeTexelBlocs[blocPos].address.uc_address;
+				unsigned char* addr = freeTexelBlocs[blocPos].address;
 				freeTexelBlocs.erase(freeTexelBlocs.begin() + blocPos);
 				return addr;
 			}
@@ -170,15 +239,15 @@ unsigned char*	const CTexelAllocator::allocateTexels(uint64_t size)
 
 		map<void*,data_bloc>::iterator it = texelBlocs.end();
 		it--;
-		currentAddress = (*it).second.address.uc_address + (*it).second.size;
+		currentAddress = (*it).second.address + (*it).second.size;
 	}
 
-	if ( ((uint64_t)currentAddress - (uint64_t)texels.address.uc_address) + size > texels.size)
+	if ( ((uint64_t)currentAddress - (uint64_t)texels.address) + size > texels.size)
     {
 		stringstream err;
 		err << "Texel Allocator could not get enough memory:";
 		err << " missing ";
-		err << (((uint64_t)currentAddress - (uint64_t)texels.address.uc_address) + size) - texels.size;
+		err << (((uint64_t)currentAddress - (uint64_t)texels.address) + size) - texels.size;
 		err << " bytes.";
 		Raptor::GetErrorManager()->generateRaptorError(	Global::COpenGLClassID::GetClassId(),
 														CRaptorErrorManager::RAPTOR_FATAL,
@@ -187,16 +256,16 @@ unsigned char*	const CTexelAllocator::allocateTexels(uint64_t size)
     }
 
     //  No NULL offset to distinguish nil pointers
-    if ((NULL != relocatedTexels) && (currentAddress == NULL))
-        currentAddress = (unsigned char*)RELOCATE_OFFSET;
+    if ((NULL != relocatedTexels) && (NULL == currentAddress))
+		currentAddress = (unsigned char*)relocatedTexels->getRelocationOffset();
 
 	//	Address should be aligned on a 16byte boundary
 	data_bloc db;
-	db.address.uc_address = (unsigned char*)(((unsigned int)(currentAddress) + 0x0f) & 0xfffffff0);
+	db.address = (unsigned char*)(((unsigned int)(currentAddress) + 0x0f) & 0xfffffff0);
 	db.size = size;
-	texelBlocs[db.address.uc_address] = db;
+	texelBlocs[db.address] = db;
 
-	return db.address.uc_address;
+	return db.address;
 }
 
 float*	const CTexelAllocator::allocateFloatTexels(uint64_t size)
@@ -225,7 +294,7 @@ bool CTexelAllocator::releaseTexels(void *tex)
 		{
 			res = true;
 			data_bloc db;
-			db.address.uc_address = (unsigned char*)tex;
+			db.address = (unsigned char*)tex;
 			db.size = (*blocPos).second.size;
 			freeTexelBlocs.push_back(db);
 		}

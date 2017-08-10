@@ -445,10 +445,15 @@ bool CContextManager::vkInitInstance(CContextManager::RENDERING_CONTEXT_ID ctx)
 				vk_ctx.device.vkGetDeviceProcAddr = vk_ctx.vkGetDeviceProcAddr;
 
 				CVulkanMemory::vkGetBufferMemoryRequirements = (PFN_vkGetBufferMemoryRequirements)(vkGetInstanceProcAddr(vk_ctx.instance,"vkGetBufferMemoryRequirements"));
+				CVulkanMemory::vkGetImageMemoryRequirements = (PFN_vkGetImageMemoryRequirements)(vkGetInstanceProcAddr(vk_ctx.instance, "vkGetImageMemoryRequirements"));
+				CVulkanMemory::vkGetImageSparseMemoryRequirements = (PFN_vkGetImageSparseMemoryRequirements)(vkGetInstanceProcAddr(vk_ctx.instance, "vkGetImageSparseMemoryRequirements"));
 				CVulkanMemory::vkCreateBuffer = (PFN_vkCreateBuffer)(vkGetInstanceProcAddr(vk_ctx.instance,"vkCreateBuffer"));
 				CVulkanMemory::vkDestroyBuffer = (PFN_vkDestroyBuffer)(vkGetInstanceProcAddr(vk_ctx.instance,"vkDestroyBuffer"));
 				CVulkanMemory::vkAllocateMemory = (PFN_vkAllocateMemory)(vkGetInstanceProcAddr(vk_ctx.instance,"vkAllocateMemory"));
 				CVulkanMemory::vkBindBufferMemory = (PFN_vkBindBufferMemory)(vkGetInstanceProcAddr(vk_ctx.instance,"vkBindBufferMemory"));
+				CVulkanMemory::vkCreateImage = (PFN_vkCreateImage)(vkGetInstanceProcAddr(vk_ctx.instance, "vkCreateImage"));
+				CVulkanMemory::vkDestroyImage = (PFN_vkDestroyImage)(vkGetInstanceProcAddr(vk_ctx.instance, "vkDestroyImage"));
+				CVulkanMemory::vkBindImageMemory = (PFN_vkBindImageMemory)(vkGetInstanceProcAddr(vk_ctx.instance, "vkBindImageMemory"));
 				CVulkanMemory::vkFreeMemory = (PFN_vkFreeMemory)(vkGetInstanceProcAddr(vk_ctx.instance,"vkFreeMemory"));
 				CVulkanMemory::vkMapMemory = (PFN_vkMapMemory)(vkGetInstanceProcAddr(vk_ctx.instance,"vkMapMemory"));
 				CVulkanMemory::vkFlushMappedMemoryRanges = (PFN_vkFlushMappedMemoryRanges)(vkGetInstanceProcAddr(vk_ctx.instance,"vkFlushMappedMemoryRanges"));

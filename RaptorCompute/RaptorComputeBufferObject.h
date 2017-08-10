@@ -9,7 +9,7 @@ class CRaptorComputeBufferObject : public CRaptorComputeMemory::IBufferObject
 {
 public:
 	//!	Compute buffer constructor
-	CRaptorComputeBufferObject():m_size(0),address(NULL),m_storage(COMPUTE_BUFFER)
+	CRaptorComputeBufferObject() :m_size(0), address(NULL), m_storage(COMPUTE_BUFFER), m_granularity(0)
 	{};
 
 	//!	Local buffer constructor
@@ -19,14 +19,22 @@ public:
 	//!	Destructor
 	virtual ~CRaptorComputeBufferObject() {};
 
+	//! Implements IDeviceMemoryManager::IBufferObject
 	virtual uint64_t getSize(void) const
 	{ return m_size; };
 
+	//! Implements IDeviceMemoryManager::IBufferObject
 	BUFFER_KIND getStorage(void) const
 	{ return m_storage; }
 
-	unsigned int getBufferId(void) const
+	//! Implements IDeviceMemoryManager::IBufferObject
+	uint32_t getBufferId(void) const
 	{ return 0; }
+
+	//! Implements IDeviceMemoryManager::IBufferObject
+	virtual uint64_t getRelocationOffset(void) const
+	{ return m_granularity;	}
+
 
 	//!	Retrieve an existing buffer.
 	//! @return NULL if buffer not found
@@ -48,6 +56,9 @@ public:
 
 	//! Indicates the data storage usage: vertex, pixels, ...
     BUFFER_KIND m_storage;
+
+	//!	Memory granularity
+	uint64_t	m_granularity;
 
 
 private:

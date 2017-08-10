@@ -15,17 +15,23 @@ class CBufferObject : public IDeviceMemoryManager::IBufferObject
 public:
 	//!	OpenGL buffer objet constructor
 	CBufferObject()
-		:m_size(0),m_storage(NB_BUFFER_KIND),m_buffer(0) { };
+		:m_size(0), m_storage(NB_BUFFER_KIND), m_buffer(0), m_granularity(0) {};
 
 	//!	Destructor
 	virtual ~CBufferObject() {};
 
-
+	//! Implements IDeviceMemoryManager::IBufferObject
 	virtual uint64_t getSize(void) const;
 
+	//! Implements IDeviceMemoryManager::IBufferObject
 	virtual BUFFER_KIND getStorage(void) const;
 
-	virtual unsigned int getBufferId(void) const;
+	//! Implements IDeviceMemoryManager::IBufferObject
+	virtual uint32_t getBufferId(void) const;
+
+	//! Implements IDeviceMemoryManager::IBufferObject
+	virtual uint64_t getRelocationOffset(void) const;
+
 
 	
 	//! The size of the buffer object
@@ -36,6 +42,9 @@ public:
 
 	//!	Actual data
 	unsigned int	m_buffer;
+
+	//!	Memory granularity
+	uint64_t		m_granularity;
 };
 
 uint64_t CBufferObject::getSize(void) const
@@ -48,10 +57,16 @@ inline IDeviceMemoryManager::IBufferObject::BUFFER_KIND CBufferObject::getStorag
 	return m_storage;
 }
 
-inline unsigned int CBufferObject::getBufferId(void) const
+inline uint32_t CBufferObject::getBufferId(void) const
 {
 	if (m_buffer & 1) return (m_buffer >> 16);
 	else return 0;
+}
+
+
+inline uint64_t CBufferObject::getRelocationOffset(void) const
+{
+	return m_granularity;
 }
 
 

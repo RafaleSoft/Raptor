@@ -536,7 +536,7 @@ copy $(SolutionDir)\$(ProjectName)\Subsys\CodeGeneration.h "%RAPTOR_ROOT%\Redist
     <ClInclude Include="..\..\RaptorCore\Subsys\BaseTree.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\BlinnShader.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\BufferImage.h" />
-    <ClInclude Include="..\..\RaptorCore\Subsys\BumpLightObserver.h" />
+    <ClInclude Include="..\..\RaptorCore\Subsys\BufferObject.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\BumpShader.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\CodeGeneration.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\Collisions.h" />

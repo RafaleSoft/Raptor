@@ -461,7 +461,7 @@ void CTextureObject::getGenerationSize(   int &posx, int &posy, int &width, int 
 
 
 
-unsigned int CTextureObject::getBufferTexelType(void) const
+unsigned int CTextureObject::getBufferType(void) const
 {
 	//!	A default value, though it may be wrong.
 	unsigned int res = GL_UNSIGNED_BYTE;
@@ -515,7 +515,7 @@ unsigned int CTextureObject::getBufferTexelType(void) const
 	return res;
 }
 
-unsigned int CTextureObject::getBufferType(void) const
+unsigned int CTextureObject::getBufferFormat(void) const
 {
 	//!	A default value, though it may be wrong.
 	unsigned int res = GL_RGBA;
@@ -568,7 +568,7 @@ unsigned int CTextureObject::getBufferType(void) const
 	return res;
 }
 
-unsigned int CTextureObject::getSizedTexelType(void) const
+unsigned int CTextureObject::getTexelFormat(void) const
 {
 	//!	A default value, though it may be wrong.
 	unsigned int res = GL_RGBA8;

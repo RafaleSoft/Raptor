@@ -22,9 +22,6 @@ RAPTOR_NAMESPACE_BEGIN
 
 CGeometryAllocator	*CGeometryAllocator::m_pInstance = NULL;
 
-//  Add a constant offset to distinguish null ( unalocated ) pointers from actual memory blocs
-static const int    RELOCATE_OFFSET = 16;
-
 RAPTOR_NAMESPACE_END
 
 
@@ -34,10 +31,8 @@ RAPTOR_NAMESPACE
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CGeometryAllocator::CGeometryAllocator():
-	m_bLocked(false),
-	relocatedFaceIndexes(NULL),relocatedVertices(NULL),
-	deviceMemoryManager(NULL)
+CGeometryAllocator::CGeometryAllocator()
+	:relocatedFaceIndexes(NULL),relocatedVertices(NULL)
 {
 	faceIndexes.address.us_address = NULL;
 	faceIndexes.size = 0;
@@ -327,20 +322,20 @@ bool CGeometryAllocator::glvkInitMemory(IDeviceMemoryManager* pDeviceMemory,
 		vertices.size = coordsSize * sizeof(float);
 		relocatedVertices = deviceMemoryManager->createBufferObject(IDeviceMemoryManager::IBufferObject::VERTEX_BUFFER,
 																	IDeviceMemoryManager::IBufferObject::STATIC,
-																	vertices.size+RELOCATE_OFFSET);
+																	vertices.size);
 		
 		faceIndexes.size = indexSize  * sizeof(unsigned short);
 		relocatedFaceIndexes = deviceMemoryManager->createBufferObject(	IDeviceMemoryManager::IBufferObject::INDEX_BUFFER,
 																		IDeviceMemoryManager::IBufferObject::STATIC,
-																		faceIndexes.size+RELOCATE_OFFSET);
+																		faceIndexes.size);
 
 		return ((relocatedFaceIndexes != NULL) && (relocatedVertices != NULL));
 	}
 	else
 	{
-		faceIndexes.address.us_address = shortAlloc.allocate(indexSize+RELOCATE_OFFSET);
+		faceIndexes.address.us_address = shortAlloc.allocate(indexSize);
 		faceIndexes.size = indexSize * sizeof(unsigned short);
-        vertices.address.f_address = floatAlloc.allocate(coordsSize+RELOCATE_OFFSET);
+        vertices.address.f_address = floatAlloc.allocate(coordsSize);
 		vertices.size = coordsSize * sizeof(float);
 		return ((faceIndexes.address.us_address != NULL) && (vertices.address.f_address != NULL));
 	}
@@ -364,7 +359,7 @@ unsigned short	* const	CGeometryAllocator::allocateIndexes(uint64_t size)
 			unsigned int blocPos = 0;
 			for (size_t i=0;i<freeIndexBlocs.size();i++)
 			{
-				data_bloc &db = freeIndexBlocs[i];
+				data_bloc2 &db = freeIndexBlocs[i];
 				if ((db.size >= sz) && (db.size < maxSize))
 				{
 					blocPos = i;
@@ -394,8 +389,8 @@ unsigned short	* const	CGeometryAllocator::allocateIndexes(uint64_t size)
     }
 
     //  No NULL offset to distinguish nil pointers
-    if ((NULL !=relocatedFaceIndexes) && (currentAddress == NULL))
-        currentAddress = (unsigned short*)RELOCATE_OFFSET;
+    if ((NULL != relocatedFaceIndexes) && (NULL == currentAddress))
+		currentAddress = (unsigned short*)relocatedFaceIndexes->getRelocationOffset();
 
 	//	Address should be aligned on a 16byte boundary
 	unsigned short* address = (unsigned short*)(((unsigned int)(currentAddress) + 0x0f) & 0xfffffff0);
@@ -428,7 +423,7 @@ bool	CGeometryAllocator::releaseIndexes(unsigned short *index)
 		else
 		{
 			res = true;
-			data_bloc db;
+			data_bloc2 db;
 			db.address.us_address = index;
 			db.size = (*blocPos).second;
 			freeIndexBlocs.push_back(db);
@@ -457,7 +452,7 @@ float * const CGeometryAllocator::allocateVertices(uint64_t size)
 			unsigned int blocPos = 0;
 			for (size_t i=0;i<freeVertexBlocs.size();i++)
 			{
-				data_bloc &db = freeVertexBlocs[i];
+				data_bloc2 &db = freeVertexBlocs[i];
 				if ((db.size >= sz) && (db.size < maxSize))
 				{
 					blocPos = i;
@@ -488,8 +483,8 @@ float * const CGeometryAllocator::allocateVertices(uint64_t size)
     }
 
     //  No NULL offset to distinguish nil pointers
-    if ((NULL != relocatedVertices) && (currentAddress == NULL))
-        currentAddress = (float*)RELOCATE_OFFSET;
+    if ((NULL != relocatedVertices) && (NULL == currentAddress))
+		currentAddress = (float*)relocatedVertices->getRelocationOffset();
 
 	//	Address should be aligned on a 16byte boundary
 	float* address = (float*)(((unsigned int)(currentAddress) + 0x0f) & 0xfffffff0);
@@ -522,7 +517,7 @@ bool CGeometryAllocator::releaseVertices(float *index)
 		else
 		{
 			res = true;
-			data_bloc db;
+			data_bloc2 db;
 			db.address.f_address = index;
 			db.size = sz;
 			freeVertexBlocs.push_back(db);

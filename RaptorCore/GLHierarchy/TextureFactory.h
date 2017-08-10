@@ -134,15 +134,15 @@ public:
 	//! Same as above excepts that the texteure texels are only loaded in client memory,
 	//!	and not yet transfered to GL server memory.
 	//! A subsequent call to glLoadTexture will finalize texture loading.
-	RAPTOR_HANDLE glPreloadTexture(	CTextureObject* const T,
-									const std::string &fname,
-									const CVaArray<CTextureFactoryConfig::IImageOP::OP_KIND>& ops = CVaArray<CTextureFactoryConfig::IImageOP::OP_KIND>());
+	RAPTOR_HANDLE glvkPreloadTexture(	CTextureObject* const T,
+										const std::string &fname,
+										const CVaArray<CTextureFactoryConfig::IImageOP::OP_KIND>& ops = CVaArray<CTextureFactoryConfig::IImageOP::OP_KIND>());
 
 	//!	@param preload : the result of a texture preload
 	//!	@param mode : @see glLoadTexture
 	//!	@return : @see glLoadTexture
-	bool glLoadTexture(	CTextureObject* const T,
-						RAPTOR_HANDLE preload);
+	bool glvkLoadTexture(	CTextureObject* const T,
+							RAPTOR_HANDLE preload);
 
 
     //! Resize a texture object if it possible :
@@ -190,7 +190,7 @@ private:
 		bool autoMipmap;
 		bool reScale;
 	} TexturePreload;
-	map<unsigned int,TexturePreload>	m_preloads;
+	map<CTextureObject*, TexturePreload>	m_preloads;
 };
 
 RAPTOR_NAMESPACE_END

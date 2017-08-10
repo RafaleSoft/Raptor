@@ -41,10 +41,6 @@ public:
     //! If data is relocated, High Performance blocks are activated on server
     bool    glvkLockMemory(bool lock);
 
-	//!	Returns the locking status of the data.
-	bool	isMemoryLocked(void) const { return m_bLocked; };
-
-
 	//!	This method returns the address of a free block of the requested size, ( nb of texels )
 	//!	or NULL if not enough space or other error.
 	unsigned char*	const allocateTexels(uint64_t size);
@@ -69,6 +65,12 @@ public:
 	void *glvkMapPointer(void *pointer,bool syncData = true);
 	void *glvkUnMapPointer(void *pointer,bool syncData = true);
 
+	//!	Create a Vulkan image and allocate device memory
+	VkImage vkAllocateTextureImage(uint64_t width,
+								   uint64_t height = 0,
+								   uint64_t depth = 0,
+								   CTextureObject::TEXEL_TYPE format = CTextureObject::CGL_COLOR24_ALPHA,
+								   unsigned char* texels = NULL);
 
 private:
 	//!	Singleton constructor is not allowed
@@ -79,31 +81,11 @@ private:
 	//!	The unique allocator instance
 	static CTexelAllocator	*m_pInstance;
 
-	//!	The memory state
-    bool    m_bLocked;
-
-	CHostMemoryManager::Allocator<unsigned char> charAlloc;
-
-	typedef struct data_bloc_t
-	{
-		union
-		{
-			unsigned char	*uc_address;
-			float			*f_address;
-		} address;
-		uint64_t			size;
-	} data_bloc;
-
-
 	//!	Global array for texel allocation when GPU relocation is not available
 	data_bloc	texels;
 
 	//!	If relocated, High Performance buffer object
 	IDeviceMemoryManager::IBufferObject *relocatedTexels;
-
-	//!	Memory manager for the device hosting the display holding this allocator.
-	//! (Vulkan host memory is per device)
-	IDeviceMemoryManager	*deviceMemoryManager;
 
 	//! Actual memory structure : bloc fragments of global allocated space
 	//!	IMPORTANT: The structure implementation requires a binary tree for template class map<>
