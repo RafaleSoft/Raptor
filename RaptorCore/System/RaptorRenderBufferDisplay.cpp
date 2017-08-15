@@ -583,7 +583,7 @@ void CRaptorRenderBufferDisplay::glGenerate(CTextureObject* T)
 											T->getCurrentMipMapLevel());
 
 	//	Render the display after texture is attached
-	//	because rendering propoerties are applied now ( e.g. glClear )
+	//	because rendering properties are applied now ( e.g. glClear )
 	RAPTOR_HANDLE noDevice;
 	CRaptorDisplay::glBindDisplay(noDevice);
 	glPushAttrib(GL_VIEWPORT_BIT);

@@ -637,8 +637,9 @@ RAPTOR_HANDLE CTextureUnitSetup::glBuildUnSetup(void)
 
 			if (imageUnit[i] != NULL)
 			{
-				glBindTexture(imageUnit[i]->target & 0xFFFF, 0);
-				glDisable(imageUnit[i]->target & 0xFFFF);
+				GLenum target = imageUnit[i]->target & 0xFFFF;
+				glBindTexture(target, 0);
+				glDisable(target);
 			}
 
 		    // Unsetup of combiners

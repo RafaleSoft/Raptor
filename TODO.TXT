@@ -3,9 +3,6 @@
 - BasicObjects:
 	- Ajouter un TextureQuad le plus simple possible
 
--CRaptorComputeMemory:
-	- décaler les buffer kind, car overlapping !
-
 -CVulkanMemory:
 	- initialiser une bloc mémoire pour l'application (vertex et index buffers bindés sur la même allocation)
 	- Factoriser les allocators (Geometry, Texel, Uniform)
@@ -28,10 +25,10 @@
 
 - CRaptorRenderBufferDisplay:
 	- mettre au point le format CGL_FLOAT_32 (creation des textures attachées)
+	- glGenerate : la texture est 'unbindee', or si appelé depuis CTextureObject::glRender ==> ?
 	
 - CGeometry / CGeometryPrimitive:
 	- créer un mode"BigGeometry" avec des indices de type uint32_t
-	- attention au GeometryAllocator lock/unlock (utilise la taille estimée des données!)
 		
 - supprimer des "friend" ?
 	p.ex. dans CRaptorDisplay et sous classes ...
@@ -99,9 +96,6 @@
 
 - Bug Microlex:
 	dans le cas d'un rule qui est un alternate d'alternate, il n'y a que le premier atome de de la premiere regle qui est selectionne.
-
-- Pb buffer display:
-	Les texture Generator ne font pas de UnBind !
 
 - Collisions:
 	- Calculer les metaballs optimales
