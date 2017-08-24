@@ -236,6 +236,11 @@ bool CVulkanDevice::vkSynchroniseBufferObjects(bool blocking)
 	if (!pDeviceMemory->needBufferObjectDataSynchro())
 		return true;
 
+	//!	TODO : check if a single command buffer works.
+	//!	Otherwise, 3 steps are necesary:
+	//!	- transition images to transfer dst optimal layout
+	//!	- copy buffers
+	//!	- transition images to shader read only optimal layout
 	{
 		CVulkanCommandBuffer displayList(transferBuffer);
 		pDeviceMemory->synchroniseBufferObjectData(displayList);

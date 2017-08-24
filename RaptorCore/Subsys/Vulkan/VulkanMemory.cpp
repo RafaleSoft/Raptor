@@ -153,6 +153,13 @@ bool CVulkanMemory::CVulkanMemoryWrapper::needBufferObjectDataSynchro(void) cons
 				needSynchro = true;
 				break;
 			}
+
+			const std::vector<CVulkanBufferObject::unsynchronizedImage> &sync2 = pBuffer->m_unsynchronizedImages;
+			if (sync2.size() > 0)
+			{
+				needSynchro = true;
+				break;
+			}
 		}
 	}
 
@@ -163,6 +170,24 @@ bool CVulkanMemory::CVulkanMemoryWrapper::synchroniseBufferObjectData(const CVul
 {
 	bool res = false;
 
+	//!	Step 1 : transition image layouts
+	for (unsigned int i = 0; i < IDeviceMemoryManager::IBufferObject::NB_BUFFER_KIND; i++)
+	{
+		CVulkanBufferObject* pBuffer = const_cast<CVulkanBufferObject*>(currentBuffers[i]);
+		if (NULL != pBuffer)
+		{
+			std::vector<CVulkanBufferObject::unsynchronizedImage> &sync2 = pBuffer->m_unsynchronizedImages;
+			for (size_t i = 0; i < sync2.size(); i++)
+			{
+				CVulkanBufferObject::unsynchronizedImage& synchro = sync2[i];
+				commandBuffer.imageBarrier(VK_IMAGE_LAYOUT_UNDEFINED,
+										   VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+										   synchro.image);
+			}
+		}
+	}
+
+	//!	Step 2 : copy buffers and images
 	for (unsigned int i=0;i<IDeviceMemoryManager::IBufferObject::NB_BUFFER_KIND;i++)
 	{
 		CVulkanBufferObject* pBuffer = const_cast<CVulkanBufferObject*>(currentBuffers[i]);
@@ -181,19 +206,38 @@ bool CVulkanMemory::CVulkanMemoryWrapper::synchroniseBufferObjectData(const CVul
 				res = true;
 			}
 
-			std::vector<VkBufferImageCopy> &sync2 = pBuffer->m_unsynchronizedImages;
-			if (sync2.size() > 0)
+			std::vector<CVulkanBufferObject::unsynchronizedImage> &sync2 = pBuffer->m_unsynchronizedImages;
+			for (size_t i = 0; i < sync2.size(); i++)
 			{
+				CVulkanBufferObject::unsynchronizedImage& synchro = sync2[i];
 				CVulkanCommandBuffer::vkCmdCopyBufferToImage( commandBuffer.commandBuffer,
 															  pBuffer->m_buffer,
-															  pBuffer->m_deviceBuffer,
+															  synchro.image,
 															  VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-															  sync2.size(),
-															  sync2.data());
-
-				sync2.clear();
+															  1, &synchro.bufferCopy);
 				res = true;
 			}
+			//	Do not clear unsynchronised data here : we need additional transitions.
+			//sync2.clear();
+		}
+	}
+
+	//!	Step 3 : transition image layouts
+	for (unsigned int i = 0; i < IDeviceMemoryManager::IBufferObject::NB_BUFFER_KIND; i++)
+	{
+		CVulkanBufferObject* pBuffer = const_cast<CVulkanBufferObject*>(currentBuffers[i]);
+		if (NULL != pBuffer)
+		{
+			std::vector<CVulkanBufferObject::unsynchronizedImage> &sync2 = pBuffer->m_unsynchronizedImages;
+			for (size_t i = 0; i < sync2.size(); i++)
+			{
+				CVulkanBufferObject::unsynchronizedImage& synchro = sync2[i];
+				commandBuffer.imageBarrier(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+										   VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+										   synchro.image);
+			}
+
+			sync2.clear();
 		}
 	}
 
@@ -237,15 +281,20 @@ bool CVulkanMemory::CVulkanMemoryWrapper::setBufferObjectData(	IDeviceMemoryMana
 			(0 == vb.m_deviceBuffer))
 		{
 			std::map<VkDeviceSize, data_bloc>::iterator it = m_images.find(dstOffset);
+			data_bloc &db = (*it).second;
 
 			VkBufferImageCopy outOfDate;
-			outOfDate.bufferImageHeight = 0;
-			outOfDate.bufferRowLength = 0;
 			outOfDate.bufferOffset = dstOffset;
+			outOfDate.bufferImageHeight = 0;	// image data tight packing in buffer -> image extent
+			outOfDate.bufferRowLength = 0;		// image data tight packing in buffer -> image extent
+			outOfDate.imageSubresource = { VK_IMAGE_ASPECT_COLOR_BIT, 0, 0, 1 };
 			outOfDate.imageOffset = { 0, 0, 0 };	//VkOffsset3D;
-			outOfDate.imageSubresource = { VK_IMAGE_ASPECT_COLOR_BIT, 1, 0, 1 };
-			outOfDate.imageExtent = { 0, 0, 0 };
-			vb.m_unsynchronizedImages.push_back(outOfDate);
+			outOfDate.imageExtent = db.imageExtent;
+
+			CVulkanBufferObject::unsynchronizedImage synchro;
+			synchro.image = db.image;
+			synchro.bufferCopy = outOfDate;
+			vb.m_unsynchronizedImages.push_back(synchro);
 		}
 		else
 		{
@@ -438,7 +487,7 @@ VkImage CVulkanMemory::CVulkanMemoryWrapper::createImage(const VkImageCreateInfo
 				it--;
 				data_bloc &db = (*it).second;
 
-				offset = db.address + db.size;
+				offset = db.memory_offset + db.size;
 				offset = (offset / image_memory_requirements.alignment) * image_memory_requirements.alignment;
 				offset = offset + image_memory_requirements.alignment;
 			}
@@ -459,7 +508,8 @@ VkImage CVulkanMemory::CVulkanMemoryWrapper::createImage(const VkImageCreateInfo
 				//	Register image mapping into device memory.
 				data_bloc db;
 				db.image = image;
-				db.address = offset;
+				db.imageExtent = image_info.extent;
+				db.memory_offset = offset;
 				db.size = image_memory_requirements.size;
 				m_images[srcOffset] = db;
 			}

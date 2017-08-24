@@ -150,7 +150,7 @@ public:
     //! - image is rescaled if actually loaded
     //! - allocated texels are discarded.
     //! @return false if resizing is not possible
-    bool glResizeTexture( CTextureObject *T, unsigned int width, unsigned int height, unsigned int depth=0) const;
+    bool glResizeTexture( CTextureObject *T, unsigned int width, unsigned int height, unsigned int depth=1) const;
 
     //! Exports a texture image to a file, type is selected from fname extension
 	bool glExportTexture(CTextureObject *T,const std::string &fname);

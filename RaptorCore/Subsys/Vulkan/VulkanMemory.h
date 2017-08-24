@@ -92,7 +92,8 @@ public:
 		typedef struct data_bloc_t
 		{
 			VkImage			image;
-			VkDeviceSize	address;
+			VkExtent3D		imageExtent;
+			VkDeviceSize	memory_offset;
 			VkDeviceSize	size;
 		} data_bloc;
 		std::map<VkDeviceSize, data_bloc> m_images;

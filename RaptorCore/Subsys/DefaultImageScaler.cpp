@@ -39,7 +39,7 @@ bool CDefaultImageScaler::apply(CTextureObject* const src,
 								unsigned int texelType,
 								const CTextureFactoryConfig& config) const
 {
-	if (src->getDepth() != 0)
+	if (src->getDepth() > 1)
 		return false;	//	Unsupported Texture3D resize.
 
 	

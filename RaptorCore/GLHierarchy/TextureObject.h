@@ -135,7 +135,7 @@ public:
     //! to proceed a GL resize. If texels have been allocated and the new size do not match,
     //! texels are lost and the wrapper is reallocated.
     //! This method must be used with allocateTexels, any other usage is not supported.
-    void setSize(unsigned int width, unsigned int height, unsigned int depth=0);
+    void setSize(unsigned int width, unsigned int height, unsigned int depth=1);
 
     //! Allocates a bloc of texels to pass data to server. Memory allocator must be in library.
     //! The size is dependent on texture attributes, it might be reallocated or not.

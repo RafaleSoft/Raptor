@@ -31,6 +31,9 @@
 #if !defined(AFX_RAPTORIO_H__87D52C27_9117_4675_95DC_6AD2CCD2E78D__INCLUDED_)
 	#include "System/RaptorIO.h"
 #endif
+#ifndef __GLOBAL_H__
+	#include "System/Global.h"
+#endif
 
 RAPTOR_NAMESPACE
 
@@ -112,6 +115,16 @@ void CTextureObject::glRender()
 
 void CTextureObject::setSize(unsigned int width, unsigned int height, unsigned int depth)
 {
+	if ((width == 0) || (height == 0) || (depth == 0))
+	{
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+		Raptor::GetErrorManager()->generateRaptorError(Global::COpenGLClassID::GetClassId(),
+													   CRaptorErrorManager::RAPTOR_WARNING,
+													   "CTextureObject wrong size update");
+#endif
+		return;
+	}
+
     if ((width != m_width) || (height != m_height) || (depth != m_depth))
     {
         releaseTexels();
@@ -198,7 +211,7 @@ void CTextureObject::releaseTexels(void)
 void CTextureObject::allocateTexels(TEXEL_TYPE type)
 {
     //   reserve default space for at least rgba type, even if it larger than necessary.
-    unsigned int size = m_width * m_height * 4 * MAX(1,m_depth);
+    unsigned int size = 4 * m_width * m_height * m_depth;
 
     if (size > 0)
     {

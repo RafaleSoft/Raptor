@@ -260,7 +260,7 @@ bool CTextureFactory::glvkLoadTexture(	CTextureObject* const T,
 		//	- mipmapping generation
 		//	- image loading
 #if defined(GL_EXT_texture3D)
-		if (T->getDepth() > 0)   // Texture Volumes
+		if (T->getDepth() > 1)   // Texture Volumes
 		{
 			const CRaptorExtensions * const extensions = Raptor::glGetExtensions();
 			extensions->glTexImage3DEXT(P.target, 0,
@@ -388,7 +388,7 @@ bool CTextureFactory::glLoadTexture(CTextureObject* const T,
 			//	Handle Image re-scaling
 			//
             if ((mConfig.useTextureResize() || ops.hasValue(CTextureFactoryConfig::IImageOP::IMAGE_SCALER)) && 
-				(T->getDepth() == 0))
+				(T->getDepth() < 2)) // depth 1 is a 1D or 2D texture, depth 0 is invalid
             {
                 CTextureFactoryConfig::IImageOP* op = mConfig.getImageKindOP(CTextureFactoryConfig::IImageOP::IMAGE_SCALER);
                 op->apply(T,GL_INNER_FORMAT,GL_FORMAT,GL_SRC_FORMAT,mConfig);
@@ -405,7 +405,7 @@ bool CTextureFactory::glLoadTexture(CTextureObject* const T,
 			//	- mipmapping generation
 			//	- image loading
 #if defined(GL_EXT_texture3D)
-            if (T->getDepth() > 0)   // Texture Volumes
+            if (T->getDepth() > 1)   // Texture Volumes
             {
                 const CRaptorExtensions * const extensions = Raptor::glGetExtensions();
                 extensions->glTexImage3DEXT( target,0,
@@ -428,7 +428,7 @@ bool CTextureFactory::glLoadTexture(CTextureObject* const T,
 				if (VK_IMAGE_TYPE_2D == target)
 					T->vk_texname = CTexelAllocator::GetInstance()->vkAllocateTextureImage(	T->getWidth(),
 																							T->getHeight(),
-																							0,
+																							T->getDepth(),
 																							T->getTexelType(),
 																							T->getTexels());
 				else
@@ -464,7 +464,7 @@ bool CTextureFactory::glLoadTexture(CTextureObject* const T,
 
 bool CTextureFactory::glResizeTexture( CTextureObject *T, unsigned int width, unsigned int height, unsigned int depth) const
 {
-    if ((T == NULL) || (width == 0) || (height == 0))
+    if ((T == NULL) || (width == 0) || (height == 0) || (depth == 0))
         return false;
 
     if ((T->getWidth() == width) && (T->getHeight() == height) && (T->getDepth() == depth))
@@ -472,6 +472,7 @@ bool CTextureFactory::glResizeTexture( CTextureObject *T, unsigned int width, un
 
     GLint currentWidth = 0;
     GLint currentHeight = 0;
+	GLint currentDepth = 0;
 
     GLenum target = T->target & 0xFFFF;
 
@@ -488,6 +489,7 @@ bool CTextureFactory::glResizeTexture( CTextureObject *T, unsigned int width, un
 
 	glGetTexLevelParameteriv(target, T->getCurrentMipMapLevel(), GL_TEXTURE_WIDTH, &currentWidth);
 	glGetTexLevelParameteriv(target, T->getCurrentMipMapLevel(), GL_TEXTURE_HEIGHT, &currentHeight);
+	glGetTexLevelParameteriv(target, T->getCurrentMipMapLevel(), GL_TEXTURE_DEPTH, &currentDepth);
 
 
 	//!	Handle the case with unsupported rectangle texture
@@ -495,12 +497,15 @@ bool CTextureFactory::glResizeTexture( CTextureObject *T, unsigned int width, un
 	{
 		unsigned int w2 = width;
 		unsigned int h2 = height;
+		unsigned int d2 = depth;
 		if (w2 > 0)
 			w2 = 1 << (unsigned int)(log((float)width) / log(2.0f));
 		if (h2 > 0)
 			h2 = 1 << (unsigned int)(log((float)height) / log(2.0f));
+		if (d2 > 0)
+			d2 = 1 << (unsigned int)(log((float)depth) / log(2.0f));
 
-		if ((w2 != width) || (h2 != height))
+		if ((w2 != width) || (h2 != height) || (d2 != depth))
 		{
 			if (mConfig.useTextureResize())
 			{
@@ -515,13 +520,14 @@ bool CTextureFactory::glResizeTexture( CTextureObject *T, unsigned int width, un
 					height = 2 * h2;
 				else
 					height = h2;
+				if (d2 < depth)
+					depth = 2 * d2;
+				else
+					depth = d2;
 			}
 		}
 	}
 
-    //! Current depth is not needed, because it is considered 0 and valid for a 2D texture.
-    //! Here under, the texture is non existent, there has been no loading.
-//    if ((currentWidth == 0) || (currentHeight == 0))
     {
 		T->setSize(width, height, depth);
 		int posx = 0;
