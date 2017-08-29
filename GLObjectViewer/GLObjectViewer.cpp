@@ -88,7 +88,7 @@ BOOL CGLObjectViewerApp::InitInstance()
     
 	CGLWnd::SetDefaultDisplayConfig(glcs);
 
-    CImaging::installImagers(CTextureFactory::getDefaultFactory());
+    CImaging::installImagers();
 
 
 	CMultiDocTemplate* pDocTemplate;

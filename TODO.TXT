@@ -1,5 +1,8 @@
 - simd.cpp : appel a GetSystemInfo (linux : /proc/cpuinfo)
 
+- Global:
+	- Destruction des operateurs de CImage
+
 - BasicObjects:
 	- Ajouter un TextureQuad le plus simple possible
 

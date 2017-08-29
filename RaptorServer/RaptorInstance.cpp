@@ -187,8 +187,7 @@ bool CRaptorInstance::start(unsigned int width,unsigned int height)
 	else
 		return false;
 
-	CTextureFactory &factory = CTextureFactory::getDefaultFactory();
-	CImaging::installImagers(factory);
+	CImaging::installImagers();
 
 	CRaptorDisplayConfig glcs;
 	glcs.width = width;

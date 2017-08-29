@@ -11,8 +11,8 @@
 	#include "TextureFactoryConfig.h"
 #endif
 
-#ifndef __GLOBAL_H__
-	#include "System/Global.h"
+#if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
+	#include "System/RaptorErrorManager.h"
 #endif
 
 #if !defined(AFX_RAPTOREXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
@@ -435,17 +435,6 @@ CTextureFactoryConfig::CTextureFactoryConfig()
 	m_bSupportResize = false;
     m_nbTextureImages = 0;
 	m_texelFormat = BYTEORDER_RGBA;
-
-	Global::RAPTOR_CURRENT_STATUS &status = Global::GetInstance().getCurrentStatus();
-
-	IImageIO *pIO = new CBufferImage();
-	vector<std::string> exts = pIO->getImageKind();
-	for (size_t j=0;j<exts.size();j++)
-		IMAGE_KIND_IO.insert(map<std::string,IImageIO*>::value_type(exts[j],pIO));
-
-	IMAGE_KIND_OP.insert(map<IImageOP::OP_KIND,IImageOP*>::value_type(IImageOP::BUMPMAP_LOADER,status.pDefaultBumpmapLoader));
-	IMAGE_KIND_OP.insert(map<IImageOP::OP_KIND,IImageOP*>::value_type(IImageOP::IMAGE_SCALER,status.pDefaultImageScaler));
-	IMAGE_KIND_OP.insert(map<IImageOP::OP_KIND,IImageOP*>::value_type(IImageOP::MIPMAP_BUILDER,status.pDefaultMipmapBuilder));
 }
 
 CTextureFactoryConfig::~CTextureFactoryConfig()
@@ -568,7 +557,7 @@ void CTextureFactoryConfig::useTextureResize(bool resize)
 #endif
 }
 
-
+/*
 void CTextureFactoryConfig::setImageKindIO(IImageIO *imager)
 {
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
@@ -636,7 +625,7 @@ CTextureFactoryConfig::IImageOP* const CTextureFactoryConfig::getImageKindOP(IIm
 	else 
 		return NULL;
 }
-
+*/
 
 const CTextureFactoryConfig::ICompressor* CTextureFactoryConfig::getCompressor(unsigned int numCompressor)
 {

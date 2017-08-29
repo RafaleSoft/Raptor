@@ -408,6 +408,7 @@ Subsys\Redist.bat
     <ClCompile Include="..\..\RaptorCore\System\CGLTypes.cpp" />
     <ClCompile Include="..\..\RaptorCore\System\Color.cpp" />
     <ClCompile Include="..\..\RaptorCore\System\Global.cpp" />
+    <ClCompile Include="..\..\RaptorCore\System\Image.cpp" />
     <ClCompile Include="..\..\RaptorCore\System\Memory.cpp" />
     <ClCompile Include="..\..\RaptorCore\System\Raptor.cpp" />
     <ClCompile Include="..\..\RaptorCore\System\RaptorApplication.cpp" />
@@ -594,6 +595,7 @@ copy $(SolutionDir)\$(ProjectName)\Subsys\CodeGeneration.h "%RAPTOR_ROOT%\Redist
     <ClInclude Include="..\..\RaptorCore\System\Color.h" />
     <ClInclude Include="..\..\RaptorCore\System\GLEXTMacros.h" />
     <ClInclude Include="..\..\RaptorCore\System\Global.h" />
+    <ClInclude Include="..\..\RaptorCore\System\Image.h" />
     <ClInclude Include="..\..\RaptorCore\System\Memory.h" />
     <ClInclude Include="..\..\RaptorCore\System\Raptor.h" />
     <ClInclude Include="..\..\RaptorCore\System\RaptorApplication.h" />

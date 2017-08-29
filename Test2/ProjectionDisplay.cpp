@@ -129,8 +129,7 @@ void CProjectionDisplay::Init()
     tmp->setSize(64,64);
     tmp->glSetTransparency(255);
 
-    CTextureFactoryConfig& config = f.getConfig();
-    CTextureFactoryConfig::IImageIO *loader = config.getImageKindIO("TGA");
+	CImage::IImageIO *loader = CImage::getImageKindIO("TGA");
     for (i=0;i<32;i++)
     {
         char fname[32];

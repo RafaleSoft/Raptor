@@ -91,7 +91,7 @@ CTest5Doc::CTest5Doc(const RAPTOR_HANDLE& device,const char* title)
     config.m_uiVertices = 50000;
     Raptor::glInitRaptor(config);
 
-	CImaging::installImagers(CTextureFactory::getDefaultFactory());
+	CImaging::installImagers();
 
 	RECT r;
 	GetClientRect((HWND)(device.handle),&r);

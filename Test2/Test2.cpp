@@ -72,7 +72,7 @@ BOOL CTest2App::InitInstance()
     Animator = new CAnimator();
 	CAnimator::SetAnimator(Animator);
 
-    CImaging::installImagers(CTextureFactory::getDefaultFactory());
+    CImaging::installImagers();
     CStreaming::installStreamers();
 
 	char title[256];

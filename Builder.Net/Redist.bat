@@ -137,6 +137,7 @@ ECHO       System:
 copy .\RaptorCore\System\CGLTypes.h Redist\Include\System
 copy .\RaptorCore\System\Color.h Redist\Include\System
 copy .\RaptorCore\System\Glext.h Redist\Include\System
+copy .\RaptorCore\System\Image.h Redist\Include\System
 copy .\RaptorCore\System\Memory.h Redist\Include\System
 copy .\RaptorCore\System\Raptor.h Redist\Include\System
 copy .\RaptorCore\System\RaptorApplication.h Redist\Include\System

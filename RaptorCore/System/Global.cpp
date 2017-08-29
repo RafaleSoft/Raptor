@@ -16,7 +16,12 @@
     #include "Engine/3DEngineTaskManager.h"
 #endif
 #if !defined(AFX_RAPTORDATAMANAGER_H__114BFB19_FA00_4E3E_879E_C9130043668E__INCLUDED_)
-    #include "DataManager/RaptorDataManager.h"
+	#include "DataManager/RaptorDataManager.h"
+#endif
+
+//! Default Imaging functionnalities
+#if !defined(AFX_BUFFERIMAGE_H__B28C75CD_81D5_473F_A247_608FB6E02949__INCLUDED_)
+	#include "Subsys/BufferImage.h"
 #endif
 #if !defined(AFX_DEFAULTBUMPMAPLOADER_H__3841D5F8_284B_4DC5_9E4B_56EF18AF80F4__INCLUDED_)
     #include "Subsys/DefaultBumpmapLoader.h"
@@ -58,11 +63,6 @@ Global::Global()
 	raptorStatus.currentAnimator = NULL;
     raptorStatus.engineTaskMgr = NULL;
     raptorStatus.console = NULL;
-
-	raptorStatus.pDefaultBumpmapLoader = NULL;
-	raptorStatus.pDefaultImageScaler = NULL;
-	raptorStatus.pDefaultMipmapBuilder = NULL;
-
 
     raptorStatus.defaultDisplay = NULL;
 	raptorStatus.defaultWindow.handle = 0;
@@ -118,10 +118,6 @@ Global::~Global()
         delete raptorStatus.messages;
     if (raptorStatus.errorMgr != NULL)
         delete raptorStatus.errorMgr;
-
-	delete (raptorStatus.pDefaultBumpmapLoader);
-	delete (raptorStatus.pDefaultImageScaler);
-	delete (raptorStatus.pDefaultMipmapBuilder);
 
 	raptorStatus.initialised = false;
 }
@@ -194,9 +190,17 @@ bool Global::init(const CRaptorConfig& config)
 
 		CContextManager *pContext = CContextManager::GetInstance();
 
-		raptorStatus.pDefaultBumpmapLoader = new CDefaultBumpmapLoader();
-		raptorStatus.pDefaultImageScaler = new CDefaultImageScaler();
-		raptorStatus.pDefaultMipmapBuilder = new CDefaultMipmapBuilder();
+		CDefaultBumpmapLoader *pDefaultBumpmapLoader = new CDefaultBumpmapLoader();
+		CImage::setImageKindOP(pDefaultBumpmapLoader);
+
+		CDefaultImageScaler *pDefaultImageScaler = new CDefaultImageScaler();
+		CImage::setImageKindOP(pDefaultImageScaler);
+
+		CDefaultMipmapBuilder *pDefaultMipmapBuilder = new CDefaultMipmapBuilder();
+		CImage::setImageKindOP(pDefaultMipmapBuilder);
+		
+		CImage::IImageIO *pIO = new CBufferImage();
+		CImage::setImageKindIO(pIO);
 
 #if defined (VK_VERSION_1_0)
 		if (!pContext->vkInit())

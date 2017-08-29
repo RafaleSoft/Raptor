@@ -26,6 +26,9 @@
 #if !defined(AFX_TEXTUREFACTORYCONFIG_H__7A20D208_423F_4E02_AA4D_D736E0A7959F__INCLUDED_)
 	#include "GLHierarchy/TextureFactoryConfig.h"
 #endif
+#if !defined(AFX_IMAGE_H__F545D0D5_5F10_4EFA_BE3B_3F3D34D4DBF3__INCLUDED_)
+	#include "System/Image.h"
+#endif
 
 
 RAPTOR_NAMESPACE_BEGIN
@@ -129,14 +132,14 @@ public:
 	//! - the numeric format
 	bool glLoadTexture(	CTextureObject* const T,
 						const std::string &fname,
-						const CVaArray<CTextureFactoryConfig::IImageOP::OP_KIND>& ops = CVaArray<CTextureFactoryConfig::IImageOP::OP_KIND>());
+						const CVaArray<CImage::IImageOP::OP_KIND>& ops = CVaArray<CImage::IImageOP::OP_KIND>());
 
 	//! Same as above excepts that the texteure texels are only loaded in client memory,
 	//!	and not yet transfered to GL server memory.
 	//! A subsequent call to glLoadTexture will finalize texture loading.
 	RAPTOR_HANDLE glvkPreloadTexture(	CTextureObject* const T,
 										const std::string &fname,
-										const CVaArray<CTextureFactoryConfig::IImageOP::OP_KIND>& ops = CVaArray<CTextureFactoryConfig::IImageOP::OP_KIND>());
+										const CVaArray<CImage::IImageOP::OP_KIND>& ops = CVaArray<CImage::IImageOP::OP_KIND>());
 
 	//!	@param preload : the result of a texture preload
 	//!	@param mode : @see glLoadTexture

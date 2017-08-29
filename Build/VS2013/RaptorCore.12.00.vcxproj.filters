@@ -572,6 +572,9 @@
     <ClCompile Include="..\..\RaptorCore\Subsys\ResourceAllocator.cpp">
       <Filter>Source Files\Subsys src</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\System\Image.cpp">
+      <Filter>Source Files\System src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Xsd Include="Subsys\ObjectModels\Raptor.xsd">
@@ -1100,6 +1103,9 @@
     </ClInclude>
     <ClInclude Include="..\..\RaptorCore\Subsys\BufferObject.h">
       <Filter>Header Files\Subsys include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\System\Image.h">
+      <Filter>Header Files\System include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

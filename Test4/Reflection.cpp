@@ -33,8 +33,8 @@ CReflection::CReflection(float width,float height,int hcels,int vcels)
     config.setBumpAmplitude(3.0f);
     config.setCurrentAnisotropy(16.0f);
 
-	CPerlinNoise *pNoise = new CPerlinNoise(CVaArray<CTextureFactoryConfig::IImageOP::OP_KIND>(	CTextureFactoryConfig::IImageOP::MIPMAP_BUILDER,
-																								CTextureFactoryConfig::IImageOP::BUMPMAP_LOADER));
+	CPerlinNoise *pNoise = new CPerlinNoise(CVaArray<CImage::IImageOP::OP_KIND>(CImage::IImageOP::MIPMAP_BUILDER,
+																				CImage::IImageOP::BUMPMAP_LOADER));
     CTextureObject *T = f.glCreateDynamicTexture(	CTextureObject::CGL_COLOR24_ALPHA,
 													CTextureObject::CGL_MULTIPLY,
 													CTextureObject::CGL_TRILINEAR,

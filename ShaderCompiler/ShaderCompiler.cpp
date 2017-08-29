@@ -344,7 +344,7 @@ int main(int argc, char* argv[])
 
     Raptor::glInitRaptor(config);
 
-    CImaging::installImagers(CTextureFactory::getDefaultFactory());
+    CImaging::installImagers();
 
 	unsigned int v = Raptor::GetVersion();
 	stringstream title;

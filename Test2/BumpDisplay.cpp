@@ -143,7 +143,7 @@ void CBumpDisplay::Init()
 											CTextureObject::CGL_ALPHA_TRANSPARENT,
 											CTextureObject::CGL_BILINEAR);
 	f.glResizeTexture(tt,512,512);
-	CPerlinNoise noise = CPerlinNoise(CTextureFactoryConfig::IImageOP::BUMPMAP_LOADER);
+	CPerlinNoise noise = CPerlinNoise(CImage::IImageOP::BUMPMAP_LOADER);
 	noise.setNoiseModel(CPerlinNoise::NOISE2);
 	noise.generateMirrorTexture(true);
 /*

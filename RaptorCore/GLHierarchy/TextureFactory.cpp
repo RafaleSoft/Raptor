@@ -30,6 +30,7 @@
 #endif
 
 
+
 #ifdef WIN32
 #pragma warning(disable:4786)
 #endif
@@ -76,7 +77,7 @@ CTextureFactory& CTextureFactory::getDefaultFactory()
 
 RAPTOR_HANDLE CTextureFactory::glvkPreloadTexture(CTextureObject* const T,
 												const std::string &fname,
-												const CVaArray<CTextureFactoryConfig::IImageOP::OP_KIND>& ops)
+												const CVaArray<CImage::IImageOP::OP_KIND>& ops)
 {
 	RAPTOR_HANDLE preload(0,NULL);
 
@@ -101,7 +102,7 @@ RAPTOR_HANDLE CTextureFactory::glvkPreloadTexture(CTextureObject* const T,
 		return preload;
 	}
 
-	CTextureFactoryConfig::IImageIO *imager = mConfig.getImageKindIO(fname);
+	CImage::IImageIO *imager = CImage::getImageKindIO(fname);
 	if (imager != NULL)
 	{
 		if (imager->loadImageFile(fname,T))
@@ -115,9 +116,9 @@ RAPTOR_HANDLE CTextureFactory::glvkPreloadTexture(CTextureObject* const T,
 			P.inner_format = T->getTexelFormat();
 			P.format = T->getBufferFormat();
 			P.src_format = T->getBufferType();
-			P.createNormalMap = ops.hasValue(CTextureFactoryConfig::IImageOP::BUMPMAP_LOADER);
-			P.autoMipmap = ops.hasValue(CTextureFactoryConfig::IImageOP::MIPMAP_BUILDER);
-			P.reScale = ops.hasValue(CTextureFactoryConfig::IImageOP::IMAGE_SCALER);
+			P.createNormalMap = ops.hasValue(CImage::IImageOP::BUMPMAP_LOADER);
+			P.autoMipmap = ops.hasValue(CImage::IImageOP::MIPMAP_BUILDER);
+			P.reScale = ops.hasValue(CImage::IImageOP::IMAGE_SCALER);
 
 			//	1)	Texture internal format
 			//
@@ -125,7 +126,7 @@ RAPTOR_HANDLE CTextureFactory::glvkPreloadTexture(CTextureObject* const T,
 			//
 			if (P.createNormalMap)
 			{
-                CTextureFactoryConfig::IImageOP* op = mConfig.getImageKindOP(CTextureFactoryConfig::IImageOP::BUMPMAP_LOADER);
+				CImage::IImageOP* op = CImage::getImageKindOP(CImage::IImageOP::BUMPMAP_LOADER);
 				op->apply(T,P.inner_format,P.format,P.src_format,mConfig);
 			}
 
@@ -173,7 +174,7 @@ RAPTOR_HANDLE CTextureFactory::glvkPreloadTexture(CTextureObject* const T,
 			//
 			if (mConfig.useTextureResize() || P.reScale)
             {
-                CTextureFactoryConfig::IImageOP* op = mConfig.getImageKindOP(CTextureFactoryConfig::IImageOP::IMAGE_SCALER);
+				CImage::IImageOP* op = CImage::getImageKindOP(CImage::IImageOP::IMAGE_SCALER);
 /* OGL call*/	op->apply(T,P.inner_format,P.format,P.src_format,mConfig);
             }
 
@@ -273,7 +274,7 @@ bool CTextureFactory::glvkLoadTexture(	CTextureObject* const T,
 #endif
 			if (P.autoMipmap && (T->getFilter() == CTextureObject::CGL_TRILINEAR))
 			{
-				CTextureFactoryConfig::IImageOP* op = mConfig.getImageKindOP(CTextureFactoryConfig::IImageOP::MIPMAP_BUILDER);
+				CImage::IImageOP* op = CImage::getImageKindOP(CImage::IImageOP::MIPMAP_BUILDER);
 				op->apply(T, P.inner_format, P.format, P.src_format, mConfig);
 			}
 			//  The default case, at least load the texture.
@@ -298,7 +299,7 @@ bool CTextureFactory::glvkLoadTexture(	CTextureObject* const T,
 
 bool CTextureFactory::glLoadTexture(CTextureObject* const T,
 									const std::string& fname,
-									const CVaArray<CTextureFactoryConfig::IImageOP::OP_KIND>& ops)
+									const CVaArray<CImage::IImageOP::OP_KIND>& ops)
 {
 	//	ensure we can do something ...
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
@@ -322,7 +323,7 @@ bool CTextureFactory::glLoadTexture(CTextureObject* const T,
 	}
 
 
-	CTextureFactoryConfig::IImageIO *imager = mConfig.getImageKindIO(fname);
+	CImage::IImageIO *imager = CImage::getImageKindIO(fname);
 	if (imager != NULL)
 	{
 		if (imager->loadImageFile(fname,T))
@@ -340,9 +341,9 @@ bool CTextureFactory::glLoadTexture(CTextureObject* const T,
 			//
 			//	Handle normal maps for bumping
 			//
-			if (ops.hasValue(CTextureFactoryConfig::IImageOP::BUMPMAP_LOADER))
+			if (ops.hasValue(CImage::IImageOP::BUMPMAP_LOADER))
 			{
-                CTextureFactoryConfig::IImageOP* op = mConfig.getImageKindOP(CTextureFactoryConfig::IImageOP::BUMPMAP_LOADER);
+				CImage::IImageOP* op = CImage::getImageKindOP(CImage::IImageOP::BUMPMAP_LOADER);
                 op->apply(T,GL_INNER_FORMAT,GL_FORMAT,GL_SRC_FORMAT,mConfig);
 			}
 			//
@@ -387,10 +388,10 @@ bool CTextureFactory::glLoadTexture(CTextureObject* const T,
 			//
 			//	Handle Image re-scaling
 			//
-            if ((mConfig.useTextureResize() || ops.hasValue(CTextureFactoryConfig::IImageOP::IMAGE_SCALER)) && 
+			if ((mConfig.useTextureResize() || ops.hasValue(CImage::IImageOP::IMAGE_SCALER)) &&
 				(T->getDepth() < 2)) // depth 1 is a 1D or 2D texture, depth 0 is invalid
             {
-                CTextureFactoryConfig::IImageOP* op = mConfig.getImageKindOP(CTextureFactoryConfig::IImageOP::IMAGE_SCALER);
+				CImage::IImageOP* op = CImage::getImageKindOP(CImage::IImageOP::IMAGE_SCALER);
                 op->apply(T,GL_INNER_FORMAT,GL_FORMAT,GL_SRC_FORMAT,mConfig);
             }
 
@@ -416,10 +417,10 @@ bool CTextureFactory::glLoadTexture(CTextureObject* const T,
             }
             else
 #endif
-			if (ops.hasValue(CTextureFactoryConfig::IImageOP::MIPMAP_BUILDER) && 
+				if (ops.hasValue(CImage::IImageOP::MIPMAP_BUILDER) &&
 				(T->getFilter() == CTextureObject::CGL_TRILINEAR))
 			{
-				CTextureFactoryConfig::IImageOP* op = mConfig.getImageKindOP(CTextureFactoryConfig::IImageOP::MIPMAP_BUILDER);
+				CImage::IImageOP* op = CImage::getImageKindOP(CImage::IImageOP::MIPMAP_BUILDER);
 				result = op->apply(T,GL_INNER_FORMAT,GL_FORMAT,GL_SRC_FORMAT,mConfig);
 			}
             //  The default case, at least load the texture.
@@ -594,7 +595,7 @@ bool CTextureFactory::glExportTexture(CTextureObject *T,const std::string &fname
     if ((T->getWidth() == 0) || (T->getHeight() == 0))
         return false;
 
-	CTextureFactoryConfig::IImageIO *imager = mConfig.getImageKindIO(fname);
+	CImage::IImageIO *imager = CImage::getImageKindIO(fname);
     bool res = true;
 	if (imager != NULL)
 	{
