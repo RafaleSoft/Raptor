@@ -980,7 +980,12 @@ void CGeometry::glRenderGeometry()
 #endif
 
 	// extract normals
-	if (m_renderingModel.hasModel(CRenderingModel::CGL_NORMALS) && proceedLighting)
+	if (m_renderingModel.hasModel(CRenderingModel::CGL_NORMALS) && proceedLighting
+#if defined (DATA_EXTENDED)
+		&& (geometry != NULL))
+#elif defined(DATA_PACKED)
+		&& (NULL != normals))
+#endif
 	{
 		glEnableClientState(GL_NORMAL_ARRAY);
         popNormalArray = true;
@@ -993,7 +998,12 @@ void CGeometry::glRenderGeometry()
 
     // extract tangents
 #if defined(GL_ARB_vertex_program)
-	if (m_renderingModel.hasModel(CRenderingModel::CGL_TANGENTS) && proceedLighting)
+	if (m_renderingModel.hasModel(CRenderingModel::CGL_TANGENTS) && proceedLighting
+#if defined (DATA_EXTENDED)
+		&& (geometry != NULL))
+#elif defined(DATA_PACKED)
+		&& (NULL != tangents))
+#endif
 	{
         popTangentArray = true;
 		pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::ADDITIONAL_PARAM1);
@@ -1007,7 +1017,12 @@ void CGeometry::glRenderGeometry()
 #endif
 
 	// extract colors
-	if (m_renderingModel.hasModel(CRenderingModel::CGL_COLORS))
+	if (m_renderingModel.hasModel(CRenderingModel::CGL_COLORS)
+#if defined (DATA_EXTENDED)
+		&& (geometry != NULL))
+#elif defined(DATA_PACKED)
+		&& (NULL != colors))
+#endif
 	{
 		glEnableClientState(GL_COLOR_ARRAY);
         popColorArray = true;

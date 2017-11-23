@@ -3,6 +3,9 @@
 - Global:
 	- Destruction des operateurs de CImage
 
+- CICOImaging::loadImageFile
+	- utilisation du getWidth pour charger le i-ème icône ... mais width non défini ici, utiliser les layers.
+
 - BasicObjects:
 	- Ajouter un TextureQuad le plus simple possible
 
@@ -23,6 +26,7 @@
 
 - CGeometryAllocator:
 	- currentAddress : utilisé en unsigned int => bug si uint64_t
+
 - OpenGLMemory:
 	pExtensions->glLockArraysEXT(0, bo.getSize() / 2);	// unsigned short
 

@@ -122,24 +122,22 @@ void CProjectionDisplay::Init()
     cube = f.glCreateVolumeTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_ALPHA_TRANSPARENT,CTextureObject::CGL_BILINEAR);
     cube->glSetTransparency(255);
     cube->setSize(64,64,32);
-    cube->allocateTexels();
-	unsigned char *buffer = cube->getTexels();
 
-    CTextureObject  *tmp = f.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_ALPHA_TRANSPARENT,CTextureObject::CGL_BILINEAR);
-    tmp->setSize(64,64);
-    tmp->glSetTransparency(255);
-
+	CImage cubeImage;
+	cubeImage.allocatePixels(64, 64, 32);
 	CImage::IImageIO *loader = CImage::getImageKindIO("TGA");
     for (i=0;i<32;i++)
     {
         char fname[32];
 		sprintf(fname,"Datas\\caust%02d.tga",i);
 
-        loader->loadImageFile(fname,tmp);
-		unsigned char *data = tmp->getTexels();
-        memcpy(&buffer[64*64*4*i],data,64*64*4);
+		CImage tmp;
+        loader->loadImageFile(fname,&tmp);
+		unsigned char *buffer = cubeImage.getPixels(i);
+		unsigned char *data = tmp.getPixels();
+        memcpy(buffer,data,64*64*4);
     }
-    f.glLoadTexture(cube,".buffer");
+	f.glLoadTexture(cube, cubeImage);
 
 	m_light = new CLight("PROJECTOR");
 	m_light->setProjector(m_projector);

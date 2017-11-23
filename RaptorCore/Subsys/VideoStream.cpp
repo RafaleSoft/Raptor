@@ -73,13 +73,14 @@ void CVideoStream::glGenerate(CTextureObject* T)
             rConfig.useTextureResize(false);
 
             T->setSize(width,height);
-            T->allocateTexels();
-			unsigned int *tbuf = (unsigned int*)(T->getTexels());
+			CImage buffer;
+			buffer.allocatePixels(width, height);
+			unsigned int *tbuf = (unsigned int*)buffer.getPixels();
 
             for (unsigned int i=0;i<height*width;i++)
 		        tbuf[i] = 0xFFFFFFFF;
 
-	        factory.glLoadTexture(T,".buffer");
+			factory.glLoadTexture(T, buffer);
 
             rConfig.useTextureResize(previousResize);
 

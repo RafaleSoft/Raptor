@@ -43,7 +43,7 @@ RAPTOR_NAMESPACE
 //////////////////////////////////////////////////////////////////////
 
 CTextureObject::CTextureObject(TEXEL_TYPE type)
-    :m_type(type),m_bufferType(type)
+    :m_type(type)
 {
 	m_name = "<unknown>";
 	texname = 0;
@@ -52,7 +52,6 @@ CTextureObject::CTextureObject(TEXEL_TYPE type)
 	m_width = 0;
 	m_height = 0;
     m_depth = 0;
-	texels = NULL;
 	env_mode = GL_REPLACE;
 	m_filter = CTextureObject::CGL_UNFILTERED;
 	m_alpha = 255;
@@ -73,7 +72,6 @@ CTextureObject::CTextureObject(const CTextureObject& rsh)
 	m_width = rsh.m_width;
 	m_height = rsh.m_height;
     m_depth = rsh.m_depth;
-	texels = NULL;
 	env_mode = rsh.env_mode;
 	m_filter = rsh.m_filter;
 	m_alpha = rsh.m_alpha;
@@ -81,7 +79,6 @@ CTextureObject::CTextureObject(const CTextureObject& rsh)
     aniso_level = rsh.aniso_level;
     source[0] = source[1] = source[2] = source[3] = 0;
 	m_type = rsh.m_type;
-	m_bufferType = rsh.m_bufferType;
 #if defined(VK_VERSION_1_0)
 	vk_texname = VK_NULL_HANDLE;
 #endif
@@ -91,8 +88,6 @@ CTextureObject::~CTextureObject()
 {
     if (texname != 0)
 	    glDeleteTextures(1,&texname);
-
-	releaseTexels();
 }
 
 
@@ -127,8 +122,6 @@ void CTextureObject::setSize(unsigned int width, unsigned int height, unsigned i
 
     if ((width != m_width) || (height != m_height) || (depth != m_depth))
     {
-        releaseTexels();
-
         m_width = width;
         m_height = height;
         m_depth = depth;
@@ -160,96 +153,6 @@ void CTextureObject::selectCubeFace(CUBE_FACE face)
 			target = (target & 0xFFFF0000) + GL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB + (face - CGL_CUBEMAP_PX);
 	}
 #endif
-}
-
-unsigned char* CTextureObject::getTexels(void)
-{
-    if ((m_bufferType == CGL_COLOR24) ||
-        (m_bufferType == CGL_COLOR24_ALPHA) ||
-        (m_bufferType == CGL_LIGHTMAP) ||
-        (m_bufferType == CGL_LIGHTMAP_ALPHA) ||
-		(m_bufferType == CGL_LIGHTMAP16) ||
-        (m_bufferType == CGL_LIGHTMAP16_ALPHA) ||
-		(m_bufferType == CGL_DEPTH24_STENCIL8))
-    {
-        return (unsigned char*)texels;
-    }
-    else
-    {
-        return NULL;
-    }
-}
-
-
-float* CTextureObject::getFloatTexels(void)
-{
-	if ((m_bufferType == CGL_COLOR_FLOAT32) ||
-        (m_bufferType == CGL_COLOR_FLOAT32_ALPHA) ||
-        (m_bufferType == CGL_COLOR_FLOAT16) ||
-        (m_bufferType == CGL_COLOR_FLOAT16_ALPHA) ||
-		(m_bufferType == CGL_DEPTH8) ||
-		(m_bufferType == CGL_DEPTH16) ||
-        (m_bufferType == CGL_DEPTH24) ||
-        (m_bufferType == CGL_DEPTH32))
-    {
-		return (float*)texels;
-    }
-    else
-    {
-        return NULL;
-    }
-}
-
-void CTextureObject::releaseTexels(void)
-{
-	if (texels != NULL)
-		CHostMemoryManager::GetInstance()->garbage(texels);
-
-	texels = NULL;
-}
-
-void CTextureObject::allocateTexels(TEXEL_TYPE type)
-{
-    //   reserve default space for at least rgba type, even if it larger than necessary.
-    unsigned int size = 4 * m_width * m_height * m_depth;
-
-    if (size > 0)
-    {
-		// always clear memory, even is type is identical:
-		// the texture may have been resized.
-		releaseTexels();
-
-		switch(type)
-		{
-			case CGL_COLOR24:
-			case CGL_COLOR24_ALPHA:
-			case CGL_LIGHTMAP:
-			case CGL_LIGHTMAP_ALPHA:
-			case CGL_LIGHTMAP16:
-			case CGL_LIGHTMAP16_ALPHA:
-			case CGL_DEPTH24_STENCIL8:
-			{
-				CHostMemoryManager::Allocator<unsigned char> allocator;
-				texels = allocator.allocate(size); 
-				break;
-			}
-			case CGL_COLOR_FLOAT16:
-			case CGL_COLOR_FLOAT16_ALPHA:
-			case CGL_COLOR_FLOAT32:
-			case CGL_COLOR_FLOAT32_ALPHA:
-			case CGL_DEPTH8:
-			case CGL_DEPTH16:
-			case CGL_DEPTH24:
-			case CGL_DEPTH32:
-			{
-				CHostMemoryManager::Allocator<float> allocator;
-				texels = allocator.allocate(size);
-				break;
-			}
-		}
-    }
-
-    m_bufferType = type;
 }
 
 void CTextureObject::setFunction(CTextureObject::TEXTURE_FUNCTION F)
@@ -369,9 +272,6 @@ void CTextureObject::glSetTransparentColor(unsigned char r, unsigned char g, uns
     {
 	    glBindTexture(target & 0xFFFF,texname);
 
-        //! Free any allocated texels, structure may have changed;
-		releaseTexels();
-
         GLint currentWidth = 0;
         GLint currentHeight = 0;
         glGetTexLevelParameteriv(target & 0xFFFF, level, GL_TEXTURE_WIDTH, &currentWidth);
@@ -384,7 +284,7 @@ void CTextureObject::glSetTransparentColor(unsigned char r, unsigned char g, uns
 	    for (int i=0 ; i<currentWidth*currentHeight*4 ; i+=4)
         {
 		    if ((data[i] == r) && (data[i+1] == g) && (data[i+2] == b))
-				    data[i+3] = 0;
+				data[i+3] = 0;
         }
 
 	    glTexSubImage2D( (target & 0xFFFF), level,
@@ -413,9 +313,6 @@ void CTextureObject::glSetTransparency(unsigned int	alpha)
         {
             m_width = currentWidth;
             m_height = currentHeight;
-
-            //! Free any allocated texels, structure may have changed;
-            releaseTexels();
 
             // Here currentWidth ( & currentHeight) sould be equal to m_width ( & m_height)
             GLubyte *data = new unsigned char[currentWidth*currentHeight*4];
@@ -470,115 +367,6 @@ void CTextureObject::getGenerationSize(   int &posx, int &posy, int &width, int 
     posy = source[1];
     width = source[2];
     height = source[3];
-}
-
-
-
-unsigned int CTextureObject::getBufferType(void) const
-{
-	//!	A default value, though it may be wrong.
-	unsigned int res = GL_UNSIGNED_BYTE;
-
-	switch(m_bufferType)
-	{
-		case CGL_COLOR24:
-        case CGL_COLOR24_ALPHA:
-        case CGL_LIGHTMAP:
-        case CGL_LIGHTMAP_ALPHA:
-        {
-			res = GL_UNSIGNED_BYTE;
-            break;
-        }
-		case CGL_LIGHTMAP16:
-		case CGL_LIGHTMAP16_ALPHA:
-		{
-			res = GL_UNSIGNED_SHORT;
-            break;
-		}
-#if defined(GL_ARB_half_float_pixel)
-        case CGL_COLOR_FLOAT16:
-        case CGL_COLOR_FLOAT16_ALPHA:
-        {
-            res = GL_HALF_FLOAT_ARB;
-            break;
-        }
-#else
-        case CGL_COLOR_FLOAT16:
-        case CGL_COLOR_FLOAT16_ALPHA:
-#endif
-        case CGL_COLOR_FLOAT32:
-        case CGL_COLOR_FLOAT32_ALPHA:
-        case CGL_DEPTH8:
-        case CGL_DEPTH16:
-        case CGL_DEPTH24:
-        case CGL_DEPTH32:
-        {
-			res = GL_FLOAT;
-            break;
-        }
-#if defined(GL_EXT_packed_depth_stencil)
-		case CGL_DEPTH24_STENCIL8:
-		{
-			res = GL_UNSIGNED_INT_24_8_EXT;
-			break;
-		}
-#endif
-    }
-
-	return res;
-}
-
-unsigned int CTextureObject::getBufferFormat(void) const
-{
-	//!	A default value, though it may be wrong.
-	unsigned int res = GL_RGBA;
-
-	switch(m_bufferType)
-	{
-		case CGL_COLOR24:
-        case CGL_COLOR_FLOAT16:
-		case CGL_COLOR_FLOAT32:
-		{
-			res = GL_RGB;
-			break;
-		}
-        case CGL_COLOR24_ALPHA:
-        case CGL_COLOR_FLOAT16_ALPHA:
-		case CGL_COLOR_FLOAT32_ALPHA:
-		{
-			res = GL_RGBA;
-			break;
-		}
-        case CGL_LIGHTMAP:
-		case CGL_LIGHTMAP16:
-        {
-			res = GL_LUMINANCE;
-            break;
-        }
-		case CGL_LIGHTMAP_ALPHA:
-		case CGL_LIGHTMAP16_ALPHA:
-		{
-			res = GL_LUMINANCE_ALPHA;
-            break;
-		}
-        case CGL_DEPTH8:
-        case CGL_DEPTH16:
-        case CGL_DEPTH24:
-        case CGL_DEPTH32:
-        {
-			res = GL_DEPTH_COMPONENT;
-            break;
-        }
-#if defined(GL_EXT_packed_depth_stencil)
-		case CGL_DEPTH24_STENCIL8:
-		{
-			res = GL_DEPTH_STENCIL_EXT;
-			break;
-		}
-#endif
-    }
-
-	return res;
 }
 
 unsigned int CTextureObject::getTexelFormat(void) const

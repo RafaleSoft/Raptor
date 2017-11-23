@@ -74,6 +74,13 @@ public:
     //! Returns the value set here above.
     float getBumpAmplitude(void) const { return m_fBumpScale; };
 
+	//! This method sets the capability to auto-generate mipmap if available from OpenGL.
+	//!	@param generate : true (default) to request auto-generation.
+	void setGenerateMipmap(bool generate);
+
+	//! Returns the previous value.
+	bool getGenerateMipmap(void) const { return m_bGenerateMipmap; };
+
 	//! This method defines the priority for all subsequent newly
 	//! created CTextureObject. The default value is max priority : 1.0f
 	void setCurrentPriority(float priority);
@@ -127,6 +134,7 @@ public:
 private:
 	TEXEL_FORMAT	m_texelFormat;
     float			m_fBumpScale;
+	bool			m_bGenerateMipmap;
     bool			m_bResizeTextures;
 	float			m_fCurrentPriority;
 	float			m_fCurrentAnisotropy;

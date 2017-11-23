@@ -26,15 +26,15 @@ public:
 
 
 private:
-	C3DPath				*path;
-	CShadedGeometry		*bspline;
+	C3DPath			*path;
+	CShadedGeometry	*bspline;
 
-	unsigned int		text;
-	CGLFont				*font;
-	CTextureSet			*texture;
+	unsigned int	text;
+	CGLFont			*font;
+	CTextureSet		*texture;
 
-	//	viewpoint
-	CViewPoint			*vp;
+	CViewPoint		*vp;
+	CLight			*m_pLight;
 
 	virtual void ReInit();
 

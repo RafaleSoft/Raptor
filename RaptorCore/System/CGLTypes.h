@@ -113,6 +113,10 @@ typedef RAPTOR_HANDLE*	LP_RAPTOR_HANDLE;
 	#define ONE_OVER_256 0.00390625
 	#define ONE_OVER_256_F 0.00390625f
 #endif
+#if !defined(ONE_OVER_255)
+	#define ONE_OVER_255 0.00392156
+	#define ONE_OVER_255_F 0.00392156f
+#endif
 //
 //	own data structures for fast access
 //	( faster than classes, data can also
@@ -405,6 +409,11 @@ public:
 			if (vaArray[i] == t)
 				has = true;
 		return has;
+	};
+
+	void addValue(T t)
+	{
+		vaArray.push_back(t);
 	};
 
 	//!	Explicit

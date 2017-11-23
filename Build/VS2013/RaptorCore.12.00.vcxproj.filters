@@ -353,9 +353,6 @@
     <ClCompile Include="..\..\RaptorCore\Subsys\DefaultImageScaler.cpp">
       <Filter>Source Files\Subsys src</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\RaptorCore\Subsys\DefaultMipmapBuilder.cpp">
-      <Filter>Source Files\Subsys src</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\RaptorCore\Subsys\GeometryAllocator.cpp">
       <Filter>Source Files\Subsys src</Filter>
     </ClCompile>
@@ -832,9 +829,6 @@
       <Filter>Header Files\Subsys include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\RaptorCore\Subsys\DefaultImageScaler.h">
-      <Filter>Header Files\Subsys include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\RaptorCore\Subsys\DefaultMipmapBuilder.h">
       <Filter>Header Files\Subsys include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\RaptorCore\Subsys\GeometryAllocator.h">

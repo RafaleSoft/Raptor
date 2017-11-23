@@ -136,35 +136,7 @@ bool CTextureSet::exportObject(CRaptorIO& o)
 {
 	CPersistence::exportObject(o);
 
-	o << m_pTextures.size();
-
-	for (unsigned int i=0;i<m_pTextures.size();i++)
-	{
-		CTextureObject* T = m_pTextures.at(i);
-
-		o << T->getCurrentMipMapLevel();
-		o << T->getWidth();
-		o << T->getHeight();
-        o << T->getDepth();
-		o << T->getFunction();
-		o << T->getFilter();
-		o << T->getTransparency();
-		o << T->getName().size();
-		o << T->getName().data();
-
-        CTextureObject::TEXEL_TYPE format = T->getTexelType();
-
-        T->allocateTexels(format);
-		unsigned char *texels = T->getTexels();
-
-		glGetTexImage(GL_TEXTURE_2D,T->getCurrentMipMapLevel(),format,GL_UNSIGNED_BYTE,texels);
-
-		o.write((unsigned char*)texels,0 /*size*/);
-
-		T->releaseTexels();
-	}
-
-	return true;
+	return false;
 }
 
 bool CTextureSet::importTextureObject(CRaptorIO& io)

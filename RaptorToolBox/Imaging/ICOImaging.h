@@ -26,9 +26,13 @@ public:
 
 	virtual vector<std::string> getImageKind(void) const;
 
-    virtual bool loadImageFile(const std::string& fname,CTextureObject* const T);
+	virtual bool storeImageFile(const std::string& fname, CImage* const I) const;
 
-    virtual bool storeImageFile(const std::string& fname,CTextureObject* const T);
+	//! Method prototype for image loading 'from file'
+	//!	@param fname : full filename, with path and file extensions
+	//! @param I : a valid image object.
+	//! @eturn true if loading is successfull.
+	virtual bool loadImageFile(const std::string& fname, CImage* const I) const;
 };
 
 #endif	// !defined(AFX_ICOIMAGING_H__6E2B8113_3111_4770_97A8_A786982CF05F__INCLUDED_)

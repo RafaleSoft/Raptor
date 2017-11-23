@@ -292,12 +292,12 @@ bool CAmbientOcclusionShader::glSetCoords(GL_COORD_VERTEX* refVertex, unsigned i
 									CTextureObject::CGL_UNFILTERED);
 		}
 
-		T->setSize(width,height);
-		T->allocateTexels(CTextureObject::CGL_COLOR_FLOAT32_ALPHA);
-		float *texels = T->getFloatTexels();
-		memcpy(texels,refVertex,nbVertex*sizeof(GL_COORD_VERTEX));
+		CImage coords;
+		coords.allocatePixels(width, height, CImage::CGL_COLOR_FLOAT32_ALPHA);
+		float *pixels = coords.getFloatPixels();
+		memcpy(pixels, refVertex, nbVertex*sizeof(GL_COORD_VERTEX));
 
-		f.glLoadTexture(T,".buffer");
+		f.glLoadTexture(T, coords);
 		m_pVertexMap = T;
 
 		CATCH_GL_ERROR;
@@ -333,12 +333,12 @@ bool CAmbientOcclusionShader::glSetNormals(GL_COORD_VERTEX* refNormal, unsigned 
 									CTextureObject::CGL_UNFILTERED);
 		}
 
-		T->setSize(width,height);
-		T->allocateTexels(CTextureObject::CGL_COLOR_FLOAT32_ALPHA);
-		float *texels = T->getFloatTexels();
-		memcpy(texels,refNormal,nbVertex*4*sizeof(float));
+		CImage normals;
+		normals.allocatePixels(width, height, CImage::CGL_COLOR_FLOAT32_ALPHA);
+		float *pixels = normals.getFloatPixels();
+		memcpy(pixels,refNormal,nbVertex*4*sizeof(float));
 
-		f.glLoadTexture(T,".buffer");
+		f.glLoadTexture(T, normals);
 		m_pNormalMap = T;
 
 		CATCH_GL_ERROR;

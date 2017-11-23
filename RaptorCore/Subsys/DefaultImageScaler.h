@@ -25,12 +25,8 @@ public:
     //! Implements CImageOP
     virtual OP_KIND getKind(void) const { return IMAGE_SCALER; };
 
-    //! Implaments CImageOP
-    virtual bool apply(	CTextureObject* const src,
-						unsigned int innerFormat,
-						unsigned int texelFormat,
-						unsigned int texelType,
-						const CTextureFactoryConfig& config) const;
+	//! Implements CImageOP
+	virtual bool apply(CImage* const src, const operation_param_t& param) const;
 };
 
 RAPTOR_NAMESPACE_END

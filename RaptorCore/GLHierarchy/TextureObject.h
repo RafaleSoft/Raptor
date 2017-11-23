@@ -92,8 +92,11 @@ public:
     //!	Renders the textures : it is bound to the current active Texture Unit.
 	void glRender(void);
 
-    //! texture name ( default is the source filename )
+    //! @return texture name ( default is the source filename )
 	const std::string & getName(void) const { return m_name; };
+
+	//! @param name: the new texture name
+	void setName(const std::string & name) { m_name = name; };
 
     //! Returns the selected environment function
     TEXTURE_FUNCTION getFunction(void) const;
@@ -137,13 +140,6 @@ public:
     //! This method must be used with allocateTexels, any other usage is not supported.
     void setSize(unsigned int width, unsigned int height, unsigned int depth=1);
 
-    //! Allocates a bloc of texels to pass data to server. Memory allocator must be in library.
-    //! The size is dependent on texture attributes, it might be reallocated or not.
-    void allocateTexels(TEXEL_TYPE type = CGL_COLOR24_ALPHA);
-
-	//! Releases any allocated texel blocs.
-    void releaseTexels(void);
-
     //! Define the dimensions ( of the generator ) for texture generation.
     //! Actual parameters are modified if requested generation size is too large for the texture
     //! or if position is not valid within the generator. Texture must have a valid size.
@@ -155,25 +151,6 @@ public:
 
 	//!	Returns the sized format of the texels stored in device memory (texture)
 	unsigned int getTexelFormat(void) const;
-
-	//!	Returns the sized format of buffer in host memory to upload or download texels from server.
-	//!	(buffer is allocated with allocateTexels)
-	unsigned int getBufferFormat(void) const;
-
-	//! Returns the type of a texel componant in host buffer
-	//!	(buffer is allocated with allocateTexels)
-	unsigned int getBufferType(void) const;
-
-    //! Request texture object texel data access.
-    //! The pointer returned can be used to manually upload texels.
-    //! After the texture has been uploaded to server-side, the returned pointer
-    //! will always be NULL except if a reallocation has been issued.
-    //! @return : the returned pointer can be NULL because the type do not match even is there is data to request.
-	//! ( i.e. data has been allocated using allocateTexels )
-    unsigned char* getTexels(void);
-
-    //!	Same as above, except that the requested type of texels is different.
-    float* getFloatTexels(void);
 
     //! Return texture width
     unsigned int	getWidth(void) const { return m_width; };
@@ -231,9 +208,6 @@ private:
     //! The texture texel type is stored only to avoid server calls to query internal format
     TEXEL_TYPE      m_type;
 
-	//!	The buffer texel type for loading with format compatible to texture texel type
-	TEXEL_TYPE		m_bufferType;
-
     //! Aplha value. It is stored to be applyed before or after texture loading.
     unsigned int	m_alpha;
 
@@ -260,9 +234,6 @@ private:
 
     //! generation source dimensions
     int source[4];
-
-    //!  Temporary data : might be null after texture loading to release client memory
-    void			*texels;
 
 	//!	Handle to vulkan image	
 	VkImage			vk_texname;

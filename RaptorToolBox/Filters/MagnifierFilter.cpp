@@ -251,8 +251,10 @@ void CMagnifierFilter::computeKernel(void)
 {
 	CTextureFactory &filterFactory = CTextureFactory::getDefaultFactory();
 
-    kernelTexture->allocateTexels(CTextureObject::CGL_COLOR_FLOAT32_ALPHA);
-	float *kernel = kernelTexture->getFloatTexels(); 
+	CImage kernelImage;
+	kernelImage.allocatePixels(KERNEL_SIZE, 1, CImage::CGL_COLOR_FLOAT32_ALPHA);
+	float *kernel = kernelImage.getFloatPixels();
+	
     for (unsigned int i=0; i<KERNEL_SIZE ; i++)
     {
         float x = i / ((float)KERNEL_SIZE - 1.0f);
@@ -261,7 +263,8 @@ void CMagnifierFilter::computeKernel(void)
         *kernel++ = (this->*kernelBuilder)(1-x,	kernelParams.x, kernelParams.y);
         *kernel++ = (this->*kernelBuilder)(2-x,	kernelParams.x, kernelParams.y);
     }
-    filterFactory.glLoadTexture(kernelTexture,".buffer");
+
+	filterFactory.glLoadTexture(kernelTexture, kernelImage);
 	m_bRebuild = false;
 }
 

@@ -134,6 +134,9 @@ public:
 						const std::string &fname,
 						const CVaArray<CImage::IImageOP::OP_KIND>& ops = CVaArray<CImage::IImageOP::OP_KIND>());
 
+	bool glLoadTexture(CTextureObject* const T,
+					   const CImage &image);
+
 	//! Same as above excepts that the texteure texels are only loaded in client memory,
 	//!	and not yet transfered to GL server memory.
 	//! A subsequent call to glLoadTexture will finalize texture loading.
@@ -146,6 +149,7 @@ public:
 	//!	@return : @see glLoadTexture
 	bool glvkLoadTexture(	CTextureObject* const T,
 							RAPTOR_HANDLE preload);
+
 
 
     //! Resize a texture object if it possible :
@@ -190,7 +194,6 @@ private:
 		unsigned int format;
 		unsigned int src_format;
 		bool createNormalMap;
-		bool autoMipmap;
 		bool reScale;
 	} TexturePreload;
 	map<CTextureObject*, TexturePreload>	m_preloads;

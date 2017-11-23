@@ -113,8 +113,10 @@ void CEMBMShader::glInit(const std::string &bump_vertexshader,
 												CTextureObject::CGL_OPAQUE,
 												CTextureObject::CGL_UNFILTERED);
     permutation->setSize(512,1);
-	permutation->allocateTexels(CTextureObject::CGL_LIGHTMAP);
-	unsigned char* perm = permutation->getTexels();
+
+	CImage perlin;
+	perlin.allocatePixels(512,1);
+	unsigned char* perm = perlin.getPixels();
 	for (unsigned int i=0;i<256;i++)
 		perm[i] = i;
 	for (unsigned int i=0;i<256;i++)
@@ -124,7 +126,7 @@ void CEMBMShader::glInit(const std::string &bump_vertexshader,
         perm[j] = perm[i];
         perm[i+256] = perm[i] = p;
 	}
-	filterFactory.glLoadTexture(permutation,".buffer");
+	filterFactory.glLoadTexture(permutation,perlin);
 #endif
 }
 

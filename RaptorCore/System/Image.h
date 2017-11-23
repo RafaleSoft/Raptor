@@ -22,6 +22,17 @@ class CTextureFactoryConfig;
 class RAPTOR_API CImage  
 {
 public:
+	//!	Image data type (pixels type)
+	typedef enum
+	{
+		CGL_COLOR24,
+		CGL_COLOR24_ALPHA,
+		CGL_COLOR_FLOAT16,
+		CGL_COLOR_FLOAT16_ALPHA,
+		CGL_COLOR_FLOAT32,
+		CGL_COLOR_FLOAT32_ALPHA
+	} PIXEL_TYPE;
+
     //! This class defines an Image I/O service. The user can extend Raptor texture loading capabilities
     //! by implementing and registering a custom IO class into the TextureFactoryConfig.
     //! TextureFactories will dynamically request for an available ImageIO to load a texture.
@@ -34,17 +45,17 @@ public:
 		//! Returns the list of extension kind handled by this imageIO.
 		virtual vector<std::string> getImageKind(void) const = 0;
 
-        //! Method prototype for texture loading 'from file'
-	    //!	@param fname : full filename, with path and file extensions
-	    //! @param T : a valid texture object created from a factory.
-	    //! @eturn true if loading is successfull.
-        virtual bool loadImageFile(const std::string& fname,CTextureObject* const T) = 0;
+		//! Method prototype for image loading 'from file'
+		//!	@param fname : full filename, with path and file extensions
+		//! @param I : a valid image object.
+		//! @eturn true if loading is successfull.
+		virtual bool loadImageFile(const std::string& fname, CImage* const I) const = 0;
 
         //! Method prototype for texture storing 'to file'
 	    //!	@param fname : full filename, with path and file extensions
-	    //! @param T : a valid texture object created from a factory, the image texels must be accesible through T->getTexels.
+	    //! @param I : a valid image object, the image pixels must be accesible through I->getPixels or I->getFloatPixels.
 	    //! @return true if storing is successfull.
-        virtual bool storeImageFile(const std::string& fname,CTextureObject* const T) = 0;
+		virtual bool storeImageFile(const std::string& fname, CImage* const I) const = 0;
 
     protected:
         IImageIO() {};
@@ -64,21 +75,24 @@ public:
         {
             BUMPMAP_LOADER,
             IMAGE_SCALER,
-            MIPMAP_BUILDER
+			ALPHA_TRANSPARENCY,
+			NB_OP_KIND
         } OP_KIND;
+
+		typedef struct operation_param_t
+		{
+			float		bump_scale;
+			uint32_t	transparency;
+		};
 
         //!	Returns the kind of operation managed ( extension )
         virtual OP_KIND getKind(void) const = 0;
 
-        //! Apply the specific operator to the textureobject ( it must be valid and have been loaded )
-        //! @param src : a valid texture object, defined as the source of texels
-        //! @param texelFormat : the format of the texels that will be holded by src->getTexels
-        //! @return true if no error, false otherwise.
-        virtual bool apply(	CTextureObject* const src,
-							unsigned int innerFormat,
-							unsigned int texelFormat,
-							unsigned int texelType,
-							const CTextureFactoryConfig& config) const = 0;
+		//! Apply the specific operator to the image ( it must be valid and have been loaded )
+		//! @param src : a valid image object, defined as the source of pixels
+		//! @return true if no error, false otherwise.
+		virtual bool apply(CImage* const src,
+						   const operation_param_t& param) const = 0;
 
     protected:
         IImageOP() {};
@@ -92,6 +106,72 @@ public:
 public:
 	CImage();
 	virtual ~CImage();
+
+	//!	Loads an image file named filename. The file type is used to
+	//!	Determine the appropriate image loader, if any.
+	//! @return false if the an error is encountered when trying to access filename of no loader found.
+	bool loadImage(const std::string &filename,
+				   const CVaArray<CImage::IImageOP::OP_KIND>& ops,
+				   const CImage::IImageOP::operation_param_t& param);
+
+	//!	Updates alpha channel of pixels, if present in pixel type.
+	void setAlpha(uint32_t alpha);
+
+	//! texture name ( default is the source filename )
+	const std::string & getName(void) const { return m_name; };
+
+	//! @return image width
+	uint32_t	getWidth(void) const { return m_width; };
+
+	//! @return image height
+	uint32_t	getHeight(void) const { return m_height; };
+
+	//! @return image height
+	uint32_t	getLayers(void) const { return m_layers; };
+
+
+	//!	Returns the sized format of buffer in host memory to upload or download texels from server.
+	//!	(buffer is allocated with allocateTexels)
+	unsigned int getBufferFormat(void) const;
+
+	//! Returns the type of a texel componant in host buffer
+	//!	(buffer is allocated with allocateTexels)
+	unsigned int getBufferType(void) const;
+
+	//! Returns the type of a texel componant in host buffer
+	//!	(buffer is allocated with allocateTexels)
+	CImage::PIXEL_TYPE getPixelType(void) const
+	{
+		return m_pixelType;
+	};
+
+
+	//! Allocates a bloc of texels to pass data to server. Memory allocator must be in library.
+	//! The size is dependent on texture attributes, it might be reallocated or not.
+	//! @param width : image width in pixels.
+	//!	@param height : image height in pixels.
+	//! @param type : the type of pixels to allocate, it cannot be changed later on.
+	//! @return true if allocation is successfull.
+	bool allocatePixels(uint32_t width, uint32_t height, PIXEL_TYPE type = CGL_COLOR24_ALPHA);
+
+	//! Allocates a bloc of texels for several image layers.
+	//! @param width : image width in pixels.
+	//!	@param height : image height in pixels.
+	//! @param layers : the number of layers for this image.
+	//! @param type : the type of pixels to allocate, it cannot be changed later on.
+	//! @return true if allocation is successfull.
+	bool allocatePixels(uint32_t width, uint32_t height, uint32_t layers, PIXEL_TYPE type = CGL_COLOR24_ALPHA);
+
+	//! Releases any allocated texel blocs.
+	void releasePixels(void);
+
+	//!	Obtain image pixels.
+	//!	@return pointer to pixels array or NULL if image do not match
+	uint8_t* getPixels(uint32_t layer = 0) const;
+
+	//!	Obtain image pixels.
+	//!	@return pointer to pixels array or NULL if image do not match
+	float* getFloatPixels(uint32_t layer = 0) const;
 
 	//!	Callbacks management :
     //!
@@ -119,6 +199,21 @@ public:
 private:
 	static map<std::string,IImageIO*>			IMAGE_KIND_IO;
     static map<IImageOP::OP_KIND,IImageOP*>		IMAGE_KIND_OP;
+
+	//!	Object name ( default is filename )
+	std::string	m_name;
+
+	//! Image dimensions
+	uint32_t	m_width;
+	uint32_t	m_height;
+	uint32_t	m_layers;
+
+	//!	The buffer pixel type for loading image data
+	PIXEL_TYPE		m_pixelType;
+
+	//!	Actual pixels storage
+	//uint8_t			*pixels;
+	void			*pixels;
 };
 
 RAPTOR_NAMESPACE_END

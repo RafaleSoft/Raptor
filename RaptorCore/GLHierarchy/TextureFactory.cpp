@@ -74,7 +74,7 @@ CTextureFactory& CTextureFactory::getDefaultFactory()
 }
 
 
-
+/*
 RAPTOR_HANDLE CTextureFactory::glvkPreloadTexture(CTextureObject* const T,
 												const std::string &fname,
 												const CVaArray<CImage::IImageOP::OP_KIND>& ops)
@@ -102,10 +102,11 @@ RAPTOR_HANDLE CTextureFactory::glvkPreloadTexture(CTextureObject* const T,
 		return preload;
 	}
 
+
 	CImage::IImageIO *imager = CImage::getImageKindIO(fname);
 	if (imager != NULL)
 	{
-		if (imager->loadImageFile(fname,T))
+		if (imager->loadImageFile(fname,0)) //T))
 		{
 			//
 			//	Initialise texture attributes : main formats.
@@ -117,7 +118,6 @@ RAPTOR_HANDLE CTextureFactory::glvkPreloadTexture(CTextureObject* const T,
 			P.format = T->getBufferFormat();
 			P.src_format = T->getBufferType();
 			P.createNormalMap = ops.hasValue(CImage::IImageOP::BUMPMAP_LOADER);
-			P.autoMipmap = ops.hasValue(CImage::IImageOP::MIPMAP_BUILDER);
 			P.reScale = ops.hasValue(CImage::IImageOP::IMAGE_SCALER);
 
 			//	1)	Texture internal format
@@ -127,7 +127,7 @@ RAPTOR_HANDLE CTextureFactory::glvkPreloadTexture(CTextureObject* const T,
 			if (P.createNormalMap)
 			{
 				CImage::IImageOP* op = CImage::getImageKindOP(CImage::IImageOP::BUMPMAP_LOADER);
-				op->apply(T,P.inner_format,P.format,P.src_format,mConfig);
+				//op->apply(T,P.format,P.src_format,mConfig);
 			}
 
 			//
@@ -175,7 +175,7 @@ RAPTOR_HANDLE CTextureFactory::glvkPreloadTexture(CTextureObject* const T,
 			if (mConfig.useTextureResize() || P.reScale)
             {
 				CImage::IImageOP* op = CImage::getImageKindOP(CImage::IImageOP::IMAGE_SCALER);
-/* OGL call*/	op->apply(T,P.inner_format,P.format,P.src_format,mConfig);
+// OGL call		//op->apply(T,P.format,P.src_format,mConfig);
             }
 
 			//
@@ -219,7 +219,7 @@ RAPTOR_HANDLE CTextureFactory::glvkPreloadTexture(CTextureObject* const T,
 
 			CATCH_GL_ERROR
 		}
-		else	/* load from file failed */
+		else	// load from file failed
         {
             CRaptorMessages::MessageArgument arg;
             arg.arg_sz = fname.data();
@@ -233,8 +233,8 @@ RAPTOR_HANDLE CTextureFactory::glvkPreloadTexture(CTextureObject* const T,
 
 	return preload;
 }
-
-
+*/
+/*
 bool CTextureFactory::glvkLoadTexture(	CTextureObject* const T,
 										RAPTOR_HANDLE preload)
 {
@@ -272,29 +272,167 @@ bool CTextureFactory::glvkLoadTexture(	CTextureObject* const T,
 		}
 		else
 #endif
-			if (P.autoMipmap && (T->getFilter() == CTextureObject::CGL_TRILINEAR))
-			{
-				CImage::IImageOP* op = CImage::getImageKindOP(CImage::IImageOP::MIPMAP_BUILDER);
-				op->apply(T, P.inner_format, P.format, P.src_format, mConfig);
-			}
+		{
+			bool generateMipmap = ((T->getFilter() == CTextureObject::CGL_TRILINEAR) ||
+								   (T->getFilter() == CTextureObject::CGL_ANISOTROPIC)) &&
+								   mConfig.getGenerateMipmap();
+			//
 			//  The default case, at least load the texture.
-			else
-			{
-				glTexImage2D(P.target,
-							 T->getCurrentMipMapLevel(), P.inner_format,
-							 T->getWidth(), T->getHeight(),
-							 0, P.format,
-							 P.src_format,
-							 T->texels);
-			}
+			//
+#if (defined(GL_VERSION_1_4) && !defined(GL_VERSION_3_0) && !defined(GL_EXT_framebuffer_object))
+			if (generateMipmap)
+				glTexParameteri(target, GL_GENERATE_MIPMAP, GL_TRUE);
+#endif
+			glTexImage2D(P.target,
+						 T->getCurrentMipMapLevel(), P.inner_format,
+						 T->getWidth(), T->getHeight(),
+						 0, P.format,
+						 P.src_format,
+						 T->texels);
+#if (defined(GL_VERSION_3_0) || defined(GL_EXT_framebuffer_object))
+			if (generateMipmap)
+				Raptor::glGetExtensions()->glGenerateMipmapEXT(P.target);
+#endif
+		}
 	}
 
 	CATCH_GL_ERROR
 
 	return true;
 }
+*/
+
+bool CTextureFactory::glLoadTexture(CTextureObject* const T,
+									const CImage &image)
+{
+	//	ensure we can do something ...
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+	if ((T == NULL) || (!glIsTexture(T->texname)))
+	{
+		Raptor::GetErrorManager()->generateRaptorError(CTextureFactory::CTextureFactoryClassID::GetClassId(),
+													   CRaptorErrorManager::RAPTOR_WARNING,
+													   CRaptorMessages::ID_NULL_OBJECT);
+		return false;
+	}
+#endif
+
+	if ((T->target >> 16) == ITextureGenerator::BUFFERED)
+	{
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+		Raptor::GetErrorManager()->generateRaptorError(CTextureFactory::CTextureFactoryClassID::GetClassId(),
+													   CRaptorErrorManager::RAPTOR_WARNING,
+													   CRaptorMessages::ID_UPDATE_FAILED);
+#endif
+		return false;
+	}
+
+	if ((image.getWidth() > 0) && (image.getHeight() > 0))
+		T->setSize(image.getWidth(), image.getHeight(), image.getLayers());
+
+	//
+	//	Initialise texture attributes : main formats.
+	//
+	T->setName(image.getName());
+
+	//	1)	Texture internal format
+	GLuint GL_INNER_FORMAT = T->getTexelFormat();
+	GLuint GL_FORMAT = image.getBufferFormat();
+	GLuint GL_SRC_FORMAT = image.getBufferType();
+	void *pixels = image.getPixels();
+	if (NULL == pixels)
+		pixels = image.getFloatPixels();
+
+#ifdef GL_ARB_texture_compression
+	//	use texture compression if possible
+	/*else*/ if (NULL != mConfig.getCurrentCompressor())
+	{
+		GLuint compressor = mConfig.getCurrentCompressor()->getFormat(GL_INNER_FORMAT);
+		if (compressor != (GLuint)-1)
+			GL_INNER_FORMAT = compressor;
+	}
+#endif
 
 
+	//	2)	Format of data to load
+	//
+	CTextureFactoryConfig::TEXEL_FORMAT texelFormat = mConfig.getTexelFormat();
+	if (GL_FORMAT == GL_RGBA)
+	{
+#if defined(GL_EXT_bgra)
+		if (texelFormat == CTextureFactoryConfig::BYTEORDER_BGRA)
+			GL_FORMAT = GL_BGRA_EXT;
+#endif
+#if defined(GL_EXT_abgr)
+		else if (texelFormat == CTextureFactoryConfig::BYTEORDER_ABGR)
+			GL_FORMAT = GL_ABGR_EXT;
+#endif
+	}
+	else if (GL_FORMAT == GL_RGB)
+	{
+#if defined(GL_EXT_bgra)
+		if (texelFormat == CTextureFactoryConfig::BYTEORDER_BGRA)
+			GL_FORMAT = GL_BGR_EXT;
+#endif
+	}
+
+	//
+	//	Handle cubemap textures
+	//
+	bool result = false;
+	GLuint target = T->target & 0xFFFF;
+
+	//
+	//	Final processing :
+	//	- mipmapping generation
+	//	- image loading
+#if defined(GL_EXT_texture3D)
+	if (T->getDepth() > 1)   // Texture Volumes
+	{
+		const CRaptorExtensions * const extensions = Raptor::glGetExtensions();
+		extensions->glTexImage3DEXT(target, 0,
+									GL_INNER_FORMAT,
+									T->getWidth(), T->getHeight(), T->getDepth(),
+									0, GL_FORMAT, GL_SRC_FORMAT,
+									pixels);
+		result = true;
+	}
+	else
+#endif
+	{
+		bool generateMipmap = ((T->getFilter() == CTextureObject::CGL_TRILINEAR) ||
+							   (T->getFilter() == CTextureObject::CGL_ANISOTROPIC)) &&
+							   mConfig.getGenerateMipmap();
+
+		if (VK_IMAGE_TYPE_2D == target)
+			T->vk_texname = CTexelAllocator::GetInstance()->vkAllocateTextureImage(T->getWidth(),
+			T->getHeight(),
+			T->getDepth(),
+			T->getTexelType(),
+			(uint8_t*)pixels);
+		else
+		{
+#if (defined(GL_VERSION_1_4) && !defined(GL_VERSION_3_0) && !defined(GL_EXT_framebuffer_object))
+			if (generateMipmap)
+				glTexParameteri(target, GL_GENERATE_MIPMAP, GL_TRUE);
+#endif
+			glTexImage2D(target,
+						 T->getCurrentMipMapLevel(), GL_INNER_FORMAT,
+						 T->getWidth(), T->getHeight(),
+						 0, GL_FORMAT,
+						 GL_SRC_FORMAT,
+						 pixels);
+#if (defined(GL_VERSION_3_0) || defined(GL_EXT_framebuffer_object))
+			if (generateMipmap)
+				Raptor::glGetExtensions()->glGenerateMipmapEXT(target);
+#endif
+		}
+		result = true;
+	}
+
+	CATCH_GL_ERROR
+
+	return result;
+}
 
 
 bool CTextureFactory::glLoadTexture(CTextureObject* const T,
@@ -305,9 +443,9 @@ bool CTextureFactory::glLoadTexture(CTextureObject* const T,
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 	if ((T == NULL) || (!glIsTexture(T->texname)))
 	{
-        Raptor::GetErrorManager()->generateRaptorError(	CTextureFactory::CTextureFactoryClassID::GetClassId(),
-														CRaptorErrorManager::RAPTOR_WARNING,
-														CRaptorMessages::ID_NULL_OBJECT);
+		Raptor::GetErrorManager()->generateRaptorError(CTextureFactory::CTextureFactoryClassID::GetClassId(),
+													   CRaptorErrorManager::RAPTOR_WARNING,
+													   CRaptorMessages::ID_NULL_OBJECT);
 		return false;
 	}
 #endif
@@ -315,151 +453,27 @@ bool CTextureFactory::glLoadTexture(CTextureObject* const T,
 	if ((T->target >> 16) == ITextureGenerator::BUFFERED)
 	{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
-        Raptor::GetErrorManager()->generateRaptorError(	CTextureFactory::CTextureFactoryClassID::GetClassId(),
-														CRaptorErrorManager::RAPTOR_WARNING,
-														CRaptorMessages::ID_UPDATE_FAILED);
+		Raptor::GetErrorManager()->generateRaptorError(CTextureFactory::CTextureFactoryClassID::GetClassId(),
+													   CRaptorErrorManager::RAPTOR_WARNING,
+													   CRaptorMessages::ID_UPDATE_FAILED);
 #endif
 		return false;
 	}
 
+	CImage::IImageOP::operation_param_t param;
+	param.bump_scale = mConfig.getBumpAmplitude();
+	param.transparency = T->getTransparency();
+	CVaArray<CImage::IImageOP::OP_KIND> iops = ops;
+	if (mConfig.useTextureResize() && !ops.hasValue(CImage::IImageOP::IMAGE_SCALER))
+		iops.addValue(CImage::IImageOP::IMAGE_SCALER);
 
-	CImage::IImageIO *imager = CImage::getImageKindIO(fname);
-	if (imager != NULL)
+	CImage loadImage;
+	if (loadImage.loadImage(fname, iops, param))
 	{
-		if (imager->loadImageFile(fname,T))
-		{
-			//
-			//	Initialise texture attributes : main formats.
-			//
-			T->m_name = fname.data();
-			GLuint GL_INNER_FORMAT = T->getTexelFormat();
-			GLuint GL_FORMAT = T->getBufferFormat();
-			GLuint GL_SRC_FORMAT = T->getBufferType();
-
-
-			//	1)	Texture internal format
-			//
-			//	Handle normal maps for bumping
-			//
-			if (ops.hasValue(CImage::IImageOP::BUMPMAP_LOADER))
-			{
-				CImage::IImageOP* op = CImage::getImageKindOP(CImage::IImageOP::BUMPMAP_LOADER);
-                op->apply(T,GL_INNER_FORMAT,GL_FORMAT,GL_SRC_FORMAT,mConfig);
-			}
-			//
-			//	Handle support for texture compression.
-			//	Rely on OpenGL 'generic' compression to choose
-			//	appropriate compressor of hardware capabilities.
-			//
-#ifdef GL_ARB_texture_compression
-			//	use texture compression if possible
-			else if (NULL != mConfig.getCurrentCompressor())
-			{
-				GLuint compressor = mConfig.getCurrentCompressor()->getFormat(GL_INNER_FORMAT);
-				if (compressor != (GLuint)-1)
-					GL_INNER_FORMAT = compressor;
-			}
-#endif
-
-
-			//	2)	Format of data to load
-			//
-			CTextureFactoryConfig::TEXEL_FORMAT texelFormat = mConfig.getTexelFormat();
-			if (GL_FORMAT == GL_RGBA)
-			{
-#if defined(GL_EXT_bgra)
-				if (texelFormat == CTextureFactoryConfig::BYTEORDER_BGRA)
-					GL_FORMAT = GL_BGRA_EXT;
-#endif
-#if defined(GL_EXT_abgr)
-				else if (texelFormat == CTextureFactoryConfig::BYTEORDER_ABGR)
-					GL_FORMAT = GL_ABGR_EXT;
-#endif
-			}
-			else if (GL_FORMAT == GL_RGB)
-			{
-#if defined(GL_EXT_bgra)
-				if (texelFormat == CTextureFactoryConfig::BYTEORDER_BGRA)
-					GL_FORMAT = GL_BGR_EXT;
-#endif
-			}
-
-
-			//
-			//	Handle Image re-scaling
-			//
-			if ((mConfig.useTextureResize() || ops.hasValue(CImage::IImageOP::IMAGE_SCALER)) &&
-				(T->getDepth() < 2)) // depth 1 is a 1D or 2D texture, depth 0 is invalid
-            {
-				CImage::IImageOP* op = CImage::getImageKindOP(CImage::IImageOP::IMAGE_SCALER);
-                op->apply(T,GL_INNER_FORMAT,GL_FORMAT,GL_SRC_FORMAT,mConfig);
-            }
-
-			//
-			//	Handle cubemap textures
-			//
-			bool result = false;
-			GLuint target = T->target & 0xFFFF;
-
-			//
-			//	Final processing :
-			//	- mipmapping generation
-			//	- image loading
-#if defined(GL_EXT_texture3D)
-            if (T->getDepth() > 1)   // Texture Volumes
-            {
-                const CRaptorExtensions * const extensions = Raptor::glGetExtensions();
-                extensions->glTexImage3DEXT( target,0,
-                                             GL_INNER_FORMAT,
-                                             T->getWidth(),T->getHeight(),T->getDepth(),
-                                             0,GL_FORMAT,GL_SRC_FORMAT,
-                                             T->texels);
-            }
-            else
-#endif
-				if (ops.hasValue(CImage::IImageOP::MIPMAP_BUILDER) &&
-				(T->getFilter() == CTextureObject::CGL_TRILINEAR))
-			{
-				CImage::IImageOP* op = CImage::getImageKindOP(CImage::IImageOP::MIPMAP_BUILDER);
-				result = op->apply(T,GL_INNER_FORMAT,GL_FORMAT,GL_SRC_FORMAT,mConfig);
-			}
-            //  The default case, at least load the texture.
-			else
-			{
-				if (VK_IMAGE_TYPE_2D == target)
-					T->vk_texname = CTexelAllocator::GetInstance()->vkAllocateTextureImage(	T->getWidth(),
-																							T->getHeight(),
-																							T->getDepth(),
-																							T->getTexelType(),
-																							T->getTexels());
-				else
-					glTexImage2D(	target,
-									T->getCurrentMipMapLevel(), GL_INNER_FORMAT,
-									T->getWidth(),T->getHeight(),
-									0,GL_FORMAT,
-									GL_SRC_FORMAT,
-									T->texels);
-				result = true;
-			}
-            T->releaseTexels();
-
-			CATCH_GL_ERROR
-
-			return result;
-		}
-		else	/* load from file failed */
-        {
-            CRaptorMessages::MessageArgument arg;
-            arg.arg_sz = fname.data();
-            vector<CRaptorMessages::MessageArgument> args;
-            args.push_back(arg);
-            Raptor::GetErrorManager()->generateRaptorError(	CTextureFactory::CTextureFactoryClassID::GetClassId(),
-			    											CRaptorErrorManager::RAPTOR_WARNING,
-				    										CRaptorMessages::ID_TEXTURE_MISS,args);
-			return false;
-        }
+		loadImage.setAlpha(T->getTransparency());
+		return glLoadTexture(T, loadImage);
 	}
-	else	/*	Loader not found */
+	else
 		return false;
 }
 
@@ -538,14 +552,30 @@ bool CTextureFactory::glResizeTexture( CTextureObject *T, unsigned int width, un
 		T->getGenerationSize(posx, posy, W, H);
 		T->setGenerationSize(posx, posy, W, H);
 		
+		GLuint GL_FORMAT = GL_RGBA;
+		GLuint GL_TYPE = GL_UNSIGNED_BYTE;
+		if ((T->getTexelFormat() == GL_DEPTH_COMPONENT) ||
+			(T->getTexelFormat() == GL_DEPTH_COMPONENT16_ARB) ||
+			(T->getTexelFormat() == GL_DEPTH_COMPONENT24_ARB) ||
+			(T->getTexelFormat() == GL_DEPTH_COMPONENT32_ARB))
+		{
+			GL_FORMAT = GL_DEPTH_COMPONENT;
+			GL_TYPE = GL_FLOAT;
+		}
+		else if (T->getTexelFormat() == GL_DEPTH24_STENCIL8_EXT)
+		{
+			GL_FORMAT = GL_DEPTH_STENCIL_EXT;
+			GL_TYPE = GL_UNSIGNED_INT_24_8_EXT;
+		}
+
         if (target == GL_TEXTURE_1D)
 			glTexImage1D(	GL_TEXTURE_1D, 
 							T->getCurrentMipMapLevel(), 
 							T->getTexelFormat(),
 							width, 
 							0, 
-							T->getBufferFormat(),
-							T->getBufferType(),
+							GL_FORMAT,
+							GL_TYPE,
 							NULL);
         else if (target == GL_TEXTURE_2D)
             glTexImage2D(	GL_TEXTURE_2D, 
@@ -553,8 +583,8 @@ bool CTextureFactory::glResizeTexture( CTextureObject *T, unsigned int width, un
 							T->getTexelFormat(),
 							width, height, 
 							0, 
-							T->getBufferFormat(),
-							T->getBufferType(),
+							GL_FORMAT,
+							GL_TYPE,
 							NULL);
 #if defined(GL_EXT_texture3D)
         else if (target == GL_TEXTURE_3D_EXT)
@@ -567,8 +597,8 @@ bool CTextureFactory::glResizeTexture( CTextureObject *T, unsigned int width, un
 											height, 
 											depth, 
 											0, 
-											T->getBufferFormat(),
-											T->getBufferType(),
+											GL_FORMAT,
+											GL_TYPE,
 											NULL);
         }
 #endif
@@ -601,16 +631,11 @@ bool CTextureFactory::glExportTexture(CTextureObject *T,const std::string &fname
 	{
         T->glRender();
 
-		unsigned char *texels = T->getTexels();
-        if (texels == NULL)
-        {
-            T->allocateTexels();
-			texels = T->getTexels();
-        }
+		CImage exp;
+		exp.allocatePixels(T->getWidth(), T->getHeight());
+		glGetTexImage(GL_TEXTURE_2D, T->getCurrentMipMapLevel(), GL_RGBA, GL_UNSIGNED_BYTE, exp.getPixels());
 
-		glGetTexImage(GL_TEXTURE_2D, T->getCurrentMipMapLevel(), GL_RGBA, GL_UNSIGNED_BYTE, texels);
-
-        res = imager->storeImageFile(fname,T);
+        res = imager->storeImageFile(fname,&exp);
     }
 
     CATCH_GL_ERROR

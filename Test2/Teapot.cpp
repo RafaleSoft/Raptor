@@ -54,11 +54,9 @@ CTeapot::CTeapot()
     :rx(0),ry(0),rz(0),currentDisplay(NULL),
     stopdemo(-1),m_globalDisplay(NULL),
 	//numdemo(CTest2App::PARTICLEDEMO)
-	//numdemo(CTest2App::AMBIENTOCCLUSIONDEMO)
+	numdemo(CTest2App::AMBIENTOCCLUSIONDEMO)
 	//numdemo(CTest2App::BUMPDEMO)
 	//numdemo(CTest2App::VRTXSHADERSDEMO)
-	//numdemo(CTest2App::PARTICLEDEMO)
-	numdemo(CTest2App::VRTXSHADERSDEMO)
 {
 }
 
@@ -106,7 +104,7 @@ void CTeapot::GLInitContext()
 	CTextureObject*	T = f.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_ALPHA_TRANSPARENT,CTextureObject::CGL_BILINEAR);
 	T->glSetTransparency(128);
 	f.glLoadTexture(T,"Datas\\raptor.tga");
-	//f.glLoadTexture(T,"Datas\\Mire.tga");
+	f.glExportTexture(T, "raptor.jpg");
 	t->addTexture(T);
 
 	T = f.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_MULTIPLY,CTextureObject::CGL_BILINEAR);
@@ -121,7 +119,6 @@ void CTeapot::GLInitContext()
 	#if(0)
 		f.glLoadCompressedTexture(T,"start.s3tc");
 	#else
-		//const CTextureFactoryConfig::ICompressor *compressor = config.getCurrentCompressor();
 		if (0 < config.getNumCompressors())
 			config.setCurrentCompressor(config.getCompressor("OpenGL"));
 		f.glLoadTexture(T,"Datas\\start.tga");
@@ -236,19 +233,19 @@ void CTeapot::GLInitContext()
 	displays[CTest2App::SPLINEDEMO] = &splineDisplay;
 	skinningDisplay.Init();
 	displays[CTest2App::SKINNINGDEMO] = &skinningDisplay;
-	//particleDisplay.Init();
+	particleDisplay.Init();
 	displays[CTest2App::PARTICLEDEMO] = &particleDisplay;
-	//shadowDisplay.Init();
+	shadowDisplay.Init();
 	displays[CTest2App::SHADOWDEMO] = &shadowDisplay;
-	//shadowMapDisplay.Init();
+	shadowMapDisplay.Init();
 	displays[CTest2App::SHADOWMAPDEMO] = &shadowMapDisplay;
-	//warpingDisplay.Init();
+	warpingDisplay.Init();
 	displays[CTest2App::WARPINGDEMO] = &warpingDisplay;
-	//projectionDisplay.Init();
+	projectionDisplay.Init();
 	displays[CTest2App::PROJECTIONDEMO] = &projectionDisplay;
-	//lodDisplay.Init();
+	lodDisplay.Init();
 	displays[CTest2App::LODDEMO] = &lodDisplay;
-	//collisionDisplay.Init();
+	collisionDisplay.Init();
 	displays[CTest2App::COLLISIONDEMO] = &collisionDisplay;
 	ambientOcclusionDisplay.Init();
 	displays[CTest2App::AMBIENTOCCLUSIONDEMO] = &ambientOcclusionDisplay;

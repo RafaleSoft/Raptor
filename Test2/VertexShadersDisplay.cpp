@@ -613,18 +613,20 @@ public:
 		pCosTable = factory.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_OPAQUE,CTextureObject::CGL_BILINEAR);
         pCosTable->setSize(TABLE_SIZE,1);
 		pCosTable->glSetTransparency(255);
-        pCosTable->allocateTexels();
-		unsigned char *cosTable = pCosTable->getTexels();
+        
+		CImage cosTable;
+		cosTable.allocatePixels(TABLE_SIZE, 1);
+		unsigned char *cost = cosTable.getPixels();
         int i=0;
 		for (i=0;i<4*TABLE_SIZE;i+=4)
 		{
-			cosTable[i] = 0;
-			cosTable[i+1] = 255.999 * (0.5f * cos(2.0*PI*i/(4.0f * TABLE_SIZE)) + 0.5f)
-							* pow((0.5f * sin(2.0*PI*i/(4.0f * TABLE_SIZE)) + 0.5f),1);
-			cosTable[i+2] = 0;
-			cosTable[i+3] = 255;
+			cost[i] = 0;
+			cost[i + 1] = 255.999 * (0.5f * cos(2.0*PI*i / (4.0f * TABLE_SIZE)) + 0.5f)
+							  * pow((0.5f * sin(2.0*PI*i / (4.0f * TABLE_SIZE)) + 0.5f),1);
+			cost[i + 2] = 0;
+			cost[i + 3] = 255;
 		}
-		factory.glLoadTexture(pCosTable,".BUFFER");
+		factory.glLoadTexture(pCosTable,cosTable);
 
 		srand((unsigned)time( NULL ));
 		float baseAngle = (float)(PI / 2.0f);

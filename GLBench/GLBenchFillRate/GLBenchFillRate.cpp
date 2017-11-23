@@ -92,6 +92,7 @@ void Display::GLInitContext()
 	glClearColor(0.0f,0.0f,0.0f,0.5f);
 
 	CTextureFactory &f = CTextureFactory::getDefaultFactory();
+	CTextureFactoryConfig& config = f.getConfig();
 	txt = new CTextureSet();
 
 	glColor4f(1.0f,1.0f,1.0f,1.0f);
@@ -104,7 +105,6 @@ void Display::GLInitContext()
 	{
 		T = f.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_MULTIPLY,CTextureObject::CGL_BILINEAR);
 		T->glSetTransparency(128);
-		CTextureFactoryConfig& config = f.getConfig();
 		const CTextureFactoryConfig::ICompressor *compressor = config.getCurrentCompressor();
 		if (0 < config.getNumCompressors())
 			config.setCurrentCompressor(config.getCompressor("OpenGL"));
@@ -125,6 +125,7 @@ void Display::GLInitContext()
 	txt->addTexture(T);
 
 	T = f.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_MULTIPLY,CTextureObject::CGL_TRILINEAR);
+	config.setGenerateMipmap(false);
 	T->glSetTransparency(128);	f.glLoadTexture(T,"Datas\\M1_1024.jpg");
 	T->selectMipMapLevel(1);	f.glLoadTexture(T,"Datas\\M1_512.jpg");
 	T->selectMipMapLevel(2);	f.glLoadTexture(T,"Datas\\M1_256.jpg");
@@ -136,6 +137,7 @@ void Display::GLInitContext()
 	T->selectMipMapLevel(8);	f.glLoadTexture(T,"Datas\\M1_4.jpg");
 	T->selectMipMapLevel(9);	f.glLoadTexture(T,"Datas\\M1_2.jpg");
 	T->selectMipMapLevel(10);	f.glLoadTexture(T,"Datas\\M1_1.jpg");
+	config.setGenerateMipmap(true);
 	txt->addTexture(T);
 
 
@@ -149,10 +151,10 @@ void Display::GLInitContext()
 	{
 		float anisotropy = 1.0f;
 		glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT,&anisotropy);
-		CTextureFactoryConfig &tfConfig = f.getConfig();
-		tfConfig.setCurrentAnisotropy(anisotropy);
+		config.setCurrentAnisotropy(anisotropy);
 
 		T = f.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_MULTIPLY,CTextureObject::CGL_ANISOTROPIC);
+		config.setGenerateMipmap(false);
 		T->glSetTransparency(255);	f.glLoadTexture(T,"Datas\\M1_1024.jpg");
 		T->selectMipMapLevel(1);	f.glLoadTexture(T,"Datas\\M1_512.jpg");
 		T->selectMipMapLevel(2);	f.glLoadTexture(T,"Datas\\M1_256.jpg");
@@ -164,6 +166,7 @@ void Display::GLInitContext()
 		T->selectMipMapLevel(8);	f.glLoadTexture(T,"Datas\\M1_4.jpg");
 		T->selectMipMapLevel(9);	f.glLoadTexture(T,"Datas\\M1_2.jpg");
 		T->selectMipMapLevel(10);	f.glLoadTexture(T,"Datas\\M1_1.jpg");
+		config.setGenerateMipmap(true);
 		txt->addTexture(T);
 	}
 #endif
@@ -404,19 +407,19 @@ GLDisplay->glMakeCurrent(false);
 		tfConfig.useTextureResize(false);
 
 		GLint maxSize = 1024;
+		CImage load;
 
 GLDisplay->glMakeCurrent();
 		glGetIntegerv(GL_MAX_TEXTURE_SIZE,&maxSize);
 		T = factory.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA);
-		factory.glResizeTexture(T,maxSize,maxSize);
+		load.allocatePixels(maxSize, maxSize);
 		unsigned char *buffer = new unsigned char[maxSize*4*maxSize];
 
 		float bench_dt = 0.0f;
 		for (unsigned int i=0;i<LOOP_LOADTEXTURE;i++)
 		{
-			T->allocateTexels();
 			CTimeObject::markTime(parent);
-			factory.glLoadTexture(T,".buffer");
+			factory.glLoadTexture(T, load);
 			bench_dt += CTimeObject::deltaMarkTime(parent);
 			nb++;
 		}
@@ -437,9 +440,8 @@ GLDisplay->glMakeCurrent();
 		bench_dt = 0.0f;
 		for (unsigned int i=0;i<LOOP_LOADTEXTURE;i++)
 		{
-			T->allocateTexels();
 			CTimeObject::markTime(parent);
-			factory.glLoadTexture(T,".buffer");
+			factory.glLoadTexture(T, load);
 			bench_dt += CTimeObject::deltaMarkTime(parent);
 			nb++;
 		}

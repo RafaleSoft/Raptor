@@ -35,32 +35,34 @@ public:
 		return result;
 	}
 
-    //! Method prototype for texture loading 'from file'. 
-    //! Simply validates the buffer of the texture object
-    virtual bool loadImageFile(const std::string& fname,CTextureObject* const T)
-    {
-        if (T == NULL)
-            return false;
+	//! Method prototype for image loading 'from file'
+	//!	@param fname : full filename, with path and file extensions
+	//! @param I : a valid image object.
+	//! @eturn true if loading is successfull.
+	virtual bool loadImageFile(const std::string& fname, CImage* const I) const
+	{
+		if (I == NULL)
+			return false;
 
-		unsigned char *texels = T->getTexels();
-	    if ( texels == NULL)
-	    {
-			float *texels2 = T->getFloatTexels();
-            if (texels2 == NULL)
-                return false;
-            else
-                return true;
-	    }
-        else
-	        return true;
-    }
+		uint8_t *pixels = I->getPixels();
+		if (pixels == NULL)
+		{
+			float *pixels2 = I->getFloatPixels();
+			if (pixels2 == NULL)
+				return false;
+			else
+				return true;
+		}
+		else
+			return true;
+	}
 
     //! Method prototype for texture storing 'to file' is not implemented for a buffer. Maybe if needed
     //! Indeed, a texture generator will do the necessary
-    virtual bool storeImageFile(const std::string& fname,CTextureObject* const)
-    {
-        return false;
-    }
+	virtual bool storeImageFile(const std::string& fname, CImage* const) const
+	{
+		return false;
+	}
 
     CBufferImage() {};
     virtual ~CBufferImage() {};

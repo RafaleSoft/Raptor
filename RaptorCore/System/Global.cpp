@@ -29,9 +29,6 @@
 #if !defined(AFX_DEFAULTIMAGESCALER_H__E3E63A13_79FC_4E46_A1D5_BCD41CF86360__INCLUDED_)
     #include "Subsys/DefaultImageScaler.h"
 #endif
-#if !defined(AFX_DEFAULTMIPMAPBUILDER_H__9C508D96_B614_4920_8816_B670295B6CE2__INCLUDED_)
-    #include "Subsys/DefaultMipmapBuilder.h"
-#endif
 #if !defined(AFX_SHADERLIBRARY_H__E2A8C35E_23A4_4AD1_8467_884E6B183B4F__INCLUDED_)
 	#include "Subsys/ShaderLibrary.h"
 #endif
@@ -196,9 +193,6 @@ bool Global::init(const CRaptorConfig& config)
 		CDefaultImageScaler *pDefaultImageScaler = new CDefaultImageScaler();
 		CImage::setImageKindOP(pDefaultImageScaler);
 
-		CDefaultMipmapBuilder *pDefaultMipmapBuilder = new CDefaultMipmapBuilder();
-		CImage::setImageKindOP(pDefaultMipmapBuilder);
-		
 		CImage::IImageIO *pIO = new CBufferImage();
 		CImage::setImageKindIO(pIO);
 

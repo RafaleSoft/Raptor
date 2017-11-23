@@ -415,6 +415,7 @@ void CObjectStore::LoadModels(void)
 								CTextureObject::CGL_MULTIPLY,
 								CTextureObject::CGL_ANISOTROPIC);
 	T->glSetTransparency(255);
+	config.setGenerateMipmap(false);
 	factory.glLoadTexture(T,BRICKS_0);
 	T->selectMipMapLevel(1);
 	factory.glLoadTexture(T,BRICKS_1);
@@ -435,6 +436,7 @@ void CObjectStore::LoadModels(void)
 	T->selectMipMapLevel(9);
 	factory.glLoadTexture(T,BRICKS_9);
 	m_textures->addTexture(T);
+	config.setGenerateMipmap(true);
 
 	T = factory.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,
 								CTextureObject::CGL_MULTIPLY,

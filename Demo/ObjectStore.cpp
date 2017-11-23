@@ -199,7 +199,7 @@ bool CObjectStore::IsAColumn(CGeometry *&g)
 		CTextureObject *normalMap = factory.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,
                                                             CTextureObject::CGL_MULTIPLY,
                                                             CTextureObject::CGL_TRILINEAR);
-		factory.glLoadTexture(normalMap,BUMP_0,CImage::IImageOP::MIPMAP_BUILDER);
+		factory.glLoadTexture(normalMap,BUMP_0);
 		bump->setNormalMap(normalMap);
 
         CGeometry::CRenderingModel l_model(0);
@@ -501,6 +501,7 @@ void CObjectStore::LoadModels(void)
 	T = factory.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,
 								CTextureObject::CGL_MULTIPLY,
 								CTextureObject::CGL_ANISOTROPIC);
+	config.setGenerateMipmap(false);
 	T->glSetTransparency(255);
 	factory.glLoadTexture(T,BRICKS_0);
 	T->selectMipMapLevel(1);
@@ -522,6 +523,7 @@ void CObjectStore::LoadModels(void)
 	T->selectMipMapLevel(9);
 	factory.glLoadTexture(T,BRICKS_9);
 	m_textures->addTexture(T);
+	config.setGenerateMipmap(true);
 
 	T = factory.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,
 								CTextureObject::CGL_MULTIPLY,
@@ -713,7 +715,7 @@ void CObjectStore::BuildObjects(void)
     const CGeometryEditor &pEditor = m_pBumpKnot->getEditor();
 	pEditor.scaleTexCoords(48.0f,2.0f);
 	CTextureObject* normalMap = factory.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_MULTIPLY,CTextureObject::CGL_TRILINEAR);
-	factory.glLoadTexture(normalMap,BUMP_0,CImage::IImageOP::MIPMAP_BUILDER);
+	factory.glLoadTexture(normalMap,BUMP_0);
     m_pBumpKnot->setDiffuseMap(m_textures->getTexture(MARBLE5));
 	m_pBumpKnot->setNormalMap(normalMap);
 	

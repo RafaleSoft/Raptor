@@ -143,9 +143,10 @@ CTextureObject* CRaptorToolBox::mergeTextures(	CTextureSet *t,
 	CTextureObject* T = factory.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_OPAQUE);
     T->setSize(powx,powy);
 	T->glSetTransparency(255);
-    T->allocateTexels();
-
-	unsigned int *result = (unsigned int*)T->getTexels();
+    
+	CImage merge;
+	merge.allocatePixels(powx, powy);
+	unsigned int *result = (unsigned int*)merge.getPixels();
 
 	if (t->getNbTexture() < nb)
 		nb = t->getNbTexture();
@@ -183,7 +184,7 @@ CTextureObject* CRaptorToolBox::mergeTextures(	CTextureSet *t,
 	}
 
 	T->glRender();
-	factory.glLoadTexture(T,".buffer");
+	factory.glLoadTexture(T,merge);
 	return T;
 }
 

@@ -27,12 +27,11 @@ public:
     //! Implements CImageOP
     virtual OP_KIND getKind(void) const { return BUMPMAP_LOADER; };
 
-    //! Implaments CImageOP
-    virtual bool apply(	CTextureObject* const src,
-						unsigned int innerFormat,
-						unsigned int texelFormat,
-						unsigned int texelType,
-						const CTextureFactoryConfig& config) const;
+	//! Implements CImageOP
+	virtual bool apply(CImage* const src, const operation_param_t& param) const;
+
+private:
+	float bump_scale;
 };
 
 

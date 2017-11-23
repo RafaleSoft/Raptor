@@ -370,6 +370,7 @@ void CShadowMapDisplay::Init()
 											CTextureObject::CGL_ALPHA_TRANSPARENT,
 											CTextureObject::CGL_ANISOTROPIC);
 	T->glSetTransparency(255);
+	config.setGenerateMipmap(false);
 	f.glLoadTexture(T,"Datas\\oldwood.jpg");
     T->selectMipMapLevel(1);
     f.glLoadTexture(T,"Datas\\oldwood2.jpg");
@@ -389,7 +390,7 @@ void CShadowMapDisplay::Init()
     f.glLoadTexture(T,"Datas\\oldwood9.jpg");
     T->selectMipMapLevel(9);
     f.glLoadTexture(T,"Datas\\oldwood10.jpg");
-
+	config.setGenerateMipmap(true);
     config.setCurrentAnisotropy(1.0f);
     
 

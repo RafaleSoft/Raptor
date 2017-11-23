@@ -6,35 +6,32 @@
 #include "SplineDisplay.h"
 
 
-#include "System\CGLTypes.h"
-#include "Engine\3DPath.h"
-#include "Engine\3DScene.h"
-#include "GLHierarchy\GLFontFactory.h"
-#include "GLHierarchy\GLFont.h"
-#include "GLHierarchy\GL2DFont.h"
-#include "GLHierarchy\GL3DFont.h"
-#include "GLHierarchy\TextureSet.h"
-#include "GLHierarchy\TextureFactory.h"
-#include "Engine\ViewPoint.h"
-#include "GLHierarchy\Shader.h"
-#include "GLHierarchy\TextureUnitSetup.h"
-#include "GLHierarchy\Material.h"
-#include "System\RaptorDisplay.h"
-#include "GLHierarchy\TextureObject.h"
-#include "GLHierarchy\ShadedGeometry.h"
-#include "GLHierarchy\RenderingProperties.h"
+#include "System/CGLTypes.h"
+#include "Engine/3DPath.h"
+#include "Engine/3DScene.h"
+#include "GLHierarchy/GLFontFactory.h"
+#include "GLHierarchy/GLFont.h"
+#include "GLHierarchy/GL2DFont.h"
+#include "GLHierarchy/GL3DFont.h"
+#include "GLHierarchy/Light.h"
+#include "GLHierarchy/TextureSet.h"
+#include "GLHierarchy/TextureFactory.h"
+#include "Engine/ViewPoint.h"
+#include "GLHierarchy/Shader.h"
+#include "GLHierarchy/TextureUnitSetup.h"
+#include "GLHierarchy/Material.h"
+#include "System/RaptorDisplay.h"
+#include "GLHierarchy/TextureObject.h"
+#include "GLHierarchy/ShadedGeometry.h"
+#include "GLHierarchy/RenderingProperties.h"
 
-
-static GLfloat light_ambient[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-static GLfloat light_diffuse[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-static GLfloat light_specular[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
 CSplineDisplay::CSplineDisplay():
-path(NULL),bspline(NULL),font(NULL),vp(NULL)
+path(NULL), bspline(NULL), font(NULL), vp(NULL), m_pLight(NULL)
 {
 
 }
@@ -72,6 +69,7 @@ void CSplineDisplay::Init()
 	m->setShininess(50.0f);
     CGeometry::CRenderingModel l_model(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
     l_model.addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
+	l_model.addModel(CGeometry::CRenderingModel::CGL_NORMALS);
 	bspline->setRenderingModel(l_model);
 	GLfloat ctrlpoints[16][4] = 
 	{
@@ -97,15 +95,22 @@ void CSplineDisplay::Init()
 	font = font3d;
 	font->glGenGlyphs(1, 5, 2.0f);
 	text = (font3d->glWriteList("Raptor",0)).handle;
-	font = CGLFontFactory::create2DFont("Datas\\kld.ttf", 20, "main_font");
 
 	vp = new CViewPoint();
     vp->setPosition(5.0,0.0,5.0,CViewPoint::EYE);
     vp->setPosition(0.0,0.0,0.0,CViewPoint::TARGET);
 	vp->setViewVolume(-1.33f,1.33f,-1.0f,1.0f,1.0f,10000,CViewPoint::PERSPECTIVE);
 
+	m_pLight = new CLight("Spline light");
+	m_pLight->setAmbient(1.0f, 1.0f, 1.0f, 1.0f);
+	m_pLight->setDiffuse(1.0f, 1.0f, 1.0f, 1.0f);
+	m_pLight->setSpecular(1.0f, 1.0f, 1.0f, 1.0f);
+	m_pLight->setLightDirection(GL_COORD_VERTEX(0, 0, -1, 1));
+	m_pLight->setLightPosition(GL_COORD_VERTEX(0, 10, 20, 1));
+
 	C3DScene *pScene = new C3DScene("SPLINE_SCENE");
 	pScene->addObject(bspline);
+	pScene->addLight(m_pLight);
 
 	CRaptorDisplay* pDisplay = CRaptorDisplay::GetCurrentDisplay();
 	pDisplay->addScene(pScene);
@@ -114,15 +119,6 @@ void CSplineDisplay::Init()
 void CSplineDisplay::ReInit()
 {
 	CGenericDisplay::ReInit();
-	
-	glEnable(GL_LIGHT0);
-	glDisable(GL_LIGHT1);
-
-	float position[4] = {0,10,20,1.0};
-	glLightfv(GL_LIGHT0,GL_POSITION,position);
-	glLightfv(GL_LIGHT0,GL_AMBIENT,light_ambient);
-	glLightfv(GL_LIGHT0,GL_DIFFUSE,light_diffuse);
-	glLightfv(GL_LIGHT0,GL_SPECULAR,light_specular);
 	
 	CRaptorDisplay* const pDisplay = CRaptorDisplay::GetCurrentDisplay();
 	pDisplay->setViewPoint(vp);
@@ -146,8 +142,9 @@ void CSplineDisplay::Display()
 	
 	float dt = CTimeObject::GetGlobalTime();
     vp->setPosition((float)(5.0*cos(dt*2*PI)),0.0f,5.0f,CViewPoint::EYE);
-
+	
 	glPushMatrix();
+	glPushAttrib(GL_ALL_ATTRIB_BITS);
 	
 	glTranslatef(3.0f,0.0f,2.0f);
 	
@@ -183,4 +180,5 @@ void CSplineDisplay::Display()
 	glCallList(text);
 	
 	glPopMatrix();
+	glPopAttrib();
 }
