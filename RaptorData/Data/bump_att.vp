@@ -1,0 +1,58 @@
+!!ARBvp1.0
+
+ATTRIB iPos = vertex.position;
+ATTRIB iNrml = vertex.normal;
+ATTRIB iTangent = vertex.attrib[6];
+ATTRIB iTexCoord = vertex.texcoord[0];
+
+PARAM mvp[4] = { state.matrix.mvp };
+PARAM lightPos = program.local[4];
+PARAM viewPos = program.local[5];
+PARAM attenuation = program.local[6];
+
+OUTPUT oPos = result.position;
+OUTPUT oTex0 = result.texcoord[0];
+OUTPUT oTex1 = result.texcoord[1];
+OUTPUT oTex2 = result.texcoord[2];
+OUTPUT oTex3 = result.texcoord[3];
+
+TEMP biNormal;
+TEMP diffuse;
+TEMP specular;
+TEMP diffuseResult;
+TEMP specularResult;
+TEMP attResult;
+
+DP4 oPos.x , mvp[0] , iPos;
+DP4 oPos.y , mvp[1] , iPos;
+DP4 oPos.z , mvp[2] , iPos;
+DP4 oPos.w, mvp[3] ,iPos;
+
+XPD biNormal, iNrml, iTangent;
+ADD diffuse, lightPos, -iPos;
+DP3 diffuse.w, diffuse, diffuse;
+MOV diffuseResult, diffuse.w;
+RSQ diffuse.w, diffuse.w;
+MOV specularResult, diffuse.w;
+MUL diffuse.xyz, diffuse.w, diffuse;
+DST attResult, diffuseResult, specularResult;
+ADD specular, viewPos, -iPos;
+DP3 specular.w, specular, specular;
+RSQ specular.w, specular.w;
+MAD specular.xyz, specular.w, specular,diffuse;
+DP3 specular.w, specular, specular;
+RSQ specular.w, specular.w;
+MUL specular.xyz, specular.w, specular;
+DP3 diffuseResult.x, diffuse, iTangent;
+DP3 diffuseResult.y, diffuse, biNormal;
+DP3 diffuseResult.z, diffuse, iNrml;
+DP3 specularResult.x, specular, iTangent;
+DP3 specularResult.y, specular, biNormal;
+DP3 specularResult.z, specular, iNrml;
+MOV oTex0 , iTexCoord;
+DP3 attResult.w , attResult, attenuation;
+RCP oTex1, attResult.w;
+MOV oTex2 , diffuseResult;
+MOV oTex3 , specularResult;
+
+END

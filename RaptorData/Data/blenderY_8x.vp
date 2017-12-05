@@ -1,0 +1,39 @@
+!!ARBvp1.0
+
+ATTRIB iPos = vertex.position;
+ATTRIB iTexCoord = vertex.texcoord[0];
+
+PARAM mvp[4] = { state.matrix.mvp };
+PARAM offset = program.local[0];
+
+OUTPUT oPos = result.position;
+OUTPUT oTex0 = result.texcoord[0];
+OUTPUT oTex1 = result.texcoord[1];
+OUTPUT oTex2 = result.texcoord[2];
+OUTPUT oTex3 = result.texcoord[3];
+OUTPUT oTex4 = result.texcoord[4];
+OUTPUT oTex5 = result.texcoord[5];
+OUTPUT oTex6 = result.texcoord[6];
+OUTPUT oTex7 = result.texcoord[7];
+
+TEMP tpos;
+TEMP tpos2;
+
+DP4 oPos.x , mvp[0] , iPos;
+DP4 oPos.y , mvp[1] , iPos;
+DP4 oPos.z , mvp[2] , iPos;
+DP4 oPos.w, mvp[3], iPos;
+MOV oTex0, iTexCoord;
+MOV oTex1, iTexCoord;
+ADD oTex2, iTexCoord, offset.zyzw;
+ADD tpos, iTexCoord, offset.zyzw;
+ADD oTex3, tpos, offset.zyzw;
+ADD tpos2, tpos, offset.zyzw;
+ADD oTex4, tpos2, offset.zyzw;
+SUB oTex5, iTexCoord, offset.zyzw;
+SUB tpos,  iTexCoord, offset.zyzw;
+SUB oTex6, tpos, offset.zyzw;
+SUB tpos2,  tpos, offset.zyzw;
+SUB oTex7, tpos2, offset.zyzw;
+
+END

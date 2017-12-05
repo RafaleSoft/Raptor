@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="RaptorMessages" xmlns="" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+  <xs:element name="Message">
+    <xs:complexType>
+      <xs:attribute name="id" type="xs:string" />
+      <xs:attribute name="str" type="xs:string" />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Class">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="Message" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+      <xs:attribute name="name" type="xs:string" />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="RaptorMessages">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="Class" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+      <xs:attribute name="language" type="xs:string" />
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

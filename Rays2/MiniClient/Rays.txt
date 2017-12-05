@@ -1,0 +1,52 @@
+"test"
+{
+	{
+                width = 1024
+                height = 1024
+                variance = 0
+		deflection = 5
+		defraction = 5
+		crease = 45
+	}
+
+	{
+		light "light0" = 
+		{
+			{ 400.0 , 400.0 , 400.0 , 1.0 },
+			{ 1.0 , 1.0 , 1.0 , 1.0 },
+			0.7
+		}
+		shading "shading0" = { 0.1 , 0.3 , 0.6 , 10 , 0.2 , 0.9 , 1.33 }
+		shading "shading1" = { 0.2 , 0.6 , 0.7 , 50 , 0.0 , 0.0 , 1.0 }
+		texture "texture0" = { "raptor.tga" }
+                texture "texture1" = { "none" }
+	}
+
+	{
+		"sphere0"
+		{
+			"shading0",
+                        "texture1",
+			{ 0.2 , 0.7 , 0.8 , 1.0 },
+			{ 0.0 , 0.0 , -600.0 , 1.0 },
+			100.0
+		}
+
+		"sphere1"
+		{
+			"shading1",
+                        "texture1",
+			{ 0.8 , 0.7 , 0.2 , 1.0 },
+			{ 100.0 , -100.0 , -1000.0 , 1.0 },
+			100.0
+		}
+
+		"teapot"
+		{
+			"shading1",
+                        "texture0",
+			{ 0.8 , 0.8 , 0.8 , 1.0 },
+			import "teapot.3DS"
+		}
+	}
+}

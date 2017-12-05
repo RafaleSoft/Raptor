@@ -1,0 +1,39 @@
+#version 120
+
+const int MAX_LIGHTS = 3;
+uniform	sampler2D diffuseMap;
+uniform int lightEnable[gl_MaxLights];
+
+varying vec3 normal;
+varying	vec4 lightDirs[MAX_LIGHTS];
+varying	vec3 halfVector[MAX_LIGHTS];
+
+
+void main (void)
+{
+	vec3 n = normalize(normal);
+	vec4 diffuse = gl_FrontLightModelProduct.sceneColor;
+	vec4 specular = vec4(0.0,0.0,0.0,0.0);
+
+	for (int i=0 ; i<MAX_LIGHTS ; i++)
+	{
+		int numl = lightEnable[i];
+		if (numl >= 0)
+		{
+			float att = lightDirs[numl].w;
+			diffuse += att * gl_FrontLightProduct[numl].ambient;
+			float NdotL = max(dot(n,normalize(lightDirs[numl].xyz)),0.0);
+			
+			if (NdotL > 0.0)
+			{
+				diffuse += att * gl_FrontLightProduct[numl].diffuse * NdotL;
+
+				float NdotHV = max(dot(n,normalize(halfVector[numl])),0.0);
+				specular += att * pow(NdotHV,gl_FrontMaterial.shininess) * gl_FrontLightProduct[numl].specular;
+			}
+		}
+	}
+
+    gl_FragColor = specular + diffuse * texture2D(diffuseMap,vec2(gl_TexCoord[0].st));
+}
+

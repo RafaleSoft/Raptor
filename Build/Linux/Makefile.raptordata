@@ -1,0 +1,27 @@
+OUTPUT = Release
+INCDIRS = -I. 
+CCCFLAGS = -DLINUX
+
+all:	$(OUTPUT)/libraptordata.a $(OUTPUT)/libraptordata.so
+
+clean:
+	rm -f $(OUTPUT)/*.o $(OUTPUT)/libraptordata.*
+	rm -rf $(OUTPUT)
+	mkdir -p $(OUTPUT)
+
+SRC = \
+	RaptorDataManager.cpp
+
+OBJ = $(SRC:%.cpp=$(OUTPUT)/%.o)
+
+$(OUTPUT)/libraptordata.a:  $(OBJ)
+	ar r $(OUTPUT)/libraptordata.a $(OBJ)
+	cp $(OUTPUT)/libraptordata.a $(RAPTOR_ROOT)/Redist/Lib
+
+$(OUTPUT)/libraptordata.so:  $(OBJ)
+	g++ -shared $(OBJ) -o $(OUTPUT)/libraptordata.so 
+	cp $(OUTPUT)/libraptordata.so $(RAPTOR_ROOT)/Redist/Bin
+
+$(OBJ):	$(SRC)
+	g++ $(CCCFLAGS) $(INCDIRS) -c $(<D)/$(*F).cpp  -o $(OUTPUT)/$(@F)
+

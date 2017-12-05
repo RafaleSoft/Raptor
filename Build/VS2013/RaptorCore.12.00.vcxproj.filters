@@ -1,0 +1,1113 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{5f04399d-1f34-476d-9942-ce9ddb1e51f2}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+    <Filter Include="Header Files\Engine include">
+      <UniqueIdentifier>{c5369555-f7ac-4539-881c-3d729df1c114}</UniqueIdentifier>
+      <Extensions>h</Extensions>
+    </Filter>
+    <Filter Include="Header Files\GLHierarchy include">
+      <UniqueIdentifier>{7272f345-39ab-4ca7-82b3-02bea083cac1}</UniqueIdentifier>
+      <Extensions>h</Extensions>
+    </Filter>
+    <Filter Include="Header Files\SSE_Engine include">
+      <UniqueIdentifier>{5604c3d5-21dd-410a-be12-8a1249fc755b}</UniqueIdentifier>
+      <Extensions>h</Extensions>
+    </Filter>
+    <Filter Include="Header Files\Subsys include">
+      <UniqueIdentifier>{fce59a4b-815d-4010-976d-d81b79a344b8}</UniqueIdentifier>
+      <Extensions>h</Extensions>
+    </Filter>
+    <Filter Include="Header Files\System include">
+      <UniqueIdentifier>{5df3f1f4-6926-4d36-9c98-4a66b0ad26d7}</UniqueIdentifier>
+      <Extensions>h</Extensions>
+    </Filter>
+    <Filter Include="Header Files\Win32Specific include">
+      <UniqueIdentifier>{19784df7-4232-438f-9c13-1723e633e71b}</UniqueIdentifier>
+      <Extensions>h</Extensions>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{b82a7301-90d6-4427-9d6b-7072f4778077}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Source Files\Engine src">
+      <UniqueIdentifier>{75b38c05-413f-4a4f-a52e-a20372a69925}</UniqueIdentifier>
+      <Extensions>cpp</Extensions>
+    </Filter>
+    <Filter Include="Source Files\GLHierarchy src">
+      <UniqueIdentifier>{bae9bdc9-d203-4c48-9ba3-5115762054ab}</UniqueIdentifier>
+      <Extensions>cpp</Extensions>
+    </Filter>
+    <Filter Include="Source Files\SSE_Engine src">
+      <UniqueIdentifier>{31688317-85a0-48c2-bd79-1404ccd96074}</UniqueIdentifier>
+      <Extensions>cpp</Extensions>
+    </Filter>
+    <Filter Include="Source Files\Subsys src">
+      <UniqueIdentifier>{60a5ad55-2d47-443c-a43c-38ca98f6686b}</UniqueIdentifier>
+      <Extensions>cpp</Extensions>
+    </Filter>
+    <Filter Include="Source Files\Subsys src\ObjectModels">
+      <UniqueIdentifier>{5ba9c4f0-3216-426c-bffb-4c0f7b786ab0}</UniqueIdentifier>
+      <Extensions>lex</Extensions>
+    </Filter>
+    <Filter Include="Source Files\System src">
+      <UniqueIdentifier>{124d6d72-b720-4fd1-8c63-ad5e65355629}</UniqueIdentifier>
+      <Extensions>cpp</Extensions>
+    </Filter>
+    <Filter Include="Source Files\Win32Specific src">
+      <UniqueIdentifier>{b3c7d6f5-8d2e-487a-8c5e-b226de18dba5}</UniqueIdentifier>
+      <Extensions>cpp</Extensions>
+    </Filter>
+    <Filter Include="Header Files\Subsys include\FreeType">
+      <UniqueIdentifier>{50d79381-8b8d-439e-ae1b-9fa898cecabb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Subsys src\FreeType">
+      <UniqueIdentifier>{0dbdb37f-1eff-4bce-9c48-2c35a4d587bd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Subsys src\Hershey">
+      <UniqueIdentifier>{c76a4fc3-27bf-4bcc-8473-1e313048e365}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Subsys include\Hershey">
+      <UniqueIdentifier>{a56710d9-53b2-4868-8668-861c9349b34c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Subsys src\Vulkan">
+      <UniqueIdentifier>{c23dceae-2176-4741-83ab-440c3bd55eec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Subsys include\Vulkan">
+      <UniqueIdentifier>{02a65b1a-6e1a-4080-9a83-f6139c1cc147}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\RaptorCore\Subsys\ObjectModels\Basic.lex">
+      <Filter>Source Files\Subsys src\ObjectModels</Filter>
+    </None>
+    <None Include="..\..\RaptorCore\Subsys\ObjectModels\Commands.lex">
+      <Filter>Source Files\Subsys src\ObjectModels</Filter>
+    </None>
+    <None Include="..\..\RaptorCore\Subsys\ObjectModels\Expressions.lex">
+      <Filter>Source Files\Subsys src\ObjectModels</Filter>
+    </None>
+    <None Include="..\..\RaptorCore\Subsys\ObjectModels\Shader.lex">
+      <Filter>Source Files\Subsys src\ObjectModels</Filter>
+    </None>
+    <None Include="..\..\RaptorCore\Subsys\Redist.bat">
+      <Filter>Source Files\Subsys src</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\RaptorCore\Raptordll.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Win32Specific\Win32Application.cpp">
+      <Filter>Source Files\Win32Specific src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Win32Specific\Win32ContextManager.cpp">
+      <Filter>Source Files\Win32Specific src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Win32Specific\Win32EngineTaskManager.cpp">
+      <Filter>Source Files\Win32Specific src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Win32Specific\Win32RaptorIO.cpp">
+      <Filter>Source Files\Win32Specific src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Win32Specific\Win32TimeObject.cpp">
+      <Filter>Source Files\Win32Specific src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Engine\3DEngine.cpp">
+      <Filter>Source Files\Engine src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Engine\3DEngineMatrix.cpp">
+      <Filter>Source Files\Engine src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Engine\3DEngineTaskManager.cpp">
+      <Filter>Source Files\Engine src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Engine\3DPath.cpp">
+      <Filter>Source Files\Engine src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Engine\3DScene.cpp">
+      <Filter>Source Files\Engine src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Engine\3DSqueleton.cpp">
+      <Filter>Source Files\Engine src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Engine\AmbientOcclusion.cpp">
+      <Filter>Source Files\Engine src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Engine\Animator.cpp">
+      <Filter>Source Files\Engine src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Engine\BoundingBox.cpp">
+      <Filter>Source Files\Engine src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Engine\EngineJob.cpp">
+      <Filter>Source Files\Engine src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Engine\Environment.cpp">
+      <Filter>Source Files\Engine src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Engine\GeometricModifier.cpp">
+      <Filter>Source Files\Engine src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Engine\ImageModifier.cpp">
+      <Filter>Source Files\Engine src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Engine\LightModifier.cpp">
+      <Filter>Source Files\Engine src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Engine\Modifier.cpp">
+      <Filter>Source Files\Engine src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Engine\OmniShadowMap.cpp">
+      <Filter>Source Files\Engine src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Engine\ParticleManager.cpp">
+      <Filter>Source Files\Engine src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Engine\Physics.cpp">
+      <Filter>Source Files\Engine src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Engine\ShadowMap.cpp">
+      <Filter>Source Files\Engine src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Engine\ShadowVolume.cpp">
+      <Filter>Source Files\Engine src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Engine\TimeObject.cpp">
+      <Filter>Source Files\Engine src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Engine\ViewModifier.cpp">
+      <Filter>Source Files\Engine src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Engine\ViewPoint.cpp">
+      <Filter>Source Files\Engine src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\SSE_Engine\SSE_3DEngine.cpp">
+      <Filter>Source Files\SSE_Engine src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\SSE_Engine\SSE_BoundingBox.cpp">
+      <Filter>Source Files\SSE_Engine src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\SSE_Engine\SSE_GLLayer.cpp">
+      <Filter>Source Files\SSE_Engine src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\3DSet.cpp">
+      <Filter>Source Files\GLHierarchy src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\BumppedGeometry.cpp">
+      <Filter>Source Files\GLHierarchy src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\FragmentProgram.cpp">
+      <Filter>Source Files\GLHierarchy src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\FragmentShader.cpp">
+      <Filter>Source Files\GLHierarchy src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\Geometry.cpp">
+      <Filter>Source Files\GLHierarchy src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\GeometryEditor.cpp">
+      <Filter>Source Files\GLHierarchy src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\GeometryPrimitive.cpp">
+      <Filter>Source Files\GLHierarchy src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\GeometryProgram.cpp">
+      <Filter>Source Files\GLHierarchy src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\GLFont.cpp">
+      <Filter>Source Files\GLHierarchy src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\GLLayer.cpp">
+      <Filter>Source Files\GLHierarchy src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\GLLod.cpp">
+      <Filter>Source Files\GLHierarchy src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\Light.cpp">
+      <Filter>Source Files\GLHierarchy src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\LightObserver.cpp">
+      <Filter>Source Files\GLHierarchy src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\Material.cpp">
+      <Filter>Source Files\GLHierarchy src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\Object3D.cpp">
+      <Filter>Source Files\GLHierarchy src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\Object3DContour.cpp">
+      <Filter>Source Files\GLHierarchy src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\Object3DInstance.cpp">
+      <Filter>Source Files\GLHierarchy src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\Object3DInstanceSet.cpp">
+      <Filter>Source Files\GLHierarchy src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\Object3DShadow.cpp">
+      <Filter>Source Files\GLHierarchy src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\ObjectFactory.cpp">
+      <Filter>Source Files\GLHierarchy src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\ObjectProperties.cpp">
+      <Filter>Source Files\GLHierarchy src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\Particle.cpp">
+      <Filter>Source Files\GLHierarchy src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\PerlinNoise.cpp">
+      <Filter>Source Files\GLHierarchy src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\Persistence.cpp">
+      <Filter>Source Files\GLHierarchy src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\Projector.cpp">
+      <Filter>Source Files\GLHierarchy src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\Reference.cxx">
+      <Filter>Source Files\GLHierarchy src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\RenderingProperties.cpp">
+      <Filter>Source Files\GLHierarchy src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\ShadedGeometry.cpp">
+      <Filter>Source Files\GLHierarchy src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\Shader.cpp">
+      <Filter>Source Files\GLHierarchy src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\ShaderProgram.cpp">
+      <Filter>Source Files\GLHierarchy src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\SimpleObject.cpp">
+      <Filter>Source Files\GLHierarchy src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\TextureFactory.cpp">
+      <Filter>Source Files\GLHierarchy src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\TextureFactoryConfig.cpp">
+      <Filter>Source Files\GLHierarchy src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\TextureObject.cpp">
+      <Filter>Source Files\GLHierarchy src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\TextureSet.cpp">
+      <Filter>Source Files\GLHierarchy src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\TextureUnitSetup.cpp">
+      <Filter>Source Files\GLHierarchy src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\UnifiedProgram.cpp">
+      <Filter>Source Files\GLHierarchy src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\VertexProgram.cpp">
+      <Filter>Source Files\GLHierarchy src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\VertexShader.cpp">
+      <Filter>Source Files\GLHierarchy src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\3DSceneAttributes.cpp">
+      <Filter>Source Files\Subsys src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\3DSceneObject.cpp">
+      <Filter>Source Files\Subsys src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\3DSetItem.cpp">
+      <Filter>Source Files\Subsys src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\AmbientOcclusionShader.cpp">
+      <Filter>Source Files\Subsys src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\AnimatorStream.cpp">
+      <Filter>Source Files\Subsys src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\AOComputeShader.cpp">
+      <Filter>Source Files\Subsys src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\BlinnShader.cpp">
+      <Filter>Source Files\Subsys src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\BumpShader.cpp">
+      <Filter>Source Files\Subsys src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\CodeGeneration.cpp">
+      <Filter>Source Files\Subsys src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\Collisions.cpp">
+      <Filter>Source Files\Subsys src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\ContextManager.cpp">
+      <Filter>Source Files\Subsys src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\ContourAttributes.cpp">
+      <Filter>Source Files\Subsys src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\DefaultBumpmapLoader.cpp">
+      <Filter>Source Files\Subsys src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\DefaultImageScaler.cpp">
+      <Filter>Source Files\Subsys src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\GeometryAllocator.cpp">
+      <Filter>Source Files\Subsys src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\Interpreters.cpp">
+      <Filter>Source Files\Subsys src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\KDTree.cxx">
+      <Filter>Source Files\Subsys src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\LightAttributes.cpp">
+      <Filter>Source Files\Subsys src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\Object3DShadowAttributes.cpp">
+      <Filter>Source Files\Subsys src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\Octree.cxx">
+      <Filter>Source Files\Subsys src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\PhongShader.cpp">
+      <Filter>Source Files\Subsys src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\PlayFrameJob.cpp">
+      <Filter>Source Files\Subsys src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\RegisterCombiner.cpp">
+      <Filter>Source Files\Subsys src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\ShaderLibrary.cpp">
+      <Filter>Source Files\Subsys src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\ShadowVolumeJob.cpp">
+      <Filter>Source Files\Subsys src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\SubBoundingBox.cpp">
+      <Filter>Source Files\Subsys src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\Tesselator.cpp">
+      <Filter>Source Files\Subsys src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\TexelAllocator.cpp">
+      <Filter>Source Files\Subsys src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\VideoStream.cpp">
+      <Filter>Source Files\Subsys src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\XMLRaptorIO.cpp">
+      <Filter>Source Files\Subsys src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\ObjectModels\RaptorScript_lex.cpp">
+      <Filter>Source Files\Subsys src\ObjectModels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\ObjectModels\RaptorScript_tree.cpp">
+      <Filter>Source Files\Subsys src\ObjectModels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\ObjectModels\RaptorScript_yacc.cpp">
+      <Filter>Source Files\Subsys src\ObjectModels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\System\CGLTypes.cpp">
+      <Filter>Source Files\System src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\System\Color.cpp">
+      <Filter>Source Files\System src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\System\Global.cpp">
+      <Filter>Source Files\System src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\System\Memory.cpp">
+      <Filter>Source Files\System src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\System\Raptor.cpp">
+      <Filter>Source Files\System src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\System\RaptorApplication.cpp">
+      <Filter>Source Files\System src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\System\RaptorBufferDisplay.cpp">
+      <Filter>Source Files\System src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\System\RaptorConfig.cpp">
+      <Filter>Source Files\System src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\System\RaptorConsole.cpp">
+      <Filter>Source Files\System src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\System\RaptorDisplay.cpp">
+      <Filter>Source Files\System src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\System\RaptorDisplayConfig.cpp">
+      <Filter>Source Files\System src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\System\RaptorDisplayFilter.cpp">
+      <Filter>Source Files\System src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\System\RaptorErrorManager.cpp">
+      <Filter>Source Files\System src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\System\RaptorEventManager.cpp">
+      <Filter>Source Files\System src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\System\RaptorExtensions.cpp">
+      <Filter>Source Files\System src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\System\RaptorFilteredDisplay.cpp">
+      <Filter>Source Files\System src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\System\RaptorIO.cpp">
+      <Filter>Source Files\System src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\System\RaptorMessages.cpp">
+      <Filter>Source Files\System src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\System\RaptorRenderBufferDisplay.cpp">
+      <Filter>Source Files\System src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\System\RaptorScreenDisplay.cpp">
+      <Filter>Source Files\System src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\System\RenderEntryPoint.cpp">
+      <Filter>Source Files\System src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Engine\Mirror.cpp">
+      <Filter>Source Files\Engine src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\FreeType\FTEngine.cpp">
+      <Filter>Source Files\Subsys src\FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\FreeType\FTFace.cpp">
+      <Filter>Source Files\Subsys src\FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\FreeType\FTGlyphBitmap.cpp">
+      <Filter>Source Files\Subsys src\FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\FreeType\FTGlyphOutline.cpp">
+      <Filter>Source Files\Subsys src\FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\FreeType\FTGlyphVectorizer.cpp">
+      <Filter>Source Files\Subsys src\FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\FreeType\TTBitmapFont.cpp">
+      <Filter>Source Files\Subsys src\FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\FreeType\TTFont.cpp">
+      <Filter>Source Files\Subsys src\FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\FreeType\TTGlyphPolygonizer.cpp">
+      <Filter>Source Files\Subsys src\FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\FreeType\TTGlyphTriangulator.cpp">
+      <Filter>Source Files\Subsys src\FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\FreeType\TTOutlineFont.cpp">
+      <Filter>Source Files\Subsys src\FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\Hershey\Simplex.cpp">
+      <Filter>Source Files\Subsys src\Hershey</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\GLFontFactory.cpp">
+      <Filter>Source Files\GLHierarchy src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\GL2DFont.cpp">
+      <Filter>Source Files\GLHierarchy src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\GL2DTextureFont.cpp">
+      <Filter>Source Files\GLHierarchy src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\GL3DFont.cpp">
+      <Filter>Source Files\GLHierarchy src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\GLVectorFont.cpp">
+      <Filter>Source Files\GLHierarchy src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\DOT3BumppedGeometry.cpp">
+      <Filter>Source Files\Subsys src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\LightGlow.cpp">
+      <Filter>Source Files\GLHierarchy src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Engine\ShaderModifier.cpp">
+      <Filter>Source Files\Engine src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\EMBMShader.cpp">
+      <Filter>Source Files\Subsys src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\System\RaptorVulkanDisplay.cpp">
+      <Filter>Source Files\System src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\Vulkan\VulkanDevice.cpp">
+      <Filter>Source Files\Subsys src\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\Vulkan\VulkanMemory.cpp">
+      <Filter>Source Files\Subsys src\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\Vulkan\VulkanPipeline.cpp">
+      <Filter>Source Files\Subsys src\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\Vulkan\VulkanShader.cpp">
+      <Filter>Source Files\Subsys src\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\VulkanShaderStage.cpp">
+      <Filter>Source Files\GLHierarchy src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\OpenGLMemory.cpp">
+      <Filter>Source Files\Subsys src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\Vulkan\VulkanCommandBuffer.cpp">
+      <Filter>Source Files\Subsys src\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\UniformAllocator.cpp">
+      <Filter>Source Files\Subsys src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\ProgramParameters.cpp">
+      <Filter>Source Files\GLHierarchy src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\ResourceAllocator.cpp">
+      <Filter>Source Files\Subsys src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\System\Image.cpp">
+      <Filter>Source Files\System src</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Xsd Include="Subsys\ObjectModels\Raptor.xsd">
+      <Filter>Source Files\Subsys src\ObjectModels</Filter>
+    </Xsd>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\RaptorCore\Engine\3DEngine.h">
+      <Filter>Header Files\Engine include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Engine\3DEngineMatrix.h">
+      <Filter>Header Files\Engine include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Engine\3DEngineTaskManager.h">
+      <Filter>Header Files\Engine include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Engine\3DPath.h">
+      <Filter>Header Files\Engine include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Engine\3DScene.h">
+      <Filter>Header Files\Engine include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Engine\3DSqueleton.h">
+      <Filter>Header Files\Engine include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Engine\AmbientOcclusion.h">
+      <Filter>Header Files\Engine include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Engine\Animator.h">
+      <Filter>Header Files\Engine include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Engine\BoundingBox.h">
+      <Filter>Header Files\Engine include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Engine\EngineJob.h">
+      <Filter>Header Files\Engine include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Engine\Environment.h">
+      <Filter>Header Files\Engine include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Engine\GeometricModifier.h">
+      <Filter>Header Files\Engine include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Engine\ImageModifier.h">
+      <Filter>Header Files\Engine include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Engine\LightModifier.h">
+      <Filter>Header Files\Engine include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Engine\Modifier.h">
+      <Filter>Header Files\Engine include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Engine\OmniShadowMap.h">
+      <Filter>Header Files\Engine include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Engine\ParticleManager.h">
+      <Filter>Header Files\Engine include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Engine\Physics.h">
+      <Filter>Header Files\Engine include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Engine\ShadowMap.h">
+      <Filter>Header Files\Engine include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Engine\ShadowVolume.h">
+      <Filter>Header Files\Engine include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Engine\TimeObject.h">
+      <Filter>Header Files\Engine include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Engine\ViewModifier.h">
+      <Filter>Header Files\Engine include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Engine\ViewPoint.h">
+      <Filter>Header Files\Engine include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\3DSet.h">
+      <Filter>Header Files\GLHierarchy include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\BumppedGeometry.h">
+      <Filter>Header Files\GLHierarchy include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\FragmentProgram.h">
+      <Filter>Header Files\GLHierarchy include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\FragmentShader.h">
+      <Filter>Header Files\GLHierarchy include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\Geometry.h">
+      <Filter>Header Files\GLHierarchy include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\GeometryEditor.h">
+      <Filter>Header Files\GLHierarchy include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\GeometryPrimitive.h">
+      <Filter>Header Files\GLHierarchy include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\GeometryProgram.h">
+      <Filter>Header Files\GLHierarchy include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\GLFont.h">
+      <Filter>Header Files\GLHierarchy include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\GLLayer.h">
+      <Filter>Header Files\GLHierarchy include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\GLLod.h">
+      <Filter>Header Files\GLHierarchy include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\Light.h">
+      <Filter>Header Files\GLHierarchy include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\LightObserver.h">
+      <Filter>Header Files\GLHierarchy include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\Material.h">
+      <Filter>Header Files\GLHierarchy include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\Object3D.h">
+      <Filter>Header Files\GLHierarchy include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\Object3DContour.h">
+      <Filter>Header Files\GLHierarchy include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\Object3DInstance.h">
+      <Filter>Header Files\GLHierarchy include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\Object3DInstanceSet.h">
+      <Filter>Header Files\GLHierarchy include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\Object3DShadow.h">
+      <Filter>Header Files\GLHierarchy include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\ObjectFactory.h">
+      <Filter>Header Files\GLHierarchy include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\ObjectProperties.h">
+      <Filter>Header Files\GLHierarchy include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\ObjectReference.h">
+      <Filter>Header Files\GLHierarchy include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\Particle.h">
+      <Filter>Header Files\GLHierarchy include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\PerlinNoise.h">
+      <Filter>Header Files\GLHierarchy include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\Persistence.h">
+      <Filter>Header Files\GLHierarchy include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\Projector.h">
+      <Filter>Header Files\GLHierarchy include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\RenderingProperties.h">
+      <Filter>Header Files\GLHierarchy include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\ShadedGeometry.h">
+      <Filter>Header Files\GLHierarchy include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\Shader.h">
+      <Filter>Header Files\GLHierarchy include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\ShaderProgram.h">
+      <Filter>Header Files\GLHierarchy include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\SimpleObject.h">
+      <Filter>Header Files\GLHierarchy include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\TextureFactory.h">
+      <Filter>Header Files\GLHierarchy include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\TextureFactoryConfig.h">
+      <Filter>Header Files\GLHierarchy include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\TextureGenerator.h">
+      <Filter>Header Files\GLHierarchy include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\TextureObject.h">
+      <Filter>Header Files\GLHierarchy include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\TextureSet.h">
+      <Filter>Header Files\GLHierarchy include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\TextureUnitSetup.h">
+      <Filter>Header Files\GLHierarchy include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\UnifiedProgram.h">
+      <Filter>Header Files\GLHierarchy include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\VertexProgram.h">
+      <Filter>Header Files\GLHierarchy include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\VertexShader.h">
+      <Filter>Header Files\GLHierarchy include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\SSE_Engine\SSE_3DEngine.h">
+      <Filter>Header Files\SSE_Engine include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\SSE_Engine\SSE_BoundingBox.h">
+      <Filter>Header Files\SSE_Engine include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\SSE_Engine\SSE_GLLayer.h">
+      <Filter>Header Files\SSE_Engine include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\SSE_Engine\SSE_Object3DContour.h">
+      <Filter>Header Files\SSE_Engine include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\3DEngineAttributes.h">
+      <Filter>Header Files\Subsys include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\3DSceneAttributes.h">
+      <Filter>Header Files\Subsys include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\3DSceneObject.h">
+      <Filter>Header Files\Subsys include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\3DSetItem.h">
+      <Filter>Header Files\Subsys include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\AmbientOcclusionShader.h">
+      <Filter>Header Files\Subsys include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\AnimatorStream.h">
+      <Filter>Header Files\Subsys include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\AOComputeShader.h">
+      <Filter>Header Files\Subsys include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\BaseTree.h">
+      <Filter>Header Files\Subsys include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\BlinnShader.h">
+      <Filter>Header Files\Subsys include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\BufferImage.h">
+      <Filter>Header Files\Subsys include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\BumpShader.h">
+      <Filter>Header Files\Subsys include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\CodeGeneration.h">
+      <Filter>Header Files\Subsys include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\Collisions.h">
+      <Filter>Header Files\Subsys include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\ContextManager.h">
+      <Filter>Header Files\Subsys include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\ContourAttributes.h">
+      <Filter>Header Files\Subsys include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\DefaultBumpmapLoader.h">
+      <Filter>Header Files\Subsys include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\DefaultImageScaler.h">
+      <Filter>Header Files\Subsys include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\GeometryAllocator.h">
+      <Filter>Header Files\Subsys include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\Interpreters.h">
+      <Filter>Header Files\Subsys include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\KDTree.h">
+      <Filter>Header Files\Subsys include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\LightAttributes.h">
+      <Filter>Header Files\Subsys include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\Object3DContainerNotifier.h">
+      <Filter>Header Files\Subsys include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\Object3DShadowAttributes.h">
+      <Filter>Header Files\Subsys include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\Octree.h">
+      <Filter>Header Files\Subsys include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\PhongShader.h">
+      <Filter>Header Files\Subsys include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\PlayFrameJob.h">
+      <Filter>Header Files\Subsys include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\RegisterCombiner.h">
+      <Filter>Header Files\Subsys include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\ShaderLibrary.h">
+      <Filter>Header Files\Subsys include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\ShadowVolumeJob.h">
+      <Filter>Header Files\Subsys include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\SubBoundingBox.h">
+      <Filter>Header Files\Subsys include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\Tesselator.h">
+      <Filter>Header Files\Subsys include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\TexelAllocator.h">
+      <Filter>Header Files\Subsys include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\TimeObjectImpl.h">
+      <Filter>Header Files\Subsys include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\VideoStream.h">
+      <Filter>Header Files\Subsys include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\XMLRaptorIO.h">
+      <Filter>Header Files\Subsys include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\System\CGLTypes.h">
+      <Filter>Header Files\System include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\System\Color.h">
+      <Filter>Header Files\System include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\System\GLEXTMacros.h">
+      <Filter>Header Files\System include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\System\Global.h">
+      <Filter>Header Files\System include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\System\Memory.h">
+      <Filter>Header Files\System include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\System\Raptor.h">
+      <Filter>Header Files\System include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\System\RaptorApplication.h">
+      <Filter>Header Files\System include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\System\RaptorBufferDisplay.h">
+      <Filter>Header Files\System include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\System\RaptorConfig.h">
+      <Filter>Header Files\System include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\System\RaptorConsole.h">
+      <Filter>Header Files\System include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\System\RaptorDisplay.h">
+      <Filter>Header Files\System include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\System\RaptorDisplayConfig.h">
+      <Filter>Header Files\System include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\System\RaptorDisplayFilter.h">
+      <Filter>Header Files\System include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\System\RaptorErrorManager.h">
+      <Filter>Header Files\System include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\System\RaptorEventManager.h">
+      <Filter>Header Files\System include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\System\RaptorExtensions.h">
+      <Filter>Header Files\System include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\System\RaptorFilteredDisplay.h">
+      <Filter>Header Files\System include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\System\RaptorIO.h">
+      <Filter>Header Files\System include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\System\RaptorMessages.h">
+      <Filter>Header Files\System include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\System\RaptorRenderBufferDisplay.h">
+      <Filter>Header Files\System include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\System\RaptorScreenDisplay.h">
+      <Filter>Header Files\System include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\System\RenderEntryPoint.h">
+      <Filter>Header Files\System include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Win32Specific\Win32Application.h">
+      <Filter>Header Files\Win32Specific include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Win32Specific\Win32ContextManager.h">
+      <Filter>Header Files\Win32Specific include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Win32Specific\Win32EngineTaskManager.h">
+      <Filter>Header Files\Win32Specific include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Win32Specific\Win32Glext.h">
+      <Filter>Header Files\Win32Specific include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Win32Specific\Win32RaptorIO.h">
+      <Filter>Header Files\Win32Specific include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Win32Specific\Win32TimeObject.h">
+      <Filter>Header Files\Win32Specific include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Raptordll.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\StdAfx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\ObjectModels\RaptorScript_lex.h">
+      <Filter>Source Files\Subsys src\ObjectModels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\ObjectModels\RaptorScript_tree.h">
+      <Filter>Source Files\Subsys src\ObjectModels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\ObjectModels\RaptorScript_yacc.h">
+      <Filter>Source Files\Subsys src\ObjectModels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Engine\Mirror.h">
+      <Filter>Header Files\Engine include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\FreeType\FTEngine.h">
+      <Filter>Header Files\Subsys include\FreeType</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\FreeType\FTFace.h">
+      <Filter>Header Files\Subsys include\FreeType</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\FreeType\FTGlyph.h">
+      <Filter>Header Files\Subsys include\FreeType</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\FreeType\FTGlyphBitmap.h">
+      <Filter>Header Files\Subsys include\FreeType</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\FreeType\FTGlyphOutline.h">
+      <Filter>Header Files\Subsys include\FreeType</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\FreeType\FTGlyphVectorizer.h">
+      <Filter>Header Files\Subsys include\FreeType</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\FreeType\TTBitmapFont.h">
+      <Filter>Header Files\Subsys include\FreeType</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\FreeType\TTFont.h">
+      <Filter>Header Files\Subsys include\FreeType</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\FreeType\TTGlyphPolygonizer.h">
+      <Filter>Header Files\Subsys include\FreeType</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\FreeType\TTGlyphPolygonizerHandler.h">
+      <Filter>Header Files\Subsys include\FreeType</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\FreeType\TTGlyphTriangulator.h">
+      <Filter>Header Files\Subsys include\FreeType</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\FreeType\TTOutlineFont.h">
+      <Filter>Header Files\Subsys include\FreeType</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\Hershey\Simplex.h">
+      <Filter>Header Files\Subsys include\Hershey</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\GLFontFactory.h">
+      <Filter>Header Files\GLHierarchy include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\GL2DFont.h">
+      <Filter>Header Files\GLHierarchy include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\GL2DTextureFont.h">
+      <Filter>Header Files\GLHierarchy include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\GL3DFont.h">
+      <Filter>Header Files\GLHierarchy include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\GLVectorFont.h">
+      <Filter>Header Files\GLHierarchy include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\DOT3BumppedGeometry.h">
+      <Filter>Header Files\Subsys include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\LightGlow.h">
+      <Filter>Header Files\GLHierarchy include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\System\Version.h">
+      <Filter>Header Files\System include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Engine\ShaderModifier.h">
+      <Filter>Header Files\Engine include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\EMBMShader.h">
+      <Filter>Header Files\Subsys include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\System\RaptorVulkanDisplay.h">
+      <Filter>Header Files\System include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\Vulkan\VulkanBufferObject.h">
+      <Filter>Header Files\Subsys include\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\Vulkan\VulkanDevice.h">
+      <Filter>Header Files\Subsys include\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\Vulkan\VulkanMemory.h">
+      <Filter>Header Files\Subsys include\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\Vulkan\VulkanPipeline.h">
+      <Filter>Header Files\Subsys include\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\Vulkan\VulkanShader.h">
+      <Filter>Header Files\Subsys include\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\VulkanShaderStage.h">
+      <Filter>Header Files\GLHierarchy include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\OpenGLMemory.h">
+      <Filter>Header Files\Subsys include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\Vulkan\VulkanCommandBuffer.h">
+      <Filter>Header Files\Subsys include\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\System\vkext.h">
+      <Filter>Header Files\System include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\UniformAllocator.h">
+      <Filter>Header Files\Subsys include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\ProgramParameters.h">
+      <Filter>Header Files\GLHierarchy include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\ResourceAllocator.h">
+      <Filter>Header Files\Subsys include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\BufferObject.h">
+      <Filter>Header Files\Subsys include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\System\Image.h">
+      <Filter>Header Files\System include</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\RaptorCore\Subsys\ObjectModels\Raptor.lex">
+      <Filter>Source Files\Subsys src\ObjectModels</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\RaptorCore\System\Glext.h">
+      <Filter>Header Files\System include</Filter>
+    </CustomBuild>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,176 @@
+newmtl Fuselage
+Ka 0.1 0.1 0.1
+Kd 0.6 0.6 0.6
+Ks 1 1 1
+Ns 20
+map_Kd RafaleM2.jpg
+newmtl Tuyere
+Ka 0.1 0.1 0.1
+Kd 0.6 0.6 0.6
+Ks 1 1 1
+Ns 20
+newmtl Disk
+Ka 0.1 0.1 0.1
+Kd 0.6 0.6 0.6
+Ks 1 1 1
+Ns 20
+newmtl Tube_8
+Ka 0.1 0.1 0.1
+Kd 0.6 0.6 0.6
+Ks 1 1 1
+Ns 20
+newmtl Disk_2
+Ka 0.1 0.1 0.1
+Kd 0.6 0.6 0.6
+Ks 1 1 1
+Ns 20
+newmtl Visiere2
+Ka 0.1 0.1 0.1
+Kd 0.6 0.6 0.6
+Ks 1 1 1
+Ns 20
+newmtl Orange
+Ka 0.1 0.1 0.1
+Kd 0.6 0.6 0.6
+Ks 1 1 1
+Ns 20
+newmtl Disk_1
+Ka 0.1 0.1 0.1
+Kd 0.6 0.6 0.6
+Ks 1 1 1
+Ns 20
+newmtl Crosse
+Ka 0.1 0.1 0.1
+Kd 0.6 0.6 0.6
+Ks 1 1 1
+Ns 20
+newmtl Tube_4
+Ka 0.1 0.1 0.1
+Kd 0.6 0.6 0.6
+Ks 1 1 1
+Ns 20
+newmtl Visiere
+Ka 0.1 0.1 0.1
+Kd 0.6 0.6 0.6
+Ks 1 1 1
+Ns 20
+newmtl Tube_12
+Ka 0.1 0.1 0.1
+Kd 0.6 0.6 0.6
+Ks 1 1 1
+Ns 20
+newmtl Box_6
+Ka 0.1 0.1 0.1
+Kd 0.6 0.6 0.6
+Ks 1 1 1
+Ns 20
+newmtl Box_7
+Ka 0.1 0.1 0.1
+Kd 0.6 0.6 0.6
+Ks 1 1 1
+Ns 20
+newmtl Box_8
+Ka 0.1 0.1 0.1
+Kd 0.6 0.6 0.6
+Ks 1 1 1
+Ns 20
+newmtl Tube_13
+Ka 0.1 0.1 0.1
+Kd 0.6 0.6 0.6
+Ks 1 1 1
+Ns 20
+newmtl Box_9
+Ka 0.1 0.1 0.1
+Kd 0.6 0.6 0.6
+Ks 1 1 1
+Ns 20
+newmtl Disk_5
+Ka 0.1 0.1 0.1
+Kd 0.6 0.6 0.6
+Ks 1 1 1
+Ns 20
+newmtl Magic
+Ka 0.1 0.1 0.1
+Kd 0.6 0.6 0.6
+Ks 1 1 1
+Ns 20
+newmtl Bidon
+Ka 0.1 0.1 0.1
+Kd 0.6 0.6 0.6
+Ks 1 1 1
+Ns 20
+newmtl Disk_12
+Ka 0.1 0.1 0.1
+Kd 0.6 0.6 0.6
+Ks 1 1 1
+Ns 20
+newmtl Oval
+Ka 0.1 0.1 0.1
+Kd 0.6 0.6 0.6
+Ks 1 1 1
+Ns 20
+newmtl Oval_1
+Ka 0.1 0.1 0.1
+Kd 0.6 0.6 0.6
+Ks 1 1 1
+Ns 20
+newmtl Disk_17
+Ka 0.1 0.1 0.1
+Kd 0.6 0.6 0.6
+Ks 1 1 1
+Ns 20
+newmtl Disk_18
+Ka 0.1 0.1 0.1
+Kd 0.6 0.6 0.6
+Ks 1 1 1
+Ns 20
+newmtl Disk_19
+Ka 0.1 0.1 0.1
+Kd 0.6 0.6 0.6
+Ks 1 1 1
+Ns 20
+newmtl Disk_20
+Ka 0.1 0.1 0.1
+Kd 0.6 0.6 0.6
+Ks 1 1 1
+Ns 20
+newmtl Disk_21
+Ka 0.1 0.1 0.1
+Kd 0.6 0.6 0.6
+Ks 1 1 1
+Ns 20
+newmtl Disk_23
+Ka 0.1 0.1 0.1
+Kd 0.6 0.6 0.6
+Ks 1 1 1
+Ns 20
+newmtl Disk_25
+Ka 0.1 0.1 0.1
+Kd 0.6 0.6 0.6
+Ks 1 1 1
+Ns 20
+newmtl Box_12
+Ka 0.1 0.1 0.1
+Kd 0.6 0.6 0.6
+Ks 1 1 1
+Ns 20
+newmtl Sphere_13
+Ka 0.1 0.1 0.1
+Kd 0.6 0.6 0.6
+Ks 1 1 1
+Ns 20
+newmtl Sphere_14
+Ka 0.1 0.1 0.1
+Kd 0.6 0.6 0.6
+Ks 1 1 1
+Ns 20
+newmtl Perche
+Ka 0.1 0.1 0.1
+Kd 0.6 0.6 0.6
+Ks 1 1 1
+Ns 20
+newmtl BoutPerche
+Ka 0.1 0.1 0.1
+Kd 0.6 0.6 0.6
+Ks 1 1 1
+Ns 20

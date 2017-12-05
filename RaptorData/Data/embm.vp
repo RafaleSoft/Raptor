@@ -1,0 +1,76 @@
+!!ARBvp1.0
+ATTRIB iPos = vertex.position;
+ATTRIB iNrml = vertex.normal;
+ATTRIB iTangent = vertex.attrib[6];
+ATTRIB iTexCoord = vertex.texcoord[0];
+
+TEMP biNormal;
+TEMP eyePos;
+TEMP diffuse;
+TEMP specular;
+TEMP diffuseResult;
+TEMP specularResult;
+
+PARAM mvp[4] = { state.matrix.mvp };
+PARAM mvinvt[4] = { state.matrix.modelview.invtrans };
+PARAM half = { 0.5, 0.5, 0.5, 1 };
+
+OUTPUT oPos = result.position;
+OUTPUT oPCol = result.color.primary;
+OUTPUT oSCol = result.color.secondary;
+OUTPUT oTex0 = result.texcoord[0];
+OUTPUT oTex1 = result.texcoord[1];
+OUTPUT oTex2 = result.texcoord[2];
+OUTPUT oTex3 = result.texcoord[3];
+
+DP4 oPos.x, mvp[0], iPos;
+DP4 oPos.y, mvp[1], iPos;
+DP4 oPos.z, mvp[2], iPos;
+DP4 oPos.w, mvp[3], iPos;
+XPD biNormal, iNrml, iTangent;
+ADD eyePos, mvinvt[3], -iPos;
+DP3 eyePos.w, eyePos, eyePos;
+RSQ eyePos.w, eyePos.w;
+MUL eyePos.xyz, eyePos.w, eyePos;
+MOV oTex0.xy, iTexCoord;
+MOV oTex1.x, iTangent.x;
+MOV oTex1.y, biNormal.x;
+MOV oTex1.z, iNrml.x;
+MOV oTex1.w, eyePos.x;
+MOV oTex2.x, iTangent.y;
+MOV oTex2.y, biNormal.y;
+MOV oTex2.z, iNrml.y;
+MOV oTex2.w, eyePos.y;
+MOV oTex3.x, iTangent.z;
+MOV oTex3.y, biNormal.z;
+MOV oTex3.z, iNrml.z;
+MOV oTex3.w, eyePos.z;
+
+PARAM lightPos = program.local[10];
+PARAM viewPos = program.local[11];
+
+ADD diffuse, lightPos, -iPos;
+DP3 diffuse.w, diffuse, diffuse;
+RSQ diffuse.w, diffuse.w;
+MUL diffuse.xyz, diffuse.w, diffuse;
+ADD specular, viewPos, -iPos;
+DP3 specular.w, specular, specular;
+RSQ specular.w, specular.w;
+MUL specular.xyz, specular, specular.w;
+ADD specular, specular, diffuse;
+DP3 specular.w, specular, specular;
+RSQ specular.w, specular.w;
+MUL specular.xyz, specular, specular.w;
+DP3 diffuseResult.x, diffuse, iTangent;
+DP3 diffuseResult.y, diffuse, biNormal;
+DP3 diffuseResult.z, diffuse, iNrml;
+MOV diffuseResult.w , half.w;
+DP3 specularResult.x, specular, iTangent;
+DP3 specularResult.y, specular, biNormal;
+DP3 specularResult.z, specular, iNrml;
+MOV specularResult.w , half.w;
+MOV oPCol , diffuseResult;
+MOV oSCol , specularResult;
+
+END
+
