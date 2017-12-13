@@ -1,8 +1,5 @@
 - simd.cpp : appel a GetSystemInfo (linux : /proc/cpuinfo)
 
-- Global:
-	- Destruction des operateurs de CImage
-
 - CICOImaging::loadImageFile
 	- utilisation du getWidth pour charger le i-ème icône ... mais width non défini ici, utiliser les layers.
 

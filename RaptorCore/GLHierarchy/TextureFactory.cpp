@@ -404,11 +404,13 @@ bool CTextureFactory::glLoadTexture(CTextureObject* const T,
 							   mConfig.getGenerateMipmap();
 
 		if (VK_IMAGE_TYPE_2D == target)
+		{
 			T->vk_texname = CTexelAllocator::GetInstance()->vkAllocateTextureImage(T->getWidth(),
-			T->getHeight(),
-			T->getDepth(),
-			T->getTexelType(),
-			(uint8_t*)pixels);
+																				   T->getHeight(),
+																				   T->getDepth(),
+																				   T->getTexelType(),
+																				   (uint8_t*)pixels);
+		}
 		else
 		{
 #if (defined(GL_VERSION_1_4) && !defined(GL_VERSION_3_0) && !defined(GL_EXT_framebuffer_object))

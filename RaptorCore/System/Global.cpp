@@ -103,6 +103,16 @@ Global::~Global()
     CContextManager::GetInstance()->glDestroyContext(raptorStatus.defaultContext);
     raptorStatus.defaultContext = 0;
 
+
+	CImage::IImageOP *op = CImage::getImageKindOP(CImage::IImageOP::BUMPMAP_LOADER);
+	delete op;
+
+	op = CImage::getImageKindOP(CImage::IImageOP::IMAGE_SCALER);
+	delete op;
+
+	CImage::IImageIO *pIO = CImage::getImageKindIO("BUFFER");
+	delete pIO;
+
     //  Default display is NULL, because it was created with GENERIC attribute.
     //    glDestroyDisplay(status.defaultDisplay);
     CContextManager::GetInstance()->glDestroyWindow(raptorStatus.defaultWindow);

@@ -39,6 +39,9 @@ public:
     class IImageIO
     {
     public:
+		//!	Virtual destructor
+		virtual ~IImageIO() {};
+
 		//!	Returns the kind of image managed ( common extension used for image type: e.g. jpg)
 		virtual bool isOfKind(const std::string &kind) const = 0;
 
@@ -59,7 +62,6 @@ public:
 
     protected:
         IImageIO() {};
-        virtual ~IImageIO() {};
         IImageIO(const IImageIO&) {};
         IImageIO& operator=(const IImageIO&) {};
     };
@@ -85,6 +87,9 @@ public:
 			uint32_t	transparency;
 		};
 
+		//!	Virtual destructor
+		virtual ~IImageOP() {};
+
         //!	Returns the kind of operation managed ( extension )
         virtual OP_KIND getKind(void) const = 0;
 
@@ -96,7 +101,6 @@ public:
 
     protected:
         IImageOP() {};
-        virtual ~IImageOP() {}
         IImageOP(const IImageOP&) {}
         IImageOP& operator=(const IImageOP&) {};
     };

@@ -214,8 +214,6 @@ void CTest5Doc::GLInitContext(void)
 	geo->glSetPolygons(2,VertexIndices);
 	
 	m_pTexture = f.vkCreateTexture(CTextureObject::CGL_COLOR24_ALPHA, CTextureObject::CGL_ALPHA_TRANSPARENT, CTextureObject::CGL_BILINEAR);
-	//RAPTOR_HANDLE p = f.glvkPreloadTexture(m_pTexture, "earth.TGA");
-	//f.glvkLoadTexture(m_pTexture, p);
 	f.glLoadTexture(m_pTexture, "earth.TGA");
 
 	CShader* s = geo->getShader();
