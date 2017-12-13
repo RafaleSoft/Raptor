@@ -1,0 +1,137 @@
+- simd.cpp : appel a GetSystemInfo (linux : /proc/cpuinfo)
+
+- CICOImaging::loadImageFile
+	- utilisation du getWidth pour charger le i-ème icône ... mais width non défini ici, utiliser les layers.
+
+- BasicObjects:
+	- Ajouter un TextureQuad le plus simple possible
+
+-CVulkanMemory:
+	- initialiser une bloc mémoire pour l'application (vertex et index buffers bindés sur la même allocation)
+	- Factoriser les allocators (Geometry, Texel, Uniform)
+
+-CVulkanShader:
+	- Déplacer la gestion du descriptor pool à l'init de ShaderProgram
+	- Traiter le cas ou setProgramParameters fournit un set différents (destruction + reallocation)
+	- Déplacer la création du Pipeline après InitContext (C3DSCene::PrepareData ?)
+
+-CVulkanCommandBuffer:
+	- rendre privée les mathodes et attribut commandbuffer
+
+- CHostMemoryManager:
+	- ajouter capacité allocations/release dans un bloc prédéfini (data pool)
+
+- CGeometryAllocator:
+	- currentAddress : utilisé en unsigned int => bug si uint64_t
+
+- OpenGLMemory:
+	pExtensions->glLockArraysEXT(0, bo.getSize() / 2);	// unsigned short
+
+- CRaptorRenderBufferDisplay:
+	- mettre au point le format CGL_FLOAT_32 (creation des textures attachées)
+	- glGenerate : la texture est 'unbindee', or si appelé depuis CTextureObject::glRender ==> ?
+	
+- CGeometry / CGeometryPrimitive:
+	- créer un mode"BigGeometry" avec des indices de type uint32_t
+		
+- supprimer des "friend" ?
+	p.ex. dans CRaptorDisplay et sous classes ...
+
+- Bumping:
+	- comment gérer le filtrage trilinéaire/anisotropique du normal map ?
+	- Comment paraméter le shader : EYE_SPACE / OBJECT_SPACE / Ambient occlusion
+	- Supprimer CBumppedGeometry => remplacer par le shader.
+	- Remplacer / améliorer par displacement map / parallax bump mapping
+	
+- Persistence:
+	- Creer un RootPersitence pour stocker les statiques et l'affecter à un display
+	( permettre des espaces de noms différentes entre 2 displays).
+	
+- CRaptorDisplayConfig:
+	- faire un sync avec timer (VSync prend 50% CPU!)
+
+- CShader:
+	- faire le glenderTexture (attention a prendre en charge l'utilisation automatique des
+	TMUs. N'activer et désactiver que le minimum, car coûteux')
+
+- RaptorServer:
+	- Rendre thread safe la gestion des clients
+		- en particulier la fermeture de connection dans readClients // writeClients
+	- Ajouter un mode verbose
+	- Tester WSAPoll au lieu de select
+	- Passer les sockets en UDP (pour le streaming uniquement ?)
+
+- RaptorCompute
+	- corriger Retain/Release sur les mem objects (c.f. test3)
+	
+- Blur filter
+	- il semble que le niveau de blur soit plus bas que ce qu'il devrait être
+	(pas assez flou ... ?)
+	
+- CParticle
+	- Exploiter les geometry shaders pour générer les quads à partir d'une position ponctuelle
+	- SMP : si défini, créer des Engine jobs ?
+	- OpenCL + GPU computing
+	- Positionner les setFactors sur le particle compute depuis l'import (c.f. demo.xml)
+	
+- CLight
+	- glow : volume rendering  ?
+	- projection: texture clamping, border fading ...
+	- le volume size ne devrait-il pas etre fonction de dmax ?
+	c'est le volume de l'objet lumière ! eventuellement, attacher un CObject3D
+	- selection de lumière dans 3DSceneObjet: si dans l'angle du cône !
+	
+- COctree :
+	- la subdivision symétrique xyz ne balance pas bien l'arbre:
+	on se retrouve avec m_objects > TRESHOLD ( p.ex: 48 ! )
+	Voir comment gérer la partition binaire de l'espace selon une direction principale
+    
+- Ambient occlusion
+	- shader FSAO pour ambient occlusion
+	- terminer avec tous les types de primitives
+	- skipper les faces non visibles (normale transformée a un z negatif)
+	- la géométrie "référence" ne peut plus être transformée ? => recharger les textures
+	- gestion des coordsPointers/ClientState ... a revoir ? transferer a la geometry ?
+	- nombre de geometries occultantes ?
+	- remplacer RenderResult par RenderTexture ?
+
+- Noise Generator : 
+	- Implémentation full shader
+
+- Bug Microlex:
+	dans le cas d'un rule qui est un alternate d'alternate, il n'y a que le premier atome de de la premiere regle qui est selectionne.
+
+- Collisions:
+	- Calculer les metaballs optimales
+	- algorithme d'intersection : CPU ? GPU ? Pourquoi pas Physx (Havok, accéléré par Intel)
+
+- Optimisations:
+	- clipping en SSE / OpenCL
+	- glGetFloatv : trop d'appels pour la modelview ( en particulier clipping )
+	- Créer des display lists pour le rendu des Light flare ? Il vaudrait mieux faire le lens flare en HDR
+	- Pipeline multithread
+	- NURBS : implémentation OpenCL ou shaders ou CPU.
+	- Rendering no environment: faire un pre rendu en depth pour accélérer le rendu full shaded
+
+- 3DScene :
+	- Traiter le cas des lumières multiples dans les shaders et shadows ( ex : bump mapping, shadow volume .)
+	- Octrees statiques : comment traiter les mouvements d'objets ? ( remonter les objets au niveau supérieur )
+	- Mirror : ne pas activer de lighting et texturing si on est en DEPTH_PASS
+
+- Terminer shadow volumes:
+	- Clipping multithread !
+	- Shadow volume rendering / Soft Shadow Volume : 
+		technique de deferred shading
+	- determiner si viewer est inside/outside shadowVolume 
+	- depth volume clipping ( scissoring ? )
+	- determiner dynamiquement l'extrusion : partiellement fait, reste pb si shadow d'une instance dmax mal calculé ( prendre en compte la transformation )
+	- bbox CObject3DShadow
+	- CEnvironment : pourquoi un current Light ? (pour shadows)
+		supprimer dépendance à currentLight -> utiliser la lumière max du SceneObject (effective lights)
+	- CObject3DShadow : seul le premier contour est utilisé (c.f. m_pVisibleContours[0])
+
+- Soft shadow maps:
+	- problème de glitch : passer en unit cube ... 
+	- Modifier les shadow maps pour travailler avec un TMUSetup plutôt que de taper en dur sur le TMU courant.
+	- Corriger shadowmap dans demo
+	- Implementer OmniShadowMap
