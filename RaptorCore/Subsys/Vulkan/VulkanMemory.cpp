@@ -64,7 +64,7 @@ static void* VKAPI_PTR vkAllocationFunction(void* pUserData,
 static void VKAPI_PTR vkFreeFunction(	void* pUserData,
 										void* pMemory)
 {
-	if (pMemory != NULL)
+	if (NULL != pMemory)
 	{
 		CHostMemoryManager *memory = CHostMemoryManager::GetInstance();
 		memory->garbage(pMemory);	// free strategy could use allocationScope
@@ -79,11 +79,18 @@ static void* VKAPI_PTR vkReallocationFunction(	void* pUserData,
 												size_t alignment,
 												VkSystemAllocationScope allocationScope)
 {
-	vkFreeFunction(pUserData,pOriginal);
-	if (size > 0)
-		return vkAllocationFunction(pUserData,size,alignment,allocationScope);
+	if (NULL == pOriginal)
+		return vkAllocationFunction(pUserData, size, alignment, allocationScope);
+	else if (0 == size)
+	{
+		vkFreeFunction(pUserData, pOriginal);
+		return NULL;
+	}
 	else
-		return pOriginal;
+	{
+		CHostMemoryManager *memory = CHostMemoryManager::GetInstance();
+		return memory->reallocate(pOriginal, size, 1, alignment);
+	}
 }
 
 static void VKAPI_PTR vkInternalAllocationNotification(	void* pUserData,
@@ -287,8 +294,13 @@ bool CVulkanMemory::CVulkanMemoryWrapper::setBufferObjectData(	IDeviceMemoryMana
 			outOfDate.bufferOffset = dstOffset;
 			outOfDate.bufferImageHeight = 0;	// image data tight packing in buffer -> image extent
 			outOfDate.bufferRowLength = 0;		// image data tight packing in buffer -> image extent
-			outOfDate.imageSubresource = { VK_IMAGE_ASPECT_COLOR_BIT, 0, 0, 1 };
-			outOfDate.imageOffset = { 0, 0, 0 };	//VkOffsset3D;
+
+			VkImageSubresourceLayers layers = { VK_IMAGE_ASPECT_COLOR_BIT, 0, 0, 1 };
+			outOfDate.imageSubresource = layers;
+
+			VkOffset3D offset = { 0, 0, 0 };
+			outOfDate.imageOffset = offset;
+
 			outOfDate.imageExtent = db.imageExtent;
 
 			CVulkanBufferObject::unsynchronizedImage synchro;

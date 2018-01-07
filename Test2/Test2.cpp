@@ -210,7 +210,6 @@ void CTest2App::OnAboutRaptor()
 {
 	CRaptorStatus Status;
 	Status.AboutDlg();
-	//Status.TMUSetupDialog();
 }
 
 void CTest2App::OnVideoSettings() 
@@ -285,9 +284,6 @@ void CTest2App::OnSelectDemo(UINT nID )
 						break;
 					case ID_SHADOWMAPDEMO:
 						((CTeapot*)pDoc)->SwitchDemo(SHADOWMAPDEMO);
-						break;
-					case ID_PERPIXELEMBMDEMO:
-						((CTeapot*)pDoc)->SwitchDemo(EMBMDEMO);
 						break;
 					case ID_AMBIENTOCCLUSIONDEMO:
 						((CTeapot*)pDoc)->SwitchDemo(AMBIENTOCCLUSIONDEMO);

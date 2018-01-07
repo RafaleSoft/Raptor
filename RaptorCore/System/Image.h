@@ -78,6 +78,7 @@ public:
             BUMPMAP_LOADER,
             IMAGE_SCALER,
 			ALPHA_TRANSPARENCY,
+			OTHER_OP,
 			NB_OP_KIND
         } OP_KIND;
 

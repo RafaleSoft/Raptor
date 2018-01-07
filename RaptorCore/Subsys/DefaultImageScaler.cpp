@@ -23,9 +23,23 @@ RAPTOR_NAMESPACE
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CDefaultImageScaler::CDefaultImageScaler()
+CDefaultImageScaler::CDefaultImageScaler(float sx, float sy)
+	: scale_x(sx), scale_y(sy)
 {
 
+}
+
+CDefaultImageScaler::CDefaultImageScaler(const CDefaultImageScaler& scaler)
+	: scale_x(scaler.scale_x), scale_y(scaler.scale_y)
+{
+	
+}
+
+CDefaultImageScaler& CDefaultImageScaler::operator =(const CDefaultImageScaler& scaler)
+{
+	scale_x = scaler.scale_x;
+	scale_y = scaler.scale_y;
+	return *this;
 }
 
 CDefaultImageScaler::~CDefaultImageScaler()

@@ -37,7 +37,7 @@
 
 RAPTOR_NAMESPACE
 
-#define VULKAN_TEST 1
+//#define VULKAN_TEST 1
 
 
 class MySphere : public /*CBasicObjects::CIsocahedron*/ CBasicObjects::CGeoSphere
@@ -192,18 +192,18 @@ void CTest5Doc::GLInitContext(void)
 	geo->glSetPolygons(2, NULL);
 	GL_COORD_VERTEX VertexData[5] =
 	{
-		{ -0.7f, -0.7f, -2.0f, 1.0f },	// TODO : check / configure depth
-		{ -0.7f, 0.7f, -5.0f, 1.0f },
-		{ 0.7f, -0.7f, -1.5f, 1.0f },
-		{ 0.7f, 0.7f, -3.5f, 1.0f },
-		{ 0.0f, 0.0f, 0.1f, 1.0f }
+		GL_COORD_VERTEX(-0.7f, -0.7f, -2.0f, 1.0f),	// TODO : check / configure depth
+		GL_COORD_VERTEX(-0.7f, 0.7f, -5.0f, 1.0f),
+		GL_COORD_VERTEX(0.7f, -0.7f, -1.5f, 1.0f),
+		GL_COORD_VERTEX(0.7f, 0.7f, -3.5f, 1.0f),
+		GL_COORD_VERTEX(0.0f, 0.0f, 0.1f, 1.0f)
 	};
 	CColor::RGBA ColorData[4] =
 	{
-		{ 1.0f, 0.0f, 0.0f, 0.0f },
-		{ 0.0f, 1.0f, 0.0f, 0.0f },
-		{ 0.0f, 0.0f, 1.0f, 0.0f },
-		{ 0.3f, 0.3f, 0.3f, 0.0f }
+		CColor::RGBA(1.0f, 0.0f, 0.0f, 0.0f),
+		CColor::RGBA(0.0f, 1.0f, 0.0f, 0.0f),
+		CColor::RGBA(0.0f, 0.0f, 1.0f, 0.0f),
+		CColor::RGBA(0.3f, 0.3f, 0.3f, 0.0f)
 	};
 	unsigned short VertexIndices[6] =
 	{
@@ -260,7 +260,7 @@ void CTest5Doc::GLInitContext(void)
 	CTextureUnitSetup *tus = obj->getShader()->glGetTextureUnitsSetup();
 	tus->setDiffuseMap(m_pTexture);
 	m_pTexture = f.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_MULTIPLY,CTextureObject::CGL_BILINEAR);
-    f.glLoadTexture(m_pTexture,"bump3.tga",CVaArray<CTextureFactoryConfig::IImageOP::OP_KIND>(CTextureFactoryConfig::IImageOP::BUMPMAP_LOADER));
+    f.glLoadTexture(m_pTexture,"bump3.tga",CVaArray<CImage::IImageOP::OP_KIND>(CImage::IImageOP::BUMPMAP_LOADER));
 	//f.getConfig().setBumpAmplitude(4.0f);
 	//f.glLoadTexture(m_pTexture,"BlurCircle.TGA",CGL_CREATE_NORMAL_MAP);
 	tus->setNormalMap(m_pTexture);

@@ -1,4 +1,4 @@
-set RAPTOR_VERSION="2.16.6"
+set RAPTOR_VERSION="2.17.0"
 set RAPTOR_ROOT=E:\Share\Raptor
 set PATH=%PATH%;E:\Share\Raptor\Redist\bin
 set WMSDK=E:\WMSDK\WMFSDK95
@@ -12,9 +12,9 @@ set ZLIB_INCLUDE_PATH=%RAPTOR_ROOT%\AddOns\zlib128\include
 set ZLIB_LIB_PATH=%RAPTOR_ROOT%\AddOns\zlib128\lib\VC9
 set ZLIB_BIN_PATH=%RAPTOR_ROOT%\AddOns\zlib128\bin\VC9
 
-set XERCES_INCLUDE_PATH=%RAPTOR_ROOT%\AddOns\xercesc_2_7
-set XERCES_LIB_PATH=%RAPTOR_ROOT%\AddOns\xercesc_2_7\vc9
-set XERCES_BIN_PATH=%RAPTOR_ROOT%\AddOns\xercesc_2_7\vc9
+set XERCES_INCLUDE_PATH=%RAPTOR_ROOT%\AddOns\xercesc_3_1
+set XERCES_LIB_PATH=%RAPTOR_ROOT%\AddOns\xercesc_3_1\VC9
+set XERCES_BIN_PATH=%RAPTOR_ROOT%\AddOns\xercesc_3_1\VC9
 
 set JPEGLIB_INCLUDE_PATH=%RAPTOR_ROOT%\AddOns\JpegLib\include
 set JPEGLIB_LIB_PATH=%RAPTOR_ROOT%\AddOns\JpegLib\lib

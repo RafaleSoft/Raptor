@@ -93,7 +93,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy $(TargetDir)$(TargetFileName) $(SolutionDir)$(ProjectName)"
+				CommandLine="copy $(TargetDir)$(TargetFileName) $(SolutionDir)$(ProjectName)&#x0D;&#x0A;copy $(TargetDir)$(TargetFileName) &quot;%RAPTOR_ROOT%\Redist\lib\&quot;"
 			/>
 		</Configuration>
 	</Configurations>

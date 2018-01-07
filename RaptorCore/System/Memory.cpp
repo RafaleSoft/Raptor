@@ -209,6 +209,39 @@ void CHostMemoryManager::setDeferedPacking(bool defered) const
 	m_pHeap->m_bDeferedPacking = defered;
 }
 
+void *CHostMemoryManager::reallocate(void *olddata, size_t size, unsigned int count, size_t alignment) const
+{
+	if (NULL == olddata)
+		return allocate(size, count, alignment);
+	else if (0 == size)
+	{
+		release(olddata);
+		return NULL;
+	}
+	else
+	{
+		map<void*, CMemoryHeap::DATA_BLOC>::iterator itr = m_pHeap->heap.find(olddata);
+		if (m_pHeap->heap.end() == itr)
+			return NULL;
+
+		const CMemoryHeap::DATA_BLOC &db = (*itr).second;
+		if (db.address != olddata)
+			return NULL;
+		
+		// assert alignment match
+		unsigned char *pT = (unsigned char*)olddata;
+		size_t old_align = *(pT - 1);
+		if (old_align != alignment)
+			return NULL;
+
+		void *res = allocate(size, count, alignment);
+		memcpy(res, olddata, MIN(db.size,size)-1);
+
+		release(olddata);
+		return res;
+	}
+}
+
 void *CHostMemoryManager::allocate(size_t size,unsigned int count,size_t alignment) const
 {
     //! After this point, we are in critical section

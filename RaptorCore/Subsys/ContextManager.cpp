@@ -413,7 +413,7 @@ bool CContextManager::vkInitInstance(CContextManager::RENDERING_CONTEXT_ID ctx)
 												extensions};							// const char* const* ppEnabledExtensionNames;
 
 	res = vkCreateInstance(	&instanceCreateInfo,
-							CVulkanMemory::GetAllocator(), 
+							CVulkanMemory::GetAllocator(),
 							&vk_ctx.instance);
 	if (VK_SUCCESS != res)
 		pErrMgr->vkGetError(res,__FILE__,__LINE__);

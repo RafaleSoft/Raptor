@@ -29,10 +29,21 @@ RAPTOR_NAMESPACE
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CDefaultBumpmapLoader::CDefaultBumpmapLoader()
-	:bump_scale(1.0f)
+CDefaultBumpmapLoader::CDefaultBumpmapLoader(float scale)
+	:bump_scale(scale)
 {
 
+}
+
+CDefaultBumpmapLoader::CDefaultBumpmapLoader(const CDefaultBumpmapLoader& loader)
+	: bump_scale(loader.bump_scale)
+{
+}
+
+CDefaultBumpmapLoader& CDefaultBumpmapLoader::operator=(const CDefaultBumpmapLoader& loader)
+{
+	bump_scale = loader.bump_scale;
+	return *this;
 }
 
 CDefaultBumpmapLoader::~CDefaultBumpmapLoader()

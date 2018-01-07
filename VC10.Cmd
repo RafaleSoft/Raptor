@@ -1,11 +1,6 @@
-cd C:\OPENGL
-
-set RAPTOR_VERSION="2.16.3"
-set PLATFORM_SDK=C:\Program Files\Microsoft SDKs\Windows\v7.0
-
-set RAPTOR_ROOT=C:\OPENGL\Raptor
+set RAPTOR_VERSION="2.17.0"
+set RAPTOR_ROOT=E:\Share\Raptor
 set PATH=%PATH%;%RAPTOR_ROOT%\Redist\bin
-
 set WMSDK=C:\OPENGL\WMSDK\WMFSDK95
 
 set FREETYPE_INCLUDE_PATH=%RAPTOR_ROOT%\AddOns\freetype-2.5.5\include
@@ -36,12 +31,16 @@ set OPENEXRLIB_INCLUDE_PATH=%RAPTOR_ROOT%\AddOns\OpenEXRLib\include
 set OPENEXRLIB_LIB_PATH=%RAPTOR_ROOT%\AddOns\OpenEXRLib\lib\vc10
 set OPENEXRLIB_BIN_PATH=%RAPTOR_ROOT%\AddOns\OpenEXRLib\bin\vc10
 
-SET OPENCL_INCLUDE_PATH=C:\Program Files (x86)\Intel\OpenCL SDK\3.0\include
-SET OPENCL_LIB_PATH=C:\Program Files (x86)\Intel\OpenCL SDK\3.0\lib\x86
-SET OPENCL_BIN_PATH=C:\Program Files (x86)\Intel\OpenCL SDK\3.0\bin\x86
+set OPENCL_INCLUDE_PATH=E:\Intel\OpenCL\sdk\include
+set OPENCL_LIB_PATH=E:\Intel\OpenCL\sdk\lib\x86
+set OPENCL_BIN_PATH=E:\Intel\OpenCL\sdk\bin\x86
 
 set VULKAN_INCLUDE_PATH=%RAPTOR_ROOT%\AddOns\vulkan\include
 set VULKAN_BIN_PATH=c:\windows\system32
+
+set PLATFORM_SDK=C:\Program Files\Microsoft SDKs\Windows\v7.0
+
+cd %RAPTOR_ROOT%
 
 "C:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\IDE\VCExpress.exe"
 

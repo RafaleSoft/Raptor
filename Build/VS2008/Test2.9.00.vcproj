@@ -239,10 +239,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\Test2\EMBMDisplay.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\..\Test2\GenericDisplay.cpp"
 				>
 			</File>

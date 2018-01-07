@@ -197,10 +197,10 @@ bool Global::init(const CRaptorConfig& config)
 
 		CContextManager *pContext = CContextManager::GetInstance();
 
-		CDefaultBumpmapLoader *pDefaultBumpmapLoader = new CDefaultBumpmapLoader();
+		CDefaultBumpmapLoader *pDefaultBumpmapLoader = new CDefaultBumpmapLoader(1.0f);
 		CImage::setImageKindOP(pDefaultBumpmapLoader);
 
-		CDefaultImageScaler *pDefaultImageScaler = new CDefaultImageScaler();
+		CDefaultImageScaler *pDefaultImageScaler = new CDefaultImageScaler(1.0f,1.0f);
 		CImage::setImageKindOP(pDefaultImageScaler);
 
 		CImage::IImageIO *pIO = new CBufferImage();

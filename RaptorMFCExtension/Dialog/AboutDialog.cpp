@@ -239,7 +239,6 @@ BOOL CAboutDialog::OnInitDialog()
 
 	//	Setting up Raptor version item
 	{
-        DWORD version = Raptor::GetVersion();
 		stringstream vrs;
         vrs << "Version: " << RAPTOR_VERSION_STR;
 		this->SetDlgItemText(IDC_VERSION,CA2T(vrs.str().c_str()));

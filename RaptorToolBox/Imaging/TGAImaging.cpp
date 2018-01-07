@@ -105,8 +105,8 @@ bool CTGAImaging::loadImageFile(const std::string& fname, CImage* const I) const
 	FILE			*in_rgb = NULL;
 	long			outcolor = 0;
 	unsigned char	*outcolors = NULL;
-	long			w = 0;
-	long            h = 0;
+	size_t			w = 0;
+	size_t          h = 0;
 	int				size = 0;
 
 	if ((in_rgb = fopen(fname.data(), "rb")) == NULL)

@@ -19,7 +19,10 @@ RAPTOR_NAMESPACE_BEGIN
 class CDefaultImageScaler : public CImage::IImageOP
 {
 public:
-	CDefaultImageScaler();
+	CDefaultImageScaler(float sx, float sy);
+	CDefaultImageScaler(const CDefaultImageScaler& scaler);
+	CDefaultImageScaler& operator=(const CDefaultImageScaler& scaler);
+
 	virtual ~CDefaultImageScaler();
 
     //! Implements CImageOP
@@ -27,6 +30,13 @@ public:
 
 	//! Implements CImageOP
 	virtual bool apply(CImage* const src, const operation_param_t& param) const;
+
+private:
+	CDefaultImageScaler();
+
+	//!	Texture resize factors.
+	float scale_x;
+	float scale_y;
 };
 
 RAPTOR_NAMESPACE_END
