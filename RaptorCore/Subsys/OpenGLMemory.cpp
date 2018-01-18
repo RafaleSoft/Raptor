@@ -388,14 +388,25 @@ bool COpenGLMemory::lockBufferObject(IDeviceMemoryManager::IBufferObject &bo)
 
         currentBuffers[storage] = buffer;
 
-//!	compiled vertex array locking is subject to deprecation
+	//!	compiled vertex array locking is subject to deprecation
 #if defined(GL_EXT_compiled_vertex_array)
 		if (pExtensions->glLockArraysEXT != NULL)
 		{
+			//!	locked arrays are limited to 32bits size/index:
+			//!	- check size is not exceeded
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+			if (0x7fffffff < bo.getSize())
+			{
+				Raptor::GetErrorManager()->generateRaptorError(CPersistence::CPersistenceClassID::GetClassId(),
+															   CRaptorErrorManager::RAPTOR_WARNING,
+															   "Buffer Object size over 2Gb is not supported by RaptorCore COpenGLMemory");
+			}
+#endif
+			GLsizei size = (GLsizei)(0x7fffffff & bo.getSize());
 			if (IDeviceMemoryManager::IBufferObject::VERTEX_BUFFER == bo.getStorage())
-				pExtensions->glLockArraysEXT(0, bo.getSize() / 4);	// floats
+				pExtensions->glLockArraysEXT(0, size / 4);	// floats
 			else if (IDeviceMemoryManager::IBufferObject::INDEX_BUFFER == bo.getStorage())
-				pExtensions->glLockArraysEXT(0, bo.getSize() / 2);	// unsigned short
+				pExtensions->glLockArraysEXT(0, size / 2);	// unsigned short, big geometry will need attention.
 		}
 #endif
 

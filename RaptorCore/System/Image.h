@@ -119,9 +119,6 @@ public:
 				   const CVaArray<CImage::IImageOP::OP_KIND>& ops,
 				   const CImage::IImageOP::operation_param_t& param);
 
-	//!	Updates alpha channel of pixels, if present in pixel type.
-	void setAlpha(uint32_t alpha);
-
 	//! texture name ( default is the source filename )
 	const std::string & getName(void) const { return m_name; };
 

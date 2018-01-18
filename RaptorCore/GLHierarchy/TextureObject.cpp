@@ -49,9 +49,6 @@ CTextureObject::CTextureObject(TEXEL_TYPE type)
 	texname = 0;
 	target = 0;
 	level = 0;
-	m_width = 0;
-	m_height = 0;
-    m_depth = 0;
 	env_mode = GL_REPLACE;
 	m_filter = CTextureObject::CGL_UNFILTERED;
 	m_alpha = 255;
@@ -64,14 +61,12 @@ CTextureObject::CTextureObject(TEXEL_TYPE type)
 }
 
 CTextureObject::CTextureObject(const CTextureObject& rsh)
+	:ITextureObject(rsh)
 {
 	m_name = rsh.m_name;
 	texname = 0;
 	target = rsh.target;
 	level = rsh.level;
-	m_width = rsh.m_width;
-	m_height = rsh.m_height;
-    m_depth = rsh.m_depth;
 	env_mode = rsh.env_mode;
 	m_filter = rsh.m_filter;
 	m_alpha = rsh.m_alpha;
@@ -91,7 +86,7 @@ CTextureObject::~CTextureObject()
 }
 
 
-void CTextureObject::glRender()
+void CTextureObject::glvkRender()
 {
     if (texname == 0)   // much faster
 		return;
@@ -106,26 +101,6 @@ void CTextureObject::glRender()
     }
 
     CATCH_GL_ERROR
-}
-
-void CTextureObject::setSize(unsigned int width, unsigned int height, unsigned int depth)
-{
-	if ((width == 0) || (height == 0) || (depth == 0))
-	{
-#ifdef RAPTOR_DEBUG_MODE_GENERATION
-		Raptor::GetErrorManager()->generateRaptorError(Global::COpenGLClassID::GetClassId(),
-													   CRaptorErrorManager::RAPTOR_WARNING,
-													   "CTextureObject wrong size update");
-#endif
-		return;
-	}
-
-    if ((width != m_width) || (height != m_height) || (depth != m_depth))
-    {
-        m_width = width;
-        m_height = height;
-        m_depth = depth;
-    }
 }
 
 CTextureObject::CUBE_FACE CTextureObject::getCurrentCubeFace(void) const
@@ -256,7 +231,7 @@ void CTextureObject::glUpdateClamping(CLAMP_MODE C)
 
 	glTexParameteri(target & 0xFFFF,GL_TEXTURE_WRAP_S,clamp_mode);
 	glTexParameteri(target & 0xFFFF,GL_TEXTURE_WRAP_T,clamp_mode);
-	if  (m_depth > 0)
+	if (getDepth() > 0)
 	{
 #if defined(GL_VERSION_1_2)
 		glTexParameteri(target & 0xFFFF,GL_TEXTURE_WRAP_R,clamp_mode);
@@ -311,8 +286,7 @@ void CTextureObject::glSetTransparency(unsigned int	alpha)
 
         if ((currentWidth != 0) && (currentHeight != 0))
         {
-            m_width = currentWidth;
-            m_height = currentHeight;
+			setSize(currentWidth, currentHeight, getDepth());
 
             // Here currentWidth ( & currentHeight) sould be equal to m_width ( & m_height)
             GLubyte *data = new unsigned char[currentWidth*currentHeight*4];
@@ -343,8 +317,8 @@ bool CTextureObject::setGenerationSize(int posx, int posy, unsigned int width, u
     if ((gH == 0) || (gW == 0))
         return false;
 
-    int H = MIN(height,MIN(m_height,gH));
-    int W = MIN(width,MIN(m_width,gW));
+    int H = MIN(height,MIN(getHeight(),gH));
+    int W = MIN(width,MIN(getWidth(),gW));
 
 //  OGL does not raise errors for that. 
 //  Specific check must then be done in each generator

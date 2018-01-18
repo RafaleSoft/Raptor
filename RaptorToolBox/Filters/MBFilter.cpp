@@ -163,9 +163,9 @@ void CMBFilter::glRenderFilter()
     pAccum->pCurrentDisplay->glBindDisplay(noDevice);
     glActiveTextureARB(GL_TEXTURE1_ARB);
     glEnable(GL_TEXTURE_2D);
-    pAccum->m_pPreviousColorAccum->glRender();
+	pAccum->m_pPreviousColorAccum->glvkRender();
     glActiveTextureARB(GL_TEXTURE0_ARB);
-    getColorInput()->glRender();
+	getColorInput()->glvkRender();
 
 	m_pMotionBlurShader->glGetFragmentProgram()->setProgramParameters(f_params);
     m_pMotionBlurShader->glRender();
@@ -181,7 +181,7 @@ void CMBFilter::glRenderFilterOutput()
     //  Render final buffer
     CAccumulator *pAccum = (CAccumulator*)m_pAccumulator;
 	
-	pAccum->m_pCurrentColorAccum->glRender();
+	pAccum->m_pCurrentColorAccum->glvkRender();
     glDrawBuffer();
 
 	glBindTexture(GL_TEXTURE_2D,0);

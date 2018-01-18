@@ -150,7 +150,7 @@ void CSlide::glRender(void)
     else
     {
         glEnable(GL_TEXTURE_2D);
-        mVideo->glRender();
+		mVideo->glvkRender();
         glBegin(GL_QUADS);
             glTexCoord2f(0.0f,0.0f);   glVertex3f(-2.0f,-2.0f,0.1f);
             glTexCoord2f(tw,0.0f);   glVertex3f(2.0f,-2.0f,0.1f);

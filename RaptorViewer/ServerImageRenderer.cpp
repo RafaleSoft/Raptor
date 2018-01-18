@@ -44,7 +44,7 @@ void CServerImageRenderer::glRender(void)
 		return;
 		
 	{
-		m_pImage->glRender();
+		m_pImage->glvkRender();
 
 		unsigned char* src = NULL;
 

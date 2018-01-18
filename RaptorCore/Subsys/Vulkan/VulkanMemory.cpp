@@ -479,7 +479,7 @@ VkImage CVulkanMemory::CVulkanMemoryWrapper::createImage(const VkImageCreateInfo
 		image_info.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 		image_info.queueFamilyIndexCount = 0;
 		image_info.pQueueFamilyIndices = NULL;
-		image_info.initialLayout = VK_IMAGE_LAYOUT_PREINITIALIZED;
+		image_info.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 
 		VkResult res = vkCreateImage(device, &image_info, &s_vulkanAllocator, &image);
 		if (VK_SUCCESS != res)

@@ -240,7 +240,7 @@ void CWarpObject::glRender()
 										floor(v1.y+0.5f),
 										w+2,
 										h+2);
-    m_captureBuffer->glRender();
+	m_captureBuffer->glvkRender();
 
 	glMatrixMode(GL_TEXTURE);
 	glPushMatrix();
@@ -344,7 +344,7 @@ void CGlassObject::glRender()
 										floor(v1.y+0.5f),
 										w+2,
 										h+2);
-    m_captureBuffer->glRender();
+	m_captureBuffer->glvkRender();
 	m_pShader->glRenderTexture();
 	m_pShader->glRender();
 	

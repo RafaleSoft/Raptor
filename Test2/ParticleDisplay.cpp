@@ -313,7 +313,7 @@ void CParticleDisplay::Display()
 
 		if (numframe == 127)
 		{
-			pSmoke2->getTexture()->glRender();
+			pSmoke2->getTexture()->glvkRender();
 			CTextureFactory &f = CTextureFactory::getDefaultFactory();
 			f.glLoadTexture(pSmoke2->getTexture(), smoke);
 			smoke.releasePixels();

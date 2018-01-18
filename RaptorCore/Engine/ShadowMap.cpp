@@ -405,7 +405,7 @@ void CShadowMap::glRenderShadow(const vector<C3DSceneObject*>& objects)
 
 	if (m_pShadowTexture != NULL)
 	{
-		m_pShadowTexture->glRender();
+		m_pShadowTexture->glvkRender();
 
 		glTexGeni(GL_S,GL_TEXTURE_GEN_MODE,GL_EYE_LINEAR);
 		glTexGeni(GL_T,GL_TEXTURE_GEN_MODE,GL_EYE_LINEAR);
@@ -460,7 +460,7 @@ void CShadowMap::glRenderShadow(const vector<C3DSceneObject*>& objects)
 void CShadowMap::glRenderTexture(void)
 {
     glEnable(GL_TEXTURE_2D);
-    m_pShadowTexture->glRender();
+	m_pShadowTexture->glvkRender();
 }
 
 

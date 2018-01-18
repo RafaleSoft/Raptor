@@ -20,7 +20,7 @@
 
 RAPTOR_NAMESPACE_BEGIN
 
-class CTextureObject;
+class ITextureObject;
 
 
 //! This class handles particle objects and ther behaviour.
@@ -117,7 +117,7 @@ private:
     //!	A helper to import managed particle systems.
     bool importParticle(CRaptorIO& io);
 	//!	A helper to import managed particle systems.
-	CTextureObject* importTexture(CRaptorIO &io);
+	ITextureObject* importTexture(CRaptorIO &io);
 
 	//!	Notifies observers that this persistence is about to be destroyed.
 	virtual void unLink(const CPersistence*);

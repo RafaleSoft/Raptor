@@ -352,7 +352,7 @@ void CHDRFilter::glRenderFilter()
     for (unsigned int i=0;i<nLevels;i++)
     {
         m_pDownSizedDisplay[i]->glBindDisplay(nodevice);
-        currentBuffer->glRender();
+		currentBuffer->glvkRender();
 
 		luminanceParams.p = GL_COORD_VERTEX(0.5f / currentBuffer->getWidth(),
 											0.5f / currentBuffer->getHeight(),
@@ -393,7 +393,7 @@ void CHDRFilter::glRenderFilter()
     //  Extract high frequencies only
     //
     m_pDownHighFreqs->glBindDisplay(nodevice);
-    m_pDownSizedBuffer[1]->glRender();
+	m_pDownSizedBuffer[1]->glvkRender();
 	thresholdParams[1].copy(thresholdParam);
 #if defined(GL_ARB_vertex_shader)
 	m_pTreshholdFreqs->glGetFragmentProgram()->setProgramParameters(thresholdParams);
@@ -409,7 +409,7 @@ void CHDRFilter::glRenderFilter()
     //  Blur high frequencies  
     //
     m_pDownBlurXDisplay->glBindDisplay(nodevice);
-    m_pDownHFBuffer->glRender();
+	m_pDownHFBuffer->glvkRender();
     m_pBlurXOffsets->setProgramParameters(blurOffsets);
     m_pBlurXOffsets->glRender();
     m_pBlur->glRender();
@@ -421,7 +421,7 @@ void CHDRFilter::glRenderFilter()
     m_pDownBlurXDisplay->glUnBindDisplay();
 
     m_pDownBlurYDisplay->glBindDisplay(nodevice);
-    m_pDownBlurXBuffer->glRender();
+	m_pDownBlurXBuffer->glvkRender();
     m_pBlurYOffsets->setProgramParameters(blurOffsets);
     m_pBlurYOffsets->glRender();
     m_pBlur->glRender();
@@ -438,7 +438,7 @@ void CHDRFilter::glRenderFilter()
 		//  Second pass Blur high frequencies  
 		//
 		m_pDownBlurXDisplay->glBindDisplay(nodevice);
-		m_pDownBlurYBuffer->glRender();
+		m_pDownBlurYBuffer->glvkRender();
 		m_pBlurXOffsets->setProgramParameters(blurOffsets);
 		m_pBlurXOffsets->glRender();
 		m_pBlur->glRender();
@@ -449,7 +449,7 @@ void CHDRFilter::glRenderFilter()
 		m_pDownBlurXDisplay->glUnBindDisplay();
 
 		m_pDownBlurYDisplay->glBindDisplay(nodevice);
-		m_pDownBlurXBuffer->glRender();
+		m_pDownBlurXBuffer->glvkRender();
 		m_pBlurYOffsets->setProgramParameters(blurOffsets);
 		m_pBlurYOffsets->glRender();
 
@@ -471,10 +471,10 @@ void CHDRFilter::glRenderFilterOutput()
 
     glActiveTextureARB(GL_TEXTURE2_ARB);
     glEnable(GL_TEXTURE_2D);
-    m_pDownSizedBuffer[nLevels-1]->glRender();    // texture is a single texel with luminance max.
+	m_pDownSizedBuffer[nLevels - 1]->glvkRender();    // texture is a single texel with luminance max.
     glActiveTextureARB(GL_TEXTURE1_ARB);
     glEnable(GL_TEXTURE_2D);
-    m_pDownBlurYBuffer->glRender();
+	m_pDownBlurYBuffer->glvkRender();
 
 /*
 	glActiveTextureARB(GL_TEXTURE0_ARB);
@@ -486,7 +486,7 @@ void CHDRFilter::glRenderFilterOutput()
 */
 
     glActiveTextureARB(GL_TEXTURE0_ARB);
-    getColorInput()->glRender();
+	getColorInput()->glvkRender();
 
     // compose blur + hdr
     m_pComposite->glRender();

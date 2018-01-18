@@ -141,8 +141,6 @@ RAPTOR_NAMESPACE
 		tree->InsertItem(str,item);
 		str.Format(TEXT("Alpha: %u"), obj->getTransparency());
 		tree->InsertItem(str,item);
-		str.Format(TEXT("Level: %u"), obj->getCurrentMipMapLevel());
-		tree->InsertItem(str,item);
 		switch(obj->getFilter())
 		{
             case CTextureObject::CGL_UNFILTERED: str = "Filtering : none"; break;

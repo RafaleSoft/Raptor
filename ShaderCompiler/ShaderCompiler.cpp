@@ -310,7 +310,7 @@ void CDisplay::glRender(void)
         pConsole->addItem(item);
     }
 
-    background->glRender();
+	background->glvkRender();
 
     glBegin(GL_QUADS);
         glTexCoord2f(0.0f,0.0f);glVertex3f(-1.33f,-1.0f,-1.0f);

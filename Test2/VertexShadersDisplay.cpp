@@ -683,7 +683,7 @@ public:
 
 			CFragmentShader *fp = pShader->glGetFragmentShader();
 			fp->glRender();
-			pCosTable->glRender();
+			pCosTable->glvkRender();
 			glBegin(GL_QUADS);
 				glTexCoord4f(0.0f,0.0f,0.0f,0.0f);glVertex3f(-1.0f,-1.0f,0.0f);
 				glTexCoord4f(2.0f,0.0f,0.0f,0.0f);glVertex3f(1.0f,-1.0f,0.0f);
@@ -694,7 +694,7 @@ public:
 			fp->glStop();
 		pBuffer->glUnBindDisplay();
 
-		pMap->glRender();
+		pMap->glvkRender();
 
 		if (bShow)
 		{

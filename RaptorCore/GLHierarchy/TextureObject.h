@@ -15,6 +15,9 @@
 #if !defined(AFX_OBJECTREFERENCE_H__0D47C721_2B2D_4163_AB88_BE1B4E08A84D__INCLUDED_)
     #include "ObjectReference.h"
 #endif
+#if !defined(AFX_ITEXTUREOBJECT_H__3AA8C89E_BB23_483C_A547_C8A4CC53E551__INCLUDED_)
+	#include "ITextureObject.h"
+#endif
 
 
 RAPTOR_NAMESPACE_BEGIN
@@ -27,7 +30,7 @@ class ITextureGenerator;
 //	Base structure for CTexture class
 //	this structure defines a texture object
 //	and its degenerate form : a sprite
-class RAPTOR_API CTextureObject : public CObjectReference
+class RAPTOR_API CTextureObject : public CObjectReference, public ITextureObject
 {
 public:
 	//! Texel transfer function ( combines input fragment with texel extracted from sampler )
@@ -90,7 +93,7 @@ public:
 
 public:
     //!	Renders the textures : it is bound to the current active Texture Unit.
-	void glRender(void);
+	virtual void glvkRender(void);
 
     //! @return texture name ( default is the source filename )
 	const std::string & getName(void) const { return m_name; };
@@ -132,14 +135,6 @@ public:
     //! Selects the current cubemap face for image access ( loading, reading, ... )
     void selectCubeFace(CUBE_FACE face);
 
-
-    //! Defines the size of the texel array ( texel wrapper ) for texture loading/updates/reading.
-    //! Note that the server texture object will not be modified, only the factory is allowed
-    //! to proceed a GL resize. If texels have been allocated and the new size do not match,
-    //! texels are lost and the wrapper is reallocated.
-    //! This method must be used with allocateTexels, any other usage is not supported.
-    void setSize(unsigned int width, unsigned int height, unsigned int depth=1);
-
     //! Define the dimensions ( of the generator ) for texture generation.
     //! Actual parameters are modified if requested generation size is too large for the texture
     //! or if position is not valid within the generator. Texture must have a valid size.
@@ -151,15 +146,6 @@ public:
 
 	//!	Returns the sized format of the texels stored in device memory (texture)
 	unsigned int getTexelFormat(void) const;
-
-    //! Return texture width
-    unsigned int	getWidth(void) const { return m_width; };
-
-    //! Return texture height
-    unsigned int	getHeight(void) const { return m_height; };
-
-    //! Return texture depth : assume it is a volumetric texture.
-    unsigned int	getDepth(void) const { return m_depth; };
 
     //! Return texture global transparency.
     //! @ return : the value set using the method glSetTransparency
@@ -199,13 +185,8 @@ private:
 	//!
 	//!	Attributes
 	//!
-
-    //! Texture dimensions
-    unsigned int	m_width;
-	unsigned int	m_height;
-    unsigned int	m_depth;
-
-    //! The texture texel type is stored only to avoid server calls to query internal format
+    
+	//! The texture texel type is stored only to avoid server calls to query internal format
     TEXEL_TYPE      m_type;
 
     //! Aplha value. It is stored to be applyed before or after texture loading.

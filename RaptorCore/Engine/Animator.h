@@ -22,7 +22,6 @@
 RAPTOR_NAMESPACE_BEGIN
 
 class CAnimatorStream;
-class CTextureObject;
 class ITextureGenerator;
 
 

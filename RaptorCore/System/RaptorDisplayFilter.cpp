@@ -128,7 +128,7 @@ void CRaptorDisplayFilter::glRender(void)
 		pExtensions->glActiveTextureARB(GL_TEXTURE1_ARB);
         glDisable(GL_TEXTURE_2D);
         pExtensions->glActiveTextureARB(GL_TEXTURE0_ARB);
-		getColorInput()->glRender();
+		getColorInput()->glvkRender();
         glDrawBuffer();
     }
 

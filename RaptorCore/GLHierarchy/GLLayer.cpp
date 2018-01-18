@@ -110,7 +110,7 @@ const CTextureObject* CGLLayer::getLayerImage(void) const
 void CGLLayer::glRenderSingleBuffer(const CGLLayer *layer) const
 {
 	CTextureObject* singleBuffer = const_cast<CTextureObject*>(m_pPlane);
-	singleBuffer->glRender();
+	singleBuffer->glvkRender();
 
 	glBegin(GL_QUADS);
 		glTexCoord2f(0.0f,0.0f);
@@ -249,7 +249,7 @@ void CGLLayer::glRender()
 	
     if (m_bRedraw)
     {
-		m_pPlane->glRender();
+		m_pPlane->glvkRender();
 
 		if (CTexelAllocator::GetInstance()->isMemoryRelocated() &&
 			CTexelAllocator::GetInstance()->isMemoryLocked() &&
@@ -288,7 +288,7 @@ void CGLLayer::glRender()
 		glTranslatef((float)(m_xpos+spr.posx),(float)(m_ypos+spr.posy),0.0f);
 		glRotatef(spr.angle,0.0f,0.0f,1.0f);
 
-		T->glRender();
+		T->glvkRender();
 		glBegin(GL_QUADS);
 			glTexCoord2f(0.0f,0.0f);
 			glVertex3f(-(float)(T->getWidth())/2,-(float)(T->getHeight())/2,m_depth);

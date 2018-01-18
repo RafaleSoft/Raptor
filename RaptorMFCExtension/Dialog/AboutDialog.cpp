@@ -120,7 +120,7 @@ private:
 
 void CAboutVideo::glRender()
 {
-	m_pTxt->glRender();
+	m_pTxt->glvkRender();
 
 	glBegin(GL_QUADS);
 		glTexCoord2f(0.0f,0.0f); glVertex3f(-2.0f,-1.5f,-2.0f);

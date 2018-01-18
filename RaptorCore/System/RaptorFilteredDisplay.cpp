@@ -555,7 +555,7 @@ void CRaptorFilteredDisplay::glRenderScene(void)
 	if (!filterRendered || m_pFilters.empty())
     {
 		CTextureObject *T = m_pImageSet->getTexture(0);
-        T->glRender();
+		T->glvkRender();
 
         if (drawBuffer.handle > 0)
             glCallList(drawBuffer.handle);

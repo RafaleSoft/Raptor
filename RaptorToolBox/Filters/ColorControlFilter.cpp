@@ -218,7 +218,7 @@ void CColorControlFilter::glRenderFilterOutput()
 #endif
 
     glActiveTextureARB(GL_TEXTURE0_ARB);
-    getColorInput()->glRender();
+	getColorInput()->glvkRender();
 	
 	BWShader->glRender();
     glDrawBuffer();

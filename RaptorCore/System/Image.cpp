@@ -140,62 +140,6 @@ bool CImage::loadImage(const std::string &filename,
 	return ret;
 }
 
-void CImage::setAlpha(uint32_t alpha)
-{
-	if (NULL == pixels)
-		return;
-
-	uint8_t* ppixels = CImage::getPixels();
-	if (ppixels != NULL)
-	{
-		uint32_t size = 4 * m_width * m_height * m_layers;
-		for (uint32_t i = 0; i < size; i += 4)
-		{
-			if (alpha > 255)
-			{
-				if ((ppixels[i] == 0) && (ppixels[i + 1] == 0) && (ppixels[i + 2] == 0))
-					ppixels[i + 3] = 0;
-				else
-					ppixels[i + 3] = 255;
-			}
-			else if (alpha > 0)
-			{
-				ppixels[i + 3] = (uint8_t)(alpha & 0xFF);
-			}
-			else
-			{
-				ppixels[i + 3] = (uint8_t)((ppixels[i] + ppixels[i + 1] + ppixels[i + 2]) / 3);
-			}
-		}
-	}
-	else
-	{
-		float* fpixels = CImage::getFloatPixels();
-		if (fpixels != NULL)
-		{
-			uint32_t size = 4 * m_width * m_height * m_layers;
-			for (uint32_t i = 0; i < size; i += 4)
-			{
-				if (alpha > 255)
-				{
-					if ((fpixels[i] == 0) && (fpixels[i + 1] == 0) && (fpixels[i + 2] == 0))
-						fpixels[i + 3] = 0;
-					else
-						fpixels[i + 3] = 1.0f;
-				}
-				else if (alpha > 0)
-				{
-					fpixels[i + 3] = alpha * ONE_OVER_255_F;
-				}
-				else
-				{
-					fpixels[i + 3] = (fpixels[i] + fpixels[i + 1] + fpixels[i + 2]) / 3;
-				}
-			}
-		}
-	}
-}
-
 void CImage::releasePixels(void)
 {
 	if (pixels != NULL)

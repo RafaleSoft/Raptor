@@ -192,7 +192,7 @@ void CBlurFilter::glRenderFilter()
     RAPTOR_HANDLE noDevice;
     xBuffer->glBindDisplay(noDevice);
     glActiveTextureARB(GL_TEXTURE0_ARB);
-    getColorInput()->glRender();
+	getColorInput()->glvkRender();
 
     hBlur->glRender();
     glDrawBuffer();
@@ -209,7 +209,7 @@ void CBlurFilter::glRenderFilterOutput()
 
     //! Second (last) pass : yPass of the kernel, assuming it is separable
 	glActiveTextureARB(GL_TEXTURE0_ARB);
-    xKernelPass->glRender();
+	xKernelPass->glvkRender();
 
 	vBlur->glRender();
     glDrawBuffer();
@@ -312,10 +312,10 @@ bool CBlurFilter::glBuildFilter(int width,int height)
 	// Update filtering
 	if ((BLUR_BOX_LINEAR == m_model) || (BLUR_GAUSSIAN_LINEAR == m_model))
 	{
-		colorInput->glRender();
+		colorInput->glvkRender();
 		colorInput->glUpdateFilter(CTextureObject::CGL_BILINEAR);
 
-		xKernelPass->glRender();
+		xKernelPass->glvkRender();
 		xKernelPass->glUpdateFilter(CTextureObject::CGL_BILINEAR);
 	}
 
@@ -344,7 +344,7 @@ bool CBlurFilter::glInitFilter(void)
 	else if (m_fModel == RENDER_BUFFER)
 	{
 		//!    Source is unfiltered to avoid artifacts ( see comment below ).
-		colorInput->glRender();
+		colorInput->glvkRender();
 		colorInput->glUpdateFilter(CTextureObject::CGL_UNFILTERED);
 	}
 

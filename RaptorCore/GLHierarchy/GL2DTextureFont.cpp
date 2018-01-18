@@ -80,7 +80,7 @@ bool CGL2DTextureFont::init(const std::string &filename, unsigned int size, bool
 		size_t W = TEXTURE_WIDTH;
 		size_t H = h * w; //h * 256 / nb;
 		factory.glResizeTexture(m_texture, W, H);
-		m_texture->glRender();
+		m_texture->glvkRender();
 
 		unsigned char *buffer = new unsigned char[2 * W*H];
 		memset(buffer, 0, 2 * W*H);
@@ -275,7 +275,7 @@ void CGL2DTextureFont::glWrite(const std::string &text, int x, int y)
 	glEnable(GL_TEXTURE_2D);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	m_texture->glRender();
+	m_texture->glvkRender();
 
 	glTranslatef(x, viewport[3] - y, -1.0f);
 	for (unsigned int i = 0; i<text.size(); i++)

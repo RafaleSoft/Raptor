@@ -88,7 +88,7 @@ void SkinningBackGround::glRender()
 	m_layer->glRender();
 
 	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-	m_background->glRender();
+	m_background->glvkRender();
 		
 	float dt = CTimeObject::GetGlobalTime();
 	glPushMatrix();

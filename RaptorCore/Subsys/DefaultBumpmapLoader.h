@@ -16,7 +16,6 @@
 
 RAPTOR_NAMESPACE_BEGIN
 
-class CTextureObject;
 
 class CDefaultBumpmapLoader : public CImage::IImageOP
 {

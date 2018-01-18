@@ -147,7 +147,7 @@ void CAmbientOcclusionShader::glRenderResult()
 
 		pExtensions->glActiveTextureARB(GL_TEXTURE2_ARB);
 		glEnable(GL_TEXTURE_2D);
-		m_pAOMap->glRender();
+		m_pAOMap->glvkRender();
 		/*
 		CTextureFactory &f = CTextureFactory::getDefaultFactory();
 		f.glExportTexture(m_pAOMap, "AO_map.jpg");

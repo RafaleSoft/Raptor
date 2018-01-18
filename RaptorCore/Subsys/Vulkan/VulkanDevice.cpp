@@ -521,10 +521,7 @@ bool CVulkanDevice::vkCreateRenderPassResources(VkSurfaceFormatKHR format,
 																VK_COMPONENT_SWIZZLE_IDENTITY,
 																VK_COMPONENT_SWIZZLE_IDENTITY	}, 
 															{	VK_IMAGE_ASPECT_COLOR_BIT,
-																0,
-																1,
-																0,
-																1	} };
+																0, 1, 0, 1	} };
 			
 			res = vkCreateImageView(device,
 									&image_view_create_info,

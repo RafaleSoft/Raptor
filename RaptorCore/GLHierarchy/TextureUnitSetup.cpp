@@ -558,7 +558,7 @@ RAPTOR_HANDLE CTextureUnitSetup::glBuildSetup(void)
                 if (G != NULL)
                     G->enableGenerator(false);
 
-			    imageUnit[i]->glRender();
+				imageUnit[i]->glvkRender();
 
                 if (G != NULL)
                     G->enableGenerator(true);

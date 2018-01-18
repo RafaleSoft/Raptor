@@ -37,7 +37,7 @@
 
 RAPTOR_NAMESPACE
 
-//#define VULKAN_TEST 1
+#define VULKAN_TEST 1
 
 
 class MySphere : public /*CBasicObjects::CIsocahedron*/ CBasicObjects::CGeoSphere
@@ -358,65 +358,4 @@ void CTest5Doc::GLInitContext(void)
 	CAnimator *pAnimator = new CAnimator();
 	CAnimator::SetAnimator(pAnimator);
 #endif
-
-/*
-	CRaptorDisplayConfig glcs;
-	glcs.width = 320;
-	glcs.height = 240;
-	glcs.x = 0;
-	glcs.y = 0;
-	glcs.caption = "RAPTOR_RENDER_BUFFER_DISPLAY";
-	glcs.display_mode = CGL_RGBA | CGL_DEPTH;
-	glcs.renderer = CRaptorDisplayConfig::BUFFERED;
-	m_pDisplayBuffer = Raptor::glCreateDisplay(glcs);
-
-	vp = m_pDisplayBuffer->getViewPoint();
-	vp->setPosition(0,0,3.5,CViewPoint::EYE);
-	vp->setPosition(0,0,0,CViewPoint::TARGET);
-
-	RAPTOR_HANDLE noDevice;
-	if (m_pDisplayBuffer->glBindDisplay(noDevice))
-	{
-		glColor4f(1.0f,1.0f,1.0f,1.0f);
-		CRenderingProperties *props = m_pDisplayBuffer->getRenderingProperties();
-		//props->setWireframe(CRenderingProperties::ENABLE);
-		props->setLighting(CRenderingProperties::ENABLE);
-		props->setTexturing(CRenderingProperties::DISABLE);
-		props->clear(CGL_DEPTH|CGL_RGBA);
-
-		// inits
-		CBasicObjects::CCube *cube = new CBasicObjects::CCube();
-		cube->setDimensions(1.0f,1.0f,1.0f);
-		CMaterial *pM = cube->getShader()->getMaterial();
-		*pM = *pMat;
-
-		CViewModifier *vmcube = new CViewModifier("MyCube");
-		vmcube->setObject(cube);
-		CModifier::TIME_FUNCTION tz;
-		tz.timeFunction = CModifier::CGL_TIME_CONSTANT;
-		tz.a0 = 0.2f;
-		CModifier::TIME_FUNCTION tx;
-		tx.timeFunction = CModifier::CGL_TIME_CONSTANT;
-		tx.a0 = 0.3f;
-		CModifier::TIME_FUNCTION ty;
-		ty.timeFunction = CModifier::CGL_TIME_COSINE;
-		ty.a2 = 0.3f;
-		ty.a1 = 0.2f;
-		ty.a0 = 0;
-		vmcube->addAction(CViewModifier::ROTATE_VIEW,tx,ty,tz);
-
-		C3DScene *pScene = m_pDisplayBuffer->getRootScene();
-		pScene->addObject(vmcube->getObject());
-		pScene->addLight(pLight);
-
-		m_pDisplayBuffer->glUnBindDisplay();
-	}
-
-	f.getConfig().useTextureResize(false);
-	m_pBufferTexture = f.glCreateDynamicTexture(CTextureObject::CGL_COLOR24_ALPHA,
-												CTextureObject::CGL_ALPHA_TRANSPARENT,
-												CTextureObject::CGL_BILINEAR,
-												m_pDisplayBuffer);
-	tus->setDiffuseMap(m_pBufferTexture);
-*/
 }

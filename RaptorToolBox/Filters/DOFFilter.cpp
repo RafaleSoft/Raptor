@@ -309,9 +309,9 @@ void CDOFFilter::glRenderFilter()
     tmpDisplay->glBindDisplay(noDevice);
     glActiveTextureARB(GL_TEXTURE1_ARB);
     glEnable(GL_TEXTURE_2D);
-    depthInput->glRender();
+	depthInput->glvkRender();
     glActiveTextureARB(GL_TEXTURE0_ARB);
-    getColorInput()->glRender();
+	getColorInput()->glvkRender();
 
 
 #if defined(GL_ARB_vertex_shader)
@@ -332,7 +332,7 @@ void CDOFFilter::glRenderFilter()
 	{
 		//  Render Y-blur in current buffer
 		tmpDisplay2->glBindDisplay(noDevice);
-		tmpTexture->glRender();
+		tmpTexture->glvkRender();
 
 	#if defined(GL_ARB_vertex_shader)
 		DOFShader->glGetVertexProgram()->setProgramParameters(vp_paramsY);
@@ -349,7 +349,7 @@ void CDOFFilter::glRenderFilter()
 
 		//  Render X-blur in pixel buffer
 		tmpDisplay->glBindDisplay(noDevice);
-		tmpTexture2->glRender();
+		tmpTexture2->glvkRender();
 
 #if defined(GL_ARB_vertex_shader)
 		DOFShader->glGetVertexProgram()->setProgramParameters(vp_paramsX);
@@ -375,9 +375,9 @@ void CDOFFilter::glRenderFilterOutput()
 	//  Render Y-blur in current buffer
 	glActiveTextureARB(GL_TEXTURE1_ARB);
 	glEnable(GL_TEXTURE_2D);
-	depthInput->glRender();
+	depthInput->glvkRender();
 	glActiveTextureARB(GL_TEXTURE0_ARB);
-	tmpTexture->glRender();
+	tmpTexture->glvkRender();
 
 #if defined(GL_ARB_vertex_shader)
 	DOFShader->glGetVertexProgram()->setProgramParameters(vp_paramsY);

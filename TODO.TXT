@@ -3,6 +3,9 @@
 - BasicObjects:
 	- Ajouter un TextureQuad le plus simple possible
 
+- CTextureObject:
+	- Supprimer les targets > 16bits et ajouter accesseur pour le ITextureGenerator
+
 -CVulkanMemory:
 	- initialiser une bloc mémoire pour l'application (vertex et index buffers bindés sur la même allocation)
 	- Factoriser les allocators (Geometry, Texel, Uniform)
@@ -20,9 +23,6 @@
 
 - CGeometryAllocator:
 	- currentAddress : utilisé en unsigned int => bug si uint64_t
-
-- OpenGLMemory:
-	pExtensions->glLockArraysEXT(0, bo.getSize() / 2);	// unsigned short
 
 - CRaptorRenderBufferDisplay:
 	- mettre au point le format CGL_FLOAT_32 (creation des textures attachées)
@@ -70,6 +70,7 @@
 	- SMP : si défini, créer des Engine jobs ?
 	- OpenCL + GPU computing
 	- Positionner les setFactors sur le particle compute depuis l'import (c.f. demo.xml)
+	- ParticleManager : enlever le cast de ITextureObject en CTextureObject
 	
 - CLight
 	- glow : volume rendering  ?

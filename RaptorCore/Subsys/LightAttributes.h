@@ -15,14 +15,11 @@
 #if !defined(AFX_LIGHTOBSERVER_H__D6E2195C_21B4_42FB_ABA5_4219EECFF076__INCLUDED_)
 	#include "GLHierarchy/LightObserver.h"
 #endif
-#if !defined(AFX_OBJECTREFERENCE_H__0D47C721_2B2D_4163_AB88_BE1B4E08A84D__INCLUDED_)
-	#include "GLHierarchy/ObjectReference.h"
-#endif
 
 
 RAPTOR_NAMESPACE_BEGIN
 
-class CTextureObject;
+class ITextureObject;
 class CProjector;
 class CLight;
 
@@ -85,12 +82,12 @@ private:
 
     typedef struct flare_item_t
     {
-        CTextureObject	*pFlare;
+        ITextureObject	*pFlare;
         float			fSize;
         float			fDistance;
     } flare_item;
-	vector<flare_item>   mFlares;
-	unsigned int		m_uiFlare;
+	std::vector<flare_item>	mFlares;
+	unsigned int			m_uiFlare;
 
     float				m_fLightVolumeSize;
     unsigned int		m_volumeVisibility;

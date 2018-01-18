@@ -155,7 +155,7 @@ CTextureObject* CRaptorToolBox::mergeTextures(	CTextureSet *t,
 	{
 		CTextureObject* current = t->getTexture(i);
 
-		current->glRender();
+		current->glvkRender();
 
 		GLuint *buffer = new GLuint[current->getWidth()*current->getHeight()*4];
 
@@ -183,7 +183,7 @@ CTextureObject* CRaptorToolBox::mergeTextures(	CTextureSet *t,
 		delete [] buffer;
 	}
 
-	T->glRender();
+	T->glvkRender();
 	factory.glLoadTexture(T,merge);
 	return T;
 }

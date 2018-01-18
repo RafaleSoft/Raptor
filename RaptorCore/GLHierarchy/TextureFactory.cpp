@@ -452,29 +452,18 @@ bool CTextureFactory::glLoadTexture(CTextureObject* const T,
 	}
 #endif
 
-	if ((T->target >> 16) == ITextureGenerator::BUFFERED)
-	{
-#ifdef RAPTOR_DEBUG_MODE_GENERATION
-		Raptor::GetErrorManager()->generateRaptorError(CTextureFactory::CTextureFactoryClassID::GetClassId(),
-													   CRaptorErrorManager::RAPTOR_WARNING,
-													   CRaptorMessages::ID_UPDATE_FAILED);
-#endif
-		return false;
-	}
-
 	CImage::IImageOP::operation_param_t param;
 	param.bump_scale = mConfig.getBumpAmplitude();
 	param.transparency = T->getTransparency();
 	CVaArray<CImage::IImageOP::OP_KIND> iops = ops;
 	if (mConfig.useTextureResize() && !ops.hasValue(CImage::IImageOP::IMAGE_SCALER))
 		iops.addValue(CImage::IImageOP::IMAGE_SCALER);
+	if (!ops.hasValue(CImage::IImageOP::ALPHA_TRANSPARENCY))
+		iops.addValue(CImage::IImageOP::ALPHA_TRANSPARENCY);
 
 	CImage loadImage;
 	if (loadImage.loadImage(fname, iops, param))
-	{
-		loadImage.setAlpha(T->getTransparency());
 		return glLoadTexture(T, loadImage);
-	}
 	else
 		return false;
 }
@@ -631,7 +620,7 @@ bool CTextureFactory::glExportTexture(CTextureObject *T,const std::string &fname
     bool res = true;
 	if (imager != NULL)
 	{
-        T->glRender();
+		T->glvkRender();
 
 		CImage exp;
 		exp.allocatePixels(T->getWidth(), T->getHeight());

@@ -278,11 +278,11 @@ void CMagnifierFilter::glRenderFilter()
     xBuffer->glBindDisplay(noDevice);
     glActiveTextureARB(GL_TEXTURE1_ARB);
     glEnable(GL_TEXTURE_2D);
-    kernelTexture->glRender();
+	kernelTexture->glvkRender();
 	if (m_bRebuild)
 		computeKernel();
     glActiveTextureARB(GL_TEXTURE0_ARB);
-    colorInput->glRender();
+	colorInput->glvkRender();
 
 #if defined(GL_ARB_vertex_shader)
 	m_pYKernelShader->glGetVertexProgram()->setProgramParameters(v_params_y);
@@ -308,9 +308,9 @@ void CMagnifierFilter::glRenderFilterOutput()
     //! Second (last) pass : yPass of the kernel, assuming it is separable
 	glActiveTextureARB(GL_TEXTURE1_ARB);
     glEnable(GL_TEXTURE_2D);
-    kernelTexture->glRender();
+	kernelTexture->glvkRender();
     glActiveTextureARB(GL_TEXTURE0_ARB);
-    xKernelPass->glRender();
+	xKernelPass->glvkRender();
 
 #if defined(GL_ARB_vertex_shader)
 	m_pXKernelShader->glGetVertexProgram()->setProgramParameters(v_params_x);
@@ -350,7 +350,7 @@ bool CMagnifierFilter::glInitFilter(void)
 	else if (m_fModel == RENDER_BUFFER)
 	{
 		//!    Source is unfiltered to avoid artifacts ( see comment below ).
-		colorInput->glRender();
+		colorInput->glvkRender();
 		colorInput->glUpdateFilter(CTextureObject::CGL_UNFILTERED);
 	}
 

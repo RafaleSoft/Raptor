@@ -213,7 +213,7 @@ void CContextManager::glDrawLogo(void)
 		glEnable(GL_TEXTURE_2D);
 		glColor4f(1.0f,1.0f,1.0f,0.75f);
 		if (!(m_pLogo == NULL))
-			m_pLogo->glRender();
+			m_pLogo->glvkRender();
 		glBegin(GL_QUADS);
 			glTexCoord2f(0.0f,1.0f);		glVertex3f(0.7f,-0.85f,1.0f);
 			glTexCoord2f(0.0f,0.0f);		glVertex3f(0.7f,-1.0f,1.0f);

@@ -480,7 +480,7 @@ GLDisplay->glMakeCurrent(false);
 	GLDisplay->resetTotalTime();
 GLDisplay->glMakeCurrent(true);
 	T = GLDisplay->txt->getTexture(4);
-	T->glRender();
+	T->glvkRender();
 GLDisplay->glMakeCurrent(false);
 
 	BenchStep(resultCount,LOOP_SIZE,GLDisplay);
@@ -492,7 +492,7 @@ GLDisplay->glMakeCurrent(false);
 	GLDisplay->draw = 0;
 GLDisplay->glMakeCurrent(true);
 	T = GLDisplay->txt->getTexture(0);
-	T->glRender();
+	T->glvkRender();
 GLDisplay->glMakeCurrent(false);
 
 	BenchStep(resultCount,LOOP_SIZE,GLDisplay);
@@ -507,7 +507,7 @@ GLDisplay->glMakeCurrent(false);
 	{
 GLDisplay->glMakeCurrent(true);
 		T = GLDisplay->txt->getTexture(1);
-		T->glRender();
+		T->glvkRender();
 GLDisplay->glMakeCurrent(false);
 		BenchStep(resultCount,LOOP_SIZE,GLDisplay);
 	}
@@ -527,7 +527,7 @@ GLDisplay->glMakeCurrent(true);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 	T = GLDisplay->txt->getTexture(0);
-	T->glRender();
+	T->glvkRender();
 GLDisplay->glMakeCurrent(false);
 
 	BenchStep(resultCount,LOOP_SIZE,GLDisplay);
@@ -578,7 +578,7 @@ GLDisplay->glMakeCurrent(false);
 	{
 GLDisplay->glMakeCurrent(true);
 		T = GLDisplay->txt->getTexture(5);
-		T->glRender();
+		T->glvkRender();
 GLDisplay->glMakeCurrent(false);
 
 		CTextureFactoryConfig &tfConfig = CTextureFactory::getDefaultFactory().getConfig();
