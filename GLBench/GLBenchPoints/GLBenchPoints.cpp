@@ -210,7 +210,7 @@ void Display::GLInitContext()
 
 	CTextureFactory &txt = CTextureFactory::getDefaultFactory();
 
-	sprite = txt.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA);
+	sprite = txt.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA);
     sprite->setSize(32,32);
 	sprite->glSetTransparency(192);
 
@@ -402,7 +402,7 @@ extern "C" void GLBENCH_API Bench(CWnd *parent)
 		glEnable(GL_POINT_SPRITE_NV);
 		//GLDisplay->glPointParameterfEXT(GL_POINT_SPRITE_R_MODE_NV,GL_ZERO);
 		glTexEnvi(GL_POINT_SPRITE_NV,GL_COORD_REPLACE_NV,GL_TRUE);
-		sprite->glRender();
+		sprite->glvkRender();
 		CTimeObject::markTime(parent);
 		for (i=0;i<LOOP_SIZE;i++)
 		{

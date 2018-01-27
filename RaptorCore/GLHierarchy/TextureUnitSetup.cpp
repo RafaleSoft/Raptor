@@ -552,13 +552,13 @@ RAPTOR_HANDLE CTextureUnitSetup::glBuildSetup(void)
 		    if (imageUnit[i] != NULL)
 		    {
 			    // It is preferable not to render texture extensions in a display list.
-			    glEnable(imageUnit[i]->target & 0xFFFF);
+			    glEnable(imageUnit[i]->target);
                 // generators cannot be used in display lists
 				ITextureGenerator *G = imageUnit[i]->m_pTexelGenerator;
                 if (G != NULL)
                     G->enableGenerator(false);
 
-			    imageUnit[i]->glRender();
+				imageUnit[i]->glvkRender();
 
                 if (G != NULL)
                     G->enableGenerator(true);
@@ -637,7 +637,7 @@ RAPTOR_HANDLE CTextureUnitSetup::glBuildUnSetup(void)
 
 			if (imageUnit[i] != NULL)
 			{
-				GLenum target = imageUnit[i]->target & 0xFFFF;
+				GLenum target = imageUnit[i]->target;
 				glBindTexture(target, 0);
 				glDisable(target);
 			}

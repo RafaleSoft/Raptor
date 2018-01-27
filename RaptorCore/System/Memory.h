@@ -199,6 +199,12 @@ public:
 	//! allocate count chuncks of size bytes, aligned with alignment
 	void *allocate(size_t size,unsigned int count,size_t alignment = 0) const;
 
+	//!	Reallocation method with aligned data
+	//! allocate count chuncks of size bytes, aligned with alignment, preserving old content.
+	//! If size is 0, it is equivalent to a call to release(olddata).
+	//! If olddata is NULL, it is equivalent to a call to allocate(size, count, alignment)
+	void *reallocate(void *olddata, size_t size, unsigned int count, size_t alignment = 0) const;
+
 	//!	Free aligned allocated memory only with Release method.
 	//!	Do not Release memory not allocated with Allocate
 	void release(void *data) const;

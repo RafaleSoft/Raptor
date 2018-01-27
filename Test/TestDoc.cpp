@@ -59,7 +59,7 @@ public:
 	Foreground(CMagnifierFilter *mf):fgMag(mf),status(mf->isEnabled())
 	{
 		CTextureFactory &fct = CTextureFactory::getDefaultFactory();
-		CTextureObject *T = fct.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA);
+		CTextureObject *T = fct.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA);
 		fct.glLoadTexture(T,"lrock049.jpg");
 
 		fgMag->setColorInput(T);
@@ -214,7 +214,7 @@ void CTestDoc::GLInitContext(void)
     background->glUnLockData();
 
 	CTextureFactory &fct = CTextureFactory::getDefaultFactory();
-	CTextureObject *T = fct.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA);
+	CTextureObject *T = fct.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA);
 	fct.glLoadTexture(T,"Gaussian_blur_test.jpg");
 	CShader *s = background->getShader();
 	CTextureUnitSetup *tmu = s->glGetTextureUnitsSetup();

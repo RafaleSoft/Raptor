@@ -21,7 +21,7 @@
 RAPTOR_NAMESPACE_BEGIN
 
 class CLightAttributes;
-class CTextureObject;
+class ITextureObject;
 class CObject3D;
 class CProjector;
 class CLightGlow;
@@ -130,7 +130,7 @@ public:
 
     //!	Specifie the lens flare texture of the light
 	//!	Use size parameter to minify/magnify projection size
-	void addLensFlare(CTextureObject* T,float size);
+	void addLensFlare(ITextureObject* T,float size);
 
     //! Specifies the glow texture of the light.
     void setGlow(CLightGlow *T);

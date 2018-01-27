@@ -29,6 +29,9 @@
 #if !defined(AFX_DEFAULTIMAGESCALER_H__E3E63A13_79FC_4E46_A1D5_BCD41CF86360__INCLUDED_)
     #include "Subsys/DefaultImageScaler.h"
 #endif
+#if !defined(AFX_DEFAULTALPHATRANSPARENCY_H__8EAD8C9F_DC40_4063_8E0A_0C2AB300AD16__INCLUDED_)
+	#include "Subsys/DefaultAlphaTransparency.h"
+#endif
 #if !defined(AFX_SHADERLIBRARY_H__E2A8C35E_23A4_4AD1_8467_884E6B183B4F__INCLUDED_)
 	#include "Subsys/ShaderLibrary.h"
 #endif
@@ -108,6 +111,9 @@ Global::~Global()
 	delete op;
 
 	op = CImage::getImageKindOP(CImage::IImageOP::IMAGE_SCALER);
+	delete op;
+
+	op = CImage::getImageKindOP(CImage::IImageOP::ALPHA_TRANSPARENCY);
 	delete op;
 
 	CImage::IImageIO *pIO = CImage::getImageKindIO("BUFFER");
@@ -197,11 +203,14 @@ bool Global::init(const CRaptorConfig& config)
 
 		CContextManager *pContext = CContextManager::GetInstance();
 
-		CDefaultBumpmapLoader *pDefaultBumpmapLoader = new CDefaultBumpmapLoader();
+		CDefaultBumpmapLoader *pDefaultBumpmapLoader = new CDefaultBumpmapLoader(1.0f);
 		CImage::setImageKindOP(pDefaultBumpmapLoader);
 
-		CDefaultImageScaler *pDefaultImageScaler = new CDefaultImageScaler();
+		CDefaultImageScaler *pDefaultImageScaler = new CDefaultImageScaler(1.0f,1.0f);
 		CImage::setImageKindOP(pDefaultImageScaler);
+
+		CDefaultAlphaTransparency *pDefaultAlphaTransparency = new CDefaultAlphaTransparency(255);
+		CImage::setImageKindOP(pDefaultAlphaTransparency);
 
 		CImage::IImageIO *pIO = new CBufferImage();
 		CImage::setImageKindIO(pIO);

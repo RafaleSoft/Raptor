@@ -43,18 +43,13 @@ RAPTOR_NAMESPACE
 //////////////////////////////////////////////////////////////////////
 
 CTextureObject::CTextureObject(TEXEL_TYPE type)
-    :m_type(type)
+    :ITextureObject(type)
 {
-	m_name = "<unknown>";
 	texname = 0;
 	target = 0;
 	level = 0;
-	m_width = 0;
-	m_height = 0;
-    m_depth = 0;
 	env_mode = GL_REPLACE;
 	m_filter = CTextureObject::CGL_UNFILTERED;
-	m_alpha = 255;
 	m_pTexelGenerator = NULL;
     aniso_level = 0.0f;
     source[0] = source[1] = source[2] = source[3] = 0;
@@ -64,21 +59,16 @@ CTextureObject::CTextureObject(TEXEL_TYPE type)
 }
 
 CTextureObject::CTextureObject(const CTextureObject& rsh)
+	:ITextureObject(rsh)
 {
-	m_name = rsh.m_name;
 	texname = 0;
 	target = rsh.target;
 	level = rsh.level;
-	m_width = rsh.m_width;
-	m_height = rsh.m_height;
-    m_depth = rsh.m_depth;
 	env_mode = rsh.env_mode;
 	m_filter = rsh.m_filter;
-	m_alpha = rsh.m_alpha;
 	m_pTexelGenerator = rsh.m_pTexelGenerator;
     aniso_level = rsh.aniso_level;
     source[0] = source[1] = source[2] = source[3] = 0;
-	m_type = rsh.m_type;
 #if defined(VK_VERSION_1_0)
 	vk_texname = VK_NULL_HANDLE;
 #endif
@@ -91,16 +81,20 @@ CTextureObject::~CTextureObject()
 }
 
 
-void CTextureObject::glRender()
+void CTextureObject::glvkRender()
 {
     if (texname == 0)   // much faster
 		return;
 
-	glBindTexture((target & 0xFFFF),texname);
+	glBindTexture(target,texname);
 	glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,env_mode);
 
-	if (((target >> 16) == ITextureGenerator::BUFFERED) ||
-        ((target >> 16) == ITextureGenerator::ANIMATED))
+	
+	ITextureGenerator::GENERATOR_KIND kind = ITextureGenerator::NONE;
+	if (NULL != m_pTexelGenerator)
+		kind = m_pTexelGenerator->getKind();
+	if ((kind == ITextureGenerator::BUFFERED) ||
+		(kind == ITextureGenerator::ANIMATED))
 	{
         m_pTexelGenerator->glGenerate(this);
     }
@@ -108,32 +102,11 @@ void CTextureObject::glRender()
     CATCH_GL_ERROR
 }
 
-void CTextureObject::setSize(unsigned int width, unsigned int height, unsigned int depth)
-{
-	if ((width == 0) || (height == 0) || (depth == 0))
-	{
-#ifdef RAPTOR_DEBUG_MODE_GENERATION
-		Raptor::GetErrorManager()->generateRaptorError(Global::COpenGLClassID::GetClassId(),
-													   CRaptorErrorManager::RAPTOR_WARNING,
-													   "CTextureObject wrong size update");
-#endif
-		return;
-	}
-
-    if ((width != m_width) || (height != m_height) || (depth != m_depth))
-    {
-        m_width = width;
-        m_height = height;
-        m_depth = depth;
-    }
-}
-
 CTextureObject::CUBE_FACE CTextureObject::getCurrentCubeFace(void) const
 {
-	GLuint t = (target & 0xFFFF);
 #if defined(GL_ARB_texture_cube_map)
-	if ((t >= GL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB) && (t <= GL_TEXTURE_CUBE_MAP_NEGATIVE_Z_ARB))
-		return (CTextureObject::CUBE_FACE)(t-GL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB);
+	if ((target >= GL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB) && (target <= GL_TEXTURE_CUBE_MAP_NEGATIVE_Z_ARB))
+		return (CTextureObject::CUBE_FACE)(target-GL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB);
 	else
 #endif
 		return CGL_CUBEMAP_NONE;
@@ -142,15 +115,13 @@ CTextureObject::CUBE_FACE CTextureObject::getCurrentCubeFace(void) const
 void CTextureObject::selectCubeFace(CUBE_FACE face)
 {
 #if defined(GL_ARB_texture_cube_map)
-	GLuint t = (target & 0xFFFF);
-
-	if ((t == GL_TEXTURE_CUBE_MAP_ARB) ||
-		((t >= GL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB) && (t <= GL_TEXTURE_CUBE_MAP_NEGATIVE_Z_ARB)))
+	if ((target == GL_TEXTURE_CUBE_MAP_ARB) ||
+		((target >= GL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB) && (target <= GL_TEXTURE_CUBE_MAP_NEGATIVE_Z_ARB)))
 	{
 		if (face == CGL_CUBEMAP_NONE)
-			target = (target & 0xFFFF0000) + GL_TEXTURE_CUBE_MAP_ARB;
+			target = GL_TEXTURE_CUBE_MAP_ARB;
 		else
-			target = (target & 0xFFFF0000) + GL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB + (face - CGL_CUBEMAP_PX);
+			target = GL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB + (face - CGL_CUBEMAP_PX);
 	}
 #endif
 }
@@ -223,8 +194,8 @@ void CTextureObject::glUpdateFilter(CTextureObject::TEXTURE_FILTER F)
 		min_filter = GL_LINEAR_MIPMAP_NEAREST;
 	}
 	
-	glTexParameteri(target & 0xFFFF,GL_TEXTURE_MAG_FILTER,mag_filter);
-	glTexParameteri(target & 0xFFFF,GL_TEXTURE_MIN_FILTER,min_filter);
+	glTexParameteri(target,GL_TEXTURE_MAG_FILTER,mag_filter);
+	glTexParameteri(target,GL_TEXTURE_MIN_FILTER,min_filter);
 
 	m_filter = F;
 
@@ -254,14 +225,14 @@ void CTextureObject::glUpdateClamping(CLAMP_MODE C)
 			break;
 	}
 
-	glTexParameteri(target & 0xFFFF,GL_TEXTURE_WRAP_S,clamp_mode);
-	glTexParameteri(target & 0xFFFF,GL_TEXTURE_WRAP_T,clamp_mode);
-	if  (m_depth > 0)
+	glTexParameteri(target,GL_TEXTURE_WRAP_S,clamp_mode);
+	glTexParameteri(target,GL_TEXTURE_WRAP_T,clamp_mode);
+	if (getDepth() > 0)
 	{
 #if defined(GL_VERSION_1_2)
-		glTexParameteri(target & 0xFFFF,GL_TEXTURE_WRAP_R,clamp_mode);
+		glTexParameteri(target,GL_TEXTURE_WRAP_R,clamp_mode);
 #elif defined(GL_EXT_texture3D)
-		glTexParameteri(target & 0xFFFF,GL_TEXTURE_WRAP_R_EXT,clamp_mode);
+		glTexParameteri(target,GL_TEXTURE_WRAP_R_EXT,clamp_mode);
 #endif
 	}
 }
@@ -270,12 +241,12 @@ void CTextureObject::glSetTransparentColor(unsigned char r, unsigned char g, uns
 {
     if ((target & GL_TEXTURE_2D) == GL_TEXTURE_2D)
     {
-	    glBindTexture(target & 0xFFFF,texname);
+	    glBindTexture(target,texname);
 
         GLint currentWidth = 0;
         GLint currentHeight = 0;
-        glGetTexLevelParameteriv(target & 0xFFFF, level, GL_TEXTURE_WIDTH, &currentWidth);
-        glGetTexLevelParameteriv(target & 0xFFFF, level, GL_TEXTURE_HEIGHT, &currentHeight);
+        glGetTexLevelParameteriv(target, level, GL_TEXTURE_WIDTH, &currentWidth);
+        glGetTexLevelParameteriv(target, level, GL_TEXTURE_HEIGHT, &currentHeight);
 
 	    GLubyte *data = new GLubyte[currentWidth*currentHeight*4];
 
@@ -287,7 +258,7 @@ void CTextureObject::glSetTransparentColor(unsigned char r, unsigned char g, uns
 				data[i+3] = 0;
         }
 
-	    glTexSubImage2D( (target & 0xFFFF), level,
+	    glTexSubImage2D( target, level,
 					     0,	0, currentWidth,	currentHeight,
 					     GL_RGBA, GL_UNSIGNED_BYTE, data);
 
@@ -302,27 +273,26 @@ void CTextureObject::glSetTransparency(unsigned int	alpha)
 {
     m_alpha = alpha;
 
-    if (((target & 0xFFFF) & GL_TEXTURE_2D) == GL_TEXTURE_2D)
+    if ((target & GL_TEXTURE_2D) == GL_TEXTURE_2D)
     {
         GLint currentWidth = 0;
         GLint currentHeight = 0;
-        glGetTexLevelParameteriv(target & 0xFFFF, level, GL_TEXTURE_WIDTH, &currentWidth);
-        glGetTexLevelParameteriv(target & 0xFFFF, level, GL_TEXTURE_HEIGHT, &currentHeight);
+        glGetTexLevelParameteriv(target, level, GL_TEXTURE_WIDTH, &currentWidth);
+        glGetTexLevelParameteriv(target, level, GL_TEXTURE_HEIGHT, &currentHeight);
 
         if ((currentWidth != 0) && (currentHeight != 0))
         {
-            m_width = currentWidth;
-            m_height = currentHeight;
+			setSize(currentWidth, currentHeight, getDepth());
 
             // Here currentWidth ( & currentHeight) sould be equal to m_width ( & m_height)
             GLubyte *data = new unsigned char[currentWidth*currentHeight*4];
 
-            glGetTexImage(target&0xFFFF,level,GL_RGBA,GL_UNSIGNED_BYTE,data);
+            glGetTexImage(target,level,GL_RGBA,GL_UNSIGNED_BYTE,data);
 
             for (int i=3;i<currentWidth*currentHeight;i+=4)
                 data[i] = alpha;
 
-            glTexSubImage2D((target & 0xFFFF), level,
+            glTexSubImage2D(target, level,
 							0,	0, currentWidth,	currentHeight,
 							GL_RGBA, GL_UNSIGNED_BYTE, data);
 
@@ -343,8 +313,8 @@ bool CTextureObject::setGenerationSize(int posx, int posy, unsigned int width, u
     if ((gH == 0) || (gW == 0))
         return false;
 
-    int H = MIN(height,MIN(m_height,gH));
-    int W = MIN(width,MIN(m_width,gW));
+    int H = MIN(height,MIN(getHeight(),gH));
+    int W = MIN(width,MIN(getWidth(),gW));
 
 //  OGL does not raise errors for that. 
 //  Specific check must then be done in each generator
@@ -374,7 +344,7 @@ unsigned int CTextureObject::getTexelFormat(void) const
 	//!	A default value, though it may be wrong.
 	unsigned int res = GL_RGBA8;
 
-	switch(m_type)
+	switch(getTexelType())
 	{
 		case CGL_COLOR24:
 			res = GL_RGB8;

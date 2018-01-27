@@ -120,7 +120,7 @@ void CProjector::glRender(void)
 	glRenderCone(30.0f);
 #endif
 
-    m_pProjection->glRender();
+	m_pProjection->glvkRender();
 	//m_pProjection->glUpdateClamping(CTextureObject::CGL_EDGECLAMP);
 
 	glTexGenfv(GL_S,GL_EYE_PLANE,m_Sprojection);

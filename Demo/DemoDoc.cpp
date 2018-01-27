@@ -142,7 +142,7 @@ void HeatSpots::glRenderFilterOutput()
 	PFN_GL_ACTIVE_TEXTURE_ARB_PROC glActiveTextureARB = pExtensions->glActiveTextureARB;
 
 	glActiveTextureARB(GL_TEXTURE0_ARB);
-    colorInput->glRender();
+	colorInput->glvkRender();
     glDrawBuffer();
 
     glPushAttrib(GL_ENABLE_BIT);
@@ -197,7 +197,7 @@ bool HeatSpots::glInitFilter()
 	if ((colorExternalSource != NULL) && 
 		(m_fModel == CRaptorDisplayFilter::RENDER_TEXTURE))
 	{
-		colorInput = filterFactory.glCreateDynamicTexture(	CTextureObject::CGL_COLOR24_ALPHA,
+		colorInput = filterFactory.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 															CTextureObject::CGL_OPAQUE,
 															CTextureObject::CGL_BILINEAR,
 															colorExternalSource);

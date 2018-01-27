@@ -51,7 +51,7 @@ RAPTOR_NAMESPACE
 //////////////////////////////////////////////////////////////////////
 
 COmniShadowMap::COmniShadowMap(C3DScene& rScene)
-	:CEnvironment(rScene)
+	:CEnvironment(rScene), m_pShadowTexture(NULL)
 {
 }
 
@@ -147,9 +147,9 @@ bool COmniShadowMap::glInitEnvironment(unsigned int width,unsigned int height)
 	m_pShadowCubeMap->glUnBindDisplay();
 
 	CTextureFactory &factory = CTextureFactory::getDefaultFactory();
-    m_pShadowTexture = factory.glCreateCubemap(CTextureObject::CGL_COLOR24_ALPHA,
-                                                                                CTextureObject::CGL_MULTIPLY,
-                                                                                CTextureObject::CGL_UNFILTERED);
+    m_pShadowTexture = factory.glCreateCubemap(ITextureObject::CGL_COLOR24_ALPHA,
+                                               CTextureObject::CGL_MULTIPLY,
+                                               CTextureObject::CGL_UNFILTERED);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB,GL_TEXTURE_WRAP_S,GL_CLAMP);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB,GL_TEXTURE_WRAP_T,GL_CLAMP);
 
@@ -332,7 +332,7 @@ void COmniShadowMap::glRenderShadow(const vector<C3DSceneObject*>& objects)
 
 	if (m_pShadowTexture != NULL)
 	{
-		m_pShadowTexture->glRender();
+		m_pShadowTexture->glvkRender();
 
 		RAPTOR_HANDLE renderTexture;
 		renderTexture.hClass = CTextureFactory::CTextureFactoryClassID::GetClassId().ID();
@@ -361,7 +361,7 @@ void COmniShadowMap::glRenderTexture(void)
 {
 #ifdef GL_ARB_texture_cube_map
     glEnable(GL_TEXTURE_CUBE_MAP_ARB);
-    m_pShadowTexture->glRender();
+	m_pShadowTexture->glvkRender();
 
 	RAPTOR_HANDLE renderTexture;
 	renderTexture.hClass = CTextureFactory::CTextureFactoryClassID::GetClassId().ID();

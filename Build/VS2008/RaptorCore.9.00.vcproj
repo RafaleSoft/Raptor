@@ -266,10 +266,6 @@
 				RelativePath="..\..\RaptorCore\Raptordll.cpp"
 				>
 			</File>
-			<File
-				RelativePath="..\..\RaptorCore\StdAfx.cpp"
-				>
-			</File>
 			<Filter
 				Name="GLHierarchy src"
 				Filter="cpp"
@@ -280,10 +276,6 @@
 				</File>
 				<File
 					RelativePath="..\..\RaptorCore\GLHierarchy\BumppedGeometry.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\RaptorCore\GLHierarchy\EMBMGeometry.cpp"
 					>
 				</File>
 				<File
@@ -396,6 +388,10 @@
 				</File>
 				<File
 					RelativePath="..\..\RaptorCore\GLHierarchy\Persistence.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\RaptorCore\GLHierarchy\ProgramParameters.cpp"
 					>
 				</File>
 				<File
@@ -662,10 +658,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\RaptorCore\Subsys\DefaultMipmapBuilder.cpp"
-					>
-				</File>
-				<File
 					RelativePath="..\..\RaptorCore\Subsys\DOT3BumppedGeometry.cpp"
 					>
 				</File>
@@ -675,10 +667,6 @@
 				</File>
 				<File
 					RelativePath="..\..\RaptorCore\Subsys\GeometryAllocator.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\RaptorCore\Subsys\InternalProcs.cpp"
 					>
 				</File>
 				<File
@@ -738,6 +726,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\RaptorCore\Subsys\ResourceAllocator.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\..\RaptorCore\Subsys\ShaderLibrary.cpp"
 					>
 				</File>
@@ -755,6 +747,10 @@
 				</File>
 				<File
 					RelativePath="..\..\RaptorCore\Subsys\TexelAllocator.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\RaptorCore\Subsys\UniformAllocator.cpp"
 					>
 				</File>
 				<File
@@ -1046,6 +1042,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\RaptorCore\System\Image.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\..\RaptorCore\System\Memory.cpp"
 					>
 				</File>
@@ -1293,6 +1293,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\RaptorCore\GLHierarchy\ProgramParameters.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\RaptorCore\GLHierarchy\Projector.h"
 					>
 				</File>
@@ -1514,6 +1518,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\RaptorCore\System\Image.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\RaptorCore\System\Memory.h"
 					>
 				</File>
@@ -1704,10 +1712,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\RaptorCore\Subsys\DefaultMipmapBuilder.h"
-					>
-				</File>
-				<File
 					RelativePath="..\..\RaptorCore\Subsys\DOT3BumppedGeometry.h"
 					>
 				</File>
@@ -1764,6 +1768,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\RaptorCore\Subsys\ResourceAllocator.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\RaptorCore\Subsys\ShaderLibrary.h"
 					>
 				</File>
@@ -1789,6 +1797,10 @@
 				</File>
 				<File
 					RelativePath="..\..\RaptorCore\Subsys\TimeObjectImpl.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\RaptorCore\Subsys\UniformAllocator.h"
 					>
 				</File>
 				<File

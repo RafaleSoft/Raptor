@@ -60,7 +60,7 @@ void CLightGlow::glRender(void)
     glGetIntegerv(GL_BLEND_SRC,&blendSrc);
 	glGetIntegerv(GL_BLEND_DST,&blendDst);
 
-    m_glow->glRender();
+	m_glow->glvkRender();
     float s = m_glowSize;	// shorter to write
 
     if (m_bRebuildGlow)

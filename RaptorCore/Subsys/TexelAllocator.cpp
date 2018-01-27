@@ -161,11 +161,11 @@ VkImage CTexelAllocator::vkAllocateTextureImage(uint64_t width,
 	//!
 	switch (format)
 	{
-		case CTextureObject::CGL_COLOR24_ALPHA:
+		case ITextureObject::CGL_COLOR24_ALPHA:
 			imageInfo.format = VK_FORMAT_R8G8B8A8_UNORM;
 			size = size * 4;
 			break;
-		case CTextureObject::CGL_COLOR24:
+		case ITextureObject::CGL_COLOR24:
 			imageInfo.format = VK_FORMAT_R8G8B8_UNORM;
 			size = size * 3;
 			break;

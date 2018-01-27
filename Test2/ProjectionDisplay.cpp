@@ -69,7 +69,8 @@ CProjectionDisplay::CProjectionDisplay():
     m_shader(NULL),
 	m_pScene(NULL),
 	m_pBall(NULL),
-	m_light(NULL)
+	m_light(NULL),
+	dt(0.0f)
 {
 }
 
@@ -112,14 +113,15 @@ void CProjectionDisplay::Init()
 		char fname[32];
 		sprintf(fname,"Datas\\caust%02d.tga",i);
 
-		CTextureObject *T = f.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_ALPHA_TRANSPARENT,CTextureObject::CGL_BILINEAR);
+		CTextureObject *T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_ALPHA_TRANSPARENT,CTextureObject::CGL_BILINEAR);
 		T->glSetTransparency(128);
 		f.glLoadTexture(T,fname);
 		m_caustics->addTexture(T);
 	}
 
     // Volume texture
-    cube = f.glCreateVolumeTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_ALPHA_TRANSPARENT,CTextureObject::CGL_BILINEAR);
+	/*
+    cube = f.glCreateVolumeTexture(ITextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_ALPHA_TRANSPARENT,CTextureObject::CGL_BILINEAR);
     cube->glSetTransparency(255);
     cube->setSize(64,64,32);
 
@@ -138,7 +140,7 @@ void CProjectionDisplay::Init()
         memcpy(buffer,data,64*64*4);
     }
 	f.glLoadTexture(cube, cubeImage);
-
+	*/
 	m_light = new CLight("PROJECTOR");
 	m_light->setProjector(m_projector);
 	m_light->setLightPosition(GL_COORD_VERTEX(0.0f,10.0f,10.0f));

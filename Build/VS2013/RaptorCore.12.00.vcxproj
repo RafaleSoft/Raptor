@@ -276,6 +276,7 @@ Subsys\Redist.bat
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\GLLayer.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\GLLod.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\GLVectorFont.cpp" />
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\ITextureObject.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\Light.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\LightGlow.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\LightObserver.cpp" />
@@ -330,6 +331,7 @@ Subsys\Redist.bat
     <ClCompile Include="..\..\RaptorCore\Subsys\Collisions.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\ContextManager.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\ContourAttributes.cpp" />
+    <ClCompile Include="..\..\RaptorCore\Subsys\DefaultAlphaTransparency.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\DefaultBumpmapLoader.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\DefaultImageScaler.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\DOT3BumppedGeometry.cpp" />
@@ -403,6 +405,7 @@ Subsys\Redist.bat
     <ClCompile Include="..\..\RaptorCore\Subsys\Vulkan\VulkanMemory.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\Vulkan\VulkanPipeline.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\Vulkan\VulkanShader.cpp" />
+    <ClCompile Include="..\..\RaptorCore\Subsys\Vulkan\VulkanTextureObject.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\XMLRaptorIO.cpp" />
     <ClCompile Include="..\..\RaptorCore\System\CGLTypes.cpp" />
     <ClCompile Include="..\..\RaptorCore\System\Color.cpp" />
@@ -488,6 +491,7 @@ copy $(SolutionDir)\$(ProjectName)\Subsys\CodeGeneration.h "%RAPTOR_ROOT%\Redist
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\GLLayer.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\GLLod.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\GLVectorFont.h" />
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\ITextureObject.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\Light.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\LightGlow.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\LightObserver.h" />
@@ -542,6 +546,7 @@ copy $(SolutionDir)\$(ProjectName)\Subsys\CodeGeneration.h "%RAPTOR_ROOT%\Redist
     <ClInclude Include="..\..\RaptorCore\Subsys\Collisions.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\ContextManager.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\ContourAttributes.h" />
+    <ClInclude Include="..\..\RaptorCore\Subsys\DefaultAlphaTransparency.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\DefaultBumpmapLoader.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\DefaultImageScaler.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\DOT3BumppedGeometry.h" />
@@ -588,6 +593,7 @@ copy $(SolutionDir)\$(ProjectName)\Subsys\CodeGeneration.h "%RAPTOR_ROOT%\Redist
     <ClInclude Include="..\..\RaptorCore\Subsys\Vulkan\VulkanMemory.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\Vulkan\VulkanPipeline.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\Vulkan\VulkanShader.h" />
+    <ClInclude Include="..\..\RaptorCore\Subsys\Vulkan\VulkanTextureObject.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\XMLRaptorIO.h" />
     <ClInclude Include="..\..\RaptorCore\System\CGLTypes.h" />
     <ClInclude Include="..\..\RaptorCore\System\Color.h" />

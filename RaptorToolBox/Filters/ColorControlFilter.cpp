@@ -218,7 +218,7 @@ void CColorControlFilter::glRenderFilterOutput()
 #endif
 
     glActiveTextureARB(GL_TEXTURE0_ARB);
-    getColorInput()->glRender();
+	getColorInput()->glvkRender();
 	
 	BWShader->glRender();
     glDrawBuffer();
@@ -236,7 +236,7 @@ bool CColorControlFilter::glInitFilter(void)
 
 	if ((colorExternalSource != NULL) && (m_fModel == RENDER_TEXTURE))
 	{
-		colorInput = filterFactory.glCreateDynamicTexture(	CTextureObject::CGL_COLOR24_ALPHA,
+		colorInput = filterFactory.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 															CTextureObject::CGL_OPAQUE,
 															CTextureObject::CGL_BILINEAR,
 															colorExternalSource);

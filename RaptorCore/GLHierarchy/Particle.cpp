@@ -255,7 +255,7 @@ void RAPTOR_FASTCALL CParticle::glRenderPoints(void)
 	if (m_bPointSprite)
 	{
 		glEnable(GL_TEXTURE_2D);
-		m_pTexture->glRender();
+		m_pTexture->glvkRender();
 		#if defined(GL_ARB_point_sprite)
 			glEnable(GL_POINT_SPRITE_ARB);
 			glTexEnvi(GL_POINT_SPRITE_ARB,GL_COORD_REPLACE_ARB,GL_TRUE);
@@ -415,7 +415,7 @@ void RAPTOR_FASTCALL CParticle::glRenderTextures(void)
 		pExtensions->glActiveTextureARB(GL_TEXTURE0_ARB);
 #endif
 	glEnable(GL_TEXTURE_2D);
-	m_pTexture->glRender();
+	m_pTexture->glvkRender();
 
 	CGenericMatrix<float> transform;
 	glGetTransposeFloatv(GL_MODELVIEW_MATRIX,transform);
@@ -537,7 +537,7 @@ void RAPTOR_FASTCALL CParticle::glRenderVolumes(void)
 		pExtensions->glActiveTextureARB(GL_TEXTURE0_ARB);
 #endif
 	glEnable(GL_TEXTURE_3D_EXT);
-	m_pTexture->glRender();
+	m_pTexture->glvkRender();
 
 	CGenericMatrix<float> transform;
 	glGetTransposeFloatv(GL_MODELVIEW_MATRIX,transform);

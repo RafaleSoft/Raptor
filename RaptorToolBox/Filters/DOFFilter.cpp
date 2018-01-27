@@ -309,9 +309,9 @@ void CDOFFilter::glRenderFilter()
     tmpDisplay->glBindDisplay(noDevice);
     glActiveTextureARB(GL_TEXTURE1_ARB);
     glEnable(GL_TEXTURE_2D);
-    depthInput->glRender();
+	depthInput->glvkRender();
     glActiveTextureARB(GL_TEXTURE0_ARB);
-    getColorInput()->glRender();
+	getColorInput()->glvkRender();
 
 
 #if defined(GL_ARB_vertex_shader)
@@ -332,7 +332,7 @@ void CDOFFilter::glRenderFilter()
 	{
 		//  Render Y-blur in current buffer
 		tmpDisplay2->glBindDisplay(noDevice);
-		tmpTexture->glRender();
+		tmpTexture->glvkRender();
 
 	#if defined(GL_ARB_vertex_shader)
 		DOFShader->glGetVertexProgram()->setProgramParameters(vp_paramsY);
@@ -349,7 +349,7 @@ void CDOFFilter::glRenderFilter()
 
 		//  Render X-blur in pixel buffer
 		tmpDisplay->glBindDisplay(noDevice);
-		tmpTexture2->glRender();
+		tmpTexture2->glvkRender();
 
 #if defined(GL_ARB_vertex_shader)
 		DOFShader->glGetVertexProgram()->setProgramParameters(vp_paramsX);
@@ -375,9 +375,9 @@ void CDOFFilter::glRenderFilterOutput()
 	//  Render Y-blur in current buffer
 	glActiveTextureARB(GL_TEXTURE1_ARB);
 	glEnable(GL_TEXTURE_2D);
-	depthInput->glRender();
+	depthInput->glvkRender();
 	glActiveTextureARB(GL_TEXTURE0_ARB);
-	tmpTexture->glRender();
+	tmpTexture->glvkRender();
 
 #if defined(GL_ARB_vertex_shader)
 	DOFShader->glGetVertexProgram()->setProgramParameters(vp_paramsY);
@@ -419,11 +419,11 @@ bool CDOFFilter::glInitFilter(void)
 		(depthExternalSource != NULL) &&
 		(m_fModel == RENDER_TEXTURE))
 	{
-		depthInput = filterFactory.glCreateDynamicTexture(	CTextureObject::CGL_DEPTH24,
+		depthInput = filterFactory.glCreateDynamicTexture(	ITextureObject::CGL_DEPTH24,
 															CTextureObject::CGL_OPAQUE,
 															CTextureObject::CGL_UNFILTERED,
 															depthExternalSource);
-		colorInput = filterFactory.glCreateDynamicTexture(	CTextureObject::CGL_COLOR24_ALPHA,
+		colorInput = filterFactory.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 															CTextureObject::CGL_OPAQUE,
 															CTextureObject::CGL_UNFILTERED,
 															colorExternalSource);
@@ -448,14 +448,14 @@ bool CDOFFilter::glInitFilter(void)
 	{
 		state.renderer = CRaptorDisplayConfig::RENDER_BUFFER;
 
-		tmpTexture = filterFactory.glCreateTexture(	CTextureObject::CGL_COLOR24_ALPHA,
+		tmpTexture = filterFactory.glCreateTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 			                                        CTextureObject::CGL_OPAQUE,
 				                                    CTextureObject::CGL_UNFILTERED);
 		filterFactory.glResizeTexture(tmpTexture,state.width,state.height);
 		tmpTexture->glUpdateClamping(CTextureObject::CGL_EDGECLAMP);
 		m_pRenderTextures->addTexture(tmpTexture);
 
-		tmpTexture2 = filterFactory.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,
+		tmpTexture2 = filterFactory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
 			                                        CTextureObject::CGL_OPAQUE,
 				                                    CTextureObject::CGL_UNFILTERED);
 		filterFactory.glResizeTexture(tmpTexture2,state.width,state.height);
@@ -489,11 +489,11 @@ bool CDOFFilter::glInitFilter(void)
 
 	if (m_fModel == RENDER_TEXTURE)
 	{
-		tmpTexture = filterFactory.glCreateDynamicTexture(	CTextureObject::CGL_COLOR24_ALPHA,
+		tmpTexture = filterFactory.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 															CTextureObject::CGL_OPAQUE,
 															CTextureObject::CGL_UNFILTERED,
 															tmpDisplay);
-		tmpTexture2 = filterFactory.glCreateDynamicTexture(	CTextureObject::CGL_COLOR24_ALPHA,
+		tmpTexture2 = filterFactory.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 															CTextureObject::CGL_OPAQUE,
 															CTextureObject::CGL_UNFILTERED,
 															tmpDisplay2);

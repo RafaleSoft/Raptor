@@ -162,7 +162,7 @@ CWarpObject::CWarpObject(float width,float height,int hcels,int vcels)
 	memset(m_d_grid,0,3*m_hcels*m_vcels*sizeof(float));
 
 	CTextureFactory &f = CTextureFactory::getDefaultFactory();
-    m_captureBuffer = f.glCreateDynamicTexture(	CTextureObject::CGL_COLOR24_ALPHA,
+    m_captureBuffer = f.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 												CTextureObject::CGL_ALPHA_TRANSPARENT,
 												CTextureObject::CGL_BILINEAR,
 												CRaptorDisplay::GetCurrentDisplay());
@@ -240,7 +240,7 @@ void CWarpObject::glRender()
 										floor(v1.y+0.5f),
 										w+2,
 										h+2);
-    m_captureBuffer->glRender();
+	m_captureBuffer->glvkRender();
 
 	glMatrixMode(GL_TEXTURE);
 	glPushMatrix();
@@ -287,13 +287,13 @@ CGlassObject::CGlassObject(float width,float height,int hcels,int vcels)
 					GL_COORD_VERTEX(-m_orgx,-m_orgy,0.1f,1.0f));
 
 	CTextureFactory &f = CTextureFactory::getDefaultFactory();
-    m_captureBuffer = f.glCreateDynamicTexture(	CTextureObject::CGL_COLOR24_ALPHA,
+    m_captureBuffer = f.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 												CTextureObject::CGL_ALPHA_TRANSPARENT,
 												CTextureObject::CGL_BILINEAR,
 												CRaptorDisplay::GetCurrentDisplay());
     f.glResizeTexture(m_captureBuffer,BASE_WARP_WIDTH,BASE_WARP_HEIGHT);
 
-	CTextureObject* T = f.glCreateTexture( CTextureObject::CGL_COLOR24_ALPHA,
+	CTextureObject* T = f.glCreateTexture( ITextureObject::CGL_COLOR24_ALPHA,
                                            CTextureObject::CGL_ALPHA_TRANSPARENT,
                                            CTextureObject::CGL_BILINEAR);
 	f.glLoadTexture(T,"Datas\\Bump2.tga");
@@ -344,7 +344,7 @@ void CGlassObject::glRender()
 										floor(v1.y+0.5f),
 										w+2,
 										h+2);
-    m_captureBuffer->glRender();
+	m_captureBuffer->glvkRender();
 	m_pShader->glRenderTexture();
 	m_pShader->glRender();
 	

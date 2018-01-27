@@ -122,36 +122,7 @@ bool CTGAImaging::loadImageFile(const std::string& fname, CImage* const I) const
 	FILE			*in_rgb = NULL;
 	long			outcolor = 0;
 	unsigned char	*outcolors = NULL;
-<<<<<<< HEAD
-	long			w = 0;
-	long            h = 0;
-	int				size = 0;
 
-	if ((in_rgb = fopen(fname.data(), "rb")) == NULL)
-		return false;
-
-	if (fread(head, sizeof(char), 18, in_rgb) != 18)
-		return false;
-
-	w = (head[13] * 256) + head[12];
-	h = (head[15] * 256) + head[14];
-	size = head[16] / 8;
-
-	I->allocatePixels(w, h, CImage::CGL_COLOR24_ALPHA);
-	uint8_t * texturedata = I->getPixels();
-
-	//  allocate extra size for fast unchecked reading here under.
-	outcolors = new unsigned char[size*w*h + 4];
-	if (fread(outcolors, size, w*h, in_rgb) != w*h)
-	{
-		fclose(in_rgb);
-		return false;
-	}
-
-	int t_pos = 0;
-	int i_pos = 0;
-	for (int i = 0; i < w*h; i++)
-=======
 	size_t			w = 0;
     size_t          h = 0;
 	int				size = 0;
@@ -181,7 +152,6 @@ bool CTGAImaging::loadImageFile(const std::string& fname, CImage* const I) const
 	int t_pos = 0;
 	int i_pos = 0;
 	for ( size_t i=0; i < w*h; i++ )
->>>>>>> dev-vs2013
 	{
 		outcolor = *((long*)&outcolors[i_pos]);
 

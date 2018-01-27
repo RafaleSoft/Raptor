@@ -176,7 +176,7 @@ void CSplineDisplay::Display()
 	glTranslatef(-40.0,20.0,-100.0);
 
 	CTextureObject* T = texture->getTexture(1);
-	T->glRender();
+	T->glvkRender();
 	glCallList(text);
 	
 	glPopMatrix();

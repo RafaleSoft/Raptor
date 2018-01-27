@@ -128,7 +128,7 @@ void CRaptorDisplayFilter::glRender(void)
 		pExtensions->glActiveTextureARB(GL_TEXTURE1_ARB);
         glDisable(GL_TEXTURE_2D);
         pExtensions->glActiveTextureARB(GL_TEXTURE0_ARB);
-		getColorInput()->glRender();
+		getColorInput()->glvkRender();
         glDrawBuffer();
     }
 
@@ -374,7 +374,7 @@ CTextureObject*  CRaptorDisplayFilter::glCreateColorOutput(void)
 		state.renderer = CRaptorDisplayConfig::PIXEL_BUFFER;
 
 	CTextureFactory &filterFactory = CTextureFactory::getDefaultFactory();
-	colorOutput = filterFactory.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,
+	colorOutput = filterFactory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
 		                                        CTextureObject::CGL_OPAQUE,
 			                                    CTextureObject::CGL_UNFILTERED);
 	filterFactory.glResizeTexture(colorOutput,state.width,state.height);

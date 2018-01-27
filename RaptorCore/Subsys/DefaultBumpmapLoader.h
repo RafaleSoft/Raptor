@@ -16,12 +16,14 @@
 
 RAPTOR_NAMESPACE_BEGIN
 
-class CTextureObject;
 
 class CDefaultBumpmapLoader : public CImage::IImageOP
 {
 public:
-    CDefaultBumpmapLoader();
+    CDefaultBumpmapLoader(float scale);
+	CDefaultBumpmapLoader(const CDefaultBumpmapLoader& loader);
+	CDefaultBumpmapLoader& operator=(const CDefaultBumpmapLoader& loader);
+
 	virtual ~CDefaultBumpmapLoader();
 
     //! Implements CImageOP
@@ -31,6 +33,9 @@ public:
 	virtual bool apply(CImage* const src, const operation_param_t& param) const;
 
 private:
+	CDefaultBumpmapLoader();
+
+	//!	Bumping amplitude.
 	float bump_scale;
 };
 

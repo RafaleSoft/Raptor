@@ -213,7 +213,7 @@ void CContextManager::glDrawLogo(void)
 		glEnable(GL_TEXTURE_2D);
 		glColor4f(1.0f,1.0f,1.0f,0.75f);
 		if (!(m_pLogo == NULL))
-			m_pLogo->glRender();
+			m_pLogo->glvkRender();
 		glBegin(GL_QUADS);
 			glTexCoord2f(0.0f,1.0f);		glVertex3f(0.7f,-0.85f,1.0f);
 			glTexCoord2f(0.0f,0.0f);		glVertex3f(0.7f,-1.0f,1.0f);
@@ -238,7 +238,7 @@ CTextureObject* CContextManager::glBuildLogo(void)
     glPushAttrib(GL_TEXTURE_BIT);
 
 	CTextureFactory &Txt = CTextureFactory::getDefaultFactory();
-	CTextureObject *p_Logo = Txt.glCreateTexture(	CTextureObject::CGL_COLOR24_ALPHA,
+	CTextureObject *p_Logo = Txt.glCreateTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 													CTextureObject::CGL_MULTIPLY,
 													CTextureObject::CGL_BILINEAR);
 
@@ -421,7 +421,7 @@ bool CContextManager::vkInitInstance(CContextManager::RENDERING_CONTEXT_ID ctx)
 												extensions};							// const char* const* ppEnabledExtensionNames;
 
 	res = vkCreateInstance(	&instanceCreateInfo,
-							CVulkanMemory::GetAllocator(), 
+							CVulkanMemory::GetAllocator(),
 							&vk_ctx.instance);
 	if (VK_SUCCESS != res)
 		pErrMgr->vkGetError(res,__FILE__,__LINE__);

@@ -265,7 +265,7 @@ void CDOT3BumppedGeometry::glRender()
 	//	specular
 
 	glColorPointer(4, GL_UNSIGNED_BYTE, 0, bumpSpecularPx);
-	normalMap->glRender();
+	normalMap->glvkRender();
 
 #if defined(GL_ARB_texture_env_dot3)
 	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_ARB);

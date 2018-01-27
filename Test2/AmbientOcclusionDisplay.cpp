@@ -137,12 +137,12 @@ void CAmbientOcclusionDisplay::Init()
 		m_pTeapot->setShader(CShader::getShader("BUMP_SHADER").glClone("AO_BUMP"));
 		
 		CTextureFactory &f = CTextureFactory::getDefaultFactory();
-		CTextureObject*	m_pTexture = f.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_ALPHA_TRANSPARENT,CTextureObject::CGL_BILINEAR);
+		CTextureObject*	m_pTexture = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_ALPHA_TRANSPARENT,CTextureObject::CGL_BILINEAR);
 		f.glLoadTexture(m_pTexture,"Datas/MARBLE6.JPG");
 		
 		CTextureUnitSetup *tus = m_pTeapot->getShader()->glGetTextureUnitsSetup();
 		tus->setDiffuseMap(m_pTexture);
-		m_pTexture = f.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_MULTIPLY,CTextureObject::CGL_BILINEAR);
+		m_pTexture = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_MULTIPLY,CTextureObject::CGL_BILINEAR);
 		f.glLoadTexture(m_pTexture,"Datas/BUMP4.TGA");
 		tus->setNormalMap(m_pTexture);
 		tus->useRegisterCombiners(false);

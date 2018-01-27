@@ -120,7 +120,7 @@ private:
 
 void CAboutVideo::glRender()
 {
-	m_pTxt->glRender();
+	m_pTxt->glvkRender();
 
 	glBegin(GL_QUADS);
 		glTexCoord2f(0.0f,0.0f); glVertex3f(-2.0f,-1.5f,-2.0f);
@@ -190,7 +190,7 @@ void CGLDisplay::GLInitContext()
 	ITextureGenerator *pGenerator = m_pAnimator->glStartPlayBack(buffer.str().c_str(),true);
 
 	CTextureFactory f;
-    m_pTxt = f.glCreateDynamicTexture(	CTextureObject::CGL_COLOR24_ALPHA,
+    m_pTxt = f.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 										CTextureObject::CGL_MULTIPLY,
 										CTextureObject::CGL_BILINEAR,
 										pGenerator);
@@ -239,7 +239,6 @@ BOOL CAboutDialog::OnInitDialog()
 
 	//	Setting up Raptor version item
 	{
-        DWORD version = Raptor::GetVersion();
 		stringstream vrs;
         vrs << "Version: " << RAPTOR_VERSION_STR;
 		this->SetDlgItemText(IDC_VERSION,CA2T(vrs.str().c_str()));
