@@ -61,7 +61,7 @@ bool CGL2DTextureFont::init(const std::string &filename, unsigned int size, bool
 		CTextureFactory &factory = CTextureFactory::getDefaultFactory();
 		if (m_texture == NULL)
 		{
-			m_texture = factory.glCreateTexture(CTextureObject::CGL_LIGHTMAP_ALPHA,
+			m_texture = factory.glCreateTexture(ITextureObject::CGL_LIGHTMAP_ALPHA,
 												CTextureObject::CGL_MULTIPLY, // CGL_ALPHA_TRANSPARENT
 												CTextureObject::CGL_BILINEAR);
 		}

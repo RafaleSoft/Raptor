@@ -23,8 +23,45 @@ RAPTOR_NAMESPACE_BEGIN
 class CVulkanTextureObject : public ITextureObject
 {
 public:
-	CVulkanTextureObject();
+	CVulkanTextureObject(ITextureObject::TEXEL_TYPE type,
+						 VkDevice device,
+						 PFN_vkGetDeviceProcAddr vkGetDeviceProcAddr);
 	virtual ~CVulkanTextureObject();
+
+	//!	Renders the textures : it is bound to the current active Texture Unit.
+	virtual void glvkRender(void);
+
+	//!	Returns the sized format of the texels stored in device memory (texture)
+	VkFormat getTexelFormat(void) const;
+
+	//!	Returns the proper implementation
+	virtual CVulkanTextureObject* getVulkanTextureObject(void) { return this; };
+
+
+	void vkLoadTexture(uint32_t innerFormat,
+					   uint32_t width,
+					   uint32_t height,
+					   uint32_t pixels_format,
+					   uint32_t pixels_type,
+					   unsigned char* pixels);
+
+
+private:
+	//!
+	//!	Attributes
+	//!
+
+	//!	Creator device
+	VkDevice	m_device;
+
+	//!	Vulkan texture backed image 
+	VkImage		m_image;
+
+	//!	Vulkan image accessor (format mapper)
+	VkImageView	m_view;
+
+	//!	Vulkan texture backed image 
+	PFN_vkCreateImageView vkCreateImageView;
 };
 
 

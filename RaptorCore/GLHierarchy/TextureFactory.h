@@ -54,7 +54,7 @@ public:
 	//! @param env_mode : is one of the TEXTURE_FUNCTION enum
     //! @param filter : specifies the kind of texel sampler of the texture object
     //! @return : the texture created or NULL if there has been an error
-    CTextureObject*		const glCreateTexture(  CTextureObject::TEXEL_TYPE type,
+    CTextureObject*		const glCreateTexture(  ITextureObject::TEXEL_TYPE type,
 												CTextureObject::TEXTURE_FUNCTION env_mode = CTextureObject::CGL_ALPHA_TRANSPARENT,
 												CTextureObject::TEXTURE_FILTER filter = CTextureObject::CGL_UNFILTERED);
 
@@ -63,7 +63,7 @@ public:
 	//! @param env_mode : is one of the TEXTURE_FUNCTION enum
     //! @param filter : specifies the kind of texel sampler of the texture object
     //! @return : the texture created or NULL if there has been an error
-    CTextureObject*		const glCreateRectangleTexture(	CTextureObject::TEXEL_TYPE type,
+    CTextureObject*		const glCreateRectangleTexture(	ITextureObject::TEXEL_TYPE type,
 														CTextureObject::TEXTURE_FUNCTION env_mode = CTextureObject::CGL_ALPHA_TRANSPARENT,
 														CTextureObject::TEXTURE_FILTER filter = CTextureObject::CGL_UNFILTERED);
 	
@@ -73,7 +73,7 @@ public:
 	//! @param pGenerator : is a texture generator that produces texels to dynamically 'reload' the texture.
     //! @param filter : specifies the kind of texel sampler of the texture object
     //! @return : the texture created or NULL if there has been an error
-    CTextureObject*		const glCreateDynamicTexture(	CTextureObject::TEXEL_TYPE type,
+    CTextureObject*		const glCreateDynamicTexture(	ITextureObject::TEXEL_TYPE type,
 														CTextureObject::TEXTURE_FUNCTION env_mode = CTextureObject::CGL_ALPHA_TRANSPARENT,
 														CTextureObject::TEXTURE_FILTER filter = CTextureObject::CGL_UNFILTERED,
 														ITextureGenerator* pGenerator = NULL);
@@ -83,7 +83,7 @@ public:
 	//! @param env_mode : is one of the TEXTURE_FUNCTION enum
     //! @param filter : specifies the kind of texel sampler of the texture object
     //! @return : the texture created or NULL if there has been an error
-	CTextureObject*		const glCreateCubemap(	CTextureObject::TEXEL_TYPE type,
+	CTextureObject*		const glCreateCubemap(	ITextureObject::TEXEL_TYPE type,
 												CTextureObject::TEXTURE_FUNCTION env_mode = CTextureObject::CGL_ALPHA_TRANSPARENT,
 												CTextureObject::TEXTURE_FILTER filter = CTextureObject::CGL_UNFILTERED);
 
@@ -92,14 +92,14 @@ public:
 	//! @param env_mode : is one of the TEXTURE_FUNCTION enum
     //! @param filter : specifies the kind of texel sampler of the texture object
     //! @return : the texture created or NULL if there has been an error
-	CTextureObject*		const glCreateVolumeTexture(CTextureObject::TEXEL_TYPE type,
+	CTextureObject*		const glCreateVolumeTexture(ITextureObject::TEXEL_TYPE type,
 													CTextureObject::TEXTURE_FUNCTION env_mode = CTextureObject::CGL_ALPHA_TRANSPARENT,
 													CTextureObject::TEXTURE_FILTER filter = CTextureObject::CGL_UNFILTERED);
 
 	//!	Creates a sprite object. A sprite is a small texture with
 	//!	pixel replacement mode ( CGL_OPAQUE ) and no filtering ( thus no anisotropy )
 	//!	See CreateTexture.
-	CTextureObject*		const glCreateSprite(CTextureObject::TEXEL_TYPE type);
+	CTextureObject*		const glCreateSprite(ITextureObject::TEXEL_TYPE type);
 
 
 	//!	Creates a Vulkan image texture object.
@@ -107,9 +107,9 @@ public:
 	//! @param env_mode : is one of the TEXTURE_FUNCTION enum
 	//! @param filter : specifies the kind of texel sampler of the texture object
 	//! @return : the texture created or NULL if there has been an error
-	CTextureObject*		const vkCreateTexture(CTextureObject::TEXEL_TYPE type,
-											  CTextureObject::TEXTURE_FUNCTION env_mode = CTextureObject::CGL_ALPHA_TRANSPARENT,
-											  CTextureObject::TEXTURE_FILTER filter = CTextureObject::CGL_UNFILTERED);
+	ITextureObject*	const vkCreateTexture(	ITextureObject::TEXEL_TYPE type,
+											CTextureObject::TEXTURE_FUNCTION env_mode = CTextureObject::CGL_ALPHA_TRANSPARENT,
+											CTextureObject::TEXTURE_FILTER filter = CTextureObject::CGL_UNFILTERED);
 
 	//!	If .buffer extension is used,
 	//!	loadBUFFER does nothing, but assumes the user provides a buffer
@@ -130,11 +130,13 @@ public:
 	//! CGL_DEPTH_MAP16, CGL_DEPTH_MAP32 or CGL_DEPTH_MAPZ
 	//!	- the cubemap face index : CUBEMAP_PX,PY,PZ,NX,NY,or NZ
 	//! - the numeric format
-	bool glLoadTexture(	CTextureObject* const T,
+	bool glLoadTexture(	ITextureObject* const T,
 						const std::string &fname,
 						const CVaArray<CImage::IImageOP::OP_KIND>& ops = CVaArray<CImage::IImageOP::OP_KIND>());
 
 	bool glLoadTexture(CTextureObject* const T,
+					   const CImage &image);
+	bool vkLoadTexture(CVulkanTextureObject* const T,
 					   const CImage &image);
 
 	//! Same as above excepts that the texteure texels are only loaded in client memory,

@@ -34,7 +34,7 @@ CReflection::CReflection(float width,float height,int hcels,int vcels)
     config.setCurrentAnisotropy(16.0f);
 
 	CPerlinNoise *pNoise = new CPerlinNoise(CVaArray<CImage::IImageOP::OP_KIND>(CImage::IImageOP::BUMPMAP_LOADER));
-    CTextureObject *T = f.glCreateDynamicTexture(	CTextureObject::CGL_COLOR24_ALPHA,
+    CTextureObject *T = f.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 													CTextureObject::CGL_MULTIPLY,
 													CTextureObject::CGL_TRILINEAR,
 													pNoise);
@@ -46,7 +46,7 @@ CReflection::CReflection(float width,float height,int hcels,int vcels)
     pNoise->glGenerate(T);
     tus->setNormalMap(T);
 
-    T = f.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_MULTIPLY,CTextureObject::CGL_BILINEAR);
+    T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_MULTIPLY,CTextureObject::CGL_BILINEAR);
     T->glSetTransparency(230);
 
     f.glLoadTexture(T,"Datas\\marble5.jpg");

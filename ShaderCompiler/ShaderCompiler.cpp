@@ -39,7 +39,7 @@ public:
         m_pDisplay = pDisplay;
 
 		CTextureFactory &factory = CTextureFactory::getDefaultFactory();
-        background = factory.glCreateTexture(	CTextureObject::CGL_COLOR24_ALPHA,
+        background = factory.glCreateTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 												CTextureObject::CGL_OPAQUE,
 												CTextureObject::CGL_BILINEAR);
         background->glSetTransparency(255);
@@ -441,7 +441,7 @@ int AFXAPI AfxWinMain(	HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	wchar_t **wargv = __wargv;
 	char **argv = new char*[__argc];
 	for (int c = 0; c < __argc; c++)
-		argv[c] = strdup(CT2A(wargv[c]));
+		argv[c] = _strdup(CT2A(wargv[c]));
 	if (AfxWinInit(hInstance, hPrevInstance, lpCmdLine, nCmdShow))
 		res = main(__argc, argv);
 	for (int c = 0; c < __argc; c++)

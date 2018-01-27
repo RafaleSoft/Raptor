@@ -419,11 +419,11 @@ bool CDOFFilter::glInitFilter(void)
 		(depthExternalSource != NULL) &&
 		(m_fModel == RENDER_TEXTURE))
 	{
-		depthInput = filterFactory.glCreateDynamicTexture(	CTextureObject::CGL_DEPTH24,
+		depthInput = filterFactory.glCreateDynamicTexture(	ITextureObject::CGL_DEPTH24,
 															CTextureObject::CGL_OPAQUE,
 															CTextureObject::CGL_UNFILTERED,
 															depthExternalSource);
-		colorInput = filterFactory.glCreateDynamicTexture(	CTextureObject::CGL_COLOR24_ALPHA,
+		colorInput = filterFactory.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 															CTextureObject::CGL_OPAQUE,
 															CTextureObject::CGL_UNFILTERED,
 															colorExternalSource);
@@ -448,14 +448,14 @@ bool CDOFFilter::glInitFilter(void)
 	{
 		state.renderer = CRaptorDisplayConfig::RENDER_BUFFER;
 
-		tmpTexture = filterFactory.glCreateTexture(	CTextureObject::CGL_COLOR24_ALPHA,
+		tmpTexture = filterFactory.glCreateTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 			                                        CTextureObject::CGL_OPAQUE,
 				                                    CTextureObject::CGL_UNFILTERED);
 		filterFactory.glResizeTexture(tmpTexture,state.width,state.height);
 		tmpTexture->glUpdateClamping(CTextureObject::CGL_EDGECLAMP);
 		m_pRenderTextures->addTexture(tmpTexture);
 
-		tmpTexture2 = filterFactory.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,
+		tmpTexture2 = filterFactory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
 			                                        CTextureObject::CGL_OPAQUE,
 				                                    CTextureObject::CGL_UNFILTERED);
 		filterFactory.glResizeTexture(tmpTexture2,state.width,state.height);
@@ -489,11 +489,11 @@ bool CDOFFilter::glInitFilter(void)
 
 	if (m_fModel == RENDER_TEXTURE)
 	{
-		tmpTexture = filterFactory.glCreateDynamicTexture(	CTextureObject::CGL_COLOR24_ALPHA,
+		tmpTexture = filterFactory.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 															CTextureObject::CGL_OPAQUE,
 															CTextureObject::CGL_UNFILTERED,
 															tmpDisplay);
-		tmpTexture2 = filterFactory.glCreateDynamicTexture(	CTextureObject::CGL_COLOR24_ALPHA,
+		tmpTexture2 = filterFactory.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 															CTextureObject::CGL_OPAQUE,
 															CTextureObject::CGL_UNFILTERED,
 															tmpDisplay2);

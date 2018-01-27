@@ -147,7 +147,7 @@ bool CTextureSet::importTextureObject(CRaptorIO& io)
     string filename = "<unknown>";
     CTextureObject::TEXTURE_FUNCTION function = CTextureObject::CGL_OPAQUE;
     CTextureObject::TEXTURE_FILTER filter = CTextureObject::CGL_UNFILTERED;
-    CTextureObject::TEXEL_TYPE texelType = CTextureObject::CGL_COLOR24_ALPHA;
+    ITextureObject::TEXEL_TYPE texelType = ITextureObject::CGL_COLOR24_ALPHA;
     float transparency = -1.0f;
 	bool compressed = false;
 

@@ -69,7 +69,7 @@ public:
 	VkImage vkAllocateTextureImage(uint64_t width,
 								   uint64_t height = 0,
 								   uint64_t depth = 0,
-								   CTextureObject::TEXEL_TYPE format = CTextureObject::CGL_COLOR24_ALPHA,
+								   ITextureObject::TEXEL_TYPE format = ITextureObject::CGL_COLOR24_ALPHA,
 								   unsigned char* texels = NULL);
 
 private:

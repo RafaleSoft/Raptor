@@ -52,26 +52,6 @@ public:
 		CGL_ANISOTROPIC
 	} TEXTURE_FILTER;
 
-	//!	Server-side texel type
-    typedef enum
-    {
-        CGL_COLOR24,
-        CGL_COLOR24_ALPHA,
-        CGL_LIGHTMAP,
-        CGL_LIGHTMAP_ALPHA,
-		CGL_LIGHTMAP16,
-        CGL_LIGHTMAP16_ALPHA,
-        CGL_COLOR_FLOAT16,
-        CGL_COLOR_FLOAT16_ALPHA,
-        CGL_COLOR_FLOAT32,
-        CGL_COLOR_FLOAT32_ALPHA,
-        CGL_DEPTH8,
-        CGL_DEPTH16,
-        CGL_DEPTH24,
-        CGL_DEPTH32,
-		CGL_DEPTH24_STENCIL8
-    } TEXEL_TYPE;
-
 	//! Texture sampler clampping model
 	typedef enum
 	{
@@ -95,11 +75,8 @@ public:
     //!	Renders the textures : it is bound to the current active Texture Unit.
 	virtual void glvkRender(void);
 
-    //! @return texture name ( default is the source filename )
-	const std::string & getName(void) const { return m_name; };
-
-	//! @param name: the new texture name
-	void setName(const std::string & name) { m_name = name; };
+	//!	Returns the proper implementation
+	virtual CTextureObject* getGLTextureObject(void) { return this; };
 
     //! Returns the selected environment function
     TEXTURE_FUNCTION getFunction(void) const;
@@ -110,9 +87,6 @@ public:
 
     //! Returns the selected filtering method
 	TEXTURE_FILTER getFilter(void) const { return m_filter; };
-
-    //! Returns the texture texel type for internal storage
-    TEXEL_TYPE getTexelType(void) const { return m_type; };
 
 	//! Updates texture sampler clamping mode. This method
 	//!	is a simple helper, clamping mode is applied equally 
@@ -147,10 +121,7 @@ public:
 	//!	Returns the sized format of the texels stored in device memory (texture)
 	unsigned int getTexelFormat(void) const;
 
-    //! Return texture global transparency.
-    //! @ return : the value set using the method glSetTransparency
-    unsigned int	getTransparency(void) const { return m_alpha; };
-	
+    
     //! This method set texture alpha for transparency management.
     //! if 0, use color average, if > 255, saturate to 0 and 255, else use alpha
     void glSetTransparency(unsigned int	alpha);
@@ -160,14 +131,15 @@ public:
     //! This method only applyes to 2D textures ; future versions will handle more cases if needed.
 	void glSetTransparentColor(  unsigned char r, unsigned char g, unsigned char b);
 
-
+	//!	Returns the texture generator, if any. NULL otherwise.
+	ITextureGenerator * getTexelGenerator(void) const { return m_pTexelGenerator; };
 
 
 private:
 	//!
 	//!	Forbidden methods
 	//!
-	CTextureObject(TEXEL_TYPE type);
+	CTextureObject(ITextureObject::TEXEL_TYPE type);
 	CTextureObject(const CTextureObject& rsh);
 	virtual ~CTextureObject();
 
@@ -185,20 +157,11 @@ private:
 	//!
 	//!	Attributes
 	//!
+
     
-	//! The texture texel type is stored only to avoid server calls to query internal format
-    TEXEL_TYPE      m_type;
-
-    //! Aplha value. It is stored to be applyed before or after texture loading.
-    unsigned int	m_alpha;
-
-    //!	Object name ( default is filename )
-	string			m_name;
     //!	OpenGL context based texture name
 	unsigned int	texname;
-    //!  Target : 
-	//!		low word = 1D,2D,3D,CUBE, 
-	//!		hi word = subtarget
+    //!  Target : 1D,2D,3D,CUBE, 
 	unsigned int	target;
     //!	rendering environment model
 	unsigned int    env_mode;

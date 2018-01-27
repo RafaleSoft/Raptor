@@ -202,7 +202,7 @@ bool CMBFilter::glInitFilter(void)
 
 	if ((colorExternalSource != NULL) && (m_fModel == RENDER_TEXTURE))
 	{
-		colorInput = filterFactory.glCreateDynamicTexture(	CTextureObject::CGL_COLOR24_ALPHA,
+		colorInput = filterFactory.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 															CTextureObject::CGL_OPAQUE,
 															CTextureObject::CGL_BILINEAR,
 															colorExternalSource);
@@ -226,7 +226,7 @@ bool CMBFilter::glInitFilter(void)
 		state.renderer = CRaptorDisplayConfig::RENDER_BUFFER;
 
 		CTextureObject *T = NULL;
-		T = filterFactory.glCreateTexture(	CTextureObject::CGL_COLOR24_ALPHA,
+		T = filterFactory.glCreateTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 											CTextureObject::CGL_OPAQUE,
 											CTextureObject::CGL_BILINEAR);
 		filterFactory.glResizeTexture(T,state.width,state.height);
@@ -235,7 +235,7 @@ bool CMBFilter::glInitFilter(void)
 		m_pRenderTextures->addTexture(T);
 
 		m_pRenderTextures2 = new CTextureSet();
-		T = filterFactory.glCreateTexture(	CTextureObject::CGL_COLOR24_ALPHA,
+		T = filterFactory.glCreateTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 											CTextureObject::CGL_OPAQUE,
 											CTextureObject::CGL_BILINEAR);
 		filterFactory.glResizeTexture(T,state.width,state.height);	
@@ -271,11 +271,11 @@ bool CMBFilter::glInitFilter(void)
 
 	if (m_fModel == RENDER_TEXTURE)
 	{
-		accumulator->m_pCurrentColorAccum = filterFactory.glCreateDynamicTexture(	CTextureObject::CGL_COLOR24_ALPHA,
+		accumulator->m_pCurrentColorAccum = filterFactory.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 																					CTextureObject::CGL_OPAQUE,
 																					CTextureObject::CGL_BILINEAR,
 																					accumulator->pCurrentDisplay);
-		accumulator->m_pPreviousColorAccum = filterFactory.glCreateDynamicTexture(	CTextureObject::CGL_COLOR24_ALPHA,
+		accumulator->m_pPreviousColorAccum = filterFactory.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 																					CTextureObject::CGL_OPAQUE,
 																					CTextureObject::CGL_BILINEAR,
 																					accumulator->pPreviousDisplay);

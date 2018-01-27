@@ -7,12 +7,14 @@
 #include "Engine/ViewPoint.h"
 #include "Engine/ViewModifier.h"
 #include "Engine/LightModifier.h"
+#include "GLHierarchy/FragmentProgram.h"
 #include "GLHierarchy/GeometryEditor.h"
 #include "GLHierarchy/Object3DInstance.h"
 #include "GLHierarchy/RenderingProperties.h"
 #include "GLHierarchy/Light.h"
 #include "GLHierarchy/Shader.h"
 #include "GLHierarchy/ShaderProgram.h"
+#include "GLHierarchy/VertexProgram.h"
 #include "GLHierarchy/VertexShader.h"
 #include "GLHierarchy/VulkanShaderStage.h"
 #include "GLHierarchy/TextureFactory.h"
@@ -20,20 +22,11 @@
 #include "GLHierarchy/TextureObject.h"
 #include "System/RaptorConsole.h"
 #include "System/RaptorErrorManager.h"
+#include "System/RaptorExtensions.h"
 #include "System/RaptorIO.h"
 #include "ToolBox/BasicObjects.h"
 #include "ToolBox/Imaging.h"
 
-
-#if !defined(AFX_VERTEXPROGRAM_H__204F7213_B40B_4B6A_9BCA_828409871B68__INCLUDED_)
-	#include "GLHierarchy/VertexProgram.h"
-#endif
-#if !defined(AFX_FRAGMENTPROGRAM_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
-	#include "GLHierarchy/FragmentProgram.h"
-#endif
-#if !defined(AFX_RAPTOREXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
-	#include "System/RaptorExtensions.h"
-#endif
 
 RAPTOR_NAMESPACE
 
@@ -79,7 +72,6 @@ CTest5Doc::CTest5Doc(const RAPTOR_HANDLE& device,const char* title)
 {
 	m_pDisplay = NULL;
 	m_pDisplayBuffer = NULL;
-	m_pBufferTexture = NULL;
 	m_pTexture = NULL;
 	m_device = device;
 
@@ -213,7 +205,7 @@ void CTest5Doc::GLInitContext(void)
 	geo->glSetColors(4,ColorData);
 	geo->glSetPolygons(2,VertexIndices);
 	
-	m_pTexture = f.vkCreateTexture(CTextureObject::CGL_COLOR24_ALPHA, CTextureObject::CGL_ALPHA_TRANSPARENT, CTextureObject::CGL_BILINEAR);
+	m_pTexture = f.vkCreateTexture(ITextureObject::CGL_COLOR24_ALPHA, CTextureObject::CGL_ALPHA_TRANSPARENT, CTextureObject::CGL_BILINEAR);
 	f.glLoadTexture(m_pTexture, "earth.TGA");
 
 	CShader* s = geo->getShader();
@@ -255,11 +247,11 @@ void CTest5Doc::GLInitContext(void)
 
 	pScene->addObject(geo);
 #else
-	m_pTexture = f.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA, CTextureObject::CGL_ALPHA_TRANSPARENT, CTextureObject::CGL_BILINEAR);
+	m_pTexture = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA, CTextureObject::CGL_ALPHA_TRANSPARENT, CTextureObject::CGL_BILINEAR);
 	f.glLoadTexture(m_pTexture,"earth.TGA");
 	CTextureUnitSetup *tus = obj->getShader()->glGetTextureUnitsSetup();
 	tus->setDiffuseMap(m_pTexture);
-	m_pTexture = f.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_MULTIPLY,CTextureObject::CGL_BILINEAR);
+	m_pTexture = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_MULTIPLY,CTextureObject::CGL_BILINEAR);
     f.glLoadTexture(m_pTexture,"bump3.tga",CVaArray<CImage::IImageOP::OP_KIND>(CImage::IImageOP::BUMPMAP_LOADER));
 	//f.getConfig().setBumpAmplitude(4.0f);
 	//f.glLoadTexture(m_pTexture,"BlurCircle.TGA",CGL_CREATE_NORMAL_MAP);

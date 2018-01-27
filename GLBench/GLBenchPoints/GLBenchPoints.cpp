@@ -210,7 +210,7 @@ void Display::GLInitContext()
 
 	CTextureFactory &txt = CTextureFactory::getDefaultFactory();
 
-	sprite = txt.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA);
+	sprite = txt.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA);
     sprite->setSize(32,32);
 	sprite->glSetTransparency(192);
 

@@ -200,7 +200,7 @@ void CParticleDisplay::Init()
 	// Load texture
 	CTextureFactory &f = CTextureFactory::getDefaultFactory();
 	CTextureSet* pTextures = (CTextureSet*)CPersistence::FindObject("main_textures");
-	CTextureObject* T = f.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_MULTIPLY, CTextureObject::CGL_BILINEAR);
+	CTextureObject* T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_MULTIPLY, CTextureObject::CGL_BILINEAR);
 	f.glLoadTexture(T, "Datas\\particle.jpg");
 	pTextures->addTexture(T);
 
@@ -209,7 +209,7 @@ void CParticleDisplay::Init()
 	pTextures->addTexture(T);
 	pFire->setTexture(T);
 
-	T = f.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_MULTIPLY, CTextureObject::CGL_BILINEAR);
+	T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_MULTIPLY, CTextureObject::CGL_BILINEAR);
 	T->glSetTransparency(0);
 	f.glLoadTexture(T, "Datas\\particle.tga");
 	pTextures->addTexture(T);
@@ -217,7 +217,7 @@ void CParticleDisplay::Init()
 
 	pParticle->setTexture(T);
 
-    T = f.glCreateVolumeTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_OPAQUE, CTextureObject::CGL_BILINEAR);
+    T = f.glCreateVolumeTexture(ITextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_OPAQUE, CTextureObject::CGL_BILINEAR);
     T->setSize(128,128,128);
 	T->glSetTransparency(255);
 	

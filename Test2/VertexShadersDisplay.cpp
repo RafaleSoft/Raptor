@@ -603,14 +603,14 @@ public:
 		pBuffer->glUnBindDisplay();
 
 		CTextureFactory &factory = CTextureFactory::getDefaultFactory();
-		pMap = factory.glCreateDynamicTexture(	CTextureObject::CGL_COLOR24_ALPHA,
+		pMap = factory.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 												CTextureObject::CGL_OPAQUE,
 												CTextureObject::CGL_BILINEAR,
 												pBuffer);
 		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_REPEAT);
 
-		pCosTable = factory.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_OPAQUE,CTextureObject::CGL_BILINEAR);
+		pCosTable = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_OPAQUE,CTextureObject::CGL_BILINEAR);
         pCosTable->setSize(TABLE_SIZE,1);
 		pCosTable->glSetTransparency(255);
         
@@ -769,7 +769,7 @@ void CVertexShadersDisplay::Init()
 	CShader *pShader = water->getShader();
 	shaderModifier = new ShaderModifier(pShader);
 	CTextureUnitSetup *ts = pShader->glGetTextureUnitsSetup();
-	CTextureObject* T = factory.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,
+	CTextureObject* T = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
 												CTextureObject::CGL_ALPHA_TRANSPARENT,
 												CTextureObject::CGL_BILINEAR);
 	T->glSetTransparency(128);
@@ -802,7 +802,7 @@ void CVertexShadersDisplay::Init()
 #endif
 	
 	//	Create see underwater object
-	T = factory.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_OPAQUE, CTextureObject::CGL_BILINEAR);
+	T = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_OPAQUE, CTextureObject::CGL_BILINEAR);
 	T->glSetTransparency(255);
 	factory.glLoadTexture(T,"Datas\\oldwood.jpg");
 	CBasicObjects::CRectangle *ground = new CBasicObjects::CRectangle();
@@ -821,7 +821,7 @@ void CVertexShadersDisplay::Init()
 	sky->setRenderingModel(l_model2);
 	CShader *sh = sky->getShader();
 	CTextureUnitSetup* tus = sh->glGetTextureUnitsSetup();
-	T = factory.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_OPAQUE,CTextureObject::CGL_BILINEAR);
+	T = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_OPAQUE,CTextureObject::CGL_BILINEAR);
 	factory.glLoadTexture(T,"Datas\\ciel_07.jpg");
 	tus->setDiffuseMap(T);
 

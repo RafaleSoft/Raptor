@@ -102,7 +102,7 @@ void CSlide::setVideo(const string& vName)
         mVideo->releaseReference();
 
     CTextureFactory f;
-    mVideo = f.glCreateDynamicTexture(	CTextureObject::CGL_COLOR24_ALPHA,
+    mVideo = f.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 										CTextureObject::CGL_ALPHA_TRANSPARENT,
 										CTextureObject::CGL_BILINEAR,
 										pGenerator);

@@ -3,9 +3,6 @@
 - BasicObjects:
 	- Ajouter un TextureQuad le plus simple possible
 
-- CTextureObject:
-	- Supprimer les targets > 16bits et ajouter accesseur pour le ITextureGenerator
-
 -CVulkanMemory:
 	- initialiser une bloc mémoire pour l'application (vertex et index buffers bindés sur la même allocation)
 	- Factoriser les allocators (Geometry, Texel, Uniform)

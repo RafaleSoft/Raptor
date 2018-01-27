@@ -79,7 +79,7 @@ bool CAmbientOcclusionShader::glInitAOCompute(void)
 
 	CTextureFactory &f = CTextureFactory::getDefaultFactory();
 	f.getConfig().useTextureResize(false);
-	CTextureObject *T = f.glCreateTexture(	CTextureObject::CGL_COLOR_FLOAT32_ALPHA,
+	CTextureObject *T = f.glCreateTexture(	ITextureObject::CGL_COLOR_FLOAT32_ALPHA,
 											CTextureObject::CGL_OPAQUE,
 											CTextureObject::CGL_BILINEAR);
 	T->glUpdateClamping(CTextureObject::CGL_EDGECLAMP);
@@ -280,14 +280,14 @@ bool CAmbientOcclusionShader::glSetCoords(GL_COORD_VERTEX* refVertex, unsigned i
 		int width = ceil(log(sqrt((float)nbVertex)) / log(2.0));
 		int height = width = pow(2.0,width);
 
-		CTextureObject *T = f.glCreateRectangleTexture(	CTextureObject::CGL_COLOR_FLOAT32_ALPHA,
+		CTextureObject *T = f.glCreateRectangleTexture(	ITextureObject::CGL_COLOR_FLOAT32_ALPHA,
 														CTextureObject::CGL_OPAQUE,
 														CTextureObject::CGL_UNFILTERED);
 		// Should this case still be supported ?
 		// with no texture rectangle, it is rather laborious
 		if (T == NULL)
 		{
-			T = f.glCreateTexture(	CTextureObject::CGL_COLOR_FLOAT32_ALPHA,
+			T = f.glCreateTexture(	ITextureObject::CGL_COLOR_FLOAT32_ALPHA,
 									CTextureObject::CGL_OPAQUE,
 									CTextureObject::CGL_UNFILTERED);
 		}
@@ -320,7 +320,7 @@ bool CAmbientOcclusionShader::glSetNormals(GL_COORD_VERTEX* refNormal, unsigned 
 		int width = ceil(log(sqrt((float)nbVertex)) / log(2.0));
 		int height = width = pow(2.0,width);
 
-		CTextureObject *T = f.glCreateRectangleTexture(	CTextureObject::CGL_COLOR_FLOAT32_ALPHA,
+		CTextureObject *T = f.glCreateRectangleTexture(	ITextureObject::CGL_COLOR_FLOAT32_ALPHA,
 														CTextureObject::CGL_OPAQUE,
 														CTextureObject::CGL_UNFILTERED);
 
@@ -328,7 +328,7 @@ bool CAmbientOcclusionShader::glSetNormals(GL_COORD_VERTEX* refNormal, unsigned 
 		// with no texture rectangle, it is rather laborious
 		if (T == NULL)
 		{
-			T = f.glCreateTexture(	CTextureObject::CGL_COLOR_FLOAT32_ALPHA,
+			T = f.glCreateTexture(	ITextureObject::CGL_COLOR_FLOAT32_ALPHA,
 									CTextureObject::CGL_OPAQUE,
 									CTextureObject::CGL_UNFILTERED);
 		}

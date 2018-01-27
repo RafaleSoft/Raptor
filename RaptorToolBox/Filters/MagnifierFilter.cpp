@@ -342,7 +342,7 @@ bool CMagnifierFilter::glInitFilter(void)
 	if ((colorExternalSource != NULL) && (m_fModel == RENDER_TEXTURE))
 	{
 		//! See remark below regarding texture filtering.
-		colorInput = filterFactory.glCreateDynamicTexture(	CTextureObject::CGL_COLOR24_ALPHA,
+		colorInput = filterFactory.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 															CTextureObject::CGL_OPAQUE,
 															CTextureObject::CGL_UNFILTERED, //CGL_BILINEAR,
 															colorExternalSource);
@@ -357,7 +357,7 @@ bool CMagnifierFilter::glInitFilter(void)
 
     //! 256 interpolated values are enough for good results.
     //! For high quality filtering, future release may allow a user defined size.
-    kernelTexture = filterFactory.glCreateTexture( CTextureObject::CGL_COLOR_FLOAT16_ALPHA,
+    kernelTexture = filterFactory.glCreateTexture( ITextureObject::CGL_COLOR_FLOAT16_ALPHA,
                                                    CTextureObject::CGL_OPAQUE,
                                                    CTextureObject::CGL_UNFILTERED);
     kernelTexture->setSize(KERNEL_SIZE,1);
@@ -380,7 +380,7 @@ bool CMagnifierFilter::glInitFilter(void)
 	{
 		state.renderer = CRaptorDisplayConfig::RENDER_BUFFER;
 
-		xKernelPass = filterFactory.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,
+		xKernelPass = filterFactory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
 			                                        CTextureObject::CGL_OPAQUE,
 				                                    CTextureObject::CGL_UNFILTERED);
 		filterFactory.glResizeTexture(xKernelPass,state.width,state.height);
@@ -405,7 +405,7 @@ bool CMagnifierFilter::glInitFilter(void)
 	{
 		//! Do not use bilinear filtering because the colors fetched may not correspond to the kernel factors with some texture sizes non power of 2.
 		//! ( Specifically where tex coord is near a texel edge, and also because it is shifted to work in texels' center and should be faster ).
-		xKernelPass = filterFactory.glCreateDynamicTexture(	CTextureObject::CGL_COLOR24_ALPHA,
+		xKernelPass = filterFactory.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 															CTextureObject::CGL_OPAQUE,
 															CTextureObject::CGL_UNFILTERED,//CGL_BILINEAR,
 															xBuffer);

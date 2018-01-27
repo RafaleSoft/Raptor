@@ -190,7 +190,7 @@ void CGLDisplay::GLInitContext()
 	ITextureGenerator *pGenerator = m_pAnimator->glStartPlayBack(buffer.str().c_str(),true);
 
 	CTextureFactory f;
-    m_pTxt = f.glCreateDynamicTexture(	CTextureObject::CGL_COLOR24_ALPHA,
+    m_pTxt = f.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 										CTextureObject::CGL_MULTIPLY,
 										CTextureObject::CGL_BILINEAR,
 										pGenerator);

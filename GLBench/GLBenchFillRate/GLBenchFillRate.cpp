@@ -96,14 +96,18 @@ void Display::GLInitContext()
 	txt = new CTextureSet();
 
 	glColor4f(1.0f,1.0f,1.0f,1.0f);
-	CTextureObject* T = f.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_MULTIPLY,CTextureObject::CGL_BILINEAR);
+	CTextureObject* T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
+										  CTextureObject::CGL_MULTIPLY,
+										  CTextureObject::CGL_BILINEAR);
 	T->glSetTransparency(128);
 	f.glLoadTexture(T,"Datas\\M1_1024.jpg");
 	txt->addTexture(T);
 
 	if (Raptor::glIsExtensionSupported("GL_ARB_texture_compression"))
 	{
-		T = f.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_MULTIPLY,CTextureObject::CGL_BILINEAR);
+		T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
+							  CTextureObject::CGL_MULTIPLY,
+							  CTextureObject::CGL_BILINEAR);
 		T->glSetTransparency(128);
 		const CTextureFactoryConfig::ICompressor *compressor = config.getCurrentCompressor();
 		if (0 < config.getNumCompressors())
@@ -113,18 +117,24 @@ void Display::GLInitContext()
 	}
 	else
 	{
-		T = f.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_MULTIPLY,CTextureObject::CGL_BILINEAR);
+		T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
+							  CTextureObject::CGL_MULTIPLY,
+							  CTextureObject::CGL_BILINEAR);
 		T->glSetTransparency(128);
 		f.glLoadTexture(T,"Datas\\M1_1024.jpg");
 	}
 	txt->addTexture(T);
 
-	T = f.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_MULTIPLY,CTextureObject::CGL_BILINEAR);
+	T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
+						  CTextureObject::CGL_MULTIPLY,
+						  CTextureObject::CGL_BILINEAR);
 	T->glSetTransparency(128);
 	f.glLoadTexture(T,"Datas\\M74_1024.jpg");
 	txt->addTexture(T);
 
-	T = f.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_MULTIPLY,CTextureObject::CGL_TRILINEAR);
+	T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
+						  CTextureObject::CGL_MULTIPLY,
+						  CTextureObject::CGL_TRILINEAR);
 	config.setGenerateMipmap(false);
 	T->glSetTransparency(128);	f.glLoadTexture(T,"Datas\\M1_1024.jpg");
 	T->selectMipMapLevel(1);	f.glLoadTexture(T,"Datas\\M1_512.jpg");
@@ -141,7 +151,9 @@ void Display::GLInitContext()
 	txt->addTexture(T);
 
 
-	T = f.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_MULTIPLY,CTextureObject::CGL_BILINEAR);
+	T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
+						  CTextureObject::CGL_MULTIPLY,
+						  CTextureObject::CGL_BILINEAR);
 	T->glSetTransparency(128);
 	f.glLoadTexture(T,"Datas\\M1_256.jpg");
 	txt->addTexture(T);
@@ -153,7 +165,9 @@ void Display::GLInitContext()
 		glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT,&anisotropy);
 		config.setCurrentAnisotropy(anisotropy);
 
-		T = f.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_MULTIPLY,CTextureObject::CGL_ANISOTROPIC);
+		T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
+							  CTextureObject::CGL_MULTIPLY,
+							  CTextureObject::CGL_ANISOTROPIC);
 		config.setGenerateMipmap(false);
 		T->glSetTransparency(255);	f.glLoadTexture(T,"Datas\\M1_1024.jpg");
 		T->selectMipMapLevel(1);	f.glLoadTexture(T,"Datas\\M1_512.jpg");
@@ -411,7 +425,7 @@ GLDisplay->glMakeCurrent(false);
 
 GLDisplay->glMakeCurrent();
 		glGetIntegerv(GL_MAX_TEXTURE_SIZE,&maxSize);
-		T = factory.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA);
+		T = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA);
 		load.allocatePixels(maxSize, maxSize);
 		unsigned char *buffer = new unsigned char[maxSize*4*maxSize];
 

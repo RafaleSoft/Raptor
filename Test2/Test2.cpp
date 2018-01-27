@@ -64,7 +64,7 @@ BOOL CTest2App::InitInstance()
     config.m_bRelocation = true;
     config.m_uiPolygons = 400000;
     config.m_uiVertices = 1000000;
-	config.m_uiTexels = 262144;
+	config.m_uiTexels = 400000;
 	config.m_logFile = "Test2_Raptor.log";
 	bool init = Raptor::glInitRaptor(config);
 

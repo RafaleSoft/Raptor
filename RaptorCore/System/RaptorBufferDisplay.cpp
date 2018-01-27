@@ -168,11 +168,11 @@ void CRaptorBufferDisplay::glGenerate(CTextureObject* T)
 			GLuint buffer = WGL_FRONT_LEFT_ARB;
 
 #ifdef WGL_NV_render_depth_texture
-			CTextureObject::TEXEL_TYPE tt = T->getTexelType();
-			if ((tt == CTextureObject::CGL_DEPTH8) ||
-				(tt == CTextureObject::CGL_DEPTH16) ||
-				(tt == CTextureObject::CGL_DEPTH24) ||
-				(tt == CTextureObject::CGL_DEPTH32))
+			ITextureObject::TEXEL_TYPE tt = T->getTexelType();
+			if ((tt == ITextureObject::CGL_DEPTH8) ||
+				(tt == ITextureObject::CGL_DEPTH16) ||
+				(tt == ITextureObject::CGL_DEPTH24) ||
+				(tt == ITextureObject::CGL_DEPTH32))
 				buffer = WGL_DEPTH_COMPONENT_NV;
 #endif
 			CContextManager::GetInstance()->glBindTexImageARB(m_pBuffer - 1,buffer);

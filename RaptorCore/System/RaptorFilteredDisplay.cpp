@@ -270,9 +270,9 @@ bool CRaptorFilteredDisplay::glCreateRenderDisplay(void)
 		//	Render to texture and render to depth texture are imposed.
 		if (CRaptorDisplayConfig::RENDER_BUFFER == filter_cs.renderer)
 		{
-			CTextureObject::TEXEL_TYPE texelType = CTextureObject::CGL_COLOR24_ALPHA;
+			ITextureObject::TEXEL_TYPE texelType = ITextureObject::CGL_COLOR24_ALPHA;
 			if ((filter_cs.display_mode & CGL_FLOAT) == CGL_FLOAT)
-				texelType = CTextureObject::CGL_COLOR_FLOAT16_ALPHA;
+				texelType = ITextureObject::CGL_COLOR_FLOAT16_ALPHA;
 
 			CTextureObject *T = f.glCreateTexture(	texelType,
 													CTextureObject::CGL_OPAQUE,
@@ -287,13 +287,13 @@ bool CRaptorFilteredDisplay::glCreateRenderDisplay(void)
 #if defined(GL_EXT_packed_depth_stencil)
 			if ((filter_cs.stencil_buffer) &&
 				((filter_cs.display_mode & CGL_DEPTH) == CGL_DEPTH))
-				T = f.glCreateTexture(	CTextureObject::CGL_DEPTH24_STENCIL8,
+				T = f.glCreateTexture(	ITextureObject::CGL_DEPTH24_STENCIL8,
 										CTextureObject::CGL_OPAQUE,
 										CTextureObject::CGL_UNFILTERED);
 			else
 #endif
 
-				T = f.glCreateTexture(	CTextureObject::CGL_DEPTH24,
+				T = f.glCreateTexture(	ITextureObject::CGL_DEPTH24,
 										CTextureObject::CGL_OPAQUE,
 										CTextureObject::CGL_UNFILTERED);
 
@@ -315,7 +315,7 @@ bool CRaptorFilteredDisplay::glCreateRenderDisplay(void)
 			//
 			//	Rq: for PBuffers, the final texture format is determined by the PBuffer pixelFormat,
 			//	so the texelType here is not necessary.
-			CTextureObject *T = f.glCreateDynamicTexture(	CTextureObject::CGL_COLOR24_ALPHA,
+			CTextureObject *T = f.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 															CTextureObject::CGL_OPAQUE,
 															CTextureObject::CGL_BILINEAR,
 															m_pDisplay);

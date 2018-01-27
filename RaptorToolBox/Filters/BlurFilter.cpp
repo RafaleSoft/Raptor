@@ -336,7 +336,7 @@ bool CBlurFilter::glInitFilter(void)
 	if ((colorExternalSource != NULL) && (m_fModel == RENDER_TEXTURE))
 	{
 		//!    Source is unfiltered to avoid artifacts ( see comment below ).
-		colorInput = filterFactory.glCreateDynamicTexture(	CTextureObject::CGL_COLOR24_ALPHA,
+		colorInput = filterFactory.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 															CTextureObject::CGL_OPAQUE,
 															CTextureObject::CGL_UNFILTERED, //CGL_BILINEAR,
 															colorExternalSource);
@@ -365,7 +365,7 @@ bool CBlurFilter::glInitFilter(void)
 	{
 		state.renderer = CRaptorDisplayConfig::RENDER_BUFFER;
 
-		xKernelPass = filterFactory.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,
+		xKernelPass = filterFactory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
 			                                        CTextureObject::CGL_OPAQUE,
 				                                    CTextureObject::CGL_UNFILTERED);
 		filterFactory.glResizeTexture(xKernelPass,state.width,state.height);
@@ -392,7 +392,7 @@ bool CBlurFilter::glInitFilter(void)
 		//! ( Specifically where tex coord is near a texel edge, 
 		//! and also because it is shifted to work in texels' center and 
 		//! should be faster ).
-		xKernelPass = filterFactory.glCreateDynamicTexture(	CTextureObject::CGL_COLOR24_ALPHA,
+		xKernelPass = filterFactory.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 															CTextureObject::CGL_OPAQUE,
 															CTextureObject::CGL_UNFILTERED, //CGL_BILINEAR,
 															xBuffer);

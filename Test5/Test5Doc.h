@@ -24,9 +24,9 @@ public:
 private:
 	CRaptorDisplay*	m_pDisplay;
 	CRaptorDisplay*	m_pDisplayBuffer;
-	CTextureObject*	m_pBufferTexture;
+	//CTextureObject*	m_pBufferTexture;
 	
-	CTextureObject*	m_pTexture;
+	ITextureObject*	m_pTexture;
 
 	RAPTOR_HANDLE	m_device;
 };

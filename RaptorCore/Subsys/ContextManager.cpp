@@ -238,7 +238,7 @@ CTextureObject* CContextManager::glBuildLogo(void)
     glPushAttrib(GL_TEXTURE_BIT);
 
 	CTextureFactory &Txt = CTextureFactory::getDefaultFactory();
-	CTextureObject *p_Logo = Txt.glCreateTexture(	CTextureObject::CGL_COLOR24_ALPHA,
+	CTextureObject *p_Logo = Txt.glCreateTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 													CTextureObject::CGL_MULTIPLY,
 													CTextureObject::CGL_BILINEAR);
 
