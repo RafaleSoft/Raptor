@@ -322,7 +322,8 @@ public:
 		else if (innerFormat == GL_RGB32F_ARB)
 			return GL_COMPRESSED_RGB_BPTC_SIGNED_FLOAT_ARB;
 		/*else if (innerFormat == GL_SRGB8_ALPHA8)
-		return GL_COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT_ARB;*/
+			return GL_COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT_ARB;*/
+		else
 #endif
 			return (unsigned int)-1;
 	};
@@ -358,9 +359,8 @@ public:
 		else if (innerFormat == GL_SRGB8_ALPHA8)
 			return GL_COMPRESSED_SRGB8_ALPHA8_ASTC_4x4_KHR;
 		else
-#else
-			return (unsigned int)-1;
 #endif
+			return (unsigned int)-1;
 	}
 
 	bool isCompressionSupported(unsigned int compressedFormat) const

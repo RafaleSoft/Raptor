@@ -393,21 +393,3 @@ void SSE_COctree::RemoveEmpty(void)
 	}
 }
 
-ostream& operator<< (ostream &out, const SSE_COctree &surf)
-{
-
-	out << "pere: nbPolygons = "  << surf.m_subMesh.size() << endl;
-
-	out << "fils:" << endl << "{" << endl;
-
-	unsigned int nbChilds = surf.m_childs.size();
-
-	for (unsigned int i=0 ; i<nbChilds ; i++)
-	{
-		out <<"\t"<< *(surf.m_childs[i]);
-	}
-
-	out << "}" << endl;
-
-	return out;
-}

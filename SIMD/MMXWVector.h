@@ -20,6 +20,16 @@ public:
 	CMMXWVector(){};
 	virtual ~CMMXWVector(){};
 
+	CMMXWVector& operator*= (const unsigned short& t)
+	{
+		m_vector[0] = (unsigned short)(m_vector[0] * t);
+		m_vector[1] = (unsigned short)(m_vector[1] * t);
+		m_vector[2] = (unsigned short)(m_vector[2] * t);
+		m_vector[3] = (unsigned short)(m_vector[3] * t);
+		return *this;
+	};
+
+#ifndef SIMD_NO_ASSEMBLY
 	CMMXWVector& operator= ( const CMMXWVector& v )
 	{ 
 		__asm
@@ -200,14 +210,6 @@ public:
 		return *this; 
 	};
 
-	CMMXWVector& operator*= (const unsigned short& t)
-	{ 
-		m_vector[0]=(unsigned short)(m_vector[0]*t);
-		m_vector[1]=(unsigned short)(m_vector[1]*t);
-		m_vector[2]=(unsigned short)(m_vector[2]*t);
-		m_vector[3]=(unsigned short)(m_vector[3]*t);
-		return *this; 
-	};
 
 	//	this = m*this
 	CMMXWVector& SIMD_CALL operator*= (const CMMXWMatrix& m);
@@ -226,6 +228,7 @@ public:
 	// scalar operations
 	CMMXWVector& SIMD_CALL operator+  (const CMMXWVector& v2) const;
 	CMMXWVector& SIMD_CALL operator-  (const CMMXWVector& v2) const;
+#endif
 };
 
 // return = v * m

@@ -11,10 +11,27 @@
 	#include "Imaging/TGAImaging.h"
 #endif
 
-#ifdef LINUX
+
+#if defined(WIN32)
+	#include <share.h>
+	static FILE *msdn_fopen(const char *filename, const char *mode)
+	{
+		if ((NULL == filename) || (NULL == mode))
+			return NULL;
+		FILE* pFile = NULL;
+		errno_t err = fopen_s(&pFile, filename, mode);
+		if (0 == err)
+			return pFile;
+		else
+			return NULL;
+	}
+	#define FOPEN(a,b) msdn_fopen(a,b)
+#elif LINUX
 	#include <stdio.h>
 	#include <string.h>
+	#define FOPEN(a,b) fopen(a,b)
 #endif
+
 
 CTGAImaging::CTGAImaging(void)
 {
@@ -47,7 +64,7 @@ bool CTGAImaging::storeImageFile(const std::string& fname,CTextureObject* const 
         return false;
 
     FILE			*out_rgb = NULL;
-    if (NULL == (out_rgb = fopen( fname.data(), "wb" )))
+	if (NULL == (out_rgb = FOPEN(fname.data(), "wb")))
         return false;
 
     unsigned char	head[18] ;
@@ -105,11 +122,11 @@ bool CTGAImaging::loadImageFile(const std::string& fname,CTextureObject* const T
 	FILE			*in_rgb = NULL;
 	long			outcolor = 0;
 	unsigned char	*outcolors = NULL;
-	long			w = 0;
-    long            h = 0;
+	size_t			w = 0;
+    size_t          h = 0;
 	int				size = 0;
 
-	if ((in_rgb = fopen( fname.data(), "rb" ))==NULL)
+	if ((in_rgb = FOPEN(fname.data(), "rb")) == NULL)
 		return false;
 	
 	if (fread( head, sizeof(char), 18, in_rgb )!=18)
@@ -125,7 +142,7 @@ bool CTGAImaging::loadImageFile(const std::string& fname,CTextureObject* const T
 
     //  allocate extra size for fast unchecked reading here under.
 	outcolors = new unsigned char[size*w*h+4];
-	if (fread( outcolors, size, w*h, in_rgb ) != w*h)
+	if (fread(outcolors, size, w*h, in_rgb) != w*h)
     {
         fclose( in_rgb );
 	    return false;
@@ -133,7 +150,7 @@ bool CTGAImaging::loadImageFile(const std::string& fname,CTextureObject* const T
 
 	int t_pos = 0;
 	int i_pos = 0;
-	for ( int i=0; i < w*h; i++ )
+	for ( size_t i=0; i < w*h; i++ )
 	{
 		outcolor = *((long*)&outcolors[i_pos]);
 		unsigned int transparency = T->getTransparency();

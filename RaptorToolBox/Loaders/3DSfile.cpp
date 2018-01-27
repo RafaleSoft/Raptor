@@ -802,8 +802,11 @@ bool RAPTOR_FASTCALL ProcessChunkAxxxH(long length)
 				str += CurrentState.name;
 				str += " to ";
 
-				strcat(CurrentState.name,"2");
-				str+= CurrentState.name;
+				stringstream rename;
+				rename << CurrentState.name;
+				rename << "2";
+				
+				str+= rename.str();
 				Raptor::GetErrorManager()->generateRaptorError(CPersistence::CPersistenceClassID::GetClassId(),
                                                                CRaptorErrorManager::RAPTOR_WARNING,str);
 				materialRenamed = true;
