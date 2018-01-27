@@ -176,12 +176,11 @@ copy .\RaptorCore\Raptordll.h Redist\Include
 ECHO    Copying ToolBox files:
 copy .\RaptorToolBox\BasicObjects.h Redist\Include\ToolBox
 copy .\RaptorToolBox\CmdLineParser.h Redist\Include\ToolBox
+copy .\RaptorToolBox\Controllers.h Redist\Include\ToolBox
 copy .\RaptorToolBox\Imaging.h Redist\Include\ToolBox
+copy .\RaptorToolBox\ParticleCompute.h Redist\Include\ToolBox
 copy .\RaptorToolBox\RaptorToolBox.h Redist\Include\ToolBox
 copy .\RaptorToolBox\Streaming.h Redist\Include\ToolBox
-copy .\RaptorToolBox\Controllers.h Redist\Include\ToolBox
-copy .\RaptorToolBox\ParticleCompute.h Redist\Include\ToolBox
-
 copy .\RaptorToolBox\Filters\BlurFilter.h Redist\Include\ToolBox\Filters
 copy .\RaptorToolBox\Filters\ColorControlFilter.h Redist\Include\ToolBox\Filters
 copy .\RaptorToolBox\Filters\DOFFilter.h Redist\Include\ToolBox\Filters

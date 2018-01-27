@@ -40,6 +40,7 @@ public:
 		return *this; 
 	};
 
+#ifndef SIMD_NO_ASSEMBLY
 	CMMXWMatrix&	SIMD_CALL operator-= (const CMMXWMatrix& m)
 	{ 
 		_asm
@@ -113,7 +114,7 @@ public:
 	};
 
 	CMMXWMatrix&	SIMD_CALL operator*= (const CMMXWMatrix& m);
-
+#endif
 };
 
 #endif // !defined(AFX_MMXWMATRIX_H__6CB7BBD5_103F_4C28_AA90_88AA8AD9E466__INCLUDED_)

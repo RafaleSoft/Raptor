@@ -33,7 +33,6 @@ public:
 	int GetNbEmpty(void);
 	void RemoveEmpty(void);
 
-	friend	ostream& operator<< (ostream&, const COctree&) ;
 
 public:
 	int				m_idxIntersected;

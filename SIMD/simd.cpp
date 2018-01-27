@@ -34,8 +34,11 @@
 	#include "MMXWMatrix.h"
 #endif
 
-
-#include <intrin.h>
+#ifdef WIN32
+	#include <intrin.h>
+#else
+	#include <cpuid.h>
+#endif
 
 //	These global vectors are defined to
 //	avoid "sloooow" calls to the constructor
@@ -342,12 +345,16 @@ const CPU_INFO& SIMD_API getCPUINFO()
 		return cpuInfo;
 	else
 	{
-#ifdef WIN32
 		cpuScanned = true;
 		memset(&cpuInfo,0,sizeof(CPU_INFO));
-
 		int cpuidRegs[4];
+
+#ifdef WIN32
 		__cpuid(cpuidRegs,0);
+#else
+    __get_cpuid(1);
+#endif
+
 		int nbId = cpuidRegs[0];
 
 		cpuInfo.CPUID = (nbId > 0);
@@ -358,7 +365,11 @@ const CPU_INFO& SIMD_API getCPUINFO()
 			*((int*)&cpuInfo.features[4]) = cpuidRegs[3];
 			*((int*)&cpuInfo.features[8]) = cpuidRegs[2];
 
+#ifdef WIN32
 			__cpuid(cpuidRegs,1);
+#else
+      __get_cpuid(1);
+#endif
 			cpuInfo.stepping = (cpuidRegs[0] & 0x0f);
 			cpuInfo.model = (cpuidRegs[0] >> 4) & 0x0f;
 			cpuInfo.family = (cpuidRegs[0] >> 8) & 0x0f;
@@ -376,7 +387,11 @@ const CPU_INFO& SIMD_API getCPUINFO()
 		}
 		if (nbId >= 2)
 		{
+#ifdef WIN32
 			__cpuid(cpuidRegs,2);
+#else
+      __get_cpuid(1);
+#endif
 			int nbCacheCalls = (cpuidRegs[0] & 0xff);
 			if (cpuInfo.cacheDescriptor.descriptors != 0)
 				delete [] cpuInfo.cacheDescriptor.descriptors;
@@ -404,12 +419,20 @@ const CPU_INFO& SIMD_API getCPUINFO()
 						}
 					}
 				}
+#ifdef WIN32
 				__cpuid(cpuidRegs,2);
+#else
+      __get_cpuid(1);
+#endif
 			}
 		}
 		if ((nbId >= 3) && cpuInfo.hasFeature(CPUINFO::PSN))
 		{
+#ifdef WIN32
 			__cpuid(cpuidRegs,3);
+#else
+      __get_cpuid(1);
+#endif
 			cpuInfo.serialNumber[0] = cpuidRegs[2];
 			cpuInfo.serialNumber[1] = cpuidRegs[3];
 		}
@@ -488,21 +511,37 @@ const CPU_INFO& SIMD_API getCPUINFO()
 				cpuInfo.numCores = cpuidRegs[1] & 0xffff;
 			}
 		}
+#ifdef WIN32
 		__cpuid(cpuidRegs,0x80000000);
+#else
+      __get_cpuid(1);
+#endif
 		nbId = cpuidRegs[0];
 		if (nbId >= 0x80000002)
 		{
+#ifdef WIN32
 			__cpuid(cpuidRegs,0x80000002);
+#else
+      __get_cpuid(1);
+#endif
 			memcpy(&cpuInfo.processorBrand[0],cpuidRegs,16);
 		}
 		if (nbId >= 0x80000003)
 		{
+#ifdef WIN32
 			__cpuid(cpuidRegs,0x80000003);
+#else
+      __get_cpuid(1);
+#endif
 			memcpy(&cpuInfo.processorBrand[16],cpuidRegs,16);
 		}
 		if (nbId >= 0x80000004)
 		{
+#ifdef WIN32
 			__cpuid(cpuidRegs,0x80000004);
+#else
+      __get_cpuid(1);
+#endif
 			memcpy(&cpuInfo.processorBrand[32],cpuidRegs,16);
 		}
 		//!
@@ -595,9 +634,7 @@ const CPU_INFO& SIMD_API getCPUINFO()
 
 			memcpy(cpuInfo.features,_cpuInfo,sizeof(_cpuInfo));
 		}*/
-#else
-	cat /proc/cpuinfo
-#endif
+
 		return cpuInfo;
 	}
 }

@@ -16,7 +16,7 @@
 #include "png.h"
 
 #if defined(WIN32)
-#include <share.h>
+	#include <share.h>
 	static FILE *msdn_fopen(const char *filename, const char *mode)
 	{
 		if ((NULL == filename) || (NULL == mode))

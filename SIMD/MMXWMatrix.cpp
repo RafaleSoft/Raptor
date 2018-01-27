@@ -11,6 +11,8 @@
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
+#ifndef SIMD_NO_ASSEMBLY
+
 CMMXWMatrix&	SIMD_CALL CMMXWMatrix::operator*= (const CMMXWMatrix& m)
 {
 	__asm
@@ -55,3 +57,4 @@ row:
 	return *this;
 }
 
+#endif

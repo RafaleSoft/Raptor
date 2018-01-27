@@ -29,7 +29,6 @@ public:
 	int GetNbEmpty(void);
 	void RemoveEmpty(void);
 
-	friend	ostream& operator<< (ostream&, const SSE_COctree&) ;
 
 public:
 	int				m_idxIntersected;
