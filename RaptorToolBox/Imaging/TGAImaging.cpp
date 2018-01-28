@@ -137,9 +137,8 @@ bool CTGAImaging::loadImageFile(const std::string& fname, CImage* const I) const
 	h = (head[15]*256)+head[14];
 	size = head[16]/8;
 
-    T->setSize(w,h);
-    T->allocateTexels();
-    unsigned char *texturedata = T->getTexels();
+    I->allocatePixels(w, h, CImage::CGL_COLOR24_ALPHA);
+    uint8_t *texturedata = I->getPixels();
 
     //  allocate extra size for fast unchecked reading here under.
 	outcolors = new unsigned char[size*w*h+4];
