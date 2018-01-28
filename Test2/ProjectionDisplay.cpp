@@ -69,7 +69,8 @@ CProjectionDisplay::CProjectionDisplay():
     m_shader(NULL),
 	m_pScene(NULL),
 	m_pBall(NULL),
-	m_light(NULL)
+	m_light(NULL),
+	dt(0.0f)
 {
 }
 
@@ -112,36 +113,34 @@ void CProjectionDisplay::Init()
 		char fname[32];
 		sprintf(fname,"Datas\\caust%02d.tga",i);
 
-		CTextureObject *T = f.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_ALPHA_TRANSPARENT,CTextureObject::CGL_BILINEAR);
+		CTextureObject *T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_ALPHA_TRANSPARENT,CTextureObject::CGL_BILINEAR);
 		T->glSetTransparency(128);
 		f.glLoadTexture(T,fname);
 		m_caustics->addTexture(T);
 	}
 
     // Volume texture
-    cube = f.glCreateVolumeTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_ALPHA_TRANSPARENT,CTextureObject::CGL_BILINEAR);
+	/*
+    cube = f.glCreateVolumeTexture(ITextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_ALPHA_TRANSPARENT,CTextureObject::CGL_BILINEAR);
     cube->glSetTransparency(255);
     cube->setSize(64,64,32);
-    cube->allocateTexels();
-	unsigned char *buffer = cube->getTexels();
 
-    CTextureObject  *tmp = f.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_ALPHA_TRANSPARENT,CTextureObject::CGL_BILINEAR);
-    tmp->setSize(64,64);
-    tmp->glSetTransparency(255);
-
-    CTextureFactoryConfig& config = f.getConfig();
-    CTextureFactoryConfig::IImageIO *loader = config.getImageKindIO("TGA");
+	CImage cubeImage;
+	cubeImage.allocatePixels(64, 64, 32);
+	CImage::IImageIO *loader = CImage::getImageKindIO("TGA");
     for (i=0;i<32;i++)
     {
         char fname[32];
 		sprintf(fname,"Datas\\caust%02d.tga",i);
 
-        loader->loadImageFile(fname,tmp);
-		unsigned char *data = tmp->getTexels();
-        memcpy(&buffer[64*64*4*i],data,64*64*4);
+		CImage tmp;
+        loader->loadImageFile(fname,&tmp);
+		unsigned char *buffer = cubeImage.getPixels(i);
+		unsigned char *data = tmp.getPixels();
+        memcpy(buffer,data,64*64*4);
     }
-    f.glLoadTexture(cube,".buffer");
-
+	f.glLoadTexture(cube, cubeImage);
+	*/
 	m_light = new CLight("PROJECTOR");
 	m_light->setProjector(m_projector);
 	m_light->setLightPosition(GL_COORD_VERTEX(0.0f,10.0f,10.0f));

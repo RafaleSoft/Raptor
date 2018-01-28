@@ -32,17 +32,17 @@ vector<std::string> CBMPImaging::getImageKind(void) const
 	return result;
 }
 
-bool CBMPImaging::storeImageFile(const std::string&,CTextureObject* const T)
+bool CBMPImaging::storeImageFile(const std::string&, CImage* const I) const
 {
-    return false;
+	return false;
 }
 
-bool CBMPImaging::loadImageFile(const std::string& fname,CTextureObject* const T)
+bool CBMPImaging::loadImageFile(const std::string& fname, CImage* const I) const
 {
 #ifdef WIN32
-   	HANDLE h = LoadImage(NULL,fname.data(),IMAGE_BITMAP,0,0,LR_LOADFROMFILE);
+	HANDLE h = LoadImage(NULL, fname.data(), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
 
-	if (h == NULL)
+	if ((NULL == h) || (NULL == I))
 		return false;
 
 	HBITMAP bmp = (HBITMAP)h;
@@ -50,66 +50,53 @@ bool CBMPImaging::loadImageFile(const std::string& fname,CTextureObject* const T
 
 	HDC hdc = GetDC(NULL);
 	BITMAPINFO bi;
-	GetDIBits(  hdc, bmp, 0, 0, NULL, &bi, DIB_RGB_COLORS);
+	GetDIBits(hdc, bmp, 0, 0, NULL, &bi, DIB_RGB_COLORS);
 
 	int size = bi.bmiHeader.biBitCount / 8;
 	int dim = bi.bmiHeader.biWidth * bi.bmiHeader.biHeight;
-	
-    T->setSize(bi.bmiHeader.biWidth , bi.bmiHeader.biHeight);
-    T->allocateTexels();
-	unsigned char *texturedata = T->getTexels();
+
+	I->allocatePixels(bi.bmiHeader.biWidth, bi.bmiHeader.biHeight, CImage::CGL_COLOR24_ALPHA);
+	unsigned char *texturedata = (unsigned char*)I->getPixels();
 
 	unsigned char *buffer = new unsigned char[dim*size];
-	if (bi.bmiHeader.biHeight != GetDIBits(  hdc, bmp, 0, bi.bmiHeader.biHeight, buffer, &bi, DIB_RGB_COLORS))
+	if (bi.bmiHeader.biHeight != GetDIBits(hdc, bmp, 0, bi.bmiHeader.biHeight, buffer, &bi, DIB_RGB_COLORS))
 		return false;
 
 	int t_pos = 0;
 	int b_pos = 0;
 
-	for ( int i=0; i < dim; i++ )
+	for (int i = 0; i < dim; i++)
 	{
-		switch(size)
+		switch (size)
 		{
 			case 3:
 			case 4:	// most 32 bits TGA images are defined with alpha as 0 !!!, so manage like 24bits
+			{
 				texturedata[t_pos] = buffer[b_pos];
-				texturedata[t_pos+1] = buffer[b_pos+1];
-				texturedata[t_pos+2] = buffer[b_pos+2];
-				
-				if (T->getTransparency()>255)
-				{
-					if ((texturedata[t_pos]==0)&&(texturedata[t_pos+1]==0)&&(texturedata[t_pos+2]==0))
-						texturedata[t_pos+3]=0;
-					else 
-						texturedata[t_pos+3]=255;
-				}
-				else if (T->getTransparency()>0)
-					texturedata[t_pos+3] = (unsigned char)(T->getTransparency() & 0xFF);
-				else 
-				{	
-					texturedata[t_pos+3] =
-					(unsigned char)((texturedata[t_pos] + texturedata[t_pos+1] + texturedata[t_pos+2]) / 3);
-				}
-
+				texturedata[t_pos + 1] = buffer[b_pos + 1];
+				texturedata[t_pos + 2] = buffer[b_pos + 2];
+				texturedata[t_pos + 3] = 0xFF;	// default value to ensure image is visible
 				break;
+			}
 			default:
+			{
 				texturedata[t_pos] = 0xFF;
-				texturedata[t_pos+1] = 0xFF;
-				texturedata[t_pos+2] = 0xFF;
-				if (T->getTransparency()>0)
-					texturedata[t_pos+3] = (unsigned char)(T->getTransparency() & 0xFF);
+				texturedata[t_pos + 1] = 0xFF;
+				texturedata[t_pos + 2] = 0xFF;
+				texturedata[t_pos + 3] = 0xFF;	// default value to ensure image is visible
+			}
 		}
 
 		b_pos += size;
 		t_pos += 4;
 	}
 
-	ReleaseDC(NULL,hdc);
+	ReleaseDC(NULL, hdc);
 	DeleteObject(h);
-	delete [] buffer;
+	delete[] buffer;
 	return true;
 #else
-    return false;
+	return false;
 #endif
 }
 

@@ -55,7 +55,13 @@ public:
 
 	//! The array of unsynchronized host_visible vs. device local memory data chunks
 	std::vector<VkBufferCopy>		m_unsynchronizedBuffers;
-	std::vector<VkBufferImageCopy>	m_unsynchronizedImages;
+
+	typedef struct unsynchronizedImage
+	{
+		VkImage				image;
+		VkBufferImageCopy	bufferCopy;
+	};
+	std::vector<unsynchronizedImage>	m_unsynchronizedImages;
 
 
 private:

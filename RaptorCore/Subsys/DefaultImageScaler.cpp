@@ -23,9 +23,23 @@ RAPTOR_NAMESPACE
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CDefaultImageScaler::CDefaultImageScaler()
+CDefaultImageScaler::CDefaultImageScaler(float sx, float sy)
+	: scale_x(sx), scale_y(sy)
 {
 
+}
+
+CDefaultImageScaler::CDefaultImageScaler(const CDefaultImageScaler& scaler)
+	: scale_x(scaler.scale_x), scale_y(scaler.scale_y)
+{
+	
+}
+
+CDefaultImageScaler& CDefaultImageScaler::operator =(const CDefaultImageScaler& scaler)
+{
+	scale_x = scaler.scale_x;
+	scale_y = scaler.scale_y;
+	return *this;
 }
 
 CDefaultImageScaler::~CDefaultImageScaler()
@@ -33,73 +47,61 @@ CDefaultImageScaler::~CDefaultImageScaler()
 
 }
 
-bool CDefaultImageScaler::apply(CTextureObject* const src,
-								unsigned int,
-								unsigned int texelFormat,
-								unsigned int texelType,
-								const CTextureFactoryConfig& config) const
+bool CDefaultImageScaler::apply(CImage* const src, const operation_param_t& ) const
 {
-	if (src->getDepth() != 0)
-		return false;	//	Unsupported Texture3D resize.
-
-	
-	unsigned int powx=1;
-    unsigned int powy=1;
+	unsigned int powx = 1;
+	unsigned int powy = 1;
 
 	while (powx < src->getWidth())
-		powx *= 2;	
+		powx *= 2;
 	while (powy < src->getHeight())
 		powy *= 2;
-	
+
 	if ((powx != src->getWidth()) || (powy != src->getHeight()))
 	{
-        void *texels = NULL;
+		void *pixels = NULL;
 
-        unsigned int elemSize = 1;
-		unsigned char* pTexels = src->getTexels();
+		unsigned int elemSize = 1;
+		unsigned char* pPixels = src->getPixels();
 
-        //! Allocate a destination bloc for the scaled result
-        if (pTexels != NULL)
-        {
-            CHostMemoryManager::Allocator<unsigned char> allocator;
-            texels = allocator.allocate(powx*powy*4);
-        }
-        else
-        {
-            elemSize = 4;
-			float *pfTexels = src->getFloatTexels();
-            if (pfTexels != NULL)
-            {
-                CHostMemoryManager::Allocator<float> allocator;
-                texels = allocator.allocate(powx*powy*4);
-            }
-            else
-                return false;
-        }
+		//! Allocate a destination bloc for the scaled result
+		if (pPixels != NULL)
+		{
+			CHostMemoryManager::Allocator<unsigned char> allocator;
+			pixels = allocator.allocate(powx*powy * 4);
+		}
+		else
+		{
+			elemSize = 4;
+			float *pfTexels = src->getFloatPixels();
+			if (pfTexels != NULL)
+			{
+				CHostMemoryManager::Allocator<float> allocator;
+				pixels = allocator.allocate(powx*powy * 4);
+			}
+			else
+				return false;
+		}
 
-        //! We keep the same type in & out of pixel data
-        //! to be able to control values with accuracy.
-        gluScaleImage(	texelFormat, 
-						src->getWidth(), 
-						src->getHeight(), 
-						texelType, 
-						pTexels, 
-						powx, 
-						powy, 
-						texelType, 
-						texels);
+		//! We keep the same type in & out of pixel data
+		//! to be able to control values with accuracy.
+		gluScaleImage(src->getBufferFormat(),
+					  src->getWidth(),
+					  src->getHeight(),
+					  src->getBufferType(),
+					  pPixels,
+					  powx,
+					  powy,
+					  src->getBufferType(),
+					  pixels);
 
-        CTextureObject::TEXEL_TYPE tType = src->getTexelType();
-        src->setSize(powx,powy);
-        src->allocateTexels(tType);
-		pTexels = src->getTexels();
+		src->allocatePixels(powx,powy,src->getPixelType());
+		pPixels = src->getPixels();
 
-        memcpy(pTexels,texels,powx*powy*4*elemSize);
+		memcpy(pPixels, pixels, powx*powy * 4 * elemSize);
 
-        CHostMemoryManager::GetInstance()->garbage(texels);
+		CHostMemoryManager::GetInstance()->garbage(pixels);
 	}
 
-    return true;
+	return true;
 }
-
-

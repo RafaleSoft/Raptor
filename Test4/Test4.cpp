@@ -199,7 +199,7 @@ int WINAPI WinMain(  HINSTANCE hinstance,
 	CTimeObject::setTimeFactor(1.0f);
     CAnimator *pAnimator = new CAnimator();
     CAnimator::SetAnimator(pAnimator);
-    CImaging::installImagers(CTextureFactory::getDefaultFactory());
+    CImaging::installImagers();
     CStreaming::installStreamers();
 
 

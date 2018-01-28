@@ -7,12 +7,14 @@
 #include "Engine/ViewPoint.h"
 #include "Engine/ViewModifier.h"
 #include "Engine/LightModifier.h"
+#include "GLHierarchy/FragmentProgram.h"
 #include "GLHierarchy/GeometryEditor.h"
 #include "GLHierarchy/Object3DInstance.h"
 #include "GLHierarchy/RenderingProperties.h"
 #include "GLHierarchy/Light.h"
 #include "GLHierarchy/Shader.h"
 #include "GLHierarchy/ShaderProgram.h"
+#include "GLHierarchy/VertexProgram.h"
 #include "GLHierarchy/VertexShader.h"
 #include "GLHierarchy/VulkanShaderStage.h"
 #include "GLHierarchy/TextureFactory.h"
@@ -20,20 +22,11 @@
 #include "GLHierarchy/TextureObject.h"
 #include "System/RaptorConsole.h"
 #include "System/RaptorErrorManager.h"
+#include "System/RaptorExtensions.h"
 #include "System/RaptorIO.h"
 #include "ToolBox/BasicObjects.h"
 #include "ToolBox/Imaging.h"
 
-
-#if !defined(AFX_VERTEXPROGRAM_H__204F7213_B40B_4B6A_9BCA_828409871B68__INCLUDED_)
-	#include "GLHierarchy/VertexProgram.h"
-#endif
-#if !defined(AFX_FRAGMENTPROGRAM_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
-	#include "GLHierarchy/FragmentProgram.h"
-#endif
-#if !defined(AFX_RAPTOREXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
-	#include "System/RaptorExtensions.h"
-#endif
 
 RAPTOR_NAMESPACE
 
@@ -79,7 +72,6 @@ CTest5Doc::CTest5Doc(const RAPTOR_HANDLE& device,const char* title)
 {
 	m_pDisplay = NULL;
 	m_pDisplayBuffer = NULL;
-	m_pBufferTexture = NULL;
 	m_pTexture = NULL;
 	m_device = device;
 
@@ -91,7 +83,7 @@ CTest5Doc::CTest5Doc(const RAPTOR_HANDLE& device,const char* title)
     config.m_uiVertices = 50000;
     Raptor::glInitRaptor(config);
 
-	CImaging::installImagers(CTextureFactory::getDefaultFactory());
+	CImaging::installImagers();
 
 	RECT r;
 	GetClientRect((HWND)(device.handle),&r);
@@ -192,18 +184,18 @@ void CTest5Doc::GLInitContext(void)
 	geo->glSetPolygons(2, NULL);
 	GL_COORD_VERTEX VertexData[5] =
 	{
-		{ -0.7f, -0.7f, -2.0f, 1.0f },	// TODO : check / configure depth
-		{ -0.7f, 0.7f, -5.0f, 1.0f },
-		{ 0.7f, -0.7f, -1.5f, 1.0f },
-		{ 0.7f, 0.7f, -3.5f, 1.0f },
-		{ 0.0f, 0.0f, 0.1f, 1.0f }
+		GL_COORD_VERTEX(-0.7f, -0.7f, -2.0f, 1.0f),	// TODO : check / configure depth
+		GL_COORD_VERTEX(-0.7f, 0.7f, -5.0f, 1.0f),
+		GL_COORD_VERTEX(0.7f, -0.7f, -1.5f, 1.0f),
+		GL_COORD_VERTEX(0.7f, 0.7f, -3.5f, 1.0f),
+		GL_COORD_VERTEX(0.0f, 0.0f, 0.1f, 1.0f)
 	};
 	CColor::RGBA ColorData[4] =
 	{
-		{ 1.0f, 0.0f, 0.0f, 0.0f },
-		{ 0.0f, 1.0f, 0.0f, 0.0f },
-		{ 0.0f, 0.0f, 1.0f, 0.0f },
-		{ 0.3f, 0.3f, 0.3f, 0.0f }
+		CColor::RGBA(1.0f, 0.0f, 0.0f, 0.0f),
+		CColor::RGBA(0.0f, 1.0f, 0.0f, 0.0f),
+		CColor::RGBA(0.0f, 0.0f, 1.0f, 0.0f),
+		CColor::RGBA(0.3f, 0.3f, 0.3f, 0.0f)
 	};
 	unsigned short VertexIndices[6] =
 	{
@@ -213,9 +205,7 @@ void CTest5Doc::GLInitContext(void)
 	geo->glSetColors(4,ColorData);
 	geo->glSetPolygons(2,VertexIndices);
 	
-	m_pTexture = f.vkCreateTexture(CTextureObject::CGL_COLOR24_ALPHA, CTextureObject::CGL_ALPHA_TRANSPARENT, CTextureObject::CGL_BILINEAR);
-	//RAPTOR_HANDLE p = f.glvkPreloadTexture(m_pTexture, "earth.TGA");
-	//f.glvkLoadTexture(m_pTexture, p);
+	m_pTexture = f.vkCreateTexture(ITextureObject::CGL_COLOR24_ALPHA, CTextureObject::CGL_ALPHA_TRANSPARENT, CTextureObject::CGL_BILINEAR);
 	f.glLoadTexture(m_pTexture, "earth.TGA");
 
 	CShader* s = geo->getShader();
@@ -257,12 +247,12 @@ void CTest5Doc::GLInitContext(void)
 
 	pScene->addObject(geo);
 #else
-	m_pTexture = f.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA, CTextureObject::CGL_ALPHA_TRANSPARENT, CTextureObject::CGL_BILINEAR);
+	m_pTexture = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA, CTextureObject::CGL_ALPHA_TRANSPARENT, CTextureObject::CGL_BILINEAR);
 	f.glLoadTexture(m_pTexture,"earth.TGA");
 	CTextureUnitSetup *tus = obj->getShader()->glGetTextureUnitsSetup();
 	tus->setDiffuseMap(m_pTexture);
-	m_pTexture = f.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_MULTIPLY,CTextureObject::CGL_BILINEAR);
-    f.glLoadTexture(m_pTexture,"bump3.tga",CVaArray<CTextureFactoryConfig::IImageOP::OP_KIND>(CTextureFactoryConfig::IImageOP::BUMPMAP_LOADER));
+	m_pTexture = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_MULTIPLY,CTextureObject::CGL_BILINEAR);
+    f.glLoadTexture(m_pTexture,"bump3.tga",CVaArray<CImage::IImageOP::OP_KIND>(CImage::IImageOP::BUMPMAP_LOADER));
 	//f.getConfig().setBumpAmplitude(4.0f);
 	//f.glLoadTexture(m_pTexture,"BlurCircle.TGA",CGL_CREATE_NORMAL_MAP);
 	tus->setNormalMap(m_pTexture);
@@ -360,65 +350,4 @@ void CTest5Doc::GLInitContext(void)
 	CAnimator *pAnimator = new CAnimator();
 	CAnimator::SetAnimator(pAnimator);
 #endif
-
-/*
-	CRaptorDisplayConfig glcs;
-	glcs.width = 320;
-	glcs.height = 240;
-	glcs.x = 0;
-	glcs.y = 0;
-	glcs.caption = "RAPTOR_RENDER_BUFFER_DISPLAY";
-	glcs.display_mode = CGL_RGBA | CGL_DEPTH;
-	glcs.renderer = CRaptorDisplayConfig::BUFFERED;
-	m_pDisplayBuffer = Raptor::glCreateDisplay(glcs);
-
-	vp = m_pDisplayBuffer->getViewPoint();
-	vp->setPosition(0,0,3.5,CViewPoint::EYE);
-	vp->setPosition(0,0,0,CViewPoint::TARGET);
-
-	RAPTOR_HANDLE noDevice;
-	if (m_pDisplayBuffer->glBindDisplay(noDevice))
-	{
-		glColor4f(1.0f,1.0f,1.0f,1.0f);
-		CRenderingProperties *props = m_pDisplayBuffer->getRenderingProperties();
-		//props->setWireframe(CRenderingProperties::ENABLE);
-		props->setLighting(CRenderingProperties::ENABLE);
-		props->setTexturing(CRenderingProperties::DISABLE);
-		props->clear(CGL_DEPTH|CGL_RGBA);
-
-		// inits
-		CBasicObjects::CCube *cube = new CBasicObjects::CCube();
-		cube->setDimensions(1.0f,1.0f,1.0f);
-		CMaterial *pM = cube->getShader()->getMaterial();
-		*pM = *pMat;
-
-		CViewModifier *vmcube = new CViewModifier("MyCube");
-		vmcube->setObject(cube);
-		CModifier::TIME_FUNCTION tz;
-		tz.timeFunction = CModifier::CGL_TIME_CONSTANT;
-		tz.a0 = 0.2f;
-		CModifier::TIME_FUNCTION tx;
-		tx.timeFunction = CModifier::CGL_TIME_CONSTANT;
-		tx.a0 = 0.3f;
-		CModifier::TIME_FUNCTION ty;
-		ty.timeFunction = CModifier::CGL_TIME_COSINE;
-		ty.a2 = 0.3f;
-		ty.a1 = 0.2f;
-		ty.a0 = 0;
-		vmcube->addAction(CViewModifier::ROTATE_VIEW,tx,ty,tz);
-
-		C3DScene *pScene = m_pDisplayBuffer->getRootScene();
-		pScene->addObject(vmcube->getObject());
-		pScene->addLight(pLight);
-
-		m_pDisplayBuffer->glUnBindDisplay();
-	}
-
-	f.getConfig().useTextureResize(false);
-	m_pBufferTexture = f.glCreateDynamicTexture(CTextureObject::CGL_COLOR24_ALPHA,
-												CTextureObject::CGL_ALPHA_TRANSPARENT,
-												CTextureObject::CGL_BILINEAR,
-												m_pDisplayBuffer);
-	tus->setDiffuseMap(m_pBufferTexture);
-*/
 }

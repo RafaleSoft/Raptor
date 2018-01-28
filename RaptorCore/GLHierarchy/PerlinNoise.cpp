@@ -13,6 +13,9 @@
 #if !defined(AFX_TEXTUREOBJECT_H__D32B6294_B42B_4E6F_AB73_13B33C544AD0__INCLUDED_)
 	#include "GLHierarchy/TextureObject.h"
 #endif
+#if !defined(AFX_IMAGE_H__F545D0D5_5F10_4EFA_BE3B_3F3D34D4DBF3__INCLUDED_)
+	#include "System/Image.h"
+#endif
 #if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
     #include "System/RaptorErrorManager.h"
 #endif
@@ -314,12 +317,20 @@ void CPerlinNoise::glGenerate(CTextureObject* t)
     if ((t == NULL) || (!m_bEnabled))
         return;
 
-	CTextureFactory &f = CTextureFactory::getDefaultFactory();
-    t->allocateTexels();
-	unsigned char *data = t->getTexels();
+	CImage noise;
+	noise.allocatePixels(t->getWidth(), t->getHeight());
+	
+	unsigned char *data = noise.getPixels();
 	generateNoise(data,t->getWidth(),t->getHeight(),t->getDepth(),t->getTransparency());
 
-    f.glLoadTexture(t,".buffer",m_ImageOps);
+	CTextureFactory &f = CTextureFactory::getDefaultFactory();
+
+	CImage::IImageOP::operation_param_t param;
+	param.bump_scale = f.getConfig().getBumpAmplitude();
+	param.transparency = t->getTransparency();
+	noise.loadImage(".buffer", m_ImageOps, param);
+		
+	f.glLoadTexture(t, noise);
 
     CATCH_GL_ERROR
 }

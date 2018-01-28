@@ -40,7 +40,7 @@ CRaptorIO::CRaptorIO(const std::string& streamName, CRaptorIO::IO_KIND kind)
 		{
 			case DISK_READ:
 			{
-				m_inFile.open(streamName,ios_base::in|ios::binary);
+				m_inFile.open(streamName.data(),ios_base::in|ios::binary);
 				m_inFile.seekg (0, ios_base::end);
 				m_size = m_inFile.tellg();
 				m_inFile.seekg (0, ios_base::beg);
@@ -50,7 +50,7 @@ CRaptorIO::CRaptorIO(const std::string& streamName, CRaptorIO::IO_KIND kind)
 			}
 			case DISK_WRITE:
 			{
-				m_outFile.open(streamName,ios::out|ios::binary);
+				m_outFile.open(streamName.data(),ios::out|ios::binary);
 				if (m_outFile.good())
 					m_status = IO_OK;
 				break;

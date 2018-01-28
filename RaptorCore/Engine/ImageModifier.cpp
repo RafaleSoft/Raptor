@@ -87,7 +87,7 @@ unsigned int CImageModifier::getGenerateHeight(void) const
 }
 
 
-bool CImageModifier::setImage(const CTextureObject* image)
+bool CImageModifier::setImage(const ITextureObject* image)
 {
 	m_pBufferImage = NULL;
     m_pImage = NULL;
@@ -106,7 +106,7 @@ bool CImageModifier::setImage(const CTextureObject* image)
     //! Be sure we have something to modify !!!
     if ((image != NULL) && (image->getWidth() > 0) && (image->getHeight() > 0))
     {
-        m_pImage = const_cast<CTextureObject*>(image);
+        m_pImage = const_cast<ITextureObject*>(image);
 
 	    //	Allocate buffers with a one pixel border
 		size_t s = (m_pImage->getWidth()) * (m_pImage->getHeight() + 2) * 4;

@@ -44,7 +44,7 @@ void CServerImageRenderer::glRender(void)
 		return;
 		
 	{
-		m_pImage->glRender();
+		m_pImage->glvkRender();
 
 		unsigned char* src = NULL;
 
@@ -107,7 +107,7 @@ void CServerImageRenderer::glInitImage()
     glEndList();
 
 	CTextureFactory &factory = CTextureFactory::getDefaultFactory();
-	m_pImage = factory.glCreateTexture(	CTextureObject::CGL_COLOR24, //_ALPHA,
+	m_pImage = factory.glCreateTexture(	ITextureObject::CGL_COLOR24, //_ALPHA,
 										CTextureObject::CGL_OPAQUE,
 										CTextureObject::CGL_BILINEAR);
 

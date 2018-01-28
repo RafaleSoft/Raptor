@@ -26,6 +26,9 @@
 #if !defined(AFX_TEXTUREFACTORYCONFIG_H__7A20D208_423F_4E02_AA4D_D736E0A7959F__INCLUDED_)
 	#include "GLHierarchy/TextureFactoryConfig.h"
 #endif
+#if !defined(AFX_IMAGE_H__F545D0D5_5F10_4EFA_BE3B_3F3D34D4DBF3__INCLUDED_)
+	#include "System/Image.h"
+#endif
 
 
 RAPTOR_NAMESPACE_BEGIN
@@ -51,7 +54,7 @@ public:
 	//! @param env_mode : is one of the TEXTURE_FUNCTION enum
     //! @param filter : specifies the kind of texel sampler of the texture object
     //! @return : the texture created or NULL if there has been an error
-    CTextureObject*		const glCreateTexture(  CTextureObject::TEXEL_TYPE type,
+    CTextureObject*		const glCreateTexture(  ITextureObject::TEXEL_TYPE type,
 												CTextureObject::TEXTURE_FUNCTION env_mode = CTextureObject::CGL_ALPHA_TRANSPARENT,
 												CTextureObject::TEXTURE_FILTER filter = CTextureObject::CGL_UNFILTERED);
 
@@ -60,7 +63,7 @@ public:
 	//! @param env_mode : is one of the TEXTURE_FUNCTION enum
     //! @param filter : specifies the kind of texel sampler of the texture object
     //! @return : the texture created or NULL if there has been an error
-    CTextureObject*		const glCreateRectangleTexture(	CTextureObject::TEXEL_TYPE type,
+    CTextureObject*		const glCreateRectangleTexture(	ITextureObject::TEXEL_TYPE type,
 														CTextureObject::TEXTURE_FUNCTION env_mode = CTextureObject::CGL_ALPHA_TRANSPARENT,
 														CTextureObject::TEXTURE_FILTER filter = CTextureObject::CGL_UNFILTERED);
 	
@@ -70,7 +73,7 @@ public:
 	//! @param pGenerator : is a texture generator that produces texels to dynamically 'reload' the texture.
     //! @param filter : specifies the kind of texel sampler of the texture object
     //! @return : the texture created or NULL if there has been an error
-    CTextureObject*		const glCreateDynamicTexture(	CTextureObject::TEXEL_TYPE type,
+    CTextureObject*		const glCreateDynamicTexture(	ITextureObject::TEXEL_TYPE type,
 														CTextureObject::TEXTURE_FUNCTION env_mode = CTextureObject::CGL_ALPHA_TRANSPARENT,
 														CTextureObject::TEXTURE_FILTER filter = CTextureObject::CGL_UNFILTERED,
 														ITextureGenerator* pGenerator = NULL);
@@ -80,7 +83,7 @@ public:
 	//! @param env_mode : is one of the TEXTURE_FUNCTION enum
     //! @param filter : specifies the kind of texel sampler of the texture object
     //! @return : the texture created or NULL if there has been an error
-	CTextureObject*		const glCreateCubemap(	CTextureObject::TEXEL_TYPE type,
+	CTextureObject*		const glCreateCubemap(	ITextureObject::TEXEL_TYPE type,
 												CTextureObject::TEXTURE_FUNCTION env_mode = CTextureObject::CGL_ALPHA_TRANSPARENT,
 												CTextureObject::TEXTURE_FILTER filter = CTextureObject::CGL_UNFILTERED);
 
@@ -89,14 +92,14 @@ public:
 	//! @param env_mode : is one of the TEXTURE_FUNCTION enum
     //! @param filter : specifies the kind of texel sampler of the texture object
     //! @return : the texture created or NULL if there has been an error
-	CTextureObject*		const glCreateVolumeTexture(CTextureObject::TEXEL_TYPE type,
+	CTextureObject*		const glCreateVolumeTexture(ITextureObject::TEXEL_TYPE type,
 													CTextureObject::TEXTURE_FUNCTION env_mode = CTextureObject::CGL_ALPHA_TRANSPARENT,
 													CTextureObject::TEXTURE_FILTER filter = CTextureObject::CGL_UNFILTERED);
 
 	//!	Creates a sprite object. A sprite is a small texture with
 	//!	pixel replacement mode ( CGL_OPAQUE ) and no filtering ( thus no anisotropy )
 	//!	See CreateTexture.
-	CTextureObject*		const glCreateSprite(CTextureObject::TEXEL_TYPE type);
+	CTextureObject*		const glCreateSprite(ITextureObject::TEXEL_TYPE type);
 
 
 	//!	Creates a Vulkan image texture object.
@@ -104,9 +107,9 @@ public:
 	//! @param env_mode : is one of the TEXTURE_FUNCTION enum
 	//! @param filter : specifies the kind of texel sampler of the texture object
 	//! @return : the texture created or NULL if there has been an error
-	CTextureObject*		const vkCreateTexture(CTextureObject::TEXEL_TYPE type,
-											  CTextureObject::TEXTURE_FUNCTION env_mode = CTextureObject::CGL_ALPHA_TRANSPARENT,
-											  CTextureObject::TEXTURE_FILTER filter = CTextureObject::CGL_UNFILTERED);
+	ITextureObject*	const vkCreateTexture(	ITextureObject::TEXEL_TYPE type,
+											CTextureObject::TEXTURE_FUNCTION env_mode = CTextureObject::CGL_ALPHA_TRANSPARENT,
+											CTextureObject::TEXTURE_FILTER filter = CTextureObject::CGL_UNFILTERED);
 
 	//!	If .buffer extension is used,
 	//!	loadBUFFER does nothing, but assumes the user provides a buffer
@@ -127,16 +130,21 @@ public:
 	//! CGL_DEPTH_MAP16, CGL_DEPTH_MAP32 or CGL_DEPTH_MAPZ
 	//!	- the cubemap face index : CUBEMAP_PX,PY,PZ,NX,NY,or NZ
 	//! - the numeric format
-	bool glLoadTexture(	CTextureObject* const T,
+	bool glLoadTexture(	ITextureObject* const T,
 						const std::string &fname,
-						const CVaArray<CTextureFactoryConfig::IImageOP::OP_KIND>& ops = CVaArray<CTextureFactoryConfig::IImageOP::OP_KIND>());
+						const CVaArray<CImage::IImageOP::OP_KIND>& ops = CVaArray<CImage::IImageOP::OP_KIND>());
+
+	bool glLoadTexture(CTextureObject* const T,
+					   const CImage &image);
+	bool vkLoadTexture(CVulkanTextureObject* const T,
+					   const CImage &image);
 
 	//! Same as above excepts that the texteure texels are only loaded in client memory,
 	//!	and not yet transfered to GL server memory.
 	//! A subsequent call to glLoadTexture will finalize texture loading.
 	RAPTOR_HANDLE glvkPreloadTexture(	CTextureObject* const T,
 										const std::string &fname,
-										const CVaArray<CTextureFactoryConfig::IImageOP::OP_KIND>& ops = CVaArray<CTextureFactoryConfig::IImageOP::OP_KIND>());
+										const CVaArray<CImage::IImageOP::OP_KIND>& ops = CVaArray<CImage::IImageOP::OP_KIND>());
 
 	//!	@param preload : the result of a texture preload
 	//!	@param mode : @see glLoadTexture
@@ -145,12 +153,13 @@ public:
 							RAPTOR_HANDLE preload);
 
 
+
     //! Resize a texture object if it possible :
     //! - width & height & depth must be a power of two if not supported otherwise
     //! - image is rescaled if actually loaded
     //! - allocated texels are discarded.
     //! @return false if resizing is not possible
-    bool glResizeTexture( CTextureObject *T, unsigned int width, unsigned int height, unsigned int depth=0) const;
+    bool glResizeTexture( CTextureObject *T, unsigned int width, unsigned int height, unsigned int depth=1) const;
 
     //! Exports a texture image to a file, type is selected from fname extension
 	bool glExportTexture(CTextureObject *T,const std::string &fname);
@@ -187,7 +196,6 @@ private:
 		unsigned int format;
 		unsigned int src_format;
 		bool createNormalMap;
-		bool autoMipmap;
 		bool reScale;
 	} TexturePreload;
 	map<CTextureObject*, TexturePreload>	m_preloads;

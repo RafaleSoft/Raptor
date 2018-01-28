@@ -42,6 +42,18 @@ PFN_vkCmdDrawIndexed		CVulkanCommandBuffer::vkCmdDrawIndexed = NULL;
 CVulkanCommandBuffer::CVulkanCommandBuffer(VkCommandBuffer cmdBuffer,const VkRect2D& scissor)
 	:commandBuffer(cmdBuffer), retore_barrier(false), view_scissor(scissor), render_pass(false)
 {
+	image_barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+	image_barrier.pNext = NULL;
+	image_barrier.srcAccessMask = VK_ACCESS_MEMORY_READ_BIT;
+	image_barrier.dstAccessMask = VK_ACCESS_MEMORY_READ_BIT; //VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT, // VkAccessFlags
+	image_barrier.oldLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;	// VkImageLayout
+	image_barrier.newLayout	= VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;	// VkImageLayout
+	image_barrier.srcQueueFamilyIndex = 0;
+	image_barrier.dstQueueFamilyIndex = 0;
+	image_barrier.image = VK_NULL_HANDLE;
+	VkImageSubresourceRange range = { 0, 0, 0, 0, 0 };
+	image_barrier.subresourceRange = range;
+
 	VkCommandBufferBeginInfo graphics_command_buffer_begin_info = {	VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
 																	NULL,
 																	VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT,
@@ -115,7 +127,8 @@ void CVulkanCommandBuffer::imageBarrier(uint32_t present_queueFamilyIndex,
 										uint32_t graphics_queueFamilyIndex,
 										VkImage image)
 {
-	if (graphics_queueFamilyIndex != present_queueFamilyIndex)
+	if ((graphics_queueFamilyIndex != present_queueFamilyIndex) &&
+		(VK_NULL_HANDLE != image))
 	{
 		VkImageSubresourceRange image_subresource_range = { VK_IMAGE_ASPECT_COLOR_BIT,
 															0, // baseMipLevel;
@@ -124,27 +137,68 @@ void CVulkanCommandBuffer::imageBarrier(uint32_t present_queueFamilyIndex,
 															1 };  // layerCount };
 
 		//!	barrier_from_present_to_draw
-		image_barrier  = {	VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
-							NULL,
-							VK_ACCESS_MEMORY_READ_BIT, // VkAccessFlagBits
-							VK_ACCESS_MEMORY_READ_BIT, //VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT, // VkAccessFlags
-							VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,	// VkImageLayout
-							VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,	// VkImageLayout
-							present_queueFamilyIndex,
-							graphics_queueFamilyIndex,
-							image,
-							image_subresource_range };
+		image_barrier.srcQueueFamilyIndex = present_queueFamilyIndex;
+		image_barrier.dstQueueFamilyIndex = graphics_queueFamilyIndex;
+		image_barrier.image = image;
+		image_barrier.subresourceRange = image_subresource_range;
 
 		CVulkanCommandBuffer::vkCmdPipelineBarrier(	commandBuffer,
 													VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
 													VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
 													0, // VkDependencyFlags
-													0,
-													NULL, // const VkMemoryBarrier*
-													0,
-													NULL, // const VkBufferMemoryBarrier*
+													0, NULL, // const VkMemoryBarrier*
+													0, NULL, // const VkBufferMemoryBarrier*
 													1, &image_barrier);
 		retore_barrier = true;
+	}
+}
+
+
+void CVulkanCommandBuffer::imageBarrier(VkImageLayout oldLayout,
+										VkImageLayout newLayout,
+										VkImage image) const
+{
+	if ((oldLayout != newLayout) && (VK_NULL_HANDLE != image))
+	{
+		VkImageSubresourceRange image_subresource_range = { VK_IMAGE_ASPECT_COLOR_BIT,
+															0, // baseMipLevel;
+															1, // levelCount;
+															0, // baseArrayLayer;
+															1 };  // layerCount };
+
+		//!	barrier_from_present_to_draw
+		VkImageMemoryBarrier barrier = {VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
+										NULL,
+										VK_ACCESS_TRANSFER_WRITE_BIT,			// VkAccessFlagBits
+										VK_ACCESS_TRANSFER_WRITE_BIT,			// VkAccessFlagsBits
+										oldLayout,								// VkImageLayout
+										newLayout,								// VkImageLayout
+										VK_QUEUE_FAMILY_IGNORED,
+										VK_QUEUE_FAMILY_IGNORED,
+										image,
+										image_subresource_range };
+
+		VkPipelineStageFlags sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+		VkPipelineStageFlags destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+
+		if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)
+		{
+			barrier.srcAccessMask = 0;
+			sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+		}
+		else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
+		{
+			barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+			destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+		}
+
+		CVulkanCommandBuffer::vkCmdPipelineBarrier(commandBuffer,
+												   sourceStage,
+												   destinationStage,
+												   0, // VkDependencyFlags
+												   0, NULL, // const VkMemoryBarrier*
+												   0, NULL, // const VkBufferMemoryBarrier*
+												   1, &barrier);
 	}
 }
 

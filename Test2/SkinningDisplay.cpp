@@ -9,6 +9,7 @@
 
 #include "Raptordll.h"
 #include "GLHierarchy/GLFont.h"
+#include "GLHierarchy/GLFontFactory.h"
 #include "GLHierarchy/Persistence.h"
 #include "GLHierarchy/3DSet.h"
 #include "Engine/3DScene.h"
@@ -87,7 +88,7 @@ void SkinningBackGround::glRender()
 	m_layer->glRender();
 
 	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-	m_background->glRender();
+	m_background->glvkRender();
 		
 	float dt = CTimeObject::GetGlobalTime();
 	glPushMatrix();
@@ -124,11 +125,7 @@ void CSkinningDisplay::Init()
 	if (p->getId().isSubClassOf(CTextureSet::CTextureSetClassID::GetClassId()))
 		 texture = (CTextureSet *)p;
 
-	p = CPersistence::FindObject("main_font");
-
-	CGL2DFont *font = NULL;
-	if (p->getId().isSubClassOf(CGLFont::CGLFontClassID::GetClassId()))
-		 font = (CGL2DFont *)p;
+	CGL2DFont *font = CGLFontFactory::create2DFont("Datas\\kld.ttf", 20, "main_font");
 
     CRaptorToolBox::SCENE_LOADER_OPTIONS options;
     CRaptorToolBox::load3DStudioScene("Datas\\Cylinder.3DS",set,&options);
@@ -201,7 +198,7 @@ void CSkinningDisplay::Init()
 	layer->drawAText(20,30,vrs.str(),font,0x80C0E000);
 
 	CTextureFactory &f = CTextureFactory::getDefaultFactory();
-	t2 = f.glCreateSprite(CTextureObject::CGL_COLOR24_ALPHA);
+	t2 = f.glCreateSprite(ITextureObject::CGL_COLOR24_ALPHA);
 	t2->glSetTransparency(128);
 	f.glLoadTexture(t2,"Datas\\sprite.tga");
 
@@ -211,12 +208,12 @@ void CSkinningDisplay::Init()
     modifier = new MyModifier();
 	modifier->selectModifierFunction(CImageModifier::CGL_BLOWFADER_MODIFIER,0x05010101);
 
-    CTextureObject*	T = f.glCreateDynamicTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_OPAQUE,CTextureObject::CGL_BILINEAR,modifier);
+    CTextureObject*	T = f.glCreateDynamicTexture(ITextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_OPAQUE,CTextureObject::CGL_BILINEAR,modifier);
     f.glResizeTexture(T,64,64);
     modifier->setImage(T);
 	layer->manageSprite(T,150,75,0);
 
-    t = f.glCreateDynamicTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_OPAQUE,CTextureObject::CGL_BILINEAR,CRaptorDisplay::GetCurrentDisplay());
+    t = f.glCreateDynamicTexture(ITextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_OPAQUE,CTextureObject::CGL_BILINEAR,CRaptorDisplay::GetCurrentDisplay());
     f.glResizeTexture(t,512,256);
 	t->setGenerationSize(51,101,510,254);	// avoid artefacts on border due to bilinear filterings
 	t->glUpdateClamping(CTextureObject::CGL_EDGECLAMP);

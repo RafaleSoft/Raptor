@@ -28,7 +28,7 @@ int main(int argc, char* argv[])
     //config.setFilterSizeFactor(0.0625);
     Raptor::glInitRaptor(config);
 
-    CImaging::installImagers(CTextureFactory::getDefaultFactory());
+    CImaging::installImagers();
 
     CRaptorApplication  *app = CRaptorApplication::CreateApplication();
     app->initApplication();

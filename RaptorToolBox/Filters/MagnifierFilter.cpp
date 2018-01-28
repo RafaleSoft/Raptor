@@ -251,8 +251,10 @@ void CMagnifierFilter::computeKernel(void)
 {
 	CTextureFactory &filterFactory = CTextureFactory::getDefaultFactory();
 
-    kernelTexture->allocateTexels(CTextureObject::CGL_COLOR_FLOAT32_ALPHA);
-	float *kernel = kernelTexture->getFloatTexels(); 
+	CImage kernelImage;
+	kernelImage.allocatePixels(KERNEL_SIZE, 1, CImage::CGL_COLOR_FLOAT32_ALPHA);
+	float *kernel = kernelImage.getFloatPixels();
+	
     for (unsigned int i=0; i<KERNEL_SIZE ; i++)
     {
         float x = i / ((float)KERNEL_SIZE - 1.0f);
@@ -261,7 +263,8 @@ void CMagnifierFilter::computeKernel(void)
         *kernel++ = (this->*kernelBuilder)(1-x,	kernelParams.x, kernelParams.y);
         *kernel++ = (this->*kernelBuilder)(2-x,	kernelParams.x, kernelParams.y);
     }
-    filterFactory.glLoadTexture(kernelTexture,".buffer");
+
+	filterFactory.glLoadTexture(kernelTexture, kernelImage);
 	m_bRebuild = false;
 }
 
@@ -275,11 +278,11 @@ void CMagnifierFilter::glRenderFilter()
     xBuffer->glBindDisplay(noDevice);
     glActiveTextureARB(GL_TEXTURE1_ARB);
     glEnable(GL_TEXTURE_2D);
-    kernelTexture->glRender();
+	kernelTexture->glvkRender();
 	if (m_bRebuild)
 		computeKernel();
     glActiveTextureARB(GL_TEXTURE0_ARB);
-    colorInput->glRender();
+	colorInput->glvkRender();
 
 #if defined(GL_ARB_vertex_shader)
 	m_pYKernelShader->glGetVertexProgram()->setProgramParameters(v_params_y);
@@ -305,9 +308,9 @@ void CMagnifierFilter::glRenderFilterOutput()
     //! Second (last) pass : yPass of the kernel, assuming it is separable
 	glActiveTextureARB(GL_TEXTURE1_ARB);
     glEnable(GL_TEXTURE_2D);
-    kernelTexture->glRender();
+	kernelTexture->glvkRender();
     glActiveTextureARB(GL_TEXTURE0_ARB);
-    xKernelPass->glRender();
+	xKernelPass->glvkRender();
 
 #if defined(GL_ARB_vertex_shader)
 	m_pXKernelShader->glGetVertexProgram()->setProgramParameters(v_params_x);
@@ -339,7 +342,7 @@ bool CMagnifierFilter::glInitFilter(void)
 	if ((colorExternalSource != NULL) && (m_fModel == RENDER_TEXTURE))
 	{
 		//! See remark below regarding texture filtering.
-		colorInput = filterFactory.glCreateDynamicTexture(	CTextureObject::CGL_COLOR24_ALPHA,
+		colorInput = filterFactory.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 															CTextureObject::CGL_OPAQUE,
 															CTextureObject::CGL_UNFILTERED, //CGL_BILINEAR,
 															colorExternalSource);
@@ -347,14 +350,14 @@ bool CMagnifierFilter::glInitFilter(void)
 	else if (m_fModel == RENDER_BUFFER)
 	{
 		//!    Source is unfiltered to avoid artifacts ( see comment below ).
-		colorInput->glRender();
+		colorInput->glvkRender();
 		colorInput->glUpdateFilter(CTextureObject::CGL_UNFILTERED);
 	}
 
 
     //! 256 interpolated values are enough for good results.
     //! For high quality filtering, future release may allow a user defined size.
-    kernelTexture = filterFactory.glCreateTexture( CTextureObject::CGL_COLOR_FLOAT16_ALPHA,
+    kernelTexture = filterFactory.glCreateTexture( ITextureObject::CGL_COLOR_FLOAT16_ALPHA,
                                                    CTextureObject::CGL_OPAQUE,
                                                    CTextureObject::CGL_UNFILTERED);
     kernelTexture->setSize(KERNEL_SIZE,1);
@@ -377,7 +380,7 @@ bool CMagnifierFilter::glInitFilter(void)
 	{
 		state.renderer = CRaptorDisplayConfig::RENDER_BUFFER;
 
-		xKernelPass = filterFactory.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,
+		xKernelPass = filterFactory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
 			                                        CTextureObject::CGL_OPAQUE,
 				                                    CTextureObject::CGL_UNFILTERED);
 		filterFactory.glResizeTexture(xKernelPass,state.width,state.height);
@@ -402,7 +405,7 @@ bool CMagnifierFilter::glInitFilter(void)
 	{
 		//! Do not use bilinear filtering because the colors fetched may not correspond to the kernel factors with some texture sizes non power of 2.
 		//! ( Specifically where tex coord is near a texel edge, and also because it is shifted to work in texels' center and should be faster ).
-		xKernelPass = filterFactory.glCreateDynamicTexture(	CTextureObject::CGL_COLOR24_ALPHA,
+		xKernelPass = filterFactory.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 															CTextureObject::CGL_OPAQUE,
 															CTextureObject::CGL_UNFILTERED,//CGL_BILINEAR,
 															xBuffer);

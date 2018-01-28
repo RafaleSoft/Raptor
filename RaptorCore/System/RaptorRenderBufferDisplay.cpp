@@ -154,29 +154,28 @@ bool CRaptorRenderBufferDisplay::glAttachBuffers()
 		for (unsigned int i=0;i<MIN(nbtextures,(unsigned int)abs(max(0,maxAttachments)));i++)
 		{
 			CTextureObject *T = m_pAttachments->getTexture(i);
-			unsigned int target = T->target & 0xFFFF;
 
-			CTextureObject::TEXEL_TYPE tt = T->getTexelType();
+			ITextureObject::TEXEL_TYPE tt = T->getTexelType();
 			GLuint attachment = GL_COLOR_ATTACHMENT0_EXT;
-			if ((tt == CTextureObject::CGL_DEPTH8) ||
-				(tt == CTextureObject::CGL_DEPTH16) ||
-				(tt == CTextureObject::CGL_DEPTH24) ||
-				(tt == CTextureObject::CGL_DEPTH32) ||
-				(tt == CTextureObject::CGL_DEPTH24_STENCIL8))
+			if ((tt == ITextureObject::CGL_DEPTH8) ||
+				(tt == ITextureObject::CGL_DEPTH16) ||
+				(tt == ITextureObject::CGL_DEPTH24) ||
+				(tt == ITextureObject::CGL_DEPTH32) ||
+				(tt == ITextureObject::CGL_DEPTH24_STENCIL8))
 				attachment = GL_DEPTH_ATTACHMENT_EXT;
 			else
 				attachment = colorAttachment++;
 
 			pExtensions->glFramebufferTexture2DEXT(	GL_FRAMEBUFFER_EXT, 
 													attachment,
-													target, 
+													T->target,
 													T->texname,
 													T->getCurrentMipMapLevel());
 
-			if (tt == CTextureObject::CGL_DEPTH24_STENCIL8)
+			if (tt == ITextureObject::CGL_DEPTH24_STENCIL8)
 				pExtensions->glFramebufferTexture2DEXT(	GL_FRAMEBUFFER_EXT, 
 														GL_STENCIL_ATTACHMENT_EXT,
-														target, 
+														T->target,
 														T->texname,
 														T->getCurrentMipMapLevel());
 		}
@@ -204,7 +203,6 @@ bool CRaptorRenderBufferDisplay::glDetachBuffers()
 		for (unsigned int i=0;i<MIN(nbtextures,(unsigned int)abs(max(0,maxAttachments)));i++)
 		{
 			CTextureObject *T = m_pAttachments->getTexture(i);
-			unsigned int target = T->target & 0xFFFF;
 
 			if ((T->getWidth() != cs.width) ||
 				(T->getHeight() != cs.height))
@@ -214,25 +212,25 @@ bool CRaptorRenderBufferDisplay::glDetachBuffers()
 																"Raptor Render Buffer Display is attached to a texture with invalid sizes");
 			}
 
-			CTextureObject::TEXEL_TYPE tt = T->getTexelType();
+			ITextureObject::TEXEL_TYPE tt = T->getTexelType();
 			GLuint attachment = GL_COLOR_ATTACHMENT0_EXT;
-			if ((tt == CTextureObject::CGL_DEPTH8) ||
-				(tt == CTextureObject::CGL_DEPTH16) ||
-				(tt == CTextureObject::CGL_DEPTH24) ||
-				(tt == CTextureObject::CGL_DEPTH32) ||
-				(tt == CTextureObject::CGL_DEPTH24_STENCIL8))
+			if ((tt == ITextureObject::CGL_DEPTH8) ||
+				(tt == ITextureObject::CGL_DEPTH16) ||
+				(tt == ITextureObject::CGL_DEPTH24) ||
+				(tt == ITextureObject::CGL_DEPTH32) ||
+				(tt == ITextureObject::CGL_DEPTH24_STENCIL8))
 				attachment = GL_DEPTH_ATTACHMENT_EXT;
 
 			pExtensions->glFramebufferTexture2DEXT(	GL_FRAMEBUFFER_EXT, 
 													attachment,
-													target, 
+													T->target,
 													0,
 													0);
 
-			if (tt == CTextureObject::CGL_DEPTH24_STENCIL8)
+			if (tt == ITextureObject::CGL_DEPTH24_STENCIL8)
 				pExtensions->glFramebufferTexture2DEXT(	GL_FRAMEBUFFER_EXT, 
 														GL_STENCIL_ATTACHMENT_EXT,
-														target, 
+														T->target,
 														0,
 														0);
 		}
@@ -575,10 +573,9 @@ void CRaptorRenderBufferDisplay::glGenerate(CTextureObject* T)
 	const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();	
 	pExtensions->glBindFramebufferEXT(GL_FRAMEBUFFER_EXT,m_framebuffer);
 
-	unsigned int target = T->target & 0xFFFF;
 	pExtensions->glFramebufferTexture2DEXT(	GL_FRAMEBUFFER_EXT, 
 											GL_COLOR_ATTACHMENT0_EXT,
-											target, 
+											T->target,
 											T->texname,
 											T->getCurrentMipMapLevel());
 
@@ -597,7 +594,7 @@ void CRaptorRenderBufferDisplay::glGenerate(CTextureObject* T)
 
 	pExtensions->glFramebufferTexture2DEXT(	GL_FRAMEBUFFER_EXT, 
 											GL_COLOR_ATTACHMENT0_EXT,
-											target, 
+											T->target,
 											0,
 											0);
 

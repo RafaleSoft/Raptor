@@ -18,6 +18,9 @@
 #if !defined(AFX_RAPTORVULKANSHADER_H__C188550F_1D1C_4531_B0A0_727CE9FF9450__INCLUDED_)
 	#include "Subsys/Vulkan/VulkanShader.h"
 #endif
+#if !defined(AFX_VULKANTEXTUREOBJECT_H__5E3E26C2_441F_4051_986F_2207AF0B3F6D__INCLUDED_)
+	#include "Subsys/Vulkan/VulkanTextureObject.h"
+#endif
 #if !defined(AFX_RAPTORVULKANMEMORY_H__72256FF7_DBB9_4B9C_9BF7_C36F425CF811__INCLUDED_)
 	#include "Subsys/Vulkan/VulkanMemory.h"
 #endif
@@ -141,6 +144,17 @@ CVulkanShader* CVulkanDevice::createShader(void) const
 		return NULL;
 }
 
+CVulkanTextureObject* CVulkanDevice::createTextureObject(ITextureObject::TEXEL_TYPE type) const
+{
+	if (VK_NULL_HANDLE != device)
+	{
+		CVulkanTextureObject *shader = new CVulkanTextureObject(type, device, vkGetDeviceProcAddr);
+		return shader;
+	}
+	else
+		return NULL;
+}
+
 bool CVulkanDevice::acquireSwapChainImage(uint64_t timeout)
 {
 	//! Only a single image is managed for the moment.
@@ -236,6 +250,11 @@ bool CVulkanDevice::vkSynchroniseBufferObjects(bool blocking)
 	if (!pDeviceMemory->needBufferObjectDataSynchro())
 		return true;
 
+	//!	TODO : check if a single command buffer works.
+	//!	Otherwise, 3 steps are necesary:
+	//!	- transition images to transfer dst optimal layout
+	//!	- copy buffers
+	//!	- transition images to shader read only optimal layout
 	{
 		CVulkanCommandBuffer displayList(transferBuffer);
 		pDeviceMemory->synchroniseBufferObjectData(displayList);
@@ -516,10 +535,7 @@ bool CVulkanDevice::vkCreateRenderPassResources(VkSurfaceFormatKHR format,
 																VK_COMPONENT_SWIZZLE_IDENTITY,
 																VK_COMPONENT_SWIZZLE_IDENTITY	}, 
 															{	VK_IMAGE_ASPECT_COLOR_BIT,
-																0,
-																1,
-																0,
-																1	} };
+																0, 1, 0, 1	} };
 			
 			res = vkCreateImageView(device,
 									&image_view_create_info,

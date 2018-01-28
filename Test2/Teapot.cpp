@@ -57,8 +57,7 @@ CTeapot::CTeapot()
 	//numdemo(CTest2App::AMBIENTOCCLUSIONDEMO)
 	//numdemo(CTest2App::BUMPDEMO)
 	//numdemo(CTest2App::VRTXSHADERSDEMO)
-	//numdemo(CTest2App::PARTICLEDEMO)
-	numdemo(CTest2App::VRTXSHADERSDEMO)
+	numdemo(CTest2App::PROJECTIONDEMO)
 {
 }
 
@@ -103,25 +102,24 @@ void CTeapot::GLInitContext()
 	t = new CTextureSet("main_textures");
 	CTextureFactoryConfig& config = f.getConfig();
 
-	CTextureObject*	T = f.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_ALPHA_TRANSPARENT,CTextureObject::CGL_BILINEAR);
+	CTextureObject*	T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_ALPHA_TRANSPARENT,CTextureObject::CGL_BILINEAR);
 	T->glSetTransparency(128);
 	f.glLoadTexture(T,"Datas\\raptor.tga");
-	//f.glLoadTexture(T,"Datas\\Mire.tga");
+	f.glExportTexture(T, "raptor.jpg");
 	t->addTexture(T);
 
-	T = f.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_MULTIPLY,CTextureObject::CGL_BILINEAR);
+	T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_MULTIPLY,CTextureObject::CGL_BILINEAR);
 	T->glSetTransparency(255);
 	f.glLoadTexture(T,"Datas\\marble.jpg");
 	t->addTexture(T);
 
-	T = f.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_ALPHA_TRANSPARENT,CTextureObject::CGL_BILINEAR);
+	T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_ALPHA_TRANSPARENT,CTextureObject::CGL_BILINEAR);
 	T->glSetTransparency(128);
 	t->addTexture(T);
 #if defined(GL_ARB_texture_compression)
 	#if(0)
 		f.glLoadCompressedTexture(T,"start.s3tc");
 	#else
-		//const CTextureFactoryConfig::ICompressor *compressor = config.getCurrentCompressor();
 		if (0 < config.getNumCompressors())
 			config.setCurrentCompressor(config.getCompressor("OpenGL"));
 		f.glLoadTexture(T,"Datas\\start.tga");
@@ -132,7 +130,7 @@ void CTeapot::GLInitContext()
 	f.glLoadTexture(T,"Datas\\start.tga");
 #endif
 
-	T = f.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_ALPHA_TRANSPARENT,CTextureObject::CGL_BILINEAR);
+	T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_ALPHA_TRANSPARENT,CTextureObject::CGL_BILINEAR);
 	T->glSetTransparency(128);
 	f.glLoadTexture(T,"Datas\\bump.tga");
 	t->addTexture(T);
@@ -144,7 +142,7 @@ void CTeapot::GLInitContext()
 		if (0 < config.getNumCompressors())
 			config.setCurrentCompressor(config.getCompressor("OpenGL"));
 #endif
-		T = f.glCreateCubemap(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_ALPHA_TRANSPARENT,CTextureObject::CGL_BILINEAR);
+		T = f.glCreateCubemap(ITextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_ALPHA_TRANSPARENT,CTextureObject::CGL_BILINEAR);
 		T->glSetTransparency(255);
 		T->selectCubeFace(CTextureObject::CGL_CUBEMAP_PX);
 		f.glLoadTexture(T,"Datas\\ciel_07_small.jpg");
@@ -190,8 +188,8 @@ void CTeapot::GLInitContext()
 	s->setColor(1.0f,1.0f,1.0f,1.0f);
     s->getMaterial()->setShininess(10.0f);
 	teapot->setDiffuseMap(t->getTexture(0));
-	CTextureObject* normalMap = f.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_MULTIPLY,CTextureObject::CGL_BILINEAR);
-    f.glLoadTexture(normalMap,"Datas\\bump3.tga",CTextureFactoryConfig::IImageOP::BUMPMAP_LOADER);
+	CTextureObject* normalMap = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_MULTIPLY,CTextureObject::CGL_BILINEAR);
+    f.glLoadTexture(normalMap,"Datas\\bump3.tga",CImage::IImageOP::BUMPMAP_LOADER);
 	teapot->setNormalMap(normalMap);
 	t->addTexture(normalMap);
 	teapot->setEnvironmentMap(t->getTexture("Datas\\ciel_07_small.jpg"));
@@ -236,19 +234,19 @@ void CTeapot::GLInitContext()
 	displays[CTest2App::SPLINEDEMO] = &splineDisplay;
 	skinningDisplay.Init();
 	displays[CTest2App::SKINNINGDEMO] = &skinningDisplay;
-	//particleDisplay.Init();
+	particleDisplay.Init();
 	displays[CTest2App::PARTICLEDEMO] = &particleDisplay;
-	//shadowDisplay.Init();
+	shadowDisplay.Init();
 	displays[CTest2App::SHADOWDEMO] = &shadowDisplay;
-	//shadowMapDisplay.Init();
+	shadowMapDisplay.Init();
 	displays[CTest2App::SHADOWMAPDEMO] = &shadowMapDisplay;
-	//warpingDisplay.Init();
+	warpingDisplay.Init();
 	displays[CTest2App::WARPINGDEMO] = &warpingDisplay;
-	//projectionDisplay.Init();
+	projectionDisplay.Init();
 	displays[CTest2App::PROJECTIONDEMO] = &projectionDisplay;
-	//lodDisplay.Init();
+	lodDisplay.Init();
 	displays[CTest2App::LODDEMO] = &lodDisplay;
-	//collisionDisplay.Init();
+	collisionDisplay.Init();
 	displays[CTest2App::COLLISIONDEMO] = &collisionDisplay;
 	ambientOcclusionDisplay.Init();
 	displays[CTest2App::AMBIENTOCCLUSIONDEMO] = &ambientOcclusionDisplay;

@@ -64,7 +64,7 @@ BOOL CTest2App::InitInstance()
     config.m_bRelocation = true;
     config.m_uiPolygons = 400000;
     config.m_uiVertices = 1000000;
-	config.m_uiTexels = 262144;
+	config.m_uiTexels = 400000;
 	config.m_logFile = "Test2_Raptor.log";
 	bool init = Raptor::glInitRaptor(config);
 
@@ -72,7 +72,7 @@ BOOL CTest2App::InitInstance()
     Animator = new CAnimator();
 	CAnimator::SetAnimator(Animator);
 
-    CImaging::installImagers(CTextureFactory::getDefaultFactory());
+    CImaging::installImagers();
     CStreaming::installStreamers();
 
 	char title[256];
@@ -210,7 +210,6 @@ void CTest2App::OnAboutRaptor()
 {
 	CRaptorStatus Status;
 	Status.AboutDlg();
-	//Status.TMUSetupDialog();
 }
 
 void CTest2App::OnVideoSettings() 
@@ -285,9 +284,6 @@ void CTest2App::OnSelectDemo(UINT nID )
 						break;
 					case ID_SHADOWMAPDEMO:
 						((CTeapot*)pDoc)->SwitchDemo(SHADOWMAPDEMO);
-						break;
-					case ID_PERPIXELEMBMDEMO:
-						((CTeapot*)pDoc)->SwitchDemo(EMBMDEMO);
 						break;
 					case ID_AMBIENTOCCLUSIONDEMO:
 						((CTeapot*)pDoc)->SwitchDemo(AMBIENTOCCLUSIONDEMO);

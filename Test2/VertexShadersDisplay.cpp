@@ -603,28 +603,30 @@ public:
 		pBuffer->glUnBindDisplay();
 
 		CTextureFactory &factory = CTextureFactory::getDefaultFactory();
-		pMap = factory.glCreateDynamicTexture(	CTextureObject::CGL_COLOR24_ALPHA,
+		pMap = factory.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 												CTextureObject::CGL_OPAQUE,
 												CTextureObject::CGL_BILINEAR,
 												pBuffer);
 		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_REPEAT);
 
-		pCosTable = factory.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_OPAQUE,CTextureObject::CGL_BILINEAR);
+		pCosTable = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_OPAQUE,CTextureObject::CGL_BILINEAR);
         pCosTable->setSize(TABLE_SIZE,1);
 		pCosTable->glSetTransparency(255);
-        pCosTable->allocateTexels();
-		unsigned char *cosTable = pCosTable->getTexels();
+        
+		CImage cosTable;
+		cosTable.allocatePixels(TABLE_SIZE, 1);
+		unsigned char *cost = cosTable.getPixels();
         int i=0;
 		for (i=0;i<4*TABLE_SIZE;i+=4)
 		{
-			cosTable[i] = 0;
-			cosTable[i+1] = 255.999 * (0.5f * cos(2.0*PI*i/(4.0f * TABLE_SIZE)) + 0.5f)
-							* pow((0.5f * sin(2.0*PI*i/(4.0f * TABLE_SIZE)) + 0.5f),1);
-			cosTable[i+2] = 0;
-			cosTable[i+3] = 255;
+			cost[i] = 0;
+			cost[i + 1] = 255.999 * (0.5f * cos(2.0*PI*i / (4.0f * TABLE_SIZE)) + 0.5f)
+							  * pow((0.5f * sin(2.0*PI*i / (4.0f * TABLE_SIZE)) + 0.5f),1);
+			cost[i + 2] = 0;
+			cost[i + 3] = 255;
 		}
-		factory.glLoadTexture(pCosTable,".BUFFER");
+		factory.glLoadTexture(pCosTable,cosTable);
 
 		srand((unsigned)time( NULL ));
 		float baseAngle = (float)(PI / 2.0f);
@@ -681,7 +683,7 @@ public:
 
 			CFragmentShader *fp = pShader->glGetFragmentShader();
 			fp->glRender();
-			pCosTable->glRender();
+			pCosTable->glvkRender();
 			glBegin(GL_QUADS);
 				glTexCoord4f(0.0f,0.0f,0.0f,0.0f);glVertex3f(-1.0f,-1.0f,0.0f);
 				glTexCoord4f(2.0f,0.0f,0.0f,0.0f);glVertex3f(1.0f,-1.0f,0.0f);
@@ -692,7 +694,7 @@ public:
 			fp->glStop();
 		pBuffer->glUnBindDisplay();
 
-		pMap->glRender();
+		pMap->glvkRender();
 
 		if (bShow)
 		{
@@ -767,7 +769,7 @@ void CVertexShadersDisplay::Init()
 	CShader *pShader = water->getShader();
 	shaderModifier = new ShaderModifier(pShader);
 	CTextureUnitSetup *ts = pShader->glGetTextureUnitsSetup();
-	CTextureObject* T = factory.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,
+	CTextureObject* T = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
 												CTextureObject::CGL_ALPHA_TRANSPARENT,
 												CTextureObject::CGL_BILINEAR);
 	T->glSetTransparency(128);
@@ -800,7 +802,7 @@ void CVertexShadersDisplay::Init()
 #endif
 	
 	//	Create see underwater object
-	T = factory.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_OPAQUE, CTextureObject::CGL_BILINEAR);
+	T = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_OPAQUE, CTextureObject::CGL_BILINEAR);
 	T->glSetTransparency(255);
 	factory.glLoadTexture(T,"Datas\\oldwood.jpg");
 	CBasicObjects::CRectangle *ground = new CBasicObjects::CRectangle();
@@ -819,7 +821,7 @@ void CVertexShadersDisplay::Init()
 	sky->setRenderingModel(l_model2);
 	CShader *sh = sky->getShader();
 	CTextureUnitSetup* tus = sh->glGetTextureUnitsSetup();
-	T = factory.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_OPAQUE,CTextureObject::CGL_BILINEAR);
+	T = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_OPAQUE,CTextureObject::CGL_BILINEAR);
 	factory.glLoadTexture(T,"Datas\\ciel_07.jpg");
 	tus->setDiffuseMap(T);
 

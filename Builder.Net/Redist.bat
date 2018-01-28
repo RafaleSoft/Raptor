@@ -94,6 +94,7 @@ copy .\RaptorCore\GLHierarchy\Geometry.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\GeometryEditor.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\GeometryPrimitive.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\GeometryProgram.h Redist\Include\GLHierarchy
+copy .\RaptorCore\GLHierarchy\ITextureObject.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\Light.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\LightGlow.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\LightObserver.h Redist\Include\GLHierarchy
@@ -137,6 +138,7 @@ ECHO       System:
 copy .\RaptorCore\System\CGLTypes.h Redist\Include\System
 copy .\RaptorCore\System\Color.h Redist\Include\System
 copy .\RaptorCore\System\Glext.h Redist\Include\System
+copy .\RaptorCore\System\Image.h Redist\Include\System
 copy .\RaptorCore\System\Memory.h Redist\Include\System
 copy .\RaptorCore\System\Raptor.h Redist\Include\System
 copy .\RaptorCore\System\RaptorApplication.h Redist\Include\System

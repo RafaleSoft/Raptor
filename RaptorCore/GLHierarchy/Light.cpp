@@ -267,7 +267,7 @@ void RAPTOR_FASTCALL CLight::setLightDirection(const GL_COORD_VERTEX& direction)
 	m_pAttributes->m_direction.Normalize();
 }
 
-void CLight::addLensFlare(CTextureObject* T,float size)
+void CLight::addLensFlare(ITextureObject* T,float size)
 {
     CLightAttributes::flare_item flare;
     flare.pFlare = T;
@@ -443,7 +443,7 @@ void CLight::glRenderFlare(void)
 			for (unsigned int i=0;(i<m_pAttributes->mFlares.size());i++)
 			{
 				const CLightAttributes::flare_item& flare = m_pAttributes->mFlares[i];
-				flare.pFlare->glRender();
+				flare.pFlare->glvkRender();
 			    
 				glBegin(GL_QUADS);
 				glTexCoord2f(0.0f,0.0f);    glVertex3f(-flare.fSize,-flare.fSize,0.0f);

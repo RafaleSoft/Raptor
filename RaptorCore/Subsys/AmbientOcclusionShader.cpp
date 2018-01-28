@@ -79,7 +79,7 @@ bool CAmbientOcclusionShader::glInitAOCompute(void)
 
 	CTextureFactory &f = CTextureFactory::getDefaultFactory();
 	f.getConfig().useTextureResize(false);
-	CTextureObject *T = f.glCreateTexture(	CTextureObject::CGL_COLOR_FLOAT32_ALPHA,
+	CTextureObject *T = f.glCreateTexture(	ITextureObject::CGL_COLOR_FLOAT32_ALPHA,
 											CTextureObject::CGL_OPAQUE,
 											CTextureObject::CGL_BILINEAR);
 	T->glUpdateClamping(CTextureObject::CGL_EDGECLAMP);
@@ -147,7 +147,7 @@ void CAmbientOcclusionShader::glRenderResult()
 
 		pExtensions->glActiveTextureARB(GL_TEXTURE2_ARB);
 		glEnable(GL_TEXTURE_2D);
-		m_pAOMap->glRender();
+		m_pAOMap->glvkRender();
 		/*
 		CTextureFactory &f = CTextureFactory::getDefaultFactory();
 		f.glExportTexture(m_pAOMap, "AO_map.jpg");
@@ -280,24 +280,24 @@ bool CAmbientOcclusionShader::glSetCoords(GL_COORD_VERTEX* refVertex, unsigned i
 		int width = ceil(log(sqrt((float)nbVertex)) / log(2.0));
 		int height = width = pow(2.0,width);
 
-		CTextureObject *T = f.glCreateRectangleTexture(	CTextureObject::CGL_COLOR_FLOAT32_ALPHA,
+		CTextureObject *T = f.glCreateRectangleTexture(	ITextureObject::CGL_COLOR_FLOAT32_ALPHA,
 														CTextureObject::CGL_OPAQUE,
 														CTextureObject::CGL_UNFILTERED);
 		// Should this case still be supported ?
 		// with no texture rectangle, it is rather laborious
 		if (T == NULL)
 		{
-			T = f.glCreateTexture(	CTextureObject::CGL_COLOR_FLOAT32_ALPHA,
+			T = f.glCreateTexture(	ITextureObject::CGL_COLOR_FLOAT32_ALPHA,
 									CTextureObject::CGL_OPAQUE,
 									CTextureObject::CGL_UNFILTERED);
 		}
 
-		T->setSize(width,height);
-		T->allocateTexels(CTextureObject::CGL_COLOR_FLOAT32_ALPHA);
-		float *texels = T->getFloatTexels();
-		memcpy(texels,refVertex,nbVertex*sizeof(GL_COORD_VERTEX));
+		CImage coords;
+		coords.allocatePixels(width, height, CImage::CGL_COLOR_FLOAT32_ALPHA);
+		float *pixels = coords.getFloatPixels();
+		memcpy(pixels, refVertex, nbVertex*sizeof(GL_COORD_VERTEX));
 
-		f.glLoadTexture(T,".buffer");
+		f.glLoadTexture(T, coords);
 		m_pVertexMap = T;
 
 		CATCH_GL_ERROR;
@@ -320,7 +320,7 @@ bool CAmbientOcclusionShader::glSetNormals(GL_COORD_VERTEX* refNormal, unsigned 
 		int width = ceil(log(sqrt((float)nbVertex)) / log(2.0));
 		int height = width = pow(2.0,width);
 
-		CTextureObject *T = f.glCreateRectangleTexture(	CTextureObject::CGL_COLOR_FLOAT32_ALPHA,
+		CTextureObject *T = f.glCreateRectangleTexture(	ITextureObject::CGL_COLOR_FLOAT32_ALPHA,
 														CTextureObject::CGL_OPAQUE,
 														CTextureObject::CGL_UNFILTERED);
 
@@ -328,17 +328,17 @@ bool CAmbientOcclusionShader::glSetNormals(GL_COORD_VERTEX* refNormal, unsigned 
 		// with no texture rectangle, it is rather laborious
 		if (T == NULL)
 		{
-			T = f.glCreateTexture(	CTextureObject::CGL_COLOR_FLOAT32_ALPHA,
+			T = f.glCreateTexture(	ITextureObject::CGL_COLOR_FLOAT32_ALPHA,
 									CTextureObject::CGL_OPAQUE,
 									CTextureObject::CGL_UNFILTERED);
 		}
 
-		T->setSize(width,height);
-		T->allocateTexels(CTextureObject::CGL_COLOR_FLOAT32_ALPHA);
-		float *texels = T->getFloatTexels();
-		memcpy(texels,refNormal,nbVertex*4*sizeof(float));
+		CImage normals;
+		normals.allocatePixels(width, height, CImage::CGL_COLOR_FLOAT32_ALPHA);
+		float *pixels = normals.getFloatPixels();
+		memcpy(pixels,refNormal,nbVertex*4*sizeof(float));
 
-		f.glLoadTexture(T,".buffer");
+		f.glLoadTexture(T, normals);
 		m_pNormalMap = T;
 
 		CATCH_GL_ERROR;

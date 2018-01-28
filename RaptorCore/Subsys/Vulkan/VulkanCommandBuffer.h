@@ -40,6 +40,13 @@ public:
 						uint32_t graphics_queueFamilyIndex,
 						VkImage image);
 
+	//! Insert a pipeline barrier for the parameter image
+	//!	- generates a layout transition
+	//!	- the reverse barrier has to be manually called by user
+	void imageBarrier(VkImageLayout oldLayout,
+					  VkImageLayout newLayout,
+					  VkImage image) const;
+
 	//!	Initialise the render pass in the command buffer.
 	//!	Render pass is finalized upon command buffer destruction.
 	void renderPass(VkRenderPass renderPass,

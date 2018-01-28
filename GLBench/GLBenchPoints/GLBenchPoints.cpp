@@ -188,7 +188,7 @@ void Display::GLInitContext()
 		indexes[i] = i;
 	}
 
-	glClearColor(0.0f,0.0f,0.0f,0.0);
+	glClearColor(0.0f,0.0f,0.0f,0.0f);
 	
 	m_points = new CGeometry("BenchPoints");
 	CGeometry::CRenderingModel model(	CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY|
@@ -210,12 +210,14 @@ void Display::GLInitContext()
 
 	CTextureFactory &txt = CTextureFactory::getDefaultFactory();
 
-	sprite = txt.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA);
+	sprite = txt.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA);
     sprite->setSize(32,32);
 	sprite->glSetTransparency(192);
-	sprite->allocateTexels();
 
-	unsigned char *data = sprite->getTexels();
+	CImage spr;
+	spr.allocatePixels(32,32);
+
+	unsigned char *data = spr.getPixels();
 	unsigned int offset = 0;
 	for (int j=0;j<32;j++)
 	{
@@ -228,7 +230,7 @@ void Display::GLInitContext()
 		}
 	}
 
-	txt.glLoadTexture(sprite,".buffer");
+	txt.glLoadTexture(sprite,spr);
 }
 
 extern "C" void GLBENCH_API Bench(CWnd *parent)
@@ -400,7 +402,7 @@ extern "C" void GLBENCH_API Bench(CWnd *parent)
 		glEnable(GL_POINT_SPRITE_NV);
 		//GLDisplay->glPointParameterfEXT(GL_POINT_SPRITE_R_MODE_NV,GL_ZERO);
 		glTexEnvi(GL_POINT_SPRITE_NV,GL_COORD_REPLACE_NV,GL_TRUE);
-		sprite->glRender();
+		sprite->glvkRender();
 		CTimeObject::markTime(parent);
 		for (i=0;i<LOOP_SIZE;i++)
 		{

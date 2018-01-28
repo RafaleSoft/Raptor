@@ -54,20 +54,20 @@ vector<std::string> COpenEXRImaging::getImageKind(void) const
 	return result;
 }
 
-bool COpenEXRImaging::storeImageFile(const std::string& fname,CTextureObject* const T)
+bool COpenEXRImaging::storeImageFile(const std::string& fname, CImage* const I) const
 {
 // Old compilers that do not support namespaces cannot compile
 // with OpenEXR library headers, so I exclude the support
 #if _MSC_VER > 1200
-    if (T == NULL)
+    if (I == NULL)
         return false;
 
-	float *image_buffer = T->getFloatTexels();
+	float *image_buffer = I->getFloatPixels();
     if (image_buffer == NULL)
         return false;
 
-	unsigned int w = T->getWidth();
-	unsigned int h = T->getHeight();
+	unsigned int w = I->getWidth();
+	unsigned int h = I->getHeight();
 
 	Imf::Header header (w, h);
 	header.insert ("origin", Imf::StringAttribute ("Raptor OpenEXR image"));
@@ -101,21 +101,21 @@ bool COpenEXRImaging::storeImageFile(const std::string& fname,CTextureObject* co
 #endif
 }
 
-bool COpenEXRImaging::loadImageFile(const std::string& fname,CTextureObject* const T)
+bool COpenEXRImaging::loadImageFile(const std::string& fname, CImage* const I) const
 {
-// Old compilers that do not support namespaces cannot compile
-// with OpenEXR library headers, so I exclude the support
+	// Old compilers that do not support namespaces cannot compile
+	// with OpenEXR library headers, so I exclude the support
 #if _MSC_VER > 1200
-	if (T == NULL)
-        return false;
+	if (NULL == I)
+		return false;
 
 	try
 	{
-		Imf::RgbaInputFile file (fname.data());
+		Imf::RgbaInputFile file(fname.data());
 
 		//const Imf::StringAttribute *comments =
 		//	file.header().findTypedAttribute <Imf::StringAttribute> ("origin");
-		
+
 		Imath::Box2i dw = file.dataWindow();
 
 		unsigned int w = dw.max.x - dw.min.x + 1;
@@ -123,24 +123,23 @@ bool COpenEXRImaging::loadImageFile(const std::string& fname,CTextureObject* con
 
 		Imf::Rgba *pixels = new Imf::Rgba[w*h];
 
-		file.setFrameBuffer (pixels - dw.min.x - dw.min.y * w, 1, w);
-		file.readPixels (dw.min.y, dw.max.y);
+		file.setFrameBuffer(pixels - dw.min.x - dw.min.y * w, 1, w);
+		file.readPixels(dw.min.y, dw.max.y);
 
-		T->setSize(w,h);
-        T->allocateTexels(CTextureObject::CGL_COLOR_FLOAT16_ALPHA);
-		float *image_buffer = T->getFloatTexels();
+		I->allocatePixels(w, h, CImage::CGL_COLOR_FLOAT16_ALPHA);
+		float *image_buffer = I->getFloatPixels();
 
-		for (unsigned int i=0;i<w*h;i++)
+		for (unsigned int i = 0; i<w*h; i++)
 		{
-			image_buffer[4*i+0] = pixels[i].r;
-			image_buffer[4*i+1] = pixels[i].g;
-			image_buffer[4*i+2] = pixels[i].b;
-			image_buffer[4*i+3] = pixels[i].a;
+			image_buffer[4 * i + 0] = pixels[i].r;
+			image_buffer[4 * i + 1] = pixels[i].g;
+			image_buffer[4 * i + 2] = pixels[i].b;
+			image_buffer[4 * i + 3] = pixels[i].a;
 		}
 
-		delete [] pixels;
+		delete[] pixels;
 	}
-	catch(...)
+	catch (...)
 	{
 		return false;
 	}
@@ -150,5 +149,4 @@ bool COpenEXRImaging::loadImageFile(const std::string& fname,CTextureObject* con
 	return false;
 #endif
 }
-
 

@@ -139,22 +139,33 @@ VkImage CTexelAllocator::vkAllocateTextureImage(uint64_t width,
 												CTextureObject::TEXEL_TYPE format,
 												unsigned char* texels)
 {
+	VkImage image = VK_NULL_HANDLE;
+	if ((width == 0) || (height == 0) || (depth == 0))
+	{
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+		Raptor::GetErrorManager()->generateRaptorError(Global::COpenGLClassID::GetClassId(),
+													   CRaptorErrorManager::RAPTOR_WARNING,
+													   "CTextureObject wrong size update");
+#endif
+		return image;
+	}
+
 	VkImageCreateInfo imageInfo = {};
 	imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
 	imageInfo.pNext = NULL;
 	imageInfo.flags = 0;
 
-	uint64_t size = width * height * MAX(1, depth);
+	uint64_t size = width * height * depth;
 	//!
 	//! Select Image format
 	//!
 	switch (format)
 	{
-		case CTextureObject::CGL_COLOR24_ALPHA:
+		case ITextureObject::CGL_COLOR24_ALPHA:
 			imageInfo.format = VK_FORMAT_R8G8B8A8_UNORM;
 			size = size * 4;
 			break;
-		case CTextureObject::CGL_COLOR24:
+		case ITextureObject::CGL_COLOR24:
 			imageInfo.format = VK_FORMAT_R8G8B8_UNORM;
 			size = size * 3;
 			break;
@@ -171,9 +182,9 @@ VkImage CTexelAllocator::vkAllocateTextureImage(uint64_t width,
 	//!
 	//! Select Image type
 	//!
-	if (0 == depth)
+	if (2 > depth)
 	{
-		if (0 == height)
+		if (2 > height)
 			imageInfo.imageType = VK_IMAGE_TYPE_1D;
 		else
 			imageInfo.imageType = VK_IMAGE_TYPE_2D;
@@ -186,8 +197,6 @@ VkImage CTexelAllocator::vkAllocateTextureImage(uint64_t width,
 	imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
 	imageInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
 
-
-	VkImage image = VK_NULL_HANDLE;
 	CVulkanDevice *pDevice = CVulkanDevice::getCurrentDevice();
 	if (NULL != pDevice)
 	{
@@ -323,7 +332,7 @@ void CTexelAllocator::glvkCopyPointer(unsigned char *dst, unsigned char *src, ui
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 		else
 		{
-			Raptor::GetErrorManager()->generateRaptorError(	CPersistence::CPersistenceClassID::GetClassId(),
+			Raptor::GetErrorManager()->generateRaptorError(	Global::COpenGLClassID::GetClassId(),
 															CRaptorErrorManager::RAPTOR_WARNING,
 				                                            "The destination device buffer does not exist");
 		}

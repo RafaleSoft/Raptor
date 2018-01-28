@@ -353,9 +353,6 @@
     <ClCompile Include="..\..\RaptorCore\Subsys\DefaultImageScaler.cpp">
       <Filter>Source Files\Subsys src</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\RaptorCore\Subsys\DefaultMipmapBuilder.cpp">
-      <Filter>Source Files\Subsys src</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\RaptorCore\Subsys\GeometryAllocator.cpp">
       <Filter>Source Files\Subsys src</Filter>
     </ClCompile>
@@ -571,6 +568,18 @@
     </ClCompile>
     <ClCompile Include="..\..\RaptorCore\Subsys\ResourceAllocator.cpp">
       <Filter>Source Files\Subsys src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\System\Image.cpp">
+      <Filter>Source Files\System src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\DefaultAlphaTransparency.cpp">
+      <Filter>Source Files\Subsys src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\ITextureObject.cpp">
+      <Filter>Source Files\GLHierarchy src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\Vulkan\VulkanTextureObject.cpp">
+      <Filter>Source Files\Subsys src\Vulkan</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -829,9 +838,6 @@
       <Filter>Header Files\Subsys include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\RaptorCore\Subsys\DefaultImageScaler.h">
-      <Filter>Header Files\Subsys include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\RaptorCore\Subsys\DefaultMipmapBuilder.h">
       <Filter>Header Files\Subsys include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\RaptorCore\Subsys\GeometryAllocator.h">
@@ -1100,6 +1106,18 @@
     </ClInclude>
     <ClInclude Include="..\..\RaptorCore\Subsys\BufferObject.h">
       <Filter>Header Files\Subsys include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\System\Image.h">
+      <Filter>Header Files\System include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\DefaultAlphaTransparency.h">
+      <Filter>Header Files\Subsys include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\ITextureObject.h">
+      <Filter>Header Files\GLHierarchy include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\Vulkan\VulkanTextureObject.h">
+      <Filter>Header Files\Subsys include\Vulkan</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

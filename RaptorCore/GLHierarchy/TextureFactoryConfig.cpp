@@ -11,8 +11,8 @@
 	#include "TextureFactoryConfig.h"
 #endif
 
-#ifndef __GLOBAL_H__
-	#include "System/Global.h"
+#if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
+	#include "System/RaptorErrorManager.h"
 #endif
 
 #if !defined(AFX_RAPTOREXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
@@ -30,19 +30,7 @@
 	#include "TextureFactory.h"
 #endif
 
-//! Default Imaging functionnalities
-#if !defined(AFX_BUFFERIMAGE_H__B28C75CD_81D5_473F_A247_608FB6E02949__INCLUDED_)
-    #include "Subsys/BufferImage.h"
-#endif
-#if !defined(AFX_DEFAULTBUMPMAPLOADER_H__3841D5F8_284B_4DC5_9E4B_56EF18AF80F4__INCLUDED_)
-    #include "Subsys/DefaultBumpmapLoader.h"
-#endif
-#if !defined(AFX_DEFAULTIMAGESCALER_H__E3E63A13_79FC_4E46_A1D5_BCD41CF86360__INCLUDED_)
-    #include "Subsys/DefaultImageScaler.h"
-#endif
-#if !defined(AFX_DEFAULTMIPMAPBUILDER_H__9C508D96_B614_4920_8816_B670295B6CE2__INCLUDED_)
-    #include "Subsys/DefaultMipmapBuilder.h"
-#endif
+
 
 RAPTOR_NAMESPACE
 
@@ -430,22 +418,10 @@ CTextureFactoryConfig::CTextureFactoryConfig()
     m_fBumpScale = 1.0f;
 	m_fCurrentPriority = 1.0f;
 	m_fCurrentAnisotropy = 1.0f;
-	m_fMaxAnisotropy = 1.0f;
+	m_bGenerateMipmap = false;
 	m_bResizeTextures = true;
-	m_bSupportResize = false;
     m_nbTextureImages = 0;
 	m_texelFormat = BYTEORDER_RGBA;
-
-	Global::RAPTOR_CURRENT_STATUS &status = Global::GetInstance().getCurrentStatus();
-
-	IImageIO *pIO = new CBufferImage();
-	vector<std::string> exts = pIO->getImageKind();
-	for (size_t j=0;j<exts.size();j++)
-		IMAGE_KIND_IO.insert(map<std::string,IImageIO*>::value_type(exts[j],pIO));
-
-	IMAGE_KIND_OP.insert(map<IImageOP::OP_KIND,IImageOP*>::value_type(IImageOP::BUMPMAP_LOADER,status.pDefaultBumpmapLoader));
-	IMAGE_KIND_OP.insert(map<IImageOP::OP_KIND,IImageOP*>::value_type(IImageOP::IMAGE_SCALER,status.pDefaultImageScaler));
-	IMAGE_KIND_OP.insert(map<IImageOP::OP_KIND,IImageOP*>::value_type(IImageOP::MIPMAP_BUILDER,status.pDefaultMipmapBuilder));
 }
 
 CTextureFactoryConfig::~CTextureFactoryConfig()
@@ -529,9 +505,32 @@ bool CTextureFactoryConfig::glInit()
 	m_bSupportResize = Raptor::glIsExtensionSupported("GL_ARB_texture_non_power_of_two");
 #endif
 
+	setGenerateMipmap(true);
+
 	CATCH_GL_ERROR
 
 	return true;
+}
+
+void CTextureFactoryConfig::setGenerateMipmap(bool generate)
+{
+	//!	Simple case, just deactivate.
+	if (!generate)
+	{
+		m_bGenerateMipmap = false;
+		return;
+	}
+
+	//!	Complex case, check if auto generation can be activated.
+#if (defined(GL_VERSION_3_0) || defined(GL_EXT_framebuffer_object))
+	const CRaptorExtensions * const extensions = Raptor::glGetExtensions();
+	if (extensions->glGenerateMipmapEXT != NULL)
+		m_bGenerateMipmap = true;
+#elif defined(GL_VERSION_1_4)
+	m_bGenerateMipmap = true;
+#else
+	m_bGenerateMipmap = false;
+#endif
 }
 
 void CTextureFactoryConfig::setCurrentPriority(float priority)
@@ -567,76 +566,6 @@ void CTextureFactoryConfig::useTextureResize(bool resize)
 	m_bResizeTextures = true;
 #endif
 }
-
-
-void CTextureFactoryConfig::setImageKindIO(IImageIO *imager)
-{
-#ifdef RAPTOR_DEBUG_MODE_GENERATION
-    if ((imager == NULL) || (imager->getImageKind().empty()))
-	{
-		Raptor::GetErrorManager()->generateRaptorError(	CTextureFactory::CTextureFactoryClassID::GetClassId(),
-														CRaptorErrorManager::RAPTOR_WARNING,
-														CRaptorMessages::ID_PROCEDURE_FAILED);
-		return;
-	}
-#endif
-
-	vector<std::string> extensionKind = imager->getImageKind();
-	for (size_t j=0;j<extensionKind.size();j++)
-	{
-		string ext;
-		for (unsigned int i=0;i<extensionKind[j].size();i++)
-			ext += toupper(extensionKind[j][i]);
-
-		IMAGE_KIND_IO.insert(map<std::string,IImageIO*>::value_type(ext,imager));
-	}
-}
-
-CTextureFactoryConfig::IImageIO* const CTextureFactoryConfig::getImageKindIO(const std::string &extension) const
-{
-	//	extract the right image loader
-    string ext = extension;
-	std::string::size_type pos = ext.rfind('.');
-    if (pos < ext.size())
-        ext = ext.substr(pos+1);
-
-    pos = 0;
-	for (pos=0;pos<ext.size();pos++)
-        ext[pos] = toupper(ext[pos]);
-
-	map<std::string,IImageIO*>::const_iterator itr = IMAGE_KIND_IO.find(ext);
-	if (IMAGE_KIND_IO.end() != itr)
-		return (*itr).second;
-	else 
-		return NULL;
-}
-
-
-void CTextureFactoryConfig::setImageKindOP(IImageOP *op)
-{
-#ifdef RAPTOR_DEBUG_MODE_GENERATION
-    if (op == NULL)
-	{
-        Raptor::GetErrorManager()->generateRaptorError(	CTextureFactory::CTextureFactoryClassID::GetClassId(),
-														CRaptorErrorManager::RAPTOR_WARNING,
-														CRaptorMessages::ID_PROCEDURE_FAILED);
-		return;
-	}
-#endif
-
-	IMAGE_KIND_OP.insert(map<IImageOP::OP_KIND,IImageOP*>::value_type(op->getKind(),op));
-}
-
-
-CTextureFactoryConfig::IImageOP* const CTextureFactoryConfig::getImageKindOP(IImageOP::OP_KIND kind) const
-{
-    map<IImageOP::OP_KIND,IImageOP*>::const_iterator itr = IMAGE_KIND_OP.find(kind);
-	if (IMAGE_KIND_OP.end() != itr)
-		return (*itr).second;
-	else 
-		return NULL;
-}
-
 
 const CTextureFactoryConfig::ICompressor* CTextureFactoryConfig::getCompressor(unsigned int numCompressor)
 {

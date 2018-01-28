@@ -23,6 +23,7 @@ RAPTOR_NAMESPACE_BEGIN
 
 class CVulkanPipeline;
 class CVulkanShader;
+class CVulkanTextureObject;
 class C3DScene;
 
 class CVulkanDevice
@@ -89,8 +90,9 @@ public:
 	//! Returns the memory wrapper managing this device.
 	CVulkanMemory::CVulkanMemoryWrapper* getMemory(void) const { return pDeviceMemory; };
 
-	CVulkanPipeline*	createPipeline(void) const;
-	CVulkanShader*		createShader(void) const;
+	CVulkanPipeline*		createPipeline(void) const;
+	CVulkanShader*			createShader(void) const;
+	CVulkanTextureObject*	createTextureObject(ITextureObject::TEXEL_TYPE type) const;
 
 
 	//!	Renders the 3DScene provided to the current grahics command buffer

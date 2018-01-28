@@ -16,7 +16,12 @@
     #include "Engine/3DEngineTaskManager.h"
 #endif
 #if !defined(AFX_RAPTORDATAMANAGER_H__114BFB19_FA00_4E3E_879E_C9130043668E__INCLUDED_)
-    #include "DataManager/RaptorDataManager.h"
+	#include "DataManager/RaptorDataManager.h"
+#endif
+
+//! Default Imaging functionnalities
+#if !defined(AFX_BUFFERIMAGE_H__B28C75CD_81D5_473F_A247_608FB6E02949__INCLUDED_)
+	#include "Subsys/BufferImage.h"
 #endif
 #if !defined(AFX_DEFAULTBUMPMAPLOADER_H__3841D5F8_284B_4DC5_9E4B_56EF18AF80F4__INCLUDED_)
     #include "Subsys/DefaultBumpmapLoader.h"
@@ -24,8 +29,8 @@
 #if !defined(AFX_DEFAULTIMAGESCALER_H__E3E63A13_79FC_4E46_A1D5_BCD41CF86360__INCLUDED_)
     #include "Subsys/DefaultImageScaler.h"
 #endif
-#if !defined(AFX_DEFAULTMIPMAPBUILDER_H__9C508D96_B614_4920_8816_B670295B6CE2__INCLUDED_)
-    #include "Subsys/DefaultMipmapBuilder.h"
+#if !defined(AFX_DEFAULTALPHATRANSPARENCY_H__8EAD8C9F_DC40_4063_8E0A_0C2AB300AD16__INCLUDED_)
+	#include "Subsys/DefaultAlphaTransparency.h"
 #endif
 #if !defined(AFX_SHADERLIBRARY_H__E2A8C35E_23A4_4AD1_8467_884E6B183B4F__INCLUDED_)
 	#include "Subsys/ShaderLibrary.h"
@@ -58,11 +63,6 @@ Global::Global()
 	raptorStatus.currentAnimator = NULL;
     raptorStatus.engineTaskMgr = NULL;
     raptorStatus.console = NULL;
-
-	raptorStatus.pDefaultBumpmapLoader = NULL;
-	raptorStatus.pDefaultImageScaler = NULL;
-	raptorStatus.pDefaultMipmapBuilder = NULL;
-
 
     raptorStatus.defaultDisplay = NULL;
 	raptorStatus.defaultWindow.handle = 0;
@@ -106,6 +106,19 @@ Global::~Global()
     CContextManager::GetInstance()->glDestroyContext(raptorStatus.defaultContext);
     raptorStatus.defaultContext = 0;
 
+
+	CImage::IImageOP *op = CImage::getImageKindOP(CImage::IImageOP::BUMPMAP_LOADER);
+	delete op;
+
+	op = CImage::getImageKindOP(CImage::IImageOP::IMAGE_SCALER);
+	delete op;
+
+	op = CImage::getImageKindOP(CImage::IImageOP::ALPHA_TRANSPARENCY);
+	delete op;
+
+	CImage::IImageIO *pIO = CImage::getImageKindIO("BUFFER");
+	delete pIO;
+
     //  Default display is NULL, because it was created with GENERIC attribute.
     //    glDestroyDisplay(status.defaultDisplay);
     CContextManager::GetInstance()->glDestroyWindow(raptorStatus.defaultWindow);
@@ -118,10 +131,6 @@ Global::~Global()
         delete raptorStatus.messages;
     if (raptorStatus.errorMgr != NULL)
         delete raptorStatus.errorMgr;
-
-	delete (raptorStatus.pDefaultBumpmapLoader);
-	delete (raptorStatus.pDefaultImageScaler);
-	delete (raptorStatus.pDefaultMipmapBuilder);
 
 	raptorStatus.initialised = false;
 }
@@ -194,9 +203,17 @@ bool Global::init(const CRaptorConfig& config)
 
 		CContextManager *pContext = CContextManager::GetInstance();
 
-		raptorStatus.pDefaultBumpmapLoader = new CDefaultBumpmapLoader();
-		raptorStatus.pDefaultImageScaler = new CDefaultImageScaler();
-		raptorStatus.pDefaultMipmapBuilder = new CDefaultMipmapBuilder();
+		CDefaultBumpmapLoader *pDefaultBumpmapLoader = new CDefaultBumpmapLoader(1.0f);
+		CImage::setImageKindOP(pDefaultBumpmapLoader);
+
+		CDefaultImageScaler *pDefaultImageScaler = new CDefaultImageScaler(1.0f,1.0f);
+		CImage::setImageKindOP(pDefaultImageScaler);
+
+		CDefaultAlphaTransparency *pDefaultAlphaTransparency = new CDefaultAlphaTransparency(255);
+		CImage::setImageKindOP(pDefaultAlphaTransparency);
+
+		CImage::IImageIO *pIO = new CBufferImage();
+		CImage::setImageKindIO(pIO);
 
 #if defined (VK_VERSION_1_0)
 		if (!pContext->vkInit())
