@@ -26,44 +26,40 @@
 
 void RaptorTIFFErrorHandler(const char* module , const char* fmt, va_list ap)
 {
-	const char *szTitleText = "%s Error";
-	const char *szDefaultModule = "LIBTIFF";
-	const char *szTmpModule = (module == NULL) ? szDefaultModule : module;
+	std::string szTitle;
+	if (module == NULL)
+		szTitle = "LIBTIFF";
+	else
+		szTitle = module;
+	szTitle += " Error";
 
-	char *szTitle = (char*)new char[(strlen(szTmpModule) + strlen(szTitleText) + strlen(fmt) + 128)];
-    if (szTitle == NULL)
-		return;
-
-	sprintf(szTitle, szTitleText, szTmpModule);
-	char *szTmp = szTitle + (strlen(szTitle)+2)*sizeof(char);
+	char szTmp[256];
+	memset(szTmp, 0, 256);
 	vsprintf(szTmp, fmt, ap);
+	szTitle += szTmp;
 
     Raptor::GetErrorManager()->generateRaptorError(	CPersistence::CPersistenceClassID::GetClassId(),
 													CRaptorErrorManager::RAPTOR_ERROR,
-													szTmp);
-
-    delete [] szTitle;
+													szTitle);
 }
 
 void RaptorTIFFWarningHandler(const char* module , const char* fmt, va_list ap)
 {
-	const char *szTitleText = "%s Warning";
-	const char *szDefaultModule = "LIBTIFF";
-	const char *szTmpModule = (module == NULL) ? szDefaultModule : module;
+	std::string szTitle;
+	if (module == NULL)
+		szTitle = "LIBTIFF";
+	else
+		szTitle = module;
+	szTitle += " Warning";
 
-	char *szTitle = (char*)new char[(strlen(szTmpModule) + strlen(szTitleText) + strlen(fmt) + 128)];
-    if (szTitle == NULL)
-		return;
-
-	sprintf(szTitle, szTitleText, szTmpModule);
-	char *szTmp = szTitle + (strlen(szTitle)+2)*sizeof(char);
+	char szTmp[256];
+	memset(szTmp, 0, 256);
 	vsprintf(szTmp, fmt, ap);
+	szTitle += szTmp;
 
     Raptor::GetErrorManager()->generateRaptorError(	CPersistence::CPersistenceClassID::GetClassId(),
 													CRaptorErrorManager::RAPTOR_WARNING,
-													szTmp);
-
-    delete [] szTitle;
+													szTitle);
 }
 
 

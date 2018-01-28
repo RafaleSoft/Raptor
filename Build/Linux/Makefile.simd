@@ -1,0 +1,30 @@
+export
+
+CCCFLAGS =  -DSIMD_NO_ASSEMBLY
+OUTPUT = $(RAPTOR_ROOT)/Build/Linux/Release/SIMD
+SRCDIR = $(RAPTOR_ROOT)/SIMD
+INCDIRS = -I$(SRCDIR)
+
+all:	$(OUTPUT)/simd.lib
+
+clean:
+	rm -rf $(OUTPUT)
+	mkdir -p $(OUTPUT)
+
+SRC = \
+	$(SRCDIR)/MMXBVector.cpp \
+	$(SRCDIR)/MMXWMatrix.cpp \
+	$(SRCDIR)/MMXWVector.cpp \
+	$(SRCDIR)/simd.cpp \
+	$(SRCDIR)/SSEFMatrix.cpp \
+	$(SRCDIR)/SSEFVector.cpp \
+	$(SRCDIR)/WVector.cpp
+
+OBJ = $(SRC:$(SRCDIR)/%.cpp=$(OUTPUT)/%.o)
+	
+$(OUTPUT)/simd.lib:	$(OBJ) 
+	ar -pc $(OUTPUT)/simd.lib $(OBJ)
+	cp $(OUTPUT)/simd.lib $(REDIST)/Lib/
+
+$(OBJ):	$(SRC)
+	g++ $(CCCFLAGS) $(INCDIRS) -c $(<D)/$(*F).cpp  -o $(OUTPUT)/$(@F)

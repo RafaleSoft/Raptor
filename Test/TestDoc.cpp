@@ -36,7 +36,6 @@
 #include "ToolBox/Filters/MBFilter.h"
 #include "ToolBox/Filters/BlurFilter.h"
 #include "ToolBox/Filters/DOFFilter.h"
-#include "ToolBox/Filters/TextureFilter.h"
 
 
 CTestDoc::CTestDoc(const RAPTOR_HANDLE& wnd,CRaptorDisplay *pDisplay)

@@ -11,10 +11,27 @@
 	#include "Imaging/TGAImaging.h"
 #endif
 
-#ifdef LINUX
+
+#if defined(WIN32)
+	#include <share.h>
+	static FILE *msdn_fopen(const char *filename, const char *mode)
+	{
+		if ((NULL == filename) || (NULL == mode))
+			return NULL;
+		FILE* pFile = NULL;
+		errno_t err = fopen_s(&pFile, filename, mode);
+		if (0 == err)
+			return pFile;
+		else
+			return NULL;
+	}
+	#define FOPEN(a,b) msdn_fopen(a,b)
+#elif LINUX
 	#include <stdio.h>
 	#include <string.h>
+	#define FOPEN(a,b) fopen(a,b)
 #endif
+
 
 CTGAImaging::CTGAImaging(void)
 {
@@ -105,34 +122,35 @@ bool CTGAImaging::loadImageFile(const std::string& fname, CImage* const I) const
 	FILE			*in_rgb = NULL;
 	long			outcolor = 0;
 	unsigned char	*outcolors = NULL;
+
 	size_t			w = 0;
-	size_t          h = 0;
+    size_t          h = 0;
 	int				size = 0;
 
-	if ((in_rgb = fopen(fname.data(), "rb")) == NULL)
+	if ((in_rgb = FOPEN(fname.data(), "rb")) == NULL)
 		return false;
+	
+	if (fread( head, sizeof(char), 18, in_rgb )!=18)
+		return false ;
 
-	if (fread(head, sizeof(char), 18, in_rgb) != 18)
-		return false;
+	w = (head[13]*256)+head[12];
+	h = (head[15]*256)+head[14];
+	size = head[16]/8;
 
-	w = (head[13] * 256) + head[12];
-	h = (head[15] * 256) + head[14];
-	size = head[16] / 8;
+    I->allocatePixels(w, h, CImage::CGL_COLOR24_ALPHA);
+    uint8_t *texturedata = I->getPixels();
 
-	I->allocatePixels(w, h, CImage::CGL_COLOR24_ALPHA);
-	uint8_t * texturedata = I->getPixels();
-
-	//  allocate extra size for fast unchecked reading here under.
-	outcolors = new unsigned char[size*w*h + 4];
+    //  allocate extra size for fast unchecked reading here under.
+	outcolors = new unsigned char[size*w*h+4];
 	if (fread(outcolors, size, w*h, in_rgb) != w*h)
-	{
-		fclose(in_rgb);
-		return false;
-	}
+    {
+        fclose( in_rgb );
+	    return false;
+    }
 
 	int t_pos = 0;
 	int i_pos = 0;
-	for (int i = 0; i < w*h; i++)
+	for ( size_t i=0; i < w*h; i++ )
 	{
 		outcolor = *((long*)&outcolors[i_pos]);
 

@@ -6,11 +6,10 @@
 	#include "MMXWVector.h"
 #endif
 
+#ifndef SIMD_NO_ASSEMBLY
+
 extern CMMXWVector _unalignedMMXShortVector;
 
-//////////////////////////////////////////////////////////////////////
-// Construction/Destruction
-//////////////////////////////////////////////////////////////////////
 CMMXWVector& SIMD_CALL CMMXWVector::operator^  (const CMMXWVector& v2) const
 {
 	__asm
@@ -229,4 +228,5 @@ CMMXWVector& SIMD_CALL CMMXWVector::operator*= (const CMMXWMatrix& m)
 	return *this;
 }
 
+#endif
 

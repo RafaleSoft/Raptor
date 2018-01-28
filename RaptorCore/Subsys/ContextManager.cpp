@@ -390,6 +390,14 @@ bool CContextManager::vkInitInstance(CContextManager::RENDERING_CONTEXT_ID ctx)
 	CRaptorErrorManager *pErrMgr = Raptor::GetErrorManager();
 	VkResult res = VK_NOT_READY;
 
+	if (NULL == vkCreateInstance)
+	{
+		pErrMgr->generateRaptorError(Global::CVulkanClassID::GetClassId(),
+									 CRaptorErrorManager::RAPTOR_ERROR,
+									 "Unable to initialise a Vulkan Instance");
+		return false;
+	}
+
 	VkApplicationInfo applicationInfo = {	VK_STRUCTURE_TYPE_APPLICATION_INFO, NULL,
 											"Raptor", RAPTOR_VERSION,
 											"Raptor 3D Engine", RAPTOR_VERSION,
