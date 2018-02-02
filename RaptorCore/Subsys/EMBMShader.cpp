@@ -111,7 +111,7 @@ void CEMBMShader::glInit(const std::string &bump_vertexshader,
     //! For high quality filtering, future release may allow a user defined size.
     permutation = filterFactory.glCreateTexture(ITextureObject::CGL_LIGHTMAP,
 												CTextureObject::CGL_OPAQUE,
-												CTextureObject::CGL_UNFILTERED);
+												ITextureObject::CGL_UNFILTERED);
     permutation->setSize(512,1);
 
 	CImage perlin;

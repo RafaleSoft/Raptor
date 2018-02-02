@@ -63,7 +63,7 @@ bool CGL2DTextureFont::init(const std::string &filename, unsigned int size, bool
 		{
 			m_texture = factory.glCreateTexture(ITextureObject::CGL_LIGHTMAP_ALPHA,
 												CTextureObject::CGL_MULTIPLY, // CGL_ALPHA_TRANSPARENT
-												CTextureObject::CGL_BILINEAR);
+												ITextureObject::CGL_BILINEAR);
 		}
 
 		if (m_bAntialiased)

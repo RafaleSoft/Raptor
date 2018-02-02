@@ -344,14 +344,14 @@ bool CMagnifierFilter::glInitFilter(void)
 		//! See remark below regarding texture filtering.
 		colorInput = filterFactory.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 															CTextureObject::CGL_OPAQUE,
-															CTextureObject::CGL_UNFILTERED, //CGL_BILINEAR,
+															ITextureObject::CGL_UNFILTERED, //CGL_BILINEAR,
 															colorExternalSource);
 	}
 	else if (m_fModel == RENDER_BUFFER)
 	{
 		//!    Source is unfiltered to avoid artifacts ( see comment below ).
 		colorInput->glvkRender();
-		colorInput->glUpdateFilter(CTextureObject::CGL_UNFILTERED);
+		colorInput->glvkUpdateFilter(ITextureObject::CGL_UNFILTERED);
 	}
 
 
@@ -359,7 +359,7 @@ bool CMagnifierFilter::glInitFilter(void)
     //! For high quality filtering, future release may allow a user defined size.
     kernelTexture = filterFactory.glCreateTexture( ITextureObject::CGL_COLOR_FLOAT16_ALPHA,
                                                    CTextureObject::CGL_OPAQUE,
-                                                   CTextureObject::CGL_UNFILTERED);
+                                                   ITextureObject::CGL_UNFILTERED);
     kernelTexture->setSize(KERNEL_SIZE,1);
     computeKernel();
 
@@ -382,7 +382,7 @@ bool CMagnifierFilter::glInitFilter(void)
 
 		xKernelPass = filterFactory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
 			                                        CTextureObject::CGL_OPAQUE,
-				                                    CTextureObject::CGL_UNFILTERED);
+				                                    ITextureObject::CGL_UNFILTERED);
 		filterFactory.glResizeTexture(xKernelPass,state.width,state.height);
 		xKernelPass->glUpdateClamping(CTextureObject::CGL_EDGECLAMP);
 		m_pRenderTextures->addTexture(xKernelPass);
@@ -407,7 +407,7 @@ bool CMagnifierFilter::glInitFilter(void)
 		//! ( Specifically where tex coord is near a texel edge, and also because it is shifted to work in texels' center and should be faster ).
 		xKernelPass = filterFactory.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 															CTextureObject::CGL_OPAQUE,
-															CTextureObject::CGL_UNFILTERED,//CGL_BILINEAR,
+															ITextureObject::CGL_UNFILTERED,//CGL_BILINEAR,
 															xBuffer);
 	}
 

@@ -146,7 +146,7 @@ bool CTextureSet::importTextureObject(CRaptorIO& io)
 
     string filename = "<unknown>";
     CTextureObject::TEXTURE_FUNCTION function = CTextureObject::CGL_OPAQUE;
-    CTextureObject::TEXTURE_FILTER filter = CTextureObject::CGL_UNFILTERED;
+    ITextureObject::TEXTURE_FILTER filter = ITextureObject::CGL_UNFILTERED;
     ITextureObject::TEXEL_TYPE texelType = ITextureObject::CGL_COLOR24_ALPHA;
     float transparency = -1.0f;
 	bool compressed = false;
@@ -172,15 +172,15 @@ bool CTextureSet::importTextureObject(CRaptorIO& io)
         {
             io >> name;
             if (name == "unfiltered")
-                filter = CTextureObject::CGL_UNFILTERED;
+                filter = ITextureObject::CGL_UNFILTERED;
             else if (name == "bilinear")
-                filter = CTextureObject::CGL_BILINEAR;
+                filter = ITextureObject::CGL_BILINEAR;
             else if (name == "bilinear_mipmapped")
-                filter = CTextureObject::CGL_BILINEAR_MIPMAPPED;
+                filter = ITextureObject::CGL_BILINEAR_MIPMAPPED;
             else if (name == "trilinear")
-                filter = CTextureObject::CGL_TRILINEAR;
+                filter = ITextureObject::CGL_TRILINEAR;
             else if (name == "anisotropic")
-                filter = CTextureObject::CGL_ANISOTROPIC;
+                filter = ITextureObject::CGL_ANISOTROPIC;
         }
         else if (data == "mode")
         {

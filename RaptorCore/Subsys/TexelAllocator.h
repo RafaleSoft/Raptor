@@ -66,11 +66,8 @@ public:
 	void *glvkUnMapPointer(void *pointer,bool syncData = true);
 
 	//!	Create a Vulkan image and allocate device memory
-	VkImage vkAllocateTextureImage(uint64_t width,
-								   uint64_t height = 0,
-								   uint64_t depth = 0,
-								   ITextureObject::TEXEL_TYPE format = ITextureObject::CGL_COLOR24_ALPHA,
-								   unsigned char* texels = NULL);
+	VkImage vkAllocateTextureImage(VkImageCreateInfo imageInfo,
+								   VkDeviceSize offset = 0);
 
 private:
 	//!	Singleton constructor is not allowed

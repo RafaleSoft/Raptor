@@ -421,11 +421,11 @@ bool CDOFFilter::glInitFilter(void)
 	{
 		depthInput = filterFactory.glCreateDynamicTexture(	ITextureObject::CGL_DEPTH24,
 															CTextureObject::CGL_OPAQUE,
-															CTextureObject::CGL_UNFILTERED,
+															ITextureObject::CGL_UNFILTERED,
 															depthExternalSource);
 		colorInput = filterFactory.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 															CTextureObject::CGL_OPAQUE,
-															CTextureObject::CGL_UNFILTERED,
+															ITextureObject::CGL_UNFILTERED,
 															colorExternalSource);
 	}
 
@@ -450,14 +450,14 @@ bool CDOFFilter::glInitFilter(void)
 
 		tmpTexture = filterFactory.glCreateTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 			                                        CTextureObject::CGL_OPAQUE,
-				                                    CTextureObject::CGL_UNFILTERED);
+				                                    ITextureObject::CGL_UNFILTERED);
 		filterFactory.glResizeTexture(tmpTexture,state.width,state.height);
 		tmpTexture->glUpdateClamping(CTextureObject::CGL_EDGECLAMP);
 		m_pRenderTextures->addTexture(tmpTexture);
 
 		tmpTexture2 = filterFactory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
 			                                        CTextureObject::CGL_OPAQUE,
-				                                    CTextureObject::CGL_UNFILTERED);
+				                                    ITextureObject::CGL_UNFILTERED);
 		filterFactory.glResizeTexture(tmpTexture2,state.width,state.height);
 		tmpTexture2->glUpdateClamping(CTextureObject::CGL_EDGECLAMP);
 		m_pRenderTextures2->addTexture(tmpTexture2);
@@ -491,11 +491,11 @@ bool CDOFFilter::glInitFilter(void)
 	{
 		tmpTexture = filterFactory.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 															CTextureObject::CGL_OPAQUE,
-															CTextureObject::CGL_UNFILTERED,
+															ITextureObject::CGL_UNFILTERED,
 															tmpDisplay);
 		tmpTexture2 = filterFactory.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 															CTextureObject::CGL_OPAQUE,
-															CTextureObject::CGL_UNFILTERED,
+															ITextureObject::CGL_UNFILTERED,
 															tmpDisplay2);
 	}
 

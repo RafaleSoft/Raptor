@@ -56,7 +56,7 @@ public:
     //! @return : the texture created or NULL if there has been an error
     CTextureObject*		const glCreateTexture(  ITextureObject::TEXEL_TYPE type,
 												CTextureObject::TEXTURE_FUNCTION env_mode = CTextureObject::CGL_ALPHA_TRANSPARENT,
-												CTextureObject::TEXTURE_FILTER filter = CTextureObject::CGL_UNFILTERED);
+												ITextureObject::TEXTURE_FILTER filter = ITextureObject::CGL_UNFILTERED);
 
     //!	Creates a 2D rectangular texture object
 	//! @param type : the type of texels of the texture ( server memory model )
@@ -65,7 +65,7 @@ public:
     //! @return : the texture created or NULL if there has been an error
     CTextureObject*		const glCreateRectangleTexture(	ITextureObject::TEXEL_TYPE type,
 														CTextureObject::TEXTURE_FUNCTION env_mode = CTextureObject::CGL_ALPHA_TRANSPARENT,
-														CTextureObject::TEXTURE_FILTER filter = CTextureObject::CGL_UNFILTERED);
+														ITextureObject::TEXTURE_FILTER filter = ITextureObject::CGL_UNFILTERED);
 	
 	//!	Creates a texture object
     //! @param type : the type of texels of the texture ( server memory model )
@@ -75,7 +75,7 @@ public:
     //! @return : the texture created or NULL if there has been an error
     CTextureObject*		const glCreateDynamicTexture(	ITextureObject::TEXEL_TYPE type,
 														CTextureObject::TEXTURE_FUNCTION env_mode = CTextureObject::CGL_ALPHA_TRANSPARENT,
-														CTextureObject::TEXTURE_FILTER filter = CTextureObject::CGL_UNFILTERED,
+														ITextureObject::TEXTURE_FILTER filter = ITextureObject::CGL_UNFILTERED,
 														ITextureGenerator* pGenerator = NULL);
 
 	//!	Creates a cubemap object
@@ -85,7 +85,7 @@ public:
     //! @return : the texture created or NULL if there has been an error
 	CTextureObject*		const glCreateCubemap(	ITextureObject::TEXEL_TYPE type,
 												CTextureObject::TEXTURE_FUNCTION env_mode = CTextureObject::CGL_ALPHA_TRANSPARENT,
-												CTextureObject::TEXTURE_FILTER filter = CTextureObject::CGL_UNFILTERED);
+												ITextureObject::TEXTURE_FILTER filter = ITextureObject::CGL_UNFILTERED);
 
     //!	Creates a 3D texture object. Might return NULL if volumic textures are not supported.
 	//! @param type : the type of texels of the texture ( server memory model )
@@ -94,7 +94,7 @@ public:
     //! @return : the texture created or NULL if there has been an error
 	CTextureObject*		const glCreateVolumeTexture(ITextureObject::TEXEL_TYPE type,
 													CTextureObject::TEXTURE_FUNCTION env_mode = CTextureObject::CGL_ALPHA_TRANSPARENT,
-													CTextureObject::TEXTURE_FILTER filter = CTextureObject::CGL_UNFILTERED);
+													ITextureObject::TEXTURE_FILTER filter = ITextureObject::CGL_UNFILTERED);
 
 	//!	Creates a sprite object. A sprite is a small texture with
 	//!	pixel replacement mode ( CGL_OPAQUE ) and no filtering ( thus no anisotropy )
@@ -109,7 +109,7 @@ public:
 	//! @return : the texture created or NULL if there has been an error
 	ITextureObject*	const vkCreateTexture(	ITextureObject::TEXEL_TYPE type,
 											CTextureObject::TEXTURE_FUNCTION env_mode = CTextureObject::CGL_ALPHA_TRANSPARENT,
-											CTextureObject::TEXTURE_FILTER filter = CTextureObject::CGL_UNFILTERED);
+											ITextureObject::TEXTURE_FILTER filter = ITextureObject::CGL_UNFILTERED);
 
 	//!	If .buffer extension is used,
 	//!	loadBUFFER does nothing, but assumes the user provides a buffer

@@ -164,7 +164,7 @@ CWarpObject::CWarpObject(float width,float height,int hcels,int vcels)
 	CTextureFactory &f = CTextureFactory::getDefaultFactory();
     m_captureBuffer = f.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 												CTextureObject::CGL_ALPHA_TRANSPARENT,
-												CTextureObject::CGL_BILINEAR,
+												ITextureObject::CGL_BILINEAR,
 												CRaptorDisplay::GetCurrentDisplay());
     f.glResizeTexture(m_captureBuffer,BASE_WARP_WIDTH,BASE_WARP_HEIGHT);
 
@@ -289,13 +289,13 @@ CGlassObject::CGlassObject(float width,float height,int hcels,int vcels)
 	CTextureFactory &f = CTextureFactory::getDefaultFactory();
     m_captureBuffer = f.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 												CTextureObject::CGL_ALPHA_TRANSPARENT,
-												CTextureObject::CGL_BILINEAR,
+												ITextureObject::CGL_BILINEAR,
 												CRaptorDisplay::GetCurrentDisplay());
     f.glResizeTexture(m_captureBuffer,BASE_WARP_WIDTH,BASE_WARP_HEIGHT);
 
 	CTextureObject* T = f.glCreateTexture( ITextureObject::CGL_COLOR24_ALPHA,
                                            CTextureObject::CGL_ALPHA_TRANSPARENT,
-                                           CTextureObject::CGL_BILINEAR);
+                                           ITextureObject::CGL_BILINEAR);
 	f.glLoadTexture(T,"Datas\\Bump2.tga");
 
 	m_pShader = new CShader("GLASS_SHADER");

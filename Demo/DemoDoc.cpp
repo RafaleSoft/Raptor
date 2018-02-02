@@ -199,7 +199,7 @@ bool HeatSpots::glInitFilter()
 	{
 		colorInput = filterFactory.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 															CTextureObject::CGL_OPAQUE,
-															CTextureObject::CGL_BILINEAR,
+															ITextureObject::CGL_BILINEAR,
 															colorExternalSource);
 	}
 

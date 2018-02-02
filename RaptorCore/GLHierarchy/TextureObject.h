@@ -12,9 +12,6 @@
 #ifndef __CGLTYPES_HPP__
 	#include "System/CGLTypes.h"
 #endif
-#if !defined(AFX_OBJECTREFERENCE_H__0D47C721_2B2D_4163_AB88_BE1B4E08A84D__INCLUDED_)
-    #include "ObjectReference.h"
-#endif
 #if !defined(AFX_ITEXTUREOBJECT_H__3AA8C89E_BB23_483C_A547_C8A4CC53E551__INCLUDED_)
 	#include "ITextureObject.h"
 #endif
@@ -30,7 +27,7 @@ class ITextureGenerator;
 //	Base structure for CTexture class
 //	this structure defines a texture object
 //	and its degenerate form : a sprite
-class RAPTOR_API CTextureObject : public CObjectReference, public ITextureObject
+class RAPTOR_API CTextureObject : public ITextureObject
 {
 public:
 	//! Texel transfer function ( combines input fragment with texel extracted from sampler )
@@ -41,16 +38,6 @@ public:
 		CGL_ALPHA_TRANSPARENT,
 		CGL_CONSTANT_BLENDED
 	} TEXTURE_FUNCTION;
-
-	//! Texel sampler filter
-	typedef enum
-	{
-		CGL_UNFILTERED,
-		CGL_BILINEAR,
-		CGL_BILINEAR_MIPMAPPED,
-		CGL_TRILINEAR,
-		CGL_ANISOTROPIC
-	} TEXTURE_FILTER;
 
 	//! Texture sampler clampping model
 	typedef enum
@@ -83,10 +70,7 @@ public:
 
 	//! Updates texture filtering function
 	//! @param F : the filter function
-    void glUpdateFilter(TEXTURE_FILTER F);
-
-    //! Returns the selected filtering method
-	TEXTURE_FILTER getFilter(void) const { return m_filter; };
+	virtual void glvkUpdateFilter(ITextureObject::TEXTURE_FILTER F);
 
 	//! Updates texture sampler clamping mode. This method
 	//!	is a simple helper, clamping mode is applied equally 
@@ -167,8 +151,6 @@ private:
 	unsigned int    env_mode;
     //	texture level ( mipmapping and anisotropy)
 	unsigned int	level;
-
-	TEXTURE_FILTER	m_filter;
 
     //! Anisotropy level
     float           aniso_level;

@@ -81,7 +81,7 @@ bool CAmbientOcclusionShader::glInitAOCompute(void)
 	f.getConfig().useTextureResize(false);
 	CTextureObject *T = f.glCreateTexture(	ITextureObject::CGL_COLOR_FLOAT32_ALPHA,
 											CTextureObject::CGL_OPAQUE,
-											CTextureObject::CGL_BILINEAR);
+											ITextureObject::CGL_BILINEAR);
 	T->glUpdateClamping(CTextureObject::CGL_EDGECLAMP);
 	f.glResizeTexture(T,m_pVertexMap->getWidth(),m_pVertexMap->getHeight());
 
@@ -282,14 +282,14 @@ bool CAmbientOcclusionShader::glSetCoords(GL_COORD_VERTEX* refVertex, unsigned i
 
 		CTextureObject *T = f.glCreateRectangleTexture(	ITextureObject::CGL_COLOR_FLOAT32_ALPHA,
 														CTextureObject::CGL_OPAQUE,
-														CTextureObject::CGL_UNFILTERED);
+														ITextureObject::CGL_UNFILTERED);
 		// Should this case still be supported ?
 		// with no texture rectangle, it is rather laborious
 		if (T == NULL)
 		{
 			T = f.glCreateTexture(	ITextureObject::CGL_COLOR_FLOAT32_ALPHA,
 									CTextureObject::CGL_OPAQUE,
-									CTextureObject::CGL_UNFILTERED);
+									ITextureObject::CGL_UNFILTERED);
 		}
 
 		CImage coords;
@@ -322,7 +322,7 @@ bool CAmbientOcclusionShader::glSetNormals(GL_COORD_VERTEX* refNormal, unsigned 
 
 		CTextureObject *T = f.glCreateRectangleTexture(	ITextureObject::CGL_COLOR_FLOAT32_ALPHA,
 														CTextureObject::CGL_OPAQUE,
-														CTextureObject::CGL_UNFILTERED);
+														ITextureObject::CGL_UNFILTERED);
 
 		// Should this case still be supported ?
 		// with no texture rectangle, it is rather laborious
@@ -330,7 +330,7 @@ bool CAmbientOcclusionShader::glSetNormals(GL_COORD_VERTEX* refNormal, unsigned 
 		{
 			T = f.glCreateTexture(	ITextureObject::CGL_COLOR_FLOAT32_ALPHA,
 									CTextureObject::CGL_OPAQUE,
-									CTextureObject::CGL_UNFILTERED);
+									ITextureObject::CGL_UNFILTERED);
 		}
 
 		CImage normals;

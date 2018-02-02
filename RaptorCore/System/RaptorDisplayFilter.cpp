@@ -376,7 +376,7 @@ CTextureObject*  CRaptorDisplayFilter::glCreateColorOutput(void)
 	CTextureFactory &filterFactory = CTextureFactory::getDefaultFactory();
 	colorOutput = filterFactory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
 		                                        CTextureObject::CGL_OPAQUE,
-			                                    CTextureObject::CGL_UNFILTERED);
+			                                    ITextureObject::CGL_UNFILTERED);
 	filterFactory.glResizeTexture(colorOutput,state.width,state.height);
 	colorOutput->glUpdateClamping(CTextureObject::CGL_EDGECLAMP);
 

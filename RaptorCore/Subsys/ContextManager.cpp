@@ -240,7 +240,7 @@ CTextureObject* CContextManager::glBuildLogo(void)
 	CTextureFactory &Txt = CTextureFactory::getDefaultFactory();
 	CTextureObject *p_Logo = Txt.glCreateTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 													CTextureObject::CGL_MULTIPLY,
-													CTextureObject::CGL_BILINEAR);
+													ITextureObject::CGL_BILINEAR);
 
     CRaptorDataManager  *dataManager = CRaptorDataManager::GetInstance();
     if (dataManager == NULL)

@@ -104,7 +104,7 @@ void CSlide::setVideo(const string& vName)
     CTextureFactory f;
     mVideo = f.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 										CTextureObject::CGL_ALPHA_TRANSPARENT,
-										CTextureObject::CGL_BILINEAR,
+										ITextureObject::CGL_BILINEAR,
 										pGenerator);
 
 	tw = (float)(pGenerator->getGenerateWidth()) / (float)(mVideo->getWidth());

@@ -276,7 +276,7 @@ bool CRaptorFilteredDisplay::glCreateRenderDisplay(void)
 
 			CTextureObject *T = f.glCreateTexture(	texelType,
 													CTextureObject::CGL_OPAQUE,
-													CTextureObject::CGL_BILINEAR);
+													ITextureObject::CGL_BILINEAR);
 			f.glResizeTexture(T,rda.width,rda.height);
 			T->glUpdateClamping(CTextureObject::CGL_EDGECLAMP);
 			m_pImageSet->addTexture(T);
@@ -289,13 +289,13 @@ bool CRaptorFilteredDisplay::glCreateRenderDisplay(void)
 				((filter_cs.display_mode & CGL_DEPTH) == CGL_DEPTH))
 				T = f.glCreateTexture(	ITextureObject::CGL_DEPTH24_STENCIL8,
 										CTextureObject::CGL_OPAQUE,
-										CTextureObject::CGL_UNFILTERED);
+										ITextureObject::CGL_UNFILTERED);
 			else
 #endif
 
 				T = f.glCreateTexture(	ITextureObject::CGL_DEPTH24,
 										CTextureObject::CGL_OPAQUE,
-										CTextureObject::CGL_UNFILTERED);
+										ITextureObject::CGL_UNFILTERED);
 
 			f.glResizeTexture(T,rda.width,rda.height);
 			m_pImageSet->addTexture(T);
@@ -317,7 +317,7 @@ bool CRaptorFilteredDisplay::glCreateRenderDisplay(void)
 			//	so the texelType here is not necessary.
 			CTextureObject *T = f.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 															CTextureObject::CGL_OPAQUE,
-															CTextureObject::CGL_BILINEAR,
+															ITextureObject::CGL_BILINEAR,
 															m_pDisplay);
 			m_pImageSet->addTexture(T);
 		}

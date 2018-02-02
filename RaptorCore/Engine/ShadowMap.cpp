@@ -180,7 +180,7 @@ void CShadowMap::glInitRenderBuffer(unsigned int width,unsigned int height)
     {
 		m_pShadowTexture = factory.glCreateTexture( ITextureObject::CGL_DEPTH24,
 													CTextureObject::CGL_OPAQUE,
-													CTextureObject::CGL_BILINEAR);
+													ITextureObject::CGL_BILINEAR);
 		m_pFSShadowMap = (CFragmentShader*)CPersistence::FindObject("SHADOWMAP_TEX_SHADER_PCF_16X");
 		//m_pFSShadowMap = (CFragmentShader*)CPersistence::FindObject("SHADOWMAP_TEX_SHADER_PCF_4X");
         //m_pFSShadowMap = (CFragmentShader*)CPersistence::FindObject("SHADOWMAP_TEX_SHADER_PCF");
@@ -190,7 +190,7 @@ void CShadowMap::glInitRenderBuffer(unsigned int width,unsigned int height)
 			m_pShadowTexture->releaseReference();
             m_pShadowTexture = factory.glCreateTexture( ITextureObject::CGL_DEPTH24,
                                                         CTextureObject::CGL_OPAQUE,
-														CTextureObject::CGL_UNFILTERED);
+														ITextureObject::CGL_UNFILTERED);
             m_pFSShadowMap = (CFragmentShader*)CPersistence::FindObject("SHADOWMAP_TEX_SHADER");
         }
 	}
@@ -203,14 +203,14 @@ void CShadowMap::glInitRenderBuffer(unsigned int width,unsigned int height)
 #else
     m_pShadowTexture = factory.glCreateTexture(	ITextureObject::CGL_DEPTH24,
 												CTextureObject::CGL_OPAQUE,
-												CTextureObject::CGL_UNFILTERED);
+												ITextureObject::CGL_UNFILTERED);
     m_pFSShadowMap = (CFragmentShader*)CPersistence::FindObject("SHADOWMAP_TEX_SHADER");
 #endif
 
 	CTextureSet *pImageSet = new CTextureSet();
 	CTextureObject *ShadowTexture = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
 															CTextureObject::CGL_OPAQUE,
-															CTextureObject::CGL_BILINEAR);
+															ITextureObject::CGL_BILINEAR);
 
 	factory.glResizeTexture(m_pShadowTexture,width,height);
 	m_pShadowTexture->glUpdateClamping(CTextureObject::CGL_EDGECLAMP);
@@ -247,7 +247,7 @@ void CShadowMap::glInitPixelBuffer(unsigned int width,unsigned int height)
     {
 		m_pShadowTexture = factory.glCreateDynamicTexture( ITextureObject::CGL_DEPTH24,
                                                            CTextureObject::CGL_MULTIPLY,
-                                                           CTextureObject::CGL_BILINEAR,
+                                                           ITextureObject::CGL_BILINEAR,
                                                            m_pShadowMap);
         m_pFSShadowMap = (CFragmentShader*)CPersistence::FindObject("SHADOWMAP_TEX_SHADER_PCF_16X");
         //m_pFSShadowMap = (CFragmentShader*)CPersistence::FindObject("SHADOWMAP_TEX_SHADER_PCF_4X");
@@ -258,7 +258,7 @@ void CShadowMap::glInitPixelBuffer(unsigned int width,unsigned int height)
 			m_pShadowTexture->releaseReference();
             m_pShadowTexture = factory.glCreateDynamicTexture( ITextureObject::CGL_DEPTH24,
                                                                CTextureObject::CGL_MULTIPLY,
-                                                               CTextureObject::CGL_UNFILTERED,
+                                                               ITextureObject::CGL_UNFILTERED,
                                                                m_pShadowMap);
             m_pFSShadowMap = (CFragmentShader*)CPersistence::FindObject("SHADOWMAP_TEX_SHADER");
         }
@@ -272,7 +272,7 @@ void CShadowMap::glInitPixelBuffer(unsigned int width,unsigned int height)
 #else
     m_pShadowTexture = factory.glCreateDynamicTexture(	ITextureObject::CGL_DEPTH24,
 														CTextureObject::CGL_MULTIPLY,
-														CTextureObject::CGL_UNFILTERED,
+														ITextureObject::CGL_UNFILTERED,
 														m_pShadowMap);
     m_pFSShadowMap = (CFragmentShader*)CPersistence::FindObject("SHADOWMAP_TEX_SHADER");
 #endif
@@ -284,7 +284,7 @@ void CShadowMap::glInitPixelBuffer(unsigned int width,unsigned int height)
         m_pFSShadowMap = NULL;
         m_pShadowTexture = factory.glCreateDynamicTexture( ITextureObject::CGL_DEPTH24,
                                                            CTextureObject::CGL_MULTIPLY,
-                                                           CTextureObject::CGL_UNFILTERED,
+                                                           ITextureObject::CGL_UNFILTERED,
                                                            m_pShadowMap);
         Raptor::GetErrorManager()->generateRaptorError(	Global::COpenGLClassID::GetClassId(),
 														CRaptorErrorManager::RAPTOR_WARNING,

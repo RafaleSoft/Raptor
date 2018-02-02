@@ -204,7 +204,7 @@ bool CMBFilter::glInitFilter(void)
 	{
 		colorInput = filterFactory.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 															CTextureObject::CGL_OPAQUE,
-															CTextureObject::CGL_BILINEAR,
+															ITextureObject::CGL_BILINEAR,
 															colorExternalSource);
 	}
 
@@ -228,7 +228,7 @@ bool CMBFilter::glInitFilter(void)
 		CTextureObject *T = NULL;
 		T = filterFactory.glCreateTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 											CTextureObject::CGL_OPAQUE,
-											CTextureObject::CGL_BILINEAR);
+											ITextureObject::CGL_BILINEAR);
 		filterFactory.glResizeTexture(T,state.width,state.height);
 		T->glUpdateClamping(CTextureObject::CGL_EDGECLAMP);
 		accumulator->m_pCurrentColorAccum = T;
@@ -237,7 +237,7 @@ bool CMBFilter::glInitFilter(void)
 		m_pRenderTextures2 = new CTextureSet();
 		T = filterFactory.glCreateTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 											CTextureObject::CGL_OPAQUE,
-											CTextureObject::CGL_BILINEAR);
+											ITextureObject::CGL_BILINEAR);
 		filterFactory.glResizeTexture(T,state.width,state.height);	
 		T->glUpdateClamping(CTextureObject::CGL_EDGECLAMP);
 		accumulator->m_pPreviousColorAccum = T;
@@ -273,11 +273,11 @@ bool CMBFilter::glInitFilter(void)
 	{
 		accumulator->m_pCurrentColorAccum = filterFactory.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 																					CTextureObject::CGL_OPAQUE,
-																					CTextureObject::CGL_BILINEAR,
+																					ITextureObject::CGL_BILINEAR,
 																					accumulator->pCurrentDisplay);
 		accumulator->m_pPreviousColorAccum = filterFactory.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 																					CTextureObject::CGL_OPAQUE,
-																					CTextureObject::CGL_BILINEAR,
+																					ITextureObject::CGL_BILINEAR,
 																					accumulator->pPreviousDisplay);
 	}
 

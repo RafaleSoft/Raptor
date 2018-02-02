@@ -147,8 +147,6 @@ void CTest5Doc::glRender(void)
 	bool res = m_pDisplay->glBindDisplay(m_device);
     if (res)
 	{
-//		m_pBufferTexture->glRender();
-
 		m_pDisplay->glRender();
 
 		m_pDisplay->glUnBindDisplay();
@@ -205,7 +203,7 @@ void CTest5Doc::GLInitContext(void)
 	geo->glSetColors(4,ColorData);
 	geo->glSetPolygons(2,VertexIndices);
 	
-	m_pTexture = f.vkCreateTexture(ITextureObject::CGL_COLOR24_ALPHA, CTextureObject::CGL_ALPHA_TRANSPARENT, CTextureObject::CGL_BILINEAR);
+	m_pTexture = f.vkCreateTexture(ITextureObject::CGL_COLOR24_ALPHA, CTextureObject::CGL_ALPHA_TRANSPARENT, ITextureObject::CGL_BILINEAR);
 	f.glLoadTexture(m_pTexture, "earth.TGA");
 
 	CShader* s = geo->getShader();
@@ -247,11 +245,11 @@ void CTest5Doc::GLInitContext(void)
 
 	pScene->addObject(geo);
 #else
-	m_pTexture = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA, CTextureObject::CGL_ALPHA_TRANSPARENT, CTextureObject::CGL_BILINEAR);
+	m_pTexture = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA, CTextureObject::CGL_ALPHA_TRANSPARENT, ITextureObject::CGL_BILINEAR);
 	f.glLoadTexture(m_pTexture,"earth.TGA");
 	CTextureUnitSetup *tus = obj->getShader()->glGetTextureUnitsSetup();
 	tus->setDiffuseMap(m_pTexture);
-	m_pTexture = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_MULTIPLY,CTextureObject::CGL_BILINEAR);
+	m_pTexture = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_MULTIPLY,ITextureObject::CGL_BILINEAR);
     f.glLoadTexture(m_pTexture,"bump3.tga",CVaArray<CImage::IImageOP::OP_KIND>(CImage::IImageOP::BUMPMAP_LOADER));
 	//f.getConfig().setBumpAmplitude(4.0f);
 	//f.glLoadTexture(m_pTexture,"BlurCircle.TGA",CGL_CREATE_NORMAL_MAP);

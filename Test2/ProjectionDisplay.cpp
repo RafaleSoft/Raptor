@@ -113,7 +113,7 @@ void CProjectionDisplay::Init()
 		char fname[32];
 		sprintf(fname,"Datas\\caust%02d.tga",i);
 
-		CTextureObject *T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_ALPHA_TRANSPARENT,CTextureObject::CGL_BILINEAR);
+		CTextureObject *T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_ALPHA_TRANSPARENT,ITextureObject::CGL_BILINEAR);
 		T->glSetTransparency(128);
 		f.glLoadTexture(T,fname);
 		m_caustics->addTexture(T);
@@ -121,7 +121,7 @@ void CProjectionDisplay::Init()
 
     // Volume texture
 	/*
-    cube = f.glCreateVolumeTexture(ITextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_ALPHA_TRANSPARENT,CTextureObject::CGL_BILINEAR);
+    cube = f.glCreateVolumeTexture(ITextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_ALPHA_TRANSPARENT,ITextureObject::CGL_BILINEAR);
     cube->glSetTransparency(255);
     cube->setSize(64,64,32);
 

@@ -13,9 +13,6 @@
 #if !defined(AFX_PERSISTENCE_H__5561BA28_831B_11D3_9142_EEB51CEBBDB0__INCLUDED_)
 	#include "Persistence.h"
 #endif
-#ifndef __CGLTYPES_HPP__
-    #include "System/CGLTypes.h"
-#endif
 #if !defined(AFX_MEMORY_H__81A6CA9A_4ED9_4260_B6E4_C03276C38DBC__INCLUDED_)
 	#include "System/Memory.h"
 #endif
@@ -49,7 +46,7 @@ CTextureObject::CTextureObject(TEXEL_TYPE type)
 	target = 0;
 	level = 0;
 	env_mode = GL_REPLACE;
-	m_filter = CTextureObject::CGL_UNFILTERED;
+	m_filter = ITextureObject::CGL_UNFILTERED;
 	m_pTexelGenerator = NULL;
     aniso_level = 0.0f;
     source[0] = source[1] = source[2] = source[3] = 0;
@@ -168,27 +165,27 @@ CTextureObject::TEXTURE_FUNCTION CTextureObject::getFunction(void) const
     return res;
 }
 
-void CTextureObject::glUpdateFilter(CTextureObject::TEXTURE_FILTER F)
+void CTextureObject::glvkUpdateFilter(ITextureObject::TEXTURE_FILTER F)
 {
 	GLint	mag_filter = GL_NEAREST;
 	GLint	min_filter = GL_NEAREST;
 
-    if (F == CTextureObject::CGL_BILINEAR)
+    if (F == ITextureObject::CGL_BILINEAR)
 	{
 		mag_filter = GL_LINEAR;
 		min_filter = GL_LINEAR;
 	}
-	else if (F == CTextureObject::CGL_BILINEAR_MIPMAPPED)
+	else if (F == ITextureObject::CGL_BILINEAR_MIPMAPPED)
 	{
 		mag_filter = GL_LINEAR;
 		min_filter = GL_LINEAR_MIPMAP_NEAREST;
 	}
-	else if (F == CTextureObject::CGL_TRILINEAR)
+	else if (F == ITextureObject::CGL_TRILINEAR)
 	{
 		mag_filter = GL_LINEAR;
 		min_filter = GL_LINEAR_MIPMAP_LINEAR;
 	}
-	else if (F == CTextureObject::CGL_ANISOTROPIC)
+	else if (F == ITextureObject::CGL_ANISOTROPIC)
 	{
 		mag_filter = GL_LINEAR;
 		min_filter = GL_LINEAR_MIPMAP_NEAREST;

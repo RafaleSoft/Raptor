@@ -313,10 +313,10 @@ bool CBlurFilter::glBuildFilter(int width,int height)
 	if ((BLUR_BOX_LINEAR == m_model) || (BLUR_GAUSSIAN_LINEAR == m_model))
 	{
 		colorInput->glvkRender();
-		colorInput->glUpdateFilter(CTextureObject::CGL_BILINEAR);
+		colorInput->glvkUpdateFilter(ITextureObject::CGL_BILINEAR);
 
 		xKernelPass->glvkRender();
-		xKernelPass->glUpdateFilter(CTextureObject::CGL_BILINEAR);
+		xKernelPass->glvkUpdateFilter(ITextureObject::CGL_BILINEAR);
 	}
 
 	m_bRebuild = !res;
@@ -338,14 +338,14 @@ bool CBlurFilter::glInitFilter(void)
 		//!    Source is unfiltered to avoid artifacts ( see comment below ).
 		colorInput = filterFactory.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 															CTextureObject::CGL_OPAQUE,
-															CTextureObject::CGL_UNFILTERED, //CGL_BILINEAR,
+															ITextureObject::CGL_UNFILTERED, //CGL_BILINEAR,
 															colorExternalSource);
 	}
 	else if (m_fModel == RENDER_BUFFER)
 	{
 		//!    Source is unfiltered to avoid artifacts ( see comment below ).
 		colorInput->glvkRender();
-		colorInput->glUpdateFilter(CTextureObject::CGL_UNFILTERED);
+		colorInput->glvkUpdateFilter(ITextureObject::CGL_UNFILTERED);
 	}
 
     //! A buffer to render the first pass of the blur
@@ -367,7 +367,7 @@ bool CBlurFilter::glInitFilter(void)
 
 		xKernelPass = filterFactory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
 			                                        CTextureObject::CGL_OPAQUE,
-				                                    CTextureObject::CGL_UNFILTERED);
+				                                    ITextureObject::CGL_UNFILTERED);
 		filterFactory.glResizeTexture(xKernelPass,state.width,state.height);
 		xKernelPass->glUpdateClamping(CTextureObject::CGL_EDGECLAMP);
 		m_pRenderTextures->addTexture(xKernelPass);
@@ -394,7 +394,7 @@ bool CBlurFilter::glInitFilter(void)
 		//! should be faster ).
 		xKernelPass = filterFactory.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 															CTextureObject::CGL_OPAQUE,
-															CTextureObject::CGL_UNFILTERED, //CGL_BILINEAR,
+															ITextureObject::CGL_UNFILTERED, //CGL_BILINEAR,
 															xBuffer);
 	}
 

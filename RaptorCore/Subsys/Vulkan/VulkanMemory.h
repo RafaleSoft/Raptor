@@ -49,6 +49,9 @@ public:
 							IDeviceMemoryManager::IBufferObject &bo,
 							uint64_t srcOffset);
 
+		bool releaseImage(VkImage image);
+
+
 		//!	Implements @see IDeviceMemoryManager
 		virtual bool setBufferObjectData(	IDeviceMemoryManager::IBufferObject &bo,
 											uint64_t dstOffset,
@@ -84,7 +87,7 @@ public:
 
 	private:
 		const CVulkanMemory& memory;
-		VkDevice device;
+		VkDevice m_device;
 
 		std::list<pair<const IDeviceMemoryManager::IBufferObject*,CVulkanBufferObject*>> m_pBuffers;
 		const CVulkanBufferObject* currentBuffers[IDeviceMemoryManager::IBufferObject::NB_BUFFER_KIND];

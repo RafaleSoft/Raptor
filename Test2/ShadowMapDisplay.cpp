@@ -368,7 +368,7 @@ void CShadowMapDisplay::Init()
 
 	CTextureObject *T = f.glCreateTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 											CTextureObject::CGL_ALPHA_TRANSPARENT,
-											CTextureObject::CGL_ANISOTROPIC);
+											ITextureObject::CGL_ANISOTROPIC);
 	T->glSetTransparency(255);
 	config.setGenerateMipmap(false);
 	f.glLoadTexture(T,"Datas\\oldwood.jpg");
@@ -403,7 +403,7 @@ void CShadowMapDisplay::Init()
 
 	T = f.glCreateTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 							CTextureObject::CGL_ALPHA_TRANSPARENT,
-							CTextureObject::CGL_BILINEAR);
+							ITextureObject::CGL_BILINEAR);
 	T->glSetTransparency(255);
 	f.glLoadTexture(T,fname);
 
