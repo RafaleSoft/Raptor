@@ -216,7 +216,7 @@ void CSkinningDisplay::Init()
     t = f.glCreateDynamicTexture(ITextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_OPAQUE,ITextureObject::CGL_BILINEAR,CRaptorDisplay::GetCurrentDisplay());
     f.glResizeTexture(t,512,256);
 	t->setGenerationSize(51,101,510,254);	// avoid artefacts on border due to bilinear filterings
-	t->glUpdateClamping(CTextureObject::CGL_EDGECLAMP);
+	t->glvkUpdateClamping(CTextureObject::CGL_EDGECLAMP);
 
     string skinning_vp_src =
 "uniform mat4 skinningMatrix; \

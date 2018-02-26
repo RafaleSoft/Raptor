@@ -39,14 +39,6 @@ public:
 		CGL_CONSTANT_BLENDED
 	} TEXTURE_FUNCTION;
 
-	//! Texture sampler clampping model
-	typedef enum
-	{
-		CGL_REPEAT,
-		CGL_CLAMP,
-		CGL_EDGECLAMP
-	} CLAMP_MODE;
-
 	typedef enum
 	{
 		CGL_CUBEMAP_PX,
@@ -57,6 +49,7 @@ public:
 		CGL_CUBEMAP_NZ,
 		CGL_CUBEMAP_NONE
 	} CUBE_FACE;
+
 
 public:
     //!	Renders the textures : it is bound to the current active Texture Unit.
@@ -76,7 +69,7 @@ public:
 	//!	is a simple helper, clamping mode is applied equally 
 	//!	to each dimension.
 	//! @param C : the clamp mode
-    void glUpdateClamping(CLAMP_MODE C);
+	virtual void glvkUpdateClamping(ITextureObject::CLAMP_MODE C);
 
 
     //! Returns the actual selected mipmap.

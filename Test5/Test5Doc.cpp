@@ -78,6 +78,7 @@ CTest5Doc::CTest5Doc(const RAPTOR_HANDLE& device,const char* title)
 	CRaptorConfig config;
 	config.m_logFile = "Test5.log";
     config.m_bRelocation = true;
+	config.m_bVulkan = true;
 	config.m_uiTexels = 2048*1024;
     config.m_uiPolygons = 20000;
     config.m_uiVertices = 50000;

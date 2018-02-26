@@ -11,11 +11,14 @@
 #endif // _MSC_VER > 1000
 
 
-#if !defined(__RAPTOR_VKEXT_H__)
-	#include "System/vkext.h"
-#endif
 #if !defined(AFX_RAPTORVULKANMEMORY_H__72256FF7_DBB9_4B9C_9BF7_C36F425CF811__INCLUDED_)
 	#include "Subsys/Vulkan/VulkanMemory.h"
+#endif
+#ifndef __CGLTYPES_HPP__
+	#include "System/CGLTypes.h"
+#endif
+#if !defined(AFX_ITEXTUREOBJECT_H__3AA8C89E_BB23_483C_A547_C8A4CC53E551__INCLUDED_)
+	#include "GLHierarchy/ITextureObject.h"
 #endif
 
 
@@ -36,8 +39,7 @@ public:
 	virtual ~CVulkanDevice(void);
 
 	//!	Store the current device, activated from context glMakeCurrentCurrent
-	static bool setCurrentDevice(CVulkanDevice* current);
-	static CVulkanDevice* getCurrentDevice();
+	static const CVulkanDevice& getCurrentDevice();
 
 #if defined(VK_VERSION_1_0)
 	//!	Creates and initialise a logical device and linked resources
@@ -120,7 +122,6 @@ private:
 	DECLARE_VK_queue(DEFAULT_LINKAGE)
 
 	VkDevice		device;
-	static CVulkanDevice	*pCurrentDevice;
 
 	CVulkanMemory::CVulkanMemoryWrapper* pDeviceMemory;
 

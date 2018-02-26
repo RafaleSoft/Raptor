@@ -23,8 +23,8 @@
 #if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
     #include "System/RaptorErrorManager.h"
 #endif
-#if !defined(AFX_RAPTOREXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
-	#include "System/RaptorExtensions.h"
+#if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
+	#include "System/RaptorGLExtensions.h"
 #endif
 
 RAPTOR_NAMESPACE_BEGIN
@@ -324,7 +324,7 @@ void CRenderingProperties::glRender(void)
 #if defined(GL_ARB_color_buffer_float) || defined(WGL_ATI_pixel_format_float)
 	if (m_bClampFloats == ENABLE)
 	{
-		const CRaptorExtensions * const pExtensions = Raptor::glGetExtensions();
+		const CRaptorGLExtensions * const pExtensions = Raptor::glGetExtensions();
 		if ((pExtensions != NULL) && (pExtensions->glClampColorARB != NULL))
 		{
 			pExtensions->glClampColorARB(GL_CLAMP_VERTEX_COLOR_ARB,GL_TRUE);
@@ -335,7 +335,7 @@ void CRenderingProperties::glRender(void)
 	}
 	else if (m_bClampFloats == DISABLE)
 	{
-		const CRaptorExtensions * const pExtensions = Raptor::glGetExtensions();
+		const CRaptorGLExtensions * const pExtensions = Raptor::glGetExtensions();
 		if ((pExtensions != NULL) && (pExtensions->glClampColorARB != NULL))
 		{
 			pExtensions->glClampColorARB(GL_CLAMP_VERTEX_COLOR_ARB,GL_FALSE);

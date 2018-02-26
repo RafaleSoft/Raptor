@@ -9,6 +9,9 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#if !defined(__RAPTOR_VKEXT_H__)
+	#include "System/vkext.h"
+#endif
 #if !defined(AFX_RESOURCEALLOCATOR_H__4BAB58CE_942B_450D_88C9_AF0DDDF03718__INCLUDED_)
 	#include "ResourceAllocator.h"
 #endif

@@ -46,11 +46,8 @@
 #if !defined(AFX_RAPTORIO_H__87D52C27_9117_4675_95DC_6AD2CCD2E78D__INCLUDED_)
 	#include "System/RaptorIO.h"
 #endif
-#if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
-	#include "System/Raptor.h"
-#endif
-#if !defined(AFX_RAPTOREXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
-	#include "System/RaptorExtensions.h"
+#if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
+	#include "System/RaptorGLExtensions.h"
 #endif
 #if !defined(AFX_OBJECTFACTORY_H__7F891C52_9E32_489C_B09C_5E5803522D91__INCLUDED_)
 	#include "ObjectFactory.h"
@@ -261,7 +258,7 @@ CShader::~CShader()
     if ((m_shaderProgram.handle != 0) &&
 		(m_bDeleteVProgram || m_bDeleteFProgram || m_bDeleteGProgram))
     {
-        const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+        const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 
         GLsizei maxCount = 0;
         pExtensions->glGetObjectParameterivARB(m_shaderProgram.handle,GL_OBJECT_ATTACHED_OBJECTS_ARB,&maxCount);
@@ -735,7 +732,7 @@ void CShader::glRender()
 		//MAX_UNIFORM_BUFFER_BINDINGS
 
 #if defined(GL_ARB_shader_objects)
-        const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+        const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
         pExtensions->glUseProgramObjectARB(m_shaderProgram.handle);
 
         if (m_pVProgram != NULL)
@@ -764,7 +761,7 @@ void CShader::glStop()
     if (m_shaderProgram.handle != 0)
     {
 #if defined(GL_ARB_shader_objects)
-		const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 		pExtensions->glUseProgramObjectARB(0);
 #endif
 	}
@@ -789,7 +786,7 @@ void CShader::glStop()
 
 bool CShader::glCompileShader()
 {
-    const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+    const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 
     // First try to generate programs.
     // This step is mandatory and must succeed if there are programs.

@@ -22,14 +22,11 @@
 #if !defined(AFX_VERTEXSHADER_H__F2D3BBC6_87A1_4695_B667_2B8C3C4CF022__INCLUDED_)
 	#include "GLHierarchy/VertexShader.h"
 #endif
-#if !defined(AFX_RAPTOREXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
-  #include "System/RaptorExtensions.h"
+#if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
+  #include "System/RaptorGLExtensions.h"
 #endif
 #if !defined(AFX_TEXTUREFACTORY_H__1B470EC4_4B68_11D3_9142_9A502CBADC6B__INCLUDED_)
 	#include "GLHierarchy/TextureFactory.h"
-#endif
-#if !defined(AFX_TEXTUREFACTORYCONFIG_H__7A20D208_423F_4E02_AA4D_D736E0A7959F__INCLUDED_)
-	#include "GLHierarchy/TextureFactoryConfig.h"
 #endif
 #if !defined(AFX_RENDERINGPROPERTIES_H__634BCF2B_84B4_47F2_B460_D7FDC0F3B698__INCLUDED_)
 	#include "GLHierarchy/RenderingProperties.h"
@@ -466,7 +463,7 @@ void CHDRFilter::glRenderFilterOutput()
 	//
     // Final rendering : composite global illumination with gloom and original HDR scene.
     //
-	const CRaptorExtensions*   const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions*   const pExtensions = Raptor::glGetExtensions();
 	PFN_GL_ACTIVE_TEXTURE_ARB_PROC glActiveTextureARB = pExtensions->glActiveTextureARB;
 
     glActiveTextureARB(GL_TEXTURE2_ARB);
@@ -595,7 +592,7 @@ bool CHDRFilter::glInitFilter(void)
 															CTextureObject::CGL_OPAQUE,
 															ITextureObject::CGL_BILINEAR);
 		filterFactory.glResizeTexture(m_pDownBlurXBuffer,rda.width,rda.height);
-		m_pDownBlurXBuffer->glUpdateClamping(CTextureObject::CGL_EDGECLAMP);
+		m_pDownBlurXBuffer->glvkUpdateClamping(CTextureObject::CGL_EDGECLAMP);
 		CTextureSet *tset = new CTextureSet("HDR_XBlur");
 		tset->addTexture(m_pDownBlurXBuffer);
 		m_pDownBlurXDisplay->glBindDisplay(*tset);
@@ -618,7 +615,7 @@ bool CHDRFilter::glInitFilter(void)
 															CTextureObject::CGL_OPAQUE,
 															ITextureObject::CGL_BILINEAR);
 		filterFactory.glResizeTexture(m_pDownBlurYBuffer,rda.width,rda.height);
-		m_pDownBlurYBuffer->glUpdateClamping(CTextureObject::CGL_EDGECLAMP);
+		m_pDownBlurYBuffer->glvkUpdateClamping(CTextureObject::CGL_EDGECLAMP);
 		CTextureSet *tset = new CTextureSet("HDR_YBlur");
 		tset->addTexture(m_pDownBlurYBuffer);
 		m_pDownBlurYDisplay->glBindDisplay(*tset);
@@ -641,7 +638,7 @@ bool CHDRFilter::glInitFilter(void)
 														CTextureObject::CGL_OPAQUE,
 														ITextureObject::CGL_BILINEAR);
 		filterFactory.glResizeTexture(m_pDownHFBuffer,rda.width,rda.height);
-		m_pDownHFBuffer->glUpdateClamping(CTextureObject::CGL_EDGECLAMP);
+		m_pDownHFBuffer->glvkUpdateClamping(CTextureObject::CGL_EDGECLAMP);
 		CTextureSet *tset = new CTextureSet("HDR_HighFrequencies");
 		tset->addTexture(m_pDownHFBuffer);
 		m_pDownHighFreqs->glBindDisplay(*tset);

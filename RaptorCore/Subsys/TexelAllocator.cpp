@@ -138,12 +138,9 @@ VkImage CTexelAllocator::vkAllocateTextureImage(VkImageCreateInfo imageInfo,
 {
 	VkImage image = VK_NULL_HANDLE;
 	
-	CVulkanDevice *pDevice = CVulkanDevice::getCurrentDevice();
-	if (NULL != pDevice)
-	{
-		CVulkanMemory::CVulkanMemoryWrapper* memory = pDevice->getMemory();
+	CVulkanMemory::CVulkanMemoryWrapper* memory = CVulkanDevice::getCurrentDevice().getMemory();
+	if (NULL != memory)
 		image = memory->createImage(imageInfo, *relocatedTexels, offset);
-	}
 
 	return image;
 }

@@ -41,8 +41,8 @@
 #if !defined(AFX_OBJECT3DSHADOWATTRIBUTES_H__4FAFE331_A695_471C_AD48_0F541948AAAD__INCLUDED_)
     #include "Subsys/Object3DShadowAttributes.h"
 #endif
-#if !defined(AFX_RAPTOREXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
-	#include "System/RaptorExtensions.h"
+#if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
+	#include "System/RaptorGLExtensions.h"
 #endif
 
 #if !defined(AFX_SHADOWVOLUMEJOB_H__3C3EB9C3_88DF_4C32_B66E_5265B65D8648__INCLUDED_)
@@ -688,7 +688,7 @@ void CObject3DShadow::glRenderBBox(bool filled)
 void CObject3DShadow::glClipRender(void)
 {
 #if defined(GL_ARB_occlusion_query)
-    const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+    const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
     unsigned int available = 0;
 
     if (m_pAttributes->queryIssued )

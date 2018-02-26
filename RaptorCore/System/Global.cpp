@@ -99,14 +99,6 @@ Global::~Global()
 
     Raptor::glPurgeRaptor(false);
 
-    RAPTOR_HANDLE noDevice;
-	CContextManager::GetInstance()->glMakeCurrentContext(noDevice,
-														 raptorStatus.defaultContext);
-
-    CContextManager::GetInstance()->glDestroyContext(raptorStatus.defaultContext);
-    raptorStatus.defaultContext = 0;
-
-
 	CImage::IImageOP *op = CImage::getImageKindOP(CImage::IImageOP::BUMPMAP_LOADER);
 	delete op;
 
@@ -119,12 +111,31 @@ Global::~Global()
 	CImage::IImageIO *pIO = CImage::getImageKindIO("BUFFER");
 	delete pIO;
 
-    //  Default display is NULL, because it was created with GENERIC attribute.
+
+    RAPTOR_HANDLE noDevice;
+	CContextManager::GetInstance()->glMakeCurrentContext(noDevice,
+														 raptorStatus.defaultContext);
+
+    CContextManager::GetInstance()->glDestroyContext(raptorStatus.defaultContext);
+    raptorStatus.defaultContext = 0;
+
+	//  Default display is NULL, because it was created with GENERIC attribute.
     //    glDestroyDisplay(status.defaultDisplay);
     CContextManager::GetInstance()->glDestroyWindow(raptorStatus.defaultWindow);
 
-    delete CHostMemoryManager::GetInstance();
+#if defined (VK_VERSION_1_0)
+	if (globalConfig.m_bVulkan)
+		if (!CContextManager::GetInstance()->vkRelease())
+		{
+			raptorStatus.errorMgr->generateRaptorError(CVulkanClassID::GetClassId(),
+													   CRaptorErrorManager::RAPTOR_VK_ERROR,
+													   "Unable to release Vulkan module !");
+		}
+
+#endif
+
 	delete CContextManager::GetInstance();
+	delete CHostMemoryManager::GetInstance();
     delete CRaptorDataManager::GetInstance();
 
     if (raptorStatus.messages != NULL)
@@ -216,12 +227,13 @@ bool Global::init(const CRaptorConfig& config)
 		CImage::setImageKindIO(pIO);
 
 #if defined (VK_VERSION_1_0)
-		if (!pContext->vkInit())
-		{
-			raptorStatus.errorMgr->generateRaptorError(	CVulkanClassID::GetClassId(),
-														CRaptorErrorManager::RAPTOR_VK_ERROR,
-														"Unable to load Vulkan module !");
-		}
+		if (config.m_bVulkan)
+			if (!pContext->vkInit())
+			{
+				raptorStatus.errorMgr->generateRaptorError(	CVulkanClassID::GetClassId(),
+															CRaptorErrorManager::RAPTOR_VK_ERROR,
+															"Unable to load Vulkan module !");
+			}
 #endif
 
 		raptorStatus.initialised = true;

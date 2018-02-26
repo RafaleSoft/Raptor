@@ -11,12 +11,6 @@
 
 #include "Subsys/CodeGeneration.h"
 
-#if !defined(AFX_PERSISTENCE_H__5561BA28_831B_11D3_9142_EEB51CEBBDB0__INCLUDED_)
-	#include "Persistence.h"
-#endif
-#ifndef __CGLTYPES_HPP__
-	#include "System/CGLTypes.h"
-#endif
 #if !defined(AFX_PROGRAMPARAMETERS_H__E28A74BB_DE78_470A_A8A2_5A3EBB3F4F90__INCLUDED_)
 	#include "GLHierarchy/ProgramParameters.h"
 #endif

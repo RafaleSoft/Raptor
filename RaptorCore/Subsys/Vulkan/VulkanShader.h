@@ -50,7 +50,7 @@ public:
 
 
 #if defined(VK_VERSION_1_0)
-	//	On a per device basis, static linkage is incorrect
+	//	On a per device basis, STATIC_LINKAGE is incorrect
 	DECLARE_VK_pipeline(DEFAULT_LINKAGE)
 #endif
 

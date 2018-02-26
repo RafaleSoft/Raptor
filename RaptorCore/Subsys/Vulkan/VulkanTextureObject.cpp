@@ -4,14 +4,14 @@
 
 #include "Subsys/CodeGeneration.h"
 
+#if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
+	#include "System/Raptor.h"
+#endif
 #if !defined(AFX_VULKANTEXTUREOBJECT_H__5E3E26C2_441F_4051_986F_2207AF0B3F6D__INCLUDED_)
 	#include "VulkanTextureObject.h"
 #endif
 #if !defined(AFX_TEXELALLOCATOR_H__7C48808C_E838_4BE3_8B0E_286428BB7CF8__INCLUDED_)
 	#include "Subsys/TexelAllocator.h"
-#endif
-#if !defined(__RAPTOR_VKEXT_H__)
-	#include "System/vkext.h"
 #endif
 #if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
 	#include "System/RaptorErrorManager.h"
@@ -36,7 +36,9 @@ CVulkanTextureObject::CVulkanTextureObject(	ITextureObject::TEXEL_TYPE type,
 											PFN_vkGetDeviceProcAddr vkGetDeviceProcAddr)
 	:ITextureObject(type), 
 	m_device(device), 
-	m_image(VK_NULL_HANDLE), m_view(VK_NULL_HANDLE), m_sampler(VK_NULL_HANDLE)
+	m_image(VK_NULL_HANDLE), m_view(VK_NULL_HANDLE), m_sampler(VK_NULL_HANDLE),
+	minFilter(VK_FILTER_NEAREST), magFilter(VK_FILTER_NEAREST), mipmap(VK_SAMPLER_MIPMAP_MODE_NEAREST),
+	clamp_mode(VK_SAMPLER_ADDRESS_MODE_REPEAT)
 {
 	//! TODO : make this static because many texture objects !
 	vkCreateImageView = (PFN_vkCreateImageView)(vkGetDeviceProcAddr(device, "vkCreateImageView"));
@@ -152,7 +154,26 @@ void CVulkanTextureObject::vkLoadTexture(uint32_t innerFormat,
 
 		VkSamplerCreateInfo samplerInfo = {};
 		samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
-		
+		samplerInfo.pNext = NULL;
+		samplerInfo.flags = 0;	// VkSamplerCreateFlags for future use
+		samplerInfo.minFilter = minFilter;
+		samplerInfo.magFilter = magFilter;
+		samplerInfo.addressModeU = clamp_mode;
+		samplerInfo.addressModeV = clamp_mode;
+		samplerInfo.addressModeW = clamp_mode;
+		samplerInfo.mipmapMode = mipmap;
+		samplerInfo.mipLodBias = 0.0f;
+		samplerInfo.anisotropyEnable = VK_FALSE;
+		samplerInfo.maxAnisotropy = 1.0f;
+		if (ITextureObject::CGL_ANISOTROPIC == m_filter)
+			samplerInfo.anisotropyEnable = VK_TRUE;
+		samplerInfo.compareEnable = VK_FALSE;
+		samplerInfo.compareOp = VK_COMPARE_OP_NEVER;
+		samplerInfo.minLod = 0.0f;
+		samplerInfo.maxLod = 0.0f;
+		samplerInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
+		samplerInfo.unnormalizedCoordinates = VK_FALSE;
+
 		res = vkCreateSampler(m_device, &samplerInfo, CVulkanMemory::GetAllocator(), &m_sampler);
 		CATCH_VK_ERROR(res)
 	}
@@ -198,12 +219,8 @@ void CVulkanTextureObject::clean(void)
 													   CRaptorErrorManager::RAPTOR_WARNING,
 													   "CVulkanTextureObject has a previous image");
 #endif
-		CVulkanDevice *pDevice = CVulkanDevice::getCurrentDevice();
-		if (NULL != pDevice)
-		{
-			CVulkanMemory::CVulkanMemoryWrapper* memory = pDevice->getMemory();
-			memory->releaseImage(m_image);
-		}
+		CVulkanMemory::CVulkanMemoryWrapper* memory = CVulkanDevice::getCurrentDevice().getMemory();
+		memory->releaseImage(m_image);
 
 		m_image = VK_NULL_HANDLE;
 	}
@@ -213,18 +230,58 @@ void CVulkanTextureObject::glvkUpdateFilter(ITextureObject::TEXTURE_FILTER F)
 {
 	if (F == ITextureObject::CGL_BILINEAR)
 	{
+		minFilter = VK_FILTER_LINEAR;
+		magFilter = VK_FILTER_LINEAR;
+		mipmap = VK_SAMPLER_MIPMAP_MODE_NEAREST;
 	}
 	else if (F == ITextureObject::CGL_BILINEAR_MIPMAPPED)
 	{
+		minFilter = VK_FILTER_LINEAR;
+		magFilter = VK_FILTER_LINEAR;
+		mipmap = VK_SAMPLER_MIPMAP_MODE_NEAREST;
 	}
 	else if (F == ITextureObject::CGL_TRILINEAR)
 	{
+		minFilter = VK_FILTER_LINEAR;
+		magFilter = VK_FILTER_LINEAR;
+		mipmap = VK_SAMPLER_MIPMAP_MODE_LINEAR;
 	}
 	else if (F == ITextureObject::CGL_ANISOTROPIC)
 	{
+		minFilter = VK_FILTER_LINEAR;
+		magFilter = VK_FILTER_LINEAR;
+		mipmap = VK_SAMPLER_MIPMAP_MODE_LINEAR;
 	}
+	// else VK_FILTER_CUBIC_IMG
 
 	m_filter = F;
+}
+
+void CVulkanTextureObject::glvkUpdateClamping(ITextureObject::CLAMP_MODE C)
+{
+	switch (C)
+	{
+		case ITextureObject::CGL_REPEAT:
+			clamp_mode = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+			break;
+		case ITextureObject::CGL_CLAMP:
+			clamp_mode = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
+			break;
+		case ITextureObject::CGL_EDGECLAMP:
+			clamp_mode = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+			break;
+		case ITextureObject::CGL_MIRROR_REPEAT:
+			clamp_mode = VK_SAMPLER_ADDRESS_MODE_MIRRORED_REPEAT;
+			break;
+		case ITextureObject::CGL_MIRROR_EDGECLAMP:
+		{
+#if defined(VK_KHR_sampler_mirror_clamp_to_edge)
+			if (Raptor::vkIsExtensionSupported("VK_KHR_sampler_mirror_clamp_to_edge"))
+				clamp_mode = VK_SAMPLER_ADDRESS_MODE_MIRROR_CLAMP_TO_EDGE;
+#endif
+			break;
+		}
+	}
 }
 
 VkFormat CVulkanTextureObject::getTexelFormat(void) const

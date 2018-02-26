@@ -9,20 +9,11 @@
 #if !defined(AFX_TEXTUREFACTORY_H__1B470EC4_4B68_11D3_9142_9A502CBADC6B__INCLUDED_)
 	#include "GLHierarchy/TextureFactory.h"
 #endif
-#if !defined(AFX_TEXTUREFACTORYCONFIG_H__7A20D208_423F_4E02_AA4D_D736E0A7959F__INCLUDED_)
-	#include "GLHierarchy/TextureFactoryConfig.h"
-#endif
 #if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
     #include "System/RaptorErrorManager.h"
 #endif
-#if !defined(AFX_RAPTORDISPLAYCONFIG_H__DA0759DF_6CF9_44A7_9ADE_D404FEEC2DDF__INCLUDED_)
-	#include "System/RaptorDisplayConfig.h"
-#endif
 #if !defined(AFX_TEXTURESET_H__26F3022D_70FE_414D_9479_F9CCD3DCD445__INCLUDED_)
 	#include "GLHierarchy/TextureSet.h"
-#endif
-#if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
-    #include "System/Raptor.h"
 #endif
 #if !defined(AFX_RENDERINGPROPERTIES_H__634BCF2B_84B4_47F2_B460_D7FDC0F3B698__INCLUDED_)
 	#include "GLHierarchy/RenderingProperties.h"
@@ -42,8 +33,8 @@
 #if !defined(AFX_3DENGINE_H__DB24F018_80B9_11D3_97C1_FC2841000000__INCLUDED_)
 	#include "Engine/3DEngine.h"
 #endif
-#if !defined(AFX_RAPTOREXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
-	#include "System/RaptorExtensions.h"
+#if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
+	#include "System/RaptorGLExtensions.h"
 #endif
 
 
@@ -82,7 +73,7 @@ bool CAmbientOcclusionShader::glInitAOCompute(void)
 	CTextureObject *T = f.glCreateTexture(	ITextureObject::CGL_COLOR_FLOAT32_ALPHA,
 											CTextureObject::CGL_OPAQUE,
 											ITextureObject::CGL_BILINEAR);
-	T->glUpdateClamping(CTextureObject::CGL_EDGECLAMP);
+	T->glvkUpdateClamping(CTextureObject::CGL_EDGECLAMP);
 	f.glResizeTexture(T,m_pVertexMap->getWidth(),m_pVertexMap->getHeight());
 
 	CTextureSet *pOutputTextures = new CTextureSet("Filter Output Render Textures");
@@ -138,7 +129,7 @@ void CAmbientOcclusionShader::glRenderResult()
 
 	if (CRenderingProperties::GetCurrentProperties()->getCurrentTexturing() == CRenderingProperties::ENABLE)
 	{
-		const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 		pExtensions->glClientActiveTextureARB(GL_TEXTURE2_ARB);
 
 		// This is responsibility of a geometry
@@ -228,7 +219,7 @@ void CAmbientOcclusionShader::glRender()
 	glVertexPointer(3,GL_FLOAT,sizeof(GL_COORD_VERTEX),m_refVertex);
 	glNormalPointer(GL_FLOAT,sizeof(GL_COORD_VERTEX),m_refNormal);
 
-	const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 	pExtensions->glClientActiveTextureARB(GL_TEXTURE2_ARB);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	glTexCoordPointer(2,GL_FLOAT,0,m_refTexCoords);

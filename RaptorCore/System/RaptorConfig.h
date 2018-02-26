@@ -37,6 +37,11 @@ public:
 	//!
 	bool	m_bCompute;
 
+	//!
+	//! Initialise Raptor Vulkan interface in Raptor Engine.
+	//!
+	bool	m_bVulkan;
+
     //!
 	//!	Reserve memory space at global level for geometries.
 	//!	( by default, only 1000 polygons and 4000 vertices are reserved when Raptor is initialized )

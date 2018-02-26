@@ -9,9 +9,6 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#ifndef __CGLTYPES_HPP__
-	#include "System/CGLTypes.h"
-#endif
 #if !defined(AFX_OBJECTREFERENCE_H__0D47C721_2B2D_4163_AB88_BE1B4E08A84D__INCLUDED_)
 	#include "ObjectReference.h"
 #endif
@@ -55,6 +52,16 @@ public:
 		CGL_ANISOTROPIC
 	} TEXTURE_FILTER;
 
+	//! Texture sampler clampping model
+	typedef enum
+	{
+		CGL_REPEAT,
+		CGL_MIRROR_REPEAT,
+		CGL_CLAMP,
+		CGL_EDGECLAMP,
+		CGL_MIRROR_EDGECLAMP
+	} CLAMP_MODE;
+
 
 public:
 	ITextureObject(TEXEL_TYPE m_type);
@@ -66,6 +73,12 @@ public:
 	//! Updates texture filtering function
 	//! @param F : the filter function
 	virtual void glvkUpdateFilter(ITextureObject::TEXTURE_FILTER F) = 0;
+
+	//! Updates texture sampler clamping mode. This method
+	//!	is a simple helper, clamping mode is applied equally 
+	//!	to each dimension.
+	//! @param C : the clamp mode
+	virtual void glvkUpdateClamping(ITextureObject::CLAMP_MODE C) = 0;
 
 	//! Returns texture object implementation or NULL
 	virtual CTextureObject* getGLTextureObject(void) { return NULL; };

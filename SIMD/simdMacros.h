@@ -174,7 +174,14 @@ typedef struct CPUINFO
 	} FEATURE_ECX;
 
 	bool hasFeature(FEATURE_EDX_t f) const
-	{ return ((featureFlagEDX >> f) & 1); };
+	{
+		return ((featureFlagEDX >> f) & 1);
+	};
+	
+	bool hasFeature(FEATURE_ECX_t f) const
+	{
+		return ((featureFlagECX >> f) & 1);
+	};
 
 } CPU_INFO;
 

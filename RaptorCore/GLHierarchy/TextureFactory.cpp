@@ -13,8 +13,8 @@
 #if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
     #include "System/RaptorErrorManager.h"
 #endif
-#if !defined(AFX_RAPTOREXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
-	#include "System/RaptorExtensions.h"
+#if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
+	#include "System/RaptorGLExtensions.h"
 #endif
 #if !defined(AFX_RAPTORIO_H__87D52C27_9117_4675_95DC_6AD2CCD2E78D__INCLUDED_)
 	#include "System/RaptorIO.h"
@@ -448,7 +448,7 @@ bool CTextureFactory::glLoadTexture(CTextureObject* const T,
 #if defined(GL_EXT_texture3D)
 	if (T->getDepth() > 1)   // Texture Volumes
 	{
-		const CRaptorExtensions * const extensions = Raptor::glGetExtensions();
+		const CRaptorGLExtensions * const extensions = Raptor::glGetExtensions();
 		extensions->glTexImage3DEXT(target, 0,
 									GL_INNER_FORMAT,
 									T->getWidth(),
@@ -645,7 +645,7 @@ bool CTextureFactory::glResizeTexture( CTextureObject *T, unsigned int width, un
 #if defined(GL_EXT_texture3D)
         else if (target == GL_TEXTURE_3D_EXT)
         {
-            const CRaptorExtensions * const extensions = Raptor::glGetExtensions();
+            const CRaptorGLExtensions * const extensions = Raptor::glGetExtensions();
             extensions->glTexImage3DEXT(	GL_TEXTURE_3D_EXT, 
 											T->getCurrentMipMapLevel(), 
 											T->getTexelFormat(),
@@ -699,40 +699,6 @@ bool CTextureFactory::glExportTexture(CTextureObject *T,const std::string &fname
     return res;
 }
 
-ITextureObject* const CTextureFactory::vkCreateTexture(	ITextureObject::TEXEL_TYPE type,
-														CTextureObject::TEXTURE_FUNCTION env_mode,
-														ITextureObject::TEXTURE_FILTER filter)
-{
-#ifdef RAPTOR_DEBUG_MODE_GENERATION
-	if ((type == ITextureObject::CGL_COLOR_FLOAT32) || (type == ITextureObject::CGL_COLOR_FLOAT32_ALPHA))
-	{
-		vector<CRaptorMessages::MessageArgument> args;
-		CRaptorMessages::MessageArgument arg;
-		arg.arg_sz = "2D Float32 Texture, use a Texture Rectangle instead.";
-		args.push_back(arg);
-		Raptor::GetErrorManager()->generateRaptorError(CTextureFactory::CTextureFactoryClassID::GetClassId(),
-													   CRaptorErrorManager::RAPTOR_WARNING,
-													   CRaptorMessages::ID_FORMAT_NOT_SUPPORTED, args);
-	}
-#endif
-
-	CVulkanDevice *pDevice = CVulkanDevice::getCurrentDevice();
-	CVulkanTextureObject* T = pDevice->createTextureObject(type);
-
-	//T->setFunction(env_mode);
-	//T->target = VK_IMAGE_TYPE_2D;
-	//T->m_filter = filter;
-
-#ifdef GL_EXT_texture_filter_anisotropic
-	if ((mConfig.getCurrentAnisotropy() > 1.0f) && (filter == ITextureObject::CGL_ANISOTROPIC))
-	{
-		//T->aniso_level = mConfig.getCurrentAnisotropy();
-	}
-#endif
-
-	return T;
-}
-
 CTextureObject* const CTextureFactory::glCreateSprite(CTextureObject::TEXEL_TYPE type)
 {
     //! type checking will be donne at loading
@@ -746,7 +712,7 @@ CTextureObject* const CTextureFactory::glCreateSprite(CTextureObject::TEXEL_TYPE
 	glBindTexture(GL_TEXTURE_2D,T->texname);
 
 	T->glvkUpdateFilter(ITextureObject::CGL_UNFILTERED);
-	T->glUpdateClamping(CTextureObject::CGL_CLAMP);
+	T->glvkUpdateClamping(ITextureObject::CGL_CLAMP);
 	
 	glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_PRIORITY,mConfig.getCurrentPriority());
 
@@ -784,7 +750,7 @@ CTextureObject* const CTextureFactory::glCreateCubemap(  ITextureObject::TEXEL_T
 	glBindTexture(GL_TEXTURE_CUBE_MAP_ARB, T->texname);
 
 	T->glvkUpdateFilter(filter);
-	T->glUpdateClamping(CTextureObject::CGL_REPEAT);
+	T->glvkUpdateClamping(CTextureObject::CGL_REPEAT);
 
 	glTexParameterf(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_PRIORITY, mConfig.getCurrentPriority());
 
@@ -803,6 +769,42 @@ CTextureObject* const CTextureFactory::glCreateCubemap(  ITextureObject::TEXEL_T
 #else
     return NULL;
 #endif
+}
+
+
+ITextureObject* const CTextureFactory::vkCreateTexture(ITextureObject::TEXEL_TYPE type,
+													   CTextureObject::TEXTURE_FUNCTION env_mode,
+													   ITextureObject::TEXTURE_FILTER filter)
+{
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+	if ((type == ITextureObject::CGL_COLOR_FLOAT32) || (type == ITextureObject::CGL_COLOR_FLOAT32_ALPHA))
+	{
+		vector<CRaptorMessages::MessageArgument> args;
+		CRaptorMessages::MessageArgument arg;
+		arg.arg_sz = "2D Float32 Texture, use a Texture Rectangle instead.";
+		args.push_back(arg);
+		Raptor::GetErrorManager()->generateRaptorError(CTextureFactory::CTextureFactoryClassID::GetClassId(),
+													   CRaptorErrorManager::RAPTOR_WARNING,
+													   CRaptorMessages::ID_FORMAT_NOT_SUPPORTED, args);
+	}
+#endif
+
+	CVulkanTextureObject* T = CVulkanDevice::getCurrentDevice().createTextureObject(type);
+	if (NULL != T)
+	{
+		T->glvkUpdateFilter(filter);
+		T->glvkUpdateClamping(ITextureObject::CGL_REPEAT);
+		//T->setFunction(env_mode);
+
+#ifdef GL_EXT_texture_filter_anisotropic
+		if ((mConfig.getCurrentAnisotropy() > 1.0f) && (filter == ITextureObject::CGL_ANISOTROPIC))
+		{
+			//T->aniso_level = mConfig.getCurrentAnisotropy();
+		}
+#endif
+	}
+
+	return T;
 }
 
 CTextureObject* const CTextureFactory::glCreateTexture( ITextureObject::TEXEL_TYPE type,
@@ -846,7 +848,7 @@ CTextureObject* const CTextureFactory::glCreateTexture( ITextureObject::TEXEL_TY
 	glBindTexture(GL_TEXTURE_2D, T->texname);
 
 	T->glvkUpdateFilter(filter);
-	T->glUpdateClamping(CTextureObject::CGL_REPEAT);
+	T->glvkUpdateClamping(CTextureObject::CGL_REPEAT);
 	
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_PRIORITY, mConfig.getCurrentPriority());
 
@@ -896,7 +898,7 @@ CTextureObject* const CTextureFactory::glCreateRectangleTexture( ITextureObject:
     else
 		T->glvkUpdateFilter(filter);
 
-	T->glUpdateClamping(CTextureObject::CGL_EDGECLAMP);
+	T->glvkUpdateClamping(CTextureObject::CGL_EDGECLAMP);
 
 	glTexParameterf(GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_PRIORITY, mConfig.getCurrentPriority());
 
@@ -952,8 +954,7 @@ CTextureObject* const CTextureFactory::glCreateDynamicTexture(ITextureObject::TE
 	//	Dynamic textures are mostly used for render-to-texture buffers,
 	//	frequent usage of these textures is clamped mode.
 	//	Until there exist an interface to customize it, it is hard coded here.
-	//T->glUpdateClamping(CTextureObject::CGL_CLAMP);
-	T->glUpdateClamping(CTextureObject::CGL_EDGECLAMP);
+	T->glvkUpdateClamping(CTextureObject::CGL_EDGECLAMP);
 
 	glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_PRIORITY,mConfig.getCurrentPriority());
 

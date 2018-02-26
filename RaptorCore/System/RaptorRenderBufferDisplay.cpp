@@ -16,8 +16,8 @@
     #include "Raptor.h"
 #endif
 
-#if !defined(AFX_RAPTOREXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
-	#include "RaptorExtensions.h"
+#if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
+	#include "RaptorGLExtensions.h"
 #endif
 
 #if !defined(AFX_TEXTUREOBJECT_H__D32B6294_B42B_4E6F_AB73_13B33C544AD0__INCLUDED_)
@@ -90,7 +90,7 @@ void CRaptorRenderBufferDisplay::unLink(const CPersistence* obj)
 void CRaptorRenderBufferDisplay::glDestroyBuffer(void)
 {
 #if defined(GL_EXT_framebuffer_object)
-	const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 
 	if (m_framebuffer != 0)
 	{
@@ -147,7 +147,7 @@ bool CRaptorRenderBufferDisplay::glAttachBuffers()
 		GLint maxAttachments = 0;
 		glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS_EXT ,&maxAttachments);
 		 
-		const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 		unsigned int nbtextures = m_pAttachments->getNbTexture();
 
 		GLuint colorAttachment = GL_COLOR_ATTACHMENT0_EXT;
@@ -197,7 +197,7 @@ bool CRaptorRenderBufferDisplay::glDetachBuffers()
 		GLint maxAttachments = 0;
 		glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS_EXT ,&maxAttachments);
 
-		const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 		unsigned int nbtextures = m_pAttachments->getNbTexture();
 
 		for (unsigned int i=0;i<MIN(nbtextures,(unsigned int)abs(max(0,maxAttachments)));i++)
@@ -265,7 +265,7 @@ bool CRaptorRenderBufferDisplay::createFrameBuffer(void)
 		nbSamples = cs.getNbSamples();
 #endif
 
-	const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 	pExtensions->glGenFramebuffersEXT(1,&m_framebuffer);
 	pExtensions->glBindFramebufferEXT(GL_FRAMEBUFFER_EXT,m_framebuffer);
 	if (pExtensions->glIsFramebufferEXT(m_framebuffer))
@@ -484,7 +484,7 @@ bool CRaptorRenderBufferDisplay::glBindDisplay(const RAPTOR_HANDLE& device)
 	}
 
 #if defined(GL_EXT_framebuffer_object)
-	const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 
 	if (m_framebuffer == 0)
 	{
@@ -521,7 +521,7 @@ bool CRaptorRenderBufferDisplay::glUnBindDisplay(void)
 		return false;
 
 #if defined(GL_EXT_framebuffer_object)
-	const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 
 	bool res = CRaptorDisplay::glUnBindDisplay();
 	glPopAttrib();	// Viewport
@@ -570,7 +570,7 @@ void CRaptorRenderBufferDisplay::glGenerate(CTextureObject* T)
 	glBindTexture(GL_TEXTURE_2D,0);
 
 #if defined(GL_EXT_framebuffer_object)
-	const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();	
+	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();	
 	pExtensions->glBindFramebufferEXT(GL_FRAMEBUFFER_EXT,m_framebuffer);
 
 	pExtensions->glFramebufferTexture2DEXT(	GL_FRAMEBUFFER_EXT, 
@@ -620,7 +620,7 @@ void CRaptorRenderBufferDisplay::glResize(unsigned int sx,unsigned int sy,unsign
 	glGetIntegerv(GL_FRAMEBUFFER_BINDING_EXT,&binding);
 	if (binding != 0)
 	{
-		const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 		pExtensions->glBindFramebufferEXT(GL_FRAMEBUFFER_EXT,0);
 	}
 
@@ -641,7 +641,7 @@ void CRaptorRenderBufferDisplay::glResize(unsigned int sx,unsigned int sy,unsign
 		glUnBindDisplay();
 	else if (!bindSelf)
 	{
-		const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 		pExtensions->glBindFramebufferEXT(GL_FRAMEBUFFER_EXT,binding);
 	}
 #endif
@@ -695,7 +695,7 @@ bool CRaptorRenderBufferDisplay::glBlit(unsigned int xSrc, unsigned int ySrc, un
 		(pDst->getId().isSubClassOf(CRaptorRenderBufferDisplay::CRaptorRenderBufferDisplayClassID::GetClassId())))
 	{
 		CRaptorRenderBufferDisplay *pDstBuffer = (CRaptorRenderBufferDisplay *)pDst;
-		const CRaptorExtensions * const pExtensions = Raptor::glGetExtensions(); 
+		const CRaptorGLExtensions * const pExtensions = Raptor::glGetExtensions(); 
 
 		GLint readBinding = 0;
 		GLint drawBinding = 0;
@@ -765,7 +765,7 @@ bool CRaptorRenderBufferDisplay::checkBufferStatus(void) const
 	if ((buffer != m_framebuffer) || (buffer == 0))
 		return false;
 
-	const CRaptorExtensions * const pExtensions = Raptor::glGetExtensions(); 
+	const CRaptorGLExtensions * const pExtensions = Raptor::glGetExtensions(); 
 	GLenum status = pExtensions->glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
 
 #ifndef RAPTOR_DEBUG_MODE_GENERATION

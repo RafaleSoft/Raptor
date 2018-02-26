@@ -76,13 +76,10 @@ bool CVulkanShaderStage::vkLoadShader(const std::string& filename)
 
 	if (NULL == m_pShaderStages)
 	{
-		CVulkanDevice* pDevice = CVulkanDevice::getCurrentDevice();
-		if (NULL != pDevice)
-		{
-			CVulkanShader* pShader = pDevice->createShader();
-			if (NULL != pShader)
-				m_pShaderStages = pShader;
-		}
+		const CVulkanDevice& rDevice = CVulkanDevice::getCurrentDevice();
+		CVulkanShader* pShader = rDevice.createShader();
+		if (NULL != pShader)
+			m_pShaderStages = pShader;
 	}
 
 	if (NULL != m_pShaderStages)

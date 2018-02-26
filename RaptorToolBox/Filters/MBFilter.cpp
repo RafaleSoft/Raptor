@@ -7,8 +7,8 @@
 #if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
 	#include "System/Raptor.h"
 #endif
-#if !defined(AFX_RAPTOREXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
-    #include "System/RaptorExtensions.h"
+#if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
+    #include "System/RaptorGLExtensions.h"
 #endif
 #if !defined(AFX_TEXTUREFACTORY_H__1B470EC4_4B68_11D3_9142_9A502CBADC6B__INCLUDED_)
 	#include "GLHierarchy/TextureFactory.h"
@@ -155,7 +155,7 @@ void CMBFilter::glRenderFilter()
     //  Rendering accumulators
     CAccumulator *pAccum = (CAccumulator*)m_pAccumulator;
 
-	const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 	PFN_GL_ACTIVE_TEXTURE_ARB_PROC glActiveTextureARB = pExtensions->glActiveTextureARB;
 
     // Accumulate previous render with colorSource
@@ -230,7 +230,7 @@ bool CMBFilter::glInitFilter(void)
 											CTextureObject::CGL_OPAQUE,
 											ITextureObject::CGL_BILINEAR);
 		filterFactory.glResizeTexture(T,state.width,state.height);
-		T->glUpdateClamping(CTextureObject::CGL_EDGECLAMP);
+		T->glvkUpdateClamping(CTextureObject::CGL_EDGECLAMP);
 		accumulator->m_pCurrentColorAccum = T;
 		m_pRenderTextures->addTexture(T);
 
@@ -239,7 +239,7 @@ bool CMBFilter::glInitFilter(void)
 											CTextureObject::CGL_OPAQUE,
 											ITextureObject::CGL_BILINEAR);
 		filterFactory.glResizeTexture(T,state.width,state.height);	
-		T->glUpdateClamping(CTextureObject::CGL_EDGECLAMP);
+		T->glvkUpdateClamping(CTextureObject::CGL_EDGECLAMP);
 		accumulator->m_pPreviousColorAccum = T;
 		m_pRenderTextures2->addTexture(T);
 	}

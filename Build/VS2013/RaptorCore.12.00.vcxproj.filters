@@ -452,9 +452,6 @@
     <ClCompile Include="..\..\RaptorCore\System\RaptorEventManager.cpp">
       <Filter>Source Files\System src</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\RaptorCore\System\RaptorExtensions.cpp">
-      <Filter>Source Files\System src</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\RaptorCore\System\RaptorFilteredDisplay.cpp">
       <Filter>Source Files\System src</Filter>
     </ClCompile>
@@ -580,6 +577,12 @@
     </ClCompile>
     <ClCompile Include="..\..\RaptorCore\Subsys\Vulkan\VulkanTextureObject.cpp">
       <Filter>Source Files\Subsys src\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\System\RaptorGLExtensions.cpp">
+      <Filter>Source Files\System src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\System\RaptorVKExtensions.cpp">
+      <Filter>Source Files\System src</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -939,9 +942,6 @@
     <ClInclude Include="..\..\RaptorCore\System\RaptorEventManager.h">
       <Filter>Header Files\System include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\RaptorCore\System\RaptorExtensions.h">
-      <Filter>Header Files\System include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\RaptorCore\System\RaptorFilteredDisplay.h">
       <Filter>Header Files\System include</Filter>
     </ClInclude>
@@ -1118,6 +1118,15 @@
     </ClInclude>
     <ClInclude Include="..\..\RaptorCore\Subsys\Vulkan\VulkanTextureObject.h">
       <Filter>Header Files\Subsys include\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\System\RaptorGLExtensions.h">
+      <Filter>Header Files\System include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\System\RaptorVKExtensions.h">
+      <Filter>Header Files\System include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\System\VKEXTMacros.h">
+      <Filter>Header Files\System include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

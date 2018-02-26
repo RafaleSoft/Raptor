@@ -40,8 +40,8 @@
 #if !defined(AFX_TEXTURESET_H__26F3022D_70FE_414D_9479_F9CCD3DCD445__INCLUDED_)
 	#include "GLHierarchy/TextureSet.h"
 #endif
-#if !defined(AFX_RAPTOREXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
-    #include "System/RaptorExtensions.h"
+#if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
+    #include "System/RaptorGLExtensions.h"
 #endif
 
 
@@ -123,7 +123,7 @@ void CRaptorDisplayFilter::glRender(void)
 		glRenderFilterOutput();
 	else
     {
-		const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 
 		pExtensions->glActiveTextureARB(GL_TEXTURE1_ARB);
         glDisable(GL_TEXTURE_2D);
@@ -378,7 +378,7 @@ CTextureObject*  CRaptorDisplayFilter::glCreateColorOutput(void)
 		                                        CTextureObject::CGL_OPAQUE,
 			                                    ITextureObject::CGL_UNFILTERED);
 	filterFactory.glResizeTexture(colorOutput,state.width,state.height);
-	colorOutput->glUpdateClamping(CTextureObject::CGL_EDGECLAMP);
+	colorOutput->glvkUpdateClamping(CTextureObject::CGL_EDGECLAMP);
 
 	if (m_pOutputTextures != NULL)
 		delete m_pOutputTextures;

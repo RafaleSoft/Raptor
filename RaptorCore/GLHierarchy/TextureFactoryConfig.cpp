@@ -15,8 +15,8 @@
 	#include "System/RaptorErrorManager.h"
 #endif
 
-#if !defined(AFX_RAPTOREXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
-	#include "System/RaptorExtensions.h"
+#if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
+	#include "System/RaptorGLExtensions.h"
 #endif
 
 #if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
@@ -523,7 +523,7 @@ void CTextureFactoryConfig::setGenerateMipmap(bool generate)
 
 	//!	Complex case, check if auto generation can be activated.
 #if (defined(GL_VERSION_3_0) || defined(GL_EXT_framebuffer_object))
-	const CRaptorExtensions * const extensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions * const extensions = Raptor::glGetExtensions();
 	if (extensions->glGenerateMipmapEXT != NULL)
 		m_bGenerateMipmap = true;
 #elif defined(GL_VERSION_1_4)

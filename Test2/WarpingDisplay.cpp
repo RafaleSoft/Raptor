@@ -20,7 +20,7 @@
 #include "GLHierarchy\Shader.h"
 #include "GLHierarchy\FragmentProgram.h"
 #include "System\Raptor.h"
-#include "System\RaptorExtensions.h"
+#include "System\RaptorGLExtensions.h"
 #include "GLHierarchy\RenderingProperties.h"
 
 #include "ToolBox/BasicObjects.h"
@@ -89,7 +89,7 @@ public:
 		glCallList(bg.handle);
 		glCallList(list.handle);
 
-		const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 		pExtensions->glActiveTextureARB(GL_TEXTURE1_ARB);
 		glDisable(GL_TEXTURE_2D);
 		pExtensions->glActiveTextureARB(GL_TEXTURE0_ARB);
@@ -371,7 +371,7 @@ void CGlassObject::glRender()
 
 	m_pShader->glStop();
 
-	const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 	pExtensions->glActiveTextureARB(GL_TEXTURE1_ARB);
 	glDisable(GL_TEXTURE_2D);
 	pExtensions->glActiveTextureARB(GL_TEXTURE0_ARB);

@@ -34,6 +34,13 @@ public:
 	//! @param F : the filter function
 	virtual void glvkUpdateFilter(ITextureObject::TEXTURE_FILTER F);
 
+	//! Updates texture sampler clamping mode. This method
+	//!	is a simple helper, clamping mode is applied equally 
+	//!	to each dimension.
+	//! @param C : the clamp mode
+	virtual void glvkUpdateClamping(ITextureObject::CLAMP_MODE C);
+
+
 	//!	Returns the sized format of the texels stored in device memory (texture)
 	VkFormat getTexelFormat(void) const;
 
@@ -73,6 +80,10 @@ private:
 
 	//! Vulkan texture sampler
 	VkSampler	m_sampler;
+	VkFilter	minFilter;
+	VkFilter	magFilter;
+	VkSamplerMipmapMode	mipmap;
+	VkSamplerAddressMode clamp_mode;
 
 	//!	Vulkan texture backed image 
 	PFN_vkCreateImageView vkCreateImageView;

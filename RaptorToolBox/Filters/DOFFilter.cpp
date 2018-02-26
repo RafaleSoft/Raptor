@@ -7,20 +7,11 @@
 #if !defined(AFX_TEXTUREFACTORY_H__1B470EC4_4B68_11D3_9142_9A502CBADC6B__INCLUDED_)
 	#include "GLHierarchy/TextureFactory.h"
 #endif
-#if !defined(AFX_TEXTUREFACTORYCONFIG_H__7A20D208_423F_4E02_AA4D_D736E0A7959F__INCLUDED_)
-	#include "GLHierarchy/TextureFactoryConfig.h"
-#endif
-#if !defined(AFX_TEXTUREOBJECT_H__D32B6294_B42B_4E6F_AB73_13B33C544AD0__INCLUDED_)
-	#include "GLHierarchy/TextureObject.h"
-#endif
 #if !defined(AFX_TEXTURESET_H__26F3022D_70FE_414D_9479_F9CCD3DCD445__INCLUDED_)
 	#include "GLHierarchy/TextureSet.h"
 #endif
-#if !defined(AFX_RAPTOREXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
-    #include "System/RaptorExtensions.h"
-#endif
-#if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
-	#include "System/Raptor.h"
+#if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
+    #include "System/RaptorGLExtensions.h"
 #endif
 #if !defined(AFX_FRAGMENTSHADER_H__66B3089A_2919_4678_9273_6CDEF7E5787F__INCLUDED_)
 	#include "GLHierarchy/FragmentShader.h"
@@ -301,7 +292,7 @@ void CDOFFilter::setBlurNbPass(unsigned int nb)
 
 void CDOFFilter::glRenderFilter()
 {
-	const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 	PFN_GL_ACTIVE_TEXTURE_ARB_PROC glActiveTextureARB = pExtensions->glActiveTextureARB;
 
     //  Render X-blur in pixel buffer
@@ -369,7 +360,7 @@ void CDOFFilter::glRenderFilter()
 
 void CDOFFilter::glRenderFilterOutput()
 {
-	const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 	PFN_GL_ACTIVE_TEXTURE_ARB_PROC glActiveTextureARB = pExtensions->glActiveTextureARB;
 
 	//  Render Y-blur in current buffer
@@ -452,14 +443,14 @@ bool CDOFFilter::glInitFilter(void)
 			                                        CTextureObject::CGL_OPAQUE,
 				                                    ITextureObject::CGL_UNFILTERED);
 		filterFactory.glResizeTexture(tmpTexture,state.width,state.height);
-		tmpTexture->glUpdateClamping(CTextureObject::CGL_EDGECLAMP);
+		tmpTexture->glvkUpdateClamping(CTextureObject::CGL_EDGECLAMP);
 		m_pRenderTextures->addTexture(tmpTexture);
 
 		tmpTexture2 = filterFactory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
 			                                        CTextureObject::CGL_OPAQUE,
 				                                    ITextureObject::CGL_UNFILTERED);
 		filterFactory.glResizeTexture(tmpTexture2,state.width,state.height);
-		tmpTexture2->glUpdateClamping(CTextureObject::CGL_EDGECLAMP);
+		tmpTexture2->glvkUpdateClamping(CTextureObject::CGL_EDGECLAMP);
 		m_pRenderTextures2->addTexture(tmpTexture2);
 	}
 

@@ -9,8 +9,8 @@
 #if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
 	#include "System/Raptor.h"
 #endif
-#if !defined(AFX_RAPTOREXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
-	#include "System/RaptorExtensions.h"
+#if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
+	#include "System/RaptorGLExtensions.h"
 #endif
 #if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
     #include "System/RaptorErrorManager.h"
@@ -71,7 +71,7 @@ void CRegisterCombiner::glRender(void)
 	int nb_rc = 0;
 	GLenum stage = GL_COMBINER0_NV;
 
-	const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 	PFN_GL_COMBINER_INPUT_NV_PROC glCombinerInputNV = pExtensions->glCombinerInputNV;
 	PFN_GL_COMBINER_OUTPUT_NV_PROC glCombinerOutputNV = pExtensions->glCombinerOutputNV;
 	PFN_GL_COMBINER_PARAMETER_I_NV_PROC glCombinerParameteriNV = pExtensions->glCombinerParameteriNV;

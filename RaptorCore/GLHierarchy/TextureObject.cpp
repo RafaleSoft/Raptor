@@ -199,19 +199,35 @@ void CTextureObject::glvkUpdateFilter(ITextureObject::TEXTURE_FILTER F)
 	CATCH_GL_ERROR
 }
 
-void CTextureObject::glUpdateClamping(CLAMP_MODE C)
+void CTextureObject::glvkUpdateClamping(ITextureObject::CLAMP_MODE C)
 {
 	GLenum clamp_mode = GL_CLAMP;
 
 	switch(C)
 	{
-		case CGL_REPEAT:
+		case ITextureObject::CGL_REPEAT:
 			clamp_mode = GL_REPEAT;
 			break;
-		case CGL_CLAMP:
+		case ITextureObject::CGL_MIRROR_REPEAT:
+#if defined(GL_ARB_texture_mirrored_repeat)
+			clamp_mode = GL_MIRRORED_REPEAT_ARB;
+#elif defined (GL_VERSION_1_4)
+			clamp_mode = GL_MIRRORED_REPEAT;
+#else
+			clamp_mode = GL_REPEAT;
+#endif
+			break;
+		case ITextureObject::CGL_MIRROR_EDGECLAMP:
+#if defined(GL_ARB_texture_mirror_clamp_to_edge)
+			clamp_mode = GL_MIRROR_CLAMP_TO_EDGE_ARB;
+#elif defined (GL_VERSION_1_4)
+			clamp_mode = GL_MIRROR_CLAMP_TO_EDGE;
+#endif
+			break;
+		case ITextureObject::CGL_CLAMP:
 			clamp_mode = GL_CLAMP;
 			break;
-		case CGL_EDGECLAMP:
+		case ITextureObject::CGL_EDGECLAMP:
 #if defined (GL_VERSION_1_2)
 			clamp_mode = GL_CLAMP_TO_EDGE;
 #elif defined (GL_EXT_texture_edge_clamp)

@@ -8,8 +8,8 @@
     #include "UnifiedProgram.h"
 #endif
 
-#if !defined(AFX_RAPTOREXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
-	#include "System/RaptorExtensions.h"
+#if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
+	#include "System/RaptorGLExtensions.h"
 #endif
 
 #if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
@@ -82,7 +82,7 @@ void CUnifiedProgram::glParameter(unsigned int numParam,const float *v) const
 		}
 		else
         {
-            const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+            const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
             pExtensions->glUniform4fvARB(location,1,v);
         }
     }
@@ -98,7 +98,7 @@ bool CUnifiedProgram::glBindProgram(RAPTOR_HANDLE program)
 	if (program.handle == 0)
 		return false;
 
-	const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 	GLint value = 0;
 	pExtensions->glGetObjectParameterivARB(program.handle, GL_OBJECT_TYPE_ARB, &value);
 	if (value != GL_PROGRAM_OBJECT_ARB)
@@ -122,7 +122,7 @@ bool CUnifiedProgram::glUnbindProgram(RAPTOR_HANDLE program)
 	if ((program.handle == 0) || (m_handle.handle == 0))
 		return false;
 
-	const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 	GLint value = 0;
 	pExtensions->glGetObjectParameterivARB(program.handle, GL_OBJECT_TYPE_ARB, &value);
 	if (value != GL_PROGRAM_OBJECT_ARB)
@@ -154,7 +154,7 @@ void CUnifiedProgram::glRender(void)
 			value.locationType = GL_FLOAT_VEC4_ARB;
 		}
 
-		const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 		GLhandleARB program = pExtensions->glGetHandleARB(GL_PROGRAM_OBJECT_ARB);
 
 		if (program != 0)
@@ -180,7 +180,7 @@ void CUnifiedProgram::glRender(void)
 	GL_COORD_VERTEX vector(0.0f, 0.0f, 0.0f, 0.0f);
 	GL_MATRIX matrix;
 
-	const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 	for (unsigned int idx = 0; idx < m_parameters.getNbParameters(); idx++)
 	{
 		const CProgramParameters::CParameterBase& param_value = m_parameters[idx];
@@ -305,7 +305,7 @@ uint64_t CUnifiedProgram::glGetBufferMemoryRequirements(RAPTOR_HANDLE program)
 	uint64_t uniform_size = 0;
 
 #if defined(GL_ARB_uniform_buffer_object)
-	const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 
 	GLint active_blocks_count = 0;
 	GLint active_uniform_max_length = 0;
@@ -463,7 +463,7 @@ void CUnifiedProgram::glQueryUniformLocations(RAPTOR_HANDLE program)
 #if defined(GL_ARB_shader_objects)
     // Query the size of uniforms
     GLint attrMaxLength = 0;
-    const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+    const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 
     pExtensions->glGetObjectParameterivARB(program.handle,GL_OBJECT_ACTIVE_UNIFORM_MAX_LENGTH_ARB,&attrMaxLength);
 	//	Predefined uniforms are not taken into account ! (e.g. gl_ModelViewProjectionMatrix)
@@ -517,7 +517,7 @@ void CUnifiedProgram::glQueryAttributeLocations(RAPTOR_HANDLE program)
 #if defined(GL_ARB_shader_objects)
     // Query the size of attributes
     GLint attrMaxLength = 0;
-    const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+    const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 
     pExtensions->glGetObjectParameterivARB(program.handle,GL_OBJECT_ACTIVE_ATTRIBUTE_MAX_LENGTH_ARB,&attrMaxLength);
 	attrMaxLength = MAX(32, attrMaxLength);
