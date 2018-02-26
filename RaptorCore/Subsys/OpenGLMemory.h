@@ -11,7 +11,9 @@
 
 #include "Subsys/CodeGeneration.h"
 
-
+#ifndef __CGLTYPES_HPP__
+	#include "System/CGLTypes.h"
+#endif
 #if !defined(AFX_MEMORY_H__81A6CA9A_4ED9_4260_B6E4_C03276C38DBC__INCLUDED_)
 	#include "System/Memory.h"
 #endif

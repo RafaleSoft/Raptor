@@ -8,11 +8,8 @@
 #if !defined(AFX_DOT3BUMPPEDGEOMETRY_H__C1ED14FB_CABA_4F04_A7AE_433BB692709C)
 	#include "DOT3BumppedGeometry.h"
 #endif
-#if !defined(AFX_RAPTOREXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
-	#include "System/RaptorExtensions.h"
-#endif
-#if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
-	#include "System/Raptor.h"
+#if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
+	#include "System/RaptorGLExtensions.h"
 #endif
 #if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
 	#include "System/RaptorErrorManager.h"
@@ -213,7 +210,7 @@ void CDOT3BumppedGeometry::glRender()
 	glVertexPointer(3, GL_FLOAT, sizeof(GL_COORD_VERTEX), vertex);
 #endif
 
-	const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 #if defined(GL_EXT_compiled_vertex_array)
 	if (pExtensions->glLockArraysEXT != NULL)
 		pExtensions->glLockArraysEXT(0, m_nbVertex);

@@ -9,8 +9,8 @@
 #if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
 	#include "System/Raptor.h"
 #endif
-#if !defined(AFX_RAPTOREXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
-	#include "System/RaptorExtensions.h"
+#if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
+	#include "System/RaptorGLExtensions.h"
 #endif
 #if !defined(AFX_TEXTUREUNITSETUP_H__4A6ADC72_02E5_4F2A_931E_A736B6D6E0F0__INCLUDED_)
 	#include "GLHierarchy/TextureUnitSetup.h"
@@ -111,7 +111,7 @@ void CEMBMShader::glInit(const std::string &bump_vertexshader,
     //! For high quality filtering, future release may allow a user defined size.
     permutation = filterFactory.glCreateTexture(ITextureObject::CGL_LIGHTMAP,
 												CTextureObject::CGL_OPAQUE,
-												CTextureObject::CGL_UNFILTERED);
+												ITextureObject::CGL_UNFILTERED);
     permutation->setSize(512,1);
 
 	CImage perlin;
@@ -137,7 +137,7 @@ void CEMBMShader::glRender(void)
 #if defined(GL_ARB_shader_objects)
 	if (m_bEnabled)
 	{
-		const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 
 		if (environmentMap < 0)
 		{

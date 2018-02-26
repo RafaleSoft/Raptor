@@ -20,7 +20,7 @@
 #include "GLHierarchy\Shader.h"
 #include "GLHierarchy\FragmentProgram.h"
 #include "System\Raptor.h"
-#include "System\RaptorExtensions.h"
+#include "System\RaptorGLExtensions.h"
 #include "GLHierarchy\RenderingProperties.h"
 
 #include "ToolBox/BasicObjects.h"
@@ -89,7 +89,7 @@ public:
 		glCallList(bg.handle);
 		glCallList(list.handle);
 
-		const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 		pExtensions->glActiveTextureARB(GL_TEXTURE1_ARB);
 		glDisable(GL_TEXTURE_2D);
 		pExtensions->glActiveTextureARB(GL_TEXTURE0_ARB);
@@ -164,7 +164,7 @@ CWarpObject::CWarpObject(float width,float height,int hcels,int vcels)
 	CTextureFactory &f = CTextureFactory::getDefaultFactory();
     m_captureBuffer = f.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 												CTextureObject::CGL_ALPHA_TRANSPARENT,
-												CTextureObject::CGL_BILINEAR,
+												ITextureObject::CGL_BILINEAR,
 												CRaptorDisplay::GetCurrentDisplay());
     f.glResizeTexture(m_captureBuffer,BASE_WARP_WIDTH,BASE_WARP_HEIGHT);
 
@@ -289,13 +289,13 @@ CGlassObject::CGlassObject(float width,float height,int hcels,int vcels)
 	CTextureFactory &f = CTextureFactory::getDefaultFactory();
     m_captureBuffer = f.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 												CTextureObject::CGL_ALPHA_TRANSPARENT,
-												CTextureObject::CGL_BILINEAR,
+												ITextureObject::CGL_BILINEAR,
 												CRaptorDisplay::GetCurrentDisplay());
     f.glResizeTexture(m_captureBuffer,BASE_WARP_WIDTH,BASE_WARP_HEIGHT);
 
 	CTextureObject* T = f.glCreateTexture( ITextureObject::CGL_COLOR24_ALPHA,
                                            CTextureObject::CGL_ALPHA_TRANSPARENT,
-                                           CTextureObject::CGL_BILINEAR);
+                                           ITextureObject::CGL_BILINEAR);
 	f.glLoadTexture(T,"Datas\\Bump2.tga");
 
 	m_pShader = new CShader("GLASS_SHADER");
@@ -371,7 +371,7 @@ void CGlassObject::glRender()
 
 	m_pShader->glStop();
 
-	const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 	pExtensions->glActiveTextureARB(GL_TEXTURE1_ARB);
 	glDisable(GL_TEXTURE_2D);
 	pExtensions->glActiveTextureARB(GL_TEXTURE0_ARB);

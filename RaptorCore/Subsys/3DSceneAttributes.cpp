@@ -13,8 +13,8 @@
 #if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
     #include "System/RaptorErrorManager.h"
 #endif
-#if !defined(AFX_RAPTOREXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
-	#include "System/RaptorExtensions.h"
+#if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
+	#include "System/RaptorGLExtensions.h"
 #endif
 #if !defined(AFX_3DSCENEOBJECT_H__96A34268_AD58_4F73_B633_F6C3E92FE0A9__INCLUDED_)
 	#include "Subsys/3DSceneObject.h"
@@ -76,7 +76,7 @@ void C3DSceneAttributes::glMakeQueries(void)
 		if (m_pObjects.size() < 1)
 			return;
 
-		const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
         if (pExtensions->glGenQueriesARB != NULL)
         {
 		    vector<C3DSceneObject*>::iterator itr = m_pObjects.begin();
@@ -102,7 +102,7 @@ void C3DSceneAttributes::glResetQueries(void)
 	{
         m_bQueriesReady = false;
 
-        const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+        const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
         if (pExtensions->glDeleteQueriesARB != NULL)
         {
 		    vector<C3DSceneObject*>::iterator itr = m_pObjects.begin();

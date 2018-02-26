@@ -28,7 +28,8 @@ CRaptorConfig::CRaptorConfig():
 	m_uiUniforms(1024),
 	m_uiGarbageSize(1024*1024),
 	m_logFile("Raptor.log"),
-	m_bCompute(false)
+	m_bCompute(false),
+	m_bVulkan(false)
 {
 
 }

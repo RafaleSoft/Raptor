@@ -26,10 +26,20 @@ public:
 	CVulkanTextureObject(ITextureObject::TEXEL_TYPE type,
 						 VkDevice device,
 						 PFN_vkGetDeviceProcAddr vkGetDeviceProcAddr);
-	virtual ~CVulkanTextureObject();
 
 	//!	Renders the textures : it is bound to the current active Texture Unit.
 	virtual void glvkRender(void);
+
+	//! Updates texture filtering function
+	//! @param F : the filter function
+	virtual void glvkUpdateFilter(ITextureObject::TEXTURE_FILTER F);
+
+	//! Updates texture sampler clamping mode. This method
+	//!	is a simple helper, clamping mode is applied equally 
+	//!	to each dimension.
+	//! @param C : the clamp mode
+	virtual void glvkUpdateClamping(ITextureObject::CLAMP_MODE C);
+
 
 	//!	Returns the sized format of the texels stored in device memory (texture)
 	VkFormat getTexelFormat(void) const;
@@ -39,14 +49,22 @@ public:
 
 
 	void vkLoadTexture(uint32_t innerFormat,
-					   uint32_t width,
-					   uint32_t height,
 					   uint32_t pixels_format,
 					   uint32_t pixels_type,
 					   unsigned char* pixels);
 
 
 private:
+	//!
+	//!	Forbidden methods
+	//!
+	CVulkanTextureObject(ITextureObject::TEXEL_TYPE type);
+	CVulkanTextureObject(const CVulkanTextureObject& rsh);
+	virtual ~CVulkanTextureObject();
+
+	//!	Release all allocated resources.
+	void clean(void);
+
 	//!
 	//!	Attributes
 	//!
@@ -60,8 +78,18 @@ private:
 	//!	Vulkan image accessor (format mapper)
 	VkImageView	m_view;
 
+	//! Vulkan texture sampler
+	VkSampler	m_sampler;
+	VkFilter	minFilter;
+	VkFilter	magFilter;
+	VkSamplerMipmapMode	mipmap;
+	VkSamplerAddressMode clamp_mode;
+
 	//!	Vulkan texture backed image 
 	PFN_vkCreateImageView vkCreateImageView;
+	PFN_vkDestroyImageView vkDestroyImageView;
+	PFN_vkCreateSampler	vkCreateSampler;
+	PFN_vkDestroySampler vkDestroySampler;
 };
 
 

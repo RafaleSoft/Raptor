@@ -192,7 +192,7 @@ void CGLDisplay::GLInitContext()
 	CTextureFactory f;
     m_pTxt = f.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 										CTextureObject::CGL_MULTIPLY,
-										CTextureObject::CGL_BILINEAR,
+										ITextureObject::CGL_BILINEAR,
 										pGenerator);
 
     float tw = (float)(pGenerator->getGenerateWidth()) / (float)(m_pTxt->getWidth());

@@ -26,7 +26,8 @@
 
 RAPTOR_NAMESPACE_BEGIN
 
-class CRaptorExtensions;
+class CRaptorGLExtensions;
+class CRaptorVKExtensions;
 class CTextureObject;
 
 
@@ -48,7 +49,11 @@ public:
 
 	//!	Retuns the RaptorExtensions class to acces implementation
 	//! of openGL extensions.
-	virtual const CRaptorExtensions *const glGetExtensions(void) = 0;
+	virtual const CRaptorGLExtensions *const glGetExtensions(void) = 0;
+
+	//!	Retuns the RaptorExtensions class to acces implementation
+	//! of openGL extensions.
+	virtual const CRaptorVKExtensions *const vkGetExtensions(void);
 
 	//!	Check display config fields with underlying system capabilities.
 	//! If some fields of rdc are not valid, they are adjusted, and false
@@ -56,12 +61,21 @@ public:
 	//! If rdc is properly initialised, it is left unchanged and true is returned.
 	virtual bool validateConfig(CRaptorDisplayConfig& rdc);
 
+	//! Returns currently active  OpenGL rendering context.
+	RENDERING_CONTEXT_ID glGetCurrentContext(void) const { return m_currentGLContext; };
 
 #if defined(VK_VERSION_1_0)
+	//! Returns currently active  OpenGL rendering context.
+	RENDERING_CONTEXT_ID vkGetCurrentContext(void) const { return m_currentVKContext; };
+
 	//!	Initialise a global Vulkan instance and pysical devices for
 	//!	further logical devices queries.
 	//! @return false is vulkan library cannot be initialized, true otherwise.
 	virtual bool vkInit(void);
+
+	//!	Release and destroy the global Vulkan instance and pysical devices.
+	//! @return false is vulkan library cannot be released, true otherwise.
+	virtual bool vkRelease(void);
 
 	RENDERING_CONTEXT_ID vkCreateContext(	const RAPTOR_HANDLE& device,
 											const CRaptorDisplayConfig& config);
@@ -113,9 +127,6 @@ public:
 	virtual RENDERING_CONTEXT_ID glCreateExtendedContext(	const RAPTOR_HANDLE& device,
 															const CRaptorDisplayConfig& config) = 0;
 
-	//! Abstraction for rendering context access.
-	virtual RENDERING_CONTEXT_ID glGetCurrentContext(void) const = 0;
-    
     //! Returns the device for the requested rendering context if it exists.
     //! The returned handle is null if ctx is invalid or if no context ctx is not bound to a device.
 	virtual RAPTOR_HANDLE getDevice(CContextManager::RENDERING_CONTEXT_ID ctx) const;
@@ -167,22 +178,19 @@ protected:
 
     void glRemoveLogo(void);
 
+	RENDERING_CONTEXT_ID	m_currentGLContext;
 #if defined(VK_VERSION_1_0)
+	RENDERING_CONTEXT_ID	m_currentVKContext;
+	
 	RAPTOR_HANDLE		vulkanModule;
-	string				instance_extensions;
-	string				instance_layers;
-	DECLARE_VK_get_instance_proc_addr(DEFAULT_LINKAGE);
-	DECLARE_VK_global(DEFAULT_LINKAGE);
-
+	
 	//!	An extensions manager to access Vulkan API.
 	typedef struct
 	{
-		DECLARE_VK_instance(DEFAULT_LINKAGE)
 		DECLARE_VK_win32(DEFAULT_LINKAGE)
 		DECLARE_VK_xlib(DEFAULT_LINKAGE)
 		DECLARE_VK_KHR_surface(DEFAULT_LINKAGE)
 
-		VkInstance					instance;
 		unsigned int				nbPhysicalDevices;
 		VkPhysicalDevice			*pPhysicalDevices;
 		VkPhysicalDeviceProperties	*pProperties;
@@ -192,6 +200,7 @@ protected:
 
 		uint32_t					physicalDevice;
 		CVulkanDevice				device;
+		CRaptorVKExtensions			*pExtensions;
 		
 #ifdef VK_KHR_surface
 		VkSurfaceKHR				surface;
@@ -207,6 +216,7 @@ protected:
 #ifdef VK_KHR_swapchain
 	VkPresentModeKHR	presentMode;
 #endif
+
 
 private:
 #if defined(VK_VERSION_1_0)
@@ -227,8 +237,6 @@ private:
 	//!	Collects all physical device properties to use surface formats and modes
 	bool vkInitSurface(RENDERING_CONTEXT_ID ctx);
 #endif
-
-	CRaptorExtensions	*m_pExtensions;
 #endif
 
 	CTextureObject	*glBuildLogo(void);

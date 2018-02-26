@@ -36,8 +36,8 @@
 #if !defined(AFX_LIGHT_H__AA8BABD6_059A_4939_A4B6_A0A036E12E1E__INCLUDED_)
 	#include "GLHierarchy/Light.h"
 #endif
-#if !defined(AFX_RAPTOREXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
-	#include "System/RaptorExtensions.h"
+#if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
+	#include "System/RaptorGLExtensions.h"
 #endif
 #ifndef __GLOBAL_H__
 	#include "System/Global.h"
@@ -149,7 +149,7 @@ bool COmniShadowMap::glInitEnvironment(unsigned int width,unsigned int height)
 	CTextureFactory &factory = CTextureFactory::getDefaultFactory();
     m_pShadowTexture = factory.glCreateCubemap(ITextureObject::CGL_COLOR24_ALPHA,
                                                CTextureObject::CGL_MULTIPLY,
-                                               CTextureObject::CGL_UNFILTERED);
+                                               ITextureObject::CGL_UNFILTERED);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB,GL_TEXTURE_WRAP_S,GL_CLAMP);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB,GL_TEXTURE_WRAP_T,GL_CLAMP);
 
@@ -322,7 +322,7 @@ void COmniShadowMap::glRenderMap(const CLight* currentLight,const vector<C3DScen
 void COmniShadowMap::glRenderShadow(const vector<C3DSceneObject*>& objects)
 {
 #ifdef GL_ARB_texture_cube_map
-    const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+    const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 	PFN_GL_ACTIVE_TEXTURE_ARB_PROC glActiveTextureARB = pExtensions->glActiveTextureARB;
 
 	GLint previousTMU = GL_TEXTURE0_ARB;

@@ -11,13 +11,6 @@
 
 #include "Subsys/CodeGeneration.h"
 
-#ifndef __CGLTYPES_HPP__
-	#include "System/CGLTypes.h"
-#endif
-#if !defined(AFX_TEXTUREOBJECT_H__D32B6294_B42B_4E6F_AB73_13B33C544AD0__INCLUDED_)
-	#include "GLHierarchy/TextureObject.h"
-#endif
-
 
 RAPTOR_NAMESPACE_BEGIN
 

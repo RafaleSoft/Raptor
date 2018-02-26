@@ -30,7 +30,7 @@
 #include "System/Raptor.h"
 #include "System/RaptorConsole.h"
 #include "System/RaptorDisplay.h"
-#include "System/RaptorExtensions.h"
+#include "System/RaptorGLExtensions.h"
 #include "System/RaptorMessages.h"
 
 #include "ToolBox/BasicObjects.h"
@@ -138,7 +138,7 @@ void RAPTOR_FASTCALL HeatSpots::updateVertices(float dt,GL_COORD_VERTEX *vertice
 
 void HeatSpots::glRenderFilterOutput()
 {
-	const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 	PFN_GL_ACTIVE_TEXTURE_ARB_PROC glActiveTextureARB = pExtensions->glActiveTextureARB;
 
 	glActiveTextureARB(GL_TEXTURE0_ARB);
@@ -199,7 +199,7 @@ bool HeatSpots::glInitFilter()
 	{
 		colorInput = filterFactory.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 															CTextureObject::CGL_OPAQUE,
-															CTextureObject::CGL_BILINEAR,
+															ITextureObject::CGL_BILINEAR,
 															colorExternalSource);
 	}
 

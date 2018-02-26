@@ -27,6 +27,9 @@
 #if !defined(AFX_RAPTORVULKANCOMMANDBUFFER_H__0398BABD_747B_4DFE_94AA_B026BDBD03B1__INCLUDED_)
 	#include "Subsys/Vulkan/VulkanCommandBuffer.h"
 #endif
+#if !defined(AFX_CONTEXTMANAGER_H__F992F5F0_D8A5_475F_9777_B0EB30E7648E__INCLUDED_)
+	#include "Subsys/ContextManager.h"
+#endif
 #ifndef __GLOBAL_H__
 	#include "System/Global.h"
 #endif
@@ -99,26 +102,14 @@ CVulkanDevice::~CVulkanDevice(void)
 		delete [] renderingResources;
 }
 
-CVulkanDevice	*CVulkanDevice::pCurrentDevice = NULL;
 
-bool CVulkanDevice::setCurrentDevice(CVulkanDevice* current)
+const CVulkanDevice& CVulkanDevice::getCurrentDevice()
 {
-	if (NULL != pCurrentDevice)
-	{
-		if (NULL != current)
-			return false;
-		else
-			pCurrentDevice = NULL;
-	}
-	else
-		pCurrentDevice = current;
-
-	return true;
-}
-
-CVulkanDevice* CVulkanDevice::getCurrentDevice()
-{
-	return pCurrentDevice;
+	// TODO : protect NULL pointer here.
+	CContextManager *pContext = CContextManager::GetInstance();
+	CContextManager::RENDERING_CONTEXT_ID id = pContext->vkGetCurrentContext();
+	CVulkanDevice& device = pContext->vkGetDevice(id);
+	return device;
 }
 
 CVulkanPipeline* CVulkanDevice::createPipeline(void) const

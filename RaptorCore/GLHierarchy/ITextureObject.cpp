@@ -27,7 +27,9 @@ RAPTOR_NAMESPACE
 //////////////////////////////////////////////////////////////////////
 
 ITextureObject::ITextureObject(TEXEL_TYPE type)
-	:m_type(type), m_width(0), m_height(0), m_depth(0), m_alpha(255), m_name("<unknown>")
+	:CObjectReference(),
+	m_type(type), m_width(0), m_height(0), m_depth(0), m_alpha(255),
+	m_name("<unknown>")
 {
 }
 
@@ -38,7 +40,8 @@ ITextureObject::~ITextureObject()
 
 
 ITextureObject::ITextureObject(const ITextureObject& rsh)
-	:m_type(rsh.m_type), m_width(rsh.m_width), 
+	:CObjectReference(), 
+	m_type(rsh.m_type), m_width(rsh.m_width),
 	m_height(rsh.m_height), m_depth(rsh.m_depth),
 	m_alpha(rsh.m_alpha), m_name(rsh.m_name)
 {

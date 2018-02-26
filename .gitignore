@@ -24,6 +24,7 @@ CodeGeneration.h
 [Dd]ebug/
 [Dd]ebugPublic/
 [Rr]elease/
+[Oo]ptimised/
 x64/
 bld/
 # Thrid-party COTS are in bin, so do not remove them
