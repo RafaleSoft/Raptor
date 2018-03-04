@@ -38,7 +38,7 @@ CReflection::CReflection(float width,float height,int hcels,int vcels)
 													CTextureObject::CGL_MULTIPLY,
 													ITextureObject::CGL_TRILINEAR,
 													pNoise);
-	T->glvkUpdateClamping(CTextureObject::CGL_REPEAT);
+	T->glvkUpdateClamping(ITextureObject::CGL_REPEAT);
 
 	CTextureUnitSetup *tus = pShader->glGetTextureUnitsSetup();
 

@@ -146,14 +146,14 @@ CTextureUnitSetup::CTextureUnitSetup():
     register_combiners = new CRegisterCombiner;
 
 #ifdef GL_ARB_texture_env_combine
-	if (!Raptor::glIsExtensionSupported("GL_ARB_texture_env_combine"))
+	if (!Raptor::glIsExtensionSupported(GL_ARB_TEXTURE_ENV_COMBINE_EXTENSION_NAME))
 		Raptor::GetErrorManager()->generateRaptorError(	CTextureUnitSetup::CTextureUnitSetupClassID::GetClassId(),
                                                         CRaptorErrorManager::RAPTOR_WARNING,
                                                         "No texture combiners available for TextureUnitSetup instances");
 #endif
 
 #ifdef GL_NV_texture_shader
-	if (!Raptor::glIsExtensionSupported("GL_NV_texture_shader"))
+	if (!Raptor::glIsExtensionSupported(GL_NV_TEXTURE_SHADER_EXTENSION_NAME))
 		Raptor::GetErrorManager()->generateRaptorError(	CTextureUnitSetup::CTextureUnitSetupClassID::GetClassId(),
                                                         CRaptorErrorManager::RAPTOR_WARNING,
                                                         "No texture shaders available for TextureUnitSetup instances");
@@ -434,7 +434,7 @@ bool RAPTOR_FASTCALL CTextureUnitSetup::glRender(CTextureUnitSetup::GL_TEXTURE_S
 		else 
 		{
 #if defined(GL_NV_texture_shader)
-			if (!Raptor::glIsExtensionSupported("GL_NV_texture_shader"))
+			if (!Raptor::glIsExtensionSupported(GL_NV_TEXTURE_SHADER_EXTENSION_NAME))
 				return false;
 			glEnable(GL_TEXTURE_SHADER_NV);
 			glTexEnvi(GL_TEXTURE_SHADER_NV,GL_SHADER_OPERATION_NV,S->shaderOperation);
@@ -554,7 +554,7 @@ RAPTOR_HANDLE CTextureUnitSetup::glBuildSetup(void)
 			    // It is preferable not to render texture extensions in a display list.
 			    glEnable(imageUnit[i]->target);
                 // generators cannot be used in display lists
-				ITextureGenerator *G = imageUnit[i]->m_pTexelGenerator;
+				ITextureGenerator *G = imageUnit[i]->getTexelGenerator();
                 if (G != NULL)
                     G->enableGenerator(false);
 
@@ -654,7 +654,7 @@ RAPTOR_HANDLE CTextureUnitSetup::glBuildUnSetup(void)
 		    glLoadIdentity();
 		    glMatrixMode(GL_MODELVIEW);
     #if defined(GL_NV_texture_shader)
-		    if (Raptor::glIsExtensionSupported("GL_NV_texture_shader"))
+			if (Raptor::glIsExtensionSupported(GL_NV_TEXTURE_SHADER_EXTENSION_NAME))
 			    glDisable(GL_TEXTURE_SHADER_NV);
     #endif
 	    }		

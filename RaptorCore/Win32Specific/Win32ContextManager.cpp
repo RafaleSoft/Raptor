@@ -480,7 +480,7 @@ bool CWin32ContextManager::glSwapVSync(unsigned int nbVSync) const
 		context_t &context = pContext[m_currentGLContext];
         
 #if defined(WGL_EXT_swap_control)
-	    if ((context.pExtensions->glIsExtensionSupported("WGL_EXT_swap_control")) && 
+		if ((context.pExtensions->glIsExtensionSupported(WGL_EXT_SWAP_CONTROL_EXTENSION_NAME)) &&
 			(context.pExtensions->wglSwapIntervalEXT != NULL))
 	    {
 		    swapControl = true;
@@ -499,7 +499,7 @@ bool CWin32ContextManager::glSwapVSync(unsigned int nbVSync) const
 				    context.pExtensions->wglSwapIntervalEXT(0);
 #if defined(WGL_EXT_swap_control_tear)
 			    else if ((nbVSync == 0) &&
-						(context.pExtensions->glIsExtensionSupported("WGL_EXT_swap_control_tear")))
+						 (context.pExtensions->glIsExtensionSupported(WGL_EXT_SWAP_CONTROL_TEAR_EXTENSION_NAME)))
 					context.pExtensions->wglSwapIntervalEXT(-1);
 #endif
 				else
@@ -1293,8 +1293,8 @@ bool CWin32ContextManager::vkInit(void)
 		if (CContextManager::vkInit())
 		{
 			CRaptorVKExtensions instance_extensions("");
-			bool surface_rendering_supported = instance_extensions.vkIsExtensionSupported("VK_KHR_surface") &&
-												instance_extensions.vkIsExtensionSupported("VK_KHR_win32_surface");
+			bool surface_rendering_supported =	instance_extensions.vkIsExtensionSupported(VK_KHR_SURFACE_EXTENSION_NAME) &&
+												instance_extensions.vkIsExtensionSupported(VK_KHR_WIN32_SURFACE_EXTENSION_NAME);
 			if (!surface_rendering_supported)
 			{
 				RAPTOR_ERROR(	Global::CVulkanClassID::GetClassId(),
@@ -1335,7 +1335,7 @@ bool CWin32ContextManager::vkCreateSurface(const RAPTOR_HANDLE& handle,RENDERING
 
 		//!	Create the Surface
 		VkResult res = VK_NOT_READY;
-		res = context.vkCreateWin32SurfaceKHR(CRaptorVKExtensions::getInstance(), &createInfo, NULL, &context.surface);
+		res = context.pExtensions->vkCreateWin32SurfaceKHR(CRaptorVKExtensions::getInstance(), &createInfo, NULL, &context.surface);
 		if (VK_SUCCESS != res)
 		{
 			RAPTOR_ERROR(	Global::CVulkanClassID::GetClassId(),

@@ -153,9 +153,6 @@ private:
 
     //! generation source dimensions
     int source[4];
-
-	//!	Handle to vulkan image	
-	VkImage			vk_texname;
 };
 
 RAPTOR_NAMESPACE_END

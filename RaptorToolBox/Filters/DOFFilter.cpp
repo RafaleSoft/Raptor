@@ -443,14 +443,14 @@ bool CDOFFilter::glInitFilter(void)
 			                                        CTextureObject::CGL_OPAQUE,
 				                                    ITextureObject::CGL_UNFILTERED);
 		filterFactory.glResizeTexture(tmpTexture,state.width,state.height);
-		tmpTexture->glvkUpdateClamping(CTextureObject::CGL_EDGECLAMP);
+		tmpTexture->glvkUpdateClamping(ITextureObject::CGL_EDGECLAMP);
 		m_pRenderTextures->addTexture(tmpTexture);
 
 		tmpTexture2 = filterFactory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
 			                                        CTextureObject::CGL_OPAQUE,
 				                                    ITextureObject::CGL_UNFILTERED);
 		filterFactory.glResizeTexture(tmpTexture2,state.width,state.height);
-		tmpTexture2->glvkUpdateClamping(CTextureObject::CGL_EDGECLAMP);
+		tmpTexture2->glvkUpdateClamping(ITextureObject::CGL_EDGECLAMP);
 		m_pRenderTextures2->addTexture(tmpTexture2);
 	}
 

@@ -1,16 +1,16 @@
 - BasicObjects:
 	- Ajouter un TextureQuad le plus simple possible
 
--CVulkanMemory:
+- CVulkanMemory:
 	- initialiser une bloc mémoire pour l'application (vertex et index buffers bindés sur la même allocation)
 	- Factoriser les allocators (Geometry, Texel, Uniform)
 
--CVulkanShader:
+- CVulkanShader:
 	- Déplacer la gestion du descriptor pool à l'init de ShaderProgram
 	- Traiter le cas ou setProgramParameters fournit un set différents (destruction + reallocation)
 	- Déplacer la création du Pipeline après InitContext (C3DSCene::PrepareData ?)
 
--CVulkanCommandBuffer:
+- CVulkanCommandBuffer:
 	- rendre privée les mathodes et attribut commandbuffer
 
 - CHostMemoryManager:
@@ -36,7 +36,7 @@
 	- Remplacer / améliorer par displacement map / parallax bump mapping
 	
 - Persistence:
-	- Creer un RootPersitence pour stocker les statiques et l'affecter à un display
+	- Creer un RootPersitence pour stocker les statiques et l'affecter à un display: créer CRaptorInstance, gérée depuis Global/Raptor
 	( permettre des espaces de noms différentes entre 2 displays).
 	
 - CRaptorDisplayConfig:

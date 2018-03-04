@@ -300,7 +300,7 @@ CHDRFilter::CHDRFilter(const CRaptorDisplayConfig &da)
 	rda.renderer = CRaptorDisplayConfig::PIXEL_BUFFER;
 
 #if defined(GL_EXT_framebuffer_object)
-	if ((Raptor::glIsExtensionSupported("GL_EXT_framebuffer_object")) &&
+	if ((Raptor::glIsExtensionSupported(GL_EXT_FRAMEBUFFER_OBJECT_EXTENSION_NAME)) &&
 		(da.renderer == CRaptorDisplayConfig::RENDER_BUFFER))
 		rda.renderer = CRaptorDisplayConfig::RENDER_BUFFER;
 #endif
@@ -592,7 +592,7 @@ bool CHDRFilter::glInitFilter(void)
 															CTextureObject::CGL_OPAQUE,
 															ITextureObject::CGL_BILINEAR);
 		filterFactory.glResizeTexture(m_pDownBlurXBuffer,rda.width,rda.height);
-		m_pDownBlurXBuffer->glvkUpdateClamping(CTextureObject::CGL_EDGECLAMP);
+		m_pDownBlurXBuffer->glvkUpdateClamping(ITextureObject::CGL_EDGECLAMP);
 		CTextureSet *tset = new CTextureSet("HDR_XBlur");
 		tset->addTexture(m_pDownBlurXBuffer);
 		m_pDownBlurXDisplay->glBindDisplay(*tset);
@@ -615,7 +615,7 @@ bool CHDRFilter::glInitFilter(void)
 															CTextureObject::CGL_OPAQUE,
 															ITextureObject::CGL_BILINEAR);
 		filterFactory.glResizeTexture(m_pDownBlurYBuffer,rda.width,rda.height);
-		m_pDownBlurYBuffer->glvkUpdateClamping(CTextureObject::CGL_EDGECLAMP);
+		m_pDownBlurYBuffer->glvkUpdateClamping(ITextureObject::CGL_EDGECLAMP);
 		CTextureSet *tset = new CTextureSet("HDR_YBlur");
 		tset->addTexture(m_pDownBlurYBuffer);
 		m_pDownBlurYDisplay->glBindDisplay(*tset);
@@ -638,7 +638,7 @@ bool CHDRFilter::glInitFilter(void)
 														CTextureObject::CGL_OPAQUE,
 														ITextureObject::CGL_BILINEAR);
 		filterFactory.glResizeTexture(m_pDownHFBuffer,rda.width,rda.height);
-		m_pDownHFBuffer->glvkUpdateClamping(CTextureObject::CGL_EDGECLAMP);
+		m_pDownHFBuffer->glvkUpdateClamping(ITextureObject::CGL_EDGECLAMP);
 		CTextureSet *tset = new CTextureSet("HDR_HighFrequencies");
 		tset->addTexture(m_pDownHFBuffer);
 		m_pDownHighFreqs->glBindDisplay(*tset);

@@ -73,7 +73,7 @@ bool CAmbientOcclusionShader::glInitAOCompute(void)
 	CTextureObject *T = f.glCreateTexture(	ITextureObject::CGL_COLOR_FLOAT32_ALPHA,
 											CTextureObject::CGL_OPAQUE,
 											ITextureObject::CGL_BILINEAR);
-	T->glvkUpdateClamping(CTextureObject::CGL_EDGECLAMP);
+	T->glvkUpdateClamping(ITextureObject::CGL_EDGECLAMP);
 	f.glResizeTexture(T,m_pVertexMap->getWidth(),m_pVertexMap->getHeight());
 
 	CTextureSet *pOutputTextures = new CTextureSet("Filter Output Render Textures");
@@ -109,7 +109,7 @@ bool CAmbientOcclusionShader::glInitAOCompute(void)
 
 	CATCH_GL_ERROR;
 
-	if (!Raptor::glIsExtensionSupported("GL_ARB_texture_rectangle"))
+	if (!Raptor::glIsExtensionSupported(GL_ARB_TEXTURE_RECTANGLE_EXTENSION_NAME))
 	{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 		Raptor::GetErrorManager()->generateRaptorError(	CShader::CShaderClassID::GetClassId(),

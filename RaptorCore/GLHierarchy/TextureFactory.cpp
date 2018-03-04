@@ -699,7 +699,7 @@ bool CTextureFactory::glExportTexture(CTextureObject *T,const std::string &fname
     return res;
 }
 
-CTextureObject* const CTextureFactory::glCreateSprite(CTextureObject::TEXEL_TYPE type)
+CTextureObject* const CTextureFactory::glCreateSprite(ITextureObject::TEXEL_TYPE type)
 {
     //! type checking will be donne at loading
 	CTextureObject* T = new CTextureObject(type);
@@ -726,7 +726,7 @@ CTextureObject* const CTextureFactory::glCreateCubemap(  ITextureObject::TEXEL_T
 														 ITextureObject::TEXTURE_FILTER filter)
 {
 #if defined(GL_ARB_texture_cube_map)
-	if (!Raptor::glIsExtensionSupported("GL_ARB_texture_cube_map"))
+	if (!Raptor::glIsExtensionSupported(GL_ARB_TEXTURE_CUBE_MAP_EXTENSION_NAME))
     {
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 		vector<CRaptorMessages::MessageArgument> args;
@@ -750,7 +750,7 @@ CTextureObject* const CTextureFactory::glCreateCubemap(  ITextureObject::TEXEL_T
 	glBindTexture(GL_TEXTURE_CUBE_MAP_ARB, T->texname);
 
 	T->glvkUpdateFilter(filter);
-	T->glvkUpdateClamping(CTextureObject::CGL_REPEAT);
+	T->glvkUpdateClamping(ITextureObject::CGL_REPEAT);
 
 	glTexParameterf(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_PRIORITY, mConfig.getCurrentPriority());
 
@@ -812,7 +812,7 @@ CTextureObject* const CTextureFactory::glCreateTexture( ITextureObject::TEXEL_TY
 														ITextureObject::TEXTURE_FILTER filter)
 {
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
-    if ((type == CTextureObject::CGL_COLOR_FLOAT32) || (type == CTextureObject::CGL_COLOR_FLOAT32_ALPHA))
+    if ((type == ITextureObject::CGL_COLOR_FLOAT32) || (type == ITextureObject::CGL_COLOR_FLOAT32_ALPHA))
     {
 		vector<CRaptorMessages::MessageArgument> args;
 		CRaptorMessages::MessageArgument arg;
@@ -824,7 +824,7 @@ CTextureObject* const CTextureFactory::glCreateTexture( ITextureObject::TEXEL_TY
     }
 #endif
 	if ((type == ITextureObject::CGL_DEPTH24_STENCIL8) &&
-		(!Raptor::glIsExtensionSupported("GL_EXT_packed_depth_stencil")))
+		(!Raptor::glIsExtensionSupported(GL_EXT_PACKED_DEPTH_STENCIL_EXTENSION_NAME)))
     {
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 		vector<CRaptorMessages::MessageArgument> args;
@@ -848,7 +848,7 @@ CTextureObject* const CTextureFactory::glCreateTexture( ITextureObject::TEXEL_TY
 	glBindTexture(GL_TEXTURE_2D, T->texname);
 
 	T->glvkUpdateFilter(filter);
-	T->glvkUpdateClamping(CTextureObject::CGL_REPEAT);
+	T->glvkUpdateClamping(ITextureObject::CGL_REPEAT);
 	
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_PRIORITY, mConfig.getCurrentPriority());
 
@@ -870,7 +870,7 @@ CTextureObject* const CTextureFactory::glCreateRectangleTexture( ITextureObject:
 														         ITextureObject::TEXTURE_FILTER filter)
 {
 #if defined(GL_ARB_texture_rectangle)
-    if (!Raptor::glIsExtensionSupported("GL_ARB_texture_rectangle"))
+	if (!Raptor::glIsExtensionSupported(GL_ARB_TEXTURE_RECTANGLE_EXTENSION_NAME))
     {
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 		vector<CRaptorMessages::MessageArgument> args;
@@ -898,7 +898,7 @@ CTextureObject* const CTextureFactory::glCreateRectangleTexture( ITextureObject:
     else
 		T->glvkUpdateFilter(filter);
 
-	T->glvkUpdateClamping(CTextureObject::CGL_EDGECLAMP);
+	T->glvkUpdateClamping(ITextureObject::CGL_EDGECLAMP);
 
 	glTexParameterf(GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_PRIORITY, mConfig.getCurrentPriority());
 
@@ -954,7 +954,7 @@ CTextureObject* const CTextureFactory::glCreateDynamicTexture(ITextureObject::TE
 	//	Dynamic textures are mostly used for render-to-texture buffers,
 	//	frequent usage of these textures is clamped mode.
 	//	Until there exist an interface to customize it, it is hard coded here.
-	T->glvkUpdateClamping(CTextureObject::CGL_EDGECLAMP);
+	T->glvkUpdateClamping(ITextureObject::CGL_EDGECLAMP);
 
 	glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_PRIORITY,mConfig.getCurrentPriority());
 
@@ -971,7 +971,7 @@ CTextureObject* const CTextureFactory::glCreateVolumeTexture(ITextureObject::TEX
 														     ITextureObject::TEXTURE_FILTER filter)
 {
 #if defined(GL_EXT_texture3D)
-    if (!Raptor::glIsExtensionSupported("GL_EXT_texture3D"))
+	if (!Raptor::glIsExtensionSupported(GL_EXT_TEXTURE3D_EXTENSION_NAME))
     {
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 		vector<CRaptorMessages::MessageArgument> args;

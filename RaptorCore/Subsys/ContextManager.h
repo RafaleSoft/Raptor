@@ -187,8 +187,6 @@ protected:
 	//!	An extensions manager to access Vulkan API.
 	typedef struct
 	{
-		DECLARE_VK_win32(DEFAULT_LINKAGE)
-		DECLARE_VK_xlib(DEFAULT_LINKAGE)
 		DECLARE_VK_KHR_surface(DEFAULT_LINKAGE)
 
 		unsigned int				nbPhysicalDevices;

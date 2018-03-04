@@ -194,11 +194,11 @@ void CGeometry::setRenderingModel(const CRenderingModel& model)
 
 	//	But remove unsupported extensions
 #ifdef GL_EXT_vertex_weighting
-	if (!Raptor::glIsExtensionSupported("GL_EXT_vertex_weighting"))
+	if (!Raptor::glIsExtensionSupported(GL_EXT_VERTEX_WEIGHTING_EXTENSION_NAME))
 		m_renderingModel.removeModel(CRenderingModel::CGL_WEIGHT);
 #endif
 
-	if (!Raptor::glIsExtensionSupported("GL_EXT_fog_coord"))
+	if (!Raptor::glIsExtensionSupported(GL_EXT_FOG_COORD_EXTENSION_NAME))
 		m_renderingModel.removeModel(CRenderingModel::CGL_FOG);
 }
 

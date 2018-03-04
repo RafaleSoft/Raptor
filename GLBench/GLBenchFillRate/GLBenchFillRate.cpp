@@ -103,7 +103,7 @@ void Display::GLInitContext()
 	f.glLoadTexture(T,"Datas\\M1_1024.jpg");
 	txt->addTexture(T);
 
-	if (Raptor::glIsExtensionSupported("GL_ARB_texture_compression"))
+	if (Raptor::glIsExtensionSupported(GL_ARB_TEXTURE_COMPRESSION_EXTENSION_NAME))
 	{
 		T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
 							  CTextureObject::CGL_MULTIPLY,
@@ -159,7 +159,7 @@ void Display::GLInitContext()
 	txt->addTexture(T);
 
 #if defined(GL_EXT_texture_filter_anisotropic)
-	if (Raptor::glIsExtensionSupported("GL_EXT_texture_filter_anisotropic"))
+	if (Raptor::glIsExtensionSupported(GL_EXT_TEXTURE_FILTER_ANISOTROPIC_EXTENSION_NAME))
 	{
 		float anisotropy = 1.0f;
 		glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT,&anisotropy);
@@ -517,7 +517,7 @@ GLDisplay->glMakeCurrent(false);
 	resultCount++;
 	GLDisplay->draw = 0;
 
-	if (Raptor::glIsExtensionSupported("GL_ARB_texture_compression"))
+	if (Raptor::glIsExtensionSupported(GL_ARB_TEXTURE_COMPRESSION_EXTENSION_NAME))
 	{
 GLDisplay->glMakeCurrent(true);
 		T = GLDisplay->txt->getTexture(1);
@@ -588,7 +588,7 @@ GLDisplay->glMakeCurrent(false);
 	resultCount++;
 	GLDisplay->draw = 3;
 #if defined(GL_EXT_texture_filter_anisotropic)
-	if (Raptor::glIsExtensionSupported("GL_EXT_texture_filter_anisotropic"))
+	if (Raptor::glIsExtensionSupported(GL_EXT_TEXTURE_FILTER_ANISOTROPIC_EXTENSION_NAME))
 	{
 GLDisplay->glMakeCurrent(true);
 		T = GLDisplay->txt->getTexture(5);

@@ -43,10 +43,10 @@ COpenGLMemory::~COpenGLMemory(void)
 bool COpenGLMemory::relocationAvailable(void) const
 {
 #if (defined(GL_ARB_vertex_buffer_object) || defined(GL_NV_vertex_array_range))
-	if (Raptor::glIsExtensionSupported("GL_ARB_vertex_buffer_object") || 
-		Raptor::glIsExtensionSupported("GL_NV_vertex_array_range") ||
-		Raptor::glIsExtensionSupported("GL_ARB_pixel_buffer_object") ||
-		Raptor::glIsExtensionSupported("GL_ARB_uniform_buffer_object"))
+	if (Raptor::glIsExtensionSupported(GL_ARB_VERTEX_BUFFER_OBJECT_EXTENSION_NAME) ||
+		Raptor::glIsExtensionSupported(GL_NV_VERTEX_ARRAY_RANGE_EXTENSION_NAME) ||
+		Raptor::glIsExtensionSupported(GL_ARB_PIXEL_BUFFER_OBJECT_EXTENSION_NAME) ||
+		Raptor::glIsExtensionSupported(GL_ARB_UNIFORM_BUFFER_OBJECT_EXTENSION_NAME))
 	{
 		// TODO: scan device memory and check available space
 		return true;

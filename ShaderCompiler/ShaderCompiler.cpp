@@ -376,11 +376,11 @@ int main(int argc, char* argv[])
     CRaptorDisplay *pDisplay = Raptor::glCreateDisplay(glcs);
     if (pDisplay->glBindDisplay(device))
 	{
-        if (!Raptor::glIsExtensionSupported("GL_ARB_vertex_program") ||
-			!Raptor::glIsExtensionSupported("GL_ARB_vertex_shader") ||
-			!Raptor::glIsExtensionSupported("GL_ARB_fragment_program") ||
-			!Raptor::glIsExtensionSupported("GL_ARB_fragment_shader") ||
-			!Raptor::glIsExtensionSupported("GL_ARB_geometry_shader4"))
+		if (!Raptor::glIsExtensionSupported(GL_ARB_VERTEX_PROGRAM_EXTENSION_NAME) ||
+			!Raptor::glIsExtensionSupported(GL_ARB_VERTEX_SHADER_EXTENSION_NAME) ||
+			!Raptor::glIsExtensionSupported(GL_ARB_FRAGMENT_PROGRAM_EXTENSION_NAME) ||
+			!Raptor::glIsExtensionSupported(GL_ARB_FRAGMENT_SHADER_EXTENSION_NAME) ||
+			!Raptor::glIsExtensionSupported(GL_ARB_GEOMETRY_SHADER4_EXTENSION_NAME))
         {
             Raptor::GetMessages()->displayMessage("Sorry: Test cannot run : hardware OpenGL shaders not supported, exiting...");
             return -1;

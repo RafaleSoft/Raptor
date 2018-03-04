@@ -36,6 +36,10 @@ public:
 	//!	so need to declare it as STATIC_LINKAGE since we have one Vulkan instance per application
 	//!	Multiple instance per application shall come later.
 	DECLARE_VK_instance(STATIC_LINKAGE)
+
+	DECLARE_VK_win32(DEFAULT_LINKAGE)
+	DECLARE_VK_xlib(DEFAULT_LINKAGE)
+	DECLARE_VK_KHR_surface(DEFAULT_LINKAGE)
 #endif
 
 	//!	Initialise global Vulkan entry points.

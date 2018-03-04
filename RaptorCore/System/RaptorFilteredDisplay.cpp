@@ -221,9 +221,9 @@ bool CRaptorFilteredDisplay::glCreateRenderDisplay(void)
         //  prepare createStruct for buffers :
         //  render to texture for window system buffers may not be supported,
 		//	try to use textures attached to application buffers instead
-		if (!Raptor::glIsExtensionSupported("WGL_ARB_render_texture"))
+		if (!Raptor::glIsExtensionSupported(WGL_ARB_RENDER_TEXTURE_EXTENSION_NAME))
 		{
-			if (Raptor::glIsExtensionSupported("GL_EXT_framebuffer_object"))
+			if (Raptor::glIsExtensionSupported(GL_EXT_FRAMEBUFFER_OBJECT_EXTENSION_NAME))
 				filter_cs.renderer = CRaptorDisplayConfig::RENDER_BUFFER;
 			else
 				return false;
@@ -272,7 +272,7 @@ bool CRaptorFilteredDisplay::glCreateRenderDisplay(void)
 													CTextureObject::CGL_OPAQUE,
 													ITextureObject::CGL_BILINEAR);
 			f.glResizeTexture(T,rda.width,rda.height);
-			T->glvkUpdateClamping(CTextureObject::CGL_EDGECLAMP);
+			T->glvkUpdateClamping(ITextureObject::CGL_EDGECLAMP);
 			m_pImageSet->addTexture(T);
 
 			//!	Do not use bilinear filtering for depth textures :
@@ -319,8 +319,8 @@ bool CRaptorFilteredDisplay::glCreateRenderDisplay(void)
         if ((filter_cs.display_mode & CGL_FLOAT) == CGL_FLOAT)
         {
 #if defined(GL_ARB_color_buffer_float) || defined(WGL_ATI_pixel_format_float)
-            if (Raptor::glIsExtensionSupported("GL_ARB_color_buffer_float") ||
-				Raptor::glIsExtensionSupported("WGL_ATI_pixel_format_float"))
+			if (Raptor::glIsExtensionSupported(GL_ARB_COLOR_BUFFER_FLOAT_EXTENSION_NAME) ||
+				Raptor::glIsExtensionSupported(WGL_ATI_PIXEL_FORMAT_FLOAT_EXTENSION_NAME))
             {
 				CRenderingProperties* props = m_pDisplay->getRenderingProperties();
 				props->setFloatClamping(CRenderingProperties::DISABLE);
