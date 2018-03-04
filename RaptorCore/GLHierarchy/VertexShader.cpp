@@ -86,7 +86,7 @@ void CVertexShader::glInitShaders()
 
 	if (!m_bVertexReady)
 	{
-		if (Raptor::glIsExtensionSupported("GL_ARB_vertex_program"))
+		if (Raptor::glIsExtensionSupported(GL_ARB_VERTEX_PROGRAM_EXTENSION_NAME))
 		{
 #if defined(GL_ARB_vertex_program)
 			const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();

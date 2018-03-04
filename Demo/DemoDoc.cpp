@@ -258,13 +258,14 @@ CDemoDoc::~CDemoDoc()
 //	Default virtual implementation
 void CDemoDoc::GLInitContext(void)
 {
-	if ((!Raptor::glIsExtensionSupported("GL_ARB_vertex_program")) ||
-		(!Raptor::glIsExtensionSupported("GL_ARB_fragment_program")) ||
-		(!Raptor::glIsExtensionSupported("WGL_ARB_pbuffer")) ||
-		(!Raptor::glIsExtensionSupported("WGL_ARB_render_texture") && !Raptor::glIsExtensionSupported("GL_EXT_framebuffer_object")))
+	if ((!Raptor::glIsExtensionSupported(GL_ARB_VERTEX_PROGRAM_EXTENSION_NAME)) ||
+		(!Raptor::glIsExtensionSupported(GL_ARB_FRAGMENT_PROGRAM_EXTENSION_NAME)) ||
+		(!Raptor::glIsExtensionSupported(WGL_ARB_PBUFFER_EXTENSION_NAME)) ||
+		(!Raptor::glIsExtensionSupported(WGL_ARB_RENDER_TEXTURE_EXTENSION_NAME) && 
+		!Raptor::glIsExtensionSupported(GL_EXT_FRAMEBUFFER_OBJECT_EXTENSION_NAME)))
 	{
         CRaptorMessages * const msg = Raptor::GetMessages();
-        msg->displayMessage("It seems your CPU/GPU do not have enough power to run this demo in full hardware. Rendering might be wrong");
+        msg->displayMessage("It seems your CPU/GPU does not support necessary extensions to run this demo in full hardware. Rendering might be wrong");
 	}
 
     CRaptorConsole *pConsole = Raptor::GetConsole();

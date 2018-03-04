@@ -363,7 +363,7 @@ bool CBlurFilter::glInitFilter(void)
 			                                        CTextureObject::CGL_OPAQUE,
 				                                    ITextureObject::CGL_UNFILTERED);
 		filterFactory.glResizeTexture(xKernelPass,state.width,state.height);
-		xKernelPass->glvkUpdateClamping(CTextureObject::CGL_EDGECLAMP);
+		xKernelPass->glvkUpdateClamping(ITextureObject::CGL_EDGECLAMP);
 		m_pRenderTextures->addTexture(xKernelPass);
 	}
 

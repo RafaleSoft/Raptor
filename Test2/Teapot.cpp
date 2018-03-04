@@ -86,12 +86,12 @@ void CTeapot::GLInitContext()
 	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 
 #if defined(GL_ARB_texture_compression)
-	if (Raptor::glIsExtensionSupported("GL_ARB_texture_compression"))
+	if (Raptor::glIsExtensionSupported(GL_ARB_TEXTURE_COMPRESSION_EXTENSION_NAME))
 		glHint(GL_TEXTURE_COMPRESSION_HINT_ARB,GL_NICEST);
 #endif
 
 	// point parameter settings
-	if (Raptor::glIsExtensionSupported("GL_EXT_point_parameters"))
+	if (Raptor::glIsExtensionSupported(GL_EXT_POINT_PARAMETERS_EXTENSION_NAME))
 	{
 		CVertexShader s;
 		GL_COORD_VERTEX quadric(-40.0f, 0.0f, 0.1f, 1.0f);
@@ -123,7 +123,7 @@ void CTeapot::GLInitContext()
 		if (0 < config.getNumCompressors())
 			config.setCurrentCompressor(config.getCompressor("OpenGL"));
 		f.glLoadTexture(T,"Datas\\start.tga");
-	    if (Raptor::glIsExtensionSupported("GL_ARB_texture_compression"))
+		if (Raptor::glIsExtensionSupported(GL_ARB_TEXTURE_COMPRESSION_EXTENSION_NAME))
 		    f.glExportCompressedTexture("start.s3tc",T);
     #endif
 #else
@@ -135,7 +135,7 @@ void CTeapot::GLInitContext()
 	f.glLoadTexture(T,"Datas\\bump.tga");
 	t->addTexture(T);
 
-	if (Raptor::glIsExtensionSupported("GL_ARB_texture_cube_map"))
+	if (Raptor::glIsExtensionSupported(GL_ARB_TEXTURE_CUBE_MAP_EXTENSION_NAME))
 	{
 #if defined(GL_ARB_texture_compression)
 		//const CTextureFactoryConfig::ICompressor *compressor = config.getCurrentCompressor();
@@ -197,7 +197,7 @@ void CTeapot::GLInitContext()
     CGeometry::CRenderingModel l_model(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
     l_model.addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
 	teapot->setRenderingModel(l_model);
-	if (!Raptor::glIsExtensionSupported("GL_ARB_vertex_program"))
+	if (!Raptor::glIsExtensionSupported(GL_ARB_VERTEX_PROGRAM_EXTENSION_NAME))
 		Raptor::GetMessages()->displayMessage("Hardware unable to render bump mapping");
 
 	C3DEngine::Get3DEngine()->setCameraBBox(-1.0,-1.0,-1.0,1.0,1.0,1.0);

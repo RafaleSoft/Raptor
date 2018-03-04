@@ -56,6 +56,29 @@
 	#endif	// defined(VK_VERSION_1_0)
 #endif
 
+#ifndef IMPLEMENT_VK_win32
+	#if defined(VK_VERSION_1_0) && defined(VK_USE_PLATFORM_WIN32_KHR) && defined(VK_KHR_win32_surface)
+		#define IMPLEMENT_VK_win32(target,instance)\
+		{\
+			target##vkCreateWin32SurfaceKHR = (PFN_vkCreateWin32SurfaceKHR)(vkGetInstanceProcAddr(instance, "vkCreateWin32SurfaceKHR")); \
+			target##vkGetPhysicalDeviceWin32PresentationSupportKHR = (PFN_vkGetPhysicalDeviceWin32PresentationSupportKHR)(vkGetInstanceProcAddr(instance, "vkGetPhysicalDeviceWin32PresentationSupportKHR"));\
+		}
+	#else
+		#define IMPLEMENT_VK_win32(target,instance)
+	#endif // defined(VK_VERSION_1_0) && defined(VK_USE_PLATFORM_WIN32_KHR) defined(VK_KHR_win32_surface)
+#endif
+
+#ifndef IMPLEMENT_VK_xlib
+	#if defined(VK_VERSION_1_0) && defined(VK_USE_PLATFORM_XLIB_KHR) && defined(VK_KHR_win32_surface)
+		#define IMPLEMENT_VK_xlib(target,instance)\
+		{\
+			target##vkCreateXlibSurfaceKHR = (PFN_vkCreateWin32SurfaceKHR)(vkGetInstanceProcAddr(instance, "vkCreateXlibSurfaceKHR")); \
+			target##vkGetPhysicalDeviceXlibPresentationSupportKHR = (PFN_vkGetPhysicalDeviceWin32PresentationSupportKHR)(vkGetInstanceProcAddr(instance, "vkGetPhysicalDeviceXlibPresentationSupportKHR"));\
+		}
+	#else
+		#define IMPLEMENT_VK_xlib(target,instance)
+	#endif // defined(VK_VERSION_1_0) && defined(VK_USE_PLATFORM_XLIB_KHR) && defined(VK_KHR_win32_surface)
+#endif
 
 #endif	// __vkext_macros_h_
 

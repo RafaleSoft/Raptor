@@ -482,7 +482,7 @@
 #ifndef IMPLEMENT_GL_EXT_point_parameters
 	#ifdef GL_EXT_point_parameters
 		#define IMPLEMENT_GL_EXT_point_parameters(target)\
-		if (Raptor::glIsExtensionSupported("GL_EXT_point_parameters"))\
+		if (Raptor::glIsExtensionSupported(GL_EXT_POINT_PARAMETERS_EXTENSION_NAME))\
 		{\
 			target->glPointParameterfEXT = (PFN_GL_POINT_PARAMETER_F_EXT_PROC)GET_PROC_ADDRESS("glPointParameterfEXT");\
 			target->glPointParameterfvEXT = (PFN_GL_POINT_PARAMETER_FV_EXT_PROC)GET_PROC_ADDRESS("glPointParameterfvEXT");\
@@ -500,7 +500,7 @@
 #ifndef IMPLEMENT_GL_ARB_point_parameters
 	#ifdef GL_ARB_point_parameters
 		#define IMPLEMENT_GL_ARB_point_parameters(target)\
-		if (Raptor::glIsExtensionSupported("GL_ARB_point_parameters"))\
+		if (Raptor::glIsExtensionSupported(GL_ARB_POINT_PARAMETERS_EXTENSION_NAME))\
 		{\
 			target->glPointParameterfARB = (PFN_GL_POINT_PARAMETER_F_ARB_PROC)GET_PROC_ADDRESS("glPointParameterfARB");\
 			target->glPointParameterfvARB = (PFN_GL_POINT_PARAMETER_FV_ARB_PROC)GET_PROC_ADDRESS("glPointParameterfvARB");\
@@ -518,7 +518,7 @@
 #ifndef IMPLEMENT_GL_ARB_multitexture
 	#ifdef GL_ARB_multitexture
 		#define IMPLEMENT_GL_ARB_multitexture(target)\
-		if (Raptor::glIsExtensionSupported("GL_ARB_multitexture"))\
+		if (Raptor::glIsExtensionSupported(GL_ARB_MULTITEXTURE_EXTENSION_NAME))\
 		{\
 			target->glActiveTextureARB = (PFN_GL_ACTIVE_TEXTURE_ARB_PROC)GET_PROC_ADDRESS("glActiveTextureARB");\
 			target->glClientActiveTextureARB = (PFN_GL_CLIENT_ACTIVE_TEXTURE_ARB_PROC)GET_PROC_ADDRESS("glClientActiveTextureARB");\
@@ -568,7 +568,7 @@
 #ifndef IMPLEMENT_GL_EXT_secondary_color
 	#ifdef GL_EXT_secondary_color
 		#define IMPLEMENT_GL_EXT_secondary_color(target)\
-		if (Raptor::glIsExtensionSupported("GL_EXT_secondary_color"))\
+		if (Raptor::glIsExtensionSupported(GL_EXT_SECONDARY_COLOR_EXTENSION_NAME))\
 		{\
 			target->glSecondaryColor3fEXT = (PFN_GL_SECONDARY_COLOR_3F_EXT_PROC)GET_PROC_ADDRESS("glSecondaryColor3fEXT");\
 			target->glSecondaryColor3fvEXT = (PFN_GL_SECONDARY_COLOR_3FV_EXT_PROC)GET_PROC_ADDRESS("glSecondaryColor3fvEXT");\
@@ -592,7 +592,7 @@
 #ifndef IMPLEMENT_WGL_EXT_swap_control
 	#ifdef WGL_EXT_swap_control
 		#define IMPLEMENT_WGL_EXT_swap_control(target)\
-		if (Raptor::glIsExtensionSupported("WGL_EXT_swap_control"))\
+		if (Raptor::glIsExtensionSupported(WGL_EXT_SWAP_CONTROL_EXTENSION_NAME))\
 		{\
 			target->wglSwapIntervalEXT = (PFN_WGL_SWAP_INTERVAL_PROC)GET_PROC_ADDRESS("wglSwapIntervalEXT");\
 			target->wglGetSwapIntervalEXT = (PFN_WGL_GET_SWAP_INTERVAL_PROC)GET_PROC_ADDRESS("wglGetSwapIntervalEXT");\
@@ -610,7 +610,7 @@
 #ifndef IMPLEMENT_GL_ARB_transpose_matrix
 	#ifdef GL_ARB_transpose_matrix
 		#define IMPLEMENT_GL_ARB_transpose_matrix(target)\
-		if (Raptor::glIsExtensionSupported("GL_ARB_transpose_matrix"))\
+		if (Raptor::glIsExtensionSupported(GL_ARB_TRANSPOSE_MATRIX_EXTENSION_NAME))\
 		{\
 			target->glLoadTransposeMatrixfARB = (PFN_GL_LOAD_TRANSPOSE_MATRIX_F_ARB_PROC)GET_PROC_ADDRESS("glLoadTransposeMatrixfARB");\
 			target->glLoadTransposeMatrixdARB = (PFN_GL_LOAD_TRANSPOSE_MATRIX_D_ARB_PROC)GET_PROC_ADDRESS("glLoadTransposeMatrixdARB");\
@@ -632,7 +632,7 @@
 #ifndef IMPLEMENT_GL_EXT_vertex_weighting
 	#ifdef GL_EXT_vertex_weighting
 		#define IMPLEMENT_GL_EXT_vertex_weighting(target)\
-		if (Raptor::glIsExtensionSupported("GL_EXT_vertex_weighting"))\
+		if (Raptor::glIsExtensionSupported(GL_EXT_VERTEX_WEIGHTING_EXTENSION_NAME))\
 		{\
 			target->glVertexWeightfEXT = (PFN_GL_VERTEX_WEIGHT_F_EXT_PROC)GET_PROC_ADDRESS("glVertexWeightfEXT");\
 			target->glVertexWeightfvEXT = (PFN_GL_VERTEX_WEIGHT_FV_EXT_PROC)GET_PROC_ADDRESS("glVertexWeightfvEXT");\
@@ -652,7 +652,7 @@
 #ifndef IMPLEMENT_GL_ARB_texture_compression
 	#ifdef GL_ARB_texture_compression
 		#define IMPLEMENT_GL_ARB_texture_compression(target)\
-		if (Raptor::glIsExtensionSupported("GL_ARB_texture_compression"))\
+		if (Raptor::glIsExtensionSupported(GL_ARB_TEXTURE_COMPRESSION_EXTENSION_NAME))\
 		{\
 			target->glCompressedTexImage3DARB = (PFN_GL_COMPRESSED_TEX_IMAGE_3D_ARB_PROC)GET_PROC_ADDRESS("glCompressedTexImage3DARB"); \
 			target->glCompressedTexImage2DARB = (PFN_GL_COMPRESSED_TEX_IMAGE_2D_ARB_PROC)GET_PROC_ADDRESS("glCompressedTexImage2DARB"); \
@@ -681,7 +681,7 @@
 #ifndef IMPLEMENT_GL_EXT_compiled_vertex_array
 	#ifdef GL_EXT_compiled_vertex_array
 		#define IMPLEMENT_GL_EXT_compiled_vertex_array(target)\
-		if (Raptor::glIsExtensionSupported("GL_EXT_compiled_vertex_array"))\
+		if (Raptor::glIsExtensionSupported(GL_EXT_COMPILED_VERTEX_ARRAY_EXTENSION_NAME))\
 		{\
 			target->glLockArraysEXT = (PFN_GL_LOCK_ARRAYS_EXT_PROC)GET_PROC_ADDRESS("glLockArraysEXT");\
 			target->glUnlockArraysEXT = (PFN_GL_UNLOCK_ARRAYS_EXT_PROC)GET_PROC_ADDRESS("glUnlockArraysEXT");\
@@ -699,7 +699,7 @@
 #ifndef IMPLEMENT_GL_ARB_imaging
 	#ifdef GL_ARB_imaging
 		#define IMPLEMENT_GL_ARB_imaging(target)\
-		if (Raptor::glIsExtensionSupported("GL_ARB_imaging"))\
+		if (Raptor::glIsExtensionSupported(GL_ARB_IMAGING_EXTENSION_NAME))\
 		{\
 			target->glBlendColorARB = (PFN_GL_BLEND_COLOR_ARB_PROC)GET_PROC_ADDRESS("glBlendColor");\
 			target->glBlendEquationARB = (PFN_GL_BLEND_EQUATION_ARB_PROC)GET_PROC_ADDRESS("glBlendEquation");\
@@ -717,7 +717,7 @@
 #ifndef IMPLEMENT_GL_NV_register_combiners
 	#ifdef GL_NV_register_combiners
 	#define IMPLEMENT_GL_NV_register_combiners(target) \
-		if (Raptor::glIsExtensionSupported("GL_NV_register_combiners"))\
+		if (Raptor::glIsExtensionSupported(GL_NV_REGISTER_COMBINERS_EXTENSION_NAME))\
 		{\
 			target->glCombinerParameterfvNV = (PFN_GL_COMBINER_PARAMETER_FV_NV_PROC)GET_PROC_ADDRESS("glCombinerParameterfvNV"); \
 			target->glCombinerParameterivNV  = (PFN_GL_COMBINER_PARAMETER_IV_NV_PROC)GET_PROC_ADDRESS("glCombinerParameterivNV"); \
@@ -758,7 +758,7 @@
 #ifndef IMPLEMENT_GL_EXT_fog_coord
 	#ifdef GL_EXT_fog_coord
 	#define IMPLEMENT_GL_EXT_fog_coord(target) \
-		if (Raptor::glIsExtensionSupported("GL_EXT_fog_coord"))\
+		if (Raptor::glIsExtensionSupported(GL_EXT_FOG_COORD_EXTENSION_NAME))\
 		{\
 			target->glFogCoordfEXT = (PFN_GL_FOG_COORD_F_EXT_PROC)GET_PROC_ADDRESS("glFogCoordfEXT"); \
 			target->glFogCoorddEXT = (PFN_GL_FOG_COORD_D_EXT_PROC)GET_PROC_ADDRESS("glFogCoorddEXT"); \
@@ -782,7 +782,7 @@
 #ifndef IMPLEMENT_GL_NV_vertex_array_range
 	#ifdef GL_NV_vertex_array_range
 	#define IMPLEMENT_GL_NV_vertex_array_range(target) \
-		if (Raptor::glIsExtensionSupported("GL_NV_vertex_array_range"))\
+		if (Raptor::glIsExtensionSupported(GL_NV_VERTEX_ARRAY_RANGE_EXTENSION_NAME))\
 		{\
 			target->glVertexArrayRangeNV = (PFN_GL_VERTEX_ARRAY_RANGE_NV_PROC)GET_PROC_ADDRESS("glVertexArrayRangeNV");\
 			target->glFlushVertexArrayRangeNV = (PFN_GL_FLUSH_VERTEX_ARRAY_RANGE_NV_PROC)GET_PROC_ADDRESS("glFlushVertexArrayRangeNV");\
@@ -804,7 +804,7 @@
 #ifndef IMPLEMENT_GL_ARB_vertex_buffer_object
 	#ifdef GL_ARB_vertex_buffer_object
 	#define IMPLEMENT_GL_ARB_vertex_buffer_object(target) \
-		if (Raptor::glIsExtensionSupported("GL_ARB_vertex_buffer_object"))\
+		if (Raptor::glIsExtensionSupported(GL_ARB_VERTEX_BUFFER_OBJECT_EXTENSION_NAME))\
 		{\
 			target->glBindBufferARB = (PFN_BIND_BUFFER_ARB_PROC)GET_PROC_ADDRESS("glBindBufferARB");\
 			target->glDeleteBuffersARB = (PFN_DELETE_BUFFERS_ARB_PROC)GET_PROC_ADDRESS("glDeleteBuffersARB");\
@@ -841,7 +841,7 @@
 #ifndef IMPLEMENT_GL_NV_point_sprite
 	#ifdef GL_NV_point_sprite
 		#define IMPLEMENT_GL_NV_point_sprite(target)\
-		if (Raptor::glIsExtensionSupported("GL_NV_point_sprite"))\
+		if (Raptor::glIsExtensionSupported(GL_NV_POINT_SPRITE_EXTENSION_NAME))\
 		{\
 			target->glPointParameteriNV = (PFN_GL_POINT_PARAMETER_I_NV_PROC)GET_PROC_ADDRESS("glPointParameteriNV");\
 			target->glPointParameterivNV = (PFN_GL_POINT_PARAMETER_IV_NV_PROC)GET_PROC_ADDRESS("glPointParameterivNV");\
@@ -859,7 +859,7 @@
 #ifndef IMPLEMENT_WGL_ARB_pbuffer
 	#ifdef WGL_ARB_pbuffer
 		#define IMPLEMENT_WGL_ARB_pbuffer(target) \
-		if (Raptor::glIsExtensionSupported("WGL_ARB_pbuffer"))\
+		if (Raptor::glIsExtensionSupported(WGL_ARB_PBUFFER_EXTENSION_NAME))\
 		{\
 			target->wglCreatePBufferARB = (PFN_WGL_CREATE_PBUFFER_ARB_PROC)GET_PROC_ADDRESS("wglCreatePbufferARB");\
 			target->wglGetPBufferDCARB = (PFN_WGL_GET_PBUFFER_DC_ARB_PROC)GET_PROC_ADDRESS("wglGetPbufferDCARB");\
@@ -883,7 +883,7 @@
 #ifndef	IMPLEMENT_WGL_ARB_render_texture
 	#ifdef WGL_ARB_render_texture
 		#define IMPLEMENT_WGL_ARB_render_texture(target)\
-		if (Raptor::glIsExtensionSupported("WGL_ARB_pbuffer"))\
+		if (Raptor::glIsExtensionSupported(WGL_ARB_RENDER_TEXTURE_EXTENSION_NAME))\
 		{\
 			target->wglBindTexImageARB = (PFN_WGL_BIND_TEX_IMAGE_ARB_PROC)GET_PROC_ADDRESS("wglBindTexImageARB");\
 			target->wglReleaseTexImageARB = (PFN_WGL_RELEASE_TEX_IMAGE_ARB_PROC)GET_PROC_ADDRESS("wglReleaseTexImageARB");\
@@ -905,7 +905,7 @@
 	#ifdef GL_ARB_vertex_program
 		#define IMPLEMENT_GL_ARB_vertex_program(target)\
 		{\
-			if (Raptor::glIsExtensionSupported("GL_ARB_vertex_program"))\
+			if (Raptor::glIsExtensionSupported(GL_ARB_VERTEX_PROGRAM_EXTENSION_NAME))\
 			{\
 				target->glVertexAttrib1sARB = (PFN_VERTEX_ATTRIB_1S_ARB_PROC)GET_PROC_ADDRESS("glVertexAttrib1sARB");\
 				target->glVertexAttrib1fARB = (PFN_VERTEX_ATTRIB_1F_ARB_PROC)GET_PROC_ADDRESS("glVertexAttrib1fARB");\
@@ -1044,7 +1044,7 @@
 #ifndef IMPLEMENT_GL_ARB_occlusion_query
 	#ifdef GL_ARB_occlusion_query
 		#define IMPLEMENT_GL_ARB_occlusion_query(target)\
-		if (Raptor::glIsExtensionSupported("GL_ARB_occlusion_query"))\
+		if (Raptor::glIsExtensionSupported(GL_ARB_OCCLUSION_QUERY_EXTENSION_NAME))\
 		{\
 			target->glGenQueriesARB = (PFN_GEN_QUERIES_ARB_PROC)GET_PROC_ADDRESS("glGenQueriesARB");\
 			target->glDeleteQueriesARB = (PFN_DELETE_QUERIES_ARB_PROC)GET_PROC_ADDRESS("glDeleteQueriesARB");\
@@ -1075,7 +1075,7 @@
 #ifndef IMPLEMENT_GL_EXT_stencil_two_side
 	#ifdef GL_EXT_stencil_two_side
 		#define IMPLEMENT_GL_EXT_stencil_two_side(target)\
-		if (Raptor::glIsExtensionSupported("GL_EXT_stencil_two_side"))\
+		if (Raptor::glIsExtensionSupported(GL_EXT_STENCIL_TWO_SIDE_EXTENSION_NAME))\
 		{\
 			target->glActiveStencilFaceEXT = (PFN_GL_ACTIVE_STENCIL_FACE_EXT_PROC)GET_PROC_ADDRESS("glActiveStencilFaceEXT");\
 		}\
@@ -1092,7 +1092,7 @@
 #ifndef IMPLEMENT_GL_ARB_color_buffer_float
 	#ifdef GL_ARB_color_buffer_float
 		#define IMPLEMENT_GL_ARB_color_buffer_float(target)\
-		if (Raptor::glIsExtensionSupported("GL_ARB_color_buffer_float"))\
+		if (Raptor::glIsExtensionSupported(GL_ARB_COLOR_BUFFER_FLOAT_EXTENSION_NAME))\
 		{\
 			target->glClampColorARB = (PFN_CLAMP_COLOR_ARB_PROC)GET_PROC_ADDRESS("glClampColorARB");\
 		}\
@@ -1109,7 +1109,7 @@
 #ifndef IMPLEMENT_GL_EXT_texture3D
 	#ifdef GL_EXT_texture3D
 		#define IMPLEMENT_GL_EXT_texture3D(target)\
-		if (Raptor::glIsExtensionSupported("GL_EXT_texture3D"))\
+		if (Raptor::glIsExtensionSupported(GL_EXT_TEXTURE3D_EXTENSION_NAME))\
 		{\
 			target->glTexImage3DEXT = (PFN_GL_TEX_IMAGE3D_EXT_PROC)GET_PROC_ADDRESS("glTexImage3DEXT");\
 		}\
@@ -1125,7 +1125,7 @@
 #ifndef IMPLEMENT_GL_ARB_shader_objets
     #ifdef GL_ARB_shader_objects
         #define IMPLEMENT_GL_ARB_shader_objects(target) \
-        if (Raptor::glIsExtensionSupported("GL_ARB_shader_objects"))\
+        if (Raptor::glIsExtensionSupported(GL_ARB_SHADER_OBJECTS_EXTENSION_NAME))\
 		{\
 			target->glDeleteObjectARB = (PFN_DELETE_OBJECT_ARB_PROC)GET_PROC_ADDRESS("glDeleteObjectARB");\
             target->glGetHandleARB = (PFN_GET_HANDLE_ARB_PROC)GET_PROC_ADDRESS("glGetHandleARB");\
@@ -1218,7 +1218,7 @@
 #ifndef IMPLEMENT_GL_ARB_vertex_shader
 	#ifdef GL_ARB_vertex_shader
 		#define IMPLEMENT_GL_ARB_vertex_shader(target)\
-		if (Raptor::glIsExtensionSupported("GL_ARB_vertex_shader"))\
+		if (Raptor::glIsExtensionSupported(GL_ARB_VERTEX_SHADER_EXTENSION_NAME))\
 		{\
 			target->glBindAttribLocationARB = (PFN_BIND_ATTRIB_LOCATION_ARB_PROC)GET_PROC_ADDRESS("glBindAttribLocationARB");\
             target->glGetActiveAttribARB = (PFN_GET_ACTIVE_ATTRIB_ARB_PROC)GET_PROC_ADDRESS("glGetActiveAttribARB");\
@@ -1239,7 +1239,7 @@
 #ifndef IMPLEMENT_GL_ARB_geometry_shader4
 	#ifdef GL_ARB_geometry_shader4
 		#define IMPLEMENT_GL_ARB_geometry_shader4(target)\
-		if (Raptor::glIsExtensionSupported("GL_ARB_geometry_shader4"))\
+		if (Raptor::glIsExtensionSupported(GL_ARB_GEOMETRY_SHADER4_EXTENSION_NAME))\
 		{\
 			target->glProgramParameteriARB = (PFN_PROGRAM_PARAMETER_I_ARB_PROC)GET_PROC_ADDRESS("glProgramParameteriARB");\
             target->glFramebufferTextureARB = (PFN_FRAMEBUFFER_TEXTURE_ARB_PROC)GET_PROC_ADDRESS("glFramebufferTextureARB");\
@@ -1262,7 +1262,7 @@
 #ifndef IMPLEMENT_GL_ARB_draw_buffers
 	#ifdef GL_ARB_draw_buffers
 		#define IMPLEMENT_GL_ARB_draw_buffers(target)\
-		if (Raptor::glIsExtensionSupported("GL_ARB_draw_buffers"))\
+		if (Raptor::glIsExtensionSupported(GL_ARB_DRAW_BUFFERS_EXTENSION_NAME))\
 		{\
 			target->glDrawBuffersARB = (PFN_DRAW_BUFFERS_ARB)GET_PROC_ADDRESS("glDrawBuffersARB");\
 		}\
@@ -1279,7 +1279,7 @@
 #ifndef IMPLEMENT_GL_EXT_blend_color
 	#ifdef GL_EXT_blend_color
 		#define IMPLEMENT_GL_EXT_blend_color(target)\
-		if (Raptor::glIsExtensionSupported("GL_EXT_blend_color"))\
+		if (Raptor::glIsExtensionSupported(GL_EXT_BLEND_COLOR_EXTENSION_NAME))\
 		{\
 			target->glBlendColorEXT = (PFN_GL_BLEND_COLOR_EXT_PROC)GET_PROC_ADDRESS("glBlendColorEXT");\
 		}\
@@ -1296,7 +1296,7 @@
 #ifndef IMPLEMENT_GL_EXT_framebuffer_object
     #ifdef GL_EXT_framebuffer_object
 		#define IMPLEMENT_GL_EXT_framebuffer_object(target) \
-		if (Raptor::glIsExtensionSupported("GL_EXT_framebuffer_object"))\
+		if (Raptor::glIsExtensionSupported(GL_EXT_FRAMEBUFFER_OBJECT_EXTENSION_NAME))\
 		{\
 			target->glIsRenderbufferEXT = (PFN_GL_IS_RENDER_BUFFER_EXT_PROC)GET_PROC_ADDRESS("glIsRenderbufferEXT");\
 			target->glBindRenderbufferEXT = (PFN_GL_BIND_RENDER_BUFFER_EXT_PROC)GET_PROC_ADDRESS("glBindRenderbufferEXT");\
@@ -1345,7 +1345,7 @@
 #ifndef IMPLEMENT_GL_EXT_framebuffer_blit
 	#ifdef GL_EXT_framebuffer_blit
 		#define IMPLEMENT_GL_EXT_framebuffer_blit(target)\
-		if (Raptor::glIsExtensionSupported("GL_EXT_framebuffer_blit"))\
+		if (Raptor::glIsExtensionSupported(GL_EXT_FRAMEBUFFER_BLIT_EXTENSION_NAME))\
 		{\
 			target->glBlitFrameBufferEXT = (PFN_GL_BLIT_FRAME_BUFFER_EXT_PROC)GET_PROC_ADDRESS("glBlitFramebufferEXT");\
 		}\
@@ -1362,7 +1362,7 @@
 #ifndef IMPLEMENT_GL_EXT_framebuffer_multisample
 	#ifdef GL_EXT_framebuffer_multisample
 		#define IMPLEMENT_GL_EXT_framebuffer_multisample(target)\
-		if (Raptor::glIsExtensionSupported("GL_EXT_blend_color"))\
+		if (Raptor::glIsExtensionSupported(GL_EXT_BLEND_COLOR_EXTENSION_NAME))\
 		{\
 			target->glRenderbufferStorageMultisampleEXT = (PFN_GL_RENDER_BUFFER_STORAGE_MULTISAMPLE_EXT_PROC)GET_PROC_ADDRESS("glRenderbufferStorageMultisampleEXT");\
 		}\
@@ -1378,7 +1378,7 @@
 #ifndef IMPLEMENT_GL_ARB_uniform_buffer_object
 	#ifdef GL_ARB_uniform_buffer_object
 	#define IMPLEMENT_GL_ARB_uniform_buffer_object(target)\
-			if (Raptor::glIsExtensionSupported("GL_ARB_uniform_buffer_object"))\
+			if (Raptor::glIsExtensionSupported(GL_ARB_UNIFORM_BUFFER_OBJECT_EXTENSION_NAME))\
 			{\
 				target->glGetUniformIndicesARB = (PFN_GL_GET_UNIFORM_INDICES_ARB_PROC)GET_PROC_ADDRESS("glGetUniformIndices");\
 				target->glGetActiveUniformsivARB = (PFN_GL_GET_ACTIVE_UNIFORMS_IV_ARB_PROC)GET_PROC_ADDRESS("glGetActiveUniformsiv");\

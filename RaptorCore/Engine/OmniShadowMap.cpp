@@ -100,9 +100,10 @@ void COmniShadowMap::addObject(C3DSceneObject* object)
 bool COmniShadowMap::glInitEnvironment(unsigned int width,unsigned int height)
 {
 #ifdef GL_ARB_texture_cube_map
-    if ( !Raptor::glIsExtensionSupported("GL_ARB_texture_cube_map") ||
-         !Raptor::glIsExtensionSupported("WGL_NV_render_depth_texture") ||
-         !(Raptor::glIsExtensionSupported("GL_ARB_color_buffer_float") || Raptor::glIsExtensionSupported("WGL_ATI_pixel_format_float")))
+	if (!Raptor::glIsExtensionSupported(GL_ARB_TEXTURE_CUBE_MAP_EXTENSION_NAME) ||
+		!Raptor::glIsExtensionSupported(WGL_NV_RENDER_DEPTH_TEXTURE_EXTENSION_NAME) ||
+		!(Raptor::glIsExtensionSupported(GL_ARB_COLOR_BUFFER_FLOAT_EXTENSION_NAME) || 
+		Raptor::glIsExtensionSupported(WGL_ATI_PIXEL_FORMAT_FLOAT_EXTENSION_NAME)))
     {
 		Raptor::GetErrorManager()->generateRaptorError(	Global::COpenGLClassID::GetClassId(),
 														CRaptorErrorManager::RAPTOR_ERROR,

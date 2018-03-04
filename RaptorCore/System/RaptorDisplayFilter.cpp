@@ -378,7 +378,7 @@ CTextureObject*  CRaptorDisplayFilter::glCreateColorOutput(void)
 		                                        CTextureObject::CGL_OPAQUE,
 			                                    ITextureObject::CGL_UNFILTERED);
 	filterFactory.glResizeTexture(colorOutput,state.width,state.height);
-	colorOutput->glvkUpdateClamping(CTextureObject::CGL_EDGECLAMP);
+	colorOutput->glvkUpdateClamping(ITextureObject::CGL_EDGECLAMP);
 
 	if (m_pOutputTextures != NULL)
 		delete m_pOutputTextures;

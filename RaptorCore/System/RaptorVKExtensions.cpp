@@ -52,6 +52,11 @@ RAPTOR_NAMESPACE
 CRaptorVKExtensions::CRaptorVKExtensions(const std::string &ext)
 {
 	extensions = ext;
+
+#if defined(VK_VERSION_1_0)
+	IMPLEMENT_VK_win32(this->, instance);
+	IMPLEMENT_VK_xlib(this->, instance);
+#endif
 }
 
 CRaptorVKExtensions::~CRaptorVKExtensions()
@@ -161,23 +166,23 @@ bool CRaptorVKExtensions::vkInitInstanceExtensions(void)
 	uint32_t nbExtensions = 0;
 
 #if defined(RAPTOR_DEBUG_MODE_GENERATION) && defined(VK_EXT_debug_report)
-	if (vkIsExtensionSupported("VK_EXT_debug_report"))
+	if (string::npos != instance_extensions.find(VK_EXT_DEBUG_REPORT_EXTENSION_NAME))
 	{
-		extensions[nbExtensions] = "VK_EXT_debug_report";
+		extensions[nbExtensions] = VK_EXT_DEBUG_REPORT_EXTENSION_NAME;
 		nbExtensions++;
 	}
 #endif
 #if defined (VK_KHR_surface)
-	if (string::npos != instance_extensions.find("VK_KHR_surface"))
+	if (string::npos != instance_extensions.find(VK_KHR_SURFACE_EXTENSION_NAME))
 	{
-		extensions[nbExtensions] = "VK_KHR_surface";
+		extensions[nbExtensions] = VK_KHR_SURFACE_EXTENSION_NAME;
 		nbExtensions++;
 	}
 #endif
 #if defined (VK_KHR_win32_surface)
-	if (string::npos != instance_extensions.find("VK_KHR_win32_surface"))
+	if (string::npos != instance_extensions.find(VK_KHR_WIN32_SURFACE_EXTENSION_NAME))
 	{
-		extensions[nbExtensions] = "VK_KHR_win32_surface";
+		extensions[nbExtensions] = VK_KHR_WIN32_SURFACE_EXTENSION_NAME;
 		nbExtensions++;
 	}
 #endif
