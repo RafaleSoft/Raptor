@@ -42,31 +42,65 @@ OPENCL_BIN_PATH=C:/Intel/OpenCL/sdk/bin/x86
 VULKAN_INCLUDE_PATH = $(RAPTOR_ROOT)/AddOns/vulkan/include
 VULKAN_BIN_PATH=c:/windows/system32
 
-all:	simd microlex builder
+#
+# Projects target building dependencies and order
+#
+all:	simd microlex builder raptordatapackager raptordata raptorcore
 
-	
+raptorcore: builder simd microlex raptordata $(REDIST)/Lib/RaptorCore.lib
+
+raptordata:	builder raptordatapackager $(REDIST)/Lib/RaptorData.lib
+
+raptordatapackager:	builder $(REDIST)/Bin/RaptorDataPackager
+
 builder:	simd microlex $(REDIST)/Bin/Builder
-	echo "Building builder..."
 
 microlex:	$(REDIST)/Bin/Microlex
-	echo "Building microlex..."
 
 simd:	$(REDIST)/Lib/simd.lib
-	echo "Building simd..."
 
+
+#
+# Projects building rules
+#
+$(REDIST)/Lib/RaptorCore.lib:
+	@echo "Building RaptorCore project ..."
+	make -C Build/Linux -f Makefile.raptorcore all
+	@echo "RaptorCore project done."
+
+$(REDIST)/Lib/RaptorData.lib:
+	@echo "Building RaptorData project ..."
+	make -C Build/Linux -f Makefile.raptordata all
+	@echo "RaptorData project done."
+
+$(REDIST)/Bin/RaptorDataPackager:
+	@echo "Building RaptorDataPackager project ..."
+	make -C Build/Linux -f Makefile.raptordatapackager all
+	@echo "RaptorDataPackager project done."
 
 $(REDIST)/Bin/Builder:
+	@echo "Building Builder project ..."
 	make -C Build/Linux -f Makefile.builder all
+	@echo "Builder project done."
 
 $(REDIST)/Bin/Microlex:
+	@echo "Building Microlex project ..."
 	make -C Build/Linux -f Makefile.microlex all
+	@echo "Microlex project done."
 
 $(REDIST)/Lib/simd.lib:
-	echo "make simd.lib ..."
+	@echo "Building simd.lib project ..."
 	make -C Build/Linux -f Makefile.simd all
+	@echo "simd.lib project done."
 
 
+#
+# Common targets
+#
 clean:
+	make -C Build/Linux -f Makefile.raptorcore clean
+	make -C Build/Linux -f Makefile.raptordata clean
+	make -C Build/Linux -f Makefile.raptordatapackager clean
 	make -C Build/Linux -f Makefile.builder clean
 	make -C Build/Linux -f Makefile.microlex clean
 	make -C Build/Linux -f Makefile.simd clean

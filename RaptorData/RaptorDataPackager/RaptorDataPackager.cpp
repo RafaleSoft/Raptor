@@ -8,7 +8,6 @@
 #include <errno.h>
 #include <string.h>
 #include <stdlib.h>
-#include <io.h>
 #include <fcntl.h>
 
 #include "PackageHeader.h"
@@ -23,6 +22,7 @@ static unsigned char out[CHUNK];
 
 
 #if defined(WIN32)
+	#include <io.h>
 	#include <share.h>
 	static FILE *msdn_fopen(const char *filename,const char *mode)
 	{
@@ -64,11 +64,31 @@ static unsigned char out[CHUNK];
 	#define STRCPY(a,b,s) msdn_strcpy(a,b,s)
 	#define STRCAT(a,b,s) msdn_strcat(a,b,s)
 	#define OPEN(f,o,m) msdn_open(f,o,m)
+	#define STAT _stat
+	#define STRDUP _strdup
+	#define CLOSE(f) _close(f)
+	#define WRITE(a,b,c) _write(a,b,c)
+	#define READ(a,b,c) _read(a,b,c)
+	#define O_BINARY _O_BINARY
+	#define O_CREAT _O_CREAT
+	#define O_TRUNC _O_TRUNC
+	#define O_RDONLY _O_RDONLY
+	#define O_WRONLY _O_WRONLY
+	#define S_IREAD _S_IREAD
+	#define S_IWRITE _S_IWRITE
 #elif defined(LINUX)
+	#include <linux/limits.h>
 	#define FOPEN(a,b) fopen(a,b)
 	#define STRCPY(a,b,s) strcpy(a,b)
 	#define STRCAT(a,b,s) strcat(a,b)
 	#define OPEN(f,o,m) open(f,o,m)
+	#define STAT stat
+	#define STRDUP strdup
+	#define CLOSE(f) close(f)
+	#define WRITE(a,b,c) write(a,b,c)
+	#define READ(a,b,c) read(a,b,c)
+	#define O_BINARY 0
+	#define _MAX_PATH PATH_MAX
 #endif
 
 void clean(PackageHeader_t &header)
@@ -96,91 +116,90 @@ void clean(PackageHeader_t &header)
 
 bool zipfile(const char* fname, const char* outfile, int level)
 {
-    int ret, flush;
-    unsigned have;
-    z_stream strm;
+	int flush = Z_NO_FLUSH;
+	unsigned int have = 0;
 
-    /* allocate deflate state */
-    strm.zalloc = Z_NULL;
-    strm.zfree = Z_NULL;
-    strm.opaque = Z_NULL;
-    ret = deflateInit(&strm, level);
-    if (ret != Z_OK)
-        return false;
+	/* allocate deflate state */
+	z_stream strm;
+	strm.zalloc = Z_NULL;
+	strm.zfree = Z_NULL;
+	strm.opaque = Z_NULL;
+	int ret = deflateInit(&strm, level);
+	if (ret != Z_OK)
+		return false;
 
 	FILE *source = FOPEN(fname,"rb");
-	if (source == NULL)
+	if (NULL == source)
 		return false;
 
 	FILE *dest = FOPEN(outfile,"wb");
-	if (dest == NULL)
+	if (NULL == dest)
 		return false;
 
-    /* compress until end of file */
-    do 
+	/* compress until end of file */
+	do 
 	{
-        strm.avail_in = fread(in, 1, CHUNK, source);
-        if (ferror(source)) 
+		strm.avail_in = fread(in, 1, CHUNK, source);
+		if (ferror(source)) 
 		{
-            (void)deflateEnd(&strm);
-            return false;
-        }
-        flush = feof(source) ? Z_FINISH : Z_NO_FLUSH;
-        strm.next_in = in;
+			(void)deflateEnd(&strm);
+			return false;
+		}
+		flush = feof(source) ? Z_FINISH : Z_NO_FLUSH;
+		strm.next_in = in;
 
-        /* run deflate() on input until output buffer not full, finish
-           compression if all of source has been read in */
-        do 
+		/* run deflate() on input until output buffer not full, finish
+		compression if all of source has been read in */
+		do 
 		{
-            strm.avail_out = CHUNK;
-            strm.next_out = out;
-            ret = deflate(&strm, flush);    /* no bad return value */
+			strm.avail_out = CHUNK;
+			strm.next_out = out;
+			ret = deflate(&strm, flush);    /* no bad return value */
 
 			if (ret == Z_STREAM_ERROR)
 				return false;
 
-            have = CHUNK - strm.avail_out;
-            if (fwrite(out, 1, have, dest) != have || ferror(dest)) 
+			have = CHUNK - strm.avail_out;
+			if (fwrite(out, 1, have, dest) != have || ferror(dest)) 
 			{
-                (void)deflateEnd(&strm);
-                return false;
-            }
-        } 
+				(void)deflateEnd(&strm);
+				return false;
+			}
+		} 
 		while (strm.avail_out == 0);
 
-        if (strm.avail_in != 0)     /* all input will be used */
+		if (strm.avail_in != 0)     /* all input will be used */
 			return false;
 
-        /* done when last data in file processed */
-    } 
+	/* done when last data in file processed */
+	} 
 	while (flush != Z_FINISH);
 
-    if (ret != Z_STREAM_END)        /* stream will be complete */
+	if (ret != Z_STREAM_END)        /* stream will be complete */
 		return false;
 
-    /* clean up and return */
-    (void)deflateEnd(&strm);
+	/* clean up and return */
+	(void)deflateEnd(&strm);
 
 	ret = fclose(source);
 	ret = fclose(dest);
-    return ( true );
+	return true;
 }
 
 bool unzipfile(const char* fname, const char* outfile)
 {
-    int ret;
-    unsigned have;
-    z_stream strm;
-
-    /* allocate inflate state */
-    strm.zalloc = Z_NULL;
-    strm.zfree = Z_NULL;
-    strm.opaque = Z_NULL;
-    strm.avail_in = 0;
-    strm.next_in = Z_NULL;
-    ret = inflateInit(&strm);
-    if (ret != Z_OK)
-        return false;
+	unsigned int have = 0;
+    
+	/* allocate inflate state */
+	z_stream strm;
+	strm.zalloc = Z_NULL;
+	strm.zfree = Z_NULL;
+	strm.opaque = Z_NULL;
+	strm.avail_in = 0;
+	strm.next_in = Z_NULL;
+	int ret = inflateInit(&strm);
+	if (ret != Z_OK)
+		return false;
 
 	FILE *source = FOPEN(fname,"rb");
 	if (source == NULL)
@@ -190,32 +209,32 @@ bool unzipfile(const char* fname, const char* outfile)
 	if (dest == NULL)
 		return false;
 
-    /* decompress until deflate stream ends or end of file */
-    do 
+	/* decompress until deflate stream ends or end of file */
+	do 
 	{
-        strm.avail_in = fread(in, 1, CHUNK, source);
-        if (ferror(source)) 
+		strm.avail_in = fread(in, 1, CHUNK, source);
+		if (ferror(source)) 
 		{
-            (void)inflateEnd(&strm);
-            return false;
-        }
+			(void)inflateEnd(&strm);
+			return false;
+		}
 
-        if (strm.avail_in == 0)
-            break;
+		if (strm.avail_in == 0)
+			break;
 
-        strm.next_in = in;
+		strm.next_in = in;
 
-        /* run inflate() on input until output buffer not full */
-        do 
+		/* run inflate() on input until output buffer not full */
+		do 
 		{
-            strm.avail_out = CHUNK;
-            strm.next_out = out;
-            ret = inflate(&strm, Z_NO_FLUSH);
+			strm.avail_out = CHUNK;
+			strm.next_out = out;
+			ret = inflate(&strm, Z_NO_FLUSH);
 
-            if (ret == Z_STREAM_ERROR)  /* state not clobbered */
+			if (ret == Z_STREAM_ERROR)  /* state not clobbered */
 				return false;
 
-            switch (ret) 
+			switch (ret) 
 			{
 				case Z_NEED_DICT:
 					ret = Z_DATA_ERROR;     /* and fall through */
@@ -223,24 +242,24 @@ bool unzipfile(const char* fname, const char* outfile)
 				case Z_MEM_ERROR:
 					(void)inflateEnd(&strm);
 					return false;
-            }
+			}
 
-            have = CHUNK - strm.avail_out;
-            if (fwrite(out, 1, have, dest) != have || ferror(dest)) 
+			have = CHUNK - strm.avail_out;
+			if (fwrite(out, 1, have, dest) != have || ferror(dest)) 
 			{
-                (void)inflateEnd(&strm);
-                return false;
-            }
-        } 
+				(void)inflateEnd(&strm);
+				return false;
+			}
+		} 
 		while (strm.avail_out == 0);
 
-        /* done when inflate() says it's done */
-    } 
+	/* done when inflate() says it's done */
+	} 
 	while (ret != Z_STREAM_END);
 
-    /* clean up and return */
-    (void)inflateEnd(&strm);
-    
+	/* clean up and return */
+	(void)inflateEnd(&strm);
+
 	fclose(source);
 	fclose(dest);
 
@@ -249,18 +268,18 @@ bool unzipfile(const char* fname, const char* outfile)
 
 int main(int argc, char* argv[])
 {
-    if (argc < 3)
-    {
-        printf("Usage:\n");
-        printf("RaptorDataPackager [-C] <package_name> <filename_1> [filename_2] ... [filename_n]\n");
+	if (argc < 3)
+	{
+		printf("Usage:\n");
+		printf("RaptorDataPackager [-C] <package_name> <filename_1> [filename_2] ... [filename_n]\n");
 		printf("    if -C flag is provided, data will be compressed before added to the package\n");
-        return -1;
-    }
+		return -1;
+	}
 
-    PackageHeader_t header = PackageHeader_t();
-    header.nbFHeaders = argc - 2;
+	PackageHeader_t header = PackageHeader_t();
+	header.nbFHeaders = argc - 2;
 
-    struct _stat packagestatus;
+	struct STAT packagestatus;
 	int argpos = 1;
 
 	if (!strcmp(argv[argpos],"-C") || !strcmp(argv[argpos],"-c"))
@@ -272,43 +291,43 @@ int main(int argc, char* argv[])
 	}
 
 	header.fHeaders = new PackageFileHeader_t[header.nbFHeaders];
-    for (unsigned int j=0;j<header.nbFHeaders;j++)
-        header.fHeaders[j].fname = NULL;
+	for (unsigned int j=0;j<header.nbFHeaders;j++)
+		header.fHeaders[j].fname = NULL;
 	
-    header.pckName = NULL;
-    int res = _stat(argv[argpos],&packagestatus);
-    if (res >= 0)
-    {
-        printf("A package with the same name already exist, rename the package or move it to another place. Exiting.\n");
-        clean(header);
-        return -1;
-    }
-    else
-    {
+	header.pckName = NULL;
+	int res = STAT(argv[argpos],&packagestatus);
+	if (res >= 0)
+	{
+		printf("A package with the same name already exist, rename the package or move it to another place. Exiting.\n");
+		clean(header);
+		return -1;
+	}
+	else
+	{
 		printf("Package name: %s\n",argv[argpos]);
-        header.pckName = _strdup(argv[argpos++]);
-    }
+		header.pckName = STRDUP(argv[argpos++]);
+	}
 
     
-    unsigned int offset = 0;
+	unsigned int offset = 0;
 	unsigned int nbFHeaders = 0;
-    printf("Scanning file...\n");
+	printf("Scanning file...\n");
 	while ((argpos < argc) && (nbFHeaders < header.nbFHeaders))
-    {
-        printf("file: %s...\n",argv[argpos]);
+	{
+		printf("file: %s...\n",argv[argpos]);
 
-        struct _stat filestatus;
-        res = _stat(argv[argpos],&filestatus);
-        if (res < 0)
-        {
-            if (errno == ENOENT)
-                printf("    file does not exits, check paths.\n");
-            else
-                printf("    unknown error occured attempting to access file.\n");
-            filesOK = false;
-        }
-        else
-        {
+		struct STAT filestatus;
+		res = STAT(argv[argpos],&filestatus);
+		if (res < 0)
+		{
+			if (errno == ENOENT)
+				printf("    file does not exits, check paths.\n");
+			else
+				printf("    unknown error occured attempting to access file.\n");
+			filesOK = false;
+		}
+		else
+		{
 			if (header.compression != Z_NO_COMPRESSION)
 			{
 				char zfname[_MAX_PATH];
@@ -317,8 +336,8 @@ int main(int argc, char* argv[])
 				STRCAT(zfname,".zip",_MAX_PATH);
 				if (zipfile(argv[argpos],zfname,header.compression))
 				{
-					res = _stat(zfname,&filestatus);
-					header.fHeaders[nbFHeaders].fname = _strdup(argv[argpos]);
+					res = STAT(zfname,&filestatus);
+					header.fHeaders[nbFHeaders].fname = STRDUP(argv[argpos]);
 					header.fHeaders[nbFHeaders].fsize = filestatus.st_size;
 					header.fHeaders[nbFHeaders].offset = offset;
 					offset += filestatus.st_size;
@@ -338,58 +357,59 @@ int main(int argc, char* argv[])
 			}
 			else
 			{
-				header.fHeaders[nbFHeaders].fname = _strdup(argv[argpos]);
+				header.fHeaders[nbFHeaders].fname = STRDUP(argv[argpos]);
 				header.fHeaders[nbFHeaders].fsize = filestatus.st_size;
 				header.fHeaders[nbFHeaders].offset = offset;
 				offset += filestatus.st_size;
 				nbFHeaders++;
 			}
-        }
+		}
 		argpos++;
-    }
+	}
+	
 	header.nbFHeaders = nbFHeaders;
 
-    if (!filesOK)
-    {
-        printf("\nErrors found, exiting.\n");
-        clean(header);
-        return -1;
-    }
+	if (!filesOK)
+	{
+		printf("\nErrors found, exiting.\n");
+		clean(header);
+		return -1;
+	}
 
-    printf("\nCreating package %s...\n",header.pckName);
+	printf("\nCreating package %s...\n",header.pckName);
     
 
-    int package = OPEN(header.pckName,_O_CREAT|_O_TRUNC|_O_WRONLY|_O_BINARY,_S_IREAD);
-    if (package < 0)
-    {
-        printf("Failed to create package file, exiting.\n");
-        clean(header);
-        return -1;
-    }
+	int package = OPEN(header.pckName,O_CREAT|O_TRUNC|O_WRONLY|O_BINARY,S_IREAD);
+	if (package < 0)
+	{
+		printf("Failed to create package file, exiting.\n");
+		clean(header);
+		return -1;
+	}
 
-    printf("\nWriting package header... ");
-    unsigned int intBuffer = strlen(header.pckName);
-    _write(package,&intBuffer,sizeof(unsigned int));
-    _write(package,header.pckName,intBuffer);
+	printf("\nWriting package header... ");
+	unsigned int intBuffer = strlen(header.pckName);
+	WRITE(package,&intBuffer,sizeof(unsigned int));
+	WRITE(package,header.pckName,intBuffer);
 	intBuffer = header.compression;
-	_write(package,&intBuffer,sizeof(unsigned int));
-    intBuffer = header.nbFHeaders;
-    _write(package,&intBuffer,sizeof(unsigned int));
-    for (unsigned int k=0;k<header.nbFHeaders;k++)
-    {
-        intBuffer = strlen(header.fHeaders[k].fname);
-        _write(package,&intBuffer,sizeof(unsigned int));
-        _write(package,header.fHeaders[k].fname,intBuffer);
-        intBuffer = header.fHeaders[k].fsize;
-        _write(package,&intBuffer,sizeof(unsigned int));
-        intBuffer = header.fHeaders[k].offset;
-        _write(package,&intBuffer,sizeof(unsigned int));
-    }
-    printf("done.\n");
+	WRITE(package,&intBuffer,sizeof(unsigned int));
+	intBuffer = header.nbFHeaders;
+	WRITE(package,&intBuffer,sizeof(unsigned int));
+	for (unsigned int k=0;k<header.nbFHeaders;k++)
+	{
+		intBuffer = strlen(header.fHeaders[k].fname);
+		WRITE(package,&intBuffer,sizeof(unsigned int));
+		WRITE(package,header.fHeaders[k].fname,intBuffer);
+		intBuffer = header.fHeaders[k].fsize;
+		WRITE(package,&intBuffer,sizeof(unsigned int));
+		intBuffer = header.fHeaders[k].offset;
+		WRITE(package,&intBuffer,sizeof(unsigned int));
+	}
+	printf("done.\n");
 
-    printf("\nWriting package data... ");
-    for (unsigned int l=0;l<header.nbFHeaders;l++)
-    {
+	printf("\nWriting package data... ");
+	for (unsigned int l=0;l<header.nbFHeaders;l++)
+	{
 		char zfname[_MAX_PATH];
 		char *fname = header.fHeaders[l].fname;
 		if (header.compression != Z_NO_COMPRESSION)
@@ -399,27 +419,27 @@ int main(int argc, char* argv[])
 			fname = zfname;
 		}
 
-        int src = OPEN(fname,_O_BINARY|_O_RDONLY,_S_IWRITE);
-        if ( src < 0)
-        {
-            printf("Failed to read package data %s, exiting.\n",fname);
-            clean(header);
-            _close(package);
-            return -1;
-        }
+		int src = OPEN(fname,O_BINARY|O_RDONLY,S_IWRITE);
+		if ( src < 0)
+		{
+			printf("Failed to read package data %s, exiting.\n",fname);
+			clean(header);
+			CLOSE(package);
+			return -1;
+		}
 
-        int rsize = CHUNK;
-        while (CHUNK == (rsize = _read(src,in,CHUNK)))
-            _write(package,in,CHUNK);
-        _write(package,in,rsize);
+		int rsize = CHUNK;
+		while (CHUNK == (rsize = READ(src,in,CHUNK)))
+			WRITE(package,in,CHUNK);
+		WRITE(package,in,rsize);
 
-        _close(src);
-    }
-    printf("done.\n");
+		CLOSE(src);
+	}
+	printf("done.\n");
 
-    printf("\nPackage %s built successfully. Bye.\n\n",header.pckName);
-    _close(package);
-    clean(header);
+	printf("\nPackage %s built successfully. Bye.\n\n",header.pckName);
+	CLOSE(package);
+	clean(header);
 
 	return 0;
 }
