@@ -253,18 +253,18 @@ BuilderForm::BuilderForm(void)
 		builder.glQueryExtensions(glextensions);
 	}
 
-	//const CPU_INFO& cpu = getCPUINFO();
+	const CPU_INFO& cpu = getCPUINFO();
 
-	builder.activateExtension("RAPTOR_SMP_CODE_GENERATION",true/*cpu.CPUID*/);
-	builder.activateExtension("RAPTOR_SSE_CODE_GENERATION",true/*cpu.SSE*/);
-	builder.activateExtension("RAPTOR_SSE2_CODE_GENERATION",true/*cpu.SSE2*/);
-	builder.activateExtension("RAPTOR_SSE3_CODE_GENERATION",true/*cpu.SSE3*/);
-	builder.activateExtension("RAPTOR_SSSE3_CODE_GENERATION",true/*cpu.SSSE3*/);
-	builder.activateExtension("RAPTOR_SSE41_CODE_GENERATION",true/*cpu.SSE41*/);
-	builder.activateExtension("RAPTOR_SSE42_CODE_GENERATION",true/*cpu.SSE42*/);
-	builder.activateExtension("RAPTOR_AES_CODE_GENERATION",true/*cpu.AES*/);
-	builder.activateExtension("RAPTOR_AVX_CODE_GENERATION",true/*cpu.AVX*/);
-	builder.activateExtension("RAPTOR_FMA_CODE_GENERATION",false/*cpu.FMA*/);
+	builder.activateExtension("RAPTOR_SMP_CODE_GENERATION", cpu.CPUID);
+	builder.activateExtension("RAPTOR_SSE_CODE_GENERATION", cpu.hasFeature(CPU_INFO::SSE));
+	builder.activateExtension("RAPTOR_SSE2_CODE_GENERATION", cpu.hasFeature(CPU_INFO::SSE2));
+	builder.activateExtension("RAPTOR_SSE3_CODE_GENERATION", cpu.hasFeature(CPU_INFO::SSE3));
+	builder.activateExtension("RAPTOR_SSSE3_CODE_GENERATION", cpu.hasFeature(CPU_INFO::SSSE3));
+	builder.activateExtension("RAPTOR_SSE41_CODE_GENERATION", cpu.hasFeature(CPU_INFO::SSE41));
+	builder.activateExtension("RAPTOR_SSE42_CODE_GENERATION", cpu.hasFeature(CPU_INFO::SSE42));
+	builder.activateExtension("RAPTOR_AES_CODE_GENERATION", cpu.hasFeature(CPU_INFO::AES));
+	builder.activateExtension("RAPTOR_AVX_CODE_GENERATION", cpu.hasFeature(CPU_INFO::AVX));
+	builder.activateExtension("RAPTOR_FMA_CODE_GENERATION", cpu.hasFeature(CPU_INFO::FMA));
 
 	g->ReleaseHdc(hDC);
 	delete g;

@@ -98,7 +98,7 @@ void Display::GLInitContext()
 	glColor4f(1.0f,1.0f,1.0f,1.0f);
 	CTextureObject* T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
 										  CTextureObject::CGL_MULTIPLY,
-										  CTextureObject::CGL_BILINEAR);
+										  ITextureObject::CGL_BILINEAR);
 	T->glSetTransparency(128);
 	f.glLoadTexture(T,"Datas\\M1_1024.jpg");
 	txt->addTexture(T);
@@ -107,7 +107,7 @@ void Display::GLInitContext()
 	{
 		T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
 							  CTextureObject::CGL_MULTIPLY,
-							  CTextureObject::CGL_BILINEAR);
+							  ITextureObject::CGL_BILINEAR);
 		T->glSetTransparency(128);
 		const CTextureFactoryConfig::ICompressor *compressor = config.getCurrentCompressor();
 		if (0 < config.getNumCompressors())
@@ -119,7 +119,7 @@ void Display::GLInitContext()
 	{
 		T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
 							  CTextureObject::CGL_MULTIPLY,
-							  CTextureObject::CGL_BILINEAR);
+							  ITextureObject::CGL_BILINEAR);
 		T->glSetTransparency(128);
 		f.glLoadTexture(T,"Datas\\M1_1024.jpg");
 	}
@@ -127,14 +127,14 @@ void Display::GLInitContext()
 
 	T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
 						  CTextureObject::CGL_MULTIPLY,
-						  CTextureObject::CGL_BILINEAR);
+						  ITextureObject::CGL_BILINEAR);
 	T->glSetTransparency(128);
 	f.glLoadTexture(T,"Datas\\M74_1024.jpg");
 	txt->addTexture(T);
 
 	T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
 						  CTextureObject::CGL_MULTIPLY,
-						  CTextureObject::CGL_TRILINEAR);
+						  ITextureObject::CGL_TRILINEAR);
 	config.setGenerateMipmap(false);
 	T->glSetTransparency(128);	f.glLoadTexture(T,"Datas\\M1_1024.jpg");
 	T->selectMipMapLevel(1);	f.glLoadTexture(T,"Datas\\M1_512.jpg");
@@ -153,7 +153,7 @@ void Display::GLInitContext()
 
 	T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
 						  CTextureObject::CGL_MULTIPLY,
-						  CTextureObject::CGL_BILINEAR);
+						  ITextureObject::CGL_BILINEAR);
 	T->glSetTransparency(128);
 	f.glLoadTexture(T,"Datas\\M1_256.jpg");
 	txt->addTexture(T);
@@ -167,7 +167,7 @@ void Display::GLInitContext()
 
 		T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
 							  CTextureObject::CGL_MULTIPLY,
-							  CTextureObject::CGL_ANISOTROPIC);
+							  ITextureObject::CGL_ANISOTROPIC);
 		config.setGenerateMipmap(false);
 		T->glSetTransparency(255);	f.glLoadTexture(T,"Datas\\M1_1024.jpg");
 		T->selectMipMapLevel(1);	f.glLoadTexture(T,"Datas\\M1_512.jpg");

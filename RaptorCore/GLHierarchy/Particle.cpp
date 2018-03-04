@@ -16,8 +16,8 @@
 #if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
 	#include "System/Raptor.h"
 #endif
-#if !defined(AFX_RAPTOREXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
-	#include "System/RaptorExtensions.h"
+#if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
+	#include "System/RaptorGLExtensions.h"
 #endif
 #if !defined(AFX_GEOMETRYALLOCATOR_H__802B3C7A_43F7_46B2_A79E_DDDC9012D371__INCLUDED_)
 	#include "Subsys/GeometryAllocator.h"
@@ -243,7 +243,7 @@ void CParticle::usePointSprite(bool use,float size)
 void RAPTOR_FASTCALL CParticle::glRenderPoints(void)
 {
 #ifdef GL_ARB_multitexture
-	const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 	if (pExtensions->glActiveTextureARB != NULL)
 		pExtensions->glActiveTextureARB(GL_TEXTURE0_ARB);
 #endif
@@ -337,7 +337,7 @@ void RAPTOR_FASTCALL CParticle::glRenderPoints(void)
 void RAPTOR_FASTCALL CParticle::glRenderLines(void)
 {
 #ifdef GL_ARB_multitexture
-	const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 	if (pExtensions->glActiveTextureARB != NULL)
 		pExtensions->glActiveTextureARB(GL_TEXTURE0_ARB);
 #endif
@@ -406,7 +406,7 @@ void RAPTOR_FASTCALL CParticle::glRenderLines(void)
 
 void RAPTOR_FASTCALL CParticle::glRenderTextures(void)
 {
-	const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 
 	m_pShader->glRender();
 
@@ -528,7 +528,7 @@ void RAPTOR_FASTCALL CParticle::glRenderTextures(void)
 void RAPTOR_FASTCALL CParticle::glRenderVolumes(void)
 {
 #ifdef GL_EXT_texture3D
- 	const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+ 	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 
 	m_pShader->glRender();
 

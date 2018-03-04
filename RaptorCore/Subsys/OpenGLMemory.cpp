@@ -10,8 +10,8 @@
 #if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
 	#include "System/Raptor.h"
 #endif
-#if !defined(AFX_RAPTOREXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
-	#include "System/RaptorExtensions.h"
+#if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
+	#include "System/RaptorGLExtensions.h"
 #endif
 #if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
     #include "System/RaptorErrorManager.h"
@@ -93,7 +93,7 @@ COpenGLMemory::createBufferObject(	IDeviceMemoryManager::IBufferObject::BUFFER_K
 		return NULL;
 
     IDeviceMemoryManager::IBufferObject * res = NULL;
-	const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 
 #ifdef GL_ARB_vertex_buffer_object
 	//	This should be the fastest memory bloc for
@@ -176,7 +176,7 @@ bool COpenGLMemory::setBufferObjectData(IDeviceMemoryManager::IBufferObject &bo,
 	if (buffer > 0)
 #endif
 	{
-		const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 		IDeviceMemoryManager::IBufferObject::BUFFER_KIND storage = bo.getStorage();
 		if (storage > IDeviceMemoryManager::IBufferObject::PIXEL_SOURCE)
 		{
@@ -248,7 +248,7 @@ bool COpenGLMemory::getBufferObjectData(IDeviceMemoryManager::IBufferObject &vb,
 	if (buffer > 0)
 #endif
 	{
-		const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 		
 		IDeviceMemoryManager::IBufferObject::BUFFER_KIND storage = vb.getStorage();
         GLenum glStorage = BufferKindToGL(storage);
@@ -326,7 +326,7 @@ bool COpenGLMemory::releaseBufferObject(IDeviceMemoryManager::IBufferObject* &vb
 		m_deviceHeap.erase(itr);
 	}
 
-	const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
     if (pExtensions == NULL)
         return false;
 
@@ -371,7 +371,7 @@ bool COpenGLMemory::lockBufferObject(IDeviceMemoryManager::IBufferObject &bo)
 		return false;
 	uint32_t buffer = bo.getBufferId();
 
-	const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 
     //! This method could be called very often, lock/unlock 
     //! could be very expensive, so I will try to lock at a higher level
@@ -435,7 +435,7 @@ bool COpenGLMemory::unlockBufferObject(IDeviceMemoryManager::IBufferObject &bo)
 		return false;
 
 	uint32_t buffer = bo.getBufferId();
-	const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 
     //! This method could be called very often, lock/unlock 
     //! could be very expensive, so I will try to lock at a higher level

@@ -13,8 +13,8 @@
 #if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
     #include "System/RaptorErrorManager.h"
 #endif
-#if !defined(AFX_RAPTOREXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
-	#include "System/RaptorExtensions.h"
+#if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
+	#include "System/RaptorGLExtensions.h"
 #endif
 #if !defined(AFX_RAPTORIO_H__87D52C27_9117_4675_95DC_6AD2CCD2E78D__INCLUDED_)
 	#include "System/RaptorIO.h"
@@ -274,8 +274,8 @@ bool CTextureFactory::glvkLoadTexture(	CTextureObject* const T,
 		else
 #endif
 		{
-			bool generateMipmap = ((T->getFilter() == CTextureObject::CGL_TRILINEAR) ||
-								   (T->getFilter() == CTextureObject::CGL_ANISOTROPIC)) &&
+			bool generateMipmap = ((T->getFilter() == ITextureObject::CGL_TRILINEAR) ||
+								   (T->getFilter() == ITextureObject::CGL_ANISOTROPIC)) &&
 								   mConfig.getGenerateMipmap();
 			//
 			//  The default case, at least load the texture.
@@ -352,8 +352,6 @@ bool CTextureFactory::vkLoadTexture(CVulkanTextureObject* const T,
 	//	- mipmapping generation
 	//	- image loading
 	T->vkLoadTexture(GL_INNER_FORMAT,
-					T->getWidth(),
-					T->getHeight(),
 					GL_FORMAT,
 					GL_SRC_FORMAT,
 					(uint8_t*)pixels);
@@ -450,7 +448,7 @@ bool CTextureFactory::glLoadTexture(CTextureObject* const T,
 #if defined(GL_EXT_texture3D)
 	if (T->getDepth() > 1)   // Texture Volumes
 	{
-		const CRaptorExtensions * const extensions = Raptor::glGetExtensions();
+		const CRaptorGLExtensions * const extensions = Raptor::glGetExtensions();
 		extensions->glTexImage3DEXT(target, 0,
 									GL_INNER_FORMAT,
 									T->getWidth(),
@@ -463,8 +461,8 @@ bool CTextureFactory::glLoadTexture(CTextureObject* const T,
 	else
 #endif
 	{
-		bool generateMipmap = ((T->getFilter() == CTextureObject::CGL_TRILINEAR) ||
-							   (T->getFilter() == CTextureObject::CGL_ANISOTROPIC)) &&
+		bool generateMipmap = ((T->getFilter() == ITextureObject::CGL_TRILINEAR) ||
+							   (T->getFilter() == ITextureObject::CGL_ANISOTROPIC)) &&
 							   mConfig.getGenerateMipmap();
 
 #if (defined(GL_VERSION_1_4) && !defined(GL_VERSION_3_0) && !defined(GL_EXT_framebuffer_object))
@@ -647,7 +645,7 @@ bool CTextureFactory::glResizeTexture( CTextureObject *T, unsigned int width, un
 #if defined(GL_EXT_texture3D)
         else if (target == GL_TEXTURE_3D_EXT)
         {
-            const CRaptorExtensions * const extensions = Raptor::glGetExtensions();
+            const CRaptorGLExtensions * const extensions = Raptor::glGetExtensions();
             extensions->glTexImage3DEXT(	GL_TEXTURE_3D_EXT, 
 											T->getCurrentMipMapLevel(), 
 											T->getTexelFormat(),
@@ -701,40 +699,6 @@ bool CTextureFactory::glExportTexture(CTextureObject *T,const std::string &fname
     return res;
 }
 
-ITextureObject* const CTextureFactory::vkCreateTexture(	ITextureObject::TEXEL_TYPE type,
-														CTextureObject::TEXTURE_FUNCTION env_mode,
-														CTextureObject::TEXTURE_FILTER filter)
-{
-#ifdef RAPTOR_DEBUG_MODE_GENERATION
-	if ((type == ITextureObject::CGL_COLOR_FLOAT32) || (type == ITextureObject::CGL_COLOR_FLOAT32_ALPHA))
-	{
-		vector<CRaptorMessages::MessageArgument> args;
-		CRaptorMessages::MessageArgument arg;
-		arg.arg_sz = "2D Float32 Texture, use a Texture Rectangle instead.";
-		args.push_back(arg);
-		Raptor::GetErrorManager()->generateRaptorError(CTextureFactory::CTextureFactoryClassID::GetClassId(),
-													   CRaptorErrorManager::RAPTOR_WARNING,
-													   CRaptorMessages::ID_FORMAT_NOT_SUPPORTED, args);
-	}
-#endif
-
-	CVulkanDevice *pDevice = CVulkanDevice::getCurrentDevice();
-	CVulkanTextureObject* T = pDevice->createTextureObject(type);
-
-	//T->setFunction(env_mode);
-	//T->target = VK_IMAGE_TYPE_2D;
-	//T->m_filter = filter;
-
-#ifdef GL_EXT_texture_filter_anisotropic
-	if ((mConfig.getCurrentAnisotropy() > 1.0f) && (filter == CTextureObject::CGL_ANISOTROPIC))
-	{
-		//T->aniso_level = mConfig.getCurrentAnisotropy();
-	}
-#endif
-
-	return T;
-}
-
 CTextureObject* const CTextureFactory::glCreateSprite(CTextureObject::TEXEL_TYPE type)
 {
     //! type checking will be donne at loading
@@ -747,8 +711,8 @@ CTextureObject* const CTextureFactory::glCreateSprite(CTextureObject::TEXEL_TYPE
 
 	glBindTexture(GL_TEXTURE_2D,T->texname);
 
-	T->glUpdateFilter(CTextureObject::CGL_UNFILTERED);
-	T->glUpdateClamping(CTextureObject::CGL_CLAMP);
+	T->glvkUpdateFilter(ITextureObject::CGL_UNFILTERED);
+	T->glvkUpdateClamping(ITextureObject::CGL_CLAMP);
 	
 	glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_PRIORITY,mConfig.getCurrentPriority());
 
@@ -759,7 +723,7 @@ CTextureObject* const CTextureFactory::glCreateSprite(CTextureObject::TEXEL_TYPE
 
 CTextureObject* const CTextureFactory::glCreateCubemap(  ITextureObject::TEXEL_TYPE type,
                                                          CTextureObject::TEXTURE_FUNCTION env_mode,
-														 CTextureObject::TEXTURE_FILTER filter)
+														 ITextureObject::TEXTURE_FILTER filter)
 {
 #if defined(GL_ARB_texture_cube_map)
 	if (!Raptor::glIsExtensionSupported("GL_ARB_texture_cube_map"))
@@ -785,14 +749,14 @@ CTextureObject* const CTextureFactory::glCreateCubemap(  ITextureObject::TEXEL_T
 
 	glBindTexture(GL_TEXTURE_CUBE_MAP_ARB, T->texname);
 
-	T->glUpdateFilter(filter);
-	T->glUpdateClamping(CTextureObject::CGL_REPEAT);
+	T->glvkUpdateFilter(filter);
+	T->glvkUpdateClamping(CTextureObject::CGL_REPEAT);
 
 	glTexParameterf(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_PRIORITY, mConfig.getCurrentPriority());
 
 	// Is this usefull on a cube map ?
 #ifdef GL_EXT_texture_filter_anisotropic
-	if ((mConfig.getCurrentAnisotropy() > 1.0f) && (filter == CTextureObject::CGL_ANISOTROPIC))
+	if ((mConfig.getCurrentAnisotropy() > 1.0f) && (filter == ITextureObject::CGL_ANISOTROPIC))
     {
 		glTexParameterf(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_MAX_ANISOTROPY_EXT, mConfig.getCurrentAnisotropy());
         T->aniso_level = mConfig.getCurrentAnisotropy();
@@ -807,9 +771,45 @@ CTextureObject* const CTextureFactory::glCreateCubemap(  ITextureObject::TEXEL_T
 #endif
 }
 
+
+ITextureObject* const CTextureFactory::vkCreateTexture(ITextureObject::TEXEL_TYPE type,
+													   CTextureObject::TEXTURE_FUNCTION env_mode,
+													   ITextureObject::TEXTURE_FILTER filter)
+{
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+	if ((type == ITextureObject::CGL_COLOR_FLOAT32) || (type == ITextureObject::CGL_COLOR_FLOAT32_ALPHA))
+	{
+		vector<CRaptorMessages::MessageArgument> args;
+		CRaptorMessages::MessageArgument arg;
+		arg.arg_sz = "2D Float32 Texture, use a Texture Rectangle instead.";
+		args.push_back(arg);
+		Raptor::GetErrorManager()->generateRaptorError(CTextureFactory::CTextureFactoryClassID::GetClassId(),
+													   CRaptorErrorManager::RAPTOR_WARNING,
+													   CRaptorMessages::ID_FORMAT_NOT_SUPPORTED, args);
+	}
+#endif
+
+	CVulkanTextureObject* T = CVulkanDevice::getCurrentDevice().createTextureObject(type);
+	if (NULL != T)
+	{
+		T->glvkUpdateFilter(filter);
+		T->glvkUpdateClamping(ITextureObject::CGL_REPEAT);
+		//T->setFunction(env_mode);
+
+#ifdef GL_EXT_texture_filter_anisotropic
+		if ((mConfig.getCurrentAnisotropy() > 1.0f) && (filter == ITextureObject::CGL_ANISOTROPIC))
+		{
+			//T->aniso_level = mConfig.getCurrentAnisotropy();
+		}
+#endif
+	}
+
+	return T;
+}
+
 CTextureObject* const CTextureFactory::glCreateTexture( ITextureObject::TEXEL_TYPE type,
                                                         CTextureObject::TEXTURE_FUNCTION env_mode,
-														CTextureObject::TEXTURE_FILTER filter)
+														ITextureObject::TEXTURE_FILTER filter)
 {
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
     if ((type == CTextureObject::CGL_COLOR_FLOAT32) || (type == CTextureObject::CGL_COLOR_FLOAT32_ALPHA))
@@ -847,13 +847,13 @@ CTextureObject* const CTextureFactory::glCreateTexture( ITextureObject::TEXEL_TY
 
 	glBindTexture(GL_TEXTURE_2D, T->texname);
 
-	T->glUpdateFilter(filter);
-	T->glUpdateClamping(CTextureObject::CGL_REPEAT);
+	T->glvkUpdateFilter(filter);
+	T->glvkUpdateClamping(CTextureObject::CGL_REPEAT);
 	
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_PRIORITY, mConfig.getCurrentPriority());
 
 #ifdef GL_EXT_texture_filter_anisotropic
-	if ((mConfig.getCurrentAnisotropy() > 1.0f) && (filter == CTextureObject::CGL_ANISOTROPIC))
+	if ((mConfig.getCurrentAnisotropy() > 1.0f) && (filter == ITextureObject::CGL_ANISOTROPIC))
     {
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, mConfig.getCurrentAnisotropy());
         T->aniso_level = mConfig.getCurrentAnisotropy();
@@ -867,7 +867,7 @@ CTextureObject* const CTextureFactory::glCreateTexture( ITextureObject::TEXEL_TY
 
 CTextureObject* const CTextureFactory::glCreateRectangleTexture( ITextureObject::TEXEL_TYPE type,
                                                                  CTextureObject::TEXTURE_FUNCTION env_mode,
-														         CTextureObject::TEXTURE_FILTER filter)
+														         ITextureObject::TEXTURE_FILTER filter)
 {
 #if defined(GL_ARB_texture_rectangle)
     if (!Raptor::glIsExtensionSupported("GL_ARB_texture_rectangle"))
@@ -893,17 +893,17 @@ CTextureObject* const CTextureFactory::glCreateRectangleTexture( ITextureObject:
 
 	glBindTexture(GL_TEXTURE_RECTANGLE_ARB, T->texname);
 
-	if ((filter == CTextureObject::CGL_TRILINEAR) || (filter == CTextureObject::CGL_ANISOTROPIC))
-        T->glUpdateFilter(CTextureObject::CGL_BILINEAR);
+	if ((filter == ITextureObject::CGL_TRILINEAR) || (filter == ITextureObject::CGL_ANISOTROPIC))
+		T->glvkUpdateFilter(ITextureObject::CGL_BILINEAR);
     else
-        T->glUpdateFilter(filter);
+		T->glvkUpdateFilter(filter);
 
-	T->glUpdateClamping(CTextureObject::CGL_EDGECLAMP);
+	T->glvkUpdateClamping(CTextureObject::CGL_EDGECLAMP);
 
 	glTexParameterf(GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_PRIORITY, mConfig.getCurrentPriority());
 
 #ifdef GL_EXT_texture_filter_anisotropic
-	if ((mConfig.getCurrentAnisotropy() > 1.0f) && (filter == CTextureObject::CGL_ANISOTROPIC))
+	if ((mConfig.getCurrentAnisotropy() > 1.0f) && (filter == ITextureObject::CGL_ANISOTROPIC))
     {
 		glTexParameterf(GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_MAX_ANISOTROPY_EXT, mConfig.getCurrentAnisotropy());
         T->aniso_level = mConfig.getCurrentAnisotropy();
@@ -921,7 +921,7 @@ CTextureObject* const CTextureFactory::glCreateRectangleTexture( ITextureObject:
 
 CTextureObject* const CTextureFactory::glCreateDynamicTexture(ITextureObject::TEXEL_TYPE type,
                                                               CTextureObject::TEXTURE_FUNCTION env_mode,
-                                                              CTextureObject::TEXTURE_FILTER filter,
+                                                              ITextureObject::TEXTURE_FILTER filter,
 														      ITextureGenerator* pGenerator)
 {
 	if (pGenerator == NULL)
@@ -949,13 +949,12 @@ CTextureObject* const CTextureFactory::glCreateDynamicTexture(ITextureObject::TE
 
 	glBindTexture(GL_TEXTURE_2D,T->texname);
 
-	T->glUpdateFilter(filter);
+	T->glvkUpdateFilter(filter);
 
 	//	Dynamic textures are mostly used for render-to-texture buffers,
 	//	frequent usage of these textures is clamped mode.
 	//	Until there exist an interface to customize it, it is hard coded here.
-	//T->glUpdateClamping(CTextureObject::CGL_CLAMP);
-	T->glUpdateClamping(CTextureObject::CGL_EDGECLAMP);
+	T->glvkUpdateClamping(CTextureObject::CGL_EDGECLAMP);
 
 	glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_PRIORITY,mConfig.getCurrentPriority());
 
@@ -969,7 +968,7 @@ CTextureObject* const CTextureFactory::glCreateDynamicTexture(ITextureObject::TE
 
 CTextureObject* const CTextureFactory::glCreateVolumeTexture(ITextureObject::TEXEL_TYPE type,
                                                              CTextureObject::TEXTURE_FUNCTION env_mode,
-														     CTextureObject::TEXTURE_FILTER filter)
+														     ITextureObject::TEXTURE_FILTER filter)
 {
 #if defined(GL_EXT_texture3D)
     if (!Raptor::glIsExtensionSupported("GL_EXT_texture3D"))
@@ -995,7 +994,7 @@ CTextureObject* const CTextureFactory::glCreateVolumeTexture(ITextureObject::TEX
 
 	glBindTexture(GL_TEXTURE_3D_EXT,T->texname);
 
-	T->glUpdateFilter(filter);
+	T->glvkUpdateFilter(filter);
 
 	glTexParameteri(GL_TEXTURE_3D_EXT,GL_TEXTURE_WRAP_S,GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_3D_EXT,GL_TEXTURE_WRAP_T,GL_REPEAT);

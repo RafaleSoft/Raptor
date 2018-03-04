@@ -3,8 +3,8 @@
 //////////////////////////////////////////////////////////////////////
 #include "Subsys/CodeGeneration.h"
 
-#if !defined(AFX_RAPTOREXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
-	#include "RaptorExtensions.h"
+#if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
+	#include "RaptorGLExtensions.h"
 #endif
 #ifndef __glext_macros_h_
 	#include "GLEXTMacros.h"
@@ -22,12 +22,12 @@
 
 RAPTOR_NAMESPACE_BEGIN
 #if defined(WGL_ARB_extensions_string)
-	PFN_WGL_GET_EXTENSIONS_STRING_ARB_PROC CRaptorExtensions::wglGetExtensionsStringARB = NULL;
+	PFN_WGL_GET_EXTENSIONS_STRING_ARB_PROC CRaptorGLExtensions::wglGetExtensionsStringARB = NULL;
 #endif
-    IMPLEMENT_RAPTOR_WGL_ARB_pixel_format(CRaptorExtensions)
-	IMPLEMENT_RAPTOR_WGL_ARB_pbuffer(CRaptorExtensions)
-	IMPLEMENT_RAPTOR_WGL_ARB_render_texture(CRaptorExtensions)
-	IMPLEMENT_RAPTOR_WGL_EXT_swap_control(CRaptorExtensions)
+	IMPLEMENT_RAPTOR_WGL_ARB_pixel_format(CRaptorGLExtensions)
+	IMPLEMENT_RAPTOR_WGL_ARB_pbuffer(CRaptorGLExtensions)
+	IMPLEMENT_RAPTOR_WGL_ARB_render_texture(CRaptorGLExtensions)
+	IMPLEMENT_RAPTOR_WGL_EXT_swap_control(CRaptorGLExtensions)
 RAPTOR_NAMESPACE_END
 
 RAPTOR_NAMESPACE
@@ -36,17 +36,17 @@ RAPTOR_NAMESPACE
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
-CRaptorExtensions::CRaptorExtensions(const std::string &ext)
+CRaptorGLExtensions::CRaptorGLExtensions(const std::string &ext)
 {
 	extensions = ext;
 }
 
-CRaptorExtensions::~CRaptorExtensions()
+CRaptorGLExtensions::~CRaptorGLExtensions()
 {
 
 }
 
-void CRaptorExtensions::glInitExtensions(void)
+void CRaptorGLExtensions::glInitExtensions(void)
 {
 #if defined(WGL_ARB_extensions_string)
 	{
@@ -116,7 +116,7 @@ void RAPTOR_APICALL glMultiTexCoord4fvARB__default(GLenum target, const GLfloat 
 	glTexCoord4fv(v);
 }
 
-void CRaptorExtensions::defaultInit(void)
+void CRaptorGLExtensions::defaultInit(void)
 {
 #if defined(GL_ARB_multitexture)
 	if (glMultiTexCoord4fvARB == NULL)
@@ -126,7 +126,7 @@ void CRaptorExtensions::defaultInit(void)
 #endif
 }
 
-bool CRaptorExtensions::glIsExtensionSupported(const std::string &ext) const
+bool CRaptorGLExtensions::glIsExtensionSupported(const std::string &ext) const
 {	
 	bool supported = false;
 

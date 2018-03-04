@@ -16,7 +16,7 @@
 
 RAPTOR_NAMESPACE_BEGIN
 
-class CRaptorExtensions;
+class CRaptorGLExtensions;
 
 
 //! This class implements openGL contexts management for WIN32 platform.
@@ -27,7 +27,7 @@ public:
 	virtual ~CWin32ContextManager();
 
 	//! @see base class
-	virtual const CRaptorExtensions *const glGetExtensions(void);
+	virtual const CRaptorGLExtensions *const glGetExtensions(void);
 
 	//! @see base class
 	virtual bool validateConfig(CRaptorDisplayConfig& rdc);
@@ -47,9 +47,6 @@ public:
 	//! @see base class
 	virtual RENDERING_CONTEXT_ID glCreateExtendedContext(	const RAPTOR_HANDLE& device,
 															const CRaptorDisplayConfig& config);
-
-	//! @see base class
-	virtual RENDERING_CONTEXT_ID glGetCurrentContext(void) const { return m_currentContext; };
 
     //! @see base class
     virtual RAPTOR_HANDLE getDevice(RENDERING_CONTEXT_ID ctx) const;
@@ -94,6 +91,8 @@ public:
 	//! @see base class
 	virtual bool vkInit(void);
 	//! @see base class
+	virtual bool vkRelease(void);
+	//! @see base class
 	virtual bool vkCreateSurface(const RAPTOR_HANDLE& handle,RENDERING_CONTEXT_ID ctx);
 #endif
 
@@ -111,11 +110,11 @@ private:
 
 	typedef struct context_tag
 	{
-		HGLRC               OGLContext;
-        HDC                 WIN32Context;
-        HWND                WIN32Window;
-		PAINTSTRUCT			WIN32Paint;
-	    CRaptorExtensions*  pExtensions;
+		HGLRC					OGLContext;
+        HDC						WIN32Context;
+        HWND					WIN32Window;
+		PAINTSTRUCT				WIN32Paint;
+	    CRaptorGLExtensions*	pExtensions;
 	} context_t;
 
 	unsigned int			nbPBuffers;
@@ -124,8 +123,6 @@ private:
 #endif
 	unsigned int			nbContext;
 	context_t				*pContext;
-
-	RENDERING_CONTEXT_ID	m_currentContext;
 
 
 #if defined RAPTOR_DEBUG_MODE_GENERATION

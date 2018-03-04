@@ -13,9 +13,6 @@
 #if !defined(AFX_PERSISTENCE_H__5561BA28_831B_11D3_9142_EEB51CEBBDB0__INCLUDED_)
 	#include "Persistence.h"
 #endif
-#ifndef __CGLTYPES_HPP__
-    #include "System/CGLTypes.h"
-#endif
 #if !defined(AFX_MEMORY_H__81A6CA9A_4ED9_4260_B6E4_C03276C38DBC__INCLUDED_)
 	#include "System/Memory.h"
 #endif
@@ -49,7 +46,7 @@ CTextureObject::CTextureObject(TEXEL_TYPE type)
 	target = 0;
 	level = 0;
 	env_mode = GL_REPLACE;
-	m_filter = CTextureObject::CGL_UNFILTERED;
+	m_filter = ITextureObject::CGL_UNFILTERED;
 	m_pTexelGenerator = NULL;
     aniso_level = 0.0f;
     source[0] = source[1] = source[2] = source[3] = 0;
@@ -168,27 +165,27 @@ CTextureObject::TEXTURE_FUNCTION CTextureObject::getFunction(void) const
     return res;
 }
 
-void CTextureObject::glUpdateFilter(CTextureObject::TEXTURE_FILTER F)
+void CTextureObject::glvkUpdateFilter(ITextureObject::TEXTURE_FILTER F)
 {
 	GLint	mag_filter = GL_NEAREST;
 	GLint	min_filter = GL_NEAREST;
 
-    if (F == CTextureObject::CGL_BILINEAR)
+    if (F == ITextureObject::CGL_BILINEAR)
 	{
 		mag_filter = GL_LINEAR;
 		min_filter = GL_LINEAR;
 	}
-	else if (F == CTextureObject::CGL_BILINEAR_MIPMAPPED)
+	else if (F == ITextureObject::CGL_BILINEAR_MIPMAPPED)
 	{
 		mag_filter = GL_LINEAR;
 		min_filter = GL_LINEAR_MIPMAP_NEAREST;
 	}
-	else if (F == CTextureObject::CGL_TRILINEAR)
+	else if (F == ITextureObject::CGL_TRILINEAR)
 	{
 		mag_filter = GL_LINEAR;
 		min_filter = GL_LINEAR_MIPMAP_LINEAR;
 	}
-	else if (F == CTextureObject::CGL_ANISOTROPIC)
+	else if (F == ITextureObject::CGL_ANISOTROPIC)
 	{
 		mag_filter = GL_LINEAR;
 		min_filter = GL_LINEAR_MIPMAP_NEAREST;
@@ -202,19 +199,35 @@ void CTextureObject::glUpdateFilter(CTextureObject::TEXTURE_FILTER F)
 	CATCH_GL_ERROR
 }
 
-void CTextureObject::glUpdateClamping(CLAMP_MODE C)
+void CTextureObject::glvkUpdateClamping(ITextureObject::CLAMP_MODE C)
 {
 	GLenum clamp_mode = GL_CLAMP;
 
 	switch(C)
 	{
-		case CGL_REPEAT:
+		case ITextureObject::CGL_REPEAT:
 			clamp_mode = GL_REPEAT;
 			break;
-		case CGL_CLAMP:
+		case ITextureObject::CGL_MIRROR_REPEAT:
+#if defined(GL_ARB_texture_mirrored_repeat)
+			clamp_mode = GL_MIRRORED_REPEAT_ARB;
+#elif defined (GL_VERSION_1_4)
+			clamp_mode = GL_MIRRORED_REPEAT;
+#else
+			clamp_mode = GL_REPEAT;
+#endif
+			break;
+		case ITextureObject::CGL_MIRROR_EDGECLAMP:
+#if defined(GL_ARB_texture_mirror_clamp_to_edge)
+			clamp_mode = GL_MIRROR_CLAMP_TO_EDGE_ARB;
+#elif defined (GL_VERSION_1_4)
+			clamp_mode = GL_MIRROR_CLAMP_TO_EDGE;
+#endif
+			break;
+		case ITextureObject::CGL_CLAMP:
 			clamp_mode = GL_CLAMP;
 			break;
-		case CGL_EDGECLAMP:
+		case ITextureObject::CGL_EDGECLAMP:
 #if defined (GL_VERSION_1_2)
 			clamp_mode = GL_CLAMP_TO_EDGE;
 #elif defined (GL_EXT_texture_edge_clamp)

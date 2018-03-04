@@ -25,7 +25,6 @@ int main(int argc, char* argv[])
     config.m_uiVertices = 40000;
 	config.m_logFile = "Test_Raptor.log";
 
-    //config.setFilterSizeFactor(0.0625);
     Raptor::glInitRaptor(config);
 
     CImaging::installImagers();

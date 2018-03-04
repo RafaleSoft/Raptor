@@ -9,6 +9,9 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#if !defined(__RAPTOR_VKEXT_H__)
+	#include "System/vkext.h"
+#endif
 #if !defined(AFX_RESOURCEALLOCATOR_H__4BAB58CE_942B_450D_88C9_AF0DDDF03718__INCLUDED_)
 	#include "ResourceAllocator.h"
 #endif
@@ -66,11 +69,8 @@ public:
 	void *glvkUnMapPointer(void *pointer,bool syncData = true);
 
 	//!	Create a Vulkan image and allocate device memory
-	VkImage vkAllocateTextureImage(uint64_t width,
-								   uint64_t height = 0,
-								   uint64_t depth = 0,
-								   ITextureObject::TEXEL_TYPE format = ITextureObject::CGL_COLOR24_ALPHA,
-								   unsigned char* texels = NULL);
+	VkImage vkAllocateTextureImage(VkImageCreateInfo imageInfo,
+								   VkDeviceSize offset = 0);
 
 private:
 	//!	Singleton constructor is not allowed

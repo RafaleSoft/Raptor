@@ -109,7 +109,7 @@ void CServerImageRenderer::glInitImage()
 	CTextureFactory &factory = CTextureFactory::getDefaultFactory();
 	m_pImage = factory.glCreateTexture(	ITextureObject::CGL_COLOR24, //_ALPHA,
 										CTextureObject::CGL_OPAQUE,
-										CTextureObject::CGL_BILINEAR);
+										ITextureObject::CGL_BILINEAR);
 
 	factory.glResizeTexture(m_pImage,m_serverWidth,m_serverHeight);
 }

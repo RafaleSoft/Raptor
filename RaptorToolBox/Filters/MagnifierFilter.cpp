@@ -16,8 +16,8 @@
 #if !defined(AFX_RENDERINGPROPERTIES_H__634BCF2B_84B4_47F2_B460_D7FDC0F3B698__INCLUDED_)
 	#include "GLHierarchy/RenderingProperties.h"
 #endif
-#if !defined(AFX_RAPTOREXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
-    #include "System/RaptorExtensions.h"
+#if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
+    #include "System/RaptorGLExtensions.h"
 #endif
 #if !defined(AFX_SHADER_H__4D405EC2_7151_465D_86B6_1CA99B906777__INCLUDED_)
 	#include "GLHierarchy/Shader.h"
@@ -33,9 +33,6 @@
 #endif
 #if !defined(AFX_VERTEXPROGRAM_H__204F7213_B40B_4B6A_9BCA_828409871B68__INCLUDED_)
 	#include "GLHierarchy/VertexProgram.h"
-#endif
-#if !defined(AFX_TEXTUREFACTORYCONFIG_H__7A20D208_423F_4E02_AA4D_D736E0A7959F__INCLUDED_)
-	#include "GLHierarchy/TextureFactoryConfig.h"
 #endif
 #if !defined(AFX_TEXTURESET_H__26F3022D_70FE_414D_9479_F9CCD3DCD445__INCLUDED_)
 	#include "GLHierarchy/TextureSet.h"
@@ -270,7 +267,7 @@ void CMagnifierFilter::computeKernel(void)
 
 void CMagnifierFilter::glRenderFilter()
 {
-	const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 	PFN_GL_ACTIVE_TEXTURE_ARB_PROC glActiveTextureARB = pExtensions->glActiveTextureARB;
 
     //! First pass : xPass of the kernel assuming it is separable
@@ -302,7 +299,7 @@ void CMagnifierFilter::glRenderFilter()
 
 void CMagnifierFilter::glRenderFilterOutput()
 {
-	const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 	PFN_GL_ACTIVE_TEXTURE_ARB_PROC glActiveTextureARB = pExtensions->glActiveTextureARB;
 
     //! Second (last) pass : yPass of the kernel, assuming it is separable
@@ -344,14 +341,14 @@ bool CMagnifierFilter::glInitFilter(void)
 		//! See remark below regarding texture filtering.
 		colorInput = filterFactory.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 															CTextureObject::CGL_OPAQUE,
-															CTextureObject::CGL_UNFILTERED, //CGL_BILINEAR,
+															ITextureObject::CGL_UNFILTERED, //CGL_BILINEAR,
 															colorExternalSource);
 	}
 	else if (m_fModel == RENDER_BUFFER)
 	{
 		//!    Source is unfiltered to avoid artifacts ( see comment below ).
 		colorInput->glvkRender();
-		colorInput->glUpdateFilter(CTextureObject::CGL_UNFILTERED);
+		colorInput->glvkUpdateFilter(ITextureObject::CGL_UNFILTERED);
 	}
 
 
@@ -359,7 +356,7 @@ bool CMagnifierFilter::glInitFilter(void)
     //! For high quality filtering, future release may allow a user defined size.
     kernelTexture = filterFactory.glCreateTexture( ITextureObject::CGL_COLOR_FLOAT16_ALPHA,
                                                    CTextureObject::CGL_OPAQUE,
-                                                   CTextureObject::CGL_UNFILTERED);
+                                                   ITextureObject::CGL_UNFILTERED);
     kernelTexture->setSize(KERNEL_SIZE,1);
     computeKernel();
 
@@ -382,9 +379,9 @@ bool CMagnifierFilter::glInitFilter(void)
 
 		xKernelPass = filterFactory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
 			                                        CTextureObject::CGL_OPAQUE,
-				                                    CTextureObject::CGL_UNFILTERED);
+				                                    ITextureObject::CGL_UNFILTERED);
 		filterFactory.glResizeTexture(xKernelPass,state.width,state.height);
-		xKernelPass->glUpdateClamping(CTextureObject::CGL_EDGECLAMP);
+		xKernelPass->glvkUpdateClamping(CTextureObject::CGL_EDGECLAMP);
 		m_pRenderTextures->addTexture(xKernelPass);
 	}
 
@@ -407,7 +404,7 @@ bool CMagnifierFilter::glInitFilter(void)
 		//! ( Specifically where tex coord is near a texel edge, and also because it is shifted to work in texels' center and should be faster ).
 		xKernelPass = filterFactory.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 															CTextureObject::CGL_OPAQUE,
-															CTextureObject::CGL_UNFILTERED,//CGL_BILINEAR,
+															ITextureObject::CGL_UNFILTERED,//CGL_BILINEAR,
 															xBuffer);
 	}
 

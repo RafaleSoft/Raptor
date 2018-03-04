@@ -131,219 +131,82 @@ static const char *END =
 //////////////////////////////////////////////////////////////////////
 
 CGLBuilder::CGLBuilder():
-    m_buildDebug(false),m_buildRedist(false),m_buildCompute(false)
+    m_buildDebug(false),m_buildRedist(false),m_buildCompute(false),
+	majorVersion(1), minorVersion(0), releaseNumber(0)
 {
-	majorVersion = 1;
-	minorVersion = 0;
-	releaseNumber = 0;
+	addExtension(CPU, "RAPTOR_SMP_CODE_GENERATION");
+	addExtension(CPU, "RAPTOR_SSE_CODE_GENERATION");
+	addExtension(CPU, "RAPTOR_SSE2_CODE_GENERATION", "RAPTOR_SSE_CODE_GENERATION");
+	addExtension(CPU, "RAPTOR_SSE3_CODE_GENERATION", "RAPTOR_SSE_CODE_GENERATION");
+	addExtension(CPU, "RAPTOR_SSSE3_CODE_GENERATION", "RAPTOR_SSE3_CODE_GENERATION");
+	addExtension(CPU, "RAPTOR_SSE41_CODE_GENERATION", "RAPTOR_SSE_CODE_GENERATION");
+	addExtension(CPU, "RAPTOR_SSE42_CODE_GENERATION", "RAPTOR_SSE_CODE_GENERATION");
+	addExtension(CPU, "RAPTOR_AES_CODE_GENERATION");
+	addExtension(CPU, "RAPTOR_AVX_CODE_GENERATION");
+	addExtension(CPU, "RAPTOR_FMA_CODE_GENERATION");
+
+	addExtension(COREGL, "GL_VERSION_1_0");
+	addExtension(COREGL, "GL_VERSION_1_1");
+	addExtension(COREGL, "GL_VERSION_1_2");
+	addExtension(COREGL, "GL_VERSION_1_3");
+	addExtension(COREGL, "GL_VERSION_1_4");
+	addExtension(COREGL, "GL_VERSION_1_5");
+	addExtension(COREGL, "GL_VERSION_2_0");
+	addExtension(COREGL, "GL_VERSION_2_1");
+	addExtension(COREGL, "GL_VERSION_3_0");
+	addExtension(COREGL, "GL_VERSION_3_1");
+	addExtension(COREGL, "GL_VERSION_3_2");
+	addExtension(COREGL, "GL_VERSION_3_3");
+	addExtension(COREGL, "GL_VERSION_4_0");
+	addExtension(COREGL, "GL_VERSION_4_1");
+	addExtension(COREGL, "GL_VERSION_4_2");
+	addExtension(COREGL, "GL_VERSION_4_3");
+	addExtension(COREGL, "GL_VERSION_4_4");
+	addExtension(COREGL, "GL_VERSION_4_5");
+	addExtension(COREGL, "GL_VERSION_4_6");
+
+	addExtension(ARB, "GL_ARB_multitexture");
+	addExtension(ARB, "GL_ARB_texture_mirrored_repeat");
+	addExtension(ARB, "GL_ARB_transpose_matrix");
+	addExtension(ARB, "GL_ARB_imaging");
+	addExtension(ARB, "GL_ARB_texture_cube_map");
+	addExtension(ARB, "GL_ARB_vertex_buffer_object");
+	addExtension(ARB, "GL_ARB_fragment_program");
+	addExtension(ARB, "GL_ARB_occlusion_query");
+	addExtension(ARB, "GL_ARB_point_sprite");
+	addExtension(ARB, "GL_ARB_point_parameters");
+	addExtension(ARB, "GL_ARB_shadow_ambient");
+	addExtension(ARB, "GL_ARB_depth_texture");
+	addExtension(ARB, "GL_ARB_vertex_program");
+	addExtension(ARB, "GL_ARB_texture_non_power_of_two");
+	addExtension(ARB, "GL_ARB_texture_float");
+	addExtension(ARB, "GL_ARB_texture_border_clamp");
+	addExtension(ARB, "GL_ARB_shader_objects");
+	addExtension(ARB, "GL_ARB_half_float_pixel");
+	addExtension(ARB, "GL_ARB_window_pos");
+	addExtension(ARB, "GL_ARB_vertex_array_object");
+	addExtension(ARB, "GL_ARB_texture_compression", "GL_ARB_texture_cube_map");
+	addExtension(ARB, "GL_ARB_texture_mirror_clamp_to_edge", "GL_VERSION_1_4");
+	addExtension(ARB, "GL_ARB_texture_env_combine", "GL_ARB_multitexture");
+	addExtension(ARB, "GL_ARB_shadow", "GL_ARB_depth_texture");
+	addExtension(ARB, "GL_ARB_pixel_buffer_object", "GL_ARB_vertex_buffer_object");
+	addExtension(ARB, "GL_ARB_texture_rectangle", "GL_VERSION_1_1");
+	addExtension(ARB, "GL_ARB_vertex_shader", "GL_ARB_shader_objects");
+	addExtension(ARB, "GL_ARB_fragment_shader", "GL_ARB_shader_objects");
+	addExtension(ARB, "GL_ARB_texture_compression_rgtc", "GL_ARB_texture_compression");
+	addExtension(ARB, "GL_ARB_texture_rg", "GL_VERSION_1_1");
+	addExtension(ARB, "GL_ARB_fragment_coord_conventions", "GL_VERSION_3_1");
+	addExtension(ARB, "GL_ARB_geometry_shader4", "GL_VERSION_2_0");
+	addExtension(ARB, "GL_ARB_compressed_texture_pixel_storage", "GL_VERSION_1_2");
+	addExtension(ARB, "GL_ARB_draw_buffers", "GL_VERSION_1_3");
+	addExtension(ARB, "GL_ARB_color_buffer_float", "WGL_ARB_pixel_format");
+	addExtension(ARB, "GL_ARB_multisample", "WGL_ARB_extensions_string", "WGL_ARB_pixel_format");
+	addExtension(ARB, "GL_ARB_texture_env_dot3", "GL_ARB_multitexture", "GL_ARB_texture_env_combine");
+	addExtension(ARB, "GL_ARB_fragment_program_shadow", "GL_ARB_fragment_program", "GL_ARB_shadow");
+	addExtension(ARB, "GL_ARB_texture_compression_bptc", "GL_ARB_texture_compression", "GL_VERSION_3_1");
+	addExtension(ARB, "GL_ARB_uniform_buffer_object", "GL_ARB_shader_objects", "GL_ARB_vertex_buffer_object");
 
 	EXTENSION extension;
-
-    extension.dependencies.clear(); 
-	extension.active = false;	extension.kind = CPU;	extension.extensionName = "RAPTOR_SMP_CODE_GENERATION";
-	extensions.push_back(extension); 
-
-    extension.dependencies.clear(); 
-	extension.active = false;	extension.kind = CPU;	extension.extensionName = "RAPTOR_SSE_CODE_GENERATION";
-	extensions.push_back(extension);
-
-    extension.dependencies.clear(); 
-	extension.active = false;	extension.kind = CPU;	extension.extensionName = "RAPTOR_SSE2_CODE_GENERATION";
-    extension.dependencies.push_back("RAPTOR_SSE_CODE_GENERATION");
-	extensions.push_back(extension);
-
-	extension.dependencies.clear(); 
-	extension.active = false;	extension.kind = COREGL;	extension.extensionName = "GL_VERSION_1_0";
-	extensions.push_back(extension);
-
-	extension.dependencies.clear(); 
-	extension.active = false;	extension.kind = COREGL;	extension.extensionName = "GL_VERSION_1_1";
-	extensions.push_back(extension);
-
-	extension.dependencies.clear();
-	extension.active = false;	extension.kind = COREGL;	extension.extensionName = "GL_VERSION_1_2";
-	extensions.push_back(extension);
-
-	extension.dependencies.clear();
-	extension.active = false;	extension.kind = COREGL;	extension.extensionName = "GL_VERSION_1_3";
-	extensions.push_back(extension);
-
-	extension.dependencies.clear();
-	extension.active = false;	extension.kind = COREGL;	extension.extensionName = "GL_VERSION_1_4";
-	extensions.push_back(extension);
-
-	extension.dependencies.clear();
-	extension.active = false;	extension.kind = COREGL;	extension.extensionName = "GL_VERSION_1_5";
-	extensions.push_back(extension);
-
-	extension.dependencies.clear();
-	extension.active = false;	extension.kind = COREGL;	extension.extensionName = "GL_VERSION_2_0";
-	extensions.push_back(extension);
-
-	extension.dependencies.clear();
-	extension.active = false;	extension.kind = COREGL;	extension.extensionName = "GL_VERSION_2_1";
-	extensions.push_back(extension);
-
-	extension.dependencies.clear();
-	extension.active = false;	extension.kind = COREGL;	extension.extensionName = "GL_VERSION_3_0";
-	extensions.push_back(extension);
-
-	extension.dependencies.clear();
-	extension.active = false;	extension.kind = COREGL;	extension.extensionName = "GL_VERSION_3_1";
-	extensions.push_back(extension);
-
-	extension.dependencies.clear();
-	extension.active = false;	extension.kind = COREGL;	extension.extensionName = "GL_VERSION_3_2";
-	extensions.push_back(extension);
-
-	extension.dependencies.clear();
-	extension.active = false;	extension.kind = COREGL;	extension.extensionName = "GL_VERSION_3_3";
-	extensions.push_back(extension);
-
-	extension.dependencies.clear(); 
-	extension.active = false;	extension.kind = COREGL;	extension.extensionName = "GL_VERSION_4_0";
-	extensions.push_back(extension);
-
-	extension.dependencies.clear(); 
-	extension.active = false;	extension.kind = COREGL;	extension.extensionName = "GL_VERSION_4_1";
-	extensions.push_back(extension);
-
-	extension.dependencies.clear(); 
-	extension.active = false;	extension.kind = COREGL;	extension.extensionName = "GL_VERSION_4_2";
-	extensions.push_back(extension);
-
-	extension.dependencies.clear(); 
-	extension.active = false;	extension.kind = COREGL;	extension.extensionName = "GL_VERSION_4_3";
-	extensions.push_back(extension);
-
-	extension.dependencies.clear(); 
-	extension.active = false;	extension.kind = COREGL;	extension.extensionName = "GL_VERSION_4_4";
-	extensions.push_back(extension);
-
-	extension.dependencies.clear(); 
-	extension.active = false;	extension.kind = COREGL;	extension.extensionName = "GL_VERSION_4_5";
-	extensions.push_back(extension);
-
-	extension.dependencies.clear(); 
-	extension.active = false;	extension.kind = COREVK;	extension.extensionName = "VK_VERSION_1_0";
-	extensions.push_back(extension);
-
-    extension.dependencies.clear(); 
-	extension.active = false;	extension.kind = ARB;	extension.extensionName = "GL_ARB_multitexture";
-	extensions.push_back(extension);
-
-    extension.dependencies.clear(); 
-	extension.active = false;	extension.kind = ARB;	extension.extensionName = "GL_ARB_texture_compression";
-    extension.dependencies.push_back("GL_ARB_texture_cube_map");
-	extensions.push_back(extension);
-
-	extension.dependencies.clear(); 
-	extension.active = false;	extension.kind = ARB;	extension.extensionName = "GL_ARB_texture_mirrored_repeat";
-	extensions.push_back(extension);
-
-    extension.dependencies.clear(); 
-	extension.active = false;	extension.kind = ARB;	extension.extensionName = "GL_ARB_texture_env_combine";
-    extension.dependencies.push_back("GL_ARB_multitexture");
-	extensions.push_back(extension);
-
-    extension.dependencies.clear(); 
-    extension.active = false;	extension.kind = ARB;	extension.extensionName = "GL_ARB_transpose_matrix";
-	extensions.push_back(extension);
-
-    extension.dependencies.clear(); 
-	extension.active = false;	extension.kind = ARB;	extension.extensionName = "GL_ARB_imaging";
-	extensions.push_back(extension);
-
-    extension.dependencies.clear(); 
-    extension.active = false;	extension.kind = ARB;	extension.extensionName = "GL_ARB_multisample";
-#ifdef WIN32
-    extension.dependencies.push_back("WGL_ARB_extensions_string");
-    extension.dependencies.push_back("WGL_ARB_pixel_format");
-#endif
-	extensions.push_back(extension);
-
-    extension.dependencies.clear();
-    extension.active = false;	extension.kind = ARB;	extension.extensionName = "GL_ARB_texture_env_dot3";
-    extension.dependencies.push_back("GL_ARB_multitexture");
-    extension.dependencies.push_back("GL_ARB_texture_env_combine");
-	extensions.push_back(extension);
-
-    extension.dependencies.clear(); 
-	extension.active = false;	extension.kind = ARB;	extension.extensionName = "GL_ARB_texture_cube_map";
-	extensions.push_back(extension);
-
-    extension.dependencies.clear(); 
-    extension.active = false;	extension.kind = ARB;	extension.extensionName = "GL_ARB_vertex_buffer_object";
-	extensions.push_back(extension);
-
-    extension.dependencies.clear(); 
-	extension.active = false;	extension.kind = ARB;	extension.extensionName = "GL_ARB_fragment_program";
-	extensions.push_back(extension);
-
-    extension.dependencies.clear(); 
-	extension.active = false;	extension.kind = ARB;	extension.extensionName = "GL_ARB_fragment_program_shadow";
-    extension.dependencies.push_back("GL_ARB_fragment_program");
-    extension.dependencies.push_back("GL_ARB_shadow");
-	extensions.push_back(extension);
-
-    extension.dependencies.clear(); 
-	extension.active = false;	extension.kind = ARB;	extension.extensionName = "GL_ARB_occlusion_query";
-	extensions.push_back(extension);
-
-    extension.dependencies.clear(); 
-    extension.active = false;	extension.kind = ARB;	extension.extensionName = "GL_ARB_point_sprite";
-	extensions.push_back(extension);
-
-    extension.dependencies.clear(); 
-    extension.active = false;	extension.kind = ARB;	extension.extensionName = "GL_ARB_point_parameters";
-	extensions.push_back(extension);
-
-    extension.dependencies.clear(); 
-    extension.active = false;	extension.kind = ARB;	extension.extensionName = "GL_ARB_shadow";
-    extension.dependencies.push_back("GL_ARB_depth_texture");
-	extensions.push_back(extension);
-
-	extension.dependencies.clear(); 
-	extension.active = false;	extension.kind = ARB;	extension.extensionName = "GL_ARB_shadow_ambient";
-	extensions.push_back(extension);
-
-    extension.dependencies.clear(); 
-	extension.active = false;	extension.kind = ARB;	extension.extensionName = "GL_ARB_depth_texture";
-	extensions.push_back(extension);
-
-    extension.dependencies.clear(); 
-    extension.active = false;	extension.kind = ARB;	extension.extensionName = "GL_ARB_vertex_program";
-	extensions.push_back(extension);
-
-    extension.dependencies.clear(); 
-    extension.active = false;	extension.kind = ARB;	extension.extensionName = "GL_ARB_texture_non_power_of_two";
-	extensions.push_back(extension);
-
-    extension.dependencies.clear(); 
-    extension.active = false;	extension.kind = ARB;	extension.extensionName = "GL_ARB_color_buffer_float";
-#ifdef WIN32
-    extension.dependencies.push_back("WGL_ARB_pixel_format");
-#endif
-	extensions.push_back(extension);
-
-    extension.dependencies.clear(); 
-    extension.active = false;	extension.kind = ARB;	extension.extensionName = "GL_ARB_texture_float";
-	extensions.push_back(extension);
-
-    extension.dependencies.clear(); 
-    extension.active = false;	extension.kind = ARB;	extension.extensionName = "GL_ARB_texture_border_clamp";
-	extensions.push_back(extension);
-
-    extension.dependencies.clear(); 
-    extension.active = false;	extension.kind = ARB;	extension.extensionName = "GL_ARB_pixel_buffer_object";
-    extension.dependencies.push_back("GL_ARB_vertex_buffer_object");
-	extensions.push_back(extension);
-
-    extension.dependencies.clear(); 
-    extension.active = false;	extension.kind = ARB;	extension.extensionName = "GL_ARB_texture_rectangle";
-	extension.dependencies.push_back("GL_VERSION_1_1");
-	extensions.push_back(extension);
-
     extension.dependencies.clear(); 
     extension.active = false;	extension.kind = ARB;	extension.extensionName = "GL_ARB_shading_language_100";
     extension.dependencies.push_back("GL_ARB_shader_objects");
@@ -351,238 +214,60 @@ CGLBuilder::CGLBuilder():
     extension.dependencies.push_back("GL_ARB_vertex_shader");
 	extensions.push_back(extension);
 
-    extension.dependencies.clear(); 
-    extension.active = false;	extension.kind = ARB;	extension.extensionName = "GL_ARB_shader_objects";
-	extensions.push_back(extension);
 
-    extension.dependencies.clear(); 
-    extension.active = false;	extension.kind = ARB;	extension.extensionName = "GL_ARB_vertex_shader";
-    extension.dependencies.push_back("GL_ARB_shader_objects");
-	extensions.push_back(extension);
+	addExtension(COREVK, "VK_VERSION_1_0");
+	addExtension(VK, "VK_KHR_surface", "VK_VERSION_1_0");
+	addExtension(VK, "VK_KHR_swapchain", "VK_VERSION_1_0");
+	addExtension(VK, "VK_KHR_display", "VK_VERSION_1_0");
+	addExtension(VK, "VK_KHR_display_swapchain", "VK_VERSION_1_0");
+	addExtension(VK, "VK_KHR_xlib_surface", "VK_VERSION_1_0");
+	addExtension(VK, "VK_KHR_xcb_surface", "VK_VERSION_1_0");
+	addExtension(VK, "VK_KHR_wayland_surface", "VK_VERSION_1_0");
+	addExtension(VK, "VK_KHR_mir_surface", "VK_VERSION_1_0");
+	addExtension(VK, "VK_KHR_android_surface", "VK_VERSION_1_0");
+	addExtension(VK, "VK_KHR_win32_surface", "VK_VERSION_1_0");
+	addExtension(VK, "VK_EXT_debug_report", "VK_VERSION_1_0");
+	addExtension(VK, "VK_KHR_sampler_mirror_clamp_to_edge", "VK_VERSION_1_0");
 
-    extension.dependencies.clear(); 
-    extension.active = false;	extension.kind = ARB;	extension.extensionName = "GL_ARB_fragment_shader";
-    extension.dependencies.push_back("GL_ARB_shader_objects");
-	extensions.push_back(extension);
+	addExtension(_3DFX, "GL_3DFX_texture_compression_FXT1", "GL_ARB_texture_compression");
 
-    extension.dependencies.clear(); 
-    extension.active = false;	extension.kind = ARB;	extension.extensionName = "GL_ARB_draw_buffers";
-	extension.dependencies.push_back("GL_VERSION_1_3");
-	extensions.push_back(extension);
+	addExtension(EXT, "GL_EXT_abgr");
+	addExtension(EXT, "GL_EXT_bgra");
+	addExtension(EXT, "GL_EXT_cmyka");
+	addExtension(EXT, "GL_EXT_clip_volume_hint");
+	addExtension(EXT, "GL_EXT_compiled_vertex_array");
+	addExtension(EXT, "GL_EXT_cull_vertex");
+	addExtension(EXT, "GL_EXT_packed_pixels");
+	addExtension(EXT, "GL_EXT_point_parameters");
+	addExtension(EXT, "GL_EXT_stencil_wrap");
+	addExtension(EXT, "GL_EXT_stencil_two_side");
+	addExtension(EXT, "GL_EXT_texture_env_add");
+	addExtension(EXT, "GL_EXT_secondary_color");
+	addExtension(EXT, "GL_EXT_separate_specular_color");
+	addExtension(EXT, "GL_EXT_vertex_weighting");
+	addExtension(EXT, "GL_EXT_texture_filter_anisotropic");
+	addExtension(EXT, "GL_EXT_fog_coord");
+	addExtension(EXT, "GL_EXT_texture3D");
+	addExtension(EXT, "GL_EXT_texture_edge_clamp");
+	addExtension(EXT, "GL_EXT_blend_color");
+	addExtension(EXT, "GL_EXT_texture_compression_latc", "GL_ARB_texture_compression");
+	addExtension(EXT, "GL_EXT_texture_compression_s3tc", "GL_ARB_texture_compression");
+	addExtension(EXT, "GL_EXT_texture_compression_dxt1", "GL_VERSION_1_3");
+	addExtension(EXT, "GL_EXT_framebuffer_object", "GL_VERSION_1_1");
+	addExtension(EXT, "GL_EXT_framebuffer_blit", "GL_VERSION_1_1", "GL_EXT_framebuffer_object");
+	addExtension(EXT, "GL_EXT_framebuffer_multisample", "GL_EXT_framebuffer_blit", "GL_EXT_framebuffer_object");
+	addExtension(EXT, "GL_EXT_packed_depth_stencil", "GL_VERSION_1_1", "GL_EXT_framebuffer_object");
 
-	extension.dependencies.clear(); 
-    extension.active = false;	extension.kind = ARB;	extension.extensionName = "GL_ARB_half_float_pixel";
-	extensions.push_back(extension);
+	addExtension(NV, "GL_NV_texgen_reflection");
+	addExtension(NV, "GL_NV_texture_rectangle");
+	addExtension(NV, "GL_NV_vertex_array_range");
+	addExtension(NV, "GL_NV_point_sprite", "GL_EXT_point_parameters");
+	addExtension(NV, "GL_NV_register_combiners", "GL_ARB_multitexture");
+	addExtension(NV, "GL_NV_texture_env_combine4", "GL_ARB_texture_env_combine");
+	addExtension(NV, "GL_NV_fragment_program", "GL_VERSION_1_2", "GL_ARB_multitexture");
+	addExtension(NV, "GL_NV_texture_shader", "GL_ARB_multitexture", "GL_ARB_texture_cube_map");
+	addExtension(NV, "GL_NV_texture_compression_vtc", "GL_ARB_texture_compression", "GL_EXT_texture_compression_s3tc");
 
-	extension.dependencies.clear(); 
-    extension.active = false;	extension.kind = ARB;	extension.extensionName = "GL_ARB_window_pos";
-	extensions.push_back(extension);
-
-	extension.dependencies.clear(); 
-    extension.active = false;	extension.kind = ARB;	extension.extensionName = "GL_ARB_vertex_array_object";
-	extensions.push_back(extension);
-
-	extension.dependencies.clear(); 
-    extension.active = false;	extension.kind = ARB;	extension.extensionName = "GL_ARB_texture_compression_rgtc";
-	extension.dependencies.push_back("GL_ARB_texture_compression");
-	extensions.push_back(extension);
-
-	extension.dependencies.clear(); 
-    extension.active = false;	extension.kind = ARB;	extension.extensionName = "GL_ARB_texture_compression_bptc";
-	extension.dependencies.push_back("GL_ARB_texture_compression");
-	extension.dependencies.push_back("GL_VERSION_3_1");
-	extensions.push_back(extension);
-
-	extension.dependencies.clear(); 
-    extension.active = false;	extension.kind = ARB;	extension.extensionName = "GL_ARB_texture_rg";
-	extension.dependencies.push_back("GL_VERSION_1_1");
-	extensions.push_back(extension);
-
-	extension.dependencies.clear();
-    extension.active = false;	extension.kind = ARB;	extension.extensionName = "GL_ARB_fragment_coord_conventions";
-	extension.dependencies.push_back("GL_VERSION_3_1");
-	extensions.push_back(extension);
-
-	extension.dependencies.clear();
-    extension.active = false;	extension.kind = ARB;	extension.extensionName = "GL_ARB_geometry_shader4";
-	extension.dependencies.push_back("GL_VERSION_2_0");
-	extensions.push_back(extension);
-
-	extension.dependencies.clear(); 
-	extension.active = false;	extension.kind = VK;	extension.extensionName = "VK_KHR_surface";
-	extension.dependencies.push_back("VK_VERSION_1_0");
-	extensions.push_back(extension);
-
-	extension.dependencies.clear(); 
-	extension.active = false;	extension.kind = VK;	extension.extensionName = "VK_KHR_swapchain";
-	extension.dependencies.push_back("VK_VERSION_1_0");
-	extensions.push_back(extension);
-
-	extension.dependencies.clear(); 
-	extension.active = false;	extension.kind = VK;	extension.extensionName = "VK_KHR_display";
-	extension.dependencies.push_back("VK_VERSION_1_0");
-	extensions.push_back(extension);
-
-	extension.dependencies.clear(); 
-	extension.active = false;	extension.kind = VK;	extension.extensionName = "VK_KHR_display_swapchain";
-	extension.dependencies.push_back("VK_VERSION_1_0");
-	extensions.push_back(extension);
-
-	extension.dependencies.clear(); 
-	extension.active = false;	extension.kind = VK;	extension.extensionName = "VK_KHR_xlib_surface";
-	extension.dependencies.push_back("VK_VERSION_1_0");
-	extensions.push_back(extension);
-
-	extension.dependencies.clear(); 
-	extension.active = false;	extension.kind = VK;	extension.extensionName = "VK_KHR_xcb_surface";
-	extension.dependencies.push_back("VK_VERSION_1_0");
-	extensions.push_back(extension);
-
-	extension.dependencies.clear(); 
-	extension.active = false;	extension.kind = VK;	extension.extensionName = "VK_KHR_wayland_surface";
-	extension.dependencies.push_back("VK_VERSION_1_0");
-	extensions.push_back(extension);
-
-	extension.dependencies.clear(); 
-	extension.active = false;	extension.kind = VK;	extension.extensionName = "VK_KHR_mir_surface";
-	extension.dependencies.push_back("VK_VERSION_1_0");
-	extensions.push_back(extension);
-
-	extension.dependencies.clear(); 
-	extension.active = false;	extension.kind = VK;	extension.extensionName = "VK_KHR_android_surface";
-	extension.dependencies.push_back("VK_VERSION_1_0");
-	extensions.push_back(extension);
-
-	extension.dependencies.clear(); 
-	extension.active = false;	extension.kind = VK;	extension.extensionName = "VK_KHR_win32_surface";
-	extension.dependencies.push_back("VK_VERSION_1_0");
-	extensions.push_back(extension);
-
-	extension.dependencies.clear(); 
-	extension.active = false;	extension.kind = VK;	extension.extensionName = "VK_EXT_debug_report";
-	extension.dependencies.push_back("VK_VERSION_1_0");
-	extensions.push_back(extension);
-
-	extension.dependencies.clear(); 
-    extension.active = false;	extension.kind = _3DFX;	extension.extensionName = "GL_3DFX_texture_compression_FXT1";
-	extension.dependencies.push_back("GL_ARB_texture_compression");
-	extensions.push_back(extension);
-
-	extension.dependencies.clear(); 
-    extension.active = false;	extension.kind = EXT;	extension.extensionName = "GL_EXT_texture_compression_latc";
-	extension.dependencies.push_back("GL_ARB_texture_compression");
-	extensions.push_back(extension);
-
-    extension.dependencies.clear(); 
-	extension.active = false;	extension.kind = EXT;	extension.extensionName = "GL_EXT_abgr";
-	extensions.push_back(extension);
-
-    extension.dependencies.clear(); 
-    extension.active = false;	extension.kind = EXT;	extension.extensionName = "GL_EXT_bgra";
-	extensions.push_back(extension);
-
-	extension.dependencies.clear(); 
-    extension.active = false;	extension.kind = EXT;	extension.extensionName = "GL_EXT_cmyka";
-	extensions.push_back(extension);
-
-    extension.dependencies.clear(); 
-	extension.active = false;	extension.kind = EXT;	extension.extensionName = "GL_EXT_clip_volume_hint";
-	extensions.push_back(extension);
-
-    extension.dependencies.clear(); 
-    extension.active = false;	extension.kind = EXT;	extension.extensionName = "GL_EXT_compiled_vertex_array";
-	extensions.push_back(extension);
-
-    extension.dependencies.clear(); 
-    extension.active = false;	extension.kind = EXT;	extension.extensionName = "GL_EXT_cull_vertex";
-	extensions.push_back(extension);
-
-    extension.dependencies.clear(); 
-    extension.active = false;	extension.kind = EXT;	extension.extensionName = "GL_EXT_packed_pixels";
-	extensions.push_back(extension);
-
-    extension.dependencies.clear(); 
-    extension.active = false;	extension.kind = EXT;	extension.extensionName = "GL_EXT_point_parameters";
-	extensions.push_back(extension);
-
-    extension.dependencies.clear(); 
-    extension.active = false;	extension.kind = EXT;	extension.extensionName = "GL_EXT_stencil_wrap";
-	extensions.push_back(extension);
-
-    extension.dependencies.clear(); 
-    extension.active = false;	extension.kind = EXT;	extension.extensionName = "GL_EXT_stencil_two_side";
-	extensions.push_back(extension);
-
-    extension.dependencies.clear(); 
-    extension.active = false;	extension.kind = EXT;	extension.extensionName = "GL_EXT_texture_compression_s3tc";
-    extension.dependencies.push_back("GL_ARB_texture_compression");
-	extensions.push_back(extension);
-
-    extension.dependencies.clear(); 
-    extension.active = false;	extension.kind = EXT;	extension.extensionName = "GL_EXT_texture_env_add";
-	extensions.push_back(extension);
-
-    extension.dependencies.clear(); 
-    extension.active = false;	extension.kind = EXT;	extension.extensionName = "GL_EXT_secondary_color";
-	extensions.push_back(extension);
-
-    extension.dependencies.clear(); 
-    extension.active = false;	extension.kind = EXT;	extension.extensionName = "GL_EXT_separate_specular_color";
-	extensions.push_back(extension);
-
-    extension.dependencies.clear(); 
-    extension.active = false;	extension.kind = EXT;	extension.extensionName = "GL_EXT_vertex_weighting";
-	extensions.push_back(extension);
-
-    extension.dependencies.clear(); 
-    extension.active = false;	extension.kind = EXT;	extension.extensionName = "GL_EXT_texture_filter_anisotropic";
-	extensions.push_back(extension);
-
-    extension.dependencies.clear(); 
-    extension.active = false;	extension.kind = EXT;	extension.extensionName = "GL_EXT_fog_coord";
-	extensions.push_back(extension);
-
-    extension.dependencies.clear(); 
-    extension.active = false;	extension.kind = EXT;	extension.extensionName = "GL_EXT_texture3D";
-	extensions.push_back(extension);
-
-    extension.dependencies.clear(); 
-	extension.active = false;	extension.kind = EXT;	extension.extensionName = "GL_EXT_texture_edge_clamp";
-	extensions.push_back(extension);
-
-	extension.dependencies.clear(); 
-	extension.active = false;	extension.kind = EXT;	extension.extensionName = "GL_EXT_blend_color";
-	extensions.push_back(extension);
-
-    extension.dependencies.clear(); 
-	extension.active = false;	extension.kind = EXT;	extension.extensionName = "GL_EXT_framebuffer_object";
-    extension.dependencies.push_back("GL_VERSION_1_1");
-	extensions.push_back(extension);
-
-	extension.dependencies.clear(); 
-	extension.active = false;	extension.kind = EXT;	extension.extensionName = "GL_EXT_framebuffer_blit";
-    extension.dependencies.push_back("GL_VERSION_1_1");
-	extension.dependencies.push_back("GL_EXT_framebuffer_object");
-	extensions.push_back(extension);
-
-	extension.dependencies.clear(); 
-	extension.active = false;	extension.kind = EXT;	extension.extensionName = "GL_EXT_framebuffer_multisample";
-    extension.dependencies.push_back("GL_EXT_framebuffer_blit");
-	extension.dependencies.push_back("GL_EXT_framebuffer_object");
-	extensions.push_back(extension);
-
-	extension.dependencies.clear(); 
-	extension.active = false;	extension.kind = EXT;	extension.extensionName = "GL_EXT_packed_depth_stencil";
-    extension.dependencies.push_back("GL_VERSION_1_1");
-	extension.dependencies.push_back("GL_EXT_framebuffer_object");
-	extensions.push_back(extension);
-
-	extension.dependencies.clear(); 
-	extension.active = false;	extension.kind = NV;	extension.extensionName = "GL_NV_fragment_program";
-    extension.dependencies.push_back("GL_VERSION_1_2");
-    extension.dependencies.push_back("GL_ARB_multitexture");
-	extensions.push_back(extension);
-    
 	extension.dependencies.clear(); 
     extension.active = false;	extension.kind = NV;	extension.extensionName = "GL_NV_float_buffer";
 	extension.dependencies.push_back("GL_NV_fragment_program");
@@ -594,62 +279,15 @@ CGLBuilder::CGLBuilder():
 #endif
 	extensions.push_back(extension);
 
-    extension.dependencies.clear(); 
-    extension.active = false;	extension.kind = NV;	extension.extensionName = "GL_NV_texgen_reflection";
-	extensions.push_back(extension);
 
-    extension.dependencies.clear(); 
-	extension.active = false;	extension.kind = NV;	extension.extensionName = "GL_NV_texture_env_combine4";
-    extension.dependencies.push_back("GL_ARB_texture_env_combine");
-	extensions.push_back(extension);
-
-	extension.dependencies.clear(); 
-    extension.active = false;	extension.kind = NV;	extension.extensionName = "GL_NV_texture_rectangle";
-	extensions.push_back(extension);
-
-    extension.dependencies.clear(); 
-	extension.active = false;	extension.kind = NV;	extension.extensionName = "GL_NV_texture_shader";
-    extension.dependencies.push_back("GL_ARB_multitexture");
-    extension.dependencies.push_back("GL_ARB_texture_cube_map");
-	extensions.push_back(extension);
-
-    extension.dependencies.clear(); 
-	extension.active = false;	extension.kind = NV;	extension.extensionName = "GL_NV_vertex_array_range";
-	extensions.push_back(extension);
-
-    extension.dependencies.clear(); 
-	extension.active = false;	extension.kind = NV;	extension.extensionName = "GL_NV_point_sprite";
-    extension.dependencies.push_back("GL_EXT_point_parameters");
-	extensions.push_back(extension);
-
-    extension.dependencies.clear(); 
-	extension.active = false;	extension.kind = NV;	extension.extensionName = "GL_NV_register_combiners";
-    extension.dependencies.push_back("GL_ARB_multitexture");
-	extensions.push_back(extension);
-
-    extension.dependencies.clear(); 
-	extension.active = false;	extension.kind = WGL;	extension.extensionName = "WGL_EXT_swap_control";
-    extension.dependencies.push_back("WGL_ARB_extensions_string");
-	extensions.push_back(extension);
-
-    extension.dependencies.clear(); 
-    extension.active = false;	extension.kind = WGL;	extension.extensionName = "GL_WIN_swap_hint";
-	extensions.push_back(extension);
-
-    extension.dependencies.clear(); 
-	extension.active = false;	extension.kind = WGL;	extension.extensionName = "WGL_ARB_extensions_string";
-	extensions.push_back(extension);
-
-    extension.dependencies.clear(); 
-	extension.active = false;	extension.kind = WGL;	extension.extensionName = "WGL_ARB_pixel_format";
-    extension.dependencies.push_back("WGL_ARB_extensions_string");
-	extensions.push_back(extension);
-
-    extension.dependencies.clear(); 
-	extension.active = false;	extension.kind = WGL;	extension.extensionName = "WGL_ARB_pbuffer";
-    extension.dependencies.push_back("WGL_ARB_extensions_string");
-    extension.dependencies.push_back("WGL_ARB_pixel_format");
-	extensions.push_back(extension);
+	addExtension(WGL, "GL_WIN_swap_hint");
+	addExtension(WGL, "WGL_ARB_extensions_string");
+	addExtension(WGL, "WGL_NV_render_texture_rectangle");
+	addExtension(WGL, "WGL_EXT_swap_control", "WGL_ARB_extensions_string");
+	addExtension(WGL, "WGL_ARB_pixel_format", "WGL_ARB_extensions_string");
+	addExtension(WGL, "WGL_NV_render_depth_texture", "WGL_ARB_render_texture");
+	addExtension(WGL, "WGL_EXT_swap_control_tear", "WGL_EXT_swap_control");
+	addExtension(WGL, "WGL_ARB_pbuffer", "WGL_ARB_extensions_string", "WGL_ARB_pixel_format");
 
     extension.dependencies.clear(); 
     extension.active = false;	extension.kind = WGL;	extension.extensionName = "WGL_ARB_render_texture";
@@ -658,62 +296,15 @@ CGLBuilder::CGLBuilder():
     extension.dependencies.push_back("WGL_ARB_pbuffer");
 	extensions.push_back(extension);
 
-    extension.dependencies.clear(); 
-    extension.active = false;	extension.kind = WGL;	extension.extensionName = "WGL_NV_render_depth_texture";
-    extension.dependencies.push_back("WGL_ARB_render_texture");
-	extensions.push_back(extension);
+    
+	addExtension(GLX, "GLX_EXTENSIONS");
 
-	extension.dependencies.clear(); 
-    extension.active = false;	extension.kind = WGL;	extension.extensionName = "WGL_NV_render_texture_rectangle";
-	extensions.push_back(extension);
+	addExtension(ATI, "WGL_ATI_pixel_format_float", "WGL_ARB_pixel_format");
 
-    extension.dependencies.clear(); 
-    extension.active = false;	extension.kind = GLX;	extension.extensionName = "GLX_EXTENSIONS";
-	extensions.push_back(extension);
+	addExtension(KHR, "GL_KHR_texture_compression_astc_hdr");
+	addExtension(KHR, "GL_KHR_texture_compression_astc_ldr");
 
-	extension.dependencies.clear(); 
-    extension.active = false;	extension.kind = ATI;	extension.extensionName = "WGL_ATI_pixel_format_float";
-	extension.dependencies.push_back("WGL_ARB_pixel_format");
-	extensions.push_back(extension);
-
-	extension.dependencies.clear(); 
-    extension.active = false;	extension.kind = WGL;	extension.extensionName = "WGL_EXT_swap_control_tear";
-	extension.dependencies.push_back("WGL_EXT_swap_control");
-	extensions.push_back(extension);
-
-	extension.dependencies.clear();
-	extension.active = false;	extension.kind = KHR;	extension.extensionName = "GL_KHR_texture_compression_astc_hdr";
-	extensions.push_back(extension);
-
-	extension.dependencies.clear();
-	extension.active = false;	extension.kind = KHR;	extension.extensionName = "GL_KHR_texture_compression_astc_ldr";
-	extensions.push_back(extension);
-
-	extension.dependencies.clear();
-	extension.active = false;	extension.kind = NV;	extension.extensionName = "GL_NV_texture_compression_vtc";
-	extension.dependencies.push_back("GL_ARB_texture_compression");
-	extension.dependencies.push_back("GL_EXT_texture_compression_s3tc");
-	extensions.push_back(extension);
-
-	extension.dependencies.clear();
-	extension.active = false;	extension.kind = EXT;	extension.extensionName = "GL_EXT_texture_compression_dxt1";
-	extension.dependencies.push_back("GL_VERSION_1_3");
-	extensions.push_back(extension);
-
-	extension.dependencies.clear();
-	extension.active = false;	extension.kind = ARB;	extension.extensionName = "GL_ARB_compressed_texture_pixel_storage";
-	extension.dependencies.push_back("GL_VERSION_1_2");
-	extensions.push_back(extension);
-
-	extension.dependencies.clear();
-	extension.active = false;	extension.kind = OES;	extension.extensionName = "GL_OES_compressed_paletted_texture";
-	extensions.push_back(extension);
-
-	extension.dependencies.clear();
-	extension.active = false;	extension.kind = ARB;	extension.extensionName = "GL_ARB_uniform_buffer_object";
-	extension.dependencies.push_back("GL_ARB_shader_objects");
-	extension.dependencies.push_back("GL_ARB_vertex_buffer_object");
-	extensions.push_back(extension);
+	addExtension(OES, "GL_OES_compressed_paletted_texture");
 }
 
 CGLBuilder::~CGLBuilder()
@@ -854,6 +445,8 @@ string CGLBuilder::setVersion(const string &strVersion)
 		strResult += " GL_VERSION_4_4";
 	if ((majorVersion > 4) || ((majorVersion == 4) && (minorVersion >= 5)))
 		strResult += " GL_VERSION_4_5";
+	if ((majorVersion > 4) || ((majorVersion == 4) && (minorVersion >= 6)))
+		strResult += " GL_VERSION_4_6";
 
 	return strResult;
 }
@@ -960,3 +553,38 @@ bool CGLBuilder::writeHeader(const string& filename)
 }
 
 
+void CGLBuilder::addExtension(EXTENSION_KIND kind, std::string extensionName)
+{
+	EXTENSION extension;
+
+	extension.active = false;
+	extension.kind = kind;
+	extension.extensionName = extensionName;
+
+	extensions.push_back(extension);
+}
+
+void CGLBuilder::addExtension(EXTENSION_KIND kind, std::string extensionName, std::string extensionDependency)
+{
+	EXTENSION extension;
+
+	extension.active = false;
+	extension.kind = kind;
+	extension.extensionName = extensionName;
+	extension.dependencies.push_back(extensionDependency);
+
+	extensions.push_back(extension);
+}
+
+void CGLBuilder::addExtension(EXTENSION_KIND kind, std::string extensionName, std::string extensionDependency, std::string extensionDependency2)
+{
+	EXTENSION extension;
+
+	extension.active = false;
+	extension.kind = kind;
+	extension.extensionName = extensionName;
+	extension.dependencies.push_back(extensionDependency);
+	extension.dependencies.push_back(extensionDependency2);
+
+	extensions.push_back(extension);
+}

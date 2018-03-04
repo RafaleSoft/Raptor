@@ -149,7 +149,8 @@ copy .\RaptorCore\System\RaptorDisplayConfig.h Redist\Include\System
 copy .\RaptorCore\System\RaptorDisplayFilter.h Redist\Include\System
 copy .\RaptorCore\System\RaptorErrorManager.h Redist\Include\System
 copy .\RaptorCore\System\RaptorEventManager.h Redist\Include\System
-copy .\RaptorCore\System\RaptorExtensions.h Redist\Include\System
+copy .\RaptorCore\System\RaptorGLExtensions.h Redist\Include\System
+copy .\RaptorCore\System\RaptorVKExtensions.h Redist\Include\System
 copy .\RaptorCore\System\RaptorIO.h Redist\Include\System
 copy .\RaptorCore\System\RaptorMessages.h Redist\Include\System
 copy .\RaptorCore\System\RenderEntryPoint.h Redist\Include\System

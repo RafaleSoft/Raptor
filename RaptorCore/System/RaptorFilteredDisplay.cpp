@@ -27,9 +27,6 @@
 #if !defined(AFX_TEXTUREFACTORY_H__1B470EC4_4B68_11D3_9142_9A502CBADC6B__INCLUDED_)
 	#include "GLHierarchy/TextureFactory.h"
 #endif
-#if !defined(AFX_TEXTUREOBJECT_H__D32B6294_B42B_4E6F_AB73_13B33C544AD0__INCLUDED_)
-	#include "GLHierarchy/TextureObject.h"
-#endif
 #if !defined(AFX_TEXTURESET_H__26F3022D_70FE_414D_9479_F9CCD3DCD445__INCLUDED_)
 	#include "GLHierarchy/TextureSet.h"
 #endif
@@ -41,9 +38,6 @@
 #endif
 #if !defined(AFX_3DENGINE_H__DB24F018_80B9_11D3_97C1_FC2841000000__INCLUDED_)
 	#include "Engine/3DEngine.h"
-#endif
-#if !defined(AFX_RAPTOREXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
-  #include "System/RaptorExtensions.h"
 #endif
 #if !defined(AFX_GEOMETRYALLOCATOR_H__802B3C7A_43F7_46B2_A79E_DDDC9012D371__INCLUDED_)
 	#include "Subsys/GeometryAllocator.h"
@@ -276,9 +270,9 @@ bool CRaptorFilteredDisplay::glCreateRenderDisplay(void)
 
 			CTextureObject *T = f.glCreateTexture(	texelType,
 													CTextureObject::CGL_OPAQUE,
-													CTextureObject::CGL_BILINEAR);
+													ITextureObject::CGL_BILINEAR);
 			f.glResizeTexture(T,rda.width,rda.height);
-			T->glUpdateClamping(CTextureObject::CGL_EDGECLAMP);
+			T->glvkUpdateClamping(CTextureObject::CGL_EDGECLAMP);
 			m_pImageSet->addTexture(T);
 
 			//!	Do not use bilinear filtering for depth textures :
@@ -289,13 +283,13 @@ bool CRaptorFilteredDisplay::glCreateRenderDisplay(void)
 				((filter_cs.display_mode & CGL_DEPTH) == CGL_DEPTH))
 				T = f.glCreateTexture(	ITextureObject::CGL_DEPTH24_STENCIL8,
 										CTextureObject::CGL_OPAQUE,
-										CTextureObject::CGL_UNFILTERED);
+										ITextureObject::CGL_UNFILTERED);
 			else
 #endif
 
 				T = f.glCreateTexture(	ITextureObject::CGL_DEPTH24,
 										CTextureObject::CGL_OPAQUE,
-										CTextureObject::CGL_UNFILTERED);
+										ITextureObject::CGL_UNFILTERED);
 
 			f.glResizeTexture(T,rda.width,rda.height);
 			m_pImageSet->addTexture(T);
@@ -317,7 +311,7 @@ bool CRaptorFilteredDisplay::glCreateRenderDisplay(void)
 			//	so the texelType here is not necessary.
 			CTextureObject *T = f.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 															CTextureObject::CGL_OPAQUE,
-															CTextureObject::CGL_BILINEAR,
+															ITextureObject::CGL_BILINEAR,
 															m_pDisplay);
 			m_pImageSet->addTexture(T);
 		}

@@ -9,8 +9,11 @@
 #if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
 	#include "System/Raptor.h"
 #endif
-#if !defined(AFX_RAPTOREXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
-	#include "System/RaptorExtensions.h"
+#if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
+	#include "System/RaptorGLExtensions.h"
+#endif
+#if !defined(AFX_RAPTORVKEXTENSIONS_H__B17D6B7F_5AFC_4E34_9D49_8DC6CE9192D6__INCLUDED_)
+	#include "System/RaptorVKExtensions.h"
 #endif
 #ifndef __GLOBAL_H__
 	#include "System/Global.h"
@@ -271,7 +274,6 @@ CWin32ContextManager::CWin32ContextManager()
 	nbPBuffers = 0;
 	nbContext = 0;
 
-	m_currentContext = CContextManager::INVALID_CONTEXT;
 #if defined(WGL_ARB_pbuffer)
 	pBuffers = new pbuffer_t[MAX_PBUFFERS];
 #endif
@@ -308,23 +310,15 @@ CWin32ContextManager::~CWin32ContextManager()
 #if defined(WGL_ARB_pbuffer)
     delete [] pBuffers;
 #endif
-
-#if defined (VK_VERSION_1_0)
-	if (0 != vulkanModule.handle)
-	{
-		HMODULE module = (HMODULE)vulkanModule.handle;
-		FreeLibrary(module);
-	}
-#endif
 }
 
-const CRaptorExtensions *const CWin32ContextManager::glGetExtensions(void)
+const CRaptorGLExtensions *const CWin32ContextManager::glGetExtensions(void)
 {
-    if ((m_currentContext >= 0) && (m_currentContext < MAX_CONTEXT))
-        return pContext[m_currentContext].pExtensions;
+	if ((m_currentGLContext >= 0) && (m_currentGLContext < MAX_CONTEXT))
+		return pContext[m_currentGLContext].pExtensions;
     else
    //! If the current context is not valid, try at least to return the first context,
-  //!  which should be initialized by Raptor.  
+   //!  which should be initialized by Raptor.  
 	    return pContext[0].pExtensions;
 }
 
@@ -411,7 +405,7 @@ void CWin32ContextManager::glMakeCurrentContext(const RAPTOR_HANDLE& device,REND
 			}
             if (context.WIN32Context != NULL)
                 wglMakeCurrent(context.WIN32Context, context.OGLContext);
-			m_currentContext = ctx;
+			m_currentGLContext = ctx;
 		}
 		else
 		{
@@ -425,13 +419,13 @@ void CWin32ContextManager::glMakeCurrentContext(const RAPTOR_HANDLE& device,REND
 			}
 			context.WIN32Window = NULL;
             context.WIN32Context = NULL;
-			m_currentContext = CContextManager::INVALID_CONTEXT;
+			m_currentGLContext = CContextManager::INVALID_CONTEXT;
 		}
 	}
 	else
 	{
 		wglMakeCurrent(NULL,NULL);
-		m_currentContext = CContextManager::INVALID_CONTEXT;
+		m_currentGLContext = CContextManager::INVALID_CONTEXT;
 	}
     CATCH_WIN32_ERROR
 }
@@ -481,9 +475,9 @@ bool CWin32ContextManager::glSwapVSync(unsigned int nbVSync) const
 {
 	bool swapControl = false;
 
-    if ((m_currentContext >= 0) && (m_currentContext < MAX_CONTEXT))
+	if ((m_currentGLContext >= 0) && (m_currentGLContext < MAX_CONTEXT))
 	{ 
-        context_t &context = pContext[m_currentContext];
+		context_t &context = pContext[m_currentGLContext];
         
 #if defined(WGL_EXT_swap_control)
 	    if ((context.pExtensions->glIsExtensionSupported("WGL_EXT_swap_control")) && 
@@ -700,7 +694,7 @@ CContextManager::RENDERING_CONTEXT_ID CWin32ContextManager::glCreateContext(cons
 	}
 
     HDC hDC = NULL;
-    int pixelformat;
+    int pixelformat = 0;
 	
 	HGLRC	glhrc = NULL;
 	DWORD	flags = 0;
@@ -789,16 +783,16 @@ CContextManager::RENDERING_CONTEXT_ID CWin32ContextManager::glCreateContext(cons
 	context.WIN32Context = NULL;
     
 	wglMakeCurrent(hDC, glhrc);
-	RENDERING_CONTEXT_ID	oldContext = m_currentContext;
-	m_currentContext = pos;
+	RENDERING_CONTEXT_ID	oldContext = m_currentGLContext;
+	m_currentGLContext = pos;
 
 	PFN_WGL_GET_EXTENSIONS_STRING_ARB_PROC wglGetExtensionsStringARB = (PFN_WGL_GET_EXTENSIONS_STRING_ARB_PROC)wglGetProcAddress("wglGetExtensionsStringARB");
 	std::string extensions = (const char*)glGetString(GL_EXTENSIONS);
 	extensions += wglGetExtensionsStringARB(hDC);
-	context.pExtensions = new CRaptorExtensions(extensions);
+	context.pExtensions = new CRaptorGLExtensions(extensions);
 	context.pExtensions->glInitExtensions();
 
-	m_currentContext = oldContext;
+	m_currentGLContext = oldContext;
 	wglMakeCurrent(hDC,NULL);
 	 
 	nbContext++;
@@ -832,8 +826,8 @@ CContextManager::RENDERING_CONTEXT_ID  CWin32ContextManager::glCreateExtendedCon
 	//	Now, we are sure that the rendering context can be created,
 	//	try to create the extended rendering context
 #if defined(WGL_ARB_pixel_format)
-	if ((CRaptorExtensions::wglChoosePixelFormatARB != NULL) && 
-		(CRaptorExtensions::wglGetExtensionsStringARB != NULL))
+	if ((CRaptorGLExtensions::wglChoosePixelFormatARB != NULL) && 
+		(CRaptorGLExtensions::wglGetExtensionsStringARB != NULL))
 	{
 		// alloc pixel format descriptor
         int piAttribIList[2*30];
@@ -886,7 +880,7 @@ CContextManager::RENDERING_CONTEXT_ID  CWin32ContextManager::glCreateExtendedCon
 		//	Terminate the list and continue with the settings
 		UINT nNumFormats = 0;
 		int pixelformat;
-		if (( CRaptorExtensions::wglChoosePixelFormatARB(hDC, piAttribIList,NULL,1,&pixelformat,&nNumFormats) == 0 ) || (nNumFormats == 0))
+		if (( CRaptorGLExtensions::wglChoosePixelFormatARB(hDC, piAttribIList,NULL,1,&pixelformat,&nNumFormats) == 0 ) || (nNumFormats == 0))
 		{
 			RAPTOR_FATAL( Global::COpenGLClassID::GetClassId(),"Raptor Context Manager failed to choose EXT pixel format");
 			return CContextManager::INVALID_CONTEXT;
@@ -921,17 +915,17 @@ CContextManager::RENDERING_CONTEXT_ID  CWin32ContextManager::glCreateExtendedCon
 		nbContext++;
 
 		wglMakeCurrent(hDC, glhrc);
-		RENDERING_CONTEXT_ID	oldContext = m_currentContext;
-        m_currentContext = pos;
+		RENDERING_CONTEXT_ID	oldContext = m_currentGLContext;
+		m_currentGLContext = pos;
         context.OGLContext = glhrc; 
 
 		PFN_WGL_GET_EXTENSIONS_STRING_ARB_PROC wglGetExtensionsStringARB = (PFN_WGL_GET_EXTENSIONS_STRING_ARB_PROC)wglGetProcAddress("wglGetExtensionsStringARB");
 		std::string extensions = (const char*)glGetString(GL_EXTENSIONS);
 		extensions += wglGetExtensionsStringARB(hDC);
-		context.pExtensions = new CRaptorExtensions(extensions);
+		context.pExtensions = new CRaptorGLExtensions(extensions);
 		context.pExtensions->glInitExtensions();
 
-		m_currentContext = oldContext;
+		m_currentGLContext = oldContext;
 		wglMakeCurrent(hDC, NULL);
 
 		if (device.hClass == WINDOW_CLASS)
@@ -959,13 +953,13 @@ CContextManager::RENDERING_CONTEXT_ID  CWin32ContextManager::glCreateExtendedCon
 			return 0;
 		}
 
-       if ((m_currentContext < 0) || (m_currentContext >= MAX_CONTEXT))
-       {
+		if ((m_currentGLContext < 0) || (m_currentGLContext >= MAX_CONTEXT))
+		{
             RAPTOR_FATAL( Global::COpenGLClassID::GetClassId(),"No active rendering context to create a pbuffer");
             return 0;
-       } 
+		} 
         
-       context_t &context = pContext[m_currentContext];
+		context_t &context = pContext[m_currentGLContext];
         
 		if ((context.pExtensions->wglCreatePBufferARB == NULL) || 
 			(context.pExtensions->wglChoosePixelFormatARB == NULL) || 
@@ -1134,7 +1128,7 @@ CContextManager::RENDERING_CONTEXT_ID  CWin32ContextManager::glCreateExtendedCon
 			return false;
 		}
 		
-       const CRaptorExtensions *const pExtensions = this->glGetExtensions();
+       const CRaptorGLExtensions *const pExtensions = this->glGetExtensions();
 		if (0 == pExtensions->wglReleasePBufferDCARB(pBuffers[pbuffer].pbuffer,pBuffers[pbuffer].pbufferDC))
 		{
 			RAPTOR_FATAL( Global::COpenGLClassID::GetClassId(),"Raptor failed to release PBuffer device context");
@@ -1175,7 +1169,7 @@ CContextManager::RENDERING_CONTEXT_ID  CWin32ContextManager::glCreateExtendedCon
 		if ((selectBuffer >= CTextureObject::CGL_CUBEMAP_PX) && 
 			(selectBuffer <= CTextureObject::CGL_CUBEMAP_NZ))
         {
-            const CRaptorExtensions *const pExtensions = this->glGetExtensions();
+            const CRaptorGLExtensions *const pExtensions = this->glGetExtensions();
         
             int piAttribList[3];
             piAttribList[0] = WGL_CUBE_MAP_FACE_ARB;
@@ -1203,7 +1197,7 @@ CContextManager::RENDERING_CONTEXT_ID  CWin32ContextManager::glCreateExtendedCon
 			return false;
 		}
 		
-        const CRaptorExtensions *const pExtensions = this->glGetExtensions();
+        const CRaptorGLExtensions *const pExtensions = this->glGetExtensions();
         
 		if ((pBuffers[pbuffer].pbuffer == NULL) || (pExtensions->wglBindTexImageARB == NULL))
 		{
@@ -1250,7 +1244,7 @@ CContextManager::RENDERING_CONTEXT_ID  CWin32ContextManager::glCreateExtendedCon
 			return false;
 		}
 
-        const CRaptorExtensions *const pExtensions = this->glGetExtensions();
+        const CRaptorGLExtensions *const pExtensions = this->glGetExtensions();
        
 		if ((pBuffers[pbuffer].pbuffer == NULL) || (pExtensions->wglReleaseTexImageARB == NULL))
 		{
@@ -1294,12 +1288,13 @@ bool CWin32ContextManager::vkInit(void)
 
 	if (NULL != module)
 	{
-		vkGetInstanceProcAddr = (PFN_vkGetInstanceProcAddr)(GetProcAddress(module,"vkGetInstanceProcAddr"));
+		CRaptorVKExtensions::vkGetInstanceProcAddr = (PFN_vkGetInstanceProcAddr)(GetProcAddress(module, "vkGetInstanceProcAddr"));
 	
 		if (CContextManager::vkInit())
 		{
-			bool surface_rendering_supported =	(string::npos != instance_extensions.find("VK_KHR_surface") &&
-												string::npos != instance_extensions.find("VK_KHR_win32_surface"));
+			CRaptorVKExtensions instance_extensions("");
+			bool surface_rendering_supported = instance_extensions.vkIsExtensionSupported("VK_KHR_surface") &&
+												instance_extensions.vkIsExtensionSupported("VK_KHR_win32_surface");
 			if (!surface_rendering_supported)
 			{
 				RAPTOR_ERROR(	Global::CVulkanClassID::GetClassId(),
@@ -1309,6 +1304,21 @@ bool CWin32ContextManager::vkInit(void)
 		}
 		return false;
 	}
+	return false;
+}
+
+bool CWin32ContextManager::vkRelease(void)
+{
+	if (CContextManager::vkRelease())
+	{
+		if (0 != vulkanModule.handle)
+		{
+			HMODULE module = (HMODULE)vulkanModule.handle;
+			BOOL res = FreeLibrary(module);
+			return (res == TRUE);
+		}
+	}
+		
 	return false;
 }
 
@@ -1325,7 +1335,7 @@ bool CWin32ContextManager::vkCreateSurface(const RAPTOR_HANDLE& handle,RENDERING
 
 		//!	Create the Surface
 		VkResult res = VK_NOT_READY;
-		res = context.vkCreateWin32SurfaceKHR(context.instance,&createInfo,NULL,&context.surface);
+		res = context.vkCreateWin32SurfaceKHR(CRaptorVKExtensions::getInstance(), &createInfo, NULL, &context.surface);
 		if (VK_SUCCESS != res)
 		{
 			RAPTOR_ERROR(	Global::CVulkanClassID::GetClassId(),

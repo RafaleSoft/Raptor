@@ -9,10 +9,9 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#ifndef __CGLTYPES_HPP__
-	#include "System/CGLTypes.h"
+#if !defined(AFX_OBJECTREFERENCE_H__0D47C721_2B2D_4163_AB88_BE1B4E08A84D__INCLUDED_)
+	#include "ObjectReference.h"
 #endif
-
 
 RAPTOR_NAMESPACE_BEGIN
 
@@ -20,7 +19,7 @@ class CTextureObject;
 class CVulkanTextureObject;
 
 
-class RAPTOR_API ITextureObject
+class RAPTOR_API ITextureObject : public CObjectReference
 {
 public:
 	//!	Server-side texel type
@@ -43,6 +42,26 @@ public:
 		CGL_DEPTH24_STENCIL8
 	} TEXEL_TYPE;
 
+	//! Texel sampler filter
+	typedef enum
+	{
+		CGL_UNFILTERED,
+		CGL_BILINEAR,
+		CGL_BILINEAR_MIPMAPPED,
+		CGL_TRILINEAR,
+		CGL_ANISOTROPIC
+	} TEXTURE_FILTER;
+
+	//! Texture sampler clampping model
+	typedef enum
+	{
+		CGL_REPEAT,
+		CGL_MIRROR_REPEAT,
+		CGL_CLAMP,
+		CGL_EDGECLAMP,
+		CGL_MIRROR_EDGECLAMP
+	} CLAMP_MODE;
+
 
 public:
 	ITextureObject(TEXEL_TYPE m_type);
@@ -50,6 +69,16 @@ public:
 
 	//!	Renders the textures : it is bound to the current active Texture Unit.
 	virtual void glvkRender(void) = 0;
+
+	//! Updates texture filtering function
+	//! @param F : the filter function
+	virtual void glvkUpdateFilter(ITextureObject::TEXTURE_FILTER F) = 0;
+
+	//! Updates texture sampler clamping mode. This method
+	//!	is a simple helper, clamping mode is applied equally 
+	//!	to each dimension.
+	//! @param C : the clamp mode
+	virtual void glvkUpdateClamping(ITextureObject::CLAMP_MODE C) = 0;
 
 	//! Returns texture object implementation or NULL
 	virtual CTextureObject* getGLTextureObject(void) { return NULL; };
@@ -87,6 +116,9 @@ public:
 	//! @ return : the value set using the method glSetTransparency
 	uint32_t	getTransparency(void) const { return m_alpha; };
 
+	//! Returns the selected filtering method
+	TEXTURE_FILTER getFilter(void) const { return m_filter; };
+
 
 
 protected:
@@ -103,11 +135,15 @@ protected:
 	//! Aplha value. It is stored to be applyed before or after texture loading.
 	uint32_t	m_alpha;
 
-	//!	Object name ( default is filename )
-	std::string		m_name;
+	//! Texel sampler filter
+	TEXTURE_FILTER	m_filter;
+
 
 private:
 	ITextureObject::ITextureObject();
+
+	//!	Object name ( default is filename )
+	std::string		m_name;
 };
 
 RAPTOR_NAMESPACE_END

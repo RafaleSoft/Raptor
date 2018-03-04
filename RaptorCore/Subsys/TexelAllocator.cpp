@@ -133,82 +133,14 @@ bool CTexelAllocator::glvkLockMemory(bool lock)
     return res;
 }
 
-VkImage CTexelAllocator::vkAllocateTextureImage(uint64_t width,
-												uint64_t height,
-												uint64_t depth,
-												CTextureObject::TEXEL_TYPE format,
-												unsigned char* texels)
+VkImage CTexelAllocator::vkAllocateTextureImage(VkImageCreateInfo imageInfo,
+												VkDeviceSize offset)
 {
 	VkImage image = VK_NULL_HANDLE;
-	if ((width == 0) || (height == 0) || (depth == 0))
-	{
-#ifdef RAPTOR_DEBUG_MODE_GENERATION
-		Raptor::GetErrorManager()->generateRaptorError(Global::COpenGLClassID::GetClassId(),
-													   CRaptorErrorManager::RAPTOR_WARNING,
-													   "CTextureObject wrong size update");
-#endif
-		return image;
-	}
-
-	VkImageCreateInfo imageInfo = {};
-	imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
-	imageInfo.pNext = NULL;
-	imageInfo.flags = 0;
-
-	uint64_t size = width * height * depth;
-	//!
-	//! Select Image format
-	//!
-	switch (format)
-	{
-		case ITextureObject::CGL_COLOR24_ALPHA:
-			imageInfo.format = VK_FORMAT_R8G8B8A8_UNORM;
-			size = size * 4;
-			break;
-		case ITextureObject::CGL_COLOR24:
-			imageInfo.format = VK_FORMAT_R8G8B8_UNORM;
-			size = size * 3;
-			break;
-		default:
-			imageInfo.format = VK_FORMAT_R8G8B8A8_UNORM;
-			size = size * 4;
-			break;
-	}
-
-	imageInfo.extent.width = width;
-	imageInfo.extent.height = height;
-	imageInfo.extent.depth = depth;
-
-	//!
-	//! Select Image type
-	//!
-	if (2 > depth)
-	{
-		if (2 > height)
-			imageInfo.imageType = VK_IMAGE_TYPE_1D;
-		else
-			imageInfo.imageType = VK_IMAGE_TYPE_2D;
-	}
-	else
-		imageInfo.imageType = VK_IMAGE_TYPE_3D;
-
-	imageInfo.mipLevels = 1;
-	imageInfo.arrayLayers = 1;
-	imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
-	imageInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
-
-	CVulkanDevice *pDevice = CVulkanDevice::getCurrentDevice();
-	if (NULL != pDevice)
-	{
-		unsigned char *texpointer = this->allocateTexels(size);
-		VkDeviceSize offset = (VkDeviceSize)texpointer;
-
-		CVulkanMemory::CVulkanMemoryWrapper* memory = pDevice->getMemory();
+	
+	CVulkanMemory::CVulkanMemoryWrapper* memory = CVulkanDevice::getCurrentDevice().getMemory();
+	if (NULL != memory)
 		image = memory->createImage(imageInfo, *relocatedTexels, offset);
-
-		if ((VK_NULL_HANDLE != image) && (NULL != texels))
-			glvkCopyPointer(texpointer, texels, size);
-	}
 
 	return image;
 }

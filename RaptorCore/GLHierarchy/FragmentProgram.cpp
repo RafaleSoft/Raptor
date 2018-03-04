@@ -7,8 +7,8 @@
 #if !defined(AFX_FRAGMENTPROGRAM_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
     #include "FragmentProgram.h"
 #endif
-#if !defined(AFX_RAPTOREXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
-	#include "System/RaptorExtensions.h"
+#if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
+	#include "System/RaptorGLExtensions.h"
 #endif
 #if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
 	#include "System/Raptor.h"
@@ -66,7 +66,7 @@ CFragmentProgram::~CFragmentProgram()
 	}
 	else
 	{
-		const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 		if (m_handle.handle > 0)
 			pExtensions->glDeleteObjectARB(m_handle.handle);
 	}
@@ -83,7 +83,7 @@ void CFragmentProgram::glInitShaders()
 		if (Raptor::glIsExtensionSupported("GL_ARB_fragment_shader"))
 		{
 #if defined(GL_ARB_fragment_shader)
-			const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+			const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 			m_bFragmentProgramReady = (NULL != pExtensions->glCreateShaderObjectARB);
 #else
 			m_bFragmentProgramReady = false;
@@ -108,7 +108,7 @@ void CFragmentProgram::glInitShaders()
 bool CFragmentProgram::glLoadProgram(const std::string &program)
 {
     m_bValid = false;
-	const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 
 #if defined(GL_ARB_fragment_shader)
 	if (m_bFragmentProgramReady)
@@ -185,7 +185,7 @@ bool CFragmentProgram::glGetProgramStatus(void)
 		return false;
 
 #if defined(GL_ARB_fragment_shader)
-	const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 
 	GL_FRAGMENT_PROGRAM_CAPS caps;
 	if (glGetProgramCaps(caps))

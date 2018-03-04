@@ -36,9 +36,9 @@ CReflection::CReflection(float width,float height,int hcels,int vcels)
 	CPerlinNoise *pNoise = new CPerlinNoise(CVaArray<CImage::IImageOP::OP_KIND>(CImage::IImageOP::BUMPMAP_LOADER));
     CTextureObject *T = f.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 													CTextureObject::CGL_MULTIPLY,
-													CTextureObject::CGL_TRILINEAR,
+													ITextureObject::CGL_TRILINEAR,
 													pNoise);
-	T->glUpdateClamping(CTextureObject::CGL_REPEAT);
+	T->glvkUpdateClamping(CTextureObject::CGL_REPEAT);
 
 	CTextureUnitSetup *tus = pShader->glGetTextureUnitsSetup();
 
@@ -46,7 +46,7 @@ CReflection::CReflection(float width,float height,int hcels,int vcels)
     pNoise->glGenerate(T);
     tus->setNormalMap(T);
 
-    T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_MULTIPLY,CTextureObject::CGL_BILINEAR);
+    T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_MULTIPLY,ITextureObject::CGL_BILINEAR);
     T->glSetTransparency(230);
 
     f.glLoadTexture(T,"Datas\\marble5.jpg");

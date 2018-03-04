@@ -141,7 +141,7 @@ void CBumpDisplay::Init()
 
     CTextureObject *tt = f.glCreateTexture( ITextureObject::CGL_COLOR24_ALPHA,
 											CTextureObject::CGL_ALPHA_TRANSPARENT,
-											CTextureObject::CGL_BILINEAR);
+											ITextureObject::CGL_BILINEAR);
 	f.glResizeTexture(tt,512,512);
 	CPerlinNoise noise = CPerlinNoise(CImage::IImageOP::BUMPMAP_LOADER);
 	noise.setNoiseModel(CPerlinNoise::NOISE2);
@@ -149,7 +149,7 @@ void CBumpDisplay::Init()
 /*
 	CTextureObject *tt = f.glCreateVolumeTexture(ITextureObject::CGL_COLOR24_ALPHA,
 												 CTextureObject::CGL_ALPHA_TRANSPARENT,
-												 CTextureObject::CGL_BILINEAR);
+												 ITextureObject::CGL_BILINEAR);
 	f.glResizeTexture(tt,256,256,256);
 */
     noise.glGenerate(tt);
@@ -163,7 +163,7 @@ void CBumpDisplay::Init()
 	CPerlinNoise noise2;
 	CTextureObject *tt2 = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
                                             CTextureObject::CGL_ALPHA_TRANSPARENT,
-                                            CTextureObject::CGL_BILINEAR);
+                                            ITextureObject::CGL_BILINEAR);
 	f.glResizeTexture(tt2,512,512);
     noise2.glGenerate(tt2);
     tmu.setDiffuseMap(tt2);
