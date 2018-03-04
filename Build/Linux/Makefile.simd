@@ -1,6 +1,6 @@
 export
 
-CCCFLAGS =  -DSIMD_NO_ASSEMBLY
+CCCFLAGS =  -DSIMD_NO_ASSEMBLY -DLINUX
 OUTPUT = $(RAPTOR_ROOT)/Build/Linux/Release/SIMD
 SRCDIR = $(RAPTOR_ROOT)/SIMD
 INCDIRS = -I$(SRCDIR)
@@ -23,7 +23,7 @@ SRC = \
 OBJ = $(SRC:$(SRCDIR)/%.cpp=$(OUTPUT)/%.o)
 	
 $(OUTPUT)/simd.lib:	$(OBJ) 
-	ar -pc $(OUTPUT)/simd.lib $(OBJ)
+	ar -qcv $(OUTPUT)/simd.lib $(OBJ)
 	cp $(OUTPUT)/simd.lib $(REDIST)/Lib/
 
 $(OBJ):	$(SRC)

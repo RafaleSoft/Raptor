@@ -21,6 +21,8 @@ CSSEFMatrix::~CSSEFMatrix()
 {
 }
 
+#ifndef SIMD_NO_ASSEMBLY
+
 SIMD_ENTRY CSSEFMatrix& SIMD_CALL CSSEFMatrix::operator-(const CSSEFMatrix& m2) const
 {
 	__asm
@@ -539,3 +541,4 @@ float SIMD_CALL CSSEFMatrix::Det(void)
 			_alignedSSEFloatVector[3];
 }
 
+#endif
