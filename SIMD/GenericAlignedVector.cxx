@@ -21,8 +21,8 @@
 #define ALLOC_VECTOR(T) \
 {\
 char *pT = new char[4*sizeof(T)+16]; \
-m_vector = (T*)((int(pT)+0x00000010) & 0xfffffff0);\
-*((char*)m_vector-1)=char(int(pT)&0xf);\
+m_vector = (T*)((long(pT)+0x00000010) & 0xfffffff0);\
+*((char*)m_vector-1)=char(long(pT)&0xf);\
 }
 
 

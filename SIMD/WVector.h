@@ -20,8 +20,9 @@ public:
 	CWVector(){};
 	virtual ~CWVector(){};
 
+#ifndef SIMD_NO_ASSEMBLY
 	CWVector& operator= ( const CWVector& v )
-	{ 
+	{
 		__asm
 		{
 			mov esi,v
@@ -34,7 +35,7 @@ public:
 		return *this;
 	};
 	CWVector& operator= ( const CGenericVector<unsigned short>& v )
-	{ 
+	{
 		__asm
 		{
 			mov esi,v
@@ -57,12 +58,12 @@ public:
 			mov [edi+8],eax
 			mov [edi+4],ebx
 		}
-		return *this; 
+		return *this;
 	};	
 
 	//operations
 	bool operator== ( const CGenericVector<unsigned short>& v ) const
-	{ 
+	{
 		__asm
 		{
 			mov edi,this
@@ -83,7 +84,7 @@ public:
 #pragma warning(default:4035)
 
 	bool operator== ( const CWVector& v ) const
-	{ 
+	{
 		__asm
 		{
 			mov edi,this
@@ -104,7 +105,7 @@ public:
 #pragma warning(default:4035)
 
 	bool operator== ( const unsigned short v[4] ) const
-	{ 
+	{
 		__asm
 		{
 		mov edi,this
@@ -124,27 +125,29 @@ public:
 	};
 #pragma warning(default:4035)
 
-	void SIMD_CALL Zero() 
-	{ 
-		__asm 
+	void SIMD_CALL Zero()
+	{
+		__asm
 		{
 			mov edi,this
-			xor eax,eax 
+			xor eax,eax
 			mov [edi+8],eax
-			mov [edi+4],eax 
+			mov [edi+4],eax
 		}
 	};
 
 	void SIMD_CALL One()
-	{ 
-		__asm 
+	{
+		__asm
 		{
 			mov edi,this
 			mov eax,0x00010001
 			mov [edi+8],eax
-			mov [edi+4],eax 
+			mov [edi+4],eax
 		}
 	};
+
+#endif
 };
 
 CWVector SIMD_CALL operator*(const CWVector&, const float&);

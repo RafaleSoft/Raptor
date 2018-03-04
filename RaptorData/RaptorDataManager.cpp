@@ -33,9 +33,11 @@
 		#define STRDUP(s)		strdup(s)
 		#define STRCAT(a,b)		strcat(a,b)
 	#endif
+  #define UNLINK(a) _unlink(a)
 #elif defined(LINUX)
 	#include <stdio.h>
 	#include <sys/io.h>
+  #include <unistd.h>
 	#define _O_BINARY		0
 	#define _O_RDONLY		O_RDONLY
 	#define _O_CREAT		O_CREAT
@@ -51,6 +53,7 @@
 	#define STRCAT(a,b)		strcat(a,b)
 	#define LSEEK(a,b,c)	lseek(a,b,c)
 	#define TELL(a)			tell(a)
+  #define UNLINK(a) unlink(a)
 #endif
 
 
@@ -263,12 +266,12 @@ void CRaptorDataManager::ClearExports()
 		for (unsigned int k=0;k<header.nbFHeaders;k++)
 		{
 			std::string fname = filename + "/" + header.fHeaders[k].fname;
-			int res = _unlink(fname.data());
+			int res = UNLINK(fname.data());
 
 			if (header.compression != Z_NO_COMPRESSION)
 			{
 				fname = fname + ".zip";
-				res = _unlink(fname.data());
+				res = UNLINK(fname.data());
 			}
 		}
 	}

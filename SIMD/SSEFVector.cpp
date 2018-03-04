@@ -13,6 +13,8 @@
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
+#ifndef SIMD_NO_ASSEMBLY
+
 SIMD_ENTRY CSSEFVector& SIMD_CALL operator^  (const CSSEFVector& v1, const CSSEFVector& v2)
 {
 	__asm
@@ -376,4 +378,6 @@ SIMD_ENTRY CSSEFVector& SIMD_CALL operator* (const CSSEFVector& m, const CSSEFMa
 		ret
 	}
 }
+
+#endif
 

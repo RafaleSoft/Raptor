@@ -18,16 +18,17 @@
 #endif
 
 
-class CSSEFMatrix : public CGenericAlignedMatrix<float>  
+class CSSEFMatrix : public CGenericAlignedMatrix<float>
 {
 public:
 	CSSEFMatrix();
 	virtual ~CSSEFMatrix();
 
+#ifndef SIMD_NO_ASSEMBLY
 	#pragma warning(disable:4100) // unreferenced parameter
 	#pragma warning(disable:4035) // no return value
 	CSSEFMatrix& SIMD_CALL operator= ( const CSSEFMatrix& m )
-	{ 
+	{
 		__asm
 		{
 			mov ecx,0x10
@@ -41,7 +42,7 @@ public:
 
 	#pragma warning(disable:4100) // unreferenced parameter
 	CSSEFMatrix& SIMD_CALL operator= ( const float m[16] )
-	{ 
+	{
 		__asm
 		{
 			mov ecx,0x10
@@ -49,12 +50,12 @@ public:
 			mov eax,this
 			mov edi,[eax+4]
 			rep movsd
-		} 
+		}
 	};
 
 	#pragma warning(disable:4100) // unreferenced parameter
 	CSSEFMatrix& SIMD_CALL operator= ( const CGenericAlignedMatrix<float>& m )
-	{ 
+	{
 		__asm
 		{
 			mov ecx,0x10
@@ -81,8 +82,10 @@ public:
 	// binary operations
 	CSSEFMatrix& SIMD_CALL operator+(const CSSEFMatrix& m2) const;
 	CSSEFMatrix& SIMD_CALL operator-(const CSSEFMatrix& m2) const;
+#endif
 };
 
+#ifndef SIMD_NO_ASSEMBLY
 CSSEFMatrix& SIMD_CALL operator*(const CSSEFMatrix& m1, const CSSEFMatrix& m2);
 CSSEFMatrix& SIMD_CALL operator*(const float& v, const CSSEFMatrix& m);
 CSSEFMatrix& SIMD_CALL operator*(const CSSEFMatrix& m, const float& v);
@@ -243,7 +246,7 @@ __inline CSSEFMatrix& SIMD_CALL CSSEFMatrix::operator*=(const float& t)
 	__asm add edi,16
 	sse_storeaps(0x27)
 }
-
+#endif
 
 
 
