@@ -534,7 +534,7 @@ bool CGLBuilder::writeHeader(const string& filename)
 			std::string extension_name = "";
 			std::string::const_iterator i = extension.extensionName.begin();
 			while (i != extension.extensionName.end())
-				extension_name += ::toupper(*i++);
+				extension_name += (char)::toupper(*i++);
 			header << "	#define	" << extension_name << "_EXTENSION_NAME \"" << extension.extensionName << "\"\n";
 			header << "#endif\n";
 		}

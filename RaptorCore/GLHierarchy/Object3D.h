@@ -197,8 +197,7 @@ public:
 	virtual void glRender(void)=0;
 	virtual void vkRender(CVulkanCommandBuffer& commandBuffer,
 						  VkBuffer vertexBinding,
-						  VkBuffer indexBinding,
-						  VkBuffer uniformBinding)
+						  VkBuffer indexBinding)
 	{
 	};
 

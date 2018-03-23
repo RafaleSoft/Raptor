@@ -14,11 +14,15 @@
 #if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
     #include "System/RaptorErrorManager.h"
 #endif
+#ifndef __vkext_macros_h_
+	#include "System/VKEXTMacros.h"
+#endif
 
 
 RAPTOR_NAMESPACE
 
-
+IMPLEMENT_RAPTOR_VK_command_buffer(CVulkanCommandBuffer)
+/*
 PFN_vkCmdPipelineBarrier	CVulkanCommandBuffer::vkCmdPipelineBarrier = NULL;
 PFN_vkCmdBeginRenderPass	CVulkanCommandBuffer::vkCmdBeginRenderPass = NULL;
 PFN_vkCmdEndRenderPass		CVulkanCommandBuffer::vkCmdEndRenderPass = NULL;
@@ -37,7 +41,7 @@ PFN_vkCmdCopyBufferToImage	CVulkanCommandBuffer::vkCmdCopyBufferToImage;
 PFN_vkCmdCopyImageToBuffer	CVulkanCommandBuffer::vkCmdCopyImageToBuffer;
 PFN_vkCmdDraw				CVulkanCommandBuffer::vkCmdDraw = NULL;
 PFN_vkCmdDrawIndexed		CVulkanCommandBuffer::vkCmdDrawIndexed = NULL;
-
+*/
 
 CVulkanCommandBuffer::CVulkanCommandBuffer(VkCommandBuffer cmdBuffer,const VkRect2D& scissor)
 	:commandBuffer(cmdBuffer), retore_barrier(false), view_scissor(scissor), render_pass(false)

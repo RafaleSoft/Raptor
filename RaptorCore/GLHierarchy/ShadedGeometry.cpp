@@ -162,19 +162,21 @@ void CShadedGeometry::overrideShading(const CRenderingProperties& override)
 
 void CShadedGeometry::vkRender(	CVulkanCommandBuffer& commandBuffer,
 								VkBuffer vertexBinding,
-								VkBuffer indexBinding,
-								VkBuffer uniformBinding)
+								VkBuffer indexBinding)
 {
 	if (m_pShader != NULL)
 	{
 		if (m_pShader->hasVulkanProgram())
 		{
+			CTextureUnitSetup *tmus = NULL;
+			if (m_pShader->hasTextureUnitSetup())
+				tmus = m_pShader->glGetTextureUnitsSetup();
 			CVulkanShaderStage *ss = m_pShader->vkGetVulkanProgram();
-			ss->vkRender(commandBuffer, uniformBinding);
+			ss->vkRender(commandBuffer, tmus);
 		}
 	}
 
-	CGeometry::vkRender(commandBuffer, vertexBinding, indexBinding, uniformBinding);
+	CGeometry::vkRender(commandBuffer, vertexBinding, indexBinding);
 }
 
 void CShadedGeometry::glRender()

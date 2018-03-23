@@ -48,7 +48,6 @@ CTextureObject::CTextureObject(TEXEL_TYPE type)
 	env_mode = GL_REPLACE;
 	m_filter = ITextureObject::CGL_UNFILTERED;
 	m_pTexelGenerator = NULL;
-    aniso_level = 0.0f;
     source[0] = source[1] = source[2] = source[3] = 0;
 }
 
@@ -61,7 +60,6 @@ CTextureObject::CTextureObject(const CTextureObject& rsh)
 	env_mode = rsh.env_mode;
 	m_filter = rsh.m_filter;
 	m_pTexelGenerator = rsh.m_pTexelGenerator;
-    aniso_level = rsh.aniso_level;
     source[0] = source[1] = source[2] = source[3] = 0;
 }
 

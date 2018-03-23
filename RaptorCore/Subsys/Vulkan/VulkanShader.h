@@ -14,7 +14,9 @@
 #if !defined(__RAPTOR_VKEXT_H__)
 	#include "System/vkext.h"
 #endif
-
+#if !defined(AFX_PROGRAMPARAMETERS_H__E28A74BB_DE78_470A_A8A2_5A3EBB3F4F90__INCLUDED_)
+	#include "GLHierarchy/ProgramParameters.h"
+#endif
 
 RAPTOR_NAMESPACE_BEGIN
 
@@ -24,7 +26,7 @@ class CVulkanCommandBuffer;
 class CVulkanShader
 {
 public:
-	CVulkanShader(VkDevice device, PFN_vkGetDeviceProcAddr vkGetDeviceProcAddr);
+	CVulkanShader(VkDevice d);
 	virtual ~CVulkanShader(void);
 
 	//!	Clone this shader (not functional yet)
@@ -33,9 +35,8 @@ public:
 	//!	Renders the shader, i.e. bind descriptor sets to current commandBuffer.
 	//!	If uniformBuffer && size, descriptor sets are updated to uniform buffer.
 	void vkRender(CVulkanCommandBuffer &commandBuffer,
-				  VkBuffer uniformBuffer,
-				  VkDeviceSize offset,
-				  VkDeviceSize size);
+				  const VkDescriptorBufferInfo& bufferInfo,
+				  const VkDescriptorImageInfo& imageInfo);
 
 	//!	Returns the number of shader stages loaded
 	size_t getStageCount() const { return m_shaderModules.size(); };
@@ -44,15 +45,18 @@ public:
 	//!	Checks are done in CVulkanShaderStage class
 	bool loadShader(const std::string &filename);
 
+	//! Returns the shader module, if any, for the pipeline requested stage.
 	VkPipelineShaderStageCreateInfo getShaderStage(size_t stage) const;
 
-	VkPipelineLayout getPipelineLayout();
-
-
-#if defined(VK_VERSION_1_0)
-	//	On a per device basis, STATIC_LINKAGE is incorrect
-	DECLARE_VK_pipeline(DEFAULT_LINKAGE)
+	//! Compute descriptor sets layout and create the pipeline layout
+	//! corresponding to eh parameter set.
+	VkPipelineLayout createPipelineLayout(const CProgramParameters &v);
+	
+	#if defined(VK_VERSION_1_0)
+	DECLARE_VK_pipeline(STATIC_LINKAGE)
 #endif
+
+
 
 private:
 	//!	Forbidden operators

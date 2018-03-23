@@ -131,7 +131,7 @@ CTextureUnitSetup::CTextureUnitSetup():
 	nbUnits = CTextureFactory::getDefaultFactory().getConfig().getNumTextureImages();
 
     useUnit = new bool[nbUnits];
-    imageUnit = new CTextureObject*[nbUnits];
+    imageUnit = new ITextureObject*[nbUnits];
     tmuShader = new GL_TEXTURE_SHADER[nbUnits];
     tmuCombiner = new GL_TEXTURE_COMBINER[nbUnits];
 
@@ -204,7 +204,7 @@ const CTextureUnitSetup& CTextureUnitSetup::operator=(const CTextureUnitSetup& r
 //////////////////////////////////////////////////////////////////////
 // Implementation
 //////////////////////////////////////////////////////////////////////
-void CTextureUnitSetup::setMap(CTextureObject *to, TEXTURE_IMAGE_UNIT unit)
+void CTextureUnitSetup::setMap(ITextureObject *to, TEXTURE_IMAGE_UNIT unit)
 {
 	if (imageUnit != NULL)
 	{
@@ -216,9 +216,9 @@ void CTextureUnitSetup::setMap(CTextureObject *to, TEXTURE_IMAGE_UNIT unit)
 	}
 }
 
-CTextureObject* const CTextureUnitSetup::getDiffuseMap(void) const 
+ITextureObject* const CTextureUnitSetup::getDiffuseMap(void) const 
 {
-    CTextureObject *tmu = NULL;
+    ITextureObject *tmu = NULL;
 
     if (imageUnit != NULL)
         tmu = imageUnit[IMAGE_UNIT_0]; 
@@ -226,9 +226,9 @@ CTextureObject* const CTextureUnitSetup::getDiffuseMap(void) const
     return tmu; 
 }
 
-CTextureObject* const CTextureUnitSetup::getNormalMap(void) const 
+ITextureObject* const CTextureUnitSetup::getNormalMap(void) const 
 { 
-    CTextureObject *tmu = NULL;
+    ITextureObject *tmu = NULL;
 
     if (imageUnit != NULL)
         tmu = imageUnit[IMAGE_UNIT_1]; 
@@ -236,9 +236,9 @@ CTextureObject* const CTextureUnitSetup::getNormalMap(void) const
     return tmu; 
 }
 
-CTextureObject* const CTextureUnitSetup::getLightMap(void) const
+ITextureObject* const CTextureUnitSetup::getLightMap(void) const
 { 
-    CTextureObject *tmu = NULL;
+    ITextureObject *tmu = NULL;
 
     if (imageUnit != NULL)
         tmu = imageUnit[IMAGE_UNIT_2]; 
@@ -246,9 +246,9 @@ CTextureObject* const CTextureUnitSetup::getLightMap(void) const
     return tmu; 
 }
 
-CTextureObject* CTextureUnitSetup::getEnvironmentMap(void) const 
+ITextureObject* CTextureUnitSetup::getEnvironmentMap(void) const 
 { 
-    CTextureObject *tmu = NULL;
+    ITextureObject *tmu = NULL;
 
     if (imageUnit != NULL)
         tmu = imageUnit[IMAGE_UNIT_3]; 
@@ -256,22 +256,22 @@ CTextureObject* CTextureUnitSetup::getEnvironmentMap(void) const
     return tmu; 
 }
 
-void CTextureUnitSetup::setDiffuseMap(CTextureObject* to) 
+void CTextureUnitSetup::setDiffuseMap(ITextureObject* to) 
 {
 	setMap(to,IMAGE_UNIT_0);
 }
 
-void CTextureUnitSetup::setNormalMap(CTextureObject* to) 
+void CTextureUnitSetup::setNormalMap(ITextureObject* to) 
 { 
 	setMap(to,IMAGE_UNIT_1);
 }
 
-void CTextureUnitSetup::setLightMap(CTextureObject* to)
+void CTextureUnitSetup::setLightMap(ITextureObject* to)
 { 
     setMap(to,IMAGE_UNIT_2);
 }
 
-void CTextureUnitSetup::setEnvironmentMap(CTextureObject* to) 
+void CTextureUnitSetup::setEnvironmentMap(ITextureObject* to) 
 { 
     setMap(to,IMAGE_UNIT_3);
 }
@@ -550,15 +550,17 @@ RAPTOR_HANDLE CTextureUnitSetup::glBuildSetup(void)
 			    glActiveTextureARB(GL_TEXTURE0_ARB+i);
 
 		    if (imageUnit[i] != NULL)
-		    {
+		    {	// TODO: make this section generic
+				CTextureObject* txt = imageUnit[i]->getGLTextureObject();
+
 			    // It is preferable not to render texture extensions in a display list.
-			    glEnable(imageUnit[i]->target);
+			    glEnable(txt->target);
                 // generators cannot be used in display lists
-				ITextureGenerator *G = imageUnit[i]->getTexelGenerator();
+				ITextureGenerator *G = txt->getTexelGenerator();
                 if (G != NULL)
                     G->enableGenerator(false);
 
-				imageUnit[i]->glvkRender();
+				txt->glvkRender();
 
                 if (G != NULL)
                     G->enableGenerator(true);
@@ -637,7 +639,8 @@ RAPTOR_HANDLE CTextureUnitSetup::glBuildUnSetup(void)
 
 			if (imageUnit[i] != NULL)
 			{
-				GLenum target = imageUnit[i]->target;
+				CTextureObject* txt = imageUnit[i]->getGLTextureObject();
+				GLenum target = txt->target;
 				glBindTexture(target, 0);
 				glDisable(target);
 			}

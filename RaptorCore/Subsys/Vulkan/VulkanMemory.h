@@ -138,8 +138,7 @@ public:
 
 	static CVulkanMemoryWrapper* CreateMemoryManager(VkDevice logicalDevice);
 
-	static CVulkanMemory& GetInstance(VkPhysicalDevice physicalDevice,
-									  const VkPhysicalDeviceMemoryProperties &memory_properties);
+	static CVulkanMemory& GetInstance(VkPhysicalDevice physicalDevice);
 
 	static bool ManageDevice(	VkPhysicalDevice physicalDevice,
 								VkDevice device);

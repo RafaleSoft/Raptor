@@ -50,12 +50,12 @@ RAPTOR_NAMESPACE
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 CRaptorVKExtensions::CRaptorVKExtensions(const std::string &ext)
+	:extensions(ext)
 {
-	extensions = ext;
-
 #if defined(VK_VERSION_1_0)
 	IMPLEMENT_VK_win32(this->, instance);
 	IMPLEMENT_VK_xlib(this->, instance);
+	IMPLEMENT_VK_KHR_surface(this->, instance);
 #endif
 }
 
@@ -145,6 +145,9 @@ bool CRaptorVKExtensions::vkInitExtensions(void)
 
 bool CRaptorVKExtensions::vkInitInstanceExtensions(void)
 {
+	if (!CRaptorVKExtensions::vkInitExtensions())
+		return false;
+
 	CRaptorErrorManager *pErrMgr = Raptor::GetErrorManager();
 	if (NULL == vkCreateInstance)
 	{
@@ -204,6 +207,59 @@ bool CRaptorVKExtensions::vkInitInstanceExtensions(void)
 		pErrMgr->vkGetError(res, __FILE__, __LINE__);
 
 	IMPLEMENT_VK_instance(CRaptorVKExtensions::, instance);
+
+	return true;
+}
+
+bool CRaptorVKExtensions::vkInitDeviceExtensions(VkPhysicalDevice device)
+{
+	VkResult res = VK_SUCCESS;
+
+	std::vector<std::string> layers;
+	uint32_t pLayerCount = 0;
+	res = vkEnumerateDeviceLayerProperties(device, &pLayerCount, NULL);
+	if ((VK_SUCCESS == res) && (pLayerCount > 0))
+	{
+		VkLayerProperties* pProperties = new VkLayerProperties[pLayerCount];
+		res = vkEnumerateDeviceLayerProperties(device, &pLayerCount, pProperties);
+		for (uint32_t j = 0; j < pLayerCount; j++)
+			layers.push_back(pProperties[j].layerName);
+		delete[] pProperties;
+	}
+	else
+		return false;
+
+	uint32_t pPropertyCount = 0;
+	res = vkEnumerateDeviceExtensionProperties(device, NULL, &pPropertyCount, NULL);
+	if ((VK_SUCCESS == res) && (pPropertyCount > 0))
+	{
+		VkExtensionProperties* pProperties = new VkExtensionProperties[pPropertyCount];
+		res = vkEnumerateDeviceExtensionProperties(device, NULL, &pPropertyCount, pProperties);
+		for (uint32_t j = 0; j<pPropertyCount; j++)
+		{
+			extensions += " ";
+			extensions += pProperties[j].extensionName;
+		}
+		delete[] pProperties;
+	}
+	else
+		return false;
+
+	for (size_t l = 0; l < layers.size(); l++)
+	{
+		res = vkEnumerateDeviceExtensionProperties(device, layers[l].c_str() , &pPropertyCount, NULL);
+		if ((VK_SUCCESS == res) && (pPropertyCount > 0))
+		{
+			VkExtensionProperties* pProperties = new VkExtensionProperties[pPropertyCount];
+			res = vkEnumerateDeviceExtensionProperties(device, layers[l].c_str(), &pPropertyCount, pProperties);
+			for (uint32_t j = 0; j<pPropertyCount; j++)
+			{
+				extensions += " ";
+				extensions += pProperties[j].extensionName;
+			}
+			delete[] pProperties;
+		}
+	}
 
 	return true;
 }

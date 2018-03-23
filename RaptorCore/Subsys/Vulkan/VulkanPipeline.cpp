@@ -94,24 +94,31 @@ bool CVulkanPipeline::initPipeline(const CVulkanShaderStage& shaderStages)
 	VkVertexInputBindingDescription colors_binding_description_info = { 1,	// binding number
 																		4 * sizeof(float),	//stride
 																		VK_VERTEX_INPUT_RATE_VERTEX };
-	VkVertexInputBindingDescription bindings[2] = { vertex_binding_description_info, colors_binding_description_info };
+	VkVertexInputBindingDescription texcoords_binding_description_info = {	2,	// binding number
+																			2 * sizeof(float),	//stride
+																			VK_VERTEX_INPUT_RATE_VERTEX };
+	VkVertexInputBindingDescription bindings[3] = { vertex_binding_description_info, colors_binding_description_info, texcoords_binding_description_info };
 
-	VkVertexInputAttributeDescription vertex_input_attribute_info[2] = { {	0,
+	VkVertexInputAttributeDescription vertex_input_attribute_info[3] = { {	0,
 																			vertex_binding_description_info.binding,
 																			VK_FORMAT_R32G32B32A32_SFLOAT,
 																			0 },
 																		  { 1,
 																			colors_binding_description_info.binding,
 																			VK_FORMAT_R32G32B32A32_SFLOAT,
-																			0 } }; // 4 * sizeof(float)
+																			0 },
+																		  { 2,
+																			texcoords_binding_description_info.binding,
+																			VK_FORMAT_R32G32_SFLOAT,
+																			0 } };
 
 
 	VkPipelineVertexInputStateCreateInfo vertex_input_state_create_info = {	VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
 																			NULL,
 																			0,	//VkPipelineVertexInputStateCreateFlags
-																			2, //vertexBindingDescriptionCount
+																			3, //vertexBindingDescriptionCount
 																			&bindings[0], //VkVertexInputBindingDescription
-																			2,	//vertexAttributeDescriptionCount
+																			3,	//vertexAttributeDescriptionCount
 																			&vertex_input_attribute_info[0] }; // VkVertexInputAttributeDescription
 
 
@@ -185,7 +192,7 @@ bool CVulkanPipeline::initPipeline(const CVulkanShaderStage& shaderStages)
 	uint32_t subpass = 0;
 	VkPipeline basePipelineHandle = VK_NULL_HANDLE;
 	int32_t basePipelineIndex = -1;
-	VkPipelineLayout layout = pShaderStage->getPipelineLayout();
+	VkPipelineLayout layout = shaderStages.getPipelineLayout();
 
 	VkGraphicsPipelineCreateInfo pipeline_create_info = {VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
 														NULL,	// const void *pNext 

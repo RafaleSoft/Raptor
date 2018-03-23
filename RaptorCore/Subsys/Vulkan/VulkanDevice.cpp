@@ -12,6 +12,12 @@
 #if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
     #include "System/RaptorErrorManager.h"
 #endif
+#if !defined(AFX_RAPTORVKEXTENSIONS_H__B17D6B7F_5AFC_4E34_9D49_8DC6CE9192D6__INCLUDED_)
+	#include "System/RaptorVKExtensions.h"
+#endif
+#ifndef __vkext_macros_h_
+	#include "System/VKEXTMacros.h"
+#endif
 #if !defined(AFX_RAPTORVULKANPIPELINE_H__C2997B30_C6E2_4EF2_AFE3_FCD27AB5CBB7__INCLUDED_)
 	#include "Subsys/Vulkan/VulkanPipeline.h"
 #endif
@@ -41,6 +47,9 @@ RAPTOR_NAMESPACE
 
 CVulkanDevice::CVulkanDevice(void)
 {
+	memset(&m_features, 0, sizeof(VkPhysicalDeviceFeatures));
+	memset(&m_properties, 0, sizeof(VkPhysicalDeviceProperties));
+
 	device = VK_NULL_HANDLE;
 	renderPass = VK_NULL_HANDLE;
 	renderImages = NULL;
@@ -51,15 +60,6 @@ CVulkanDevice::CVulkanDevice(void)
 
 	currentRenderingResources = 0;
 	renderingResources = NULL;
-
-#ifdef VK_KHR_swapchain
-	swapChain = VK_NULL_HANDLE;
-	currentImage = MAXUINT;
-	swapchainImageCount = 0;
-#endif
-
-	vkCreateDevice = NULL;
-	vkGetDeviceProcAddr = NULL;
 
 	vkDeviceWaitIdle = NULL;
 	vkDestroyDevice = NULL;
@@ -85,6 +85,10 @@ CVulkanDevice::CVulkanDevice(void)
 	vkQueueWaitIdle = NULL;
 
 #if defined(VK_KHR_swapchain)
+	swapChain = VK_NULL_HANDLE;
+	currentImage = MAXUINT;
+	swapchainImageCount = 0;
+
 	vkCreateSwapchainKHR = NULL;
 	vkDestroySwapchainKHR = NULL;
 	vkGetSwapchainImagesKHR = NULL;
@@ -117,7 +121,7 @@ CVulkanPipeline* CVulkanDevice::createPipeline(void) const
 	if ((VK_NULL_HANDLE != device) &&
 		(VK_NULL_HANDLE != renderPass))
 	{
-		CVulkanPipeline *pipeline = new CVulkanPipeline(device,renderPass,vkGetDeviceProcAddr);
+		CVulkanPipeline *pipeline = new CVulkanPipeline(device, renderPass, CRaptorVKExtensions::vkGetDeviceProcAddr);
 		return pipeline;
 	}
 	else
@@ -128,7 +132,7 @@ CVulkanShader* CVulkanDevice::createShader(void) const
 {
 	if (VK_NULL_HANDLE != device)
 	{
-		CVulkanShader *shader = new CVulkanShader(device, vkGetDeviceProcAddr);
+		CVulkanShader *shader = new CVulkanShader(device);
 		return shader;
 	}
 	else
@@ -139,7 +143,7 @@ CVulkanTextureObject* CVulkanDevice::createTextureObject(ITextureObject::TEXEL_T
 {
 	if (VK_NULL_HANDLE != device)
 	{
-		CVulkanTextureObject *shader = new CVulkanTextureObject(type, device, vkGetDeviceProcAddr);
+		CVulkanTextureObject *shader = new CVulkanTextureObject(type, device, CRaptorVKExtensions::vkGetDeviceProcAddr);
 		return shader;
 	}
 	else
@@ -312,8 +316,7 @@ bool CVulkanDevice::vkRender(	C3DScene *pScene,
 	
 	VkBuffer binding = pDeviceMemory->getLockedBuffer(IDeviceMemoryManager::IBufferObject::VERTEX_BUFFER);
 	VkBuffer binding2 = pDeviceMemory->getLockedBuffer(IDeviceMemoryManager::IBufferObject::INDEX_BUFFER);
-	VkBuffer binding3 = pDeviceMemory->getLockedBuffer(IDeviceMemoryManager::IBufferObject::UNIFORM_BUFFER);
-	pScene->vkRender(displayList, binding, binding2, binding3);
+	pScene->vkRender(displayList, binding, binding2);
 
 	return true;
 }
@@ -632,7 +635,7 @@ bool CVulkanDevice::vkCreateSwapChain(VkSurfaceKHR surface,
 }
 
 bool CVulkanDevice::vkCreateLogicalDevice(	const VkPhysicalDevice &physicalDevice,
-											const VkPhysicalDeviceFeatures &features,
+											const VkPhysicalDeviceProperties &props,
 											uint32_t graphicsQueueFamilyIndex,
 											uint32_t graphicsQueueCount,
 											uint32_t presentQueueFamilyIndex,
@@ -640,6 +643,9 @@ bool CVulkanDevice::vkCreateLogicalDevice(	const VkPhysicalDevice &physicalDevic
 											uint32_t transferQueueFamilyIndex,
 											uint32_t transferQueueCount)
 {
+	CRaptorVKExtensions::vkGetPhysicalDeviceFeatures(physicalDevice, &m_features);
+	m_properties = props;
+
 #if defined RAPTOR_DEBUG_MODE_GENERATION
 	if (graphicsQueueCount < NB_RENDERING_RESOURCES)
 	{
@@ -708,12 +714,12 @@ bool CVulkanDevice::vkCreateLogicalDevice(	const VkPhysicalDevice &physicalDevic
 											0, NULL,	//	layers
 											nb_extensions, extensions,	//	extensions
 											//	full available features, many not specifically necessary here
-											&features };
+											&m_features };
 
-	res = vkCreateDevice(	physicalDevice,
-							&deviceCreateInfo,
-							CVulkanMemory::GetAllocator(),
-							&device);
+	res = CRaptorVKExtensions::vkCreateDevice(	physicalDevice,
+												&deviceCreateInfo,
+												CVulkanMemory::GetAllocator(),
+												&device);
 
 	delete [] queuePriorities;
 	if (VK_SUCCESS != res)
@@ -722,65 +728,25 @@ bool CVulkanDevice::vkCreateLogicalDevice(	const VkPhysicalDevice &physicalDevic
 		return false;
 	}
 
+	CVulkanMemory& memory = CVulkanMemory::GetInstance(physicalDevice);
 	if (!CVulkanMemory::ManageDevice(physicalDevice,device))
 		return false;
 	else
 		pDeviceMemory = CVulkanMemory::CreateMemoryManager(device);
 
 
-	vkDeviceWaitIdle = (PFN_vkDeviceWaitIdle)(vkGetDeviceProcAddr(device,"vkDeviceWaitIdle"));
-	vkDestroyDevice = (PFN_vkDestroyDevice)(vkGetDeviceProcAddr(device,"vkDestroyDevice"));
-	vkCreateCommandPool = (PFN_vkCreateCommandPool)(vkGetDeviceProcAddr(device,"vkCreateCommandPool"));
-	vkDestroyCommandPool = (PFN_vkDestroyCommandPool)(vkGetDeviceProcAddr(device,"vkDestroyCommandPool"));
-	vkResetCommandPool = (PFN_vkResetCommandPool)(vkGetDeviceProcAddr(device,"vkResetCommandPool"));
-	vkGetDeviceQueue = (PFN_vkGetDeviceQueue)(vkGetDeviceProcAddr(device,"vkGetDeviceQueue"));
-	vkCreateSemaphore = (PFN_vkCreateSemaphore)(vkGetDeviceProcAddr(device,"vkCreateSemaphore"));
-	vkDestroySemaphore = (PFN_vkDestroySemaphore)(vkGetDeviceProcAddr(device,"vkDestroySemaphore"));
-	vkCreateFence = (PFN_vkCreateFence)(vkGetDeviceProcAddr(device,"vkCreateFence"));
-	vkWaitForFences = (PFN_vkWaitForFences)(vkGetDeviceProcAddr(device,"vkWaitForFences"));
-	vkResetFences = (PFN_vkResetFences)(vkGetDeviceProcAddr(device,"vkResetFences"));
-	vkDestroyFence = (PFN_vkDestroyFence)(vkGetDeviceProcAddr(device,"vkDestroyFence"));
-	vkAllocateCommandBuffers = (PFN_vkAllocateCommandBuffers)(vkGetDeviceProcAddr(device,"vkAllocateCommandBuffers"));
-	vkFreeCommandBuffers = (PFN_vkFreeCommandBuffers)(vkGetDeviceProcAddr(device,"vkFreeCommandBuffers"));
-	vkCreateRenderPass = (PFN_vkCreateRenderPass)(vkGetDeviceProcAddr(device,"vkCreateRenderPass"));
-	vkDestroyRenderPass = (PFN_vkDestroyRenderPass)(vkGetDeviceProcAddr(device,"vkDestroyRenderPass"));
-	vkCreateImageView = (PFN_vkCreateImageView)(vkGetDeviceProcAddr(device,"vkCreateImageView"));
-	vkDestroyImageView = (PFN_vkDestroyImageView)(vkGetDeviceProcAddr(device,"vkDestroyImageView"));
-	vkCreateFramebuffer = (PFN_vkCreateFramebuffer)(vkGetDeviceProcAddr(device,"vkCreateFramebuffer"));
-	vkDestroyFramebuffer = (PFN_vkDestroyFramebuffer)(vkGetDeviceProcAddr(device,"vkDestroyFramebuffer"));
+	PFN_vkGetDeviceProcAddr vkGetDeviceProcAddr = CRaptorVKExtensions::vkGetDeviceProcAddr;
+	IMPLEMENT_VK_device(this->, device);
+	IMPLEMENT_VK_KHR_swapchain(this->, device);
+	if (VK_NULL_HANDLE == CVulkanCommandBuffer::vkBeginCommandBuffer)
+		IMPLEMENT_VK_command_buffer(CVulkanCommandBuffer::,device);
+	if (VK_NULL_HANDLE == CVulkanShader::vkCreateShaderModule)
+		IMPLEMENT_VK_pipeline(CVulkanShader::, device)
 	
+	vkQueueSubmit = (PFN_vkQueueSubmit)(vkGetDeviceProcAddr(device, "vkQueueSubmit"));
+	vkQueueWaitIdle = (PFN_vkQueueWaitIdle)(vkGetDeviceProcAddr(device, "vkQueueWaitIdle"));
 
-	CVulkanCommandBuffer::vkCmdPipelineBarrier = (PFN_vkCmdPipelineBarrier)(vkGetDeviceProcAddr(device,"vkCmdPipelineBarrier"));
-	CVulkanCommandBuffer::vkCmdBeginRenderPass = (PFN_vkCmdBeginRenderPass)(vkGetDeviceProcAddr(device,"vkCmdBeginRenderPass"));
-	CVulkanCommandBuffer::vkCmdEndRenderPass = (PFN_vkCmdEndRenderPass)(vkGetDeviceProcAddr(device,"vkCmdEndRenderPass"));
-	CVulkanCommandBuffer::vkCmdBindPipeline = (PFN_vkCmdBindPipeline)(vkGetDeviceProcAddr(device,"vkCmdBindPipeline"));
-	CVulkanCommandBuffer::vkBeginCommandBuffer = (PFN_vkBeginCommandBuffer)(vkGetDeviceProcAddr(device,"vkBeginCommandBuffer"));
-	CVulkanCommandBuffer::vkEndCommandBuffer = (PFN_vkEndCommandBuffer)(vkGetDeviceProcAddr(device,"vkEndCommandBuffer"));
-	CVulkanCommandBuffer::vkCmdBindVertexBuffers = (PFN_vkCmdBindVertexBuffers)(vkGetDeviceProcAddr(device,"vkCmdBindVertexBuffers"));
-	CVulkanCommandBuffer::vkCmdBindIndexBuffer = (PFN_vkCmdBindIndexBuffer)(vkGetDeviceProcAddr(device,"vkCmdBindIndexBuffer"));
-	CVulkanCommandBuffer::vkCmdBindDescriptorSets = (PFN_vkCmdBindDescriptorSets)(vkGetDeviceProcAddr(device, "vkCmdBindDescriptorSets"));
-	CVulkanCommandBuffer::vkCmdSetViewport = (PFN_vkCmdSetViewport)(vkGetDeviceProcAddr(device,"vkCmdSetViewport"));
-	CVulkanCommandBuffer::vkCmdSetScissor = (PFN_vkCmdSetScissor)(vkGetDeviceProcAddr(device,"vkCmdSetScissor"));
-	CVulkanCommandBuffer::vkCmdCopyBuffer = (PFN_vkCmdCopyBuffer)(vkGetDeviceProcAddr(device,"vkCmdCopyBuffer"));
-	CVulkanCommandBuffer::vkCmdCopyImage = (PFN_vkCmdCopyImage)(vkGetDeviceProcAddr(device,"vkCmdCopyImage"));
-	CVulkanCommandBuffer::vkCmdBlitImage = (PFN_vkCmdBlitImage)(vkGetDeviceProcAddr(device,"vkCmdBlitImage"));
-	CVulkanCommandBuffer::vkCmdCopyBufferToImage = (PFN_vkCmdCopyBufferToImage)(vkGetDeviceProcAddr(device,"vkCmdCopyBufferToImage"));
-	CVulkanCommandBuffer::vkCmdCopyImageToBuffer = (PFN_vkCmdCopyImageToBuffer)(vkGetDeviceProcAddr(device,"vkCmdCopyImageToBuffer"));
-	CVulkanCommandBuffer::vkCmdDraw = (PFN_vkCmdDraw)(vkGetDeviceProcAddr(device,"vkCmdDraw"));
-	CVulkanCommandBuffer::vkCmdDrawIndexed = (PFN_vkCmdDrawIndexed)(vkGetDeviceProcAddr(device,"vkCmdDrawIndexed"));
-
-	vkQueueSubmit = (PFN_vkQueueSubmit)(vkGetDeviceProcAddr(device,"vkQueueSubmit"));
-	vkQueueWaitIdle = (PFN_vkQueueWaitIdle)(vkGetDeviceProcAddr(device,"vkQueueWaitIdle"));
-
-#if defined(VK_KHR_swapchain)
-	vkCreateSwapchainKHR = (PFN_vkCreateSwapchainKHR)(vkGetDeviceProcAddr(device,"vkCreateSwapchainKHR"));
-	vkDestroySwapchainKHR = (PFN_vkDestroySwapchainKHR)(vkGetDeviceProcAddr(device,"vkDestroySwapchainKHR"));
-	vkGetSwapchainImagesKHR = (PFN_vkGetSwapchainImagesKHR)(vkGetDeviceProcAddr(device,"vkGetSwapchainImagesKHR"));
-	vkAcquireNextImageKHR = (PFN_vkAcquireNextImageKHR)(vkGetDeviceProcAddr(device,"vkAcquireNextImageKHR"));
-	vkQueuePresentKHR = (PFN_vkQueuePresentKHR)(vkGetDeviceProcAddr(device,"vkQueuePresentKHR"));
-#endif
-
-
+	
 	//!
 	//!	Create Graphics command pool
 	//!

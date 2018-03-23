@@ -54,8 +54,7 @@ CTextureFactory *CTextureFactory::m_pDefault = NULL;
 CTextureFactory::CTextureFactory(const std::string& name)
 	:CPersistence(factoryId,name),mConfig()
 {
-    if (mConfig.getNumCompressors() < 0)
-        mConfig.glInit();
+	mConfig.glInit();
 }
 
 CTextureFactory::~CTextureFactory(void)
@@ -757,10 +756,7 @@ CTextureObject* const CTextureFactory::glCreateCubemap(  ITextureObject::TEXEL_T
 	// Is this usefull on a cube map ?
 #ifdef GL_EXT_texture_filter_anisotropic
 	if ((mConfig.getCurrentAnisotropy() > 1.0f) && (filter == ITextureObject::CGL_ANISOTROPIC))
-    {
 		glTexParameterf(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_MAX_ANISOTROPY_EXT, mConfig.getCurrentAnisotropy());
-        T->aniso_level = mConfig.getCurrentAnisotropy();
-    }
 #endif
 
 	CATCH_GL_ERROR
@@ -796,12 +792,9 @@ ITextureObject* const CTextureFactory::vkCreateTexture(ITextureObject::TEXEL_TYP
 		T->glvkUpdateClamping(ITextureObject::CGL_REPEAT);
 		//T->setFunction(env_mode);
 
-#ifdef GL_EXT_texture_filter_anisotropic
 		if ((mConfig.getCurrentAnisotropy() > 1.0f) && (filter == ITextureObject::CGL_ANISOTROPIC))
 		{
-			//T->aniso_level = mConfig.getCurrentAnisotropy();
 		}
-#endif
 	}
 
 	return T;
@@ -854,10 +847,7 @@ CTextureObject* const CTextureFactory::glCreateTexture( ITextureObject::TEXEL_TY
 
 #ifdef GL_EXT_texture_filter_anisotropic
 	if ((mConfig.getCurrentAnisotropy() > 1.0f) && (filter == ITextureObject::CGL_ANISOTROPIC))
-    {
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, mConfig.getCurrentAnisotropy());
-        T->aniso_level = mConfig.getCurrentAnisotropy();
-    }
 #endif
 
 	CATCH_GL_ERROR
@@ -904,10 +894,7 @@ CTextureObject* const CTextureFactory::glCreateRectangleTexture( ITextureObject:
 
 #ifdef GL_EXT_texture_filter_anisotropic
 	if ((mConfig.getCurrentAnisotropy() > 1.0f) && (filter == ITextureObject::CGL_ANISOTROPIC))
-    {
 		glTexParameterf(GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_MAX_ANISOTROPY_EXT, mConfig.getCurrentAnisotropy());
-        T->aniso_level = mConfig.getCurrentAnisotropy();
-    }
 #endif
 
 	CATCH_GL_ERROR

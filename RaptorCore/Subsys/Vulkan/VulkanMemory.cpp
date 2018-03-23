@@ -15,11 +15,17 @@
 #if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
 	#include "System/Raptor.h"
 #endif
+#if !defined(AFX_RAPTORVKEXTENSIONS_H__B17D6B7F_5AFC_4E34_9D49_8DC6CE9192D6__INCLUDED_)
+	#include "System/RaptorVKExtensions.h"
+#endif
 #if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
     #include "System/RaptorErrorManager.h"
 #endif
 #ifndef __GLOBAL_H__
 	#include "System/Global.h"
+#endif
+#ifndef __vkext_macros_h_
+	#include "System/VKEXTMacros.h"
 #endif
 
 
@@ -32,23 +38,11 @@ RAPTOR_NAMESPACE
 std::map<VkPhysicalDevice,CVulkanMemory*>	CVulkanMemory::s_pMemories;
 std::map<VkDevice,CVulkanMemory*>			CVulkanMemory::s_pMemories2;
 
-
 CVulkanMemory CVulkanMemory::defaultMemory;
 
-PFN_vkGetBufferMemoryRequirements CVulkanMemory::vkGetBufferMemoryRequirements = VK_NULL_HANDLE;
-PFN_vkGetImageMemoryRequirements CVulkanMemory::vkGetImageMemoryRequirements = VK_NULL_HANDLE;
-PFN_vkGetImageSparseMemoryRequirements CVulkanMemory::vkGetImageSparseMemoryRequirements = VK_NULL_HANDLE;
-PFN_vkCreateBuffer CVulkanMemory::vkCreateBuffer = VK_NULL_HANDLE;
-PFN_vkDestroyBuffer CVulkanMemory::vkDestroyBuffer = VK_NULL_HANDLE;
-PFN_vkAllocateMemory CVulkanMemory::vkAllocateMemory = VK_NULL_HANDLE;
-PFN_vkBindBufferMemory CVulkanMemory::vkBindBufferMemory = VK_NULL_HANDLE;
-PFN_vkCreateImage CVulkanMemory::vkCreateImage = VK_NULL_HANDLE;
-PFN_vkDestroyImage CVulkanMemory::vkDestroyImage = VK_NULL_HANDLE;
-PFN_vkBindImageMemory CVulkanMemory::vkBindImageMemory = VK_NULL_HANDLE;
-PFN_vkFreeMemory CVulkanMemory::vkFreeMemory = VK_NULL_HANDLE;
-PFN_vkMapMemory CVulkanMemory::vkMapMemory = VK_NULL_HANDLE;
-PFN_vkFlushMappedMemoryRanges CVulkanMemory::vkFlushMappedMemoryRanges = VK_NULL_HANDLE;
-PFN_vkUnmapMemory CVulkanMemory::vkUnmapMemory = VK_NULL_HANDLE;
+IMPLEMENT_RAPTOR_VK_device_memory(CVulkanMemory);
+
+
 
 
 static void* VKAPI_PTR vkAllocationFunction(void* pUserData,
@@ -184,9 +178,9 @@ bool CVulkanMemory::CVulkanMemoryWrapper::synchroniseBufferObjectData(const CVul
 		if (NULL != pBuffer)
 		{
 			std::vector<CVulkanBufferObject::unsynchronizedImage> &sync2 = pBuffer->m_unsynchronizedImages;
-			for (size_t i = 0; i < sync2.size(); i++)
+			for (size_t j = 0; j < sync2.size(); j++)
 			{
-				CVulkanBufferObject::unsynchronizedImage& synchro = sync2[i];
+				CVulkanBufferObject::unsynchronizedImage& synchro = sync2[j];
 				commandBuffer.imageBarrier(VK_IMAGE_LAYOUT_UNDEFINED,
 										   VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
 										   synchro.image);
@@ -214,9 +208,9 @@ bool CVulkanMemory::CVulkanMemoryWrapper::synchroniseBufferObjectData(const CVul
 			}
 
 			std::vector<CVulkanBufferObject::unsynchronizedImage> &sync2 = pBuffer->m_unsynchronizedImages;
-			for (size_t i = 0; i < sync2.size(); i++)
+			for (size_t j = 0; j < sync2.size(); j++)
 			{
-				CVulkanBufferObject::unsynchronizedImage& synchro = sync2[i];
+				CVulkanBufferObject::unsynchronizedImage& synchro = sync2[j];
 				CVulkanCommandBuffer::vkCmdCopyBufferToImage( commandBuffer.commandBuffer,
 															  pBuffer->m_buffer,
 															  synchro.image,
@@ -236,9 +230,9 @@ bool CVulkanMemory::CVulkanMemoryWrapper::synchroniseBufferObjectData(const CVul
 		if (NULL != pBuffer)
 		{
 			std::vector<CVulkanBufferObject::unsynchronizedImage> &sync2 = pBuffer->m_unsynchronizedImages;
-			for (size_t i = 0; i < sync2.size(); i++)
+			for (size_t j = 0; j < sync2.size(); j++)
 			{
-				CVulkanBufferObject::unsynchronizedImage& synchro = sync2[i];
+				CVulkanBufferObject::unsynchronizedImage& synchro = sync2[j];
 				commandBuffer.imageBarrier(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
 										   VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
 										   synchro.image);
@@ -269,17 +263,17 @@ bool CVulkanMemory::CVulkanMemoryWrapper::setBufferObjectData(	IDeviceMemoryMana
 																uint64_t sz)
 {
 	const IDeviceMemoryManager::IBufferObject *pIBuffer = &bo;
-	std::list<pair<const IDeviceMemoryManager::IBufferObject*, CVulkanBufferObject*>>::iterator it = m_pBuffers.begin();
-	while (it != m_pBuffers.end())
+	std::list<pair<const IDeviceMemoryManager::IBufferObject*, CVulkanBufferObject*>>::iterator itb = m_pBuffers.begin();
+	while (itb != m_pBuffers.end())
 	{
-		if ((*it).first == pIBuffer)
+		if ((*itb).first == pIBuffer)
 			break;
 		else
-			it++;
+			itb++;
 	}
-	if (m_pBuffers.end() == it)
+	if (m_pBuffers.end() == itb)
 		return false;
-	CVulkanBufferObject& vb = *((*it).second);
+	CVulkanBufferObject& vb = *((*itb).second);
 	bool set_data = memory.vkSetBufferObjectData(m_device,vb,dstOffset,src,sz);
 
 	if (set_data)
@@ -453,18 +447,18 @@ VkImage CVulkanMemory::CVulkanMemoryWrapper::createImage(const VkImageCreateInfo
 	if (VK_NULL_HANDLE != m_device)
 	{
 		const IDeviceMemoryManager::IBufferObject *pIBuffer = &bo;
-		std::list<pair<const IDeviceMemoryManager::IBufferObject*, CVulkanBufferObject*>>::iterator it = m_pBuffers.begin();
-		while (it != m_pBuffers.end())
+		std::list<pair<const IDeviceMemoryManager::IBufferObject*, CVulkanBufferObject*>>::iterator itb = m_pBuffers.begin();
+		while (itb != m_pBuffers.end())
 		{
-			if ((*it).first == pIBuffer)
+			if ((*itb).first == pIBuffer)
 				break;
 			else
-				it++;
+				itb++;
 		}
-		if (m_pBuffers.end() == it)
+		if (m_pBuffers.end() == itb)
 			return VK_NULL_HANDLE;
 
-		CVulkanBufferObject * pBuffer = (*it).second;
+		CVulkanBufferObject * pBuffer = (*itb).second;
 		if (VK_NULL_HANDLE == pBuffer->m_deviceAddress)
 		{
 			RAPTOR_ERROR(Global::CVulkanClassID::GetClassId(), "There is no allocated memory on given buffer object!");
@@ -790,7 +784,7 @@ VkDeviceMemory CVulkanMemory::allocateBufferMemory(VkDevice device,
 															buffer_memory_requirements.size + alignment,	// VkDeviceSize allocationSize 
 															i };											// uint32_t memoryTypeIndex 
 
-			VkResult res = vkAllocateMemory(device, &memory_allocate_info, &s_vulkanAllocator, &pMemory );
+			res = vkAllocateMemory(device, &memory_allocate_info, &s_vulkanAllocator, &pMemory );
 			if( VK_SUCCESS == res )
 				break;
 			else 
@@ -938,8 +932,7 @@ CVulkanMemory::CVulkanMemoryWrapper* CVulkanMemory::CreateMemoryManager(VkDevice
 	return memory;
 }
 
-CVulkanMemory& CVulkanMemory::GetInstance(VkPhysicalDevice physicalDevice,
-										  const VkPhysicalDeviceMemoryProperties &memory_properties)
+CVulkanMemory& CVulkanMemory::GetInstance(VkPhysicalDevice physicalDevice)
 {
 	if (VK_NULL_HANDLE == physicalDevice)
 		return defaultMemory;
@@ -950,8 +943,19 @@ CVulkanMemory& CVulkanMemory::GetInstance(VkPhysicalDevice physicalDevice,
 	if (it == s_pMemories.end())
 	{
 		pMem = new CVulkanMemory();
+
+		VkPhysicalDeviceMemoryProperties memory_properties;
+		CRaptorVKExtensions::vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memory_properties);
+
 		pMem->memory_properties = memory_properties;
 		s_pMemories[physicalDevice] = pMem;
+
+		if (VK_NULL_HANDLE == vkCreateBuffer)
+		{
+			PFN_vkGetInstanceProcAddr vkGetInstanceProcAddr = CRaptorVKExtensions::vkGetInstanceProcAddr;
+			VkInstance instance = CRaptorVKExtensions::getInstance();
+			IMPLEMENT_VK_device_memory(CVulkanMemory::, physicalDevice)
+		}
 	}
 	else
 	{
