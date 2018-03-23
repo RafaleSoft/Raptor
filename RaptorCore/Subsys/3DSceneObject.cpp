@@ -98,8 +98,7 @@ C3DSceneObject::~C3DSceneObject()
 
 void C3DSceneObject::vkRender(	CVulkanCommandBuffer& commandBuffer,
 								VkBuffer vertexBinding,
-								VkBuffer indexBinding,
-								VkBuffer uniformBinding)
+								VkBuffer indexBinding)
 {
 	if (NULL != m_pPipeline)
 	{
@@ -109,7 +108,7 @@ void C3DSceneObject::vkRender(	CVulkanCommandBuffer& commandBuffer,
 										pipe);
 
 		CObject3D* obj = (CObject3D*)(object.handle);
-		obj->vkRender(commandBuffer, vertexBinding, indexBinding, uniformBinding);
+		obj->vkRender(commandBuffer, vertexBinding, indexBinding);
 	}
 }
 

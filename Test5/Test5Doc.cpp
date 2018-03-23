@@ -180,6 +180,7 @@ void CTest5Doc::GLInitContext(void)
 	CShadedGeometry *geo = new CShadedGeometry("VULKAN_GEOMETRY");
 	geo->glSetVertices(4,NULL);
 	geo->glSetColors(4, NULL);
+	geo->glSetTexCoords(4, NULL);
 	geo->glSetPolygons(2, NULL);
 	GL_COORD_VERTEX VertexData[5] =
 	{
@@ -188,6 +189,13 @@ void CTest5Doc::GLInitContext(void)
 		GL_COORD_VERTEX(0.7f, -0.7f, -1.5f, 1.0f),
 		GL_COORD_VERTEX(0.7f, 0.7f, -3.5f, 1.0f),
 		GL_COORD_VERTEX(0.0f, 0.0f, 0.1f, 1.0f)
+	};
+	GL_TEX_VERTEX TexCoordData[4] =
+	{
+		GL_TEX_VERTEX(0.0f, 0.0f),	// TODO : check / configure depth
+		GL_TEX_VERTEX(0.0f, 1.0f),
+		GL_TEX_VERTEX(1.0f, 0.0f),
+		GL_TEX_VERTEX(1.0f, 1.0f),
 	};
 	CColor::RGBA ColorData[4] =
 	{
@@ -202,6 +210,7 @@ void CTest5Doc::GLInitContext(void)
 	};
 	geo->glSetVertices(4,VertexData);
 	geo->glSetColors(4,ColorData);
+	geo->glSetTexCoords(4, TexCoordData);
 	geo->glSetPolygons(2,VertexIndices);
 	
 	m_pTexture = f.vkCreateTexture(ITextureObject::CGL_COLOR24_ALPHA, CTextureObject::CGL_ALPHA_TRANSPARENT, ITextureObject::CGL_BILINEAR);
@@ -211,8 +220,9 @@ void CTest5Doc::GLInitContext(void)
 	CVulkanShaderStage *ss = s->vkGetVulkanProgram();
 	ss->vkLoadShader("shader3.vert");
 	ss->vkLoadShader("shader3.frag");
+	CTextureUnitSetup *tus = s->glGetTextureUnitsSetup();
+	tus->setDiffuseMap(m_pTexture);
 
-	CProgramParameters parameters;
 	typedef struct 
 	{ 
 		GL_MATRIX M;
@@ -237,11 +247,17 @@ void CTest5Doc::GLInitContext(void)
 		C3DEngine::Generic_to_MATRIX(T.P, view.Transpose());
 	}
 	
+	CProgramParameters parameters;
 	CProgramParameters::CParameter<Transform_t> param(T);
 	param.name("modelview");
 	param.locationIndex = 0;
-	
 	parameters.addParameter(param);
+
+	CProgramParameters::CParameter<CTextureUnitSetup::TEXTURE_IMAGE_UNIT> param2(CTextureUnitSetup::IMAGE_UNIT_0);
+	param2.name("diffusemap");
+	param2.locationIndex = 1;
+	parameters.addParameter(param2);
+
 	ss->setProgramParameters(parameters);
 
 	pScene->addObject(geo);
@@ -339,7 +355,7 @@ void CTest5Doc::GLInitContext(void)
     lz.pUserFunction = lposx;
     lz.timeFunction = CModifier::CGL_TIME_USER;
     lm3->addAction(CLightModifier::SET_POSITION,lx,ly,lz);
-
+#endif
 
 	CViewPoint *vp = m_pDisplay->getViewPoint();
     vp->setPosition(0,0,3.5,CViewPoint::EYE);
@@ -348,5 +364,5 @@ void CTest5Doc::GLInitContext(void)
 	CTimeObject::setTimeFactor(1.0f);
 	CAnimator *pAnimator = new CAnimator();
 	CAnimator::SetAnimator(pAnimator);
-#endif
+
 }

@@ -34,17 +34,26 @@ class CVulkanDevice
 public:
 	static const unsigned int NB_RENDERING_RESOURCES = 3;
 
-
 	CVulkanDevice(void);
 	virtual ~CVulkanDevice(void);
 
 	//!	Store the current device, activated from context glMakeCurrentCurrent
 	static const CVulkanDevice& getCurrentDevice();
 
+
 #if defined(VK_VERSION_1_0)
+	//!
+	//!	Device creation and initialisation
+	//!	These functions shall be called in this order:
+	//!	- vkCreateLogicalDevice
+	//!	- vkCreateSwapChain
+	//!	- vkCreateRenderPassResources
+	//!	- vkCreateRenderingResources
+	//!
+
 	//!	Creates and initialise a logical device and linked resources
 	bool vkCreateLogicalDevice(	const VkPhysicalDevice &device,
-								const VkPhysicalDeviceFeatures &features,
+								const VkPhysicalDeviceProperties &props,
 								uint32_t graphicsQueueFamilyIndex,
 								uint32_t graphicsQueueCount,
 								uint32_t presentQueueFamilyIndex,
@@ -53,6 +62,7 @@ public:
 								uint32_t transferQueueCount);
 
 	//!	Creates and initialises the swap chain.
+	//!	The previous Swap chain is destroyed if not null.
 	bool vkCreateSwapChain(	VkSurfaceKHR surface,
 							VkSurfaceFormatKHR format,
 							VkSurfaceCapabilitiesKHR surfaceCapabilities,
@@ -60,15 +70,7 @@ public:
 							uint32_t width,
 							uint32_t height);
 
-	bool vkDestroySwapChain();
-
-	//!	Provides a rendering image from swap chain for next frame render.
-	//!	Currently, only a single image per frame is managed.
-	//!	TODO : handle multiple acquired images.
-	bool acquireSwapChainImage(uint64_t timeout);
-	bool presentSwapChainImage();
-
-	//!	Creates and initialises a render pass
+	//!	Creates and initialises a render pass and image views
 	bool vkCreateRenderPassResources(	VkSurfaceFormatKHR format,
 										uint32_t nbSamples,
 										uint32_t width,
@@ -83,6 +85,12 @@ public:
 	//!	NB_RENDERING_RESOURCES set of resources are created.
 	bool vkCreateRenderingResources(void);
 
+
+
+	//!
+	//!	Accessing data
+	//!
+
 	//!	Transfer unsynchronised buffer object data to corresponding 
 	//!	device buffer objects. Buffer object data may already be synchronised.
 	//! @param blocking : if blocking is true, synchronisation will wait for complete queue execution.
@@ -92,10 +100,28 @@ public:
 	//! Returns the memory wrapper managing this device.
 	CVulkanMemory::CVulkanMemoryWrapper* getMemory(void) const { return pDeviceMemory; };
 
+
+	//! Return device features
+	const VkPhysicalDeviceFeatures& getFeatures(void) const { return m_features; };
+
+	//! Return device properties
+	const VkPhysicalDeviceProperties& getProperties(void) const { return m_properties; };
+
+
 	CVulkanPipeline*		createPipeline(void) const;
 	CVulkanShader*			createShader(void) const;
 	CVulkanTextureObject*	createTextureObject(ITextureObject::TEXEL_TYPE type) const;
 
+
+	//!
+	//!	Rendering
+	//!
+
+	//!	Provides a rendering image from swap chain for next frame render.
+	//!	Currently, only a single image per frame is managed.
+	//!	TODO : handle multiple acquired images.
+	bool acquireSwapChainImage(uint64_t timeout);
+	bool presentSwapChainImage();
 
 	//!	Renders the 3DScene provided to the current grahics command buffer
 	//!	and initialise the render pass.
@@ -106,11 +132,10 @@ public:
 	//! Destroy or Release all device linked Vulkan resources, including swap chain
 	bool vkDestroyLogicalDevice(void);
 
+	//!	Destroy Swap Chain, render pass resources and framebuffers
+	bool vkDestroySwapChain();
 
-	PFN_vkCreateDevice vkCreateDevice;
-	PFN_vkGetDeviceProcAddr vkGetDeviceProcAddr;
 
-		
 
 private:
 	//!	Forbidden operator
@@ -121,7 +146,9 @@ private:
 	DECLARE_VK_device(DEFAULT_LINKAGE)
 	DECLARE_VK_queue(DEFAULT_LINKAGE)
 
-	VkDevice		device;
+	VkDevice					device;
+	VkPhysicalDeviceFeatures	m_features;
+	VkPhysicalDeviceProperties	m_properties;
 
 	CVulkanMemory::CVulkanMemoryWrapper* pDeviceMemory;
 

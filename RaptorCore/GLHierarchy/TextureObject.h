@@ -145,9 +145,6 @@ private:
     //	texture level ( mipmapping and anisotropy)
 	unsigned int	level;
 
-    //! Anisotropy level
-    float           aniso_level;
-
     //!	Render target used to provide texImage
 	ITextureGenerator  *m_pTexelGenerator;
 

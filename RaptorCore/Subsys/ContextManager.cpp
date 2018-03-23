@@ -281,39 +281,25 @@ const CRaptorVKExtensions *const CContextManager::vkGetExtensions(void)
 #if defined(VK_VERSION_1_0)
 bool CContextManager::vkInit(void)
 {
-	if (!CRaptorVKExtensions::vkInitExtensions())
-		return false;
-
 	if (!CRaptorVKExtensions::vkInitInstanceExtensions())
 		return false;
 
-
 	if (NULL != m_pVkContext)
 	{
-		for (unsigned int i = 0; i < MAX_CONTEXT; i++)
-			vkDestroyContext(i);
+		for (RENDERING_CONTEXT_ID ctx = 0; ctx < MAX_CONTEXT; ctx++)
+			vkDestroyContext(ctx);
 		delete[] m_pVkContext;
 	}
 
 	m_pVkContext = new VK_CONTEXT[MAX_CONTEXT];
-	for (unsigned int i = 0; i<MAX_CONTEXT; i++)
+	for (RENDERING_CONTEXT_ID ctx = 0; ctx < MAX_CONTEXT; ctx++)
 	{
-		VK_CONTEXT &ctxt = m_pVkContext[i];
+		VK_CONTEXT &ctxt = m_pVkContext[ctx];
 		
-		ctxt.nbPhysicalDevices = 0;
-		ctxt.pPhysicalDevices = NULL;
-		ctxt.pProperties = NULL;
-		ctxt.pFeatures = NULL;
-		ctxt.physicalDevice = MAXUINT;
 		ctxt.pExtensions = NULL;
+		ctxt.physicalDevice = VK_NULL_HANDLE;
 
 #ifdef VK_KHR_surface
-		ctxt.vkDestroySurfaceKHR = NULL;
-		ctxt.vkGetPhysicalDeviceSurfaceSupportKHR = NULL;
-		ctxt.vkGetPhysicalDeviceSurfaceCapabilitiesKHR = NULL;
-		ctxt.vkGetPhysicalDeviceSurfaceFormatsKHR = NULL;
-		ctxt.vkGetPhysicalDeviceSurfacePresentModesKHR = NULL;
-
 		ctxt.surface = VK_NULL_HANDLE;
 		ctxt.pSurfaceFormatCount = 0;
 		ctxt.pSurfaceFormats = NULL;
@@ -331,8 +317,8 @@ bool CContextManager::vkInit(void)
 
 bool CContextManager::vkRelease(void)
 {
-	for (unsigned int i = 0; i<MAX_CONTEXT; i++)
-		vkDestroyContext(i);
+	for (RENDERING_CONTEXT_ID ctx = 0; ctx < MAX_CONTEXT; ctx++)
+		vkDestroyContext(ctx);
 
 	VkInstance instance = CRaptorVKExtensions::getInstance();
 	if ((VK_NULL_HANDLE != instance) && (NULL != CRaptorVKExtensions::vkDestroyInstance))
@@ -344,143 +330,71 @@ bool CContextManager::vkRelease(void)
 		return false;
 }
 
-bool CContextManager::vkInitInstance(CContextManager::RENDERING_CONTEXT_ID ctx)
-{
-	VK_CONTEXT &vk_ctx = m_pVkContext[ctx];
-	CRaptorErrorManager *pErrMgr = Raptor::GetErrorManager();
-	VkResult res = VK_SUCCESS;
-
-	vk_ctx.pExtensions = new CRaptorVKExtensions("");
-
-	PFN_vkGetInstanceProcAddr vkGetInstanceProcAddr = CRaptorVKExtensions::vkGetInstanceProcAddr;
-	CVulkanMemory::vkGetBufferMemoryRequirements = (PFN_vkGetBufferMemoryRequirements)(vkGetInstanceProcAddr(CRaptorVKExtensions::getInstance(), "vkGetBufferMemoryRequirements"));
-	CVulkanMemory::vkGetImageMemoryRequirements = (PFN_vkGetImageMemoryRequirements)(vkGetInstanceProcAddr(CRaptorVKExtensions::getInstance(), "vkGetImageMemoryRequirements"));
-	CVulkanMemory::vkGetImageSparseMemoryRequirements = (PFN_vkGetImageSparseMemoryRequirements)(vkGetInstanceProcAddr(CRaptorVKExtensions::getInstance(), "vkGetImageSparseMemoryRequirements"));
-	CVulkanMemory::vkCreateBuffer = (PFN_vkCreateBuffer)(vkGetInstanceProcAddr(CRaptorVKExtensions::getInstance(), "vkCreateBuffer"));
-	CVulkanMemory::vkDestroyBuffer = (PFN_vkDestroyBuffer)(vkGetInstanceProcAddr(CRaptorVKExtensions::getInstance(), "vkDestroyBuffer"));
-	CVulkanMemory::vkAllocateMemory = (PFN_vkAllocateMemory)(vkGetInstanceProcAddr(CRaptorVKExtensions::getInstance(), "vkAllocateMemory"));
-	CVulkanMemory::vkBindBufferMemory = (PFN_vkBindBufferMemory)(vkGetInstanceProcAddr(CRaptorVKExtensions::getInstance(), "vkBindBufferMemory"));
-	CVulkanMemory::vkCreateImage = (PFN_vkCreateImage)(vkGetInstanceProcAddr(CRaptorVKExtensions::getInstance(), "vkCreateImage"));
-	CVulkanMemory::vkDestroyImage = (PFN_vkDestroyImage)(vkGetInstanceProcAddr(CRaptorVKExtensions::getInstance(), "vkDestroyImage"));
-	CVulkanMemory::vkBindImageMemory = (PFN_vkBindImageMemory)(vkGetInstanceProcAddr(CRaptorVKExtensions::getInstance(), "vkBindImageMemory"));
-	CVulkanMemory::vkFreeMemory = (PFN_vkFreeMemory)(vkGetInstanceProcAddr(CRaptorVKExtensions::getInstance(), "vkFreeMemory"));
-	CVulkanMemory::vkMapMemory = (PFN_vkMapMemory)(vkGetInstanceProcAddr(CRaptorVKExtensions::getInstance(), "vkMapMemory"));
-	CVulkanMemory::vkFlushMappedMemoryRanges = (PFN_vkFlushMappedMemoryRanges)(vkGetInstanceProcAddr(CRaptorVKExtensions::getInstance(), "vkFlushMappedMemoryRanges"));
-	CVulkanMemory::vkUnmapMemory = (PFN_vkUnmapMemory)(vkGetInstanceProcAddr(CRaptorVKExtensions::getInstance(), "vkUnmapMemory"));
-		
-	vk_ctx.nbPhysicalDevices = 0;
-
-	res = CRaptorVKExtensions::vkEnumeratePhysicalDevices(CRaptorVKExtensions::getInstance(), &vk_ctx.nbPhysicalDevices, NULL);
-	if ((VK_SUCCESS == res) && (vk_ctx.nbPhysicalDevices > 0))
-	{
-		vk_ctx.pPhysicalDevices = new VkPhysicalDevice[vk_ctx.nbPhysicalDevices];
-		res = CRaptorVKExtensions::vkEnumeratePhysicalDevices(CRaptorVKExtensions::getInstance(), &vk_ctx.nbPhysicalDevices, vk_ctx.pPhysicalDevices);
-		if (VK_SUCCESS == res)
-		{
-			vk_ctx.device.vkCreateDevice = CRaptorVKExtensions::vkCreateDevice;
-			vk_ctx.device.vkGetDeviceProcAddr = CRaptorVKExtensions::vkGetDeviceProcAddr;
-
-#if defined(VK_KHR_surface)
-			vk_ctx.vkDestroySurfaceKHR = (PFN_vkDestroySurfaceKHR)(vkGetInstanceProcAddr(CRaptorVKExtensions::getInstance(), "vkDestroySurfaceKHR"));
-			vk_ctx.vkGetPhysicalDeviceSurfaceSupportKHR = (PFN_vkGetPhysicalDeviceSurfaceSupportKHR)(vkGetInstanceProcAddr(CRaptorVKExtensions::getInstance(), "vkGetPhysicalDeviceSurfaceSupportKHR"));
-			vk_ctx.vkGetPhysicalDeviceSurfaceCapabilitiesKHR = (PFN_vkGetPhysicalDeviceSurfaceCapabilitiesKHR)(vkGetInstanceProcAddr(CRaptorVKExtensions::getInstance(), "vkGetPhysicalDeviceSurfaceCapabilitiesKHR"));
-			vk_ctx.vkGetPhysicalDeviceSurfaceFormatsKHR = (PFN_vkGetPhysicalDeviceSurfaceFormatsKHR)(vkGetInstanceProcAddr(CRaptorVKExtensions::getInstance(), "vkGetPhysicalDeviceSurfaceFormatsKHR"));
-			vk_ctx.vkGetPhysicalDeviceSurfacePresentModesKHR = (PFN_vkGetPhysicalDeviceSurfacePresentModesKHR)(vkGetInstanceProcAddr(CRaptorVKExtensions::getInstance(), "vkGetPhysicalDeviceSurfacePresentModesKHR"));
-#endif
-				
-			vk_ctx.pProperties = new VkPhysicalDeviceProperties[vk_ctx.nbPhysicalDevices];
-			vk_ctx.pFeatures = new VkPhysicalDeviceFeatures[vk_ctx.nbPhysicalDevices];
-
-			for (uint32_t i=0;i<vk_ctx.nbPhysicalDevices;i++)
-			{
-				VkPhysicalDevice device = vk_ctx.pPhysicalDevices[i];
-				CRaptorVKExtensions::vkGetPhysicalDeviceProperties(device, &vk_ctx.pProperties[i]);
-				CRaptorVKExtensions::vkGetPhysicalDeviceFeatures(device, &vk_ctx.pFeatures[i]);
-
-				uint32_t pPropertyCount = 0;
-				res = CRaptorVKExtensions::vkEnumerateDeviceExtensionProperties(device, NULL, &pPropertyCount, NULL);
-				if ((VK_SUCCESS == res) && (pPropertyCount > 0))
-				{
-					VkExtensionProperties* pProperties = new VkExtensionProperties[pPropertyCount];
-					res = CRaptorVKExtensions::vkEnumerateDeviceExtensionProperties(device, NULL, &pPropertyCount, pProperties);
-					for (uint32_t j=0;j<pPropertyCount;j++)
-					{
-						vk_ctx.deviceExtensions += " ";
-						vk_ctx.deviceExtensions += pProperties[j].extensionName;
-					}
-					delete [] pProperties;
-				}
-
-				uint32_t pLayerCount = 0;
-				res = CRaptorVKExtensions::vkEnumerateDeviceLayerProperties(device, &pLayerCount, NULL);
-				if ((VK_SUCCESS == res) && (pLayerCount > 0))
-				{
-					VkLayerProperties* pProperties = new VkLayerProperties[pLayerCount];
-					uint32_t nbLayerCount = pLayerCount;
-					res = CRaptorVKExtensions::vkEnumerateDeviceLayerProperties(device, &nbLayerCount, pProperties);
-					for (uint32_t j=0;j<pLayerCount;j++)
-					{
-						vk_ctx.deviceLayers += " ";
-						vk_ctx.deviceLayers += pProperties[j].layerName;
-					}
-					delete [] pProperties;
-				}
-			}
-		}
-		else
-		{
-			vk_ctx.nbPhysicalDevices = 0;
-			delete [] vk_ctx.pPhysicalDevices;
-		}
-	}
-	if (VK_SUCCESS != res)
-		pErrMgr->vkGetError(res,__FILE__,__LINE__);
-
-	if (VK_SUCCESS != res)
-	{
-		pErrMgr->generateRaptorError(	Global::CVulkanClassID::GetClassId(),
-										CRaptorErrorManager::RAPTOR_ERROR,
-										"Unable to initialise a Vulkan Instance");
-	}
-
-	return ((VK_SUCCESS == res) && (vk_ctx.nbPhysicalDevices > 0));
-}
-
 bool CContextManager::vkInitDevice(CContextManager::RENDERING_CONTEXT_ID ctx,const CRaptorDisplayConfig& config)
 {
 	VK_CONTEXT &vk_ctx = m_pVkContext[ctx];
 	CRaptorErrorManager *pErrMgr = Raptor::GetErrorManager();
 	VkResult res = VK_NOT_READY;
 
-	unsigned int maxd = vk_ctx.nbPhysicalDevices;
+	unsigned int nbPhysicalDevices = 0;
+	VkPhysicalDevice *pPhysicalDevices = NULL;
+	VkPhysicalDeviceProperties *pProperties = NULL;
+	
+	VkInstance instance = CRaptorVKExtensions::getInstance();
+	res = CRaptorVKExtensions::vkEnumeratePhysicalDevices(instance, &nbPhysicalDevices, NULL);
+	if ((VK_SUCCESS == res) && (nbPhysicalDevices > 0))
+	{
+		pPhysicalDevices = new VkPhysicalDevice[nbPhysicalDevices];
+		res = CRaptorVKExtensions::vkEnumeratePhysicalDevices(instance, &nbPhysicalDevices, pPhysicalDevices);
+		if (VK_SUCCESS == res)
+		{
+			pProperties = new VkPhysicalDeviceProperties[nbPhysicalDevices];
+
+			for (uint32_t i = 0; i<nbPhysicalDevices; i++)
+			{
+				VkPhysicalDevice device = pPhysicalDevices[i];
+				CRaptorVKExtensions::vkGetPhysicalDeviceProperties(device, &pProperties[i]);
+			}
+		}
+		else
+		{
+			nbPhysicalDevices = 0;
+			delete[] pPhysicalDevices;
+		}
+	}
+
+	if ((NULL == pPhysicalDevices) || (NULL == pProperties))
+		return false;
+
+	uint32_t numDevice = MAXUINT;
 	uint32_t queueCount = 0;
 	uint32_t graphicsQueueFamilyIndex = MAXUINT;
 	uint32_t presentQueueFamilyIndex = MAXUINT;
 	uint32_t transferQueueFamilyIndex = MAXUINT;
 
 	//!	Find a device with graphic & win32 presentation support
-	for (unsigned int i=0; (i<maxd) && (vk_ctx.physicalDevice > maxd); i++)
+	for (unsigned int i = 0; (i<nbPhysicalDevices) && (numDevice > nbPhysicalDevices); i++)
 	{
-		VkPhysicalDevice physicalDevice = vk_ctx.pPhysicalDevices[i];
+		VkPhysicalDevice physical = pPhysicalDevices[i];
 		//! Not confirmed if a CPU type is able to render graphics
-		if ((vk_ctx.pProperties[i].deviceType == VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU) ||
-			(vk_ctx.pProperties[i].deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU) ||
-			(vk_ctx.pProperties[i].deviceType == VK_PHYSICAL_DEVICE_TYPE_VIRTUAL_GPU))
+		if ((pProperties[i].deviceType == VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU) ||
+			(pProperties[i].deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU) ||
+			(pProperties[i].deviceType == VK_PHYSICAL_DEVICE_TYPE_VIRTUAL_GPU))
 		{
 			uint32_t pQueueFamilyPropertyCount = 0;
-			CRaptorVKExtensions::vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &pQueueFamilyPropertyCount, NULL);
+			CRaptorVKExtensions::vkGetPhysicalDeviceQueueFamilyProperties(physical, &pQueueFamilyPropertyCount, NULL);
 			if (pQueueFamilyPropertyCount > 0)
 			{
 				VkQueueFamilyProperties *pQueueFamilyProperties = new VkQueueFamilyProperties[pQueueFamilyPropertyCount];
 				uint32_t nbQueueFamilyProperties = pQueueFamilyPropertyCount;
-				CRaptorVKExtensions::vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &nbQueueFamilyProperties, pQueueFamilyProperties);
+				CRaptorVKExtensions::vkGetPhysicalDeviceQueueFamilyProperties(physical, &nbQueueFamilyProperties, pQueueFamilyProperties);
 				
 				for (uint32_t j=0;j<pQueueFamilyPropertyCount;j++)
 				{
 					//!	Check presentation support
 					VkBool32 support = VK_FALSE;
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
-					support = vk_ctx.pExtensions->vkGetPhysicalDeviceWin32PresentationSupportKHR(physicalDevice,j);
+					support = vk_ctx.pExtensions->vkGetPhysicalDeviceWin32PresentationSupportKHR(physical,j);
 #elif defined(VK_USE_PLATFORM_XLIB_KHR)
 					support = vk_ctx.pExtensions->PFN_vkGetPhysicalDeviceXlibPresentationSupportKHR(physicalDevice,j);
 #else
@@ -490,10 +404,10 @@ bool CContextManager::vkInitDevice(CContextManager::RENDERING_CONTEXT_ID ctx,con
 					VkBool32 present_support = VK_FALSE;
 #if defined(VK_KHR_surface)
 					if (VK_NULL_HANDLE != vk_ctx.surface )
-						res = vk_ctx.vkGetPhysicalDeviceSurfaceSupportKHR(	physicalDevice,
-																			j,
-																			vk_ctx.surface,
-																			&present_support);
+						res = vk_ctx.pExtensions->vkGetPhysicalDeviceSurfaceSupportKHR(physical,
+																						j,
+																						vk_ctx.surface,
+																						&present_support);
 #endif
 
 					if ((pQueueFamilyProperties[j].queueCount > 0) &&
@@ -527,7 +441,8 @@ bool CContextManager::vkInitDevice(CContextManager::RENDERING_CONTEXT_ID ctx,con
 						(presentQueueFamilyIndex < MAXUINT) &&
 						(transferQueueFamilyIndex < MAXUINT))
 					{
-						vk_ctx.physicalDevice = i;
+						numDevice = i;
+						vk_ctx.physicalDevice = physical;
 						break;
 					}
 				}
@@ -538,32 +453,21 @@ bool CContextManager::vkInitDevice(CContextManager::RENDERING_CONTEXT_ID ctx,con
 	}
 
 	//! Check Device properties to comply with requested config
-	if (vk_ctx.physicalDevice < maxd)
+	if (numDevice < nbPhysicalDevices)
 	{
-		VkPhysicalDeviceProperties props = vk_ctx.pProperties[vk_ctx.physicalDevice];
+		VkPhysicalDeviceProperties props = pProperties[numDevice];
 		VkPhysicalDeviceLimits limits = props.limits;
 		if ((limits.maxViewports < 1) ||
 			(limits.maxViewportDimensions[0] < config.width) ||
 			(limits.maxViewportDimensions[1] < config.height))
 			return false;
 		
-		VkPhysicalDevice physicalDevice = vk_ctx.pPhysicalDevices[vk_ctx.physicalDevice];
-		VkPhysicalDeviceFeatures features = vk_ctx.pFeatures[vk_ctx.physicalDevice];
-
-		if ((props.limits.maxSamplerAnisotropy < 16) ||
-			(!features.samplerAnisotropy))
-			return false;
+		vk_ctx.pExtensions->vkInitDeviceExtensions(vk_ctx.physicalDevice);
 
 		//make common initialisation in CTextureFactoryConfig
 
-
-		VkPhysicalDeviceMemoryProperties memory_properties;
-		CRaptorVKExtensions::vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memory_properties);
-		CVulkanMemory& memory = CVulkanMemory::GetInstance(	physicalDevice,
-															memory_properties);
-
-		return vk_ctx.device.vkCreateLogicalDevice(	physicalDevice,
-													features,
+		return vk_ctx.device.vkCreateLogicalDevice(	vk_ctx.physicalDevice,
+													props,
 													graphicsQueueFamilyIndex,
 													queueCount,
 													presentQueueFamilyIndex,1,
@@ -574,16 +478,15 @@ bool CContextManager::vkInitDevice(CContextManager::RENDERING_CONTEXT_ID ctx,con
 }
 
 
-void CContextManager::vkResize(	RENDERING_CONTEXT_ID ctx,const CRaptorDisplayConfig& config)
+void CContextManager::vkResize(RENDERING_CONTEXT_ID ctx,const CRaptorDisplayConfig& config)
 {
 	VK_CONTEXT &context = m_pVkContext[ctx];
 #if defined(VK_KHR_display)
 	//!	 Collect new surface capabilities,
 	//! presumably the only this modified for a resize.
-	VkPhysicalDevice pPhysicalDevice = context.pPhysicalDevices[context.physicalDevice];
-	VkResult res = context.vkGetPhysicalDeviceSurfaceCapabilitiesKHR(pPhysicalDevice,
-																	context.surface,
-																	&context.surfaceCapabilities);
+	VkResult res = context.pExtensions->vkGetPhysicalDeviceSurfaceCapabilitiesKHR(	context.physicalDevice,
+																					context.surface,
+																					&context.surfaceCapabilities);
 	if (VK_SUCCESS != res)
 	{
 		RAPTOR_ERROR(	Global::CVulkanClassID::GetClassId(),
@@ -614,10 +517,9 @@ bool CContextManager::vkInitSurface(RENDERING_CONTEXT_ID ctx)
 	context.pPresentModes = NULL;
 
 	//!	GetSurface Capabilities
-	VkPhysicalDevice pPhysicalDevice = context.pPhysicalDevices[context.physicalDevice];
-	VkResult res = context.vkGetPhysicalDeviceSurfaceCapabilitiesKHR(pPhysicalDevice,
-																	context.surface,
-																	&context.surfaceCapabilities);
+	VkResult res = context.pExtensions->vkGetPhysicalDeviceSurfaceCapabilitiesKHR(	context.physicalDevice,
+																					context.surface,
+																					&context.surfaceCapabilities);
 	if (VK_SUCCESS != res)
 	{
 		RAPTOR_ERROR(	Global::CVulkanClassID::GetClassId(),
@@ -626,10 +528,10 @@ bool CContextManager::vkInitSurface(RENDERING_CONTEXT_ID ctx)
 	}
 
 	//!	Get Surface formats
-	res = context.vkGetPhysicalDeviceSurfaceFormatsKHR(	pPhysicalDevice,
-														context.surface,
-														&context.pSurfaceFormatCount,
-														NULL);
+	res = context.pExtensions->vkGetPhysicalDeviceSurfaceFormatsKHR(context.physicalDevice,
+																	context.surface,
+																	&context.pSurfaceFormatCount,
+																	NULL);
 	if ((VK_SUCCESS != res) || (0 == context.pSurfaceFormatCount))
 	{
 		RAPTOR_ERROR(	Global::CVulkanClassID::GetClassId(),
@@ -640,10 +542,10 @@ bool CContextManager::vkInitSurface(RENDERING_CONTEXT_ID ctx)
 	else
 	{
 		context.pSurfaceFormats = new VkSurfaceFormatKHR[context.pSurfaceFormatCount];
-		res = context.vkGetPhysicalDeviceSurfaceFormatsKHR(	pPhysicalDevice,
-															context.surface,
-															&context.pSurfaceFormatCount,
-															context.pSurfaceFormats);
+		res = context.pExtensions->vkGetPhysicalDeviceSurfaceFormatsKHR(context.physicalDevice,
+																		context.surface,
+																		&context.pSurfaceFormatCount,
+																		context.pSurfaceFormats);
 		if (VK_SUCCESS != res)
 		{
 			RAPTOR_ERROR(	Global::CVulkanClassID::GetClassId(),
@@ -652,10 +554,10 @@ bool CContextManager::vkInitSurface(RENDERING_CONTEXT_ID ctx)
 	}
 
 	if (VK_SUCCESS == res)
-		res = context.vkGetPhysicalDeviceSurfacePresentModesKHR(pPhysicalDevice,
-																context.surface,
-																&context.pPresentModeCount,
-																NULL);
+		res = context.pExtensions->vkGetPhysicalDeviceSurfacePresentModesKHR(	context.physicalDevice,
+																				context.surface,
+																				&context.pPresentModeCount,
+																				NULL);
 	if ((VK_SUCCESS != res) || (0 == context.pPresentModeCount))
 	{
 		RAPTOR_ERROR(	Global::CVulkanClassID::GetClassId(),
@@ -665,10 +567,10 @@ bool CContextManager::vkInitSurface(RENDERING_CONTEXT_ID ctx)
 	else
 	{
 		context.pPresentModes = new VkPresentModeKHR[context.pPresentModeCount];
-		res = context.vkGetPhysicalDeviceSurfacePresentModesKHR(pPhysicalDevice,
-																context.surface,
-																&context.pPresentModeCount,
-																context.pPresentModes);
+		res = context.pExtensions->vkGetPhysicalDeviceSurfacePresentModesKHR(	context.physicalDevice,
+																				context.surface,
+																				&context.pPresentModeCount,
+																				context.pPresentModes);
 		if (VK_SUCCESS != res)
 		{
 			RAPTOR_ERROR(	Global::CVulkanClassID::GetClassId(),
@@ -746,31 +648,21 @@ bool CContextManager::vkCreateSwapChain(RENDERING_CONTEXT_ID ctx,uint32_t nbSamp
 CContextManager::RENDERING_CONTEXT_ID CContextManager::vkCreateContext(const RAPTOR_HANDLE& handle,
 																	   const CRaptorDisplayConfig& config)
 {
-	size_t nbInstances = 0;
-	for (size_t i=0;i<MAX_CONTEXT;i++)
-		nbInstances += (NULL != m_pVkContext[i].pExtensions ? 1 : 0);
-
-	if (nbInstances >= MAX_CONTEXT)
-	{
-		RAPTOR_ERROR( Global::CVulkanClassID::GetClassId(),"Too many Vulkan Context created");
-		return CContextManager::INVALID_CONTEXT;
-	}
-
-	//	Here, at least one instance slot is available, so no further check
-	unsigned int ctx = 0;
+	RENDERING_CONTEXT_ID ctx = 0;
 	while ((ctx < MAX_CONTEXT) && (NULL != m_pVkContext[ctx].pExtensions))
 		ctx++;
-	VK_CONTEXT &context = m_pVkContext[ctx];
-
-	if (!vkInitInstance(ctx))
+	if (ctx >= MAX_CONTEXT)
 	{
-		vkDestroyContext(ctx);
+		RAPTOR_ERROR(Global::CVulkanClassID::GetClassId(), "Too many Vulkan Context created");
 		return CContextManager::INVALID_CONTEXT;
 	}
 
+	VK_CONTEXT &context = m_pVkContext[ctx];
+	context.pExtensions = new CRaptorVKExtensions("");
+	
 	if (WINDOW_CLASS == handle.hClass)
 	{
-		if (!vkCreateSurface(handle,ctx))
+		if (!vkCreateSurface(handle, ctx))
 		{
 			vkDestroyContext(ctx);
 			return CContextManager::INVALID_CONTEXT;
@@ -782,7 +674,6 @@ CContextManager::RENDERING_CONTEXT_ID CContextManager::vkCreateContext(const RAP
 		vkDestroyContext(ctx);
 		return CContextManager::INVALID_CONTEXT;
 	}
-
 
 #ifdef VK_KHR_surface
 	if (!vkInitSurface(ctx))
@@ -884,13 +775,10 @@ void CContextManager::vkDestroyContext(RENDERING_CONTEXT_ID ctx)
 		
 		if (context.device.vkDestroyLogicalDevice())
 		{
-			context.deviceLayers.clear();
-			context.deviceExtensions.clear();
-
 #ifdef VK_KHR_surface
 			VkSurfaceKHR surface = context.surface;
 			if (VK_NULL_HANDLE != surface)
-				context.vkDestroySurfaceKHR(CRaptorVKExtensions::getInstance(), surface, NULL);
+				context.pExtensions->vkDestroySurfaceKHR(CRaptorVKExtensions::getInstance(), surface, NULL);
 
 			if (NULL != context.pSurfaceFormats)
 				delete [] context.pSurfaceFormats;
@@ -908,18 +796,6 @@ void CContextManager::vkDestroyContext(RENDERING_CONTEXT_ID ctx)
 		if (NULL != context.pExtensions)
 			delete context.pExtensions;
 		context.pExtensions = NULL;
-
-		if (NULL != context.pPhysicalDevices)
-			delete [] context.pPhysicalDevices;
-		context.pPhysicalDevices = NULL;
-		context.nbPhysicalDevices = 0;
-		context.physicalDevice = MAXUINT;
-		if (NULL != context.pProperties)
-			delete [] context.pProperties;
-		context.pProperties = NULL;
-		if (NULL != context.pFeatures)
-			delete [] context.pFeatures;
-		context.pFeatures = NULL;
 	}
 	else
 	{

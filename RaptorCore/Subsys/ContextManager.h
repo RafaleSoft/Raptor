@@ -47,12 +47,10 @@ public:
 	//!	if necessary, but depends on drivers.
 	virtual ~CContextManager();
 
-	//!	Retuns the RaptorExtensions class to acces implementation
-	//! of openGL extensions.
+	//!	Retuns the RaptorGLExtensions class to acces implementation of openGL extensions.
 	virtual const CRaptorGLExtensions *const glGetExtensions(void) = 0;
 
-	//!	Retuns the RaptorExtensions class to acces implementation
-	//! of openGL extensions.
+	//!	Retuns the RaptorVKExtensions class to acces implementation of Vulkan extensions.
 	virtual const CRaptorVKExtensions *const vkGetExtensions(void);
 
 	//!	Check display config fields with underlying system capabilities.
@@ -187,16 +185,7 @@ protected:
 	//!	An extensions manager to access Vulkan API.
 	typedef struct
 	{
-		DECLARE_VK_KHR_surface(DEFAULT_LINKAGE)
-
-		unsigned int				nbPhysicalDevices;
-		VkPhysicalDevice			*pPhysicalDevices;
-		VkPhysicalDeviceProperties	*pProperties;
-		VkPhysicalDeviceFeatures	*pFeatures;
-		std::string					deviceExtensions;
-		std::string					deviceLayers;
-
-		uint32_t					physicalDevice;
+		VkPhysicalDevice			physicalDevice;
 		CVulkanDevice				device;
 		CRaptorVKExtensions			*pExtensions;
 		
@@ -218,9 +207,6 @@ protected:
 
 private:
 #if defined(VK_VERSION_1_0)
-	//!	Initialise a Vulkan instance, collects physical devices, etensions & properties.
-	bool vkInitInstance(RENDERING_CONTEXT_ID ctx);
-
 	//!	Initialise a Vulkan logical device and all necessary queue families.
 	bool vkInitDevice(RENDERING_CONTEXT_ID ctx,const CRaptorDisplayConfig& config);
 

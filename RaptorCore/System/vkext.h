@@ -12,6 +12,8 @@
 	#define VK_USE_PLATFORM_XLIB_KHR 1
 #endif
 
+//!	Remove prototypes definition to avoid linking mismatch
+#define VK_NO_PROTOTYPES
 #include "vulkan.h"
 
 /*

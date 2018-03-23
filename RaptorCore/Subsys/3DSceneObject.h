@@ -54,8 +54,7 @@ public:
 
 	void vkRender(	CVulkanCommandBuffer& commandBuffer,
 					VkBuffer vertexBinding,
-					VkBuffer indexBinding,
-					VkBuffer uniformBinding);
+					VkBuffer indexBinding);
 
     //! This method chooses the appropriate light for self object rendering.
 	//! The lights selected are the first and less then CLightAttributes::MAX_LIGHTS lights

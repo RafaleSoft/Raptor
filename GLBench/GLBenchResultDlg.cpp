@@ -61,7 +61,7 @@ BOOL CGLBenchResultDlg::OnInitDialog()
 	lb->AddString(TEXT(""));
 
 	CString format;
-	format.Format(TEXT("Score: %d"),m_pResults->score);
+	format.Format(TEXT("Score: %u"),m_pResults->score);
 	lb->AddString(format);
 	format.Format(TEXT("Avg. frame rate: %.2f fps"),m_pResults->rate);
 	lb->AddString(format);
@@ -72,7 +72,7 @@ BOOL CGLBenchResultDlg::OnInitDialog()
 	for (unsigned int i=0;i<m_pResults->nbItems;i++)
 	{
 		lb->AddString(CA2T(m_pResults->result_items[i].description));
-		format.Format(TEXT("Score: %d"),m_pResults->result_items[i].score);
+		format.Format(TEXT("Score: %u"),m_pResults->result_items[i].score);
 		lb->AddString(format);
 		format.Format(TEXT("Frame rate: %.2f fps"),m_pResults->result_items[i].fps_rate);
 		lb->AddString(format);

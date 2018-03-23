@@ -916,15 +916,14 @@ void CGeometry::transform(GL_MATRIX &m)
 //////////////////////////////////////////////////////////////////////
 void CGeometry::vkRender(CVulkanCommandBuffer& commandBuffer,
 						 VkBuffer vertexBinding,
-						 VkBuffer indexBinding,
-						 VkBuffer uniformBinding)
+						 VkBuffer indexBinding)
 {
-	VkBuffer bindings[2] = { vertexBinding, vertexBinding };
-	VkDeviceSize offsets[2] = { (VkDeviceSize)&vertex[0], (VkDeviceSize)&colors[0] };
+	VkBuffer bindings[3] = { vertexBinding, vertexBinding, vertexBinding };
+	VkDeviceSize offsets[3] = { (VkDeviceSize)&vertex[0], (VkDeviceSize)&colors[0], (VkDeviceSize)&texcoords[0] };
 	commandBuffer.vkCmdBindVertexBuffers(	commandBuffer.commandBuffer, 
-											0, 2, &bindings[0], &offsets[0]);
+											0, 3, &bindings[0], &offsets[0]);
 
-	commandBuffer.vkCmdBindIndexBuffer(	commandBuffer.commandBuffer, 
+	commandBuffer.vkCmdBindIndexBuffer(	commandBuffer.commandBuffer,
 										indexBinding,
 										(VkDeviceSize)&polys[0],
 										VK_INDEX_TYPE_UINT16);

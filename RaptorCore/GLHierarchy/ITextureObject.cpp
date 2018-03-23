@@ -29,7 +29,7 @@ RAPTOR_NAMESPACE
 ITextureObject::ITextureObject(TEXEL_TYPE type)
 	:CObjectReference(),
 	m_type(type), m_width(0), m_height(0), m_depth(0), m_alpha(255),
-	m_name("<unknown>")
+	m_filter(CGL_UNFILTERED), m_name("<unknown>")
 {
 }
 
@@ -43,7 +43,9 @@ ITextureObject::ITextureObject(const ITextureObject& rsh)
 	:CObjectReference(), 
 	m_type(rsh.m_type), m_width(rsh.m_width),
 	m_height(rsh.m_height), m_depth(rsh.m_depth),
-	m_alpha(rsh.m_alpha), m_name(rsh.m_name)
+	m_alpha(rsh.m_alpha), 
+	m_filter(rsh.m_filter),
+	m_name(rsh.m_name)
 {
 }
 

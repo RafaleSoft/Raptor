@@ -120,7 +120,6 @@ public:
 	TEXTURE_FILTER getFilter(void) const { return m_filter; };
 
 
-
 protected:
 	ITextureObject::ITextureObject(const ITextureObject& rsh);
 

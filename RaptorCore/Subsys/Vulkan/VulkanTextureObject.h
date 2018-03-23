@@ -41,6 +41,12 @@ public:
 	virtual void glvkUpdateClamping(ITextureObject::CLAMP_MODE C);
 
 
+	VkDescriptorImageInfo getCombinedImageSampler(void) const
+	{
+		VkDescriptorImageInfo info = { m_sampler, m_view, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL };
+		return info;
+	};
+
 	//!	Returns the sized format of the texels stored in device memory (texture)
 	VkFormat getTexelFormat(void) const;
 

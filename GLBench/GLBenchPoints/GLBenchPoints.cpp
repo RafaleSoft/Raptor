@@ -125,8 +125,7 @@ void Display::GLInitContext()
 	CColor::RGBA *colors = (CColor::RGBA*)(CHostMemoryManager::GetInstance()->allocate(sizeof(CColor::RGBA),MAX_VERTEX,16));
 	GLushort *indexes = (GLushort*)(CHostMemoryManager::GetInstance()->allocate(sizeof(GLushort),MAX_VERTEX,16));
 
-    int i = 0;
-	for (i=0;i<MAX_VERTEX;i++)
+	for (int i=0;i<MAX_VERTEX;i++)
 	{
 		colors[i].r = 1.0f / 255.0f * (rand() % 256);
 		colors[i].g = 1.0f / 255.0f * (rand() % 256);
@@ -151,7 +150,7 @@ void Display::GLInitContext()
 	vertex[0].z = p3.z;
 	vertex[0].h = 1.0f;
 
-	for (i=1;i<MAX_VERTEX;i++)
+	for (int i=1;i<MAX_VERTEX;i++)
 	{
 		int idx = (rand() % 4);
 		switch(idx)
@@ -183,7 +182,7 @@ void Display::GLInitContext()
 		}
 	}
 
-	for (i=0;i<MAX_VERTEX;i++)
+	for (int i=0;i<MAX_VERTEX;i++)
 	{
 		indexes[i] = i;
 	}

@@ -39,8 +39,12 @@ public:
 	{
 	};
 
-	void vkRender(CVulkanCommandBuffer &commandBuffer, VkBuffer uniformBuffer);
+	//! Apply parameters and bind descriptor sets for shader rendering
+	void vkRender(CVulkanCommandBuffer &commandBuffer, CTextureUnitSetup *tmu_setup = NULL);
 	
+	//! Compute descriptor sets layout and create the pipeline layout
+	VkPipelineLayout getPipelineLayout() const;
+
 	//! Implements base class
 	virtual void glStop(void)
 	{
@@ -93,7 +97,8 @@ private:
 	CVulkanShader*	m_pShaderStages;
 
 	//!	Uniform buffer
-	unsigned char* uniforms;
+	unsigned char*	uniforms;
+	uint64_t		uniforms_size;
 };
 
 

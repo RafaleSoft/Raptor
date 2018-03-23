@@ -409,10 +409,10 @@ bool CRaptorInstance::executeRequest(request &r)
 		s.id = r.id;
 		s.display = NULL;
 	
-		CRaptorNetwork::SESSION_COMMAND *command = (CRaptorNetwork::SESSION_COMMAND *)r.data;
+		CRaptorNetwork::SESSION_COMMAND *session_command = (CRaptorNetwork::SESSION_COMMAND *)r.data;
 		CRaptorDisplayConfig glcs;
-		glcs.width = command->width;
-		glcs.height = command->height;
+		glcs.width = session_command->width;
+		glcs.height = session_command->height;
 		glcs.x = 0;
 		glcs.y = 0;
 		glcs.caption = "RaptorRenderServer_Session";

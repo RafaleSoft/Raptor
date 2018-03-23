@@ -130,9 +130,9 @@ void CGLBenchDlg::LoadModules(const char* path)
 			module = AfxLoadLibrary(moduleName);
 			if (module != NULL)
 			{
-				INITMODULE fnc_init = (INITMODULE)(GetProcAddress(module,"InitModule"));
-				BENCH fnc_bench = (BENCH)(GetProcAddress(module,"Bench"));
-				RESULT fnc_result = (RESULT)(GetProcAddress(module,"GetBenchResult"));
+				fnc_init = (INITMODULE)(GetProcAddress(module,"InitModule"));
+				fnc_bench = (BENCH)(GetProcAddress(module,"Bench"));
+				fnc_result = (RESULT)(GetProcAddress(module,"GetBenchResult"));
 
 				if ((fnc_result != NULL) &&
 					(fnc_init != NULL) &&

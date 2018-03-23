@@ -1332,7 +1332,7 @@ bool CWin32ContextManager::vkCreateSurface(const RAPTOR_HANDLE& handle,RENDERING
 													NULL,0, //flags,
 													hInstance,hWnd };
 		VK_CONTEXT &context = m_pVkContext[ctx];
-
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
 		//!	Create the Surface
 		VkResult res = VK_NOT_READY;
 		res = context.pExtensions->vkCreateWin32SurfaceKHR(CRaptorVKExtensions::getInstance(), &createInfo, NULL, &context.surface);
@@ -1343,6 +1343,9 @@ bool CWin32ContextManager::vkCreateSurface(const RAPTOR_HANDLE& handle,RENDERING
 			return false;
 		}
 		return true;
+#else
+		return false;
+#endif
 	}
 	else
 		return false;

@@ -174,8 +174,7 @@ public:
 	DECLARE_OBJECT3D_MANIPULATORS
 	virtual void vkRender(CVulkanCommandBuffer& commandBuffer,
 						  VkBuffer vertexBinding,
-						  VkBuffer indexBinding,
-						  VkBuffer uniformBinding);
+						  VkBuffer indexBinding);
     //!
     //! Creates the list of contours for this objet.
     virtual vector<CObject3DContour*> createContours(void);
