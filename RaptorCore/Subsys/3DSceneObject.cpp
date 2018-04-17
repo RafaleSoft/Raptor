@@ -80,7 +80,7 @@ C3DSceneObject::C3DSceneObject(CObject3D* obj)
 			CShader* s = sg->getShader();
 			CVulkanShaderStage *ss = s->vkGetVulkanProgram();
 
-			if (!m_pPipeline->initPipeline(*ss))
+			if (!m_pPipeline->initPipeline(ss,sg))
 			{
 				Raptor::GetErrorManager()->generateRaptorError(CShadedGeometry::CShadedGeometryClassID::GetClassId(),
 															   CRaptorErrorManager::RAPTOR_FATAL,
@@ -94,7 +94,7 @@ C3DSceneObject::~C3DSceneObject()
 {
 	if (NULL != m_pPipeline)
 		delete m_pPipeline;
-}		
+}
 
 void C3DSceneObject::vkRender(	CVulkanCommandBuffer& commandBuffer,
 								VkBuffer vertexBinding,

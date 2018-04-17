@@ -48,6 +48,9 @@
 	#if !defined(AFX_RAPTORVULKANMEMORY_H__72256FF7_DBB9_4B9C_9BF7_C36F425CF811__INCLUDED_)
 		#include "Subsys/Vulkan/VulkanMemory.h"
 	#endif
+	#if !defined(AFX_RAPTORVULKANSURFACE_H__C377C267_32A8_4963_BC2A_4694F4299A68__INCLUDED_)
+		#include "Subsys/Vulkan/VulkanSurface.h"
+	#endif
 #endif
 
 
@@ -297,15 +300,8 @@ bool CContextManager::vkInit(void)
 		VK_CONTEXT &ctxt = m_pVkContext[ctx];
 		
 		ctxt.pExtensions = NULL;
+		ctxt.pSurface = NULL;
 		ctxt.physicalDevice = VK_NULL_HANDLE;
-
-#ifdef VK_KHR_surface
-		ctxt.surface = VK_NULL_HANDLE;
-		ctxt.pSurfaceFormatCount = 0;
-		ctxt.pSurfaceFormats = NULL;
-		ctxt.pPresentModeCount = 0;
-		ctxt.pPresentModes = NULL;
-#endif
 	}
 
 #ifdef VK_KHR_swapchain
@@ -381,74 +377,58 @@ bool CContextManager::vkInitDevice(CContextManager::RENDERING_CONTEXT_ID ctx,con
 			(pProperties[i].deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU) ||
 			(pProperties[i].deviceType == VK_PHYSICAL_DEVICE_TYPE_VIRTUAL_GPU))
 		{
-			uint32_t pQueueFamilyPropertyCount = 0;
-			CRaptorVKExtensions::vkGetPhysicalDeviceQueueFamilyProperties(physical, &pQueueFamilyPropertyCount, NULL);
-			if (pQueueFamilyPropertyCount > 0)
-			{
-				VkQueueFamilyProperties *pQueueFamilyProperties = new VkQueueFamilyProperties[pQueueFamilyPropertyCount];
-				uint32_t nbQueueFamilyProperties = pQueueFamilyPropertyCount;
-				CRaptorVKExtensions::vkGetPhysicalDeviceQueueFamilyProperties(physical, &nbQueueFamilyProperties, pQueueFamilyProperties);
+			vk_ctx.physicalDevice = physical;
+			uint32_t numQueue = getPresentationSuppotQueueFamily(ctx);
+			if (MAXUINT == numQueue)
+				continue;
+
+			uint32_t pQueueFamilyPropertyCount = numQueue + 1;
 				
-				for (uint32_t j=0;j<pQueueFamilyPropertyCount;j++)
-				{
-					//!	Check presentation support
-					VkBool32 support = VK_FALSE;
-#if defined(VK_USE_PLATFORM_WIN32_KHR)
-					support = vk_ctx.pExtensions->vkGetPhysicalDeviceWin32PresentationSupportKHR(physical,j);
-#elif defined(VK_USE_PLATFORM_XLIB_KHR)
-					support = vk_ctx.pExtensions->PFN_vkGetPhysicalDeviceXlibPresentationSupportKHR(physicalDevice,j);
-#else
-					RAPTOR_WARNING( Global::CVulkanClassID::GetClassId(),"No support for Vulkan WSI");
-					support = VK_TRUE;
-#endif
-					VkBool32 present_support = VK_FALSE;
-#if defined(VK_KHR_surface)
-					if (VK_NULL_HANDLE != vk_ctx.surface )
-						res = vk_ctx.pExtensions->vkGetPhysicalDeviceSurfaceSupportKHR(physical,
-																						j,
-																						vk_ctx.surface,
-																						&present_support);
-#endif
-
-					if ((pQueueFamilyProperties[j].queueCount > 0) &&
-						(VK_QUEUE_GRAPHICS_BIT == (VK_QUEUE_GRAPHICS_BIT & pQueueFamilyProperties[j].queueFlags)))
-					{
-						if ((pQueueFamilyProperties[j].queueCount > queueCount) || (graphicsQueueFamilyIndex == MAXUINT))
-						{
-							queueCount = pQueueFamilyProperties[j].queueCount;
-							graphicsQueueFamilyIndex = j;
-						}
-
-						//	If queue supports both graphics & presentation, select it.
-						if ((VK_TRUE == support) && (VK_TRUE == present_support))
-						{
-							presentQueueFamilyIndex = j;
-							graphicsQueueFamilyIndex = j;
-						}
-					}
-
-					if ((pQueueFamilyProperties[j].queueCount > 0) &&
-						(VK_QUEUE_TRANSFER_BIT == (VK_QUEUE_TRANSFER_BIT & pQueueFamilyProperties[j].queueFlags)))
-						transferQueueFamilyIndex = j;
-
-					if ((pQueueFamilyProperties[j].queueCount > 0) && (VK_TRUE == support) && (VK_TRUE == present_support))
-						presentQueueFamilyIndex = j;
+			VkQueueFamilyProperties *pQueueFamilyProperties = new VkQueueFamilyProperties[pQueueFamilyPropertyCount];
+			CRaptorVKExtensions::vkGetPhysicalDeviceQueueFamilyProperties(physical, &pQueueFamilyPropertyCount, pQueueFamilyProperties);
 			
-					//!	Here, we always select a device with presentable queue.
-					//!	For future : allow selection of device not for presentation if
-					//!	specificaly required.
-					if ((graphicsQueueFamilyIndex < MAXUINT) &&
-						(presentQueueFamilyIndex < MAXUINT) &&
-						(transferQueueFamilyIndex < MAXUINT))
-					{
-						numDevice = i;
-						vk_ctx.physicalDevice = physical;
-						break;
-					}
+			const VkQueueFamilyProperties& props = pQueueFamilyProperties[numQueue];
+			if (0 == props.queueCount)
+				continue;
+
+			VkBool32 support = (MAXUINT != numQueue);
+			VkBool32 present_support = vk_ctx.pSurface->supportPresentation(physical, numQueue,vk_ctx.pExtensions);
+
+			if (VK_QUEUE_GRAPHICS_BIT == (VK_QUEUE_GRAPHICS_BIT & props.queueFlags))
+			{
+				if ((props.queueCount > queueCount) || (graphicsQueueFamilyIndex == MAXUINT))
+				{
+					queueCount = props.queueCount;
+					graphicsQueueFamilyIndex = numQueue;
 				}
 
-				delete [] pQueueFamilyProperties;
+				//	If queue supports both graphics & presentation, select it.
+				if ((VK_TRUE == support) && (VK_TRUE == present_support))
+				{
+					presentQueueFamilyIndex = numQueue;
+					graphicsQueueFamilyIndex = numQueue;
+				}
 			}
+
+			if (VK_QUEUE_TRANSFER_BIT == (VK_QUEUE_TRANSFER_BIT & props.queueFlags))
+				transferQueueFamilyIndex = numQueue;
+
+			if ((VK_TRUE == support) && (VK_TRUE == present_support))
+				presentQueueFamilyIndex = numQueue;
+			
+			//!	Here, we always select a device with presentable queue.
+			//!	For future : allow selection of device not for presentation if
+			//!	specificaly required.
+			if ((graphicsQueueFamilyIndex < MAXUINT) &&
+				(presentQueueFamilyIndex < MAXUINT) &&
+				(transferQueueFamilyIndex < MAXUINT))
+			{
+				numDevice = i;
+				vk_ctx.physicalDevice = physical;
+				break;
+			}
+
+			delete [] pQueueFamilyProperties;
 		}
 	}
 
@@ -482,167 +462,20 @@ void CContextManager::vkResize(RENDERING_CONTEXT_ID ctx,const CRaptorDisplayConf
 {
 	VK_CONTEXT &context = m_pVkContext[ctx];
 #if defined(VK_KHR_display)
-	//!	 Collect new surface capabilities,
-	//! presumably the only this modified for a resize.
-	VkResult res = context.pExtensions->vkGetPhysicalDeviceSurfaceCapabilitiesKHR(	context.physicalDevice,
-																					context.surface,
-																					&context.surfaceCapabilities);
-	if (VK_SUCCESS != res)
+	if (!context.pSurface->vkResize(context.physicalDevice))
 	{
 		RAPTOR_ERROR(	Global::CVulkanClassID::GetClassId(),
 						"Failed to obtain Vulkan surface capabilities");
 	}
 	else
 	{
-		if (!vkCreateSwapChain(ctx,config.getNbSamples(),config.width,config.height))
+		if (!context.device.vkCreateSwapChain(context.pSurface, config))
 		{
 			RAPTOR_ERROR(	Global::CVulkanClassID::GetClassId(),
 							"Failed to recreate Vulkan swap chain");
 		}
 	}
 #endif
-}
-
-#ifdef VK_KHR_surface
-bool CContextManager::vkInitSurface(RENDERING_CONTEXT_ID ctx)
-{
-	VK_CONTEXT &context = m_pVkContext[ctx];
-	context.pSurfaceFormatCount = 0;
-	if (NULL != context.pSurfaceFormats)
-		delete [] context.pSurfaceFormats;
-	context.pSurfaceFormats = NULL;
-	context.pPresentModeCount = 0;
-	if (NULL != context.pPresentModes)
-		delete [] context.pPresentModes;
-	context.pPresentModes = NULL;
-
-	//!	GetSurface Capabilities
-	VkResult res = context.pExtensions->vkGetPhysicalDeviceSurfaceCapabilitiesKHR(	context.physicalDevice,
-																					context.surface,
-																					&context.surfaceCapabilities);
-	if (VK_SUCCESS != res)
-	{
-		RAPTOR_ERROR(	Global::CVulkanClassID::GetClassId(),
-						"Failed to obtain Vulkan surface capabilities");
-		return false;
-	}
-
-	//!	Get Surface formats
-	res = context.pExtensions->vkGetPhysicalDeviceSurfaceFormatsKHR(context.physicalDevice,
-																	context.surface,
-																	&context.pSurfaceFormatCount,
-																	NULL);
-	if ((VK_SUCCESS != res) || (0 == context.pSurfaceFormatCount))
-	{
-		RAPTOR_ERROR(	Global::CVulkanClassID::GetClassId(),
-						"Failed to obtain Vulkan surface formats");
-		res = VK_NOT_READY;
-		return false;
-	}
-	else
-	{
-		context.pSurfaceFormats = new VkSurfaceFormatKHR[context.pSurfaceFormatCount];
-		res = context.pExtensions->vkGetPhysicalDeviceSurfaceFormatsKHR(context.physicalDevice,
-																		context.surface,
-																		&context.pSurfaceFormatCount,
-																		context.pSurfaceFormats);
-		if (VK_SUCCESS != res)
-		{
-			RAPTOR_ERROR(	Global::CVulkanClassID::GetClassId(),
-							"Failed to obtain Vulkan surface formats");
-		}
-	}
-
-	if (VK_SUCCESS == res)
-		res = context.pExtensions->vkGetPhysicalDeviceSurfacePresentModesKHR(	context.physicalDevice,
-																				context.surface,
-																				&context.pPresentModeCount,
-																				NULL);
-	if ((VK_SUCCESS != res) || (0 == context.pPresentModeCount))
-	{
-		RAPTOR_ERROR(	Global::CVulkanClassID::GetClassId(),
-						"Failed to obtain Vulkan surface present modes or no present modes available");
-		res = VK_NOT_READY;
-	}
-	else
-	{
-		context.pPresentModes = new VkPresentModeKHR[context.pPresentModeCount];
-		res = context.pExtensions->vkGetPhysicalDeviceSurfacePresentModesKHR(	context.physicalDevice,
-																				context.surface,
-																				&context.pPresentModeCount,
-																				context.pPresentModes);
-		if (VK_SUCCESS != res)
-		{
-			RAPTOR_ERROR(	Global::CVulkanClassID::GetClassId(),
-							"Failed to obtain Vulkan surface formats");
-		}
-	}
-
-	//	Clean Surface formats and present modes
-	if (VK_SUCCESS != res)
-	{
-		if (NULL != context.pSurfaceFormats)
-			delete [] context.pSurfaceFormats;
-		context.pSurfaceFormats = NULL;
-		context.pSurfaceFormatCount = 0;
-		if (NULL != context.pPresentModes)
-			delete [] context.pPresentModes;
-		context.pPresentModes = NULL;
-		context.pPresentModeCount = 0;
-		return false;
-	}
-
-	return true;
-}
-#endif
-
-
-bool CContextManager::vkCreateSwapChain(RENDERING_CONTEXT_ID ctx,uint32_t nbSamples,uint32_t width,uint32_t height)
-{
-	VK_CONTEXT &context = m_pVkContext[ctx];
-
-	VkSurfaceFormatKHR format = { VK_FORMAT_R8G8B8A8_UNORM, VK_COLORSPACE_SRGB_NONLINEAR_KHR };
-	for (unsigned int i=0;i<context.pSurfaceFormatCount;i++)
-		if ((VK_FORMAT_R8G8B8A8_UNORM == context.pSurfaceFormats[i].format) ||
-			(VK_FORMAT_B8G8R8A8_UNORM == context.pSurfaceFormats[i].format))
-			format = context.pSurfaceFormats[i];
-
-#ifdef VK_KHR_swapchain
-	// Find a supported present mode and update requested/current present mode.
-	VkPresentModeKHR pMode = VK_PRESENT_MODE_MAX_ENUM_KHR;
-	for (unsigned int i=0;i<context.pPresentModeCount;i++)
-		if (context.pPresentModes[i] == presentMode)
-			pMode = presentMode;
-	if (pMode == VK_PRESENT_MODE_MAX_ENUM_KHR)
-		for (unsigned int i=0;i<context.pPresentModeCount;i++)
-			if (context.pPresentModes[i] == VK_PRESENT_MODE_MAILBOX_KHR)
-				pMode = VK_PRESENT_MODE_MAILBOX_KHR;
-	if (pMode == VK_PRESENT_MODE_MAX_ENUM_KHR)
-		for (unsigned int i=0;i<context.pPresentModeCount;i++)
-			if (context.pPresentModes[i] == VK_PRESENT_MODE_FIFO_KHR)
-				pMode = VK_PRESENT_MODE_FIFO_KHR;
-	presentMode = pMode;
-
-	if (!context.device.vkCreateSwapChain(	context.surface,
-											format,
-											context.surfaceCapabilities,
-											presentMode,
-											width,
-											height))
-		return false;
-#endif
-
-	if (!context.device.vkCreateRenderPassResources(format,
-													nbSamples,
-													width,
-													height))
-		return false;
-
-
-	if (!context.device.vkCreateRenderingResources())
-		return false;
-
-	return true;
 }
 
 CContextManager::RENDERING_CONTEXT_ID CContextManager::vkCreateContext(const RAPTOR_HANDLE& handle,
@@ -676,13 +509,13 @@ CContextManager::RENDERING_CONTEXT_ID CContextManager::vkCreateContext(const RAP
 	}
 
 #ifdef VK_KHR_surface
-	if (!vkInitSurface(ctx))
+	if (!context.pSurface->vkInitSurface(context.physicalDevice, context.pExtensions))
 	{
 		vkDestroyContext(ctx);
 		return CContextManager::INVALID_CONTEXT;
 	}
 
-	if (!vkCreateSwapChain(ctx,config.getNbSamples(),config.width,config.height))
+	if (!context.device.vkCreateSwapChain(context.pSurface, config))
 	{
 		vkDestroyContext(ctx);
 		return CContextManager::INVALID_CONTEXT;
@@ -736,36 +569,7 @@ void CContextManager::vkSwapBuffers(RENDERING_CONTEXT_ID ctx)
 	}
 }
 
-//
-//	TODO : migrate to Win32 specifics ?
-//
-void CContextManager::vkSwapVSync(unsigned int framerate)
-{
-#ifdef VK_KHR_swapchain
-	if (CGL_MAXREFRESHRATE == framerate)
-		presentMode = VK_PRESENT_MODE_IMMEDIATE_KHR;	// no-vblank + no-queue (immediate)
-	else if (0 == framerate)
-		presentMode = VK_PRESENT_MODE_FIFO_RELAXED_KHR; // single v-blank + internal queue
-	else // (swapinterval == 1)
-	{
-		DEVMODE mode;
-	    memset(&mode,sizeof(DEVMODE),0);
-	    mode.dmSize = sizeof(DEVMODE);
-	    mode.dmDriverExtra = 0;
-	    mode.dmFields = DM_BITSPERPEL|DM_PELSWIDTH|DM_PELSHEIGHT|DM_DISPLAYFLAGS|DM_DISPLAYFREQUENCY;
 
-	    if (0!=EnumDisplaySettings(NULL,ENUM_CURRENT_SETTINGS,&mode))
-	    {
-			if (mode.dmDisplayFrequency < framerate)
-				presentMode = VK_PRESENT_MODE_MAILBOX_KHR;		// v-blank + no-queue (latest image rendered)
-			else
-				presentMode = VK_PRESENT_MODE_FIFO_KHR;			// v-blank + internal queue
-		}
-		else	// default mode.
-			presentMode = VK_PRESENT_MODE_FIFO_KHR;			// v-blank + internal queue
-	}
-#endif
-}
 
 void CContextManager::vkDestroyContext(RENDERING_CONTEXT_ID ctx)
 {
@@ -775,23 +579,10 @@ void CContextManager::vkDestroyContext(RENDERING_CONTEXT_ID ctx)
 		
 		if (context.device.vkDestroyLogicalDevice())
 		{
-#ifdef VK_KHR_surface
-			VkSurfaceKHR surface = context.surface;
-			if (VK_NULL_HANDLE != surface)
-				context.pExtensions->vkDestroySurfaceKHR(CRaptorVKExtensions::getInstance(), surface, NULL);
-
-			if (NULL != context.pSurfaceFormats)
-				delete [] context.pSurfaceFormats;
-			context.pSurfaceFormats = NULL;
-			context.pSurfaceFormatCount = 0;
-			if (NULL != context.pPresentModes)
-				delete [] context.pPresentModes;
-			context.pPresentModes = NULL;
-			context.pPresentModeCount = 0;
-#endif
+			if (NULL != context.pSurface)
+				delete context.pSurface;
+			context.pSurface = NULL;
 		}
-
-		context.surface = VK_NULL_HANDLE;
 
 		if (NULL != context.pExtensions)
 			delete context.pExtensions;

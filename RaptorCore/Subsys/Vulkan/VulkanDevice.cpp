@@ -33,6 +33,9 @@
 #if !defined(AFX_RAPTORVULKANCOMMANDBUFFER_H__0398BABD_747B_4DFE_94AA_B026BDBD03B1__INCLUDED_)
 	#include "Subsys/Vulkan/VulkanCommandBuffer.h"
 #endif
+#if !defined(AFX_RAPTORVULKANSURFACE_H__C377C267_32A8_4963_BC2A_4694F4299A68__INCLUDED_)
+	#include "Subsys/Vulkan/VulkanSurface.h"
+#endif
 #if !defined(AFX_CONTEXTMANAGER_H__F992F5F0_D8A5_475F_9777_B0EB30E7648E__INCLUDED_)
 	#include "Subsys/ContextManager.h"
 #endif
@@ -46,17 +49,17 @@
 RAPTOR_NAMESPACE
 
 CVulkanDevice::CVulkanDevice(void)
+	:device(VK_NULL_HANDLE),
+	graphics_queueFamilyIndex(MAXUINT), present_queueFamilyIndex(MAXUINT), transfer_queueFamilyIndex(MAXUINT),
+	graphicsCommandPool(VK_NULL_HANDLE), presentCommandPool(VK_NULL_HANDLE), transferCommandPool(VK_NULL_HANDLE),
+	zBuffer(VK_NULL_HANDLE), zView(VK_NULL_HANDLE), zMemory(VK_NULL_HANDLE),
+	transferBuffer(VK_NULL_HANDLE), transferQueue(VK_NULL_HANDLE)
 {
 	memset(&m_features, 0, sizeof(VkPhysicalDeviceFeatures));
 	memset(&m_properties, 0, sizeof(VkPhysicalDeviceProperties));
 
-	device = VK_NULL_HANDLE;
 	renderPass = VK_NULL_HANDLE;
 	renderImages = NULL;
-	graphics_queueFamilyIndex = MAXUINT;
-	present_queueFamilyIndex = MAXUINT;
-	graphicsCommandPool = VK_NULL_HANDLE;
-	presentCommandPool = VK_NULL_HANDLE;
 
 	currentRenderingResources = 0;
 	renderingResources = NULL;
@@ -121,7 +124,7 @@ CVulkanPipeline* CVulkanDevice::createPipeline(void) const
 	if ((VK_NULL_HANDLE != device) &&
 		(VK_NULL_HANDLE != renderPass))
 	{
-		CVulkanPipeline *pipeline = new CVulkanPipeline(device, renderPass, CRaptorVKExtensions::vkGetDeviceProcAddr);
+		CVulkanPipeline *pipeline = new CVulkanPipeline(device, renderPass);
 		return pipeline;
 	}
 	else
@@ -428,11 +431,77 @@ bool CVulkanDevice::vkCreateRenderingResources(void)
 	return true;
 }
 
+bool CVulkanDevice::vkCreateZBuffer(uint32_t width,
+									uint32_t height,
+									VkFormat depth)
+{
+	if (!vkDestroyZBuffer())
+		return false;
+
+	VkImageCreateInfo imageInfo = {};
+	imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+	imageInfo.pNext = NULL;
+	imageInfo.flags = 0;
+	imageInfo.imageType = VK_IMAGE_TYPE_2D;
+
+	imageInfo.extent.width = width;
+	imageInfo.extent.height = height;
+	imageInfo.extent.depth = 1;
+	
+	imageInfo.format = depth;
+	imageInfo.mipLevels = 1;
+	imageInfo.arrayLayers = 1;
+	imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
+	imageInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
+	imageInfo.usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
+	imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+	imageInfo.queueFamilyIndexCount = 0;
+	imageInfo.pQueueFamilyIndices = NULL;
+	imageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+
+	VkResult res = CVulkanMemory::vkCreateImage(device, &imageInfo, CVulkanMemory::GetAllocator(), &zBuffer);
+	if (VK_SUCCESS != res)
+	{
+		CATCH_VK_ERROR(res);
+		return false;
+	}
+
+	zMemory = pDeviceMemory->allocateImageMemory(zBuffer, 0, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+	CVulkanMemory::vkBindImageMemory(device, zBuffer, zMemory, 0);
+
+
+	VkImageViewCreateInfo image_view_create_info = {VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
+													NULL,
+													0,
+													zBuffer,
+													VK_IMAGE_VIEW_TYPE_2D,
+													depth,
+													{ VK_COMPONENT_SWIZZLE_IDENTITY,
+													VK_COMPONENT_SWIZZLE_IDENTITY,
+													VK_COMPONENT_SWIZZLE_IDENTITY,
+													VK_COMPONENT_SWIZZLE_IDENTITY },
+													{ VK_IMAGE_ASPECT_DEPTH_BIT,
+													0, 1, 0, 1 } };
+
+	res = vkCreateImageView(device,
+							&image_view_create_info,
+							CVulkanMemory::GetAllocator(),
+							&zView);
+	
+	if (VK_SUCCESS != res)
+	{
+		CATCH_VK_ERROR(res);
+		return false;
+	}
+	
+	return true;
+}
 
 bool CVulkanDevice::vkCreateRenderPassResources(VkSurfaceFormatKHR format,
 												uint32_t nbSamples,
 												uint32_t width,
-												uint32_t height)
+												uint32_t height,
+												VkFormat depth)
 {
 	if (NULL != renderImages)
 		return false;
@@ -451,13 +520,18 @@ bool CVulkanDevice::vkCreateRenderPassResources(VkSurfaceFormatKHR format,
 	else if (nbSamples == 64)
 		samples = VK_SAMPLE_COUNT_64_BIT;
 
+
+	if (VK_FORMAT_UNDEFINED != depth)
+		if (!vkCreateZBuffer(width,height,depth))
+			return false;
+
 	VkAttachmentDescription pAttachments = {0, // or 1 = VK_ATTACHMENT_DESCRIPTION_MAY_ALIAS_BIT
 											format.format,samples,
 											VK_ATTACHMENT_LOAD_OP_CLEAR,
 											VK_ATTACHMENT_STORE_OP_STORE,
 											VK_ATTACHMENT_LOAD_OP_CLEAR,
 											VK_ATTACHMENT_STORE_OP_DONT_CARE,
-											VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, //	Is this correct ?
+											VK_IMAGE_LAYOUT_UNDEFINED, //	Is this correct ?
 											VK_IMAGE_LAYOUT_PRESENT_SRC_KHR }; // is this correct ?
 	VkAttachmentReference pColorAttachments = { 0, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL };
 	//VkAttachmentReference pDepthStencilAttachment = { 0, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL };
@@ -558,54 +632,17 @@ bool CVulkanDevice::vkCreateRenderPassResources(VkSurfaceFormatKHR format,
 	return (VK_SUCCESS == res);
 }
 
-bool CVulkanDevice::vkCreateSwapChain(VkSurfaceKHR surface,
-									VkSurfaceFormatKHR format,
-									VkSurfaceCapabilitiesKHR surfaceCapabilities,
-									VkPresentModeKHR presentMode,
-									uint32_t width,
-									uint32_t height)
+bool CVulkanDevice::vkCreateSwapChain(CVulkanSurface *pSurface,
+									  const CRaptorDisplayConfig& config)
 {
 	VkResult res = VK_NOT_READY;
 	CRaptorErrorManager *pErrMgr = Raptor::GetErrorManager();
-	VkExtent2D extent = surfaceCapabilities.currentExtent;
 
-	// width and height are either both -1, or both not -1.
-	if (extent.width == -1)
-	{
-		extent.width = max(	min(width,surfaceCapabilities.maxImageExtent.width),
-								surfaceCapabilities.minImageExtent.width);
-		extent.height = max(min(height,surfaceCapabilities.maxImageExtent.height),
-								surfaceCapabilities.minImageExtent.height);
-	}
-	VkImageUsageFlags usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
-	if (surfaceCapabilities.supportedUsageFlags & VK_IMAGE_USAGE_TRANSFER_DST_BIT)
-		usage |= VK_IMAGE_USAGE_TRANSFER_DST_BIT;	// add transfer flag for clear
-	VkSurfaceTransformFlagBitsKHR transform = surfaceCapabilities.currentTransform;
-	if (surfaceCapabilities.supportedTransforms & VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR)
-		transform = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;
+	VkSwapchainCreateInfoKHR pCreateInfo = pSurface->getSwapChainRequirements(config.display_mode,
+																			  config.width,
+																			  config.height);
+	pCreateInfo.oldSwapchain = swapChain;
 
-	//	mailbox will require at least 3 images for non blocking acquire of one image for the application.
-	uint32_t numImages = min (max(3,surfaceCapabilities.minImageCount + 1),
-								  surfaceCapabilities.maxImageCount);
-
-	//	Opaque alpha if supported
-	VkCompositeAlphaFlagBitsKHR composite = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
-	//if (context.surfaceCapabilities.supportedCompositeAlpha & VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR)
-	//	composite = context.surfaceCapabilities.supportedCompositeAlpha;
-
-	VkSwapchainCreateInfoKHR pCreateInfo = {VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR,
-											NULL, 0, surface,
-											numImages,
-											format.format,format.colorSpace,
-											extent,
-											1,	// imageArrayLayers in multiview/stereo surface
-											usage,
-											VK_SHARING_MODE_EXCLUSIVE, 0, NULL, // Exclusive => no queues share access
-											transform, // VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR
-											composite, // VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR alpha ignored, final alpha set to 1
-											presentMode,
-											VK_TRUE,	// Hard clipping, no read back
-											swapChain };
 	VkSwapchainKHR newSwapChain = VK_NULL_HANDLE;
 	res = vkCreateSwapchainKHR(	device,
 								&pCreateInfo,
@@ -628,6 +665,27 @@ bool CVulkanDevice::vkCreateSwapChain(VkSurfaceKHR surface,
 	if ((VK_SUCCESS != res) || (swapchainImageCount == 0))
 	{
 		pErrMgr->vkGetError(res,__FILE__,__LINE__);
+		return false;
+	}
+
+	VkSurfaceFormatKHR format = pSurface->getSurfaceFormat(config.display_mode);
+	VkFormat depth_format = pSurface->getDepthFormat(config.display_mode, config.stencil_buffer);
+
+	if (!vkCreateRenderPassResources(	format,
+										config.getNbSamples(),
+										config.width,
+										config.height,
+										depth_format))
+	{
+		RAPTOR_VKERROR(Global::CVulkanClassID::GetClassId(),
+					   "Vulkan Device cannot create render pass ressources !");
+		return false;
+	}
+
+	if (!vkCreateRenderingResources())
+	{
+		RAPTOR_VKERROR(Global::CVulkanClassID::GetClassId(),
+					   "Vulkan Device cannot create rendering ressources !");
 		return false;
 	}
 
@@ -703,7 +761,7 @@ bool CVulkanDevice::vkCreateLogicalDevice(	const VkPhysicalDevice &physicalDevic
 
 	uint32_t nb_extensions = 0;
 #if defined(VK_KHR_swapchain)
-	const char* extensions[1] = { "VK_KHR_swapchain" };
+	const char* extensions[1] = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
 	nb_extensions = 1;
 #else
 	const char* extensions[0] = NULL;
@@ -741,7 +799,9 @@ bool CVulkanDevice::vkCreateLogicalDevice(	const VkPhysicalDevice &physicalDevic
 	if (VK_NULL_HANDLE == CVulkanCommandBuffer::vkBeginCommandBuffer)
 		IMPLEMENT_VK_command_buffer(CVulkanCommandBuffer::,device);
 	if (VK_NULL_HANDLE == CVulkanShader::vkCreateShaderModule)
-		IMPLEMENT_VK_pipeline(CVulkanShader::, device)
+		IMPLEMENT_VK_pipeline(CVulkanShader::, device);
+	if (VK_NULL_HANDLE == CVulkanPipeline::vkCreateGraphicsPipelines)
+		IMPLEMENT_VK_pipeline(CVulkanPipeline::, device);
 	
 	vkQueueSubmit = (PFN_vkQueueSubmit)(vkGetDeviceProcAddr(device, "vkQueueSubmit"));
 	vkQueueWaitIdle = (PFN_vkQueueWaitIdle)(vkGetDeviceProcAddr(device, "vkQueueWaitIdle"));
@@ -750,58 +810,13 @@ bool CVulkanDevice::vkCreateLogicalDevice(	const VkPhysicalDevice &physicalDevic
 	//!
 	//!	Create Graphics command pool
 	//!
-	VkCommandPoolCreateInfo commandPoolCreateInfo = {VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
-													NULL,
-													VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT|VK_COMMAND_POOL_CREATE_TRANSIENT_BIT,
-													graphics_queueFamilyIndex };
-	res = vkCreateCommandPool(	device,
-								&commandPoolCreateInfo,
-								CVulkanMemory::GetAllocator(),
-								&graphicsCommandPool);
-	if (VK_SUCCESS != res)
-	{
-		CATCH_VK_ERROR(res)
-		return false;
-	}
-	else
-	{
-		res = vkResetCommandPool(	device,
-									graphicsCommandPool,
-									VK_COMMAND_POOL_RESET_RELEASE_RESOURCES_BIT);
-		if (VK_SUCCESS != res)
-		{
-			pErrMgr->vkGetError(res,__FILE__,__LINE__);
-			return false;
-		}
-	}
+	graphicsCommandPool = createCommandPool(graphics_queueFamilyIndex);
 
 	//!
 	//!	Create Present command pool
 	//!
 	if (graphics_queueFamilyIndex != present_queueFamilyIndex)
-	{
-		commandPoolCreateInfo.queueFamilyIndex = present_queueFamilyIndex;
-		res = vkCreateCommandPool(	device,
-									&commandPoolCreateInfo,
-									CVulkanMemory::GetAllocator(),
-									&presentCommandPool);
-		if (VK_SUCCESS != res)
-		{
-			CATCH_VK_ERROR(res)
-			return false;
-		}
-		else
-		{
-			res = vkResetCommandPool(	device,
-										presentCommandPool,
-										VK_COMMAND_POOL_RESET_RELEASE_RESOURCES_BIT);
-			if (VK_SUCCESS != res)
-			{
-				CATCH_VK_ERROR(res)
-				return false;
-			}
-		}
-	}
+		presentCommandPool = createCommandPool(present_queueFamilyIndex);
 	else
 		presentCommandPool = graphicsCommandPool;
 
@@ -809,35 +824,70 @@ bool CVulkanDevice::vkCreateLogicalDevice(	const VkPhysicalDevice &physicalDevic
 	//!	Create Transfer command pool
 	//!
 	if (graphics_queueFamilyIndex != transfer_queueFamilyIndex)
-	{
-		commandPoolCreateInfo.queueFamilyIndex = transfer_queueFamilyIndex;
-		res = vkCreateCommandPool(	device,
-									&commandPoolCreateInfo,
-									CVulkanMemory::GetAllocator(),
-									&transferCommandPool);
-		if (VK_SUCCESS != res)
-		{
-			CATCH_VK_ERROR(res)
-			return false;
-		}
-		else
-		{
-			res = vkResetCommandPool(	device,
-										transferCommandPool,
-										VK_COMMAND_POOL_RESET_RELEASE_RESOURCES_BIT);
-			if (VK_SUCCESS != res)
-			{
-				CATCH_VK_ERROR(res)
-				return false;
-			}
-		}
-	}
+		transferCommandPool = createCommandPool(transfer_queueFamilyIndex);
 	else
 		transferCommandPool = graphicsCommandPool;
 
 	return true;
 }
 
+
+VkCommandPool CVulkanDevice::createCommandPool(uint32_t queueFamilyIndex)
+{
+	VkCommandPoolCreateInfo commandPoolCreateInfo = {	VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
+														NULL,
+														VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT | VK_COMMAND_POOL_CREATE_TRANSIENT_BIT,
+														queueFamilyIndex };
+	VkResult res = VK_NOT_READY;
+	VkCommandPool commandPool = VK_NULL_HANDLE;
+	res = vkCreateCommandPool(device,
+							  &commandPoolCreateInfo,
+							  CVulkanMemory::GetAllocator(),
+							  &commandPool);
+	if (VK_SUCCESS != res)
+	{
+		CATCH_VK_ERROR(res);
+		return VK_NULL_HANDLE;
+	}
+	else
+	{
+		res = vkResetCommandPool(device,
+								 commandPool,
+								 VK_COMMAND_POOL_RESET_RELEASE_RESOURCES_BIT);
+		if (VK_SUCCESS != res)
+		{
+			vkDestroyCommandPool(device,
+								 commandPool,
+								 CVulkanMemory::GetAllocator());
+			CATCH_VK_ERROR(res);
+			return VK_NULL_HANDLE;
+		}
+	}
+
+	return commandPool;
+}
+
+bool CVulkanDevice::vkDestroyZBuffer(void)
+{
+	if (VK_NULL_HANDLE != zView)
+	{
+		vkDestroyImageView(device, zView, CVulkanMemory::GetAllocator());
+		zView = VK_NULL_HANDLE;
+	}
+	if (VK_NULL_HANDLE != zBuffer)
+	{
+		CVulkanMemory::vkDestroyImage(device, zBuffer, CVulkanMemory::GetAllocator());
+		zBuffer = VK_NULL_HANDLE;
+	}
+
+	if (VK_NULL_HANDLE != zMemory)
+	{
+		pDeviceMemory->discardImageMemory(zMemory);
+		zMemory = VK_NULL_HANDLE;
+	}
+
+	return true;
+}
 
 bool CVulkanDevice::vkDestroySwapChain()
 {
@@ -894,6 +944,8 @@ bool CVulkanDevice::vkDestroySwapChain()
 								&transferBuffer);
 		transferBuffer = VK_NULL_HANDLE;
 	}
+
+	vkDestroyZBuffer();
 
 	if (NULL != renderingResources)
 	{

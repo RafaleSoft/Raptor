@@ -15,16 +15,18 @@
 #if defined(VK_VERSION_1_0)
 	#ifndef IMPLEMENT_RAPTOR_VK_instance
 	#define IMPLEMENT_RAPTOR_VK_instance(target) \
-		PFN_vkEnumeratePhysicalDevices					target::vkEnumeratePhysicalDevices = VK_NULL_HANDLE; \
-		PFN_vkEnumerateDeviceExtensionProperties		target::vkEnumerateDeviceExtensionProperties = VK_NULL_HANDLE; \
-		PFN_vkEnumerateDeviceLayerProperties			target::vkEnumerateDeviceLayerProperties = VK_NULL_HANDLE; \
-		PFN_vkGetPhysicalDeviceProperties				target::vkGetPhysicalDeviceProperties = VK_NULL_HANDLE; \
-		PFN_vkGetPhysicalDeviceFeatures					target::vkGetPhysicalDeviceFeatures = VK_NULL_HANDLE; \
-		PFN_vkGetPhysicalDeviceQueueFamilyProperties	target::vkGetPhysicalDeviceQueueFamilyProperties = VK_NULL_HANDLE; \
-		PFN_vkGetPhysicalDeviceMemoryProperties			target::vkGetPhysicalDeviceMemoryProperties = VK_NULL_HANDLE; \
-		PFN_vkDestroyInstance							target::vkDestroyInstance = VK_NULL_HANDLE; \
-		PFN_vkCreateDevice								target::vkCreateDevice = VK_NULL_HANDLE; \
-		PFN_vkGetDeviceProcAddr							target::vkGetDeviceProcAddr = VK_NULL_HANDLE;
+		PFN_vkEnumeratePhysicalDevices					target##vkEnumeratePhysicalDevices = VK_NULL_HANDLE; \
+		PFN_vkEnumerateDeviceExtensionProperties		target##vkEnumerateDeviceExtensionProperties = VK_NULL_HANDLE; \
+		PFN_vkEnumerateDeviceLayerProperties			target##vkEnumerateDeviceLayerProperties = VK_NULL_HANDLE; \
+		PFN_vkGetPhysicalDeviceProperties				target##vkGetPhysicalDeviceProperties = VK_NULL_HANDLE; \
+		PFN_vkGetPhysicalDeviceFeatures					target##vkGetPhysicalDeviceFeatures = VK_NULL_HANDLE; \
+		PFN_vkGetPhysicalDeviceQueueFamilyProperties	target##vkGetPhysicalDeviceQueueFamilyProperties = VK_NULL_HANDLE; \
+		PFN_vkGetPhysicalDeviceMemoryProperties			target##vkGetPhysicalDeviceMemoryProperties = VK_NULL_HANDLE; \
+		PFN_vkGetPhysicalDeviceFormatProperties			target##vkGetPhysicalDeviceFormatProperties; \
+		PFN_vkGetPhysicalDeviceImageFormatProperties	target##vkGetPhysicalDeviceImageFormatProperties; \
+		PFN_vkDestroyInstance							target##vkDestroyInstance = VK_NULL_HANDLE; \
+		PFN_vkCreateDevice								target##vkCreateDevice = VK_NULL_HANDLE; \
+		PFN_vkGetDeviceProcAddr							target##vkGetDeviceProcAddr = VK_NULL_HANDLE;
 	#endif
 #else
 	#define IMPLEMENT_RAPTOR_VK_instance(target)
@@ -123,6 +125,8 @@
 			target##vkGetPhysicalDeviceFeatures = (PFN_vkGetPhysicalDeviceFeatures)(vkGetInstanceProcAddr(instance, "vkGetPhysicalDeviceFeatures")); \
 			target##vkGetPhysicalDeviceQueueFamilyProperties = (PFN_vkGetPhysicalDeviceQueueFamilyProperties)(vkGetInstanceProcAddr(instance, "vkGetPhysicalDeviceQueueFamilyProperties")); \
 			target##vkGetPhysicalDeviceMemoryProperties = (PFN_vkGetPhysicalDeviceMemoryProperties)(vkGetInstanceProcAddr(instance, "vkGetPhysicalDeviceMemoryProperties")); \
+			target##vkGetPhysicalDeviceFormatProperties = (PFN_vkGetPhysicalDeviceFormatProperties)(vkGetInstanceProcAddr(instance, "vkGetPhysicalDeviceFormatProperties")); \
+			target##vkGetPhysicalDeviceImageFormatProperties = (PFN_vkGetPhysicalDeviceImageFormatProperties)(vkGetInstanceProcAddr(instance, "vkGetPhysicalDeviceImageFormatProperties")); \
 			target##vkDestroyInstance = (PFN_vkDestroyInstance)(vkGetInstanceProcAddr(instance, "vkDestroyInstance")); \
 			target##vkCreateDevice = (PFN_vkCreateDevice)(vkGetInstanceProcAddr(instance, "vkCreateDevice")); \
 			target##vkGetDeviceProcAddr = (PFN_vkGetDeviceProcAddr)(vkGetInstanceProcAddr(instance, "vkGetDeviceProcAddr")); \

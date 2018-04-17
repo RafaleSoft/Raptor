@@ -439,6 +439,33 @@ bool CVulkanMemory::CVulkanMemoryWrapper::releaseBufferObject(IDeviceMemoryManag
 }
 
 
+//!	This method allocates memory type compatible with the image.
+VkDeviceMemory CVulkanMemory::CVulkanMemoryWrapper::allocateImageMemory(VkImage image,
+																		VkDeviceSize size,
+																		VkMemoryPropertyFlagBits memory_type) const
+{
+	if ((VK_NULL_HANDLE == image) || (VK_NULL_HANDLE == m_device))
+		return VK_NULL_HANDLE;
+
+	VkDeviceMemory pMemory = memory.allocateImageMemory(m_device, image, size, memory_type);
+
+	if (VK_NULL_HANDLE == pMemory)
+	{
+		RAPTOR_ERROR(Global::CVulkanClassID::GetClassId(), "Unable to allocate image memory !");
+	}
+
+	return pMemory;
+}
+
+bool CVulkanMemory::CVulkanMemoryWrapper::discardImageMemory(VkDeviceMemory imageMemory) const
+{
+	if ((VK_NULL_HANDLE == imageMemory) || (VK_NULL_HANDLE == m_device))
+		return false;
+
+	memory.vkFreeMemory(m_device, imageMemory, &s_vulkanAllocator);
+
+	return true;
+}
 
 VkImage CVulkanMemory::CVulkanMemoryWrapper::createImage(const VkImageCreateInfo &imageInfo,
 														 IDeviceMemoryManager::IBufferObject &bo,
@@ -623,6 +650,14 @@ bool CVulkanMemory::vkSetBufferObjectData(VkDevice device,
 bool CVulkanMemory::vkDestroyBufferObject(VkDevice device,
 										  CVulkanBufferObject* pBuffer) const
 {
+	if (VK_NULL_HANDLE != pBuffer->m_deviceBuffer)
+	{
+		vkDestroyBuffer(device, pBuffer->m_deviceBuffer, &s_vulkanAllocator);
+		pBuffer->m_deviceBuffer = NULL;
+	}
+	else
+		return false;
+
 	if (VK_NULL_HANDLE != pBuffer->m_deviceAddress)
 	{
 		vkFreeMemory(device, pBuffer->m_deviceAddress, &s_vulkanAllocator);
@@ -631,10 +666,11 @@ bool CVulkanMemory::vkDestroyBufferObject(VkDevice device,
 	else
 		return false;
 
-	if (VK_NULL_HANDLE != pBuffer->m_deviceBuffer)
+	
+	if (VK_NULL_HANDLE != pBuffer->m_buffer)
 	{
-		vkDestroyBuffer(device,pBuffer->m_deviceBuffer,&s_vulkanAllocator);
-		pBuffer->m_deviceBuffer = NULL;
+		vkDestroyBuffer(device, pBuffer->m_buffer, &s_vulkanAllocator);
+		pBuffer->m_buffer = NULL;
 	}
 	else
 		return false;
@@ -647,13 +683,6 @@ bool CVulkanMemory::vkDestroyBufferObject(VkDevice device,
 	else
 		return false;
 
-	if (VK_NULL_HANDLE != pBuffer->m_buffer)
-	{
-		vkDestroyBuffer(device,pBuffer->m_buffer,&s_vulkanAllocator);
-		pBuffer->m_buffer = NULL;
-	}
-	else
-		return false;
 
 	return true;
 }
@@ -735,7 +764,8 @@ CVulkanBufferObject* CVulkanMemory::vkCreateBufferObject(	VkDevice device,
 	if (allocateBuffer)
 		pDeviceMemory = allocateBufferMemory(device, device_buffer, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, device_alignment);
 	else
-		pDeviceMemory = allocateImageMemory(device, size, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, device_alignment);
+		pDeviceMemory = allocateTextureMemory(	device, size, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+												VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, device_alignment);
 	
 	if ((VK_NULL_HANDLE != pMemory) && (VK_NULL_HANDLE != pDeviceMemory))
 	{
@@ -810,9 +840,10 @@ VkDeviceMemory CVulkanMemory::allocateBufferMemory(VkDevice device,
 }
 
 
-VkDeviceMemory CVulkanMemory::allocateImageMemory(VkDevice device,
+VkDeviceMemory CVulkanMemory::allocateTextureMemory(VkDevice device,
 												  VkDeviceSize size,
 												  VkMemoryPropertyFlagBits memory_type,
+												  VkImageUsageFlags image_usage,
 												  VkDeviceSize &alignment) const
 {
 	//!
@@ -820,35 +851,44 @@ VkDeviceMemory CVulkanMemory::allocateImageMemory(VkDevice device,
 	//!	TODO: check memory_type is the same faot all image formats with the same usage (texture source for sampler)
 	//!
 	VkImageCreateInfo imageInfo = { VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
-									NULL,					// const void*
-									0,						// VkImageCreateFlags
-									VK_IMAGE_TYPE_2D,		// VkImageType
-									VK_FORMAT_R8G8B8A8_UNORM, // VkFormat
-									{ 1, 1, 1 },			// VkExtent3D
-									1,						//uint32_t mipLevels
-									1,						// uint32_t arrayLayers
-									VK_SAMPLE_COUNT_1_BIT,	// VkSampleCountFlagBits
+									NULL,						// const void*
+									0,							// VkImageCreateFlags
+									VK_IMAGE_TYPE_2D,			// VkImageType
+									VK_FORMAT_R8G8B8A8_UNORM,	// VkFormat
+									{ 1, 1, 1 },				// VkExtent3D
+									1,							//uint32_t mipLevels
+									1,							// uint32_t arrayLayers
+									VK_SAMPLE_COUNT_1_BIT,		// VkSampleCountFlagBits
 									VK_IMAGE_TILING_OPTIMAL,	// VkImageTiling
-									VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,		// VkImageUsageFlags
+									image_usage,				// VkImageUsageFlags
 									VK_SHARING_MODE_EXCLUSIVE,	// VkSharingMode
-									0,						// uint32_t  queueFamilyIndexCount
-									NULL,					// const uint32_t* pQueueFamilyIndices
-									VK_IMAGE_LAYOUT_PREINITIALIZED };	// VkImageLayout
+									0,							// uint32_t  queueFamilyIndexCount
+									NULL,						// const uint32_t* pQueueFamilyIndices
+									VK_IMAGE_LAYOUT_UNDEFINED };// VkImageLayout
 
-	VkResult res = VK_NOT_READY;
 	VkImage device_image = VK_NULL_HANDLE;
-	res = vkCreateImage(device, &imageInfo, &s_vulkanAllocator, &device_image);
+	VkResult res = vkCreateImage(device, &imageInfo, &s_vulkanAllocator, &device_image);
 	if (VK_SUCCESS != res)
 	{
 		CATCH_VK_ERROR(res);
 		return NULL;
 	}
-		
-	VkMemoryRequirements image_memory_requirements;
-	vkGetImageMemoryRequirements(device, device_image, &image_memory_requirements);
-	alignment = image_memory_requirements.alignment;
+	
+	VkDeviceMemory pMemory = allocateImageMemory(device, device_image, size, memory_type);
 
 	vkDestroyImage(device, device_image, &s_vulkanAllocator);
+
+	return pMemory;
+}
+
+VkDeviceMemory CVulkanMemory::allocateImageMemory(	VkDevice device,
+													VkImage image,
+													VkDeviceSize size,
+													VkMemoryPropertyFlagBits memory_type) const
+{
+	VkMemoryRequirements image_memory_requirements;
+	vkGetImageMemoryRequirements(device, image, &image_memory_requirements);
+	VkDeviceSize alignment = image_memory_requirements.alignment;
 
 	VkDeviceMemory pMemory = VK_NULL_HANDLE;
 	for (uint32_t i = 0; i < memory_properties.memoryTypeCount; ++i)
@@ -857,13 +897,15 @@ VkDeviceMemory CVulkanMemory::allocateImageMemory(VkDevice device,
 			(memory_properties.memoryTypes[i].propertyFlags & memory_type))
 		{
 			if (memory_properties.memoryTypes[i].propertyFlags & VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)
-				m_bNeedFlush = false;
+				m_bNeedFlush = false;;
+
+			VkDeviceSize sz = MAX(image_memory_requirements.size,size);
 			VkMemoryAllocateInfo memory_allocate_info = {	VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,     // VkStructureType sType 
 															NULL,										// const void *pNext 
-															size + alignment,							// VkDeviceSize allocationSize 
+															sz + alignment,								// VkDeviceSize allocationSize 
 															i };										// uint32_t memoryTypeIndex 
 
-			res = vkAllocateMemory(device, &memory_allocate_info, &s_vulkanAllocator, &pMemory);
+			VkResult res = vkAllocateMemory(device, &memory_allocate_info, &s_vulkanAllocator, &pMemory);
 			if (VK_SUCCESS == res)
 				break;
 			else
@@ -876,6 +918,7 @@ VkDeviceMemory CVulkanMemory::allocateImageMemory(VkDevice device,
 
 	return pMemory;
 }
+
 
 CVulkanMemory::CVulkanMemory()
 {

@@ -232,7 +232,7 @@ bool CRaptorVulkanDisplay::glBindDisplay(const RAPTOR_HANDLE& device)
 		}
 	}
 
-	return true; //CRaptorDisplay::glBindDisplay(device);
+	return true; // CRaptorDisplay::glBindDisplay(device);
 }
 
 bool CRaptorVulkanDisplay::glUnBindDisplay(void)

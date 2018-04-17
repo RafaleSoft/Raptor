@@ -109,6 +109,8 @@
 		LINKAGE PFN_vkGetPhysicalDeviceFeatures vkGetPhysicalDeviceFeatures; \
 		LINKAGE PFN_vkGetPhysicalDeviceQueueFamilyProperties vkGetPhysicalDeviceQueueFamilyProperties; \
 		LINKAGE PFN_vkGetPhysicalDeviceMemoryProperties vkGetPhysicalDeviceMemoryProperties; \
+		LINKAGE PFN_vkGetPhysicalDeviceFormatProperties vkGetPhysicalDeviceFormatProperties; \
+		LINKAGE PFN_vkGetPhysicalDeviceImageFormatProperties vkGetPhysicalDeviceImageFormatProperties; \
 		LINKAGE PFN_vkDestroyInstance	vkDestroyInstance; \
 		LINKAGE PFN_vkCreateDevice vkCreateDevice; \
 		LINKAGE PFN_vkGetDeviceProcAddr vkGetDeviceProcAddr;
@@ -210,8 +212,6 @@
 
 	#if !defined(DECLARE_VK_core)
 	#define DECLARE_VK_core(LINKAGE) \
-		LINKAGE PFN_vkGetPhysicalDeviceFormatProperties vkGetPhysicalDeviceFormatProperties; \
-		LINKAGE PFN_vkGetPhysicalDeviceImageFormatProperties vkGetPhysicalDeviceImageFormatProperties; \
 		LINKAGE PFN_vkInvalidateMappedMemoryRanges vkInvalidateMappedMemoryRanges; \
 		LINKAGE PFN_vkGetDeviceMemoryCommitment vkGetDeviceMemoryCommitment; \
 		LINKAGE PFN_vkGetPhysicalDeviceSparseImageFormatProperties vkGetPhysicalDeviceSparseImageFormatProperties; \

@@ -1,6 +1,11 @@
 - BasicObjects:
 	- Ajouter un TextureQuad le plus simple possible
 
+- CContextManager:
+	factoriser getPresentationSuppotQueueFamily et vk_ctx.pSurface->supportPresentation(physical, numQueue):
+		passer le physical device à CVulkanSurface => renvoyer la queue qui supporte WSI et presentation sur la surface.
+		=> Passer pExtensions au constructeur.
+
 - CTextureFactoryConfig:
 	appel a CTextureFactoryConfig::glInit() à partir de glInitRaptor => CVulkanDisplay non initialisé (besoin d'accéder aux properties)
 

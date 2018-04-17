@@ -26,8 +26,11 @@ RAPTOR_NAMESPACE_BEGIN
 
 class CVulkanPipeline;
 class CVulkanShader;
+class CVulkanSurface;
 class CVulkanTextureObject;
 class C3DScene;
+class CRaptorDisplayConfig;
+
 
 class CVulkanDevice
 {
@@ -47,8 +50,6 @@ public:
 	//!	These functions shall be called in this order:
 	//!	- vkCreateLogicalDevice
 	//!	- vkCreateSwapChain
-	//!	- vkCreateRenderPassResources
-	//!	- vkCreateRenderingResources
 	//!
 
 	//!	Creates and initialise a logical device and linked resources
@@ -63,28 +64,8 @@ public:
 
 	//!	Creates and initialises the swap chain.
 	//!	The previous Swap chain is destroyed if not null.
-	bool vkCreateSwapChain(	VkSurfaceKHR surface,
-							VkSurfaceFormatKHR format,
-							VkSurfaceCapabilitiesKHR surfaceCapabilities,
-							VkPresentModeKHR presentMode,
-							uint32_t width,
-							uint32_t height);
-
-	//!	Creates and initialises a render pass and image views
-	bool vkCreateRenderPassResources(	VkSurfaceFormatKHR format,
-										uint32_t nbSamples,
-										uint32_t width,
-										uint32_t height);
-
-	//!	Creates and initialise rendering resources for each rendering pass.
-	//!	Rendering resources are:
-	//!	- CommandBuffer
-	//!	- Semaphores for image available and rendering finished
-	//!	- Fence for queue submission
-	//!	- Framebuffer.
-	//!	NB_RENDERING_RESOURCES set of resources are created.
-	bool vkCreateRenderingResources(void);
-
+	bool vkCreateSwapChain(	CVulkanSurface *pSurface,
+						   const CRaptorDisplayConfig& config);
 
 
 	//!
@@ -142,6 +123,33 @@ private:
 	CVulkanDevice(const CVulkanDevice&);
 	CVulkanDevice& operator=(const CVulkanDevice&);
 
+	//!	Creates a command pool on to a Queue Family Index
+	VkCommandPool createCommandPool(uint32_t queueFamilyIndex);
+
+	//!	Creates and initialises a render pass and image views
+	bool vkCreateRenderPassResources(VkSurfaceFormatKHR format,
+									 uint32_t nbSamples,
+									 uint32_t width,
+									 uint32_t height,
+									 VkFormat depth);
+
+	//!	Creates and initialise rendering resources for each rendering pass.
+	//!	Rendering resources are:
+	//!	- CommandBuffer
+	//!	- Semaphores for image available and rendering finished
+	//!	- Fence for queue submission
+	//!	- Framebuffer.
+	//!	NB_RENDERING_RESOURCES set of resources are created.
+	bool vkCreateRenderingResources(void);
+
+	//!	Creates the z-buffer for the display context referencing this device
+	bool vkCreateZBuffer(uint32_t width,
+						 uint32_t height,
+						 VkFormat depth);
+
+	bool vkDestroyZBuffer(void);
+
+
 	DECLARE_VK_KHR_swapchain(DEFAULT_LINKAGE)
 	DECLARE_VK_device(DEFAULT_LINKAGE)
 	DECLARE_VK_queue(DEFAULT_LINKAGE)
@@ -170,6 +178,9 @@ private:
 		VkQueue			queue;
 	} VK_RENDERING_RESOURCE;
 
+	VkImage			zBuffer;
+	VkImageView		zView;
+	VkDeviceMemory	zMemory;
 	VkCommandBuffer	transferBuffer;
 	VkQueue			transferQueue;
 
