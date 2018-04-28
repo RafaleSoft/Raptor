@@ -167,9 +167,10 @@ bool CVulkanMemory::CVulkanMemoryWrapper::needBufferObjectDataSynchro(void) cons
 	return needSynchro;
 }
 
-bool CVulkanMemory::CVulkanMemoryWrapper::synchroniseBufferObjectData(const CVulkanCommandBuffer &commandBuffer)
+bool CVulkanMemory::CVulkanMemoryWrapper::synchroniseBufferObjectData(VkCommandBuffer commandBuffer)
 {
 	bool res = false;
+	const CVulkanCommandBuffer displayList(commandBuffer);
 
 	//!	Step 1 : transition image layouts
 	for (unsigned int i = 0; i < IDeviceMemoryManager::IBufferObject::NB_BUFFER_KIND; i++)
@@ -181,9 +182,9 @@ bool CVulkanMemory::CVulkanMemoryWrapper::synchroniseBufferObjectData(const CVul
 			for (size_t j = 0; j < sync2.size(); j++)
 			{
 				CVulkanBufferObject::unsynchronizedImage& synchro = sync2[j];
-				commandBuffer.imageBarrier(VK_IMAGE_LAYOUT_UNDEFINED,
-										   VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-										   synchro.image);
+				displayList.imageBarrier(VK_IMAGE_LAYOUT_UNDEFINED,
+										 VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+										 synchro.image);
 			}
 		}
 	}
@@ -197,7 +198,7 @@ bool CVulkanMemory::CVulkanMemoryWrapper::synchroniseBufferObjectData(const CVul
 			std::vector<VkBufferCopy> &sync = pBuffer->m_unsynchronizedBuffers;
 			if (sync.size() > 0)
 			{
-				CVulkanCommandBuffer::vkCmdCopyBuffer(	commandBuffer.commandBuffer, 
+				CVulkanCommandBuffer::vkCmdCopyBuffer(displayList.commandBuffer,
 														pBuffer->m_buffer,
 														pBuffer->m_deviceBuffer,
 														sync.size(),
@@ -211,7 +212,7 @@ bool CVulkanMemory::CVulkanMemoryWrapper::synchroniseBufferObjectData(const CVul
 			for (size_t j = 0; j < sync2.size(); j++)
 			{
 				CVulkanBufferObject::unsynchronizedImage& synchro = sync2[j];
-				CVulkanCommandBuffer::vkCmdCopyBufferToImage( commandBuffer.commandBuffer,
+				CVulkanCommandBuffer::vkCmdCopyBufferToImage(displayList.commandBuffer,
 															  pBuffer->m_buffer,
 															  synchro.image,
 															  VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
@@ -233,7 +234,7 @@ bool CVulkanMemory::CVulkanMemoryWrapper::synchroniseBufferObjectData(const CVul
 			for (size_t j = 0; j < sync2.size(); j++)
 			{
 				CVulkanBufferObject::unsynchronizedImage& synchro = sync2[j];
-				commandBuffer.imageBarrier(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+				displayList.imageBarrier(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
 										   VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
 										   synchro.image);
 			}

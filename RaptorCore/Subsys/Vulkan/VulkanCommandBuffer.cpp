@@ -22,26 +22,25 @@
 RAPTOR_NAMESPACE
 
 IMPLEMENT_RAPTOR_VK_command_buffer(CVulkanCommandBuffer)
+
 /*
-PFN_vkCmdPipelineBarrier	CVulkanCommandBuffer::vkCmdPipelineBarrier = NULL;
-PFN_vkCmdBeginRenderPass	CVulkanCommandBuffer::vkCmdBeginRenderPass = NULL;
-PFN_vkCmdEndRenderPass		CVulkanCommandBuffer::vkCmdEndRenderPass = NULL;
-PFN_vkCmdBindPipeline		CVulkanCommandBuffer::vkCmdBindPipeline = NULL;
-PFN_vkBeginCommandBuffer	CVulkanCommandBuffer::vkBeginCommandBuffer = NULL;
-PFN_vkEndCommandBuffer		CVulkanCommandBuffer::vkEndCommandBuffer = NULL;
-PFN_vkCmdBindVertexBuffers	CVulkanCommandBuffer::vkCmdBindVertexBuffers = NULL;
-PFN_vkCmdBindIndexBuffer	CVulkanCommandBuffer::vkCmdBindIndexBuffer = NULL;
-PFN_vkCmdBindDescriptorSets	CVulkanCommandBuffer::vkCmdBindDescriptorSets = NULL;
-PFN_vkCmdSetViewport		CVulkanCommandBuffer::vkCmdSetViewport = NULL;
-PFN_vkCmdSetScissor			CVulkanCommandBuffer::vkCmdSetScissor = NULL;
-PFN_vkCmdCopyBuffer			CVulkanCommandBuffer::vkCmdCopyBuffer;
-PFN_vkCmdCopyImage			CVulkanCommandBuffer::vkCmdCopyImage;
-PFN_vkCmdBlitImage			CVulkanCommandBuffer::vkCmdBlitImage;
-PFN_vkCmdCopyBufferToImage	CVulkanCommandBuffer::vkCmdCopyBufferToImage;
-PFN_vkCmdCopyImageToBuffer	CVulkanCommandBuffer::vkCmdCopyImageToBuffer;
-PFN_vkCmdDraw				CVulkanCommandBuffer::vkCmdDraw = NULL;
-PFN_vkCmdDrawIndexed		CVulkanCommandBuffer::vkCmdDrawIndexed = NULL;
-*/
+ * Graphics pipeline order:
+ *
+	VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT
+	VK_PIPELINE_STAGE_DRAW_INDIRECT_BIT
+	VK_PIPELINE_STAGE_VERTEX_INPUT_BIT
+	VK_PIPELINE_STAGE_VERTEX_SHADER_BIT
+	VK_PIPELINE_STAGE_TESSELLATION_CONTROL_SHADER_BIT
+	VK_PIPELINE_STAGE_TESSELLATION_EVALUATION_SHADER_BIT
+	VK_PIPELINE_STAGE_GEOMETRY_SHADER_BIT
+	VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT
+	VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT
+	VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT
+	VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT
+	VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT
+ *
+ */
+
 
 CVulkanCommandBuffer::CVulkanCommandBuffer(VkCommandBuffer cmdBuffer,const VkRect2D& scissor)
 	:commandBuffer(cmdBuffer), retore_barrier(false), view_scissor(scissor), render_pass(false)

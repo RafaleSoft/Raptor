@@ -97,7 +97,7 @@ public:
 
 
 		bool needBufferObjectDataSynchro(void) const;
-		bool synchroniseBufferObjectData(const CVulkanCommandBuffer &commandBuffer);
+		bool synchroniseBufferObjectData(VkCommandBuffer commandBuffer);
 
 
 	private:

@@ -243,20 +243,12 @@ bool CVulkanDevice::presentSwapChainImage()
 	return (VK_SUCCESS == res);
 }
 
-bool CVulkanDevice::vkSynchroniseBufferObjects(bool blocking)
+bool CVulkanDevice::vkUploadDataToDevice(bool blocking)
 {
 	if (!pDeviceMemory->needBufferObjectDataSynchro())
 		return true;
 
-	//!	TODO : check if a single command buffer works.
-	//!	Otherwise, 3 steps are necesary:
-	//!	- transition images to transfer dst optimal layout
-	//!	- copy buffers
-	//!	- transition images to shader read only optimal layout
-	{
-		CVulkanCommandBuffer displayList(transferBuffer);
-		pDeviceMemory->synchroniseBufferObjectData(displayList);
-	}
+	pDeviceMemory->synchroniseBufferObjectData(transferBuffer);
 
 	VkSubmitInfo submit_info = {VK_STRUCTURE_TYPE_SUBMIT_INFO,
 								NULL,
@@ -280,7 +272,7 @@ bool CVulkanDevice::vkRender(	C3DScene *pScene,
 								const VkRect2D& scissor,
 								const CColor::RGBA& clearColor)
 {
-	vkSynchroniseBufferObjects();
+	vkUploadDataToDevice();
 
 	// TODO : check currentRenderingResources is valid ?
 	if ((currentRenderingResources >= NB_RENDERING_RESOURCES) ||
@@ -889,6 +881,73 @@ bool CVulkanDevice::vkDestroyZBuffer(void)
 	return true;
 }
 
+bool CVulkanDevice::vkDestroyRenderPassResources(void)
+{
+	if (NULL != renderImages)
+	{
+		for (uint32_t i = 0; i<swapchainImageCount; i++)
+			if (VK_NULL_HANDLE != renderImages[i].view)
+				vkDestroyImageView(device, renderImages[i].view, CVulkanMemory::GetAllocator());
+		delete[] renderImages;
+		renderImages = NULL;
+	}
+	
+	if (VK_NULL_HANDLE != renderPass)
+	{
+		vkDestroyRenderPass(device, renderPass,
+							CVulkanMemory::GetAllocator());
+		renderPass = VK_NULL_HANDLE;
+	}
+
+	if (!vkDestroyZBuffer())
+		return false;
+
+	return true;
+}
+
+bool CVulkanDevice::vkDestroyRenderingResources(void)
+{
+	if (VK_NULL_HANDLE != transferBuffer)
+	{
+		vkFreeCommandBuffers(device,
+							 transferCommandPool,
+							 1,
+							 &transferBuffer);
+		transferBuffer = VK_NULL_HANDLE;
+	}
+
+	if (NULL != renderingResources)
+	{
+		for (unsigned int i = 0; i<NB_RENDERING_RESOURCES; i++)
+		{
+			VK_RENDERING_RESOURCE& rr = renderingResources[i];
+			if (VK_NULL_HANDLE != rr.frameBuffer)
+				vkDestroyFramebuffer(device, rr.frameBuffer, NULL);
+
+			if (VK_NULL_HANDLE != rr.commandBuffers[0])
+				vkFreeCommandBuffers(device, graphicsCommandPool, 1, &rr.commandBuffers[0]);
+			rr.commandBuffers.clear();
+
+			//if ((graphics_queueFamilyIndex != present_queueFamilyIndex) &&
+			//	(graphicsCommandPool != presentCommandPool) &&
+			//	(VK_NULL_HANDLE != presentCommandBuffer))
+			//	vkFreeCommandBuffers(device,presentCommandPool,1,&renderingResources[i].presentCommandBuffer);
+
+			if (VK_NULL_HANDLE != rr.imageAvailableSemaphore)
+				vkDestroySemaphore(device, rr.imageAvailableSemaphore, CVulkanMemory::GetAllocator());
+			if (VK_NULL_HANDLE != rr.renderingCompleteSemaphore)
+				vkDestroySemaphore(device, rr.renderingCompleteSemaphore, CVulkanMemory::GetAllocator());
+			if (VK_NULL_HANDLE != rr.queueExecutionComplete)
+				vkDestroyFence(device, rr.queueExecutionComplete, CVulkanMemory::GetAllocator());
+		}
+
+		delete[] renderingResources;
+		renderingResources = NULL;
+	}
+
+	return true;
+}
+
 bool CVulkanDevice::vkDestroySwapChain()
 {
 	VkResult res = vkDeviceWaitIdle(device);
@@ -918,74 +977,13 @@ bool CVulkanDevice::vkDestroySwapChain()
 								CVulkanMemory::GetAllocator());
 #endif
 
-	if (NULL != renderImages)
-	{
-		// Images should be cleared upon swap chain destruction
-		for (uint32_t i=0;i<swapchainImageCount;i++)
-			vkDestroyImageView(	device,renderImages[i].view,
-								CVulkanMemory::GetAllocator());
-		delete [] renderImages;
-		renderImages = NULL;
-	}
+	if (!vkDestroyRenderPassResources())
+		return false;
+	
 	swapchainImageCount = 0;
-
-	if (VK_NULL_HANDLE != renderPass)
-	{
-		vkDestroyRenderPass(device,renderPass,
-							CVulkanMemory::GetAllocator());
-		renderPass = VK_NULL_HANDLE;
-	}
-
-	if (VK_NULL_HANDLE != transferBuffer)
-	{
-		vkFreeCommandBuffers(	device,
-								transferCommandPool,
-								1,
-								&transferBuffer);
-		transferBuffer = VK_NULL_HANDLE;
-	}
-
-	vkDestroyZBuffer();
-
-	if (NULL != renderingResources)
-	{
-		for (unsigned int i=0;i<NB_RENDERING_RESOURCES;i++)
-		{
-			VK_RENDERING_RESOURCE& rr = renderingResources[i];
-			if (VK_NULL_HANDLE != rr.frameBuffer)
-				vkDestroyFramebuffer(	device,
-										rr.frameBuffer,
-										NULL);
-
-			if (VK_NULL_HANDLE != rr.commandBuffers[0])
-				vkFreeCommandBuffers(	device,
-										graphicsCommandPool,
-										1,
-										&rr.commandBuffers[0]);
-			rr.commandBuffers.clear();
-
-			//if ((graphics_queueFamilyIndex != present_queueFamilyIndex) &&
-			//	(graphicsCommandPool != presentCommandPool) &&
-			//	(VK_NULL_HANDLE != presentCommandBuffer))
-			//	vkFreeCommandBuffers(device,presentCommandPool,1,&renderingResources[i].presentCommandBuffer);
-
-			if (VK_NULL_HANDLE != rr.imageAvailableSemaphore)
-				vkDestroySemaphore(	device,
-									rr.imageAvailableSemaphore,
-									CVulkanMemory::GetAllocator());
-			if (VK_NULL_HANDLE != rr.renderingCompleteSemaphore)
-				vkDestroySemaphore(	device,
-									rr.renderingCompleteSemaphore,
-									CVulkanMemory::GetAllocator());
-			if (VK_NULL_HANDLE != rr.queueExecutionComplete)
-				vkDestroyFence(	device,
-								rr.queueExecutionComplete,
-								CVulkanMemory::GetAllocator());
-		}
-
-		delete [] renderingResources;
-		renderingResources = NULL;
-	}
+	
+	if (!vkDestroyRenderingResources())
+		return false;
 
 	currentRenderingResources = 0;
 	currentImage = MAXUINT;

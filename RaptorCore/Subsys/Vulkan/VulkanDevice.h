@@ -76,7 +76,8 @@ public:
 	//!	device buffer objects. Buffer object data may already be synchronised.
 	//! @param blocking : if blocking is true, synchronisation will wait for complete queue execution.
 	//! @return true if synchronisation is successful
-	bool vkSynchroniseBufferObjects(bool blocking = false);
+	bool vkUploadDataToDevice(bool blocking = false);
+	VkCommandBuffer getUploadBuffer(void) const { return transferBuffer; };
 
 	//! Returns the memory wrapper managing this device.
 	CVulkanMemory::CVulkanMemoryWrapper* getMemory(void) const { return pDeviceMemory; };
@@ -133,6 +134,9 @@ private:
 									 uint32_t height,
 									 VkFormat depth);
 
+	//!	Destroy the render pass resources allocated from vkCreateRenderPassResources.
+	bool vkDestroyRenderPassResources(void);
+
 	//!	Creates and initialise rendering resources for each rendering pass.
 	//!	Rendering resources are:
 	//!	- CommandBuffer
@@ -142,11 +146,15 @@ private:
 	//!	NB_RENDERING_RESOURCES set of resources are created.
 	bool vkCreateRenderingResources(void);
 
+	//!	Destroy the rendering resources allocated from vkCreateRenderingResources.
+	bool vkDestroyRenderingResources(void);
+
 	//!	Creates the z-buffer for the display context referencing this device
 	bool vkCreateZBuffer(uint32_t width,
 						 uint32_t height,
 						 VkFormat depth);
 
+	//!	Destroy the z-buffer resources allocated by vkCreateZBuffer.
 	bool vkDestroyZBuffer(void);
 
 
