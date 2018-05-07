@@ -94,31 +94,27 @@ CTest5Doc::CTest5Doc(const RAPTOR_HANDLE& device,const char* title)
 	glcs.x = 0;
 	glcs.y = 0;
 	glcs.caption = title;
+#ifdef VULKAN_TEST
+	glcs.renderer = CRaptorDisplayConfig::VULKAN;
+#else
 	glcs.acceleration = CRaptorDisplayConfig::HARDWARE;
-	//glcs.antialias = CRaptorDisplayConfig::ANTIALIAS_16X;
+	glcs.antialias = CRaptorDisplayConfig::ANTIALIAS_16X;
+#endif
 	//glcs.framebufferState.colorClearValue = CColor::RGBA(0.5f,0.6f,0.7f,1.0f);
 	glcs.double_buffer = true;
 	glcs.depth_buffer = true;
 	glcs.display_mode = CGL_RGBA | CGL_DEPTH;
 	glcs.draw_logo = true;
 
-#ifdef VULKAN_TEST
-	glcs.renderer = CRaptorDisplayConfig::VULKAN;
 	m_pDisplay = Raptor::glCreateDisplay(glcs);
 	bool res = m_pDisplay->glBindDisplay(device);
 	if (res)
 	{
-#else
-	m_pDisplay = Raptor::glCreateDisplay(glcs);
-	bool res = m_pDisplay->glBindDisplay(device);
-    if (res)
-	{
 		CRenderingProperties *props = m_pDisplay->getRenderingProperties();
-		//props->setWireframe(CRenderingProperties::ENABLE);
-		//props->setCullFace(CRenderingProperties::DISABLE);
 		props->setLighting(CRenderingProperties::ENABLE);
 		props->setTexturing(CRenderingProperties::ENABLE);
-
+#ifdef VULKAN_TEST
+#else
 		CRaptorConsole *pConsole = Raptor::GetConsole();
         pConsole->glInit("",true);
         pConsole->showStatus(true);
@@ -178,6 +174,9 @@ void CTest5Doc::GLInitContext(void)
 
 #ifdef VULKAN_TEST
 	CShadedGeometry *geo = new CShadedGeometry("VULKAN_GEOMETRY");
+	geo->getRenderingModel().addModel(CGeometry::CRenderingModel::CGL_COLORS);
+	geo->getRenderingModel().addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
+
 	geo->glSetVertices(4,NULL);
 	geo->glSetColors(4, NULL);
 	geo->glSetTexCoords(4, NULL);

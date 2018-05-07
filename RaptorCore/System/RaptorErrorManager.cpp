@@ -305,6 +305,30 @@ void CRaptorErrorManager::vkGetError(VkResult err, const std::string& file,int l
 		case VK_ERROR_FORMAT_NOT_SUPPORTED:
 			r_err.error = "Error format not supported (class " + r_file + r_line.str() + ")";
 			break;
+		case VK_ERROR_FRAGMENTED_POOL:
+			r_err.error = "Error fragmented pool (class " + r_file + r_line.str() + ")";
+			break;
+		case VK_ERROR_SURFACE_LOST_KHR:
+			r_err.error = "Error surface lost (class " + r_file + r_line.str() + ")";
+			break;
+		case VK_ERROR_NATIVE_WINDOW_IN_USE_KHR:
+			r_err.error = "Error native window in use (class " + r_file + r_line.str() + ")";
+			break;
+		case VK_SUBOPTIMAL_KHR:
+			r_err.error = "Error suboptimal (class " + r_file + r_line.str() + ")";
+			break;
+		case VK_ERROR_OUT_OF_DATE_KHR:
+			r_err.error = "Error out of date (class " + r_file + r_line.str() + ")";
+			break;
+		case VK_ERROR_INCOMPATIBLE_DISPLAY_KHR:
+			r_err.error = "Error incompatible display (class " + r_file + r_line.str() + ")";
+			break;
+		case VK_ERROR_VALIDATION_FAILED_EXT:
+			r_err.error = "Error validation failed (class " + r_file + r_line.str() + ")";
+			break;
+		case VK_ERROR_INVALID_SHADER_NV:
+			r_err.error = "Error invalid shader NV (class " + r_file + r_line.str() + ")";
+			break;
 		default:
 			r_err.error = "Unknown Error (class " + r_file + r_line.str() + ")";
 			break;

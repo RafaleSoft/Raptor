@@ -130,7 +130,7 @@ bool CRaptorVulkanDisplay::glRender(void)
 		
 		//	Actual rendering
 		C3DScene *pScene = getRootScene();
-		vk_device.vkRender(pScene,scissor,cs.framebufferState.colorClearValue);
+		vk_device.vkRender(pScene,scissor,cs);
 		
         m_pGAllocator->glvkLockMemory(false);
 		m_pTAllocator->glvkLockMemory(false);
@@ -232,7 +232,7 @@ bool CRaptorVulkanDisplay::glBindDisplay(const RAPTOR_HANDLE& device)
 		}
 	}
 
-	return true; //CRaptorDisplay::glBindDisplay(device);
+	return true; // CRaptorDisplay::glBindDisplay(device);
 }
 
 bool CRaptorVulkanDisplay::glUnBindDisplay(void)

@@ -29,7 +29,7 @@ RAPTOR_NAMESPACE_BEGIN
 class CRaptorGLExtensions;
 class CRaptorVKExtensions;
 class CTextureObject;
-
+class CVulkanSurface;
 
 //!	This class implements OpenGL contexts management.
 class CContextManager  
@@ -86,7 +86,7 @@ public:
 
 	void vkSwapBuffers(RENDERING_CONTEXT_ID ctx);
 
-	void vkSwapVSync(unsigned int framerate);
+	virtual void vkSwapVSync(unsigned int framerate) = 0;
 
 	void vkResize(RENDERING_CONTEXT_ID ctx,const CRaptorDisplayConfig& config);
 #endif
@@ -188,15 +188,7 @@ protected:
 		VkPhysicalDevice			physicalDevice;
 		CVulkanDevice				device;
 		CRaptorVKExtensions			*pExtensions;
-		
-#ifdef VK_KHR_surface
-		VkSurfaceKHR				surface;
-		VkSurfaceCapabilitiesKHR	surfaceCapabilities;
-		uint32_t					pSurfaceFormatCount;
-		VkSurfaceFormatKHR			*pSurfaceFormats;
-		uint32_t					pPresentModeCount;
-		VkPresentModeKHR			*pPresentModes;
-#endif
+		CVulkanSurface				*pSurface;
 	} VK_CONTEXT;
 	VK_CONTEXT	*m_pVkContext;
 #endif
@@ -210,17 +202,12 @@ private:
 	//!	Initialise a Vulkan logical device and all necessary queue families.
 	bool vkInitDevice(RENDERING_CONTEXT_ID ctx,const CRaptorDisplayConfig& config);
 
-	//!	Create a swap chain from the surface properties and initialise all rendering resources.
-	bool vkCreateSwapChain(RENDERING_CONTEXT_ID ctx,uint32_t nbSamples,uint32_t width,uint32_t height);
+	//!	Returns the queue family index that supports WSI presentation
+	virtual uint32_t getPresentationSuppotQueueFamily(RENDERING_CONTEXT_ID ctx) = 0;
 
 	//!	Creates a rendering surface for the window handle handle
 	//! @return false if surface creation failed
 	virtual bool vkCreateSurface(const RAPTOR_HANDLE& handle,RENDERING_CONTEXT_ID ctx) = 0;
-
-#ifdef VK_KHR_surface
-	//!	Collects all physical device properties to use surface formats and modes
-	bool vkInitSurface(RENDERING_CONTEXT_ID ctx);
-#endif
 #endif
 
 	CTextureObject	*glBuildLogo(void);

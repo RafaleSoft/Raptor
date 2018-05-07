@@ -214,7 +214,6 @@ private:
 	PIXEL_TYPE		m_pixelType;
 
 	//!	Actual pixels storage
-	//uint8_t			*pixels;
 	void			*pixels;
 };
 

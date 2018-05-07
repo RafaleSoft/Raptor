@@ -79,10 +79,10 @@ CRaptorDisplayConfig::CRaptorDisplayConfig()
     framebufferState.colorWriteMask[1] = GL_TRUE;
     framebufferState.colorWriteMask[2] = GL_TRUE;
     framebufferState.colorWriteMask[3] = GL_TRUE;
-	framebufferState.depthClearValue = 1;
+	framebufferState.depthClearValue = 1.0f;
 	framebufferState.depthWriteMask = GL_TRUE;
 	framebufferState.drawBuffer = GL_BACK;
-    framebufferState.indexClearValue = 0;
+    framebufferState.indexClearValue = 0.0f;
 	framebufferState.indexWriteMask = ~0;
 	framebufferState.stencilClearValue = 0;
     framebufferState.stencilWriteMask = ~0;
@@ -424,7 +424,7 @@ bool CRaptorDisplayConfig::glQueryConfig(unsigned long query)
 		glGetIntegerv(GL_STENCIL_WRITEMASK,&framebufferState.stencilWriteMask);
 		glGetFloatv(GL_COLOR_CLEAR_VALUE,framebufferState.colorClearValue);
 		glGetFloatv(GL_INDEX_CLEAR_VALUE,&framebufferState.indexClearValue);
-		glGetIntegerv(GL_DEPTH_CLEAR_VALUE,&framebufferState.depthClearValue);
+		glGetFloatv(GL_DEPTH_CLEAR_VALUE, &framebufferState.depthClearValue);
 		glGetIntegerv(GL_STENCIL_CLEAR_VALUE,&framebufferState.stencilClearValue);
 		glGetFloatv(GL_ACCUM_CLEAR_VALUE,framebufferState.accumClearValue);
 	}

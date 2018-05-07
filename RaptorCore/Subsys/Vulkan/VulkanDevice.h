@@ -26,8 +26,11 @@ RAPTOR_NAMESPACE_BEGIN
 
 class CVulkanPipeline;
 class CVulkanShader;
+class CVulkanSurface;
 class CVulkanTextureObject;
 class C3DScene;
+class CRaptorDisplayConfig;
+
 
 class CVulkanDevice
 {
@@ -47,8 +50,6 @@ public:
 	//!	These functions shall be called in this order:
 	//!	- vkCreateLogicalDevice
 	//!	- vkCreateSwapChain
-	//!	- vkCreateRenderPassResources
-	//!	- vkCreateRenderingResources
 	//!
 
 	//!	Creates and initialise a logical device and linked resources
@@ -63,28 +64,8 @@ public:
 
 	//!	Creates and initialises the swap chain.
 	//!	The previous Swap chain is destroyed if not null.
-	bool vkCreateSwapChain(	VkSurfaceKHR surface,
-							VkSurfaceFormatKHR format,
-							VkSurfaceCapabilitiesKHR surfaceCapabilities,
-							VkPresentModeKHR presentMode,
-							uint32_t width,
-							uint32_t height);
-
-	//!	Creates and initialises a render pass and image views
-	bool vkCreateRenderPassResources(	VkSurfaceFormatKHR format,
-										uint32_t nbSamples,
-										uint32_t width,
-										uint32_t height);
-
-	//!	Creates and initialise rendering resources for each rendering pass.
-	//!	Rendering resources are:
-	//!	- CommandBuffer
-	//!	- Semaphores for image available and rendering finished
-	//!	- Fence for queue submission
-	//!	- Framebuffer.
-	//!	NB_RENDERING_RESOURCES set of resources are created.
-	bool vkCreateRenderingResources(void);
-
+	bool vkCreateSwapChain(	CVulkanSurface *pSurface,
+						   const CRaptorDisplayConfig& config);
 
 
 	//!
@@ -95,7 +76,8 @@ public:
 	//!	device buffer objects. Buffer object data may already be synchronised.
 	//! @param blocking : if blocking is true, synchronisation will wait for complete queue execution.
 	//! @return true if synchronisation is successful
-	bool vkSynchroniseBufferObjects(bool blocking = false);
+	bool vkUploadDataToDevice(bool blocking = false) const;
+	VkCommandBuffer getUploadBuffer(void) const { return transferBuffer; };
 
 	//! Returns the memory wrapper managing this device.
 	CVulkanMemory::CVulkanMemoryWrapper* getMemory(void) const { return pDeviceMemory; };
@@ -127,7 +109,7 @@ public:
 	//!	and initialise the render pass.
 	bool vkRender(	C3DScene *pScene,
 					const VkRect2D& scissor,
-					const CColor::RGBA& clearColor);
+					const CRaptorDisplayConfig& config);
 
 	//! Destroy or Release all device linked Vulkan resources, including swap chain
 	bool vkDestroyLogicalDevice(void);
@@ -141,6 +123,40 @@ private:
 	//!	Forbidden operator
 	CVulkanDevice(const CVulkanDevice&);
 	CVulkanDevice& operator=(const CVulkanDevice&);
+
+	//!	Creates a command pool on to a Queue Family Index
+	VkCommandPool createCommandPool(uint32_t queueFamilyIndex);
+
+	//!	Creates and initialises a render pass and image views
+	bool vkCreateRenderPassResources(VkSurfaceFormatKHR format,
+									 uint32_t nbSamples,
+									 uint32_t width,
+									 uint32_t height,
+									 VkFormat depth);
+
+	//!	Destroy the render pass resources allocated from vkCreateRenderPassResources.
+	bool vkDestroyRenderPassResources(void);
+
+	//!	Creates and initialise rendering resources for each rendering pass.
+	//!	Rendering resources are:
+	//!	- CommandBuffer
+	//!	- Semaphores for image available and rendering finished
+	//!	- Fence for queue submission
+	//!	- Framebuffer.
+	//!	NB_RENDERING_RESOURCES set of resources are created.
+	bool vkCreateRenderingResources(void);
+
+	//!	Destroy the rendering resources allocated from vkCreateRenderingResources.
+	bool vkDestroyRenderingResources(void);
+
+	//!	Creates the z-buffer for the display context referencing this device
+	bool vkCreateZBuffer(uint32_t width,
+						 uint32_t height,
+						 VkFormat depth);
+
+	//!	Destroy the z-buffer resources allocated by vkCreateZBuffer.
+	bool vkDestroyZBuffer(void);
+
 
 	DECLARE_VK_KHR_swapchain(DEFAULT_LINKAGE)
 	DECLARE_VK_device(DEFAULT_LINKAGE)
@@ -170,6 +186,9 @@ private:
 		VkQueue			queue;
 	} VK_RENDERING_RESOURCE;
 
+	VkImage			zBuffer;
+	VkImageView		zView;
+	VkDeviceMemory	zMemory;
 	VkCommandBuffer	transferBuffer;
 	VkQueue			transferQueue;
 

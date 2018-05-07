@@ -37,7 +37,7 @@ RAPTOR_NAMESPACE_BEGIN
 	PFN_vkEnumerateInstanceLayerProperties CRaptorVKExtensions::vkEnumerateInstanceLayerProperties = NULL;
 	PFN_vkCreateInstance CRaptorVKExtensions::vkCreateInstance = NULL;
 
-	IMPLEMENT_RAPTOR_VK_instance(CRaptorVKExtensions)
+	IMPLEMENT_RAPTOR_VK_instance(CRaptorVKExtensions::)
 #endif
 
 RAPTOR_NAMESPACE_END

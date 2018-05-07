@@ -931,6 +931,35 @@ void CGeometry::vkRender(CVulkanCommandBuffer& commandBuffer,
 	commandBuffer.vkCmdDrawIndexed(commandBuffer.commandBuffer, 3 * m_nbPolys, 1, 0, 0, 0);
 }
 
+bool CGeometry::getVertexInputState( std::vector<VkVertexInputBindingDescription>& bindings,
+									 std::vector<VkVertexInputAttributeDescription>& vertexInput) const
+{
+	bindings.clear();
+	vertexInput.clear();
+
+	//!	Vertex
+	bindings.push_back({ 0, 4 * sizeof(float), VK_VERTEX_INPUT_RATE_VERTEX });
+	vertexInput.push_back({ 0, 0, VK_FORMAT_R32G32B32A32_SFLOAT, 0 });
+
+	//!	Colors
+	if (m_renderingModel.hasModel(CRenderingModel::CGL_COLORS))
+	{
+		bindings.push_back({ 1, 4 * sizeof(float), VK_VERTEX_INPUT_RATE_VERTEX });
+		vertexInput.push_back({ 1, 1, VK_FORMAT_R32G32B32A32_SFLOAT, 0 });
+	}
+
+	//!	TexCoords
+	CRenderingProperties *props = CRenderingProperties::GetCurrentProperties();
+	if ((m_renderingModel.hasModel(CRenderingModel::CGL_TEXTURE)))
+//		(props->getCurrentTexturing() == CRenderingProperties::ENABLE))
+	{
+		bindings.push_back({ 2, 2 * sizeof(float), VK_VERTEX_INPUT_RATE_VERTEX });
+		vertexInput.push_back({ 2, 2, VK_FORMAT_R32G32_SFLOAT, 0 });
+	}
+
+	return true;
+}
+
 void CGeometry::glRender()
 {
     if (!properties.isVisible())

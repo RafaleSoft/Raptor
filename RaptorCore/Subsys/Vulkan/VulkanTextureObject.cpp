@@ -22,7 +22,9 @@
 #if !defined(AFX_RAPTORVULKANDEVICE_H__2FDEDD40_444E_4CC2_96AA_CBF9E79C3ABE__INCLUDED_)
 	#include "Subsys/Vulkan/VulkanDevice.h"
 #endif
-
+#if !defined(AFX_RAPTORVULKANCOMMANDBUFFER_H__0398BABD_747B_4DFE_94AA_B026BDBD03B1__INCLUDED_)
+	#include "Subsys/Vulkan/VulkanCommandBuffer.h"
+#endif
 
 RAPTOR_NAMESPACE
 
@@ -59,8 +61,7 @@ void CVulkanTextureObject::glvkRender(void)
 
 }
 
-void CVulkanTextureObject::vkLoadTexture(uint32_t innerFormat,
-										 uint32_t pixels_format,
+void CVulkanTextureObject::vkLoadTexture(VkComponentMapping swizzle,
 										 uint32_t pixels_type,
 										 unsigned char* pixels)
 {
@@ -79,26 +80,11 @@ void CVulkanTextureObject::vkLoadTexture(uint32_t innerFormat,
 	imageInfo.pNext = NULL;
 	imageInfo.flags = 0;
 
+	//! TODO: Adjust size with format
 	uint64_t size = getWidth() * getHeight() * getDepth();
-	//!
-	//! Select Image format
-	//!
-	switch (getTexelType())
-	{
-		case ITextureObject::CGL_COLOR24_ALPHA:
-			imageInfo.format = VK_FORMAT_R8G8B8A8_UNORM;
-			size = size * 4;
-			break;
-		case ITextureObject::CGL_COLOR24:
-			imageInfo.format = VK_FORMAT_R8G8B8_UNORM;
-			size = size * 3;
-			break;
-		default:
-			imageInfo.format = VK_FORMAT_R8G8B8A8_UNORM;
-			size = size * 4;
-			break;
-	}
+	size = size * 4;
 
+	imageInfo.format = getTexelFormat();
 	imageInfo.extent.width = getWidth();
 	imageInfo.extent.height = getHeight();
 	imageInfo.extent.depth = getDepth();
@@ -132,25 +118,36 @@ void CVulkanTextureObject::vkLoadTexture(uint32_t innerFormat,
 
 	if ((VK_NULL_HANDLE != m_image) && (NULL != pixels))
 	{
+		VkImageAspectFlagBits aspect = VK_IMAGE_ASPECT_COLOR_BIT;
+
+		//!	Transition image layout to upload data.
+		const CVulkanDevice& device = CVulkanDevice::getCurrentDevice();
+		{
+			VkCommandBuffer commandBuffer = device.getUploadBuffer();
+			const CVulkanCommandBuffer displayList(commandBuffer);
+			displayList.imageBarrier(VK_IMAGE_LAYOUT_UNDEFINED,
+									 VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+									 m_image,
+									 aspect);
+		}
+		device.vkUploadDataToDevice(true);
+
+		//!	Upload texels to device image
 		tAllocator->glvkCopyPointer(texpointer, pixels, size);
 
 		VkImageViewCreateInfo image_view_create_info = {VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
-														NULL,
-														0,
+														NULL, 0,
 														m_image,
 														VK_IMAGE_VIEW_TYPE_2D,
 														getTexelFormat(),
-														{ VK_COMPONENT_SWIZZLE_IDENTITY,
-														VK_COMPONENT_SWIZZLE_IDENTITY,
-														VK_COMPONENT_SWIZZLE_IDENTITY,
-														VK_COMPONENT_SWIZZLE_IDENTITY },
-														{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 } };
+														swizzle,
+														{ aspect, 0, 1, 0, 1 } };
 
 		VkResult res = vkCreateImageView(m_device,
 										 &image_view_create_info,
 										 CVulkanMemory::GetAllocator(),
 										 &m_view);
-		CATCH_VK_ERROR(res)
+		CATCH_VK_ERROR(res);
 
 		VkSamplerCreateInfo samplerInfo = {};
 		samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
@@ -166,7 +163,10 @@ void CVulkanTextureObject::vkLoadTexture(uint32_t innerFormat,
 		samplerInfo.anisotropyEnable = VK_FALSE;
 		samplerInfo.maxAnisotropy = 1.0f;
 		if (ITextureObject::CGL_ANISOTROPIC == m_filter)
+		{
 			samplerInfo.anisotropyEnable = VK_TRUE;
+			device.getProperties().limits.maxSamplerAnisotropy;
+		}
 		samplerInfo.compareEnable = VK_FALSE;
 		samplerInfo.compareOp = VK_COMPARE_OP_NEVER;
 		samplerInfo.minLod = 0.0f;
@@ -175,13 +175,26 @@ void CVulkanTextureObject::vkLoadTexture(uint32_t innerFormat,
 		samplerInfo.unnormalizedCoordinates = VK_FALSE;
 
 		res = vkCreateSampler(m_device, &samplerInfo, CVulkanMemory::GetAllocator(), &m_sampler);
-		CATCH_VK_ERROR(res)
+		CATCH_VK_ERROR(res);
+
+		//!	Transition image layout to read texels from samplers.
+		{
+			VkCommandBuffer commandBuffer = device.getUploadBuffer();
+			const CVulkanCommandBuffer displayList(commandBuffer);
+			displayList.imageBarrier(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+									 VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+									 m_image,
+									 aspect);
+		}
+		device.vkUploadDataToDevice(true);
+
+		tAllocator->releaseTexels(texpointer);
 	}
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 	else
 	{
 		Raptor::GetErrorManager()->generateRaptorError(Global::CVulkanClassID::GetClassId(),
-													   CRaptorErrorManager::RAPTOR_WARNING,
+													   CRaptorErrorManager::RAPTOR_ERROR,
 													   "CVulkanTextureObject failed to allocate texture image");
 	}
 #endif
