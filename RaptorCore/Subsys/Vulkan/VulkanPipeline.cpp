@@ -157,6 +157,20 @@ bool CVulkanPipeline::initPipeline(const CVulkanShaderStage* shaderStages,
 																	0,	// VkPipelineDynamicStateCreateFlags
 																	2,
 																	&dynamic_states[0]};
+
+	VkPipelineDepthStencilStateCreateInfo depthStencil = {	VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO,
+															NULL,
+															0,
+															VK_TRUE,
+															VK_TRUE,
+															VK_COMPARE_OP_LESS,
+															VK_FALSE,
+															VK_FALSE,
+															{},
+															{},
+															0.0f,
+															1.0f};
+
 	uint32_t subpass = 0;
 	VkPipeline basePipelineHandle = VK_NULL_HANDLE;
 	int32_t basePipelineIndex = -1;
@@ -173,7 +187,7 @@ bool CVulkanPipeline::initPipeline(const CVulkanShaderStage* shaderStages,
 														&viewport_state_create_info, // const VkPipelineViewportStateCreateInfo *
 														&rasterization_state_create_info, // const VkPipelineRasterizationStateCreateInfo *
 														&multisample_state_create_info, // const VkPipelineMultisampleStateCreateInfo *
-														NULL,	// const VkPipelineDepthStencilStateCreateInfo *
+														&depthStencil,	// const VkPipelineDepthStencilStateCreateInfo *
 														&color_blend_state_create_info, // const VkPipelineColorBlendStateCreateInfo *
 														&dynamic_state_create_info, // const VkPipelineDynamicStateCreateInfo *
 														layout,// VkPipelineLayout

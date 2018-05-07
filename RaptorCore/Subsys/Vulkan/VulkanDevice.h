@@ -76,7 +76,7 @@ public:
 	//!	device buffer objects. Buffer object data may already be synchronised.
 	//! @param blocking : if blocking is true, synchronisation will wait for complete queue execution.
 	//! @return true if synchronisation is successful
-	bool vkUploadDataToDevice(bool blocking = false);
+	bool vkUploadDataToDevice(bool blocking = false) const;
 	VkCommandBuffer getUploadBuffer(void) const { return transferBuffer; };
 
 	//! Returns the memory wrapper managing this device.
@@ -109,7 +109,7 @@ public:
 	//!	and initialise the render pass.
 	bool vkRender(	C3DScene *pScene,
 					const VkRect2D& scissor,
-					const CColor::RGBA& clearColor);
+					const CRaptorDisplayConfig& config);
 
 	//! Destroy or Release all device linked Vulkan resources, including swap chain
 	bool vkDestroyLogicalDevice(void);

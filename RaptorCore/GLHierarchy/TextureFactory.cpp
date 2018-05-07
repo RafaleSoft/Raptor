@@ -311,8 +311,7 @@ bool CTextureFactory::vkLoadTexture(CVulkanTextureObject* const T,
 		T->setSize(image.getWidth(), image.getHeight(), image.getLayers());
 	T->setName(image.getName());
 
-	//	1)	Texture internal format
-	VkFormat GL_INNER_FORMAT = T->getTexelFormat();
+	//	1)	Texture source format
 	GLuint GL_FORMAT = image.getBufferFormat();
 	GLuint GL_SRC_FORMAT = image.getBufferType();
 	void *pixels = image.getPixels();
@@ -322,23 +321,46 @@ bool CTextureFactory::vkLoadTexture(CVulkanTextureObject* const T,
 
 	//	2)	Format of data to load
 	//
+	VkComponentMapping swizzle = {	VK_COMPONENT_SWIZZLE_R,
+									VK_COMPONENT_SWIZZLE_G,
+									VK_COMPONENT_SWIZZLE_B,
+									VK_COMPONENT_SWIZZLE_A };
+	
 	CTextureFactoryConfig::TEXEL_FORMAT texelFormat = mConfig.getTexelFormat();
 	if (GL_FORMAT == GL_RGBA)
 	{
 #if defined(GL_EXT_bgra)
 		if (texelFormat == CTextureFactoryConfig::BYTEORDER_BGRA)
+		{
 			GL_FORMAT = GL_BGRA_EXT;
+			swizzle = { VK_COMPONENT_SWIZZLE_B,
+						VK_COMPONENT_SWIZZLE_G,
+						VK_COMPONENT_SWIZZLE_R,
+						VK_COMPONENT_SWIZZLE_A };
+		}
 #endif
 #if defined(GL_EXT_abgr)
 		else if (texelFormat == CTextureFactoryConfig::BYTEORDER_ABGR)
+		{
 			GL_FORMAT = GL_ABGR_EXT;
+			swizzle = { VK_COMPONENT_SWIZZLE_A,
+						VK_COMPONENT_SWIZZLE_B,
+						VK_COMPONENT_SWIZZLE_G,
+						VK_COMPONENT_SWIZZLE_R };
+		}
 #endif
 	}
 	else if (GL_FORMAT == GL_RGB)
 	{
 #if defined(GL_EXT_bgra)
 		if (texelFormat == CTextureFactoryConfig::BYTEORDER_BGRA)
+		{
 			GL_FORMAT = GL_BGR_EXT;
+			swizzle = { VK_COMPONENT_SWIZZLE_B,
+						VK_COMPONENT_SWIZZLE_G,
+						VK_COMPONENT_SWIZZLE_R,
+						VK_COMPONENT_SWIZZLE_ZERO };
+		}
 #endif
 	}
 
@@ -348,12 +370,11 @@ bool CTextureFactory::vkLoadTexture(CVulkanTextureObject* const T,
 	bool result = false;
 
 	//	Final processing :
-	//	- mipmapping generation
-	//	- image loading
-	T->vkLoadTexture(GL_INNER_FORMAT,
-					GL_FORMAT,
-					GL_SRC_FORMAT,
-					(uint8_t*)pixels);
+	//	- memory allocation
+	//	- image creation
+	//	- image layout transitions
+	//	- sampler creation
+	T->vkLoadTexture(swizzle, GL_SRC_FORMAT, (uint8_t*)pixels);
 	result = true;
 
 	CATCH_GL_ERROR

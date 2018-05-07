@@ -12,6 +12,9 @@
 #if !defined(AFX_RAPTORVULKANCOMMANDBUFFER_H__0398BABD_747B_4DFE_94AA_B026BDBD03B1__INCLUDED_)
 	#include "Subsys/Vulkan/VulkanCommandBuffer.h"
 #endif
+#if !defined(AFX_RAPTORVULKANDEVICE_H__2FDEDD40_444E_4CC2_96AA_CBF9E79C3ABE__INCLUDED_)
+	#include "Subsys/Vulkan/VulkanDevice.h"
+#endif
 #if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
 	#include "System/Raptor.h"
 #endif
@@ -139,113 +142,6 @@ VkBuffer CVulkanMemory::CVulkanMemoryWrapper::getLockedBuffer(IDeviceMemoryManag
 		return VK_NULL_HANDLE;
 }
 
-bool CVulkanMemory::CVulkanMemoryWrapper::needBufferObjectDataSynchro(void) const
-{
-	bool needSynchro = false;
-
-	for (unsigned int i=0;i<IDeviceMemoryManager::IBufferObject::NB_BUFFER_KIND;i++)
-	{
-		const CVulkanBufferObject* pBuffer = currentBuffers[i];
-		if (NULL != pBuffer)
-		{
-			const std::vector<VkBufferCopy> &sync = pBuffer->m_unsynchronizedBuffers;
-			if (sync.size() > 0)
-			{
-				needSynchro = true;
-				break;
-			}
-
-			const std::vector<CVulkanBufferObject::unsynchronizedImage> &sync2 = pBuffer->m_unsynchronizedImages;
-			if (sync2.size() > 0)
-			{
-				needSynchro = true;
-				break;
-			}
-		}
-	}
-
-	return needSynchro;
-}
-
-bool CVulkanMemory::CVulkanMemoryWrapper::synchroniseBufferObjectData(VkCommandBuffer commandBuffer)
-{
-	bool res = false;
-	const CVulkanCommandBuffer displayList(commandBuffer);
-
-	//!	Step 1 : transition image layouts
-	for (unsigned int i = 0; i < IDeviceMemoryManager::IBufferObject::NB_BUFFER_KIND; i++)
-	{
-		CVulkanBufferObject* pBuffer = const_cast<CVulkanBufferObject*>(currentBuffers[i]);
-		if (NULL != pBuffer)
-		{
-			std::vector<CVulkanBufferObject::unsynchronizedImage> &sync2 = pBuffer->m_unsynchronizedImages;
-			for (size_t j = 0; j < sync2.size(); j++)
-			{
-				CVulkanBufferObject::unsynchronizedImage& synchro = sync2[j];
-				displayList.imageBarrier(VK_IMAGE_LAYOUT_UNDEFINED,
-										 VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-										 synchro.image);
-			}
-		}
-	}
-
-	//!	Step 2 : copy buffers and images
-	for (unsigned int i=0;i<IDeviceMemoryManager::IBufferObject::NB_BUFFER_KIND;i++)
-	{
-		CVulkanBufferObject* pBuffer = const_cast<CVulkanBufferObject*>(currentBuffers[i]);
-		if (NULL != pBuffer)
-		{
-			std::vector<VkBufferCopy> &sync = pBuffer->m_unsynchronizedBuffers;
-			if (sync.size() > 0)
-			{
-				CVulkanCommandBuffer::vkCmdCopyBuffer(displayList.commandBuffer,
-														pBuffer->m_buffer,
-														pBuffer->m_deviceBuffer,
-														sync.size(),
-														sync.data());
-
-				sync.clear();
-				res = true;
-			}
-
-			std::vector<CVulkanBufferObject::unsynchronizedImage> &sync2 = pBuffer->m_unsynchronizedImages;
-			for (size_t j = 0; j < sync2.size(); j++)
-			{
-				CVulkanBufferObject::unsynchronizedImage& synchro = sync2[j];
-				CVulkanCommandBuffer::vkCmdCopyBufferToImage(displayList.commandBuffer,
-															  pBuffer->m_buffer,
-															  synchro.image,
-															  VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-															  1, &synchro.bufferCopy);
-				res = true;
-			}
-			//	Do not clear unsynchronised data here : we need additional transitions.
-			//sync2.clear();
-		}
-	}
-
-	//!	Step 3 : transition image layouts
-	for (unsigned int i = 0; i < IDeviceMemoryManager::IBufferObject::NB_BUFFER_KIND; i++)
-	{
-		CVulkanBufferObject* pBuffer = const_cast<CVulkanBufferObject*>(currentBuffers[i]);
-		if (NULL != pBuffer)
-		{
-			std::vector<CVulkanBufferObject::unsynchronizedImage> &sync2 = pBuffer->m_unsynchronizedImages;
-			for (size_t j = 0; j < sync2.size(); j++)
-			{
-				CVulkanBufferObject::unsynchronizedImage& synchro = sync2[j];
-				displayList.imageBarrier(VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-										   VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-										   synchro.image);
-			}
-
-			sync2.clear();
-		}
-	}
-
-	return res;
-}
-
 IDeviceMemoryManager::IBufferObject *
 CVulkanMemory::CVulkanMemoryWrapper::createBufferObject(IDeviceMemoryManager::IBufferObject::BUFFER_KIND kind, 
 														IDeviceMemoryManager::IBufferObject::BUFFER_MODE mode, 
@@ -285,31 +181,46 @@ bool CVulkanMemory::CVulkanMemoryWrapper::setBufferObjectData(	IDeviceMemoryMana
 			std::map<VkDeviceSize, data_bloc>::iterator it = m_images.find(dstOffset);
 			data_bloc &db = (*it).second;
 
-			VkBufferImageCopy outOfDate;
-			outOfDate.bufferOffset = dstOffset;
-			outOfDate.bufferImageHeight = 0;	// image data tight packing in buffer -> image extent
-			outOfDate.bufferRowLength = 0;		// image data tight packing in buffer -> image extent
+			const CVulkanDevice& device = CVulkanDevice::getCurrentDevice();
+			{
+				VkCommandBuffer commandBuffer = device.getUploadBuffer();
+				const CVulkanCommandBuffer displayList(commandBuffer);
+				
+				VkBufferImageCopy outOfDate;
+				outOfDate.bufferOffset = dstOffset;
+				outOfDate.bufferImageHeight = 0;	// image data tight packing in buffer -> image extent
+				outOfDate.bufferRowLength = 0;		// image data tight packing in buffer -> image extent
+				outOfDate.imageSubresource = { VK_IMAGE_ASPECT_COLOR_BIT, 0, 0, 1 };
+				outOfDate.imageOffset = { 0, 0, 0 };
+				outOfDate.imageExtent = db.imageExtent;
 
-			VkImageSubresourceLayers layers = { VK_IMAGE_ASPECT_COLOR_BIT, 0, 0, 1 };
-			outOfDate.imageSubresource = layers;
-
-			VkOffset3D offset = { 0, 0, 0 };
-			outOfDate.imageOffset = offset;
-
-			outOfDate.imageExtent = db.imageExtent;
-
-			CVulkanBufferObject::unsynchronizedImage synchro;
-			synchro.image = db.image;
-			synchro.bufferCopy = outOfDate;
-			vb.m_unsynchronizedImages.push_back(synchro);
+				displayList.copyBuffer(vb.m_buffer, db.image, outOfDate);
+			}
+			set_data = device.vkUploadDataToDevice(true);
+			if (!set_data)
+			{
+				RAPTOR_ERROR(Global::CVulkanClassID::GetClassId(), "Unable to upload image memory to device !");
+			}
 		}
 		else
 		{
-			VkBufferCopy outOfDate;
-			outOfDate.srcOffset = dstOffset;
-			outOfDate.dstOffset = dstOffset;
-			outOfDate.size = sz;
-			vb.m_unsynchronizedBuffers.push_back(outOfDate);
+			const CVulkanDevice& device = CVulkanDevice::getCurrentDevice();
+			{
+				VkCommandBuffer commandBuffer = device.getUploadBuffer();
+				const CVulkanCommandBuffer displayList(commandBuffer);
+
+				VkBufferCopy outOfDate;
+				outOfDate.srcOffset = dstOffset;
+				outOfDate.dstOffset = dstOffset;
+				outOfDate.size = sz;
+
+				displayList.copyBuffer(vb.m_buffer, vb.m_deviceBuffer, outOfDate);
+			}
+			set_data = device.vkUploadDataToDevice(true);
+			if (!set_data)
+			{
+				RAPTOR_ERROR(Global::CVulkanClassID::GetClassId(), "Unable to upload buffer memory to device !");
+			}
 		}
 	}
 

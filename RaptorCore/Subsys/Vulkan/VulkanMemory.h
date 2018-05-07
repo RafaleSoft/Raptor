@@ -95,11 +95,6 @@ public:
 		bool releaseImage(VkImage image);
 
 
-
-		bool needBufferObjectDataSynchro(void) const;
-		bool synchroniseBufferObjectData(VkCommandBuffer commandBuffer);
-
-
 	private:
 		const CVulkanMemory& memory;
 		VkDevice m_device;

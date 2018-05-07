@@ -130,7 +130,7 @@ bool CRaptorVulkanDisplay::glRender(void)
 		
 		//	Actual rendering
 		C3DScene *pScene = getRootScene();
-		vk_device.vkRender(pScene,scissor,cs.framebufferState.colorClearValue);
+		vk_device.vkRender(pScene,scissor,cs);
 		
         m_pGAllocator->glvkLockMemory(false);
 		m_pTAllocator->glvkLockMemory(false);

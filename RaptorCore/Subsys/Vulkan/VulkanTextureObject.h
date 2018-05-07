@@ -54,8 +54,7 @@ public:
 	virtual CVulkanTextureObject* getVulkanTextureObject(void) { return this; };
 
 
-	void vkLoadTexture(uint32_t innerFormat,
-					   uint32_t pixels_format,
+	void vkLoadTexture(VkComponentMapping swizzle,
 					   uint32_t pixels_type,
 					   unsigned char* pixels);
 

@@ -243,13 +243,8 @@ bool CVulkanDevice::presentSwapChainImage()
 	return (VK_SUCCESS == res);
 }
 
-bool CVulkanDevice::vkUploadDataToDevice(bool blocking)
+bool CVulkanDevice::vkUploadDataToDevice(bool blocking) const
 {
-	if (!pDeviceMemory->needBufferObjectDataSynchro())
-		return true;
-
-	pDeviceMemory->synchroniseBufferObjectData(transferBuffer);
-
 	VkSubmitInfo submit_info = {VK_STRUCTURE_TYPE_SUBMIT_INFO,
 								NULL,
 								0, NULL,
@@ -270,10 +265,8 @@ bool CVulkanDevice::vkUploadDataToDevice(bool blocking)
 
 bool CVulkanDevice::vkRender(	C3DScene *pScene,
 								const VkRect2D& scissor,
-								const CColor::RGBA& clearColor)
+								const CRaptorDisplayConfig& config)
 {
-	vkUploadDataToDevice();
-
 	// TODO : check currentRenderingResources is valid ?
 	if ((currentRenderingResources >= NB_RENDERING_RESOURCES) ||
 		(currentImage == MAXUINT))
@@ -291,10 +284,11 @@ bool CVulkanDevice::vkRender(	C3DScene *pScene,
 	if (VK_NULL_HANDLE == resource.frameBuffer)
 	{
 		resource.linkedView = image.view;
+		const VkImageView attachments[2] = { image.view, zView };
 		VkFramebufferCreateInfo pFrameBufferCreateInfo = { VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
 															NULL, 0,
 															renderPass,
-															1, &image.view,
+															2, attachments,
 															image.extent.width,
 															image.extent.height, 1 };
 
@@ -307,7 +301,11 @@ bool CVulkanDevice::vkRender(	C3DScene *pScene,
 	if (bResize)
 		displayList.resize();
 	displayList.imageBarrier(present_queueFamilyIndex, graphics_queueFamilyIndex, image.image);
-	displayList.renderPass(renderPass, resource.frameBuffer, clearColor);
+	displayList.renderPass(renderPass, 
+						   resource.frameBuffer, 
+						   config.framebufferState.colorClearValue,
+						   config.framebufferState.depthClearValue,
+						   config.framebufferState.stencilClearValue);
 	
 	VkBuffer binding = pDeviceMemory->getLockedBuffer(IDeviceMemoryManager::IBufferObject::VERTEX_BUFFER);
 	VkBuffer binding2 = pDeviceMemory->getLockedBuffer(IDeviceMemoryManager::IBufferObject::INDEX_BUFFER);
@@ -461,6 +459,24 @@ bool CVulkanDevice::vkCreateZBuffer(uint32_t width,
 	zMemory = pDeviceMemory->allocateImageMemory(zBuffer, 0, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 	CVulkanMemory::vkBindImageMemory(device, zBuffer, zMemory, 0);
 
+	//!	Transition z-Buffer layout to upload data.
+	{
+		VkCommandBuffer commandBuffer = getUploadBuffer();
+		const CVulkanCommandBuffer displayList(commandBuffer);
+
+		VkImageAspectFlags aspect = VK_IMAGE_ASPECT_DEPTH_BIT;
+		if ((depth == VK_FORMAT_D16_UNORM_S8_UINT) || 
+			(depth == VK_FORMAT_D24_UNORM_S8_UINT) ||
+			(depth == VK_FORMAT_D32_SFLOAT_S8_UINT))
+			aspect |= VK_IMAGE_ASPECT_STENCIL_BIT;
+
+		displayList.imageBarrier(VK_IMAGE_LAYOUT_UNDEFINED,
+								 VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,
+								 zBuffer,
+								 aspect);
+	}
+	vkUploadDataToDevice(true);
+
 
 	VkImageViewCreateInfo image_view_create_info = {VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
 													NULL,
@@ -517,22 +533,31 @@ bool CVulkanDevice::vkCreateRenderPassResources(VkSurfaceFormatKHR format,
 		if (!vkCreateZBuffer(width,height,depth))
 			return false;
 
-	VkAttachmentDescription pAttachments = {0, // or 1 = VK_ATTACHMENT_DESCRIPTION_MAY_ALIAS_BIT
-											format.format,samples,
-											VK_ATTACHMENT_LOAD_OP_CLEAR,
-											VK_ATTACHMENT_STORE_OP_STORE,
-											VK_ATTACHMENT_LOAD_OP_CLEAR,
-											VK_ATTACHMENT_STORE_OP_DONT_CARE,
-											VK_IMAGE_LAYOUT_UNDEFINED, //	Is this correct ?
-											VK_IMAGE_LAYOUT_PRESENT_SRC_KHR }; // is this correct ?
+	VkAttachmentDescription pAttachments[2] = { {	0, // or 1 = VK_ATTACHMENT_DESCRIPTION_MAY_ALIAS_BIT
+													format.format, samples,
+													VK_ATTACHMENT_LOAD_OP_CLEAR,
+													VK_ATTACHMENT_STORE_OP_STORE,
+													VK_ATTACHMENT_LOAD_OP_CLEAR,
+													VK_ATTACHMENT_STORE_OP_DONT_CARE,
+													VK_IMAGE_LAYOUT_UNDEFINED,
+													VK_IMAGE_LAYOUT_PRESENT_SRC_KHR }, // is this correct ?
+												{	0,
+													depth, samples,
+													VK_ATTACHMENT_LOAD_OP_CLEAR,
+													VK_ATTACHMENT_STORE_OP_DONT_CARE,
+													VK_ATTACHMENT_LOAD_OP_CLEAR,
+													VK_ATTACHMENT_STORE_OP_DONT_CARE,
+													VK_IMAGE_LAYOUT_UNDEFINED,
+													VK_IMAGE_LAYOUT_PRESENT_SRC_KHR } // is this correct ?
+												};
 	VkAttachmentReference pColorAttachments = { 0, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL };
-	//VkAttachmentReference pDepthStencilAttachment = { 0, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL };
+	VkAttachmentReference pDepthStencilAttachment = { 1, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL };
 	VkSubpassDescription pSubpasses = {	0,
 										VK_PIPELINE_BIND_POINT_GRAPHICS,
 										0, NULL,
 										1, &pColorAttachments,
 										NULL,
-										NULL, //&pDepthStencilAttachment,
+										&pDepthStencilAttachment,
 										0, NULL };
 	VkSubpassDependency dependencies[2] = {{VK_SUBPASS_EXTERNAL,
 											0,
@@ -552,7 +577,7 @@ bool CVulkanDevice::vkCreateRenderPassResources(VkSurfaceFormatKHR format,
 
 	VkRenderPassCreateInfo pRenderPassCreateInfo = {VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
 													NULL, 0,
-													1, &pAttachments,
+													2, &pAttachments[0],
 													1, &pSubpasses,
 													2, &dependencies[0]};
 
@@ -660,6 +685,14 @@ bool CVulkanDevice::vkCreateSwapChain(CVulkanSurface *pSurface,
 		return false;
 	}
 
+	if (!vkCreateRenderingResources())
+	{
+		RAPTOR_VKERROR(Global::CVulkanClassID::GetClassId(),
+					   "Vulkan Device cannot create rendering ressources !");
+		return false;
+	}
+
+
 	VkSurfaceFormatKHR format = pSurface->getSurfaceFormat(config.display_mode);
 	VkFormat depth_format = pSurface->getDepthFormat(config.display_mode, config.stencil_buffer);
 
@@ -671,13 +704,6 @@ bool CVulkanDevice::vkCreateSwapChain(CVulkanSurface *pSurface,
 	{
 		RAPTOR_VKERROR(Global::CVulkanClassID::GetClassId(),
 					   "Vulkan Device cannot create render pass ressources !");
-		return false;
-	}
-
-	if (!vkCreateRenderingResources())
-	{
-		RAPTOR_VKERROR(Global::CVulkanClassID::GetClassId(),
-					   "Vulkan Device cannot create rendering ressources !");
 		return false;
 	}
 

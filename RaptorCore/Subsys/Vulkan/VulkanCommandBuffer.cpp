@@ -6,8 +6,6 @@
 #if !defined(AFX_RAPTORVULKANCOMMANDBUFFER_H__0398BABD_747B_4DFE_94AA_B026BDBD03B1__INCLUDED_)
 	#include "VulkanCommandBuffer.h"
 #endif
-
-
 #if !defined(AFX_RAPTORVULKANMEMORY_H__72256FF7_DBB9_4B9C_9BF7_C36F425CF811__INCLUDED_)
 	#include "Subsys/Vulkan/VulkanMemory.h"
 #endif
@@ -159,11 +157,12 @@ void CVulkanCommandBuffer::imageBarrier(uint32_t present_queueFamilyIndex,
 
 void CVulkanCommandBuffer::imageBarrier(VkImageLayout oldLayout,
 										VkImageLayout newLayout,
-										VkImage image) const
+										VkImage image,
+										VkImageAspectFlags aspect) const
 {
 	if ((oldLayout != newLayout) && (VK_NULL_HANDLE != image))
 	{
-		VkImageSubresourceRange image_subresource_range = { VK_IMAGE_ASPECT_COLOR_BIT,
+		VkImageSubresourceRange image_subresource_range = { aspect,
 															0, // baseMipLevel;
 															1, // levelCount;
 															0, // baseArrayLayer;
@@ -194,6 +193,13 @@ void CVulkanCommandBuffer::imageBarrier(VkImageLayout oldLayout,
 			barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
 			destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
 		}
+		else if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL)
+		{
+			barrier.srcAccessMask = 0;
+			barrier.dstAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+			sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+			destinationStage = VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+		}
 
 		CVulkanCommandBuffer::vkCmdPipelineBarrier(commandBuffer,
 												   sourceStage,
@@ -207,19 +213,23 @@ void CVulkanCommandBuffer::imageBarrier(VkImageLayout oldLayout,
 
 void CVulkanCommandBuffer::renderPass(	VkRenderPass renderPass,
 										VkFramebuffer framebuffer,
-										const CColor::RGBA& clearColor)
+										const CColor::RGBA& clearColor,
+										float clearDepth,
+										int clearStencil)
 {
-	VkClearValue clear_value;
-	clear_value.color.float32[0] = clearColor.r;
-	clear_value.color.float32[1] = clearColor.g;
-	clear_value.color.float32[2] = clearColor.b;
-	clear_value.color.float32[3] = clearColor.a;
+	VkClearValue clear_value[2];
+	clear_value[0].color.float32[0] = clearColor.r;
+	clear_value[0].color.float32[1] = clearColor.g;
+	clear_value[0].color.float32[2] = clearColor.b;
+	clear_value[0].color.float32[3] = clearColor.a;
+	clear_value[1].depthStencil.depth = clearDepth;
+	clear_value[1].depthStencil.stencil = clearStencil;
 	VkRenderPassBeginInfo render_pass_begin_info = {VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
 													NULL,
 													renderPass,
 													framebuffer,
 													view_scissor,
-													1, &clear_value };
+													2, clear_value };
 
 	vkCmdBeginRenderPass(	commandBuffer,
 							&render_pass_begin_info,
@@ -227,3 +237,24 @@ void CVulkanCommandBuffer::renderPass(	VkRenderPass renderPass,
 	render_pass = true;
 }
 
+void CVulkanCommandBuffer::copyBuffer(VkBuffer buffer,
+									  VkImage image,
+									  VkBufferImageCopy outOfDate) const
+{
+	vkCmdCopyBufferToImage(commandBuffer,
+						   buffer,
+						   image,
+						   VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+						   1, &outOfDate);
+}
+
+void CVulkanCommandBuffer::copyBuffer(VkBuffer hostBuffer,
+									  VkBuffer deviceBuffer,
+									  VkBufferCopy outOfDate) const
+{
+	vkCmdCopyBuffer(commandBuffer,
+					hostBuffer,
+					deviceBuffer,
+					1,
+					&outOfDate);
+}
