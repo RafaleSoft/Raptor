@@ -33,7 +33,7 @@ RAPTOR_NAMESPACE
 #define VULKAN_TEST 1
 
 
-class MySphere : public /*CBasicObjects::CIsocahedron*/ CBasicObjects::CGeoSphere
+class MySphere : public CBasicObjects::CGeoSphere
 {
 public:
 	MySphere();
@@ -152,19 +152,17 @@ void CTest5Doc::glRender(void)
 
 void CTest5Doc::GLInitContext(void)
 {
+#ifdef VULKAN_TEST
+#else
 	CBasicObjects::CGeoSphere *obj = new MySphere();
-	//CBasicObjects::CIsocahedron *obj = new MySphere();
-	//CBasicObjects::CCube *c = new CBasicObjects::CCube();
-	//CBasicObjects::CIsocahedron *obj = new CBasicObjects::CIsocahedron();
 	obj->setDimensions(2.0f,32,32);
-	//obj->setDimensions(2.0f,4);
-	//c->setDimensions(1.0f,1.0f,1.0f);
 	obj->getEditor().genBinormals();
 	obj->getEditor().scaleTexCoords(4.0f,4.0f);
+
 	obj->getRenderingModel().addModel(CGeometry::CRenderingModel::CGL_TANGENTS);
+#endif
 
 	C3DScene *pScene = m_pDisplay->getRootScene();
-
 	//CShader *shader = new CShader("uniforms-shader");
 	//CVertexProgram *p = shader->glGetVertexProgram("uniforms");
 	//p->glLoadProgramFromStream(*shdr);
@@ -173,14 +171,20 @@ void CTest5Doc::GLInitContext(void)
 	CTextureFactory &f = CTextureFactory::getDefaultFactory();
 
 #ifdef VULKAN_TEST
-	CShadedGeometry *geo = new CShadedGeometry("VULKAN_GEOMETRY");
-	geo->getRenderingModel().addModel(CGeometry::CRenderingModel::CGL_COLORS);
-	geo->getRenderingModel().addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
+	
+	CBasicObjects::CIsocahedron *obj = new CBasicObjects::CIsocahedron();
+	obj->setDimensions(0.5f, 3);
+	obj->getEditor().genBinormals();
+	obj->getEditor().scaleTexCoords(4.0f, 4.0f);
+	/*
+	CShadedGeometry *obj = new CShadedGeometry("VULKAN_GEOMETRY");
+	//obj->getRenderingModel().addModel(CGeometry::CRenderingModel::CGL_COLORS);
+	obj->getRenderingModel().addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
 
-	geo->glSetVertices(4,NULL);
-	geo->glSetColors(4, NULL);
-	geo->glSetTexCoords(4, NULL);
-	geo->glSetPolygons(2, NULL);
+	obj->glSetVertices(4, NULL);
+	obj->glSetColors(4, NULL);
+	obj->glSetTexCoords(4, NULL);
+	obj->glSetPolygons(2, NULL);
 	GL_COORD_VERTEX VertexData[5] =
 	{
 		GL_COORD_VERTEX(-0.7f, -0.7f, -2.0f, 1.0f),	// TODO : check / configure depth
@@ -207,15 +211,15 @@ void CTest5Doc::GLInitContext(void)
 	{
 		3, 2, 0, 3, 0, 1
 	};
-	geo->glSetVertices(4,VertexData);
-	geo->glSetColors(4,ColorData);
-	geo->glSetTexCoords(4, TexCoordData);
-	geo->glSetPolygons(2,VertexIndices);
-	
+	obj->glSetVertices(4, VertexData);
+	obj->glSetColors(4, ColorData);
+	obj->glSetTexCoords(4, TexCoordData);
+	obj->glSetPolygons(2, VertexIndices);
+	*/
 	m_pTexture = f.vkCreateTexture(ITextureObject::CGL_COLOR24_ALPHA, CTextureObject::CGL_ALPHA_TRANSPARENT, ITextureObject::CGL_BILINEAR);
 	f.glLoadTexture(m_pTexture, "earth.TGA");
 
-	CShader* s = geo->getShader();
+	CShader* s = obj->getShader();
 	CVulkanShaderStage *ss = s->vkGetVulkanProgram();
 	ss->vkLoadShader("shader3.vert");
 	ss->vkLoadShader("shader3.frag");
@@ -259,7 +263,7 @@ void CTest5Doc::GLInitContext(void)
 
 	ss->setProgramParameters(parameters);
 
-	pScene->addObject(geo);
+	pScene->addObject(obj);
 #else
 	m_pTexture = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA, CTextureObject::CGL_ALPHA_TRANSPARENT, ITextureObject::CGL_BILINEAR);
 	f.glLoadTexture(m_pTexture,"earth.TGA");
