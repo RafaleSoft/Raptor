@@ -1,6 +1,6 @@
 export
 
-RAPTOR_VERSION = "2.17.0"
+RAPTOR_VERSION = 2.17.0
 RAPTOR_ROOT = /media/sf_OPENGL/Raptor
 REDIST = $(RAPTOR_ROOT)/Redist
 
@@ -47,9 +47,9 @@ VULKAN_BIN_PATH=c:/windows/system32
 #
 all:	simd microlex builder raptordatapackager raptordata raptorcore
 
-raptorcore: builder simd microlex raptordata $(REDIST)/Lib/RaptorCore.lib
+raptorcore: builder simd microlex raptordata $(REDIST)/Lib/RaptorCore.lib $(REDIST)/Bin/RaptorCore.so.$(RAPTOR_VERSION)
 
-raptordata:	builder raptordatapackager $(REDIST)/Lib/RaptorData.lib
+raptordata:	builder raptordatapackager $(REDIST)/Lib/RaptorData.lib $(REDIST)/Bin/RaptorData.so.$(RAPTOR_VERSION)
 
 raptordatapackager:	builder $(REDIST)/Bin/RaptorDataPackager
 
@@ -57,18 +57,18 @@ builder:	simd microlex $(REDIST)/Bin/Builder
 
 microlex:	$(REDIST)/Bin/Microlex
 
-simd:	$(REDIST)/Lib/simd.lib
+simd:	$(REDIST)/Lib/simd.lib $(REDIST)/Bin/simd.so.$(RAPTOR_VERSION)
 
 
 #
 # Projects building rules
 #
-$(REDIST)/Lib/RaptorCore.lib:
+$(REDIST)/Lib/RaptorCore.lib $(REDIST)/Bin/RaptorCore.so.$(RAPTOR_VERSION):
 	@echo "Building RaptorCore project ..."
 	make -C Build/Linux -f Makefile.raptorcore all
 	@echo "RaptorCore project done."
 
-$(REDIST)/Lib/RaptorData.lib:
+$(REDIST)/Lib/RaptorData.lib $(REDIST)/Bin/RaptorData.so.$(RAPTOR_VERSION):
 	@echo "Building RaptorData project ..."
 	make -C Build/Linux -f Makefile.raptordata all
 	@echo "RaptorData project done."
@@ -88,24 +88,28 @@ $(REDIST)/Bin/Microlex:
 	make -C Build/Linux -f Makefile.microlex all
 	@echo "Microlex project done."
 
-$(REDIST)/Lib/simd.lib:
-	@echo "Building simd.lib project ..."
+$(REDIST)/Lib/simd.lib $(REDIST)/Bin/simd.so.$(RAPTOR_VERSION):
+	@echo "Building simd project ..."
 	make -C Build/Linux -f Makefile.simd all
-	@echo "simd.lib project done."
+	@echo "simd project done."
 
 
 #
 # Common targets
 #
 clean:
+	@echo "Cleaning intermediate build files..."
 	make -C Build/Linux -f Makefile.raptorcore clean
 	make -C Build/Linux -f Makefile.raptordata clean
 	make -C Build/Linux -f Makefile.raptordatapackager clean
 	make -C Build/Linux -f Makefile.builder clean
 	make -C Build/Linux -f Makefile.microlex clean
 	make -C Build/Linux -f Makefile.simd clean
+	@echo "Done."
 
 distclean:
+	@echo "Cleaning redistribuable files in $(REDIST)..."
 	rm -f $(REDIST)/Bin/*
 	rm -f $(REDIST)/Lib/*
+	@echo "Done."
 

@@ -14,6 +14,8 @@
 #pragma warning(disable:4035) // no return value
 #pragma warning(disable:4514) // unreferenced inline function has been removed
 
+#ifndef SIMD_NO_ASSEMBLY
+
 #define SSE_REGISTER_UNARY_OPERATOR_IMPL(thisClass,operandClass,operatorClass)\
 __inline SIMD_ENTRY CSSERegister##thisClass & SIMD_CALL CSSERegister##thisClass::operator##operatorClass(const CSSERegister##operandClass &)\
 {\
@@ -28,7 +30,7 @@ __inline SIMD_ENTRY CSSERegister##thisClass & SIMD_CALL CSSERegister##thisClass:
 	__asm ret\
 }
 
-
+#endif
 
 #endif
 

@@ -140,7 +140,8 @@ cp ./RaptorCore/System/RaptorDisplayConfig.h Redist/Include/System
 cp ./RaptorCore/System/RaptorDisplayFilter.h Redist/Include/System
 cp ./RaptorCore/System/RaptorErrorManager.h Redist/Include/System
 cp ./RaptorCore/System/RaptorEventManager.h Redist/Include/System
-cp ./RaptorCore/System/RaptorExtensions.h Redist/Include/System
+cp ./RaptorCore/System/RaptorGLExtensions.h Redist/Include/System
+cp ./RaptorCore/System/RaptorVKExtensions.h Redist/Include/System
 cp ./RaptorCore/System/RaptorIO.h Redist/Include/System
 cp ./RaptorCore/System/RaptorMessages.h Redist/Include/System
 cp ./RaptorCore/System/RenderEntryPoint.h Redist/Include/System
@@ -216,8 +217,6 @@ cp ./SIMD/GenericAlignedVector.cxx Redist/Include/Subsys/SimdLib
 cp ./SIMD/GenericMatrix.cxx Redist/Include/Subsys/SimdLib
 cp ./SIMD/Vector4f.cxx Redist/Include/Subsys/SimdLib
 cp ./SIMD/Matrix4f.cxx Redist/Include/Subsys/SimdLib
-
-cp ./SIMD/simd.lib Redist/Lib/
 
 echo "		Copying help files ..."
 

@@ -1,11 +1,15 @@
 export
 
-CCCFLAGS =  -DSIMD_NO_ASSEMBLY -DLINUX
+CCCFLAGS =  -DSIMD_NO_ASSEMBLY -DLINUX -fPIC
 OUTPUT = $(RAPTOR_ROOT)/Build/Linux/Release/RaptorData
 SRCDIR = $(RAPTOR_ROOT)/RaptorData
 INCDIRS = -I$(SRCDIR)
+LDFLAGS = -Bdynamic -shared -lstdc++
 
-all:	$(OUTPUT)/RaptorData.lib
+SO = $(OUTPUT)/RaptorData.so.$(RAPTOR_VERSION)
+LIB = $(OUTPUT)/RaptorData.lib
+
+all:	$(LIB) $(SO)
 
 clean:
 	rm -rf $(OUTPUT)
@@ -16,9 +20,13 @@ SRC = \
 
 OBJ = $(SRC:$(SRCDIR)/%.cpp=$(OUTPUT)/%.o)
 	
-$(OUTPUT)/RaptorData.lib:	$(OBJ) 
-	ar -qcv $(OUTPUT)/RaptorData.lib $(OBJ)
-	cp $(OUTPUT)/RaptorData.lib $(REDIST)/Lib/
+$(SO):	$(OBJ) 
+	g++ -o $(SO) $(LDFLAGS) $(OBJ)
+	cp $(SO) $(REDIST)/Bin/
+
+$(LIB):	$(OBJ) 
+	ar -qcv $(LIB) $(OBJ)
+	cp $(LIB) $(REDIST)/Lib/
 
 $(OBJ):	$(SRC)
 	g++ $(CCCFLAGS) $(INCDIRS) -c $(<D)/$(*F).cpp  -o $(OUTPUT)/$(@F)
