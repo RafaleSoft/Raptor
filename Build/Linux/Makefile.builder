@@ -2,7 +2,8 @@ export
 
 OUTPUT = $(RAPTOR_ROOT)/Build/Linux/Release/Builder
 SRCDIR = $(RAPTOR_ROOT)/Builder.Net
-INCDIRS = -I$(SRCDIR) -I/usr/include
+INCDIRS = -I$(SRCDIR) -I$(REDIST)/include -I/usr/include
+CCCFLAGS = -DSIMD_NO_ASSEMBLY -DLINUX
 
 all:	redist $(OUTPUT)/Builder
 
