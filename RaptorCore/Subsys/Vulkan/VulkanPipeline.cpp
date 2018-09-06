@@ -128,7 +128,6 @@ bool CVulkanPipeline::initPipeline(const CVulkanShaderStage* shaderStages,
 																			NULL, //	VkSampleMask
 																			VK_FALSE,	//alphaToCoverageEnable
 																			VK_FALSE };	//alphaToOneEnable
-	//VkPipelineDepthStencilStateCreateInfo depth_stencil_state_create_info;
 
 	VkPipelineColorBlendAttachmentState color_blend_attachment_state = {	VK_FALSE, //VkBool32 blendEnable;
 																			VK_BLEND_FACTOR_ONE, //VkBlendFactor srcColorBlendFactor;

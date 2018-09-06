@@ -6,9 +6,6 @@
 		passer le physical device à CVulkanSurface => renvoyer la queue qui supporte WSI et presentation sur la surface.
 		=> Passer pExtensions au constructeur.
 
-- CTextureFactoryConfig:
-	appel a CTextureFactoryConfig::glInit() à partir de glInitRaptor => CVulkanDisplay non initialisé (besoin d'accéder aux properties)
-
 - CVulkanMemory:
 	- initialiser une bloc mémoire pour l'application (vertex et index buffers bindés sur la même allocation)
 	- Factoriser les allocators (Geometry, Texel, Uniform)

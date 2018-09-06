@@ -56,7 +56,7 @@ static const char *STL =
     #else\n\
         #define RAPTOR_TYPENAME\n\
     #endif\n\
-#else\n\
+#else // Linux environment \n\
 	#include <stdlib.h>\n\
 	#define RAPTOR_API\n\
     #define RAPTOR_FASTCALL\n\
@@ -110,6 +110,11 @@ RAPTOR_NAMESPACE_END\n\
 #define DEFAULT_LINKAGE \n\
 #define STATIC_LINKAGE        static \n\
 #define EXTERN_LINKAGE      extern \n\
+\n\n\
+// define types for compatibility with Android OpenGLES \n\
+#if defined(_ANDROID) \n\
+#define GLdouble double \n\
+#endif\n\n\
 \n";
 
 static const char *NAMESPACE =
