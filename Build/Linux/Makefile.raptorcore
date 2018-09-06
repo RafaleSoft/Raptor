@@ -1,52 +1,58 @@
-CCCFLAGS =  -DSIMD_NO_ASSEMBLY -DLINUX -DGL_MESA_shader_debug -g
+export
+
+CCCFLAGS =  -DSIMD_NO_ASSEMBLY -DLINUX -fPIC
+OUTPUT = $(RAPTOR_ROOT)/Build/Linux/Release/RaptorCore
+SRCDIR = $(RAPTOR_ROOT)/RaptorCore
+INCXERCES = -I../AddOns/xercesc_2_7 
+INCDIRS = -I$(SRCDIR) -I$(RAPTOR_ROOT)/Redist/Include
+LDFLAGS = -Bdynamic -shared -lstdc++
 
 # Remove MESA options before all GL extensions are included.
-CCCFLAGS += -DGL_MESA_shader_object
+CCCFLAGS += -DGL_MESA_shader_object -DGL_MESA_shader_debug
 CCCFLAGS += -DMAX_PATH=PATH_MAX
 
-OUTPUT = Release
-INCDIRS = -I. -I$(RAPTOR_ROOT)/Redist/Include
-INCXERCES = -I../AddOns/xercesc_2_7 
+SO = $(OUTPUT)/RaptorCore.so.$(RAPTOR_VERSION)
+LIB = $(OUTPUT)/RaptorCore.lib
+
 
 HIERARCHY_SRC = \
-	GLHierarchy/3DSet.cpp \
-	GLHierarchy/BumppedGeometry.cpp \
-	GLHierarchy/FragmentShader.cpp \
-	GLHierarchy/FragmentProgram.cpp \
-	GLHierarchy/Geometry.cpp \
-	GLHierarchy/GeometryEditor.cpp \
-	GLHierarchy/GeometryPrimitive.cpp \
-    GLHierarchy/GLFont.cpp \
-    GLHierarchy/GLLod.cpp \
-    GLHierarchy/Light.cpp \
-    GLHierarchy/LightObserver.cpp \
-    GLHierarchy/Material.cpp \
-    GLHierarchy/Object3D.cpp \
-    GLHierarchy/Object3DContour.cpp \
-    GLHierarchy/Object3DInstance.cpp \
-    GLHierarchy/Object3DInstanceSet.cpp \
-    GLHierarchy/Object3DShadow.cpp \
-	GLHierarchy/PerlinNoise.cpp \
-	GLHierarchy/Persistence.cpp \
-	GLHierarchy/Projector.cpp \
-    GLHierarchy/RenderingProperties.cpp \
-    GLHierarchy/ShadedGeometry.cpp \
-    GLHierarchy/Shader.cpp \
-    GLHierarchy/ShaderProgram.cpp \
-    GLHierarchy/SimpleObject.cpp \
-    GLHierarchy/TextureFactory.cpp \
-    GLHierarchy/TextureFactoryConfig.cpp \
-    GLHierarchy/TextureObject.cpp \
-	GLHierarchy/TextureSet.cpp \
-    GLHierarchy/TextureUnitSetup.cpp \
-    GLHierarchy/VertexShader.cpp \
-    GLHierarchy/VertexProgram.cpp \
-    GLHierarchy/Particle.cpp \
-    GLHierarchy/ObjectFactory.cpp \
-    GLHierarchy/ObjectProperties.cpp \
-    GLHierarchy/UnifiedProgram.cpp
-
-    #GLHierarchy/GLLayer.cpp
+	$(SRCDIR)/GLHierarchy/3DSet.cpp \
+	$(SRCDIR)/GLHierarchy/BumppedGeometry.cpp \
+	$(SRCDIR)/GLHierarchy/FragmentShader.cpp \
+	$(SRCDIR)/GLHierarchy/FragmentProgram.cpp \
+	$(SRCDIR)/GLHierarchy/Geometry.cpp \
+	$(SRCDIR)/GLHierarchy/GeometryEditor.cpp \
+	$(SRCDIR)/GLHierarchy/GeometryPrimitive.cpp \
+	$(SRCDIR)/GLHierarchy/GLFont.cpp \
+	$(SRCDIR)/GLHierarchy/GLLayer.cpp \
+	$(SRCDIR)/GLHierarchy/GLLod.cpp \
+	$(SRCDIR)/GLHierarchy/Light.cpp \
+	$(SRCDIR)/GLHierarchy/LightObserver.cpp \
+	$(SRCDIR)/GLHierarchy/Material.cpp \
+	$(SRCDIR)/GLHierarchy/Object3D.cpp \
+	$(SRCDIR)/GLHierarchy/Object3DContour.cpp \
+	$(SRCDIR)/GLHierarchy/Object3DInstance.cpp \
+	$(SRCDIR)/GLHierarchy/Object3DInstanceSet.cpp \
+	$(SRCDIR)/GLHierarchy/Object3DShadow.cpp \
+	$(SRCDIR)/GLHierarchy/PerlinNoise.cpp \
+	$(SRCDIR)/GLHierarchy/Persistence.cpp \
+	$(SRCDIR)/GLHierarchy/Projector.cpp \
+	$(SRCDIR)/GLHierarchy/RenderingProperties.cpp \
+	$(SRCDIR)/GLHierarchy/ShadedGeometry.cpp \
+	$(SRCDIR)/GLHierarchy/Shader.cpp \
+	$(SRCDIR)/GLHierarchy/ShaderProgram.cpp \
+	$(SRCDIR)/GLHierarchy/SimpleObject.cpp \
+	$(SRCDIR)/GLHierarchy/TextureFactory.cpp \
+	$(SRCDIR)/GLHierarchy/TextureFactoryConfig.cpp \
+	$(SRCDIR)/GLHierarchy/TextureObject.cpp \
+	$(SRCDIR)/GLHierarchy/TextureSet.cpp \
+	$(SRCDIR)/GLHierarchy/TextureUnitSetup.cpp \
+	$(SRCDIR)/GLHierarchy/VertexShader.cpp \
+	$(SRCDIR)/GLHierarchy/VertexProgram.cpp \
+	$(SRCDIR)/GLHierarchy/Particle.cpp \
+	$(SRCDIR)/GLHierarchy/ObjectFactory.cpp \
+	$(SRCDIR)/GLHierarchy/ObjectProperties.cpp \
+	$(SRCDIR)/GLHierarchy/UnifiedProgram.cpp
 
 ENGINE_SRC = \
     Engine/Animator.cpp \
@@ -144,7 +150,7 @@ GLXSPECIFIC_SRC = \
     GLXSpecific/GLXView.cpp \
 
 
-HIERARCHY_OBJS = $(HIERARCHY_SRC:GLHierarchy%.cpp=$(OUTPUT)%.o)
+HIERARCHY_OBJS = $(HIERARCHY_SRC:$(SRCDIR)/GLHierarchy%.cpp=$(OUTPUT)%.o)
 ENGINE_OBJS = $(ENGINE_SRC:Engine%.cpp=$(OUTPUT)%.o)
 SYSTEM_OBJS = $(SYSTEM_SRC:System%.cpp=$(OUTPUT)%.o)
 SUBSYS_OBJS = $(SUBSYS_SRC:Subsys%.cpp=$(OUTPUT)%.o)
@@ -154,22 +160,21 @@ CODE_GENERATION = Subsys/CodeGeneration.h
 
 ALL_OBJS = $(HIERARCHY_OBJS) $(ENGINE_OBJS) $(SYSTEM_OBJS) $(SUBSYS_OBJS) $(GLXSPECIFIC_OBJS) $(SUBSYS_SCRIPT_OBJS) $(OUTPUT)/Simplex.o
 
-all:    $(OUTPUT)/libraptor.a $(OUTPUT)/libraptor.so
+all:    $(LIB) $(SO)
 
 clean:
-	rm -f $(OUTPUT)/*.o $(OUTPUT)/*.a $(OUTPUT)/*.so
 	rm -rf $(OUTPUT)
 	rm -f $(SUBSYS_SCRIPT_SRC)
 	rm -f $(CODE_GENERATION)
 	mkdir -p $(OUTPUT)
 
-$(OUTPUT)/libraptor.a:  $(ALL_OBJS)
-	ar r $(OUTPUT)/libraptor.a $(ALL_OBJS)
-	cp $(OUTPUT)/libraptor.a $(RAPTOR_ROOT)/Redist/Lib
+$(LIB):  $(ALL_OBJS)
+	ar -qcv $(LIB) $(ALL_OBJS)
+	cp $(LIB) $(RAPTOR_ROOT)/Redist/Lib
 
-$(OUTPUT)/libraptor.so: $(ALL_OBJS)
-	ld -shared $(ALL_OBJS) -o $(OUTPUT)/libraptor.so
-	cp $(OUTPUT)/libraptor.so $(RAPTOR_ROOT)/Redist/Bin
+$(SO): $(ALL_OBJS)
+	g++ -o $(SO) $(LDFLAGS) $(ALL_OBJS)
+	cp $(SO) $(RAPTOR_ROOT)/Redist/Bin
 
 $(HIERARCHY_OBJS): $(HIERARCHY_SRC) $(CODE_GENERATION)
 	g++  $(CCCFLAGS) $(INCDIRS) -c $(<D)/$(*F).cpp  -o $(OUTPUT)/$(@F)

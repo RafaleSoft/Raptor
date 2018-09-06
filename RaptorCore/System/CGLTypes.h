@@ -4,7 +4,7 @@
 //!	Sub-systems headers
 
 #ifndef __SIMD_H__
-	#include "SimdLib/SIMD.H"
+	#include "SimdLib/simd.H"
 #endif
 #ifndef __RAPTOR_GLEXT_H__
 	#include "System/Glext.h"
