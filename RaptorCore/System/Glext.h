@@ -263,11 +263,17 @@ extern "C" {
 	#define GL_FOG_COORD_ARRAY_POINTER        GL_FOG_COORDINATE_ARRAY_POINTER
 	#define GL_FOG_COORD_ARRAY                GL_FOG_COORDINATE_ARRAY
 	#define GL_FOG_COORD_ARRAY_BUFFER_BINDING GL_FOG_COORDINATE_ARRAY_BUFFER_BINDING
+	#undef GL_SRC0_RGB
 	#define GL_SRC0_RGB                       GL_SOURCE0_RGB
+	#undef GL_SRC1_RGB
 	#define GL_SRC1_RGB                       GL_SOURCE1_RGB
+	#undef GL_SRC2_RGB
 	#define GL_SRC2_RGB                       GL_SOURCE2_RGB
+	#undef GL_SRC0_ALPHA
 	#define GL_SRC0_ALPHA                     GL_SOURCE0_ALPHA
+	#undef GL_SRC1_ALPHA
 	#define GL_SRC1_ALPHA                     GL_SOURCE1_ALPHA
+	#undef GL_SRC2_ALPHA
 	#define GL_SRC2_ALPHA                     GL_SOURCE2_ALPHA
 #endif
 

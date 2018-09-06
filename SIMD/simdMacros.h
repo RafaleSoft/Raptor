@@ -19,7 +19,9 @@
 // #define SIMD_NO_ASSEMBLY
 
 //	Include intrinsics if available
-#include <emmintrin.h>
+#ifndef SIMD_NO_ASSEMBLY
+	#include <emmintrin.h>
+#endif
 
 //
 //
