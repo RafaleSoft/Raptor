@@ -21,38 +21,25 @@
 #if !defined(AFX_VULKANSHADERSTAGE_H__EF5769B8_470D_467F_9FDE_553142C81698__INCLUDED_)
 	#include "GLHierarchy/VulkanShaderStage.h"
 #endif
-
+#if !defined(AFX_GEOMETRY_H__B42ABB87_80E8_11D3_97C2_DE5C28000000__INCLUDED_)
+	#include "GLHierarchy/Geometry.h"
+#endif
+#ifndef __vkext_macros_h_
+	#include "System/VKEXTMacros.h"
+#endif
 
 RAPTOR_NAMESPACE
 
-CVulkanPipeline::CVulkanPipeline(	VkDevice d,
-									VkRenderPass r,
-									PFN_vkGetDeviceProcAddr vkGetDeviceProcAddr)
 #if defined(VK_VERSION_1_0)
-	: device(d), renderPass(r),
-	pipeline(VK_NULL_HANDLE)
+	IMPLEMENT_RAPTOR_VK_pipeline(CVulkanPipeline)
+#endif
+
+CVulkanPipeline::CVulkanPipeline(	VkDevice d,
+									VkRenderPass r)
+#if defined(VK_VERSION_1_0)
+	: device(d), renderPass(r),	pipeline(VK_NULL_HANDLE)
 #endif
 {
-#if defined(VK_VERSION_1_0)
-	vkCreateGraphicsPipelines = (PFN_vkCreateGraphicsPipelines)(vkGetDeviceProcAddr(device, "vkCreateGraphicsPipelines"));
-	vkCreateComputePipelines = (PFN_vkCreateComputePipelines)(vkGetDeviceProcAddr(device, "vkCreateComputePipelines"));
-	vkDestroyPipeline = (PFN_vkDestroyPipeline)(vkGetDeviceProcAddr(device, "vkDestroyPipeline"));
-	vkCreateShaderModule = NULL;
-	vkDestroyShaderModule = NULL;
-	vkCreateDescriptorSetLayout = NULL;
-	vkDestroyDescriptorSetLayout = NULL;
-	vkGetImageSubresourceLayout = (PFN_vkGetImageSubresourceLayout)(vkGetDeviceProcAddr(device, "vkGetImageSubresourceLayout"));
-	vkCreatePipelineCache = (PFN_vkCreatePipelineCache)(vkGetDeviceProcAddr(device, "vkCreatePipelineCache"));
-	vkDestroyPipelineCache = (PFN_vkDestroyPipelineCache)(vkGetDeviceProcAddr(device, "vkDestroyPipelineCache"));
-	vkGetPipelineCacheData = (PFN_vkGetPipelineCacheData)(vkGetDeviceProcAddr(device, "vkGetPipelineCacheData"));
-	vkMergePipelineCaches = (PFN_vkMergePipelineCaches)(vkGetDeviceProcAddr(device, "vkMergePipelineCaches"));
-	vkCreateDescriptorPool = NULL;
-	vkDestroyDescriptorPool = NULL;
-	vkResetDescriptorPool = NULL;
-	vkAllocateDescriptorSets = NULL;
-	vkFreeDescriptorSets = NULL;
-	vkUpdateDescriptorSets = NULL;
-#endif
 }
 
 CVulkanPipeline::~CVulkanPipeline(void)
@@ -73,13 +60,17 @@ bool CVulkanPipeline::destroyPipeline()
 }
 
 
-bool CVulkanPipeline::initPipeline(const CVulkanShaderStage& shaderStages)
+bool CVulkanPipeline::initPipeline(const CVulkanShaderStage* shaderStages,
+								   const CGeometry* geometry)
 {
 	VkResult res = VK_NOT_READY;
 
+	if ((NULL == shaderStages) || (NULL == geometry))
+		return false;
+
 	//VkPipelineCache pipelineCache;
 
-	CVulkanShader* pShaderStage = shaderStages.getShader();
+	CVulkanShader* pShaderStage = shaderStages->getShader();
 	if (NULL == pShaderStage)
 		return false;
 
@@ -88,32 +79,16 @@ bool CVulkanPipeline::initPipeline(const CVulkanShaderStage& shaderStages)
 	for (size_t i=0;i<stageCount;i++)
 		shader_stages[i] = pShaderStage->getShaderStage(i);
 	
-	VkVertexInputBindingDescription vertex_binding_description_info = {	0,	// binding number
-																		4*sizeof(float),	//stride
-																		VK_VERTEX_INPUT_RATE_VERTEX };
-	VkVertexInputBindingDescription colors_binding_description_info = { 1,	// binding number
-																		4 * sizeof(float),	//stride
-																		VK_VERTEX_INPUT_RATE_VERTEX };
-	VkVertexInputBindingDescription bindings[2] = { vertex_binding_description_info, colors_binding_description_info };
-
-	VkVertexInputAttributeDescription vertex_input_attribute_info[2] = { {	0,
-																			vertex_binding_description_info.binding,
-																			VK_FORMAT_R32G32B32A32_SFLOAT,
-																			0 },
-																		  { 1,
-																			colors_binding_description_info.binding,
-																			VK_FORMAT_R32G32B32A32_SFLOAT,
-																			0 } }; // 4 * sizeof(float)
-
-
-	VkPipelineVertexInputStateCreateInfo vertex_input_state_create_info = {	VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
+	std::vector<VkVertexInputBindingDescription> bindings;
+	std::vector<VkVertexInputAttributeDescription> vertexInput;
+	geometry->getVertexInputState(bindings,vertexInput);
+	VkPipelineVertexInputStateCreateInfo vertex_input_state_create_info = { VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
 																			NULL,
-																			0,	//VkPipelineVertexInputStateCreateFlags
-																			2, //vertexBindingDescriptionCount
-																			&bindings[0], //VkVertexInputBindingDescription
-																			2,	//vertexAttributeDescriptionCount
-																			&vertex_input_attribute_info[0] }; // VkVertexInputAttributeDescription
-
+																			0,					// Reserved: VkPipelineVertexInputStateCreateFlags
+																			bindings.size(),	//vertexBindingDescriptionCount
+																			bindings.data(),	//VkVertexInputBindingDescription
+																			vertexInput.size(),	//vertexAttributeDescriptionCount
+																			vertexInput.data() };
 
 
 	VkPipelineInputAssemblyStateCreateInfo input_assembly_state_create_info = {	VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO,
@@ -182,10 +157,24 @@ bool CVulkanPipeline::initPipeline(const CVulkanShaderStage& shaderStages)
 																	0,	// VkPipelineDynamicStateCreateFlags
 																	2,
 																	&dynamic_states[0]};
+
+	VkPipelineDepthStencilStateCreateInfo depthStencil = {	VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO,
+															NULL,
+															0,
+															VK_TRUE,
+															VK_TRUE,
+															VK_COMPARE_OP_LESS,
+															VK_FALSE,
+															VK_FALSE,
+															{},
+															{},
+															0.0f,
+															1.0f};
+
 	uint32_t subpass = 0;
 	VkPipeline basePipelineHandle = VK_NULL_HANDLE;
 	int32_t basePipelineIndex = -1;
-	VkPipelineLayout layout = pShaderStage->getPipelineLayout();
+	VkPipelineLayout layout = shaderStages->getPipelineLayout();
 
 	VkGraphicsPipelineCreateInfo pipeline_create_info = {VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
 														NULL,	// const void *pNext 
@@ -198,7 +187,7 @@ bool CVulkanPipeline::initPipeline(const CVulkanShaderStage& shaderStages)
 														&viewport_state_create_info, // const VkPipelineViewportStateCreateInfo *
 														&rasterization_state_create_info, // const VkPipelineRasterizationStateCreateInfo *
 														&multisample_state_create_info, // const VkPipelineMultisampleStateCreateInfo *
-														NULL,	// const VkPipelineDepthStencilStateCreateInfo *
+														&depthStencil,	// const VkPipelineDepthStencilStateCreateInfo *
 														&color_blend_state_create_info, // const VkPipelineColorBlendStateCreateInfo *
 														&dynamic_state_create_info, // const VkPipelineDynamicStateCreateInfo *
 														layout,// VkPipelineLayout

@@ -16,6 +16,9 @@
 #if !defined(AFX_RAPTORVULKANSHADER_H__C188550F_1D1C_4531_B0A0_727CE9FF9450__INCLUDED_)
 	#include "Subsys/Vulkan/VulkanShader.h"
 #endif
+#if !defined(AFX_VULKANTEXTUREOBJECT_H__5E3E26C2_441F_4051_986F_2207AF0B3F6D__INCLUDED_)
+	#include "Subsys/Vulkan/VulkanTextureObject.h"
+#endif
 #if !defined(AFX_UNIFORMALLOCATOR_H__4DD62C99_E476_4FE5_AEE4_EEC71F7B0F38__INCLUDED_)
 	#include "Subsys/UniformAllocator.h"
 #endif
@@ -42,7 +45,7 @@ RAPTOR_NAMESPACE
 
 CVulkanShaderStage::CVulkanShaderStage(const std::string& name)
 	:CShaderProgram(stageId, name),
-	m_pShaderStages(NULL), uniforms(NULL)
+	m_pShaderStages(NULL), uniforms(NULL), uniforms_size(0)
 {
 }
 
@@ -102,41 +105,82 @@ void CVulkanShaderStage::setProgramParameters(const CProgramParameters &v)
 			uint64_t size = 0;
 			for (unsigned int idx = 0; idx < m_parameters.getNbParameters(); idx++)
 			{
-				const CProgramParameters::CParameterBase& param_value = m_parameters[idx];
-				size += param_value.size();
+				CProgramParameters::CParameterBase& param_value = m_parameters[idx];
+				CTextureUnitSetup::TEXTURE_IMAGE_UNIT sampler = CTextureUnitSetup::IMAGE_UNIT_0;
+				if (param_value.isA(sampler))
+				{
+					param_value.locationType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+				}
+				else
+				{
+					param_value.locationType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+					size += param_value.size();
+				}
 			}
 			uniforms = pUAllocator->allocateUniforms(size);
 		}
 
-		// TODO : handle the case where parameter sets have different size:
-		//	release parameters + reallocate.
+		// TODO : handle the case where parameter sets have different size: release parameters + reallocate.
+		// TODO : optimize : use a temp buffer and make a single CopyPointer call.
 		uint64_t totalsize = 0;
 		for (unsigned int idx = 0; idx < m_parameters.getNbParameters(); idx++)
 		{
 			const CProgramParameters::CParameterBase& param_value = m_parameters[idx];
-			uint64_t sz = param_value.size();
-			const void *addr = param_value.addr();
+			if (VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER == (VkDescriptorType)param_value.locationType)
+			{
+				uint64_t sz = param_value.size();
+				const void *addr = param_value.addr();
 
-			pUAllocator->glvkCopyPointer(uniforms+totalsize, (unsigned char*)addr, sz);
-			totalsize += sz;
+				pUAllocator->glvkCopyPointer(uniforms + totalsize, (unsigned char*)addr, sz);
+				totalsize += sz;
+			}
 		}
+		uniforms_size = totalsize;
 	}
 }
 
-void CVulkanShaderStage::vkRender(CVulkanCommandBuffer &commandBuffer, VkBuffer uniformBuffer)
+VkPipelineLayout CVulkanShaderStage::getPipelineLayout() const
+{
+	VkPipelineLayout layout = 0;
+	if (NULL != m_pShaderStages)
+	{
+		// TODO: assert locationType is initialised
+		layout = m_pShaderStages->createPipelineLayout(m_parameters);
+	}
+
+	return layout;
+}
+
+void CVulkanShaderStage::vkRender(CVulkanCommandBuffer &commandBuffer,
+								  CTextureUnitSetup *tmu_setup)
 {
 	if (NULL != m_pShaderStages)
 	{
-		uint64_t size = 0;
 		if (m_bApplyParameters)
 		{
 			for (unsigned int idx = 0; idx < m_parameters.getNbParameters(); idx++)
 			{
 				const CProgramParameters::CParameterBase& param_value = m_parameters[idx];
-				size += param_value.size();
+				if ((VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER == param_value.locationType) ||
+					(VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE == param_value.locationType))
+				{
+					CTextureUnitSetup::TEXTURE_IMAGE_UNIT unit;
+					unit = ((const CProgramParameters::CParameter<CTextureUnitSetup::TEXTURE_IMAGE_UNIT>&)param_value).p;
+					
+				}
 			}
 			m_bApplyParameters = false;
 		}
-		m_pShaderStages->vkRender(commandBuffer, uniformBuffer, (VkDeviceSize)uniforms, size);
+
+		//!	Does this cost a lot of CPU ?
+		const CVulkanDevice& rDevice = CVulkanDevice::getCurrentDevice();
+		VkBuffer uniformBuffer = rDevice.getMemory()->getLockedBuffer(IDeviceMemoryManager::IBufferObject::UNIFORM_BUFFER);
+		
+		//! TODO : Set this only once ? i.e only if m_bApplyParameters ?
+		VkDescriptorBufferInfo bufferInfo = { uniformBuffer, (VkDeviceSize)uniforms, uniforms_size };
+		CVulkanTextureObject* t = tmu_setup->getDiffuseMap()->getVulkanTextureObject();
+		VkDescriptorImageInfo imageInfo = t->getCombinedImageSampler();
+
+		m_pShaderStages->vkRender(commandBuffer, bufferInfo, imageInfo);
 	}
 }

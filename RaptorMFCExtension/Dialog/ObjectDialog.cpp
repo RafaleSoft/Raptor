@@ -124,7 +124,7 @@ RAPTOR_NAMESPACE
 		tree->InsertItem(str,item);
 	}
 
-	void Add(CTreeCtrl *tree,HTREEITEM parentItem,CTextureObject* obj)
+	void Add(CTreeCtrl *tree,HTREEITEM parentItem,ITextureObject* obj)
 	{
 		HTREEITEM item = tree->InsertItem(TEXT("<Image>"), parentItem);
 		CString str;

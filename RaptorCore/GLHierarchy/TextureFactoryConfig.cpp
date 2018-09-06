@@ -24,12 +24,14 @@
 #endif
 
 #if !defined(AFX_PERSISTENCE_H__5561BA28_831B_11D3_9142_EEB51CEBBDB0__INCLUDED_)
-	#include "Persistence.h"
+	//#include "Persistence.h"
 #endif
 #if !defined(AFX_TEXTUREFACTORY_H__1B470EC4_4B68_11D3_9142_9A502CBADC6B__INCLUDED_)
 	#include "TextureFactory.h"
 #endif
-
+#if !defined(AFX_RAPTORVULKANDEVICE_H__2FDEDD40_444E_4CC2_96AA_CBF9E79C3ABE__INCLUDED_)
+	#include "Subsys/Vulkan/VulkanDevice.h"
+#endif
 
 
 RAPTOR_NAMESPACE
@@ -449,7 +451,7 @@ bool CTextureFactoryConfig::glInit()
 		delete [] m_pCompressors;
 
 #if defined(GL_ARB_texture_compression)
-	if (Raptor::glIsExtensionSupported("GL_ARB_texture_compression"))
+	if (Raptor::glIsExtensionSupported(GL_ARB_TEXTURE_COMPRESSION_EXTENSION_NAME))
 	{
 		m_nbCompressors = 0;
 		glHint(GL_TEXTURE_COMPRESSION_HINT_ARB,GL_NICEST);
@@ -465,6 +467,8 @@ bool CTextureFactoryConfig::glInit()
 
 			for (int i=0;i<nbCompressors;i++)
 			{
+				//! 0 is NULL compressor
+				//!	1 is OpenGL default compressor
 				for (int j=2;j<MAX_COMPRESSORS;j++)
 				{
 					if (knownCompressors[j]->isCompressionSupported(pCompressors[i]))
@@ -495,14 +499,20 @@ bool CTextureFactoryConfig::glInit()
 #endif
 
 #ifdef GL_EXT_texture_filter_anisotropic
-	if (Raptor::glIsExtensionSupported("GL_EXT_texture_filter_anisotropic"))
+	if (Raptor::glIsExtensionSupported(GL_EXT_TEXTURE_FILTER_ANISOTROPIC_EXTENSION_NAME))
 		glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT,&m_fMaxAnisotropy);
 	else
 		m_fMaxAnisotropy = 1.0f;
 #endif
 
+#ifdef VK_VERSION_1_0
+	const CVulkanDevice& d = CVulkanDevice::getCurrentDevice();
+	if (VK_TRUE == d.getFeatures().samplerAnisotropy)
+		m_fMaxAnisotropy = MIN(m_fMaxAnisotropy, d.getProperties().limits.maxSamplerAnisotropy);
+#endif
+
 #ifdef GL_ARB_texture_non_power_of_two
-	m_bSupportResize = Raptor::glIsExtensionSupported("GL_ARB_texture_non_power_of_two");
+	m_bSupportResize = Raptor::glIsExtensionSupported(GL_ARB_TEXTURE_NON_POWER_OF_TWO_EXTENSION_NAME);
 #endif
 
 	setGenerateMipmap(true);

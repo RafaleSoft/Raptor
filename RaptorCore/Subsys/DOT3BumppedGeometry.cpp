@@ -80,8 +80,8 @@ void CDOT3BumppedGeometry::setRenderingModel(const CRenderingModel& model)
 	CBumppedGeometry::setRenderingModel(model);
 
 	//	Rendering requires separate specular & seconday color
-	if (!Raptor::glIsExtensionSupported("GL_EXT_secondary_color") ||
-		!Raptor::glIsExtensionSupported("GL_ARB_texture_env_dot3"))
+	if (!Raptor::glIsExtensionSupported(GL_EXT_SECONDARY_COLOR_EXTENSION_NAME) ||
+		!Raptor::glIsExtensionSupported(GL_ARB_TEXTURE_ENV_DOT3_EXTENSION_NAME))
 	{
 		Raptor::GetErrorManager()->generateRaptorError(	CBumppedGeometry::CBumppedGeometryClassID::GetClassId(),
 														CRaptorErrorManager::RAPTOR_WARNING,

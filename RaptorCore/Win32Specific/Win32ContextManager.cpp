@@ -15,6 +15,9 @@
 #if !defined(AFX_RAPTORVKEXTENSIONS_H__B17D6B7F_5AFC_4E34_9D49_8DC6CE9192D6__INCLUDED_)
 	#include "System/RaptorVKExtensions.h"
 #endif
+#if !defined(AFX_RAPTORVULKANSURFACE_H__C377C267_32A8_4963_BC2A_4694F4299A68__INCLUDED_)
+	#include "Subsys/Vulkan/VulkanSurface.h"
+#endif
 #ifndef __GLOBAL_H__
 	#include "System/Global.h"
 #endif
@@ -480,7 +483,7 @@ bool CWin32ContextManager::glSwapVSync(unsigned int nbVSync) const
 		context_t &context = pContext[m_currentGLContext];
         
 #if defined(WGL_EXT_swap_control)
-	    if ((context.pExtensions->glIsExtensionSupported("WGL_EXT_swap_control")) && 
+		if ((context.pExtensions->glIsExtensionSupported(WGL_EXT_SWAP_CONTROL_EXTENSION_NAME)) &&
 			(context.pExtensions->wglSwapIntervalEXT != NULL))
 	    {
 		    swapControl = true;
@@ -499,7 +502,7 @@ bool CWin32ContextManager::glSwapVSync(unsigned int nbVSync) const
 				    context.pExtensions->wglSwapIntervalEXT(0);
 #if defined(WGL_EXT_swap_control_tear)
 			    else if ((nbVSync == 0) &&
-						(context.pExtensions->glIsExtensionSupported("WGL_EXT_swap_control_tear")))
+						 (context.pExtensions->glIsExtensionSupported(WGL_EXT_SWAP_CONTROL_TEAR_EXTENSION_NAME)))
 					context.pExtensions->wglSwapIntervalEXT(-1);
 #endif
 				else
@@ -1293,8 +1296,8 @@ bool CWin32ContextManager::vkInit(void)
 		if (CContextManager::vkInit())
 		{
 			CRaptorVKExtensions instance_extensions("");
-			bool surface_rendering_supported = instance_extensions.vkIsExtensionSupported("VK_KHR_surface") &&
-												instance_extensions.vkIsExtensionSupported("VK_KHR_win32_surface");
+			bool surface_rendering_supported =	instance_extensions.vkIsExtensionSupported(VK_KHR_SURFACE_EXTENSION_NAME) &&
+												instance_extensions.vkIsExtensionSupported(VK_KHR_WIN32_SURFACE_EXTENSION_NAME);
 			if (!surface_rendering_supported)
 			{
 				RAPTOR_ERROR(	Global::CVulkanClassID::GetClassId(),
@@ -1322,6 +1325,40 @@ bool CWin32ContextManager::vkRelease(void)
 	return false;
 }
 
+uint32_t CWin32ContextManager::getPresentationSuppotQueueFamily(RENDERING_CONTEXT_ID ctx)
+{
+	uint32_t presentation_queue = MAXUINT;
+
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
+	VK_CONTEXT &vk_ctx = m_pVkContext[ctx];
+
+	uint32_t pQueueFamilyPropertyCount = 0;
+	CRaptorVKExtensions::vkGetPhysicalDeviceQueueFamilyProperties(vk_ctx.physicalDevice, &pQueueFamilyPropertyCount, NULL);
+
+	if (pQueueFamilyPropertyCount > 0)
+	{
+		//!	Check presentation support
+		for (uint32_t j = 0; j < pQueueFamilyPropertyCount; j++)
+		{
+			VkBool32 support = vk_ctx.pExtensions->vkGetPhysicalDeviceWin32PresentationSupportKHR(vk_ctx.physicalDevice, j);
+			if (support)
+				presentation_queue = j;
+		}
+	}
+
+	if (MAXUINT == presentation_queue)
+	{
+		RAPTOR_ERROR(Global::CVulkanClassID::GetClassId(),
+					 "No queue family supports WSI rendering");
+	}
+
+#else
+	RAPTOR_ERROR(Global::CVulkanClassID::GetClassId(),"No support for Vulkan WSI");
+#endif
+
+	return presentation_queue;
+}
+
 bool CWin32ContextManager::vkCreateSurface(const RAPTOR_HANDLE& handle,RENDERING_CONTEXT_ID ctx)
 {
 	if (WINDOW_CLASS == handle.hClass)
@@ -1332,20 +1369,55 @@ bool CWin32ContextManager::vkCreateSurface(const RAPTOR_HANDLE& handle,RENDERING
 													NULL,0, //flags,
 													hInstance,hWnd };
 		VK_CONTEXT &context = m_pVkContext[ctx];
-
-		//!	Create the Surface
-		VkResult res = VK_NOT_READY;
-		res = context.vkCreateWin32SurfaceKHR(CRaptorVKExtensions::getInstance(), &createInfo, NULL, &context.surface);
-		if (VK_SUCCESS != res)
+		if (NULL != context.pExtensions)
 		{
-			RAPTOR_ERROR(	Global::CVulkanClassID::GetClassId(),
-							"Failed to create Vulkan rendering surface");
-			return false;
+			//!	Create the Surface
+			VkResult res = VK_NOT_READY;
+			VkSurfaceKHR surface = VK_NULL_HANDLE;
+			if (context.pExtensions->vkIsExtensionSupported(VK_KHR_WIN32_SURFACE_EXTENSION_NAME))
+				res = context.pExtensions->vkCreateWin32SurfaceKHR(CRaptorVKExtensions::getInstance(), &createInfo, NULL, &surface);
+			if (VK_SUCCESS != res)
+			{
+				RAPTOR_ERROR(Global::CVulkanClassID::GetClassId(),
+							 "Failed to create Vulkan rendering surface");
+				return false;
+			}
+			else
+				context.pSurface = new CVulkanSurface(surface);
+			return true;
 		}
-		return true;
+		else
+			return false;
 	}
 	else
 		return false;
 }
 
+void CWin32ContextManager::vkSwapVSync(unsigned int framerate)
+{
+#ifdef VK_KHR_swapchain
+	if (CGL_MAXREFRESHRATE == framerate)
+		presentMode = VK_PRESENT_MODE_IMMEDIATE_KHR;	// no-vblank + no-queue (immediate)
+	else if (0 == framerate)
+		presentMode = VK_PRESENT_MODE_FIFO_RELAXED_KHR; // single v-blank + internal queue
+	else // (swapinterval == 1)
+	{
+		DEVMODE mode;
+		memset(&mode, sizeof(DEVMODE), 0);
+		mode.dmSize = sizeof(DEVMODE);
+		mode.dmDriverExtra = 0;
+		mode.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT | DM_DISPLAYFLAGS | DM_DISPLAYFREQUENCY;
+
+		if (0 != EnumDisplaySettings(NULL, ENUM_CURRENT_SETTINGS, &mode))
+		{
+			if (mode.dmDisplayFrequency < framerate)
+				presentMode = VK_PRESENT_MODE_MAILBOX_KHR;		// v-blank + no-queue (latest image rendered)
+			else
+				presentMode = VK_PRESENT_MODE_FIFO_KHR;			// v-blank + internal queue
+		}
+		else	// default mode.
+			presentMode = VK_PRESENT_MODE_FIFO_KHR;			// v-blank + internal queue
+	}
+#endif
+}
 #endif

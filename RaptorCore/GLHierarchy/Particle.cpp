@@ -230,8 +230,8 @@ void CParticle::usePointSprite(bool use,float size)
 {
 	m_fPointSize = size;
 #if defined(GL_NV_point_sprite)
-	if ((Raptor::glIsExtensionSupported("GL_NV_point_sprite")) ||
-        (Raptor::glIsExtensionSupported("GL_ARB_point_sprite")))
+	if ((Raptor::glIsExtensionSupported(GL_NV_POINT_SPRITE_EXTENSION_NAME)) ||
+		(Raptor::glIsExtensionSupported(GL_ARB_POINT_SPRITE_EXTENSION_NAME)))
 	{
 		m_bPointSprite = use;
 	}

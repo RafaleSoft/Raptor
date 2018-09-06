@@ -76,7 +76,7 @@ void CGeometryProgram::glInitShaders()
 
 	if (!m_bGeometryProgramReady)
 	{
-		if (Raptor::glIsExtensionSupported("GL_ARB_geometry_shader4"))
+		if (Raptor::glIsExtensionSupported(GL_ARB_GEOMETRY_SHADER4_EXTENSION_NAME))
 		{
 #if defined(GL_ARB_geometry_shader4)
 			const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();

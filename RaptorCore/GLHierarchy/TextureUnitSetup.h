@@ -23,7 +23,7 @@
 
 RAPTOR_NAMESPACE_BEGIN
 
-class CTextureObject;
+class ITextureObject;
 class CRegisterCombiner;
 
 
@@ -152,17 +152,17 @@ public:
 
     //! Texture objects configuration.
     //! For compatibility with old OpenGL specs, 4 TMU images are associated to 4 TMU units ( & 4 TMU coords )
-    void setDiffuseMap(CTextureObject* to);
-    CTextureObject* const getDiffuseMap(void) const;
+    void setDiffuseMap(ITextureObject* to);
+    ITextureObject* const getDiffuseMap(void) const;
 
-    void setNormalMap(CTextureObject* to);
-    CTextureObject* const getNormalMap(void) const;
+    void setNormalMap(ITextureObject* to);
+    ITextureObject* const getNormalMap(void) const;
 
-    void setLightMap(CTextureObject* to);
-    CTextureObject* const getLightMap(void) const;
+    void setLightMap(ITextureObject* to);
+    ITextureObject* const getLightMap(void) const;
 
-    void setEnvironmentMap(CTextureObject* to);
-    CTextureObject* getEnvironmentMap(void) const;
+    void setEnvironmentMap(ITextureObject* to);
+    ITextureObject* getEnvironmentMap(void) const;
 
 	//!	Generate a renderable which sets the desired TMU configuration
 	//!	If use_register_combiner is true, then nVidia register combiners are used
@@ -187,7 +187,7 @@ public:
 
 
 private:
-	void setMap(CTextureObject *to,TEXTURE_IMAGE_UNIT unit);
+	void setMap(ITextureObject *to,TEXTURE_IMAGE_UNIT unit);
 
     bool importMap(TEXTURE_IMAGE_UNIT unit,CRaptorIO& io);
 
@@ -201,7 +201,7 @@ private:
     bool				*useUnit;
     GL_TEXTURE_SHADER   *tmuShader;
     GL_TEXTURE_COMBINER *tmuCombiner;
-    CTextureObject	    **imageUnit;
+    ITextureObject	    **imageUnit;
 };
 
 RAPTOR_NAMESPACE_END

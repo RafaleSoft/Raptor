@@ -120,12 +120,11 @@ public:
 	TEXTURE_FILTER getFilter(void) const { return m_filter; };
 
 
-
 protected:
 	ITextureObject::ITextureObject(const ITextureObject& rsh);
 
 	//! The texture texel type is stored only to avoid server calls to query internal format
-	TEXEL_TYPE      m_type;
+	TEXEL_TYPE	m_type;
 		
 	//! Texture dimensions
 	uint32_t	m_width;
@@ -143,7 +142,7 @@ private:
 	ITextureObject::ITextureObject();
 
 	//!	Object name ( default is filename )
-	std::string		m_name;
+	std::string	m_name;
 };
 
 RAPTOR_NAMESPACE_END

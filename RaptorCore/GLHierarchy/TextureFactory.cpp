@@ -54,8 +54,7 @@ CTextureFactory *CTextureFactory::m_pDefault = NULL;
 CTextureFactory::CTextureFactory(const std::string& name)
 	:CPersistence(factoryId,name),mConfig()
 {
-    if (mConfig.getNumCompressors() < 0)
-        mConfig.glInit();
+	mConfig.glInit();
 }
 
 CTextureFactory::~CTextureFactory(void)
@@ -312,8 +311,7 @@ bool CTextureFactory::vkLoadTexture(CVulkanTextureObject* const T,
 		T->setSize(image.getWidth(), image.getHeight(), image.getLayers());
 	T->setName(image.getName());
 
-	//	1)	Texture internal format
-	VkFormat GL_INNER_FORMAT = T->getTexelFormat();
+	//	1)	Texture source format
 	GLuint GL_FORMAT = image.getBufferFormat();
 	GLuint GL_SRC_FORMAT = image.getBufferType();
 	void *pixels = image.getPixels();
@@ -323,23 +321,46 @@ bool CTextureFactory::vkLoadTexture(CVulkanTextureObject* const T,
 
 	//	2)	Format of data to load
 	//
+	VkComponentMapping swizzle = {	VK_COMPONENT_SWIZZLE_R,
+									VK_COMPONENT_SWIZZLE_G,
+									VK_COMPONENT_SWIZZLE_B,
+									VK_COMPONENT_SWIZZLE_A };
+	
 	CTextureFactoryConfig::TEXEL_FORMAT texelFormat = mConfig.getTexelFormat();
 	if (GL_FORMAT == GL_RGBA)
 	{
 #if defined(GL_EXT_bgra)
 		if (texelFormat == CTextureFactoryConfig::BYTEORDER_BGRA)
+		{
 			GL_FORMAT = GL_BGRA_EXT;
+			swizzle = { VK_COMPONENT_SWIZZLE_B,
+						VK_COMPONENT_SWIZZLE_G,
+						VK_COMPONENT_SWIZZLE_R,
+						VK_COMPONENT_SWIZZLE_A };
+		}
 #endif
 #if defined(GL_EXT_abgr)
 		else if (texelFormat == CTextureFactoryConfig::BYTEORDER_ABGR)
+		{
 			GL_FORMAT = GL_ABGR_EXT;
+			swizzle = { VK_COMPONENT_SWIZZLE_A,
+						VK_COMPONENT_SWIZZLE_B,
+						VK_COMPONENT_SWIZZLE_G,
+						VK_COMPONENT_SWIZZLE_R };
+		}
 #endif
 	}
 	else if (GL_FORMAT == GL_RGB)
 	{
 #if defined(GL_EXT_bgra)
 		if (texelFormat == CTextureFactoryConfig::BYTEORDER_BGRA)
+		{
 			GL_FORMAT = GL_BGR_EXT;
+			swizzle = { VK_COMPONENT_SWIZZLE_B,
+						VK_COMPONENT_SWIZZLE_G,
+						VK_COMPONENT_SWIZZLE_R,
+						VK_COMPONENT_SWIZZLE_ZERO };
+		}
 #endif
 	}
 
@@ -349,12 +370,11 @@ bool CTextureFactory::vkLoadTexture(CVulkanTextureObject* const T,
 	bool result = false;
 
 	//	Final processing :
-	//	- mipmapping generation
-	//	- image loading
-	T->vkLoadTexture(GL_INNER_FORMAT,
-					GL_FORMAT,
-					GL_SRC_FORMAT,
-					(uint8_t*)pixels);
+	//	- memory allocation
+	//	- image creation
+	//	- image layout transitions
+	//	- sampler creation
+	T->vkLoadTexture(swizzle, GL_SRC_FORMAT, (uint8_t*)pixels);
 	result = true;
 
 	CATCH_GL_ERROR
@@ -699,7 +719,7 @@ bool CTextureFactory::glExportTexture(CTextureObject *T,const std::string &fname
     return res;
 }
 
-CTextureObject* const CTextureFactory::glCreateSprite(CTextureObject::TEXEL_TYPE type)
+CTextureObject* const CTextureFactory::glCreateSprite(ITextureObject::TEXEL_TYPE type)
 {
     //! type checking will be donne at loading
 	CTextureObject* T = new CTextureObject(type);
@@ -726,7 +746,7 @@ CTextureObject* const CTextureFactory::glCreateCubemap(  ITextureObject::TEXEL_T
 														 ITextureObject::TEXTURE_FILTER filter)
 {
 #if defined(GL_ARB_texture_cube_map)
-	if (!Raptor::glIsExtensionSupported("GL_ARB_texture_cube_map"))
+	if (!Raptor::glIsExtensionSupported(GL_ARB_TEXTURE_CUBE_MAP_EXTENSION_NAME))
     {
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 		vector<CRaptorMessages::MessageArgument> args;
@@ -750,17 +770,14 @@ CTextureObject* const CTextureFactory::glCreateCubemap(  ITextureObject::TEXEL_T
 	glBindTexture(GL_TEXTURE_CUBE_MAP_ARB, T->texname);
 
 	T->glvkUpdateFilter(filter);
-	T->glvkUpdateClamping(CTextureObject::CGL_REPEAT);
+	T->glvkUpdateClamping(ITextureObject::CGL_REPEAT);
 
 	glTexParameterf(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_PRIORITY, mConfig.getCurrentPriority());
 
 	// Is this usefull on a cube map ?
 #ifdef GL_EXT_texture_filter_anisotropic
 	if ((mConfig.getCurrentAnisotropy() > 1.0f) && (filter == ITextureObject::CGL_ANISOTROPIC))
-    {
 		glTexParameterf(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_MAX_ANISOTROPY_EXT, mConfig.getCurrentAnisotropy());
-        T->aniso_level = mConfig.getCurrentAnisotropy();
-    }
 #endif
 
 	CATCH_GL_ERROR
@@ -796,12 +813,9 @@ ITextureObject* const CTextureFactory::vkCreateTexture(ITextureObject::TEXEL_TYP
 		T->glvkUpdateClamping(ITextureObject::CGL_REPEAT);
 		//T->setFunction(env_mode);
 
-#ifdef GL_EXT_texture_filter_anisotropic
 		if ((mConfig.getCurrentAnisotropy() > 1.0f) && (filter == ITextureObject::CGL_ANISOTROPIC))
 		{
-			//T->aniso_level = mConfig.getCurrentAnisotropy();
 		}
-#endif
 	}
 
 	return T;
@@ -812,7 +826,7 @@ CTextureObject* const CTextureFactory::glCreateTexture( ITextureObject::TEXEL_TY
 														ITextureObject::TEXTURE_FILTER filter)
 {
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
-    if ((type == CTextureObject::CGL_COLOR_FLOAT32) || (type == CTextureObject::CGL_COLOR_FLOAT32_ALPHA))
+    if ((type == ITextureObject::CGL_COLOR_FLOAT32) || (type == ITextureObject::CGL_COLOR_FLOAT32_ALPHA))
     {
 		vector<CRaptorMessages::MessageArgument> args;
 		CRaptorMessages::MessageArgument arg;
@@ -824,7 +838,7 @@ CTextureObject* const CTextureFactory::glCreateTexture( ITextureObject::TEXEL_TY
     }
 #endif
 	if ((type == ITextureObject::CGL_DEPTH24_STENCIL8) &&
-		(!Raptor::glIsExtensionSupported("GL_EXT_packed_depth_stencil")))
+		(!Raptor::glIsExtensionSupported(GL_EXT_PACKED_DEPTH_STENCIL_EXTENSION_NAME)))
     {
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 		vector<CRaptorMessages::MessageArgument> args;
@@ -848,16 +862,13 @@ CTextureObject* const CTextureFactory::glCreateTexture( ITextureObject::TEXEL_TY
 	glBindTexture(GL_TEXTURE_2D, T->texname);
 
 	T->glvkUpdateFilter(filter);
-	T->glvkUpdateClamping(CTextureObject::CGL_REPEAT);
+	T->glvkUpdateClamping(ITextureObject::CGL_REPEAT);
 	
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_PRIORITY, mConfig.getCurrentPriority());
 
 #ifdef GL_EXT_texture_filter_anisotropic
 	if ((mConfig.getCurrentAnisotropy() > 1.0f) && (filter == ITextureObject::CGL_ANISOTROPIC))
-    {
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, mConfig.getCurrentAnisotropy());
-        T->aniso_level = mConfig.getCurrentAnisotropy();
-    }
 #endif
 
 	CATCH_GL_ERROR
@@ -870,7 +881,7 @@ CTextureObject* const CTextureFactory::glCreateRectangleTexture( ITextureObject:
 														         ITextureObject::TEXTURE_FILTER filter)
 {
 #if defined(GL_ARB_texture_rectangle)
-    if (!Raptor::glIsExtensionSupported("GL_ARB_texture_rectangle"))
+	if (!Raptor::glIsExtensionSupported(GL_ARB_TEXTURE_RECTANGLE_EXTENSION_NAME))
     {
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 		vector<CRaptorMessages::MessageArgument> args;
@@ -898,16 +909,13 @@ CTextureObject* const CTextureFactory::glCreateRectangleTexture( ITextureObject:
     else
 		T->glvkUpdateFilter(filter);
 
-	T->glvkUpdateClamping(CTextureObject::CGL_EDGECLAMP);
+	T->glvkUpdateClamping(ITextureObject::CGL_EDGECLAMP);
 
 	glTexParameterf(GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_PRIORITY, mConfig.getCurrentPriority());
 
 #ifdef GL_EXT_texture_filter_anisotropic
 	if ((mConfig.getCurrentAnisotropy() > 1.0f) && (filter == ITextureObject::CGL_ANISOTROPIC))
-    {
 		glTexParameterf(GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_MAX_ANISOTROPY_EXT, mConfig.getCurrentAnisotropy());
-        T->aniso_level = mConfig.getCurrentAnisotropy();
-    }
 #endif
 
 	CATCH_GL_ERROR
@@ -954,7 +962,7 @@ CTextureObject* const CTextureFactory::glCreateDynamicTexture(ITextureObject::TE
 	//	Dynamic textures are mostly used for render-to-texture buffers,
 	//	frequent usage of these textures is clamped mode.
 	//	Until there exist an interface to customize it, it is hard coded here.
-	T->glvkUpdateClamping(CTextureObject::CGL_EDGECLAMP);
+	T->glvkUpdateClamping(ITextureObject::CGL_EDGECLAMP);
 
 	glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_PRIORITY,mConfig.getCurrentPriority());
 
@@ -971,7 +979,7 @@ CTextureObject* const CTextureFactory::glCreateVolumeTexture(ITextureObject::TEX
 														     ITextureObject::TEXTURE_FILTER filter)
 {
 #if defined(GL_EXT_texture3D)
-    if (!Raptor::glIsExtensionSupported("GL_EXT_texture3D"))
+	if (!Raptor::glIsExtensionSupported(GL_EXT_TEXTURE3D_EXTENSION_NAME))
     {
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 		vector<CRaptorMessages::MessageArgument> args;

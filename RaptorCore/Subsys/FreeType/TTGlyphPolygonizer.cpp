@@ -58,17 +58,17 @@ static void CALLBACK gltt_polygonizer_error( GLenum error )
 
 /////////////////////////////////////////////////////////////////////////////
 
-bool TTGlyphPolygonizer::polygonize(TTGlyphPolygonizerHandler* handler,
+bool TTGlyphPolygonizer::polygonize(TTGlyphPolygonizerHandler* poly_handler,
 									const FTGlyphVectorizer& vectorizer)
 {
-	if (0 == handler)
+	if (0 == poly_handler)
 		return false;
 
 	GLUtriangulatorObj* tobj = gluNewTess();
 	if( tobj == 0 )
 		return false;
 
-	::handler = handler;
+	::handler = poly_handler;
 
 	gluTessCallback( tobj, GLU_BEGIN, (glu_tess_callback)gltt_polygonizer_begin );
 	gluTessCallback( tobj, GLU_VERTEX, (glu_tess_callback)gltt_polygonizer_vertex );

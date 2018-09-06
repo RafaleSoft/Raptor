@@ -230,7 +230,7 @@ bool CMBFilter::glInitFilter(void)
 											CTextureObject::CGL_OPAQUE,
 											ITextureObject::CGL_BILINEAR);
 		filterFactory.glResizeTexture(T,state.width,state.height);
-		T->glvkUpdateClamping(CTextureObject::CGL_EDGECLAMP);
+		T->glvkUpdateClamping(ITextureObject::CGL_EDGECLAMP);
 		accumulator->m_pCurrentColorAccum = T;
 		m_pRenderTextures->addTexture(T);
 
@@ -239,7 +239,7 @@ bool CMBFilter::glInitFilter(void)
 											CTextureObject::CGL_OPAQUE,
 											ITextureObject::CGL_BILINEAR);
 		filterFactory.glResizeTexture(T,state.width,state.height);	
-		T->glvkUpdateClamping(CTextureObject::CGL_EDGECLAMP);
+		T->glvkUpdateClamping(ITextureObject::CGL_EDGECLAMP);
 		accumulator->m_pPreviousColorAccum = T;
 		m_pRenderTextures2->addTexture(T);
 	}

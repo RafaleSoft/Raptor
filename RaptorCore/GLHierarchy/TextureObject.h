@@ -145,17 +145,11 @@ private:
     //	texture level ( mipmapping and anisotropy)
 	unsigned int	level;
 
-    //! Anisotropy level
-    float           aniso_level;
-
     //!	Render target used to provide texImage
 	ITextureGenerator  *m_pTexelGenerator;
 
     //! generation source dimensions
     int source[4];
-
-	//!	Handle to vulkan image	
-	VkImage			vk_texname;
 };
 
 RAPTOR_NAMESPACE_END

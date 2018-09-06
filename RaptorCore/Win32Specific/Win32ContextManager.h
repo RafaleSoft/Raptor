@@ -94,6 +94,10 @@ public:
 	virtual bool vkRelease(void);
 	//! @see base class
 	virtual bool vkCreateSurface(const RAPTOR_HANDLE& handle,RENDERING_CONTEXT_ID ctx);
+	//!	@see base class
+	virtual uint32_t getPresentationSuppotQueueFamily(RENDERING_CONTEXT_ID ctx);
+	//!	@see base class
+	virtual void vkSwapVSync(unsigned int framerate);
 #endif
 
 

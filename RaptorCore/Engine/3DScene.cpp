@@ -410,12 +410,11 @@ void C3DScene::glRender(void)
 
 void C3DScene::vkRender(CVulkanCommandBuffer& commandBuffer,
 						VkBuffer vertexBinding,
-						VkBuffer indexBinding,
-						VkBuffer uniformBinding)
+						VkBuffer indexBinding)
 {
 	vector<C3DSceneObject*> viewableObjects = m_pAttributes->glGetObjects();
 	for (unsigned int i = 0; i < viewableObjects.size(); i++)
-		viewableObjects[i]->vkRender(commandBuffer, vertexBinding, indexBinding, uniformBinding);
+		viewableObjects[i]->vkRender(commandBuffer, vertexBinding, indexBinding);
 }
 
 

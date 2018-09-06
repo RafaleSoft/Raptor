@@ -728,7 +728,7 @@ void CObjectStore::BuildObjects(void)
     l_model.addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
 	m_pBumpKnot->setRenderingModel(l_model);
 
-	if (!Raptor::glIsExtensionSupported("GL_ARB_vertex_program"))
+	if (!Raptor::glIsExtensionSupported(GL_ARB_VERTEX_PROGRAM_EXTENSION_NAME))
     {
         CRaptorMessages * const msg = Raptor::GetMessages();
         msg->displayMessage("Hardware unable to render bump mapping");

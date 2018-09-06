@@ -405,6 +405,7 @@ Subsys\Redist.bat
     <ClCompile Include="..\..\RaptorCore\Subsys\Vulkan\VulkanMemory.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\Vulkan\VulkanPipeline.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\Vulkan\VulkanShader.cpp" />
+    <ClCompile Include="..\..\RaptorCore\Subsys\Vulkan\VulkanSurface.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\Vulkan\VulkanTextureObject.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\XMLRaptorIO.cpp" />
     <ClCompile Include="..\..\RaptorCore\System\CGLTypes.cpp" />
@@ -594,6 +595,7 @@ copy $(SolutionDir)\$(ProjectName)\Subsys\CodeGeneration.h "%RAPTOR_ROOT%\Redist
     <ClInclude Include="..\..\RaptorCore\Subsys\Vulkan\VulkanMemory.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\Vulkan\VulkanPipeline.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\Vulkan\VulkanShader.h" />
+    <ClInclude Include="..\..\RaptorCore\Subsys\Vulkan\VulkanSurface.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\Vulkan\VulkanTextureObject.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\XMLRaptorIO.h" />
     <ClInclude Include="..\..\RaptorCore\System\CGLTypes.h" />

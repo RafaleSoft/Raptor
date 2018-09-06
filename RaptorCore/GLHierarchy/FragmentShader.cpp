@@ -80,10 +80,9 @@ void CFragmentShader::glInitShaders()
 
 	if (!m_bFragmentReady)
 	{
-		if (Raptor::glIsExtensionSupported("GL_ARB_fragment_program"))
+		if (Raptor::glIsExtensionSupported(GL_ARB_FRAGMENT_PROGRAM_EXTENSION_NAME))
 		{
 #if defined(GL_ARB_fragment_program)
-			const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 			m_bFragmentReady = pExtensions->glIsProgramARB != NULL;
 #else
 			m_bFragmentReady = false;

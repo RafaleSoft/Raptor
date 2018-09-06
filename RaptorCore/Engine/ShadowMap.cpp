@@ -116,14 +116,14 @@ bool CShadowMap::glInitEnvironment(unsigned int width,unsigned int height)
     lib->glInitFactory();
 
 #if defined(GL_EXT_framebuffer_object)
-	if (Raptor::glIsExtensionSupported("GL_EXT_framebuffer_object"))
+	if (Raptor::glIsExtensionSupported(GL_EXT_FRAMEBUFFER_OBJECT_EXTENSION_NAME))
 		glInitRenderBuffer(width,height);
 	else
 #endif
 #if defined(WGL_ARB_pbuffer) && defined(WGL_ARB_render_texture)
-	if (Raptor::glIsExtensionSupported("WGL_ARB_pbuffer") && 
-		Raptor::glIsExtensionSupported("WGL_ARB_render_texture"))
-		glInitPixelBuffer(width,height);
+		if (Raptor::glIsExtensionSupported(WGL_ARB_PBUFFER_EXTENSION_NAME) &&
+			Raptor::glIsExtensionSupported(WGL_ARB_RENDER_TEXTURE_EXTENSION_NAME))
+			glInitPixelBuffer(width,height);
 	else
 #endif
     {
@@ -176,7 +176,7 @@ void CShadowMap::glInitRenderBuffer(unsigned int width,unsigned int height)
 	CTextureFactory &factory = CTextureFactory::getDefaultFactory();
 
 #ifdef GL_ARB_shadow
-    if (Raptor::glIsExtensionSupported("GL_ARB_shadow"))
+	if (Raptor::glIsExtensionSupported(GL_ARB_SHADOW_EXTENSION_NAME))
     {
 		m_pShadowTexture = factory.glCreateTexture( ITextureObject::CGL_DEPTH24,
 													CTextureObject::CGL_OPAQUE,
@@ -213,9 +213,9 @@ void CShadowMap::glInitRenderBuffer(unsigned int width,unsigned int height)
 															ITextureObject::CGL_BILINEAR);
 
 	factory.glResizeTexture(m_pShadowTexture,width,height);
-	m_pShadowTexture->glvkUpdateClamping(CTextureObject::CGL_EDGECLAMP);
+	m_pShadowTexture->glvkUpdateClamping(ITextureObject::CGL_EDGECLAMP);
 	factory.glResizeTexture(ShadowTexture,width,height);
-	ShadowTexture->glvkUpdateClamping(CTextureObject::CGL_EDGECLAMP);
+	ShadowTexture->glvkUpdateClamping(ITextureObject::CGL_EDGECLAMP);
 	
 	pImageSet->addTexture(m_pShadowTexture);
 	pImageSet->addTexture(ShadowTexture);
@@ -243,7 +243,7 @@ void CShadowMap::glInitPixelBuffer(unsigned int width,unsigned int height)
 	CTextureFactory &factory = CTextureFactory::getDefaultFactory();
 
 #ifdef GL_ARB_shadow
-    if (Raptor::glIsExtensionSupported("GL_ARB_shadow"))
+	if (Raptor::glIsExtensionSupported(GL_ARB_SHADOW_EXTENSION_NAME))
     {
 		m_pShadowTexture = factory.glCreateDynamicTexture( ITextureObject::CGL_DEPTH24,
                                                            CTextureObject::CGL_MULTIPLY,

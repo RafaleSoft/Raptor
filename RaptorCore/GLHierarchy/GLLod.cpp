@@ -241,7 +241,7 @@ bool CGLLod::importLevel(CRaptorIO& io)
     string name;
     io >> name;
 
-    LOD lod;
+	LOD lod = { 0.0f, NULL };
 
 	string data = io.getValueName();
     while (!data.empty())

@@ -99,7 +99,7 @@ public:
     CGeometryPrimitive*	createPrimitive(CGeometryPrimitive::PRIMITIVE_KIND kind);
 
 	//!	Return the list of primitives currently defining the geometry
-	const vector<CGeometryPrimitive*>	getPrimitives(void) const { return m_pPrimitives; };
+	const std::vector<CGeometryPrimitive*>	getPrimitives(void) const { return m_pPrimitives; };
 
 	//!	Removes a specific GeometryPrimitive.
 	//!	@param priimitive : a pointer to a primitive to delete. If NULL,
@@ -164,7 +164,7 @@ public:
     void getBiNormal(unsigned  int numvtx,GL_COORD_VERTEX &v) const;
 	
     //!
-    //!  Geometry operations are realised in a GeometryEditor
+    //!  Geometry operations are performed in a GeometryEditor
     //!
     const CGeometryEditor& getEditor(void);
 
@@ -174,8 +174,11 @@ public:
 	DECLARE_OBJECT3D_MANIPULATORS
 	virtual void vkRender(CVulkanCommandBuffer& commandBuffer,
 						  VkBuffer vertexBinding,
-						  VkBuffer indexBinding,
-						  VkBuffer uniformBinding);
+						  VkBuffer indexBinding);
+
+	bool getVertexInputState(std::vector<VkVertexInputBindingDescription>& bindings,
+							 std::vector<VkVertexInputAttributeDescription>& vertexInput) const;
+
     //!
     //! Creates the list of contours for this objet.
     virtual vector<CObject3DContour*> createContours(void);

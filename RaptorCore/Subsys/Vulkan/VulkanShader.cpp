@@ -12,6 +12,9 @@
 #if !defined(AFX_RAPTORVULKANCOMMANDBUFFER_H__0398BABD_747B_4DFE_94AA_B026BDBD03B1__INCLUDED_)
 	#include "Subsys/Vulkan/VulkanCommandBuffer.h"
 #endif
+#ifndef __vkext_macros_h_
+	#include "System/VKEXTMacros.h"
+#endif
 #if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
 	#include "System/Raptor.h"
 #endif
@@ -26,11 +29,13 @@
 RAPTOR_NAMESPACE
 
 #if defined(VK_VERSION_1_0)
-	const uint32_t poolSizeCount = 1;
+	const uint32_t poolSizeCount = 2;
 	VkDescriptorPool CVulkanShader::descriptor_pool = VK_NULL_HANDLE;
+
+	IMPLEMENT_RAPTOR_VK_pipeline(CVulkanShader)
 #endif
 
-CVulkanShader::CVulkanShader(VkDevice d, PFN_vkGetDeviceProcAddr vkGetDeviceProcAddr)
+CVulkanShader::CVulkanShader(VkDevice d)
 #if defined(VK_VERSION_1_0)
 	: device(d),
 	  descriptor_set_layout(VK_NULL_HANDLE),
@@ -38,38 +43,17 @@ CVulkanShader::CVulkanShader(VkDevice d, PFN_vkGetDeviceProcAddr vkGetDeviceProc
 	  layout(VK_NULL_HANDLE)
 #endif
 {
-	vkCreateShaderModule = (PFN_vkCreateShaderModule)(vkGetDeviceProcAddr(device, "vkCreateShaderModule"));
-	vkDestroyShaderModule = (PFN_vkDestroyShaderModule)(vkGetDeviceProcAddr(device, "vkDestroyShaderModule"));
-	vkCreateDescriptorPool = (PFN_vkCreateDescriptorPool)(vkGetDeviceProcAddr(device, "vkCreateDescriptorPool"));
-	vkDestroyDescriptorPool = (PFN_vkDestroyDescriptorPool)(vkGetDeviceProcAddr(device, "vkDestroyDescriptorPool"));
-	vkResetDescriptorPool = (PFN_vkResetDescriptorPool)(vkGetDeviceProcAddr(device, "vkResetDescriptorPool"));
-	vkCreateDescriptorSetLayout = (PFN_vkCreateDescriptorSetLayout)(vkGetDeviceProcAddr(device, "vkCreateDescriptorSetLayout"));
-	vkDestroyDescriptorSetLayout = (PFN_vkDestroyDescriptorSetLayout)(vkGetDeviceProcAddr(device, "vkDestroyDescriptorSetLayout"));
-	vkAllocateDescriptorSets = (PFN_vkAllocateDescriptorSets)(vkGetDeviceProcAddr(device, "vkAllocateDescriptorSets"));
-	vkFreeDescriptorSets = (PFN_vkFreeDescriptorSets)(vkGetDeviceProcAddr(device, "vkFreeDescriptorSets"));
-	vkUpdateDescriptorSets = (PFN_vkUpdateDescriptorSets)(vkGetDeviceProcAddr(device, "vkUpdateDescriptorSets"));
-	vkCreatePipelineLayout = (PFN_vkCreatePipelineLayout)(vkGetDeviceProcAddr(device, "vkCreatePipelineLayout"));
-	vkDestroyPipelineLayout = (PFN_vkDestroyPipelineLayout)(vkGetDeviceProcAddr(device, "vkDestroyPipelineLayout"));
-	vkCreateGraphicsPipelines = NULL;
-	vkCreateComputePipelines = NULL;
-	vkDestroyPipeline = NULL;
-	vkGetImageSubresourceLayout = NULL;
-	vkCreatePipelineCache = NULL;
-	vkDestroyPipelineCache = NULL;
-	vkGetPipelineCacheData = NULL;
-	vkMergePipelineCaches = NULL;
-
-
 	//! TOTO : move this to ShaderProgram::glInitShaders()
 	if (VK_NULL_HANDLE == descriptor_pool)
 	{
 		VkDescriptorPoolSize pPoolSizes[poolSizeCount] = {
-															{ VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1 }
+															{ VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1 },
+															{ VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1}
 														};
 
 		VkDescriptorPoolCreateInfo pool_create_info = { VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,
 														NULL,
-														0, //VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT: VkDescriptorPoolCreateFlagBits
+														VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT, // VkDescriptorPoolCreateFlagBits
 														1, // maxSets
 														poolSizeCount, // poolSizeCount
 														pPoolSizes };
@@ -107,11 +91,6 @@ CVulkanShader::~CVulkanShader(void)
 	if (VK_NULL_HANDLE != descriptor_set_layout)
 		vkDestroyDescriptorSetLayout(device, descriptor_set_layout, CVulkanMemory::GetAllocator());
 
-	//! If one pool is created per shader stages, we can call this,
-	//!	Otherwise it shall be done at a global level (@see rmk on glInitShaders above)
-	//if (VK_NULL_HANDLE != descriptor_set)
-	//	vkResetDescriptorPool(device, descriptor_pool, 0);
-
 	if (VK_NULL_HANDLE != descriptor_pool)
 		vkDestroyDescriptorPool(device, descriptor_pool, CVulkanMemory::GetAllocator());
 
@@ -144,82 +123,105 @@ VkPipelineShaderStageCreateInfo CVulkanShader::getShaderStage(size_t stage) cons
 	return shaderStage;
 }
 
-VkPipelineLayout CVulkanShader::getPipelineLayout()
+VkPipelineLayout CVulkanShader::createPipelineLayout(const CProgramParameters &v)
 {
+	//!
+	//! Check internal layouts and descriptors and release them.
+	//!
 	if (VK_NULL_HANDLE != layout)
-		return layout;
-
-	if (VK_NULL_HANDLE == descriptor_set_layout)
-	{
-		VkDescriptorSetLayoutBinding uboLayoutBinding = {	0, // binding
-															VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, // descriptorType
-															1, // descriptorCount
-															VK_SHADER_STAGE_VERTEX_BIT, // stageFlags
-															NULL };
-
-		VkDescriptorSetLayoutCreateInfo descriptor_set_layout_create_info = {	VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
-																				NULL,
-																				0,	// flags
-																				1,	// bingind count
-																				&uboLayoutBinding };
-		VkResult res = VK_NOT_READY;
-		res = vkCreateDescriptorSetLayout(	device,
-											&descriptor_set_layout_create_info,
-											CVulkanMemory::GetAllocator(),
-											&descriptor_set_layout);
-		CATCH_VK_ERROR(res);
-		if (VK_SUCCESS != res)
-			return VK_NULL_HANDLE;
-	}
+		vkDestroyPipelineLayout(device, layout, CVulkanMemory::GetAllocator());
+	layout = VK_NULL_HANDLE;
 
 	if (VK_NULL_HANDLE != descriptor_set_layout)
-	{
-		const uint32_t setLayoutCount = 1;
-		VkDescriptorSetLayout pSetLayouts[setLayoutCount];
-		pSetLayouts[0] = descriptor_set_layout;
+		vkDestroyDescriptorSetLayout(device, descriptor_set_layout, CVulkanMemory::GetAllocator());
+	descriptor_set_layout = VK_NULL_HANDLE;
 
-		VkPipelineLayoutCreateInfo layout_create_info = {	VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
-															NULL,	// next
-															0,		// flags
-															setLayoutCount, // uint32_t setLayoutCount
-															pSetLayouts, //VkDescriptorSetLayout   *pSetLayouts
-															0,		//uint32_t pushConstantRangeCount
-															NULL };	//VkPushConstantRange     *pPushConstantRanges
-		VkResult res = VK_NOT_READY;
-		res = vkCreatePipelineLayout(	device,
-										&layout_create_info,
-										CVulkanMemory::GetAllocator(),
-										&layout);
-		CATCH_VK_ERROR(res);
-		if (VK_SUCCESS != res)
-			return VK_NULL_HANDLE;
+	if (VK_NULL_HANDLE != descriptor_set)
+		vkFreeDescriptorSets(device, descriptor_pool, 1, &descriptor_set);
+	descriptor_set = VK_NULL_HANDLE;
+		
+	//!
+	//! Create descriptor sets layouts mapping given shader parameters
+	//!
+	std::vector<VkDescriptorSetLayoutBinding> bindings;
+	for (size_t i = 0; i < v.getNbParameters(); i++)
+	{
+		const CProgramParameters::CParameterBase& param_value = v[i];
+
+		VkDescriptorType type = (VkDescriptorType)param_value.locationType;
+		VkDescriptorSetLayoutBinding layoutBinding = {	param_value.locationIndex, // binding. TODO: binding shall be unsigned
+														type,	// descriptorType
+														1, // descriptorCount
+														VK_SHADER_STAGE_VERTEX_BIT, // stageFlags
+														NULL };
+		if ((VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER == type) ||
+			(VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE == type))
+			layoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+
+		bindings.push_back(layoutBinding);
 	}
+
+	VkDescriptorSetLayoutCreateInfo descriptor_set_layout_create_info = {	VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
+																			NULL,
+																			0,	// flags
+																			bindings.size(),	// bingind count
+																			bindings.data() };
+	VkResult res = VK_NOT_READY;
+	res = vkCreateDescriptorSetLayout(	device,
+										&descriptor_set_layout_create_info,
+										CVulkanMemory::GetAllocator(),
+										&descriptor_set_layout);
+	CATCH_VK_ERROR(res);
+	if ((VK_SUCCESS != res) || (VK_NULL_HANDLE == descriptor_set_layout))
+		return VK_NULL_HANDLE;
+
+
+	//!
+	//! Allocate descriptor sets with new created layout
+	//!
+	VkDescriptorSetAllocateInfo descriptor_allocate_info = {VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,
+															NULL,
+															descriptor_pool,
+															1, //descriptorSetCount;
+															&descriptor_set_layout };
+
+	res = vkAllocateDescriptorSets(device, &descriptor_allocate_info, &descriptor_set);
+	CATCH_VK_ERROR(res);
+	if ((VK_SUCCESS != res) || (VK_NULL_HANDLE == descriptor_set))
+		return VK_NULL_HANDLE;
+
+
+	//!
+	//! Finally create pipeline layout
+	//!
+	const uint32_t setLayoutCount = 1;
+	VkDescriptorSetLayout pSetLayouts[setLayoutCount];
+	pSetLayouts[0] = descriptor_set_layout;
+
+	VkPipelineLayoutCreateInfo layout_create_info = {	VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
+														NULL,	// next
+														0,		// flags
+														setLayoutCount, // uint32_t setLayoutCount
+														pSetLayouts, //VkDescriptorSetLayout   *pSetLayouts
+														0,		//uint32_t pushConstantRangeCount
+														NULL };	//VkPushConstantRange     *pPushConstantRanges
+	res = vkCreatePipelineLayout(	device,
+									&layout_create_info,
+									CVulkanMemory::GetAllocator(),
+									&layout);
+	CATCH_VK_ERROR(res);
+	if ((VK_SUCCESS != res) || (VK_NULL_HANDLE == layout))
+		return VK_NULL_HANDLE;
 
 	return layout;
 }
 
 void CVulkanShader::vkRender(CVulkanCommandBuffer& commandBuffer,
-							 VkBuffer uniformBuffer,
-							 VkDeviceSize offset,
-							 VkDeviceSize size)
+							 const VkDescriptorBufferInfo& bufferInfo,
+							 const VkDescriptorImageInfo& imageInfo)
 {
-	if (VK_NULL_HANDLE == descriptor_set)
+	if ((VK_NULL_HANDLE != bufferInfo.buffer) && (bufferInfo.range > 0))
 	{
-		VkDescriptorSetAllocateInfo descriptor_allocate_info = {VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO,
-																NULL,
-																descriptor_pool,
-																1, //descriptorSetCount;
-																&descriptor_set_layout };
-
-		VkResult res = vkAllocateDescriptorSets(device, &descriptor_allocate_info, &descriptor_set);
-		CATCH_VK_ERROR(res);
-		if ((VK_SUCCESS != res) || (VK_NULL_HANDLE == descriptor_set))
-			return;
-	}
-	
-	if ((VK_NULL_HANDLE != uniformBuffer) && (size > 0))
-	{
-		VkDescriptorBufferInfo bufferInfo = {	uniformBuffer, offset, size };
 		VkWriteDescriptorSet descriptorWrite = {VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
 												NULL,
 												descriptor_set,
@@ -230,7 +232,18 @@ void CVulkanShader::vkRender(CVulkanCommandBuffer& commandBuffer,
 												NULL,
 												&bufferInfo,
 												NULL };
-		vkUpdateDescriptorSets(device, 1, &descriptorWrite, 0, NULL);
+		VkWriteDescriptorSet descriptorWrite2 = {	VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+													NULL,
+													descriptor_set,
+													1,	// dstBinding
+													0,	// dstArrayElement
+													1,	// descriptorCount;
+													VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,	// descriptorType
+													&imageInfo,
+													NULL,
+													NULL };
+		const VkWriteDescriptorSet writes[2] = { descriptorWrite, descriptorWrite2};
+		vkUpdateDescriptorSets(device, 2, writes, 0, NULL);
 	}
 
 	commandBuffer.vkCmdBindDescriptorSets(	commandBuffer.commandBuffer,
@@ -239,7 +252,7 @@ void CVulkanShader::vkRender(CVulkanCommandBuffer& commandBuffer,
 											0,
 											1,
 											&descriptor_set,
-											0,
+											0,	//	No dynamic offsets (no DYNAMIC_BUFFER)
 											NULL);
 }
 

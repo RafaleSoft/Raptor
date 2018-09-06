@@ -79,10 +79,10 @@ CBumppedGeometry::CBumppedGeometry(	const std::string& name,
 void CBumppedGeometry::init(void)
 {
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
-	if ((!Raptor::glIsExtensionSupported("GL_ARB_fragment_program")) ||
-		(!Raptor::glIsExtensionSupported("GL_ARB_vertex_program")) ||
-		(!Raptor::glIsExtensionSupported("GL_ARB_fragment_shader")) ||
-		(!Raptor::glIsExtensionSupported("GL_ARB_vertex_shader")))
+	if ((!Raptor::glIsExtensionSupported(GL_ARB_FRAGMENT_PROGRAM_EXTENSION_NAME)) ||
+		(!Raptor::glIsExtensionSupported(GL_ARB_VERTEX_PROGRAM_EXTENSION_NAME)) ||
+		(!Raptor::glIsExtensionSupported(GL_ARB_FRAGMENT_SHADER_EXTENSION_NAME)) ||
+		(!Raptor::glIsExtensionSupported(GL_ARB_VERTEX_SHADER_EXTENSION_NAME)))
 	{
 		Raptor::GetErrorManager()->generateRaptorError(	CBumppedGeometry::CBumppedGeometryClassID::GetClassId(),
 														CRaptorErrorManager::RAPTOR_WARNING,
@@ -179,8 +179,8 @@ void CBumppedGeometry::setRenderingModel(const CRenderingModel& model)
 	setup->setNormalMap(normalMap);
 	setup->useRegisterCombiners(false);
 	
-	if (!Raptor::glIsExtensionSupported("GL_EXT_secondary_color") ||
-		!Raptor::glIsExtensionSupported("GL_ARB_fragment_program"))
+	if (!Raptor::glIsExtensionSupported(GL_EXT_SECONDARY_COLOR_EXTENSION_NAME) ||
+		!Raptor::glIsExtensionSupported(GL_ARB_FRAGMENT_PROGRAM_EXTENSION_NAME))
 	{
 		Raptor::GetErrorManager()->generateRaptorError(	CBumppedGeometry::CBumppedGeometryClassID::GetClassId(),
 														CRaptorErrorManager::RAPTOR_WARNING,

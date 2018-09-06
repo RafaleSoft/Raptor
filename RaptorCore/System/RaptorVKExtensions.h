@@ -36,22 +36,25 @@ public:
 	//!	so need to declare it as STATIC_LINKAGE since we have one Vulkan instance per application
 	//!	Multiple instance per application shall come later.
 	DECLARE_VK_instance(STATIC_LINKAGE)
-#endif
 
-	//!	Initialise global Vulkan entry points.
-	static bool vkInitExtensions(void);
+	DECLARE_VK_win32(DEFAULT_LINKAGE)
+	DECLARE_VK_xlib(DEFAULT_LINKAGE)
+	DECLARE_VK_KHR_surface(DEFAULT_LINKAGE)
+#endif
 
 	//!	Initialise instance entry points and extensions
 #if defined(VK_VERSION_1_0)
 	static bool vkInitInstanceExtensions(void);
+
+	bool vkInitDeviceExtensions(VkPhysicalDevice device);
 
 	static VkInstance getInstance(void) { return instance; };
 #endif
 
 	
 	//! Search for a specific extension string in all available extensions.
-	//! Extensions must have been initialized with a valid OpenGL context
-	//! from which extensions are extracted.
+	//! Extensions must have been initialized with a valid Vulkan Instance
+	//! or Vulkan device from which extensions are extracted.
 	//! @return true is ext is found in extensions list, false otherwise.
 	bool vkIsExtensionSupported(const std::string &ext) const;
 	
@@ -61,19 +64,24 @@ public:
 	{ return extensions; }
 
 
+
 private:
 	//!	Forbidden constructor
 	CRaptorVKExtensions();
 
-	//!	String buffer containing instance extensions
-	static std::string instance_extensions;
+	//!	Initialise global Vulkan entry points.
+	static bool vkInitExtensions(void);
 
+	
 #if defined(VK_VERSION_1_0)
 	//!	Vulkan application Instance
 	static VkInstance instance;
 #endif
 
-	//! String buffers containing Vulkan capabilities
+	//!	String buffer containing instance extensions
+	static std::string instance_extensions;
+	
+	//! String buffers containing capabilities of a Vulkan physical device.
 	std::string	extensions;
 };
 

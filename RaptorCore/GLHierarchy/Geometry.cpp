@@ -194,11 +194,11 @@ void CGeometry::setRenderingModel(const CRenderingModel& model)
 
 	//	But remove unsupported extensions
 #ifdef GL_EXT_vertex_weighting
-	if (!Raptor::glIsExtensionSupported("GL_EXT_vertex_weighting"))
+	if (!Raptor::glIsExtensionSupported(GL_EXT_VERTEX_WEIGHTING_EXTENSION_NAME))
 		m_renderingModel.removeModel(CRenderingModel::CGL_WEIGHT);
 #endif
 
-	if (!Raptor::glIsExtensionSupported("GL_EXT_fog_coord"))
+	if (!Raptor::glIsExtensionSupported(GL_EXT_FOG_COORD_EXTENSION_NAME))
 		m_renderingModel.removeModel(CRenderingModel::CGL_FOG);
 }
 
@@ -916,20 +916,48 @@ void CGeometry::transform(GL_MATRIX &m)
 //////////////////////////////////////////////////////////////////////
 void CGeometry::vkRender(CVulkanCommandBuffer& commandBuffer,
 						 VkBuffer vertexBinding,
-						 VkBuffer indexBinding,
-						 VkBuffer uniformBinding)
+						 VkBuffer indexBinding)
 {
-	VkBuffer bindings[2] = { vertexBinding, vertexBinding };
-	VkDeviceSize offsets[2] = { (VkDeviceSize)&vertex[0], (VkDeviceSize)&colors[0] };
+	VkBuffer bindings[3] = { vertexBinding, vertexBinding, vertexBinding };
+	VkDeviceSize offsets[3] = { (VkDeviceSize)&vertex[0], (VkDeviceSize)&colors[0], (VkDeviceSize)&texcoords[0] };
 	commandBuffer.vkCmdBindVertexBuffers(	commandBuffer.commandBuffer, 
-											0, 2, &bindings[0], &offsets[0]);
+											0, 3, &bindings[0], &offsets[0]);
 
-	commandBuffer.vkCmdBindIndexBuffer(	commandBuffer.commandBuffer, 
+	commandBuffer.vkCmdBindIndexBuffer(	commandBuffer.commandBuffer,
 										indexBinding,
 										(VkDeviceSize)&polys[0],
 										VK_INDEX_TYPE_UINT16);
 
 	commandBuffer.vkCmdDrawIndexed(commandBuffer.commandBuffer, 3 * m_nbPolys, 1, 0, 0, 0);
+}
+
+bool CGeometry::getVertexInputState( std::vector<VkVertexInputBindingDescription>& bindings,
+									 std::vector<VkVertexInputAttributeDescription>& vertexInput) const
+{
+	bindings.clear();
+	vertexInput.clear();
+
+	//!	Vertex
+	bindings.push_back({ 0, 4 * sizeof(float), VK_VERTEX_INPUT_RATE_VERTEX });
+	vertexInput.push_back({ 0, 0, VK_FORMAT_R32G32B32A32_SFLOAT, 0 });
+
+	//!	Colors
+	if (m_renderingModel.hasModel(CRenderingModel::CGL_COLORS))
+	{
+		bindings.push_back({ 1, 4 * sizeof(float), VK_VERTEX_INPUT_RATE_VERTEX });
+		vertexInput.push_back({ 1, 1, VK_FORMAT_R32G32B32A32_SFLOAT, 0 });
+	}
+
+	//!	TexCoords
+	CRenderingProperties *props = CRenderingProperties::GetCurrentProperties();
+	if ((m_renderingModel.hasModel(CRenderingModel::CGL_TEXTURE)))
+//		(props->getCurrentTexturing() == CRenderingProperties::ENABLE))
+	{
+		bindings.push_back({ 2, 2 * sizeof(float), VK_VERTEX_INPUT_RATE_VERTEX });
+		vertexInput.push_back({ 2, 2, VK_FORMAT_R32G32_SFLOAT, 0 });
+	}
+
+	return true;
 }
 
 void CGeometry::glRender()

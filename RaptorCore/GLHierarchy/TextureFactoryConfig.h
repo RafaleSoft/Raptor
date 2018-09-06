@@ -12,7 +12,6 @@
 
 RAPTOR_NAMESPACE_BEGIN
 
-class CTextureObject;
 
 class RAPTOR_API CTextureFactoryConfig  
 {
@@ -58,7 +57,6 @@ public:
 	virtual ~CTextureFactoryConfig();
 
 	//!	Initialises implementation dependant datas.
-	//! Raptor will call it once for a correct init
 	bool glInit();
 
 	//! Defines the texel format for pixel buffers ( textures and frame buffers )

@@ -517,7 +517,7 @@ bool CGLBuilder::writeHeader(const string& filename)
 		{
 			header << "#ifndef " << extension.extensionName << "\n";
 			header << "	#define	" << extension.extensionName << "		1\n";
-			header << "#endif\n"; 
+			header << "#endif\n";
 		}
 	}
 	header << "\n";
@@ -527,9 +527,16 @@ bool CGLBuilder::writeHeader(const string& filename)
 		const EXTENSION& extension = extensions[i];
 		if ((extension.active) && (extension.kind != CPU) && (extension.kind != COREGL) && (extension.kind != COREVK))
 		{
-			header << "#define ";
+			header << "#ifndef " << extension.extensionName << "\n";
+			header << "	#define ";
 			header << extension.extensionName;
 			header << "				1\n";
+			std::string extension_name = "";
+			std::string::const_iterator i = extension.extensionName.begin();
+			while (i != extension.extensionName.end())
+				extension_name += (char)::toupper(*i++);
+			header << "	#define	" << extension_name << "_EXTENSION_NAME \"" << extension.extensionName << "\"\n";
+			header << "#endif\n";
 		}
 	}
 	
