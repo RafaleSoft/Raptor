@@ -294,10 +294,10 @@ bool CRaptorFilteredDisplay::glCreateRenderDisplay(void)
 			f.glResizeTexture(T,rda.width,rda.height);
 			m_pImageSet->addTexture(T);
 
-			m_pDisplay->glBindDisplay(*m_pImageSet);
+			m_pDisplay->glvkBindDisplay(*m_pImageSet);
 
 			RAPTOR_HANDLE noDevice;
-            if (!m_pDisplay->glBindDisplay(noDevice))
+			if (!m_pDisplay->glvkBindDisplay(noDevice))
 				return false;
 			m_pDisplay->glUnBindDisplay();
 		}
@@ -356,7 +356,7 @@ bool CRaptorFilteredDisplay::glCreateRenderDisplay(void)
     return true;
 }
 
-bool CRaptorFilteredDisplay::glBindDisplay(const RAPTOR_HANDLE& device)
+bool CRaptorFilteredDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
 {
 	if (device.hClass == CShader::CShaderClassID::GetClassId().ID())
     {
@@ -410,7 +410,7 @@ bool CRaptorFilteredDisplay::glBindDisplay(const RAPTOR_HANDLE& device)
 
     //  prepare createStruct for screen :
     // just keep colors ( but remove float : unsupported ) and hardware
-	if (CRaptorScreenDisplay::glBindDisplay(device))
+	if (CRaptorScreenDisplay::glvkBindDisplay(device))
 	{
 		if (!glCreateRenderDisplay())
             return false;
@@ -419,9 +419,9 @@ bool CRaptorFilteredDisplay::glBindDisplay(const RAPTOR_HANDLE& device)
 		RAPTOR_HANDLE noDevice;
 
 		if (CRaptorDisplayConfig::ANTIALIAS_NONE != filter_cs.antialias)
-			return m_pFSAADisplay->glBindDisplay(noDevice);
+			return m_pFSAADisplay->glvkBindDisplay(noDevice);
 		else
-			return m_pDisplay->glBindDisplay(noDevice);
+			return m_pDisplay->glvkBindDisplay(noDevice);
 	}
 	else
 		return false;
@@ -488,12 +488,12 @@ void CRaptorFilteredDisplay::glResize(unsigned int sx,unsigned int sy,unsigned i
 
 		if (m_pFSAADisplay != NULL)
 		{
-			m_pFSAADisplay->glBindDisplay(noDevice);
+			m_pFSAADisplay->glvkBindDisplay(noDevice);
 			vp = m_pFSAADisplay->getViewPoint();
 		}
 		else
 		{
-			m_pDisplay->glBindDisplay(noDevice);
+			m_pDisplay->glvkBindDisplay(noDevice);
 			vp = m_pDisplay->getViewPoint();
 		}
 

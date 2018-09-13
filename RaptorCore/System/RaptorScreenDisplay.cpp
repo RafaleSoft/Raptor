@@ -200,7 +200,7 @@ RAPTOR_HANDLE CRaptorScreenDisplay::getCurrentDevice(void) const
     return device;
 }
 
-bool CRaptorScreenDisplay::glBindDisplay(const RAPTOR_HANDLE& device)
+bool CRaptorScreenDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
 {
 	if (device.handle != CGL_NULL)
 	{
@@ -250,7 +250,7 @@ bool CRaptorScreenDisplay::glBindDisplay(const RAPTOR_HANDLE& device)
 			//  Display shading configuration
 			cs.glApplyConfig(GL_PIXEL_STATE_QUERY|GL_HINT_STATE_QUERY|GL_LIGHT_STATE_QUERY|GL_FRAME_STATE_QUERY);
 
-            bool res = CRaptorDisplay::glBindDisplay(device);
+			bool res = CRaptorDisplay::glvkBindDisplay(device);
 			//glViewport(cs.x,cs.y,cs.width,cs.height);
 			glViewport(0,0,cs.width,cs.height); // Viewport is relative to window !!!
 			
@@ -281,7 +281,7 @@ bool CRaptorScreenDisplay::glBindDisplay(const RAPTOR_HANDLE& device)
 
     CATCH_GL_ERROR
 
-	return CRaptorDisplay::glBindDisplay(device);
+	return CRaptorDisplay::glvkBindDisplay(device);
 }
 
 void CRaptorScreenDisplay::allocateResources(void)

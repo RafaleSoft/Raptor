@@ -56,6 +56,7 @@ static const char *STL =
     #else\n\
         #define RAPTOR_TYPENAME\n\
     #endif\n\
+	#define RAPTOR_INTERFACE __interface\n\
 #else // Linux environment \n\
 	#include <stdlib.h>\n\
 	#define RAPTOR_API\n\
@@ -63,6 +64,7 @@ static const char *STL =
     #define RAPTOR_CCALL\n\
     #define RAPTOR_APICALL\n\
     #define RAPTOR_TYPENAME typename\n\
+	#define RAPTOR_INTERFACE class\n\
 #endif\n\n\
 #if defined(_WIN32) \n\
     #pragma warning(disable: 4786)    //  dbug info too large \n\

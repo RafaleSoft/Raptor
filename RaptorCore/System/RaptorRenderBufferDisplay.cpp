@@ -459,7 +459,7 @@ bool CRaptorRenderBufferDisplay::createFrameBuffer(void)
 }
 
 
-bool CRaptorRenderBufferDisplay::glBindDisplay(const RAPTOR_HANDLE& device)
+bool CRaptorRenderBufferDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
 {
 	if (device.hClass == CTextureSet::CTextureSetClassID::GetClassId().ID())
 	{
@@ -508,7 +508,7 @@ bool CRaptorRenderBufferDisplay::glBindDisplay(const RAPTOR_HANDLE& device)
 		vp->glRenderViewPointModel();
 
 	RAPTOR_HANDLE noDevice;
-	return CRaptorDisplay::glBindDisplay(noDevice);
+	return CRaptorDisplay::glvkBindDisplay(noDevice);
 #else
 	return false;
 #endif
@@ -582,7 +582,7 @@ void CRaptorRenderBufferDisplay::glGenerate(CTextureObject* T)
 	//	Render the display after texture is attached
 	//	because rendering properties are applied now ( e.g. glClear )
 	RAPTOR_HANDLE noDevice;
-	CRaptorDisplay::glBindDisplay(noDevice);
+	CRaptorDisplay::glvkBindDisplay(noDevice);
 	glPushAttrib(GL_VIEWPORT_BIT);
 	//glViewport(cs.x,cs.y,cs.width,cs.height);
 	glViewport(0,0,cs.width,cs.height); // Viewport is relative to window !!!
@@ -634,7 +634,7 @@ void CRaptorRenderBufferDisplay::glResize(unsigned int sx,unsigned int sy,unsign
     cs.height = sy;
 
     RAPTOR_HANDLE noDevice;
-    glBindDisplay(noDevice);
+	glvkBindDisplay(noDevice);
 
 	// Render buffers are recreated, now restore previous state.
 	if (binding == 0)

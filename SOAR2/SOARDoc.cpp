@@ -208,7 +208,7 @@ void CSOARDoc::glRender()
 	pConsole->addItem(item);
 	s.freeze(0);
 
-	m_pDisplay->glBindDisplay(m_wnd);
+	m_pDisplay->glvkBindDisplay(m_wnd);
 
 	m_pDisplay->glRender();
 

@@ -76,7 +76,7 @@ int main(int argc, char* argv[])
 
     CDemoDoc *pDoc = new CDemoDoc(wnd,pDisplay);
 
-    bool res = pDisplay->glBindDisplay(wnd);
+	bool res = pDisplay->glvkBindDisplay(wnd);
     if (res)
 	{
         pDoc->GLInitContext();

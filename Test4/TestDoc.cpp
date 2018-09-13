@@ -68,7 +68,7 @@ void CTestDoc::GLInitContext(HDC hdc)
     display.handle = (unsigned int)(hdc);
 	display.hClass = CLIENT_HANDLE_CLASS;
 
-    m_pDisplay->glBindDisplay(display);
+	m_pDisplay->glvkBindDisplay(display);
 
     glClearColor(0.0f,0.0f,0.0f,0.0f);
 
@@ -168,7 +168,7 @@ void CTestDoc::GLInitContext(HDC hdc)
 
         CHDRFilter *hdr = new CHDRFilter(rda);
 		hdr->setFilterModel(CRaptorDisplayFilter::RENDER_TEXTURE);
-        CRaptorDisplay::GetCurrentDisplay()->glBindDisplay(*hdr);
+		CRaptorDisplay::GetCurrentDisplay()->glvkBindDisplay(*hdr);
         hdr->enableFilter(true);
 		
 		m_hdr = hdr;
@@ -181,7 +181,7 @@ void CTestDoc::GLInitContext(HDC hdc)
         CMBFilter *mb = new CMBFilter();
         mb->setPercentage(0.95f,0.95f,0.95f,1.0f);
 		mb->setFilterModel(CRaptorDisplayFilter::RENDER_TEXTURE);
-        CRaptorDisplay::GetCurrentDisplay()->glBindDisplay(*mb);
+		CRaptorDisplay::GetCurrentDisplay()->glvkBindDisplay(*mb);
 		mb->enableFilter(false);
 		
 		m_mb = mb;
@@ -234,7 +234,7 @@ void CTestDoc::glDisplay(HDC hdc)
     display.handle = (unsigned int)(hdc);
 	display.hClass = CLIENT_HANDLE_CLASS;
 
-    m_pDisplay->glBindDisplay(display);
+	m_pDisplay->glvkBindDisplay(display);
 
 	m_pDisplay->glRender();
 

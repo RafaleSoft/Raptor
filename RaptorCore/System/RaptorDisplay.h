@@ -50,7 +50,7 @@ public:
 	//! without errors, this method simply makes the current context active for the display.
 	//!	Return true if the display is bound without errors, false if the display is
 	//! unbounded or if there is an error.
-	virtual bool glBindDisplay(const RAPTOR_HANDLE& device);
+	virtual bool glvkBindDisplay(const RAPTOR_HANDLE& device);
 
     //! If the display is bound to a device, it returns the current device if it is valid.
     //! Here, the method returns a void device as a generic display cannot be bound, see derived classes

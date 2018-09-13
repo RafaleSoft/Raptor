@@ -116,7 +116,7 @@ void CRaptorDisplayFilter::glRender(void)
     {
         CRaptorDisplay *output = ((CRaptorDisplay*)colorInternalSource);
         RAPTOR_HANDLE noDevice;
-        output->glBindDisplay(noDevice);
+		output->glvkBindDisplay(noDevice);
     }
 
 	if (m_bEnabled)
@@ -397,10 +397,10 @@ CTextureObject*  CRaptorDisplayFilter::glCreateColorOutput(void)
     renderBuffer->setViewPoint(NULL);
 
 	if (m_fModel == RENDER_BUFFER)
-		renderBuffer->glBindDisplay(*m_pOutputTextures);
+		renderBuffer->glvkBindDisplay(*m_pOutputTextures);
 
     RAPTOR_HANDLE noDevice;
-    renderBuffer->glBindDisplay(noDevice);
+	renderBuffer->glvkBindDisplay(noDevice);
     renderBuffer->glUnBindDisplay();
 
 	colorInternalSource = renderBuffer;

@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "Subsys/CodeGeneration.h"
 
 #ifndef __CGLTYPES_HPP__
 	#include "System/CGLTypes.h"

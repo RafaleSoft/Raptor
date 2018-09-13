@@ -103,7 +103,7 @@ void CRaptorClient::queryServerImage(void)
 
 void CRaptorClient::glRender()
 {
-	m_pDisplay->glBindDisplay(m_window);
+	m_pDisplay->glvkBindDisplay(m_window);
 
 	m_pDisplay->glRender();
 
@@ -150,7 +150,7 @@ bool CRaptorClient::run(unsigned int width, unsigned int height)
 	props->setLighting(CRenderingProperties::DISABLE);
 	props->setCullFace(CRenderingProperties::DISABLE);
 
-	res = m_pDisplay->glBindDisplay(m_window);
+	res = m_pDisplay->glvkBindDisplay(m_window);
 	if (res)
 	{
 		vp->glRenderViewPointModel();

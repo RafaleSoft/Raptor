@@ -8,7 +8,6 @@
 
 #include "../RaptorToolBox/RaptorToolBox.h"
 
-#include "System/RaptorExtensions.h"
 #include "GLHierarchy/GeometryEditor.h"
 #include "GLHierarchy/GLFont.h"
 #include "GLHierarchy/FragmentShader.h"

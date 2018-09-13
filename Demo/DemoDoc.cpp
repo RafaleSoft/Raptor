@@ -312,13 +312,13 @@ void CDemoDoc::GLInitContext(void)
         pSpots->AddSpot(lpos);
     }
     pSpots->lights = lights;
-    pCurrentDisplay->glBindDisplay(*pSpots);
+	pCurrentDisplay->glvkBindDisplay(*pSpots);
 	pSpots->releaseReference();
 
     dof = new CDOFFilter;
     dof->setDOFParams(0.85f, 10.0f);
 	dof->setBlurNbPass(4);
-    pCurrentDisplay->glBindDisplay(*dof);
+	pCurrentDisplay->glvkBindDisplay(*dof);
 	dof->releaseReference();
 
 	CRaptorDisplayConfig rda;
@@ -332,7 +332,7 @@ void CDemoDoc::GLInitContext(void)
 
 void CDemoDoc::glRender()
 {
-	m_pDisplay->glBindDisplay(m_wnd);
+	m_pDisplay->glvkBindDisplay(m_wnd);
 
 	m_pDisplay->glRender();
 

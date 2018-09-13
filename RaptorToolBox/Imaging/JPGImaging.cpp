@@ -1,7 +1,6 @@
 // JPGImaging.cpp: implementation of the CJPGImaging class.
 //
 //////////////////////////////////////////////////////////////////////
-#include "StdAfx.h"
 #include "Subsys/CodeGeneration.h"
 
 #if !defined(AFX_TEXTUREOBJECT_H__D32B6294_B42B_4E6F_AB73_13B33C544AD0__INCLUDED_)

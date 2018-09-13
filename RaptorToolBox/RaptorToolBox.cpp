@@ -1,7 +1,7 @@
 // RaptorToolBox.cpp : Defines the initialization routines for the DLL.
 //
 
-#include "StdAfx.h"
+#include "Subsys/CodeGeneration.h"
 
 extern "C" int APIENTRY
 DllMain(HINSTANCE , DWORD dwReason)

@@ -21,16 +21,11 @@
 - CHostMemoryManager:
 	- ajouter capacité allocations/release dans un bloc prédéfini (data pool)
 
-- CGeometryAllocator:
-	- currentAddress : utilisé en unsigned int => bug si uint64_t
-
 - CRaptorRenderBufferDisplay:
 	- mettre au point le format CGL_FLOAT_32 (creation des textures attachées)
 	- glGenerate : la texture est 'unbindee', or si appelé depuis CTextureObject::glRender ==> ?
 	
-- CGeometry / CGeometryPrimitive:
-	- créer un mode"BigGeometry" avec des indices de type uint32_t
-		
+	
 - supprimer des "friend" ?
 	p.ex. dans CRaptorDisplay et sous classes ...
 

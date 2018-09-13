@@ -581,7 +581,7 @@ public:
 
 		pBuffer = Raptor::glCreateDisplay(attrs);
 		RAPTOR_HANDLE handle;
-		pBuffer->glBindDisplay(handle);
+		pBuffer->glvkBindDisplay(handle);
 			
 			CRenderingProperties *rp = pBuffer->getRenderingProperties();
 			rp->setTexturing(CRenderingProperties::ENABLE);
@@ -659,7 +659,7 @@ public:
 	virtual void glRender(bool bShow)
 	{
 		RAPTOR_HANDLE handle;
-		pBuffer->glBindDisplay(handle);
+		pBuffer->glvkBindDisplay(handle);
 			CVertexShader *vp = pShader->glGetVertexShader();
 			float t = CTimeObject::GetGlobalTime();
 			GL_COORD_VERTEX v(	0.2 * t,

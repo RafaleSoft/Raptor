@@ -209,7 +209,7 @@ void CRaptorDisplay::setViewPoint(CViewPoint *viewPoint)
 	}
 }
 
-bool CRaptorDisplay::glBindDisplay(const RAPTOR_HANDLE& device)
+bool CRaptorDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
 {
 	if (device.handle != CGL_NULL)
 	{
@@ -249,7 +249,7 @@ bool CRaptorDisplay::glBindDisplay(const RAPTOR_HANDLE& device)
         while (it != m_pSubDisplays.end())
         {
             CRaptorDisplay* display = (*it++);
-		    display->glBindDisplay(_device);
+			display->glvkBindDisplay(_device);
             display->glRender();
 		    display->glUnBindDisplay();
         }

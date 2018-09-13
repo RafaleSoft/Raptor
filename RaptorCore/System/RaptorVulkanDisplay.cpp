@@ -186,7 +186,7 @@ void CRaptorVulkanDisplay::glGenerate(CTextureObject* )
 {
 }
 
-bool CRaptorVulkanDisplay::glBindDisplay(const RAPTOR_HANDLE& device)
+bool CRaptorVulkanDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
 {
 	if (device.handle != CGL_NULL)
 	{

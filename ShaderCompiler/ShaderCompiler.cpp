@@ -285,7 +285,7 @@ void CDisplay::glRender(void)
 
     CClientDC DC(m_wnd);
     RAPTOR_HANDLE device(DEVICE_CONTEXT_CLASS,DC.m_hDC);
-    m_pDisplay->glBindDisplay(device);
+	m_pDisplay->glvkBindDisplay(device);
 
     if (!fileSources.empty())
     {
@@ -374,7 +374,7 @@ int main(int argc, char* argv[])
     RAPTOR_HANDLE device(DEVICE_CONTEXT_CLASS,pDC->m_hDC);
 
     CRaptorDisplay *pDisplay = Raptor::glCreateDisplay(glcs);
-    if (pDisplay->glBindDisplay(device))
+	if (pDisplay->glvkBindDisplay(device))
 	{
 		if (!Raptor::glIsExtensionSupported(GL_ARB_VERTEX_PROGRAM_EXTENSION_NAME) ||
 			!Raptor::glIsExtensionSupported(GL_ARB_VERTEX_SHADER_EXTENSION_NAME) ||

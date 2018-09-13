@@ -579,6 +579,8 @@ void CObjectStore::LoadModels(void)
 
     C3DSet* root = NULL;
     CRaptorToolBox::load3DStudioScene(MODELS,root,&options);
+	if (NULL == root)
+		return;
 
 	m_groundTile = new C3DSet("GoundTile_Set");
 	m_groundTileLow = new C3DSet("GoundTile_SetLow");

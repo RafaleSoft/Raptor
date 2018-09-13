@@ -153,7 +153,7 @@ bool CShadowMap::glInitEnvironment(unsigned int width,unsigned int height)
 	m_pViewPoint->registerDestruction(m_pObserver);
 
 	RAPTOR_HANDLE display;
-	m_pShadowMap->glBindDisplay(display);
+	m_pShadowMap->glvkBindDisplay(display);
 	m_pShadowMap->setViewPoint(m_pViewPoint);
 	m_pShadowMap->glUnBindDisplay();
 
@@ -220,7 +220,7 @@ void CShadowMap::glInitRenderBuffer(unsigned int width,unsigned int height)
 	pImageSet->addTexture(m_pShadowTexture);
 	pImageSet->addTexture(ShadowTexture);
 
-	m_pShadowMap->glBindDisplay(*pImageSet);
+	m_pShadowMap->glvkBindDisplay(*pImageSet);
 
 	CATCH_GL_ERROR
 }
@@ -367,7 +367,7 @@ void CShadowMap::glRenderMap(const CLight* currentLight,const vector<C3DSceneObj
 
 	// Render to p-Buffer
 	RAPTOR_HANDLE display;
-	m_pShadowMap->glBindDisplay(display);
+	m_pShadowMap->glvkBindDisplay(display);
 	{
 		glGetTransposeFloatv(GL_PROJECTION_MATRIX,PLight);
 		glGetTransposeFloatv(GL_MODELVIEW_MATRIX,MLight);

@@ -38,7 +38,7 @@ public:
 	//! The user can then bind a filter to this display
 	//!	and release the reference count of the filter, the display will destroy the 
 	//!	filter when it is no more needed.
-	virtual bool glBindDisplay(const RAPTOR_HANDLE& device);
+	virtual bool glvkBindDisplay(const RAPTOR_HANDLE& device);
 
 	//! see base class
 	virtual bool glUnBindDisplay(void);

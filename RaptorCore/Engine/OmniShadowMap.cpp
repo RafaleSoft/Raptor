@@ -141,7 +141,7 @@ bool COmniShadowMap::glInitEnvironment(unsigned int width,unsigned int height)
     m_lightProjection.Ident();
 
 	RAPTOR_HANDLE display;
-	m_pShadowCubeMap->glBindDisplay(display);
+	m_pShadowCubeMap->glvkBindDisplay(display);
 	m_pShadowCubeMap->setViewPoint(NULL);
     m_pViewPoint->glRenderViewPointModel();
 	m_pViewPoint->glRender();
@@ -261,7 +261,7 @@ void COmniShadowMap::glRenderMap(const CLight* currentLight,const vector<C3DScen
     GL_COORD_VERTEX coord =  currentLight->getLightPosition();
 
     RAPTOR_HANDLE display;
-	m_pShadowCubeMap->glBindDisplay(display);
+	m_pShadowCubeMap->glvkBindDisplay(display);
     //glColorMask(GL_FALSE,GL_FALSE,GL_FALSE,GL_FALSE);
 
 	unsigned int cubefaces[6] = {	CTextureObject::CGL_CUBEMAP_NZ,
@@ -291,7 +291,7 @@ void COmniShadowMap::glRenderMap(const CLight* currentLight,const vector<C3DScen
      for (unsigned int i=0 ; i<6 ; i++)
     {
         RAPTOR_HANDLE _display(cubefaces[i],0);
-	    m_pShadowCubeMap->glBindDisplay(_display);
+	    m_pShadowCubeMap->glvkBindDisplay(_display);
 
         glLoadIdentity();
         glRotatef(rotates[i][0],rotates[i][1],rotates[i][2],rotates[i][3]);
@@ -337,7 +337,7 @@ void COmniShadowMap::glRenderShadow(const vector<C3DSceneObject*>& objects)
 
 		RAPTOR_HANDLE renderTexture;
 		renderTexture.hClass = CTextureFactory::CTextureFactoryClassID::GetClassId().ID();
-		m_pShadowCubeMap->glBindDisplay(renderTexture);
+		m_pShadowCubeMap->glvkBindDisplay(renderTexture);
 	}
 
     glActiveTextureARB(previousTMU);
@@ -366,7 +366,7 @@ void COmniShadowMap::glRenderTexture(void)
 
 	RAPTOR_HANDLE renderTexture;
 	renderTexture.hClass = CTextureFactory::CTextureFactoryClassID::GetClassId().ID();
-	m_pShadowCubeMap->glBindDisplay(renderTexture);
+	m_pShadowCubeMap->glvkBindDisplay(renderTexture);
 #endif
 }
 

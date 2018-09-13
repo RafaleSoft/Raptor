@@ -1,5 +1,4 @@
-#include "StdAfx.h"
-
+#include "Subsys/CodeGeneration.h"
 
 #if !defined(AFX_RAPTORTOOLBOX_H__7FFBBFE8_DBCD_4F8C_872E_EA2692DE1A11__INCLUDED_)
 	#include "RaptorToolBox.h"
