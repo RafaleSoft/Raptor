@@ -79,6 +79,12 @@
     <Filter Include="Header Files\Subsys include\Vulkan">
       <UniqueIdentifier>{02a65b1a-6e1a-4080-9a83-f6139c1cc147}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Subsys src\OpenGL">
+      <UniqueIdentifier>{293691f9-dd3b-41c0-b59d-2a4892986a74}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Subsys include\OpenGL">
+      <UniqueIdentifier>{26af82cc-2aef-4809-ab4c-376e74f6e4b8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\RaptorCore\Subsys\ObjectModels\Basic.lex">
@@ -551,9 +557,6 @@
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\VulkanShaderStage.cpp">
       <Filter>Source Files\GLHierarchy src</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\RaptorCore\Subsys\OpenGLMemory.cpp">
-      <Filter>Source Files\Subsys src</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\RaptorCore\Subsys\Vulkan\VulkanCommandBuffer.cpp">
       <Filter>Source Files\Subsys src\Vulkan</Filter>
     </ClCompile>
@@ -586,6 +589,9 @@
     </ClCompile>
     <ClCompile Include="..\..\RaptorCore\Subsys\Vulkan\VulkanSurface.cpp">
       <Filter>Source Files\Subsys src\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\OpenGL\OpenGLMemory.cpp">
+      <Filter>Source Files\Subsys src\OpenGL</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1089,9 +1095,6 @@
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\VulkanShaderStage.h">
       <Filter>Header Files\GLHierarchy include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\RaptorCore\Subsys\OpenGLMemory.h">
-      <Filter>Header Files\Subsys include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\RaptorCore\Subsys\Vulkan\VulkanCommandBuffer.h">
       <Filter>Header Files\Subsys include\Vulkan</Filter>
     </ClInclude>
@@ -1133,6 +1136,9 @@
     </ClInclude>
     <ClInclude Include="..\..\RaptorCore\Subsys\Vulkan\VulkanSurface.h">
       <Filter>Header Files\Subsys include\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\OpenGL\OpenGLMemory.h">
+      <Filter>Header Files\Subsys include\OpenGL</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

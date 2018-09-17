@@ -41,7 +41,7 @@
 	#include "GLHierarchy/Geometry.h"
 #endif
 #if !defined(AFX_OPENGLMEMORY_H__C344567B_877F_4F43_8961_C4E59E3BBF7E__INCLUDED_)
-	#include "Subsys/OpenGLMemory.h"
+	#include "Subsys/OpenGL/OpenGLMemory.h"
 #endif
 
 

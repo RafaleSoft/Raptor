@@ -388,7 +388,7 @@ Subsys\Redist.bat
     <ClCompile Include="..\..\RaptorCore\Subsys\Octree.cxx">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\RaptorCore\Subsys\OpenGLMemory.cpp" />
+    <ClCompile Include="..\..\RaptorCore\Subsys\OpenGL\OpenGLMemory.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\PhongShader.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\PlayFrameJob.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\RegisterCombiner.cpp" />
@@ -576,7 +576,7 @@ copy $(SolutionDir)\$(ProjectName)\Subsys\CodeGeneration.h "%RAPTOR_ROOT%\Redist
     <ClInclude Include="..\..\RaptorCore\Subsys\ObjectModels\RaptorScript_tree.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\ObjectModels\RaptorScript_yacc.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\Octree.h" />
-    <ClInclude Include="..\..\RaptorCore\Subsys\OpenGLMemory.h" />
+    <ClInclude Include="..\..\RaptorCore\Subsys\OpenGL\OpenGLMemory.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\PhongShader.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\PlayFrameJob.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\RegisterCombiner.h" />

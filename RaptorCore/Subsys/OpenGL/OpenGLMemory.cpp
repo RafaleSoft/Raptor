@@ -5,7 +5,7 @@
 #include "Subsys\CodeGeneration.h"
 
 #if !defined(AFX_OPENGLMEMORY_H__C344567B_877F_4F43_8961_C4E59E3BBF7E__INCLUDED_)
-	#include "Subsys/OpenGLMemory.h"
+	#include "OpenGLMemory.h"
 #endif
 #if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
 	#include "System/Raptor.h"
