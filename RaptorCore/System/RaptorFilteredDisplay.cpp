@@ -477,7 +477,7 @@ void CRaptorFilteredDisplay::glResize(unsigned int sx,unsigned int sy,unsigned i
 	C3DEngine::Get3DEngine()->setClip(ox,oy,sx,sy);
 
 	CViewPoint *pVp = CRaptorDisplay::getViewPoint();
-	pVp->glRenderViewPointModel();
+	pVp->glvkRenderViewPointModel();
 
     //m_pDisplay->glResize(sx,sy,ox,oy);
 
@@ -497,7 +497,7 @@ void CRaptorFilteredDisplay::glResize(unsigned int sx,unsigned int sy,unsigned i
 			vp = m_pDisplay->getViewPoint();
 		}
 
-		vp->glRenderViewPointModel();
+		vp->glvkRenderViewPointModel();
 	}
 
     CATCH_GL_ERROR

@@ -163,7 +163,7 @@ void CTeapot::GLInitContext()
 	CRaptorDisplay *pDisplay = CRaptorDisplay::GetCurrentDisplay();
 	CViewPoint *vp = pDisplay->getViewPoint();
 	vp->setViewVolume(-1.33f,1.33f,-1.0f,1.0f,1.0f,10000,CViewPoint::PERSPECTIVE);
-    vp->glRenderViewPointModel();   // switch demo removes the view  point, so render here and forget
+    vp->glvkRenderViewPointModel();   // switch demo removes the view  point, so render here and forget
 	pDisplay->setViewPoint(vp);
 
 	CRaptorToolBox::SCENE_LOADER_OPTIONS options;

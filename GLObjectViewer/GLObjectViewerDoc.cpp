@@ -166,7 +166,7 @@ void CGLObjectViewerDoc::GLInitContext(void)
 
         CViewPoint *vp = pDisplay->getViewPoint();
         vp->setViewVolume(-ratio,ratio,-1.0f,1.0f,1.0f,10000.0f,CViewPoint::PERSPECTIVE);
-        vp->glRenderViewPointModel();
+        vp->glvkRenderViewPointModel();
 		const CBoundingBox * const bbox = m_pRoot->boundingBox();
 		vp->translate(0.0f,0.0f,bbox->zMax());
 

@@ -105,10 +105,10 @@ void CSOARDoc::GLInitContext(int argc, char* argv[])
 
 	CViewPoint *vp = dsp->getViewPoint();
 	vp->setViewVolume(-1.33f,1.33f,-1.0f,1.0f,2.0f,100000.0f,CViewPoint::PERSPECTIVE);
-	vp->glRenderViewPointModel();
+	vp->glvkRenderViewPointModel();
     vp->setPosition(40.0,40.0,8.0f,CViewPoint::EYE);
     vp->setPosition(40.0,40.0,0,CViewPoint::TARGET);
-	vp->glRender();
+	vp->glvkRender();
 
 	CAnimator::SetAnimator(new CAnimator());
 

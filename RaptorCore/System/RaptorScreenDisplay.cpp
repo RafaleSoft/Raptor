@@ -184,7 +184,7 @@ void CRaptorScreenDisplay::glResize(unsigned int sx,unsigned int sy,unsigned int
 
 		CViewPoint *pVp = getViewPoint();
 		if (pVp != NULL)
-			pVp->glRenderViewPointModel();
+			pVp->glvkRenderViewPointModel();
 	}
 }
 

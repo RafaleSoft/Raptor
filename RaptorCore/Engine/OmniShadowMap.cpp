@@ -143,8 +143,8 @@ bool COmniShadowMap::glInitEnvironment(unsigned int width,unsigned int height)
 	RAPTOR_HANDLE display;
 	m_pShadowCubeMap->glvkBindDisplay(display);
 	m_pShadowCubeMap->setViewPoint(NULL);
-    m_pViewPoint->glRenderViewPointModel();
-	m_pViewPoint->glRender();
+    m_pViewPoint->glvkRenderViewPointModel();
+	m_pViewPoint->glvkRender();
 	m_pShadowCubeMap->glUnBindDisplay();
 
 	CTextureFactory &factory = CTextureFactory::getDefaultFactory();

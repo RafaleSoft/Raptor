@@ -591,7 +591,7 @@ public:
 			rp->clear(CGL_RGBA|CGL_DEPTH);
 			CViewPoint *vpoint = pBuffer->getViewPoint();
 			vpoint->setViewVolume(-1.0,1.0,-1.0,1.0,-1.0,1.0,CViewPoint::ORTHOGRAPHIC);
-			vpoint->glRenderViewPointModel();
+			vpoint->glvkRenderViewPointModel();
 			
 			pShader = new CShader("WATER_SHADER2");
 			CVertexShader *vp = pShader->glGetVertexShader();

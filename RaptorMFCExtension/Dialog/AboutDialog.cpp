@@ -170,7 +170,7 @@ void CGLDisplay::GLInitContext()
 	glColor4f(1.0,1.0,1.0,1.0f);
 
 	pVP->setViewVolume(-1.0,1.0,-1.0,1.0,1.0,1000.0,CViewPoint::PERSPECTIVE);
-	pVP->glRenderViewPointModel();
+	pVP->glvkRenderViewPointModel();
 
     CRenderingProperties *props = pDisplay->getRenderingProperties();
     props->setTexturing(CRenderingProperties::ENABLE);

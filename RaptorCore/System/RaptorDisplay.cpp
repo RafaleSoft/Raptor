@@ -231,10 +231,10 @@ bool CRaptorDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
     {
         if (m_bApplyViewPointModel)
         {
-            m_pViewPoint->glRenderViewPointModel();
+            m_pViewPoint->glvkRenderViewPointModel();
             m_bApplyViewPointModel = false;
         }
-		m_pViewPoint->glRender();
+		m_pViewPoint->glvkRender();
     }
     else
 		C3DEngine::Get3DEngine()->glConfigureEngine(NULL);

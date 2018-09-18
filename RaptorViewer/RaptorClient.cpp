@@ -153,7 +153,7 @@ bool CRaptorClient::run(unsigned int width, unsigned int height)
 	res = m_pDisplay->glvkBindDisplay(m_window);
 	if (res)
 	{
-		vp->glRenderViewPointModel();
+		vp->glvkRenderViewPointModel();
 		CRaptorConsole *pConsole = Raptor::GetConsole();
 		pConsole->glInit();
 		pConsole->showStatus(true);

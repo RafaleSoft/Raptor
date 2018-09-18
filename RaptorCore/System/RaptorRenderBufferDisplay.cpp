@@ -505,7 +505,7 @@ bool CRaptorRenderBufferDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
 	glPushMatrix();
 	CViewPoint *vp = getViewPoint();
 	if (vp != NULL)
-		vp->glRenderViewPointModel();
+		vp->glvkRenderViewPointModel();
 
 	RAPTOR_HANDLE noDevice;
 	return CRaptorDisplay::glvkBindDisplay(noDevice);
