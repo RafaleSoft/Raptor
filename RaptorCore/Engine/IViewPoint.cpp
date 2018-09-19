@@ -7,8 +7,8 @@
 	#include "System/Raptor.h"
 #endif
 
-#if !defined(AFX_VIEWPOINT_H__82071851_A036_4311_81CB_01E7E25F19E1__INCLUDED_)
-	#include "ViewPoint.h"
+#if !defined(AFX_IVIEWPOINT_H__82071851_A036_4311_81CB_01E7E25F19E1__INCLUDED_)
+	#include "IViewPoint.h"
 #endif
 
 #if !defined(AFX_3DPATH_H__6AD45CFB_C7F6_4F7B_BFF6_932A812A770E__INCLUDED_)
@@ -34,17 +34,17 @@
 
 RAPTOR_NAMESPACE
 
-static CViewPoint::CViewPointClassID viewId;
+static IViewPoint::IViewPointClassID viewId;
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
-CViewPoint::CViewPoint(const std::string& name):
+IViewPoint::IViewPoint(const std::string& name) :
 	CPersistence(viewId,name),
 	currentPath(-1),timePos(0),startTime(0),endTime(1),
 	m_lfAlpha(0.0),m_lfBeta(0.0),m_lfGamma(0.0),m_lfLength(0.0),
 	m_bContinus(true),m_bLoop(true),
-	model(CViewPoint::PERSPECTIVE)
+	model(IViewPoint::PERSPECTIVE)
 {
     //  initialise positions
 	Origin.Set(0.0f,0.0f,0.0f,1.0f);
@@ -66,11 +66,11 @@ CViewPoint::CViewPoint(const std::string& name):
     pTargetTrack2 = NULL;
 }
 
-CViewPoint::~CViewPoint()
+IViewPoint::~IViewPoint()
 {
 }
 
-void CViewPoint::setPosition(float x,float y,float z,VIEW_POINT_POSITION p)
+void IViewPoint::setPosition(float x, float y, float z, VIEW_POINT_POSITION p)
 {
     switch(p)
     {
@@ -85,7 +85,7 @@ void CViewPoint::setPosition(float x,float y,float z,VIEW_POINT_POSITION p)
     recomputeViewPoint();
 }
 
-void CViewPoint::setViewVolume(float left, float right,
+void IViewPoint::setViewVolume(float left, float right,
 							   float bottom, float up,
 							   float n, float f,
 							   VIEW_POINT_MODEL m)
@@ -112,7 +112,7 @@ void CViewPoint::setViewVolume(float left, float right,
 	}
 }
 
-void CViewPoint::getViewVolume(	float &left,float &right,
+void IViewPoint::getViewVolume(float &left, float &right,
 								float &bottom, float &up,
 								float &n, float &f,
 								VIEW_POINT_MODEL &m) const
@@ -126,7 +126,7 @@ void CViewPoint::getViewVolume(	float &left,float &right,
 	m = model;
 }
 
-void CViewPoint::getFrustum(CGenericMatrix<float, 4>& frustum) const
+void IViewPoint::getFrustum(CGenericMatrix<float, 4>& frustum) const
 {
 	frustum.Zero();
 
@@ -137,7 +137,7 @@ void CViewPoint::getFrustum(CGenericMatrix<float, 4>& frustum) const
 	float n = viewVolume[4];
 	float f = viewVolume[5];
 
-	if (CViewPoint::PERSPECTIVE == model)
+	if (IViewPoint::PERSPECTIVE == model)
 	{
 		//	2.n / (r-l)		0		(r+l) / (r-l)		0
 		//		0		2.n / (t-b)	(t+b) / (t-b)		0
@@ -155,7 +155,7 @@ void CViewPoint::getFrustum(CGenericMatrix<float, 4>& frustum) const
 
 		frustum[14] = -1;
 	}
-	else if (CViewPoint::ORTHOGRAPHIC == model)
+	else if (IViewPoint::ORTHOGRAPHIC == model)
 	{
 		//	2 / (r-l)		0			0			-(r+l) / (r-l)
 		//		0		2 / (t-b)		0			-(t+b) / (t-b)
@@ -179,7 +179,7 @@ void CViewPoint::getFrustum(CGenericMatrix<float, 4>& frustum) const
 	}
 }
 
-CGenericVector<float> CViewPoint::getPosition(VIEW_POINT_POSITION p) const
+CGenericVector<float> IViewPoint::getPosition(VIEW_POINT_POSITION p) const
 {
     switch(p)
     {
@@ -229,7 +229,7 @@ CGenericVector<float> CViewPoint::getPosition(VIEW_POINT_POSITION p) const
 //////////////////////////////////////////////////////////////////////
 // Transforms
 //////////////////////////////////////////////////////////////////////
-void CViewPoint::translate(float tx,float ty,float tz)
+void IViewPoint::translate(float tx, float ty, float tz)
 {
 	CGenericVector<float>	z_axis = Origin - Target;
 	z_axis.Normalize();
@@ -253,19 +253,19 @@ void CViewPoint::translate(float tx,float ty,float tz)
 	Target += delta;
 }
 
-void CViewPoint::scale(float sx,float sy,float sz)
+void IViewPoint::scale(float sx, float sy, float sz)
 {
 	Scale.X() *= sx;
 	Scale.Y() *= sy;
 	Scale.Z() *= sz;
 }
 
-void CViewPoint::rotationZ(float rz)
+void IViewPoint::rotationZ(float rz)
 {
 	m_lfGamma += rz;
 }
 
-void CViewPoint::rotationX(float rx)
+void IViewPoint::rotationX(float rx)
 {
 	m_lfBeta -= rx;
 	if (m_lfBeta > 360.0)
@@ -285,7 +285,7 @@ void CViewPoint::rotationX(float rx)
 	Target = v + Origin;
 }
 
-void CViewPoint::rotationY(float ry)
+void IViewPoint::rotationY(float ry)
 {
 	m_lfAlpha -= ry;
 	if (m_lfAlpha > 360.0)
@@ -308,7 +308,7 @@ void CViewPoint::rotationY(float ry)
 //////////////////////////////////////////////////////////////////////
 // Rendering
 //////////////////////////////////////////////////////////////////////
-void CViewPoint::recomputeViewPoint(void)
+void IViewPoint::recomputeViewPoint(void)
 {
 	CGenericVector<float> v = Target - Origin;
 	
@@ -318,8 +318,8 @@ void CViewPoint::recomputeViewPoint(void)
     m_lfBeta = -TO_DEGREE(atan2(sqrt(v.X()*v.X()+v.Z()*v.Z()),v.Y())) + 90.0;
 }
 
-
-void CViewPoint::glvkRender(void)
+/*
+void IViewPoint::glvkRender(void)
 {
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -337,7 +337,7 @@ void CViewPoint::glvkRender(void)
 	CATCH_GL_ERROR
 }
 
-void CViewPoint::glvkRenderViewPointModel(void)
+void IViewPoint::glvkRenderViewPointModel(void)
 {
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
@@ -361,9 +361,9 @@ void CViewPoint::glvkRenderViewPointModel(void)
 
 	CATCH_GL_ERROR
 }
+*/
 
-
-void CViewPoint::setTimeInterval(float tMin, float tMax)
+void IViewPoint::setTimeInterval(float tMin, float tMax)
 {
 	if ((tMin<tMax)&&(tMin>=0))
 	{
@@ -377,7 +377,7 @@ void CViewPoint::setTimeInterval(float tMin, float tMax)
 	}
 }
 
-void CViewPoint::setTimePos(float tpos)
+void IViewPoint::setTimePos(float tpos)
 { 
 	if ((tpos>endTime)||(tpos<startTime))
 		timePos = startTime;
@@ -385,7 +385,7 @@ void CViewPoint::setTimePos(float tpos)
 		timePos = tpos; 
 }
 
-void CViewPoint::trackObject(CObject3D *object, VIEW_POINT_POSITION p)
+void IViewPoint::trackObject(CObject3D *object, VIEW_POINT_POSITION p)
 {
     switch(p)
     {
@@ -400,7 +400,7 @@ void CViewPoint::trackObject(CObject3D *object, VIEW_POINT_POSITION p)
     }
 }
  
-void CViewPoint::trackObject(CLight *object, VIEW_POINT_POSITION p)
+void IViewPoint::trackObject(CLight *object, VIEW_POINT_POSITION p)
 {
     switch(p)
     {
@@ -415,7 +415,7 @@ void CViewPoint::trackObject(CLight *object, VIEW_POINT_POSITION p)
     }
 }
 
-void RAPTOR_FASTCALL CViewPoint::deltaTime(float dt)
+void RAPTOR_FASTCALL IViewPoint::deltaTime(float dt)
 {
 	timePos += dt;
 
@@ -481,7 +481,7 @@ void RAPTOR_FASTCALL CViewPoint::deltaTime(float dt)
 }
 
 
-void CViewPoint::addPath(C3DPath *eyePositionPath,C3DPath *targetPath)
+void IViewPoint::addPath(C3DPath *eyePositionPath, C3DPath *targetPath)
 {
 	if ((eyePositionPath != NULL)&&(targetPath != NULL))
 	{
@@ -490,7 +490,7 @@ void CViewPoint::addPath(C3DPath *eyePositionPath,C3DPath *targetPath)
 	}
 }
 
-void CViewPoint::setCurrentPath(int nPath,bool continus,bool loop)
+void IViewPoint::setCurrentPath(int nPath, bool continus, bool loop)
 {
 	if (nPath < (int)(eyePositionPaths.size()))
 		currentPath = nPath;
@@ -502,7 +502,7 @@ void CViewPoint::setCurrentPath(int nPath,bool continus,bool loop)
 //////////////////////////////////////////////////////////////////////
 // Serialisation
 //////////////////////////////////////////////////////////////////////
-bool CViewPoint::exportObject(CRaptorIO& o) 
+bool IViewPoint::exportObject(CRaptorIO& o)
 { 
 	CPersistence::exportObject(o);
 
@@ -519,7 +519,7 @@ bool CViewPoint::exportObject(CRaptorIO& o)
 	return true;
 }
 
-void CViewPoint::ImportPaths(CRaptorIO& io) 
+void IViewPoint::ImportPaths(CRaptorIO& io)
 { 
     string name;
 	io >> name; 
@@ -552,7 +552,7 @@ void CViewPoint::ImportPaths(CRaptorIO& io)
         addPath(ePath,tPath);
 }
 
-bool CViewPoint::importObject(CRaptorIO& io) 
+bool IViewPoint::importObject(CRaptorIO& io)
 { 
     string name;
 	io >> name; 
@@ -608,13 +608,13 @@ bool CViewPoint::importObject(CRaptorIO& io)
 		{
 			GL_COORD_VERTEX coord;
 			io >> coord;
-            setPosition(coord.x,coord.y,coord.z,CViewPoint::EYE);
+			setPosition(coord.x, coord.y, coord.z, IViewPoint::EYE);
 		}
 		else if (data == "TargetPosition")
 		{
 			GL_COORD_VERTEX coord;
 			io >> coord;
-            setPosition(coord.x,coord.y,coord.z,CViewPoint::TARGET);
+			setPosition(coord.x, coord.y, coord.z, IViewPoint::TARGET);
 		}
         else if (data == "ViewPath")
             ImportPaths(io);

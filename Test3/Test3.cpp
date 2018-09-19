@@ -15,7 +15,7 @@
 #include "GLHierarchy/Object3DInstance.h"
 #include "Engine/ParticleManager.h"
 #include "Engine/3DScene.h"
-#include "Engine/ViewPoint.h"
+#include "Engine/IViewPoint.h"
 #include "Engine/Animator.h"
 
 #include "ToolBox/RaptorToolBox.h"
@@ -401,8 +401,8 @@ int _tmain(int argc, _TCHAR* argv[])
     RAPTOR_HANDLE wnd = Raptor::glCreateWindow(glcs,pDisplay);
 	pDisplay->glvkBindDisplay(wnd);
 
-	CViewPoint *vp = pDisplay->getViewPoint();
-	vp->setViewVolume(-1.33f,1.33f,-1.0f,1.0f,1.0f,10000,CViewPoint::PERSPECTIVE);
+	IViewPoint *vp = pDisplay->getViewPoint();
+	vp->setViewVolume(-1.33f,1.33f,-1.0f,1.0f,1.0f,10000,IViewPoint::PERSPECTIVE);
 	pDisplay->setViewPoint(vp);
 
 	CRaptorCompute::clInitRaptorCompute();

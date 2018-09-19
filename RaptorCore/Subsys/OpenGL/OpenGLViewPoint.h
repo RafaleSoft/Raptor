@@ -1,8 +1,8 @@
 // ViewPoint.h: interface for the CViewPoint class.
 //
 //////////////////////////////////////////////////////////////////////
-#if !defined(AFX_VULKANVIEWPOINT_H__08D29395_9883_45F8_AE51_5174BD6BC19B__INCLUDED_)
-#define AFX_VULKANVIEWPOINT_H__08D29395_9883_45F8_AE51_5174BD6BC19B__INCLUDED_
+#if !defined(AFX_OPENGLVIEWPOINT_H__94BDC36B_27AB_41FC_848E_DD28D1BDFC13__INCLUDED_)
+#define AFX_OPENGLVIEWPOINT_H__94BDC36B_27AB_41FC_848E_DD28D1BDFC13__INCLUDED_
 
 #if _MSC_VER > 1000
 #pragma once
@@ -20,11 +20,11 @@
 RAPTOR_NAMESPACE_BEGIN
 
 
-class RAPTOR_API CVulkanViewPoint : public IViewPoint
+class RAPTOR_API COpenGLViewPoint :	public IViewPoint
 {
 public:
-	CVulkanViewPoint(const std::string& name = "VULKAN_VIEW_POINT");
-	virtual ~CVulkanViewPoint();
+	COpenGLViewPoint(const std::string& name = "OPENGL_VIEW_POINT");
+	virtual ~COpenGLViewPoint();
 
 
 	//!
@@ -46,5 +46,5 @@ private:
 
 RAPTOR_NAMESPACE_END
 
-#endif // !defined(AFX_VULKANVIEWPOINT_H__08D29395_9883_45F8_AE51_5174BD6BC19B__INCLUDED_)
+#endif // !defined(AFX_OPENGLVIEWPOINT_H__94BDC36B_27AB_41FC_848E_DD28D1BDFC13__INCLUDED_)
 

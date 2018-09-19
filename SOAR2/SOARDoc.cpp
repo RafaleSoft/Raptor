@@ -4,7 +4,7 @@
 #include "SOARTerrainMorphed.h"
 
 #include "System/RaptorDisplay.h"
-#include "Engine/ViewPoint.h"
+#include "Engine/IViewPoint.h"
 #include "System/Raptor.h"
 #include "System/RaptorConsole.h"
 #include "GLHierarchy/RenderingProperties.h"
@@ -103,11 +103,11 @@ void CSOARDoc::GLInitContext(int argc, char* argv[])
 	props->setWireframe(CRenderingProperties::DISABLE);
 	props->clear(CGL_DEPTH|CGL_RGBA);
 
-	CViewPoint *vp = dsp->getViewPoint();
-	vp->setViewVolume(-1.33f,1.33f,-1.0f,1.0f,2.0f,100000.0f,CViewPoint::PERSPECTIVE);
+	IViewPoint *vp = dsp->getViewPoint();
+	vp->setViewVolume(-1.33f,1.33f,-1.0f,1.0f,2.0f,100000.0f,IViewPoint::PERSPECTIVE);
 	vp->glvkRenderViewPointModel();
-    vp->setPosition(40.0,40.0,8.0f,CViewPoint::EYE);
-    vp->setPosition(40.0,40.0,0,CViewPoint::TARGET);
+    vp->setPosition(40.0,40.0,8.0f,IViewPoint::EYE);
+    vp->setPosition(40.0,40.0,0,IViewPoint::TARGET);
 	vp->glvkRender();
 
 	CAnimator::SetAnimator(new CAnimator());

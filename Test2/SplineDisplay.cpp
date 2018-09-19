@@ -16,7 +16,7 @@
 #include "GLHierarchy/Light.h"
 #include "GLHierarchy/TextureSet.h"
 #include "GLHierarchy/TextureFactory.h"
-#include "Engine/ViewPoint.h"
+#include "Engine/IViewPoint.h"
 #include "GLHierarchy/Shader.h"
 #include "GLHierarchy/TextureUnitSetup.h"
 #include "GLHierarchy/Material.h"
@@ -96,10 +96,11 @@ void CSplineDisplay::Init()
 	font->glGenGlyphs(1, 5, 2.0f);
 	text = (font3d->glWriteList("Raptor",0)).handle;
 
-	vp = new CViewPoint();
-    vp->setPosition(5.0,0.0,5.0,CViewPoint::EYE);
-    vp->setPosition(0.0,0.0,0.0,CViewPoint::TARGET);
-	vp->setViewVolume(-1.33f,1.33f,-1.0f,1.0f,1.0f,10000,CViewPoint::PERSPECTIVE);
+	CRaptorDisplay* pDisplay = CRaptorDisplay::GetCurrentDisplay();
+	vp = pDisplay->createViewPoint();
+    vp->setPosition(5.0,0.0,5.0,IViewPoint::EYE);
+    vp->setPosition(0.0,0.0,0.0,IViewPoint::TARGET);
+	vp->setViewVolume(-1.33f,1.33f,-1.0f,1.0f,1.0f,10000,IViewPoint::PERSPECTIVE);
 
 	m_pLight = new CLight("Spline light");
 	m_pLight->setAmbient(1.0f, 1.0f, 1.0f, 1.0f);
@@ -112,7 +113,6 @@ void CSplineDisplay::Init()
 	pScene->addObject(bspline);
 	pScene->addLight(m_pLight);
 
-	CRaptorDisplay* pDisplay = CRaptorDisplay::GetCurrentDisplay();
 	pDisplay->addScene(pScene);
 }
 
@@ -141,7 +141,7 @@ void CSplineDisplay::Display()
 		ReInit();
 	
 	float dt = CTimeObject::GetGlobalTime();
-    vp->setPosition((float)(5.0*cos(dt*2*PI)),0.0f,5.0f,CViewPoint::EYE);
+    vp->setPosition((float)(5.0*cos(dt*2*PI)),0.0f,5.0f,IViewPoint::EYE);
 	
 	glPushMatrix();
 	glPushAttrib(GL_ALL_ATTRIB_BITS);

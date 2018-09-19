@@ -9,7 +9,7 @@
 #include "GLHierarchy/RenderingProperties.h"
 #include "GLHierarchy/Light.h"
 #include "GLHierarchy/ShaderProgram.h"
-#include "Engine/ViewPoint.h"
+#include "Engine/IViewPoint.h"
 #include "Engine/3DScene.h"
 #include "Engine/Mirror.h"
 
@@ -76,9 +76,9 @@ void CTestDoc::GLInitContext(HDC hdc)
     CRenderingProperties *props = dsp->getRenderingProperties();
     props->setLighting(CRenderingProperties::ENABLE);
 
-	CViewPoint *vp = dsp->getViewPoint();
-    vp->setPosition(0,2,4.5f,CViewPoint::EYE);
-    vp->setPosition(0,0,0,CViewPoint::TARGET);
+	IViewPoint *vp = dsp->getViewPoint();
+    vp->setPosition(0,2,4.5f,IViewPoint::EYE);
+    vp->setPosition(0,0,0,IViewPoint::TARGET);
 
 	C3DScene *pScene = dsp->getRootScene();
     pScene->useZSort();

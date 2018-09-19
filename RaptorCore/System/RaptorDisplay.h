@@ -29,7 +29,7 @@
 
 RAPTOR_NAMESPACE_BEGIN
 
-class CViewPoint;
+class IViewPoint;
 class C3DScene;
 class CRenderingProperties;
 
@@ -43,6 +43,10 @@ public:
 
 	//! Returns the global rendering properties.
 	virtual CRenderingProperties *getRenderingProperties(void) const { return m_pProperties; };
+
+	//!
+	//!	Display management
+	//!
 
 	//!	Create and attach the display to a device context.
 	//!	For a newly created display, the underlying context is created
@@ -61,14 +65,24 @@ public:
 	//! unbounded before call or if there is an error.
 	virtual bool glUnBindDisplay(void);
 
+
+	//!
+	//!	Display management
+	//!
+
 	//!	Current user ( eye ) viewpoint used to render the current root scene of the display. 
     //! The viewpoint has priority over any user OpenGL transforms in rendering: the initial MODELVIEW
 	//!	transform is updated according to the point of view before glRender is called
     //! RQ: If view point is modified, it be passed to this method to "reapply it"
-	virtual void setViewPoint(CViewPoint *viewPoint);
+	virtual void setViewPoint(IViewPoint *viewPoint);
 
 	//! Returns the display view point.
-	virtual CViewPoint *const getViewPoint(void) const;
+	virtual IViewPoint *const getViewPoint(void) const;
+
+	//! Returns the display view point.
+	virtual IViewPoint *const createViewPoint(void) const;
+
+
 
 	//! Resize the display to handle user interface events.
 	//! - sx,sy : define the width and height of the display
@@ -173,6 +187,7 @@ protected:
 
 	
 private:
+	//!	Display factory
 	friend class Raptor;
 	
 	CRaptorDisplay(const CRaptorDisplay&);
@@ -180,7 +195,7 @@ private:
 
 	static CRaptorDisplay	*m_pCurrentDisplay;
 
-	CViewPoint				*m_pViewPoint;
+	IViewPoint				*m_pViewPoint;
 	bool					m_bDeleteViewPoint;
     bool                    m_bApplyViewPointModel;
 

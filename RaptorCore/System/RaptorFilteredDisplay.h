@@ -50,12 +50,12 @@ public:
 	//! Applies the viewpoint to the buffer image,
 	//! leaving the filter display unmodifiable because
 	//! it only renders an flat image.
-	virtual void setViewPoint(CViewPoint *viewPoint);
+	virtual void setViewPoint(IViewPoint *viewPoint);
 
 	virtual void glResize(unsigned int sx,unsigned int sy,unsigned int ox,unsigned int oy);
 
 	//!	Returns the buffer display.
-	virtual CViewPoint *const getViewPoint(void) const;
+	virtual IViewPoint *const getViewPoint(void) const;
 
     //! Returns the rendering properties of the 'drawing display'
     //! ( if it were not overloaded, it would return the properties of the 'filter drawing'

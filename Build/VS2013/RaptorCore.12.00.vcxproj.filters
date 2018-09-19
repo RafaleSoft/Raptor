@@ -188,9 +188,6 @@
     <ClCompile Include="..\..\RaptorCore\Engine\ViewModifier.cpp">
       <Filter>Source Files\Engine src</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\RaptorCore\Engine\ViewPoint.cpp">
-      <Filter>Source Files\Engine src</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\RaptorCore\SSE_Engine\SSE_3DEngine.cpp">
       <Filter>Source Files\SSE_Engine src</Filter>
     </ClCompile>
@@ -593,6 +590,15 @@
     <ClCompile Include="..\..\RaptorCore\Subsys\OpenGL\OpenGLMemory.cpp">
       <Filter>Source Files\Subsys src\OpenGL</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Engine\IViewPoint.cpp">
+      <Filter>Source Files\Engine src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\OpenGL\OpenGLViewPoint.cpp">
+      <Filter>Source Files\Subsys src\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\Vulkan\VulkanViewPoint.cpp">
+      <Filter>Source Files\Subsys src\Vulkan</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Xsd Include="Subsys\ObjectModels\Raptor.xsd">
@@ -664,9 +670,6 @@
       <Filter>Header Files\Engine include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\RaptorCore\Engine\ViewModifier.h">
-      <Filter>Header Files\Engine include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\RaptorCore\Engine\ViewPoint.h">
       <Filter>Header Files\Engine include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\3DSet.h">
@@ -1139,6 +1142,15 @@
     </ClInclude>
     <ClInclude Include="..\..\RaptorCore\Subsys\OpenGL\OpenGLMemory.h">
       <Filter>Header Files\Subsys include\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Engine\IViewPoint.h">
+      <Filter>Header Files\Engine include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\OpenGL\OpenGLViewPoint.h">
+      <Filter>Header Files\Subsys include\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\Vulkan\VulkanViewPoint.h">
+      <Filter>Header Files\Subsys include\Vulkan</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

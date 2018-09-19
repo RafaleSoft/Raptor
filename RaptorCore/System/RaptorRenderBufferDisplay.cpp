@@ -28,8 +28,8 @@
 	#include "GLHierarchy/TextureSet.h"
 #endif
 
-#if !defined(AFX_VIEWPOINT_H__82071851_A036_4311_81CB_01E7E25F19E1__INCLUDED_)
-	#include "Engine/ViewPoint.h"
+#if !defined(AFX_IVIEWPOINT_H__82071851_A036_4311_81CB_01E7E25F19E1__INCLUDED_)
+	#include "Engine/IViewPoint.h"
 #endif
 
 #if !defined(AFX_GEOMETRYALLOCATOR_H__802B3C7A_43F7_46B2_A79E_DDDC9012D371__INCLUDED_)
@@ -503,7 +503,7 @@ bool CRaptorRenderBufferDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
 	glPushMatrix();
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
-	CViewPoint *vp = getViewPoint();
+	IViewPoint *vp = getViewPoint();
 	if (vp != NULL)
 		vp->glvkRenderViewPointModel();
 

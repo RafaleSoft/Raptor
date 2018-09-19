@@ -28,8 +28,8 @@
 #if !defined(AFX_ANIMATOR_H__077150E3_D826_11D3_9142_9866F8B4457F__INCLUDED_)
 	#include "Engine/Animator.h"
 #endif
-#if !defined(AFX_VIEWPOINT_H__82071851_A036_4311_81CB_01E7E25F19E1__INCLUDED_)
-	#include "Engine/ViewPoint.h"
+#if !defined(AFX_IVIEWPOINT_H__82071851_A036_4311_81CB_01E7E25F19E1__INCLUDED_)
+	#include "Engine/IViewPoint.h"
 #endif
 #if !defined(AFX_3DSCENE_H__E597E752_BAD4_415D_9C00_8C59D139D32B__INCLUDED_)
 	#include "Engine/3DScene.h"
@@ -141,8 +141,8 @@ bool CRaptorClient::run(unsigned int width, unsigned int height)
 		return false;
 	}
 
-	CViewPoint *vp = m_pDisplay->getViewPoint();
-	vp->setViewVolume(-1.0,1.0,-1.0,1.0,1.0,100.0,CViewPoint::ORTHOGRAPHIC);
+	IViewPoint *vp = m_pDisplay->getViewPoint();
+	vp->setViewVolume(-1.0,1.0,-1.0,1.0,1.0,100.0,IViewPoint::ORTHOGRAPHIC);
 
 	CRenderingProperties *props = m_pDisplay->getRenderingProperties();
 	props->clear(CGL_RGBA|CGL_DEPTH);

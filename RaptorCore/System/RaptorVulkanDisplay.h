@@ -36,6 +36,8 @@ public:
 	//! see base class
 	virtual bool glUnBindDisplay(void);
 
+	//! see base class
+	virtual IViewPoint *const createViewPoint(void) const;
 
 	//!	Implements base class.
 	virtual bool glRender(void);

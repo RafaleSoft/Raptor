@@ -31,7 +31,7 @@ CControllers::~CControllers(void)
 {
 }
 
-CControllers::CController *CControllers::createViewpointController(CViewPoint* pVp)
+CControllers::CController *CControllers::createViewpointController(IViewPoint* pVp)
 {
 	CViewPointController *pController = new CViewPointController(pVp);
 

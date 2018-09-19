@@ -19,8 +19,8 @@
 #if !defined(AFX_TIMEOBJECT_H__C06AC4B9_4DD7_49E2_9C5C_050EF5C39780__INCLUDED_)
 	#include "Engine/TimeObject.h"
 #endif
-#if !defined(AFX_VIEWPOINT_H__82071851_A036_4311_81CB_01E7E25F19E1__INCLUDED_)
-	#include "Engine/ViewPoint.h"
+#if !defined(AFX_IVIEWPOINT_H__82071851_A036_4311_81CB_01E7E25F19E1__INCLUDED_)
+	#include "Engine/IViewPoint.h"
 #endif
 #if !defined(AFX_3DSCENE_H__E597E752_BAD4_415D_9C00_8C59D139D32B__INCLUDED_)
 	#include "Engine/3DScene.h"
@@ -182,7 +182,7 @@ void CRaptorScreenDisplay::glResize(unsigned int sx,unsigned int sy,unsigned int
 		glViewport(ox,oy,sx,sy);
 		C3DEngine::Get3DEngine()->setClip(ox,oy,sx,sy);
 
-		CViewPoint *pVp = getViewPoint();
+		IViewPoint *pVp = getViewPoint();
 		if (pVp != NULL)
 			pVp->glvkRenderViewPointModel();
 	}

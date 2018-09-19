@@ -12,8 +12,8 @@
 #if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
     #include "System/RaptorErrorManager.h"
 #endif
-#if !defined(AFX_VIEWPOINT_H__82071851_A036_4311_81CB_01E7E25F19E1__INCLUDED_)
-	#include "ViewPoint.h"
+#if !defined(AFX_OPENGLVIEWPOINT_H__94BDC36B_27AB_41FC_848E_DD28D1BDFC13__INCLUDED_)
+	#include "Subsys/OpenGL/OpenGLViewPoint.h"
 #endif
 #if !defined(AFX_TEXTUREOBJECT_H__D32B6294_B42B_4E6F_AB73_13B33C544AD0__INCLUDED_)
 	#include "GLHierarchy/TextureObject.h"
@@ -116,8 +116,8 @@ bool COmniShadowMap::glInitEnvironment(unsigned int width,unsigned int height)
 
     // TODO: Should prevent non power of 2 texture sizes.
 
-	m_pViewPoint = new CViewPoint();
-	m_pViewPoint->setViewVolume(	-1.0,1.0,-1.0,1.0,1.0,100.0,CViewPoint::PERSPECTIVE);
+	m_pViewPoint = new COpenGLViewPoint();
+	m_pViewPoint->setViewVolume(	-1.0,1.0,-1.0,1.0,1.0,100.0,IViewPoint::PERSPECTIVE);
 	m_pViewPoint->registerDestruction(m_pObserver);
 
     //  Square coordinates are mandatory

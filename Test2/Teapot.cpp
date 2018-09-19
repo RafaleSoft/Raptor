@@ -13,7 +13,7 @@
 #include "System/Raptor.h"
 #include "System/RaptorMessages.h"
 #include "Engine/Animator.h"
-#include "Engine/ViewPoint.h"
+#include "Engine/IViewPoint.h"
 #include "GLHierarchy/RenderingProperties.h"
 #include "GLHierarchy/TextureSet.h"
 #include "GLHierarchy/TextureFactory.h"
@@ -161,8 +161,8 @@ void CTeapot::GLInitContext()
 	}
 
 	CRaptorDisplay *pDisplay = CRaptorDisplay::GetCurrentDisplay();
-	CViewPoint *vp = pDisplay->getViewPoint();
-	vp->setViewVolume(-1.33f,1.33f,-1.0f,1.0f,1.0f,10000,CViewPoint::PERSPECTIVE);
+	IViewPoint *vp = pDisplay->getViewPoint();
+	vp->setViewVolume(-1.33f,1.33f,-1.0f,1.0f,1.0f,10000,IViewPoint::PERSPECTIVE);
     vp->glvkRenderViewPointModel();   // switch demo removes the view  point, so render here and forget
 	pDisplay->setViewPoint(vp);
 

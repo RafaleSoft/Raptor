@@ -37,7 +37,7 @@ private:
 	CMaterial	*redMat;
 	CMaterial	*greenMat;
 
-	CViewPoint			*vp;
+	IViewPoint			*vp;
 
 	CFragmentShader		*pfsSetup;
     CVertexShader       *pvsSetup;

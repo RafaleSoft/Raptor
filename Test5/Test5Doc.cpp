@@ -4,7 +4,7 @@
 #include "System/RaptorConfig.h"
 #include "Engine/Animator.h"
 #include "Engine/3DScene.h"
-#include "Engine/ViewPoint.h"
+#include "Engine/IViewPoint.h"
 #include "Engine/ViewModifier.h"
 #include "Engine/LightModifier.h"
 #include "GLHierarchy/FragmentProgram.h"
@@ -325,9 +325,9 @@ void CTest5Doc::GLInitContext(void)
 #endif
 
 
-	CViewPoint *vp = m_pDisplay->getViewPoint();
-    vp->setPosition(0,0,3.5,CViewPoint::EYE);
-    vp->setPosition(0,0,0,CViewPoint::TARGET);
+	IViewPoint *vp = m_pDisplay->getViewPoint();
+    vp->setPosition(0,0,3.5,IViewPoint::EYE);
+    vp->setPosition(0,0,0,IViewPoint::TARGET);
 
 	CTimeObject::setTimeFactor(1.0f);
 	CAnimator *pAnimator = new CAnimator();

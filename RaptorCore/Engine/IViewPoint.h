@@ -1,8 +1,8 @@
 // ViewPoint.h: interface for the CViewPoint class.
 //
 //////////////////////////////////////////////////////////////////////
-#if !defined(AFX_VIEWPOINT_H__82071851_A036_4311_81CB_01E7E25F19E1__INCLUDED_)
-#define AFX_VIEWPOINT_H__82071851_A036_4311_81CB_01E7E25F19E1__INCLUDED_
+#if !defined(AFX_IVIEWPOINT_H__82071851_A036_4311_81CB_01E7E25F19E1__INCLUDED_)
+#define AFX_IVIEWPOINT_H__82071851_A036_4311_81CB_01E7E25F19E1__INCLUDED_
 
 #if _MSC_VER > 1000
 #pragma once
@@ -31,7 +31,7 @@ class CLight;
 
 
 
-class RAPTOR_API CViewPoint :	public CPersistence, 
+class RAPTOR_API IViewPoint :	public CPersistence, 
 								public CTimeObject
 {
 public:
@@ -48,8 +48,8 @@ public:
     } VIEW_POINT_POSITION;
 
 public:
-	CViewPoint(const std::string& name = "VIEW_POINT");
-	virtual ~CViewPoint();
+	IViewPoint(const std::string& name = "VIEW_POINT");
+	virtual ~IViewPoint();
 
 	//!	Set the viewer's eye position or target position.
     void setPosition(float x,float y,float z,VIEW_POINT_POSITION p);
@@ -94,12 +94,12 @@ public:
 	//! This method applies the viewpoint transform to the current modelview transform.
 	//!	The modelview is initialized from identity, thus rendering is not cumulative 
 	//!	with current modelview status.
-	virtual void glvkRender(void);
+	virtual void glvkRender(void) = 0;
 	//! This method is added to render the 'projection' model
 	//! of the viewpoint. It is not part of the generic 'Render'
 	//! method because it should be called only once, except
 	//! in somme specific case ( camera effects )
-	virtual void glvkRenderViewPointModel(void);
+	virtual void glvkRenderViewPointModel(void) = 0;
 
 
 	//!
@@ -128,11 +128,11 @@ public:
 
     //! Persistence I/O
 	DECLARE_IO
-	DECLARE_CLASS_ID(CViewPointClassID,"ViewPoint",CPersistence)
+	DECLARE_CLASS_ID(IViewPointClassID,"IViewPoint",CPersistence)
 
 
 
-private:
+protected:
     //!	Compute physics resultant after dt time increment
 	virtual void RAPTOR_FASTCALL deltaTime(float dt);
 
@@ -178,5 +178,5 @@ private:
 
 RAPTOR_NAMESPACE_END
 
-#endif // !defined(AFX_VIEWPOINT_H__82071851_A036_4311_81CB_01E7E25F19E1__INCLUDED_)
+#endif // !defined(AFX_IVIEWPOINT_H__82071851_A036_4311_81CB_01E7E25F19E1__INCLUDED_)
 

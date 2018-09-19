@@ -4,7 +4,7 @@
 #include "StdAfx.h"
 
 
-#include "Engine/ViewPoint.h"
+#include "Engine/IViewPoint.h"
 #include "GLHierarchy/TextureFactory.h"
 #include "GLHierarchy/TextureSet.h"
 #include "GLHierarchy/TextureFactoryConfig.h"
@@ -85,8 +85,8 @@ Display::~Display()
 
 void Display::GLInitContext()
 {
-	CViewPoint *vp = getDisplay()->getViewPoint();
-	vp->setViewVolume(-viewScale, viewScale, -1.0f, 1.0f, 1.0f, 1000.0f, CViewPoint::ORTHOGRAPHIC);
+	IViewPoint *vp = getDisplay()->getViewPoint();
+	vp->setViewVolume(-viewScale, viewScale, -1.0f, 1.0f, 1.0f, 1000.0f, IViewPoint::ORTHOGRAPHIC);
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_CULL_FACE);
 	glClearColor(0.0f,0.0f,0.0f,0.5f);

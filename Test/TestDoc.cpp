@@ -150,9 +150,9 @@ void CTestDoc::GLInitContext(void)
     pLight->setLightDirection(GL_COORD_VERTEX(0.0f,0.0f,-5.0f,1.0f));
     pLight->glActivate();
 
-	CViewPoint *vp = dsp->getViewPoint();
-    vp->setPosition(0,0,5.5,CViewPoint::EYE);
-    vp->setPosition(0,0,0,CViewPoint::TARGET);
+	IViewPoint *vp = dsp->getViewPoint();
+    vp->setPosition(0,0,5.5,IViewPoint::EYE);
+    vp->setPosition(0,0,0,IViewPoint::TARGET);
 
 	CViewModifier *vm = new CViewModifier("test");
 	vm->setObject(m_pSG);

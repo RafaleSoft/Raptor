@@ -28,7 +28,7 @@
 #include "GLHierarchy/Light.h"
 #include "System/Raptor.h"
 #include "Engine/3DPath.h"
-#include "Engine/ViewPoint.h"
+#include "Engine/IViewPoint.h"
 
 static CShadowMapDisplay* display = NULL;
 static const int NB_INSTANCES = 27;
@@ -462,15 +462,15 @@ void CShadowMapDisplay::Init()
 	targetPath->addKnot(0.0f,0.0f,0.0f,0.75f);
 	targetPath->addKnot(0.0f,0.0f,0.0f,1.0f);
 
-	vp = new CViewPoint();
-    vp->setPosition(0.0,4.0,10.0,CViewPoint::EYE);
-    vp->setPosition(0.0,0.0,0.0,CViewPoint::TARGET);
-	vp->setViewVolume(-1.33f,1.33f,-1.0f,1.0f,1.0f,10000.0f,CViewPoint::PERSPECTIVE);
+	CRaptorDisplay* pDisplay = CRaptorDisplay::GetCurrentDisplay();
+	vp = pDisplay->createViewPoint();
+    vp->setPosition(0.0,4.0,10.0,IViewPoint::EYE);
+    vp->setPosition(0.0,0.0,0.0,IViewPoint::TARGET);
+	vp->setViewVolume(-1.33f,1.33f,-1.0f,1.0f,1.0f,10000.0f,IViewPoint::PERSPECTIVE);
 	vp->addPath(eyePositionPath,targetPath);
 	vp->setCurrentPath(0);
 	vp->setTimeInterval(0.0f,20.0f);
 
-	CRaptorDisplay* pDisplay = CRaptorDisplay::GetCurrentDisplay();
 	pDisplay->addScene(m_pScene);
 }
 

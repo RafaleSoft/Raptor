@@ -27,6 +27,9 @@
 #if !defined(AFX_RAPTORVULKANSHADER_H__C188550F_1D1C_4531_B0A0_727CE9FF9450__INCLUDED_)
 	#include "Subsys/Vulkan/VulkanShader.h"
 #endif
+#if !defined(AFX_VULKANVIEWPOINT_H__08D29395_9883_45F8_AE51_5174BD6BC19B__INCLUDED_)
+	#include "Subsys/Vulkan/VulkanViewPoint.h"
+#endif
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 	#if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
 		#include "System/RaptorErrorManager.h"
@@ -95,6 +98,14 @@ CRaptorVulkanDisplay::~CRaptorVulkanDisplay(void)
 	glUnBindDisplay();
 
 	CContextManager::GetInstance()->vkDestroyContext(m_context);
+}
+
+IViewPoint *const CRaptorVulkanDisplay::createViewPoint(void) const
+{
+	if (NULL != getRootScene())
+		return new CVulkanViewPoint(getRootScene()->getName() + "_VIEWPOINT");
+	else
+		return new CVulkanViewPoint("RAPTORVULKANDISPLAY_VIEWPOINT");
 }
 
 void CRaptorVulkanDisplay::glResize(unsigned int sx,unsigned int sy,
@@ -232,7 +243,7 @@ bool CRaptorVulkanDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
 		}
 	}
 
-	return true; // CRaptorDisplay::glBindDisplay(device);
+	return true; // CRaptorDisplay::glvkBindDisplay(device);
 }
 
 bool CRaptorVulkanDisplay::glUnBindDisplay(void)
@@ -249,7 +260,7 @@ bool CRaptorVulkanDisplay::glUnBindDisplay(void)
 	RAPTOR_HANDLE device;
 	manager->vkMakeCurrentContext(device, CContextManager::INVALID_CONTEXT);
 
-	return true; //CRaptorDisplay::glUnBindDisplay();
+	return true; //CRaptorDisplay::glvkUnBindDisplay();
 }
 
 

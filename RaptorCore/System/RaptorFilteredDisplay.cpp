@@ -30,8 +30,8 @@
 #if !defined(AFX_TEXTURESET_H__26F3022D_70FE_414D_9479_F9CCD3DCD445__INCLUDED_)
 	#include "GLHierarchy/TextureSet.h"
 #endif
-#if !defined(AFX_VIEWPOINT_H__82071851_A036_4311_81CB_01E7E25F19E1__INCLUDED_)
-	#include "Engine/ViewPoint.h"
+#if !defined(AFX_IVIEWPOINT_H__82071851_A036_4311_81CB_01E7E25F19E1__INCLUDED_)
+	#include "Engine/IViewPoint.h"
 #endif
 #if !defined(AFX_RENDERINGPROPERTIES_H__634BCF2B_84B4_47F2_B460_D7FDC0F3B698__INCLUDED_)
 	#include "GLHierarchy/RenderingProperties.h"
@@ -110,8 +110,8 @@ CRaptorFilteredDisplay::CRaptorFilteredDisplay(const CRaptorDisplayConfig& pcs)
 		filter_cs.renderer = CRaptorDisplayConfig::PIXEL_BUFFER;
 #endif
 
-	CViewPoint *vp = CRaptorDisplay::getViewPoint();
-	vp->setViewVolume(-1.0f,1.0f,-1.0f,1.0f,1.0f,100.0f,CViewPoint::ORTHOGRAPHIC);
+	IViewPoint *vp = CRaptorDisplay::getViewPoint();
+	vp->setViewVolume(-1.0f,1.0f,-1.0f,1.0f,1.0f,100.0f,IViewPoint::ORTHOGRAPHIC);
 
     CRenderingProperties *rp = CRaptorScreenDisplay::getRenderingProperties();
     rp->setTexturing(CRenderingProperties::ENABLE);
@@ -476,14 +476,14 @@ void CRaptorFilteredDisplay::glResize(unsigned int sx,unsigned int sy,unsigned i
 	glViewport(ox,oy,sx,sy);
 	C3DEngine::Get3DEngine()->setClip(ox,oy,sx,sy);
 
-	CViewPoint *pVp = CRaptorDisplay::getViewPoint();
+	IViewPoint *pVp = CRaptorDisplay::getViewPoint();
 	pVp->glvkRenderViewPointModel();
 
     //m_pDisplay->glResize(sx,sy,ox,oy);
 
 	if (m_bBufferBound)
 	{
-		CViewPoint *vp = NULL;
+		IViewPoint *vp = NULL;
 		RAPTOR_HANDLE noDevice;
 
 		if (m_pFSAADisplay != NULL)
@@ -497,7 +497,8 @@ void CRaptorFilteredDisplay::glResize(unsigned int sx,unsigned int sy,unsigned i
 			vp = m_pDisplay->getViewPoint();
 		}
 
-		vp->glvkRenderViewPointModel();
+		if (NULL != vp)
+			vp->glvkRenderViewPointModel();
 	}
 
     CATCH_GL_ERROR
@@ -585,7 +586,7 @@ bool CRaptorFilteredDisplay::glRender(void)
 
 
 
-void CRaptorFilteredDisplay::setViewPoint(CViewPoint *viewPoint)
+void CRaptorFilteredDisplay::setViewPoint(IViewPoint *viewPoint)
 {
 	if (m_pDisplay != NULL)
 	{
@@ -615,7 +616,7 @@ void CRaptorFilteredDisplay::setViewPoint(CViewPoint *viewPoint)
 #endif
 }
 
-CViewPoint *const CRaptorFilteredDisplay::getViewPoint(void) const
+IViewPoint *const CRaptorFilteredDisplay::getViewPoint(void) const
 {
 	if (m_pDisplay == NULL)
 		return NULL;

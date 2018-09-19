@@ -6,7 +6,7 @@
 
 
 
-CViewPointController::CViewPointController(CViewPoint *pVP)
+CViewPointController::CViewPointController(IViewPoint *pVP)
 	:m_pViewPoint(pVP),
 	oldxpos(-1),oldypos(-1)
 {
