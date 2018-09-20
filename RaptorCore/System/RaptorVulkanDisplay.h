@@ -31,11 +31,13 @@ public:
 	virtual ~CRaptorVulkanDisplay(void);
 
 	//! see base class
-	virtual bool glBindDisplay(const RAPTOR_HANDLE& device);
+	virtual bool glvkBindDisplay(const RAPTOR_HANDLE& device);
 
 	//! see base class
 	virtual bool glUnBindDisplay(void);
 
+	//! see base class
+	virtual IViewPoint *const createViewPoint(void) const;
 
 	//!	Implements base class.
 	virtual bool glRender(void);
@@ -81,7 +83,6 @@ public:
 private:
 	void allocateResources(void);
 
-	std::vector<CVulkanPipeline*> m_pipelines;
 	CContextManager::RENDERING_CONTEXT_ID	m_context;
 
 	//!	Display configuration.

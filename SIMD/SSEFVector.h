@@ -22,14 +22,15 @@
 	#include "GenericAlignedVector.h"
 #endif
 
-class CSSEFVector : public CGenericAlignedVector<float>  
+class CSSEFVector : public CGenericAlignedVector<float>
 {
 public:
 	CSSEFVector() {};
 	virtual ~CSSEFVector() {};
 
+#ifndef SIMD_NO_ASSEMBLY
 	CSSEFVector& operator= ( const CSSEFVector& v )
-	{ 
+	{
 		__asm
 		{
 			mov ebx,v
@@ -42,7 +43,7 @@ public:
 		return *this;
 	};
 	CSSEFVector& operator= ( const CGenericAlignedVector<float>& v )
-	{ 
+	{
 		__asm
 		{
 			mov ebx,v
@@ -55,7 +56,7 @@ public:
 		return *this;
 	};
 	CSSEFVector& operator= ( const CGenericVector<float>& v )
-	{ 
+	{
 		__asm
 		{
 			mov esi,v
@@ -76,11 +77,11 @@ public:
 			mov edi,[ebx+4]
 			sse_storeaps(XMM0_EDI)
 		}
-		return *this; 
+		return *this;
 	};		
 
 	bool operator== ( const CGenericAlignedVector<float>& v ) const
-	{ 
+	{
 		__asm
 		{
 			mov ebx,v
@@ -110,7 +111,7 @@ public:
 #pragma warning(default:4035)
 
 	bool operator== ( const CSSEFVector& v ) const
-	{ 
+	{
 		__asm
 		{
 			mov ebx,v
@@ -155,11 +156,11 @@ public:
 	CSSEFVector& SIMD_CALL operator*= (const CGenericAlignedMatrix<float>& m);
 
 	CSSEFVector& SIMD_CALL operator+  (const CSSEFVector&) const;
-    CSSEFVector& SIMD_CALL operator-  (const CSSEFVector&) const;
-
-
+  CSSEFVector& SIMD_CALL operator-  (const CSSEFVector&) const;
+#endif
 };
 
+#ifndef SIMD_NO_ASSEMBLY
 // cross product
 CSSEFVector& SIMD_CALL operator^  (const CSSEFVector&, const CSSEFVector&);
 // scalar operations
@@ -191,7 +192,7 @@ __inline CSSEFVector& SIMD_CALL CSSEFVector::operator-(void)
 }
 
 __inline CSSEFVector& SIMD_CALL CSSEFVector::operator!(void)
-{ 
+{
 		__asm
 	{
 		mov ebx,this
@@ -311,7 +312,7 @@ __inline double SIMD_CALL CSSEFVector::Normalize()
 	}
 	return res;
 }
-
+#endif
 
 #endif // !defined(AFX_SSEFLOATVECTOR_H__9AAB93A4_DB7C_4486_802A_1B4CE4E6CEC4__INCLUDED_)
 

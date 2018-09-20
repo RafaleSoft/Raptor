@@ -1,12 +1,8 @@
 // Imaging.cpp: implementation of the CImaging class.
 //
 //////////////////////////////////////////////////////////////////////
-#include "StdAfx.h"
 #include "Subsys/CodeGeneration.h"
 
-#if !defined(AFX_TEXTUREFACTORY_H__1B470EC4_4B68_11D3_9142_9A502CBADC6B__INCLUDED_)
-	#include "GLHierarchy/TextureFactory.h"
-#endif
 
 #if !defined(AFX_BMPIMAGING_H__C9C42555_D3BF_42BE_8CC2_FA35410B79AD__INCLUDED_)
 	#include "Imaging/BMPImaging.h"
@@ -50,24 +46,22 @@ CImaging::~CImaging()
 
 }
 
-bool CImaging::installImagers(CTextureFactory &factory) 
+bool CImaging::installImagers(void) 
 {
-	CTextureFactoryConfig &pConfig = factory.getConfig();
-
-    pConfig.setImageKindIO(new CBMPImaging());
-    pConfig.setImageKindIO(new CICOImaging());
-    pConfig.setImageKindIO(new CTGAImaging());
-    pConfig.setImageKindIO(new CJPGImaging());
-    pConfig.setImageKindIO(new CTIFFImaging());
+    CImage::setImageKindIO(new CBMPImaging());
+	CImage::setImageKindIO(new CICOImaging());
+	CImage::setImageKindIO(new CTGAImaging());
+	CImage::setImageKindIO(new CJPGImaging());
+	CImage::setImageKindIO(new CTIFFImaging());
 #if _MSC_VER > 1200 
-	pConfig.setImageKindIO(new COpenEXRImaging());
+	CImage::setImageKindIO(new COpenEXRImaging());
 #endif
-    pConfig.setImageKindIO(new CPNGImaging());
+	CImage::setImageKindIO(new CPNGImaging());
 
     return true;
 }
 
-bool CImaging::installImager(CTextureFactory &factory,const std::string& imageType)
+bool CImaging::installImager(const std::string& imageType)
 {
     bool res = true;
 
@@ -75,24 +69,22 @@ bool CImaging::installImager(CTextureFactory &factory,const std::string& imageTy
 	for (size_t pos=0;pos<imageType.size();pos++)
         ext[pos] = toupper(imageType[pos]);
 
-	CTextureFactoryConfig &pConfig = factory.getConfig();
-
     if (ext == "BMP")
-        pConfig.setImageKindIO(new CBMPImaging());
+		CImage::setImageKindIO(new CBMPImaging());
     else if (ext == "ICO")
-        pConfig.setImageKindIO(new CICOImaging());
+		CImage::setImageKindIO(new CICOImaging());
     else if (ext == "TGA")
-        pConfig.setImageKindIO(new CTGAImaging());
+		CImage::setImageKindIO(new CTGAImaging());
     else if (ext == "JPG")
-        pConfig.setImageKindIO(new CJPGImaging());
+		CImage::setImageKindIO(new CJPGImaging());
     else if (ext == "TIF")
-        pConfig.setImageKindIO(new CTIFFImaging());
+		CImage::setImageKindIO(new CTIFFImaging());
 #if _MSC_VER > 1200 
 	else if (ext == "EXR")
-        pConfig.setImageKindIO(new COpenEXRImaging());
+		CImage::setImageKindIO(new COpenEXRImaging());
 #endif
     else if (ext == "PNG")
-        pConfig.setImageKindIO(new CPNGImaging());
+		CImage::setImageKindIO(new CPNGImaging());
 	else
 		res = false;
 

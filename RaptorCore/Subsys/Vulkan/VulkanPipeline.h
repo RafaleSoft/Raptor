@@ -21,29 +21,26 @@ RAPTOR_NAMESPACE_BEGIN
 class CRaptorDisplayConfig;
 class CVulkanShader;
 class CVulkanShaderStage;
+class CGeometry;
 
 class CVulkanPipeline
 {
 public:
 	CVulkanPipeline(VkDevice device,
-					VkRenderPass renderPass,
-					PFN_vkGetDeviceProcAddr vkGetDeviceProcAddr);
+					VkRenderPass renderPass);
 	virtual ~CVulkanPipeline(void);
 
-	bool initPipeline(const CVulkanShaderStage& shaderStages);
+	bool initPipeline(const CVulkanShaderStage* shaderStages, const CGeometry* geometry);
 
 	bool destroyPipeline(void);
 
 	VkPipeline getPipeline(void) const { return pipeline; };
 
 
-
 #if defined(VK_VERSION_1_0)
-	DECLARE_VK_pipeline(DEFAULT_LINKAGE)
-#endif
+	DECLARE_VK_pipeline(STATIC_LINKAGE)
 
 private:
-#if defined(VK_VERSION_1_0)
 	VkDevice		device;
 	VkRenderPass	renderPass;
 	VkPipeline		pipeline;

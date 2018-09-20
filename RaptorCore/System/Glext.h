@@ -188,6 +188,7 @@ extern "C" {
 	#define GL_DEPTH_COMPONENT16              0x81A5
 	#define GL_DEPTH_COMPONENT24              0x81A6
 	#define GL_DEPTH_COMPONENT32              0x81A7
+	#define GL_MIRROR_CLAMP_TO_EDGE           0x8743
 	#define GL_MIRRORED_REPEAT                0x8370
 	#define GL_FOG_COORDINATE_SOURCE          0x8450
 	#define GL_FOG_COORDINATE                 0x8451
@@ -262,11 +263,17 @@ extern "C" {
 	#define GL_FOG_COORD_ARRAY_POINTER        GL_FOG_COORDINATE_ARRAY_POINTER
 	#define GL_FOG_COORD_ARRAY                GL_FOG_COORDINATE_ARRAY
 	#define GL_FOG_COORD_ARRAY_BUFFER_BINDING GL_FOG_COORDINATE_ARRAY_BUFFER_BINDING
+	#undef GL_SRC0_RGB
 	#define GL_SRC0_RGB                       GL_SOURCE0_RGB
+	#undef GL_SRC1_RGB
 	#define GL_SRC1_RGB                       GL_SOURCE1_RGB
+	#undef GL_SRC2_RGB
 	#define GL_SRC2_RGB                       GL_SOURCE2_RGB
+	#undef GL_SRC0_ALPHA
 	#define GL_SRC0_ALPHA                     GL_SOURCE0_ALPHA
+	#undef GL_SRC1_ALPHA
 	#define GL_SRC1_ALPHA                     GL_SOURCE1_ALPHA
+	#undef GL_SRC2_ALPHA
 	#define GL_SRC2_ALPHA                     GL_SOURCE2_ALPHA
 #endif
 
@@ -740,9 +747,13 @@ extern "C" {
 
 /* GL_ARB_texture_mirrored_repeat */
 #if defined(GL_ARB_texture_mirrored_repeat)
-	#define GL_MIRRORED_REPEAT_ARB            0x8370
+	#define GL_MIRRORED_REPEAT_ARB				0x8370
 #endif
 
+/* GL_ARB_texture_mirrored_repeat */
+#if defined(GL_ARB_texture_mirror_clamp_to_edge)
+	#define GL_MIRROR_CLAMP_TO_EDGE_ARB			0x8743
+#endif
 
 /* ARB_texture_env_combine */
 //	texture combiners:

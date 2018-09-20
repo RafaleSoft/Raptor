@@ -18,22 +18,12 @@ RAPTOR_NAMESPACE
 #ifdef RAPTOR_SSE_CODE_GENERATION
 
 
-	#define VMIN_OFFSET	4
-	#define VMAX_OFFSET	20
 	//////////////////////////////////////////////////////////////////////
 	// Construction/Destruction
 	//////////////////////////////////////////////////////////////////////
 	CSSE_BoundingBox::CSSE_BoundingBox():
 		CBoundingBox()
 	{
-		// Check offsets
-		if (
-			(((unsigned char*)(&xmin) - (unsigned char*)(this)) != VMIN_OFFSET) ||
-			(((unsigned char*)(&xmax) - (unsigned char*)(this)) != VMAX_OFFSET)
-			)
-		{
-			RAPTOR_FATAL(CPersistence::CPersistenceClassID::GetClassId(),"Raptor was not properly generated. Check CSSE_BoundingBox offsets");
-		}
 	}
 
 	CSSE_BoundingBox::CSSE_BoundingBox(const CSSE_BoundingBox &r_box):

@@ -75,7 +75,7 @@ copy .\RaptorCore\Engine\ParticleManager.h Redist\Include\Engine
 copy .\RaptorCore\Engine\Physics.h Redist\Include\Engine
 copy .\RaptorCore\Engine\TimeObject.h Redist\Include\Engine
 copy .\RaptorCore\Engine\ViewModifier.h Redist\Include\Engine
-copy .\RaptorCore\Engine\ViewPoint.h Redist\Include\Engine
+copy .\RaptorCore\Engine\IViewPoint.h Redist\Include\Engine
 
 ECHO       GLHierarchy:
 copy .\RaptorCore\GLHierarchy\3DSet.h Redist\Include\GLHierarchy
@@ -94,6 +94,7 @@ copy .\RaptorCore\GLHierarchy\Geometry.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\GeometryEditor.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\GeometryPrimitive.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\GeometryProgram.h Redist\Include\GLHierarchy
+copy .\RaptorCore\GLHierarchy\ITextureObject.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\Light.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\LightGlow.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\LightObserver.h Redist\Include\GLHierarchy
@@ -137,6 +138,7 @@ ECHO       System:
 copy .\RaptorCore\System\CGLTypes.h Redist\Include\System
 copy .\RaptorCore\System\Color.h Redist\Include\System
 copy .\RaptorCore\System\Glext.h Redist\Include\System
+copy .\RaptorCore\System\Image.h Redist\Include\System
 copy .\RaptorCore\System\Memory.h Redist\Include\System
 copy .\RaptorCore\System\Raptor.h Redist\Include\System
 copy .\RaptorCore\System\RaptorApplication.h Redist\Include\System
@@ -147,7 +149,8 @@ copy .\RaptorCore\System\RaptorDisplayConfig.h Redist\Include\System
 copy .\RaptorCore\System\RaptorDisplayFilter.h Redist\Include\System
 copy .\RaptorCore\System\RaptorErrorManager.h Redist\Include\System
 copy .\RaptorCore\System\RaptorEventManager.h Redist\Include\System
-copy .\RaptorCore\System\RaptorExtensions.h Redist\Include\System
+copy .\RaptorCore\System\RaptorGLExtensions.h Redist\Include\System
+copy .\RaptorCore\System\RaptorVKExtensions.h Redist\Include\System
 copy .\RaptorCore\System\RaptorIO.h Redist\Include\System
 copy .\RaptorCore\System\RaptorMessages.h Redist\Include\System
 copy .\RaptorCore\System\RenderEntryPoint.h Redist\Include\System
@@ -175,12 +178,11 @@ copy .\RaptorCore\Raptordll.h Redist\Include
 ECHO    Copying ToolBox files:
 copy .\RaptorToolBox\BasicObjects.h Redist\Include\ToolBox
 copy .\RaptorToolBox\CmdLineParser.h Redist\Include\ToolBox
+copy .\RaptorToolBox\Controllers.h Redist\Include\ToolBox
 copy .\RaptorToolBox\Imaging.h Redist\Include\ToolBox
+copy .\RaptorToolBox\ParticleCompute.h Redist\Include\ToolBox
 copy .\RaptorToolBox\RaptorToolBox.h Redist\Include\ToolBox
 copy .\RaptorToolBox\Streaming.h Redist\Include\ToolBox
-copy .\RaptorToolBox\Controllers.h Redist\Include\ToolBox
-copy .\RaptorToolBox\ParticleCompute.h Redist\Include\ToolBox
-
 copy .\RaptorToolBox\Filters\BlurFilter.h Redist\Include\ToolBox\Filters
 copy .\RaptorToolBox\Filters\ColorControlFilter.h Redist\Include\ToolBox\Filters
 copy .\RaptorToolBox\Filters\DOFFilter.h Redist\Include\ToolBox\Filters

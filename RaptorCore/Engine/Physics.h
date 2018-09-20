@@ -47,9 +47,9 @@ public:
     //!	provided by the physics object to which it is linked.
     //!	There is no special case for diracs, except the fact
     //!	that they will appear only once
-    typedef void (RAPTOR_CCALL *FORCES_PROC)(CPhysics *physics,
-                                                                                    CGenericVector<float> &accel,
-                                                                                    CGenericVector<float> &raccel);
+    typedef void (RAPTOR_CCALL *FORCES_PROC)(	CPhysics *physics,
+												CGenericVector<float> &accel,
+												CGenericVector<float> &raccel);
 
     
     //	Definition of a force that will be computed by Pfd

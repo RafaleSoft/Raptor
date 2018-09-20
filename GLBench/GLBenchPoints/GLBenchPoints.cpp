@@ -125,8 +125,7 @@ void Display::GLInitContext()
 	CColor::RGBA *colors = (CColor::RGBA*)(CHostMemoryManager::GetInstance()->allocate(sizeof(CColor::RGBA),MAX_VERTEX,16));
 	GLushort *indexes = (GLushort*)(CHostMemoryManager::GetInstance()->allocate(sizeof(GLushort),MAX_VERTEX,16));
 
-    int i = 0;
-	for (i=0;i<MAX_VERTEX;i++)
+	for (int i=0;i<MAX_VERTEX;i++)
 	{
 		colors[i].r = 1.0f / 255.0f * (rand() % 256);
 		colors[i].g = 1.0f / 255.0f * (rand() % 256);
@@ -151,7 +150,7 @@ void Display::GLInitContext()
 	vertex[0].z = p3.z;
 	vertex[0].h = 1.0f;
 
-	for (i=1;i<MAX_VERTEX;i++)
+	for (int i=1;i<MAX_VERTEX;i++)
 	{
 		int idx = (rand() % 4);
 		switch(idx)
@@ -183,12 +182,12 @@ void Display::GLInitContext()
 		}
 	}
 
-	for (i=0;i<MAX_VERTEX;i++)
+	for (int i=0;i<MAX_VERTEX;i++)
 	{
 		indexes[i] = i;
 	}
 
-	glClearColor(0.0f,0.0f,0.0f,0.0);
+	glClearColor(0.0f,0.0f,0.0f,0.0f);
 	
 	m_points = new CGeometry("BenchPoints");
 	CGeometry::CRenderingModel model(	CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY|
@@ -210,12 +209,14 @@ void Display::GLInitContext()
 
 	CTextureFactory &txt = CTextureFactory::getDefaultFactory();
 
-	sprite = txt.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA);
+	sprite = txt.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA);
     sprite->setSize(32,32);
 	sprite->glSetTransparency(192);
-	sprite->allocateTexels();
 
-	unsigned char *data = sprite->getTexels();
+	CImage spr;
+	spr.allocatePixels(32,32);
+
+	unsigned char *data = spr.getPixels();
 	unsigned int offset = 0;
 	for (int j=0;j<32;j++)
 	{
@@ -228,7 +229,7 @@ void Display::GLInitContext()
 		}
 	}
 
-	txt.glLoadTexture(sprite,".buffer");
+	txt.glLoadTexture(sprite,spr);
 }
 
 extern "C" void GLBENCH_API Bench(CWnd *parent)
@@ -317,7 +318,7 @@ extern "C" void GLBENCH_API Bench(CWnd *parent)
 	CTimeObject::markTime(parent);
 	glPointSize(20.0);
 #if defined(GL_EXT_point_parameters)
-	if (Raptor::glIsExtensionSupported("GL_EXT_point_parameters"))
+	if (Raptor::glIsExtensionSupported(GL_EXT_POINT_PARAMETERS_EXTENSION_NAME))
 	{
 		CVertexShader s;
 		GL_COORD_VERTEX quadric(1.0f, 1.0f, 10.0f, 1.0f);
@@ -351,7 +352,7 @@ extern "C" void GLBENCH_API Bench(CWnd *parent)
 	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 	glPointSize(32.0);
 #if defined(GL_EXT_point_parameters)
-	if (Raptor::glIsExtensionSupported("GL_EXT_point_parameters"))
+	if (Raptor::glIsExtensionSupported(GL_EXT_POINT_PARAMETERS_EXTENSION_NAME))
 	{
 		CVertexShader s;
 		GL_COORD_VERTEX quadric(1.0f, 1.0f, 10.0f, 1.0f);
@@ -381,11 +382,11 @@ extern "C" void GLBENCH_API Bench(CWnd *parent)
 #if defined(GL_NV_point_sprite)
 	GLDisplay->glMakeCurrent();
 	glPointSize(16.0);
-	if (Raptor::glIsExtensionSupported("GL_NV_point_sprite"))
+	if (Raptor::glIsExtensionSupported(GL_NV_POINT_SPRITE_EXTENSION_NAME))
 	{
 		//AfxMessageBox("Code need to be adapted !");
 	#if defined(GL_EXT_point_parameters)
-		if (Raptor::glIsExtensionSupported("GL_EXT_point_parameters"))
+		if (Raptor::glIsExtensionSupported(GL_EXT_POINT_PARAMETERS_EXTENSION_NAME))
 		{
 			CVertexShader s;
 			GL_COORD_VERTEX quadric(1.0f, 0.2f, 0.0f, 1.0f);
@@ -400,7 +401,7 @@ extern "C" void GLBENCH_API Bench(CWnd *parent)
 		glEnable(GL_POINT_SPRITE_NV);
 		//GLDisplay->glPointParameterfEXT(GL_POINT_SPRITE_R_MODE_NV,GL_ZERO);
 		glTexEnvi(GL_POINT_SPRITE_NV,GL_COORD_REPLACE_NV,GL_TRUE);
-		sprite->glRender();
+		sprite->glvkRender();
 		CTimeObject::markTime(parent);
 		for (i=0;i<LOOP_SIZE;i++)
 		{

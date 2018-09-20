@@ -44,8 +44,8 @@ public:
 	{
 		EXTENSION_KIND	kind;
 		bool	active;
-		string	extensionName;
-        vector<string>  dependencies;
+		std::string	extensionName;
+        std::vector<std::string>  dependencies;
 	} EXTENSION;
 
 public:
@@ -54,7 +54,10 @@ public:
 
 	const vector<EXTENSION>& getExtensions(void) const { return extensions; };
 
+	//!	Activates all registered extensions.
 	void activateAll(void);
+	
+	//!	Deactivates all registered extensions.
 	void activateNone(void);
 
 	void activateDebug(bool activate) { m_buildDebug = activate; };
@@ -85,8 +88,20 @@ public:
 	//! Generates the extension header file
 	bool writeHeader(const string& filename);
 
+
+
 private:
-	vector<EXTENSION>	extensions;
+	//!	Helper to register Raptor extensions.
+	void addExtension(EXTENSION_KIND kind, std::string extensionName);
+
+	//!	Helper to register Raptor extensions.
+	void addExtension(EXTENSION_KIND kind, std::string extensionName, std::string extensionDependency);
+
+	//!	Helper to register Raptor extensions.
+	void addExtension(EXTENSION_KIND kind, std::string extensionName, std::string extensionDependency, std::string extensionDependency2);
+
+
+	std::vector<EXTENSION>	extensions;
 
     bool	m_buildDebug;
     bool	m_buildRedist;

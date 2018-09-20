@@ -16,9 +16,6 @@
 #if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
 	#include "System/Raptor.h"
 #endif
-#ifndef __INTERNAL_PROCS_H__
-	#include "Subsys/InternalProcs.h"
-#endif
 #if !defined(AFX_VERTEXSHADER_H__F2D3BBC6_87A1_4695_B667_2B8C3C4CF022__INCLUDED_)
 	#include "VertexShader.h"
 #endif
@@ -28,8 +25,8 @@
 #if !defined(AFX_EMBMSHADER_H__99A5AF45_D5C7_4F43_851C_A31FC52DB237__INCLUDED_)
 	#include "Subsys/EMBMShader.h"
 #endif
-#if !defined(AFX_RAPTOREXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
-	#include "System/RaptorExtensions.h"
+#if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
+	#include "System/RaptorGLExtensions.h"
 #endif
 #if !defined(AFX_RAPTORIO_H__87D52C27_9117_4675_95DC_6AD2CCD2E78D__INCLUDED_)
 	#include "System/RaptorIO.h"
@@ -82,10 +79,10 @@ CBumppedGeometry::CBumppedGeometry(	const std::string& name,
 void CBumppedGeometry::init(void)
 {
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
-	if ((!Raptor::glIsExtensionSupported("GL_ARB_fragment_program")) ||
-		(!Raptor::glIsExtensionSupported("GL_ARB_vertex_program")) ||
-		(!Raptor::glIsExtensionSupported("GL_ARB_fragment_shader")) ||
-		(!Raptor::glIsExtensionSupported("GL_ARB_vertex_shader")))
+	if ((!Raptor::glIsExtensionSupported(GL_ARB_FRAGMENT_PROGRAM_EXTENSION_NAME)) ||
+		(!Raptor::glIsExtensionSupported(GL_ARB_VERTEX_PROGRAM_EXTENSION_NAME)) ||
+		(!Raptor::glIsExtensionSupported(GL_ARB_FRAGMENT_SHADER_EXTENSION_NAME)) ||
+		(!Raptor::glIsExtensionSupported(GL_ARB_VERTEX_SHADER_EXTENSION_NAME)))
 	{
 		Raptor::GetErrorManager()->generateRaptorError(	CBumppedGeometry::CBumppedGeometryClassID::GetClassId(),
 														CRaptorErrorManager::RAPTOR_WARNING,
@@ -182,8 +179,8 @@ void CBumppedGeometry::setRenderingModel(const CRenderingModel& model)
 	setup->setNormalMap(normalMap);
 	setup->useRegisterCombiners(false);
 	
-	if (!Raptor::glIsExtensionSupported("GL_EXT_secondary_color") ||
-		!Raptor::glIsExtensionSupported("GL_ARB_fragment_program"))
+	if (!Raptor::glIsExtensionSupported(GL_EXT_SECONDARY_COLOR_EXTENSION_NAME) ||
+		!Raptor::glIsExtensionSupported(GL_ARB_FRAGMENT_PROGRAM_EXTENSION_NAME))
 	{
 		Raptor::GetErrorManager()->generateRaptorError(	CBumppedGeometry::CBumppedGeometryClassID::GetClassId(),
 														CRaptorErrorManager::RAPTOR_WARNING,
@@ -234,7 +231,7 @@ void CBumppedGeometry::glRender()
 	CRenderingProperties *props = CRenderingProperties::GetCurrentProperties();
 	if (props->getCurrentTexturing() == CRenderingProperties::ENABLE)
 	{
-		const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 		pExtensions->glActiveTextureARB(GL_TEXTURE1_ARB);
 		glDisable(GL_TEXTURE_2D);
 

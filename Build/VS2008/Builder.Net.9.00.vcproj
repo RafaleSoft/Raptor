@@ -223,6 +223,14 @@
 			<File
 				RelativePath="..\..\Builder.Net\AssemblyInfo.cpp"
 				>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\Builder.Net\Builder.Net.cpp"
@@ -235,18 +243,6 @@
 			<File
 				RelativePath="..\..\Builder.Net\GLBuilder.cpp"
 				>
-			</File>
-			<File
-				RelativePath="..\..\Builder.Net\stdafx.cpp"
-				>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="1"
-					/>
-				</FileConfiguration>
 			</File>
 		</Filter>
 		<Filter

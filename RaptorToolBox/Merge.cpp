@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "Subsys/CodeGeneration.h"
 
 #ifndef __CGLTYPES_HPP__
 	#include "System/CGLTypes.h"
@@ -140,12 +140,13 @@ CTextureObject* CRaptorToolBox::mergeTextures(	CTextureSet *t,
 		powy*=2;
 
 	CTextureFactory &factory = CTextureFactory::getDefaultFactory();
-	CTextureObject* T = factory.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_OPAQUE);
+	CTextureObject* T = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_OPAQUE);
     T->setSize(powx,powy);
 	T->glSetTransparency(255);
-    T->allocateTexels();
-
-	unsigned int *result = (unsigned int*)T->getTexels();
+    
+	CImage merge;
+	merge.allocatePixels(powx, powy);
+	unsigned int *result = (unsigned int*)merge.getPixels();
 
 	if (t->getNbTexture() < nb)
 		nb = t->getNbTexture();
@@ -154,7 +155,7 @@ CTextureObject* CRaptorToolBox::mergeTextures(	CTextureSet *t,
 	{
 		CTextureObject* current = t->getTexture(i);
 
-		current->glRender();
+		current->glvkRender();
 
 		GLuint *buffer = new GLuint[current->getWidth()*current->getHeight()*4];
 
@@ -182,8 +183,8 @@ CTextureObject* CRaptorToolBox::mergeTextures(	CTextureSet *t,
 		delete [] buffer;
 	}
 
-	T->glRender();
-	factory.glLoadTexture(T,".buffer");
+	T->glvkRender();
+	factory.glLoadTexture(T,merge);
 	return T;
 }
 

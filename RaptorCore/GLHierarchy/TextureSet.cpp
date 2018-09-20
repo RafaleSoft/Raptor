@@ -136,35 +136,7 @@ bool CTextureSet::exportObject(CRaptorIO& o)
 {
 	CPersistence::exportObject(o);
 
-	o << m_pTextures.size();
-
-	for (unsigned int i=0;i<m_pTextures.size();i++)
-	{
-		CTextureObject* T = m_pTextures.at(i);
-
-		o << T->getCurrentMipMapLevel();
-		o << T->getWidth();
-		o << T->getHeight();
-        o << T->getDepth();
-		o << T->getFunction();
-		o << T->getFilter();
-		o << T->getTransparency();
-		o << T->getName().size();
-		o << T->getName().data();
-
-        CTextureObject::TEXEL_TYPE format = T->getTexelType();
-
-        T->allocateTexels(format);
-		unsigned char *texels = T->getTexels();
-
-		glGetTexImage(GL_TEXTURE_2D,T->getCurrentMipMapLevel(),format,GL_UNSIGNED_BYTE,texels);
-
-		o.write((unsigned char*)texels,0 /*size*/);
-
-		T->releaseTexels();
-	}
-
-	return true;
+	return false;
 }
 
 bool CTextureSet::importTextureObject(CRaptorIO& io)
@@ -174,8 +146,8 @@ bool CTextureSet::importTextureObject(CRaptorIO& io)
 
     string filename = "<unknown>";
     CTextureObject::TEXTURE_FUNCTION function = CTextureObject::CGL_OPAQUE;
-    CTextureObject::TEXTURE_FILTER filter = CTextureObject::CGL_UNFILTERED;
-    CTextureObject::TEXEL_TYPE texelType = CTextureObject::CGL_COLOR24_ALPHA;
+    ITextureObject::TEXTURE_FILTER filter = ITextureObject::CGL_UNFILTERED;
+    ITextureObject::TEXEL_TYPE texelType = ITextureObject::CGL_COLOR24_ALPHA;
     float transparency = -1.0f;
 	bool compressed = false;
 
@@ -200,15 +172,15 @@ bool CTextureSet::importTextureObject(CRaptorIO& io)
         {
             io >> name;
             if (name == "unfiltered")
-                filter = CTextureObject::CGL_UNFILTERED;
+                filter = ITextureObject::CGL_UNFILTERED;
             else if (name == "bilinear")
-                filter = CTextureObject::CGL_BILINEAR;
+                filter = ITextureObject::CGL_BILINEAR;
             else if (name == "bilinear_mipmapped")
-                filter = CTextureObject::CGL_BILINEAR_MIPMAPPED;
+                filter = ITextureObject::CGL_BILINEAR_MIPMAPPED;
             else if (name == "trilinear")
-                filter = CTextureObject::CGL_TRILINEAR;
+                filter = ITextureObject::CGL_TRILINEAR;
             else if (name == "anisotropic")
-                filter = CTextureObject::CGL_ANISOTROPIC;
+                filter = ITextureObject::CGL_ANISOTROPIC;
         }
         else if (data == "mode")
         {

@@ -19,7 +19,8 @@
 
 RAPTOR_NAMESPACE_BEGIN
 
-class CRaptorExtensions;
+class CRaptorGLExtensions;
+class CRaptorVKExtensions;
 class CRaptorDisplay;
 class CRaptorMessages;
 class CRaptorErrorManager;
@@ -78,10 +79,14 @@ public:
 	//!	Main Render entry point : all CRenderEntryPoints are rendered ( such as displays )
 	static void glRender(void);
 
-
+	//!	Return extensions state.
 	static bool glIsExtensionSupported(const std::string &ext);
-	static const CRaptorExtensions *const glGetExtensions(void);
-    static CRaptorConsole *const GetConsole(void);
+	static const CRaptorGLExtensions *const glGetExtensions(void);
+	static bool vkIsExtensionSupported(const std::string &ext);
+	static const CRaptorVKExtensions *const vkGetExtensions(void);
+    
+	//!	Access to RaptorConsole, if initialised at startup
+	static CRaptorConsole *const GetConsole(void);
 
     //! Error management use internal messages.
     static CRaptorErrorManager * const GetErrorManager(void);

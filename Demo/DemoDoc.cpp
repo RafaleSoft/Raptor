@@ -30,7 +30,7 @@
 #include "System/Raptor.h"
 #include "System/RaptorConsole.h"
 #include "System/RaptorDisplay.h"
-#include "System/RaptorExtensions.h"
+#include "System/RaptorGLExtensions.h"
 #include "System/RaptorMessages.h"
 
 #include "ToolBox/BasicObjects.h"
@@ -138,11 +138,11 @@ void RAPTOR_FASTCALL HeatSpots::updateVertices(float dt,GL_COORD_VERTEX *vertice
 
 void HeatSpots::glRenderFilterOutput()
 {
-	const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 	PFN_GL_ACTIVE_TEXTURE_ARB_PROC glActiveTextureARB = pExtensions->glActiveTextureARB;
 
 	glActiveTextureARB(GL_TEXTURE0_ARB);
-    colorInput->glRender();
+	colorInput->glvkRender();
     glDrawBuffer();
 
     glPushAttrib(GL_ENABLE_BIT);
@@ -197,9 +197,9 @@ bool HeatSpots::glInitFilter()
 	if ((colorExternalSource != NULL) && 
 		(m_fModel == CRaptorDisplayFilter::RENDER_TEXTURE))
 	{
-		colorInput = filterFactory.glCreateDynamicTexture(	CTextureObject::CGL_COLOR24_ALPHA,
+		colorInput = filterFactory.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 															CTextureObject::CGL_OPAQUE,
-															CTextureObject::CGL_BILINEAR,
+															ITextureObject::CGL_BILINEAR,
 															colorExternalSource);
 	}
 
@@ -258,13 +258,14 @@ CDemoDoc::~CDemoDoc()
 //	Default virtual implementation
 void CDemoDoc::GLInitContext(void)
 {
-	if ((!Raptor::glIsExtensionSupported("GL_ARB_vertex_program")) ||
-		(!Raptor::glIsExtensionSupported("GL_ARB_fragment_program")) ||
-		(!Raptor::glIsExtensionSupported("WGL_ARB_pbuffer")) ||
-		(!Raptor::glIsExtensionSupported("WGL_ARB_render_texture") && !Raptor::glIsExtensionSupported("GL_EXT_framebuffer_object")))
+	if ((!Raptor::glIsExtensionSupported(GL_ARB_VERTEX_PROGRAM_EXTENSION_NAME)) ||
+		(!Raptor::glIsExtensionSupported(GL_ARB_FRAGMENT_PROGRAM_EXTENSION_NAME)) ||
+		(!Raptor::glIsExtensionSupported(WGL_ARB_PBUFFER_EXTENSION_NAME)) ||
+		(!Raptor::glIsExtensionSupported(WGL_ARB_RENDER_TEXTURE_EXTENSION_NAME) && 
+		!Raptor::glIsExtensionSupported(GL_EXT_FRAMEBUFFER_OBJECT_EXTENSION_NAME)))
 	{
         CRaptorMessages * const msg = Raptor::GetMessages();
-        msg->displayMessage("It seems your CPU/GPU do not have enough power to run this demo in full hardware. Rendering might be wrong");
+        msg->displayMessage("It seems your CPU/GPU does not support necessary extensions to run this demo in full hardware. Rendering might be wrong");
 	}
 
     CRaptorConsole *pConsole = Raptor::GetConsole();
@@ -311,13 +312,13 @@ void CDemoDoc::GLInitContext(void)
         pSpots->AddSpot(lpos);
     }
     pSpots->lights = lights;
-    pCurrentDisplay->glBindDisplay(*pSpots);
+	pCurrentDisplay->glvkBindDisplay(*pSpots);
 	pSpots->releaseReference();
 
     dof = new CDOFFilter;
     dof->setDOFParams(0.85f, 10.0f);
 	dof->setBlurNbPass(4);
-    pCurrentDisplay->glBindDisplay(*dof);
+	pCurrentDisplay->glvkBindDisplay(*dof);
 	dof->releaseReference();
 
 	CRaptorDisplayConfig rda;
@@ -331,7 +332,7 @@ void CDemoDoc::GLInitContext(void)
 
 void CDemoDoc::glRender()
 {
-	m_pDisplay->glBindDisplay(m_wnd);
+	m_pDisplay->glvkBindDisplay(m_wnd);
 
 	m_pDisplay->glRender();
 

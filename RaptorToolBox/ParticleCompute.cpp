@@ -2,7 +2,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "Subsys/CodeGeneration.h"
 
 #if !defined(AFX_PARTICLECOMPUTE_H__395259D4_3C60_4233_8D81_1F7B58BED8A5__INCLUDED_)
 	#include "ParticleCompute.h"

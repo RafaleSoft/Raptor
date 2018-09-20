@@ -27,7 +27,9 @@
 #endif
 
 #ifndef __VECTOR_4F_H__
-	#include "Vector4f.h"
+	#ifndef SIMD_NO_ASSEMBLY
+		#include "Vector4f.h"
+	#endif
 #endif
 
 //	4 Word values Vector
@@ -80,7 +82,9 @@
 #endif
 
 #ifndef __MATRIX_4F_H__
-	#include "Matrix4f.h"
+	#ifndef SIMD_NO_ASSEMBLY
+		#include "Matrix4f.h"
+	#endif
 #endif
 
 

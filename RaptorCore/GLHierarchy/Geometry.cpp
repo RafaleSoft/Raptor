@@ -25,8 +25,8 @@
 #if !defined(AFX_MEMORY_H__81A6CA9A_4ED9_4260_B6E4_C03276C38DBC__INCLUDED_)
 	#include "System/Memory.h"
 #endif
-#if !defined(AFX_RAPTOREXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
-	#include "System/RaptorExtensions.h"
+#if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
+	#include "System/RaptorGLExtensions.h"
 #endif
 #if !defined(AFX_RAPTORIO_H__87D52C27_9117_4675_95DC_6AD2CCD2E78D__INCLUDED_)
 	#include "System/RaptorIO.h"
@@ -194,11 +194,11 @@ void CGeometry::setRenderingModel(const CRenderingModel& model)
 
 	//	But remove unsupported extensions
 #ifdef GL_EXT_vertex_weighting
-	if (!Raptor::glIsExtensionSupported("GL_EXT_vertex_weighting"))
+	if (!Raptor::glIsExtensionSupported(GL_EXT_VERTEX_WEIGHTING_EXTENSION_NAME))
 		m_renderingModel.removeModel(CRenderingModel::CGL_WEIGHT);
 #endif
 
-	if (!Raptor::glIsExtensionSupported("GL_EXT_fog_coord"))
+	if (!Raptor::glIsExtensionSupported(GL_EXT_FOG_COORD_EXTENSION_NAME))
 		m_renderingModel.removeModel(CRenderingModel::CGL_FOG);
 }
 
@@ -916,20 +916,68 @@ void CGeometry::transform(GL_MATRIX &m)
 //////////////////////////////////////////////////////////////////////
 void CGeometry::vkRender(CVulkanCommandBuffer& commandBuffer,
 						 VkBuffer vertexBinding,
-						 VkBuffer indexBinding,
-						 VkBuffer uniformBinding)
+						 VkBuffer indexBinding)
 {
-	VkBuffer bindings[2] = { vertexBinding, vertexBinding };
-	VkDeviceSize offsets[2] = { (VkDeviceSize)&vertex[0], (VkDeviceSize)&colors[0] };
-	commandBuffer.vkCmdBindVertexBuffers(	commandBuffer.commandBuffer, 
-											0, 2, &bindings[0], &offsets[0]);
+	VkBuffer bindings[3] = { vertexBinding, 0, 0 };
+	VkDeviceSize offsets[3] = { (VkDeviceSize)&vertex[0], 0, 0 };
+	size_t nb_bindings = 1;	// always extract geometry
 
-	commandBuffer.vkCmdBindIndexBuffer(	commandBuffer.commandBuffer, 
+	if (m_renderingModel.hasModel(CRenderingModel::CGL_TEXTURE))
+	{
+		bindings[nb_bindings] = vertexBinding;
+		offsets[nb_bindings] = (VkDeviceSize)&texcoords[0];
+		nb_bindings++;
+	}
+
+	if (m_renderingModel.hasModel(CRenderingModel::CGL_COLORS))
+	{
+		bindings[nb_bindings] = vertexBinding;
+		offsets[nb_bindings] = (VkDeviceSize)&colors[0];
+		nb_bindings++;
+	}
+
+	commandBuffer.vkCmdBindVertexBuffers(commandBuffer.commandBuffer, 
+										 0, nb_bindings, bindings, offsets);
+
+	commandBuffer.vkCmdBindIndexBuffer(	commandBuffer.commandBuffer,
 										indexBinding,
 										(VkDeviceSize)&polys[0],
 										VK_INDEX_TYPE_UINT16);
 
 	commandBuffer.vkCmdDrawIndexed(commandBuffer.commandBuffer, 3 * m_nbPolys, 1, 0, 0, 0);
+}
+
+bool CGeometry::getVertexInputState( std::vector<VkVertexInputBindingDescription>& bindings,
+									 std::vector<VkVertexInputAttributeDescription>& vertexInput) const
+{
+	bindings.clear();
+	vertexInput.clear();
+	size_t nb_bindings = 0;
+
+	//!	Vertex
+	bindings.push_back({ nb_bindings, 4 * sizeof(float), VK_VERTEX_INPUT_RATE_VERTEX });
+	vertexInput.push_back({ 0, 0, VK_FORMAT_R32G32B32A32_SFLOAT, 0 });
+	nb_bindings++; 	// always extract geometry
+
+	//!	TexCoords
+	CRenderingProperties *props = CRenderingProperties::GetCurrentProperties();
+	if ((m_renderingModel.hasModel(CRenderingModel::CGL_TEXTURE)))
+//		(props->getCurrentTexturing() == CRenderingProperties::ENABLE))
+	{
+		bindings.push_back({ nb_bindings, 2 * sizeof(float), VK_VERTEX_INPUT_RATE_VERTEX });
+		vertexInput.push_back({ 1, nb_bindings, VK_FORMAT_R32G32_SFLOAT, 0 });
+		nb_bindings++;
+	}
+
+	//!	Colors
+	if (m_renderingModel.hasModel(CRenderingModel::CGL_COLORS))
+	{
+		bindings.push_back({ nb_bindings, 4 * sizeof(float), VK_VERTEX_INPUT_RATE_VERTEX });
+		vertexInput.push_back({ 2, nb_bindings, VK_FORMAT_R32G32B32A32_SFLOAT, 0 });
+		nb_bindings++;
+	}
+
+	return true;
 }
 
 void CGeometry::glRender()
@@ -953,7 +1001,7 @@ void CGeometry::glRenderGeometry()
     }
 #endif
 
-	const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 
 
 	//	Store arrays state + texture state
@@ -980,7 +1028,12 @@ void CGeometry::glRenderGeometry()
 #endif
 
 	// extract normals
-	if (m_renderingModel.hasModel(CRenderingModel::CGL_NORMALS) && proceedLighting)
+	if (m_renderingModel.hasModel(CRenderingModel::CGL_NORMALS) && proceedLighting
+#if defined (DATA_EXTENDED)
+		&& (geometry != NULL))
+#elif defined(DATA_PACKED)
+		&& (NULL != normals))
+#endif
 	{
 		glEnableClientState(GL_NORMAL_ARRAY);
         popNormalArray = true;
@@ -993,7 +1046,12 @@ void CGeometry::glRenderGeometry()
 
     // extract tangents
 #if defined(GL_ARB_vertex_program)
-	if (m_renderingModel.hasModel(CRenderingModel::CGL_TANGENTS) && proceedLighting)
+	if (m_renderingModel.hasModel(CRenderingModel::CGL_TANGENTS) && proceedLighting
+#if defined (DATA_EXTENDED)
+		&& (geometry != NULL))
+#elif defined(DATA_PACKED)
+		&& (NULL != tangents))
+#endif
 	{
         popTangentArray = true;
 		pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::ADDITIONAL_PARAM1);
@@ -1007,7 +1065,12 @@ void CGeometry::glRenderGeometry()
 #endif
 
 	// extract colors
-	if (m_renderingModel.hasModel(CRenderingModel::CGL_COLORS))
+	if (m_renderingModel.hasModel(CRenderingModel::CGL_COLORS)
+#if defined (DATA_EXTENDED)
+		&& (geometry != NULL))
+#elif defined(DATA_PACKED)
+		&& (NULL != colors))
+#endif
 	{
 		glEnableClientState(GL_COLOR_ARRAY);
         popColorArray = true;

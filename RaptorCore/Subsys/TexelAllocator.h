@@ -9,15 +9,17 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#if !defined(AFX_MEMORY_H__81A6CA9A_4ED9_4260_B6E4_C03276C38DBC__INCLUDED_)
-	#include "System/Memory.h"
+#if !defined(__RAPTOR_VKEXT_H__)
+	#include "System/vkext.h"
+#endif
+#if !defined(AFX_RESOURCEALLOCATOR_H__4BAB58CE_942B_450D_88C9_AF0DDDF03718__INCLUDED_)
+	#include "ResourceAllocator.h"
 #endif
 
 
 RAPTOR_NAMESPACE_BEGIN
 
-
-class CTexelAllocator
+class CTexelAllocator : public CResourceAllocator
 {
 public:
 	//!	Singleton access : returns the current instance or create a new instance if there is no current.
@@ -41,10 +43,6 @@ public:
     //! Lock memory data and relocation so that no change can be made.
     //! If data is relocated, High Performance blocks are activated on server
     bool    glvkLockMemory(bool lock);
-
-	//!	Returns the locking status of the data.
-	bool	isMemoryLocked(void) const { return m_bLocked; };
-
 
 	//!	This method returns the address of a free block of the requested size, ( nb of texels )
 	//!	or NULL if not enough space or other error.
@@ -70,6 +68,9 @@ public:
 	void *glvkMapPointer(void *pointer,bool syncData = true);
 	void *glvkUnMapPointer(void *pointer,bool syncData = true);
 
+	//!	Create a Vulkan image and allocate device memory
+	VkImage vkAllocateTextureImage(VkImageCreateInfo imageInfo,
+								   VkDeviceSize offset = 0);
 
 private:
 	//!	Singleton constructor is not allowed
@@ -80,31 +81,11 @@ private:
 	//!	The unique allocator instance
 	static CTexelAllocator	*m_pInstance;
 
-	//!	The memory state
-    bool    m_bLocked;
-
-	CHostMemoryManager::Allocator<unsigned char> charAlloc;
-
-	typedef struct data_bloc_t
-	{
-		union
-		{
-			unsigned char	*uc_address;
-			float			*f_address;
-		} address;
-		uint64_t			size;
-	} data_bloc;
-
-
 	//!	Global array for texel allocation when GPU relocation is not available
 	data_bloc	texels;
 
 	//!	If relocated, High Performance buffer object
 	IDeviceMemoryManager::IBufferObject *relocatedTexels;
-
-	//!	Memory manager for the device hosting the display holding this allocator.
-	//! (Vulkan host memory is per device)
-	IDeviceMemoryManager	*deviceMemoryManager;
 
 	//! Actual memory structure : bloc fragments of global allocated space
 	//!	IMPORTANT: The structure implementation requires a binary tree for template class map<>

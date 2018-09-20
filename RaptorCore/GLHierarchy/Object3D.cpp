@@ -127,7 +127,7 @@ void CObject3D::glAllocateBBox(void)
 				0, 1, 5, 4,	// bottom
 			};
 			if (CGeometryAllocator::GetInstance()->isMemoryRelocated())
-				CGeometryAllocator::GetInstance()->glCopyPointer(boxIndexes,indexes,BBOX_INDEX_SIZE);
+				CGeometryAllocator::GetInstance()->glvkCopyPointer(boxIndexes,indexes,BBOX_INDEX_SIZE);
 			else
 				memcpy(boxIndexes,indexes,BBOX_INDEX_SIZE*sizeof(unsigned short));
 		}
@@ -152,7 +152,7 @@ void CObject3D::glAllocateBBox(void)
 				5, 1, 5, 6	// bottom + right + front
 			};
 			if (CGeometryAllocator::GetInstance()->isMemoryRelocated())
-				CGeometryAllocator::GetInstance()->glCopyPointer(boxIndexes2,indexes,BBOX_INDEX_SIZE2);
+				CGeometryAllocator::GetInstance()->glvkCopyPointer(boxIndexes2,indexes,BBOX_INDEX_SIZE2);
 			else
 				memcpy(boxIndexes2,indexes,BBOX_INDEX_SIZE2*sizeof(unsigned short));
 		}
@@ -181,13 +181,13 @@ void CObject3D::glAllocateBBox(void)
 															CRaptorMessages::ID_NO_RESOURCE);
         }
 
-        old__boxArrays = (float*)(CGeometryAllocator::GetInstance()->glMapPointer(old__boxArrays));
-        boxArrays = (float*)(CGeometryAllocator::GetInstance()->glMapPointer(boxArrays));
+        old__boxArrays = (float*)(CGeometryAllocator::GetInstance()->glvkMapPointer(old__boxArrays));
+        boxArrays = (float*)(CGeometryAllocator::GetInstance()->glvkMapPointer(boxArrays));
 
         memcpy(boxArrays,old__boxArrays,boxIndex * sizeof(float));
 
-        old__boxArrays = (float*)(CGeometryAllocator::GetInstance()->glUnMapPointer(old__boxArrays));
-        boxArrays = (float*)(CGeometryAllocator::GetInstance()->glUnMapPointer(boxArrays));
+        old__boxArrays = (float*)(CGeometryAllocator::GetInstance()->glvkUnMapPointer(old__boxArrays));
+        boxArrays = (float*)(CGeometryAllocator::GetInstance()->glvkUnMapPointer(boxArrays));
 
 		CGeometryAllocator::GetInstance()->releaseVertices(old__boxArrays);
     }
@@ -304,9 +304,9 @@ void CObject3D::extendBoundingBox(const GL_COORD_VERTEX& min, const GL_COORD_VER
 		if (boxValue != value)
 		{
 			boxValue = value;
-			CGeometryAllocator::GetInstance()->glLockMemory(false);
+			CGeometryAllocator::GetInstance()->glvkLockMemory(false);
 
-			boxArrays = (float*)(CGeometryAllocator::GetInstance()->glMapPointer(boxArrays));
+			boxArrays = (float*)(CGeometryAllocator::GetInstance()->glvkMapPointer(boxArrays));
 	        
 			float *boxArray = boxArrays + boxArrayOffset;
 
@@ -320,8 +320,8 @@ void CObject3D::extendBoundingBox(const GL_COORD_VERTEX& min, const GL_COORD_VER
 			boxArray[18] = xmax; boxArray[19] = ymax; boxArray[20] = zmax;  
 			boxArray[21] = xmin; boxArray[22] = ymax; boxArray[23] = zmax;
 
-			boxArrays = (float*)(CGeometryAllocator::GetInstance()->glUnMapPointer(boxArrays));
-			CGeometryAllocator::GetInstance()->glLockMemory(true);
+			boxArrays = (float*)(CGeometryAllocator::GetInstance()->glvkUnMapPointer(boxArrays));
+			CGeometryAllocator::GetInstance()->glvkLockMemory(true);
 		}
 	}
 

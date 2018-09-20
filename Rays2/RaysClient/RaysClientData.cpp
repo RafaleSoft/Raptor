@@ -109,9 +109,9 @@ bool CObjectStore::IsAColumn(CGeometry *&g)
 		bump->setDiffuseMap(m_textures->getTexture(ROCKSCULPT));
 
 		CTextureFactory &factory = CTextureFactory::getDefaultFactory();
-		CTextureObject *normalMap = factory.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,
+		ITextureObject *normalMap = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
                                                             CTextureObject::CGL_MULTIPLY,
-                                                            CTextureObject::CGL_TRILINEAR);
+                                                            ITextureObject::CGL_TRILINEAR);
 		factory.glLoadTexture(normalMap,BUMP_0,CVaArray<CTextureFactoryConfig::IImageOP::OP_KIND>(CTextureFactoryConfig::IImageOP::MIPMAP_BUILDER));
 		bump->setNormalMap(normalMap);
 
@@ -368,53 +368,54 @@ void CObjectStore::LoadModels(void)
 
 		config.setCurrentCompressor(compressor);
 	}
-	CTextureObject* T = NULL;
-	T = factory.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,
+	ITextureObject* T = NULL;
+	T = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
 								CTextureObject::CGL_MULTIPLY,
-								CTextureObject::CGL_BILINEAR);
+								ITextureObject::CGL_BILINEAR);
 	T->glSetTransparency(192);
     factory.glLoadTexture(T,MARBLE_0);
 	m_textures->addTexture(T);
 
-	T = factory.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,
+	T = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
 								CTextureObject::CGL_MULTIPLY,
-								CTextureObject::CGL_BILINEAR);
+								ITextureObject::CGL_BILINEAR);
 	T->glSetTransparency(255);
 	factory.glLoadTexture(T,MARBLE_1);
 	m_textures->addTexture(T);
 
-	T = factory.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,
+	T = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
 								CTextureObject::CGL_MULTIPLY,
-								CTextureObject::CGL_BILINEAR);
+								ITextureObject::CGL_BILINEAR);
 	T->glSetTransparency(192);
 	factory.glLoadTexture(T,MARBLE_2);
 	m_textures->addTexture(T);
 
-	T = factory.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,
+	T = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
 								CTextureObject::CGL_MULTIPLY,
-								CTextureObject::CGL_BILINEAR);
+								ITextureObject::CGL_BILINEAR);
 	T->glSetTransparency(255);
 	factory.glLoadTexture(T,MARBLE_3);
 	m_textures->addTexture(T);
 
-	T = factory.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,
+	T = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
 								CTextureObject::CGL_MULTIPLY,
-								CTextureObject::CGL_BILINEAR);
+								ITextureObject::CGL_BILINEAR);
 	factory.glLoadTexture(T,MARBLE_4);
 	m_textures->addTexture(T);
 
-	T = factory.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,
+	T = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
 								CTextureObject::CGL_MULTIPLY,
-								CTextureObject::CGL_BILINEAR);
+								ITextureObject::CGL_BILINEAR);
 	factory.glLoadTexture(T,MARBLE_5);
 	m_textures->addTexture(T);
     
     config.setCurrentAnisotropy(16.0f);
 
-	T = factory.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,
+	T = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
 								CTextureObject::CGL_MULTIPLY,
-								CTextureObject::CGL_ANISOTROPIC);
+								ITextureObject::CGL_ANISOTROPIC);
 	T->glSetTransparency(255);
+	config.setGenerateMipmap(false);
 	factory.glLoadTexture(T,BRICKS_0);
 	T->selectMipMapLevel(1);
 	factory.glLoadTexture(T,BRICKS_1);
@@ -435,27 +436,28 @@ void CObjectStore::LoadModels(void)
 	T->selectMipMapLevel(9);
 	factory.glLoadTexture(T,BRICKS_9);
 	m_textures->addTexture(T);
+	config.setGenerateMipmap(true);
 
-	T = factory.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,
+	T = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
 								CTextureObject::CGL_MULTIPLY,
-								CTextureObject::CGL_BILINEAR);
+								ITextureObject::CGL_BILINEAR);
 	factory.glLoadTexture(T,MARBLE_2);
 	m_textures->addTexture(T);
 
-	T = factory.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,
+	T = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
 								CTextureObject::CGL_MULTIPLY,
-								CTextureObject::CGL_BILINEAR);
+								ITextureObject::CGL_BILINEAR);
 	factory.glLoadTexture(T,FLARE_BASE);
 	m_textures->addTexture(T);
 
-	T = factory.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,
+	T = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
 								CTextureObject::CGL_MULTIPLY, 
-								CTextureObject::CGL_BILINEAR);
+								ITextureObject::CGL_BILINEAR);
 	T->glSetTransparency(255);
 	factory.glLoadTexture(T,OLDWOOD_1);
 	m_textures->addTexture(T);
 
-    T = factory.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_MULTIPLY,CTextureObject::CGL_BILINEAR);
+    T = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_MULTIPLY,ITextureObject::CGL_BILINEAR);
 	factory.glLoadTexture(T,ROCKSCULPT);
 	m_textures->addTexture(T);
 
@@ -625,7 +627,7 @@ void CObjectStore::BuildObjects(void)
     m_pBumpKnot->getShader()->getMaterial()->setAmbient(1.0f,1.0f,1.0f,1.0f);
     const CGeometryEditor &pEditor = m_pBumpKnot->getEditor();
 	pEditor.scaleTexCoords(48.0f,2.0f);
-	CTextureObject* normalMap = factory.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_MULTIPLY,CTextureObject::CGL_TRILINEAR);
+	ITextureObject* normalMap = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_MULTIPLY,ITextureObject::CGL_TRILINEAR);
 	factory.glLoadTexture(normalMap,BUMP_0,CVaArray<CTextureFactoryConfig::IImageOP::OP_KIND>(CTextureFactoryConfig::IImageOP::MIPMAP_BUILDER));
     m_pBumpKnot->setDiffuseMap(m_textures->getTexture(MARBLE5));
 	m_pBumpKnot->setNormalMap(normalMap);
@@ -635,7 +637,7 @@ void CObjectStore::BuildObjects(void)
     l_model.addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
 	m_pBumpKnot->setRenderingModel(l_model);
 
-	if (!Raptor::glIsExtensionSupported("GL_ARB_vertex_program"))
+	if (!Raptor::glIsExtensionSupported(GL_ARB_VERTEX_PROGRAM_EXTENSION_NAME))
     {
         CRaptorMessages * const msg = Raptor::GetMessages();
         msg->displayMessage("Hardware unable to render bump mapping");

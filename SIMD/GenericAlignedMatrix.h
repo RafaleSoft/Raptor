@@ -13,7 +13,7 @@ class CSSEFMatrix;
 
 	//		16 bytes more space is allocated,
 	//		to store alignment and to store align offset
-	//	char *pT = new char[16*sizeof(##T)+16]; 
+	//	char *pT = new char[16*sizeof(##T)+16];
 	//		align data
 	//	vector = (##T*)((int(pT)+0x00000010) & 0xfffffff0);
 	//		store offset
@@ -22,11 +22,11 @@ class CSSEFMatrix;
 #define ALLOC_MATRIX(T) \
 {\
 char *pT = new char[16*sizeof(T)+16]; \
-m_matrix = (T*)((int(pT)+0x00000010) & 0xfffffff0);\
-*((char*)m_matrix-1)=char(int(pT)&0xf);\
+m_matrix = (T*)((long(pT)+0x00000010) & 0xfffffff0);\
+*((char*)m_matrix-1)=char(long(pT)&0xf);\
 }
 
-template<class T> 
+template<class T>
 class CGenericAlignedMatrix
 {
 protected:
@@ -36,21 +36,21 @@ public:
 	// construction/destruction
 	CGenericAlignedMatrix();
 	virtual ~CGenericAlignedMatrix();
-	virtual void Zero() 
-	{ 
-		for (int i=0;i<16;i++)
-			m_matrix[i]=0; 
-	};
-	virtual void One() 
-	{ 
-		for (int i=0;i<16;i++)
-			m_matrix[i]=1; 
-	};
-	virtual void Ident() 
-	{ 
+	virtual void Zero()
+	{
 		for (int i=0;i<16;i++)
 			m_matrix[i]=0;
-		m_matrix[0]=m_matrix[5]=m_matrix[10]=m_matrix[15]=1; 
+	};
+	virtual void One()
+	{
+		for (int i=0;i<16;i++)
+			m_matrix[i]=1;
+	};
+	virtual void Ident()
+	{
+		for (int i=0;i<16;i++)
+			m_matrix[i]=0;
+		m_matrix[0]=m_matrix[5]=m_matrix[10]=m_matrix[15]=1;
 	};
 	
 	// data access
@@ -60,34 +60,34 @@ public:
 	
 
 	CGenericAlignedMatrix<T>& SIMD_CALL operator= ( const CGenericAlignedMatrix<T>& m )
-	{ 
+	{
 		for (int i=0;i<16;i++)
 			m_matrix[i]=m.m_matrix[i];
-		return *this; 
+		return *this;
 	};
 	CGenericAlignedMatrix<T>& SIMD_CALL operator= ( const T m[16] )
-	{ 
+	{
 		for (int i=0;i<16;i++)
 			m_matrix[i]=m[i];
-		return *this; 
+		return *this;
 	};
 
 		//	Store transpose
 	CGenericAlignedMatrix<T>& SIMD_CALL operator^= ( const CGenericAlignedMatrix<T>& m )
-	{ 
+	{
 		m_matrix[0]=m.m_matrix[0];m_matrix[4]=m.m_matrix[1];m_matrix[8]=m.m_matrix[2];m_matrix[12]=m.m_matrix[3];
 		m_matrix[1]=m.m_matrix[4];m_matrix[5]=m.m_matrix[5];m_matrix[9]=m.m_matrix[6];m_matrix[13]=m.m_matrix[7];
 		m_matrix[2]=m.m_matrix[8];m_matrix[6]=m.m_matrix[9];m_matrix[10]=m.m_matrix[10];m_matrix[14]=m.m_matrix[11];
 		m_matrix[3]=m.m_matrix[12];m_matrix[7]=m.m_matrix[13];m_matrix[11]=m.m_matrix[14];m_matrix[15]=m.m_matrix[15];
-		return *this; 
+		return *this;
 	};
 	CGenericAlignedMatrix<T>& SIMD_CALL operator^= ( const T m[16] )
-	{ 
+	{
 		m_matrix[0]=m[0];m_matrix[4]=m[1];m_matrix[8]=m[2];m_matrix[12]=m[3];
 		m_matrix[1]=m[4];m_matrix[5]=m[5];m_matrix[9]=m[6];m_matrix[13]=m[7];
 		m_matrix[2]=m[8];m_matrix[6]=m[9];m_matrix[10]=m[10];m_matrix[14]=m[11];
 		m_matrix[3]=m[12];m_matrix[7]=m[13];m_matrix[11]=m[14];m_matrix[15]=m[15];
-		return *this; 
+		return *this;
 	};
 
 	// T SIMD_CALL Det(void);
@@ -95,13 +95,13 @@ public:
 	// unary operations
 	CGenericAlignedMatrix<T> SIMD_CALL operator-(void);
 	CGenericAlignedMatrix<T>& SIMD_CALL operator!(void)
-	{ 
+	{
 		for (int i=0;i<16;i++)
 			m_matrix[i]=-m_matrix[i];
-		return *this; 
+		return *this;
 	};
 	CGenericAlignedMatrix<T>& SIMD_CALL operator~(void)
-	{ 
+	{
 		T elt;
 
 		elt = m_matrix[1]; m_matrix[1] = m_matrix[4]; m_matrix[4] = elt;
@@ -110,19 +110,19 @@ public:
 		elt = m_matrix[12]; m_matrix[12] = m_matrix[3]; m_matrix[3] = elt;
 		elt = m_matrix[13]; m_matrix[13] = m_matrix[7]; m_matrix[7] = elt;
 		elt = m_matrix[11]; m_matrix[11] = m_matrix[14]; m_matrix[14] = elt;
-		return *this; 
+		return *this;
 	};
 	CGenericAlignedMatrix<T>&	SIMD_CALL operator-= (const CGenericAlignedMatrix<T>& m)
-	{ 
+	{
 		for (int i=0;i<16;i++)
 			m_matrix[i]-=m.m_matrix[i];
-		return *this; 
+		return *this;
 	};
 	CGenericAlignedMatrix<T>&	SIMD_CALL operator+= (const CGenericAlignedMatrix<T>& m)
-	{ 
+	{
 		for (int i=0;i<16;i++)
 			m_matrix[i]+=m.m_matrix[i];
-		return *this; 
+		return *this;
 	};
 	CGenericAlignedMatrix<T>&	SIMD_CALL operator*= (const CGenericAlignedMatrix<T>& m);
 	CGenericAlignedMatrix<T>&	SIMD_CALL operator*= (T t);
@@ -144,7 +144,7 @@ public:
 //	Matrix is aligned to a 16 bytes boundery
 template <class T>
 CGenericAlignedMatrix<T>::CGenericAlignedMatrix()
-{ 
+{
 	ALLOC_MATRIX(T)
 }
 
@@ -173,7 +173,7 @@ __inline CGenericAlignedMatrix<T> SIMD_CALL CGenericAlignedMatrix<T>::operator-(
 
 	for (int i=0;i<16;i++)
 		m.m_matrix[i]=-m_matrix[i];
-	return m; 
+	return m;
 }
 
 template <class T>
@@ -242,7 +242,7 @@ __inline CGenericAlignedMatrix<T> SIMD_CALL CGenericAlignedMatrix<T>::operator* 
 
 	for (int i=0;i<16;i++)
 		m.m_matrix[i] = m_matrix[i] * t;
-	return m; 
+	return m;
 }
 
 template <class T>
@@ -252,7 +252,7 @@ __inline CGenericAlignedMatrix<T> SIMD_CALL CGenericAlignedMatrix<T>::operator+ 
 
 	for (int i=0;i<16;i++)
 		m.m_matrix[i] = m_matrix[i] + m2.m_matrix[i];
-	return m; 
+	return m;
 }
 
 template <class T>
@@ -262,12 +262,12 @@ __inline CGenericAlignedMatrix<T> SIMD_CALL CGenericAlignedMatrix<T>::operator- 
 
 	for (int i=0;i<16;i++)
 		m.m_matrix[i] = m_matrix[i] - m2.m_matrix[i];
-	return m; 
+	return m;
 }
 
 
 template <class T>
-__inline CGenericAlignedVector<T> SIMD_CALL CGenericAlignedMatrix<T>::operator*  (const CGenericAlignedVector<T>& v1) const 
+__inline CGenericAlignedVector<T> SIMD_CALL CGenericAlignedMatrix<T>::operator*  (const CGenericAlignedVector<T>& v1) const
 {
 	CGenericAlignedVector<T> v;
 

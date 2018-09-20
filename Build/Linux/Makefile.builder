@@ -1,30 +1,32 @@
-OUTPUT = Release
-INCDIRS = -I. 
-LIBGL = -L/usr/X11R6/lib -lGL -lGLU
+export
+
+OUTPUT = $(RAPTOR_ROOT)/Build/Linux/Release/Builder
+SRCDIR = $(RAPTOR_ROOT)/Builder.Net
+INCDIRS = -I$(SRCDIR) -I$(REDIST)/include -I/usr/include
+CCCFLAGS = -DSIMD_NO_ASSEMBLY -DLINUX
 
 all:	redist $(OUTPUT)/Builder
 
 clean:
-	rm -f $(OUTPUT)/*.o $(OUTPUT)/Builder
 	rm -rf $(OUTPUT)
 	mkdir -p $(OUTPUT)
 	
 redist:
-	chmod +x ./Redist.sh; ./Redist.sh
+	mkdir -p $(OUTPUT)
+	cp $(SRCDIR)/Redist.sh $(OUTPUT)/Redist.sh 
+	chmod +x $(OUTPUT)/Redist.sh; $(OUTPUT)/Redist.sh
 	
 
 SRC = \
-	GLBuilder.cpp \
-    main.cpp
+	$(SRCDIR)/GLBuilder.cpp \
+	$(SRCDIR)/main.cpp
 
-OBJ = \
-	$(OUTPUT)/GLBuilder.o \
-    $(OUTPUT)/main.o
+OBJ = $(SRC:$(SRCDIR)/%.cpp=$(OUTPUT)/%.o)
 
 $(OUTPUT)/Builder:	$(OBJ)
 	g++ $(OBJ) -o $(OUTPUT)/Builder $(LIBGL)
-	cp $(OUTPUT)/Builder $(RAPTOR_ROOT)/Redist/Bin
+	cp $(OUTPUT)/Builder $(REDIST)/Bin/
 
 $(OBJ):	$(SRC)
-	g++ $(CCCFLAGS) $(INCDIRS) -c $(<D)/$(*F).cpp  -o $(OUTPUT)/$(@F)
+	g++ $(CCCFLAGS) $(INCDIRS) -c $(<D)/$(*F).cpp -o $(OUTPUT)/$(@F)
 

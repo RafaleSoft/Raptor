@@ -287,16 +287,16 @@ __inline CGenericVector<T,D> SIMD_CALL CGenericVector<T,D>::operator^  (const CG
 template <class T,int D>
 __inline std::istream& operator>>(std::istream& i, CGenericVector<T,D>& v)
 {
-	for (int i=0;i<D;i++)
-		i >> v.m_vector[i];
+	for (int dim=0;dim<D;dim++)
+		i >> v.m_vector[dim];
 	return i;
 };
 
 template <class T,int D>
 __inline std::ostream& operator<<(std::ostream& o, const CGenericVector<T,D>& v)
 {
-	for (int i=0;i<D-1;i++)
-		o<<v.m_vector[i]<<" ";
+	for (int dim=0;dim<D-1;dim++)
+		o<<v.m_vector[dim]<<" ";
 
 	return o<<v.m_vector[D-1];
 };

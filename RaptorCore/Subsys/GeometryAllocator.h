@@ -9,9 +9,10 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#if !defined(AFX_MEMORY_H__81A6CA9A_4ED9_4260_B6E4_C03276C38DBC__INCLUDED_)
-	#include "System/Memory.h"
+#if !defined(AFX_RESOURCEALLOCATOR_H__4BAB58CE_942B_450D_88C9_AF0DDDF03718__INCLUDED_)
+	#include "ResourceAllocator.h"
 #endif
+
 #if !defined(AFX_RAPTORVULKANMEMORY_H__72256FF7_DBB9_4B9C_9BF7_C36F425CF811__INCLUDED_)
 	#include "Subsys/Vulkan/VulkanMemory.h"
 #endif
@@ -20,7 +21,7 @@
 RAPTOR_NAMESPACE_BEGIN
 
 
-class CGeometryAllocator  
+class CGeometryAllocator : public CResourceAllocator
 {
 public:
 	//!	Singleton access : returns the current instance or create a new instance if there is no current.
@@ -41,9 +42,6 @@ public:
 	//! Returns the relocate state ( set with the method here above ).
 	bool    isMemoryRelocated(void) const
 	{ return ((NULL != deviceMemoryManager) && (NULL != relocatedFaceIndexes) && (NULL != relocatedVertices)); };
-
-	//! Returns the lock state ( set with the method below ).
-	bool    isMemoryLocked(void) const { return m_bLocked; };
 
 	//! Lock memory data and relocation so that no change can be made.
 	//! If data is relocated, High Performance memory blocks are activated on server
@@ -103,11 +101,8 @@ private:
     CHostMemoryManager::Allocator<unsigned short> shortAlloc;
     CHostMemoryManager::Allocator<float> floatAlloc;
 
-	//!	The memory state
-    bool    m_bLocked;
-
 	//!	Structure for memory blocs
-	typedef struct data_bloc_t
+	typedef struct data_bloc2_t
 	{
 		//	bloc address
 		union
@@ -117,22 +112,18 @@ private:
 		} address;
 		//	bloc size in bytes
 		uint64_t size;
-	} data_bloc;
+	} data_bloc2;
 
 
 	//!	Global array for geometry face indexes allocation.
-	data_bloc	faceIndexes;
+	data_bloc2	faceIndexes;
 
 	//!	Global array for geometry coordinates allocation.
-	data_bloc	vertices;
+	data_bloc2	vertices;
 
 	//!	If relocated, High Performance buffer object
 	IDeviceMemoryManager::IBufferObject *relocatedFaceIndexes;
 	IDeviceMemoryManager::IBufferObject *relocatedVertices;
-
-	//!	Memory manager for the device hosting the display holding this allocator.
-	//! (Vulkan host memory is per device)
-	IDeviceMemoryManager	*deviceMemoryManager;
 
 	//! Actual memory structure : bloc fragments of global allocated space
 	//!	IMPORTANT: The structure implementation requires a binary tree for template class map<>
@@ -140,8 +131,8 @@ private:
 	map<float*,uint64_t>			vertexBlocs;
 
 	//! Free blocs for faster reallocation ( blocs are contained in actual memory structure )
-	vector<data_bloc>	freeIndexBlocs;
-	vector<data_bloc>	freeVertexBlocs;
+	vector<data_bloc2>	freeIndexBlocs;
+	vector<data_bloc2>	freeVertexBlocs;
 
     //!  memory mappers from local memory to server memory
     map<unsigned short*,unsigned short*>    indexReMap;

@@ -15,8 +15,8 @@
 #ifndef __CGLTYPES_HPP__
     #include "System/CGLTypes.h"
 #endif
-#if !defined(AFX_TEXTUREFACTORYCONFIG_H__7A20D208_423F_4E02_AA4D_D736E0A7959F__INCLUDED_)
-	#include "GLHierarchy/TextureFactoryConfig.h"
+#if !defined(AFX_IMAGE_H__F545D0D5_5F10_4EFA_BE3B_3F3D34D4DBF3__INCLUDED_)
+	#include "System/Image.h"
 #endif
 
 
@@ -26,7 +26,7 @@ RAPTOR_NAMESPACE_BEGIN
 class RAPTOR_API CPerlinNoise : public ITextureGenerator  
 {
 public:
-	typedef CTextureFactoryConfig::IImageOP::OP_KIND OPS;
+	typedef CImage::IImageOP::OP_KIND OPS;
 	typedef enum
 	{
 		NOISE1,

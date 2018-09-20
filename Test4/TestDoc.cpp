@@ -9,7 +9,7 @@
 #include "GLHierarchy/RenderingProperties.h"
 #include "GLHierarchy/Light.h"
 #include "GLHierarchy/ShaderProgram.h"
-#include "Engine/ViewPoint.h"
+#include "Engine/IViewPoint.h"
 #include "Engine/3DScene.h"
 #include "Engine/Mirror.h"
 
@@ -68,7 +68,7 @@ void CTestDoc::GLInitContext(HDC hdc)
     display.handle = (unsigned int)(hdc);
 	display.hClass = CLIENT_HANDLE_CLASS;
 
-    m_pDisplay->glBindDisplay(display);
+	m_pDisplay->glvkBindDisplay(display);
 
     glClearColor(0.0f,0.0f,0.0f,0.0f);
 
@@ -76,9 +76,9 @@ void CTestDoc::GLInitContext(HDC hdc)
     CRenderingProperties *props = dsp->getRenderingProperties();
     props->setLighting(CRenderingProperties::ENABLE);
 
-	CViewPoint *vp = dsp->getViewPoint();
-    vp->setPosition(0,2,4.5f,CViewPoint::EYE);
-    vp->setPosition(0,0,0,CViewPoint::TARGET);
+	IViewPoint *vp = dsp->getViewPoint();
+    vp->setPosition(0,2,4.5f,IViewPoint::EYE);
+    vp->setPosition(0,0,0,IViewPoint::TARGET);
 
 	C3DScene *pScene = dsp->getRootScene();
     pScene->useZSort();
@@ -160,7 +160,7 @@ void CTestDoc::GLInitContext(HDC hdc)
     pScene->addLight(pLight);
 
 #if defined(GL_ARB_color_buffer_float)
-    if (Raptor::glIsExtensionSupported("GL_ARB_color_buffer_float"))
+	if (Raptor::glIsExtensionSupported(GL_ARB_COLOR_BUFFER_FLOAT_EXTENSION_NAME))
     {
         CRaptorDisplayConfig rda;
         CRaptorDisplay::GetCurrentDisplay()->glQueryStatus(rda,GL_CONFIG_STATE_QUERY);
@@ -168,7 +168,7 @@ void CTestDoc::GLInitContext(HDC hdc)
 
         CHDRFilter *hdr = new CHDRFilter(rda);
 		hdr->setFilterModel(CRaptorDisplayFilter::RENDER_TEXTURE);
-        CRaptorDisplay::GetCurrentDisplay()->glBindDisplay(*hdr);
+		CRaptorDisplay::GetCurrentDisplay()->glvkBindDisplay(*hdr);
         hdr->enableFilter(true);
 		
 		m_hdr = hdr;
@@ -181,7 +181,7 @@ void CTestDoc::GLInitContext(HDC hdc)
         CMBFilter *mb = new CMBFilter();
         mb->setPercentage(0.95f,0.95f,0.95f,1.0f);
 		mb->setFilterModel(CRaptorDisplayFilter::RENDER_TEXTURE);
-        CRaptorDisplay::GetCurrentDisplay()->glBindDisplay(*mb);
+		CRaptorDisplay::GetCurrentDisplay()->glvkBindDisplay(*mb);
 		mb->enableFilter(false);
 		
 		m_mb = mb;
@@ -234,7 +234,7 @@ void CTestDoc::glDisplay(HDC hdc)
     display.handle = (unsigned int)(hdc);
 	display.hClass = CLIENT_HANDLE_CLASS;
 
-    m_pDisplay->glBindDisplay(display);
+	m_pDisplay->glvkBindDisplay(display);
 
 	m_pDisplay->glRender();
 

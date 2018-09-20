@@ -246,7 +246,7 @@ public:
 		int		stencilWriteMask;
 		CColor::RGBA	colorClearValue;
 		float	indexClearValue;
-		int		depthClearValue;
+		float	depthClearValue;
 		int		stencilClearValue;
 		CColor::RGBA	accumClearValue;
 	} GL_FRAME_STATE;

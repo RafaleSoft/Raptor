@@ -7,7 +7,7 @@
 #include "GLObjectViewerDoc.h"
 #include "GLObjectViewerView.h"
 
-#include "Engine/ViewPoint.h"
+#include "Engine/IViewPoint.h"
 #include "System/RaptorDisplay.h"
 #include "GLHierarchy/RenderingProperties.h"
 
@@ -210,7 +210,7 @@ void CGLObjectViewerView::OnMouseMove(UINT nFlags, CPoint point)
 BOOL CGLObjectViewerView::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) 
 {
 	CRaptorDisplay *pDisplay = getDisplay();
-	CViewPoint * const vp = pDisplay->getViewPoint();
+	IViewPoint * const vp = pDisplay->getViewPoint();
 	if (zDelta < 0)
         vp->translate(0.0f,0.0f,-1.0f);
     else

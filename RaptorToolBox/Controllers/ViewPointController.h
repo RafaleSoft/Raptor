@@ -15,7 +15,7 @@ RAPTOR_NAMESPACE
 class CViewPointController : public CControllers::CController
 {
 public:
-	CViewPointController(CViewPoint	*pVP);
+	CViewPointController(IViewPoint	*pVP);
 	virtual ~CViewPointController(void);
 
 private:
@@ -29,7 +29,7 @@ private:
 	void handleMouseInput(int button, int xpos, int ypos);
 
 	//! The controlled view point
-	CViewPoint	*m_pViewPoint;
+	IViewPoint	*m_pViewPoint;
 
 	int oldxpos;
 	int oldypos;

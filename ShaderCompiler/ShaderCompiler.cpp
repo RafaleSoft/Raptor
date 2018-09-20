@@ -39,9 +39,9 @@ public:
         m_pDisplay = pDisplay;
 
 		CTextureFactory &factory = CTextureFactory::getDefaultFactory();
-        background = factory.glCreateTexture(	CTextureObject::CGL_COLOR24_ALPHA,
+        background = factory.glCreateTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 												CTextureObject::CGL_OPAQUE,
-												CTextureObject::CGL_BILINEAR);
+												ITextureObject::CGL_BILINEAR);
         background->glSetTransparency(255);
         factory.glLoadTexture(background,"Raptor_splash.jpg");
         //sfactory.glLoadTexture(T,"Dune.tif");
@@ -285,7 +285,7 @@ void CDisplay::glRender(void)
 
     CClientDC DC(m_wnd);
     RAPTOR_HANDLE device(DEVICE_CONTEXT_CLASS,DC.m_hDC);
-    m_pDisplay->glBindDisplay(device);
+	m_pDisplay->glvkBindDisplay(device);
 
     if (!fileSources.empty())
     {
@@ -310,7 +310,7 @@ void CDisplay::glRender(void)
         pConsole->addItem(item);
     }
 
-    background->glRender();
+	background->glvkRender();
 
     glBegin(GL_QUADS);
         glTexCoord2f(0.0f,0.0f);glVertex3f(-1.33f,-1.0f,-1.0f);
@@ -344,7 +344,7 @@ int main(int argc, char* argv[])
 
     Raptor::glInitRaptor(config);
 
-    CImaging::installImagers(CTextureFactory::getDefaultFactory());
+    CImaging::installImagers();
 
 	unsigned int v = Raptor::GetVersion();
 	stringstream title;
@@ -374,13 +374,13 @@ int main(int argc, char* argv[])
     RAPTOR_HANDLE device(DEVICE_CONTEXT_CLASS,pDC->m_hDC);
 
     CRaptorDisplay *pDisplay = Raptor::glCreateDisplay(glcs);
-    if (pDisplay->glBindDisplay(device))
+	if (pDisplay->glvkBindDisplay(device))
 	{
-        if (!Raptor::glIsExtensionSupported("GL_ARB_vertex_program") ||
-			!Raptor::glIsExtensionSupported("GL_ARB_vertex_shader") ||
-			!Raptor::glIsExtensionSupported("GL_ARB_fragment_program") ||
-			!Raptor::glIsExtensionSupported("GL_ARB_fragment_shader") ||
-			!Raptor::glIsExtensionSupported("GL_ARB_geometry_shader4"))
+		if (!Raptor::glIsExtensionSupported(GL_ARB_VERTEX_PROGRAM_EXTENSION_NAME) ||
+			!Raptor::glIsExtensionSupported(GL_ARB_VERTEX_SHADER_EXTENSION_NAME) ||
+			!Raptor::glIsExtensionSupported(GL_ARB_FRAGMENT_PROGRAM_EXTENSION_NAME) ||
+			!Raptor::glIsExtensionSupported(GL_ARB_FRAGMENT_SHADER_EXTENSION_NAME) ||
+			!Raptor::glIsExtensionSupported(GL_ARB_GEOMETRY_SHADER4_EXTENSION_NAME))
         {
             Raptor::GetMessages()->displayMessage("Sorry: Test cannot run : hardware OpenGL shaders not supported, exiting...");
             return -1;
@@ -441,7 +441,7 @@ int AFXAPI AfxWinMain(	HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	wchar_t **wargv = __wargv;
 	char **argv = new char*[__argc];
 	for (int c = 0; c < __argc; c++)
-		argv[c] = strdup(CT2A(wargv[c]));
+		argv[c] = _strdup(CT2A(wargv[c]));
 	if (AfxWinInit(hInstance, hPrevInstance, lpCmdLine, nCmdShow))
 		res = main(__argc, argv);
 	for (int c = 0; c < __argc; c++)

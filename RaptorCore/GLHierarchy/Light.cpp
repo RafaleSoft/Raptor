@@ -23,8 +23,8 @@
 #if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
 	#include "System/Raptor.h"
 #endif
-#if !defined(AFX_RAPTOREXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
-	#include "System/RaptorExtensions.h"
+#if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
+	#include "System/RaptorGLExtensions.h"
 #endif
 #if !defined(AFX_RAPTORIO_H__87D52C27_9117_4675_95DC_6AD2CCD2E78D__INCLUDED_)
 	#include "System/RaptorIO.h"
@@ -267,7 +267,7 @@ void RAPTOR_FASTCALL CLight::setLightDirection(const GL_COORD_VERTEX& direction)
 	m_pAttributes->m_direction.Normalize();
 }
 
-void CLight::addLensFlare(CTextureObject* T,float size)
+void CLight::addLensFlare(ITextureObject* T,float size)
 {
     CLightAttributes::flare_item flare;
     flare.pFlare = T;
@@ -371,7 +371,7 @@ void CLight::glRenderFlare(void)
     C3DEngine::Get3DEngine()->glProject(up_right);
 
 #if defined(GL_ARB_occlusion_query)
-    const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+    const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
     GLuint query = m_pAttributes->m_visibilityQuery;
     if (query == 0)
     {
@@ -443,7 +443,7 @@ void CLight::glRenderFlare(void)
 			for (unsigned int i=0;(i<m_pAttributes->mFlares.size());i++)
 			{
 				const CLightAttributes::flare_item& flare = m_pAttributes->mFlares[i];
-				flare.pFlare->glRender();
+				flare.pFlare->glvkRender();
 			    
 				glBegin(GL_QUADS);
 				glTexCoord2f(0.0f,0.0f);    glVertex3f(-flare.fSize,-flare.fSize,0.0f);

@@ -1,4 +1,3 @@
-#include "StdAfx.h"
 #include "Subsys/CodeGeneration.h"
 
 #if !defined(AFX_CMDLINEPARSER_H__D7D8768A_3D97_491F_8493_588972A3CF62__INCLUDED_)

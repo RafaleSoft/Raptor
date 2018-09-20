@@ -25,10 +25,9 @@ int main(int argc, char* argv[])
     config.m_uiVertices = 40000;
 	config.m_logFile = "Test_Raptor.log";
 
-    //config.setFilterSizeFactor(0.0625);
     Raptor::glInitRaptor(config);
 
-    CImaging::installImagers(CTextureFactory::getDefaultFactory());
+    CImaging::installImagers();
 
     CRaptorApplication  *app = CRaptorApplication::CreateApplication();
     app->initApplication();
@@ -73,7 +72,7 @@ int main(int argc, char* argv[])
 
     CTestDoc *pDoc = new CTestDoc(wnd,pDisplay);
 
-    bool res = pDisplay->glBindDisplay(wnd);
+	bool res = pDisplay->glvkBindDisplay(wnd);
     if (res)
 	{
         pDoc->GLInitContext();

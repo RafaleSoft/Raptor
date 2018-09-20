@@ -36,6 +36,9 @@
     <ClInclude Include="..\..\RaptorCompute\targetver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\RaptorCompute\RaptorComputeBufferObject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\RaptorCompute\dllmain.cpp">

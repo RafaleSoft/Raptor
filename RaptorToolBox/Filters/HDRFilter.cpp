@@ -2,7 +2,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "Subsys/CodeGeneration.h"
 
 #if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
 	#include "System/Raptor.h"
@@ -22,14 +22,11 @@
 #if !defined(AFX_VERTEXSHADER_H__F2D3BBC6_87A1_4695_B667_2B8C3C4CF022__INCLUDED_)
 	#include "GLHierarchy/VertexShader.h"
 #endif
-#if !defined(AFX_RAPTOREXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
-  #include "System/RaptorExtensions.h"
+#if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
+  #include "System/RaptorGLExtensions.h"
 #endif
 #if !defined(AFX_TEXTUREFACTORY_H__1B470EC4_4B68_11D3_9142_9A502CBADC6B__INCLUDED_)
 	#include "GLHierarchy/TextureFactory.h"
-#endif
-#if !defined(AFX_TEXTUREFACTORYCONFIG_H__7A20D208_423F_4E02_AA4D_D736E0A7959F__INCLUDED_)
-	#include "GLHierarchy/TextureFactoryConfig.h"
 #endif
 #if !defined(AFX_RENDERINGPROPERTIES_H__634BCF2B_84B4_47F2_B460_D7FDC0F3B698__INCLUDED_)
 	#include "GLHierarchy/RenderingProperties.h"
@@ -303,7 +300,7 @@ CHDRFilter::CHDRFilter(const CRaptorDisplayConfig &da)
 	rda.renderer = CRaptorDisplayConfig::PIXEL_BUFFER;
 
 #if defined(GL_EXT_framebuffer_object)
-	if ((Raptor::glIsExtensionSupported("GL_EXT_framebuffer_object")) &&
+	if ((Raptor::glIsExtensionSupported(GL_EXT_FRAMEBUFFER_OBJECT_EXTENSION_NAME)) &&
 		(da.renderer == CRaptorDisplayConfig::RENDER_BUFFER))
 		rda.renderer = CRaptorDisplayConfig::RENDER_BUFFER;
 #endif
@@ -351,8 +348,8 @@ void CHDRFilter::glRenderFilter()
     CTextureObject  *currentBuffer = getColorInput();
     for (unsigned int i=0;i<nLevels;i++)
     {
-        m_pDownSizedDisplay[i]->glBindDisplay(nodevice);
-        currentBuffer->glRender();
+		m_pDownSizedDisplay[i]->glvkBindDisplay(nodevice);
+		currentBuffer->glvkRender();
 
 		luminanceParams.p = GL_COORD_VERTEX(0.5f / currentBuffer->getWidth(),
 											0.5f / currentBuffer->getHeight(),
@@ -392,8 +389,8 @@ void CHDRFilter::glRenderFilter()
     //
     //  Extract high frequencies only
     //
-    m_pDownHighFreqs->glBindDisplay(nodevice);
-    m_pDownSizedBuffer[1]->glRender();
+	m_pDownHighFreqs->glvkBindDisplay(nodevice);
+	m_pDownSizedBuffer[1]->glvkRender();
 	thresholdParams[1].copy(thresholdParam);
 #if defined(GL_ARB_vertex_shader)
 	m_pTreshholdFreqs->glGetFragmentProgram()->setProgramParameters(thresholdParams);
@@ -408,8 +405,8 @@ void CHDRFilter::glRenderFilter()
     //
     //  Blur high frequencies  
     //
-    m_pDownBlurXDisplay->glBindDisplay(nodevice);
-    m_pDownHFBuffer->glRender();
+	m_pDownBlurXDisplay->glvkBindDisplay(nodevice);
+	m_pDownHFBuffer->glvkRender();
     m_pBlurXOffsets->setProgramParameters(blurOffsets);
     m_pBlurXOffsets->glRender();
     m_pBlur->glRender();
@@ -420,8 +417,8 @@ void CHDRFilter::glRenderFilter()
     m_pBlur->glStop();
     m_pDownBlurXDisplay->glUnBindDisplay();
 
-    m_pDownBlurYDisplay->glBindDisplay(nodevice);
-    m_pDownBlurXBuffer->glRender();
+	m_pDownBlurYDisplay->glvkBindDisplay(nodevice);
+	m_pDownBlurXBuffer->glvkRender();
     m_pBlurYOffsets->setProgramParameters(blurOffsets);
     m_pBlurYOffsets->glRender();
     m_pBlur->glRender();
@@ -437,8 +434,8 @@ void CHDRFilter::glRenderFilter()
 		//
 		//  Second pass Blur high frequencies  
 		//
-		m_pDownBlurXDisplay->glBindDisplay(nodevice);
-		m_pDownBlurYBuffer->glRender();
+		m_pDownBlurXDisplay->glvkBindDisplay(nodevice);
+		m_pDownBlurYBuffer->glvkRender();
 		m_pBlurXOffsets->setProgramParameters(blurOffsets);
 		m_pBlurXOffsets->glRender();
 		m_pBlur->glRender();
@@ -448,8 +445,8 @@ void CHDRFilter::glRenderFilter()
 		m_pBlurXOffsets->glStop();
 		m_pDownBlurXDisplay->glUnBindDisplay();
 
-		m_pDownBlurYDisplay->glBindDisplay(nodevice);
-		m_pDownBlurXBuffer->glRender();
+		m_pDownBlurYDisplay->glvkBindDisplay(nodevice);
+		m_pDownBlurXBuffer->glvkRender();
 		m_pBlurYOffsets->setProgramParameters(blurOffsets);
 		m_pBlurYOffsets->glRender();
 
@@ -466,15 +463,15 @@ void CHDRFilter::glRenderFilterOutput()
 	//
     // Final rendering : composite global illumination with gloom and original HDR scene.
     //
-	const CRaptorExtensions*   const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions*   const pExtensions = Raptor::glGetExtensions();
 	PFN_GL_ACTIVE_TEXTURE_ARB_PROC glActiveTextureARB = pExtensions->glActiveTextureARB;
 
     glActiveTextureARB(GL_TEXTURE2_ARB);
     glEnable(GL_TEXTURE_2D);
-    m_pDownSizedBuffer[nLevels-1]->glRender();    // texture is a single texel with luminance max.
+	m_pDownSizedBuffer[nLevels - 1]->glvkRender();    // texture is a single texel with luminance max.
     glActiveTextureARB(GL_TEXTURE1_ARB);
     glEnable(GL_TEXTURE_2D);
-    m_pDownBlurYBuffer->glRender();
+	m_pDownBlurYBuffer->glvkRender();
 
 /*
 	glActiveTextureARB(GL_TEXTURE0_ARB);
@@ -486,7 +483,7 @@ void CHDRFilter::glRenderFilterOutput()
 */
 
     glActiveTextureARB(GL_TEXTURE0_ARB);
-    getColorInput()->glRender();
+	getColorInput()->glvkRender();
 
     // compose blur + hdr
     m_pComposite->glRender();
@@ -532,9 +529,9 @@ bool CHDRFilter::glInitFilter(void)
 
 	if ((colorExternalSource != NULL) && (m_fModel == RENDER_TEXTURE))
 	{
-		colorInput = filterFactory.glCreateDynamicTexture(	CTextureObject::CGL_COLOR24_ALPHA,
+		colorInput = filterFactory.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 															CTextureObject::CGL_OPAQUE,
-															CTextureObject::CGL_BILINEAR,
+															ITextureObject::CGL_BILINEAR,
 															colorExternalSource);
 	}
 	else if (m_fModel == RENDER_BUFFER)
@@ -561,22 +558,22 @@ bool CHDRFilter::glInitFilter(void)
         CRenderingProperties *rp = m_pDownSizedDisplay[i]->getRenderingProperties();
         *rp = commonRP;
         m_pDownSizedDisplay[i]->setViewPoint(NULL);
-        CTextureObject::TEXTURE_FILTER filter = ( i < 2 ? CTextureObject::CGL_BILINEAR : CTextureObject::CGL_UNFILTERED);
+        ITextureObject::TEXTURE_FILTER filter = ( i < 2 ? ITextureObject::CGL_BILINEAR : ITextureObject::CGL_UNFILTERED);
 
 		if (m_fModel == RENDER_BUFFER)
 		{
-			m_pDownSizedBuffer[i] = filterFactory.glCreateTexture(	CTextureObject::CGL_COLOR_FLOAT16_ALPHA,
+			m_pDownSizedBuffer[i] = filterFactory.glCreateTexture(	ITextureObject::CGL_COLOR_FLOAT16_ALPHA,
 																	CTextureObject::CGL_OPAQUE,
 																	filter);
 			filterFactory.glResizeTexture(m_pDownSizedBuffer[i],width,height);
 			CTextureSet *tset = new CTextureSet("HDR_TSet");
 			tset->addTexture(m_pDownSizedBuffer[i]);
-			m_pDownSizedDisplay[i]->glBindDisplay(*tset);
+			m_pDownSizedDisplay[i]->glvkBindDisplay(*tset);
 			m_pDownSizedAttachments[i] = tset;
 		}
 		else if (m_fModel == RENDER_TEXTURE)
 		{
-			m_pDownSizedBuffer[i] = filterFactory.glCreateDynamicTexture(	CTextureObject::CGL_COLOR24_ALPHA,
+			m_pDownSizedBuffer[i] = filterFactory.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 																			CTextureObject::CGL_OPAQUE,
 																			filter, 
 																			m_pDownSizedDisplay[i]);
@@ -591,20 +588,20 @@ bool CHDRFilter::glInitFilter(void)
     m_pDownBlurXDisplay->setViewPoint(NULL);
 	if (m_fModel == RENDER_BUFFER)
 	{
-		m_pDownBlurXBuffer = filterFactory.glCreateTexture(	CTextureObject::CGL_COLOR_FLOAT16_ALPHA,
+		m_pDownBlurXBuffer = filterFactory.glCreateTexture(	ITextureObject::CGL_COLOR_FLOAT16_ALPHA,
 															CTextureObject::CGL_OPAQUE,
-															CTextureObject::CGL_BILINEAR);
+															ITextureObject::CGL_BILINEAR);
 		filterFactory.glResizeTexture(m_pDownBlurXBuffer,rda.width,rda.height);
-		m_pDownBlurXBuffer->glUpdateClamping(CTextureObject::CGL_EDGECLAMP);
+		m_pDownBlurXBuffer->glvkUpdateClamping(ITextureObject::CGL_EDGECLAMP);
 		CTextureSet *tset = new CTextureSet("HDR_XBlur");
 		tset->addTexture(m_pDownBlurXBuffer);
-		m_pDownBlurXDisplay->glBindDisplay(*tset);
+		m_pDownBlurXDisplay->glvkBindDisplay(*tset);
 	}
 	else if (m_fModel == RENDER_TEXTURE)
 	{
-		m_pDownBlurXBuffer = filterFactory.glCreateDynamicTexture(CTextureObject::CGL_COLOR24_ALPHA,	
+		m_pDownBlurXBuffer = filterFactory.glCreateDynamicTexture(ITextureObject::CGL_COLOR24_ALPHA,	
 																  CTextureObject::CGL_OPAQUE,
-																  CTextureObject::CGL_BILINEAR,
+																  ITextureObject::CGL_BILINEAR,
 																  m_pDownBlurXDisplay);
 	}
 
@@ -614,20 +611,20 @@ bool CHDRFilter::glInitFilter(void)
     m_pDownBlurYDisplay->setViewPoint(NULL);
 	if (m_fModel == RENDER_BUFFER)
 	{
-		m_pDownBlurYBuffer = filterFactory.glCreateTexture(	CTextureObject::CGL_COLOR_FLOAT16_ALPHA,
+		m_pDownBlurYBuffer = filterFactory.glCreateTexture(	ITextureObject::CGL_COLOR_FLOAT16_ALPHA,
 															CTextureObject::CGL_OPAQUE,
-															CTextureObject::CGL_BILINEAR);
+															ITextureObject::CGL_BILINEAR);
 		filterFactory.glResizeTexture(m_pDownBlurYBuffer,rda.width,rda.height);
-		m_pDownBlurYBuffer->glUpdateClamping(CTextureObject::CGL_EDGECLAMP);
+		m_pDownBlurYBuffer->glvkUpdateClamping(ITextureObject::CGL_EDGECLAMP);
 		CTextureSet *tset = new CTextureSet("HDR_YBlur");
 		tset->addTexture(m_pDownBlurYBuffer);
-		m_pDownBlurYDisplay->glBindDisplay(*tset);
+		m_pDownBlurYDisplay->glvkBindDisplay(*tset);
 	}
 	else if (m_fModel == RENDER_TEXTURE)
 	{
-		m_pDownBlurYBuffer = filterFactory.glCreateDynamicTexture(	CTextureObject::CGL_COLOR24_ALPHA,
+		m_pDownBlurYBuffer = filterFactory.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 																	CTextureObject::CGL_OPAQUE,
-																	CTextureObject::CGL_BILINEAR,
+																	ITextureObject::CGL_BILINEAR,
 																	m_pDownBlurYDisplay);
 	}
 
@@ -637,20 +634,20 @@ bool CHDRFilter::glInitFilter(void)
     m_pDownHighFreqs->setViewPoint(NULL);
 	if (m_fModel == RENDER_BUFFER)
 	{
-		m_pDownHFBuffer = filterFactory.glCreateTexture(CTextureObject::CGL_COLOR_FLOAT16_ALPHA,
+		m_pDownHFBuffer = filterFactory.glCreateTexture(ITextureObject::CGL_COLOR_FLOAT16_ALPHA,
 														CTextureObject::CGL_OPAQUE,
-														CTextureObject::CGL_BILINEAR);
+														ITextureObject::CGL_BILINEAR);
 		filterFactory.glResizeTexture(m_pDownHFBuffer,rda.width,rda.height);
-		m_pDownHFBuffer->glUpdateClamping(CTextureObject::CGL_EDGECLAMP);
+		m_pDownHFBuffer->glvkUpdateClamping(ITextureObject::CGL_EDGECLAMP);
 		CTextureSet *tset = new CTextureSet("HDR_HighFrequencies");
 		tset->addTexture(m_pDownHFBuffer);
-		m_pDownHighFreqs->glBindDisplay(*tset);
+		m_pDownHighFreqs->glvkBindDisplay(*tset);
 	}
 	else if (m_fModel == RENDER_TEXTURE)
 	{
-		m_pDownHFBuffer = filterFactory.glCreateDynamicTexture(	CTextureObject::CGL_COLOR24_ALPHA,
+		m_pDownHFBuffer = filterFactory.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 																CTextureObject::CGL_OPAQUE,
-																CTextureObject::CGL_BILINEAR,
+																ITextureObject::CGL_BILINEAR,
 																m_pDownHighFreqs);
 	}
 

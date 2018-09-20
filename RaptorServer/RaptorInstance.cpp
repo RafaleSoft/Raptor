@@ -108,7 +108,7 @@ void CRaptorInstance::glRender()
 			item.text = str2.str();
 			pConsole->updateItem(item,1);
 
-			m_pDisplay->glBindDisplay(m_pWindow);
+			m_pDisplay->glvkBindDisplay(m_pWindow);
 
 			for (size_t i=0;i<m_sessions.size();i++)
 				if (m_sessions[i].id == r.id)
@@ -127,7 +127,7 @@ void CRaptorInstance::glRender()
 				{
 					pDisplay = r.display;
 					RAPTOR_HANDLE handle;
-					pDisplay->glBindDisplay(handle);
+					pDisplay->glvkBindDisplay(handle);
 				}
 
 				pDisplay->glRender();
@@ -156,7 +156,7 @@ void CRaptorInstance::glRender()
 		{
 			if (!m_sessionsToDestroy.empty())
 			{
-				m_pDisplay->glBindDisplay(m_pWindow);
+				m_pDisplay->glvkBindDisplay(m_pWindow);
 				Raptor::glDestroyDisplay(m_sessionsToDestroy[0].display);
 				m_sessionsToDestroy.erase(m_sessionsToDestroy.begin());
 				m_pDisplay->glUnBindDisplay();
@@ -187,8 +187,7 @@ bool CRaptorInstance::start(unsigned int width,unsigned int height)
 	else
 		return false;
 
-	CTextureFactory &factory = CTextureFactory::getDefaultFactory();
-	CImaging::installImagers(factory);
+	CImaging::installImagers();
 
 	CRaptorDisplayConfig glcs;
 	glcs.width = width;
@@ -230,7 +229,7 @@ bool CRaptorInstance::start(unsigned int width,unsigned int height)
         return false;
     }
 
-	m_pDisplay->glBindDisplay(m_pWindow);
+	m_pDisplay->glvkBindDisplay(m_pWindow);
 		CRaptorConsole *pConsole = Raptor::GetConsole();
 		pConsole->glInit();
 		pConsole->showStatus(true);
@@ -410,10 +409,10 @@ bool CRaptorInstance::executeRequest(request &r)
 		s.id = r.id;
 		s.display = NULL;
 	
-		CRaptorNetwork::SESSION_COMMAND *command = (CRaptorNetwork::SESSION_COMMAND *)r.data;
+		CRaptorNetwork::SESSION_COMMAND *session_command = (CRaptorNetwork::SESSION_COMMAND *)r.data;
 		CRaptorDisplayConfig glcs;
-		glcs.width = command->width;
-		glcs.height = command->height;
+		glcs.width = session_command->width;
+		glcs.height = session_command->height;
 		glcs.x = 0;
 		glcs.y = 0;
 		glcs.caption = "RaptorRenderServer_Session";
@@ -431,7 +430,7 @@ bool CRaptorInstance::executeRequest(request &r)
 		}
 
 		RAPTOR_HANDLE handle;
-		s.display->glBindDisplay(handle);
+		s.display->glvkBindDisplay(handle);
 			CRenderingProperties *props = s.display->getRenderingProperties();
 			//props->setMultisampling(CRenderingProperties::ENABLE);
 			props->setTexturing(CRenderingProperties::ENABLE);

@@ -7,7 +7,6 @@
 #include "GLHierarchy/TextureObject.h"
 #include "GLHierarchy/TextureFactory.h"
 #include "System/Raptor.h"
-#include "System/RaptorExtensions.h"
 #include "Engine/Animator.h"
 #include "ToolBox/RaptorToolBox.h"
 
@@ -102,9 +101,9 @@ void CSlide::setVideo(const string& vName)
         mVideo->releaseReference();
 
     CTextureFactory f;
-    mVideo = f.glCreateDynamicTexture(	CTextureObject::CGL_COLOR24_ALPHA,
+    mVideo = f.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 										CTextureObject::CGL_ALPHA_TRANSPARENT,
-										CTextureObject::CGL_BILINEAR,
+										ITextureObject::CGL_BILINEAR,
 										pGenerator);
 
 	tw = (float)(pGenerator->getGenerateWidth()) / (float)(mVideo->getWidth());
@@ -150,7 +149,7 @@ void CSlide::glRender(void)
     else
     {
         glEnable(GL_TEXTURE_2D);
-        mVideo->glRender();
+		mVideo->glvkRender();
         glBegin(GL_QUADS);
             glTexCoord2f(0.0f,0.0f);   glVertex3f(-2.0f,-2.0f,0.1f);
             glTexCoord2f(tw,0.0f);   glVertex3f(2.0f,-2.0f,0.1f);

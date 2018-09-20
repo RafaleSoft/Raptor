@@ -33,6 +33,10 @@ public:
 	//!	If a berrier has been inserted, it is reused before destruction.
 	CVulkanCommandBuffer(	VkCommandBuffer cmdBuffer);
 
+	//!	Command buffer destruction finalizes the command buffer for submission to a queue.
+	~CVulkanCommandBuffer(void);
+
+
 	//! Insert a pipeline barrier for the parameter image
 	//!	- change queue ownership from presentation to graphics
 	//!	- the reverse barrier is inserted at command buffer completion
@@ -40,27 +44,47 @@ public:
 						uint32_t graphics_queueFamilyIndex,
 						VkImage image);
 
+	//! Insert a pipeline barrier for the parameter image
+	//!	- generates a layout transition
+	//!	- the reverse barrier has to be manually called by user
+	void imageBarrier(VkImageLayout oldLayout,
+					  VkImageLayout newLayout,
+					  VkImage image,
+					  VkImageAspectFlags aspect) const;
+
+	//! Insert a buffer copy to image. 
+	//!	Appropriate image layout must have been recorder previously with imageBarrier
+	void copyBuffer(VkBuffer buffer,
+					VkImage image,
+					VkBufferImageCopy outOfDate) const;
+
+	//! Insert a buffer copy to device. 
+	//!	Appropriate image layout must have been recorder previously with imageBarrier
+	void copyBuffer(VkBuffer hostBuffer,
+					VkBuffer deviceBuffer,
+					VkBufferCopy outOfDate) const;
+
 	//!	Initialise the render pass in the command buffer.
 	//!	Render pass is finalized upon command buffer destruction.
 	void renderPass(VkRenderPass renderPass,
 					VkFramebuffer framebuffer,
-					const CColor::RGBA& clearColor);
+					const CColor::RGBA& clearColor,
+					float clearDepth,
+					int clearStencil);
 
 	//!	Insert a viewport and scissor (same size!) in the commnd buffer.
 	void resize();
-
-
-	~CVulkanCommandBuffer(void);
-
+		
 
 	DECLARE_VK_command_buffer(STATIC_LINKAGE)
 
 	VkCommandBuffer	commandBuffer;
 
+
 private:
 	CVulkanCommandBuffer(void);
 	CVulkanCommandBuffer(const CVulkanCommandBuffer&);
-
+	
 	//!	Remember to insert a pipeline barrier when terminating the command buffer
 	bool					retore_barrier;
 	bool					render_pass;

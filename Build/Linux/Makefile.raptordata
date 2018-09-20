@@ -1,27 +1,32 @@
-OUTPUT = Release
-INCDIRS = -I. 
-CCCFLAGS = -DLINUX
+export
 
-all:	$(OUTPUT)/libraptordata.a $(OUTPUT)/libraptordata.so
+CCCFLAGS =  -DSIMD_NO_ASSEMBLY -DLINUX -fPIC
+OUTPUT = $(RAPTOR_ROOT)/Build/Linux/Release/RaptorData
+SRCDIR = $(RAPTOR_ROOT)/RaptorData
+INCDIRS = -I$(SRCDIR)
+LDFLAGS = -Bdynamic -shared -lstdc++
+
+SO = $(OUTPUT)/RaptorData.so.$(RAPTOR_VERSION)
+LIB = $(OUTPUT)/RaptorData.lib
+
+all:	$(LIB) $(SO)
 
 clean:
-	rm -f $(OUTPUT)/*.o $(OUTPUT)/libraptordata.*
 	rm -rf $(OUTPUT)
 	mkdir -p $(OUTPUT)
 
 SRC = \
-	RaptorDataManager.cpp
+	$(SRCDIR)/RaptorDataManager.cpp
 
-OBJ = $(SRC:%.cpp=$(OUTPUT)/%.o)
+OBJ = $(SRC:$(SRCDIR)/%.cpp=$(OUTPUT)/%.o)
+	
+$(SO):	$(OBJ) 
+	g++ -o $(SO) $(LDFLAGS) $(OBJ)
+	cp $(SO) $(REDIST)/Bin/
 
-$(OUTPUT)/libraptordata.a:  $(OBJ)
-	ar r $(OUTPUT)/libraptordata.a $(OBJ)
-	cp $(OUTPUT)/libraptordata.a $(RAPTOR_ROOT)/Redist/Lib
-
-$(OUTPUT)/libraptordata.so:  $(OBJ)
-	g++ -shared $(OBJ) -o $(OUTPUT)/libraptordata.so 
-	cp $(OUTPUT)/libraptordata.so $(RAPTOR_ROOT)/Redist/Bin
+$(LIB):	$(OBJ) 
+	ar -qcv $(LIB) $(OBJ)
+	cp $(LIB) $(REDIST)/Lib/
 
 $(OBJ):	$(SRC)
 	g++ $(CCCFLAGS) $(INCDIRS) -c $(<D)/$(*F).cpp  -o $(OUTPUT)/$(@F)
-

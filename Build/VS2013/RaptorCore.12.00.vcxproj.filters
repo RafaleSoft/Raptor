@@ -79,6 +79,12 @@
     <Filter Include="Header Files\Subsys include\Vulkan">
       <UniqueIdentifier>{02a65b1a-6e1a-4080-9a83-f6139c1cc147}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Subsys src\OpenGL">
+      <UniqueIdentifier>{293691f9-dd3b-41c0-b59d-2a4892986a74}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Subsys include\OpenGL">
+      <UniqueIdentifier>{26af82cc-2aef-4809-ab4c-376e74f6e4b8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\RaptorCore\Subsys\ObjectModels\Basic.lex">
@@ -180,9 +186,6 @@
       <Filter>Source Files\Engine src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\RaptorCore\Engine\ViewModifier.cpp">
-      <Filter>Source Files\Engine src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\RaptorCore\Engine\ViewPoint.cpp">
       <Filter>Source Files\Engine src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\RaptorCore\SSE_Engine\SSE_3DEngine.cpp">
@@ -353,13 +356,7 @@
     <ClCompile Include="..\..\RaptorCore\Subsys\DefaultImageScaler.cpp">
       <Filter>Source Files\Subsys src</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\RaptorCore\Subsys\DefaultMipmapBuilder.cpp">
-      <Filter>Source Files\Subsys src</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\RaptorCore\Subsys\GeometryAllocator.cpp">
-      <Filter>Source Files\Subsys src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\RaptorCore\Subsys\InternalProcs.cpp">
       <Filter>Source Files\Subsys src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\RaptorCore\Subsys\Interpreters.cpp">
@@ -456,9 +453,6 @@
       <Filter>Source Files\System src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\RaptorCore\System\RaptorEventManager.cpp">
-      <Filter>Source Files\System src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\RaptorCore\System\RaptorExtensions.cpp">
       <Filter>Source Files\System src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\RaptorCore\System\RaptorFilteredDisplay.cpp">
@@ -560,9 +554,6 @@
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\VulkanShaderStage.cpp">
       <Filter>Source Files\GLHierarchy src</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\RaptorCore\Subsys\OpenGLMemory.cpp">
-      <Filter>Source Files\Subsys src</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\RaptorCore\Subsys\Vulkan\VulkanCommandBuffer.cpp">
       <Filter>Source Files\Subsys src\Vulkan</Filter>
     </ClCompile>
@@ -571,6 +562,42 @@
     </ClCompile>
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\ProgramParameters.cpp">
       <Filter>Source Files\GLHierarchy src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\ResourceAllocator.cpp">
+      <Filter>Source Files\Subsys src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\System\Image.cpp">
+      <Filter>Source Files\System src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\DefaultAlphaTransparency.cpp">
+      <Filter>Source Files\Subsys src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\ITextureObject.cpp">
+      <Filter>Source Files\GLHierarchy src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\Vulkan\VulkanTextureObject.cpp">
+      <Filter>Source Files\Subsys src\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\System\RaptorGLExtensions.cpp">
+      <Filter>Source Files\System src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\System\RaptorVKExtensions.cpp">
+      <Filter>Source Files\System src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\Vulkan\VulkanSurface.cpp">
+      <Filter>Source Files\Subsys src\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\OpenGL\OpenGLMemory.cpp">
+      <Filter>Source Files\Subsys src\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Engine\IViewPoint.cpp">
+      <Filter>Source Files\Engine src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\OpenGL\OpenGLViewPoint.cpp">
+      <Filter>Source Files\Subsys src\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\Vulkan\VulkanViewPoint.cpp">
+      <Filter>Source Files\Subsys src\Vulkan</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -643,9 +670,6 @@
       <Filter>Header Files\Engine include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\RaptorCore\Engine\ViewModifier.h">
-      <Filter>Header Files\Engine include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\RaptorCore\Engine\ViewPoint.h">
       <Filter>Header Files\Engine include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\3DSet.h">
@@ -810,9 +834,6 @@
     <ClInclude Include="..\..\RaptorCore\Subsys\BufferImage.h">
       <Filter>Header Files\Subsys include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\RaptorCore\Subsys\BumpLightObserver.h">
-      <Filter>Header Files\Subsys include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\RaptorCore\Subsys\BumpShader.h">
       <Filter>Header Files\Subsys include</Filter>
     </ClInclude>
@@ -834,13 +855,7 @@
     <ClInclude Include="..\..\RaptorCore\Subsys\DefaultImageScaler.h">
       <Filter>Header Files\Subsys include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\RaptorCore\Subsys\DefaultMipmapBuilder.h">
-      <Filter>Header Files\Subsys include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\RaptorCore\Subsys\GeometryAllocator.h">
-      <Filter>Header Files\Subsys include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\RaptorCore\Subsys\InternalProcs.h">
       <Filter>Header Files\Subsys include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\RaptorCore\Subsys\Interpreters.h">
@@ -937,9 +952,6 @@
       <Filter>Header Files\System include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\RaptorCore\System\RaptorEventManager.h">
-      <Filter>Header Files\System include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\RaptorCore\System\RaptorExtensions.h">
       <Filter>Header Files\System include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\RaptorCore\System\RaptorFilteredDisplay.h">
@@ -1086,9 +1098,6 @@
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\VulkanShaderStage.h">
       <Filter>Header Files\GLHierarchy include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\RaptorCore\Subsys\OpenGLMemory.h">
-      <Filter>Header Files\Subsys include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\RaptorCore\Subsys\Vulkan\VulkanCommandBuffer.h">
       <Filter>Header Files\Subsys include\Vulkan</Filter>
     </ClInclude>
@@ -1100,6 +1109,48 @@
     </ClInclude>
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\ProgramParameters.h">
       <Filter>Header Files\GLHierarchy include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\ResourceAllocator.h">
+      <Filter>Header Files\Subsys include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\BufferObject.h">
+      <Filter>Header Files\Subsys include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\System\Image.h">
+      <Filter>Header Files\System include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\DefaultAlphaTransparency.h">
+      <Filter>Header Files\Subsys include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\ITextureObject.h">
+      <Filter>Header Files\GLHierarchy include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\Vulkan\VulkanTextureObject.h">
+      <Filter>Header Files\Subsys include\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\System\RaptorGLExtensions.h">
+      <Filter>Header Files\System include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\System\RaptorVKExtensions.h">
+      <Filter>Header Files\System include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\System\VKEXTMacros.h">
+      <Filter>Header Files\System include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\Vulkan\VulkanSurface.h">
+      <Filter>Header Files\Subsys include\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\OpenGL\OpenGLMemory.h">
+      <Filter>Header Files\Subsys include\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Engine\IViewPoint.h">
+      <Filter>Header Files\Engine include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\OpenGL\OpenGLViewPoint.h">
+      <Filter>Header Files\Subsys include\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\Vulkan\VulkanViewPoint.h">
+      <Filter>Header Files\Subsys include\Vulkan</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

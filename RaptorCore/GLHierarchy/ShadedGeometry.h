@@ -42,8 +42,7 @@ public:
 	virtual void glRender();
 	virtual void vkRender(CVulkanCommandBuffer& commandBuffer,
 						  VkBuffer vertexBinding,
-						  VkBuffer indexBinding,
-						  VkBuffer uniformBinding);
+						  VkBuffer indexBinding);
 
 	//!	Assignement to be able to create a shaded geometry from a base geometry.
 	//!	Shader is not modified of left uninitialised.

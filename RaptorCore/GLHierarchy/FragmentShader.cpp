@@ -13,8 +13,8 @@
 #if !defined(AFX_FRAGMENTSHADER_H__66B3089A_2919_4678_9273_6CDEF7E5787F__INCLUDED_)
 	#include "FragmentShader.h"
 #endif
-#if !defined(AFX_RAPTOREXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
-	#include "System/RaptorExtensions.h"
+#if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
+	#include "System/RaptorGLExtensions.h"
 #endif
 
 
@@ -58,7 +58,7 @@ CFragmentShader::~CFragmentShader()
 	{
 		glStop();
 
-		const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 		if (pExtensions->glIsProgramARB(m_handle.handle))
 			pExtensions->glDeleteProgramsARB(1,&m_handle.handle);
 	}
@@ -71,7 +71,7 @@ void CFragmentShader::glInitShaders()
     GLint maxMats = 8;
 
 #if defined(GL_ARB_fragment_program)
-    const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+    const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
     pExtensions->glGetProgramivARB(GL_FRAGMENT_PROGRAM_ARB,GL_MAX_PROGRAM_LOCAL_PARAMETERS_ARB,&maxLocals);
     glGetIntegerv(GL_MAX_PROGRAM_MATRICES_ARB,&maxMats);
 #endif
@@ -80,10 +80,9 @@ void CFragmentShader::glInitShaders()
 
 	if (!m_bFragmentReady)
 	{
-		if (Raptor::glIsExtensionSupported("GL_ARB_fragment_program"))
+		if (Raptor::glIsExtensionSupported(GL_ARB_FRAGMENT_PROGRAM_EXTENSION_NAME))
 		{
 #if defined(GL_ARB_fragment_program)
-			const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
 			m_bFragmentReady = pExtensions->glIsProgramARB != NULL;
 #else
 			m_bFragmentReady = false;
@@ -111,7 +110,7 @@ bool CFragmentShader::glGetProgramCaps(GL_FRAGMENT_SHADER_CAPS& caps)
 #ifdef GL_ARB_fragment_program
 	if (m_bFragmentReady)
 	{
-		const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 
 		pExtensions->glGetProgramivARB(GL_FRAGMENT_PROGRAM_ARB,GL_MAX_PROGRAM_INSTRUCTIONS_ARB,&caps.max_instructions);
 		pExtensions->glGetProgramivARB(GL_FRAGMENT_PROGRAM_ARB,GL_MAX_PROGRAM_NATIVE_INSTRUCTIONS_ARB,&caps.max_native_instructions);
@@ -151,7 +150,7 @@ void CFragmentShader::glRender(void)
 #ifdef GL_ARB_fragment_program
 	if (m_bFragmentReady)
 	{
-		const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 		if (pExtensions->glIsProgramARB(m_handle.handle))
 		{
 			glEnable(GL_FRAGMENT_PROGRAM_ARB);
@@ -178,7 +177,7 @@ void CFragmentShader::glRender(void)
 void CFragmentShader::glStop(void)
 {
 #ifdef GL_ARB_fragment_program
-	const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 	pExtensions->glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB,0);
 	glDisable(GL_FRAGMENT_PROGRAM_ARB);
 #endif
@@ -187,7 +186,7 @@ void CFragmentShader::glStop(void)
 bool CFragmentShader::glLoadProgram(const std::string &program)
 {
     m_bValid = false;
-	const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 
 #ifdef GL_ARB_fragment_program
 	if (m_bFragmentReady)
@@ -265,7 +264,7 @@ bool CFragmentShader::glGetProgramStatus(void)
 		return false;
 
 #if defined(GL_ARB_fragment_program)
-const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 
 	if (pExtensions->glIsProgramARB(m_handle.handle))
 		pExtensions->glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB,m_handle.handle);
@@ -348,7 +347,7 @@ void CFragmentShader::glProgramParameter(unsigned int numParam,const GL_COORD_VE
 #if defined(GL_ARB_fragment_program)
 	if (m_bFragmentReady)
 	{
-		const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 		pExtensions->glProgramLocalParameter4fvARB(GL_FRAGMENT_PROGRAM_ARB, numParam, v);
 	}
 #endif
@@ -361,7 +360,7 @@ void CFragmentShader::glProgramParameter(unsigned int numParam,const CColor::RGB
 #if defined(GL_ARB_fragment_program)
 	if (m_bFragmentReady)
 	{
-		const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 		pExtensions->glProgramLocalParameter4fvARB(GL_FRAGMENT_PROGRAM_ARB, numParam, v);
 	}
 #endif

@@ -22,6 +22,8 @@
 
 
 static GL_COORD_VERTEX center;
+static CImage smoke;
+
 
 class MyCompute : public CParticleManager::CParticleCompute
 {
@@ -198,16 +200,16 @@ void CParticleDisplay::Init()
 	// Load texture
 	CTextureFactory &f = CTextureFactory::getDefaultFactory();
 	CTextureSet* pTextures = (CTextureSet*)CPersistence::FindObject("main_textures");
-	CTextureObject* T = f.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_MULTIPLY, CTextureObject::CGL_BILINEAR);
+	CTextureObject* T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_MULTIPLY, ITextureObject::CGL_BILINEAR);
 	f.glLoadTexture(T, "Datas\\particle.jpg");
 	pTextures->addTexture(T);
 
-	T = f.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_MULTIPLY, CTextureObject::CGL_BILINEAR);
+	T = f.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_MULTIPLY, ITextureObject::CGL_BILINEAR);
 	f.glLoadTexture(T, "Datas\\Fire.tga");
 	pTextures->addTexture(T);
 	pFire->setTexture(T);
 
-	T = f.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_MULTIPLY, CTextureObject::CGL_BILINEAR);
+	T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_MULTIPLY, ITextureObject::CGL_BILINEAR);
 	T->glSetTransparency(0);
 	f.glLoadTexture(T, "Datas\\particle.tga");
 	pTextures->addTexture(T);
@@ -215,13 +217,11 @@ void CParticleDisplay::Init()
 
 	pParticle->setTexture(T);
 
-    T = f.glCreateVolumeTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_OPAQUE, CTextureObject::CGL_BILINEAR);
+    T = f.glCreateVolumeTexture(ITextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_OPAQUE, ITextureObject::CGL_BILINEAR);
     T->setSize(128,128,128);
 	T->glSetTransparency(255);
-    T->allocateTexels();
 	
-	unsigned char *data = T->getTexels();
-	memset(data,0,128*128*128*4);
+	smoke.allocatePixels(128, 128, 128);
 	pTextures->addTexture(T);
 	pSmoke2->setTexture(T);
 
@@ -304,18 +304,19 @@ void CParticleDisplay::Display()
 	if (repeat == 3)
 	{
 		CParticle *pSmoke2 = (CParticle*)(m_pSmoke2->getObject());
-		unsigned char *data = pSmoke2->getTexture()->getTexels();
+		unsigned char *data = smoke.getPixels(numframe);
 		unsigned char *src = ((CubeMapModifier*)m_pModifier)->getBuffer();
 
-		memcpy(&data[128*128*4*numframe],src,128*128*4);
-		memset(&data[128*128*4*numframe],0,128*8); // clear first two lines
-		memset(&data[128*128*4*numframe+128*126*4],0,128*8); // clear last two lines
+		memcpy(data,src,128*128*4);
+		memset(data,0,128*8); // clear first two lines
+		memset(&data[128*126*4],0,128*8); // clear last two lines
 
 		if (numframe == 127)
 		{
-			pSmoke2->getTexture()->glRender();
+			pSmoke2->getTexture()->glvkRender();
 			CTextureFactory &f = CTextureFactory::getDefaultFactory();
-			f.glLoadTexture(pSmoke2->getTexture(),".buffer");
+			f.glLoadTexture(pSmoke2->getTexture(), smoke);
+			smoke.releasePixels();
 			pSmoke2->getProperties().setVisible(true);
 		}
 	}

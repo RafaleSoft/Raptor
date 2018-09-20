@@ -12,8 +12,8 @@
 #if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
     #include "System/RaptorErrorManager.h"
 #endif
-#if !defined(AFX_VIEWPOINT_H__82071851_A036_4311_81CB_01E7E25F19E1__INCLUDED_)
-	#include "ViewPoint.h"
+#if !defined(AFX_OPENGLVIEWPOINT_H__94BDC36B_27AB_41FC_848E_DD28D1BDFC13__INCLUDED_)
+	#include "Subsys/OpenGL/OpenGLViewPoint.h"
 #endif
 #if !defined(AFX_TEXTUREOBJECT_H__D32B6294_B42B_4E6F_AB73_13B33C544AD0__INCLUDED_)
 	#include "GLHierarchy/TextureObject.h"
@@ -36,8 +36,8 @@
 #if !defined(AFX_LIGHT_H__AA8BABD6_059A_4939_A4B6_A0A036E12E1E__INCLUDED_)
 	#include "GLHierarchy/Light.h"
 #endif
-#if !defined(AFX_RAPTOREXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
-	#include "System/RaptorExtensions.h"
+#if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
+	#include "System/RaptorGLExtensions.h"
 #endif
 #ifndef __GLOBAL_H__
 	#include "System/Global.h"
@@ -51,7 +51,7 @@ RAPTOR_NAMESPACE
 //////////////////////////////////////////////////////////////////////
 
 COmniShadowMap::COmniShadowMap(C3DScene& rScene)
-	:CEnvironment(rScene)
+	:CEnvironment(rScene), m_pShadowTexture(NULL)
 {
 }
 
@@ -100,9 +100,10 @@ void COmniShadowMap::addObject(C3DSceneObject* object)
 bool COmniShadowMap::glInitEnvironment(unsigned int width,unsigned int height)
 {
 #ifdef GL_ARB_texture_cube_map
-    if ( !Raptor::glIsExtensionSupported("GL_ARB_texture_cube_map") ||
-         !Raptor::glIsExtensionSupported("WGL_NV_render_depth_texture") ||
-         !(Raptor::glIsExtensionSupported("GL_ARB_color_buffer_float") || Raptor::glIsExtensionSupported("WGL_ATI_pixel_format_float")))
+	if (!Raptor::glIsExtensionSupported(GL_ARB_TEXTURE_CUBE_MAP_EXTENSION_NAME) ||
+		!Raptor::glIsExtensionSupported(WGL_NV_RENDER_DEPTH_TEXTURE_EXTENSION_NAME) ||
+		!(Raptor::glIsExtensionSupported(GL_ARB_COLOR_BUFFER_FLOAT_EXTENSION_NAME) || 
+		Raptor::glIsExtensionSupported(WGL_ATI_PIXEL_FORMAT_FLOAT_EXTENSION_NAME)))
     {
 		Raptor::GetErrorManager()->generateRaptorError(	Global::COpenGLClassID::GetClassId(),
 														CRaptorErrorManager::RAPTOR_ERROR,
@@ -115,8 +116,8 @@ bool COmniShadowMap::glInitEnvironment(unsigned int width,unsigned int height)
 
     // TODO: Should prevent non power of 2 texture sizes.
 
-	m_pViewPoint = new CViewPoint();
-	m_pViewPoint->setViewVolume(	-1.0,1.0,-1.0,1.0,1.0,100.0,CViewPoint::PERSPECTIVE);
+	m_pViewPoint = new COpenGLViewPoint();
+	m_pViewPoint->setViewVolume(	-1.0,1.0,-1.0,1.0,1.0,100.0,IViewPoint::PERSPECTIVE);
 	m_pViewPoint->registerDestruction(m_pObserver);
 
     //  Square coordinates are mandatory
@@ -140,16 +141,16 @@ bool COmniShadowMap::glInitEnvironment(unsigned int width,unsigned int height)
     m_lightProjection.Ident();
 
 	RAPTOR_HANDLE display;
-	m_pShadowCubeMap->glBindDisplay(display);
+	m_pShadowCubeMap->glvkBindDisplay(display);
 	m_pShadowCubeMap->setViewPoint(NULL);
-    m_pViewPoint->glRenderViewPointModel();
-	m_pViewPoint->glRender();
+    m_pViewPoint->glvkRenderViewPointModel();
+	m_pViewPoint->glvkRender();
 	m_pShadowCubeMap->glUnBindDisplay();
 
 	CTextureFactory &factory = CTextureFactory::getDefaultFactory();
-    m_pShadowTexture = factory.glCreateCubemap(CTextureObject::CGL_COLOR24_ALPHA,
-                                                                                CTextureObject::CGL_MULTIPLY,
-                                                                                CTextureObject::CGL_UNFILTERED);
+    m_pShadowTexture = factory.glCreateCubemap(ITextureObject::CGL_COLOR24_ALPHA,
+                                               CTextureObject::CGL_MULTIPLY,
+                                               ITextureObject::CGL_UNFILTERED);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB,GL_TEXTURE_WRAP_S,GL_CLAMP);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB,GL_TEXTURE_WRAP_T,GL_CLAMP);
 
@@ -260,7 +261,7 @@ void COmniShadowMap::glRenderMap(const CLight* currentLight,const vector<C3DScen
     GL_COORD_VERTEX coord =  currentLight->getLightPosition();
 
     RAPTOR_HANDLE display;
-	m_pShadowCubeMap->glBindDisplay(display);
+	m_pShadowCubeMap->glvkBindDisplay(display);
     //glColorMask(GL_FALSE,GL_FALSE,GL_FALSE,GL_FALSE);
 
 	unsigned int cubefaces[6] = {	CTextureObject::CGL_CUBEMAP_NZ,
@@ -290,7 +291,7 @@ void COmniShadowMap::glRenderMap(const CLight* currentLight,const vector<C3DScen
      for (unsigned int i=0 ; i<6 ; i++)
     {
         RAPTOR_HANDLE _display(cubefaces[i],0);
-	    m_pShadowCubeMap->glBindDisplay(_display);
+	    m_pShadowCubeMap->glvkBindDisplay(_display);
 
         glLoadIdentity();
         glRotatef(rotates[i][0],rotates[i][1],rotates[i][2],rotates[i][3]);
@@ -322,7 +323,7 @@ void COmniShadowMap::glRenderMap(const CLight* currentLight,const vector<C3DScen
 void COmniShadowMap::glRenderShadow(const vector<C3DSceneObject*>& objects)
 {
 #ifdef GL_ARB_texture_cube_map
-    const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+    const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 	PFN_GL_ACTIVE_TEXTURE_ARB_PROC glActiveTextureARB = pExtensions->glActiveTextureARB;
 
 	GLint previousTMU = GL_TEXTURE0_ARB;
@@ -332,11 +333,11 @@ void COmniShadowMap::glRenderShadow(const vector<C3DSceneObject*>& objects)
 
 	if (m_pShadowTexture != NULL)
 	{
-		m_pShadowTexture->glRender();
+		m_pShadowTexture->glvkRender();
 
 		RAPTOR_HANDLE renderTexture;
 		renderTexture.hClass = CTextureFactory::CTextureFactoryClassID::GetClassId().ID();
-		m_pShadowCubeMap->glBindDisplay(renderTexture);
+		m_pShadowCubeMap->glvkBindDisplay(renderTexture);
 	}
 
     glActiveTextureARB(previousTMU);
@@ -361,11 +362,11 @@ void COmniShadowMap::glRenderTexture(void)
 {
 #ifdef GL_ARB_texture_cube_map
     glEnable(GL_TEXTURE_CUBE_MAP_ARB);
-    m_pShadowTexture->glRender();
+	m_pShadowTexture->glvkRender();
 
 	RAPTOR_HANDLE renderTexture;
 	renderTexture.hClass = CTextureFactory::CTextureFactoryClassID::GetClassId().ID();
-	m_pShadowCubeMap->glBindDisplay(renderTexture);
+	m_pShadowCubeMap->glvkBindDisplay(renderTexture);
 #endif
 }
 

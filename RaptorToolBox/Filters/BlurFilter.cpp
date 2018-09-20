@@ -2,16 +2,13 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "Subsys/CodeGeneration.h"
 
 #if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
 	#include "System/Raptor.h"
 #endif
 #if !defined(AFX_TEXTUREFACTORY_H__1B470EC4_4B68_11D3_9142_9A502CBADC6B__INCLUDED_)
 	#include "GLHierarchy/TextureFactory.h"
-#endif
-#if !defined(AFX_TEXTUREOBJECT_H__D32B6294_B42B_4E6F_AB73_13B33C544AD0__INCLUDED_)
-	#include "GLHierarchy/TextureObject.h"
 #endif
 #if !defined(AFX_SHADER_H__4D405EC2_7151_465D_86B6_1CA99B906777__INCLUDED_)
 	#include "GLHierarchy/Shader.h"
@@ -22,14 +19,11 @@
 #if !defined(AFX_RENDERINGPROPERTIES_H__634BCF2B_84B4_47F2_B460_D7FDC0F3B698__INCLUDED_)
 	#include "GLHierarchy/RenderingProperties.h"
 #endif
-#if !defined(AFX_RAPTOREXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
-    #include "System/RaptorExtensions.h"
+#if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
+    #include "System/RaptorGLExtensions.h"
 #endif
 #if !defined(AFX_BLURFILTER_H__46C7BB3A_6996_4E57_A387_A56F89777EF9__INCLUDED_)
     #include "BlurFilter.h"
-#endif
-#if !defined(AFX_TEXTUREFACTORYCONFIG_H__7A20D208_423F_4E02_AA4D_D736E0A7959F__INCLUDED_)
-	#include "GLHierarchy/TextureFactoryConfig.h"
 #endif
 #if !defined(AFX_TEXTURESET_H__26F3022D_70FE_414D_9479_F9CCD3DCD445__INCLUDED_)
 	#include "GLHierarchy/TextureSet.h"
@@ -185,14 +179,14 @@ void CBlurFilter::glRenderFilter()
 		glBuildFilter(config.width,config.height);
 	}
 
-	const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 	PFN_GL_ACTIVE_TEXTURE_ARB_PROC glActiveTextureARB = pExtensions->glActiveTextureARB;
 
     //! First pass : xPass of the kernel assuming it is separable
     RAPTOR_HANDLE noDevice;
-    xBuffer->glBindDisplay(noDevice);
+	xBuffer->glvkBindDisplay(noDevice);
     glActiveTextureARB(GL_TEXTURE0_ARB);
-    getColorInput()->glRender();
+	getColorInput()->glvkRender();
 
     hBlur->glRender();
     glDrawBuffer();
@@ -204,12 +198,12 @@ void CBlurFilter::glRenderFilter()
 
 void CBlurFilter::glRenderFilterOutput()
 {
-	const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 	PFN_GL_ACTIVE_TEXTURE_ARB_PROC glActiveTextureARB = pExtensions->glActiveTextureARB;
 
     //! Second (last) pass : yPass of the kernel, assuming it is separable
 	glActiveTextureARB(GL_TEXTURE0_ARB);
-    xKernelPass->glRender();
+	xKernelPass->glvkRender();
 
 	vBlur->glRender();
     glDrawBuffer();
@@ -312,11 +306,11 @@ bool CBlurFilter::glBuildFilter(int width,int height)
 	// Update filtering
 	if ((BLUR_BOX_LINEAR == m_model) || (BLUR_GAUSSIAN_LINEAR == m_model))
 	{
-		colorInput->glRender();
-		colorInput->glUpdateFilter(CTextureObject::CGL_BILINEAR);
+		colorInput->glvkRender();
+		colorInput->glvkUpdateFilter(ITextureObject::CGL_BILINEAR);
 
-		xKernelPass->glRender();
-		xKernelPass->glUpdateFilter(CTextureObject::CGL_BILINEAR);
+		xKernelPass->glvkRender();
+		xKernelPass->glvkUpdateFilter(ITextureObject::CGL_BILINEAR);
 	}
 
 	m_bRebuild = !res;
@@ -336,16 +330,16 @@ bool CBlurFilter::glInitFilter(void)
 	if ((colorExternalSource != NULL) && (m_fModel == RENDER_TEXTURE))
 	{
 		//!    Source is unfiltered to avoid artifacts ( see comment below ).
-		colorInput = filterFactory.glCreateDynamicTexture(	CTextureObject::CGL_COLOR24_ALPHA,
+		colorInput = filterFactory.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 															CTextureObject::CGL_OPAQUE,
-															CTextureObject::CGL_UNFILTERED, //CGL_BILINEAR,
+															ITextureObject::CGL_UNFILTERED, //CGL_BILINEAR,
 															colorExternalSource);
 	}
 	else if (m_fModel == RENDER_BUFFER)
 	{
 		//!    Source is unfiltered to avoid artifacts ( see comment below ).
-		colorInput->glRender();
-		colorInput->glUpdateFilter(CTextureObject::CGL_UNFILTERED);
+		colorInput->glvkRender();
+		colorInput->glvkUpdateFilter(ITextureObject::CGL_UNFILTERED);
 	}
 
     //! A buffer to render the first pass of the blur
@@ -365,11 +359,11 @@ bool CBlurFilter::glInitFilter(void)
 	{
 		state.renderer = CRaptorDisplayConfig::RENDER_BUFFER;
 
-		xKernelPass = filterFactory.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,
+		xKernelPass = filterFactory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
 			                                        CTextureObject::CGL_OPAQUE,
-				                                    CTextureObject::CGL_UNFILTERED);
+				                                    ITextureObject::CGL_UNFILTERED);
 		filterFactory.glResizeTexture(xKernelPass,state.width,state.height);
-		xKernelPass->glUpdateClamping(CTextureObject::CGL_EDGECLAMP);
+		xKernelPass->glvkUpdateClamping(ITextureObject::CGL_EDGECLAMP);
 		m_pRenderTextures->addTexture(xKernelPass);
 	}
 
@@ -383,7 +377,7 @@ bool CBlurFilter::glInitFilter(void)
     xBuffer->setViewPoint(NULL);
 
 	if (m_fModel == RENDER_BUFFER)
-		xBuffer->glBindDisplay(*m_pRenderTextures);
+		xBuffer->glvkBindDisplay(*m_pRenderTextures);
 
 	if (m_fModel == RENDER_TEXTURE)
 	{
@@ -392,9 +386,9 @@ bool CBlurFilter::glInitFilter(void)
 		//! ( Specifically where tex coord is near a texel edge, 
 		//! and also because it is shifted to work in texels' center and 
 		//! should be faster ).
-		xKernelPass = filterFactory.glCreateDynamicTexture(	CTextureObject::CGL_COLOR24_ALPHA,
+		xKernelPass = filterFactory.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 															CTextureObject::CGL_OPAQUE,
-															CTextureObject::CGL_UNFILTERED, //CGL_BILINEAR,
+															ITextureObject::CGL_UNFILTERED, //CGL_BILINEAR,
 															xBuffer);
 	}
 

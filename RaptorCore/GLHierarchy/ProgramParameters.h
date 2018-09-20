@@ -71,9 +71,25 @@ public:
 			return *this;
 		}
 
+#if _MSC_VER == 1500
+		static size_t hash_value(const std::string& s)
+		{	
+			const char *ptr = s.c_str();
+			const char *end = ptr + s.size();
+			size_t hash = 2166136261U;
+			while(end != end)
+				hash = 16777619U * hash ^ (size_t)*ptr++;
+			return (hash);
+		}
+#endif
 		virtual size_t getTypeId(void) const
 		{
+#if _MSC_VER > 1500
 			static size_t ti = typeid(void*).hash_code();
+#else
+			const std::string nm = std::string(typeid(void*).name());
+			static size_t ti = hash_value(nm);
+#endif		
 			return ti;
 		}
 
@@ -104,7 +120,16 @@ public:
 		CParameter(const P &param) :p(param) {};
 		virtual ~CParameter() {};
 
-		static size_t TypeId(void) { static size_t ti = typeid(P).hash_code(); return ti; };
+		static size_t TypeId(void)
+		{
+#if _MSC_VER > 1500
+			static size_t ti = typeid(P).hash_code();
+#else
+			const std::string nm = std::string(typeid(P).name());
+			static size_t ti = hash_value(nm);
+#endif
+			return ti;
+		};
 		virtual size_t getTypeId(void) const { return CParameter<P>::TypeId(); };
 
 		virtual uint64_t size(void) const { return sizeof(p); };

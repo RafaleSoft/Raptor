@@ -13,7 +13,7 @@
 #include "System/Raptor.h"
 #include "System/RaptorMessages.h"
 #include "Engine/Animator.h"
-#include "Engine/ViewPoint.h"
+#include "Engine/IViewPoint.h"
 #include "GLHierarchy/RenderingProperties.h"
 #include "GLHierarchy/TextureSet.h"
 #include "GLHierarchy/TextureFactory.h"
@@ -57,8 +57,7 @@ CTeapot::CTeapot()
 	//numdemo(CTest2App::AMBIENTOCCLUSIONDEMO)
 	//numdemo(CTest2App::BUMPDEMO)
 	//numdemo(CTest2App::VRTXSHADERSDEMO)
-	//numdemo(CTest2App::PARTICLEDEMO)
-	numdemo(CTest2App::VRTXSHADERSDEMO)
+	numdemo(CTest2App::PROJECTIONDEMO)
 {
 }
 
@@ -87,12 +86,12 @@ void CTeapot::GLInitContext()
 	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 
 #if defined(GL_ARB_texture_compression)
-	if (Raptor::glIsExtensionSupported("GL_ARB_texture_compression"))
+	if (Raptor::glIsExtensionSupported(GL_ARB_TEXTURE_COMPRESSION_EXTENSION_NAME))
 		glHint(GL_TEXTURE_COMPRESSION_HINT_ARB,GL_NICEST);
 #endif
 
 	// point parameter settings
-	if (Raptor::glIsExtensionSupported("GL_EXT_point_parameters"))
+	if (Raptor::glIsExtensionSupported(GL_EXT_POINT_PARAMETERS_EXTENSION_NAME))
 	{
 		CVertexShader s;
 		GL_COORD_VERTEX quadric(-40.0f, 0.0f, 0.1f, 1.0f);
@@ -103,48 +102,47 @@ void CTeapot::GLInitContext()
 	t = new CTextureSet("main_textures");
 	CTextureFactoryConfig& config = f.getConfig();
 
-	CTextureObject*	T = f.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_ALPHA_TRANSPARENT,CTextureObject::CGL_BILINEAR);
+	CTextureObject*	T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_ALPHA_TRANSPARENT,ITextureObject::CGL_BILINEAR);
 	T->glSetTransparency(128);
 	f.glLoadTexture(T,"Datas\\raptor.tga");
-	//f.glLoadTexture(T,"Datas\\Mire.tga");
+	f.glExportTexture(T, "raptor.jpg");
 	t->addTexture(T);
 
-	T = f.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_MULTIPLY,CTextureObject::CGL_BILINEAR);
+	T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_MULTIPLY,ITextureObject::CGL_BILINEAR);
 	T->glSetTransparency(255);
 	f.glLoadTexture(T,"Datas\\marble.jpg");
 	t->addTexture(T);
 
-	T = f.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_ALPHA_TRANSPARENT,CTextureObject::CGL_BILINEAR);
+	T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_ALPHA_TRANSPARENT,ITextureObject::CGL_BILINEAR);
 	T->glSetTransparency(128);
 	t->addTexture(T);
 #if defined(GL_ARB_texture_compression)
 	#if(0)
 		f.glLoadCompressedTexture(T,"start.s3tc");
 	#else
-		//const CTextureFactoryConfig::ICompressor *compressor = config.getCurrentCompressor();
 		if (0 < config.getNumCompressors())
 			config.setCurrentCompressor(config.getCompressor("OpenGL"));
 		f.glLoadTexture(T,"Datas\\start.tga");
-	    if (Raptor::glIsExtensionSupported("GL_ARB_texture_compression"))
+		if (Raptor::glIsExtensionSupported(GL_ARB_TEXTURE_COMPRESSION_EXTENSION_NAME))
 		    f.glExportCompressedTexture("start.s3tc",T);
     #endif
 #else
 	f.glLoadTexture(T,"Datas\\start.tga");
 #endif
 
-	T = f.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_ALPHA_TRANSPARENT,CTextureObject::CGL_BILINEAR);
+	T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_ALPHA_TRANSPARENT,ITextureObject::CGL_BILINEAR);
 	T->glSetTransparency(128);
 	f.glLoadTexture(T,"Datas\\bump.tga");
 	t->addTexture(T);
 
-	if (Raptor::glIsExtensionSupported("GL_ARB_texture_cube_map"))
+	if (Raptor::glIsExtensionSupported(GL_ARB_TEXTURE_CUBE_MAP_EXTENSION_NAME))
 	{
 #if defined(GL_ARB_texture_compression)
 		//const CTextureFactoryConfig::ICompressor *compressor = config.getCurrentCompressor();
 		if (0 < config.getNumCompressors())
 			config.setCurrentCompressor(config.getCompressor("OpenGL"));
 #endif
-		T = f.glCreateCubemap(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_ALPHA_TRANSPARENT,CTextureObject::CGL_BILINEAR);
+		T = f.glCreateCubemap(ITextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_ALPHA_TRANSPARENT,ITextureObject::CGL_BILINEAR);
 		T->glSetTransparency(255);
 		T->selectCubeFace(CTextureObject::CGL_CUBEMAP_PX);
 		f.glLoadTexture(T,"Datas\\ciel_07_small.jpg");
@@ -163,9 +161,9 @@ void CTeapot::GLInitContext()
 	}
 
 	CRaptorDisplay *pDisplay = CRaptorDisplay::GetCurrentDisplay();
-	CViewPoint *vp = pDisplay->getViewPoint();
-	vp->setViewVolume(-1.33f,1.33f,-1.0f,1.0f,1.0f,10000,CViewPoint::PERSPECTIVE);
-    vp->glRenderViewPointModel();   // switch demo removes the view  point, so render here and forget
+	IViewPoint *vp = pDisplay->getViewPoint();
+	vp->setViewVolume(-1.33f,1.33f,-1.0f,1.0f,1.0f,10000,IViewPoint::PERSPECTIVE);
+    vp->glvkRenderViewPointModel();   // switch demo removes the view  point, so render here and forget
 	pDisplay->setViewPoint(vp);
 
 	CRaptorToolBox::SCENE_LOADER_OPTIONS options;
@@ -190,8 +188,8 @@ void CTeapot::GLInitContext()
 	s->setColor(1.0f,1.0f,1.0f,1.0f);
     s->getMaterial()->setShininess(10.0f);
 	teapot->setDiffuseMap(t->getTexture(0));
-	CTextureObject* normalMap = f.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_MULTIPLY,CTextureObject::CGL_BILINEAR);
-    f.glLoadTexture(normalMap,"Datas\\bump3.tga",CTextureFactoryConfig::IImageOP::BUMPMAP_LOADER);
+	CTextureObject* normalMap = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_MULTIPLY,ITextureObject::CGL_BILINEAR);
+    f.glLoadTexture(normalMap,"Datas\\bump3.tga",CImage::IImageOP::BUMPMAP_LOADER);
 	teapot->setNormalMap(normalMap);
 	t->addTexture(normalMap);
 	teapot->setEnvironmentMap(t->getTexture("Datas\\ciel_07_small.jpg"));
@@ -199,7 +197,7 @@ void CTeapot::GLInitContext()
     CGeometry::CRenderingModel l_model(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
     l_model.addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
 	teapot->setRenderingModel(l_model);
-	if (!Raptor::glIsExtensionSupported("GL_ARB_vertex_program"))
+	if (!Raptor::glIsExtensionSupported(GL_ARB_VERTEX_PROGRAM_EXTENSION_NAME))
 		Raptor::GetMessages()->displayMessage("Hardware unable to render bump mapping");
 
 	C3DEngine::Get3DEngine()->setCameraBBox(-1.0,-1.0,-1.0,1.0,1.0,1.0);
@@ -236,19 +234,19 @@ void CTeapot::GLInitContext()
 	displays[CTest2App::SPLINEDEMO] = &splineDisplay;
 	skinningDisplay.Init();
 	displays[CTest2App::SKINNINGDEMO] = &skinningDisplay;
-	//particleDisplay.Init();
+	particleDisplay.Init();
 	displays[CTest2App::PARTICLEDEMO] = &particleDisplay;
-	//shadowDisplay.Init();
+	shadowDisplay.Init();
 	displays[CTest2App::SHADOWDEMO] = &shadowDisplay;
-	//shadowMapDisplay.Init();
+	shadowMapDisplay.Init();
 	displays[CTest2App::SHADOWMAPDEMO] = &shadowMapDisplay;
-	//warpingDisplay.Init();
+	warpingDisplay.Init();
 	displays[CTest2App::WARPINGDEMO] = &warpingDisplay;
-	//projectionDisplay.Init();
+	projectionDisplay.Init();
 	displays[CTest2App::PROJECTIONDEMO] = &projectionDisplay;
-	//lodDisplay.Init();
+	lodDisplay.Init();
 	displays[CTest2App::LODDEMO] = &lodDisplay;
-	//collisionDisplay.Init();
+	collisionDisplay.Init();
 	displays[CTest2App::COLLISIONDEMO] = &collisionDisplay;
 	ambientOcclusionDisplay.Init();
 	displays[CTest2App::AMBIENTOCCLUSIONDEMO] = &ambientOcclusionDisplay;

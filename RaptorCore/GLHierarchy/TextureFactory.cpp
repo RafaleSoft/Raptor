@@ -13,14 +13,11 @@
 #if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
     #include "System/RaptorErrorManager.h"
 #endif
-#if !defined(AFX_RAPTOREXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
-	#include "System/RaptorExtensions.h"
+#if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
+	#include "System/RaptorGLExtensions.h"
 #endif
 #if !defined(AFX_RAPTORIO_H__87D52C27_9117_4675_95DC_6AD2CCD2E78D__INCLUDED_)
 	#include "System/RaptorIO.h"
-#endif
-#ifndef __INTERNAL_PROCS_H__
-	#include "Subsys/InternalProcs.h"
 #endif
 #if !defined(AFX_OBJECTFACTORY_H__7F891C52_9E32_489C_B09C_5E5803522D91__INCLUDED_)
 	#include "ObjectFactory.h"
@@ -28,10 +25,12 @@
 #if !defined(AFX_MEMORY_H__81A6CA9A_4ED9_4260_B6E4_C03276C38DBC__INCLUDED_)
 	#include "System/Memory.h"
 #endif
-#if !defined(AFX_TEXELALLOCATOR_H__7C48808C_E838_4BE3_8B0E_286428BB7CF8__INCLUDED_)
-	#include "Subsys/TexelAllocator.h"
+#if !defined(AFX_VULKANTEXTUREOBJECT_H__5E3E26C2_441F_4051_986F_2207AF0B3F6D__INCLUDED_)
+	#include "Subsys/Vulkan/VulkanTextureObject.h"
 #endif
-
+#if !defined(AFX_RAPTORVULKANDEVICE_H__2FDEDD40_444E_4CC2_96AA_CBF9E79C3ABE__INCLUDED_)
+	#include "Subsys/Vulkan/VulkanDevice.h"
+#endif
 
 #ifdef WIN32
 #pragma warning(disable:4786)
@@ -55,8 +54,7 @@ CTextureFactory *CTextureFactory::m_pDefault = NULL;
 CTextureFactory::CTextureFactory(const std::string& name)
 	:CPersistence(factoryId,name),mConfig()
 {
-    if (mConfig.getNumCompressors() < 0)
-        mConfig.glInit();
+	mConfig.glInit();
 }
 
 CTextureFactory::~CTextureFactory(void)
@@ -76,16 +74,16 @@ CTextureFactory& CTextureFactory::getDefaultFactory()
 }
 
 
-
-RAPTOR_HANDLE CTextureFactory::glPreloadTexture(CTextureObject* const T,
+/*
+RAPTOR_HANDLE CTextureFactory::glvkPreloadTexture(CTextureObject* const T,
 												const std::string &fname,
-												const CVaArray<CTextureFactoryConfig::IImageOP::OP_KIND>& ops)
+												const CVaArray<CImage::IImageOP::OP_KIND>& ops)
 {
 	RAPTOR_HANDLE preload(0,NULL);
 
 	//	ensure we can do something ...
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
-	if ((T == NULL) || (!glIsTexture(T->texname)))
+	if ((T == NULL) || (!glIsTexture(T->texname) && (T->target != VK_IMAGE_TYPE_2D))
 	{
         Raptor::GetErrorManager()->generateRaptorError(	CTextureFactory::CTextureFactoryClassID::GetClassId(),
 														CRaptorErrorManager::RAPTOR_WARNING,
@@ -104,22 +102,23 @@ RAPTOR_HANDLE CTextureFactory::glPreloadTexture(CTextureObject* const T,
 		return preload;
 	}
 
-	CTextureFactoryConfig::IImageIO *imager = mConfig.getImageKindIO(fname);
+
+	CImage::IImageIO *imager = CImage::getImageKindIO(fname);
 	if (imager != NULL)
 	{
-		if (imager->loadImageFile(fname,T))
+		if (imager->loadImageFile(fname,0)) //T))
 		{
 			//
 			//	Initialise texture attributes : main formats.
 			//
 			T->m_name = fname.data();
 			TexturePreload P;
-			P.inner_format = T->getSizedTexelType();
-			P.format = T->getBufferType();
-			P.src_format = T->getBufferTexelType();
-			P.createNormalMap = ops.hasValue(CTextureFactoryConfig::IImageOP::BUMPMAP_LOADER);
-			P.autoMipmap = ops.hasValue(CTextureFactoryConfig::IImageOP::MIPMAP_BUILDER);
-			P.reScale = ops.hasValue(CTextureFactoryConfig::IImageOP::IMAGE_SCALER);
+			P.target = 0;
+			P.inner_format = T->getTexelFormat();
+			P.format = T->getBufferFormat();
+			P.src_format = T->getBufferType();
+			P.createNormalMap = ops.hasValue(CImage::IImageOP::BUMPMAP_LOADER);
+			P.reScale = ops.hasValue(CImage::IImageOP::IMAGE_SCALER);
 
 			//	1)	Texture internal format
 			//
@@ -127,8 +126,8 @@ RAPTOR_HANDLE CTextureFactory::glPreloadTexture(CTextureObject* const T,
 			//
 			if (P.createNormalMap)
 			{
-                CTextureFactoryConfig::IImageOP* op = mConfig.getImageKindOP(CTextureFactoryConfig::IImageOP::BUMPMAP_LOADER);
-				op->apply(T,P.inner_format,P.format,P.src_format,mConfig);
+				CImage::IImageOP* op = CImage::getImageKindOP(CImage::IImageOP::BUMPMAP_LOADER);
+				//op->apply(T,P.format,P.src_format,mConfig);
 			}
 
 			//
@@ -175,39 +174,52 @@ RAPTOR_HANDLE CTextureFactory::glPreloadTexture(CTextureObject* const T,
 			//
 			if (mConfig.useTextureResize() || P.reScale)
             {
-                CTextureFactoryConfig::IImageOP* op = mConfig.getImageKindOP(CTextureFactoryConfig::IImageOP::IMAGE_SCALER);
-/* OGL call*/	op->apply(T,P.inner_format,P.format,P.src_format,mConfig);
+				CImage::IImageOP* op = CImage::getImageKindOP(CImage::IImageOP::IMAGE_SCALER);
+// OGL call		//op->apply(T,P.format,P.src_format,mConfig);
             }
 
 			//
 			//	Handle cubemap textures
 			//
-			P.target = T->target & 0xFFFF;
-			preload.handle = T->texname;
+			P.target = T->target;
+			preload.handle = (unsigned int)T;
 			preload.hClass = 0;
-			m_preloads[T->texname] = P;
+			m_preloads[T] = P;
 
 			//
 			// Store texels in a relocated chunk.
 			//
-			size_t size = 4 * T->getWidth() * T->getHeight() * MAX(1,T->getDepth());
-			if (T->getTexels() != NULL)
+			if (VK_IMAGE_TYPE_2D == T->target)
 			{
-				unsigned char *const texPointer = CTexelAllocator::GetInstance()->allocateTexels(size);
-				CTexelAllocator::GetInstance()->glvkCopyPointer(texPointer,T->getTexels(),size);
+				T->vk_texname =
+					CTexelAllocator::GetInstance()->vkAllocateTextureImage(	T->getWidth(),
+																			T->getHeight(),
+																			T->getDepth(),
+																			T->getTexelType());
 			}
-			else if (T->getFloatTexels() != NULL)
+			else
 			{
-				float* const texPointer = CTexelAllocator::GetInstance()->allocateFloatTexels(size);
-				CTexelAllocator::GetInstance()->glvkCopyPointer((unsigned char *)texPointer,
-																(unsigned char *)T->getFloatTexels(),
-																4*size);
+				size_t size = 4 * T->getWidth() * T->getHeight() * MAX(1, T->getDepth());
+				unsigned char *texPointer = NULL;
+				if (T->getTexels() != NULL)
+				{
+					texPointer = CTexelAllocator::GetInstance()->allocateTexels(size);
+					CTexelAllocator::GetInstance()->glvkCopyPointer(texPointer, T->getTexels(), size);
+				}
+				else if (T->getFloatTexels() != NULL)
+				{
+					texPointer = (unsigned char *)CTexelAllocator::GetInstance()->allocateFloatTexels(size);
+					CTexelAllocator::GetInstance()->glvkCopyPointer(texPointer,
+																	(unsigned char *)T->getFloatTexels(),
+																	4 * size);
+				}
 			}
+			
 			T->releaseTexels();
 
 			CATCH_GL_ERROR
 		}
-		else	/* load from file failed */
+		else	// load from file failed
         {
             CRaptorMessages::MessageArgument arg;
             arg.arg_sz = fname.data();
@@ -221,15 +233,16 @@ RAPTOR_HANDLE CTextureFactory::glPreloadTexture(CTextureObject* const T,
 
 	return preload;
 }
-
-bool CTextureFactory::glLoadTexture(CTextureObject* const T, 
-									RAPTOR_HANDLE preload)
+*/
+/*
+bool CTextureFactory::glvkLoadTexture(	CTextureObject* const T,
+										RAPTOR_HANDLE preload)
 {
-	if (preload.handle == 0)
+	if ((NULL == T) || (preload.handle != (unsigned int)T))
 		return false;
 
 	TexturePreload P;
-	map<unsigned int,TexturePreload>::iterator it = m_preloads.find(preload.handle);
+	map<CTextureObject*, TexturePreload>::iterator it = m_preloads.find(T);
 	if (it == m_preloads.end())
 		return false;
 	else
@@ -238,217 +251,321 @@ bool CTextureFactory::glLoadTexture(CTextureObject* const T,
 		m_preloads.erase(it);
 	}
 
-	//
-	//	Final processing : 
-	//	- mipmapping generation
-	//	- image loading
-#if defined(GL_EXT_texture3D)
-    if (T->m_depth > 0)   // Texture Volumes
-    {
-        const CRaptorExtensions * const extensions = Raptor::glGetExtensions();
-        extensions->glTexImage3DEXT(P.target,0,
-									P.inner_format,
-                                    T->m_width,T->m_height,T->m_depth,
-									0,P.format,P.src_format,
-                                    T->texels);
-    }
-    else
-#endif
-	if (P.autoMipmap && (T->getFilter() == CTextureObject::CGL_TRILINEAR))
+	if (VK_IMAGE_TYPE_2D == T->target)
 	{
-		CTextureFactoryConfig::IImageOP* op = mConfig.getImageKindOP(CTextureFactoryConfig::IImageOP::MIPMAP_BUILDER);
-		op->apply(T,P.inner_format,P.format,P.src_format,mConfig);
 	}
-    //  The default case, at least load the texture.
 	else
 	{
-		glTexImage2D(	P.target,
-						T->level,P.inner_format,
-						T->m_width,T->m_height,
-						0,P.format,
-						P.src_format,
-						T->texels);
+		//
+		//	Final processing : 
+		//	- mipmapping generation
+		//	- image loading
+#if defined(GL_EXT_texture3D)
+		if (T->getDepth() > 1)   // Texture Volumes
+		{
+			const CRaptorExtensions * const extensions = Raptor::glGetExtensions();
+			extensions->glTexImage3DEXT(P.target, 0,
+										P.inner_format,
+										T->getWidth(), T->getHeight(), T->getDepth(),
+										0, P.format, P.src_format,
+										T->texels);
+		}
+		else
+#endif
+		{
+			bool generateMipmap = ((T->getFilter() == ITextureObject::CGL_TRILINEAR) ||
+								   (T->getFilter() == ITextureObject::CGL_ANISOTROPIC)) &&
+								   mConfig.getGenerateMipmap();
+			//
+			//  The default case, at least load the texture.
+			//
+#if (defined(GL_VERSION_1_4) && !defined(GL_VERSION_3_0) && !defined(GL_EXT_framebuffer_object))
+			if (generateMipmap)
+				glTexParameteri(target, GL_GENERATE_MIPMAP, GL_TRUE);
+#endif
+			glTexImage2D(P.target,
+						 T->getCurrentMipMapLevel(), P.inner_format,
+						 T->getWidth(), T->getHeight(),
+						 0, P.format,
+						 P.src_format,
+						 T->texels);
+#if (defined(GL_VERSION_3_0) || defined(GL_EXT_framebuffer_object))
+			if (generateMipmap)
+				Raptor::glGetExtensions()->glGenerateMipmapEXT(P.target);
+#endif
+		}
 	}
 
 	CATCH_GL_ERROR
 
 	return true;
 }
+*/
 
 
+bool CTextureFactory::vkLoadTexture(CVulkanTextureObject* const T,
+									const CImage &image)
+{
+	//	Initialise main texture attributes.
+	if ((image.getWidth() > 0) && (image.getHeight() > 0))
+		T->setSize(image.getWidth(), image.getHeight(), image.getLayers());
+	T->setName(image.getName());
 
+	//	1)	Texture source format
+	GLuint GL_FORMAT = image.getBufferFormat();
+	GLuint GL_SRC_FORMAT = image.getBufferType();
+	void *pixels = image.getPixels();
+	if (NULL == pixels)
+		pixels = image.getFloatPixels();
+
+
+	//	2)	Format of data to load
+	//
+	VkComponentMapping swizzle = {	VK_COMPONENT_SWIZZLE_R,
+									VK_COMPONENT_SWIZZLE_G,
+									VK_COMPONENT_SWIZZLE_B,
+									VK_COMPONENT_SWIZZLE_A };
+	
+	CTextureFactoryConfig::TEXEL_FORMAT texelFormat = mConfig.getTexelFormat();
+	if (GL_FORMAT == GL_RGBA)
+	{
+#if defined(GL_EXT_bgra)
+		if (texelFormat == CTextureFactoryConfig::BYTEORDER_BGRA)
+		{
+			GL_FORMAT = GL_BGRA_EXT;
+			swizzle = { VK_COMPONENT_SWIZZLE_B,
+						VK_COMPONENT_SWIZZLE_G,
+						VK_COMPONENT_SWIZZLE_R,
+						VK_COMPONENT_SWIZZLE_A };
+		}
+#endif
+#if defined(GL_EXT_abgr)
+		else if (texelFormat == CTextureFactoryConfig::BYTEORDER_ABGR)
+		{
+			GL_FORMAT = GL_ABGR_EXT;
+			swizzle = { VK_COMPONENT_SWIZZLE_A,
+						VK_COMPONENT_SWIZZLE_B,
+						VK_COMPONENT_SWIZZLE_G,
+						VK_COMPONENT_SWIZZLE_R };
+		}
+#endif
+	}
+	else if (GL_FORMAT == GL_RGB)
+	{
+#if defined(GL_EXT_bgra)
+		if (texelFormat == CTextureFactoryConfig::BYTEORDER_BGRA)
+		{
+			GL_FORMAT = GL_BGR_EXT;
+			swizzle = { VK_COMPONENT_SWIZZLE_B,
+						VK_COMPONENT_SWIZZLE_G,
+						VK_COMPONENT_SWIZZLE_R,
+						VK_COMPONENT_SWIZZLE_ZERO };
+		}
+#endif
+	}
+
+	//
+	//	Handle cubemap textures
+	//
+	bool result = false;
+
+	//	Final processing :
+	//	- memory allocation
+	//	- image creation
+	//	- image layout transitions
+	//	- sampler creation
+	T->vkLoadTexture(swizzle, GL_SRC_FORMAT, (uint8_t*)pixels);
+	result = true;
+
+	CATCH_GL_ERROR
+		
+	return result;
+}
 
 bool CTextureFactory::glLoadTexture(CTextureObject* const T,
-									const std::string& fname,
-									const CVaArray<CTextureFactoryConfig::IImageOP::OP_KIND>& ops)
+									const CImage &image)
 {
 	//	ensure we can do something ...
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
-	if ((T == NULL) || (!glIsTexture(T->texname)))
+	if (!glIsTexture(T->texname))
 	{
-        Raptor::GetErrorManager()->generateRaptorError(	CTextureFactory::CTextureFactoryClassID::GetClassId(),
-														CRaptorErrorManager::RAPTOR_WARNING,
-														CRaptorMessages::ID_NULL_OBJECT);
+		Raptor::GetErrorManager()->generateRaptorError(CTextureFactory::CTextureFactoryClassID::GetClassId(),
+													   CRaptorErrorManager::RAPTOR_WARNING,
+													   CRaptorMessages::ID_NULL_OBJECT);
 		return false;
 	}
 #endif
 
-	if ((T->target >> 16) == ITextureGenerator::BUFFERED)
+	ITextureGenerator::GENERATOR_KIND kind = ITextureGenerator::NONE;
+	if (NULL != T->getTexelGenerator())
+		kind = T->getTexelGenerator()->getKind();
+	if (kind == ITextureGenerator::BUFFERED)
 	{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
-        Raptor::GetErrorManager()->generateRaptorError(	CTextureFactory::CTextureFactoryClassID::GetClassId(),
-														CRaptorErrorManager::RAPTOR_WARNING,
-														CRaptorMessages::ID_UPDATE_FAILED);
+		Raptor::GetErrorManager()->generateRaptorError(CTextureFactory::CTextureFactoryClassID::GetClassId(),
+													   CRaptorErrorManager::RAPTOR_WARNING,
+													   CRaptorMessages::ID_UPDATE_FAILED);
 #endif
 		return false;
 	}
 
+	//	Initialise main texture attributes.
+	if ((image.getWidth() > 0) && (image.getHeight() > 0))
+		T->setSize(image.getWidth(), image.getHeight(), image.getLayers());
+	T->setName(image.getName());
 
-	CTextureFactoryConfig::IImageIO *imager = mConfig.getImageKindIO(fname);
-	if (imager != NULL)
-	{
-		if (imager->loadImageFile(fname,T))
-		{
-			//
-			//	Initialise texture attributes : main formats.
-			//
-			T->m_name = fname.data();
-			GLuint GL_INNER_FORMAT = T->getSizedTexelType();
-			GLuint GL_FORMAT = T->getBufferType();
-			GLuint GL_SRC_FORMAT = T->getBufferTexelType();
+	//	1)	Texture internal format
+	GLuint GL_INNER_FORMAT = T->getTexelFormat();
+	GLuint GL_FORMAT = image.getBufferFormat();
+	GLuint GL_SRC_FORMAT = image.getBufferType();
+	void *pixels = image.getPixels();
+	if (NULL == pixels)
+		pixels = image.getFloatPixels();
 
-
-			//	1)	Texture internal format
-			//
-			//	Handle normal maps for bumping
-			//
-			if (ops.hasValue(CTextureFactoryConfig::IImageOP::BUMPMAP_LOADER))
-			{
-                CTextureFactoryConfig::IImageOP* op = mConfig.getImageKindOP(CTextureFactoryConfig::IImageOP::BUMPMAP_LOADER);
-                op->apply(T,GL_INNER_FORMAT,GL_FORMAT,GL_SRC_FORMAT,mConfig);
-			}
-			//
-			//	Handle support for texture compression.
-			//	Rely on OpenGL 'generic' compression to choose
-			//	appropriate compressor of hardware capabilities.
-			//
 #ifdef GL_ARB_texture_compression
-			//	use texture compression if possible
-			else if (NULL != mConfig.getCurrentCompressor())
-			{
-				GLuint compressor = mConfig.getCurrentCompressor()->getFormat(GL_INNER_FORMAT);
-				if (compressor != (GLuint)-1)
-					GL_INNER_FORMAT = compressor;
-			}
+	//	use texture compression if possible
+	if (NULL != mConfig.getCurrentCompressor())
+	{
+		GLuint compressor = mConfig.getCurrentCompressor()->getFormat(GL_INNER_FORMAT);
+		if (compressor != (GLuint)-1)
+			GL_INNER_FORMAT = compressor;
+	}
 #endif
 
 
-			//	2)	Format of data to load
-			//
-			CTextureFactoryConfig::TEXEL_FORMAT texelFormat = mConfig.getTexelFormat();
-			if (GL_FORMAT == GL_RGBA)
-			{
+	//	2)	Format of data to load
+	//
+	CTextureFactoryConfig::TEXEL_FORMAT texelFormat = mConfig.getTexelFormat();
+	if (GL_FORMAT == GL_RGBA)
+	{
 #if defined(GL_EXT_bgra)
-				if (texelFormat == CTextureFactoryConfig::BYTEORDER_BGRA)
-					GL_FORMAT = GL_BGRA_EXT;
+		if (texelFormat == CTextureFactoryConfig::BYTEORDER_BGRA)
+			GL_FORMAT = GL_BGRA_EXT;
 #endif
 #if defined(GL_EXT_abgr)
-				else if (texelFormat == CTextureFactoryConfig::BYTEORDER_ABGR)
-					GL_FORMAT = GL_ABGR_EXT;
+		else if (texelFormat == CTextureFactoryConfig::BYTEORDER_ABGR)
+			GL_FORMAT = GL_ABGR_EXT;
 #endif
-			}
-			else if (GL_FORMAT == GL_RGB)
-			{
-#if defined(GL_EXT_bgra)
-				if (texelFormat == CTextureFactoryConfig::BYTEORDER_BGRA)
-					GL_FORMAT = GL_BGR_EXT;
-#endif
-			}
-
-
-			//
-			//	Handle Image re-scaling
-			//
-            if ((mConfig.useTextureResize() || ops.hasValue(CTextureFactoryConfig::IImageOP::IMAGE_SCALER)) && 
-				(T->getDepth() == 0))
-            {
-                CTextureFactoryConfig::IImageOP* op = mConfig.getImageKindOP(CTextureFactoryConfig::IImageOP::IMAGE_SCALER);
-                op->apply(T,GL_INNER_FORMAT,GL_FORMAT,GL_SRC_FORMAT,mConfig);
-            }
-
-			//
-			//	Handle cubemap textures
-			//
-			bool result = false;
-			GLuint target = T->target & 0xFFFF;
-
-			//
-			//	Final processing :
-			//	- mipmapping generation
-			//	- image loading
-#if defined(GL_EXT_texture3D)
-            if (T->m_depth > 0)   // Texture Volumes
-            {
-                const CRaptorExtensions * const extensions = Raptor::glGetExtensions();
-                extensions->glTexImage3DEXT( target,0,
-                                             GL_INNER_FORMAT,
-                                             T->m_width,T->m_height,T->m_depth,
-                                             0,GL_FORMAT,GL_SRC_FORMAT,
-                                             T->texels);
-            }
-            else
-#endif
-			if (ops.hasValue(CTextureFactoryConfig::IImageOP::MIPMAP_BUILDER) && 
-				(T->getFilter() == CTextureObject::CGL_TRILINEAR))
-			{
-				CTextureFactoryConfig::IImageOP* op = mConfig.getImageKindOP(CTextureFactoryConfig::IImageOP::MIPMAP_BUILDER);
-				result = op->apply(T,GL_INNER_FORMAT,GL_FORMAT,GL_SRC_FORMAT,mConfig);
-			}
-            //  The default case, at least load the texture.
-			else
-			{
-				glTexImage2D(	target,
-								T->level,GL_INNER_FORMAT,
-								T->m_width,T->m_height,
-								0,GL_FORMAT,
-								GL_SRC_FORMAT,
-								T->texels);
-				result = true;
-			}
-            T->releaseTexels();
-
-			CATCH_GL_ERROR
-
-			return result;
-		}
-		else	/* load from file failed */
-        {
-            CRaptorMessages::MessageArgument arg;
-            arg.arg_sz = fname.data();
-            vector<CRaptorMessages::MessageArgument> args;
-            args.push_back(arg);
-            Raptor::GetErrorManager()->generateRaptorError(	CTextureFactory::CTextureFactoryClassID::GetClassId(),
-			    											CRaptorErrorManager::RAPTOR_WARNING,
-				    										CRaptorMessages::ID_TEXTURE_MISS,args);
-			return false;
-        }
 	}
-	else	/*	Loader not found */
+	else if (GL_FORMAT == GL_RGB)
+	{
+#if defined(GL_EXT_bgra)
+		if (texelFormat == CTextureFactoryConfig::BYTEORDER_BGRA)
+			GL_FORMAT = GL_BGR_EXT;
+#endif
+	}
+
+	//
+	//	Handle cubemap textures
+	//
+	bool result = false;
+	GLuint target = T->target;
+
+	//
+	//	Final processing :
+	//	- mipmapping generation
+	//	- image loading
+#if defined(GL_EXT_texture3D)
+	if (T->getDepth() > 1)   // Texture Volumes
+	{
+		const CRaptorGLExtensions * const extensions = Raptor::glGetExtensions();
+		extensions->glTexImage3DEXT(target, 0,
+									GL_INNER_FORMAT,
+									T->getWidth(),
+									T->getHeight(),
+									T->getDepth(),
+									0, GL_FORMAT, GL_SRC_FORMAT,
+									pixels);
+		result = true;
+	}
+	else
+#endif
+	{
+		bool generateMipmap = ((T->getFilter() == ITextureObject::CGL_TRILINEAR) ||
+							   (T->getFilter() == ITextureObject::CGL_ANISOTROPIC)) &&
+							   mConfig.getGenerateMipmap();
+
+#if (defined(GL_VERSION_1_4) && !defined(GL_VERSION_3_0) && !defined(GL_EXT_framebuffer_object))
+		if (generateMipmap)
+			glTexParameteri(target, GL_GENERATE_MIPMAP, GL_TRUE);
+#endif
+		glTexImage2D(target,
+						T->getCurrentMipMapLevel(),
+						GL_INNER_FORMAT,
+						T->getWidth(), 
+						T->getHeight(),
+						0, GL_FORMAT,
+						GL_SRC_FORMAT,
+						pixels);
+#if (defined(GL_VERSION_3_0) || defined(GL_EXT_framebuffer_object))
+		if (generateMipmap)
+			Raptor::glGetExtensions()->glGenerateMipmapEXT(target);
+#endif
+		result = true;
+	}
+
+	CATCH_GL_ERROR
+
+	return result;
+}
+
+
+bool CTextureFactory::glLoadTexture(ITextureObject* const T,
+									const std::string& fname,
+									const CVaArray<CImage::IImageOP::OP_KIND>& ops)
+{
+	//	ensure we can do something ...
+#ifndef RAPTOR_DEBUG_MODE_GENERATION
+	if ((T == NULL) || fname.empty())
+	{
+		Raptor::GetErrorManager()->generateRaptorError(CTextureFactory::CTextureFactoryClassID::GetClassId(),
+													   CRaptorErrorManager::RAPTOR_WARNING,
+													   CRaptorMessages::ID_NULL_OBJECT);
+		return false;
+	}
+#endif
+
+	CImage::IImageOP::operation_param_t param;
+	param.bump_scale = mConfig.getBumpAmplitude();
+	param.transparency = T->getTransparency();
+	CVaArray<CImage::IImageOP::OP_KIND> iops = ops;
+	if (mConfig.useTextureResize() && !ops.hasValue(CImage::IImageOP::IMAGE_SCALER))
+		iops.addValue(CImage::IImageOP::IMAGE_SCALER);
+	if (!ops.hasValue(CImage::IImageOP::ALPHA_TRANSPARENCY))
+		iops.addValue(CImage::IImageOP::ALPHA_TRANSPARENCY);
+
+	CImage loadImage;
+	if (loadImage.loadImage(fname, iops, param))
+	{
+		CTextureObject *t = T->getGLTextureObject();
+		if (NULL != t)
+			return glLoadTexture(t, loadImage);
+		else
+		{
+			CVulkanTextureObject *v = T->getVulkanTextureObject();
+			if (NULL != v)
+				return vkLoadTexture(v, loadImage);
+			else
+				return false;
+		}
+	}
+	else
 		return false;
 }
 
 bool CTextureFactory::glResizeTexture( CTextureObject *T, unsigned int width, unsigned int height, unsigned int depth) const
 {
-    if ((T == NULL) || (width == 0) || (height == 0))
+    if ((T == NULL) || (width == 0) || (height == 0) || (depth == 0))
         return false;
 
-    if ((T->m_width == width) && (T->m_height == height) && (T->m_depth == depth))
+    if ((T->getWidth() == width) && (T->getHeight() == height) && (T->getDepth() == depth))
         return true;
 
     GLint currentWidth = 0;
     GLint currentHeight = 0;
+	GLint currentDepth = 0;
 
-    GLenum target = T->target & 0xFFFF;
+    GLenum target = T->target;
 
     //! For a cube map, the target must identify a specific cube face
     //! otherwise, getTexLevelParameter will raise an error.
@@ -459,10 +576,11 @@ bool CTextureFactory::glResizeTexture( CTextureObject *T, unsigned int width, un
 	    target = GL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB;
 #endif
     
-    glBindTexture((T->target & 0xFFFF),T->texname);
+    glBindTexture(target,T->texname);
 
-    glGetTexLevelParameteriv(target, T->level, GL_TEXTURE_WIDTH, &currentWidth);
-    glGetTexLevelParameteriv(target, T->level, GL_TEXTURE_HEIGHT, &currentHeight);
+	glGetTexLevelParameteriv(target, T->getCurrentMipMapLevel(), GL_TEXTURE_WIDTH, &currentWidth);
+	glGetTexLevelParameteriv(target, T->getCurrentMipMapLevel(), GL_TEXTURE_HEIGHT, &currentHeight);
+	glGetTexLevelParameteriv(target, T->getCurrentMipMapLevel(), GL_TEXTURE_DEPTH, &currentDepth);
 
 
 	//!	Handle the case with unsupported rectangle texture
@@ -470,12 +588,15 @@ bool CTextureFactory::glResizeTexture( CTextureObject *T, unsigned int width, un
 	{
 		unsigned int w2 = width;
 		unsigned int h2 = height;
+		unsigned int d2 = depth;
 		if (w2 > 0)
 			w2 = 1 << (unsigned int)(log((float)width) / log(2.0f));
 		if (h2 > 0)
 			h2 = 1 << (unsigned int)(log((float)height) / log(2.0f));
+		if (d2 > 0)
+			d2 = 1 << (unsigned int)(log((float)depth) / log(2.0f));
 
-		if ((w2 != width) || (h2 != height))
+		if ((w2 != width) || (h2 != height) || (d2 != depth))
 		{
 			if (mConfig.useTextureResize())
 			{
@@ -490,52 +611,70 @@ bool CTextureFactory::glResizeTexture( CTextureObject *T, unsigned int width, un
 					height = 2 * h2;
 				else
 					height = h2;
+				if (d2 < depth)
+					depth = 2 * d2;
+				else
+					depth = d2;
 			}
 		}
 	}
 
-    //! Current depth is not needed, because it is considered 0 and valid for a 2D texture.
-    //! Here under, the texture is non existent, there has been no loading.
-//    if ((currentWidth == 0) || (currentHeight == 0))
     {
-        T->m_width = width;
-        T->m_height = height;
-        T->m_depth = depth;
+		T->setSize(width, height, depth);
+		int posx = 0;
+		int posy = 0;
+		int W = 0;
+		int H = 0;
+		T->getGenerationSize(posx, posy, W, H);
+		T->setGenerationSize(posx, posy, W, H);
+		
+		GLuint GL_FORMAT = GL_RGBA;
+		GLuint GL_TYPE = GL_UNSIGNED_BYTE;
+		if ((T->getTexelFormat() == GL_DEPTH_COMPONENT) ||
+			(T->getTexelFormat() == GL_DEPTH_COMPONENT16_ARB) ||
+			(T->getTexelFormat() == GL_DEPTH_COMPONENT24_ARB) ||
+			(T->getTexelFormat() == GL_DEPTH_COMPONENT32_ARB))
+		{
+			GL_FORMAT = GL_DEPTH_COMPONENT;
+			GL_TYPE = GL_FLOAT;
+		}
+		else if (T->getTexelFormat() == GL_DEPTH24_STENCIL8_EXT)
+		{
+			GL_FORMAT = GL_DEPTH_STENCIL_EXT;
+			GL_TYPE = GL_UNSIGNED_INT_24_8_EXT;
+		}
 
-        if (T->m_pTexelGenerator != NULL)
-            T->setGenerationSize(T->source[0],T->source[1],T->source[2],T->source[3]);
-
-        if ((T->target & 0xFFFF) == GL_TEXTURE_1D)
+        if (target == GL_TEXTURE_1D)
 			glTexImage1D(	GL_TEXTURE_1D, 
 							T->getCurrentMipMapLevel(), 
-							T->getSizedTexelType(), 
+							T->getTexelFormat(),
 							width, 
 							0, 
-							T->getBufferType(), 
-							T->getBufferTexelType(),
+							GL_FORMAT,
+							GL_TYPE,
 							NULL);
-        else if ((T->target & 0xFFFF) == GL_TEXTURE_2D)
+        else if (target == GL_TEXTURE_2D)
             glTexImage2D(	GL_TEXTURE_2D, 
 							T->getCurrentMipMapLevel(), 
-							T->getSizedTexelType(), 
+							T->getTexelFormat(),
 							width, height, 
 							0, 
-							T->getBufferType(), 
-							T->getBufferTexelType(),
+							GL_FORMAT,
+							GL_TYPE,
 							NULL);
 #if defined(GL_EXT_texture3D)
-        else if ((T->target & 0xFFFF) == GL_TEXTURE_3D_EXT)
+        else if (target == GL_TEXTURE_3D_EXT)
         {
-            const CRaptorExtensions * const extensions = Raptor::glGetExtensions();
+            const CRaptorGLExtensions * const extensions = Raptor::glGetExtensions();
             extensions->glTexImage3DEXT(	GL_TEXTURE_3D_EXT, 
 											T->getCurrentMipMapLevel(), 
-											T->getSizedTexelType(), 
+											T->getTexelFormat(),
 											width, 
 											height, 
 											depth, 
 											0, 
-											T->getBufferType(), 
-											T->getBufferTexelType(),
+											GL_FORMAT,
+											GL_TYPE,
 											NULL);
         }
 #endif
@@ -553,31 +692,26 @@ bool CTextureFactory::glResizeTexture( CTextureObject *T, unsigned int width, un
 
 bool CTextureFactory::glExportTexture(CTextureObject *T,const std::string &fname)
 {
-    if (T == NULL)
+	if ((T == NULL) || (fname.empty()))
         return false;
 
     if (T->texname == 0)
         return false;
 
-    if ((T->m_width == 0) || (T->m_height == 0))
+    if ((T->getWidth() == 0) || (T->getHeight() == 0))
         return false;
 
-	CTextureFactoryConfig::IImageIO *imager = mConfig.getImageKindIO(fname);
+	CImage::IImageIO *imager = CImage::getImageKindIO(fname);
     bool res = true;
 	if (imager != NULL)
 	{
-        T->glRender();
+		T->glvkRender();
 
-		unsigned char *texels = T->getTexels();
-        if (texels == NULL)
-        {
-            T->allocateTexels();
-			texels = T->getTexels();
-        }
+		CImage exp;
+		exp.allocatePixels(T->getWidth(), T->getHeight());
+		glGetTexImage(GL_TEXTURE_2D, T->getCurrentMipMapLevel(), GL_RGBA, GL_UNSIGNED_BYTE, exp.getPixels());
 
-        glGetTexImage(GL_TEXTURE_2D,T->level,GL_RGBA,GL_UNSIGNED_BYTE,texels);
-
-        res = imager->storeImageFile(fname,T);
+        res = imager->storeImageFile(fname,&exp);
     }
 
     CATCH_GL_ERROR
@@ -585,7 +719,7 @@ bool CTextureFactory::glExportTexture(CTextureObject *T,const std::string &fname
     return res;
 }
 
-CTextureObject* const CTextureFactory::glCreateSprite(CTextureObject::TEXEL_TYPE type)
+CTextureObject* const CTextureFactory::glCreateSprite(ITextureObject::TEXEL_TYPE type)
 {
     //! type checking will be donne at loading
 	CTextureObject* T = new CTextureObject(type);
@@ -597,8 +731,8 @@ CTextureObject* const CTextureFactory::glCreateSprite(CTextureObject::TEXEL_TYPE
 
 	glBindTexture(GL_TEXTURE_2D,T->texname);
 
-	T->glUpdateFilter(CTextureObject::CGL_UNFILTERED);
-	T->glUpdateClamping(CTextureObject::CGL_CLAMP);
+	T->glvkUpdateFilter(ITextureObject::CGL_UNFILTERED);
+	T->glvkUpdateClamping(ITextureObject::CGL_CLAMP);
 	
 	glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_PRIORITY,mConfig.getCurrentPriority());
 
@@ -607,12 +741,12 @@ CTextureObject* const CTextureFactory::glCreateSprite(CTextureObject::TEXEL_TYPE
 	return T;
 }
 
-CTextureObject* const CTextureFactory::glCreateCubemap(  CTextureObject::TEXEL_TYPE type,
+CTextureObject* const CTextureFactory::glCreateCubemap(  ITextureObject::TEXEL_TYPE type,
                                                          CTextureObject::TEXTURE_FUNCTION env_mode,
-														 CTextureObject::TEXTURE_FILTER filter)
+														 ITextureObject::TEXTURE_FILTER filter)
 {
 #if defined(GL_ARB_texture_cube_map)
-	if (!Raptor::glIsExtensionSupported("GL_ARB_texture_cube_map"))
+	if (!Raptor::glIsExtensionSupported(GL_ARB_TEXTURE_CUBE_MAP_EXTENSION_NAME))
     {
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 		vector<CRaptorMessages::MessageArgument> args;
@@ -631,23 +765,19 @@ CTextureObject* const CTextureFactory::glCreateCubemap(  CTextureObject::TEXEL_T
 	glGenTextures(1,&(T->texname));
 
     T->setFunction(env_mode);
-		
 	T->target = GL_TEXTURE_CUBE_MAP_ARB;
 
-	glBindTexture(T->target,T->texname);
+	glBindTexture(GL_TEXTURE_CUBE_MAP_ARB, T->texname);
 
-	T->glUpdateFilter(filter);
-	T->glUpdateClamping(CTextureObject::CGL_REPEAT);
+	T->glvkUpdateFilter(filter);
+	T->glvkUpdateClamping(ITextureObject::CGL_REPEAT);
 
-	glTexParameterf(T->target,GL_TEXTURE_PRIORITY,mConfig.getCurrentPriority());
+	glTexParameterf(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_PRIORITY, mConfig.getCurrentPriority());
 
 	// Is this usefull on a cube map ?
 #ifdef GL_EXT_texture_filter_anisotropic
-	if ((mConfig.getCurrentAnisotropy() > 1.0f) && (filter == CTextureObject::CGL_ANISOTROPIC))
-    {
-		glTexParameterf(T->target,GL_TEXTURE_MAX_ANISOTROPY_EXT,mConfig.getCurrentAnisotropy());
-        T->aniso_level = mConfig.getCurrentAnisotropy();
-    }
+	if ((mConfig.getCurrentAnisotropy() > 1.0f) && (filter == ITextureObject::CGL_ANISOTROPIC))
+		glTexParameterf(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_MAX_ANISOTROPY_EXT, mConfig.getCurrentAnisotropy());
 #endif
 
 	CATCH_GL_ERROR
@@ -658,12 +788,45 @@ CTextureObject* const CTextureFactory::glCreateCubemap(  CTextureObject::TEXEL_T
 #endif
 }
 
-CTextureObject* const CTextureFactory::glCreateTexture( CTextureObject::TEXEL_TYPE type,
-                                                        CTextureObject::TEXTURE_FUNCTION env_mode,
-														CTextureObject::TEXTURE_FILTER filter)
+
+ITextureObject* const CTextureFactory::vkCreateTexture(ITextureObject::TEXEL_TYPE type,
+													   CTextureObject::TEXTURE_FUNCTION env_mode,
+													   ITextureObject::TEXTURE_FILTER filter)
 {
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
-    if ((type == CTextureObject::CGL_COLOR_FLOAT32) || (type == CTextureObject::CGL_COLOR_FLOAT32_ALPHA))
+	if ((type == ITextureObject::CGL_COLOR_FLOAT32) || (type == ITextureObject::CGL_COLOR_FLOAT32_ALPHA))
+	{
+		vector<CRaptorMessages::MessageArgument> args;
+		CRaptorMessages::MessageArgument arg;
+		arg.arg_sz = "2D Float32 Texture, use a Texture Rectangle instead.";
+		args.push_back(arg);
+		Raptor::GetErrorManager()->generateRaptorError(CTextureFactory::CTextureFactoryClassID::GetClassId(),
+													   CRaptorErrorManager::RAPTOR_WARNING,
+													   CRaptorMessages::ID_FORMAT_NOT_SUPPORTED, args);
+	}
+#endif
+
+	CVulkanTextureObject* T = CVulkanDevice::getCurrentDevice().createTextureObject(type);
+	if (NULL != T)
+	{
+		T->glvkUpdateFilter(filter);
+		T->glvkUpdateClamping(ITextureObject::CGL_REPEAT);
+		//T->setFunction(env_mode);
+
+		if ((mConfig.getCurrentAnisotropy() > 1.0f) && (filter == ITextureObject::CGL_ANISOTROPIC))
+		{
+		}
+	}
+
+	return T;
+}
+
+CTextureObject* const CTextureFactory::glCreateTexture( ITextureObject::TEXEL_TYPE type,
+                                                        CTextureObject::TEXTURE_FUNCTION env_mode,
+														ITextureObject::TEXTURE_FILTER filter)
+{
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+    if ((type == ITextureObject::CGL_COLOR_FLOAT32) || (type == ITextureObject::CGL_COLOR_FLOAT32_ALPHA))
     {
 		vector<CRaptorMessages::MessageArgument> args;
 		CRaptorMessages::MessageArgument arg;
@@ -674,8 +837,8 @@ CTextureObject* const CTextureFactory::glCreateTexture( CTextureObject::TEXEL_TY
 														CRaptorMessages::ID_FORMAT_NOT_SUPPORTED,args);
     }
 #endif
-	if ((type == CTextureObject::CGL_DEPTH24_STENCIL8) &&
-		(!Raptor::glIsExtensionSupported("GL_EXT_packed_depth_stencil")))
+	if ((type == ITextureObject::CGL_DEPTH24_STENCIL8) &&
+		(!Raptor::glIsExtensionSupported(GL_EXT_PACKED_DEPTH_STENCIL_EXTENSION_NAME)))
     {
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 		vector<CRaptorMessages::MessageArgument> args;
@@ -694,22 +857,18 @@ CTextureObject* const CTextureFactory::glCreateTexture( CTextureObject::TEXEL_TY
 	glGenTextures(1,&(T->texname));
 
     T->setFunction(env_mode);
-	
 	T->target = GL_TEXTURE_2D;
 
-	glBindTexture(T->target,T->texname);
+	glBindTexture(GL_TEXTURE_2D, T->texname);
 
-	T->glUpdateFilter(filter);
-	T->glUpdateClamping(CTextureObject::CGL_REPEAT);
+	T->glvkUpdateFilter(filter);
+	T->glvkUpdateClamping(ITextureObject::CGL_REPEAT);
 	
-	glTexParameterf(T->target,GL_TEXTURE_PRIORITY,mConfig.getCurrentPriority());
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_PRIORITY, mConfig.getCurrentPriority());
 
 #ifdef GL_EXT_texture_filter_anisotropic
-	if ((mConfig.getCurrentAnisotropy() > 1.0f) && (filter == CTextureObject::CGL_ANISOTROPIC))
-    {
-		glTexParameterf(T->target,GL_TEXTURE_MAX_ANISOTROPY_EXT,mConfig.getCurrentAnisotropy());
-        T->aniso_level = mConfig.getCurrentAnisotropy();
-    }
+	if ((mConfig.getCurrentAnisotropy() > 1.0f) && (filter == ITextureObject::CGL_ANISOTROPIC))
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, mConfig.getCurrentAnisotropy());
 #endif
 
 	CATCH_GL_ERROR
@@ -717,12 +876,12 @@ CTextureObject* const CTextureFactory::glCreateTexture( CTextureObject::TEXEL_TY
 	return T;
 }
 
-CTextureObject* const CTextureFactory::glCreateRectangleTexture( CTextureObject::TEXEL_TYPE type,
+CTextureObject* const CTextureFactory::glCreateRectangleTexture( ITextureObject::TEXEL_TYPE type,
                                                                  CTextureObject::TEXTURE_FUNCTION env_mode,
-														         CTextureObject::TEXTURE_FILTER filter)
+														         ITextureObject::TEXTURE_FILTER filter)
 {
 #if defined(GL_ARB_texture_rectangle)
-    if (!Raptor::glIsExtensionSupported("GL_ARB_texture_rectangle"))
+	if (!Raptor::glIsExtensionSupported(GL_ARB_TEXTURE_RECTANGLE_EXTENSION_NAME))
     {
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 		vector<CRaptorMessages::MessageArgument> args;
@@ -741,26 +900,22 @@ CTextureObject* const CTextureFactory::glCreateRectangleTexture( CTextureObject:
 	glGenTextures(1,&(T->texname));
 
     T->setFunction(env_mode);
-
-
 	T->target = GL_TEXTURE_RECTANGLE_ARB;
-	glBindTexture(T->target,T->texname);
 
-	if ((filter == CTextureObject::CGL_TRILINEAR) || (filter == CTextureObject::CGL_ANISOTROPIC))
-        T->glUpdateFilter(CTextureObject::CGL_BILINEAR);
+	glBindTexture(GL_TEXTURE_RECTANGLE_ARB, T->texname);
+
+	if ((filter == ITextureObject::CGL_TRILINEAR) || (filter == ITextureObject::CGL_ANISOTROPIC))
+		T->glvkUpdateFilter(ITextureObject::CGL_BILINEAR);
     else
-        T->glUpdateFilter(filter);
+		T->glvkUpdateFilter(filter);
 
-	T->glUpdateClamping(CTextureObject::CGL_EDGECLAMP);
+	T->glvkUpdateClamping(ITextureObject::CGL_EDGECLAMP);
 
-	glTexParameterf(T->target,GL_TEXTURE_PRIORITY,mConfig.getCurrentPriority());
+	glTexParameterf(GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_PRIORITY, mConfig.getCurrentPriority());
 
 #ifdef GL_EXT_texture_filter_anisotropic
-	if ((mConfig.getCurrentAnisotropy() > 1.0f) && (filter == CTextureObject::CGL_ANISOTROPIC))
-    {
-		glTexParameterf(T->target,GL_TEXTURE_MAX_ANISOTROPY_EXT,mConfig.getCurrentAnisotropy());
-        T->aniso_level = mConfig.getCurrentAnisotropy();
-    }
+	if ((mConfig.getCurrentAnisotropy() > 1.0f) && (filter == ITextureObject::CGL_ANISOTROPIC))
+		glTexParameterf(GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_MAX_ANISOTROPY_EXT, mConfig.getCurrentAnisotropy());
 #endif
 
 	CATCH_GL_ERROR
@@ -772,9 +927,9 @@ CTextureObject* const CTextureFactory::glCreateRectangleTexture( CTextureObject:
 }
 
 
-CTextureObject* const CTextureFactory::glCreateDynamicTexture(CTextureObject::TEXEL_TYPE type,
+CTextureObject* const CTextureFactory::glCreateDynamicTexture(ITextureObject::TEXEL_TYPE type,
                                                               CTextureObject::TEXTURE_FUNCTION env_mode,
-                                                              CTextureObject::TEXTURE_FILTER filter,
+                                                              ITextureObject::TEXTURE_FILTER filter,
 														      ITextureGenerator* pGenerator)
 {
 	if (pGenerator == NULL)
@@ -797,26 +952,21 @@ CTextureObject* const CTextureFactory::glCreateDynamicTexture(CTextureObject::TE
 	glGenTextures(1,&(T->texname));
 
     T->setFunction(env_mode);
-		
-    T->target = GL_TEXTURE_2D | (pGenerator->getKind() << 16);
+	T->target = GL_TEXTURE_2D;
 	T->m_pTexelGenerator = pGenerator;
 
 	glBindTexture(GL_TEXTURE_2D,T->texname);
 
-	T->glUpdateFilter(filter);
+	T->glvkUpdateFilter(filter);
 
 	//	Dynamic textures are mostly used for render-to-texture buffers,
 	//	frequent usage of these textures is clamped mode.
 	//	Until there exist an interface to customize it, it is hard coded here.
-	//T->glUpdateClamping(CTextureObject::CGL_CLAMP);
-	T->glUpdateClamping(CTextureObject::CGL_EDGECLAMP);
+	T->glvkUpdateClamping(ITextureObject::CGL_EDGECLAMP);
 
 	glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_PRIORITY,mConfig.getCurrentPriority());
 
-    //  Initialise texture object with default value to store width & height
-    //glTexImage2D(GL_TEXTURE_2D, 0, 4, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE,NULL);
-
-	this->glResizeTexture(T,pGenerator->getGenerateWidth(),pGenerator->getGenerateHeight());
+	glResizeTexture(T,pGenerator->getGenerateWidth(),pGenerator->getGenerateHeight());
 	T->setGenerationSize(0,0,T->getWidth(),T->getHeight());
 
 	CATCH_GL_ERROR
@@ -824,12 +974,12 @@ CTextureObject* const CTextureFactory::glCreateDynamicTexture(CTextureObject::TE
 	return T;
 }
 
-CTextureObject* const CTextureFactory::glCreateVolumeTexture(CTextureObject::TEXEL_TYPE type,
+CTextureObject* const CTextureFactory::glCreateVolumeTexture(ITextureObject::TEXEL_TYPE type,
                                                              CTextureObject::TEXTURE_FUNCTION env_mode,
-														     CTextureObject::TEXTURE_FILTER filter)
+														     ITextureObject::TEXTURE_FILTER filter)
 {
 #if defined(GL_EXT_texture3D)
-    if (!Raptor::glIsExtensionSupported("GL_EXT_texture3D"))
+	if (!Raptor::glIsExtensionSupported(GL_EXT_TEXTURE3D_EXTENSION_NAME))
     {
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 		vector<CRaptorMessages::MessageArgument> args;
@@ -847,14 +997,12 @@ CTextureObject* const CTextureFactory::glCreateVolumeTexture(CTextureObject::TEX
 
 	glGenTextures(1,&(T->texname));
 
-    T->setFunction(env_mode);
-		
+    T->setFunction(env_mode);	
 	T->target = GL_TEXTURE_3D_EXT;
-	T->m_pTexelGenerator = NULL;
 
 	glBindTexture(GL_TEXTURE_3D_EXT,T->texname);
 
-	T->glUpdateFilter(filter);
+	T->glvkUpdateFilter(filter);
 
 	glTexParameteri(GL_TEXTURE_3D_EXT,GL_TEXTURE_WRAP_S,GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_3D_EXT,GL_TEXTURE_WRAP_T,GL_REPEAT);

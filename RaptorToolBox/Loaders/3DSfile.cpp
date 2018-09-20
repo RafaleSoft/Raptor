@@ -1,4 +1,3 @@
-#include "StdAfx.h"
 #include "Subsys/CodeGeneration.h"
 
 
@@ -796,27 +795,31 @@ bool RAPTOR_FASTCALL ProcessChunkAxxxH(long length)
 			alias.oldName = CurrentState.name;
             alias.newName = "";
 
-			while (matlib->find(CurrentState.name) != matlib->end() )
+			stringstream rename;
+			rename << CurrentState.name;
+
+			while (matlib->find(rename.str()) != matlib->end() )
 			{
 				string str = "Raptor renamed duplicate 3DS material ";
 				str += CurrentState.name;
 				str += " to ";
-
-				strcat(CurrentState.name,"2");
-				str+= CurrentState.name;
+				
+				rename << "2";
+				
+				str += rename.str();
 				Raptor::GetErrorManager()->generateRaptorError(CPersistence::CPersistenceClassID::GetClassId(),
                                                                CRaptorErrorManager::RAPTOR_WARNING,str);
 				materialRenamed = true;
 				newAlias = true;
-				alias.newName = CurrentState.name;
+				alias.newName = rename.str();
 			}
 			mat->mat = new CMaterial(	CMaterial::CGL_NO_MATERIAL,
 										CMaterial::CGL_NO_MATERIAL,
 										CMaterial::CGL_NO_MATERIAL,
 										0,
 										CMaterial::CGL_NO_MATERIAL,
-										CurrentState.name);
-            matlib->insert(MapStringToPtr::value_type(CurrentState.name,mat));
+										rename.str());
+			matlib->insert(MapStringToPtr::value_type(rename.str(), mat));
 			if (newAlias)
 				materialRenames.push_back(alias);
 			return true;
@@ -993,7 +996,7 @@ bool RAPTOR_FASTCALL ProcessChunkAxxxH(long length)
 
 		CTextureFactory &f = CTextureFactory::getDefaultFactory();
 		CTextureObject* T;
-		T = f.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_MULTIPLY,CTextureObject::CGL_BILINEAR);
+		T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_MULTIPLY,ITextureObject::CGL_BILINEAR);
 		T->glSetTransparency((unsigned char)((float)CurrentState.spercentage*255.0/100.0));
 
 		string fname = CurrentState.name;

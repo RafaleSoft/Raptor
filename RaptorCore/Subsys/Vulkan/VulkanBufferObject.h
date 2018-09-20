@@ -16,7 +16,7 @@ public:
 	//!	Vulkan buffer objet constructor
 	CVulkanBufferObject()
 		:m_size(0),m_storage(VERTEX_BUFFER),m_coherent(false),
-		m_buffer(0),m_address(0),m_deviceBuffer(0),m_deviceAddress(0)
+		m_buffer(0), m_address(0), m_deviceBuffer(0), m_deviceAddress(0), m_granularity(0)
 	{};
 
 	//!	Destructor
@@ -29,7 +29,10 @@ public:
 	virtual BUFFER_KIND getStorage(void) const;
 
 	//! Implements IDeviceMemoryManager::IBufferObject
-	unsigned int getBufferId(void) const;
+	uint32_t getBufferId(void) const;
+
+	//! Implements IDeviceMemoryManager::IBufferObject
+	virtual uint64_t getRelocationOffset(void) const;
 
 
     //! The size in bytes of the buffer object
@@ -41,6 +44,9 @@ public:
 	//!	Type of host visible memory (do not need flush)
 	bool		m_coherent;
 
+	//!	Memory granularity
+	uint64_t	m_granularity;
+
 	//!	Buffer and memory handles
 	VkBuffer		m_buffer;
 	VkDeviceMemory	m_address;
@@ -48,7 +54,14 @@ public:
 	VkDeviceMemory	m_deviceAddress;
 
 	//! The array of unsynchronized host_visible vs. device local memory data chunks
-	std::vector<VkBufferCopy>	m_unsynchronizedData;
+	std::vector<VkBufferCopy>		m_unsynchronizedBuffers;
+
+	typedef struct unsynchronizedImage
+	{
+		VkImage				image;
+		VkBufferImageCopy	bufferCopy;
+	};
+	std::vector<unsynchronizedImage>	m_unsynchronizedImages;
 
 
 private:
@@ -67,9 +80,14 @@ inline IDeviceMemoryManager::IBufferObject::BUFFER_KIND CVulkanBufferObject::get
 	return m_storage;
 }
 
-inline unsigned int CVulkanBufferObject::getBufferId(void) const
+inline uint32_t CVulkanBufferObject::getBufferId(void) const
 {
 	return 0;
+}
+
+inline uint64_t CVulkanBufferObject::getRelocationOffset(void) const
+{
+	return m_granularity;
 }
 
 RAPTOR_NAMESPACE_END

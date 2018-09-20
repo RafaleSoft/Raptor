@@ -36,7 +36,6 @@
 #include "ToolBox/Filters/MBFilter.h"
 #include "ToolBox/Filters/BlurFilter.h"
 #include "ToolBox/Filters/DOFFilter.h"
-#include "ToolBox/Filters/TextureFilter.h"
 
 
 CTestDoc::CTestDoc(const RAPTOR_HANDLE& wnd,CRaptorDisplay *pDisplay)
@@ -60,7 +59,7 @@ public:
 	Foreground(CMagnifierFilter *mf):fgMag(mf),status(mf->isEnabled())
 	{
 		CTextureFactory &fct = CTextureFactory::getDefaultFactory();
-		CTextureObject *T = fct.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA);
+		CTextureObject *T = fct.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA);
 		fct.glLoadTexture(T,"lrock049.jpg");
 
 		fgMag->setColorInput(T);
@@ -151,9 +150,9 @@ void CTestDoc::GLInitContext(void)
     pLight->setLightDirection(GL_COORD_VERTEX(0.0f,0.0f,-5.0f,1.0f));
     pLight->glActivate();
 
-	CViewPoint *vp = dsp->getViewPoint();
-    vp->setPosition(0,0,5.5,CViewPoint::EYE);
-    vp->setPosition(0,0,0,CViewPoint::TARGET);
+	IViewPoint *vp = dsp->getViewPoint();
+    vp->setPosition(0,0,5.5,IViewPoint::EYE);
+    vp->setPosition(0,0,0,IViewPoint::TARGET);
 
 	CViewModifier *vm = new CViewModifier("test");
 	vm->setObject(m_pSG);
@@ -215,7 +214,7 @@ void CTestDoc::GLInitContext(void)
     background->glUnLockData();
 
 	CTextureFactory &fct = CTextureFactory::getDefaultFactory();
-	CTextureObject *T = fct.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA);
+	CTextureObject *T = fct.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA);
 	fct.glLoadTexture(T,"Gaussian_blur_test.jpg");
 	CShader *s = background->getShader();
 	CTextureUnitSetup *tmu = s->glGetTextureUnitsSetup();
@@ -224,31 +223,31 @@ void CTestDoc::GLInitContext(void)
 	
 
 #if defined(GL_ARB_color_buffer_float)
-    if (Raptor::glIsExtensionSupported("GL_ARB_color_buffer_float"))
+	if (Raptor::glIsExtensionSupported(GL_ARB_COLOR_BUFFER_FLOAT_EXTENSION_NAME))
     {
         CRaptorDisplayConfig rda;
         CRaptorDisplay::GetCurrentDisplay()->glQueryStatus(rda,GL_CONFIG_STATE_QUERY);
         rda.caption = "Raptor HDR Filter";
 
         hdr = new CHDRFilter(rda);
-        CRaptorDisplay::GetCurrentDisplay()->glBindDisplay(*hdr);
+		CRaptorDisplay::GetCurrentDisplay()->glvkBindDisplay(*hdr);
 		hdr->setBlurNbPass(2);
 		hdr->setHFTreshold(1.0f);
 
         pBlur = new CBlurFilter();
 		pBlur->setBlurModel(CBlurFilter::BLUR_GAUSSIAN_LINEAR);
 		pBlur->setBlurSize(9);
-        CRaptorDisplay::GetCurrentDisplay()->glBindDisplay(*pBlur);
+		CRaptorDisplay::GetCurrentDisplay()->glvkBindDisplay(*pBlur);
 
 		bwf = new CColorControlFilter();
-		CRaptorDisplay::GetCurrentDisplay()->glBindDisplay(*bwf);
+		CRaptorDisplay::GetCurrentDisplay()->glvkBindDisplay(*bwf);
 		bwf->setColorBlend(1.1f,0.8f,0.7f,1.0f,0.65f);
 		bwf->setCorrection(1.0f,1.0f);
 		bwf->enableFilter(true);
 	
 		mbf = new CMBFilter();
 		mbf->setPercentage(0.95f,0.95f,0.95f,1.0f);
-		CRaptorDisplay::GetCurrentDisplay()->glBindDisplay(*mbf);
+		CRaptorDisplay::GetCurrentDisplay()->glvkBindDisplay(*mbf);
 		mbf->enableFilter(false);
 
 		dof = new CDOFFilter();
@@ -279,7 +278,7 @@ void CTestDoc::GLInitContext(void)
 
 void CTestDoc::glRender()
 {
-	m_pDisplay->glBindDisplay(m_wnd);
+	m_pDisplay->glvkBindDisplay(m_wnd);
 
 	m_pDisplay->glRender();
 

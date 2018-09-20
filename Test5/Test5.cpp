@@ -74,6 +74,8 @@ int WINAPI wWinMain(HINSTANCE hInstance,
 
     } // end while
 
+	Raptor::glQuitRaptor();
+
 	return (int) msg.wParam;
 }
 

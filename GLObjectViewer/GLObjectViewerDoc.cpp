@@ -13,7 +13,7 @@
 #include "GLHierarchy/TextureFactory.h"
 #include "GLHierarchy/TextureObject.h"
 #include "GLHierarchy/TextureUnitSetup.h"
-#include "Engine/ViewPoint.h"
+#include "Engine/IViewPoint.h"
 
 #include "Resource.h"
 #include "MainFrm.h"
@@ -164,9 +164,9 @@ void CGLObjectViewerDoc::GLInitContext(void)
         props->setLighting(CRenderingProperties::DISABLE);
         props->setWireframe(CRenderingProperties::DISABLE);
 
-        CViewPoint *vp = pDisplay->getViewPoint();
-        vp->setViewVolume(-ratio,ratio,-1.0f,1.0f,1.0f,10000.0f,CViewPoint::PERSPECTIVE);
-        vp->glRenderViewPointModel();
+        IViewPoint *vp = pDisplay->getViewPoint();
+        vp->setViewVolume(-ratio,ratio,-1.0f,1.0f,1.0f,10000.0f,IViewPoint::PERSPECTIVE);
+        vp->glvkRenderViewPointModel();
 		const CBoundingBox * const bbox = m_pRoot->boundingBox();
 		vp->translate(0.0f,0.0f,bbox->zMax());
 

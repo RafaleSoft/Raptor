@@ -7,8 +7,8 @@
 #if !defined(AFX_VERTEXPROGRAM_H__204F7213_B40B_4B6A_9BCA_828409871B68__INCLUDED_)
     #include "VertexProgram.h"
 #endif
-#if !defined(AFX_RAPTOREXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
-	#include "System/RaptorExtensions.h"
+#if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
+	#include "System/RaptorGLExtensions.h"
 #endif
 #if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
 	#include "System/Raptor.h"
@@ -62,7 +62,7 @@ CVertexProgram::~CVertexProgram()
 	}
 	else
 	{
-		const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 		if (m_handle.handle > 0)
 			pExtensions->glDeleteObjectARB(m_handle.handle);
 	}
@@ -75,10 +75,10 @@ void CVertexProgram::glInitShaders()
 
 	if (!m_bVertexProgramReady)
 	{
-		if (Raptor::glIsExtensionSupported("GL_ARB_vertex_shader"))
+		if (Raptor::glIsExtensionSupported(GL_ARB_VERTEX_SHADER_EXTENSION_NAME))
 		{
 #if defined(GL_ARB_vertex_shader)
-			const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+			const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 			m_bVertexProgramReady = (NULL != pExtensions->glCreateShaderObjectARB);
 #else
 			m_bVertexProgramReady = false;
@@ -103,7 +103,7 @@ void CVertexProgram::glInitShaders()
 bool CVertexProgram::glLoadProgram(const std::string &program)
 {
     m_bValid = false;
-	const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 
 #if defined(GL_ARB_vertex_shader)
 	if (m_bVertexProgramReady)
@@ -156,7 +156,7 @@ bool CVertexProgram::glLoadProgram(const std::string &program)
 bool CVertexProgram::glBindProgram(RAPTOR_HANDLE program)
 {
 #if defined(GL_ARB_shader_objects)
-	const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 	if (CUnifiedProgram::glBindProgram(program))
 	{
 		for (unsigned int idx = 0; idx < m_parameters.getNbParameters(); idx++)
@@ -217,7 +217,7 @@ bool CVertexProgram::glGetProgramStatus(void)
 		return false;
 
 #if defined(GL_ARB_vertex_shader)
-	const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 
 	GL_VERTEX_PROGRAM_CAPS caps;
 	if (glGetProgramCaps(caps))

@@ -2,13 +2,13 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "Subsys/CodeGeneration.h"
 
 #if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
 	#include "System/Raptor.h"
 #endif
-#if !defined(AFX_RAPTOREXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
-    #include "System/RaptorExtensions.h"
+#if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
+    #include "System/RaptorGLExtensions.h"
 #endif
 #if !defined(AFX_TEXTUREFACTORY_H__1B470EC4_4B68_11D3_9142_9A502CBADC6B__INCLUDED_)
 	#include "GLHierarchy/TextureFactory.h"
@@ -155,17 +155,17 @@ void CMBFilter::glRenderFilter()
     //  Rendering accumulators
     CAccumulator *pAccum = (CAccumulator*)m_pAccumulator;
 
-	const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 	PFN_GL_ACTIVE_TEXTURE_ARB_PROC glActiveTextureARB = pExtensions->glActiveTextureARB;
 
     // Accumulate previous render with colorSource
     RAPTOR_HANDLE noDevice;
-    pAccum->pCurrentDisplay->glBindDisplay(noDevice);
+	pAccum->pCurrentDisplay->glvkBindDisplay(noDevice);
     glActiveTextureARB(GL_TEXTURE1_ARB);
     glEnable(GL_TEXTURE_2D);
-    pAccum->m_pPreviousColorAccum->glRender();
+	pAccum->m_pPreviousColorAccum->glvkRender();
     glActiveTextureARB(GL_TEXTURE0_ARB);
-    getColorInput()->glRender();
+	getColorInput()->glvkRender();
 
 	m_pMotionBlurShader->glGetFragmentProgram()->setProgramParameters(f_params);
     m_pMotionBlurShader->glRender();
@@ -181,7 +181,7 @@ void CMBFilter::glRenderFilterOutput()
     //  Render final buffer
     CAccumulator *pAccum = (CAccumulator*)m_pAccumulator;
 	
-	pAccum->m_pCurrentColorAccum->glRender();
+	pAccum->m_pCurrentColorAccum->glvkRender();
     glDrawBuffer();
 
 	glBindTexture(GL_TEXTURE_2D,0);
@@ -202,9 +202,9 @@ bool CMBFilter::glInitFilter(void)
 
 	if ((colorExternalSource != NULL) && (m_fModel == RENDER_TEXTURE))
 	{
-		colorInput = filterFactory.glCreateDynamicTexture(	CTextureObject::CGL_COLOR24_ALPHA,
+		colorInput = filterFactory.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 															CTextureObject::CGL_OPAQUE,
-															CTextureObject::CGL_BILINEAR,
+															ITextureObject::CGL_BILINEAR,
 															colorExternalSource);
 	}
 
@@ -226,20 +226,20 @@ bool CMBFilter::glInitFilter(void)
 		state.renderer = CRaptorDisplayConfig::RENDER_BUFFER;
 
 		CTextureObject *T = NULL;
-		T = filterFactory.glCreateTexture(	CTextureObject::CGL_COLOR24_ALPHA,
+		T = filterFactory.glCreateTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 											CTextureObject::CGL_OPAQUE,
-											CTextureObject::CGL_BILINEAR);
+											ITextureObject::CGL_BILINEAR);
 		filterFactory.glResizeTexture(T,state.width,state.height);
-		T->glUpdateClamping(CTextureObject::CGL_EDGECLAMP);
+		T->glvkUpdateClamping(ITextureObject::CGL_EDGECLAMP);
 		accumulator->m_pCurrentColorAccum = T;
 		m_pRenderTextures->addTexture(T);
 
 		m_pRenderTextures2 = new CTextureSet();
-		T = filterFactory.glCreateTexture(	CTextureObject::CGL_COLOR24_ALPHA,
+		T = filterFactory.glCreateTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 											CTextureObject::CGL_OPAQUE,
-											CTextureObject::CGL_BILINEAR);
+											ITextureObject::CGL_BILINEAR);
 		filterFactory.glResizeTexture(T,state.width,state.height);	
-		T->glUpdateClamping(CTextureObject::CGL_EDGECLAMP);
+		T->glvkUpdateClamping(ITextureObject::CGL_EDGECLAMP);
 		accumulator->m_pPreviousColorAccum = T;
 		m_pRenderTextures2->addTexture(T);
 	}
@@ -254,7 +254,7 @@ bool CMBFilter::glInitFilter(void)
     pDisplay1->setViewPoint(NULL);
 
 	if (m_fModel == RENDER_BUFFER)
-		pDisplay1->glBindDisplay(*m_pRenderTextures);
+		pDisplay1->glvkBindDisplay(*m_pRenderTextures);
 
     CRaptorDisplay* pDisplay2 = Raptor::glCreateDisplay(state);
     CRenderingProperties *rp2 = pDisplay2->getRenderingProperties();
@@ -262,7 +262,7 @@ bool CMBFilter::glInitFilter(void)
     pDisplay2->setViewPoint(NULL);
 
 	if (m_fModel == RENDER_BUFFER)
-		pDisplay2->glBindDisplay(*m_pRenderTextures2);
+		pDisplay2->glvkBindDisplay(*m_pRenderTextures2);
 
 
     accumulator->pCurrentDisplay = pDisplay1;
@@ -271,13 +271,13 @@ bool CMBFilter::glInitFilter(void)
 
 	if (m_fModel == RENDER_TEXTURE)
 	{
-		accumulator->m_pCurrentColorAccum = filterFactory.glCreateDynamicTexture(	CTextureObject::CGL_COLOR24_ALPHA,
+		accumulator->m_pCurrentColorAccum = filterFactory.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 																					CTextureObject::CGL_OPAQUE,
-																					CTextureObject::CGL_BILINEAR,
+																					ITextureObject::CGL_BILINEAR,
 																					accumulator->pCurrentDisplay);
-		accumulator->m_pPreviousColorAccum = filterFactory.glCreateDynamicTexture(	CTextureObject::CGL_COLOR24_ALPHA,
+		accumulator->m_pPreviousColorAccum = filterFactory.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 																					CTextureObject::CGL_OPAQUE,
-																					CTextureObject::CGL_BILINEAR,
+																					ITextureObject::CGL_BILINEAR,
 																					accumulator->pPreviousDisplay);
 	}
 

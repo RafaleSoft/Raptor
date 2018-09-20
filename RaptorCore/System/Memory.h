@@ -11,10 +11,6 @@
 
 #include "Subsys/CodeGeneration.h"
 
-#ifndef __CGLTYPES_HPP__
-	#include "System/CGLTypes.h"
-#endif
-
 
 RAPTOR_NAMESPACE_BEGIN
 
@@ -32,8 +28,7 @@ public:
         static const BUFFER_KIND PIXEL_STORAGE = 2;
         static const BUFFER_KIND PIXEL_SOURCE = 3;
 		static const BUFFER_KIND UNIFORM_BUFFER = 4;
-		static const BUFFER_KIND TEXTURE_BUFFER = 5;
-		static const BUFFER_KIND NB_BUFFER_KIND = 6;
+		static const BUFFER_KIND NB_BUFFER_KIND = 5;
 
 
         typedef enum
@@ -50,7 +45,11 @@ public:
 		virtual BUFFER_KIND getStorage(void) const = 0;
 
 		//! Returns a valid buffer id of the buffer or 0
-		virtual unsigned int getBufferId(void) const = 0;
+		virtual uint32_t getBufferId(void) const = 0;
+
+		//!	Returns the relocation required for alignement, and avoid NULL offsets
+		//!	(equivalent to NULL pointers.)
+		virtual uint64_t getRelocationOffset(void) const = 0;
 
 	protected:
 		IBufferObject() {};
@@ -74,10 +73,13 @@ public:
 	//! This method creates a new buffer object :
     //! @param kind : selects a kind of buffer ( vertex, pixel, memory ... )
     //! @param size : sets the size of the buffer and allocates uninitialized memory
+	//! @param size2 : sets the 2nd dimension size of the buffer
+	//! @param size3 : sets the 3nd dimension size of the buffer
+	//!	@param 
     //! @return the newly allocated buffer object or NULL if allocation failed.
 	virtual IDeviceMemoryManager::IBufferObject *
 			createBufferObject(	IDeviceMemoryManager::IBufferObject::BUFFER_KIND kind, 
-								IDeviceMemoryManager::IBufferObject::BUFFER_MODE mode, 
+								IDeviceMemoryManager::IBufferObject::BUFFER_MODE mode,
 								uint64_t size) = 0;
 
 	//! Activates the buffer object : bo is now the currently selected buffer for
@@ -189,6 +191,12 @@ public:
 	//!	Allocation method with aligned data
 	//! allocate count chuncks of size bytes, aligned with alignment
 	void *allocate(size_t size,unsigned int count,size_t alignment = 0) const;
+
+	//!	Reallocation method with aligned data
+	//! allocate count chuncks of size bytes, aligned with alignment, preserving old content.
+	//! If size is 0, it is equivalent to a call to release(olddata).
+	//! If olddata is NULL, it is equivalent to a call to allocate(size, count, alignment)
+	void *reallocate(void *olddata, size_t size, unsigned int count, size_t alignment = 0) const;
 
 	//!	Free aligned allocated memory only with Release method.
 	//!	Do not Release memory not allocated with Allocate

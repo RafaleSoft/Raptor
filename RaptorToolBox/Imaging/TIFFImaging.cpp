@@ -1,7 +1,6 @@
 // TIFFImaging.cpp: implementation of the CTIFFImaging class.
 //
 //////////////////////////////////////////////////////////////////////
-#include "StdAfx.h"
 #include "Subsys/CodeGeneration.h"
 
 #if !defined(AFX_TEXTUREOBJECT_H__D32B6294_B42B_4E6F_AB73_13B33C544AD0__INCLUDED_)
@@ -26,44 +25,40 @@
 
 void RaptorTIFFErrorHandler(const char* module , const char* fmt, va_list ap)
 {
-	const char *szTitleText = "%s Error";
-	const char *szDefaultModule = "LIBTIFF";
-	const char *szTmpModule = (module == NULL) ? szDefaultModule : module;
+	std::string szTitle;
+	if (module == NULL)
+		szTitle = "LIBTIFF";
+	else
+		szTitle = module;
+	szTitle += " Error";
 
-	char *szTitle = (char*)new char[(strlen(szTmpModule) + strlen(szTitleText) + strlen(fmt) + 128)];
-    if (szTitle == NULL)
-		return;
-
-	sprintf(szTitle, szTitleText, szTmpModule);
-	char *szTmp = szTitle + (strlen(szTitle)+2)*sizeof(char);
+	char szTmp[256];
+	memset(szTmp, 0, 256);
 	vsprintf(szTmp, fmt, ap);
+	szTitle += szTmp;
 
     Raptor::GetErrorManager()->generateRaptorError(	CPersistence::CPersistenceClassID::GetClassId(),
 													CRaptorErrorManager::RAPTOR_ERROR,
-													szTmp);
-
-    delete [] szTitle;
+													szTitle);
 }
 
 void RaptorTIFFWarningHandler(const char* module , const char* fmt, va_list ap)
 {
-	const char *szTitleText = "%s Warning";
-	const char *szDefaultModule = "LIBTIFF";
-	const char *szTmpModule = (module == NULL) ? szDefaultModule : module;
+	std::string szTitle;
+	if (module == NULL)
+		szTitle = "LIBTIFF";
+	else
+		szTitle = module;
+	szTitle += " Warning";
 
-	char *szTitle = (char*)new char[(strlen(szTmpModule) + strlen(szTitleText) + strlen(fmt) + 128)];
-    if (szTitle == NULL)
-		return;
-
-	sprintf(szTitle, szTitleText, szTmpModule);
-	char *szTmp = szTitle + (strlen(szTitle)+2)*sizeof(char);
+	char szTmp[256];
+	memset(szTmp, 0, 256);
 	vsprintf(szTmp, fmt, ap);
+	szTitle += szTmp;
 
     Raptor::GetErrorManager()->generateRaptorError(	CPersistence::CPersistenceClassID::GetClassId(),
 													CRaptorErrorManager::RAPTOR_WARNING,
-													szTmp);
-
-    delete [] szTitle;
+													szTitle);
 }
 
 
@@ -91,138 +86,120 @@ vector<std::string> CTIFFImaging::getImageKind(void) const
 	return result;
 }
 
-bool CTIFFImaging::storeImageFile(const std::string& fname,CTextureObject* const T)
+bool CTIFFImaging::storeImageFile(const std::string& fname, CImage* const I) const
 {
-    if (T == NULL)
-        return false;
+	if (I == NULL)
+		return false;
 
-	unsigned char *texturedata = T->getTexels();
-    if (texturedata == NULL)
-        return false;
+	unsigned char *texturedata = I->getPixels();
+	if (texturedata == NULL)
+		return false;
 
-    TIFFSetErrorHandler(RaptorTIFFErrorHandler);
-    TIFFSetWarningHandler(RaptorTIFFWarningHandler);
+	TIFFSetErrorHandler(RaptorTIFFErrorHandler);
+	TIFFSetWarningHandler(RaptorTIFFWarningHandler);
 
-    TIFF *out = NULL;
+	TIFF *out = NULL;
 	if ((out = TIFFOpen(fname.data(), "w")) == NULL)
 		return false;
 
-    TIFFSetField(out, TIFFTAG_IMAGEWIDTH, T->getWidth());
-	TIFFSetField(out, TIFFTAG_IMAGELENGTH, T->getHeight());
-    TIFFSetField(out, TIFFTAG_SAMPLESPERPIXEL, 4); //  only 32 bits supported
-    TIFFSetField(out, TIFFTAG_BITSPERSAMPLE, 8);	// only 8bits per sample ( channel ? )
+	TIFFSetField(out, TIFFTAG_IMAGEWIDTH, I->getWidth());
+	TIFFSetField(out, TIFFTAG_IMAGELENGTH, I->getHeight());
+	TIFFSetField(out, TIFFTAG_SAMPLESPERPIXEL, 4); //  only 32 bits supported
+	TIFFSetField(out, TIFFTAG_BITSPERSAMPLE, 8);	// only 8bits per sample ( channel ? )
 	TIFFSetField(out, TIFFTAG_PLANARCONFIG, PLANARCONFIG_CONTIG);
-    TIFFSetField(out, TIFFTAG_PHOTOMETRIC, PHOTOMETRIC_RGB); //  only RGB types are supported
-    TIFFSetField(out, TIFFTAG_ROWSPERSTRIP, T->getWidth());
-    
-    // Tiff library has a bug : output image has only data in a square region.
-    // So I cannot use JPEG compression !!!
-    //TIFFSetField(out, TIFFTAG_COMPRESSION,	COMPRESSION_JPEG);
-    TIFFSetField(out, TIFFTAG_COMPRESSION,	COMPRESSION_LZW);
-    //TIFFSetField(out, TIFFTAG_JPEGCOLORMODE, JPEGCOLORMODE_RGB);
+	TIFFSetField(out, TIFFTAG_PHOTOMETRIC, PHOTOMETRIC_RGB); //  only RGB types are supported
+	TIFFSetField(out, TIFFTAG_ROWSPERSTRIP, I->getWidth());
 
-    unsigned int size = T->getWidth()*4;
+	// Tiff library has a bug : output image has only data in a square region.
+	// So I cannot use JPEG compression !!!
+	//TIFFSetField(out, TIFFTAG_COMPRESSION,	COMPRESSION_JPEG);
+	TIFFSetField(out, TIFFTAG_COMPRESSION, COMPRESSION_LZW);
+	//TIFFSetField(out, TIFFTAG_JPEGCOLORMODE, JPEGCOLORMODE_RGB);
 
-    for (unsigned int row = 0; row < T->getHeight(); row++)
-    {
-        int texel = (T->getHeight() - row - 1) * size;
+	unsigned int size = I->getWidth() * 4;
 
-	    if (TIFFWriteScanline(out, texturedata+texel, row, 0) < 0)
-        {
-            TIFFClose(out);
-            return false;
-        }
-    }
-	
-    TIFFClose(out);
+	for (unsigned int row = 0; row < I->getHeight(); row++)
+	{
+		int texel = (I->getHeight() - row - 1) * size;
+
+		if (TIFFWriteScanline(out, texturedata + texel, row, 0) < 0)
+		{
+			TIFFClose(out);
+			return false;
+		}
+	}
+
+	TIFFClose(out);
 
 	return true;
 }
 
-bool CTIFFImaging::loadImageFile(const std::string& fname,CTextureObject* const T)
+bool CTIFFImaging::loadImageFile(const std::string& fname, CImage* const I) const
 {
-	if (T==NULL)
-        return false;
+	if ((NULL == I) || (fname.empty()))
+		return false;
 
-    TIFFSetErrorHandler(RaptorTIFFErrorHandler);
-    TIFFSetWarningHandler(RaptorTIFFWarningHandler);
+	TIFFSetErrorHandler(RaptorTIFFErrorHandler);
+	TIFFSetWarningHandler(RaptorTIFFWarningHandler);
 
-    TIFF *in = NULL;
+	TIFF *in = NULL;
 	if ((in = TIFFOpen(fname.data(), "r")) == NULL)
 		return false;
 
-    unsigned short photometric = 0;
-    TIFFGetField(in, TIFFTAG_PHOTOMETRIC, &photometric);
-    if (photometric != PHOTOMETRIC_RGB)
-        return false;   //  only RGB types are supported
+	unsigned short photometric = 0;
+	TIFFGetField(in, TIFFTAG_PHOTOMETRIC, &photometric);
+	if (photometric != PHOTOMETRIC_RGB)
+		return false;   //  only RGB types are supported
 
-    unsigned short samplesperpixel = 0;
-    TIFFGetField(in, TIFFTAG_SAMPLESPERPIXEL, &samplesperpixel);
+	unsigned short samplesperpixel = 0;
+	TIFFGetField(in, TIFFTAG_SAMPLESPERPIXEL, &samplesperpixel);
 	if (samplesperpixel != 3)
-        return false;   //  only 24 && 32 bits supported
+		return false;   //  only 24 && 32 bits supported
 
-    unsigned short bitspersample = 0;
-    TIFFGetField(in, TIFFTAG_BITSPERSAMPLE, &bitspersample);
+	unsigned short bitspersample = 0;
+	TIFFGetField(in, TIFFTAG_BITSPERSAMPLE, &bitspersample);
 	if (bitspersample != 8)
-        return false;   // only 8bits per sample ( channel ? )
+		return false;   // only 8bits per sample ( channel ? )
 
-    unsigned int w = 0;
-    TIFFGetField(in, TIFFTAG_IMAGEWIDTH, &w);
+	unsigned int w = 0;
+	TIFFGetField(in, TIFFTAG_IMAGEWIDTH, &w);
 
-    unsigned int h = 0;
+	unsigned int h = 0;
 	TIFFGetField(in, TIFFTAG_IMAGELENGTH, &h);
 
-    unsigned short config = 0;
+	unsigned short config = 0;
 	TIFFGetField(in, TIFFTAG_PLANARCONFIG, &config);
-	
-	//	I want GL_RGBA buffer format
-    T->setSize(w,h);
-    T->allocateTexels();
-	unsigned char *image_buffer = T->getTexels();
 
-    unsigned char *inbuf = (unsigned char *)_TIFFmalloc(TIFFScanlineSize(in));
-    for (unsigned int row = 0; row < h; row++) 
-    {
+	//	I want GL_RGBA buffer format
+	I->allocatePixels(w, h, CImage::CGL_COLOR24_ALPHA);
+	uint8_t *image_buffer = I->getPixels();
+
+	// Allocate 4 more bytes to safely erad past the end of the buffer
+	unsigned char *inbuf = (unsigned char *)_TIFFmalloc(4 + TIFFScanlineSize(in));
+	for (unsigned int row = 0; row < h; row++)
+	{
 		if (TIFFReadScanline(in, inbuf, row, 0) < 0)
 			break;
 
-        //	converting from RGB to RGBA format for
+		//	converting from RGB to RGBA format for
 		//	eventual extra processing
 		//	starting at the end of the buffer
-		int base_4 = w*4*(h - row - 1);
+		int base_4 = w * 4 * (h - row - 1);
 		int base_3 = 0;
 
-		for (unsigned int i=0;i<w;i++)
+		for (unsigned int i = 0; i<w; i++)
 		{
 			//	I know i read an octet off the end of the buffer
 			//	but this is faster. Moreover, the data should be 
 			//	aligned to a dword address for each row, so ...
 			*((unsigned int*)(&image_buffer[base_4])) = *((unsigned int*)(&(inbuf[base_3])));
-			
-			if (T->getTransparency()>255)
-			{
-				if ((image_buffer[base_4]==0)&&(image_buffer[base_4+1]==0)&&(image_buffer[base_4+2]==0))
-					image_buffer[base_4+3] = 0;
-				else 
-					image_buffer[base_4+3] = 255;
-			}
-			else if (T->getTransparency()>0)
-			{
-				image_buffer[base_4+3] = (unsigned char)(T->getTransparency() & 0xFF);
-			}
-			else
-			{	
-				image_buffer[base_4+3] = 
-				 (unsigned char)((image_buffer[base_4] + image_buffer[base_4+1] + image_buffer[base_4+2]) / 3);
-			}
 
-			base_3+=3;
+			base_3 += 3;
 			base_4 += 4;
 		}
 	}
-	
-    TIFFClose(in);
+
+	TIFFClose(in);
 
 	return true;
 }
-

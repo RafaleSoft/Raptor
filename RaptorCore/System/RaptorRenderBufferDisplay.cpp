@@ -16,8 +16,8 @@
     #include "Raptor.h"
 #endif
 
-#if !defined(AFX_RAPTOREXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
-	#include "RaptorExtensions.h"
+#if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
+	#include "RaptorGLExtensions.h"
 #endif
 
 #if !defined(AFX_TEXTUREOBJECT_H__D32B6294_B42B_4E6F_AB73_13B33C544AD0__INCLUDED_)
@@ -28,8 +28,8 @@
 	#include "GLHierarchy/TextureSet.h"
 #endif
 
-#if !defined(AFX_VIEWPOINT_H__82071851_A036_4311_81CB_01E7E25F19E1__INCLUDED_)
-	#include "Engine/ViewPoint.h"
+#if !defined(AFX_IVIEWPOINT_H__82071851_A036_4311_81CB_01E7E25F19E1__INCLUDED_)
+	#include "Engine/IViewPoint.h"
 #endif
 
 #if !defined(AFX_GEOMETRYALLOCATOR_H__802B3C7A_43F7_46B2_A79E_DDDC9012D371__INCLUDED_)
@@ -90,7 +90,7 @@ void CRaptorRenderBufferDisplay::unLink(const CPersistence* obj)
 void CRaptorRenderBufferDisplay::glDestroyBuffer(void)
 {
 #if defined(GL_EXT_framebuffer_object)
-	const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 
 	if (m_framebuffer != 0)
 	{
@@ -147,36 +147,35 @@ bool CRaptorRenderBufferDisplay::glAttachBuffers()
 		GLint maxAttachments = 0;
 		glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS_EXT ,&maxAttachments);
 		 
-		const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 		unsigned int nbtextures = m_pAttachments->getNbTexture();
 
 		GLuint colorAttachment = GL_COLOR_ATTACHMENT0_EXT;
 		for (unsigned int i=0;i<MIN(nbtextures,(unsigned int)abs(max(0,maxAttachments)));i++)
 		{
 			CTextureObject *T = m_pAttachments->getTexture(i);
-			unsigned int target = T->target & 0xFFFF;
 
-			CTextureObject::TEXEL_TYPE tt = T->getTexelType();
+			ITextureObject::TEXEL_TYPE tt = T->getTexelType();
 			GLuint attachment = GL_COLOR_ATTACHMENT0_EXT;
-			if ((tt == CTextureObject::CGL_DEPTH8) ||
-				(tt == CTextureObject::CGL_DEPTH16) ||
-				(tt == CTextureObject::CGL_DEPTH24) ||
-				(tt == CTextureObject::CGL_DEPTH32) ||
-				(tt == CTextureObject::CGL_DEPTH24_STENCIL8))
+			if ((tt == ITextureObject::CGL_DEPTH8) ||
+				(tt == ITextureObject::CGL_DEPTH16) ||
+				(tt == ITextureObject::CGL_DEPTH24) ||
+				(tt == ITextureObject::CGL_DEPTH32) ||
+				(tt == ITextureObject::CGL_DEPTH24_STENCIL8))
 				attachment = GL_DEPTH_ATTACHMENT_EXT;
 			else
 				attachment = colorAttachment++;
 
 			pExtensions->glFramebufferTexture2DEXT(	GL_FRAMEBUFFER_EXT, 
 													attachment,
-													target, 
+													T->target,
 													T->texname,
 													T->getCurrentMipMapLevel());
 
-			if (tt == CTextureObject::CGL_DEPTH24_STENCIL8)
+			if (tt == ITextureObject::CGL_DEPTH24_STENCIL8)
 				pExtensions->glFramebufferTexture2DEXT(	GL_FRAMEBUFFER_EXT, 
 														GL_STENCIL_ATTACHMENT_EXT,
-														target, 
+														T->target,
 														T->texname,
 														T->getCurrentMipMapLevel());
 		}
@@ -198,13 +197,12 @@ bool CRaptorRenderBufferDisplay::glDetachBuffers()
 		GLint maxAttachments = 0;
 		glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS_EXT ,&maxAttachments);
 
-		const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 		unsigned int nbtextures = m_pAttachments->getNbTexture();
 
 		for (unsigned int i=0;i<MIN(nbtextures,(unsigned int)abs(max(0,maxAttachments)));i++)
 		{
 			CTextureObject *T = m_pAttachments->getTexture(i);
-			unsigned int target = T->target & 0xFFFF;
 
 			if ((T->getWidth() != cs.width) ||
 				(T->getHeight() != cs.height))
@@ -214,25 +212,25 @@ bool CRaptorRenderBufferDisplay::glDetachBuffers()
 																"Raptor Render Buffer Display is attached to a texture with invalid sizes");
 			}
 
-			CTextureObject::TEXEL_TYPE tt = T->getTexelType();
+			ITextureObject::TEXEL_TYPE tt = T->getTexelType();
 			GLuint attachment = GL_COLOR_ATTACHMENT0_EXT;
-			if ((tt == CTextureObject::CGL_DEPTH8) ||
-				(tt == CTextureObject::CGL_DEPTH16) ||
-				(tt == CTextureObject::CGL_DEPTH24) ||
-				(tt == CTextureObject::CGL_DEPTH32) ||
-				(tt == CTextureObject::CGL_DEPTH24_STENCIL8))
+			if ((tt == ITextureObject::CGL_DEPTH8) ||
+				(tt == ITextureObject::CGL_DEPTH16) ||
+				(tt == ITextureObject::CGL_DEPTH24) ||
+				(tt == ITextureObject::CGL_DEPTH32) ||
+				(tt == ITextureObject::CGL_DEPTH24_STENCIL8))
 				attachment = GL_DEPTH_ATTACHMENT_EXT;
 
 			pExtensions->glFramebufferTexture2DEXT(	GL_FRAMEBUFFER_EXT, 
 													attachment,
-													target, 
+													T->target,
 													0,
 													0);
 
-			if (tt == CTextureObject::CGL_DEPTH24_STENCIL8)
+			if (tt == ITextureObject::CGL_DEPTH24_STENCIL8)
 				pExtensions->glFramebufferTexture2DEXT(	GL_FRAMEBUFFER_EXT, 
 														GL_STENCIL_ATTACHMENT_EXT,
-														target, 
+														T->target,
 														0,
 														0);
 		}
@@ -267,7 +265,7 @@ bool CRaptorRenderBufferDisplay::createFrameBuffer(void)
 		nbSamples = cs.getNbSamples();
 #endif
 
-	const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 	pExtensions->glGenFramebuffersEXT(1,&m_framebuffer);
 	pExtensions->glBindFramebufferEXT(GL_FRAMEBUFFER_EXT,m_framebuffer);
 	if (pExtensions->glIsFramebufferEXT(m_framebuffer))
@@ -461,7 +459,7 @@ bool CRaptorRenderBufferDisplay::createFrameBuffer(void)
 }
 
 
-bool CRaptorRenderBufferDisplay::glBindDisplay(const RAPTOR_HANDLE& device)
+bool CRaptorRenderBufferDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
 {
 	if (device.hClass == CTextureSet::CTextureSetClassID::GetClassId().ID())
 	{
@@ -486,7 +484,7 @@ bool CRaptorRenderBufferDisplay::glBindDisplay(const RAPTOR_HANDLE& device)
 	}
 
 #if defined(GL_EXT_framebuffer_object)
-	const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 
 	if (m_framebuffer == 0)
 	{
@@ -505,12 +503,12 @@ bool CRaptorRenderBufferDisplay::glBindDisplay(const RAPTOR_HANDLE& device)
 	glPushMatrix();
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
-	CViewPoint *vp = getViewPoint();
+	IViewPoint *vp = getViewPoint();
 	if (vp != NULL)
-		vp->glRenderViewPointModel();
+		vp->glvkRenderViewPointModel();
 
 	RAPTOR_HANDLE noDevice;
-	return CRaptorDisplay::glBindDisplay(noDevice);
+	return CRaptorDisplay::glvkBindDisplay(noDevice);
 #else
 	return false;
 #endif
@@ -523,7 +521,7 @@ bool CRaptorRenderBufferDisplay::glUnBindDisplay(void)
 		return false;
 
 #if defined(GL_EXT_framebuffer_object)
-	const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 
 	bool res = CRaptorDisplay::glUnBindDisplay();
 	glPopAttrib();	// Viewport
@@ -572,20 +570,19 @@ void CRaptorRenderBufferDisplay::glGenerate(CTextureObject* T)
 	glBindTexture(GL_TEXTURE_2D,0);
 
 #if defined(GL_EXT_framebuffer_object)
-	const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();	
+	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();	
 	pExtensions->glBindFramebufferEXT(GL_FRAMEBUFFER_EXT,m_framebuffer);
 
-	unsigned int target = T->target & 0xFFFF;
 	pExtensions->glFramebufferTexture2DEXT(	GL_FRAMEBUFFER_EXT, 
 											GL_COLOR_ATTACHMENT0_EXT,
-											target, 
+											T->target,
 											T->texname,
 											T->getCurrentMipMapLevel());
 
 	//	Render the display after texture is attached
-	//	because rendering propoerties are applied now ( e.g. glClear )
+	//	because rendering properties are applied now ( e.g. glClear )
 	RAPTOR_HANDLE noDevice;
-	CRaptorDisplay::glBindDisplay(noDevice);
+	CRaptorDisplay::glvkBindDisplay(noDevice);
 	glPushAttrib(GL_VIEWPORT_BIT);
 	//glViewport(cs.x,cs.y,cs.width,cs.height);
 	glViewport(0,0,cs.width,cs.height); // Viewport is relative to window !!!
@@ -597,7 +594,7 @@ void CRaptorRenderBufferDisplay::glGenerate(CTextureObject* T)
 
 	pExtensions->glFramebufferTexture2DEXT(	GL_FRAMEBUFFER_EXT, 
 											GL_COLOR_ATTACHMENT0_EXT,
-											target, 
+											T->target,
 											0,
 											0);
 
@@ -623,7 +620,7 @@ void CRaptorRenderBufferDisplay::glResize(unsigned int sx,unsigned int sy,unsign
 	glGetIntegerv(GL_FRAMEBUFFER_BINDING_EXT,&binding);
 	if (binding != 0)
 	{
-		const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 		pExtensions->glBindFramebufferEXT(GL_FRAMEBUFFER_EXT,0);
 	}
 
@@ -637,14 +634,14 @@ void CRaptorRenderBufferDisplay::glResize(unsigned int sx,unsigned int sy,unsign
     cs.height = sy;
 
     RAPTOR_HANDLE noDevice;
-    glBindDisplay(noDevice);
+	glvkBindDisplay(noDevice);
 
 	// Render buffers are recreated, now restore previous state.
 	if (binding == 0)
 		glUnBindDisplay();
 	else if (!bindSelf)
 	{
-		const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 		pExtensions->glBindFramebufferEXT(GL_FRAMEBUFFER_EXT,binding);
 	}
 #endif
@@ -698,7 +695,7 @@ bool CRaptorRenderBufferDisplay::glBlit(unsigned int xSrc, unsigned int ySrc, un
 		(pDst->getId().isSubClassOf(CRaptorRenderBufferDisplay::CRaptorRenderBufferDisplayClassID::GetClassId())))
 	{
 		CRaptorRenderBufferDisplay *pDstBuffer = (CRaptorRenderBufferDisplay *)pDst;
-		const CRaptorExtensions * const pExtensions = Raptor::glGetExtensions(); 
+		const CRaptorGLExtensions * const pExtensions = Raptor::glGetExtensions(); 
 
 		GLint readBinding = 0;
 		GLint drawBinding = 0;
@@ -768,7 +765,7 @@ bool CRaptorRenderBufferDisplay::checkBufferStatus(void) const
 	if ((buffer != m_framebuffer) || (buffer == 0))
 		return false;
 
-	const CRaptorExtensions * const pExtensions = Raptor::glGetExtensions(); 
+	const CRaptorGLExtensions * const pExtensions = Raptor::glGetExtensions(); 
 	GLenum status = pExtensions->glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
 
 #ifndef RAPTOR_DEBUG_MODE_GENERATION

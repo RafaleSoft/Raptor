@@ -1,35 +1,31 @@
-- simd.cpp : appel a GetSystemInfo, migrer vers intrinsics
-	- linux : /proc/cpuinfo
-
 - BasicObjects:
 	- Ajouter un TextureQuad le plus simple possible
 
--CVulkanMemory:
+- CContextManager:
+	factoriser getPresentationSuppotQueueFamily et vk_ctx.pSurface->supportPresentation(physical, numQueue):
+		passer le physical device à CVulkanSurface => renvoyer la queue qui supporte WSI et presentation sur la surface.
+		=> Passer pExtensions au constructeur.
+
+- CVulkanMemory:
 	- initialiser une bloc mémoire pour l'application (vertex et index buffers bindés sur la même allocation)
 	- Factoriser les allocators (Geometry, Texel, Uniform)
-	- fournir RELOCATE_OFFSET (buffer_memory_requirements) et éliminer la constante
 
--CVulkanShader:
+- CVulkanShader:
 	- Déplacer la gestion du descriptor pool à l'init de ShaderProgram
 	- Traiter le cas ou setProgramParameters fournit un set différents (destruction + reallocation)
 	- Déplacer la création du Pipeline après InitContext (C3DSCene::PrepareData ?)
 
--CVulkanCommandBuffer:
+- CVulkanCommandBuffer:
 	- rendre privée les mathodes et attribut commandbuffer
 
 - CHostMemoryManager:
 	- ajouter capacité allocations/release dans un bloc prédéfini (data pool)
 
-- CGeometryAllocator:
-	- currentAddress : utilisé en unsigned int => bug si uint64_t
-
 - CRaptorRenderBufferDisplay:
 	- mettre au point le format CGL_FLOAT_32 (creation des textures attachées)
+	- glGenerate : la texture est 'unbindee', or si appelé depuis CTextureObject::glRender ==> ?
 	
-- CGeometry / CGeometryPrimitive:
-	- créer un mode"BigGeometry" avec des indices de type uint32_t
-	- attention au GeometryAllocator lock/unlock (utilise la taille estimée des données!)
-		
+	
 - supprimer des "friend" ?
 	p.ex. dans CRaptorDisplay et sous classes ...
 
@@ -40,7 +36,7 @@
 	- Remplacer / améliorer par displacement map / parallax bump mapping
 	
 - Persistence:
-	- Creer un RootPersitence pour stocker les statiques et l'affecter à un display
+	- Creer un RootPersitence pour stocker les statiques et l'affecter à un display: créer CRaptorInstance, gérée depuis Global/Raptor
 	( permettre des espaces de noms différentes entre 2 displays).
 	
 - CRaptorDisplayConfig:
@@ -69,6 +65,7 @@
 	- SMP : si défini, créer des Engine jobs ?
 	- OpenCL + GPU computing
 	- Positionner les setFactors sur le particle compute depuis l'import (c.f. demo.xml)
+	- ParticleManager : enlever le cast de ITextureObject en CTextureObject
 	
 - CLight
 	- glow : volume rendering  ?
@@ -96,9 +93,6 @@
 
 - Bug Microlex:
 	dans le cas d'un rule qui est un alternate d'alternate, il n'y a que le premier atome de de la premiere regle qui est selectionne.
-
-- Pb buffer display:
-	Les texture Generator ne font pas de UnBind !
 
 - Collisions:
 	- Calculer les metaballs optimales

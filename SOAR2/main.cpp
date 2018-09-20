@@ -59,7 +59,7 @@ int main(int argc, char* argv[])
 
     CSOARDoc *pDoc = new CSOARDoc(wnd,pDisplay);
 
-    bool res = pDisplay->glBindDisplay(wnd);
+	bool res = pDisplay->glvkBindDisplay(wnd);
     if (res)
 	{
         pDoc->GLInitContext(argc,argv);

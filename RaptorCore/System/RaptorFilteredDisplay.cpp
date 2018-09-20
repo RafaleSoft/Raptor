@@ -27,23 +27,17 @@
 #if !defined(AFX_TEXTUREFACTORY_H__1B470EC4_4B68_11D3_9142_9A502CBADC6B__INCLUDED_)
 	#include "GLHierarchy/TextureFactory.h"
 #endif
-#if !defined(AFX_TEXTUREOBJECT_H__D32B6294_B42B_4E6F_AB73_13B33C544AD0__INCLUDED_)
-	#include "GLHierarchy/TextureObject.h"
-#endif
 #if !defined(AFX_TEXTURESET_H__26F3022D_70FE_414D_9479_F9CCD3DCD445__INCLUDED_)
 	#include "GLHierarchy/TextureSet.h"
 #endif
-#if !defined(AFX_VIEWPOINT_H__82071851_A036_4311_81CB_01E7E25F19E1__INCLUDED_)
-	#include "Engine/ViewPoint.h"
+#if !defined(AFX_IVIEWPOINT_H__82071851_A036_4311_81CB_01E7E25F19E1__INCLUDED_)
+	#include "Engine/IViewPoint.h"
 #endif
 #if !defined(AFX_RENDERINGPROPERTIES_H__634BCF2B_84B4_47F2_B460_D7FDC0F3B698__INCLUDED_)
 	#include "GLHierarchy/RenderingProperties.h"
 #endif
 #if !defined(AFX_3DENGINE_H__DB24F018_80B9_11D3_97C1_FC2841000000__INCLUDED_)
 	#include "Engine/3DEngine.h"
-#endif
-#if !defined(AFX_RAPTOREXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
-  #include "System/RaptorExtensions.h"
 #endif
 #if !defined(AFX_GEOMETRYALLOCATOR_H__802B3C7A_43F7_46B2_A79E_DDDC9012D371__INCLUDED_)
 	#include "Subsys/GeometryAllocator.h"
@@ -116,8 +110,8 @@ CRaptorFilteredDisplay::CRaptorFilteredDisplay(const CRaptorDisplayConfig& pcs)
 		filter_cs.renderer = CRaptorDisplayConfig::PIXEL_BUFFER;
 #endif
 
-	CViewPoint *vp = CRaptorDisplay::getViewPoint();
-	vp->setViewVolume(-1.0f,1.0f,-1.0f,1.0f,1.0f,100.0f,CViewPoint::ORTHOGRAPHIC);
+	IViewPoint *vp = CRaptorDisplay::getViewPoint();
+	vp->setViewVolume(-1.0f,1.0f,-1.0f,1.0f,1.0f,100.0f,IViewPoint::ORTHOGRAPHIC);
 
     CRenderingProperties *rp = CRaptorScreenDisplay::getRenderingProperties();
     rp->setTexturing(CRenderingProperties::ENABLE);
@@ -227,9 +221,9 @@ bool CRaptorFilteredDisplay::glCreateRenderDisplay(void)
         //  prepare createStruct for buffers :
         //  render to texture for window system buffers may not be supported,
 		//	try to use textures attached to application buffers instead
-		if (!Raptor::glIsExtensionSupported("WGL_ARB_render_texture"))
+		if (!Raptor::glIsExtensionSupported(WGL_ARB_RENDER_TEXTURE_EXTENSION_NAME))
 		{
-			if (Raptor::glIsExtensionSupported("GL_EXT_framebuffer_object"))
+			if (Raptor::glIsExtensionSupported(GL_EXT_FRAMEBUFFER_OBJECT_EXTENSION_NAME))
 				filter_cs.renderer = CRaptorDisplayConfig::RENDER_BUFFER;
 			else
 				return false;
@@ -270,15 +264,15 @@ bool CRaptorFilteredDisplay::glCreateRenderDisplay(void)
 		//	Render to texture and render to depth texture are imposed.
 		if (CRaptorDisplayConfig::RENDER_BUFFER == filter_cs.renderer)
 		{
-			CTextureObject::TEXEL_TYPE texelType = CTextureObject::CGL_COLOR24_ALPHA;
+			ITextureObject::TEXEL_TYPE texelType = ITextureObject::CGL_COLOR24_ALPHA;
 			if ((filter_cs.display_mode & CGL_FLOAT) == CGL_FLOAT)
-				texelType = CTextureObject::CGL_COLOR_FLOAT16_ALPHA;
+				texelType = ITextureObject::CGL_COLOR_FLOAT16_ALPHA;
 
 			CTextureObject *T = f.glCreateTexture(	texelType,
 													CTextureObject::CGL_OPAQUE,
-													CTextureObject::CGL_BILINEAR);
+													ITextureObject::CGL_BILINEAR);
 			f.glResizeTexture(T,rda.width,rda.height);
-			T->glUpdateClamping(CTextureObject::CGL_EDGECLAMP);
+			T->glvkUpdateClamping(ITextureObject::CGL_EDGECLAMP);
 			m_pImageSet->addTexture(T);
 
 			//!	Do not use bilinear filtering for depth textures :
@@ -287,23 +281,23 @@ bool CRaptorFilteredDisplay::glCreateRenderDisplay(void)
 #if defined(GL_EXT_packed_depth_stencil)
 			if ((filter_cs.stencil_buffer) &&
 				((filter_cs.display_mode & CGL_DEPTH) == CGL_DEPTH))
-				T = f.glCreateTexture(	CTextureObject::CGL_DEPTH24_STENCIL8,
+				T = f.glCreateTexture(	ITextureObject::CGL_DEPTH24_STENCIL8,
 										CTextureObject::CGL_OPAQUE,
-										CTextureObject::CGL_UNFILTERED);
+										ITextureObject::CGL_UNFILTERED);
 			else
 #endif
 
-				T = f.glCreateTexture(	CTextureObject::CGL_DEPTH24,
+				T = f.glCreateTexture(	ITextureObject::CGL_DEPTH24,
 										CTextureObject::CGL_OPAQUE,
-										CTextureObject::CGL_UNFILTERED);
+										ITextureObject::CGL_UNFILTERED);
 
 			f.glResizeTexture(T,rda.width,rda.height);
 			m_pImageSet->addTexture(T);
 
-			m_pDisplay->glBindDisplay(*m_pImageSet);
+			m_pDisplay->glvkBindDisplay(*m_pImageSet);
 
 			RAPTOR_HANDLE noDevice;
-            if (!m_pDisplay->glBindDisplay(noDevice))
+			if (!m_pDisplay->glvkBindDisplay(noDevice))
 				return false;
 			m_pDisplay->glUnBindDisplay();
 		}
@@ -315,9 +309,9 @@ bool CRaptorFilteredDisplay::glCreateRenderDisplay(void)
 			//
 			//	Rq: for PBuffers, the final texture format is determined by the PBuffer pixelFormat,
 			//	so the texelType here is not necessary.
-			CTextureObject *T = f.glCreateDynamicTexture(	CTextureObject::CGL_COLOR24_ALPHA,
+			CTextureObject *T = f.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 															CTextureObject::CGL_OPAQUE,
-															CTextureObject::CGL_BILINEAR,
+															ITextureObject::CGL_BILINEAR,
 															m_pDisplay);
 			m_pImageSet->addTexture(T);
 		}
@@ -325,8 +319,8 @@ bool CRaptorFilteredDisplay::glCreateRenderDisplay(void)
         if ((filter_cs.display_mode & CGL_FLOAT) == CGL_FLOAT)
         {
 #if defined(GL_ARB_color_buffer_float) || defined(WGL_ATI_pixel_format_float)
-            if (Raptor::glIsExtensionSupported("GL_ARB_color_buffer_float") ||
-				Raptor::glIsExtensionSupported("WGL_ATI_pixel_format_float"))
+			if (Raptor::glIsExtensionSupported(GL_ARB_COLOR_BUFFER_FLOAT_EXTENSION_NAME) ||
+				Raptor::glIsExtensionSupported(WGL_ATI_PIXEL_FORMAT_FLOAT_EXTENSION_NAME))
             {
 				CRenderingProperties* props = m_pDisplay->getRenderingProperties();
 				props->setFloatClamping(CRenderingProperties::DISABLE);
@@ -362,7 +356,7 @@ bool CRaptorFilteredDisplay::glCreateRenderDisplay(void)
     return true;
 }
 
-bool CRaptorFilteredDisplay::glBindDisplay(const RAPTOR_HANDLE& device)
+bool CRaptorFilteredDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
 {
 	if (device.hClass == CShader::CShaderClassID::GetClassId().ID())
     {
@@ -416,7 +410,7 @@ bool CRaptorFilteredDisplay::glBindDisplay(const RAPTOR_HANDLE& device)
 
     //  prepare createStruct for screen :
     // just keep colors ( but remove float : unsupported ) and hardware
-	if (CRaptorScreenDisplay::glBindDisplay(device))
+	if (CRaptorScreenDisplay::glvkBindDisplay(device))
 	{
 		if (!glCreateRenderDisplay())
             return false;
@@ -425,9 +419,9 @@ bool CRaptorFilteredDisplay::glBindDisplay(const RAPTOR_HANDLE& device)
 		RAPTOR_HANDLE noDevice;
 
 		if (CRaptorDisplayConfig::ANTIALIAS_NONE != filter_cs.antialias)
-			return m_pFSAADisplay->glBindDisplay(noDevice);
+			return m_pFSAADisplay->glvkBindDisplay(noDevice);
 		else
-			return m_pDisplay->glBindDisplay(noDevice);
+			return m_pDisplay->glvkBindDisplay(noDevice);
 	}
 	else
 		return false;
@@ -482,28 +476,29 @@ void CRaptorFilteredDisplay::glResize(unsigned int sx,unsigned int sy,unsigned i
 	glViewport(ox,oy,sx,sy);
 	C3DEngine::Get3DEngine()->setClip(ox,oy,sx,sy);
 
-	CViewPoint *pVp = CRaptorDisplay::getViewPoint();
-	pVp->glRenderViewPointModel();
+	IViewPoint *pVp = CRaptorDisplay::getViewPoint();
+	pVp->glvkRenderViewPointModel();
 
     //m_pDisplay->glResize(sx,sy,ox,oy);
 
 	if (m_bBufferBound)
 	{
-		CViewPoint *vp = NULL;
+		IViewPoint *vp = NULL;
 		RAPTOR_HANDLE noDevice;
 
 		if (m_pFSAADisplay != NULL)
 		{
-			m_pFSAADisplay->glBindDisplay(noDevice);
+			m_pFSAADisplay->glvkBindDisplay(noDevice);
 			vp = m_pFSAADisplay->getViewPoint();
 		}
 		else
 		{
-			m_pDisplay->glBindDisplay(noDevice);
+			m_pDisplay->glvkBindDisplay(noDevice);
 			vp = m_pDisplay->getViewPoint();
 		}
 
-		vp->glRenderViewPointModel();
+		if (NULL != vp)
+			vp->glvkRenderViewPointModel();
 	}
 
     CATCH_GL_ERROR
@@ -555,7 +550,7 @@ void CRaptorFilteredDisplay::glRenderScene(void)
 	if (!filterRendered || m_pFilters.empty())
     {
 		CTextureObject *T = m_pImageSet->getTexture(0);
-        T->glRender();
+		T->glvkRender();
 
         if (drawBuffer.handle > 0)
             glCallList(drawBuffer.handle);
@@ -591,7 +586,7 @@ bool CRaptorFilteredDisplay::glRender(void)
 
 
 
-void CRaptorFilteredDisplay::setViewPoint(CViewPoint *viewPoint)
+void CRaptorFilteredDisplay::setViewPoint(IViewPoint *viewPoint)
 {
 	if (m_pDisplay != NULL)
 	{
@@ -621,7 +616,7 @@ void CRaptorFilteredDisplay::setViewPoint(CViewPoint *viewPoint)
 #endif
 }
 
-CViewPoint *const CRaptorFilteredDisplay::getViewPoint(void) const
+IViewPoint *const CRaptorFilteredDisplay::getViewPoint(void) const
 {
 	if (m_pDisplay == NULL)
 		return NULL;

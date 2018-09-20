@@ -144,7 +144,7 @@ void CRaptorBufferDisplay::glResize(unsigned int sx,unsigned int sy,unsigned int
     m_pBuffer = 0;
 
     RAPTOR_HANDLE noDevice;
-    glBindDisplay(noDevice);
+	glvkBindDisplay(noDevice);
     glUnBindDisplay();
 
     CATCH_GL_ERROR
@@ -168,11 +168,11 @@ void CRaptorBufferDisplay::glGenerate(CTextureObject* T)
 			GLuint buffer = WGL_FRONT_LEFT_ARB;
 
 #ifdef WGL_NV_render_depth_texture
-			CTextureObject::TEXEL_TYPE tt = T->getTexelType();
-			if ((tt == CTextureObject::CGL_DEPTH8) ||
-				(tt == CTextureObject::CGL_DEPTH16) ||
-				(tt == CTextureObject::CGL_DEPTH24) ||
-				(tt == CTextureObject::CGL_DEPTH32))
+			ITextureObject::TEXEL_TYPE tt = T->getTexelType();
+			if ((tt == ITextureObject::CGL_DEPTH8) ||
+				(tt == ITextureObject::CGL_DEPTH16) ||
+				(tt == ITextureObject::CGL_DEPTH24) ||
+				(tt == ITextureObject::CGL_DEPTH32))
 				buffer = WGL_DEPTH_COMPONENT_NV;
 #endif
 			CContextManager::GetInstance()->glBindTexImageARB(m_pBuffer - 1,buffer);
@@ -191,7 +191,7 @@ void CRaptorBufferDisplay::glGenerate(CTextureObject* T)
 }
 
 
-bool CRaptorBufferDisplay::glBindDisplay(const RAPTOR_HANDLE& device)
+bool CRaptorBufferDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
 {
 #if defined(WGL_ARB_pbuffer)
 	if (m_pBuffer == 0)
@@ -221,7 +221,7 @@ bool CRaptorBufferDisplay::glBindDisplay(const RAPTOR_HANDLE& device)
         CATCH_GL_ERROR
 
         RAPTOR_HANDLE noDevice;
-		return CRaptorDisplay::glBindDisplay(noDevice);
+		return CRaptorDisplay::glvkBindDisplay(noDevice);
 	}
 	else
 	{
@@ -256,7 +256,7 @@ bool CRaptorBufferDisplay::glBindDisplay(const RAPTOR_HANDLE& device)
 
             CATCH_GL_ERROR
 
-			res = CRaptorDisplay::glBindDisplay(device);
+			res = CRaptorDisplay::glvkBindDisplay(device);
 		}
         // Specific case for BufferDisplay :
         //  a configuration parameter can be transmitted to the underlying

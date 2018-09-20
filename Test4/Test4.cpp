@@ -106,7 +106,7 @@ LRESULT CALLBACK WindowProc(  HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
                 RAPTOR_HANDLE display;
 	            display.handle = (unsigned int)(hdc);
 	            display.hClass = CLIENT_HANDLE_CLASS;
-	            if (pDisplay->glBindDisplay(display))
+				if (pDisplay->glvkBindDisplay(display))
 	            {
                     CRaptorConsole *pConsole = Raptor::GetConsole();
                     pConsole->glInit();
@@ -142,7 +142,7 @@ LRESULT CALLBACK WindowProc(  HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
             RAPTOR_HANDLE display;
 	        display.handle = (unsigned int)(hdc);
 	        display.hClass = CLIENT_HANDLE_CLASS;
-	        if (pDisplay->glBindDisplay(display))
+			if (pDisplay->glvkBindDisplay(display))
 	        {
                 pDisplay->glResize(nWidth,nHeight,0,0);
 		        pDisplay->glUnBindDisplay();
@@ -199,7 +199,7 @@ int WINAPI WinMain(  HINSTANCE hinstance,
 	CTimeObject::setTimeFactor(1.0f);
     CAnimator *pAnimator = new CAnimator();
     CAnimator::SetAnimator(pAnimator);
-    CImaging::installImagers(CTextureFactory::getDefaultFactory());
+    CImaging::installImagers();
     CStreaming::installStreamers();
 
 

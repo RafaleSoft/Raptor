@@ -224,7 +224,7 @@ void WriteTerminator(StreamManager& stream,unsigned int file_ID,node *n)
 		str="	OnError(LEX_ERR_SYN);\n	return -1;\n\n";
 	else
 	{
-		SPRINTF(FORMAT_BUFFER, "	chr = c;\n	return %d;\n\n", n->terminate);
+		SPRINTF(FORMAT_BUFFER, "	chr = c;\n	return %u;\n\n", n->terminate);
 		str = FORMAT_BUFFER;
 	}
 

@@ -21,9 +21,6 @@ RAPTOR_NAMESPACE_BEGIN
 
 CUniformAllocator	*CUniformAllocator::m_pInstance = NULL;
 
-//  Add a constant offset to distinguish null ( unalocated ) pointers from actual memory blocs
-static const int    RELOCATE_OFFSET = 256;
-
 RAPTOR_NAMESPACE_END
 
 
@@ -34,8 +31,7 @@ RAPTOR_NAMESPACE
 //////////////////////////////////////////////////////////////////////
 
 CUniformAllocator::CUniformAllocator()
-	:m_bLocked(false),relocatedUniforms(NULL),
-	deviceMemoryManager(NULL)
+	:relocatedUniforms(NULL)
 {
 	uniforms.address = NULL;
 	uniforms.size = 0;
@@ -93,14 +89,14 @@ bool CUniformAllocator::glvkInitMemory(	IDeviceMemoryManager* pDeviceMemory,
 		uniforms.size = uniformSize;
 		relocatedUniforms = deviceMemoryManager->createBufferObject(IDeviceMemoryManager::IBufferObject::UNIFORM_BUFFER,
 																	IDeviceMemoryManager::IBufferObject::STREAM,
-																	uniformSize + RELOCATE_OFFSET);
+																	uniformSize);
 		CATCH_GL_ERROR
 
 		return (relocatedUniforms != NULL);
 	}
 	else
 	{
-		uniforms.address = charAlloc.allocate(uniformSize + RELOCATE_OFFSET);
+		uniforms.address = charAlloc.allocate(uniformSize);
 		uniforms.size = uniformSize;
 		return (uniforms.address != NULL);
 	}
@@ -188,8 +184,8 @@ unsigned char * const CUniformAllocator::allocateUniforms(uint64_t size)
 	}
 
 	//  No NULL offset to distinguish nil pointers
-	if ((NULL != relocatedUniforms) && (currentAddress == NULL))
-		currentAddress = (float*)RELOCATE_OFFSET;
+	if ((NULL != relocatedUniforms) && (NULL == currentAddress))
+		currentAddress = (float*)relocatedUniforms->getRelocationOffset();
 
 	//	Address should be aligned on a 16byte boundary
 	unsigned char* address = (unsigned char*)(((unsigned int)(currentAddress)+0x0f) & 0xfffffff0);

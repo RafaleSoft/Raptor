@@ -5,16 +5,17 @@
 
 [Setup]
 AppName=Raptor SDK
-AppVerName=Raptor SDK 2.16.6
+AppVerName=Raptor SDK 2.17.0
 DefaultDirName={pf}\Raptor
 DefaultGroupName=Raptor
 UninstallDisplayIcon={app}\MyProg.exe
 Compression=lzma
+OutputBaseFilename=RaptorSDK
 SolidCompression=yes
 VersionInfoCompany=Rafale Soft Inc.(c)
 VersionInfoProductName=Raptor SDK
-VersionInfoProductVersion=2.16.6.0
-VersionInfoVersion=2.16.6.0
+VersionInfoProductVersion=2.17.0.0
+VersionInfoVersion=2.17.0.0
 
 [Files]
 Source: "../*.sln";               DestDir: "{app}"
@@ -25,9 +26,9 @@ Source: "../TODO.txt";            DestDir: "{app}"
 Source: "../AddOns/*.lib";            DestDir: "{app}/AddOns"
 Source: "../AddOns/*.pdb";            DestDir: "{app}/AddOns"
 Source: "../AddOns/usertype.dat";     DestDir: "{app}/AddOns"
-Source: "../AddOns/freetype-2.5.5/lib/*.*";          DestDir: "{app}/AddOns/libpng-1.6.16/lib"
-Source: "../AddOns/freetype-2.5.5/include/*.*";      DestDir: "{app}/AddOns/libpng-1.6.16/include"
-Source: "../AddOns/freetype-2.5.5/include/config/*.*";      DestDir: "{app}/AddOns/libpng-1.6.16/include/config"
+Source: "../AddOns/freetype-2.5.5/lib/*.*";          DestDir: "{app}/AddOns/freetype-2.5.5/lib"
+Source: "../AddOns/freetype-2.5.5/include/*.*";      DestDir: "{app}/AddOns/freetype-2.5.5/include"
+Source: "../AddOns/freetype-2.5.5/include/config/*.*";      DestDir: "{app}/AddOns/freetype-2.5.5/include/config"
 Source: "../AddOns/JpegLib/lib/*.*";         DestDir: "{app}/AddOns/JpegLib/lib"
 Source: "../AddOns/JpegLib/include/*.*";     DestDir: "{app}/AddOns/JpegLib/include"
 Source: "../AddOns/libpng-1.6.16/lib/VC9/*.*";          DestDir: "{app}/AddOns/libpng-1.6.16/lib/VC9"
@@ -89,14 +90,12 @@ Source: "../AddOns/xercesc_3_1/xercesc/validators/schema/*.*";     DestDir: "{ap
 Source: "../AddOns/xercesc_3_1/xercesc/validators/schema/identity/*.*";     DestDir: "{app}/AddOns/xercesc_3_1/xercesc/validators/schema/identity"
 Source: "../AddOns/xercesc_3_1/xercesc/xinclude/*.*";              DestDir: "{app}/AddOns/xercesc_3_1/xercesc/xinclude"
 
-Source: "../Build/Linux/*.*";         DestDir: "{app}/Build"
+Source: "../Build/Linux/Makefile.*";         DestDir: "{app}/Build"
 Source: "../Build/VS2008/*.vcproj";   DestDir: "{app}/Build/VS2008"
-Source: "../Build/VS2008/*.user";     DestDir: "{app}/Build/VS2008"
 Source: "../Build/VS2010/*.vcxproj";  DestDir: "{app}/Build/VS2010"
 Source: "../Build/VS2010/*.filters";  DestDir: "{app}/Build/VS2010"
-Source: "../Build/VS2013/*.vcxproj";  DestDir: "{app}/Build/VS2010"
-Source: "../Build/VS2013/*.user";     DestDir: "{app}/Build/VS2010"
-Source: "../Build/VS2013/*.filters";  DestDir: "{app}/Build/VS2010"
+Source: "../Build/VS2013/*.vcxproj";  DestDir: "{app}/Build/VS2013"
+Source: "../Build/VS2013/*.filters";  DestDir: "{app}/Build/VS2013"
 
 Source: "../Builder.Net/*.cpp";           DestDir: "{app}/Builder.Net"
 Source: "../Builder.Net/*.h";             DestDir: "{app}/Builder.Net"

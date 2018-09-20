@@ -9,14 +9,14 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#if !defined(AFX_MEMORY_H__81A6CA9A_4ED9_4260_B6E4_C03276C38DBC__INCLUDED_)
-	#include "System/Memory.h"
+#if !defined(AFX_RESOURCEALLOCATOR_H__4BAB58CE_942B_450D_88C9_AF0DDDF03718__INCLUDED_)
+	#include "ResourceAllocator.h"
 #endif
 
 
 RAPTOR_NAMESPACE_BEGIN
 
-class CUniformAllocator
+class CUniformAllocator : public CResourceAllocator
 {
 public:
 	//!	Singleton access : returns the current instance or create a new instance if there is no current.
@@ -24,7 +24,7 @@ public:
 
 	//! Set the current instance.
 	//! @return : the previous value.
-	static CUniformAllocator *SetCurrentInstance(CUniformAllocator* texelAllocator);
+	static CUniformAllocator *SetCurrentInstance(CUniformAllocator* uniformAllocator);
 
 	//! Destructor destroy all memory blocs created by this instance.
 	virtual ~CUniformAllocator();
@@ -38,9 +38,6 @@ public:
 	//! Lock memory data and relocation so that no change can be made.
 	//! If data is relocated, High Performance blocks are activated on server
 	bool    glvkLockMemory(bool lock);
-
-	//!	Returns the locking status of the data.
-	bool	isMemoryLocked(void) const { return m_bLocked; };
 
 	//!	This method returns the address of a free block of the requested size, ( nb of indexes )
 	//!	or NULL if not enough space or other error.
@@ -59,22 +56,7 @@ private:
 
 	//!	The unique allocator instance
 	static CUniformAllocator	*m_pInstance;
-
-	//!	Memory manager for the device hosting the display holding this allocator.
-	//! (Vulkan host memory is per device)
-	IDeviceMemoryManager	*deviceMemoryManager;
 	
-	//!	The memory state
-	bool    m_bLocked;
-
-	CHostMemoryManager::Allocator<unsigned char> charAlloc;
-
-	typedef struct data_bloc_t
-	{
-		unsigned char	*address;
-		uint64_t		size;
-	} data_bloc;
-
 	//!	Global array for texel allocation when GPU relocation is not available
 	data_bloc	uniforms;
 

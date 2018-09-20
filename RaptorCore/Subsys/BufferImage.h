@@ -9,10 +9,12 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#if !defined(AFX_TEXTUREFACTORYCONFIG_H__7A20D208_423F_4E02_AA4D_D736E0A7959F__INCLUDED_)
-	#include "GLHierarchy/TextureFactoryConfig.h"
+#if !defined(AFX_IMAGE_H__F545D0D5_5F10_4EFA_BE3B_3F3D34D4DBF3__INCLUDED_)
+	#include "System/Image.h"
 #endif
-
+#if !defined(AFX_TEXTUREOBJECT_H__D32B6294_B42B_4E6F_AB73_13B33C544AD0__INCLUDED_)
+	#include "GLHierarchy/TextureObject.h"
+#endif
 
 RAPTOR_NAMESPACE_BEGIN
 
@@ -21,7 +23,7 @@ RAPTOR_NAMESPACE_BEGIN
 //! to load texture images.
 //!	loadImageFile does nothing, but assumes the user provides a buffer of texels, pointed by T->texels 
 //! and that T->width & T->height are properly set to the width and height of the image.
-class CBufferImage : public CTextureFactoryConfig::IImageIO  
+class CBufferImage : public CImage::IImageIO
 {
 public:
 	virtual bool isOfKind(const std::string &kind) const { return ("BUFFER" == kind); }
@@ -33,32 +35,34 @@ public:
 		return result;
 	}
 
-    //! Method prototype for texture loading 'from file'. 
-    //! Simply validates the buffer of the texture object
-    virtual bool loadImageFile(const std::string& fname,CTextureObject* const T)
-    {
-        if (T == NULL)
-            return false;
+	//! Method prototype for image loading 'from file'
+	//!	@param fname : full filename, with path and file extensions
+	//! @param I : a valid image object.
+	//! @eturn true if loading is successfull.
+	virtual bool loadImageFile(const std::string& fname, CImage* const I) const
+	{
+		if (I == NULL)
+			return false;
 
-		unsigned char *texels = T->getTexels();
-	    if ( texels == NULL)
-	    {
-			float *texels2 = T->getFloatTexels();
-            if (texels2 == NULL)
-                return false;
-            else
-                return true;
-	    }
-        else
-	        return true;
-    }
+		uint8_t *pixels = I->getPixels();
+		if (pixels == NULL)
+		{
+			float *pixels2 = I->getFloatPixels();
+			if (pixels2 == NULL)
+				return false;
+			else
+				return true;
+		}
+		else
+			return true;
+	}
 
     //! Method prototype for texture storing 'to file' is not implemented for a buffer. Maybe if needed
     //! Indeed, a texture generator will do the necessary
-    virtual bool storeImageFile(const std::string& fname,CTextureObject* const)
-    {
-        return false;
-    }
+	virtual bool storeImageFile(const std::string& fname, CImage* const) const
+	{
+		return false;
+	}
 
     CBufferImage() {};
     virtual ~CBufferImage() {};

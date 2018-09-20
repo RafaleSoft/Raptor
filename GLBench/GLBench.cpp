@@ -46,7 +46,7 @@ BOOL CGLBenchApp::InitInstance()
     CRaptorConfig config;
 	Raptor::glInitRaptor(config);
 
-    CImaging::installImagers(CTextureFactory::getDefaultFactory());
+    CImaging::installImagers();
 
 	CGLBenchDlg dlg;
 	m_pMainWnd = &dlg;

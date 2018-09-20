@@ -38,7 +38,7 @@ public:
 	//! The user can then bind a filter to this display
 	//!	and release the reference count of the filter, the display will destroy the 
 	//!	filter when it is no more needed.
-	virtual bool glBindDisplay(const RAPTOR_HANDLE& device);
+	virtual bool glvkBindDisplay(const RAPTOR_HANDLE& device);
 
 	//! see base class
 	virtual bool glUnBindDisplay(void);
@@ -50,12 +50,12 @@ public:
 	//! Applies the viewpoint to the buffer image,
 	//! leaving the filter display unmodifiable because
 	//! it only renders an flat image.
-	virtual void setViewPoint(CViewPoint *viewPoint);
+	virtual void setViewPoint(IViewPoint *viewPoint);
 
 	virtual void glResize(unsigned int sx,unsigned int sy,unsigned int ox,unsigned int oy);
 
 	//!	Returns the buffer display.
-	virtual CViewPoint *const getViewPoint(void) const;
+	virtual IViewPoint *const getViewPoint(void) const;
 
     //! Returns the rendering properties of the 'drawing display'
     //! ( if it were not overloaded, it would return the properties of the 'filter drawing'

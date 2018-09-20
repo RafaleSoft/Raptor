@@ -4,7 +4,7 @@
 //!	Sub-systems headers
 
 #ifndef __SIMD_H__
-	#include "SimdLib/SIMD.H"
+	#include "SimdLib/simd.h"
 #endif
 #ifndef __RAPTOR_GLEXT_H__
 	#include "System/Glext.h"
@@ -34,11 +34,11 @@ RAPTOR_NAMESPACE_BEGIN
 //!	- User handles, that Raptor can use but that identify client classes.
 typedef struct RAPTOR_HANDLE
 {
-	unsigned int hClass;
-	unsigned int handle;
+	uint32_t hClass;
+	uint32_t handle;
 
 	RAPTOR_HANDLE():hClass(0),handle(0) {}
-    RAPTOR_HANDLE(unsigned int c,void* p):hClass(c),handle((unsigned int)p) {}
+	RAPTOR_HANDLE(uint32_t c, void* p) :hClass(c), handle((uint32_t)p) {}
 	bool operator==(const RAPTOR_HANDLE &h) const { return (h.hClass==hClass)&&(h.handle==handle); }
 } RAPTOR_HANDLE;
 typedef RAPTOR_HANDLE*	LP_RAPTOR_HANDLE;
@@ -112,6 +112,10 @@ typedef RAPTOR_HANDLE*	LP_RAPTOR_HANDLE;
 #if !defined(ONE_OVER_256)
 	#define ONE_OVER_256 0.00390625
 	#define ONE_OVER_256_F 0.00390625f
+#endif
+#if !defined(ONE_OVER_255)
+	#define ONE_OVER_255 0.00392156
+	#define ONE_OVER_255_F 0.00392156f
 #endif
 //
 //	own data structures for fast access
@@ -322,7 +326,7 @@ private:
 
 #if defined(_WIN32) || defined(_WIN64)
 	mutable CRITICAL_SECTION _mutex;
-#elif defined(LINUX)
+#elif defined(LINUX) || defined (_ANDROID)
 	mutable pthread_mutex_t _mutex;
 #endif
 };
@@ -350,6 +354,10 @@ private:
     bool		_locked;
 };
 
+#if defined(_ANDROID)
+	#include <semaphore.h>
+#endif
+
 class RAPTOR_API CRaptorSemaphore
 {
 public:
@@ -365,7 +373,7 @@ private:
 
 #if defined(_WIN32) || defined(_WIN64)
 	mutable HANDLE _sem;
-#elif defined(LINUX)
+#elif defined(LINUX) || defined (_ANDROID)
 	mutable sem_t _sem;
 #endif
 };
@@ -405,6 +413,11 @@ public:
 			if (vaArray[i] == t)
 				has = true;
 		return has;
+	};
+
+	void addValue(T t)
+	{
+		vaArray.push_back(t);
 	};
 
 	//!	Explicit

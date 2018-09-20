@@ -1,7 +1,6 @@
 // ICOImaging.cpp: implementation of the CICOImaging class.
 //
 //////////////////////////////////////////////////////////////////////
-#include "StdAfx.h"
 #include "Subsys/CodeGeneration.h"
 
 
@@ -39,102 +38,147 @@ vector<std::string> CICOImaging::getImageKind(void) const
 	return result;
 }
 
-bool CICOImaging::storeImageFile(const std::string& fname,CTextureObject* const T)
+bool CICOImaging::storeImageFile(const std::string& fname, CImage* const T) const
 {
-    return false;
+	return false;
 }
 
-bool CICOImaging::loadImageFile(const std::string& fname,CTextureObject* const T)
+bool CICOImaging::loadImageFile(const std::string& fname, CImage* const I) const
 {
-    if (T == NULL)
-        return false;
+	if (I == NULL)
+		return false;
 
 #ifdef WIN32
-    ICONINFO	ii;
-	HICON		hh;
-
-	if ((hh = ExtractIcon(0,fname.data(),T->getWidth())) == NULL)
+	HICON hh = ::ExtractIcon(0, fname.data(), (UINT)-1);
+	if (NULL == hh)
 		return false;
-
-	GetIconInfo( hh, &ii); 
-
+	
 	HDC hdc = GetDC(NULL);
-	BITMAPINFO bi;
-	GetDIBits(  hdc, ii.hbmColor, 0, 0, NULL, &bi, DIB_RGB_COLORS);
-	int size = bi.bmiHeader.biBitCount / 8;
-	int dim = bi.bmiHeader.biWidth * bi.bmiHeader.biHeight;
+	ICONINFO	ii;
 
-	unsigned char *bits = new unsigned char[dim*size];
-	if (bi.bmiHeader.biHeight != GetDIBits(  hdc, ii.hbmColor, 0, bi.bmiHeader.biHeight, bits, &bi, DIB_RGB_COLORS))
-		return false;
+	size_t width = 0;
+	size_t height = 0;
 
-    T->setSize(bi.bmiHeader.biWidth , bi.bmiHeader.biHeight);
-    T->allocateTexels();
-	unsigned char *texturedata = T->getTexels();
-
-	if (size == 2)
-    {
-		for (int j=0 ; j<bi.bmiHeader.biHeight ; j++)
-			for (int i=0 ; i<bi.bmiHeader.biWidth ; i++)
+	size_t nbIcons = (size_t)hh;
+	for (size_t i = 0; i < nbIcons; i++)
+	{
+		if ((hh = ExtractIcon(0, fname.data(), i)) == NULL)
+			return false;
+		else
 		{
-			int pos = 4 * (bi.bmiHeader.biWidth - i - 1 + bi.bmiHeader.biWidth*j);
-			int pos2 = 2 * (i + j*bi.bmiHeader.biWidth);
+			if (0 == GetIconInfo(hh, &ii))
+			{
+				::DestroyIcon(hh);
+				return false;
+			}
 
-			texturedata[pos] = (unsigned char)((bits[pos2+1]>>3)<<3);
-			texturedata[pos+1] = (unsigned char)((((bits[pos2+1]&7)<<3)|(bits[pos2]>>5))<<2);
-			texturedata[pos+2] = (unsigned char)(bits[pos2]<<3);		
+			BITMAPINFO bi;
+			memset(&bi, 0, sizeof(BITMAPINFO));
+			bi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+			int info = GetDIBits(hdc, ii.hbmColor, 0, 0, NULL, &bi, DIB_RGB_COLORS);
+			::DestroyIcon(hh);
+			if (ii.hbmColor != NULL)
+				DeleteObject(ii.hbmColor);
+			if (ii.hbmMask != NULL)
+				DeleteObject(ii.hbmMask);
 
-			if (T->getTransparency()>0)
-				texturedata[pos+3] = (unsigned char)(T->getTransparency() & 0xFF);
-			else if((texturedata[pos+2]==0) && (texturedata[pos+1]==0) && (texturedata[pos]==0))
-				texturedata[pos+3]=0;
+			if (0 != info)
+			{
+				width = MAX(width, (size_t)bi.bmiHeader.biWidth);
+				height = MAX(height, (size_t)bi.bmiHeader.biHeight);
+			}
+			else
+				return false;
 		}
-    }
-	else if (size == 3)
-    {
-		for (int j=0 ; j<bi.bmiHeader.biHeight ; j++)
-		for (int i=0 ; i<bi.bmiHeader.biWidth ; i++)
+	}
+
+	//	Allocate an image array, one layer per icon.
+	I->allocatePixels(width, height, nbIcons, CImage::CGL_COLOR24_ALPHA);
+
+	for (size_t icon = 0; icon < nbIcons; icon++)
+	{
+		if ((hh = ExtractIcon(0, fname.data(), icon)) == NULL)
+			return false;
+
+		if (0 == GetIconInfo(hh, &ii))
 		{
-			int pos = 4 * (bi.bmiHeader.biWidth - i - 1 + bi.bmiHeader.biWidth*j);
-			int pos2 = 3 * (i + j*bi.bmiHeader.biWidth);
-
-			texturedata[pos+2] = bits[pos2];
-			texturedata[pos+1] = bits[pos2+1];
-			texturedata[pos] = bits[pos2+2];
-
-			if (T->getTransparency()>0)
-				texturedata[pos+3] = (unsigned char)(T->getTransparency() & 0xFF);
-			else if((texturedata[pos+2]==0)&&(texturedata[pos+1]==0)&&(texturedata[pos]==0))
-				texturedata[pos+3]=0;
+			::DestroyIcon(hh);
+			return false;
 		}
-    }
-	else if (size == 4)
-    {
-		for (int j=0 ; j<bi.bmiHeader.biHeight ; j++)
-		for (int i=0 ; i<bi.bmiHeader.biWidth ; i++)
+
+		BITMAPINFO bi;
+		memset(&bi, 0, sizeof(BITMAPINFO));
+		bi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+		GetDIBits(hdc, ii.hbmColor, 0, 0, NULL, &bi, DIB_RGB_COLORS);
+		
+		int size = bi.bmiHeader.biBitCount / 8;
+		int dim = bi.bmiHeader.biWidth * bi.bmiHeader.biHeight;
+		bi.bmiHeader.biCompression = BI_RGB;	// Extract RGB.
+		
+		unsigned char *bits = new unsigned char[dim*size];
+		memset(bits, 0, dim*size);
+		int nbread = GetDIBits(hdc, ii.hbmColor, 0, bi.bmiHeader.biHeight, bits, &bi, DIB_RGB_COLORS);
+		if (nbread != bi.bmiHeader.biHeight)
 		{
-			int pos = 4 * (bi.bmiHeader.biWidth - i - 1 + bi.bmiHeader.biWidth*j);
-			int pos2 = 4 * (i + j*bi.bmiHeader.biWidth);
-
-			texturedata[pos+2] = bits[pos2];
-			texturedata[pos+1] = bits[pos2+1];
-			texturedata[pos] = bits[pos2+2];
-
-			if (T->getTransparency() > 0)
-				texturedata[pos+3] = (unsigned char)(T->getTransparency() & 0xFF);
-			else if((texturedata[pos+2]==0)&&(texturedata[pos+1]==0)&&(texturedata[pos]==0))
-				texturedata[pos+3] = 0;
+			::DestroyIcon(hh);
+			return false;
 		}
-    }
 
-	DestroyIcon(hh);
-	if (ii.hbmColor != NULL)
-		DeleteObject(ii.hbmColor);
-	if (ii.hbmMask != NULL)
-		DeleteObject(ii.hbmMask);
-	delete [] bits;
+		unsigned char *texturedata = (unsigned char*)I->getPixels(icon);
 
-    return true;
+		if (size == 2)
+		{
+			for (int j = 0; j < bi.bmiHeader.biHeight; j++)
+				for (int i = 0; i < bi.bmiHeader.biWidth; i++)
+				{
+					int pos = 4 * (bi.bmiHeader.biWidth - i - 1 + bi.bmiHeader.biWidth*j);
+					int pos2 = 2 * (i + j*bi.bmiHeader.biWidth);
+
+					texturedata[pos] = (unsigned char)((bits[pos2 + 1] >> 3) << 3);
+					texturedata[pos + 1] = (unsigned char)((((bits[pos2 + 1] & 7) << 3) | (bits[pos2] >> 5)) << 2);
+					texturedata[pos + 2] = (unsigned char)(bits[pos2] << 3);
+					texturedata[pos + 3] = 255;	// default value to ensure image is visible
+				}
+		}
+		else if (size == 3)
+		{
+			for (int j = 0; j < bi.bmiHeader.biHeight; j++)
+				for (int i = 0; i < bi.bmiHeader.biWidth; i++)
+				{
+					int pos = 4 * (bi.bmiHeader.biWidth - i - 1 + bi.bmiHeader.biWidth*j);
+					int pos2 = 3 * (i + j*bi.bmiHeader.biWidth);
+
+					texturedata[pos + 3] = 255;	// default value to ensure image is visible
+					texturedata[pos + 2] = bits[pos2];
+					texturedata[pos + 1] = bits[pos2 + 1];
+					texturedata[pos] = bits[pos2 + 2];
+				}
+		}
+		else if (size == 4)
+		{
+			for (int j = 0; j < bi.bmiHeader.biHeight; j++)
+				for (int i = 0; i < bi.bmiHeader.biWidth; i++)
+				{
+					int pos = 4 * (bi.bmiHeader.biWidth - i - 1 + bi.bmiHeader.biWidth*j);
+					int pos2 = 4 * (i + j*bi.bmiHeader.biWidth);
+
+					texturedata[pos + 3] = bits[pos2 + 3];
+					texturedata[pos + 2] = bits[pos2];
+					texturedata[pos + 1] = bits[pos2 + 1];
+					texturedata[pos] = bits[pos2 + 2];
+				}
+		}
+
+		::DestroyIcon(hh);
+
+		if (ii.hbmColor != NULL)
+			DeleteObject(ii.hbmColor);
+		if (ii.hbmMask != NULL)
+			DeleteObject(ii.hbmMask);
+		delete[] bits;
+	}
+
+	return true;
 #else
 	return false;
 #endif

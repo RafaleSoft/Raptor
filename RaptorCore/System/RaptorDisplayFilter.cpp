@@ -40,8 +40,8 @@
 #if !defined(AFX_TEXTURESET_H__26F3022D_70FE_414D_9479_F9CCD3DCD445__INCLUDED_)
 	#include "GLHierarchy/TextureSet.h"
 #endif
-#if !defined(AFX_RAPTOREXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
-    #include "System/RaptorExtensions.h"
+#if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
+    #include "System/RaptorGLExtensions.h"
 #endif
 
 
@@ -116,19 +116,19 @@ void CRaptorDisplayFilter::glRender(void)
     {
         CRaptorDisplay *output = ((CRaptorDisplay*)colorInternalSource);
         RAPTOR_HANDLE noDevice;
-        output->glBindDisplay(noDevice);
+		output->glvkBindDisplay(noDevice);
     }
 
 	if (m_bEnabled)
 		glRenderFilterOutput();
 	else
     {
-		const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 
 		pExtensions->glActiveTextureARB(GL_TEXTURE1_ARB);
         glDisable(GL_TEXTURE_2D);
         pExtensions->glActiveTextureARB(GL_TEXTURE0_ARB);
-		getColorInput()->glRender();
+		getColorInput()->glvkRender();
         glDrawBuffer();
     }
 
@@ -374,11 +374,11 @@ CTextureObject*  CRaptorDisplayFilter::glCreateColorOutput(void)
 		state.renderer = CRaptorDisplayConfig::PIXEL_BUFFER;
 
 	CTextureFactory &filterFactory = CTextureFactory::getDefaultFactory();
-	colorOutput = filterFactory.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,
+	colorOutput = filterFactory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
 		                                        CTextureObject::CGL_OPAQUE,
-			                                    CTextureObject::CGL_UNFILTERED);
+			                                    ITextureObject::CGL_UNFILTERED);
 	filterFactory.glResizeTexture(colorOutput,state.width,state.height);
-	colorOutput->glUpdateClamping(CTextureObject::CGL_EDGECLAMP);
+	colorOutput->glvkUpdateClamping(ITextureObject::CGL_EDGECLAMP);
 
 	if (m_pOutputTextures != NULL)
 		delete m_pOutputTextures;
@@ -397,10 +397,10 @@ CTextureObject*  CRaptorDisplayFilter::glCreateColorOutput(void)
     renderBuffer->setViewPoint(NULL);
 
 	if (m_fModel == RENDER_BUFFER)
-		renderBuffer->glBindDisplay(*m_pOutputTextures);
+		renderBuffer->glvkBindDisplay(*m_pOutputTextures);
 
     RAPTOR_HANDLE noDevice;
-    renderBuffer->glBindDisplay(noDevice);
+	renderBuffer->glvkBindDisplay(noDevice);
     renderBuffer->glUnBindDisplay();
 
 	colorInternalSource = renderBuffer;

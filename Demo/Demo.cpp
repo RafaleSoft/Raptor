@@ -45,7 +45,7 @@ int main(int argc, char* argv[])
     //	initialize Raptor classes and settings
 	Raptor::glInitRaptor(config);
 
-	CImaging::installImagers(CTextureFactory::getDefaultFactory());
+	CImaging::installImagers();
 	CParticleCompute::installComputers();
 
     if (!Raptor::glCheckDisplayConfig(glcs))
@@ -76,7 +76,7 @@ int main(int argc, char* argv[])
 
     CDemoDoc *pDoc = new CDemoDoc(wnd,pDisplay);
 
-    bool res = pDisplay->glBindDisplay(wnd);
+	bool res = pDisplay->glvkBindDisplay(wnd);
     if (res)
 	{
         pDoc->GLInitContext();

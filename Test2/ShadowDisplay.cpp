@@ -5,27 +5,27 @@
 #include "stdafx.h"
 #include "ShadowDisplay.h"
 
-#include "GLHierarchy\Persistence.h"
-#include "Engine\3DScene.h"
-#include "GLHierarchy\3DSet.h"
-#include "GLHierarchy\GeometryEditor.h"
-#include "GLHierarchy\ShadedGeometry.h"
-#include "GLHierarchy\Shader.h"
-#include "GLHierarchy\Light.h"
-#include "System\RaptorDisplay.h"
-#include "GLHierarchy\Object3DShadow.h"
-#include "GLHierarchy\Object3DInstance.h"
-#include "GLHierarchy\TextureUnitSetup.h"
-#include "GLHierarchy\TextureSet.h"
-#include "GLHierarchy\TextureFactory.h"
-#include "GLHierarchy\TextureFactoryConfig.h"
-#include "GLHierarchy\TextureObject.h"
-#include "GLHierarchy\GLFont.h"
-#include "GLHierarchy\GL3DFont.h"
-#include "GLHierarchy\GLFontFactory.h"
+#include "GLHierarchy/Persistence.h"
+#include "Engine/3DScene.h"
+#include "GLHierarchy/3DSet.h"
+#include "GLHierarchy/GeometryEditor.h"
+#include "GLHierarchy/ShadedGeometry.h"
+#include "GLHierarchy/Shader.h"
+#include "GLHierarchy/Light.h"
+#include "System/RaptorDisplay.h"
+#include "GLHierarchy/Object3DShadow.h"
+#include "GLHierarchy/Object3DInstance.h"
+#include "GLHierarchy/TextureUnitSetup.h"
+#include "GLHierarchy/TextureSet.h"
+#include "GLHierarchy/TextureFactory.h"
+#include "GLHierarchy/TextureFactoryConfig.h"
+#include "GLHierarchy/TextureObject.h"
+#include "GLHierarchy/GLFont.h"
+#include "GLHierarchy/GL3DFont.h"
+#include "GLHierarchy/GLFontFactory.h"
 #include "system/Raptor.h"
 #include "GLHierarchy/RenderingProperties.h"
-#include "Engine\ViewPoint.h"
+#include "Engine/IViewPoint.h"
 
 #include "ToolBox/RaptorToolBox.h"
 
@@ -87,7 +87,7 @@ void CShadowDisplay::Init()
 	}
 
 	CTextureFactory &f = CTextureFactory::getDefaultFactory();
-	CTextureObject *T = f.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_MULTIPLY,CTextureObject::CGL_BILINEAR);
+	CTextureObject *T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_MULTIPLY,ITextureObject::CGL_BILINEAR);
 	T->glSetTransparency(255);
 	CTextureFactoryConfig& config = f.getConfig();
 	const CTextureFactoryConfig::ICompressor *compressor = config.getCurrentCompressor();
@@ -168,12 +168,12 @@ void CShadowDisplay::Init()
     m_pScene->glManageEnvironment(CEnvironment::SHADOW_VOLUME,0,0);
     m_pScene->useZSort(); //Optimize surrounding bbox drawings to use it in this very special case.
 
-	m_pVP = new CViewPoint();
-    m_pVP->setPosition(0.0,0.0,25.0,CViewPoint::EYE);
-    m_pVP->setPosition(0.0,0.0,0.0,CViewPoint::TARGET);
-	m_pVP->setViewVolume(-1.33f,1.33f,-1.0f,1.0f,1.0f,10000,CViewPoint::PERSPECTIVE);
-
 	CRaptorDisplay* pDisplay = CRaptorDisplay::GetCurrentDisplay();
+	m_pVP = pDisplay->createViewPoint();
+    m_pVP->setPosition(0.0,0.0,25.0,IViewPoint::EYE);
+    m_pVP->setPosition(0.0,0.0,0.0,IViewPoint::TARGET);
+	m_pVP->setViewVolume(-1.33f,1.33f,-1.0f,1.0f,1.0f,10000,IViewPoint::PERSPECTIVE);
+
 	pDisplay->addScene(m_pScene);
 }
 
@@ -225,7 +225,7 @@ void CShadowDisplay::Display()
 	float x = 25 * cos(10*PI*dt) * cos(10*PI*dt);
 	float z = 25 * sin(10*PI*dt) * cos(10*PI*dt);
 	float y = 25 * sin(10*PI*dt);
-	m_pVP->setPosition(x,y,z,CViewPoint::EYE);
+	m_pVP->setPosition(x,y,z,IViewPoint::EYE);
 
 	glDisable(GL_TEXTURE_2D);
     glDisable(GL_LIGHTING);

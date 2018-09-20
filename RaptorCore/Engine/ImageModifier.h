@@ -22,7 +22,7 @@
 
 RAPTOR_NAMESPACE_BEGIN
 
-class CTextureObject;
+class ITextureObject;
 
 
 class RAPTOR_API CImageModifier : public CModifier, public ITextureGenerator
@@ -72,15 +72,12 @@ public:
 
 
 	//!	Select the image to which the time image modifier will apply
-	bool setImage(const CTextureObject *simage);
+	bool setImage(const ITextureObject *simage);
 
 	//!	Select the function to apply, by user pointer or using
 	//!	one of the stock modifiers ( see CGLTypes.h )
 	bool selectModifierFunction(MODIFIER_STOCK_FNC fnc,unsigned long dwParam);
 	bool selectModifierFunction(RENDERING_MODIFIER fnc,unsigned long dwParam);
-
-    //! This method returns one of the predefined modifier functions
-	static MODIFIER_STOCK_FNC GetModifierFunction(RENDERING_MODIFIER fnc);
 
 	//!	Called by the framework to prepare modifier buffers
 	//!	before modifiers are applied
@@ -113,8 +110,9 @@ private:
 	MODIFIER_STOCK_FNC	m_pfnModifier;
 	unsigned long		m_dwFncParam;
 
-	CTextureObject		*m_pImage;
+	ITextureObject		*m_pImage;
     unsigned char       *m_pBufferImage;
+	unsigned char       *m_pBufferPointer;
 
 	unsigned char		*m_pSrcBuffer;
 	unsigned char		*m_pDstBuffer;

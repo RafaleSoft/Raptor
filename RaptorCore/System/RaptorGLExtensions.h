@@ -2,8 +2,8 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#if !defined(AFX_RAPTOREXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
-#define AFX_RAPTOREXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_
+#if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
+#define AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_
 
 #if _MSC_VER > 1000
 #pragma once
@@ -20,11 +20,11 @@ RAPTOR_NAMESPACE_BEGIN
 
 //! This class handles all entry points to OGL extensions.
 //! An instance of this class is the one and only one access to these entry points.
-class RAPTOR_API CRaptorExtensions  
+class RAPTOR_API CRaptorGLExtensions  
 {
 public:
-	CRaptorExtensions(const std::string &ext);
-	virtual ~CRaptorExtensions();
+	CRaptorGLExtensions(const std::string &ext);
+	virtual ~CRaptorGLExtensions();
 
     //! Use static linkage for wgl extensions as they are necessary for
     //! all kind of commands for rendering context management
@@ -83,10 +83,10 @@ private:
 	void defaultInit(void);
 	
 	//! String buffers containing OGL server capabilities
-	string			extensions;
+	std::string	extensions;
 };
 
 RAPTOR_NAMESPACE_END
 
-#endif // !defined(AFX_RAPTOREXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
+#endif // !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
 

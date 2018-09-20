@@ -35,7 +35,7 @@ class CParticleManager;
 class CPhysics;
 class CTimeObject;
 class CViewModifier;
-class CViewPoint;
+class IViewPoint;
 
 // GLHierarchy section
 class C3DSet;
@@ -77,6 +77,7 @@ class CTextureSet;
 class CTextureUnitSetup;
 class CVertexProgram;
 class CVertexShader;
+class ITextureObject;
 
 // SSE Engine section
 class CSSE_3DEngine;

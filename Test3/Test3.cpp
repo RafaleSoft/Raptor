@@ -15,7 +15,7 @@
 #include "GLHierarchy/Object3DInstance.h"
 #include "Engine/ParticleManager.h"
 #include "Engine/3DScene.h"
-#include "Engine/ViewPoint.h"
+#include "Engine/IViewPoint.h"
 #include "Engine/Animator.h"
 
 #include "ToolBox/RaptorToolBox.h"
@@ -296,7 +296,7 @@ void GalaxyModel::compute(CParticle& particle,float dt)
 
 void GLinterop(CRaptorDisplay *pDisplay,RAPTOR_HANDLE wnd)
 {
-	pDisplay->glBindDisplay(wnd);
+	pDisplay->glvkBindDisplay(wnd);
 
 	CRaptorComputeJob *pJob = CRaptorComputeJob::clCreateJob(0,1,pDisplay);
 	
@@ -399,10 +399,10 @@ int _tmain(int argc, _TCHAR* argv[])
 	glcs.display_mode = CGL_RGBA | CGL_DEPTH;
 	//glcs.refresh_rate.fps = 12;
     RAPTOR_HANDLE wnd = Raptor::glCreateWindow(glcs,pDisplay);
-	pDisplay->glBindDisplay(wnd);
+	pDisplay->glvkBindDisplay(wnd);
 
-	CViewPoint *vp = pDisplay->getViewPoint();
-	vp->setViewVolume(-1.33f,1.33f,-1.0f,1.0f,1.0f,10000,CViewPoint::PERSPECTIVE);
+	IViewPoint *vp = pDisplay->getViewPoint();
+	vp->setViewVolume(-1.33f,1.33f,-1.0f,1.0f,1.0f,10000,IViewPoint::PERSPECTIVE);
 	pDisplay->setViewPoint(vp);
 
 	CRaptorCompute::clInitRaptorCompute();
@@ -449,7 +449,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		virtual ~EntryPoint() {};
 		virtual void glRender()
 		{
-			m_dsp->glBindDisplay(m_wnd);
+			m_dsp->glvkBindDisplay(m_wnd);
 			m_dsp->glRender();
 			m_dsp->glUnBindDisplay();
 		}

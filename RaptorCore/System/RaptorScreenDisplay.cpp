@@ -19,8 +19,8 @@
 #if !defined(AFX_TIMEOBJECT_H__C06AC4B9_4DD7_49E2_9C5C_050EF5C39780__INCLUDED_)
 	#include "Engine/TimeObject.h"
 #endif
-#if !defined(AFX_VIEWPOINT_H__82071851_A036_4311_81CB_01E7E25F19E1__INCLUDED_)
-	#include "Engine/ViewPoint.h"
+#if !defined(AFX_IVIEWPOINT_H__82071851_A036_4311_81CB_01E7E25F19E1__INCLUDED_)
+	#include "Engine/IViewPoint.h"
 #endif
 #if !defined(AFX_3DSCENE_H__E597E752_BAD4_415D_9C00_8C59D139D32B__INCLUDED_)
 	#include "Engine/3DScene.h"
@@ -41,7 +41,7 @@
 	#include "GLHierarchy/Geometry.h"
 #endif
 #if !defined(AFX_OPENGLMEMORY_H__C344567B_877F_4F43_8961_C4E59E3BBF7E__INCLUDED_)
-	#include "Subsys/OpenGLMemory.h"
+	#include "Subsys/OpenGL/OpenGLMemory.h"
 #endif
 
 
@@ -182,9 +182,9 @@ void CRaptorScreenDisplay::glResize(unsigned int sx,unsigned int sy,unsigned int
 		glViewport(ox,oy,sx,sy);
 		C3DEngine::Get3DEngine()->setClip(ox,oy,sx,sy);
 
-		CViewPoint *pVp = getViewPoint();
+		IViewPoint *pVp = getViewPoint();
 		if (pVp != NULL)
-			pVp->glRenderViewPointModel();
+			pVp->glvkRenderViewPointModel();
 	}
 }
 
@@ -200,7 +200,7 @@ RAPTOR_HANDLE CRaptorScreenDisplay::getCurrentDevice(void) const
     return device;
 }
 
-bool CRaptorScreenDisplay::glBindDisplay(const RAPTOR_HANDLE& device)
+bool CRaptorScreenDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
 {
 	if (device.handle != CGL_NULL)
 	{
@@ -250,7 +250,7 @@ bool CRaptorScreenDisplay::glBindDisplay(const RAPTOR_HANDLE& device)
 			//  Display shading configuration
 			cs.glApplyConfig(GL_PIXEL_STATE_QUERY|GL_HINT_STATE_QUERY|GL_LIGHT_STATE_QUERY|GL_FRAME_STATE_QUERY);
 
-            bool res = CRaptorDisplay::glBindDisplay(device);
+			bool res = CRaptorDisplay::glvkBindDisplay(device);
 			//glViewport(cs.x,cs.y,cs.width,cs.height);
 			glViewport(0,0,cs.width,cs.height); // Viewport is relative to window !!!
 			
@@ -281,7 +281,7 @@ bool CRaptorScreenDisplay::glBindDisplay(const RAPTOR_HANDLE& device)
 
     CATCH_GL_ERROR
 
-	return CRaptorDisplay::glBindDisplay(device);
+	return CRaptorDisplay::glvkBindDisplay(device);
 }
 
 void CRaptorScreenDisplay::allocateResources(void)

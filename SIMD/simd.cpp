@@ -2,6 +2,13 @@
 	#include "registers.h"
 #endif
 
+#if defined(WIN32)
+	#include <intrin.h>
+#elif defined(LINUX)
+	#include <cpuid.h>
+  #include <string.h>
+#endif
+
 #ifndef __GENERIC_VECTOR_IMPL__
 	#include "GenericVector.cxx"
 #endif
@@ -34,9 +41,6 @@
 	#include "MMXWMatrix.h"
 #endif
 
-
-#include <intrin.h>
-
 //	These global vectors are defined to
 //	avoid "sloooow" calls to the constructor
 CSSEFVector	_alignedSSEFloatVector;
@@ -53,9 +57,9 @@ static CPU_INFO	cpuInfo;
 
 //!
 //! Define missing __cpuidex function
-//! @param regs : int[4]
-//! @param func : int
-//! @param leaf : int
+//! @param regs : int[4], cpuid return in EAX,EBX,ECX & EDX
+//! @param func : int, cpuid function passed in EAX
+//! @param leaf : int, cpuid subfunction passed in ECX
 #ifdef WIN32
 	#if _MSC_VER >= 1600
 		// function defined in intrin.h
@@ -70,6 +74,23 @@ static CPU_INFO	cpuInfo;
 				__asm mov dword ptr [regs+8], ecx \
 				__asm mov dword ptr [regs+12], edx
 	#endif
+  #define CPUID(function,regs)  __cpuid(regs,function)
+  #define CPUIDEX(function,subfunction,regs)  __cpuidex(regs,function,subfunction)
+#elif defined(LINUX)
+  static __inline int __get_cpuidex(unsigned int __level, unsigned int __subfunction,
+                                    unsigned int *__eax, unsigned int *__ebx,
+                                    unsigned int *__ecx, unsigned int *__edx)
+  {
+    unsigned int __ext = __level & 0x80000000;
+
+    if (__get_cpuid_max (__ext, 0) < __level)
+      return 0;
+
+    __cpuid_count(__level, __subfunction, *__eax, *__ebx, *__ecx, *__edx);
+    return 1;
+  }
+  #define CPUID(level,regs)  __get_cpuid(level,&regs[0],&regs[1],&regs[2],&regs[3])
+  #define CPUIDEX(level,subfunction,regs)  __get_cpuidex(level,subfunction,&regs[0],&regs[1],&regs[2],&regs[3])
 #endif
 
 //!
@@ -335,19 +356,23 @@ const CPU_INFO::CACHE_DESCRIPTOR cacheDescriptors[256] =
 	/* FFh */	{ CPU_INFO::NONE, 0, 0, 0, 0 },
 };
 
-#pragma warning(disable : 4731)
 const CPU_INFO& SIMD_API getCPUINFO()
 {
 	if (cpuScanned)
 		return cpuInfo;
 	else
 	{
-#ifdef WIN32
 		cpuScanned = true;
 		memset(&cpuInfo,0,sizeof(CPU_INFO));
 
+#ifdef WIN32
 		int cpuidRegs[4];
-		__cpuid(cpuidRegs,0);
+#elif defined(LINUX)
+		unsigned int cpuidRegs[4];
+#endif
+
+    CPUID(0,cpuidRegs);
+
 		int nbId = cpuidRegs[0];
 
 		cpuInfo.CPUID = (nbId > 0);
@@ -358,7 +383,8 @@ const CPU_INFO& SIMD_API getCPUINFO()
 			*((int*)&cpuInfo.features[4]) = cpuidRegs[3];
 			*((int*)&cpuInfo.features[8]) = cpuidRegs[2];
 
-			__cpuid(cpuidRegs,1);
+      CPUID(1,cpuidRegs);
+
 			cpuInfo.stepping = (cpuidRegs[0] & 0x0f);
 			cpuInfo.model = (cpuidRegs[0] >> 4) & 0x0f;
 			cpuInfo.family = (cpuidRegs[0] >> 8) & 0x0f;
@@ -376,7 +402,8 @@ const CPU_INFO& SIMD_API getCPUINFO()
 		}
 		if (nbId >= 2)
 		{
-			__cpuid(cpuidRegs,2);
+      CPUID(2,cpuidRegs);
+
 			int nbCacheCalls = (cpuidRegs[0] & 0xff);
 			if (cpuInfo.cacheDescriptor.descriptors != 0)
 				delete [] cpuInfo.cacheDescriptor.descriptors;
@@ -404,12 +431,14 @@ const CPU_INFO& SIMD_API getCPUINFO()
 						}
 					}
 				}
-				__cpuid(cpuidRegs,2);
+
+        CPUID(2,cpuidRegs);
 			}
 		}
 		if ((nbId >= 3) && cpuInfo.hasFeature(CPUINFO::PSN))
 		{
-			__cpuid(cpuidRegs,3);
+      CPUID(3,cpuidRegs);
+
 			cpuInfo.serialNumber[0] = cpuidRegs[2];
 			cpuInfo.serialNumber[1] = cpuidRegs[3];
 		}
@@ -421,7 +450,7 @@ const CPU_INFO& SIMD_API getCPUINFO()
 			cpuInfo.cacheParameters.nbCacheLevels = 0;
 			int cacheLevel = 0;
 
-			__cpuidex(cpuidRegs,4,cacheLevel);
+      CPUIDEX(4,cacheLevel,cpuidRegs);
 			cacheLevel++;
 			
 			short cacheType = (cpuidRegs[0] & 0x1f);
@@ -446,7 +475,7 @@ const CPU_INFO& SIMD_API getCPUINFO()
 				parameter.cacheSize = parameter.ways * parameter.partitions * parameter.lineSize * parameter.sets;
 				cpuInfo.cacheParameters.parameters[cpuInfo.cacheParameters.nbCacheLevels++] = parameter;
 
-				__cpuidex(cpuidRegs,4,cacheLevel);
+        CPUIDEX(4,cacheLevel,cpuidRegs);
 				cacheLevel++;
 				cacheType = (cpuidRegs[0] & 0x1f);
 			}
@@ -473,7 +502,7 @@ const CPU_INFO& SIMD_API getCPUINFO()
 			/* processor topology */
 			int topologyLevel = 0;
 
-			__cpuidex(cpuidRegs,11,topologyLevel);
+      CPUIDEX(11,topologyLevel,cpuidRegs);
 			topologyLevel++;
 		
 			int apicShift = cpuidRegs[0] & 0xff;
@@ -481,28 +510,30 @@ const CPU_INFO& SIMD_API getCPUINFO()
 
 			if ((cpuidRegs[0] > 0) && (cpuidRegs[1] > 0))
 			{
-				__cpuidex(cpuidRegs,11,topologyLevel);
+        CPUIDEX(11,topologyLevel,cpuidRegs);
 				topologyLevel++;
 
 				apicShift = cpuidRegs[0] & 0xff;
 				cpuInfo.numCores = cpuidRegs[1] & 0xffff;
 			}
 		}
-		__cpuid(cpuidRegs,0x80000000);
+
+    CPUID(0x80000000,cpuidRegs);
+
 		nbId = cpuidRegs[0];
 		if (nbId >= 0x80000002)
 		{
-			__cpuid(cpuidRegs,0x80000002);
+      CPUID(0x80000002,cpuidRegs);
 			memcpy(&cpuInfo.processorBrand[0],cpuidRegs,16);
 		}
 		if (nbId >= 0x80000003)
 		{
-			__cpuid(cpuidRegs,0x80000003);
+      CPUID(0x80000003,cpuidRegs);
 			memcpy(&cpuInfo.processorBrand[16],cpuidRegs,16);
 		}
 		if (nbId >= 0x80000004)
 		{
-			__cpuid(cpuidRegs,0x80000004);
+      CPUID(0x80000004,cpuidRegs);
 			memcpy(&cpuInfo.processorBrand[32],cpuidRegs,16);
 		}
 		//!
@@ -595,9 +626,7 @@ const CPU_INFO& SIMD_API getCPUINFO()
 
 			memcpy(cpuInfo.features,_cpuInfo,sizeof(_cpuInfo));
 		}*/
-#else
-	cat /proc/cpuinfo
-#endif
+
 		return cpuInfo;
 	}
 }

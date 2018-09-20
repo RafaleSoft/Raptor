@@ -7,8 +7,8 @@
 #if !defined(AFX_GEOMETRYPROGRAM_H__1981EA98_8F3C_4881_9429_A9ACA5B285D3__INCLUDED_)
     #include "GeometryProgram.h"
 #endif
-#if !defined(AFX_RAPTOREXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
-	#include "System/RaptorExtensions.h"
+#if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
+	#include "System/RaptorGLExtensions.h"
 #endif
 #if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
 	#include "System/Raptor.h"
@@ -63,7 +63,7 @@ CGeometryProgram::~CGeometryProgram()
 	}
 	else
 	{
-		const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 		if (m_handle.handle > 0)
 			pExtensions->glDeleteObjectARB(m_handle.handle);
 	}
@@ -76,10 +76,10 @@ void CGeometryProgram::glInitShaders()
 
 	if (!m_bGeometryProgramReady)
 	{
-		if (Raptor::glIsExtensionSupported("GL_ARB_geometry_shader4"))
+		if (Raptor::glIsExtensionSupported(GL_ARB_GEOMETRY_SHADER4_EXTENSION_NAME))
 		{
 #if defined(GL_ARB_geometry_shader4)
-			const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+			const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 			m_bGeometryProgramReady = (NULL != pExtensions->glCreateShaderObjectARB);
 #else
 			m_bGeometryProgramReady = false;
@@ -104,7 +104,7 @@ void CGeometryProgram::glInitShaders()
 bool CGeometryProgram::glLoadProgram(const std::string &program)
 {
     m_bValid = false;
-	const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 
 #if defined(GL_ARB_geometry_shader4)
 	if (m_bGeometryProgramReady)
@@ -157,7 +157,7 @@ bool CGeometryProgram::glLoadProgram(const std::string &program)
 bool CGeometryProgram::glBindProgram(RAPTOR_HANDLE program)
 {
 #if defined(GL_ARB_shader_objects)
-    const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+    const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 	if (CUnifiedProgram::glBindProgram(program))
 	{
 		for (unsigned int idx = 0; idx < m_parameters.getNbParameters(); idx++)
@@ -211,7 +211,7 @@ bool CGeometryProgram::glGetProgramStatus(void)
 		return false;
 
 #if defined(GL_ARB_geometry_shader4)
-	const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 
 	GL_GEOMETRY_PROGRAM_CAPS caps;
 	if (glGetProgramCaps(caps))

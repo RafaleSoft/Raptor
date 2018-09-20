@@ -43,8 +43,11 @@
 #if !defined(AFX_TIMEOBJECT_H__C06AC4B9_4DD7_49E2_9C5C_050EF5C39780__INCLUDED_)
 	#include "Engine/TimeObject.h"
 #endif
-#if !defined(AFX_RAPTOREXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
-	#include "System/RaptorExtensions.h"
+#if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
+	#include "System/RaptorGLExtensions.h"
+#endif
+#if !defined(AFX_RAPTORVKEXTENSIONS_H__B17D6B7F_5AFC_4E34_9D49_8DC6CE9192D6__INCLUDED_)
+	#include "System/RaptorVKExtensions.h"
 #endif
 #if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
     #include "RaptorErrorManager.h"
@@ -83,16 +86,30 @@ CRaptorConsole *const Raptor::GetConsole(void)
 
 bool Raptor::glIsExtensionSupported(const std::string &ext)
 {
-	const CRaptorExtensions *const extensions = CContextManager::GetInstance()->glGetExtensions();
+	const CRaptorGLExtensions *const extensions = CContextManager::GetInstance()->glGetExtensions();
 	if (extensions != NULL)
 		return extensions->glIsExtensionSupported(ext);
 	else
 		return false;
 }
 
-const CRaptorExtensions *const Raptor::glGetExtensions(void)
+const CRaptorGLExtensions *const Raptor::glGetExtensions(void)
 {
 	return CContextManager::GetInstance()->glGetExtensions();
+}
+
+bool Raptor::vkIsExtensionSupported(const std::string &ext)
+{
+	const CRaptorVKExtensions *const extensions = CContextManager::GetInstance()->vkGetExtensions();
+	if (extensions != NULL)
+		return extensions->vkIsExtensionSupported(ext);
+	else
+		return false;
+}
+
+const CRaptorVKExtensions *const Raptor::vkGetExtensions(void)
+{
+	return CContextManager::GetInstance()->vkGetExtensions();
 }
 
 CRaptorMessages * const Raptor::GetMessages(void)
@@ -156,10 +173,8 @@ int Raptor::glPurgeRaptor(bool count)
 #endif
 					pos = NULL;
 					delete obj;
-					//	We need to restart from first object
-					//	Because destruction of obj removed
-					//	elements from static objects map and
-					//	thus, pos is no longer valid.
+					//	We need to restart from first object because destruction of obj removed
+					//	elements from global objects map and thus, pos is no longer valid.
 					obj = CPersistence::Object((void*&)pos);
 				}
 			}

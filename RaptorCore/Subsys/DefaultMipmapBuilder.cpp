@@ -44,7 +44,7 @@ bool CDefaultMipmapBuilder::apply(CTextureObject* const src,
 								  unsigned int innerFormat,
 								  unsigned int texelFormat,
 								  unsigned int texelType,
-								  const CTextureFactoryConfig& config) const
+								  const CTextureFactoryConfig& ) const
 {
 	GLuint target = GL_TEXTURE_2D;
 	void* pTexels = src->getTexels();

@@ -14,11 +14,11 @@ public:
 	class RAPTORCOMPUTE_API IBufferObject : public IDeviceMemoryManager::IBufferObject
     {
     public:
-        static const BUFFER_KIND COMPUTE_BUFFER = 4;
-		static const BUFFER_KIND INTEROP_COMPUTE_BUFFER = 5;
-		static const BUFFER_KIND LOCAL_BUFFER = 6;
-		static const BUFFER_KIND IMAGE_BUFFER = 7;
-        static const BUFFER_KIND NB_BUFFER_KIND = 8;
+		static const BUFFER_KIND COMPUTE_BUFFER = IDeviceMemoryManager::IBufferObject::NB_BUFFER_KIND;				// 6
+		static const BUFFER_KIND INTEROP_COMPUTE_BUFFER = IDeviceMemoryManager::IBufferObject::NB_BUFFER_KIND + 1;	// 7
+		static const BUFFER_KIND LOCAL_BUFFER = IDeviceMemoryManager::IBufferObject::NB_BUFFER_KIND + 2;			// 8
+		static const BUFFER_KIND IMAGE_BUFFER = IDeviceMemoryManager::IBufferObject::NB_BUFFER_KIND + 3;			// 9
+		static const BUFFER_KIND NB_BUFFER_KIND = IDeviceMemoryManager::IBufferObject::NB_BUFFER_KIND + 4;			// 10
 
     protected:
         IBufferObject() {};
@@ -68,8 +68,8 @@ private:
 	unsigned int mID;
 
 	//!	Max memory sizes
-	unsigned __int64	maxSizes;
-	__int64				maxAllocatable;
+	uint64_t	maxSizes;
+	int64_t		maxAllocatable;
 };
 
 #endif

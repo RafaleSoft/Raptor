@@ -19,8 +19,8 @@
 #if !defined(AFX_TEXTUREFACTORY_H__1B470EC4_4B68_11D3_9142_9A502CBADC6B__INCLUDED_)
 	#include "GLHierarchy/TextureFactory.h"
 #endif
-#if !defined(AFX_VIEWPOINT_H__82071851_A036_4311_81CB_01E7E25F19E1__INCLUDED_)
-	#include "Engine/ViewPoint.h"
+#if !defined(AFX_IVIEWPOINT_H__82071851_A036_4311_81CB_01E7E25F19E1__INCLUDED_)
+	#include "Engine/IViewPoint.h"
 #endif
 #if !defined(AFX_RENDERINGPROPERTIES_H__634BCF2B_84B4_47F2_B460_D7FDC0F3B698__INCLUDED_)
 	#include "GLHierarchy/RenderingProperties.h"
@@ -120,7 +120,7 @@ private:
 
 void CAboutVideo::glRender()
 {
-	m_pTxt->glRender();
+	m_pTxt->glvkRender();
 
 	glBegin(GL_QUADS);
 		glTexCoord2f(0.0f,0.0f); glVertex3f(-2.0f,-1.5f,-2.0f);
@@ -166,11 +166,11 @@ CGLDisplay::~CGLDisplay()
 void CGLDisplay::GLInitContext()
 {
 	CRaptorDisplay *pDisplay = CRaptorDisplay::GetCurrentDisplay();
-	CViewPoint *pVP = pDisplay->getViewPoint();
+	IViewPoint *pVP = pDisplay->getViewPoint();
 	glColor4f(1.0,1.0,1.0,1.0f);
 
-	pVP->setViewVolume(-1.0,1.0,-1.0,1.0,1.0,1000.0,CViewPoint::PERSPECTIVE);
-	pVP->glRenderViewPointModel();
+	pVP->setViewVolume(-1.0,1.0,-1.0,1.0,1.0,1000.0,IViewPoint::PERSPECTIVE);
+	pVP->glvkRenderViewPointModel();
 
     CRenderingProperties *props = pDisplay->getRenderingProperties();
     props->setTexturing(CRenderingProperties::ENABLE);
@@ -190,9 +190,9 @@ void CGLDisplay::GLInitContext()
 	ITextureGenerator *pGenerator = m_pAnimator->glStartPlayBack(buffer.str().c_str(),true);
 
 	CTextureFactory f;
-    m_pTxt = f.glCreateDynamicTexture(	CTextureObject::CGL_COLOR24_ALPHA,
+    m_pTxt = f.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 										CTextureObject::CGL_MULTIPLY,
-										CTextureObject::CGL_BILINEAR,
+										ITextureObject::CGL_BILINEAR,
 										pGenerator);
 
     float tw = (float)(pGenerator->getGenerateWidth()) / (float)(m_pTxt->getWidth());
@@ -239,7 +239,6 @@ BOOL CAboutDialog::OnInitDialog()
 
 	//	Setting up Raptor version item
 	{
-        DWORD version = Raptor::GetVersion();
 		stringstream vrs;
         vrs << "Version: " << RAPTOR_VERSION_STR;
 		this->SetDlgItemText(IDC_VERSION,CA2T(vrs.str().c_str()));

@@ -9,20 +9,11 @@
 #if !defined(AFX_TEXTUREFACTORY_H__1B470EC4_4B68_11D3_9142_9A502CBADC6B__INCLUDED_)
 	#include "GLHierarchy/TextureFactory.h"
 #endif
-#if !defined(AFX_TEXTUREFACTORYCONFIG_H__7A20D208_423F_4E02_AA4D_D736E0A7959F__INCLUDED_)
-	#include "GLHierarchy/TextureFactoryConfig.h"
-#endif
 #if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
     #include "System/RaptorErrorManager.h"
 #endif
-#if !defined(AFX_RAPTORDISPLAYCONFIG_H__DA0759DF_6CF9_44A7_9ADE_D404FEEC2DDF__INCLUDED_)
-	#include "System/RaptorDisplayConfig.h"
-#endif
 #if !defined(AFX_TEXTURESET_H__26F3022D_70FE_414D_9479_F9CCD3DCD445__INCLUDED_)
 	#include "GLHierarchy/TextureSet.h"
-#endif
-#if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
-    #include "System/Raptor.h"
 #endif
 #if !defined(AFX_RENDERINGPROPERTIES_H__634BCF2B_84B4_47F2_B460_D7FDC0F3B698__INCLUDED_)
 	#include "GLHierarchy/RenderingProperties.h"
@@ -42,8 +33,8 @@
 #if !defined(AFX_3DENGINE_H__DB24F018_80B9_11D3_97C1_FC2841000000__INCLUDED_)
 	#include "Engine/3DEngine.h"
 #endif
-#if !defined(AFX_RAPTOREXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
-	#include "System/RaptorExtensions.h"
+#if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
+	#include "System/RaptorGLExtensions.h"
 #endif
 
 
@@ -79,10 +70,10 @@ bool CAmbientOcclusionShader::glInitAOCompute(void)
 
 	CTextureFactory &f = CTextureFactory::getDefaultFactory();
 	f.getConfig().useTextureResize(false);
-	CTextureObject *T = f.glCreateTexture(	CTextureObject::CGL_COLOR_FLOAT32_ALPHA,
+	CTextureObject *T = f.glCreateTexture(	ITextureObject::CGL_COLOR_FLOAT32_ALPHA,
 											CTextureObject::CGL_OPAQUE,
-											CTextureObject::CGL_BILINEAR);
-	T->glUpdateClamping(CTextureObject::CGL_EDGECLAMP);
+											ITextureObject::CGL_BILINEAR);
+	T->glvkUpdateClamping(ITextureObject::CGL_EDGECLAMP);
 	f.glResizeTexture(T,m_pVertexMap->getWidth(),m_pVertexMap->getHeight());
 
 	CTextureSet *pOutputTextures = new CTextureSet("Filter Output Render Textures");
@@ -106,7 +97,7 @@ bool CAmbientOcclusionShader::glInitAOCompute(void)
     rp->setLighting(CRenderingProperties::DISABLE);
     rp->clear(CGL_NULL);
     m_pAOBuffer->setViewPoint(NULL);
-	m_pAOBuffer->glBindDisplay(*pOutputTextures);
+	m_pAOBuffer->glvkBindDisplay(*pOutputTextures);
 
 	m_pAOcomputeRef = CShader::getShader("AOCOMPUTE_SHADER").glClone("AO_SHADER");
 	CTextureUnitSetup *AOdata = glGetTextureUnitsSetup();
@@ -118,7 +109,7 @@ bool CAmbientOcclusionShader::glInitAOCompute(void)
 
 	CATCH_GL_ERROR;
 
-	if (!Raptor::glIsExtensionSupported("GL_ARB_texture_rectangle"))
+	if (!Raptor::glIsExtensionSupported(GL_ARB_TEXTURE_RECTANGLE_EXTENSION_NAME))
 	{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 		Raptor::GetErrorManager()->generateRaptorError(	CShader::CShaderClassID::GetClassId(),
@@ -138,7 +129,7 @@ void CAmbientOcclusionShader::glRenderResult()
 
 	if (CRenderingProperties::GetCurrentProperties()->getCurrentTexturing() == CRenderingProperties::ENABLE)
 	{
-		const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 		pExtensions->glClientActiveTextureARB(GL_TEXTURE2_ARB);
 
 		// This is responsibility of a geometry
@@ -147,7 +138,7 @@ void CAmbientOcclusionShader::glRenderResult()
 
 		pExtensions->glActiveTextureARB(GL_TEXTURE2_ARB);
 		glEnable(GL_TEXTURE_2D);
-		m_pAOMap->glRender();
+		m_pAOMap->glvkRender();
 		/*
 		CTextureFactory &f = CTextureFactory::getDefaultFactory();
 		f.glExportTexture(m_pAOMap, "AO_map.jpg");
@@ -213,7 +204,7 @@ void CAmbientOcclusionShader::glRender()
 	f_params.addParameter("numRows",GL_COORD_VERTEX(m_occluders[0]->m_refNbVertex/64,0,0,0));
 
 	RAPTOR_HANDLE noDevice;
-	m_pAOBuffer->glBindDisplay(noDevice);
+	m_pAOBuffer->glvkBindDisplay(noDevice);
 
 #ifdef GL_ARB_texture_rectangle
 	glEnable(GL_TEXTURE_RECTANGLE_ARB);
@@ -228,7 +219,7 @@ void CAmbientOcclusionShader::glRender()
 	glVertexPointer(3,GL_FLOAT,sizeof(GL_COORD_VERTEX),m_refVertex);
 	glNormalPointer(GL_FLOAT,sizeof(GL_COORD_VERTEX),m_refNormal);
 
-	const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 	pExtensions->glClientActiveTextureARB(GL_TEXTURE2_ARB);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	glTexCoordPointer(2,GL_FLOAT,0,m_refTexCoords);
@@ -280,24 +271,24 @@ bool CAmbientOcclusionShader::glSetCoords(GL_COORD_VERTEX* refVertex, unsigned i
 		int width = ceil(log(sqrt((float)nbVertex)) / log(2.0));
 		int height = width = pow(2.0,width);
 
-		CTextureObject *T = f.glCreateRectangleTexture(	CTextureObject::CGL_COLOR_FLOAT32_ALPHA,
+		CTextureObject *T = f.glCreateRectangleTexture(	ITextureObject::CGL_COLOR_FLOAT32_ALPHA,
 														CTextureObject::CGL_OPAQUE,
-														CTextureObject::CGL_UNFILTERED);
+														ITextureObject::CGL_UNFILTERED);
 		// Should this case still be supported ?
 		// with no texture rectangle, it is rather laborious
 		if (T == NULL)
 		{
-			T = f.glCreateTexture(	CTextureObject::CGL_COLOR_FLOAT32_ALPHA,
+			T = f.glCreateTexture(	ITextureObject::CGL_COLOR_FLOAT32_ALPHA,
 									CTextureObject::CGL_OPAQUE,
-									CTextureObject::CGL_UNFILTERED);
+									ITextureObject::CGL_UNFILTERED);
 		}
 
-		T->setSize(width,height);
-		T->allocateTexels(CTextureObject::CGL_COLOR_FLOAT32_ALPHA);
-		float *texels = T->getFloatTexels();
-		memcpy(texels,refVertex,nbVertex*sizeof(GL_COORD_VERTEX));
+		CImage coords;
+		coords.allocatePixels(width, height, CImage::CGL_COLOR_FLOAT32_ALPHA);
+		float *pixels = coords.getFloatPixels();
+		memcpy(pixels, refVertex, nbVertex*sizeof(GL_COORD_VERTEX));
 
-		f.glLoadTexture(T,".buffer");
+		f.glLoadTexture(T, coords);
 		m_pVertexMap = T;
 
 		CATCH_GL_ERROR;
@@ -320,25 +311,25 @@ bool CAmbientOcclusionShader::glSetNormals(GL_COORD_VERTEX* refNormal, unsigned 
 		int width = ceil(log(sqrt((float)nbVertex)) / log(2.0));
 		int height = width = pow(2.0,width);
 
-		CTextureObject *T = f.glCreateRectangleTexture(	CTextureObject::CGL_COLOR_FLOAT32_ALPHA,
+		CTextureObject *T = f.glCreateRectangleTexture(	ITextureObject::CGL_COLOR_FLOAT32_ALPHA,
 														CTextureObject::CGL_OPAQUE,
-														CTextureObject::CGL_UNFILTERED);
+														ITextureObject::CGL_UNFILTERED);
 
 		// Should this case still be supported ?
 		// with no texture rectangle, it is rather laborious
 		if (T == NULL)
 		{
-			T = f.glCreateTexture(	CTextureObject::CGL_COLOR_FLOAT32_ALPHA,
+			T = f.glCreateTexture(	ITextureObject::CGL_COLOR_FLOAT32_ALPHA,
 									CTextureObject::CGL_OPAQUE,
-									CTextureObject::CGL_UNFILTERED);
+									ITextureObject::CGL_UNFILTERED);
 		}
 
-		T->setSize(width,height);
-		T->allocateTexels(CTextureObject::CGL_COLOR_FLOAT32_ALPHA);
-		float *texels = T->getFloatTexels();
-		memcpy(texels,refNormal,nbVertex*4*sizeof(float));
+		CImage normals;
+		normals.allocatePixels(width, height, CImage::CGL_COLOR_FLOAT32_ALPHA);
+		float *pixels = normals.getFloatPixels();
+		memcpy(pixels,refNormal,nbVertex*4*sizeof(float));
 
-		f.glLoadTexture(T,".buffer");
+		f.glLoadTexture(T, normals);
 		m_pNormalMap = T;
 
 		CATCH_GL_ERROR;

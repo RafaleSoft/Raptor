@@ -124,7 +124,7 @@ RAPTOR_NAMESPACE
 		tree->InsertItem(str,item);
 	}
 
-	void Add(CTreeCtrl *tree,HTREEITEM parentItem,CTextureObject* obj)
+	void Add(CTreeCtrl *tree,HTREEITEM parentItem,ITextureObject* obj)
 	{
 		HTREEITEM item = tree->InsertItem(TEXT("<Image>"), parentItem);
 		CString str;
@@ -141,15 +141,13 @@ RAPTOR_NAMESPACE
 		tree->InsertItem(str,item);
 		str.Format(TEXT("Alpha: %u"), obj->getTransparency());
 		tree->InsertItem(str,item);
-		str.Format(TEXT("Level: %u"), obj->getCurrentMipMapLevel());
-		tree->InsertItem(str,item);
 		switch(obj->getFilter())
 		{
-            case CTextureObject::CGL_UNFILTERED: str = "Filtering : none"; break;
-			case CTextureObject::CGL_BILINEAR: str = "Filtering : bilinear"; break;
-			case CTextureObject::CGL_BILINEAR_MIPMAPPED: str = "Filtering : bilinear mipmapped"; break;
-			case CTextureObject::CGL_TRILINEAR: str = "Filtering : trilinear"; break;
-            case CTextureObject::CGL_ANISOTROPIC: str = "Filtering : anisotropic"; break;
+            case ITextureObject::CGL_UNFILTERED: str = "Filtering : none"; break;
+			case ITextureObject::CGL_BILINEAR: str = "Filtering : bilinear"; break;
+			case ITextureObject::CGL_BILINEAR_MIPMAPPED: str = "Filtering : bilinear mipmapped"; break;
+			case ITextureObject::CGL_TRILINEAR: str = "Filtering : trilinear"; break;
+            case ITextureObject::CGL_ANISOTROPIC: str = "Filtering : anisotropic"; break;
 			default : str = "Filtering : unknown";break;
 		}
 		tree->InsertItem(str,item);

@@ -28,9 +28,6 @@ class CRaptorErrorManager;
 class C3DEngineTaskManager;
 class CRaptorDisplay;
 class CRenderEntryPoint;
-class CDefaultBumpmapLoader;
-class CDefaultImageScaler;
-class CDefaultMipmapBuilder;
 
 #ifdef WIN32
 	#pragma warning(disable:4786)
@@ -56,11 +53,6 @@ public:
 
 		//!	default display creation structure + defaut initial state of the renderer.
 		CRaptorDisplayConfig	defaultConfig;	
-
-		//!	Default Texture operators
-		CDefaultBumpmapLoader	*pDefaultBumpmapLoader;
-		CDefaultImageScaler		*pDefaultImageScaler;
-		CDefaultMipmapBuilder	*pDefaultMipmapBuilder;
 
         unsigned int			iRenderedObjects;
         unsigned int			iRenderedTriangles;

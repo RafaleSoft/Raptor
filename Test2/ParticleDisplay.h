@@ -11,7 +11,6 @@
 
 #include "GenericDisplay.h"
 
-
 class CParticleDisplay : public CGenericDisplay
 {
 public:
@@ -40,9 +39,9 @@ private:
 	CImageModifier *m_pModifier;
 
 	// Particules clusters
-    CParticleManager    *m_pParticleManager;
+    CParticleManager  *m_pParticleManager;
 	CObject3DInstance *m_pParticle;
-	CObject3DInstance* m_pFire;
+	CObject3DInstance *m_pFire;
 	CObject3DInstance *m_pSmoke;
 	CObject3DInstance *m_pSmoke2;
 

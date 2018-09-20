@@ -7,9 +7,6 @@
 #if !defined(AFX_PARTICLEMANAGER_H__687B445A_C015_43DA_95A4_EC8AB1AED606__INCLUDED_)
     #include "ParticleManager.h"
 #endif
-#ifndef __INTERNAL_PROCS_H__
-	#include "Subsys/InternalProcs.h"
-#endif
 #ifndef __GLOBAL_H__
 	#include "System/Global.h"
 #endif
@@ -24,6 +21,9 @@
 #endif
 #if !defined(AFX_TEXTURESET_H__26F3022D_70FE_414D_9479_F9CCD3DCD445__INCLUDED_)
 	#include "GLHierarchy/TextureSet.h"
+#endif
+#if !defined(AFX_TEXTUREOBJECT_H__D32B6294_B42B_4E6F_AB73_13B33C544AD0__INCLUDED_)
+	#include "GLHierarchy/TextureObject.h"
 #endif
 
 
@@ -199,12 +199,12 @@ bool CParticleManager::exportObject(CRaptorIO& o)
     return false;
 }
 
-CTextureObject* CParticleManager::importTexture(CRaptorIO &io)
+ITextureObject* CParticleManager::importTexture(CRaptorIO &io)
 {
     string name;
     io >> name;
 
-	CTextureObject *t = NULL;
+	ITextureObject *t = NULL;
     string setName = "";
     string textureName = "";
 
@@ -252,7 +252,7 @@ bool CParticleManager::importParticle(CRaptorIO& io)
     CParticle::PARTICLE_RENDERING type = CParticle::CGL_PARTICLE_POINT;
     CParticle::PARTICLE_BLENDING blend = CParticle::CGL_ALPHA_TRANSPARENT;
 	string computeModel = "";
-	CTextureObject *t = NULL;
+	ITextureObject *t = NULL;
 
 	string data = io.getValueName();
     while (!data.empty())
@@ -314,7 +314,7 @@ bool CParticleManager::importParticle(CRaptorIO& io)
     if (particle == NULL)
         particle = glCreateParticle(size,revive,type,blend,computeModel,particleName);
 	particle->usePointSprite(sprite,pSize);
-	particle->setTexture(t);
+	particle->setTexture((CTextureObject*)t);
 
 	return true;
 }

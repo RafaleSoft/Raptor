@@ -9,15 +9,14 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#if !defined(AFX_TEXTUREFACTORYCONFIG_H__7A20D208_423F_4E02_AA4D_D736E0A7959F__INCLUDED_)
-    #include "GLHierarchy/TextureFactoryConfig.h"
+#if !defined(AFX_IMAGE_H__F545D0D5_5F10_4EFA_BE3B_3F3D34D4DBF3__INCLUDED_)
+	#include "System/Image.h"
 #endif
 
 RAPTOR_NAMESPACE_BEGIN
 
-class CTextureObject;
 
-class CDefaultMipmapBuilder : public CTextureFactoryConfig::IImageOP  
+class CDefaultMipmapBuilder : public CImage::IImageOP
 {
 public:
 	CDefaultMipmapBuilder();

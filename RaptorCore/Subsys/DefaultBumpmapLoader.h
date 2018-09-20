@@ -9,30 +9,34 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#if !defined(AFX_TEXTUREFACTORYCONFIG_H__7A20D208_423F_4E02_AA4D_D736E0A7959F__INCLUDED_)
-    #include "GLHierarchy/TextureFactoryConfig.h"
+#if !defined(AFX_IMAGE_H__F545D0D5_5F10_4EFA_BE3B_3F3D34D4DBF3__INCLUDED_)
+	#include "System/Image.h"
 #endif
 
 
 RAPTOR_NAMESPACE_BEGIN
 
-class CTextureObject;
 
-class CDefaultBumpmapLoader : public CTextureFactoryConfig::IImageOP  
+class CDefaultBumpmapLoader : public CImage::IImageOP
 {
 public:
-    CDefaultBumpmapLoader();
+    CDefaultBumpmapLoader(float scale);
+	CDefaultBumpmapLoader(const CDefaultBumpmapLoader& loader);
+	CDefaultBumpmapLoader& operator=(const CDefaultBumpmapLoader& loader);
+
 	virtual ~CDefaultBumpmapLoader();
 
     //! Implements CImageOP
     virtual OP_KIND getKind(void) const { return BUMPMAP_LOADER; };
 
-    //! Implaments CImageOP
-    virtual bool apply(	CTextureObject* const src,
-						unsigned int innerFormat,
-						unsigned int texelFormat,
-						unsigned int texelType,
-						const CTextureFactoryConfig& config) const;
+	//! Implements CImageOP
+	virtual bool apply(CImage* const src, const operation_param_t& param) const;
+
+private:
+	CDefaultBumpmapLoader();
+
+	//!	Bumping amplitude.
+	float bump_scale;
 };
 
 

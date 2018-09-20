@@ -19,8 +19,8 @@
 #if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
 	#include "System/Raptor.h"
 #endif
-#if !defined(AFX_RAPTOREXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
-	#include "System/RaptorExtensions.h"
+#if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
+	#include "System/RaptorGLExtensions.h"
 #endif
 #if !defined(AFX_TEXTUREOBJECT_H__D32B6294_B42B_4E6F_AB73_13B33C544AD0__INCLUDED_)
 	#include "TextureObject.h"
@@ -112,7 +112,7 @@ void CProjector::glRender(void)
 		Q *= 2 * m_unitDistance;
     
 #if defined(GL_ARB_multitexture)
-    const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+    const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
     pExtensions->glActiveTextureARB(GL_TEXTURE3_ARB);
 #endif
 
@@ -120,8 +120,7 @@ void CProjector::glRender(void)
 	glRenderCone(30.0f);
 #endif
 
-    m_pProjection->glRender();
-	//m_pProjection->glUpdateClamping(CTextureObject::CGL_EDGECLAMP);
+	m_pProjection->glvkRender();
 
 	glTexGenfv(GL_S,GL_EYE_PLANE,m_Sprojection);
 	glTexGenfv(GL_T,GL_EYE_PLANE,m_Tprojection);
@@ -135,7 +134,7 @@ void CProjector::glRender(void)
 void CProjector::glActivate(bool activate)
 {
 #if defined(GL_ARB_multitexture)
-	const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 	pExtensions->glActiveTextureARB(GL_TEXTURE3_ARB);
 #endif
 
@@ -229,7 +228,7 @@ void CProjector::glRenderCone(float d)
 	CGenericVector<float>	p;
 
 #if defined(GL_ARB_multitexture)
-    const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+    const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
     pExtensions->glActiveTextureARB(GL_TEXTURE3_ARB);
 	glDisable(GL_TEXTURE_2D);
 #endif
