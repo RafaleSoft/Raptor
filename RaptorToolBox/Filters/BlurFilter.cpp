@@ -2,7 +2,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "Subsys/CodeGeneration.h"
 
 #if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
 	#include "System/Raptor.h"
@@ -184,7 +184,7 @@ void CBlurFilter::glRenderFilter()
 
     //! First pass : xPass of the kernel assuming it is separable
     RAPTOR_HANDLE noDevice;
-    xBuffer->glBindDisplay(noDevice);
+	xBuffer->glvkBindDisplay(noDevice);
     glActiveTextureARB(GL_TEXTURE0_ARB);
 	getColorInput()->glvkRender();
 
@@ -377,7 +377,7 @@ bool CBlurFilter::glInitFilter(void)
     xBuffer->setViewPoint(NULL);
 
 	if (m_fModel == RENDER_BUFFER)
-		xBuffer->glBindDisplay(*m_pRenderTextures);
+		xBuffer->glvkBindDisplay(*m_pRenderTextures);
 
 	if (m_fModel == RENDER_TEXTURE)
 	{

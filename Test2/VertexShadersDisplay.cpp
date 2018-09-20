@@ -5,26 +5,26 @@
 #include "stdafx.h"
 
 #include "VertexShadersDisplay.h"
-#include "GLHierarchy\VertexShader.h"
-#include "GLHierarchy\FragmentShader.h"
-#include "GLHierarchy\VertexProgram.h"
-#include "GLHierarchy\FragmentProgram.h"
-#include "Engine\3DEngine.h"
-#include "Engine\3DScene.h"
-#include "Engine\ViewPoint.h"
-#include "GLHierarchy\TextureUnitSetup.h"
-#include "System\Raptor.h"
-#include "GLHierarchy\Shader.h"
-#include "GLHierarchy\TextureFactory.h"
-#include "GLHierarchy\TextureFactoryConfig.h"
-#include "GLHierarchy\TextureObject.h"
+#include "GLHierarchy/VertexShader.h"
+#include "GLHierarchy/FragmentShader.h"
+#include "GLHierarchy/VertexProgram.h"
+#include "GLHierarchy/FragmentProgram.h"
+#include "Engine/3DEngine.h"
+#include "Engine/3DScene.h"
+#include "Engine/IViewPoint.h"
+#include "GLHierarchy/TextureUnitSetup.h"
+#include "System/Raptor.h"
+#include "GLHierarchy/Shader.h"
+#include "GLHierarchy/TextureFactory.h"
+#include "GLHierarchy/TextureFactoryConfig.h"
+#include "GLHierarchy/TextureObject.h"
 #include "GLHierarchy/TextureSet.h"
-#include "Engine\GeometricModifier.h"
-#include "GLHierarchy\3DSet.h"
-#include "GLHierarchy\Light.h"
-#include "GLHierarchy\SimpleObject.h"
-#include "GLHierarchy\ShadedGeometry.h"
-#include "GLHierarchy\RenderingProperties.h"
+#include "Engine/GeometricModifier.h"
+#include "GLHierarchy/3DSet.h"
+#include "GLHierarchy/Light.h"
+#include "GLHierarchy/SimpleObject.h"
+#include "GLHierarchy/ShadedGeometry.h"
+#include "GLHierarchy/RenderingProperties.h"
 
 #include "ToolBox/BasicObjects.h"
 
@@ -581,7 +581,7 @@ public:
 
 		pBuffer = Raptor::glCreateDisplay(attrs);
 		RAPTOR_HANDLE handle;
-		pBuffer->glBindDisplay(handle);
+		pBuffer->glvkBindDisplay(handle);
 			
 			CRenderingProperties *rp = pBuffer->getRenderingProperties();
 			rp->setTexturing(CRenderingProperties::ENABLE);
@@ -589,9 +589,9 @@ public:
 			rp->setCullFace(CRenderingProperties::DISABLE);
 			rp->setLighting(CRenderingProperties::DISABLE);
 			rp->clear(CGL_RGBA|CGL_DEPTH);
-			CViewPoint *vpoint = pBuffer->getViewPoint();
-			vpoint->setViewVolume(-1.0,1.0,-1.0,1.0,-1.0,1.0,CViewPoint::ORTHOGRAPHIC);
-			vpoint->glRenderViewPointModel();
+			IViewPoint *vpoint = pBuffer->getViewPoint();
+			vpoint->setViewVolume(-1.0,1.0,-1.0,1.0,-1.0,1.0,IViewPoint::ORTHOGRAPHIC);
+			vpoint->glvkRenderViewPointModel();
 			
 			pShader = new CShader("WATER_SHADER2");
 			CVertexShader *vp = pShader->glGetVertexShader();
@@ -659,7 +659,7 @@ public:
 	virtual void glRender(bool bShow)
 	{
 		RAPTOR_HANDLE handle;
-		pBuffer->glBindDisplay(handle);
+		pBuffer->glvkBindDisplay(handle);
 			CVertexShader *vp = pShader->glGetVertexShader();
 			float t = CTimeObject::GetGlobalTime();
 			GL_COORD_VERTEX v(	0.2 * t,
@@ -826,17 +826,17 @@ void CVertexShadersDisplay::Init()
 	tus->setDiffuseMap(T);
 
 	//	Build scene
-	view_point = new CViewPoint();
-    view_point->setPosition(0.0,150.0,1500.0,CViewPoint::EYE);
-    view_point->setPosition(0.0,0.0,0.0,CViewPoint::TARGET);
-	view_point->setViewVolume(-1.33f,1.33f,-1.0f,1.0f,1.0f,10000,CViewPoint::PERSPECTIVE);
+	CRaptorDisplay* pDisplay = CRaptorDisplay::GetCurrentDisplay();
+	view_point = pDisplay->createViewPoint();
+    view_point->setPosition(0.0,150.0,1500.0,IViewPoint::EYE);
+    view_point->setPosition(0.0,0.0,0.0,IViewPoint::TARGET);
+	view_point->setViewVolume(-1.33f,1.33f,-1.0f,1.0f,1.0f,10000,IViewPoint::PERSPECTIVE);
 
 	C3DScene *pScene = new C3DScene("SHADER SCENE");
 	pScene->addObject(sky);
 	pScene->addObject(ground);
 	pScene->addObject(water);
 
-	CRaptorDisplay* pDisplay = CRaptorDisplay::GetCurrentDisplay();
 	pDisplay->addScene(pScene);
 }
 

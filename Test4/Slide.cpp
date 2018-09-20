@@ -7,7 +7,6 @@
 #include "GLHierarchy/TextureObject.h"
 #include "GLHierarchy/TextureFactory.h"
 #include "System/Raptor.h"
-#include "System/RaptorExtensions.h"
 #include "Engine/Animator.h"
 #include "ToolBox/RaptorToolBox.h"
 

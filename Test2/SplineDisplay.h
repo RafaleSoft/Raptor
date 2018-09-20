@@ -33,7 +33,7 @@ private:
 	CGLFont			*font;
 	CTextureSet		*texture;
 
-	CViewPoint		*vp;
+	IViewPoint		*vp;
 	CLight			*m_pLight;
 
 	virtual void ReInit();

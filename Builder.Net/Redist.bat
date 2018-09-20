@@ -75,7 +75,7 @@ copy .\RaptorCore\Engine\ParticleManager.h Redist\Include\Engine
 copy .\RaptorCore\Engine\Physics.h Redist\Include\Engine
 copy .\RaptorCore\Engine\TimeObject.h Redist\Include\Engine
 copy .\RaptorCore\Engine\ViewModifier.h Redist\Include\Engine
-copy .\RaptorCore\Engine\ViewPoint.h Redist\Include\Engine
+copy .\RaptorCore\Engine\IViewPoint.h Redist\Include\Engine
 
 ECHO       GLHierarchy:
 copy .\RaptorCore\GLHierarchy\3DSet.h Redist\Include\GLHierarchy

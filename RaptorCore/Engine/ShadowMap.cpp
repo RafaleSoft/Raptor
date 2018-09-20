@@ -13,8 +13,8 @@
 #if !defined(AFX_OBJECT3D_H__DB24F017_80B9_11D3_97C1_FC2841000000__INCLUDED_)
 	#include "GLHierarchy/Object3D.h"
 #endif
-#if !defined(AFX_VIEWPOINT_H__82071851_A036_4311_81CB_01E7E25F19E1__INCLUDED_)
-	#include "ViewPoint.h"
+#if !defined(AFX_OPENGLVIEWPOINT_H__94BDC36B_27AB_41FC_848E_DD28D1BDFC13__INCLUDED_)
+	#include "Subsys/OpenGL/OpenGLViewPoint.h"
 #endif
 #if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
 	#include "System/Raptor.h"
@@ -146,14 +146,14 @@ bool CShadowMap::glInitEnvironment(unsigned int width,unsigned int height)
     props->setLighting(CRenderingProperties::DISABLE);
 
 	if (m_pViewPoint == NULL)
-		m_pViewPoint = new CViewPoint();
-	m_pViewPoint->setViewVolume(-1.33f,1.33f,-1.0f,1.0f,1.5f,100.0f,CViewPoint::PERSPECTIVE);
-    m_pViewPoint->setPosition(0.0f,0.0f,0.0f,CViewPoint::EYE);
-    m_pViewPoint->setPosition(0.0f,0.0f,-10.0f,CViewPoint::TARGET);
+		m_pViewPoint = new COpenGLViewPoint();
+	m_pViewPoint->setViewVolume(-1.33f,1.33f,-1.0f,1.0f,1.5f,100.0f,IViewPoint::PERSPECTIVE);
+    m_pViewPoint->setPosition(0.0f,0.0f,0.0f,IViewPoint::EYE);
+    m_pViewPoint->setPosition(0.0f,0.0f,-10.0f,IViewPoint::TARGET);
 	m_pViewPoint->registerDestruction(m_pObserver);
 
 	RAPTOR_HANDLE display;
-	m_pShadowMap->glBindDisplay(display);
+	m_pShadowMap->glvkBindDisplay(display);
 	m_pShadowMap->setViewPoint(m_pViewPoint);
 	m_pShadowMap->glUnBindDisplay();
 
@@ -220,7 +220,7 @@ void CShadowMap::glInitRenderBuffer(unsigned int width,unsigned int height)
 	pImageSet->addTexture(m_pShadowTexture);
 	pImageSet->addTexture(ShadowTexture);
 
-	m_pShadowMap->glBindDisplay(*pImageSet);
+	m_pShadowMap->glvkBindDisplay(*pImageSet);
 
 	CATCH_GL_ERROR
 }
@@ -345,13 +345,13 @@ void CShadowMap::glRenderMap(const CLight* currentLight,const vector<C3DSceneObj
 {
     //  TODO : should use multiple lights of the scene !!!
 	GL_COORD_VERTEX coord =  currentLight->getLightPosition();
-    m_pViewPoint->setPosition(coord.x,coord.y,coord.z,CViewPoint::EYE);
+    m_pViewPoint->setPosition(coord.x,coord.y,coord.z,IViewPoint::EYE);
 
 	GL_COORD_VERTEX coord2 =  currentLight->getLightDirection();
 	m_pViewPoint->setPosition( coord.x + coord2.x,
 							   coord.y + coord2.y,
 							   coord.z + coord2.z,
-                               CViewPoint::TARGET);
+                               IViewPoint::TARGET);
 
 	CGenericMatrix<float> PLight;
 	CGenericMatrix<float> MLight;
@@ -367,7 +367,7 @@ void CShadowMap::glRenderMap(const CLight* currentLight,const vector<C3DSceneObj
 
 	// Render to p-Buffer
 	RAPTOR_HANDLE display;
-	m_pShadowMap->glBindDisplay(display);
+	m_pShadowMap->glvkBindDisplay(display);
 	{
 		glGetTransposeFloatv(GL_PROJECTION_MATRIX,PLight);
 		glGetTransposeFloatv(GL_MODELVIEW_MATRIX,MLight);

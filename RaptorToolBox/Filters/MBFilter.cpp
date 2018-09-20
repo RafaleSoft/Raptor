@@ -2,7 +2,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "Subsys/CodeGeneration.h"
 
 #if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
 	#include "System/Raptor.h"
@@ -160,7 +160,7 @@ void CMBFilter::glRenderFilter()
 
     // Accumulate previous render with colorSource
     RAPTOR_HANDLE noDevice;
-    pAccum->pCurrentDisplay->glBindDisplay(noDevice);
+	pAccum->pCurrentDisplay->glvkBindDisplay(noDevice);
     glActiveTextureARB(GL_TEXTURE1_ARB);
     glEnable(GL_TEXTURE_2D);
 	pAccum->m_pPreviousColorAccum->glvkRender();
@@ -254,7 +254,7 @@ bool CMBFilter::glInitFilter(void)
     pDisplay1->setViewPoint(NULL);
 
 	if (m_fModel == RENDER_BUFFER)
-		pDisplay1->glBindDisplay(*m_pRenderTextures);
+		pDisplay1->glvkBindDisplay(*m_pRenderTextures);
 
     CRaptorDisplay* pDisplay2 = Raptor::glCreateDisplay(state);
     CRenderingProperties *rp2 = pDisplay2->getRenderingProperties();
@@ -262,7 +262,7 @@ bool CMBFilter::glInitFilter(void)
     pDisplay2->setViewPoint(NULL);
 
 	if (m_fModel == RENDER_BUFFER)
-		pDisplay2->glBindDisplay(*m_pRenderTextures2);
+		pDisplay2->glvkBindDisplay(*m_pRenderTextures2);
 
 
     accumulator->pCurrentDisplay = pDisplay1;

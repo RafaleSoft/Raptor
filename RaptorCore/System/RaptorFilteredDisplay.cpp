@@ -30,8 +30,8 @@
 #if !defined(AFX_TEXTURESET_H__26F3022D_70FE_414D_9479_F9CCD3DCD445__INCLUDED_)
 	#include "GLHierarchy/TextureSet.h"
 #endif
-#if !defined(AFX_VIEWPOINT_H__82071851_A036_4311_81CB_01E7E25F19E1__INCLUDED_)
-	#include "Engine/ViewPoint.h"
+#if !defined(AFX_IVIEWPOINT_H__82071851_A036_4311_81CB_01E7E25F19E1__INCLUDED_)
+	#include "Engine/IViewPoint.h"
 #endif
 #if !defined(AFX_RENDERINGPROPERTIES_H__634BCF2B_84B4_47F2_B460_D7FDC0F3B698__INCLUDED_)
 	#include "GLHierarchy/RenderingProperties.h"
@@ -110,8 +110,8 @@ CRaptorFilteredDisplay::CRaptorFilteredDisplay(const CRaptorDisplayConfig& pcs)
 		filter_cs.renderer = CRaptorDisplayConfig::PIXEL_BUFFER;
 #endif
 
-	CViewPoint *vp = CRaptorDisplay::getViewPoint();
-	vp->setViewVolume(-1.0f,1.0f,-1.0f,1.0f,1.0f,100.0f,CViewPoint::ORTHOGRAPHIC);
+	IViewPoint *vp = CRaptorDisplay::getViewPoint();
+	vp->setViewVolume(-1.0f,1.0f,-1.0f,1.0f,1.0f,100.0f,IViewPoint::ORTHOGRAPHIC);
 
     CRenderingProperties *rp = CRaptorScreenDisplay::getRenderingProperties();
     rp->setTexturing(CRenderingProperties::ENABLE);
@@ -294,10 +294,10 @@ bool CRaptorFilteredDisplay::glCreateRenderDisplay(void)
 			f.glResizeTexture(T,rda.width,rda.height);
 			m_pImageSet->addTexture(T);
 
-			m_pDisplay->glBindDisplay(*m_pImageSet);
+			m_pDisplay->glvkBindDisplay(*m_pImageSet);
 
 			RAPTOR_HANDLE noDevice;
-            if (!m_pDisplay->glBindDisplay(noDevice))
+			if (!m_pDisplay->glvkBindDisplay(noDevice))
 				return false;
 			m_pDisplay->glUnBindDisplay();
 		}
@@ -356,7 +356,7 @@ bool CRaptorFilteredDisplay::glCreateRenderDisplay(void)
     return true;
 }
 
-bool CRaptorFilteredDisplay::glBindDisplay(const RAPTOR_HANDLE& device)
+bool CRaptorFilteredDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
 {
 	if (device.hClass == CShader::CShaderClassID::GetClassId().ID())
     {
@@ -410,7 +410,7 @@ bool CRaptorFilteredDisplay::glBindDisplay(const RAPTOR_HANDLE& device)
 
     //  prepare createStruct for screen :
     // just keep colors ( but remove float : unsupported ) and hardware
-	if (CRaptorScreenDisplay::glBindDisplay(device))
+	if (CRaptorScreenDisplay::glvkBindDisplay(device))
 	{
 		if (!glCreateRenderDisplay())
             return false;
@@ -419,9 +419,9 @@ bool CRaptorFilteredDisplay::glBindDisplay(const RAPTOR_HANDLE& device)
 		RAPTOR_HANDLE noDevice;
 
 		if (CRaptorDisplayConfig::ANTIALIAS_NONE != filter_cs.antialias)
-			return m_pFSAADisplay->glBindDisplay(noDevice);
+			return m_pFSAADisplay->glvkBindDisplay(noDevice);
 		else
-			return m_pDisplay->glBindDisplay(noDevice);
+			return m_pDisplay->glvkBindDisplay(noDevice);
 	}
 	else
 		return false;
@@ -476,28 +476,29 @@ void CRaptorFilteredDisplay::glResize(unsigned int sx,unsigned int sy,unsigned i
 	glViewport(ox,oy,sx,sy);
 	C3DEngine::Get3DEngine()->setClip(ox,oy,sx,sy);
 
-	CViewPoint *pVp = CRaptorDisplay::getViewPoint();
-	pVp->glRenderViewPointModel();
+	IViewPoint *pVp = CRaptorDisplay::getViewPoint();
+	pVp->glvkRenderViewPointModel();
 
     //m_pDisplay->glResize(sx,sy,ox,oy);
 
 	if (m_bBufferBound)
 	{
-		CViewPoint *vp = NULL;
+		IViewPoint *vp = NULL;
 		RAPTOR_HANDLE noDevice;
 
 		if (m_pFSAADisplay != NULL)
 		{
-			m_pFSAADisplay->glBindDisplay(noDevice);
+			m_pFSAADisplay->glvkBindDisplay(noDevice);
 			vp = m_pFSAADisplay->getViewPoint();
 		}
 		else
 		{
-			m_pDisplay->glBindDisplay(noDevice);
+			m_pDisplay->glvkBindDisplay(noDevice);
 			vp = m_pDisplay->getViewPoint();
 		}
 
-		vp->glRenderViewPointModel();
+		if (NULL != vp)
+			vp->glvkRenderViewPointModel();
 	}
 
     CATCH_GL_ERROR
@@ -585,7 +586,7 @@ bool CRaptorFilteredDisplay::glRender(void)
 
 
 
-void CRaptorFilteredDisplay::setViewPoint(CViewPoint *viewPoint)
+void CRaptorFilteredDisplay::setViewPoint(IViewPoint *viewPoint)
 {
 	if (m_pDisplay != NULL)
 	{
@@ -615,7 +616,7 @@ void CRaptorFilteredDisplay::setViewPoint(CViewPoint *viewPoint)
 #endif
 }
 
-CViewPoint *const CRaptorFilteredDisplay::getViewPoint(void) const
+IViewPoint *const CRaptorFilteredDisplay::getViewPoint(void) const
 {
 	if (m_pDisplay == NULL)
 		return NULL;

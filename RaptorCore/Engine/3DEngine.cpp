@@ -19,11 +19,13 @@
 #if !defined(AFX_OBJECT3DINSTANCE_H__A2627662_F5F9_11D3_9142_CFEB8E9F2745__INCLUDED_)
 	#include "GLHierarchy/Object3DInstance.h"
 #endif
-#if !defined(AFX_SSE_3DENGINE_H__247539DD_1572_4C73_86BB_CD4C1DD82614__INCLUDED_)
-	#include "SSE_Engine/SSE_3DEngine.h"
+#ifdef RAPTOR_SSE_CODE_GENERATION
+	#if !defined(AFX_SSE_3DENGINE_H__247539DD_1572_4C73_86BB_CD4C1DD82614__INCLUDED_)
+		#include "SSE_Engine/SSE_3DEngine.h"
+	#endif
 #endif
-#if !defined(AFX_VIEWPOINT_H__82071851_A036_4311_81CB_01E7E25F19E1__INCLUDED_)
-	#include "ViewPoint.h"
+#if !defined(AFX_IVIEWPOINT_H__82071851_A036_4311_81CB_01E7E25F19E1__INCLUDED_)
+	#include "IViewPoint.h"
 #endif
 
 //	Collision core
@@ -330,7 +332,7 @@ CGenericMatrix<float> &C3DEngine::getModelview(void) const
     return m_pAttributes->modelview;
 }
 
-void C3DEngine::glConfigureEngine(CViewPoint* pViewPoint)
+void C3DEngine::glConfigureEngine(IViewPoint* pViewPoint)
 {
 	CGenericMatrix<float> M;
 	CGenericMatrix<float> P;
@@ -351,7 +353,7 @@ void C3DEngine::glConfigureEngine(CViewPoint* pViewPoint)
 	if (pViewPoint != NULL)
 	{
 		float n,f,l,r,t,b;
-		CViewPoint::VIEW_POINT_MODEL m;
+		IViewPoint::VIEW_POINT_MODEL m;
 		pViewPoint->getViewVolume(l,r,b,t,n,f,m);
 
 		m_pAttributes->farPlane = f;

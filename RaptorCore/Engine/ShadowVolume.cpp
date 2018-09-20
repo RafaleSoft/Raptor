@@ -9,8 +9,8 @@
 #if !defined(AFX_OBJECT3DSHADOW_H__A502A78F_0575_4F30_BCE2_0658B60EB490__INCLUDED_)
 	#include "GLHierarchy/Object3DShadow.h"
 #endif
-#if !defined(AFX_VIEWPOINT_H__82071851_A036_4311_81CB_01E7E25F19E1__INCLUDED_)
-	#include "ViewPoint.h"
+#if !defined(AFX_IVIEWPOINT_H__82071851_A036_4311_81CB_01E7E25F19E1__INCLUDED_)
+	#include "IViewPoint.h"
 #endif
 #if !defined(AFX_RAPTORDISPLAY_H__9637BC66_3734_43A8_A130_87553D4379BC__INCLUDED_)
 	#include "System/RaptorDisplay.h"
@@ -135,12 +135,12 @@ void CShadowVolume::addObject(C3DSceneObject* object)
 #endif
 
 	// Compute all possible shadow volumes
-    CViewPoint *vp = CRaptorDisplay::GetCurrentDisplay()->getViewPoint();
+    IViewPoint *vp = CRaptorDisplay::GetCurrentDisplay()->getViewPoint();
     float shadowExtrusion = C3DEngine::Get3DEngine()->getFarPlane();
     if (vp != NULL)
     {
         float vv[6];
-        CViewPoint::VIEW_POINT_MODEL model;
+        IViewPoint::VIEW_POINT_MODEL model;
         vp->getViewVolume(	vv[0],vv[1],vv[2],vv[3],vv[4],vv[5],model);
         shadowExtrusion = vv[5];
     }
@@ -176,12 +176,12 @@ void CShadowVolume::initVolumes(const vector<C3DSceneObject*>& objects)
 
 
     // Compute all possible shadow volumes
-    CViewPoint *vp = CRaptorDisplay::GetCurrentDisplay()->getViewPoint();
+    IViewPoint *vp = CRaptorDisplay::GetCurrentDisplay()->getViewPoint();
     float shadowExtrusion = C3DEngine::Get3DEngine()->getFarPlane();
     if (vp != NULL)
     {
         float vv[6];
-        CViewPoint::VIEW_POINT_MODEL model;
+        IViewPoint::VIEW_POINT_MODEL model;
         vp->getViewVolume(	vv[0],vv[1],vv[2],vv[3],vv[4],vv[5],model);
         shadowExtrusion = vv[5];
     }

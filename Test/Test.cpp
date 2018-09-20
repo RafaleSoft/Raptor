@@ -72,7 +72,7 @@ int main(int argc, char* argv[])
 
     CTestDoc *pDoc = new CTestDoc(wnd,pDisplay);
 
-    bool res = pDisplay->glBindDisplay(wnd);
+	bool res = pDisplay->glvkBindDisplay(wnd);
     if (res)
 	{
         pDoc->GLInitContext();

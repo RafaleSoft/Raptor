@@ -9,8 +9,8 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#if !defined(AFX_VIEWPOINT_H__82071851_A036_4311_81CB_01E7E25F19E1__INCLUDED_)
-	#include "Engine/ViewPoint.h"
+#if !defined(AFX_IVIEWPOINT_H__82071851_A036_4311_81CB_01E7E25F19E1__INCLUDED_)
+	#include "Engine/IViewPoint.h"
 #endif
 #if !defined(AFX_RAPTORCONSOLE_H__27656611_2DF3_4416_8124_F608CFAC2122__INCLUDED_)
 	#include "System/RaptorConsole.h"
@@ -62,7 +62,7 @@ public:
 		CRaptorConsole::CInputCollector<CController>	*m_pInput;
 	};
 
-	static CController *createViewpointController(CViewPoint* pVp);
+	static CController *createViewpointController(IViewPoint* pVp);
 
 private:
 	CControllers(void);

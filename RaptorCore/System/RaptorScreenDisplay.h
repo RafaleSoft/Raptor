@@ -35,7 +35,7 @@ public:
     virtual ITextureGenerator::GENERATOR_KIND getKind(void) const { return ITextureGenerator::ANIMATED; };
 
 	//! see base class
-	virtual bool glBindDisplay(const RAPTOR_HANDLE& device);
+	virtual bool glvkBindDisplay(const RAPTOR_HANDLE& device);
 
     //! see base class
     virtual RAPTOR_HANDLE getCurrentDevice(void) const;

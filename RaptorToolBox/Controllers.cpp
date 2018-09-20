@@ -1,4 +1,3 @@
-#include "StdAfx.h"
 #include "Subsys/CodeGeneration.h"
 
 #if !defined(AFX_CONTROLLERS_H__CC9BBAE1_0481_4CC0_A421_7BB690656844__INCLUDED_)
@@ -32,7 +31,7 @@ CControllers::~CControllers(void)
 {
 }
 
-CControllers::CController *CControllers::createViewpointController(CViewPoint* pVp)
+CControllers::CController *CControllers::createViewpointController(IViewPoint* pVp)
 {
 	CViewPointController *pController = new CViewPointController(pVp);
 

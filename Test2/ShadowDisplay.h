@@ -35,7 +35,7 @@ private:
 	CShadedGeometry	*fulltext;
     CShadedGeometry	*knot;
     C3DScene		*m_pScene;
-	CViewPoint		*m_pVP;
+	IViewPoint		*m_pVP;
 
 	float			dt;
 

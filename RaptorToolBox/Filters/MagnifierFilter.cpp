@@ -2,7 +2,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "Subsys/CodeGeneration.h"
 
 #if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
 	#include "System/Raptor.h"
@@ -272,7 +272,7 @@ void CMagnifierFilter::glRenderFilter()
 
     //! First pass : xPass of the kernel assuming it is separable
     RAPTOR_HANDLE noDevice;
-    xBuffer->glBindDisplay(noDevice);
+	xBuffer->glvkBindDisplay(noDevice);
     glActiveTextureARB(GL_TEXTURE1_ARB);
     glEnable(GL_TEXTURE_2D);
 	kernelTexture->glvkRender();
@@ -396,7 +396,7 @@ bool CMagnifierFilter::glInitFilter(void)
     xBuffer->setViewPoint(NULL);
 
 	if (m_fModel == RENDER_BUFFER)
-		xBuffer->glBindDisplay(*m_pRenderTextures);
+		xBuffer->glvkBindDisplay(*m_pRenderTextures);
 
 	if (m_fModel == RENDER_TEXTURE)
 	{

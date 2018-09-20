@@ -21,8 +21,8 @@
 #if !defined(AFX_3DENGINE_H__DB24F018_80B9_11D3_97C1_FC2841000000__INCLUDED_)
 	#include "Engine/3DEngine.h"
 #endif
-#if !defined(AFX_VIEWPOINT_H__82071851_A036_4311_81CB_01E7E25F19E1__INCLUDED_)
-	#include "Engine/ViewPoint.h"
+#if !defined(AFX_OPENGLVIEWPOINT_H__94BDC36B_27AB_41FC_848E_DD28D1BDFC13__INCLUDED_)
+	#include "Subsys/OpenGL/OpenGLViewPoint.h"
 #endif
 #if !defined(AFX_3DSCENE_H__E597E752_BAD4_415D_9C00_8C59D139D32B__INCLUDED_)
 	#include "Engine/3DScene.h"
@@ -73,7 +73,7 @@ CRaptorDisplay::CRaptorDisplay(const CPersistence::CPersistenceClassID& id,const
 	:CPersistence(id,name)
 {
 	m_pRootScene = new C3DScene("ROOT_SCENE");
-	m_pViewPoint = new CViewPoint(m_pRootScene->getName()+"_VIEWPOINT");
+	m_pViewPoint = createViewPoint();
 	m_pProperties = new CRenderingProperties();
     m_pProperties->clear(CGL_RGBA|CGL_DEPTH);
 	m_pProperties->setMultisampling(CRenderingProperties::DISABLE);
@@ -97,6 +97,14 @@ CRaptorDisplay::~CRaptorDisplay()
 		delete m_pViewPoint;
 }
 
+IViewPoint *const CRaptorDisplay::createViewPoint(void) const
+{
+	if (NULL != m_pRootScene)
+		return new COpenGLViewPoint(m_pRootScene->getName() + "_VIEWPOINT");
+	else
+		return new COpenGLViewPoint("RAPTORDISPLAY_VIEWPOINT");
+}
+
 void CRaptorDisplay::glReleaseResources(void)
 {
     //!  Should place destructor body here,
@@ -115,7 +123,7 @@ void CRaptorDisplay::unLink(const CPersistence* obj)
     }
 }
 
-CViewPoint *const CRaptorDisplay::getViewPoint(void) const
+IViewPoint *const CRaptorDisplay::getViewPoint(void) const
 {
 	return m_pViewPoint; 
 }
@@ -176,7 +184,7 @@ void CRaptorDisplay::addSubDisplay(CRaptorDisplay *pDisplay)
     }
 }
 
-void CRaptorDisplay::setViewPoint(CViewPoint *viewPoint)
+void CRaptorDisplay::setViewPoint(IViewPoint *viewPoint)
 {
 	if (m_pViewPoint != viewPoint)
 	{
@@ -209,7 +217,7 @@ void CRaptorDisplay::setViewPoint(CViewPoint *viewPoint)
 	}
 }
 
-bool CRaptorDisplay::glBindDisplay(const RAPTOR_HANDLE& device)
+bool CRaptorDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
 {
 	if (device.handle != CGL_NULL)
 	{
@@ -231,10 +239,10 @@ bool CRaptorDisplay::glBindDisplay(const RAPTOR_HANDLE& device)
     {
         if (m_bApplyViewPointModel)
         {
-            m_pViewPoint->glRenderViewPointModel();
+            m_pViewPoint->glvkRenderViewPointModel();
             m_bApplyViewPointModel = false;
         }
-		m_pViewPoint->glRender();
+		m_pViewPoint->glvkRender();
     }
     else
 		C3DEngine::Get3DEngine()->glConfigureEngine(NULL);
@@ -249,7 +257,7 @@ bool CRaptorDisplay::glBindDisplay(const RAPTOR_HANDLE& device)
         while (it != m_pSubDisplays.end())
         {
             CRaptorDisplay* display = (*it++);
-		    display->glBindDisplay(_device);
+			display->glvkBindDisplay(_device);
             display->glRender();
 		    display->glUnBindDisplay();
         }

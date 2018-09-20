@@ -70,7 +70,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;EXPORT_RAPTOR_CORE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile>Subsys\CodeGeneration.h</PrecompiledHeaderFile>
       <WarningLevel>Level4</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>None</DebugInformationFormat>
@@ -226,11 +226,10 @@ copy OpenEXRLib\bin\vc9\zdll.dll "%RAPTOR_ROOT%\Redist\bin\zlib1.dll"
     </ClCompile>
     <ClCompile Include="..\..\RaptorToolBox\Merge.cpp" />
     <ClCompile Include="..\..\RaptorToolBox\ParticleCompute.cpp" />
-    <ClCompile Include="..\..\RaptorToolBox\RaptorToolBox.cpp" />
-    <ClCompile Include="..\..\RaptorToolBox\Renders.cpp" />
-    <ClCompile Include="..\..\RaptorToolBox\StdAfx.cpp">
+    <ClCompile Include="..\..\RaptorToolBox\RaptorToolBox.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="..\..\RaptorToolBox\Renders.cpp" />
     <ClCompile Include="..\..\RaptorToolBox\Streaming.cpp" />
     <ClCompile Include="..\..\RaptorToolBox\Streaming\AVIStreaming.cpp" />
     <ClCompile Include="..\..\RaptorToolBox\Streaming\WMVStreaming.cpp" />
@@ -270,7 +269,6 @@ copy OpenEXRLib\bin\vc9\zdll.dll "%RAPTOR_ROOT%\Redist\bin\zlib1.dll"
     <ClInclude Include="..\..\RaptorToolBox\ParticleCompute.h" />
     <ClInclude Include="..\..\RaptorToolBox\RaptorToolBox.h" />
     <ClInclude Include="..\..\RaptorToolBox\Resource.h" />
-    <ClInclude Include="..\..\RaptorToolBox\StdAfx.h" />
     <ClInclude Include="..\..\RaptorToolBox\Streaming.h" />
     <ClInclude Include="..\..\RaptorToolBox\Streaming\AVIStreaming.h" />
     <ClInclude Include="..\..\RaptorToolBox\Streaming\WMVStreaming.h" />

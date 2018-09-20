@@ -22,7 +22,7 @@
 
 RAPTOR_NAMESPACE_BEGIN
 
-class CViewPoint;
+class IViewPoint;
 class CRaptorDisplay;
 class CTextureObject;
 class CVertexShader ;
@@ -76,7 +76,7 @@ private:
 	CGenericMatrix<float>	m_lightProjection;
     CRenderingProperties	m_lightProperties;
 
-    CViewPoint		*m_pViewPoint;
+    IViewPoint		*m_pViewPoint;
     CRaptorDisplay	*m_pShadowMap;
     CTextureObject	*m_pShadowTexture;
     CVertexShader	*m_pVSShadowMap;

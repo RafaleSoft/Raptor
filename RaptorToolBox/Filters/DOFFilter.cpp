@@ -2,7 +2,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "Subsys/CodeGeneration.h"
 
 #if !defined(AFX_TEXTUREFACTORY_H__1B470EC4_4B68_11D3_9142_9A502CBADC6B__INCLUDED_)
 	#include "GLHierarchy/TextureFactory.h"
@@ -297,7 +297,7 @@ void CDOFFilter::glRenderFilter()
 
     //  Render X-blur in pixel buffer
     RAPTOR_HANDLE noDevice;
-    tmpDisplay->glBindDisplay(noDevice);
+	tmpDisplay->glvkBindDisplay(noDevice);
     glActiveTextureARB(GL_TEXTURE1_ARB);
     glEnable(GL_TEXTURE_2D);
 	depthInput->glvkRender();
@@ -322,7 +322,7 @@ void CDOFFilter::glRenderFilter()
 	for (unsigned int i=2;i<=m_nbBlur;i++)
 	{
 		//  Render Y-blur in current buffer
-		tmpDisplay2->glBindDisplay(noDevice);
+		tmpDisplay2->glvkBindDisplay(noDevice);
 		tmpTexture->glvkRender();
 
 	#if defined(GL_ARB_vertex_shader)
@@ -339,7 +339,7 @@ void CDOFFilter::glRenderFilter()
 		tmpDisplay2->glUnBindDisplay();
 
 		//  Render X-blur in pixel buffer
-		tmpDisplay->glBindDisplay(noDevice);
+		tmpDisplay->glvkBindDisplay(noDevice);
 		tmpTexture2->glvkRender();
 
 #if defined(GL_ARB_vertex_shader)
@@ -474,8 +474,8 @@ bool CDOFFilter::glInitFilter(void)
 
 	if (m_fModel == RENDER_BUFFER)
 	{
-		tmpDisplay->glBindDisplay(*m_pRenderTextures);
-		tmpDisplay2->glBindDisplay(*m_pRenderTextures2);
+		tmpDisplay->glvkBindDisplay(*m_pRenderTextures);
+		tmpDisplay2->glvkBindDisplay(*m_pRenderTextures2);
 	}
 
 	if (m_fModel == RENDER_TEXTURE)

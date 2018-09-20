@@ -69,7 +69,7 @@ void CGLWnd::glMakeCurrent(bool restoreContext)
 		RAPTOR_HANDLE display;
 		display.handle = (unsigned int)(dc.m_hDC);
 		display.hClass = DEVICE_CONTEXT_CLASS;
-		m_pDisplay->glBindDisplay(display);
+		m_pDisplay->glvkBindDisplay(display);
 	}
 	else
 		m_pDisplay->glUnBindDisplay();
@@ -111,7 +111,7 @@ bool CGLWnd::GLCreateWindow (CString name,CWnd *parent, const CRaptorDisplayConf
 			RAPTOR_HANDLE display;
 			display.handle = (unsigned int)(dc.m_hDC);
 			display.hClass = DEVICE_CONTEXT_CLASS;
-			m_pDisplay->glBindDisplay(display);
+			m_pDisplay->glvkBindDisplay(display);
 
 			GLInitContext();
 		
@@ -135,7 +135,7 @@ bool CGLWnd::GLCreateWindow (CString name,CWnd *parent, const CRaptorDisplayConf
 		RAPTOR_HANDLE display;
 		display.handle = (unsigned int)(dc.m_hDC);
 		display.hClass = DEVICE_CONTEXT_CLASS;
-		m_pDisplay->glBindDisplay(display);
+		m_pDisplay->glvkBindDisplay(display);
 
 		GLInitContext();
 
@@ -188,7 +188,7 @@ int CGLWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	RAPTOR_HANDLE display;
 	display.handle = (unsigned int)(dc.m_hDC);
 	display.hClass = DEVICE_CONTEXT_CLASS;
-	if (m_pDisplay->glBindDisplay(display))
+	if (m_pDisplay->glvkBindDisplay(display))
 	{
 		m_pDisplay->glUnBindDisplay();
 		return 1;
@@ -206,7 +206,7 @@ int CGLWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		if (m_pDisplay == NULL)
 			return -1;
 
-		if (m_pDisplay->glBindDisplay(display))
+		if (m_pDisplay->glvkBindDisplay(display))
 		{
 			m_pDisplay->glUnBindDisplay();
 			return 1;
@@ -262,7 +262,7 @@ void CGLWnd::OnSize(UINT nType, int cx, int cy)
 	RAPTOR_HANDLE display;
 	display.handle = (unsigned int)(dc.m_hDC);
 	display.hClass = DEVICE_CONTEXT_CLASS;
-	m_pDisplay->glBindDisplay(display);
+	m_pDisplay->glvkBindDisplay(display);
 	m_pDisplay->glResize(cx,cy,0,0);
 	
 	CATCH_GL_ERROR
@@ -279,7 +279,7 @@ void CGLWnd::OnPaint()
 	RAPTOR_HANDLE display;
 	display.handle = (unsigned int)(dc.m_hDC);
 	display.hClass = DEVICE_CONTEXT_CLASS;
-	m_pDisplay->glBindDisplay(display);
+	m_pDisplay->glvkBindDisplay(display);
 
 	GLDisplayFunc();
 

@@ -144,7 +144,7 @@ void CRaptorBufferDisplay::glResize(unsigned int sx,unsigned int sy,unsigned int
     m_pBuffer = 0;
 
     RAPTOR_HANDLE noDevice;
-    glBindDisplay(noDevice);
+	glvkBindDisplay(noDevice);
     glUnBindDisplay();
 
     CATCH_GL_ERROR
@@ -191,7 +191,7 @@ void CRaptorBufferDisplay::glGenerate(CTextureObject* T)
 }
 
 
-bool CRaptorBufferDisplay::glBindDisplay(const RAPTOR_HANDLE& device)
+bool CRaptorBufferDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
 {
 #if defined(WGL_ARB_pbuffer)
 	if (m_pBuffer == 0)
@@ -221,7 +221,7 @@ bool CRaptorBufferDisplay::glBindDisplay(const RAPTOR_HANDLE& device)
         CATCH_GL_ERROR
 
         RAPTOR_HANDLE noDevice;
-		return CRaptorDisplay::glBindDisplay(noDevice);
+		return CRaptorDisplay::glvkBindDisplay(noDevice);
 	}
 	else
 	{
@@ -256,7 +256,7 @@ bool CRaptorBufferDisplay::glBindDisplay(const RAPTOR_HANDLE& device)
 
             CATCH_GL_ERROR
 
-			res = CRaptorDisplay::glBindDisplay(device);
+			res = CRaptorDisplay::glvkBindDisplay(device);
 		}
         // Specific case for BufferDisplay :
         //  a configuration parameter can be transmitted to the underlying

@@ -28,7 +28,7 @@ public:
 private:
 	CGLLod		*lod;
 	CMaterial	*material;
-	CViewPoint	*vp;
+	IViewPoint	*vp;
 
 	virtual void	ReInit();
 

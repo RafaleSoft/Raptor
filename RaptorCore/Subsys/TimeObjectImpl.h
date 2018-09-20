@@ -12,7 +12,7 @@
 
 RAPTOR_NAMESPACE_BEGIN
 
-__interface ITImeObjectImpl
+RAPTOR_INTERFACE ITImeObjectImpl
 {
 public:
 	//!	Implements @see CTimeObject

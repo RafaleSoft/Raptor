@@ -97,7 +97,7 @@ bool CAmbientOcclusionShader::glInitAOCompute(void)
     rp->setLighting(CRenderingProperties::DISABLE);
     rp->clear(CGL_NULL);
     m_pAOBuffer->setViewPoint(NULL);
-	m_pAOBuffer->glBindDisplay(*pOutputTextures);
+	m_pAOBuffer->glvkBindDisplay(*pOutputTextures);
 
 	m_pAOcomputeRef = CShader::getShader("AOCOMPUTE_SHADER").glClone("AO_SHADER");
 	CTextureUnitSetup *AOdata = glGetTextureUnitsSetup();
@@ -204,7 +204,7 @@ void CAmbientOcclusionShader::glRender()
 	f_params.addParameter("numRows",GL_COORD_VERTEX(m_occluders[0]->m_refNbVertex/64,0,0,0));
 
 	RAPTOR_HANDLE noDevice;
-	m_pAOBuffer->glBindDisplay(noDevice);
+	m_pAOBuffer->glvkBindDisplay(noDevice);
 
 #ifdef GL_ARB_texture_rectangle
 	glEnable(GL_TEXTURE_RECTANGLE_ARB);

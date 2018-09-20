@@ -248,6 +248,7 @@ Subsys\Redist.bat
     <ClCompile Include="..\..\RaptorCore\Engine\Environment.cpp" />
     <ClCompile Include="..\..\RaptorCore\Engine\GeometricModifier.cpp" />
     <ClCompile Include="..\..\RaptorCore\Engine\ImageModifier.cpp" />
+    <ClCompile Include="..\..\RaptorCore\Engine\IViewPoint.cpp" />
     <ClCompile Include="..\..\RaptorCore\Engine\LightModifier.cpp" />
     <ClCompile Include="..\..\RaptorCore\Engine\Mirror.cpp" />
     <ClCompile Include="..\..\RaptorCore\Engine\Modifier.cpp" />
@@ -259,7 +260,6 @@ Subsys\Redist.bat
     <ClCompile Include="..\..\RaptorCore\Engine\ShadowVolume.cpp" />
     <ClCompile Include="..\..\RaptorCore\Engine\TimeObject.cpp" />
     <ClCompile Include="..\..\RaptorCore\Engine\ViewModifier.cpp" />
-    <ClCompile Include="..\..\RaptorCore\Engine\ViewPoint.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\3DSet.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\BumppedGeometry.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\FragmentProgram.cpp" />
@@ -388,7 +388,8 @@ Subsys\Redist.bat
     <ClCompile Include="..\..\RaptorCore\Subsys\Octree.cxx">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\RaptorCore\Subsys\OpenGLMemory.cpp" />
+    <ClCompile Include="..\..\RaptorCore\Subsys\OpenGL\OpenGLMemory.cpp" />
+    <ClCompile Include="..\..\RaptorCore\Subsys\OpenGL\OpenGLViewPoint.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\PhongShader.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\PlayFrameJob.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\RegisterCombiner.cpp" />
@@ -407,6 +408,7 @@ Subsys\Redist.bat
     <ClCompile Include="..\..\RaptorCore\Subsys\Vulkan\VulkanShader.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\Vulkan\VulkanSurface.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\Vulkan\VulkanTextureObject.cpp" />
+    <ClCompile Include="..\..\RaptorCore\Subsys\Vulkan\VulkanViewPoint.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\XMLRaptorIO.cpp" />
     <ClCompile Include="..\..\RaptorCore\System\CGLTypes.cpp" />
     <ClCompile Include="..\..\RaptorCore\System\Color.cpp" />
@@ -465,6 +467,7 @@ copy $(SolutionDir)\$(ProjectName)\Subsys\CodeGeneration.h "%RAPTOR_ROOT%\Redist
     <ClInclude Include="..\..\RaptorCore\Engine\Environment.h" />
     <ClInclude Include="..\..\RaptorCore\Engine\GeometricModifier.h" />
     <ClInclude Include="..\..\RaptorCore\Engine\ImageModifier.h" />
+    <ClInclude Include="..\..\RaptorCore\Engine\IViewPoint.h" />
     <ClInclude Include="..\..\RaptorCore\Engine\LightModifier.h" />
     <ClInclude Include="..\..\RaptorCore\Engine\Mirror.h" />
     <ClInclude Include="..\..\RaptorCore\Engine\Modifier.h" />
@@ -476,7 +479,6 @@ copy $(SolutionDir)\$(ProjectName)\Subsys\CodeGeneration.h "%RAPTOR_ROOT%\Redist
     <ClInclude Include="..\..\RaptorCore\Engine\ShadowVolume.h" />
     <ClInclude Include="..\..\RaptorCore\Engine\TimeObject.h" />
     <ClInclude Include="..\..\RaptorCore\Engine\ViewModifier.h" />
-    <ClInclude Include="..\..\RaptorCore\Engine\ViewPoint.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\3DSet.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\BumppedGeometry.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\FragmentProgram.h" />
@@ -576,7 +578,8 @@ copy $(SolutionDir)\$(ProjectName)\Subsys\CodeGeneration.h "%RAPTOR_ROOT%\Redist
     <ClInclude Include="..\..\RaptorCore\Subsys\ObjectModels\RaptorScript_tree.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\ObjectModels\RaptorScript_yacc.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\Octree.h" />
-    <ClInclude Include="..\..\RaptorCore\Subsys\OpenGLMemory.h" />
+    <ClInclude Include="..\..\RaptorCore\Subsys\OpenGL\OpenGLMemory.h" />
+    <ClInclude Include="..\..\RaptorCore\Subsys\OpenGL\OpenGLViewPoint.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\PhongShader.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\PlayFrameJob.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\RegisterCombiner.h" />
@@ -597,6 +600,7 @@ copy $(SolutionDir)\$(ProjectName)\Subsys\CodeGeneration.h "%RAPTOR_ROOT%\Redist
     <ClInclude Include="..\..\RaptorCore\Subsys\Vulkan\VulkanShader.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\Vulkan\VulkanSurface.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\Vulkan\VulkanTextureObject.h" />
+    <ClInclude Include="..\..\RaptorCore\Subsys\Vulkan\VulkanViewPoint.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\XMLRaptorIO.h" />
     <ClInclude Include="..\..\RaptorCore\System\CGLTypes.h" />
     <ClInclude Include="..\..\RaptorCore\System\Color.h" />
