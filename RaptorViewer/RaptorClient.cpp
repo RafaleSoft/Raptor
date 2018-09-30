@@ -107,7 +107,7 @@ void CRaptorClient::glRender()
 
 	m_pDisplay->glRender();
 
-	m_pDisplay->glUnBindDisplay();
+	m_pDisplay->glvkUnBindDisplay();
 
 	if (pending_queries < MAX_QUERIES)
 	{
@@ -164,7 +164,7 @@ bool CRaptorClient::run(unsigned int width, unsigned int height)
 		C3DScene *pScene = m_pDisplay->getRootScene();
 		pScene->addObject(m_pImage);
 
-		res = m_pDisplay->glUnBindDisplay();
+		res = m_pDisplay->glvkUnBindDisplay();
 
 		if (res)
 		{

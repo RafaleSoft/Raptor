@@ -292,7 +292,7 @@ void CMagnifierFilter::glRenderFilter()
     glDrawBuffer();
 	m_pYKernelShader->glStop();
 
-    xBuffer->glUnBindDisplay();
+	xBuffer->glvkUnBindDisplay();
 
 	glBindTexture(GL_TEXTURE_2D,0);
 }

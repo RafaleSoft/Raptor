@@ -193,7 +193,7 @@ void CBlurFilter::glRenderFilter()
 	hBlur->glStop();
 
 	glBindTexture(GL_TEXTURE_2D,0);
-    xBuffer->glUnBindDisplay();
+	xBuffer->glvkUnBindDisplay();
 }
 
 void CBlurFilter::glRenderFilterOutput()

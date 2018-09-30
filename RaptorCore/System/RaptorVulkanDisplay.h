@@ -34,7 +34,7 @@ public:
 	virtual bool glvkBindDisplay(const RAPTOR_HANDLE& device);
 
 	//! see base class
-	virtual bool glUnBindDisplay(void);
+	virtual bool glvkUnBindDisplay(void);
 
 	//! see base class
 	virtual IViewPoint *const createViewPoint(void) const;

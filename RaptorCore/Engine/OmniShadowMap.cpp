@@ -145,7 +145,7 @@ bool COmniShadowMap::glInitEnvironment(unsigned int width,unsigned int height)
 	m_pShadowCubeMap->setViewPoint(NULL);
     m_pViewPoint->glvkRenderViewPointModel();
 	m_pViewPoint->glvkRender();
-	m_pShadowCubeMap->glUnBindDisplay();
+	m_pShadowCubeMap->glvkUnBindDisplay();
 
 	CTextureFactory &factory = CTextureFactory::getDefaultFactory();
     m_pShadowTexture = factory.glCreateCubemap(ITextureObject::CGL_COLOR24_ALPHA,
@@ -315,7 +315,7 @@ void COmniShadowMap::glRenderMap(const CLight* currentLight,const vector<C3DScen
    //m_pVSShadowMap->Stop();
    //m_pFSShadowMap->Stop();
 
-    m_pShadowCubeMap->glUnBindDisplay();
+	 m_pShadowCubeMap->glvkUnBindDisplay();
 #endif
 }
 
@@ -348,9 +348,7 @@ void COmniShadowMap::glRenderShadow(const vector<C3DSceneObject*>& objects)
 	glActiveTextureARB(GL_TEXTURE1_ARB);
 
 	if (m_pShadowTexture != NULL)
-	{
-		m_pShadowCubeMap->glUnBindDisplay();
-	}
+		m_pShadowCubeMap->glvkUnBindDisplay();
     
 	glDisable(GL_TEXTURE_CUBE_MAP_ARB);
 	glActiveTextureARB(previousTMU);

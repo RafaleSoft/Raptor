@@ -173,7 +173,7 @@ void CMBFilter::glRenderFilter()
 	m_pMotionBlurShader->glStop();
 
 	glBindTexture(GL_TEXTURE_2D,0);
-    pAccum->pCurrentDisplay->glUnBindDisplay();
+	pAccum->pCurrentDisplay->glvkUnBindDisplay();
 }
 
 void CMBFilter::glRenderFilterOutput()

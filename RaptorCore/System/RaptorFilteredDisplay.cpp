@@ -132,7 +132,7 @@ CRaptorFilteredDisplay::~CRaptorFilteredDisplay()
 	{
 		m_pFSAADisplay->unregisterDestruction(this);
 		if (m_bBufferBound)
-			m_pFSAADisplay->glUnBindDisplay();
+			m_pFSAADisplay->glvkUnBindDisplay();
 		Raptor::glDestroyDisplay(m_pFSAADisplay);
 	}
 
@@ -140,7 +140,7 @@ CRaptorFilteredDisplay::~CRaptorFilteredDisplay()
 	{
 		m_pDisplay->unregisterDestruction(this);
 		if (m_bBufferBound)
-			m_pDisplay->glUnBindDisplay();
+			m_pDisplay->glvkUnBindDisplay();
 		Raptor::glDestroyDisplay(m_pDisplay);
 	}
 
@@ -299,7 +299,7 @@ bool CRaptorFilteredDisplay::glCreateRenderDisplay(void)
 			RAPTOR_HANDLE noDevice;
 			if (!m_pDisplay->glvkBindDisplay(noDevice))
 				return false;
-			m_pDisplay->glUnBindDisplay();
+			m_pDisplay->glvkUnBindDisplay();
 		}
 		else
 		{
@@ -428,7 +428,7 @@ bool CRaptorFilteredDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
 }
 
 
-bool CRaptorFilteredDisplay::glUnBindDisplay(void)
+bool CRaptorFilteredDisplay::glvkUnBindDisplay(void)
 {
 	if (m_pDisplay == NULL)
 		return false;
@@ -438,16 +438,16 @@ bool CRaptorFilteredDisplay::glUnBindDisplay(void)
 		{
 			if (m_pFSAADisplay != NULL)
 			{
-				m_pFSAADisplay->glUnBindDisplay();
+				m_pFSAADisplay->glvkUnBindDisplay();
 				m_pFSAADisplay->glBlit(	0,0,filter_cs.width,filter_cs.height,
 										0,0,filter_cs.width,filter_cs.height,
 										m_pDisplay);
 			}
 			else
-				m_pDisplay->glUnBindDisplay();
+				m_pDisplay->glvkUnBindDisplay();
 		}
 		m_bBufferBound = false;
-		return CRaptorScreenDisplay::glUnBindDisplay();
+		return CRaptorScreenDisplay::glvkUnBindDisplay();
 	}
 }
 
@@ -468,9 +468,9 @@ void CRaptorFilteredDisplay::glResize(unsigned int sx,unsigned int sy,unsigned i
 	if (m_bBufferBound)
 	{
 		if (m_pFSAADisplay != NULL)
-			m_pFSAADisplay->glUnBindDisplay();
+			m_pFSAADisplay->glvkUnBindDisplay();
 		else
-			m_pDisplay->glUnBindDisplay();
+			m_pDisplay->glvkUnBindDisplay();
 	}
 
 	glViewport(ox,oy,sx,sy);
@@ -511,13 +511,13 @@ void CRaptorFilteredDisplay::glRenderScene(void)
 		m_bBufferBound = false;
 		if (m_pFSAADisplay != NULL)
 		{
-			m_pFSAADisplay->glUnBindDisplay();
+			m_pFSAADisplay->glvkUnBindDisplay();
 			m_pFSAADisplay->glBlit(	0,0,filter_cs.width,filter_cs.height,
 									0,0,filter_cs.width,filter_cs.height,
 									m_pDisplay);
 		}
         else if (m_pDisplay != NULL)
-		    m_pDisplay->glUnBindDisplay();
+			m_pDisplay->glvkUnBindDisplay();
 	}
 
 	bool filterRendered = false;

@@ -75,6 +75,7 @@ CRaptorVulkanDisplay::CRaptorVulkanDisplay(const CRaptorDisplayConfig& pcs)
 	m_pTAllocator(NULL), m_pTOldAllocator(NULL),
 	m_pUAllocator(NULL), m_pUOldAllocator(NULL)
 {
+	setViewPoint(createViewPoint());
 }
 
 CRaptorVulkanDisplay::~CRaptorVulkanDisplay(void)
@@ -95,7 +96,7 @@ CRaptorVulkanDisplay::~CRaptorVulkanDisplay(void)
 		delete m_pUAllocator;
 
 
-	glUnBindDisplay();
+	glvkUnBindDisplay();
 
 	CContextManager::GetInstance()->vkDestroyContext(m_context);
 }
@@ -243,10 +244,10 @@ bool CRaptorVulkanDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
 		}
 	}
 
-	return true; // CRaptorDisplay::glvkBindDisplay(device);
+	return CRaptorDisplay::glvkBindDisplay(device);
 }
 
-bool CRaptorVulkanDisplay::glUnBindDisplay(void)
+bool CRaptorVulkanDisplay::glvkUnBindDisplay(void)
 {
 	CGeometryAllocator::SetCurrentInstance(m_pGOldAllocator);
 	m_pGOldAllocator = NULL;

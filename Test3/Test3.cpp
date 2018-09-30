@@ -312,7 +312,7 @@ void GLinterop(CRaptorDisplay *pDisplay,RAPTOR_HANDLE wnd)
 	C3DScene *pScene = pDisplay->getRootScene();
 	pScene->addObject(pSpace);
 
-	pDisplay->glUnBindDisplay();
+	pDisplay->glvkUnBindDisplay();
 	CRaptorApplication *pApp = CRaptorApplication::GetInstance();
 	pApp->run();
 
@@ -451,13 +451,13 @@ int _tmain(int argc, _TCHAR* argv[])
 		{
 			m_dsp->glvkBindDisplay(m_wnd);
 			m_dsp->glRender();
-			m_dsp->glUnBindDisplay();
+			m_dsp->glvkUnBindDisplay();
 		}
 		CRaptorDisplay *m_dsp;
 		RAPTOR_HANDLE m_wnd;
 	};
 	new EntryPoint(pDisplay,wnd);
-	pDisplay->glUnBindDisplay();
+	pDisplay->glvkUnBindDisplay();
 
 	size_t NPoints = 16;
 	cl_float4 *semiT = Initialise(NPoints);

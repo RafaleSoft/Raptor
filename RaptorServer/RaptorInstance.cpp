@@ -146,11 +146,11 @@ void CRaptorInstance::glRender()
 				m_prodCons.P();
 
 				if (r.display != 0)
-					pDisplay->glUnBindDisplay();
+					pDisplay->glvkUnBindDisplay();
 				m_pDisplay->glRender();
 			}
 
-			m_pDisplay->glUnBindDisplay();
+			m_pDisplay->glvkUnBindDisplay();
 		}
 		else
 		{
@@ -159,7 +159,7 @@ void CRaptorInstance::glRender()
 				m_pDisplay->glvkBindDisplay(m_pWindow);
 				Raptor::glDestroyDisplay(m_sessionsToDestroy[0].display);
 				m_sessionsToDestroy.erase(m_sessionsToDestroy.begin());
-				m_pDisplay->glUnBindDisplay();
+				m_pDisplay->glvkUnBindDisplay();
 			}
 			Sleep(1);
 		}
@@ -248,7 +248,7 @@ bool CRaptorInstance::start(unsigned int width,unsigned int height)
 		props->setDepthTest(CRenderingProperties::DISABLE);
 		props->setCullFace(CRenderingProperties::DISABLE);
 		props->clear(CGL_RGBA);
-	m_pDisplay->glUnBindDisplay();
+	m_pDisplay->glvkUnBindDisplay();
 
 	m_pApplication = CRaptorApplication::CreateApplication();
 	m_pApplication->grabCursor(false);
@@ -436,7 +436,7 @@ bool CRaptorInstance::executeRequest(request &r)
 			props->setTexturing(CRenderingProperties::ENABLE);
 			props->setLighting(CRenderingProperties::ENABLE);
 			props->clear(CGL_RGBA|CGL_DEPTH);
-		s.display->glUnBindDisplay();
+		s.display->glvkUnBindDisplay();
 
 		m_sessions.push_back(s);
 		return true;

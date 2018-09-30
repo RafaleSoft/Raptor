@@ -188,7 +188,7 @@ void CTestDoc::GLInitContext(HDC hdc)
     }
 #endif
 
-   m_pDisplay->glUnBindDisplay();
+	m_pDisplay->glvkUnBindDisplay();
 }
 
 
@@ -238,6 +238,6 @@ void CTestDoc::glDisplay(HDC hdc)
 
 	m_pDisplay->glRender();
 
-	m_pDisplay->glUnBindDisplay();
+	m_pDisplay->glvkUnBindDisplay();
 }
 

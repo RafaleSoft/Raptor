@@ -41,7 +41,7 @@ public:
 	virtual bool glvkBindDisplay(const RAPTOR_HANDLE& device);
 
 	//! see base class
-	virtual bool glUnBindDisplay(void);
+	virtual bool glvkUnBindDisplay(void);
 
 	//!	Renders the display, if it has been bound.
 	//! Returns true if rendered without errors, false otherwise.

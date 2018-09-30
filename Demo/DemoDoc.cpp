@@ -336,7 +336,7 @@ void CDemoDoc::glRender()
 
 	m_pDisplay->glRender();
 
-	m_pDisplay->glUnBindDisplay();
+	m_pDisplay->glvkUnBindDisplay();
 
 
 	nbFrames++;

@@ -382,7 +382,7 @@ void CHDRFilter::glRenderFilter()
             m_lastMaxLuminance->glStop();
         }
 
-        m_pDownSizedDisplay[i]->glUnBindDisplay();
+		m_pDownSizedDisplay[i]->glvkUnBindDisplay();
         currentBuffer = m_pDownSizedBuffer[i];
     }
 
@@ -400,7 +400,7 @@ void CHDRFilter::glRenderFilter()
     m_pTreshholdFreqs->glRender();
     glDrawBuffer();
     m_pTreshholdFreqs->glStop();
-    m_pDownHighFreqs->glUnBindDisplay();
+	m_pDownHighFreqs->glvkUnBindDisplay();
   
     //
     //  Blur high frequencies  
@@ -415,7 +415,7 @@ void CHDRFilter::glRenderFilter()
 
     m_pBlurXOffsets->glStop();
     m_pBlur->glStop();
-    m_pDownBlurXDisplay->glUnBindDisplay();
+	m_pDownBlurXDisplay->glvkUnBindDisplay();
 
 	m_pDownBlurYDisplay->glvkBindDisplay(nodevice);
 	m_pDownBlurXBuffer->glvkRender();
@@ -427,7 +427,7 @@ void CHDRFilter::glRenderFilter()
 
     m_pBlurYOffsets->glStop();
     m_pBlur->glStop();
-    m_pDownBlurYDisplay->glUnBindDisplay();
+	m_pDownBlurYDisplay->glvkUnBindDisplay();
 
 	for (unsigned int i=2;i<=nBlurPass;i++)
 	{
@@ -443,7 +443,7 @@ void CHDRFilter::glRenderFilter()
 		glDrawBuffer();
 
 		m_pBlurXOffsets->glStop();
-		m_pDownBlurXDisplay->glUnBindDisplay();
+		m_pDownBlurXDisplay->glvkUnBindDisplay();
 
 		m_pDownBlurYDisplay->glvkBindDisplay(nodevice);
 		m_pDownBlurXBuffer->glvkRender();
@@ -454,7 +454,7 @@ void CHDRFilter::glRenderFilter()
 
 		m_pBlurYOffsets->glStop();
 		m_pBlur->glStop();
-		m_pDownBlurYDisplay->glUnBindDisplay();
+		m_pDownBlurYDisplay->glvkUnBindDisplay();
 	}
 }
 

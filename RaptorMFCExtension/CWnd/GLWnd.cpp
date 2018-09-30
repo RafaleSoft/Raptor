@@ -72,7 +72,7 @@ void CGLWnd::glMakeCurrent(bool restoreContext)
 		m_pDisplay->glvkBindDisplay(display);
 	}
 	else
-		m_pDisplay->glUnBindDisplay();
+		m_pDisplay->glvkUnBindDisplay();
 }
 
 BOOL CGLWnd::OnEraseBkgnd(CDC* ) 
@@ -121,7 +121,7 @@ bool CGLWnd::GLCreateWindow (CString name,CWnd *parent, const CRaptorDisplayConf
 
 			CATCH_GL_ERROR
 
-			m_pDisplay->glUnBindDisplay();
+			m_pDisplay->glvkUnBindDisplay();
 
 			return true;
 		}
@@ -145,7 +145,7 @@ bool CGLWnd::GLCreateWindow (CString name,CWnd *parent, const CRaptorDisplayConf
 
 		CATCH_GL_ERROR
 
-		m_pDisplay->glUnBindDisplay();
+		m_pDisplay->glvkUnBindDisplay();
 
 		return true;
 	}
@@ -190,7 +190,7 @@ int CGLWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	display.hClass = DEVICE_CONTEXT_CLASS;
 	if (m_pDisplay->glvkBindDisplay(display))
 	{
-		m_pDisplay->glUnBindDisplay();
+		m_pDisplay->glvkUnBindDisplay();
 		return 1;
 	}
 	else
@@ -208,7 +208,7 @@ int CGLWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 		if (m_pDisplay->glvkBindDisplay(display))
 		{
-			m_pDisplay->glUnBindDisplay();
+			m_pDisplay->glvkUnBindDisplay();
 			return 1;
 		}
 		else
@@ -267,7 +267,7 @@ void CGLWnd::OnSize(UINT nType, int cx, int cy)
 	
 	CATCH_GL_ERROR
 
-	m_pDisplay->glUnBindDisplay();
+	m_pDisplay->glvkUnBindDisplay();
 }
 
 
@@ -287,6 +287,6 @@ void CGLWnd::OnPaint()
 
 	CATCH_GL_ERROR
 
-	m_pDisplay->glUnBindDisplay();
+	m_pDisplay->glvkUnBindDisplay();
 	// Do not call CWnd::OnPaint() for painting messages
 }

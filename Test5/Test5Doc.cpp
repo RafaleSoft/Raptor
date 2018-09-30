@@ -121,7 +121,7 @@ CTest5Doc::CTest5Doc(const RAPTOR_HANDLE& device,const char* title)
 #endif
         GLInitContext();
 
-		m_pDisplay->glUnBindDisplay();
+		m_pDisplay->glvkUnBindDisplay();
 	}
 }
 
@@ -134,7 +134,7 @@ void CTest5Doc::resize(unsigned int width, unsigned int height)
 	if (m_pDisplay->glvkBindDisplay(m_device))
     {
         m_pDisplay->glResize(width,height,0,0);
-        m_pDisplay->glUnBindDisplay();
+		m_pDisplay->glvkUnBindDisplay();
     }
 }
 
@@ -145,7 +145,7 @@ void CTest5Doc::glRender(void)
 	{
 		m_pDisplay->glRender();
 
-		m_pDisplay->glUnBindDisplay();
+		m_pDisplay->glvkUnBindDisplay();
 	}
 }
 

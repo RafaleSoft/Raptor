@@ -40,6 +40,15 @@ public:
 
     //! This method returns the transpose of an OpenGL matrix.
 	C3DEngineMatrix & RAPTOR_FASTCALL Transpose(void);
+
+	//! This method returns this OpenGL matrix translated.
+	C3DEngineMatrix & RAPTOR_FASTCALL Translate(float delta_x, float delta_y, float delta_z);
+
+	//! This method returns this OpenGL matrix rotated.
+	C3DEngineMatrix & RAPTOR_FASTCALL Rotate(float angle,float axis_x, float axis_y, float axis_z);
+
+	//! This method returns this OpenGL matrix scaled.
+	C3DEngineMatrix & RAPTOR_FASTCALL Scale(float scale_x, float scale_y, float scale_z);
 };
 
 RAPTOR_NAMESPACE_END

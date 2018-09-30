@@ -63,7 +63,7 @@ public:
 	//! To unbound the display, simply call this method
 	//!	Return true if the display is unbound without errors, false if the display is
 	//! unbounded before call or if there is an error.
-	virtual bool glUnBindDisplay(void);
+	virtual bool glvkUnBindDisplay(void);
 
 
 	//!

@@ -321,7 +321,7 @@ void CDisplay::glRender(void)
 
     m_pDisplay->glRender();
 
-    m_pDisplay->glUnBindDisplay();
+	m_pDisplay->glvkUnBindDisplay();
 }
 
 
@@ -399,7 +399,7 @@ int main(int argc, char* argv[])
 		pConsole->showFrameTime(true);
         pConsole->activateConsole(true);
 
-        pDisplay->glUnBindDisplay();
+		pDisplay->glvkUnBindDisplay();
     }
     else
     {

@@ -90,7 +90,7 @@ CRaptorScreenDisplay::~CRaptorScreenDisplay()
 	if (NULL != m_pDeviceMemory)
 		delete m_pDeviceMemory;
 
-	glUnBindDisplay();
+	glvkUnBindDisplay();
 
 	CContextManager::GetInstance()->glDestroyContext(m_context);
 }
@@ -363,7 +363,7 @@ void CRaptorScreenDisplay::allocateResources(void)
 		m_pUOldAllocator->glvkLockMemory(false);
 }
 
-bool CRaptorScreenDisplay::glUnBindDisplay(void)
+bool CRaptorScreenDisplay::glvkUnBindDisplay(void)
 {
     CGeometryAllocator::SetCurrentInstance(m_pGOldAllocator);
     m_pGOldAllocator = NULL;
@@ -372,7 +372,7 @@ bool CRaptorScreenDisplay::glUnBindDisplay(void)
 	CUniformAllocator::SetCurrentInstance(m_pUOldAllocator);
 	m_pUOldAllocator = NULL;
 
-    CRaptorDisplay::glUnBindDisplay();
+	CRaptorDisplay::glvkUnBindDisplay();
 
 	RAPTOR_HANDLE device;
 	CContextManager::GetInstance()->glMakeCurrentContext(device,m_context);

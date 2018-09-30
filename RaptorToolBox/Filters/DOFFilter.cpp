@@ -317,7 +317,7 @@ void CDOFFilter::glRenderFilter()
     glDrawBuffer();
 	DOFShader->glStop();
 
-    tmpDisplay->glUnBindDisplay();
+	tmpDisplay->glvkUnBindDisplay();
 
 	for (unsigned int i=2;i<=m_nbBlur;i++)
 	{
@@ -336,7 +336,7 @@ void CDOFFilter::glRenderFilter()
 		DOFShader->glRender();
 		glDrawBuffer();
 		DOFShader->glStop();
-		tmpDisplay2->glUnBindDisplay();
+		tmpDisplay2->glvkUnBindDisplay();
 
 		//  Render X-blur in pixel buffer
 		tmpDisplay->glvkBindDisplay(noDevice);
@@ -354,7 +354,7 @@ void CDOFFilter::glRenderFilter()
 		glDrawBuffer();
 		DOFShader->glStop();
 
-		tmpDisplay->glUnBindDisplay();
+		tmpDisplay->glvkUnBindDisplay();
 	}
 }
 

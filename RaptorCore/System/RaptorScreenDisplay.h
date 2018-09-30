@@ -41,7 +41,7 @@ public:
     virtual RAPTOR_HANDLE getCurrentDevice(void) const;
 
 	//! see base class
-	virtual bool glUnBindDisplay(void);
+	virtual bool glvkUnBindDisplay(void);
 
 	//! Real implementation of the viewport resize
 	virtual void glResize(unsigned int sx,unsigned int sy,unsigned int ox, unsigned int oy);

@@ -237,7 +237,7 @@ void CAmbientOcclusionShader::glRender()
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_NORMAL_ARRAY);
 
-	m_pAOBuffer->glUnBindDisplay();
+	m_pAOBuffer->glvkUnBindDisplay();
 
 	CATCH_GL_ERROR;
 }

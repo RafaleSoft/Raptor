@@ -600,7 +600,7 @@ public:
 			CFragmentShader *fp = pShader->glGetFragmentShader();
 			fp->glLoadProgram(waterFragments2.data());
 			fp->glStop();
-		pBuffer->glUnBindDisplay();
+		pBuffer->glvkUnBindDisplay();
 
 		CTextureFactory &factory = CTextureFactory::getDefaultFactory();
 		pMap = factory.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
@@ -692,7 +692,7 @@ public:
 			glEnd();
 			vp->glStop();
 			fp->glStop();
-		pBuffer->glUnBindDisplay();
+		pBuffer->glvkUnBindDisplay();
 
 		pMap->glvkRender();
 

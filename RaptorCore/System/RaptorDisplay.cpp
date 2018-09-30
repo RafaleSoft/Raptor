@@ -259,14 +259,14 @@ bool CRaptorDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
             CRaptorDisplay* display = (*it++);
 			display->glvkBindDisplay(_device);
             display->glRender();
-		    display->glUnBindDisplay();
+		    display->glvkUnBindDisplay();
         }
     }
 
 	return true;
 }
 
-bool CRaptorDisplay::glUnBindDisplay(void)
+bool CRaptorDisplay::glvkUnBindDisplay(void)
 {
     if (m_pProperties != NULL)
        m_pProperties->glPopProperties();
