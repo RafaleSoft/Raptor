@@ -555,8 +555,8 @@ bool CHDRFilter::glInitFilter(void)
         rda.height = height;
 
         m_pDownSizedDisplay[i] = Raptor::glCreateDisplay(rda);
-        CRenderingProperties *rp = m_pDownSizedDisplay[i]->getRenderingProperties();
-        *rp = commonRP;
+        CRenderingProperties &rp = m_pDownSizedDisplay[i]->getRenderingProperties();
+        rp = commonRP;
         m_pDownSizedDisplay[i]->setViewPoint(NULL);
         ITextureObject::TEXTURE_FILTER filter = ( i < 2 ? ITextureObject::CGL_BILINEAR : ITextureObject::CGL_UNFILTERED);
 
@@ -583,8 +583,8 @@ bool CHDRFilter::glInitFilter(void)
     rda.width = MAX(1,filter_cs_width * BLUR_BUFFER_SIZE_FACTOR);
     rda.height = MAX(1,filter_cs_height * BLUR_BUFFER_SIZE_FACTOR);
     m_pDownBlurXDisplay = Raptor::glCreateDisplay(rda);
-    CRenderingProperties *rp = m_pDownBlurXDisplay->getRenderingProperties();
-    *rp = commonRP;
+    CRenderingProperties &rp = m_pDownBlurXDisplay->getRenderingProperties();
+    rp = commonRP;
     m_pDownBlurXDisplay->setViewPoint(NULL);
 	if (m_fModel == RENDER_BUFFER)
 	{
@@ -606,8 +606,8 @@ bool CHDRFilter::glInitFilter(void)
 	}
 
     m_pDownBlurYDisplay = Raptor::glCreateDisplay(rda);
-    rp = m_pDownBlurYDisplay->getRenderingProperties();
-    *rp = commonRP;
+	CRenderingProperties &rp2 = m_pDownBlurYDisplay->getRenderingProperties();
+    rp2 = commonRP;
     m_pDownBlurYDisplay->setViewPoint(NULL);
 	if (m_fModel == RENDER_BUFFER)
 	{
@@ -629,8 +629,8 @@ bool CHDRFilter::glInitFilter(void)
 	}
 
     m_pDownHighFreqs  = Raptor::glCreateDisplay(rda);
-    rp = m_pDownHighFreqs->getRenderingProperties();
-    *rp = commonRP;
+	CRenderingProperties &rp3 = m_pDownHighFreqs->getRenderingProperties();
+    rp3 = commonRP;
     m_pDownHighFreqs->setViewPoint(NULL);
 	if (m_fModel == RENDER_BUFFER)
 	{

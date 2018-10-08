@@ -113,11 +113,11 @@ CRaptorFilteredDisplay::CRaptorFilteredDisplay(const CRaptorDisplayConfig& pcs)
 	IViewPoint *vp = CRaptorDisplay::getViewPoint();
 	vp->setViewVolume(-1.0f,1.0f,-1.0f,1.0f,1.0f,100.0f,IViewPoint::ORTHOGRAPHIC);
 
-    CRenderingProperties *rp = CRaptorScreenDisplay::getRenderingProperties();
-    rp->setTexturing(CRenderingProperties::ENABLE);
-	rp->setCullFace(CRenderingProperties::DISABLE);
-	rp->setDepthTest(CRenderingProperties::DISABLE);
-	rp->clear(CGL_NULL);
+    CRenderingProperties &rp = CRaptorScreenDisplay::getRenderingProperties();
+    rp.setTexturing(CRenderingProperties::ENABLE);
+	rp.setCullFace(CRenderingProperties::DISABLE);
+	rp.setDepthTest(CRenderingProperties::DISABLE);
+	rp.clear(CGL_NULL);
 }
 
 CRaptorFilteredDisplay::~CRaptorFilteredDisplay()
@@ -192,7 +192,7 @@ bool CRaptorFilteredDisplay::glQueryStatus(CRaptorDisplayConfig &state,unsigned 
     return CRaptorDisplay::glQueryStatus(state,query);
 }
 
-CRenderingProperties *CRaptorFilteredDisplay::getRenderingProperties(void) const
+CRenderingProperties &CRaptorFilteredDisplay::getRenderingProperties(void) const
 {
     if (m_pDisplay != NULL)
     {
@@ -201,8 +201,8 @@ CRenderingProperties *CRaptorFilteredDisplay::getRenderingProperties(void) const
 		else
 			return m_pDisplay->getRenderingProperties();
     }
-    else
-        return NULL;
+    else // by default, return the base class' rendering properties.
+        return CRaptorScreenDisplay::getRenderingProperties();
 }
 
 bool CRaptorFilteredDisplay::glCreateRenderDisplay(void)
@@ -322,12 +322,12 @@ bool CRaptorFilteredDisplay::glCreateRenderDisplay(void)
 			if (Raptor::glIsExtensionSupported(GL_ARB_COLOR_BUFFER_FLOAT_EXTENSION_NAME) ||
 				Raptor::glIsExtensionSupported(WGL_ATI_PIXEL_FORMAT_FLOAT_EXTENSION_NAME))
             {
-				CRenderingProperties* props = m_pDisplay->getRenderingProperties();
-				props->setFloatClamping(CRenderingProperties::DISABLE);
+				CRenderingProperties& props = m_pDisplay->getRenderingProperties();
+				props.setFloatClamping(CRenderingProperties::DISABLE);
 				if (m_pFSAADisplay != NULL)
 				{
-					props = m_pFSAADisplay->getRenderingProperties();
-					props->setFloatClamping(CRenderingProperties::DISABLE);
+					CRenderingProperties& props2 = m_pFSAADisplay->getRenderingProperties();
+					props2.setFloatClamping(CRenderingProperties::DISABLE);
 				}
             }
 			else 

@@ -140,10 +140,10 @@ bool CShadowMap::glInitEnvironment(unsigned int width,unsigned int height)
 	//
 	// prepare light's point of view transform
 	//
-    CRenderingProperties *props = m_pShadowMap->getRenderingProperties();
-    props->clear(CGL_DEPTH);
-    props->setTexturing(CRenderingProperties::DISABLE);
-    props->setLighting(CRenderingProperties::DISABLE);
+    CRenderingProperties &props = m_pShadowMap->getRenderingProperties();
+    props.clear(CGL_DEPTH);
+    props.setTexturing(CRenderingProperties::DISABLE);
+    props.setLighting(CRenderingProperties::DISABLE);
 
 	if (m_pViewPoint == NULL)
 		m_pViewPoint = new COpenGLViewPoint();

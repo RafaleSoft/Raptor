@@ -255,8 +255,8 @@ void CTeapot::GLInitContext()
 	displays[CTest2App::VRTXSHADERSDEMO] = &vertexShadersDisplay;
 
 	m_globalDisplay = CRaptorDisplay::GetCurrentDisplay();
-	CRenderingProperties *props = m_globalDisplay->getRenderingProperties();
-	props->setMultisampling(CRenderingProperties::ENABLE);
+	CRenderingProperties &props = m_globalDisplay->getRenderingProperties();
+	props.setMultisampling(CRenderingProperties::ENABLE);
 
 	SwitchDemo(numdemo);
 }

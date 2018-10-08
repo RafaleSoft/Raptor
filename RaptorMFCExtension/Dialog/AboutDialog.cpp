@@ -172,8 +172,8 @@ void CGLDisplay::GLInitContext()
 	pVP->setViewVolume(-1.0,1.0,-1.0,1.0,1.0,1000.0,IViewPoint::PERSPECTIVE);
 	pVP->glvkRenderViewPointModel();
 
-    CRenderingProperties *props = pDisplay->getRenderingProperties();
-    props->setTexturing(CRenderingProperties::ENABLE);
+    CRenderingProperties &props = pDisplay->getRenderingProperties();
+    props.setTexturing(CRenderingProperties::ENABLE);
 
     CRaptorDataManager  *dataManager = CRaptorDataManager::GetInstance();
     if (dataManager != NULL)

@@ -109,9 +109,9 @@ CTest5Doc::CTest5Doc(const RAPTOR_HANDLE& device,const char* title)
 	bool res = m_pDisplay->glvkBindDisplay(device);
 	if (res)
 	{
-		CRenderingProperties *props = m_pDisplay->getRenderingProperties();
-		props->setLighting(CRenderingProperties::ENABLE);
-		props->setTexturing(CRenderingProperties::ENABLE);
+		CRenderingProperties &props = m_pDisplay->getRenderingProperties();
+		props.setLighting(CRenderingProperties::ENABLE);
+		props.setTexturing(CRenderingProperties::ENABLE);
 #ifdef VULKAN_TEST
 #else
 		CRaptorConsole *pConsole = Raptor::GetConsole();
@@ -225,10 +225,11 @@ void CTest5Doc::GLInitContext(void)
 	}
 	
 	CProgramParameters parameters;
-	CProgramParameters::CParameter<Transform_t> param(T);
-	param.name("modelview");
-	param.locationIndex = 0;
-	parameters.addParameter(param);
+	//CProgramParameters::CParameter<Transform_t> param(T);
+	//param.name("gl_ModelViewMatrix");
+	//param.locationIndex = 0;
+	//parameters.addParameter(param);
+	parameters.addParameter(ss->getDefaultParameter("gl_ModelViewMatrix", 0));
 
 	CProgramParameters::CParameter<CTextureUnitSetup::TEXTURE_IMAGE_UNIT> param2(CTextureUnitSetup::IMAGE_UNIT_0);
 	param2.name("diffusemap");

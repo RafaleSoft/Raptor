@@ -455,21 +455,21 @@ bool CDOFFilter::glInitFilter(void)
 	}
 
     tmpDisplay = Raptor::glCreateDisplay(state);
-    CRenderingProperties *rp = tmpDisplay->getRenderingProperties();
-    rp->setTexturing(CRenderingProperties::ENABLE);
-    rp->setCullFace(CRenderingProperties::DISABLE);
-    rp->setDepthTest(CRenderingProperties::DISABLE);
-    rp->setLighting(CRenderingProperties::DISABLE);
-    rp->clear(CGL_NULL);
+    CRenderingProperties &rp = tmpDisplay->getRenderingProperties();
+    rp.setTexturing(CRenderingProperties::ENABLE);
+    rp.setCullFace(CRenderingProperties::DISABLE);
+    rp.setDepthTest(CRenderingProperties::DISABLE);
+    rp.setLighting(CRenderingProperties::DISABLE);
+    rp.clear(CGL_NULL);
     tmpDisplay->setViewPoint(NULL);
 
 	tmpDisplay2 = Raptor::glCreateDisplay(state);
-    rp = tmpDisplay2->getRenderingProperties();
-    rp->setTexturing(CRenderingProperties::ENABLE);
-    rp->setCullFace(CRenderingProperties::DISABLE);
-    rp->setDepthTest(CRenderingProperties::DISABLE);
-    rp->setLighting(CRenderingProperties::DISABLE);
-    rp->clear(CGL_NULL);
+	CRenderingProperties &rp2 = tmpDisplay2->getRenderingProperties();
+    rp2.setTexturing(CRenderingProperties::ENABLE);
+    rp2.setCullFace(CRenderingProperties::DISABLE);
+    rp2.setDepthTest(CRenderingProperties::DISABLE);
+    rp2.setLighting(CRenderingProperties::DISABLE);
+    rp2.clear(CGL_NULL);
     tmpDisplay2->setViewPoint(NULL);
 
 	if (m_fModel == RENDER_BUFFER)

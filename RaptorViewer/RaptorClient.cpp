@@ -144,11 +144,11 @@ bool CRaptorClient::run(unsigned int width, unsigned int height)
 	IViewPoint *vp = m_pDisplay->getViewPoint();
 	vp->setViewVolume(-1.0,1.0,-1.0,1.0,1.0,100.0,IViewPoint::ORTHOGRAPHIC);
 
-	CRenderingProperties *props = m_pDisplay->getRenderingProperties();
-	props->clear(CGL_RGBA|CGL_DEPTH);
-	props->setTexturing(CRenderingProperties::ENABLE);
-	props->setLighting(CRenderingProperties::DISABLE);
-	props->setCullFace(CRenderingProperties::DISABLE);
+	CRenderingProperties &props = m_pDisplay->getRenderingProperties();
+	props.clear(CGL_RGBA|CGL_DEPTH);
+	props.setTexturing(CRenderingProperties::ENABLE);
+	props.setLighting(CRenderingProperties::DISABLE);
+	props.setCullFace(CRenderingProperties::DISABLE);
 
 	res = m_pDisplay->glvkBindDisplay(m_window);
 	if (res)

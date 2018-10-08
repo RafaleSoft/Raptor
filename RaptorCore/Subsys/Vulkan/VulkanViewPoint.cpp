@@ -13,6 +13,9 @@
 #if !defined(AFX_3DENGINE_H__DB24F018_80B9_11D3_97C1_FC2841000000__INCLUDED_)
 	#include "Engine/3DEngine.h"
 #endif
+#if !defined(AFX_UNIFORMALLOCATOR_H__4DD62C99_E476_4FE5_AEE4_EEC71F7B0F38__INCLUDED_)
+	#include "Subsys/UniformAllocator.h"
+#endif
 
 RAPTOR_NAMESPACE
 
@@ -21,7 +24,7 @@ RAPTOR_NAMESPACE
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 CVulkanViewPoint::CVulkanViewPoint(const std::string& name)
-	:IViewPoint(name)
+	:IViewPoint(name), uniforms(NULL)
 {
 	modelview.Ident();
 	IDENT_MATRIX(transform.modelview);
@@ -46,6 +49,8 @@ void CVulkanViewPoint::glvkRender(void)
 
 	C3DEngine::Generic_to_MATRIX(transform.modelview, modelview.Transpose());
 
+	vkRenderUniforms();
+
 	CATCH_GL_ERROR
 }
 
@@ -67,4 +72,19 @@ void CVulkanViewPoint::glvkRenderViewPointModel(void)
 }
 
 
+bool CVulkanViewPoint::vkRenderUniforms(void)
+{
+	CUniformAllocator*	pUAllocator = CUniformAllocator::GetInstance();
+	uint64_t size = sizeof(Transform_t);
 
+	if (NULL == uniforms)
+		uniforms = pUAllocator->allocateUniforms(size);
+
+	if (NULL != uniforms)
+	{
+		pUAllocator->glvkCopyPointer(uniforms, (unsigned char*)&transform, size);
+		return true;
+	}
+	else
+		return false;
+}

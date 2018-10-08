@@ -245,20 +245,20 @@ bool CMBFilter::glInitFilter(void)
 	}
 
     CRaptorDisplay* pDisplay1 = Raptor::glCreateDisplay(state);
-    CRenderingProperties *rp1 = pDisplay1->getRenderingProperties();
-    rp1->setTexturing(CRenderingProperties::ENABLE);
-    rp1->setLighting(CRenderingProperties::DISABLE);
-    rp1->setCullFace(CRenderingProperties::DISABLE);
-    rp1->setDepthTest(CRenderingProperties::DISABLE);
-    rp1->clear(CGL_NULL);
+    CRenderingProperties &rp1 = pDisplay1->getRenderingProperties();
+    rp1.setTexturing(CRenderingProperties::ENABLE);
+    rp1.setLighting(CRenderingProperties::DISABLE);
+    rp1.setCullFace(CRenderingProperties::DISABLE);
+    rp1.setDepthTest(CRenderingProperties::DISABLE);
+    rp1.clear(CGL_NULL);
     pDisplay1->setViewPoint(NULL);
 
 	if (m_fModel == RENDER_BUFFER)
 		pDisplay1->glvkBindDisplay(*m_pRenderTextures);
 
     CRaptorDisplay* pDisplay2 = Raptor::glCreateDisplay(state);
-    CRenderingProperties *rp2 = pDisplay2->getRenderingProperties();
-    *rp2 = *rp1;
+    CRenderingProperties &rp2 = pDisplay2->getRenderingProperties();
+    rp2 = rp1;
     pDisplay2->setViewPoint(NULL);
 
 	if (m_fModel == RENDER_BUFFER)

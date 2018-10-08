@@ -22,8 +22,8 @@
 #if !defined(AFX_UNIFORMALLOCATOR_H__4DD62C99_E476_4FE5_AEE4_EEC71F7B0F38__INCLUDED_)
 	#include "Subsys/UniformAllocator.h"
 #endif
-#if !defined(AFX_RAPTORIO_H__87D52C27_9117_4675_95DC_6AD2CCD2E78D__INCLUDED_)
-	#include "System/RaptorIO.h"
+#if !defined(AFX_VULKANVIEWPOINT_H__08D29395_9883_45F8_AE51_5174BD6BC19B__INCLUDED_)
+	#include "Subsys/Vulkan/VulkanViewPoint.h"
 #endif
 
 
@@ -44,15 +44,22 @@ RAPTOR_NAMESPACE_END
 RAPTOR_NAMESPACE
 
 CVulkanShaderStage::CVulkanShaderStage(const std::string& name)
-	:CShaderProgram(stageId, name),
+	:CShaderProgram(stageId, name), m_param(NULL),
 	m_pShaderStages(NULL), uniforms(NULL), uniforms_size(0)
 {
 }
 
 CVulkanShaderStage::~CVulkanShaderStage(void)
 {
+	if (NULL != m_param)
+		delete m_param;
 	if (NULL != m_pShaderStages)
 		delete m_pShaderStages;
+	if (NULL != uniforms)
+	{
+		CUniformAllocator*	pUAllocator = CUniformAllocator::GetInstance();
+		pUAllocator->releaseUniforms(uniforms);
+	}
 }
 
 CVulkanShaderStage* CVulkanShaderStage::vkClone(void) const
@@ -108,9 +115,7 @@ void CVulkanShaderStage::setProgramParameters(const CProgramParameters &v)
 				CProgramParameters::CParameterBase& param_value = m_parameters[idx];
 				CTextureUnitSetup::TEXTURE_IMAGE_UNIT sampler = CTextureUnitSetup::IMAGE_UNIT_0;
 				if (param_value.isA(sampler))
-				{
 					param_value.locationType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-				}
 				else
 				{
 					param_value.locationType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
@@ -183,4 +188,20 @@ void CVulkanShaderStage::vkRender(CVulkanCommandBuffer &commandBuffer,
 
 		m_pShaderStages->vkRender(commandBuffer, bufferInfo, imageInfo);
 	}
+}
+
+
+CProgramParameters::CParameterBase& CVulkanShaderStage::getDefaultParameter(const std::string& parameter_name, int locationIndex)
+{
+	if (NULL != m_param)
+		delete m_param;
+
+	if (parameter_name == "gl_ModelViewMatrix")
+	{
+		CVulkanViewPoint::Transform_t t;
+		m_param = new CProgramParameters::CParameter<CVulkanViewPoint::Transform_t>(t);
+		m_param->locationIndex = locationIndex;
+	}
+
+	return *m_param;
 }

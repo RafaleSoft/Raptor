@@ -90,12 +90,12 @@ bool CAmbientOcclusionShader::glInitAOCompute(void)
 	cfg.renderer = CRaptorDisplayConfig::RENDER_BUFFER;
 
     m_pAOBuffer = Raptor::glCreateDisplay(cfg);
-    CRenderingProperties *rp = m_pAOBuffer->getRenderingProperties();
-    rp->setTexturing(CRenderingProperties::ENABLE);
-    rp->setCullFace(CRenderingProperties::DISABLE);
-    rp->setDepthTest(CRenderingProperties::DISABLE);
-    rp->setLighting(CRenderingProperties::DISABLE);
-    rp->clear(CGL_NULL);
+    CRenderingProperties &rp = m_pAOBuffer->getRenderingProperties();
+    rp.setTexturing(CRenderingProperties::ENABLE);
+    rp.setCullFace(CRenderingProperties::DISABLE);
+    rp.setDepthTest(CRenderingProperties::DISABLE);
+    rp.setLighting(CRenderingProperties::DISABLE);
+    rp.clear(CGL_NULL);
     m_pAOBuffer->setViewPoint(NULL);
 	m_pAOBuffer->glvkBindDisplay(*pOutputTextures);
 

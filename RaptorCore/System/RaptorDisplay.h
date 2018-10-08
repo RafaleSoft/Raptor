@@ -42,7 +42,7 @@ public:
 	static CRaptorDisplay * const GetCurrentDisplay(void);
 
 	//! Returns the global rendering properties.
-	virtual CRenderingProperties *getRenderingProperties(void) const { return m_pProperties; };
+	virtual CRenderingProperties &getRenderingProperties(void) const;
 
 	//!
 	//!	Display management
@@ -154,10 +154,6 @@ public:
     //! This generator is not yet implemented.in this version
     virtual ITextureGenerator::GENERATOR_KIND getKind(void) const { return ITextureGenerator::NONE; };
 
-    //! Implements CTextureGenerator
-    //! This class is virtual, generation is only implemented in subclasses
-    //virtual void glGenerate(CTextureObject* );
-
     //! This method returns the width of the generator
     virtual unsigned int getGenerateWidth(void) const;
 
@@ -184,6 +180,11 @@ protected:
     //! free all possible ressources while the display is still usable, 
     //! and before the purge is effective.
     virtual void glReleaseResources(void);
+
+	//! This method enables subclasses to replace rendering properties
+	//!	Registration is not implemented, it remains the responsibility of subclasses
+	//! (method is protected)
+	void setRenderingProperties(CRenderingProperties *properties);
 
 	
 private:

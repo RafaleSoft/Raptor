@@ -121,10 +121,10 @@ void CCollisionDisplay::ReInit()
 	physicsBall->animate(true);
 
     CRaptorDisplay* pDisplay = CRaptorDisplay::GetCurrentDisplay();
-	CRenderingProperties *rp = pDisplay->getRenderingProperties();
-	rp->setTexturing(CRenderingProperties::DISABLE);
-    rp->setLighting(CRenderingProperties::DISABLE);
-	rp->setBlending(CRenderingProperties::DISABLE);
+	CRenderingProperties &rp = pDisplay->getRenderingProperties();
+	rp.setTexturing(CRenderingProperties::DISABLE);
+    rp.setLighting(CRenderingProperties::DISABLE);
+	rp.setBlending(CRenderingProperties::DISABLE);
 
 	pDisplay->selectScene("COLLISION_SCENE");
 }

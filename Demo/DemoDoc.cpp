@@ -288,9 +288,9 @@ void CDemoDoc::GLInitContext(void)
 	CAnimator::SetAnimator(animator);
     
     CRaptorDisplay * const pCurrentDisplay = CRaptorDisplay::GetCurrentDisplay();
-    CRenderingProperties *rp = pCurrentDisplay->getRenderingProperties();
-	rp->clear(CGL_RGBA|CGL_DEPTH);
-	rp->setMultisampling(CRenderingProperties::ENABLE);
+    CRenderingProperties &rp = pCurrentDisplay->getRenderingProperties();
+	rp.clear(CGL_RGBA|CGL_DEPTH);
+	rp.setMultisampling(CRenderingProperties::ENABLE);
 
     C3DScene *m_pScene = pCurrentDisplay->getRootScene();
 	//pCurrentDisplay->getViewPoint()->setCurrentPath(-1);

@@ -76,6 +76,7 @@ CRaptorVulkanDisplay::CRaptorVulkanDisplay(const CRaptorDisplayConfig& pcs)
 	m_pUAllocator(NULL), m_pUOldAllocator(NULL)
 {
 	setViewPoint(createViewPoint());
+	setRenderingProperties(NULL);
 }
 
 CRaptorVulkanDisplay::~CRaptorVulkanDisplay(void)

@@ -387,12 +387,12 @@ bool CMagnifierFilter::glInitFilter(void)
 
 
     xBuffer = Raptor::glCreateDisplay(state);
-    CRenderingProperties *rp = xBuffer->getRenderingProperties();
-    rp->setTexturing(CRenderingProperties::ENABLE);
-    rp->setCullFace(CRenderingProperties::DISABLE);
-    rp->setDepthTest(CRenderingProperties::DISABLE);
-    rp->setLighting(CRenderingProperties::DISABLE);
-    rp->clear(CGL_NULL);
+    CRenderingProperties &rp = xBuffer->getRenderingProperties();
+    rp.setTexturing(CRenderingProperties::ENABLE);
+    rp.setCullFace(CRenderingProperties::DISABLE);
+    rp.setDepthTest(CRenderingProperties::DISABLE);
+    rp.setLighting(CRenderingProperties::DISABLE);
+    rp.clear(CGL_NULL);
     xBuffer->setViewPoint(NULL);
 
 	if (m_fModel == RENDER_BUFFER)

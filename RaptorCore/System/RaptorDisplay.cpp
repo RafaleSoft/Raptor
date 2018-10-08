@@ -70,21 +70,20 @@ const CPersistence::CPersistenceClassID& CRaptorDisplay::CRaptorDisplayClassID::
 //////////////////////////////////////////////////////////////////////
 
 CRaptorDisplay::CRaptorDisplay(const CPersistence::CPersistenceClassID& id,const std::string& name)
-	:CPersistence(id,name)
+	:CPersistence(id, name), 
+	m_bDeleteViewPoint(true), m_bApplyViewPointModel(true),
+	m_pRootScene(NULL), m_pViewPoint(NULL), m_pProperties(NULL)
 {
 	m_pRootScene = new C3DScene("ROOT_SCENE");
+	m_pRootScene->registerDestruction(this);
+	m_pScenes.push_back(m_pRootScene);
+
 	m_pViewPoint = createViewPoint();
+	m_pViewPoint->registerDestruction(this);
+
 	m_pProperties = new CRenderingProperties();
     m_pProperties->clear(CGL_RGBA|CGL_DEPTH);
 	m_pProperties->setMultisampling(CRenderingProperties::DISABLE);
-
-	m_bDeleteViewPoint = true;
-    m_bApplyViewPointModel = true;
-
-    m_pRootScene->registerDestruction(this);
-	m_pScenes.push_back(m_pRootScene);
-
-    m_pViewPoint->registerDestruction(this);
 }
 
 CRaptorDisplay::~CRaptorDisplay()
@@ -126,6 +125,11 @@ void CRaptorDisplay::unLink(const CPersistence* obj)
 IViewPoint *const CRaptorDisplay::getViewPoint(void) const
 {
 	return m_pViewPoint; 
+}
+
+CRenderingProperties &CRaptorDisplay::getRenderingProperties(void) const
+{
+	return *m_pProperties;
 }
 
 void CRaptorDisplay::addScene(C3DScene* const scene )
@@ -178,10 +182,15 @@ bool CRaptorDisplay::selectScene( const std::string& sname)
 
 void CRaptorDisplay::addSubDisplay(CRaptorDisplay *pDisplay)
 {
-    if (pDisplay != NULL)
-    {
+    if (NULL != pDisplay)
         m_pSubDisplays.push_back(pDisplay);
-    }
+}
+
+void CRaptorDisplay::setRenderingProperties(CRenderingProperties *properties)
+{
+	if (NULL != m_pProperties)
+		delete m_pProperties;
+	m_pProperties = properties;
 }
 
 void CRaptorDisplay::setViewPoint(IViewPoint *viewPoint)
@@ -366,7 +375,7 @@ bool CRaptorDisplay::importObject(CRaptorIO& io)
 			da.display_mode |= mode;
 		}
 		else if (data == "RenderingProperties")
-			getRenderingProperties()->importObject(io);
+			getRenderingProperties().importObject(io);
 		else if (data == "Scene")
 			m_pRootScene->importObject(io);
 		else if (data == "ViewPoint")

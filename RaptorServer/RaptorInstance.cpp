@@ -242,12 +242,12 @@ bool CRaptorInstance::start(unsigned int width,unsigned int height)
 		item.text = "Pending replies: 0";
 		pConsole->addItem(item);
 
-		CRenderingProperties *props = m_pDisplay->getRenderingProperties();
-		props->setTexturing(CRenderingProperties::ENABLE);
-		props->setLighting(CRenderingProperties::DISABLE);
-		props->setDepthTest(CRenderingProperties::DISABLE);
-		props->setCullFace(CRenderingProperties::DISABLE);
-		props->clear(CGL_RGBA);
+		CRenderingProperties &props = m_pDisplay->getRenderingProperties();
+		props.setTexturing(CRenderingProperties::ENABLE);
+		props.setLighting(CRenderingProperties::DISABLE);
+		props.setDepthTest(CRenderingProperties::DISABLE);
+		props.setCullFace(CRenderingProperties::DISABLE);
+		props.clear(CGL_RGBA);
 	m_pDisplay->glvkUnBindDisplay();
 
 	m_pApplication = CRaptorApplication::CreateApplication();
@@ -431,11 +431,11 @@ bool CRaptorInstance::executeRequest(request &r)
 
 		RAPTOR_HANDLE handle;
 		s.display->glvkBindDisplay(handle);
-			CRenderingProperties *props = s.display->getRenderingProperties();
+			CRenderingProperties &props = s.display->getRenderingProperties();
 			//props->setMultisampling(CRenderingProperties::ENABLE);
-			props->setTexturing(CRenderingProperties::ENABLE);
-			props->setLighting(CRenderingProperties::ENABLE);
-			props->clear(CGL_RGBA|CGL_DEPTH);
+			props.setTexturing(CRenderingProperties::ENABLE);
+			props.setLighting(CRenderingProperties::ENABLE);
+			props.clear(CGL_RGBA|CGL_DEPTH);
 		s.display->glvkUnBindDisplay();
 
 		m_sessions.push_back(s);

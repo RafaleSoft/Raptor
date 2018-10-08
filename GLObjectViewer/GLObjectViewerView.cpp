@@ -84,8 +84,8 @@ void CGLObjectViewerView::setBBoxes(bool bboxes)
 void CGLObjectViewerView::setWireFrame(bool wireframe)
 {
     CRaptorDisplay *pDisplay = getDisplay();
-    CRenderingProperties *props = pDisplay->getRenderingProperties();
-    props->setWireframe(wireframe ? 
+    CRenderingProperties &props = pDisplay->getRenderingProperties();
+    props.setWireframe(wireframe ? 
                         CRenderingProperties::ENABLE : 
                         CRenderingProperties::DISABLE);
 
@@ -96,8 +96,8 @@ void CGLObjectViewerView::setWireFrame(bool wireframe)
 void CGLObjectViewerView::setBackFaces(bool backfaces)
 {
     CRaptorDisplay *pDisplay = getDisplay();
-    CRenderingProperties *props = pDisplay->getRenderingProperties();
-    props->setCullFace(	backfaces ? 
+    CRenderingProperties &props = pDisplay->getRenderingProperties();
+    props.setCullFace(	backfaces ? 
                         CRenderingProperties::DISABLE : 
                         CRenderingProperties::ENABLE);
 
@@ -108,8 +108,8 @@ void CGLObjectViewerView::setBackFaces(bool backfaces)
 void CGLObjectViewerView::setLighting(bool lighting)
 {
 	CRaptorDisplay *pDisplay = getDisplay();
-    CRenderingProperties *props = pDisplay->getRenderingProperties();
-    props->setLighting(	lighting ? 
+    CRenderingProperties &props = pDisplay->getRenderingProperties();
+    props.setLighting(	lighting ? 
                         CRenderingProperties::ENABLE : 
                         CRenderingProperties::DISABLE);
 
@@ -119,8 +119,8 @@ void CGLObjectViewerView::setLighting(bool lighting)
 void CGLObjectViewerView::setTexturing(bool texturing)
 {
 	CRaptorDisplay *pDisplay = getDisplay();
-    CRenderingProperties *props = pDisplay->getRenderingProperties();
-    props->setTexturing(texturing ? 
+    CRenderingProperties &props = pDisplay->getRenderingProperties();
+    props.setTexturing(texturing ? 
                         CRenderingProperties::ENABLE : 
                         CRenderingProperties::DISABLE);
 

@@ -1,6 +1,14 @@
 - BasicObjects:
 	- Ajouter un TextureQuad le plus simple possible
 
+- CRaptorDisplay:
+	- déplacer les fps et timings dans CRaptorDisplayConfig ( ==> glQueryStatus )
+	- getRenderingProperties ==> retourner une référence et pas le pointeur.
+
+- CRenderingProperties:
+	- ajouter des alias : p.ex enableTexturing pour raccourcir le code
+	- faire retourner CRenderingProperties& des méthodes de get/set pour enchaîner l'initialisation et raccourcir le code
+
 - CContextManager:
 	factoriser getPresentationSuppotQueueFamily et vk_ctx.pSurface->supportPresentation(physical, numQueue):
 		passer le physical device à CVulkanSurface => renvoyer la queue qui supporte WSI et presentation sur la surface.

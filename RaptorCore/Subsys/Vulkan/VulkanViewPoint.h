@@ -29,6 +29,12 @@ public:
 	CVulkanViewPoint(const std::string& name = "VULKAN_VIEW_POINT");
 	virtual ~CVulkanViewPoint();
 
+	typedef struct
+	{
+		GL_MATRIX modelview;
+		GL_MATRIX projection;
+	} Transform_t;
+
 
 	//!
 	//!	Rendering:
@@ -45,14 +51,14 @@ public:
 
 
 private:
-	typedef struct
-	{
-		GL_MATRIX modelview;
-		GL_MATRIX projection;
-	} Transform_t;
+	//!	Update uniforms with viewpoint matrixes
+	bool vkRenderUniforms(void);
+
 	Transform_t transform;
 
 	C3DEngineMatrix modelview;
+
+	unsigned char *uniforms;
 };
 
 RAPTOR_NAMESPACE_END
