@@ -39,8 +39,8 @@ void CGenericDisplay::ReInit()
 	{
 		CRaptorDisplay* pDisplay = CRaptorDisplay::GetCurrentDisplay();
 		pDisplay->selectScene("ROOT_SCENE");
-		CRenderingProperties &rp = pDisplay->getRenderingProperties();
-		rp.setTexturing(CRenderingProperties::DISABLE);
+		IRenderingProperties &rp = pDisplay->getRenderingProperties();
+		rp.setTexturing(IRenderingProperties::DISABLE);
 
 		if (reinitTMU.handle != 0)
 			glCallList(reinitTMU.handle);

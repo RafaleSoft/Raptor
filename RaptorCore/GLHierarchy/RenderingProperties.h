@@ -19,7 +19,7 @@ class CRaptorIO;
 
 //! This class manages global rendering properties
 //! in a scene such as texturing, lighting, fogging, ...
-class RAPTOR_API CRenderingProperties
+class RAPTOR_API IRenderingProperties
 {
 public:
     typedef enum
@@ -32,19 +32,19 @@ public:
 
 public:
 	//! Constructor.
-	CRenderingProperties();
+	IRenderingProperties();
 
     //! Copy Constructor.
-	CRenderingProperties(const CRenderingProperties &properties);
+	IRenderingProperties(const IRenderingProperties &properties);
 
     //! Assignment
-    CRenderingProperties& operator=(const CRenderingProperties &properties);
+	IRenderingProperties& operator=(const IRenderingProperties &properties);
 
 	//! Destructor.
-	virtual ~CRenderingProperties();
+	virtual ~IRenderingProperties();
 
     //! Returns the current rendering properties ( or at least the last rendered )
-    static CRenderingProperties *GetCurrentProperties(void);
+	static IRenderingProperties *GetCurrentProperties(void);
 
 
 	//! Applies all the properties.
@@ -138,9 +138,9 @@ protected:
 	unsigned int		m_clear;
 
 
-    CRenderingProperties			*m_pPrevious;
+	IRenderingProperties			*m_pPrevious;
     
-	static CRenderingProperties		*m_pCurrent;
+	static IRenderingProperties		*m_pCurrent;
 };
 
 RAPTOR_NAMESPACE_END

@@ -960,7 +960,7 @@ bool CGeometry::getVertexInputState( std::vector<VkVertexInputBindingDescription
 	nb_bindings++; 	// always extract geometry
 
 	//!	TexCoords
-	CRenderingProperties *props = CRenderingProperties::GetCurrentProperties();
+	IRenderingProperties *props = IRenderingProperties::GetCurrentProperties();
 	if ((m_renderingModel.hasModel(CRenderingModel::CGL_TEXTURE)))
 //		(props->getCurrentTexturing() == CRenderingProperties::ENABLE))
 	{
@@ -1005,15 +1005,15 @@ void CGeometry::glRenderGeometry()
 
 
 	//	Store arrays state + texture state
-    CRenderingProperties *props = CRenderingProperties::GetCurrentProperties();
+	IRenderingProperties *props = IRenderingProperties::GetCurrentProperties();
     bool popNormalArray = false;
     bool popTangentArray = false;
     bool popColorArray = false;
     bool popTexCoordArray = false;
     bool popWeightArray = false;
     bool popFogArray = false;
-    bool proceedLighting = (props->getCurrentLighting() == CRenderingProperties::ENABLE);
-    bool proceedTexturing = (props->getCurrentTexturing() == CRenderingProperties::ENABLE);
+	bool proceedLighting = (props->getCurrentLighting() == IRenderingProperties::ENABLE);
+	bool proceedTexturing = (props->getCurrentTexturing() == IRenderingProperties::ENABLE);
     
 
 	if (m_renderingModel.hasModel(CRenderingModel::CGL_BACK_GEOMETRY))

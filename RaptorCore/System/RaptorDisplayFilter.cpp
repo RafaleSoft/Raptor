@@ -336,10 +336,10 @@ ITextureGenerator*  CRaptorDisplayFilter::glCreateColorSource(void)
 		state.renderer = CRaptorDisplayConfig::PIXEL_BUFFER;
 
     CRaptorDisplay* pDisplay = Raptor::glCreateDisplay(state);
-    CRenderingProperties &rp = pDisplay->getRenderingProperties();
-    rp.setTexturing(CRenderingProperties::ENABLE);
-    rp.setCullFace(CRenderingProperties::DISABLE);
-    rp.setDepthTest(CRenderingProperties::DISABLE);
+	IRenderingProperties &rp = pDisplay->getRenderingProperties();
+	rp.setTexturing(IRenderingProperties::ENABLE);
+	rp.setCullFace(IRenderingProperties::DISABLE);
+	rp.setDepthTest(IRenderingProperties::DISABLE);
     rp.clear(CGL_NULL);
     pDisplay->setViewPoint(NULL);
 
@@ -388,11 +388,11 @@ CTextureObject*  CRaptorDisplayFilter::glCreateColorOutput(void)
 
 	CRaptorDisplay *renderBuffer = NULL;
     renderBuffer = Raptor::glCreateDisplay(state);
-    CRenderingProperties &rp = renderBuffer->getRenderingProperties();
-    rp.setTexturing(CRenderingProperties::ENABLE);
-    rp.setCullFace(CRenderingProperties::DISABLE);
-    rp.setDepthTest(CRenderingProperties::DISABLE);
-    rp.setLighting(CRenderingProperties::DISABLE);
+	IRenderingProperties &rp = renderBuffer->getRenderingProperties();
+	rp.setTexturing(IRenderingProperties::ENABLE);
+	rp.setCullFace(IRenderingProperties::DISABLE);
+	rp.setDepthTest(IRenderingProperties::DISABLE);
+	rp.setLighting(IRenderingProperties::DISABLE);
     rp.clear(CGL_NULL);
     renderBuffer->setViewPoint(NULL);
 

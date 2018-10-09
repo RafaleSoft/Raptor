@@ -192,7 +192,7 @@ CShader * const CObject3DInstance::getShader(void)
 }
 
 
-void CObject3DInstance::overrideShading(const CRenderingProperties& override)
+void CObject3DInstance::overrideShading(const IRenderingProperties& override)
 {
     if (m_pOverride ==  NULL)
 		m_pOverride = new COpenGLRenderingProperties(override);

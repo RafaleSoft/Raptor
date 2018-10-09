@@ -31,7 +31,7 @@ RAPTOR_NAMESPACE_BEGIN
 
 class IViewPoint;
 class C3DScene;
-class CRenderingProperties;
+class IRenderingProperties;
 
 
 
@@ -42,10 +42,10 @@ public:
 	static CRaptorDisplay * const GetCurrentDisplay(void);
 
 	//! Returns the global rendering properties.
-	virtual CRenderingProperties &getRenderingProperties(void) const;
+	virtual IRenderingProperties &getRenderingProperties(void) const;
 
 	//! Creates a view point compatible with this display.
-	virtual CRenderingProperties *const createRenderingProperties(void) const;
+	virtual IRenderingProperties *const createRenderingProperties(void) const;
 
 
 	//!
@@ -188,7 +188,7 @@ protected:
 	//! This method enables subclasses to replace rendering properties
 	//!	Registration is not implemented, it remains the responsibility of subclasses
 	//! (method is protected)
-	void setRenderingProperties(CRenderingProperties *properties);
+	void setRenderingProperties(IRenderingProperties *properties);
 
 	
 private:
@@ -204,7 +204,7 @@ private:
 	bool					m_bDeleteViewPoint;
     bool                    m_bApplyViewPointModel;
 
-	CRenderingProperties    *m_pProperties;
+	IRenderingProperties    *m_pProperties;
 
     C3DScene				*m_pRootScene;
 	vector<C3DScene*>       m_pScenes;

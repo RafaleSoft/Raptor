@@ -388,9 +388,9 @@ int main(int argc, char* argv[])
 
         d = new CDisplay(wnd,pDisplay);
 
-        CRenderingProperties &props = pDisplay->getRenderingProperties();
-        props.setTexturing(CRenderingProperties::ENABLE);
-        props.setLighting(CRenderingProperties::DISABLE);
+		IRenderingProperties &props = pDisplay->getRenderingProperties();
+		props.setTexturing(IRenderingProperties::ENABLE);
+		props.setLighting(IRenderingProperties::DISABLE);
 
         CRaptorConsole *pConsole = Raptor::GetConsole();
         pConsole->glInit("",true);

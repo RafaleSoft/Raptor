@@ -435,9 +435,9 @@ void CWarpingDisplay::ReInit()
 	glEnable(GL_NORMALIZE);
 
     CRaptorDisplay* const pDisplay = CRaptorDisplay::GetCurrentDisplay();
-    CRenderingProperties &rp = pDisplay->getRenderingProperties();
-    rp.setLighting(CRenderingProperties::DISABLE);
-    rp.setTexturing(CRenderingProperties::ENABLE);
+	IRenderingProperties &rp = pDisplay->getRenderingProperties();
+	rp.setLighting(IRenderingProperties::DISABLE);
+	rp.setTexturing(IRenderingProperties::ENABLE);
 
 	pDisplay->selectScene("WARPING_SCENE");
 }

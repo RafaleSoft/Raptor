@@ -113,10 +113,10 @@ CRaptorFilteredDisplay::CRaptorFilteredDisplay(const CRaptorDisplayConfig& pcs)
 	IViewPoint *vp = CRaptorDisplay::getViewPoint();
 	vp->setViewVolume(-1.0f,1.0f,-1.0f,1.0f,1.0f,100.0f,IViewPoint::ORTHOGRAPHIC);
 
-    CRenderingProperties &rp = CRaptorScreenDisplay::getRenderingProperties();
-    rp.setTexturing(CRenderingProperties::ENABLE);
-	rp.setCullFace(CRenderingProperties::DISABLE);
-	rp.setDepthTest(CRenderingProperties::DISABLE);
+	IRenderingProperties &rp = CRaptorScreenDisplay::getRenderingProperties();
+	rp.setTexturing(IRenderingProperties::ENABLE);
+	rp.setCullFace(IRenderingProperties::DISABLE);
+	rp.setDepthTest(IRenderingProperties::DISABLE);
 	rp.clear(CGL_NULL);
 }
 
@@ -192,7 +192,7 @@ bool CRaptorFilteredDisplay::glQueryStatus(CRaptorDisplayConfig &state,unsigned 
     return CRaptorDisplay::glQueryStatus(state,query);
 }
 
-CRenderingProperties &CRaptorFilteredDisplay::getRenderingProperties(void) const
+IRenderingProperties &CRaptorFilteredDisplay::getRenderingProperties(void) const
 {
     if (m_pDisplay != NULL)
     {
@@ -322,12 +322,12 @@ bool CRaptorFilteredDisplay::glCreateRenderDisplay(void)
 			if (Raptor::glIsExtensionSupported(GL_ARB_COLOR_BUFFER_FLOAT_EXTENSION_NAME) ||
 				Raptor::glIsExtensionSupported(WGL_ATI_PIXEL_FORMAT_FLOAT_EXTENSION_NAME))
             {
-				CRenderingProperties& props = m_pDisplay->getRenderingProperties();
-				props.setFloatClamping(CRenderingProperties::DISABLE);
+				IRenderingProperties& props = m_pDisplay->getRenderingProperties();
+				props.setFloatClamping(IRenderingProperties::DISABLE);
 				if (m_pFSAADisplay != NULL)
 				{
-					CRenderingProperties& props2 = m_pFSAADisplay->getRenderingProperties();
-					props2.setFloatClamping(CRenderingProperties::DISABLE);
+					IRenderingProperties& props2 = m_pFSAADisplay->getRenderingProperties();
+					props2.setFloatClamping(IRenderingProperties::DISABLE);
 				}
             }
 			else 

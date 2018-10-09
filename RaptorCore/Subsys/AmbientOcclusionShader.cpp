@@ -90,11 +90,11 @@ bool CAmbientOcclusionShader::glInitAOCompute(void)
 	cfg.renderer = CRaptorDisplayConfig::RENDER_BUFFER;
 
     m_pAOBuffer = Raptor::glCreateDisplay(cfg);
-    CRenderingProperties &rp = m_pAOBuffer->getRenderingProperties();
-    rp.setTexturing(CRenderingProperties::ENABLE);
-    rp.setCullFace(CRenderingProperties::DISABLE);
-    rp.setDepthTest(CRenderingProperties::DISABLE);
-    rp.setLighting(CRenderingProperties::DISABLE);
+	IRenderingProperties &rp = m_pAOBuffer->getRenderingProperties();
+	rp.setTexturing(IRenderingProperties::ENABLE);
+	rp.setCullFace(IRenderingProperties::DISABLE);
+	rp.setDepthTest(IRenderingProperties::DISABLE);
+	rp.setLighting(IRenderingProperties::DISABLE);
     rp.clear(CGL_NULL);
     m_pAOBuffer->setViewPoint(NULL);
 	m_pAOBuffer->glvkBindDisplay(*pOutputTextures);
@@ -127,7 +127,7 @@ void CAmbientOcclusionShader::glRenderResult()
 	if (m_transforms.size() == 0)
 		return;
 
-	if (CRenderingProperties::GetCurrentProperties()->getCurrentTexturing() == CRenderingProperties::ENABLE)
+	if (IRenderingProperties::GetCurrentProperties()->getCurrentTexturing() == IRenderingProperties::ENABLE)
 	{
 		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 		pExtensions->glClientActiveTextureARB(GL_TEXTURE2_ARB);

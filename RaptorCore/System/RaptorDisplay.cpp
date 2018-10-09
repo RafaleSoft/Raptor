@@ -83,7 +83,7 @@ CRaptorDisplay::CRaptorDisplay(const CPersistence::CPersistenceClassID& id,const
 
 	m_pProperties = new COpenGLRenderingProperties();
     m_pProperties->clear(CGL_RGBA|CGL_DEPTH);
-	m_pProperties->setMultisampling(CRenderingProperties::DISABLE);
+	m_pProperties->setMultisampling(IRenderingProperties::DISABLE);
 }
 
 CRaptorDisplay::~CRaptorDisplay()
@@ -96,7 +96,7 @@ CRaptorDisplay::~CRaptorDisplay()
 		delete m_pViewPoint;
 }
 
-CRenderingProperties *const CRaptorDisplay::createRenderingProperties(void) const
+IRenderingProperties *const CRaptorDisplay::createRenderingProperties(void) const
 {
 	return new COpenGLRenderingProperties();
 }
@@ -132,7 +132,7 @@ IViewPoint *const CRaptorDisplay::getViewPoint(void) const
 	return m_pViewPoint; 
 }
 
-CRenderingProperties &CRaptorDisplay::getRenderingProperties(void) const
+IRenderingProperties &CRaptorDisplay::getRenderingProperties(void) const
 {
 	return *m_pProperties;
 }
@@ -191,7 +191,7 @@ void CRaptorDisplay::addSubDisplay(CRaptorDisplay *pDisplay)
         m_pSubDisplays.push_back(pDisplay);
 }
 
-void CRaptorDisplay::setRenderingProperties(CRenderingProperties *properties)
+void CRaptorDisplay::setRenderingProperties(IRenderingProperties *properties)
 {
 	if (NULL != m_pProperties)
 		delete m_pProperties;

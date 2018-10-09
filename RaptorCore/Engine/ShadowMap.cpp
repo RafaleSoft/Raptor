@@ -52,8 +52,8 @@ CShadowMap::CShadowMap(C3DScene& rScene)
     :CEnvironment(rScene),
 	m_pViewPoint(NULL),m_pShadowMap(NULL),m_pShadowTexture(NULL)
 {
-    m_lightProperties.setTexturing(CRenderingProperties::ENABLE);
-    m_lightProperties.setLighting(CRenderingProperties::ENABLE);
+	m_lightProperties.setTexturing(IRenderingProperties::ENABLE);
+	m_lightProperties.setLighting(IRenderingProperties::ENABLE);
     m_lightProperties.clear(0);
 }
 
@@ -140,10 +140,10 @@ bool CShadowMap::glInitEnvironment(unsigned int width,unsigned int height)
 	//
 	// prepare light's point of view transform
 	//
-    CRenderingProperties &props = m_pShadowMap->getRenderingProperties();
+	IRenderingProperties &props = m_pShadowMap->getRenderingProperties();
     props.clear(CGL_DEPTH);
-    props.setTexturing(CRenderingProperties::DISABLE);
-    props.setLighting(CRenderingProperties::DISABLE);
+	props.setTexturing(IRenderingProperties::DISABLE);
+	props.setLighting(IRenderingProperties::DISABLE);
 
 	if (m_pViewPoint == NULL)
 		m_pViewPoint = new COpenGLViewPoint();

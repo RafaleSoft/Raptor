@@ -584,11 +584,11 @@ public:
 		RAPTOR_HANDLE handle;
 		pBuffer->glvkBindDisplay(handle);
 			
-			CRenderingProperties &rp = pBuffer->getRenderingProperties();
-			rp.setTexturing(CRenderingProperties::ENABLE);
-			rp.setDepthTest(CRenderingProperties::DISABLE);
-			rp.setCullFace(CRenderingProperties::DISABLE);
-			rp.setLighting(CRenderingProperties::DISABLE);
+			IRenderingProperties &rp = pBuffer->getRenderingProperties();
+			rp.setTexturing(IRenderingProperties::ENABLE);
+			rp.setDepthTest(IRenderingProperties::DISABLE);
+			rp.setCullFace(IRenderingProperties::DISABLE);
+			rp.setLighting(IRenderingProperties::DISABLE);
 			rp.clear(CGL_RGBA|CGL_DEPTH);
 			IViewPoint *vpoint = pBuffer->getViewPoint();
 			vpoint->setViewVolume(-1.0,1.0,-1.0,1.0,-1.0,1.0,IViewPoint::ORTHOGRAPHIC);
@@ -648,8 +648,8 @@ public:
 		}
 
         props->clear(0);
-        props->setTexturing(CRenderingProperties::ENABLE);
-        props->setLighting(CRenderingProperties::DISABLE);
+		props->setTexturing(IRenderingProperties::ENABLE);
+		props->setLighting(IRenderingProperties::DISABLE);
 	};
 
 	virtual ~CTextureWaves() 
@@ -719,7 +719,7 @@ public:
 	{ return pMap; };
 
 private:
-    CRenderingProperties *props;
+	IRenderingProperties *props;
 	CTextureObject	*pMap;
 	CTextureObject	*pCosTable;
 	CRaptorDisplay	*pBuffer;
@@ -852,10 +852,10 @@ void CVertexShadersDisplay::ReInit()
     CRaptorDisplay* const pDisplay = CRaptorDisplay::GetCurrentDisplay();
 	pDisplay->selectScene("SHADER SCENE");
 	pDisplay->setViewPoint(view_point);
-    CRenderingProperties &rp = pDisplay->getRenderingProperties();
-	rp.setWireframe(CRenderingProperties::DISABLE);
-    rp.setTexturing(CRenderingProperties::ENABLE);
-	rp.setLighting(CRenderingProperties::ENABLE);
+	IRenderingProperties &rp = pDisplay->getRenderingProperties();
+	rp.setWireframe(IRenderingProperties::DISABLE);
+	rp.setTexturing(IRenderingProperties::ENABLE);
+	rp.setLighting(IRenderingProperties::ENABLE);
 }
 
 

@@ -18,9 +18,9 @@ CReflection::CReflection(float width,float height,int hcels,int vcels)
     :CBasicObjects::CRectMesh()
 {
 	props = CRaptorDisplay::GetCurrentDisplay()->createRenderingProperties();
-	props->setBlending(CRenderingProperties::ENABLE);
-	props->setLighting(CRenderingProperties::ENABLE);
-	props->setTexturing(CRenderingProperties::ENABLE);
+	props->setBlending(IRenderingProperties::ENABLE);
+	props->setLighting(IRenderingProperties::ENABLE);
+	props->setTexturing(IRenderingProperties::ENABLE);
 
 	setDimensions(width,height,hcels,vcels);
 	const CGeometryEditor& pEditor = getEditor();

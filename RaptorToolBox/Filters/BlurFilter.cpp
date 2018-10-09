@@ -368,11 +368,11 @@ bool CBlurFilter::glInitFilter(void)
 	}
 
     xBuffer = Raptor::glCreateDisplay(state);
-    CRenderingProperties &rp = xBuffer->getRenderingProperties();
-    rp.setTexturing(CRenderingProperties::ENABLE);
-    rp.setCullFace(CRenderingProperties::DISABLE);
-    rp.setDepthTest(CRenderingProperties::DISABLE);
-    rp.setLighting(CRenderingProperties::DISABLE);
+	IRenderingProperties &rp = xBuffer->getRenderingProperties();
+	rp.setTexturing(IRenderingProperties::ENABLE);
+	rp.setCullFace(IRenderingProperties::DISABLE);
+	rp.setDepthTest(IRenderingProperties::DISABLE);
+	rp.setLighting(IRenderingProperties::DISABLE);
     rp.clear(CGL_NULL);
     xBuffer->setViewPoint(NULL);
 

@@ -228,8 +228,8 @@ void CBumppedGeometry::glRender()
 	if (m_pBumpShader != NULL)
 		m_pBumpShader->glStop();
 
-	CRenderingProperties *props = CRenderingProperties::GetCurrentProperties();
-	if (props->getCurrentTexturing() == CRenderingProperties::ENABLE)
+	IRenderingProperties *props = IRenderingProperties::GetCurrentProperties();
+	if (props->getCurrentTexturing() == IRenderingProperties::ENABLE)
 	{
 		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 		pExtensions->glActiveTextureARB(GL_TEXTURE1_ARB);

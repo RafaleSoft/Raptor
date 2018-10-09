@@ -36,13 +36,13 @@ RAPTOR_NAMESPACE
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 COpenGLRenderingProperties::COpenGLRenderingProperties()
-	:CRenderingProperties()
+	:IRenderingProperties()
 {
 
 }
 
-COpenGLRenderingProperties::COpenGLRenderingProperties(const CRenderingProperties &properties)
-	: CRenderingProperties(properties)
+COpenGLRenderingProperties::COpenGLRenderingProperties(const IRenderingProperties &properties)
+	: IRenderingProperties(properties)
 {
 }
 
@@ -50,11 +50,11 @@ COpenGLRenderingProperties::~COpenGLRenderingProperties()
 {
 }
 
-CRenderingProperties::PROPERTY_SETTING COpenGLRenderingProperties::getCurrentLighting(void) const
+IRenderingProperties::PROPERTY_SETTING COpenGLRenderingProperties::getCurrentLighting(void) const
 {
 	return m_globalProperties.m_bLighting;
 }
-CRenderingProperties::PROPERTY_SETTING COpenGLRenderingProperties::getCurrentTexturing(void) const
+IRenderingProperties::PROPERTY_SETTING COpenGLRenderingProperties::getCurrentTexturing(void) const
 {
 	return m_globalProperties.m_bTexturing;
 }

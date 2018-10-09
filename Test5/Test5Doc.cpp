@@ -109,9 +109,9 @@ CTest5Doc::CTest5Doc(const RAPTOR_HANDLE& device,const char* title)
 	bool res = m_pDisplay->glvkBindDisplay(device);
 	if (res)
 	{
-		CRenderingProperties &props = m_pDisplay->getRenderingProperties();
-		props.setLighting(CRenderingProperties::ENABLE);
-		props.setTexturing(CRenderingProperties::ENABLE);
+		IRenderingProperties &props = m_pDisplay->getRenderingProperties();
+		props.setLighting(IRenderingProperties::ENABLE);
+		props.setTexturing(IRenderingProperties::ENABLE);
 #ifdef VULKAN_TEST
 #else
 		CRaptorConsole *pConsole = Raptor::GetConsole();

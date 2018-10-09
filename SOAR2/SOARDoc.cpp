@@ -95,12 +95,12 @@ void CSOARDoc::GLInitContext(int argc, char* argv[])
     glClearColor(0.0f,0.6f,0.0f,0.0f);
 
 	CRaptorDisplay *dsp = CRaptorDisplay::GetCurrentDisplay();
-    CRenderingProperties &props = dsp->getRenderingProperties();
-    props.setLighting(CRenderingProperties::ENABLE);
-	props.setCullFace(CRenderingProperties::ENABLE);
-	props.setTexturing(CRenderingProperties::DISABLE);
-	props.setDepthTest(CRenderingProperties::ENABLE);
-	props.setWireframe(CRenderingProperties::DISABLE);
+	IRenderingProperties &props = dsp->getRenderingProperties();
+	props.setLighting(IRenderingProperties::ENABLE);
+	props.setCullFace(IRenderingProperties::ENABLE);
+	props.setTexturing(IRenderingProperties::DISABLE);
+	props.setDepthTest(IRenderingProperties::ENABLE);
+	props.setWireframe(IRenderingProperties::DISABLE);
 	props.clear(CGL_DEPTH|CGL_RGBA);
 
 	IViewPoint *vp = dsp->getViewPoint();

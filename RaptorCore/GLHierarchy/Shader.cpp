@@ -682,7 +682,7 @@ bool CShader::vkRemoveVulkanProgram(void)
 void CShader::glRenderMaterial(void)
 {
 	//if (glIsEnabled(GL_LIGHTING) == GL_TRUE)
-    if (CRenderingProperties::GetCurrentProperties()->getCurrentLighting() == CRenderingProperties::ENABLE)
+	if (IRenderingProperties::GetCurrentProperties()->getCurrentLighting() == IRenderingProperties::ENABLE)
 	{
 		if (m_pMaterial!=NULL)
 		    m_pMaterial->glRender();
@@ -708,7 +708,7 @@ void CShader::glRenderMaterial(void)
 void CShader::glRenderTexture(void)
 {
 	//if (glIsEnabled(GL_TEXTURE_2D) == GL_TRUE)
-    if (CRenderingProperties::GetCurrentProperties()->getCurrentTexturing() == CRenderingProperties::ENABLE)
+	if (IRenderingProperties::GetCurrentProperties()->getCurrentTexturing() == IRenderingProperties::ENABLE)
 	{
 		if (m_textureUnitSetup.handle > 0)
         {

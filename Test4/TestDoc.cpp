@@ -73,8 +73,8 @@ void CTestDoc::GLInitContext(HDC hdc)
     glClearColor(0.0f,0.0f,0.0f,0.0f);
 
 	CRaptorDisplay *dsp = CRaptorDisplay::GetCurrentDisplay();
-    CRenderingProperties &props = dsp->getRenderingProperties();
-    props.setLighting(CRenderingProperties::ENABLE);
+	IRenderingProperties &props = dsp->getRenderingProperties();
+	props.setLighting(IRenderingProperties::ENABLE);
 
 	IViewPoint *vp = dsp->getViewPoint();
     vp->setPosition(0,2,4.5f,IViewPoint::EYE);

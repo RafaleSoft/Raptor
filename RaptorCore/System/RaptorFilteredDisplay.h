@@ -60,7 +60,7 @@ public:
     //! Returns the rendering properties of the 'drawing display'
     //! ( if it were not overloaded, it would return the properties of the 'filter drawing'
     //! which must not be changed by user calls )
-	virtual CRenderingProperties &getRenderingProperties(void) const;
+	virtual IRenderingProperties &getRenderingProperties(void) const;
 
 	//! @see CRaptorDisplay
 	virtual bool glBlit(unsigned int xSrc, unsigned int ySrc, unsigned int widthSrc, unsigned int heightSrc,

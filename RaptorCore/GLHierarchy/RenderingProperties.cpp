@@ -29,7 +29,7 @@
 
 RAPTOR_NAMESPACE_BEGIN
 
-CRenderingProperties*   CRenderingProperties::m_pCurrent = NULL;
+IRenderingProperties*   IRenderingProperties::m_pCurrent = NULL;
 
 RAPTOR_NAMESPACE_END
 
@@ -39,7 +39,7 @@ RAPTOR_NAMESPACE
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
-CRenderingProperties::CRenderingProperties()
+IRenderingProperties::IRenderingProperties()
 	:m_bTexturing(IGNORE_PROPERTY/*DISABLE*/),m_bLighting(IGNORE_PROPERTY/*DISABLE*/),
 	m_bWireframe(IGNORE_PROPERTY/*DISABLE*/),m_bCullFace(ENABLE),
 	m_bDepthTest(ENABLE),m_bBlend(IGNORE_PROPERTY),m_bStencilTest(IGNORE_PROPERTY),
@@ -49,7 +49,7 @@ CRenderingProperties::CRenderingProperties()
 
 }
 
-CRenderingProperties::CRenderingProperties(const CRenderingProperties &properties)
+IRenderingProperties::IRenderingProperties(const IRenderingProperties &properties)
 {
     if (&properties != this)
     {
@@ -67,7 +67,7 @@ CRenderingProperties::CRenderingProperties(const CRenderingProperties &propertie
     }
 }
 
-CRenderingProperties& CRenderingProperties::operator=(const CRenderingProperties &properties)
+IRenderingProperties& IRenderingProperties::operator=(const IRenderingProperties &properties)
 {
     if (&properties != this)
     {
@@ -86,21 +86,21 @@ CRenderingProperties& CRenderingProperties::operator=(const CRenderingProperties
     return *this;
 }
 
-CRenderingProperties::~CRenderingProperties()
+IRenderingProperties::~IRenderingProperties()
 {
 }
 
-CRenderingProperties *CRenderingProperties::GetCurrentProperties(void)
+IRenderingProperties *IRenderingProperties::GetCurrentProperties(void)
 { 
     return m_pCurrent; 
 }
 
-bool CRenderingProperties::exportObject(CRaptorIO& o)
+bool IRenderingProperties::exportObject(CRaptorIO& o)
 {
     return false;
 }
 
-bool CRenderingProperties::importObject(CRaptorIO& io)
+bool IRenderingProperties::importObject(CRaptorIO& io)
 {
     string name;
     io >> name;

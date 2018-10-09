@@ -19,14 +19,14 @@ RAPTOR_NAMESPACE_BEGIN
 
 //! This class manages global rendering properties
 //! in a scene such as texturing, lighting, fogging, ...
-class COpenGLRenderingProperties : public CRenderingProperties
+class COpenGLRenderingProperties : public IRenderingProperties
 {
 public:
 	//! Constructor.
 	COpenGLRenderingProperties();
 
 	//! Copy Constructor.
-	COpenGLRenderingProperties(const CRenderingProperties &properties);
+	COpenGLRenderingProperties(const IRenderingProperties &properties);
 
 	//! Destructor.
 	virtual ~COpenGLRenderingProperties();

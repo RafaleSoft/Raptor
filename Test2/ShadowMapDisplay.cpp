@@ -494,9 +494,9 @@ void CShadowMapDisplay::ReInit()
 	vp->animate(true);
 
 	CRaptorDisplay* const pDisplay = CRaptorDisplay::GetCurrentDisplay();
-	CRenderingProperties &rp = pDisplay->getRenderingProperties();
-    rp.setTexturing(CRenderingProperties::ENABLE);
-	rp.setLighting(CRenderingProperties::ENABLE);
+	IRenderingProperties &rp = pDisplay->getRenderingProperties();
+	rp.setTexturing(IRenderingProperties::ENABLE);
+	rp.setLighting(IRenderingProperties::ENABLE);
 	pDisplay->setViewPoint(vp);
 	pDisplay->selectScene("SHADOW_MAP_SCENE");
 }

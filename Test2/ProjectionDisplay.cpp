@@ -204,9 +204,9 @@ void CProjectionDisplay::ReInit()
 		((CLightModifier*)p)->animate(true);
 
     CRaptorDisplay* const pDisplay = CRaptorDisplay::GetCurrentDisplay();
-    CRenderingProperties &rp = pDisplay->getRenderingProperties();
-    rp.setTexturing(CRenderingProperties::ENABLE);
-	rp.setLighting(CRenderingProperties::ENABLE);
+	IRenderingProperties &rp = pDisplay->getRenderingProperties();
+	rp.setTexturing(IRenderingProperties::ENABLE);
+	rp.setLighting(IRenderingProperties::ENABLE);
 
 	pDisplay->selectScene("PROJECTION_SCENE");
 }
