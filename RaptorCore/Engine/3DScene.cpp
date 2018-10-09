@@ -34,7 +34,7 @@
 	#include "GLHierarchy/ObjectFactory.h"
 #endif
 #if !defined(AFX_RENDERINGPROPERTIES_H__634BCF2B_84B4_47F2_B460_D7FDC0F3B698__INCLUDED_)
-	#include "GLHierarchy/RenderingProperties.h"
+	#include "GLHierarchy/IRenderingProperties.h"
 #endif
 
 #if !defined(AFX_3DSCENEOBJECT_H__96A34268_AD58_4F73_B633_F6C3E92FE0A9__INCLUDED_)

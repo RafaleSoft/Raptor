@@ -9,7 +9,7 @@
 
 #include "Engine/IViewPoint.h"
 #include "System/RaptorDisplay.h"
-#include "GLHierarchy/RenderingProperties.h"
+#include "GLHierarchy/IRenderingProperties.h"
 
 
 

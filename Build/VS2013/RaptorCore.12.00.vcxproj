@@ -296,7 +296,7 @@ Subsys\Redist.bat
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\Reference.cxx">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\RaptorCore\GLHierarchy\RenderingProperties.cpp" />
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\IRenderingProperties.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\ShadedGeometry.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\Shader.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\ShaderProgram.cpp" />
@@ -514,7 +514,7 @@ copy $(SolutionDir)\$(ProjectName)\Subsys\CodeGeneration.h "%RAPTOR_ROOT%\Redist
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\Persistence.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\ProgramParameters.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\Projector.h" />
-    <ClInclude Include="..\..\RaptorCore\GLHierarchy\RenderingProperties.h" />
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\IRenderingProperties.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\ShadedGeometry.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\Shader.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\ShaderProgram.h" />

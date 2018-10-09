@@ -24,7 +24,7 @@
 #include "GLHierarchy/Light.h"
 #include "GLHierarchy/SimpleObject.h"
 #include "GLHierarchy/ShadedGeometry.h"
-#include "GLHierarchy/RenderingProperties.h"
+#include "GLHierarchy/IRenderingProperties.h"
 
 #include "ToolBox/BasicObjects.h"
 

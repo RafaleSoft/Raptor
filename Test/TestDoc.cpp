@@ -23,7 +23,7 @@
 #include "System/Raptor.h"
 #include "GLHierarchy/Material.h"
 #include "GLHierarchy/Light.h"
-#include "GLHierarchy/RenderingProperties.h"
+#include "GLHierarchy/IRenderingProperties.h"
 #include "GLHierarchy/3DSet.h"
 #include "System/RaptorConsole.h"
 

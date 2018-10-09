@@ -24,7 +24,7 @@
 #include "GLHierarchy/FragmentProgram.h"
 #include "Engine/ImageModifier.h"
 #include "System/Raptor.h"
-#include "GLHierarchy/RenderingProperties.h"
+#include "GLHierarchy/IRenderingProperties.h"
 #include "GLHierarchy/Object3DInstance.h"
 #include "SSE_Engine/SSE_GLLayer.h"
 

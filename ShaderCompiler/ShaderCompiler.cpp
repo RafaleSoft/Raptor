@@ -11,7 +11,7 @@
 #include "System/RaptorConsole.h"
 
 #include "GLHierarchy/TextureFactory.h"
-#include "GLHierarchy/RenderingProperties.h"
+#include "GLHierarchy/IRenderingProperties.h"
 #include "GLHierarchy/Shader.h"
 #include "GLHierarchy/VertexShader.h"
 #include "GLHierarchy/VertexProgram.h"

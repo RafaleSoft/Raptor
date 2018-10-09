@@ -4,17 +4,12 @@
 
 #include "stdafx.h"
 #include "GenericDisplay.h"
-#include "GLHierarchy\TextureUnitSetup.h"
-#include "GLHierarchy\FragmentShader.h"
-#include "GLHierarchy\VertexShader.h"
-#include "GLHierarchy\RenderingProperties.h"
-#include "System\RaptorDisplay.h"
+#include "GLHierarchy/TextureUnitSetup.h"
+#include "GLHierarchy/FragmentShader.h"
+#include "GLHierarchy/VertexShader.h"
+#include "GLHierarchy/IRenderingProperties.h"
+#include "System/RaptorDisplay.h"
 
-#ifdef _DEBUG
-#undef THIS_FILE
-static char THIS_FILE[]=__FILE__;
-#define new DEBUG_NEW
-#endif
 
 RAPTOR_HANDLE CGenericDisplay::reinitTMU;
 

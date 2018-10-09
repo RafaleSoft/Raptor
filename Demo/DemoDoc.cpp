@@ -11,7 +11,7 @@
 #include "GLHierarchy/Object3DInstance.h"
 #include "GLHierarchy/Object3DShadow.h"
 #include "GLHierarchy/Projector.h"
-#include "GLHierarchy/RenderingProperties.h"
+#include "GLHierarchy/IRenderingProperties.h"
 #include "GLHierarchy/ShadedGeometry.h"
 #include "GLHierarchy/Shader.h"
 #include "GLHierarchy/SimpleObject.h"

@@ -6,7 +6,7 @@
 
 #include "System/Raptor.h"
 #include "System/RaptorDisplay.h"
-#include "GLHierarchy/RenderingProperties.h"
+#include "GLHierarchy/IRenderingProperties.h"
 #include "GLHierarchy/Light.h"
 #include "GLHierarchy/ShaderProgram.h"
 #include "Engine/IViewPoint.h"

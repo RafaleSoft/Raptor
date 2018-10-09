@@ -14,7 +14,7 @@
 #include "System/RaptorMessages.h"
 #include "Engine/Animator.h"
 #include "Engine/IViewPoint.h"
-#include "GLHierarchy/RenderingProperties.h"
+#include "GLHierarchy/IRenderingProperties.h"
 #include "GLHierarchy/TextureSet.h"
 #include "GLHierarchy/TextureFactory.h"
 #include "GLHierarchy/TextureFactoryConfig.h"

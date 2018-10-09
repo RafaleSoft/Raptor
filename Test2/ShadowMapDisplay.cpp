@@ -24,7 +24,7 @@
 #include "GLHierarchy/ShadedGeometry.h"
 #include "GLHierarchy/3DSet.h"
 #include "GLHierarchy/Object3DInstance.h"
-#include "GLHierarchy\RenderingProperties.h"
+#include "GLHierarchy/IRenderingProperties.h"
 #include "GLHierarchy/Light.h"
 #include "System/Raptor.h"
 #include "Engine/3DPath.h"

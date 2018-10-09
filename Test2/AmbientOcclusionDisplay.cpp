@@ -17,7 +17,7 @@
 #include "GLHierarchy/SimpleObject.h"
 #include "GLHierarchy/ShadedGeometry.h"
 #include "GLHierarchy/GeometryEditor.h"
-#include "GLHierarchy/RenderingProperties.h"
+#include "GLHierarchy/IRenderingProperties.h"
 #include "GLHierarchy/Object3DInstance.h"
 #include "GLHierarchy/Shader.h"
 #include "GLHierarchy/VertexProgram.h"

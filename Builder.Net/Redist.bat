@@ -113,7 +113,7 @@ copy .\RaptorCore\GLHierarchy\PerlinNoise.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\Persistence.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\ProgramParameters.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\Projector.h Redist\Include\GLHierarchy
-copy .\RaptorCore\GLHierarchy\RenderingProperties.h Redist\Include\GLHierarchy
+copy .\RaptorCore\GLHierarchy\IRenderingProperties.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\ShadedGeometry.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\Shader.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\ShaderProgram.h Redist\Include\GLHierarchy

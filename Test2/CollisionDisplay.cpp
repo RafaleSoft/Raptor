@@ -16,7 +16,7 @@
 #include "Engine/3DScene.h"
 #include "System/Raptor.h"
 #include "System/RaptorDisplay.h"
-#include "GLHierarchy/RenderingProperties.h"
+#include "GLHierarchy/IRenderingProperties.h"
 #include "GLHierarchy/GeometryEditor.h"
 
 //////////////////////////////////////////////////////////////////////

@@ -47,6 +47,9 @@
 #if !defined(AFX_GEOMETRY_H__B42ABB87_80E8_11D3_97C2_DE5C28000000__INCLUDED_)
 	#include "GLHierarchy/Geometry.h"
 #endif
+#if !defined(AFX_RENDERINGPROPERTIES_H__634BCF2B_84B4_47F2_B460_D7FDC0F3B698__INCLUDED_)
+	#include "GLHierarchy/IRenderingProperties.h"
+#endif
 
 
 RAPTOR_NAMESPACE_BEGIN
@@ -57,7 +60,18 @@ const CPersistence::CPersistenceClassID& CRaptorVulkanDisplay::CRaptorVulkanDisp
 	return bufferID;
 }
 
+class VulkanRP : public IRenderingProperties
+{
+public:
+	VulkanRP() {};
+	virtual void glPushProperties(void) {};
+	virtual void glPopProperties(void) {};
+	virtual PROPERTY_SETTING getCurrentTexturing(void) const { return IGNORE_PROPERTY; };
+	virtual PROPERTY_SETTING getCurrentLighting(void) const { return IGNORE_PROPERTY; };
+};
+
 RAPTOR_NAMESPACE_END
+
 
 
 RAPTOR_NAMESPACE
@@ -76,7 +90,7 @@ CRaptorVulkanDisplay::CRaptorVulkanDisplay(const CRaptorDisplayConfig& pcs)
 	m_pUAllocator(NULL), m_pUOldAllocator(NULL)
 {
 	setViewPoint(createViewPoint());
-	setRenderingProperties(NULL);
+	setRenderingProperties(new VulkanRP());
 }
 
 CRaptorVulkanDisplay::~CRaptorVulkanDisplay(void)

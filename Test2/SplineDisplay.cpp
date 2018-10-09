@@ -23,7 +23,7 @@
 #include "System/RaptorDisplay.h"
 #include "GLHierarchy/TextureObject.h"
 #include "GLHierarchy/ShadedGeometry.h"
-#include "GLHierarchy/RenderingProperties.h"
+#include "GLHierarchy/IRenderingProperties.h"
 
 
 //////////////////////////////////////////////////////////////////////

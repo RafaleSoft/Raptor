@@ -53,7 +53,7 @@
 	#include "ObjectFactory.h"
 #endif
 #if !defined(AFX_RENDERINGPROPERTIES_H__634BCF2B_84B4_47F2_B460_D7FDC0F3B698__INCLUDED_)
-	#include "RenderingProperties.h"
+	#include "IRenderingProperties.h"
 #endif
 
 //////////////////////////////////////////////////////////////////////

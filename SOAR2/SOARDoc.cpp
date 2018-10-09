@@ -7,7 +7,7 @@
 #include "Engine/IViewPoint.h"
 #include "System/Raptor.h"
 #include "System/RaptorConsole.h"
-#include "GLHierarchy/RenderingProperties.h"
+#include "GLHierarchy/IRenderingProperties.h"
 #include "GLHierarchy/SimpleObject.h"
 #include "GLHierarchy/ShadedGeometry.h"
 #include "GLHierarchy/Shader.h"

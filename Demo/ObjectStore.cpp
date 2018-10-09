@@ -29,7 +29,7 @@
 #include "Engine/ViewModifier.h"
 #include "Engine/LightModifier.h"
 #include "Engine/ParticleManager.h"
-#include "GLHierarchy/RenderingProperties.h"
+#include "GLHierarchy/IRenderingProperties.h"
 #include "System/RaptorMessages.h"
 #include "System/RaptorIO.h"
 #include "Engine/ViewPoint.h"

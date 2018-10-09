@@ -7,7 +7,7 @@
 #include "MFCExtension/CWnd/GLView.h"
 #include "System/RaptorDisplay.h"
 #include "Engine/3DScene.h"
-#include "GLHierarchy/RenderingProperties.h"
+#include "GLHierarchy/IRenderingProperties.h"
 #include "GLHierarchy/Light.h"
 #include "GLHierarchy/Shader.h"
 #include "GLHierarchy/TextureFactory.h"

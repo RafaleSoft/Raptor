@@ -24,7 +24,7 @@
 #include "GLHierarchy/GL3DFont.h"
 #include "GLHierarchy/GLFontFactory.h"
 #include "system/Raptor.h"
-#include "GLHierarchy/RenderingProperties.h"
+#include "GLHierarchy/IRenderingProperties.h"
 #include "Engine/IViewPoint.h"
 
 #include "ToolBox/RaptorToolBox.h"

@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 
 #include "GLHierarchy/Shader.h"
-#include "GLHierarchy/RenderingProperties.h"
+#include "GLHierarchy/IRenderingProperties.h"
 #include "GLHierarchy/Material.h"
 #include "GLHierarchy/Geometry.h"
 #include "GLHierarchy/GeometryEditor.h"
