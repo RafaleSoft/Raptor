@@ -44,6 +44,10 @@ public:
 	//! Returns the global rendering properties.
 	virtual CRenderingProperties &getRenderingProperties(void) const;
 
+	//! Creates a view point compatible with this display.
+	virtual CRenderingProperties *const createRenderingProperties(void) const;
+
+
 	//!
 	//!	Display management
 	//!
@@ -79,7 +83,7 @@ public:
 	//! Returns the display view point.
 	virtual IViewPoint *const getViewPoint(void) const;
 
-	//! Returns the display view point.
+	//! Creates a view point compatible with this display.
 	virtual IViewPoint *const createViewPoint(void) const;
 
 

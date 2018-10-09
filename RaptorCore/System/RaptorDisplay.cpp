@@ -30,8 +30,8 @@
 #if !defined(AFX_OBJECT3D_H__DB24F017_80B9_11D3_97C1_FC2841000000__INCLUDED_)
 	#include "GLHierarchy/Object3D.h"
 #endif
-#if !defined(AFX_RENDERINGPROPERTIES_H__634BCF2B_84B4_47F2_B460_D7FDC0F3B698__INCLUDED_)
-	#include "GLHierarchy/RenderingProperties.h"
+#if !defined(AFX_OPENGLRENDERINGPROPERTIES_H__1F0F1E67_FC84_4772_A6EE_923BD81F91D3__INCLUDED_)
+	#include "Subsys/OpenGL/OpenGLRenderingProperties.h"
 #endif
 #if !defined(AFX_RAPTORIO_H__87D52C27_9117_4675_95DC_6AD2CCD2E78D__INCLUDED_)
 	#include "System/RaptorIO.h"
@@ -81,7 +81,7 @@ CRaptorDisplay::CRaptorDisplay(const CPersistence::CPersistenceClassID& id,const
 	m_pViewPoint = createViewPoint();
 	m_pViewPoint->registerDestruction(this);
 
-	m_pProperties = new CRenderingProperties();
+	m_pProperties = new COpenGLRenderingProperties();
     m_pProperties->clear(CGL_RGBA|CGL_DEPTH);
 	m_pProperties->setMultisampling(CRenderingProperties::DISABLE);
 }
@@ -94,6 +94,11 @@ CRaptorDisplay::~CRaptorDisplay()
 		delete m_pRootScene;
 	if ((m_bDeleteViewPoint) && (m_pViewPoint != NULL))
 		delete m_pViewPoint;
+}
+
+CRenderingProperties *const CRaptorDisplay::createRenderingProperties(void) const
+{
+	return new COpenGLRenderingProperties();
 }
 
 IViewPoint *const CRaptorDisplay::createViewPoint(void) const

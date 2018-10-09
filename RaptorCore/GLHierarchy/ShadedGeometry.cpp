@@ -28,8 +28,8 @@
 #if !defined(AFX_RAPTORVULKANSHADER_H__C188550F_1D1C_4531_B0A0_727CE9FF9450__INCLUDED_)
 	#include "Subsys/Vulkan/VulkanShader.h"
 #endif
-#if !defined(AFX_RENDERINGPROPERTIES_H__634BCF2B_84B4_47F2_B460_D7FDC0F3B698__INCLUDED_)
-	#include "RenderingProperties.h"
+#if !defined(AFX_OPENGLRENDERINGPROPERTIES_H__1F0F1E67_FC84_4772_A6EE_923BD81F91D3__INCLUDED_)
+	#include "Subsys/OpenGL/OpenGLRenderingProperties.h"
 #endif
 #if !defined(AFX_RAPTORIO_H__87D52C27_9117_4675_95DC_6AD2CCD2E78D__INCLUDED_)
 	#include "System/RaptorIO.h"
@@ -152,7 +152,7 @@ void CShadedGeometry::setShader(CShader *shader)
 void CShadedGeometry::overrideShading(const CRenderingProperties& override)
 {
     if (m_pOverride ==  NULL)
-        m_pOverride = new CRenderingProperties(override);
+		m_pOverride = new COpenGLRenderingProperties(override);
     else
         *m_pOverride = override;
 
@@ -263,7 +263,7 @@ bool CShadedGeometry::importObject(CRaptorIO& io)
 			CGeometry::importObject(io);
 		else if (data == "RenderingProperties")
 		{
-            CRenderingProperties props;
+			COpenGLRenderingProperties props;
             props.importObject(io);
             overrideShading(props);
 		}

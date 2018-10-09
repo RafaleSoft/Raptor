@@ -568,6 +568,7 @@ class CTextureWaves : public CSimpleObject
 public:
 	CTextureWaves()
 	{
+		props = CRaptorDisplay::GetCurrentDisplay()->createRenderingProperties();
 		CRaptorDisplayConfig attrs;
 		attrs.x = 0;
 		attrs.y = 0;
@@ -646,9 +647,9 @@ public:
 			angles[i] = angle + baseAngle;
 		}
 
-        props.clear(0);
-        props.setTexturing(CRenderingProperties::ENABLE);
-        props.setLighting(CRenderingProperties::DISABLE);
+        props->clear(0);
+        props->setTexturing(CRenderingProperties::ENABLE);
+        props->setLighting(CRenderingProperties::DISABLE);
 	};
 
 	virtual ~CTextureWaves() 
@@ -698,7 +699,7 @@ public:
 
 		if (bShow)
 		{
-            props.glPushProperties();
+            props->glPushProperties();
 
 			glPushMatrix();
 				glTranslatef(0.0f,0.0f,-5.0f);
@@ -710,7 +711,7 @@ public:
 				glEnd();
 			glPopMatrix();
 
-            props.glPopProperties();
+            props->glPopProperties();
 		}
 	}
 
@@ -718,7 +719,7 @@ public:
 	{ return pMap; };
 
 private:
-    CRenderingProperties props;
+    CRenderingProperties *props;
 	CTextureObject	*pMap;
 	CTextureObject	*pCosTable;
 	CRaptorDisplay	*pBuffer;

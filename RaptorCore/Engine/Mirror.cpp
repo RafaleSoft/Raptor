@@ -39,7 +39,7 @@ CMirror::CMirror()
 {
 	IDENT_MATRIX(m_mirror);
 
-    m_pProperties = new CRenderingProperties();
+	m_pProperties = CRaptorDisplay::GetCurrentDisplay()->createRenderingProperties();
     m_pProperties->setTexturing(CRenderingProperties::ENABLE);
     m_pProperties->setLighting(CRenderingProperties::ENABLE);
     m_pProperties->setStencilTest(CRenderingProperties::DISABLE);

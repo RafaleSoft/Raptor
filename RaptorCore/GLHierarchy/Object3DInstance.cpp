@@ -26,8 +26,8 @@
 #if !defined(AFX_OBJECTFACTORY_H__7F891C52_9E32_489C_B09C_5E5803522D91__INCLUDED_)
 	#include "ObjectFactory.h"
 #endif
-#if !defined(AFX_RENDERINGPROPERTIES_H__634BCF2B_84B4_47F2_B460_D7FDC0F3B698__INCLUDED_)
-	#include "RenderingProperties.h"
+#if !defined(AFX_OPENGLRENDERINGPROPERTIES_H__1F0F1E67_FC84_4772_A6EE_923BD81F91D3__INCLUDED_)
+	#include "Subsys/OpenGL/OpenGLRenderingProperties.h"
 #endif
 #if !defined(AFX_SHADER_H__4D405EC2_7151_465D_86B6_1CA99B906777__INCLUDED_)
 	#include "GLHierarchy/Shader.h"
@@ -195,7 +195,7 @@ CShader * const CObject3DInstance::getShader(void)
 void CObject3DInstance::overrideShading(const CRenderingProperties& override)
 {
     if (m_pOverride ==  NULL)
-        m_pOverride = new CRenderingProperties(override);
+		m_pOverride = new COpenGLRenderingProperties(override);
     else
         *m_pOverride = override;
 
@@ -737,7 +737,7 @@ bool CObject3DInstance::importObject(CRaptorIO& io)
         }
         else if(data == "RenderingProperties")
         {
-            CRenderingProperties props;
+			COpenGLRenderingProperties props;
             props.importObject(io);
             overrideShading(props);
         }

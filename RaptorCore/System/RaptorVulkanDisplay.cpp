@@ -262,7 +262,7 @@ bool CRaptorVulkanDisplay::glvkUnBindDisplay(void)
 	RAPTOR_HANDLE device;
 	manager->vkMakeCurrentContext(device, CContextManager::INVALID_CONTEXT);
 
-	return true; //CRaptorDisplay::glvkUnBindDisplay();
+	return CRaptorDisplay::glvkUnBindDisplay();
 }
 
 

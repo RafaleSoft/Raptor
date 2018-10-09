@@ -14,4 +14,5 @@ public:
     virtual void glRender();
 
 private:
+	CRenderingProperties *props;
 };

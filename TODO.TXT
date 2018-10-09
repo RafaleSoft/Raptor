@@ -3,7 +3,6 @@
 
 - CRaptorDisplay:
 	- déplacer les fps et timings dans CRaptorDisplayConfig ( ==> glQueryStatus )
-	- getRenderingProperties ==> retourner une référence et pas le pointeur.
 
 - CRenderingProperties:
 	- ajouter des alias : p.ex enableTexturing pour raccourcir le code

@@ -49,19 +49,19 @@ public:
 
 	//! Applies all the properties.
     //! The current property is made current ( provided it is not already current )
-    void glPushProperties(void);
+	virtual void glPushProperties(void) = 0;
 
     //! Restore previous properties. 
     //! The property set popped MUST be the last pushed,
     //! otherwise this method has no effects.
-    void glPopProperties(void);
+	virtual void glPopProperties(void) = 0;
 
 	//! Enables / Disables rendering with textures.
     //! Default setting for texturing is IGNORE_PROPERTY.
 	void setTexturing(PROPERTY_SETTING texturing) { m_bTexturing = texturing; };
     PROPERTY_SETTING getTexturing(void) const { return m_bTexturing; };
     //! Returns the current global texturing state which should have been set by a previous rendering property.
-    PROPERTY_SETTING getCurrentTexturing(void) const;
+    virtual PROPERTY_SETTING getCurrentTexturing(void) const = 0;
 
 
 	//! Enables / Disables rendering with lights.
@@ -69,7 +69,7 @@ public:
 	void setLighting(PROPERTY_SETTING lighting) { m_bLighting = lighting; };
     PROPERTY_SETTING getLighting(void) const { return m_bLighting; };
     //! Returns the current global lighting state which should have been set by a previous rendering property.
-    PROPERTY_SETTING getCurrentLighting(void) const;
+    virtual PROPERTY_SETTING getCurrentLighting(void) const = 0;
 
 
 	//! Enables / Disables wire frame rendering.
@@ -125,9 +125,7 @@ public:
 
 
 
-private:
-    void glRender(void);
-
+protected:
 	PROPERTY_SETTING	m_bTexturing;
 	PROPERTY_SETTING	m_bLighting;
 	PROPERTY_SETTING	m_bWireframe;
@@ -139,10 +137,10 @@ private:
 	PROPERTY_SETTING	m_bClampFloats;
 	unsigned int		m_clear;
 
-    CRenderingProperties *m_pPrevious;
-    static CRenderingProperties *m_pCurrent;
 
-    static CRenderingProperties     m_globalProperties;
+    CRenderingProperties			*m_pPrevious;
+    
+	static CRenderingProperties		*m_pCurrent;
 };
 
 RAPTOR_NAMESPACE_END
