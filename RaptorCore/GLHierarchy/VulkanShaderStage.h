@@ -91,6 +91,9 @@ private:
 	CVulkanShaderStage();
     CVulkanShaderStage& operator=(const CVulkanShaderStage& ) { return *this;};
 
+	//!	Identify predefined OpenGL shader names variables
+	bool IsPredefinedGLVariable(const std::string& name);
+
 
 	//!	Vulkan shader modules
 	CVulkanShader*	m_pShaderStages;

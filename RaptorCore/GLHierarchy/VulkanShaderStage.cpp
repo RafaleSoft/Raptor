@@ -116,7 +116,7 @@ void CVulkanShaderStage::setProgramParameters(const CProgramParameters &v)
 				CTextureUnitSetup::TEXTURE_IMAGE_UNIT sampler = CTextureUnitSetup::IMAGE_UNIT_0;
 				if (param_value.isA(sampler))
 					param_value.locationType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-				else
+				else if (!IsPredefinedGLVariable(param_value.name()))
 				{
 					param_value.locationType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 					size += param_value.size();
@@ -196,7 +196,7 @@ CProgramParameters::CParameterBase& CVulkanShaderStage::getDefaultParameter(cons
 	if (NULL != m_param)
 		delete m_param;
 
-	if (parameter_name == "gl_ModelViewMatrix")
+	if (IsPredefinedGLVariable(parameter_name))
 	{
 		CVulkanViewPoint::Transform_t t;
 		m_param = new CProgramParameters::CParameter<CVulkanViewPoint::Transform_t>(t);
@@ -204,4 +204,11 @@ CProgramParameters::CParameterBase& CVulkanShaderStage::getDefaultParameter(cons
 	}
 
 	return *m_param;
+}
+
+bool CVulkanShaderStage::IsPredefinedGLVariable(const std::string& name)
+{
+	return ((name == "gl_ModelViewMatrix") ||
+			(name == "gl_ProjectionMatrix") ||
+			(name == "gl_NormalMatrix"));
 }

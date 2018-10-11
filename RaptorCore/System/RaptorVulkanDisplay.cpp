@@ -47,7 +47,7 @@
 #if !defined(AFX_GEOMETRY_H__B42ABB87_80E8_11D3_97C2_DE5C28000000__INCLUDED_)
 	#include "GLHierarchy/Geometry.h"
 #endif
-#if !defined(AFX_RENDERINGPROPERTIES_H__634BCF2B_84B4_47F2_B460_D7FDC0F3B698__INCLUDED_)
+#if !defined(AFX_IRENDERINGPROPERTIES_H__634BCF2B_84B4_47F2_B460_D7FDC0F3B698__INCLUDED_)
 	#include "GLHierarchy/IRenderingProperties.h"
 #endif
 
@@ -64,8 +64,22 @@ class VulkanRP : public IRenderingProperties
 {
 public:
 	VulkanRP() {};
-	virtual void glPushProperties(void) {};
-	virtual void glPopProperties(void) {};
+	virtual void glPushProperties(void)
+	{
+		if ((m_pCurrent != this) && (m_pPrevious == NULL))
+		{
+			m_pPrevious = m_pCurrent;
+			m_pCurrent = this;
+		}
+	};
+	virtual void glPopProperties(void)
+	{
+		if (m_pCurrent == this)
+		{
+			m_pCurrent = m_pPrevious;
+			m_pPrevious = NULL;
+		}
+	};
 	virtual PROPERTY_SETTING getCurrentTexturing(void) const { return IGNORE_PROPERTY; };
 	virtual PROPERTY_SETTING getCurrentLighting(void) const { return IGNORE_PROPERTY; };
 };

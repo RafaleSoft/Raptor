@@ -110,8 +110,7 @@ CTest5Doc::CTest5Doc(const RAPTOR_HANDLE& device,const char* title)
 	if (res)
 	{
 		IRenderingProperties &props = m_pDisplay->getRenderingProperties();
-		props.setLighting(IRenderingProperties::ENABLE);
-		props.setTexturing(IRenderingProperties::ENABLE);
+		props.enableLighting.enableTexturing;
 #ifdef VULKAN_TEST
 #else
 		CRaptorConsole *pConsole = Raptor::GetConsole();
