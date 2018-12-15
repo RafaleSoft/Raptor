@@ -17,7 +17,7 @@
 RAPTOR_NAMESPACE_BEGIN
 
 class CShader;
-class CRenderingProperties;
+class IRenderingProperties;
 
 class CAmbientOcclusionShader;
 
@@ -70,7 +70,7 @@ public:
     virtual void setShader(CShader *shader);
 
     //! Override Display rendering properties tu use local object specific shading.
-    void overrideShading(const CRenderingProperties& override);
+	void overrideShading(const IRenderingProperties& override);
 
 	//! Implements CPersistence
     DECLARE_IO
@@ -86,7 +86,7 @@ protected:
 private:
 	CShader					*m_pShader;
 	CShader					*m_pAOShader;
-    CRenderingProperties	*m_pOverride;
+	IRenderingProperties	*m_pOverride;
 };
 
 RAPTOR_NAMESPACE_END

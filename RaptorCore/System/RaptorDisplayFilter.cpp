@@ -28,8 +28,8 @@
 #if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
 	#include "Raptor.h"
 #endif
-#if !defined(AFX_RENDERINGPROPERTIES_H__634BCF2B_84B4_47F2_B460_D7FDC0F3B698__INCLUDED_)
-	#include "GLHierarchy/RenderingProperties.h"
+#if !defined(AFX_IRENDERINGPROPERTIES_H__634BCF2B_84B4_47F2_B460_D7FDC0F3B698__INCLUDED_)
+	#include "GLHierarchy/IRenderingProperties.h"
 #endif
 #if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
     #include "RaptorErrorManager.h"
@@ -135,13 +135,13 @@ void CRaptorDisplayFilter::glRender(void)
 	if ((colorInternalSource != NULL) && m_bBufferedOutputEnabled)
     {
         CRaptorDisplay *output = ((CRaptorDisplay*)colorInternalSource);
-        output->glUnBindDisplay();
+		output->glvkUnBindDisplay();
 	}
 
 	if (colorExternalSource != NULL)
 	{
         CRaptorDisplay *input = ((CRaptorDisplay*)colorExternalSource);
-        input->glUnBindDisplay();
+		input->glvkUnBindDisplay();
     }
 
 	CATCH_GL_ERROR
@@ -336,11 +336,11 @@ ITextureGenerator*  CRaptorDisplayFilter::glCreateColorSource(void)
 		state.renderer = CRaptorDisplayConfig::PIXEL_BUFFER;
 
     CRaptorDisplay* pDisplay = Raptor::glCreateDisplay(state);
-    CRenderingProperties *rp = pDisplay->getRenderingProperties();
-    rp->setTexturing(CRenderingProperties::ENABLE);
-    rp->setCullFace(CRenderingProperties::DISABLE);
-    rp->setDepthTest(CRenderingProperties::DISABLE);
-    rp->clear(CGL_NULL);
+	IRenderingProperties &rp = pDisplay->getRenderingProperties();
+	rp.setTexturing(IRenderingProperties::ENABLE);
+	rp.setCullFace(IRenderingProperties::DISABLE);
+	rp.setDepthTest(IRenderingProperties::DISABLE);
+    rp.clear(CGL_NULL);
     pDisplay->setViewPoint(NULL);
 
 	CATCH_GL_ERROR
@@ -388,12 +388,12 @@ CTextureObject*  CRaptorDisplayFilter::glCreateColorOutput(void)
 
 	CRaptorDisplay *renderBuffer = NULL;
     renderBuffer = Raptor::glCreateDisplay(state);
-    CRenderingProperties *rp = renderBuffer->getRenderingProperties();
-    rp->setTexturing(CRenderingProperties::ENABLE);
-    rp->setCullFace(CRenderingProperties::DISABLE);
-    rp->setDepthTest(CRenderingProperties::DISABLE);
-    rp->setLighting(CRenderingProperties::DISABLE);
-    rp->clear(CGL_NULL);
+	IRenderingProperties &rp = renderBuffer->getRenderingProperties();
+	rp.setTexturing(IRenderingProperties::ENABLE);
+	rp.setCullFace(IRenderingProperties::DISABLE);
+	rp.setDepthTest(IRenderingProperties::DISABLE);
+	rp.setLighting(IRenderingProperties::DISABLE);
+    rp.clear(CGL_NULL);
     renderBuffer->setViewPoint(NULL);
 
 	if (m_fModel == RENDER_BUFFER)
@@ -401,7 +401,7 @@ CTextureObject*  CRaptorDisplayFilter::glCreateColorOutput(void)
 
     RAPTOR_HANDLE noDevice;
 	renderBuffer->glvkBindDisplay(noDevice);
-    renderBuffer->glUnBindDisplay();
+	renderBuffer->glvkUnBindDisplay();
 
 	colorInternalSource = renderBuffer;
 	CATCH_GL_ERROR

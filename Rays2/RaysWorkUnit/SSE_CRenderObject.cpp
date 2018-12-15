@@ -57,7 +57,7 @@ float SSE_CRenderObject::FastIntersect( CGenericRay &ray )
 	else
 		return res;
 	*/
-	return SMALL_REAL;
+	return (float)SMALL_REAL;
 }
 
 CGenericVector<float>& SSE_CRenderObject::GetLocalNormal( const CGenericVector<float> &hit ) 

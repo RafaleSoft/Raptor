@@ -19,7 +19,7 @@
 #include "GLHierarchy/Shader.h"
 #include "System/RaptorDisplay.h"
 #include "Engine/3DScene.h"
-#include "GLHierarchy/RenderingProperties.h"
+#include "GLHierarchy/IRenderingProperties.h"
 #include "GLHierarchy/GLFontFactory.h"
 
 #include "ToolBox/RaptorToolBox.h"
@@ -235,10 +235,10 @@ void CLodDisplay::ReInit()
 
     CRaptorDisplay* const pDisplay = CRaptorDisplay::GetCurrentDisplay();
 	pDisplay->setViewPoint(vp);
-    CRenderingProperties *rp = pDisplay->getRenderingProperties();
-    rp->setTexturing(CRenderingProperties::DISABLE);
-    rp->setLighting(CRenderingProperties::ENABLE);
-    rp->setCullFace(CRenderingProperties::DISABLE);
+	IRenderingProperties &rp = pDisplay->getRenderingProperties();
+	rp.setTexturing(IRenderingProperties::DISABLE);
+	rp.setLighting(IRenderingProperties::ENABLE);
+	rp.setCullFace(IRenderingProperties::DISABLE);
 
 	pDisplay->selectScene("LOD_SCENE");
 }

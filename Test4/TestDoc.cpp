@@ -6,7 +6,7 @@
 
 #include "System/Raptor.h"
 #include "System/RaptorDisplay.h"
-#include "GLHierarchy/RenderingProperties.h"
+#include "GLHierarchy/IRenderingProperties.h"
 #include "GLHierarchy/Light.h"
 #include "GLHierarchy/ShaderProgram.h"
 #include "Engine/IViewPoint.h"
@@ -73,8 +73,8 @@ void CTestDoc::GLInitContext(HDC hdc)
     glClearColor(0.0f,0.0f,0.0f,0.0f);
 
 	CRaptorDisplay *dsp = CRaptorDisplay::GetCurrentDisplay();
-    CRenderingProperties *props = dsp->getRenderingProperties();
-    props->setLighting(CRenderingProperties::ENABLE);
+	IRenderingProperties &props = dsp->getRenderingProperties();
+	props.setLighting(IRenderingProperties::ENABLE);
 
 	IViewPoint *vp = dsp->getViewPoint();
     vp->setPosition(0,2,4.5f,IViewPoint::EYE);
@@ -188,7 +188,7 @@ void CTestDoc::GLInitContext(HDC hdc)
     }
 #endif
 
-   m_pDisplay->glUnBindDisplay();
+	m_pDisplay->glvkUnBindDisplay();
 }
 
 
@@ -238,6 +238,6 @@ void CTestDoc::glDisplay(HDC hdc)
 
 	m_pDisplay->glRender();
 
-	m_pDisplay->glUnBindDisplay();
+	m_pDisplay->glvkUnBindDisplay();
 }
 

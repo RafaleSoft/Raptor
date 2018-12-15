@@ -24,7 +24,7 @@
 #include "GLHierarchy/Light.h"
 #include "GLHierarchy/SimpleObject.h"
 #include "GLHierarchy/ShadedGeometry.h"
-#include "GLHierarchy/RenderingProperties.h"
+#include "GLHierarchy/IRenderingProperties.h"
 
 #include "ToolBox/BasicObjects.h"
 
@@ -568,6 +568,7 @@ class CTextureWaves : public CSimpleObject
 public:
 	CTextureWaves()
 	{
+		props = CRaptorDisplay::GetCurrentDisplay()->createRenderingProperties();
 		CRaptorDisplayConfig attrs;
 		attrs.x = 0;
 		attrs.y = 0;
@@ -583,12 +584,12 @@ public:
 		RAPTOR_HANDLE handle;
 		pBuffer->glvkBindDisplay(handle);
 			
-			CRenderingProperties *rp = pBuffer->getRenderingProperties();
-			rp->setTexturing(CRenderingProperties::ENABLE);
-			rp->setDepthTest(CRenderingProperties::DISABLE);
-			rp->setCullFace(CRenderingProperties::DISABLE);
-			rp->setLighting(CRenderingProperties::DISABLE);
-			rp->clear(CGL_RGBA|CGL_DEPTH);
+			IRenderingProperties &rp = pBuffer->getRenderingProperties();
+			rp.setTexturing(IRenderingProperties::ENABLE);
+			rp.setDepthTest(IRenderingProperties::DISABLE);
+			rp.setCullFace(IRenderingProperties::DISABLE);
+			rp.setLighting(IRenderingProperties::DISABLE);
+			rp.clear(CGL_RGBA|CGL_DEPTH);
 			IViewPoint *vpoint = pBuffer->getViewPoint();
 			vpoint->setViewVolume(-1.0,1.0,-1.0,1.0,-1.0,1.0,IViewPoint::ORTHOGRAPHIC);
 			vpoint->glvkRenderViewPointModel();
@@ -600,7 +601,7 @@ public:
 			CFragmentShader *fp = pShader->glGetFragmentShader();
 			fp->glLoadProgram(waterFragments2.data());
 			fp->glStop();
-		pBuffer->glUnBindDisplay();
+		pBuffer->glvkUnBindDisplay();
 
 		CTextureFactory &factory = CTextureFactory::getDefaultFactory();
 		pMap = factory.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
@@ -646,9 +647,9 @@ public:
 			angles[i] = angle + baseAngle;
 		}
 
-        props.clear(0);
-        props.setTexturing(CRenderingProperties::ENABLE);
-        props.setLighting(CRenderingProperties::DISABLE);
+        props->clear(0);
+		props->setTexturing(IRenderingProperties::ENABLE);
+		props->setLighting(IRenderingProperties::DISABLE);
 	};
 
 	virtual ~CTextureWaves() 
@@ -692,13 +693,13 @@ public:
 			glEnd();
 			vp->glStop();
 			fp->glStop();
-		pBuffer->glUnBindDisplay();
+		pBuffer->glvkUnBindDisplay();
 
 		pMap->glvkRender();
 
 		if (bShow)
 		{
-            props.glPushProperties();
+            props->glPushProperties();
 
 			glPushMatrix();
 				glTranslatef(0.0f,0.0f,-5.0f);
@@ -710,7 +711,7 @@ public:
 				glEnd();
 			glPopMatrix();
 
-            props.glPopProperties();
+            props->glPopProperties();
 		}
 	}
 
@@ -718,7 +719,7 @@ public:
 	{ return pMap; };
 
 private:
-    CRenderingProperties props;
+	IRenderingProperties *props;
 	CTextureObject	*pMap;
 	CTextureObject	*pCosTable;
 	CRaptorDisplay	*pBuffer;
@@ -851,10 +852,10 @@ void CVertexShadersDisplay::ReInit()
     CRaptorDisplay* const pDisplay = CRaptorDisplay::GetCurrentDisplay();
 	pDisplay->selectScene("SHADER SCENE");
 	pDisplay->setViewPoint(view_point);
-    CRenderingProperties *rp = pDisplay->getRenderingProperties();
-	rp->setWireframe(CRenderingProperties::DISABLE);
-    rp->setTexturing(CRenderingProperties::ENABLE);
-	rp->setLighting(CRenderingProperties::ENABLE);
+	IRenderingProperties &rp = pDisplay->getRenderingProperties();
+	rp.setWireframe(IRenderingProperties::DISABLE);
+	rp.setTexturing(IRenderingProperties::ENABLE);
+	rp.setLighting(IRenderingProperties::ENABLE);
 }
 
 

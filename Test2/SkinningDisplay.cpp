@@ -24,7 +24,7 @@
 #include "GLHierarchy/FragmentProgram.h"
 #include "Engine/ImageModifier.h"
 #include "System/Raptor.h"
-#include "GLHierarchy/RenderingProperties.h"
+#include "GLHierarchy/IRenderingProperties.h"
 #include "GLHierarchy/Object3DInstance.h"
 #include "SSE_Engine/SSE_GLLayer.h"
 
@@ -271,10 +271,10 @@ void CSkinningDisplay::ReInit()
 	CGenericDisplay::ReInit();
 
     CRaptorDisplay* pDisplay = CRaptorDisplay::GetCurrentDisplay();
-    CRenderingProperties *rp = pDisplay->getRenderingProperties();
-    rp->setTexturing(CRenderingProperties::ENABLE);
-	rp->setLighting(CRenderingProperties::DISABLE);
-    rp->setBlending(CRenderingProperties::ENABLE);
+	IRenderingProperties &rp = pDisplay->getRenderingProperties();
+	rp.setTexturing(IRenderingProperties::ENABLE);
+	rp.setLighting(IRenderingProperties::DISABLE);
+	rp.setBlending(IRenderingProperties::ENABLE);
 
 	modifier->animate(true);
 

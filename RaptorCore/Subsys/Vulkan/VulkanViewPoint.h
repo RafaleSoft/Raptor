@@ -8,12 +8,15 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+
 #if !defined(AFX_PERSISTENCE_H__5561BA28_831B_11D3_9142_EEB51CEBBDB0__INCLUDED_)
 	#include "GLHierarchy/Persistence.h"
 #endif
-
 #if !defined(AFX_IVIEWPOINT_H__82071851_A036_4311_81CB_01E7E25F19E1__INCLUDED_)
 	#include "Engine/IViewPoint.h"
+#endif
+#if !defined(AFX_3DENGINEMATRIX_H__6CD1110E_1174_4f38_A452_30FB312022D0__INCLUDED_)
+	#include "Engine/3DEngineMatrix.h"
 #endif
 
 
@@ -25,6 +28,12 @@ class RAPTOR_API CVulkanViewPoint : public IViewPoint
 public:
 	CVulkanViewPoint(const std::string& name = "VULKAN_VIEW_POINT");
 	virtual ~CVulkanViewPoint();
+
+	typedef struct
+	{
+		GL_MATRIX modelview;
+		GL_MATRIX projection;
+	} Transform_t;
 
 
 	//!
@@ -42,6 +51,14 @@ public:
 
 
 private:
+	//!	Update uniforms with viewpoint matrixes
+	bool vkRenderUniforms(void);
+
+	Transform_t transform;
+
+	C3DEngineMatrix modelview;
+
+	unsigned char *uniforms;
 };
 
 RAPTOR_NAMESPACE_END

@@ -17,6 +17,7 @@
 RAPTOR_NAMESPACE_BEGIN
 
 class CObject3D;
+class IRenderingProperties;
 
 
 //! This class implements a mirror plane in the scene. The mirror is defined by
@@ -66,7 +67,7 @@ private:
 	GL_MATRIX	m_mirror;
 
     //! The properties applyed for mirror rendering.
-	CRenderingProperties    *m_pProperties;
+	IRenderingProperties    *m_pProperties;
 };
 
 

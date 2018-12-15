@@ -114,7 +114,7 @@ LRESULT CALLBACK WindowProc(  HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 					pConsole->showFrameTime(true);
                     pConsole->activateConsole(true);
 
-		            pDisplay->glUnBindDisplay();
+					pDisplay->glvkUnBindDisplay();
 
                     pDoc = new CTestDoc(hwnd,pDisplay);
                     pDoc->GLInitContext(hdc);
@@ -145,7 +145,7 @@ LRESULT CALLBACK WindowProc(  HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			if (pDisplay->glvkBindDisplay(display))
 	        {
                 pDisplay->glResize(nWidth,nHeight,0,0);
-		        pDisplay->glUnBindDisplay();
+				pDisplay->glvkUnBindDisplay();
 	        }
 
             ReleaseDC(hwnd, hdc);

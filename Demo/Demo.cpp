@@ -83,7 +83,7 @@ int main(int argc, char* argv[])
 
 		CControllers::createViewpointController(pDisplay->getViewPoint());
 
-		pDisplay->glUnBindDisplay();
+		pDisplay->glvkUnBindDisplay();
 	}
 
     app->run();

@@ -23,7 +23,7 @@
 #include "System/Raptor.h"
 #include "GLHierarchy/Material.h"
 #include "GLHierarchy/Light.h"
-#include "GLHierarchy/RenderingProperties.h"
+#include "GLHierarchy/IRenderingProperties.h"
 #include "GLHierarchy/3DSet.h"
 #include "System/RaptorConsole.h"
 
@@ -121,10 +121,10 @@ void CTestDoc::GLInitContext(void)
 	glClearColor(0.0f,0.0f,0.0f,0.0f);
 
 	CRaptorDisplay *dsp = CRaptorDisplay::GetCurrentDisplay();
-    CRenderingProperties *props = dsp->getRenderingProperties();
-    props->setLighting(CRenderingProperties::ENABLE);
-	props->setTexturing(CRenderingProperties::ENABLE);
-	props->setMultisampling(CRenderingProperties::ENABLE);
+	IRenderingProperties &props = dsp->getRenderingProperties();
+	props.setLighting(IRenderingProperties::ENABLE);
+	props.setTexturing(IRenderingProperties::ENABLE);
+	props.setMultisampling(IRenderingProperties::ENABLE);
 
 	CRaptorDisplayConfig state;
 	bool res = dsp->glQueryStatus(state,	GL_CURRENT_STATE_QUERY|GL_ARRAYS_STATE_QUERY|
@@ -282,6 +282,6 @@ void CTestDoc::glRender()
 
 	m_pDisplay->glRender();
 
-	m_pDisplay->glUnBindDisplay();
+	m_pDisplay->glvkUnBindDisplay();
 }
 

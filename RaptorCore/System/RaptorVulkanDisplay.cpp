@@ -47,6 +47,9 @@
 #if !defined(AFX_GEOMETRY_H__B42ABB87_80E8_11D3_97C2_DE5C28000000__INCLUDED_)
 	#include "GLHierarchy/Geometry.h"
 #endif
+#if !defined(AFX_IRENDERINGPROPERTIES_H__634BCF2B_84B4_47F2_B460_D7FDC0F3B698__INCLUDED_)
+	#include "GLHierarchy/IRenderingProperties.h"
+#endif
 
 
 RAPTOR_NAMESPACE_BEGIN
@@ -57,7 +60,32 @@ const CPersistence::CPersistenceClassID& CRaptorVulkanDisplay::CRaptorVulkanDisp
 	return bufferID;
 }
 
+class VulkanRP : public IRenderingProperties
+{
+public:
+	VulkanRP() {};
+	virtual void glPushProperties(void)
+	{
+		if ((m_pCurrent != this) && (m_pPrevious == NULL))
+		{
+			m_pPrevious = m_pCurrent;
+			m_pCurrent = this;
+		}
+	};
+	virtual void glPopProperties(void)
+	{
+		if (m_pCurrent == this)
+		{
+			m_pCurrent = m_pPrevious;
+			m_pPrevious = NULL;
+		}
+	};
+	virtual PROPERTY_SETTING getCurrentTexturing(void) const { return IGNORE_PROPERTY; };
+	virtual PROPERTY_SETTING getCurrentLighting(void) const { return IGNORE_PROPERTY; };
+};
+
 RAPTOR_NAMESPACE_END
+
 
 
 RAPTOR_NAMESPACE
@@ -75,6 +103,8 @@ CRaptorVulkanDisplay::CRaptorVulkanDisplay(const CRaptorDisplayConfig& pcs)
 	m_pTAllocator(NULL), m_pTOldAllocator(NULL),
 	m_pUAllocator(NULL), m_pUOldAllocator(NULL)
 {
+	setViewPoint(createViewPoint());
+	setRenderingProperties(new VulkanRP());
 }
 
 CRaptorVulkanDisplay::~CRaptorVulkanDisplay(void)
@@ -95,7 +125,7 @@ CRaptorVulkanDisplay::~CRaptorVulkanDisplay(void)
 		delete m_pUAllocator;
 
 
-	glUnBindDisplay();
+	glvkUnBindDisplay();
 
 	CContextManager::GetInstance()->vkDestroyContext(m_context);
 }
@@ -243,10 +273,10 @@ bool CRaptorVulkanDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
 		}
 	}
 
-	return true; // CRaptorDisplay::glvkBindDisplay(device);
+	return CRaptorDisplay::glvkBindDisplay(device);
 }
 
-bool CRaptorVulkanDisplay::glUnBindDisplay(void)
+bool CRaptorVulkanDisplay::glvkUnBindDisplay(void)
 {
 	CGeometryAllocator::SetCurrentInstance(m_pGOldAllocator);
 	m_pGOldAllocator = NULL;
@@ -260,7 +290,7 @@ bool CRaptorVulkanDisplay::glUnBindDisplay(void)
 	RAPTOR_HANDLE device;
 	manager->vkMakeCurrentContext(device, CContextManager::INVALID_CONTEXT);
 
-	return true; //CRaptorDisplay::glvkUnBindDisplay();
+	return CRaptorDisplay::glvkUnBindDisplay();
 }
 
 

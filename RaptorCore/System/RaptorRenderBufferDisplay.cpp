@@ -66,7 +66,7 @@ CRaptorRenderBufferDisplay::CRaptorRenderBufferDisplay(const CRaptorDisplayConfi
 CRaptorRenderBufferDisplay::~CRaptorRenderBufferDisplay()
 {
     //  Unbind, in case it is forgotten by the user.
-    glUnBindDisplay();
+    glvkUnBindDisplay();
 
 	if (m_pAttachments != NULL)
 	{
@@ -515,7 +515,7 @@ bool CRaptorRenderBufferDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
 }
 
 
-bool CRaptorRenderBufferDisplay::glUnBindDisplay(void)
+bool CRaptorRenderBufferDisplay::glvkUnBindDisplay(void)
 {
 	if (m_framebuffer == 0)
 		return false;
@@ -523,7 +523,7 @@ bool CRaptorRenderBufferDisplay::glUnBindDisplay(void)
 #if defined(GL_EXT_framebuffer_object)
 	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 
-	bool res = CRaptorDisplay::glUnBindDisplay();
+	bool res = CRaptorDisplay::glvkUnBindDisplay();
 	glPopAttrib();	// Viewport
 	glMatrixMode(GL_PROJECTION);
 	glPopMatrix();
@@ -590,7 +590,7 @@ void CRaptorRenderBufferDisplay::glGenerate(CTextureObject* T)
 	glRender();
 
 	glPopAttrib();
-	CRaptorDisplay::glUnBindDisplay();
+	CRaptorDisplay::glvkUnBindDisplay();
 
 	pExtensions->glFramebufferTexture2DEXT(	GL_FRAMEBUFFER_EXT, 
 											GL_COLOR_ATTACHMENT0_EXT,
@@ -638,7 +638,7 @@ void CRaptorRenderBufferDisplay::glResize(unsigned int sx,unsigned int sy,unsign
 
 	// Render buffers are recreated, now restore previous state.
 	if (binding == 0)
-		glUnBindDisplay();
+		glvkUnBindDisplay();
 	else if (!bindSelf)
 	{
 		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();

@@ -16,8 +16,8 @@
 #if !defined(AFX_OBJECT3D_H__DB24F017_80B9_11D3_97C1_FC2841000000__INCLUDED_)
 	#include "GLHierarchy/Object3D.h"
 #endif
-#if !defined(AFX_RENDERINGPROPERTIES_H__634BCF2B_84B4_47F2_B460_D7FDC0F3B698__INCLUDED_)
-	#include "GLHierarchy/RenderingProperties.h"
+#if !defined(AFX_OPENGLRENDERINGPROPERTIES_H__1F0F1E67_FC84_4772_A6EE_923BD81F91D3__INCLUDED_)
+	#include "Subsys/OpenGL/OpenGLRenderingProperties.h"
 #endif
 
 
@@ -77,8 +77,8 @@ private:
     CContainerNotifier<CObject3D*> *m_pObserver;
 
 	//! Rendering propoerties for shadowed and lighted passes
-    CRenderingProperties            m_shadowProperties;
-    CRenderingProperties            m_lightProperties;
+	COpenGLRenderingProperties	m_shadowProperties;
+	COpenGLRenderingProperties	m_lightProperties;
 };
 
 RAPTOR_NAMESPACE_END

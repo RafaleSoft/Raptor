@@ -24,7 +24,7 @@
 #include "GLHierarchy/GL3DFont.h"
 #include "GLHierarchy/GLFontFactory.h"
 #include "system/Raptor.h"
-#include "GLHierarchy/RenderingProperties.h"
+#include "GLHierarchy/IRenderingProperties.h"
 #include "Engine/IViewPoint.h"
 
 #include "ToolBox/RaptorToolBox.h"
@@ -194,10 +194,10 @@ void CShadowDisplay::ReInit()
 
 	CRaptorDisplay* pDisplay = CRaptorDisplay::GetCurrentDisplay();
 	pDisplay->setViewPoint(m_pVP);
-	CRenderingProperties *rp = pDisplay->getRenderingProperties();
-	rp->setTexturing(CRenderingProperties::ENABLE);
-    rp->setLighting(CRenderingProperties::ENABLE);
-	rp->setBlending(CRenderingProperties::ENABLE);
+	IRenderingProperties &rp = pDisplay->getRenderingProperties();
+	rp.setTexturing(IRenderingProperties::ENABLE);
+	rp.setLighting(IRenderingProperties::ENABLE);
+	rp.setBlending(IRenderingProperties::ENABLE);
 	pDisplay->selectScene("SHADOWVOLUME_SCENE");
 }
 

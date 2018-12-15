@@ -70,7 +70,7 @@ int main(int argc, char* argv[])
         pConsole->activateConsole(true);
 		//pConsole->setColor(GL_RGBA_COLOR(1.0f,1.0f,1.0f,1.0f));
 
-		pDisplay->glUnBindDisplay();
+		pDisplay->glvkUnBindDisplay();
 	}
 
     app->run();

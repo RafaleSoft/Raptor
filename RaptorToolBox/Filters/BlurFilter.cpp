@@ -16,8 +16,8 @@
 #if !defined(AFX_FRAGMENTPROGRAM_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
     #include "GLHierarchy/FragmentProgram.h"
 #endif
-#if !defined(AFX_RENDERINGPROPERTIES_H__634BCF2B_84B4_47F2_B460_D7FDC0F3B698__INCLUDED_)
-	#include "GLHierarchy/RenderingProperties.h"
+#if !defined(AFX_IRENDERINGPROPERTIES_H__634BCF2B_84B4_47F2_B460_D7FDC0F3B698__INCLUDED_)
+	#include "GLHierarchy/IRenderingProperties.h"
 #endif
 #if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
     #include "System/RaptorGLExtensions.h"
@@ -193,7 +193,7 @@ void CBlurFilter::glRenderFilter()
 	hBlur->glStop();
 
 	glBindTexture(GL_TEXTURE_2D,0);
-    xBuffer->glUnBindDisplay();
+	xBuffer->glvkUnBindDisplay();
 }
 
 void CBlurFilter::glRenderFilterOutput()
@@ -368,12 +368,12 @@ bool CBlurFilter::glInitFilter(void)
 	}
 
     xBuffer = Raptor::glCreateDisplay(state);
-    CRenderingProperties *rp = xBuffer->getRenderingProperties();
-    rp->setTexturing(CRenderingProperties::ENABLE);
-    rp->setCullFace(CRenderingProperties::DISABLE);
-    rp->setDepthTest(CRenderingProperties::DISABLE);
-    rp->setLighting(CRenderingProperties::DISABLE);
-    rp->clear(CGL_NULL);
+	IRenderingProperties &rp = xBuffer->getRenderingProperties();
+	rp.setTexturing(IRenderingProperties::ENABLE);
+	rp.setCullFace(IRenderingProperties::DISABLE);
+	rp.setDepthTest(IRenderingProperties::DISABLE);
+	rp.setLighting(IRenderingProperties::DISABLE);
+    rp.clear(CGL_NULL);
     xBuffer->setViewPoint(NULL);
 
 	if (m_fModel == RENDER_BUFFER)

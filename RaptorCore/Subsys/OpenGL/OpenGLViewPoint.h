@@ -20,7 +20,7 @@
 RAPTOR_NAMESPACE_BEGIN
 
 
-class RAPTOR_API COpenGLViewPoint :	public IViewPoint
+class COpenGLViewPoint :	public IViewPoint
 {
 public:
 	COpenGLViewPoint(const std::string& name = "OPENGL_VIEW_POINT");

@@ -52,8 +52,8 @@ CShadowMap::CShadowMap(C3DScene& rScene)
     :CEnvironment(rScene),
 	m_pViewPoint(NULL),m_pShadowMap(NULL),m_pShadowTexture(NULL)
 {
-    m_lightProperties.setTexturing(CRenderingProperties::ENABLE);
-    m_lightProperties.setLighting(CRenderingProperties::ENABLE);
+	m_lightProperties.setTexturing(IRenderingProperties::ENABLE);
+	m_lightProperties.setLighting(IRenderingProperties::ENABLE);
     m_lightProperties.clear(0);
 }
 
@@ -140,10 +140,10 @@ bool CShadowMap::glInitEnvironment(unsigned int width,unsigned int height)
 	//
 	// prepare light's point of view transform
 	//
-    CRenderingProperties *props = m_pShadowMap->getRenderingProperties();
-    props->clear(CGL_DEPTH);
-    props->setTexturing(CRenderingProperties::DISABLE);
-    props->setLighting(CRenderingProperties::DISABLE);
+	IRenderingProperties &props = m_pShadowMap->getRenderingProperties();
+    props.clear(CGL_DEPTH);
+	props.setTexturing(IRenderingProperties::DISABLE);
+	props.setLighting(IRenderingProperties::DISABLE);
 
 	if (m_pViewPoint == NULL)
 		m_pViewPoint = new COpenGLViewPoint();
@@ -155,7 +155,7 @@ bool CShadowMap::glInitEnvironment(unsigned int width,unsigned int height)
 	RAPTOR_HANDLE display;
 	m_pShadowMap->glvkBindDisplay(display);
 	m_pShadowMap->setViewPoint(m_pViewPoint);
-	m_pShadowMap->glUnBindDisplay();
+	m_pShadowMap->glvkUnBindDisplay();
 
 	return true;
 }
@@ -389,7 +389,7 @@ void CShadowMap::glRenderMap(const CLight* currentLight,const vector<C3DSceneObj
 
 		glPopMatrix();
 	}
-	m_pShadowMap->glUnBindDisplay();
+	m_pShadowMap->glvkUnBindDisplay();
 
     CATCH_GL_ERROR
 }
@@ -438,7 +438,7 @@ void CShadowMap::glRenderShadow(const vector<C3DSceneObject*>& objects)
 
 	if (m_pShadowTexture != NULL)
 	{
-		m_pShadowMap->glUnBindDisplay();
+		m_pShadowMap->glvkUnBindDisplay();
 
 		glDisable(GL_TEXTURE_GEN_S);
 		glDisable(GL_TEXTURE_GEN_T);

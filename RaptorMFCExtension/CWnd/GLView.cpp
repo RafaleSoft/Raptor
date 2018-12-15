@@ -81,7 +81,7 @@ void CGLView::OnDraw(CDC* pDC)
 	CATCH_GL_ERROR
 
 	//	Unselect rendering context for other windows
-	m_pDisplay->glUnBindDisplay();
+	m_pDisplay->glvkUnBindDisplay();
 
 	//	Update associated GLFrameWnd Display
 	if (displayFps)
@@ -115,7 +115,7 @@ int CGLView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	display.hClass = DEVICE_CONTEXT_CLASS;
 	if (m_pDisplay->glvkBindDisplay(display))
 	{
-		m_pDisplay->glUnBindDisplay();
+		m_pDisplay->glvkUnBindDisplay();
 		return 1;
 	}
 	else
@@ -133,7 +133,7 @@ int CGLView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 		if (m_pDisplay->glvkBindDisplay(display))
 		{
-			m_pDisplay->glUnBindDisplay();
+			m_pDisplay->glvkUnBindDisplay();
 			return 1;
 		}
 		else
@@ -173,7 +173,7 @@ void CGLView::OnSize(UINT nType, int cx, int cy)
 
 	CATCH_GL_ERROR
 
-	m_pDisplay->glUnBindDisplay();
+	m_pDisplay->glvkUnBindDisplay();
 }
 
 
@@ -191,7 +191,7 @@ void CGLView::glMakeCurrent(bool restoreContext)
 		m_pDisplay->glvkBindDisplay(display);
 	}
 	else
-		m_pDisplay->glUnBindDisplay();
+		m_pDisplay->glvkUnBindDisplay();
 }
 
 
@@ -219,7 +219,7 @@ void CGLView::OnInitialUpdate()
 
 	CATCH_GL_ERROR
 
-	m_pDisplay->glUnBindDisplay();
+	m_pDisplay->glvkUnBindDisplay();
 
 	// Initialise MFC after GL init, because
 	// a first 'draw' will occur before GL context initialisation

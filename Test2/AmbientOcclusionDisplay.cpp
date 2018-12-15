@@ -17,7 +17,7 @@
 #include "GLHierarchy/SimpleObject.h"
 #include "GLHierarchy/ShadedGeometry.h"
 #include "GLHierarchy/GeometryEditor.h"
-#include "GLHierarchy/RenderingProperties.h"
+#include "GLHierarchy/IRenderingProperties.h"
 #include "GLHierarchy/Object3DInstance.h"
 #include "GLHierarchy/Shader.h"
 #include "GLHierarchy/VertexProgram.h"
@@ -187,9 +187,9 @@ void CAmbientOcclusionDisplay::ReInit()
 	}
 
     CRaptorDisplay* pDisplay = CRaptorDisplay::GetCurrentDisplay();
-	CRenderingProperties *rp = pDisplay->getRenderingProperties();
-	rp->setTexturing(CRenderingProperties::ENABLE);
-    rp->setLighting(CRenderingProperties::ENABLE);
+	IRenderingProperties &rp = pDisplay->getRenderingProperties();
+	rp.setTexturing(IRenderingProperties::ENABLE);
+	rp.setLighting(IRenderingProperties::ENABLE);
 	//rp->setWireframe(CRenderingProperties::ENABLE);
 	//rp->setCullFace(CRenderingProperties::DISABLE);
 

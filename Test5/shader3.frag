@@ -6,7 +6,8 @@ layout(location = 1) in vec2 v_TexCoord;
 
 layout(location = 0) out vec4 o_Color;
 
-void main() {
+void main()
+{
 	//o_Color = v_Color;
 	o_Color = texture(texSampler, v_TexCoord);
 }

@@ -40,8 +40,8 @@
 #if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
 	#include "System/RaptorErrorManager.h"
 #endif
-#if !defined(AFX_RENDERINGPROPERTIES_H__634BCF2B_84B4_47F2_B460_D7FDC0F3B698__INCLUDED_)
-	#include "RenderingProperties.h"
+#if !defined(AFX_IRENDERINGPROPERTIES_H__634BCF2B_84B4_47F2_B460_D7FDC0F3B698__INCLUDED_)
+	#include "IRenderingProperties.h"
 #endif
 
 
@@ -228,8 +228,8 @@ void CBumppedGeometry::glRender()
 	if (m_pBumpShader != NULL)
 		m_pBumpShader->glStop();
 
-	CRenderingProperties *props = CRenderingProperties::GetCurrentProperties();
-	if (props->getCurrentTexturing() == CRenderingProperties::ENABLE)
+	IRenderingProperties *props = IRenderingProperties::GetCurrentProperties();
+	if (props->getCurrentTexturing() == IRenderingProperties::ENABLE)
 	{
 		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 		pExtensions->glActiveTextureARB(GL_TEXTURE1_ARB);
