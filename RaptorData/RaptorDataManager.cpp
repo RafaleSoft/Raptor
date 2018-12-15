@@ -132,11 +132,7 @@ bool unzipfile(const char* fname, const char* outfile)
     z_stream strm;
 
     /* allocate inflate state */
-    strm.zalloc = Z_NULL;
-    strm.zfree = Z_NULL;
-    strm.opaque = Z_NULL;
-    strm.avail_in = 0;
-    strm.next_in = Z_NULL;
+	memset(&strm, 0, sizeof(z_stream));
     ret = inflateInit(&strm);
     if (ret != Z_OK)
         return false;
@@ -375,7 +371,11 @@ std::string CRaptorDataManager::ExportFile(const std::string& fname,
 #endif
     }
 
+#if defined(WIN32)
+	filename += "\\";
+#else
     filename += "/";
+#endif
     filename += fname;
 
 	int dst = 0;

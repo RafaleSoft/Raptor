@@ -56,7 +56,7 @@ void CTerrain::glClipRender()
 
 	getShader()->glRenderMaterial();
 
-	float fov = 10.0f * TO_RADIAN(67.0f / 640.0f);
+	float fov = (float)(10.0 * TO_RADIAN(67.0f / 640.0f));
 	VECTOR3f vp;
 	float mv[16];
 	glGetFloatv(GL_MODELVIEW_MATRIX, mv);

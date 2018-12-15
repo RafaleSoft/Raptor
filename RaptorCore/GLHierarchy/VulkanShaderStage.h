@@ -102,6 +102,7 @@ private:
 	CProgramParameters::CParameterBase* m_param;
 
 	//!	Uniform buffer
+	VkDescriptorBufferInfo m_bufferInfo;
 	unsigned char*	uniforms;
 	uint64_t		uniforms_size;
 };

@@ -58,6 +58,9 @@
 #if !defined(AFX_MIRROR_H__BA9C578A_40A8_451B_9EA3_C27CB04288FA__INCLUDED_)
     #include "Mirror.h"
 #endif
+#if !defined(AFX_RAPTORVULKANDEVICE_H__2FDEDD40_444E_4CC2_96AA_CBF9E79C3ABE__INCLUDED_)
+	#include "Subsys/Vulkan/VulkanDevice.h"
+#endif
 
 
 #include <set>
@@ -408,13 +411,15 @@ void C3DScene::glRender(void)
 }
 
 
-void C3DScene::vkRender(CVulkanCommandBuffer& commandBuffer,
-						VkBuffer vertexBinding,
-						VkBuffer indexBinding)
+void C3DScene::vkRender(CVulkanCommandBuffer& commandBuffer)
 {
+	const CVulkanDevice& rDevice = CVulkanDevice::getCurrentDevice();
+	VkBuffer vertexBuffer = rDevice.getMemory()->getLockedBuffer(IDeviceMemoryManager::IBufferObject::VERTEX_BUFFER);
+	VkBuffer indexBuffer = rDevice.getMemory()->getLockedBuffer(IDeviceMemoryManager::IBufferObject::INDEX_BUFFER);
+
 	vector<C3DSceneObject*> viewableObjects = m_pAttributes->glGetObjects();
 	for (unsigned int i = 0; i < viewableObjects.size(); i++)
-		viewableObjects[i]->vkRender(commandBuffer, vertexBinding, indexBinding);
+		viewableObjects[i]->vkRender(commandBuffer, vertexBuffer, indexBuffer);
 }
 
 
