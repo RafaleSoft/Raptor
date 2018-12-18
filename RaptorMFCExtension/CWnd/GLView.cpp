@@ -70,7 +70,7 @@ void CGLView::OnDraw(CDC* pDC)
 	RAPTOR_HANDLE display;
     display.handle = (unsigned int)(pDC->m_hDC);
     display.hClass = DEVICE_CONTEXT_CLASS;
-	m_pDisplay->glBindDisplay(display);
+	m_pDisplay->glvkBindDisplay(display);
 
 	pDoc->GLDisplayFunc(m_viewID);
 
@@ -81,7 +81,7 @@ void CGLView::OnDraw(CDC* pDC)
 	CATCH_GL_ERROR
 
 	//	Unselect rendering context for other windows
-	m_pDisplay->glUnBindDisplay();
+	m_pDisplay->glvkUnBindDisplay();
 
 	//	Update associated GLFrameWnd Display
 	if (displayFps)
@@ -113,9 +113,9 @@ int CGLView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	RAPTOR_HANDLE display;
 	display.handle = (unsigned int)(dc.m_hDC);
 	display.hClass = DEVICE_CONTEXT_CLASS;
-	if (m_pDisplay->glBindDisplay(display))
+	if (m_pDisplay->glvkBindDisplay(display))
 	{
-		m_pDisplay->glUnBindDisplay();
+		m_pDisplay->glvkUnBindDisplay();
 		return 1;
 	}
 	else
@@ -131,9 +131,9 @@ int CGLView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		if (m_pDisplay == NULL)
 			return -1;
 
-		if (m_pDisplay->glBindDisplay(display))
+		if (m_pDisplay->glvkBindDisplay(display))
 		{
-			m_pDisplay->glUnBindDisplay();
+			m_pDisplay->glvkUnBindDisplay();
 			return 1;
 		}
 		else
@@ -168,12 +168,12 @@ void CGLView::OnSize(UINT nType, int cx, int cy)
 	RAPTOR_HANDLE display;
 	display.handle = (unsigned int)(dc.m_hDC);
 	display.hClass = DEVICE_CONTEXT_CLASS;
-	m_pDisplay->glBindDisplay(display);
+	m_pDisplay->glvkBindDisplay(display);
 	m_pDisplay->glResize(cx,cy,0,0);
 
 	CATCH_GL_ERROR
 
-	m_pDisplay->glUnBindDisplay();
+	m_pDisplay->glvkUnBindDisplay();
 }
 
 
@@ -188,10 +188,10 @@ void CGLView::glMakeCurrent(bool restoreContext)
 		RAPTOR_HANDLE display;
 		display.handle = (unsigned int)(dc.m_hDC);
 		display.hClass = DEVICE_CONTEXT_CLASS;
-		m_pDisplay->glBindDisplay(display);
+		m_pDisplay->glvkBindDisplay(display);
 	}
 	else
-		m_pDisplay->glUnBindDisplay();
+		m_pDisplay->glvkUnBindDisplay();
 }
 
 
@@ -209,7 +209,7 @@ void CGLView::OnInitialUpdate()
 	RAPTOR_HANDLE display;
 	display.handle = (unsigned int)(dc.m_hDC);
 	display.hClass = DEVICE_CONTEXT_CLASS;
-	m_pDisplay->glBindDisplay(display);
+	m_pDisplay->glvkBindDisplay(display);
 
 	//	Initialise linked document if necessary
 	pDoc->glInitialize();
@@ -219,7 +219,7 @@ void CGLView::OnInitialUpdate()
 
 	CATCH_GL_ERROR
 
-	m_pDisplay->glUnBindDisplay();
+	m_pDisplay->glvkUnBindDisplay();
 
 	// Initialise MFC after GL init, because
 	// a first 'draw' will occur before GL context initialisation

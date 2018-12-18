@@ -7,13 +7,13 @@
 #include "MFCExtension/CWnd/GLView.h"
 #include "System/RaptorDisplay.h"
 #include "Engine/3DScene.h"
-#include "GLHierarchy/RenderingProperties.h"
+#include "GLHierarchy/IRenderingProperties.h"
 #include "GLHierarchy/Light.h"
 #include "GLHierarchy/Shader.h"
 #include "GLHierarchy/TextureFactory.h"
 #include "GLHierarchy/TextureObject.h"
 #include "GLHierarchy/TextureUnitSetup.h"
-#include "Engine/ViewPoint.h"
+#include "Engine/IViewPoint.h"
 
 #include "Resource.h"
 #include "MainFrm.h"
@@ -158,15 +158,15 @@ void CGLObjectViewerDoc::GLInitContext(void)
 		float ratio = ((float)(rect.right - rect.left)) / ((float)(rect.bottom - rect.top));
 
         CRaptorDisplay* const pDisplay = view->getDisplay();
-        CRenderingProperties *props = pDisplay->getRenderingProperties();
-        props->clear(CGL_RGBA|CGL_DEPTH);
-        props->setTexturing(CRenderingProperties::DISABLE);
-        props->setLighting(CRenderingProperties::DISABLE);
-        props->setWireframe(CRenderingProperties::DISABLE);
+		IRenderingProperties &props = pDisplay->getRenderingProperties();
+        props.clear(CGL_RGBA|CGL_DEPTH);
+		props.setTexturing(IRenderingProperties::DISABLE);
+		props.setLighting(IRenderingProperties::DISABLE);
+		props.setWireframe(IRenderingProperties::DISABLE);
 
-        CViewPoint *vp = pDisplay->getViewPoint();
-        vp->setViewVolume(-ratio,ratio,-1.0f,1.0f,1.0f,10000.0f,CViewPoint::PERSPECTIVE);
-        vp->glRenderViewPointModel();
+        IViewPoint *vp = pDisplay->getViewPoint();
+        vp->setViewVolume(-ratio,ratio,-1.0f,1.0f,1.0f,10000.0f,IViewPoint::PERSPECTIVE);
+        vp->glvkRenderViewPointModel();
 		const CBoundingBox * const bbox = m_pRoot->boundingBox();
 		vp->translate(0.0f,0.0f,bbox->zMax());
 

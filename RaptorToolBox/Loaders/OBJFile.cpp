@@ -1,4 +1,3 @@
-#include "StdAfx.h"
 #include "Subsys/CodeGeneration.h"
 
 

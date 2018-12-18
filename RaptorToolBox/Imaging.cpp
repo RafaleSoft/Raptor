@@ -1,7 +1,6 @@
 // Imaging.cpp: implementation of the CImaging class.
 //
 //////////////////////////////////////////////////////////////////////
-#include "StdAfx.h"
 #include "Subsys/CodeGeneration.h"
 
 

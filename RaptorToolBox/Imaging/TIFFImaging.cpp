@@ -1,7 +1,6 @@
 // TIFFImaging.cpp: implementation of the CTIFFImaging class.
 //
 //////////////////////////////////////////////////////////////////////
-#include "StdAfx.h"
 #include "Subsys/CodeGeneration.h"
 
 #if !defined(AFX_TEXTUREOBJECT_H__D32B6294_B42B_4E6F_AB73_13B33C544AD0__INCLUDED_)
@@ -17,7 +16,7 @@
     #include "System/RaptorErrorManager.h"
 #endif
 
-//  tiff 3.8.2 support
+//  tiff support
 #include "tif_config.h"
 #ifndef _TIFFIO_
 	#include "tiffio.h"

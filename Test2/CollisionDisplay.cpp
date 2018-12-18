@@ -16,7 +16,7 @@
 #include "Engine/3DScene.h"
 #include "System/Raptor.h"
 #include "System/RaptorDisplay.h"
-#include "GLHierarchy/RenderingProperties.h"
+#include "GLHierarchy/IRenderingProperties.h"
 #include "GLHierarchy/GeometryEditor.h"
 
 //////////////////////////////////////////////////////////////////////
@@ -121,10 +121,10 @@ void CCollisionDisplay::ReInit()
 	physicsBall->animate(true);
 
     CRaptorDisplay* pDisplay = CRaptorDisplay::GetCurrentDisplay();
-	CRenderingProperties *rp = pDisplay->getRenderingProperties();
-	rp->setTexturing(CRenderingProperties::DISABLE);
-    rp->setLighting(CRenderingProperties::DISABLE);
-	rp->setBlending(CRenderingProperties::DISABLE);
+	IRenderingProperties &rp = pDisplay->getRenderingProperties();
+	rp.setTexturing(IRenderingProperties::DISABLE);
+	rp.setLighting(IRenderingProperties::DISABLE);
+	rp.setBlending(IRenderingProperties::DISABLE);
 
 	pDisplay->selectScene("COLLISION_SCENE");
 }

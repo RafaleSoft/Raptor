@@ -6,10 +6,10 @@
 
 #include "System/Raptor.h"
 #include "System/RaptorDisplay.h"
-#include "GLHierarchy/RenderingProperties.h"
+#include "GLHierarchy/IRenderingProperties.h"
 #include "GLHierarchy/Light.h"
 #include "GLHierarchy/ShaderProgram.h"
-#include "Engine/ViewPoint.h"
+#include "Engine/IViewPoint.h"
 #include "Engine/3DScene.h"
 #include "Engine/Mirror.h"
 
@@ -68,17 +68,17 @@ void CTestDoc::GLInitContext(HDC hdc)
     display.handle = (unsigned int)(hdc);
 	display.hClass = CLIENT_HANDLE_CLASS;
 
-    m_pDisplay->glBindDisplay(display);
+	m_pDisplay->glvkBindDisplay(display);
 
     glClearColor(0.0f,0.0f,0.0f,0.0f);
 
 	CRaptorDisplay *dsp = CRaptorDisplay::GetCurrentDisplay();
-    CRenderingProperties *props = dsp->getRenderingProperties();
-    props->setLighting(CRenderingProperties::ENABLE);
+	IRenderingProperties &props = dsp->getRenderingProperties();
+	props.setLighting(IRenderingProperties::ENABLE);
 
-	CViewPoint *vp = dsp->getViewPoint();
-    vp->setPosition(0,2,4.5f,CViewPoint::EYE);
-    vp->setPosition(0,0,0,CViewPoint::TARGET);
+	IViewPoint *vp = dsp->getViewPoint();
+    vp->setPosition(0,2,4.5f,IViewPoint::EYE);
+    vp->setPosition(0,0,0,IViewPoint::TARGET);
 
 	C3DScene *pScene = dsp->getRootScene();
     pScene->useZSort();
@@ -168,7 +168,7 @@ void CTestDoc::GLInitContext(HDC hdc)
 
         CHDRFilter *hdr = new CHDRFilter(rda);
 		hdr->setFilterModel(CRaptorDisplayFilter::RENDER_TEXTURE);
-        CRaptorDisplay::GetCurrentDisplay()->glBindDisplay(*hdr);
+		CRaptorDisplay::GetCurrentDisplay()->glvkBindDisplay(*hdr);
         hdr->enableFilter(true);
 		
 		m_hdr = hdr;
@@ -181,14 +181,14 @@ void CTestDoc::GLInitContext(HDC hdc)
         CMBFilter *mb = new CMBFilter();
         mb->setPercentage(0.95f,0.95f,0.95f,1.0f);
 		mb->setFilterModel(CRaptorDisplayFilter::RENDER_TEXTURE);
-        CRaptorDisplay::GetCurrentDisplay()->glBindDisplay(*mb);
+		CRaptorDisplay::GetCurrentDisplay()->glvkBindDisplay(*mb);
 		mb->enableFilter(false);
 		
 		m_mb = mb;
     }
 #endif
 
-   m_pDisplay->glUnBindDisplay();
+	m_pDisplay->glvkUnBindDisplay();
 }
 
 
@@ -234,10 +234,10 @@ void CTestDoc::glDisplay(HDC hdc)
     display.handle = (unsigned int)(hdc);
 	display.hClass = CLIENT_HANDLE_CLASS;
 
-    m_pDisplay->glBindDisplay(display);
+	m_pDisplay->glvkBindDisplay(display);
 
 	m_pDisplay->glRender();
 
-	m_pDisplay->glUnBindDisplay();
+	m_pDisplay->glvkUnBindDisplay();
 }
 

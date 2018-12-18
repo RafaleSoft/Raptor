@@ -11,7 +11,7 @@
 #include "System/RaptorConsole.h"
 
 #include "GLHierarchy/TextureFactory.h"
-#include "GLHierarchy/RenderingProperties.h"
+#include "GLHierarchy/IRenderingProperties.h"
 #include "GLHierarchy/Shader.h"
 #include "GLHierarchy/VertexShader.h"
 #include "GLHierarchy/VertexProgram.h"
@@ -285,7 +285,7 @@ void CDisplay::glRender(void)
 
     CClientDC DC(m_wnd);
     RAPTOR_HANDLE device(DEVICE_CONTEXT_CLASS,DC.m_hDC);
-    m_pDisplay->glBindDisplay(device);
+	m_pDisplay->glvkBindDisplay(device);
 
     if (!fileSources.empty())
     {
@@ -321,7 +321,7 @@ void CDisplay::glRender(void)
 
     m_pDisplay->glRender();
 
-    m_pDisplay->glUnBindDisplay();
+	m_pDisplay->glvkUnBindDisplay();
 }
 
 
@@ -374,7 +374,7 @@ int main(int argc, char* argv[])
     RAPTOR_HANDLE device(DEVICE_CONTEXT_CLASS,pDC->m_hDC);
 
     CRaptorDisplay *pDisplay = Raptor::glCreateDisplay(glcs);
-    if (pDisplay->glBindDisplay(device))
+	if (pDisplay->glvkBindDisplay(device))
 	{
 		if (!Raptor::glIsExtensionSupported(GL_ARB_VERTEX_PROGRAM_EXTENSION_NAME) ||
 			!Raptor::glIsExtensionSupported(GL_ARB_VERTEX_SHADER_EXTENSION_NAME) ||
@@ -388,9 +388,9 @@ int main(int argc, char* argv[])
 
         d = new CDisplay(wnd,pDisplay);
 
-        CRenderingProperties *props = pDisplay->getRenderingProperties();
-        props->setTexturing(CRenderingProperties::ENABLE);
-        props->setLighting(CRenderingProperties::DISABLE);
+		IRenderingProperties &props = pDisplay->getRenderingProperties();
+		props.setTexturing(IRenderingProperties::ENABLE);
+		props.setLighting(IRenderingProperties::DISABLE);
 
         CRaptorConsole *pConsole = Raptor::GetConsole();
         pConsole->glInit("",true);
@@ -399,7 +399,7 @@ int main(int argc, char* argv[])
 		pConsole->showFrameTime(true);
         pConsole->activateConsole(true);
 
-        pDisplay->glUnBindDisplay();
+		pDisplay->glvkUnBindDisplay();
     }
     else
     {

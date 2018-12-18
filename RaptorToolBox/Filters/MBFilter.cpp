@@ -2,7 +2,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "Subsys/CodeGeneration.h"
 
 #if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
 	#include "System/Raptor.h"
@@ -22,8 +22,8 @@
 #if !defined(AFX_SHADER_H__4D405EC2_7151_465D_86B6_1CA99B906777__INCLUDED_)
 	#include "GLHierarchy/Shader.h"
 #endif
-#if !defined(AFX_RENDERINGPROPERTIES_H__634BCF2B_84B4_47F2_B460_D7FDC0F3B698__INCLUDED_)
-	#include "GLHierarchy/RenderingProperties.h"
+#if !defined(AFX_IRENDERINGPROPERTIES_H__634BCF2B_84B4_47F2_B460_D7FDC0F3B698__INCLUDED_)
+	#include "GLHierarchy/IRenderingProperties.h"
 #endif
 #if !defined(AFX_FRAGMENTPROGRAM_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
     #include "GLHierarchy/FragmentProgram.h"
@@ -160,7 +160,7 @@ void CMBFilter::glRenderFilter()
 
     // Accumulate previous render with colorSource
     RAPTOR_HANDLE noDevice;
-    pAccum->pCurrentDisplay->glBindDisplay(noDevice);
+	pAccum->pCurrentDisplay->glvkBindDisplay(noDevice);
     glActiveTextureARB(GL_TEXTURE1_ARB);
     glEnable(GL_TEXTURE_2D);
 	pAccum->m_pPreviousColorAccum->glvkRender();
@@ -173,7 +173,7 @@ void CMBFilter::glRenderFilter()
 	m_pMotionBlurShader->glStop();
 
 	glBindTexture(GL_TEXTURE_2D,0);
-    pAccum->pCurrentDisplay->glUnBindDisplay();
+	pAccum->pCurrentDisplay->glvkUnBindDisplay();
 }
 
 void CMBFilter::glRenderFilterOutput()
@@ -245,24 +245,24 @@ bool CMBFilter::glInitFilter(void)
 	}
 
     CRaptorDisplay* pDisplay1 = Raptor::glCreateDisplay(state);
-    CRenderingProperties *rp1 = pDisplay1->getRenderingProperties();
-    rp1->setTexturing(CRenderingProperties::ENABLE);
-    rp1->setLighting(CRenderingProperties::DISABLE);
-    rp1->setCullFace(CRenderingProperties::DISABLE);
-    rp1->setDepthTest(CRenderingProperties::DISABLE);
-    rp1->clear(CGL_NULL);
+	IRenderingProperties &rp1 = pDisplay1->getRenderingProperties();
+	rp1.setTexturing(IRenderingProperties::ENABLE);
+	rp1.setLighting(IRenderingProperties::DISABLE);
+	rp1.setCullFace(IRenderingProperties::DISABLE);
+	rp1.setDepthTest(IRenderingProperties::DISABLE);
+    rp1.clear(CGL_NULL);
     pDisplay1->setViewPoint(NULL);
 
 	if (m_fModel == RENDER_BUFFER)
-		pDisplay1->glBindDisplay(*m_pRenderTextures);
+		pDisplay1->glvkBindDisplay(*m_pRenderTextures);
 
     CRaptorDisplay* pDisplay2 = Raptor::glCreateDisplay(state);
-    CRenderingProperties *rp2 = pDisplay2->getRenderingProperties();
-    *rp2 = *rp1;
+	IRenderingProperties &rp2 = pDisplay2->getRenderingProperties();
+    rp2 = rp1;
     pDisplay2->setViewPoint(NULL);
 
 	if (m_fModel == RENDER_BUFFER)
-		pDisplay2->glBindDisplay(*m_pRenderTextures2);
+		pDisplay2->glvkBindDisplay(*m_pRenderTextures2);
 
 
     accumulator->pCurrentDisplay = pDisplay1;

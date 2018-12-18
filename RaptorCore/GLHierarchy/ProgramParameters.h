@@ -192,7 +192,7 @@ public:
 
 	//! Add a generic parameter
 	template <class param>
-	bool addParameter(const std::string& name, const param& param);
+	bool addParameter(const std::string& name, const param& p);
 
 	//! Add a base parameter
 	bool addParameter(const CParameterBase& param);

@@ -1,7 +1,6 @@
 // OpenEXRImaging.cpp: implementation of the COpenEXRImaging class.
 //
 //////////////////////////////////////////////////////////////////////
-#include "StdAfx.h"
 #include "Subsys/CodeGeneration.h"
 
 

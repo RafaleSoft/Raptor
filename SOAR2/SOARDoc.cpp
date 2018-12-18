@@ -4,10 +4,10 @@
 #include "SOARTerrainMorphed.h"
 
 #include "System/RaptorDisplay.h"
-#include "Engine/ViewPoint.h"
+#include "Engine/IViewPoint.h"
 #include "System/Raptor.h"
 #include "System/RaptorConsole.h"
-#include "GLHierarchy/RenderingProperties.h"
+#include "GLHierarchy/IRenderingProperties.h"
 #include "GLHierarchy/SimpleObject.h"
 #include "GLHierarchy/ShadedGeometry.h"
 #include "GLHierarchy/Shader.h"
@@ -56,7 +56,7 @@ void CTerrain::glClipRender()
 
 	getShader()->glRenderMaterial();
 
-	float fov = 10.0f * TO_RADIAN(67.0f / 640.0f);
+	float fov = (float)(10.0 * TO_RADIAN(67.0f / 640.0f));
 	VECTOR3f vp;
 	float mv[16];
 	glGetFloatv(GL_MODELVIEW_MATRIX, mv);
@@ -95,20 +95,20 @@ void CSOARDoc::GLInitContext(int argc, char* argv[])
     glClearColor(0.0f,0.6f,0.0f,0.0f);
 
 	CRaptorDisplay *dsp = CRaptorDisplay::GetCurrentDisplay();
-    CRenderingProperties *props = dsp->getRenderingProperties();
-    props->setLighting(CRenderingProperties::ENABLE);
-	props->setCullFace(CRenderingProperties::ENABLE);
-	props->setTexturing(CRenderingProperties::DISABLE);
-	props->setDepthTest(CRenderingProperties::ENABLE);
-	props->setWireframe(CRenderingProperties::DISABLE);
-	props->clear(CGL_DEPTH|CGL_RGBA);
+	IRenderingProperties &props = dsp->getRenderingProperties();
+	props.setLighting(IRenderingProperties::ENABLE);
+	props.setCullFace(IRenderingProperties::ENABLE);
+	props.setTexturing(IRenderingProperties::DISABLE);
+	props.setDepthTest(IRenderingProperties::ENABLE);
+	props.setWireframe(IRenderingProperties::DISABLE);
+	props.clear(CGL_DEPTH|CGL_RGBA);
 
-	CViewPoint *vp = dsp->getViewPoint();
-	vp->setViewVolume(-1.33f,1.33f,-1.0f,1.0f,2.0f,100000.0f,CViewPoint::PERSPECTIVE);
-	vp->glRenderViewPointModel();
-    vp->setPosition(40.0,40.0,8.0f,CViewPoint::EYE);
-    vp->setPosition(40.0,40.0,0,CViewPoint::TARGET);
-	vp->glRender();
+	IViewPoint *vp = dsp->getViewPoint();
+	vp->setViewVolume(-1.33f,1.33f,-1.0f,1.0f,2.0f,100000.0f,IViewPoint::PERSPECTIVE);
+	vp->glvkRenderViewPointModel();
+    vp->setPosition(40.0,40.0,8.0f,IViewPoint::EYE);
+    vp->setPosition(40.0,40.0,0,IViewPoint::TARGET);
+	vp->glvkRender();
 
 	CAnimator::SetAnimator(new CAnimator());
 
@@ -208,11 +208,11 @@ void CSOARDoc::glRender()
 	pConsole->addItem(item);
 	s.freeze(0);
 
-	m_pDisplay->glBindDisplay(m_wnd);
+	m_pDisplay->glvkBindDisplay(m_wnd);
 
 	m_pDisplay->glRender();
 
-	m_pDisplay->glUnBindDisplay();
+	m_pDisplay->glvkUnBindDisplay();
 }
 
 

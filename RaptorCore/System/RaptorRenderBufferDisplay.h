@@ -32,10 +32,10 @@ public:
 	//!	and the device.class is the class id of a texture set.
 	//! Each color texture of the set will be bound to a color attachment,
 	//! and each depth texture will be bound to the depth attachment.
-	virtual bool glBindDisplay(const RAPTOR_HANDLE& device);
+	virtual bool glvkBindDisplay(const RAPTOR_HANDLE& device);
 
 	//! see base class
-	virtual bool glUnBindDisplay(void);
+	virtual bool glvkUnBindDisplay(void);
 
 	//! see base class
 	virtual void glResize(unsigned int sx,unsigned int sy,unsigned int ox,unsigned int oy);

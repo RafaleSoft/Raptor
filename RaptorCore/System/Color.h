@@ -42,7 +42,6 @@ public:
 
 		operator CYMK() const;
 		operator YUVA() const;
-		operator RGBA() const { return *this; };
 		operator HSVA() const;
 		operator HSLA() const;
 		operator HCYA() const;
@@ -66,7 +65,6 @@ public:
 		operator unsigned long()    //  little endian byte ordering
 		{ return floatColorToULong(c,y,m,k); }
 
-		operator CYMK() const { return *this; };
 		operator YUVA() const;
 		operator RGBA() const;
 
@@ -90,7 +88,6 @@ public:
 		{ return floatColorToULong(y,u,v,a); }
 
 		operator CYMK() const;
-		operator YUVA() const { return *this; };
 		operator RGBA() const;
 
 		YUVA(float _y = 0.0f,float _u = 0.0f,float _v = 0.0f,float _a = 0.0f)
@@ -111,7 +108,6 @@ public:
 		operator unsigned long()    //  little endian byte ordering
 		{ return floatColorToULong(h,s,v,a); }
 
-		operator HSVA() const { return *this; };
 		operator RGBA() const;
 
 		HSVA(float _h = 0.0f,float _s = 0.0f,float _v = 0.0f,float _a = 0.0f)
@@ -132,7 +128,6 @@ public:
 		operator unsigned long()    //  little endian byte ordering
 		{ return floatColorToULong(h,s,l,a); }
 
-		operator HSLA() const { return *this; };
 		operator RGBA() const;
 
 		HSLA(float _h = 0.0f,float _s = 0.0f,float _l = 0.0f,float _a = 0.0f)
@@ -153,7 +148,6 @@ public:
 		operator unsigned long()    //  little endian byte ordering
 		{ return floatColorToULong(h,c,y,a); }
 
-		operator HCYA() const { return *this; };
 		operator RGBA() const;
 
 		HCYA(float _h = 0.0f,float _c = 0.0f,float _y = 0.0f,float _a = 0.0f)

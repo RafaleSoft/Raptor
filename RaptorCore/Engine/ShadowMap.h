@@ -15,14 +15,14 @@
 #ifndef __SIMD_H__
 	#include "Subsys/SimdLib/simd.h"
 #endif
-#if !defined(AFX_RENDERINGPROPERTIES_H__634BCF2B_84B4_47F2_B460_D7FDC0F3B698__INCLUDED_)
-	#include "GLHierarchy/RenderingProperties.h"
+#if !defined(AFX_OPENGLRENDERINGPROPERTIES_H__1F0F1E67_FC84_4772_A6EE_923BD81F91D3__INCLUDED_)
+	#include "Subsys/OpenGL/OpenGLRenderingProperties.h"
 #endif
 
 
 RAPTOR_NAMESPACE_BEGIN
 
-class CViewPoint;
+class IViewPoint;
 class CRaptorDisplay;
 class CTextureObject;
 class CVertexShader ;
@@ -73,10 +73,10 @@ private:
 	virtual void addObject(C3DSceneObject* object);
 
 
-	CGenericMatrix<float>	m_lightProjection;
-    CRenderingProperties	m_lightProperties;
+	CGenericMatrix<float>		m_lightProjection;
+	COpenGLRenderingProperties	m_lightProperties;
 
-    CViewPoint		*m_pViewPoint;
+    IViewPoint		*m_pViewPoint;
     CRaptorDisplay	*m_pShadowMap;
     CTextureObject	*m_pShadowTexture;
     CVertexShader	*m_pVSShadowMap;

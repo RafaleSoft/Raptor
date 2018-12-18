@@ -46,8 +46,8 @@
 #if !defined(AFX_OBJECT3DCONTOUR_H__C0C2B562_ABBC_4B04_A1E7_E0727FAC66AB__INCLUDED_)
 	#include "GLHierarchy/Object3DContour.h"
 #endif
-#if !defined(AFX_RENDERINGPROPERTIES_H__634BCF2B_84B4_47F2_B460_D7FDC0F3B698__INCLUDED_)
-	#include "RenderingProperties.h"
+#if !defined(AFX_IRENDERINGPROPERTIES_H__634BCF2B_84B4_47F2_B460_D7FDC0F3B698__INCLUDED_)
+	#include "IRenderingProperties.h"
 #endif
 #if !defined(AFX_RAPTORVULKANCOMMANDBUFFER_H__0398BABD_747B_4DFE_94AA_B026BDBD03B1__INCLUDED_)
 	#include "Subsys/Vulkan/VulkanCommandBuffer.h"
@@ -918,10 +918,26 @@ void CGeometry::vkRender(CVulkanCommandBuffer& commandBuffer,
 						 VkBuffer vertexBinding,
 						 VkBuffer indexBinding)
 {
-	VkBuffer bindings[3] = { vertexBinding, vertexBinding, vertexBinding };
-	VkDeviceSize offsets[3] = { (VkDeviceSize)&vertex[0], (VkDeviceSize)&colors[0], (VkDeviceSize)&texcoords[0] };
-	commandBuffer.vkCmdBindVertexBuffers(	commandBuffer.commandBuffer, 
-											0, 3, &bindings[0], &offsets[0]);
+	VkBuffer bindings[3] = { vertexBinding, 0, 0 };
+	VkDeviceSize offsets[3] = { (VkDeviceSize)&vertex[0], 0, 0 };
+	size_t nb_bindings = 1;	// always extract geometry
+
+	if (m_renderingModel.hasModel(CRenderingModel::CGL_TEXTURE))
+	{
+		bindings[nb_bindings] = vertexBinding;
+		offsets[nb_bindings] = (VkDeviceSize)&texcoords[0];
+		nb_bindings++;
+	}
+
+	if (m_renderingModel.hasModel(CRenderingModel::CGL_COLORS))
+	{
+		bindings[nb_bindings] = vertexBinding;
+		offsets[nb_bindings] = (VkDeviceSize)&colors[0];
+		nb_bindings++;
+	}
+
+	commandBuffer.vkCmdBindVertexBuffers(commandBuffer.commandBuffer, 
+										 0, nb_bindings, bindings, offsets);
 
 	commandBuffer.vkCmdBindIndexBuffer(	commandBuffer.commandBuffer,
 										indexBinding,
@@ -936,25 +952,29 @@ bool CGeometry::getVertexInputState( std::vector<VkVertexInputBindingDescription
 {
 	bindings.clear();
 	vertexInput.clear();
+	size_t nb_bindings = 0;
 
 	//!	Vertex
-	bindings.push_back({ 0, 4 * sizeof(float), VK_VERTEX_INPUT_RATE_VERTEX });
+	bindings.push_back({ nb_bindings, 4 * sizeof(float), VK_VERTEX_INPUT_RATE_VERTEX });
 	vertexInput.push_back({ 0, 0, VK_FORMAT_R32G32B32A32_SFLOAT, 0 });
+	nb_bindings++; 	// always extract geometry
+
+	//!	TexCoords
+	IRenderingProperties *props = IRenderingProperties::GetCurrentProperties();
+	if ((m_renderingModel.hasModel(CRenderingModel::CGL_TEXTURE)))
+//		(props->getCurrentTexturing() == CRenderingProperties::ENABLE))
+	{
+		bindings.push_back({ nb_bindings, 2 * sizeof(float), VK_VERTEX_INPUT_RATE_VERTEX });
+		vertexInput.push_back({ 1, nb_bindings, VK_FORMAT_R32G32_SFLOAT, 0 });
+		nb_bindings++;
+	}
 
 	//!	Colors
 	if (m_renderingModel.hasModel(CRenderingModel::CGL_COLORS))
 	{
-		bindings.push_back({ 1, 4 * sizeof(float), VK_VERTEX_INPUT_RATE_VERTEX });
-		vertexInput.push_back({ 1, 1, VK_FORMAT_R32G32B32A32_SFLOAT, 0 });
-	}
-
-	//!	TexCoords
-	CRenderingProperties *props = CRenderingProperties::GetCurrentProperties();
-	if ((m_renderingModel.hasModel(CRenderingModel::CGL_TEXTURE)))
-//		(props->getCurrentTexturing() == CRenderingProperties::ENABLE))
-	{
-		bindings.push_back({ 2, 2 * sizeof(float), VK_VERTEX_INPUT_RATE_VERTEX });
-		vertexInput.push_back({ 2, 2, VK_FORMAT_R32G32_SFLOAT, 0 });
+		bindings.push_back({ nb_bindings, 4 * sizeof(float), VK_VERTEX_INPUT_RATE_VERTEX });
+		vertexInput.push_back({ 2, nb_bindings, VK_FORMAT_R32G32B32A32_SFLOAT, 0 });
+		nb_bindings++;
 	}
 
 	return true;
@@ -985,15 +1005,15 @@ void CGeometry::glRenderGeometry()
 
 
 	//	Store arrays state + texture state
-    CRenderingProperties *props = CRenderingProperties::GetCurrentProperties();
+	IRenderingProperties *props = IRenderingProperties::GetCurrentProperties();
     bool popNormalArray = false;
     bool popTangentArray = false;
     bool popColorArray = false;
     bool popTexCoordArray = false;
     bool popWeightArray = false;
     bool popFogArray = false;
-    bool proceedLighting = (props->getCurrentLighting() == CRenderingProperties::ENABLE);
-    bool proceedTexturing = (props->getCurrentTexturing() == CRenderingProperties::ENABLE);
+	bool proceedLighting = (props->getCurrentLighting() == IRenderingProperties::ENABLE);
+	bool proceedTexturing = (props->getCurrentTexturing() == IRenderingProperties::ENABLE);
     
 
 	if (m_renderingModel.hasModel(CRenderingModel::CGL_BACK_GEOMETRY))

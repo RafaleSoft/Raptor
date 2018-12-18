@@ -9,8 +9,8 @@
 #if !defined(AFX_OBJECT3DSHADOW_H__A502A78F_0575_4F30_BCE2_0658B60EB490__INCLUDED_)
 	#include "GLHierarchy/Object3DShadow.h"
 #endif
-#if !defined(AFX_VIEWPOINT_H__82071851_A036_4311_81CB_01E7E25F19E1__INCLUDED_)
-	#include "ViewPoint.h"
+#if !defined(AFX_IVIEWPOINT_H__82071851_A036_4311_81CB_01E7E25F19E1__INCLUDED_)
+	#include "IViewPoint.h"
 #endif
 #if !defined(AFX_RAPTORDISPLAY_H__9637BC66_3734_43A8_A130_87553D4379BC__INCLUDED_)
 	#include "System/RaptorDisplay.h"
@@ -26,12 +26,6 @@
 #endif
 #if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
 	#include "System/Raptor.h"
-#endif
-#if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
-    #include "System/RaptorErrorManager.h"
-#endif
-#if !defined(AFX_RENDERINGPROPERTIES_H__634BCF2B_84B4_47F2_B460_D7FDC0F3B698__INCLUDED_)
-	#include "GLHierarchy/RenderingProperties.h"
 #endif
 #if !defined(AFX_GEOMETRY_H__B42ABB87_80E8_11D3_97C2_DE5C28000000__INCLUDED_)
 	#include "GLHierarchy/Geometry.h"
@@ -60,14 +54,14 @@ CShadowVolume::CShadowVolume(C3DScene& rScene)
     C3DEngineTaskManager *taskManager = st.engineTaskMgr;
 	jobId = taskManager->generateBatchId();
 
-    m_shadowProperties.setCullFace(CRenderingProperties::ENABLE);
-    m_shadowProperties.setTexturing(CRenderingProperties::DISABLE);
-    m_shadowProperties.setLighting(CRenderingProperties::DISABLE);
+	m_shadowProperties.setCullFace(IRenderingProperties::ENABLE);
+	m_shadowProperties.setTexturing(IRenderingProperties::DISABLE);
+	m_shadowProperties.setLighting(IRenderingProperties::DISABLE);
     m_shadowProperties.clear(CGL_STENCIL);
 
-    m_lightProperties.setTexturing(CRenderingProperties::DISABLE);
-    m_lightProperties.setLighting(CRenderingProperties::DISABLE);
-    m_lightProperties.setStencilTest(CRenderingProperties::ENABLE);
+	m_lightProperties.setTexturing(IRenderingProperties::DISABLE);
+	m_lightProperties.setLighting(IRenderingProperties::DISABLE);
+	m_lightProperties.setStencilTest(IRenderingProperties::ENABLE);
     m_lightProperties.clear(0);
 
 	m_pObserver = new CObject3DContainerNotifier<CShadowVolume,CObject3D*>(*this,&CShadowVolume::notifyFromChild);
@@ -135,12 +129,12 @@ void CShadowVolume::addObject(C3DSceneObject* object)
 #endif
 
 	// Compute all possible shadow volumes
-    CViewPoint *vp = CRaptorDisplay::GetCurrentDisplay()->getViewPoint();
+    IViewPoint *vp = CRaptorDisplay::GetCurrentDisplay()->getViewPoint();
     float shadowExtrusion = C3DEngine::Get3DEngine()->getFarPlane();
     if (vp != NULL)
     {
         float vv[6];
-        CViewPoint::VIEW_POINT_MODEL model;
+        IViewPoint::VIEW_POINT_MODEL model;
         vp->getViewVolume(	vv[0],vv[1],vv[2],vv[3],vv[4],vv[5],model);
         shadowExtrusion = vv[5];
     }
@@ -176,12 +170,12 @@ void CShadowVolume::initVolumes(const vector<C3DSceneObject*>& objects)
 
 
     // Compute all possible shadow volumes
-    CViewPoint *vp = CRaptorDisplay::GetCurrentDisplay()->getViewPoint();
+    IViewPoint *vp = CRaptorDisplay::GetCurrentDisplay()->getViewPoint();
     float shadowExtrusion = C3DEngine::Get3DEngine()->getFarPlane();
     if (vp != NULL)
     {
         float vv[6];
-        CViewPoint::VIEW_POINT_MODEL model;
+        IViewPoint::VIEW_POINT_MODEL model;
         vp->getViewVolume(	vv[0],vv[1],vv[2],vv[3],vv[4],vv[5],model);
         shadowExtrusion = vv[5];
     }
@@ -308,7 +302,7 @@ void CShadowVolume::glRender(const CLight* currentLight,const vector<C3DSceneObj
     //	Third pass : render shadowed objects
     //
 	glColorMask(GL_TRUE,GL_TRUE,GL_TRUE,GL_TRUE);
-    m_lightProperties.setTexturing(CRenderingProperties::ENABLE);
+	m_lightProperties.setTexturing(IRenderingProperties::ENABLE);
     m_lightProperties.glPushProperties();
     //  function lifted up to 128 to be able to render in OGL 1.0
 	//# glStencilFunc(GL_LESS,0,~0);
@@ -326,7 +320,7 @@ void CShadowVolume::glRender(const CLight* currentLight,const vector<C3DSceneObj
     //  function lifted up to 128 to be able to render in OGL 1.0
 	//# glStencilFunc(GL_EQUAL,0,~0);
 	glStencilFunc(GL_EQUAL,128,~0);
-    m_lightProperties.setLighting(CRenderingProperties::ENABLE);
+	m_lightProperties.setLighting(IRenderingProperties::ENABLE);
     m_lightProperties.glPushProperties();
     // Draw Scene
     C3DSceneObject::m_currentPass = C3DSceneObject::LIGHT_PASS;
@@ -336,8 +330,8 @@ void CShadowVolume::glRender(const CLight* currentLight,const vector<C3DSceneObj
 	glDepthFunc(GL_LESS);
 	
     m_lightProperties.glPopProperties();
-    m_lightProperties.setTexturing(CRenderingProperties::DISABLE);
-    m_lightProperties.setLighting(CRenderingProperties::DISABLE);
+	m_lightProperties.setTexturing(IRenderingProperties::DISABLE);
+	m_lightProperties.setLighting(IRenderingProperties::DISABLE);
 
     //
     //  Fifth pass : render other objects ( non shadowed & non caster )

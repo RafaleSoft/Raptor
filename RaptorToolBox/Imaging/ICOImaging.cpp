@@ -1,7 +1,6 @@
 // ICOImaging.cpp: implementation of the CICOImaging class.
 //
 //////////////////////////////////////////////////////////////////////
-#include "StdAfx.h"
 #include "Subsys/CodeGeneration.h"
 
 

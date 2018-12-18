@@ -4,13 +4,13 @@
 #include "System/RaptorConfig.h"
 #include "Engine/Animator.h"
 #include "Engine/3DScene.h"
-#include "Engine/ViewPoint.h"
+#include "Engine/IViewPoint.h"
 #include "Engine/ViewModifier.h"
 #include "Engine/LightModifier.h"
 #include "GLHierarchy/FragmentProgram.h"
 #include "GLHierarchy/GeometryEditor.h"
 #include "GLHierarchy/Object3DInstance.h"
-#include "GLHierarchy/RenderingProperties.h"
+#include "GLHierarchy/IRenderingProperties.h"
 #include "GLHierarchy/Light.h"
 #include "GLHierarchy/Shader.h"
 #include "GLHierarchy/ShaderProgram.h"
@@ -22,7 +22,6 @@
 #include "GLHierarchy/TextureObject.h"
 #include "System/RaptorConsole.h"
 #include "System/RaptorErrorManager.h"
-#include "System/RaptorExtensions.h"
 #include "System/RaptorIO.h"
 #include "ToolBox/BasicObjects.h"
 #include "ToolBox/Imaging.h"
@@ -33,7 +32,7 @@ RAPTOR_NAMESPACE
 #define VULKAN_TEST 1
 
 
-class MySphere : public /*CBasicObjects::CIsocahedron*/ CBasicObjects::CGeoSphere
+class MySphere : public CBasicObjects::CGeoSphere
 {
 public:
 	MySphere();
@@ -107,12 +106,11 @@ CTest5Doc::CTest5Doc(const RAPTOR_HANDLE& device,const char* title)
 	glcs.draw_logo = true;
 
 	m_pDisplay = Raptor::glCreateDisplay(glcs);
-	bool res = m_pDisplay->glBindDisplay(device);
+	bool res = m_pDisplay->glvkBindDisplay(device);
 	if (res)
 	{
-		CRenderingProperties *props = m_pDisplay->getRenderingProperties();
-		props->setLighting(CRenderingProperties::ENABLE);
-		props->setTexturing(CRenderingProperties::ENABLE);
+		IRenderingProperties &props = m_pDisplay->getRenderingProperties();
+		props.enableLighting.enableTexturing;
 #ifdef VULKAN_TEST
 #else
 		CRaptorConsole *pConsole = Raptor::GetConsole();
@@ -122,7 +120,7 @@ CTest5Doc::CTest5Doc(const RAPTOR_HANDLE& device,const char* title)
 #endif
         GLInitContext();
 
-		m_pDisplay->glUnBindDisplay();
+		m_pDisplay->glvkUnBindDisplay();
 	}
 }
 
@@ -132,96 +130,75 @@ CTest5Doc::~CTest5Doc(void)
 
 void CTest5Doc::resize(unsigned int width, unsigned int height)
 {
-	if (m_pDisplay->glBindDisplay(m_device))
+	if (m_pDisplay->glvkBindDisplay(m_device))
     {
         m_pDisplay->glResize(width,height,0,0);
-        m_pDisplay->glUnBindDisplay();
+		m_pDisplay->glvkUnBindDisplay();
     }
 }
 
 void CTest5Doc::glRender(void)
 {
-	bool res = m_pDisplay->glBindDisplay(m_device);
+	bool res = m_pDisplay->glvkBindDisplay(m_device);
     if (res)
 	{
 		m_pDisplay->glRender();
 
-		m_pDisplay->glUnBindDisplay();
+		m_pDisplay->glvkUnBindDisplay();
 	}
 }
 
 void CTest5Doc::GLInitContext(void)
 {
+#ifdef VULKAN_TEST
+	CBasicObjects::CIsocahedron *obj = new CBasicObjects::CIsocahedron();
+	obj->setDimensions(2.0f, 3);
+	obj->getEditor().genBinormals();
+	//obj->getEditor().scaleTexCoords(4.0f, 4.0f);
+#else
 	CBasicObjects::CGeoSphere *obj = new MySphere();
-	//CBasicObjects::CIsocahedron *obj = new MySphere();
-	//CBasicObjects::CCube *c = new CBasicObjects::CCube();
-	//CBasicObjects::CIsocahedron *obj = new CBasicObjects::CIsocahedron();
 	obj->setDimensions(2.0f,32,32);
-	//obj->setDimensions(2.0f,4);
-	//c->setDimensions(1.0f,1.0f,1.0f);
 	obj->getEditor().genBinormals();
 	obj->getEditor().scaleTexCoords(4.0f,4.0f);
+
 	obj->getRenderingModel().addModel(CGeometry::CRenderingModel::CGL_TANGENTS);
+#endif
+
 
 	C3DScene *pScene = m_pDisplay->getRootScene();
-
 	//CShader *shader = new CShader("uniforms-shader");
 	//CVertexProgram *p = shader->glGetVertexProgram("uniforms");
 	//p->glLoadProgramFromStream(*shdr);
 	//bool res = shader->glCompileShader();
 
 	CTextureFactory &f = CTextureFactory::getDefaultFactory();
+	CShader* s = obj->getShader();
+
 
 #ifdef VULKAN_TEST
-	CShadedGeometry *geo = new CShadedGeometry("VULKAN_GEOMETRY");
-	geo->getRenderingModel().addModel(CGeometry::CRenderingModel::CGL_COLORS);
-	geo->getRenderingModel().addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
-
-	geo->glSetVertices(4,NULL);
-	geo->glSetColors(4, NULL);
-	geo->glSetTexCoords(4, NULL);
-	geo->glSetPolygons(2, NULL);
-	GL_COORD_VERTEX VertexData[5] =
-	{
-		GL_COORD_VERTEX(-0.7f, -0.7f, -2.0f, 1.0f),	// TODO : check / configure depth
-		GL_COORD_VERTEX(-0.7f, 0.7f, -5.0f, 1.0f),
-		GL_COORD_VERTEX(0.7f, -0.7f, -1.5f, 1.0f),
-		GL_COORD_VERTEX(0.7f, 0.7f, -3.5f, 1.0f),
-		GL_COORD_VERTEX(0.0f, 0.0f, 0.1f, 1.0f)
-	};
-	GL_TEX_VERTEX TexCoordData[4] =
-	{
-		GL_TEX_VERTEX(0.0f, 0.0f),	// TODO : check / configure depth
-		GL_TEX_VERTEX(0.0f, 1.0f),
-		GL_TEX_VERTEX(1.0f, 0.0f),
-		GL_TEX_VERTEX(1.0f, 1.0f),
-	};
-	CColor::RGBA ColorData[4] =
-	{
-		CColor::RGBA(1.0f, 0.0f, 0.0f, 0.0f),
-		CColor::RGBA(0.0f, 1.0f, 0.0f, 0.0f),
-		CColor::RGBA(0.0f, 0.0f, 1.0f, 0.0f),
-		CColor::RGBA(0.3f, 0.3f, 0.3f, 0.0f)
-	};
-	unsigned short VertexIndices[6] =
-	{
-		3, 2, 0, 3, 0, 1
-	};
-	geo->glSetVertices(4,VertexData);
-	geo->glSetColors(4,ColorData);
-	geo->glSetTexCoords(4, TexCoordData);
-	geo->glSetPolygons(2,VertexIndices);
-	
 	m_pTexture = f.vkCreateTexture(ITextureObject::CGL_COLOR24_ALPHA, CTextureObject::CGL_ALPHA_TRANSPARENT, ITextureObject::CGL_BILINEAR);
-	f.glLoadTexture(m_pTexture, "earth.TGA");
+#else
+	m_pTexture = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA, CTextureObject::CGL_ALPHA_TRANSPARENT, ITextureObject::CGL_BILINEAR);
+#endif
 
-	CShader* s = geo->getShader();
-	CVulkanShaderStage *ss = s->vkGetVulkanProgram();
-	ss->vkLoadShader("shader3.vert");
-	ss->vkLoadShader("shader3.frag");
+
+	f.glLoadTexture(m_pTexture, "earth.TGA");
 	CTextureUnitSetup *tus = s->glGetTextureUnitsSetup();
 	tus->setDiffuseMap(m_pTexture);
 
+	CMaterial *pMat = s->getMaterial();
+	pMat->setAmbient(0.02f, 0.02f, 0.02f, 1.0f);
+	pMat->setDiffuse(0.3f, 0.4f, 0.8f, 1.0f);
+	pMat->setSpecular(0.7f, 0.7f, 0.7f, 1.0f);
+	pMat->setEmission(0.0f, 0.0f, 0.0f, 1.0f);
+	pMat->setShininess(128.0f);
+
+
+#ifdef VULKAN_TEST
+	CVulkanShaderStage *ss = s->vkGetVulkanProgram();
+	ss->vkLoadShader("shader3.vert");
+	ss->vkLoadShader("shader3.frag");
+	
 	typedef struct 
 	{ 
 		GL_MATRIX M;
@@ -231,8 +208,8 @@ void CTest5Doc::GLInitContext(void)
 	
 	IDENT_MATRIX(T.M);
 	IDENT_MATRIX(T.P);
-	T.M[12] = 0.5f;
-	T.M[14] = -1.0f;
+	T.M[12] = 0.0f;
+	T.M[14] = -3.5f;
 	{
 		CGenericMatrix<float, 4> frustum;
 		m_pDisplay->getViewPoint()->getFrustum(frustum);
@@ -247,10 +224,11 @@ void CTest5Doc::GLInitContext(void)
 	}
 	
 	CProgramParameters parameters;
-	CProgramParameters::CParameter<Transform_t> param(T);
-	param.name("modelview");
-	param.locationIndex = 0;
-	parameters.addParameter(param);
+	//CProgramParameters::CParameter<Transform_t> param(T);
+	//param.name("gl_ModelViewMatrix");
+	//param.locationIndex = 0;
+	//parameters.addParameter(param);
+	parameters.addParameter(ss->getDefaultParameter("gl_ModelViewMatrix", 0));
 
 	CProgramParameters::CParameter<CTextureUnitSetup::TEXTURE_IMAGE_UNIT> param2(CTextureUnitSetup::IMAGE_UNIT_0);
 	param2.name("diffusemap");
@@ -259,24 +237,14 @@ void CTest5Doc::GLInitContext(void)
 
 	ss->setProgramParameters(parameters);
 
-	pScene->addObject(geo);
-#else
-	m_pTexture = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA, CTextureObject::CGL_ALPHA_TRANSPARENT, ITextureObject::CGL_BILINEAR);
-	f.glLoadTexture(m_pTexture,"earth.TGA");
-	CTextureUnitSetup *tus = obj->getShader()->glGetTextureUnitsSetup();
-	tus->setDiffuseMap(m_pTexture);
+	pScene->addObject(obj);
+#else	
 	m_pTexture = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_MULTIPLY,ITextureObject::CGL_BILINEAR);
     f.glLoadTexture(m_pTexture,"bump3.tga",CVaArray<CImage::IImageOP::OP_KIND>(CImage::IImageOP::BUMPMAP_LOADER));
 	//f.getConfig().setBumpAmplitude(4.0f);
 	//f.glLoadTexture(m_pTexture,"BlurCircle.TGA",CGL_CREATE_NORMAL_MAP);
 	tus->setNormalMap(m_pTexture);
 
-	CMaterial *pMat = obj->getShader()->getMaterial();
-	pMat->setAmbient(0.02f,0.02f,0.02f,1.0f);
-	pMat->setDiffuse(0.3f,0.4f,0.8f,1.0f);
-	pMat->setSpecular(0.7f,0.7f,0.7f,1.0f);
-	pMat->setEmission(0.0f,0.0f,0.0f,1.0f);
-	pMat->setShininess(128.0f);
 
 	CViewModifier *vm = new CViewModifier("MySphere");
 	vm->setObject(obj);
@@ -356,9 +324,10 @@ void CTest5Doc::GLInitContext(void)
     lm3->addAction(CLightModifier::SET_POSITION,lx,ly,lz);
 #endif
 
-	CViewPoint *vp = m_pDisplay->getViewPoint();
-    vp->setPosition(0,0,3.5,CViewPoint::EYE);
-    vp->setPosition(0,0,0,CViewPoint::TARGET);
+
+	IViewPoint *vp = m_pDisplay->getViewPoint();
+    vp->setPosition(0,0,3.5,IViewPoint::EYE);
+    vp->setPosition(0,0,0,IViewPoint::TARGET);
 
 	CTimeObject::setTimeFactor(1.0f);
 	CAnimator *pAnimator = new CAnimator();

@@ -31,7 +31,7 @@ class CCubeBTree;
 class CCollisionStatus;
 class C3DEngineAttributes;
 class C3DEngineTaskManager;
-class CViewPoint;
+class IViewPoint;
 
 
 class RAPTOR_API C3DEngine : public CPersistence  
@@ -113,7 +113,7 @@ public:
 	//!	@param pViewPoint : the viewpoint from datas can be queried, or NULL if no viewpoint is available.
 	//!	It is not necessary to explicitely call this method except when there is no viewpoint
 	//!	and a 3Dengine is used.
-	void glConfigureEngine(CViewPoint* pViewPoint);
+	void glConfigureEngine(IViewPoint* pViewPoint);
 
 
     //!

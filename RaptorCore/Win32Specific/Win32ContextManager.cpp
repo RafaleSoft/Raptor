@@ -629,7 +629,7 @@ RAPTOR_HANDLE CWin32ContextManager::glCreateWindow(const CRaptorDisplayConfig& c
         if (destroyDisplay)
             pDisplay = Raptor::glCreateDisplay(pda);
         id = 0;
-        if (!pDisplay->glBindDisplay(device))
+		if (!pDisplay->glvkBindDisplay(device))
 			id = CContextManager::INVALID_CONTEXT;
         else
 		{
@@ -644,7 +644,7 @@ RAPTOR_HANDLE CWin32ContextManager::glCreateWindow(const CRaptorDisplayConfig& c
 			else
 				pDisplay->glResize(MAX(1,pda.width),MAX(1,pda.height),0,0);
 
-			if (!pDisplay->glUnBindDisplay())
+			if (!pDisplay->glvkUnBindDisplay())
 				id = CContextManager::INVALID_CONTEXT;
 		}
 		if (CContextManager::INVALID_CONTEXT != id)

@@ -19,11 +19,11 @@
 #if !defined(AFX_TEXTUREFACTORY_H__1B470EC4_4B68_11D3_9142_9A502CBADC6B__INCLUDED_)
 	#include "GLHierarchy/TextureFactory.h"
 #endif
-#if !defined(AFX_VIEWPOINT_H__82071851_A036_4311_81CB_01E7E25F19E1__INCLUDED_)
-	#include "Engine/ViewPoint.h"
+#if !defined(AFX_IVIEWPOINT_H__82071851_A036_4311_81CB_01E7E25F19E1__INCLUDED_)
+	#include "Engine/IViewPoint.h"
 #endif
-#if !defined(AFX_RENDERINGPROPERTIES_H__634BCF2B_84B4_47F2_B460_D7FDC0F3B698__INCLUDED_)
-	#include "GLHierarchy/RenderingProperties.h"
+#if !defined(AFX_IRENDERINGPROPERTIES_H__634BCF2B_84B4_47F2_B460_D7FDC0F3B698__INCLUDED_)
+	#include "GLHierarchy/IRenderingProperties.h"
 #endif
 #if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
     #include "System/RaptorErrorManager.h"
@@ -166,14 +166,14 @@ CGLDisplay::~CGLDisplay()
 void CGLDisplay::GLInitContext()
 {
 	CRaptorDisplay *pDisplay = CRaptorDisplay::GetCurrentDisplay();
-	CViewPoint *pVP = pDisplay->getViewPoint();
+	IViewPoint *pVP = pDisplay->getViewPoint();
 	glColor4f(1.0,1.0,1.0,1.0f);
 
-	pVP->setViewVolume(-1.0,1.0,-1.0,1.0,1.0,1000.0,CViewPoint::PERSPECTIVE);
-	pVP->glRenderViewPointModel();
+	pVP->setViewVolume(-1.0,1.0,-1.0,1.0,1.0,1000.0,IViewPoint::PERSPECTIVE);
+	pVP->glvkRenderViewPointModel();
 
-    CRenderingProperties *props = pDisplay->getRenderingProperties();
-    props->setTexturing(CRenderingProperties::ENABLE);
+	IRenderingProperties &props = pDisplay->getRenderingProperties();
+	props.setTexturing(IRenderingProperties::ENABLE);
 
     CRaptorDataManager  *dataManager = CRaptorDataManager::GetInstance();
     if (dataManager != NULL)

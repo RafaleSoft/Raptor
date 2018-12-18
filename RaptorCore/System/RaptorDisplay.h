@@ -29,9 +29,9 @@
 
 RAPTOR_NAMESPACE_BEGIN
 
-class CViewPoint;
+class IViewPoint;
 class C3DScene;
-class CRenderingProperties;
+class IRenderingProperties;
 
 
 
@@ -42,7 +42,15 @@ public:
 	static CRaptorDisplay * const GetCurrentDisplay(void);
 
 	//! Returns the global rendering properties.
-	virtual CRenderingProperties *getRenderingProperties(void) const { return m_pProperties; };
+	virtual IRenderingProperties &getRenderingProperties(void) const;
+
+	//! Creates a view point compatible with this display.
+	virtual IRenderingProperties *const createRenderingProperties(void) const;
+
+
+	//!
+	//!	Display management
+	//!
 
 	//!	Create and attach the display to a device context.
 	//!	For a newly created display, the underlying context is created
@@ -50,7 +58,7 @@ public:
 	//! without errors, this method simply makes the current context active for the display.
 	//!	Return true if the display is bound without errors, false if the display is
 	//! unbounded or if there is an error.
-	virtual bool glBindDisplay(const RAPTOR_HANDLE& device);
+	virtual bool glvkBindDisplay(const RAPTOR_HANDLE& device);
 
     //! If the display is bound to a device, it returns the current device if it is valid.
     //! Here, the method returns a void device as a generic display cannot be bound, see derived classes
@@ -59,16 +67,26 @@ public:
 	//! To unbound the display, simply call this method
 	//!	Return true if the display is unbound without errors, false if the display is
 	//! unbounded before call or if there is an error.
-	virtual bool glUnBindDisplay(void);
+	virtual bool glvkUnBindDisplay(void);
+
+
+	//!
+	//!	Display management
+	//!
 
 	//!	Current user ( eye ) viewpoint used to render the current root scene of the display. 
     //! The viewpoint has priority over any user OpenGL transforms in rendering: the initial MODELVIEW
 	//!	transform is updated according to the point of view before glRender is called
     //! RQ: If view point is modified, it be passed to this method to "reapply it"
-	virtual void setViewPoint(CViewPoint *viewPoint);
+	virtual void setViewPoint(IViewPoint *viewPoint);
 
 	//! Returns the display view point.
-	virtual CViewPoint *const getViewPoint(void) const;
+	virtual IViewPoint *const getViewPoint(void) const;
+
+	//! Creates a view point compatible with this display.
+	virtual IViewPoint *const createViewPoint(void) const;
+
+
 
 	//! Resize the display to handle user interface events.
 	//! - sx,sy : define the width and height of the display
@@ -140,10 +158,6 @@ public:
     //! This generator is not yet implemented.in this version
     virtual ITextureGenerator::GENERATOR_KIND getKind(void) const { return ITextureGenerator::NONE; };
 
-    //! Implements CTextureGenerator
-    //! This class is virtual, generation is only implemented in subclasses
-    //virtual void glGenerate(CTextureObject* );
-
     //! This method returns the width of the generator
     virtual unsigned int getGenerateWidth(void) const;
 
@@ -171,8 +185,14 @@ protected:
     //! and before the purge is effective.
     virtual void glReleaseResources(void);
 
+	//! This method enables subclasses to replace rendering properties
+	//!	Registration is not implemented, it remains the responsibility of subclasses
+	//! (method is protected)
+	void setRenderingProperties(IRenderingProperties *properties);
+
 	
 private:
+	//!	Display factory
 	friend class Raptor;
 	
 	CRaptorDisplay(const CRaptorDisplay&);
@@ -180,11 +200,11 @@ private:
 
 	static CRaptorDisplay	*m_pCurrentDisplay;
 
-	CViewPoint				*m_pViewPoint;
+	IViewPoint				*m_pViewPoint;
 	bool					m_bDeleteViewPoint;
     bool                    m_bApplyViewPointModel;
 
-	CRenderingProperties    *m_pProperties;
+	IRenderingProperties    *m_pProperties;
 
     C3DScene				*m_pRootScene;
 	vector<C3DScene*>       m_pScenes;

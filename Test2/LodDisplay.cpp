@@ -5,24 +5,24 @@
 #include "stdafx.h"
 #include "LodDisplay.h"
 
-#include "Engine\ViewPoint.h"
+#include "Engine/IViewPoint.h"
 #include "GLHierarchy/GLFont.h"
-#include "GLHierarchy\GLLod.h"
-#include "GLHierarchy\Material.h"
-#include "GLHierarchy\SimpleObject.h"
-#include "System\Raptor.h"
-#include "GLHierarchy\3DSet.h"
-#include "GLHierarchy\ShadedGeometry.h"
+#include "GLHierarchy/GLLod.h"
+#include "GLHierarchy/Material.h"
+#include "GLHierarchy/SimpleObject.h"
+#include "System/Raptor.h"
+#include "GLHierarchy/3DSet.h"
+#include "GLHierarchy/ShadedGeometry.h"
 #include "SSE_Engine/SSE_GLLayer.h"
-#include "GLHierarchy\TextureFactory.h"	// for cast
-#include "GLHierarchy\TextureUnitSetup.h"
-#include "GLHierarchy\Shader.h"
-#include "System\RaptorDisplay.h"
-#include "Engine\3DScene.h"
-#include "GLHierarchy\RenderingProperties.h"
+#include "GLHierarchy/TextureFactory.h"	// for cast
+#include "GLHierarchy/TextureUnitSetup.h"
+#include "GLHierarchy/Shader.h"
+#include "System/RaptorDisplay.h"
+#include "Engine/3DScene.h"
+#include "GLHierarchy/IRenderingProperties.h"
 #include "GLHierarchy/GLFontFactory.h"
 
-#include "ToolBox\RaptorToolBox.h"
+#include "ToolBox/RaptorToolBox.h"
 
 
 static GLfloat light_ambient[] = { 1.0f, 1.0f, 1.0f, 1.0f };
@@ -205,17 +205,17 @@ void CLodDisplay::Init()
 	lod->rotationX(60.0f);
 	lod->translateAbsolute(0.0f,0.0f,-1300.0f);
 
-	vp = new CViewPoint();
-    vp->setPosition(0.0,0.0,5.0,CViewPoint::EYE);
-    vp->setPosition(0.0,0.0,0.0,CViewPoint::TARGET);
-	vp->setViewVolume(-1.33f,1.33f,-1.0f,1.0f,1.0f,10000,CViewPoint::PERSPECTIVE);
+	CRaptorDisplay* pDisplay = CRaptorDisplay::GetCurrentDisplay();
+	vp = pDisplay->createViewPoint();
+    vp->setPosition(0.0,0.0,5.0,IViewPoint::EYE);
+    vp->setPosition(0.0,0.0,0.0,IViewPoint::TARGET);
+	vp->setViewVolume(-1.33f,1.33f,-1.0f,1.0f,1.0f,10000,IViewPoint::PERSPECTIVE);
 
 	C3DScene *pScene = new C3DScene("LOD_SCENE");
 	pScene->addObject(lod);
 	CCountFaces *countFaces = new CCountFaces(lod);
 	pScene->addObject(countFaces);
-
-	CRaptorDisplay* pDisplay = CRaptorDisplay::GetCurrentDisplay();
+		
 	pDisplay->addScene(pScene);
 }
 
@@ -235,10 +235,10 @@ void CLodDisplay::ReInit()
 
     CRaptorDisplay* const pDisplay = CRaptorDisplay::GetCurrentDisplay();
 	pDisplay->setViewPoint(vp);
-    CRenderingProperties *rp = pDisplay->getRenderingProperties();
-    rp->setTexturing(CRenderingProperties::DISABLE);
-    rp->setLighting(CRenderingProperties::ENABLE);
-    rp->setCullFace(CRenderingProperties::DISABLE);
+	IRenderingProperties &rp = pDisplay->getRenderingProperties();
+	rp.setTexturing(IRenderingProperties::DISABLE);
+	rp.setLighting(IRenderingProperties::ENABLE);
+	rp.setCullFace(IRenderingProperties::DISABLE);
 
 	pDisplay->selectScene("LOD_SCENE");
 }

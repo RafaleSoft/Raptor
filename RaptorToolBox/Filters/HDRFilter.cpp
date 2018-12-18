@@ -2,7 +2,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "Subsys/CodeGeneration.h"
 
 #if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
 	#include "System/Raptor.h"
@@ -28,8 +28,8 @@
 #if !defined(AFX_TEXTUREFACTORY_H__1B470EC4_4B68_11D3_9142_9A502CBADC6B__INCLUDED_)
 	#include "GLHierarchy/TextureFactory.h"
 #endif
-#if !defined(AFX_RENDERINGPROPERTIES_H__634BCF2B_84B4_47F2_B460_D7FDC0F3B698__INCLUDED_)
-	#include "GLHierarchy/RenderingProperties.h"
+#if !defined(AFX_IRENDERINGPROPERTIES_H__634BCF2B_84B4_47F2_B460_D7FDC0F3B698__INCLUDED_)
+	#include "GLHierarchy/IRenderingProperties.h"
 #endif
 #if !defined(AFX_SHADER_H__4D405EC2_7151_465D_86B6_1CA99B906777__INCLUDED_)
 	#include "GLHierarchy/Shader.h"
@@ -348,7 +348,7 @@ void CHDRFilter::glRenderFilter()
     CTextureObject  *currentBuffer = getColorInput();
     for (unsigned int i=0;i<nLevels;i++)
     {
-        m_pDownSizedDisplay[i]->glBindDisplay(nodevice);
+		m_pDownSizedDisplay[i]->glvkBindDisplay(nodevice);
 		currentBuffer->glvkRender();
 
 		luminanceParams.p = GL_COORD_VERTEX(0.5f / currentBuffer->getWidth(),
@@ -382,14 +382,14 @@ void CHDRFilter::glRenderFilter()
             m_lastMaxLuminance->glStop();
         }
 
-        m_pDownSizedDisplay[i]->glUnBindDisplay();
+		m_pDownSizedDisplay[i]->glvkUnBindDisplay();
         currentBuffer = m_pDownSizedBuffer[i];
     }
 
     //
     //  Extract high frequencies only
     //
-    m_pDownHighFreqs->glBindDisplay(nodevice);
+	m_pDownHighFreqs->glvkBindDisplay(nodevice);
 	m_pDownSizedBuffer[1]->glvkRender();
 	thresholdParams[1].copy(thresholdParam);
 #if defined(GL_ARB_vertex_shader)
@@ -400,12 +400,12 @@ void CHDRFilter::glRenderFilter()
     m_pTreshholdFreqs->glRender();
     glDrawBuffer();
     m_pTreshholdFreqs->glStop();
-    m_pDownHighFreqs->glUnBindDisplay();
+	m_pDownHighFreqs->glvkUnBindDisplay();
   
     //
     //  Blur high frequencies  
     //
-    m_pDownBlurXDisplay->glBindDisplay(nodevice);
+	m_pDownBlurXDisplay->glvkBindDisplay(nodevice);
 	m_pDownHFBuffer->glvkRender();
     m_pBlurXOffsets->setProgramParameters(blurOffsets);
     m_pBlurXOffsets->glRender();
@@ -415,9 +415,9 @@ void CHDRFilter::glRenderFilter()
 
     m_pBlurXOffsets->glStop();
     m_pBlur->glStop();
-    m_pDownBlurXDisplay->glUnBindDisplay();
+	m_pDownBlurXDisplay->glvkUnBindDisplay();
 
-    m_pDownBlurYDisplay->glBindDisplay(nodevice);
+	m_pDownBlurYDisplay->glvkBindDisplay(nodevice);
 	m_pDownBlurXBuffer->glvkRender();
     m_pBlurYOffsets->setProgramParameters(blurOffsets);
     m_pBlurYOffsets->glRender();
@@ -427,14 +427,14 @@ void CHDRFilter::glRenderFilter()
 
     m_pBlurYOffsets->glStop();
     m_pBlur->glStop();
-    m_pDownBlurYDisplay->glUnBindDisplay();
+	m_pDownBlurYDisplay->glvkUnBindDisplay();
 
 	for (unsigned int i=2;i<=nBlurPass;i++)
 	{
 		//
 		//  Second pass Blur high frequencies  
 		//
-		m_pDownBlurXDisplay->glBindDisplay(nodevice);
+		m_pDownBlurXDisplay->glvkBindDisplay(nodevice);
 		m_pDownBlurYBuffer->glvkRender();
 		m_pBlurXOffsets->setProgramParameters(blurOffsets);
 		m_pBlurXOffsets->glRender();
@@ -443,9 +443,9 @@ void CHDRFilter::glRenderFilter()
 		glDrawBuffer();
 
 		m_pBlurXOffsets->glStop();
-		m_pDownBlurXDisplay->glUnBindDisplay();
+		m_pDownBlurXDisplay->glvkUnBindDisplay();
 
-		m_pDownBlurYDisplay->glBindDisplay(nodevice);
+		m_pDownBlurYDisplay->glvkBindDisplay(nodevice);
 		m_pDownBlurXBuffer->glvkRender();
 		m_pBlurYOffsets->setProgramParameters(blurOffsets);
 		m_pBlurYOffsets->glRender();
@@ -454,7 +454,7 @@ void CHDRFilter::glRenderFilter()
 
 		m_pBlurYOffsets->glStop();
 		m_pBlur->glStop();
-		m_pDownBlurYDisplay->glUnBindDisplay();
+		m_pDownBlurYDisplay->glvkUnBindDisplay();
 	}
 }
 
@@ -539,12 +539,12 @@ bool CHDRFilter::glInitFilter(void)
 		m_pDownSizedAttachments = new CTextureSet*[nLevels];
 	}
 
-    CRenderingProperties commonRP;
-    commonRP.setTexturing(CRenderingProperties::ENABLE);
-    commonRP.setCullFace(CRenderingProperties::DISABLE);
-    commonRP.setDepthTest(CRenderingProperties::DISABLE);
-    commonRP.setLighting(CRenderingProperties::DISABLE);
-    commonRP.clear(CGL_NULL);
+	IRenderingProperties *commonRP = CRaptorDisplay::GetCurrentDisplay()->createRenderingProperties();
+	commonRP->setTexturing(IRenderingProperties::ENABLE);
+	commonRP->setCullFace(IRenderingProperties::DISABLE);
+	commonRP->setDepthTest(IRenderingProperties::DISABLE);
+	commonRP->setLighting(IRenderingProperties::DISABLE);
+	commonRP->clear(CGL_NULL);
 
     for (unsigned int i=0; i<nLevels; i++)
     {
@@ -555,8 +555,8 @@ bool CHDRFilter::glInitFilter(void)
         rda.height = height;
 
         m_pDownSizedDisplay[i] = Raptor::glCreateDisplay(rda);
-        CRenderingProperties *rp = m_pDownSizedDisplay[i]->getRenderingProperties();
-        *rp = commonRP;
+		IRenderingProperties &rp = m_pDownSizedDisplay[i]->getRenderingProperties();
+        rp = *commonRP;
         m_pDownSizedDisplay[i]->setViewPoint(NULL);
         ITextureObject::TEXTURE_FILTER filter = ( i < 2 ? ITextureObject::CGL_BILINEAR : ITextureObject::CGL_UNFILTERED);
 
@@ -568,7 +568,7 @@ bool CHDRFilter::glInitFilter(void)
 			filterFactory.glResizeTexture(m_pDownSizedBuffer[i],width,height);
 			CTextureSet *tset = new CTextureSet("HDR_TSet");
 			tset->addTexture(m_pDownSizedBuffer[i]);
-			m_pDownSizedDisplay[i]->glBindDisplay(*tset);
+			m_pDownSizedDisplay[i]->glvkBindDisplay(*tset);
 			m_pDownSizedAttachments[i] = tset;
 		}
 		else if (m_fModel == RENDER_TEXTURE)
@@ -583,8 +583,8 @@ bool CHDRFilter::glInitFilter(void)
     rda.width = MAX(1,filter_cs_width * BLUR_BUFFER_SIZE_FACTOR);
     rda.height = MAX(1,filter_cs_height * BLUR_BUFFER_SIZE_FACTOR);
     m_pDownBlurXDisplay = Raptor::glCreateDisplay(rda);
-    CRenderingProperties *rp = m_pDownBlurXDisplay->getRenderingProperties();
-    *rp = commonRP;
+	IRenderingProperties &rp = m_pDownBlurXDisplay->getRenderingProperties();
+    rp = *commonRP;
     m_pDownBlurXDisplay->setViewPoint(NULL);
 	if (m_fModel == RENDER_BUFFER)
 	{
@@ -595,7 +595,7 @@ bool CHDRFilter::glInitFilter(void)
 		m_pDownBlurXBuffer->glvkUpdateClamping(ITextureObject::CGL_EDGECLAMP);
 		CTextureSet *tset = new CTextureSet("HDR_XBlur");
 		tset->addTexture(m_pDownBlurXBuffer);
-		m_pDownBlurXDisplay->glBindDisplay(*tset);
+		m_pDownBlurXDisplay->glvkBindDisplay(*tset);
 	}
 	else if (m_fModel == RENDER_TEXTURE)
 	{
@@ -606,8 +606,8 @@ bool CHDRFilter::glInitFilter(void)
 	}
 
     m_pDownBlurYDisplay = Raptor::glCreateDisplay(rda);
-    rp = m_pDownBlurYDisplay->getRenderingProperties();
-    *rp = commonRP;
+	IRenderingProperties &rp2 = m_pDownBlurYDisplay->getRenderingProperties();
+    rp2 = *commonRP;
     m_pDownBlurYDisplay->setViewPoint(NULL);
 	if (m_fModel == RENDER_BUFFER)
 	{
@@ -618,7 +618,7 @@ bool CHDRFilter::glInitFilter(void)
 		m_pDownBlurYBuffer->glvkUpdateClamping(ITextureObject::CGL_EDGECLAMP);
 		CTextureSet *tset = new CTextureSet("HDR_YBlur");
 		tset->addTexture(m_pDownBlurYBuffer);
-		m_pDownBlurYDisplay->glBindDisplay(*tset);
+		m_pDownBlurYDisplay->glvkBindDisplay(*tset);
 	}
 	else if (m_fModel == RENDER_TEXTURE)
 	{
@@ -629,8 +629,8 @@ bool CHDRFilter::glInitFilter(void)
 	}
 
     m_pDownHighFreqs  = Raptor::glCreateDisplay(rda);
-    rp = m_pDownHighFreqs->getRenderingProperties();
-    *rp = commonRP;
+	IRenderingProperties &rp3 = m_pDownHighFreqs->getRenderingProperties();
+    rp3 = *commonRP;
     m_pDownHighFreqs->setViewPoint(NULL);
 	if (m_fModel == RENDER_BUFFER)
 	{
@@ -641,7 +641,7 @@ bool CHDRFilter::glInitFilter(void)
 		m_pDownHFBuffer->glvkUpdateClamping(ITextureObject::CGL_EDGECLAMP);
 		CTextureSet *tset = new CTextureSet("HDR_HighFrequencies");
 		tset->addTexture(m_pDownHFBuffer);
-		m_pDownHighFreqs->glBindDisplay(*tset);
+		m_pDownHighFreqs->glvkBindDisplay(*tset);
 	}
 	else if (m_fModel == RENDER_TEXTURE)
 	{
@@ -650,6 +650,8 @@ bool CHDRFilter::glInitFilter(void)
 																ITextureObject::CGL_BILINEAR,
 																m_pDownHighFreqs);
 	}
+
+	delete commonRP;
 
     //
     //  Create shaders

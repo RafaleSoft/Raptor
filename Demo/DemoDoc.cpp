@@ -11,7 +11,7 @@
 #include "GLHierarchy/Object3DInstance.h"
 #include "GLHierarchy/Object3DShadow.h"
 #include "GLHierarchy/Projector.h"
-#include "GLHierarchy/RenderingProperties.h"
+#include "GLHierarchy/IRenderingProperties.h"
 #include "GLHierarchy/ShadedGeometry.h"
 #include "GLHierarchy/Shader.h"
 #include "GLHierarchy/SimpleObject.h"
@@ -288,9 +288,9 @@ void CDemoDoc::GLInitContext(void)
 	CAnimator::SetAnimator(animator);
     
     CRaptorDisplay * const pCurrentDisplay = CRaptorDisplay::GetCurrentDisplay();
-    CRenderingProperties *rp = pCurrentDisplay->getRenderingProperties();
-	rp->clear(CGL_RGBA|CGL_DEPTH);
-	rp->setMultisampling(CRenderingProperties::ENABLE);
+	IRenderingProperties &rp = pCurrentDisplay->getRenderingProperties();
+	rp.clear(CGL_RGBA|CGL_DEPTH);
+	rp.setMultisampling(IRenderingProperties::ENABLE);
 
     C3DScene *m_pScene = pCurrentDisplay->getRootScene();
 	//pCurrentDisplay->getViewPoint()->setCurrentPath(-1);
@@ -312,13 +312,13 @@ void CDemoDoc::GLInitContext(void)
         pSpots->AddSpot(lpos);
     }
     pSpots->lights = lights;
-    pCurrentDisplay->glBindDisplay(*pSpots);
+	pCurrentDisplay->glvkBindDisplay(*pSpots);
 	pSpots->releaseReference();
 
     dof = new CDOFFilter;
     dof->setDOFParams(0.85f, 10.0f);
 	dof->setBlurNbPass(4);
-    pCurrentDisplay->glBindDisplay(*dof);
+	pCurrentDisplay->glvkBindDisplay(*dof);
 	dof->releaseReference();
 
 	CRaptorDisplayConfig rda;
@@ -332,11 +332,11 @@ void CDemoDoc::GLInitContext(void)
 
 void CDemoDoc::glRender()
 {
-	m_pDisplay->glBindDisplay(m_wnd);
+	m_pDisplay->glvkBindDisplay(m_wnd);
 
 	m_pDisplay->glRender();
 
-	m_pDisplay->glUnBindDisplay();
+	m_pDisplay->glvkUnBindDisplay();
 
 
 	nbFrames++;

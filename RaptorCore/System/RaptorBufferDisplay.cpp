@@ -71,7 +71,7 @@ CRaptorBufferDisplay::CRaptorBufferDisplay(const CRaptorDisplayConfig& pcs)
 CRaptorBufferDisplay::~CRaptorBufferDisplay()
 {
     //  Unbind, in case it is forgotten by the user.
-    glUnBindDisplay();
+    glvkUnBindDisplay();
 
 	if (m_pBuffer > 0)
 		CContextManager::GetInstance()->glDestroyPBuffer(m_pBuffer - 1);
@@ -133,7 +133,7 @@ void CRaptorBufferDisplay::glResize(unsigned int sx,unsigned int sy,unsigned int
         return;
     }
 
-    glUnBindDisplay();
+	glvkUnBindDisplay();
     if (m_pBuffer > 0)
 		CContextManager::GetInstance()->glDestroyPBuffer(m_pBuffer - 1);
 
@@ -144,8 +144,8 @@ void CRaptorBufferDisplay::glResize(unsigned int sx,unsigned int sy,unsigned int
     m_pBuffer = 0;
 
     RAPTOR_HANDLE noDevice;
-    glBindDisplay(noDevice);
-    glUnBindDisplay();
+	glvkBindDisplay(noDevice);
+	glvkUnBindDisplay();
 
     CATCH_GL_ERROR
 }
@@ -191,7 +191,7 @@ void CRaptorBufferDisplay::glGenerate(CTextureObject* T)
 }
 
 
-bool CRaptorBufferDisplay::glBindDisplay(const RAPTOR_HANDLE& device)
+bool CRaptorBufferDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
 {
 #if defined(WGL_ARB_pbuffer)
 	if (m_pBuffer == 0)
@@ -221,7 +221,7 @@ bool CRaptorBufferDisplay::glBindDisplay(const RAPTOR_HANDLE& device)
         CATCH_GL_ERROR
 
         RAPTOR_HANDLE noDevice;
-		return CRaptorDisplay::glBindDisplay(noDevice);
+		return CRaptorDisplay::glvkBindDisplay(noDevice);
 	}
 	else
 	{
@@ -243,9 +243,7 @@ bool CRaptorBufferDisplay::glBindDisplay(const RAPTOR_HANDLE& device)
 			// with texturing. Explicit unbinding can be avoided for
 			// performance reasons, but future drivers might be faster.
             if (m_bBoundToTexture)
-            {
-                glUnBindDisplay();
-            }
+				glvkUnBindDisplay();
     
 			CContextManager *manager = CContextManager::GetInstance();
 
@@ -256,7 +254,7 @@ bool CRaptorBufferDisplay::glBindDisplay(const RAPTOR_HANDLE& device)
 
             CATCH_GL_ERROR
 
-			res = CRaptorDisplay::glBindDisplay(device);
+			res = CRaptorDisplay::glvkBindDisplay(device);
 		}
         // Specific case for BufferDisplay :
         //  a configuration parameter can be transmitted to the underlying
@@ -290,7 +288,7 @@ bool CRaptorBufferDisplay::glBindDisplay(const RAPTOR_HANDLE& device)
 #endif
 }
 
-bool CRaptorBufferDisplay::glUnBindDisplay(void)
+bool CRaptorBufferDisplay::glvkUnBindDisplay(void)
 {
 #if defined(WGL_ARB_pbuffer)
 	// Buffer not created ( Binding never done )
@@ -330,7 +328,7 @@ bool CRaptorBufferDisplay::glUnBindDisplay(void)
 			allocatorT->glvkLockMemory(false);
 
 
-        CRaptorDisplay::glUnBindDisplay();
+		CRaptorDisplay::glvkUnBindDisplay();
 
         //  First case : there is another buffer bound in the stack,
         //  we must get back to that buffer

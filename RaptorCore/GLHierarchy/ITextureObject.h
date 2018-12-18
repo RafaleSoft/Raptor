@@ -121,7 +121,7 @@ public:
 
 
 protected:
-	ITextureObject::ITextureObject(const ITextureObject& rsh);
+	ITextureObject(const ITextureObject& rsh);
 
 	//! The texture texel type is stored only to avoid server calls to query internal format
 	TEXEL_TYPE	m_type;
@@ -139,7 +139,7 @@ protected:
 
 
 private:
-	ITextureObject::ITextureObject();
+	ITextureObject();
 
 	//!	Object name ( default is filename )
 	std::string	m_name;

@@ -282,10 +282,10 @@ bool CRaptorMessages::LoadMessages(const std::string& fname)
 	if (NULL != raptor_root)
 	{
 		shemaLocation << raptor_root;
-		shemaLocation << "/Redist/bin/RaptorMessages.xsd";
+		shemaLocation << "//Redist//bin//RaptorMessages.xsd";
 	}
 	else
-		shemaLocation << "./RaptorMessages.xsd";
+		shemaLocation << ".//RaptorMessages.xsd";
 
 	m_pTranslator->parse(shemaLocation.str().c_str(), 0);
 	m_pTranslator->parse(fname.c_str(), 0);

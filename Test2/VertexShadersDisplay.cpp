@@ -5,26 +5,26 @@
 #include "stdafx.h"
 
 #include "VertexShadersDisplay.h"
-#include "GLHierarchy\VertexShader.h"
-#include "GLHierarchy\FragmentShader.h"
-#include "GLHierarchy\VertexProgram.h"
-#include "GLHierarchy\FragmentProgram.h"
-#include "Engine\3DEngine.h"
-#include "Engine\3DScene.h"
-#include "Engine\ViewPoint.h"
-#include "GLHierarchy\TextureUnitSetup.h"
-#include "System\Raptor.h"
-#include "GLHierarchy\Shader.h"
-#include "GLHierarchy\TextureFactory.h"
-#include "GLHierarchy\TextureFactoryConfig.h"
-#include "GLHierarchy\TextureObject.h"
+#include "GLHierarchy/VertexShader.h"
+#include "GLHierarchy/FragmentShader.h"
+#include "GLHierarchy/VertexProgram.h"
+#include "GLHierarchy/FragmentProgram.h"
+#include "Engine/3DEngine.h"
+#include "Engine/3DScene.h"
+#include "Engine/IViewPoint.h"
+#include "GLHierarchy/TextureUnitSetup.h"
+#include "System/Raptor.h"
+#include "GLHierarchy/Shader.h"
+#include "GLHierarchy/TextureFactory.h"
+#include "GLHierarchy/TextureFactoryConfig.h"
+#include "GLHierarchy/TextureObject.h"
 #include "GLHierarchy/TextureSet.h"
-#include "Engine\GeometricModifier.h"
-#include "GLHierarchy\3DSet.h"
-#include "GLHierarchy\Light.h"
-#include "GLHierarchy\SimpleObject.h"
-#include "GLHierarchy\ShadedGeometry.h"
-#include "GLHierarchy\RenderingProperties.h"
+#include "Engine/GeometricModifier.h"
+#include "GLHierarchy/3DSet.h"
+#include "GLHierarchy/Light.h"
+#include "GLHierarchy/SimpleObject.h"
+#include "GLHierarchy/ShadedGeometry.h"
+#include "GLHierarchy/IRenderingProperties.h"
 
 #include "ToolBox/BasicObjects.h"
 
@@ -568,6 +568,7 @@ class CTextureWaves : public CSimpleObject
 public:
 	CTextureWaves()
 	{
+		props = CRaptorDisplay::GetCurrentDisplay()->createRenderingProperties();
 		CRaptorDisplayConfig attrs;
 		attrs.x = 0;
 		attrs.y = 0;
@@ -581,17 +582,17 @@ public:
 
 		pBuffer = Raptor::glCreateDisplay(attrs);
 		RAPTOR_HANDLE handle;
-		pBuffer->glBindDisplay(handle);
+		pBuffer->glvkBindDisplay(handle);
 			
-			CRenderingProperties *rp = pBuffer->getRenderingProperties();
-			rp->setTexturing(CRenderingProperties::ENABLE);
-			rp->setDepthTest(CRenderingProperties::DISABLE);
-			rp->setCullFace(CRenderingProperties::DISABLE);
-			rp->setLighting(CRenderingProperties::DISABLE);
-			rp->clear(CGL_RGBA|CGL_DEPTH);
-			CViewPoint *vpoint = pBuffer->getViewPoint();
-			vpoint->setViewVolume(-1.0,1.0,-1.0,1.0,-1.0,1.0,CViewPoint::ORTHOGRAPHIC);
-			vpoint->glRenderViewPointModel();
+			IRenderingProperties &rp = pBuffer->getRenderingProperties();
+			rp.setTexturing(IRenderingProperties::ENABLE);
+			rp.setDepthTest(IRenderingProperties::DISABLE);
+			rp.setCullFace(IRenderingProperties::DISABLE);
+			rp.setLighting(IRenderingProperties::DISABLE);
+			rp.clear(CGL_RGBA|CGL_DEPTH);
+			IViewPoint *vpoint = pBuffer->getViewPoint();
+			vpoint->setViewVolume(-1.0,1.0,-1.0,1.0,-1.0,1.0,IViewPoint::ORTHOGRAPHIC);
+			vpoint->glvkRenderViewPointModel();
 			
 			pShader = new CShader("WATER_SHADER2");
 			CVertexShader *vp = pShader->glGetVertexShader();
@@ -600,7 +601,7 @@ public:
 			CFragmentShader *fp = pShader->glGetFragmentShader();
 			fp->glLoadProgram(waterFragments2.data());
 			fp->glStop();
-		pBuffer->glUnBindDisplay();
+		pBuffer->glvkUnBindDisplay();
 
 		CTextureFactory &factory = CTextureFactory::getDefaultFactory();
 		pMap = factory.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
@@ -646,9 +647,9 @@ public:
 			angles[i] = angle + baseAngle;
 		}
 
-        props.clear(0);
-        props.setTexturing(CRenderingProperties::ENABLE);
-        props.setLighting(CRenderingProperties::DISABLE);
+        props->clear(0);
+		props->setTexturing(IRenderingProperties::ENABLE);
+		props->setLighting(IRenderingProperties::DISABLE);
 	};
 
 	virtual ~CTextureWaves() 
@@ -659,7 +660,7 @@ public:
 	virtual void glRender(bool bShow)
 	{
 		RAPTOR_HANDLE handle;
-		pBuffer->glBindDisplay(handle);
+		pBuffer->glvkBindDisplay(handle);
 			CVertexShader *vp = pShader->glGetVertexShader();
 			float t = CTimeObject::GetGlobalTime();
 			GL_COORD_VERTEX v(	0.2 * t,
@@ -692,13 +693,13 @@ public:
 			glEnd();
 			vp->glStop();
 			fp->glStop();
-		pBuffer->glUnBindDisplay();
+		pBuffer->glvkUnBindDisplay();
 
 		pMap->glvkRender();
 
 		if (bShow)
 		{
-            props.glPushProperties();
+            props->glPushProperties();
 
 			glPushMatrix();
 				glTranslatef(0.0f,0.0f,-5.0f);
@@ -710,7 +711,7 @@ public:
 				glEnd();
 			glPopMatrix();
 
-            props.glPopProperties();
+            props->glPopProperties();
 		}
 	}
 
@@ -718,7 +719,7 @@ public:
 	{ return pMap; };
 
 private:
-    CRenderingProperties props;
+	IRenderingProperties *props;
 	CTextureObject	*pMap;
 	CTextureObject	*pCosTable;
 	CRaptorDisplay	*pBuffer;
@@ -826,17 +827,17 @@ void CVertexShadersDisplay::Init()
 	tus->setDiffuseMap(T);
 
 	//	Build scene
-	view_point = new CViewPoint();
-    view_point->setPosition(0.0,150.0,1500.0,CViewPoint::EYE);
-    view_point->setPosition(0.0,0.0,0.0,CViewPoint::TARGET);
-	view_point->setViewVolume(-1.33f,1.33f,-1.0f,1.0f,1.0f,10000,CViewPoint::PERSPECTIVE);
+	CRaptorDisplay* pDisplay = CRaptorDisplay::GetCurrentDisplay();
+	view_point = pDisplay->createViewPoint();
+    view_point->setPosition(0.0,150.0,1500.0,IViewPoint::EYE);
+    view_point->setPosition(0.0,0.0,0.0,IViewPoint::TARGET);
+	view_point->setViewVolume(-1.33f,1.33f,-1.0f,1.0f,1.0f,10000,IViewPoint::PERSPECTIVE);
 
 	C3DScene *pScene = new C3DScene("SHADER SCENE");
 	pScene->addObject(sky);
 	pScene->addObject(ground);
 	pScene->addObject(water);
 
-	CRaptorDisplay* pDisplay = CRaptorDisplay::GetCurrentDisplay();
 	pDisplay->addScene(pScene);
 }
 
@@ -851,10 +852,10 @@ void CVertexShadersDisplay::ReInit()
     CRaptorDisplay* const pDisplay = CRaptorDisplay::GetCurrentDisplay();
 	pDisplay->selectScene("SHADER SCENE");
 	pDisplay->setViewPoint(view_point);
-    CRenderingProperties *rp = pDisplay->getRenderingProperties();
-	rp->setWireframe(CRenderingProperties::DISABLE);
-    rp->setTexturing(CRenderingProperties::ENABLE);
-	rp->setLighting(CRenderingProperties::ENABLE);
+	IRenderingProperties &rp = pDisplay->getRenderingProperties();
+	rp.setWireframe(IRenderingProperties::DISABLE);
+	rp.setTexturing(IRenderingProperties::ENABLE);
+	rp.setLighting(IRenderingProperties::ENABLE);
 }
 
 

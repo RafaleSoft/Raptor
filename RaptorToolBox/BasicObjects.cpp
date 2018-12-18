@@ -2,7 +2,8 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "Subsys/CodeGeneration.h"
+
 
 #if !defined(AFX_BASICOBJECTS_H__2E0B717D_862A_4096_9D99_8EE0654F4678__INCLUDED_)
 	#include "BasicObjects.h"
@@ -420,7 +421,8 @@ void CBasicObjects::CGeoSphere::setDimensions(float radius,unsigned int nbMeridi
 	prim->setIndexes(NM+1,topfaces);
 	delete [] topfaces;
 
-	prim = this->createPrimitive(CGeometryPrimitive::QUAD);
+	//prim = this->createPrimitive(CGeometryPrimitive::QUAD);
+	prim = this->createPrimitive(CGeometryPrimitive::TRIANGLE_STRIP);
 	unsigned short *faces = new unsigned short[(nbMeridiens-1)*nbParallels*4];
 	unsigned int offset = 0;
 
@@ -430,8 +432,9 @@ void CBasicObjects::CGeoSphere::setDimensions(float radius,unsigned int nbMeridi
 		{
 			faces[offset++] = 1+(i*NM)+j;
 			faces[offset++] = 1+(i*NM)+j+NM;
+			faces[offset++] = 1 + (i*NM) + j + 1;
 			faces[offset++] = 1+(i*NM)+j+NM+1;
-			faces[offset++] = 1+(i*NM)+j+1;
+			//faces[offset++] = 1+(i*NM)+j+1;
 		}
 	}
 	

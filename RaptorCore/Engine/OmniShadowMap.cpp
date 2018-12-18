@@ -12,8 +12,8 @@
 #if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
     #include "System/RaptorErrorManager.h"
 #endif
-#if !defined(AFX_VIEWPOINT_H__82071851_A036_4311_81CB_01E7E25F19E1__INCLUDED_)
-	#include "ViewPoint.h"
+#if !defined(AFX_OPENGLVIEWPOINT_H__94BDC36B_27AB_41FC_848E_DD28D1BDFC13__INCLUDED_)
+	#include "Subsys/OpenGL/OpenGLViewPoint.h"
 #endif
 #if !defined(AFX_TEXTUREOBJECT_H__D32B6294_B42B_4E6F_AB73_13B33C544AD0__INCLUDED_)
 	#include "GLHierarchy/TextureObject.h"
@@ -116,8 +116,8 @@ bool COmniShadowMap::glInitEnvironment(unsigned int width,unsigned int height)
 
     // TODO: Should prevent non power of 2 texture sizes.
 
-	m_pViewPoint = new CViewPoint();
-	m_pViewPoint->setViewVolume(	-1.0,1.0,-1.0,1.0,1.0,100.0,CViewPoint::PERSPECTIVE);
+	m_pViewPoint = new COpenGLViewPoint();
+	m_pViewPoint->setViewVolume(	-1.0,1.0,-1.0,1.0,1.0,100.0,IViewPoint::PERSPECTIVE);
 	m_pViewPoint->registerDestruction(m_pObserver);
 
     //  Square coordinates are mandatory
@@ -141,11 +141,11 @@ bool COmniShadowMap::glInitEnvironment(unsigned int width,unsigned int height)
     m_lightProjection.Ident();
 
 	RAPTOR_HANDLE display;
-	m_pShadowCubeMap->glBindDisplay(display);
+	m_pShadowCubeMap->glvkBindDisplay(display);
 	m_pShadowCubeMap->setViewPoint(NULL);
-    m_pViewPoint->glRenderViewPointModel();
-	m_pViewPoint->glRender();
-	m_pShadowCubeMap->glUnBindDisplay();
+    m_pViewPoint->glvkRenderViewPointModel();
+	m_pViewPoint->glvkRender();
+	m_pShadowCubeMap->glvkUnBindDisplay();
 
 	CTextureFactory &factory = CTextureFactory::getDefaultFactory();
     m_pShadowTexture = factory.glCreateCubemap(ITextureObject::CGL_COLOR24_ALPHA,
@@ -261,7 +261,7 @@ void COmniShadowMap::glRenderMap(const CLight* currentLight,const vector<C3DScen
     GL_COORD_VERTEX coord =  currentLight->getLightPosition();
 
     RAPTOR_HANDLE display;
-	m_pShadowCubeMap->glBindDisplay(display);
+	m_pShadowCubeMap->glvkBindDisplay(display);
     //glColorMask(GL_FALSE,GL_FALSE,GL_FALSE,GL_FALSE);
 
 	unsigned int cubefaces[6] = {	CTextureObject::CGL_CUBEMAP_NZ,
@@ -291,7 +291,7 @@ void COmniShadowMap::glRenderMap(const CLight* currentLight,const vector<C3DScen
      for (unsigned int i=0 ; i<6 ; i++)
     {
         RAPTOR_HANDLE _display(cubefaces[i],0);
-	    m_pShadowCubeMap->glBindDisplay(_display);
+	    m_pShadowCubeMap->glvkBindDisplay(_display);
 
         glLoadIdentity();
         glRotatef(rotates[i][0],rotates[i][1],rotates[i][2],rotates[i][3]);
@@ -315,7 +315,7 @@ void COmniShadowMap::glRenderMap(const CLight* currentLight,const vector<C3DScen
    //m_pVSShadowMap->Stop();
    //m_pFSShadowMap->Stop();
 
-    m_pShadowCubeMap->glUnBindDisplay();
+	 m_pShadowCubeMap->glvkUnBindDisplay();
 #endif
 }
 
@@ -337,7 +337,7 @@ void COmniShadowMap::glRenderShadow(const vector<C3DSceneObject*>& objects)
 
 		RAPTOR_HANDLE renderTexture;
 		renderTexture.hClass = CTextureFactory::CTextureFactoryClassID::GetClassId().ID();
-		m_pShadowCubeMap->glBindDisplay(renderTexture);
+		m_pShadowCubeMap->glvkBindDisplay(renderTexture);
 	}
 
     glActiveTextureARB(previousTMU);
@@ -348,9 +348,7 @@ void COmniShadowMap::glRenderShadow(const vector<C3DSceneObject*>& objects)
 	glActiveTextureARB(GL_TEXTURE1_ARB);
 
 	if (m_pShadowTexture != NULL)
-	{
-		m_pShadowCubeMap->glUnBindDisplay();
-	}
+		m_pShadowCubeMap->glvkUnBindDisplay();
     
 	glDisable(GL_TEXTURE_CUBE_MAP_ARB);
 	glActiveTextureARB(previousTMU);
@@ -366,7 +364,7 @@ void COmniShadowMap::glRenderTexture(void)
 
 	RAPTOR_HANDLE renderTexture;
 	renderTexture.hClass = CTextureFactory::CTextureFactoryClassID::GetClassId().ID();
-	m_pShadowCubeMap->glBindDisplay(renderTexture);
+	m_pShadowCubeMap->glvkBindDisplay(renderTexture);
 #endif
 }
 

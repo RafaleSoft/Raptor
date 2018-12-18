@@ -29,7 +29,7 @@
 #include "Engine/ViewModifier.h"
 #include "Engine/LightModifier.h"
 #include "Engine/ParticleManager.h"
-#include "GLHierarchy/RenderingProperties.h"
+#include "GLHierarchy/IRenderingProperties.h"
 #include "System/RaptorMessages.h"
 #include "System/RaptorIO.h"
 #include "Engine/ViewPoint.h"
@@ -579,6 +579,8 @@ void CObjectStore::LoadModels(void)
 
     C3DSet* root = NULL;
     CRaptorToolBox::load3DStudioScene(MODELS,root,&options);
+	if (NULL == root)
+		return;
 
 	m_groundTile = new C3DSet("GoundTile_Set");
 	m_groundTileLow = new C3DSet("GoundTile_SetLow");
@@ -746,10 +748,11 @@ void CObjectStore::BuildScene(void)
         m_pTranslator = CRaptorIO::Create("XMLIO",CRaptorIO::DISK_READ,CRaptorIO::ASCII_XML);
     CRaptorDisplay * const pCurrentDisplay = CRaptorDisplay::GetCurrentDisplay();
 
-	char shemaLocation[MAX_PATH];
-	strcpy(shemaLocation,getenv("RAPTOR_ROOT"));
-	strcat(shemaLocation,"/Redist/bin/Raptor.xsd");
-	m_pTranslator->parse(shemaLocation,0);
+	//char shemaLocation[MAX_PATH];
+	stringstream schemaLocation;
+	schemaLocation << getenv("RAPTOR_ROOT");
+	schemaLocation << "/Redist/bin/Raptor.xsd";
+	m_pTranslator->parse(schemaLocation.str().c_str(), 0);
     m_pTranslator->parse("Demo.xml",0);
 
     string name;

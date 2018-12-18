@@ -7,9 +7,9 @@
 #include "GLObjectViewerDoc.h"
 #include "GLObjectViewerView.h"
 
-#include "Engine/ViewPoint.h"
+#include "Engine/IViewPoint.h"
 #include "System/RaptorDisplay.h"
-#include "GLHierarchy/RenderingProperties.h"
+#include "GLHierarchy/IRenderingProperties.h"
 
 
 
@@ -84,10 +84,10 @@ void CGLObjectViewerView::setBBoxes(bool bboxes)
 void CGLObjectViewerView::setWireFrame(bool wireframe)
 {
     CRaptorDisplay *pDisplay = getDisplay();
-    CRenderingProperties *props = pDisplay->getRenderingProperties();
-    props->setWireframe(wireframe ? 
-                        CRenderingProperties::ENABLE : 
-                        CRenderingProperties::DISABLE);
+	IRenderingProperties &props = pDisplay->getRenderingProperties();
+    props.setWireframe(wireframe ? 
+					   IRenderingProperties::ENABLE :
+					   IRenderingProperties::DISABLE);
 
     InvalidateRect(NULL);
 }
@@ -96,10 +96,10 @@ void CGLObjectViewerView::setWireFrame(bool wireframe)
 void CGLObjectViewerView::setBackFaces(bool backfaces)
 {
     CRaptorDisplay *pDisplay = getDisplay();
-    CRenderingProperties *props = pDisplay->getRenderingProperties();
-    props->setCullFace(	backfaces ? 
-                        CRenderingProperties::DISABLE : 
-                        CRenderingProperties::ENABLE);
+	IRenderingProperties &props = pDisplay->getRenderingProperties();
+    props.setCullFace(backfaces ? 
+					  IRenderingProperties::DISABLE :
+					  IRenderingProperties::ENABLE);
 
     InvalidateRect(NULL);
 }
@@ -108,10 +108,10 @@ void CGLObjectViewerView::setBackFaces(bool backfaces)
 void CGLObjectViewerView::setLighting(bool lighting)
 {
 	CRaptorDisplay *pDisplay = getDisplay();
-    CRenderingProperties *props = pDisplay->getRenderingProperties();
-    props->setLighting(	lighting ? 
-                        CRenderingProperties::ENABLE : 
-                        CRenderingProperties::DISABLE);
+	IRenderingProperties &props = pDisplay->getRenderingProperties();
+    props.setLighting(lighting ? 
+					  IRenderingProperties::ENABLE :
+					  IRenderingProperties::DISABLE);
 
     InvalidateRect(NULL);
 }
@@ -119,10 +119,10 @@ void CGLObjectViewerView::setLighting(bool lighting)
 void CGLObjectViewerView::setTexturing(bool texturing)
 {
 	CRaptorDisplay *pDisplay = getDisplay();
-    CRenderingProperties *props = pDisplay->getRenderingProperties();
-    props->setTexturing(texturing ? 
-                        CRenderingProperties::ENABLE : 
-                        CRenderingProperties::DISABLE);
+	IRenderingProperties &props = pDisplay->getRenderingProperties();
+    props.setTexturing(texturing ? 
+					   IRenderingProperties::ENABLE :
+					   IRenderingProperties::DISABLE);
 
     InvalidateRect(NULL);
 }
@@ -210,7 +210,7 @@ void CGLObjectViewerView::OnMouseMove(UINT nFlags, CPoint point)
 BOOL CGLObjectViewerView::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) 
 {
 	CRaptorDisplay *pDisplay = getDisplay();
-	CViewPoint * const vp = pDisplay->getViewPoint();
+	IViewPoint * const vp = pDisplay->getViewPoint();
 	if (zDelta < 0)
         vp->translate(0.0f,0.0f,-1.0f);
     else

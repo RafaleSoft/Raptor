@@ -27,6 +27,9 @@
 #if !defined(AFX_RAPTORVULKANSHADER_H__C188550F_1D1C_4531_B0A0_727CE9FF9450__INCLUDED_)
 	#include "Subsys/Vulkan/VulkanShader.h"
 #endif
+#if !defined(AFX_VULKANVIEWPOINT_H__08D29395_9883_45F8_AE51_5174BD6BC19B__INCLUDED_)
+	#include "Subsys/Vulkan/VulkanViewPoint.h"
+#endif
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 	#if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
 		#include "System/RaptorErrorManager.h"
@@ -44,6 +47,9 @@
 #if !defined(AFX_GEOMETRY_H__B42ABB87_80E8_11D3_97C2_DE5C28000000__INCLUDED_)
 	#include "GLHierarchy/Geometry.h"
 #endif
+#if !defined(AFX_IRENDERINGPROPERTIES_H__634BCF2B_84B4_47F2_B460_D7FDC0F3B698__INCLUDED_)
+	#include "GLHierarchy/IRenderingProperties.h"
+#endif
 
 
 RAPTOR_NAMESPACE_BEGIN
@@ -54,7 +60,32 @@ const CPersistence::CPersistenceClassID& CRaptorVulkanDisplay::CRaptorVulkanDisp
 	return bufferID;
 }
 
+class VulkanRP : public IRenderingProperties
+{
+public:
+	VulkanRP() {};
+	virtual void glPushProperties(void)
+	{
+		if ((m_pCurrent != this) && (m_pPrevious == NULL))
+		{
+			m_pPrevious = m_pCurrent;
+			m_pCurrent = this;
+		}
+	};
+	virtual void glPopProperties(void)
+	{
+		if (m_pCurrent == this)
+		{
+			m_pCurrent = m_pPrevious;
+			m_pPrevious = NULL;
+		}
+	};
+	virtual PROPERTY_SETTING getCurrentTexturing(void) const { return IGNORE_PROPERTY; };
+	virtual PROPERTY_SETTING getCurrentLighting(void) const { return IGNORE_PROPERTY; };
+};
+
 RAPTOR_NAMESPACE_END
+
 
 
 RAPTOR_NAMESPACE
@@ -72,6 +103,8 @@ CRaptorVulkanDisplay::CRaptorVulkanDisplay(const CRaptorDisplayConfig& pcs)
 	m_pTAllocator(NULL), m_pTOldAllocator(NULL),
 	m_pUAllocator(NULL), m_pUOldAllocator(NULL)
 {
+	setViewPoint(createViewPoint());
+	setRenderingProperties(new VulkanRP());
 }
 
 CRaptorVulkanDisplay::~CRaptorVulkanDisplay(void)
@@ -92,9 +125,17 @@ CRaptorVulkanDisplay::~CRaptorVulkanDisplay(void)
 		delete m_pUAllocator;
 
 
-	glUnBindDisplay();
+	glvkUnBindDisplay();
 
 	CContextManager::GetInstance()->vkDestroyContext(m_context);
+}
+
+IViewPoint *const CRaptorVulkanDisplay::createViewPoint(void) const
+{
+	if (NULL != getRootScene())
+		return new CVulkanViewPoint(getRootScene()->getName() + "_VIEWPOINT");
+	else
+		return new CVulkanViewPoint("RAPTORVULKANDISPLAY_VIEWPOINT");
 }
 
 void CRaptorVulkanDisplay::glResize(unsigned int sx,unsigned int sy,
@@ -186,7 +227,7 @@ void CRaptorVulkanDisplay::glGenerate(CTextureObject* )
 {
 }
 
-bool CRaptorVulkanDisplay::glBindDisplay(const RAPTOR_HANDLE& device)
+bool CRaptorVulkanDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
 {
 	if (device.handle != CGL_NULL)
 	{
@@ -232,10 +273,10 @@ bool CRaptorVulkanDisplay::glBindDisplay(const RAPTOR_HANDLE& device)
 		}
 	}
 
-	return true; // CRaptorDisplay::glBindDisplay(device);
+	return CRaptorDisplay::glvkBindDisplay(device);
 }
 
-bool CRaptorVulkanDisplay::glUnBindDisplay(void)
+bool CRaptorVulkanDisplay::glvkUnBindDisplay(void)
 {
 	CGeometryAllocator::SetCurrentInstance(m_pGOldAllocator);
 	m_pGOldAllocator = NULL;
@@ -249,7 +290,7 @@ bool CRaptorVulkanDisplay::glUnBindDisplay(void)
 	RAPTOR_HANDLE device;
 	manager->vkMakeCurrentContext(device, CContextManager::INVALID_CONTEXT);
 
-	return true; //CRaptorDisplay::glUnBindDisplay();
+	return CRaptorDisplay::glvkUnBindDisplay();
 }
 
 

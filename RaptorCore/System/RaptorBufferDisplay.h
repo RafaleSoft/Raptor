@@ -28,10 +28,10 @@ public:
 	virtual ~CRaptorBufferDisplay();
 
 	//! see base class
-	virtual bool glBindDisplay(const RAPTOR_HANDLE& device);
+	virtual bool glvkBindDisplay(const RAPTOR_HANDLE& device);
 
 	//! see base class
-	virtual bool glUnBindDisplay(void);
+	virtual bool glvkUnBindDisplay(void);
 
 	//! see base class
 	virtual void glResize(unsigned int sx,unsigned int sy,unsigned int ox,unsigned int oy);

@@ -38,7 +38,7 @@ public:
 		ICompressor() {};
 		virtual ~ICompressor() {};
 		ICompressor(const ICompressor&) {};
-		ICompressor& operator=(const ICompressor&) {};
+		ICompressor& operator=(const ICompressor&) { return *this;  };
 	};
 
 	//!	Defines the texel byte order format used by texture factories.

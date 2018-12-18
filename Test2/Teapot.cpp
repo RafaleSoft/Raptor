@@ -13,8 +13,8 @@
 #include "System/Raptor.h"
 #include "System/RaptorMessages.h"
 #include "Engine/Animator.h"
-#include "Engine/ViewPoint.h"
-#include "GLHierarchy/RenderingProperties.h"
+#include "Engine/IViewPoint.h"
+#include "GLHierarchy/IRenderingProperties.h"
 #include "GLHierarchy/TextureSet.h"
 #include "GLHierarchy/TextureFactory.h"
 #include "GLHierarchy/TextureFactoryConfig.h"
@@ -161,9 +161,9 @@ void CTeapot::GLInitContext()
 	}
 
 	CRaptorDisplay *pDisplay = CRaptorDisplay::GetCurrentDisplay();
-	CViewPoint *vp = pDisplay->getViewPoint();
-	vp->setViewVolume(-1.33f,1.33f,-1.0f,1.0f,1.0f,10000,CViewPoint::PERSPECTIVE);
-    vp->glRenderViewPointModel();   // switch demo removes the view  point, so render here and forget
+	IViewPoint *vp = pDisplay->getViewPoint();
+	vp->setViewVolume(-1.33f,1.33f,-1.0f,1.0f,1.0f,10000,IViewPoint::PERSPECTIVE);
+    vp->glvkRenderViewPointModel();   // switch demo removes the view  point, so render here and forget
 	pDisplay->setViewPoint(vp);
 
 	CRaptorToolBox::SCENE_LOADER_OPTIONS options;
@@ -255,8 +255,8 @@ void CTeapot::GLInitContext()
 	displays[CTest2App::VRTXSHADERSDEMO] = &vertexShadersDisplay;
 
 	m_globalDisplay = CRaptorDisplay::GetCurrentDisplay();
-	CRenderingProperties *props = m_globalDisplay->getRenderingProperties();
-	props->setMultisampling(CRenderingProperties::ENABLE);
+	IRenderingProperties &props = m_globalDisplay->getRenderingProperties();
+	props.setMultisampling(IRenderingProperties::ENABLE);
 
 	SwitchDemo(numdemo);
 }

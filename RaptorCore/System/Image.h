@@ -63,7 +63,7 @@ public:
     protected:
         IImageIO() {};
         IImageIO(const IImageIO&) {};
-        IImageIO& operator=(const IImageIO&) {};
+		IImageIO& operator=(const IImageIO&) { return *this; };
     };
 
     //! This class defines an Image Operation service. The user can extend Raptor texture loading capabilities
@@ -103,7 +103,7 @@ public:
     protected:
         IImageOP() {};
         IImageOP(const IImageOP&) {}
-        IImageOP& operator=(const IImageOP&) {};
+		IImageOP& operator=(const IImageOP&) { return *this;  };
     };
 
 

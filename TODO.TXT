@@ -1,13 +1,13 @@
 - BasicObjects:
 	- Ajouter un TextureQuad le plus simple possible
 
+- CRaptorDisplay:
+	- déplacer les fps et timings dans CRaptorDisplayConfig ( ==> glQueryStatus )
+
 - CContextManager:
 	factoriser getPresentationSuppotQueueFamily et vk_ctx.pSurface->supportPresentation(physical, numQueue):
 		passer le physical device à CVulkanSurface => renvoyer la queue qui supporte WSI et presentation sur la surface.
 		=> Passer pExtensions au constructeur.
-
-- CTextureFactoryConfig:
-	appel a CTextureFactoryConfig::glInit() à partir de glInitRaptor => CVulkanDisplay non initialisé (besoin d'accéder aux properties)
 
 - CVulkanMemory:
 	- initialiser une bloc mémoire pour l'application (vertex et index buffers bindés sur la même allocation)
@@ -24,16 +24,11 @@
 - CHostMemoryManager:
 	- ajouter capacité allocations/release dans un bloc prédéfini (data pool)
 
-- CGeometryAllocator:
-	- currentAddress : utilisé en unsigned int => bug si uint64_t
-
 - CRaptorRenderBufferDisplay:
 	- mettre au point le format CGL_FLOAT_32 (creation des textures attachées)
 	- glGenerate : la texture est 'unbindee', or si appelé depuis CTextureObject::glRender ==> ?
 	
-- CGeometry / CGeometryPrimitive:
-	- créer un mode"BigGeometry" avec des indices de type uint32_t
-		
+	
 - supprimer des "friend" ?
 	p.ex. dans CRaptorDisplay et sous classes ...
 

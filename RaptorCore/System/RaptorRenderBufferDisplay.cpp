@@ -28,8 +28,8 @@
 	#include "GLHierarchy/TextureSet.h"
 #endif
 
-#if !defined(AFX_VIEWPOINT_H__82071851_A036_4311_81CB_01E7E25F19E1__INCLUDED_)
-	#include "Engine/ViewPoint.h"
+#if !defined(AFX_IVIEWPOINT_H__82071851_A036_4311_81CB_01E7E25F19E1__INCLUDED_)
+	#include "Engine/IViewPoint.h"
 #endif
 
 #if !defined(AFX_GEOMETRYALLOCATOR_H__802B3C7A_43F7_46B2_A79E_DDDC9012D371__INCLUDED_)
@@ -66,7 +66,7 @@ CRaptorRenderBufferDisplay::CRaptorRenderBufferDisplay(const CRaptorDisplayConfi
 CRaptorRenderBufferDisplay::~CRaptorRenderBufferDisplay()
 {
     //  Unbind, in case it is forgotten by the user.
-    glUnBindDisplay();
+    glvkUnBindDisplay();
 
 	if (m_pAttachments != NULL)
 	{
@@ -459,7 +459,7 @@ bool CRaptorRenderBufferDisplay::createFrameBuffer(void)
 }
 
 
-bool CRaptorRenderBufferDisplay::glBindDisplay(const RAPTOR_HANDLE& device)
+bool CRaptorRenderBufferDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
 {
 	if (device.hClass == CTextureSet::CTextureSetClassID::GetClassId().ID())
 	{
@@ -503,19 +503,19 @@ bool CRaptorRenderBufferDisplay::glBindDisplay(const RAPTOR_HANDLE& device)
 	glPushMatrix();
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
-	CViewPoint *vp = getViewPoint();
+	IViewPoint *vp = getViewPoint();
 	if (vp != NULL)
-		vp->glRenderViewPointModel();
+		vp->glvkRenderViewPointModel();
 
 	RAPTOR_HANDLE noDevice;
-	return CRaptorDisplay::glBindDisplay(noDevice);
+	return CRaptorDisplay::glvkBindDisplay(noDevice);
 #else
 	return false;
 #endif
 }
 
 
-bool CRaptorRenderBufferDisplay::glUnBindDisplay(void)
+bool CRaptorRenderBufferDisplay::glvkUnBindDisplay(void)
 {
 	if (m_framebuffer == 0)
 		return false;
@@ -523,7 +523,7 @@ bool CRaptorRenderBufferDisplay::glUnBindDisplay(void)
 #if defined(GL_EXT_framebuffer_object)
 	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 
-	bool res = CRaptorDisplay::glUnBindDisplay();
+	bool res = CRaptorDisplay::glvkUnBindDisplay();
 	glPopAttrib();	// Viewport
 	glMatrixMode(GL_PROJECTION);
 	glPopMatrix();
@@ -582,7 +582,7 @@ void CRaptorRenderBufferDisplay::glGenerate(CTextureObject* T)
 	//	Render the display after texture is attached
 	//	because rendering properties are applied now ( e.g. glClear )
 	RAPTOR_HANDLE noDevice;
-	CRaptorDisplay::glBindDisplay(noDevice);
+	CRaptorDisplay::glvkBindDisplay(noDevice);
 	glPushAttrib(GL_VIEWPORT_BIT);
 	//glViewport(cs.x,cs.y,cs.width,cs.height);
 	glViewport(0,0,cs.width,cs.height); // Viewport is relative to window !!!
@@ -590,7 +590,7 @@ void CRaptorRenderBufferDisplay::glGenerate(CTextureObject* T)
 	glRender();
 
 	glPopAttrib();
-	CRaptorDisplay::glUnBindDisplay();
+	CRaptorDisplay::glvkUnBindDisplay();
 
 	pExtensions->glFramebufferTexture2DEXT(	GL_FRAMEBUFFER_EXT, 
 											GL_COLOR_ATTACHMENT0_EXT,
@@ -634,11 +634,11 @@ void CRaptorRenderBufferDisplay::glResize(unsigned int sx,unsigned int sy,unsign
     cs.height = sy;
 
     RAPTOR_HANDLE noDevice;
-    glBindDisplay(noDevice);
+	glvkBindDisplay(noDevice);
 
 	// Render buffers are recreated, now restore previous state.
 	if (binding == 0)
-		glUnBindDisplay();
+		glvkUnBindDisplay();
 	else if (!bindSelf)
 	{
 		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();

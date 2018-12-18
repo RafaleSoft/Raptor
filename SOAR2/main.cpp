@@ -59,7 +59,7 @@ int main(int argc, char* argv[])
 
     CSOARDoc *pDoc = new CSOARDoc(wnd,pDisplay);
 
-    bool res = pDisplay->glBindDisplay(wnd);
+	bool res = pDisplay->glvkBindDisplay(wnd);
     if (res)
 	{
         pDoc->GLInitContext(argc,argv);
@@ -70,7 +70,7 @@ int main(int argc, char* argv[])
         pConsole->activateConsole(true);
 		//pConsole->setColor(GL_RGBA_COLOR(1.0f,1.0f,1.0f,1.0f));
 
-		pDisplay->glUnBindDisplay();
+		pDisplay->glvkUnBindDisplay();
 	}
 
     app->run();

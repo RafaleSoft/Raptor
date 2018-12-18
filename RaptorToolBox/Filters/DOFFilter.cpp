@@ -2,7 +2,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
+#include "Subsys/CodeGeneration.h"
 
 #if !defined(AFX_TEXTUREFACTORY_H__1B470EC4_4B68_11D3_9142_9A502CBADC6B__INCLUDED_)
 	#include "GLHierarchy/TextureFactory.h"
@@ -28,8 +28,8 @@
 #if !defined(AFX_SHADER_H__4D405EC2_7151_465D_86B6_1CA99B906777__INCLUDED_)
 	#include "GLHierarchy/Shader.h"
 #endif
-#if !defined(AFX_RENDERINGPROPERTIES_H__634BCF2B_84B4_47F2_B460_D7FDC0F3B698__INCLUDED_)
-	#include "GLHierarchy/RenderingProperties.h"
+#if !defined(AFX_IRENDERINGPROPERTIES_H__634BCF2B_84B4_47F2_B460_D7FDC0F3B698__INCLUDED_)
+	#include "GLHierarchy/IRenderingProperties.h"
 #endif
 #if !defined(AFX_DOFFILTER_H__A4FA0FE9_04AA_4887_9B4A_3CFAF930D840__INCLUDED_)
     #include "DOFFilter.h"
@@ -297,7 +297,7 @@ void CDOFFilter::glRenderFilter()
 
     //  Render X-blur in pixel buffer
     RAPTOR_HANDLE noDevice;
-    tmpDisplay->glBindDisplay(noDevice);
+	tmpDisplay->glvkBindDisplay(noDevice);
     glActiveTextureARB(GL_TEXTURE1_ARB);
     glEnable(GL_TEXTURE_2D);
 	depthInput->glvkRender();
@@ -317,12 +317,12 @@ void CDOFFilter::glRenderFilter()
     glDrawBuffer();
 	DOFShader->glStop();
 
-    tmpDisplay->glUnBindDisplay();
+	tmpDisplay->glvkUnBindDisplay();
 
 	for (unsigned int i=2;i<=m_nbBlur;i++)
 	{
 		//  Render Y-blur in current buffer
-		tmpDisplay2->glBindDisplay(noDevice);
+		tmpDisplay2->glvkBindDisplay(noDevice);
 		tmpTexture->glvkRender();
 
 	#if defined(GL_ARB_vertex_shader)
@@ -336,10 +336,10 @@ void CDOFFilter::glRenderFilter()
 		DOFShader->glRender();
 		glDrawBuffer();
 		DOFShader->glStop();
-		tmpDisplay2->glUnBindDisplay();
+		tmpDisplay2->glvkUnBindDisplay();
 
 		//  Render X-blur in pixel buffer
-		tmpDisplay->glBindDisplay(noDevice);
+		tmpDisplay->glvkBindDisplay(noDevice);
 		tmpTexture2->glvkRender();
 
 #if defined(GL_ARB_vertex_shader)
@@ -354,7 +354,7 @@ void CDOFFilter::glRenderFilter()
 		glDrawBuffer();
 		DOFShader->glStop();
 
-		tmpDisplay->glUnBindDisplay();
+		tmpDisplay->glvkUnBindDisplay();
 	}
 }
 
@@ -455,27 +455,27 @@ bool CDOFFilter::glInitFilter(void)
 	}
 
     tmpDisplay = Raptor::glCreateDisplay(state);
-    CRenderingProperties *rp = tmpDisplay->getRenderingProperties();
-    rp->setTexturing(CRenderingProperties::ENABLE);
-    rp->setCullFace(CRenderingProperties::DISABLE);
-    rp->setDepthTest(CRenderingProperties::DISABLE);
-    rp->setLighting(CRenderingProperties::DISABLE);
-    rp->clear(CGL_NULL);
+	IRenderingProperties &rp = tmpDisplay->getRenderingProperties();
+	rp.setTexturing(IRenderingProperties::ENABLE);
+	rp.setCullFace(IRenderingProperties::DISABLE);
+	rp.setDepthTest(IRenderingProperties::DISABLE);
+	rp.setLighting(IRenderingProperties::DISABLE);
+    rp.clear(CGL_NULL);
     tmpDisplay->setViewPoint(NULL);
 
 	tmpDisplay2 = Raptor::glCreateDisplay(state);
-    rp = tmpDisplay2->getRenderingProperties();
-    rp->setTexturing(CRenderingProperties::ENABLE);
-    rp->setCullFace(CRenderingProperties::DISABLE);
-    rp->setDepthTest(CRenderingProperties::DISABLE);
-    rp->setLighting(CRenderingProperties::DISABLE);
-    rp->clear(CGL_NULL);
+	IRenderingProperties &rp2 = tmpDisplay2->getRenderingProperties();
+	rp2.setTexturing(IRenderingProperties::ENABLE);
+	rp2.setCullFace(IRenderingProperties::DISABLE);
+	rp2.setDepthTest(IRenderingProperties::DISABLE);
+	rp2.setLighting(IRenderingProperties::DISABLE);
+    rp2.clear(CGL_NULL);
     tmpDisplay2->setViewPoint(NULL);
 
 	if (m_fModel == RENDER_BUFFER)
 	{
-		tmpDisplay->glBindDisplay(*m_pRenderTextures);
-		tmpDisplay2->glBindDisplay(*m_pRenderTextures2);
+		tmpDisplay->glvkBindDisplay(*m_pRenderTextures);
+		tmpDisplay2->glvkBindDisplay(*m_pRenderTextures2);
 	}
 
 	if (m_fModel == RENDER_TEXTURE)

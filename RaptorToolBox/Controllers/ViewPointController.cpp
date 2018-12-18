@@ -1,4 +1,3 @@
-#include "StdAfx.h"
 #include "Subsys/CodeGeneration.h"
 
 #if !defined(AFX_CONTROLLERS_H__DCDB86E4_E50D_4B97_BBE2_AD0425D0D925__INCLUDED_)
@@ -7,7 +6,7 @@
 
 
 
-CViewPointController::CViewPointController(CViewPoint *pVP)
+CViewPointController::CViewPointController(IViewPoint *pVP)
 	:m_pViewPoint(pVP),
 	oldxpos(-1),oldypos(-1)
 {

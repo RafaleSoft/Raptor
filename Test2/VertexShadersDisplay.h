@@ -36,7 +36,7 @@ private:
 
 	bool			showBump;
 
-	CViewPoint		*view_point;
+	IViewPoint		*view_point;
 
 	ShaderModifier	*shaderModifier;
 	CLight			*pLight;

@@ -17,6 +17,12 @@ using namespace BuilderNet;
 static CGLBuilder	builder;
 typedef const char * (APIENTRY * pfnc)(HDC hdc);
 
+// tip to solve warning LNK4248: unresolved typeref token:
+//	the types below are only predeclarations in vulkan.h
+//	so here, define only the name ...
+struct VkPhysicalDevice_T {};
+struct VkInstance_T {};
+
 int glCreateContext(HDC& hdc,HGLRC& glhrc)
 {
 	DWORD	flags;

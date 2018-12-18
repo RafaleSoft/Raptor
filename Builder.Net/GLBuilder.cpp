@@ -56,13 +56,15 @@ static const char *STL =
     #else\n\
         #define RAPTOR_TYPENAME\n\
     #endif\n\
-#else\n\
+	#define RAPTOR_INTERFACE __interface\n\
+#else // Linux environment \n\
 	#include <stdlib.h>\n\
 	#define RAPTOR_API\n\
     #define RAPTOR_FASTCALL\n\
     #define RAPTOR_CCALL\n\
     #define RAPTOR_APICALL\n\
     #define RAPTOR_TYPENAME typename\n\
+	#define RAPTOR_INTERFACE class\n\
 #endif\n\n\
 #if defined(_WIN32) \n\
     #pragma warning(disable: 4786)    //  dbug info too large \n\
@@ -110,6 +112,11 @@ RAPTOR_NAMESPACE_END\n\
 #define DEFAULT_LINKAGE \n\
 #define STATIC_LINKAGE        static \n\
 #define EXTERN_LINKAGE      extern \n\
+\n\n\
+// define types for compatibility with Android OpenGLES \n\
+#if defined(_ANDROID) \n\
+#define GLdouble double \n\
+#endif\n\n\
 \n";
 
 static const char *NAMESPACE =
