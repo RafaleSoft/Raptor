@@ -251,7 +251,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\SIMD\BVector.h" />
-    <ClInclude Include="..\..\SIMD\FVector.h" />
     <ClInclude Include="..\..\SIMD\GenericAlignedMatrix.h" />
     <ClInclude Include="..\..\SIMD\GenericAlignedVector.h" />
     <ClInclude Include="..\..\SIMD\GenericMatrix.h" />

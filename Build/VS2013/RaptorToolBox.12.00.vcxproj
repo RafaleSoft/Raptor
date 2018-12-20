@@ -113,7 +113,7 @@
       <PrecompiledHeaderFile>Subsys\CodeGeneration.h</PrecompiledHeaderFile>
       <WarningLevel>Level4</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <DebugInformationFormat>None</DebugInformationFormat>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -169,13 +169,13 @@ copy "%PNGLIB_BIN_PATH%\libpng.dll" "%RAPTOR_ROOT%\Redist\bin\"
       <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Full</Optimization>
       <AdditionalIncludeDirectories>$(SolutionDir)\$(ProjectName);$(ZLIB_INCLUDE_PATH);$(PNGLIB_INCLUDE_PATH);$(OPENEXRLIB_INCLUDE_PATH);$(TIFFLIB_INCLUDE_PATH);$(JPEGLIB_INCLUDE_PATH);$(RAPTOR_ROOT)\Redist\Include;$(VULKAN_INCLUDE_PATH);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;EXPORT_RAPTOR_CORE;ZLIB_WINAPI; ZLIB_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;EXPORT_RAPTOR_CORE;ZLIB_WINAPI; ZLIB_DLL;PNG_USE_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>Subsys\CodeGeneration.h</PrecompiledHeaderFile>
       <WarningLevel>Level4</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <DebugInformationFormat>None</DebugInformationFormat>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -450,7 +450,6 @@ copy OpenEXRLib\bin\vc9\zdll.dll "%RAPTOR_ROOT%\Redist\bin\zlib1.dll"
     <ClInclude Include="..\..\RaptorToolBox\Loaders\OBJScript_yacc.h" />
     <ClInclude Include="..\..\RaptorToolBox\ParticleCompute.h" />
     <ClInclude Include="..\..\RaptorToolBox\RaptorToolBox.h" />
-    <ClInclude Include="..\..\RaptorToolBox\Resource.h" />
     <ClInclude Include="..\..\RaptorToolBox\Streaming.h" />
     <ClInclude Include="..\..\RaptorToolBox\Streaming\AVIStreaming.h" />
     <ClInclude Include="..\..\RaptorToolBox\Streaming\WMVStreaming.h" />

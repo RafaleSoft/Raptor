@@ -800,7 +800,6 @@ copy $(SolutionDir)\$(ProjectName)\Subsys\CodeGeneration.h "%RAPTOR_ROOT%\Redist
     <ClInclude Include="..\..\RaptorCore\SSE_Engine\SSE_3DEngine.h" />
     <ClInclude Include="..\..\RaptorCore\SSE_Engine\SSE_BoundingBox.h" />
     <ClInclude Include="..\..\RaptorCore\SSE_Engine\SSE_GLLayer.h" />
-    <ClInclude Include="..\..\RaptorCore\SSE_Engine\SSE_Object3DContour.h" />
     <ClInclude Include="..\..\RaptorCore\StdAfx.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\3DEngineAttributes.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\3DSceneAttributes.h" />

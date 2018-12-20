@@ -330,7 +330,6 @@
   <ItemGroup>
     <ClInclude Include="..\..\Demo\Demo.h" />
     <ClInclude Include="..\..\Demo\DemoDoc.h" />
-    <ClInclude Include="..\..\Demo\DemoMode.h" />
     <ClInclude Include="..\..\Demo\ObjectStore.h" />
     <ClInclude Include="..\..\Demo\StdAfx.h" />
   </ItemGroup>

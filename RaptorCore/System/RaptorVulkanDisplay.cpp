@@ -273,7 +273,7 @@ bool CRaptorVulkanDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
 		}
 	}
 
-	return CRaptorDisplay::glvkBindDisplay(device);
+	return true; // CRaptorDisplay::glvkBindDisplay(device);
 }
 
 bool CRaptorVulkanDisplay::glvkUnBindDisplay(void)
@@ -290,7 +290,7 @@ bool CRaptorVulkanDisplay::glvkUnBindDisplay(void)
 	RAPTOR_HANDLE device;
 	manager->vkMakeCurrentContext(device, CContextManager::INVALID_CONTEXT);
 
-	return CRaptorDisplay::glvkUnBindDisplay();
+	return true; // CRaptorDisplay::glvkUnBindDisplay();
 }
 
 

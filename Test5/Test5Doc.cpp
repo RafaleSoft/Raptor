@@ -224,11 +224,11 @@ void CTest5Doc::GLInitContext(void)
 	}
 	
 	CProgramParameters parameters;
-	//CProgramParameters::CParameter<Transform_t> param(T);
-	//param.name("gl_ModelViewMatrix");
-	//param.locationIndex = 0;
-	//parameters.addParameter(param);
-	parameters.addParameter(ss->getDefaultParameter("gl_ModelViewMatrix", 0));
+	CProgramParameters::CParameter<Transform_t> param(T);
+	param.name("ubo");
+	param.locationIndex = 0;
+	parameters.addParameter(param);
+	//parameters.addParameter(ss->getDefaultParameter("gl_ModelViewMatrix", 0));
 
 	CProgramParameters::CParameter<CTextureUnitSetup::TEXTURE_IMAGE_UNIT> param2(CTextureUnitSetup::IMAGE_UNIT_0);
 	param2.name("diffusemap");
