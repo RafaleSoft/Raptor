@@ -167,12 +167,15 @@
     </Manifest>
     <PostBuildEvent>
       <Command>copy $(OutDir)$(TargetFileName) "%RAPTOR_ROOT%\Redist\bin\"
-$(SolutionDir)\$(ProjectName)\Redist.bat
+
 
 
 </Command>
       <Message>Copying Builder to Raptor redist path: $(RAPTOR_ROOT)\Redist\bin</Message>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>$(SolutionDir)\$(ProjectName)\Redist.bat</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -205,12 +208,15 @@ $(SolutionDir)\$(ProjectName)\Redist.bat
     </Manifest>
     <PostBuildEvent>
       <Command>copy $(OutDir)$(TargetFileName) "%RAPTOR_ROOT%\Redist\bin\"
-$(SolutionDir)\$(ProjectName)\Redist.bat
+
 
 
 </Command>
       <Message>Copying Builder to Raptor redist path: $(RAPTOR_ROOT)\Redist\bin</Message>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>$(SolutionDir)\$(ProjectName)\Redist.bat</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Optimized|Win32'">
     <ClCompile>
@@ -244,10 +250,12 @@ $(SolutionDir)\$(ProjectName)\Redist.bat
       <OutputManifestFile>$(OutDir)$(TargetFileName).embed.manifest</OutputManifestFile>
     </Manifest>
     <PostBuildEvent>
-      <Command>copy $(OutDir)Builder.Net.exe "%RAPTOR_ROOT%\Redist\bin\Builder.Net.exe"
-copy $(OutDir)Builder.Net.exe $(ProjectDir)
-</Command>
+      <Command>copy $(OutDir)$(TargetFileName) "%RAPTOR_ROOT%\Redist\bin\"</Command>
+      <Message>Copying Builder to Raptor redist path: $(RAPTOR_ROOT)\Redist\bin</Message>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>$(SolutionDir)\$(ProjectName)\Redist.bat</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <Reference Include="System" />

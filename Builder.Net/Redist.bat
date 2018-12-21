@@ -264,10 +264,10 @@ copy .\License\LIBPNG.TXT Redist\Licenses
 ECHO    Copying sub-system files ...
 
 copy "%ZLIB_BIN_PATH%\zlib.dll" "%RAPTOR_ROOT%\Redist\bin"
-copy "%ZLIB_LIB_PATH%\zlib.lib" "%RAPTOR_ROOT%\Redist\lib"
 copy "%ZLIB_LIB_PATH%\zlibs.lib" "%RAPTOR_ROOT%\Redist\lib"
 copy "%TIFFLIB_LIB_PATH%\libtiff.lib" "%RAPTOR_ROOT%\Redist\lib"
 copy "%PNGLIB_BIN_PATH%\libpng.dll" "%RAPTOR_ROOT%\Redist\bin"
+copy "%FREETYPE_BIN_PATH%\freetype.dll" "%RAPTOR_ROOT%\Redist\bin"
 copy "%XERCES_BIN_PATH%\xerces-c_3_2.dll" "%RAPTOR_ROOT%\Redist\bin"
 
 
