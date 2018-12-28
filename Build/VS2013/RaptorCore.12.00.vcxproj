@@ -231,8 +231,7 @@ $(SolutionDir)\$(ProjectName)\Subsys\Redist.bat
       <LinkStatus>
       </LinkStatus>
       <ProgramDatabaseFile>$(OutDir)Raptor.pdb</ProgramDatabaseFile>
-      <Version>
-      </Version>
+      <Version>$(RAPTOR_RELEASE)</Version>
     </Link>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>

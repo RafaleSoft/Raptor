@@ -81,6 +81,7 @@ CTest5Doc::CTest5Doc(const RAPTOR_HANDLE& device,const char* title)
 	config.m_uiTexels = 2048*1024;
     config.m_uiPolygons = 20000;
     config.m_uiVertices = 50000;
+	config.m_uiUniforms = 2048;
     Raptor::glInitRaptor(config);
 
 	CImaging::installImagers();

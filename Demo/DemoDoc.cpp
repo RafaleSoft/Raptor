@@ -25,7 +25,6 @@
 #include "Engine/Animator.h"
 #include "Engine/Environment.h"
 #include "Engine/GeometricModifier.h"
-#include "Engine/ViewPoint.h"
 
 #include "System/Raptor.h"
 #include "System/RaptorConsole.h"

@@ -16,7 +16,6 @@
 #include "GLHierarchy/FragmentShader.h"
 #include "GLHierarchy/VertexShader.h"
 #include "GLHierarchy/Shader.h"
-#include "Engine/ViewPoint.h"
 #include "Engine/ViewModifier.h"
 #include "Engine/3DScene.h"
 #include "Engine/Animator.h"
