@@ -1,0 +1,186 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release_with_AddOns|Win32">
+      <Configuration>Release_with_AddOns</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{827AF7CF-449A-42B8-B63E-2F1386BF2BEF}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>libjpeg</RootNamespace>
+    <ProjectName>libjpeg</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">
+    <OutDir>$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <AdditionalIncludeDirectories>$(SolutionDir)\AddOns\JpegLib-v9\source;$(SolutionDir)\AddOns\JpegLib-v9\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(SolutionDir)\AddOns\JpegLib-v9\source;$(SolutionDir)\AddOns\JpegLib-v9\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(SolutionDir)\AddOns\JpegLib-v9\source;$(SolutionDir)\AddOns\JpegLib-v9\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+    <PostBuildEvent>
+      <Command>copy $(OutDir)$(TargetName).lib "%RAPTOR_ROOT%\Redist\lib\"</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\AddOns\JpegLib-v9\include\jconfig.h" />
+    <ClInclude Include="..\..\AddOns\JpegLib-v9\include\jerror.h" />
+    <ClInclude Include="..\..\AddOns\JpegLib-v9\include\jmorecfg.h" />
+    <ClInclude Include="..\..\AddOns\JpegLib-v9\include\jpeglib.h" />
+    <ClInclude Include="..\..\AddOns\JpegLib-v9\source\jdct.h" />
+    <ClInclude Include="..\..\AddOns\JpegLib-v9\source\jinclude.h" />
+    <ClInclude Include="..\..\AddOns\JpegLib-v9\source\jmemsys.h" />
+    <ClInclude Include="..\..\AddOns\JpegLib-v9\source\jpegint.h" />
+    <ClInclude Include="..\..\AddOns\JpegLib-v9\source\jversion.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\AddOns\JpegLib-v9\source\jaricom.c" />
+    <ClCompile Include="..\..\AddOns\JpegLib-v9\source\jcapimin.c" />
+    <ClCompile Include="..\..\AddOns\JpegLib-v9\source\jcapistd.c" />
+    <ClCompile Include="..\..\AddOns\JpegLib-v9\source\jcarith.c" />
+    <ClCompile Include="..\..\AddOns\JpegLib-v9\source\jccoefct.c" />
+    <ClCompile Include="..\..\AddOns\JpegLib-v9\source\jccolor.c" />
+    <ClCompile Include="..\..\AddOns\JpegLib-v9\source\jcdctmgr.c" />
+    <ClCompile Include="..\..\AddOns\JpegLib-v9\source\jchuff.c" />
+    <ClCompile Include="..\..\AddOns\JpegLib-v9\source\jcinit.c" />
+    <ClCompile Include="..\..\AddOns\JpegLib-v9\source\jcmainct.c" />
+    <ClCompile Include="..\..\AddOns\JpegLib-v9\source\jcmarker.c" />
+    <ClCompile Include="..\..\AddOns\JpegLib-v9\source\jcmaster.c" />
+    <ClCompile Include="..\..\AddOns\JpegLib-v9\source\jcomapi.c" />
+    <ClCompile Include="..\..\AddOns\JpegLib-v9\source\jcparam.c" />
+    <ClCompile Include="..\..\AddOns\JpegLib-v9\source\jcprepct.c" />
+    <ClCompile Include="..\..\AddOns\JpegLib-v9\source\jcsample.c" />
+    <ClCompile Include="..\..\AddOns\JpegLib-v9\source\jctrans.c" />
+    <ClCompile Include="..\..\AddOns\JpegLib-v9\source\jdapimin.c" />
+    <ClCompile Include="..\..\AddOns\JpegLib-v9\source\jdapistd.c" />
+    <ClCompile Include="..\..\AddOns\JpegLib-v9\source\jdarith.c" />
+    <ClCompile Include="..\..\AddOns\JpegLib-v9\source\jdatadst.c" />
+    <ClCompile Include="..\..\AddOns\JpegLib-v9\source\jdatasrc.c" />
+    <ClCompile Include="..\..\AddOns\JpegLib-v9\source\jdcoefct.c" />
+    <ClCompile Include="..\..\AddOns\JpegLib-v9\source\jdcolor.c" />
+    <ClCompile Include="..\..\AddOns\JpegLib-v9\source\jddctmgr.c" />
+    <ClCompile Include="..\..\AddOns\JpegLib-v9\source\jdhuff.c" />
+    <ClCompile Include="..\..\AddOns\JpegLib-v9\source\jdinput.c" />
+    <ClCompile Include="..\..\AddOns\JpegLib-v9\source\jdmainct.c" />
+    <ClCompile Include="..\..\AddOns\JpegLib-v9\source\jdmarker.c" />
+    <ClCompile Include="..\..\AddOns\JpegLib-v9\source\jdmaster.c" />
+    <ClCompile Include="..\..\AddOns\JpegLib-v9\source\jdmerge.c" />
+    <ClCompile Include="..\..\AddOns\JpegLib-v9\source\jdpostct.c" />
+    <ClCompile Include="..\..\AddOns\JpegLib-v9\source\jdsample.c" />
+    <ClCompile Include="..\..\AddOns\JpegLib-v9\source\jdtrans.c" />
+    <ClCompile Include="..\..\AddOns\JpegLib-v9\source\jerror.c" />
+    <ClCompile Include="..\..\AddOns\JpegLib-v9\source\jfdctflt.c" />
+    <ClCompile Include="..\..\AddOns\JpegLib-v9\source\jfdctfst.c" />
+    <ClCompile Include="..\..\AddOns\JpegLib-v9\source\jfdctint.c" />
+    <ClCompile Include="..\..\AddOns\JpegLib-v9\source\jidctflt.c" />
+    <ClCompile Include="..\..\AddOns\JpegLib-v9\source\jidctfst.c" />
+    <ClCompile Include="..\..\AddOns\JpegLib-v9\source\jidctint.c" />
+    <ClCompile Include="..\..\AddOns\JpegLib-v9\source\jmemmgr.c" />
+    <ClCompile Include="..\..\AddOns\JpegLib-v9\source\jmemname.c" />
+    <ClCompile Include="..\..\AddOns\JpegLib-v9\source\jquant1.c" />
+    <ClCompile Include="..\..\AddOns\JpegLib-v9\source\jquant2.c" />
+    <ClCompile Include="..\..\AddOns\JpegLib-v9\source\jutils.c" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
