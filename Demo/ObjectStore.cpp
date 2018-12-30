@@ -32,7 +32,6 @@
 #include "GLHierarchy/IRenderingProperties.h"
 #include "System/RaptorMessages.h"
 #include "System/RaptorIO.h"
-#include "Engine/ViewPoint.h"
 #include "GLHierarchy/LightObserver.h"
 #include "GLHierarchy/GeometryEditor.h"
 #include "GLHierarchy/ObjectFactory.h"

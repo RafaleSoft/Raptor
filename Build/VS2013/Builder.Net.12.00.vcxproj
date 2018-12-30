@@ -100,7 +100,7 @@
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
-      <DebugInformationFormat>None</DebugInformationFormat>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <PrecompiledHeaderOutputFile>$(ProjectDir)\$(IntDir)$(TargetName).pch</PrecompiledHeaderOutputFile>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
@@ -125,9 +125,13 @@
     <PostBuildEvent>
       <Command>copy $(OutDir)$(TargetFileName) "%RAPTOR_ROOT%\Redist\bin\"
 
+
 </Command>
       <Message>Copying Builder to Raptor redist path: $(RAPTOR_ROOT)\Redist\bin</Message>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>$(SolutionDir)\$(ProjectName)\Redist.bat</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">
     <ClCompile>
@@ -136,13 +140,15 @@
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
-      <DebugInformationFormat>None</DebugInformationFormat>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <PrecompiledHeaderOutputFile>$(ProjectDir)\$(IntDir)$(TargetName).pch</PrecompiledHeaderOutputFile>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <Optimization>Full</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <StringPooling>true</StringPooling>
     </ClCompile>
     <Link>
       <AdditionalDependencies>simd.lib;gdi32.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -154,18 +160,22 @@
       <EntryPointSymbol>main</EntryPointSymbol>
       <TargetMachine>MachineX86</TargetMachine>
       <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
+      <Version>$(RAPTOR_RELEASE)</Version>
     </Link>
     <Manifest>
       <OutputManifestFile>$(OutDir)$(TargetFileName).embed.manifest</OutputManifestFile>
     </Manifest>
     <PostBuildEvent>
       <Command>copy $(OutDir)$(TargetFileName) "%RAPTOR_ROOT%\Redist\bin\"
-$(SolutionDir)\$(ProjectName)\Redist.bat
+
 
 
 </Command>
       <Message>Copying Builder to Raptor redist path: $(RAPTOR_ROOT)\Redist\bin</Message>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>$(SolutionDir)\$(ProjectName)\Redist.bat</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -174,20 +184,20 @@ $(SolutionDir)\$(ProjectName)\Redist.bat
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
-      <DebugInformationFormat>None</DebugInformationFormat>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <PrecompiledHeaderOutputFile>$(ProjectDir)\$(IntDir)$(TargetName).pch</PrecompiledHeaderOutputFile>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <Optimization>Full</Optimization>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <IntrinsicFunctions>false</IntrinsicFunctions>
+      <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
+      <Optimization>Disabled</Optimization>
     </ClCompile>
     <Link>
       <AdditionalDependencies>simd.lib;gdi32.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>$(RAPTOR_ROOT)\Redist\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <EntryPointSymbol>main</EntryPointSymbol>
       <TargetMachine>MachineX86</TargetMachine>
@@ -198,12 +208,15 @@ $(SolutionDir)\$(ProjectName)\Redist.bat
     </Manifest>
     <PostBuildEvent>
       <Command>copy $(OutDir)$(TargetFileName) "%RAPTOR_ROOT%\Redist\bin\"
-$(SolutionDir)\$(ProjectName)\Redist.bat
+
 
 
 </Command>
       <Message>Copying Builder to Raptor redist path: $(RAPTOR_ROOT)\Redist\bin</Message>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>$(SolutionDir)\$(ProjectName)\Redist.bat</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Optimized|Win32'">
     <ClCompile>
@@ -237,10 +250,12 @@ $(SolutionDir)\$(ProjectName)\Redist.bat
       <OutputManifestFile>$(OutDir)$(TargetFileName).embed.manifest</OutputManifestFile>
     </Manifest>
     <PostBuildEvent>
-      <Command>copy $(OutDir)Builder.Net.exe "%RAPTOR_ROOT%\Redist\bin\Builder.Net.exe"
-copy $(OutDir)Builder.Net.exe $(ProjectDir)
-</Command>
+      <Command>copy $(OutDir)$(TargetFileName) "%RAPTOR_ROOT%\Redist\bin\"</Command>
+      <Message>Copying Builder to Raptor redist path: $(RAPTOR_ROOT)\Redist\bin</Message>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>$(SolutionDir)\$(ProjectName)\Redist.bat</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <Reference Include="System" />

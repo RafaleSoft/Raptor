@@ -6,7 +6,6 @@
 #include "System/RaptorConsole.h"
 #include "System/RaptorErrorManager.h"
 #include "System/RaptorApplication.h"
-#include "Engine/ViewPoint.h"
 #include "Engine/3DEngine.h"
 
 #include <strstream>

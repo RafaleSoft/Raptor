@@ -71,7 +71,6 @@ void CVulkanViewPoint::glvkRenderViewPointModel(void)
 	CATCH_GL_ERROR
 }
 
-
 bool CVulkanViewPoint::vkRenderUniforms(void)
 {
 	CUniformAllocator*	pUAllocator = CUniformAllocator::GetInstance();

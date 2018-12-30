@@ -801,9 +801,6 @@
     <ClInclude Include="..\..\RaptorCore\SSE_Engine\SSE_GLLayer.h">
       <Filter>Header Files\SSE_Engine include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\RaptorCore\SSE_Engine\SSE_Object3DContour.h">
-      <Filter>Header Files\SSE_Engine include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\RaptorCore\Subsys\3DEngineAttributes.h">
       <Filter>Header Files\Subsys include</Filter>
     </ClInclude>

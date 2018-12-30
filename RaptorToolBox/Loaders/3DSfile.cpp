@@ -1355,9 +1355,9 @@ bool _glLoadScene(const std::string &fname,C3DSet *&set,CRaptorToolBox::SCENE_LO
 			FlushGeometry(geo);
 
 		set = currentSet;
-		return Close3DSFile();
 
         discardGeometryHints.clear();
+		return Close3DSFile();
 	}
 	else
 	{
