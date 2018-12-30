@@ -4,16 +4,19 @@
 //! Besides, all standard extensions ( ARB ) are prefered to vendor's specifics, which
 //! should disappear un future versions of Raptor.
 //! If this header cannot be included to prefer the OS version ( or because this header is
-//! incomplete ), all function prototypes defined here under must be defined to compile 
+//! incomplete ), all function prototypes defined here under must be defined to compile
 //! and use Raptor, it should work fine.
 //!
 //! The directive RAPTOR_GLEXT is given here instead of __glext_h_ to be able to easily
-//! use one of the possible extensions header file. The only place where gl is included is 
+//! use one of the possible extensions header file. The only place where gl is included is
 //! in this file.
 #ifndef __RAPTOR_GLEXT_H__
 #define __RAPTOR_GLEXT_H__
 
 //! This macro prevents inclusion of other "glext" definitions
+#ifdef __glext_h_
+  #undef __glext_h_
+#endif
 #define __glext_h_
 #include <GL/gl.h>
 
@@ -255,13 +258,21 @@ extern "C" {
 	#define GL_DYNAMIC_READ                   0x88E9
 	#define GL_DYNAMIC_COPY                   0x88EA
 	#define GL_SAMPLES_PASSED                 0x8914
+	#undef GL_FOG_COORD_SRC
 	#define GL_FOG_COORD_SRC                  GL_FOG_COORDINATE_SOURCE
+	#undef GL_FOG_COORD
 	#define GL_FOG_COORD                      GL_FOG_COORDINATE
+	#undef GL_CURRENT_FOG_COORD
 	#define GL_CURRENT_FOG_COORD              GL_CURRENT_FOG_COORDINATE
+	#undef GL_FOG_COORD_ARRAY_TYPE
 	#define GL_FOG_COORD_ARRAY_TYPE           GL_FOG_COORDINATE_ARRAY_TYPE
+	#undef GL_FOG_COORD_ARRAY_STRIDE
 	#define GL_FOG_COORD_ARRAY_STRIDE         GL_FOG_COORDINATE_ARRAY_STRIDE
+	#undef GL_FOG_COORD_ARRAY_POINTER
 	#define GL_FOG_COORD_ARRAY_POINTER        GL_FOG_COORDINATE_ARRAY_POINTER
+	#undef GL_FOG_COORD_ARRAY
 	#define GL_FOG_COORD_ARRAY                GL_FOG_COORDINATE_ARRAY
+	#undef GL_FOG_COORD_ARRAY_BUFFER_BINDING
 	#define GL_FOG_COORD_ARRAY_BUFFER_BINDING GL_FOG_COORDINATE_ARRAY_BUFFER_BINDING
 	#undef GL_SRC0_RGB
 	#define GL_SRC0_RGB                       GL_SOURCE0_RGB
@@ -279,6 +290,7 @@ extern "C" {
 
 /*	GL VERSION 2.0	*/
 #if defined(GL_VERSION_2_0)
+	#undef GL_BLEND_EQUATION_RGB
 	#define GL_BLEND_EQUATION_RGB             GL_BLEND_EQUATION
 	#define GL_VERTEX_ATTRIB_ARRAY_ENABLED    0x8622
 	#define GL_VERTEX_ATTRIB_ARRAY_SIZE       0x8623
@@ -484,7 +496,7 @@ extern "C" {
 		LINKAGE PFN_GL_POINT_PARAMETER_F_EXT_PROC		glPointParameterfEXT; \
 		LINKAGE PFN_GL_POINT_PARAMETER_FV_EXT_PROC		glPointParameterfvEXT;
 	#endif
-#else 
+#else
 	#define DECLARE_GL_EXT_point_parameters(LINKAGE)
 #endif
 
@@ -504,7 +516,7 @@ extern "C" {
 		LINKAGE PFN_GL_POINT_PARAMETER_F_ARB_PROC		glPointParameterfARB; \
 		LINKAGE PFN_GL_POINT_PARAMETER_FV_ARB_PROC		glPointParameterfvARB;
 	#endif
-#else 
+#else
 	#define DECLARE_GL_ARB_point_parameters(LINKAGE)
 #endif
 
@@ -1518,8 +1530,11 @@ extern "C" {
 	#define GL_OFFSET_TEXTURE_MATRIX_NV			0x86E1
 	#define GL_OFFSET_TEXTURE_SCALE_NV			0x86E2
 	#define GL_OFFSET_TEXTURE_BIAS_NV			0x86E3
+  #undef GL_OFFSET_TEXTURE_2D_MATRIX_NV
 	#define GL_OFFSET_TEXTURE_2D_MATRIX_NV		GL_OFFSET_TEXTURE_MATRIX_NV
+  #undef GL_OFFSET_TEXTURE_2D_SCALE_NV
 	#define GL_OFFSET_TEXTURE_2D_SCALE_NV		GL_OFFSET_TEXTURE_SCALE_NV
+  #undef GL_OFFSET_TEXTURE_2D_BIAS_NV
 	#define GL_OFFSET_TEXTURE_2D_BIAS_NV		GL_OFFSET_TEXTURE_BIAS_NV
 
 	#define GL_PREVIOUS_TEXTURE_INPUT_NV		0x86E4
@@ -1994,7 +2009,7 @@ extern "C" {
 	#define GL_MAX_TEXTURE_IMAGE_UNITS_ARB		0x8872
 
 	// #define GL_PROGRAM_ERROR_STRING_ARB 0x8874
-	// all enumerants from MATRIX0_ARB to MATRIX31_ARB 
+	// all enumerants from MATRIX0_ARB to MATRIX31_ARB
 	// are also previously defined by vertex_program
 #endif
 
@@ -2334,7 +2349,7 @@ extern "C" {
     #define DECLARE_GL_ARB_vertex_shader(LINKAGE) \
         LINKAGE PFN_BIND_ATTRIB_LOCATION_ARB_PROC glBindAttribLocationARB; \
         LINKAGE PFN_GET_ACTIVE_ATTRIB_ARB_PROC glGetActiveAttribARB; \
-        LINKAGE PFN_GET_ATTRIB_LOCATION_ARB_PROC glGetAttribLocationARB; 
+        LINKAGE PFN_GET_ATTRIB_LOCATION_ARB_PROC glGetAttribLocationARB;
     #endif
 #else
     #define DECLARE_GL_ARB_vertex_shader(LINKAGE)
@@ -2360,10 +2375,18 @@ extern "C" {
     #define GL_MAX_GEOMETRY_UNIFORM_COMPONENTS_ARB		0x8DDF
     #define GL_MAX_GEOMETRY_OUTPUT_VERTICES_ARB			0x8DE0
     #define GL_MAX_GEOMETRY_TOTAL_OUTPUT_COMPONENTS_ARB	0x8DE1
-    #define GL_LINES_ADJACENCY_ARB						0xA
-    #define GL_LINE_STRIP_ADJACENCY_ARB					0xB
-    #define GL_TRIANGLES_ADJACENCY_ARB					0xC
-    #define GL_TRIANGLE_STRIP_ADJACENCY_ARB				0xD
+    #ifndef GL_LINES_ADJACENCY_ARB            // not always redefined
+        #define GL_LINES_ADJACENCY_ARB						0xA
+    #endif
+    #ifndef GL_LINE_STRIP_ADJACENCY_ARB
+        #define GL_LINE_STRIP_ADJACENCY_ARB					0xB
+    #endif
+    #ifndef GL_TRIANGLES_ADJACENCY_ARB
+        #define GL_TRIANGLES_ADJACENCY_ARB					0xC
+    #endif
+    #ifndef GL_TRIANGLE_STRIP_ADJACENCY_ARB
+        #define GL_TRIANGLE_STRIP_ADJACENCY_ARB				0xD
+    #endif
     #define GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS_ARB	0x8DA8
     #define GL_FRAMEBUFFER_INCOMPLETE_LAYER_COUNT_ARB	0x8DA9
     #define GL_FRAMEBUFFER_ATTACHMENT_LAYERED_ARB		0x8DA7
@@ -2380,7 +2403,7 @@ extern "C" {
         LINKAGE PFN_PROGRAM_PARAMETER_I_ARB_PROC glProgramParameteriARB; \
         LINKAGE PFN_FRAMEBUFFER_TEXTURE_ARB_PROC glFramebufferTextureARB; \
         LINKAGE PFN_FRAMEBUFFER_TEXTURE_LAYER_ARB_PROC glFramebufferTextureLayerARB; \
-		LINKAGE PFN_FRAMEBUFFER_TEXTURE_FACE_ARB_PROC glFramebufferTextureFaceARB; 
+		LINKAGE PFN_FRAMEBUFFER_TEXTURE_FACE_ARB_PROC glFramebufferTextureFaceARB;
     #endif
 #else
     #define DECLARE_GL_ARB_geometry_shader4(LINKAGE)
@@ -2734,7 +2757,9 @@ extern "C" {
 
 
 #if defined(GL_EXT_blend_equation_separate)
-	#define GL_BLEND_EQUATION_RGB_EXT         GL_BLEND_EQUATION
+	#ifndef GL_BLEND_EQUATION_RGB_EXT
+		#define GL_BLEND_EQUATION_RGB_EXT         GL_BLEND_EQUATION
+	#endif
 	#define GL_BLEND_EQUATION_ALPHA_EXT       0x883D
 
 	typedef GLvoid (RAPTOR_APICALL * PFN_GL_BLEND_EQUATION_SEPARATE_EXT_PROC) (GLenum modeRGB, GLenum modeAlpha);
