@@ -272,7 +272,18 @@ copy "%PNGLIB_BIN_PATH%\libpng.dll" "%RAPTOR_ROOT%\Redist\bin"
 copy "%PNGLIB_LIB_PATH%\libpng.lib" "%RAPTOR_ROOT%\Redist\lib"
 copy "%FREETYPE_BIN_PATH%\freetype.dll" "%RAPTOR_ROOT%\Redist\bin"
 copy "%XERCES_BIN_PATH%\xerces-c_3_2.dll" "%RAPTOR_ROOT%\Redist\bin"
-
+copy "%OPENEXRLIB_LIB_PATH%\Half.lib" "%RAPTOR_ROOT%\Redist\lib"
+copy "%OPENEXRLIB_BIN_PATH%\Half.dll" "%RAPTOR_ROOT%\Redist\bin"
+copy "%OPENEXRLIB_LIB_PATH%\Iex.lib" "%RAPTOR_ROOT%\Redist\lib"
+copy "%OPENEXRLIB_BIN_PATH%\Iex.dll" "%RAPTOR_ROOT%\Redist\bin"
+copy "%OPENEXRLIB_LIB_PATH%\IexMath.lib" "%RAPTOR_ROOT%\Redist\lib"
+copy "%OPENEXRLIB_BIN_PATH%\IexMath.dll" "%RAPTOR_ROOT%\Redist\bin"
+copy "%OPENEXRLIB_LIB_PATH%\IMath.lib" "%RAPTOR_ROOT%\Redist\lib"
+copy "%OPENEXRLIB_BIN_PATH%\IMath.dll" "%RAPTOR_ROOT%\Redist\bin"
+copy "%OPENEXRLIB_LIB_PATH%\IlmThread.lib" "%RAPTOR_ROOT%\Redist\lib"
+copy "%OPENEXRLIB_BIN_PATH%\IlmThread.dll" "%RAPTOR_ROOT%\Redist\bin"
+copy "%OPENEXRLIB_LIB_PATH%\IlmImf.lib" "%RAPTOR_ROOT%\Redist\lib"
+copy "%OPENEXRLIB_BIN_PATH%\IlmImf.dll" "%RAPTOR_ROOT%\Redist\bin"
 
 ECHO Redist complete > Builder.Net\Redist.log
 
