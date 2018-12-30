@@ -4,7 +4,7 @@
 
 
 #include <ft2build.h>
-#include <freetype.h>
+#include FT_FREETYPE_H
 
 #include "FTGlyphOutline.h"
 

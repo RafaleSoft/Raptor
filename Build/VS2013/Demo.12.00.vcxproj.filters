@@ -17,9 +17,6 @@
     <ClInclude Include="..\..\Demo\DemoDoc.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Demo\DemoMode.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Demo\ObjectStore.h">
       <Filter>Header Files</Filter>
     </ClInclude>

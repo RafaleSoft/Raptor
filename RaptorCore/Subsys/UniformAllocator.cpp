@@ -183,12 +183,13 @@ unsigned char * const CUniformAllocator::allocateUniforms(uint64_t size)
 		return NULL;
 	}
 
-	//  No NULL offset to distinguish nil pointers
-	if ((NULL != relocatedUniforms) && (NULL == currentAddress))
-		currentAddress = (float*)relocatedUniforms->getRelocationOffset();
+	
+	//	Address should be aligned on a boundary multiple of buffer granularity
+	uint64_t base = ((uint64_t)currentAddress) / relocatedUniforms->getRelocationOffset();
+	//  and no NULL offset to distinguish nil pointers
+	base = (base + 1) * relocatedUniforms->getRelocationOffset();
 
-	//	Address should be aligned on a 16byte boundary
-	unsigned char* address = (unsigned char*)(((unsigned int)(currentAddress)+0x0f) & 0xfffffff0);
+	unsigned char* address = (unsigned char*)(base);
 	uniformBlocs[address] = size;
 
 	return address;

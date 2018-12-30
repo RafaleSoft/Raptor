@@ -81,6 +81,7 @@ CTest5Doc::CTest5Doc(const RAPTOR_HANDLE& device,const char* title)
 	config.m_uiTexels = 2048*1024;
     config.m_uiPolygons = 20000;
     config.m_uiVertices = 50000;
+	config.m_uiUniforms = 2048;
     Raptor::glInitRaptor(config);
 
 	CImaging::installImagers();
@@ -224,11 +225,11 @@ void CTest5Doc::GLInitContext(void)
 	}
 	
 	CProgramParameters parameters;
-	//CProgramParameters::CParameter<Transform_t> param(T);
-	//param.name("gl_ModelViewMatrix");
-	//param.locationIndex = 0;
-	//parameters.addParameter(param);
-	parameters.addParameter(ss->getDefaultParameter("gl_ModelViewMatrix", 0));
+	CProgramParameters::CParameter<Transform_t> param(T);
+	param.name("ubo");
+	param.locationIndex = 0;
+	parameters.addParameter(param);
+	//parameters.addParameter(ss->getDefaultParameter("gl_ModelViewMatrix", 0));
 
 	CProgramParameters::CParameter<CTextureUnitSetup::TEXTURE_IMAGE_UNIT> param2(CTextureUnitSetup::IMAGE_UNIT_0);
 	param2.name("diffusemap");

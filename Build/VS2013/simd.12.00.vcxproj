@@ -168,9 +168,9 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <Optimization>Full</Optimization>
-      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
-      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <Optimization>Disabled</Optimization>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <ExceptionHandling>Sync</ExceptionHandling>
@@ -186,7 +186,7 @@
       <OmitDefaultLibName>false</OmitDefaultLibName>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <IntrinsicFunctions>false</IntrinsicFunctions>
       <EnablePREfast>true</EnablePREfast>
       <SDLCheck>true</SDLCheck>
     </ClCompile>
@@ -251,7 +251,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\SIMD\BVector.h" />
-    <ClInclude Include="..\..\SIMD\FVector.h" />
     <ClInclude Include="..\..\SIMD\GenericAlignedMatrix.h" />
     <ClInclude Include="..\..\SIMD\GenericAlignedVector.h" />
     <ClInclude Include="..\..\SIMD\GenericMatrix.h" />
