@@ -1,0 +1,11 @@
+SOAR v1.11, 28 May 2002
+  - Renamed "near" and "far" for easier integration with MSVC.
+  - Changed from dynamic to static allocation in png2geo to greatly
+    speed up preprocessing under Windows.
+  - Added estimated memory requirements to png2geo.
+
+SOAR v1.10, 10 Apr 2002
+  - Added support for geomorphing.
+
+SOAR v1.00, 24 Jan 2002
+  - Initial release.

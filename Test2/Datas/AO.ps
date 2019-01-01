@@ -1,0 +1,47 @@
+#version 140
+#extension GL_ARB_fragment_coord_conventions : require
+#extension GL_ARB_texture_rectangle : require
+
+layout(pixel_center_integer) in vec4 gl_FragCoord;
+
+in vec4 vertex;
+in vec4 normal;
+uniform sampler2DRect posMap;
+uniform sampler2DRect normalMap;
+uniform int numRows;
+
+float formFactor(in float ctr,in float cte,in float area,in vec4 r)
+{
+	float d2 = dot(r,r);
+	float ff = ctr * cte / d2;
+	float A_r2 = inversesqrt(1.0 + area / d2);
+	
+	return (ff * (1.0 - A_r2));
+}
+
+void main (void)
+{
+	float FF = 1.0;
+	
+	for (int j=0;j<numRows;j++)
+	{
+		for (int i=0;i<64;i++)
+		{
+			/*vec2 tc = vec2(gl_FragCoord.xy);*/
+			ivec2 tc = ivec2(i,j);
+			vec4 r = texture2DRect(posMap,tc) - vertex;
+			float cos_tr = dot(vec3(normal.xyz),vec3(r.xyz));
+			if (cos_tr > 0)
+			{
+				vec4 te = texture2DRect(normalMap,tc);
+				float cos_te = -dot(vec3(te.xyz),vec3(r.xyz));
+				if (cos_te > 0)
+				{
+					FF = FF - formFactor(cos_tr,cos_te,te.w,r);
+				}
+			}
+		}
+	}
+	
+	gl_FragColor = vec4(FF,FF,FF,1.0);
+}

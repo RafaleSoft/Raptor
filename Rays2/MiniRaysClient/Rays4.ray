@@ -1,0 +1,47 @@
+"test"
+{
+	{
+		width = 2048
+		height = 2048
+		variance = 10
+		deflection = 3
+		defraction = 3
+		crease = 45
+		plugin = "ModuleDOF.dll"
+	}
+
+	{
+		light "light0" = 
+		{
+			{ 400.0 , 400.0 , 400.0 , 1.0 },
+			{ 1.0 , 1.0 , 1.0 , 1.0 },
+			0.8
+		}
+		shading "shading0" = { 0.1 , 0.3 , 0.6 , 10 , 0.2 , 0.9 , 1.33 , none}
+		shading "shading1" = { 0.2 , 0.6 , 0.7 , 10 , 0.5 , 0.0 , 1.0 , none}
+		texture "texture0" = { "Start.tga" }
+		texture "texture1" = { "none" }
+		texture "texture2" = { "Bump.tga" }
+		environment "background" = { "sky1.jpg" }
+	}
+
+	{
+		"teapot"
+		{
+			"shading1",
+			"texture0",
+			"texture2",
+			{ 0.8 , 0.8 , 0.8 , 1.0 },
+			import "teapot2.3DS"
+		}
+		"sphere"
+		{
+			"shading0",
+			"texture1",
+			"texture1",
+			{ 0.9 , 0.3 , 0.1 , 1.0 },
+			{ -2.1, -2.0 , 5.0 , 1.0 },
+			1.2
+		}
+	}
+}

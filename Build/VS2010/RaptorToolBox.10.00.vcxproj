@@ -1,0 +1,280 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Optimized|Win32">
+      <Configuration>Optimized</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectName>RaptorToolBox</ProjectName>
+    <ProjectGuid>{9DE3BD6F-6EAC-4917-AD42-31C50E6DC10E}</ProjectGuid>
+    <RootNamespace>RaptorToolBox</RootNamespace>
+    <Keyword>MFCProj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Optimized|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.21006.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)\$(ProjectName)\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Optimized|Win32'">$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Optimized|Win32'">$(Configuration)\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Optimized|Win32'">false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>.\Release/RaptorToolBox.tlb</TypeLibraryName>
+      <HeaderFileName>
+      </HeaderFileName>
+    </Midl>
+    <ClCompile>
+      <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>$(SolutionDir)$(ProjectName);$(ZLIB_INCLUDE_PATH);$(PNGLIB_INCLUDE_PATH);$(OPENEXRLIB_INCLUDE_PATH);$(TIFFLIB_INCLUDE_PATH);$(JPEGLIB_INCLUDE_PATH);$(RAPTOR_ROOT)\Redist\Include;$(VULKAN_INCLUDE_PATH);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;EXPORT_RAPTOR_CORE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x040c</Culture>
+      <AdditionalIncludeDirectories>$(MSSdk)\Include\mfc;$(MSSdk)\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>opengl32.lib;Raptor.lib;wmvcore.lib;vfw32.lib;libjpeg.6.b.lib;libtiff.lib;zlib.lib;ilmimf.lib;half.lib;iex.lib;libpng.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)$(ProjectName).dll</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <AdditionalLibraryDirectories>$(OPENEXRLIB_LIB_PATH);$(PNGLIB_LIB_PATH);$(TIFFLIB_LIB_PATH);$(JPEGLIB_LIB_PATH);$(ZLIB_LIB_PATH);$(RAPTOR_ROOT)\Redist\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreSpecificDefaultLibraries>libc;libcmt;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ModuleDefinitionFile>
+      </ModuleDefinitionFile>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>$(TargetDir)$(TargetName).pdb</ProgramDatabaseFile>
+      <GenerateMapFile>false</GenerateMapFile>
+      <MapFileName>
+      </MapFileName>
+      <SubSystem>Windows</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <ImportLibrary>Release\RaptorToolBox.lib</ImportLibrary>
+      <TargetMachine>MachineX86</TargetMachine>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <Version>$(RAPTOR_VERSION)</Version>
+    </Link>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\Release/RaptorToolBox.bsc</OutputFile>
+    </Bscmake>
+    <PostBuildEvent>
+      <Command>copy $(OutDir)$(ProjectName).lib "%RAPTOR_ROOT%\Redist\lib\"
+copy $(OutDir)$(ProjectName).dll "%RAPTOR_ROOT%\Redist\bin\"
+copy "%OPENEXRLIB_BIN_PATH%\IlmImf.dll" "%RAPTOR_ROOT%\Redist\bin\"
+copy "%OPENEXRLIB_BIN_PATH%\Half.dll" "%RAPTOR_ROOT%\Redist\bin\"
+copy "%OPENEXRLIB_BIN_PATH%\Iex.dll" "%RAPTOR_ROOT%\Redist\bin\"
+copy "%OPENEXRLIB_BIN_PATH%\IlmThread.dll" "%RAPTOR_ROOT%\Redist\bin\"
+copy "%PNGLIB_BIN_PATH%\libpng.dll" "%RAPTOR_ROOT%\Redist\bin\"
+</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Optimized|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>.\Release/RaptorToolBox.tlb</TypeLibraryName>
+      <HeaderFileName>
+      </HeaderFileName>
+    </Midl>
+    <ClCompile>
+      <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>Full</Optimization>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <AdditionalIncludeDirectories>.\;zlib123\include;libpng\include;OpenEXRLib\include;TiffLib\include;JpegLib\include;$(RAPTOR_ROOT)\Redist\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;EXPORT_RAPTOR_CORE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile>.\Release/RaptorToolBox.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>.\Release/</AssemblerListingLocation>
+      <ObjectFileName>.\Release/</ObjectFileName>
+      <ProgramDataBaseFileName>.\Release/</ProgramDataBaseFileName>
+      <WarningLevel>Level4</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x040c</Culture>
+      <AdditionalIncludeDirectories>$(MSSdk)\Include\mfc;$(MSSdk)\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>opengl32.lib;Raptor.lib;wmvcore.lib;vfw32.lib;JpegLib\lib\libjpeg.6.b.lib;TiffLib\lib\libtiff.lib;zlib123\lib\zlib.lib;OpenEXRLib\lib\vc9\ilmimf.lib;OpenEXRLib\lib\vc9\half.lib;OpenEXRLib\lib\vc9\iex.lib;libpng\lib\libpng.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>Release\RaptorToolBox.dll</OutputFile>
+      <Version>2.16.0</Version>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <AdditionalLibraryDirectories>$(RAPTOR_ROOT)\Redist\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreSpecificDefaultLibraries>libc;libcd;libcmt;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ModuleDefinitionFile>.\RaptorToolBox.def</ModuleDefinitionFile>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <ProgramDatabaseFile>$(TargetDir)$(TargetName).pdb</ProgramDatabaseFile>
+      <GenerateMapFile>false</GenerateMapFile>
+      <MapFileName>.\Release/RaptorToolBox.map</MapFileName>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <ImportLibrary>Release\RaptorToolBox.lib</ImportLibrary>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\Release/RaptorToolBox.bsc</OutputFile>
+    </Bscmake>
+    <PostBuildEvent>
+      <Command>copy Release\RaptorToolBox.lib "%RAPTOR_ROOT%\Redist\lib\"
+copy Release\RaptorToolBox.dll "%RAPTOR_ROOT%\Redist\bin\"
+copy OpenEXRLib\bin\vc9\IlmImf.dll "%RAPTOR_ROOT%\Redist\bin\"
+copy OpenEXRLib\bin\vc9\Half.dll "%RAPTOR_ROOT%\Redist\bin\"
+copy OpenEXRLib\bin\vc9\Iex.dll "%RAPTOR_ROOT%\Redist\bin\"
+copy OpenEXRLib\bin\vc9\IlmThread.dll "%RAPTOR_ROOT%\Redist\bin\"
+copy OpenEXRLib\bin\vc9\zdll.dll "%RAPTOR_ROOT%\Redist\bin\zlib1.dll"
+</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\RaptorToolBox\BasicObjects.cpp" />
+    <ClCompile Include="..\..\RaptorToolBox\CmdLineParser.cpp" />
+    <ClCompile Include="..\..\RaptorToolBox\Controllers.cpp" />
+    <ClCompile Include="..\..\RaptorToolBox\Controllers\ViewPointController.cpp" />
+    <ClCompile Include="..\..\RaptorToolBox\Filters\BlurFilter.cpp" />
+    <ClCompile Include="..\..\RaptorToolBox\Filters\ColorControlFilter.cpp" />
+    <ClCompile Include="..\..\RaptorToolBox\Filters\DOFFilter.cpp" />
+    <ClCompile Include="..\..\RaptorToolBox\Filters\HDRFilter.cpp" />
+    <ClCompile Include="..\..\RaptorToolBox\Filters\MagnifierFilter.cpp" />
+    <ClCompile Include="..\..\RaptorToolBox\Filters\MBFilter.cpp" />
+    <ClCompile Include="..\..\RaptorToolBox\Imaging.cpp" />
+    <ClCompile Include="..\..\RaptorToolBox\Imaging\BMPImaging.cpp" />
+    <ClCompile Include="..\..\RaptorToolBox\Imaging\ICOImaging.cpp" />
+    <ClCompile Include="..\..\RaptorToolBox\Imaging\JPGImaging.cpp" />
+    <ClCompile Include="..\..\RaptorToolBox\Imaging\OpenEXRImaging.cpp" />
+    <ClCompile Include="..\..\RaptorToolBox\Imaging\PNGImaging.cpp" />
+    <ClCompile Include="..\..\RaptorToolBox\Imaging\TGAImaging.cpp" />
+    <ClCompile Include="..\..\RaptorToolBox\Imaging\TIFFImaging.cpp" />
+    <ClCompile Include="..\..\RaptorToolBox\Loaders.cpp" />
+    <ClCompile Include="..\..\RaptorToolBox\Loaders\3DSfile.cpp" />
+    <ClCompile Include="..\..\RaptorToolBox\Loaders\OBJFile.cpp" />
+    <ClCompile Include="..\..\RaptorToolBox\Loaders\OBJScript_lex.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorToolBox\Loaders\OBJScript_tree.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorToolBox\Loaders\OBJScript_yacc.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorToolBox\Loaders\Vrml2.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorToolBox\Merge.cpp" />
+    <ClCompile Include="..\..\RaptorToolBox\ParticleCompute.cpp" />
+    <ClCompile Include="..\..\RaptorToolBox\RaptorToolBox.cpp" />
+    <ClCompile Include="..\..\RaptorToolBox\Renders.cpp" />
+    <ClCompile Include="..\..\RaptorToolBox\StdAfx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorToolBox\Streaming.cpp" />
+    <ClCompile Include="..\..\RaptorToolBox\Streaming\AVIStreaming.cpp" />
+    <ClCompile Include="..\..\RaptorToolBox\Streaming\WMVStreaming.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\RaptorToolBox\Loaders\OBJ.lex">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">cd %(RelativeDir)
+"%RAPTOR_ROOT%\Redist\Bin\MicroLex.exe" -f %(FileName).lex -o OBJScript -v
+</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(RelativeDir)\OBJScript_lex.cpp;%(RelativeDir)\OBJScript_lex.h;%(RelativeDir)\OBJScript_tree.cpp;%(RelativeDir)\OBJScript_tree.h;%(RelativeDir)\OBJScript_yacc.cpp;%(RelativeDir)\OBJScript_yacc.h;%(Outputs)</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\RaptorToolBox\BasicObjects.h" />
+    <ClInclude Include="..\..\RaptorToolBox\CmdLineParser.h" />
+    <ClInclude Include="..\..\RaptorToolBox\Controllers.h" />
+    <ClInclude Include="..\..\RaptorToolBox\Controllers\ViewPointController.h" />
+    <ClInclude Include="..\..\RaptorToolBox\Filters\BlurFilter.h" />
+    <ClInclude Include="..\..\RaptorToolBox\Filters\ColorControlFilter.h" />
+    <ClInclude Include="..\..\RaptorToolBox\Filters\DOFFilter.h" />
+    <ClInclude Include="..\..\RaptorToolBox\Filters\HDRFilter.h" />
+    <ClInclude Include="..\..\RaptorToolBox\Filters\MagnifierFilter.h" />
+    <ClInclude Include="..\..\RaptorToolBox\Filters\MBFilter.h" />
+    <ClInclude Include="..\..\RaptorToolBox\Imaging.h" />
+    <ClInclude Include="..\..\RaptorToolBox\Imaging\BMPImaging.h" />
+    <ClInclude Include="..\..\RaptorToolBox\Imaging\ICOImaging.h" />
+    <ClInclude Include="..\..\RaptorToolBox\Imaging\JPGImaging.h" />
+    <ClInclude Include="..\..\RaptorToolBox\Imaging\OpenEXRImaging.h" />
+    <ClInclude Include="..\..\RaptorToolBox\Imaging\PNGImaging.h" />
+    <ClInclude Include="..\..\RaptorToolBox\Imaging\TGAImaging.h" />
+    <ClInclude Include="..\..\RaptorToolBox\Imaging\TIFFImaging.h" />
+    <ClInclude Include="..\..\RaptorToolBox\Loaders\3DSfile.h" />
+    <ClInclude Include="..\..\RaptorToolBox\Loaders\OBJScript_lex.h" />
+    <ClInclude Include="..\..\RaptorToolBox\Loaders\OBJScript_tree.h" />
+    <ClInclude Include="..\..\RaptorToolBox\Loaders\OBJScript_yacc.h" />
+    <ClInclude Include="..\..\RaptorToolBox\ParticleCompute.h" />
+    <ClInclude Include="..\..\RaptorToolBox\RaptorToolBox.h" />
+    <ClInclude Include="..\..\RaptorToolBox\Resource.h" />
+    <ClInclude Include="..\..\RaptorToolBox\StdAfx.h" />
+    <ClInclude Include="..\..\RaptorToolBox\Streaming.h" />
+    <ClInclude Include="..\..\RaptorToolBox\Streaming\AVIStreaming.h" />
+    <ClInclude Include="..\..\RaptorToolBox\Streaming\WMVStreaming.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

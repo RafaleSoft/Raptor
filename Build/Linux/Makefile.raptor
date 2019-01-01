@@ -1,0 +1,38 @@
+BUILDER = Builder/Release/Builder
+RAPTORDATA = RaptorData/Release/libraptordata.a
+RAPTORDATA += RaptorData/Release/libraptordata.so
+RAPTORCORE = RaptorCore/Release/libraptor.a
+RAPTORCORE += RaptorCore/Release/libraptor.so
+RAPTORTOOLBOX = RaptorToolBox/Release/libraptortoolbox.a
+RAPTORTOOLBOX += RaptorToolBox/Release/libraptortoolbox.so
+
+TEST = Test/Release/Test
+
+all:    $(BUILDER) $(RAPTORDATA) $(RAPTORCORE) $(RAPTORTOOLBOX) $(TEST)
+	cp $(TEST) Redist/Bin
+
+clean:
+	find . \( -name "*.obj" -o -name "*.sbr" -o -name "*.ncb" -o -name "*.bsc" \) -print -exec rm {} \;
+	find . \( -name "*.idb" -o -name "*.pdb" -o -name "*.pch" -o -name "*.map" \) -print -exec rm {} \;
+	cd Builder; make -f Makefile.builder clean
+	cd RaptorData; make -f Makefile.raptordata clean
+	cd RaptorCore; make -f Makefile.raptorcore clean
+	cd RaptorToolBox; make -f Makefile.raptortoolbox clean
+	cd Test; make -f Makefile.test clean
+
+$(BUILDER):
+	cd Builder; make -f Makefile.builder
+
+$(RAPTORDATA):
+	cd RaptorData; make -f Makefile.raptordata
+
+$(RAPTORCORE):	$(BUILDER) $(RAPTORDATA)
+	cd RaptorCore; make -f Makefile.raptorcore
+
+$(RAPTORTOOLBOX):	$(RAPTORCORE)
+	cd RaptorToolBox; make -f Makefile.raptortoolbox
+
+
+$(TEST):	$(RAPTORTOOLBOX) $(RAPTORCORE)
+	cd Test; make -f Makefile.test
+

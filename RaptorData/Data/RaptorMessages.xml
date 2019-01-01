@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RaptorMessages 	language="English"
+			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<Class name="Object3D">
+		<Message id="ID_NO_RESOURCE" str="No memory allocated for object Bounding Boxes"/>
+	</Class>
+	<Class name="Squeleton">
+		<Message id="ID_NULL_OBJECT" str="Raptor Squeleton cannot instantiate NULL objects"/>
+		<Message id="ID_LOST_LINK" str="A link of Squeleton is replacing one of its bones"/>
+	</Class>
+	<Class name="BumppedGeometry">
+		<Message id="ID_NO_GPU_PROGRAM" str="Fragment program not supported on this GPU"/>
+		<Message id="ID_NO_GPU_COLOR2" str="No secondary color is are available on this GPU"/>
+		<Message id="ID_NO_GPU_DOT3" str="No Dot3 texture function available on this GPU"/>
+		<Message id="ID_WRONG_RENDERING" str="No bump texture functions selected for rendering"/>
+		<Message id="ID_TEXTURE_MISS" str="Missing diffuse or normal map for bumping !"/>
+	</Class>
+	<Class name="Geometry">
+		<Message id="ID_WRONG_RENDERING" str="SetRenderingModel is called with no shader !"/>
+		<Message id="ID_NULL_OBJECT" str="Using an empty primitive or geometry lacks indexes !"/>
+		<Message id="ID_NO_RESOURCE" str="Geometry Allocator could not get enough memory"/>
+	</Class>
+	<Class name="GLFont">
+		<Message id="ID_SUBSYS_FAILED" str="FTFace open failed!"/>
+		<Message id="ID_CREATE_FAILED" str="Raptor failed to create GLTTFont"/>
+		<Message id="ID_INIT_FAILED" str="Raptor GLFont has not been properly initialized !"/>
+	</Class>
+	<Class name="Object3DShadow">
+		<Message id="ID_NULL_OBJECT" str="Shadow instantiates a nil objet !"/>
+		<Message id="ID_INIT_FAILED" str="This version of shadow volume is not able to work with objects other than geometry. Check for upgrades"/>
+		<Message id="ID_WRONG_RENDERING" str="No light is defined for shadow rendering, rendering will be wrong !"/>
+	</Class>
+	<Class name="Object3DInstance">
+		<Message id="ID_NULL_OBJECT" str="Raptor Object3DInstance cannot instantiate NULL objects"/>
+	</Class>
+	<Class name="Persistence">
+		<Message id="ID_OBJECT_DUPLICATE" str="Another CPersistence object exist with same name %s, object will be renamed"/>
+		<Message id="ID_UPDATE_FAILED" str="Raptor failed to rename object"/>
+		<Message id="ID_DESTROY_FAILED" str="Raptor failed to delete persistent object"/>
+		<Message id="ID_NO_RESOURCE" str="System failed to allocate requested memory block!!!"/>
+		<Message id="ID_CREATE_FAILED" str="Object Factory failed to create object: missing or duplicate object"/>
+	</Class>
+	<Class name="FragmentShader">
+		<Message id="ID_NO_GPU_PROGRAM" str="Fragment ASM program not supported or cannot be run 100% hardware"/>
+		<Message id="ID_PROGRAM_ERROR" str="Error in fragment ASM program at pos %d: %s"/>
+	</Class>
+	<Class name="FragmentProgram">
+		<Message id="ID_NO_GPU_PROGRAM" str="Fragment GLSL shader not supported or cannot be run 100% hardware"/>
+		<Message id="ID_PROGRAM_ERROR" str="Error in fragment GLSL shader code : %s"/>
+		<Message id="ID_NO_RESOURCE" str="GLSL attribute location does not exist"/>
+		<Message id="ID_WRONG_RENDERING" str="GLSL no active program"/>
+	</Class>
+	<Class name="VertexShader">
+		<Message id="ID_NO_GPU_PROGRAM" str="Vertex ASM program not supported or cannot be run 100% hardware"/>
+		<Message id="ID_PROGRAM_ERROR" str="Error in vertex ASM program at pos %d : %s"/>
+	</Class>
+	<Class name="VertexProgram">
+		<Message id="ID_NO_GPU_PROGRAM" str="Vertex GLSL shader not supported or cannot be run 100% hardware"/>
+		<Message id="ID_PROGRAM_ERROR" str="Error in vertex GLSL shader code : %s"/>
+		<Message id="ID_NO_RESOURCE" str="GLSL attribute location does not exist"/>
+		<Message id="ID_WRONG_RENDERING" str="GLSL no active program"/>
+	</Class>
+  <Class name="GeometryProgram">
+    <Message id="ID_NO_GPU_PROGRAM" str="Geometry GLSL shader not supported or cannot be run 100% hardware"/>
+    <Message id="ID_PROGRAM_ERROR" str="Error in geometry GLSL shader code : %s"/>
+  </Class>
+	<Class name="Shader">
+		<Message id="ID_UPDATE_FAILED" str="Incompatible parameters with shader program type"/>
+		<Message id="ID_CREATE_FAILED" str="Unable to create a program object, out of resources of unsupported feature"/>
+		<Message id="ID_PROGRAM_ERROR" str="Unable to create a program object, out of resources of unsupported feature: %s"/>
+	</Class>
+	<Class name="ShaderProgram">
+		<Message id="ID_UPDATE_FAILED" str="Incompatible parameters with shader program type"/>
+		<Message id="ID_NO_GPU_PROGRAM" str="%s programs not supported"/>
+	</Class>
+	<Class name="TextureFactory">
+		<Message id="ID_DESTROY_FAILED" str="Raptor Texture Factory cannot delete an invalid GL_TEXTURE_OBJECT"/>
+		<Message id="ID_PROCEDURE_FAILED" str="Nil procedure is passed to Raptor Texture Factory"/>
+		<Message id="ID_NULL_OBJECT" str="Raptor Texture Factory cannot load nil of invalid CTextureObject"/>
+		<Message id="ID_UPDATE_FAILED" str="Raptor Texture Factory cannot reload 'buffered' texture"/>
+		<Message id="ID_TEXTURE_MISS" str="Raptor Texture Factory cannot find source %s"/>
+		<Message id="ID_FORMAT_NOT_SUPPORTED" str="Texture format not supported: %s"/>
+		<Message id="ID_NO_RESOURCE" str="Raptor Texture Factory cannot load texture with invalid compressor"/>
+	</Class>
+	<Class name="TextureUnitSetup">
+		<Message id="ID_TEXTURE_MISS" str="Multitexturing is unavailable for TextureUnitSetup instances, wrong rendering"/>
+	</Class>
+	<Class name="Scene">
+		<Message id="ID_NULL_OBJECT" str="A flat or null size object is added to scene. Check bounding box"/>
+		<Message id="ID_UPDATE_FAILED" str="Shadow volumes are built. Add object before a call to UseShadowVolumes"/>
+		<Message id="ID_OBJECT_DUPLICATE" str="Failed to manage new environment : such a kind already exists."/>
+	</Class>
+	<Class name="Animator">
+		<Message id="ID_PROGRAM_ERROR" str="Syntax error in source script in line %d at pos %d"/>
+	</Class>
+	<Class name="RaptorDisplay">
+		<Message id="ID_CREATE_FAILED" str="Raptor Display failed to create OpenGL extended context"/>
+		<Message id="ID_NO_RESOURCE" str="Raptor Display has not enough GPU memory for relocation"/>
+		<Message id="ID_UPDATE_FAILED" str="Raptor Display is requested a resize with a wrong dimension ( 0 ) !"/>
+	</Class>
+	<Class name="Modifier">
+		<Message id="ID_TEXTURE_MISS" str="No valid texture is passed to modifier"/>
+	</Class>
+  <Class name="ParticleManager">
+    <Message id="ID_PROCEDURE_FAILED" str="No valid compute model provided"/>
+  </Class>
+</RaptorMessages>

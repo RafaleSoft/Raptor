@@ -1,0 +1,30 @@
+export
+
+CCCFLAGS =  -DSIMD_NO_ASSEMBLY
+OUTPUT = $(RAPTOR_ROOT)/Build/Linux/Release/Microlex
+SRCDIR = $(RAPTOR_ROOT)/Microlex
+INCDIRS = -I$(SRCDIR)
+
+all:	$(OUTPUT)/Microlex
+
+clean:
+	rm -rf $(OUTPUT)
+	mkdir -p $(OUTPUT)
+
+SRC = \
+	$(SRCDIR)/Atoms.cpp \
+	$(SRCDIR)/Automat.cpp \
+	$(SRCDIR)/Config.cpp \
+	$(SRCDIR)/GenCode.cpp \
+	$(SRCDIR)/MicroLex.cpp \
+	$(SRCDIR)/Rules.cpp \
+	$(SRCDIR)/Streams.cpp
+
+OBJ = $(SRC:$(SRCDIR)/%.cpp=$(OUTPUT)/%.o)
+	
+$(OUTPUT)/Microlex:	$(OBJ) 
+	g++ $(OBJ) -o $(OUTPUT)/Microlex
+	cp $(OUTPUT)/Microlex $(REDIST)/Bin/
+
+$(OBJ):	$(SRC)
+	g++ $(CCCFLAGS) $(INCDIRS) -c $(<D)/$(*F).cpp  -o $(OUTPUT)/$(@F)

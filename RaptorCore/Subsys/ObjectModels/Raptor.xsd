@@ -1,0 +1,406 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="RaptorDataSet" xmlns="" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+  <xs:element name="Render">
+    <xs:complexType>
+      <xs:attribute name="name" type="xs:string" />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Object3D">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Properties" minOccurs="0" maxOccurs="1">
+          <xs:complexType>
+            <xs:attribute name="cast_shadow" type="xs:boolean" />
+            <xs:attribute name="is_mirror" type="xs:boolean" />
+            <xs:attribute name="transparent" type="xs:boolean" />
+            <xs:attribute name="receive_shadow" type="xs:boolean" />
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="TextureSet">
+      <xs:complexType>
+          <xs:sequence>
+              <xs:element name="Texture" minOccurs="0" maxOccurs="unbounded">
+                  <xs:complexType>
+                      <xs:attribute name="name" type="xs:string" />
+                      <xs:attribute name="function" type="xs:string" />
+                      <xs:attribute name="filter" type="xs:string" />
+                      <xs:attribute name="mode" type="xs:string" />
+                      <xs:attribute name="transparency" type="xs:float" />
+                  </xs:complexType>
+              </xs:element>
+          </xs:sequence>
+          <xs:attribute name="name" type="xs:string" />
+      </xs:complexType>
+  </xs:element>
+  <xs:element name="Set">
+      <xs:complexType>
+          <xs:sequence>
+              <xs:element ref="Object3D" minOccurs="0" maxOccurs="1" />
+              <xs:element name="Child" minOccurs="0" maxOccurs="unbounded">
+                  <xs:complexType>
+                      <xs:attribute name="name" type="xs:string" />
+                  </xs:complexType>
+              </xs:element>
+          </xs:sequence>
+          <xs:attribute name="name" type="xs:string" />
+      </xs:complexType>
+  </xs:element>
+  <xs:element name="ParticleManager">
+    <xs:complexType>
+       <xs:sequence>
+           <xs:element name="Particle" minOccurs="0" maxOccurs="unbounded">
+               <xs:complexType>
+                   <xs:sequence>
+                     <xs:element name="FadeFactors" minOccurs="0" maxOccurs="1">
+                         <xs:complexType>
+                             <xs:attribute name="x" type="xs:float"/>
+                             <xs:attribute name="y" type="xs:float"/>
+                             <xs:attribute name="z" type="xs:float"/>
+                             <xs:attribute name="h" type="xs:float"/>   
+                         </xs:complexType>
+                     </xs:element>
+                     <xs:element name="Sprite" minOccurs="0" maxOccurs="1">
+                         <xs:complexType>
+                             <xs:attribute name="set" type="xs:string" />
+                             <xs:attribute name="texname" type="xs:string" />
+                         </xs:complexType>
+                     </xs:element>
+                   </xs:sequence>
+                   <xs:attribute name="name" type="xs:string" />
+                   <xs:attribute name="systemSize" type="xs:integer" />
+                   <xs:attribute name="revive" type="xs:boolean" />
+                   <xs:attribute name="type" type="xs:string" />
+                   <xs:attribute name="mode" type="xs:string" />
+                   <xs:attribute name="pointSize" type="xs:float" />
+                   <xs:attribute name="sprite" type="xs:boolean" />
+                   <xs:attribute name="model" type="xs:string" />
+                   <xs:attribute name="scaleFactor" type="xs:float" />
+               </xs:complexType>
+           </xs:element>
+       </xs:sequence>
+       <xs:attribute name="name" type="xs:string" />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Shader">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Color" minOccurs="0" maxOccurs="1">
+          <xs:complexType>
+            <xs:attribute name="r" type="xs:float" />
+            <xs:attribute name="g" type="xs:float" />
+            <xs:attribute name="b" type="xs:float" />
+            <xs:attribute name="a" type="xs:float" />
+          </xs:complexType>
+        </xs:element>
+        <xs:element ref="Material" minOccurs="0" maxOccurs="1" />
+      </xs:sequence>
+      <xs:attribute name="name" type="xs:string" />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Material">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Ambient" minOccurs="0" maxOccurs="1">
+          <xs:complexType>
+            <xs:attribute name="r" type="xs:float" />
+            <xs:attribute name="g" type="xs:float" />
+            <xs:attribute name="b" type="xs:float" />
+            <xs:attribute name="a" type="xs:float" />
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="Diffuse" minOccurs="0" maxOccurs="1">
+          <xs:complexType>
+            <xs:attribute name="r" type="xs:float" />
+            <xs:attribute name="g" type="xs:float" />
+            <xs:attribute name="b" type="xs:float" />
+            <xs:attribute name="a" type="xs:float" />
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="Specular" minOccurs="0" maxOccurs="1">
+          <xs:complexType>
+            <xs:attribute name="r" type="xs:float" />
+            <xs:attribute name="g" type="xs:float" />
+            <xs:attribute name="b" type="xs:float" />
+            <xs:attribute name="a" type="xs:float" />
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="Shininess" minOccurs="0" maxOccurs="1">
+          <xs:complexType>
+            <xs:attribute name="r" type="xs:float" />
+            <xs:attribute name="g" type="xs:float" />
+            <xs:attribute name="b" type="xs:float" />
+            <xs:attribute name="a" type="xs:float" />
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Action">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="TimeFunction" minOccurs="0" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:attribute name="type" type="xs:string" />
+            <xs:attribute name="a0" type="xs:float" />
+            <xs:attribute name="a1" type="xs:float" />
+            <xs:attribute name="a2" type="xs:float" />
+            <xs:attribute name="a3" type="xs:float" />
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+      <xs:attribute name="action" type="xs:string" />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Light">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Position" minOccurs="0" maxOccurs="1">
+          <xs:complexType>
+            <xs:attribute name="x" type="xs:float" />
+            <xs:attribute name="y" type="xs:float" />
+            <xs:attribute name="z" type="xs:float" />
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="Direction" minOccurs="0" maxOccurs="1">
+          <xs:complexType>
+            <xs:attribute name="x" type="xs:float" />
+            <xs:attribute name="y" type="xs:float" />
+            <xs:attribute name="z" type="xs:float" />
+          </xs:complexType>
+        </xs:element>
+        <xs:element ref="Material" minOccurs="0" maxOccurs="1" />
+        <xs:element name="Spot" minOccurs="0" maxOccurs="1">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Attenuation" minOccurs="0" maxOccurs="1">
+                <xs:complexType>
+                  <xs:attribute name="x" type="xs:float" />
+                  <xs:attribute name="y" type="xs:float" />
+                  <xs:attribute name="z" type="xs:float" />
+                  <xs:attribute name="h" type="xs:float" />
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+            <xs:attribute name="treshold" type="xs:float" />
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="Glow" minOccurs="0" maxOccurs="1">
+          <xs:complexType>
+            <xs:attribute name="set" type="xs:string" />
+            <xs:attribute name="size" type="xs:float" />
+            <xs:attribute name="texname" type="xs:string" />
+          </xs:complexType>
+        </xs:element>
+          <xs:element name="Flare" minOccurs="0" maxOccurs="unbounded">
+              <xs:complexType>
+                  <xs:attribute name="set" type="xs:string" />
+                  <xs:attribute name="size" type="xs:float" />
+                  <xs:attribute name="texname" type="xs:string" />
+              </xs:complexType>
+          </xs:element> 
+      </xs:sequence>
+      <xs:attribute name="name" type="xs:string" />
+      <xs:attribute name="active" type="xs:string" />
+      <xs:attribute name="volumesize" type="xs:float" />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="RenderingProperties">
+    <xs:complexType>
+      <xs:attribute name="texturing" type="xs:boolean" />
+      <xs:attribute name="lighting" type="xs:boolean" />
+      <xs:attribute name="blending" type="xs:boolean" />
+      <xs:attribute name="wireframe" type="xs:boolean" />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Knot">
+    <xs:complexType>
+      <xs:attribute name="x" type="xs:float" />
+      <xs:attribute name="y" type="xs:float" />
+      <xs:attribute name="z" type="xs:float" />
+      <xs:attribute name="h" type="xs:float" />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Object">
+    <xs:complexType>
+      <xs:attribute name="name" type="xs:string" />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ViewModifier">
+    <xs:complexType>
+        <xs:sequence>
+            <xs:element ref="Action" minOccurs="0" maxOccurs="unbounded" />
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" />
+        <xs:attribute name="object" type="xs:string" />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="LightModifier">
+    <xs:complexType>
+        <xs:sequence>
+            <xs:element ref="Action" minOccurs="0" maxOccurs="unbounded" />
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" />
+        <xs:attribute name="light" type="xs:string" />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Object3DInstance">
+    <xs:complexType>
+        <xs:sequence>
+            <xs:element ref="Shader" minOccurs="0" maxOccurs="1" />
+            <xs:element ref="Object3D" minOccurs="0" maxOccurs="1" />
+            <xs:element ref="RenderingProperties" minOccurs="0" maxOccurs="1" />
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" />
+        <xs:attribute name="reference" type="xs:string" />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Lod">
+    <xs:complexType>
+        <xs:sequence>
+            <xs:element name="Level" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                    <xs:attribute name="depth" type="xs:float" />
+                    <xs:attribute name="reference" type="xs:string" />
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Geometry">
+    <xs:complexType>
+        <xs:sequence>
+            <xs:element name="RenderingModel" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                    <xs:attribute name="front_geometry" type="xs:boolean" />
+                    <xs:attribute name="back_geometry" type="xs:boolean" />
+                    <xs:attribute name="normals" type="xs:boolean" />
+                    <xs:attribute name="tangents" type="xs:boolean" />
+                    <xs:attribute name="texture" type="xs:boolean" />
+                    <xs:attribute name="weights" type="xs:boolean" />
+                    <xs:attribute name="colors" type="xs:boolean" />
+                    <xs:attribute name="fog" type="xs:boolean" />
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Data">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="TextureSet" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element ref="ParticleManager" minOccurs="0" maxOccurs="unbounded"/> 
+        <xs:element ref="Set" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element ref="Shader" minOccurs="0" maxOccurs="unbounded" />
+        <xs:element ref="Light" minOccurs="0" maxOccurs="unbounded" /> 
+        <xs:element ref="ViewModifier" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element ref="LightModifier" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element ref="Object3DInstance" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element ref="Lod" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element name="Update" minOccurs="0" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element ref="Geometry" minOccurs="0" maxOccurs="unbounded"/>
+              <xs:element ref="Shader" minOccurs="0" maxOccurs="unbounded" />
+              <xs:element ref="Object3D" minOccurs="0" maxOccurs="unbounded" />
+              <xs:element ref="RenderingProperties" minOccurs="0" maxOccurs="unbounded" />
+              <xs:element name="ViewPoint" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="EyePosition" minOccurs="0" maxOccurs="1">
+                      <xs:complexType>
+                        <xs:attribute name="x" type="xs:float" />
+                        <xs:attribute name="y" type="xs:float" />
+                        <xs:attribute name="z" type="xs:float" />
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="TargetPosition" minOccurs="0" maxOccurs="1">
+                      <xs:complexType>
+                        <xs:attribute name="x" type="xs:float" />
+                        <xs:attribute name="y" type="xs:float" />
+                        <xs:attribute name="z" type="xs:float" />
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="ViewPath" minOccurs="0" maxOccurs="unbounded">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="EyePath" minOccurs="0" maxOccurs="1">
+                            <xs:complexType>
+                              <xs:sequence>
+                                <xs:element ref="Knot" minOccurs="0" maxOccurs="unbounded" />
+                              </xs:sequence>
+                              <xs:attribute name="name" type="xs:string" />
+                              <xs:attribute name="model" type="xs:string" />
+                            </xs:complexType>
+                          </xs:element>
+                          <xs:element name="TargetPath" minOccurs="0" maxOccurs="1">
+                            <xs:complexType>
+                              <xs:sequence>
+                                <xs:element ref="Knot" minOccurs="0" maxOccurs="unbounded" />
+                              </xs:sequence>
+                              <xs:attribute name="name" type="xs:string" />
+                              <xs:attribute name="model" type="xs:string" />
+                            </xs:complexType>
+                          </xs:element>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                  <xs:attribute name="left" type="xs:string" />
+                  <xs:attribute name="right" type="xs:string" />
+                  <xs:attribute name="bottom" type="xs:string" />
+                  <xs:attribute name="top" type="xs:string" />
+                  <xs:attribute name="near" type="xs:string" />
+                  <xs:attribute name="far" type="xs:string" />
+                  <xs:attribute name="model" type="xs:string" />
+				          <xs:attribute name="tmin" type="xs:float" />
+				          <xs:attribute name="tmax" type="xs:float" />
+				          <xs:attribute name="path" type="xs:string" />
+				          <xs:attribute name="continus" type="xs:string" />
+				          <xs:attribute name="loop" type="xs:string" />
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="Scene" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element ref="Light" minOccurs="0" maxOccurs="unbounded" />
+                    <xs:element ref="Object" minOccurs="0" maxOccurs="unbounded" />
+                    <xs:element name="Mirror" minOccurs="0" maxOccurs="unbounded">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="Normal" minOccurs="0" maxOccurs="1">
+                            <xs:complexType>
+                              <xs:attribute name="x" type="xs:float" />
+                              <xs:attribute name="y" type="xs:float" />
+                              <xs:attribute name="z" type="xs:float" />
+                              <xs:attribute name="h" type="xs:float" />
+                            </xs:complexType>
+                          </xs:element>
+                          <xs:element name="Point" minOccurs="0" maxOccurs="1">
+                            <xs:complexType>
+                              <xs:attribute name="x" type="xs:float" />
+                              <xs:attribute name="y" type="xs:float" />
+                              <xs:attribute name="z" type="xs:float" />
+                              <xs:attribute name="h" type="xs:float" />
+                            </xs:complexType>
+                          </xs:element>
+                          <xs:element ref="Object" minOccurs="0" maxOccurs="unbounded" />
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                  <xs:attribute name="name" type="xs:string" />
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+            <xs:attribute name="name" type="xs:string" />
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+      <xs:attribute name="name" type="xs:string" />
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
