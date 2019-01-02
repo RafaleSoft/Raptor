@@ -370,6 +370,9 @@ copy OpenEXRLib\bin\vc9\zdll.dll "%RAPTOR_ROOT%\Redist\bin\zlib1.dll"
     <ClCompile Include="..\..\RaptorToolBox\Imaging\PNGImaging.cpp" />
     <ClCompile Include="..\..\RaptorToolBox\Imaging\TGAImaging.cpp" />
     <ClCompile Include="..\..\RaptorToolBox\Imaging\TIFFImaging.cpp" />
+    <ClCompile Include="..\..\RaptorToolBox\Imaging\writepng.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\..\RaptorToolBox\Loaders.cpp" />
     <ClCompile Include="..\..\RaptorToolBox\Loaders\3DSfile.cpp" />
     <ClCompile Include="..\..\RaptorToolBox\Loaders\OBJFile.cpp" />
@@ -441,6 +444,7 @@ copy OpenEXRLib\bin\vc9\zdll.dll "%RAPTOR_ROOT%\Redist\bin\zlib1.dll"
     <ClInclude Include="..\..\RaptorToolBox\Imaging\PNGImaging.h" />
     <ClInclude Include="..\..\RaptorToolBox\Imaging\TGAImaging.h" />
     <ClInclude Include="..\..\RaptorToolBox\Imaging\TIFFImaging.h" />
+    <ClInclude Include="..\..\RaptorToolBox\Imaging\writepng.h" />
     <ClInclude Include="..\..\RaptorToolBox\Loaders\3DSfile.h" />
     <ClInclude Include="..\..\RaptorToolBox\Loaders\OBJScript_lex.h" />
     <ClInclude Include="..\..\RaptorToolBox\Loaders\OBJScript_tree.h" />

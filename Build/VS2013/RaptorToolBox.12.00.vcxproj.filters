@@ -137,6 +137,9 @@
     <ClCompile Include="..\..\RaptorToolBox\CmdLineParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\RaptorToolBox\Imaging\writepng.c">
+      <Filter>Source Files\Imaging</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\RaptorToolBox\Loaders\OBJScript_lex.h">
@@ -219,6 +222,9 @@
     </ClInclude>
     <ClInclude Include="..\..\RaptorToolBox\CmdLineParser.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorToolBox\Imaging\writepng.h">
+      <Filter>Header Files\Imaging</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
