@@ -4,17 +4,12 @@
 
 #include "stdafx.h"
 #include "GenericDisplay.h"
-#include "GLHierarchy\TextureUnitSetup.h"
-#include "GLHierarchy\FragmentShader.h"
-#include "GLHierarchy\VertexShader.h"
-#include "GLHierarchy\RenderingProperties.h"
-#include "System\RaptorDisplay.h"
+#include "GLHierarchy/TextureUnitSetup.h"
+#include "GLHierarchy/FragmentShader.h"
+#include "GLHierarchy/VertexShader.h"
+#include "GLHierarchy/IRenderingProperties.h"
+#include "System/RaptorDisplay.h"
 
-#ifdef _DEBUG
-#undef THIS_FILE
-static char THIS_FILE[]=__FILE__;
-#define new DEBUG_NEW
-#endif
 
 RAPTOR_HANDLE CGenericDisplay::reinitTMU;
 
@@ -39,8 +34,8 @@ void CGenericDisplay::ReInit()
 	{
 		CRaptorDisplay* pDisplay = CRaptorDisplay::GetCurrentDisplay();
 		pDisplay->selectScene("ROOT_SCENE");
-		CRenderingProperties *rp = pDisplay->getRenderingProperties();
-		rp->setTexturing(CRenderingProperties::DISABLE);
+		IRenderingProperties &rp = pDisplay->getRenderingProperties();
+		rp.setTexturing(IRenderingProperties::DISABLE);
 
 		if (reinitTMU.handle != 0)
 			glCallList(reinitTMU.handle);

@@ -3,7 +3,7 @@
 #define __FTEngine_h
 
 #include <ft2build.h>
-#include <freetype.h>
+#include FT_FREETYPE_H
 
 /////////////////////////////////////////////////////////////////////////////
 

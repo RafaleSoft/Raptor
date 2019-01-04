@@ -307,9 +307,7 @@ bool CVulkanDevice::vkRender(	C3DScene *pScene,
 						   config.framebufferState.depthClearValue,
 						   config.framebufferState.stencilClearValue);
 	
-	VkBuffer binding = pDeviceMemory->getLockedBuffer(IDeviceMemoryManager::IBufferObject::VERTEX_BUFFER);
-	VkBuffer binding2 = pDeviceMemory->getLockedBuffer(IDeviceMemoryManager::IBufferObject::INDEX_BUFFER);
-	pScene->vkRender(displayList, binding, binding2);
+	pScene->vkRender(displayList);
 
 	return true;
 }

@@ -63,7 +63,7 @@ bool CProgramParameters::addParameter(const CParameterBase& param)
 #endif
 
 	m_parameters.push_back(param.clone());
-	return false;
+	return true;
 }
 
 CProgramParameters& CProgramParameters::operator=(const CProgramParameters& params)

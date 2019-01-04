@@ -121,14 +121,12 @@ bool zipfile(const char* fname, const char* outfile, int level)
 
 	/* allocate deflate state */
 	z_stream strm;
-	strm.zalloc = Z_NULL;
-	strm.zfree = Z_NULL;
-	strm.opaque = Z_NULL;
+	memset(&strm, 0, sizeof(z_stream));
 	int ret = deflateInit(&strm, level);
 	if (ret != Z_OK)
 		return false;
 
-	FILE *source = FOPEN(fname,"rb");
+	FILE *source = FOPEN(fname, "rb");
 	if (NULL == source)
 		return false;
 
@@ -192,11 +190,8 @@ bool unzipfile(const char* fname, const char* outfile)
     
 	/* allocate inflate state */
 	z_stream strm;
-	strm.zalloc = Z_NULL;
-	strm.zfree = Z_NULL;
-	strm.opaque = Z_NULL;
-	strm.avail_in = 0;
-	strm.next_in = Z_NULL;
+	memset(&strm, 0, sizeof(z_stream));
+
 	int ret = inflateInit(&strm);
 	if (ret != Z_OK)
 		return false;
@@ -268,6 +263,8 @@ bool unzipfile(const char* fname, const char* outfile)
 
 int main(int argc, char* argv[])
 {
+	printf("Welcone to the simple Raptor Zip Data Packager...\n\n");
+
 	if (argc < 3)
 	{
 		printf("Usage:\n");
@@ -343,11 +340,11 @@ int main(int argc, char* argv[])
 					offset += filestatus.st_size;
 					nbFHeaders++;
 
-					/*char uzfname[_MAX_PATH];
-					strcpy(uzfname,"_");
-					strcat(uzfname,zfname);
-					uzfname[strlen(zfname)-3] = 0;
-					unzipfile(zfname,uzfname);*/
+					//char uzfname[_MAX_PATH];
+					//strcpy(uzfname,"_");
+					//strcat(uzfname,zfname);
+					//uzfname[strlen(zfname)-3] = 0;
+					//unzipfile(zfname,uzfname);
 				}
 				else
 				{

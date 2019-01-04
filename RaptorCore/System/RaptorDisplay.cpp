@@ -30,8 +30,8 @@
 #if !defined(AFX_OBJECT3D_H__DB24F017_80B9_11D3_97C1_FC2841000000__INCLUDED_)
 	#include "GLHierarchy/Object3D.h"
 #endif
-#if !defined(AFX_RENDERINGPROPERTIES_H__634BCF2B_84B4_47F2_B460_D7FDC0F3B698__INCLUDED_)
-	#include "GLHierarchy/RenderingProperties.h"
+#if !defined(AFX_OPENGLRENDERINGPROPERTIES_H__1F0F1E67_FC84_4772_A6EE_923BD81F91D3__INCLUDED_)
+	#include "Subsys/OpenGL/OpenGLRenderingProperties.h"
 #endif
 #if !defined(AFX_RAPTORIO_H__87D52C27_9117_4675_95DC_6AD2CCD2E78D__INCLUDED_)
 	#include "System/RaptorIO.h"
@@ -70,21 +70,20 @@ const CPersistence::CPersistenceClassID& CRaptorDisplay::CRaptorDisplayClassID::
 //////////////////////////////////////////////////////////////////////
 
 CRaptorDisplay::CRaptorDisplay(const CPersistence::CPersistenceClassID& id,const std::string& name)
-	:CPersistence(id,name)
+	:CPersistence(id, name), 
+	m_bDeleteViewPoint(true), m_bApplyViewPointModel(true),
+	m_pRootScene(NULL), m_pViewPoint(NULL), m_pProperties(NULL)
 {
 	m_pRootScene = new C3DScene("ROOT_SCENE");
-	m_pViewPoint = createViewPoint();
-	m_pProperties = new CRenderingProperties();
-    m_pProperties->clear(CGL_RGBA|CGL_DEPTH);
-	m_pProperties->setMultisampling(CRenderingProperties::DISABLE);
-
-	m_bDeleteViewPoint = true;
-    m_bApplyViewPointModel = true;
-
-    m_pRootScene->registerDestruction(this);
+	m_pRootScene->registerDestruction(this);
 	m_pScenes.push_back(m_pRootScene);
 
-    m_pViewPoint->registerDestruction(this);
+	m_pViewPoint = createViewPoint();
+	m_pViewPoint->registerDestruction(this);
+
+	m_pProperties = new COpenGLRenderingProperties();
+    m_pProperties->clear(CGL_RGBA|CGL_DEPTH);
+	m_pProperties->setMultisampling(IRenderingProperties::DISABLE);
 }
 
 CRaptorDisplay::~CRaptorDisplay()
@@ -95,6 +94,11 @@ CRaptorDisplay::~CRaptorDisplay()
 		delete m_pRootScene;
 	if ((m_bDeleteViewPoint) && (m_pViewPoint != NULL))
 		delete m_pViewPoint;
+}
+
+IRenderingProperties *const CRaptorDisplay::createRenderingProperties(void) const
+{
+	return new COpenGLRenderingProperties();
 }
 
 IViewPoint *const CRaptorDisplay::createViewPoint(void) const
@@ -126,6 +130,11 @@ void CRaptorDisplay::unLink(const CPersistence* obj)
 IViewPoint *const CRaptorDisplay::getViewPoint(void) const
 {
 	return m_pViewPoint; 
+}
+
+IRenderingProperties &CRaptorDisplay::getRenderingProperties(void) const
+{
+	return *m_pProperties;
 }
 
 void CRaptorDisplay::addScene(C3DScene* const scene )
@@ -178,10 +187,15 @@ bool CRaptorDisplay::selectScene( const std::string& sname)
 
 void CRaptorDisplay::addSubDisplay(CRaptorDisplay *pDisplay)
 {
-    if (pDisplay != NULL)
-    {
+    if (NULL != pDisplay)
         m_pSubDisplays.push_back(pDisplay);
-    }
+}
+
+void CRaptorDisplay::setRenderingProperties(IRenderingProperties *properties)
+{
+	if (NULL != m_pProperties)
+		delete m_pProperties;
+	m_pProperties = properties;
 }
 
 void CRaptorDisplay::setViewPoint(IViewPoint *viewPoint)
@@ -259,14 +273,14 @@ bool CRaptorDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
             CRaptorDisplay* display = (*it++);
 			display->glvkBindDisplay(_device);
             display->glRender();
-		    display->glUnBindDisplay();
+		    display->glvkUnBindDisplay();
         }
     }
 
 	return true;
 }
 
-bool CRaptorDisplay::glUnBindDisplay(void)
+bool CRaptorDisplay::glvkUnBindDisplay(void)
 {
     if (m_pProperties != NULL)
        m_pProperties->glPopProperties();
@@ -366,7 +380,7 @@ bool CRaptorDisplay::importObject(CRaptorIO& io)
 			da.display_mode |= mode;
 		}
 		else if (data == "RenderingProperties")
-			getRenderingProperties()->importObject(io);
+			getRenderingProperties().importObject(io);
 		else if (data == "Scene")
 			m_pRootScene->importObject(io);
 		else if (data == "ViewPoint")

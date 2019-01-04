@@ -46,8 +46,8 @@
 #if !defined(AFX_OBJECT3DCONTOUR_H__C0C2B562_ABBC_4B04_A1E7_E0727FAC66AB__INCLUDED_)
 	#include "GLHierarchy/Object3DContour.h"
 #endif
-#if !defined(AFX_RENDERINGPROPERTIES_H__634BCF2B_84B4_47F2_B460_D7FDC0F3B698__INCLUDED_)
-	#include "RenderingProperties.h"
+#if !defined(AFX_IRENDERINGPROPERTIES_H__634BCF2B_84B4_47F2_B460_D7FDC0F3B698__INCLUDED_)
+	#include "IRenderingProperties.h"
 #endif
 #if !defined(AFX_RAPTORVULKANCOMMANDBUFFER_H__0398BABD_747B_4DFE_94AA_B026BDBD03B1__INCLUDED_)
 	#include "Subsys/Vulkan/VulkanCommandBuffer.h"
@@ -960,7 +960,7 @@ bool CGeometry::getVertexInputState( std::vector<VkVertexInputBindingDescription
 	nb_bindings++; 	// always extract geometry
 
 	//!	TexCoords
-	CRenderingProperties *props = CRenderingProperties::GetCurrentProperties();
+	IRenderingProperties *props = IRenderingProperties::GetCurrentProperties();
 	if ((m_renderingModel.hasModel(CRenderingModel::CGL_TEXTURE)))
 //		(props->getCurrentTexturing() == CRenderingProperties::ENABLE))
 	{
@@ -1005,15 +1005,15 @@ void CGeometry::glRenderGeometry()
 
 
 	//	Store arrays state + texture state
-    CRenderingProperties *props = CRenderingProperties::GetCurrentProperties();
+	IRenderingProperties *props = IRenderingProperties::GetCurrentProperties();
     bool popNormalArray = false;
     bool popTangentArray = false;
     bool popColorArray = false;
     bool popTexCoordArray = false;
     bool popWeightArray = false;
     bool popFogArray = false;
-    bool proceedLighting = (props->getCurrentLighting() == CRenderingProperties::ENABLE);
-    bool proceedTexturing = (props->getCurrentTexturing() == CRenderingProperties::ENABLE);
+	bool proceedLighting = (props->getCurrentLighting() == IRenderingProperties::ENABLE);
+	bool proceedTexturing = (props->getCurrentTexturing() == IRenderingProperties::ENABLE);
     
 
 	if (m_renderingModel.hasModel(CRenderingModel::CGL_BACK_GEOMETRY))

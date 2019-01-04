@@ -16,7 +16,7 @@
     #include "System/RaptorErrorManager.h"
 #endif
 
-//  tiff 3.8.2 support
+//  tiff support
 #include "tif_config.h"
 #ifndef _TIFFIO_
 	#include "tiffio.h"

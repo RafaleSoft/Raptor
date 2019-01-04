@@ -6,22 +6,22 @@
 #include "WarpingDisplay.h"
 
 
-#include "Engine\GeometricModifier.h"
-#include "Engine\3DScene.h"
-#include "GLHierarchy\TextureSet.h"
-#include "GLHierarchy\TextureFactory.h"
-#include "GLHierarchy\TextureUnitSetup.h"
-#include "GLHierarchy\TextureObject.h"
-#include "Engine\3DEngine.h"
-#include "GLHierarchy\ShadedGeometry.h"
-#include "GLHierarchy\VertexShader.h"
-#include "GLHierarchy\Object3DInstance.h"
-#include "GLHierarchy\SimpleObject.h"
-#include "GLHierarchy\Shader.h"
-#include "GLHierarchy\FragmentProgram.h"
-#include "System\Raptor.h"
-#include "System\RaptorGLExtensions.h"
-#include "GLHierarchy\RenderingProperties.h"
+#include "Engine/GeometricModifier.h"
+#include "Engine/3DScene.h"
+#include "GLHierarchy/TextureSet.h"
+#include "GLHierarchy/TextureFactory.h"
+#include "GLHierarchy/TextureUnitSetup.h"
+#include "GLHierarchy/TextureObject.h"
+#include "Engine/3DEngine.h"
+#include "GLHierarchy/ShadedGeometry.h"
+#include "GLHierarchy/VertexShader.h"
+#include "GLHierarchy/Object3DInstance.h"
+#include "GLHierarchy/SimpleObject.h"
+#include "GLHierarchy/Shader.h"
+#include "GLHierarchy/FragmentProgram.h"
+#include "System/Raptor.h"
+#include "System/RaptorGLExtensions.h"
+#include "GLHierarchy/IRenderingProperties.h"
 
 #include "ToolBox/BasicObjects.h"
 
@@ -435,9 +435,9 @@ void CWarpingDisplay::ReInit()
 	glEnable(GL_NORMALIZE);
 
     CRaptorDisplay* const pDisplay = CRaptorDisplay::GetCurrentDisplay();
-    CRenderingProperties *rp = pDisplay->getRenderingProperties();
-    rp->setLighting(CRenderingProperties::DISABLE);
-    rp->setTexturing(CRenderingProperties::ENABLE);
+	IRenderingProperties &rp = pDisplay->getRenderingProperties();
+	rp.setLighting(IRenderingProperties::DISABLE);
+	rp.setTexturing(IRenderingProperties::ENABLE);
 
 	pDisplay->selectScene("WARPING_SCENE");
 }

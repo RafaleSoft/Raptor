@@ -10,7 +10,7 @@
 #include "GLHierarchy/FragmentProgram.h"
 #include "GLHierarchy/GeometryEditor.h"
 #include "GLHierarchy/Object3DInstance.h"
-#include "GLHierarchy/RenderingProperties.h"
+#include "GLHierarchy/IRenderingProperties.h"
 #include "GLHierarchy/Light.h"
 #include "GLHierarchy/Shader.h"
 #include "GLHierarchy/ShaderProgram.h"
@@ -81,6 +81,7 @@ CTest5Doc::CTest5Doc(const RAPTOR_HANDLE& device,const char* title)
 	config.m_uiTexels = 2048*1024;
     config.m_uiPolygons = 20000;
     config.m_uiVertices = 50000;
+	config.m_uiUniforms = 2048;
     Raptor::glInitRaptor(config);
 
 	CImaging::installImagers();
@@ -109,9 +110,8 @@ CTest5Doc::CTest5Doc(const RAPTOR_HANDLE& device,const char* title)
 	bool res = m_pDisplay->glvkBindDisplay(device);
 	if (res)
 	{
-		CRenderingProperties *props = m_pDisplay->getRenderingProperties();
-		props->setLighting(CRenderingProperties::ENABLE);
-		props->setTexturing(CRenderingProperties::ENABLE);
+		IRenderingProperties &props = m_pDisplay->getRenderingProperties();
+		props.enableLighting.enableTexturing;
 #ifdef VULKAN_TEST
 #else
 		CRaptorConsole *pConsole = Raptor::GetConsole();
@@ -121,7 +121,7 @@ CTest5Doc::CTest5Doc(const RAPTOR_HANDLE& device,const char* title)
 #endif
         GLInitContext();
 
-		m_pDisplay->glUnBindDisplay();
+		m_pDisplay->glvkUnBindDisplay();
 	}
 }
 
@@ -134,7 +134,7 @@ void CTest5Doc::resize(unsigned int width, unsigned int height)
 	if (m_pDisplay->glvkBindDisplay(m_device))
     {
         m_pDisplay->glResize(width,height,0,0);
-        m_pDisplay->glUnBindDisplay();
+		m_pDisplay->glvkUnBindDisplay();
     }
 }
 
@@ -145,7 +145,7 @@ void CTest5Doc::glRender(void)
 	{
 		m_pDisplay->glRender();
 
-		m_pDisplay->glUnBindDisplay();
+		m_pDisplay->glvkUnBindDisplay();
 	}
 }
 
@@ -226,9 +226,10 @@ void CTest5Doc::GLInitContext(void)
 	
 	CProgramParameters parameters;
 	CProgramParameters::CParameter<Transform_t> param(T);
-	param.name("modelview");
+	param.name("ubo");
 	param.locationIndex = 0;
 	parameters.addParameter(param);
+	//parameters.addParameter(ss->getDefaultParameter("gl_ModelViewMatrix", 0));
 
 	CProgramParameters::CParameter<CTextureUnitSetup::TEXTURE_IMAGE_UNIT> param2(CTextureUnitSetup::IMAGE_UNIT_0);
 	param2.name("diffusemap");

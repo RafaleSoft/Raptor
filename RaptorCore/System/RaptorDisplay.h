@@ -31,7 +31,7 @@ RAPTOR_NAMESPACE_BEGIN
 
 class IViewPoint;
 class C3DScene;
-class CRenderingProperties;
+class IRenderingProperties;
 
 
 
@@ -42,7 +42,11 @@ public:
 	static CRaptorDisplay * const GetCurrentDisplay(void);
 
 	//! Returns the global rendering properties.
-	virtual CRenderingProperties *getRenderingProperties(void) const { return m_pProperties; };
+	virtual IRenderingProperties &getRenderingProperties(void) const;
+
+	//! Creates a view point compatible with this display.
+	virtual IRenderingProperties *const createRenderingProperties(void) const;
+
 
 	//!
 	//!	Display management
@@ -63,7 +67,7 @@ public:
 	//! To unbound the display, simply call this method
 	//!	Return true if the display is unbound without errors, false if the display is
 	//! unbounded before call or if there is an error.
-	virtual bool glUnBindDisplay(void);
+	virtual bool glvkUnBindDisplay(void);
 
 
 	//!
@@ -79,7 +83,7 @@ public:
 	//! Returns the display view point.
 	virtual IViewPoint *const getViewPoint(void) const;
 
-	//! Returns the display view point.
+	//! Creates a view point compatible with this display.
 	virtual IViewPoint *const createViewPoint(void) const;
 
 
@@ -154,10 +158,6 @@ public:
     //! This generator is not yet implemented.in this version
     virtual ITextureGenerator::GENERATOR_KIND getKind(void) const { return ITextureGenerator::NONE; };
 
-    //! Implements CTextureGenerator
-    //! This class is virtual, generation is only implemented in subclasses
-    //virtual void glGenerate(CTextureObject* );
-
     //! This method returns the width of the generator
     virtual unsigned int getGenerateWidth(void) const;
 
@@ -185,6 +185,11 @@ protected:
     //! and before the purge is effective.
     virtual void glReleaseResources(void);
 
+	//! This method enables subclasses to replace rendering properties
+	//!	Registration is not implemented, it remains the responsibility of subclasses
+	//! (method is protected)
+	void setRenderingProperties(IRenderingProperties *properties);
+
 	
 private:
 	//!	Display factory
@@ -199,7 +204,7 @@ private:
 	bool					m_bDeleteViewPoint;
     bool                    m_bApplyViewPointModel;
 
-	CRenderingProperties    *m_pProperties;
+	IRenderingProperties    *m_pProperties;
 
     C3DScene				*m_pRootScene;
 	vector<C3DScene*>       m_pScenes;

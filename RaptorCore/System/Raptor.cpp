@@ -314,7 +314,7 @@ void Raptor::glDestroyDisplay(CRaptorDisplay* pDisplay)
                                                            CRaptorErrorManager::RAPTOR_WARNING,
 											               "Cannot destroy a Display currently bound !");
 #endif
-			pDisplay->glUnBindDisplay();
+			pDisplay->glvkUnBindDisplay();
 		}
 	//	else
 		{

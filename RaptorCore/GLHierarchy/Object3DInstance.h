@@ -15,7 +15,7 @@
 
 RAPTOR_NAMESPACE_BEGIN
 
-class CRenderingProperties;
+class IRenderingProperties;
 class CShader;
 
 
@@ -77,7 +77,7 @@ public:
 	virtual void glClipRender();
 
     //! Override Display rendering properties tu use local object specific shading.
-    void overrideShading(const CRenderingProperties& override);
+	void overrideShading(const IRenderingProperties& override);
 
     //! Returns the internal shader. A new shader is allocated if necessary.
     virtual CShader	* const getShader(void);
@@ -109,15 +109,15 @@ protected:
 	//!	The differences between an object and it's instance
 	//!	N.B.: to avoid matrix transposition before it is loaded by OpenGL
 	//!	operations should produce the transpose of transform
-	GL_MATRIX		m_transform;
+	GL_MATRIX				m_transform;
 	
     //! The real object instanciated
-	CObject3D		            *m_pReference;
+	CObject3D				*m_pReference;
 
 
 private:
-    CShader			              *m_pShader;
-    CRenderingProperties  *m_pOverride;
+    CShader					*m_pShader;
+	IRenderingProperties	*m_pOverride;
     CContainerNotifier<CObject3D*> *m_pObserver;
 };
 

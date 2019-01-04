@@ -24,7 +24,7 @@
 #include "GLHierarchy/ShadedGeometry.h"
 #include "GLHierarchy/3DSet.h"
 #include "GLHierarchy/Object3DInstance.h"
-#include "GLHierarchy\RenderingProperties.h"
+#include "GLHierarchy/IRenderingProperties.h"
 #include "GLHierarchy/Light.h"
 #include "System/Raptor.h"
 #include "Engine/3DPath.h"
@@ -494,9 +494,9 @@ void CShadowMapDisplay::ReInit()
 	vp->animate(true);
 
 	CRaptorDisplay* const pDisplay = CRaptorDisplay::GetCurrentDisplay();
-	CRenderingProperties *rp = pDisplay->getRenderingProperties();
-    rp->setTexturing(CRenderingProperties::ENABLE);
-	rp->setLighting(CRenderingProperties::ENABLE);
+	IRenderingProperties &rp = pDisplay->getRenderingProperties();
+	rp.setTexturing(IRenderingProperties::ENABLE);
+	rp.setLighting(IRenderingProperties::ENABLE);
 	pDisplay->setViewPoint(vp);
 	pDisplay->selectScene("SHADOW_MAP_SCENE");
 }

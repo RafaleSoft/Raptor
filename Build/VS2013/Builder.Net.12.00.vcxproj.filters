@@ -45,7 +45,7 @@
     <Image Include="..\..\Builder.Net\res\Raptor_logo_sml.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\..\Builder.Net\res\app.ico">
+    <Image Include="..\..\Builder.Net\res\Builder.ico">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>
@@ -60,8 +60,8 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="..\..\Builder.Net\Redist.bat">
+    <None Include="..\..\Builder.Net\Redist.bat">
       <Filter>Source Files</Filter>
-    </CustomBuild>
+    </None>
   </ItemGroup>
 </Project>

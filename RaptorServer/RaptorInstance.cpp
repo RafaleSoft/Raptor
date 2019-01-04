@@ -43,8 +43,8 @@
 #if !defined(AFX_IMAGING_H__BD40E48F_EE12_49CF_BFBD_93658FCD0529__INCLUDED_)
 	#include "ToolBox/Imaging.h"
 #endif
-#if !defined(AFX_RENDERINGPROPERTIES_H__634BCF2B_84B4_47F2_B460_D7FDC0F3B698__INCLUDED_)
-	#include "GLHierarchy/RenderingProperties.h"
+#if !defined(AFX_IRENDERINGPROPERTIES_H__634BCF2B_84B4_47F2_B460_D7FDC0F3B698__INCLUDED_)
+	#include "GLHierarchy/IRenderingProperties.h"
 #endif
 
 #include "YUVCompressor.h"
@@ -146,11 +146,11 @@ void CRaptorInstance::glRender()
 				m_prodCons.P();
 
 				if (r.display != 0)
-					pDisplay->glUnBindDisplay();
+					pDisplay->glvkUnBindDisplay();
 				m_pDisplay->glRender();
 			}
 
-			m_pDisplay->glUnBindDisplay();
+			m_pDisplay->glvkUnBindDisplay();
 		}
 		else
 		{
@@ -159,7 +159,7 @@ void CRaptorInstance::glRender()
 				m_pDisplay->glvkBindDisplay(m_pWindow);
 				Raptor::glDestroyDisplay(m_sessionsToDestroy[0].display);
 				m_sessionsToDestroy.erase(m_sessionsToDestroy.begin());
-				m_pDisplay->glUnBindDisplay();
+				m_pDisplay->glvkUnBindDisplay();
 			}
 			Sleep(1);
 		}
@@ -242,13 +242,13 @@ bool CRaptorInstance::start(unsigned int width,unsigned int height)
 		item.text = "Pending replies: 0";
 		pConsole->addItem(item);
 
-		CRenderingProperties *props = m_pDisplay->getRenderingProperties();
-		props->setTexturing(CRenderingProperties::ENABLE);
-		props->setLighting(CRenderingProperties::DISABLE);
-		props->setDepthTest(CRenderingProperties::DISABLE);
-		props->setCullFace(CRenderingProperties::DISABLE);
-		props->clear(CGL_RGBA);
-	m_pDisplay->glUnBindDisplay();
+		IRenderingProperties &props = m_pDisplay->getRenderingProperties();
+		props.setTexturing(IRenderingProperties::ENABLE);
+		props.setLighting(IRenderingProperties::DISABLE);
+		props.setDepthTest(IRenderingProperties::DISABLE);
+		props.setCullFace(IRenderingProperties::DISABLE);
+		props.clear(CGL_RGBA);
+	m_pDisplay->glvkUnBindDisplay();
 
 	m_pApplication = CRaptorApplication::CreateApplication();
 	m_pApplication->grabCursor(false);
@@ -431,12 +431,12 @@ bool CRaptorInstance::executeRequest(request &r)
 
 		RAPTOR_HANDLE handle;
 		s.display->glvkBindDisplay(handle);
-			CRenderingProperties *props = s.display->getRenderingProperties();
+			IRenderingProperties &props = s.display->getRenderingProperties();
 			//props->setMultisampling(CRenderingProperties::ENABLE);
-			props->setTexturing(CRenderingProperties::ENABLE);
-			props->setLighting(CRenderingProperties::ENABLE);
-			props->clear(CGL_RGBA|CGL_DEPTH);
-		s.display->glUnBindDisplay();
+			props.setTexturing(IRenderingProperties::ENABLE);
+			props.setLighting(IRenderingProperties::ENABLE);
+			props.clear(CGL_RGBA|CGL_DEPTH);
+		s.display->glvkUnBindDisplay();
 
 		m_sessions.push_back(s);
 		return true;

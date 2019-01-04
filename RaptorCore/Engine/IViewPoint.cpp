@@ -185,33 +185,6 @@ CGenericVector<float> IViewPoint::getPosition(VIEW_POINT_POSITION p) const
     {
         case EYE:
         {
-			/*
-            CGenericMatrix<float> T;
-	        CGenericMatrix<float> R;
-
-	        //	first compute the actual transform
-	        CGenericVector<float> ax = Rotate;
-	        C3DEngine::Get3DEngine()->generateRotation(m_lfAlpha,!ax,R);
-	        T.Ident();
-	        T[3] = -Origin.X();
-	        T[7] = -Origin.Y();
-	        T[11] = -Origin.Z();
-
-	        R *= T;
-
-	        T[3] = Position.X();
-	        T[7] = Position.Y();
-	        T[11] = Position.Z();
-
-	        T *= R;
-
-	        //	Now solve to find Origin translation
-	        //	T.x = O
-	        CGenericVector<float> b(T[3],T[7],T[11],1.0f);
-	        C3DEngine::Get3DEngine()->solve(b,R,ax);
-
-	        return ax;
-			*/
 			return Origin;
             break;
         }
@@ -317,51 +290,6 @@ void IViewPoint::recomputeViewPoint(void)
     m_lfAlpha = TO_DEGREE(atan2(v.X(),v.Z())) + 180.0;
     m_lfBeta = -TO_DEGREE(atan2(sqrt(v.X()*v.X()+v.Z()*v.Z()),v.Y())) + 90.0;
 }
-
-/*
-void IViewPoint::glvkRender(void)
-{
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-
-	glScalef(Scale.X(),Scale.Y(),Scale.Z());
-
-	glRotatef(m_lfGamma,0.0f,0.0f,1.0f);
-	glRotatef(-m_lfBeta,1.0f,0.0f,0.0f);
-	glRotatef(-m_lfAlpha,0.0f,1.0f,0.0f);
-
-	glTranslatef(-Origin.X(),-Origin.Y(),-Origin.Z());
-
-	C3DEngine::Get3DEngine()->glConfigureEngine(this);
-
-	CATCH_GL_ERROR
-}
-
-void IViewPoint::glvkRenderViewPointModel(void)
-{
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-
-	switch(model)
-	{
-		case ORTHOGRAPHIC:
-			glOrtho(viewVolume[0],viewVolume[1],
-					viewVolume[2],viewVolume[3],
-					viewVolume[4],viewVolume[5]);
-			break;
-		case PERSPECTIVE:
-			glFrustum(	viewVolume[0],viewVolume[1],
-						viewVolume[2],viewVolume[3],
-						viewVolume[4],viewVolume[5]);
-	}
-
-	glMatrixMode(GL_MODELVIEW);
-
-	//glConfigureEngine(this);
-
-	CATCH_GL_ERROR
-}
-*/
 
 void IViewPoint::setTimeInterval(float tMin, float tMax)
 {

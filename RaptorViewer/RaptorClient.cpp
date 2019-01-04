@@ -34,8 +34,8 @@
 #if !defined(AFX_3DSCENE_H__E597E752_BAD4_415D_9C00_8C59D139D32B__INCLUDED_)
 	#include "Engine/3DScene.h"
 #endif
-#if !defined(AFX_RENDERINGPROPERTIES_H__634BCF2B_84B4_47F2_B460_D7FDC0F3B698__INCLUDED_)
-	#include "GLHierarchy/RenderingProperties.h"
+#if !defined(AFX_IRENDERINGPROPERTIES_H__634BCF2B_84B4_47F2_B460_D7FDC0F3B698__INCLUDED_)
+	#include "GLHierarchy/IRenderingProperties.h"
 #endif
 
 #if !defined(AFX_SERVERIMAGERENDERER_H__C9720F3B_1B29_482C_84C8_1A990CEC0EBD__INCLUDED_)
@@ -107,7 +107,7 @@ void CRaptorClient::glRender()
 
 	m_pDisplay->glRender();
 
-	m_pDisplay->glUnBindDisplay();
+	m_pDisplay->glvkUnBindDisplay();
 
 	if (pending_queries < MAX_QUERIES)
 	{
@@ -144,11 +144,11 @@ bool CRaptorClient::run(unsigned int width, unsigned int height)
 	IViewPoint *vp = m_pDisplay->getViewPoint();
 	vp->setViewVolume(-1.0,1.0,-1.0,1.0,1.0,100.0,IViewPoint::ORTHOGRAPHIC);
 
-	CRenderingProperties *props = m_pDisplay->getRenderingProperties();
-	props->clear(CGL_RGBA|CGL_DEPTH);
-	props->setTexturing(CRenderingProperties::ENABLE);
-	props->setLighting(CRenderingProperties::DISABLE);
-	props->setCullFace(CRenderingProperties::DISABLE);
+	IRenderingProperties &props = m_pDisplay->getRenderingProperties();
+	props.clear(CGL_RGBA|CGL_DEPTH);
+	props.setTexturing(IRenderingProperties::ENABLE);
+	props.setLighting(IRenderingProperties::DISABLE);
+	props.setCullFace(IRenderingProperties::DISABLE);
 
 	res = m_pDisplay->glvkBindDisplay(m_window);
 	if (res)
@@ -164,7 +164,7 @@ bool CRaptorClient::run(unsigned int width, unsigned int height)
 		C3DScene *pScene = m_pDisplay->getRootScene();
 		pScene->addObject(m_pImage);
 
-		res = m_pDisplay->glUnBindDisplay();
+		res = m_pDisplay->glvkUnBindDisplay();
 
 		if (res)
 		{

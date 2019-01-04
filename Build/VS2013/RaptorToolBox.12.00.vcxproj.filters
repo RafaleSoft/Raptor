@@ -214,9 +214,6 @@
     <ClInclude Include="..\..\RaptorToolBox\RaptorToolBox.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\RaptorToolBox\Resource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\RaptorToolBox\Streaming.h">
       <Filter>Header Files</Filter>
     </ClInclude>

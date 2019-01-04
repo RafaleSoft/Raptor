@@ -12,6 +12,7 @@
     #endif // _MSC_VER > 1000
 
     #define VC_EXTRALEAN		// Exclude rarely-used stuff from Windows headers
+	#define _WIN32_WINNT _WIN32_WINNT_WIN7	// Minimum target is Win7
 
     #include <afxwin.h>         // MFC core and standard components
     #include <afxext.h>         // MFC extensions

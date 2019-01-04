@@ -52,8 +52,8 @@
 #if !defined(AFX_OBJECTFACTORY_H__7F891C52_9E32_489C_B09C_5E5803522D91__INCLUDED_)
 	#include "ObjectFactory.h"
 #endif
-#if !defined(AFX_RENDERINGPROPERTIES_H__634BCF2B_84B4_47F2_B460_D7FDC0F3B698__INCLUDED_)
-	#include "RenderingProperties.h"
+#if !defined(AFX_IRENDERINGPROPERTIES_H__634BCF2B_84B4_47F2_B460_D7FDC0F3B698__INCLUDED_)
+	#include "IRenderingProperties.h"
 #endif
 
 //////////////////////////////////////////////////////////////////////
@@ -682,7 +682,7 @@ bool CShader::vkRemoveVulkanProgram(void)
 void CShader::glRenderMaterial(void)
 {
 	//if (glIsEnabled(GL_LIGHTING) == GL_TRUE)
-    if (CRenderingProperties::GetCurrentProperties()->getCurrentLighting() == CRenderingProperties::ENABLE)
+	if (IRenderingProperties::GetCurrentProperties()->getCurrentLighting() == IRenderingProperties::ENABLE)
 	{
 		if (m_pMaterial!=NULL)
 		    m_pMaterial->glRender();
@@ -708,7 +708,7 @@ void CShader::glRenderMaterial(void)
 void CShader::glRenderTexture(void)
 {
 	//if (glIsEnabled(GL_TEXTURE_2D) == GL_TRUE)
-    if (CRenderingProperties::GetCurrentProperties()->getCurrentTexturing() == CRenderingProperties::ENABLE)
+	if (IRenderingProperties::GetCurrentProperties()->getCurrentTexturing() == IRenderingProperties::ENABLE)
 	{
 		if (m_textureUnitSetup.handle > 0)
         {

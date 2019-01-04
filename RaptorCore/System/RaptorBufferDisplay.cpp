@@ -71,7 +71,7 @@ CRaptorBufferDisplay::CRaptorBufferDisplay(const CRaptorDisplayConfig& pcs)
 CRaptorBufferDisplay::~CRaptorBufferDisplay()
 {
     //  Unbind, in case it is forgotten by the user.
-    glUnBindDisplay();
+    glvkUnBindDisplay();
 
 	if (m_pBuffer > 0)
 		CContextManager::GetInstance()->glDestroyPBuffer(m_pBuffer - 1);
@@ -133,7 +133,7 @@ void CRaptorBufferDisplay::glResize(unsigned int sx,unsigned int sy,unsigned int
         return;
     }
 
-    glUnBindDisplay();
+	glvkUnBindDisplay();
     if (m_pBuffer > 0)
 		CContextManager::GetInstance()->glDestroyPBuffer(m_pBuffer - 1);
 
@@ -145,7 +145,7 @@ void CRaptorBufferDisplay::glResize(unsigned int sx,unsigned int sy,unsigned int
 
     RAPTOR_HANDLE noDevice;
 	glvkBindDisplay(noDevice);
-    glUnBindDisplay();
+	glvkUnBindDisplay();
 
     CATCH_GL_ERROR
 }
@@ -243,9 +243,7 @@ bool CRaptorBufferDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
 			// with texturing. Explicit unbinding can be avoided for
 			// performance reasons, but future drivers might be faster.
             if (m_bBoundToTexture)
-            {
-                glUnBindDisplay();
-            }
+				glvkUnBindDisplay();
     
 			CContextManager *manager = CContextManager::GetInstance();
 
@@ -290,7 +288,7 @@ bool CRaptorBufferDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
 #endif
 }
 
-bool CRaptorBufferDisplay::glUnBindDisplay(void)
+bool CRaptorBufferDisplay::glvkUnBindDisplay(void)
 {
 #if defined(WGL_ARB_pbuffer)
 	// Buffer not created ( Binding never done )
@@ -330,7 +328,7 @@ bool CRaptorBufferDisplay::glUnBindDisplay(void)
 			allocatorT->glvkLockMemory(false);
 
 
-        CRaptorDisplay::glUnBindDisplay();
+		CRaptorDisplay::glvkUnBindDisplay();
 
         //  First case : there is another buffer bound in the stack,
         //  we must get back to that buffer

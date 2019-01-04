@@ -5,24 +5,24 @@
 #include "stdafx.h"
 
 #include "ProjectionDisplay.h"
-#include "Engine\3DEngine.h"
-#include "Engine\3DScene.h"
-#include "Engine\TimeObject.h"
-#include "Engine\LightModifier.h"
-#include "GLHierarchy\ShadedGeometry.h"
-#include "GLHierarchy\Object3DInstance.h"
-#include "GLHierarchy\TextureSet.h"
-#include "GLHierarchy\TextureFactory.h"
-#include "GLHierarchy\TextureFactoryConfig.h"
-#include "GLHierarchy\TextureUnitSetup.h"
-#include "GLHierarchy\TextureObject.h"
-#include "GLHierarchy\Material.h"
-#include "GLHierarchy\Light.h"
-#include "System\RaptorDisplay.h"
-#include "GLHierarchy\Shader.h"
-#include "GLHierarchy\Projector.h"
-#include "GLHierarchy\RenderingProperties.h"
-#include "GLHierarchy\SimpleObject.h"
+#include "Engine/3DEngine.h"
+#include "Engine/3DScene.h"
+#include "Engine/TimeObject.h"
+#include "Engine/LightModifier.h"
+#include "GLHierarchy/ShadedGeometry.h"
+#include "GLHierarchy/Object3DInstance.h"
+#include "GLHierarchy/TextureSet.h"
+#include "GLHierarchy/TextureFactory.h"
+#include "GLHierarchy/TextureFactoryConfig.h"
+#include "GLHierarchy/TextureUnitSetup.h"
+#include "GLHierarchy/TextureObject.h"
+#include "GLHierarchy/Material.h"
+#include "GLHierarchy/Light.h"
+#include "System/RaptorDisplay.h"
+#include "GLHierarchy/Shader.h"
+#include "GLHierarchy/Projector.h"
+#include "GLHierarchy/IRenderingProperties.h"
+#include "GLHierarchy/SimpleObject.h"
 
 
 class CPlane : public CSimpleObject
@@ -204,9 +204,9 @@ void CProjectionDisplay::ReInit()
 		((CLightModifier*)p)->animate(true);
 
     CRaptorDisplay* const pDisplay = CRaptorDisplay::GetCurrentDisplay();
-    CRenderingProperties *rp = pDisplay->getRenderingProperties();
-    rp->setTexturing(CRenderingProperties::ENABLE);
-	rp->setLighting(CRenderingProperties::ENABLE);
+	IRenderingProperties &rp = pDisplay->getRenderingProperties();
+	rp.setTexturing(IRenderingProperties::ENABLE);
+	rp.setLighting(IRenderingProperties::ENABLE);
 
 	pDisplay->selectScene("PROJECTION_SCENE");
 }

@@ -7,6 +7,9 @@
 #if !defined(AFX_3DENGINEMATRIX_H__6CD1110E_1174_4f38_A452_30FB312022D0__INCLUDED_)
 	#include "Engine/3DEngineMatrix.h"
 #endif
+#if !defined(AFX_3DENGINE_H__DB24F018_80B9_11D3_97C1_FC2841000000__INCLUDED_)
+	#include "Engine/3DEngine.h"
+#endif
 
 RAPTOR_NAMESPACE
 
@@ -29,6 +32,36 @@ C3DEngineMatrix::C3DEngineMatrix(const CGenericMatrix<float>& m)
 C3DEngineMatrix::C3DEngineMatrix(const GL_MATRIX& M)
 {
 	CGenericMatrix<float>::operator =(M);
+}
+
+C3DEngineMatrix &C3DEngineMatrix::Rotate(float angle, float axis_x, float axis_y, float axis_z)
+{
+	CGenericMatrix<float> rotation;
+
+	CGenericVector<float> axis(axis_x, axis_y, axis_z, 1.0f);
+	C3DEngine::Get3DEngine()->generateRotation(angle, axis, rotation);
+
+	this->operator*(rotation);
+
+	return *this;
+}
+
+C3DEngineMatrix &C3DEngineMatrix::Translate(float delta_x, float delta_y, float delta_z)
+{
+	m_matrix[3] += delta_x;
+	m_matrix[7] += delta_y;
+	m_matrix[11] += delta_z;
+
+	return *this;
+}
+
+C3DEngineMatrix &C3DEngineMatrix::Scale(float scale_x, float scale_y, float scale_z)
+{
+	m_matrix[1] *= scale_x;
+	m_matrix[5] *= scale_y;
+	m_matrix[9] *= scale_z;
+
+	return *this;
 }
 
 C3DEngineMatrix &C3DEngineMatrix::Inverse(void)

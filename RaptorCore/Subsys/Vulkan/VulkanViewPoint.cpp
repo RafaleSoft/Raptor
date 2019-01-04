@@ -13,6 +13,9 @@
 #if !defined(AFX_3DENGINE_H__DB24F018_80B9_11D3_97C1_FC2841000000__INCLUDED_)
 	#include "Engine/3DEngine.h"
 #endif
+#if !defined(AFX_UNIFORMALLOCATOR_H__4DD62C99_E476_4FE5_AEE4_EEC71F7B0F38__INCLUDED_)
+	#include "Subsys/UniformAllocator.h"
+#endif
 
 RAPTOR_NAMESPACE
 
@@ -21,8 +24,11 @@ RAPTOR_NAMESPACE
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 CVulkanViewPoint::CVulkanViewPoint(const std::string& name)
-	:IViewPoint(name)
+	:IViewPoint(name), uniforms(NULL)
 {
+	modelview.Ident();
+	IDENT_MATRIX(transform.modelview);
+	IDENT_MATRIX(transform.projection);
 }
 
 CVulkanViewPoint::~CVulkanViewPoint()
@@ -32,46 +38,52 @@ CVulkanViewPoint::~CVulkanViewPoint()
 
 void CVulkanViewPoint::glvkRender(void)
 {
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
+	modelview.Ident();
+	modelview.Scale(Scale.X(), Scale.Y(), Scale.Z());
 
-	glScalef(Scale.X(), Scale.Y(), Scale.Z());
+	modelview.Rotate(m_lfGamma, 0.0f, 0.0f, 1.0f);
+	modelview.Rotate(-m_lfBeta, 1.0f, 0.0f, 0.0f);
+	modelview.Rotate(-m_lfAlpha, 0.0f, 1.0f, 0.0f);
 
-	glRotatef(m_lfGamma, 0.0f, 0.0f, 1.0f);
-	glRotatef(-m_lfBeta, 1.0f, 0.0f, 0.0f);
-	glRotatef(-m_lfAlpha, 0.0f, 1.0f, 0.0f);
+	modelview.Translate(-Origin.X(), -Origin.Y(), -Origin.Z());
 
-	glTranslatef(-Origin.X(), -Origin.Y(), -Origin.Z());
+	C3DEngine::Generic_to_MATRIX(transform.modelview, modelview.Transpose());
 
-	C3DEngine::Get3DEngine()->glConfigureEngine(this);
+	vkRenderUniforms();
 
 	CATCH_GL_ERROR
 }
 
 void CVulkanViewPoint::glvkRenderViewPointModel(void)
 {
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
+	CGenericMatrix<float, 4> frustum;
+	getFrustum(frustum);
 
-	switch (model)
-	{
-		case ORTHOGRAPHIC:
-			glOrtho(viewVolume[0], viewVolume[1],
-					viewVolume[2], viewVolume[3],
-					viewVolume[4], viewVolume[5]);
-			break;
-		case PERSPECTIVE:
-			glFrustum(viewVolume[0], viewVolume[1],
-					  viewVolume[2], viewVolume[3],
-					  viewVolume[4], viewVolume[5]);
-	}
+	//	Need this additional transform to map depth [-1.0 .. 1.0] to [0.0 .. 1.0] range.
+	CGenericMatrix<float, 4> view;
+	view.Ident();
+	view[10] = 0.5f;
+	view[11] = 0.5f;
+	view *= frustum;
 
-	glMatrixMode(GL_MODELVIEW);
-
-	//glConfigureEngine(this);
+	C3DEngine::Generic_to_MATRIX(transform.projection, view.Transpose());
 
 	CATCH_GL_ERROR
 }
 
+bool CVulkanViewPoint::vkRenderUniforms(void)
+{
+	CUniformAllocator*	pUAllocator = CUniformAllocator::GetInstance();
+	uint64_t size = sizeof(Transform_t);
 
+	if (NULL == uniforms)
+		uniforms = pUAllocator->allocateUniforms(size);
 
+	if (NULL != uniforms)
+	{
+		pUAllocator->glvkCopyPointer(uniforms, (unsigned char*)&transform, size);
+		return true;
+	}
+	else
+		return false;
+}

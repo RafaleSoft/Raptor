@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 
 #include "GLHierarchy/Shader.h"
-#include "GLHierarchy/RenderingProperties.h"
+#include "GLHierarchy/IRenderingProperties.h"
 #include "GLHierarchy/Material.h"
 #include "GLHierarchy/Geometry.h"
 #include "GLHierarchy/GeometryEditor.h"
@@ -17,6 +17,11 @@
 CReflection::CReflection(float width,float height,int hcels,int vcels)
     :CBasicObjects::CRectMesh()
 {
+	props = CRaptorDisplay::GetCurrentDisplay()->createRenderingProperties();
+	props->setBlending(IRenderingProperties::ENABLE);
+	props->setLighting(IRenderingProperties::ENABLE);
+	props->setTexturing(IRenderingProperties::ENABLE);
+
 	setDimensions(width,height,hcels,vcels);
 	const CGeometryEditor& pEditor = getEditor();
 	pEditor.scaleTexCoords(10.0f,5.0f);
@@ -64,14 +69,10 @@ CReflection::~CReflection(void)
 
 void CReflection::glRender()
 {
-    CRenderingProperties props;
-    props.setBlending(CRenderingProperties::ENABLE);
-    props.setLighting(CRenderingProperties::ENABLE);
-    props.setTexturing(CRenderingProperties::ENABLE);
-    props.glPushProperties();
+    props->glPushProperties();
 	glColor4f(1.0,0.0,0.0,1.0);
 
 	CShadedGeometry::glRender();
 
-    props.glPopProperties();
+    props->glPopProperties();
 }

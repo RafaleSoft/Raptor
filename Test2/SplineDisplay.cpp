@@ -23,7 +23,7 @@
 #include "System/RaptorDisplay.h"
 #include "GLHierarchy/TextureObject.h"
 #include "GLHierarchy/ShadedGeometry.h"
-#include "GLHierarchy/RenderingProperties.h"
+#include "GLHierarchy/IRenderingProperties.h"
 
 
 //////////////////////////////////////////////////////////////////////
@@ -123,10 +123,10 @@ void CSplineDisplay::ReInit()
 	CRaptorDisplay* const pDisplay = CRaptorDisplay::GetCurrentDisplay();
 	pDisplay->setViewPoint(vp);
 	
-    CRenderingProperties *rp = pDisplay->getRenderingProperties();
-    rp->setTexturing(CRenderingProperties::ENABLE);
-    rp->setLighting(CRenderingProperties::ENABLE);
-    rp->setBlending(CRenderingProperties::DISABLE);
+	IRenderingProperties &rp = pDisplay->getRenderingProperties();
+	rp.setTexturing(IRenderingProperties::ENABLE);
+	rp.setLighting(IRenderingProperties::ENABLE);
+	rp.setBlending(IRenderingProperties::DISABLE);
 	
 	pDisplay->selectScene("SPLINE_SCENE");
 }

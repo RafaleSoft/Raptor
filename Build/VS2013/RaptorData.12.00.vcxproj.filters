@@ -130,9 +130,6 @@
     <ClInclude Include="..\..\RaptorData\RaptorDataManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\RaptorData\resource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\RaptorData\StdAfx.h">
       <Filter>Header Files</Filter>
     </ClInclude>

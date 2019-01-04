@@ -12,8 +12,8 @@
 #if !defined(AFX_OBJECT3D_H__DB24F017_80B9_11D3_97C1_FC2841000000__INCLUDED_)
 	#include "GLHierarchy/Object3D.h"
 #endif
-#if !defined(AFX_RENDERINGPROPERTIES_H__634BCF2B_84B4_47F2_B460_D7FDC0F3B698__INCLUDED_)
-	#include "GLHierarchy/RenderingProperties.h"
+#if !defined(AFX_IRENDERINGPROPERTIES_H__634BCF2B_84B4_47F2_B460_D7FDC0F3B698__INCLUDED_)
+	#include "GLHierarchy/IRenderingProperties.h"
 #endif
 
 #ifndef __GLOBAL_H__
@@ -39,10 +39,10 @@ CMirror::CMirror()
 {
 	IDENT_MATRIX(m_mirror);
 
-    m_pProperties = new CRenderingProperties();
-    m_pProperties->setTexturing(CRenderingProperties::ENABLE);
-    m_pProperties->setLighting(CRenderingProperties::ENABLE);
-    m_pProperties->setStencilTest(CRenderingProperties::DISABLE);
+	m_pProperties = CRaptorDisplay::GetCurrentDisplay()->createRenderingProperties();
+	m_pProperties->setTexturing(IRenderingProperties::ENABLE);
+	m_pProperties->setLighting(IRenderingProperties::ENABLE);
+	m_pProperties->setStencilTest(IRenderingProperties::DISABLE);
     m_pProperties->clear(0);
 }
 

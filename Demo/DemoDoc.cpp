@@ -11,7 +11,7 @@
 #include "GLHierarchy/Object3DInstance.h"
 #include "GLHierarchy/Object3DShadow.h"
 #include "GLHierarchy/Projector.h"
-#include "GLHierarchy/RenderingProperties.h"
+#include "GLHierarchy/IRenderingProperties.h"
 #include "GLHierarchy/ShadedGeometry.h"
 #include "GLHierarchy/Shader.h"
 #include "GLHierarchy/SimpleObject.h"
@@ -25,7 +25,6 @@
 #include "Engine/Animator.h"
 #include "Engine/Environment.h"
 #include "Engine/GeometricModifier.h"
-#include "Engine/ViewPoint.h"
 
 #include "System/Raptor.h"
 #include "System/RaptorConsole.h"
@@ -288,9 +287,9 @@ void CDemoDoc::GLInitContext(void)
 	CAnimator::SetAnimator(animator);
     
     CRaptorDisplay * const pCurrentDisplay = CRaptorDisplay::GetCurrentDisplay();
-    CRenderingProperties *rp = pCurrentDisplay->getRenderingProperties();
-	rp->clear(CGL_RGBA|CGL_DEPTH);
-	rp->setMultisampling(CRenderingProperties::ENABLE);
+	IRenderingProperties &rp = pCurrentDisplay->getRenderingProperties();
+	rp.clear(CGL_RGBA|CGL_DEPTH);
+	rp.setMultisampling(IRenderingProperties::ENABLE);
 
     C3DScene *m_pScene = pCurrentDisplay->getRootScene();
 	//pCurrentDisplay->getViewPoint()->setCurrentPath(-1);
@@ -336,7 +335,7 @@ void CDemoDoc::glRender()
 
 	m_pDisplay->glRender();
 
-	m_pDisplay->glUnBindDisplay();
+	m_pDisplay->glvkUnBindDisplay();
 
 
 	nbFrames++;

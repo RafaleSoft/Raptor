@@ -1,6 +1,9 @@
 - BasicObjects:
 	- Ajouter un TextureQuad le plus simple possible
 
+- CRaptorDisplay:
+	- déplacer les fps et timings dans CRaptorDisplayConfig ( ==> glQueryStatus )
+
 - CContextManager:
 	factoriser getPresentationSuppotQueueFamily et vk_ctx.pSurface->supportPresentation(physical, numQueue):
 		passer le physical device à CVulkanSurface => renvoyer la queue qui supporte WSI et presentation sur la surface.
@@ -16,7 +19,7 @@
 	- Déplacer la création du Pipeline après InitContext (C3DSCene::PrepareData ?)
 
 - CVulkanCommandBuffer:
-	- rendre privée les mathodes et attribut commandbuffer
+	- rendre privée les méthodes et attribut commandbuffer
 
 - CHostMemoryManager:
 	- ajouter capacité allocations/release dans un bloc prédéfini (data pool)

@@ -15,8 +15,8 @@
 #if !defined(AFX_TEXTURESET_H__26F3022D_70FE_414D_9479_F9CCD3DCD445__INCLUDED_)
 	#include "GLHierarchy/TextureSet.h"
 #endif
-#if !defined(AFX_RENDERINGPROPERTIES_H__634BCF2B_84B4_47F2_B460_D7FDC0F3B698__INCLUDED_)
-	#include "GLHierarchy/RenderingProperties.h"
+#if !defined(AFX_IRENDERINGPROPERTIES_H__634BCF2B_84B4_47F2_B460_D7FDC0F3B698__INCLUDED_)
+	#include "GLHierarchy/IRenderingProperties.h"
 #endif
 #if !defined(AFX_TEXUREUNITSETUP_H__4A6ADC72_02E5_4F2A_931E_A736B6D6E0F0__INCLUDED_)
 	#include "GLHierarchy/TextureUnitSetup.h"
@@ -90,12 +90,12 @@ bool CAmbientOcclusionShader::glInitAOCompute(void)
 	cfg.renderer = CRaptorDisplayConfig::RENDER_BUFFER;
 
     m_pAOBuffer = Raptor::glCreateDisplay(cfg);
-    CRenderingProperties *rp = m_pAOBuffer->getRenderingProperties();
-    rp->setTexturing(CRenderingProperties::ENABLE);
-    rp->setCullFace(CRenderingProperties::DISABLE);
-    rp->setDepthTest(CRenderingProperties::DISABLE);
-    rp->setLighting(CRenderingProperties::DISABLE);
-    rp->clear(CGL_NULL);
+	IRenderingProperties &rp = m_pAOBuffer->getRenderingProperties();
+	rp.setTexturing(IRenderingProperties::ENABLE);
+	rp.setCullFace(IRenderingProperties::DISABLE);
+	rp.setDepthTest(IRenderingProperties::DISABLE);
+	rp.setLighting(IRenderingProperties::DISABLE);
+    rp.clear(CGL_NULL);
     m_pAOBuffer->setViewPoint(NULL);
 	m_pAOBuffer->glvkBindDisplay(*pOutputTextures);
 
@@ -127,7 +127,7 @@ void CAmbientOcclusionShader::glRenderResult()
 	if (m_transforms.size() == 0)
 		return;
 
-	if (CRenderingProperties::GetCurrentProperties()->getCurrentTexturing() == CRenderingProperties::ENABLE)
+	if (IRenderingProperties::GetCurrentProperties()->getCurrentTexturing() == IRenderingProperties::ENABLE)
 	{
 		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 		pExtensions->glClientActiveTextureARB(GL_TEXTURE2_ARB);
@@ -237,7 +237,7 @@ void CAmbientOcclusionShader::glRender()
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_NORMAL_ARRAY);
 
-	m_pAOBuffer->glUnBindDisplay();
+	m_pAOBuffer->glvkUnBindDisplay();
 
 	CATCH_GL_ERROR;
 }
