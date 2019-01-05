@@ -102,7 +102,7 @@ namespace BuilderNet {
 			this->pictureBox1 = (gcnew System::Windows::Forms::PictureBox());
 			this->groupBox1->SuspendLayout();
 			this->CPU->SuspendLayout();
-			(cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->pictureBox1))->BeginInit();
+			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pictureBox1))->BeginInit();
 			this->SuspendLayout();
 			// 
 			// TREE_EXTENSIONS
@@ -239,7 +239,7 @@ namespace BuilderNet {
 			// 
 			// pictureBox1
 			// 
-			this->pictureBox1->Image = (cli::safe_cast<System::Drawing::Image^  >(resources->GetObject(L"pictureBox1.Image")));
+			this->pictureBox1->Image = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"pictureBox1.Image")));
 			this->pictureBox1->Location = System::Drawing::Point(337, 232);
 			this->pictureBox1->Name = L"pictureBox1";
 			this->pictureBox1->Size = System::Drawing::Size(170, 49);
@@ -260,13 +260,14 @@ namespace BuilderNet {
 			this->Controls->Add(this->OK);
 			this->Controls->Add(this->SelectAll);
 			this->Controls->Add(this->TREE_EXTENSIONS);
+			this->Icon = (cli::safe_cast<System::Drawing::Icon^>(resources->GetObject(L"$this.Icon")));
 			this->Name = L"Form1";
 			this->Text = L"Raptor Builder.Net  [Prepare Raptor Code to use the following options] ";
 			this->groupBox1->ResumeLayout(false);
 			this->groupBox1->PerformLayout();
 			this->CPU->ResumeLayout(false);
 			this->CPU->PerformLayout();
-			(cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->pictureBox1))->EndInit();
+			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pictureBox1))->EndInit();
 			this->ResumeLayout(false);
 
 		}

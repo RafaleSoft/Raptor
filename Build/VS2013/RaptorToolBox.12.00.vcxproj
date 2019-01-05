@@ -451,9 +451,13 @@ copy OpenEXRLib\bin\vc9\zdll.dll "%RAPTOR_ROOT%\Redist\bin\zlib1.dll"
     <ClInclude Include="..\..\RaptorToolBox\Loaders\OBJScript_yacc.h" />
     <ClInclude Include="..\..\RaptorToolBox\ParticleCompute.h" />
     <ClInclude Include="..\..\RaptorToolBox\RaptorToolBox.h" />
+    <ClInclude Include="..\..\RaptorToolBox\resource.h" />
     <ClInclude Include="..\..\RaptorToolBox\Streaming.h" />
     <ClInclude Include="..\..\RaptorToolBox\Streaming\AVIStreaming.h" />
     <ClInclude Include="..\..\RaptorToolBox\Streaming\WMVStreaming.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\..\RaptorToolBox\RaptorToolBox.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

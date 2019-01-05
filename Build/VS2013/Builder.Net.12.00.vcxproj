@@ -70,7 +70,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <_ProjectFileVersion>10.0.21006.1</_ProjectFileVersion>
+    <_ProjectFileVersion>12.0.30501.0</_ProjectFileVersion>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)\</OutDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">$(Configuration)\</OutDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Configuration)\</OutDir>
@@ -176,6 +176,9 @@
     <PreBuildEvent>
       <Command>$(SolutionDir)\$(ProjectName)\Redist.bat</Command>
     </PreBuildEvent>
+    <ResourceCompile>
+      <Culture>0x040c</Culture>
+    </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -276,7 +279,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Builder.Net\BuilderForm.h" />
-    <ClInclude Include="..\..\Builder.Net\Form1.h" />
+    <ClInclude Include="..\..\Builder.Net\Form1.h">
+      <FileType>CppForm</FileType>
+    </ClInclude>
     <ClInclude Include="..\..\Builder.Net\GLBuilder.h" />
     <ClInclude Include="..\..\Builder.Net\stdafx.h" />
   </ItemGroup>
@@ -299,16 +304,12 @@
     <Image Include="..\..\Builder.Net\res\Raptor_logo_sml.bmp" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="..\..\Builder.Net\res\app.rc">
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\Builder.Net\</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">..\..\Builder.Net\</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\Builder.Net\</AdditionalIncludeDirectories>
-    </ResourceCompile>
+    <EmbeddedResource Include="..\..\Builder.Net\Form1.resx">
+      <DependentUpon>..\..\Builder.Net\Form1.h</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="..\..\Builder.Net\Form1.resx">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
+    <ResourceCompile Include="..\..\Builder.Net\res\app.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
