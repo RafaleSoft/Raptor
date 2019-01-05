@@ -260,6 +260,7 @@
     <ClInclude Include="..\..\SIMD\MMXWMatrix.h" />
     <ClInclude Include="..\..\SIMD\MMXWVector.h" />
     <ClInclude Include="..\..\SIMD\Registers.h" />
+    <ClInclude Include="..\..\SIMD\resource.h" />
     <ClInclude Include="..\..\SIMD\SIMD.H" />
     <ClInclude Include="..\..\SIMD\simdMacros.h" />
     <ClInclude Include="..\..\SIMD\SIMDRegister.h" />
@@ -267,6 +268,9 @@
     <ClInclude Include="..\..\SIMD\SSEFVector.h" />
     <ClInclude Include="..\..\SIMD\Vector4f.h" />
     <ClInclude Include="..\..\SIMD\WVector.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\..\SIMD\simd.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -371,6 +371,9 @@ copy Release\RaptorMFCExtension.dll "%RAPTOR_ROOT%\Redist\bin\"
     <ClInclude Include="..\..\RaptorMFCExtension\resource.h" />
     <ClInclude Include="..\..\RaptorMFCExtension\StdAfx.h" />
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\..\RaptorMFCExtension\res\Raptor_logo_sml.bmp" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

@@ -383,6 +383,7 @@ copy RaptorData.pck "%RAPTOR_ROOT%\Redist\bin\"
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\RaptorData\RaptorDataManager.h" />
+    <ClInclude Include="..\..\RaptorData\resource.h" />
     <ClInclude Include="..\..\RaptorData\StdAfx.h" />
   </ItemGroup>
   <ItemGroup>
@@ -437,6 +438,9 @@ copy RaptorData.pck "%RAPTOR_ROOT%\Redist\bin\"
   </ItemGroup>
   <ItemGroup>
     <Font Include="..\..\RaptorData\Data\lucon.ttf" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\..\RaptorData\RaptorData.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
