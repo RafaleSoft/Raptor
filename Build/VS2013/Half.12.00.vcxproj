@@ -84,6 +84,11 @@
       <Command>$(Configuration)\eLut.exe &gt; $(Configuration)\eLut.h
 $(Configuration)\toFloat.exe &gt; $(Configuration)\toFloat.h</Command>
     </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>copy $(TargetPath) $(RAPTOR_ROOT)\Redist\bin
+copy $(OutDir)\freetype.lib $(RAPTOR_ROOT)\Redist\lib
+</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">
     <ClCompile>
@@ -103,6 +108,11 @@ $(Configuration)\toFloat.exe &gt; $(Configuration)\toFloat.h</Command>
       <Command>$(Configuration)\eLut.exe &gt; $(Configuration)\eLut.h
 $(Configuration)\toFloat.exe &gt; $(Configuration)\toFloat.h</Command>
     </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>copy $(TargetPath) $(RAPTOR_ROOT)\Redist\bin
+copy $(OutDir)\freetype.lib $(RAPTOR_ROOT)\Redist\lib
+</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>

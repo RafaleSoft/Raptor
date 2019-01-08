@@ -166,6 +166,10 @@
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <PostBuildEvent>
+      <Command>copy $(TargetPath) $(RAPTOR_ROOT)\Redist\bin
+copy $(OutDir)\freetype.lib $(RAPTOR_ROOT)\Redist\lib</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -330,7 +334,8 @@
       <AdditionalDependencies>$(UserDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
     <PostBuildEvent>
-      <Command>copy $(TargetPath) $(RAPTOR_ROOT)\Redist\bin</Command>
+      <Command>copy $(TargetPath) $(RAPTOR_ROOT)\Redist\bin
+copy $(OutDir)\freetype.lib $(RAPTOR_ROOT)\Redist\lib</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

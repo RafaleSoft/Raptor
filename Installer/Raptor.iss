@@ -1,7 +1,4 @@
-; -- Example1.iss --
-; Demonstrates copying 3 files and creating an icon.
-
-; SEE THE DOCUMENTATION FOR DETAILS ON CREATING .ISS SCRIPT FILES!
+; -- Raptor.iss --
 
 [Setup]
 AppName=Raptor SDK
@@ -18,84 +15,43 @@ VersionInfoProductVersion=2.17.0.0
 VersionInfoVersion=2.17.0.0
 
 [Files]
-Source: "../*.sln";               DestDir: "{app}"
-Source: "../*.Cmd";               DestDir: "{app}"
-Source: "../*.bat";               DestDir: "{app}"
-Source: "../TODO.txt";            DestDir: "{app}"
+Source: "..\*.sln";               DestDir: "{app}"
+Source: "..\*.Cmd";               DestDir: "{app}"
+Source: "..\*.bat";               DestDir: "{app}"
+Source: "..\Makefile";            DestDir: "{app}"
+Source: "..\TODO.txt";            DestDir: "{app}"
+Source: "..\README.md";           DestDir: "{app}"
 
-Source: "../AddOns/*.lib";            DestDir: "{app}/AddOns"
-Source: "../AddOns/*.pdb";            DestDir: "{app}/AddOns"
-Source: "../AddOns/usertype.dat";     DestDir: "{app}/AddOns"
-Source: "../AddOns/freetype-2.5.5/lib/*.*";          DestDir: "{app}/AddOns/freetype-2.5.5/lib"
-Source: "../AddOns/freetype-2.5.5/include/*.*";      DestDir: "{app}/AddOns/freetype-2.5.5/include"
-Source: "../AddOns/freetype-2.5.5/include/config/*.*";      DestDir: "{app}/AddOns/freetype-2.5.5/include/config"
-Source: "../AddOns/JpegLib/lib/*.*";         DestDir: "{app}/AddOns/JpegLib/lib"
-Source: "../AddOns/JpegLib/include/*.*";     DestDir: "{app}/AddOns/JpegLib/include"
-Source: "../AddOns/libpng-1.6.16/lib/VC9/*.*";          DestDir: "{app}/AddOns/libpng-1.6.16/lib/VC9"
-Source: "../AddOns/libpng-1.6.16/lib/VC10/*.*";          DestDir: "{app}/AddOns/libpng-1.6.16/lib/VC9"
-Source: "../AddOns/libpng-1.6.16/include/*.*";      DestDir: "{app}/AddOns/libpng-1.6.16/include"
-Source: "../AddOns/libpng-1.6.16/bin/VC9/*.*";      DestDir: "{app}/AddOns/libpng-1.6.16/bin/VC9"
-Source: "../AddOns/libpng-1.6.16/bin/VC10/*.*";      DestDir: "{app}/AddOns/libpng-1.6.16/bin/VC10"
-Source: "../AddOns/Opencl/Intel_v11/*.*";           DestDir: "{app}/AddOns/Opencl/Intel_v11"
-Source: "../AddOns/OpenEXRLib/include/*.*";  DestDir: "{app}/AddOns/OpenEXRLib/include"
-Source: "../AddOns/OpenEXRLib/bin/VC9/*.*";  DestDir: "{app}/AddOns/OpenEXRLib/bin/VC9"
-Source: "../AddOns/OpenEXRLib/bin/VC10/*.*";  DestDir: "{app}/AddOns/OpenEXRLib/bin/VC10"
-Source: "../AddOns/OpenEXRLib/lib/VC9/*.*";  DestDir: "{app}/AddOns/OpenEXRLib/lib/VC9"
-Source: "../AddOns/OpenEXRLib/lib/VC10/*.*";  DestDir: "{app}/AddOns/OpenEXRLib/lib/VC10"
-Source: "../AddOns/Openmp/VC9/*.*";           DestDir: "{app}/AddOns/Openmp/VC9"
-Source: "../AddOns/Openmp/VC10/*.*";        DestDir: "{app}/AddOns/Openmp/VC10"
-Source: "../AddOns/Openmp/VC10/x64/*.*";        DestDir: "{app}/AddOns/Openmp/VC10/x64"
-Source: "../AddOns/Openmp/VC10/x86/*.*";        DestDir: "{app}/AddOns/Openmp/VC10/x86"
-Source: "../AddOns/TiffLib/lib/*.*";         DestDir: "{app}/AddOns/TiffLib/lib"
-Source: "../AddOns/TiffLib/lib/VC9/*.*";     DestDir: "{app}/AddOns/TiffLib/lib/VC9"
-Source: "../AddOns/TiffLib/lib/VC10/*.*";     DestDir: "{app}/AddOns/TiffLib/lib/VC10"
-Source: "../AddOns/TiffLib/include/*.*";     DestDir: "{app}/AddOns/TiffLib/include"
-Source: "../AddOns/zlib128/lib/VC9/*.*";         DestDir: "{app}/AddOns/zlib128/lib/VC9"
-Source: "../AddOns/zlib128/lib/VC10/*.*";         DestDir: "{app}/AddOns/zlib128/lib/VC10"
-Source: "../AddOns/zlib128/bin/VC9/*.*";         DestDir: "{app}/AddOns/zlib128/bin/VC9"
-Source: "../AddOns/zlib128/bin/VC10/*.*";         DestDir: "{app}/AddOns/zlib128/bin/VC10"
-Source: "../AddOns/zlib128/include/*.*";     DestDir: "{app}/AddOns/zlib128/include"
-Source: "../AddOns/xercesc_3_1/VC9/*.*";                           DestDir: "{app}/AddOns/xercesc_3_1/VC9"
-Source: "../AddOns/xercesc_3_1/VC10/*.*";                          DestDir: "{app}/AddOns/xercesc_3_1/VC10"
-Source: "../AddOns/xercesc_3_1/xercesc/dom/*.*";                   DestDir: "{app}/AddOns/xercesc_3_1/xercesc/dom"
-Source: "../AddOns/xercesc_3_1/xercesc/framework/*.*";             DestDir: "{app}/AddOns/xercesc_3_1/xercesc/framework"
-Source: "../AddOns/xercesc_3_1/xercesc/framework/psvi/*.*";        DestDir: "{app}/AddOns/xercesc_3_1/xercesc/framework/psvi"
-Source: "../AddOns/xercesc_3_1/xercesc/internal/*.*";              DestDir: "{app}/AddOns/xercesc_3_1/xercesc/internal"
-Source: "../AddOns/xercesc_3_1/xercesc/parsers/*.*";               DestDir: "{app}/AddOns/xercesc_3_1/xercesc/parsers"
-Source: "../AddOns/xercesc_3_1/xercesc/sax/*.*";                   DestDir: "{app}/AddOns/xercesc_3_1/xercesc/sax"
-Source: "../AddOns/xercesc_3_1/xercesc/sax2/*.*";                  DestDir: "{app}/AddOns/xercesc_3_1/xercesc/sax2"
-Source: "../AddOns/xercesc_3_1/xercesc/util/*.*";                  DestDir: "{app}/AddOns/xercesc_3_1/xercesc/util"
-Source: "../AddOns/xercesc_3_1/xercesc/util/FileManagers/*.*";     DestDir: "{app}/AddOns/xercesc_3_1/xercesc/util/FileManagers"
-Source: "../AddOns/xercesc_3_1/xercesc/util/MsgLoaders/ICU/*.*";       DestDir: "{app}/AddOns/xercesc_3_1/xercesc/util/MsgLoaders/ICU"
-Source: "../AddOns/xercesc_3_1/xercesc/util/MsgLoaders/ICU/resources/*.*";       DestDir: "{app}/AddOns/xercesc_3_1/xercesc/util/MsgLoaders/ICU/resources"
-Source: "../AddOns/xercesc_3_1/xercesc/util/MsgLoaders/InMemory/*.*";       DestDir: "{app}/AddOns/xercesc_3_1/xercesc/util/MsgLoaders/InMemory"
-Source: "../AddOns/xercesc_3_1/xercesc/util/MsgLoaders/MsgCatalog/*.*";       DestDir: "{app}/AddOns/xercesc_3_1/xercesc/util/MsgLoaders/MsgCatalog"
-Source: "../AddOns/xercesc_3_1/xercesc/util/MsgLoaders/Win32/*.*";       DestDir: "{app}/AddOns/xercesc_3_1/xercesc/util/MsgLoaders/Win32"
-Source: "../AddOns/xercesc_3_1/xercesc/util/MutexManagers/*.*";    DestDir: "{app}/AddOns/xercesc_3_1/xercesc/util/MutexManagers"
-Source: "../AddOns/xercesc_3_1/xercesc/util/NetAccessors/*.*";     DestDir: "{app}/AddOns/xercesc_3_1/xercesc/util/NetAccessors"
-Source: "../AddOns/xercesc_3_1/xercesc/util/NetAccessors/Curl/*.*";     DestDir: "{app}/AddOns/xercesc_3_1/xercesc/util/NetAccessors/Curl"
-Source: "../AddOns/xercesc_3_1/xercesc/util/NetAccessors/MacOSURLAccessCF/*.*";     DestDir: "{app}/AddOns/xercesc_3_1/xercesc/util/NetAccessors/MacOSURLAccessCF"
-Source: "../AddOns/xercesc_3_1/xercesc/util/NetAccessors/Socket/*.*";     DestDir: "{app}/AddOns/xercesc_3_1/xercesc/util/NetAccessors/Socket"
-Source: "../AddOns/xercesc_3_1/xercesc/util/NetAccessors/WinSock/*.*";     DestDir: "{app}/AddOns/xercesc_3_1/xercesc/util/NetAccessors/WinSock"
-Source: "../AddOns/xercesc_3_1/xercesc/util/regx/*.*";             DestDir: "{app}/AddOns/xercesc_3_1/xercesc/util/regx"
-Source: "../AddOns/xercesc_3_1/xercesc/util/Transcoders/Iconv/*.*";      DestDir: "{app}/AddOns/xercesc_3_1/xercesc/util/Transcoders/Iconv"
-Source: "../AddOns/xercesc_3_1/xercesc/util/Transcoders/IconvGNU/*.*";      DestDir: "{app}/AddOns/xercesc_3_1/xercesc/util/Transcoders/IconvGNU"
-Source: "../AddOns/xercesc_3_1/xercesc/util/Transcoders/ICU/*.*";      DestDir: "{app}/AddOns/xercesc_3_1/xercesc/util/Transcoders/ICU"
-Source: "../AddOns/xercesc_3_1/xercesc/util/Transcoders/MacOSUnicodeConverter/*.*";      DestDir: "{app}/AddOns/xercesc_3_1/xercesc/util/Transcoders/MacOSUnicodeConverter"
-Source: "../AddOns/xercesc_3_1/xercesc/util/Transcoders/Win32/*.*";      DestDir: "{app}/AddOns/xercesc_3_1/xercesc/util/Transcoders/Win32"
-Source: "../AddOns/xercesc_3_1/xercesc/validators/common/*.*";     DestDir: "{app}/AddOns/xercesc_3_1/xercesc/validators/common"
-Source: "../AddOns/xercesc_3_1/xercesc/validators/datatype/*.*";   DestDir: "{app}/AddOns/xercesc_3_1/xercesc/validators/datatype"
-Source: "../AddOns/xercesc_3_1/xercesc/validators/DTD/*.*";        DestDir: "{app}/AddOns/xercesc_3_1/xercesc/validators/DTD"
-Source: "../AddOns/xercesc_3_1/xercesc/validators/schema/*.*";     DestDir: "{app}/AddOns/xercesc_3_1/xercesc/validators/schema"
-Source: "../AddOns/xercesc_3_1/xercesc/validators/schema/identity/*.*";     DestDir: "{app}/AddOns/xercesc_3_1/xercesc/validators/schema/identity"
-Source: "../AddOns/xercesc_3_1/xercesc/xinclude/*.*";              DestDir: "{app}/AddOns/xercesc_3_1/xercesc/xinclude"
+Source: "..\AddOns\*.lib";            DestDir: "{app}\AddOns"
+Source: "..\AddOns\*.pdb";            DestDir: "{app}\AddOns"
+Source: "..\AddOns\usertype.dat";     DestDir: "{app}\AddOns"
+Source: "..\AddOns\freetype-2.5.5\*";  DestDir: "{app}\AddOns\freetype-2.5.5\"; Flags: recursesubdirs
+Source: "..\AddOns\freetype-2.9.1\*";  DestDir: "{app}\AddOns\freetype-2.9.1\"; Flags: recursesubdirs
+Source: "..\AddOns\JpegLib\*";         DestDir: "{app}\AddOns\JpegLib\";        Flags: recursesubdirs
+Source: "..\AddOns\JpegLib-v9\*";      DestDir: "{app}\AddOns\JpegLib-v9\";     Flags: recursesubdirs
+Source: "..\AddOns\libpng-1.6.16\*";   DestDir: "{app}\AddOns\libpng-1.6.16\";  Flags: recursesubdirs
+Source: "..\AddOns\libpng-1.6.36\*";   DestDir: "{app}\AddOns\libpng-1.6.36\";  Flags: recursesubdirs
+Source: "..\AddOns\Opencl\Intel_v11\*.*";           DestDir: "{app}\AddOns\Opencl\Intel_v11"
+Source: "..\AddOns\OpenEXRLib\*";       DestDir: "{app}\AddOns\OpenEXRLib\";    Flags: recursesubdirs
+Source: "..\AddOns\OpenEXR-2.3.0\*";    DestDir: "{app}\AddOns\OpenEXRLib-2.3.0\";    Flags: recursesubdirs
+Source: "..\AddOns\Openmp\*";           DestDir: "{app}\AddOns\Openmp\";        Flags: recursesubdirs
+Source: "..\AddOns\TiffLib\*";         DestDir: "{app}\AddOns\TiffLib\";        Flags: recursesubdirs
+Source: "..\AddOns\TiffLib-4.0.10\*";   DestDir: "{app}\AddOns\TiffLib-4.0.10\";        Flags: recursesubdirs
+Source: "..\AddOns\zlib128\*";         DestDir: "{app}\AddOns\zlib128\";        Flags: recursesubdirs
+Source: "..\AddOns\zlib-1.2.11\*";         DestDir: "{app}\AddOns\zlib-1.2.11\";        Flags: recursesubdirs
+Source: "..\AddOns\xercesc_3_1\*";         DestDir: "{app}\AddOns\xercesc_3_1\";        Flags: recursesubdirs
+Source: "..\AddOns\xercesc-3.2.2\*";       DestDir: "{app}\AddOns\xercesc-3.2.2\";        Flags: recursesubdirs
+Source: "..\AddOns\vulkan\*";         DestDir: "{app}\AddOns\vulkan\";        Flags: recursesubdirs
 
-Source: "../Build/Linux/Makefile.*";         DestDir: "{app}/Build"
+
+Source: "../Build/Linux/Makefile.*";  DestDir: "{app}/Build"
 Source: "../Build/VS2008/*.vcproj";   DestDir: "{app}/Build/VS2008"
 Source: "../Build/VS2010/*.vcxproj";  DestDir: "{app}/Build/VS2010"
 Source: "../Build/VS2010/*.filters";  DestDir: "{app}/Build/VS2010"
 Source: "../Build/VS2013/*.vcxproj";  DestDir: "{app}/Build/VS2013"
 Source: "../Build/VS2013/*.filters";  DestDir: "{app}/Build/VS2013"
+Source: "../Build/VS2017/*.vcxproj";  DestDir: "{app}/Build/VS2017"
+Source: "../Build/VS2017/*.filters";  DestDir: "{app}/Build/VS2017"
 
 Source: "../Builder.Net/*.cpp";           DestDir: "{app}/Builder.Net"
 Source: "../Builder.Net/*.h";             DestDir: "{app}/Builder.Net"
