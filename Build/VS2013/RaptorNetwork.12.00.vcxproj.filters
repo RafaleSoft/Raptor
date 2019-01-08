@@ -9,6 +9,9 @@
       <UniqueIdentifier>{73cca926-8543-4c02-bd68-c168ff9856f3}</UniqueIdentifier>
       <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
     </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{615b116b-12c9-4545-9db1-17e8ce964ca7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\RaptorNetwork\Client.h">
@@ -35,6 +38,9 @@
     <ClInclude Include="..\..\RaptorNetwork\NetworkLogger.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\RaptorNetwork\resource.h">
+      <Filter>Resource Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\RaptorNetwork\ClientSocket.cpp">
@@ -58,5 +64,10 @@
     <ClCompile Include="..\..\RaptorNetwork\stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\..\RaptorNetwork\RaptorNetwork.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

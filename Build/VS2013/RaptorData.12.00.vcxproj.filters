@@ -16,6 +16,9 @@
     <Filter Include="Data">
       <UniqueIdentifier>{94e238af-abc5-4f1a-9433-375bbfd1d521}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{753be3f3-4aee-4855-b86c-6cf2340dba8f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\RaptorData\buildpak.bat">
@@ -133,6 +136,9 @@
     <ClInclude Include="..\..\RaptorData\StdAfx.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\RaptorData\resource.h">
+      <Filter>Resource Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\..\RaptorData\Data\Raptor_logo_sml.txt">
@@ -148,5 +154,10 @@
     <Font Include="..\..\RaptorData\Data\lucon.ttf">
       <Filter>Data</Filter>
     </Font>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\..\RaptorData\RaptorData.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

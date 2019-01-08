@@ -45,21 +45,18 @@
     <Image Include="..\..\Builder.Net\res\Raptor_logo_sml.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\..\Builder.Net\res\Builder.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="..\..\Builder.Net\res\app.rc">
+    <Image Include="..\..\Builder.Net\res\Builder.ico">
       <Filter>Resource Files</Filter>
-    </ResourceCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="..\..\Builder.Net\Form1.resx">
-      <Filter>Resource Files</Filter>
-    </EmbeddedResource>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Builder.Net\Redist.bat">
       <Filter>Source Files</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\..\Builder.Net\res\app.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>
