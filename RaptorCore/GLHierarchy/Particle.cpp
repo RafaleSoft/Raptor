@@ -37,6 +37,9 @@
 #if !defined(AFX_GEOMETRYPROGRAM_H__1981EA98_8F3C_4881_9429_A9ACA5B285D3__INCLUDED_)
     #include "GLHierarchy/GeometryProgram.h"
 #endif
+#if !defined(AFX_FRAGMENTPROGRAM_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
+	#include "GLHierarchy/FragmentProgram.h"
+#endif
 
 RAPTOR_NAMESPACE_BEGIN
 
@@ -96,25 +99,50 @@ void main (void) \n\
 ";
 
 static const std::string particle_gp_src =
-"#version 120 \n\
+"#version 460 compatibility\n\
+\n\
 #extension GL_ARB_geometry_shader4 : enable \n\
 \n\
 layout(points) in; \n\
-layout(points, max_vertices=1) out; \n\
+layout(triangle_strip, max_vertices=4) out; \n\
 \n\
 void main() \n\
-{ \n\
-  for(int i = 0; i < gl_in.length(); i++) \n\
-  { \n\
-    gl_Position = gl_in[i].gl_Position; \n\
-    EmitVertex(); \n\
-  } \n\
-  EndPrimitive(); \n\
+{\n\
+	gl_Position = gl_in[0].gl_Position; \n\
+	gl_TexCoord[0] = vec4(0.0,0.0,0.0,0.0); \n\
+	EmitVertex(); \n\
+\n\
+	gl_Position = gl_in[0].gl_Position + vec4(0.2,0.0,0.0,0.0); \n\
+	gl_TexCoord[0] = vec4(1.0,0.0,0.0,0.0); \n\
+	EmitVertex(); \n\
+\n\
+	gl_Position = gl_in[0].gl_Position + vec4(0.0,0.2,0.0,0.0); \n\
+	gl_TexCoord[0] = vec4(0.0,1.0,0.0,0.0); \n\
+	EmitVertex(); \n\
+\n\
+	gl_Position = gl_in[0].gl_Position + vec4(0.2,0.2,0.0,0.0); \n\
+	gl_TexCoord[0] = vec4(1.0,1.0,0.0,0.0); \n\
+	EmitVertex(); \n\
+\n\
+	EndPrimitive(); \n\
 }\n\
 ";
 
+static const std::string fp_src =
+"#version 460 compatibility\n\
+\n\
+uniform	sampler2D diffuseMap; \n\
+\n\
+void main (void) \n\
+{\n\
+	gl_FragColor = texture2D(diffuseMap,vec2(gl_TexCoord[0].st)); \n\
+}\n\
+";
+
+
 RAPTOR_NAMESPACE
 
+//#define GEOMETRY_TEST 1
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -178,10 +206,16 @@ void CParticle::glInitParticle(void)
 		m_pShader = new CShader(getName()+"_SHADER");
 		CVertexProgram *vp = m_pShader->glGetVertexProgram();
 		res = vp->glLoadProgram(particle_vp_src);
+#ifdef GEOMETRY_TEST
+		CGeometryProgram *gp = m_pShader->glGetGeometryProgram();
+		gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
+		res = res & gp->glLoadProgram(particle_gp_src);
 
-	//	CGeometryProgram *gp = m_pShader->glGetGeometryProgram();
-	//	res = res & gp->glLoadProgram(particle_gp_src);
-
+		CFragmentProgram *fs = m_pShader->glGetFragmentProgram();
+		res = res & fs->glLoadProgram(fp_src);
+		CProgramParameters params;
+		params.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);
+#endif
 		res = res & m_pShader->glCompileShader();
 	}
 	else if (m_type == CGL_PARTICLE_VOLUMETRIC)
@@ -500,9 +534,11 @@ void RAPTOR_FASTCALL CParticle::glRenderTextures(void)
 			CGeometryAllocator *pAllocator = CGeometryAllocator::GetInstance();
 			if (pAllocator->isMemoryRelocated())
 				pAllocator->glvkCopyPointer(cachePointer,&cache[0].coord.x,CACHEPOINTER_SIZE);
-
+#ifdef GEOMETRY_TEST
+			glDrawArrays(GL_POINTS, 0, CACHE_SIZE);
+#else
 			glDrawArrays(GL_QUADS, 0, CACHE_SIZE);
-			//glDrawArrays(GL_POINTS, 0, CACHE_SIZE);
+#endif
 			nbElt = 0;
 		}
 	}
@@ -511,9 +547,12 @@ void RAPTOR_FASTCALL CParticle::glRenderTextures(void)
 		CGeometryAllocator *pAllocator = CGeometryAllocator::GetInstance();
 		if (pAllocator->isMemoryRelocated())
 			pAllocator->glvkCopyPointer(cachePointer,&cache[0].coord.x,sizeof(CACHEELT)*nbElt/sizeof(float));
-
+#ifdef GEOMETRY_TEST
+		glDrawArrays(GL_POINTS, 0, nbElt);
+#else
 		glDrawArrays(GL_QUADS, 0, nbElt);
-		//glDrawArrays(GL_POINTS, 0, nbElt);
+#endif
+		
 		nbElt = 0;
 	}
 

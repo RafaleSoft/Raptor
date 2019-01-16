@@ -16,10 +16,10 @@
 class CMMXBVector : public CGenericVector<char,4>  
 {
 public:
-	CMMXBVector(){};
+	CMMXBVector() NOEXCEPT {};
 	virtual ~CMMXBVector(){};
 
-	CMMXBVector& operator= ( const CMMXBVector& v )
+	CMMXBVector& operator= ( const CMMXBVector& v ) NOEXCEPT
 	{ 	
 		int t = *((int*)v.m_vector);
 		*((int*)m_vector) = t;
@@ -31,7 +31,7 @@ public:
 		*((int*)m_vector) = t;
 		return *this;
 	};
-	CMMXBVector& operator= ( const char v[4] )
+	CMMXBVector& operator= ( const char v[4] ) NOEXCEPT
 	{
 		int t = *((int*)v);
 		*((int*)m_vector) = t;
@@ -49,27 +49,27 @@ public:
 		return (*((int*)v.vector()) == *((int*)m_vector));
 	};
 
-	bool operator== ( const char v[4] ) const
+	bool operator== ( const char v[4] ) const NOEXCEPT
 	{
 		return (*((int*)v) == *((int*)m_vector));
 	};
 
-	void SIMD_CALL Zero() 
+	void SIMD_CALL Zero() NOEXCEPT
 	{ 
 		*((int*)m_vector) = 0;
 	};
 
-	void SIMD_CALL One()
+	void SIMD_CALL One() NOEXCEPT
 	{ 
 		*((int*)m_vector) = 0x01010101;
 	};
 
 	CMMXBVector& SIMD_CALL operator*= (const char& t)
 	{
-		m_vector[0] = (char)(m_vector[0] * t);
-		m_vector[1] = (char)(m_vector[1] * t);
-		m_vector[2] = (char)(m_vector[2] * t);
-		m_vector[3] = (char)(m_vector[3] * t);
+		m_vector[0] = m_vector[0] * t;
+		m_vector[1] = m_vector[1] * t;
+		m_vector[2] = m_vector[2] * t;
+		m_vector[3] = m_vector[3] * t;
 		return *this;
 	};
 

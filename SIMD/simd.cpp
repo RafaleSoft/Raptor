@@ -1,3 +1,8 @@
+
+#ifndef __SIMD_H__
+	#include "simd.h"
+#endif
+
 #ifndef __REGISTERS_H__
 	#include "registers.h"
 #endif
@@ -7,10 +12,6 @@
 #elif defined(LINUX)
 	#include <cpuid.h>
   #include <string.h>
-#endif
-
-#ifndef __GENERIC_VECTOR_IMPL__
-	#include "GenericVector.cxx"
 #endif
 
 #ifndef __GENERIC_ALIGNED_VECTOR_IMPL__

@@ -253,7 +253,7 @@ bool CVulkanDevice::vkUploadDataToDevice(bool blocking) const
 								0, NULL };
 	VkResult res = vkQueueSubmit(transferQueue, 1, &submit_info, NULL );
 	CATCH_VK_ERROR(res);
-	
+
 	if (blocking)
 	{
 		res = vkQueueWaitIdle(transferQueue);

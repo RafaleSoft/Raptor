@@ -287,10 +287,10 @@ void Factorize(vector<branch*> &factorBranches)
 //	a given node. The node is given during BuildNodes
 //	and the new branches will then be processed continuing
 //	BuildNodes inner loops
-int CAutomat::BuildNextBranches(atom* a,int branchLength,node* n,vector<branch*> &nextBranches,vector<branch*> &factorBranches,int nbr)
+int CAutomat::BuildNextBranches(atom* a,int bLength,node* n,vector<branch*> &nextBranches,vector<branch*> &factorBranches,int nbr)
 {
 	vector<string> possibles;
-	PossibleChars(a,branchLength,possibles);
+	PossibleChars(a,bLength,possibles);
 
 	for (unsigned int j=0;j<possibles.size();j++)
 	{

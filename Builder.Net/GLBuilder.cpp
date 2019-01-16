@@ -534,9 +534,9 @@ bool CGLBuilder::writeHeader(const string& filename)
 		const EXTENSION& extension = extensions[i];
 
 		std::string extension_name = "";
-		std::string::const_iterator i = extension.extensionName.begin();
-		while (i != extension.extensionName.end())
-			extension_name += (char)::toupper(*i++);
+		std::string::const_iterator it = extension.extensionName.begin();
+		while (it != extension.extensionName.end())
+			extension_name += (char)::toupper(*it++);
 		header << "#define	" << extension_name << "_EXTENSION_NAME \"" << extension.extensionName << "\"\n";
 
 		if ((extension.active) && (extension.kind != CPU) && (extension.kind != COREGL) && (extension.kind != COREVK))
