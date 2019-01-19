@@ -1,3 +1,5 @@
+- Ajouter un dialog pour Vulkan Status comme OpenGL.
+
 - BasicObjects:
 	- Ajouter un TextureQuad le plus simple possible
 

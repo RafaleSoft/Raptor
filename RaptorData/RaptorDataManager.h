@@ -1,6 +1,20 @@
-// RaptorDataManager.h: interface for the CRaptorDataManager class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  RaptorDataManager.h                                                    */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
 
 #if !defined(AFX_RAPTORDATAMANAGER_H__114BFB19_FA00_4E3E_879E_C9130043668E__INCLUDED_)
 #define AFX_RAPTORDATAMANAGER_H__114BFB19_FA00_4E3E_879E_C9130043668E__INCLUDED_
@@ -23,7 +37,7 @@
 
 
 #include <string>
-using std::string;
+
 
 class RAPTORDATA_API CRaptorDataManager  
 {
@@ -46,6 +60,9 @@ public:
 	//!	Remove all exported files from the package for a fresh update
 	void ClearExports();
 
+	//!	Defines a package name, different from the default 'RaptorData.pck'
+	bool setPackName(const std::string& packName);
+
 
 private:
     CRaptorDataManager();
@@ -57,6 +74,7 @@ private:
 	std::string getPackPath();
 
     static CRaptorDataManager  *m_pInstance;
+	std::string					m_packName;
 };
 
 #endif // !defined(AFX_RAPTORDATAMANAGER_H__114BFB19_FA00_4E3E_879E_C9130043668E__INCLUDED_)

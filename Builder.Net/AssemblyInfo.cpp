@@ -1,3 +1,21 @@
+/***************************************************************************/
+/*                                                                         */
+/*  AssemblyInfo.cpp                                                       */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
 #include "stdafx.h"
 
 using namespace System;
@@ -16,7 +34,7 @@ using namespace System::Security::Permissions;
 [assembly:AssemblyConfigurationAttribute("")];
 [assembly:AssemblyCompanyAttribute("Rafale Soft Inc.(c)")];
 [assembly:AssemblyProductAttribute("BuilderNet")];
-[assembly:AssemblyCopyrightAttribute("Copyright (c) Rafale Soft Inc.(c) 2009")];
+[assembly:AssemblyCopyrightAttribute("Copyright (c) Rafale Soft Inc.(c) 2019")];
 [assembly:AssemblyTrademarkAttribute("")];
 [assembly:AssemblyCultureAttribute("")];
 
