@@ -14,6 +14,8 @@ Redist/
 *_yacc.cpp
 *_yacc.h
 RaptorData.pck
+GLBench.pck
+Demo.pck
 start.s3tc
 Installer/Output
 MicroLex/MicroLex.exe
@@ -34,6 +36,7 @@ bld/
 
 # Roslyn cache directories
 *.ide/
+.vs/
 
 # MSTest test Results
 [Tt]est[Rr]esult*/

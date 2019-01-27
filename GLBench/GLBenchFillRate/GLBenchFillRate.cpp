@@ -1,5 +1,20 @@
-// GLBenchFillRate.cpp : Defines the initialization routines for the DLL.
-//
+/***************************************************************************/
+/*                                                                         */
+/*  GLBenchFillRate.cpp                                                    */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
 
 #include "StdAfx.h"
 
@@ -13,6 +28,10 @@
 #include "GLHierarchy/VertexShader.h"
 #include "System/Raptor.h"
 #include "System/Memory.h"
+
+#include "DataManager/RaptorDataManager.h"
+
+
 
 RAPTOR_NAMESPACE
 
@@ -46,6 +65,21 @@ static char RESULT_DESCRIPTION[NB_RESULTS][256] =
 	};
 
 #include "GLBenchModuleTemplate.cxx"
+
+static std::string M1_1024_path = "Datas\\M1_1024.jpg";
+static std::string M1_512_path = "Datas\\M1_512.jpg";
+static std::string M1_256_path = "Datas\\M1_256.jpg";
+static std::string M1_128_path = "Datas\\M1_128.jpg";
+static std::string M1_64_path = "Datas\\M1_64.jpg";
+static std::string M1_32_path = "Datas\\M1_32.jpg";
+static std::string M1_16_path = "Datas\\M1_16.jpg";
+static std::string M1_8_path = "Datas\\M1_8.jpg";
+static std::string M1_4_path = "Datas\\M1_4.jpg";
+static std::string M1_2_path = "Datas\\M1_2.jpg";
+static std::string M1_1_path = "Datas\\M1_1.jpg";
+static std::string M74_1024_path = "Datas\\M74_1024.jpg";
+static std::string M74_256_path = "Datas\\M74_256.jpg";
+
 
 //
 /////////////////////////////////////////////////////////////////////////////
@@ -100,7 +134,7 @@ void Display::GLInitContext()
 										  CTextureObject::CGL_MULTIPLY,
 										  ITextureObject::CGL_BILINEAR);
 	T->glSetTransparency(128);
-	f.glLoadTexture(T,"Datas\\M1_1024.jpg");
+	f.glLoadTexture(T, M1_1024_path);
 	txt->addTexture(T);
 
 	if (Raptor::glIsExtensionSupported(GL_ARB_TEXTURE_COMPRESSION_EXTENSION_NAME))
@@ -112,7 +146,7 @@ void Display::GLInitContext()
 		const CTextureFactoryConfig::ICompressor *compressor = config.getCurrentCompressor();
 		if (0 < config.getNumCompressors())
 			config.setCurrentCompressor(config.getCompressor("OpenGL"));
-		f.glLoadTexture(T,"Datas\\M1_1024.jpg");
+		f.glLoadTexture(T, M1_1024_path);
 		config.setCurrentCompressor(compressor);
 	}
 	else
@@ -121,7 +155,7 @@ void Display::GLInitContext()
 							  CTextureObject::CGL_MULTIPLY,
 							  ITextureObject::CGL_BILINEAR);
 		T->glSetTransparency(128);
-		f.glLoadTexture(T,"Datas\\M1_1024.jpg");
+		f.glLoadTexture(T, M1_1024_path);
 	}
 	txt->addTexture(T);
 
@@ -129,24 +163,24 @@ void Display::GLInitContext()
 						  CTextureObject::CGL_MULTIPLY,
 						  ITextureObject::CGL_BILINEAR);
 	T->glSetTransparency(128);
-	f.glLoadTexture(T,"Datas\\M74_1024.jpg");
+	f.glLoadTexture(T, M74_1024_path);
 	txt->addTexture(T);
 
 	T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
 						  CTextureObject::CGL_MULTIPLY,
 						  ITextureObject::CGL_TRILINEAR);
 	config.setGenerateMipmap(false);
-	T->glSetTransparency(128);	f.glLoadTexture(T,"Datas\\M1_1024.jpg");
-	T->selectMipMapLevel(1);	f.glLoadTexture(T,"Datas\\M1_512.jpg");
-	T->selectMipMapLevel(2);	f.glLoadTexture(T,"Datas\\M1_256.jpg");
-	T->selectMipMapLevel(3);	f.glLoadTexture(T,"Datas\\M1_128.jpg");
-	T->selectMipMapLevel(4);	f.glLoadTexture(T,"Datas\\M1_64.jpg");
-	T->selectMipMapLevel(5);	f.glLoadTexture(T,"Datas\\M1_32.jpg");
-	T->selectMipMapLevel(6);	f.glLoadTexture(T,"Datas\\M1_16.jpg");
-	T->selectMipMapLevel(7);	f.glLoadTexture(T,"Datas\\M1_8.jpg");
-	T->selectMipMapLevel(8);	f.glLoadTexture(T,"Datas\\M1_4.jpg");
-	T->selectMipMapLevel(9);	f.glLoadTexture(T,"Datas\\M1_2.jpg");
-	T->selectMipMapLevel(10);	f.glLoadTexture(T,"Datas\\M1_1.jpg");
+	T->glSetTransparency(128);	f.glLoadTexture(T, M1_1024_path);
+	T->selectMipMapLevel(1);	f.glLoadTexture(T, M1_512_path);
+	T->selectMipMapLevel(2);	f.glLoadTexture(T, M1_256_path);
+	T->selectMipMapLevel(3);	f.glLoadTexture(T, M1_128_path);
+	T->selectMipMapLevel(4);	f.glLoadTexture(T, M1_64_path);
+	T->selectMipMapLevel(5);	f.glLoadTexture(T, M1_32_path);
+	T->selectMipMapLevel(6);	f.glLoadTexture(T, M1_16_path);
+	T->selectMipMapLevel(7);	f.glLoadTexture(T, M1_8_path);
+	T->selectMipMapLevel(8);	f.glLoadTexture(T, M1_4_path);
+	T->selectMipMapLevel(9);	f.glLoadTexture(T, M1_2_path);
+	T->selectMipMapLevel(10);	f.glLoadTexture(T, M1_1_path);
 	config.setGenerateMipmap(true);
 	txt->addTexture(T);
 
@@ -155,7 +189,7 @@ void Display::GLInitContext()
 						  CTextureObject::CGL_MULTIPLY,
 						  ITextureObject::CGL_BILINEAR);
 	T->glSetTransparency(128);
-	f.glLoadTexture(T,"Datas\\M1_256.jpg");
+	f.glLoadTexture(T, M1_256_path);
 	txt->addTexture(T);
 
 #if defined(GL_EXT_texture_filter_anisotropic)
@@ -169,17 +203,17 @@ void Display::GLInitContext()
 							  CTextureObject::CGL_MULTIPLY,
 							  ITextureObject::CGL_ANISOTROPIC);
 		config.setGenerateMipmap(false);
-		T->glSetTransparency(255);	f.glLoadTexture(T,"Datas\\M1_1024.jpg");
-		T->selectMipMapLevel(1);	f.glLoadTexture(T,"Datas\\M1_512.jpg");
-		T->selectMipMapLevel(2);	f.glLoadTexture(T,"Datas\\M1_256.jpg");
-		T->selectMipMapLevel(3);	f.glLoadTexture(T,"Datas\\M1_128.jpg");
-		T->selectMipMapLevel(4);	f.glLoadTexture(T,"Datas\\M1_64.jpg");
-		T->selectMipMapLevel(5);	f.glLoadTexture(T,"Datas\\M1_32.jpg");
-		T->selectMipMapLevel(6);	f.glLoadTexture(T,"Datas\\M1_16.jpg");
-		T->selectMipMapLevel(7);	f.glLoadTexture(T,"Datas\\M1_8.jpg");
-		T->selectMipMapLevel(8);	f.glLoadTexture(T,"Datas\\M1_4.jpg");
-		T->selectMipMapLevel(9);	f.glLoadTexture(T,"Datas\\M1_2.jpg");
-		T->selectMipMapLevel(10);	f.glLoadTexture(T,"Datas\\M1_1.jpg");
+		T->glSetTransparency(255);	f.glLoadTexture(T, M1_1024_path);
+		T->selectMipMapLevel(1);	f.glLoadTexture(T, M1_512_path);
+		T->selectMipMapLevel(2);	f.glLoadTexture(T, M1_256_path);
+		T->selectMipMapLevel(3);	f.glLoadTexture(T, M1_128_path);
+		T->selectMipMapLevel(4);	f.glLoadTexture(T, M1_64_path);
+		T->selectMipMapLevel(5);	f.glLoadTexture(T, M1_32_path);
+		T->selectMipMapLevel(6);	f.glLoadTexture(T, M1_16_path);
+		T->selectMipMapLevel(7);	f.glLoadTexture(T, M1_8_path);
+		T->selectMipMapLevel(8);	f.glLoadTexture(T, M1_4_path);
+		T->selectMipMapLevel(9);	f.glLoadTexture(T, M1_2_path);
+		T->selectMipMapLevel(10);	f.glLoadTexture(T, M1_1_path);
 		config.setGenerateMipmap(true);
 		txt->addTexture(T);
 	}
@@ -356,6 +390,41 @@ extern "C" GLBENCH_API void Bench(CWnd *parent)
 	if (parent == NULL)
 		return;
 
+	CRaptorDataManager  *dataManager = CRaptorDataManager::GetInstance();
+	if (dataManager != NULL)
+	{
+		//	Change package and erase previous files in case of updates
+		dataManager->setPackName("GLBench.pck");
+
+		M1_1024_path = dataManager->ExportFile("M1_1024.jpg");
+		if (M1_1024_path.empty()) return;
+		M1_512_path = dataManager->ExportFile("M1_512.jpg");
+		if (M1_512_path.empty()) return;
+		M1_256_path = dataManager->ExportFile("M1_256.jpg");
+		if (M1_256_path.empty()) return;
+		M1_128_path = dataManager->ExportFile("M1_128.jpg");
+		if (M1_128_path.empty()) return;
+		M1_64_path = dataManager->ExportFile("M1_64.jpg");
+		if (M1_64_path.empty()) return;
+		M1_32_path = dataManager->ExportFile("M1_32.jpg");
+		if (M1_32_path.empty()) return;
+		M1_16_path = dataManager->ExportFile("M1_16.jpg");
+		if (M1_16_path.empty()) return;
+		M1_8_path = dataManager->ExportFile("M1_8.jpg");
+		if (M1_8_path.empty()) return;
+		M1_4_path = dataManager->ExportFile("M1_4.jpg");
+		if (M1_4_path.empty()) return;
+		M1_2_path = dataManager->ExportFile("M1_2.jpg");
+		if (M1_2_path.empty()) return;
+		M1_1_path = dataManager->ExportFile("M1_1.jpg");
+		if (M1_1_path.empty()) return;
+
+		M74_1024_path = dataManager->ExportFile("M74_1024.jpg");
+		if (M74_1024_path.empty()) return;
+		M74_256_path = dataManager->ExportFile("M74_256.jpg");
+		if (M74_256_path.empty()) return;
+	}
+
 	CHostMemoryManager::GetInstance()->setGarbageMaxSize(64000000);
 	Display *GLDisplay = new Display;
 
@@ -427,7 +496,6 @@ GLDisplay->glMakeCurrent();
 		glGetIntegerv(GL_MAX_TEXTURE_SIZE,&maxSize);
 		T = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA);
 		load.allocatePixels(maxSize, maxSize);
-		unsigned char *buffer = new unsigned char[maxSize*4*maxSize];
 
 		float bench_dt = 0.0f;
 		for (unsigned int i=0;i<LOOP_LOADTEXTURE;i++)

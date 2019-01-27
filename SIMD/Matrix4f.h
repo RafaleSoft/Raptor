@@ -1,10 +1,28 @@
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
+/***************************************************************************/
+/*                                                                         */
+/*  Matrix4f.h                                                             */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
 
 
 #ifndef __MATRIX_4F_H__
 #define __MATRIX_4F_H__
+
+#if _MSC_VER > 1000
+#pragma once
+#endif // _MSC_VER > 1000
 
 #ifndef __GENERIC_MATRIX_H__
 	#include "GenericMatrix.h"	// for linear systems
@@ -43,5 +61,7 @@ protected:
 	friend class CVector4f;
 	//__m128 m_matrix[4];
 };
+
+
 #pragma pack(pop)
 #endif // __MATRIX_4F_H__

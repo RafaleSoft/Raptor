@@ -84,6 +84,10 @@
       <Command>$(Configuration)\eLut.exe &gt; $(Configuration)\eLut.h
 $(Configuration)\toFloat.exe &gt; $(Configuration)\toFloat.h</Command>
     </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>copy $(OutDir)$(TargetName).lib "%RAPTOR_ROOT%\Redist\lib\"
+copy $(OutDir)$(TargetName).dll "%RAPTOR_ROOT%\Redist\bin\"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">
     <ClCompile>

@@ -1,6 +1,19 @@
-// SIMDRegister.cpp: implementation of the CSIMDRegister class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  SIMDRegister.cxx                                                       */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
 
 
 #ifndef __SIMD_REGISTER_IMPL__
@@ -30,7 +43,7 @@ __inline SIMD_ENTRY CSSERegister##thisClass & SIMD_CALL CSSERegister##thisClass:
 	__asm ret\
 }
 
-#endif
+#endif	// SIMD_NO_ASSEMBLY
 
-#endif
+#endif	// __SIMD_REGISTER_IMPL__
 
