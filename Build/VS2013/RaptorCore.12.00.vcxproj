@@ -796,6 +796,7 @@ copy $(SolutionDir)\$(ProjectName)\Subsys\CodeGeneration.h "%RAPTOR_ROOT%\Redist
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\VertexShader.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\VulkanShaderStage.h" />
     <ClInclude Include="..\..\RaptorCore\Raptordll.h" />
+    <ClInclude Include="..\..\RaptorCore\resource.h" />
     <ClInclude Include="..\..\RaptorCore\SSE_Engine\SSE_3DEngine.h" />
     <ClInclude Include="..\..\RaptorCore\SSE_Engine\SSE_BoundingBox.h" />
     <ClInclude Include="..\..\RaptorCore\SSE_Engine\SSE_GLLayer.h" />
@@ -903,6 +904,9 @@ copy $(SolutionDir)\$(ProjectName)\Subsys\CodeGeneration.h "%RAPTOR_ROOT%\Redist
     <ClInclude Include="..\..\RaptorCore\Win32Specific\Win32Glext.h" />
     <ClInclude Include="..\..\RaptorCore\Win32Specific\Win32RaptorIO.h" />
     <ClInclude Include="..\..\RaptorCore\Win32Specific\Win32TimeObject.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\..\RaptorCore\RaptorCore.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

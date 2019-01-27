@@ -1,6 +1,21 @@
-// Automat.cpp: implementation of the CAutomat class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  Automat.cpp                                                            */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
 
 #include "StdAfx.h"
 #include "Automat.h"
@@ -287,10 +302,10 @@ void Factorize(vector<branch*> &factorBranches)
 //	a given node. The node is given during BuildNodes
 //	and the new branches will then be processed continuing
 //	BuildNodes inner loops
-int CAutomat::BuildNextBranches(atom* a,int branchLength,node* n,vector<branch*> &nextBranches,vector<branch*> &factorBranches,int nbr)
+int CAutomat::BuildNextBranches(atom* a,int bLength,node* n,vector<branch*> &nextBranches,vector<branch*> &factorBranches,int nbr)
 {
 	vector<string> possibles;
-	PossibleChars(a,branchLength,possibles);
+	PossibleChars(a,bLength,possibles);
 
 	for (unsigned int j=0;j<possibles.size();j++)
 	{

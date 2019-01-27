@@ -1,6 +1,20 @@
-// GLBuilder.cpp: implementation of the CGLBuilder class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  GLBuilder.cpp                                                          */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
 
 #include "StdAfx.h"
 
@@ -534,9 +548,9 @@ bool CGLBuilder::writeHeader(const string& filename)
 		const EXTENSION& extension = extensions[i];
 
 		std::string extension_name = "";
-		std::string::const_iterator i = extension.extensionName.begin();
-		while (i != extension.extensionName.end())
-			extension_name += (char)::toupper(*i++);
+		std::string::const_iterator it = extension.extensionName.begin();
+		while (it != extension.extensionName.end())
+			extension_name += (char)::toupper(*it++);
 		header << "#define	" << extension_name << "_EXTENSION_NAME \"" << extension.extensionName << "\"\n";
 
 		if ((extension.active) && (extension.kind != CPU) && (extension.kind != COREGL) && (extension.kind != COREVK))

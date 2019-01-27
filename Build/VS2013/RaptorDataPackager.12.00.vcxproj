@@ -307,7 +307,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\RaptorData\RaptorDataPackager\PackageHeader.h" />
+    <ClInclude Include="..\..\RaptorData\RaptorDataPackager\resource.h" />
     <ClInclude Include="..\..\RaptorData\RaptorDataPackager\StdAfx.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\..\RaptorData\RaptorDataPackager\RaptorDataPackager.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -150,6 +150,9 @@
     <PostBuildEvent>
       <Command>copy $(OutDir)$(TargetFileName) "%RAPTOR_ROOT%\Redist\bin\"</Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>%RAPTOR_ROOT%\GLBench\buildpak.bat</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">
     <Midl>
@@ -205,8 +208,13 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
     </Bscmake>
     <PostBuildEvent>
-      <Command>copy $(OutDir)$(TargetFileName) "%RAPTOR_ROOT%\Redist\bin\"</Command>
+      <Command>copy $(OutDir)$(TargetFileName) "%RAPTOR_ROOT%\Redist\bin\"
+copy $(SolutionDir)$(ProjectName)\GLBench.pck "%RAPTOR_ROOT%\Redist\bin\"
+</Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>%RAPTOR_ROOT%\GLBench\buildpak.bat</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Midl>
@@ -265,6 +273,9 @@
     <PostBuildEvent>
       <Command>copy $(OutDir)$(TargetFileName) "%RAPTOR_ROOT%\Redist\bin\"</Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>%RAPTOR_ROOT%\GLBench\buildpak.bat</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Optimized|Win32'">
     <Midl>
@@ -328,6 +339,9 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <OutputFile>.\Release/GLBench.bsc</OutputFile>
     </Bscmake>
+    <PreBuildEvent>
+      <Command>%RAPTOR_ROOT%\GLBench\buildpak.bat</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\GLBench\GLBench.cpp" />
@@ -356,6 +370,7 @@
     <Image Include="..\..\GLBench\res\Raptor_logo_sml.bmp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\GLBench\buildpak.bat" />
     <None Include="..\..\GLBench\res\GLBench.rc2" />
   </ItemGroup>
   <ItemGroup>

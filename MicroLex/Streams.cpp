@@ -1,3 +1,23 @@
+/***************************************************************************/
+/*                                                                         */
+/*  Streams.cpp                                                            */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
+
+
 #include "StdAfx.h"
 #include "MicroLex.h"
 
@@ -9,7 +29,6 @@
 //	( due to file inclusion )
 typedef struct source_stream_t
 {
-    // CFile source;
 	ifstream	source;
 	char	buffer[BUFFER_SIZE];
 	int		bufferpos;
@@ -19,7 +38,6 @@ typedef struct source_stream_t
 typedef struct microlex_file_t 
 {
 	unsigned int ID;
-	//CFile file;
     ofstream    file;
     string      filename;
 } microlex_file;
@@ -41,12 +59,9 @@ bool StreamManager::PushSourceFile(const string& fname)
 {
 	source_stream *newsrc = new source_stream;
 
-	//CFileException	exc;
-	//if (FALSE == newsrc->source.Open(fname.data(),CFile::modeRead|CFile::shareDenyWrite,&exc))
     newsrc->source.open(fname.data(),ios_base::binary|ios_base::in);
     if ((!newsrc->source.is_open()) || (!newsrc->source.good()))
 	{
-		//cout << "File " << LPCTSTR(exc.m_strFileName) << " could not be opened: error " << exc.m_cause << endl;
 		cout << "File " << fname.data() << " could not be opened: error " << errno << endl;
 		return false;
 	}
@@ -62,7 +77,6 @@ bool StreamManager::PushSourceFile(const string& fname)
 
 void StreamManager::PopSourceFile()
 {
-	//sources[current_source]->source.Close();
 	sources[current_source]->source.close();
 
 	source_stream* src = sources[current_source];
@@ -165,10 +179,8 @@ char StreamManager::ReadToken(char delim,string &token)
 
 int StreamManager::OpenMicroLexFile(const string& fname)
 {
-	//CFileException	exc;
 	microlex_file* mf = new microlex_file;
 
-	//if (FALSE == mf->file.Open(fname.data(),CFile::modeCreate|CFile::modeWrite|CFile::shareExclusive,&exc))
 	mf->file.open(fname.data());
     if ((!mf->file.is_open()) || (!mf->file.good()))
 	{
@@ -187,10 +199,7 @@ int StreamManager::OpenMicroLexFile(const string& fname)
 void StreamManager::CloseMicroLexFiles(void)
 {
 	for (unsigned int i=0;i<microlex_files.size();i++)
-	{
-		//microlex_files[i]->file.Close();
 		microlex_files[i]->file.close();
-	}
 }
 
 string StreamManager::GetFileName(unsigned int file_ID)
@@ -201,7 +210,6 @@ string StreamManager::GetFileName(unsigned int file_ID)
 		return "";
 	}
 	else
-		//return microlex_files[file_ID]->file.GetFileName();
 		return microlex_files[file_ID]->filename;
 }
 
@@ -215,64 +223,12 @@ void StreamManager::WriteData(unsigned int file_ID,const char *data)
 
 	try
 	{
-		//CFile &file = microlex_files[file_ID]->file;
 		ofstream &file = microlex_files[file_ID]->file;
 
 		file.write(data,strlen(data));
-		//file.Write(data,strlen(data));
 	}
     catch(...)
     {
     }
-    /*
-	catch(CFileException *ex)
-	{
-		switch(ex->m_cause)
-		{
-			case CFileException::generic:
-				cout << "Unknown error" << endl;
-				break;
-			case CFileException::fileNotFound:
-				cout << "File not found" << endl;
-				break;
-			case CFileException::badPath:
-				cout << "Bad path" << endl;
-				break;
-			case CFileException::tooManyOpenFiles:
-				cout << "Too many files opened" << endl;
-				break;
-			case CFileException::accessDenied:
-				cout << "Access denied" << endl;
-				break;
-			case CFileException::invalidFile:
-				cout << "Invalid files" << endl;
-				break;
-			case CFileException::removeCurrentDir:
-				cout << "Cannot remove current directory" << endl;
-				break;
-			case CFileException::directoryFull:
-				cout << "Directory full" << endl;
-				break;
-			case CFileException::badSeek:
-				cout << "File pointer error" << endl;
-				break;
-			case CFileException::hardIO:
-				cout << "Hardware error" << endl;
-				break;
-			case CFileException::sharingViolation:
-				cout << "Sharing violation" << endl;
-				break;
-			case CFileException::lockViolation:
-				cout << "Lock violation" << endl;
-				break;
-			case CFileException::diskFull:
-				cout << "Disk full" << endl;
-				break;
-			case CFileException::endOfFile:
-				cout << "End of file" << endl;
-				break;
-		}
-	}
-    */
 }
 

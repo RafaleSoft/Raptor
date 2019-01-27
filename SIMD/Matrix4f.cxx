@@ -1,6 +1,21 @@
-/////////////////////////////////////////////////////////////////////////////////////////////
-// definition
-/////////////////////////////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  Matrix4f.cxx                                                           */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
 #ifndef __MATRIX_4F_IMPL__
 #define __MATRIX_4F_IMPL__
 
@@ -25,4 +40,4 @@ __inline CVector4f SIMD_CALL CMatrix4f::operator*(const CVector4f& v) const
 	return res;
 }
 
-#endif
+#endif	// __MATRIX_4F_IMPL__

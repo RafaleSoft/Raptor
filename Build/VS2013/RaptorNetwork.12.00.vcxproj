@@ -214,6 +214,7 @@ copy RaptorNetwork.dll "%RAPTOR_ROOT%\Redist\bin\"
     <ClInclude Include="..\..\RaptorNetwork\Network.h" />
     <ClInclude Include="..\..\RaptorNetwork\NetworkLogger.h" />
     <ClInclude Include="..\..\RaptorNetwork\RaptorNetwork.h" />
+    <ClInclude Include="..\..\RaptorNetwork\resource.h" />
     <ClInclude Include="..\..\RaptorNetwork\Server.h" />
     <ClInclude Include="..\..\RaptorNetwork\ServerSocket.h" />
     <ClInclude Include="..\..\RaptorNetwork\stdafx.h" />
@@ -230,6 +231,9 @@ copy RaptorNetwork.dll "%RAPTOR_ROOT%\Redist\bin\"
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\..\RaptorNetwork\RaptorNetwork.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

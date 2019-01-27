@@ -319,6 +319,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\RaptorViewer\RaptorClient.h" />
     <ClInclude Include="..\..\RaptorViewer\RaptorViewer.h" />
+    <ClInclude Include="..\..\RaptorViewer\resource.h" />
     <ClInclude Include="..\..\RaptorViewer\ServerImageRenderer.h" />
     <ClInclude Include="..\..\RaptorViewer\StdAfx.h" />
   </ItemGroup>
@@ -331,6 +332,9 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\..\RaptorViewer\RaptorViewer.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

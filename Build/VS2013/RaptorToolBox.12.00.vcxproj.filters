@@ -39,6 +39,9 @@
     <Filter Include="Header Files\Controllers">
       <UniqueIdentifier>{cef92f25-3779-4602-bc52-71a6ca0168cc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{2fb057fb-b5cd-4bce-8078-39c8b2c0741a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\RaptorToolBox\Loaders\3DSfile.cpp">
@@ -137,6 +140,9 @@
     <ClCompile Include="..\..\RaptorToolBox\CmdLineParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\RaptorToolBox\Imaging\writepng.c">
+      <Filter>Source Files\Imaging</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\RaptorToolBox\Loaders\OBJScript_lex.h">
@@ -220,10 +226,21 @@
     <ClInclude Include="..\..\RaptorToolBox\CmdLineParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\RaptorToolBox\Imaging\writepng.h">
+      <Filter>Header Files\Imaging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorToolBox\resource.h">
+      <Filter>Resource Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\RaptorToolBox\Loaders\OBJ.lex">
       <Filter>Source Files\Loaders</Filter>
     </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\..\RaptorToolBox\RaptorToolBox.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

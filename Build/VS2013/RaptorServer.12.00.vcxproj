@@ -344,9 +344,13 @@
     <ClInclude Include="..\..\RaptorServer\RaptorInstance.h" />
     <ClInclude Include="..\..\RaptorServer\RaptorServer.h" />
     <ClInclude Include="..\..\RaptorServer\RaptorServerCompressor.h" />
+    <ClInclude Include="..\..\RaptorServer\resource.h" />
     <ClInclude Include="..\..\RaptorServer\ServerTransport.h" />
     <ClInclude Include="..\..\RaptorServer\StdAfx.h" />
     <ClInclude Include="..\..\RaptorServer\YUVCompressor.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\..\RaptorServer\RaptorServer.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

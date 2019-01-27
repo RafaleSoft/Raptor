@@ -85,6 +85,9 @@
     <Filter Include="Header Files\Subsys include\OpenGL">
       <UniqueIdentifier>{26af82cc-2aef-4809-ab4c-376e74f6e4b8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{64e00f6c-8881-45eb-8e66-4b7d826e4aa0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\RaptorCore\Subsys\ObjectModels\Basic.lex">
@@ -1155,6 +1158,9 @@
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\IRenderingProperties.h">
       <Filter>Header Files\GLHierarchy include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\resource.h">
+      <Filter>Resource Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\RaptorCore\Subsys\ObjectModels\Raptor.lex">
@@ -1163,5 +1169,10 @@
     <CustomBuild Include="..\..\RaptorCore\System\Glext.h">
       <Filter>Header Files\System include</Filter>
     </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\..\RaptorCore\RaptorCore.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

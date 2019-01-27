@@ -1,6 +1,20 @@
-// ObjectStore.cpp: implementation of the CObjectStore class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  ObjectStore.cpp                                                        */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
 
 #include "StdAfx.h"
 
@@ -37,55 +51,38 @@
 #include "GLHierarchy/ObjectFactory.h"
 
 #include "ToolBox/RaptorToolBox.h"
+#include "DataManager/RaptorDataManager.h"
+
 #include "ObjectStore.h"
 
 #include "strstream"
 
 
-static const string MODELSHIGH = "Datas\\Columns.3DS";
-static const string MODELSLOW = "Datas\\ColumnsLow.3DS";
-static const string COLUMNLOW = "Datas\\colonneLow.3DS";
+static std::string MODELSHIGH = "Datas\\Columns.3DS";
+static std::string MODELSLOW = "Datas\\ColumnsLow.3DS";
+static std::string COLUMNLOW = "Datas\\colonneLow.3DS";
 static string MODELS;
 
-static const char* MARBLE_0 = "Datas\\Marble.jpg";
-static const char* MARBLE_1 = "Datas\\Marble2.jpg";
-static const char* MARBLE_2 = "Datas\\Marble3.jpg";
-static const char* MARBLE_3 = "Datas\\Marble4.jpg";
-static const char* MARBLE_4 = "Datas\\Marble5.jpg";
-static const char* MARBLE_5 = "Datas\\Marble6.jpg";
-static const char* BRICKS_0 = "Datas\\Bricks.jpg";
-static const char* BRICKS_1 = "Datas\\Bricks2.jpg";
-static const char* BRICKS_2 = "Datas\\Bricks3.jpg";
-static const char* BRICKS_3 = "Datas\\Bricks4.jpg";
-static const char* BRICKS_4 = "Datas\\Bricks5.jpg";
-static const char* BRICKS_5 = "Datas\\Bricks6.jpg";
-static const char* BRICKS_6 = "Datas\\Bricks7.jpg";
-static const char* BRICKS_7 = "Datas\\Bricks8.jpg";
-static const char* BRICKS_8 = "Datas\\Bricks9.jpg";
-static const char* BRICKS_9 = "Datas\\Bricks10.jpg";
-static const char* BUMP_0 = "Datas\\Sculpt.tga";
-static const char* BUMP_1 = "Datas\\marbleBump.tga";
-static const char* OLDWOOD_0 = "Datas\\OLDWOOD.JPG";
-static const char* OLDWOOD_1 = "Datas\\OLDWOOD2.JPG";
-static const char* OLDWOOD_2 = "Datas\\OLDWOOD3.JPG";
-static const char* OLDWOOD_3 = "Datas\\OLDWOOD4.JPG";
-static const char* OLDWOOD_4 = "Datas\\OLDWOOD5.JPG";
-static const char* OLDWOOD_5 = "Datas\\OLDWOOD6.JPG";
-static const char* OLDWOOD_6 = "Datas\\OLDWOOD7.JPG";
-static const char* OLDWOOD_7 = "Datas\\OLDWOOD8.JPG";
-static const char* OLDWOOD_8 = "Datas\\OLDWOOD9.JPG";
-static const char* OLDWOOD_9 = "Datas\\OLDWOOD10.JPG";
-static const char* FLARE_BASE = "Datas\\LensFlare2.tga";
-static const char* FLARE_0 = "Datas\\flare0.jpg";
-static const char* FLARE_1 = "Datas\\flare1.jpg";
-static const char* FLARE_2 = "Datas\\flare3.jpg";
-static const char* FLARE_3 = "Datas\\flare4.jpg";
-static const char* FLARE_4 = "Datas\\flare5.jpg";
-static const char* FLARE_5 = "Datas\\flare6.jpg";
-static const char* FLARE_6 = "Datas\\flare7.jpg";
-static const char* FLARE_7 = "Datas\\flare8.jpg";
-static const char* FLARE_8 = "Datas\\flare10.jpg";
-static const char* ROCKSCULPT = "Datas\\lrock049.jpg";
+static std::string MARBLE_0 = "Datas\\Marble.jpg";
+static std::string MARBLE_1 = "Datas\\Marble2.jpg";
+static std::string MARBLE_2 = "Datas\\Marble3.jpg";
+static std::string MARBLE_3 = "Datas\\Marble4.jpg";
+static std::string MARBLE_4 = "Datas\\Marble5.jpg";
+static std::string MARBLE_5 = "Datas\\Marble6.jpg";
+static std::string BRICKS_0 = "Datas\\BRICKS.jpg";
+static std::string BRICKS_1 = "Datas\\Bricks2.jpg";
+static std::string BRICKS_2 = "Datas\\Bricks3.jpg";
+static std::string BRICKS_3 = "Datas\\Bricks4.jpg";
+static std::string BRICKS_4 = "Datas\\Bricks5.jpg";
+static std::string BRICKS_5 = "Datas\\Bricks6.jpg";
+static std::string BRICKS_6 = "Datas\\Bricks7.jpg";
+static std::string BRICKS_7 = "Datas\\Bricks8.jpg";
+static std::string BRICKS_8 = "Datas\\Bricks9.jpg";
+static std::string BRICKS_9 = "Datas\\Bricks10.jpg";
+static std::string BUMP_0 = "Datas\\Sculpt.tga";
+static std::string OLDWOOD_1 = "Datas\\OLDWOOD2.JPG";
+static std::string FLARE_BASE = "Datas\\LensFlare2.tga";
+static std::string ROCKSCULPT = "Datas\\lrock049.jpg";
 
 
 #define MARBLE0 0
@@ -436,6 +433,69 @@ bool CObjectStore::IsARoof(CGeometry *g)
 	
 	return false;
 }
+
+void CObjectStore::LoadPack(void)
+{
+	CRaptorDataManager  *dataManager = CRaptorDataManager::GetInstance();
+	if (dataManager != NULL)
+	{
+		//	Change package and erase previous files in case of updates
+		dataManager->setPackName("Demo.pck");
+
+		BRICKS_0 = dataManager->ExportFile("BRICKS.jpg");
+		if (BRICKS_0.empty()) return;
+		BRICKS_1 = dataManager->ExportFile("BRICKS2.jpg");
+		if (BRICKS_1.empty()) return;
+		BRICKS_2 = dataManager->ExportFile("BRICKS3.jpg");
+		if (BRICKS_2.empty()) return;
+		BRICKS_3 = dataManager->ExportFile("BRICKS4.jpg");
+		if (BRICKS_3.empty()) return;
+		BRICKS_4 = dataManager->ExportFile("BRICKS5.jpg");
+		if (BRICKS_4.empty()) return;
+		BRICKS_5 = dataManager->ExportFile("BRICKS6.jpg");
+		if (BRICKS_5.empty()) return;
+		BRICKS_6 = dataManager->ExportFile("BRICKS7.jpg");
+		if (BRICKS_6.empty()) return;
+		BRICKS_7 = dataManager->ExportFile("BRICKS8.jpg");
+		if (BRICKS_7.empty()) return;
+		BRICKS_8 = dataManager->ExportFile("BRICKS9.jpg");
+		if (BRICKS_8.empty()) return;
+		BRICKS_9 = dataManager->ExportFile("BRICKS10.jpg");
+		if (BRICKS_9.empty()) return;
+
+		COLUMNLOW = dataManager->ExportFile("colonneLow.3DS");
+		if (COLUMNLOW.empty()) return;
+		MODELSHIGH = dataManager->ExportFile("Columns.3DS");
+		if (MODELSHIGH.empty()) return;
+		MODELSLOW = dataManager->ExportFile("ColumnsLow.3DS");
+		if (MODELSLOW.empty()) return;
+
+		MARBLE_0 = dataManager->ExportFile("Marble.jpg");
+		if (MARBLE_0.empty()) return;
+		MARBLE_1 = dataManager->ExportFile("Marble2.jpg");
+		if (MARBLE_1.empty()) return;
+		MARBLE_2 = dataManager->ExportFile("Marble3.jpg");
+		if (MARBLE_2.empty()) return;
+		MARBLE_3 = dataManager->ExportFile("Marble4.jpg");
+		if (MARBLE_3.empty()) return;
+		MARBLE_4 = dataManager->ExportFile("Marble5.jpg");
+		if (MARBLE_4.empty()) return;
+		MARBLE_5 = dataManager->ExportFile("Marble6.jpg");
+		if (MARBLE_5.empty()) return;
+
+		BUMP_0 = dataManager->ExportFile("Sculpt.tga");
+		if (BUMP_0.empty()) return;
+
+		OLDWOOD_1 = dataManager->ExportFile("OLDWOOD2.JPG");
+		if (OLDWOOD_1.empty()) return;
+
+		FLARE_BASE = dataManager->ExportFile("LensFlare2.tga");
+		if (FLARE_BASE.empty()) return;
+		ROCKSCULPT = dataManager->ExportFile("lrock049.jpg");
+		if (ROCKSCULPT.empty()) return;
+	}
+}
+
 
 void CObjectStore::LoadModels(void)
 {
