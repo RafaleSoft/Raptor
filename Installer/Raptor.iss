@@ -97,7 +97,7 @@ Source: "../Installer/*.jpg";                   DestDir: "{app}/Installer"
 Source: "../Installer/Raptor.iss";              DestDir: "{app}/Installer"
 Source: "../Installer/Raptor.html";             DestDir: "{app}/Installer"
 
-Source: "../License/*.*";                       DestDir: "{app}/License"
+Source: "../Licenses/*.*";                       DestDir: "{app}/Licenses"
 
 Source: "../MicroLex/*.*";                      DestDir: "{app}/MicroLex"
     
