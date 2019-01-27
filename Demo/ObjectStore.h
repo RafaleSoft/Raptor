@@ -21,6 +21,7 @@ public:
 
 	void SetPerf(bool lowdef = false);
 
+	void LoadPack(void);
 	void LoadModels(void);
 	void BuildObjects(void);
 	void BuildScene(void);

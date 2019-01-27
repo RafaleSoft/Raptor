@@ -16,9 +16,9 @@ REM		/*                                                                         
 REM		/***************************************************************************/
 
 
-ECHO Making GLBench data package  ...
+ECHO Making Demo data package  ...
 
-cd "%RAPTOR_ROOT%\GLBench\Datas"
+cd "%RAPTOR_ROOT%\Demo\Datas"
 
 IF NOT EXIST "%RAPTOR_ROOT%\Redist\Bin\RaptorDataPackager.exe" (
 	ECHO DataPackager not found !
@@ -30,7 +30,7 @@ IF NOT EXIST "%RAPTOR_ROOT%\Redist\Bin\RaptorDataPackager.exe" (
 	ECHO "%RAPTOR_ROOT%\Redist\Bin\RaptorDataPackager.exe"
 )
 
-"%RAPTOR_ROOT%\Redist\Bin\RaptorDataPackager.exe" -C GLBench.pck M1_1.jpg M1_1024.jpg M1_128.jpg M1_1280.jpg M1_16.jpg M1_2.jpg M1_256.jpg M1_32.jpg M1_4.jpg M1_512.jpg M1_64.jpg M1_8.jpg M74_1024.jpg M74_256.jpg SmallTeapot.3DS
+"%RAPTOR_ROOT%\Redist\Bin\RaptorDataPackager.exe" -C Demo.pck BRICKS.jpg BRICKS2.jpg BRICKS3.jpg BRICKS4.jpg BRICKS5.jpg BRICKS6.jpg BRICKS7.jpg BRICKS8.jpg BRICKS9.jpg BRICKS10.jpg colonneLow.3DS Columns.3DS ColumnsLow.3DS Marble.jpg Marble2.jpg Marble3.jpg Marble4.jpg Marble5.jpg Marble6.jpg Sculpt.tga OLDWOOD2.JPG LensFlare2.tga lrock049.jpg Fire.tga flare0.jpg flare1.jpg flare3.jpg flare4.jpg flare5.jpg flare6.jpg flare7.jpg flare8.jpg flare10.jpg
 
 ECHO Removing temporary files
 DEL /F "*.zip"
@@ -38,12 +38,12 @@ DEL /F "*.zip"
 ECHO Delivering package ...
 cd ..
 
-IF EXIST GLBench.pck (
-	ECHO GLBench package already exist, it will be replaced !
-	DEL /F GLBench.pck
+IF EXIST Demo.pck (
+	ECHO Demo package already exist, it will be replaced !
+	DEL /F Demo.pck
 )
 
-move Datas\GLBench.pck .
+move Datas\Demo.pck .
 
 :END
 

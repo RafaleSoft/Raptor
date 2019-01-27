@@ -15,6 +15,7 @@ Redist/
 *_yacc.h
 RaptorData.pck
 GLBench.pck
+Demo.pck
 start.s3tc
 Installer/Output
 MicroLex/MicroLex.exe

@@ -268,7 +268,15 @@ bool CRaptorDataManager::setPackName(const std::string& packName)
 	if (packName.length() < 4)
 		return false;
 
+	if (package > 0)
+		CLOSE(package);
+	package = 0;
+	packageheadpos = 0;
+	clean(header);
+
 	m_packName = packName;
+	ClearExports();
+
 	return true;
 }
 

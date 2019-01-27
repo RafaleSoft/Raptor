@@ -77,6 +77,9 @@ static std::string M1_8_path = "Datas\\M1_8.jpg";
 static std::string M1_4_path = "Datas\\M1_4.jpg";
 static std::string M1_2_path = "Datas\\M1_2.jpg";
 static std::string M1_1_path = "Datas\\M1_1.jpg";
+static std::string M74_1024_path = "Datas\\M74_1024.jpg";
+static std::string M74_256_path = "Datas\\M74_256.jpg";
+
 
 //
 /////////////////////////////////////////////////////////////////////////////
@@ -160,7 +163,7 @@ void Display::GLInitContext()
 						  CTextureObject::CGL_MULTIPLY,
 						  ITextureObject::CGL_BILINEAR);
 	T->glSetTransparency(128);
-	f.glLoadTexture(T,"Datas\\M74_1024.jpg");
+	f.glLoadTexture(T, M74_1024_path);
 	txt->addTexture(T);
 
 	T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
@@ -390,32 +393,36 @@ extern "C" GLBENCH_API void Bench(CWnd *parent)
 	CRaptorDataManager  *dataManager = CRaptorDataManager::GetInstance();
 	if (dataManager != NULL)
 	{
-		//	Erase previous files in case of updates
-		dataManager->ClearExports();
+		//	Change package and erase previous files in case of updates
 		dataManager->setPackName("GLBench.pck");
 
 		M1_1024_path = dataManager->ExportFile("M1_1024.jpg");
-		if (!M1_1024_path.empty()) return;
+		if (M1_1024_path.empty()) return;
 		M1_512_path = dataManager->ExportFile("M1_512.jpg");
-		if (!M1_512_path.empty()) return;
+		if (M1_512_path.empty()) return;
 		M1_256_path = dataManager->ExportFile("M1_256.jpg");
-		if (!M1_256_path.empty()) return;
+		if (M1_256_path.empty()) return;
 		M1_128_path = dataManager->ExportFile("M1_128.jpg");
-		if (!M1_128_path.empty()) return;
+		if (M1_128_path.empty()) return;
 		M1_64_path = dataManager->ExportFile("M1_64.jpg");
-		if (!M1_64_path.empty()) return;
+		if (M1_64_path.empty()) return;
 		M1_32_path = dataManager->ExportFile("M1_32.jpg");
-		if (!M1_32_path.empty()) return;
+		if (M1_32_path.empty()) return;
 		M1_16_path = dataManager->ExportFile("M1_16.jpg");
-		if (!M1_16_path.empty()) return;
+		if (M1_16_path.empty()) return;
 		M1_8_path = dataManager->ExportFile("M1_8.jpg");
-		if (!M1_8_path.empty()) return;
+		if (M1_8_path.empty()) return;
 		M1_4_path = dataManager->ExportFile("M1_4.jpg");
-		if (!M1_4_path.empty()) return;
+		if (M1_4_path.empty()) return;
 		M1_2_path = dataManager->ExportFile("M1_2.jpg");
-		if (!M1_2_path.empty()) return;
+		if (M1_2_path.empty()) return;
 		M1_1_path = dataManager->ExportFile("M1_1.jpg");
-		if (!M1_1_path.empty()) return;
+		if (M1_1_path.empty()) return;
+
+		M74_1024_path = dataManager->ExportFile("M74_1024.jpg");
+		if (M74_1024_path.empty()) return;
+		M74_256_path = dataManager->ExportFile("M74_256.jpg");
+		if (M74_256_path.empty()) return;
 	}
 
 	CHostMemoryManager::GetInstance()->setGarbageMaxSize(64000000);
@@ -489,7 +496,6 @@ GLDisplay->glMakeCurrent();
 		glGetIntegerv(GL_MAX_TEXTURE_SIZE,&maxSize);
 		T = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA);
 		load.allocatePixels(maxSize, maxSize);
-		unsigned char *buffer = new unsigned char[maxSize*4*maxSize];
 
 		float bench_dt = 0.0f;
 		for (unsigned int i=0;i<LOOP_LOADTEXTURE;i++)
