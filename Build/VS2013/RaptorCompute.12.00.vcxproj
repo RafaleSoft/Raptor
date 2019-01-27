@@ -212,6 +212,7 @@ copy $(OutDir)$(TargetName).dll "%RAPTOR_ROOT%\Redist\bin\"</Command>
     <ClInclude Include="..\..\RaptorCompute\RaptorComputeMemory.h" />
     <ClInclude Include="..\..\RaptorCompute\RaptorComputeTask.h" />
     <ClInclude Include="..\..\RaptorCompute\ReadBufferTask.h" />
+    <ClInclude Include="..\..\RaptorCompute\resource.h" />
     <ClInclude Include="..\..\RaptorCompute\stdafx.h" />
     <ClInclude Include="..\..\RaptorCompute\targetver.h" />
   </ItemGroup>
@@ -228,6 +229,9 @@ copy $(OutDir)$(TargetName).dll "%RAPTOR_ROOT%\Redist\bin\"</Command>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\..\RaptorCompute\RaptorCompute.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

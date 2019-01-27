@@ -1,3 +1,21 @@
+REM		/***************************************************************************/
+REM		/*                                                                         */
+REM		/*  Redist.bat                                                             */
+REM		/*                                                                         */
+REM		/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+REM		/*                                                                         */
+REM		/*  Copyright 1998-2019 by                                                 */
+REM		/*  Fabrice FERRAND.                                                       */
+REM		/*                                                                         */
+REM		/*  This file is part of the Raptor project, and may only be used,         */
+REM		/*  modified, and distributed under the terms of the Raptor project        */
+REM		/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+REM		/*  this file you indicate that you have read the license and              */
+REM		/*  understand and accept it fully.                                        */
+REM		/*                                                                         */
+REM		/***************************************************************************/
+
+
 ECHO OFF
 
 ECHO    Preparing redist structure...
@@ -243,7 +261,6 @@ copy .\SIMD\GenericMatrix.cxx Redist\Include\SimdLib
 copy .\SIMD\Vector4f.cxx Redist\Include\SimdLib
 copy .\SIMD\Matrix4f.cxx Redist\Include\SimdLib
 
-copy .\SIMD\simd.lib Redist\Lib
 
 ECHO    Copying help files ...
 

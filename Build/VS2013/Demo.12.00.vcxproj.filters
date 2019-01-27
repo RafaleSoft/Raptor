@@ -40,5 +40,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Demo\Demo.cmd" />
+    <None Include="..\..\Demo\buildpak.bat" />
   </ItemGroup>
 </Project>

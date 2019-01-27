@@ -1,6 +1,21 @@
-// SSEFloatVector.h: interface for the CSSEFVector class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  SSEFVector.h                                                           */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
 
 #if !defined(AFX_SSEFLOATVECTOR_H__9AAB93A4_DB7C_4486_802A_1B4CE4E6CEC4__INCLUDED_)
 #define AFX_SSEFLOATVECTOR_H__9AAB93A4_DB7C_4486_802A_1B4CE4E6CEC4__INCLUDED_

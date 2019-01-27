@@ -1,3 +1,25 @@
+/***************************************************************************/
+/*                                                                         */
+/*  simd.cpp                                                               */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
+#ifndef __SIMD_H__
+	#include "simd.h"
+#endif
+
 #ifndef __REGISTERS_H__
 	#include "registers.h"
 #endif
@@ -7,10 +29,6 @@
 #elif defined(LINUX)
 	#include <cpuid.h>
   #include <string.h>
-#endif
-
-#ifndef __GENERIC_VECTOR_IMPL__
-	#include "GenericVector.cxx"
 #endif
 
 #ifndef __GENERIC_ALIGNED_VECTOR_IMPL__

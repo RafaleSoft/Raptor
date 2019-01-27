@@ -1,10 +1,27 @@
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
+/***************************************************************************/
+/*                                                                         */
+/*  Vector4f.h                                                             */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
 
 
 #ifndef __VECTOR_4F_H__
 #define __VECTOR_4F_H__
+
+#if _MSC_VER > 1000
+#pragma once
+#endif // _MSC_VER > 1000
 
 #ifndef __GENERIC_VECTOR_H__
 	#include "GenericVector.h"
@@ -160,4 +177,4 @@ protected:
 };
 #pragma pack(pop)
 
-#endif
+#endif	// __VECTOR_4F_H__

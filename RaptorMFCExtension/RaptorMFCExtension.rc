@@ -1,4 +1,4 @@
-//Microsoft Developer Studio generated resource script.
+// Microsoft Visual C++ generated resource script.
 //
 #include "resource.h"
 
@@ -16,10 +16,8 @@
 // French (France) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_FRA)
-#ifdef _WIN32
 LANGUAGE LANG_FRENCH, SUBLANG_FRENCH
 #pragma code_page(1252)
-#endif //_WIN32
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
@@ -27,18 +25,18 @@ LANGUAGE LANG_FRENCH, SUBLANG_FRENCH
 // TEXTINCLUDE
 //
 
-1 TEXTINCLUDE DISCARDABLE 
+1 TEXTINCLUDE 
 BEGIN
     "resource.h\0"
 END
 
-2 TEXTINCLUDE DISCARDABLE 
+2 TEXTINCLUDE 
 BEGIN
     "#include ""afxres.h""\r\n"
     "\0"
 END
 
-3 TEXTINCLUDE DISCARDABLE 
+3 TEXTINCLUDE 
 BEGIN
     "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
     "#define _AFX_NO_OLE_RESOURCES\r\n"
@@ -59,15 +57,14 @@ END
 #endif    // APSTUDIO_INVOKED
 
 
-#ifndef _MAC
 /////////////////////////////////////////////////////////////////////////////
 //
 // Version
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,0,1
- PRODUCTVERSION 1,0,0,1
+ FILEVERSION 2,17,0,0
+ PRODUCTVERSION 2,17,0,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -80,17 +77,16 @@ VS_VERSION_INFO VERSIONINFO
 BEGIN
     BLOCK "StringFileInfo"
     BEGIN
-        BLOCK "040C04B0"
+        BLOCK "040c04b0"
         BEGIN
-            VALUE "CompanyName", "\0"
-            VALUE "FileDescription", "RaptorMFCExtension DLL\0"
-            VALUE "FileVersion", "1, 0, 0, 1\0"
-            VALUE "InternalName", "RaptorMFCExtension\0"
-            VALUE "LegalCopyright", "Copyright (C) 2009\0"
-            VALUE "LegalTrademarks", "\0"
-            VALUE "OriginalFilename", "RaptorMFCExtension.DLL\0"
-            VALUE "ProductName", "Bibliothèque de liaison dynamique RaptorMFCExtension\0"
-            VALUE "ProductVersion", "1, 0, 0, 1\0"
+            VALUE "CompanyName", "Rafale Soft Inc. ©"
+            VALUE "FileDescription", "Raptor OpenGL & Vulkan SDK MFC Extension support library"
+            VALUE "FileVersion", "2.17.0.0"
+            VALUE "InternalName", "RaptorMFCExtension.dll"
+            VALUE "LegalCopyright", "Copyright © 1998-2019 Fabrice Ferrand <fabfer@wanadoo.fr>"
+            VALUE "OriginalFilename", "RaptorMFCExtension.dll"
+            VALUE "ProductName", "Raptor"
+            VALUE "ProductVersion", "2.17.0.0"
         END
     END
     BLOCK "VarFileInfo"
@@ -99,8 +95,6 @@ BEGIN
     END
 END
 
-#endif    // !_MAC
-
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -108,9 +102,9 @@ END
 //
 
 IDD_DIALOG1 DIALOGEX 0, 0, 186, 222
-STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Raptor Status"
-FONT 8, "MS Sans Serif"
+FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,129,7,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,129,24,50,14
@@ -119,15 +113,11 @@ BEGIN
     LTEXT           "Version :",IDC_VERSION,12,75,82,10,SS_CENTERIMAGE
     LTEXT           "Extensions :",IDC_EXTENSIONS,12,98,43,9
     GROUPBOX        "OpenGL engine :",IDC_STATIC,7,43,172,127
-    CONTROL         5000,IDC_STATIC,"Static",SS_BITMAP,7,7,118,31
-    GROUPBOX        "Implementation-dependant GL Values",IDC_STATIC,7,172,
-                    172,46
-    COMBOBOX        IDC_COMBO1,13,185,160,62,CBS_DROPDOWN | CBS_AUTOHSCROLL | 
-                    WS_VSCROLL | WS_TABSTOP
-    LTEXT           "N/A",IDC_VALUE,13,202,160,12,SS_CENTERIMAGE,
-                    WS_EX_STATICEDGE
-    LISTBOX         IDC_LIST1,13,107,160,58,LBS_NOINTEGRALHEIGHT | LBS_NOSEL | 
-                    WS_VSCROLL | WS_TABSTOP
+    CONTROL         IDB_BITMAP1,IDC_STATIC,"Static",SS_BITMAP,7,7,118,31
+    GROUPBOX        "Implementation-dependant GL Values",IDC_STATIC,7,172,172,46
+    COMBOBOX        IDC_COMBO1,13,185,160,62,CBS_DROPDOWN | CBS_AUTOHSCROLL | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "N/A",IDC_VALUE,13,202,160,12,SS_CENTERIMAGE,WS_EX_STATICEDGE
+    LISTBOX         IDC_LIST1,13,107,160,58,LBS_NOINTEGRALHEIGHT | LBS_NOSEL | WS_VSCROLL | WS_TABSTOP
     CTEXT           "TMUs :",IDC_MAXTMU,72,98,35,9,SS_CENTERIMAGE
     RTEXT           "Compressors :",IDC_COMPRESSORS,110,98,63,9
     RTEXT           "SMP is active :",IDC_SMP,107,75,66,9
@@ -135,39 +125,33 @@ BEGIN
 END
 
 IDD_DIALOG2 DIALOGEX 0, 0, 238, 180
-STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Objects usage"
-FONT 8, "MS Sans Serif"
+FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,181,7,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,181,24,50,14
-    CONTROL         5000,IDC_STATIC,"Static",SS_BITMAP,7,7,85,28
-    CONTROL         "Tree1",IDC_OBJECTTREE,"SysTreeView32",TVS_HASBUTTONS | 
-                    TVS_HASLINES | TVS_LINESATROOT | WS_BORDER | WS_TABSTOP,
-                    7,42,224,131,WS_EX_STATICEDGE
+    CONTROL         IDB_BITMAP1,IDC_STATIC,"Static",SS_BITMAP,7,7,85,28
+    CONTROL         "Tree1",IDC_OBJECTTREE,"SysTreeView32",TVS_HASBUTTONS | TVS_HASLINES | TVS_LINESATROOT | WS_BORDER | WS_TABSTOP,7,42,224,131,WS_EX_STATICEDGE
 END
 
 IDD_DIALOG3 DIALOGEX 0, 0, 186, 118
-STYLE DS_MODALFRAME | DS_SETFOREGROUND | DS_3DLOOK | DS_NOFAILCREATE | 
-    DS_CENTER | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+STYLE DS_SETFONT | DS_MODALFRAME | DS_SETFOREGROUND | DS_3DLOOK | DS_NOFAILCREATE | DS_CENTER | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 CAPTION "Video settings..."
-FONT 8, "MS Sans Serif"
+FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,129,7,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,129,24,50,14
-    CONTROL         5000,IDC_STATIC,"Static",SS_BITMAP,7,7,118,31
+    CONTROL         IDB_BITMAP1,IDC_STATIC,"Static",SS_BITMAP,7,7,118,31
     GROUPBOX        "Full Screen configuration ...",IDC_STATIC,7,42,172,69
-    COMBOBOX        IDC_CONFIG,13,52,159,76,CBS_DROPDOWN | 
-                    CBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_CONFIG,13,52,159,76,CBS_DROPDOWN | CBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
     PUSHBUTTON      "Test",IDC_TEST,13,89,66,18
     PUSHBUTTON      "Apply",IDC_APPLY,107,88,66,18
-    CTEXT           "",IDC_STATUS,13,69,159,14,SS_CENTERIMAGE | SS_SUNKEN,
-                    WS_EX_STATICEDGE
+    CTEXT           "",IDC_STATUS,13,69,159,14,SS_CENTERIMAGE | SS_SUNKEN,WS_EX_STATICEDGE
 END
 
-IDD_DIALOG4 DIALOG DISCARDABLE  0, 0, 261, 114
-STYLE DS_MODALFRAME | DS_SETFOREGROUND | DS_3DLOOK | DS_NOFAILCREATE | 
-    DS_CENTER | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+IDD_DIALOG4 DIALOG 0, 0, 261, 114
+STYLE DS_SETFONT | DS_MODALFRAME | DS_SETFOREGROUND | DS_3DLOOK | DS_NOFAILCREATE | DS_CENTER | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 CAPTION "About Raptor OpenGL framework..."
 FONT 8, "MS Sans Serif"
 BEGIN
@@ -175,17 +159,14 @@ BEGIN
     DEFPUSHBUTTON   "OK",IDOK,204,7,50,14
 END
 
-IDD_DIALOG5 DIALOG DISCARDABLE  0, 0, 319, 113
-STYLE DS_MODALFRAME | DS_SETFOREGROUND | DS_3DLOOK | DS_NOFAILCREATE | 
-    WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+IDD_DIALOG5 DIALOG 0, 0, 319, 113
+STYLE DS_SETFONT | DS_MODALFRAME | DS_SETFOREGROUND | DS_3DLOOK | DS_NOFAILCREATE | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 CAPTION "Raptor errors"
 FONT 8, "MS Sans Serif"
 BEGIN
     DEFPUSHBUTTON   "Close",IDOK,263,96,50,14
-    LISTBOX         IDC_LIST3,7,18,305,76,LBS_NOINTEGRALHEIGHT | WS_VSCROLL | 
-                    WS_HSCROLL | WS_TABSTOP
-    LTEXT           "Type:        Class:                   Message:",
-                    IDC_STATIC,7,7,305,9
+    LISTBOX         IDC_LIST3,7,18,305,76,LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_HSCROLL | WS_TABSTOP
+    LTEXT           "Type:        Class:                   Message:",IDC_STATIC,7,7,305,9
 END
 
 
@@ -305,14 +286,14 @@ END
 // Bitmap
 //
 
-IDB_BITMAP1             BITMAP  DISCARDABLE     "res\\Raptor_logo_sml.bmp"
+IDB_BITMAP1             BITMAP                  "res\\Raptor_logo_sml.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // String Table
 //
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     ID_INDICATOR_WIDTH      "w:         "
     ID_INDICATOR_HEIGHT     "h:         "

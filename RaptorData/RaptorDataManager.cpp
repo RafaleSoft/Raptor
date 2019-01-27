@@ -1,10 +1,26 @@
-// RaptorDataManager.cpp: implementation of the CRaptorDataManager class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  RaptorDataManager.cpp                                                  */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
+
 #include "StdAfx.h"
 
 #if !defined(AFX_RAPTORDATAMANAGER_H__114BFB19_FA00_4E3E_879E_C9130043668E__INCLUDED_)
-#include "RaptorDataManager.h"
+	#include "RaptorDataManager.h"
 #endif
 
 #ifndef __PACKAGE_HEADER__
@@ -221,7 +237,8 @@ bool unzipfile(const char* fname, const char* outfile)
 
 CRaptorDataManager  *CRaptorDataManager::m_pInstance = NULL;
 
-CRaptorDataManager::CRaptorDataManager()
+CRaptorDataManager::CRaptorDataManager():
+	m_packName("RaptorData.pck")
 {
 
 }
@@ -244,6 +261,23 @@ CRaptorDataManager  *CRaptorDataManager::GetInstance(void)
     }
 
     return m_pInstance;
+}
+
+bool CRaptorDataManager::setPackName(const std::string& packName)
+{
+	if (packName.length() < 4)
+		return false;
+
+	if (package > 0)
+		CLOSE(package);
+	package = 0;
+	packageheadpos = 0;
+	clean(header);
+
+	m_packName = packName;
+	ClearExports();
+
+	return true;
 }
 
 void CRaptorDataManager::ClearExports()
@@ -330,26 +364,30 @@ bool CRaptorDataManager::openPackage(const std::string& pakName)
 std::string CRaptorDataManager::getPackPath()
 {
 	char buffer[BUFFER];
-	std::string pakpath = "./RaptorData.pck";
+	std::string pakpath = "./";
+	pakpath += m_packName;
+
 #if defined(WIN32)
     DWORD pakPath = GetEnvironmentVariable("RAPTOR_ROOT",buffer,BUFFER);
     if (pakPath > 0)
     {
         pakpath = buffer;
-		string::size_type st = pakpath.find("\"");
-		while (string::npos != st)
+		std::string::size_type st = pakpath.find("\"");
+		while (std::string::npos != st)
 		{
 			pakpath.erase(st,1);
 			st = pakpath.find("\"");
 		}
-        pakpath += "/Redist/Bin/RaptorData.pck";
+		pakpath += "/Redist/Bin/";
+		pakpath += m_packName;
     }
 #elif defined(LINUX)
 	char *pakPath = getenv("RAPTOR_ROOT");
     if (pakPath != NULL)
     {
         pakpath = pakPath;
-        pakpath += "/Redist/Bin/RaptorData.pck";
+		pakpath += "/Redist/Bin/";
+		pakpath += m_packName;
     }
 #endif
 
@@ -412,7 +450,7 @@ std::string CRaptorDataManager::ExportFile(const std::string& fname,
         return "";
 
 
-	string tmpfname = (header.compression != Z_NO_COMPRESSION) ? 
+	std::string tmpfname = (header.compression != Z_NO_COMPRESSION) ? 
 						filename + ".zip" : filename;
 	dst = 0;
 #if _MSC_VER > 1200 

@@ -1,5 +1,20 @@
-// GLBenchDlg.cpp : implementation file
-//
+/***************************************************************************/
+/*                                                                         */
+/*  GLBenchDlg.cpp                                                         */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
 
 #include "StdAfx.h"
 #include "resource.h"
@@ -62,9 +77,11 @@ BOOL CGLBenchDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// Set small icon
 	
 	LoadModules(0);
+
 	TCHAR buffer[MAX_PATH];
 	GetEnvironmentVariable(TEXT("RAPTOR_ROOT"),buffer,MAX_PATH);
 	_tcscpy(buffer, TEXT("\\Redist\\bin"));
+	
 	LoadModules(CT2A(buffer));
 
 	CButton *bt = (CButton *)(GetDlgItem(IDC_RADIO1));

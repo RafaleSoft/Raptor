@@ -186,7 +186,7 @@ void CParticleDisplay::Init()
 	// Create particles cluster
 	CParticleCompute::CFireParticle *computeFire = new CParticleCompute::CFireParticle();
 	CParticle *pFire = m_pParticleManager->glCreateParticle(500,true,CParticle::CGL_PARTICLE_TEXTURE,CParticle::CGL_ALPHA_BLEND,computeFire,"FIRE");
-
+	
 	CParticleCompute::CSmokeParticle *computeSmoke = new CParticleCompute::CSmokeParticle();
 	CParticle *pSmoke = m_pParticleManager->glCreateParticle(100,true,CParticle::CGL_PARTICLE_TEXTURE,CParticle::CGL_COLOR_BLEND,computeSmoke,"SMOKE");
 
@@ -196,7 +196,7 @@ void CParticleDisplay::Init()
 	//pParticle->usePointSprite(false,30.0f);
 	CParticleCompute::CSmokeParticle *computeSmoke2 = new CParticleCompute::CSmokeParticle();
     CParticle *pSmoke2 = m_pParticleManager->glCreateParticle(75,true,CParticle::CGL_PARTICLE_VOLUMETRIC,CParticle::CGL_COLOR_BLEND,computeSmoke2,"SMOKE2");
-
+	
 	// Load texture
 	CTextureFactory &f = CTextureFactory::getDefaultFactory();
 	CTextureSet* pTextures = (CTextureSet*)CPersistence::FindObject("main_textures");
@@ -232,6 +232,7 @@ void CParticleDisplay::Init()
 	m_pSmoke2 = new CObject3DInstance(pSmoke2);
 	m_pSmoke2->translate(15.0f,-10.0f,-20.0f);
 	pSmoke2->getProperties().setVisible(false);	// non visible until texture is computed.
+	
 	m_pFire = new CObject3DInstance(pFire);
 	m_pFire->translate(0.0f, -12.0f, -20.0f);
 	m_pSmoke = new CObject3DInstance(pSmoke);
@@ -241,6 +242,7 @@ void CParticleDisplay::Init()
 
 	m_pScene = new C3DScene("PARTICLE_SCENE");
 	//m_pScene->useZSort();
+	
 	m_pScene->addObject(m_pSmoke2);
 	m_pScene->addObject(m_pSmoke);
 	m_pScene->addObject(m_pFire);
@@ -279,7 +281,7 @@ void CParticleDisplay::Display()
 {
 	if (reinit)
 		ReInit();
-
+	
 	CParticle *pParticle = (CParticle*)(m_pParticle->getObject());
 
 	m_pParticle->rotationY(-0.1f);
