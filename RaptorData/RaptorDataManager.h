@@ -37,7 +37,7 @@
 
 
 #include <string>
-
+#include <vector>
 
 class RAPTORDATA_API CRaptorDataManager  
 {
@@ -57,24 +57,36 @@ public:
     //! Returns default the list of shaders embedded with Raptor
 	const char *const * GetShaderList(void);
 
-	//!	Remove all exported files from the package for a fresh update
-	void ClearExports();
+	//!	Remove all exported files from a managed package for a fresh update.
+	//!	@param packName : the name of the package to clear exports of.
+	//! @return false if package not managed.
+	bool ClearExports(const std::string& packName);
 
 	//!	Defines a package name, different from the default 'RaptorData.pck'
-	bool setPackName(const std::string& packName);
+	bool managePackage(const std::string& packName);
 
 
 private:
     CRaptorDataManager();
 
-    bool openPackage(const std::string& pakName);
+	typedef struct Package_t
+	{
+		int				package;
+		std::string		packPath;
+		size_t			headerSize;
+		void			*header;
+	} Package;
+
+	bool openPackage(Package_t &pack);
 
 	std::string readFile(const std::string &fname);
 
-	std::string getPackPath();
+	std::string getPackPath(const std::string& packName);
 
+	//!	The only one DAta Manager Instance.
     static CRaptorDataManager  *m_pInstance;
-	std::string					m_packName;
+
+	std::vector<Package>	m_packages;
 };
 
 #endif // !defined(AFX_RAPTORDATAMANAGER_H__114BFB19_FA00_4E3E_879E_C9130043668E__INCLUDED_)

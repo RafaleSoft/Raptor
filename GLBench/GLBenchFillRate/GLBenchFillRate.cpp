@@ -394,7 +394,7 @@ extern "C" GLBENCH_API void Bench(CWnd *parent)
 	if (dataManager != NULL)
 	{
 		//	Change package and erase previous files in case of updates
-		dataManager->setPackName("GLBench.pck");
+		dataManager->managePackage("GLBench.pck");
 
 		M1_1024_path = dataManager->ExportFile("M1_1024.jpg");
 		if (M1_1024_path.empty()) return;
