@@ -134,6 +134,7 @@ bool CRaptorDataManager::managePackage(const std::string& packName)
 	pack.packPath = getPackPath(packName);
 	pack.package = 0;
 	pack.header = NULL;
+	pack.headerSize = 0;
 
 	if (openPackage(pack))
 	{
@@ -191,15 +192,9 @@ bool CRaptorDataManager::ClearExports(const std::string& packName)
 
 bool CRaptorDataManager::openPackage(Package_t &pack)
 {
-#if _MSC_VER > 1200 
-	errno_t err = _sopen_s(&pack.package,pack.packPath.c_str(),O_BINARY|O_RDONLY,SH_DENYWR,S_IREAD);
-	if ((err != 0) || (pack.package < 0))
-		return false;
-#else
 	pack.package = OPEN(pack.packPath.c_str(), O_BINARY | O_RDONLY, S_IREAD);
 	if (pack.package < 0)
-        return false;
-#endif
+		return false;
 
 	//! Allocate new package and fill it.
 	PackageHeader_t *pHeader = new PackageHeader_t;
@@ -210,7 +205,6 @@ bool CRaptorDataManager::openPackage(Package_t &pack)
     char byteBuffer[BUFFER];
     memset(byteBuffer,0,BUFFER);
     unsigned int intBuffer = 0;
-	pack.headerSize = 0;
 
 	//! Todo : remove name in header, add check to match package name.
     int nbr = READ(pack.package,&intBuffer,sizeof(unsigned int));
@@ -269,7 +263,6 @@ std::string CRaptorDataManager::getPackPath(const std::string& packName)
 			st = pakpath.find("\"");
 		}
 		pakpath += "/Redist/Bin/";
-		pakpath += packName;
     }
 #elif defined(LINUX)
 	char *pakPath = getenv("RAPTOR_ROOT");
@@ -277,10 +270,10 @@ std::string CRaptorDataManager::getPackPath(const std::string& packName)
     {
         pakpath = pakPath;
 		pakpath += "/Redist/Bin/";
-		pakpath += packName;
     }
 #endif
 
+	pakpath += packName;
 	return pakpath;
 }
 
@@ -305,38 +298,27 @@ std::string CRaptorDataManager::ExportFile(const std::string& fname,
     filename += "/";
 #endif
     filename += fname;
-
-	int dst = 0;
-#if _MSC_VER > 1200 
-	errno_t err = _sopen_s(&dst,filename.c_str(),O_RDONLY|O_BINARY,SH_DENYWR,S_IREAD);
-	if ((err == 0) && (dst > 0))
+	
+	int dst = OPEN(filename.c_str(), O_RDONLY | O_BINARY, S_IREAD);
+	if (dst > 0)
 	{
 		CLOSE(dst);
 		return filename;
 	}
-#else
-    dst = OPEN(filename.c_str(),O_RDONLY|O_BINARY,S_IREAD);
-    if (dst > 0)
-	{
-		CLOSE(dst);
-        return filename;
-	}
-#endif
 
-    bool res = true;
 	Package_t pack;
 	PackageHeader_t* pHeader = NULL;
 	PackageFileHeader_t *fHeader = NULL;
 
-    res = false;
-	for (size_t i = 0; i < m_packages.size(); i++)
+    bool res = false;
+	for (size_t i = 0; !res && (i < m_packages.size()); i++)
 	{
 		pack = m_packages[i];
 		pHeader = (PackageHeader_t*)pack.header;
 
-		for (unsigned int i = 0; !res && (i < pHeader->nbFHeaders); i++)
+		for (unsigned int j = 0; !res && (j < pHeader->nbFHeaders); j++)
 		{
-			fHeader = &(pHeader->fHeaders[i]);
+			fHeader = &(pHeader->fHeaders[j]);
 			res = (0 == fname.compare(fHeader->fname));
 		}
 	}
@@ -346,16 +328,10 @@ std::string CRaptorDataManager::ExportFile(const std::string& fname,
 
 	std::string tmpfname = (pHeader->compression != Z_NO_COMPRESSION) ?
 							filename + ".zip" : filename;
-	dst = 0;
-#if _MSC_VER > 1200 
-	err = _sopen_s(&dst,tmpfname.c_str(),O_CREAT|O_TRUNC|O_WRONLY|O_BINARY,SH_DENYWR,S_IWRITE);
-	if ((err != 0) || (dst < 0))
+
+	dst = OPEN(tmpfname.c_str(), O_CREAT | O_TRUNC | O_WRONLY | O_BINARY, S_IWRITE);
+	if (dst < 0)
 		return "";
-#else
-    dst = OPEN(tmpfname.c_str(),O_CREAT|O_TRUNC|O_WRONLY|O_BINARY,S_IWRITE);
-    if ( dst < 0)
-        return "";
-#endif
 
     long pos = LSEEK(pack.package,fHeader->offset + pack.headerSize, SEEK_SET);
     if (pos == -1L)
@@ -373,17 +349,9 @@ std::string CRaptorDataManager::ExportFile(const std::string& fname,
 
 std::string CRaptorDataManager::readFile(const std::string &fname)
 {
-    int fileHandle = 0;
-
-#if _MSC_VER > 1200 
-	errno_t err = _sopen_s(&fileHandle,fname.c_str(),O_BINARY|O_RDONLY,SH_DENYWR,S_IREAD);
-	if ((err != 0) || (fileHandle < 0))
+	int fileHandle = OPEN(fname.c_str(), O_BINARY | O_RDONLY, S_IREAD);
+	if (fileHandle < 0)
 		return "";
-#else
-    fileHandle = OPEN(fname.c_str(),O_BINARY|O_RDONLY,S_IREAD);
-    if (fileHandle < 0)
-        return "";
-#endif
 
 	long fpos = LSEEK(fileHandle,0, SEEK_END);
     if (fpos == -1L)
