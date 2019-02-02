@@ -270,12 +270,20 @@ copy .\Installer\Raptor_splash.JPG Redist\Doc\html
 
 ECHO    Copying license files ...
 
-copy .\License\FREETYPE.TXT Redist\Licenses
-copy .\License\DOXYGEN.txt Redist\Licenses
-copy .\License\XERCESC.txt Redist\Licenses
-copy .\License\APACHE.TXT Redist\Licenses
-copy .\License\OPENEXR.txt Redist\Licenses
-copy .\License\LIBPNG.TXT Redist\Licenses
+copy .\Licenses\APACHE.TXT Redist\Licenses
+copy .\Licenses\COPYRIGHT Redist\Licenses
+copy .\Licenses\DOXYGEN.txt Redist\Licenses
+copy .\Licenses\FREETYPE.TXT Redist\Licenses
+copy .\Licenses\FTL.TXT Redist\Licenses
+copy .\Licenses\GPLv2.TXT Redist\Licenses
+copy .\Licenses\lgpl-3.0.txt Redist\Licenses
+copy .\Licenses\LIBPNG.TXT Redist\Licenses
+copy .\Licenses\LICENSE.md Redist\Licenses
+copy .\Licenses\LICENSE.TXT Redist\Licenses
+copy .\Licenses\OPENEXR.TXT Redist\Licenses
+copy .\Licenses\PNG_LICENSE Redist\Licenses
+copy .\Licenses\README Redist\Licenses
+copy .\Licenses\XERCESC.txt Redist\Licenses
 
 
 ECHO    Copying sub-system files ...
