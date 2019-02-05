@@ -1102,7 +1102,12 @@ void CGeometry::glRenderGeometry()
 // shaders enable a more powerfull blending.
 
 	// extract vertex weighting
-	if (m_renderingModel.hasModel(CRenderingModel::CGL_WEIGHT))
+	if (m_renderingModel.hasModel(CRenderingModel::CGL_WEIGHT)
+#if defined (DATA_EXTENDED)
+		&& (geometry != NULL))
+#elif defined(DATA_PACKED)
+		&& (NULL != weightcoords))
+#endif
 	{
 #ifdef GL_EXT_vertex_weighting
 		if (pExtensions->glVertexWeightPointerEXT != NULL)
@@ -1124,11 +1129,11 @@ void CGeometry::glRenderGeometry()
 #else
         {
 			pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::WEIGHTS);
+			popWeightArray = true;
 #if defined(DATA_EXTENDED)
             pExtensions->glVertexAttribPointerARB(CShaderProgram::WEIGHTS,1,GL_FLOAT,false,sizeof(GL_VERTEX_DATA),&geometry[0].weight);
 #elif defined(DATA_PACKED)
-            if (weightcoords != NULL)
-				pExtensions->glVertexAttribPointerARB(CProgramParameters::WEIGHTS, 1, GL_FLOAT, false, 0, weightcoords);
+			pExtensions->glVertexAttribPointerARB(CProgramParameters::WEIGHTS, 1, GL_FLOAT, false, 0, weightcoords);
 #endif
         }
 #endif

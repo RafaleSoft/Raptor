@@ -1,6 +1,6 @@
 /***************************************************************************/
 /*                                                                         */
-/*  DemoDoc.cpp                                                           */
+/*  DemoDoc.cpp                                                            */
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */

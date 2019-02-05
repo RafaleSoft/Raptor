@@ -148,9 +148,11 @@ static const std::string fp_src =
 \n\
 uniform	sampler2D diffuseMap; \n\
 \n\
+layout(location = 0) out vec4 o_Color;	\n\
+\n\
 void main (void) \n\
 {\n\
-	gl_FragColor = texture2D(diffuseMap,vec2(gl_TexCoord[0].st)); \n\
+	o_Color = texture2D(diffuseMap,vec2(gl_TexCoord[0].st)); \n\
 }\n\
 ";
 
