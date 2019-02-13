@@ -440,8 +440,8 @@ void CObjectStore::LoadPack(void)
 	if (dataManager != NULL)
 	{
 		//	Change package and erase previous files in case of updates
-		dataManager->setPackName("Demo.pck");
-
+		dataManager->managePackage("Demo.pck");
+		
 		BRICKS_0 = dataManager->ExportFile("BRICKS.jpg");
 		if (BRICKS_0.empty()) return;
 		BRICKS_1 = dataManager->ExportFile("BRICKS2.jpg");

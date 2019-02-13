@@ -120,6 +120,7 @@ public:
 	void glSetTexCoords(unsigned int nbT, GL_TEX_VERTEX* texcoords = NULL);
 	void glSetTexCoords2(unsigned int nbT, GL_TEX_VERTEX* texcoords = NULL);
 	void glSetWeights(unsigned int nbW, float* weights = NULL);
+	void glSetFogs(unsigned int nbW, float* fogs = NULL);
 	void glSetColors(unsigned int nbC, CColor::RGBA* rgbaColors = NULL);
 	void glSetPolygons(unsigned int nbP, unsigned short* polygons = NULL);
 

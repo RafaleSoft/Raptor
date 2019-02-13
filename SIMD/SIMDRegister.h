@@ -183,7 +183,7 @@ class CSSERegister7;
 class CSSERegister##thisClass \
 {\
 public:\
-	CSSERegister##thisClass () {};\
+	CSSERegister##thisClass () NOEXCEPT {};\
 	virtual ~CSSERegister##thisClass () {};\
 \
 	SSE_REGISTER_SET_OPERATOR(thisClass)\

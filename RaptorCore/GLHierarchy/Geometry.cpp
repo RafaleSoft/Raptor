@@ -170,9 +170,6 @@ CGeometry::~CGeometry()
 		CGeometryAllocator::GetInstance()->releaseIndexes(polys);
 #endif	
 
-	if (fogcoords != NULL)
-		delete [] fogcoords;
-
 	if (0 != m_pPrimitives.size())
 	{
 		vector<CGeometryPrimitive*>::const_iterator itr = m_pPrimitives.begin();
@@ -1102,7 +1099,12 @@ void CGeometry::glRenderGeometry()
 // shaders enable a more powerfull blending.
 
 	// extract vertex weighting
-	if (m_renderingModel.hasModel(CRenderingModel::CGL_WEIGHT))
+	if (m_renderingModel.hasModel(CRenderingModel::CGL_WEIGHT)
+#if defined (DATA_EXTENDED)
+		&& (geometry != NULL))
+#elif defined(DATA_PACKED)
+		&& (NULL != weightcoords))
+#endif
 	{
 #ifdef GL_EXT_vertex_weighting
 		if (pExtensions->glVertexWeightPointerEXT != NULL)
@@ -1124,11 +1126,11 @@ void CGeometry::glRenderGeometry()
 #else
         {
 			pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::WEIGHTS);
+			popWeightArray = true;
 #if defined(DATA_EXTENDED)
             pExtensions->glVertexAttribPointerARB(CShaderProgram::WEIGHTS,1,GL_FLOAT,false,sizeof(GL_VERTEX_DATA),&geometry[0].weight);
 #elif defined(DATA_PACKED)
-            if (weightcoords != NULL)
-				pExtensions->glVertexAttribPointerARB(CProgramParameters::WEIGHTS, 1, GL_FLOAT, false, 0, weightcoords);
+			pExtensions->glVertexAttribPointerARB(CProgramParameters::WEIGHTS, 1, GL_FLOAT, false, 0, weightcoords);
 #endif
         }
 #endif
@@ -1400,6 +1402,26 @@ void CGeometry::glSetColors(unsigned int nbC, CColor::RGBA* rgbaColors)
 #endif
 }
 
+void CGeometry::glSetFogs(unsigned int nbF, float* fogs)
+{
+#if defined (DATA_PACKED)
+	if (fogs == NULL)
+	{
+		if (fogcoords != NULL)
+			CGeometryAllocator::GetInstance()->releaseVertices(fogcoords);
+
+		fogcoords = CGeometryAllocator::GetInstance()->allocateVertices(nbF);
+	}
+	else if ((nbF > 0) && (fogcoords != NULL))
+	{
+		CGeometryAllocator *pAllocator = CGeometryAllocator::GetInstance();
+		if (!pAllocator->isMemoryRelocated() || m_bDataLocked)
+			memcpy(fogcoords, fogs, nbF*sizeof(float));
+		else
+			pAllocator->glvkCopyPointer(fogcoords, fogs, nbF);
+	}
+#endif
+}
 
 bool CGeometry::glLockData()
 {

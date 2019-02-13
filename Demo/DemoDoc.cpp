@@ -1,6 +1,6 @@
 /***************************************************************************/
 /*                                                                         */
-/*  DemoDoc.cpp                                                           */
+/*  DemoDoc.cpp                                                            */
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
@@ -291,7 +291,7 @@ void CDemoDoc::GLInitContext(void)
 	m_objects = new CObjectStore;
 	m_objects->SetPerf(true);
 
-	//m_objects->LoadPack();
+	m_objects->LoadPack();
 	m_objects->LoadModels();
 	m_objects->BuildObjects();
     m_objects->BuildScene();
@@ -312,7 +312,7 @@ void CDemoDoc::GLInitContext(void)
     pConsole->activateConsole(true);
     pConsole->runBatch("Demo.cmd");
     pConsole->activateConsole(false);
-
+	 
     m_pScene->glManageEnvironment(CEnvironment::SHADOW_VOLUME,0,0);
     //m_pScene->glManageEnvironment(CEnvironment::SHADOW_MAP,1024,1024);
     m_pScene->useSceneGlobalAmbient(CColor::RGBA(0.1f,0.1f,0.1f,1.0f));

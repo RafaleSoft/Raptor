@@ -199,10 +199,14 @@ const z_crc_t FAR * ZEXPORT get_crc_table()
 #define DO8 DO1; DO1; DO1; DO1; DO1; DO1; DO1; DO1
 
 /* ========================================================================= */
+#ifndef STDC
 unsigned long ZEXPORT crc32_z(crc, buf, len)
     unsigned long crc;
     const unsigned char FAR *buf;
     z_size_t len;
+#else
+unsigned long ZEXPORT crc32_z(unsigned long crc, const unsigned char FAR *buf, z_size_t len)
+#endif
 {
     if (buf == Z_NULL) return 0UL;
 
@@ -234,10 +238,14 @@ unsigned long ZEXPORT crc32_z(crc, buf, len)
 }
 
 /* ========================================================================= */
+#ifndef STDC
 unsigned long ZEXPORT crc32(crc, buf, len)
     unsigned long crc;
     const unsigned char FAR *buf;
     uInt len;
+#else
+unsigned long ZEXPORT crc32(unsigned long crc, const unsigned char FAR *buf, uInt len)
+#endif
 {
     return crc32_z(crc, buf, len);
 }
@@ -263,10 +271,14 @@ unsigned long ZEXPORT crc32(crc, buf, len)
 #define DOLIT32 DOLIT4; DOLIT4; DOLIT4; DOLIT4; DOLIT4; DOLIT4; DOLIT4; DOLIT4
 
 /* ========================================================================= */
+#ifndef STDC
 local unsigned long crc32_little(crc, buf, len)
     unsigned long crc;
     const unsigned char FAR *buf;
     z_size_t len;
+#else
+local unsigned long crc32_little(unsigned long crc, const unsigned char FAR *buf, z_size_t len)
+#endif
 {
     register z_crc_t c;
     register const z_crc_t FAR *buf4;
