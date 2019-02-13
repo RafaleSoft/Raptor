@@ -72,8 +72,12 @@ char ZLIB_INTERNAL *gz_strwinerror (error)
 #endif /* UNDER_CE */
 
 /* Reset gzip file state */
+#ifndef STDC
 local void gz_reset(state)
     gz_statep state;
+#else
+local void gz_reset(gz_statep state)
+#endif
 {
     state->x.have = 0;              /* no output data available */
     if (state->mode == GZ_READ) {   /* for reading ... */
@@ -88,10 +92,14 @@ local void gz_reset(state)
 }
 
 /* Open a gzip file either by name or file descriptor. */
+#ifndef STDC
 local gzFile gz_open(path, fd, mode)
     const void *path;
     int fd;
     const char *mode;
+#else
+local gzFile gz_open(const void *path, int fd, const char *mode)
+#endif
 {
     gz_statep state;
     z_size_t len;

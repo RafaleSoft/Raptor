@@ -170,9 +170,6 @@ CGeometry::~CGeometry()
 		CGeometryAllocator::GetInstance()->releaseIndexes(polys);
 #endif	
 
-	if (fogcoords != NULL)
-		delete [] fogcoords;
-
 	if (0 != m_pPrimitives.size())
 	{
 		vector<CGeometryPrimitive*>::const_iterator itr = m_pPrimitives.begin();
@@ -1405,6 +1402,26 @@ void CGeometry::glSetColors(unsigned int nbC, CColor::RGBA* rgbaColors)
 #endif
 }
 
+void CGeometry::glSetFogs(unsigned int nbF, float* fogs)
+{
+#if defined (DATA_PACKED)
+	if (fogs == NULL)
+	{
+		if (fogcoords != NULL)
+			CGeometryAllocator::GetInstance()->releaseVertices(fogcoords);
+
+		fogcoords = CGeometryAllocator::GetInstance()->allocateVertices(nbF);
+	}
+	else if ((nbF > 0) && (fogcoords != NULL))
+	{
+		CGeometryAllocator *pAllocator = CGeometryAllocator::GetInstance();
+		if (!pAllocator->isMemoryRelocated() || m_bDataLocked)
+			memcpy(fogcoords, fogs, nbF*sizeof(float));
+		else
+			pAllocator->glvkCopyPointer(fogcoords, fogs, nbF);
+	}
+#endif
+}
 
 bool CGeometry::glLockData()
 {

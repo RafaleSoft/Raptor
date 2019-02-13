@@ -33,7 +33,7 @@
 class CBVector : public CGenericVector<char>  
 {
 public:
-	CBVector(){};
+	CBVector() NOEXCEPT {};
 	virtual ~CBVector(){};
 
 	CBVector& operator= ( const CBVector& v )
@@ -56,7 +56,7 @@ public:
 	};	
 
 	//operations
-	bool operator== ( const CGenericVector<char>& v ) const
+	bool operator== ( const CGenericVector<char>& v ) const NOEXCEPT
 	{ 
 		__asm
 		{
@@ -74,7 +74,7 @@ public:
 	};
 #pragma warning(default:4035)
 
-	bool operator== ( const CBVector& v ) const
+	bool operator== ( const CBVector& v ) const NOEXCEPT
 	{ 
 		__asm
 		{
@@ -92,7 +92,7 @@ public:
 	};
 #pragma warning(default:4035)
 
-	bool operator== ( const short v[4] ) const
+	bool operator== ( const short v[4] ) const NOEXCEPT
 	{ 
 		__asm
 		{
@@ -110,7 +110,7 @@ public:
 	};
 #pragma warning(default:4035)
 
-	void SIMD_CALL Zero() 
+	void SIMD_CALL Zero() NOEXCEPT
 	{ 
 		__asm 
 		{
@@ -121,7 +121,7 @@ public:
 		}
 	};
 
-	void SIMD_CALL One()
+	void SIMD_CALL One() NOEXCEPT
 	{ 
 		__asm 
 		{

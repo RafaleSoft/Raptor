@@ -563,11 +563,11 @@ int ZEXPORT deflateSetHeader(z_streamp strm, gz_headerp head)
 /* ========================================================================= */
 #ifndef STDC
 int ZEXPORT deflatePending (strm, pending, bits)
-    unsigned *pending;
+	z_streamp strm;    
+	unsigned *pending;
     int *bits;
-    z_streamp strm;
 #else
-int ZEXPORT deflatePending(unsigned *pending, int *bits, z_streamp strm)
+int ZEXPORT deflatePending(z_streamp strm, unsigned *pending, int *bits)
 #endif
 {
     if (deflateStateCheck(strm)) return Z_STREAM_ERROR;
