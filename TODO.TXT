@@ -65,7 +65,6 @@
 	(pas assez flou ... ?)
 	
 - CParticle
-	- Exploiter les geometry shaders pour générer les quads à partir d'une position ponctuelle
 	- SMP : si défini, créer des Engine jobs ?
 	- OpenCL + GPU computing
 	- Positionner les setFactors sur le particle compute depuis l'import (c.f. demo.xml)

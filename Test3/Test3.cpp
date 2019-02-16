@@ -386,6 +386,7 @@ int _tmain(int argc, _TCHAR* argv[])
     config.m_uiVertices = 1000000;
 	config.m_bCompute = true;
 	Raptor::glInitRaptor(config);
+
 	CRaptorDisplayConfig glcs;
 	glcs.width = 640;
 	glcs.height = 480;

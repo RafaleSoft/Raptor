@@ -99,6 +99,7 @@ BuilderForm::BuilderForm(void)
 	tree->BeginUpdate();
 
 	TreeNode^ GL_root = tree->Nodes->Add(GL_Label);
+	TreeNode^ GL_profile_root = tree->Nodes->Add(GLProfile_Label);
 	TreeNode^ VK_root = tree->Nodes->Add(VK_Label);
 	TreeNode^ ARB_root = tree->Nodes->Add(ARB_Label);
 	TreeNode^ VK_KHR_root = tree->Nodes->Add(VK_KHR_Label);
@@ -121,6 +122,10 @@ BuilderForm::BuilderForm(void)
 		{
 			case CGLBuilder::COREGL:
 				item = GL_root->Nodes->Add(str);
+				item->Tag = gcnew System::Int32(extension.kind);
+				break;
+			case CGLBuilder::GLPROFILE:
+				item = GL_profile_root->Nodes->Add(str);
 				item->Tag = gcnew System::Int32(extension.kind);
 				break;
 			case CGLBuilder::COREVK:
@@ -166,6 +171,7 @@ BuilderForm::BuilderForm(void)
 		}
 	}
 
+
 	tree->Sort();
 	tree->ExpandAll();
 	tree->EndUpdate();
@@ -190,6 +196,12 @@ BuilderForm::BuilderForm(void)
 			string wgl_extensions = (const char*)_glGetExtensionsStringARB(dc);
 			glextensions += wgl_extensions;
 		}
+		glextensions += " ";
+		glextensions += CGLBuilder::core_profile;
+		glextensions += " ";
+		glextensions += CGLBuilder::compatibility_profile;
+		glextensions += " ";
+		glextensions += CGLBuilder::full_profile;
 
 		wchar_t buffer[MAX_PATH];
 		GetEnvironmentVariable(L"VULKAN_BIN_PATH",(LPTSTR)buffer,MAX_PATH);

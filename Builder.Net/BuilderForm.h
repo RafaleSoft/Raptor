@@ -40,6 +40,7 @@ namespace BuilderNet {
 		void getData(void);
 
 		static System::String ^GL_Label = "CORE OpenGL versions";
+		static System::String ^GLProfile_Label = "OpenGL profiles";
 		static System::String ^VK_Label = "CORE Vulkan versions";
 		static System::String ^ARB_Label = "ARB extensions";
 		static System::String ^VK_KHR_Label = "Vulkan extensions";

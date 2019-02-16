@@ -77,22 +77,6 @@ static float *cachePointer = NULL;
 
 RAPTOR_NAMESPACE_END
 
-static const std::string particle_vp_src =
-"#version 120 \n\
-\n\
-vec4 tcoords[4] = vec4[4](vec4(1.0,1.0,0.0,1.0), \n\
-					      vec4(0.0,1.0,0.0,1.0), \n\
-						  vec4(0.0,0.0,0.0,1.0), \n\
-						  vec4(1.0,0.0,0.0,1.0));\n\
-void main (void) \n\
-{\n\
-	int t_index = int(gl_Vertex.w); \n\
-	gl_TexCoord[0] = tcoords[t_index]; \n\
-	gl_FrontColor = gl_Color; \n\
-	vec4 pos = vec4(vec3(gl_Vertex.xyz),1.0); \n\
-	gl_Position =  gl_ModelViewProjectionMatrix * pos; \n\
-}\n\
-";
 
 static const std::string particle2_vp_src =
 "#version 120 \n\
@@ -197,8 +181,6 @@ void main (void) \n\
 
 RAPTOR_NAMESPACE
 
-#define GEOMETRY_TEST 1
-
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -261,7 +243,7 @@ void CParticle::glInitParticle(void)
 		m_pShader = new CShader(getName()+"_SHADER");
 		CVertexProgram *vp = m_pShader->glGetVertexProgram();
 		res = vp->glLoadProgram(vp_src);
-#ifdef GEOMETRY_TEST
+
 		CGeometryProgram *gp = m_pShader->glGetGeometryProgram();
 		gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
 		res = res & gp->glLoadProgram(gp_src);
@@ -270,7 +252,7 @@ void CParticle::glInitParticle(void)
 		res = res & fs->glLoadProgram(fp_src);
 		CProgramParameters params;
 		params.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);
-#endif
+
 		res = res & m_pShader->glCompileShader();
 	}
 	else if (m_type == CGL_PARTICLE_VOLUMETRIC)
@@ -565,134 +547,6 @@ void RAPTOR_FASTCALL CParticle::glRenderTextures(void)
 	glPopClientAttrib();
 }
 
-
-/*
-void RAPTOR_FASTCALL CParticle::glRenderTextures(void)
-{
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
-
-	m_pShader->glRender();
-
-#ifdef GL_ARB_multitexture
-	if (pExtensions->glActiveTextureARB != NULL)
-		pExtensions->glActiveTextureARB(GL_TEXTURE0_ARB);
-#endif
-	glEnable(GL_TEXTURE_2D);
-	m_pTexture->glvkRender();
-
-	CGenericMatrix<float> transform;
-	glGetTransposeFloatv(GL_MODELVIEW_MATRIX,transform);
-	glPushMatrix();
-	glLoadIdentity();
-
-	CGenericVector<float> position;
-	unsigned int nbElt = 0;
-
-    glColor4f(1.0f,1.0f,1.0f,1.0f);
-
-	glPushClientAttrib(GL_CLIENT_VERTEX_ARRAY_BIT);
-	glEnableClientState(GL_VERTEX_ARRAY);
-    glEnableClientState(GL_COLOR_ARRAY);
-
-	CACHEELT_t* pCache = (CACHEELT_t*)cachePointer;
-	glVertexPointer(4, GL_FLOAT, sizeof(CACHEELT), &pCache[0].coord);
-	glColorPointer(4, GL_FLOAT, sizeof(CACHEELT), &pCache[0].colors);
-
-	for(unsigned int i = 0; i < m_uiQuantity; i++)
-	{
-		CParticle::PARTICLE_ATTRIBUTE &attrs = m_attributes[i];
-
-		float halfSize = m_fPointSize * 0.5f * attrs.size;
-        float f = TO_RADIAN(attrs.angle);
-        float cs = cos(f);
-        float ss = sin(f);
-
-		float *c = attrs.color;
-		position = attrs.position;
-        position *= m_fPointSize;   // is this correct ?
-        position.H(1.0f);
-		position *= transform;
-
-		float Hx = halfSize * (cs - ss);
-		float Hy = halfSize * (cs + ss);
-
-#ifdef RAPTOR_SSE_CODE_GENERATION
-		__m128 colors = _mm_loadu_ps(c);
-		_mm_storeu_ps(cache[nbElt].colors, colors);
-		_mm_storeu_ps(cache[nbElt+1].colors, colors);
-		_mm_storeu_ps(cache[nbElt+2].colors, colors);
-		_mm_storeu_ps(cache[nbElt+3].colors, colors);
-
-		float Hs[8] = { Hx, Hy, 0, -1.0f, Hy, -Hx, 0, 0 };
-
-		__m128 pos = _mm_loadu_ps(position.vector());
-		__m128 hxy = _mm_loadu_ps(&Hs[0]);
-		_mm_storeu_ps(cache[nbElt].coord, _mm_add_ps(pos, hxy));
-		__m128 hxy2 = _mm_loadu_ps(&Hs[4]);
-		_mm_storeu_ps(cache[nbElt+1].coord, _mm_sub_ps(pos, hxy2));
-		_mm_storeu_ps(cache[nbElt+2].coord, _mm_sub_ps(pos, hxy));
-		_mm_storeu_ps(cache[nbElt+3].coord, _mm_add_ps(pos, hxy2));
-		cache[nbElt + 3].coord.h = 3.0; //position.H();
-#else
-		memcpy(&cache[nbElt].colors,c,4*sizeof(float));
-		memcpy(&cache[nbElt+1].colors,c,4*sizeof(float));
-		memcpy(&cache[nbElt+2].colors,c,4*sizeof(float));
-		memcpy(&cache[nbElt+3].colors,c,4*sizeof(float));
-		
-		cache[nbElt].coord.x = position.X() + Hx;
-		cache[nbElt].coord.y = position.Y() + Hy;
-		cache[nbElt].coord.z = position.Z();
-		cache[nbElt].coord.h = 0.0; //position.H();
-		cache[nbElt+1].coord.x = position.X() - Hy;
-		cache[nbElt+1].coord.y = position.Y() + Hx;
-		cache[nbElt+1].coord.z = position.Z();
-		cache[nbElt+1].coord.h = 1.0; //position.H();
-		cache[nbElt+2].coord.x = position.X() - Hx;
-		cache[nbElt+2].coord.y = position.Y() - Hy;
-		cache[nbElt+2].coord.z = position.Z();
-		cache[nbElt+2].coord.h = 2.0; //position.H();
-		cache[nbElt+3].coord.x = position.X() + Hy;
-		cache[nbElt+3].coord.y = position.Y() - Hx;
-		cache[nbElt+3].coord.z = position.Z();
-		cache[nbElt+3].coord.h = 3.0; //position.H();
-#endif
-
-		nbElt += 4;
-		if (nbElt == CACHE_SIZE)
-		{
-			CGeometryAllocator *pAllocator = CGeometryAllocator::GetInstance();
-			if (pAllocator->isMemoryRelocated())
-				pAllocator->glvkCopyPointer(cachePointer,&cache[0].coord.x,CACHEPOINTER_SIZE);
-#ifdef GEOMETRY_TEST
-			glDrawArrays(GL_POINTS, 0, CACHE_SIZE);
-#else
-			glDrawArrays(GL_QUADS, 0, CACHE_SIZE);
-#endif
-			nbElt = 0;
-		}
-	}
-	if (nbElt > 0)
-	{
-		CGeometryAllocator *pAllocator = CGeometryAllocator::GetInstance();
-		if (pAllocator->isMemoryRelocated())
-			pAllocator->glvkCopyPointer(cachePointer,&cache[0].coord.x,sizeof(CACHEELT)*nbElt/sizeof(float));
-#ifdef GEOMETRY_TEST
-		glDrawArrays(GL_POINTS, 0, nbElt);
-#else
-		glDrawArrays(GL_QUADS, 0, nbElt);
-#endif
-		
-		nbElt = 0;
-	}
-
-	m_pShader->glStop();
-
-	glDisable(GL_TEXTURE_2D);
-
-	glPopClientAttrib();
-	glPopMatrix();
-}
-*/
 
 void RAPTOR_FASTCALL CParticle::glRenderVolumes(void)
 {

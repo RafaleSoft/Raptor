@@ -36,6 +36,7 @@ public:
 	{
 		CPU,
 		COREGL,
+		GLPROFILE,
 		COREVK,
 		ARB,
 		VK,
@@ -62,6 +63,11 @@ public:
 		std::string	extensionName;
         std::vector<std::string>  dependencies;
 	} EXTENSION;
+
+	static const char* core_profile;
+	static const char* compatibility_profile;
+	static const char* full_profile;
+
 
 public:
 	CGLBuilder();
@@ -107,13 +113,13 @@ public:
 
 private:
 	//!	Helper to register Raptor extensions.
-	void addExtension(EXTENSION_KIND kind, std::string extensionName);
+	void addExtension(EXTENSION_KIND kind, const std::string& extensionName);
 
 	//!	Helper to register Raptor extensions.
-	void addExtension(EXTENSION_KIND kind, std::string extensionName, std::string extensionDependency);
+	void addExtension(EXTENSION_KIND kind, const std::string& extensionName, const std::string& extensionDependency);
 
 	//!	Helper to register Raptor extensions.
-	void addExtension(EXTENSION_KIND kind, std::string extensionName, std::string extensionDependency, std::string extensionDependency2);
+	void addExtension(EXTENSION_KIND kind, const std::string& extensionName, const std::string& extensionDependency, const std::string& extensionDependency2);
 
 
 	std::vector<EXTENSION>	extensions;

@@ -817,11 +817,12 @@ local void flush_pending(z_streamp strm)
  * Update the header CRC with the bytes s->pending_buf[beg..s->pending - 1].
  */
 #define HCRC_UPDATE(beg) \
-    do { \
+    { \
         if (s->gzhead->hcrc && s->pending > (beg)) \
             strm->adler = crc32(strm->adler, s->pending_buf + (beg), \
                                 s->pending - (beg)); \
-    } while (0)
+	}
+    //}/while (0)
 
 /* ========================================================================= */
 #ifndef STDC

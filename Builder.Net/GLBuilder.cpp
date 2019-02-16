@@ -145,6 +145,9 @@ static const char *END =
 "\n\n\
 #endif\n";
 
+const char* CGLBuilder::core_profile = "GL_CORE_profile";
+const char* CGLBuilder::compatibility_profile = "GL_COMPATIBILITY_profile";
+const char* CGLBuilder::full_profile = "GL_FULL_profile";
 
 
 //////////////////////////////////////////////////////////////////////
@@ -186,6 +189,10 @@ CGLBuilder::CGLBuilder():
 	addExtension(COREGL, "GL_VERSION_4_5");
 	addExtension(COREGL, "GL_VERSION_4_6");
 
+	addExtension(GLPROFILE, CGLBuilder::core_profile);
+	addExtension(GLPROFILE, CGLBuilder::compatibility_profile);
+	addExtension(GLPROFILE, CGLBuilder::full_profile, CGLBuilder::core_profile, CGLBuilder::compatibility_profile);
+
 	addExtension(ARB, "GL_ARB_multitexture");
 	addExtension(ARB, "GL_ARB_texture_mirrored_repeat");
 	addExtension(ARB, "GL_ARB_transpose_matrix");
@@ -226,6 +233,7 @@ CGLBuilder::CGLBuilder():
 	addExtension(ARB, "GL_ARB_fragment_program_shadow", "GL_ARB_fragment_program", "GL_ARB_shadow");
 	addExtension(ARB, "GL_ARB_texture_compression_bptc", "GL_ARB_texture_compression", "GL_VERSION_3_1");
 	addExtension(ARB, "GL_ARB_uniform_buffer_object", "GL_ARB_shader_objects", "GL_ARB_vertex_buffer_object");
+	addExtension(ARB, "GL_ARB_compatibility");
 
 	EXTENSION extension;
     extension.dependencies.clear(); 
@@ -309,7 +317,9 @@ CGLBuilder::CGLBuilder():
 	addExtension(WGL, "WGL_NV_render_depth_texture", "WGL_ARB_render_texture");
 	addExtension(WGL, "WGL_EXT_swap_control_tear", "WGL_EXT_swap_control");
 	addExtension(WGL, "WGL_ARB_pbuffer", "WGL_ARB_extensions_string", "WGL_ARB_pixel_format");
-
+	addExtension(WGL, "WGL_ARB_create_context", "WGL_ARB_extensions_string", "WGL_ARB_create_context_profile");
+	addExtension(WGL, "WGL_ARB_create_context_profile", "WGL_ARB_extensions_string", "WGL_ARB_create_context");
+	
     extension.dependencies.clear(); 
     extension.active = false;	extension.kind = WGL;	extension.extensionName = "WGL_ARB_render_texture";
     extension.dependencies.push_back("WGL_ARB_extensions_string");
@@ -583,7 +593,7 @@ bool CGLBuilder::writeHeader(const string& filename)
 }
 
 
-void CGLBuilder::addExtension(EXTENSION_KIND kind, std::string extensionName)
+void CGLBuilder::addExtension(EXTENSION_KIND kind, const std::string& extensionName)
 {
 	EXTENSION extension;
 
@@ -594,7 +604,7 @@ void CGLBuilder::addExtension(EXTENSION_KIND kind, std::string extensionName)
 	extensions.push_back(extension);
 }
 
-void CGLBuilder::addExtension(EXTENSION_KIND kind, std::string extensionName, std::string extensionDependency)
+void CGLBuilder::addExtension(EXTENSION_KIND kind, const std::string& extensionName, const std::string& extensionDependency)
 {
 	EXTENSION extension;
 
@@ -606,7 +616,7 @@ void CGLBuilder::addExtension(EXTENSION_KIND kind, std::string extensionName, st
 	extensions.push_back(extension);
 }
 
-void CGLBuilder::addExtension(EXTENSION_KIND kind, std::string extensionName, std::string extensionDependency, std::string extensionDependency2)
+void CGLBuilder::addExtension(EXTENSION_KIND kind, const std::string& extensionName, const std::string& extensionDependency, const std::string& extensionDependency2)
 {
 	EXTENSION extension;
 
