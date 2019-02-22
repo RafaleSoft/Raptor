@@ -117,8 +117,7 @@ void main (void) \n\
 	angle = i_Angle; \n\
 	size = i_Size; \n\
 	v_color = i_Color; \n\
-}\n\
-";
+}";
 
 static const std::string gp_src =
 "#version 460\n\
@@ -160,8 +159,7 @@ void main() \n\
 	EmitVertex(); \n\
 	\n\
 	EndPrimitive(); \n\
-}\n\
-";
+}";
 
 static const std::string fp_src =
 "#version 460\n\
@@ -175,8 +173,7 @@ layout(location = 0) out vec4 o_Color;	\n\
 void main (void) \n\
 {\n\
 	o_Color = g_color * texture2D(diffuseMap,vec2(g_TexCoord.st)); \n\
-}\n\
-";
+}";
 
 
 RAPTOR_NAMESPACE
@@ -252,6 +249,7 @@ void CParticle::glInitParticle(void)
 		res = res & fs->glLoadProgram(fp_src);
 		CProgramParameters params;
 		params.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);
+		fs->setProgramParameters(params);
 
 		res = res & m_pShader->glCompileShader();
 	}

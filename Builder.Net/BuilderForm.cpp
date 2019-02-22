@@ -197,10 +197,6 @@ BuilderForm::BuilderForm(void)
 			glextensions += wgl_extensions;
 		}
 		glextensions += " ";
-		glextensions += CGLBuilder::core_profile;
-		glextensions += " ";
-		glextensions += CGLBuilder::compatibility_profile;
-		glextensions += " ";
 		glextensions += CGLBuilder::full_profile;
 
 		wchar_t buffer[MAX_PATH];

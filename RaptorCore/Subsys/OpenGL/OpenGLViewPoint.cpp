@@ -61,9 +61,14 @@ void COpenGLViewPoint::glvkRenderViewPointModel(void)
 					viewVolume[4],viewVolume[5]);
 			break;
 		case PERSPECTIVE:
-			glFrustum(	viewVolume[0],viewVolume[1],
-						viewVolume[2],viewVolume[3],
-						viewVolume[4],viewVolume[5]);
+		{
+			//!	Deprecated since OpenGL 3.2
+			// glFrustum(viewVolume[0], viewVolume[1], viewVolume[2], viewVolume[3], viewVolume[4], viewVolume[5]);
+			
+			CGenericMatrix<float, 4> frustum;
+			getTransposeFrustum(frustum);
+			glMultMatrixf(frustum.matrix());
+		}
 	}
 
 	glMatrixMode(GL_MODELVIEW);

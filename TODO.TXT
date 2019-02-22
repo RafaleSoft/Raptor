@@ -1,10 +1,10 @@
 - Ajouter un dialog pour Vulkan Status comme OpenGL.
 
-- BasicObjects:
-	- Ajouter un TextureQuad le plus simple possible
-
 - CRaptorDisplay:
 	- déplacer les fps et timings dans CRaptorDisplayConfig ( ==> glQueryStatus )
+
+- CRaptorRenderBufferDisplay:
+	- appels récurrents à glvkRenderViewPointModel. Pourquoi ? c.f. CRaptorDisplay & m_bApplyViewPointModel.
 
 - CContextManager:
 	factoriser getPresentationSuppotQueueFamily et vk_ctx.pSurface->supportPresentation(physical, numQueue):

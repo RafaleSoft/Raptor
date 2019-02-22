@@ -179,6 +179,59 @@ void IViewPoint::getFrustum(CGenericMatrix<float, 4>& frustum) const
 	}
 }
 
+void IViewPoint::getTransposeFrustum(CGenericMatrix<float, 4>& frustum) const
+{
+	frustum.Zero();
+
+	float l = viewVolume[0];
+	float r = viewVolume[1];
+	float b = viewVolume[2];
+	float t = viewVolume[3];
+	float n = viewVolume[4];
+	float f = viewVolume[5];
+
+	if (IViewPoint::PERSPECTIVE == model)
+	{
+		//	2.n / (r-l)			0				0				0
+		//		0			2.n / (t-b)			0				0
+		//	(r+l) / (r-l)	(t+b) / (t-b)	-(f+n) / (f-n)  	-1
+		//		0				0			-2.f.n / (f-n)		0
+
+		frustum[0] = 2 * n / (r - l);
+
+		frustum[5] = 2 * n / (t - b);
+		
+		frustum[8] = (r + l) / (r - l);
+		frustum[9] = (t + b) / (t - b);
+		frustum[10] = -(f + n) / (f - n);
+		frustum[11] = -1;
+
+		frustum[14] = -2 * f * n / (f - n);
+	}
+	else if (IViewPoint::ORTHOGRAPHIC == model)
+	{
+		//	2 / (r-l)			0				0				0
+		//		0			2 / (t-b)			0				0
+		//		0				0			-2 / (f-n)			0
+		//	-(r+l) / (r-l)	-(t+b) / (t-b)	-(f+n) / (f-n)		1
+
+		frustum[0] = 2 / (r - l);
+
+		frustum[5] = 2 / (t - b);
+		
+		frustum[10] = -2 / (f - n);
+
+		frustum[12] = -(r + l) / (r - l);
+		frustum[13] = -(t + b) / (t - b);
+		frustum[14] = -(f + n) / (f - n);
+		frustum[15] = 1;
+	}
+	else
+	{
+		// Unreachable code
+	}
+}
+
 CGenericVector<float> IViewPoint::getPosition(VIEW_POINT_POSITION p) const
 {
     switch(p)

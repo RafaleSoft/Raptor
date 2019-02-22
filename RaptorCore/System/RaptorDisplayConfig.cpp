@@ -722,15 +722,17 @@ bool CRaptorDisplayConfig::glApplyConfig(unsigned long query) const
 	if (query & GL_FRAME_STATE_QUERY)
 	{
 		glDrawBuffer(framebufferState.drawBuffer);
-		glIndexMask(framebufferState.indexWriteMask);
 		glColorMask(framebufferState.colorWriteMask[0],framebufferState.colorWriteMask[1],framebufferState.colorWriteMask[2],framebufferState.colorWriteMask[3]);
 		glDepthMask(framebufferState.depthWriteMask);
 		glStencilMask(framebufferState.stencilWriteMask);
 		glClearColor(framebufferState.colorClearValue.r,framebufferState.colorClearValue.g,framebufferState.colorClearValue.b,framebufferState.colorClearValue.a);
-		glClearIndex(framebufferState.indexClearValue);
 		glClearDepth(framebufferState.depthClearValue);
 		glClearStencil(framebufferState.stencilClearValue);
+#if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
+		glIndexMask(framebufferState.indexWriteMask);
+		glClearIndex(framebufferState.indexClearValue);
 		glClearAccum(framebufferState.accumClearValue.r,framebufferState.accumClearValue.g,framebufferState.accumClearValue.b,framebufferState.accumClearValue.a);
+#endif
 	}
 
 	if (query & GL_HINT_STATE_QUERY)

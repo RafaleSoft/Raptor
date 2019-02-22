@@ -1,6 +1,20 @@
-// ContextManager.cpp: implementation of the CContextManager class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  ContextManager.cpp                                                     */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
 
 #include "Subsys/CodeGeneration.h"
 
@@ -19,6 +33,9 @@
 #endif
 #if !defined(AFX_TEXTUREFACTORY_H__1B470EC4_4B68_11D3_9142_9A502CBADC6B__INCLUDED_)
 	#include "GLHierarchy/TextureFactory.h"
+#endif
+#if !defined(AFX_TEXTUREQUAD_H__1712AF34_6723_4E39_BC72_05ED6FA28418__INCLUDED_)
+	#include "GLHierarchy/TextureQuad.h"
 #endif
 #if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
     #include "System/RaptorErrorManager.h"
@@ -74,7 +91,7 @@ static CVulkanDevice defaultDevice;
 //////////////////////////////////////////////////////////////////////
 
 CContextManager::CContextManager()
-	:m_logo(),
+	:m_logo(), pLogo(NULL),
 	m_currentGLContext(CContextManager::INVALID_CONTEXT)
 #if defined(VK_VERSION_1_0)
 	,m_currentVKContext(CContextManager::INVALID_CONTEXT)
@@ -196,7 +213,7 @@ CTextureObject* CContextManager::glBuildLogo(void)
 													ITextureObject::CGL_BILINEAR);
 
     CRaptorDataManager  *dataManager = CRaptorDataManager::GetInstance();
-    if (dataManager == NULL)
+    if (NULL == dataManager)
         return NULL;
 
 	string filepath = dataManager->ExportFile("Raptor_logo_sml.txt");
@@ -213,6 +230,9 @@ CTextureObject* CContextManager::glBuildLogo(void)
 
     glPopAttrib();
 
+	pLogo = new CTextureQuad();
+	pLogo->glLoadTexture(filepath);
+
 	CATCH_GL_ERROR
 
     return p_Logo;
@@ -222,6 +242,10 @@ CTextureObject* CContextManager::glBuildLogo(void)
 void CContextManager::glRemoveLogo(void)
 {
     m_pLogo = NULL;
+	
+	//if (NULL != pLogo)
+	//	delete pLogo;
+	pLogo = NULL;
 
 	CATCH_GL_ERROR
 }

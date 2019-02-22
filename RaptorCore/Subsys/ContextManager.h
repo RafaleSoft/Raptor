@@ -30,6 +30,7 @@ class CRaptorGLExtensions;
 class CRaptorVKExtensions;
 class CTextureObject;
 class CVulkanSurface;
+class CTextureQuad;
 
 //!	This class implements OpenGL contexts management.
 class CContextManager  
@@ -214,6 +215,7 @@ private:
 
 	RAPTOR_HANDLE				m_logo;
 	CReference<CTextureObject>	m_pLogo;
+	CTextureQuad*				pLogo;
 
 	static CContextManager	*p_manager;
 };
