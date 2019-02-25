@@ -13,9 +13,6 @@
 #if !defined(AFX_RAPTORDISPLAY_H__9637BC66_3734_43A8_A130_87553D4379BC__INCLUDED_)
 	#include "System/RaptorDisplay.h"
 #endif
-#if !defined(AFX_OBJECTREFERENCE_H__0D47C721_2B2D_4163_AB88_BE1B4E08A84D__INCLUDED_)
-	#include "GLHierarchy/ObjectReference.h"
-#endif
 #if !defined(AFX_TEXTUREOBJECT_H__D32B6294_B42B_4E6F_AB73_13B33C544AD0__INCLUDED_)
 	#include "GLHierarchy/TextureObject.h"
 #endif
@@ -211,11 +208,8 @@ private:
 	virtual bool vkCreateSurface(const RAPTOR_HANDLE& handle,RENDERING_CONTEXT_ID ctx) = 0;
 #endif
 
-	CTextureObject	*glBuildLogo(void);
-
-	RAPTOR_HANDLE				m_logo;
-	CReference<CTextureObject>	m_pLogo;
-	CTextureQuad*				pLogo;
+	CTextureQuad*	glBuildLogo(void);
+	CTextureQuad*	pLogo;
 
 	static CContextManager	*p_manager;
 };

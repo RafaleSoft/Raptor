@@ -43,6 +43,17 @@ class CShader;
 class RAPTOR_API CTextureQuad : public CSimpleObject
 {
 public:
+	typedef struct Attributes_t
+	{
+		GL_COORD_VERTEX		m_center;
+		CColor::RGBA		m_color;
+		GL_COORD_VERTEX		m_sizes;
+	} Attributes;
+
+	static const uint32_t max_texture_quad;
+
+
+public:
 	CTextureQuad();
 	virtual ~CTextureQuad();
 
@@ -55,14 +66,28 @@ public:
 	//! @return false if texture loading failed.
 	bool CTextureQuad::glLoadTexture(const std::string &texname,bool compressed = false);
 
+	//!	Set quad attributes
+	//!	@return false if failed to set attributes or max texture quads reached.
+	bool glSetQuadAttributes(	const GL_COORD_VERTEX &center, 
+								const CColor::RGBA& color, 
+								const GL_COORD_VERTEX &sizes);
+
 
 private:
 	//!	Forbidden operators
 	CTextureQuad(const CTextureQuad&);
 	CTextureQuad& operator=(const CTextureQuad&);
 
+	//!	Common texture quad shader.
 	static CShader				*m_pShader;
+
+	//!	Quad texture.
 	ITextureObject				*m_pTexture;
+
+	//!	Attributes.
+	static uint32_t		max_index;
+	static Attributes*	s_attributes;
+	uint32_t			m_index;
 };
 
 RAPTOR_NAMESPACE_END

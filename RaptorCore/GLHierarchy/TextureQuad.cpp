@@ -39,6 +39,9 @@
 #if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
 	#include "System/RaptorGLExtensions.h"
 #endif
+#if !defined(AFX_GEOMETRYALLOCATOR_H__802B3C7A_43F7_46B2_A79E_DDDC9012D371__INCLUDED_)
+	#include "Subsys/GeometryAllocator.h"
+#endif
 
 
 RAPTOR_NAMESPACE
@@ -49,19 +52,18 @@ static const std::string vp_src =
 "#version 460 compatibility\n\
 \n\
 layout(location = 0) in vec4 i_Position; \n\
-layout(location = 1) in vec2 i_Size; \n\
 layout(location = 3) in vec4 i_Color; \n\
+layout(location = 6) in vec4 i_Size; \n\
 \n\
-out vec2 size; \n\
+out vec4 size; \n\
 out vec4 v_color; \n\
 \n\
 void main (void) \n\
 {\n\
 	vec4 pos = vec4(vec3(i_Position.xyz),1.0); \n\
 	gl_Position =  gl_ModelViewProjectionMatrix * pos; \n\
-	angle = i_Angle; \n\
 	size = i_Size; \n\
-	v_color =  ;\n\
+	v_color =  i_Color;\n\
 }";
 
 static const std::string gp_src =
@@ -70,7 +72,7 @@ static const std::string gp_src =
 //	Expect the geometry shader extension to be available, warn if not. \n\
 #extension GL_ARB_geometry_shader4 : enable \n\
 \n\
-in vec2 size[]; \n\
+in vec4 size[]; \n\
 in vec4 v_color[]; \n\
 \n\
 layout(points) in; \n\
@@ -82,19 +84,19 @@ void main() \n\
 {\n\
 	g_color = v_color[0]; \n\
 	\n\
-	gl_Position = gl_in[0].gl_Position + vec4(-Hx, -Hy, 0.0, 0.0); \n\
+	gl_Position = gl_in[0].gl_Position + vec4(-size[0].x, -size[0].y, 0.0, 0.0); \n\
 	g_TexCoord[0] = vec4(0.0,0.0,0.0,0.0); \n\
 	EmitVertex(); \n\
 	\n\
-	gl_Position = gl_in[0].gl_Position + vec4(Hy,-Hx,0.0,0.0); \n\
+	gl_Position = gl_in[0].gl_Position + vec4(size[0].x,-size[0].y,0.0,0.0); \n\
 	g_TexCoord[0] = vec4(1.0,0.0,0.0,0.0); \n\
 	EmitVertex(); \n\
 	\n\
-	gl_Position = gl_in[0].gl_Position + vec4(-Hy,Hx,0.0,0.0); \n\
+	gl_Position = gl_in[0].gl_Position + vec4(-size[0].x,size[0].y,0.0,0.0); \n\
 	g_TexCoord[0] = vec4(0.0,1.0,0.0,0.0); \n\
 	EmitVertex(); \n\
 	\n\
-	gl_Position = gl_in[0].gl_Position + vec4(Hx,Hy,0.0,0.0); \n\
+	gl_Position = gl_in[0].gl_Position + vec4(size[0].x,size[0].y,0.0,0.0); \n\
 	g_TexCoord[0] = vec4(1.0,1.0,0.0,0.0); \n\
 	EmitVertex(); \n\
 	\n\
@@ -117,22 +119,50 @@ void main (void) \n\
 
 
 //!	The shader is common to all texture quads by definition.
+const uint32_t CTextureQuad::max_texture_quad = 256;
 CShader	*CTextureQuad::m_pShader = NULL;
-
+uint32_t CTextureQuad::max_index = 0;
+CTextureQuad::Attributes*	CTextureQuad::s_attributes = NULL;
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
 CTextureQuad::CTextureQuad()
-	:CSimpleObject("TEXTURE_QUAD")
+	:CSimpleObject("TEXTURE_QUAD"), m_index(max_index++)
 {
 
 }
 
 CTextureQuad::~CTextureQuad()
 {
-	m_pTexture = NULL;
+	delete m_pTexture;
+}
+
+bool CTextureQuad::glSetQuadAttributes(	const GL_COORD_VERTEX &center,
+										const CColor::RGBA& color,
+										const GL_COORD_VERTEX &sizes)
+{
+	if ((max_index >= max_texture_quad) || (m_index > max_index))
+		return false;
+
+	CGeometryAllocator *pAllocator = CGeometryAllocator::GetInstance();
+	
+	if (NULL == s_attributes)
+	{
+		size_t s = sizeof(Attributes) / sizeof(float);
+		s_attributes = (Attributes*)(pAllocator->allocateVertices(max_texture_quad * s));
+	}
+
+	//! Update vertex buffer
+	s_attributes = (Attributes*)pAllocator->glvkMapPointer((float*)s_attributes);
+	CTextureQuad::Attributes& attrs = s_attributes[m_index];
+	attrs.m_center = center;
+	attrs.m_color = color;
+	attrs.m_sizes = sizes;
+	s_attributes = (Attributes*)pAllocator->glvkUnMapPointer((float*)s_attributes);
+	
+	return true;
 }
 
 bool CTextureQuad::glLoadTexture(const std::string &texname, bool compressed)
@@ -166,22 +196,26 @@ bool CTextureQuad::glLoadTexture(const std::string &texname, bool compressed)
 	Txt.glExportCompressedTexture("Raptor_logo_sml.txt",p_Logo);
 	*/
 
+	bool res = true;
 	if (NULL == m_pShader)
+	{
 		m_pShader = new CShader(getName() + "_SHADER");
-	
-	CVertexProgram *vp = m_pShader->glGetVertexProgram();
-	bool res = vp->glLoadProgram(vp_src);
 
-	CGeometryProgram *gp = m_pShader->glGetGeometryProgram();
-	gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
-	res = res & gp->glLoadProgram(gp_src);
+		CVertexProgram *vp = m_pShader->glGetVertexProgram();
+		res = vp->glLoadProgram(vp_src);
 
-	CFragmentProgram *fs = m_pShader->glGetFragmentProgram();
-	res = res & fs->glLoadProgram(fp_src);
-	CProgramParameters params;
-	params.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);
+		CGeometryProgram *gp = m_pShader->glGetGeometryProgram();
+		gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
+		res = res & gp->glLoadProgram(gp_src);
 
-	res = res & m_pShader->glCompileShader();
+		CFragmentProgram *fs = m_pShader->glGetFragmentProgram();
+		res = res & fs->glLoadProgram(fp_src);
+		CProgramParameters params;
+		params.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);
+
+		res = res & m_pShader->glCompileShader();
+	}
+
 	return res;
 }
 
@@ -193,15 +227,6 @@ void CTextureQuad::glRender(void)
 	if (NULL == m_pShader)
 		return;
 
-	//! Use transparency,
-	GLint blendSrc;
-	GLint blendDst;
-	glGetIntegerv(GL_BLEND_SRC, &blendSrc);
-	glGetIntegerv(GL_BLEND_DST, &blendDst);
-
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
 	//!	Render (activate) shader and texture.
 	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 	if (pExtensions->glActiveTextureARB != NULL)
@@ -210,30 +235,24 @@ void CTextureQuad::glRender(void)
 	m_pShader->glRender();
 	m_pTexture->glvkRender();
 
-	//!	Set shader parameter.
-	glColor4f(1.0f, 1.0f, 1.0f, 0.75f);
-	glTexCoord2f(0.0f, 1.0f);		glVertex3f(0.7f, -0.85f, 1.0f);
-	glTexCoord2f(0.0f, 0.0f);		glVertex3f(0.7f, -1.0f, 1.0f);
-	glTexCoord2f(1.0f, 0.0f);		glVertex3f(1.0f, -1.0f, 1.0f);
-	glTexCoord2f(1.0f, 1.0f);		glVertex3f(1.0f, -0.85f, 1.0f);
+CGeometryAllocator *pAllocator = CGeometryAllocator::GetInstance();
+pAllocator->glvkLockMemory(true);
 
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glVertexPointer(4, GL_FLOAT, sizeof(Attributes), &s_attributes[m_index].m_center);
+	glEnableClientState(GL_COLOR_ARRAY);
+	glColorPointer(4, GL_FLOAT, sizeof(Attributes), &s_attributes[m_index].m_color);
+	pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::ADDITIONAL_PARAM1);
+	pExtensions->glVertexAttribPointerARB(CProgramParameters::ADDITIONAL_PARAM1, 4, GL_FLOAT, false, sizeof(Attributes), &s_attributes[m_index].m_sizes);
 
-	glPushAttrib(GL_ENABLE_BIT | GL_TEXTURE_BIT | GL_POLYGON_BIT);
-	glPushMatrix();
-	glMatrixMode(GL_PROJECTION);
-	glPushMatrix();
+	glDrawArrays(GL_POINTS, 0, 1);
 
-	glLoadIdentity();
-	glOrtho(-1.0f, 1.0f, -1.0f, 1.0f, -1.0, 1.0);
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-		
+	glDisableClientState(GL_VERTEX_ARRAY);
+	glDisableClientState(GL_COLOR_ARRAY);
+	pExtensions->glDisableVertexAttribArrayARB(CProgramParameters::ADDITIONAL_PARAM1);
 
-	glMatrixMode(GL_PROJECTION);
-	glPopMatrix();
-	glMatrixMode(GL_MODELVIEW);
-	glPopMatrix();
-	glPopAttrib();
+	m_pShader->glStop();
 
+pAllocator->glvkLockMemory(false);
 }
 

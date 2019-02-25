@@ -91,7 +91,7 @@ static CVulkanDevice defaultDevice;
 //////////////////////////////////////////////////////////////////////
 
 CContextManager::CContextManager()
-	:m_logo(), pLogo(NULL),
+	:pLogo(NULL),
 	m_currentGLContext(CContextManager::INVALID_CONTEXT)
 #if defined(VK_VERSION_1_0)
 	,m_currentVKContext(CContextManager::INVALID_CONTEXT)
@@ -133,116 +133,64 @@ CContextManager *CContextManager::GetInstance(void)
 
 void CContextManager::glDrawLogo(void)
 {
-	if (m_logo.handle != NULL)
-		glCallList(m_logo.handle);
-	else
-	{
-		if (m_pLogo == NULL)
-			m_pLogo = glBuildLogo();
+	if (pLogo == NULL)
+		pLogo = glBuildLogo();
 
-		m_logo.handle = glGenLists(1);
-		glNewList(m_logo.handle,GL_COMPILE_AND_EXECUTE);
+	glPushAttrib(GL_ENABLE_BIT | GL_TEXTURE_BIT | GL_POLYGON_BIT);
+	glPushMatrix();
+	glMatrixMode(GL_PROJECTION);
+	glPushMatrix();
 
-		glPushAttrib(GL_ENABLE_BIT|GL_TEXTURE_BIT|GL_POLYGON_BIT);
-		glPushMatrix();
-		glMatrixMode(GL_PROJECTION);
-		glPushMatrix();
+	glLoadIdentity();
+	glOrtho(-1.0f, 1.0f, -1.0f, 1.0f, -1.0, 1.0);
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	glDisable(GL_DEPTH_TEST);
+	glDisable(GL_LIGHTING);
+	glDisable(GL_CULL_FACE);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-		glLoadIdentity();
-		glOrtho(-1.0f,1.0f,-1.0f,1.0f,-1.0,1.0);
-		glMatrixMode(GL_MODELVIEW);
-		glLoadIdentity();
-		glDisable(GL_DEPTH_TEST);
-		glDisable(GL_LIGHTING);
-		glDisable(GL_CULL_FACE);
-		glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+	pLogo->glRender();
 
-	#if defined(GL_ARB_multitexture)
-		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
-		if (pExtensions->glActiveTextureARB != NULL)
-		{
-			pExtensions->glActiveTextureARB(GL_TEXTURE3_ARB);
-			glDisable(GL_TEXTURE_2D);
-			pExtensions->glActiveTextureARB(GL_TEXTURE2_ARB);
-			glDisable(GL_TEXTURE_2D);
-			pExtensions->glActiveTextureARB(GL_TEXTURE1_ARB);
-			glDisable(GL_TEXTURE_2D);
-			pExtensions->glActiveTextureARB(GL_TEXTURE0_ARB);
-		}
-	#endif
+	glMatrixMode(GL_PROJECTION);
+	glPopMatrix();
+	glMatrixMode(GL_MODELVIEW);
+	glPopMatrix();
+	glPopAttrib();
 
-	#if defined(GL_ARB_fragment_program)
-		glDisable(GL_FRAGMENT_PROGRAM_ARB);
-	#endif
-	#if defined(GL_NV_texture_shader)
-		glDisable(GL_TEXTURE_SHADER_NV);
-	#endif
-
-		glEnable(GL_TEXTURE_2D);
-		glColor4f(1.0f,1.0f,1.0f,0.75f);
-		if (!(m_pLogo == NULL))
-			m_pLogo->glvkRender();
-		glBegin(GL_QUADS);
-			glTexCoord2f(0.0f,1.0f);		glVertex3f(0.7f,-0.85f,1.0f);
-			glTexCoord2f(0.0f,0.0f);		glVertex3f(0.7f,-1.0f,1.0f);
-			glTexCoord2f(1.0f,0.0f);		glVertex3f(1.0f,-1.0f,1.0f);
-			glTexCoord2f(1.0f,1.0f);		glVertex3f(1.0f,-0.85f,1.0f);
-		glEnd();
-
-		glMatrixMode(GL_PROJECTION);
-		glPopMatrix();
-		glMatrixMode(GL_MODELVIEW);
-		glPopMatrix();
-		glPopAttrib();
-
-		glEndList();
-	}
 
 	CATCH_GL_ERROR
 }
 
-CTextureObject* CContextManager::glBuildLogo(void)
+CTextureQuad* CContextManager::glBuildLogo(void)
 {
-    glPushAttrib(GL_TEXTURE_BIT);
-
-	CTextureFactory &Txt = CTextureFactory::getDefaultFactory();
-	CTextureObject *p_Logo = Txt.glCreateTexture(	ITextureObject::CGL_COLOR24_ALPHA,
-													CTextureObject::CGL_MULTIPLY,
-													ITextureObject::CGL_BILINEAR);
-
     CRaptorDataManager  *dataManager = CRaptorDataManager::GetInstance();
     if (NULL == dataManager)
         return NULL;
 
-	string filepath = dataManager->ExportFile("Raptor_logo_sml.txt");
-	if (!filepath.empty())
-    {
-        p_Logo->glSetTransparency(256);
-		Txt.glLoadCompressedTexture(p_Logo,filepath);
-    }
 	/*
 	p_Logo->glSetTransparency(256);
 	if (Txt.glLoadTexture(p_Logo,"Raptor_logo_sml.tga",CGL_USER_MIPMAPPED))
 		Txt.glExportCompressedTexture("Raptor_logo_sml.txt",p_Logo);
 	*/
 
-    glPopAttrib();
-
+	string filepath = dataManager->ExportFile("Raptor_logo_sml.txt");
 	pLogo = new CTextureQuad();
-	pLogo->glLoadTexture(filepath);
+	pLogo->glLoadTexture(filepath,true);
+	pLogo->glSetQuadAttributes(GL_COORD_VERTEX(0.85f, -0.925f, 1.0f, 1.0f),
+							   CColor::RGBA(1.0f, 1.0f, 1.0f, 1.0f),
+							   GL_COORD_VERTEX(0.15f, 0.075f, -0.15f, 0.0f));
 
 	CATCH_GL_ERROR
 
-    return p_Logo;
+    return pLogo;
 }
 
 
 void CContextManager::glRemoveLogo(void)
 {
-    m_pLogo = NULL;
-	
 	//if (NULL != pLogo)
 	//	delete pLogo;
 	pLogo = NULL;

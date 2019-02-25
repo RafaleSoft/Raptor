@@ -1175,6 +1175,7 @@ void CGeometry::glRenderGeometry()
 	if (m_renderingModel.hasModel(CRenderingModel::CGL_BACK_GEOMETRY))
 		glCullFace(GL_BACK);
 	
+
     glDisableClientState(GL_VERTEX_ARRAY);
     if (popNormalArray)
         glDisableClientState(GL_NORMAL_ARRAY);
