@@ -240,15 +240,15 @@ pAllocator->glvkLockMemory(true);
 
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glVertexPointer(4, GL_FLOAT, sizeof(Attributes), &s_attributes[m_index].m_center);
-	glEnableClientState(GL_COLOR_ARRAY);
-	glColorPointer(4, GL_FLOAT, sizeof(Attributes), &s_attributes[m_index].m_color);
+	pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::PRIMARY_COLOR);
+	pExtensions->glVertexAttribPointerARB(CProgramParameters::PRIMARY_COLOR, 4, GL_FLOAT, false, sizeof(Attributes), &s_attributes[m_index].m_color);
 	pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::ADDITIONAL_PARAM1);
 	pExtensions->glVertexAttribPointerARB(CProgramParameters::ADDITIONAL_PARAM1, 4, GL_FLOAT, false, sizeof(Attributes), &s_attributes[m_index].m_sizes);
 
 	glDrawArrays(GL_POINTS, 0, 1);
 
 	glDisableClientState(GL_VERTEX_ARRAY);
-	glDisableClientState(GL_COLOR_ARRAY);
+	pExtensions->glDisableVertexAttribArrayARB(CProgramParameters::PRIMARY_COLOR);
 	pExtensions->glDisableVertexAttribArrayARB(CProgramParameters::ADDITIONAL_PARAM1);
 
 	m_pShader->glStop();

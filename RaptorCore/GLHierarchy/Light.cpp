@@ -426,11 +426,6 @@ void CLight::glRenderFlare(void)
 
 		glScalef(scale,scale,scale);
 	
-//		if (m_pAttributes->m_uiFlare == 0)
-//		{
-//			m_pAttributes->m_uiFlare = glGenLists(1);
-//			glNewList(m_pAttributes->m_uiFlare,GL_COMPILE_AND_EXECUTE);
-
 			glEnable(GL_TEXTURE_2D);
 			glEnable(GL_BLEND);
 			glBlendFunc(GL_SRC_ALPHA,GL_ONE);
@@ -455,10 +450,6 @@ void CLight::glRenderFlare(void)
 				glTranslatef(dx, dy, 0/*dz*/);
 
 			}
-//			glEndList();
-//		}
-//		else
-//			glCallList(m_pAttributes->m_uiFlare);
     
 		glBlendFunc(blendSrc,blendDst);
 	}

@@ -146,7 +146,6 @@ void CContextManager::glDrawLogo(void)
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	glDisable(GL_DEPTH_TEST);
-	glDisable(GL_LIGHTING);
 	glDisable(GL_CULL_FACE);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glEnable(GL_BLEND);
@@ -180,7 +179,7 @@ CTextureQuad* CContextManager::glBuildLogo(void)
 	pLogo = new CTextureQuad();
 	pLogo->glLoadTexture(filepath,true);
 	pLogo->glSetQuadAttributes(GL_COORD_VERTEX(0.85f, -0.925f, 1.0f, 1.0f),
-							   CColor::RGBA(1.0f, 1.0f, 1.0f, 1.0f),
+							   CColor::RGBA(0.6f, 0.85f, 1.0f, 0.5f),
 							   GL_COORD_VERTEX(0.15f, 0.075f, -0.15f, 0.0f));
 
 	CATCH_GL_ERROR

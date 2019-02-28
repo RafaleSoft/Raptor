@@ -49,9 +49,9 @@ public:
 	typedef struct PARTICLE_ATTRIBUTE_t
 	{
 		GL_COORD_VERTEX	position;
+		GL_COORD_VERTEX color;
 		GL_COORD_VERTEX speed;
 		GL_COORD_VERTEX pull;
-		GL_COORD_VERTEX color;
 		float size;
 		float fade;
 		float angle;

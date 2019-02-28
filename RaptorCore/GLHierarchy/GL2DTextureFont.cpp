@@ -34,7 +34,7 @@ CGL2DTextureFont::~CGL2DTextureFont()
 {
 }
 
-bool CGL2DTextureFont::init(const std::string &filename, unsigned int size, bool antialiased)
+bool CGL2DTextureFont::glInit(const std::string &filename, unsigned int size, bool antialiased)
 {
 	m_bAntialiased = antialiased;
 
@@ -82,7 +82,7 @@ bool CGL2DTextureFont::init(const std::string &filename, unsigned int size, bool
 		factory.glResizeTexture(m_texture, W, H);
 		m_texture->glvkRender();
 
-		unsigned char *buffer = new unsigned char[2 * W*H];
+		unsigned char *buffer = new unsigned char[2 * W*H];	// lightmap alpha
 		memset(buffer, 0, 2 * W*H);
 		for (unsigned int i = 0; i<256; i++)
 		{
@@ -119,7 +119,7 @@ bool CGL2DTextureFont::init(const std::string &filename, unsigned int size, bool
 		if (m_bAntialiased)
 		{
 			// Antialias font buffer
-			unsigned char *AAbuffer = new unsigned char[2 * W*H];
+			unsigned char *AAbuffer = new unsigned char[2 * W*H];		// lightmap alpha
 			for (size_t j = 0; j<H; j++)
 			{
 				for (size_t i = 0; i<W; i++)

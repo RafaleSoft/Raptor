@@ -11,6 +11,18 @@
 #if !defined(AFX_RAPTORDISPLAYCONFIG_H__DA0759DF_6CF9_44A7_9ADE_D404FEEC2DDF__INCLUDED_)
 	#include "RaptorDisplayConfig.h"
 #endif
+#if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
+#else
+	#if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
+		#include "System/Raptor.h"
+	#endif
+	#if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
+		#include "System/RaptorGLExtensions.h"
+	#endif
+	#if !defined(AFX_PROGRAMPARAMETERS_H__E28A74BB_DE78_470A_A8A2_5A3EBB3F4F90__INCLUDED_)
+		#include "GLHierarchy/ProgramParameters.h"
+	#endif
+#endif
 
 RAPTOR_NAMESPACE
 
@@ -455,6 +467,11 @@ bool CRaptorDisplayConfig::glApplyConfig(unsigned long query) const
 
 	if (query & GL_ARRAYS_STATE_QUERY)
 	{
+#if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
+#else
+		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+#endif
+
 		if(arraysState.vertexArray.enable)
 		{
 			glEnableClientState(GL_VERTEX_ARRAY);
@@ -472,11 +489,15 @@ bool CRaptorDisplayConfig::glApplyConfig(unsigned long query) const
 		}
 		if(arraysState.colorArray.enable)
 		{
+#if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
 			glEnableClientState(GL_COLOR_ARRAY);
 			glColorPointer(	arraysState.colorArray.arraySize,
 							arraysState.colorArray.arrayType,
 							arraysState.colorArray.arrayStride,
 							arraysState.colorArray.arrayPointer);
+#else
+			pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::PRIMARY_COLOR);
+#endif
 		}
 		if(arraysState.indexArray.enable)
 		{
@@ -580,11 +601,14 @@ bool CRaptorDisplayConfig::glApplyConfig(unsigned long query) const
 		glMaterialfv(GL_FRONT,GL_SPECULAR,lightingState.materialSpecular);
 		glMaterialfv(GL_FRONT,GL_SHININESS,&lightingState.materialShininess);
 		glLightModelfv(GL_LIGHT_MODEL_AMBIENT,lightingState.lightModelAmbient);
+
 		glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER,lightingState.lightModelLocalViewer);
+#if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
 		glLightModeli(GL_LIGHT_MODEL_TWO_SIDE,lightingState.lightModelTwoSide);
-#if defined GL_VERSION_1_2
+	#if defined GL_VERSION_1_2
 		glLightModeli(	GL_LIGHT_MODEL_COLOR_CONTROL,
 						(lightingState.lightModelSeparateSpecular ? GL_SEPARATE_SPECULAR_COLOR : GL_SINGLE_COLOR));
+	#endif
 #endif
 		for (int i=0;i<8;i++)
 		{
@@ -728,11 +752,13 @@ bool CRaptorDisplayConfig::glApplyConfig(unsigned long query) const
 		glClearColor(framebufferState.colorClearValue.r,framebufferState.colorClearValue.g,framebufferState.colorClearValue.b,framebufferState.colorClearValue.a);
 		glClearDepth(framebufferState.depthClearValue);
 		glClearStencil(framebufferState.stencilClearValue);
+
 #if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
 		glIndexMask(framebufferState.indexWriteMask);
 		glClearIndex(framebufferState.indexClearValue);
 		glClearAccum(framebufferState.accumClearValue.r,framebufferState.accumClearValue.g,framebufferState.accumClearValue.b,framebufferState.accumClearValue.a);
 #endif
+
 	}
 
 	if (query & GL_HINT_STATE_QUERY)

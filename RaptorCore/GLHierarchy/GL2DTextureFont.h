@@ -29,7 +29,7 @@ public:
 	//!	@param size : the size of the glyphs generated.
 	//! @param antialias : turn on/off font antialiasing (alpha based for correct superposition with frame content)
 	//! @return true if the whole creation process succeeded, false otherwise
-	bool init(const std::string &filename, unsigned int size, bool antialiased);
+	bool glInit(const std::string &filename, unsigned int size, bool antialiased);
 
 	//!	2D font writer: this method directly draws into the current buffer with textures.
 	//! @param text : the text to write

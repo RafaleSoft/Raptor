@@ -1069,12 +1069,12 @@ void CGeometry::glRenderGeometry()
 		&& (NULL != colors))
 #endif
 	{
-		glEnableClientState(GL_COLOR_ARRAY);
+		pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::PRIMARY_COLOR);
         popColorArray = true;
 #if defined(DATA_EXTENDED)
-        glColorPointer( 4 , GL_FLOAT , sizeof(GL_VERTEX_DATA), &geometry[0].color);
+		pExtensions->glVertexAttribPointerARB(CProgramParameters::PRIMARY_COLOR, 4, GL_FLOAT, false, sizeof(GL_VERTEX_DATA), &geometry[0].color);
 #elif defined(DATA_PACKED)
-		glColorPointer( 4 , GL_FLOAT , 0, colors);
+		pExtensions->glVertexAttribPointerARB(CProgramParameters::PRIMARY_COLOR, 4, GL_FLOAT, false, 0, colors);
 #endif
 	}
 
@@ -1180,7 +1180,7 @@ void CGeometry::glRenderGeometry()
     if (popNormalArray)
         glDisableClientState(GL_NORMAL_ARRAY);
     if (popColorArray)
-        glDisableClientState(GL_COLOR_ARRAY);
+		pExtensions->glDisableVertexAttribArrayARB(CProgramParameters::PRIMARY_COLOR);
     if (popTexCoordArray)
         glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 #ifdef GL_EXT_vertex_weighting
