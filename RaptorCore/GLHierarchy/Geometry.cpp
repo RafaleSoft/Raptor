@@ -1,6 +1,21 @@
-// Geometry.cpp: implementation of the CGeometry class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  Geometry.cpp                                                           */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
 #include "Subsys/CodeGeneration.h"
 
 
@@ -1032,12 +1047,15 @@ void CGeometry::glRenderGeometry()
 		&& (NULL != normals))
 #endif
 	{
-		glEnableClientState(GL_NORMAL_ARRAY);
+		//glEnableClientState(GL_NORMAL_ARRAY);
         popNormalArray = true;
 #if defined(DATA_EXTENDED)
         glNormalPointer( GL_FLOAT , sizeof(GL_VERTEX_DATA) , &geometry[0].normal);
 #elif defined(DATA_PACKED)
-		glNormalPointer( GL_FLOAT , sizeof(GL_COORD_VERTEX) , normals);
+		//glNormalPointer( GL_FLOAT , sizeof(GL_COORD_VERTEX) , normals);
+		pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::NORMAL);
+		pExtensions->glVertexAttribPointerARB(CProgramParameters::NORMAL,
+											  4, GL_FLOAT, sizeof(GL_COORD_VERTEX), false, normals);
 #endif
 	}
 
@@ -1178,7 +1196,8 @@ void CGeometry::glRenderGeometry()
 
     glDisableClientState(GL_VERTEX_ARRAY);
     if (popNormalArray)
-        glDisableClientState(GL_NORMAL_ARRAY);
+        //glDisableClientState(GL_NORMAL_ARRAY);
+		pExtensions->glDisableVertexAttribArrayARB(CProgramParameters::NORMAL);
     if (popColorArray)
 		pExtensions->glDisableVertexAttribArrayARB(CProgramParameters::PRIMARY_COLOR);
     if (popTexCoordArray)

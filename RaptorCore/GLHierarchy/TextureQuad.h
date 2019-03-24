@@ -79,10 +79,10 @@ private:
 	CTextureQuad& operator=(const CTextureQuad&);
 
 	//!	Common texture quad shader.
-	static CShader				*m_pShader;
+	static CShader		*m_pShader;
 
 	//!	Quad texture.
-	ITextureObject				*m_pTexture;
+	ITextureObject		*m_pTexture;
 
 	//!	Attributes.
 	static uint32_t		max_index;

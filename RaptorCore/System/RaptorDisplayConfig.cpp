@@ -474,18 +474,54 @@ bool CRaptorDisplayConfig::glApplyConfig(unsigned long query) const
 
 		if(arraysState.vertexArray.enable)
 		{
+#if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
 			glEnableClientState(GL_VERTEX_ARRAY);
 			glVertexPointer(arraysState.vertexArray.arraySize,
 							arraysState.vertexArray.arrayType,
 							arraysState.vertexArray.arrayStride,
 							arraysState.vertexArray.arrayPointer);
+#else
+			pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::POSITION);
+			pExtensions->glVertexAttribPointerARB(CProgramParameters::POSITION,
+												  arraysState.vertexArray.arraySize,
+												  arraysState.vertexArray.arrayType,
+												  arraysState.vertexArray.arrayStride,
+												  false, // normalize
+												  arraysState.vertexArray.arrayPointer);
+#endif
+		}
+		else
+		{
+#if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
+			glDisableClientState(GL_VERTEX_ARRAY);
+#else
+			pExtensions->glDisableVertexAttribArrayARB(CProgramParameters::POSITION);
+#endif
 		}
 		if(arraysState.normalArray.enable)
 		{
+#if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
 			glEnableClientState(GL_NORMAL_ARRAY);
 			glNormalPointer(arraysState.normalArray.arrayType,
 							arraysState.normalArray.arrayStride,
 							arraysState.normalArray.arrayPointer);
+#else
+			pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::NORMAL);
+			pExtensions->glVertexAttribPointerARB(CProgramParameters::NORMAL,
+												  arraysState.normalArray.arraySize,
+												  arraysState.normalArray.arrayType,
+												  arraysState.normalArray.arrayStride,
+												  false, // normalize
+												  arraysState.normalArray.arrayPointer);
+#endif
+		}
+		else
+		{
+#if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
+			glDisableClientState(GL_NORMAL_ARRAY);
+#else
+			pExtensions->glDisableVertexAttribArrayARB(CProgramParameters::NORMAL);
+#endif
 		}
 		if(arraysState.colorArray.enable)
 		{
@@ -497,6 +533,20 @@ bool CRaptorDisplayConfig::glApplyConfig(unsigned long query) const
 							arraysState.colorArray.arrayPointer);
 #else
 			pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::PRIMARY_COLOR);
+			pExtensions->glVertexAttribPointerARB(CProgramParameters::PRIMARY_COLOR,
+												  arraysState.colorArray.arraySize,
+												  arraysState.colorArray.arrayType,
+												  arraysState.colorArray.arrayStride,
+												  false, // normalize
+												  arraysState.colorArray.arrayPointer);
+#endif
+		}
+		else
+		{
+#if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
+			glDisableClientState(GL_COLOR_ARRAY);
+#else
+			pExtensions->glDisableVertexAttribArrayARB(CProgramParameters::PRIMARY_COLOR);
 #endif
 		}
 		if(arraysState.indexArray.enable)
@@ -594,7 +644,7 @@ bool CRaptorDisplayConfig::glApplyConfig(unsigned long query) const
 		else
 			glDisable(GL_COLOR_MATERIAL);
 
-		glColorMaterial(lightingState.colorMaterialFace,lightingState.colorMaterialParameter);
+		
 		glMaterialfv(GL_FRONT,GL_AMBIENT,lightingState.materialAmbient);
 		glMaterialfv(GL_FRONT,GL_DIFFUSE,lightingState.materialDiffuse);
 		glMaterialfv(GL_FRONT,GL_EMISSION,lightingState.materialEmission);
@@ -603,7 +653,9 @@ bool CRaptorDisplayConfig::glApplyConfig(unsigned long query) const
 		glLightModelfv(GL_LIGHT_MODEL_AMBIENT,lightingState.lightModelAmbient);
 
 		glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER,lightingState.lightModelLocalViewer);
+
 #if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
+		glColorMaterial(lightingState.colorMaterialFace,lightingState.colorMaterialParameter);
 		glLightModeli(GL_LIGHT_MODEL_TWO_SIDE,lightingState.lightModelTwoSide);
 	#if defined GL_VERSION_1_2
 		glLightModeli(	GL_LIGHT_MODEL_COLOR_CONTROL,

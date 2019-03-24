@@ -393,22 +393,21 @@ bool CRaptorScreenDisplay::glRender(void)
 {
 	if (CContextManager::INVALID_CONTEXT != m_context)
 	{
-		CTimeObject::markTime(this);
-
         m_pGAllocator->glvkLockMemory(true);
 		m_pTAllocator->glvkLockMemory(true);
 		m_pUAllocator->glvkLockMemory(true);
 
+		CTimeObject::markTime(this);
 		glRenderScene();
+		rtime = CTimeObject::deltaMarkTime(this);
+
+		if (Global::GetInstance().getConsole() != NULL)
+			Global::GetInstance().getConsole()->glRender();
 
         m_pGAllocator->glvkLockMemory(false);
 		m_pTAllocator->glvkLockMemory(false);
 		m_pUAllocator->glvkLockMemory(false);
 
-		rtime = CTimeObject::deltaMarkTime(this);
-
-        if (Global::GetInstance().getConsole() != NULL)
-		    Global::GetInstance().getConsole()->glRender();
 
 		CContextManager::GetInstance()->glSwapBuffers(m_context);
 

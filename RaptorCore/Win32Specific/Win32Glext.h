@@ -1,7 +1,25 @@
+/***************************************************************************/
+/*                                                                         */
+/*  Win32Glext.h    											           */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
 //! This header provides Win32 specific OpenGL extensions.
 //! It is included where needed, depending on the content of 
 //! the file CodeGeneration.h. User should never include this file 
 //! directly because it is managed by Glext.h
+
 #ifndef __WIN32_RAPTOR_GLEXT_H__
 #define __WIN32_RAPTOR_GLEXT_H__
 
@@ -191,6 +209,31 @@
 #if defined(WGL_EXT_swap_control_tear)
 	// No new tokens
 	// No new functions: only SwapInterval(-1) syncs to monitor actual refresh rate
+#endif
+
+
+#if defined(WGL_ARB_create_context) || defined(WGL_ARB_create_context_profile)
+	#define WGL_CONTEXT_MAJOR_VERSION_ARB           0x2091
+	#define WGL_CONTEXT_MINOR_VERSION_ARB           0x2092
+	#define WGL_CONTEXT_LAYER_PLANE_ARB             0x2093
+	#define WGL_CONTEXT_FLAGS_ARB                   0x2094
+	#define WGL_CONTEXT_PROFILE_MASK_ARB            0x9126
+	#define WGL_CONTEXT_DEBUG_BIT_ARB               0x0001
+	#define WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB  0x0002
+	#define WGL_CONTEXT_CORE_PROFILE_BIT_ARB        0x00000001
+	#define WGL_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB 0x00000002
+
+	#define ERROR_INVALID_VERSION_ARB               0x2095
+	#define ERROR_INVALID_PROFILE_ARB               0x2096
+
+	typedef HGLRC(RAPTOR_APICALL *PFN_WGL_CREATE_CONTEXT_ATTRIBS_PROC) (HDC hDC, HGLRC hShareContext, const int *attribList);
+
+	#ifndef DECLARE_WGL_ARB_create_context
+	#define DECLARE_WGL_ARB_create_context(LINKAGE) \
+			LINKAGE PFN_WGL_CREATE_CONTEXT_ATTRIBS_PROC		wglCreateContextAttribsARB;
+	#endif
+#else
+	#define DECLARE_WGL_ARB_create_context(LINKAGE)
 #endif
 
 #endif

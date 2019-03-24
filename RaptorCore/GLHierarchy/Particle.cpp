@@ -81,6 +81,8 @@ RAPTOR_NAMESPACE_END
 static const std::string vp_src =
 "#version 460 compatibility\n\
 \n\
+uniform float fPointSize; \n\
+\n\
 layout(location = 0) in vec4 i_Position; \n\
 layout(location = 1) in float i_Size; \n\
 layout(location = 3) in vec4 i_Color; \n\
@@ -92,10 +94,10 @@ out vec4 v_color; \n\
 \n\
 void main (void) \n\
 {\n\
-	vec4 pos = vec4(vec3(i_Position.xyz),1.0); \n\
+	vec4 pos = vec4(fPointSize * vec3(i_Position.xyz),1.0); \n\
 	gl_Position =  gl_ModelViewProjectionMatrix * pos; \n\
 	angle = i_Angle; \n\
-	size = i_Size; \n\
+	size = fPointSize * i_Size; \n\
 	v_color = i_Color; \n\
 }";
 
@@ -196,7 +198,7 @@ layout(location = 0) out vec4 o_Color;	\n\
 \n\
 void main (void) \n\
 {\n\
-	o_Color = g_color * texture2D(diffuseMap,vec2(g_TexCoord.st)); \n\
+	o_Color = g_color * texture(diffuseMap,vec2(g_TexCoord.st)); \n\
 }";
 
 static const std::string fp_src2 =
@@ -277,6 +279,9 @@ void CParticle::glInitParticle(void)
 		m_pShader = new CShader(getName()+"_SHADER");
 		CVertexProgram *vp = m_pShader->glGetVertexProgram();
 		res = vp->glLoadProgram(vp_src);
+		CProgramParameters params;
+		params.addParameter("fPointSize", GL_COORD_VERTEX(m_fPointSize,0.0f,0.0f,0.0f));
+		vp->setProgramParameters(params);
 
 		CGeometryProgram *gp = m_pShader->glGetGeometryProgram();
 		gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
@@ -284,7 +289,7 @@ void CParticle::glInitParticle(void)
 
 		CFragmentProgram *fs = m_pShader->glGetFragmentProgram();
 		res = res & fs->glLoadProgram(fp_src);
-		CProgramParameters params;
+		params.clear();
 		params.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);
 		fs->setProgramParameters(params);
 
@@ -295,6 +300,9 @@ void CParticle::glInitParticle(void)
 		m_pShader = new CShader(getName() + "_VOLUME_SHADER");
 		CVertexProgram *vp = m_pShader->glGetVertexProgram();
 		res = vp->glLoadProgram(vp_src);
+		CProgramParameters params;
+		params.addParameter("fPointSize", GL_COORD_VERTEX(m_fPointSize, 0.0f, 0.0f, 0.0f));
+		vp->setProgramParameters(params);
 
 		CGeometryProgram *gp = m_pShader->glGetGeometryProgram();
 		gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
@@ -302,7 +310,7 @@ void CParticle::glInitParticle(void)
 
 		CFragmentProgram *fs = m_pShader->glGetFragmentProgram();
 		res = res & fs->glLoadProgram(fp_src2);
-		CProgramParameters params;
+		params.clear();
 		params.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);
 		fs->setProgramParameters(params);
 
@@ -341,6 +349,15 @@ void CParticle::setTexture(CTextureObject* texture)
 void CParticle::usePointSprite(bool use,float size) 
 {
 	m_fPointSize = size;
+
+	if (NULL != m_pShader)
+	{
+		CVertexProgram *vp = m_pShader->glGetVertexProgram();
+		CProgramParameters params;
+		params.addParameter("fPointSize", GL_COORD_VERTEX(m_fPointSize, 0.0f, 0.0f, 0.0f));
+		vp->setProgramParameters(params);
+	}
+
 #if defined(GL_NV_point_sprite)
 	if ((Raptor::glIsExtensionSupported(GL_NV_POINT_SPRITE_EXTENSION_NAME)) ||
 		(Raptor::glIsExtensionSupported(GL_ARB_POINT_SPRITE_EXTENSION_NAME)))
@@ -585,12 +602,9 @@ void RAPTOR_FASTCALL CParticle::glRenderTextures(void)
 	for (unsigned int i = 0; i < m_uiQuantity; i++)
 	{
 		CParticle::PARTICLE_ATTRIBUTE &attrs = m_attributes[i];
-		position = attrs.position;
-		position *= m_fPointSize;
-		
-		memcpy(&cache[nbElt].coord, position.vector(), 4 * sizeof(float));
+		memcpy(&cache[nbElt].coord, attrs.position, 4 * sizeof(float));
 		memcpy(&cache[nbElt].colors, attrs.color, 4 * sizeof(float));
-		cache[nbElt].size = m_fPointSize * attrs.size;
+		cache[nbElt].size = attrs.size;
 		cache[nbElt].angle = TO_RADIAN(attrs.angle);
 
 		nbElt += 1;
@@ -668,12 +682,9 @@ void RAPTOR_FASTCALL CParticle::glRenderVolumes(void)
 	for(unsigned int i = 0; i < m_uiQuantity; i++)
 	{
 		CParticle::PARTICLE_ATTRIBUTE &attrs = m_attributes[i];
-		position = attrs.position;
-        position *= m_fPointSize;
-
-		memcpy(&cache[nbElt].coord, position.vector(), 4 * sizeof(float));
+		memcpy(&cache[nbElt].coord, attrs.position, 4 * sizeof(float));
 		memcpy(&cache[nbElt].colors, attrs.color, 4 * sizeof(float));
-		cache[nbElt].size = m_fPointSize * attrs.size;
+		cache[nbElt].size = attrs.size;
 		cache[nbElt].angle = TO_RADIAN(attrs.angle);
 
 		nbElt += 1;

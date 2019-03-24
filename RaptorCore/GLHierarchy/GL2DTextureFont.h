@@ -1,6 +1,19 @@
-// GL2DFont.h: interface for the CGL2DFont class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  GL2DFont.h													           */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
 
 #if !defined(AFX_GL2DTEXTUREFONT_H__7122B2F2_8D47_492F_8738_71FE06D8BA21__INCLUDED_)
 #define AFX_GL2DTEXTUREFONT_H__7122B2F2_8D47_492F_8738_71FE06D8BA21__INCLUDED_
@@ -17,6 +30,7 @@
 RAPTOR_NAMESPACE_BEGIN
 
 class CTextureObject;
+class CShader;
 
 class RAPTOR_API CGL2DTextureFont : public CGL2DFont
 {
@@ -51,6 +65,9 @@ private:
 	int				m_char_w;
 	int				m_char_h;
 	CTextureObject	*m_texture;
+
+	//! Particle shaders
+	static CShader	*m_pShader;
 };
 
 

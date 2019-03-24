@@ -137,14 +137,16 @@ void CContextManager::glDrawLogo(void)
 		pLogo = glBuildLogo();
 
 	glPushAttrib(GL_ENABLE_BIT | GL_TEXTURE_BIT | GL_POLYGON_BIT);
-	glPushMatrix();
+	
 	glMatrixMode(GL_PROJECTION);
 	glPushMatrix();
-
 	glLoadIdentity();
 	glOrtho(-1.0f, 1.0f, -1.0f, 1.0f, -1.0, 1.0);
+	
 	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();
 	glLoadIdentity();
+	
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_CULL_FACE);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -153,12 +155,11 @@ void CContextManager::glDrawLogo(void)
 
 	pLogo->glRender();
 
+	glPopMatrix();
 	glMatrixMode(GL_PROJECTION);
 	glPopMatrix();
-	glMatrixMode(GL_MODELVIEW);
-	glPopMatrix();
-	glPopAttrib();
 
+	glPopAttrib();
 
 	CATCH_GL_ERROR
 }

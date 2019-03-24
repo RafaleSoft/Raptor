@@ -520,7 +520,6 @@ void CRaptorConsole::glRender(void)
 		glWriteLine(promptString+cmdString,1,currentLine+=10);
 	    glWriteLine(lastResult,1,currentLine+=10);
 
-
         for (unsigned int i=0;i<m_items.size();i++)
         {
             TEXT_ITEM &t = m_items[i];
