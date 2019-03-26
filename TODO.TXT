@@ -1,5 +1,12 @@
 - Ajouter un dialog pour Vulkan Status comme OpenGL.
 
+- CGL2DFont:
+	- rendre privé TTBitmapFont:
+		==> CGLLayer & SSE_GLLayer : ne pas accéder directement à TTBitmapFont.
+
+- CRaptorConsole:
+	- write multiple lines (ajouter fonction à CGLFont ?)
+
 - CRaptorDisplay:
 	- déplacer les fps et timings dans CRaptorDisplayConfig ( ==> glQueryStatus )
 

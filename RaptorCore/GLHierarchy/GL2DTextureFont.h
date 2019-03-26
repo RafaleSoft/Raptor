@@ -1,6 +1,6 @@
 /***************************************************************************/
 /*                                                                         */
-/*  GL2DFont.h													           */
+/*  GL2DTextureFont.h                                                      */
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
@@ -46,11 +46,15 @@ public:
 	bool glInit(const std::string &filename, unsigned int size, bool antialiased);
 
 	//!	2D font writer: this method directly draws into the current buffer with textures.
+	//!	A 2D font must be initialised.
 	//! @param text : the text to write
-	//! @param x : the x horizontal position where writing starts
-	//! @param y : the y vertical position where writing starts
-	//! Rq: a texture font must be initialised.
-	virtual void glWrite(const std::string &text, int x, int y);
+	//! @param x : the x horizontal position where writing starts.
+	//! @param y : the y vertical position where writing starts.
+	//! @param color : a user provided color to write text.
+	virtual void glWrite(const std::string &text, 
+						 int x, 
+						 int y,
+						 const CColor::RGBA	&color);
 
 
 protected:

@@ -1,6 +1,21 @@
-// GLFont.h: interface for the CGLFont class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  GLFont.h                                                               */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
 #if !defined(AFX_GLFONT_H__D451FE62_5FE1_11D3_9142_BA23BC92E77C__INCLUDED_)
 #define AFX_GLFONT_H__D451FE62_5FE1_11D3_9142_BA23BC92E77C__INCLUDED_
 
@@ -62,7 +77,14 @@ public:
 	}
 
 	//!	Writes text using glyphs without generating a new display list.
-	virtual void glWrite(const std::string &text, int x, int y);
+	//!	@param text : the text to write with this font.
+	//! @param x : the horizontal displacement to start writing.
+	//! @param y : the horizontal displacement to start writing.
+	//! @param color : a user provided color to write text.
+	virtual void glWrite(const std::string &text,
+						int x, 
+						int y,
+						const CColor::RGBA	&color);
 
 	//!	Computes a 3D font width for the specified text string
 	//! @param s : the text for which width is queried

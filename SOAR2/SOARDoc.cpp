@@ -204,7 +204,7 @@ void CSOARDoc::glRender()
 	ostrstream s;
 	s << "tri: " << m_pTerrain->getNbTriangles()+m_pTerrain2->getNbTriangles()+m_pTerrain3->getNbTriangles()+m_pTerrain4->getNbTriangles() << ends;
 	item.text = s.str();
-	item.offset = 10;
+	item.x_offset = 10;
 	pConsole->addItem(item);
 	s.freeze(0);
 

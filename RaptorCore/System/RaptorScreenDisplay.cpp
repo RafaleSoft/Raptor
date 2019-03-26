@@ -403,7 +403,7 @@ bool CRaptorScreenDisplay::glRender(void)
 
 		if (Global::GetInstance().getConsole() != NULL)
 			Global::GetInstance().getConsole()->glRender();
-
+		
         m_pGAllocator->glvkLockMemory(false);
 		m_pTAllocator->glvkLockMemory(false);
 		m_pUAllocator->glvkLockMemory(false);

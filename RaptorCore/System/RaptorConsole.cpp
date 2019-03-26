@@ -1,6 +1,21 @@
-// RaptorConsole.cpp: implementation of the CRaptorConsole class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  RaptorConsole.cpp                                                      */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
 #include "Subsys/CodeGeneration.h"
 
 #if !defined(AFX_RAPTORCONSOLE_H__27656611_2DF3_4416_8124_F608CFAC2122__INCLUDED_)
@@ -336,23 +351,23 @@ void CRaptorConsole::displayHelp(void)
 
 	m_items.clear();
 
-	t.offset = 1; t.text = " ";
+	t.x_offset = 1; t.text = " ";
 	m_items.push_back(t);
-	t.offset = 1; t.text = "help: display this help";
+	t.x_offset = 1; t.text = "help: display this help";
 	m_items.push_back(t);
-	t.offset = 1; t.text = "clear: clear the console";
+	t.x_offset = 1; t.text = "clear: clear the console";
 	m_items.push_back(t);
-	t.offset = 1; t.text = "select \"<ObjectName>\": selects an object as current object for subsequent commands";
+	t.x_offset = 1; t.text = "select \"<ObjectName>\": selects an object as current object for subsequent commands";
 	m_items.push_back(t);
-	t.offset = 1; t.text = "scale(float sx,float sy,float sz): scales the selected object in all dimensions";
+	t.x_offset = 1; t.text = "scale(float sx,float sy,float sz): scales the selected object in all dimensions";
 	m_items.push_back(t);
-	t.offset = 1; t.text = "translate(float tx,float ty,float tz): translates the selected object in all dimensions";
+	t.x_offset = 1; t.text = "translate(float tx,float ty,float tz): translates the selected object in all dimensions";
 	m_items.push_back(t);
-	t.offset = 1; t.text = "translate_absolute(float tx,float ty,float tz): moves the selected object to the specified position";
+	t.x_offset = 1; t.text = "translate_absolute(float tx,float ty,float tz): moves the selected object to the specified position";
 	m_items.push_back(t);
-	t.offset = 1; t.text = "visible(<true|false>): turns visible/invisible the selected object";
+	t.x_offset = 1; t.text = "visible(<true|false>): turns visible/invisible the selected object";
 	m_items.push_back(t);
-	t.offset = 1; t.text = "rotation(float a,float ax,float ay,float az): rotates the selected object of the specified angle(a) around the axis (ax,ay,az)";
+	t.x_offset = 1; t.text = "rotation(float a,float ax,float ay,float az): rotates the selected object of the specified angle(a) around the axis (ax,ay,az)";
 	m_items.push_back(t);
 }
 
@@ -407,17 +422,17 @@ void CRaptorConsole::glInit(const std::string &fontPath,bool useVectors)
 void CRaptorConsole::glWriteLine(const std::string& line,int x,int y)
 {
 	if (!m_bUseVectors)
-		m_pFont->glWrite(line,x,y);
+		m_pFont->glWrite(line,x,y,m_color);
 	else
 	{
 		m_pFont->selectCurrentGlyphset(0);
 		glPushMatrix();
 		glColor4fv(m_secondColor);
 		glLineWidth(3.0f);
-		m_pFont->glWrite(line,x,-y);
+		m_pFont->glWrite(line,x,-y,m_secondColor);
 		glColor4fv(m_color);
 		glLineWidth(1.1f);
-		m_pFont->glWrite(line,x,-y);
+		m_pFont->glWrite(line,x,-y,m_color);
 		glPopMatrix();
 	}
 }
@@ -426,20 +441,20 @@ void CRaptorConsole::glRender(void)
 {
     if ((m_pFont != NULL) && m_bIsActive)
     {
-        const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
-	    PFN_GL_ACTIVE_TEXTURE_ARB_PROC glActiveTextureARB = pExtensions->glActiveTextureARB;
+        //const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	    //PFN_GL_ACTIVE_TEXTURE_ARB_PROC glActiveTextureARB = pExtensions->glActiveTextureARB;
 
 	    glPushAttrib(GL_ENABLE_BIT);
-        if (glActiveTextureARB != NULL)
-        {
-            glActiveTextureARB(GL_TEXTURE3_ARB);
-	        glDisable(GL_TEXTURE_2D);
-            glActiveTextureARB(GL_TEXTURE2_ARB);
-	        glDisable(GL_TEXTURE_2D);
-            glActiveTextureARB(GL_TEXTURE1_ARB);
-	        glDisable(GL_TEXTURE_2D);
-            glActiveTextureARB(GL_TEXTURE0_ARB);
-        }
+        //if (glActiveTextureARB != NULL)
+        //{
+        //    glActiveTextureARB(GL_TEXTURE3_ARB);
+	    //    glDisable(GL_TEXTURE_2D);
+        //    glActiveTextureARB(GL_TEXTURE2_ARB);
+	    //    glDisable(GL_TEXTURE_2D);
+        //    glActiveTextureARB(GL_TEXTURE1_ARB);
+	    //    glDisable(GL_TEXTURE_2D);
+        //    glActiveTextureARB(GL_TEXTURE0_ARB);
+        //}
 	    glDisable(GL_TEXTURE_2D);
 	    glDisable(GL_LIGHTING);
 	    glDisable(GL_DEPTH_TEST);
@@ -464,11 +479,11 @@ void CRaptorConsole::glRender(void)
 			glHint(GL_LINE_SMOOTH,GL_NICEST);
 		}
 
-		CColor::RGBA oldColor;
+		//CColor::RGBA oldColor;
 		float lineWidth = 1.0f;
-		glGetFloatv(GL_CURRENT_COLOR,oldColor);
+		//glGetFloatv(GL_CURRENT_COLOR,oldColor);
 		glGetFloatv(GL_LINE_WIDTH,&lineWidth);
-	    glColor4fv(m_color);
+	    //glColor4fv(m_color);
 
 		int currentLine = -1;
 
@@ -523,7 +538,7 @@ void CRaptorConsole::glRender(void)
         for (unsigned int i=0;i<m_items.size();i++)
         {
             TEXT_ITEM &t = m_items[i];
-            glWriteLine(t.text,t.offset,currentLine+=10);
+            glWriteLine(t.text,t.x_offset,currentLine+=10);
         }
 
 		if (m_bUseVectors)
@@ -534,7 +549,7 @@ void CRaptorConsole::glRender(void)
 			glPopMatrix();
 		}
 
-		glColor4fv(oldColor);
+		//glColor4fv(oldColor);
 		glLineWidth(lineWidth);
 	    glPopAttrib();
     }

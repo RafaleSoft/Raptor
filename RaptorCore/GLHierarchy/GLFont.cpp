@@ -155,7 +155,7 @@ bool CGLFont::getGlyphSettings(	float &precision,
 	return true;
 }
 
-void CGLFont::glWrite(const std::string &text, int x, int y)
+void CGLFont::glWrite(const std::string &text, int x, int y, const CColor::RGBA	&color)
 {
 	unsigned int glyphset = m_currentGlyphset;
 	if ((glyphset >= m_glfontglyph.size()) || m_glfontglyph.empty())

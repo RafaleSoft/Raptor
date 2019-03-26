@@ -110,6 +110,7 @@ static const std::string font_fp_src =
 "#version 460\n\
 \n\
 uniform	sampler2D diffuseMap; \n\
+uniform vec4 color; \n\
 \n\
 layout(location = 1) in vec4 g_TexCoord; \n\
 layout(location = 0) out vec4 o_Color;	\n\
@@ -117,7 +118,7 @@ layout(location = 0) out vec4 o_Color;	\n\
 void main (void) \n\
 {\n\
 	vec4 col = texture(diffuseMap,vec2(g_TexCoord.st)); \n\
-	o_Color = vec4(col.w,0.0,0.0,col.x); \n\
+	o_Color = color * vec4(col.x,col.x,col.x,col.w); \n\
 }";
 
 
@@ -338,11 +339,13 @@ bool CGL2DTextureFont::glGenGlyphs(float precision,
 	if (NULL == m_pShader)
 	{
 		m_pShader = new CShader(getName() + "_SHADER");
+
 		CVertexProgram *vp = m_pShader->glGetVertexProgram();
-		CProgramParameters params;
-		GL_COORD_VERTEX viewport(0,0,640,480);
-		params.addParameter("viewport", viewport);
 		bool res = vp->glLoadProgram(font_vp_src);
+		CProgramParameters params;
+		GL_COORD_VERTEX viewport(0, 0, 640, 480);
+		params.addParameter("viewport", viewport);
+		vp->setProgramParameters(params);
 
 		CGeometryProgram *gp = m_pShader->glGetGeometryProgram();
 		gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
@@ -352,6 +355,7 @@ bool CGL2DTextureFont::glGenGlyphs(float precision,
 		res = res & fs->glLoadProgram(font_fp_src);
 		params.clear();
 		params.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);
+		params.addParameter("color", CColor::RGBA(1.0, 0.0, 0.0, 1.0));
 		fs->setProgramParameters(params);
 
 		res = res & m_pShader->glCompileShader();
@@ -373,22 +377,10 @@ bool CGL2DTextureFont::glGenGlyphs(float precision,
 			float ww = gbitmap->getWidth();
 			float hh = gbitmap->getHeight();
 
-			RAPTOR_HANDLE h;
-			h.hClass = CGLFont::CGLFontClassID::GetClassId().ID();
-			h.handle = glGenLists(1);
-			glNewList(h.handle, GL_COMPILE);
-			glBegin(GL_QUADS);
-				glTexCoord2f(u / TEXTURE_WIDTH, v / H);					glVertex2f(dx, dy);
-				glTexCoord2f((u + ww) / TEXTURE_WIDTH, v / H);			glVertex2f(dx + ww, dy);
-				glTexCoord2f((u + ww) / TEXTURE_WIDTH, (v + hh) / H);	glVertex2f(dx + ww, dy + hh);
-				glTexCoord2f(u / TEXTURE_WIDTH, (v + hh) / H);			glVertex2f(dx, dy + hh);
-			glEnd();
-			glEndList();
-
 			glyphs[i].halfWidth = -0.5f * ww;
 			glyphs[i].height = hh;
 			glyphs[i].advance = gbitmap->getAdvance();
-			glyphs[i].glList = h.handle;
+			glyphs[i].glList = 0;
 
 
 			font_cache[i].coord = GL_COORD_VERTEX(dx, dy, ww, hh);
@@ -401,8 +393,7 @@ bool CGL2DTextureFont::glGenGlyphs(float precision,
 	return CGLFont::glGenGlyphs(precision, extrusion, scale);
 }
 
-//#define STANDARD_GLLIST	1
-void CGL2DTextureFont::glWrite(const std::string &text, int x, int y)
+void CGL2DTextureFont::glWrite(const std::string &text, int x, int y, const CColor::RGBA &color)
 {
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 	if (m_bmfont == NULL)
@@ -414,52 +405,16 @@ void CGL2DTextureFont::glWrite(const std::string &text, int x, int y)
 	}
 #endif
 
-#ifdef STANDARD_GLLIST
 	GLfloat viewport[4];
-
-	glGetFloatv(GL_VIEWPORT, viewport);
-	glMatrixMode(GL_MODELVIEW);
-	glPushMatrix();
-	glLoadIdentity();
-	glMatrixMode(GL_PROJECTION);
-	glPushMatrix();
-	glLoadIdentity();
-	glOrtho(viewport[0], viewport[2], viewport[1], viewport[3], 1, 20);
-	glMatrixMode(GL_MODELVIEW);
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-
-	glEnable(GL_TEXTURE_2D);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	m_texture->glvkRender();
-
-	glTranslatef(x, viewport[3] - y, -1.0f);
-	for (unsigned int i = 0; i<text.size(); i++)
-	{
-		unsigned char ch = text[i];
-
-		glyph *glyphs = (glyph*)m_glfontglyph.at(0);
-		glyph g = glyphs[ch];
-		glCallList(g.glList);
-		glTranslatef(g.advance, 0.0f, 0.0f);
-	}
-	glDisable(GL_TEXTURE_2D);
-	glDisable(GL_BLEND);
-
-	glMatrixMode(GL_PROJECTION);
-	glPopMatrix();
-	glMatrixMode(GL_MODELVIEW);
-	glPopMatrix();
-#else
-
-	GLfloat viewport[4];
-
 	glGetFloatv(GL_VIEWPORT, viewport);
 
 	CProgramParameters params;
 	GL_COORD_VERTEX vp(viewport[0], viewport[1], 0.5f * viewport[2], 0.5f * viewport[3]);
 	params.addParameter("viewport", vp);
-	m_pShader->glGetVertexProgram()->setProgramParameters(params);
+	m_pShader->glGetVertexProgram()->updateProgramParameters(params);
+	params.clear();
+	params.addParameter("color", color);
+	m_pShader->glGetFragmentProgram()->updateProgramParameters(params);
 
 	FONT_CACHEELT_t* pCache = (FONT_CACHEELT_t*)font_linePointer;
 #if defined(GL_ARB_vertex_program)
@@ -509,8 +464,6 @@ void CGL2DTextureFont::glWrite(const std::string &text, int x, int y)
 
 	glDisable(GL_TEXTURE_2D);
 	glDisable(GL_BLEND);
-
-#endif
 
 	CATCH_GL_ERROR
 }

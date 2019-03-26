@@ -1,6 +1,20 @@
-// RaptorConsole.h: interface for the CRaptorConsole class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  RaptorConsole.h                                                        */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
 
 #if !defined(AFX_RAPTORCONSOLE_H__27656611_2DF3_4416_8124_F608CFAC2122__INCLUDED_)
 #define AFX_RAPTORCONSOLE_H__27656611_2DF3_4416_8124_F608CFAC2122__INCLUDED_
@@ -28,14 +42,21 @@ class CMicroYacc;
 class RAPTOR_API CRaptorConsole
 {
 public:
+	//!	That structure stores data to write a console line on screen.
     typedef struct TEXT_ITEM_TAG
     {
-        unsigned int	offset;
-        string			text;
+		//!	horizontal position, in pixels.
+        uint32_t	x_offset;
+		//!	vertical position, in pixels (y axis in reversed, i.e. top left corner is 0, increasing value go to bottom left corner.
+		uint32_t	y_offset;
+		//!	text line to write.
+        string		text;
 
-		TEXT_ITEM_TAG():offset(0) {};
+		TEXT_ITEM_TAG() :x_offset(0), y_offset(0) {};
     } TEXT_ITEM;
 
+
+	//!	This class abstracts an input collector for console user interaction.
 	class RAPTOR_API CInputCollectorBase
 	{
 	public:
@@ -50,6 +71,7 @@ public:
 		static void broadcastMouseInput(int button, int xpos, int ypos);
 	};
 
+	//!	This class implements a generic user input collector.
 	template <class T> class CInputCollector : public CInputCollectorBase
 	{
 	public:
@@ -77,7 +99,10 @@ public:
 
 
 public:
+	//!	Constructor.
 	CRaptorConsole();
+
+	//!	Destructor.
 	virtual ~CRaptorConsole();
 
     //! Generic rendering method to draw the console.
@@ -136,6 +161,10 @@ public:
     //! ( count is the numbre of rendered triangles issued from objects, status must be activated ).
     //! Returns the previous status ( by default, TriangleCount is deactivated )
     bool showTriangleCount(bool show);
+
+	//!	Returns the main font color.
+	//! @return the main color.
+	CColor::RGBA getColor(void) const { return m_color; };
 
     //! This method defines the console text color.
     //! The default is red, the background is transparent.
