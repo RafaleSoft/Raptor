@@ -28,7 +28,9 @@
 #ifndef __CGLTYPES_HPP__
     #include "CGLTypes.h"
 #endif
-
+#if !defined(AFX_GLFONT_H__D451FE62_5FE1_11D3_9142_BA23BC92E77C__INCLUDED_)
+	#include "GLHierarchy/GLFont.h"
+#endif
 
 
 RAPTOR_NAMESPACE_BEGIN
@@ -42,20 +44,6 @@ class CMicroYacc;
 class RAPTOR_API CRaptorConsole
 {
 public:
-	//!	That structure stores data to write a console line on screen.
-    typedef struct TEXT_ITEM_TAG
-    {
-		//!	horizontal position, in pixels.
-        uint32_t	x_offset;
-		//!	vertical position, in pixels (y axis in reversed, i.e. top left corner is 0, increasing value go to bottom left corner.
-		uint32_t	y_offset;
-		//!	text line to write.
-        string		text;
-
-		TEXT_ITEM_TAG() :x_offset(0), y_offset(0) {};
-    } TEXT_ITEM;
-
-
 	//!	This class abstracts an input collector for console user interaction.
 	class RAPTOR_API CInputCollectorBase
 	{
@@ -181,13 +169,13 @@ public:
     //! This method adds a text item
 	//!	@param t : the item to add
 	//! @return the new item id
-    unsigned int addItem(TEXT_ITEM t);
+    unsigned int addItem(CGLFont::FONT_TEXT_ITEM &t);
 
 	//! Updates an existing item.
 	//!	@param t : an item containing new values
 	//!	@param id : the id of the item to update
 	//!	@return false if the id is not found.
-	bool updateItem(TEXT_ITEM t,unsigned int id);
+	bool updateItem(CGLFont::FONT_TEXT_ITEM &t,unsigned int id);
 
 
 private:
@@ -228,7 +216,7 @@ private:
 	string	lastResult;
 	char	autoActivateChar;
 
-    vector<TEXT_ITEM>   m_items;
+    vector<CGLFont::FONT_TEXT_ITEM>   m_items;
 
 	CLexical	*lex;
 	CMicroYacc	*yacc;

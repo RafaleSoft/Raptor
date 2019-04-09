@@ -20,6 +20,7 @@
 
 RAPTOR_NAMESPACE_BEGIN
 
+class CTextureQuad;
 class CTextureObject;
 
 class RAPTOR_API CLightGlow : public CPersistence
@@ -39,6 +40,8 @@ private:
 	unsigned int	m_uiGlow;
 	bool			m_bRebuildGlow;
 	float			m_glowSize;
+
+	CTextureQuad	*m_pGlow;
 	CReference<CTextureObject> m_glow;
 };
 

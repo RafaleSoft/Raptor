@@ -42,15 +42,20 @@ public:
     //! be handled properly by GL and by the engine )
     virtual void glRender(void);
 
+
     //! Renders the 'lens flare' of the light. 
-    //! If no flares are defined, this method can be used to cumpote light's voume visibility.
-	virtual void glRenderFlare(void);
+    //! If no flares are defined, this method can be used to compute light's volume visibility.
+	//virtual void glRenderFlare(void);
 
     //! Renders the 'lens glow' of the light. 
-	virtual void glRenderGlow(void);
+	//virtual void glRenderGlow(void);
+
+	//!	Renders the light glow and lens flare of this light.
+	void glRenderEffects(void);
+
 
     //! Renders the BBox of the light's lighted zone ( if not infinite )
-    virtual void glRenderLightBBox(void);
+    void glRenderLightBBox(void);
 
 	//!	Switch on the light. ( the light is mapped to hardware, T&L uses this light )
 	void glActivate(bool spot = false);

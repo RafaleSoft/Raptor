@@ -23,7 +23,7 @@ ColorController::ColorController(CColorControlFilter* ccf,
 {
 	CRaptorConsole *pConsole = Raptor::GetConsole();
 	
-	CRaptorConsole::TEXT_ITEM item;
+	CGLFont::FONT_TEXT_ITEM item;
 	{
 		float b,c;
 		if (ccf != NULL)
@@ -174,7 +174,7 @@ void ColorController::handleCharacterInput(char c)
 	pBF->setBlurModel(m);
 
 	CRaptorConsole *pConsole = Raptor::GetConsole();
-	CRaptorConsole::TEXT_ITEM item;
+	CGLFont::FONT_TEXT_ITEM item;
 	{
 		stringstream str;
 		str << "ColorControl: brightness=" << br << " saturation=" << ct << "    ";

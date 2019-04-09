@@ -180,8 +180,8 @@ CTextureQuad* CContextManager::glBuildLogo(void)
 	pLogo = new CTextureQuad();
 	pLogo->glLoadTexture(filepath,true);
 	pLogo->glSetQuadAttributes(GL_COORD_VERTEX(0.85f, -0.925f, 1.0f, 1.0f),
-							   CColor::RGBA(0.6f, 0.85f, 1.0f, 0.5f),
-							   GL_COORD_VERTEX(0.15f, 0.075f, -0.15f, 0.0f));
+							   CColor::RGBA(0.6f, 0.9f, 1.0f, 0.4f),
+							   GL_COORD_VERTEX(0.15f, 0.075f, 0.0f, 0.0f));
 
 	CATCH_GL_ERROR
 

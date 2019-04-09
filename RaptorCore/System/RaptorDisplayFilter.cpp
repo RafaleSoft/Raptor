@@ -43,6 +43,9 @@
 #if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
     #include "System/RaptorGLExtensions.h"
 #endif
+#if !defined(AFX_TEXTUREQUAD_H__1712AF34_6723_4E39_BC72_05ED6FA28418__INCLUDED_)
+	#include "GLHierarchy/TextureQuad.h"
+#endif
 
 
 RAPTOR_NAMESPACE
@@ -60,7 +63,7 @@ CRaptorDisplayFilter::CRaptorDisplayFilter():
 	m_pRenderTextures(NULL),m_pOutputTextures(NULL),
     m_bEnabled(true),m_bBufferedOutputEnabled(true),
 	m_fXfactor(1.0f),m_fYfactor(1.0f),
-	m_pPreviousFilter(NULL)
+	m_pPreviousFilter(NULL), m_pDrawBuffer(NULL)
 {
 }
 
@@ -256,7 +259,13 @@ bool CRaptorDisplayFilter::glInitFilter(void)
 			glTexCoord2f(0.0f,1.0f);glVertex4f(-1.0,1.0,-1.0f,1.0f);
 		glEnd();
 	glEndList();
-
+	/*
+	m_pDrawBuffer = new CTextureQuad();
+	m_pDrawBuffer->setQuadTexture(m_pImageSet->getTexture(0));
+	m_pDrawBuffer->glSetQuadAttributes(GL_COORD_VERTEX(0.0f, 0.0f, 0.0f, 1.0f),
+									   CColor::RGBA(1.0f, 1.0f, 1.0f, 1.0f),
+									   GL_COORD_VERTEX(1.0f, 1.0f, 0.0f, 0.0f));
+									   */
 	if (m_fModel == RENDER_BUFFER)
 	{
 		if (m_pRenderTextures != NULL)

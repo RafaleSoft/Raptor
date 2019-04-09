@@ -26,15 +26,15 @@
 #if !defined(AFX_SIMPLEOBJECT_H__D7942271_77C5_4514_A44F_67F653C82A16__INCLUDED_)
 	#include "SimpleObject.h"
 #endif
-#if !defined(AFX_ITEXTUREOBJECT_H__3AA8C89E_BB23_483C_A547_C8A4CC53E551__INCLUDED_)
-	#include "ITextureObject.h"
+#if !defined(AFX_OBJECTREFERENCE_H__0D47C721_2B2D_4163_AB88_BE1B4E08A84D__INCLUDED_)
+	#include "ObjectReference.h"
 #endif
 
 
 RAPTOR_NAMESPACE_BEGIN
 
 class CShader;
-
+class CTextureObject;
 
 //!
 //!	This class implements a simple object 
@@ -62,11 +62,23 @@ public:
 	//! @see CObject3D
 	DECLARE_OBJECT3D_NOMANIPULATORS
 
-	//!	Laod the texture of the Quad.
+	//!	Load the texture of the Quad.
 	//! @return false if texture loading failed.
-	bool CTextureQuad::glLoadTexture(const std::string &texname,bool compressed = false);
+	bool glLoadTexture(const std::string &texname,bool compressed = false);
 
-	//!	Set quad attributes
+	//!	Update the texture object rendered by this quad.
+	//! @param pTexture : a non NULL texture object pointer.
+	//!	@return true if texture quad updated without errors or texture not null.
+	bool setQuadTexture(CTextureObject *pTexture);
+
+	//!	Update the texture object rendered by this quad.
+	//! @param center : defines the center of the quad for drawing (model view reference).
+	bool setQuadCenter(const GL_COORD_VERTEX &center);
+
+	//!	Set quad attributes.
+	//!	@param center : defines the center of the quad for drawing (model view reference)
+	//!	@param color : defines the base color of the quad (multiplied by texture color)
+	//! @param sizes : defines absolute width & height of the quad.
 	//!	@return false if failed to set attributes or max texture quads reached.
 	bool glSetQuadAttributes(	const GL_COORD_VERTEX &center, 
 								const CColor::RGBA& color, 
@@ -82,9 +94,10 @@ private:
 	static CShader		*m_pShader;
 
 	//!	Quad texture.
-	ITextureObject		*m_pTexture;
+	CReference<CTextureObject>	m_rTexture;
 
 	//!	Attributes.
+	static uint32_t		nb_quads;
 	static uint32_t		max_index;
 	static Attributes*	s_attributes;
 	uint32_t			m_index;

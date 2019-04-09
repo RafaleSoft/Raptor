@@ -49,9 +49,7 @@
 #endif
 
 
-static const size_t TEXTURE_WIDTH = 256;
-static const size_t FONT_SIZE = 256;
-static const size_t LINE_SIZE = 256;
+
 
 static const std::string font_vp_src =
 "#version 460 \n\
@@ -124,6 +122,10 @@ void main (void) \n\
 
 
 RAPTOR_NAMESPACE
+
+static const size_t TEXTURE_WIDTH = 256;
+static const size_t FONT_SIZE = 256;
+static const size_t LINE_SIZE = 256;
 
 struct FONT_CACHEELT_t
 {
@@ -468,3 +470,86 @@ void CGL2DTextureFont::glWrite(const std::string &text, int x, int y, const CCol
 	CATCH_GL_ERROR
 }
 
+void CGL2DTextureFont::glWrite(const std::vector<FONT_TEXT_ITEM> &lines)
+{
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+	if (m_bmfont == NULL)
+	{
+		Raptor::GetErrorManager()->generateRaptorError(CGLFont::CGLFontClassID::GetClassId(),
+													   CRaptorErrorManager::RAPTOR_ERROR,
+													   CRaptorMessages::ID_INIT_FAILED);
+		return;
+	}
+#endif
+
+	GLfloat viewport[4];
+	glGetFloatv(GL_VIEWPORT, viewport);
+	CColor::RGBA color = CColor::RGBA(1.0f, 0.0f, 0.0f, 1.0f);
+
+	FONT_CACHEELT_t* pCache = (FONT_CACHEELT_t*)font_linePointer;
+#if defined(GL_ARB_vertex_program)
+	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::POSITION);
+	pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::TEXCOORD0);
+
+	pExtensions->glVertexAttribPointerARB(CProgramParameters::POSITION, 4, GL_FLOAT, false, sizeof(FONT_CACHEELT), &pCache[0].coord);
+	pExtensions->glVertexAttribPointerARB(CProgramParameters::TEXCOORD0, 4, GL_FLOAT, false, sizeof(FONT_CACHEELT), &pCache[0].texcoord);
+#else
+#endif
+
+	CProgramParameters params;
+	GL_COORD_VERTEX vp(viewport[0], viewport[1], 0.5f * viewport[2], 0.5f * viewport[3]);
+	params.addParameter("viewport", vp);
+	m_pShader->glGetVertexProgram()->updateProgramParameters(params);
+	params.clear();
+	params.addParameter("color", color);
+	m_pShader->glGetFragmentProgram()->updateProgramParameters(params);
+
+	GLsizei count = 0;
+	for (size_t l = 0; l < lines.size(); l++)
+	{
+		const FONT_TEXT_ITEM& item = lines[l];
+
+		float advance = item.x_offset;
+		size_t sz = item.text.size();
+		for (size_t i = 0; i < sz; i++)
+		{
+			unsigned char ch = item.text[i];
+			FONT_CACHEELT_t &elt = font_cache[ch];
+
+			font_line[i+count] = elt;
+			font_line[i+count].coord.x += advance;
+			font_line[i+count].coord.y = item.y_offset - font_line[i+count].coord.y;
+
+			advance = advance + elt.advance;
+		}
+
+		count += sz;
+	}
+
+	CGeometryAllocator *pAllocator = CGeometryAllocator::GetInstance();
+	if (pAllocator->isMemoryRelocated())
+		pAllocator->glvkCopyPointer(font_linePointer, (float*)&font_line[0], sizeof(FONT_CACHEELT) * count / sizeof(float));
+
+	glEnable(GL_TEXTURE_2D);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	m_pShader->glRender();
+	m_texture->glvkRender();
+
+	glDrawArrays(GL_POINTS, 0, count);
+
+	m_pShader->glStop();
+
+#if defined(GL_ARB_vertex_program)
+	pExtensions->glDisableVertexAttribArrayARB(CProgramParameters::POSITION);
+	pExtensions->glDisableVertexAttribArrayARB(CProgramParameters::TEXCOORD0);
+#else
+#endif
+
+	glDisable(GL_TEXTURE_2D);
+	glDisable(GL_BLEND);
+
+	CATCH_GL_ERROR
+}

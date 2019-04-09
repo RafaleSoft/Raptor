@@ -1104,12 +1104,12 @@ void CGeometry::glRenderGeometry()
 		&& (texcoords != NULL))
 #endif
 	{
-			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+			pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::TEXCOORD0);
             popTexCoordArray = true;
 #if defined(DATA_EXTENDED)
-            glTexCoordPointer( 2,GL_FLOAT,sizeof(GL_VERTEX_DATA),&geometry[0].texCoord0);
+			pExtensions->glVertexAttribPointerARB(CProgramParameters::TEXCOORD0, 2, GL_FLOAT, false, sizeof(GL_VERTEX_DATA), &geometry[0].texCoord0);
 #elif defined(DATA_PACKED)
-			glTexCoordPointer( 2,GL_FLOAT,0,texcoords);
+			pExtensions->glVertexAttribPointerARB(CProgramParameters::TEXCOORD0, 2, GL_FLOAT, false, 0, texcoords);
 #endif
 	}
 
@@ -1196,12 +1196,11 @@ void CGeometry::glRenderGeometry()
 
     glDisableClientState(GL_VERTEX_ARRAY);
     if (popNormalArray)
-        //glDisableClientState(GL_NORMAL_ARRAY);
 		pExtensions->glDisableVertexAttribArrayARB(CProgramParameters::NORMAL);
     if (popColorArray)
 		pExtensions->glDisableVertexAttribArrayARB(CProgramParameters::PRIMARY_COLOR);
     if (popTexCoordArray)
-        glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+		pExtensions->glDisableVertexAttribArrayARB(CProgramParameters::TEXCOORD0);
 #ifdef GL_EXT_vertex_weighting
     if (popWeightArray)
     {

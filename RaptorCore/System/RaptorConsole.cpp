@@ -203,14 +203,14 @@ bool CRaptorConsole::activateConsole(bool activate)
     return ret;
 }
 
-unsigned int CRaptorConsole::addItem(TEXT_ITEM t)
+unsigned int CRaptorConsole::addItem(CGLFont::FONT_TEXT_ITEM &t)
 {
 	unsigned int id = m_items.size();
     m_items.push_back(t);
 	return id;
 }
 
-bool CRaptorConsole::updateItem(TEXT_ITEM t,unsigned int id)
+bool CRaptorConsole::updateItem(CGLFont::FONT_TEXT_ITEM &t,unsigned int id)
 {
 	if (id >= m_items.size())
 		return false;
@@ -347,7 +347,7 @@ void CRaptorConsole::handleMouseInput(int button, int xpos, int ypos)
 
 void CRaptorConsole::displayHelp(void)
 {
-	TEXT_ITEM t;
+	CGLFont::FONT_TEXT_ITEM t;
 
 	m_items.clear();
 
@@ -419,53 +419,28 @@ void CRaptorConsole::glInit(const std::string &fontPath,bool useVectors)
 	}
 }
 
-void CRaptorConsole::glWriteLine(const std::string& line,int x,int y)
-{
-	if (!m_bUseVectors)
-		m_pFont->glWrite(line,x,y,m_color);
-	else
-	{
-		m_pFont->selectCurrentGlyphset(0);
-		glPushMatrix();
-		glColor4fv(m_secondColor);
-		glLineWidth(3.0f);
-		m_pFont->glWrite(line,x,-y,m_secondColor);
-		glColor4fv(m_color);
-		glLineWidth(1.1f);
-		m_pFont->glWrite(line,x,-y,m_color);
-		glPopMatrix();
-	}
-}
-
 void CRaptorConsole::glRender(void)
 {
     if ((m_pFont != NULL) && m_bIsActive)
     {
-        //const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
-	    //PFN_GL_ACTIVE_TEXTURE_ARB_PROC glActiveTextureARB = pExtensions->glActiveTextureARB;
-
 	    glPushAttrib(GL_ENABLE_BIT);
-        //if (glActiveTextureARB != NULL)
-        //{
-        //    glActiveTextureARB(GL_TEXTURE3_ARB);
-	    //    glDisable(GL_TEXTURE_2D);
-        //    glActiveTextureARB(GL_TEXTURE2_ARB);
-	    //    glDisable(GL_TEXTURE_2D);
-        //    glActiveTextureARB(GL_TEXTURE1_ARB);
-	    //    glDisable(GL_TEXTURE_2D);
-        //    glActiveTextureARB(GL_TEXTURE0_ARB);
-        //}
-	    glDisable(GL_TEXTURE_2D);
+	    
+		glDisable(GL_TEXTURE_2D);
 	    glDisable(GL_LIGHTING);
 	    glDisable(GL_DEPTH_TEST);
         glDisable(GL_CULL_FACE);
         glDisable(GL_STENCIL_TEST);
         glDisable(GL_BLEND);
 
+		float lineWidth = 1.0f;
+
 		if (m_bUseVectors)
 		{
+			glGetFloatv(GL_LINE_WIDTH, &lineWidth);
+
 			GLfloat viewport[4];
 			glGetFloatv(GL_VIEWPORT,viewport);
+			
 			glMatrixMode(GL_PROJECTION);	
 			glPushMatrix();
 			glLoadIdentity();
@@ -479,13 +454,8 @@ void CRaptorConsole::glRender(void)
 			glHint(GL_LINE_SMOOTH,GL_NICEST);
 		}
 
-		//CColor::RGBA oldColor;
-		float lineWidth = 1.0f;
-		//glGetFloatv(GL_CURRENT_COLOR,oldColor);
-		glGetFloatv(GL_LINE_WIDTH,&lineWidth);
-	    //glColor4fv(m_color);
-
 		int currentLine = -1;
+		std::vector<CGLFont::FONT_TEXT_ITEM> lines;
 
 		if (m_bShowStatus)
         {
@@ -499,7 +469,7 @@ void CRaptorConsole::glRender(void)
 				status << " [";
 				status << pDisplay->getRTFPS();
 				status << "]";
-                glWriteLine(status.str(),1,currentLine+=10);
+				lines.push_back(CGLFont::FONT_TEXT_ITEM(1, currentLine+=10, status.str(), m_color));
             }
 
 			if ((m_bShowFrameTime) && (pDisplay != NULL))
@@ -512,7 +482,7 @@ void CRaptorConsole::glRender(void)
 				status << " ms] render time: [";
 				status << 1000.0f*pDisplay->getRenderTime();
 				status << " ms]";
-                glWriteLine(status.str(),1,currentLine+=10);
+				lines.push_back(CGLFont::FONT_TEXT_ITEM(1, currentLine+=10, status.str(), m_color));
             }
             
             if (m_bShowObjects)
@@ -520,7 +490,7 @@ void CRaptorConsole::glRender(void)
                 unsigned int nbRendered = Global::GetInstance().getCurrentStatus().iRenderedObjects;
                 stringstream status2;
                 status2 << "nb objs: " << nbRendered;
-                glWriteLine(status2.str(),1,currentLine+=10);
+				lines.push_back(CGLFont::FONT_TEXT_ITEM(1, currentLine+=10, status2.str(), m_color));
             }
 
             if (m_bShowTriangles)
@@ -528,29 +498,40 @@ void CRaptorConsole::glRender(void)
                 unsigned int nbRendered = Global::GetInstance().getCurrentStatus().iRenderedTriangles;
                 stringstream status3;
                 status3 << "nb tris: " << nbRendered;
-                glWriteLine(status3.str(),1,currentLine+=10);
+				lines.push_back(CGLFont::FONT_TEXT_ITEM(1, currentLine+=10, status3.str(), m_color));
             }
         }
 
-		glWriteLine(promptString+cmdString,1,currentLine+=10);
-	    glWriteLine(lastResult,1,currentLine+=10);
+		lines.push_back(CGLFont::FONT_TEXT_ITEM(1, currentLine+=10, promptString + cmdString, m_color));
+		lines.push_back(CGLFont::FONT_TEXT_ITEM(1, currentLine+=10, lastResult, m_color));
 
         for (unsigned int i=0;i<m_items.size();i++)
         {
-            TEXT_ITEM &t = m_items[i];
-            glWriteLine(t.text,t.x_offset,currentLine+=10);
+			CGLFont::FONT_TEXT_ITEM &t = m_items[i];
+			lines.push_back(CGLFont::FONT_TEXT_ITEM(t.x_offset, currentLine+=10, t.text, m_color));
         }
 
 		if (m_bUseVectors)
 		{
+			m_pFont->selectCurrentGlyphset(0);
+			glPushMatrix();
+			glColor4fv(m_secondColor);
+			glLineWidth(3.0f);
+			m_pFont->glWrite(lines);
+			glColor4fv(m_color);
+			glLineWidth(1.1f);
+			m_pFont->glWrite(lines);
+			glPopMatrix();
+
 			glMatrixMode(GL_PROJECTION);
 			glPopMatrix();
 			glMatrixMode(GL_MODELVIEW);
 			glPopMatrix();
+			glLineWidth(lineWidth);
 		}
+		else
+			m_pFont->glWrite(lines);
 
-		//glColor4fv(oldColor);
-		glLineWidth(lineWidth);
 	    glPopAttrib();
     }
 

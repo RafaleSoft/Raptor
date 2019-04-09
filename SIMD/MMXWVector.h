@@ -37,10 +37,10 @@ public:
 
 	CMMXWVector& operator*= (const unsigned short& t)
 	{
-		m_vector[0] = (unsigned short)(m_vector[0] * t);
-		m_vector[1] = (unsigned short)(m_vector[1] * t);
-		m_vector[2] = (unsigned short)(m_vector[2] * t);
-		m_vector[3] = (unsigned short)(m_vector[3] * t);
+		m_vector[0] = m_vector[0] * t;
+		m_vector[1] = m_vector[1] * t;
+		m_vector[2] = m_vector[2] * t;
+		m_vector[3] = m_vector[3] * t;
 		return *this;
 	};
 

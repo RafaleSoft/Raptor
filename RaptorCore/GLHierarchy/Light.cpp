@@ -314,11 +314,11 @@ void CLight::glRender(void)
 		if (m_pAttributes->m_spot)
 		{
 			glLightfv(hwMapping,GL_SPOT_DIRECTION,m_pAttributes->m_direction.vector());
-			glLightf(hwMapping,GL_SPOT_EXPONENT,shininess[0]);
-			glLightf(hwMapping,GL_SPOT_CUTOFF,m_pAttributes->m_spotParams[3]);
-			glLightf(hwMapping,GL_CONSTANT_ATTENUATION,m_pAttributes->m_spotParams[2]);
-			glLightf(hwMapping,GL_LINEAR_ATTENUATION,m_pAttributes->m_spotParams[1]);
-			glLightf(hwMapping,GL_QUADRATIC_ATTENUATION,m_pAttributes->m_spotParams[0]);
+			glLightfv(hwMapping,GL_SPOT_EXPONENT,&shininess[0]);
+			glLightfv(hwMapping,GL_SPOT_CUTOFF,&m_pAttributes->m_spotParams[3]);
+			glLightfv(hwMapping,GL_CONSTANT_ATTENUATION,&m_pAttributes->m_spotParams[2]);
+			glLightfv(hwMapping,GL_LINEAR_ATTENUATION,&m_pAttributes->m_spotParams[1]);
+			glLightfv(hwMapping,GL_QUADRATIC_ATTENUATION,&m_pAttributes->m_spotParams[0]);
 
 			if (m_pProjector != NULL)
 				m_pProjector->glRender();
@@ -328,134 +328,101 @@ void CLight::glRender(void)
 	CATCH_GL_ERROR
 }
 
-void CLight::glRenderGlow(void)
+void CLight::glRenderEffects(void)
 {
-    if (NULL == m_pGlow)
-        return;
-
-	glPushMatrix();
 	glLoadIdentity();
-    glTranslatef(	m_pAttributes->m_viewPosition.X(),
-					m_pAttributes->m_viewPosition.Y(),
-					m_pAttributes->m_viewPosition.Z());
+	glTranslatef(m_pAttributes->m_viewPosition.X(),
+				 m_pAttributes->m_viewPosition.Y(),
+				 m_pAttributes->m_viewPosition.Z());
 
-	m_pGlow->glRender();
+	if (NULL != m_pGlow)
+		m_pGlow->glRender();
 
-	glPopMatrix();
-}
-
-void CLight::glRenderFlare(void)
-{
-    //! Do not return : this function computes light's surface visibility,
-    //! even when there are no flares. The can be used to determine global scene light density.
-	//if (m_pAttributes->mFlares.size() == 0)
-	//	return;
-    if (m_pAttributes->m_fLightVolumeSize == 0.0f)
-        return;
+	if (m_pAttributes->m_fLightVolumeSize == 0.0f)
+		return;
 
 	glPushAttrib(GL_ENABLE_BIT);
-	glPushMatrix();
-	glLoadIdentity();
-	glDepthMask(GL_FALSE);
 
-	glTranslatef(	m_pAttributes->m_viewPosition.X(),
-					m_pAttributes->m_viewPosition.Y(),
-					m_pAttributes->m_viewPosition.Z());
-
-	glDisable(GL_LIGHTING);
-
-    //  Project light volume to compute total surface, and then compare it to visible surface.
-    GL_COORD_VERTEX down_left(-m_pAttributes->m_fLightVolumeSize,-m_pAttributes->m_fLightVolumeSize,0.0f,1.0f);
-    GL_COORD_VERTEX up_right(m_pAttributes->m_fLightVolumeSize,m_pAttributes->m_fLightVolumeSize,0.0f,1.0f);
-    C3DEngine::Get3DEngine()->glProject(down_left);
-    C3DEngine::Get3DEngine()->glProject(up_right);
+	//  Project light volume to compute total surface, and then compare it to visible surface.
+	GL_COORD_VERTEX down_left(-m_pAttributes->m_fLightVolumeSize, -m_pAttributes->m_fLightVolumeSize, 0.0f, 1.0f);
+	GL_COORD_VERTEX up_right(m_pAttributes->m_fLightVolumeSize, m_pAttributes->m_fLightVolumeSize, 0.0f, 1.0f);
+	C3DEngine::Get3DEngine()->glProject(down_left);
+	C3DEngine::Get3DEngine()->glProject(up_right);
 
 #if defined(GL_ARB_occlusion_query)
-    const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
-    GLuint query = m_pAttributes->m_visibilityQuery;
-    if (query == 0)
-    {
-	    pExtensions->glGenQueriesARB(1,&query);
-        m_pAttributes->m_visibilityQuery = query;
-    }
-    else
-	    pExtensions->glGetQueryObjectuivARB(query,GL_QUERY_RESULT_ARB,&m_pAttributes->m_volumeVisibility);
+	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	GLuint query = m_pAttributes->m_visibilityQuery;
+	if (query == 0)
+	{
+		pExtensions->glGenQueriesARB(1, &query);
+		m_pAttributes->m_visibilityQuery = query;
+	}
+	else
+		pExtensions->glGetQueryObjectuivARB(query, GL_QUERY_RESULT_ARB, &m_pAttributes->m_volumeVisibility);
 
-	glColorMask(GL_FALSE,GL_FALSE,GL_FALSE,GL_FALSE);
-	glDepthMask(GL_FALSE);
+	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
 	glDisable(GL_TEXTURE_2D);
-	pExtensions->glBeginQueryARB(GL_SAMPLES_PASSED_ARB,query);
+	pExtensions->glBeginQueryARB(GL_SAMPLES_PASSED_ARB, query);
 	glBegin(GL_QUADS);
-		glVertex3f(-m_pAttributes->m_fLightVolumeSize,-m_pAttributes->m_fLightVolumeSize,0.0f);
-		glVertex3f(+m_pAttributes->m_fLightVolumeSize,-m_pAttributes->m_fLightVolumeSize,0.0f);
-		glVertex3f(+m_pAttributes->m_fLightVolumeSize,+m_pAttributes->m_fLightVolumeSize,0.0f);
-		glVertex3f(-m_pAttributes->m_fLightVolumeSize,+m_pAttributes->m_fLightVolumeSize,0.0f);
+		glVertex3f(-m_pAttributes->m_fLightVolumeSize, -m_pAttributes->m_fLightVolumeSize, 0.0f);
+		glVertex3f(+m_pAttributes->m_fLightVolumeSize, -m_pAttributes->m_fLightVolumeSize, 0.0f);
+		glVertex3f(+m_pAttributes->m_fLightVolumeSize, +m_pAttributes->m_fLightVolumeSize, 0.0f);
+		glVertex3f(-m_pAttributes->m_fLightVolumeSize, +m_pAttributes->m_fLightVolumeSize, 0.0f);
 	glEnd();
 	pExtensions->glEndQueryARB(GL_SAMPLES_PASSED_ARB);
-    glColorMask(GL_TRUE,GL_TRUE,GL_TRUE,GL_TRUE);
+	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 
-    GLint nbSamples = 1;
+	GLint nbSamples = 1;
 #if defined(GL_ARB_multisample)
-    GLint sampleBuffers = 0;
-    glGetIntegerv(GL_SAMPLE_BUFFERS_ARB,&sampleBuffers);
-    if (sampleBuffers > 0)
-        glGetIntegerv(GL_SAMPLES_ARB,&nbSamples);
+	GLint sampleBuffers = 0;
+	glGetIntegerv(GL_SAMPLE_BUFFERS_ARB, &sampleBuffers);
+	if (sampleBuffers > 0)
+		glGetIntegerv(GL_SAMPLES_ARB, &nbSamples);
 #endif
 
-    float surface = nbSamples * (up_right.x - down_left.x) * (up_right.y - down_left.y);
-	float scale = ( m_pAttributes->m_volumeVisibility / surface );
-    m_pAttributes->m_fLightVolumeVisibility = scale;
+	float surface = nbSamples * (up_right.x - down_left.x) * (up_right.y - down_left.y);
+	float scale = (m_pAttributes->m_volumeVisibility / surface);
+	m_pAttributes->m_fLightVolumeVisibility = scale;
 
-    if (scale < 0.5) scale = 0.0f;  //TODO : use a treshold parameter instead of this constant value.
+	if (scale < 0.5) scale = 0.0f;  //TODO : use a treshold parameter instead of this constant value.
 
 #else
-    float surface = (up_right.x - down_left.x) * (up_right.y - down_left.y);
-    //  TODO : find real scale
-    //float scale = surface / (m_pAttributes->m_fLightVolumeSize*m_pAttributes->m_fLightVolumeSize);
-    float scale = 1.0f;
-    m_pAttributes->m_fLightVolumeVisibility = scale;
+	float surface = (up_right.x - down_left.x) * (up_right.y - down_left.y);
+	//  TODO : find real scale
+	//float scale = surface / (m_pAttributes->m_fLightVolumeSize*m_pAttributes->m_fLightVolumeSize);
+	float scale = 1.0f;
+	m_pAttributes->m_fLightVolumeVisibility = scale;
 #endif
 
-	glColor4f(1.0f,1.0f,1.0f,1.0f);
+	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 	if (scale > 0)
 	{
-		int	blendSrc;
-		int	blendDst;
-		glGetIntegerv(GL_BLEND_SRC,&blendSrc);
-		glGetIntegerv(GL_BLEND_DST,&blendDst);
+		glScalef(scale, scale, scale);
 
-		glScalef(scale,scale,scale);
-	
-			glEnable(GL_TEXTURE_2D);
-			glEnable(GL_BLEND);
-			glBlendFunc(GL_SRC_ALPHA,GL_ONE);
-			glDisable(GL_DEPTH_TEST);
-		    
-			float dx = -2 * m_pAttributes->m_viewPosition.X() / (scale * m_pAttributes->mFlares.size());
-			float dy = -2 * m_pAttributes->m_viewPosition.Y() / (scale * m_pAttributes->mFlares.size());
-			//float dz = -m_pAttributes->m_viewPosition.Z() / m_pAttributes->mFlares.size());
-			
-			for (unsigned int i=0;(i<m_pAttributes->mFlares.size());i++)
-			{
-				const CLightAttributes::flare_item& flare = m_pAttributes->mFlares[i];
-				flare.pFlare->glvkRender();
-			    
-				glBegin(GL_QUADS);
-				glTexCoord2f(0.0f,0.0f);    glVertex3f(-flare.fSize,-flare.fSize,0.0f);
-				glTexCoord2f(1.0f,0.0f);    glVertex3f(+flare.fSize,-flare.fSize,0.0f);
-				glTexCoord2f(1.0f,1.0f);    glVertex3f(+flare.fSize,+flare.fSize,0.0f);
-				glTexCoord2f(0.0f,1.0f);    glVertex3f(-flare.fSize,+flare.fSize,0.0f);
-				glEnd();
-			    
-				glTranslatef(dx, dy, 0/*dz*/);
+		glEnable(GL_TEXTURE_2D);
+		glEnable(GL_BLEND);
+		glDisable(GL_DEPTH_TEST);
 
-			}
-    
-		glBlendFunc(blendSrc,blendDst);
+		float dx = -2 * m_pAttributes->m_viewPosition.X() / (scale * m_pAttributes->mFlares.size());
+		float dy = -2 * m_pAttributes->m_viewPosition.Y() / (scale * m_pAttributes->mFlares.size());
+		//float dz = -m_pAttributes->m_viewPosition.Z() / m_pAttributes->mFlares.size());
+
+		for (unsigned int i = 0; (i<m_pAttributes->mFlares.size()); i++)
+		{
+			const CLightAttributes::flare_item& flare = m_pAttributes->mFlares[i];
+			flare.pFlare->glvkRender();
+
+			glBegin(GL_QUADS);
+				glTexCoord2f(0.0f, 0.0f);    glVertex3f(-flare.fSize, -flare.fSize, 0.0f);
+				glTexCoord2f(1.0f, 0.0f);    glVertex3f(+flare.fSize, -flare.fSize, 0.0f);
+				glTexCoord2f(1.0f, 1.0f);    glVertex3f(+flare.fSize, +flare.fSize, 0.0f);
+				glTexCoord2f(0.0f, 1.0f);    glVertex3f(-flare.fSize, +flare.fSize, 0.0f);
+			glEnd();
+
+			glTranslatef(dx, dy, 0); //dz
+		}
 	}
 
-	glDepthMask(GL_TRUE);
-	glPopMatrix();
 	glPopAttrib();
 
 	CATCH_GL_ERROR

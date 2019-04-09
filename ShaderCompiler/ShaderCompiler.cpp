@@ -296,7 +296,7 @@ void CDisplay::glRender(void)
         CRaptorConsole *pConsole = Raptor::GetConsole();
         pConsole->clear();
 
-        CRaptorConsole::TEXT_ITEM item;
+        CGLFont::FONT_TEXT_ITEM item;
         item.x_offset = 20;
         strstream text;
         text << "Shaders compiled: " << nbShadersOK << ends;

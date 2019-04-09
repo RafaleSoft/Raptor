@@ -56,6 +56,13 @@ public:
 						 int y,
 						 const CColor::RGBA	&color);
 
+	//!	Writes text using glyphs without generating a new display list.
+	//!	@param text : the text to write with this font.
+	//! @param x : the horizontal displacement to start writing.
+	//! @param y : the horizontal displacement to start writing.
+	//! @param color : a user provided color to write text.
+	virtual void glWrite(const std::vector<FONT_TEXT_ITEM> &lines);
+
 
 protected:
 	//! Generates the display lists for vector glyphs for a whole charset

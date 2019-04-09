@@ -178,3 +178,30 @@ void CGLFont::glWrite(const std::string &text, int x, int y, const CColor::RGBA	
 	CATCH_GL_ERROR
 }
 
+void CGLFont::glWrite(const std::vector<FONT_TEXT_ITEM> &lines)
+{
+	unsigned int glyphset = m_currentGlyphset;
+	if ((glyphset >= m_glfontglyph.size()) || m_glfontglyph.empty())
+		return;
+
+	glyph *glyphs = (glyph*)m_glfontglyph.at(glyphset);
+
+	for (size_t j = 0; j < lines.size(); j++)
+	{
+		glPushMatrix();
+
+		const FONT_TEXT_ITEM &item = lines[j];
+		glTranslatef(item.x_offset, item.y_offset, 0.0);
+
+		for (unsigned int i = 0; i < item.text.size(); i++)
+		{
+			glyph g = glyphs[(unsigned char)item.text[i]];
+			glCallList(g.glList);
+			glTranslatef(g.advance, 0.0, 0.0);
+		}
+
+		glPopMatrix();
+	}
+
+	CATCH_GL_ERROR
+}

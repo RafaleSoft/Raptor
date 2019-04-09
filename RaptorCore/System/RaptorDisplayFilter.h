@@ -24,6 +24,8 @@ class CShader;
 class ITextureGenerator;
 class CTextureObject;
 class CTextureSet;
+class CTextureQuad;
+
 
 
 //! This class manages filtering process of a display.
@@ -165,7 +167,8 @@ protected:
     float   m_fXfactor;
     float   m_fYfactor;
 
-    RAPTOR_HANDLE drawBuffer;
+    RAPTOR_HANDLE	drawBuffer;
+	CTextureQuad	*m_pDrawBuffer;
     
     CShader     *pFilter;
 

@@ -558,11 +558,21 @@ bool CRaptorDisplayConfig::glApplyConfig(unsigned long query) const
 		}
 		if(arraysState.textureArray.enable)
 		{
+#if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
 			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 			glTexCoordPointer(	arraysState.textureArray.arraySize,
 								arraysState.textureArray.arrayType,
 								arraysState.textureArray.arrayStride,
 								arraysState.textureArray.arrayPointer);
+#else
+			pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::TEXCOORD0);
+			pExtensions->glVertexAttribPointerARB(CProgramParameters::TEXCOORD0,
+												  arraysState.textureArray.arraySize,
+												  arraysState.textureArray.arrayType,
+												  arraysState.textureArray.arrayStride,
+												  false, // normalize
+												  arraysState.textureArray.arrayPointer);
+#endif
 		}
 		if(arraysState.edgeArray.enable)
 		{

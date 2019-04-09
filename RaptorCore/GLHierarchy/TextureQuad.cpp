@@ -36,6 +36,9 @@
 #if !defined(AFX_FRAGMENTPROGRAM_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
 	#include "GLHierarchy/FragmentProgram.h"
 #endif
+#if !defined(AFX_TEXTUREOBJECT_H__D32B6294_B42B_4E6F_AB73_13B33C544AD0__INCLUDED_)
+	#include "GLHierarchy/TextureObject.h"
+#endif
 #if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
 	#include "System/RaptorGLExtensions.h"
 #endif
@@ -62,7 +65,10 @@ void main (void) \n\
 {\n\
 	vec4 pos = vec4(vec3(i_Position.xyz),1.0); \n\
 	gl_Position =  gl_ModelViewProjectionMatrix * pos; \n\
-	size = i_Size; \n\
+	\n\
+	//	The size has to be projected because it is added to the posision \n\
+	//	in the geometry stage. \n\
+	size = gl_ModelViewProjectionMatrix * i_Size; \n\
 	v_color =  i_Color;\n\
 }";
 
@@ -114,7 +120,7 @@ layout(location = 0) out vec4 o_Color;	\n\
 \n\
 void main (void) \n\
 {\n\
-	o_Color = g_color * texture2D(diffuseMap,vec2(g_TexCoord.st)); \n\
+	o_Color = g_color * texture(diffuseMap,vec2(g_TexCoord.st)); \n\
 }";
 
 
@@ -122,6 +128,7 @@ void main (void) \n\
 const uint32_t CTextureQuad::max_texture_quad = 256;
 CShader	*CTextureQuad::m_pShader = NULL;
 uint32_t CTextureQuad::max_index = 0;
+uint32_t CTextureQuad::nb_quads = 0;
 CTextureQuad::Attributes*	CTextureQuad::s_attributes = NULL;
 
 //////////////////////////////////////////////////////////////////////
@@ -131,12 +138,55 @@ CTextureQuad::Attributes*	CTextureQuad::s_attributes = NULL;
 CTextureQuad::CTextureQuad()
 	:CSimpleObject("TEXTURE_QUAD"), m_index(max_index++)
 {
-
+	nb_quads++;
 }
 
 CTextureQuad::~CTextureQuad()
 {
-	delete m_pTexture;
+	m_rTexture = NULL;
+	nb_quads--;
+	if (0 == nb_quads)
+	{
+		CGeometryAllocator *pAllocator = CGeometryAllocator::GetInstance();
+		bool res = pAllocator->releaseVertices((float*)s_attributes);
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+		if (!res)
+		Raptor::GetErrorManager()->generateRaptorError(Global::COpenGLClassID::GetClassId(),
+													   CRaptorErrorManager::RAPTOR_WARNING,
+													   "Raptor Texture Quad Allocator released out of owning display !");
+#endif
+		s_attributes = NULL;
+		max_index = 0;
+	}
+}
+
+bool CTextureQuad::setQuadTexture(CTextureObject *pTexture)
+{
+	m_rTexture = pTexture;
+
+	return (NULL != pTexture);
+}
+
+bool CTextureQuad::setQuadCenter(const GL_COORD_VERTEX &center)
+{
+	if ((max_index >= max_texture_quad) || (m_index > max_index))
+		return false;
+
+	CGeometryAllocator *pAllocator = CGeometryAllocator::GetInstance();
+
+	if (NULL == s_attributes)
+	{
+		size_t s = sizeof(Attributes) / sizeof(float);
+		s_attributes = (Attributes*)(pAllocator->allocateVertices(max_texture_quad * s));
+	}
+
+	//! Update vertex buffer
+	s_attributes = (Attributes*)pAllocator->glvkMapPointer((float*)s_attributes);
+	CTextureQuad::Attributes& attrs = s_attributes[m_index];
+	attrs.m_center = center;
+	s_attributes = (Attributes*)pAllocator->glvkUnMapPointer((float*)s_attributes);
+
+	return true;
 }
 
 bool CTextureQuad::glSetQuadAttributes(	const GL_COORD_VERTEX &center,
@@ -184,7 +234,7 @@ bool CTextureQuad::glLoadTexture(const std::string &texname, bool compressed)
 			Txt.glLoadTexture(T, texname, iops);
 		}
 
-		m_pTexture = T;
+		m_rTexture = T;
 	}
 	else
 		return false;
@@ -196,6 +246,14 @@ bool CTextureQuad::glLoadTexture(const std::string &texname, bool compressed)
 	Txt.glExportCompressedTexture("Raptor_logo_sml.txt",p_Logo);
 	*/
 
+	return true;
+}
+
+
+void CTextureQuad::glRender(void)
+{
+	//if (NULL == m_pShader)
+	//	return;
 	bool res = true;
 	if (NULL == m_pShader)
 	{
@@ -216,30 +274,19 @@ bool CTextureQuad::glLoadTexture(const std::string &texname, bool compressed)
 		res = res & m_pShader->glCompileShader();
 	}
 
-	return res;
-}
-
-
-void CTextureQuad::glRender(void)
-{
-	if (NULL == m_pTexture)
-		return;
-	if (NULL == m_pShader)
-		return;
-
 	//!	Render (activate) shader and texture.
 	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 	if (pExtensions->glActiveTextureARB != NULL)
 		pExtensions->glActiveTextureARB(GL_TEXTURE0_ARB);
 	glEnable(GL_TEXTURE_2D);
 	m_pShader->glRender();
-	m_pTexture->glvkRender();
+	m_rTexture->glvkRender();
 
 CGeometryAllocator *pAllocator = CGeometryAllocator::GetInstance();
 pAllocator->glvkLockMemory(true);
 
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glVertexPointer(4, GL_FLOAT, sizeof(Attributes), &s_attributes[m_index].m_center);
+	pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::POSITION);
+	pExtensions->glVertexAttribPointerARB(CProgramParameters::POSITION, 4, GL_FLOAT, false, sizeof(Attributes), &s_attributes[m_index].m_center);
 	pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::PRIMARY_COLOR);
 	pExtensions->glVertexAttribPointerARB(CProgramParameters::PRIMARY_COLOR, 4, GL_FLOAT, false, sizeof(Attributes), &s_attributes[m_index].m_color);
 	pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::ADDITIONAL_PARAM1);
@@ -247,7 +294,7 @@ pAllocator->glvkLockMemory(true);
 
 	glDrawArrays(GL_POINTS, 0, 1);
 
-	glDisableClientState(GL_VERTEX_ARRAY);
+	pExtensions->glDisableVertexAttribArrayARB(CProgramParameters::POSITION);
 	pExtensions->glDisableVertexAttribArrayARB(CProgramParameters::PRIMARY_COLOR);
 	pExtensions->glDisableVertexAttribArrayARB(CProgramParameters::ADDITIONAL_PARAM1);
 
