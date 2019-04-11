@@ -115,6 +115,7 @@ copy .\RaptorCore\GLHierarchy\GeometryProgram.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\ITextureObject.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\Light.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\LightGlow.h Redist\Include\GLHierarchy
+copy .\RaptorCore\GLHierarchy\LightFlare.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\LightObserver.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\Material.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\Object3D.h Redist\Include\GLHierarchy

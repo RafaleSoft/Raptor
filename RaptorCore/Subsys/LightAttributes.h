@@ -79,17 +79,8 @@ private:
 	GL_COORD_VERTEX	m_spotParams;
     float			m_dMax;
     float			m_threshold;
+	unsigned int	m_uiFlare;
 
-    typedef struct flare_item_t
-    {
-        ITextureObject	*pFlare;
-        float			fSize;
-        float			fDistance;
-    } flare_item;
-	std::vector<flare_item>	mFlares;
-	unsigned int			m_uiFlare;
-
-    float				m_fLightVolumeSize;
     unsigned int		m_volumeVisibility;
     unsigned int		m_visibilityQuery;
     float				m_fLightVolumeVisibility;

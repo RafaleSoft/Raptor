@@ -62,7 +62,7 @@ CLightAttributes::CLightAttributes()
     m_dMax = FLT_MAX;
     m_threshold = 256.0f;
 
-    m_fLightVolumeSize = 0.0f;
+    //m_fLightVolumeSize = 0.0f;
     m_volumeVisibility = 0;
     m_visibilityQuery = 0;
     m_fLightVolumeVisibility = 0.0f;

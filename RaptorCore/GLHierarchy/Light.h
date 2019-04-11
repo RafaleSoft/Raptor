@@ -1,6 +1,20 @@
-// Light.h: interface for the CLight class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  Light.h                                                                */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
 
 #if !defined(AFX_LIGHT_H__AA8BABD6_059A_4939_A4B6_A0A036E12E1E__INCLUDED_)
 #define AFX_LIGHT_H__AA8BABD6_059A_4939_A4B6_A0A036E12E1E__INCLUDED_
@@ -8,10 +22,6 @@
 #if _MSC_VER > 1000
 #pragma once
 #endif // _MSC_VER > 1000
-
-#ifndef __CGLTYPES_HPP__
-	#include "System/CGLTypes.h"
-#endif
 
 #if !defined(AFX_MATERIAL_H__B42ABB88_80E8_11D3_97C2_DE5C28000000__INCLUDED_)
 	#include "Material.h"
@@ -25,6 +35,7 @@ class ITextureObject;
 class CObject3D;
 class CProjector;
 class CLightGlow;
+class CLightFlare;
 
 
 class RAPTOR_API CLight : public CMaterial
@@ -133,10 +144,6 @@ public:
     //! @return attenuation factor in [0..1]
 	float getLightAttenuation(CGenericVector<float> atPosition) const;
 
-    //!	Specifie the lens flare texture of the light
-	//!	Use size parameter to minify/magnify projection size
-	void addLensFlare(ITextureObject* T,float size);
-
     //! Specifies the glow texture of the light.
     void setGlow(CLightGlow *T);
 
@@ -164,9 +171,9 @@ private:
 	CLightAttributes	*m_pAttributes;
 	CProjector			*m_pProjector;
 	CLightGlow			*m_pGlow;
+	CLightFlare			*m_pFlare;
 
     bool importSpotParams(CRaptorIO& io);
-    bool importFlare(CRaptorIO& io);
 };
 
 RAPTOR_NAMESPACE_END

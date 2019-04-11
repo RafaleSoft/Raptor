@@ -1,6 +1,6 @@
 /***************************************************************************/
 /*                                                                         */
-/*  LightGlow.h                                                            */
+/*  LightFlare.h                                                           */
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
@@ -16,8 +16,8 @@
 /***************************************************************************/
 
 
-#if !defined(AFX_LIGHTGLOW_H__577C39B3_EE0B_4A07_8974_BC250BA2960A__INCLUDED_)
-#define AFX_LIGHTGLOW_H__577C39B3_EE0B_4A07_8974_BC250BA2960A__INCLUDED_
+#if !defined(AFX_LIGHTFLARE_H__373B5695_C92B_4ED8_8DDF_81273BF34FE3__INCLUDED_)
+#define AFX_LIGHTFLARE_H__373B5695_C92B_4ED8_8DDF_81273BF34FE3__INCLUDED_
 
 #if _MSC_VER > 1000
 #pragma once
@@ -35,32 +35,50 @@
 RAPTOR_NAMESPACE_BEGIN
 
 class CTextureQuad;
-class CTextureObject;
+class ITextureObject;
 
-class RAPTOR_API CLightGlow : public CPersistence
+
+class RAPTOR_API CLightFlare : public CPersistence
 {
 public:
-	CLightGlow(const std::string& name="LIGHTGLOW");
-	virtual ~CLightGlow(void);
+	CLightFlare(const std::string& name = "LIGHTFLARE");
+	virtual ~CLightFlare(void);
 
-	//!	Glow rendering
-	void glRender(void);
+	//!	Lens Flare rendering
+	void glRender(float dx, float dy);
+
+	//!	Returns the light volume with which the flare size is computed.
+	float getLightVolumeSize(void) const { return m_fLightVolumeSize; }
+
+	//!	Returns the light volume with which the flare size is computed.
+	void setLightVolumeSize(float s) { m_fLightVolumeSize = s; }
+
+	//!	Returns the number of flares.
+	size_t getNbFlares(void) const { return mFlares.size(); }
+
 
 	//! Inherited from CPersistence
 	DECLARE_IO
-	DECLARE_CLASS_ID(CLightGlowClassID,"LightGlow",CPersistence)
+	DECLARE_CLASS_ID(CLightFlareClassID,"LightFlare",CPersistence)
+
 
 private:
-	//unsigned int	m_uiGlow;
-	//bool			m_bRebuildGlow;
-	float			m_glowSize;
+	typedef struct flare_item_t
+	{
+		ITextureObject	*pFlare;
+		float			fSize;
+		float			fDistance;
+	} flare_item;
+	std::vector<flare_item>	mFlares;
 
-	CTextureQuad	*m_pGlow;
-	CReference<CTextureObject> m_glow;
+	float				m_fLightVolumeSize;
+	unsigned int		m_volumeVisibility;
+	unsigned int		m_visibilityQuery;
+	float				m_fLightVolumeVisibility;
 };
 
 
 RAPTOR_NAMESPACE_END
 
-#endif // !defined(AFX_LIGHTGLOW_H__577C39B3_EE0B_4A07_8974_BC250BA2960A__INCLUDED_)
+#endif // !defined(AFX_LIGHTFLARE_H__373B5695_C92B_4ED8_8DDF_81273BF34FE3__INCLUDED_)
 

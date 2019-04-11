@@ -1,6 +1,21 @@
-// Light.cpp: implementation of the CLight class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  Light.cpp                                                              */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
 #include "Subsys/CodeGeneration.h"
 
 
@@ -44,6 +59,9 @@
 #if !defined(AFX_LIGHTGLOW_H__577C39B3_EE0B_4A07_8974_BC250BA2960A__INCLUDED_)
     #include "LightGlow.h"
 #endif
+#if !defined(AFX_LIGHTFLARE_H__373B5695_C92B_4ED8_8DDF_81273BF34FE3__INCLUDED_)
+	#include "LightFlare.h"
+#endif
 
 RAPTOR_NAMESPACE
 
@@ -61,7 +79,7 @@ const CPersistence::CPersistenceClassID& CLight::CLightClassID::GetClassId(void)
 CLight::CLight(const std::string& name)
 	:CMaterial(	CGL_NO_MATERIAL,CGL_NO_MATERIAL,CGL_NO_MATERIAL,
 				0.0, CGL_NO_MATERIAL, lightID, name),
-	m_pProjector(NULL),m_pGlow(NULL)
+				m_pProjector(NULL), m_pGlow(NULL), m_pFlare(NULL)
 {
 	m_pAttributes = new CLightAttributes();
 }
@@ -74,6 +92,11 @@ CLight::~CLight()
 	{
 		m_pGlow->unregisterDestruction(this);
 		delete m_pGlow;
+	}
+	if (NULL != m_pFlare)
+	{
+		m_pFlare->unregisterDestruction(this);
+		delete m_pFlare;
 	}
 	
 	glDeActivate();
@@ -90,6 +113,8 @@ void CLight::unLink(const CPersistence* obj)
 		m_pProjector = NULL;
 	else if (obj == static_cast<CPersistence*>(m_pGlow))
 		m_pGlow = NULL;
+	else if (obj == static_cast<CPersistence*>(m_pFlare))
+		m_pFlare = NULL;
 	else
 		CMaterial::unLink(obj);
 }
@@ -267,16 +292,6 @@ void RAPTOR_FASTCALL CLight::setLightDirection(const GL_COORD_VERTEX& direction)
 	m_pAttributes->m_direction.Normalize();
 }
 
-void CLight::addLensFlare(ITextureObject* T,float size)
-{
-    CLightAttributes::flare_item flare;
-    flare.pFlare = T;
-    flare.fSize = size;
-    flare.fDistance = 1.0f;
-
-	m_pAttributes->mFlares.push_back(flare);
-}
-
 void CLight::setGlow(CLightGlow *G)
 {
 	if (m_pGlow != NULL)
@@ -297,7 +312,13 @@ void CLight::setProjector(CProjector *P)
 
 void CLight::setLightVolume(float size)
 {
-    m_pAttributes->m_fLightVolumeSize = size;
+	if (NULL == m_pFlare)
+	{
+		m_pFlare = new CLightFlare;
+		m_pFlare->registerDestruction(this);
+	}
+
+	m_pFlare->setLightVolumeSize(size);
 }
 
 void CLight::glRender(void)
@@ -338,14 +359,18 @@ void CLight::glRenderEffects(void)
 	if (NULL != m_pGlow)
 		m_pGlow->glRender();
 
-	if (m_pAttributes->m_fLightVolumeSize == 0.0f)
+	if (NULL == m_pFlare)
+		return;
+
+	float V = m_pFlare->getLightVolumeSize();
+	if (V == 0.0f)
 		return;
 
 	glPushAttrib(GL_ENABLE_BIT);
 
 	//  Project light volume to compute total surface, and then compare it to visible surface.
-	GL_COORD_VERTEX down_left(-m_pAttributes->m_fLightVolumeSize, -m_pAttributes->m_fLightVolumeSize, 0.0f, 1.0f);
-	GL_COORD_VERTEX up_right(m_pAttributes->m_fLightVolumeSize, m_pAttributes->m_fLightVolumeSize, 0.0f, 1.0f);
+	GL_COORD_VERTEX down_left(-V, -V, 0.0f, 1.0f);
+	GL_COORD_VERTEX up_right(V, V, 0.0f, 1.0f);
 	C3DEngine::Get3DEngine()->glProject(down_left);
 	C3DEngine::Get3DEngine()->glProject(up_right);
 
@@ -364,10 +389,10 @@ void CLight::glRenderEffects(void)
 	glDisable(GL_TEXTURE_2D);
 	pExtensions->glBeginQueryARB(GL_SAMPLES_PASSED_ARB, query);
 	glBegin(GL_QUADS);
-		glVertex3f(-m_pAttributes->m_fLightVolumeSize, -m_pAttributes->m_fLightVolumeSize, 0.0f);
-		glVertex3f(+m_pAttributes->m_fLightVolumeSize, -m_pAttributes->m_fLightVolumeSize, 0.0f);
-		glVertex3f(+m_pAttributes->m_fLightVolumeSize, +m_pAttributes->m_fLightVolumeSize, 0.0f);
-		glVertex3f(-m_pAttributes->m_fLightVolumeSize, +m_pAttributes->m_fLightVolumeSize, 0.0f);
+		glVertex3f(-V, -V, 0.0f);
+		glVertex3f(+V, -V, 0.0f);
+		glVertex3f(+V, +V, 0.0f);
+		glVertex3f(-V, +V, 0.0f);
 	glEnd();
 	pExtensions->glEndQueryARB(GL_SAMPLES_PASSED_ARB);
 	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
@@ -399,28 +424,13 @@ void CLight::glRenderEffects(void)
 	{
 		glScalef(scale, scale, scale);
 
-		glEnable(GL_TEXTURE_2D);
 		glEnable(GL_BLEND);
 		glDisable(GL_DEPTH_TEST);
 
-		float dx = -2 * m_pAttributes->m_viewPosition.X() / (scale * m_pAttributes->mFlares.size());
-		float dy = -2 * m_pAttributes->m_viewPosition.Y() / (scale * m_pAttributes->mFlares.size());
-		//float dz = -m_pAttributes->m_viewPosition.Z() / m_pAttributes->mFlares.size());
-
-		for (unsigned int i = 0; (i<m_pAttributes->mFlares.size()); i++)
-		{
-			const CLightAttributes::flare_item& flare = m_pAttributes->mFlares[i];
-			flare.pFlare->glvkRender();
-
-			glBegin(GL_QUADS);
-				glTexCoord2f(0.0f, 0.0f);    glVertex3f(-flare.fSize, -flare.fSize, 0.0f);
-				glTexCoord2f(1.0f, 0.0f);    glVertex3f(+flare.fSize, -flare.fSize, 0.0f);
-				glTexCoord2f(1.0f, 1.0f);    glVertex3f(+flare.fSize, +flare.fSize, 0.0f);
-				glTexCoord2f(0.0f, 1.0f);    glVertex3f(-flare.fSize, +flare.fSize, 0.0f);
-			glEnd();
-
-			glTranslatef(dx, dy, 0); //dz
-		}
+		float dx = -2 * m_pAttributes->m_viewPosition.X() / (scale * m_pFlare->getNbFlares());
+		float dy = -2 * m_pAttributes->m_viewPosition.Y() / (scale * m_pFlare->getNbFlares());
+		
+		m_pFlare->glRender(dx, dy);
 	}
 
 	glPopAttrib();
@@ -479,50 +489,6 @@ bool CLight::exportObject(CRaptorIO& o)
 
 	return true;
 }
-
-bool CLight::importFlare(CRaptorIO& io)
-{
-    string name;
-    io >> name;
-
-    string setName = "";
-    string textureName = "";
-    float gSize = 1.0f;
-
-	string data = io.getValueName();
-    while (!data.empty())
-    {
-        if (data == "set")
-            io >> setName;
-        else if (data == "texname")
-            io >> textureName;
-        else if (data == "size")
-            io >> gSize;
-        else
-			io >> name;
-		
-		data = io.getValueName();
-	}
-	io >> name;
-
-    if (!setName.empty() && !textureName.empty())
-    {
-        CPersistence *p = CPersistence::FindObject(setName);
-		if ((p != NULL) && 
-			(p->getId().isSubClassOf(CTextureSet::CTextureSetClassID::GetClassId())))
-        {
-            CTextureSet *tset = (CTextureSet*)p;
-            CTextureObject *t = tset->getTexture(textureName);
-            if (t != NULL)
-            {
-				addLensFlare(t,gSize);
-            }
-        }
-    }
-
-    return true;
-}
-
 
 bool CLight::importSpotParams(CRaptorIO& io)
 {
@@ -594,12 +560,21 @@ bool CLight::importObject(CRaptorIO& io)
         else if (data == "Glow")
 		{
 			if (NULL == m_pGlow)
+			{
 				m_pGlow = new CLightGlow;
+				m_pGlow->registerDestruction(this);
+			}
             m_pGlow->importObject(io);
-			m_pGlow->registerDestruction(this);
 		}
-        else if (data == "Flare")
-            importFlare(io);
+		else if (data == "Flare")
+		{
+			if (NULL == m_pFlare)
+			{
+				m_pFlare = new CLightFlare;
+				m_pFlare->registerDestruction(this);
+			}
+			m_pFlare->importObject(io);
+		}
 		else
 			io >> name;
 

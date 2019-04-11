@@ -1,6 +1,6 @@
 /***************************************************************************/
 /*                                                                         */
-/*  LightGlow.cpp                                                          */
+/*  LightFlare.cpp                                                         */
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
@@ -16,10 +16,11 @@
 /***************************************************************************/
 
 
+
 #include "Subsys/CodeGeneration.h"
 
-#if !defined(AFX_LIGHTGLOW_H__577C39B3_EE0B_4A07_8974_BC250BA2960A__INCLUDED_)
-    #include "LightGlow.h"
+#if !defined(AFX_LIGHTFLARE_H__373B5695_C92B_4ED8_8DDF_81273BF34FE3__INCLUDED_)
+    #include "LightFlare.h"
 #endif
 #if !defined(AFX_RAPTORIO_H__87D52C27_9117_4675_95DC_6AD2CCD2E78D__INCLUDED_)
 	#include "System/RaptorIO.h"
@@ -36,10 +37,10 @@
 
 RAPTOR_NAMESPACE_BEGIN
 
-static CLightGlow::CLightGlowClassID lightglowId;
-const CPersistence::CPersistenceClassID& CLightGlow::CLightGlowClassID::GetClassId(void)
+static CLightFlare::CLightFlareClassID lightflareId;
+const CPersistence::CPersistenceClassID& CLightFlare::CLightFlareClassID::GetClassId(void)
 {
-	return lightglowId;
+	return lightflareId;
 }
 
 RAPTOR_NAMESPACE_END
@@ -51,84 +52,102 @@ RAPTOR_NAMESPACE
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CLightGlow::CLightGlow(const std::string& name):
-    CPersistence(lightglowId,name),
-	m_glowSize(1.0f),
-	m_pGlow(NULL)
+CLightFlare::CLightFlare(const std::string& name) :
+    CPersistence(lightflareId,name),
+	m_fLightVolumeSize(0.0f),
+	m_volumeVisibility(0),
+	m_visibilityQuery(0),
+	m_fLightVolumeVisibility(0.0f)
 {
 }
 
-CLightGlow::~CLightGlow(void)
+CLightFlare::~CLightFlare(void)
 {
-	m_glow = NULL;
+	mFlares.clear();
 }
 
-void CLightGlow::glRender(void)
+void CLightFlare::glRender(float dx, float dy)
 {
-    if ((NULL == m_glow) || (m_glowSize <= 0))
+    if (0 == mFlares.size())
         return;
 
-    glPushAttrib(GL_ENABLE_BIT);
+	glEnable(GL_TEXTURE_2D);
 
-	glEnable(GL_BLEND);
+	for (unsigned int i = 0; i < mFlares.size(); i++)
+	{
+		const flare_item& flare = mFlares[i];
+		flare.pFlare->glvkRender();
 
-	m_pGlow->glRender();
+		glBegin(GL_QUADS);
+			glTexCoord2f(0.0f, 0.0f);    glVertex3f(-flare.fSize, -flare.fSize, 0.0f);
+			glTexCoord2f(1.0f, 0.0f);    glVertex3f(+flare.fSize, -flare.fSize, 0.0f);
+			glTexCoord2f(1.0f, 1.0f);    glVertex3f(+flare.fSize, +flare.fSize, 0.0f);
+			glTexCoord2f(0.0f, 1.0f);    glVertex3f(-flare.fSize, +flare.fSize, 0.0f);
+		glEnd();
 
-    glPopAttrib();
+		glTranslatef(dx, dy, 0); //dz
+	}
 }
 
-bool CLightGlow::importObject(CRaptorIO& io)
+bool CLightFlare::importObject(CRaptorIO& io)
 {
-	if (NULL != m_pGlow)
-		delete m_pGlow;
-	m_pGlow = NULL;
-
-    string name;
-    io >> name;
+	string name;
+	io >> name;
 
 	string setName = "";
-    string textureName = "";
-    
+	string textureName = "";
+	float gSize = 1.0f;
+
 	string data = io.getValueName();
-    while (!data.empty())
-    {
-		if (data == "name")
-			CPersistence::importObject(io);
-		else if (data == "set")
-            io >> setName;
-        else if (data == "texname")
-            io >> textureName;
-        else if (data == "size")
-            io >> m_glowSize;
+	while (!data.empty())
+	{
+		if (data == "set")
+			io >> setName;
+		else if (data == "texname")
+			io >> textureName;
+		else if (data == "size")
+			io >> gSize;
 		else
 			io >> name;
 
 		data = io.getValueName();
 	}
-	
+	io >> name;
+
 	if (!setName.empty() && !textureName.empty())
-    {
-        CPersistence *p = CPersistence::FindObject(setName);
-		if ((p != NULL) && 
+	{
+		CPersistence *p = CPersistence::FindObject(setName);
+		if ((p != NULL) &&
 			(p->getId().isSubClassOf(CTextureSet::CTextureSetClassID::GetClassId())))
+		{
+			CTextureSet *tset = (CTextureSet*)p;
+			CTextureObject *t = tset->getTexture(textureName);
+			if (t != NULL)
+			{
+				CLightFlare::flare_item flare;
+				flare.pFlare = t;
+				flare.fSize = gSize;
+				flare.fDistance = 1.0f;
+				mFlares.push_back(flare);
+			}
+			/*
         {
-            CTextureSet *tset = (CTextureSet*)p;
-            CTextureObject *t = tset->getTexture(textureName);
 			m_glow = t;
 
 			m_pGlow = new CTextureQuad();
 			m_pGlow->setQuadTexture(t);
 			m_pGlow->glSetQuadAttributes(GL_COORD_VERTEX(0.0f, 0.0f, 0.0f, 1.0f),
 										 CColor::RGBA(1.0f, 1.0f, 1.0f, 1.0f),
-										 GL_COORD_VERTEX(m_glowSize, m_glowSize, 0.0f, 0.0f));
+										 GL_COORD_VERTEX(gSize, gSize, 0.0f, 0.0f));
         }
-    }
+			*/
+		}
+	}
 
-	io >> name;
 	return true;
 }
 
-bool CLightGlow::exportObject(CRaptorIO& o)
+bool CLightFlare::exportObject(CRaptorIO& o)
 {
 	return true;
 }
