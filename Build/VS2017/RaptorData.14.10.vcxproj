@@ -426,7 +426,7 @@ copy RaptorData.pck "%RAPTOR_ROOT%\Redist\bin\"
     <None Include="..\..\RaptorData\Data\shadowmap_pcf_4x.fp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="RaptorDataPackager.12.00.vcxproj">
+    <ProjectReference Include="RaptorDataPackager.14.10.vcxproj">
       <Project>{8a89c7b7-4197-452c-8b2a-cdd4a889bfe5}</Project>
     </ProjectReference>
   </ItemGroup>

@@ -35,11 +35,11 @@ class CGenericMatrix
 {
 public:
 	// construction/destruction
-	CGenericMatrix();
+	CGenericMatrix() NOEXCEPT;
 	virtual ~CGenericMatrix();
-	virtual void Zero();
-	virtual void One();
-	virtual void Ident();
+	virtual void Zero() NOEXCEPT;
+	virtual void One() NOEXCEPT;
+	virtual void Ident() NOEXCEPT;
 	
 	// data access
 	T* const matrix(void) const { return (T*)(m_matrix); };

@@ -75,17 +75,11 @@ void CLightFlare::glRender(float dx, float dy)
 
 	for (unsigned int i = 0; i < mFlares.size(); i++)
 	{
-		const flare_item& flare = mFlares[i];
-		flare.pFlare->glvkRender();
+		CTextureQuad* flare = mFlares[i];
+		
+		flare->glRender();
 
-		glBegin(GL_QUADS);
-			glTexCoord2f(0.0f, 0.0f);    glVertex3f(-flare.fSize, -flare.fSize, 0.0f);
-			glTexCoord2f(1.0f, 0.0f);    glVertex3f(+flare.fSize, -flare.fSize, 0.0f);
-			glTexCoord2f(1.0f, 1.0f);    glVertex3f(+flare.fSize, +flare.fSize, 0.0f);
-			glTexCoord2f(0.0f, 1.0f);    glVertex3f(-flare.fSize, +flare.fSize, 0.0f);
-		glEnd();
-
-		glTranslatef(dx, dy, 0); //dz
+		glTranslatef(dx, dy, 0);
 	}
 }
 
@@ -124,23 +118,13 @@ bool CLightFlare::importObject(CRaptorIO& io)
 			CTextureObject *t = tset->getTexture(textureName);
 			if (t != NULL)
 			{
-				CLightFlare::flare_item flare;
-				flare.pFlare = t;
-				flare.fSize = gSize;
-				flare.fDistance = 1.0f;
-				mFlares.push_back(flare);
+				CTextureQuad *q = new CTextureQuad();
+				q->setQuadTexture(t);
+				q->glSetQuadAttributes(	GL_COORD_VERTEX(0.0f, 0.0f, 0.0f, 1.0f),
+										CColor::RGBA(1.0f, 1.0f, 1.0f, 1.0f),
+										GL_COORD_VERTEX(gSize, gSize, 0.0f, 0.0f));
+				mFlares.push_back(q);
 			}
-			/*
-        {
-			m_glow = t;
-
-			m_pGlow = new CTextureQuad();
-			m_pGlow->setQuadTexture(t);
-			m_pGlow->glSetQuadAttributes(GL_COORD_VERTEX(0.0f, 0.0f, 0.0f, 1.0f),
-										 CColor::RGBA(1.0f, 1.0f, 1.0f, 1.0f),
-										 GL_COORD_VERTEX(gSize, gSize, 0.0f, 0.0f));
-        }
-			*/
 		}
 	}
 

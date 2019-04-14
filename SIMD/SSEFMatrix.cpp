@@ -27,7 +27,7 @@ extern CSSEFVector	_alignedSSEFloatVector;
 //////////////////////////////////////////////////////////////////////
 #pragma warning(disable:4100)
 
-CSSEFMatrix::CSSEFMatrix()
+CSSEFMatrix::CSSEFMatrix() NOEXCEPT
 {
 }
 
@@ -37,7 +37,7 @@ CSSEFMatrix::~CSSEFMatrix()
 
 #ifndef SIMD_NO_ASSEMBLY
 
-SIMD_ENTRY CSSEFMatrix& SIMD_CALL CSSEFMatrix::operator-(const CSSEFMatrix& m2) const
+SIMD_ENTRY CSSEFMatrix& SIMD_CALL CSSEFMatrix::operator-(const CSSEFMatrix& m2) const NOEXCEPT
 {
 	__asm
 	{
@@ -85,7 +85,7 @@ SIMD_ENTRY CSSEFMatrix& SIMD_CALL CSSEFMatrix::operator-(const CSSEFMatrix& m2) 
 	}
 }
 
-SIMD_ENTRY CSSEFMatrix& SIMD_CALL CSSEFMatrix::operator+(const CSSEFMatrix& m2) const
+SIMD_ENTRY CSSEFMatrix& SIMD_CALL CSSEFMatrix::operator+(const CSSEFMatrix& m2) const NOEXCEPT
 {
 	__asm
 	{
@@ -134,7 +134,7 @@ SIMD_ENTRY CSSEFMatrix& SIMD_CALL CSSEFMatrix::operator+(const CSSEFMatrix& m2) 
 }
 
 
-SIMD_ENTRY CSSEFMatrix& SIMD_CALL operator*(const CSSEFMatrix& m1,const CSSEFMatrix& m2)
+SIMD_ENTRY CSSEFMatrix& SIMD_CALL operator*(const CSSEFMatrix& m1,const CSSEFMatrix& m2) NOEXCEPT
 {
 	__asm
 	{
@@ -247,7 +247,7 @@ SIMD_ENTRY CSSEFMatrix& SIMD_CALL operator*(const CSSEFMatrix& m1,const CSSEFMat
 }
 
 
-SIMD_ENTRY CSSEFMatrix& SIMD_CALL CSSEFMatrix::operator*=(const CSSEFMatrix& m)
+SIMD_ENTRY CSSEFMatrix& SIMD_CALL CSSEFMatrix::operator*=(const CSSEFMatrix& m) NOEXCEPT
 {
 	__asm
 	{
@@ -359,7 +359,7 @@ SIMD_ENTRY CSSEFMatrix& SIMD_CALL CSSEFMatrix::operator*=(const CSSEFMatrix& m)
 	}
 }
 
-SIMD_ENTRY CSSEFMatrix& SIMD_CALL operator* (const CSSEFMatrix& m, const float& v)
+SIMD_ENTRY CSSEFMatrix& SIMD_CALL operator* (const CSSEFMatrix& m, const float& v) NOEXCEPT
 {
 	__asm
 	{
@@ -405,7 +405,7 @@ SIMD_ENTRY CSSEFMatrix& SIMD_CALL operator* (const CSSEFMatrix& m, const float& 
 }
 
 
-SIMD_ENTRY CSSEFMatrix& SIMD_CALL operator* (const float& v, const CSSEFMatrix& m)
+SIMD_ENTRY CSSEFMatrix& SIMD_CALL operator* (const float& v, const CSSEFMatrix& m) NOEXCEPT
 {
 	__asm
 	{

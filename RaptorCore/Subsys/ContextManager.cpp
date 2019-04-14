@@ -31,12 +31,6 @@
 #if !defined(AFX_RAPTORVKEXTENSIONS_H__B17D6B7F_5AFC_4E34_9D49_8DC6CE9192D6__INCLUDED_)
 	#include "System/RaptorVKExtensions.h"
 #endif
-#if !defined(AFX_TEXTUREFACTORY_H__1B470EC4_4B68_11D3_9142_9A502CBADC6B__INCLUDED_)
-	#include "GLHierarchy/TextureFactory.h"
-#endif
-#if !defined(AFX_TEXTUREQUAD_H__1712AF34_6723_4E39_BC72_05ED6FA28418__INCLUDED_)
-	#include "GLHierarchy/TextureQuad.h"
-#endif
 #if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
     #include "System/RaptorErrorManager.h"
 #endif
@@ -55,10 +49,6 @@
     #if !defined(AFX_GLXCONTEXTMANAGER_H__B6CE3CDF_D7E4_4B9C_89BF_5E934062BC97__INCLUDED_)
         #include "GLXSpecific/GLXContextManager.h"
     #endif
-#endif
-
-#if !defined(AFX_RAPTORDATAMANAGER_H__114BFB19_FA00_4E3E_879E_C9130043668E__INCLUDED_)
-    #include "DataManager/RaptorDataManager.h"
 #endif
 
 #if defined(VK_VERSION_1_0)
@@ -91,8 +81,7 @@ static CVulkanDevice defaultDevice;
 //////////////////////////////////////////////////////////////////////
 
 CContextManager::CContextManager()
-	:pLogo(NULL),
-	m_currentGLContext(CContextManager::INVALID_CONTEXT)
+	:m_currentGLContext(CContextManager::INVALID_CONTEXT)
 #if defined(VK_VERSION_1_0)
 	,m_currentVKContext(CContextManager::INVALID_CONTEXT)
 	,m_pVkContext(NULL)
@@ -113,8 +102,6 @@ CContextManager::~CContextManager()
 	if (NULL != m_pVkContext)
 		delete [] m_pVkContext;
 #endif
-
-	glRemoveLogo();
 }
 
 CContextManager *CContextManager::GetInstance(void)
@@ -129,73 +116,6 @@ CContextManager *CContextManager::GetInstance(void)
 	}
 
 	return p_manager;
-}
-
-void CContextManager::glDrawLogo(void)
-{
-	if (pLogo == NULL)
-		pLogo = glBuildLogo();
-
-	glPushAttrib(GL_ENABLE_BIT | GL_TEXTURE_BIT | GL_POLYGON_BIT);
-	
-	glMatrixMode(GL_PROJECTION);
-	glPushMatrix();
-	glLoadIdentity();
-	glOrtho(-1.0f, 1.0f, -1.0f, 1.0f, -1.0, 1.0);
-	
-	glMatrixMode(GL_MODELVIEW);
-	glPushMatrix();
-	glLoadIdentity();
-	
-	glDisable(GL_DEPTH_TEST);
-	glDisable(GL_CULL_FACE);
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	pLogo->glRender();
-
-	glPopMatrix();
-	glMatrixMode(GL_PROJECTION);
-	glPopMatrix();
-
-	glPopAttrib();
-
-	CATCH_GL_ERROR
-}
-
-CTextureQuad* CContextManager::glBuildLogo(void)
-{
-    CRaptorDataManager  *dataManager = CRaptorDataManager::GetInstance();
-    if (NULL == dataManager)
-        return NULL;
-
-	/*
-	p_Logo->glSetTransparency(256);
-	if (Txt.glLoadTexture(p_Logo,"Raptor_logo_sml.tga",CGL_USER_MIPMAPPED))
-		Txt.glExportCompressedTexture("Raptor_logo_sml.txt",p_Logo);
-	*/
-
-	string filepath = dataManager->ExportFile("Raptor_logo_sml.txt");
-	pLogo = new CTextureQuad();
-	pLogo->glLoadTexture(filepath,true);
-	pLogo->glSetQuadAttributes(GL_COORD_VERTEX(0.85f, -0.925f, 1.0f, 1.0f),
-							   CColor::RGBA(0.6f, 0.9f, 1.0f, 0.4f),
-							   GL_COORD_VERTEX(0.15f, 0.075f, 0.0f, 0.0f));
-
-	CATCH_GL_ERROR
-
-    return pLogo;
-}
-
-
-void CContextManager::glRemoveLogo(void)
-{
-	//if (NULL != pLogo)
-	//	delete pLogo;
-	pLogo = NULL;
-
-	CATCH_GL_ERROR
 }
 
 bool CContextManager::validateConfig(CRaptorDisplayConfig& rdc)

@@ -60,12 +60,12 @@ CLightGlow::CLightGlow(const std::string& name):
 
 CLightGlow::~CLightGlow(void)
 {
-	m_glow = NULL;
+	m_pGlow = NULL;
 }
 
 void CLightGlow::glRender(void)
 {
-    if ((NULL == m_glow) || (m_glowSize <= 0))
+	if ((NULL == m_pGlow) || (m_glowSize <= 0))
         return;
 
     glPushAttrib(GL_ENABLE_BIT);
@@ -114,7 +114,6 @@ bool CLightGlow::importObject(CRaptorIO& io)
         {
             CTextureSet *tset = (CTextureSet*)p;
             CTextureObject *t = tset->getTexture(textureName);
-			m_glow = t;
 
 			m_pGlow = new CTextureQuad();
 			m_pGlow->setQuadTexture(t);

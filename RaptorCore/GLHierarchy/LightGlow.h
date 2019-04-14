@@ -27,15 +27,12 @@
 #if !defined(AFX_PERSISTENCE_H__5561BA28_831B_11D3_9142_EEB51CEBBDB0__INCLUDED_)
 	#include "Persistence.h"
 #endif
-#if !defined(AFX_OBJECTREFERENCE_H__0D47C721_2B2D_4163_AB88_BE1B4E08A84D__INCLUDED_)
-	#include "ObjectReference.h"
-#endif
 
 
 RAPTOR_NAMESPACE_BEGIN
 
 class CTextureQuad;
-class CTextureObject;
+
 
 class RAPTOR_API CLightGlow : public CPersistence
 {
@@ -51,12 +48,9 @@ public:
 	DECLARE_CLASS_ID(CLightGlowClassID,"LightGlow",CPersistence)
 
 private:
-	//unsigned int	m_uiGlow;
-	//bool			m_bRebuildGlow;
 	float			m_glowSize;
 
 	CTextureQuad	*m_pGlow;
-	CReference<CTextureObject> m_glow;
 };
 
 

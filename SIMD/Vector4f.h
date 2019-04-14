@@ -43,44 +43,44 @@ class CVector4f //: public CGenericVector<float,4>
 #endif
 
 public:
-	CVector4f(void)
+	CVector4f(void) NOEXCEPT
 	{
 		// can we avoid initialising homogeneous coordinate ?
 		M_VECTOR = _mm_setzero_ps();
 	};
-	CVector4f(const CVector4f& v)
+	CVector4f(const CVector4f& v) NOEXCEPT
 	{ M_VECTOR = VECTOR(v); };
-	CVector4f(const float v[4])
+	CVector4f(const float v[4]) NOEXCEPT
 	{ M_VECTOR = _mm_load_ps(v); };
-	CVector4f(float v0,float v1,float v2,float v3)
+	CVector4f(float v0,float v1,float v2,float v3) NOEXCEPT
 	{ M_VECTOR = _mm_set_ps(v0,v1,v2,v3); };
-	CVector4f &CVector4f::operator=(const CVector4f &v)
+	CVector4f &CVector4f::operator=(const CVector4f &v) NOEXCEPT
 	{ M_VECTOR = VECTOR(v); return *this; };
 	CVector4f &CVector4f::operator=(const CGenericVector<float,4> &v)
 	{ M_VECTOR = _mm_load_ps(v.vector()); return *this; };
 	virtual ~CVector4f(void) {};
 
-	const float* vector() const { return m_vector.m128_f32; };
-	virtual void Set(float v0,float v1,float v2,float v3)
+	const float* vector() const NOEXCEPT { return m_vector.m128_f32; };
+	virtual void Set(float v0,float v1,float v2,float v3) NOEXCEPT
 	{ M_VECTOR = _mm_set_ps(v0,v1,v2,v3); }
 
-	float& SIMD_CALL X() { return m_vector.m128_f32[0]; };
-	float& SIMD_CALL Y() { return m_vector.m128_f32[1]; };
-	float& SIMD_CALL Z() { return m_vector.m128_f32[2]; };
-	float& SIMD_CALL H() { return m_vector.m128_f32[3]; };
+	float& SIMD_CALL X() NOEXCEPT { return m_vector.m128_f32[0]; };
+	float& SIMD_CALL Y() NOEXCEPT { return m_vector.m128_f32[1]; };
+	float& SIMD_CALL Z() NOEXCEPT { return m_vector.m128_f32[2]; };
+	float& SIMD_CALL H() NOEXCEPT { return m_vector.m128_f32[3]; };
 
-	const float& SIMD_CALL X() const { return m_vector.m128_f32[0]; };
-	const float& SIMD_CALL Y() const { return m_vector.m128_f32[1]; };
-	const float& SIMD_CALL Z() const { return m_vector.m128_f32[2]; };
-	const float& SIMD_CALL H() const { return m_vector.m128_f32[3]; };
+	const float& SIMD_CALL X() const NOEXCEPT { return m_vector.m128_f32[0]; };
+	const float& SIMD_CALL Y() const NOEXCEPT { return m_vector.m128_f32[1]; };
+	const float& SIMD_CALL Z() const NOEXCEPT { return m_vector.m128_f32[2]; };
+	const float& SIMD_CALL H() const NOEXCEPT { return m_vector.m128_f32[3]; };
 
-	void X(float t) { m_vector.m128_f32[0] = t; };
-	void Y(float t) { m_vector.m128_f32[1] = t; };
-	void Z(float t) { m_vector.m128_f32[2] = t; };
-	void H(float t) { m_vector.m128_f32[3] = t; };
+	void X(float t) NOEXCEPT { m_vector.m128_f32[0] = t; };
+	void Y(float t) NOEXCEPT { m_vector.m128_f32[1] = t; };
+	void Z(float t) NOEXCEPT { m_vector.m128_f32[2] = t; };
+	void H(float t) NOEXCEPT { m_vector.m128_f32[3] = t; };
 
 
-	virtual float SIMD_CALL Length() const
+	virtual float SIMD_CALL Length() const NOEXCEPT
 	{ return (m_vector.m128_f32[0]+m_vector.m128_f32[1]+m_vector.m128_f32[2]+m_vector.m128_f32[3]); }
 
 	virtual double SIMD_CALL Normalize()
@@ -100,7 +100,7 @@ public:
 		return n;
 	}
 
-	virtual double SIMD_CALL Norm() const
+	virtual double SIMD_CALL Norm() const NOEXCEPT
 	{ 
 		return sqrt(m_vector.m128_f32[0]*m_vector.m128_f32[0] + 
 					m_vector.m128_f32[1]*m_vector.m128_f32[1] + 
@@ -131,7 +131,7 @@ public:
 		return res;
 	}
 
-	CVector4f& SIMD_CALL operator+=(const CVector4f& v)
+	CVector4f& SIMD_CALL operator+=(const CVector4f& v) NOEXCEPT
 	{
 		M_VECTOR  = _mm_add_ps(M_VECTOR,VECTOR(v));
 		return *this;
@@ -144,7 +144,7 @@ public:
 		return res;
 	}
 
-	CVector4f& SIMD_CALL operator-=(const CVector4f& v)
+	CVector4f& SIMD_CALL operator-=(const CVector4f& v) NOEXCEPT
 	{
 		M_VECTOR = _mm_sub_ps(M_VECTOR,VECTOR(v));
 		return *this;
@@ -158,7 +158,7 @@ public:
 		return v;
 	}
 
-	CVector4f& SIMD_CALL operator*=(float t)
+	CVector4f& SIMD_CALL operator*=(float t) NOEXCEPT
 	{
 		__m128 T = _mm_load_ss(&t);
 		M_VECTOR = _mm_mul_ps(_mm_shuffle_ps(T,T,0),M_VECTOR);

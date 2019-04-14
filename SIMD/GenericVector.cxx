@@ -25,7 +25,7 @@
 
 
 template <class T,int D>
-__inline CGenericVector<T,D>::CGenericVector() 
+__inline CGenericVector<T,D>::CGenericVector() NOEXCEPT
 {
 	for (int i=0;i<D-1;i++)
 		m_vector[i] = 0; 
@@ -137,7 +137,7 @@ __inline double SIMD_CALL CGenericVector<T,D>::Norm() const
 };
 
 template <class T,int D>
-__inline T SIMD_CALL CGenericVector<T,D>::Length() const
+__inline T SIMD_CALL CGenericVector<T,D>::Length() const NOEXCEPT
 { 
 	return (T)(m_vector[0]+m_vector[1]+m_vector[2]+m_vector[3]); 
 };

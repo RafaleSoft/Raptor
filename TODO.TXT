@@ -1,5 +1,8 @@
 - Ajouter un dialog pour Vulkan Status comme OpenGL.
 
+- CTextureQuad:
+	- ajouter une méthode pour faire le render sur une liste de Quads.
+
 - CRaptorDisplay:
 	- déplacer les fps et timings dans CRaptorDisplayConfig ( ==> glQueryStatus )
 
@@ -80,7 +83,7 @@
 	- glow : volume rendering  ?
 	- projection: texture clamping, border fading ...
 	- le volume size ne devrait-il pas etre fonction de dmax ?
-	c'est le volume de l'objet lumière ! eventuellement, attacher un CObject3D
+		c'est le volume de l'objet lumière ! eventuellement, attacher un CObject3D
 	- selection de lumière dans 3DSceneObjet: si dans l'angle du cône !
 	
 - COctree :

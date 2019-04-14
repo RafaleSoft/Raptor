@@ -66,7 +66,9 @@ public:
 
 
     //! Renders the BBox of the light's lighted zone ( if not infinite )
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
     void glRenderLightBBox(void);
+#endif
 
 	//!	Switch on the light. ( the light is mapped to hardware, T&L uses this light )
 	void glActivate(bool spot = false);

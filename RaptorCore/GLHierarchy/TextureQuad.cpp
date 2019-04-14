@@ -45,7 +45,9 @@
 #if !defined(AFX_GEOMETRYALLOCATOR_H__802B3C7A_43F7_46B2_A79E_DDDC9012D371__INCLUDED_)
 	#include "Subsys/GeometryAllocator.h"
 #endif
-
+#if !defined(AFX_TEXELALLOCATOR_H__7C48808C_E838_4BE3_8B0E_286428BB7CF8__INCLUDED_)
+	#include "Subsys/TexelAllocator.h"
+#endif
 
 RAPTOR_NAMESPACE
 
@@ -173,6 +175,9 @@ bool CTextureQuad::setQuadCenter(const GL_COORD_VERTEX &center)
 		return false;
 
 	CGeometryAllocator *pAllocator = CGeometryAllocator::GetInstance();
+	bool lock = pAllocator->isMemoryLocked();
+	if (lock)
+		pAllocator->glvkLockMemory(false);
 
 	if (NULL == s_attributes)
 	{
@@ -186,6 +191,9 @@ bool CTextureQuad::setQuadCenter(const GL_COORD_VERTEX &center)
 	attrs.m_center = center;
 	s_attributes = (Attributes*)pAllocator->glvkUnMapPointer((float*)s_attributes);
 
+	if (lock)
+		pAllocator->glvkLockMemory(true);
+
 	return true;
 }
 
@@ -197,7 +205,10 @@ bool CTextureQuad::glSetQuadAttributes(	const GL_COORD_VERTEX &center,
 		return false;
 
 	CGeometryAllocator *pAllocator = CGeometryAllocator::GetInstance();
-	
+	bool lock = pAllocator->isMemoryLocked();
+	if (lock)
+		pAllocator->glvkLockMemory(false);
+
 	if (NULL == s_attributes)
 	{
 		size_t s = sizeof(Attributes) / sizeof(float);
@@ -212,6 +223,9 @@ bool CTextureQuad::glSetQuadAttributes(	const GL_COORD_VERTEX &center,
 	attrs.m_sizes = sizes;
 	s_attributes = (Attributes*)pAllocator->glvkUnMapPointer((float*)s_attributes);
 	
+	if (lock)
+		pAllocator->glvkLockMemory(true);
+
 	return true;
 }
 
@@ -223,7 +237,12 @@ bool CTextureQuad::glLoadTexture(const std::string &texname, bool compressed)
 		CTextureObject *T = Txt.glCreateTexture( ITextureObject::CGL_COLOR24_ALPHA,
 												 CTextureObject::CGL_MULTIPLY,
 												 ITextureObject::CGL_BILINEAR);
-	
+		
+		CTexelAllocator *pAllocator = CTexelAllocator::GetInstance();
+		bool lock = pAllocator->isMemoryLocked();
+		if (lock)
+			pAllocator->glvkLockMemory(false);
+
 		T->glSetTransparency(256);
 
 		if (compressed)
@@ -235,6 +254,9 @@ bool CTextureQuad::glLoadTexture(const std::string &texname, bool compressed)
 		}
 
 		m_rTexture = T;
+
+		if (lock)
+			pAllocator->glvkLockMemory(true);
 	}
 	else
 		return false;
@@ -252,8 +274,6 @@ bool CTextureQuad::glLoadTexture(const std::string &texname, bool compressed)
 
 void CTextureQuad::glRender(void)
 {
-	//if (NULL == m_pShader)
-	//	return;
 	bool res = true;
 	if (NULL == m_pShader)
 	{
@@ -282,9 +302,6 @@ void CTextureQuad::glRender(void)
 	m_pShader->glRender();
 	m_rTexture->glvkRender();
 
-CGeometryAllocator *pAllocator = CGeometryAllocator::GetInstance();
-pAllocator->glvkLockMemory(true);
-
 	pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::POSITION);
 	pExtensions->glVertexAttribPointerARB(CProgramParameters::POSITION, 4, GL_FLOAT, false, sizeof(Attributes), &s_attributes[m_index].m_center);
 	pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::PRIMARY_COLOR);
@@ -299,7 +316,5 @@ pAllocator->glvkLockMemory(true);
 	pExtensions->glDisableVertexAttribArrayARB(CProgramParameters::ADDITIONAL_PARAM1);
 
 	m_pShader->glStop();
-
-pAllocator->glvkLockMemory(false);
 }
 

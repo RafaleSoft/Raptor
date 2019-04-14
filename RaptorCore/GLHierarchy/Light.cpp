@@ -419,7 +419,6 @@ void CLight::glRenderEffects(void)
 	m_pAttributes->m_fLightVolumeVisibility = scale;
 #endif
 
-	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 	if (scale > 0)
 	{
 		glScalef(scale, scale, scale);
@@ -450,38 +449,39 @@ float CLight::getLightVisibility(void) const
 
 //!   This method should be for debug only because it uses OpenGL direct mode
 //! instead of vertex arrays as in CObject3D. It should be replaced or disappear.
-void CLight::glRenderLightBBox(void)
-{
-    float att = m_pAttributes->m_dMax;
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+	void CLight::glRenderLightBBox(void)
+	{
+		float att = m_pAttributes->m_dMax;
     
-    const CGenericVector<float>& x = m_pAttributes->m_position;
+		const CGenericVector<float>& x = m_pAttributes->m_position;
 
-    float xmin = x.X() - att;
-    float xmax = x.X() + att;
-    float ymin = x.Y() - att;
-    float ymax = x.Y() + att;
-    float zmin = x.Z() - att;
-    float zmax = x.Z() + att;
+		float xmin = x.X() - att;
+		float xmax = x.X() + att;
+		float ymin = x.Y() - att;
+		float ymax = x.Y() + att;
+		float zmin = x.Z() - att;
+		float zmax = x.Z() + att;
 	            
-    glPushAttrib(GL_ENABLE_BIT);
-    glDisable(GL_LIGHTING);
-    glDisable(GL_TEXTURE_2D);
-    glDisable(GL_CULL_FACE);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-    glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
-	glColor4f(1.0f,1.0f,1.0f,0.3f);
-	glBegin(GL_QUADS);
-		glVertex3f(xmin,ymin,zmin);	glVertex3f(xmax,ymin,zmin);glVertex3f(xmax,ymax,zmin);glVertex3f(xmin,ymax,zmin);
-		glVertex3f(xmin,ymin,zmax);	glVertex3f(xmax,ymin,zmax);glVertex3f(xmax,ymax,zmax);glVertex3f(xmin,ymax,zmax);
-		glVertex3f(xmin,ymax,zmin);	glVertex3f(xmin,ymax,zmax);glVertex3f(xmax,ymax,zmax);glVertex3f(xmax,ymax,zmin);
-		glVertex3f(xmin,ymin,zmin);	glVertex3f(xmin,ymin,zmax);glVertex3f(xmax,ymin,zmax);glVertex3f(xmax,ymin,zmin);
-		glVertex3f(xmin,ymin,zmin);	glVertex3f(xmin,ymin,zmax);glVertex3f(xmin,ymax,zmax);glVertex3f(xmin,ymax,zmin);
-		glVertex3f(xmax,ymax,zmin);	glVertex3f(xmax,ymax,zmax);glVertex3f(xmax,ymin,zmax);glVertex3f(xmax,ymin,zmin);
-	glEnd();
-    glPopAttrib();
-}
-
+		glPushAttrib(GL_ENABLE_BIT);
+		glDisable(GL_LIGHTING);
+		glDisable(GL_TEXTURE_2D);
+		glDisable(GL_CULL_FACE);
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+		glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
+		glColor4f(1.0f,1.0f,1.0f,0.3f);
+		glBegin(GL_QUADS);
+			glVertex3f(xmin,ymin,zmin);	glVertex3f(xmax,ymin,zmin);glVertex3f(xmax,ymax,zmin);glVertex3f(xmin,ymax,zmin);
+			glVertex3f(xmin,ymin,zmax);	glVertex3f(xmax,ymin,zmax);glVertex3f(xmax,ymax,zmax);glVertex3f(xmin,ymax,zmax);
+			glVertex3f(xmin,ymax,zmin);	glVertex3f(xmin,ymax,zmax);glVertex3f(xmax,ymax,zmax);glVertex3f(xmax,ymax,zmin);
+			glVertex3f(xmin,ymin,zmin);	glVertex3f(xmin,ymin,zmax);glVertex3f(xmax,ymin,zmax);glVertex3f(xmax,ymin,zmin);
+			glVertex3f(xmin,ymin,zmin);	glVertex3f(xmin,ymin,zmax);glVertex3f(xmin,ymax,zmax);glVertex3f(xmin,ymax,zmin);
+			glVertex3f(xmax,ymax,zmin);	glVertex3f(xmax,ymax,zmax);glVertex3f(xmax,ymin,zmax);glVertex3f(xmax,ymin,zmin);
+		glEnd();
+		glPopAttrib();
+	}
+#endif
 
 bool CLight::exportObject(CRaptorIO& o)
 {

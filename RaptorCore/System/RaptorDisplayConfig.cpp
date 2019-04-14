@@ -457,7 +457,12 @@ bool CRaptorDisplayConfig::glApplyConfig(unsigned long query) const
 {
 	if (query & GL_CURRENT_STATE_QUERY)
 	{
+#if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
 		glColor4fv(currentState.currentColor);
+#else
+		CColor::RGBA c = currentState.currentColor;
+		glColor4f(c.r,c.g,c.b,c.a);
+#endif
 		glIndexi(currentState.currentIndex);
 		glTexCoord4fv(currentState.currentTextureCoords);
 		glNormal3fv(currentState.currentNormal);

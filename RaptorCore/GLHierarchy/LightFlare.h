@@ -63,13 +63,8 @@ public:
 
 
 private:
-	typedef struct flare_item_t
-	{
-		ITextureObject	*pFlare;
-		float			fSize;
-		float			fDistance;
-	} flare_item;
-	std::vector<flare_item>	mFlares;
+	//!	The list of texture quad flares.
+	std::vector<CTextureQuad*>	mFlares;
 
 	float				m_fLightVolumeSize;
 	unsigned int		m_volumeVisibility;

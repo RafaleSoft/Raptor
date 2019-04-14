@@ -35,7 +35,7 @@ class CMatrix4f : public CGenericMatrix<float,4>
 #define M_MATRIX ((__m128*)&m_matrix[0])
 #define MATRIX(m) ((__m128*)&m.m_matrix[0])
 public:
-	CMatrix4f(void) { };
+	CMatrix4f(void) NOEXCEPT { };
 	CMatrix4f(const float m[16])
 	{
 		M_MATRIX[0] = _mm_load_ps(&m[0]);
@@ -43,7 +43,7 @@ public:
 		M_MATRIX[2] = _mm_load_ps(&m[8]);
 		M_MATRIX[3] = _mm_load_ps(&m[12]);
 	};
-	CMatrix4f& SIMD_CALL operator=( const float m[16] )
+	CMatrix4f& SIMD_CALL operator=( const float m[16] ) NOEXCEPT
 	{
 		M_MATRIX[0] = _mm_load_ps(&m[0]);
 		M_MATRIX[1] = _mm_load_ps(&m[4]);

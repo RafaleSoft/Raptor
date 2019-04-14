@@ -262,6 +262,8 @@ copy .\SIMD\GenericMatrix.cxx Redist\Include\SimdLib
 copy .\SIMD\Vector4f.cxx Redist\Include\SimdLib
 copy .\SIMD\Matrix4f.cxx Redist\Include\SimdLib
 
+copy .\SIMD\simd.lib Redist\Lib
+
 
 ECHO    Copying help files ...
 

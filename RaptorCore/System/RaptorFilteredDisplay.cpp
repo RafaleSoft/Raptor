@@ -143,8 +143,8 @@ CRaptorFilteredDisplay::~CRaptorFilteredDisplay()
 {
 	if (NULL != m_pDrawBuffer)
 	{
-		delete m_pDrawBuffer;
-		m_pDrawBuffer = NULL;
+		//delete m_pDrawBuffer;
+		//m_pDrawBuffer = NULL;
 	}
 
 	if (NULL != m_pImageSet)
@@ -375,11 +375,11 @@ bool CRaptorFilteredDisplay::glCreateRenderDisplay(void)
             glEnd();
         glEndList();
 
-		m_pDrawBuffer = new CTextureQuad();
-		m_pDrawBuffer->setQuadTexture(m_pImageSet->getTexture(0));
-		m_pDrawBuffer->glSetQuadAttributes(	GL_COORD_VERTEX(0.0f, 0.0f, 0.0f, 1.0f),
-											CColor::RGBA(1.0f, 1.0f, 1.0f, 1.0f),
-											GL_COORD_VERTEX(1.0f, 1.0f, 0.0f, 0.0f));
+		//m_pDrawBuffer = new CTextureQuad();
+		//m_pDrawBuffer->setQuadTexture(m_pImageSet->getTexture(0));
+		//m_pDrawBuffer->glSetQuadAttributes(	GL_COORD_VERTEX(0.0f, 0.0f, 0.0f, 1.0f),
+		//									CColor::RGBA(1.0f, 1.0f, 1.0f, 1.0f),
+		//									GL_COORD_VERTEX(1.0f, 1.0f, 0.0f, 0.0f));
 	}
 
     CATCH_GL_ERROR
@@ -578,14 +578,14 @@ void CRaptorFilteredDisplay::glRenderScene(void)
         }
     }
 	else if (!filterRendered)
-	{/*
+	{
 		CTextureObject *T = m_pImageSet->getTexture(0);
 		T->glvkRender();
 
         if (drawBuffer.handle > 0)
             glCallList(drawBuffer.handle);
-			*/
-		m_pDrawBuffer->glRender();
+			
+		//m_pDrawBuffer->glRender();
 		glBindTexture(GL_TEXTURE_2D,0);
     }
 

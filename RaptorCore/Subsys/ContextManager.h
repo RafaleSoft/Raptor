@@ -25,9 +25,8 @@ RAPTOR_NAMESPACE_BEGIN
 
 class CRaptorGLExtensions;
 class CRaptorVKExtensions;
-class CTextureObject;
 class CVulkanSurface;
-class CTextureQuad;
+
 
 //!	This class implements OpenGL contexts management.
 class CContextManager  
@@ -170,10 +169,6 @@ public:
 protected:
 	CContextManager();
 
-	void glDrawLogo(void);
-
-    void glRemoveLogo(void);
-
 	RENDERING_CONTEXT_ID	m_currentGLContext;
 #if defined(VK_VERSION_1_0)
 	RENDERING_CONTEXT_ID	m_currentVKContext;
@@ -207,9 +202,6 @@ private:
 	//! @return false if surface creation failed
 	virtual bool vkCreateSurface(const RAPTOR_HANDLE& handle,RENDERING_CONTEXT_ID ctx) = 0;
 #endif
-
-	CTextureQuad*	glBuildLogo(void);
-	CTextureQuad*	pLogo;
 
 	static CContextManager	*p_manager;
 };
