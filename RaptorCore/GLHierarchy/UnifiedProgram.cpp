@@ -178,6 +178,7 @@ void CUnifiedProgram::glRender(void)
 
 	CTextureUnitSetup::TEXTURE_IMAGE_UNIT sampler = CTextureUnitSetup::IMAGE_UNIT_0;
 	GL_COORD_VERTEX vector(0.0f, 0.0f, 0.0f, 0.0f);
+	CColor::RGBA color(0.0f, 0.0f, 0.0f, 0.0f);
 	GL_MATRIX matrix;
 
 	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
@@ -256,6 +257,19 @@ void CUnifiedProgram::glRender(void)
 				matrix = ((const CProgramParameters::CParameter<GL_MATRIX>&)param_value).p;
 				pExtensions->glUniformMatrix4fvARB(param_value.locationIndex, 1, GL_TRUE, matrix);
 			}
+			else if (param_value.isA(color))
+			{
+				color = ((const CProgramParameters::CParameter<CColor::RGBA>&)param_value).p;
+				pExtensions->glUniform4fvARB(param_value.locationIndex, 1, color);
+			}
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+			else
+			{
+				Raptor::GetErrorManager()->generateRaptorError(CShaderProgram::CShaderProgramClassID::GetClassId(),
+															   CRaptorErrorManager::RAPTOR_ERROR,
+															   CRaptorMessages::ID_UPDATE_FAILED);
+			}
+#endif
 		}
 	}
 #endif

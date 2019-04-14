@@ -1,6 +1,22 @@
-// RaptorFilteredDisplay.cpp: implementation of the CRaptorFilteredDisplay class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  RaptorFilteredDisplay.cpp                                              */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
+
 #include "Subsys/CodeGeneration.h"
 
 #if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
@@ -51,6 +67,9 @@
 #if !defined(AFX_ANIMATORSTREAM_H__3D03D0B9_A350_4226_8AB4_BABDD53D68B6__INCLUDED_)
 	#include "Subsys/AnimatorStream.h"
 #endif
+#if !defined(AFX_TEXTUREQUAD_H__1712AF34_6723_4E39_BC72_05ED6FA28418__INCLUDED_)
+	#include "GLHierarchy/TextureQuad.h"
+#endif
 
 RAPTOR_NAMESPACE
 
@@ -61,7 +80,7 @@ RAPTOR_NAMESPACE
 
 CRaptorFilteredDisplay::CRaptorFilteredDisplay(const CRaptorDisplayConfig& pcs)
 	:CRaptorScreenDisplay(pcs),m_pDisplay(NULL),m_pFSAADisplay(NULL),
-	m_bBufferBound(false),m_pImageSet(NULL)
+	m_bBufferBound(false), m_pImageSet(NULL), m_pDrawBuffer(NULL)
 {
     filter_cs = pcs;
 	cs.overlay = false;
@@ -122,13 +141,19 @@ CRaptorFilteredDisplay::CRaptorFilteredDisplay(const CRaptorDisplayConfig& pcs)
 
 CRaptorFilteredDisplay::~CRaptorFilteredDisplay()
 {
-	if (m_pImageSet != NULL)
+	if (NULL != m_pDrawBuffer)
+	{
+		//delete m_pDrawBuffer;
+		//m_pDrawBuffer = NULL;
+	}
+
+	if (NULL != m_pImageSet)
 	{
 		m_pImageSet->unregisterDestruction(this);
 		delete m_pImageSet;
 	}
 
-	if (m_pFSAADisplay != NULL)
+	if (NULL != m_pFSAADisplay)
 	{
 		m_pFSAADisplay->unregisterDestruction(this);
 		if (m_bBufferBound)
@@ -136,7 +161,7 @@ CRaptorFilteredDisplay::~CRaptorFilteredDisplay()
 		Raptor::glDestroyDisplay(m_pFSAADisplay);
 	}
 
-	if (m_pDisplay != NULL)
+	if (NULL != m_pDisplay)
 	{
 		m_pDisplay->unregisterDestruction(this);
 		if (m_bBufferBound)
@@ -349,6 +374,12 @@ bool CRaptorFilteredDisplay::glCreateRenderDisplay(void)
                 glTexCoord2f(0.0f,1.0f);glVertex4f(-1.0,1.0,-1.0f,1.0f);
             glEnd();
         glEndList();
+
+		//m_pDrawBuffer = new CTextureQuad();
+		//m_pDrawBuffer->setQuadTexture(m_pImageSet->getTexture(0));
+		//m_pDrawBuffer->glSetQuadAttributes(	GL_COORD_VERTEX(0.0f, 0.0f, 0.0f, 1.0f),
+		//									CColor::RGBA(1.0f, 1.0f, 1.0f, 1.0f),
+		//									GL_COORD_VERTEX(1.0f, 1.0f, 0.0f, 0.0f));
 	}
 
     CATCH_GL_ERROR
@@ -546,15 +577,15 @@ void CRaptorFilteredDisplay::glRenderScene(void)
 			}
         }
     }
-
-	if (!filterRendered || m_pFilters.empty())
-    {
+	else if (!filterRendered)
+	{
 		CTextureObject *T = m_pImageSet->getTexture(0);
 		T->glvkRender();
 
         if (drawBuffer.handle > 0)
             glCallList(drawBuffer.handle);
-
+			
+		//m_pDrawBuffer->glRender();
 		glBindTexture(GL_TEXTURE_2D,0);
     }
 

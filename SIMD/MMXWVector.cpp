@@ -25,7 +25,7 @@
 
 extern CMMXWVector _unalignedMMXShortVector;
 
-CMMXWVector& SIMD_CALL CMMXWVector::operator^  (const CMMXWVector& v2) const
+CMMXWVector& SIMD_CALL CMMXWVector::operator^  (const CMMXWVector& v2) const NOEXCEPT
 {
 	__asm
 	{
@@ -61,7 +61,7 @@ CMMXWVector& SIMD_CALL CMMXWVector::operator^  (const CMMXWVector& v2) const
 	return _unalignedMMXShortVector;
 };
 
-CMMXWVector& SIMD_CALL CMMXWVector::operator*  (const CMMXWVector& v2) const
+CMMXWVector& SIMD_CALL CMMXWVector::operator*  (const CMMXWVector& v2) const NOEXCEPT
 {
 	__asm
 	{
@@ -77,7 +77,7 @@ CMMXWVector& SIMD_CALL CMMXWVector::operator*  (const CMMXWVector& v2) const
 	return _unalignedMMXShortVector;
 };
 
-CMMXWVector& SIMD_CALL CMMXWVector::operator*  (const CMMXWMatrix& m) const
+CMMXWVector& SIMD_CALL CMMXWVector::operator*  (const CMMXWMatrix& m) const NOEXCEPT
 {
 	int t[2];
 	_asm
@@ -165,7 +165,7 @@ CMMXWVector& SIMD_CALL operator*  (const CMMXWVector& v, const CMMXWMatrix& m)
 	return _unalignedMMXShortVector;
 }
 
-CMMXWVector& SIMD_CALL CMMXWVector::operator+  (const CMMXWVector& v2) const
+CMMXWVector& SIMD_CALL CMMXWVector::operator+  (const CMMXWVector& v2) const NOEXCEPT
 {
 	__asm
 	{
@@ -181,7 +181,7 @@ CMMXWVector& SIMD_CALL CMMXWVector::operator+  (const CMMXWVector& v2) const
 	return _unalignedMMXShortVector;
 };
 
-CMMXWVector& SIMD_CALL CMMXWVector::operator-  (const CMMXWVector& v2) const
+CMMXWVector& SIMD_CALL CMMXWVector::operator-  (const CMMXWVector& v2) const NOEXCEPT
 {
 	__asm
 	{
@@ -197,7 +197,7 @@ CMMXWVector& SIMD_CALL CMMXWVector::operator-  (const CMMXWVector& v2) const
 	return _unalignedMMXShortVector;
 };
 
-CMMXWVector& SIMD_CALL CMMXWVector::operator*= (const CMMXWMatrix& m)
+CMMXWVector& SIMD_CALL CMMXWVector::operator*= (const CMMXWMatrix& m) NOEXCEPT
 {
 	int t[2];
 	_asm

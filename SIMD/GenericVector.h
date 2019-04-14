@@ -37,7 +37,7 @@ class CGenericVector
 {	
 public:
 	// construction/destruction
-	CGenericVector();
+	CGenericVector() NOEXCEPT;
 	CGenericVector(const T v[D]);
 
 	//! Deprecated
@@ -82,7 +82,7 @@ public:
 	bool SIMD_CALL operator== ( const T v[D] ) const;
 	virtual double SIMD_CALL Norm() const;
 	virtual double SIMD_CALL Normalize();
-	virtual T SIMD_CALL Length() const;
+	virtual T SIMD_CALL Length() const NOEXCEPT;
 
 
 	// unary operations

@@ -29,7 +29,7 @@
 //////////////////////////////////////////////////////////////////////
 #ifndef SIMD_NO_ASSEMBLY
 
-SIMD_ENTRY CSSEFVector& SIMD_CALL operator^  (const CSSEFVector& v1, const CSSEFVector& v2)
+SIMD_ENTRY CSSEFVector& SIMD_CALL operator^  (const CSSEFVector& v1, const CSSEFVector& v2) NOEXCEPT
 {
 	__asm
 	{
@@ -56,7 +56,7 @@ SIMD_ENTRY CSSEFVector& SIMD_CALL operator^  (const CSSEFVector& v1, const CSSEF
 	}
 }
 
-SIMD_ENTRY CSSEFVector& SIMD_CALL operator*  (const CSSEFVector& v1, const CSSEFVector& v2)
+SIMD_ENTRY CSSEFVector& SIMD_CALL operator*  (const CSSEFVector& v1, const CSSEFVector& v2) NOEXCEPT
 {
 	__asm
 	{
@@ -71,7 +71,7 @@ SIMD_ENTRY CSSEFVector& SIMD_CALL operator*  (const CSSEFVector& v1, const CSSEF
 	}
 }
 
-SIMD_ENTRY CSSEFVector& SIMD_CALL CSSEFVector::operator+  (const CSSEFVector& v2) const
+SIMD_ENTRY CSSEFVector& SIMD_CALL CSSEFVector::operator+  (const CSSEFVector& v2) const NOEXCEPT
 {
 	__asm
 	{
@@ -86,7 +86,7 @@ SIMD_ENTRY CSSEFVector& SIMD_CALL CSSEFVector::operator+  (const CSSEFVector& v2
 	}
 }
 
-SIMD_ENTRY CSSEFVector& SIMD_CALL CSSEFVector::operator-  (const CSSEFVector& v2) const
+SIMD_ENTRY CSSEFVector& SIMD_CALL CSSEFVector::operator-  (const CSSEFVector& v2) const NOEXCEPT
 {
 	__asm
 	{
@@ -101,7 +101,7 @@ SIMD_ENTRY CSSEFVector& SIMD_CALL CSSEFVector::operator-  (const CSSEFVector& v2
 	}
 }
 
-SIMD_ENTRY CSSEFVector& SIMD_CALL operator*  (const float& v, const CSSEFVector& v2)
+SIMD_ENTRY CSSEFVector& SIMD_CALL operator*  (const float& v, const CSSEFVector& v2) NOEXCEPT
 {
 	__asm
 	{
@@ -135,7 +135,7 @@ SIMD_ENTRY CSSEFVector& SIMD_CALL operator*  (const float& v, const CSSEFVector&
 	}
 }
 
-SIMD_ENTRY CSSEFVector& SIMD_CALL operator*  (const CSSEFVector& v2, const float& v)
+SIMD_ENTRY CSSEFVector& SIMD_CALL operator*  (const CSSEFVector& v2, const float& v) NOEXCEPT
 {
 	__asm
 	{
@@ -169,7 +169,7 @@ SIMD_ENTRY CSSEFVector& SIMD_CALL operator*  (const CSSEFVector& v2, const float
 	}
 }
 
-SIMD_ENTRY CSSEFVector& SIMD_CALL CSSEFVector::operator*= (const CGenericAlignedMatrix<float>& m)
+SIMD_ENTRY CSSEFVector& SIMD_CALL CSSEFVector::operator*= (const CGenericAlignedMatrix<float>& m) NOEXCEPT
 {
 
 	__asm
@@ -247,7 +247,7 @@ SIMD_ENTRY CSSEFVector& SIMD_CALL CSSEFVector::operator*= (const CGenericAligned
 }
 
 
-SIMD_ENTRY CSSEFVector& SIMD_CALL operator* (const CSSEFMatrix& m, const CSSEFVector& v)
+SIMD_ENTRY CSSEFVector& SIMD_CALL operator* (const CSSEFMatrix& m, const CSSEFVector& v) NOEXCEPT
 {
 
 	__asm
@@ -325,7 +325,7 @@ SIMD_ENTRY CSSEFVector& SIMD_CALL operator* (const CSSEFMatrix& m, const CSSEFVe
 	}
 }
 
-SIMD_ENTRY CSSEFVector& SIMD_CALL operator* (const CSSEFVector& m, const CSSEFMatrix& v)
+SIMD_ENTRY CSSEFVector& SIMD_CALL operator* (const CSSEFVector& m, const CSSEFMatrix& v) NOEXCEPT
 {
 
 	__asm

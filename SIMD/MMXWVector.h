@@ -35,17 +35,17 @@ public:
 	CMMXWVector(){};
 	virtual ~CMMXWVector(){};
 
-	CMMXWVector& operator*= (const unsigned short& t)
+	CMMXWVector& operator*= (const unsigned short& t) NOEXCEPT
 	{
-		m_vector[0] = (unsigned short)(m_vector[0] * t);
-		m_vector[1] = (unsigned short)(m_vector[1] * t);
-		m_vector[2] = (unsigned short)(m_vector[2] * t);
-		m_vector[3] = (unsigned short)(m_vector[3] * t);
+		m_vector[0] = m_vector[0] * t;
+		m_vector[1] = m_vector[1] * t;
+		m_vector[2] = m_vector[2] * t;
+		m_vector[3] = m_vector[3] * t;
 		return *this;
 	};
 
 #ifndef SIMD_NO_ASSEMBLY
-	CMMXWVector& operator= ( const CMMXWVector& v )
+	CMMXWVector& operator= ( const CMMXWVector& v ) NOEXCEPT
 	{ 
 		__asm
 		{
@@ -57,7 +57,7 @@ public:
 		}
 		return *this;
 	};
-	CMMXWVector& operator= ( const CGenericVector<unsigned short>& v )
+	CMMXWVector& operator= ( const CGenericVector<unsigned short>& v ) NOEXCEPT
 	{ 
 		__asm
 		{
@@ -69,7 +69,7 @@ public:
 		}
 		return *this;
 	};
-	CMMXWVector& operator= ( const unsigned short v[4] )
+	CMMXWVector& operator= ( const unsigned short v[4] ) NOEXCEPT
 	{
 		__asm
 		{
@@ -83,7 +83,7 @@ public:
 	};	
 
 	//operations
-	bool operator== ( const CGenericVector<unsigned short>& v ) const
+	bool operator== ( const CGenericVector<unsigned short>& v ) const NOEXCEPT
 	{ 
 		__asm
 		{
@@ -104,7 +104,7 @@ public:
 	};
 #pragma warning(default:4035)
 
-	bool operator== ( const CMMXWVector& v ) const
+	bool operator== ( const CMMXWVector& v ) const NOEXCEPT
 	{ 
 		__asm
 		{
@@ -125,7 +125,7 @@ public:
 	};
 #pragma warning(default:4035)
 
-	bool operator== ( const unsigned short v[4] ) const
+	bool operator== ( const unsigned short v[4] ) const NOEXCEPT
 	{ 
 		__asm
 		{
@@ -146,7 +146,7 @@ public:
 	};
 #pragma warning(error:4035)
 
-	void SIMD_CALL Zero() 
+	void SIMD_CALL Zero() NOEXCEPT
 	{ 
 		__asm 
 		{
@@ -157,7 +157,7 @@ public:
 		}
 	};
 
-	void SIMD_CALL One()
+	void SIMD_CALL One() NOEXCEPT
 	{ 
 		__asm 
 		{
@@ -170,7 +170,7 @@ public:
 
 
 //	Real MMX Stuff starts here...
-	CMMXWVector& operator!()
+	CMMXWVector& operator!() NOEXCEPT
 	{
 		__asm
 		{
@@ -183,7 +183,7 @@ public:
 		return *this;
 	}
 	
-	CMMXWVector& operator-= (const CMMXWVector& v)
+	CMMXWVector& operator-= (const CMMXWVector& v) NOEXCEPT
 	{ 
 		__asm
 		{
@@ -197,7 +197,7 @@ public:
 		return *this; 
 	};
 
-	CMMXWVector& operator+= (const CMMXWVector& v)
+	CMMXWVector& operator+= (const CMMXWVector& v) NOEXCEPT
 	{ 
 		__asm
 		{
@@ -211,7 +211,7 @@ public:
 		return *this; 
 	};
 
-	CMMXWVector& operator*= (const CMMXWVector& v)
+	CMMXWVector& operator*= (const CMMXWVector& v) NOEXCEPT
 	{ 
 		__asm
 		{
@@ -227,22 +227,22 @@ public:
 
 
 	//	this = m*this
-	CMMXWVector& SIMD_CALL operator*= (const CMMXWMatrix& m);
+	CMMXWVector& SIMD_CALL operator*= (const CMMXWMatrix& m) NOEXCEPT;
 
 	// binary operations
 	// cross product
-	CMMXWVector& SIMD_CALL operator^  (const CMMXWVector& v2) const;
+	CMMXWVector& SIMD_CALL operator^  (const CMMXWVector& v2) const NOEXCEPT;
 
 	// dot product
-	CMMXWVector& SIMD_CALL operator*  (const CMMXWVector& v2) const;
+	CMMXWVector& SIMD_CALL operator*  (const CMMXWVector& v2) const NOEXCEPT;
 
 	// linear systems
     // return = m * this
-	CMMXWVector& SIMD_CALL operator*  (const CMMXWMatrix& m) const;
+	CMMXWVector& SIMD_CALL operator*  (const CMMXWMatrix& m) const NOEXCEPT;
 	
 	// scalar operations
-	CMMXWVector& SIMD_CALL operator+  (const CMMXWVector& v2) const;
-	CMMXWVector& SIMD_CALL operator-  (const CMMXWVector& v2) const;
+	CMMXWVector& SIMD_CALL operator+  (const CMMXWVector& v2) const NOEXCEPT;
+	CMMXWVector& SIMD_CALL operator-  (const CMMXWVector& v2) const NOEXCEPT;
 #endif
 };
 

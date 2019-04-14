@@ -25,7 +25,7 @@
 
 
 template <class T,int D>
-__inline CGenericMatrix<T,D>::CGenericMatrix() 
+__inline CGenericMatrix<T,D>::CGenericMatrix() NOEXCEPT
 {
 	Ident();
 };
@@ -41,20 +41,20 @@ __inline CGenericMatrix<T,D>::~CGenericMatrix()
 /////////////////////////////////////////////////////////////////////////////
 
 template <class T,int D>
-__inline void CGenericMatrix<T,D>::Zero() 
+__inline void CGenericMatrix<T,D>::Zero() NOEXCEPT
 { 
 	memset(m_matrix,0,sizeof(T)*D*D);
 }
 
 template <class T,int D>
-__inline void CGenericMatrix<T,D>::One() 
+__inline void CGenericMatrix<T,D>::One() NOEXCEPT
 { 
 	for (int i=0;i<D*D;i++)
 		m_matrix[i] = 1;
 }
 
 template <class T,int D>
-__inline void CGenericMatrix<T,D>::Ident() 
+__inline void CGenericMatrix<T,D>::Ident() NOEXCEPT
 { 
 	memset(m_matrix,0,sizeof(T)*D*D);
 	m_matrix[0] = m_matrix[5] = m_matrix[10] = m_matrix[15]=1; 

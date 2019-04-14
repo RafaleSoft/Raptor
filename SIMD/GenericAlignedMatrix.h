@@ -54,7 +54,7 @@ protected:
 	
 public:
 	// construction/destruction
-	CGenericAlignedMatrix();
+	CGenericAlignedMatrix() NOEXCEPT;
 	virtual ~CGenericAlignedMatrix();
 	virtual void Zero()
 	{
@@ -163,7 +163,7 @@ public:
 
 //	Matrix is aligned to a 16 bytes boundery
 template <class T>
-CGenericAlignedMatrix<T>::CGenericAlignedMatrix()
+CGenericAlignedMatrix<T>::CGenericAlignedMatrix() NOEXCEPT
 {
 	ALLOC_MATRIX(T)
 }

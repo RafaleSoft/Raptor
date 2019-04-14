@@ -497,8 +497,7 @@ bool CRaptorRenderBufferDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
 	m_bindingStack.push_back(m_framebuffer);
 
 	glPushAttrib(GL_VIEWPORT_BIT);
-	//glViewport(cs.x,cs.y,cs.width,cs.height);
-	glViewport(0,0,cs.width,cs.height); // Viewport is relative to window !!!
+	glViewport(/*cs.x,cs.y*/0,0,cs.width,cs.height); // Viewport is relative to window !!!
 	glMatrixMode(GL_PROJECTION);
 	glPushMatrix();
 	glMatrixMode(GL_MODELVIEW);

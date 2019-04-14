@@ -48,7 +48,7 @@ public:
 		*((int*)m_vector) = t;
 		return *this;
 	};
-	CBVector& operator= ( const char v[4] )
+	CBVector& operator= ( const char v[4] ) NOEXCEPT
 	{
 		int t = *((int*)v);
 		*((int*)m_vector) = t;

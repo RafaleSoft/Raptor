@@ -1,6 +1,22 @@
-// ViewPoint.cpp: implementation of the CViewPoint class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  ViewPoint.cpp                                                          */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
+
 #include "Subsys/CodeGeneration.h"
 
 #if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
@@ -171,6 +187,59 @@ void IViewPoint::getFrustum(CGenericMatrix<float, 4>& frustum) const
 		frustum[10] = -2 / (f - n); 
 		frustum[11] = -(f + n) / (f - n);
 
+		frustum[15] = 1;
+	}
+	else
+	{
+		// Unreachable code
+	}
+}
+
+void IViewPoint::getTransposeFrustum(CGenericMatrix<float, 4>& frustum) const
+{
+	frustum.Zero();
+
+	float l = viewVolume[0];
+	float r = viewVolume[1];
+	float b = viewVolume[2];
+	float t = viewVolume[3];
+	float n = viewVolume[4];
+	float f = viewVolume[5];
+
+	if (IViewPoint::PERSPECTIVE == model)
+	{
+		//	2.n / (r-l)			0				0				0
+		//		0			2.n / (t-b)			0				0
+		//	(r+l) / (r-l)	(t+b) / (t-b)	-(f+n) / (f-n)  	-1
+		//		0				0			-2.f.n / (f-n)		0
+
+		frustum[0] = 2 * n / (r - l);
+
+		frustum[5] = 2 * n / (t - b);
+		
+		frustum[8] = (r + l) / (r - l);
+		frustum[9] = (t + b) / (t - b);
+		frustum[10] = -(f + n) / (f - n);
+		frustum[11] = -1;
+
+		frustum[14] = -2 * f * n / (f - n);
+	}
+	else if (IViewPoint::ORTHOGRAPHIC == model)
+	{
+		//	2 / (r-l)			0				0				0
+		//		0			2 / (t-b)			0				0
+		//		0				0			-2 / (f-n)			0
+		//	-(r+l) / (r-l)	-(t+b) / (t-b)	-(f+n) / (f-n)		1
+
+		frustum[0] = 2 / (r - l);
+
+		frustum[5] = 2 / (t - b);
+		
+		frustum[10] = -2 / (f - n);
+
+		frustum[12] = -(r + l) / (r - l);
+		frustum[13] = -(t + b) / (t - b);
+		frustum[14] = -(f + n) / (f - n);
 		frustum[15] = 1;
 	}
 	else

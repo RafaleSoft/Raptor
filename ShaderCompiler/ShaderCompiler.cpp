@@ -296,14 +296,14 @@ void CDisplay::glRender(void)
         CRaptorConsole *pConsole = Raptor::GetConsole();
         pConsole->clear();
 
-        CRaptorConsole::TEXT_ITEM item;
-        item.offset = 20;
+        CGLFont::FONT_TEXT_ITEM item;
+        item.x_offset = 20;
         strstream text;
         text << "Shaders compiled: " << nbShadersOK << ends;
         item.text = text.str();
         pConsole->addItem(item);
 
-        item.offset = 20;
+        item.x_offset = 20;
         strstream text2;
         text2 << "Shaders failed: " << nbShadersKO << ends;
         item.text = text2.str();

@@ -1,6 +1,20 @@
-// GL2DTextureFont.cpp: implementation of the CGL2DTextureFont class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  GL2DTextureFont.cpp                                                    */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
 #include "Subsys/CodeGeneration.h"
 
 #include "Subsys/FreeType/TTBitmapFont.h"
@@ -15,10 +29,120 @@
 #if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
 	#include "System/RaptorErrorManager.h"
 #endif
+#if !defined(AFX_GEOMETRYALLOCATOR_H__802B3C7A_43F7_46B2_A79E_DDDC9012D371__INCLUDED_)
+	#include "Subsys/GeometryAllocator.h"
+#endif
+#if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
+	#include "System/RaptorGLExtensions.h"
+#endif
+#if !defined(AFX_VERTEXPROGRAM_H__204F7213_B40B_4B6A_9BCA_828409871B68__INCLUDED_)
+	#include "GLHierarchy/VertexProgram.h"
+#endif
+#if !defined(AFX_GEOMETRYPROGRAM_H__1981EA98_8F3C_4881_9429_A9ACA5B285D3__INCLUDED_)
+	#include "GLHierarchy/GeometryProgram.h"
+#endif
+#if !defined(AFX_SHADER_H__4D405EC2_7151_465D_86B6_1CA99B906777__INCLUDED_)
+	#include "GLHierarchy/Shader.h"
+#endif
+#if !defined(AFX_FRAGMENTPROGRAM_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
+	#include "GLHierarchy/FragmentProgram.h"
+#endif
 
-#define TEXTURE_WIDTH 256
+
+
+
+static const std::string font_vp_src =
+"#version 460 \n\
+\n\
+uniform vec4 viewport; \n\
+\n\
+layout(location = 0) in vec4 i_Position; \n\
+layout(location = 8) in vec4 i_TexCoord; \n\
+\n\
+out vec4 v_texCoord; \n\
+out vec2 v_size; \n\
+\n\
+void main (void) \n\
+{\n\
+	vec4 pos = vec4(i_Position.x / viewport.z - 1.0, 1.0 - i_Position.y / viewport.w, 0.0, 1.0); \n\
+	gl_Position = pos; \n\
+	v_texCoord = i_TexCoord; \n\
+	v_size = vec2(i_Position.z / viewport.z, i_Position.w / viewport.w); \n\
+}";
+
+static const std::string font_gp_src =
+"#version 460\n\
+\n\
+//	Expect the geometry shader extension to be available, warn if not. \n\
+#extension GL_ARB_geometry_shader4 : enable \n\
+\n\
+in vec4 v_texCoord[]; \n\
+in vec2 v_size[]; \n\
+\n\
+layout(points) in; \n\
+layout(triangle_strip, max_vertices=4) out; \n\
+layout(location = 1) out vec4 g_TexCoord[1]; \n\
+\n\
+void main() \n\
+{\n\
+	gl_Position = gl_in[0].gl_Position; \n\
+	g_TexCoord[0] = vec4(v_texCoord[0].x, v_texCoord[0].y, 0.0, 0.0); \n\
+	EmitVertex(); \n\
+	\n\
+	gl_Position = gl_in[0].gl_Position + vec4(v_size[0].x, 0.0, 0.0, 0.0); \n\
+	g_TexCoord[0] = vec4(v_texCoord[0].x + v_texCoord[0].z, v_texCoord[0].y, 0.0, 0.0); \n\
+	EmitVertex(); \n\
+	\n\
+	gl_Position = gl_in[0].gl_Position + vec4(0.0, v_size[0].y, 0.0, 0.0); \n\
+	g_TexCoord[0] = vec4(v_texCoord[0].x, v_texCoord[0].y + v_texCoord[0].w, 0.0, 0.0); \n\
+	EmitVertex(); \n\
+	\n\
+	gl_Position = gl_in[0].gl_Position + vec4(v_size[0].x,v_size[0].y, 0.0, 0.0); \n\
+	g_TexCoord[0] = vec4(v_texCoord[0].x + v_texCoord[0].z, v_texCoord[0].y + v_texCoord[0].w, 0.0, 0.0); \n\
+	EmitVertex(); \n\
+	\n\
+	EndPrimitive(); \n\
+}";
+
+static const std::string font_fp_src =
+"#version 460\n\
+\n\
+uniform	sampler2D diffuseMap; \n\
+uniform vec4 color; \n\
+\n\
+layout(location = 1) in vec4 g_TexCoord; \n\
+layout(location = 0) out vec4 o_Color;	\n\
+\n\
+void main (void) \n\
+{\n\
+	vec4 col = texture(diffuseMap,vec2(g_TexCoord.st)); \n\
+	o_Color = color * vec4(col.x,col.x,col.x,col.w); \n\
+}";
+
+
 
 RAPTOR_NAMESPACE
+
+static const size_t TEXTURE_WIDTH = 256;
+static const size_t FONT_SIZE = 256;
+static const size_t LINE_SIZE = 256;
+
+struct FONT_CACHEELT_t
+{
+	GL_COORD_VERTEX coord;
+	GL_COORD_VERTEX	texcoord;
+	float			advance;
+} FONT_CACHEELT;
+static FONT_CACHEELT_t font_cache[FONT_SIZE];
+static size_t FONT_CACHEPOINTER_SIZE = sizeof(FONT_CACHEELT)*FONT_SIZE / sizeof(float);
+static size_t LINE_CACHEPOINTER_SIZE = sizeof(FONT_CACHEELT)*LINE_SIZE / sizeof(float);
+
+static FONT_CACHEELT_t font_line[LINE_SIZE];
+static float *font_linePointer = NULL;
+
+CShader *CGL2DTextureFont::m_pShader = NULL;
+
+
 
 CGL2DTextureFont::CGL2DTextureFont(const std::string& name)
 	:CGL2DFont(name),
@@ -34,7 +158,7 @@ CGL2DTextureFont::~CGL2DTextureFont()
 {
 }
 
-bool CGL2DTextureFont::init(const std::string &filename, unsigned int size, bool antialiased)
+bool CGL2DTextureFont::glInit(const std::string &filename, unsigned int size, bool antialiased)
 {
 	m_bAntialiased = antialiased;
 
@@ -44,7 +168,7 @@ bool CGL2DTextureFont::init(const std::string &filename, unsigned int size, bool
 		unsigned int w = 0;
 
 		// find size of biggest char
-		for (unsigned int i = 0; i<256; i++)
+		for (unsigned int i = 0; i<FONT_SIZE; i++)
 		{
 			char c = (char)i;
 			FTGlyphBitmap* gbitmap = m_bmfont->getBitmap(c);
@@ -82,9 +206,9 @@ bool CGL2DTextureFont::init(const std::string &filename, unsigned int size, bool
 		factory.glResizeTexture(m_texture, W, H);
 		m_texture->glvkRender();
 
-		unsigned char *buffer = new unsigned char[2 * W*H];
+		unsigned char *buffer = new unsigned char[2 * W*H];	// lightmap alpha
 		memset(buffer, 0, 2 * W*H);
-		for (unsigned int i = 0; i<256; i++)
+		for (unsigned int i = 0; i<FONT_SIZE; i++)
 		{
 			char c = (char)i;
 			FTGlyphBitmap* gbitmap = m_bmfont->getBitmap(c);
@@ -119,7 +243,7 @@ bool CGL2DTextureFont::init(const std::string &filename, unsigned int size, bool
 		if (m_bAntialiased)
 		{
 			// Antialias font buffer
-			unsigned char *AAbuffer = new unsigned char[2 * W*H];
+			unsigned char *AAbuffer = new unsigned char[2 * W*H];		// lightmap alpha
 			for (size_t j = 0; j<H; j++)
 			{
 				for (size_t i = 0; i<W; i++)
@@ -201,15 +325,49 @@ bool CGL2DTextureFont::glGenGlyphs(float precision,
 								   float extrusion,
 								   float scale)
 {
-	glyph *glyphs = new glyph[256];
+	glyph *glyphs = new glyph[FONT_SIZE];
 	if (NULL == m_bmfont)
 		return false;
-
-	string c;
-	for (int i = 0; i < 256; i++)
+	
+	if (NULL == font_linePointer)
 	{
-		c = (char)i;
+		CGeometryAllocator *pAllocator = CGeometryAllocator::GetInstance();
+		if (pAllocator->isMemoryRelocated())
+			font_linePointer = pAllocator->allocateVertices(LINE_CACHEPOINTER_SIZE);
+		else
+			font_linePointer = &font_line[0].coord.x;
+	}
 
+	if (NULL == m_pShader)
+	{
+		m_pShader = new CShader(getName() + "_SHADER");
+
+		CVertexProgram *vp = m_pShader->glGetVertexProgram();
+		bool res = vp->glLoadProgram(font_vp_src);
+		CProgramParameters params;
+		GL_COORD_VERTEX viewport(0, 0, 640, 480);
+		params.addParameter("viewport", viewport);
+		vp->setProgramParameters(params);
+
+		CGeometryProgram *gp = m_pShader->glGetGeometryProgram();
+		gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
+		res = res & gp->glLoadProgram(font_gp_src);
+
+		CFragmentProgram *fs = m_pShader->glGetFragmentProgram();
+		res = res & fs->glLoadProgram(font_fp_src);
+		params.clear();
+		params.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);
+		params.addParameter("color", CColor::RGBA(1.0, 0.0, 0.0, 1.0));
+		fs->setProgramParameters(params);
+
+		res = res & m_pShader->glCompileShader();
+		if (!res)
+			return false;
+	}
+
+	int H = m_char_w * m_char_h;
+	for (int i = 0; i < FONT_SIZE; i++)
+	{
 		FTGlyphBitmap* gbitmap = m_bmfont->getBitmap(i);
 		if (gbitmap != 0)
 		{
@@ -218,28 +376,18 @@ bool CGL2DTextureFont::glGenGlyphs(float precision,
 
 			float dx = gbitmap->getDeltaX();
 			float dy = gbitmap->getDeltaY();
-
-			int H = m_char_w * m_char_h;
-
 			float ww = gbitmap->getWidth();
 			float hh = gbitmap->getHeight();
-
-			RAPTOR_HANDLE h;
-			h.hClass = CGLFont::CGLFontClassID::GetClassId().ID();
-			h.handle = glGenLists(1);
-			glNewList(h.handle, GL_COMPILE);
-			glBegin(GL_QUADS);
-				glTexCoord2f(u / TEXTURE_WIDTH, v / H);					glVertex2f(dx, dy);
-				glTexCoord2f((u + ww) / TEXTURE_WIDTH, v / H);			glVertex2f(dx + ww, dy);
-				glTexCoord2f((u + ww) / TEXTURE_WIDTH, (v + hh) / H);	glVertex2f(dx + ww, dy + hh);
-				glTexCoord2f(u / TEXTURE_WIDTH, (v + hh) / H);			glVertex2f(dx, dy + hh);
-			glEnd();
-			glEndList();
 
 			glyphs[i].halfWidth = -0.5f * ww;
 			glyphs[i].height = hh;
 			glyphs[i].advance = gbitmap->getAdvance();
-			glyphs[i].glList = h.handle;
+			glyphs[i].glList = 0;
+
+
+			font_cache[i].coord = GL_COORD_VERTEX(dx, dy, ww, hh);
+			font_cache[i].texcoord = GL_COORD_VERTEX(u / TEXTURE_WIDTH, v / H, ww / TEXTURE_WIDTH, hh / H);
+			font_cache[i].advance = glyphs[i].advance;
 		}
 	}
 
@@ -247,7 +395,7 @@ bool CGL2DTextureFont::glGenGlyphs(float precision,
 	return CGLFont::glGenGlyphs(precision, extrusion, scale);
 }
 
-void CGL2DTextureFont::glWrite(const std::string &text, int x, int y)
+void CGL2DTextureFont::glWrite(const std::string &text, int x, int y, const CColor::RGBA &color)
 {
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 	if (m_bmfont == NULL)
@@ -260,41 +408,148 @@ void CGL2DTextureFont::glWrite(const std::string &text, int x, int y)
 #endif
 
 	GLfloat viewport[4];
-
 	glGetFloatv(GL_VIEWPORT, viewport);
-	glMatrixMode(GL_MODELVIEW);
-	glPushMatrix();
-	glLoadIdentity();
-	glMatrixMode(GL_PROJECTION);
-	glPushMatrix();
-	glLoadIdentity();
-	glOrtho(viewport[0], viewport[2], viewport[1], viewport[3], 1, 20);
-	glMatrixMode(GL_MODELVIEW);
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+	CProgramParameters params;
+	GL_COORD_VERTEX vp(viewport[0], viewport[1], 0.5f * viewport[2], 0.5f * viewport[3]);
+	params.addParameter("viewport", vp);
+	m_pShader->glGetVertexProgram()->updateProgramParameters(params);
+	params.clear();
+	params.addParameter("color", color);
+	m_pShader->glGetFragmentProgram()->updateProgramParameters(params);
+
+	FONT_CACHEELT_t* pCache = (FONT_CACHEELT_t*)font_linePointer;
+#if defined(GL_ARB_vertex_program)
+	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::POSITION);
+	pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::TEXCOORD0);
+
+	pExtensions->glVertexAttribPointerARB(CProgramParameters::POSITION, 4, GL_FLOAT, false, sizeof(FONT_CACHEELT), &pCache[0].coord);
+	pExtensions->glVertexAttribPointerARB(CProgramParameters::TEXCOORD0, 4, GL_FLOAT, false, sizeof(FONT_CACHEELT), &pCache[0].texcoord);
+#else
+#endif
+
+	float advance = x;
+	size_t sz = text.size();
+	for (size_t i = 0; i < sz; i++)
+	{
+		unsigned char ch = text[i];
+		FONT_CACHEELT_t &elt = font_cache[ch];
+
+		font_line[i] = elt;
+		font_line[i].coord.x += advance;
+		font_line[i].coord.y = y - font_line[i].coord.y;
+		
+		advance = advance + elt.advance;
+	}
+
+	CGeometryAllocator *pAllocator = CGeometryAllocator::GetInstance();
+	if (pAllocator->isMemoryRelocated())
+		pAllocator->glvkCopyPointer(font_linePointer, (float*)&font_line[0], sizeof(FONT_CACHEELT) * sz / sizeof(float));
 
 	glEnable(GL_TEXTURE_2D);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	
+	m_pShader->glRender();
 	m_texture->glvkRender();
 
-	glTranslatef(x, viewport[3] - y, -1.0f);
-	for (unsigned int i = 0; i<text.size(); i++)
-	{
-		unsigned char ch = text[i];
+	glDrawArrays(GL_POINTS, 0, sz);
 
-		glyph *glyphs = (glyph*)m_glfontglyph.at(0);
-		glyph g = glyphs[ch];
-		glCallList(g.glList);
-		glTranslatef(g.advance, 0.0f, 0.0f);
-	}
+	m_pShader->glStop();
+
+#if defined(GL_ARB_vertex_program)
+	pExtensions->glDisableVertexAttribArrayARB(CProgramParameters::POSITION);
+	pExtensions->glDisableVertexAttribArrayARB(CProgramParameters::TEXCOORD0);
+#else
+#endif
+
 	glDisable(GL_TEXTURE_2D);
 	glDisable(GL_BLEND);
-
-	glMatrixMode(GL_PROJECTION);
-	glPopMatrix();
-	glMatrixMode(GL_MODELVIEW);
-	glPopMatrix();
 
 	CATCH_GL_ERROR
 }
 
+void CGL2DTextureFont::glWrite(const std::vector<FONT_TEXT_ITEM> &lines)
+{
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+	if (m_bmfont == NULL)
+	{
+		Raptor::GetErrorManager()->generateRaptorError(CGLFont::CGLFontClassID::GetClassId(),
+													   CRaptorErrorManager::RAPTOR_ERROR,
+													   CRaptorMessages::ID_INIT_FAILED);
+		return;
+	}
+#endif
+
+	GLfloat viewport[4];
+	glGetFloatv(GL_VIEWPORT, viewport);
+	CColor::RGBA color = CColor::RGBA(1.0f, 0.0f, 0.0f, 1.0f);
+
+	FONT_CACHEELT_t* pCache = (FONT_CACHEELT_t*)font_linePointer;
+#if defined(GL_ARB_vertex_program)
+	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::POSITION);
+	pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::TEXCOORD0);
+
+	pExtensions->glVertexAttribPointerARB(CProgramParameters::POSITION, 4, GL_FLOAT, false, sizeof(FONT_CACHEELT), &pCache[0].coord);
+	pExtensions->glVertexAttribPointerARB(CProgramParameters::TEXCOORD0, 4, GL_FLOAT, false, sizeof(FONT_CACHEELT), &pCache[0].texcoord);
+#else
+#endif
+
+	CProgramParameters params;
+	GL_COORD_VERTEX vp(viewport[0], viewport[1], 0.5f * viewport[2], 0.5f * viewport[3]);
+	params.addParameter("viewport", vp);
+	m_pShader->glGetVertexProgram()->updateProgramParameters(params);
+	params.clear();
+	params.addParameter("color", color);
+	m_pShader->glGetFragmentProgram()->updateProgramParameters(params);
+
+	GLsizei count = 0;
+	for (size_t l = 0; l < lines.size(); l++)
+	{
+		const FONT_TEXT_ITEM& item = lines[l];
+
+		float advance = item.x_offset;
+		size_t sz = item.text.size();
+		for (size_t i = 0; i < sz; i++)
+		{
+			unsigned char ch = item.text[i];
+			FONT_CACHEELT_t &elt = font_cache[ch];
+
+			font_line[i+count] = elt;
+			font_line[i+count].coord.x += advance;
+			font_line[i+count].coord.y = item.y_offset - font_line[i+count].coord.y;
+
+			advance = advance + elt.advance;
+		}
+
+		count += sz;
+	}
+
+	CGeometryAllocator *pAllocator = CGeometryAllocator::GetInstance();
+	if (pAllocator->isMemoryRelocated())
+		pAllocator->glvkCopyPointer(font_linePointer, (float*)&font_line[0], sizeof(FONT_CACHEELT) * count / sizeof(float));
+
+	glEnable(GL_TEXTURE_2D);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	m_pShader->glRender();
+	m_texture->glvkRender();
+
+	glDrawArrays(GL_POINTS, 0, count);
+
+	m_pShader->glStop();
+
+#if defined(GL_ARB_vertex_program)
+	pExtensions->glDisableVertexAttribArrayARB(CProgramParameters::POSITION);
+	pExtensions->glDisableVertexAttribArrayARB(CProgramParameters::TEXCOORD0);
+#else
+#endif
+
+	glDisable(GL_TEXTURE_2D);
+	glDisable(GL_BLEND);
+
+	CATCH_GL_ERROR
+}
