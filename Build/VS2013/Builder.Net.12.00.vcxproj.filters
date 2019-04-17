@@ -50,11 +50,6 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\Builder.Net\Redist.bat">
-      <Filter>Source Files</Filter>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
     <ResourceCompile Include="..\..\Builder.Net\res\app.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>

@@ -161,6 +161,7 @@ void CUnifiedProgram::glRender(void)
 		{
 			glQueryUniformLocations(RAPTOR_HANDLE(0, (void*)program));
 			glQueryAttributeLocations(RAPTOR_HANDLE(0, (void*)program));
+			//glGetBufferMemoryRequirements(RAPTOR_HANDLE(0, (void*)program));
 			m_bReLinked = false;
 		}
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
@@ -322,9 +323,11 @@ uint64_t CUnifiedProgram::glGetBufferMemoryRequirements(RAPTOR_HANDLE program)
 	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 
 	GLint active_blocks_count = 0;
-	GLint active_uniform_max_length = 0;
-	pExtensions->glGetProgramivARB(program.handle, GL_ACTIVE_UNIFORM_BLOCKS_ARB, &active_blocks_count);
-	pExtensions->glGetProgramivARB(program.handle, GL_ACTIVE_UNIFORM_MAX_LENGTH, &active_uniform_max_length);
+
+	//! Despite the fact that the GL_VERSION text is greater than 3.1, it seems there is a bug in the call
+	//! below : the actual value should be returned by glGetProgramiv and not by glGetObjectParameteriv.
+	//pExtensions->glGetProgramivARB(program.handle, GL_ACTIVE_UNIFORM_BLOCKS_ARB, &active_blocks_count);
+	pExtensions->glGetObjectParameterivARB(program.handle, GL_ACTIVE_UNIFORM_BLOCKS_ARB, &active_blocks_count);
 
 	for (GLint i = 0; i < active_blocks_count; i++)
 	{
@@ -333,64 +336,37 @@ uint64_t CUnifiedProgram::glGetBufferMemoryRequirements(RAPTOR_HANDLE program)
 
 		uniform_size += block_size;
 
-		/*
 		GLint active_uniforms = 0;
-		pExtensions->glGetActiveUniformBlockivARB(m_shaderProgram.handle, i, GL_UNIFORM_BLOCK_ACTIVE_UNIFORMS_ARB, &active_uniforms);
+		pExtensions->glGetActiveUniformBlockivARB(program.handle, i, GL_UNIFORM_BLOCK_ACTIVE_UNIFORMS_ARB, &active_uniforms);
+		GLint indices[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
+		pExtensions->glGetActiveUniformBlockivARB(program.handle, i, GL_UNIFORM_BLOCK_ACTIVE_UNIFORM_INDICES_ARB, &indices[0]);
 
-		const char* * uniformNames = new const char*[active_uniforms];
-		for (GLint j = 0; j < active_uniforms; j++)
-		uniformNames[j] = new const char[active_uniform_max_length];
-		GLuint* uniformIndices = new GLuint[active_uniforms];
-		pExtensions->glGetUniformIndicesARB(m_shaderProgram.handle, active_uniforms, uniformNames, uniformIndices);
-		*/
+		GLint active_uniform_max_length = 0;
+		//pExtensions->glGetProgramivARB(program.handle, GL_ACTIVE_UNIFORM_BLOCK_MAX_NAME_LENGTH_ARB, &active_uniform_max_length);
+		pExtensions->glGetObjectParameterivARB(program.handle, GL_ACTIVE_UNIFORM_BLOCK_MAX_NAME_LENGTH_ARB, &active_uniform_max_length);
+
+		GLint active_uniform_length = 0;
+		pExtensions->glGetActiveUniformBlockivARB(program.handle, i, GL_UNIFORM_BLOCK_NAME_LENGTH_ARB, &active_uniform_length);
+
+		GLsizei length = 0;
+		char uniformBlockName[256];
+		pExtensions->glGetActiveUniformBlockNameARB(program.handle, i, 256, &length, uniformBlockName);
+
+		GLuint uniformBlockIndex = pExtensions->glGetUniformBlockIndexARB(program.handle, uniformBlockName);
+
+		GLint binding = 0;
+		pExtensions->glGetActiveUniformBlockivARB(program.handle, i, GL_UNIFORM_BLOCK_BINDING_ARB, &binding);
+
+		GLint max_bindings = 0;
+		glGetIntegerv(GL_MAX_UNIFORM_BUFFER_BINDINGS_ARB, &max_bindings);
+
+		pExtensions->glGetActiveUniformBlockivARB(program.handle, i, GL_UNIFORM_BLOCK_BINDING_ARB, &binding);
 	}
 #endif
 
 	return uniform_size;
 }
 
-/*
-
-GLuint err = glGetError();
-while (GL_NO_ERROR != err)
-err = glGetError();
-
-GLuint uniformBlockIndex = pExtensions->glGetUniformBlockIndexARB(m_shaderProgram.handle, "UniformBufferObject");
-GLsizei uniformBlockSize = 0;
-pExtensions->glGetActiveUniformBlockivARB(	m_shaderProgram.handle, uniformBlockIndex,
-GL_UNIFORM_BLOCK_DATA_SIZE_ARB,
-&uniformBlockSize);
-
-GLsizei length = 0;
-char uniformBlockName[256];
-pExtensions->glGetActiveUniformBlockNameARB(m_shaderProgram.handle, uniformBlockIndex,
-256, &length,uniformBlockName);
-
-//pExtensions->glUniformBlockBindingARB(m_shaderProgram.handle, uniformBlockIndex, 0);
-err = glGetError();
-
-GLint active_blocks_count = 0;
-GLint active_uniform_max_length = 0;
-pExtensions->glGetProgramivARB(m_shaderProgram.handle, GL_ACTIVE_UNIFORM_BLOCKS_ARB, &active_blocks_count);
-err = glGetError();
-
-pExtensions->glGetProgramivARB(m_shaderProgram.handle, GL_ACTIVE_UNIFORM_BLOCK_MAX_NAME_LENGTH_ARB, &active_uniform_max_length);
-err = glGetError();
-
-const char* const names[1] = { "view" };
-GLuint index[1];
-pExtensions->glGetUniformIndicesARB(m_shaderProgram.handle, 1, names, index);
-GLint offset = -1;
-pExtensions->glGetActiveUniformsivARB(m_shaderProgram.handle, 1, index, GL_UNIFORM_OFFSET_ARB, &offset);
-GLint singleSize = -1;
-pExtensions->glGetActiveUniformsivARB(m_shaderProgram.handle, 1, index, GL_UNIFORM_SIZE_ARB, &singleSize);
-GLint singleType = -1;
-pExtensions->glGetActiveUniformsivARB(m_shaderProgram.handle, 1, index, GL_UNIFORM_TYPE_ARB, &singleType);
-
-err = glGetError();
-
-uint64_t size = m_pVProgram->glGetBufferMemoryRequirements(m_shaderProgram);
-*/
 
 bool isTypeVector(unsigned int shaderKind)
 {
