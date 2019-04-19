@@ -29,40 +29,19 @@
 using std::string;
 using std::vector;
 
+#include "BuilderNative.h"
+
 class CGLBuilder  
 {
 public:
-	typedef enum
-	{
-		CPU,
-		COREGL,
-		GLPROFILE,
-		COREVK,
-		ARB,
-		VK,
-		EXT,
-		NV,
-        APPLE,
-        ATI,
-        HP,
-        IBM,
-        SGIS,
-        SUN,
-		WGL,
-		GLX,
-		KHR,
-        MESA,
-		OES,
-		_3DFX
-	} EXTENSION_KIND;
-
 	typedef struct EXTENSION_TAG
 	{
 		EXTENSION_KIND	kind;
-		bool	active;
-		std::string	extensionName;
-        std::vector<std::string>  dependencies;
+		bool			active;
+		std::string		extensionName;
+		std::vector<std::string>  dependencies;
 	} EXTENSION;
+
 
 	static const char* core_profile;
 	static const char* compatibility_profile;

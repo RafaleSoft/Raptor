@@ -27,6 +27,9 @@
     <ClInclude Include="..\..\Builder\BuilderNative\GLBuilder.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Builder\BuilderNative\BuilderNative.cpp">
@@ -41,5 +44,10 @@
     <ClCompile Include="..\..\Builder\BuilderNative\GLBuilder.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="BuilderNative.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

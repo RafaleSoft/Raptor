@@ -21,7 +21,7 @@
 #include <GL\gl.h>
 #include "vulkan.h"
 #include <string>
-#include "BuilderNative.h"
+//#include "BuilderNative.h"
 
 #if !defined(AFX_GLBUILDER_H__0F2DA94E_7293_494C_B936_8CB72098E626__INCLUDED_)
 	#include "GLBuilder.h"
@@ -38,24 +38,64 @@ typedef const char * (APIENTRY * pfnc)(HDC hdc);
 struct VkPhysicalDevice_T {};
 struct VkInstance_T {};
 
+//	The builder instance.
+static CGLBuilder	*builder = NULL;
 
-
-
-// This is the constructor of a class that has been exported.
-// see BuilderNative.h for the class definition
-CBuilderNative::CBuilderNative()
+int glCreateContext(HDC& hdc, HGLRC& glhrc)
 {
-	builder = new CGLBuilder();
+	DWORD	flags;
+	BYTE	alphabits = 8;
+	BYTE	depthbits = 24;
+	BYTE	stencilbits = 8;
+
+	flags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_SWAP_EXCHANGE | PFD_DOUBLEBUFFER;
+
+	PIXELFORMATDESCRIPTOR pfd = { sizeof(PIXELFORMATDESCRIPTOR),  //  size of this pfd 
+		1,                     // version number 
+		flags,
+		PFD_TYPE_RGBA,         // RGBA type 
+		24,                    // 24-bit color depth 
+		0, 0, 0, 0, 0, 0,      // color bits ignored 
+		alphabits,             // 8 bits alpha buffer 
+		0,                     // alpha shift bit
+		0,                     // no accumulation buffer 
+		0, 0, 0, 0,            // accum bits ignored 
+		depthbits,             // 16/24/32-bit z-buffer	 
+		stencilbits,           // 8 bits stencil buffer 
+		0,                     // no auxiliary buffer 
+		PFD_MAIN_PLANE,        // main layer 
+		0,                     // reserved 
+		0, 0, 0                // layer masks ignored 
+	};
+
+	int pixelformat = 0;
+	if ((pixelformat = ChoosePixelFormat(hdc, &pfd)) == 0)
+	{
+		return -1;
+	}
+
+	if (SetPixelFormat(hdc, pixelformat, &pfd) == FALSE)
+	{
+		return -1;
+	}
+
+	glhrc = wglCreateContext(hdc);
+	if (!glhrc)
+	{
+		return -1;
+	}
+	else
+	{
+		return 0;
+	}
 }
 
-CBuilderNative::~CBuilderNative(void)
+bool glvkInitBuilder(HDC dc)
 {
-	delete builder;
-}
+	if (NULL == builder)
+		builder = new CGLBuilder();
 
-
-void CBuilderNative::glvkInitBuilder(HDC dc, HGLRC glhrc)
-{
+	HGLRC glhrc;
 	int res = glCreateContext(dc, glhrc);
 
 	if (res == 0)
@@ -160,6 +200,8 @@ void CBuilderNative::glvkInitBuilder(HDC dc, HGLRC glhrc)
 		glextensions += builder->setVersion(version);
 		builder->glQueryExtensions(glextensions);
 	}
+	else
+		return false;
 
 	const CPU_INFO& cpu = getCPUINFO();
 
@@ -173,54 +215,41 @@ void CBuilderNative::glvkInitBuilder(HDC dc, HGLRC glhrc)
 	builder->activateExtension("RAPTOR_AES_CODE_GENERATION", cpu.hasFeature(CPU_INFO::AES));
 	builder->activateExtension("RAPTOR_AVX_CODE_GENERATION", cpu.hasFeature(CPU_INFO::AVX));
 	builder->activateExtension("RAPTOR_FMA_CODE_GENERATION", cpu.hasFeature(CPU_INFO::FMA));
+
+	return true;
 }
 
-
-int CBuilderNative::glCreateContext(HDC& hdc, HGLRC& glhrc)
+bool getExtensions(NATIVE_EXTENSION* ext, uint32_t *s)
 {
-	DWORD	flags;
-	BYTE	alphabits = 8;
-	BYTE	depthbits = 24;
-	BYTE	stencilbits = 8;
+	if (NULL == builder)
+		return false;
 
-	flags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_SWAP_EXCHANGE | PFD_DOUBLEBUFFER;
-
-	PIXELFORMATDESCRIPTOR pfd = {	sizeof(PIXELFORMATDESCRIPTOR),  //  size of this pfd 
-									1,                     // version number 
-									flags,
-									PFD_TYPE_RGBA,         // RGBA type 
-									24,                    // 24-bit color depth 
-									0, 0, 0, 0, 0, 0,      // color bits ignored 
-									alphabits,             // 8 bits alpha buffer 
-									0,                     // alpha shift bit
-									0,                     // no accumulation buffer 
-									0, 0, 0, 0,            // accum bits ignored 
-									depthbits,             // 16/24/32-bit z-buffer	 
-									stencilbits,           // 8 bits stencil buffer 
-									0,                     // no auxiliary buffer 
-									PFD_MAIN_PLANE,        // main layer 
-									0,                     // reserved 
-									0, 0, 0                // layer masks ignored 
-								};
-
-	int pixelformat = 0;
-	if ((pixelformat = ChoosePixelFormat(hdc, &pfd)) == 0)
-	{
-		return -1;
-	}
-
-	if (SetPixelFormat(hdc, pixelformat, &pfd) == FALSE)
-	{
-		return -1;
-	}
-
-	glhrc = wglCreateContext(hdc);
-	if (!glhrc)
-	{
-		return -1;
-	}
+	if (NULL == ext)
+		if (NULL != s)
+			*s = builder->getExtensions().size();
+		else
+			return false;
 	else
 	{
-		return 0;
+		if (NULL == s)
+			return false;
+		const std::vector<CGLBuilder::EXTENSION> &extensions = builder->getExtensions();
+
+		size_t sz = max(*s, extensions.size());
+		for (size_t i = 0; i < sz; i++)
+		{
+			const CGLBuilder::EXTENSION& extension = extensions[i];
+			ext[i].kind = extension.kind;
+			ext[i].active = extension.active;
+			ext[i].extensionName = _strdup(extension.extensionName.c_str());
+
+			size_t nb = extension.dependencies.size();
+			ext[i].nb_dependencies = nb;
+			ext[i].dependencies = (const char**)(malloc(nb));
+			for (size_t j = 0; j < nb; j++)
+				ext[i].dependencies[j] = _strdup(extension.dependencies[j].c_str());
+		}
 	}
+
+	return true;
 }
