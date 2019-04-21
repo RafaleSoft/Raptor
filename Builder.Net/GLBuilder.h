@@ -1,6 +1,21 @@
-// GLBuilder.h: interface for the CGLBuilder class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  GLBuilder.h                                                            */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
 
 #if !defined(AFX_GLBUILDER_H__0F2DA94E_7293_494C_B936_8CB72098E626__INCLUDED_)
 #define AFX_GLBUILDER_H__0F2DA94E_7293_494C_B936_8CB72098E626__INCLUDED_
@@ -21,6 +36,7 @@ public:
 	{
 		CPU,
 		COREGL,
+		GLPROFILE,
 		COREVK,
 		ARB,
 		VK,
@@ -47,6 +63,11 @@ public:
 		std::string	extensionName;
         std::vector<std::string>  dependencies;
 	} EXTENSION;
+
+	static const char* core_profile;
+	static const char* compatibility_profile;
+	static const char* full_profile;
+
 
 public:
 	CGLBuilder();
@@ -92,13 +113,13 @@ public:
 
 private:
 	//!	Helper to register Raptor extensions.
-	void addExtension(EXTENSION_KIND kind, std::string extensionName);
+	void addExtension(EXTENSION_KIND kind, const std::string& extensionName);
 
 	//!	Helper to register Raptor extensions.
-	void addExtension(EXTENSION_KIND kind, std::string extensionName, std::string extensionDependency);
+	void addExtension(EXTENSION_KIND kind, const std::string& extensionName, const std::string& extensionDependency);
 
 	//!	Helper to register Raptor extensions.
-	void addExtension(EXTENSION_KIND kind, std::string extensionName, std::string extensionDependency, std::string extensionDependency2);
+	void addExtension(EXTENSION_KIND kind, const std::string& extensionName, const std::string& extensionDependency, const std::string& extensionDependency2);
 
 
 	std::vector<EXTENSION>	extensions;

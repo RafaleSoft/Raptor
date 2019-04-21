@@ -605,6 +605,12 @@
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\IRenderingProperties.cpp">
       <Filter>Source Files\GLHierarchy src</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\TextureQuad.cpp">
+      <Filter>Source Files\GLHierarchy src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\LightFlare.cpp">
+      <Filter>Source Files\GLHierarchy src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Xsd Include="Subsys\ObjectModels\Raptor.xsd">
@@ -1160,6 +1166,12 @@
     </ClInclude>
     <ClInclude Include="..\..\RaptorCore\resource.h">
       <Filter>Resource Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\TextureQuad.h">
+      <Filter>Header Files\GLHierarchy include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\LightFlare.h">
+      <Filter>Header Files\GLHierarchy include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

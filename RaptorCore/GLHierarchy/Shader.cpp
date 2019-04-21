@@ -687,7 +687,7 @@ void CShader::glRenderMaterial(void)
 		if (m_pMaterial!=NULL)
 		    m_pMaterial->glRender();
 		else
-			glColor4fv(m_color);
+			glColor4f(m_color.r, m_color.g, m_color.b, m_color.a);
 	}
 	else
     {
@@ -698,7 +698,7 @@ void CShader::glRenderMaterial(void)
             glColor4f(m_ambient.r * ambientMat.r,m_ambient.g * ambientMat.g,m_ambient.b * ambientMat.b,1.0f);
         }
         else
-		    glColor4fv(m_color);
+		    glColor4f(m_color.r, m_color.g, m_color.b, m_color.a);
     }
 
     CATCH_GL_ERROR

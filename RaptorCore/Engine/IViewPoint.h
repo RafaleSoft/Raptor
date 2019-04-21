@@ -75,6 +75,9 @@ public:
 	//! Return the projection matrix corresponding to the view volume
 	void getFrustum(CGenericMatrix<float, 4>& frustum) const;
 
+	//! Return the transpose projection matrix corresponding to the view volume
+	void getTransposeFrustum(CGenericMatrix<float, 4>& frustum) const;
+
 	//!
 	//!	Transforms
 	//!

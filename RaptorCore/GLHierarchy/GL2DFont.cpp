@@ -97,7 +97,7 @@ float CGL2DFont::getWidth(const std::string &s) const
 
 
 
-void CGL2DFont::glWrite(const std::string &text, int x, int y)
+void CGL2DFont::glWrite(const std::string &text, int x, int y, const CColor::RGBA	&color)
 {
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 	if (m_bmfont == NULL)

@@ -199,10 +199,14 @@ const z_crc_t FAR * ZEXPORT get_crc_table()
 #define DO8 DO1; DO1; DO1; DO1; DO1; DO1; DO1; DO1
 
 /* ========================================================================= */
+#ifndef STDC
 unsigned long ZEXPORT crc32_z(crc, buf, len)
     unsigned long crc;
     const unsigned char FAR *buf;
     z_size_t len;
+#else
+unsigned long ZEXPORT crc32_z(unsigned long crc, const unsigned char FAR *buf, z_size_t len)
+#endif
 {
     if (buf == Z_NULL) return 0UL;
 
@@ -234,10 +238,14 @@ unsigned long ZEXPORT crc32_z(crc, buf, len)
 }
 
 /* ========================================================================= */
+#ifndef STDC
 unsigned long ZEXPORT crc32(crc, buf, len)
     unsigned long crc;
     const unsigned char FAR *buf;
     uInt len;
+#else
+unsigned long ZEXPORT crc32(unsigned long crc, const unsigned char FAR *buf, uInt len)
+#endif
 {
     return crc32_z(crc, buf, len);
 }
@@ -263,10 +271,14 @@ unsigned long ZEXPORT crc32(crc, buf, len)
 #define DOLIT32 DOLIT4; DOLIT4; DOLIT4; DOLIT4; DOLIT4; DOLIT4; DOLIT4; DOLIT4
 
 /* ========================================================================= */
+#ifndef STDC
 local unsigned long crc32_little(crc, buf, len)
     unsigned long crc;
     const unsigned char FAR *buf;
     z_size_t len;
+#else
+local unsigned long crc32_little(unsigned long crc, const unsigned char FAR *buf, z_size_t len)
+#endif
 {
     register z_crc_t c;
     register const z_crc_t FAR *buf4;
@@ -303,10 +315,14 @@ local unsigned long crc32_little(crc, buf, len)
 #define DOBIG32 DOBIG4; DOBIG4; DOBIG4; DOBIG4; DOBIG4; DOBIG4; DOBIG4; DOBIG4
 
 /* ========================================================================= */
+#ifndef STDC
 local unsigned long crc32_big(crc, buf, len)
     unsigned long crc;
     const unsigned char FAR *buf;
     z_size_t len;
+#else
+local unsigned long crc32_big(unsigned long crc, const unsigned char FAR *buf, z_size_t len)
+#endif
 {
     register z_crc_t c;
     register const z_crc_t FAR *buf4;
@@ -341,9 +357,13 @@ local unsigned long crc32_big(crc, buf, len)
 #define GF2_DIM 32      /* dimension of GF(2) vectors (length of CRC) */
 
 /* ========================================================================= */
+#ifndef STDC
 local unsigned long gf2_matrix_times(mat, vec)
     unsigned long *mat;
     unsigned long vec;
+#else
+local unsigned long gf2_matrix_times(unsigned long *mat, unsigned long vec)
+#endif
 {
     unsigned long sum;
 
@@ -358,9 +378,13 @@ local unsigned long gf2_matrix_times(mat, vec)
 }
 
 /* ========================================================================= */
+#ifndef STDC
 local void gf2_matrix_square(square, mat)
     unsigned long *square;
     unsigned long *mat;
+#else
+local void gf2_matrix_square(unsigned long *square, unsigned long *mat)
+#endif
 {
     int n;
 
@@ -369,10 +393,14 @@ local void gf2_matrix_square(square, mat)
 }
 
 /* ========================================================================= */
+#ifndef STDC
 local uLong crc32_combine_(crc1, crc2, len2)
     uLong crc1;
     uLong crc2;
     z_off64_t len2;
+#else
+local uLong crc32_combine_(uLong crc1, uLong crc2, z_off64_t len2)
+#endif
 {
     int n;
     unsigned long row;
@@ -425,18 +453,26 @@ local uLong crc32_combine_(crc1, crc2, len2)
 }
 
 /* ========================================================================= */
+#ifndef STDC
 uLong ZEXPORT crc32_combine(crc1, crc2, len2)
     uLong crc1;
     uLong crc2;
     z_off_t len2;
+#else
+uLong ZEXPORT crc32_combine(uLong crc1, uLong crc2, z_off_t len2)
+#endif
 {
     return crc32_combine_(crc1, crc2, len2);
 }
 
+#ifndef STDC
 uLong ZEXPORT crc32_combine64(crc1, crc2, len2)
     uLong crc1;
     uLong crc2;
     z_off64_t len2;
+#else
+uLong ZEXPORT crc32_combine64(uLong crc1, uLong crc2, z_off64_t len2)
+#endif
 {
     return crc32_combine_(crc1, crc2, len2);
 }

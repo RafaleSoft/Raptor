@@ -115,7 +115,7 @@ void DOMCharacterDataImpl::appendData(const DOMNode *node, const  XMLCh *dat, XM
     fDataBuf->append(dat, n);
 }
 
-void DOMCharacterDataImpl::appendDataFast(const DOMNode *node, const  XMLCh *dat, XMLSize_t n)
+void DOMCharacterDataImpl::appendDataFast(const DOMNode *, const  XMLCh *dat, XMLSize_t n)
 {
     // This function makes the following assumptions:
     //

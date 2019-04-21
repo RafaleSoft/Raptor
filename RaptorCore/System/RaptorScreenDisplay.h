@@ -23,6 +23,8 @@ class CGeometryAllocator;
 class CTexelAllocator;
 class CUniformAllocator;
 class CAnimatorStream;
+class CTextureQuad;
+
 
 //! This class implements an OGL display for direct screen rendering
 class CRaptorScreenDisplay : public CRaptorDisplay  
@@ -84,7 +86,13 @@ public:
 
 
 protected:
+	//! Inherited to handle occlusion queries display resources
+	virtual void unLink(const CPersistence*);
+
+	//!	Renders the main display scene.
 	virtual void glRenderScene();
+
+	void glDrawLogo(void);
 
 	//! number of frames in previous second
 	float	fps;
@@ -125,9 +133,14 @@ protected:
 	IDeviceMemoryManager	*m_pDeviceMemory;
 
 private:
+	//!	Implement Display Status.
     virtual bool glQueryStatus(CRaptorDisplayConfig &state,unsigned long query) const;
 
+	//!	Allocates Geometry, Textures and Uniforms resources
 	void allocateResources(void);
+
+	CTextureQuad*	glBuildLogo(void);
+	CTextureQuad*	pLogo;
 
 	//!	Frame number in current second.
 	int		nbFramesPerSecond;

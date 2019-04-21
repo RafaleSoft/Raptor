@@ -1,3 +1,23 @@
+/***************************************************************************/
+/*                                                                         */
+/*  GenericVector.h                                                        */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
+
+
 #ifndef __GENERIC_VECTOR_H__
 #define __GENERIC_VECTOR_H__
 
@@ -17,7 +37,7 @@ class CGenericVector
 {	
 public:
 	// construction/destruction
-	CGenericVector();
+	CGenericVector() NOEXCEPT;
 	CGenericVector(const T v[D]);
 
 	//! Deprecated
@@ -62,7 +82,7 @@ public:
 	bool SIMD_CALL operator== ( const T v[D] ) const;
 	virtual double SIMD_CALL Norm() const;
 	virtual double SIMD_CALL Normalize();
-	virtual T SIMD_CALL Length() const;
+	virtual T SIMD_CALL Length() const NOEXCEPT;
 
 
 	// unary operations
@@ -97,5 +117,5 @@ protected:
 
 
 
-#endif
+#endif	// __GENERIC_VECTOR_H__
 

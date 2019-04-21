@@ -1,6 +1,21 @@
-// MMXShortVector.cpp: implementation of the CMMXShortVector class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  MMXWVector.cpp                                                         */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
 
 #if !defined(AFX_MMXWVector_H__EDBB336A_5AF7_4AF0_9000_1F0F0CE7C0C0__INCLUDED_)
 	#include "MMXWVector.h"
@@ -10,7 +25,7 @@
 
 extern CMMXWVector _unalignedMMXShortVector;
 
-CMMXWVector& SIMD_CALL CMMXWVector::operator^  (const CMMXWVector& v2) const
+CMMXWVector& SIMD_CALL CMMXWVector::operator^  (const CMMXWVector& v2) const NOEXCEPT
 {
 	__asm
 	{
@@ -46,7 +61,7 @@ CMMXWVector& SIMD_CALL CMMXWVector::operator^  (const CMMXWVector& v2) const
 	return _unalignedMMXShortVector;
 };
 
-CMMXWVector& SIMD_CALL CMMXWVector::operator*  (const CMMXWVector& v2) const
+CMMXWVector& SIMD_CALL CMMXWVector::operator*  (const CMMXWVector& v2) const NOEXCEPT
 {
 	__asm
 	{
@@ -62,7 +77,7 @@ CMMXWVector& SIMD_CALL CMMXWVector::operator*  (const CMMXWVector& v2) const
 	return _unalignedMMXShortVector;
 };
 
-CMMXWVector& SIMD_CALL CMMXWVector::operator*  (const CMMXWMatrix& m) const
+CMMXWVector& SIMD_CALL CMMXWVector::operator*  (const CMMXWMatrix& m) const NOEXCEPT
 {
 	int t[2];
 	_asm
@@ -150,7 +165,7 @@ CMMXWVector& SIMD_CALL operator*  (const CMMXWVector& v, const CMMXWMatrix& m)
 	return _unalignedMMXShortVector;
 }
 
-CMMXWVector& SIMD_CALL CMMXWVector::operator+  (const CMMXWVector& v2) const
+CMMXWVector& SIMD_CALL CMMXWVector::operator+  (const CMMXWVector& v2) const NOEXCEPT
 {
 	__asm
 	{
@@ -166,7 +181,7 @@ CMMXWVector& SIMD_CALL CMMXWVector::operator+  (const CMMXWVector& v2) const
 	return _unalignedMMXShortVector;
 };
 
-CMMXWVector& SIMD_CALL CMMXWVector::operator-  (const CMMXWVector& v2) const
+CMMXWVector& SIMD_CALL CMMXWVector::operator-  (const CMMXWVector& v2) const NOEXCEPT
 {
 	__asm
 	{
@@ -182,7 +197,7 @@ CMMXWVector& SIMD_CALL CMMXWVector::operator-  (const CMMXWVector& v2) const
 	return _unalignedMMXShortVector;
 };
 
-CMMXWVector& SIMD_CALL CMMXWVector::operator*= (const CMMXWMatrix& m)
+CMMXWVector& SIMD_CALL CMMXWVector::operator*= (const CMMXWMatrix& m) NOEXCEPT
 {
 	int t[2];
 	_asm
@@ -228,5 +243,5 @@ CMMXWVector& SIMD_CALL CMMXWVector::operator*= (const CMMXWMatrix& m)
 	return *this;
 }
 
-#endif
+#endif	// SIMD_NO_ASSEMBLY
 

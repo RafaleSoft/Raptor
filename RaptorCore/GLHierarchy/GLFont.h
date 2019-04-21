@@ -1,6 +1,21 @@
-// GLFont.h: interface for the CGLFont class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  GLFont.h                                                               */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
 #if !defined(AFX_GLFONT_H__D451FE62_5FE1_11D3_9142_BA23BC92E77C__INCLUDED_)
 #define AFX_GLFONT_H__D451FE62_5FE1_11D3_9142_BA23BC92E77C__INCLUDED_
 
@@ -22,6 +37,25 @@ RAPTOR_NAMESPACE_BEGIN
 
 class RAPTOR_API CGLFont : public CPersistence
 {
+public:
+	//!	That structure stores data to write a console line on screen.
+	typedef struct FONT_TEXT_ITEM_t
+	{
+		//!	horizontal position, in pixels.
+		uint32_t		x_offset;
+		//!	vertical position, in pixels (y axis in reversed, i.e. top left corner is 0, increasing value go to bottom left corner.
+		uint32_t		y_offset;
+		//!	text line to write.
+		std::string		text;
+		//!	Text color.
+		CColor::RGBA	color;
+
+		FONT_TEXT_ITEM_t() :x_offset(0), y_offset(0), color(1.0f, 0.0f, 0.0f, 1.0f) {};
+		FONT_TEXT_ITEM_t(uint32_t x, uint32_t y, const std::string &t, const CColor::RGBA &c)
+			:x_offset(x), y_offset(y), text(t), color(c) {};
+	} FONT_TEXT_ITEM;
+
+
 public:
 	virtual ~CGLFont();
 
@@ -62,7 +96,21 @@ public:
 	}
 
 	//!	Writes text using glyphs without generating a new display list.
-	virtual void glWrite(const std::string &text, int x, int y);
+	//!	@param text : the text to write with this font.
+	//! @param x : the horizontal displacement to start writing.
+	//! @param y : the horizontal displacement to start writing.
+	//! @param color : a user provided color to write text.
+	virtual void glWrite(const std::string &text,
+						int x, 
+						int y,
+						const CColor::RGBA	&color);
+
+	//!	Writes text using glyphs without generating a new display list.
+	//!	@param text : the text to write with this font.
+	//! @param x : the horizontal displacement to start writing.
+	//! @param y : the horizontal displacement to start writing.
+	//! @param color : a user provided color to write text.
+	virtual void glWrite(const std::vector<FONT_TEXT_ITEM> &lines);
 
 	//!	Computes a 3D font width for the specified text string
 	//! @param s : the text for which width is queried
@@ -110,9 +158,9 @@ protected:
 		GLfloat		advance;
 	} glyph;
 
-	string	m_fontFileName;
-	unsigned int m_currentGlyphset;
-	vector<glyph*>	m_glfontglyph;
+	std::string			m_fontFileName;
+	unsigned int		m_currentGlyphset;
+	std::vector<glyph*>	m_glfontglyph;
 
 
 private:
@@ -120,8 +168,8 @@ private:
 	CGLFont(const CGLFont&);
 	CGLFont& operator=(const CGLFont&);
 
-	unsigned int	m_size;
-	vector<void*>	m_glfontglyphsettings;
+	unsigned int		m_size;
+	std::vector<void*>	m_glfontglyphsettings;
 };
 
 RAPTOR_NAMESPACE_END

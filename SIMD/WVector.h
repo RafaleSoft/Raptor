@@ -1,6 +1,20 @@
-// WVector.h: interface for the CWVector class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  WVector.h                                                              */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
 
 #if !defined(AFX_WVector_H__7493DD94_5C3A_4025_9FA6_C8F0EC4BE053__INCLUDED_)
 #define AFX_WVector_H__7493DD94_5C3A_4025_9FA6_C8F0EC4BE053__INCLUDED_
@@ -17,11 +31,11 @@ class CWVector : public CGenericVector<unsigned short>
 {
 public:
 	// Construction/Destruction
-	CWVector(){};
+	CWVector() NOEXCEPT {};
 	virtual ~CWVector(){};
 
 #ifndef SIMD_NO_ASSEMBLY
-	CWVector& operator= ( const CWVector& v )
+	CWVector& operator= ( const CWVector& v ) NOEXCEPT
 	{
 		__asm
 		{
@@ -34,7 +48,7 @@ public:
 		}
 		return *this;
 	};
-	CWVector& operator= ( const CGenericVector<unsigned short>& v )
+	CWVector& operator= ( const CGenericVector<unsigned short>& v ) NOEXCEPT
 	{
 		__asm
 		{
@@ -47,7 +61,7 @@ public:
 		}
 		return *this;
 	};
-	CWVector& operator= ( const unsigned short v[4] )
+	CWVector& operator= ( const unsigned short v[4] ) NOEXCEPT
 	{
 		__asm
 		{
@@ -62,7 +76,7 @@ public:
 	};	
 
 	//operations
-	bool operator== ( const CGenericVector<unsigned short>& v ) const
+	bool operator== ( const CGenericVector<unsigned short>& v ) const NOEXCEPT
 	{
 		__asm
 		{
@@ -83,7 +97,7 @@ public:
 	};
 #pragma warning(default:4035)
 
-	bool operator== ( const CWVector& v ) const
+	bool operator== ( const CWVector& v ) const NOEXCEPT
 	{
 		__asm
 		{
@@ -104,7 +118,7 @@ public:
 	};
 #pragma warning(default:4035)
 
-	bool operator== ( const unsigned short v[4] ) const
+	bool operator== ( const unsigned short v[4] ) const NOEXCEPT
 	{
 		__asm
 		{
@@ -125,7 +139,7 @@ public:
 	};
 #pragma warning(default:4035)
 
-	void SIMD_CALL Zero()
+	void SIMD_CALL Zero() NOEXCEPT
 	{
 		__asm
 		{
@@ -136,7 +150,7 @@ public:
 		}
 	};
 
-	void SIMD_CALL One()
+	void SIMD_CALL One() NOEXCEPT
 	{
 		__asm
 		{

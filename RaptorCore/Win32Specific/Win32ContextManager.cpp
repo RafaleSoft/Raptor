@@ -24,9 +24,6 @@
 #if !defined(AFX_WIN32APPLICATION_H__3EADD210_ABF5_4CFD_A511_09047EDBB881__INCLUDED_)
     #include "Win32Application.h"
 #endif
-#if !defined(AFX_RAPTORCONSOLE_H__27656611_2DF3_4416_8124_F608CFAC2122__INCLUDED_)
-	#include "System/RaptorConsole.h"
-#endif
 
 #include <strstream>
 
@@ -462,12 +459,6 @@ void CWin32ContextManager::glSwapBuffers(RENDERING_CONTEXT_ID ctx)
 	if ((ctx >= 0) && (ctx < MAX_CONTEXT))
 	{
 		context_t& context = pContext[ctx];
-
-#ifdef SHAREWARE_RELEASE
-		if (Global::GetInstance().getCurrentStatus().runAsShareware)
-			glDrawLogo();
-#endif
-		
         wglSwapLayerBuffers(context.WIN32Context,WGL_SWAP_MAIN_PLANE);
 
         CATCH_WIN32_ERROR

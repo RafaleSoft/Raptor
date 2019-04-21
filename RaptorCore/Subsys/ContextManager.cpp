@@ -1,6 +1,20 @@
-// ContextManager.cpp: implementation of the CContextManager class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  ContextManager.cpp                                                     */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
 
 #include "Subsys/CodeGeneration.h"
 
@@ -16,9 +30,6 @@
 #endif
 #if !defined(AFX_RAPTORVKEXTENSIONS_H__B17D6B7F_5AFC_4E34_9D49_8DC6CE9192D6__INCLUDED_)
 	#include "System/RaptorVKExtensions.h"
-#endif
-#if !defined(AFX_TEXTUREFACTORY_H__1B470EC4_4B68_11D3_9142_9A502CBADC6B__INCLUDED_)
-	#include "GLHierarchy/TextureFactory.h"
 #endif
 #if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
     #include "System/RaptorErrorManager.h"
@@ -38,10 +49,6 @@
     #if !defined(AFX_GLXCONTEXTMANAGER_H__B6CE3CDF_D7E4_4B9C_89BF_5E934062BC97__INCLUDED_)
         #include "GLXSpecific/GLXContextManager.h"
     #endif
-#endif
-
-#if !defined(AFX_RAPTORDATAMANAGER_H__114BFB19_FA00_4E3E_879E_C9130043668E__INCLUDED_)
-    #include "DataManager/RaptorDataManager.h"
 #endif
 
 #if defined(VK_VERSION_1_0)
@@ -74,8 +81,7 @@ static CVulkanDevice defaultDevice;
 //////////////////////////////////////////////////////////////////////
 
 CContextManager::CContextManager()
-	:m_logo(),
-	m_currentGLContext(CContextManager::INVALID_CONTEXT)
+	:m_currentGLContext(CContextManager::INVALID_CONTEXT)
 #if defined(VK_VERSION_1_0)
 	,m_currentVKContext(CContextManager::INVALID_CONTEXT)
 	,m_pVkContext(NULL)
@@ -96,8 +102,6 @@ CContextManager::~CContextManager()
 	if (NULL != m_pVkContext)
 		delete [] m_pVkContext;
 #endif
-
-	glRemoveLogo();
 }
 
 CContextManager *CContextManager::GetInstance(void)
@@ -112,118 +116,6 @@ CContextManager *CContextManager::GetInstance(void)
 	}
 
 	return p_manager;
-}
-
-void CContextManager::glDrawLogo(void)
-{
-	if (m_logo.handle != NULL)
-		glCallList(m_logo.handle);
-	else
-	{
-		if (m_pLogo == NULL)
-			m_pLogo = glBuildLogo();
-
-		m_logo.handle = glGenLists(1);
-		glNewList(m_logo.handle,GL_COMPILE_AND_EXECUTE);
-
-		glPushAttrib(GL_ENABLE_BIT|GL_TEXTURE_BIT|GL_POLYGON_BIT);
-		glPushMatrix();
-		glMatrixMode(GL_PROJECTION);
-		glPushMatrix();
-
-		glLoadIdentity();
-		glOrtho(-1.0f,1.0f,-1.0f,1.0f,-1.0,1.0);
-		glMatrixMode(GL_MODELVIEW);
-		glLoadIdentity();
-		glDisable(GL_DEPTH_TEST);
-		glDisable(GL_LIGHTING);
-		glDisable(GL_CULL_FACE);
-		glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-
-	#if defined(GL_ARB_multitexture)
-		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
-		if (pExtensions->glActiveTextureARB != NULL)
-		{
-			pExtensions->glActiveTextureARB(GL_TEXTURE3_ARB);
-			glDisable(GL_TEXTURE_2D);
-			pExtensions->glActiveTextureARB(GL_TEXTURE2_ARB);
-			glDisable(GL_TEXTURE_2D);
-			pExtensions->glActiveTextureARB(GL_TEXTURE1_ARB);
-			glDisable(GL_TEXTURE_2D);
-			pExtensions->glActiveTextureARB(GL_TEXTURE0_ARB);
-		}
-	#endif
-
-	#if defined(GL_ARB_fragment_program)
-		glDisable(GL_FRAGMENT_PROGRAM_ARB);
-	#endif
-	#if defined(GL_NV_texture_shader)
-		glDisable(GL_TEXTURE_SHADER_NV);
-	#endif
-
-		glEnable(GL_TEXTURE_2D);
-		glColor4f(1.0f,1.0f,1.0f,0.75f);
-		if (!(m_pLogo == NULL))
-			m_pLogo->glvkRender();
-		glBegin(GL_QUADS);
-			glTexCoord2f(0.0f,1.0f);		glVertex3f(0.7f,-0.85f,1.0f);
-			glTexCoord2f(0.0f,0.0f);		glVertex3f(0.7f,-1.0f,1.0f);
-			glTexCoord2f(1.0f,0.0f);		glVertex3f(1.0f,-1.0f,1.0f);
-			glTexCoord2f(1.0f,1.0f);		glVertex3f(1.0f,-0.85f,1.0f);
-		glEnd();
-
-		glMatrixMode(GL_PROJECTION);
-		glPopMatrix();
-		glMatrixMode(GL_MODELVIEW);
-		glPopMatrix();
-		glPopAttrib();
-
-		glEndList();
-	}
-
-	CATCH_GL_ERROR
-}
-
-CTextureObject* CContextManager::glBuildLogo(void)
-{
-    glPushAttrib(GL_TEXTURE_BIT);
-
-	CTextureFactory &Txt = CTextureFactory::getDefaultFactory();
-	CTextureObject *p_Logo = Txt.glCreateTexture(	ITextureObject::CGL_COLOR24_ALPHA,
-													CTextureObject::CGL_MULTIPLY,
-													ITextureObject::CGL_BILINEAR);
-
-    CRaptorDataManager  *dataManager = CRaptorDataManager::GetInstance();
-    if (dataManager == NULL)
-        return NULL;
-
-	string filepath = dataManager->ExportFile("Raptor_logo_sml.txt");
-	if (!filepath.empty())
-    {
-        p_Logo->glSetTransparency(256);
-		Txt.glLoadCompressedTexture(p_Logo,filepath);
-    }
-	/*
-	p_Logo->glSetTransparency(256);
-	if (Txt.glLoadTexture(p_Logo,"Raptor_logo_sml.tga",CGL_USER_MIPMAPPED))
-		Txt.glExportCompressedTexture("Raptor_logo_sml.txt",p_Logo);
-	*/
-
-    glPopAttrib();
-
-	CATCH_GL_ERROR
-
-    return p_Logo;
-}
-
-
-void CContextManager::glRemoveLogo(void)
-{
-    m_pLogo = NULL;
-
-	CATCH_GL_ERROR
 }
 
 bool CContextManager::validateConfig(CRaptorDisplayConfig& rdc)

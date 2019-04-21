@@ -1,6 +1,20 @@
-// SSEFMatrix.cpp: implementation of the CSSEFMatrix class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  SSEFMatrix.cpp                                                         */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
 
 #if !defined(AFX_SSEFMATRIX_H__7923E89B_7F26_4EE5_8038_15480F2B7985__INCLUDED_)
 	#include "SSEFMatrix.h"
@@ -13,7 +27,7 @@ extern CSSEFVector	_alignedSSEFloatVector;
 //////////////////////////////////////////////////////////////////////
 #pragma warning(disable:4100)
 
-CSSEFMatrix::CSSEFMatrix()
+CSSEFMatrix::CSSEFMatrix() NOEXCEPT
 {
 }
 
@@ -23,7 +37,7 @@ CSSEFMatrix::~CSSEFMatrix()
 
 #ifndef SIMD_NO_ASSEMBLY
 
-SIMD_ENTRY CSSEFMatrix& SIMD_CALL CSSEFMatrix::operator-(const CSSEFMatrix& m2) const
+SIMD_ENTRY CSSEFMatrix& SIMD_CALL CSSEFMatrix::operator-(const CSSEFMatrix& m2) const NOEXCEPT
 {
 	__asm
 	{
@@ -71,7 +85,7 @@ SIMD_ENTRY CSSEFMatrix& SIMD_CALL CSSEFMatrix::operator-(const CSSEFMatrix& m2) 
 	}
 }
 
-SIMD_ENTRY CSSEFMatrix& SIMD_CALL CSSEFMatrix::operator+(const CSSEFMatrix& m2) const
+SIMD_ENTRY CSSEFMatrix& SIMD_CALL CSSEFMatrix::operator+(const CSSEFMatrix& m2) const NOEXCEPT
 {
 	__asm
 	{
@@ -120,7 +134,7 @@ SIMD_ENTRY CSSEFMatrix& SIMD_CALL CSSEFMatrix::operator+(const CSSEFMatrix& m2) 
 }
 
 
-SIMD_ENTRY CSSEFMatrix& SIMD_CALL operator*(const CSSEFMatrix& m1,const CSSEFMatrix& m2)
+SIMD_ENTRY CSSEFMatrix& SIMD_CALL operator*(const CSSEFMatrix& m1,const CSSEFMatrix& m2) NOEXCEPT
 {
 	__asm
 	{
@@ -233,7 +247,7 @@ SIMD_ENTRY CSSEFMatrix& SIMD_CALL operator*(const CSSEFMatrix& m1,const CSSEFMat
 }
 
 
-SIMD_ENTRY CSSEFMatrix& SIMD_CALL CSSEFMatrix::operator*=(const CSSEFMatrix& m)
+SIMD_ENTRY CSSEFMatrix& SIMD_CALL CSSEFMatrix::operator*=(const CSSEFMatrix& m) NOEXCEPT
 {
 	__asm
 	{
@@ -345,7 +359,7 @@ SIMD_ENTRY CSSEFMatrix& SIMD_CALL CSSEFMatrix::operator*=(const CSSEFMatrix& m)
 	}
 }
 
-SIMD_ENTRY CSSEFMatrix& SIMD_CALL operator* (const CSSEFMatrix& m, const float& v)
+SIMD_ENTRY CSSEFMatrix& SIMD_CALL operator* (const CSSEFMatrix& m, const float& v) NOEXCEPT
 {
 	__asm
 	{
@@ -391,7 +405,7 @@ SIMD_ENTRY CSSEFMatrix& SIMD_CALL operator* (const CSSEFMatrix& m, const float& 
 }
 
 
-SIMD_ENTRY CSSEFMatrix& SIMD_CALL operator* (const float& v, const CSSEFMatrix& m)
+SIMD_ENTRY CSSEFMatrix& SIMD_CALL operator* (const float& v, const CSSEFMatrix& m) NOEXCEPT
 {
 	__asm
 	{
@@ -541,4 +555,4 @@ float SIMD_CALL CSSEFMatrix::Det(void)
 			_alignedSSEFloatVector[3];
 }
 
-#endif
+#endif	// SIMD_NO_ASSEMBLY

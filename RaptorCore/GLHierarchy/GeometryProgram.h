@@ -68,8 +68,15 @@ public:
     //! @return : true if binding is done without errors, false otherwise.
     bool glBindProgram(RAPTOR_HANDLE program);
 
+	//!	Configure the geometry chader.
+	//!	The shader code must be conformant to these parameters.
+	//! @return false in case of invallid parameter.
+	bool setGeometry(uint32_t inputType, uint32_t outputType, uint32_t verticesOut);
+
+
 	//!	Implements CPersistence
 	DECLARE_CLASS_ID(CGeometryProgramClassID,"GeometryProgram",CShaderProgram)
+
 
 private:
 	//!	Forbidden operators
@@ -81,7 +88,17 @@ private:
     //! Specific init of shader parameters
     virtual void	glInitShaders();
 
+	//!	See base class.
 	static bool		m_bGeometryProgramReady;
+
+	//! Input primitive type.
+	uint32_t	m_inputType;
+
+	//! Output primitive type.
+	uint32_t	m_outputType;
+
+	//! Number of vertivces emitted by primitive.
+	uint32_t	m_verticesOut;
 };
 
 RAPTOR_NAMESPACE_END

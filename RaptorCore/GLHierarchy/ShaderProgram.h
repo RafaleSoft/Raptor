@@ -68,7 +68,7 @@ public:
     //! They will be actually applied after a successfull link is issued.
     virtual void setProgramParameters(const CProgramParameters &v);
 
-	//! This method can be used to upadte only a subset of the actual parameter set.
+	//! This method can be used to update only a subset of the actual parameter set.
 	//! They will be actually applied after a successfull link is issued.
 	virtual void updateProgramParameters(const CProgramParameters &v);
 

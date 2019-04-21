@@ -1,5 +1,19 @@
-// DemoDoc.cpp : implementation of the CDemoDoc class
-//
+/***************************************************************************/
+/*                                                                         */
+/*  DemoDoc.cpp                                                            */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
 
 #include "StdAfx.h"
 #include "DemoDoc.h"
@@ -277,6 +291,7 @@ void CDemoDoc::GLInitContext(void)
 	m_objects = new CObjectStore;
 	m_objects->SetPerf(true);
 
+	m_objects->LoadPack();
 	m_objects->LoadModels();
 	m_objects->BuildObjects();
     m_objects->BuildScene();
@@ -297,7 +312,7 @@ void CDemoDoc::GLInitContext(void)
     pConsole->activateConsole(true);
     pConsole->runBatch("Demo.cmd");
     pConsole->activateConsole(false);
-
+	 
     m_pScene->glManageEnvironment(CEnvironment::SHADOW_VOLUME,0,0);
     //m_pScene->glManageEnvironment(CEnvironment::SHADOW_MAP,1024,1024);
     m_pScene->useSceneGlobalAmbient(CColor::RGBA(0.1f,0.1f,0.1f,1.0f));

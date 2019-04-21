@@ -1,3 +1,21 @@
+/***************************************************************************/
+/*                                                                         */
+/*  GenericAlignedMatrix.h                                                 */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
 #ifndef __GENERIC_ALIGNED_MATRIX_H__
 #define __GENERIC_ALIGNED_MATRIX_H__
 
@@ -7,6 +25,8 @@
 #ifndef __SIMDMACROS_H__
     #include "simdMacros.h"
 #endif
+
+
 
 template <class T> class CGenericAlignedVector;
 class CSSEFMatrix;
@@ -34,7 +54,7 @@ protected:
 	
 public:
 	// construction/destruction
-	CGenericAlignedMatrix();
+	CGenericAlignedMatrix() NOEXCEPT;
 	virtual ~CGenericAlignedMatrix();
 	virtual void Zero()
 	{
@@ -143,7 +163,7 @@ public:
 
 //	Matrix is aligned to a 16 bytes boundery
 template <class T>
-CGenericAlignedMatrix<T>::CGenericAlignedMatrix()
+CGenericAlignedMatrix<T>::CGenericAlignedMatrix() NOEXCEPT
 {
 	ALLOC_MATRIX(T)
 }
@@ -226,9 +246,9 @@ __inline CGenericAlignedMatrix<T> SIMD_CALL CGenericAlignedMatrix<T>::operator* 
 		for (int i=0;i<16;i+=4)
 		{
 			m.m_matrix[j+i] =	m_matrix[i] * t0 +
-							              m_matrix[i+1] * t1 +
-							              m_matrix[i+2] * t2 +
-							              m_matrix[i+3] * t3;
+							    m_matrix[i+1] * t1 +
+							    m_matrix[i+2] * t2 +
+							    m_matrix[i+3] * t3;
 		}
 	}
 	return m;
@@ -279,5 +299,5 @@ __inline CGenericAlignedVector<T> SIMD_CALL CGenericAlignedMatrix<T>::operator* 
 	return v;
 }
 
-#endif
+#endif	// __GENERIC_ALIGNED_MATRIX_H__
 

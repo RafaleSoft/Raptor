@@ -1,6 +1,21 @@
-/////////////////////////////////////////////////////////////////////////////////////////////
-// definition
-/////////////////////////////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  GenericVector.cxx                                                      */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
 #ifndef __GENERIC_VECTOR_IMPL__
 #define __GENERIC_VECTOR_IMPL__
 
@@ -10,7 +25,7 @@
 
 
 template <class T,int D>
-__inline CGenericVector<T,D>::CGenericVector() 
+__inline CGenericVector<T,D>::CGenericVector() NOEXCEPT
 {
 	for (int i=0;i<D-1;i++)
 		m_vector[i] = 0; 
@@ -122,7 +137,7 @@ __inline double SIMD_CALL CGenericVector<T,D>::Norm() const
 };
 
 template <class T,int D>
-__inline T SIMD_CALL CGenericVector<T,D>::Length() const
+__inline T SIMD_CALL CGenericVector<T,D>::Length() const NOEXCEPT
 { 
 	return (T)(m_vector[0]+m_vector[1]+m_vector[2]+m_vector[3]); 
 };
@@ -302,5 +317,5 @@ __inline std::ostream& operator<<(std::ostream& o, const CGenericVector<T,D>& v)
 };
 
 
-#endif
+#endif	// __GENERIC_VECTOR_IMPL__
 

@@ -1,6 +1,21 @@
-/////////////////////////////////////////////////////////////////////////////////////////////
-// definition
-/////////////////////////////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  GenericMatrix.cxx                                                      */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
 #ifndef __GENERIC_MATRIX_IMPL__
 #define __GENERIC_MATRIX_IMPL__
 
@@ -10,7 +25,7 @@
 
 
 template <class T,int D>
-__inline CGenericMatrix<T,D>::CGenericMatrix() 
+__inline CGenericMatrix<T,D>::CGenericMatrix() NOEXCEPT
 {
 	Ident();
 };
@@ -26,20 +41,20 @@ __inline CGenericMatrix<T,D>::~CGenericMatrix()
 /////////////////////////////////////////////////////////////////////////////
 
 template <class T,int D>
-__inline void CGenericMatrix<T,D>::Zero() 
+__inline void CGenericMatrix<T,D>::Zero() NOEXCEPT
 { 
 	memset(m_matrix,0,sizeof(T)*D*D);
 }
 
 template <class T,int D>
-__inline void CGenericMatrix<T,D>::One() 
+__inline void CGenericMatrix<T,D>::One() NOEXCEPT
 { 
 	for (int i=0;i<D*D;i++)
 		m_matrix[i] = 1;
 }
 
 template <class T,int D>
-__inline void CGenericMatrix<T,D>::Ident() 
+__inline void CGenericMatrix<T,D>::Ident() NOEXCEPT
 { 
 	memset(m_matrix,0,sizeof(T)*D*D);
 	m_matrix[0] = m_matrix[5] = m_matrix[10] = m_matrix[15]=1; 
@@ -392,5 +407,5 @@ std::ostream& operator<< (std::ostream& o, const CGenericMatrix<T,D>& m)
 	return o;
 };
 
-#endif
+#endif	// __GENERIC_MATRIX_IMPL__
 

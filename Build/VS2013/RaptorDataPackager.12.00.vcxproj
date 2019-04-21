@@ -203,7 +203,7 @@
       <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;ZLIB_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
@@ -298,6 +298,7 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\RaptorData\RaptorDataPackager\PackageIO.cpp" />
     <ClCompile Include="..\..\RaptorData\RaptorDataPackager\RaptorDataPackager.cpp" />
     <ClCompile Include="..\..\RaptorData\RaptorDataPackager\StdAfx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -307,6 +308,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\RaptorData\RaptorDataPackager\PackageHeader.h" />
+    <ClInclude Include="..\..\RaptorData\RaptorDataPackager\PackageIO.h" />
     <ClInclude Include="..\..\RaptorData\RaptorDataPackager\resource.h" />
     <ClInclude Include="..\..\RaptorData\RaptorDataPackager\StdAfx.h" />
   </ItemGroup>

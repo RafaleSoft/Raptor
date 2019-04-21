@@ -14,8 +14,12 @@ local z_size_t gz_write OF((gz_statep, voidpc, z_size_t));
 /* Initialize state for writing a gzip file.  Mark initialization by setting
    state->size to non-zero.  Return -1 on a memory allocation failure, or 0 on
    success. */
+#ifndef STDC
 local int gz_init(state)
     gz_statep state;
+#else
+local int gz_init(gz_statep state)
+#endif
 {
     int ret;
     z_streamp strm = &(state->strm);

@@ -169,7 +169,7 @@ bool Global::init(const CRaptorConfig& config)
 {
 	if (!raptorStatus.initialised)
 	{
-		globalConfig = config; 
+		globalConfig = config;
 
 		//	Initialise memory first
 		CHostMemoryManager::GetInstance()->init();
@@ -182,8 +182,6 @@ bool Global::init(const CRaptorConfig& config)
 		CRaptorDataManager  *dataManager = CRaptorDataManager::GetInstance();
 		if (dataManager != NULL)
 		{
-			//	Erase previous files in case of updates
-			dataManager->ClearExports();
 			string filepath = dataManager->ExportFile("RaptorMessages.xml");
 			if (!filepath.empty())
 				raptorStatus.messages->LoadMessages(filepath);
