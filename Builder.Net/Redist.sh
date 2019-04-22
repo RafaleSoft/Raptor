@@ -68,7 +68,7 @@ cp ./RaptorCore/Engine/ParticleManager.h Redist/Include/Engine
 cp ./RaptorCore/Engine/Physics.h Redist/Include/Engine
 cp ./RaptorCore/Engine/TimeObject.h Redist/Include/Engine
 cp ./RaptorCore/Engine/ViewModifier.h Redist/Include/Engine
-cp ./RaptorCore/Engine/ViewPoint.h Redist/Include/Engine
+cp ./RaptorCore/Engine/IViewPoint.h Redist/Include/Engine
 
 echo "		GLHierarchy:"
 cp ./RaptorCore/GLHierarchy/3DSet.h Redist/Include/GLHierarchy
@@ -105,7 +105,7 @@ cp ./RaptorCore/GLHierarchy/PerlinNoise.h Redist/Include/GLHierarchy
 cp ./RaptorCore/GLHierarchy/Persistence.h Redist/Include/GLHierarchy
 cp ./RaptorCore/GLHierarchy/ProgramParameters.h Redist/Include/GLHierarchy
 cp ./RaptorCore/GLHierarchy/Projector.h Redist/Include/GLHierarchy
-cp ./RaptorCore/GLHierarchy/RenderingProperties.h Redist/Include/GLHierarchy
+cp ./RaptorCore/GLHierarchy/IRenderingProperties.h Redist/Include/GLHierarchy
 cp ./RaptorCore/GLHierarchy/ShadedGeometry.h Redist/Include/GLHierarchy
 cp ./RaptorCore/GLHierarchy/Shader.h Redist/Include/GLHierarchy
 cp ./RaptorCore/GLHierarchy/ShaderProgram.h Redist/Include/GLHierarchy
