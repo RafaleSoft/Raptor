@@ -1,6 +1,21 @@
-// SSEFloatVector.h: interface for the CSSEFVector class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  SSEFVector.h                                                           */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
 
 #if !defined(AFX_SSEFLOATVECTOR_H__9AAB93A4_DB7C_4486_802A_1B4CE4E6CEC4__INCLUDED_)
 #define AFX_SSEFLOATVECTOR_H__9AAB93A4_DB7C_4486_802A_1B4CE4E6CEC4__INCLUDED_
@@ -29,7 +44,7 @@ public:
 	virtual ~CSSEFVector() {};
 
 #ifndef SIMD_NO_ASSEMBLY
-	CSSEFVector& operator= ( const CSSEFVector& v )
+	CSSEFVector& operator= ( const CSSEFVector& v ) NOEXCEPT
 	{
 		__asm
 		{
@@ -42,7 +57,7 @@ public:
 		}
 		return *this;
 	};
-	CSSEFVector& operator= ( const CGenericAlignedVector<float>& v )
+	CSSEFVector& operator= ( const CGenericAlignedVector<float>& v ) NOEXCEPT
 	{
 		__asm
 		{
@@ -55,7 +70,7 @@ public:
 		}
 		return *this;
 	};
-	CSSEFVector& operator= ( const CGenericVector<float>& v )
+	CSSEFVector& operator= ( const CGenericVector<float>& v ) NOEXCEPT
 	{
 		__asm
 		{
@@ -67,7 +82,7 @@ public:
 		}
 		return *this;
 	};
-	CSSEFVector& operator= ( const float v[4] )
+	CSSEFVector& operator= ( const float v[4] ) NOEXCEPT
 	{
 		__asm
 		{
@@ -80,7 +95,7 @@ public:
 		return *this;
 	};		
 
-	bool operator== ( const CGenericAlignedVector<float>& v ) const
+	bool operator== ( const CGenericAlignedVector<float>& v ) const NOEXCEPT
 	{
 		__asm
 		{
@@ -110,7 +125,7 @@ public:
 	};
 #pragma warning(default:4035)
 
-	bool operator== ( const CSSEFVector& v ) const
+	bool operator== ( const CSSEFVector& v ) const NOEXCEPT
 	{
 		__asm
 		{
@@ -141,34 +156,34 @@ public:
 #pragma warning(default:4035)
 
 
-	virtual double SIMD_CALL Norm() const;
-	virtual double SIMD_CALL Normalize();
+	virtual double SIMD_CALL Norm() const NOEXCEPT;
+	virtual double SIMD_CALL Normalize() NOEXCEPT;
 
 
-	CSSEFVector& SIMD_CALL operator-(void);
-	CSSEFVector& SIMD_CALL operator!(void);
-	CSSEFVector& SIMD_CALL operator-=(const CGenericAlignedVector<float>& v);
-	CSSEFVector& SIMD_CALL operator+=(const CGenericAlignedVector<float>& v);
-	CSSEFVector& SIMD_CALL operator*=(const CGenericAlignedVector<float>& v);
-	CSSEFVector& SIMD_CALL operator*= (const float& t);
+	CSSEFVector& SIMD_CALL operator-(void) NOEXCEPT;
+	CSSEFVector& SIMD_CALL operator!(void) NOEXCEPT;
+	CSSEFVector& SIMD_CALL operator-=(const CGenericAlignedVector<float>& v) NOEXCEPT;
+	CSSEFVector& SIMD_CALL operator+=(const CGenericAlignedVector<float>& v) NOEXCEPT;
+	CSSEFVector& SIMD_CALL operator*=(const CGenericAlignedVector<float>& v) NOEXCEPT;
+	CSSEFVector& SIMD_CALL operator*= (const float& t) NOEXCEPT;
 	
 	//	this = m*this
-	CSSEFVector& SIMD_CALL operator*= (const CGenericAlignedMatrix<float>& m);
+	CSSEFVector& SIMD_CALL operator*= (const CGenericAlignedMatrix<float>& m) NOEXCEPT;
 
-	CSSEFVector& SIMD_CALL operator+  (const CSSEFVector&) const;
-  CSSEFVector& SIMD_CALL operator-  (const CSSEFVector&) const;
+	CSSEFVector& SIMD_CALL operator+  (const CSSEFVector&) const NOEXCEPT;
+  CSSEFVector& SIMD_CALL operator-  (const CSSEFVector&) const NOEXCEPT;
 #endif
 };
 
 #ifndef SIMD_NO_ASSEMBLY
 // cross product
-CSSEFVector& SIMD_CALL operator^  (const CSSEFVector&, const CSSEFVector&);
+CSSEFVector& SIMD_CALL operator^  (const CSSEFVector&, const CSSEFVector&) NOEXCEPT;
 // scalar operations
-CSSEFVector& SIMD_CALL operator*  (const CSSEFVector&, const CSSEFVector&);
-CSSEFVector& SIMD_CALL operator*  (const float&, const CSSEFVector&);
-CSSEFVector& SIMD_CALL operator*  (const CSSEFVector&, const float&);
-CSSEFVector& SIMD_CALL operator*  (const CSSEFMatrix&, const CSSEFVector&);
-CSSEFVector& SIMD_CALL operator*  (const CSSEFVector&, const CSSEFMatrix&);
+CSSEFVector& SIMD_CALL operator*  (const CSSEFVector&, const CSSEFVector&) NOEXCEPT;
+CSSEFVector& SIMD_CALL operator*  (const float&, const CSSEFVector&) NOEXCEPT;
+CSSEFVector& SIMD_CALL operator*  (const CSSEFVector&, const float&) NOEXCEPT;
+CSSEFVector& SIMD_CALL operator*  (const CSSEFMatrix&, const CSSEFVector&) NOEXCEPT;
+CSSEFVector& SIMD_CALL operator*  (const CSSEFVector&, const CSSEFMatrix&) NOEXCEPT;
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -176,7 +191,7 @@ CSSEFVector& SIMD_CALL operator*  (const CSSEFVector&, const CSSEFMatrix&);
 /////////////////////////////////////////////////////////////////////////////////////////////
 extern CSSEFVector _alignedSSEFloatVector;
 
-__inline CSSEFVector& SIMD_CALL CSSEFVector::operator-(void)
+__inline CSSEFVector& SIMD_CALL CSSEFVector::operator-(void) NOEXCEPT
 {
 	__asm
 	{
@@ -191,7 +206,7 @@ __inline CSSEFVector& SIMD_CALL CSSEFVector::operator-(void)
 	return _alignedSSEFloatVector;
 }
 
-__inline CSSEFVector& SIMD_CALL CSSEFVector::operator!(void)
+__inline CSSEFVector& SIMD_CALL CSSEFVector::operator!(void) NOEXCEPT
 {
 		__asm
 	{
@@ -205,7 +220,7 @@ __inline CSSEFVector& SIMD_CALL CSSEFVector::operator!(void)
 }
 
 
-__inline CSSEFVector& SIMD_CALL CSSEFVector::operator-=(const CGenericAlignedVector<float>& v)
+__inline CSSEFVector& SIMD_CALL CSSEFVector::operator-=(const CGenericAlignedVector<float>& v) NOEXCEPT
 {
 	__asm
 	{
@@ -220,7 +235,7 @@ __inline CSSEFVector& SIMD_CALL CSSEFVector::operator-=(const CGenericAlignedVec
 	return *this;
 }
 
-__inline CSSEFVector& SIMD_CALL CSSEFVector::operator+=(const CGenericAlignedVector<float>& v)
+__inline CSSEFVector& SIMD_CALL CSSEFVector::operator+=(const CGenericAlignedVector<float>& v) NOEXCEPT
 {
 	__asm
 	{
@@ -235,7 +250,7 @@ __inline CSSEFVector& SIMD_CALL CSSEFVector::operator+=(const CGenericAlignedVec
 	return *this;
 }
 
-__inline CSSEFVector& SIMD_CALL CSSEFVector::operator*=(const CGenericAlignedVector<float>& v)
+__inline CSSEFVector& SIMD_CALL CSSEFVector::operator*=(const CGenericAlignedVector<float>& v) NOEXCEPT
 {
 	__asm
 	{
@@ -250,7 +265,7 @@ __inline CSSEFVector& SIMD_CALL CSSEFVector::operator*=(const CGenericAlignedVec
 	return *this;
 }
 
-__inline CSSEFVector& SIMD_CALL CSSEFVector::operator*=(const float& t)
+__inline CSSEFVector& SIMD_CALL CSSEFVector::operator*=(const float& t) NOEXCEPT
 {
 	__asm
 	{
@@ -266,9 +281,9 @@ __inline CSSEFVector& SIMD_CALL CSSEFVector::operator*=(const float& t)
 }
 
 
-__inline double SIMD_CALL CSSEFVector::Norm() const
+__inline double SIMD_CALL CSSEFVector::Norm() const NOEXCEPT
 {
-	float res;
+	float res = 0.0f;
 	__asm
 	{
 		mov ebx,this
@@ -288,9 +303,9 @@ __inline double SIMD_CALL CSSEFVector::Norm() const
 	return res;
 }
 
-__inline double SIMD_CALL CSSEFVector::Normalize()
+__inline double SIMD_CALL CSSEFVector::Normalize() NOEXCEPT
 {
-	float res;
+	float res = 0.0f;
 	__asm
 	{
 		mov ebx,this

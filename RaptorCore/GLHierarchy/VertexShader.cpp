@@ -259,6 +259,7 @@ void RAPTOR_FASTCALL CVertexShader::glPointParameter(float minSize,float maxSize
 		pExtensions->glPointParameterfEXT(GL_POINT_SIZE_MAX_EXT,maxSize);
 	
 	pExtensions->glPointParameterfvEXT(GL_DISTANCE_ATTENUATION_EXT,attenuation);
+
 #endif
 
 	CATCH_GL_ERROR

@@ -1,6 +1,22 @@
-// VulkanDevice.cpp: implementation of the CVulkanDisplay class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  VulkanDevice.cpp                                                       */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
+
 #include "Subsys/CodeGeneration.h"
 
 #if !defined(AFX_RAPTORVULKANDEVICE_H__2FDEDD40_444E_4CC2_96AA_CBF9E79C3ABE__INCLUDED_)
@@ -253,7 +269,7 @@ bool CVulkanDevice::vkUploadDataToDevice(bool blocking) const
 								0, NULL };
 	VkResult res = vkQueueSubmit(transferQueue, 1, &submit_info, NULL );
 	CATCH_VK_ERROR(res);
-	
+
 	if (blocking)
 	{
 		res = vkQueueWaitIdle(transferQueue);

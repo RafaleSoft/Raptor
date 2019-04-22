@@ -400,12 +400,27 @@ void C3DScene::glRender(void)
 
 	glPopMatrix();
 	
+	int	blendSrc;
+	int	blendDst;
+	glGetIntegerv(GL_BLEND_SRC, &blendSrc);
+	glGetIntegerv(GL_BLEND_DST, &blendDst);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+
+	glPushMatrix();
+	glDepthMask(GL_FALSE);
+	glDisable(GL_LIGHTING);
     for (unsigned int i=0;i<requiredLights.size();i++)
     {
-        m_pAttributes->m_pLights[i]->glRenderGlow();
-        m_pAttributes->m_pLights[i]->glRenderFlare();
-        m_pAttributes->m_pLights[i]->glDeActivate();
+		//m_pAttributes->m_pLights[i]->glRenderEffects();
+		requiredLights[i]->glRenderEffects();
     }
+	glDepthMask(GL_TRUE);
+	glPopMatrix();
+	glBlendFunc(blendSrc, blendDst);
+
+	for (unsigned int i = 0; i<requiredLights.size(); i++)
+		//m_pAttributes->m_pLights[i]->glDeActivate();
+		requiredLights[i]->glDeActivate();
 
 	CATCH_GL_ERROR
 }

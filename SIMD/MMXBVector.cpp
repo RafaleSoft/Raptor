@@ -1,6 +1,20 @@
-// MMXByteVector.cpp: implementation of the CMMXBVector class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  MMXBVector.cpp                                                         */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
 
 #if !defined(AFX_MMXBYTEVECTOR_H__8C6D4565_1B55_4069_9E6A_54484A482CA1__INCLUDED_)
 	#include "MMXBVector.h"
@@ -10,7 +24,7 @@
 
 extern CMMXBVector _unalignedMMXByteVector;
 
-CMMXBVector SIMD_CALL CMMXBVector::operator*  (const CMMXBVector& v2) const
+CMMXBVector SIMD_CALL CMMXBVector::operator*  (const CMMXBVector& v2) const NOEXCEPT
 {
 	__asm
 	{
@@ -30,7 +44,7 @@ CMMXBVector SIMD_CALL CMMXBVector::operator*  (const CMMXBVector& v2) const
 	return _unalignedMMXByteVector;
 };
 
-CMMXBVector SIMD_CALL CMMXBVector::operator+  (const CMMXBVector& v2) const
+CMMXBVector SIMD_CALL CMMXBVector::operator+  (const CMMXBVector& v2) const NOEXCEPT
 {
 	__asm
 	{
@@ -46,7 +60,7 @@ CMMXBVector SIMD_CALL CMMXBVector::operator+  (const CMMXBVector& v2) const
 	return _unalignedMMXByteVector;
 };
 
-CMMXBVector SIMD_CALL CMMXBVector::operator-  (const CMMXBVector& v2) const
+CMMXBVector SIMD_CALL CMMXBVector::operator-  (const CMMXBVector& v2) const NOEXCEPT
 {
 	__asm
 	{
@@ -61,5 +75,5 @@ CMMXBVector SIMD_CALL CMMXBVector::operator-  (const CMMXBVector& v2) const
 	}
 	return _unalignedMMXByteVector;
 };
-#endif
+#endif	// SIMD_NO_ASSEMBLY
 

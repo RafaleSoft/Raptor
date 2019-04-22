@@ -1,6 +1,21 @@
-// VertexProgram.cpp: implementation of the CVertexProgram class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  GeometryProgram.cpp                                                    */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
 
 #include "Subsys/CodeGeneration.h"
 
@@ -32,7 +47,7 @@ const CPersistence::CPersistenceClassID& CGeometryProgram::CGeometryProgramClass
 //////////////////////////////////////////////////////////////////////
 
 CGeometryProgram::CGeometryProgram(const std::string& name)
-	:CUnifiedProgram(geometryId,name)
+	:CUnifiedProgram(geometryId, name), m_inputType(0), m_outputType(0), m_verticesOut(0)
 {
     m_handle.handle = 0;	// default openGL vertex processing pipeline
 	m_handle.hClass = CGeometryProgram::CGeometryProgramClassID::GetClassId().ID();
@@ -101,6 +116,32 @@ void CGeometryProgram::glInitShaders()
 	}
 }
 
+bool CGeometryProgram::setGeometry(uint32_t inputType, uint32_t outputType, uint32_t verticesOut)
+{
+	if ((inputType == GL_POINTS) ||
+		(inputType == GL_LINES) ||
+		(inputType == GL_LINES_ADJACENCY_ARB) ||
+		(inputType == GL_TRIANGLES) ||
+		(inputType == GL_TRIANGLES_ADJACENCY_ARB))
+		m_inputType = inputType; 
+	else
+		return false;
+
+	if ((outputType == GL_POINTS) ||
+		(outputType == GL_LINE_STRIP) ||
+		(outputType == GL_TRIANGLE_STRIP))
+		m_outputType = outputType; 
+	else
+		return false;
+	
+	if (verticesOut != 0)
+		m_verticesOut = verticesOut;
+	else
+		return false;
+
+	return true;
+}
+
 bool CGeometryProgram::glLoadProgram(const std::string &program)
 {
     m_bValid = false;
@@ -160,6 +201,14 @@ bool CGeometryProgram::glBindProgram(RAPTOR_HANDLE program)
     const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 	if (CUnifiedProgram::glBindProgram(program))
 	{
+#if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
+	// Since OpenGL 3.2, geometry parameters shall be defined with a layout in shader source.
+	#if defined(GL_ARB_geometry_shader4)
+			pExtensions->glProgramParameteriARB(program.handle, GL_GEOMETRY_INPUT_TYPE_ARB, m_inputType);
+			pExtensions->glProgramParameteriARB(program.handle, GL_GEOMETRY_OUTPUT_TYPE_ARB, m_outputType);
+			pExtensions->glProgramParameteriARB(program.handle, GL_GEOMETRY_VERTICES_OUT_ARB, m_verticesOut);
+	#endif
+#endif
 		for (unsigned int idx = 0; idx < m_parameters.getNbParameters(); idx++)
 		{
 			const CProgramParameters::CParameterBase& value = m_parameters[idx];

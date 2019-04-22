@@ -1,6 +1,21 @@
-// GL2DFont.h: interface for the CGL2DFont class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  GL2DFont.h                                                             */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
 #if !defined(AFX_GL2DFONT_H__FE8026E7_74FD_46FC_A70F_D6927E565F8D__INCLUDED_)
 #define AFX_GL2DFONT_H__FE8026E7_74FD_46FC_A70F_D6927E565F8D__INCLUDED_
 
@@ -40,11 +55,15 @@ public:
 	float getWidth(const std::string &s) const;
 
 	//!	2D bitmap font writer: this method directly draws into the current buffer with bitmaps.
-	//! @param text : the text to write
-	//! @param x : the x horizontal position where writing starts
-	//! @param y : the y vertical position where writing starts
-	//! Rq: a 2D font must be initialised.
-	virtual void glWrite(const std::string &text, int x, int y);
+	//!	A 2D font must be initialised.
+	//! @param text : the text to write.
+	//! @param x : the x horizontal position where writing starts.
+	//! @param y : the y vertical position where writing starts.
+	//! @param color : a user provided color to write text.
+	virtual void glWrite(const std::string &text, 
+						 int x, 
+						 int y,
+						 const CColor::RGBA	&color);
 
 	//! Return underlying bitmap font
 	const TTBitmapFont* const getBitmapFont() const { return m_bmfont; };

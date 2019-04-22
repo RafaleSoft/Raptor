@@ -61,6 +61,7 @@ cp ./RaptorCore/Engine/EngineJob.h Redist/Include/Engine
 cp ./RaptorCore/Engine/Environment.h Redist/Include/Engine
 cp ./RaptorCore/Engine/GeometricModifier.h Redist/Include/Engine
 cp ./RaptorCore/Engine/ImageModifier.h Redist/Include/Engine
+cp ./RaptorCore/Engine/IViewPoint.h Redist/Include/Engine
 cp ./RaptorCore/Engine/LightModifier.h Redist/Include/Engine
 cp ./RaptorCore/Engine/ShaderModifier.h Redist/Include/Engine
 cp ./RaptorCore/Engine/Modifier.h Redist/Include/Engine
@@ -87,6 +88,7 @@ cp ./RaptorCore/GLHierarchy/Geometry.h Redist/Include/GLHierarchy
 cp ./RaptorCore/GLHierarchy/GeometryEditor.h Redist/Include/GLHierarchy
 cp ./RaptorCore/GLHierarchy/GeometryPrimitive.h Redist/Include/GLHierarchy
 cp ./RaptorCore/GLHierarchy/GeometryProgram.h Redist/Include/GLHierarchy
+cp ./RaptorCore/GLHierarchy/IRenderingProperties.h Redist/Include/GLHierarchy
 cp ./RaptorCore/GLHierarchy/Light.h Redist/Include/GLHierarchy
 cp ./RaptorCore/GLHierarchy/LightGlow.h Redist/Include/GLHierarchy
 cp ./RaptorCore/GLHierarchy/LightObserver.h Redist/Include/GLHierarchy

@@ -1,6 +1,20 @@
-// RaptorConsole.h: interface for the CRaptorConsole class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  RaptorConsole.h                                                        */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
 
 #if !defined(AFX_RAPTORCONSOLE_H__27656611_2DF3_4416_8124_F608CFAC2122__INCLUDED_)
 #define AFX_RAPTORCONSOLE_H__27656611_2DF3_4416_8124_F608CFAC2122__INCLUDED_
@@ -14,7 +28,9 @@
 #ifndef __CGLTYPES_HPP__
     #include "CGLTypes.h"
 #endif
-
+#if !defined(AFX_GLFONT_H__D451FE62_5FE1_11D3_9142_BA23BC92E77C__INCLUDED_)
+	#include "GLHierarchy/GLFont.h"
+#endif
 
 
 RAPTOR_NAMESPACE_BEGIN
@@ -28,14 +44,7 @@ class CMicroYacc;
 class RAPTOR_API CRaptorConsole
 {
 public:
-    typedef struct TEXT_ITEM_TAG
-    {
-        unsigned int	offset;
-        string			text;
-
-		TEXT_ITEM_TAG():offset(0) {};
-    } TEXT_ITEM;
-
+	//!	This class abstracts an input collector for console user interaction.
 	class RAPTOR_API CInputCollectorBase
 	{
 	public:
@@ -50,6 +59,7 @@ public:
 		static void broadcastMouseInput(int button, int xpos, int ypos);
 	};
 
+	//!	This class implements a generic user input collector.
 	template <class T> class CInputCollector : public CInputCollectorBase
 	{
 	public:
@@ -77,7 +87,10 @@ public:
 
 
 public:
+	//!	Constructor.
 	CRaptorConsole();
+
+	//!	Destructor.
 	virtual ~CRaptorConsole();
 
     //! Generic rendering method to draw the console.
@@ -137,6 +150,10 @@ public:
     //! Returns the previous status ( by default, TriangleCount is deactivated )
     bool showTriangleCount(bool show);
 
+	//!	Returns the main font color.
+	//! @return the main color.
+	CColor::RGBA getColor(void) const { return m_color; };
+
     //! This method defines the console text color.
     //! The default is red, the background is transparent.
     void setColor(const CColor::RGBA& color);
@@ -152,13 +169,13 @@ public:
     //! This method adds a text item
 	//!	@param t : the item to add
 	//! @return the new item id
-    unsigned int addItem(TEXT_ITEM t);
+    unsigned int addItem(CGLFont::FONT_TEXT_ITEM &t);
 
 	//! Updates an existing item.
 	//!	@param t : an item containing new values
 	//!	@param id : the id of the item to update
 	//!	@return false if the id is not found.
-	bool updateItem(TEXT_ITEM t,unsigned int id);
+	bool updateItem(CGLFont::FONT_TEXT_ITEM &t,unsigned int id);
 
 
 private:
@@ -199,7 +216,7 @@ private:
 	string	lastResult;
 	char	autoActivateChar;
 
-    vector<TEXT_ITEM>   m_items;
+    vector<CGLFont::FONT_TEXT_ITEM>   m_items;
 
 	CLexical	*lex;
 	CMicroYacc	*yacc;

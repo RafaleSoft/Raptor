@@ -1,6 +1,19 @@
-// GL2DFont.h: interface for the CGL2DFont class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  GL2DTextureFont.h                                                      */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
 
 #if !defined(AFX_GL2DTEXTUREFONT_H__7122B2F2_8D47_492F_8738_71FE06D8BA21__INCLUDED_)
 #define AFX_GL2DTEXTUREFONT_H__7122B2F2_8D47_492F_8738_71FE06D8BA21__INCLUDED_
@@ -17,6 +30,7 @@
 RAPTOR_NAMESPACE_BEGIN
 
 class CTextureObject;
+class CShader;
 
 class RAPTOR_API CGL2DTextureFont : public CGL2DFont
 {
@@ -29,14 +43,25 @@ public:
 	//!	@param size : the size of the glyphs generated.
 	//! @param antialias : turn on/off font antialiasing (alpha based for correct superposition with frame content)
 	//! @return true if the whole creation process succeeded, false otherwise
-	bool init(const std::string &filename, unsigned int size, bool antialiased);
+	bool glInit(const std::string &filename, unsigned int size, bool antialiased);
 
 	//!	2D font writer: this method directly draws into the current buffer with textures.
+	//!	A 2D font must be initialised.
 	//! @param text : the text to write
-	//! @param x : the x horizontal position where writing starts
-	//! @param y : the y vertical position where writing starts
-	//! Rq: a texture font must be initialised.
-	virtual void glWrite(const std::string &text, int x, int y);
+	//! @param x : the x horizontal position where writing starts.
+	//! @param y : the y vertical position where writing starts.
+	//! @param color : a user provided color to write text.
+	virtual void glWrite(const std::string &text, 
+						 int x, 
+						 int y,
+						 const CColor::RGBA	&color);
+
+	//!	Writes text using glyphs without generating a new display list.
+	//!	@param text : the text to write with this font.
+	//! @param x : the horizontal displacement to start writing.
+	//! @param y : the horizontal displacement to start writing.
+	//! @param color : a user provided color to write text.
+	virtual void glWrite(const std::vector<FONT_TEXT_ITEM> &lines);
 
 
 protected:
@@ -51,6 +76,9 @@ private:
 	int				m_char_w;
 	int				m_char_h;
 	CTextureObject	*m_texture;
+
+	//! Particle shaders
+	static CShader	*m_pShader;
 };
 
 

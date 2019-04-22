@@ -1,3 +1,22 @@
+/***************************************************************************/
+/*                                                                         */
+/*  BuilderForm.h                                                          */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
+
 #pragma once
 
 #include "Form1.h"
@@ -21,6 +40,7 @@ namespace BuilderNet {
 		void getData(void);
 
 		static System::String ^GL_Label = "CORE OpenGL versions";
+		static System::String ^GLProfile_Label = "OpenGL profiles";
 		static System::String ^VK_Label = "CORE Vulkan versions";
 		static System::String ^ARB_Label = "ARB extensions";
 		static System::String ^VK_KHR_Label = "Vulkan extensions";
@@ -33,3 +53,4 @@ namespace BuilderNet {
 		static System::String ^OES_Label = "OpenGL ES extensions";
 	};
 }
+

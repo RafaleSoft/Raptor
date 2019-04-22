@@ -53,18 +53,9 @@ void COpenGLViewPoint::glvkRenderViewPointModel(void)
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
-	switch(model)
-	{
-		case ORTHOGRAPHIC:
-			glOrtho(viewVolume[0],viewVolume[1],
-					viewVolume[2],viewVolume[3],
-					viewVolume[4],viewVolume[5]);
-			break;
-		case PERSPECTIVE:
-			glFrustum(	viewVolume[0],viewVolume[1],
-						viewVolume[2],viewVolume[3],
-						viewVolume[4],viewVolume[5]);
-	}
+	CGenericMatrix<float, 4> frustum;
+	getTransposeFrustum(frustum);
+	glMultMatrixf(frustum.matrix());
 
 	glMatrixMode(GL_MODELVIEW);
 

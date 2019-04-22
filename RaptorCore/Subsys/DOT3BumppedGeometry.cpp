@@ -217,6 +217,7 @@ void CDOT3BumppedGeometry::glRender()
 #endif
 
 	//	diffuse
+	//	obsolete : remove generic attributes binding
 	glEnableClientState(GL_COLOR_ARRAY);
 	glColorPointer(4, GL_UNSIGNED_BYTE, 0, bumpDiffusePx);
 
@@ -260,7 +261,7 @@ void CDOT3BumppedGeometry::glRender()
 	glDepthFunc(GL_EQUAL);
 
 	//	specular
-
+	//	obsolete : remove generic attributes binding
 	glColorPointer(4, GL_UNSIGNED_BYTE, 0, bumpSpecularPx);
 	normalMap->glvkRender();
 

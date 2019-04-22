@@ -96,7 +96,7 @@ void CRaptorInstance::glRender()
 		if ( nbr > 0)
 		{
 			CRaptorConsole *pConsole = Raptor::GetConsole();
-			CRaptorConsole::TEXT_ITEM item;
+			CGLFont::FONT_TEXT_ITEM item;
 			stringstream str;
 			str << "Pending requests: ";
 			str << nbr;
@@ -236,7 +236,7 @@ bool CRaptorInstance::start(unsigned int width,unsigned int height)
 		pConsole->showFPS(true);
 		pConsole->showFrameTime(true);
 		pConsole->activateConsole(true);
-		CRaptorConsole::TEXT_ITEM item;
+		CGLFont::FONT_TEXT_ITEM item;
 		item.text = "Pending requests: 0";
 		pConsole->addItem(item);
 		item.text = "Pending replies: 0";

@@ -1,6 +1,21 @@
-// ByteVector.h: interface for the CByteVector class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  BVector.h                                                              */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
 
 #if !defined(AFX_BYTEVECTOR_H__A9932FAD_211E_4F03_BF5B_C0E608372FE8__INCLUDED_)
 #define AFX_BYTEVECTOR_H__A9932FAD_211E_4F03_BF5B_C0E608372FE8__INCLUDED_
@@ -13,10 +28,12 @@
 	#include "GenericVector.h"
 #endif
 
+
+
 class CBVector : public CGenericVector<char>  
 {
 public:
-	CBVector(){};
+	CBVector() NOEXCEPT {};
 	virtual ~CBVector(){};
 
 	CBVector& operator= ( const CBVector& v )
@@ -31,7 +48,7 @@ public:
 		*((int*)m_vector) = t;
 		return *this;
 	};
-	CBVector& operator= ( const char v[4] )
+	CBVector& operator= ( const char v[4] ) NOEXCEPT
 	{
 		int t = *((int*)v);
 		*((int*)m_vector) = t;
@@ -39,7 +56,7 @@ public:
 	};	
 
 	//operations
-	bool operator== ( const CGenericVector<char>& v ) const
+	bool operator== ( const CGenericVector<char>& v ) const NOEXCEPT
 	{ 
 		__asm
 		{
@@ -57,7 +74,7 @@ public:
 	};
 #pragma warning(default:4035)
 
-	bool operator== ( const CBVector& v ) const
+	bool operator== ( const CBVector& v ) const NOEXCEPT
 	{ 
 		__asm
 		{
@@ -75,7 +92,7 @@ public:
 	};
 #pragma warning(default:4035)
 
-	bool operator== ( const short v[4] ) const
+	bool operator== ( const short v[4] ) const NOEXCEPT
 	{ 
 		__asm
 		{
@@ -93,7 +110,7 @@ public:
 	};
 #pragma warning(default:4035)
 
-	void SIMD_CALL Zero() 
+	void SIMD_CALL Zero() NOEXCEPT
 	{ 
 		__asm 
 		{
@@ -104,7 +121,7 @@ public:
 		}
 	};
 
-	void SIMD_CALL One()
+	void SIMD_CALL One() NOEXCEPT
 	{ 
 		__asm 
 		{

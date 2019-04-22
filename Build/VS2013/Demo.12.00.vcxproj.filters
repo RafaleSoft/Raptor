@@ -11,9 +11,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Demo\Demo.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Demo\DemoDoc.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -40,5 +37,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Demo\Demo.cmd" />
+    <None Include="..\..\Demo\buildpak.bat" />
   </ItemGroup>
 </Project>

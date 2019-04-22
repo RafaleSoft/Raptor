@@ -1,11 +1,31 @@
+/***************************************************************************/
+/*                                                                         */
+/*  simdMacros.h                                                           */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
+
+
 #ifndef __SIMDMACROS_H__
 #define __SIMDMACROS_H__
 
 
 #ifdef WIN32
-    //  the fastcall method is very fast, parameters are directly passed into ecx & edx redisters
+    /**  the fastcall method is very fast, parameters are directly passed into ecx & edx redisters. */ 
     #define SIMD_CALL   __fastcall
-    //  the naked call is even faster, no frame is constructed, pure assembler is directly inserted
+    /**  the naked call is even faster, no frame is constructed, pure assembler is directly inserted. */
     #define SIMD_ENTRY __declspec(naked)
     #define SIMD_API   __cdecl
 #else
@@ -14,9 +34,21 @@
     #define SIMD_API
 #endif
 
-//  Define this macro to compile code without assembler sources.
-//  Of course only low performance code will be available.
-// #define SIMD_NO_ASSEMBLY
+/*
+ *  Define this macro to compile code without assembler sources.
+ *  Of course only low performance code will be available.
+ */
+//#define SIMD_NO_ASSEMBLY
+
+/**	No exception compatibility with c++ < 11. */
+#if defined(_MSC_VER) && (_MSC_VER < 1900) && !defined(NOEXCEPT)
+	/*_NOEXCEPT : depending on core generation, it may be faster to avoid declaring throw()
+	 *  With Visual Studio 2013, no penalty for this declaration.
+	 */
+	#define NOEXCEPT throw() 
+#else	
+	#define NOEXCEPT noexcept	
+#endif
 
 //	Include intrinsics if available
 #ifndef SIMD_NO_ASSEMBLY
@@ -175,12 +207,12 @@ typedef struct CPUINFO
 		RESERVED12
 	} FEATURE_ECX;
 
-	bool hasFeature(FEATURE_EDX_t f) const
+	bool hasFeature(FEATURE_EDX_t f) const NOEXCEPT
 	{
 		return ((featureFlagEDX >> f) & 1);
 	};
 	
-	bool hasFeature(FEATURE_ECX_t f) const
+	bool hasFeature(FEATURE_ECX_t f) const NOEXCEPT
 	{
 		return ((featureFlagECX >> f) & 1);
 	};
@@ -191,5 +223,5 @@ const CPU_INFO& SIMD_API getCPUINFO();
 
 
 
-#endif
+#endif	// __SIMDMACROS_H__
 

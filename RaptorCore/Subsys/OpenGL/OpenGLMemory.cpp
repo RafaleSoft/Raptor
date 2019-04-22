@@ -388,6 +388,7 @@ bool COpenGLMemory::lockBufferObject(IDeviceMemoryManager::IBufferObject &bo)
 
         currentBuffers[storage] = buffer;
 
+#if defined(GL_COMPATIBILITY_profile) && !defined (GL_FULL_profile)
 	//!	compiled vertex array locking is subject to deprecation
 #if defined(GL_EXT_compiled_vertex_array)
 		if (pExtensions->glLockArraysEXT != NULL)
@@ -409,6 +410,7 @@ bool COpenGLMemory::lockBufferObject(IDeviceMemoryManager::IBufferObject &bo)
 				pExtensions->glLockArraysEXT(0, size / 2);	// unsigned short, big geometry will need attention.
 		}
 #endif
+#endif // #if !defined(GL_COMPATIBILITY_profile) || !defined (GL_FULL_profile)
 
 		return true;
 	}
@@ -453,12 +455,13 @@ bool COpenGLMemory::unlockBufferObject(IDeviceMemoryManager::IBufferObject &bo)
 
         currentBuffers[storage] = 0;
 
+#if defined(GL_COMPATIBILITY_profile) && defined (GL_FULL_profile)
 //!	compiled vertex array locking is subject to deprecation
 #if defined(GL_EXT_compiled_vertex_array)
 		if (pExtensions->glUnlockArraysEXT != NULL)
 			pExtensions->glUnlockArraysEXT();
 #endif
-
+#endif // defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
 		return true;
 	}
 	else 
