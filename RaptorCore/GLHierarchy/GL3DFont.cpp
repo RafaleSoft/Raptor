@@ -124,7 +124,7 @@ bool CGL3DFont::glGenGlyphs(float precision,
 											&(glyphs[i].halfWidth),
 											&(glyphs[i].height));
 		glyphs[i].advance = -2 * glyphs[i].halfWidth;
-		glyphs[i].glList = h.handle;
+		glyphs[i].glList = h.handle();
 	}
 
 	m_glfontglyph.push_back(glyphs);
@@ -168,8 +168,8 @@ RAPTOR_HANDLE CGL3DFont::glWriteList(const std::string &text,
 
 	CATCH_GL_ERROR
 
-	result.handle = TTList;
-	result.hClass = CGLFont::CGLFontClassID::GetClassId().ID();
+	result.handle(TTList);
+	result.hClass(CGLFont::CGLFontClassID::GetClassId().ID());
 
 	return result;
 }
@@ -614,8 +614,8 @@ RAPTOR_HANDLE CGL3DFont::glTTBuildGeometry(const std::string &str,
 	CATCH_GL_ERROR
 
 	RAPTOR_HANDLE result;
-	result.handle = TTList;
-	result.hClass = CGLFont::CGLFontClassID::GetClassId().ID();
+	result.handle(TTList);
+	result.hClass(CGLFont::CGLFontClassID::GetClassId().ID());
 
 	return result;
 }

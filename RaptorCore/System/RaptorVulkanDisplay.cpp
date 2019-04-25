@@ -245,11 +245,11 @@ void CRaptorVulkanDisplay::glGenerate(CTextureObject* )
 
 bool CRaptorVulkanDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
 {
-	if (device.handle != CGL_NULL)
+	if (device.handle() != CGL_NULL)
 	{
 		CContextManager *manager = CContextManager::GetInstance();
 
-		if ((CContextManager::INVALID_CONTEXT == m_context) && (WINDOW_CLASS == device.hClass))
+		if ((CContextManager::INVALID_CONTEXT == m_context) && (WINDOW_CLASS == device.hClass()))
 		{
 			unsigned int m_framerate = cs.refresh_rate.fps;
 			if (cs.refresh_rate.sync_to_monitor)

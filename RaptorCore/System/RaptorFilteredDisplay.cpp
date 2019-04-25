@@ -365,8 +365,8 @@ bool CRaptorFilteredDisplay::glCreateRenderDisplay(void)
         }
 
 
-        drawBuffer.handle = glGenLists(1);
-        glNewList(drawBuffer.handle,GL_COMPILE);
+        drawBuffer.handle(glGenLists(1));
+        glNewList(drawBuffer.handle(),GL_COMPILE);
             glBegin(GL_QUADS);
                 glTexCoord2f(0.0f,0.0f);glVertex4f(-1.0,-1.0,-1.0f,1.0f);
                 glTexCoord2f(1.0f,0.0f);glVertex4f(1.0,-1.0,-1.0f,1.0f);
@@ -389,11 +389,11 @@ bool CRaptorFilteredDisplay::glCreateRenderDisplay(void)
 
 bool CRaptorFilteredDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
 {
-	if (device.hClass == CShader::CShaderClassID::GetClassId().ID())
+	if (device.hClass() == CShader::CShaderClassID::GetClassId().ID())
     {
-        if (device.handle != 0)
+        if (device.handle() != 0)
         {
-            CRaptorDisplayFilter *shader = static_cast<CRaptorDisplayFilter*>((void*)device.handle);
+			CRaptorDisplayFilter *shader = device.ptr<CRaptorDisplayFilter>();
 			bool useRenderBuffers = (CRaptorDisplayConfig::RENDER_BUFFER == filter_cs.renderer);
 			if (useRenderBuffers)
 				shader->setFilterModel(CRaptorDisplayFilter::RENDER_BUFFER);
@@ -582,8 +582,8 @@ void CRaptorFilteredDisplay::glRenderScene(void)
 		CTextureObject *T = m_pImageSet->getTexture(0);
 		T->glvkRender();
 
-        if (drawBuffer.handle > 0)
-            glCallList(drawBuffer.handle);
+        if (drawBuffer.handle() > 0)
+            glCallList(drawBuffer.handle());
 			
 		//m_pDrawBuffer->glRender();
 		glBindTexture(GL_TEXTURE_2D,0);

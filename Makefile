@@ -39,7 +39,7 @@ OPENCL_INCLUDE_PATH=C:/Intel/OpenCL/sdk/include
 OPENCL_LIB_PATH=C:/Intel/OpenCL/sdk/lib/x86
 OPENCL_BIN_PATH=C:/Intel/OpenCL/sdk/bin/x86
 
-VULKAN_INCLUDE_PATH = $(RAPTOR_ROOT)/AddOns/vulkan/include
+VULKAN_INCLUDE_PATH=$(RAPTOR_ROOT)/AddOns/vulkan/include
 VULKAN_BIN_PATH=c:/windows/system32
 
 #

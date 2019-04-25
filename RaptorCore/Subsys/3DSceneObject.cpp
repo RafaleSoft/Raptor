@@ -107,14 +107,14 @@ void C3DSceneObject::vkRender(	CVulkanCommandBuffer& commandBuffer,
 										VK_PIPELINE_BIND_POINT_GRAPHICS,
 										pipe);
 
-		CObject3D* obj = (CObject3D*)(object.handle);
+		CObject3D* obj = object.ptr<CObject3D>();
 		obj->vkRender(commandBuffer, vertexBinding, indexBinding);
 	}
 }
 
 CObject3D* C3DSceneObject::getObject(void) const
 {
-	CObject3D* obj = (CObject3D*)(object.handle);
+	CObject3D* obj = object.ptr<CObject3D>();
 
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 	if (!obj->getId().isSubClassOf(CObject3D::CObject3DClassID::GetClassId()))
@@ -174,7 +174,7 @@ void C3DSceneObject::glRenderBBoxOcclusion(unsigned int passNumber)
 
     passVisibility[passNumber] = 0;
 
-	CObject3D *obj = (CObject3D*)(object.handle);
+	CObject3D *obj = object.ptr<CObject3D>();
     obj->glRenderBBox(true);
 
 	pExtensions->glEndQueryARB(GL_SAMPLES_PASSED_ARB);
@@ -228,7 +228,7 @@ bool C3DSceneObject::glRenderPass(	unsigned int passNumber,
 	glRenderLights(proceedLights,lights);
 
 	bool ret = true;
-    CObject3D *obj = (CObject3D*)(object.handle);
+	CObject3D *obj = object.ptr<CObject3D>();
 
 #if defined(GL_ARB_occlusion_query)
     GLuint query = visibilityQuery[passNumber];
@@ -280,7 +280,7 @@ void C3DSceneObject::selectLights(const vector<CLight*> &lights,const CGenericMa
 		return;
 	}
 
-    CObject3D *obj = (CObject3D*)(object.handle);
+	CObject3D *obj = object.ptr<CObject3D>();
     const CBoundingBox * const bbox = obj->boundingBox();
     
     GL_COORD_VERTEX r_max;

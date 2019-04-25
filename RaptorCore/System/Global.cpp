@@ -65,8 +65,8 @@ Global::Global()
     raptorStatus.console = NULL;
 
     raptorStatus.defaultDisplay = NULL;
-	raptorStatus.defaultWindow.handle = 0;
-	raptorStatus.defaultWindow.hClass = 0;
+	raptorStatus.defaultWindow.handle(0);
+	raptorStatus.defaultWindow.hClass(0);
 
     raptorStatus.iRenderedObjects = 0;
     raptorStatus.iRenderedTriangles = 0;

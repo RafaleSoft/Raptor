@@ -34,8 +34,8 @@ CVertexShader::CVertexShader(const std::string& name)
 	:CShaderProgram(vertexId,name)
 {
     m_bValid = false;
-	m_handle.handle = 0;	// default openGL vertex processing pipeline
-	m_handle.hClass = CVertexShader::CVertexShaderClassID::GetClassId().ID();
+	m_handle.handle(0);	// default openGL vertex processing pipeline
+	m_handle.hClass(CVertexShader::CVertexShaderClassID::GetClassId().ID());
 
     glInitShaders();
 }
@@ -67,8 +67,9 @@ CVertexShader::~CVertexShader()
         glStop();
 
 		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
-		if (pExtensions->glIsProgramARB(m_handle.handle))
-			pExtensions->glDeleteProgramsARB(1,&m_handle.handle);
+		GLuint program = m_handle.handle();
+		if (pExtensions->glIsProgramARB(program))
+			pExtensions->glDeleteProgramsARB(1,&program);
 	}
 #endif
 }
@@ -119,7 +120,7 @@ void RAPTOR_FASTCALL CVertexShader::glVertex(const GL_COORD_VERTEX &v)
 {
 	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 
-	if (m_handle.handle == 0)
+	if (m_handle.handle() == 0)
 		glVertex4fv(v);
 #if defined(GL_ARB_vertex_program)
 	else if (m_bVertexReady)
@@ -146,7 +147,7 @@ void RAPTOR_FASTCALL CVertexShader::glNormal(const GL_COORD_VERTEX &n)
 {
 	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 
-	if (m_handle.handle == 0)
+	if (m_handle.handle() == 0)
 		glNormal3fv(n);
 #if defined(GL_ARB_vertex_program)
 	else if (m_bVertexReady)
@@ -161,7 +162,7 @@ void RAPTOR_FASTCALL CVertexShader::glColor(const CColor::RGBA &c)
 {
 	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 
-	if (m_handle.handle == 0)
+	if (m_handle.handle() == 0)
 		glColor4fv(c);
 #if defined(GL_ARB_vertex_program)
 	else if (m_bVertexReady)
@@ -205,7 +206,7 @@ void RAPTOR_FASTCALL CVertexShader::glMultiTexCoord(CProgramParameters::GL_VERTE
 		return;
 
 	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
-	if (m_handle.handle == 0)
+	if (m_handle.handle() == 0)
 	{
 #if defined(GL_ARB_multitexture)
 		pExtensions->glMultiTexCoord4fvARB(tmu - CProgramParameters::TEXCOORD0 + GL_TEXTURE0_ARB, t);
@@ -340,18 +341,18 @@ void CVertexShader::glProgramParameter(unsigned int numParam,const CGenericVecto
 //
 void CVertexShader::glRender(void)
 {
-	if (m_handle.handle == 0)
+	if (m_handle.handle() == 0)
 		return;
 
 #if defined(GL_ARB_vertex_program)
 	if (m_bVertexReady)
 	{
 		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
-		if (pExtensions->glIsProgramARB(m_handle.handle))
+		if (pExtensions->glIsProgramARB(m_handle.handle()))
 		{
 			glEnable(GL_VERTEX_PROGRAM_ARB);
 
-			pExtensions->glBindProgramARB(GL_VERTEX_PROGRAM_ARB,m_handle.handle);
+			pExtensions->glBindProgramARB(GL_VERTEX_PROGRAM_ARB,m_handle.handle());
 
 			if (m_bApplyParameters)
 			{
@@ -389,8 +390,9 @@ bool CVertexShader::glLoadProgram(const std::string &program)
 #if defined(GL_ARB_vertex_program)
 	if (m_bVertexReady)
 	{
-		if (pExtensions->glIsProgramARB(m_handle.handle))
-			pExtensions->glDeleteProgramsARB(1,&m_handle.handle);
+		GLuint program = m_handle.handle();
+		if (pExtensions->glIsProgramARB(program))
+			pExtensions->glDeleteProgramsARB(1,&program);
 	}
 #endif
 
@@ -401,7 +403,7 @@ bool CVertexShader::glLoadProgram(const std::string &program)
 
 	if (ogl == "OPENGL")
 	{
-		m_handle.handle = 0;
+		m_handle.handle(0);
         m_bValid = true;
 	}
 #if defined(GL_ARB_vertex_program)
@@ -419,8 +421,10 @@ bool CVertexShader::glLoadProgram(const std::string &program)
                 err = ::glGetError();
         }
 
-		pExtensions->glGenProgramsARB(1,&m_handle.handle);
-		pExtensions->glBindProgramARB(GL_VERTEX_PROGRAM_ARB,m_handle.handle);
+		GLuint hd = 0;
+		pExtensions->glGenProgramsARB(1,&hd);
+		pExtensions->glBindProgramARB(GL_VERTEX_PROGRAM_ARB,hd);
+		m_handle.handle(hd);
 
 		pExtensions->glProgramStringARB(GL_VERTEX_PROGRAM_ARB,
 										GL_PROGRAM_FORMAT_ASCII_ARB,
@@ -470,7 +474,7 @@ bool CVertexShader::glLoadProgram(const std::string &program)
 
 bool CVertexShader::glGetProgramStatus(void)
 {
-	if (m_handle.handle == 0)
+	if (m_handle.handle() == 0)
 		return false;
 
 	if (!m_bVertexReady)
@@ -479,8 +483,8 @@ bool CVertexShader::glGetProgramStatus(void)
 #if defined(GL_ARB_vertex_program)
 	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 
-	if (pExtensions->glIsProgramARB(m_handle.handle))
-		pExtensions->glBindProgramARB(GL_VERTEX_PROGRAM_ARB,m_handle.handle);
+	if (pExtensions->glIsProgramARB(m_handle.handle()))
+		pExtensions->glBindProgramARB(GL_VERTEX_PROGRAM_ARB,m_handle.handle());
 	else
 		return false;
 

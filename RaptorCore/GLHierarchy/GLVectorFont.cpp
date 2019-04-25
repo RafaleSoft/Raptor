@@ -40,7 +40,7 @@ bool CGLVectorFont::glGenGlyphs(float precision,
 										 &(glyphs[i].halfWidth),
 										 &(glyphs[i].height));
 		glyphs[i].advance = -2 * glyphs[i].halfWidth;
-		glyphs[i].glList = h.handle;
+		glyphs[i].glList = h.handle();
 	}
 
 	m_glfontglyph.push_back(glyphs);
@@ -52,15 +52,12 @@ RAPTOR_HANDLE CGLVectorFont::glBuildVectors(const std::string &str,
 											float *width,
 											float *height)
 {
-	RAPTOR_HANDLE result;
-	result.hClass = CGLFont::CGLFontClassID::GetClassId().ID();
 	float w = 0.0f;
-
 	const char* text = str.data();
 	const int text_length = str.size();
 
-	result.handle = glGenLists(1);
-	glNewList(result.handle, GL_COMPILE);
+	RAPTOR_HANDLE result(CGLFont::CGLFontClassID::GetClassId().ID(), glGenLists(1));
+	glNewList(result.handle(), GL_COMPILE);
 
 	if (height != NULL)
 		*height = -25.0f;

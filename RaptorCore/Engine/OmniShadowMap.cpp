@@ -290,7 +290,7 @@ void COmniShadowMap::glRenderMap(const CLight* currentLight,const vector<C3DScen
 	
      for (unsigned int i=0 ; i<6 ; i++)
     {
-        RAPTOR_HANDLE _display(cubefaces[i],0);
+        RAPTOR_HANDLE _display(cubefaces[i],(void*)0);
 	    m_pShadowCubeMap->glvkBindDisplay(_display);
 
         glLoadIdentity();
@@ -335,8 +335,7 @@ void COmniShadowMap::glRenderShadow(const vector<C3DSceneObject*>& objects)
 	{
 		m_pShadowTexture->glvkRender();
 
-		RAPTOR_HANDLE renderTexture;
-		renderTexture.hClass = CTextureFactory::CTextureFactoryClassID::GetClassId().ID();
+		RAPTOR_HANDLE renderTexture(CTextureFactory::CTextureFactoryClassID::GetClassId().ID(), (void*)0);
 		m_pShadowCubeMap->glvkBindDisplay(renderTexture);
 	}
 
@@ -362,8 +361,7 @@ void COmniShadowMap::glRenderTexture(void)
     glEnable(GL_TEXTURE_CUBE_MAP_ARB);
 	m_pShadowTexture->glvkRender();
 
-	RAPTOR_HANDLE renderTexture;
-	renderTexture.hClass = CTextureFactory::CTextureFactoryClassID::GetClassId().ID();
+	RAPTOR_HANDLE renderTexture(CTextureFactory::CTextureFactoryClassID::GetClassId().ID(), (void*)0);
 	m_pShadowCubeMap->glvkBindDisplay(renderTexture);
 #endif
 }

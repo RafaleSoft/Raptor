@@ -94,12 +94,12 @@ CShader::CShader(const std::string& name)
     m_pVProgram(NULL),m_pFProgram(NULL),
 	m_pGProgram(NULL),m_pVulkanProgram(NULL)
 {
-	m_textureUnitSetup.handle = 0;
-	m_textureUnitSetup.hClass = 0;
-	m_textureUnitUnSetup.handle = 0;
-	m_textureUnitUnSetup.hClass = 0;
-    m_shaderProgram.handle = 0;
-	m_shaderProgram.hClass = CShader::CShaderClassID::GetClassId().ID();
+	m_textureUnitSetup.handle(0);
+	m_textureUnitSetup.hClass(CTextureUnitSetup::CTextureUnitSetupClassID::GetClassId().ID());
+	m_textureUnitUnSetup.handle(0);
+	m_textureUnitUnSetup.hClass(CTextureUnitSetup::CTextureUnitSetupClassID::GetClassId().ID());
+    m_shaderProgram.handle(0);
+	m_shaderProgram.hClass(CShader::CShaderClassID::GetClassId().ID());
 
 	m_color.r = 0.0f;
 	m_color.g = 0.0f;
@@ -125,12 +125,12 @@ CShader::CShader(const CShader& shader)
 	m_color = shader.m_color;
 	m_ambient = shader.m_ambient;
 	
-	m_shaderProgram.handle = 0;
-	m_shaderProgram.hClass = CShader::CShaderClassID::GetClassId().ID();
-	m_textureUnitSetup.handle = 0; // glBuildSetup done at first call to glRender
-	m_textureUnitSetup.hClass = 0;
-	m_textureUnitUnSetup.handle = 0;
-	m_textureUnitUnSetup.hClass = 0;
+	m_shaderProgram.handle(0);
+	m_shaderProgram.hClass(CShader::CShaderClassID::GetClassId().ID());
+	m_textureUnitSetup.handle(0); // glBuildSetup done at first call to glRender
+	m_textureUnitSetup.hClass(CTextureUnitSetup::CTextureUnitSetupClassID::GetClassId().ID());
+	m_textureUnitUnSetup.handle(0);
+	m_textureUnitUnSetup.hClass(CTextureUnitSetup::CTextureUnitSetupClassID::GetClassId().ID());
 
 	if (NULL != shader.m_pMaterial)
 	{
@@ -202,7 +202,7 @@ CShader::CShader(const CShader& shader)
 		m_pVulkanProgram->registerDestruction(this);
 	}
 
-	if (0 != shader.m_shaderProgram.handle)
+	if (0 != shader.m_shaderProgram.handle())
 		glCompileShader();
 
 	m_bDeleteVShader = shader.m_bDeleteVShader;
@@ -255,22 +255,22 @@ CShader::~CShader()
 {
 	// TODO : delete program only if not shared !!!
 #if defined(GL_ARB_shader_objects)
-    if ((m_shaderProgram.handle != 0) &&
+    if ((m_shaderProgram.handle() != 0) &&
 		(m_bDeleteVProgram || m_bDeleteFProgram || m_bDeleteGProgram))
     {
         const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 
         GLsizei maxCount = 0;
-        pExtensions->glGetObjectParameterivARB(m_shaderProgram.handle,GL_OBJECT_ATTACHED_OBJECTS_ARB,&maxCount);
+        pExtensions->glGetObjectParameterivARB(m_shaderProgram.handle(),GL_OBJECT_ATTACHED_OBJECTS_ARB,&maxCount);
 
         GLsizei count = 0;
         GLhandleARB *pHandles = new GLhandleARB[maxCount];
-        pExtensions->glGetAttachedObjectsARB(m_shaderProgram.handle, maxCount,&count, pHandles);
+        pExtensions->glGetAttachedObjectsARB(m_shaderProgram.handle(), maxCount,&count, pHandles);
 
         for (GLsizei i=0;((i<count) && (i<maxCount));i++)
-            pExtensions->glDetachObjectARB(m_shaderProgram.handle, pHandles[i]);
+            pExtensions->glDetachObjectARB(m_shaderProgram.handle(), pHandles[i]);
 
-        pExtensions->glDeleteObjectARB(m_shaderProgram.handle);
+        pExtensions->glDeleteObjectARB(m_shaderProgram.handle());
         delete [] pHandles;
     }
 #endif
@@ -383,17 +383,15 @@ bool CShader::glRemoveTextureUnitSetup(void)
         m_pTMUSetup = NULL;
 		m_bDeleteTMUSetup = false;
 
-		if (m_textureUnitSetup.handle != 0)
+		if (m_textureUnitSetup.handle() != 0)
 		{
-			glDeleteLists(m_textureUnitSetup.handle, 1);
-			m_textureUnitSetup.handle = 0;
-			m_textureUnitSetup.hClass = 0;
+			glDeleteLists(m_textureUnitSetup.handle(), 1);
+			m_textureUnitSetup.handle(0);
 		}
-		if (m_textureUnitUnSetup.handle != 0)
+		if (m_textureUnitUnSetup.handle() != 0)
 		{
-			glDeleteLists(m_textureUnitUnSetup.handle, 1);
-			m_textureUnitUnSetup.handle = 0;
-			m_textureUnitUnSetup.hClass = 0;
+			glDeleteLists(m_textureUnitUnSetup.handle(), 1);
+			m_textureUnitUnSetup.handle(0);
 		}
 
         CATCH_GL_ERROR
@@ -435,7 +433,7 @@ bool CShader::glRemoveVertexProgram(void)
 	else
 	{
 		m_pVProgram->unregisterDestruction(this);
-		RAPTOR_HANDLE handle(0, (void*)m_shaderProgram.handle);
+		RAPTOR_HANDLE handle(0, m_shaderProgram.handle());
 		m_pVProgram->glUnbindProgram(handle);
 
 		if (m_bDeleteVProgram)
@@ -527,7 +525,7 @@ bool CShader::glRemoveFragmentProgram(void)
 	else
 	{
 		m_pFProgram->unregisterDestruction(this);
-		RAPTOR_HANDLE handle(0, (void*)m_shaderProgram.handle);
+		RAPTOR_HANDLE handle(0, m_shaderProgram.handle());
 		m_pFProgram->glUnbindProgram(handle);
 
 		if (m_bDeleteFProgram)
@@ -619,7 +617,7 @@ bool CShader::glRemoveGeometryProgram(void)
 	else
 	{
 		m_pGProgram->unregisterDestruction(this);
-		RAPTOR_HANDLE handle(0, (void*)m_shaderProgram.handle);
+		RAPTOR_HANDLE handle(0, m_shaderProgram.handle());
 		m_pGProgram->glUnbindProgram(handle);
 
 		if (m_bDeleteGProgram)
@@ -710,15 +708,15 @@ void CShader::glRenderTexture(void)
 	//if (glIsEnabled(GL_TEXTURE_2D) == GL_TRUE)
 	if (IRenderingProperties::GetCurrentProperties()->getCurrentTexturing() == IRenderingProperties::ENABLE)
 	{
-		if (m_textureUnitSetup.handle > 0)
+		if (m_textureUnitSetup.handle() > 0)
         {
-		    glCallList(m_textureUnitSetup.handle);
+		    glCallList(m_textureUnitSetup.handle());
         }
 		else if (m_pTMUSetup != NULL)
 		{
 			m_textureUnitUnSetup = m_pTMUSetup->glBuildUnSetup();
 			m_textureUnitSetup = m_pTMUSetup->glBuildSetup();
-			glCallList(m_textureUnitSetup.handle);
+			glCallList(m_textureUnitSetup.handle());
 		}
 	}
 
@@ -727,13 +725,13 @@ void CShader::glRenderTexture(void)
 
 void CShader::glRender()
 {
-    if (m_shaderProgram.handle != 0)
+    if (m_shaderProgram.handle() != 0)
     {
 		//MAX_UNIFORM_BUFFER_BINDINGS
 
 #if defined(GL_ARB_shader_objects)
         const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
-        pExtensions->glUseProgramObjectARB(m_shaderProgram.handle);
+        pExtensions->glUseProgramObjectARB(m_shaderProgram.handle());
 
         if (m_pVProgram != NULL)
             m_pVProgram->glRender();
@@ -758,7 +756,7 @@ void CShader::glRender()
 
 void CShader::glStop()
 {
-    if (m_shaderProgram.handle != 0)
+    if (m_shaderProgram.handle() != 0)
     {
 #if defined(GL_ARB_shader_objects)
 		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
@@ -796,10 +794,10 @@ bool CShader::glCompileShader()
         bool abort = false;
 
         // create a program object
-        if (m_shaderProgram.handle == 0)
+        if (m_shaderProgram.handle() == 0)
         {
-			m_shaderProgram.handle = pExtensions->glCreateProgramObjectARB();
-            if (m_shaderProgram.handle == 0)
+			m_shaderProgram.handle(pExtensions->glCreateProgramObjectARB());
+            if (m_shaderProgram.handle() == 0)
             {
                 abort = true;
 				Raptor::GetErrorManager()->generateRaptorError(CShader::CShaderClassID::GetClassId(),
@@ -832,9 +830,9 @@ bool CShader::glCompileShader()
         // link
         if (!abort)
         {
-            pExtensions->glLinkProgramARB(m_shaderProgram.handle);
+            pExtensions->glLinkProgramARB(m_shaderProgram.handle());
             GLint linkStatus = GL_FALSE;
-            pExtensions->glGetObjectParameterivARB(m_shaderProgram.handle,GL_OBJECT_LINK_STATUS_ARB,&linkStatus);
+            pExtensions->glGetObjectParameterivARB(m_shaderProgram.handle(),GL_OBJECT_LINK_STATUS_ARB,&linkStatus);
             if (linkStatus == GL_FALSE)
                 abort = true;
         }
@@ -850,13 +848,13 @@ bool CShader::glCompileShader()
         }
 #endif
 
-        if ((abort) && (m_shaderProgram.handle != 0))
+        if ((abort) && (m_shaderProgram.handle() != 0))
         {
             GLint maxLength = 0;
             GLint length = 0;
-	        pExtensions->glGetObjectParameterivARB(m_shaderProgram.handle,GL_OBJECT_INFO_LOG_LENGTH_ARB, &maxLength);
+	        pExtensions->glGetObjectParameterivARB(m_shaderProgram.handle(),GL_OBJECT_INFO_LOG_LENGTH_ARB, &maxLength);
 	        char *pInfoLog = (char*) malloc(maxLength * sizeof(char));
-	        pExtensions->glGetInfoLogARB(m_shaderProgram.handle, maxLength, &length, pInfoLog);
+	        pExtensions->glGetInfoLogARB(m_shaderProgram.handle(), maxLength, &length, pInfoLog);
 
             CRaptorMessages::MessageArgument arg;
             arg.arg_sz = pInfoLog;

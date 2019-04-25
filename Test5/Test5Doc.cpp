@@ -87,7 +87,7 @@ CTest5Doc::CTest5Doc(const RAPTOR_HANDLE& device,const char* title)
 	CImaging::installImagers();
 
 	RECT r;
-	GetClientRect((HWND)(device.handle),&r);
+	GetClientRect((HWND)(device.handle()),&r);
 	CRaptorDisplayConfig glcs;
 	glcs.width = r.right - r.left;
 	glcs.height = r.bottom - r.top;

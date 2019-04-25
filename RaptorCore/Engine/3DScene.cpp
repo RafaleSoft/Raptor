@@ -174,12 +174,12 @@ bool C3DScene::addObject(CObject3D *object)
 
 bool C3DScene::glAddObject(RAPTOR_HANDLE handle)
 {
-    if (handle.handle == 0)
+    if (handle.handle() == 0)
         return false;
 
-	if (handle.hClass == Global::COpenGLClassID::GetClassId().ID())
+	if (handle.hClass() == Global::COpenGLClassID::GetClassId().ID())
     {
-        if (glIsList(handle.handle))
+        if (glIsList(handle.handle()))
         {
             // This is the only valid case: a correct handle
             m_pAttributes->m_pHandles.push_back(handle);
@@ -263,7 +263,7 @@ void C3DScene::glRenderObjects(	const vector<C3DSceneObject*>& objects)
     //  First step : undefined OGL display lists / Raptor handles
 	//
     for (unsigned int i=0;i<m_pAttributes->m_pHandles.size();i++)
-		glCallList(m_pAttributes->m_pHandles.at(i).handle);
+		glCallList(m_pAttributes->m_pHandles.at(i).handle());
 
 
     //

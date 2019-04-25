@@ -50,7 +50,7 @@ CUnifiedProgram::~CUnifiedProgram()
 
 void CUnifiedProgram::glProgramParameter(unsigned int numParam,const GL_COORD_VERTEX &v) const
 {
-    if (m_handle.handle == 0)
+    if (m_handle.handle() == 0)
         return;
 
     glParameter(numParam,v);
@@ -58,7 +58,7 @@ void CUnifiedProgram::glProgramParameter(unsigned int numParam,const GL_COORD_VE
 
 void CUnifiedProgram::glProgramParameter(unsigned int numParam,const CColor::RGBA &v) const
 {
-    if (m_handle.handle == 0)
+    if (m_handle.handle() == 0)
         return;
 
     glParameter(numParam,v);
@@ -95,16 +95,16 @@ void CUnifiedProgram::glParameter(unsigned int numParam,const float *v) const
 bool CUnifiedProgram::glBindProgram(RAPTOR_HANDLE program)
 {
 #if defined(GL_ARB_shader_objects)
-	if (program.handle == 0)
+	if (program.handle() == 0)
 		return false;
 
 	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 	GLint value = 0;
-	pExtensions->glGetObjectParameterivARB(program.handle, GL_OBJECT_TYPE_ARB, &value);
+	pExtensions->glGetObjectParameterivARB(program.handle(), GL_OBJECT_TYPE_ARB, &value);
 	if (value != GL_PROGRAM_OBJECT_ARB)
 		return false;
 
-	pExtensions->glAttachObjectARB(program.handle, m_handle.handle);
+	pExtensions->glAttachObjectARB(program.handle(), m_handle.handle());
 
 	CATCH_GL_ERROR
 
@@ -119,16 +119,16 @@ bool CUnifiedProgram::glBindProgram(RAPTOR_HANDLE program)
 bool CUnifiedProgram::glUnbindProgram(RAPTOR_HANDLE program)
 {
 #if defined(GL_ARB_shader_objects)
-	if ((program.handle == 0) || (m_handle.handle == 0))
+	if ((program.handle() == 0) || (m_handle.handle() == 0))
 		return false;
 
 	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 	GLint value = 0;
-	pExtensions->glGetObjectParameterivARB(program.handle, GL_OBJECT_TYPE_ARB, &value);
+	pExtensions->glGetObjectParameterivARB(program.handle(), GL_OBJECT_TYPE_ARB, &value);
 	if (value != GL_PROGRAM_OBJECT_ARB)
 		return false;
 
-	pExtensions->glDetachObjectARB(program.handle, m_handle.handle);
+	pExtensions->glDetachObjectARB(program.handle(), m_handle.handle());
 
 	CATCH_GL_ERROR
 
@@ -140,7 +140,7 @@ bool CUnifiedProgram::glUnbindProgram(RAPTOR_HANDLE program)
 
 void CUnifiedProgram::glRender(void)
 {
-	if (m_handle.handle == 0)
+	if (m_handle.handle() == 0)
 		return;
 
 #if defined(GL_ARB_vertex_shader)
@@ -313,7 +313,7 @@ void CUnifiedProgram::glProgramParameter(unsigned int numParam,GL_HIRES_COORD_VE
 
 uint64_t CUnifiedProgram::glGetBufferMemoryRequirements(RAPTOR_HANDLE program)
 {
-	if (program.handle == 0)
+	if (program.handle() == 0)
 		return 0;
 
 	uint64_t uniform_size = 0;
@@ -323,13 +323,13 @@ uint64_t CUnifiedProgram::glGetBufferMemoryRequirements(RAPTOR_HANDLE program)
 
 	GLint active_blocks_count = 0;
 	GLint active_uniform_max_length = 0;
-	pExtensions->glGetProgramivARB(program.handle, GL_ACTIVE_UNIFORM_BLOCKS_ARB, &active_blocks_count);
-	pExtensions->glGetProgramivARB(program.handle, GL_ACTIVE_UNIFORM_MAX_LENGTH, &active_uniform_max_length);
+	pExtensions->glGetProgramivARB(program.handle(), GL_ACTIVE_UNIFORM_BLOCKS_ARB, &active_blocks_count);
+	pExtensions->glGetProgramivARB(program.handle(), GL_ACTIVE_UNIFORM_MAX_LENGTH, &active_uniform_max_length);
 
 	for (GLint i = 0; i < active_blocks_count; i++)
 	{
 		GLint block_size = 0;
-		pExtensions->glGetActiveUniformBlockivARB(program.handle, i, GL_UNIFORM_BLOCK_DATA_SIZE_ARB, &block_size);
+		pExtensions->glGetActiveUniformBlockivARB(program.handle(), i, GL_UNIFORM_BLOCK_DATA_SIZE_ARB, &block_size);
 
 		uniform_size += block_size;
 
@@ -471,7 +471,7 @@ bool isTypeSampler(unsigned int shaderKind)
 }
 void CUnifiedProgram::glQueryUniformLocations(RAPTOR_HANDLE program)
 {
-    if (program.handle == 0)
+    if (program.handle() == 0)
         return;
 
 #if defined(GL_ARB_shader_objects)
@@ -479,7 +479,7 @@ void CUnifiedProgram::glQueryUniformLocations(RAPTOR_HANDLE program)
     GLint attrMaxLength = 0;
     const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 
-    pExtensions->glGetObjectParameterivARB(program.handle,GL_OBJECT_ACTIVE_UNIFORM_MAX_LENGTH_ARB,&attrMaxLength);
+    pExtensions->glGetObjectParameterivARB(program.handle(),GL_OBJECT_ACTIVE_UNIFORM_MAX_LENGTH_ARB,&attrMaxLength);
 	//	Predefined uniforms are not taken into account ! (e.g. gl_ModelViewProjectionMatrix)
 	//	So, take a bit of space.
 	attrMaxLength = MAX(32, attrMaxLength);
@@ -487,7 +487,7 @@ void CUnifiedProgram::glQueryUniformLocations(RAPTOR_HANDLE program)
 
     // Query the number of active uniforms
     GLint count = 0;
-	pExtensions->glGetObjectParameterivARB(program.handle, GL_OBJECT_ACTIVE_UNIFORMS_ARB,&count);
+	pExtensions->glGetObjectParameterivARB(program.handle(), GL_OBJECT_ACTIVE_UNIFORMS_ARB,&count);
 
 	// Loop over each of the active uniforms, and set their value
 	for (GLint i = 0; i < count; i++)
@@ -495,10 +495,10 @@ void CUnifiedProgram::glQueryUniformLocations(RAPTOR_HANDLE program)
         GLint size = 0;
         GLenum type = GL_FLOAT_VEC4_ARB;
 
-	    pExtensions->glGetActiveUniformARB(program.handle, i, attrMaxLength, NULL, &size, &type,name);
+	    pExtensions->glGetActiveUniformARB(program.handle(), i, attrMaxLength, NULL, &size, &type,name);
         if (strlen(name) > 0)
         {
-	        GLint location = pExtensions->glGetUniformLocationARB(program.handle, name);
+	        GLint location = pExtensions->glGetUniformLocationARB(program.handle(), name);
 
             if (location >= 0) 
             {
@@ -525,7 +525,7 @@ void CUnifiedProgram::glQueryUniformLocations(RAPTOR_HANDLE program)
 
 void CUnifiedProgram::glQueryAttributeLocations(RAPTOR_HANDLE program)
 {
-    if (program.handle == 0)
+    if (program.handle() == 0)
         return;
 
 #if defined(GL_ARB_shader_objects)
@@ -533,13 +533,13 @@ void CUnifiedProgram::glQueryAttributeLocations(RAPTOR_HANDLE program)
     GLint attrMaxLength = 0;
     const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 
-    pExtensions->glGetObjectParameterivARB(program.handle,GL_OBJECT_ACTIVE_ATTRIBUTE_MAX_LENGTH_ARB,&attrMaxLength);
+    pExtensions->glGetObjectParameterivARB(program.handle(),GL_OBJECT_ACTIVE_ATTRIBUTE_MAX_LENGTH_ARB,&attrMaxLength);
 	attrMaxLength = MAX(32, attrMaxLength);
     GLcharARB *name = new GLcharARB[attrMaxLength];
 
     // Query the number of active attributes
     GLint count = 0;
-	pExtensions->glGetObjectParameterivARB(program.handle, GL_OBJECT_ACTIVE_ATTRIBUTES_ARB,&count);
+	pExtensions->glGetObjectParameterivARB(program.handle(), GL_OBJECT_ACTIVE_ATTRIBUTES_ARB,&count);
     GLint maxAttribs = 0;
     glGetIntegerv(GL_MAX_VERTEX_ATTRIBS_ARB,&maxAttribs);
 
@@ -549,10 +549,10 @@ void CUnifiedProgram::glQueryAttributeLocations(RAPTOR_HANDLE program)
         GLint size = 0;
         GLenum type = GL_FLOAT_VEC4_ARB;
 
-        pExtensions->glGetActiveAttribARB(program.handle, i, attrMaxLength, NULL, &size, &type,name);
+        pExtensions->glGetActiveAttribARB(program.handle(), i, attrMaxLength, NULL, &size, &type,name);
         if (strlen(name) > 0)
         {
-            GLint location = pExtensions->glGetAttribLocationARB(program.handle, name);
+            GLint location = pExtensions->glGetAttribLocationARB(program.handle(), name);
             if (location >= 0)
             {
                 for (unsigned int idx = 0; idx < m_parameters.getNbParameters(); idx++)

@@ -48,7 +48,7 @@ int main(int argc, char* argv[])
     CRaptorDisplay *pDisplay = NULL;
     RAPTOR_HANDLE wnd = Raptor::glCreateWindow(glcs,pDisplay);
 
-    if (wnd.handle == 0)
+    if (wnd.handle() == 0)
     {
 		Raptor::GetMessages()->displayMessage("Sorry: Test cannot run : hardware OpenGL rendering not supported, exiting...");
         return -1;

@@ -18,34 +18,34 @@ else
 	echo "Creating redist folders..."
 
 	mkdir Redist
-  cd Redist
-  mkdir Include
-  mkdir Bin
-  mkdir Doc
-  cd Doc
-  mkdir html
-  cd ..
-  mkdir Lib
-  mkdir Licenses
-  cd Include
-  mkdir Engine
-  mkdir GLHierarchy
-  mkdir SSE_Engine
-  mkdir System
-  mkdir Subsys
-  mkdir GLXSpecific
-  mkdir RaptorCompute
-  mkdir RaptorNetwork
-  mkdir ToolBox
-  mkdir SimdLib
-  cd ToolBox
-  mkdir Filters
-  cd ..
-  mkdir DataManager
-  cd Subsys
-  cd ..
-  cd ..
-  cd ..
+	cd Redist
+	mkdir Include
+	mkdir Bin
+	mkdir Doc
+	cd Doc
+	mkdir html
+	cd ..
+	mkdir Lib
+	mkdir Licenses
+	cd Include
+	mkdir Engine
+	mkdir GLHierarchy
+	mkdir SSE_Engine
+	mkdir System
+	mkdir Subsys
+	mkdir GLXSpecific
+	mkdir RaptorCompute
+	mkdir RaptorNetwork
+	mkdir ToolBox
+	mkdir SimdLib
+	cd ToolBox
+	mkdir Filters
+	cd ..
+	mkdir DataManager
+	cd Subsys
+	cd ..
+	cd ..
+	cd ..
 fi
 
 echo "	Copying Raptor include files ..."
@@ -228,12 +228,22 @@ cp ./Installer/Raptor_splash.JPG Redist/Doc/html
 
 echo "		Copying license files ..."
 
-cp ./License/FREETYPE.TXT Redist/Licenses
-cp ./License/DOXYGEN.txt Redist/Licenses
-cp ./License/XERCESC.txt Redist/Licenses
-cp ./License/APACHE.TXT Redist/Licenses
-cp ./License/OPENEXR.txt Redist/Licenses
-cp ./License/LIBPNG.TXT Redist/Licenses
+cp ./Licenses/APACHE.TXT Redist/Licenses
+cp ./Licenses/COPYRIGHT Redist/Licenses
+cp ./Licenses/DOXYGEN.txt Redist/Licenses
+cp ./Licenses/FREETYPE.TXT Redist/Licenses
+cp ./Licenses/FTL.TXT Redist/Licenses
+cp ./Licenses/GPLv2.TXT Redist/Licenses
+cp ./Licenses/lgpl-3.0.txt Redist/Licenses
+cp ./Licenses/LIBPNG.TXT Redist/Licenses
+cp ./Licenses/LICENSE.md Redist/Licenses
+cp ./Licenses/LICENSE.TXT Redist/Licenses
+cp ./Licenses/OPENEXR.txt Redist/Licenses
+cp ./Licenses/PNG_LICENSE Redist/Licenses
+cp ./Licenses/README Redist/Licenses
+cp ./Licenses/XERCESC.txt Redist/Licenses
+
+
 
 
 

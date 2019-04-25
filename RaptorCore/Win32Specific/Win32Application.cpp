@@ -96,7 +96,7 @@ bool CWin32Application::initApplication(void)
 
 void CWin32Application::setRootWindow(const RAPTOR_HANDLE& root)
 {
-    if ((root.handle == 0) || (root.hClass != WINDOW_CLASS))
+    if ((root.handle() == 0) || (root.hClass() != WINDOW_CLASS))
     {
         RAPTOR_ERROR(	Global::COpenGLClassID::GetClassId(),
 						"RaptorApplication has no root window !.");
@@ -113,14 +113,14 @@ void CWin32Application::grabCursor(bool grab)
 
 bool CWin32Application::run(void)
 {
-    if (m_root.handle == NULL)
+    if (m_root.handle() == NULL)
     {
         RAPTOR_ERROR(	Global::COpenGLClassID::GetClassId(),
 						"RaptorApplication has no root window !.");
         return false;
     }
 
-	HWND wnd = (HWND)getRootWindow().handle;
+	HWND wnd = (HWND)getRootWindow().handle();
 	SetForegroundWindow(wnd);	// Slightly Higher Priority
 	SetFocus(wnd);
 	
@@ -268,7 +268,7 @@ LRESULT CALLBACK WindowProc(  HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
             if (pApp == NULL)
                 return (DefWindowProc(hwnd, msg, wparam, lparam));
 
-            if (pApp->getRootWindow().handle == (unsigned int)hwnd)
+            if (pApp->getRootWindow().handle() == (unsigned int)hwnd)
                 PostQuitMessage(0);
 
 		    return(0);

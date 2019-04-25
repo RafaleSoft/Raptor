@@ -134,7 +134,7 @@ bool CRaptorClient::run(unsigned int width, unsigned int height)
 	glcs.display_mode = CGL_RGBA | CGL_DEPTH;
 
 	m_window = Raptor::glCreateWindow(glcs,m_pDisplay);
-	if (m_window.handle == 0)
+	if (m_window.handle() == 0)
 	{
 		RAPTOR_FATAL(	CPersistence::CPersistenceClassID::GetClassId(),
 						"Raptor Render Server has no resources: hardware OpenGL rendering not supported, exiting...");

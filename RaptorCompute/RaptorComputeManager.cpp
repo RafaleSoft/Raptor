@@ -98,8 +98,8 @@ bool CRaptorComputeManager::clCreateContext(unsigned int numPlatform,
 
 	if (NULL != dsp)
 	{
-		if ((dsp->getCurrentDevice().handle == 0) ||
-			(dsp->getCurrentDevice().handle != (int)wglGetCurrentDC()) ||
+		if ((dsp->getCurrentDevice().handle() == 0) ||
+			(dsp->getCurrentDevice().handle() != (int)wglGetCurrentDC()) ||
 			(wglGetCurrentContext() == 0))
 		{
 			RAPTOR_ERROR(CRaptorComputeManager::COpenCLClassID::GetClassId(),

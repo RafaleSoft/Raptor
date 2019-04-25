@@ -248,7 +248,7 @@ void CRaptorDisplay::setViewPoint(IViewPoint *viewPoint)
 
 bool CRaptorDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
 {
-	if (device.handle != CGL_NULL)
+	if (device.handle() != CGL_NULL)
 	{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 		if ((m_pCurrentDisplay != NULL) && (m_pCurrentDisplay != this))
@@ -321,10 +321,10 @@ void CRaptorDisplay::glRender(const RAPTOR_HANDLE& handle)
 	}
 #endif
 
-	if (handle.hClass == Global::COpenGLClassID::GetClassId().ID())
+	if (handle.hClass() == Global::COpenGLClassID::GetClassId().ID())
 	{
-		if (glIsList(handle.handle))
-			glCallList(handle.handle);
+		if (glIsList(handle.handle()))
+			glCallList(handle.handle());
 		else
 		{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION

@@ -77,7 +77,7 @@ public:
 void BackGround::glRender()
 {
     glColor4f(1.0f,1.0f,1.0f,1.0f);
-	glCallList(bg.handle);
+	glCallList(bg.handle());
 	
 	m->glRender();
 	glCallList(list);
