@@ -253,3 +253,61 @@ bool getExtensions(NATIVE_EXTENSION* ext, uint32_t *s)
 
 	return true;
 }
+
+bool checkConsistency(bool force)
+{
+	if (NULL == builder)
+		return false;
+
+	return builder->checkConsistency(force);
+}
+
+bool writeHeader(const char* filename)
+{
+	if (NULL == builder)
+		return false;
+
+	if (NULL == filename)
+		return false;
+
+	return builder->writeHeader(filename);
+}
+
+bool activateExtension(const char* extension, bool activate)
+{
+	if (NULL == builder)
+		return false;
+
+	if (NULL == extension)
+		return false;
+
+	bool res = true;
+	res = builder->activateExtension(extension, activate);
+
+	return res;
+}
+
+bool setBuildSupplement(BUILD_SUPPLEMENT *bld)
+{
+	if (NULL == builder)
+		return false;
+
+	builder->activateDebug(bld->DEBUG);
+	builder->activateRedist(bld->REDIST);
+	builder->activateCompute(bld->COMPUTE);
+
+	return true;
+}
+
+bool activateAllOrNone(bool all)
+{
+	if (NULL == builder)
+		return false;
+
+	if (all)
+		builder->activateAll();
+	else
+		builder->activateNone();
+
+	return true;
+}

@@ -1,5 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
+﻿/***************************************************************************/
+/*                                                                         */
+/*  Form1.cs                                                               */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
+using System;
+using System.Collections;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
@@ -21,6 +39,15 @@ namespace Builder
 
         private void InitTree()
         {
+            Graphics g = CreateGraphics();
+            System.IntPtr hDC = g.GetHdc();
+
+            bool res = NativeWrapper.glvkInitBuilder(hDC);
+
+            g.ReleaseHdc(hDC);
+            g.Dispose();
+
+
             System.Windows.Forms.TreeView tree = getTreeExtensions();
 	        tree.BeginUpdate();
 
@@ -36,14 +63,6 @@ namespace Builder
 	        TreeNode _3DFX_root = tree.Nodes.Add(_3DFX_Label);
 	        TreeNode OES_root = tree.Nodes.Add(OES_Label);
 	        TreeNode WGL_root = tree.Nodes.Add(WGL_Label);
-
-            Graphics g = CreateGraphics();
-            System.IntPtr hDC = g.GetHdc();
-
-            bool res = NativeWrapper.glvkInitBuilder(hDC);
-
-            g.ReleaseHdc(hDC);
-            g.Dispose();
 
             if (res)
             {
@@ -91,6 +110,14 @@ namespace Builder
                         case EXTENSION_KIND.OES:
                             root = OES_root;
                             break;
+                        case EXTENSION_KIND.CPU:
+                            if (extension.extensionName == "RAPTOR_SMP_CODE_GENERATION")
+                                SMP.Checked = true;
+                            else if (extension.extensionName == "RAPTOR_SSE_CODE_GENERATION")
+                                SSE.Checked = true;
+                            else if (extension.extensionName == "RAPTOR_SSE2_CODE_GENERATION")
+                                SSE2.Checked = true;
+                            break;
 		            }
 
                     if (null != root)
@@ -109,22 +136,116 @@ namespace Builder
 
         private void OK_Click(object sender, EventArgs e)
         {
+           	getData();
 
+	        if (!NativeWrapper.checkConsistency(false))
+		        MessageBox.Show("Inconsistency found in extension profile. Header file not generated.",
+                                "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+            else
+	            NativeWrapper.writeHeader("CodeGeneration.h");
+
+	        Close();
         }
 
         private void Cancel_Click(object sender, EventArgs e)
         {
-
+            Close();
         }
 
         private void SelectAll_Click(object sender, EventArgs e)
         {
-
+            NativeWrapper.activateAllOrNone(true);
+            setData();
         }
 
         private void SelectNone_Click(object sender, EventArgs e)
         {
+            NativeWrapper.activateAllOrNone(false);
+            setData();
+        }
 
+        private void getData()
+        {
+            System.Windows.Forms.TreeView tree = getTreeExtensions();
+	        IEnumerator it = tree.Nodes.GetEnumerator();
+
+            it.MoveNext();
+            TreeNode node = (TreeNode)it.Current;
+
+            while (null != node)
+            {
+		        if (null != node.Tag)
+                    NativeWrapper.activateExtension(node.Text, node.Checked);
+        
+                TreeNode child = node.FirstNode;
+                if (null != child)
+                    node = child;
+                else
+                {
+			        TreeNode next = node.NextNode;
+                    if (null != next)
+                        node = next;
+                    else
+                    {
+				        TreeNode parent = node.Parent;
+				        node = parent.NextNode;
+                    }
+                }
+            }
+
+            NativeWrapper.activateExtension("RAPTOR_SMP_CODE_GENERATION", SMP.Checked);
+            NativeWrapper.activateExtension("RAPTOR_SSE_CODE_GENERATION", SSE.Checked);
+            NativeWrapper.activateExtension("RAPTOR_SSE2_CODE_GENERATION", SSE2.Checked);
+
+            BUILD_SUPPLEMENT bld;
+            bld.DEBUG = BUILD_DEBUG.Checked;
+            bld.REDIST = BUILD_REDIST.Checked;
+            bld.COMPUTE = BUILD_COMPUTE.Checked;
+            NativeWrapper.setBuildSupplement(ref bld);
+        }
+
+        private void setData()
+        {
+            EXTENSION[] exts = NativeWrapper.queryExtensions();
+
+            System.Windows.Forms.TreeView tree = getTreeExtensions();
+            IEnumerator it = tree.Nodes.GetEnumerator();
+
+            it.MoveNext();
+            TreeNode node = (TreeNode)it.Current;
+
+            while (null != node)
+            {
+                if ((null != node.Tag) && (node.Text.Length > 1))
+                {
+                    EXTENSION ext = exts.First(e => e.extensionName == node.Text);
+                    node.Checked = ext.active;
+                }
+
+                TreeNode child = node.FirstNode;
+                if (null != child)
+                    node = child;
+                else
+                {
+                    TreeNode next = node.NextNode;
+                    if (null != next)
+                        node = next;
+                    else
+                    {
+                        TreeNode parent = node.Parent;
+                        node = parent.NextNode;
+                    }
+                }
+            }
+
+            {
+                EXTENSION ext = exts.First(e => e.extensionName == "RAPTOR_SMP_CODE_GENERATION");
+                SMP.Checked = ext.active;
+                ext = exts.First(e => e.extensionName == "RAPTOR_SSE_CODE_GENERATION");
+                SSE.Checked = ext.active;
+                ext = exts.First(e => e.extensionName == "RAPTOR_SSE2_CODE_GENERATION");
+                SSE2.Checked = ext.active;
+            }
         }
 
         private static System.String GL_Label = "CORE OpenGL versions";

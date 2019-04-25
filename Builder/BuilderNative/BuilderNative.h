@@ -51,6 +51,13 @@ typedef enum
 	_3DFX
 } EXTENSION_KIND;
 
+typedef struct
+{
+	bool DEBUG;
+	bool REDIST;
+	bool COMPUTE;
+} BUILD_SUPPLEMENT;
+
 typedef struct NATIVE_EXTENSION_t
 {
 	EXTENSION_KIND	kind;
@@ -65,5 +72,20 @@ bool glvkInitBuilder(HDC dc);
 
 extern "C" BUILDERNATIVE_API
 bool getExtensions(NATIVE_EXTENSION* ext, uint32_t* s);
+
+extern "C" BUILDERNATIVE_API
+bool checkConsistency(bool force);
+
+extern "C" BUILDERNATIVE_API
+bool writeHeader(const char* filename);
+
+extern "C" BUILDERNATIVE_API
+bool activateExtension(const char* extension, bool activate);
+
+extern "C" BUILDERNATIVE_API
+bool setBuildSupplement(BUILD_SUPPLEMENT *bld);
+
+extern "C" BUILDERNATIVE_API
+bool activateAllOrNone(bool all);
 
 #endif
