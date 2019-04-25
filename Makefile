@@ -4,8 +4,9 @@ RAPTOR_VERSION = 2.17.0
 RAPTOR_ROOT = /media/sf_OPENGL/Raptor
 REDIST = $(RAPTOR_ROOT)/Redist
 
-LIBGL = -L/usr/X11R6/lib -lGL
-LIBGLU = -L/usr/X11R6/lib -lGLU
+LIBGL = -L/usr/lib -lGL
+LIBGLU = -L/usr/lib -lGLU
+LIBX11 = -L/usr/lib -lX11
 
 FREETYPE_INCLUDE_PATH = $(RAPTOR_ROOT)/AddOns/freetype-2.9.1/include
 FREETYPE_LIB_PATH = $(RAPTOR_ROOT)/AddOns/freetype-2.9.1/lib

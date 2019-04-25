@@ -3,7 +3,7 @@ export
 OUTPUT = $(RAPTOR_ROOT)/Build/Linux/Release/Builder
 SRCDIR = $(RAPTOR_ROOT)/Builder.Net
 INCDIRS = -I$(SRCDIR) -I$(VULKAN_INCLUDE_PATH) -I$(REDIST)/include -I/usr/include
-CCCFLAGS = -DSIMD_NO_ASSEMBLY -DLINUX
+CCCFLAGS = -DSIMD_NO_ASSEMBLY -DLINUX -DGLX_EXTENSIONS
 
 all:	redist $(OUTPUT)/Builder
 
@@ -24,7 +24,7 @@ SRC = \
 OBJ = $(SRC:$(SRCDIR)/%.cpp=$(OUTPUT)/%.o)
 
 $(OUTPUT)/Builder:	$(OBJ)
-	g++ $(OBJ) -o $(OUTPUT)/Builder $(LIBGL)
+	g++ $(OBJ) -o $(OUTPUT)/Builder $(LIBGL) $(LIBX11)
 	cp $(OUTPUT)/Builder $(REDIST)/Bin/
 
 $(OBJ):	$(SRC)

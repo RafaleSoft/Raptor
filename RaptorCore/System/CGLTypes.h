@@ -34,12 +34,12 @@
 	#include "System/Color.h"
 #endif
 
-
-RAPTOR_NAMESPACE_BEGIN
-
 #ifndef __RAPTOR_VERSION_H__
 	#include "System/Version.h"
 #endif
+
+RAPTOR_NAMESPACE_BEGIN
+
 
 //!
 //!	Generic opaque pointers.
@@ -398,7 +398,7 @@ private:
     bool		_locked;
 };
 
-#if defined(_ANDROID)
+#if defined(LINUX) || defined(_ANDROID)
 	#include <semaphore.h>
 #endif
 
