@@ -1,13 +1,30 @@
+/***************************************************************************/
+/*                                                                         */
+/*  main.cpp                                                               */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
 
-#if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
-    #include "System/Raptor.h"
-#endif
 
 #include "GLBuilder.h"
 #include <iostream>
 #include <unistd.h>	// sleep
+#include <string.h>
 
-RAPTOR_NAMESPACE
+#ifndef __GLX_RAPTOR_GLEXT_H__
+	#include "GLXSpecific/GLXGlext.h"
+#endif
+//#include "vulkan.h"
 
 #define GLX_CONTEXT_MAJOR_VERSION_ARB       0x2091
 #define GLX_CONTEXT_MINOR_VERSION_ARB       0x2092

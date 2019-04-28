@@ -12,6 +12,8 @@
 #define	DECLARE_WGL_EXT_swap_control(STATIC_LINKAGE)
 
 #ifdef GLX_EXTENSIONS
+	#include <malloc.h>
+	
 	typedef ptrdiff_t GLintptr;
 	typedef ptrdiff_t GLsizeiptr;
 	

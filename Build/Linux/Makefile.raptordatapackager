@@ -14,7 +14,8 @@ clean:
 	mkdir -p $(OUTPUT)
 
 SRC = \
-	$(SRCDIR)/RaptorDataPackager.cpp
+	$(SRCDIR)/RaptorDataPackager.cpp \
+	$(SRCDIR)/PackageIO.cpp
 
 OBJ = $(SRC:$(SRCDIR)/%.cpp=$(OUTPUT)/%.o)
 	
