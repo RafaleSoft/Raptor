@@ -171,7 +171,6 @@ bool C3DScene::addObject(CObject3D *object)
 
     return true;
 }
- 
 
 void C3DScene::glRenderObjects(	const vector<C3DSceneObject*>& objects)
 {
@@ -229,7 +228,6 @@ void C3DScene::glRenderObjects(	const vector<C3DSceneObject*>& objects)
             unsortedObjects.push_back(sc);
         }
     }
-
 
     //
 	// Rendering 

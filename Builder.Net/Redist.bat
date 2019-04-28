@@ -52,6 +52,7 @@ IF EXIST Redist (
 	mkdir System
 	mkdir Subsys
 	mkdir Win32Specific
+	mkdir GLXSpecific
 	mkdir RaptorCompute
 	mkdir RaptorNetwork
 	mkdir ToolBox

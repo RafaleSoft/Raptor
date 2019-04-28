@@ -34,6 +34,9 @@
 
 #include <fcntl.h>
 #include <sys/stat.h>
+#if defined(LINUX)
+	#include <stdlib.h>
+#endif
 
 
 

@@ -263,11 +263,11 @@ bool CRaptorBufferDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
         //  mipmapping level ).
         //  This else case lacks some tests : already bound ? / buffer valid ? / render target compatible ? ...
         //  ... so it might disappear or remain stricly internal.
-		else if ((device.hClass >= CTextureObject::CGL_CUBEMAP_PX) &&
-				 (device.hClass <= CTextureObject::CGL_CUBEMAP_NZ))
+		else if ((device.hClass() >= CTextureObject::CGL_CUBEMAP_PX) &&
+				 (device.hClass() <= CTextureObject::CGL_CUBEMAP_NZ))
         {
             CContextManager *manager = CContextManager::GetInstance();
-            manager->glBindPBuffer(m_pBuffer - 1,(CTextureObject::CUBE_FACE)(device.hClass));
+            manager->glBindPBuffer(m_pBuffer - 1,(CTextureObject::CUBE_FACE)(device.hClass()));
             res = true;
         }
         // Context already bound !!! Raise warning ?
@@ -355,9 +355,7 @@ bool CRaptorBufferDisplay::glvkUnBindDisplay(void)
         //  return to previous screen buffer.
         else
         {
-		    RAPTOR_HANDLE device;
-            device.hClass = DEVICE_CONTEXT_CLASS;
-            device.handle = 0;
+		    RAPTOR_HANDLE device(DEVICE_CONTEXT_CLASS, (void*)0);
 		    CContextManager::GetInstance()->glMakeCurrentContext(device,m_previousContext);
         }
 

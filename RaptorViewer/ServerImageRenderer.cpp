@@ -84,7 +84,7 @@ void CServerImageRenderer::glRender(void)
 	glEnable(GL_TEXTURE_2D);
 	glDisable(GL_LIGHTING);
 		
-	glCallList(drawBuffer.handle);
+	glCallList(drawBuffer.handle());
 }
 
 void CServerImageRenderer::setImageData(unsigned char *in)
@@ -96,8 +96,8 @@ void CServerImageRenderer::setImageData(unsigned char *in)
 
 void CServerImageRenderer::glInitImage()
 {
-	drawBuffer.handle = glGenLists(1);
-    glNewList(drawBuffer.handle,GL_COMPILE);
+	drawBuffer.handle(glGenLists(1));
+    glNewList(drawBuffer.handle(),GL_COMPILE);
         glBegin(GL_QUADS);
             glTexCoord2f(0.0f,0.0f);glVertex4f(-1.0,-1.0,-1.0f,1.0f);
             glTexCoord2f(1.0f,0.0f);glVertex4f(1.0,-1.0,-1.0f,1.0f);

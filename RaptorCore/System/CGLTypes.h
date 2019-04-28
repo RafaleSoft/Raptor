@@ -34,12 +34,12 @@
 	#include "System/Color.h"
 #endif
 
-
-RAPTOR_NAMESPACE_BEGIN
-
 #ifndef __RAPTOR_VERSION_H__
 	#include "System/Version.h"
 #endif
+
+RAPTOR_NAMESPACE_BEGIN
+
 
 //!
 //!	Generic opaque pointers.
@@ -50,16 +50,42 @@ RAPTOR_NAMESPACE_BEGIN
 //! divided in two parts:
 //! - Raptor private handles, created and managed by Raptor
 //!	- User handles, that Raptor can use but that identify client classes.
-typedef struct RAPTOR_HANDLE
+class RAPTOR_API RAPTOR_HANDLE
 {
-	uint32_t hClass;
-	uint32_t handle;
+public:
+	RAPTOR_HANDLE() :c(0) { h.handle = 0;  }
+	RAPTOR_HANDLE(uint32_t c, void* p) :c(c) { h.handle = p; }
+	RAPTOR_HANDLE(uint32_t c, uint32_t p) :c(c) { h.glhandle = p; }
+	~RAPTOR_HANDLE() {};
+	
+	//!	Getters.
+	uint32_t hClass(void) const { return c; };
+	template<class T>
+	T *ptr(void) const { return static_cast<T*>(h.handle); };
+	uint32_t handle(void) const { return h.glhandle; };
 
-	RAPTOR_HANDLE():hClass(0),handle(0) {}
-	RAPTOR_HANDLE(uint32_t c, void* p) :hClass(c), handle((uint32_t)p) {}
-	bool operator==(const RAPTOR_HANDLE &h) const { return (h.hClass==hClass)&&(h.handle==handle); }
-} RAPTOR_HANDLE;
+	//!	Setters.
+	void hClass(uint32_t hc) { c = hc; };
+	void ptr(void* p) { h.handle = p; };
+	void handle(uint32_t g) { h.glhandle = g; };
+
+	//!	Operators.
+	operator uint32_t() const { return h.glhandle; };
+	bool operator==(const RAPTOR_HANDLE &rh) const
+	{ return (c == rh.c) && (h.handle == rh.h.handle); }
+
+
+private:
+	uint32_t c;
+	union hd
+	{
+		void*		handle;
+		uint32_t	glhandle;
+	} h;
+};
+
 typedef RAPTOR_HANDLE*	LP_RAPTOR_HANDLE;
+
 
 //! Classes of handles are in 2 categories : Raptor handles and client handles.
 #define	RAPTOR_HANDLE_CLASS		0x00000000
@@ -372,7 +398,7 @@ private:
     bool		_locked;
 };
 
-#if defined(_ANDROID)
+#if defined(LINUX) || defined(_ANDROID)
 	#include <semaphore.h>
 #endif
 

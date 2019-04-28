@@ -236,8 +236,8 @@ static real_mat_t REAL_MATERIALS[29] =
 	    var[3]=COLOR_MATERIAL[mat][3]; \
 	}
 #define DEL_LIST \
-	if (handle.handle > 0) \
-		glDeleteLists(handle.handle,1);
+	if (handle.handle() > 0) \
+		glDeleteLists(handle.handle(),1);
 #define SET_COLOR(var) \
 	{\
 		var[0]=r;\
@@ -274,8 +274,8 @@ CMaterial::CMaterial(REAL_MATERIAL material,
 {
 	m_bRebuild = true;
 
-	handle.handle = 0;
-	handle.hClass = CMaterial::CMaterialClassID::GetClassId().ID();
+	handle.handle(0);
+	handle.hClass(CMaterial::CMaterialClassID::GetClassId().ID());
 
 	emission_enabled = false;
 	SET_MATERIAL(emission,CGL_BLACK_MATERIAL)
@@ -313,8 +313,8 @@ CMaterial::CMaterial(BASE_MATERIAL amb,
 {
     m_bRebuild = true;
 
-	handle.handle = 0;
-	handle.hClass = CMaterial::CMaterialClassID::GetClassId().ID();
+	handle.handle(0);
+	handle.hClass(CMaterial::CMaterialClassID::GetClassId().ID());
 
 	if (amb>=CGL_NO_MATERIAL)
 	{
@@ -369,8 +369,8 @@ CMaterial::CMaterial(BASE_MATERIAL amb,
 {
     m_bRebuild = true;
 
-	handle.handle = 0;
-	handle.hClass = CMaterial::CMaterialClassID::GetClassId().ID();
+	handle.handle(0);
+	handle.hClass(CMaterial::CMaterialClassID::GetClassId().ID());
 
 	if (amb>=CGL_NO_MATERIAL)
 	{
@@ -544,7 +544,7 @@ void CMaterial::glRender()
     if(m_bRebuild)
     {
         DEL_LIST
-        handle.handle = 0;
+        handle.handle(0);
         m_bRebuild = false;
     }
 	else if (pCurrentMaterial == this)
@@ -554,14 +554,12 @@ void CMaterial::glRender()
 
 	//if (glIsList(handle.handle))
     //  This is much faster ...
-    if (handle.handle > 0)
-	{
-		glCallList(handle.handle);
-	}
+    if (handle.handle() > 0)
+		glCallList(handle.handle());
 	else
 	{
-		handle.handle = glGenLists(1);
-		glNewList(handle.handle,GL_COMPILE_AND_EXECUTE);
+		handle.handle(glGenLists(1));
+		glNewList(handle.handle(),GL_COMPILE_AND_EXECUTE);
 			if (ambient_enabled)
 				glMaterialfv(GL_FRONT,GL_AMBIENT,ambient);
 			if (diffuse_enabled)
@@ -582,10 +580,7 @@ void CMaterial::glRender()
 
 CMaterial::operator RAPTOR_HANDLE() const
 {
-	RAPTOR_HANDLE handle;
-	handle.hClass = getId().ID();
-	handle.handle = (unsigned int)(this);
-
+	RAPTOR_HANDLE handle(getId().ID(),(void*)this);
 	return handle;
 }
 

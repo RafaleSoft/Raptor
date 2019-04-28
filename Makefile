@@ -4,34 +4,35 @@ RAPTOR_VERSION = 2.17.0
 RAPTOR_ROOT = /media/sf_OPENGL/Raptor
 REDIST = $(RAPTOR_ROOT)/Redist
 
-LIBGL = -L/usr/X11R6/lib -lGL
-LIBGLU = -L/usr/X11R6/lib -lGLU
+LIBGL = -L/usr/lib -lGL
+LIBGLU = -L/usr/lib -lGLU
+LIBX11 = -L/usr/lib -lX11
 
-FREETYPE_INCLUDE_PATH = $(RAPTOR_ROOT)/AddOns/freetype-2.5.5/include
-FREETYPE_LIB_PATH = $(RAPTOR_ROOT)/AddOns/freetype-2.5.5/lib
-FREETYPE_BIN_PATH = $(RAPTOR_ROOT)/AddOns/freetype-2.5.5/bin
+FREETYPE_INCLUDE_PATH = $(RAPTOR_ROOT)/AddOns/freetype-2.9.1/include
+FREETYPE_LIB_PATH = $(RAPTOR_ROOT)/AddOns/freetype-2.9.1/lib
+FREETYPE_BIN_PATH = $(RAPTOR_ROOT)/AddOns/freetype-2.9.1/bin
 
 ZLIB_INCLUDE_PATH = /usr/include
 ZLIB_LIB_PATH = $(RAPTOR_ROOT)/AddOns/zlib128/lib/VC10
 ZLIB_BIN_PATH = $(RAPTOR_ROOT)/AddOns/zlib128/bin/VC10
 
-XERCES_INCLUDE_PATH = $(RAPTOR_ROOT)/AddOns/xercesc_3_1
+XERCES_INCLUDE_PATH = $(RAPTOR_ROOT)/AddOns/xercesc-3.2.2
 XERCES_LIB_PATH = $(RAPTOR_ROOT)/AddOns/xercesc_3_1/VC10
 XERCES_BIN_PATH = $(RAPTOR_ROOT)/AddOns/xercesc_3_1/VC10
 
-JPEGLIB_INCLUDE_PATH = $(RAPTOR_ROOT)/AddOns/JpegLib/include
+JPEGLIB_INCLUDE_PATH = $(RAPTOR_ROOT)/AddOns/JpegLib-v9/include
 JPEGLIB_LIB_PATH = /usr/lib
 JPEGLIB_BIN_PATH = $(RAPTOR_ROOT)/AddOns/JpegLib/lib
 
-TIFFLIB_INCLUDE_PATH = $(RAPTOR_ROOT)/AddOns/TiffLib/include
+TIFFLIB_INCLUDE_PATH = $(RAPTOR_ROOT)/AddOns/TiffLib-4.0.10/include
 TIFFLIB_LIB_PATH = $(RAPTOR_ROOT)/AddOns/TiffLib/lib/VC10
 TIFFLIB_BIN_PATH = $(RAPTOR_ROOT)/AddOns/TiffLib/lib/VC10
 
-PNGLIB_INCLUDE_PATH = $(RAPTOR_ROOT)/AddOns/libpng-1.6.16/include
-PNGLIB_LIB_PATH = $(RAPTOR_ROOT)/AddOns/libpng-1.6.16/lib/VC10
-PNGLIB_BIN_PATH = $(RAPTOR_ROOT)/AddOns/libpng-1.6.16/bin/VC10
+PNGLIB_INCLUDE_PATH = $(RAPTOR_ROOT)/AddOns/libpng-1.6.36/include
+PNGLIB_LIB_PATH = $(RAPTOR_ROOT)/AddOns/libpng-1.6.36/lib/VC10
+PNGLIB_BIN_PATH = $(RAPTOR_ROOT)/AddOns/libpng-1.6.36/bin/VC10
 
-OPENEXRLIB_INCLUDE_PATH = $(RAPTOR_ROOT)/AddOns/OpenEXRLib/include
+OPENEXRLIB_INCLUDE_PATH = $(RAPTOR_ROOT)/AddOns/OpenEXRLib-2.3.0/include
 OPENEXRLIB_LIB_PATH = $(RAPTOR_ROOT)/AddOns/OpenEXRLib/lib/vc10
 OPENEXRLIB_BIN_PATH = $(RAPTOR_ROOT)/AddOns/OpenEXRLib/bin/vc10
 
@@ -39,7 +40,7 @@ OPENCL_INCLUDE_PATH=C:/Intel/OpenCL/sdk/include
 OPENCL_LIB_PATH=C:/Intel/OpenCL/sdk/lib/x86
 OPENCL_BIN_PATH=C:/Intel/OpenCL/sdk/bin/x86
 
-VULKAN_INCLUDE_PATH = $(RAPTOR_ROOT)/AddOns/vulkan/include
+VULKAN_INCLUDE_PATH=$(RAPTOR_ROOT)/AddOns/vulkan/include
 VULKAN_BIN_PATH=c:/windows/system32
 
 #

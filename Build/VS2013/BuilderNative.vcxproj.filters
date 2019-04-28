@@ -27,9 +27,6 @@
     <ClInclude Include="..\..\Builder\BuilderNative\GLBuilder.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="resource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Builder\resource.h">
       <Filter>Resource Files</Filter>
     </ClInclude>

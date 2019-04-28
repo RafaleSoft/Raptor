@@ -223,7 +223,7 @@ bool Raptor::glCheckDisplayConfig(const CRaptorDisplayConfig &pcs)
         CRaptorDisplay *pDisplay = NULL;
 		CContextManager::RENDERING_CONTEXT_ID ctx = CContextManager::INVALID_CONTEXT;
         RAPTOR_HANDLE wnd = ctxMgr->glCreateWindow(pcs2,pDisplay,ctx);
-        if (wnd.handle != 0)
+        if (wnd.handle() != 0)
         {
             valid = true;
             glDestroyDisplay(pDisplay);
@@ -376,7 +376,7 @@ bool Raptor::glInitRaptor(const CRaptorConfig& config)
 	RAPTOR_HANDLE noDevice;
 	CContextManager::GetInstance()->glMakeCurrentContext(noDevice,status.defaultContext);
 
-	return (res && (wnd.handle != 0));
+	return (res && (wnd.handle() != 0));
 }
 
 void Raptor::glRender(void)

@@ -461,7 +461,7 @@ bool CRaptorRenderBufferDisplay::createFrameBuffer(void)
 
 bool CRaptorRenderBufferDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
 {
-	if (device.hClass == CTextureSet::CTextureSetClassID::GetClassId().ID())
+	if (device.hClass() == CTextureSet::CTextureSetClassID::GetClassId().ID())
 	{
 		if (m_pAttachments != NULL)
 		{
@@ -469,9 +469,9 @@ bool CRaptorRenderBufferDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
 			m_pAttachments = NULL;
 		}
 
-		if (0 != device.handle)
+		if (0 != device.handle())
 		{
-			m_pAttachments = (CTextureSet*)device.handle;
+			m_pAttachments = device.ptr<CTextureSet>();
 			m_pAttachments->registerDestruction(this);
 			cs.bind_to_texture = true;
 			return (m_pAttachments->getNbTexture() > 0);

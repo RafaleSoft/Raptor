@@ -46,8 +46,8 @@ CGLLayer::CGLLayer(int xpos,int ypos,unsigned int width,unsigned int height)
 	m_bRebuild(true),m_bRedraw(false),
 	m_pPlane(NULL),m_pBuffer(NULL),m_pBufferPointer(NULL)
 {
-	layer.handle = 0;
-	layer.hClass = Global::COpenGLClassID::GetClassId().ID();
+	layer.handle(0);
+	layer.hClass(Global::COpenGLClassID::GetClassId().ID());
 
 	m_xpos = xpos;
 	m_ypos = ypos;
@@ -139,12 +139,12 @@ void CGLLayer::glMakeList()
 {
     m_bRebuild = false;
 
-	if (glIsList(layer.handle))
-		glDeleteLists(layer.handle,1);
+	if (glIsList(layer.handle()))
+		glDeleteLists(layer.handle(),1);
 
-	layer.handle = glGenLists(1);
+	layer.handle(glGenLists(1));
 
-	glNewList(layer.handle,GL_COMPILE);	
+	glNewList(layer.handle(),GL_COMPILE);	
 
 		glRenderSingleBuffer(this);
 
@@ -273,7 +273,7 @@ void CGLLayer::glRender()
 
     if (m_bRebuild)
         glMakeList();
-	glCallList(layer.handle);
+	glCallList(layer.handle());
 
 	glEnable(GL_SCISSOR_TEST);
 	glScissor(m_xpos,m_ypos,m_layerWidth,m_layerHeight);

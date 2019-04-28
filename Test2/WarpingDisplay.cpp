@@ -41,8 +41,8 @@ public:
 		GL_COORD_VERTEX texCoord1(0,0,0,1);
 
 		//	background;
-		list.handle = glGenLists(1);
-		glNewList(list.handle,GL_COMPILE);
+		list.handle(glGenLists(1));
+		glNewList(list.handle(),GL_COMPILE);
 			glBegin(GL_QUADS);
 				glTexCoord2d(0.0,0.0);
 				texCoord1.x = -1.0; texCoord1.y = -1.0;
@@ -86,8 +86,8 @@ public:
 	{ glRender(); };
 	virtual void glRender(void)
 	{
-		glCallList(bg.handle);
-		glCallList(list.handle);
+		glCallList(bg.handle());
+		glCallList(list.handle());
 
 		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 		pExtensions->glActiveTextureARB(GL_TEXTURE1_ARB);

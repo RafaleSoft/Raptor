@@ -79,7 +79,7 @@ CRaptorInstance* CRaptorInstance::GetInstance(void)
 
 void CRaptorInstance::glRender()
 {
-	if (m_pWindow.handle != NULL)
+	if (m_pWindow.handle() != NULL)
 	{
 		request r;
 		int nbr = 0;
@@ -222,7 +222,7 @@ bool CRaptorInstance::start(unsigned int width,unsigned int height)
 
 	glcs.refresh_rate.fps = CGL_MAXREFRESHRATE;
 	m_pWindow = Raptor::glCreateWindow(glcs,m_pDisplay);
-	if (m_pWindow.handle == 0)
+	if (m_pWindow.handle() == 0)
     {
 		RAPTOR_FATAL(	CPersistence::CPersistenceClassID::GetClassId(),
 						"Raptor Render Server has no resources: hardware OpenGL rendering not supported, exiting...");

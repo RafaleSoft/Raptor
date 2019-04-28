@@ -81,9 +81,7 @@ void CGLWnd::glMakeCurrent(bool restoreContext)
 	if (restoreContext == true)
 	{
 		CClientDC dc(this) ;
-		RAPTOR_HANDLE display;
-		display.handle = (unsigned int)(dc.m_hDC);
-		display.hClass = DEVICE_CONTEXT_CLASS;
+		RAPTOR_HANDLE display(DEVICE_CONTEXT_CLASS, (uint32_t)(dc.m_hDC));
 		m_pDisplay->glvkBindDisplay(display);
 	}
 	else
@@ -123,9 +121,7 @@ bool CGLWnd::GLCreateWindow (CString name,CWnd *parent, const CRaptorDisplayConf
 		{
 			CClientDC dc(this) ;
 
-			RAPTOR_HANDLE display;
-			display.handle = (unsigned int)(dc.m_hDC);
-			display.hClass = DEVICE_CONTEXT_CLASS;
+			RAPTOR_HANDLE display(DEVICE_CONTEXT_CLASS, (unsigned int)(dc.m_hDC));
 			m_pDisplay->glvkBindDisplay(display);
 
 			GLInitContext();
@@ -147,9 +143,7 @@ bool CGLWnd::GLCreateWindow (CString name,CWnd *parent, const CRaptorDisplayConf
 	{
 		CClientDC dc(this) ;
 
-		RAPTOR_HANDLE display;
-		display.handle = (unsigned int)(dc.m_hDC);
-		display.hClass = DEVICE_CONTEXT_CLASS;
+		RAPTOR_HANDLE display(DEVICE_CONTEXT_CLASS, (unsigned int)(dc.m_hDC));
 		m_pDisplay->glvkBindDisplay(display);
 
 		GLInitContext();
@@ -200,9 +194,7 @@ int CGLWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	if (m_pDisplay == NULL)
 		return -1;
 
-	RAPTOR_HANDLE display;
-	display.handle = (unsigned int)(dc.m_hDC);
-	display.hClass = DEVICE_CONTEXT_CLASS;
+	RAPTOR_HANDLE display(DEVICE_CONTEXT_CLASS, (uint32_t)(dc.m_hDC));
 	if (m_pDisplay->glvkBindDisplay(display))
 	{
 		m_pDisplay->glvkUnBindDisplay();
@@ -274,9 +266,7 @@ void CGLWnd::OnSize(UINT nType, int cx, int cy)
 	
 	CClientDC dc(this) ;
 
-	RAPTOR_HANDLE display;
-	display.handle = (unsigned int)(dc.m_hDC);
-	display.hClass = DEVICE_CONTEXT_CLASS;
+	RAPTOR_HANDLE display(DEVICE_CONTEXT_CLASS, (uint32_t)(dc.m_hDC));
 	m_pDisplay->glvkBindDisplay(display);
 	m_pDisplay->glResize(cx,cy,0,0);
 	
@@ -291,9 +281,7 @@ void CGLWnd::OnPaint()
 {
 	CPaintDC dc(this); 
 	
-	RAPTOR_HANDLE display;
-	display.handle = (unsigned int)(dc.m_hDC);
-	display.hClass = DEVICE_CONTEXT_CLASS;
+	RAPTOR_HANDLE display(DEVICE_CONTEXT_CLASS, (uint32_t)(dc.m_hDC));
 	m_pDisplay->glvkBindDisplay(display);
 
 	GLDisplayFunc();

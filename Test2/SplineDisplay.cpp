@@ -94,7 +94,7 @@ void CSplineDisplay::Init()
 	CGL3DFont *font3d = CGLFontFactory::create3DFont("Datas\\kld.ttf", 20, true, true, "main_font_3d");
 	font = font3d;
 	font->glGenGlyphs(1, 5, 2.0f);
-	text = (font3d->glWriteList("Raptor",0)).handle;
+	text = (font3d->glWriteList("Raptor",0)).handle();
 
 	CRaptorDisplay* pDisplay = CRaptorDisplay::GetCurrentDisplay();
 	vp = pDisplay->createViewPoint();

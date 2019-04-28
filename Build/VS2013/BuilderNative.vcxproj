@@ -144,7 +144,6 @@
     <ClInclude Include="..\..\Builder\BuilderNative\stdafx.h" />
     <ClInclude Include="..\..\Builder\BuilderNative\targetver.h" />
     <ClInclude Include="..\..\Builder\resource.h" />
-    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Builder\BuilderNative\BuilderNative.cpp" />
@@ -157,7 +156,10 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="..\..\Builder\BuilderNative.rc" />
+    <ResourceCompile Include="..\..\Builder\BuilderNative.rc">
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">NDEBUG;</PreprocessorDefinitions>
+      <Culture Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">0x000c</Culture>
+    </ResourceCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

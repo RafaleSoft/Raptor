@@ -507,11 +507,8 @@ bool RAPTOR_FASTCALL CTextureUnitSetup::glRender(CTextureUnitSetup::GL_TEXTURE_S
 
 RAPTOR_HANDLE CTextureUnitSetup::glBuildSetup(void)
 {
-	RAPTOR_HANDLE handle;
-	handle.hClass = Global::COpenGLClassID::GetClassId().ID();
-	handle.handle = glGenLists(1);
-
-
+	RAPTOR_HANDLE handle(Global::COpenGLClassID::GetClassId().ID(),glGenLists(1));
+	
 	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 	PFN_GL_ACTIVE_TEXTURE_ARB_PROC glActiveTextureARB = pExtensions->glActiveTextureARB;
 
@@ -540,7 +537,7 @@ RAPTOR_HANDLE CTextureUnitSetup::glBuildSetup(void)
 	else
 		glGetIntegerv(GL_ACTIVE_TEXTURE_ARB,&previousTMU);
 
-	glNewList(handle.handle,GL_COMPILE);
+	glNewList(handle.handle(),GL_COMPILE);
 
     for (unsigned int i=0;i<nbUnits;i++)
     {
@@ -595,10 +592,7 @@ RAPTOR_HANDLE CTextureUnitSetup::glBuildSetup(void)
 
 RAPTOR_HANDLE CTextureUnitSetup::glBuildUnSetup(void)
 {
-	RAPTOR_HANDLE handle;
-	handle.hClass = Global::COpenGLClassID::GetClassId().ID();
-	handle.handle = glGenLists(1);
-
+	RAPTOR_HANDLE handle(Global::COpenGLClassID::GetClassId().ID(), glGenLists(1));
 
 	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 	PFN_GL_ACTIVE_TEXTURE_ARB_PROC glActiveTextureARB = pExtensions->glActiveTextureARB;
@@ -628,7 +622,7 @@ RAPTOR_HANDLE CTextureUnitSetup::glBuildUnSetup(void)
 	else
 		glGetIntegerv(GL_ACTIVE_TEXTURE_ARB,&previousTMU);
 
-	glNewList(handle.handle,GL_COMPILE);
+	glNewList(handle.handle(),GL_COMPILE);
 
 	for (unsigned int i=0;i<nbUnits;i++)
     {
