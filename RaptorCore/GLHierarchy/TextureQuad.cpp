@@ -56,6 +56,11 @@ RAPTOR_NAMESPACE
 static const std::string vp_src =
 "#version 460 compatibility\n\
 \n\
+//uniform Transform { \n\
+//	mat4 ModelViewMatrix; \n\
+//	mat4 ModelViewProjectionMatrix; \n\
+//}; \n\
+\n\
 layout(location = 0) in vec4 i_Position; \n\
 layout(location = 3) in vec4 i_Color; \n\
 layout(location = 6) in vec4 i_Size; \n\
@@ -67,6 +72,7 @@ void main (void) \n\
 {\n\
 	vec4 pos = vec4(vec3(i_Position.xyz),1.0); \n\
 	gl_Position =  gl_ModelViewProjectionMatrix * pos; \n\
+	//gl_Position =  ModelViewMatrix * pos; \n\
 	\n\
 	//	The size has to be projected because it is added to the posision \n\
 	//	in the geometry stage. \n\

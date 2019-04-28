@@ -71,7 +71,7 @@ namespace BuilderNet {
 		System::Windows::Forms::TreeView^ getTreeExtensions()
 		{
 			return TREE_EXTENSIONS;
-		};
+		}
 
 	protected:
 		System::Windows::Forms::CheckBox^  SSE2;

@@ -62,11 +62,6 @@ public:
     //!	Use object z-sorting optimisation
 	void useZSort(bool use = true);
 
-    //! Adds an opaque pointer to the scene 
-    //! ( usable for OGL display lists for example, and in this cas it is checked ).
-    //! @return true if the handle is correctly added to the scene.
-    bool glAddObject(RAPTOR_HANDLE handle);
-
     //! Adds generic object to the scene
     //! @return true if the object is correctly added to the scene.
     bool addObject(CObject3D *object);

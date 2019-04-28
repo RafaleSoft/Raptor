@@ -25,7 +25,7 @@
 #include "vulkan.h"
 
 #if !defined(AFX_GLBUILDER_H__0F2DA94E_7293_494C_B936_8CB72098E626__INCLUDED_)
-#include "GLBuilder.h"
+	#include "GLBuilder.h"
 #endif
 #if !defined(__SIMDMACROS_H__)
 	#include "SimdLib\simdMacros.h"

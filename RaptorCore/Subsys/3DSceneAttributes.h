@@ -87,7 +87,6 @@ public:
     //! Internal use only : true if mirror pass has been issued.
     bool			m_bMirrorsRendered;
 	
-    vector<RAPTOR_HANDLE>   m_pHandles;
     vector<CEnvironment*>	m_pEnvironments;
 	vector<CLight*>			m_pLights;
     vector<CMirror*>		m_pMirrors;
