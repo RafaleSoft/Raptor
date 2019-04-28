@@ -55,8 +55,8 @@ public:
 	{
 		setBoundingBox(GL_COORD_VERTEX(-10.0f, -10.0f, -15.1f, 1.0f), GL_COORD_VERTEX(10.0f, 10.0f, -15.0f, 1.0f));
 
-		bg.handle = glGenLists(1);
-		glNewList(bg.handle, GL_COMPILE);
+		bg.handle(glGenLists(1));
+		glNewList(bg.handle(), GL_COMPILE);
 			glBegin(GL_QUADS);
 			glTexCoord2f(0.0f, 0.0f);
 			glVertex3f(-10.0f, -10.0f, 0.0f);
@@ -94,7 +94,7 @@ void SkinningBackGround::glRender()
 	glPushMatrix();
 		glRotatef(360.0f*dt, 0, 0, 1);
 		glTranslatef(0, 0, -15.0f);
-		glCallList(bg.handle);
+		glCallList(bg.handle());
 	glPopMatrix();
 }
 

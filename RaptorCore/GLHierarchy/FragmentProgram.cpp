@@ -34,10 +34,10 @@ const CPersistence::CPersistenceClassID& CFragmentProgram::CFragmentProgramClass
 //////////////////////////////////////////////////////////////////////
 
 CFragmentProgram::CFragmentProgram(const std::string& name):
-    CUnifiedProgram(fragmentId,name)
+	CUnifiedProgram(fragmentId, name)
 {
-	m_handle.handle = 0;	// default openGL vertex processing pipeline
-	m_handle.hClass = CFragmentProgram::CFragmentProgramClassID::GetClassId().ID();
+	m_handle.handle(0);	// default openGL vertex processing pipeline
+	m_handle.hClass(CFragmentProgram::CFragmentProgramClassID::GetClassId().ID());
 
     glInitShaders();
 }
@@ -67,8 +67,8 @@ CFragmentProgram::~CFragmentProgram()
 	else
 	{
 		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
-		if (m_handle.handle > 0)
-			pExtensions->glDeleteObjectARB(m_handle.handle);
+		if (m_handle.handle() > 0)
+			pExtensions->glDeleteObjectARB(m_handle.handle());
 	}
 #endif
 }
@@ -113,11 +113,11 @@ bool CFragmentProgram::glLoadProgram(const std::string &program)
 #if defined(GL_ARB_fragment_shader)
 	if (m_bFragmentProgramReady)
 	{
-		if (m_handle.handle > 0)
-			pExtensions->glDeleteObjectARB(m_handle.handle);
+		if (m_handle.handle() > 0)
+			pExtensions->glDeleteObjectARB(m_handle.handle());
 
-        m_handle.handle = pExtensions->glCreateShaderObjectARB(GL_FRAGMENT_SHADER_ARB);
-        if (m_handle.handle == 0)
+        m_handle.handle(pExtensions->glCreateShaderObjectARB(GL_FRAGMENT_SHADER_ARB));
+        if (m_handle.handle() == 0)
         {
             Raptor::GetErrorManager()->generateRaptorError(	CFragmentProgram::CFragmentProgramClassID::GetClassId(),
 															CRaptorErrorManager::RAPTOR_WARNING,
@@ -127,18 +127,18 @@ bool CFragmentProgram::glLoadProgram(const std::string &program)
 
         int length = program.size();
         const char* source = program.data();
-        pExtensions->glShaderSourceARB(m_handle.handle,1,&source,&length);
+        pExtensions->glShaderSourceARB(m_handle.handle(),1,&source,&length);
 
-        pExtensions->glCompileShaderARB(m_handle.handle);
+        pExtensions->glCompileShaderARB(m_handle.handle());
 
         m_bValid = glGetProgramStatus();
 
         if (!m_bValid) 
         {
             GLint maxLength = 0;
-	        pExtensions->glGetObjectParameterivARB(m_handle.handle,GL_OBJECT_INFO_LOG_LENGTH_ARB, &maxLength);
+	        pExtensions->glGetObjectParameterivARB(m_handle.handle(),GL_OBJECT_INFO_LOG_LENGTH_ARB, &maxLength);
 	        char *pInfoLog = (char*) malloc(maxLength * sizeof(char));
-	        pExtensions->glGetInfoLogARB(m_handle.handle, maxLength, &length, pInfoLog);
+	        pExtensions->glGetInfoLogARB(m_handle.handle(), maxLength, &length, pInfoLog);
 
             CRaptorMessages::MessageArgument arg;
             arg.arg_sz = pInfoLog;
@@ -178,7 +178,7 @@ bool CFragmentProgram::glGetProgramCaps(GL_FRAGMENT_PROGRAM_CAPS& caps)
 
 bool CFragmentProgram::glGetProgramStatus(void)
 {
-	if (m_handle.handle == 0)
+	if (m_handle.handle() == 0)
 		return false;
 
 	if (!m_bFragmentProgramReady)
@@ -192,19 +192,19 @@ bool CFragmentProgram::glGetProgramStatus(void)
 	{
         //  Check program status and compare to shader caps to return global status
         GLint value = 0;
-        pExtensions->glGetObjectParameterivARB(m_handle.handle, GL_OBJECT_TYPE_ARB,&value);
+        pExtensions->glGetObjectParameterivARB(m_handle.handle(), GL_OBJECT_TYPE_ARB,&value);
         if (value != GL_SHADER_OBJECT_ARB)
             return false;
 
-        pExtensions->glGetObjectParameterivARB(m_handle.handle, GL_OBJECT_SUBTYPE_ARB,&value);
+        pExtensions->glGetObjectParameterivARB(m_handle.handle(), GL_OBJECT_SUBTYPE_ARB,&value);
         if (value != GL_FRAGMENT_SHADER_ARB)
             return false;
 
-        pExtensions->glGetObjectParameterivARB(m_handle.handle,GL_OBJECT_COMPILE_STATUS_ARB, &value);
+        pExtensions->glGetObjectParameterivARB(m_handle.handle(),GL_OBJECT_COMPILE_STATUS_ARB, &value);
         if (value == 0)
             return false;
 
-        pExtensions->glGetObjectParameterivARB(m_handle.handle,GL_OBJECT_DELETE_STATUS_ARB, &value);
+        pExtensions->glGetObjectParameterivARB(m_handle.handle(),GL_OBJECT_DELETE_STATUS_ARB, &value);
         if (value == 1)
             return false;
 

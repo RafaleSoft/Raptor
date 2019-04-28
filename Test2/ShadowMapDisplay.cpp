@@ -59,7 +59,7 @@ void Ground::glRender()
 	glColor4f(1.0f,1.0f,1.0f,1.0f);
 
 	if (glIsEnabled(GL_TEXTURE_2D))
-		glCallList(c1.handle);
+		glCallList(c1.handle());
 
 	CVertexShader s("GL_SHADER");
 	GL_COORD_VERTEX texCoord1(0,0,0,1);
@@ -170,7 +170,7 @@ void Ground::glRender()
 	glEnable(GL_LIGHTING);
 
 	if (glIsEnabled(GL_TEXTURE_2D))
-		glCallList(c2.handle);
+		glCallList(c2.handle());
 
 	dt+=0.001f;
 	if (dt>1.0) dt=0.0;

@@ -80,7 +80,7 @@ public:
 		bool operator()(C3DSceneObject* const x, C3DSceneObject* const y) const
 		{
 			if (x->z_order == y->z_order)
-				return x->object.handle < y->object.handle;
+				return x->object.handle() < y->object.handle();
 			else
 				return (x->z_order < y->z_order); 
 		};

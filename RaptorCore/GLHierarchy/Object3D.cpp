@@ -194,10 +194,10 @@ void CObject3D::glAllocateBBox(void)
     boxArrayOffset = boxIndex;
     boxIndex += BBOX_VERTEX_SIZE;
 #else
-	filledBox.handle = 0;
-	filledBox.hClass = 0;
-	wireBox.handle = 0;
-	wireBox.hClass = 0;
+	filledBox.handle(0);
+	filledBox.hClass(0);
+	wireBox.handle(0);
+	wireBox.hClass(0);
 #endif
 }
 
@@ -248,10 +248,7 @@ bool CObject3D::removeContainerNotifier(CContainerNotifier<CObject3D*> *pNotifie
 
 CObject3D::operator RAPTOR_HANDLE() const
 {
-	RAPTOR_HANDLE handle;
-	handle.hClass = getId().ID();
-	handle.handle = (unsigned int)(this);
-
+	RAPTOR_HANDLE handle(getId().ID(),(void*)this);
 	return handle;
 }
 
@@ -355,13 +352,13 @@ void CObject3D::extendBoundingBox(const GL_COORD_VERTEX& min, const GL_COORD_VER
 		if (boxValue != value)
 		{
 			boxValue = value;
-			if (filledBox.handle != 0)
-				glDeleteLists(filledBox.handle,1);
-			if (wireBox.handle != 0)
-				glDeleteLists(wireBox.handle,1);
+			if (filledBox.handle() != 0)
+				glDeleteLists(filledBox.handle(),1);
+			if (wireBox.handle() != 0)
+				glDeleteLists(wireBox.handle(),1);
 			
-			filledBox.handle = glGenLists(1);
-			glNewList(filledBox.handle,GL_COMPILE);
+			filledBox.handle(glGenLists(1));
+			glNewList(filledBox.handle(),GL_COMPILE);
 				glBegin(GL_QUADS);
 					// front: 4, 5, 6, 7
 					glVertex3f(xmin,ymin,zmax);
@@ -401,8 +398,8 @@ void CObject3D::extendBoundingBox(const GL_COORD_VERTEX& min, const GL_COORD_VER
 				glEnd();
 			glEndList();
 			
-			wireBox.handle = glGenLists(1);
-			glNewList(wireBox.handle,GL_COMPILE);
+			wireBox.handle(glGenLists(1));
+			glNewList(wireBox.handle(),GL_COMPILE);
 				glBegin(GL_LINE_STRIP);
 					// back: 0, 1, 2, 3
 					glVertex3f(xmin,ymin,zmin);
@@ -431,7 +428,7 @@ void CObject3D::extendBoundingBox(const GL_COORD_VERTEX& min, const GL_COORD_VER
 			glEndList();
 		}
 
-		glCallList(filled ? filledBox.handle : wireBox.handle);
+		glCallList(filled ? filledBox.handle() : wireBox.handle());
 
 		Global::GetInstance().getCurrentStatus().iRenderedObjects++;
 		Global::GetInstance().getCurrentStatus().iRenderedTriangles += 12;

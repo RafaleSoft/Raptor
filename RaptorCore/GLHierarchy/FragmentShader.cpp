@@ -34,8 +34,8 @@ CFragmentShader::CFragmentShader(const std::string& name)
 	:CShaderProgram(fragmentId,name)
 {
     m_bValid = false;
-	m_handle.handle = 0;	// default openGL vertex processing pipeline
-	m_handle.hClass = CFragmentShader::CFragmentShaderClassID::GetClassId().ID();
+	m_handle.handle(0);	// default openGL vertex processing pipeline
+	m_handle.hClass(CFragmentShader::CFragmentShaderClassID::GetClassId().ID());
 
     glInitShaders();
 }
@@ -59,8 +59,9 @@ CFragmentShader::~CFragmentShader()
 		glStop();
 
 		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
-		if (pExtensions->glIsProgramARB(m_handle.handle))
-			pExtensions->glDeleteProgramsARB(1,&m_handle.handle);
+		GLuint program = m_handle.handle();
+		if (pExtensions->glIsProgramARB(program))
+			pExtensions->glDeleteProgramsARB(1,&program);
 	}
 #endif
 }
@@ -144,17 +145,17 @@ bool CFragmentShader::glGetProgramCaps(GL_FRAGMENT_SHADER_CAPS& caps)
 
 void CFragmentShader::glRender(void)
 {
-	if (m_handle.handle == 0)
+	if (m_handle.handle() == 0)
 		return;
 
 #ifdef GL_ARB_fragment_program
 	if (m_bFragmentReady)
 	{
 		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
-		if (pExtensions->glIsProgramARB(m_handle.handle))
+		if (pExtensions->glIsProgramARB(m_handle.handle()))
 		{
 			glEnable(GL_FRAGMENT_PROGRAM_ARB);
-			pExtensions->glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB,m_handle.handle);
+			pExtensions->glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB,m_handle.handle());
 
 			if (m_bApplyParameters)
 			{
@@ -203,11 +204,13 @@ bool CFragmentShader::glLoadProgram(const std::string &program)
                 err = ::glGetError();
         }
 
-		if (pExtensions->glIsProgramARB(m_handle.handle))
-			pExtensions->glDeleteProgramsARB(1,&m_handle.handle);
+		GLuint hd = m_handle.handle();
+		if (pExtensions->glIsProgramARB(hd))
+			pExtensions->glDeleteProgramsARB(1,&hd);
 
-		pExtensions->glGenProgramsARB(1,&m_handle.handle);
-		pExtensions->glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB,m_handle.handle);
+		pExtensions->glGenProgramsARB(1,&hd);
+		pExtensions->glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB,hd);
+		m_handle.handle(hd);
 
 	 	pExtensions->glProgramStringARB(GL_FRAGMENT_PROGRAM_ARB,
 										GL_PROGRAM_FORMAT_ASCII_ARB,
@@ -257,7 +260,7 @@ bool CFragmentShader::glLoadProgram(const std::string &program)
 
 bool CFragmentShader::glGetProgramStatus(void)
 {
-	if (m_handle.handle == 0)
+	if (m_handle.handle() == 0)
 		return false;
 
 	if (!m_bFragmentReady)
@@ -266,8 +269,8 @@ bool CFragmentShader::glGetProgramStatus(void)
 #if defined(GL_ARB_fragment_program)
 const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 
-	if (pExtensions->glIsProgramARB(m_handle.handle))
-		pExtensions->glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB,m_handle.handle);
+	if (pExtensions->glIsProgramARB(m_handle.handle()))
+		pExtensions->glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB,m_handle.handle());
 	else
 		return false;
 

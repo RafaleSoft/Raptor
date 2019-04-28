@@ -56,12 +56,12 @@ int main(int argc, char* argv[])
     CRaptorDisplay *pDisplay = NULL;
     RAPTOR_HANDLE wnd = Raptor::glCreateWindow(glcs,pDisplay);
 
-    if (wnd.handle == 0)
+    if (wnd.handle() == 0)
     {
         Raptor::GetMessages()->displayMessage("Sorry: Test cannot run : full display config is not supported, trying basic window...");
         glcs.display_mode = CGL_RGBA| CGL_DEPTH;
         wnd = Raptor::glCreateWindow(glcs,pDisplay);
-        if (wnd.handle == 0)
+        if (wnd.handle() == 0)
         {
             Raptor::GetMessages()->displayMessage("Sorry: Test cannot run : hardware OpenGL rendering not supported, exiting...");
             return -1;

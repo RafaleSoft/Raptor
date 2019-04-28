@@ -4,7 +4,7 @@ CCCFLAGS =  -DSIMD_NO_ASSEMBLY -DLINUX -fPIC
 OUTPUT = $(RAPTOR_ROOT)/Build/Linux/Release/RaptorCore
 SRCDIR = $(RAPTOR_ROOT)/RaptorCore
 INCXERCES = -I../AddOns/xercesc_2_7 
-INCDIRS = -I$(SRCDIR) -I$(RAPTOR_ROOT)/Redist/Include
+INCDIRS = -I$(SRCDIR) -I$(RAPTOR_ROOT)/Redist/Include -I$(VULKAN_INCLUDE_PATH)
 LDFLAGS = -Bdynamic -shared -lstdc++
 
 # Remove MESA options before all GL extensions are included.
@@ -37,14 +37,14 @@ HIERARCHY_SRC = \
 	$(SRCDIR)/GLHierarchy/PerlinNoise.cpp \
 	$(SRCDIR)/GLHierarchy/Persistence.cpp \
 	$(SRCDIR)/GLHierarchy/Projector.cpp \
-	$(SRCDIR)/GLHierarchy/RenderingProperties.cpp \
+	$(SRCDIR)/GLHierarchy/IRenderingProperties.cpp \
 	$(SRCDIR)/GLHierarchy/ShadedGeometry.cpp \
 	$(SRCDIR)/GLHierarchy/Shader.cpp \
 	$(SRCDIR)/GLHierarchy/ShaderProgram.cpp \
 	$(SRCDIR)/GLHierarchy/SimpleObject.cpp \
 	$(SRCDIR)/GLHierarchy/TextureFactory.cpp \
 	$(SRCDIR)/GLHierarchy/TextureFactoryConfig.cpp \
-	$(SRCDIR)/GLHierarchy/TextureObject.cpp \
+	$(SRCDIR)/GLHierarchy/ITextureObject.cpp \
 	$(SRCDIR)/GLHierarchy/TextureSet.cpp \
 	$(SRCDIR)/GLHierarchy/TextureUnitSetup.cpp \
 	$(SRCDIR)/GLHierarchy/VertexShader.cpp \
@@ -55,99 +55,99 @@ HIERARCHY_SRC = \
 	$(SRCDIR)/GLHierarchy/UnifiedProgram.cpp
 
 ENGINE_SRC = \
-    Engine/Animator.cpp \
-    Engine/3DEngine.cpp \
-    Engine/3DEngineMatrix.cpp \
-    Engine/3DEngineTaskManager.cpp \
-    Engine/3DPath.cpp \
-    Engine/3DScene.cpp \
-    Engine/BoundingBox.cpp \
-    Engine/EngineJob.cpp \
-    Engine/Environment.cpp \
-    Engine/GeometricModifier.cpp \
-    Engine/ImageModifier.cpp \
-    Engine/LightModifier.cpp \
-    Engine/Modifier.cpp \
-    Engine/OmniShadowMap.cpp \
-    Engine/Physics.cpp \
-    Engine/ParticleManager.cpp \
-    Engine/ShadowMap.cpp \
-    Engine/ShadowVolume.cpp \
-    Engine/TimeObject.cpp \
-    Engine/ViewModifier.cpp \
-    Engine/ViewPoint.cpp 
+	$(SRCDIR)/Engine/Animator.cpp \
+	$(SRCDIR)/Engine/3DEngine.cpp \
+	$(SRCDIR)/Engine/3DEngineMatrix.cpp \
+	$(SRCDIR)/Engine/3DEngineTaskManager.cpp \
+	$(SRCDIR)/Engine/3DPath.cpp \
+	$(SRCDIR)/Engine/3DScene.cpp \
+	$(SRCDIR)/Engine/BoundingBox.cpp \
+	$(SRCDIR)/Engine/EngineJob.cpp \
+	$(SRCDIR)/Engine/Environment.cpp \
+	$(SRCDIR)/Engine/GeometricModifier.cpp \
+	$(SRCDIR)/Engine/ImageModifier.cpp \
+	$(SRCDIR)/Engine/LightModifier.cpp \
+	$(SRCDIR)/Engine/Modifier.cpp \
+	$(SRCDIR)/Engine/OmniShadowMap.cpp \
+	$(SRCDIR)/Engine/Physics.cpp \
+	$(SRCDIR)/Engine/ParticleManager.cpp \
+	$(SRCDIR)/Engine/ShadowMap.cpp \
+	$(SRCDIR)/Engine/ShadowVolume.cpp \
+	$(SRCDIR)/Engine/TimeObject.cpp \
+	$(SRCDIR)/Engine/ViewModifier.cpp \
+	$(SRCDIR)/Engine/ViewPoint.cpp 
 
 
 SYSTEM_SRC = \
-	System/CGLTypes.cpp \
-	System/Color.cpp \
-	System/Global.cpp \
-	System/Memory.cpp \
-	System/Raptor.cpp \
-	System/RaptorApplication.cpp \
-	System/RaptorBufferDisplay.cpp \
-	System/RaptorConfig.cpp \
-	System/RaptorConsole.cpp \
-	System/RaptorDisplay.cpp \
-	System/RaptorDisplayConfig.cpp \
-	System/RaptorDisplayFilter.cpp \
-	System/RenderEntryPoint.cpp \
-	System/RaptorErrorManager.cpp \
-	System/RaptorExtensions.cpp \
-	System/RaptorFilteredDisplay.cpp \
-	System/RaptorIO.cpp \
-	System/RaptorMessages.cpp \
-	System/RaptorRenderBufferDisplay.cpp \
-	System/RaptorScreenDisplay.cpp
+	$(SRCDIR)/System/CGLTypes.cpp \
+	$(SRCDIR)/System/Color.cpp \
+	$(SRCDIR)/System/Global.cpp \
+	$(SRCDIR)/System/Memory.cpp \
+	$(SRCDIR)/System/Raptor.cpp \
+	$(SRCDIR)/System/RaptorApplication.cpp \
+	$(SRCDIR)/System/RaptorBufferDisplay.cpp \
+	$(SRCDIR)/System/RaptorConfig.cpp \
+	$(SRCDIR)/System/RaptorConsole.cpp \
+	$(SRCDIR)/System/RaptorDisplay.cpp \
+	$(SRCDIR)/System/RaptorDisplayConfig.cpp \
+	$(SRCDIR)/System/RaptorDisplayFilter.cpp \
+	$(SRCDIR)/System/RenderEntryPoint.cpp \
+	$(SRCDIR)/System/RaptorErrorManager.cpp \
+	$(SRCDIR)/System/RaptorExtensions.cpp \
+	$(SRCDIR)/System/RaptorFilteredDisplay.cpp \
+	$(SRCDIR)/System/RaptorIO.cpp \
+	$(SRCDIR)/System/RaptorMessages.cpp \
+	$(SRCDIR)/System/RaptorRenderBufferDisplay.cpp \
+	$(SRCDIR)/System/RaptorScreenDisplay.cpp
 
 SUBSYS_SRC = \
-	Subsys/3DSceneAttributes.cpp \
-	Subsys/3DSceneObject.cpp \
-	Subsys/3DSetItem.cpp \
-	Subsys/AnimatorStream.cpp \
-	Subsys/BlinnShader.cpp \
-	Subsys/BumpShader.cpp \
-	Subsys/Collisions.cpp \
-	Subsys/ContextManager.cpp \
-	Subsys/ContourAttributes.cpp \
-	Subsys/DefaultBumpmapLoader.cpp \
-	Subsys/DefaultImageScaler.cpp \
-	Subsys/DefaultMipmapBuilder.cpp \
-	Subsys/GeometryAllocator.cpp \
-	Subsys/InternalProcs.cpp \
-	Subsys/Interpreters.cpp \
-	Subsys/LightAttributes.cpp \
-	Subsys/Object3DShadowAttributes.cpp \
-	Subsys/PlayFrameJob.cpp \
-	Subsys/PhongShader.cpp \
-	Subsys/RegisterCombiner.cpp \
-	Subsys/ShaderLibrary.cpp \
-	Subsys/ShadowVolumeJob.cpp \
-	Subsys/SubBoundingBox.cpp \
-	Subsys/TexelAllocator.cpp \
-	Subsys/ThreadMutex.cpp \
-	Subsys/VideoStream.cpp \
-	Subsys/XMLRaptorIO.cpp
+	$(SRCDIR)/Subsys/3DSceneAttributes.cpp \
+	$(SRCDIR)/Subsys/3DSceneObject.cpp \
+	$(SRCDIR)/Subsys/3DSetItem.cpp \
+	$(SRCDIR)/Subsys/AnimatorStream.cpp \
+	$(SRCDIR)/Subsys/BlinnShader.cpp \
+	$(SRCDIR)/Subsys/BumpShader.cpp \
+	$(SRCDIR)/Subsys/Collisions.cpp \
+	$(SRCDIR)/Subsys/ContextManager.cpp \
+	$(SRCDIR)/Subsys/ContourAttributes.cpp \
+	$(SRCDIR)/Subsys/DefaultBumpmapLoader.cpp \
+	$(SRCDIR)/Subsys/DefaultImageScaler.cpp \
+	$(SRCDIR)/Subsys/DefaultMipmapBuilder.cpp \
+	$(SRCDIR)/Subsys/GeometryAllocator.cpp \
+	$(SRCDIR)/Subsys/InternalProcs.cpp \
+	$(SRCDIR)/Subsys/Interpreters.cpp \
+	$(SRCDIR)/Subsys/LightAttributes.cpp \
+	$(SRCDIR)/Subsys/Object3DShadowAttributes.cpp \
+	$(SRCDIR)/Subsys/PlayFrameJob.cpp \
+	$(SRCDIR)/Subsys/PhongShader.cpp \
+	$(SRCDIR)/Subsys/RegisterCombiner.cpp \
+	$(SRCDIR)/Subsys/ShaderLibrary.cpp \
+	$(SRCDIR)/Subsys/ShadowVolumeJob.cpp \
+	$(SRCDIR)/Subsys/SubBoundingBox.cpp \
+	$(SRCDIR)/Subsys/TexelAllocator.cpp \
+	$(SRCDIR)/Subsys/ThreadMutex.cpp \
+	$(SRCDIR)/Subsys/VideoStream.cpp \
+	$(SRCDIR)/Subsys/XMLRaptorIO.cpp
 
 
 SUBSYS_SCRIPT_SRC = \
-    Subsys/ObjectModels/RaptorScript_lex.cpp \
-    Subsys/ObjectModels/RaptorScript_yacc.cpp \
-    Subsys/ObjectModels/RaptorScript_tree.cpp 
+	$(SRCDIR)/Subsys/ObjectModels/RaptorScript_lex.cpp \
+	$(SRCDIR)/Subsys/ObjectModels/RaptorScript_yacc.cpp \
+	$(SRCDIR)/Subsys/ObjectModels/RaptorScript_tree.cpp 
 
 SUBSYS_LEXSCRIPT_SRC = \
-	Subsys/ObjectModels/Raptor.lex \
-	Subsys/ObjectModels/Basic.lex \
-	Subsys/ObjectModels/Expressions.lex \
-	Subsys/ObjectModels/Commands.lex \
+	$(SRCDIR)/Subsys/ObjectModels/Raptor.lex \
+	$(SRCDIR)/Subsys/ObjectModels/Basic.lex \
+	$(SRCDIR)/Subsys/ObjectModels/Expressions.lex \
+	$(SRCDIR)/Subsys/ObjectModels/Commands.lex \
 
 
 GLXSPECIFIC_SRC = \
-    GLXSpecific/GLXApplication.cpp \
-    GLXSpecific/GLXAnimatorStream.cpp \
-    GLXSpecific/GLXContextManager.cpp \
-    GLXSpecific/GLXEngineTaskManager.cpp \
-    GLXSpecific/GLXView.cpp \
+	$(SRCDIR)/GLXSpecific/GLXApplication.cpp \
+	$(SRCDIR)/GLXSpecific/GLXAnimatorStream.cpp \
+	$(SRCDIR)/GLXSpecific/GLXContextManager.cpp \
+	$(SRCDIR)/GLXSpecific/GLXEngineTaskManager.cpp \
+	$(SRCDIR)/GLXSpecific/GLXView.cpp \
 
 
 HIERARCHY_OBJS = $(HIERARCHY_SRC:$(SRCDIR)/GLHierarchy%.cpp=$(OUTPUT)%.o)
@@ -156,7 +156,7 @@ SYSTEM_OBJS = $(SYSTEM_SRC:System%.cpp=$(OUTPUT)%.o)
 SUBSYS_OBJS = $(SUBSYS_SRC:Subsys%.cpp=$(OUTPUT)%.o)
 SUBSYS_SCRIPT_OBJS = $(SUBSYS_SCRIPT_SRC:Subsys/ObjectModels%.cpp=$(OUTPUT)%.o)
 GLXSPECIFIC_OBJS = $(GLXSPECIFIC_SRC:GLXSpecific%.cpp=$(OUTPUT)%.o)
-CODE_GENERATION = Subsys/CodeGeneration.h
+CODE_GENERATION = $(SRCDIR)/Subsys/CodeGeneration.h
 
 ALL_OBJS = $(HIERARCHY_OBJS) $(ENGINE_OBJS) $(SYSTEM_OBJS) $(SUBSYS_OBJS) $(GLXSPECIFIC_OBJS) $(SUBSYS_SCRIPT_OBJS) $(OUTPUT)/Simplex.o
 
@@ -198,7 +198,7 @@ $(GLXSPECIFIC_OBJS): $(GLXSPECIFIC_SRC) $(CODE_GENERATION)
 	g++ $(CCCFLAGS) $(INCDIRS) -c $(<D)/$(*F).cpp  -o $(OUTPUT)/$(@F)
 
 $(SUBSYS_SCRIPT_SRC):	$(SUBSYS_LEXSCRIPT_SRC) $(CODE_GENERATION)
-	cd Subsys/ObjectModels; $(RAPTOR_ROOT)/Redist/Bin/Microlex -f Raptor.lex -o RaptorScript -v ; cd ../..;
+	cd $(SRCDIR)/Subsys/ObjectModels; $(RAPTOR_ROOT)/Redist/Bin/Microlex -f Raptor.lex -o RaptorScript -v ; cd ../..;
 
 $(CODE_GENERATION):
-	cd Subsys; $(RAPTOR_ROOT)/Redist/Bin/Builder -enable RAPTOR_SMP_CODE_GENERATION; cp CodeGeneration.h $(RAPTOR_ROOT)/Redist/Include/Subsys; cd ..;
+	cd $(SRCDIR)/Subsys; $(RAPTOR_ROOT)/Redist/Bin/Builder -enable RAPTOR_SMP_CODE_GENERATION; cp CodeGeneration.h $(RAPTOR_ROOT)/Redist/Include/Subsys; cd ..;

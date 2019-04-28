@@ -385,7 +385,7 @@ CContextManager::RENDERING_CONTEXT_ID CContextManager::vkCreateContext(const RAP
 	VK_CONTEXT &context = m_pVkContext[ctx];
 	context.pExtensions = new CRaptorVKExtensions("");
 	
-	if (WINDOW_CLASS == handle.hClass)
+	if (WINDOW_CLASS == handle.hClass())
 	{
 		if (!vkCreateSurface(handle, ctx))
 		{
@@ -424,7 +424,7 @@ void CContextManager::vkMakeCurrentContext(const RAPTOR_HANDLE& device,RENDERING
 		//	Use a timeout coherent with vkSwapVSync
 		uint64_t timeout = MAXUINT64;	// infinite wait
 		VK_CONTEXT& context = m_pVkContext[ctx];
-		if (NULL != device.hClass)
+		if (NULL != device.hClass())
 		{
 			if (!context.device.acquireSwapChainImage(timeout))
 			{
@@ -505,8 +505,8 @@ RAPTOR_HANDLE CContextManager::getDevice(RENDERING_CONTEXT_ID ctx) const
 	RAPTOR_HANDLE device;
 	if ((ctx >= 0) && (ctx < MAX_CONTEXT))
 	{
-		device.handle = 0;
-		device.hClass = DEVICE_CONTEXT_CLASS;
+		device.handle(0);
+		device.hClass(DEVICE_CONTEXT_CLASS);
 	}
 
 	return device;

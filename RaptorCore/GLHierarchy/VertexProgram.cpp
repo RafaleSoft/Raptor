@@ -33,8 +33,8 @@ const CPersistence::CPersistenceClassID& CVertexProgram::CVertexProgramClassID::
 CVertexProgram::CVertexProgram(const std::string& name):
     CUnifiedProgram(vertexId,name)
 {
-    m_handle.handle = 0;	// default openGL vertex processing pipeline
-	m_handle.hClass = CVertexProgram::CVertexProgramClassID::GetClassId().ID();
+    m_handle.handle(0);	// default openGL vertex processing pipeline
+	m_handle.hClass(CVertexProgram::CVertexProgramClassID::GetClassId().ID());
 
     glInitShaders();
 }
@@ -63,8 +63,8 @@ CVertexProgram::~CVertexProgram()
 	else
 	{
 		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
-		if (m_handle.handle > 0)
-			pExtensions->glDeleteObjectARB(m_handle.handle);
+		if (m_handle.handle() > 0)
+			pExtensions->glDeleteObjectARB(m_handle.handle());
 	}
 #endif
 }
@@ -108,11 +108,11 @@ bool CVertexProgram::glLoadProgram(const std::string &program)
 #if defined(GL_ARB_vertex_shader)
 	if (m_bVertexProgramReady)
 	{
-		if (m_handle.handle > 0)
-			pExtensions->glDeleteObjectARB(m_handle.handle);
+		if (m_handle.handle() > 0)
+			pExtensions->glDeleteObjectARB(m_handle.handle());
 
-        m_handle.handle = pExtensions->glCreateShaderObjectARB(GL_VERTEX_SHADER_ARB);
-        if (m_handle.handle == 0)
+        m_handle.handle(pExtensions->glCreateShaderObjectARB(GL_VERTEX_SHADER_ARB));
+        if (m_handle.handle() == 0)
         {
             Raptor::GetErrorManager()->generateRaptorError(	CVertexProgram::CVertexProgramClassID::GetClassId(),
 															CRaptorErrorManager::RAPTOR_WARNING,
@@ -122,18 +122,18 @@ bool CVertexProgram::glLoadProgram(const std::string &program)
 
         int length = program.size();
         const char* source = program.data();
-        pExtensions->glShaderSourceARB(m_handle.handle,1,&source,&length);
+        pExtensions->glShaderSourceARB(m_handle.handle(),1,&source,&length);
 
-        pExtensions->glCompileShaderARB(m_handle.handle);
+        pExtensions->glCompileShaderARB(m_handle.handle());
 
         m_bValid = glGetProgramStatus();
 
 	    if (!m_bValid) 
         {
             GLint maxLength = 0;
-	        pExtensions->glGetObjectParameterivARB(m_handle.handle,GL_OBJECT_INFO_LOG_LENGTH_ARB, &maxLength);
+	        pExtensions->glGetObjectParameterivARB(m_handle.handle(),GL_OBJECT_INFO_LOG_LENGTH_ARB, &maxLength);
 	        char *pInfoLog = (char*) malloc(maxLength * sizeof(char));
-	        pExtensions->glGetInfoLogARB(m_handle.handle, maxLength, &length, pInfoLog);
+	        pExtensions->glGetInfoLogARB(m_handle.handle(), maxLength, &length, pInfoLog);
 
             CRaptorMessages::MessageArgument arg;
             arg.arg_sz = pInfoLog;
@@ -166,7 +166,7 @@ bool CVertexProgram::glBindProgram(RAPTOR_HANDLE program)
 			if (value.isA(p))
 			{
 				p = ((const CProgramParameters::CParameter<CProgramParameters::GL_VERTEX_ATTRIB>&)value).p;
-				pExtensions->glBindAttribLocationARB(program.handle, p, value.name().data());
+				pExtensions->glBindAttribLocationARB(program.handle(), p, value.name().data());
 			}
 		}
 
@@ -210,7 +210,7 @@ bool CVertexProgram::glGetProgramCaps(GL_VERTEX_PROGRAM_CAPS& caps)
 
 bool CVertexProgram::glGetProgramStatus(void)
 {
-	if (m_handle.handle == 0)
+	if (m_handle.handle() == 0)
 		return false;
 
 	if (!m_bVertexProgramReady)
@@ -224,19 +224,19 @@ bool CVertexProgram::glGetProgramStatus(void)
 	{
         //  Check program status and compare to shader caps to return global status
         GLint value = 0;
-        pExtensions->glGetObjectParameterivARB(m_handle.handle, GL_OBJECT_TYPE_ARB,&value);
+        pExtensions->glGetObjectParameterivARB(m_handle.handle(), GL_OBJECT_TYPE_ARB,&value);
         if (value != GL_SHADER_OBJECT_ARB)
             return false;
 
-        pExtensions->glGetObjectParameterivARB(m_handle.handle, GL_OBJECT_SUBTYPE_ARB,&value);
+        pExtensions->glGetObjectParameterivARB(m_handle.handle(), GL_OBJECT_SUBTYPE_ARB,&value);
         if (value != GL_VERTEX_SHADER_ARB)
             return false;
 
-        pExtensions->glGetObjectParameterivARB(m_handle.handle,GL_OBJECT_COMPILE_STATUS_ARB, &value);
+        pExtensions->glGetObjectParameterivARB(m_handle.handle(),GL_OBJECT_COMPILE_STATUS_ARB, &value);
         if (value == 0)
             return false;
 
-        pExtensions->glGetObjectParameterivARB(m_handle.handle,GL_OBJECT_DELETE_STATUS_ARB, &value);
+        pExtensions->glGetObjectParameterivARB(m_handle.handle(),GL_OBJECT_DELETE_STATUS_ARB, &value);
         if (value == 1)
             return false;
 

@@ -16,11 +16,12 @@ clean:
 	mkdir -p $(OUTPUT)
 
 SRC = \
-	$(SRCDIR)/RaptorDataManager.cpp
+	$(SRCDIR)/RaptorDataManager.cpp \
+	$(SRCDIR)/RaptorDataPackager/PackageIO.cpp
 
-OBJ = $(SRC:$(SRCDIR)/%.cpp=$(OUTPUT)/%.o)
+OBJ = $(OUTPUT)/RaptorDataManager.o $(OUTPUT)/PackageIO.o
 	
-$(SO):	$(OBJ) 
+$(SO):	$(OBJ)
 	g++ -o $(SO) $(LDFLAGS) $(OBJ)
 	cp $(SO) $(REDIST)/Bin/
 
@@ -28,5 +29,8 @@ $(LIB):	$(OBJ)
 	ar -qcv $(LIB) $(OBJ)
 	cp $(LIB) $(REDIST)/Lib/
 
-$(OBJ):	$(SRC)
+$(OUTPUT)/RaptorDataManager.o:	$(SRCDIR)/RaptorDataManager.cpp
+	g++ $(CCCFLAGS) $(INCDIRS) -c $(<D)/$(*F).cpp  -o $(OUTPUT)/$(@F)
+
+$(OUTPUT)/PackageIO.o:	$(SRCDIR)/RaptorDataPackager/PackageIO.cpp
 	g++ $(CCCFLAGS) $(INCDIRS) -c $(<D)/$(*F).cpp  -o $(OUTPUT)/$(@F)

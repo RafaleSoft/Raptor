@@ -65,7 +65,7 @@
 	#define STRCAT(a,b,s)	msdn_strcat(a,b,s)
 #else
 	#define STRDUP(s)		strdup(s)
-	#define STRCAT(a,b)		strcat(a,b)
+	#define STRCAT(a,b,s)	strcat(a,b)
 #endif
 
 #elif defined(LINUX)
@@ -73,6 +73,7 @@
 	//! System headers	
 	#include <sys/io.h>
 	#include <unistd.h>
+	#include <string.h>
 	#include <linux/limits.h>
 	
 	//! Flags
@@ -92,8 +93,8 @@
 
 	//! String functions
 	#define STRDUP(s)		strdup(s)
-	#define STRCAT(a,b)		strcat(a,b)
-	#define STRCPY(a,b,s) strcpy(a,b)
+	#define STRCAT(a,b,s)	strcat(a,b)
+	#define STRCPY(a,b,s)	strcpy(a,b)
 
 #endif
 

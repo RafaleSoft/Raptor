@@ -49,8 +49,8 @@ const CPersistence::CPersistenceClassID& CGeometryProgram::CGeometryProgramClass
 CGeometryProgram::CGeometryProgram(const std::string& name)
 	:CUnifiedProgram(geometryId, name), m_inputType(0), m_outputType(0), m_verticesOut(0)
 {
-    m_handle.handle = 0;	// default openGL vertex processing pipeline
-	m_handle.hClass = CGeometryProgram::CGeometryProgramClassID::GetClassId().ID();
+    m_handle.handle(0);	// default openGL vertex processing pipeline
+	m_handle.hClass(CGeometryProgram::CGeometryProgramClassID::GetClassId().ID());
 
     glInitShaders();
 }
@@ -79,8 +79,8 @@ CGeometryProgram::~CGeometryProgram()
 	else
 	{
 		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
-		if (m_handle.handle > 0)
-			pExtensions->glDeleteObjectARB(m_handle.handle);
+		if (m_handle.handle() > 0)
+			pExtensions->glDeleteObjectARB(m_handle.handle());
 	}
 #endif
 }
@@ -150,11 +150,11 @@ bool CGeometryProgram::glLoadProgram(const std::string &program)
 #if defined(GL_ARB_geometry_shader4)
 	if (m_bGeometryProgramReady)
 	{
-		if (m_handle.handle > 0)
-			pExtensions->glDeleteObjectARB(m_handle.handle);
+		if (m_handle.handle() > 0)
+			pExtensions->glDeleteObjectARB(m_handle.handle());
 
-        m_handle.handle = pExtensions->glCreateShaderObjectARB(GL_GEOMETRY_SHADER_ARB);
-        if (m_handle.handle == 0)
+        m_handle.handle(pExtensions->glCreateShaderObjectARB(GL_GEOMETRY_SHADER_ARB));
+        if (m_handle.handle() == 0)
         {
             Raptor::GetErrorManager()->generateRaptorError(	CGeometryProgram::CGeometryProgramClassID::GetClassId(),
 															CRaptorErrorManager::RAPTOR_WARNING,
@@ -164,18 +164,18 @@ bool CGeometryProgram::glLoadProgram(const std::string &program)
 
         int length = program.size();
         const char* source = program.data();
-        pExtensions->glShaderSourceARB(m_handle.handle,1,&source,&length);
+        pExtensions->glShaderSourceARB(m_handle.handle(),1,&source,&length);
 
-        pExtensions->glCompileShaderARB(m_handle.handle);
+        pExtensions->glCompileShaderARB(m_handle.handle());
 
         m_bValid = glGetProgramStatus();
 
 	    if (!m_bValid) 
         {
             GLint maxLength = 0;
-	        pExtensions->glGetObjectParameterivARB(m_handle.handle,GL_OBJECT_INFO_LOG_LENGTH_ARB, &maxLength);
+	        pExtensions->glGetObjectParameterivARB(m_handle.handle(),GL_OBJECT_INFO_LOG_LENGTH_ARB, &maxLength);
 	        char *pInfoLog = (char*) malloc(maxLength * sizeof(char));
-	        pExtensions->glGetInfoLogARB(m_handle.handle, maxLength, &length, pInfoLog);
+	        pExtensions->glGetInfoLogARB(m_handle.handle(), maxLength, &length, pInfoLog);
 
             CRaptorMessages::MessageArgument arg;
             arg.arg_sz = pInfoLog;
@@ -204,9 +204,9 @@ bool CGeometryProgram::glBindProgram(RAPTOR_HANDLE program)
 #if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
 	// Since OpenGL 3.2, geometry parameters shall be defined with a layout in shader source.
 	#if defined(GL_ARB_geometry_shader4)
-			pExtensions->glProgramParameteriARB(program.handle, GL_GEOMETRY_INPUT_TYPE_ARB, m_inputType);
-			pExtensions->glProgramParameteriARB(program.handle, GL_GEOMETRY_OUTPUT_TYPE_ARB, m_outputType);
-			pExtensions->glProgramParameteriARB(program.handle, GL_GEOMETRY_VERTICES_OUT_ARB, m_verticesOut);
+			pExtensions->glProgramParameteriARB(program.handle(), GL_GEOMETRY_INPUT_TYPE_ARB, m_inputType);
+			pExtensions->glProgramParameteriARB(program.handle(), GL_GEOMETRY_OUTPUT_TYPE_ARB, m_outputType);
+			pExtensions->glProgramParameteriARB(program.handle(), GL_GEOMETRY_VERTICES_OUT_ARB, m_verticesOut);
 	#endif
 #endif
 		for (unsigned int idx = 0; idx < m_parameters.getNbParameters(); idx++)
@@ -216,7 +216,7 @@ bool CGeometryProgram::glBindProgram(RAPTOR_HANDLE program)
 			if (value.isA(p))
 			{
 				p = ((const CProgramParameters::CParameter<CProgramParameters::GL_VERTEX_ATTRIB>&)value).p;
-				pExtensions->glBindAttribLocationARB(program.handle, p, value.name().data());
+				pExtensions->glBindAttribLocationARB(program.handle(), p, value.name().data());
 			}
 		}
 
@@ -253,7 +253,7 @@ bool CGeometryProgram::glGetProgramCaps(GL_GEOMETRY_PROGRAM_CAPS& caps)
 
 bool CGeometryProgram::glGetProgramStatus(void)
 {
-	if (m_handle.handle == 0)
+	if (m_handle.handle() == 0)
 		return false;
 
 	if (!m_bGeometryProgramReady)
@@ -267,19 +267,19 @@ bool CGeometryProgram::glGetProgramStatus(void)
 	{
         //  Check program status and compare to shader caps to return global status
         GLint value = 0;
-        pExtensions->glGetObjectParameterivARB(m_handle.handle, GL_OBJECT_TYPE_ARB,&value);
+        pExtensions->glGetObjectParameterivARB(m_handle.handle(), GL_OBJECT_TYPE_ARB,&value);
         if (value != GL_SHADER_OBJECT_ARB)
             return false;
 
-        pExtensions->glGetObjectParameterivARB(m_handle.handle, GL_OBJECT_SUBTYPE_ARB,&value);
+        pExtensions->glGetObjectParameterivARB(m_handle.handle(), GL_OBJECT_SUBTYPE_ARB,&value);
         if (value != GL_GEOMETRY_SHADER_ARB)
             return false;
 
-        pExtensions->glGetObjectParameterivARB(m_handle.handle,GL_OBJECT_COMPILE_STATUS_ARB, &value);
+        pExtensions->glGetObjectParameterivARB(m_handle.handle(),GL_OBJECT_COMPILE_STATUS_ARB, &value);
         if (value == 0)
             return false;
 
-        pExtensions->glGetObjectParameterivARB(m_handle.handle,GL_OBJECT_DELETE_STATUS_ARB, &value);
+        pExtensions->glGetObjectParameterivARB(m_handle.handle(),GL_OBJECT_DELETE_STATUS_ARB, &value);
         if (value == 1)
             return false;
 

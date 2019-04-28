@@ -18,34 +18,35 @@ else
 	echo "Creating redist folders..."
 
 	mkdir Redist
-  cd Redist
-  mkdir Include
-  mkdir Bin
-  mkdir Doc
-  cd Doc
-  mkdir html
-  cd ..
-  mkdir Lib
-  mkdir Licenses
-  cd Include
-  mkdir Engine
-  mkdir GLHierarchy
-  mkdir SSE_Engine
-  mkdir System
-  mkdir Subsys
-  mkdir GLXSpecific
-  mkdir RaptorCompute
-  mkdir RaptorNetwork
-  mkdir ToolBox
-  mkdir SimdLib
-  cd ToolBox
-  mkdir Filters
-  cd ..
-  mkdir DataManager
-  cd Subsys
-  cd ..
-  cd ..
-  cd ..
+	cd Redist
+	mkdir Include
+	mkdir Bin
+	mkdir Doc
+	cd Doc
+	mkdir html
+	cd ..
+	mkdir Lib
+	mkdir Licenses
+	cd Include
+	mkdir Engine
+	mkdir GLHierarchy
+	mkdir SSE_Engine
+	mkdir System
+	mkdir Subsys
+	mkdir Win32Specific
+	mkdir GLXSpecific
+	mkdir RaptorCompute
+	mkdir RaptorNetwork
+	mkdir ToolBox
+	mkdir SimdLib
+	cd ToolBox
+	mkdir Filters
+	cd ..
+	mkdir DataManager
+	cd Subsys
+	cd ..
+	cd ..
+	cd ..
 fi
 
 echo "	Copying Raptor include files ..."
@@ -69,6 +70,7 @@ cp ./RaptorCore/Engine/ParticleManager.h Redist/Include/Engine
 cp ./RaptorCore/Engine/Physics.h Redist/Include/Engine
 cp ./RaptorCore/Engine/TimeObject.h Redist/Include/Engine
 cp ./RaptorCore/Engine/ViewModifier.h Redist/Include/Engine
+cp ./RaptorCore/Engine/IViewPoint.h Redist/Include/Engine
 
 echo "		GLHierarchy:"
 cp ./RaptorCore/GLHierarchy/3DSet.h Redist/Include/GLHierarchy
@@ -106,6 +108,7 @@ cp ./RaptorCore/GLHierarchy/PerlinNoise.h Redist/Include/GLHierarchy
 cp ./RaptorCore/GLHierarchy/Persistence.h Redist/Include/GLHierarchy
 cp ./RaptorCore/GLHierarchy/ProgramParameters.h Redist/Include/GLHierarchy
 cp ./RaptorCore/GLHierarchy/Projector.h Redist/Include/GLHierarchy
+cp ./RaptorCore/GLHierarchy/IRenderingProperties.h Redist/Include/GLHierarchy
 cp ./RaptorCore/GLHierarchy/ShadedGeometry.h Redist/Include/GLHierarchy
 cp ./RaptorCore/GLHierarchy/Shader.h Redist/Include/GLHierarchy
 cp ./RaptorCore/GLHierarchy/ShaderProgram.h Redist/Include/GLHierarchy
@@ -193,30 +196,30 @@ cp ./RaptorNetwork/ClientSocket.h Redist/Include/RaptorNetwork
 echo "	Copying sub-system files ..."
 echo "		Simd files ..."
 
-cp ./SIMD/BVector.h Redist/Include/Subsys/SimdLib
-cp ./SIMD/GenericAlignedMatrix.h Redist/Include/Subsys/SimdLib
-cp ./SIMD/GenericAlignedVector.h Redist/Include/Subsys/SimdLib
-cp ./SIMD/GenericMatrix.h Redist/Include/Subsys/SimdLib
-cp ./SIMD/GenericVector.h Redist/Include/Subsys/SimdLib
-cp ./SIMD/MMXBVector.h Redist/Include/Subsys/SimdLib
-cp ./SIMD/MMXWVector.h Redist/Include/Subsys/SimdLib
-cp ./SIMD/MMXWMatrix.h Redist/Include/Subsys/SimdLib
-cp ./SIMD/SIMD.H Redist/Include/Subsys/SimdLib
-cp ./SIMD/SSEFMatrix.h Redist/Include/Subsys/SimdLib
-cp ./SIMD/SSEFVector.h Redist/Include/Subsys/SimdLib
-cp ./SIMD/WVector.h Redist/Include/Subsys/SimdLib
-cp ./SIMD/SIMDRegister.h Redist/Include/Subsys/SimdLib
-cp ./SIMD/Registers.h Redist/Include/Subsys/SimdLib
-cp ./SIMD/simdMacros.h Redist/Include/Subsys/SimdLib
-cp ./SIMD/Vector4f.h Redist/Include/Subsys/SimdLib
-cp ./SIMD/Matrix4f.h Redist/Include/Subsys/SimdLib
+cp ./SIMD/BVector.h Redist/Include/SimdLib
+cp ./SIMD/GenericAlignedMatrix.h Redist/Include/SimdLib
+cp ./SIMD/GenericAlignedVector.h Redist/Include/SimdLib
+cp ./SIMD/GenericMatrix.h Redist/Include/SimdLib
+cp ./SIMD/GenericVector.h Redist/Include/SimdLib
+cp ./SIMD/MMXBVector.h Redist/Include/SimdLib
+cp ./SIMD/MMXWVector.h Redist/Include/SimdLib
+cp ./SIMD/MMXWMatrix.h Redist/Include/SimdLib
+cp ./SIMD/SIMD.H Redist/Include/SimdLib
+cp ./SIMD/SSEFMatrix.h Redist/Include/SimdLib
+cp ./SIMD/SSEFVector.h Redist/Include/SimdLib
+cp ./SIMD/WVector.h Redist/Include/SimdLib
+cp ./SIMD/SIMDRegister.h Redist/Include/SimdLib
+cp ./SIMD/Registers.h Redist/Include/SimdLib
+cp ./SIMD/simdMacros.h Redist/Include/SimdLib
+cp ./SIMD/Vector4f.h Redist/Include/SimdLib
+cp ./SIMD/Matrix4f.h Redist/Include/SimdLib
 
-cp ./SIMD/SIMDRegister.cxx Redist/Include/Subsys/SimdLib
-cp ./SIMD/GenericVector.cxx Redist/Include/Subsys/SimdLib
-cp ./SIMD/GenericAlignedVector.cxx Redist/Include/Subsys/SimdLib
-cp ./SIMD/GenericMatrix.cxx Redist/Include/Subsys/SimdLib
-cp ./SIMD/Vector4f.cxx Redist/Include/Subsys/SimdLib
-cp ./SIMD/Matrix4f.cxx Redist/Include/Subsys/SimdLib
+cp ./SIMD/SIMDRegister.cxx Redist/Include/SimdLib
+cp ./SIMD/GenericVector.cxx Redist/Include/SimdLib
+cp ./SIMD/GenericAlignedVector.cxx Redist/Include/SimdLib
+cp ./SIMD/GenericMatrix.cxx Redist/Include/SimdLib
+cp ./SIMD/Vector4f.cxx Redist/Include/SimdLib
+cp ./SIMD/Matrix4f.cxx Redist/Include/SimdLib
 
 echo "		Copying help files ..."
 
@@ -226,12 +229,22 @@ cp ./Installer/Raptor_splash.JPG Redist/Doc/html
 
 echo "		Copying license files ..."
 
-cp ./License/FREETYPE.TXT Redist/Licenses
-cp ./License/DOXYGEN.txt Redist/Licenses
-cp ./License/XERCESC.txt Redist/Licenses
-cp ./License/APACHE.TXT Redist/Licenses
-cp ./License/OPENEXR.txt Redist/Licenses
-cp ./License/LIBPNG.TXT Redist/Licenses
+cp ./Licenses/APACHE.TXT Redist/Licenses
+cp ./Licenses/COPYRIGHT Redist/Licenses
+cp ./Licenses/DOXYGEN.txt Redist/Licenses
+cp ./Licenses/FREETYPE.TXT Redist/Licenses
+cp ./Licenses/FTL.TXT Redist/Licenses
+cp ./Licenses/GPLv2.TXT Redist/Licenses
+cp ./Licenses/lgpl-3.0.txt Redist/Licenses
+cp ./Licenses/LIBPNG.TXT Redist/Licenses
+cp ./Licenses/LICENSE.md Redist/Licenses
+cp ./Licenses/LICENSE.TXT Redist/Licenses
+cp ./Licenses/OPENEXR.txt Redist/Licenses
+cp ./Licenses/PNG_LICENSE Redist/Licenses
+cp ./Licenses/README Redist/Licenses
+cp ./Licenses/XERCESC.txt Redist/Licenses
+
+
 
 
 

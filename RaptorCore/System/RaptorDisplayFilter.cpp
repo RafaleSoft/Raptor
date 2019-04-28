@@ -178,8 +178,8 @@ void CRaptorDisplayFilter::glRenderFilterOutput(void)
             pFilter->glGetVertexShader()->glRender();
     }
 
-    if (drawBuffer.handle > 0)
-        glCallList(drawBuffer.handle);
+    if (drawBuffer.handle() > 0)
+        glCallList(drawBuffer.handle());
 
     if (pFilter)
     {
@@ -192,16 +192,16 @@ void CRaptorDisplayFilter::glRenderFilterOutput(void)
 
 void CRaptorDisplayFilter::glDrawBuffer(void)
 {
-    if (drawBuffer.handle > 0)
-        glCallList(drawBuffer.handle);
+    if (drawBuffer.handle() > 0)
+        glCallList(drawBuffer.handle());
 }
 
 void CRaptorDisplayFilter::glDestroyFilter(void)
 {
-    if (drawBuffer.handle > 0)
+    if (drawBuffer.handle() > 0)
     {
-        glDeleteLists(drawBuffer.handle,1);
-        drawBuffer.handle = 0;
+        glDeleteLists(drawBuffer.handle(),1);
+        drawBuffer.handle(0);
     }
 
     if (colorInternalSource != NULL)
@@ -264,8 +264,8 @@ bool CRaptorDisplayFilter::glInitFilter(void)
 			return false;
 	}
 
-	drawBuffer.handle = glGenLists(1);
-	glNewList(drawBuffer.handle,GL_COMPILE);
+	drawBuffer.handle(glGenLists(1));
+	glNewList(drawBuffer.handle(),GL_COMPILE);
 		glBegin(GL_QUADS);
 			glTexCoord2f(0.0f,0.0f);glVertex4f(-1.0,-1.0,-1.0f,1.0f);
 			glTexCoord2f(1.0f,0.0f);glVertex4f(1.0,-1.0,-1.0f,1.0f);

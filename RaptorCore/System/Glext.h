@@ -17,7 +17,7 @@
 #ifdef __glext_h_
   #undef __glext_h_
 #endif
-#define __glext_h_
+#define __glext_h_ 1
 #include <GL/gl.h>
 
 /*

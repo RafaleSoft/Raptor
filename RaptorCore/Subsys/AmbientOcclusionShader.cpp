@@ -211,7 +211,7 @@ void CAmbientOcclusionShader::glRender()
 #endif
 	m_pAOcomputeRef->glGetVertexProgram()->setProgramParameters(v_params);
 	m_pAOcomputeRef->glGetFragmentProgram()->setProgramParameters(f_params);
-	glCallList(m_occluders[0]->m_AOMapSetup.handle);
+	glCallList(m_occluders[0]->m_AOMapSetup.handle());
 	m_pAOcomputeRef->glRender();
 
 	glEnableClientState(GL_VERTEX_ARRAY);

@@ -37,8 +37,8 @@ void CGenericDisplay::ReInit()
 		IRenderingProperties &rp = pDisplay->getRenderingProperties();
 		rp.setTexturing(IRenderingProperties::DISABLE);
 
-		if (reinitTMU.handle != 0)
-			glCallList(reinitTMU.handle);
+		if (reinitTMU.handle() != 0)
+			glCallList(reinitTMU.handle());
 
 		//	When there is no view point,
 		// we must reinitialize the modelview matrix.
@@ -60,7 +60,7 @@ void CGenericDisplay::ReInit()
 
 void CGenericDisplay::Init()
 {
-	if (reinitTMU.handle == 0)
+	if (reinitTMU.handle() == 0)
 	{
 		CTextureUnitSetup initSetup;
 
