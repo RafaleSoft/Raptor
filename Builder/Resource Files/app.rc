@@ -1,0 +1,109 @@
+// Script de ressources généré par Microsoft Visual C++.
+//
+
+#define APSTUDIO_READONLY_SYMBOLS
+
+#include "winres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icône
+//
+
+// L'icône placée en premier ou ayant la valeur d'ID la plus basse devient l'icône d'application
+
+LANGUAGE 12, 1
+#pragma code_page(1252)
+1           ICON         "Builder.ico"
+
+
+/////////////////////////////////////////////////////////////////////////////
+// French (France) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_FRA)
+LANGUAGE LANG_FRENCH, SUBLANG_FRENCH
+
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE
+BEGIN
+    "\0"
+END
+
+2 TEXTINCLUDE  
+BEGIN
+    "#include ""winres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE  
+BEGIN
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 2,17,0,0
+ PRODUCTVERSION 2,17,0,0
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x40004L
+ FILETYPE 0x2L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040c04b0"
+        BEGIN
+            VALUE "CompanyName", "Rafale Soft Inc. ©"
+            VALUE "FileDescription", "Raptor OpenGL & Vulkan SDK extensions generator tool"
+            VALUE "FileVersion", "2.17.0.0"
+            VALUE "InternalName", "Builder.Net.exe"
+            VALUE "LegalCopyright", "Copyright © 1998-2019 Fabrice Ferrand <fabfer@wanadoo.fr>"
+            VALUE "OriginalFilename", "Builder.Net.exe"
+            VALUE "ProductName", "Raptor"
+            VALUE "ProductVersion", "2.17.0.0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x40c, 1200
+    END
+END
+
+#endif    // French (France) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Généré à partir de la ressource TEXTINCLUDE 3.
+//
+
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // non APSTUDIO_INVOKED
+
