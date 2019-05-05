@@ -216,7 +216,7 @@ void CGLLayer::setPlaneDepth(float depth)
 void CGLLayer::clear(unsigned char r,unsigned char g,unsigned char b,unsigned char a)
 {
 	//	ABGR ordering to match memory byte ordering
-	unsigned long color = (unsigned long(a<<24)) + (unsigned long(b<<16)) + (unsigned long(g<<8)) + (unsigned long(r));
+	unsigned long color = ((unsigned long)(a<<24)) + ((unsigned long)(b<<16)) + ((unsigned long)(g<<8)) + ((unsigned long)(r));
 	clear(color);
 }
 

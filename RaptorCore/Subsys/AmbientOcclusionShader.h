@@ -55,7 +55,7 @@ public:
 
 	//! Defines occluders list used to compute ambient occlusion.
 	void setOccluders(const vector<CAmbientOcclusionShader*>& occluders,
-					  const vector<CGenericMatrix<float>>& transforms);
+					  const vector<CGenericMatrix<float> >& transforms);
 
 	//! Defines transform provider.
 	void setTransformSource(CObject3DInstance* tSource)
