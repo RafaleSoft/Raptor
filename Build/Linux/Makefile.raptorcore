@@ -4,7 +4,7 @@ CCCFLAGS =  -DSIMD_NO_ASSEMBLY -DLINUX -fPIC
 OUTPUT = $(RAPTOR_ROOT)/Build/Linux/Release/RaptorCore
 SRCDIR = $(RAPTOR_ROOT)/RaptorCore
 INCXERCES = -I../AddOns/xercesc_2_7 
-INCDIRS = -I$(SRCDIR) -I$(RAPTOR_ROOT)/Redist/Include -I$(VULKAN_INCLUDE_PATH)
+INCDIRS = -I$(SRCDIR) -I$(RAPTOR_ROOT)/Redist/Include -I$(VULKAN_INCLUDE_PATH) -I$(FREETYPE_INCLUDE_PATH)
 LDFLAGS = -Bdynamic -shared -lstdc++
 
 # Remove MESA options before all GL extensions are included.

@@ -31,7 +31,7 @@ static MapStringToPtr	objects;
 static MapStringToPtr::iterator last_itr;
 static CRaptorMutex     persistenceMutex;
 static CPersistence::CPersistenceClassID persistenceID;
-static unsigned int uniqueID = 0;
+static uint32_t uniqueID = 0;
 
 CPersistence::CPersistenceClassID::CPersistenceClassID()
 {
@@ -297,7 +297,7 @@ CPersistence *CPersistence::FindObject(const std::string &name)
 bool CPersistence::exportObject(CRaptorIO& o)
 {
 	o << m_ID.ID();
-	o << m_name.size();
+	o << (uint32_t)(m_name.size());
 	o << m_name.data();
 
 	return true;
@@ -305,6 +305,12 @@ bool CPersistence::exportObject(CRaptorIO& o)
 
 bool CPersistence::importObject(CRaptorIO& io)
 {
+	//uint32_t id = 0;
+	//io >> id;
+
+	//uint32_t sz = 0;
+	//io >> sz;
+
     string name;
 	io >> name;
 	

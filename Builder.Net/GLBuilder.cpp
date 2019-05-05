@@ -88,6 +88,7 @@ static const char *STL =
 	#define RAPTOR_INTERFACE __interface\n\
 #else // Linux environment \n\
 	#include <stdlib.h>\n\
+	#include <typeinfo>\n\
 	#define RAPTOR_API\n\
     #define RAPTOR_FASTCALL\n\
     #define RAPTOR_CCALL\n\

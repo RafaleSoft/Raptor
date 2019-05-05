@@ -71,24 +71,24 @@ public:
 			return *this;
 		}
 
-#if _MSC_VER == 1500
+#if (_MSC_VER <= 1500) || defined(LINUX)
 		static size_t hash_value(const std::string& s)
 		{	
 			const char *ptr = s.c_str();
 			const char *end = ptr + s.size();
 			size_t hash = 2166136261U;
-			while(end != end)
+			while(ptr != end)
 				hash = 16777619U * hash ^ (size_t)*ptr++;
 			return (hash);
 		}
 #endif
 		virtual size_t getTypeId(void) const
 		{
-#if _MSC_VER > 1500
-			static size_t ti = typeid(void*).hash_code();
-#else
+#if (_MSC_VER <= 1500) || defined(LINUX)
 			const std::string nm = std::string(typeid(void*).name());
 			static size_t ti = hash_value(nm);
+#else
+			static size_t ti = typeid(void*).hash_code();
 #endif		
 			return ti;
 		}
