@@ -1,6 +1,20 @@
-// MagnifierFilter.cpp: implementation of the CMagnifierFilter class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  MagnifierFilter.cpp                                                    */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
 
 #include "Subsys/CodeGeneration.h"
 
@@ -34,6 +48,9 @@
 #if !defined(AFX_VERTEXPROGRAM_H__204F7213_B40B_4B6A_9BCA_828409871B68__INCLUDED_)
 	#include "GLHierarchy/VertexProgram.h"
 #endif
+#if !defined(AFX_GEOMETRYPROGRAM_H__1981EA98_8F3C_4881_9429_A9ACA5B285D3__INCLUDED_)
+	#include "GLHierarchy/GeometryProgram.h"
+#endif
 #if !defined(AFX_TEXTURESET_H__26F3022D_70FE_414D_9479_F9CCD3DCD445__INCLUDED_)
 	#include "GLHierarchy/TextureSet.h"
 #endif
@@ -41,145 +58,113 @@
     #include "MagnifierFilter.h"
 #endif
 
+RAPTOR_NAMESPACE
 
 static const int KERNEL_SIZE = 256;
 
-#if defined(GL_ARB_vertex_shader)
-	static const string kernel_vs = 
-	"#version 120			\n\
-	uniform vec4 center;	\n\
-	void main(void)			\n\
-	{						\n\
-		gl_Position = ftransform();\n\
-		gl_TexCoord[0] = gl_MultiTexCoord0 + center;\n\
+#if defined(GL_ARB_geometry_shader4)
+	static const string kernel_vs2 =
+	"#version 460 \n\
+	void main(void)	{	}";
+
+	static const std::string gp_src =
+	"#version 460\n\
+	\n\
+	//	Expect the geometry shader extension to be available, warn if not. \n\
+	#extension GL_ARB_geometry_shader4 : enable \n\
+	\n\
+	uniform vec4 center;				\n\
+	\n\
+	layout(points) in; \n\
+	layout(triangle_strip, max_vertices=4) out; \n\
+	layout(location = 1) out vec4 g_TexCoord; \n\
+	\n\
+	void main() \n\
+	{\n\
+		gl_Position = vec4(-1.0, -1.0, 0.0, 1.0); \n\
+		g_TexCoord = center + vec4(0.0,0.0,0.0,0.0); \n\
+		EmitVertex(); \n\
+		\n\
+		gl_Position = vec4(1.0, -1.0, 0.0, 1.0); \n\
+		g_TexCoord = center + vec4(1.0,0.0,0.0,0.0); \n\
+		EmitVertex(); \n\
+		\n\
+		gl_Position = vec4(-1.0, 1.0, 0.0, 1.0); \n\
+		g_TexCoord = center + vec4(0.0, 1.0, 0.0, 0.0); \n\
+		EmitVertex(); \n\
+		\n\
+		gl_Position = vec4(1.0, 1.0, 0.0, 1.0); \n\
+		g_TexCoord = center + vec4(1.0, 1.0, 0.0, 0.0); \n\
+		EmitVertex(); \n\
+		\n\
+		EndPrimitive(); \n\
 	}";
 
-	static const string xk_ps =
-	"#version 120				\n\
+	static const string xk_ps2 =
+	"#version 460 			\n\
 	\n\
 	uniform sampler2D color;	\n\
 	uniform sampler2D factor;	\n\
 	\n\
 	uniform vec4 size;			\n\
 	uniform vec4 offset;		\n\
+	\n\
+	layout(location = 1) in vec4 g_TexCoord; \n\
+	layout(location = 0) out vec4 o_Color;	\n\
 	void main(void)			\n\
 	{						\n\
-		vec4 subpixels = fract(size * gl_TexCoord[0]); \n\
-		vec2 texcoord = gl_TexCoord[0].xy; \n\
-		vec4 factors = texture2D(factor,subpixels.xy); \n\
-	\n\
-		vec4 colors = texture2D(color,texcoord); \n\
+		vec4 subpixels = fract(size * g_TexCoord); \n\
+		vec2 texcoord = g_TexCoord.xy; \n\
+		vec4 factors = texture(factor,subpixels.xy); \n\
+		\n\
+		vec4 colors = texture(color,texcoord); \n\
 		vec4 colorsum = colors * factors.zzzz; \n\
-	\n\
-		colors = texture2D(color,texcoord + offset.xz); \n\
+		\n\
+		colors = texture(color,texcoord + offset.xz); \n\
 		colorsum = colorsum + colors * factors.wwww; \n\
-	\n\
-		colors = texture2D(color,texcoord - offset.xz); \n\
+		\n\
+		colors = texture(color,texcoord - offset.xz); \n\
 		colorsum = colorsum + colors * factors.yyyy; \n\
-	\n\
-		colors = texture2D(color,texcoord - offset.xz - offset.xz); \n\
-		gl_FragColor = colorsum + colors * factors.xxxx; \n\
-		gl_FragColor.w = 1.0; \n\
+		\n\
+		colors = texture(color,texcoord - offset.xz - offset.xz); \n\
+		o_Color = colorsum + colors * factors.xxxx; \n\
+		o_Color.w = 1.0; \n\
 	}";
 
-	static const string yk_ps =
-	"#version 120				\n\
+	static const string yk_ps2 =
+	"#version 460 			\n\
 	\n\
 	uniform sampler2D color;	\n\
 	uniform sampler2D factor;	\n\
 	\n\
 	uniform vec4 size;			\n\
 	uniform vec4 offset;		\n\
+	\n\
+	layout(location = 1) in vec4 g_TexCoord; \n\
+	layout(location = 0) out vec4 o_Color;	\n\
 	void main(void)			\n\
 	{						\n\
-		vec4 subpixels = fract(size * gl_TexCoord[0]); \n\
-		vec2 texcoord = gl_TexCoord[0].xy; \n\
-		vec4 factors = texture2D(factor,subpixels.yx); \n\
-	\n\
-		vec4 colors = texture2D(color,texcoord); \n\
+		vec4 subpixels = fract(size * g_TexCoord); \n\
+		vec2 texcoord = g_TexCoord.xy; \n\
+		vec4 factors = texture(factor,subpixels.yx); \n\
+		\n\
+		vec4 colors = texture(color,texcoord); \n\
 		vec4 colorsum = colors * factors.zzzz; \n\
-	\n\
-		colors = texture2D(color,texcoord + offset.zy); \n\
+		\n\
+		colors = texture(color,texcoord + offset.zy); \n\
 		colorsum = colorsum + colors * factors.wwww; \n\
-	\n\
-		colors = texture2D(color,texcoord - offset.zy); \n\
+		\n\
+		colors = texture(color,texcoord - offset.zy); \n\
 		colorsum = colorsum + colors * factors.yyyy; \n\
-	\n\
-		colors = texture2D(color,texcoord - offset.zy - offset.zy); \n\
-		gl_FragColor = colorsum + colors * factors.xxxx; \n\
-		gl_FragColor.w = 1.0; \n\
+		\n\
+		colors = texture(color,texcoord - offset.zy - offset.zy); \n\
+		o_Color = colorsum + colors * factors.xxxx; \n\
+		o_Color.w = 1.0; \n\
 	}";
+#elif defined(GL_ARB_vertex_shader)
+	#include "MagnifierFilter.programs"
 #elif defined(GL_ARB_vertex_program)
-	static const string kernel_vp = 
-	"!!ARBvp1.0 \
-	ATTRIB iPos = vertex.position; \
-	ATTRIB iTexCoord = vertex.texcoord[0]; \
-	PARAM mvp[4] = { state.matrix.mvp }; \
-	PARAM ofs = program.local[0]; \
-	OUTPUT oPos = result.position; \
-	OUTPUT oTex0 = result.texcoord[0]; \
-	DP4 oPos.x , mvp[0] , iPos; \
-	DP4 oPos.y , mvp[1] , iPos; \
-	DP4 oPos.z , mvp[2] , iPos; \
-	DP4 oPos.w, mvp[3] ,iPos; \
-	ADD oTex0, iTexCoord, ofs; \
-	END";
-
-	static const string xk_fp =
-	"!!ARBfp1.0 \
-	ATTRIB iTex0 = fragment.texcoord[0]; \
-	PARAM one_plusx = program.local[0];\
-	PARAM size = program.local[1];\
-	TEMP color; \
-	TEMP factors; \
-	TEMP subpixels; \
-	TEMP colorsum; \
-	TEMP offset; \
-	OUTPUT finalColor = result.color; \
-	MUL subpixels, iTex0, size; \
-	FRC subpixels, subpixels; \
-	TEX color, iTex0, texture[0] , 2D ; \
-	TEX factors, subpixels.xyzw, texture[1], 2D; \
-	MUL colorsum, color, factors.zzzz; \
-	ADD offset, iTex0, one_plusx.xzzz; \
-	TEX color, offset, texture[0] , 2D ; \
-	MAD colorsum, color, factors.wwww, colorsum;\
-	SUB offset, iTex0, one_plusx.xzzz; \
-	TEX color, offset, texture[0] , 2D ; \
-	MAD colorsum, color, factors.yyyy, colorsum; \
-	SUB offset, offset, one_plusx.xzzz; \
-	TEX color, offset, texture[0] , 2D ; \
-	MAD finalColor, color, factors.xxxx, colorsum; \
-	MOV finalColor.w, size.w; \
-	END";
-
-	static const string yk_fp = 
-	"!!ARBfp1.0 \
-	ATTRIB iTex0 = fragment.texcoord[0]; \
-	PARAM one_plusy = program.local[0];\
-	PARAM size = program.local[1];\
-	TEMP color; \
-	TEMP factors; \
-	TEMP subpixels; \
-	TEMP colorsum; \
-	TEMP offset; \
-	OUTPUT finalColor = result.color; \
-	MUL subpixels, iTex0, size; \
-	FRC subpixels, subpixels; \
-	TEX color, iTex0, texture[0] , 2D ; \
-	TEX factors, subpixels.yxzw, texture[1], 2D; \
-	MUL colorsum, color, factors.zzzz; \
-	ADD offset, iTex0, one_plusy.zyzz; \
-	TEX color, offset, texture[0] , 2D ; \
-	MAD colorsum, color, factors.wwww, colorsum;\
-	SUB offset, iTex0, one_plusy.zyzz; \
-	TEX color, offset, texture[0] , 2D ; \
-	MAD colorsum, color, factors.yyyy, colorsum; \
-	SUB offset, offset, one_plusy.zyzz; \
-	TEX color, offset, texture[0] , 2D ; \
-	MAD finalColor, color, factors.xxxx, colorsum; \
-	MOV finalColor.w, size.w; \
-	END";
+	#include "MagnifierFilter.shaders"
 #endif
 
 //////////////////////////////////////////////////////////////////////
@@ -281,7 +266,10 @@ void CMagnifierFilter::glRenderFilter()
     glActiveTextureARB(GL_TEXTURE0_ARB);
 	colorInput->glvkRender();
 
-#if defined(GL_ARB_vertex_shader)
+#if defined(GL_ARB_geometry_shader4)
+	m_pYKernelShader->glGetGeometryProgram()->setProgramParameters(v_params_y);
+	m_pYKernelShader->glGetFragmentProgram()->setProgramParameters(f_params);
+#elif defined(GL_ARB_vertex_shader)
 	m_pYKernelShader->glGetVertexProgram()->setProgramParameters(v_params_y);
 	m_pYKernelShader->glGetFragmentProgram()->setProgramParameters(f_params);
 #elif defined(GL_ARB_vertex_program)
@@ -289,7 +277,9 @@ void CMagnifierFilter::glRenderFilter()
 	m_pYKernelShader->glGetFragmentShader()->setProgramParameters(f_params);
 #endif
 	m_pYKernelShader->glRender();
-    glDrawBuffer();
+
+	glDrawFilter();
+
 	m_pYKernelShader->glStop();
 
 	xBuffer->glvkUnBindDisplay();
@@ -309,7 +299,10 @@ void CMagnifierFilter::glRenderFilterOutput()
     glActiveTextureARB(GL_TEXTURE0_ARB);
 	xKernelPass->glvkRender();
 
-#if defined(GL_ARB_vertex_shader)
+#if defined(GL_ARB_geometry_shader4)
+	m_pXKernelShader->glGetGeometryProgram()->setProgramParameters(v_params_x);
+	m_pXKernelShader->glGetFragmentProgram()->setProgramParameters(f_params);
+#elif defined(GL_ARB_vertex_shader)
 	m_pXKernelShader->glGetVertexProgram()->setProgramParameters(v_params_x);
 	m_pXKernelShader->glGetFragmentProgram()->setProgramParameters(f_params);
 #elif defined(GL_ARB_vertex_program)
@@ -317,7 +310,9 @@ void CMagnifierFilter::glRenderFilterOutput()
 	m_pXKernelShader->glGetFragmentShader()->setProgramParameters(f_params);
 #endif
 	m_pXKernelShader->glRender();
-    glDrawBuffer();
+
+	glDrawFilter();
+	
 	m_pXKernelShader->glStop();
 
 	glBindTexture(GL_TEXTURE_2D,0);
@@ -427,7 +422,25 @@ bool CMagnifierFilter::glInitFilter(void)
     m_pXKernelShader = new CShader("XKERNEL_SHADER");
 	m_pYKernelShader = new CShader("YKERNEL_SHADER");
 
-#if defined(GL_ARB_vertex_shader)
+#if defined(GL_ARB_geometry_shader4)
+	CVertexProgram *vp = m_pXKernelShader->glGetVertexProgram("magnifier_vp2");
+	bool res = vp->glLoadProgram(kernel_vs2);
+	CGeometryProgram *gp = m_pXKernelShader->glGetGeometryProgram("magnifier_gp2");
+	res = gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
+	res = res & gp->glLoadProgram(gp_src);
+	CFragmentProgram *ps = m_pXKernelShader->glGetFragmentProgram("xk_ps2");
+	res = res && ps->glLoadProgram(xk_ps2);
+	res = res && m_pXKernelShader->glCompileShader();
+
+	vp = m_pYKernelShader->glGetVertexProgram("magnifier_vp2");
+	gp = m_pYKernelShader->glGetGeometryProgram("magnifier_gp2");
+	ps = m_pYKernelShader->glGetFragmentProgram("yk_ps2");
+	res = res && ps->glLoadProgram(yk_ps2);
+	res = res && m_pYKernelShader->glCompileShader();
+
+	f_params.addParameter("color", CTextureUnitSetup::IMAGE_UNIT_0);
+	f_params.addParameter("factor", CTextureUnitSetup::IMAGE_UNIT_1);
+#elif defined(GL_ARB_vertex_shader)
 	CVertexProgram *vp = m_pXKernelShader->glGetVertexProgram("magnifier_vp");
     bool res = vp->glLoadProgram(kernel_vs);
 	CFragmentProgram *ps = m_pXKernelShader->glGetFragmentProgram("xk_ps");

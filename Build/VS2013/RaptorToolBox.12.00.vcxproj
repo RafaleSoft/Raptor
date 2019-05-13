@@ -459,6 +459,30 @@ copy OpenEXRLib\bin\vc9\zdll.dll "%RAPTOR_ROOT%\Redist\bin\zlib1.dll"
   <ItemGroup>
     <ResourceCompile Include="..\..\RaptorToolBox\RaptorToolBox.rc" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\RaptorToolBox\Filters\ColotControlFilter.programs">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">true</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\RaptorToolBox\Filters\ColotControlFilter.shaders">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">true</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\RaptorToolBox\Filters\DOF.programs">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">true</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\RaptorToolBox\Filters\DOF.shaders">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">true</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\RaptorToolBox\Filters\MagnifierFilter.programs">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">true</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\RaptorToolBox\Filters\MagnifierFilter.shaders">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">true</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\RaptorToolBox\Filters\MBFilter.programs">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">true</ExcludedFromBuild>
+    </None>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

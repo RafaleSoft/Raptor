@@ -974,7 +974,7 @@ bool CGeometry::getVertexInputState( std::vector<VkVertexInputBindingDescription
 	//!	TexCoords
 	IRenderingProperties *props = IRenderingProperties::GetCurrentProperties();
 	if ((m_renderingModel.hasModel(CRenderingModel::CGL_TEXTURE)))
-//		(props->getCurrentTexturing() == CRenderingProperties::ENABLE))
+//		(props->getCurrentTexturing() == IRenderingProperties::ENABLE))
 	{
 		bindings.push_back({ nb_bindings, 2 * sizeof(float), VK_VERTEX_INPUT_RATE_VERTEX });
 		vertexInput.push_back({ 1, nb_bindings, VK_FORMAT_R32G32_SFLOAT, 0 });
@@ -1047,15 +1047,12 @@ void CGeometry::glRenderGeometry()
 		&& (NULL != normals))
 #endif
 	{
-		//glEnableClientState(GL_NORMAL_ARRAY);
         popNormalArray = true;
+		pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::NORMAL);
 #if defined(DATA_EXTENDED)
         glNormalPointer( GL_FLOAT , sizeof(GL_VERTEX_DATA) , &geometry[0].normal);
 #elif defined(DATA_PACKED)
-		//glNormalPointer( GL_FLOAT , sizeof(GL_COORD_VERTEX) , normals);
-		pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::NORMAL);
-		pExtensions->glVertexAttribPointerARB(CProgramParameters::NORMAL,
-											  4, GL_FLOAT, sizeof(GL_COORD_VERTEX), false, normals);
+		pExtensions->glVertexAttribPointerARB(CProgramParameters::NORMAL,4, GL_FLOAT, false, 0, normals);
 #endif
 	}
 
@@ -1073,8 +1070,7 @@ void CGeometry::glRenderGeometry()
 #if defined(DATA_EXTENDED)
         pExtensions->glVertexAttribPointerARB(CShaderProgram::ADDITIONAL_PARAM1,4,GL_FLOAT,false,sizeof(GL_VERTEX_DATA),&geometry[0].tangent);
 #elif defined(DATA_PACKED)
-        if (tangents != NULL)
-			pExtensions->glVertexAttribPointerARB(CProgramParameters::ADDITIONAL_PARAM1, 4, GL_FLOAT, false, 0, tangents);
+		pExtensions->glVertexAttribPointerARB(CProgramParameters::ADDITIONAL_PARAM1, 4, GL_FLOAT, false, 0, tangents);
 #endif
 	}
 #endif

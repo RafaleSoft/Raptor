@@ -36,9 +36,6 @@
 #if !defined(AFX_FRAGMENTPROGRAM_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
 	#include "GLHierarchy/FragmentProgram.h"
 #endif
-#if !defined(AFX_TEXTUREOBJECT_H__D32B6294_B42B_4E6F_AB73_13B33C544AD0__INCLUDED_)
-	#include "GLHierarchy/TextureObject.h"
-#endif
 #if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
 	#include "System/RaptorGLExtensions.h"
 #endif
@@ -91,7 +88,7 @@ in vec4 v_color[]; \n\
 \n\
 layout(points) in; \n\
 layout(triangle_strip, max_vertices=4) out; \n\
-layout(location = 1) out vec4 g_TexCoord[1]; \n\
+layout(location = 1) out vec4 g_TexCoord; \n\
 out vec4 g_color; \n\
 \n\
 void main() \n\
@@ -99,19 +96,19 @@ void main() \n\
 	g_color = v_color[0]; \n\
 	\n\
 	gl_Position = gl_in[0].gl_Position + vec4(-size[0].x, -size[0].y, 0.0, 0.0); \n\
-	g_TexCoord[0] = vec4(0.0,0.0,0.0,0.0); \n\
+	g_TexCoord = vec4(0.0,0.0,0.0,0.0); \n\
 	EmitVertex(); \n\
 	\n\
 	gl_Position = gl_in[0].gl_Position + vec4(size[0].x,-size[0].y,0.0,0.0); \n\
-	g_TexCoord[0] = vec4(1.0,0.0,0.0,0.0); \n\
+	g_TexCoord = vec4(1.0,0.0,0.0,0.0); \n\
 	EmitVertex(); \n\
 	\n\
 	gl_Position = gl_in[0].gl_Position + vec4(-size[0].x,size[0].y,0.0,0.0); \n\
-	g_TexCoord[0] = vec4(0.0,1.0,0.0,0.0); \n\
+	g_TexCoord = vec4(0.0,1.0,0.0,0.0); \n\
 	EmitVertex(); \n\
 	\n\
 	gl_Position = gl_in[0].gl_Position + vec4(size[0].x,size[0].y,0.0,0.0); \n\
-	g_TexCoord[0] = vec4(1.0,1.0,0.0,0.0); \n\
+	g_TexCoord = vec4(1.0,1.0,0.0,0.0); \n\
 	EmitVertex(); \n\
 	\n\
 	EndPrimitive(); \n\

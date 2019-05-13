@@ -57,12 +57,14 @@
 #if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
     #include "System/RaptorGLExtensions.h"
 #endif
-#if !defined(AFX_TEXTUREQUAD_H__1712AF34_6723_4E39_BC72_05ED6FA28418__INCLUDED_)
-	#include "GLHierarchy/TextureQuad.h"
+#if !defined(AFX_GEOMETRYALLOCATOR_H__802B3C7A_43F7_46B2_A79E_DDDC9012D371__INCLUDED_)
+	#include "Subsys/GeometryAllocator.h"
 #endif
 
 
 RAPTOR_NAMESPACE
+
+GL_COORD_VERTEX	*CRaptorDisplayFilter::s_attributes = NULL;
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -77,7 +79,7 @@ CRaptorDisplayFilter::CRaptorDisplayFilter():
 	m_pRenderTextures(NULL),m_pOutputTextures(NULL),
     m_bEnabled(true),m_bBufferedOutputEnabled(true),
 	m_fXfactor(1.0f),m_fYfactor(1.0f),
-	m_pPreviousFilter(NULL), m_pDrawBuffer(NULL)
+	m_pPreviousFilter(NULL)
 {
 }
 
@@ -196,6 +198,21 @@ void CRaptorDisplayFilter::glDrawBuffer(void)
         glCallList(drawBuffer.handle());
 }
 
+void CRaptorDisplayFilter::glDrawFilter(void)
+{
+	if (NULL != s_attributes)
+	{
+		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+
+		pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::POSITION);
+		pExtensions->glVertexAttribPointerARB(CProgramParameters::POSITION, 4, GL_FLOAT, false, 0, s_attributes);
+
+		glDrawArrays(GL_POINTS, 0, 1);
+
+		pExtensions->glDisableVertexAttribArrayARB(CProgramParameters::POSITION);
+	}
+}
+
 void CRaptorDisplayFilter::glDestroyFilter(void)
 {
     if (drawBuffer.handle() > 0)
@@ -266,20 +283,35 @@ bool CRaptorDisplayFilter::glInitFilter(void)
 
 	drawBuffer.handle(glGenLists(1));
 	glNewList(drawBuffer.handle(),GL_COMPILE);
-		glBegin(GL_QUADS);
-			glTexCoord2f(0.0f,0.0f);glVertex4f(-1.0,-1.0,-1.0f,1.0f);
-			glTexCoord2f(1.0f,0.0f);glVertex4f(1.0,-1.0,-1.0f,1.0f);
-			glTexCoord2f(1.0f,1.0f);glVertex4f(1.0,1.0,-1.0f,1.0f);
-			glTexCoord2f(0.0f,1.0f);glVertex4f(-1.0,1.0,-1.0f,1.0f);
-		glEnd();
+	glBegin(GL_QUADS);
+		glTexCoord2f(0.0f,0.0f);glVertex4f(-1.0,-1.0,-1.0f,1.0f);
+		glTexCoord2f(1.0f,0.0f);glVertex4f(1.0,-1.0,-1.0f,1.0f);
+		glTexCoord2f(1.0f,1.0f);glVertex4f(1.0,1.0,-1.0f,1.0f);
+		glTexCoord2f(0.0f,1.0f);glVertex4f(-1.0,1.0,-1.0f,1.0f);
+	glEnd();
 	glEndList();
-	/*
-	m_pDrawBuffer = new CTextureQuad();
-	m_pDrawBuffer->setQuadTexture(m_pImageSet->getTexture(0));
-	m_pDrawBuffer->glSetQuadAttributes(GL_COORD_VERTEX(0.0f, 0.0f, 0.0f, 1.0f),
-									   CColor::RGBA(1.0f, 1.0f, 1.0f, 1.0f),
-									   GL_COORD_VERTEX(1.0f, 1.0f, 0.0f, 0.0f));
-									   */
+
+	
+	{
+		if (NULL == s_attributes)
+		{
+			CGeometryAllocator *pAllocator = CGeometryAllocator::GetInstance();
+			bool lock = pAllocator->isMemoryLocked();
+			if (lock)
+				pAllocator->glvkLockMemory(false);
+
+			size_t s = sizeof(GL_COORD_VERTEX) / sizeof(float);
+			s_attributes = (GL_COORD_VERTEX*)(pAllocator->allocateVertices(s));
+
+			s_attributes = (GL_COORD_VERTEX*)pAllocator->glvkMapPointer((float*)s_attributes);
+			*s_attributes = GL_COORD_VERTEX(0.0f, 0.0f, 0.0f, 0.0f);
+			s_attributes = (GL_COORD_VERTEX*)pAllocator->glvkUnMapPointer((float*)s_attributes);
+
+			if (lock)
+				pAllocator->glvkLockMemory(true);
+		}
+	}
+	
 	if (m_fModel == RENDER_BUFFER)
 	{
 		if (m_pRenderTextures != NULL)

@@ -432,7 +432,7 @@ bool CRaptorInstance::executeRequest(request &r)
 		RAPTOR_HANDLE handle;
 		s.display->glvkBindDisplay(handle);
 			IRenderingProperties &props = s.display->getRenderingProperties();
-			//props->setMultisampling(CRenderingProperties::ENABLE);
+			//props->setMultisampling(IRenderingProperties::ENABLE);
 			props.setTexturing(IRenderingProperties::ENABLE);
 			props.setLighting(IRenderingProperties::ENABLE);
 			props.clear(CGL_RGBA|CGL_DEPTH);

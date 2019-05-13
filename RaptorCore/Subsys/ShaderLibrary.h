@@ -50,9 +50,13 @@ public:
 	//! in memory, that can be retrived through
 	//! its persistence name.
 	void getFactoryShaders(vector<std::string> &);
+
+	//!	Adds a set of shader sources to this library?
+	bool glAddToLibrary(const char * const *shader_sources);
 	
 
 private:
+	/*
 	typedef struct PROGRAM_t
 	{
 		CVertexProgram		*vp;
@@ -60,7 +64,7 @@ private:
 		CGeometryProgram	*gp;
 		RAPTOR_HANDLE	program;
 	} PROGRAM;
-
+	*/
 
 	//!	Unavailable instance constructor
 	CShaderLibrary();
@@ -75,7 +79,7 @@ private:
 	static CShader *m_pNullShader;
 	
 	//!	The list of programs
-	vector<PROGRAM>	m_programs;
+	//vector<PROGRAM>	m_programs;
 };
 
 RAPTOR_NAMESPACE_END

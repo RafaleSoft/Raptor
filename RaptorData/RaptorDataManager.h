@@ -79,13 +79,20 @@ private:
 
 	bool openPackage(Package_t &pack);
 
+	//!	Read an opened file and return the text content.
+	//!	TODO: read long files.
 	std::string readFile(const std::string &fname);
 
+	//!	Returns the path of the given package filename relative to RAPTOR_ROOT.
 	std::string getPackPath(const std::string& packName);
+
+	//!	Load a shader file.
+	bool CRaptorDataManager::loadShader(const char *file, const char *shader_name, const char *shaders[], int &ns);
 
 	//!	The only one DAta Manager Instance.
     static CRaptorDataManager  *m_pInstance;
 
+	//!	The list of packages managed.
 	std::vector<Package>	m_packages;
 };
 

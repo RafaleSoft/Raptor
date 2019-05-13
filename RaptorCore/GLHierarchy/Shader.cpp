@@ -777,7 +777,7 @@ void CShader::glStop()
 	/*
 	if ((0 != m_textureUnitSetup.handle) &&
 		(0 != m_textureUnitUnSetup.handle))
-		if (CRenderingProperties::GetCurrentProperties()->getCurrentTexturing() == CRenderingProperties::ENABLE)
+		if (IRenderingProperties::GetCurrentProperties()->getCurrentTexturing() == IRenderingProperties::ENABLE)
 			glCallList(m_textureUnitUnSetup.handle);
 	*/
 }

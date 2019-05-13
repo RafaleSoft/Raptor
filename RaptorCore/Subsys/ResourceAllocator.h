@@ -9,15 +9,38 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#if !defined(AFX_RAPTORDISPLAYCONFIG_H__DA0759DF_6CF9_44A7_9ADE_D404FEEC2DDF__INCLUDED_)
+	#include "System/RaptorDisplayConfig.h"
+#endif
 #if !defined(AFX_MEMORY_H__81A6CA9A_4ED9_4260_B6E4_C03276C38DBC__INCLUDED_)
 	#include "System/Memory.h"
 #endif
+
 
 
 RAPTOR_NAMESPACE_BEGIN
 
 class CResourceAllocator
 {
+public:
+	class CResourceBinder
+	{
+	public:
+		CResourceBinder(void);
+		~CResourceBinder(void);
+
+		bool setVertexArray(void *vertexPointer, int stride);
+
+		bool glvkBindArrays(void);
+		bool glvkUnbindArrays(void);
+
+	private:
+		CResourceBinder(const CResourceBinder&);
+		CResourceBinder& operator=(const CResourceBinder&);
+
+		static CRaptorDisplayConfig::GL_ARRAYS_STATE	bindingState;
+	};
+
 public:
 	CResourceAllocator();
 	virtual ~CResourceAllocator();
@@ -29,15 +52,15 @@ public:
 protected:
 	typedef struct data_bloc_t
 	{
-		unsigned char	*address;
-		uint64_t		size;
+		uint8_t		*address;
+		uint64_t	size;
 	} data_bloc;
 
 	//!	The memory state
 	bool    m_bLocked;
 
 	//!	A host allocator
-	CHostMemoryManager::Allocator<unsigned char> charAlloc;
+	CHostMemoryManager::Allocator<uint8_t> charAlloc;
 
 	//!	Memory manager for the device hosting the display holding this allocator.
 	//! (Vulkan host memory is per device)

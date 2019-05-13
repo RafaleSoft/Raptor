@@ -105,7 +105,7 @@ void CGeometryAllocator::glvkCopyPointer(float *dst, float *src, uint64_t size)
 													sizeof(float)*size);
 }
 
-void CGeometryAllocator::glvkCopyPointer(unsigned short *dst, unsigned short *src, uint64_t size)
+void CGeometryAllocator::glvkCopyPointer(uint16_t *dst, uint16_t *src, uint64_t size)
 {
     if ((NULL == deviceMemoryManager) || (NULL == relocatedFaceIndexes) || (NULL == src) || (NULL == dst))
         return;
@@ -113,7 +113,7 @@ void CGeometryAllocator::glvkCopyPointer(unsigned short *dst, unsigned short *sr
 	if (0 == size)
 	{
 		// find memory bloc and map a copy to local memory.
-		map<unsigned short*,uint64_t>::const_iterator blocPos = indexBlocs.find(dst);
+		map<uint16_t*, uint64_t>::const_iterator blocPos = indexBlocs.find(dst);
 		if (blocPos != indexBlocs.end())
 		{
 			deviceMemoryManager->setBufferObjectData(	*relocatedFaceIndexes,
@@ -135,10 +135,10 @@ void CGeometryAllocator::glvkCopyPointer(unsigned short *dst, unsigned short *sr
 		deviceMemoryManager->setBufferObjectData(	*relocatedFaceIndexes,
 													(uint64_t)dst,
 													src,
-													sizeof(unsigned short)*size);
+													sizeof(uint16_t)*size);
 }
 
-unsigned short *CGeometryAllocator::glvkMapPointer(unsigned short *pointer, bool syncData)
+unsigned short *CGeometryAllocator::glvkMapPointer(uint16_t *pointer, bool syncData)
 {
     if ((NULL == relocatedFaceIndexes) || (m_bLocked) || (NULL == pointer))
         return pointer;
@@ -148,10 +148,10 @@ unsigned short *CGeometryAllocator::glvkMapPointer(unsigned short *pointer, bool
         return pointer;
 
     // find memory bloc and map a copy to local memory.
-	map<unsigned short*,uint64_t>::const_iterator blocPos = indexBlocs.find(pointer);
+	map<uint16_t*, uint64_t>::const_iterator blocPos = indexBlocs.find(pointer);
 	if (blocPos != indexBlocs.end())
     {
-		unsigned short *localData = shortAlloc.allocate((*blocPos).second/sizeof(unsigned short));
+		uint16_t *localData = shortAlloc.allocate((*blocPos).second / sizeof(uint16_t));
         indexReMap[pointer] = localData;
         indexReMap[localData] = pointer;
 
@@ -168,13 +168,13 @@ unsigned short *CGeometryAllocator::glvkMapPointer(unsigned short *pointer, bool
         return NULL;
 }
 
-unsigned short *CGeometryAllocator::glvkUnMapPointer(unsigned short *pointer, bool syncData)
+unsigned short *CGeometryAllocator::glvkUnMapPointer(uint16_t *pointer, bool syncData)
 {
 	if ((NULL == relocatedFaceIndexes) || (m_bLocked) || (NULL == pointer))
         return pointer;
 
     // pointer has been mapped ?
-    map<unsigned short*,unsigned short*>::iterator it = indexReMap.find(pointer);
+	map<uint16_t*, uint16_t*>::iterator it = indexReMap.find(pointer);
     if (it == indexReMap.end())
         //  I shouldn't return NULL as it can be buffer index 0.
         //  To keep a meaning to buffer offset 0, I could keep the fist data in buffer
@@ -184,13 +184,13 @@ unsigned short *CGeometryAllocator::glvkUnMapPointer(unsigned short *pointer, bo
 
 
     // find memory bloc and copy local memory to server address space.
-    unsigned short *serverData = (*it).second;
+	uint16_t *serverData = (*it).second;
 
-	map<unsigned short*,uint64_t>::const_iterator blocPos = indexBlocs.find(serverData);
+	map<uint16_t*, uint64_t>::const_iterator blocPos = indexBlocs.find(serverData);
 	if (blocPos != indexBlocs.end())
     {
         indexReMap.erase(it);
-        map<unsigned short*,unsigned short*>::iterator it2 = indexReMap.find(serverData);
+		map<uint16_t*, uint16_t*>::iterator it2 = indexReMap.find(serverData);
         //  Should check for errors.
         indexReMap.erase(it2);
         

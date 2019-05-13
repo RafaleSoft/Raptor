@@ -1,6 +1,20 @@
-// DOFFilter.cpp: implementation of the CDOFFilter class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  DOFFilter.cpp                                                          */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
 
 #include "Subsys/CodeGeneration.h"
 
@@ -25,6 +39,9 @@
 #if !defined(AFX_FRAGMENTPROGRAM_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
     #include "GLHierarchy/FragmentProgram.h"
 #endif
+#if !defined(AFX_GEOMETRYPROGRAM_H__1981EA98_8F3C_4881_9429_A9ACA5B285D3__INCLUDED_)
+	#include "GLHierarchy/GeometryProgram.h"
+#endif
 #if !defined(AFX_SHADER_H__4D405EC2_7151_465D_86B6_1CA99B906777__INCLUDED_)
 	#include "GLHierarchy/Shader.h"
 #endif
@@ -36,172 +53,124 @@
 #endif
 
 
+#if defined(GL_ARB_geometry_shader4)
+static const string dof_vp =
+	"#version 460 \n\
+	void main(void)	{	}";
 
-#if defined(GL_ARB_vertex_shader)
-	static const string dof_vp =
-	"uniform vec4 offset; \n\
+static const std::string dof_gp =
+	"#version 460\n\
+	\n\
+	//	Expect the geometry shader extension to be available, warn if not. \n\
+	#extension GL_ARB_geometry_shader4 : enable \n\
+	\n\
+	uniform vec4 offset; \n\
 	uniform vec4 vector; \n\
-	void main (void) \n\
+	\n\
+	layout(points) in; \n\
+	layout(triangle_strip, max_vertices=4) out; \n\
+	layout(location = 1) out vec4 g_TexCoord[7]; \n\
+	\n\
+	void main() \n\
 	{\n\
-		gl_TexCoord[0] = gl_MultiTexCoord0; \n\
-		gl_TexCoord[1] = gl_MultiTexCoord0 + offset.x*vector; \n\
-		gl_TexCoord[2] = gl_MultiTexCoord0 - offset.x*vector; \n\
-		gl_TexCoord[3] = gl_MultiTexCoord0 + offset.y*vector; \n\
-		gl_TexCoord[4] = gl_MultiTexCoord0 - offset.y*vector; \n\
-		gl_TexCoord[5] = gl_MultiTexCoord0 + offset.z*vector; \n\
-		gl_TexCoord[6] = gl_MultiTexCoord0 - offset.z*vector; \n\
-		gl_Position = ftransform(); \n\
-	}\n\
-	";
+		gl_Position = vec4(-1.0, -1.0, 0.0, 1.0); \n\
+		g_TexCoord[0] = vec4(0.0,0.0,0.0,0.0); \n\
+		g_TexCoord[1] = vec4(0.0,0.0,0.0,0.0) + offset.x*vector; \n\
+		g_TexCoord[2] = vec4(0.0,0.0,0.0,0.0) - offset.x*vector; \n\
+		g_TexCoord[3] = vec4(0.0,0.0,0.0,0.0) + offset.y*vector; \n\
+		g_TexCoord[4] = vec4(0.0,0.0,0.0,0.0) - offset.y*vector; \n\
+		g_TexCoord[5] = vec4(0.0,0.0,0.0,0.0) + offset.z*vector; \n\
+		g_TexCoord[6] = vec4(0.0,0.0,0.0,0.0) - offset.z*vector; \n\
+		EmitVertex(); \n\
+		\n\
+		gl_Position = vec4(1.0, -1.0, 0.0, 1.0); \n\
+		g_TexCoord[0] = vec4(1.0,0.0,0.0,0.0); \n\
+		g_TexCoord[1] = vec4(1.0,0.0,0.0,0.0) + offset.x*vector; \n\
+		g_TexCoord[2] = vec4(1.0,0.0,0.0,0.0) - offset.x*vector; \n\
+		g_TexCoord[3] = vec4(1.0,0.0,0.0,0.0) + offset.y*vector; \n\
+		g_TexCoord[4] = vec4(1.0,0.0,0.0,0.0) - offset.y*vector; \n\
+		g_TexCoord[5] = vec4(1.0,0.0,0.0,0.0) + offset.z*vector; \n\
+		g_TexCoord[6] = vec4(1.0,0.0,0.0,0.0) - offset.z*vector; \n\
+		EmitVertex(); \n\
+		\n\
+		gl_Position = vec4(-1.0, 1.0, 0.0, 1.0); \n\
+		g_TexCoord[0] = vec4(0.0, 1.0, 0.0, 0.0); \n\
+		g_TexCoord[1] = vec4(0.0, 1.0, 0.0, 0.0) + offset.x*vector; \n\
+		g_TexCoord[2] = vec4(0.0, 1.0, 0.0, 0.0) - offset.x*vector; \n\
+		g_TexCoord[3] = vec4(0.0, 1.0, 0.0, 0.0) + offset.y*vector; \n\
+		g_TexCoord[4] = vec4(0.0, 1.0, 0.0, 0.0) - offset.y*vector; \n\
+		g_TexCoord[5] = vec4(0.0, 1.0, 0.0, 0.0) + offset.z*vector; \n\
+		g_TexCoord[6] = vec4(0.0, 1.0, 0.0, 0.0) - offset.z*vector; \n\
+		EmitVertex(); \n\
+		\n\
+		gl_Position = vec4(1.0, 1.0, 0.0, 1.0); \n\
+		g_TexCoord[0] = vec4(1.0, 1.0, 0.0, 0.0); \n\
+		g_TexCoord[1] = vec4(1.0, 1.0, 0.0, 0.0) + offset.x*vector; \n\
+		g_TexCoord[2] = vec4(1.0, 1.0, 0.0, 0.0) - offset.x*vector; \n\
+		g_TexCoord[3] = vec4(1.0, 1.0, 0.0, 0.0) + offset.y*vector; \n\
+		g_TexCoord[4] = vec4(1.0, 1.0, 0.0, 0.0) - offset.y*vector; \n\
+		g_TexCoord[5] = vec4(1.0, 1.0, 0.0, 0.0) + offset.z*vector; \n\
+		g_TexCoord[6] = vec4(1.0, 1.0, 0.0, 0.0) - offset.z*vector; \n\
+		EmitVertex(); \n\
+		\n\
+		EndPrimitive(); \n\
+	}";
+
 
 	//	C = A * m * |S2 - S1| / S2
-	static const string dof_fp = 
-	"uniform sampler2D colorMap;\n\
+	static const string dof_fp =
+	"#version 460\n\
+	\n\
+	uniform sampler2D colorMap;\n\
 	uniform sampler2D depthMap;\n\
 	uniform vec4 dofParams; \n\
 	const float CoC_mag = 2.66; \n\
 	\n\
+	layout(location = 1) in vec4 g_TexCoord[7]; \n\
+	layout(location = 0) out vec4 o_Color;	\n\
 	void main (void) \n\
 	{\n\
-		vec4 color_base  = texture2D(colorMap,gl_TexCoord[0].xy);\n\
-		float depth_base = texture2D(depthMap,gl_TexCoord[0].xy).r;\n\
-	\n\
+		vec4 color_base  = texture(colorMap,g_TexCoord[0].xy);\n\
+		float depth_base = texture(depthMap,g_TexCoord[0].xy).r;\n\
+		\n\
 		float CoC_radius = dofParams.z * CoC_mag * abs(depth_base - dofParams.y) / depth_base;\n\
-	\n\
+		\n\
 		if (CoC_radius > 1.0) \n\
 		{\n\
 			vec4 color = color_base;\n\
-			color += texture2D(colorMap,gl_TexCoord[1].xy);\n\
-			color += texture2D(colorMap,gl_TexCoord[2].xy);\n\
+			color += texture(colorMap,g_TexCoord[1].xy);\n\
+			color += texture(colorMap,g_TexCoord[2].xy);\n\
 			color_base = mix(color_base,color / 3.0,(CoC_radius - 1.0)); \n\
-	//		color_base = vec4(1.0, 0.0, 0.0, 1.0); \n\
-	\n\
+			//		color_base = vec4(1.0, 0.0, 0.0, 1.0); \n\
+			\n\
 			if (CoC_radius > 2.0) \n\
 			{\n\
 				vec4 color2 = color; \n\
-				color2 += texture2D(colorMap,gl_TexCoord[3].xy);\n\
-				color2 += texture2D(colorMap,gl_TexCoord[4].xy);\n\
+				color2 += texture(colorMap,g_TexCoord[3].xy);\n\
+				color2 += texture(colorMap,g_TexCoord[4].xy);\n\
 				color_base = mix(color / 3.0,color2 / 5.0,(CoC_radius - 2.0)); \n\
-	//			color_base = vec4(0.0, 1.0, 0.0, 1.0); \n\
-	\n\
+				//			color_base = vec4(0.0, 1.0, 0.0, 1.0); \n\
+				\n\
 				if (CoC_radius > 3.0) \n\
 				{\n\
 					vec4 color3 = color2; \n\
-					color3 += texture2D(colorMap,gl_TexCoord[5].xy);\n\
-					color3 += texture2D(colorMap,gl_TexCoord[6].xy);\n\
+					color3 += texture(colorMap,g_TexCoord[5].xy);\n\
+					color3 += texture(colorMap,g_TexCoord[6].xy);\n\
 					color_base = mix(color2 / 5.0,color3 / 7.0,(min(CoC_radius,4.0) - 3.0)); \n\
-	//				color_base = vec4(0.0, 0.0, 1.0, 1.0); \n\
+					//				color_base = vec4(0.0, 0.0, 1.0, 1.0); \n\
 				} \n\
 			}\n\
-	\n\
+			\n\
 		}\n\
-	\n\
-		gl_FragColor = color_base; \n\
+		\n\
+		o_Color = color_base; \n\
 	}\n\
 	";
 
-//	Depth of field color ( eq. fog ):
-//	Not applicable as a post processing if RenderBuffer is antialiased.
-//	It could be feasible if FSAA is also applied as a (final) postprocess ( quite unlikely )
-//
-//	float f = smoothstep(dofParams.y,1.0,depth_base); \n\
-//	gl_FragColor = mix(dofColor,color_base,exp(-f*f));\n\
-
+#elif defined(GL_ARB_vertex_shader)
+	#include "DOF.programs"
 #elif defined(GL_ARB_vertex_program)
-	static const string dof_vs = 
-	"!!ARBvp1.0 \
-	ATTRIB iPos = vertex.position; \
-	ATTRIB iTexCoord = vertex.texcoord[0]; \
-	PARAM mvp[4] = { state.matrix.mvp }; \
-	PARAM offset = program.local[0]; \
-	PARAM vector = program.local[1]; \
-	TEMP pos; \
-	OUTPUT oPos = result.position; \
-	OUTPUT oTex0 = result.texcoord[0]; \
-	OUTPUT oTex2 = result.texcoord[2]; \
-	OUTPUT oTex3 = result.texcoord[3]; \
-	OUTPUT oTex4 = result.texcoord[4]; \
-	OUTPUT oTex5 = result.texcoord[5]; \
-	OUTPUT oTex6 = result.texcoord[6]; \
-	OUTPUT oTex7 = result.texcoord[7]; \
-	DP4 oPos.x , mvp[0] , iPos; \
-	DP4 oPos.y , mvp[1] , iPos; \
-	DP4 oPos.z , mvp[2] , iPos; \
-	DP4 oPos.w, mvp[3] ,iPos; \
-	MOV oTex0, iTexCoord; \
-	MAD oTex2 , offset.x, vector, iTexCoord ; \
-	MAD oTex3 , offset.y, vector, iTexCoord ; \
-	MAD oTex4 , offset.z, vector, iTexCoord ; \
-	MAD oTex5 , -offset.x, vector, iTexCoord ; \
-	MAD oTex6 , -offset.y, vector, iTexCoord ; \
-	MAD oTex7 , -offset.z, vector, iTexCoord ; \
-	END";
-
-
-
-	static const string dof_fs = 
-	"!!ARBfp1.0 \
-	OPTION ARB_precision_hint_nicest; \
-	ATTRIB iTex0 = fragment.texcoord[0]; \
-	ATTRIB iTex2 = fragment.texcoord[2]; \
-	ATTRIB iTex3 = fragment.texcoord[3]; \
-	ATTRIB iTex4 = fragment.texcoord[4]; \
-	ATTRIB iTex5 = fragment.texcoord[5]; \
-	ATTRIB iTex6 = fragment.texcoord[6]; \
-	ATTRIB iTex7 = fragment.texcoord[7]; \
-	PARAM one = { 1.0, 1.0, 1.0, 1.0 }; \
-	PARAM one2 = { 1.0, 1.0, 0.0, 0.0 }; \
-	PARAM factor = { 0.125, 0.95, 50.0, 0.1666 }; \
-	PARAM dofParams = program.local[0]; \
-	TEMP color; \
-	TEMP depth_base; \
-	TEMP filter_base; \
-	TEMP filter_CoC; \
-	TEMP depth; \
-	TEMP depth_factor; \
-	TEMP depth_factor2; \
-	OUTPUT finalColor = result.color; \
-	TEX depth_base, iTex0, texture[1], 2D; \
-	TEX filter_base, iTex0, texture[0] , 2D ; \
-	TEX color, iTex2, texture[0] , 2D ; \
-	TEX depth, iTex2, texture[1] , 2D ; \
-	SGE depth_factor.x, depth, depth_base; \
-	MUL filter_CoC, color, depth_factor.xxxx; \
-	TEX color, iTex3, texture[0] , 2D ; \
-	TEX depth, iTex3, texture[1] , 2D ; \
-	SGE depth_factor.y, depth, depth_base; \
-	MAD filter_CoC, color, depth_factor.yyyy, filter_CoC; \
-	TEX color, iTex4, texture[0] , 2D ; \
-	TEX depth, iTex4, texture[1] , 2D ; \
-	SGE depth_factor.z, depth, depth_base; \
-	MAD filter_CoC, color, depth_factor.zzzz, filter_CoC; \
-	TEX color, iTex5, texture[0] , 2D ; \
-	TEX depth, iTex5, texture[1] , 2D ; \
-	SGE depth_factor.w, depth, depth_base; \
-	MAD filter_CoC, color, depth_factor.wwww, filter_CoC; \
-	TEX color, iTex6, texture[0] , 2D ; \
-	TEX depth, iTex6, texture[1] , 2D ; \
-	SGE depth_factor2.x, depth, depth_base; \
-	MAD filter_CoC, color, depth_factor2.xxxx, filter_CoC; \
-	TEX color, iTex7, texture[0] , 2D ; \
-	TEX depth, iTex7, texture[1] , 2D ; \
-	SGE depth_factor2.y, depth, depth_base; \
-	MAD filter_CoC, color, depth_factor2.yyyy, filter_CoC; \
-	DP4 depth_factor, depth_factor, one; \
-	DP4 depth_factor2, depth_factor2, one2; \
-	ADD depth_factor, depth_factor, depth_factor2; \
-	#                           \
-	# final equation     \
-	#                           \n\
-	SUB_SAT depth_base, depth_base, dofParams.yyyy; \
-	MUL_SAT depth_base, depth_base, dofParams.zzzz; \
-	MUL filter_CoC, filter_CoC, depth_base; \
-	MUL depth_factor, depth_factor, factor.xxxx; \
-	MUL depth_factor, depth_factor, -depth_base; \
-	MAD filter_CoC, filter_CoC, factor.xxxx, filter_base; \
-	MAD finalColor, filter_base, depth_factor, filter_CoC; \
-	MOV finalColor.w, one.w; \
-	END" ;
+	#include "DOF.shaders"
 #endif
 
 //////////////////////////////////////////////////////////////////////
@@ -225,6 +194,8 @@ CDOFFilter::CDOFFilter()
 	vp_paramsY.addParameter("vector", GL_COORD_VERTEX(0.0f, 1.0f, 0.0f, 0.0f));
 
 	fp_params.addParameter("dofParams",dofParams.p);
+	fp_params.addParameter("colorMap", CTextureUnitSetup::IMAGE_UNIT_0);
+	fp_params.addParameter("depthMap", CTextureUnitSetup::IMAGE_UNIT_1);
 }
 
 CDOFFilter::~CDOFFilter()
@@ -305,7 +276,10 @@ void CDOFFilter::glRenderFilter()
 	getColorInput()->glvkRender();
 
 
-#if defined(GL_ARB_vertex_shader)
+#if defined(GL_ARB_geometry_shader4)
+	DOFShader->glGetGeometryProgram()->setProgramParameters(vp_paramsX);
+	DOFShader->glGetFragmentProgram()->setProgramParameters(fp_params);
+#elif defined(GL_ARB_vertex_shader)
 	DOFShader->glGetVertexProgram()->setProgramParameters(vp_paramsX);
 	DOFShader->glGetFragmentProgram()->setProgramParameters(fp_params);
 #elif defined(GL_ARB_vertex_program)
@@ -314,7 +288,9 @@ void CDOFFilter::glRenderFilter()
 #endif
 
 	DOFShader->glRender();
-    glDrawBuffer();
+	
+	glDrawFilter();
+
 	DOFShader->glStop();
 
 	tmpDisplay->glvkUnBindDisplay();
@@ -325,7 +301,10 @@ void CDOFFilter::glRenderFilter()
 		tmpDisplay2->glvkBindDisplay(noDevice);
 		tmpTexture->glvkRender();
 
-	#if defined(GL_ARB_vertex_shader)
+	#if defined(GL_ARB_geometry_shader4)
+		DOFShader->glGetGeometryProgram()->setProgramParameters(vp_paramsY);
+		DOFShader->glGetFragmentProgram()->setProgramParameters(fp_params);
+	#elif defined(GL_ARB_vertex_shader)
 		DOFShader->glGetVertexProgram()->setProgramParameters(vp_paramsY);
 		DOFShader->glGetFragmentProgram()->setProgramParameters(fp_params);
 	#elif defined(GL_ARB_vertex_program)
@@ -334,7 +313,9 @@ void CDOFFilter::glRenderFilter()
 	#endif
 
 		DOFShader->glRender();
-		glDrawBuffer();
+
+		glDrawFilter();
+		
 		DOFShader->glStop();
 		tmpDisplay2->glvkUnBindDisplay();
 
@@ -342,7 +323,10 @@ void CDOFFilter::glRenderFilter()
 		tmpDisplay->glvkBindDisplay(noDevice);
 		tmpTexture2->glvkRender();
 
-#if defined(GL_ARB_vertex_shader)
+#if defined(GL_ARB_geometry_shader4)
+		DOFShader->glGetGeometryProgram()->setProgramParameters(vp_paramsX);
+		DOFShader->glGetFragmentProgram()->setProgramParameters(fp_params);
+#elif defined(GL_ARB_vertex_shader)
 		DOFShader->glGetVertexProgram()->setProgramParameters(vp_paramsX);
 		DOFShader->glGetFragmentProgram()->setProgramParameters(fp_params);
 #elif defined(GL_ARB_vertex_program)
@@ -351,7 +335,9 @@ void CDOFFilter::glRenderFilter()
 #endif
 
 		DOFShader->glRender();
-		glDrawBuffer();
+
+		glDrawFilter();
+
 		DOFShader->glStop();
 
 		tmpDisplay->glvkUnBindDisplay();
@@ -370,7 +356,10 @@ void CDOFFilter::glRenderFilterOutput()
 	glActiveTextureARB(GL_TEXTURE0_ARB);
 	tmpTexture->glvkRender();
 
-#if defined(GL_ARB_vertex_shader)
+#if defined(GL_ARB_geometry_shader4)
+	DOFShader->glGetGeometryProgram()->setProgramParameters(vp_paramsY);
+	DOFShader->glGetFragmentProgram()->setProgramParameters(fp_params);
+#elif defined(GL_ARB_vertex_shader)
 	DOFShader->glGetVertexProgram()->setProgramParameters(vp_paramsY);
 	DOFShader->glGetFragmentProgram()->setProgramParameters(fp_params);
 #elif defined(GL_ARB_vertex_program)
@@ -379,7 +368,9 @@ void CDOFFilter::glRenderFilterOutput()
 #endif
 
 	DOFShader->glRender();
-	glDrawBuffer();
+
+	glDrawFilter();
+
 	DOFShader->glStop();
 
 	glActiveTextureARB(GL_TEXTURE1_ARB);
@@ -511,9 +502,22 @@ void CDOFFilter::glInitShaders(void)
 	vp_paramsY[0].copy(py);
 
 	fp_params[0].copy(dofParams);
+	
 
 	// Create & load shaders to perform a 2 pass blur using depth value.
-#if defined(GL_ARB_vertex_shader)
+#if defined(GL_ARB_geometry_shader4)
+	CVertexProgram *vp = DOFShader->glGetVertexProgram("dof_vp");
+	bool res = vp->glLoadProgram(dof_vp);
+	CGeometryProgram *gp = DOFShader->glGetGeometryProgram("dof_gp");
+	res = gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
+	res = res & gp->glLoadProgram(dof_gp);
+	CFragmentProgram *fp = DOFShader->glGetFragmentProgram("dof_fp");
+	res = res && fp->glLoadProgram(dof_fp);
+	if (res)
+		fp->setProgramParameters(fp_params);
+
+	res = res && DOFShader->glCompileShader();
+#elif defined(GL_ARB_vertex_shader)
 	CVertexProgram *vp = DOFShader->glGetVertexProgram("dof_vp");
 	bool res = vp->glLoadProgram(dof_vp);
 	if (res)
@@ -522,11 +526,7 @@ void CDOFFilter::glInitShaders(void)
 	CFragmentProgram *fp = DOFShader->glGetFragmentProgram("dof_fp");
 	res = res && fp->glLoadProgram(dof_fp);
 	if (res)
-	{
-		fp_params.addParameter("colorMap",CTextureUnitSetup::IMAGE_UNIT_0);
-		fp_params.addParameter("depthMap",CTextureUnitSetup::IMAGE_UNIT_1);
 		fp->setProgramParameters(fp_params);
-	}
 
 	res = res && DOFShader->glCompileShader();
 #elif defined(GL_ARB_vertex_program)

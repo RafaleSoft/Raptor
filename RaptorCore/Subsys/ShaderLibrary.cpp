@@ -121,6 +121,50 @@ void CShaderLibrary::getFactoryShaders(vector<std::string> & res)
 	}
 }
 
+bool CShaderLibrary::glAddToLibrary(const char * const *shader_sources)
+{
+
+	int pos = 0;
+	while (shader_sources[pos] != 0)
+	{
+		const char *fs = shader_sources[pos];
+		pos++;
+		const char *fs_name = shader_sources[pos];
+		pos++;
+
+		if (fs != 0)
+		{
+			CShaderProgram *program = NULL;
+			if (!strncmp(fs, "!!ARBfp", 7))
+			{
+				program = new CFragmentShader(fs_name);
+			}
+			else if (!strncmp(fs, "!!ARBvp", 7))
+			{
+				program = new CVertexShader(fs_name);
+			}
+			else if (NULL != strstr(fs, "gl_Position"))
+			{
+				program = new CVertexProgram(fs_name);
+			}
+			else if (NULL != strstr(fs, "gl_FragColor"))
+			{
+				program = new CFragmentProgram(fs_name);
+			}
+
+			//! Errors are genereted in debug mode in LoadProgram.
+			//! No extra check is needed here.
+			if (program != NULL)
+			{
+				program->glLoadProgram(fs);
+				s_factoryShaders.insert(map<std::string, std::string>::value_type(fs_name, fs));
+			}
+		}
+	}
+
+	return true;
+}
+
 bool CShaderLibrary::glInitFactory(void)
 {
 	if (s_initialized)
@@ -133,46 +177,11 @@ bool CShaderLibrary::glInitFactory(void)
 	CRaptorDataManager *dataManager = CRaptorDataManager::GetInstance();
 	const char * const *shader_source_library = dataManager->GetShaderList();
 
-    if (shader_source_library == NULL)
-        return false;
+	if (shader_source_library == NULL)
+		return false;
+	else
+		glAddToLibrary(shader_source_library);
 
-	int pos = 0;
-	while (shader_source_library[pos] != 0)
-	{
-		const char *fs = shader_source_library[pos];
-		pos++;
-		const char *fs_name = shader_source_library[pos];
-		pos++;
-	
-		if (fs !=0)
-		{
-			CShaderProgram *program = NULL;
-			if (!strncmp(fs,"!!ARBfp",7))
-			{
-				program = new CFragmentShader(fs_name);
-			}
-			else if (!strncmp(fs,"!!ARBvp",7))
-			{
-				program = new CVertexShader(fs_name);
-			}
-			else if (NULL != strstr(fs,"gl_Position"))
-			{
-				program = new CVertexProgram(fs_name);
-			}
-			else if (NULL != strstr(fs,"gl_FragColor"))
-			{
-				program = new CFragmentProgram(fs_name);
-			}
-
-            //! Errors are genereted in debug mode in LoadProgram.
-            //! No extra check is needed here.
-			if (program != NULL)
-			{
-				program->glLoadProgram(fs);
-				s_factoryShaders.insert(map<std::string,std::string>::value_type(fs_name,fs));
-			}
-		}
-	}
 
     CATCH_GL_ERROR
 
