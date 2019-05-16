@@ -1,10 +1,9 @@
 export
 
-CCCFLAGS =  -DSIMD_NO_ASSEMBLY -DLINUX -fPIC
+CCCFLAGS =  -DSIMD_NO_ASSEMBLY -DLINUX -fPIC -std=c++11
 OUTPUT = $(RAPTOR_ROOT)/Build/Linux/Release/RaptorCore
 SRCDIR = $(RAPTOR_ROOT)/RaptorCore
-INCXERCES = -I../AddOns/xercesc_2_7 
-INCDIRS = -I$(SRCDIR) -I$(RAPTOR_ROOT)/Redist/Include -I$(VULKAN_INCLUDE_PATH) -I$(FREETYPE_INCLUDE_PATH)
+INCDIRS = -I$(SRCDIR) -I$(RAPTOR_ROOT)/Redist/Include -I$(VULKAN_INCLUDE_PATH) -I$(FREETYPE_INCLUDE_PATH) -I$(XERCES_INCLUDE_PATH)
 LDFLAGS = -Bdynamic -shared -lstdc++
 
 # Remove MESA options before all GL extensions are included.
@@ -75,7 +74,7 @@ ENGINE_SRC = \
 	$(SRCDIR)/Engine/ShadowVolume.cpp \
 	$(SRCDIR)/Engine/TimeObject.cpp \
 	$(SRCDIR)/Engine/ViewModifier.cpp \
-	$(SRCDIR)/Engine/ViewPoint.cpp 
+	$(SRCDIR)/Engine/IViewPoint.cpp 
 
 
 SYSTEM_SRC = \
@@ -133,13 +132,16 @@ SUBSYS_SRC = \
 SUBSYS_SCRIPT_SRC = \
 	$(SRCDIR)/Subsys/ObjectModels/RaptorScript_lex.cpp \
 	$(SRCDIR)/Subsys/ObjectModels/RaptorScript_yacc.cpp \
-	$(SRCDIR)/Subsys/ObjectModels/RaptorScript_tree.cpp 
+	$(SRCDIR)/Subsys/ObjectModels/RaptorScript_tree.cpp \
+	$(SRCDIR)/Subsys/ObjectModels/RaptorScript_lex.h \
+	$(SRCDIR)/Subsys/ObjectModels/RaptorScript_yacc.h \
+	$(SRCDIR)/Subsys/ObjectModels/RaptorScript_tree.h 
 
 SUBSYS_LEXSCRIPT_SRC = \
 	$(SRCDIR)/Subsys/ObjectModels/Raptor.lex \
 	$(SRCDIR)/Subsys/ObjectModels/Basic.lex \
 	$(SRCDIR)/Subsys/ObjectModels/Expressions.lex \
-	$(SRCDIR)/Subsys/ObjectModels/Commands.lex \
+	$(SRCDIR)/Subsys/ObjectModels/Commands.lex
 
 
 GLXSPECIFIC_SRC = \
@@ -147,15 +149,15 @@ GLXSPECIFIC_SRC = \
 	$(SRCDIR)/GLXSpecific/GLXAnimatorStream.cpp \
 	$(SRCDIR)/GLXSpecific/GLXContextManager.cpp \
 	$(SRCDIR)/GLXSpecific/GLXEngineTaskManager.cpp \
-	$(SRCDIR)/GLXSpecific/GLXView.cpp \
+	$(SRCDIR)/GLXSpecific/GLXView.cpp
 
 
 HIERARCHY_OBJS = $(HIERARCHY_SRC:$(SRCDIR)/GLHierarchy%.cpp=$(OUTPUT)%.o)
-ENGINE_OBJS = $(ENGINE_SRC:Engine%.cpp=$(OUTPUT)%.o)
-SYSTEM_OBJS = $(SYSTEM_SRC:System%.cpp=$(OUTPUT)%.o)
-SUBSYS_OBJS = $(SUBSYS_SRC:Subsys%.cpp=$(OUTPUT)%.o)
-SUBSYS_SCRIPT_OBJS = $(SUBSYS_SCRIPT_SRC:Subsys/ObjectModels%.cpp=$(OUTPUT)%.o)
-GLXSPECIFIC_OBJS = $(GLXSPECIFIC_SRC:GLXSpecific%.cpp=$(OUTPUT)%.o)
+ENGINE_OBJS = $(ENGINE_SRC:$(SRCDIR)/Engine%.cpp=$(OUTPUT)%.o)
+SYSTEM_OBJS = $(SYSTEM_SRC:$(SRCDIR)/System%.cpp=$(OUTPUT)%.o)
+SUBSYS_OBJS = $(SUBSYS_SRC:$(SRCDIR)/Subsys%.cpp=$(OUTPUT)%.o)
+SUBSYS_SCRIPT_OBJS = $(OUTPUT)/RaptorScript_lex.o $(OUTPUT)/RaptorScript_yacc.o $(OUTPUT)/RaptorScript_tree.o
+GLXSPECIFIC_OBJS = $(GLXSPECIFIC_SRC:$(SRCDIR)/GLXSpecific%.cpp=$(OUTPUT)%.o)
 CODE_GENERATION = $(SRCDIR)/Subsys/CodeGeneration.h
 
 ALL_OBJS = $(HIERARCHY_OBJS) $(ENGINE_OBJS) $(SYSTEM_OBJS) $(SUBSYS_OBJS) $(GLXSPECIFIC_OBJS) $(SUBSYS_SCRIPT_OBJS) $(OUTPUT)/Simplex.o
@@ -198,7 +200,12 @@ $(GLXSPECIFIC_OBJS): $(GLXSPECIFIC_SRC) $(CODE_GENERATION)
 	g++ $(CCCFLAGS) $(INCDIRS) -c $(<D)/$(*F).cpp  -o $(OUTPUT)/$(@F)
 
 $(SUBSYS_SCRIPT_SRC):	$(SUBSYS_LEXSCRIPT_SRC) $(CODE_GENERATION)
-	cd $(SRCDIR)/Subsys/ObjectModels; $(RAPTOR_ROOT)/Redist/Bin/Microlex -f Raptor.lex -o RaptorScript -v ; cd ../..;
+	cd $(SRCDIR)/Subsys/ObjectModels
+	$(RAPTOR_ROOT)/Redist/Bin/Microlex -f Raptor.lex -o RaptorScript -v
+	cd ../..
 
 $(CODE_GENERATION):
-	cd $(SRCDIR)/Subsys; $(RAPTOR_ROOT)/Redist/Bin/Builder -enable RAPTOR_SMP_CODE_GENERATION; cp CodeGeneration.h $(RAPTOR_ROOT)/Redist/Include/Subsys; cd ..;
+	cd $(SRCDIR)/Subsys
+	$(RAPTOR_ROOT)/Redist/Bin/Builder -v -e RAPTOR_SMP_CODE_GENERATION -d GL_ARB_multisample
+	cp CodeGeneration.h $(RAPTOR_ROOT)/Redist/Include/Subsys
+	cd ..

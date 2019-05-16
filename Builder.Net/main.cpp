@@ -307,6 +307,17 @@ int glCreateContext()
     return 1;
 }
 
+void print_help(void)
+{
+	std::cout << "Raptor Builder copyright 2019." << std::endl;
+	std::cout << "Usage:" << std::endl;
+	std::cout << "Builder [-v|--verbose] [-e|--enable <extension name>] [-d|--disable <extension name>]" << std::endl;
+	std::cout << "  -v, --verbose: print extended information messages" << std::endl;
+	std::cout << "  -e, --enable: activate an OpenGL or Vulkan extension given by name" << std::endl;
+	std::cout << "  -d, --disable: deactivate an OpenGL or Vulkan extension given by name" << std::endl;
+	std::cout << "Exiting." << std::endl;
+}
+
 int main(int argc, char *argv[])
 {
 	if (!glCreateContext())
@@ -315,8 +326,39 @@ int main(int argc, char *argv[])
 		return -1;
 	}
 
+	bool verbose = false;
+	bool help = false;
+	for (int i=1;i<argc;i++)
+	{
+		const char* param = argv[i];
+		if (NULL == param)
+			continue;
+		else if (!strcmp("-v",param))
+			verbose = true;
+		else if (!strcmp("--verbose",param))
+			verbose = true;
+		else if (!strcmp("-h",param))
+			help = true;
+		else if (!strcmp("--help",param))
+			help = true;
+		else if (!strcmp("-e",param) && (i+1 < argc))
+			builder.activateExtension(argv[i+1], true);
+		else if (!strcmp("--enable",param) && (i+1 < argc))
+			builder.activateExtension(argv[i+1], true);
+		else if (!strcmp("-d",param) && (i+1 < argc))
+			builder.activateExtension(argv[i+1], false);
+		else if (!strcmp("--disable",param) && (i+1 < argc))
+			builder.activateExtension(argv[i+1], false);
+	}
+	
+	if (help)
+	{
+		print_help();
+		return(0);
+	}
+	
 	const vector<CGLBuilder::EXTENSION>& extensions = builder.getExtensions();
-	for (unsigned int i=0;i<extensions.size();i++)
+	if (verbose) for (size_t i=0;i<extensions.size();i++)
 	{
 		const CGLBuilder::EXTENSION& extension = extensions[i];
 		std::cout << "extension: " << extension.extensionName;
@@ -326,8 +368,16 @@ int main(int argc, char *argv[])
 	if (!builder.checkConsistency(false))
 	{
 		std::cout << "Inconsistency found in extension profile. Header file not generated." << std::endl;
-		return -1;
+		return(-1);
+	}
+	else
+	{
+		if (!builder.writeHeader("CodeGeneration.h"))
+		{
+			std::cout << "Failed to generate header file." << std::endl;
+			return(-1);
+		}
 	}
 
-	return 0;
+	return(0);
 }
