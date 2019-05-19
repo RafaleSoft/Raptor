@@ -58,7 +58,7 @@ void CContourAttributes::extrude(const GL_COORD_VERTEX &pos,float extrusion)
 	}
 	else
 	{
-#ifdef RAPTOR_SSE_CODE_GENERATION
+#if defined(RAPTOR_SSE_CODE_GENERATION) && defined(RAPTOR_SSE41_CODE_GENERATION)
 		__m128 p = _mm_loadu_ps(pos.operator const float *());
 		__m128 e = _mm_load1_ps(&extrusion);
 		e.m128_f32[3] = 0.0f;

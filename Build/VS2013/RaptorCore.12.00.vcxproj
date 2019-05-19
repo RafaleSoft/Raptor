@@ -240,7 +240,6 @@ $(SolutionDir)\$(ProjectName)\Subsys\Redist.bat
       <Message>Build redistribuable package</Message>
       <Command>copy $(OutDir)\Raptor.lib "%RAPTOR_ROOT%\Redist\lib\"
 copy $(OutDir)\Raptor.dll "%RAPTOR_ROOT%\Redist\bin\"
-copy $(OutDir)\xerces-c_3_2.dll "%RAPTOR_ROOT%\Redist\bin\"
 copy $(SolutionDir)$(ProjectName)\Subsys\ObjectModels\Raptor.xsd %RAPTOR_ROOT%\Redist\bin\
 copy $(SolutionDir)$(ProjectName)\Subsys\ObjectModels\RaptorMessages.xsd %RAPTOR_ROOT%\Redist\bin\
 cd $(SolutionDir)\$(ProjectName)
@@ -317,7 +316,6 @@ $(SolutionDir)\$(ProjectName)\Subsys\Redist.bat
       <Message>Build redistribuable package</Message>
       <Command>copy $(OutDir)\Raptor.lib "%RAPTOR_ROOT%\Redist\lib\"
 copy $(OutDir)\Raptor.dll "%RAPTOR_ROOT%\Redist\bin\"
-copy $(OutDir)\xerces-c_3_2.dll "%RAPTOR_ROOT%\Redist\bin\"
 copy $(SolutionDir)$(ProjectName)\Subsys\ObjectModels\Raptor.xsd %RAPTOR_ROOT%\Redist\bin\
 copy $(SolutionDir)$(ProjectName)\Subsys\ObjectModels\RaptorMessages.xsd %RAPTOR_ROOT%\Redist\bin\
 cd $(SolutionDir)\$(ProjectName)
@@ -396,10 +394,12 @@ $(SolutionDir)\$(ProjectName)\Subsys\Redist.bat
     </Bscmake>
     <PostBuildEvent>
       <Message>Build redistribuable package</Message>
-      <Command>copy Release\Raptor.lib "%RAPTOR_ROOT%\Redist\lib\"
-copy Release\Raptor.dll "%RAPTOR_ROOT%\Redist\bin\"
-copy Subsys\xercesc_2_7\vc9\xerces-c_2_7.dll "%RAPTOR_ROOT%\Redist\bin\"
-Subsys\Redist.bat
+      <Command>copy $(OutDir)\Raptor.lib "%RAPTOR_ROOT%\Redist\lib\"
+copy $(OutDir)\Raptor.dll "%RAPTOR_ROOT%\Redist\bin\"
+copy $(SolutionDir)$(ProjectName)\Subsys\ObjectModels\Raptor.xsd %RAPTOR_ROOT%\Redist\bin\
+copy $(SolutionDir)$(ProjectName)\Subsys\ObjectModels\RaptorMessages.xsd %RAPTOR_ROOT%\Redist\bin\
+cd $(SolutionDir)\$(ProjectName)
+$(SolutionDir)\$(ProjectName)\Subsys\Redist.bat
 </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
