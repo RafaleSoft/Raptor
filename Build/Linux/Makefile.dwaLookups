@@ -1,0 +1,26 @@
+export
+
+CCCFLAGS =  -DSIMD_NO_ASSEMBLY -DLINUX -fPIC -std=c++11
+OUTPUT = $(RAPTOR_ROOT)/Build/Linux/Release/dwaLookups
+SRCDIR = $(RAPTOR_ROOT)/AddOns/OpenEXR-2.3.0/source/IlmImf
+INCDIRS = -I$(RAPTOR_ROOT)/AddOns/OpenEXR-2.3.0/include
+LDFLAGS = -L$(REDIST)/Bin -lHalf -lIlmThread -lIex -lpthread
+
+
+all:	$(OUTPUT)/dwaLookups
+
+clean:
+	rm -rf $(OUTPUT)
+	mkdir -p $(OUTPUT)
+
+SRC = \
+	$(SRCDIR)/dwaLookups.cpp
+
+OBJ = $(SRC:$(SRCDIR)/%.cpp=$(OUTPUT)/%.o)
+	
+$(OUTPUT)/dwaLookups:	$(OBJ) 
+	g++ $(OBJ) -o $(OUTPUT)/dwaLookups $(LDFLAGS)
+	cp $(OUTPUT)/dwaLookups $(REDIST)/Bin/
+
+$(OBJ):	$(SRC)
+	g++ $(CCCFLAGS) $(INCDIRS) -c $(<D)/$(*F).cpp  -o $(OUTPUT)/$(@F)

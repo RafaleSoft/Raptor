@@ -43,8 +43,7 @@ static char FORMAT_BUFFER[1024];
 
 void Replace(string &str,const char*pattern,const string &newPattern)
 {
-	unsigned int pos = 0;
-	
+	string::size_type pos = 0;
 	while (string::npos != (pos = str.find(pattern,pos)))
 	{
 		str.replace(pos,strlen(pattern),newPattern);

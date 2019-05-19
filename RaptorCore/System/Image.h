@@ -96,11 +96,11 @@ public:
 			NB_OP_KIND
         } OP_KIND;
 
-		typedef struct operation_param_t
+		typedef struct 
 		{
 			float		bump_scale;
 			uint32_t	transparency;
-		};
+		} operation_param_t;
 
 		//!	Virtual destructor
 		virtual ~IImageOP() {};

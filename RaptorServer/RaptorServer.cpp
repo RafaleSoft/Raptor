@@ -69,7 +69,7 @@ bool CRaptorServer::Start(const CCmdLineParser& cmdline)
 	if (m_pTransport == NULL)
         m_pTransport = new CServerTransport();
 
-	char* addrStr = "127.0.0.1";
+	string addrStr = "127.0.0.1";
 	unsigned short port = 2048;
 	cmdline.getValue("port",port);
 	cmdline.getValue("host_addr",addrStr);

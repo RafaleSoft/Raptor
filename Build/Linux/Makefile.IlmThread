@@ -1,0 +1,45 @@
+export
+
+CCCFLAGS =  -DSIMD_NO_ASSEMBLY -DLINUX -fPIC -std=c++11
+OUTPUT = $(RAPTOR_ROOT)/Build/Linux/Release/IlmThread
+SRCDIR = $(RAPTOR_ROOT)/AddOns/OpenEXR-2.3.0/source/IlmThread
+INCDIRS = -I$(RAPTOR_ROOT)/AddOns/OpenEXR-2.3.0/include
+LDFLAGS = -Bdynamic -shared -lstdc++
+
+SO_NAME = libIlmThread.so
+SO = $(OUTPUT)/$(SO_NAME)
+LIB = $(OUTPUT)/libIlmThread.a
+
+all:	$(LIB) $(SO)
+
+clean:
+	rm -rf $(OUTPUT)
+	mkdir -p $(OUTPUT)
+
+SRC = \
+	$(SRCDIR)/IlmThread.cpp \
+	$(SRCDIR)/IlmThreadPosix.cpp \
+	$(SRCDIR)/IlmThreadSemaphore.cpp \
+	$(SRCDIR)/IlmThreadMutex.cpp \
+	$(SRCDIR)/IlmThreadSemaphorePosixCompat.cpp \
+	$(SRCDIR)/IlmThreadMutexPosix.cpp \
+	$(SRCDIR)/IlmThreadSemaphorePosix.cpp \
+	$(SRCDIR)/IlmThreadPool.cpp
+
+
+OBJ = $(SRC:$(SRCDIR)/%.cpp=$(OUTPUT)/%.o)
+	
+$(SO):	$(OBJ)
+	g++ -o $(SO) $(LDFLAGS) $(OBJ)
+	cp $(SO) $(REDIST)/Bin/
+	cp $(SO) $(REDIST)/Bin/$(SO_NAME).$(RAPTOR_VERSION)
+
+$(LIB):	$(OBJ) 
+	ar -qcv $(LIB) $(OBJ)
+	cp $(LIB) $(REDIST)/Lib/
+
+$(OBJ):	$(SRC)
+	g++ $(CCCFLAGS) $(INCDIRS) -c $(<D)/$(*F).cpp  -o $(OUTPUT)/$(@F)
+
+	
+

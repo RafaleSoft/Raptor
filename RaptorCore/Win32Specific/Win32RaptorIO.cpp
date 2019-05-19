@@ -28,24 +28,27 @@ RAPTOR_NAMESPACE
 CWin32RaptorIO::CWin32RaptorIO(const std::string& streamName, CRaptorIO::IO_KIND kind)
 	:CRaptorIO(streamName,kind)
 {
-    DWORD err = ::GetLastError();
-    if (err != ERROR_SUCCESS)
-    {
-        LPVOID lpMsgBuf = NULL;
-        FormatMessage(	FORMAT_MESSAGE_ALLOCATE_BUFFER | 
-                        FORMAT_MESSAGE_FROM_SYSTEM | 
-                        FORMAT_MESSAGE_IGNORE_INSERTS,
-                        NULL, err, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
-                        (LPTSTR) &lpMsgBuf, 0, NULL );
+	if (CRaptorIO::IO_FAILED == getStatus())
+	{
+		DWORD err = ::GetLastError();
+		if (err != ERROR_SUCCESS)
+		{
+			LPVOID lpMsgBuf = NULL;
+			FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER |
+						  FORMAT_MESSAGE_FROM_SYSTEM |
+						  FORMAT_MESSAGE_IGNORE_INSERTS,
+						  NULL, err, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
+						  (LPTSTR)&lpMsgBuf, 0, NULL);
 
-		const char *msg = (NULL != lpMsgBuf) ? (const char*)lpMsgBuf : "Unknown Win32 error.";
-		Raptor::GetErrorManager()->generateRaptorError(CPersistence::CPersistenceClassID::GetClassId(),
-													   CRaptorErrorManager::RAPTOR_WARNING, msg);
+			const char *msg = (NULL != lpMsgBuf) ? (const char*)lpMsgBuf : "Unknown Win32 error.";
+			Raptor::GetErrorManager()->generateRaptorError(CPersistence::CPersistenceClassID::GetClassId(),
+														   CRaptorErrorManager::RAPTOR_WARNING, msg);
 
-		if (NULL != lpMsgBuf)
-			LocalFree(lpMsgBuf);
-        SetLastError(0);
-    }
+			if (NULL != lpMsgBuf)
+				LocalFree(lpMsgBuf);
+			SetLastError(0);
+		}
+	}
 }
 
 
