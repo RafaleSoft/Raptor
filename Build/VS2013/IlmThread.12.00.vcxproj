@@ -73,7 +73,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;ILMTHREAD_EXPORTS;OPENEXR_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(OPENEXRLIB_INCLUDE_PATH);$(OPENEXRLIB_INCLUDE_PATH)\..\source\config;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(OPENEXRLIB_INCLUDE_PATH);</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -89,7 +89,7 @@
       <Optimization>Full</Optimization>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;ILMTHREAD_EXPORTS;OPENEXR_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(OPENEXRLIB_INCLUDE_PATH);$(OPENEXRLIB_INCLUDE_PATH)\..\source\config;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(OPENEXRLIB_INCLUDE_PATH);</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
@@ -120,6 +120,7 @@ copy $(OutDir)$(TargetName).dll "%RAPTOR_ROOT%\Redist\bin\"
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;ILMTHREAD_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(OPENEXRLIB_INCLUDE_PATH);</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -142,6 +143,7 @@ copy $(OutDir)$(TargetName).dll "%RAPTOR_ROOT%\Redist\bin\"
     <ClCompile Include="..\..\AddOns\OpenEXR-2.3.0\source\IlmThread\IlmThreadWin32.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\AddOns\OpenEXR-2.3.0\include\IlmBaseConfig.h" />
     <ClInclude Include="..\..\AddOns\OpenEXR-2.3.0\include\IlmThread.h" />
     <ClInclude Include="..\..\AddOns\OpenEXR-2.3.0\include\IlmThreadExport.h" />
     <ClInclude Include="..\..\AddOns\OpenEXR-2.3.0\include\IlmThreadForward.h" />
@@ -149,7 +151,6 @@ copy $(OutDir)$(TargetName).dll "%RAPTOR_ROOT%\Redist\bin\"
     <ClInclude Include="..\..\AddOns\OpenEXR-2.3.0\include\IlmThreadNamespace.h" />
     <ClInclude Include="..\..\AddOns\OpenEXR-2.3.0\include\IlmThreadPool.h" />
     <ClInclude Include="..\..\AddOns\OpenEXR-2.3.0\include\IlmThreadSemaphore.h" />
-    <ClInclude Include="..\..\AddOns\OpenEXR-2.3.0\source\config\IlmBaseConfig.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

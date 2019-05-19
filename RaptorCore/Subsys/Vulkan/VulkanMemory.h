@@ -99,7 +99,7 @@ public:
 		const CVulkanMemory& memory;
 		VkDevice m_device;
 
-		std::list<pair<const IDeviceMemoryManager::IBufferObject*,CVulkanBufferObject*>> m_pBuffers;
+		std::list<pair<const IDeviceMemoryManager::IBufferObject*,CVulkanBufferObject*> > m_pBuffers;
 		const CVulkanBufferObject* currentBuffers[IDeviceMemoryManager::IBufferObject::NB_BUFFER_KIND];
 
 		typedef struct data_bloc_t

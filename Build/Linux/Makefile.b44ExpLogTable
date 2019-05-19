@@ -1,0 +1,26 @@
+export
+
+CCCFLAGS =  -DSIMD_NO_ASSEMBLY -DLINUX -fPIC
+OUTPUT = $(RAPTOR_ROOT)/Build/Linux/Release/b44ExpLogTable
+SRCDIR = $(RAPTOR_ROOT)/AddOns/OpenEXR-2.3.0/source/IlmImf
+INCDIRS = -I$(RAPTOR_ROOT)/AddOns/OpenEXR-2.3.0/include
+LDFLAGS = -L$(REDIST)/Bin -lHalf
+
+
+all:	$(OUTPUT)/b44ExpLogTable
+
+clean:
+	rm -rf $(OUTPUT)
+	mkdir -p $(OUTPUT)
+
+SRC = \
+	$(SRCDIR)/b44ExpLogTable.cpp
+
+OBJ = $(SRC:$(SRCDIR)/%.cpp=$(OUTPUT)/%.o)
+	
+$(OUTPUT)/b44ExpLogTable:	$(OBJ) 
+	g++ $(OBJ) -o $(OUTPUT)/b44ExpLogTable $(LDFLAGS)
+	cp $(OUTPUT)/b44ExpLogTable $(REDIST)/Bin/
+
+$(OBJ):	$(SRC)
+	g++ $(CCCFLAGS) $(INCDIRS) -c $(<D)/$(*F).cpp  -o $(OUTPUT)/$(@F)

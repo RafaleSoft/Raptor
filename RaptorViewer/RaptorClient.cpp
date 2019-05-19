@@ -204,7 +204,7 @@ bool CRaptorClient::start(const CCmdLineParser &cmdLine)
 	if (m_Client == NULL)
 		m_Client = new CClient<CClientSocket>();
 
-	char* addrStr = "127.0.0.1";
+	string addrStr = "127.0.0.1";
 	unsigned short port = 2048;
 	cmdLine.getValue("port",port);
 	cmdLine.getValue("host_addr",addrStr);

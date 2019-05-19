@@ -1,0 +1,44 @@
+export
+
+CCCFLAGS =  -DSIMD_NO_ASSEMBLY -DLINUX -fPIC
+OUTPUT = $(RAPTOR_ROOT)/Build/Linux/Release/Half
+SRCDIR = $(RAPTOR_ROOT)/AddOns/OpenEXR-2.3.0/source/Half
+INCDIRS = -I$(RAPTOR_ROOT)/AddOns/OpenEXR-2.3.0/include -I$(OUTPUT)
+LDFLAGS = -Bdynamic -shared -lstdc++
+
+SO_NAME = libHalf.so
+SO = $(OUTPUT)/$(SO_NAME)
+LIB = $(OUTPUT)/libHalf.a
+
+all:	$(LIB) $(SO)
+
+clean:
+	rm -rf $(OUTPUT)
+	mkdir -p $(OUTPUT)
+
+SRC = \
+	$(SRCDIR)/Half.cpp
+
+OBJ = $(SRC:$(SRCDIR)/%.cpp=$(OUTPUT)/%.o)
+	
+$(SO):	$(OBJ)
+	g++ -o $(SO) $(LDFLAGS) $(OBJ)
+	cp $(SO) $(REDIST)/Bin/
+	cp $(SO) $(REDIST)/Bin/$(SO_NAME).$(RAPTOR_VERSION)
+
+$(LIB):	$(OBJ) 
+	ar -qcv $(LIB) $(OBJ)
+	cp $(LIB) $(REDIST)/Lib/
+
+$(OBJ):	$(SRC) $(OUTPUT)/eLut.h $(OUTPUT)/toFloat.h
+	g++ $(CCCFLAGS) $(INCDIRS) -c $(<D)/$(*F).cpp  -o $(OUTPUT)/$(@F)
+
+$(OUTPUT)/eLut.h:
+	$(REDIST)/Bin/eLut > $(OUTPUT)/eLut.h
+
+$(OUTPUT)/toFloat.h:
+	$(REDIST)/Bin/toFloat > $(OUTPUT)/toFloat.h
+
+
+	
+

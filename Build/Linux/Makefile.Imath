@@ -1,0 +1,41 @@
+export
+
+CCCFLAGS =  -DSIMD_NO_ASSEMBLY -DLINUX -fPIC -std=c++11
+OUTPUT = $(RAPTOR_ROOT)/Build/Linux/Release/Imath
+SRCDIR = $(RAPTOR_ROOT)/AddOns/OpenEXR-2.3.0/source/Imath
+INCDIRS = -I$(RAPTOR_ROOT)/AddOns/OpenEXR-2.3.0/include
+LDFLAGS = -Bdynamic -shared -lstdc++
+
+SO_NAME = libImath.so
+SO = $(OUTPUT)/$(SO_NAME)
+LIB = $(OUTPUT)/libImath.a
+
+all:	$(LIB) $(SO)
+
+clean:
+	rm -rf $(OUTPUT)
+	mkdir -p $(OUTPUT)
+
+SRC = \
+	$(SRCDIR)/ImathColorAlgo.cpp \
+	$(SRCDIR)/ImathMatrixAlgo.cpp \
+	$(SRCDIR)/ImathVec.cpp \
+	$(SRCDIR)/ImathFun.cpp \
+	$(SRCDIR)/ImathRandom.cpp
+
+OBJ = $(SRC:$(SRCDIR)/%.cpp=$(OUTPUT)/%.o)
+	
+$(SO):	$(OBJ)
+	g++ -o $(SO) $(LDFLAGS) $(OBJ)
+	cp $(SO) $(REDIST)/Bin/
+	cp $(SO) $(REDIST)/Bin/$(SO_NAME).$(RAPTOR_VERSION)
+
+$(LIB):	$(OBJ) 
+	ar -qcv $(LIB) $(OBJ)
+	cp $(LIB) $(REDIST)/Lib/
+
+$(OBJ):	$(SRC)
+	g++ $(CCCFLAGS) $(INCDIRS) -c $(<D)/$(*F).cpp  -o $(OUTPUT)/$(@F)
+
+	
+

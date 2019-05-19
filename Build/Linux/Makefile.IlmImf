@@ -1,0 +1,133 @@
+export
+
+CCCFLAGS =  -DSIMD_NO_ASSEMBLY -DLINUX -fPIC -std=c++11
+OUTPUT = $(RAPTOR_ROOT)/Build/Linux/Release/IlmImf
+SRCDIR = $(RAPTOR_ROOT)/AddOns/OpenEXR-2.3.0/source/IlmImf
+INCDIRS = -I$(RAPTOR_ROOT)/AddOns/OpenEXR-2.3.0/include -I$(OUTPUT)
+LDFLAGS = -Bdynamic -shared -lstdc++
+
+SO_NAME = libIlmImf.so
+SO = $(OUTPUT)/$(SO_NAME)
+LIB = $(OUTPUT)/libIlmImf.a
+
+all:	$(LIB) $(SO)
+
+clean:
+	rm -rf $(OUTPUT)
+	mkdir -p $(OUTPUT)
+
+SRC = \
+	$(SRCDIR)/ImfAcesFile.cpp \
+	$(SRCDIR)/ImfAttribute.cpp \
+	$(SRCDIR)/ImfB44Compressor.cpp \
+	$(SRCDIR)/ImfBoxAttribute.cpp \
+	$(SRCDIR)/ImfChannelListAttribute.cpp \
+	$(SRCDIR)/ImfChannelList.cpp \
+	$(SRCDIR)/ImfChromaticitiesAttribute.cpp \
+	$(SRCDIR)/ImfChromaticities.cpp \
+	$(SRCDIR)/ImfCompositeDeepScanLine.cpp \
+	$(SRCDIR)/ImfCompressionAttribute.cpp \
+	$(SRCDIR)/ImfCompressor.cpp \
+	$(SRCDIR)/ImfConvert.cpp \
+	$(SRCDIR)/ImfCRgbaFile.cpp \
+	$(SRCDIR)/ImfDeepCompositing.cpp \
+	$(SRCDIR)/ImfDeepFrameBuffer.cpp \
+	$(SRCDIR)/ImfDeepImageStateAttribute.cpp \
+	$(SRCDIR)/ImfDeepScanLineInputFile.cpp \
+	$(SRCDIR)/ImfDeepScanLineInputPart.cpp \
+	$(SRCDIR)/ImfDeepScanLineOutputFile.cpp \
+	$(SRCDIR)/ImfDeepScanLineOutputPart.cpp \
+	$(SRCDIR)/ImfDeepTiledInputFile.cpp \
+	$(SRCDIR)/ImfDeepTiledInputPart.cpp \
+	$(SRCDIR)/ImfDeepTiledOutputFile.cpp \
+	$(SRCDIR)/ImfDeepTiledOutputPart.cpp \
+	$(SRCDIR)/ImfDoubleAttribute.cpp \
+	$(SRCDIR)/ImfDwaCompressor.cpp \
+	$(SRCDIR)/ImfEnvmapAttribute.cpp \
+	$(SRCDIR)/ImfEnvmap.cpp \
+	$(SRCDIR)/ImfFastHuf.cpp \
+	$(SRCDIR)/ImfFloatAttribute.cpp \
+	$(SRCDIR)/ImfFloatVectorAttribute.cpp \
+	$(SRCDIR)/ImfFrameBuffer.cpp \
+	$(SRCDIR)/ImfFramesPerSecond.cpp \
+	$(SRCDIR)/ImfGenericInputFile.cpp \
+	$(SRCDIR)/ImfGenericOutputFile.cpp \
+	$(SRCDIR)/ImfHeader.cpp \
+	$(SRCDIR)/ImfHuf.cpp \
+	$(SRCDIR)/ImfInputFile.cpp \
+	$(SRCDIR)/ImfInputPart.cpp \
+	$(SRCDIR)/ImfInputPartData.cpp \
+	$(SRCDIR)/ImfIntAttribute.cpp \
+	$(SRCDIR)/ImfIO.cpp \
+	$(SRCDIR)/ImfKeyCodeAttribute.cpp \
+	$(SRCDIR)/ImfKeyCode.cpp \
+	$(SRCDIR)/ImfLineOrderAttribute.cpp \
+	$(SRCDIR)/ImfLut.cpp \
+	$(SRCDIR)/ImfMatrixAttribute.cpp \
+	$(SRCDIR)/ImfMisc.cpp \
+	$(SRCDIR)/ImfMultiPartInputFile.cpp \
+	$(SRCDIR)/ImfMultiPartOutputFile.cpp \
+	$(SRCDIR)/ImfMultiView.cpp \
+	$(SRCDIR)/ImfOpaqueAttribute.cpp \
+	$(SRCDIR)/ImfOutputFile.cpp \
+	$(SRCDIR)/ImfOutputPart.cpp \
+	$(SRCDIR)/ImfOutputPartData.cpp \
+	$(SRCDIR)/ImfPartType.cpp \
+	$(SRCDIR)/ImfPizCompressor.cpp \
+	$(SRCDIR)/ImfPreviewImageAttribute.cpp \
+	$(SRCDIR)/ImfPreviewImage.cpp \
+	$(SRCDIR)/ImfPxr24Compressor.cpp \
+	$(SRCDIR)/ImfRationalAttribute.cpp \
+	$(SRCDIR)/ImfRational.cpp \
+	$(SRCDIR)/ImfRgbaFile.cpp \
+	$(SRCDIR)/ImfRgbaYca.cpp \
+	$(SRCDIR)/ImfRleCompressor.cpp \
+	$(SRCDIR)/ImfRle.cpp \
+	$(SRCDIR)/ImfScanLineInputFile.cpp \
+	$(SRCDIR)/ImfStandardAttributes.cpp \
+	$(SRCDIR)/ImfStdIO.cpp \
+	$(SRCDIR)/ImfStringAttribute.cpp \
+	$(SRCDIR)/ImfStringVectorAttribute.cpp \
+	$(SRCDIR)/ImfSystemSpecific.cpp \
+	$(SRCDIR)/ImfTestFile.cpp \
+	$(SRCDIR)/ImfThreading.cpp \
+	$(SRCDIR)/ImfTileDescriptionAttribute.cpp \
+	$(SRCDIR)/ImfTiledInputFile.cpp \
+	$(SRCDIR)/ImfTiledInputPart.cpp \
+	$(SRCDIR)/ImfTiledMisc.cpp \
+	$(SRCDIR)/ImfTiledOutputFile.cpp \
+	$(SRCDIR)/ImfTiledOutputPart.cpp \
+	$(SRCDIR)/ImfTiledRgbaFile.cpp \
+	$(SRCDIR)/ImfTileOffsets.cpp \
+	$(SRCDIR)/ImfTimeCodeAttribute.cpp \
+	$(SRCDIR)/ImfTimeCode.cpp \
+	$(SRCDIR)/ImfVecAttribute.cpp \
+	$(SRCDIR)/ImfVersion.cpp \
+	$(SRCDIR)/ImfWav.cpp \
+	$(SRCDIR)/ImfZipCompressor.cpp \
+	$(SRCDIR)/ImfZip.cpp
+
+
+OBJ = $(SRC:$(SRCDIR)/%.cpp=$(OUTPUT)/%.o)
+	
+$(SO):	$(OBJ)
+	g++ -o $(SO) $(LDFLAGS) $(OBJ)
+	cp $(SO) $(REDIST)/Bin/
+	cp $(SO) $(REDIST)/Bin/$(SO_NAME).$(RAPTOR_VERSION)
+
+$(LIB):	$(OBJ) 
+	ar -qcv $(LIB) $(OBJ)
+	cp $(LIB) $(REDIST)/Lib/
+
+$(OBJ):	$(SRC) $(OUTPUT)/b44ExpLogTable.h $(OUTPUT)/dwaLookups.h
+	g++ $(CCCFLAGS) $(INCDIRS) -c $(<D)/$(*F).cpp  -o $(OUTPUT)/$(@F)
+
+$(OUTPUT)/b44ExpLogTable.h:
+	export LD_LIBRARY_PATH=$(REDIST)/Bin:$(LD_LIBRARY_PATH)
+	$(REDIST)/Bin/b44ExpLogTable > $(OUTPUT)/b44ExpLogTable.h
+	
+$(OUTPUT)/dwaLookups.h:
+	$(REDIST)/Bin/dwaLookups > $(OUTPUT)/dwaLookups.h
+
+
+
