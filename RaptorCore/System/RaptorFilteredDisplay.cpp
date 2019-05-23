@@ -123,7 +123,7 @@ CRaptorFilteredDisplay::CRaptorFilteredDisplay(const CRaptorDisplayConfig& pcs)
 	//	nVidia does not support separate Depth + Stencil framebuffers, except
 	//	in combination with EXT_packed_depth_stencil or pixel buffers
 #if !defined(GL_EXT_packed_depth_stencil)
-	if ((filter_cs.stencil) &&
+	if ((filter_cs.stencil_buffer) &&
 		((filter_cs.display_mode & CGL_DEPTH) == CGL_DEPTH) &&
 		(filter_cs.renderer == CRaptorDisplayConfig::RENDER_BUFFER))
 		filter_cs.renderer = CRaptorDisplayConfig::PIXEL_BUFFER;

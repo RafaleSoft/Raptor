@@ -12,9 +12,6 @@
 #if !defined(AFX_3DENGINETASKMANAGER_H__04149C60_C594_4009_A2C9_F852497146A3__INCLUDED_)
     #include "Engine/3DEngineTaskManager.h"
 #endif
-#if !defined(AFX_THREADMUTEX_H__E12D440F_070C_4B70_B424_AFAF2B1B458D__INCLUDED_)
-    #include "Subsys/ThreadMutex.h"
-#endif
 
 #include <pthread.h>
 
@@ -40,7 +37,7 @@ private:
     pthread_cond_t frameEvent;
     pthread_cond_t jobsEvent;
 
-	CThreadMutex     mutex;
+	CRaptorMutex     mutex;
 	static unsigned int	BATCH_ID;
 
     friend void* engineSyncThread(void* pParam);

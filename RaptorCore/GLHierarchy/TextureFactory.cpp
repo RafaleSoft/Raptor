@@ -654,12 +654,13 @@ bool CTextureFactory::glResizeTexture( CTextureObject *T, unsigned int width, un
 			GL_FORMAT = GL_DEPTH_COMPONENT;
 			GL_TYPE = GL_FLOAT;
 		}
+#if defined(GL_EXT_packed_depth_stencil)
 		else if (T->getTexelFormat() == GL_DEPTH24_STENCIL8_EXT)
 		{
 			GL_FORMAT = GL_DEPTH_STENCIL_EXT;
 			GL_TYPE = GL_UNSIGNED_INT_24_8_EXT;
 		}
-
+#endif
         if (target == GL_TEXTURE_1D)
 			glTexImage1D(	GL_TEXTURE_1D, 
 							T->getCurrentMipMapLevel(), 

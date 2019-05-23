@@ -826,14 +826,14 @@ bool CVulkanDevice::vkCreateLogicalDevice(	const VkPhysicalDevice &physicalDevic
 
 
 	PFN_vkGetDeviceProcAddr vkGetDeviceProcAddr = CRaptorVKExtensions::vkGetDeviceProcAddr;
-	IMPLEMENT_VK_device(this->, device);
-	IMPLEMENT_VK_KHR_swapchain(this->, device);
+	IMPLEMENT_VK_device(this, device);
+	IMPLEMENT_VK_KHR_swapchain(this, device);
 	if (VK_NULL_HANDLE == CVulkanCommandBuffer::vkBeginCommandBuffer)
-		IMPLEMENT_VK_command_buffer(CVulkanCommandBuffer::,device);
+		IMPLEMENT_VK_command_buffer(CVulkanCommandBuffer,device);
 	if (VK_NULL_HANDLE == CVulkanShader::vkCreateShaderModule)
-		IMPLEMENT_VK_pipeline(CVulkanShader::, device);
+		IMPLEMENT_VK_pipeline(CVulkanShader, device);
 	if (VK_NULL_HANDLE == CVulkanPipeline::vkCreateGraphicsPipelines)
-		IMPLEMENT_VK_pipeline(CVulkanPipeline::, device);
+		IMPLEMENT_VK_pipeline(CVulkanPipeline, device);
 	
 	vkQueueSubmit = (PFN_vkQueueSubmit)(vkGetDeviceProcAddr(device, "vkQueueSubmit"));
 	vkQueueWaitIdle = (PFN_vkQueueWaitIdle)(vkGetDeviceProcAddr(device, "vkQueueWaitIdle"));

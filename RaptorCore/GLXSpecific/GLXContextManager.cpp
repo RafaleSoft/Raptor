@@ -291,6 +291,11 @@ void CGLXContextManager::glSwapBuffers(RENDERING_CONTEXT_ID ctx)
 	}
 }
 
+void CGLXContextManager::vkSwapVSync(unsigned int framerate)
+{
+	
+}
+
 bool CGLXContextManager::glSwapVSync(unsigned int nbVSync) const
 {
 	bool swapControl = false;

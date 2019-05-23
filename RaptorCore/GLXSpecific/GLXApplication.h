@@ -31,6 +31,9 @@ protected:
 
 	//! @see CRaptorApplication
     virtual void setRootWindow(const RAPTOR_HANDLE& root);
+
+	//! @see CRaptorApplication
+	virtual void grabCursor(bool grab);
 };
 
 RAPTOR_NAMESPACE_END

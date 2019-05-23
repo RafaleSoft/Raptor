@@ -285,21 +285,23 @@ void *CHostMemoryManager::allocate(size_t size,unsigned int count,size_t alignme
 	    char *pT = new char[size * count + align];
 
 	    //	align data
-	    void *data = (void*)((int(pT) + align) & ~((int)(align-1)));
+		intptr_t data = (intptr_t)pT;
+		data = (data + align) & ~(align - 1);
 
 	    // store allocation offset
 #ifdef INITIALISE_MEMORY
         memset(pT,0,size * count + align);
 #endif
-        *((unsigned char*)data-1) = 0xff & ((unsigned int)(data) - (unsigned int)(pT));
+		unsigned char* poffset = (unsigned char*)data;
+		*(poffset - 1) = 0xff & (data - (intptr_t)pT);
 
 	    CMemoryHeap::DATA_BLOC db;
-	    db.address = (unsigned char*)data;
+		db.address = poffset;
 	    db.size = requestedSize;
 		db.usedBytes = requestedSize;
 
 		m_pHeap->heap[db.address] = db;
-        return data;
+		return poffset;
     }
     else
     {

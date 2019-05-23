@@ -13,13 +13,19 @@
 #ifndef __GLOBAL_H__
 	#include "System/Global.h"
 #endif
-
+#ifndef __GLX_RAPTOR_GLEXT_H__
+	#include "GLXGlext.h"
+#endif
 
 #if !defined(AFX_CONTEXTMANAGER_H__F992F5F0_D8A5_475F_9777_B0EB30E7648E__INCLUDED_)
 	#include "Subsys/ContextManager.h"
 #endif
 
+
 RAPTOR_NAMESPACE_BEGIN
+
+class CRaptorGLExtensions;
+
 
 class CGLXContextManager : public CContextManager  
 {
@@ -28,7 +34,7 @@ public:
 	virtual ~CGLXContextManager();
 
 	//! See base class
-	virtual const CRaptorExtensions *const glGetExtensions(void);
+	virtual const CRaptorGLExtensions *const glGetExtensions(void);
 
 	//! See base class
 	virtual RAPTOR_HANDLE glCreateWindow(const CRaptorDisplayConfig& pcs, CRaptorDisplay *& pdisplay,RENDERING_CONTEXT_ID &ctx);
@@ -63,6 +69,8 @@ public:
 	//! See base class
 	virtual bool glSwapVSync(unsigned int nbVSync) const;
 
+	//! See base class
+	virtual void vkSwapVSync(unsigned int framerate);
 
 
 	//! See base class
@@ -105,8 +113,8 @@ private:
 
 	string					extensions;
 	string					glx_extensions;
-	CRaptorExtensions*		pExtensions;
-	CRaptorExtensions*		pExtensionsTmp;
+	CRaptorGLExtensions*	pExtensions;
+	CRaptorGLExtensions*	pExtensionsTmp;
 	
 
     Display*                pGlobalDisplay;                 

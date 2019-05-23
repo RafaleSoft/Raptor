@@ -10,7 +10,7 @@
     <ClCompile Include="..\..\Builder.Net\BuilderForm.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Builder.Net\GLBuilder.cpp">
+    <ClCompile Include="..\..\Builder\BuilderNative\GLBuilder.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -24,7 +24,7 @@
     <ClInclude Include="..\..\Builder.Net\stdafx.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Builder.Net\GLBuilder.h">
+    <ClInclude Include="..\..\Builder\BuilderNative\GLBuilder.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

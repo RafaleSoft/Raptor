@@ -909,7 +909,7 @@ CVulkanMemory& CVulkanMemory::GetInstance(VkPhysicalDevice physicalDevice)
 		{
 			PFN_vkGetInstanceProcAddr vkGetInstanceProcAddr = CRaptorVKExtensions::vkGetInstanceProcAddr;
 			VkInstance instance = CRaptorVKExtensions::getInstance();
-			IMPLEMENT_VK_device_memory(CVulkanMemory::, physicalDevice)
+			IMPLEMENT_VK_device_memory(CVulkanMemory, physicalDevice)
 		}
 	}
 	else
