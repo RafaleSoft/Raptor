@@ -8,7 +8,7 @@ LDFLAGS = -Bdynamic -shared -lstdc++
 
 # Remove MESA options before all GL extensions are included.
 CCCFLAGS += -DGL_MESA_shader_object -DGL_MESA_shader_debug
-CCCFLAGS += -DMAX_PATH=PATH_MAX
+CCCFLAGS += -DMAX_PATH=PATH_MAX -DGLX_EXTENSIONS
 
 SO = $(OUTPUT)/RaptorCore.so.$(RAPTOR_VERSION)
 LIB = $(OUTPUT)/RaptorCore.lib
@@ -92,12 +92,14 @@ SYSTEM_SRC = \
 	$(SRCDIR)/System/RaptorDisplayFilter.cpp \
 	$(SRCDIR)/System/RenderEntryPoint.cpp \
 	$(SRCDIR)/System/RaptorErrorManager.cpp \
-	$(SRCDIR)/System/RaptorExtensions.cpp \
+	$(SRCDIR)/System/RaptorGLExtensions.cpp \
+	$(SRCDIR)/System/RaptorVKExtensions.cpp \
 	$(SRCDIR)/System/RaptorFilteredDisplay.cpp \
 	$(SRCDIR)/System/RaptorIO.cpp \
 	$(SRCDIR)/System/RaptorMessages.cpp \
 	$(SRCDIR)/System/RaptorRenderBufferDisplay.cpp \
-	$(SRCDIR)/System/RaptorScreenDisplay.cpp
+	$(SRCDIR)/System/RaptorScreenDisplay.cpp \
+	$(SRCDIR)/System/RaptorVulkanDisplay.cpp
 
 SUBSYS_SRC = \
 	$(SRCDIR)/Subsys/3DSceneAttributes.cpp \
@@ -113,7 +115,6 @@ SUBSYS_SRC = \
 	$(SRCDIR)/Subsys/DefaultImageScaler.cpp \
 	$(SRCDIR)/Subsys/DefaultMipmapBuilder.cpp \
 	$(SRCDIR)/Subsys/GeometryAllocator.cpp \
-	$(SRCDIR)/Subsys/InternalProcs.cpp \
 	$(SRCDIR)/Subsys/Interpreters.cpp \
 	$(SRCDIR)/Subsys/LightAttributes.cpp \
 	$(SRCDIR)/Subsys/Object3DShadowAttributes.cpp \
@@ -124,7 +125,6 @@ SUBSYS_SRC = \
 	$(SRCDIR)/Subsys/ShadowVolumeJob.cpp \
 	$(SRCDIR)/Subsys/SubBoundingBox.cpp \
 	$(SRCDIR)/Subsys/TexelAllocator.cpp \
-	$(SRCDIR)/Subsys/ThreadMutex.cpp \
 	$(SRCDIR)/Subsys/VideoStream.cpp \
 	$(SRCDIR)/Subsys/XMLRaptorIO.cpp
 
@@ -200,12 +200,9 @@ $(GLXSPECIFIC_OBJS): $(GLXSPECIFIC_SRC) $(CODE_GENERATION)
 	g++ $(CCCFLAGS) $(INCDIRS) -c $(<D)/$(*F).cpp  -o $(OUTPUT)/$(@F)
 
 $(SUBSYS_SCRIPT_SRC):	$(SUBSYS_LEXSCRIPT_SRC) $(CODE_GENERATION)
-	cd $(SRCDIR)/Subsys/ObjectModels
-	$(RAPTOR_ROOT)/Redist/Bin/Microlex -f Raptor.lex -o RaptorScript -v
-	cd ../..
+	(cd $(SRCDIR)/Subsys/ObjectModels && $(RAPTOR_ROOT)/Redist/Bin/Microlex -f Raptor.lex -o RaptorScript -v)
 
 $(CODE_GENERATION):
-	cd $(SRCDIR)/Subsys
-	$(RAPTOR_ROOT)/Redist/Bin/Builder -v -e RAPTOR_SMP_CODE_GENERATION -d GL_ARB_multisample
-	cp CodeGeneration.h $(RAPTOR_ROOT)/Redist/Include/Subsys
-	cd ..
+	( cd $(SRCDIR)/Subsys && $(RAPTOR_ROOT)/Redist/Bin/Builder -v -e RAPTOR_SMP_CODE_GENERATION -d GL_ARB_multisample)
+	cp $(SRCDIR)/Subsys/CodeGeneration.h $(RAPTOR_ROOT)/Redist/Include/Subsys
+

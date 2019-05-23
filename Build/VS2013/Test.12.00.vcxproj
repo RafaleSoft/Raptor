@@ -176,7 +176,7 @@
       </Command>
     </PreLinkEvent>
     <Link>
-      <AdditionalDependencies>User32.lib;RaptorCompute.lib;opengl32.lib;Raptor.lib;RaptorToolBox.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>User32.lib;opengl32.lib;Raptor.lib;RaptorToolBox.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>$(RAPTOR_ROOT)\Redist\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>

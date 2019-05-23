@@ -279,15 +279,15 @@
     </ClCompile>
     <ClCompile Include="..\..\Builder.Net\Builder.Net.cpp" />
     <ClCompile Include="..\..\Builder.Net\BuilderForm.cpp" />
-    <ClCompile Include="..\..\Builder.Net\GLBuilder.cpp" />
+    <ClCompile Include="..\..\Builder\BuilderNative\GLBuilder.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Builder.Net\BuilderForm.h" />
     <ClInclude Include="..\..\Builder.Net\Form1.h">
       <FileType>CppForm</FileType>
     </ClInclude>
-    <ClInclude Include="..\..\Builder.Net\GLBuilder.h" />
     <ClInclude Include="..\..\Builder.Net\stdafx.h" />
+    <ClInclude Include="..\..\Builder\BuilderNative\GLBuilder.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\..\Builder.Net\res\Builder.ico" />

@@ -54,6 +54,11 @@ void CGLXApplication::setRootWindow(const RAPTOR_HANDLE& root)
     CRaptorApplication::setRootWindow(root);
 }
 
+void CGLXApplication::grabCursor(bool grab)
+{
+
+}
+
 typedef struct
 {
     int x;

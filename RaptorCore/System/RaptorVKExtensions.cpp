@@ -37,7 +37,7 @@ RAPTOR_NAMESPACE_BEGIN
 	PFN_vkEnumerateInstanceLayerProperties CRaptorVKExtensions::vkEnumerateInstanceLayerProperties = NULL;
 	PFN_vkCreateInstance CRaptorVKExtensions::vkCreateInstance = NULL;
 
-	IMPLEMENT_RAPTOR_VK_instance(CRaptorVKExtensions::)
+	IMPLEMENT_RAPTOR_VK_instance(CRaptorVKExtensions)
 #endif
 
 RAPTOR_NAMESPACE_END
@@ -53,9 +53,9 @@ CRaptorVKExtensions::CRaptorVKExtensions(const std::string &ext)
 	:extensions(ext)
 {
 #if defined(VK_VERSION_1_0)
-	IMPLEMENT_VK_win32(this->, instance);
-	IMPLEMENT_VK_xlib(this->, instance);
-	IMPLEMENT_VK_KHR_surface(this->, instance);
+	IMPLEMENT_VK_win32(this, instance);
+	IMPLEMENT_VK_xlib(this, instance);
+	IMPLEMENT_VK_KHR_surface(this, instance);
 #endif
 }
 
@@ -206,7 +206,7 @@ bool CRaptorVKExtensions::vkInitInstanceExtensions(void)
 	if (VK_SUCCESS != res)
 		pErrMgr->vkGetError(res, __FILE__, __LINE__);
 
-	IMPLEMENT_VK_instance(CRaptorVKExtensions::, instance);
+	IMPLEMENT_VK_instance(CRaptorVKExtensions, instance);
 
 	return true;
 }

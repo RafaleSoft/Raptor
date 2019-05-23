@@ -20,7 +20,9 @@
     #include "System/RaptorErrorManager.h"
 #endif
 
-#include <direct.h>
+#if defined(_WIN32)
+	#include <direct.h>
+#endif
 
 RAPTOR_NAMESPACE
 

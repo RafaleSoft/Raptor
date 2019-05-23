@@ -79,7 +79,7 @@ protected:
 	{
 	public:
 		CEnvironmentObserver(CEnvironment& owner)
-			:CPersistence(CPersistence::CPersistenceClassID::CPersistenceClassID(),"EnvironmentObserver"),
+			:CPersistence(CPersistence::CPersistenceClassID::GetClassId(), "EnvironmentObserver"),
 			m_owner(owner)
 		{};
 		virtual ~CEnvironmentObserver()

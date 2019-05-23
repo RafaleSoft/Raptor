@@ -123,11 +123,10 @@ $(OBJ):	$(SRC) $(OUTPUT)/b44ExpLogTable.h $(OUTPUT)/dwaLookups.h
 	g++ $(CCCFLAGS) $(INCDIRS) -c $(<D)/$(*F).cpp  -o $(OUTPUT)/$(@F)
 
 $(OUTPUT)/b44ExpLogTable.h:
-	export LD_LIBRARY_PATH=$(REDIST)/Bin:$(LD_LIBRARY_PATH)
-	$(REDIST)/Bin/b44ExpLogTable > $(OUTPUT)/b44ExpLogTable.h
+	(export LD_LIBRARY_PATH=$(REDIST)/Bin:$(LD_LIBRARY_PATH) && $(REDIST)/Bin/b44ExpLogTable > $(OUTPUT)/b44ExpLogTable.h)
 	
 $(OUTPUT)/dwaLookups.h:
-	$(REDIST)/Bin/dwaLookups > $(OUTPUT)/dwaLookups.h
+	(export LD_LIBRARY_PATH=$(REDIST)/Bin:$(LD_LIBRARY_PATH) && $(REDIST)/Bin/dwaLookups > $(OUTPUT)/dwaLookups.h)
 
 
 

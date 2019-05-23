@@ -14,7 +14,7 @@
     #endif
 #endif
 #if defined(LINUX)
-    #if !defined(AFX_GLXANIMATORSTREAM_H__3079A145-D92D-45B8-BF7A-19FD1261159D__INCLUDED_)
+    #if !defined(AFX_GLXTIMEOBJECT_H__3079A145_D92D_45B8_BF7A_19FD1261159D__INCLUDED_)
         #include "GLXSpecific/GLXTimeObject.h"
     #endif
 #endif
