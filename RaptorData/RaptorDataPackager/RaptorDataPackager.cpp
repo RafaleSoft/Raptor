@@ -24,7 +24,7 @@ static unsigned char out[CHUNK];
 
 int main(int argc, char* argv[])
 {
-	printf("Welcone to the simple Raptor Zip Data Packager...\n\n");
+	printf("Welcome to the simple Raptor Zip Data Packager...\n\n");
 
 	if (argc < 3)
 	{

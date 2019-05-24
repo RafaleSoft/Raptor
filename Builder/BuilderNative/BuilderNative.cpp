@@ -245,10 +245,28 @@ bool getExtensions(NATIVE_EXTENSION* ext, uint32_t *s)
 
 			size_t nb = extension.dependencies.size();
 			ext[i].nb_dependencies = nb;
-			ext[i].dependencies = (const char**)(malloc(nb));
+			ext[i].dependencies = (const char**)(calloc(nb+1,sizeof(char*)));
 			for (size_t j = 0; j < nb; j++)
 				ext[i].dependencies[j] = _strdup(extension.dependencies[j].c_str());
 		}
+	}
+
+	return true;
+}
+
+
+bool freeExtensions(NATIVE_EXTENSION* extensions, uint32_t s)
+{
+	if (NULL == extensions)
+		return false;
+
+	for (uint32_t i = 0; i < s; i++)
+	{
+		NATIVE_EXTENSION& extension = extensions[i];
+		free((char*)extension.extensionName);
+		for (size_t j = 0; j < extension.nb_dependencies; j++)
+			free((char*)(extension.dependencies[j]));
+		free(extension.dependencies);
 	}
 
 	return true;
@@ -310,4 +328,18 @@ bool activateAllOrNone(bool all)
 		builder->activateNone();
 
 	return true;
+}
+
+bool isExtensionActive(const char* extension)
+{
+	if (NULL == builder)
+		return false;
+
+	if (NULL == extension)
+		return false;
+
+	bool res = true;
+	res = builder->isExtensionActive(extension);
+
+	return res;
 }

@@ -74,6 +74,9 @@ extern "C" BUILDERNATIVE_API
 bool getExtensions(NATIVE_EXTENSION* ext, uint32_t* s);
 
 extern "C" BUILDERNATIVE_API
+bool freeExtensions(NATIVE_EXTENSION* extensions, uint32_t s);
+
+extern "C" BUILDERNATIVE_API
 bool checkConsistency(bool force);
 
 extern "C" BUILDERNATIVE_API
@@ -87,5 +90,8 @@ bool setBuildSupplement(BUILD_SUPPLEMENT *bld);
 
 extern "C" BUILDERNATIVE_API
 bool activateAllOrNone(bool all);
+
+extern "C" BUILDERNATIVE_API
+bool isExtensionActive(const char* extension);
 
 #endif
