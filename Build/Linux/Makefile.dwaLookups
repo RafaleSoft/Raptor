@@ -1,10 +1,28 @@
+###########################################################################
+#                                                                         #
+#  Makefile.dwaLookups                                                    #
+#                                                                         #
+#    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       #
+#                                                                         #
+#  Copyright 1998-2019 by                                                 #
+#  Fabrice FERRAND.                                                       #
+#                                                                         #
+#  This file is part of the Raptor project, and may only be used,         #
+#  modified, and distributed under the terms of the Raptor project        #
+#  license, LICENSE.  By continuing to use, modify, or distribute         #
+#  this file you indicate that you have read the license and              #
+#  understand and accept it fully.                                        #
+#                                                                         #
+###########################################################################
+
+
 export
 
-CCCFLAGS =  -DSIMD_NO_ASSEMBLY -DLINUX -fPIC -std=c++11
+CCCFLAGS =  -DOPENEXR_IMF_HAVE_SYSCONF_NPROCESSORS_ONLN -DSIMD_NO_ASSEMBLY -DLINUX -fPIC -std=c++11
 OUTPUT = $(RAPTOR_ROOT)/Build/Linux/Release/dwaLookups
 SRCDIR = $(RAPTOR_ROOT)/AddOns/OpenEXR-2.3.0/source/IlmImf
 INCDIRS = -I$(RAPTOR_ROOT)/AddOns/OpenEXR-2.3.0/include
-LDFLAGS = -L$(REDIST)/Bin -lHalf -lIlmThread -lIex -lpthread
+LDFLAGS = $(REDIST)/Bin/libHalf.so.$(RAPTOR_VERSION) $(REDIST)/Bin/libIlmThread.so.$(RAPTOR_VERSION) $(REDIST)/Bin/libIex.so.$(RAPTOR_VERSION) -lpthread
 
 
 all:	$(OUTPUT)/dwaLookups

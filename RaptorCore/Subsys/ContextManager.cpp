@@ -49,6 +49,8 @@
     #if !defined(AFX_GLXCONTEXTMANAGER_H__B6CE3CDF_D7E4_4B9C_89BF_5E934062BC97__INCLUDED_)
         #include "GLXSpecific/GLXContextManager.h"
     #endif
+	#define MAXUINT64   ((uint64_t)~((uint64_t)0))
+	#define MAXUINT     ((uint32_t)~((uint32_t)0))
 #endif
 
 #if defined(VK_VERSION_1_0)
@@ -424,7 +426,7 @@ void CContextManager::vkMakeCurrentContext(const RAPTOR_HANDLE& device,RENDERING
 		//	Use a timeout coherent with vkSwapVSync
 		uint64_t timeout = MAXUINT64;	// infinite wait
 		VK_CONTEXT& context = m_pVkContext[ctx];
-		if (NULL != device.hClass())
+		if (0 != device.hClass())
 		{
 			if (!context.device.acquireSwapChainImage(timeout))
 			{

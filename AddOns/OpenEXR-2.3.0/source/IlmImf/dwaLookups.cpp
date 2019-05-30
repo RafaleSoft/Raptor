@@ -443,7 +443,6 @@ cpuCount()
 #if defined (OPENEXR_IMF_HAVE_SYSCONF_NPROCESSORS_ONLN)
 
     cpuCount = sysconf(_SC_NPROCESSORS_ONLN);
-
 #elif defined (_WIN32)
 
     SYSTEM_INFO sysinfo;

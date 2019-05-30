@@ -72,9 +72,9 @@ public:
 	//!
 	//!	Returns swap chain info conformant with surface capabilities
 	//!
-	VkSwapchainCreateInfoKHR CVulkanSurface::getSwapChainRequirements(	uint32_t display_mode,
-																		uint32_t width,
-																		uint32_t height);
+	VkSwapchainCreateInfoKHR getSwapChainRequirements(	uint32_t display_mode,
+														uint32_t width,
+														uint32_t height);
 #endif
 
 

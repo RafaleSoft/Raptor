@@ -43,10 +43,12 @@ public:
     virtual bool glDestroyWindow(const RAPTOR_HANDLE& wnd);
 
 	//! See base class
-	virtual RENDERING_CONTEXT_ID glCreateContext(const RAPTOR_HANDLE& device,int displayMode,bool global = false);
+	virtual RENDERING_CONTEXT_ID glCreateContext(const RAPTOR_HANDLE& device,
+												 const CRaptorDisplayConfig& config);
 
 	//! See base class
-	virtual RENDERING_CONTEXT_ID glCreateExtendedContext(const RAPTOR_HANDLE& device,int displayMode,bool global = false);
+	virtual RENDERING_CONTEXT_ID glCreateExtendedContext(const RAPTOR_HANDLE& device,
+														 const CRaptorDisplayConfig& config);
 
 	//! See base class
 	virtual RENDERING_CONTEXT_ID glGetCurrentContext(void) const { return m_currentContext; };
@@ -80,7 +82,7 @@ public:
 	virtual bool glDestroyPBuffer(PIXEL_BUFFER_ID pbuffer);
 
 	//! See base class
-	virtual void glBindPBuffer(PIXEL_BUFFER_ID pbuffer, unsigned int selectBuffer = CGL_NULL);
+	virtual void glBindPBuffer(PIXEL_BUFFER_ID pbuffer, CTextureObject::CUBE_FACE selectBuffer = CTextureObject::CGL_CUBEMAP_NONE);
 
 	//! See base class
 	virtual bool glIsPBuffer(PIXEL_BUFFER_ID pbuffer) const;
@@ -131,6 +133,14 @@ private:
 	RENDERING_CONTEXT_ID	m_currentContext;
 
 	virtual void glInitExtensions(void);
+
+#if defined(VK_VERSION_1_0)
+	//! See base class
+	virtual uint32_t getPresentationSuppotQueueFamily(RENDERING_CONTEXT_ID ctx);
+
+	//! See base class
+	virtual bool vkCreateSurface(const RAPTOR_HANDLE& handle, RENDERING_CONTEXT_ID ctx);
+#endif
 };
 
 RAPTOR_NAMESPACE_END

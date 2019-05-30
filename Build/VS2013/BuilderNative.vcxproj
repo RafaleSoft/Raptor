@@ -70,7 +70,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>BUILDERNATIVE_EXPORTS;WIN32;_DEBUG;_WINDOWS;_USRDLL;BUILDERNATIVE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -93,7 +93,7 @@ copy $(OutDir)$(TargetName).lib "%RAPTOR_ROOT%\Redist\lib\"
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -120,7 +120,7 @@ copy $(OutDir)$(TargetName).lib "%RAPTOR_ROOT%\Redist\lib\"
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -147,19 +147,12 @@ copy $(OutDir)$(TargetName).lib "%RAPTOR_ROOT%\Redist\lib\"
   <ItemGroup>
     <ClInclude Include="..\..\Builder\BuilderNative\BuilderNative.h" />
     <ClInclude Include="..\..\Builder\BuilderNative\GLBuilder.h" />
-    <ClInclude Include="..\..\Builder\BuilderNative\stdafx.h" />
-    <ClInclude Include="..\..\Builder\BuilderNative\targetver.h" />
     <ClInclude Include="..\..\Builder\resource.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Builder\BuilderNative\BuilderNative.cpp" />
     <ClCompile Include="..\..\Builder\BuilderNative\dllmain.cpp" />
     <ClCompile Include="..\..\Builder\BuilderNative\GLBuilder.cpp" />
-    <ClCompile Include="..\..\Builder\BuilderNative\stdafx.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">Create</PrecompiledHeader>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\..\Builder\BuilderNative.rc">

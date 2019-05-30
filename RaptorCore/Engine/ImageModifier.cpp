@@ -20,6 +20,7 @@
 	#include "System/Global.h"
 #endif
 
+
 RAPTOR_NAMESPACE
 
 static CImageModifier::CImageModifierClassID imageId;

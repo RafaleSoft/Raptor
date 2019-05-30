@@ -21,6 +21,7 @@
 #include "BuilderForm.h"
 #include <windows.h>
 #include <vcclr.h>
+#include <stdlib.h>
 
 #include <BuilderNative.h>
 using namespace BuilderNet;

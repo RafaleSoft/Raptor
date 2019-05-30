@@ -367,9 +367,9 @@ copy $(SolutionDir)$(ProjectName)\RaptorData.pck "%RAPTOR_ROOT%\Redist\bin\"
       <OutputFile>.\Release/RaptorData.bsc</OutputFile>
     </Bscmake>
     <PostBuildEvent>
-      <Command>copy $(OutDir)RaptorData.lib "%RAPTOR_ROOT%\Redist\lib\"
-copy $(OutDir)RaptorData.dll "%RAPTOR_ROOT%\Redist\bin\"
-copy RaptorData.pck "%RAPTOR_ROOT%\Redist\bin\"
+      <Command>copy $(OutDir)$(TargetName).lib "%RAPTOR_ROOT%\Redist\lib\"
+copy $(OutDir)$(TargetName).dll "%RAPTOR_ROOT%\Redist\bin\"
+copy $(SolutionDir)$(ProjectName)\RaptorData.pck "%RAPTOR_ROOT%\Redist\bin\"
 </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>

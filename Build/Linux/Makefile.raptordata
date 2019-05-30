@@ -1,3 +1,21 @@
+###########################################################################
+#                                                                         #
+#  Makefile.raptordata                                                    #
+#                                                                         #
+#    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       #
+#                                                                         #
+#  Copyright 1998-2019 by                                                 #
+#  Fabrice FERRAND.                                                       #
+#                                                                         #
+#  This file is part of the Raptor project, and may only be used,         #
+#  modified, and distributed under the terms of the Raptor project        #
+#  license, LICENSE.  By continuing to use, modify, or distribute         #
+#  this file you indicate that you have read the license and              #
+#  understand and accept it fully.                                        #
+#                                                                         #
+###########################################################################
+
+
 export
 
 CCCFLAGS =  -DSIMD_NO_ASSEMBLY -DLINUX -fPIC
@@ -6,10 +24,10 @@ SRCDIR = $(RAPTOR_ROOT)/RaptorData
 INCDIRS = -I$(SRCDIR)
 LDFLAGS = -Bdynamic -shared -lstdc++
 
-SO = $(OUTPUT)/RaptorData.so.$(RAPTOR_VERSION)
-LIB = $(OUTPUT)/RaptorData.lib
+SO = $(OUTPUT)/libRaptorData.so.$(RAPTOR_VERSION)
+LIB = $(OUTPUT)/libRaptorData.lib
 
-all:	$(LIB) $(SO)
+all:	$(LIB) $(SO) $(REDIST)/Bin/RaptorData.pck
 
 clean:
 	rm -rf $(OUTPUT)
@@ -22,7 +40,7 @@ SRC = \
 OBJ = $(OUTPUT)/RaptorDataManager.o $(OUTPUT)/PackageIO.o
 	
 $(SO):	$(OBJ)
-	g++ -o $(SO) $(LDFLAGS) $(OBJ)
+	g++ -o $(SO) $(OBJ) $(LDFLAGS)
 	cp $(SO) $(REDIST)/Bin/
 
 $(LIB):	$(OBJ) 
@@ -34,3 +52,7 @@ $(OUTPUT)/RaptorDataManager.o:	$(SRCDIR)/RaptorDataManager.cpp
 
 $(OUTPUT)/PackageIO.o:	$(SRCDIR)/RaptorDataPackager/PackageIO.cpp
 	g++ $(CCCFLAGS) $(INCDIRS) -c $(<D)/$(*F).cpp  -o $(OUTPUT)/$(@F)
+
+$(REDIST)/Bin/RaptorData.pck:
+	(cd $(SRCDIR) ; ./buildpak.sh)
+	cp $(SRCDIR)/RaptorData.pck $(REDIST)/Bin/RaptorData.pck
