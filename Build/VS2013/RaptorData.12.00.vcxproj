@@ -396,9 +396,12 @@ copy RaptorData.pck "%RAPTOR_ROOT%\Redist\bin\"
     </None>
     <None Include="..\..\RaptorData\Data\AO.ps" />
     <None Include="..\..\RaptorData\Data\AO.vs" />
+    <None Include="..\..\RaptorData\Data\blenderX_8x.ps" />
     <None Include="..\..\RaptorData\Data\blenderX_8x.vp" />
+    <None Include="..\..\RaptorData\Data\blenderY_8x.ps" />
     <None Include="..\..\RaptorData\Data\blenderY_8x.vp" />
     <None Include="..\..\RaptorData\Data\blender_8x.fp" />
+    <None Include="..\..\RaptorData\Data\blender_8x.gs" />
     <None Include="..\..\RaptorData\Data\blinn.ps" />
     <None Include="..\..\RaptorData\Data\blinn.vs" />
     <None Include="..\..\RaptorData\Data\bump.fp" />

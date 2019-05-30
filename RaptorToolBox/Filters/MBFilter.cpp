@@ -66,7 +66,6 @@ public:
     virtual ITextureGenerator::GENERATOR_KIND    getKind(void) const { return ITextureGenerator::BUFFERED; };
 
     //! The fragment program to compute accumulation;
-	static const string accum_vp;
 	static const string accum_gp;
 	static const string accum_fp;
 	static const string accum_fp2;
@@ -104,10 +103,6 @@ public:
 
 
 #if defined(GL_ARB_geometry_shader4)
-	const string CAccumulator::accum_vp =
-	"#version 460 \n\
-	void main(void)	{	}";
-
 	const string CAccumulator::accum_gp =
 	"#version 460\n\
 	\n\
@@ -377,17 +372,15 @@ bool CMBFilter::glInitFilter(void)
 
 #if defined(GL_ARB_geometry_shader4)
 	m_pFinalShader = new CShader("MotionBlurShader");
-
-	CVertexProgram *vp = m_pMotionBlurShader->glGetVertexProgram("mb_vp");
-	bool res = vp->glLoadProgram(CAccumulator::accum_vp);
+	CVertexProgram *vp = m_pMotionBlurShader->glGetVertexProgram("EMPTY_PROGRAM");
 	CGeometryProgram *gp = m_pMotionBlurShader->glGetGeometryProgram("mb_gp");
-	res = gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
+	bool res = gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
 	res = res & gp->glLoadProgram(CAccumulator::accum_gp);
 	CFragmentProgram *fp = m_pMotionBlurShader->glGetFragmentProgram("mb_fp");
 	res = res && fp->glLoadProgram(CAccumulator::accum_fp);
 	res = res && m_pMotionBlurShader->glCompileShader();
 
-	vp = m_pFinalShader->glGetVertexProgram("mb_vp");
+	vp = m_pFinalShader->glGetVertexProgram("EMPTY_PROGRAM");
 	gp = m_pFinalShader->glGetGeometryProgram("mb_gp");
 	fp = m_pFinalShader->glGetFragmentProgram("mb_fp2");
 	res = res && fp->glLoadProgram(CAccumulator::accum_fp2);

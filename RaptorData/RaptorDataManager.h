@@ -42,6 +42,17 @@
 class RAPTORDATA_API CRaptorDataManager  
 {
 public:
+	typedef enum
+	{
+		VERTEX_SHADER,
+		FRAGMENT_SHADER,
+		VERTEX_PROGRAM,
+		FRAGMENT_PROGRAM,
+		GEOMETRY_PROGRAM,
+		COMPUTE_PROGRAM,
+		TESSELATION_PROGRAM
+	} FILE_TYPE;
+
     static CRaptorDataManager  *GetInstance(void);
 
 	virtual ~CRaptorDataManager();
@@ -51,7 +62,7 @@ public:
     //! @return the filepath if export succeeded, an empty string if errors found.
     std::string ExportFile(const std::string& fname, const std::string& topath = "");
 
-    //! Export the about video ( Win32 only, Unix platform in next releases
+    //! Export the about video ( Win32 only, Unix platform in next releases )
     void ExportRaptorVideo(const std::string& path);
 
     //! Returns default the list of shaders embedded with Raptor

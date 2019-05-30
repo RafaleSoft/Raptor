@@ -127,8 +127,8 @@ public:
 	//! @return true if the fragment shader has been deleted
 	bool glRemoveFragmentShader(void);
 
-    //!	Returns the vertex Program
-	//!	Allocate a new one if necessary
+    //!	Returns the vertex Program, allocate a new one if necessary.
+	//!	EMPTY_PROGRAM is a special name for a void program (i.e. doing nothing)
 	CVertexProgram * const glGetVertexProgram(const std::string& name = "");
 
 	//!	Returns true if Program has a Vertex Program already

@@ -62,7 +62,7 @@ private:
 	virtual void glRenderFilterOutput(void);
 
 	//!	Build all intermediate and final shaders
-	bool glBuildShaders(unsigned int width,unsigned int height);
+	bool glBuildShaders(void);
 
 	//! HDR rendering attributes
     unsigned int    nLevels;

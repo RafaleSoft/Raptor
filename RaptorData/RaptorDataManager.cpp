@@ -404,6 +404,11 @@ const char * const *CRaptorDataManager::GetShaderList(void)
 	loadShader("shadowmap_pcf_16x.fp", "SHADOWMAP_TEX_SHADER_PCF_16X", shaders, ns);
     
 	//BLENDERS 
+	loadShader("blender_8x.gs", "BLENDER_8X_GEO_PROGRAM", shaders, ns);
+	loadShader("blenderX_8x.ps", "BLENDERX_8X_TEX_PROGRAM", shaders, ns);
+	loadShader("blenderY_8x.ps", "BLENDERY_8X_TEX_PROGRAM", shaders, ns);
+
+	//BLENDERS
 	loadShader("blender_8x.fp", "BLENDER_8X", shaders, ns);
 	loadShader("blenderX_8x.vp", "BLENDER_8X_XOFFSETS", shaders, ns);
 	loadShader("blenderY_8x.vp", "BLENDER_8X_YOFFSETS", shaders, ns);

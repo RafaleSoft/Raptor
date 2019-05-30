@@ -22,6 +22,14 @@
 #if !defined(AFX_VERTEXSHADER_H__F2D3BBC6_87A1_4695_B667_2B8C3C4CF022__INCLUDED_)
 	#include "GLHierarchy/VertexShader.h"
 #endif
+#if !defined(AFX_VERTEXPROGRAM_H__204F7213_B40B_4B6A_9BCA_828409871B68__INCLUDED_)
+	#include "GLHierarchy/VertexProgram.h"
+#endif
+#if defined(GL_ARB_geometry_shader4)
+	#if !defined(AFX_GEOMETRYPROGRAM_H__1981EA98_8F3C_4881_9429_A9ACA5B285D3__INCLUDED_)
+		#include "GLHierarchy/GeometryProgram.h"
+	#endif
+#endif
 #if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
   #include "System/RaptorGLExtensions.h"
 #endif
@@ -38,47 +46,122 @@
     #include "HDRFilter.h"
 #endif
 
+//#undef GL_ARB_geometry_shader4
 
-#if defined(GL_ARB_vertex_shader)
+#if defined(GL_ARB_geometry_shader4)
+	static const std::string hdr_gp =
+	"#version 460\n\
+	\n\
+	//	Expect the geometry shader extension to be available, warn if not. \n\
+	#extension GL_ARB_geometry_shader4 : enable \n\
+	\n\
+	layout(points) in; \n\
+	layout(triangle_strip, max_vertices=4) out; \n\
+	layout(location = 1) out vec4 g_TexCoord; \n\
+	\n\
+	void main() \n\
+	{\n\
+		gl_Position = vec4(-1.0, -1.0, 0.0, 1.0); \n\
+		g_TexCoord = vec4(0.0,0.0,0.0,0.0); \n\
+		EmitVertex(); \n\
+		\n\
+		gl_Position = vec4(1.0, -1.0, 0.0, 1.0); \n\
+		g_TexCoord = vec4(1.0,0.0,0.0,0.0); \n\
+		EmitVertex(); \n\
+		\n\
+		gl_Position = vec4(-1.0, 1.0, 0.0, 1.0); \n\
+		g_TexCoord = vec4(0.0, 1.0, 0.0, 0.0); \n\
+		EmitVertex(); \n\
+		\n\
+		gl_Position = vec4(1.0, 1.0, 0.0, 1.0); \n\
+		g_TexCoord = vec4(1.0, 1.0, 0.0, 0.0); \n\
+		EmitVertex(); \n\
+		\n\
+		EndPrimitive(); \n\
+	}";
+
+	//  Compute luminance with bilinear components, averaging
+	//  the 4 surrouding of the texel's center.
+	static const string treshhold2_ps =
+	"#version 460				\n\
+	uniform sampler2D color;	\n\
+	uniform vec4 offset;		\n\
+	uniform vec4 treshhold;		\n\
+	\n\
+	const vec4 luminance = vec4(0.299, 0.587, 0.114, 0.0);\n\
+	\n\
+	layout(location = 1) in vec4 g_TexCoord; \n\
+	layout(location = 0) out vec4 o_Color;	\n\
+	\n\
+	void main(void)			\n\
+	{						\n\
+		vec4 L = vec4(0.0, 0.0, 0.0, 0.0); \n\
+		\n\
+		vec4 c1 = texture(color,g_TexCoord.xy - offset.xy); \n\
+		L.x = dot(c1,luminance); \n\
+		\n\
+		vec4 c2 = texture(color,g_TexCoord.xy + offset.zy); \n\
+		L.y = dot(c2,luminance); \n\
+		\n\
+		vec4 c3 = texture(color,g_TexCoord.xy - offset.zy); \n\
+		L.z = dot(c3,luminance); \n\
+		\n\
+		vec4 c4 = texture(color,g_TexCoord.xy + offset.xy); \n\
+		L.w = dot(c4,luminance); \n\
+		\n\
+		L = max(vec4(0.0,0.0,0.0,0.0), L - treshhold.yyyy); \n\
+		vec4 c = c1 * L.xxxx; \n\
+		c = c + c2 * L.yyyy; \n\
+		c = c + c3 * L.zzzz; \n\
+		o_Color = c + c4 * L.wwww; \n\
+		o_Color.w = 1.0; \n\
+	}";
+
 	//!	Tone mapping shader
 	static const string composer_ps =
-	"#version 120				\n\
+	"#version 460				\n\
 	uniform sampler2D color;	\n\
 	uniform sampler2D blur;		\n\
 	uniform sampler2D lwhite;	\n\
 	\n\
+	layout(location = 1) in vec4 g_TexCoord; \n\
+	layout(location = 0) out vec4 o_Color;	\n\
+	\n\
 	const vec4 luminance = vec4(0.299, 0.587, 0.114, 0.0);\n\
 	\n\
 	void main(void)			\n\
 	{						\n\
-		vec4 c = texture2D(color,gl_TexCoord[0].xy); \n\
-		vec4 b = texture2D(blur,gl_TexCoord[0].xy); \n\
-		vec4 l = texture2D(lwhite,gl_TexCoord[0].xy); \n\
-		gl_FragColor = c*l + b; \n\
-		gl_FragColor.w = 1.0; \n\
+		vec4 c = texture(color,g_TexCoord.xy); \n\
+		vec4 b = texture(blur,g_TexCoord.xy); \n\
+		vec4 l = texture(lwhite,g_TexCoord.xy); \n\
+		o_Color = c*l + b; \n\
+		o_Color.w = 1.0; \n\
 	}";
-	
-	static const string luminanceMax_ps = 
-	"#version 120				\n\
+
+	static const string luminanceMax_ps =
+	"#version 460				\n\
 	uniform sampler2D color;	\n\
 	uniform vec4 offset;		\n\
 	\n\
+	layout(location = 1) in vec4 g_TexCoord; \n\
+	layout(location = 0) out vec4 o_Color;	\n\
+	\n\
 	const vec4 luminance = vec4(0.299, 0.587, 0.114, 0.0);\n\
 	\n\
 	void main(void)			\n\
 	{						\n\
-		vec4 c = texture2D(color,gl_TexCoord[0].xy - offset.xy); \n\
+		vec4 c = texture(color,g_TexCoord.xy - offset.xy); \n\
 		float LMax = dot(c,luminance); \n\
-	\n\
-		c = texture2D(color,gl_TexCoord[0].xy + offset.zy); \n\
+		\n\
+		c = texture(color,g_TexCoord.xy + offset.zy); \n\
 		LMax = max(LMax,dot(c,luminance)); \n\
-	\n\
-		c = texture2D(color,gl_TexCoord[0].xy - offset.zy); \n\
+		\n\
+		c = texture(color,g_TexCoord.xy - offset.zy); \n\
 		LMax = max(LMax,dot(c,luminance)); \n\
-	\n\
-		c = texture2D(color,gl_TexCoord[0].xy + offset.xy); \n\
+		\n\
+		c = texture(color,g_TexCoord.xy + offset.xy); \n\
 		LMax = max(LMax,dot(c,luminance)); \n\
-		gl_FragColor = vec4(LMax,LMax,LMax,0.0); \n\
+		o_Color = vec4(LMax,LMax,LMax,0.0); \n\
 	}";
 
 	//	Luminance max is scaled to 1.0 to avoid darkening a scene
@@ -86,194 +169,37 @@
 	//	The final luminance is applied to darken the whole scene
 	//	for the tone mapping in order to have the brightest parts
 	//	at 1.0. (L>1 => x 1/L is in range [0..1])
-	static const string lastLuminanceMax_ps = 
-	"#version 120				\n\
+	static const string lastLuminanceMax_ps =
+	"#version 460				\n\
 	uniform sampler2D color;	\n\
 	uniform vec4 offset;		\n\
 	\n\
 	const vec4 luminance = vec4(0.299, 0.587, 0.114, 0.0);\n\
 	\n\
+	layout(location = 1) in vec4 g_TexCoord; \n\
+	layout(location = 0) out vec4 o_Color;	\n\
+	\n\
 	void main(void)			\n\
 	{						\n\
-		vec4 c = texture2D(color,gl_TexCoord[0].xy - offset.xy); \n\
+		vec4 c = texture(color,g_TexCoord.xy - offset.xy); \n\
 		float LMax = dot(c,luminance); \n\
-	\n\
-		c = texture2D(color,gl_TexCoord[0].xy + offset.zy); \n\
+		\n\
+		c = texture(color,g_TexCoord.xy + offset.zy); \n\
 		LMax = max(LMax,dot(c,luminance)); \n\
-	\n\
-		c = texture2D(color,gl_TexCoord[0].xy - offset.zy); \n\
+		\n\
+		c = texture(color,g_TexCoord.xy - offset.zy); \n\
 		LMax = max(LMax,dot(c,luminance)); \n\
-	\n\
-		c = texture2D(color,gl_TexCoord[0].xy + offset.xy); \n\
+		\n\
+		c = texture(color,g_TexCoord.xy + offset.xy); \n\
 		LMax = max(LMax,dot(c,luminance)); \n\
 		LMax = 1.0 / max(1.0,LMax); \n\
-		gl_FragColor = vec4(LMax,LMax,LMax,1.0); \n\
+		o_Color = vec4(LMax,LMax,LMax,1.0); \n\
 	}";
 
-	//  Compute luminance with bilinear components, averaging
-	//  the 4 surrouding of the texel's center.
-	static const string treshhold2_ps = 
-	"#version 120				\n\
-	uniform sampler2D color;	\n\
-	uniform vec4 offset;		\n\
-	uniform vec4 treshhold;		\n\
-	\n\
-	const vec4 luminance = vec4(0.299, 0.587, 0.114, 0.0);\n\
-	\n\
-	void main(void)			\n\
-	{						\n\
-		vec4 L = vec4(0.0, 0.0, 0.0, 0.0); \n\
-		\n\
-		vec4 c1 = texture2D(color,gl_TexCoord[0].xy - offset.xy); \n\
-		L.x = dot(c1,luminance); \n\
-		\n\
-		vec4 c2 = texture2D(color,gl_TexCoord[0].xy + offset.zy); \n\
-		L.y = dot(c2,luminance); \n\
-		\n\
-		vec4 c3 = texture2D(color,gl_TexCoord[0].xy - offset.zy); \n\
-		L.z = dot(c3,luminance); \n\
-		\n\
-		vec4 c4 = texture2D(color,gl_TexCoord[0].xy + offset.xy); \n\
-		L.w = dot(c4,luminance); \n\
-		\n\
-		L = max(vec4(0.0,0.0,0.0,0.0), L - treshhold.yyyy); \n\
-		vec4 c = c1 * L.xxxx; \n\
-		c = c + c2 * L.yyyy; \n\
-		c = c + c3 * L.zzzz; \n\
-		gl_FragColor = c + c4 * L.wwww; \n\
-		gl_FragColor.w = 1.0; \n\
-	}" ;
+#elif defined(GL_ARB_vertex_shader)
+	#include "HDR.programs"
 #elif defined(GL_ARB_vertex_program)
-	static const string composer_fp =
-	"!!ARBfp1.0 \
-	ATTRIB iTex = fragment.texcoord[0]; \
-	PARAM one = { 1.0 , 1.0, 1.0, 1.0 }; \
-	PARAM luminance = { 0.299, 0.587, 0.114, 0.0 };\
-	TEMP color; \
-	TEMP blur; \
-	TEMP lwhite; \
-	TEMP l; \
-	TEMP factor; \
-	OUTPUT finalColor = result.color; \
-	TEX color, iTex, texture[0], 2D ; \
-	TEX blur, iTex, texture[1], 2D ; \
-	TEX lwhite, iTex, texture[2], 2D; \
-	DP3 l, color, luminance; \
-	MUL l, l, lwhite; \
-	MAD finalColor, color, lwhite, blur; \
-	MOV finalColor.w, one.w; \
-	END" ;
-
-	static const string luminanceMax_fp = 
-	"!!ARBfp1.0 \
-	ATTRIB iTex = fragment.texcoord[0]; \
-	PARAM offset = program.local[0];\
-	PARAM luminance = { 0.299, 0.587, 0.114, 0.0 };\
-	TEMP L;\
-	TEMP LMax; \
-	TEMP tCoord; \
-	TEMP color; \
-	OUTPUT finalColor = result.color; \
-	\
-	SUB tCoord, iTex, offset.xyww; \
-	TEX color, tCoord , texture[0] , 2D ; \
-	DP3 LMax, color, luminance; \
-	\
-	ADD tCoord, iTex, offset.zyww; \
-	TEX color, tCoord , texture[0] , 2D ; \
-	DP3 L, color, luminance; \
-	MAX LMax, L, LMax; \
-	\
-	SUB tCoord, iTex, offset.zyww; \
-	TEX color, tCoord , texture[0] , 2D ; \
-	DP3 L, color, luminance; \
-	MAX LMax, L, LMax; \
-	\
-	ADD tCoord, iTex, offset.xyww; \
-	TEX color, tCoord , texture[0] , 2D ; \
-	DP3 L, color, luminance; \
-	MAX finalColor, L, LMax; \
-	\
-	MOV finalColor.w, luminance.w ;\
-	END" ;
-	
-	static const string lastLuminanceMax_fp = 
-	"!!ARBfp1.0 \
-	ATTRIB iTex = fragment.texcoord[0]; \
-	PARAM offset = program.local[0];\
-	PARAM luminance = { 0.299, 0.587, 0.114, 1.0 };\
-	TEMP L;\
-	TEMP LMax; \
-	TEMP tCoord; \
-	TEMP color; \
-	OUTPUT finalColor = result.color; \
-	\
-	SUB tCoord, iTex, offset.xyww; \
-	TEX color, tCoord , texture[0] , 2D ; \
-	DP3 LMax, color, luminance; \
-	\
-	ADD tCoord, iTex, offset.zyww; \
-	TEX color, tCoord , texture[0] , 2D ; \
-	DP3 L, color, luminance; \
-	MAX LMax, L, LMax; \
-	\
-	SUB tCoord, iTex, offset.zyww; \
-	TEX color, tCoord , texture[0] , 2D ; \
-	DP3 L, color, luminance; \
-	MAX LMax, L, LMax; \
-	\
-	ADD tCoord, iTex, offset.xyww; \
-	TEX color, tCoord , texture[0] , 2D ; \
-	DP3 L, color, luminance; \
-	MAX LMax, L, LMax; \
-	MAX LMax.x, LMax.x, luminance.w; \
-	RCP finalColor, LMax.x; \
-	\
-	MOV finalColor.w, luminance.w ;\
-	END" ;
-
-	//  Compute luminance with bilinear components, averaging
-	//  the 4 surrouding of the texel's center.
-	static const string treshhold2_fp = 
-	"!!ARBfp1.0 \
-	ATTRIB iTex = fragment.texcoord[0]; \
-	PARAM offset = program.local[0];\
-	PARAM treshhold = program.local[1];\
-	PARAM luminance = { 0.299, 0.587, 0.114, 0.0 };\
-	TEMP color1; \
-	TEMP color2; \
-	TEMP color3; \
-	TEMP color4; \
-	TEMP L;\
-	TEMP tCoord; \
-	TEMP color; \
-	OUTPUT finalColor = result.color; \
-	\
-	SUB tCoord, iTex, offset.xyww; \
-	TEX color1, tCoord , texture[0] , 2D ; \
-	DP3 L.x, color1, luminance; \
-	\
-	ADD tCoord, iTex, offset.zyww; \
-	TEX color2, tCoord , texture[0] , 2D ; \
-	DP3 L.y, color2, luminance; \
-	\
-	SUB tCoord, iTex, offset.zyww; \
-	TEX color3, tCoord , texture[0] , 2D ; \
-	DP3 L.z, color3, luminance; \
-	\
-	ADD tCoord, iTex, offset.xyww; \
-	TEX color4, tCoord , texture[0] , 2D ; \
-	DP3 L.w, color4, luminance; \
-	\
-	SUB L, L, treshhold.y; \
-	MAX L, L, luminance.w; \
-	MUL color, color1, L.x; \
-	MAD color, color2, L.y, color; \
-	MAD color, color3, L.z, color; \
-	MAD color, color4, L.w, color; \
-	MOV finalColor, color; \
-	MOV finalColor.w, treshhold.w ;\
-	END" ;
+	#include "HDR.shaders"
 #endif
 
 
@@ -358,27 +284,27 @@ void CHDRFilter::glRenderFilter()
 		maxLuminanceParams[0].copy(luminanceParams);
 
         if (i < 2)
-            glDrawBuffer();
+			glDrawBuffer();
         else if (i<nLevels-1)
         {
-#if defined(GL_ARB_vertex_shader)
+#if defined(GL_ARB_vertex_shader) || defined(GL_ARB_geometry_shader4)
 			m_maxLuminance->glGetFragmentProgram()->setProgramParameters(maxLuminanceParams);
 #elif defined(GL_ARB_vertex_program)
             m_maxLuminance->glGetFragmentShader()->setProgramParameters(maxLuminanceParams);
 #endif
             m_maxLuminance->glRender();
-            glDrawBuffer();
+			glDrawFilter();
             m_maxLuminance->glStop();
         }
         else
         {
-#if defined(GL_ARB_vertex_shader)
+#if defined(GL_ARB_vertex_shader) || defined(GL_ARB_geometry_shader4)
 			m_lastMaxLuminance->glGetFragmentProgram()->setProgramParameters(maxLuminanceParams);
 #elif defined(GL_ARB_vertex_program)
             m_lastMaxLuminance->glGetFragmentShader()->setProgramParameters(maxLuminanceParams);
 #endif
             m_lastMaxLuminance->glRender();
-            glDrawBuffer();
+			glDrawFilter();
             m_lastMaxLuminance->glStop();
         }
 
@@ -392,13 +318,13 @@ void CHDRFilter::glRenderFilter()
 	m_pDownHighFreqs->glvkBindDisplay(nodevice);
 	m_pDownSizedBuffer[1]->glvkRender();
 	thresholdParams[1].copy(thresholdParam);
-#if defined(GL_ARB_vertex_shader)
+#if defined(GL_ARB_vertex_shader) || defined(GL_ARB_geometry_shader4)
 	m_pTreshholdFreqs->glGetFragmentProgram()->setProgramParameters(thresholdParams);
 #elif defined(GL_ARB_vertex_program)
     m_pTreshholdFreqs->glGetFragmentShader()->setProgramParameters(threshholdParams);
 #endif
     m_pTreshholdFreqs->glRender();
-    glDrawBuffer();
+	glDrawFilter();
     m_pTreshholdFreqs->glStop();
 	m_pDownHighFreqs->glvkUnBindDisplay();
   
@@ -411,7 +337,7 @@ void CHDRFilter::glRenderFilter()
     m_pBlurXOffsets->glRender();
     m_pBlur->glRender();
 
-    glDrawBuffer();
+	glDrawBuffer();
 
     m_pBlurXOffsets->glStop();
     m_pBlur->glStop();
@@ -423,7 +349,7 @@ void CHDRFilter::glRenderFilter()
     m_pBlurYOffsets->glRender();
     m_pBlur->glRender();
 
-    glDrawBuffer();
+	glDrawBuffer();
 
     m_pBlurYOffsets->glStop();
     m_pBlur->glStop();
@@ -473,21 +399,19 @@ void CHDRFilter::glRenderFilterOutput()
     glEnable(GL_TEXTURE_2D);
 	m_pDownBlurYBuffer->glvkRender();
 
-/*
 	glActiveTextureARB(GL_TEXTURE0_ARB);
+/*
 	glEnable(GL_TEXTURE_2D);
 	//m_pDownSizedBuffer[nLevels-1]->glRender();
     m_pDownBlurYBuffer->glRender();
 	//m_pDownHFBuffer->glRender();
 	glDrawBuffer();
 */
-
-    glActiveTextureARB(GL_TEXTURE0_ARB);
 	getColorInput()->glvkRender();
 
     // compose blur + hdr
     m_pComposite->glRender();
-    glDrawBuffer();
+	glDrawFilter();
     m_pComposite->glStop();
 
     glActiveTextureARB(GL_TEXTURE2_ARB);
@@ -544,6 +468,7 @@ bool CHDRFilter::glInitFilter(void)
 	commonRP->setCullFace(IRenderingProperties::DISABLE);
 	commonRP->setDepthTest(IRenderingProperties::DISABLE);
 	commonRP->setLighting(IRenderingProperties::DISABLE);
+	//commonRP->setFloatClamping(IRenderingProperties::DISABLE);
 	commonRP->clear(CGL_NULL);
 
     for (unsigned int i=0; i<nLevels; i++)
@@ -656,7 +581,16 @@ bool CHDRFilter::glInitFilter(void)
     //
     //  Create shaders
     //
-	res = res && glBuildShaders(filter_cs_width,filter_cs_height);
+	blurOffsets.addParameter("offset", GL_COORD_VERTEX(	1.0f / (filter_cs_width * BLUR_BUFFER_SIZE_FACTOR),
+														1.0f / (filter_cs_height * BLUR_BUFFER_SIZE_FACTOR),
+														0.0f, 1.0f));
+	thresholdParams.addParameter("offset", GL_COORD_VERTEX(	1.0f / (filter_cs_width * 2.0f * BLUR_BUFFER_SIZE_FACTOR),
+															1.0f / (filter_cs_height * 2.0f * BLUR_BUFFER_SIZE_FACTOR),
+															-1.0f / (filter_cs_width * 2.0f * BLUR_BUFFER_SIZE_FACTOR),
+															0.0f));
+	thresholdParams.addParameter("treshhold", thresholdParam.p);
+
+	res = res && glBuildShaders();
 
     rda.width = filter_cs_width;
     rda.height = filter_cs_height;
@@ -666,47 +600,41 @@ bool CHDRFilter::glInitFilter(void)
     return res;
 }
 
-bool CHDRFilter::glBuildShaders(unsigned int width,unsigned int height)
+
+#if defined(GL_ARB_geometry_shader4)
+bool CHDRFilter::glBuildShaders(void)
 {
-	bool res = false;
-
-	blurOffsets.addParameter("",GL_COORD_VERTEX(1.0f / (width * BLUR_BUFFER_SIZE_FACTOR), 
-												1.0f / (height * BLUR_BUFFER_SIZE_FACTOR),
-												0.0f, 1.0f));
-
 	CShader *shaderLib = new CShader();
-    m_pBlur = shaderLib->glGetFragmentShader("BLENDER_8X");
-    m_pBlurXOffsets = shaderLib->glGetVertexShader("BLENDER_8X_XOFFSETS");
-    shaderLib->releaseReference();
-    shaderLib = new CShader();
-    m_pBlurYOffsets = shaderLib->glGetVertexShader("BLENDER_8X_YOFFSETS");
-    shaderLib->releaseReference();
-
+	m_pBlur = shaderLib->glGetFragmentShader("BLENDER_8X");
+	m_pBlurXOffsets = shaderLib->glGetVertexShader("BLENDER_8X_XOFFSETS");
+	shaderLib->releaseReference();
+	shaderLib = new CShader();
+	m_pBlurYOffsets = shaderLib->glGetVertexShader("BLENDER_8X_YOFFSETS");
+	shaderLib->releaseReference();
 
 	m_pTreshholdFreqs = new CShader("HDR_TRESHOLDS");
-	thresholdParams.addParameter("offset",	GL_COORD_VERTEX(1.0f / (width * 2.0f * BLUR_BUFFER_SIZE_FACTOR),
-											1.0f / (height * 2.0f * BLUR_BUFFER_SIZE_FACTOR),
-											-1.0f / (width * 2.0f * BLUR_BUFFER_SIZE_FACTOR),
-											0.0f));
-	thresholdParams.addParameter("treshhold", thresholdParam.p);
-#if defined(GL_ARB_vertex_shader)
+	CVertexProgram *vp = m_pTreshholdFreqs->glGetVertexProgram("EMPTY_PROGRAM");
+	CGeometryProgram *gp = m_pTreshholdFreqs->glGetGeometryProgram("hdr_gp");
+	bool res = gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
+	res = res & gp->glLoadProgram(hdr_gp);
+
 	CFragmentProgram *fp = m_pTreshholdFreqs->glGetFragmentProgram("treshhold2_fp");
-    res = fp->glLoadProgram(treshhold2_ps);
+	res = fp->glLoadProgram(treshhold2_ps);
 	if (res)
 	{
 		thresholdParams.addParameter("color",CTextureUnitSetup::IMAGE_UNIT_0);
 		fp->setProgramParameters(thresholdParams);
 	}
 	res = res && m_pTreshholdFreqs->glCompileShader();
-#elif defined(GL_ARB_vertex_program)
-	CFragmentShader *fs = m_pTreshholdFreqs->glGetFragmentShader("treshhold2_fs");
-    res = res && fs->glLoadProgram(treshhold2_fp);
-#endif
 
 	m_pComposite = new CShader("HDR_COMPOSITE");
-#if defined(GL_ARB_vertex_shader)
+	vp = m_pComposite->glGetVertexProgram("EMPTY_PROGRAM");
+	gp = m_pComposite->glGetGeometryProgram("hdr_gp");
+	res = gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
+	res = res & gp->glLoadProgram(hdr_gp);
+
 	fp = m_pComposite->glGetFragmentProgram("composite_fp");
-    res = res && fp->glLoadProgram(composer_ps);
+	res = res && fp->glLoadProgram(composer_ps);
 	if (res)
 	{
 		CProgramParameters	fp_params;
@@ -716,14 +644,14 @@ bool CHDRFilter::glBuildShaders(unsigned int width,unsigned int height)
 		fp->setProgramParameters(fp_params);
 	}
 	res = res && m_pComposite->glCompileShader();
-#elif defined(GL_ARB_vertex_program)
-	CFragmentShader *fs = m_pComposite->glGetFragmentShader("composite_fs");
-    res = res && fs->glLoadProgram(composer_fp);
-#endif
 
 	m_maxLuminance = new CShader("HDR_MAXLUMINANCE");
 	maxLuminanceParams.addParameter("offset", luminanceParams.p);
-#if defined(GL_ARB_vertex_shader)
+	vp = m_maxLuminance->glGetVertexProgram("EMPTY_PROGRAM");
+	gp = m_maxLuminance->glGetGeometryProgram("hdr_gp");
+	res = gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
+	res = res & gp->glLoadProgram(hdr_gp);
+
 	fp = m_maxLuminance->glGetFragmentProgram("luminanceMax_fp");
 	res = res && fp->glLoadProgram(luminanceMax_ps);
 	if (res)
@@ -732,25 +660,117 @@ bool CHDRFilter::glBuildShaders(unsigned int width,unsigned int height)
 		fp->setProgramParameters(maxLuminanceParams);
 	}
 	res = res && m_maxLuminance->glCompileShader();
-#elif defined(GL_ARB_vertex_program)
-    fs = m_maxLuminance->glGetFragmentShader("luminanceMax_fs");
-    res = res && fs->glLoadProgram(luminanceMax_fp);
-#endif
 
 	m_lastMaxLuminance = new CShader("HDR_LASTMAXLUMINANCE");
-#if defined(GL_ARB_vertex_shader)
+	vp = m_lastMaxLuminance->glGetVertexProgram("EMPTY_PROGRAM");
+	gp = m_lastMaxLuminance->glGetGeometryProgram("hdr_gp");
+	res = gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
+	res = res & gp->glLoadProgram(hdr_gp);
+
 	fp = m_lastMaxLuminance->glGetFragmentProgram("lastluminanceMax_fp");
 	res = res && fp->glLoadProgram(lastLuminanceMax_ps);
 	if (res)
 		fp->setProgramParameters(maxLuminanceParams);
 	res = res && m_lastMaxLuminance->glCompileShader();
-#elif defined(GL_ARB_vertex_program)
-	fs = m_lastMaxLuminance->glGetFragmentShader("lastluminanceMax_fs");
-    res = res && fs->glLoadProgram(lastLuminanceMax_fp);
-#endif
 
 	return res;
 }
+
+#elif defined(GL_ARB_vertex_shader)
+
+	bool CHDRFilter::glBuildShaders()
+	{
+		CShader *shaderLib = new CShader();
+		m_pBlur = shaderLib->glGetFragmentShader("BLENDER_8X");
+		m_pBlurXOffsets = shaderLib->glGetVertexShader("BLENDER_8X_XOFFSETS");
+		shaderLib->releaseReference();
+		shaderLib = new CShader();
+		m_pBlurYOffsets = shaderLib->glGetVertexShader("BLENDER_8X_YOFFSETS");
+		shaderLib->releaseReference();
+
+		m_pTreshholdFreqs = new CShader("HDR_TRESHOLDS");
+		CFragmentProgram *fp = m_pTreshholdFreqs->glGetFragmentProgram("treshhold2_fp");
+		bool res = fp->glLoadProgram(treshhold2_ps);
+		if (res)
+		{
+			thresholdParams.addParameter("color",CTextureUnitSetup::IMAGE_UNIT_0);
+			fp->setProgramParameters(thresholdParams);
+		}
+		res = res && m_pTreshholdFreqs->glCompileShader();
+
+		m_pComposite = new CShader("HDR_COMPOSITE");
+		fp = m_pComposite->glGetFragmentProgram("composite_fp");
+		res = res && fp->glLoadProgram(composer_ps);
+		if (res)
+		{
+			CProgramParameters	fp_params;
+			fp_params.addParameter("color",CTextureUnitSetup::IMAGE_UNIT_0);
+			fp_params.addParameter("blur",CTextureUnitSetup::IMAGE_UNIT_1);
+			fp_params.addParameter("lwhite",CTextureUnitSetup::IMAGE_UNIT_2);
+			fp->setProgramParameters(fp_params);
+		}
+		res = res && m_pComposite->glCompileShader();
+
+		m_maxLuminance = new CShader("HDR_MAXLUMINANCE");
+		maxLuminanceParams.addParameter("offset", luminanceParams.p);
+		fp = m_maxLuminance->glGetFragmentProgram("luminanceMax_fp");
+		res = res && fp->glLoadProgram(luminanceMax_ps);
+		if (res)
+		{
+			maxLuminanceParams.addParameter("color",CTextureUnitSetup::IMAGE_UNIT_0);
+			fp->setProgramParameters(maxLuminanceParams);
+		}
+		res = res && m_maxLuminance->glCompileShader();
+
+		m_lastMaxLuminance = new CShader("HDR_LASTMAXLUMINANCE");
+		fp = m_lastMaxLuminance->glGetFragmentProgram("lastluminanceMax_fp");
+		res = res && fp->glLoadProgram(lastLuminanceMax_ps);
+		if (res)
+			fp->setProgramParameters(maxLuminanceParams);
+		res = res && m_lastMaxLuminance->glCompileShader();
+
+		return res;
+	}
+
+#elif defined(GL_ARB_vertex_program)
+
+	bool CHDRFilter::glBuildShaders()
+	{
+		CShader *shaderLib = new CShader();
+		m_pBlur = shaderLib->glGetFragmentShader("BLENDER_8X");
+		m_pBlurXOffsets = shaderLib->glGetVertexShader("BLENDER_8X_XOFFSETS");
+		shaderLib->releaseReference();
+		shaderLib = new CShader();
+		m_pBlurYOffsets = shaderLib->glGetVertexShader("BLENDER_8X_YOFFSETS");
+		shaderLib->releaseReference();
+
+		m_pTreshholdFreqs = new CShader("HDR_TRESHOLDS");
+		CFragmentShader *fs = m_pTreshholdFreqs->glGetFragmentShader("treshhold2_fs");
+		bool res = res && fs->glLoadProgram(treshhold2_fp);
+
+		m_pComposite = new CShader("HDR_COMPOSITE");
+		CFragmentShader *fs = m_pComposite->glGetFragmentShader("composite_fs");
+		res = res && fs->glLoadProgram(composer_fp);
+
+		m_maxLuminance = new CShader("HDR_MAXLUMINANCE");
+		maxLuminanceParams.addParameter("offset", luminanceParams.p);
+		fs = m_maxLuminance->glGetFragmentShader("luminanceMax_fs");
+		res = res && fs->glLoadProgram(luminanceMax_fp);
+
+		m_lastMaxLuminance = new CShader("HDR_LASTMAXLUMINANCE");
+		fs = m_lastMaxLuminance->glGetFragmentShader("lastluminanceMax_fs");
+		res = res && fs->glLoadProgram(lastLuminanceMax_fp);
+
+		return res;
+	}
+
+#else
+
+	bool CHDRFilter::glBuildShaders()
+	{ 
+		return false; 
+	}
+#endif
 
 void CHDRFilter::glDestroyFilter(void)
 {
@@ -784,55 +804,36 @@ void CHDRFilter::glDestroyFilter(void)
     }
 
     if (m_pDownBlurXDisplay != NULL)
-	{
         Raptor::glDestroyDisplay(m_pDownBlurXDisplay);
-		m_pDownBlurXDisplay = NULL;
-	}
     if (m_pDownBlurYDisplay != NULL)
-	{
         Raptor::glDestroyDisplay(m_pDownBlurYDisplay);
-		m_pDownBlurYDisplay = NULL;
-	}
-    if (m_pDownBlurXBuffer != NULL)
-	{
-        m_pDownBlurXBuffer->releaseReference();
-		m_pDownBlurXBuffer = NULL;
-	}
-    if (m_pDownBlurYBuffer != NULL)
-	{
-        m_pDownBlurYBuffer->releaseReference();
-		m_pDownBlurYBuffer = NULL;
-	}
-    if (m_pDownHighFreqs != NULL)
-	{
-        Raptor::glDestroyDisplay(m_pDownHighFreqs);
-		m_pDownHighFreqs = NULL;
-	}
-    if (m_pDownHFBuffer != NULL)
-	{
-        m_pDownHFBuffer->releaseReference();
-		m_pDownHFBuffer = NULL;
-	}
-    if (m_pComposite != NULL)
-	{
-        m_pComposite->releaseReference();
-		m_pComposite = NULL;
-	}
-    if (m_pTreshholdFreqs != NULL)
-	{
-        m_pTreshholdFreqs->releaseReference();
-		m_pTreshholdFreqs = NULL;
-	}
-    if (m_maxLuminance != NULL)
-	{
-        m_maxLuminance->releaseReference();
-		m_maxLuminance = NULL;
-	}
-    if (m_lastMaxLuminance != NULL)
-	{
-        m_lastMaxLuminance->releaseReference();
-		m_lastMaxLuminance = NULL;
-	}
+	if (m_pDownHighFreqs != NULL)
+		Raptor::glDestroyDisplay(m_pDownHighFreqs);
+	if (m_pDownBlurXBuffer != NULL)
+		m_pDownBlurXBuffer->releaseReference();
+	if (m_pDownBlurYBuffer != NULL)
+		m_pDownBlurYBuffer->releaseReference();
+	if (m_pDownHFBuffer != NULL)
+		m_pDownHFBuffer->releaseReference();
+	if (m_pComposite != NULL)
+		m_pComposite->releaseReference();
+	if (m_pTreshholdFreqs != NULL)
+		m_pTreshholdFreqs->releaseReference();
+	if (m_maxLuminance != NULL)
+		m_maxLuminance->releaseReference();
+	if (m_lastMaxLuminance != NULL)
+		m_lastMaxLuminance->releaseReference();
+
+	m_pDownBlurYDisplay = NULL;
+	m_pDownBlurXDisplay = NULL;
+	m_pDownBlurXBuffer = NULL;
+	m_pDownBlurYBuffer = NULL;
+	m_pDownHighFreqs = NULL;
+	m_pDownHFBuffer = NULL;
+    m_pComposite = NULL;
+	m_pTreshholdFreqs = NULL;
+	m_maxLuminance = NULL;
+	m_lastMaxLuminance = NULL;
 }
 
 //

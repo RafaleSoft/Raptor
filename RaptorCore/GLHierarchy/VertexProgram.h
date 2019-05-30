@@ -55,7 +55,7 @@ public:
 	//!	Clone this shader.
 	virtual CVertexProgram* glClone();
 
-    //! Loads an OpenGL 2.0 vertex shader program.
+    //! Loads an OpenGL vertex shader program.
 	virtual bool glLoadProgram(const std::string &program);
 
     //!	Implements CShaderProgram.

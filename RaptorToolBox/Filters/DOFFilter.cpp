@@ -54,10 +54,6 @@
 
 
 #if defined(GL_ARB_geometry_shader4)
-static const string dof_vp =
-	"#version 460 \n\
-	void main(void)	{	}";
-
 static const std::string dof_gp =
 	"#version 460\n\
 	\n\
@@ -506,10 +502,9 @@ void CDOFFilter::glInitShaders(void)
 
 	// Create & load shaders to perform a 2 pass blur using depth value.
 #if defined(GL_ARB_geometry_shader4)
-	CVertexProgram *vp = DOFShader->glGetVertexProgram("dof_vp");
-	bool res = vp->glLoadProgram(dof_vp);
+	CVertexProgram *vp = DOFShader->glGetVertexProgram("EMPTY_PROGRAM");
 	CGeometryProgram *gp = DOFShader->glGetGeometryProgram("dof_gp");
-	res = gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
+	bool res = gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
 	res = res & gp->glLoadProgram(dof_gp);
 	CFragmentProgram *fp = DOFShader->glGetFragmentProgram("dof_fp");
 	res = res && fp->glLoadProgram(dof_fp);

@@ -51,17 +51,11 @@
 
 
 #if defined(GL_ARB_geometry_shader4)
-	static const string colorcontrol_vp =
-	"#version 460 \n\
-	void main(void)	{	}";
-
 	static const std::string colorcontrol_gp =
 	"#version 460\n\
 	\n\
 	//	Expect the geometry shader extension to be available, warn if not. \n\
 	#extension GL_ARB_geometry_shader4 : enable \n\
-	\n\
-	uniform vec4 center;				\n\
 	\n\
 	layout(points) in; \n\
 	layout(triangle_strip, max_vertices=4) out; \n\
@@ -70,19 +64,19 @@
 	void main() \n\
 	{\n\
 		gl_Position = vec4(-1.0, -1.0, 0.0, 1.0); \n\
-		g_TexCoord = center + vec4(0.0,0.0,0.0,0.0); \n\
+		g_TexCoord = vec4(0.0,0.0,0.0,0.0); \n\
 		EmitVertex(); \n\
 		\n\
 		gl_Position = vec4(1.0, -1.0, 0.0, 1.0); \n\
-		g_TexCoord = center + vec4(1.0,0.0,0.0,0.0); \n\
+		g_TexCoord = vec4(1.0,0.0,0.0,0.0); \n\
 		EmitVertex(); \n\
 		\n\
 		gl_Position = vec4(-1.0, 1.0, 0.0, 1.0); \n\
-		g_TexCoord = center + vec4(0.0, 1.0, 0.0, 0.0); \n\
+		g_TexCoord = vec4(0.0, 1.0, 0.0, 0.0); \n\
 		EmitVertex(); \n\
 		\n\
 		gl_Position = vec4(1.0, 1.0, 0.0, 1.0); \n\
-		g_TexCoord = center + vec4(1.0, 1.0, 0.0, 0.0); \n\
+		g_TexCoord = vec4(1.0, 1.0, 0.0, 0.0); \n\
 		EmitVertex(); \n\
 		\n\
 		EndPrimitive(); \n\
@@ -233,8 +227,7 @@ bool CColorControlFilter::glInitFilter(void)
 
 	bool res = false;
 #if defined(GL_ARB_geometry_shader4)
-	CVertexProgram *vp = BWShader->glGetVertexProgram("bw_vp");
-	res = vp->glLoadProgram(colorcontrol_vp);
+	CVertexProgram *vp = BWShader->glGetVertexProgram("EMPTY_PROGRAM");
 	CGeometryProgram *gp = BWShader->glGetGeometryProgram("bw_gp");
 	res = gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
 	res = res & gp->glLoadProgram(colorcontrol_gp);

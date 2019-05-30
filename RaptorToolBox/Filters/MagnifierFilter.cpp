@@ -63,10 +63,6 @@ RAPTOR_NAMESPACE
 static const int KERNEL_SIZE = 256;
 
 #if defined(GL_ARB_geometry_shader4)
-	static const string kernel_vs2 =
-	"#version 460 \n\
-	void main(void)	{	}";
-
 	static const std::string gp_src =
 	"#version 460\n\
 	\n\
@@ -423,16 +419,15 @@ bool CMagnifierFilter::glInitFilter(void)
 	m_pYKernelShader = new CShader("YKERNEL_SHADER");
 
 #if defined(GL_ARB_geometry_shader4)
-	CVertexProgram *vp = m_pXKernelShader->glGetVertexProgram("magnifier_vp2");
-	bool res = vp->glLoadProgram(kernel_vs2);
+	CVertexProgram *vp = m_pXKernelShader->glGetVertexProgram("EMPTY_PROGRAM");
 	CGeometryProgram *gp = m_pXKernelShader->glGetGeometryProgram("magnifier_gp2");
-	res = gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
+	bool res = gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
 	res = res & gp->glLoadProgram(gp_src);
 	CFragmentProgram *ps = m_pXKernelShader->glGetFragmentProgram("xk_ps2");
 	res = res && ps->glLoadProgram(xk_ps2);
 	res = res && m_pXKernelShader->glCompileShader();
 
-	vp = m_pYKernelShader->glGetVertexProgram("magnifier_vp2");
+	vp = m_pYKernelShader->glGetVertexProgram("EMPTY_PROGRAM");
 	gp = m_pYKernelShader->glGetGeometryProgram("magnifier_gp2");
 	ps = m_pYKernelShader->glGetFragmentProgram("yk_ps2");
 	res = res && ps->glLoadProgram(yk_ps2);

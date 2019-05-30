@@ -28,6 +28,11 @@
 #if !defined(AFX_FRAGMENTPROGRAM_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
     #include "GLHierarchy/FragmentProgram.h"
 #endif
+#if defined(GL_ARB_geometry_shader4)
+	#if !defined(AFX_GEOMETRYPROGRAM_H__1981EA98_8F3C_4881_9429_A9ACA5B285D3__INCLUDED_)
+		#include "GLHierarchy/GeometryProgram.h"
+	#endif
+#endif
 #if !defined(AFX_SHADER_H__4D405EC2_7151_465D_86B6_1CA99B906777__INCLUDED_)
 	#include "GLHierarchy/Shader.h"
 #endif
@@ -151,7 +156,24 @@ bool CShaderLibrary::glAddToLibrary(const char * const *shader_sources)
 			{
 				program = new CFragmentProgram(fs_name);
 			}
-
+#if defined(GL_ARB_geometry_shader4)
+			else if (NULL != strstr(fs, "EndPrimitive"))
+			{
+				program = new CGeometryProgram(fs_name);
+			}
+#endif
+			else if (NULL != strstr(fs_name, ".ps"))
+			{
+				program = new CFragmentProgram(fs_name);
+			}
+			else
+			{
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+				Raptor::GetErrorManager()->generateRaptorError(Global::CShaderClassID::GetClassId(),
+															   CRaptorErrorManager::RAPTOR_WARNING,
+															   "Raptor ShaderLibrary cannot import unknown shader type");
+#endif
+			}
 			//! Errors are genereted in debug mode in LoadProgram.
 			//! No extra check is needed here.
 			if (program != NULL)
@@ -232,6 +254,12 @@ bool CShaderLibrary::glInitFactory(void)
 
 		CAOComputeShader *pAOComputeShader = new CAOComputeShader();
 		pAOComputeShader->glInit();
+
+		static const string empty_vp =
+		"#version 460 \n\
+		void main(void)	{	}";
+		CVertexProgram *vp = new CVertexProgram("EMPTY_PROGRAM");
+		vp->glLoadProgram(empty_vp);
 	}
 
 	m_pNullShader = new CShader(s_nullShaderName);

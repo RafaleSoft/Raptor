@@ -472,6 +472,8 @@ copy OpenEXRLib\bin\vc9\zdll.dll "%RAPTOR_ROOT%\Redist\bin\zlib1.dll"
     <None Include="..\..\RaptorToolBox\Filters\DOF.shaders">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">true</ExcludedFromBuild>
     </None>
+    <None Include="..\..\RaptorToolBox\Filters\HDR.programs" />
+    <None Include="..\..\RaptorToolBox\Filters\HDR.shaders" />
     <None Include="..\..\RaptorToolBox\Filters\MagnifierFilter.programs">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">true</ExcludedFromBuild>
     </None>

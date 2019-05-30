@@ -37,8 +37,7 @@ public:
 
 	//! Initialise default factory shaders.
 	//! Depends on Raptor versions.
-	//!	Returns true if library is initialized, false
-	//!	if failed or already initialized.
+	//!	Returns true if library is initialized, false if failed or already initialized.
 	bool glInitFactory(void);
 
 	//!	Returns the default null shader.
@@ -47,8 +46,7 @@ public:
 
 	//! Returns les list on shaders names.
 	//! Each name refers to a corresponding object
-	//! in memory, that can be retrived through
-	//! its persistence name.
+	//! in memory, that can be retrived through its persistence name.
 	void getFactoryShaders(vector<std::string> &);
 
 	//!	Adds a set of shader sources to this library?
@@ -56,16 +54,6 @@ public:
 	
 
 private:
-	/*
-	typedef struct PROGRAM_t
-	{
-		CVertexProgram		*vp;
-		CFragmentProgram	*fp;
-		CGeometryProgram	*gp;
-		RAPTOR_HANDLE	program;
-	} PROGRAM;
-	*/
-
 	//!	Unavailable instance constructor
 	CShaderLibrary();
 
@@ -77,9 +65,6 @@ private:
 
 	//!	A default shader.
 	static CShader *m_pNullShader;
-	
-	//!	The list of programs
-	//vector<PROGRAM>	m_programs;
 };
 
 RAPTOR_NAMESPACE_END
