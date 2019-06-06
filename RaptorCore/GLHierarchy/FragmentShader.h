@@ -1,6 +1,20 @@
-// FragmentShader.h: interface for the CFragmentShader class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  FragmentShader.h                                                       */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
 
 #if !defined(AFX_FRAGMENTSHADER_H__66B3089A_2919_4678_9273_6CDEF7E5787F__INCLUDED_)
 #define AFX_FRAGMENTSHADER_H__66B3089A_2919_4678_9273_6CDEF7E5787F__INCLUDED_
@@ -76,6 +90,10 @@ public:
     //! Returns the status of this shader
 	//!	@see CShaderProgram.
 	virtual bool glGetProgramStatus(void);
+
+	//! Implements base class
+	//!	@see CShaderProgram.
+	virtual std::string glGetProgramString(void);
 
 	//! This method returns the underlying hardware capabilities
 	//! to render a vertex program. the capabilities fill

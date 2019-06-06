@@ -50,7 +50,10 @@ public:
 		FRAGMENT_PROGRAM,
 		GEOMETRY_PROGRAM,
 		COMPUTE_PROGRAM,
-		TESSELATION_PROGRAM
+		TESSELATION_PROGRAM,
+		VIDEO,
+		AUDIO,
+		TEXT
 	} FILE_TYPE;
 
     static CRaptorDataManager  *GetInstance(void);
@@ -64,9 +67,6 @@ public:
 
     //! Export the about video ( Win32 only, Unix platform in next releases )
     void ExportRaptorVideo(const std::string& path);
-
-    //! Returns default the list of shaders embedded with Raptor
-	const char *const * GetShaderList(void);
 
 	//!	Remove all exported files from a managed package for a fresh update.
 	//!	@param packName : the name of the package to clear exports of.
@@ -96,9 +96,6 @@ private:
 
 	//!	Returns the path of the given package filename relative to RAPTOR_ROOT.
 	std::string getPackPath(const std::string& packName);
-
-	//!	Load a shader file.
-	bool CRaptorDataManager::loadShader(const char *file, const char *shader_name, const char *shaders[], int &ns);
 
 	//!	The only one DAta Manager Instance.
     static CRaptorDataManager  *m_pInstance;

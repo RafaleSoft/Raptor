@@ -1,6 +1,21 @@
-// ShaderLibrary.cpp: implementation of the CShaderLibrary class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  ShaderLibrary.cpp                                                      */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
 #include "Subsys/CodeGeneration.h"
 
 
@@ -18,6 +33,9 @@
 #endif
 #if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
     #include "System/Raptor.h"
+#endif
+#if !defined(AFX_OBJECTFACTORY_H__7F891C52_9E32_489C_B09C_5E5803522D91__INCLUDED_)
+	#include "GLHierarchy/ObjectFactory.h"
 #endif
 #if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
     #include "System/RaptorErrorManager.h"
@@ -59,12 +77,36 @@
 RAPTOR_NAMESPACE_BEGIN
 
 static bool				s_initialized = false;
-static map<std::string,std::string>	s_factoryShaders;
-static const int		NB_MANDATORY_SHADERS = 16;
 static const std::string s_nullShaderName = "NULL_SHADER";
 
 CShaderLibrary *CShaderLibrary::m_pInstance = NULL;
 CShader *CShaderLibrary::m_pNullShader = NULL;
+
+typedef struct
+{
+	const char *shader_name;
+	const char *shader_fname;
+	const char *class_name;
+} factory_shader;
+static const size_t NB_FACTORY_SHADERS = 16;
+static factory_shader fsh[NB_FACTORY_SHADERS] = {	{ "BUMP_TEX_SHADER", "bump.fp", "FragmentShader" },
+													{ "EMBM_TEX_SHADER", "embm.fp", "FragmentShader" },
+													{ "BUMP_VTX_SHADER", "bump.vp", "VertexShader" },
+													{ "EMBM_VTX_SHADER", "embm.vp", "VertexShader" },
+													{ "PROJECTION_TEX_SHADER", "projection.fp", "FragmentShader" },
+													{ "SHADOWMAP_TEX_SHADER", "shadowmap.fp", "FragmentShader" },
+													{ "SHADOWMAP_TEX_SHADER_PCF", "shadowmap_pcf.fp", "FragmentShader" },
+													{ "SHADOWMAP_TEX_SHADER_PCF_4X", "shadowmap_pcf_4x.fp", "FragmentShader" },
+													{ "PPIXEL_BLINN_VTX_PROGRAM", "blinn.vs", "VertexProgram" },
+													{ "PPIXEL_BLINN_TEX_PROGRAM", "blinn.ps", "FragmentProgram" },
+													{ "PPIXEL_PHONG_VTX_PROGRAM", "phong.vs", "VertexProgram" },
+													{ "PPIXEL_PHONG_TEX_PROGRAM", "phong.ps", "FragmentProgram" },
+													{ "PPIXEL_BUMP_VTX_PROGRAM", "bump.vs", "VertexProgram" },
+													{ "PPIXEL_BUMP_TEX_PROGRAM", "bump.ps", "FragmentProgram" },
+													{ "AMBIENT_OCCLUSION_VTX_PROGRAM", "AO.vs", "VertexProgram" },
+													{ "AMBIENT_OCCLUSION_TEX_PROGRAM", "AO.ps", "FragmentProgram" } };
+
+static map<std::string, factory_shader>	s_factoryShaders;
 
 RAPTOR_NAMESPACE_END
 
@@ -87,7 +129,7 @@ void CShaderLibrary::destroy()
 
 CShaderLibrary::~CShaderLibrary()
 {
-	map<std::string,std::string>::iterator itr = s_factoryShaders.begin();
+	map<std::string, factory_shader>::iterator itr = s_factoryShaders.begin();
 	while (itr != s_factoryShaders.end())
 	{
 		CPersistence *p = CPersistence::FindObject((*itr).first);
@@ -99,6 +141,9 @@ CShaderLibrary::~CShaderLibrary()
 			}
 		itr++;
 	}
+
+	//	TODO: delete shaders allocated from glAddToLibrary.
+	s_factoryShaders.clear();
 
 	m_pInstance = NULL;
 }
@@ -118,7 +163,7 @@ void CShaderLibrary::getFactoryShaders(vector<std::string> & res)
 {
 	res.clear();
 
-	map<std::string,std::string>::iterator itr = s_factoryShaders.begin();
+	map<std::string, factory_shader>::iterator itr = s_factoryShaders.begin();
 	while (itr != s_factoryShaders.end())
 	{
 		itr++;
@@ -126,60 +171,81 @@ void CShaderLibrary::getFactoryShaders(vector<std::string> & res)
 	}
 }
 
-bool CShaderLibrary::glAddToLibrary(const char * const *shader_sources)
+bool CShaderLibrary::glAddToLibrary(const std::string& shader_name,
+									const std::string& shader_source,
+									const std::string& class_name)
 {
+	if (shader_name.empty() || shader_source.empty() || class_name.empty())
+		return false;
 
-	int pos = 0;
-	while (shader_sources[pos] != 0)
+	if (s_factoryShaders.find(shader_name) != s_factoryShaders.end())
 	{
-		const char *fs = shader_sources[pos];
-		pos++;
-		const char *fs_name = shader_sources[pos];
-		pos++;
-
-		if (fs != 0)
-		{
-			CShaderProgram *program = NULL;
-			if (!strncmp(fs, "!!ARBfp", 7))
-			{
-				program = new CFragmentShader(fs_name);
-			}
-			else if (!strncmp(fs, "!!ARBvp", 7))
-			{
-				program = new CVertexShader(fs_name);
-			}
-			else if (NULL != strstr(fs, "gl_Position"))
-			{
-				program = new CVertexProgram(fs_name);
-			}
-			else if (NULL != strstr(fs, "gl_FragColor"))
-			{
-				program = new CFragmentProgram(fs_name);
-			}
-#if defined(GL_ARB_geometry_shader4)
-			else if (NULL != strstr(fs, "EndPrimitive"))
-			{
-				program = new CGeometryProgram(fs_name);
-			}
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+		Raptor::GetErrorManager()->generateRaptorError(Global::CShaderClassID::GetClassId(),
+													   CRaptorErrorManager::RAPTOR_WARNING,
+													   "Raptor ShaderLibrary cannot import already existing shader type");
 #endif
-			else if (NULL != strstr(fs_name, ".ps"))
-			{
-				program = new CFragmentProgram(fs_name);
-			}
-			else
-			{
+		return false;
+	}
+
+	CObjectFactory *pFactory = CObjectFactory::GetInstance();
+	const CPersistentObject & po = pFactory->createObject(class_name);
+	CPersistence* persistence = po;
+	if (persistence->getId().ClassName() == class_name)
+	{
+		persistence->setName(shader_name);
+		CShaderProgram *program = static_cast<CShaderProgram*>(persistence);
+		if (program->glLoadProgram(shader_source))
+		{
+			factory_shader fs;
+			fs.class_name = _strdup(class_name.c_str());
+			fs.shader_fname = NULL;
+			fs.shader_name = _strdup(shader_name.c_str());
+			s_factoryShaders.insert(map<std::string, factory_shader>::value_type(fs.shader_name, fs));
+		}
+
+		return true;
+	}
+	else
+	{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 				Raptor::GetErrorManager()->generateRaptorError(Global::CShaderClassID::GetClassId(),
 															   CRaptorErrorManager::RAPTOR_WARNING,
 															   "Raptor ShaderLibrary cannot import unknown shader type");
 #endif
-			}
-			//! Errors are genereted in debug mode in LoadProgram.
-			//! No extra check is needed here.
-			if (program != NULL)
+		return false;
+	}
+}
+
+
+bool CShaderLibrary::glLoadShadersFromDataPackage()
+{
+	static const string empty_vp =
+		"#version 460 \n\
+		void main(void)	{	}";
+	CVertexProgram *vp = new CVertexProgram("EMPTY_PROGRAM");
+	if (!vp->glLoadProgram(empty_vp))
+		return false;
+
+	CShaderProgram *program = NULL;
+	CRaptorDataManager *dataManager = CRaptorDataManager::GetInstance();
+
+	CObjectFactory *pFactory = CObjectFactory::GetInstance();
+
+	for (size_t nb_shaders = 0; nb_shaders < sizeof(fsh) / sizeof(factory_shader); nb_shaders++)
+	{
+		factory_shader &fs = fsh[nb_shaders];
+		string shader_path = dataManager->ExportFile(fs.shader_fname);
+		if (!shader_path.empty())
+		{
+			const CPersistentObject & po = pFactory->createObject(fs.class_name);
+			CPersistence* persistence = po;
+			if (persistence->getId().ClassName() == fs.class_name)
 			{
-				program->glLoadProgram(fs);
-				s_factoryShaders.insert(map<std::string, std::string>::value_type(fs_name, fs));
+				persistence->setName(fs.shader_name);
+				program = static_cast<CShaderProgram*>(persistence);
+				if (program->glLoadProgramFromFile(shader_path))
+					s_factoryShaders.insert(map<std::string, factory_shader>::value_type(fs.shader_name, fs));
 			}
 		}
 	}
@@ -190,50 +256,15 @@ bool CShaderLibrary::glAddToLibrary(const char * const *shader_sources)
 bool CShaderLibrary::glInitFactory(void)
 {
 	if (s_initialized)
-		return false;
+		return true;
 
 	CContextManager *manager = CContextManager::GetInstance();
 	if (CContextManager::INVALID_CONTEXT == manager->glGetCurrentContext())
 		return false;
 
-	CRaptorDataManager *dataManager = CRaptorDataManager::GetInstance();
-	const char * const *shader_source_library = dataManager->GetShaderList();
-
-	if (shader_source_library == NULL)
-		return false;
-	else
-		glAddToLibrary(shader_source_library);
-
-
-    CATCH_GL_ERROR
-
-    //! check mandatory shaders for Raptor to work with minimal settings
-    unsigned int nbMandatory = 0;
-    const char *shaders[NB_MANDATORY_SHADERS] = {	"BUMP_TEX_SHADER", 
-													"EMBM_TEX_SHADER",
-													"BUMP_VTX_SHADER", 	
-													"EMBM_VTX_SHADER",
-													"PROJECTION_TEX_SHADER", 
-													"SHADOWMAP_TEX_SHADER",
-													"SHADOWMAP_TEX_SHADER_PCF",  
-													"SHADOWMAP_TEX_SHADER_PCF_4X",
-													"PPIXEL_BLINN_VTX_PROGRAM",
-													"PPIXEL_BLINN_TEX_PROGRAM",
-													"PPIXEL_PHONG_VTX_PROGRAM",
-													"PPIXEL_PHONG_TEX_PROGRAM",
-													"PPIXEL_BUMP_VTX_PROGRAM",
-													"PPIXEL_BUMP_TEX_PROGRAM",
-													"AMBIENT_OCCLUSION_VTX_PROGRAM",
-													"AMBIENT_OCCLUSION_TEX_PROGRAM"};
-
-    for (int i=0;i<NB_MANDATORY_SHADERS;i++)
-    {
-        if (s_factoryShaders.find(shaders[i]) != s_factoryShaders.end())
-              nbMandatory++;
-    }
-
-	//	This is not a very clean way to prevent reentry !
-	s_initialized = (nbMandatory == NB_MANDATORY_SHADERS);
+	s_initialized = glLoadShadersFromDataPackage();
+    
+	CATCH_GL_ERROR
 
 	if (s_initialized)
 	{
@@ -247,19 +278,14 @@ bool CShaderLibrary::glInitFactory(void)
 		pBumpShader->glInit();
 
 		CEMBMShader *pEMBMShader = new CEMBMShader();
-		map<std::string,std::string>::const_iterator it = s_factoryShaders.find("PPIXEL_BUMP_VTX_PROGRAM");
-		map<std::string,std::string>::const_iterator it2 = s_factoryShaders.find("PPIXEL_BUMP_TEX_PROGRAM");
-		pEMBMShader->glInit((*it).second,(*it2).second);
-		//s_factoryShaders.insert(map<std::string,std::string>::value_type("PPIXEL_EMBM_TEX_PROGRAM",embm_shader));
+		std::string ppixel_vtx = pBumpShader->glGetVertexProgram()->glGetProgramString();
+		std::string ppixel_tex = pBumpShader->glGetFragmentProgram()->glGetProgramString();
+		pEMBMShader->glInit(ppixel_vtx, ppixel_tex);
 
 		CAOComputeShader *pAOComputeShader = new CAOComputeShader();
 		pAOComputeShader->glInit();
 
-		static const string empty_vp =
-		"#version 460 \n\
-		void main(void)	{	}";
-		CVertexProgram *vp = new CVertexProgram("EMPTY_PROGRAM");
-		vp->glLoadProgram(empty_vp);
+		CATCH_GL_ERROR
 	}
 
 	m_pNullShader = new CShader(s_nullShaderName);

@@ -34,6 +34,9 @@ public:
 	virtual void glProgramParameter(unsigned int numParam,
 									const CColor::RGBA &v) const;
 
+	//! Implements CShaderProgram.
+	virtual std::string glGetProgramString(void);
+
 	//! This method attaches the vertex program to a program object for
 	//! linking and validation. Checking is performed on the handle to accept only valid programs.
 	//! CShader use this method only when necessary

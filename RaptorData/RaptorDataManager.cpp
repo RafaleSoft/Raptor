@@ -49,7 +49,6 @@
 
 static bool doCompress = false;
 static const unsigned int BUFFER = 1024;
-static const int NB_SHADERS = 64;
 
 
 //////////////////////////////////////////////////////////////////////
@@ -353,7 +352,7 @@ std::string CRaptorDataManager::readFile(const std::string &fname)
 	else
 		return"";
 }
-
+/*
 bool CRaptorDataManager::loadShader(const char *file, const char *shader_name, const char *shaders[], int &ns)
 {
 	std::string fname = ExportFile(file);
@@ -369,7 +368,8 @@ bool CRaptorDataManager::loadShader(const char *file, const char *shader_name, c
 	else
 		return false;
 }
-
+*/
+/*
 const char * const *CRaptorDataManager::GetShaderList(void) 
 {
     static const char * shaders[NB_SHADERS];
@@ -393,8 +393,8 @@ const char * const *CRaptorDataManager::GetShaderList(void)
 	// EMBM LIGHTING
 	loadShader("embm_0light.vp", "EMBM_0LIGHT_VTX_SHADER", shaders, ns);
 	loadShader("embm_0light.fp", "EMBM_0LIGHT_TEX_SHADER", shaders, ns);
-	loadShader("embm.vp", "EMBM_TEX_SHADER", shaders, ns);
-	loadShader("embm.fp", "EMBM_VTX_SHADER", shaders, ns);
+	loadShader("embm.vp", "EMBM_VTX_SHADER", shaders, ns);
+	loadShader("embm.fp", "EMBM_TEX_SHADER", shaders, ns);
 
 	// SHADOWS
 	loadShader("projection.fp", "PROJECTION_TEX_SHADER", shaders, ns);
@@ -431,4 +431,4 @@ const char * const *CRaptorDataManager::GetShaderList(void)
 
 	return shaders;
 }
-
+*/
