@@ -15,8 +15,8 @@
 #if !defined(AFX_3DENGINETASKMANAGER_H__04149C60_C594_4009_A2C9_F852497146A3__INCLUDED_)
     #include "Engine/3DEngineTaskManager.h"
 #endif
-#if !defined(AFX_RAPTORDATAMANAGER_H__114BFB19_FA00_4E3E_879E_C9130043668E__INCLUDED_)
-	#include "DataManager/RaptorDataManager.h"
+#if !defined(AFX_RAPTORINSTANCE_H__90219068_202B_46C2_BFF0_73C24D048903__INCLUDED_)
+	#include "Subsys/RaptorInstance.h"
 #endif
 
 //! Default Imaging functionnalities
@@ -55,11 +55,8 @@ Global::Global()
 {
 	raptorStatus.runAsShareware = false;
 	raptorStatus.initialised = false;
-    raptorStatus.messages = NULL;
-    raptorStatus.errorMgr = NULL;
 	raptorStatus.terminate = false;
 	raptorStatus.forceSSE = false;
-	raptorStatus.current3DEngine = NULL;
 	raptorStatus.currentAnimator = NULL;
     raptorStatus.engineTaskMgr = NULL;
     raptorStatus.console = NULL;
@@ -124,24 +121,19 @@ Global::~Global()
     CContextManager::GetInstance()->glDestroyWindow(raptorStatus.defaultWindow);
 
 #if defined (VK_VERSION_1_0)
-	if (globalConfig.m_bVulkan)
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+	if (instance.config.m_bVulkan)
 		if (!CContextManager::GetInstance()->vkRelease())
 		{
-			raptorStatus.errorMgr->generateRaptorError(CVulkanClassID::GetClassId(),
-													   CRaptorErrorManager::RAPTOR_VK_ERROR,
-													   "Unable to release Vulkan module !");
+			CRaptorInstance::GetInstance().pErrorMgr->generateRaptorError(	CVulkanClassID::GetClassId(),
+																			CRaptorErrorManager::RAPTOR_VK_ERROR,
+																			"Unable to release Vulkan module !");
 		}
 
 #endif
 
 	delete CContextManager::GetInstance();
 	delete CHostMemoryManager::GetInstance();
-    delete CRaptorDataManager::GetInstance();
-
-    if (raptorStatus.messages != NULL)
-        delete raptorStatus.messages;
-    if (raptorStatus.errorMgr != NULL)
-        delete raptorStatus.errorMgr;
 
 	raptorStatus.initialised = false;
 }
@@ -169,23 +161,13 @@ bool Global::init(const CRaptorConfig& config)
 {
 	if (!raptorStatus.initialised)
 	{
-		globalConfig = config;
+		CRaptorInstance &instance = CRaptorInstance::GetInstance();
+		instance.config = config;
+		instance.initInstance();
 
 		//	Initialise memory first
 		CHostMemoryManager::GetInstance()->init();
 		CHostMemoryManager::GetInstance()->setGarbageMaxSize(config.m_uiGarbageSize);
-
-        //Initialize messages & errors
-		raptorStatus.errorMgr = new CRaptorErrorManager();
-		raptorStatus.errorMgr->logToFile(config.m_logFile);
-        raptorStatus.messages = new CRaptorMessages();
-		CRaptorDataManager  *dataManager = CRaptorDataManager::GetInstance();
-		if (dataManager != NULL)
-		{
-			string filepath = dataManager->ExportFile("RaptorMessages.xml");
-			if (!filepath.empty())
-				raptorStatus.messages->LoadMessages(filepath);
-		}
 
 		//	Initialise CPU
 #if defined(RAPTOR_SSE_CODE_GENERATION)
@@ -205,7 +187,6 @@ bool Global::init(const CRaptorConfig& config)
 
         //  Initialise engine
 		raptorStatus.currentAnimator = NULL;
-		raptorStatus.current3DEngine = NULL;
         raptorStatus.engineTaskMgr = C3DEngineTaskManager::Create();
         if (raptorStatus.engineTaskMgr)
             raptorStatus.engineTaskMgr->initEngine();
@@ -228,9 +209,9 @@ bool Global::init(const CRaptorConfig& config)
 		if (config.m_bVulkan)
 			if (!pContext->vkInit())
 			{
-				raptorStatus.errorMgr->generateRaptorError(	CVulkanClassID::GetClassId(),
-															CRaptorErrorManager::RAPTOR_VK_ERROR,
-															"Unable to load Vulkan module !");
+				CRaptorInstance::GetInstance().pErrorMgr->generateRaptorError(	CVulkanClassID::GetClassId(),
+																				CRaptorErrorManager::RAPTOR_VK_ERROR,
+																				"Unable to load Vulkan module !");
 			}
 #endif
 

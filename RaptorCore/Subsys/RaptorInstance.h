@@ -1,6 +1,6 @@
 /***************************************************************************/
 /*                                                                         */
-/*  DefaultImageScaler.h                                                   */
+/*  RaptorInstance.h                                                       */
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
@@ -16,8 +16,9 @@
 /***************************************************************************/
 
 
-#if !defined(AFX_DEFAULTIMAGESCALER_H__E3E63A13_79FC_4E46_A1D5_BCD41CF86360__INCLUDED_)
-#define AFX_DEFAULTIMAGESCALER_H__E3E63A13_79FC_4E46_A1D5_BCD41CF86360__INCLUDED_
+
+#if !defined(AFX_RAPTORINSTANCE_H__90219068_202B_46C2_BFF0_73C24D048903__INCLUDED_)
+#define AFX_RAPTORINSTANCE_H__90219068_202B_46C2_BFF0_73C24D048903__INCLUDED_
 
 #if _MSC_VER > 1000
 #pragma once
@@ -26,39 +27,50 @@
 #if !defined(AFX_IMAGE_H__F545D0D5_5F10_4EFA_BE3B_3F3D34D4DBF3__INCLUDED_)
 	#include "System/Image.h"
 #endif
+#if !defined(AFX_RAPTORCONFIG_H__29B753B8_17DE_44DF_A4D2_9D19C5AC53D5__INCLUDED_)
+	#include "System/RaptorConfig.h"
+#endif
+
 
 RAPTOR_NAMESPACE_BEGIN
 
 
-class CDefaultImageScaler : public CImage::IImageOP
+class C3DEngine;
+class CRaptorMessages;
+class CRaptorErrorManager;
+
+
+class CRaptorInstance
 {
 public:
-	CDefaultImageScaler(float sx, float sy);
-	CDefaultImageScaler(const CDefaultImageScaler& scaler);
-	CDefaultImageScaler& operator=(const CDefaultImageScaler& scaler);
+	//!	Create a singleton instance.
+	static CRaptorInstance &GetInstance(void);
 
-	virtual ~CDefaultImageScaler();
+	//! (Re)Initialise all instance objects.
+	void initInstance();
 
-    //! Implements CImageOP
-    virtual OP_KIND getKind(void) const { return IMAGE_SCALER; };
+	//!	3Dengine to use for geometric queries.
+	C3DEngine				*p3DEngine;
+	//!	Raptor Error manager.
+	CRaptorErrorManager		*pErrorMgr;
+	//!	Raptor Error messages database.
+	CRaptorMessages			*pMessages;
+	//!	Raptor global configuration.
+	CRaptorConfig			config;
 
-	//! Implements CImageOP
-	virtual bool apply(CImage* const src, const operation_param_t& param) const;
 
 private:
-	CDefaultImageScaler();
+	//! Constructor.
+	CRaptorInstance();
+	//! Copy Constructor.
+	CRaptorInstance(const CRaptorInstance&);
+	//!	Destructor.
+	~CRaptorInstance();
 
-	void scaleFloats(size_t srcw, size_t srch, size_t dstw, size_t dsth, float *srcpx, float *dstpx);
-
-	void scaleFloats(size_t srcw, size_t srch, size_t dstw, size_t dsth, uint32_t *srcpx, uint32_t *dstpx);
-
-	//!	Texture resize factors.
-	float scale_x;
-	float scale_y;
+	static CRaptorInstance *m_pInstance;
 };
 
 RAPTOR_NAMESPACE_END
 
-#endif // !defined(AFX_DEFAULTIMAGESCALER_H__E3E63A13_79FC_4E46_A1D5_BCD41CF86360__INCLUDED_)
-
+#endif // !defined(AFX_RAPTORINSTANCE_H__90219068_202B_46C2_BFF0_73C24D048903__INCLUDED_)
 

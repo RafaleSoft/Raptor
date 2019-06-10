@@ -649,6 +649,7 @@ $(SolutionDir)\$(ProjectName)\Subsys\Redist.bat
     <ClCompile Include="..\..\RaptorCore\Subsys\OpenGL\OpenGLViewPoint.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\PhongShader.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\PlayFrameJob.cpp" />
+    <ClCompile Include="..\..\RaptorCore\Subsys\RaptorInstance.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\RegisterCombiner.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\ResourceAllocator.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\ShaderLibrary.cpp" />
@@ -865,6 +866,7 @@ copy CodeGeneration.h "%RAPTOR_ROOT%\Redist\Include\Subsys"
     <ClInclude Include="..\..\RaptorCore\Subsys\OpenGL\OpenGLViewPoint.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\PhongShader.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\PlayFrameJob.h" />
+    <ClInclude Include="..\..\RaptorCore\Subsys\RaptorInstance.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\RegisterCombiner.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\ResourceAllocator.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\ShaderLibrary.h" />

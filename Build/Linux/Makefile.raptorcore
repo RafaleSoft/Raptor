@@ -138,6 +138,7 @@ SUBSYS_SRC = \
 	$(SRCDIR)/Subsys/Object3DShadowAttributes.cpp \
 	$(SRCDIR)/Subsys/PlayFrameJob.cpp \
 	$(SRCDIR)/Subsys/PhongShader.cpp \
+	$(SRCDIR)/Subsys/RaptorInstance.cpp \
 	$(SRCDIR)/Subsys/RegisterCombiner.cpp \
 	$(SRCDIR)/Subsys/ShaderLibrary.cpp \
 	$(SRCDIR)/Subsys/ShadowVolumeJob.cpp \

@@ -14,8 +14,6 @@
 #endif
 
 
-#include <GL/glu.h>	// gluScaleImage
-
 RAPTOR_NAMESPACE
 
 
@@ -52,7 +50,6 @@ bool CDefaultAlphaTransparency::apply(CImage* const src, const operation_param_t
 	if (NULL == src)
 		return false;
 
-	//uint32_t alpha = transparency;
 	uint32_t alpha = param.transparency;
 
 	uint8_t* ppixels = src->getPixels();

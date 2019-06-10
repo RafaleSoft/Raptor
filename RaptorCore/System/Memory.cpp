@@ -24,11 +24,12 @@
 #if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
 	#include "System/Raptor.h"
 #endif
-
 #if !defined(AFX_MEMORY_H__81A6CA9A_4ED9_4260_B6E4_C03276C38DBC__INCLUDED_)
 	#include "System/Memory.h"
 #endif
-
+#if !defined(AFX_RAPTORINSTANCE_H__90219068_202B_46C2_BFF0_73C24D048903__INCLUDED_)
+	#include "Subsys/RaptorInstance.h"
+#endif
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 	#if !defined(AFX_RAPTORMESSAGES_H__55776166_2943_4D08_BFC8_65DFB74FD780__INCLUDED_)
 		#include "System/RaptorMessages.h"
@@ -144,8 +145,10 @@ CHostMemoryManager::CHostMemoryManager(void)
 {
 	m_pHeap = new CMemoryHeap;
 
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+
 	m_pHeap->garbageSize = 0;
-	m_pHeap->garbageMaxSize = Global::GetInstance().getConfig().m_uiGarbageSize;
+	m_pHeap->garbageMaxSize = instance.config.m_uiGarbageSize;
 }
 
 CHostMemoryManager::~CHostMemoryManager()

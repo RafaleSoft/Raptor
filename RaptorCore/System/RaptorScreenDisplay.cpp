@@ -49,7 +49,9 @@
 #if !defined(AFX_TEXTUREQUAD_H__1712AF34_6723_4E39_BC72_05ED6FA28418__INCLUDED_)
 	#include "GLHierarchy/TextureQuad.h"
 #endif
-
+#if !defined(AFX_RAPTORINSTANCE_H__90219068_202B_46C2_BFF0_73C24D048903__INCLUDED_)
+	#include "Subsys/RaptorInstance.h"
+#endif
 
 RAPTOR_NAMESPACE
 
@@ -315,7 +317,8 @@ void CRaptorScreenDisplay::allocateResources(void)
     m_pTAllocator = CTexelAllocator::GetInstance();
 	m_pUAllocator = CUniformAllocator::GetInstance();
 
-    const CRaptorConfig& config = Global::GetInstance().getConfig();
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+    const CRaptorConfig& config = instance.config;
 	bool relocResource = true;
     if (config.m_bRelocation)
     {

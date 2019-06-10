@@ -66,6 +66,9 @@
 #if !defined(AFX_IRENDERINGPROPERTIES_H__634BCF2B_84B4_47F2_B460_D7FDC0F3B698__INCLUDED_)
 	#include "GLHierarchy/IRenderingProperties.h"
 #endif
+#if !defined(AFX_RAPTORINSTANCE_H__90219068_202B_46C2_BFF0_73C24D048903__INCLUDED_)
+	#include "Subsys/RaptorInstance.h"
+#endif
 
 
 RAPTOR_NAMESPACE_BEGIN
@@ -326,7 +329,7 @@ void CRaptorVulkanDisplay::allocateResources(void)
 	IDeviceMemoryManager* pDeviceMemory = vk_device.getMemory();
 
 	//!	Vulkan will not work without buffer reallocation to device memory
-    const CRaptorConfig& config = Global::GetInstance().getConfig();
+	const CRaptorConfig& config = CRaptorInstance::GetInstance().config;
 	if ((!config.m_bRelocation) || (0 == config.m_uiVertices) || (0 == config.m_uiPolygons))
     {
 		Raptor::GetErrorManager()->generateRaptorError(	CGeometry::CGeometryClassID::GetClassId(),

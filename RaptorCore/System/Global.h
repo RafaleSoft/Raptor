@@ -9,19 +9,19 @@
 #if !defined(AFX_RAPTORDISPLAYCONFIG_H__DA0759DF_6CF9_44A7_9ADE_D404FEEC2DDF__INCLUDED_)
 	#include "RaptorDisplayConfig.h"
 #endif
-#if !defined(AFX_RAPTORCONFIG_H__29B753B8_17DE_44DF_A4D2_9D19C5AC53D5__INCLUDED_)
-    #include "RaptorConfig.h"
-#endif
 #if !defined(AFX_RAPTORCONSOLE_H__27656611_2DF3_4416_8124_F608CFAC2122__INCLUDED_)
 	#include "RaptorConsole.h"
 #endif
+#if !defined(AFX_RAPTORCONFIG_H__29B753B8_17DE_44DF_A4D2_9D19C5AC53D5__INCLUDED_)
+	#include "System/RaptorConfig.h"
+#endif
+
 
 
 RAPTOR_NAMESPACE_BEGIN
 
 #define SHAREWARE_RELEASE 1
 
-class C3DEngine;
 class CAnimator;
 class CRaptorMessages;
 class CRaptorErrorManager;
@@ -44,15 +44,12 @@ public:
 		bool					forceSSE;
 		bool					runAsShareware;
 		bool					terminate;				//	the second pipeline has exited, raptor can be closed safely
-        CRaptorMessages			*messages;
         CRaptorConsole			*console;
-        CRaptorErrorManager		*errorMgr;
 		CAnimator				*currentAnimator;		//	current animator
-		C3DEngine				*current3DEngine;		//	3Dengine to use for geometric queries
         C3DEngineTaskManager	*engineTaskMgr;
 
 		//!	default display creation structure + defaut initial state of the renderer.
-		CRaptorDisplayConfig	defaultConfig;	
+		CRaptorDisplayConfig	defaultConfig;
 
         unsigned int			iRenderedObjects;
         unsigned int			iRenderedTriangles;
@@ -96,9 +93,6 @@ public:
     //! Returns the console if it has been created.
     CRaptorConsole* const getConsole(void) const { return raptorStatus.console; };
 
-    //! Returns the global config
-    const CRaptorConfig& getConfig(void) const { return globalConfig; };
-
 	//! Emulates CPersistence for global opengl classes IDs & global namespace
 	DECLARE_CLASS_ID(COpenGLClassID,"OpenGL",CPersistence)
 
@@ -114,7 +108,7 @@ private:
 	static Global			*pInstance;
 
 	RAPTOR_CURRENT_STATUS	raptorStatus;
-    CRaptorConfig			globalConfig;
+    
 };
 
 RAPTOR_NAMESPACE_END

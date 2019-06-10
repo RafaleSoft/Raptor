@@ -37,6 +37,9 @@
 #if !defined(AFX_RAPTORDISPLAYFILTER_H__805D8523_96EA_427B_ABEC_C39EE1BC094C__INCLUDED_)
     #include "RaptorDisplayFilter.h"
 #endif
+#if !defined(AFX_RAPTORINSTANCE_H__90219068_202B_46C2_BFF0_73C24D048903__INCLUDED_)
+	#include "Subsys/RaptorInstance.h"
+#endif
 #ifndef __GLOBAL_H__
     #include "Global.h"
 #endif
@@ -236,7 +239,7 @@ bool CRaptorFilteredDisplay::glCreateRenderDisplay(void)
 	{
 		// Then create buffered rendering display
 		CRaptorDisplayConfig rda = Global::GetInstance().getDefaultConfig();
-        const CRaptorConfig& config = Global::GetInstance().getConfig();
+		const CRaptorConfig& config = CRaptorInstance::GetInstance().config;
 
 		rda.width = cs.width * config.getFilterSizeFactor();
 		rda.height = cs.height * config.getFilterSizeFactor();

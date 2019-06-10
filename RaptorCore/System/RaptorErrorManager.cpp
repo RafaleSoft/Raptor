@@ -10,14 +10,14 @@
 #if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
     #include "RaptorErrorManager.h"
 #endif
-#ifndef __GLOBAL_H__
-	#include "System/Global.h"
-#endif
-#if !defined(AFX_PERSISTENCE_H__5561BA28_831B_11D3_9142_EEB51CEBBDB0__INCLUDED_)
-	#include "GLHierarchy/Persistence.h"
+#if !defined(AFX_RAPTORINSTANCE_H__90219068_202B_46C2_BFF0_73C24D048903__INCLUDED_)
+	#include "Subsys/RaptorInstance.h"
 #endif
 #if !defined(AFX_RAPTORIO_H__87D52C27_9117_4675_95DC_6AD2CCD2E78D__INCLUDED_)
     #include "System/RaptorIO.h"
+#endif
+#ifndef __GLOBAL_H__
+	#include "Global.h"
 #endif
 
 #include <time.h>
@@ -87,9 +87,9 @@ void CRaptorErrorManager::generateRaptorError(	const CPersistence::CPersistenceC
 	err.className = classID.ClassName();
 	err.type = type;
 
-    Global::RAPTOR_CURRENT_STATUS &st = Global::GetInstance().getCurrentStatus();
-    if (st.messages != NULL)
-        err.error = st.messages->getMessage(err.className,id,args);
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+    if (instance.pMessages != NULL)
+        err.error = instance.pMessages->getMessage(err.className,id,args);
     else
         err.error = "Raptor not initialised.";
 	

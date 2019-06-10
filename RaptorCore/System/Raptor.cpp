@@ -37,9 +37,6 @@
 #if !defined(AFX_TEXTUREFACTORY_H__1B470EC4_4B68_11D3_9142_9A502CBADC6B__INCLUDED_)
 	#include "GLHierarchy/TextureFactory.h"
 #endif
-#if !defined(AFX_TEXTUREFACTORYCONFIG_H__7A20D208_423F_4E02_AA4D_D736E0A7959F__INCLUDED_)
-	#include "GLHierarchy/TextureFactoryConfig.h"
-#endif
 #if !defined(AFX_TIMEOBJECT_H__C06AC4B9_4DD7_49E2_9C5C_050EF5C39780__INCLUDED_)
 	#include "Engine/TimeObject.h"
 #endif
@@ -49,8 +46,8 @@
 #if !defined(AFX_RAPTORVKEXTENSIONS_H__B17D6B7F_5AFC_4E34_9D49_8DC6CE9192D6__INCLUDED_)
 	#include "System/RaptorVKExtensions.h"
 #endif
-#if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
-    #include "RaptorErrorManager.h"
+#if !defined(AFX_RAPTORINSTANCE_H__90219068_202B_46C2_BFF0_73C24D048903__INCLUDED_)
+	#include "Subsys/RaptorInstance.h"
 #endif
 
 
@@ -71,8 +68,9 @@ Raptor::~Raptor()
 }
 
 const CRaptorConfig& Raptor::GetConfig(void)
-{ 
-	return Global::GetInstance().getConfig(); 
+{
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+	return instance.config;
 };
 
 CRaptorConsole *const Raptor::GetConsole(void)
@@ -114,14 +112,14 @@ const CRaptorVKExtensions *const Raptor::vkGetExtensions(void)
 
 CRaptorMessages * const Raptor::GetMessages(void)
 {
-    Global::RAPTOR_CURRENT_STATUS &st = Global::GetInstance().getCurrentStatus();
-    return st.messages;
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+    return instance.pMessages;
 }
 
 CRaptorErrorManager * const Raptor::GetErrorManager(void)
 {
-    Global::RAPTOR_CURRENT_STATUS &st = Global::GetInstance().getCurrentStatus();
-    return st.errorMgr;
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+    return instance.pErrorMgr;
 }
 
 unsigned long Raptor::GetVersion(void)

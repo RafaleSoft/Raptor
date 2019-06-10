@@ -8,14 +8,15 @@
     #include "System/Global.h"
 #endif
 
+#if !defined(AFX_RAPTORINSTANCE_H__90219068_202B_46C2_BFF0_73C24D048903__INCLUDED_)
+	#include "Subsys/RaptorInstance.h"
+#endif
 #if !defined(AFX_WIN32ENGINETASKMANAGER_H__8A94C7C2_7A88_4A75_94F4_4FE32FF31BA2__INCLUDED_)
     #include "Win32EngineTaskManager.h"
 #endif
-
 #if !defined(AFX_ANIMATOR_H__077150E3_D826_11D3_9142_9866F8B4457F__INCLUDED_)
 	#include "Engine/Animator.h"
 #endif
-
 #if !defined(AFX_3DENGINE_H__DB24F018_80B9_11D3_97C1_FC2841000000__INCLUDED_)
 	#include "Engine/3DEngine.h"
 #endif
@@ -271,7 +272,8 @@ void CWin32EngineTaskManager::computeAsyncJobs(DWORD id)
 		if (res == WAIT_FAILED)
 		{
 			res = GetLastError();
-			status.errorMgr->generateRaptorError(	CPersistence::CPersistenceClassID::GetClassId(),
+			CRaptorInstance &instance = CRaptorInstance::GetInstance();
+			instance.pErrorMgr->generateRaptorError(CPersistence::CPersistenceClassID::GetClassId(),
 													CRaptorErrorManager::RAPTOR_FATAL,
 													"Engine Async Thread will terminate, failed to synchronize");
 			break;
@@ -302,8 +304,8 @@ bool CWin32EngineTaskManager::synchronizeCore(unsigned long timeLimit)
 	{
 		case WAIT_ABANDONED:
 		{
-	        
-			st.errorMgr->generateRaptorError(CPersistence::CPersistenceClassID::GetClassId(),
+			CRaptorInstance &instance = CRaptorInstance::GetInstance();
+			instance.pErrorMgr->generateRaptorError(CPersistence::CPersistenceClassID::GetClassId(),
 											 CRaptorErrorManager::RAPTOR_FATAL,
 											 "GLSynchronize core exited on Core Termination");
 			break;
@@ -320,7 +322,8 @@ bool CWin32EngineTaskManager::synchronizeCore(unsigned long timeLimit)
 		}
 		case WAIT_TIMEOUT:
 		{
-			st.errorMgr->generateRaptorError(CPersistence::CPersistenceClassID::GetClassId(),
+			CRaptorInstance &instance = CRaptorInstance::GetInstance();
+			instance.pErrorMgr->generateRaptorError(CPersistence::CPersistenceClassID::GetClassId(),
                                              CRaptorErrorManager::RAPTOR_WARNING,
                                              "GLSynchronize core exited on timeout");
 		}
