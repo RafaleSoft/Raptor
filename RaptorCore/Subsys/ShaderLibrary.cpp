@@ -22,12 +22,6 @@
 #if !defined(AFX_SHADERLIBRARY_H__E2A8C35E_23A4_4AD1_8467_884E6B183B4F__INCLUDED_)
 	#include "ShaderLibrary.h"
 #endif
-#if !defined(AFX_VERTEXSHADER_H__F2D3BBC6_87A1_4695_B667_2B8C3C4CF022__INCLUDED_)
-	#include "GLHierarchy/VertexShader.h"
-#endif
-#if !defined(AFX_FRAGMENTSHADER_H__66B3089A_2919_4678_9273_6CDEF7E5787F__INCLUDED_)
-	#include "GLHierarchy/FragmentShader.h"
-#endif
 #if !defined(AFX_RAPTORDATAMANAGER_H__114BFB19_FA00_4E3E_879E_C9130043668E__INCLUDED_)
 	#include "DataManager/RaptorDataManager.h"
 #endif
@@ -40,19 +34,8 @@
 #if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
     #include "System/RaptorErrorManager.h"
 #endif
-#if !defined(AFX_VERTEXPROGRAM_H__204F7213_B40B_4B6A_9BCA_828409871B68__INCLUDED_)
-    #include "GLHierarchy/VertexProgram.h"
-#endif
-#if !defined(AFX_FRAGMENTPROGRAM_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
-    #include "GLHierarchy/FragmentProgram.h"
-#endif
-#if defined(GL_ARB_geometry_shader4)
-	#if !defined(AFX_GEOMETRYPROGRAM_H__1981EA98_8F3C_4881_9429_A9ACA5B285D3__INCLUDED_)
-		#include "GLHierarchy/GeometryProgram.h"
-	#endif
-#endif
-#if !defined(AFX_SHADER_H__4D405EC2_7151_465D_86B6_1CA99B906777__INCLUDED_)
-	#include "GLHierarchy/Shader.h"
+#if !defined(AFX_SHADERPROGRAM_H__936BEC73_3903_46CE_86C9_9CA0005B31F5__INCLUDED_)
+	#include "GLHierarchy/ShaderProgram.h"
 #endif
 #if !defined(AFX_BLINNSHADER_H__7C69D948_B286_4840_8101_00E84647D812__INCLUDED_)
 	#include "BlinnShader.h"
@@ -88,7 +71,7 @@ typedef struct
 	const char *shader_fname;
 	const char *class_name;
 } factory_shader;
-static const size_t NB_FACTORY_SHADERS = 16;
+static const size_t NB_FACTORY_SHADERS = 22;
 static factory_shader fsh[NB_FACTORY_SHADERS] = {	{ "BUMP_TEX_SHADER", "bump.fp", "FragmentShader" },
 													{ "EMBM_TEX_SHADER", "embm.fp", "FragmentShader" },
 													{ "BUMP_VTX_SHADER", "bump.vp", "VertexShader" },
@@ -104,7 +87,13 @@ static factory_shader fsh[NB_FACTORY_SHADERS] = {	{ "BUMP_TEX_SHADER", "bump.fp"
 													{ "PPIXEL_BUMP_VTX_PROGRAM", "bump.vs", "VertexProgram" },
 													{ "PPIXEL_BUMP_TEX_PROGRAM", "bump.ps", "FragmentProgram" },
 													{ "AMBIENT_OCCLUSION_VTX_PROGRAM", "AO.vs", "VertexProgram" },
-													{ "AMBIENT_OCCLUSION_TEX_PROGRAM", "AO.ps", "FragmentProgram" } };
+													{ "AMBIENT_OCCLUSION_TEX_PROGRAM", "AO.ps", "FragmentProgram" },
+													{ "TEXTURE_QUAD_TEX_PROGRAM", "tquad.ps", "FragmentProgram" },
+													{ "BLENDER_8X", "blender_8x.fp", "FragmentShader" },
+													{ "BLENDER_8X_XOFFSETS", "blenderX_8x.vp", "VertexShader" },
+													{ "BLENDER_8X_YOFFSETS", "blenderY_8x.vp", "VertexShader" },
+													{ "EMPTY_PROGRAM", "empty.vs", "VertexProgram" },
+													{ "FULL_SCREEN_GEO_PROGRAM", "blender_8x.gs", "GeometryProgram" } };
 
 static map<std::string, factory_shader>	s_factoryShaders;
 
@@ -220,13 +209,6 @@ bool CShaderLibrary::glAddToLibrary(const std::string& shader_name,
 
 bool CShaderLibrary::glLoadShadersFromDataPackage()
 {
-	static const string empty_vp =
-		"#version 460 \n\
-		void main(void)	{	}";
-	CVertexProgram *vp = new CVertexProgram("EMPTY_PROGRAM");
-	if (!vp->glLoadProgram(empty_vp))
-		return false;
-
 	CShaderProgram *program = NULL;
 	CRaptorDataManager *dataManager = CRaptorDataManager::GetInstance();
 
@@ -278,9 +260,7 @@ bool CShaderLibrary::glInitFactory(void)
 		pBumpShader->glInit();
 
 		CEMBMShader *pEMBMShader = new CEMBMShader();
-		std::string ppixel_vtx = pBumpShader->glGetVertexProgram()->glGetProgramString();
-		std::string ppixel_tex = pBumpShader->glGetFragmentProgram()->glGetProgramString();
-		pEMBMShader->glInit(ppixel_vtx, ppixel_tex);
+		pEMBMShader->glInit();
 
 		CAOComputeShader *pAOComputeShader = new CAOComputeShader();
 		pAOComputeShader->glInit();

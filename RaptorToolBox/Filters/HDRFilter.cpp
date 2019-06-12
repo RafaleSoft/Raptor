@@ -49,37 +49,6 @@
 //#undef GL_ARB_geometry_shader4
 
 #if defined(GL_ARB_geometry_shader4)
-	static const std::string hdr_gp =
-	"#version 460\n\
-	\n\
-	//	Expect the geometry shader extension to be available, warn if not. \n\
-	#extension GL_ARB_geometry_shader4 : enable \n\
-	\n\
-	layout(points) in; \n\
-	layout(triangle_strip, max_vertices=4) out; \n\
-	layout(location = 1) out vec4 g_TexCoord; \n\
-	\n\
-	void main() \n\
-	{\n\
-		gl_Position = vec4(-1.0, -1.0, 0.0, 1.0); \n\
-		g_TexCoord = vec4(0.0,0.0,0.0,0.0); \n\
-		EmitVertex(); \n\
-		\n\
-		gl_Position = vec4(1.0, -1.0, 0.0, 1.0); \n\
-		g_TexCoord = vec4(1.0,0.0,0.0,0.0); \n\
-		EmitVertex(); \n\
-		\n\
-		gl_Position = vec4(-1.0, 1.0, 0.0, 1.0); \n\
-		g_TexCoord = vec4(0.0, 1.0, 0.0, 0.0); \n\
-		EmitVertex(); \n\
-		\n\
-		gl_Position = vec4(1.0, 1.0, 0.0, 1.0); \n\
-		g_TexCoord = vec4(1.0, 1.0, 0.0, 0.0); \n\
-		EmitVertex(); \n\
-		\n\
-		EndPrimitive(); \n\
-	}";
-
 	//  Compute luminance with bilinear components, averaging
 	//  the 4 surrouding of the texel's center.
 	static const string treshhold2_ps =
@@ -246,6 +215,8 @@ CHDRFilter::CHDRFilter(const CRaptorDisplayConfig &da)
 	m_pTreshholdFreqs = NULL;
 	m_maxLuminance = NULL;
 	m_lastMaxLuminance = NULL;
+	m_pBlurXOffsets = NULL;
+	m_pBlurYOffsets = NULL;
 }
 
 CHDRFilter::~CHDRFilter()
@@ -614,10 +585,9 @@ bool CHDRFilter::glBuildShaders(void)
 
 	m_pTreshholdFreqs = new CShader("HDR_TRESHOLDS");
 	CVertexProgram *vp = m_pTreshholdFreqs->glGetVertexProgram("EMPTY_PROGRAM");
-	CGeometryProgram *gp = m_pTreshholdFreqs->glGetGeometryProgram("hdr_gp");
+	CGeometryProgram *gp = m_pTreshholdFreqs->glGetGeometryProgram("FULL_SCREEN_GEO_PROGRAM");
+	// Set it only once since it is a library shader (move this call to the rendering stage)
 	bool res = gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
-	res = res & gp->glLoadProgram(hdr_gp);
-
 	CFragmentProgram *fp = m_pTreshholdFreqs->glGetFragmentProgram("treshhold2_fp");
 	res = fp->glLoadProgram(treshhold2_ps);
 	if (res)
@@ -629,10 +599,7 @@ bool CHDRFilter::glBuildShaders(void)
 
 	m_pComposite = new CShader("HDR_COMPOSITE");
 	vp = m_pComposite->glGetVertexProgram("EMPTY_PROGRAM");
-	gp = m_pComposite->glGetGeometryProgram("hdr_gp");
-	res = gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
-	res = res & gp->glLoadProgram(hdr_gp);
-
+	gp = m_pComposite->glGetGeometryProgram("FULL_SCREEN_GEO_PROGRAM");
 	fp = m_pComposite->glGetFragmentProgram("composite_fp");
 	res = res && fp->glLoadProgram(composer_ps);
 	if (res)
@@ -648,10 +615,7 @@ bool CHDRFilter::glBuildShaders(void)
 	m_maxLuminance = new CShader("HDR_MAXLUMINANCE");
 	maxLuminanceParams.addParameter("offset", luminanceParams.p);
 	vp = m_maxLuminance->glGetVertexProgram("EMPTY_PROGRAM");
-	gp = m_maxLuminance->glGetGeometryProgram("hdr_gp");
-	res = gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
-	res = res & gp->glLoadProgram(hdr_gp);
-
+	gp = m_maxLuminance->glGetGeometryProgram("FULL_SCREEN_GEO_PROGRAM");
 	fp = m_maxLuminance->glGetFragmentProgram("luminanceMax_fp");
 	res = res && fp->glLoadProgram(luminanceMax_ps);
 	if (res)
@@ -663,10 +627,7 @@ bool CHDRFilter::glBuildShaders(void)
 
 	m_lastMaxLuminance = new CShader("HDR_LASTMAXLUMINANCE");
 	vp = m_lastMaxLuminance->glGetVertexProgram("EMPTY_PROGRAM");
-	gp = m_lastMaxLuminance->glGetGeometryProgram("hdr_gp");
-	res = gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
-	res = res & gp->glLoadProgram(hdr_gp);
-
+	gp = m_lastMaxLuminance->glGetGeometryProgram("FULL_SCREEN_GEO_PROGRAM");
 	fp = m_lastMaxLuminance->glGetFragmentProgram("lastluminanceMax_fp");
 	res = res && fp->glLoadProgram(lastLuminanceMax_ps);
 	if (res)

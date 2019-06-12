@@ -1,6 +1,6 @@
 /***************************************************************************/
 /*                                                                         */
-/*  blender_8x.gs                                                          */
+/*  empty.vs                                                               */
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
@@ -17,33 +17,6 @@
 
 #version 460
 
-//	Expect the geometry shader extension to be available, warn if not.
-#extension GL_ARB_geometry_shader4 : enable
-
-//	Render a unit quad from a single point:
-layout(points) in;
-layout(triangle_strip, max_vertices=4) out;
-layout(location = 1) out vec4 g_TexCoord;
-
-
-void main()
+void main (void)
 {
-	gl_Position = vec4(-1.0, -1.0, 0.0, 1.0);
-	g_TexCoord = vec4(0.0,0.0,0.0,0.0);
-	EmitVertex();
-
-	gl_Position = vec4(1.0, -1.0, 0.0, 1.0);
-	g_TexCoord = vec4(1.0,0.0,0.0,0.0);
-	EmitVertex();
-
-	gl_Position = vec4(-1.0, 1.0, 0.0, 1.0);
-	g_TexCoord = vec4(0.0, 1.0, 0.0, 0.0);
-	EmitVertex();
-
-	gl_Position = vec4(1.0, 1.0, 0.0, 1.0);
-	g_TexCoord = vec4(1.0, 1.0, 0.0, 0.0);
-	EmitVertex();
-
-	EndPrimitive();
 }
-

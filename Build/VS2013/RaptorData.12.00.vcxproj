@@ -421,6 +421,7 @@ copy RaptorData.pck "%RAPTOR_ROOT%\Redist\bin\"
     <None Include="..\..\RaptorData\Data\embm_0light.fp" />
     <None Include="..\..\RaptorData\Data\embm_0light.vp" />
     <None Include="..\..\RaptorData\Data\embm_std.vp" />
+    <None Include="..\..\RaptorData\Data\empty.vs" />
     <None Include="..\..\RaptorData\Data\phong.ps" />
     <None Include="..\..\RaptorData\Data\phong.vs" />
     <None Include="..\..\RaptorData\Data\projection.fp" />
@@ -429,6 +430,7 @@ copy RaptorData.pck "%RAPTOR_ROOT%\Redist\bin\"
     <None Include="..\..\RaptorData\Data\shadowmap_pcf.fp" />
     <None Include="..\..\RaptorData\Data\shadowmap_pcf_16x.fp" />
     <None Include="..\..\RaptorData\Data\shadowmap_pcf_4x.fp" />
+    <None Include="..\..\RaptorData\Data\tquad.ps" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="RaptorDataPackager.12.00.vcxproj">

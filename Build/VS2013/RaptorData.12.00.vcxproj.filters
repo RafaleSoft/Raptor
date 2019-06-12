@@ -129,6 +129,12 @@
     <None Include="..\..\RaptorData\Data\blenderY_8x.ps">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="..\..\RaptorData\Data\tquad.ps">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\RaptorData\Data\empty.vs">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\RaptorData\RaptorDataManager.cpp">

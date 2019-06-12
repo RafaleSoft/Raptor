@@ -58,7 +58,7 @@ public:
 	const CShader& getNullShader(void)
 	{ return *m_pNullShader; };
 
-	//! Returns les list on shaders names.
+	//! Returns the list off shaders names.
 	//! Each name refers to a corresponding object
 	//! in memory, that can be retrived through its persistence name.
 	void getFactoryShaders(vector<std::string> &);

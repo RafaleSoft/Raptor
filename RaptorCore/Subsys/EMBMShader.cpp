@@ -72,13 +72,18 @@ CEMBMShader::~CEMBMShader(void)
 }
 
 
-void CEMBMShader::glInit(const std::string &bump_vertexshader,
-						 const std::string &bump_pixelshader)
+void CEMBMShader::glInit()
 {
+	CShader *shaderLib = new CShader();
+	CVertexProgram *vp = shaderLib->glGetVertexProgram("PPIXEL_BUMP_VTX_PROGRAM");
+	CFragmentProgram *fp = shaderLib->glGetFragmentProgram("PPIXEL_BUMP_TEX_PROGRAM");
+	std::string embm_vertexshader = vp->glGetProgramString();
+	std::string embm_pixelshader = fp->glGetProgramString();
+	shaderLib->releaseReference();
+
 	//!	First create the program, to get it with the shader
 	//!	and unset auto delete shader
-	CVertexProgram *vp = new CVertexProgram("PPIXEL_EMBM_VTX_PROGRAM");
-	std::string embm_vertexshader = bump_vertexshader;
+	vp = new CVertexProgram("PPIXEL_EMBM_VTX_PROGRAM");
 	size_t pos = embm_vertexshader.find("#version");
 	if (pos < embm_vertexshader.length())
 	{
@@ -87,10 +92,9 @@ void CEMBMShader::glInit(const std::string &bump_vertexshader,
 	}
 	vp->glLoadProgram(embm_vertexshader);
 
-		//!	First create the program, to get it with the shader
+	//!	First create the program, to get it with the shader
 	//!	and unset auto delete shader
-	CFragmentProgram *fp = new CFragmentProgram("PPIXEL_EMBM_TEX_PROGRAM");
-	std::string embm_pixelshader = bump_pixelshader;
+	fp = new CFragmentProgram("PPIXEL_EMBM_TEX_PROGRAM");
 	pos = embm_pixelshader.find("#version");
 	if (pos < embm_pixelshader.length())
 	{

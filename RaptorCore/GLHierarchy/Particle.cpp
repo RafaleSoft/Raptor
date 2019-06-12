@@ -187,20 +187,6 @@ void main() \n\
 	EndPrimitive(); \n\
 }";
 
-static const std::string fp_src =
-"#version 460\n\
-\n\
-uniform	sampler2D diffuseMap; \n\
-\n\
-in vec4 g_color; \n\
-layout(location = 1) in vec4 g_TexCoord; \n\
-layout(location = 0) out vec4 o_Color;	\n\
-\n\
-void main (void) \n\
-{\n\
-	o_Color = g_color * texture(diffuseMap,vec2(g_TexCoord.st)); \n\
-}";
-
 static const std::string fp_src2 =
 "#version 460\n\
 \n\
@@ -287,8 +273,7 @@ void CParticle::glInitParticle(void)
 		gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
 		res = res & gp->glLoadProgram(gp_src);
 
-		CFragmentProgram *fs = m_pShader->glGetFragmentProgram();
-		res = res & fs->glLoadProgram(fp_src);
+		CFragmentProgram *fs = m_pShader->glGetFragmentProgram("TEXTURE_QUAD_TEX_PROGRAM");
 		params.clear();
 		params.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);
 		fs->setProgramParameters(params);
