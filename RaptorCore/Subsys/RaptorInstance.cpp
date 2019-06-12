@@ -42,16 +42,20 @@ CRaptorInstance::CRaptorInstance()
 	p3DEngine = NULL;
 	pMessages = NULL;
 	pErrorMgr = NULL;
+	pAnimator = NULL;
+	terminate = false;
 }
 
 CRaptorInstance::~CRaptorInstance()
 {
+	terminate = true;
+
 	if (pMessages != NULL)
 		delete pMessages;
 	if (pErrorMgr != NULL)
 		delete pErrorMgr;
 
-	delete CRaptorDataManager::GetInstance();
+	pAnimator = NULL;
 }
 
 CRaptorInstance &CRaptorInstance::GetInstance(void)

@@ -43,9 +43,9 @@ public:
 		bool					initialised;			//	raptor has been initialised
 		bool					forceSSE;
 		bool					runAsShareware;
-		bool					terminate;				//	the second pipeline has exited, raptor can be closed safely
+		//bool					terminate;				//	the second pipeline has exited, raptor can be closed safely
         CRaptorConsole			*console;
-		CAnimator				*currentAnimator;		//	current animator
+		//CAnimator				*currentAnimator;		//	current animator
         C3DEngineTaskManager	*engineTaskMgr;
 
 		//!	default display creation structure + defaut initial state of the renderer.

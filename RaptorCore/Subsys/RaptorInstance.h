@@ -36,6 +36,7 @@ RAPTOR_NAMESPACE_BEGIN
 
 
 class C3DEngine;
+class CAnimator;
 class CRaptorMessages;
 class CRaptorErrorManager;
 
@@ -49,8 +50,12 @@ public:
 	//! (Re)Initialise all instance objects.
 	void initInstance();
 
+	//	the second pipeline has exited, raptor can be closed safely
+	bool					terminate;
 	//!	3Dengine to use for geometric queries.
 	C3DEngine				*p3DEngine;
+	//	current animator
+	CAnimator				*pAnimator;
 	//!	Raptor Error manager.
 	CRaptorErrorManager		*pErrorMgr;
 	//!	Raptor Error messages database.

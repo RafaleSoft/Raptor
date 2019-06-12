@@ -1,15 +1,28 @@
-// Win32EngineTaskManager.cpp: implementation of the CWin32EngineTaskManager class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  Win32EngineTaskManager.cpp                                             */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
 
 #include "Subsys/CodeGeneration.h"
 
-#ifndef __GLOBAL_H__
-    #include "System/Global.h"
-#endif
-
 #if !defined(AFX_RAPTORINSTANCE_H__90219068_202B_46C2_BFF0_73C24D048903__INCLUDED_)
 	#include "Subsys/RaptorInstance.h"
+#endif
+#if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
+	#include "System/RaptorErrorManager.h"
 #endif
 #if !defined(AFX_WIN32ENGINETASKMANAGER_H__8A94C7C2_7A88_4A75_94F4_4FE32FF31BA2__INCLUDED_)
     #include "Win32EngineTaskManager.h"
@@ -41,31 +54,33 @@ unsigned int	CWin32EngineTaskManager::BATCH_ID = 1;
 DWORD WINAPI engineSyncThread(void* pParam)
 {
     CWin32EngineTaskManager* manager = (CWin32EngineTaskManager*)pParam;
-	Global::RAPTOR_CURRENT_STATUS& status = Global::GetInstance().getCurrentStatus();
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
 
 	//	I know this should mutex protected,
 	//	but is it really important here ?
     manager->engineStarted = true;
-	while (!status.terminate)
+	
+	while (!instance.terminate)
 	{
 		WaitForSingleObject(manager->processFrameEvt,INFINITE);
 		ResetEvent(manager->processFrameEvt);
-		if (status.terminate)
+		if (instance.terminate)
 			break;
 
 		ResetEvent(manager->synchroFrameEvt);
 		
-		if (status.currentAnimator != NULL )
+		if (instance.pAnimator != NULL )
 		{
-			status.currentAnimator->initSynchro();
-			status.currentAnimator->animate();
+			instance.pAnimator->initSynchro();
+			instance.pAnimator->animate();
 		}
 
 		SetEvent(manager->synchroFrameEvt);
 
-		if (status.currentAnimator != NULL )
-			status.currentAnimator->asyncAnimate();
+		if (instance.pAnimator != NULL)
+			instance.pAnimator->asyncAnimate();
 	}
+
     manager->engineStarted = false;
 	ExitThread( 0 );
 	return 0;
@@ -262,17 +277,16 @@ void CWin32EngineTaskManager::computeAsyncJobs(DWORD id)
 	//	but is it really important here ?
 	asyncEngines[stack].started = true;
 
-	Global::RAPTOR_CURRENT_STATUS& status = Global::GetInstance().getCurrentStatus();
-	while (!status.terminate)
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+	while (!instance.terminate)
 	{
 		DWORD res = WaitForSingleObject(asyncEngines[stack].hEvent,INFINITE);
-		if (status.terminate)
+		if (instance.terminate)
 			break;
 
 		if (res == WAIT_FAILED)
 		{
 			res = GetLastError();
-			CRaptorInstance &instance = CRaptorInstance::GetInstance();
 			instance.pErrorMgr->generateRaptorError(CPersistence::CPersistenceClassID::GetClassId(),
 													CRaptorErrorManager::RAPTOR_FATAL,
 													"Engine Async Thread will terminate, failed to synchronize");
@@ -285,6 +299,7 @@ void CWin32EngineTaskManager::computeAsyncJobs(DWORD id)
 				computeJobs(stack);
 		}
     }
+
 	asyncEngines[stack].started = false;
 }
 
@@ -298,13 +313,12 @@ bool CWin32EngineTaskManager::synchronizeCore(unsigned long timeLimit)
     //  First step : synchronize on frame time objects
     //
 	unsigned long wait = WaitForSingleObject(synchroFrameEvt,timeLimit);
-    Global::RAPTOR_CURRENT_STATUS &st = Global::GetInstance().getCurrentStatus();
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
 
 	switch(wait)
 	{
 		case WAIT_ABANDONED:
 		{
-			CRaptorInstance &instance = CRaptorInstance::GetInstance();
 			instance.pErrorMgr->generateRaptorError(CPersistence::CPersistenceClassID::GetClassId(),
 											 CRaptorErrorManager::RAPTOR_FATAL,
 											 "GLSynchronize core exited on Core Termination");
@@ -322,7 +336,6 @@ bool CWin32EngineTaskManager::synchronizeCore(unsigned long timeLimit)
 		}
 		case WAIT_TIMEOUT:
 		{
-			CRaptorInstance &instance = CRaptorInstance::GetInstance();
 			instance.pErrorMgr->generateRaptorError(CPersistence::CPersistenceClassID::GetClassId(),
                                              CRaptorErrorManager::RAPTOR_WARNING,
                                              "GLSynchronize core exited on timeout");

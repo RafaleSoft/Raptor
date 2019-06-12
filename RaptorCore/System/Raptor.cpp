@@ -1,6 +1,20 @@
-// Raptor.cpp: implementation of the Raptor class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  Raptor.cpp                                                           */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
 
 #include "Subsys/CodeGeneration.h"
 
@@ -191,8 +205,9 @@ int Raptor::glPurgeRaptor(bool count)
 
 bool Raptor::glCheckDisplayConfig(const CRaptorDisplayConfig &pcs)
 {
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
    	Global::RAPTOR_CURRENT_STATUS& status = Global::GetInstance().getCurrentStatus();
-    if ((!status.initialised) || (status.terminate))
+	if ((!status.initialised) || (instance.terminate))
 	{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 		Raptor::GetErrorManager()->generateRaptorError(	Global::COpenGLClassID::GetClassId(),
@@ -236,8 +251,9 @@ RAPTOR_HANDLE Raptor::glCreateWindow(const CRaptorDisplayConfig& pcs,CRaptorDisp
 {
 	RAPTOR_HANDLE result;
 
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
 	Global::RAPTOR_CURRENT_STATUS& status = Global::GetInstance().getCurrentStatus();
-    if ((!status.initialised) || (status.terminate))
+	if ((!status.initialised) || (instance.terminate))
 	{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 		Raptor::GetErrorManager()->generateRaptorError(	Global::COpenGLClassID::GetClassId(),
@@ -258,8 +274,9 @@ RAPTOR_HANDLE Raptor::glCreateWindow(const CRaptorDisplayConfig& pcs,CRaptorDisp
 
 CRaptorDisplay* Raptor::glCreateDisplay(const CRaptorDisplayConfig& pcs)
 {
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
 	Global::RAPTOR_CURRENT_STATUS& status = Global::GetInstance().getCurrentStatus();
-    if ((!status.initialised) || (status.terminate))
+	if ((!status.initialised) || (instance.terminate))
 	{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 		Raptor::GetErrorManager()->generateRaptorError(	Global::COpenGLClassID::GetClassId(),
@@ -384,8 +401,9 @@ void Raptor::glRender(void)
 
 	//! Do not display debug information,
 	//!	because this method is likely to be called in a loop!
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
 	Global::RAPTOR_CURRENT_STATUS& raptorStatus = Global::GetInstance().getCurrentStatus();
-	if ((!raptorStatus.initialised) || (raptorStatus.terminate))
+	if ((!raptorStatus.initialised) || (instance.terminate))
 		return;
 
 	vector<CRenderEntryPoint*>::iterator itr = raptorStatus.renderEntryPoints.begin();
@@ -411,8 +429,9 @@ void Raptor::glRender(void)
 
 bool Raptor::glQuitRaptor(void)
 {
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
     Global::RAPTOR_CURRENT_STATUS& status = Global::GetInstance().getCurrentStatus();
-    if ((!status.initialised) || (status.terminate))
+	if ((!status.initialised) || (instance.terminate))
         return false;
 
     return Global::GetInstance().destroy();

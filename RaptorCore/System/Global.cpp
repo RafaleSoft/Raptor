@@ -55,9 +55,8 @@ Global::Global()
 {
 	raptorStatus.runAsShareware = false;
 	raptorStatus.initialised = false;
-	raptorStatus.terminate = false;
+	
 	raptorStatus.forceSSE = false;
-	raptorStatus.currentAnimator = NULL;
     raptorStatus.engineTaskMgr = NULL;
     raptorStatus.console = NULL;
 
@@ -72,8 +71,6 @@ Global::Global()
 Global::~Global()
 {
 	//! Terminate Engine:
-    raptorStatus.terminate = true;
-    raptorStatus.currentAnimator = NULL;
     if (raptorStatus.engineTaskMgr != NULL)
 	{
         delete raptorStatus.engineTaskMgr;
@@ -186,7 +183,6 @@ bool Global::init(const CRaptorConfig& config)
 		raptorStatus.defaultConfig.y = 0;
 
         //  Initialise engine
-		raptorStatus.currentAnimator = NULL;
         raptorStatus.engineTaskMgr = C3DEngineTaskManager::Create();
         if (raptorStatus.engineTaskMgr)
             raptorStatus.engineTaskMgr->initEngine();
