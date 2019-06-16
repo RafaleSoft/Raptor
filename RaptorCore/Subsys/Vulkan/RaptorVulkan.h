@@ -1,6 +1,6 @@
 /***************************************************************************/
 /*                                                                         */
-/*  RenderEntryPoint.cpp                                                   */
+/*  Vulkan.h                                                               */
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
@@ -16,44 +16,37 @@
 /***************************************************************************/
 
 
+
+#if !defined(AFX_VULKAN_H__625F6BC5_F386_44C2_85C1_EDBA23B16921__INCLUDED_)
+#define AFX_VULKAN_H__625F6BC5_F386_44C2_85C1_EDBA23B16921__INCLUDED_
+
+#if _MSC_VER > 1000
+#pragma once
+#endif // _MSC_VER > 1000
+
 #include "Subsys/CodeGeneration.h"
 
-#if !defined(AFX_RENDERENTRYPOINT_H__0C53B135_BE95_4B42_AE37_0CBE00093DEB__INCLUDED_)
-	#include "RenderEntryPoint.h"
-#endif
-#if !defined(AFX_RAPTORINSTANCE_H__90219068_202B_46C2_BFF0_73C24D048903__INCLUDED_)
-	#include "Subsys/RaptorInstance.h"
+#if !defined(AFX_PERSISTENCE_H__5561BA28_831B_11D3_9142_EEB51CEBBDB0__INCLUDED_)
+	#include "GLHierarchy/Persistence.h"
 #endif
 
-RAPTOR_NAMESPACE
 
-//////////////////////////////////////////////////////////////////////
-// Construction/Destruction
-//////////////////////////////////////////////////////////////////////
+RAPTOR_NAMESPACE_BEGIN
 
-CRenderEntryPoint::CRenderEntryPoint()
+
+class CVulkan
 {
-	CRaptorInstance &instance = CRaptorInstance::GetInstance();
-	instance.renderEntryPoints.push_back(this);
-}
+public:
+	//! Emulates CPersistence for global opengl classes IDs & global namespace
+	DECLARE_CLASS_ID(CVulkanClassID, "Vulkan", CPersistence)
 
-CRenderEntryPoint::~CRenderEntryPoint()
-{
-	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+private:
+	CVulkan();
+	virtual ~CVulkan();
+};
 
-	vector<CRenderEntryPoint*>::iterator itr = instance.renderEntryPoints.begin();
-	vector<CRenderEntryPoint*>::iterator end = instance.renderEntryPoints.end();
 
-	while (itr != end)
-	{
-		CRenderEntryPoint* rep = (*itr);
-		if (rep == this)
-		{
-			instance.renderEntryPoints.erase(itr);
-			itr = end;
-		}
-		else
-			itr++;
-	}
-}
+RAPTOR_NAMESPACE_END
+
+#endif // !defined(AFX_VULKAN_H__625F6BC5_F386_44C2_85C1_EDBA23B16921__INCLUDED_)
 

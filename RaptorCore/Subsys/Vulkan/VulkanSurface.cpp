@@ -30,9 +30,10 @@
 #if !defined(AFX_RAPTORVKEXTENSIONS_H__B17D6B7F_5AFC_4E34_9D49_8DC6CE9192D6__INCLUDED_)
 	#include "System/RaptorVKExtensions.h"
 #endif
-#ifndef __GLOBAL_H__
-	#include "System/Global.h"
+#if !defined(AFX_VULKAN_H__625F6BC5_F386_44C2_85C1_EDBA23B16921__INCLUDED_)
+	#include "Subsys/Vulkan/RaptorVulkan.h"
 #endif
+
 
 RAPTOR_NAMESPACE
 
@@ -292,7 +293,7 @@ bool CVulkanSurface::vkResize(VkPhysicalDevice device)
 																 &surfaceCapabilities);
 	if (VK_SUCCESS != res)
 	{
-		RAPTOR_ERROR(Global::CVulkanClassID::GetClassId(),
+		RAPTOR_ERROR(CVulkan::CVulkanClassID::GetClassId(),
 					 "Failed to obtain Vulkan surface capabilities");
 		return false;
 	}
@@ -322,7 +323,7 @@ bool CVulkanSurface::vkInitSurface(VkPhysicalDevice device,
 																	&surfaceCapabilities);
 	if (VK_SUCCESS != res)
 	{
-		RAPTOR_ERROR(Global::CVulkanClassID::GetClassId(),
+		RAPTOR_ERROR(CVulkan::CVulkanClassID::GetClassId(),
 					 "Failed to obtain Vulkan surface capabilities");
 		return false;
 	}
@@ -334,7 +335,7 @@ bool CVulkanSurface::vkInitSurface(VkPhysicalDevice device,
 															NULL);
 	if ((VK_SUCCESS != res) || (0 == pSurfaceFormatCount))
 	{
-		RAPTOR_ERROR(Global::CVulkanClassID::GetClassId(),
+		RAPTOR_ERROR(CVulkan::CVulkanClassID::GetClassId(),
 					 "Failed to obtain Vulkan surface formats");
 		res = VK_NOT_READY;
 		return false;
@@ -348,7 +349,7 @@ bool CVulkanSurface::vkInitSurface(VkPhysicalDevice device,
 																pSurfaceFormats);
 		if (VK_SUCCESS != res)
 		{
-			RAPTOR_ERROR(Global::CVulkanClassID::GetClassId(),
+			RAPTOR_ERROR(CVulkan::CVulkanClassID::GetClassId(),
 						 "Failed to obtain Vulkan surface formats");
 		}
 	}
@@ -360,7 +361,7 @@ bool CVulkanSurface::vkInitSurface(VkPhysicalDevice device,
 																		NULL);
 	if ((VK_SUCCESS != res) || (0 == pPresentModeCount))
 	{
-		RAPTOR_ERROR(Global::CVulkanClassID::GetClassId(),
+		RAPTOR_ERROR(CVulkan::CVulkanClassID::GetClassId(),
 					 "Failed to obtain Vulkan surface present modes or no present modes available");
 		res = VK_NOT_READY;
 	}
@@ -373,7 +374,7 @@ bool CVulkanSurface::vkInitSurface(VkPhysicalDevice device,
 																		pPresentModes);
 		if (VK_SUCCESS != res)
 		{
-			RAPTOR_ERROR(Global::CVulkanClassID::GetClassId(),
+			RAPTOR_ERROR(CVulkan::CVulkanClassID::GetClassId(),
 						 "Failed to obtain Vulkan surface formats");
 		}
 	}

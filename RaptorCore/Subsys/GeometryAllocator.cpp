@@ -13,9 +13,10 @@
 #if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
     #include "System/RaptorErrorManager.h"
 #endif
-#ifndef __GLOBAL_H__
-	#include "System/Global.h"
+#if !defined(AFX_OPENGL_H__6C8840CA_BEFA_41DE_9879_5777FBBA7147__INCLUDED_)
+	#include "Subsys/OpenGL/RaptorOpenGL.h"
 #endif
+
 
 
 RAPTOR_NAMESPACE_BEGIN
@@ -382,9 +383,8 @@ unsigned short	* const	CGeometryAllocator::allocateIndexes(uint64_t size)
 
 	if ( ((uint64_t)currentAddress - (uint64_t)faceIndexes.address.us_address) + sz > faceIndexes.size)
     {
-        Raptor::GetErrorManager()->generateRaptorError(	Global::COpenGLClassID::GetClassId(),
-														CRaptorErrorManager::RAPTOR_FATAL,
-														"Geometry Allocator could not get enough memory");
+        RAPTOR_FATAL(	COpenGL::COpenGLClassID::GetClassId(),
+						"Geometry Allocator could not get enough memory");
 		return NULL;
     }
 
@@ -476,9 +476,8 @@ float * const CGeometryAllocator::allocateVertices(uint64_t size)
 
 	if ( ((uint64_t)currentAddress - (uint64_t)vertices.address.f_address) + sz > vertices.size)
     {
-        Raptor::GetErrorManager()->generateRaptorError(	Global::COpenGLClassID::GetClassId(),
-														CRaptorErrorManager::RAPTOR_FATAL,
-														"Geometry Allocator could not get enough memory");
+        RAPTOR_FATAL(	COpenGL::COpenGLClassID::GetClassId(),
+						"Geometry Allocator could not get enough memory");
 		return NULL;
     }
 

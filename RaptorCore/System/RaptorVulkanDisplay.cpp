@@ -198,8 +198,9 @@ bool CRaptorVulkanDisplay::glRender(void)
 
 		rtime = CTimeObject::deltaMarkTime(this);
 
-        if (Global::GetInstance().getConsole() != NULL)
-		    Global::GetInstance().getConsole()->glRender();
+		CRaptorInstance &instance = CRaptorInstance::GetInstance();
+		if (instance.pConsole != NULL)
+			instance.pConsole->glRender();
 
 		CContextManager::GetInstance()->vkSwapBuffers(m_context);
 

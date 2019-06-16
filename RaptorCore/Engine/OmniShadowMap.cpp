@@ -39,8 +39,8 @@
 #if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
 	#include "System/RaptorGLExtensions.h"
 #endif
-#ifndef __GLOBAL_H__
-	#include "System/Global.h"
+#if !defined(AFX_OPENGL_H__6C8840CA_BEFA_41DE_9879_5777FBBA7147__INCLUDED_)
+	#include "Subsys/OpenGL/RaptorOpenGL.h"
 #endif
 
 
@@ -105,7 +105,7 @@ bool COmniShadowMap::glInitEnvironment(unsigned int width,unsigned int height)
 		!(Raptor::glIsExtensionSupported(GL_ARB_COLOR_BUFFER_FLOAT_EXTENSION_NAME) || 
 		Raptor::glIsExtensionSupported(WGL_ATI_PIXEL_FORMAT_FLOAT_EXTENSION_NAME)))
     {
-		Raptor::GetErrorManager()->generateRaptorError(	Global::COpenGLClassID::GetClassId(),
+		Raptor::GetErrorManager()->generateRaptorError(	COpenGL::COpenGLClassID::GetClassId(),
 														CRaptorErrorManager::RAPTOR_ERROR,
 														"Missing hardware texture capabilities to render omni-directional Shadow Maps");
         return false;

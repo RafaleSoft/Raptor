@@ -12,9 +12,8 @@
 
 #include "Subsys/CodeGeneration.h"
 
-
 #ifndef __CGLTYPES_HPP__
-	#include "CGLTypes.h"
+	#include "System/CGLTypes.h"
 #endif
 #if !defined(AFX_PERSISTENCE_H__5561BA28_831B_11D3_9142_EEB51CEBBDB0__INCLUDED_)
 	#include "Persistence.h"

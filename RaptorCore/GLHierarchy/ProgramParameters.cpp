@@ -52,11 +52,10 @@ bool CProgramParameters::addParameter(const CParameterBase& param)
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 	for (size_t i = 0; i < m_parameters.size(); i++)
 	{
-		if (m_parameters[i]->name() == name)
+		if (m_parameters[i]->name() == param.name())
 		{
-			Raptor::GetErrorManager()->generateRaptorError(CPersistence::CPersistenceClassID::GetClassId(),
-														   CRaptorErrorManager::RAPTOR_WARNING,
-														   "Duplicate parameter name");
+			RAPTOR_WARNING(	CPersistence::CPersistenceClassID::GetClassId(),
+							"Duplicate parameter name");
 			return false;
 		}
 	}

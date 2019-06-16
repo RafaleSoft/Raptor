@@ -15,8 +15,8 @@
 #if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
     #include "RaptorErrorManager.h"
 #endif
-#ifndef __GLOBAL_H__
-	#include "System/Global.h"
+#if !defined(AFX_OPENGL_H__6C8840CA_BEFA_41DE_9879_5777FBBA7147__INCLUDED_)
+	#include "Subsys/OpenGL/RaptorOpenGL.h"
 #endif
 
 
@@ -105,18 +105,14 @@ void CRaptorGLExtensions::glInitExtensions(void)
 void RAPTOR_APICALL glActiveTextureARB__default(GLenum target)
 {
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
-    Raptor::GetErrorManager()->generateRaptorError(	Global::COpenGLClassID::GetClassId(),
-													CRaptorErrorManager::RAPTOR_ERROR,
-													"Using unavailable extension glActiveTextureARB");
+	RAPTOR_ERROR(COpenGL::COpenGLClassID::GetClassId(), "Using unavailable extension glActiveTextureARB");
 #endif
 }
 
 void RAPTOR_APICALL glMultiTexCoord4fvARB__default(GLenum target, const GLfloat *v)
 {
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
-    Raptor::GetErrorManager()->generateRaptorError(	Global::COpenGLClassID::GetClassId(),
-													CRaptorErrorManager::RAPTOR_ERROR,
-													"Using unavailable extension glMultiTexCoord4fvARB");
+	RAPTOR_ERROR(COpenGL::COpenGLClassID::GetClassId(), "Using unavailable extension glMultiTexCoord4fvARB");
 #endif
 	glTexCoord4fv(v);
 }

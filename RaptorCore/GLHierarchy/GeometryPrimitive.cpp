@@ -25,8 +25,11 @@
 #if !defined(AFX_GEOMETRY_H__B42ABB87_80E8_11D3_97C2_DE5C28000000__INCLUDED_)
 	#include "Geometry.h"
 #endif
+#if !defined(AFX_RAPTORINSTANCE_H__90219068_202B_46C2_BFF0_73C24D048903__INCLUDED_)
+	#include "Subsys/RaptorInstance.h"
+#endif
 #ifndef __GLOBAL_H__
-	#include "System/Global.h"
+	//#include "System/Global.h"
 #endif
 
 RAPTOR_NAMESPACE
@@ -156,8 +159,8 @@ void CGeometryPrimitive::glRender(void)
 			break;
 	}
 
-	Global::GetInstance().getCurrentStatus().iRenderedObjects++;
-	Global::GetInstance().getCurrentStatus().iRenderedTriangles += m_size;
+	CRaptorInstance::GetInstance().iRenderedObjects++;
+	CRaptorInstance::GetInstance().iRenderedTriangles += m_size;
 
     CATCH_GL_ERROR
 }

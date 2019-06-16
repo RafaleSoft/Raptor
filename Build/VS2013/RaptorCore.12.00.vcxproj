@@ -647,6 +647,7 @@ $(SolutionDir)\$(ProjectName)\Subsys\Redist.bat
     <ClCompile Include="..\..\RaptorCore\Subsys\OpenGL\OpenGLMemory.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\OpenGL\OpenGLRenderingProperties.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\OpenGL\OpenGLViewPoint.cpp" />
+    <ClCompile Include="..\..\RaptorCore\Subsys\OpenGL\RaptorOpenGL.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\PhongShader.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\PlayFrameJob.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\RaptorInstance.cpp" />
@@ -659,6 +660,7 @@ $(SolutionDir)\$(ProjectName)\Subsys\Redist.bat
     <ClCompile Include="..\..\RaptorCore\Subsys\TexelAllocator.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\UniformAllocator.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\VideoStream.cpp" />
+    <ClCompile Include="..\..\RaptorCore\Subsys\Vulkan\RaptorVulkan.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\Vulkan\VulkanCommandBuffer.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\Vulkan\VulkanDevice.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\Vulkan\VulkanMemory.cpp" />
@@ -670,7 +672,6 @@ $(SolutionDir)\$(ProjectName)\Subsys\Redist.bat
     <ClCompile Include="..\..\RaptorCore\Subsys\XMLRaptorIO.cpp" />
     <ClCompile Include="..\..\RaptorCore\System\CGLTypes.cpp" />
     <ClCompile Include="..\..\RaptorCore\System\Color.cpp" />
-    <ClCompile Include="..\..\RaptorCore\System\Global.cpp" />
     <ClCompile Include="..\..\RaptorCore\System\Image.cpp" />
     <ClCompile Include="..\..\RaptorCore\System\Memory.cpp" />
     <ClCompile Include="..\..\RaptorCore\System\Raptor.cpp" />
@@ -861,6 +862,7 @@ copy CodeGeneration.h "%RAPTOR_ROOT%\Redist\Include\Subsys"
     <ClInclude Include="..\..\RaptorCore\Subsys\ObjectModels\RaptorScript_tree.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\ObjectModels\RaptorScript_yacc.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\Octree.h" />
+    <ClInclude Include="..\..\RaptorCore\Subsys\OpenGL\RaptorOpenGL.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\OpenGL\OpenGLMemory.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\OpenGL\OpenGLRenderingProperties.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\OpenGL\OpenGLViewPoint.h" />
@@ -877,6 +879,7 @@ copy CodeGeneration.h "%RAPTOR_ROOT%\Redist\Include\Subsys"
     <ClInclude Include="..\..\RaptorCore\Subsys\TimeObjectImpl.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\UniformAllocator.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\VideoStream.h" />
+    <ClInclude Include="..\..\RaptorCore\Subsys\Vulkan\RaptorVulkan.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\Vulkan\VulkanBufferObject.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\Vulkan\VulkanCommandBuffer.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\Vulkan\VulkanDevice.h" />
@@ -890,7 +893,6 @@ copy CodeGeneration.h "%RAPTOR_ROOT%\Redist\Include\Subsys"
     <ClInclude Include="..\..\RaptorCore\System\CGLTypes.h" />
     <ClInclude Include="..\..\RaptorCore\System\Color.h" />
     <ClInclude Include="..\..\RaptorCore\System\GLEXTMacros.h" />
-    <ClInclude Include="..\..\RaptorCore\System\Global.h" />
     <ClInclude Include="..\..\RaptorCore\System\Image.h" />
     <ClInclude Include="..\..\RaptorCore\System\Memory.h" />
     <ClInclude Include="..\..\RaptorCore\System\Raptor.h" />

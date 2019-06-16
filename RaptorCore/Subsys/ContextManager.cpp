@@ -35,8 +35,12 @@
     #include "System/RaptorErrorManager.h"
 #endif
 #ifndef __GLOBAL_H__
-	#include "System/Global.h"
+	//#include "System/Global.h"
 #endif
+#if !defined(AFX_VULKAN_H__625F6BC5_F386_44C2_85C1_EDBA23B16921__INCLUDED_)
+	#include "Subsys/Vulkan/RaptorVulkan.h"
+#endif
+
 
 
 #if defined(_WIN32)
@@ -358,14 +362,14 @@ void CContextManager::vkResize(RENDERING_CONTEXT_ID ctx,const CRaptorDisplayConf
 #if defined(VK_KHR_display)
 	if (!context.pSurface->vkResize(context.physicalDevice))
 	{
-		RAPTOR_ERROR(	Global::CVulkanClassID::GetClassId(),
+		RAPTOR_ERROR(	CVulkan::CVulkanClassID::GetClassId(),
 						"Failed to obtain Vulkan surface capabilities");
 	}
 	else
 	{
 		if (!context.device.vkCreateSwapChain(context.pSurface, config))
 		{
-			RAPTOR_ERROR(	Global::CVulkanClassID::GetClassId(),
+			RAPTOR_ERROR(	CVulkan::CVulkanClassID::GetClassId(),
 							"Failed to recreate Vulkan swap chain");
 		}
 	}
@@ -380,7 +384,7 @@ CContextManager::RENDERING_CONTEXT_ID CContextManager::vkCreateContext(const RAP
 		ctx++;
 	if (ctx >= MAX_CONTEXT)
 	{
-		RAPTOR_ERROR(Global::CVulkanClassID::GetClassId(), "Too many Vulkan Context created");
+		RAPTOR_ERROR(CVulkan::CVulkanClassID::GetClassId(), "Too many Vulkan Context created");
 		return CContextManager::INVALID_CONTEXT;
 	}
 
@@ -430,10 +434,8 @@ void CContextManager::vkMakeCurrentContext(const RAPTOR_HANDLE& device,RENDERING
 		{
 			if (!context.device.acquireSwapChainImage(timeout))
 			{
-				CRaptorErrorManager *pErrMgr = Raptor::GetErrorManager();
-				pErrMgr->generateRaptorError(	Global::CVulkanClassID::GetClassId(),
-												CRaptorErrorManager::RAPTOR_WARNING,
-												"Vulkan Device failed to provide rendering Image!");
+				RAPTOR_WARNING(	CVulkan::CVulkanClassID::GetClassId(),
+								"Vulkan Device failed to provide rendering Image!");
 
 				// onWindowSizeChanged()
 				m_currentVKContext = CContextManager::INVALID_CONTEXT;
@@ -453,10 +455,8 @@ void CContextManager::vkSwapBuffers(RENDERING_CONTEXT_ID ctx)
 		VK_CONTEXT& context = m_pVkContext[ctx];
 		if (!context.device.presentSwapChainImage())
 		{
-			CRaptorErrorManager *pErrMgr = Raptor::GetErrorManager();
-			pErrMgr->generateRaptorError(	Global::CVulkanClassID::GetClassId(),
-											CRaptorErrorManager::RAPTOR_WARNING,
-											"Vulkan Device failed to submit and present rendering queue!");
+			RAPTOR_WARNING(	CVulkan::CVulkanClassID::GetClassId(),
+							"Vulkan Device failed to submit and present rendering queue!");
 
 			// onWindowSizeChanged()
 		}
@@ -484,10 +484,8 @@ void CContextManager::vkDestroyContext(RENDERING_CONTEXT_ID ctx)
 	}
 	else
 	{
-		CRaptorErrorManager *pErrMgr = Raptor::GetErrorManager();
-		pErrMgr->generateRaptorError(	Global::CVulkanClassID::GetClassId(),
-										CRaptorErrorManager::RAPTOR_ERROR,
-										"Unable to destroy unknown Vulkan context");
+		RAPTOR_ERROR(	CVulkan::CVulkanClassID::GetClassId(),
+						"Unable to destroy unknown Vulkan context");
 	}
 }
 

@@ -840,9 +840,9 @@ bool CShader::glCompileShader()
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
         if (!abort)
         {
-            pExtensions->glValidateProgramARB(m_shaderProgram.handle);
+            pExtensions->glValidateProgramARB(m_shaderProgram.handle());
             GLint validateStatus = GL_FALSE;
-            pExtensions->glGetObjectParameterivARB(m_shaderProgram.handle,GL_OBJECT_VALIDATE_STATUS_ARB,&validateStatus);
+            pExtensions->glGetObjectParameterivARB(m_shaderProgram.handle(),GL_OBJECT_VALIDATE_STATUS_ARB,&validateStatus);
             if (validateStatus == GL_FALSE)
                 abort = true;
         }

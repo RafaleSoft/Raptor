@@ -16,8 +16,11 @@
 #if !defined(AFX_RAPTORIO_H__87D52C27_9117_4675_95DC_6AD2CCD2E78D__INCLUDED_)
     #include "System/RaptorIO.h"
 #endif
-#ifndef __GLOBAL_H__
-	#include "Global.h"
+#if !defined(AFX_OPENGL_H__6C8840CA_BEFA_41DE_9879_5777FBBA7147__INCLUDED_)
+	#include "Subsys/OpenGL/RaptorOpenGL.h"
+#endif
+#if !defined(AFX_VULKAN_H__625F6BC5_F386_44C2_85C1_EDBA23B16921__INCLUDED_)
+	#include "Subsys/Vulkan/RaptorVulkan.h"
 #endif
 
 #include <time.h>
@@ -54,7 +57,12 @@ bool CRaptorErrorManager::logToFile(const std::string &filename)
     {
         time_t timer;
         time(&timer);
-        *m_pLogger << "Raptor log file initiated at " << asctime(localtime(&timer));
+
+		struct tm newtime;
+		localtime_s(&newtime, &timer);
+		char buffer[256];
+		asctime_s(buffer,256,&newtime);
+        *m_pLogger << "\nRaptor log file initiated at " << buffer;
         *m_pLogger << '\n';
     }
 
@@ -117,35 +125,37 @@ void CRaptorErrorManager::addRaptorError(GL_RAPTOR_ERROR& err)
     bool opened = (m_pLogger != NULL) && (m_pLogger->getStatus() == CRaptorIO::IO_OK);
     if (opened)
     {
-        time_t timer;
-        time(&timer);
-
 		*m_pLogger << err.className.data();
+
+		time_t timer;
+		time(&timer);
+
+		struct tm newtime;
+		localtime_s(&newtime, &timer);
+		char buffer[256];
+		asctime_s(buffer, 256, &newtime);
 
         switch (err.type)
         {
             case RAPTOR_NO_ERROR:
-                *m_pLogger << " - Info(" ;
+				*m_pLogger << " - Info(" << buffer << "): " << err.error.data() << '\n';
                 break;
             case RAPTOR_WARNING:
-                *m_pLogger << " - Warning(";
+				*m_pLogger << " - Warning(" << buffer << "): " << err.error.data() << '\n';
                 break;
             case RAPTOR_ERROR:
-                *m_pLogger << " - Error(";
+				*m_pLogger << " - Error(" << buffer << "): " << err.error.data() << '\n';
                 break;
             case RAPTOR_GL_ERROR:
-                *m_pLogger << " - OpenGL error(";
+				*m_pLogger << " - OpenGL error(" << buffer << "): " << err.error.data() << '\n';
                 break;
 			case RAPTOR_VK_ERROR:
-                *m_pLogger << " - Vulkan error(";
+				*m_pLogger << " - Vulkan error(" << buffer << "): " << err.error.data() << '\n';
                 break;
             case RAPTOR_FATAL:
-                *m_pLogger << " - Fatal(";
+				*m_pLogger << " - Fatal(" << buffer << "): " << err.error.data() << '\n';
                 break;
         }
-        string timeStr = asctime(localtime(&timer));
-        timeStr.erase(timeStr.size() - 1);
-        *m_pLogger << timeStr.data() << "): " << err.error.data() << '\n';
     }
 }
 
@@ -174,7 +184,7 @@ void CRaptorErrorManager::glGetError(const std::string& file,int line)
 
 	GLenum prv_err = GL_NO_ERROR;
 	GL_RAPTOR_ERROR r_err;
-	r_err.className = Global::COpenGLClassID::GetClassId().ClassName();
+	r_err.className = COpenGL::COpenGLClassID::GetClassId().ClassName();
 	r_err.type = RAPTOR_GL_ERROR;
 
 	//	extract class name based on file name
@@ -238,7 +248,7 @@ void CRaptorErrorManager::vkGetError(VkResult err, const std::string& file,int l
 
 	GL_RAPTOR_ERROR r_err;
 
-	r_err.className = Global::CVulkanClassID::GetClassId().ClassName();
+	r_err.className = CVulkan::CVulkanClassID::GetClassId().ClassName();
 	r_err.type = RAPTOR_VK_ERROR;
 
 	//	extract class name based on file name

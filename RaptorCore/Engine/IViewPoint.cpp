@@ -109,7 +109,7 @@ void IViewPoint::setViewVolume(float left, float right,
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 	if ((right == left) ||
 		(bottom == up) ||
-		(near == far))
+		(n == f))
 	{
 		Raptor::GetErrorManager()->generateRaptorError(C3DEngine::C3DEngineClassID::GetClassId(),
 													   CRaptorErrorManager::RAPTOR_ERROR,

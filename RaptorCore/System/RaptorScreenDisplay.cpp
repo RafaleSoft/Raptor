@@ -10,14 +10,11 @@
 #ifndef __GLOBAL_H__
 	#include "Global.h"
 #endif
-#if !defined(AFX_CONTEXTMANAGER_H__F992F5F0_D8A5_475F_9777_B0EB30E7648E__INCLUDED_)
-	//#include "Subsys/ContextManager.h"
-#endif
 #if !defined(AFX_RAPTORDATAMANAGER_H__114BFB19_FA00_4E3E_879E_C9130043668E__INCLUDED_)
 	#include "DataManager/RaptorDataManager.h"
 #endif
 #if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
-	#include "Raptor.h"
+	#include "System/Raptor.h"
 #endif
 #if !defined(AFX_TIMEOBJECT_H__C06AC4B9_4DD7_49E2_9C5C_050EF5C39780__INCLUDED_)
 	#include "Engine/TimeObject.h"
@@ -230,7 +227,7 @@ bool CRaptorScreenDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
 		{
             // last chance to get some valid display atributes
 			if (cs.display_mode == CGL_NULL)
-				cs = Global::GetInstance().getDefaultConfig();
+				cs = CRaptorInstance::GetInstance().getDefaultConfig();
 
 			//	Initialise frame rate management
 			l1 = CTimeObject::GetGlobalTime();
@@ -424,11 +421,12 @@ bool CRaptorScreenDisplay::glRender(void)
 		glRenderScene();
 		rtime = CTimeObject::deltaMarkTime(this);
 
-		if (Global::GetInstance().getConsole() != NULL)
-			Global::GetInstance().getConsole()->glRender();
+		CRaptorInstance &instance = CRaptorInstance::GetInstance();
+		if (instance.pConsole != NULL)
+			instance.pConsole->glRender();
 		
 #ifdef SHAREWARE_RELEASE
-		if (Global::GetInstance().getCurrentStatus().runAsShareware)
+		if (CRaptorInstance::GetInstance().runAsShareware)
 			glDrawLogo();
 #endif
 

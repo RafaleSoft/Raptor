@@ -11,13 +11,13 @@
 
 #include "Subsys/CodeGeneration.h"
 
-
-#ifndef __CGLTYPES_HPP__
-	#include "System/CGLTypes.h"
-#endif
 #if !defined(AFX_TEXTUREUNITSETUP_H__4A6ADC72_02E5_4F2A_931E_A736B6D6E0F0__INCLUDED_)
 	#include "GLHierarchy/TextureUnitSetup.h"
 #endif
+#if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
+	#include "System/RaptorErrorManager.h"
+#endif
+
 
 RAPTOR_NAMESPACE_BEGIN
 
@@ -225,9 +225,8 @@ bool CProgramParameters::addParameter(const std::string& name, const P& param)
 	{
 		if (m_parameters[i]->name() == name)
 		{
-			Raptor::GetErrorManager()->generateRaptorError(CPersistence::CPersistenceClassID::GetClassId(),
-														   CRaptorErrorManager::RAPTOR_WARNING,
-														   "Duplicate parameter name");
+			RAPTOR_WARNING(	CPersistence::CPersistenceClassID::GetClassId(),
+							"Duplicate parameter name");
 			return false;
 		}
 	}

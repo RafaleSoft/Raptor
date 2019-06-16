@@ -21,11 +21,8 @@
 #if !defined(AFX_RAPTORCONSOLE_H__27656611_2DF3_4416_8124_F608CFAC2122__INCLUDED_)
 	#include "RaptorConsole.h"
 #endif
-#ifndef __GLOBAL_H__
-	#include "System/Global.h"
-#endif
-#if !defined(AFX_GLFONT_H__D451FE62_5FE1_11D3_9142_BA23BC92E77C__INCLUDED_)
-	#include "GLHierarchy/GLFont.h"
+#if !defined(AFX_OPENGL_H__6C8840CA_BEFA_41DE_9879_5777FBBA7147__INCLUDED_)
+	#include "Subsys/OpenGL/RaptorOpenGL.h"
 #endif
 #if !defined(AFX_GLFONTFACTORY_H__E18CD490_4CB0_4ECA_916D_85B155FF04C3__INCLUDED_)
 	#include "GLHierarchy/GLFontFactory.h"
@@ -48,8 +45,16 @@
 #if !defined(AFX_RAPTORIO_H__87D52C27_9117_4675_95DC_6AD2CCD2E78D__INCLUDED_)
 	#include "System/RaptorIO.h"
 #endif
+#if !defined(AFX_RAPTORINSTANCE_H__90219068_202B_46C2_BFF0_73C24D048903__INCLUDED_)
+	#include "Subsys/RaptorInstance.h"
+#endif
+#if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
+	#include "System/RaptorErrorManager.h"
+#endif
 
 #include "Subsys/Interpreters.h"
+
+
 
 static const float CONSOLE_DELAY = 0.016667f;
 
@@ -57,19 +62,19 @@ RAPTOR_NAMESPACE
 
 CRaptorConsole::CInputCollectorBase::CInputCollectorBase(void)	
 {
-	Global::RAPTOR_CURRENT_STATUS& status = Global::GetInstance().getCurrentStatus();
-	status.inputCollectors.push_back(this);
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+	instance.inputCollectors.push_back(this);
 }
 
 CRaptorConsole::CInputCollectorBase::~CInputCollectorBase(void)
 {
-	Global::RAPTOR_CURRENT_STATUS& status = Global::GetInstance().getCurrentStatus();
-	vector<CRaptorConsole::CInputCollectorBase*>::iterator it = status.inputCollectors.begin();
-	while (it != status.inputCollectors.end())
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+	vector<CRaptorConsole::CInputCollectorBase*>::iterator it = instance.inputCollectors.begin();
+	while (it != instance.inputCollectors.end())
 	{
 		if (*it == this)
 		{
-			status.inputCollectors.erase(it);
+			instance.inputCollectors.erase(it);
 			break;
 		}
 		it++;
@@ -78,25 +83,25 @@ CRaptorConsole::CInputCollectorBase::~CInputCollectorBase(void)
 
 void CRaptorConsole::CInputCollectorBase::broadcastCharacterInput(char c)
 {
-	Global::RAPTOR_CURRENT_STATUS& status = Global::GetInstance().getCurrentStatus();
-	vector<CRaptorConsole::CInputCollectorBase*>::iterator it = status.inputCollectors.begin();
-	while (it != status.inputCollectors.end())
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+	vector<CRaptorConsole::CInputCollectorBase*>::iterator it = instance.inputCollectors.begin();
+	while (it != instance.inputCollectors.end())
 		(*it++)->handleCharacterInput(c);
 }
 
 void CRaptorConsole::CInputCollectorBase::broadcastSpecialKeyInput(unsigned char c)
 {
-	Global::RAPTOR_CURRENT_STATUS& status = Global::GetInstance().getCurrentStatus();
-	vector<CRaptorConsole::CInputCollectorBase*>::iterator it = status.inputCollectors.begin();
-	while (it != status.inputCollectors.end())
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+	vector<CRaptorConsole::CInputCollectorBase*>::iterator it = instance.inputCollectors.begin();
+	while (it != instance.inputCollectors.end())
 		(*it++)->handleSpecialKeyInput(c);
 }
 
 void CRaptorConsole::CInputCollectorBase::broadcastMouseInput(int button, int xpos, int ypos)
 {
-	Global::RAPTOR_CURRENT_STATUS& status = Global::GetInstance().getCurrentStatus();
-	vector<CRaptorConsole::CInputCollectorBase*>::iterator it = status.inputCollectors.begin();
-	while (it != status.inputCollectors.end())
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+	vector<CRaptorConsole::CInputCollectorBase*>::iterator it = instance.inputCollectors.begin();
+	while (it != instance.inputCollectors.end())
 		(*it++)->handleMouseInput(button,xpos,ypos);
 }
 
@@ -243,13 +248,12 @@ bool CRaptorConsole::runBatch(const std::string& filename)
     if (ret)
     {
         msg = "Raptor console running batch " + filename;
-        RAPTOR_NO_ERROR(Global::COpenGLClassID::GetClassId(),msg);
-                                                         
+        RAPTOR_NO_ERROR(COpenGL::COpenGLClassID::GetClassId(),msg);
     }
     else
     {
         msg = "Raptor console failed to load batch " + filename;
-        RAPTOR_ERROR(Global::COpenGLClassID::GetClassId(),msg);
+		RAPTOR_ERROR(COpenGL::COpenGLClassID::GetClassId(), msg);
     }
 
     while (ret)
@@ -270,12 +274,12 @@ bool CRaptorConsole::runBatch(const std::string& filename)
             if (ret)
             {
                 msg += " OK: " + yacc->getErrorMsg();
-                RAPTOR_NO_ERROR(Global::COpenGLClassID::GetClassId(),msg);
+				RAPTOR_NO_ERROR(COpenGL::COpenGLClassID::GetClassId(), msg);
             }
             else
             {
                 msg += " script error: " + yacc->getErrorMsg();
-				RAPTOR_ERROR(Global::COpenGLClassID::GetClassId(),msg);
+				RAPTOR_ERROR(COpenGL::COpenGLClassID::GetClassId(), msg);
             }
         }
     }
@@ -485,9 +489,10 @@ void CRaptorConsole::glRender(void)
 				lines.push_back(CGLFont::FONT_TEXT_ITEM(1, currentLine+=10, status.str(), m_color));
             }
             
+			CRaptorInstance &instance = CRaptorInstance::GetInstance();
             if (m_bShowObjects)
             {
-                unsigned int nbRendered = Global::GetInstance().getCurrentStatus().iRenderedObjects;
+                unsigned int nbRendered = instance.iRenderedObjects;
                 stringstream status2;
                 status2 << "nb objs: " << nbRendered;
 				lines.push_back(CGLFont::FONT_TEXT_ITEM(1, currentLine+=10, status2.str(), m_color));
@@ -495,7 +500,7 @@ void CRaptorConsole::glRender(void)
 
             if (m_bShowTriangles)
             {
-                unsigned int nbRendered = Global::GetInstance().getCurrentStatus().iRenderedTriangles;
+                unsigned int nbRendered = instance.iRenderedTriangles;
                 stringstream status3;
                 status3 << "nb tris: " << nbRendered;
 				lines.push_back(CGLFont::FONT_TEXT_ITEM(1, currentLine+=10, status3.str(), m_color));

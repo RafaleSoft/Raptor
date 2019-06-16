@@ -1,6 +1,6 @@
 /***************************************************************************/
 /*                                                                         */
-/*  RenderEntryPoint.cpp                                                   */
+/*  OpenGL.cpp                                                             */
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
@@ -18,42 +18,15 @@
 
 #include "Subsys/CodeGeneration.h"
 
-#if !defined(AFX_RENDERENTRYPOINT_H__0C53B135_BE95_4B42_AE37_0CBE00093DEB__INCLUDED_)
-	#include "RenderEntryPoint.h"
+#if !defined(AFX_OPENGL_H__6C8840CA_BEFA_41DE_9879_5777FBBA7147__INCLUDED_)
+	#include "Subsys/OpenGL/RaptorOpenGL.h"
 #endif
-#if !defined(AFX_RAPTORINSTANCE_H__90219068_202B_46C2_BFF0_73C24D048903__INCLUDED_)
-	#include "Subsys/RaptorInstance.h"
-#endif
+
 
 RAPTOR_NAMESPACE
 
-//////////////////////////////////////////////////////////////////////
-// Construction/Destruction
-//////////////////////////////////////////////////////////////////////
-
-CRenderEntryPoint::CRenderEntryPoint()
+static COpenGL::COpenGLClassID openglID;
+const CPersistence::CPersistenceClassID& COpenGL::COpenGLClassID::GetClassId(void)
 {
-	CRaptorInstance &instance = CRaptorInstance::GetInstance();
-	instance.renderEntryPoints.push_back(this);
+	return openglID;
 }
-
-CRenderEntryPoint::~CRenderEntryPoint()
-{
-	CRaptorInstance &instance = CRaptorInstance::GetInstance();
-
-	vector<CRenderEntryPoint*>::iterator itr = instance.renderEntryPoints.begin();
-	vector<CRenderEntryPoint*>::iterator end = instance.renderEntryPoints.end();
-
-	while (itr != end)
-	{
-		CRenderEntryPoint* rep = (*itr);
-		if (rep == this)
-		{
-			instance.renderEntryPoints.erase(itr);
-			itr = end;
-		}
-		else
-			itr++;
-	}
-}
-

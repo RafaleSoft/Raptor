@@ -79,7 +79,7 @@ RAPTOR_NAMESPACE_END
 
 
 static const std::string vp_src =
-"#version 460 compatibility\n\
+"#version 440 compatibility\n\
 \n\
 uniform float fPointSize; \n\
 \n\
@@ -102,7 +102,7 @@ void main (void) \n\
 }";
 
 static const std::string gp_src =
-"#version 460\n\
+"#version 440\n\
 \n\
 //	Expect the geometry shader extension to be available, warn if not. \n\
 #extension GL_ARB_geometry_shader4 : enable \n\
@@ -144,7 +144,7 @@ void main() \n\
 }";
 
 static const std::string gp_src2 =
-"#version 460\n\
+"#version 440\n\
 \n\
 //	Expect the geometry shader extension to be available, warn if not. \n\
 #extension GL_ARB_geometry_shader4 : enable \n\
@@ -188,7 +188,7 @@ void main() \n\
 }";
 
 static const std::string fp_src =
-"#version 460\n\
+"#version 440\n\
 \n\
 uniform	sampler2D diffuseMap; \n\
 \n\
@@ -202,7 +202,7 @@ void main (void) \n\
 }";
 
 static const std::string fp_src2 =
-"#version 460\n\
+"#version 440\n\
 \n\
 uniform	sampler3D diffuseMap; \n\
 \n\
