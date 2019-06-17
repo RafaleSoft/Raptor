@@ -98,7 +98,6 @@ ENGINE_SRC = \
 SYSTEM_SRC = \
 	$(SRCDIR)/System/CGLTypes.cpp \
 	$(SRCDIR)/System/Color.cpp \
-	$(SRCDIR)/System/Global.cpp \
 	$(SRCDIR)/System/Memory.cpp \
 	$(SRCDIR)/System/Raptor.cpp \
 	$(SRCDIR)/System/RaptorApplication.cpp \

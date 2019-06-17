@@ -40,9 +40,6 @@
 #if !defined(AFX_PROJECTOR_H__0AEE2092_215F_40FA_BBAE_7D8A2F5A482F__INCLUDED_)
     #include "Projector.h"
 #endif
-#ifndef __GLOBAL_H__
-	#include "System/Global.h"
-#endif
 #if !defined(AFX_RAPTORIO_H__87D52C27_9117_4675_95DC_6AD2CCD2E78D__INCLUDED_)
 	#include "System/RaptorIO.h"
 #endif

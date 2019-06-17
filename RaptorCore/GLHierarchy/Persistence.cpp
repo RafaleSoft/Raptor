@@ -82,9 +82,11 @@ CPersistence::CPersistence(const CPersistence::CPersistenceClassID &classID,
             msgArg.arg_sz = name.data();
             args.push_back(msgArg);
 
-			Raptor::GetErrorManager()->generateRaptorError(	CPersistence::CPersistenceClassID::GetClassId(),
-														 	CRaptorErrorManager::RAPTOR_WARNING,
-															CRaptorMessages::ID_OBJECT_DUPLICATE,args);
+			CRaptorErrorManager* mgr = Raptor::GetErrorManager();
+			if (NULL != mgr)
+				mgr->generateRaptorError(	CPersistence::CPersistenceClassID::GetClassId(), 
+											CRaptorErrorManager::RAPTOR_WARNING,
+											CRaptorMessages::ID_OBJECT_DUPLICATE, args);
             firstfind = false;
         }
 #endif
@@ -110,13 +112,8 @@ CPersistence::~CPersistence()
 {
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 	stringstream msg;
-	msg << " deleting " << this << " - " << this->m_name;
-	Raptor::GetErrorManager()->generateRaptorError(	CPersistence::CPersistenceClassID::GetClassId(),
-													CRaptorErrorManager::RAPTOR_NO_ERROR,
-													msg.str());
-	Raptor::GetErrorManager()->generateRaptorError(	CPersistence::CPersistenceClassID::GetClassId(),
-													CRaptorErrorManager::RAPTOR_NO_ERROR,
-													"proceed...");
+	msg << " deleting " << this << " - " << this->m_name << " - " << this->getId().ClassName();
+	RAPTOR_NO_ERROR(CPersistence::CPersistenceClassID::GetClassId(), msg.str());
 #endif
 
     CRaptorLock lock(persistenceMutex);
@@ -137,10 +134,12 @@ CPersistence::~CPersistence()
 		objects.erase(itr);
 
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
-    else
-		Raptor::GetErrorManager()->generateRaptorError(	CPersistence::CPersistenceClassID::GetClassId(),
-														CRaptorErrorManager::RAPTOR_ERROR,
-														CRaptorMessages::ID_DESTROY_FAILED);
+	else
+	{
+		RAPTOR_ERROR(CPersistence::CPersistenceClassID::GetClassId(), CRaptorMessages::ID_DESTROY_FAILED);
+	}
+
+	RAPTOR_NO_ERROR(CPersistence::CPersistenceClassID::GetClassId(), " done !");
 #endif
 }
 

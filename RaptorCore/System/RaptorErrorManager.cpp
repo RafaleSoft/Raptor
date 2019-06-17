@@ -134,28 +134,31 @@ void CRaptorErrorManager::addRaptorError(GL_RAPTOR_ERROR& err)
 		localtime_s(&newtime, &timer);
 		char buffer[256];
 		asctime_s(buffer, 256, &newtime);
+		buffer[24] = buffer[25] = 0;	// msdn tells there is a new lire and \0 at end of buffer.
 
         switch (err.type)
         {
             case RAPTOR_NO_ERROR:
-				*m_pLogger << " - Info(" << buffer << "): " << err.error.data() << '\n';
+				*m_pLogger << " - Info(";
                 break;
             case RAPTOR_WARNING:
-				*m_pLogger << " - Warning(" << buffer << "): " << err.error.data() << '\n';
+				*m_pLogger << " - Warning(";
                 break;
             case RAPTOR_ERROR:
-				*m_pLogger << " - Error(" << buffer << "): " << err.error.data() << '\n';
+				*m_pLogger << " - Error(";
                 break;
             case RAPTOR_GL_ERROR:
-				*m_pLogger << " - OpenGL error(" << buffer << "): " << err.error.data() << '\n';
+				*m_pLogger << " - OpenGL error(";
                 break;
 			case RAPTOR_VK_ERROR:
-				*m_pLogger << " - Vulkan error(" << buffer << "): " << err.error.data() << '\n';
+				*m_pLogger << " - Vulkan error(";
                 break;
             case RAPTOR_FATAL:
-				*m_pLogger << " - Fatal(" << buffer << "): " << err.error.data() << '\n';
+				*m_pLogger << " - Fatal(";
                 break;
         }
+
+		*m_pLogger << buffer << "): " << err.error.data() << '\n';
     }
 }
 

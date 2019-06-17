@@ -7,21 +7,11 @@
 #if !defined(AFX_RAPTORBUFFERDISPLAY_H__DBB1E3EC_EAF3_4EBA_AAB4_C51FA49C5884__INCLUDED_)
 	#include "RaptorBufferDisplay.h"
 #endif
-
-#ifndef __GLOBAL_H__
-//	#include "System/Global.h"
-#endif
-#if !defined(AFX_PERSISTENCE_H__5561BA28_831B_11D3_9142_EEB51CEBBDB0__INCLUDED_)
-	//#include "GLHierarchy/Persistence.h"
-#endif
 #if !defined(AFX_3DENGINE_H__DB24F018_80B9_11D3_97C1_FC2841000000__INCLUDED_)
 	#include "Engine/3DEngine.h"
 #endif
 #if !defined(AFX_3DSCENE_H__E597E752_BAD4_415D_9C00_8C59D139D32B__INCLUDED_)
 	#include "Engine/3DScene.h"
-#endif
-#if !defined(AFX_TEXTUREOBJECT_H__D32B6294_B42B_4E6F_AB73_13B33C544AD0__INCLUDED_)
-	//#include "GLHierarchy/TextureObject.h"
 #endif
 #if !defined(AFX_GEOMETRYALLOCATOR_H__802B3C7A_43F7_46B2_A79E_DDDC9012D371__INCLUDED_)
 	#include "Subsys/GeometryAllocator.h"

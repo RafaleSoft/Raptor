@@ -6,15 +6,11 @@
 #if !defined(AFX_RAPTORSCREENDISPLAY_H__D3165157_E39B_4770_990F_26D44A7BD1A3__INCLUDED_)
 	#include "RaptorScreenDisplay.h"
 #endif
-
-#ifndef __GLOBAL_H__
-	#include "Global.h"
-#endif
 #if !defined(AFX_RAPTORDATAMANAGER_H__114BFB19_FA00_4E3E_879E_C9130043668E__INCLUDED_)
 	#include "DataManager/RaptorDataManager.h"
 #endif
-#if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
-	#include "System/Raptor.h"
+#if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
+	#include "System/RaptorErrorManager.h"
 #endif
 #if !defined(AFX_TIMEOBJECT_H__C06AC4B9_4DD7_49E2_9C5C_050EF5C39780__INCLUDED_)
 	#include "Engine/TimeObject.h"
@@ -49,6 +45,10 @@
 #if !defined(AFX_RAPTORINSTANCE_H__90219068_202B_46C2_BFF0_73C24D048903__INCLUDED_)
 	#include "Subsys/RaptorInstance.h"
 #endif
+#if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
+	#include "System/Raptor.h"
+#endif
+
 
 RAPTOR_NAMESPACE
 

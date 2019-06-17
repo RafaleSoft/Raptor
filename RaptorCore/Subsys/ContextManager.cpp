@@ -34,14 +34,9 @@
 #if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
     #include "System/RaptorErrorManager.h"
 #endif
-#ifndef __GLOBAL_H__
-	//#include "System/Global.h"
-#endif
 #if !defined(AFX_VULKAN_H__625F6BC5_F386_44C2_85C1_EDBA23B16921__INCLUDED_)
 	#include "Subsys/Vulkan/RaptorVulkan.h"
 #endif
-
-
 
 #if defined(_WIN32)
     #if !defined(AFX_WIN32CONTEXTMANAGER_H__A1D82397_7E92_4D01_A04D_782BCFD17689__INCLUDED_)

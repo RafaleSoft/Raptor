@@ -17,12 +17,8 @@
 
 #include "Subsys/CodeGeneration.h"
 
-#ifndef __GLOBAL_H__
-    #include "Global.h"
-#endif
-
-#if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
-	#include "System/Raptor.h"
+#if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
+	#include "System/RaptorErrorManager.h"
 #endif
 #if !defined(AFX_MEMORY_H__81A6CA9A_4ED9_4260_B6E4_C03276C38DBC__INCLUDED_)
 	#include "System/Memory.h"
@@ -30,14 +26,10 @@
 #if !defined(AFX_RAPTORINSTANCE_H__90219068_202B_46C2_BFF0_73C24D048903__INCLUDED_)
 	#include "Subsys/RaptorInstance.h"
 #endif
-#ifdef RAPTOR_DEBUG_MODE_GENERATION
-	#if !defined(AFX_RAPTORMESSAGES_H__55776166_2943_4D08_BFC8_65DFB74FD780__INCLUDED_)
-		#include "System/RaptorMessages.h"
-	#endif
-	#if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
-		#include "System/RaptorErrorManager.h"
-	#endif
+#if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
+	#include "System/Raptor.h"
 #endif
+
 
 #ifdef WIN32
     #include <new.h>    // to support old platform prototypes, but not for a long time.
@@ -71,9 +63,7 @@ static _PNH __oldNewHandler = NULL;
     void RAPTOR_NEW_HANDLER(void)
 #endif
 {
-	Raptor::GetErrorManager()->generateRaptorError(	CPersistence::CPersistenceClassID::GetClassId(),
-													CRaptorErrorManager::RAPTOR_FATAL,
-													CRaptorMessages::ID_NO_RESOURCE);
+	RAPTOR_FATAL(CPersistence::CPersistenceClassID::GetClassId(), CRaptorMessages::ID_NO_RESOURCE);
 
     Raptor::GetMessages()->displayMessage("Failed to allocate more memory");
 #ifdef WIN32
@@ -158,7 +148,13 @@ CHostMemoryManager::~CHostMemoryManager()
     while (m_pHeap->garbage.end() != itr)
 	{
 		const CMemoryHeap::DATA_BLOC& db = (*itr++);
-		release(db.address);
+		unsigned char *pT = (unsigned char*)(db.address);
+
+		// get allocation offset
+		pT -= *(pT - 1);
+
+		// proceed to memory release
+		delete[] pT;
 	}
 	m_pHeap->garbage.clear();
 
@@ -364,9 +360,8 @@ void CHostMemoryManager::release(void *data) const
 	else
 	{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
-		Raptor::GetErrorManager()->generateRaptorError(CPersistence::CPersistenceClassID::GetClassId(),
-                                                       CRaptorErrorManager::RAPTOR_WARNING,
-                                                       "You are trying to free a block that was not properly allocated");
+		RAPTOR_WARNING(	CPersistence::CPersistenceClassID::GetClassId(),
+						"You are trying to free a block that was not properly allocated");
 #endif
 		return;
 	}

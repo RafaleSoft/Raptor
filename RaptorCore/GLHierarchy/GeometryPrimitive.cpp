@@ -28,9 +28,6 @@
 #if !defined(AFX_RAPTORINSTANCE_H__90219068_202B_46C2_BFF0_73C24D048903__INCLUDED_)
 	#include "Subsys/RaptorInstance.h"
 #endif
-#ifndef __GLOBAL_H__
-	//#include "System/Global.h"
-#endif
 
 RAPTOR_NAMESPACE
 

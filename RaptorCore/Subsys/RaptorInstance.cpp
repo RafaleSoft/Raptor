@@ -32,9 +32,6 @@
 #if !defined(AFX_3DENGINETASKMANAGER_H__04149C60_C594_4009_A2C9_F852497146A3__INCLUDED_)
 	#include "Engine/3DEngineTaskManager.h"
 #endif
-#if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
-	#include "System/Raptor.h"
-#endif
 #if !defined(AFX_VULKAN_H__625F6BC5_F386_44C2_85C1_EDBA23B16921__INCLUDED_)
 	#include "Subsys/Vulkan/RaptorVulkan.h"
 #endif
@@ -99,6 +96,8 @@ bool CRaptorInstance::destroy(void)
 	if (m_pInstance == NULL)
 		return false;
 
+	Raptor::glPurgeRaptor(false);
+
 	delete m_pInstance;
 	m_pInstance = NULL;
 
@@ -120,11 +119,7 @@ CRaptorInstance::~CRaptorInstance()
 		engineTaskMgr = NULL;
 	}
 
-	if (pMessages != NULL)
-		delete pMessages;
-	if (pErrorMgr != NULL)
-		delete pErrorMgr;
-
+	p3DEngine = NULL;
 	pAnimator = NULL;
 
 	if (pConsole != NULL)
@@ -159,7 +154,6 @@ CRaptorInstance::~CRaptorInstance()
 
 #endif
 
-
 	RAPTOR_HANDLE noDevice;
 	CContextManager::GetInstance()->glMakeCurrentContext(noDevice, defaultContext);
 
@@ -173,6 +167,13 @@ CRaptorInstance::~CRaptorInstance()
 
 	delete CContextManager::GetInstance();
 	delete CHostMemoryManager::GetInstance();
+
+	if (pMessages != NULL)
+		delete pMessages;
+	pMessages = NULL;
+	if (pErrorMgr != NULL)
+		delete pErrorMgr;
+	pErrorMgr = NULL;
 }
 
 void CRaptorInstance::initInstance()

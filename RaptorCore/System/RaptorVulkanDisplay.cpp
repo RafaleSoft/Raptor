@@ -28,9 +28,6 @@
 #if !defined(AFX_TIMEOBJECT_H__C06AC4B9_4DD7_49E2_9C5C_050EF5C39780__INCLUDED_)
 	#include "Engine/TimeObject.h"
 #endif
-#ifndef __GLOBAL_H__
-	#include "Global.h"
-#endif
 #if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
 	#include "System/Raptor.h"
 #endif
