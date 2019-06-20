@@ -1,3 +1,21 @@
+###########################################################################
+#                                                                         #
+#  Makefile.simd                                                          #
+#                                                                         #
+#    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       #
+#                                                                         #
+#  Copyright 1998-2019 by                                                 #
+#  Fabrice FERRAND.                                                       #
+#                                                                         #
+#  This file is part of the Raptor project, and may only be used,         #
+#  modified, and distributed under the terms of the Raptor project        #
+#  license, LICENSE.  By continuing to use, modify, or distribute         #
+#  this file you indicate that you have read the license and              #
+#  understand and accept it fully.                                        #
+#                                                                         #
+###########################################################################
+
+
 export
 
 CCCFLAGS =  -DSIMD_NO_ASSEMBLY -DLINUX -fPIC
@@ -6,8 +24,8 @@ SRCDIR = $(RAPTOR_ROOT)/SIMD
 INCDIRS = -I$(SRCDIR)
 LDFLAGS = -Bdynamic -shared -lstdc++
 
-SO = $(OUTPUT)/simd.so.$(RAPTOR_VERSION)
-LIB = $(OUTPUT)/simd.lib
+SO = $(OUTPUT)/libsimd.so.$(RAPTOR_VERSION)
+LIB = $(OUTPUT)/libsimd.lib
 
 all:	$(LIB) $(SO)
 

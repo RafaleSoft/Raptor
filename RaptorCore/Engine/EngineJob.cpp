@@ -16,8 +16,8 @@
 	#include "System/Raptor.h"
 #endif
 
-#ifndef __GLOBAL_H__
-    #include "System/Global.h"
+#if !defined(AFX_RAPTORINSTANCE_H__90219068_202B_46C2_BFF0_73C24D048903__INCLUDED_)
+	#include "Subsys/RaptorInstance.h"
 #endif
 
 
@@ -36,8 +36,8 @@ CEngineJob::CEngineJob(unsigned int batchId)
 CEngineJob::~CEngineJob()
 {
 	// Remove the job in case it has been registered.
-	Global::RAPTOR_CURRENT_STATUS &st = Global::GetInstance().getCurrentStatus();
-    C3DEngineTaskManager *taskManager = st.engineTaskMgr;
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+    C3DEngineTaskManager *taskManager = instance.engineTaskMgr;
 
 	taskManager->unregisterJob(this);
 }
@@ -60,16 +60,16 @@ void CEngineJob::jobDone(void)
 
 void CEngineJob::registerJob()
 {
-	Global::RAPTOR_CURRENT_STATUS &st = Global::GetInstance().getCurrentStatus();
-    C3DEngineTaskManager *taskManager = st.engineTaskMgr;
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+    C3DEngineTaskManager *taskManager = instance.engineTaskMgr;
 
 	taskManager->registerJob(this);
 }
 
 void CEngineJob::run(unsigned int batchId)
 {
-	Global::RAPTOR_CURRENT_STATUS &st = Global::GetInstance().getCurrentStatus();
-    C3DEngineTaskManager *taskManager = st.engineTaskMgr;
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+    C3DEngineTaskManager *taskManager = instance.engineTaskMgr;
 
 	taskManager->batchJobs(batchId);
 }

@@ -36,9 +36,6 @@
 #if !defined(AFX_FRAGMENTPROGRAM_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
 	#include "GLHierarchy/FragmentProgram.h"
 #endif
-#if !defined(AFX_TEXTUREOBJECT_H__D32B6294_B42B_4E6F_AB73_13B33C544AD0__INCLUDED_)
-	#include "GLHierarchy/TextureObject.h"
-#endif
 #if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
 	#include "System/RaptorGLExtensions.h"
 #endif
@@ -48,13 +45,17 @@
 #if !defined(AFX_TEXELALLOCATOR_H__7C48808C_E838_4BE3_8B0E_286428BB7CF8__INCLUDED_)
 	#include "Subsys/TexelAllocator.h"
 #endif
+#if !defined(AFX_OPENGL_H__6C8840CA_BEFA_41DE_9879_5777FBBA7147__INCLUDED_)
+	#include "Subsys/OpenGL/RaptorOpenGL.h"
+#endif
+
 
 RAPTOR_NAMESPACE
 
 
 
 static const std::string vp_src =
-"#version 460 compatibility\n\
+"#version 440 compatibility\n\
 \n\
 //uniform Transform { \n\
 //	mat4 ModelViewMatrix; \n\
@@ -81,7 +82,7 @@ void main (void) \n\
 }";
 
 static const std::string gp_src =
-"#version 460\n\
+"#version 440\n\
 \n\
 //	Expect the geometry shader extension to be available, warn if not. \n\
 #extension GL_ARB_geometry_shader4 : enable \n\
@@ -118,7 +119,7 @@ void main() \n\
 }";
 
 static const std::string fp_src =
-"#version 460\n\
+"#version 440\n\
 \n\
 uniform	sampler2D diffuseMap; \n\
 \n\
@@ -159,9 +160,8 @@ CTextureQuad::~CTextureQuad()
 		bool res = pAllocator->releaseVertices((float*)s_attributes);
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 		if (!res)
-		Raptor::GetErrorManager()->generateRaptorError(Global::COpenGLClassID::GetClassId(),
-													   CRaptorErrorManager::RAPTOR_WARNING,
-													   "Raptor Texture Quad Allocator released out of owning display !");
+			RAPTOR_WARNING(	COpenGL::COpenGLClassID::GetClassId(),
+							"Raptor Texture Quad Allocator released out of owning display !");
 #endif
 		s_attributes = NULL;
 		max_index = 0;

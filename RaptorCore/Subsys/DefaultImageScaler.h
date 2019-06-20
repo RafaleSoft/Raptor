@@ -1,6 +1,20 @@
-// DefaultImageScaler.h: interface for the CDefaultImageScaler class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  DefaultImageScaler.h                                                   */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
 
 #if !defined(AFX_DEFAULTIMAGESCALER_H__E3E63A13_79FC_4E46_A1D5_BCD41CF86360__INCLUDED_)
 #define AFX_DEFAULTIMAGESCALER_H__E3E63A13_79FC_4E46_A1D5_BCD41CF86360__INCLUDED_
@@ -33,6 +47,10 @@ public:
 
 private:
 	CDefaultImageScaler();
+
+	void scaleFloats(size_t srcw, size_t srch, size_t dstw, size_t dsth, float *srcpx, float *dstpx);
+
+	void scaleFloats(size_t srcw, size_t srch, size_t dstw, size_t dsth, uint32_t *srcpx, uint32_t *dstpx);
 
 	//!	Texture resize factors.
 	float scale_x;

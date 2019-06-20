@@ -19,27 +19,18 @@
 
 #include "Subsys/CodeGeneration.h"
 
-#if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
-	#include "System/Raptor.h"
+#if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
+	#include "System/RaptorErrorManager.h"
 #endif
-
 #if !defined(AFX_IVIEWPOINT_H__82071851_A036_4311_81CB_01E7E25F19E1__INCLUDED_)
 	#include "IViewPoint.h"
 #endif
-
 #if !defined(AFX_3DPATH_H__6AD45CFB_C7F6_4F7B_BFF6_932A812A770E__INCLUDED_)
 	#include "3DPath.h"
 #endif
-
 #if !defined(AFX_RAPTORIO_H__87D52C27_9117_4675_95DC_6AD2CCD2E78D__INCLUDED_)
 	#include "System/RaptorIO.h"
 #endif
-
-#ifndef __GLOBAL_H__
-	#include "System/Global.h"
-#endif
-
-
 #if !defined(AFX_OBJECT3D_H__DB24F017_80B9_11D3_97C1_FC2841000000__INCLUDED_)
 	#include "GLHierarchy/Object3D.h"
 #endif
@@ -109,7 +100,7 @@ void IViewPoint::setViewVolume(float left, float right,
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 	if ((right == left) ||
 		(bottom == up) ||
-		(near == far))
+		(n == f))
 	{
 		Raptor::GetErrorManager()->generateRaptorError(C3DEngine::C3DEngineClassID::GetClassId(),
 													   CRaptorErrorManager::RAPTOR_ERROR,

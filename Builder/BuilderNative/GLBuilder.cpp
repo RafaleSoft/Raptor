@@ -15,8 +15,10 @@
 /*                                                                         */
 /***************************************************************************/
 
-
-#include "StdAfx.h"
+#ifdef WIN32
+	#define WIN32_LEAN_AND_MEAN
+	#include <Windows.h>
+#endif
 
 #include "GLBuilder.h"
 #include <stdlib.h>
@@ -601,6 +603,48 @@ bool CGLBuilder::writeHeader(const string& filename)
 			header << "				1\n";
 		}
 	}
+
+	string parallel_header = "";
+	string parallel_enable = "\n";
+	if (isExtensionActive("RAPTOR_SSE_CODE_GENERATION"))
+	{
+		parallel_enable += "#define __SSE__  1\n";
+		parallel_header = "<xmmintrin.h>";
+	}
+	if (isExtensionActive("RAPTOR_SSE2_CODE_GENERATION"))
+	{
+		parallel_enable += "#define __SSE2__  1\n";
+		parallel_header = "<emmintrin.h>";
+	}
+	if (isExtensionActive("RAPTOR_SSE3_CODE_GENERATION"))
+	{
+		parallel_enable += "#define __SSE3__  1\n";
+		parallel_header = "<pmmintrin.h>";
+	}
+	if (isExtensionActive("RAPTOR_SSSE3_CODE_GENERATION"))
+	{
+		parallel_enable += "#define __SSSE3__  1\n";
+		parallel_header = "<tmmintrin.h>";
+	}
+	if (isExtensionActive("RAPTOR_SSE41_CODE_GENERATION"))
+	{
+		parallel_enable += "#define __SSE4_1__  1\n";
+		parallel_header = "<smmintrin.h>";
+	}
+	if (isExtensionActive("RAPTOR_SSE42_CODE_GENERATION"))
+	{
+		parallel_enable += "#define __SSE4_2__  1\n";
+		parallel_header = "<nmmintrin.h>";
+	}
+	if (isExtensionActive("RAPTOR_AES_CODE_GENERATION"))
+		parallel_header = "<wmmintrin.h>";
+	if (isExtensionActive("RAPTOR_AVX_CODE_GENERATION"))
+		parallel_header = "<immintrin.h>";
+
+	header << parallel_enable;
+	header << "\n#include ";
+	header << parallel_header;
+	header << "\n";
 	
 	header.write(END,strlen(END));
 	header.close();

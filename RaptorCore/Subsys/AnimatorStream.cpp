@@ -6,14 +6,14 @@
 #if !defined(AFX_ANIMATORSTREAM_H__3D03D0B9_A350_4226_8AB4_BABDD53D68B6__INCLUDED_)
 	#include "AnimatorStream.h"
 #endif
-#if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
-    #include "System/Raptor.h"
+#if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
+	#include "System/RaptorErrorManager.h"
 #endif
 #if !defined(AFX_RAPTORCONFIG_H__29B753B8_17DE_44DF_A4D2_9D19C5AC53D5__INCLUDED_)
     #include "System/RaptorConfig.h"
 #endif
-#ifndef __GLOBAL_H__
-	#include "System/Global.h"
+#if !defined(AFX_RAPTORINSTANCE_H__90219068_202B_46C2_BFF0_73C24D048903__INCLUDED_)
+	#include "Subsys/RaptorInstance.h"
 #endif
 #if !defined(AFX_TEXELALLOCATOR_H__7C48808C_E838_4BE3_8B0E_286428BB7CF8__INCLUDED_)
 	#include "Subsys/TexelAllocator.h"
@@ -35,8 +35,8 @@ RAPTOR_NAMESPACE
 CAnimatorStream::CAnimatorStream()
     :memoryBuffer(NULL),m_bUseDMA(false)
 {
-    Global::RAPTOR_CURRENT_STATUS &st = Global::GetInstance().getCurrentStatus();
-    C3DEngineTaskManager *taskManager = st.engineTaskMgr;
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+    C3DEngineTaskManager *taskManager = instance.engineTaskMgr;
 	jobId = taskManager->generateBatchId();
 }
 
@@ -53,9 +53,8 @@ void CAnimatorStream::setVideoKindIO(CAnimator::IVideoIO *streamer)
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
     if ((streamer == NULL) || (streamer->getKind().empty()))
 	{
-		Raptor::GetErrorManager()->generateRaptorError(	CAnimator::CAnimatorClassID::GetClassId(),
-					 									CRaptorErrorManager::RAPTOR_WARNING,
-														"Null video streamer can not be registered in an Animator");
+		RAPTOR_WARNING(	CAnimator::CAnimatorClassID::GetClassId(),
+						"Null video streamer can not be registered in an Animator");
 		return;
 	}
 #endif
@@ -166,7 +165,8 @@ long CAnimatorStream::glStartPlayBack(const std::string& fname,bool loop)
 
 #if defined(RAPTOR_SMP_CODE_GENERATION)
         video->pJob = new CPlayFrameJob(this,m_pCurrentStreams.size()-1,jobId);
-		C3DEngineTaskManager *taskManager = Global::GetInstance().getCurrentStatus().engineTaskMgr;
+		CRaptorInstance &instance = CRaptorInstance::GetInstance();
+		C3DEngineTaskManager *taskManager = instance.engineTaskMgr;
 		taskManager->registerJob(video->pJob);
 #endif
 
@@ -182,7 +182,8 @@ void CAnimatorStream::playFrames(float dt)
 	CPlayFrameJob::SetJobTime(dt);
 	if (m_pCurrentStreams.size() > 0)
 	{
-		C3DEngineTaskManager *taskManager = Global::GetInstance().getCurrentStatus().engineTaskMgr;
+		CRaptorInstance &instance = CRaptorInstance::GetInstance();
+		C3DEngineTaskManager *taskManager = instance.engineTaskMgr;
 		taskManager->batchJobs(jobId);
 	}
 #else
@@ -211,7 +212,8 @@ void CAnimatorStream::endPlayBack(unsigned int nStream)
 			}
 
 #if defined(RAPTOR_SMP_CODE_GENERATION)
-			C3DEngineTaskManager *taskManager = Global::GetInstance().getCurrentStatus().engineTaskMgr;
+			CRaptorInstance &instance = CRaptorInstance::GetInstance();
+			C3DEngineTaskManager *taskManager = instance.engineTaskMgr;
 			taskManager->unregisterJob((*it)->pJob);
 			delete (*it)->pJob;
 #endif

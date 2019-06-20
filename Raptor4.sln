@@ -6,6 +6,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Builder.Net", "Build\VS2013
 	ProjectSection(ProjectDependencies) = postProject
 		{C9E4DB51-7755-42F0-A3BD-7981799AC84E} = {C9E4DB51-7755-42F0-A3BD-7981799AC84E}
 		{C1E2375A-ABA6-4AFC-96E5-1C116DFA65CD} = {C1E2375A-ABA6-4AFC-96E5-1C116DFA65CD}
+		{23ECCA7C-B9D2-48FE-BA8C-642D1AC450C0} = {23ECCA7C-B9D2-48FE-BA8C-642D1AC450C0}
 		{5B79C3D0-E3B6-4B25-A447-8C2C1550E1DD} = {5B79C3D0-E3B6-4B25-A447-8C2C1550E1DD}
 	EndProjectSection
 EndProject
@@ -1960,8 +1961,8 @@ Global
 		{23ECCA7C-B9D2-48FE-BA8C-642D1AC450C0}.Release_with_AddOns|Any CPU.ActiveCfg = Release|Win32
 		{23ECCA7C-B9D2-48FE-BA8C-642D1AC450C0}.Release_with_AddOns|Mixed Platforms.ActiveCfg = Release_with_AddOns|Win32
 		{23ECCA7C-B9D2-48FE-BA8C-642D1AC450C0}.Release_with_AddOns|Mixed Platforms.Build.0 = Release_with_AddOns|Win32
-		{23ECCA7C-B9D2-48FE-BA8C-642D1AC450C0}.Release_with_AddOns|Win32.ActiveCfg = Release|Win32
-		{23ECCA7C-B9D2-48FE-BA8C-642D1AC450C0}.Release_with_AddOns|Win32.Build.0 = Release|Win32
+		{23ECCA7C-B9D2-48FE-BA8C-642D1AC450C0}.Release_with_AddOns|Win32.ActiveCfg = Release_with_AddOns|Win32
+		{23ECCA7C-B9D2-48FE-BA8C-642D1AC450C0}.Release_with_AddOns|Win32.Build.0 = Release_with_AddOns|Win32
 		{23ECCA7C-B9D2-48FE-BA8C-642D1AC450C0}.Release_with_AddOns|x64.ActiveCfg = Release|Win32
 		{23ECCA7C-B9D2-48FE-BA8C-642D1AC450C0}.Release_with_AddOns|x86.ActiveCfg = Release|Win32
 		{23ECCA7C-B9D2-48FE-BA8C-642D1AC450C0}.Release_with_AddOns|x86.Build.0 = Release|Win32
@@ -1992,8 +1993,8 @@ Global
 		{C9E4DB51-7755-42F0-A3BD-7981799AC84E}.Release_with_AddOns|Any CPU.ActiveCfg = Release|Win32
 		{C9E4DB51-7755-42F0-A3BD-7981799AC84E}.Release_with_AddOns|Mixed Platforms.ActiveCfg = Release_with_AddOns|Win32
 		{C9E4DB51-7755-42F0-A3BD-7981799AC84E}.Release_with_AddOns|Mixed Platforms.Build.0 = Release_with_AddOns|Win32
-		{C9E4DB51-7755-42F0-A3BD-7981799AC84E}.Release_with_AddOns|Win32.ActiveCfg = Release|Win32
-		{C9E4DB51-7755-42F0-A3BD-7981799AC84E}.Release_with_AddOns|Win32.Build.0 = Release|Win32
+		{C9E4DB51-7755-42F0-A3BD-7981799AC84E}.Release_with_AddOns|Win32.ActiveCfg = Release_with_AddOns|Win32
+		{C9E4DB51-7755-42F0-A3BD-7981799AC84E}.Release_with_AddOns|Win32.Build.0 = Release_with_AddOns|Win32
 		{C9E4DB51-7755-42F0-A3BD-7981799AC84E}.Release_with_AddOns|x64.ActiveCfg = Release|Win32
 		{C9E4DB51-7755-42F0-A3BD-7981799AC84E}.Release_with_AddOns|x86.ActiveCfg = Release|Win32
 		{C9E4DB51-7755-42F0-A3BD-7981799AC84E}.Release_with_AddOns|x86.Build.0 = Release|Win32

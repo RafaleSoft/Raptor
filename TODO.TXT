@@ -48,10 +48,6 @@
 	- Supprimer CBumppedGeometry => remplacer par le shader.
 	- Remplacer / améliorer par displacement map / parallax bump mapping
 	
-- Persistence:
-	- Creer un RootPersitence pour stocker les statiques et l'affecter à un display: créer CRaptorInstance, gérée depuis Global/Raptor
-	( permettre des espaces de noms différentes entre 2 displays).
-	
 - CRaptorDisplayConfig:
 	- faire un sync avec timer (VSync prend 50% CPU!)
 

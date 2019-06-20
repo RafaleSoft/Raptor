@@ -1,3 +1,21 @@
+###########################################################################
+#                                                                         #
+#  Makefile.Imath                                                         #
+#                                                                         #
+#    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       #
+#                                                                         #
+#  Copyright 1998-2019 by                                                 #
+#  Fabrice FERRAND.                                                       #
+#                                                                         #
+#  This file is part of the Raptor project, and may only be used,         #
+#  modified, and distributed under the terms of the Raptor project        #
+#  license, LICENSE.  By continuing to use, modify, or distribute         #
+#  this file you indicate that you have read the license and              #
+#  understand and accept it fully.                                        #
+#                                                                         #
+###########################################################################
+
+
 export
 
 CCCFLAGS =  -DSIMD_NO_ASSEMBLY -DLINUX -fPIC -std=c++11
@@ -6,8 +24,7 @@ SRCDIR = $(RAPTOR_ROOT)/AddOns/OpenEXR-2.3.0/source/Imath
 INCDIRS = -I$(RAPTOR_ROOT)/AddOns/OpenEXR-2.3.0/include
 LDFLAGS = -Bdynamic -shared -lstdc++
 
-SO_NAME = libImath.so
-SO = $(OUTPUT)/$(SO_NAME)
+SO = $(OUTPUT)/libImath.so.$(RAPTOR_VERSION)
 LIB = $(OUTPUT)/libImath.a
 
 all:	$(LIB) $(SO)
@@ -28,7 +45,6 @@ OBJ = $(SRC:$(SRCDIR)/%.cpp=$(OUTPUT)/%.o)
 $(SO):	$(OBJ)
 	g++ -o $(SO) $(LDFLAGS) $(OBJ)
 	cp $(SO) $(REDIST)/Bin/
-	cp $(SO) $(REDIST)/Bin/$(SO_NAME).$(RAPTOR_VERSION)
 
 $(LIB):	$(OBJ) 
 	ar -qcv $(LIB) $(OBJ)

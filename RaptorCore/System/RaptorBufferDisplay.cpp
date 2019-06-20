@@ -7,25 +7,11 @@
 #if !defined(AFX_RAPTORBUFFERDISPLAY_H__DBB1E3EC_EAF3_4EBA_AAB4_C51FA49C5884__INCLUDED_)
 	#include "RaptorBufferDisplay.h"
 #endif
-
-#ifndef __GLOBAL_H__
-	#include "System/Global.h"
-#endif
-
-#if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
-	#include "Raptor.h"
-#endif
-#if !defined(AFX_PERSISTENCE_H__5561BA28_831B_11D3_9142_EEB51CEBBDB0__INCLUDED_)
-	#include "GLHierarchy/Persistence.h"
-#endif
 #if !defined(AFX_3DENGINE_H__DB24F018_80B9_11D3_97C1_FC2841000000__INCLUDED_)
 	#include "Engine/3DEngine.h"
 #endif
 #if !defined(AFX_3DSCENE_H__E597E752_BAD4_415D_9C00_8C59D139D32B__INCLUDED_)
 	#include "Engine/3DScene.h"
-#endif
-#if !defined(AFX_TEXTUREOBJECT_H__D32B6294_B42B_4E6F_AB73_13B33C544AD0__INCLUDED_)
-	#include "GLHierarchy/TextureObject.h"
 #endif
 #if !defined(AFX_GEOMETRYALLOCATOR_H__802B3C7A_43F7_46B2_A79E_DDDC9012D371__INCLUDED_)
 	#include "Subsys/GeometryAllocator.h"
@@ -33,7 +19,12 @@
 #if !defined(AFX_TEXELALLOCATOR_H__7C48808C_E838_4BE3_8B0E_286428BB7CF8__INCLUDED_)
 	#include "Subsys/TexelAllocator.h"
 #endif
-
+#if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
+	#include "System/RaptorErrorManager.h"
+#endif	
+#if !defined(AFX_OPENGL_H__6C8840CA_BEFA_41DE_9879_5777FBBA7147__INCLUDED_)
+	#include "Subsys/OpenGL/RaptorOpenGL.h"
+#endif
 
 
 RAPTOR_NAMESPACE_BEGIN
@@ -126,9 +117,8 @@ void CRaptorBufferDisplay::glResize(unsigned int sx,unsigned int sy,unsigned int
     if ((sx == 0) || (sy == 0))
     {
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
-		Raptor::GetErrorManager()->generateRaptorError(	Global::COpenGLClassID::GetClassId(),
-                                                        CRaptorErrorManager::RAPTOR_ERROR,
-		    							                "Raptor Buffer Display is requested a resize with a wrong dimension ( 0 ) !");
+		RAPTOR_ERROR(	COpenGL::COpenGLClassID::GetClassId(),
+						"Raptor Buffer Display is requested a resize with a wrong dimension ( 0 ) !");
 #endif
         return;
     }
@@ -201,9 +191,8 @@ bool CRaptorBufferDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
 		if (CContextManager::INVALID_CONTEXT == manager->glGetCurrentContext())
 		{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
-			Raptor::GetErrorManager()->generateRaptorError(	Global::COpenGLClassID::GetClassId(),
-                                                            CRaptorErrorManager::RAPTOR_ERROR,
-											                "Raptor Display cannot create a buffered display with no device context active");
+			RAPTOR_ERROR(	COpenGL::COpenGLClassID::GetClassId(),
+							"Raptor Display cannot create a buffered display with no device context active");
 #endif
 			return false;
 		}
@@ -340,9 +329,8 @@ bool CRaptorBufferDisplay::glvkUnBindDisplay(void)
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
             if (lastBuffer != m_pBuffer)
             {
-			    Raptor::GetErrorManager()->generateRaptorError(Global::COpenGLClassID::GetClassId(),
-                                                               CRaptorErrorManager::RAPTOR_ERROR,
-				 							                   "Raptor Buffer Display bind/unbind mismatch");
+				RAPTOR_ERROR(	COpenGL::COpenGLClassID::GetClassId(),
+								"Raptor Buffer Display bind/unbind mismatch");
             }
 #endif
 

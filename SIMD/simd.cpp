@@ -389,7 +389,7 @@ const CPU_INFO& SIMD_API getCPUINFO()
 		unsigned int cpuidRegs[4];
 #endif
 
-    CPUID(0,cpuidRegs);
+		CPUID(0,cpuidRegs);
 
 		int nbId = cpuidRegs[0];
 
@@ -401,7 +401,7 @@ const CPU_INFO& SIMD_API getCPUINFO()
 			*((int*)&cpuInfo.features[4]) = cpuidRegs[3];
 			*((int*)&cpuInfo.features[8]) = cpuidRegs[2];
 
-      CPUID(1,cpuidRegs);
+			CPUID(1,cpuidRegs);
 
 			cpuInfo.stepping = (cpuidRegs[0] & 0x0f);
 			cpuInfo.model = (cpuidRegs[0] >> 4) & 0x0f;
@@ -420,7 +420,7 @@ const CPU_INFO& SIMD_API getCPUINFO()
 		}
 		if (nbId >= 2)
 		{
-      CPUID(2,cpuidRegs);
+			CPUID(2,cpuidRegs);
 
 			int nbCacheCalls = (cpuidRegs[0] & 0xff);
 			if (cpuInfo.cacheDescriptor.descriptors != 0)
@@ -450,12 +450,12 @@ const CPU_INFO& SIMD_API getCPUINFO()
 					}
 				}
 
-        CPUID(2,cpuidRegs);
+				CPUID(2,cpuidRegs);
 			}
 		}
 		if ((nbId >= 3) && cpuInfo.hasFeature(CPUINFO::PSN))
 		{
-      CPUID(3,cpuidRegs);
+			CPUID(3,cpuidRegs);
 
 			cpuInfo.serialNumber[0] = cpuidRegs[2];
 			cpuInfo.serialNumber[1] = cpuidRegs[3];
@@ -468,7 +468,7 @@ const CPU_INFO& SIMD_API getCPUINFO()
 			cpuInfo.cacheParameters.nbCacheLevels = 0;
 			int cacheLevel = 0;
 
-      CPUIDEX(4,cacheLevel,cpuidRegs);
+			CPUIDEX(4,cacheLevel,cpuidRegs);
 			cacheLevel++;
 			
 			short cacheType = (cpuidRegs[0] & 0x1f);
@@ -493,7 +493,7 @@ const CPU_INFO& SIMD_API getCPUINFO()
 				parameter.cacheSize = parameter.ways * parameter.partitions * parameter.lineSize * parameter.sets;
 				cpuInfo.cacheParameters.parameters[cpuInfo.cacheParameters.nbCacheLevels++] = parameter;
 
-        CPUIDEX(4,cacheLevel,cpuidRegs);
+				CPUIDEX(4,cacheLevel,cpuidRegs);
 				cacheLevel++;
 				cacheType = (cpuidRegs[0] & 0x1f);
 			}
@@ -520,7 +520,7 @@ const CPU_INFO& SIMD_API getCPUINFO()
 			/* processor topology */
 			int topologyLevel = 0;
 
-      CPUIDEX(11,topologyLevel,cpuidRegs);
+			CPUIDEX(11,topologyLevel,cpuidRegs);
 			topologyLevel++;
 		
 			int apicShift = cpuidRegs[0] & 0xff;
@@ -528,7 +528,7 @@ const CPU_INFO& SIMD_API getCPUINFO()
 
 			if ((cpuidRegs[0] > 0) && (cpuidRegs[1] > 0))
 			{
-        CPUIDEX(11,topologyLevel,cpuidRegs);
+				CPUIDEX(11,topologyLevel,cpuidRegs);
 				topologyLevel++;
 
 				apicShift = cpuidRegs[0] & 0xff;
@@ -536,22 +536,22 @@ const CPU_INFO& SIMD_API getCPUINFO()
 			}
 		}
 
-    CPUID(0x80000000,cpuidRegs);
+		CPUID(0x80000000,cpuidRegs);
 
 		nbId = cpuidRegs[0];
 		if (nbId >= 0x80000002)
 		{
-      CPUID(0x80000002,cpuidRegs);
+			CPUID(0x80000002,cpuidRegs);
 			memcpy(&cpuInfo.processorBrand[0],cpuidRegs,16);
 		}
 		if (nbId >= 0x80000003)
 		{
-      CPUID(0x80000003,cpuidRegs);
+			CPUID(0x80000003,cpuidRegs);
 			memcpy(&cpuInfo.processorBrand[16],cpuidRegs,16);
 		}
 		if (nbId >= 0x80000004)
 		{
-      CPUID(0x80000004,cpuidRegs);
+			CPUID(0x80000004,cpuidRegs);
 			memcpy(&cpuInfo.processorBrand[32],cpuidRegs,16);
 		}
 		//!

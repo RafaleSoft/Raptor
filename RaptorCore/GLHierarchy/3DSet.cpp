@@ -6,47 +6,36 @@
 #ifndef __CGLTYPES_HPP__
 	#include "System/CGLTypes.h"
 #endif
-
 #if !defined(AFX_3DSET_H__DB24F01B_80B9_11D3_97C1_FC2841000000__INCLUDED_)
 	#include "3DSet.h"
 #endif
-
 #if !defined(AFX_GEOMETRY_H__B42ABB87_80E8_11D3_97C2_DE5C28000000__INCLUDED_)
 	#include "Geometry.h"
 #endif
-
 #if !defined(AFX_OBJECT3DINSTANCE_H__A2627662_F5F9_11D3_9142_CFEB8E9F2745__INCLUDED_)
 	#include "Object3DInstance.h"
 #endif
-
 #if !defined(AFX_RAPTORIO_H__87D52C27_9117_4675_95DC_6AD2CCD2E78D__INCLUDED_)
 	#include "System/RaptorIO.h"
-#endif
-
-#ifndef __GLOBAL_H__
-	#include "System/Global.h"
 #endif
 #if !defined(AFX_OBJECTFACTORY_H__7F891C52_9E32_489C_B09C_5E5803522D91__INCLUDED_)
 	#include "ObjectFactory.h"
 #endif
-
-#if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
-	#include "System/Raptor.h"
-#endif
-
 #if !defined(AFX_OBJECT3DCONTOUR_H__C0C2B562_ABBC_4B04_A1E7_E0727FAC66AB__INCLUDED_)
 	#include "GLHierarchy/Object3DContour.h"
 #endif
-
 #if !defined(AFX_3DSETITEM_H__3AA83803_A8B2_457E_A80F_718D6678D740__INCLUDED_)
     #include "Subsys/3DSetItem.h"
 #endif
-
 #if !defined(AFX_OBJECT3DCONTAINERNOTIFIER_H__BF1EABCD_500E_4D7C_8561_2C535DF0640A__INCLUDED_)
     #include "Subsys/Object3DContainerNotifier.h"
 #endif
-
-
+#if !defined(AFX_RAPTORINSTANCE_H__90219068_202B_46C2_BFF0_73C24D048903__INCLUDED_)
+	#include "Subsys/RaptorInstance.h"
+#endif
+#if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
+	#include "System/RaptorErrorManager.h"
+#endif
 
 RAPTOR_NAMESPACE
 
@@ -539,7 +528,7 @@ void C3DSet::glRender()
 
     CATCH_GL_ERROR
 
-    Global::GetInstance().getCurrentStatus().iRenderedObjects++;
+    CRaptorInstance::GetInstance().iRenderedObjects++;
 }
 
 void C3DSet::glClipRender()
@@ -572,7 +561,7 @@ void C3DSet::glClipRender()
 
     CATCH_GL_ERROR
 
-	Global::GetInstance().getCurrentStatus().iRenderedObjects++;
+	CRaptorInstance::GetInstance().iRenderedObjects++;
 }
 
 void C3DSet::glRenderAllBBox(bool filled)

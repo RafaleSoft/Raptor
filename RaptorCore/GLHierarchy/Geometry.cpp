@@ -25,17 +25,14 @@
 #if !defined(AFX_GEOMETRY_H__B42ABB87_80E8_11D3_97C2_DE5C28000000__INCLUDED_)
 	#include "Geometry.h"
 #endif
-#if !defined(AFX_3DENGINE_H__DB24F018_80B9_11D3_97C1_FC2841000000__INCLUDED_)
-	#include "Engine/3DEngine.h"
-#endif
 #if !defined(AFX_SHADER_H__4D405EC2_7151_465D_86B6_1CA99B906777__INCLUDED_)
 	#include "Shader.h"
 #endif
 #if !defined(AFX_TEXTUREUNITSETUP_H__4A6ADC72_02E5_4F2A_931E_A736B6D6E0F0__INCLUDED_)
 	#include "TextureUnitSetup.h"
 #endif
-#ifndef __GLOBAL_H__
-	#include "System/Global.h"
+#if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
+	#include "System/RaptorErrorManager.h"
 #endif
 #if !defined(AFX_MEMORY_H__81A6CA9A_4ED9_4260_B6E4_C03276C38DBC__INCLUDED_)
 	#include "System/Memory.h"
@@ -67,6 +64,10 @@
 #if !defined(AFX_RAPTORVULKANCOMMANDBUFFER_H__0398BABD_747B_4DFE_94AA_B026BDBD03B1__INCLUDED_)
 	#include "Subsys/Vulkan/VulkanCommandBuffer.h"
 #endif
+#if !defined(AFX_RAPTORINSTANCE_H__90219068_202B_46C2_BFF0_73C24D048903__INCLUDED_)
+	#include "Subsys/RaptorInstance.h"
+#endif
+
 
 RAPTOR_NAMESPACE
 
@@ -1220,8 +1221,8 @@ void CGeometry::glRenderGeometry()
 		pExtensions->glDisableVertexAttribArrayARB(CProgramParameters::ADDITIONAL_PARAM1);
 #endif
 
-	Global::GetInstance().getCurrentStatus().iRenderedObjects++;
-	Global::GetInstance().getCurrentStatus().iRenderedTriangles += m_nbPolys;
+	CRaptorInstance::GetInstance().iRenderedObjects++;
+	CRaptorInstance::GetInstance().iRenderedTriangles += m_nbPolys;
 }
 
 //////////////////////////////////////////////////////////////////////
