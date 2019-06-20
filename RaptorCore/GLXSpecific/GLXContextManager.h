@@ -10,13 +10,9 @@
 #endif // _MSC_VER > 1000
 
 
-#ifndef __GLOBAL_H__
-	#include "System/Global.h"
-#endif
 #ifndef __GLX_RAPTOR_GLEXT_H__
 	#include "GLXGlext.h"
 #endif
-
 #if !defined(AFX_CONTEXTMANAGER_H__F992F5F0_D8A5_475F_9777_B0EB30E7648E__INCLUDED_)
 	#include "Subsys/ContextManager.h"
 #endif

@@ -338,6 +338,39 @@ void Raptor::glDestroyDisplay(CRaptorDisplay* pDisplay)
 	}
 }
 
+//! Create and initialise a new RaptorInstance.
+CRaptorInstance* Raptor::createInstance(const CRaptorConfig& config)
+{
+	//	A first instance needs to be initialised.
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+	if (!instance.initialised)
+		return false;
+
+	CRaptorInstance* previous = instance.createNewInstance();
+	if (NULL != previous)
+	{
+		CRaptorInstance &new_instance = CRaptorInstance::GetInstance();
+		new_instance.config = config;
+		new_instance.initInstance();
+
+
+	}
+
+	return previous;
+}
+
+//!	Switch the current RaptorInstance
+CRaptorInstance* Raptor::switchInstance(CRaptorInstance* pInstance)
+{
+	if (NULL == pInstance)
+		return NULL;
+
+	//	A first instance needs to be initialised.
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+	if (!instance.initialised)
+		return NULL;
+}
+
 bool Raptor::glInitRaptor(const CRaptorConfig& config)
 { 
     bool res = false;

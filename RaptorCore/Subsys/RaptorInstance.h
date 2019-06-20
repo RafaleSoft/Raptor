@@ -56,11 +56,16 @@ class CRaptorConsole;
 class CRaptorInstance
 {
 public:
-	//!	Create a singleton instance.
+	//!	Create a singleton instance or returns the current isntance.
 	static CRaptorInstance &GetInstance(void);
+
+	//!	Creates a new RaptorInstance intance abd returns the previous instance.
+	//!	The user shall manage the list of instance.
+	CRaptorInstance* createNewInstance(void);
 
 	//! (Re)Initialise all instance objects.
 	void initInstance();
+
 
 	//!	Raptor Instance has been initialised.
 	bool					initialised;
@@ -100,6 +105,8 @@ public:
 	std::vector<CRaptorDisplay*>	displays;
 	//!	Raptor Console interactors.
 	std::vector<CRaptorConsole::CInputCollectorBase*>	inputCollectors;
+	//!	The full list of persistence objects active in this instance.
+	MapStringToPtr	objects;
 
 
 	//! Stores Display attributes for delayed creation.
@@ -116,6 +123,7 @@ public:
 	//! Delete Raptor status and any allocated resource.
 	bool	destroy(void);
 
+	
 
 private:
 	//! Constructor.

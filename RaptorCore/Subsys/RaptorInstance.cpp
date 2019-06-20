@@ -91,6 +91,11 @@ CRaptorInstance &CRaptorInstance::GetInstance(void)
 	return *m_pInstance;
 }
 
+CRaptorInstance* CRaptorInstance::createNewInstance(void)
+{
+	return NULL;
+}
+
 bool CRaptorInstance::destroy(void)
 {
 	if (m_pInstance == NULL)

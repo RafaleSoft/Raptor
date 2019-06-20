@@ -26,6 +26,8 @@ class CRaptorMessages;
 class CRaptorErrorManager;
 class CRaptorConsole;
 class CRaptorConfig;
+class CRaptorInstance;
+
 
 
 class RAPTOR_API Raptor  
@@ -91,6 +93,13 @@ public:
     //! Error management use internal messages.
     static CRaptorErrorManager * const GetErrorManager(void);
     static CRaptorMessages * const GetMessages(void);
+
+	//! Create and initialise a new RaptorInstance.
+	CRaptorInstance* createInstance(const CRaptorConfig& config);
+
+	//!	Switch the current RaptorInstance
+	CRaptorInstance* switchInstance(CRaptorInstance* instance);
+
 
 private:
     Raptor();
