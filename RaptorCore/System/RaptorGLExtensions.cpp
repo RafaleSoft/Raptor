@@ -15,19 +15,21 @@
 #if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
     #include "RaptorErrorManager.h"
 #endif
-#ifndef __GLOBAL_H__
-	#include "System/Global.h"
+#if !defined(AFX_OPENGL_H__6C8840CA_BEFA_41DE_9879_5777FBBA7147__INCLUDED_)
+	#include "Subsys/OpenGL/RaptorOpenGL.h"
 #endif
 
 
 RAPTOR_NAMESPACE_BEGIN
-#if defined(WGL_ARB_extensions_string)
-	PFN_WGL_GET_EXTENSIONS_STRING_ARB_PROC CRaptorGLExtensions::wglGetExtensionsStringARB = NULL;
+#if defined(_WIN32)
+	#if defined(WGL_ARB_extensions_string)
+		PFN_WGL_GET_EXTENSIONS_STRING_ARB_PROC CRaptorGLExtensions::wglGetExtensionsStringARB = NULL;
+	#endif
+		IMPLEMENT_RAPTOR_WGL_ARB_pixel_format(CRaptorGLExtensions)
+		IMPLEMENT_RAPTOR_WGL_ARB_pbuffer(CRaptorGLExtensions)
+		IMPLEMENT_RAPTOR_WGL_ARB_render_texture(CRaptorGLExtensions)
+		IMPLEMENT_RAPTOR_WGL_EXT_swap_control(CRaptorGLExtensions)
 #endif
-	IMPLEMENT_RAPTOR_WGL_ARB_pixel_format(CRaptorGLExtensions)
-	IMPLEMENT_RAPTOR_WGL_ARB_pbuffer(CRaptorGLExtensions)
-	IMPLEMENT_RAPTOR_WGL_ARB_render_texture(CRaptorGLExtensions)
-	IMPLEMENT_RAPTOR_WGL_EXT_swap_control(CRaptorGLExtensions)
 RAPTOR_NAMESPACE_END
 
 RAPTOR_NAMESPACE
@@ -48,21 +50,24 @@ CRaptorGLExtensions::~CRaptorGLExtensions()
 
 void CRaptorGLExtensions::glInitExtensions(void)
 {
-#if defined(WGL_ARB_extensions_string)
-	{
-        wglGetExtensionsStringARB = (PFN_WGL_GET_EXTENSIONS_STRING_ARB_PROC)wglGetProcAddress("wglGetExtensionsStringARB");
-	}
-#endif
+#if defined(_WIN32)
+	#if defined(WGL_ARB_extensions_string)
+		{
+			wglGetExtensionsStringARB = (PFN_WGL_GET_EXTENSIONS_STRING_ARB_PROC)wglGetProcAddress("wglGetExtensionsStringARB");
+		}
+	#endif
 
-#if defined(WGL_ARB_pixel_format)
-    wglGetPixelFormatAttribivARB = (PFN_WGL_GET_PIXEL_FORMAT_ATTRIBIV_ARB_PROC)wglGetProcAddress("wglGetPixelFormatAttribivARB");
-    wglGetPixelFormatAttribfvARB = (PFN_WGL_GET_PIXEL_FORMAT_ATTRIBFV_ARB_PROC)wglGetProcAddress("wglGetPixelFormatAttribfvARB");
-    wglChoosePixelFormatARB = (PFN_WGL_CHOOSE_PIXEL_FORMAT_ARB_PROC)wglGetProcAddress("wglChoosePixelFormatARB");
+	#if defined(WGL_ARB_pixel_format)
+		wglGetPixelFormatAttribivARB = (PFN_WGL_GET_PIXEL_FORMAT_ATTRIBIV_ARB_PROC)wglGetProcAddress("wglGetPixelFormatAttribivARB");
+		wglGetPixelFormatAttribfvARB = (PFN_WGL_GET_PIXEL_FORMAT_ATTRIBFV_ARB_PROC)wglGetProcAddress("wglGetPixelFormatAttribfvARB");
+		wglChoosePixelFormatARB = (PFN_WGL_CHOOSE_PIXEL_FORMAT_ARB_PROC)wglGetProcAddress("wglChoosePixelFormatARB");
+	#endif
+	
+		IMPLEMENT_WGL_ARB_render_texture(this)
+	IMPLEMENT_WGL_ARB_pbuffer(this)
 #endif
 
 	IMPLEMENT_GL_ARB_texture_compression(this)
-	IMPLEMENT_WGL_ARB_render_texture(this)
-	IMPLEMENT_WGL_ARB_pbuffer(this)
 	IMPLEMENT_GL_NV_vertex_array_range(this)
 	IMPLEMENT_GL_ARB_vertex_buffer_object(this)
 	IMPLEMENT_GL_EXT_compiled_vertex_array(this)
@@ -100,18 +105,14 @@ void CRaptorGLExtensions::glInitExtensions(void)
 void RAPTOR_APICALL glActiveTextureARB__default(GLenum target)
 {
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
-    Raptor::GetErrorManager()->generateRaptorError(	Global::COpenGLClassID::GetClassId(),
-													CRaptorErrorManager::RAPTOR_ERROR,
-													"Using unavailable extension glActiveTextureARB");
+	RAPTOR_ERROR(COpenGL::COpenGLClassID::GetClassId(), "Using unavailable extension glActiveTextureARB");
 #endif
 }
 
 void RAPTOR_APICALL glMultiTexCoord4fvARB__default(GLenum target, const GLfloat *v)
 {
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
-    Raptor::GetErrorManager()->generateRaptorError(	Global::COpenGLClassID::GetClassId(),
-													CRaptorErrorManager::RAPTOR_ERROR,
-													"Using unavailable extension glMultiTexCoord4fvARB");
+	RAPTOR_ERROR(COpenGL::COpenGLClassID::GetClassId(), "Using unavailable extension glMultiTexCoord4fvARB");
 #endif
 	glTexCoord4fv(v);
 }

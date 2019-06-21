@@ -1,5 +1,25 @@
+###########################################################################
+#                                                                         #
+#  Makefile                                                               #
+#                                                                         #
+#    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       #
+#                                                                         #
+#  Copyright 1998-2019 by                                                 #
+#  Fabrice FERRAND.                                                       #
+#                                                                         #
+#  This file is part of the Raptor project, and may only be used,         #
+#  modified, and distributed under the terms of the Raptor project        #
+#  license, LICENSE.  By continuing to use, modify, or distribute         #
+#  this file you indicate that you have read the license and              #
+#  understand and accept it fully.                                        #
+#                                                                         #
+###########################################################################
+
 export
 
+#
+# Projects ependencies sources
+#
 RAPTOR_VERSION = 2.17.0
 RAPTOR_ROOT = /media/sf_OPENGL/Raptor
 REDIST = $(RAPTOR_ROOT)/Redist
@@ -46,11 +66,19 @@ VULKAN_BIN_PATH=c:/windows/system32
 #
 # Projects target building dependencies and order
 #
-all:	simd microlex builder raptordatapackager raptordata openexr raptorcore
+all: \
+	simd \
+	microlex \
+	buildernative \
+	builder \
+	raptordatapackager \
+	raptordata \
+	openexr \
+	raptorcore
 
-raptorcore: builder simd microlex raptordata $(REDIST)/Lib/RaptorCore.lib $(REDIST)/Bin/RaptorCore.so.$(RAPTOR_VERSION)
+raptorcore: builder simd microlex raptordata $(REDIST)/Lib/libRaptorCore.lib $(REDIST)/Bin/libRaptorCore.so.$(RAPTOR_VERSION)
 
-raptordata:	builder raptordatapackager $(REDIST)/Lib/RaptorData.lib $(REDIST)/Bin/RaptorData.so.$(RAPTOR_VERSION)
+raptordata:	builder raptordatapackager $(REDIST)/Bin/RaptorData.pck $(REDIST)/Lib/libRaptorData.lib $(REDIST)/Bin/libRaptorData.so.$(RAPTOR_VERSION)
 
 openexr: half IlmImf
 
@@ -64,28 +92,30 @@ IlmThread: $(REDIST)/Lib/libIlmThread.a $(REDIST)/Bin/libIlmThread.so.$(RAPTOR_V
 
 Iex: $(REDIST)/Lib/libIex.a $(REDIST)/Bin/libIex.so.$(RAPTOR_VERSION)
 
-half: generators $(REDIST)/Lib/libHalf.a $(REDIST)/Bin/libHalf.so.$(RAPTOR_VERSION)
+half: $(REDIST)/Bin/eLut $(REDIST)/Bin/toFloat $(REDIST)/Lib/libHalf.a $(REDIST)/Bin/libHalf.so.$(RAPTOR_VERSION)
 
 generators:	$(REDIST)/Bin/eLut $(REDIST)/Bin/toFloat $(REDIST)/Bin/b44ExpLogTable $(REDIST)/Bin/dwaLookups
 
 raptordatapackager:	builder $(REDIST)/Bin/RaptorDataPackager
 
-builder:	simd microlex $(REDIST)/Bin/Builder
+builder:	simd microlex buildernative $(REDIST)/Bin/Builder
+
+buildernative:	$(REDIST)/Lib/libBuilderNative.lib $(REDIST)/Bin/libBuilderNative.so.$(RAPTOR_VERSION)
 
 microlex:	$(REDIST)/Bin/Microlex
 
-simd:	$(REDIST)/Lib/simd.lib $(REDIST)/Bin/simd.so.$(RAPTOR_VERSION)
+simd:	$(REDIST)/Lib/libsimd.lib $(REDIST)/Bin/libsimd.so.$(RAPTOR_VERSION)
 
 
 #
 # Projects building rules
 #
-$(REDIST)/Lib/RaptorCore.lib $(REDIST)/Bin/RaptorCore.so.$(RAPTOR_VERSION):
+$(REDIST)/Lib/libRaptorCore.lib $(REDIST)/Bin/libRaptorCore.so.$(RAPTOR_VERSION):
 	@echo "Building RaptorCore project ..."
 	make -C Build/Linux -f Makefile.raptorcore all
 	@echo "RaptorCore project done."
 
-$(REDIST)/Lib/RaptorData.lib $(REDIST)/Bin/RaptorData.so.$(RAPTOR_VERSION):
+$(REDIST)/Lib/libRaptorData.lib $(REDIST)/Bin/libRaptorData.so.$(RAPTOR_VERSION) $(REDIST)/Bin/RaptorData.pck:
 	@echo "Building RaptorData project ..."
 	make -C Build/Linux -f Makefile.raptordata all
 	@echo "RaptorData project done."
@@ -95,17 +125,22 @@ $(REDIST)/Bin/RaptorDataPackager:
 	make -C Build/Linux -f Makefile.raptordatapackager all
 	@echo "RaptorDataPackager project done."
 
-$(REDIST)/Bin/Builder:
+$(REDIST)/Bin/Builder:	$(REDIST)/Bin/libBuilderNative.so.$(RAPTOR_VERSION)
 	@echo "Building Builder project ..."
 	make -C Build/Linux -f Makefile.builder all
 	@echo "Builder project done."
+
+$(REDIST)/Lib/libBuilderNative.lib $(REDIST)/Bin/libBuilderNative.so.$(RAPTOR_VERSION):
+	@echo "Building BuilderNative project ..."
+	make -C Build/Linux -f Makefile.BuilderNative all
+	@echo "BuilderNative project done."
 
 $(REDIST)/Bin/Microlex:
 	@echo "Building Microlex project ..."
 	make -C Build/Linux -f Makefile.microlex all
 	@echo "Microlex project done."
 
-$(REDIST)/Lib/simd.lib $(REDIST)/Bin/simd.so.$(RAPTOR_VERSION):
+$(REDIST)/Lib/libsimd.lib $(REDIST)/Bin/libsimd.so.$(RAPTOR_VERSION):
 	@echo "Building simd project ..."
 	make -C Build/Linux -f Makefile.simd all
 	@echo "simd project done."
@@ -182,6 +217,7 @@ clean:
 	make -C Build/Linux -f Makefile.b44ExpLogTable clean
 	make -C Build/Linux -f Makefile.dwaLookups clean
 	make -C Build/Linux -f Makefile.IlmImf clean
+	make -C Build/Linux -f Makefile.BuilderNative clean
 	@echo "Done."
 
 distclean:

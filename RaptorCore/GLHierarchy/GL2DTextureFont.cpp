@@ -52,7 +52,7 @@
 
 
 static const std::string font_vp_src =
-"#version 460 \n\
+"#version 440 \n\
 \n\
 uniform vec4 viewport; \n\
 \n\
@@ -71,7 +71,7 @@ void main (void) \n\
 }";
 
 static const std::string font_gp_src =
-"#version 460\n\
+"#version 440\n\
 \n\
 //	Expect the geometry shader extension to be available, warn if not. \n\
 #extension GL_ARB_geometry_shader4 : enable \n\
@@ -105,7 +105,7 @@ void main() \n\
 }";
 
 static const std::string font_fp_src =
-"#version 460\n\
+"#version 440\n\
 \n\
 uniform	sampler2D diffuseMap; \n\
 uniform vec4 color; \n\

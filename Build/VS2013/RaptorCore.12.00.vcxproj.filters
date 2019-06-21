@@ -419,9 +419,6 @@
     <ClCompile Include="..\..\RaptorCore\System\Color.cpp">
       <Filter>Source Files\System src</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\RaptorCore\System\Global.cpp">
-      <Filter>Source Files\System src</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\RaptorCore\System\Memory.cpp">
       <Filter>Source Files\System src</Filter>
     </ClCompile>
@@ -610,6 +607,15 @@
     </ClCompile>
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\LightFlare.cpp">
       <Filter>Source Files\GLHierarchy src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\RaptorInstance.cpp">
+      <Filter>Source Files\Subsys src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\OpenGL\RaptorOpenGL.cpp">
+      <Filter>Source Files\Subsys src\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\Vulkan\RaptorVulkan.cpp">
+      <Filter>Source Files\Subsys src\Vulkan</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -924,9 +930,6 @@
     <ClInclude Include="..\..\RaptorCore\System\GLEXTMacros.h">
       <Filter>Header Files\System include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\RaptorCore\System\Global.h">
-      <Filter>Header Files\System include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\RaptorCore\System\Memory.h">
       <Filter>Header Files\System include</Filter>
     </ClInclude>
@@ -1172,6 +1175,15 @@
     </ClInclude>
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\LightFlare.h">
       <Filter>Header Files\GLHierarchy include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\RaptorInstance.h">
+      <Filter>Header Files\Subsys include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\OpenGL\RaptorOpenGL.h">
+      <Filter>Header Files\Subsys include\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\Vulkan\RaptorVulkan.h">
+      <Filter>Header Files\Subsys include\Vulkan</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -7,8 +7,8 @@
 #if !defined(AFX_SHADOWMAP_H__996B1CFE_3445_4FB3_AE2B_D86E55BCE769__INCLUDED_)
 	#include "ShadowMap.h"
 #endif
-#ifndef __GLOBAL_H__
-	#include "System/Global.h"
+#if !defined(AFX_OPENGL_H__6C8840CA_BEFA_41DE_9879_5777FBBA7147__INCLUDED_)
+	#include "Subsys/OpenGL/RaptorOpenGL.h"
 #endif
 #if !defined(AFX_OBJECT3D_H__DB24F017_80B9_11D3_97C1_FC2841000000__INCLUDED_)
 	#include "GLHierarchy/Object3D.h"
@@ -16,8 +16,8 @@
 #if !defined(AFX_OPENGLVIEWPOINT_H__94BDC36B_27AB_41FC_848E_DD28D1BDFC13__INCLUDED_)
 	#include "Subsys/OpenGL/OpenGLViewPoint.h"
 #endif
-#if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
-	#include "System/Raptor.h"
+#if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
+	#include "System/RaptorErrorManager.h"
 #endif
 #if !defined(AFX_TEXTUREFACTORY_H__1B470EC4_4B68_11D3_9142_9A502CBADC6B__INCLUDED_)
 	#include "GLHierarchy/TextureFactory.h"
@@ -107,9 +107,8 @@ bool CShadowMap::glInitEnvironment(unsigned int width,unsigned int height)
 
     if (!query || ((int)height < state.height) || ((int)width < state.width))
     {
-		Raptor::GetErrorManager()->generateRaptorError(	Global::COpenGLClassID::GetClassId(),
-														CRaptorErrorManager::RAPTOR_WARNING,
-														"Shadow map environment is beeing passed inconsistent or invalid dimensions !");
+		RAPTOR_WARNING(	COpenGL::COpenGLClassID::GetClassId(),
+						"Shadow map environment is beeing passed inconsistent or invalid dimensions !");
     }
 
     CShaderLibrary *lib = CShaderLibrary::GetInstance();
@@ -127,9 +126,8 @@ bool CShadowMap::glInitEnvironment(unsigned int width,unsigned int height)
 	else
 #endif
     {
-        Raptor::GetErrorManager()->generateRaptorError(	Global::COpenGLClassID::GetClassId(),
-														CRaptorErrorManager::RAPTOR_ERROR,
-														"Shadow mapping is not supported, rendering will be wrong");
+		RAPTOR_ERROR(	COpenGL::COpenGLClassID::GetClassId(),
+						"Shadow mapping is not supported, rendering will be wrong");
 		return false;
     }
     
@@ -196,9 +194,8 @@ void CShadowMap::glInitRenderBuffer(unsigned int width,unsigned int height)
 	}
 	else
     {
-        Raptor::GetErrorManager()->generateRaptorError(	Global::COpenGLClassID::GetClassId(),
-														CRaptorErrorManager::RAPTOR_ERROR,
-														"Shadow mapping is not supported, rendering will be wrong");
+		RAPTOR_ERROR(	COpenGL::COpenGLClassID::GetClassId(),
+						"Shadow mapping is not supported, rendering will be wrong");
     }
 #else
     m_pShadowTexture = factory.glCreateTexture(	ITextureObject::CGL_DEPTH24,
@@ -265,9 +262,8 @@ void CShadowMap::glInitPixelBuffer(unsigned int width,unsigned int height)
     }
     else
     {
-        Raptor::GetErrorManager()->generateRaptorError(	Global::COpenGLClassID::GetClassId(),
-														CRaptorErrorManager::RAPTOR_ERROR,
-														"Shadow mapping is not supported, rendering will be wrong");
+		RAPTOR_ERROR(	COpenGL::COpenGLClassID::GetClassId(),
+						"Shadow mapping is not supported, rendering will be wrong");
     }
 #else
     m_pShadowTexture = factory.glCreateDynamicTexture(	ITextureObject::CGL_DEPTH24,
@@ -286,9 +282,8 @@ void CShadowMap::glInitPixelBuffer(unsigned int width,unsigned int height)
                                                            CTextureObject::CGL_MULTIPLY,
                                                            ITextureObject::CGL_UNFILTERED,
                                                            m_pShadowMap);
-        Raptor::GetErrorManager()->generateRaptorError(	Global::COpenGLClassID::GetClassId(),
-														CRaptorErrorManager::RAPTOR_WARNING,
-														"Shadow mapping cannot use shaders objects, rendering will be wrong");
+        RAPTOR_WARNING(	COpenGL::COpenGLClassID::GetClassId(),
+						"Shadow mapping cannot use shaders objects, rendering will be wrong");
     }
 
 	CATCH_GL_ERROR

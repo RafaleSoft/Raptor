@@ -21,15 +21,11 @@
 #if !defined(AFX_PARTICLE_H__12CF5A59_2AA5_464D_9D42_81048A2B4E68__INCLUDED_)
 	#include "Particle.h"
 #endif
-
-#ifndef __GLOBAL_H__
-	#include "System/Global.h"
+#if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
+	#include "System/RaptorErrorManager.h"
 #endif
 #if !defined(AFX_TEXTUREFACTORY_H__1B470EC4_4B68_11D3_9142_9A502CBADC6B__INCLUDED_)
 	#include "TextureFactory.h"
-#endif
-#if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
-	#include "System/Raptor.h"
 #endif
 #if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
 	#include "System/RaptorGLExtensions.h"
@@ -79,7 +75,7 @@ RAPTOR_NAMESPACE_END
 
 
 static const std::string vp_src =
-"#version 460 compatibility\n\
+"#version 440 compatibility\n\
 \n\
 uniform float fPointSize; \n\
 \n\
@@ -102,7 +98,7 @@ void main (void) \n\
 }";
 
 static const std::string gp_src =
-"#version 460\n\
+"#version 440\n\
 \n\
 //	Expect the geometry shader extension to be available, warn if not. \n\
 #extension GL_ARB_geometry_shader4 : enable \n\
@@ -144,7 +140,7 @@ void main() \n\
 }";
 
 static const std::string gp_src2 =
-"#version 460\n\
+"#version 440\n\
 \n\
 //	Expect the geometry shader extension to be available, warn if not. \n\
 #extension GL_ARB_geometry_shader4 : enable \n\
@@ -188,7 +184,7 @@ void main() \n\
 }";
 
 static const std::string fp_src2 =
-"#version 460\n\
+"#version 440\n\
 \n\
 uniform	sampler3D diffuseMap; \n\
 \n\

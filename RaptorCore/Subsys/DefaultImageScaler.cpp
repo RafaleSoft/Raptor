@@ -1,6 +1,21 @@
-// DefaultImageScaler.cpp: implementation of the CDefaultImageScaler class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  DefaultImageScaler.cpp                                                 */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
 #include "Subsys/CodeGeneration.h"
 
 #if !defined(AFX_DEFAULTIMAGESCALER_H__E3E63A13_79FC_4E46_A1D5_BCD41CF86360__INCLUDED_)
@@ -104,4 +119,26 @@ bool CDefaultImageScaler::apply(CImage* const src, const operation_param_t& ) co
 	}
 
 	return true;
+}
+
+void CDefaultImageScaler::scaleFloats(size_t srcw, size_t srch, size_t dstw, size_t dsth, float *srcpx, float *dstpx)
+{
+	for (size_t j = 0; j < dsth; j++)
+	{
+		for (size_t i = 0; i < dstw; i++)
+		{
+
+		}
+	}
+}
+
+void CDefaultImageScaler::scaleFloats(size_t srcw, size_t srch, size_t dstw, size_t dsth, uint32_t *srcpx, uint32_t *dstpx)
+{
+	for (size_t j = 0; j < dsth; j++)
+	{
+		for (size_t i = 0; i < dstw; i++)
+		{
+
+		}
+	}
 }

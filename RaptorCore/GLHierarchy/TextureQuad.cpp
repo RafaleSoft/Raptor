@@ -45,6 +45,10 @@
 #if !defined(AFX_TEXELALLOCATOR_H__7C48808C_E838_4BE3_8B0E_286428BB7CF8__INCLUDED_)
 	#include "Subsys/TexelAllocator.h"
 #endif
+#if !defined(AFX_OPENGL_H__6C8840CA_BEFA_41DE_9879_5777FBBA7147__INCLUDED_)
+	#include "Subsys/OpenGL/RaptorOpenGL.h"
+#endif
+
 
 RAPTOR_NAMESPACE
 
@@ -76,9 +80,8 @@ CTextureQuad::~CTextureQuad()
 		bool res = pAllocator->releaseVertices((float*)s_attributes);
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 		if (!res)
-		Raptor::GetErrorManager()->generateRaptorError(Global::COpenGLClassID::GetClassId(),
-													   CRaptorErrorManager::RAPTOR_WARNING,
-													   "Raptor Texture Quad Allocator released out of owning display !");
+			RAPTOR_WARNING(	COpenGL::COpenGLClassID::GetClassId(),
+							"Raptor Texture Quad Allocator released out of owning display !");
 #endif
 		s_attributes = NULL;
 		max_index = 0;

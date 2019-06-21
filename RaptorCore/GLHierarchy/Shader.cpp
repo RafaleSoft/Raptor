@@ -40,9 +40,6 @@
 #if !defined(AFX_PROJECTOR_H__0AEE2092_215F_40FA_BBAE_7D8A2F5A482F__INCLUDED_)
     #include "Projector.h"
 #endif
-#ifndef __GLOBAL_H__
-	#include "System/Global.h"
-#endif
 #if !defined(AFX_RAPTORIO_H__87D52C27_9117_4675_95DC_6AD2CCD2E78D__INCLUDED_)
 	#include "System/RaptorIO.h"
 #endif
@@ -840,9 +837,9 @@ bool CShader::glCompileShader()
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
         if (!abort)
         {
-            pExtensions->glValidateProgramARB(m_shaderProgram.handle);
+            pExtensions->glValidateProgramARB(m_shaderProgram.handle());
             GLint validateStatus = GL_FALSE;
-            pExtensions->glGetObjectParameterivARB(m_shaderProgram.handle,GL_OBJECT_VALIDATE_STATUS_ARB,&validateStatus);
+            pExtensions->glGetObjectParameterivARB(m_shaderProgram.handle(),GL_OBJECT_VALIDATE_STATUS_ARB,&validateStatus);
             if (validateStatus == GL_FALSE)
                 abort = true;
         }

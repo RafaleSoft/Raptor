@@ -16,9 +16,10 @@
 #if !defined(AFX_RAPTORVULKANDEVICE_H__2FDEDD40_444E_4CC2_96AA_CBF9E79C3ABE__INCLUDED_)
 	#include "Subsys/Vulkan/VulkanDevice.h"
 #endif
-#ifndef __GLOBAL_H__
-	#include "System/Global.h"
+#if !defined(AFX_OPENGL_H__6C8840CA_BEFA_41DE_9879_5777FBBA7147__INCLUDED_)
+	#include "Subsys/OpenGL/RaptorOpenGL.h"
 #endif
+
 
 RAPTOR_NAMESPACE_BEGIN
 
@@ -190,9 +191,8 @@ unsigned char*	const CTexelAllocator::allocateTexels(uint64_t size)
 		err << " missing ";
 		err << (((uint64_t)currentAddress - (uint64_t)texels.address) + size) - texels.size;
 		err << " bytes.";
-		Raptor::GetErrorManager()->generateRaptorError(	Global::COpenGLClassID::GetClassId(),
-														CRaptorErrorManager::RAPTOR_FATAL,
-														err.str().c_str());
+		RAPTOR_FATAL(	COpenGL::COpenGLClassID::GetClassId(),
+						err.str().c_str());
 		return NULL;
     }
 
@@ -264,9 +264,8 @@ void CTexelAllocator::glvkCopyPointer(unsigned char *dst, unsigned char *src, ui
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 		else
 		{
-			Raptor::GetErrorManager()->generateRaptorError(	Global::COpenGLClassID::GetClassId(),
-															CRaptorErrorManager::RAPTOR_WARNING,
-				                                            "The destination device buffer does not exist");
+			RAPTOR_WARNING(	COpenGL::COpenGLClassID::GetClassId(),
+							"The destination device buffer does not exist");
 		}
 #endif
 	}

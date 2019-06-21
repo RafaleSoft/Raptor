@@ -9,19 +9,11 @@
 #if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
 	#include "System/Raptor.h"
 #endif
-
 #if !defined(AFX_OBJECT3DINSTANCE_H__A2627662_F5F9_11D3_9142_CFEB8E9F2745__INCLUDED_)
 	#include "Object3DInstance.h"
 #endif
-
-#ifndef __GLOBAL_H__
-	#include "System/Global.h"
-#endif
 #if !defined(AFX_RAPTORIO_H__87D52C27_9117_4675_95DC_6AD2CCD2E78D__INCLUDED_)
 	#include "System/RaptorIO.h"
-#endif
-#if !defined(AFX_3DENGINE_H__DB24F018_80B9_11D3_97C1_FC2841000000__INCLUDED_)
-	#include "Engine/3DEngine.h"
 #endif
 #if !defined(AFX_OBJECTFACTORY_H__7F891C52_9E32_489C_B09C_5E5803522D91__INCLUDED_)
 	#include "ObjectFactory.h"

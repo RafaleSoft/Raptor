@@ -1,11 +1,28 @@
+###########################################################################
+#                                                                         #
+#  Makefile.raptordata                                                    #
+#                                                                         #
+#    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       #
+#                                                                         #
+#  Copyright 1998-2019 by                                                 #
+#  Fabrice FERRAND.                                                       #
+#                                                                         #
+#  This file is part of the Raptor project, and may only be used,         #
+#  modified, and distributed under the terms of the Raptor project        #
+#  license, LICENSE.  By continuing to use, modify, or distribute         #
+#  this file you indicate that you have read the license and              #
+#  understand and accept it fully.                                        #
+#                                                                         #
+###########################################################################
+
+
 export
 
 CCCFLAGS =  -DSIMD_NO_ASSEMBLY -DLINUX
 OUTPUT = $(RAPTOR_ROOT)/Build/Linux/Release/RaptorDataPackager
 SRCDIR = $(RAPTOR_ROOT)/RaptorData/RaptorDataPackager
 INCDIRS = -I$(SRCDIR)
-LIBDIRS = -L/usr/lib
-LIBS = -lz
+LDFLAGS = -L/usr/lib -lz
 
 all:	$(OUTPUT)/RaptorDataPackager
 
@@ -20,7 +37,7 @@ SRC = \
 OBJ = $(SRC:$(SRCDIR)/%.cpp=$(OUTPUT)/%.o)
 	
 $(OUTPUT)/RaptorDataPackager:	$(OBJ) 
-	g++ $(OBJ) $(LIBDIRS) $(LIBS) -o $(OUTPUT)/RaptorDataPackager
+	g++ $(OBJ) -o $(OUTPUT)/RaptorDataPackager $(LDFLAGS)
 	cp $(OUTPUT)/RaptorDataPackager $(REDIST)/Bin/
 
 $(OBJ):	$(SRC)

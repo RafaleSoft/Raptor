@@ -1,6 +1,21 @@
-// 3DEngine.cpp: implementation of the C3DEngine class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  3DEngine.cpp                                                           */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
 #include "Subsys/CodeGeneration.h"
 
 
@@ -10,11 +25,11 @@
 #if !defined(AFX_PHYSICS_H__B42ABB89_80E8_11D3_97C2_DE5C28000000__INCLUDED_)
 	#include "Physics.h"
 #endif
-#ifndef __GLOBAL_H__
-	#include "System/Global.h"
+#if !defined(AFX_RAPTORINSTANCE_H__90219068_202B_46C2_BFF0_73C24D048903__INCLUDED_)
+	#include "Subsys/RaptorInstance.h"
 #endif
-#if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
-	#include "System/Raptor.h"
+#if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
+	#include "System/RaptorErrorManager.h"
 #endif
 #if !defined(AFX_OBJECT3DINSTANCE_H__A2627662_F5F9_11D3_9142_CFEB8E9F2745__INCLUDED_)
 	#include "GLHierarchy/Object3DInstance.h"
@@ -115,26 +130,26 @@ C3DEngine::~C3DEngine()
 
 void C3DEngine::Set3DEngine(C3DEngine *Engine)
 {
-	Global::GetInstance().getCurrentStatus().current3DEngine = Engine;
+	CRaptorInstance::GetInstance().p3DEngine = Engine;
 }
 
 
 C3DEngine *C3DEngine::Get3DEngine(void)
 {
-    Global::RAPTOR_CURRENT_STATUS& status = Global::GetInstance().getCurrentStatus();
-	if (status.current3DEngine == NULL)
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+	if (instance.p3DEngine == NULL)
 	{
 #ifdef RAPTOR_SSE_CODE_GENERATION
 		const CPU_INFO &info = getCPUINFO();
 		if (info.SSE)
-			status.current3DEngine = new CSSE_3DEngine;
+			instance.p3DEngine = new CSSE_3DEngine;
 		else
-			status.current3DEngine = new C3DEngine;
+			instance.p3DEngine = new C3DEngine;
 #else
-		status.current3DEngine = new C3DEngine;
+		status.p3DEngine = new C3DEngine;
 #endif
 	}
-	return status.current3DEngine;
+	return instance.p3DEngine;
 }
 
 

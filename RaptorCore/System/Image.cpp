@@ -21,30 +21,22 @@
 #if !defined(AFX_IMAGE_H__F545D0D5_5F10_4EFA_BE3B_3F3D34D4DBF3__INCLUDED_)
 	#include "Image.h"
 #endif
-
 #ifndef __CGLTYPES_HPP__
 	#include "CGLTypes.h"
 #endif
-
-#ifndef __GLOBAL_H__
-	#include "Global.h"
-#endif
-
 #if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
 	#include "RaptorGLExtensions.h"
 #endif
-
-#if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
-	#include "Raptor.h"
+#if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
+	#include "System/RaptorErrorManager.h"
 #endif
-
 #if !defined(AFX_MEMORY_H__81A6CA9A_4ED9_4260_B6E4_C03276C38DBC__INCLUDED_)
 	#include "System/Memory.h"
 #endif
-
 #if !defined(AFX_TEXTUREFACTORY_H__1B470EC4_4B68_11D3_9142_9A502CBADC6B__INCLUDED_)
 	#include "GLHierarchy/TextureFactory.h"
 #endif
+
 
 RAPTOR_NAMESPACE
 

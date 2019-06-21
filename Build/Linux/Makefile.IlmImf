@@ -1,3 +1,22 @@
+###########################################################################
+#                                                                         #
+#  Makefile.IlmImf                                                        #
+#                                                                         #
+#    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       #
+#                                                                         #
+#  Copyright 1998-2019 by                                                 #
+#  Fabrice FERRAND.                                                       #
+#                                                                         #
+#  This file is part of the Raptor project, and may only be used,         #
+#  modified, and distributed under the terms of the Raptor project        #
+#  license, LICENSE.  By continuing to use, modify, or distribute         #
+#  this file you indicate that you have read the license and              #
+#  understand and accept it fully.                                        #
+#                                                                         #
+###########################################################################
+
+
+
 export
 
 CCCFLAGS =  -DSIMD_NO_ASSEMBLY -DLINUX -fPIC -std=c++11
@@ -6,8 +25,7 @@ SRCDIR = $(RAPTOR_ROOT)/AddOns/OpenEXR-2.3.0/source/IlmImf
 INCDIRS = -I$(RAPTOR_ROOT)/AddOns/OpenEXR-2.3.0/include -I$(OUTPUT)
 LDFLAGS = -Bdynamic -shared -lstdc++
 
-SO_NAME = libIlmImf.so
-SO = $(OUTPUT)/$(SO_NAME)
+SO = $(OUTPUT)/libIlmImf.so.$(RAPTOR_VERSION)
 LIB = $(OUTPUT)/libIlmImf.a
 
 all:	$(LIB) $(SO)
@@ -111,9 +129,8 @@ SRC = \
 OBJ = $(SRC:$(SRCDIR)/%.cpp=$(OUTPUT)/%.o)
 	
 $(SO):	$(OBJ)
-	g++ -o $(SO) $(LDFLAGS) $(OBJ)
+	g++ -o $(SO) $(OBJ) $(LDFLAGS)
 	cp $(SO) $(REDIST)/Bin/
-	cp $(SO) $(REDIST)/Bin/$(SO_NAME).$(RAPTOR_VERSION)
 
 $(LIB):	$(OBJ) 
 	ar -qcv $(LIB) $(OBJ)
@@ -123,11 +140,10 @@ $(OBJ):	$(SRC) $(OUTPUT)/b44ExpLogTable.h $(OUTPUT)/dwaLookups.h
 	g++ $(CCCFLAGS) $(INCDIRS) -c $(<D)/$(*F).cpp  -o $(OUTPUT)/$(@F)
 
 $(OUTPUT)/b44ExpLogTable.h:
-	export LD_LIBRARY_PATH=$(REDIST)/Bin:$(LD_LIBRARY_PATH)
-	$(REDIST)/Bin/b44ExpLogTable > $(OUTPUT)/b44ExpLogTable.h
+	(export LD_LIBRARY_PATH=$(REDIST)/Bin:$(LD_LIBRARY_PATH) && $(REDIST)/Bin/b44ExpLogTable > $(OUTPUT)/b44ExpLogTable.h)
 	
 $(OUTPUT)/dwaLookups.h:
-	$(REDIST)/Bin/dwaLookups > $(OUTPUT)/dwaLookups.h
+	(export LD_LIBRARY_PATH=$(REDIST)/Bin:$(LD_LIBRARY_PATH) && $(REDIST)/Bin/dwaLookups > $(OUTPUT)/dwaLookups.h)
 
 
 

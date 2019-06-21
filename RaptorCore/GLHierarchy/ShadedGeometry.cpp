@@ -13,9 +13,6 @@
 #if !defined(AFX_AMBIENTOCCLUSIONSHADER_H__FA8234C4_82B1_49D3_ABAA_7FCE45EDDCAD__INCLUDED_)
 	#include "Subsys/AmbientOcclusionShader.h"
 #endif
-#ifndef __GLOBAL_H__
-	#include "System/Global.h"
-#endif
 #if !defined(AFX_VERTEXSHADER_H__F2D3BBC6_87A1_4695_B667_2B8C3C4CF022__INCLUDED_)
 	#include "VertexShader.h"
 #endif

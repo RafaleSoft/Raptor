@@ -1,10 +1,28 @@
+###########################################################################
+#                                                                         #
+#  Makefile.b44ExpLogTable                                                #
+#                                                                         #
+#    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       #
+#                                                                         #
+#  Copyright 1998-2019 by                                                 #
+#  Fabrice FERRAND.                                                       #
+#                                                                         #
+#  This file is part of the Raptor project, and may only be used,         #
+#  modified, and distributed under the terms of the Raptor project        #
+#  license, LICENSE.  By continuing to use, modify, or distribute         #
+#  this file you indicate that you have read the license and              #
+#  understand and accept it fully.                                        #
+#                                                                         #
+###########################################################################
+
+
 export
 
 CCCFLAGS =  -DSIMD_NO_ASSEMBLY -DLINUX -fPIC
 OUTPUT = $(RAPTOR_ROOT)/Build/Linux/Release/b44ExpLogTable
 SRCDIR = $(RAPTOR_ROOT)/AddOns/OpenEXR-2.3.0/source/IlmImf
 INCDIRS = -I$(RAPTOR_ROOT)/AddOns/OpenEXR-2.3.0/include
-LDFLAGS = -L$(REDIST)/Bin -lHalf
+LDFLAGS = $(REDIST)/Bin/libHalf.so.$(RAPTOR_VERSION)
 
 
 all:	$(OUTPUT)/b44ExpLogTable

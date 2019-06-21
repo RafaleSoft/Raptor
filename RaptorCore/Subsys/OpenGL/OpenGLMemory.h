@@ -58,9 +58,7 @@ private:
 	GLenum  BufferModeToGL(	IDeviceMemoryManager::IBufferObject::BUFFER_KIND kind,
 							IDeviceMemoryManager::IBufferObject::BUFFER_MODE mode) const;
 
-#ifdef RAPTOR_DEBUG_MODE_GENERATION
 	bool isBufferObjectValid(unsigned int buffer) const;
-#endif
 
 	unsigned int currentBuffers[IDeviceMemoryManager::IBufferObject::NB_BUFFER_KIND];
 };

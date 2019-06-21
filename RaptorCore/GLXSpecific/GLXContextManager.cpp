@@ -291,6 +291,11 @@ void CGLXContextManager::glSwapBuffers(RENDERING_CONTEXT_ID ctx)
 	}
 }
 
+void CGLXContextManager::vkSwapVSync(unsigned int framerate)
+{
+	
+}
+
 bool CGLXContextManager::glSwapVSync(unsigned int nbVSync) const
 {
 	bool swapControl = false;
@@ -425,7 +430,8 @@ RAPTOR_HANDLE CGLXContextManager::glCreateWindow(const CRaptorDisplayConfig& pcs
 //	
 //	Standard OpenGL Rendering Context creation method
 //
-CContextManager::RENDERING_CONTEXT_ID CGLXContextManager::glCreateContext(const RAPTOR_HANDLE& device,int displayMode,bool global)
+CContextManager::RENDERING_CONTEXT_ID CGLXContextManager::glCreateContext(const RAPTOR_HANDLE& device,
+																		  const CRaptorDisplayConfig& config)
 {
 	if (nbContext >= MAX_CONTEXT)
 	{
@@ -547,7 +553,8 @@ CContextManager::RENDERING_CONTEXT_ID CGLXContextManager::glCreateContext(const 
 //	window creation because the rendering context
 //	cannot be set ( dc not fully initialised ? )
 //
-CContextManager::RENDERING_CONTEXT_ID  CGLXContextManager::glCreateExtendedContext(const RAPTOR_HANDLE& device,int displayMode,bool global)
+CContextManager::RENDERING_CONTEXT_ID  CGLXContextManager::glCreateExtendedContext(const RAPTOR_HANDLE& device,
+																				   const CRaptorDisplayConfig& config)
 {
 	if (nbContext >= MAX_CONTEXT)
 	{
@@ -777,7 +784,7 @@ CContextManager::RENDERING_CONTEXT_ID  CGLXContextManager::glCreateExtendedConte
 		return true;
 	}
 
-	void CGLXContextManager::glBindPBuffer(PIXEL_BUFFER_ID pbuffer)
+	void CGLXContextManager::glBindPBuffer(PIXEL_BUFFER_ID pbuffer, CTextureObject::CUBE_FACE selectBuffer);
 	{
 		if (pBuffers[pbuffer].pbuffer == NULL)
 		{
@@ -876,4 +883,14 @@ CContextManager::RENDERING_CONTEXT_ID  CGLXContextManager::glCreateExtendedConte
 	bool CGLXContextManager::glReleaseTexImageARB(PIXEL_BUFFER_ID ,int ) { return false; };
 #endif
 
+#if defined(VK_VERSION_1_0)
+	uint32_t CGLXContextManager::getPresentationSuppotQueueFamily(RENDERING_CONTEXT_ID ctx)
+	{
+		return 0;
+	}
 
+	bool CGLXContextManager::vkCreateSurface(const RAPTOR_HANDLE& handle, RENDERING_CONTEXT_ID ctx)
+	{
+		return false;
+	}
+#endif

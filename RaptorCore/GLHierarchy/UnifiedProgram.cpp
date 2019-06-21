@@ -75,9 +75,8 @@ void CUnifiedProgram::glParameter(unsigned int numParam,const float *v) const
 		if (location == -1)
 		{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
-			Raptor::GetErrorManager()->generateRaptorError(	CShaderProgram::CShaderProgramClassID::GetClassId(),
-															CRaptorErrorManager::RAPTOR_ERROR,
-															CRaptorMessages::ID_NO_RESOURCE);
+			RAPTOR_ERROR(	CShaderProgram::CShaderProgramClassID::GetClassId(),
+							CRaptorMessages::ID_NO_RESOURCE);
 #endif
 		}
 		else
@@ -189,9 +188,8 @@ void CUnifiedProgram::glRender(void)
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 		else
 		{
-			Raptor::GetErrorManager()->generateRaptorError(CFragmentProgram::CFragmentProgramClassID::GetClassId(),
-														   CRaptorErrorManager::RAPTOR_ERROR,
-														   CRaptorMessages::ID_WRONG_RENDERING);
+			RAPTOR_ERROR(	CShaderProgram::CShaderProgramClassID::GetClassId(),
+							CRaptorMessages::ID_WRONG_RENDERING);
 		}
 #endif
 	}
@@ -288,9 +286,8 @@ void CUnifiedProgram::glRender(void)
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 			else
 			{
-				Raptor::GetErrorManager()->generateRaptorError(CShaderProgram::CShaderProgramClassID::GetClassId(),
-															   CRaptorErrorManager::RAPTOR_ERROR,
-															   CRaptorMessages::ID_UPDATE_FAILED);
+				RAPTOR_ERROR(	CShaderProgram::CShaderProgramClassID::GetClassId(),
+								CRaptorMessages::ID_UPDATE_FAILED);
 			}
 #endif
 		}

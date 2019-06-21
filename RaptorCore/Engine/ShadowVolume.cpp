@@ -15,8 +15,8 @@
 #if !defined(AFX_RAPTORDISPLAY_H__9637BC66_3734_43A8_A130_87553D4379BC__INCLUDED_)
 	#include "System/RaptorDisplay.h"
 #endif
-#ifndef __GLOBAL_H__
-	#include "System/Global.h"
+#if !defined(AFX_RAPTORINSTANCE_H__90219068_202B_46C2_BFF0_73C24D048903__INCLUDED_)
+	#include "Subsys/RaptorInstance.h"
 #endif
 #if !defined(AFX_3DENGINETASKMANAGER_H__04149C60_C594_4009_A2C9_F852497146A3__INCLUDED_)
     #include "Engine/3DEngineTaskManager.h"
@@ -24,8 +24,8 @@
 #if !defined(AFX_3DSCENEOBJECT_H__96A34268_AD58_4F73_B633_F6C3E92FE0A9__INCLUDED_)
 	#include "Subsys/3DSceneObject.h"
 #endif
-#if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
-	#include "System/Raptor.h"
+#if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
+	#include "System/RaptorErrorManager.h"
 #endif
 #if !defined(AFX_GEOMETRY_H__B42ABB87_80E8_11D3_97C2_DE5C28000000__INCLUDED_)
 	#include "GLHierarchy/Geometry.h"
@@ -50,8 +50,8 @@ RAPTOR_NAMESPACE
 CShadowVolume::CShadowVolume(C3DScene& rScene)
 	:CEnvironment(rScene),jobId(0)
 {
-	Global::RAPTOR_CURRENT_STATUS &st = Global::GetInstance().getCurrentStatus();
-    C3DEngineTaskManager *taskManager = st.engineTaskMgr;
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+    C3DEngineTaskManager *taskManager = instance.engineTaskMgr;
 	jobId = taskManager->generateBatchId();
 
 	m_shadowProperties.setCullFace(IRenderingProperties::ENABLE);
@@ -97,8 +97,8 @@ void CShadowVolume::clearShadowVolumes(void)
     if (!m_pVolumes.empty())
     {
 #if defined(RAPTOR_SMP_CODE_GENERATION)
-        Global::RAPTOR_CURRENT_STATUS &st = Global::GetInstance().getCurrentStatus();
-        C3DEngineTaskManager *taskManager = st.engineTaskMgr;
+		CRaptorInstance &instance = CRaptorInstance::GetInstance();
+        C3DEngineTaskManager *taskManager = instance.engineTaskMgr;
         taskManager->cancelJobs();
 #endif
 
@@ -124,8 +124,8 @@ bool CShadowVolume::glInitEnvironment(unsigned int width,unsigned int height)
 void CShadowVolume::addObject(C3DSceneObject* object)
 {
 #if defined(RAPTOR_SMP_CODE_GENERATION)
-	Global::RAPTOR_CURRENT_STATUS &st = Global::GetInstance().getCurrentStatus();
-    C3DEngineTaskManager *taskManager = st.engineTaskMgr;
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+    C3DEngineTaskManager *taskManager = instance.engineTaskMgr;
 #endif
 
 	// Compute all possible shadow volumes
@@ -164,8 +164,8 @@ void CShadowVolume::initVolumes(const vector<C3DSceneObject*>& objects)
     clearShadowVolumes();
 
 #if defined(RAPTOR_SMP_CODE_GENERATION)
-	Global::RAPTOR_CURRENT_STATUS &st = Global::GetInstance().getCurrentStatus();
-    C3DEngineTaskManager *taskManager = st.engineTaskMgr;
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+    C3DEngineTaskManager *taskManager = instance.engineTaskMgr;
 #endif
 
 
@@ -229,15 +229,14 @@ void CShadowVolume::glRender(const CLight* currentLight,const vector<C3DSceneObj
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
     else
     {
-		Raptor::GetErrorManager()->generateRaptorError(	CObject3DShadow::CObject3DShadowClassID::GetClassId(),
-													 	CRaptorErrorManager::RAPTOR_WARNING,
-														CRaptorMessages::ID_WRONG_RENDERING);
+		RAPTOR_WARNING(	CObject3DShadow::CObject3DShadowClassID::GetClassId(),
+						CRaptorMessages::ID_WRONG_RENDERING);
     }
 #endif
 
 #if defined(RAPTOR_SMP_CODE_GENERATION)
-    Global::RAPTOR_CURRENT_STATUS &st = Global::GetInstance().getCurrentStatus();
-    C3DEngineTaskManager *taskManager = st.engineTaskMgr;
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+    C3DEngineTaskManager *taskManager = instance.engineTaskMgr;
     taskManager->batchJobs(jobId);
 #endif
 

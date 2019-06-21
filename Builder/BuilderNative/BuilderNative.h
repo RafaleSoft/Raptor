@@ -14,18 +14,23 @@
 /*  understand and accept it fully.                                        */
 /*                                                                         */
 /***************************************************************************/
+
+
 #ifndef BUILDER_NATIVE_HH
 #define BUILDER_NATIVE_HH
 
-#ifdef BUILDERNATIVE_EXPORTS
-	#define BUILDERNATIVE_API __declspec(dllexport)
+#if defined(WIN32)
+	#if defined(BUILDERNATIVE_EXPORTS)
+		#define BUILDERNATIVE_API __declspec(dllexport)
+	#else
+		#define BUILDERNATIVE_API __declspec(dllimport)
+	#endif
 #else
-	#define BUILDERNATIVE_API __declspec(dllimport)
+	#define BUILDERNATIVE_API
 #endif
 
-#include <string>
-#include <vector>
 #include <stdint.h>
+
 
 typedef enum
 {
@@ -67,11 +72,19 @@ typedef struct NATIVE_EXTENSION_t
 	const char*		*dependencies;
 } NATIVE_EXTENSION;
 
-extern "C" BUILDERNATIVE_API 
-bool glvkInitBuilder(HDC dc);
+#ifdef WIN32
+	extern "C" BUILDERNATIVE_API
+	bool glvkInitBuilder(HDC dc);
+#elif defined(LINUX)
+	extern "C" BUILDERNATIVE_API
+	bool glvkInitBuilder(void*);
+#endif
 
 extern "C" BUILDERNATIVE_API
 bool getExtensions(NATIVE_EXTENSION* ext, uint32_t* s);
+
+extern "C" BUILDERNATIVE_API
+bool freeExtensions(NATIVE_EXTENSION* extensions, uint32_t s);
 
 extern "C" BUILDERNATIVE_API
 bool checkConsistency(bool force);
@@ -87,5 +100,8 @@ bool setBuildSupplement(BUILD_SUPPLEMENT *bld);
 
 extern "C" BUILDERNATIVE_API
 bool activateAllOrNone(bool all);
+
+extern "C" BUILDERNATIVE_API
+bool isExtensionActive(const char* extension);
 
 #endif

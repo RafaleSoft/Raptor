@@ -10,9 +10,8 @@
 #if !defined(AFX_3DSQUELETON_H__3F4B9881_392F_4267_841C_3BA7929FCAC6__INCLUDED_)
 	#include "3DSqueleton.h"
 #endif
-
-#ifndef __GLOBAL_H__
-	#include "System/Global.h"
+#if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
+	#include "System/RaptorErrorManager.h"
 #endif
 #if !defined(AFX_MEMORY_H__81A6CA9A_4ED9_4260_B6E4_C03276C38DBC__INCLUDED_)
 	#include "System/Memory.h"
@@ -69,9 +68,8 @@ C3DSqueleton::C3DSqueleton(CObject3D *root,const std::string& name)
 {
 	if (root == NULL)
 	{
-		Raptor::GetErrorManager()->generateRaptorError(	C3DSqueleton::C3DSqueletonClassID::GetClassId(),
-														CRaptorErrorManager::RAPTOR_WARNING,
-														CRaptorMessages::ID_NULL_OBJECT);
+		RAPTOR_WARNING(	C3DSqueleton::C3DSqueletonClassID::GetClassId(),
+						CRaptorMessages::ID_NULL_OBJECT);
         GL_COORD_VERTEX nullPosition(0,0,0,1);
 	}
 	else
@@ -211,9 +209,8 @@ bone *C3DSqueleton::addBone(object_link *pivot,CVector4f & length,CObject3D *obj
 
 	if (pivot->p_child != NULL)
 	{
-        Raptor::GetErrorManager()->generateRaptorError(	C3DSqueleton::C3DSqueletonClassID::GetClassId(),
-														CRaptorErrorManager::RAPTOR_WARNING,
-														CRaptorMessages::ID_LOST_LINK);
+		RAPTOR_WARNING(	C3DSqueleton::C3DSqueletonClassID::GetClassId(),
+						CRaptorMessages::ID_LOST_LINK);
 	}
 
 	void* mem = CHostMemoryManager::GetInstance()->allocate(sizeof(bone), 1, 16);

@@ -24,11 +24,11 @@
 #if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
     #include "System/RaptorErrorManager.h"
 #endif
-#ifndef __GLOBAL_H__
-	#include "System/Global.h"
-#endif
 #ifndef __vkext_macros_h_
 	#include "System/VKEXTMacros.h"
+#endif
+#if !defined(AFX_VULKAN_H__625F6BC5_F386_44C2_85C1_EDBA23B16921__INCLUDED_)
+	#include "Subsys/Vulkan/RaptorVulkan.h"
 #endif
 
 
@@ -199,7 +199,8 @@ bool CVulkanMemory::CVulkanMemoryWrapper::setBufferObjectData(	IDeviceMemoryMana
 			set_data = device.vkUploadDataToDevice(true);
 			if (!set_data)
 			{
-				RAPTOR_ERROR(Global::CVulkanClassID::GetClassId(), "Unable to upload image memory to device !");
+				RAPTOR_ERROR(CVulkan::CVulkanClassID::GetClassId(),
+							 "Unable to upload image memory to device !");
 			}
 		}
 		else
@@ -219,7 +220,8 @@ bool CVulkanMemory::CVulkanMemoryWrapper::setBufferObjectData(	IDeviceMemoryMana
 			set_data = device.vkUploadDataToDevice(true);
 			if (!set_data)
 			{
-				RAPTOR_ERROR(Global::CVulkanClassID::GetClassId(), "Unable to upload buffer memory to device !");
+				RAPTOR_ERROR(	CVulkan::CVulkanClassID::GetClassId(),
+								"Unable to upload buffer memory to device !");
 			}
 		}
 	}
@@ -363,7 +365,8 @@ VkDeviceMemory CVulkanMemory::CVulkanMemoryWrapper::allocateImageMemory(VkImage 
 
 	if (VK_NULL_HANDLE == pMemory)
 	{
-		RAPTOR_ERROR(Global::CVulkanClassID::GetClassId(), "Unable to allocate image memory !");
+		RAPTOR_ERROR(CVulkan::CVulkanClassID::GetClassId(),
+					 "Unable to allocate image memory !");
 	}
 
 	return pMemory;
@@ -400,7 +403,8 @@ VkImage CVulkanMemory::CVulkanMemoryWrapper::createImage(const VkImageCreateInfo
 		CVulkanBufferObject * pBuffer = (*itb).second;
 		if (VK_NULL_HANDLE == pBuffer->m_deviceAddress)
 		{
-			RAPTOR_ERROR(Global::CVulkanClassID::GetClassId(), "There is no allocated memory on given buffer object!");
+			RAPTOR_ERROR(CVulkan::CVulkanClassID::GetClassId(),
+						 "There is no allocated memory on given buffer object!");
 			return VK_NULL_HANDLE;
 		}
 
@@ -444,7 +448,8 @@ VkImage CVulkanMemory::CVulkanMemoryWrapper::createImage(const VkImageCreateInfo
 			if (VK_SUCCESS != res)
 			{
 				CATCH_VK_ERROR(res);
-				RAPTOR_ERROR(Global::CVulkanClassID::GetClassId(),"Allocated memory cannot be mapped to image!");
+				RAPTOR_ERROR(CVulkan::CVulkanClassID::GetClassId(),
+							 "Allocated memory cannot be mapped to image!");
 				vkDestroyImage(m_device, image, &s_vulkanAllocator);
 				return VK_NULL_HANDLE;
 			}
@@ -742,7 +747,7 @@ VkDeviceMemory CVulkanMemory::allocateBufferMemory(VkDevice device,
 		res = vkBindBufferMemory(device, buffer,pMemory,0);
 		if (VK_SUCCESS != res)
 		{
-			RAPTOR_ERROR(	Global::CVulkanClassID::GetClassId(),
+			RAPTOR_ERROR(	CVulkan::CVulkanClassID::GetClassId(),
 							"Allocated memory cannot be mapped to buffer!");
 			vkFreeMemory(device,pMemory,NULL);
 		}
@@ -879,7 +884,7 @@ CVulkanMemory::CVulkanMemoryWrapper* CVulkanMemory::CreateMemoryManager(VkDevice
 	else
 	{
 		pMemory = &defaultMemory;
-		RAPTOR_ERROR(	Global::CVulkanClassID::GetClassId(),
+		RAPTOR_ERROR(	CVulkan::CVulkanClassID::GetClassId(),
 						"No memory object allocated to this device");
 	}
 
@@ -909,7 +914,7 @@ CVulkanMemory& CVulkanMemory::GetInstance(VkPhysicalDevice physicalDevice)
 		{
 			PFN_vkGetInstanceProcAddr vkGetInstanceProcAddr = CRaptorVKExtensions::vkGetInstanceProcAddr;
 			VkInstance instance = CRaptorVKExtensions::getInstance();
-			IMPLEMENT_VK_device_memory(CVulkanMemory::, physicalDevice)
+			IMPLEMENT_VK_device_memory(CVulkanMemory, physicalDevice)
 		}
 	}
 	else
