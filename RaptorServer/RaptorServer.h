@@ -9,12 +9,9 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-class CRaptorInstance;
+class CRaptorServerInstance;
 class CServerTransport;
 class CCmdLineParser;
-
-
-RAPTOR_NAMESPACE
 
 
 class CRaptorServer
@@ -28,7 +25,7 @@ public:
     bool Stop(void);
 
 private:
-    CRaptorInstance *m_pInstance;
+	CRaptorServerInstance *m_pInstance;
     CServerTransport *m_pTransport;
 };
 

@@ -1026,7 +1026,7 @@ CContextManager::RENDERING_CONTEXT_ID  CWin32ContextManager::glCreateExtendedCon
 				(context.pExtensions->wglReleaseTexImageARB == NULL) || 
 				(context.pExtensions->wglSetPbufferAttribARB == NULL))
 			{
-				RAPTOR_FATAL( Global::COpenGLClassID::GetClassId(),"Your driver or GPU does not support texture rendering");
+				RAPTOR_FATAL( COpenGL::COpenGLClassID::GetClassId(),"Your driver or GPU does not support texture rendering");
 				return 0;
 			}
 		}
@@ -1195,7 +1195,7 @@ CContextManager::RENDERING_CONTEXT_ID  CWin32ContextManager::glCreateExtendedCon
 #if defined(WGL_ARB_render_texture)
 		if (pbuffer > MAX_PBUFFERS)
 		{
-			RAPTOR_ERROR( Global::COpenGLClassID::GetClassId(),"Exceeded max number of pBuffers");
+			RAPTOR_ERROR( COpenGL::COpenGLClassID::GetClassId(),"Exceeded max number of pBuffers");
 			return false;
 		}
 		
@@ -1207,7 +1207,7 @@ CContextManager::RENDERING_CONTEXT_ID  CWin32ContextManager::glCreateExtendedCon
 			str << "Raptor pBuffer ";
 			str << (pbuffer+1);
             str << " does not exist or texture rendering not supported";
-			RAPTOR_ERROR( Global::COpenGLClassID::GetClassId(),str.str());
+			RAPTOR_ERROR(COpenGL::COpenGLClassID::GetClassId(), str.str());
 			return false;
 		}
 /*
@@ -1242,7 +1242,7 @@ CContextManager::RENDERING_CONTEXT_ID  CWin32ContextManager::glCreateExtendedCon
 #if defined(WGL_ARB_render_texture)
 		if (pbuffer > MAX_PBUFFERS)
 		{
-			RAPTOR_ERROR( Global::COpenGLClassID::GetClassId(),"Exceeded max number of pBuffers");
+			RAPTOR_ERROR(COpenGL::COpenGLClassID::GetClassId(), "Exceeded max number of pBuffers");
 			return false;
 		}
 
@@ -1254,7 +1254,7 @@ CContextManager::RENDERING_CONTEXT_ID  CWin32ContextManager::glCreateExtendedCon
 			str << "Raptor pBuffer ";
             str << (pbuffer+1);
             str << " does not exist or texture rendering not supported";
-			RAPTOR_ERROR( Global::COpenGLClassID::GetClassId(),str.str());
+			RAPTOR_ERROR(COpenGL::COpenGLClassID::GetClassId(), str.str());
 			return false;
 		}
 

@@ -1,6 +1,20 @@
-// HDRFilter.cpp: implementation of the CHDRFilter class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  HDRFilter.cpp                                                          */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
 
 #include "Subsys/CodeGeneration.h"
 
@@ -396,15 +410,8 @@ void CHDRFilter::glRenderFilterOutput()
     glActiveTextureARB(GL_TEXTURE1_ARB);
     glEnable(GL_TEXTURE_2D);
 	m_pDownBlurYBuffer->glvkRender();
-
 	glActiveTextureARB(GL_TEXTURE0_ARB);
-/*
-	glEnable(GL_TEXTURE_2D);
-	//m_pDownSizedBuffer[nLevels-1]->glRender();
-    m_pDownBlurYBuffer->glRender();
-	//m_pDownHFBuffer->glRender();
-	glDrawBuffer();
-*/
+	
 	getColorInput()->glvkRender();
 
     // compose blur + hdr
