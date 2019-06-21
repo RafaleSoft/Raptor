@@ -16,10 +16,9 @@ REM		/*                                                                         
 REM		/***************************************************************************/
 
 
-ECHO Making Raptor data package  ...
+ECHO Making RaptorToolbox data package  ...
 
-
-cd "%RAPTOR_ROOT%\RaptorData\Data"
+cd "%RAPTOR_ROOT%\RaptorToolBox\Filters"
 
 IF NOT EXIST "%RAPTOR_ROOT%\Redist\Bin\RaptorDataPackager.exe" (
 	ECHO DataPackager not found !
@@ -31,7 +30,7 @@ IF NOT EXIST "%RAPTOR_ROOT%\Redist\Bin\RaptorDataPackager.exe" (
 	ECHO "%RAPTOR_ROOT%\Redist\Bin\RaptorDataPackager.exe"
 )
 
-"%RAPTOR_ROOT%\Redist\Bin\RaptorDataPackager.exe" -C RaptorData.pck Raptor_logo_sml.txt rapsplsh.AVI lucon.ttf RaptorMessages.xml bump_0light.vp bump_0light.fp bump.vp bump.fp bump_att.vp bump_att.fp bump_att_2light.vp bump_att_2light.fp bump_att_3light.vp bump_att_3light.fp embm_0light.vp embm_0light.fp embm.vp embm.fp blinn.vs blinn.ps phong.vs phong.ps bump.vs bump.ps projection.fp shadowmap.fp shadowmap_pcf.fp shadowmap_pcf_4x.fp shadowmap_pcf_16x.fp blenderX_8x.vp blenderY_8x.vp blender_8x.fp AO.vs AO.ps blender_8x.gs blenderX_8x.ps blenderY_8x.ps tquad.vs tquad.ps tquad.gs empty.vs
+"%RAPTOR_ROOT%\Redist\Bin\RaptorDataPackager.exe" -C Toolbox.pck 
 
 ECHO Removing temporary files
 DEL /F "*.zip"
@@ -39,12 +38,12 @@ DEL /F "*.zip"
 ECHO Delivering package ...
 cd ..
 
-IF EXIST RaptorData.pck (
-	ECHO RaptorData package already exist, it will be replaced !
-	DEL /F RaptorData.pck
+IF EXIST Toolbox.pck (
+	ECHO RaptorToolbox package already exist, it will be replaced !
+	DEL /F Toolbox.pck
 )
 
-move Data\RaptorData.pck .
+move Filters\Toolbox.pck .
 
 :END
 

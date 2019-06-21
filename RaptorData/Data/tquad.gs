@@ -1,6 +1,6 @@
 /***************************************************************************/
 /*                                                                         */
-/*  blenderY_8x.ps                                                         */
+/*  tquad.gs                                                               */
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
@@ -17,31 +17,36 @@
 
 #version 460
 
-uniform vec4 offset;
-uniform sampler2D color;
+//	Expect the geometry shader extension to be available, warn if not.
+#extension GL_ARB_geometry_shader4 : enable
 
-layout(location = 1) in vec4 g_TexCoord;
-layout(location = 0) out vec4 o_Color;
+in vec4 size[];
+in vec4 v_color[];
 
-const vec4 luminance = vec4(0.299, 0.587, 0.114, 0.0);
-const vec4 factor = vec4(0.125, 0.125, 0.125, 0.125);
+layout(points) in;
+layout(triangle_strip, max_vertices=4) out;
+layout(location = 1) out vec4 g_TexCoord;
+out vec4 g_color;
 
-void main(void)
+void main()
 {
-	vec2 t = offset.zy;
-	vec4 c = texture(color,g_TexCoord.xy);
-	c = c + texture(color,g_TexCoord.xy);
-	c = c + texture(color,g_TexCoord.xy + t);
-	c = c + texture(color,g_TexCoord.xy - t);
-	t = t + t;
-	c = c + texture(color,g_TexCoord.xy + t);
-	c = c + texture(color,g_TexCoord.xy - t);
-	t = t + offset.zy;
-	c = c + texture(color,g_TexCoord.xy + t);
-	c = c + texture(color,g_TexCoord.xy - t);
+	g_color = v_color[0];
 
-	o_Color = c * factor;
+	gl_Position = gl_in[0].gl_Position + vec4(-size[0].x, -size[0].y, 0.0, 0.0);
+	g_TexCoord = vec4(0.0,0.0,0.0,0.0);
+	EmitVertex();
+
+	gl_Position = gl_in[0].gl_Position + vec4(size[0].x,-size[0].y,0.0,0.0);
+	g_TexCoord = vec4(1.0,0.0,0.0,0.0);
+	EmitVertex();
+
+	gl_Position = gl_in[0].gl_Position + vec4(-size[0].x,size[0].y,0.0,0.0);
+	g_TexCoord = vec4(0.0,1.0,0.0,0.0);
+	EmitVertex();
+
+	gl_Position = gl_in[0].gl_Position + vec4(size[0].x,size[0].y,0.0,0.0);
+	g_TexCoord = vec4(1.0,1.0,0.0,0.0);
+	EmitVertex();
+
+	EndPrimitive();
 }
-
-
-

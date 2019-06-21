@@ -430,7 +430,9 @@ copy RaptorData.pck "%RAPTOR_ROOT%\Redist\bin\"
     <None Include="..\..\RaptorData\Data\shadowmap_pcf.fp" />
     <None Include="..\..\RaptorData\Data\shadowmap_pcf_16x.fp" />
     <None Include="..\..\RaptorData\Data\shadowmap_pcf_4x.fp" />
+    <None Include="..\..\RaptorData\Data\tquad.gs" />
     <None Include="..\..\RaptorData\Data\tquad.ps" />
+    <None Include="..\..\RaptorData\Data\tquad.vs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="RaptorDataPackager.12.00.vcxproj">

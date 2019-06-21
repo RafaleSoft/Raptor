@@ -90,10 +90,14 @@ private:
     CRaptorDisplay  *m_pDownBlurYDisplay;
     CTextureObject  *m_pDownBlurXBuffer;
     CTextureObject  *m_pDownBlurYBuffer;
+#if defined(GL_ARB_geometry_shader4)
+	CShader			*m_pBlenderX;
+	CShader			*m_pBlenderY;
+#else
     CVertexShader   *m_pBlurXOffsets;
     CVertexShader   *m_pBlurYOffsets;
     CFragmentShader *m_pBlur;
-
+#endif
 	//! Final image composition with tone mapping
     CShader *m_pComposite;
     

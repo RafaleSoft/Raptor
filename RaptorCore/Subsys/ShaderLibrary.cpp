@@ -71,7 +71,7 @@ typedef struct
 	const char *shader_fname;
 	const char *class_name;
 } factory_shader;
-static const size_t NB_FACTORY_SHADERS = 22;
+static const size_t NB_FACTORY_SHADERS = 26;
 static factory_shader fsh[NB_FACTORY_SHADERS] = {	{ "BUMP_TEX_SHADER", "bump.fp", "FragmentShader" },
 													{ "EMBM_TEX_SHADER", "embm.fp", "FragmentShader" },
 													{ "BUMP_VTX_SHADER", "bump.vp", "VertexShader" },
@@ -88,10 +88,14 @@ static factory_shader fsh[NB_FACTORY_SHADERS] = {	{ "BUMP_TEX_SHADER", "bump.fp"
 													{ "PPIXEL_BUMP_TEX_PROGRAM", "bump.ps", "FragmentProgram" },
 													{ "AMBIENT_OCCLUSION_VTX_PROGRAM", "AO.vs", "VertexProgram" },
 													{ "AMBIENT_OCCLUSION_TEX_PROGRAM", "AO.ps", "FragmentProgram" },
+													{ "TEXTURE_QUAD_VTX_PROGRAM", "tquad.vs", "VertexProgram" },
 													{ "TEXTURE_QUAD_TEX_PROGRAM", "tquad.ps", "FragmentProgram" },
+													{ "TEXTURE_QUAD_GEO_PROGRAM", "tquad.gs", "GeometryProgram" },
 													{ "BLENDER_8X", "blender_8x.fp", "FragmentShader" },
 													{ "BLENDER_8X_XOFFSETS", "blenderX_8x.vp", "VertexShader" },
 													{ "BLENDER_8X_YOFFSETS", "blenderY_8x.vp", "VertexShader" },
+													{ "BLENDER_8X_TEX_PROGRAM", "blenderX_8x.ps", "FragmentProgram" },
+													{ "BLENDER_8Y_TEX_PROGRAM", "blenderY_8x.ps", "FragmentProgram" },
 													{ "EMPTY_PROGRAM", "empty.vs", "VertexProgram" },
 													{ "FULL_SCREEN_GEO_PROGRAM", "blender_8x.gs", "GeometryProgram" } };
 

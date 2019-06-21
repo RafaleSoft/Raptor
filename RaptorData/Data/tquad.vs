@@ -1,6 +1,6 @@
 /***************************************************************************/
 /*                                                                         */
-/*  blenderY_8x.ps                                                         */
+/*  tquad.vs                                                               */
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
@@ -15,33 +15,29 @@
 /*                                                                         */
 /***************************************************************************/
 
-#version 460
+#version 460 compatibility
 
-uniform vec4 offset;
-uniform sampler2D color;
+//uniform Transform {
+//	mat4 ModelViewMatrix;
+//	mat4 ModelViewProjectionMatrix;
+//};
 
-layout(location = 1) in vec4 g_TexCoord;
-layout(location = 0) out vec4 o_Color;
+layout(location = 0) in vec4 i_Position;
+layout(location = 3) in vec4 i_Color;
+layout(location = 6) in vec4 i_Size;
 
-const vec4 luminance = vec4(0.299, 0.587, 0.114, 0.0);
-const vec4 factor = vec4(0.125, 0.125, 0.125, 0.125);
+out vec4 size;
+out vec4 v_color;
 
-void main(void)
+void main (void)
 {
-	vec2 t = offset.zy;
-	vec4 c = texture(color,g_TexCoord.xy);
-	c = c + texture(color,g_TexCoord.xy);
-	c = c + texture(color,g_TexCoord.xy + t);
-	c = c + texture(color,g_TexCoord.xy - t);
-	t = t + t;
-	c = c + texture(color,g_TexCoord.xy + t);
-	c = c + texture(color,g_TexCoord.xy - t);
-	t = t + offset.zy;
-	c = c + texture(color,g_TexCoord.xy + t);
-	c = c + texture(color,g_TexCoord.xy - t);
+	vec4 pos = vec4(vec3(i_Position.xyz),1.0);
+	gl_Position =  gl_ModelViewProjectionMatrix * pos;
+	//gl_Position =  ModelViewMatrix * pos;
 
-	o_Color = c * factor;
+	//	The size has to be projected because it is added to the posision
+	//	in the geometry stage.
+	size = gl_ModelViewProjectionMatrix * i_Size;
+	v_color =  i_Color;
 }
-
-
 

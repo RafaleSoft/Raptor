@@ -215,8 +215,15 @@ CHDRFilter::CHDRFilter(const CRaptorDisplayConfig &da)
 	m_pTreshholdFreqs = NULL;
 	m_maxLuminance = NULL;
 	m_lastMaxLuminance = NULL;
+
+#if defined(GL_ARB_geometry_shader4)
+	m_pBlenderX = NULL;
+	m_pBlenderY = NULL;
+#else
 	m_pBlurXOffsets = NULL;
 	m_pBlurYOffsets = NULL;
+	m_pBlur = NULL;
+#endif
 }
 
 CHDRFilter::~CHDRFilter()
@@ -304,26 +311,37 @@ void CHDRFilter::glRenderFilter()
     //
 	m_pDownBlurXDisplay->glvkBindDisplay(nodevice);
 	m_pDownHFBuffer->glvkRender();
+#if defined(GL_ARB_geometry_shader4)
+	m_pBlenderX->glGetFragmentProgram()->setProgramParameters(blurOffsets);
+	m_pBlenderX->glRender();
+	glDrawFilter();
+	m_pBlenderX->glStop();
+#else
     m_pBlurXOffsets->setProgramParameters(blurOffsets);
     m_pBlurXOffsets->glRender();
     m_pBlur->glRender();
-
 	glDrawBuffer();
-
     m_pBlurXOffsets->glStop();
     m_pBlur->glStop();
-	m_pDownBlurXDisplay->glvkUnBindDisplay();
+#endif
 
+	m_pDownBlurXDisplay->glvkUnBindDisplay();
 	m_pDownBlurYDisplay->glvkBindDisplay(nodevice);
 	m_pDownBlurXBuffer->glvkRender();
+
+#if defined(GL_ARB_geometry_shader4)
+	m_pBlenderY->glGetFragmentProgram()->setProgramParameters(blurOffsets);
+	m_pBlenderY->glRender();
+	glDrawFilter();
+	m_pBlenderY->glStop();
+#else
     m_pBlurYOffsets->setProgramParameters(blurOffsets);
     m_pBlurYOffsets->glRender();
     m_pBlur->glRender();
-
 	glDrawBuffer();
-
     m_pBlurYOffsets->glStop();
     m_pBlur->glStop();
+#endif
 	m_pDownBlurYDisplay->glvkUnBindDisplay();
 
 	for (unsigned int i=2;i<=nBlurPass;i++)
@@ -333,26 +351,35 @@ void CHDRFilter::glRenderFilter()
 		//
 		m_pDownBlurXDisplay->glvkBindDisplay(nodevice);
 		m_pDownBlurYBuffer->glvkRender();
+#if defined(GL_ARB_geometry_shader4)
+		m_pBlenderX->glRender();
+		glDrawFilter();
+		m_pBlenderX->glStop();
+#else
 		m_pBlurXOffsets->setProgramParameters(blurOffsets);
 		m_pBlurXOffsets->glRender();
 		m_pBlur->glRender();
-
 		glDrawBuffer();
-
 		m_pBlurXOffsets->glStop();
+#endif
 		m_pDownBlurXDisplay->glvkUnBindDisplay();
-
 		m_pDownBlurYDisplay->glvkBindDisplay(nodevice);
 		m_pDownBlurXBuffer->glvkRender();
+
+#if defined(GL_ARB_geometry_shader4)
+		m_pBlenderY->glRender();
+		glDrawFilter();
+		m_pBlenderY->glStop();
+#else
 		m_pBlurYOffsets->setProgramParameters(blurOffsets);
 		m_pBlurYOffsets->glRender();
-
 		glDrawBuffer();
-
 		m_pBlurYOffsets->glStop();
 		m_pBlur->glStop();
+#endif
 		m_pDownBlurYDisplay->glvkUnBindDisplay();
 	}
+
 }
 
 void CHDRFilter::glRenderFilterOutput()
@@ -575,20 +602,27 @@ bool CHDRFilter::glInitFilter(void)
 #if defined(GL_ARB_geometry_shader4)
 bool CHDRFilter::glBuildShaders(void)
 {
-	CShader *shaderLib = new CShader();
-	m_pBlur = shaderLib->glGetFragmentShader("BLENDER_8X");
-	m_pBlurXOffsets = shaderLib->glGetVertexShader("BLENDER_8X_XOFFSETS");
-	shaderLib->releaseReference();
-	shaderLib = new CShader();
-	m_pBlurYOffsets = shaderLib->glGetVertexShader("BLENDER_8X_YOFFSETS");
-	shaderLib->releaseReference();
+	m_pBlenderX = new CShader("HDR_BLENDER_X");
+	CVertexProgram *vp = m_pBlenderX->glGetVertexProgram("EMPTY_PROGRAM");
+	CGeometryProgram *gp = m_pBlenderX->glGetGeometryProgram("FULL_SCREEN_GEO_PROGRAM");
+	CFragmentProgram *fp = m_pBlenderX->glGetFragmentProgram("BLENDER_8X_TEX_PROGRAM");
+	bool res = m_pBlenderX->glCompileShader();
+	m_pBlenderY = new CShader("HDR_BLENDER_Y");
+	vp = m_pBlenderY->glGetVertexProgram("EMPTY_PROGRAM");
+	gp = m_pBlenderY->glGetGeometryProgram("FULL_SCREEN_GEO_PROGRAM");
+	fp = m_pBlenderY->glGetFragmentProgram("BLENDER_8Y_TEX_PROGRAM");
+	res = res && m_pBlenderY->glCompileShader();
+	blurOffsets.addParameter("color", CTextureUnitSetup::IMAGE_UNIT_0);
+
+
+
 
 	m_pTreshholdFreqs = new CShader("HDR_TRESHOLDS");
-	CVertexProgram *vp = m_pTreshholdFreqs->glGetVertexProgram("EMPTY_PROGRAM");
-	CGeometryProgram *gp = m_pTreshholdFreqs->glGetGeometryProgram("FULL_SCREEN_GEO_PROGRAM");
+	vp = m_pTreshholdFreqs->glGetVertexProgram("EMPTY_PROGRAM");
+	gp = m_pTreshholdFreqs->glGetGeometryProgram("FULL_SCREEN_GEO_PROGRAM");
 	// Set it only once since it is a library shader (move this call to the rendering stage)
-	bool res = gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
-	CFragmentProgram *fp = m_pTreshholdFreqs->glGetFragmentProgram("treshhold2_fp");
+	res = gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
+	fp = m_pTreshholdFreqs->glGetFragmentProgram("treshhold2_fp");
 	res = fp->glLoadProgram(treshhold2_ps);
 	if (res)
 	{

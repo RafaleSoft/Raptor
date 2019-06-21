@@ -271,5 +271,8 @@
     <None Include="..\..\RaptorToolBox\Filters\HDR.shaders">
       <Filter>Source Files\Filters</Filter>
     </None>
+    <None Include="..\..\RaptorToolBox\buildpak.bat">
+      <Filter>Source Files</Filter>
+    </None>
   </ItemGroup>
 </Project>
