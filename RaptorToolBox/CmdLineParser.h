@@ -136,8 +136,7 @@ template <>
 CCmdLineParser::CCommandLineOptionValue<const char*>::CCommandLineOptionValue(	const string &name,
 																				const string &shortname,
 																				const char* defaultValue)
-	:CCommandLineOption(name,shortname),
-	m_value(NULL)
+	:CCommandLineOption(name,shortname), m_value(NULL)
 {
 	char *option = (char*)m_value;
 	option = _strdup(defaultValue);

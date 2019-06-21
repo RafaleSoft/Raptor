@@ -31,10 +31,7 @@ public:
 	virtual void glRender(void);
 
 	//! Initialize all shadings, must be called before use.
-	//!	@param bump_vertexshader: provides the base bump vertex shader source to add environment
-	//!	@param bump_pixelshader: provides the base bump pixel shader source to add environment
-	void glInit(const std::string &bump_vertexshader,
-				const std::string &bump_pixelshader);
+	void glInit();
 
 	//!	A state accessor to switch between strict bumping to environment bumping
 	void enableEmbm(bool enable);

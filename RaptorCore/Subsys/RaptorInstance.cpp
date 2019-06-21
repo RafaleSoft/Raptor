@@ -101,8 +101,6 @@ bool CRaptorInstance::destroy(void)
 	if (m_pInstance == NULL)
 		return false;
 
-	Raptor::glPurgeRaptor(false);
-
 	delete m_pInstance;
 	m_pInstance = NULL;
 

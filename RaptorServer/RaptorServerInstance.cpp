@@ -4,8 +4,8 @@
 
 #include "stdafx.h"
 
-#if !defined(AFX_RAPTORINSTANCE_H__602E9801_E82B_41B1_9B90_DD498DDF468F__INCLUDED_)
-    #include "RaptorInstance.h"
+#if !defined(AFX_RAPTORSERVERINSTANCE_H__602E9801_E82B_41B1_9B90_DD498DDF468F__INCLUDED_)
+    #include "RaptorServerInstance.h"
 #endif
 #if !defined(AFX_3DENGINE_H__DB24F018_80B9_11D3_97C1_FC2841000000__INCLUDED_)
 	#include "Engine/3DEngine.h"
@@ -49,13 +49,13 @@
 
 #include "YUVCompressor.h"
 
-CRaptorInstance* CRaptorInstance::m_pInstance = NULL;
+CRaptorServerInstance* CRaptorServerInstance::m_pInstance = NULL;
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CRaptorInstance::CRaptorInstance()
+CRaptorServerInstance::CRaptorServerInstance()
 {
     m_pDisplay = NULL;
 	m_pApplication = NULL;
@@ -64,20 +64,20 @@ CRaptorInstance::CRaptorInstance()
 	m_bStarted = false;
 }
 
-CRaptorInstance::~CRaptorInstance()
+CRaptorServerInstance::~CRaptorServerInstance()
 {
     m_pInstance = NULL;
 }
 
-CRaptorInstance* CRaptorInstance::GetInstance(void)
+CRaptorServerInstance* CRaptorServerInstance::GetInstance(void)
 {
     if (m_pInstance == NULL)
-        m_pInstance = new CRaptorInstance();
+		m_pInstance = new CRaptorServerInstance();
 
     return m_pInstance;
 }
 
-void CRaptorInstance::glRender()
+void CRaptorServerInstance::glRender()
 {
 	if (m_pWindow.handle() != NULL)
 	{
@@ -166,7 +166,7 @@ void CRaptorInstance::glRender()
 	}
 }
 
-void CRaptorInstance::processOutputFrame(request &r)
+void CRaptorServerInstance::processOutputFrame(request &r)
 {
 	unsigned char* image = (unsigned char*)r.data + sizeof(CRaptorNetwork::BLOC_HEADER);	
 //m_pCompressor->differentialCompress(image,r.size);
@@ -176,7 +176,7 @@ void CRaptorInstance::processOutputFrame(request &r)
 	r.size += sizeof(CRaptorNetwork::BLOC_HEADER);
 }
 
-bool CRaptorInstance::start(unsigned int width,unsigned int height)
+bool CRaptorServerInstance::start(unsigned int width, unsigned int height)
 {
     CRaptorConfig config;
 	config.m_logFile = "Raptor_Server.log";
@@ -272,7 +272,7 @@ bool CRaptorInstance::start(unsigned int width,unsigned int height)
 }
 
 
-bool CRaptorInstance::run(void)
+bool CRaptorServerInstance::run(void)
 {
 	if (m_pApplication != NULL)
 	{
@@ -282,7 +282,7 @@ bool CRaptorInstance::run(void)
 		return true;
 }
 
-bool CRaptorInstance::stop(void)
+bool CRaptorServerInstance::stop(void)
 {
 	m_bStarted = false;
 
@@ -299,7 +299,7 @@ bool CRaptorInstance::stop(void)
 	return true;
 }
 
-bool CRaptorInstance::closeSession(request_handler_t::request_id id)
+bool CRaptorServerInstance::closeSession(request_handler_t::request_id id)
 {
 	for (size_t i=0;i<m_sessions.size();i++)
 	{
@@ -314,7 +314,7 @@ bool CRaptorInstance::closeSession(request_handler_t::request_id id)
 	return false;
 }
 
-bool CRaptorInstance::handleRequest(request_handler_t::request_id id,const void *data,size_t size)
+bool CRaptorServerInstance::handleRequest(request_handler_t::request_id id, const void *data, size_t size)
 {
 	if (m_bStarted)
 	{
@@ -334,7 +334,7 @@ bool CRaptorInstance::handleRequest(request_handler_t::request_id id,const void 
 	return m_bStarted;
 }
 
-bool CRaptorInstance::handleReply(request_handler_t::request_id id,const void *&data,size_t &size)
+bool CRaptorServerInstance::handleReply(request_handler_t::request_id id, const void *&data, size_t &size)
 {
 	request r;
 	r.id = 0;
@@ -378,7 +378,7 @@ bool CRaptorInstance::handleReply(request_handler_t::request_id id,const void *&
 	return true;
 }
 
-bool CRaptorInstance::executeRequest(request &r)
+bool CRaptorServerInstance::executeRequest(request &r)
 {
 	if (m_pTranslator == NULL)
 		return false;
@@ -432,7 +432,7 @@ bool CRaptorInstance::executeRequest(request &r)
 		RAPTOR_HANDLE handle;
 		s.display->glvkBindDisplay(handle);
 			IRenderingProperties &props = s.display->getRenderingProperties();
-			//props->setMultisampling(CRenderingProperties::ENABLE);
+			//props->setMultisampling(IRenderingProperties::ENABLE);
 			props.setTexturing(IRenderingProperties::ENABLE);
 			props.setLighting(IRenderingProperties::ENABLE);
 			props.clear(CGL_RGBA|CGL_DEPTH);

@@ -454,5 +454,9 @@ bool Raptor::glQuitRaptor(void)
 	if ((!instance.initialised) || (instance.terminate))
         return false;
 
-    return instance.destroy();
+    bool res = instance.destroy();
+
+	glPurgeRaptor(false);
+
+	return res;
 }

@@ -54,6 +54,9 @@ public:
 		return m_bValid;
 	};
 
+	//! Implements base class
+	virtual std::string glGetProgramString(void) { return ""; }
+
 	virtual void glProgramParameter(unsigned int numParam,
 									const GL_COORD_VERTEX &v) const { };
 

@@ -2,8 +2,8 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#if !defined(AFX_RAPTORINSTANCE_H__602E9801_E82B_41B1_9B90_DD498DDF468F__INCLUDED_)
-#define AFX_RAPTORINSTANCE_H__602E9801_E82B_41B1_9B90_DD498DDF468F__INCLUDED_
+#if !defined(AFX_RAPTORSERVERINSTANCE_H__602E9801_E82B_41B1_9B90_DD498DDF468F__INCLUDED_)
+#define AFX_RAPTORSERVERINSTANCE_H__602E9801_E82B_41B1_9B90_DD498DDF468F__INCLUDED_
 
 #if _MSC_VER > 1000
 #pragma once
@@ -17,18 +17,19 @@
 	#include "System/RenderEntryPoint.h"
 #endif
 
+
 #include "Raptordll.h"
 RAPTOR_NAMESPACE
 
 
 class CRaptorServerCompressor;
 
-class CRaptorInstance : public server_base_t::request_handler_t,
-						public CRenderEntryPoint
+class CRaptorServerInstance :	public server_base_t::request_handler_t,
+								public CRenderEntryPoint
 {
 public:
-    static CRaptorInstance* GetInstance(void);
-	virtual ~CRaptorInstance();
+	static CRaptorServerInstance* GetInstance(void);
+	virtual ~CRaptorServerInstance();
 
 	//!	Starts a Raptor instance, performing all inits
     bool start(unsigned int width,unsigned int height);
@@ -44,7 +45,7 @@ public:
 
 
 private:
-    CRaptorInstance();
+	CRaptorServerInstance();
 
 	//!	Implements CRenderentrypoint
 	virtual void glRender();
@@ -71,7 +72,7 @@ private:
 	//!	Generate the final frame to be decompressed by client.
 	void processOutputFrame(request &r);
 
-    static CRaptorInstance* m_pInstance;
+	static CRaptorServerInstance* m_pInstance;
 
 	//! Status
 	bool				m_bStarted;

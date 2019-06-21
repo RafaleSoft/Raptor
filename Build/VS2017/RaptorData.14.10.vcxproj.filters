@@ -125,12 +125,18 @@
     <ClCompile Include="..\..\RaptorData\StdAfx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\RaptorData\RaptorDataPackager\PackageIO.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\RaptorData\RaptorDataManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\RaptorData\StdAfx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorData\RaptorDataPackager\PackageIO.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

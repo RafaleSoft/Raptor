@@ -190,8 +190,8 @@ void CAmbientOcclusionDisplay::ReInit()
 	IRenderingProperties &rp = pDisplay->getRenderingProperties();
 	rp.setTexturing(IRenderingProperties::ENABLE);
 	rp.setLighting(IRenderingProperties::ENABLE);
-	//rp->setWireframe(CRenderingProperties::ENABLE);
-	//rp->setCullFace(CRenderingProperties::DISABLE);
+	//rp->setWireframe(IRenderingProperties::ENABLE);
+	//rp->setCullFace(IRenderingProperties::DISABLE);
 
 	pDisplay->selectScene("AO_SCENE");
 }

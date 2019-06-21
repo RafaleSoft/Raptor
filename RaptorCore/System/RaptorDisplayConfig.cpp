@@ -490,8 +490,8 @@ bool CRaptorDisplayConfig::glApplyConfig(unsigned long query) const
 			pExtensions->glVertexAttribPointerARB(CProgramParameters::POSITION,
 												  arraysState.vertexArray.arraySize,
 												  arraysState.vertexArray.arrayType,
-												  arraysState.vertexArray.arrayStride,
 												  false, // normalize
+												  arraysState.vertexArray.arrayStride,
 												  arraysState.vertexArray.arrayPointer);
 #endif
 		}
@@ -515,8 +515,8 @@ bool CRaptorDisplayConfig::glApplyConfig(unsigned long query) const
 			pExtensions->glVertexAttribPointerARB(CProgramParameters::NORMAL,
 												  arraysState.normalArray.arraySize,
 												  arraysState.normalArray.arrayType,
-												  arraysState.normalArray.arrayStride,
 												  false, // normalize
+												  arraysState.normalArray.arrayStride,
 												  arraysState.normalArray.arrayPointer);
 #endif
 		}
@@ -541,8 +541,8 @@ bool CRaptorDisplayConfig::glApplyConfig(unsigned long query) const
 			pExtensions->glVertexAttribPointerARB(CProgramParameters::PRIMARY_COLOR,
 												  arraysState.colorArray.arraySize,
 												  arraysState.colorArray.arrayType,
-												  arraysState.colorArray.arrayStride,
 												  false, // normalize
+												  arraysState.colorArray.arrayStride,
 												  arraysState.colorArray.arrayPointer);
 #endif
 		}
@@ -574,8 +574,8 @@ bool CRaptorDisplayConfig::glApplyConfig(unsigned long query) const
 			pExtensions->glVertexAttribPointerARB(CProgramParameters::TEXCOORD0,
 												  arraysState.textureArray.arraySize,
 												  arraysState.textureArray.arrayType,
-												  arraysState.textureArray.arrayStride,
 												  false, // normalize
+												  arraysState.textureArray.arrayStride,
 												  arraysState.textureArray.arrayPointer);
 #endif
 		}

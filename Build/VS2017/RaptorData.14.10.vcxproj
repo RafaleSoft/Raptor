@@ -376,6 +376,7 @@ copy RaptorData.pck "%RAPTOR_ROOT%\Redist\bin\"
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\RaptorData\RaptorDataManager.cpp" />
+    <ClCompile Include="..\..\RaptorData\RaptorDataPackager\PackageIO.cpp" />
     <ClCompile Include="..\..\RaptorData\StdAfx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">Create</PrecompiledHeader>
@@ -384,6 +385,7 @@ copy RaptorData.pck "%RAPTOR_ROOT%\Redist\bin\"
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\RaptorData\RaptorDataManager.h" />
+    <ClInclude Include="..\..\RaptorData\RaptorDataPackager\PackageIO.h" />
     <ClInclude Include="..\..\RaptorData\StdAfx.h" />
   </ItemGroup>
   <ItemGroup>

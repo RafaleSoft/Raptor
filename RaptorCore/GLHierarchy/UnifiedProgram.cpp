@@ -91,6 +91,28 @@ void CUnifiedProgram::glParameter(unsigned int numParam,const float *v) const
 }
 
 
+std::string CUnifiedProgram::glGetProgramString(void)
+{
+	if (m_handle.handle() == 0)
+		return "";
+
+#if defined(GL_ARB_shader_objects)
+	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+
+	int value = 0;
+	pExtensions->glGetObjectParameterivARB(m_handle, GL_OBJECT_SHADER_SOURCE_LENGTH_ARB, &value);
+	char *source = new char[value];
+	GLsizei length = 0;
+	pExtensions->glGetShaderSourceARB(m_handle, value, &length, source);
+
+	std::string program_source = source;
+	delete[] source;
+	return program_source;
+#else
+	return "";
+#endif
+}
+
 bool CUnifiedProgram::glBindProgram(RAPTOR_HANDLE program)
 {
 #if defined(GL_ARB_shader_objects)

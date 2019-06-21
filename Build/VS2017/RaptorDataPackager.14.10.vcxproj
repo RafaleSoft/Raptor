@@ -299,6 +299,7 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\RaptorData\RaptorDataPackager\PackageIO.cpp" />
     <ClCompile Include="..\..\RaptorData\RaptorDataPackager\RaptorDataPackager.cpp" />
     <ClCompile Include="..\..\RaptorData\RaptorDataPackager\StdAfx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -308,6 +309,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\RaptorData\RaptorDataPackager\PackageHeader.h" />
+    <ClInclude Include="..\..\RaptorData\RaptorDataPackager\PackageIO.h" />
     <ClInclude Include="..\..\RaptorData\RaptorDataPackager\StdAfx.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
