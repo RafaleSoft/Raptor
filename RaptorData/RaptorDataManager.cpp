@@ -42,27 +42,6 @@
 
 //////////////////////////////////////////////////////////////////////
 //
-// RaptorData Shaders
-//
-//////////////////////////////////////////////////////////////////////
-extern const char *embm_vp;
-extern const char *embm_fp;
-extern const char *embm_vp_nolight;
-extern const char *embm_fp_nolight;
-extern const char *shadowmap_fp;
-extern const char *shadowmap_fp_pcf;
-extern const char *shadowmap_fp_pcf_4x;
-#if _MSC_VER > 1200 
-extern const char *shadowmap_fp_pcf_16x;
-#endif
-extern const char *blender_8x_fp;
-extern const char *blender_8x_Xvp;
-extern const char *blender_8x_Yvp;
-
-
-
-//////////////////////////////////////////////////////////////////////
-//
 // Compressed embedded files
 //
 //////////////////////////////////////////////////////////////////////
@@ -70,7 +49,6 @@ extern const char *blender_8x_Yvp;
 
 static bool doCompress = false;
 static const unsigned int BUFFER = 1024;
-static const int NB_SHADERS = 64;
 
 
 //////////////////////////////////////////////////////////////////////
@@ -374,69 +352,21 @@ std::string CRaptorDataManager::readFile(const std::string &fname)
 	else
 		return"";
 }
-
-#define LOAD_SHADER(file,shader_name) \
-	fname = ExportFile(file); \
-	if (!fname.empty()) \
-	{ \
-		std::string shader = readFile(fname); \
-		if (shaders[ns] == NULL) \
-			shaders[ns++] = STRDUP(shader.c_str()); \
-		shaders[ns++] = shader_name; \
-	}
-
-const char * const *CRaptorDataManager::GetShaderList(void) 
+/*
+bool CRaptorDataManager::loadShader(const char *file, const char *shader_name, const char *shaders[], int &ns)
 {
-    static const char * shaders[NB_SHADERS];
-	memset(shaders,0,NB_SHADERS);
+	std::string fname = ExportFile(file);
+	if (!fname.empty())
+	{
+		std::string shader = readFile(fname);
+		if (shaders[ns] == NULL)
+			shaders[ns++] = STRDUP(shader.c_str());
+		shaders[ns++] = shader_name;
 
-	int ns = 0;
-	std::string fname = "";
-
-	// BUMP LIGHTING
-	LOAD_SHADER("bump_0light.vp","BUMP_0LIGHT_VTX_SHADER")
-	LOAD_SHADER("bump_0light.fp","BUMP_0LIGHT_TEX_SHADER")
-	LOAD_SHADER("bump.vp","BUMP_VTX_SHADER")
-	LOAD_SHADER("bump.fp","BUMP_TEX_SHADER")
-	LOAD_SHADER("bump_att.vp","BUMP_ATT_VTX_SHADER")
-	LOAD_SHADER("bump_att.fp","BUMP_ATT_TEX_SHADER")
-	LOAD_SHADER("bump_att_2light.vp","BUMP_ATT_VTX_SHADER_2LIGHTS")
-	LOAD_SHADER("bump_att_2light.fp","BUMP_ATT_TEX_SHADER_2LIGHTS")
-	LOAD_SHADER("bump_att_3light.vp","BUMP_ATT_VTX_SHADER_3LIGHTS")
-	LOAD_SHADER("bump_att_3light.fp","BUMP_ATT_TEX_SHADER_3LIGHTS")
-
-	// EMBM LIGHTING
-	LOAD_SHADER("embm_0light.vp","EMBM_0LIGHT_VTX_SHADER")
-	LOAD_SHADER("embm_0light.fp","EMBM_0LIGHT_TEX_SHADER")
-	LOAD_SHADER("embm.vp","EMBM_TEX_SHADER")
-	LOAD_SHADER("embm.fp","EMBM_VTX_SHADER")
-
-	// SHADOWS
-	LOAD_SHADER("projection.fp","PROJECTION_TEX_SHADER")
-	LOAD_SHADER("shadowmap.fp","SHADOWMAP_TEX_SHADER")
-	LOAD_SHADER("shadowmap_pcf.fp","SHADOWMAP_TEX_SHADER_PCF")
-	LOAD_SHADER("shadowmap_pcf_4x.fp","SHADOWMAP_TEX_SHADER_PCF_4X")
-	LOAD_SHADER("shadowmap_pcf_16x.fp","SHADOWMAP_TEX_SHADER_PCF_16X")
-    
-	//BLENDERS 
-	LOAD_SHADER("blender_8x.fp","BLENDER_8X")
-	LOAD_SHADER("blenderX_8x.vp","BLENDER_8X_XOFFSETS")
-	LOAD_SHADER("blenderY_8x.vp","BLENDER_8X_YOFFSETS")    
-
-	// BLINN LIGHTING
-	LOAD_SHADER("blinn.vs","PPIXEL_BLINN_VTX_PROGRAM")
-	LOAD_SHADER("blinn.ps","PPIXEL_BLINN_TEX_PROGRAM")
-
-	// PHONG LIGHTING
-	LOAD_SHADER("phong.vs","PPIXEL_PHONG_VTX_PROGRAM")
-	LOAD_SHADER("phong.ps","PPIXEL_PHONG_TEX_PROGRAM")
-	// BUMP LIGHTING
-	LOAD_SHADER("bump.vs","PPIXEL_BUMP_VTX_PROGRAM")
-	LOAD_SHADER("bump.ps","PPIXEL_BUMP_TEX_PROGRAM")
-	// AMBIENT OCCLUSION
-	LOAD_SHADER("AO.vs","AMBIENT_OCCLUSION_VTX_PROGRAM")
-	LOAD_SHADER("AO.ps","AMBIENT_OCCLUSION_TEX_PROGRAM")
-
-	return shaders;
+		return true;
+	}
+	else
+		return false;
 }
+*/
 

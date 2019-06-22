@@ -328,7 +328,7 @@
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\RaptorServer\RaptorInstance.cpp" />
+    <ClCompile Include="..\..\RaptorServer\RaptorServerInstance.cpp" />
     <ClCompile Include="..\..\RaptorServer\RaptorServer.cpp" />
     <ClCompile Include="..\..\RaptorServer\RaptorServerApp.cpp" />
     <ClCompile Include="..\..\RaptorServer\RaptorServerCompressor.cpp" />
@@ -341,7 +341,7 @@
     <ClCompile Include="..\..\RaptorServer\YUVCompressor.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\RaptorServer\RaptorInstance.h" />
+    <ClInclude Include="..\..\RaptorServer\RaptorServerInstance.h" />
     <ClInclude Include="..\..\RaptorServer\RaptorServer.h" />
     <ClInclude Include="..\..\RaptorServer\RaptorServerCompressor.h" />
     <ClInclude Include="..\..\RaptorServer\resource.h" />

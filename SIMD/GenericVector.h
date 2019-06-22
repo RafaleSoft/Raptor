@@ -56,7 +56,7 @@ public:
 	
 	// data access
 	T* const vector(void) const { return (T*)(m_vector); };
-	const T& SIMD_CALL operator[] ( int i ) const {  return m_vector[i]; };
+	const T& SIMD_CALL operator[] ( int i ) const NOEXCEPT  {  return m_vector[i]; };
 	T& SIMD_CALL operator[] ( int i ) {  return m_vector[i]; };
 
 	T& SIMD_CALL X() { return m_vector[0]; };

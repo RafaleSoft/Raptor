@@ -1,0 +1,64 @@
+	static const string kernel_vs = 
+	"#version 120			\n\
+	uniform vec4 center;	\n\
+	void main(void)			\n\
+	{						\n\
+		gl_Position = ftransform();\n\
+		gl_TexCoord[0] = gl_MultiTexCoord0 + center;\n\
+	}";
+
+	static const string xk_ps =
+	"#version 120				\n\
+	\n\
+	uniform sampler2D color;	\n\
+	uniform sampler2D factor;	\n\
+	\n\
+	uniform vec4 size;			\n\
+	uniform vec4 offset;		\n\
+	void main(void)			\n\
+	{						\n\
+		vec4 subpixels = fract(size * gl_TexCoord[0]); \n\
+		vec2 texcoord = gl_TexCoord[0].xy; \n\
+		vec4 factors = texture2D(factor,subpixels.xy); \n\
+	\n\
+		vec4 colors = texture2D(color,texcoord); \n\
+		vec4 colorsum = colors * factors.zzzz; \n\
+	\n\
+		colors = texture2D(color,texcoord + offset.xz); \n\
+		colorsum = colorsum + colors * factors.wwww; \n\
+	\n\
+		colors = texture2D(color,texcoord - offset.xz); \n\
+		colorsum = colorsum + colors * factors.yyyy; \n\
+	\n\
+		colors = texture2D(color,texcoord - offset.xz - offset.xz); \n\
+		gl_FragColor = colorsum + colors * factors.xxxx; \n\
+		gl_FragColor.w = 1.0; \n\
+	}";
+
+	static const string yk_ps =
+	"#version 120				\n\
+	\n\
+	uniform sampler2D color;	\n\
+	uniform sampler2D factor;	\n\
+	\n\
+	uniform vec4 size;			\n\
+	uniform vec4 offset;		\n\
+	void main(void)			\n\
+	{						\n\
+		vec4 subpixels = fract(size * gl_TexCoord[0]); \n\
+		vec2 texcoord = gl_TexCoord[0].xy; \n\
+		vec4 factors = texture2D(factor,subpixels.yx); \n\
+	\n\
+		vec4 colors = texture2D(color,texcoord); \n\
+		vec4 colorsum = colors * factors.zzzz; \n\
+	\n\
+		colors = texture2D(color,texcoord + offset.zy); \n\
+		colorsum = colorsum + colors * factors.wwww; \n\
+	\n\
+		colors = texture2D(color,texcoord - offset.zy); \n\
+		colorsum = colorsum + colors * factors.yyyy; \n\
+	\n\
+		colors = texture2D(color,texcoord - offset.zy - offset.zy); \n\
+		gl_FragColor = colorsum + colors * factors.xxxx; \n\
+		gl_FragColor.w = 1.0; \n\
+	}";

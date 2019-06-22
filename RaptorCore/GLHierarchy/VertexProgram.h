@@ -1,6 +1,20 @@
-// VertexProgram.h: interface for the CVertexProgram class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  VertexProgram.h                                                        */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
 
 #if !defined(AFX_VERTEXPROGRAM_H__204F7213_B40B_4B6A_9BCA_828409871B68__INCLUDED_)
 #define AFX_VERTEXPROGRAM_H__204F7213_B40B_4B6A_9BCA_828409871B68__INCLUDED_
@@ -55,7 +69,7 @@ public:
 	//!	Clone this shader.
 	virtual CVertexProgram* glClone();
 
-    //! Loads an OpenGL 2.0 vertex shader program.
+    //! Loads an OpenGL vertex shader program.
 	virtual bool glLoadProgram(const std::string &program);
 
     //!	Implements CShaderProgram.

@@ -1,0 +1,103 @@
+	//!	Tone mapping shader
+	static const string composer_ps =
+	"#version 120				\n\
+	uniform sampler2D color;	\n\
+	uniform sampler2D blur;		\n\
+	uniform sampler2D lwhite;	\n\
+	\n\
+	const vec4 luminance = vec4(0.299, 0.587, 0.114, 0.0);\n\
+	\n\
+	void main(void)			\n\
+	{						\n\
+		vec4 c = texture2D(color,gl_TexCoord[0].xy); \n\
+		vec4 b = texture2D(blur,gl_TexCoord[0].xy); \n\
+		vec4 l = texture2D(lwhite,gl_TexCoord[0].xy); \n\
+		gl_FragColor = c*l + b; \n\
+		gl_FragColor.w = 1.0; \n\
+	}";
+	
+	static const string luminanceMax_ps = 
+	"#version 120				\n\
+	uniform sampler2D color;	\n\
+	uniform vec4 offset;		\n\
+	\n\
+	const vec4 luminance = vec4(0.299, 0.587, 0.114, 0.0);\n\
+	\n\
+	void main(void)			\n\
+	{						\n\
+		vec4 c = texture2D(color,gl_TexCoord[0].xy - offset.xy); \n\
+		float LMax = dot(c,luminance); \n\
+	\n\
+		c = texture2D(color,gl_TexCoord[0].xy + offset.zy); \n\
+		LMax = max(LMax,dot(c,luminance)); \n\
+	\n\
+		c = texture2D(color,gl_TexCoord[0].xy - offset.zy); \n\
+		LMax = max(LMax,dot(c,luminance)); \n\
+	\n\
+		c = texture2D(color,gl_TexCoord[0].xy + offset.xy); \n\
+		LMax = max(LMax,dot(c,luminance)); \n\
+		gl_FragColor = vec4(LMax,LMax,LMax,0.0); \n\
+	}";
+
+	//	Luminance max is scaled to 1.0 to avoid darkening a scene
+	//	in the case where no pixels are above 1.0
+	//	The final luminance is applied to darken the whole scene
+	//	for the tone mapping in order to have the brightest parts
+	//	at 1.0. (L>1 => x 1/L is in range [0..1])
+	static const string lastLuminanceMax_ps = 
+	"#version 120				\n\
+	uniform sampler2D color;	\n\
+	uniform vec4 offset;		\n\
+	\n\
+	const vec4 luminance = vec4(0.299, 0.587, 0.114, 0.0);\n\
+	\n\
+	void main(void)			\n\
+	{						\n\
+		vec4 c = texture2D(color,gl_TexCoord[0].xy - offset.xy); \n\
+		float LMax = dot(c,luminance); \n\
+	\n\
+		c = texture2D(color,gl_TexCoord[0].xy + offset.zy); \n\
+		LMax = max(LMax,dot(c,luminance)); \n\
+	\n\
+		c = texture2D(color,gl_TexCoord[0].xy - offset.zy); \n\
+		LMax = max(LMax,dot(c,luminance)); \n\
+	\n\
+		c = texture2D(color,gl_TexCoord[0].xy + offset.xy); \n\
+		LMax = max(LMax,dot(c,luminance)); \n\
+		LMax = 1.0 / max(1.0,LMax); \n\
+		gl_FragColor = vec4(LMax,LMax,LMax,1.0); \n\
+	}";
+
+	//  Compute luminance with bilinear components, averaging
+	//  the 4 surrouding of the texel's center.
+	static const string treshhold2_ps = 
+	"#version 120				\n\
+	uniform sampler2D color;	\n\
+	uniform vec4 offset;		\n\
+	uniform vec4 treshhold;		\n\
+	\n\
+	const vec4 luminance = vec4(0.299, 0.587, 0.114, 0.0);\n\
+	\n\
+	void main(void)			\n\
+	{						\n\
+		vec4 L = vec4(0.0, 0.0, 0.0, 0.0); \n\
+		\n\
+		vec4 c1 = texture2D(color,gl_TexCoord[0].xy - offset.xy); \n\
+		L.x = dot(c1,luminance); \n\
+		\n\
+		vec4 c2 = texture2D(color,gl_TexCoord[0].xy + offset.zy); \n\
+		L.y = dot(c2,luminance); \n\
+		\n\
+		vec4 c3 = texture2D(color,gl_TexCoord[0].xy - offset.zy); \n\
+		L.z = dot(c3,luminance); \n\
+		\n\
+		vec4 c4 = texture2D(color,gl_TexCoord[0].xy + offset.xy); \n\
+		L.w = dot(c4,luminance); \n\
+		\n\
+		L = max(vec4(0.0,0.0,0.0,0.0), L - treshhold.yyyy); \n\
+		vec4 c = c1 * L.xxxx; \n\
+		c = c + c2 * L.yyyy; \n\
+		c = c + c3 * L.zzzz; \n\
+		gl_FragColor = c + c4 * L.wwww; \n\
+		gl_FragColor.w = 1.0; \n\
+	}" ;

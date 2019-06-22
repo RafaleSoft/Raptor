@@ -146,14 +146,12 @@
     <PostBuildEvent>
       <Command>copy $(OutDir)$(TargetName).lib "%RAPTOR_ROOT%\Redist\lib\"
 copy $(OutDir)$(TargetName).dll "%RAPTOR_ROOT%\Redist\bin\"
-copy "%OPENEXRLIB_BIN_PATH%\IlmImf.dll" "%RAPTOR_ROOT%\Redist\bin\"
-copy "%OPENEXRLIB_BIN_PATH%\Half.dll" "%RAPTOR_ROOT%\Redist\bin\"
-copy "%OPENEXRLIB_BIN_PATH%\Iex.dll" "%RAPTOR_ROOT%\Redist\bin\"
-copy "%OPENEXRLIB_BIN_PATH%\IlmThread.dll" "%RAPTOR_ROOT%\Redist\bin\"
-copy "%PNGLIB_BIN_PATH%\libpng.dll" "%RAPTOR_ROOT%\Redist\bin\"
-
+copy $(SolutionDir)$(ProjectName)\Toolbox.pck "%RAPTOR_ROOT%\Redist\bin\"
 </Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>%RAPTOR_ROOT%\RaptorToolBox\buildpak.bat</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">
     <Midl>
@@ -209,10 +207,12 @@ copy "%PNGLIB_BIN_PATH%\libpng.dll" "%RAPTOR_ROOT%\Redist\bin\"
     <PostBuildEvent>
       <Command>copy $(OutDir)$(TargetName).lib "%RAPTOR_ROOT%\Redist\lib\"
 copy $(OutDir)$(TargetName).dll "%RAPTOR_ROOT%\Redist\bin\"
-
-
+copy $(SolutionDir)$(ProjectName)\Toolbox.pck "%RAPTOR_ROOT%\Redist\bin\"
 </Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>%RAPTOR_ROOT%\RaptorToolBox\buildpak.bat</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Midl>
@@ -267,14 +267,12 @@ copy $(OutDir)$(TargetName).dll "%RAPTOR_ROOT%\Redist\bin\"
     <PostBuildEvent>
       <Command>copy $(OutDir)$(TargetName).lib "%RAPTOR_ROOT%\Redist\lib\"
 copy $(OutDir)$(TargetName).dll "%RAPTOR_ROOT%\Redist\bin\"
-copy "%OPENEXRLIB_BIN_PATH%\IlmImf.dll" "%RAPTOR_ROOT%\Redist\bin\"
-copy "%OPENEXRLIB_BIN_PATH%\Half.dll" "%RAPTOR_ROOT%\Redist\bin\"
-copy "%OPENEXRLIB_BIN_PATH%\Iex.dll" "%RAPTOR_ROOT%\Redist\bin\"
-copy "%OPENEXRLIB_BIN_PATH%\IlmThread.dll" "%RAPTOR_ROOT%\Redist\bin\"
-copy "%PNGLIB_BIN_PATH%\libpng.dll" "%RAPTOR_ROOT%\Redist\bin\"
-
+copy $(SolutionDir)$(ProjectName)\Toolbox.pck "%RAPTOR_ROOT%\Redist\bin\"
 </Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>%RAPTOR_ROOT%\RaptorToolBox\buildpak.bat</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Optimized|Win32'">
     <Midl>
@@ -341,15 +339,14 @@ copy "%PNGLIB_BIN_PATH%\libpng.dll" "%RAPTOR_ROOT%\Redist\bin\"
       <OutputFile>.\Release/RaptorToolBox.bsc</OutputFile>
     </Bscmake>
     <PostBuildEvent>
-      <Command>copy Release\RaptorToolBox.lib "%RAPTOR_ROOT%\Redist\lib\"
-copy Release\RaptorToolBox.dll "%RAPTOR_ROOT%\Redist\bin\"
-copy OpenEXRLib\bin\vc9\IlmImf.dll "%RAPTOR_ROOT%\Redist\bin\"
-copy OpenEXRLib\bin\vc9\Half.dll "%RAPTOR_ROOT%\Redist\bin\"
-copy OpenEXRLib\bin\vc9\Iex.dll "%RAPTOR_ROOT%\Redist\bin\"
-copy OpenEXRLib\bin\vc9\IlmThread.dll "%RAPTOR_ROOT%\Redist\bin\"
-copy OpenEXRLib\bin\vc9\zdll.dll "%RAPTOR_ROOT%\Redist\bin\zlib1.dll"
+      <Command>copy $(OutDir)$(TargetName).lib "%RAPTOR_ROOT%\Redist\lib\"
+copy $(OutDir)$(TargetName).dll "%RAPTOR_ROOT%\Redist\bin\"
+copy $(SolutionDir)$(ProjectName)\Toolbox.pck "%RAPTOR_ROOT%\Redist\bin\"
 </Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>%RAPTOR_ROOT%\RaptorToolBox\buildpak.bat</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\RaptorToolBox\BasicObjects.cpp" />
@@ -458,6 +455,33 @@ copy OpenEXRLib\bin\vc9\zdll.dll "%RAPTOR_ROOT%\Redist\bin\zlib1.dll"
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\..\RaptorToolBox\RaptorToolBox.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\RaptorToolBox\buildpak.bat" />
+    <None Include="..\..\RaptorToolBox\Filters\ColotControlFilter.programs">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">true</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\RaptorToolBox\Filters\ColotControlFilter.shaders">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">true</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\RaptorToolBox\Filters\DOF.programs">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">true</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\RaptorToolBox\Filters\DOF.shaders">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">true</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\RaptorToolBox\Filters\HDR.programs" />
+    <None Include="..\..\RaptorToolBox\Filters\HDR.shaders" />
+    <None Include="..\..\RaptorToolBox\Filters\MagnifierFilter.programs">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">true</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\RaptorToolBox\Filters\MagnifierFilter.shaders">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">true</ExcludedFromBuild>
+    </None>
+    <None Include="..\..\RaptorToolBox\Filters\MBFilter.programs">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">true</ExcludedFromBuild>
+    </None>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

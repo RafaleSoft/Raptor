@@ -1,6 +1,21 @@
-// VertexShader.cpp: implementation of the CVertexShader class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  VertexShader.cpp                                                       */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
 #include "Subsys/CodeGeneration.h"
 
 
@@ -13,12 +28,15 @@
 #if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
 	#include "System/RaptorGLExtensions.h"
 #endif
-
+#if !defined(AFX_OBJECTFACTORY_H__7F891C52_9E32_489C_B09C_5E5803522D91__INCLUDED_)
+	#include "ObjectFactory.h"
+#endif
 
 RAPTOR_NAMESPACE
 
 bool CVertexShader::m_bVertexReady = false;
 static CVertexShader::CVertexShaderClassID vertexId;
+static CPersistentType<CVertexShader> shaderFactory(vertexId);
 const CPersistence::CPersistenceClassID& CVertexShader::CVertexShaderClassID::GetClassId(void)
 {
 	return vertexId;
@@ -467,6 +485,35 @@ bool CVertexShader::glLoadProgram(const std::string &program)
 	CATCH_GL_ERROR
 
 	return m_bValid;
+}
+
+std::string CVertexShader::glGetProgramString(void)
+{
+	if (m_handle.handle() == 0)
+		return "";
+
+	if (!m_bVertexReady)
+		return "";
+
+#if defined(GL_ARB_vertex_program)
+	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+
+	if (pExtensions->glIsProgramARB(m_handle.handle()))
+		pExtensions->glBindProgramARB(GL_VERTEX_PROGRAM_ARB, m_handle.handle());
+	else
+		return "";
+
+	int value = 0;
+	pExtensions->glGetProgramivARB(GL_VERTEX_PROGRAM_ARB, GL_PROGRAM_LENGTH_ARB, &value);
+	char *source = new char[value];
+	pExtensions->glGetProgramStringARB(GL_VERTEX_PROGRAM_ARB, GL_PROGRAM_STRING_ARB, source);
+
+	std::string program_source = source;
+	delete[] source;
+	return program_source;
+#else
+	return "";
+#endif
 }
 
 bool CVertexShader::glGetProgramStatus(void)

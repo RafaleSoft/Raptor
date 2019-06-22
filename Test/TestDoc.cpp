@@ -82,8 +82,6 @@ public:
 			status = !status;
 			glRenderFilter();
 		}
-		//if (fgMag->isEnabled())
-		//	glRenderFilter();
 		CShadedGeometry::glRender();
 	};
 
@@ -93,6 +91,7 @@ private:
 		glMatrixMode(GL_PROJECTION);
 		glPushMatrix();
 		glLoadIdentity();
+
 		glOrtho(-1,1,-1,1,1,100);
 		glMatrixMode(GL_MODELVIEW);
 		glPushMatrix();
@@ -137,7 +136,7 @@ void CTestDoc::GLInitContext(void)
     CMaterial *pMaterial = pShader->getMaterial();
     pMaterial->setAmbient(0.2f,0.2f,0.2f,1.0f);
     pMaterial->setDiffuse(0.9f,0.3f,0.7f,1.0f);
-    pMaterial->setSpecular(1.2f,0.8f,0.8f,1.0f);
+    pMaterial->setSpecular(11.0f,10.0f,9.0f,1.0f);
     pMaterial->setShininess(10.0f);
 	m_pSG->getRenderingModel().removeModel(CGeometry::CRenderingModel::CGL_TEXTURE);
 

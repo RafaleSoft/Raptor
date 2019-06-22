@@ -1,6 +1,20 @@
-// VertexShader.h: interface for the CVertexShader class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  VertexShader.h                                                         */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
 
 #if !defined(AFX_VERTEXSHADER_H__F2D3BBC6_87A1_4695_B667_2B8C3C4CF022__INCLUDED_)
 #define AFX_VERTEXSHADER_H__F2D3BBC6_87A1_4695_B667_2B8C3C4CF022__INCLUDED_
@@ -68,6 +82,10 @@ public:
     //! Implements base class
 	//!	@see CShaderProgram.
 	virtual bool glGetProgramStatus(void);
+
+	//! Implements base class
+	//!	@see CShaderProgram.
+	virtual std::string glGetProgramString(void);
 
 	//! This method returns the underlying hardware capabilities
 	//! to render a vertex program. the capabilities fill

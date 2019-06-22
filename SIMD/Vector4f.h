@@ -85,7 +85,7 @@ public:
 
 	virtual double SIMD_CALL Normalize()
 	{
-		double n = Norm();
+		const double n = Norm();
 
 		if (n != 0)
 		{

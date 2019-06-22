@@ -53,6 +53,12 @@ public:
 	//!	giving expected result.
 	virtual bool glGetProgramStatus(void) = 0;
 
+	//! This method returns the shader program source loaded
+	//! with glLoadProgram or glLoadProgramFromFile.
+	//! If the shader is not valid or if any error prevent accessing 
+	//! the source, then an empty string is returned.
+	virtual std::string glGetProgramString(void) = 0;
+
 	//!	This method sets a program parameter ( 4 components vector ):
 	//! The number of parameters is limited by hardware ( get shader caps in derived classes ). 
     //! The first parameter selects the program paramater, the second is the actual data.

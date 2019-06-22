@@ -53,86 +53,6 @@
 RAPTOR_NAMESPACE
 
 
-
-static const std::string vp_src =
-"#version 440 compatibility\n\
-\n\
-//uniform Transform { \n\
-//	mat4 ModelViewMatrix; \n\
-//	mat4 ModelViewProjectionMatrix; \n\
-//}; \n\
-\n\
-layout(location = 0) in vec4 i_Position; \n\
-layout(location = 3) in vec4 i_Color; \n\
-layout(location = 6) in vec4 i_Size; \n\
-\n\
-out vec4 size; \n\
-out vec4 v_color; \n\
-\n\
-void main (void) \n\
-{\n\
-	vec4 pos = vec4(vec3(i_Position.xyz),1.0); \n\
-	gl_Position =  gl_ModelViewProjectionMatrix * pos; \n\
-	//gl_Position =  ModelViewMatrix * pos; \n\
-	\n\
-	//	The size has to be projected because it is added to the posision \n\
-	//	in the geometry stage. \n\
-	size = gl_ModelViewProjectionMatrix * i_Size; \n\
-	v_color =  i_Color;\n\
-}";
-
-static const std::string gp_src =
-"#version 440\n\
-\n\
-//	Expect the geometry shader extension to be available, warn if not. \n\
-#extension GL_ARB_geometry_shader4 : enable \n\
-\n\
-in vec4 size[]; \n\
-in vec4 v_color[]; \n\
-\n\
-layout(points) in; \n\
-layout(triangle_strip, max_vertices=4) out; \n\
-layout(location = 1) out vec4 g_TexCoord[1]; \n\
-out vec4 g_color; \n\
-\n\
-void main() \n\
-{\n\
-	g_color = v_color[0]; \n\
-	\n\
-	gl_Position = gl_in[0].gl_Position + vec4(-size[0].x, -size[0].y, 0.0, 0.0); \n\
-	g_TexCoord[0] = vec4(0.0,0.0,0.0,0.0); \n\
-	EmitVertex(); \n\
-	\n\
-	gl_Position = gl_in[0].gl_Position + vec4(size[0].x,-size[0].y,0.0,0.0); \n\
-	g_TexCoord[0] = vec4(1.0,0.0,0.0,0.0); \n\
-	EmitVertex(); \n\
-	\n\
-	gl_Position = gl_in[0].gl_Position + vec4(-size[0].x,size[0].y,0.0,0.0); \n\
-	g_TexCoord[0] = vec4(0.0,1.0,0.0,0.0); \n\
-	EmitVertex(); \n\
-	\n\
-	gl_Position = gl_in[0].gl_Position + vec4(size[0].x,size[0].y,0.0,0.0); \n\
-	g_TexCoord[0] = vec4(1.0,1.0,0.0,0.0); \n\
-	EmitVertex(); \n\
-	\n\
-	EndPrimitive(); \n\
-}";
-
-static const std::string fp_src =
-"#version 440\n\
-\n\
-uniform	sampler2D diffuseMap; \n\
-\n\
-in vec4 g_color; \n\
-layout(location = 1) in vec4 g_TexCoord; \n\
-layout(location = 0) out vec4 o_Color;	\n\
-\n\
-void main (void) \n\
-{\n\
-	o_Color = g_color * texture(diffuseMap,vec2(g_TexCoord.st)); \n\
-}";
-
-
 //!	The shader is common to all texture quads by definition.
 const uint32_t CTextureQuad::max_texture_quad = 256;
 CShader	*CTextureQuad::m_pShader = NULL;
@@ -285,15 +205,10 @@ void CTextureQuad::glRender(void)
 	{
 		m_pShader = new CShader(getName() + "_SHADER");
 
-		CVertexProgram *vp = m_pShader->glGetVertexProgram();
-		res = vp->glLoadProgram(vp_src);
-
-		CGeometryProgram *gp = m_pShader->glGetGeometryProgram();
+		CVertexProgram *vp = m_pShader->glGetVertexProgram("TEXTURE_QUAD_VTX_PROGRAM");
+		CGeometryProgram *gp = m_pShader->glGetGeometryProgram("TEXTURE_QUAD_GEO_PROGRAM");
 		gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
-		res = res & gp->glLoadProgram(gp_src);
-
-		CFragmentProgram *fs = m_pShader->glGetFragmentProgram();
-		res = res & fs->glLoadProgram(fp_src);
+		CFragmentProgram *fs = m_pShader->glGetFragmentProgram("TEXTURE_QUAD_TEX_PROGRAM");
 		CProgramParameters params;
 		params.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);
 

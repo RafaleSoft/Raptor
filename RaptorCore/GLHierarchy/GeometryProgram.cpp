@@ -31,12 +31,16 @@
 #if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
     #include "System/RaptorErrorManager.h"
 #endif
+#if !defined(AFX_OBJECTFACTORY_H__7F891C52_9E32_489C_B09C_5E5803522D91__INCLUDED_)
+	#include "ObjectFactory.h"
+#endif
 
 #include <stdlib.h>	//	malloc
 RAPTOR_NAMESPACE
 
 bool CGeometryProgram::m_bGeometryProgramReady = false;
 static CGeometryProgram::CGeometryProgramClassID geometryId;
+static CPersistentType<CGeometryProgram> shaderFactory(geometryId);
 const CPersistence::CPersistenceClassID& CGeometryProgram::CGeometryProgramClassID::GetClassId(void)
 {
 	return geometryId;

@@ -1,0 +1,28 @@
+	const char *colorcontrol_fprogram = 
+	"	#version 120						\n\
+		const vec3 luminance = vec3(0.299, 0.587, 0.114);	\n\
+		const vec3 u_chrominance = vec3(-0.14713, -0.28886, 0.436);	\n\
+		const vec3 v_chrominance = vec3(0.615, -0.51498, -0.10001);	\n\
+		const vec3 red = vec3(1.0, 0.0, 1.13983);	\n\
+		const vec3 green = vec3(1.0, -0.39465, -0.58060);	\n\
+		const vec3 blue = vec3(1.0, 2.03211, 0.0);	\n\
+		uniform	sampler2D	source;			\n\
+		uniform vec4		percentage;		\n\
+		uniform vec4		baseColor;		\n\
+			\n\
+	void main (void) \n\
+	{\n\
+		vec3 color = texture2D(source,vec2(gl_TexCoord[0].st)).xyz; \n\
+		vec3 yuv = vec3(0.0,0.0,0.0); \n\
+		yuv.x = dot(luminance,color);	\n\
+		yuv.y = percentage.z * dot(u_chrominance,color);	\n\
+		yuv.z = percentage.z * dot(v_chrominance,color);	\n\
+	\n\
+		color.x = dot(yuv,red);		\n\
+		color.y = dot(yuv,green);	\n\
+		color.z = dot(yuv,blue);	\n\
+	\n\
+		gl_FragColor.xyz = mix(percentage.y * color,yuv.x * baseColor.xyz,percentage.x);	\n\
+		gl_FragColor.w = 1.0; \n\
+	}\n\
+	";

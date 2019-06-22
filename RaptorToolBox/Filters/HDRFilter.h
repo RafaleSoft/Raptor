@@ -1,6 +1,20 @@
-// HDRFilter.h: interface for the CHDRFilter class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  HDRFilter.h                                                            */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
 
 #if !defined(AFX_HDRFILTER_H__6E9B4FC8_154A_46DD_A218_6BC438E45C6A__INCLUDED_)
 #define AFX_HDRFILTER_H__6E9B4FC8_154A_46DD_A218_6BC438E45C6A__INCLUDED_
@@ -62,7 +76,7 @@ private:
 	virtual void glRenderFilterOutput(void);
 
 	//!	Build all intermediate and final shaders
-	bool glBuildShaders(unsigned int width,unsigned int height);
+	bool glBuildShaders(void);
 
 	//! HDR rendering attributes
     unsigned int    nLevels;
@@ -90,10 +104,14 @@ private:
     CRaptorDisplay  *m_pDownBlurYDisplay;
     CTextureObject  *m_pDownBlurXBuffer;
     CTextureObject  *m_pDownBlurYBuffer;
+#if defined(GL_ARB_geometry_shader4)
+	CShader			*m_pBlenderX;
+	CShader			*m_pBlenderY;
+#else
     CVertexShader   *m_pBlurXOffsets;
     CVertexShader   *m_pBlurYOffsets;
     CFragmentShader *m_pBlur;
-
+#endif
 	//! Final image composition with tone mapping
     CShader *m_pComposite;
     

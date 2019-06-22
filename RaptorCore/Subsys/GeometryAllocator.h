@@ -54,8 +54,8 @@ public:
 	//!     - a new pointer otherwise, which should replace pointer for subsequent calls
 	//!		- discarding a pointer retrive the mapped pointer, but the data pointed 
 	//!			is discarded without copy.
-	unsigned short *glvkMapPointer(unsigned short *pointer, bool syncData = true);
-	unsigned short *glvkUnMapPointer(unsigned short *pointer, bool syncData = true);
+	unsigned short *glvkMapPointer(uint16_t *pointer, bool syncData = true);
+	unsigned short *glvkUnMapPointer(uint16_t *pointer, bool syncData = true);
 	float *glvkMapPointer(float *pointer, bool syncData = true);
 	float *glvkUnMapPointer(float *pointer, bool syncData = true);
 	
@@ -68,16 +68,16 @@ public:
 	//!	If size is 0, the dst memory size is recomputed, otherwise, size floats are copied.
 	//!	Rq: No other testing are performed ! ( no ckech is done to validate that dst is a bloc of size 'size' )
 	void glvkCopyPointer(float *dst, float *src, uint64_t size = 0);
-	void glvkCopyPointer(unsigned short *dst, unsigned short *src, uint64_t size = 0);
+	void glvkCopyPointer(uint16_t *dst, uint16_t *src, uint64_t size = 0);
 	
 
 	//!	This method returns the address of a free block of the requested size, ( nb of indexes )
 	//!	or NULL if not enough space or other error.
-	unsigned short	* const	allocateIndexes(uint64_t size);
+	uint16_t* const	allocateIndexes(uint64_t size);
 
 	//!	Release the block allocated here above.
 	//! Returns false if block not found or if error.
-	bool	releaseIndexes(unsigned short *index);
+	bool	releaseIndexes(uint16_t *index);
 
 	//!	This method returns the address of a free block of the requested size, ( nb of indexes )
 	//!	or NULL if not enough space or other error.
@@ -98,7 +98,7 @@ private:
 	//!	The unique allocator instance
 	static CGeometryAllocator	*m_pInstance;
 
-    CHostMemoryManager::Allocator<unsigned short> shortAlloc;
+	CHostMemoryManager::Allocator<uint16_t> shortAlloc;
     CHostMemoryManager::Allocator<float> floatAlloc;
 
 	//!	Structure for memory blocs
@@ -107,8 +107,8 @@ private:
 		//	bloc address
 		union
 		{
-			unsigned short *us_address;
-			float *f_address;
+			uint16_t	*us_address;
+			float		*f_address;
 		} address;
 		//	bloc size in bytes
 		uint64_t size;
@@ -127,16 +127,16 @@ private:
 
 	//! Actual memory structure : bloc fragments of global allocated space
 	//!	IMPORTANT: The structure implementation requires a binary tree for template class map<>
-	map<unsigned short*,uint64_t>	indexBlocs;
-	map<float*,uint64_t>			vertexBlocs;
+	map<uint16_t*,uint64_t>	indexBlocs;
+	map<float*,uint64_t>	vertexBlocs;
 
 	//! Free blocs for faster reallocation ( blocs are contained in actual memory structure )
 	vector<data_bloc2>	freeIndexBlocs;
 	vector<data_bloc2>	freeVertexBlocs;
 
     //!  memory mappers from local memory to server memory
-    map<unsigned short*,unsigned short*>    indexReMap;
-    map<float*,float*>  vertexReMap;
+	map<uint16_t*, uint16_t*>   indexReMap;
+    map<float*,float*>			vertexReMap;
 };
 
 RAPTOR_NAMESPACE_END

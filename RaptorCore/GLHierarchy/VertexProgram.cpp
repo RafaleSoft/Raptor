@@ -1,6 +1,20 @@
-// VertexProgram.cpp: implementation of the CVertexProgram class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  VertexProgram.cpp                                                      */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
 
 #include "Subsys/CodeGeneration.h"
 
@@ -16,11 +30,15 @@
 #if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
     #include "System/RaptorErrorManager.h"
 #endif
+#if !defined(AFX_OBJECTFACTORY_H__7F891C52_9E32_489C_B09C_5E5803522D91__INCLUDED_)
+	#include "ObjectFactory.h"
+#endif
 
 RAPTOR_NAMESPACE
 
 bool CVertexProgram::m_bVertexProgramReady = false;
 static CVertexProgram::CVertexProgramClassID vertexId;
+static CPersistentType<CVertexProgram> shaderFactory(vertexId);
 const CPersistence::CPersistenceClassID& CVertexProgram::CVertexProgramClassID::GetClassId(void)
 {
 	return vertexId;
