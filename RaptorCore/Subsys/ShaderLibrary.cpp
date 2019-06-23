@@ -71,7 +71,7 @@ typedef struct
 	const char *shader_fname;
 	const char *class_name;
 } factory_shader;
-static const size_t NB_FACTORY_SHADERS = 26;
+static const size_t NB_FACTORY_SHADERS = 27;
 static factory_shader fsh[NB_FACTORY_SHADERS] = {	{ "BUMP_TEX_SHADER", "bump.fp", "FragmentShader" },
 													{ "EMBM_TEX_SHADER", "embm.fp", "FragmentShader" },
 													{ "BUMP_VTX_SHADER", "bump.vp", "VertexShader" },
@@ -97,6 +97,7 @@ static factory_shader fsh[NB_FACTORY_SHADERS] = {	{ "BUMP_TEX_SHADER", "bump.fp"
 													{ "BLENDER_8X_TEX_PROGRAM", "blenderX_8x.ps", "FragmentProgram" },
 													{ "BLENDER_8Y_TEX_PROGRAM", "blenderY_8x.ps", "FragmentProgram" },
 													{ "EMPTY_PROGRAM", "empty.vs", "VertexProgram" },
+													{ "DIFFUSE_PROGRAM", "diffuse.ps", "FragmentProgram" },
 													{ "FULL_SCREEN_GEO_PROGRAM", "blender_8x.gs", "GeometryProgram" } };
 
 static map<std::string, factory_shader>	s_factoryShaders;

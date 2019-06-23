@@ -66,7 +66,6 @@ public:
     virtual ITextureGenerator::GENERATOR_KIND    getKind(void) const { return ITextureGenerator::BUFFERED; };
 
     //! The fragment program to compute accumulation;
-	static const string accum_gp;
 	static const string accum_fp;
 	static const string accum_fp2;
 
@@ -103,37 +102,6 @@ public:
 
 
 #if defined(GL_ARB_geometry_shader4)
-	const string CAccumulator::accum_gp =
-	"#version 460\n\
-	\n\
-	//	Expect the geometry shader extension to be available, warn if not. \n\
-	#extension GL_ARB_geometry_shader4 : enable \n\
-	\n\
-	layout(points) in; \n\
-	layout(triangle_strip, max_vertices=4) out; \n\
-	layout(location = 1) out vec4 g_TexCoord; \n\
-	\n\
-	void main() \n\
-	{\n\
-		gl_Position = vec4(-1.0, -1.0, 0.0, 1.0); \n\
-		g_TexCoord = vec4(0.0,0.0,0.0,0.0); \n\
-		EmitVertex(); \n\
-		\n\
-		gl_Position = vec4(1.0, -1.0, 0.0, 1.0); \n\
-		g_TexCoord = vec4(1.0,0.0,0.0,0.0); \n\
-		EmitVertex(); \n\
-		\n\
-		gl_Position = vec4(-1.0, 1.0, 0.0, 1.0); \n\
-		g_TexCoord = vec4(0.0, 1.0, 0.0, 0.0); \n\
-		EmitVertex(); \n\
-		\n\
-		gl_Position = vec4(1.0, 1.0, 0.0, 1.0); \n\
-		g_TexCoord = vec4(1.0, 1.0, 0.0, 0.0); \n\
-		EmitVertex(); \n\
-		\n\
-		EndPrimitive(); \n\
-	}";
-
 	const string CAccumulator::accum_fp =
 	"#version 460 			\n\
 	\n\
@@ -373,15 +341,13 @@ bool CMBFilter::glInitFilter(void)
 #if defined(GL_ARB_geometry_shader4)
 	m_pFinalShader = new CShader("MotionBlurShader");
 	CVertexProgram *vp = m_pMotionBlurShader->glGetVertexProgram("EMPTY_PROGRAM");
-	CGeometryProgram *gp = m_pMotionBlurShader->glGetGeometryProgram("mb_gp");
-	bool res = gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
-	res = res & gp->glLoadProgram(CAccumulator::accum_gp);
+	CGeometryProgram *gp = m_pMotionBlurShader->glGetGeometryProgram("FULL_SCREEN_GEO_PROGRAM");
 	CFragmentProgram *fp = m_pMotionBlurShader->glGetFragmentProgram("mb_fp");
-	res = res && fp->glLoadProgram(CAccumulator::accum_fp);
+	bool res = fp->glLoadProgram(CAccumulator::accum_fp);
 	res = res && m_pMotionBlurShader->glCompileShader();
 
 	vp = m_pFinalShader->glGetVertexProgram("EMPTY_PROGRAM");
-	gp = m_pFinalShader->glGetGeometryProgram("mb_gp");
+	gp = m_pFinalShader->glGetGeometryProgram("FULL_SCREEN_GEO_PROGRAM");
 	fp = m_pFinalShader->glGetFragmentProgram("mb_fp2");
 	res = res && fp->glLoadProgram(CAccumulator::accum_fp2);
 	res = res && m_pFinalShader->glCompileShader();

@@ -229,6 +229,7 @@ CHDRFilter::CHDRFilter(const CRaptorDisplayConfig &da)
 	m_pTreshholdFreqs = NULL;
 	m_maxLuminance = NULL;
 	m_lastMaxLuminance = NULL;
+	m_pIdentity = NULL;
 
 #if defined(GL_ARB_geometry_shader4)
 	m_pBlenderX = NULL;
@@ -275,8 +276,12 @@ void CHDRFilter::glRenderFilter()
 											0.0f);
 		maxLuminanceParams[0].copy(luminanceParams);
 
-        if (i < 2)
-			glDrawBuffer();
+		if (i < 2)
+		{
+			m_pIdentity->glRender();
+			glDrawFilter();
+			m_pIdentity->glStop();
+		}
         else if (i<nLevels-1)
         {
 #if defined(GL_ARB_vertex_shader) || defined(GL_ARB_geometry_shader4)
@@ -621,16 +626,22 @@ bool CHDRFilter::glBuildShaders(void)
 	res = res && m_pBlenderY->glCompileShader();
 	blurOffsets.addParameter("color", CTextureUnitSetup::IMAGE_UNIT_0);
 
-
-
-
+	m_pIdentity = new CShader("HDR_IDENTITY");
+	vp = m_pIdentity->glGetVertexProgram("EMPTY_PROGRAM");
+	gp = m_pIdentity->glGetGeometryProgram("FULL_SCREEN_GEO_PROGRAM");
+	fp = m_pIdentity->glGetFragmentProgram("DIFFUSE_PROGRAM");
+	CProgramParameters identityParams;
+	identityParams.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);
+	fp->setProgramParameters(identityParams);
+	res = res && m_pIdentity->glCompileShader();
+	
 	m_pTreshholdFreqs = new CShader("HDR_TRESHOLDS");
 	vp = m_pTreshholdFreqs->glGetVertexProgram("EMPTY_PROGRAM");
 	gp = m_pTreshholdFreqs->glGetGeometryProgram("FULL_SCREEN_GEO_PROGRAM");
 	// Set it only once since it is a library shader (move this call to the rendering stage)
-	res = gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
+	//res = res && gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
 	fp = m_pTreshholdFreqs->glGetFragmentProgram("treshhold2_fp");
-	res = fp->glLoadProgram(treshhold2_ps);
+	res = res && fp->glLoadProgram(treshhold2_ps);
 	if (res)
 	{
 		thresholdParams.addParameter("color",CTextureUnitSetup::IMAGE_UNIT_0);
@@ -805,26 +816,28 @@ void CHDRFilter::glDestroyFilter(void)
 		m_pDownSizedAttachments = NULL;
     }
 
-    if (m_pDownBlurXDisplay != NULL)
+	if (NULL != m_pDownBlurXDisplay)
         Raptor::glDestroyDisplay(m_pDownBlurXDisplay);
-    if (m_pDownBlurYDisplay != NULL)
+	if (NULL != m_pDownBlurYDisplay)
         Raptor::glDestroyDisplay(m_pDownBlurYDisplay);
-	if (m_pDownHighFreqs != NULL)
+	if (NULL != m_pDownHighFreqs)
 		Raptor::glDestroyDisplay(m_pDownHighFreqs);
-	if (m_pDownBlurXBuffer != NULL)
+	if (NULL != m_pDownBlurXBuffer)
 		m_pDownBlurXBuffer->releaseReference();
-	if (m_pDownBlurYBuffer != NULL)
+	if (NULL != m_pDownBlurYBuffer)
 		m_pDownBlurYBuffer->releaseReference();
-	if (m_pDownHFBuffer != NULL)
+	if (NULL != m_pDownHFBuffer)
 		m_pDownHFBuffer->releaseReference();
-	if (m_pComposite != NULL)
+	if (NULL != m_pComposite)
 		m_pComposite->releaseReference();
-	if (m_pTreshholdFreqs != NULL)
+	if (NULL != m_pTreshholdFreqs)
 		m_pTreshholdFreqs->releaseReference();
-	if (m_maxLuminance != NULL)
+	if (NULL != m_maxLuminance)
 		m_maxLuminance->releaseReference();
-	if (m_lastMaxLuminance != NULL)
+	if (NULL != m_lastMaxLuminance)
 		m_lastMaxLuminance->releaseReference();
+	if (NULL != m_pIdentity)
+		m_pIdentity->releaseReference();
 
 	m_pDownBlurYDisplay = NULL;
 	m_pDownBlurXDisplay = NULL;

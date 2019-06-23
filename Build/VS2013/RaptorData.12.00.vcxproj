@@ -416,6 +416,7 @@ copy $(SolutionDir)$(ProjectName)\RaptorData.pck "%RAPTOR_ROOT%\Redist\bin\"
     <None Include="..\..\RaptorData\Data\bump_att_2light.vp" />
     <None Include="..\..\RaptorData\Data\bump_att_3light.fp" />
     <None Include="..\..\RaptorData\Data\bump_att_3light.vp" />
+    <None Include="..\..\RaptorData\Data\diffuse.ps" />
     <None Include="..\..\RaptorData\Data\embm.fp" />
     <None Include="..\..\RaptorData\Data\embm.vp" />
     <None Include="..\..\RaptorData\Data\embm_0light.fp" />
