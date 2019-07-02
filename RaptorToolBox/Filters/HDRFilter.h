@@ -90,7 +90,6 @@ private:
 	CTextureSet		**m_pDownSizedAttachments;
 	CShader			*m_maxLuminance;
     CShader			*m_lastMaxLuminance;
-	CShader			*m_pIdentity;
     
 	//! Extract high frequencies
 	CProgramParameters::CParameter<GL_COORD_VERTEX> thresholdParam;

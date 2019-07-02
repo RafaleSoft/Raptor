@@ -229,7 +229,6 @@ CHDRFilter::CHDRFilter(const CRaptorDisplayConfig &da)
 	m_pTreshholdFreqs = NULL;
 	m_maxLuminance = NULL;
 	m_lastMaxLuminance = NULL;
-	m_pIdentity = NULL;
 
 #if defined(GL_ARB_geometry_shader4)
 	m_pBlenderX = NULL;
@@ -278,9 +277,9 @@ void CHDRFilter::glRenderFilter()
 
 		if (i < 2)
 		{
-			m_pIdentity->glRender();
+			getIdentityShader()->glRender();
 			glDrawFilter();
-			m_pIdentity->glStop();
+			getIdentityShader()->glStop();
 		}
         else if (i<nLevels-1)
         {
@@ -625,15 +624,6 @@ bool CHDRFilter::glBuildShaders(void)
 	fp = m_pBlenderY->glGetFragmentProgram("BLENDER_8Y_TEX_PROGRAM");
 	res = res && m_pBlenderY->glCompileShader();
 	blurOffsets.addParameter("color", CTextureUnitSetup::IMAGE_UNIT_0);
-
-	m_pIdentity = new CShader("HDR_IDENTITY");
-	vp = m_pIdentity->glGetVertexProgram("EMPTY_PROGRAM");
-	gp = m_pIdentity->glGetGeometryProgram("FULL_SCREEN_GEO_PROGRAM");
-	fp = m_pIdentity->glGetFragmentProgram("DIFFUSE_PROGRAM");
-	CProgramParameters identityParams;
-	identityParams.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);
-	fp->setProgramParameters(identityParams);
-	res = res && m_pIdentity->glCompileShader();
 	
 	m_pTreshholdFreqs = new CShader("HDR_TRESHOLDS");
 	vp = m_pTreshholdFreqs->glGetVertexProgram("EMPTY_PROGRAM");
@@ -836,8 +826,6 @@ void CHDRFilter::glDestroyFilter(void)
 		m_maxLuminance->releaseReference();
 	if (NULL != m_lastMaxLuminance)
 		m_lastMaxLuminance->releaseReference();
-	if (NULL != m_pIdentity)
-		m_pIdentity->releaseReference();
 
 	m_pDownBlurYDisplay = NULL;
 	m_pDownBlurXDisplay = NULL;

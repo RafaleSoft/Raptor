@@ -262,12 +262,21 @@ bool CRaptorDisplayConfig::glQueryConfig(unsigned long query)
 		glGetIntegerv(GL_TEXTURE_COORD_ARRAY_STRIDE,&arraysState.textureArray.arrayStride);
 		glGetIntegerv(GL_EDGE_FLAG_ARRAY_STRIDE,&arraysState.edgeArray.arrayStride);
 
+#if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
 		glGetPointerv(GL_VERTEX_ARRAY_POINTER,&arraysState.vertexArray.arrayPointer);
 		glGetPointerv(GL_NORMAL_ARRAY_POINTER,&arraysState.normalArray.arrayPointer);
 		glGetPointerv(GL_COLOR_ARRAY_POINTER,&arraysState.colorArray.arrayPointer);
 		glGetPointerv(GL_INDEX_ARRAY_POINTER,&arraysState.indexArray.arrayPointer);
 		glGetPointerv(GL_TEXTURE_COORD_ARRAY_POINTER,&arraysState.textureArray.arrayPointer);
 		glGetPointerv(GL_EDGE_FLAG_ARRAY_POINTER,&arraysState.edgeArray.arrayPointer);
+#else
+		arraysState.vertexArray.arrayPointer = NULL;
+		arraysState.normalArray.arrayPointer = NULL;
+		arraysState.colorArray.arrayPointer = NULL;
+		arraysState.indexArray.arrayPointer = NULL;
+		arraysState.textureArray.arrayPointer = NULL;
+		arraysState.edgeArray.arrayPointer = NULL;
+#endif
 
 #ifdef GL_EXT_vertex_weighting
 		arraysState.weightArray.enable = glIsEnabled(GL_VERTEX_WEIGHT_ARRAY_EXT);
