@@ -84,17 +84,14 @@ RAPTOR_NAMESPACE_END
 
 RAPTOR_NAMESPACE
 
+IMPLEMENT_CLASS_ID(CShader, shaderID)
+
+
 CColor::RGBA CShader::getAmbient(void) 
 { 
     return m_ambient; 
 }
 
-static CShader::CShaderClassID shaderID;
-static CPersistentType<CShader> shaderFactory(shaderID);
-const CPersistence::CPersistenceClassID& CShader::CShaderClassID::GetClassId(void)
-{
-	return shaderID;
-}
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction

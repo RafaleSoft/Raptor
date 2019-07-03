@@ -79,6 +79,12 @@ CRaptorInstance::CRaptorInstance()
 	defaultDisplay = NULL;
 	defaultWindow.handle(0);
 	defaultWindow.hClass(0);
+
+	m_bFragmentProgramReady = false;
+	m_bVertexProgramReady = false;
+	m_bGeometryProgramReady = false;
+	m_bVertexReady = false;
+	m_bFragmentReady = false;
 }
 
 CRaptorInstance &CRaptorInstance::GetInstance(void)

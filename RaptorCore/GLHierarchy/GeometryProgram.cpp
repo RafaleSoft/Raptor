@@ -34,17 +34,15 @@
 #if !defined(AFX_OBJECTFACTORY_H__7F891C52_9E32_489C_B09C_5E5803522D91__INCLUDED_)
 	#include "ObjectFactory.h"
 #endif
+#if !defined(AFX_RAPTORINSTANCE_H__90219068_202B_46C2_BFF0_73C24D048903__INCLUDED_)
+	#include "Subsys/RaptorInstance.h"
+#endif
 
-#include <stdlib.h>	//	malloc
+
 RAPTOR_NAMESPACE
 
-bool CGeometryProgram::m_bGeometryProgramReady = false;
-static CGeometryProgram::CGeometryProgramClassID geometryId;
-static CPersistentType<CGeometryProgram> shaderFactory(geometryId);
-const CPersistence::CPersistenceClassID& CGeometryProgram::CGeometryProgramClassID::GetClassId(void)
-{
-	return geometryId;
-}
+IMPLEMENT_CLASS_ID(CGeometryProgram, geometryId)
+
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -72,7 +70,7 @@ CGeometryProgram* CGeometryProgram::glClone()
 CGeometryProgram::~CGeometryProgram()
 {
 #if defined(GL_ARB_geometry_shader4)
-	if (!m_bGeometryProgramReady)
+	if (!CRaptorInstance::GetInstance().m_bGeometryProgramReady)
 	{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
         Raptor::GetErrorManager()->generateRaptorError(	CGeometryProgram::CGeometryProgramClassID::GetClassId(),
@@ -93,15 +91,15 @@ void CGeometryProgram::glInitShaders()
 {
 	m_parameters.clear();
 
-	if (!m_bGeometryProgramReady)
+	if (!CRaptorInstance::GetInstance().m_bGeometryProgramReady)
 	{
 		if (Raptor::glIsExtensionSupported(GL_ARB_GEOMETRY_SHADER4_EXTENSION_NAME))
 		{
 #if defined(GL_ARB_geometry_shader4)
 			const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
-			m_bGeometryProgramReady = (NULL != pExtensions->glCreateShaderObjectARB);
+			CRaptorInstance::GetInstance().m_bGeometryProgramReady = (NULL != pExtensions->glCreateShaderObjectARB);
 #else
-			m_bGeometryProgramReady = false;
+			CRaptorInstance::GetInstance().m_bGeometryProgramReady = false;
 #endif
 		}
 		else
@@ -152,7 +150,7 @@ bool CGeometryProgram::glLoadProgram(const std::string &program)
 	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 
 #if defined(GL_ARB_geometry_shader4)
-	if (m_bGeometryProgramReady)
+	if (CRaptorInstance::GetInstance().m_bGeometryProgramReady)
 	{
 		if (m_handle.handle() > 0)
 			pExtensions->glDeleteObjectARB(m_handle.handle());
@@ -235,7 +233,7 @@ bool CGeometryProgram::glBindProgram(RAPTOR_HANDLE program)
 
 bool CGeometryProgram::glGetProgramCaps(GL_GEOMETRY_PROGRAM_CAPS& caps)
 {
-	if (m_bGeometryProgramReady)
+	if (CRaptorInstance::GetInstance().m_bGeometryProgramReady)
 	{
 #if defined(GL_ARB_geometry_shader4)
 		glGetIntegerv(GL_MAX_GEOMETRY_TEXTURE_IMAGE_UNITS_ARB,&caps.max_geometry_texture_image_units);
@@ -260,7 +258,7 @@ bool CGeometryProgram::glGetProgramStatus(void)
 	if (m_handle.handle() == 0)
 		return false;
 
-	if (!m_bGeometryProgramReady)
+	if (!CRaptorInstance::GetInstance().m_bGeometryProgramReady)
 		return false;
 
 #if defined(GL_ARB_geometry_shader4)

@@ -25,9 +25,6 @@
 
 #include "Subsys/CodeGeneration.h"
 
-#if !defined(AFX_IMAGE_H__F545D0D5_5F10_4EFA_BE3B_3F3D34D4DBF3__INCLUDED_)
-	//#include "System/Image.h"
-#endif
 #if !defined(AFX_RAPTORCONFIG_H__29B753B8_17DE_44DF_A4D2_9D19C5AC53D5__INCLUDED_)
 	#include "System/RaptorConfig.h"
 #endif
@@ -107,6 +104,16 @@ public:
 	std::vector<CRaptorConsole::CInputCollectorBase*>	inputCollectors;
 	//!	The full list of persistence objects active in this instance.
 	MapStringToPtr	objects;
+	//! Fragment Program state.
+	bool m_bFragmentProgramReady;
+	//! Vertex Program state.
+	bool m_bVertexProgramReady;
+	//! Geometry Program state.
+	bool m_bGeometryProgramReady;
+	//!	Vertex Shader state
+	bool m_bVertexReady;
+	//!	Fragment Shader state
+	bool m_bFragmentReady;
 
 
 	//! Stores Display attributes for delayed creation.

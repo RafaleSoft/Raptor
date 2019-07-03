@@ -262,6 +262,14 @@ CGenericVector<float> IViewPoint::getPosition(VIEW_POINT_POSITION p) const
 //////////////////////////////////////////////////////////////////////
 // Transforms
 //////////////////////////////////////////////////////////////////////
+void IViewPoint::recomputeTransform()
+{
+	Transform.Ident();
+	Transform.matrix()[0] = Scale.X();
+	Transform.matrix()[5] = Scale.Y();
+	Transform.matrix()[10] = Scale.Z();
+}
+
 void IViewPoint::translate(float tx, float ty, float tz)
 {
 	CGenericVector<float>	z_axis = Origin - Target;

@@ -326,11 +326,13 @@ bool CRaptorDisplayConfig::glQueryConfig(unsigned long query)
 		lightingState.colorMaterialEnable = (GL_TRUE == glIsEnabled(GL_COLOR_MATERIAL));
 		glGetIntegerv(GL_COLOR_MATERIAL_PARAMETER,&lightingState.colorMaterialParameter);
 		glGetIntegerv(GL_COLOR_MATERIAL_FACE,&lightingState.colorMaterialFace);
+#if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
 		glGetMaterialfv(GL_FRONT,GL_AMBIENT,lightingState.materialAmbient);
 		glGetMaterialfv(GL_FRONT,GL_DIFFUSE,lightingState.materialDiffuse);
 		glGetMaterialfv(GL_FRONT,GL_EMISSION,lightingState.materialEmission);
 		glGetMaterialfv(GL_FRONT,GL_SPECULAR,lightingState.materialSpecular);
 		glGetMaterialfv(GL_FRONT,GL_SHININESS,&lightingState.materialShininess);
+#endif
 		glGetFloatv(GL_LIGHT_MODEL_AMBIENT,lightingState.lightModelAmbient);
 
 		GLboolean b = GL_FALSE;
@@ -352,6 +354,7 @@ bool CRaptorDisplayConfig::glQueryConfig(unsigned long query)
 			CRaptorDisplayConfig::GL_LIGHT_STATE* gls = &lightingState.light0 + i;
 
 			gls->enable = (GL_TRUE == glIsEnabled(GL_LIGHT0 + i));
+#if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
 			glGetLightfv(GL_LIGHT0 + i,GL_AMBIENT,gls->ambient);
 			glGetLightfv(GL_LIGHT0 + i,GL_DIFFUSE,gls->diffuse);
 			glGetLightfv(GL_LIGHT0 + i,GL_SPECULAR,gls->specular);
@@ -363,6 +366,7 @@ bool CRaptorDisplayConfig::glQueryConfig(unsigned long query)
 			glGetLightfv(GL_LIGHT0 + i,GL_SPOT_EXPONENT,&gls->spotExponent);
 			glGetLightfv(GL_LIGHT0 + i,GL_SPOT_CUTOFF,&gls->spotCutOff);
 			glGetMaterialfv(GL_FRONT,GL_COLOR_INDEXES ,gls->colorIndexes);
+#endif
 		}
 	}
 

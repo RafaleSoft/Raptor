@@ -502,7 +502,7 @@ void CDOFFilter::glInitShaders(void)
 
 	// Create & load shaders to perform a 2 pass blur using depth value.
 #if defined(GL_ARB_geometry_shader4)
-	CVertexProgram *vp = DOFShader->glGetVertexProgram("EMPTY_PROGRAM");
+	DOFShader->glGetVertexProgram("EMPTY_PROGRAM");
 	CGeometryProgram *gp = DOFShader->glGetGeometryProgram("dof_gp");
 	bool res = gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
 	res = res & gp->glLoadProgram(dof_gp);

@@ -255,12 +255,8 @@ static real_mat_t REAL_MATERIALS[29] =
 		var[2]=MIN(var[2]*dd,1.0f);\
 	}
 
-static CMaterial::CMaterialClassID materialID;
-static CPersistentType<CMaterial> materialFactory(materialID);
-const CPersistence::CPersistenceClassID& CMaterial::CMaterialClassID::GetClassId(void)
-{
-	return materialID;
-}
+IMPLEMENT_CLASS_ID(CMaterial, materialID)
+
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction

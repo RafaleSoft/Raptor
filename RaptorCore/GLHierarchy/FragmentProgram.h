@@ -84,8 +84,6 @@ private:
 
     //! Specific init of shader parameters
     virtual void	glInitShaders();
-
-	static bool		m_bFragmentProgramReady;
 };
 
 RAPTOR_NAMESPACE_END

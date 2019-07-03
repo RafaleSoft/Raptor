@@ -145,6 +145,9 @@ protected:
     //! Helper to precompute datas for rendering
     void recomputeViewPoint();
 
+	//! Helper to recompute ViewPoint full transform
+	void recomputeTransform();
+
 
 	//	basic datas
 	VIEW_POINT_MODEL	model;
@@ -160,6 +163,7 @@ protected:
 	CGenericVector<float>	Origin;		// Define a translation in initial view position
 	CGenericVector<float>	Target;
 	CGenericVector<float>	Scale;		// Define a scaling in final view position
+	CGenericMatrix<float>	Transform;
 
 	double		m_lfAlpha;
 	double		m_lfBeta;

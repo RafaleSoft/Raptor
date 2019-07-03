@@ -102,9 +102,6 @@ private:
     //! Specific init of shader parameters
     virtual void	glInitShaders();
 
-	//!	See base class.
-	static bool		m_bGeometryProgramReady;
-
 	//! Input primitive type.
 	uint32_t	m_inputType;
 
