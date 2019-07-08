@@ -84,16 +84,16 @@ CRaptorInstance::CRaptorInstance()
 CRaptorInstance &CRaptorInstance::GetInstance(void)
 {
 	if (m_pInstance == NULL)
-	{
 		m_pInstance = new CRaptorInstance();
-	}
 
 	return *m_pInstance;
 }
 
 CRaptorInstance* CRaptorInstance::createNewInstance(void)
 {
-	return NULL;
+	CRaptorInstance *previous = m_pInstance;
+	m_pInstance = new CRaptorInstance();
+	return previous;
 }
 
 bool CRaptorInstance::destroy(void)
@@ -167,7 +167,6 @@ CRaptorInstance::~CRaptorInstance()
 	//    glDestroyDisplay(status.defaultDisplay);
 	CContextManager::GetInstance()->glDestroyWindow(defaultWindow);
 
-
 	delete CContextManager::GetInstance();
 	delete CHostMemoryManager::GetInstance();
 
@@ -182,10 +181,14 @@ CRaptorInstance::~CRaptorInstance()
 void CRaptorInstance::initInstance()
 {
 	//!	Initialize error manager.
+	if (pErrorMgr != NULL)
+		delete pErrorMgr;
 	pErrorMgr = new CRaptorErrorManager();
 	pErrorMgr->logToFile(config.m_logFile);
 
 	//! Initialise error mesasges.
+	if (pMessages != NULL)
+		delete pMessages;
 	pMessages = new CRaptorMessages();
 	CRaptorDataManager  *dataManager = CRaptorDataManager::GetInstance();
 	if (dataManager != NULL)

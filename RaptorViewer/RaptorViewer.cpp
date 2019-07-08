@@ -28,7 +28,7 @@ int main(int argc, char* argv[])
 	parser.addOption("r_width","rw",(unsigned short)256);
 	parser.addOption("r_height","rh",(unsigned short)256);
 	parser.addOption("file","f",file);
-	parser.addOption("host_addr","a","127.0.0.1");
+	parser.addOption("host_addr","a",std::string("127.0.0.1"));
 	parser.parse(argc,argv);
 
 	CRaptorClient	client;

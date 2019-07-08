@@ -155,8 +155,7 @@
       <LinkStatus>
       </LinkStatus>
       <ProgramDatabaseFile>$(OutDir)Raptor.pdb</ProgramDatabaseFile>
-      <Version>
-      </Version>
+      <Version>$(RAPTOR_RELEASE)</Version>
     </Link>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -306,8 +305,7 @@ $(SolutionDir)\$(ProjectName)\Subsys\Redist.bat
       <LinkStatus>
       </LinkStatus>
       <ProgramDatabaseFile>$(OutDir)Raptor.pdb</ProgramDatabaseFile>
-      <Version>
-      </Version>
+      <Version>$(RAPTOR_RELEASE)</Version>
     </Link>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -368,7 +366,7 @@ $(SolutionDir)\$(ProjectName)\Subsys\Redist.bat
     <Link>
       <AdditionalDependencies>RaptorData.lib;opengl32.lib;glu32.lib;simd.lib;Subsys\GlttLib\gltt.2.3.lib;Subsys\GlttLib\freetype.lib;Subsys\xercesc_2_7\vc9\xerces-c_2.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>Release\Raptor.dll</OutputFile>
-      <Version>2.16.0</Version>
+      <Version>$(RAPTOR_RELEASE)</Version>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>$(PLATFORM_SDK)\Lib;$(RAPTOR_ROOT)\Redist\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>

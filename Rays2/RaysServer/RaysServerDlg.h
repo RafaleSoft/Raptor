@@ -1,3 +1,20 @@
+/***************************************************************************/
+/*                                                                         */
+/*  RaysServerDlg.h                                                        */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
 #pragma once
 
 #include "RaysServerForm.h"
@@ -6,25 +23,23 @@
 	#include "RaysServerUtils.h"
 #endif
 
-namespace RaysServer {
+namespace RaysServer
+{
 
 	class CServerTransport;
 	class CDeamonManager;
 
-	public ref class RaysServerDlg : public RaysServerForm
+	class RaysServerDlg
 	{
 	public:
 		RaysServerDlg(void);
 		virtual ~RaysServerDlg(void);
 
 	protected:
-		virtual bool Start(int argc,char *argv[]) override;
-		virtual bool Quit(void) override;
-		virtual CDeamonManager* getDeamonManager() override
-		{ return m_pDeamonManager; };
+		
 	
 	private:
-		ref class RaysLogger : public RaysServerUtils::ILogger
+		class RaysLogger : public RaysServerUtils::ILogger
 		{
 		public:
 			RaysLogger(RaysServerDlg^ userOutput):m_pLogger(userOutput) {};
@@ -35,8 +50,6 @@ namespace RaysServer {
 			RaysServerDlg^ m_pLogger;
 		};
 
-		bool	m_started;
-		CServerTransport *m_pTransport;
-		CDeamonManager	*m_pDeamonManager;
+
 	};
 }
