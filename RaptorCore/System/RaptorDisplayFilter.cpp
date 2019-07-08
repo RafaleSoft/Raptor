@@ -60,18 +60,32 @@
 #if !defined(AFX_GEOMETRYALLOCATOR_H__802B3C7A_43F7_46B2_A79E_DDDC9012D371__INCLUDED_)
 	#include "Subsys/GeometryAllocator.h"
 #endif
+#if !defined(AFX_FRAGMENTPROGRAM_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
+	#include "GLHierarchy/FragmentProgram.h"
+#endif
 
+
+RAPTOR_NAMESPACE_BEGIN
+
+GL_COORD_VERTEX	*CRaptorDisplayFilter::s_attributes = NULL;
+CShader	* CRaptorDisplayFilter::s_pIdentity = NULL;
+#if defined(GL_COMPATIBILITY_profile)
+	RAPTOR_HANDLE	CRaptorDisplayFilter::s_drawBuffer = RAPTOR_HANDLE(0,(void*)0);
+#endif
+
+RAPTOR_NAMESPACE_END
 
 RAPTOR_NAMESPACE
 
-GL_COORD_VERTEX	*CRaptorDisplayFilter::s_attributes = NULL;
+CShader	*CRaptorDisplayFilter::getIdentityShader(void) const
+{ return s_pIdentity; }
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
 CRaptorDisplayFilter::CRaptorDisplayFilter():
-	pFilter(NULL),m_fModel(RENDER_BUFFER),
+	m_fModel(RENDER_BUFFER),
     colorExternalSource(NULL),colorInternalSource(NULL),
     depthExternalSource(NULL),depthInternalSource(NULL),
 	colorInput(NULL),depthInput(NULL),
@@ -148,7 +162,13 @@ void CRaptorDisplayFilter::glRender(void)
         glDisable(GL_TEXTURE_2D);
         pExtensions->glActiveTextureARB(GL_TEXTURE0_ARB);
 		getColorInput()->glvkRender();
-        glDrawBuffer();
+#if defined(GL_COMPATIBILITY_profile)
+		glDrawFilter();
+#else
+		s_pIdentity->glRender();
+		glDrawFilter();
+		s_pIdentity->glStop();
+#endif
     }
 
 	if ((colorInternalSource != NULL) && m_bBufferedOutputEnabled)
@@ -166,60 +186,39 @@ void CRaptorDisplayFilter::glRender(void)
 	CATCH_GL_ERROR
 }
 
-void CRaptorDisplayFilter::glRenderFilter(void)
-{
-}
-
-void CRaptorDisplayFilter::glRenderFilterOutput(void)
-{
-    if (pFilter)
-    {
-        if (pFilter->hasFragmentShader())
-            pFilter->glGetFragmentShader()->glRender();
-        if (pFilter->hasVertexShader())
-            pFilter->glGetVertexShader()->glRender();
-    }
-
-    if (drawBuffer.handle() > 0)
-        glCallList(drawBuffer.handle());
-
-    if (pFilter)
-    {
-        if (pFilter->hasFragmentShader())
-            pFilter->glGetFragmentShader()->glStop();
-        if (pFilter->hasVertexShader())
-            pFilter->glGetVertexShader()->glStop();
-    }
-}
-
-void CRaptorDisplayFilter::glDrawBuffer(void)
-{
-    if (drawBuffer.handle() > 0)
-        glCallList(drawBuffer.handle());
-}
-
-void CRaptorDisplayFilter::glDrawFilter(void)
-{
-	if (NULL != s_attributes)
+#if defined(GL_COMPATIBILITY_profile)
+	void CRaptorDisplayFilter::glDrawFilter(void)
 	{
-		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
-
-		pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::POSITION);
-		pExtensions->glVertexAttribPointerARB(CProgramParameters::POSITION, 4, GL_FLOAT, false, 0, s_attributes);
-
-		glDrawArrays(GL_POINTS, 0, 1);
-
-		pExtensions->glDisableVertexAttribArrayARB(CProgramParameters::POSITION);
+		if (s_drawBuffer.handle() > 0)
+			glCallList(s_drawBuffer.handle());
 	}
-}
+#else
+	void CRaptorDisplayFilter::glDrawFilter(void) const
+	{
+		if (NULL != s_attributes)
+		{
+			const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+
+			pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::POSITION);
+			pExtensions->glVertexAttribPointerARB(CProgramParameters::POSITION, 4, GL_FLOAT, false, 0, s_attributes);
+
+			glDrawArrays(GL_POINTS, 0, 1);
+
+			pExtensions->glDisableVertexAttribArrayARB(CProgramParameters::POSITION);
+		}
+	}
+#endif
+
 
 void CRaptorDisplayFilter::glDestroyFilter(void)
 {
-    if (drawBuffer.handle() > 0)
+#if defined(GL_COMPATIBILITY_profile)
+    if (s_drawBuffer.handle() > 0)
     {
-        glDeleteLists(drawBuffer.handle(),1);
+        glDeleteLists(s_drawBuffer.handle(),1);
         drawBuffer.handle(0);
     }
+#endif
 
     if (colorInternalSource != NULL)
     {
@@ -281,17 +280,35 @@ bool CRaptorDisplayFilter::glInitFilter(void)
 			return false;
 	}
 
-	drawBuffer.handle(glGenLists(1));
-	glNewList(drawBuffer.handle(),GL_COMPILE);
-	glBegin(GL_QUADS);
-		glTexCoord2f(0.0f,0.0f);glVertex4f(-1.0,-1.0,-1.0f,1.0f);
-		glTexCoord2f(1.0f,0.0f);glVertex4f(1.0,-1.0,-1.0f,1.0f);
-		glTexCoord2f(1.0f,1.0f);glVertex4f(1.0,1.0,-1.0f,1.0f);
-		glTexCoord2f(0.0f,1.0f);glVertex4f(-1.0,1.0,-1.0f,1.0f);
-	glEnd();
-	glEndList();
+#if defined(GL_COMPATIBILITY_profile)
+	if (0 == s_drawBuffer.handle())
+	{
+		s_drawBuffer.handle(glGenLists(1));
+		glNewList(s_drawBuffer.handle(), GL_COMPILE);
+		glBegin(GL_QUADS);
+			glTexCoord2f(0.0f, 0.0f); glVertex4f(-1.0, -1.0, -1.0f, 1.0f);
+			glTexCoord2f(1.0f, 0.0f); glVertex4f(1.0, -1.0, -1.0f, 1.0f);
+			glTexCoord2f(1.0f, 1.0f); glVertex4f(1.0, 1.0, -1.0f, 1.0f);
+			glTexCoord2f(0.0f, 1.0f); glVertex4f(-1.0, 1.0, -1.0f, 1.0f);
+		glEnd();
+		glEndList();
+	}
+#else
+	if (NULL == s_pIdentity)
+	{
+		s_pIdentity = new CShader("HDR_IDENTITY");
+		CVertexProgram *vp = s_pIdentity->glGetVertexProgram("EMPTY_PROGRAM");
+		CGeometryProgram *gp = s_pIdentity->glGetGeometryProgram("FULL_SCREEN_GEO_PROGRAM");
+		CFragmentProgram *fp = s_pIdentity->glGetFragmentProgram("DIFFUSE_PROGRAM");
 
-	
+		CProgramParameters identityParams;
+		identityParams.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);
+		fp->setProgramParameters(identityParams);
+		if (!s_pIdentity->glCompileShader())
+			return false;
+	}
+#endif
+
 	{
 		if (NULL == s_attributes)
 		{

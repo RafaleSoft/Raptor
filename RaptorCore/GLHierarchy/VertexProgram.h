@@ -99,8 +99,6 @@ private:
 
     //! Specific init of shader parameters
     virtual void	glInitShaders();
-
-	static bool		m_bVertexProgramReady;
 };
 
 RAPTOR_NAMESPACE_END

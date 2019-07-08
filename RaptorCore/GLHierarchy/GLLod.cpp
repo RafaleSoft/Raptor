@@ -29,10 +29,6 @@
 
 RAPTOR_NAMESPACE
 
-
-//////////////////////////////////////////////////////////////////////
-// Construction/Destruction
-//////////////////////////////////////////////////////////////////////
 static CGLLod::CGLLodClassID lodId;
 static CPersistentObjectType<CGLLod> lodFactory(lodId);
 const CPersistence::CPersistenceClassID& CGLLod::CGLLodClassID::GetClassId(void)
@@ -40,6 +36,10 @@ const CPersistence::CPersistenceClassID& CGLLod::CGLLodClassID::GetClassId(void)
 	return lodId;
 }
 
+
+//////////////////////////////////////////////////////////////////////
+// Construction/Destruction
+//////////////////////////////////////////////////////////////////////
 CGLLod::CGLLod(CObject3D * const level0, const std::string& name)
 	:CObject3DInstance(lodId,name)
 {

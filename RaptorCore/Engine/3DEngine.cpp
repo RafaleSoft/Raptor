@@ -83,7 +83,6 @@ const CPersistence::CPersistenceClassID& C3DEngine::C3DEngineClassID::GetClassId
 	return engineId;
 }
 
-#pragma warning (default : 4711)	// automatic inline expansion warning
 
 RAPTOR_NAMESPACE_END
 

@@ -413,7 +413,7 @@ bool Raptor::glInitRaptor(const CRaptorConfig& config)
 	RAPTOR_HANDLE noDevice;
 	CContextManager::GetInstance()->glMakeCurrentContext(noDevice, instance.defaultContext);
 
-	return (res && (wnd.handle() != 0));
+	return (wnd.handle() != 0);
 }
 
 void Raptor::glRender(void)

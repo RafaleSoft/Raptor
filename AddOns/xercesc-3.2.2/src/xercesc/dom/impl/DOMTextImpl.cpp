@@ -203,7 +203,7 @@ DOMText* DOMTextImpl::replaceWholeText(const XMLCh* newText)
             DOMTreeWalker* pInnerWalker=doc->createTreeWalker(nextNode, DOMNodeFilter::SHOW_ALL, NULL, true);
             while(pInnerWalker->nextNode())
             {
-                short nodeType=pInnerWalker->getCurrentNode()->getNodeType();
+				DOMNode::NodeType nodeType = pInnerWalker->getCurrentNode()->getNodeType();
                 if(nodeType!=ENTITY_REFERENCE_NODE && nodeType!=TEXT_NODE && nodeType!=CDATA_SECTION_NODE)
                     throw DOMException(DOMException::NO_MODIFICATION_ALLOWED_ERR, 0, GetDOMNodeMemoryManager);
             }

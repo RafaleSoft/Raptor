@@ -84,17 +84,14 @@ RAPTOR_NAMESPACE_END
 
 RAPTOR_NAMESPACE
 
+IMPLEMENT_CLASS_ID(CShader, shaderID)
+
+
 CColor::RGBA CShader::getAmbient(void) 
 { 
     return m_ambient; 
 }
 
-static CShader::CShaderClassID shaderID;
-static CPersistentType<CShader> shaderFactory(shaderID);
-const CPersistence::CPersistenceClassID& CShader::CShaderClassID::GetClassId(void)
-{
-	return shaderID;
-}
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -862,7 +859,7 @@ bool CShader::glCompileShader()
 
         if ((abort) && (m_shaderProgram.handle() != 0))
         {
-            GLint maxLength = 0;
+            GLint maxLength = 255;
             GLint length = 0;
 	        pExtensions->glGetObjectParameterivARB(m_shaderProgram.handle(),GL_OBJECT_INFO_LOG_LENGTH_ARB, &maxLength);
 	        char *pInfoLog = (char*) malloc(maxLength * sizeof(char));

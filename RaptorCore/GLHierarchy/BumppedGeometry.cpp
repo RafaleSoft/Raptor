@@ -47,9 +47,6 @@
 
 RAPTOR_NAMESPACE
 
-//////////////////////////////////////////////////////////////////////
-// Static data
-
 static CBumppedGeometry::CBumppedGeometryClassID bumpId;
 static CPersistentObjectType<CBumppedGeometry> bumpFactory(bumpId);
 const CPersistence::CPersistenceClassID& CBumppedGeometry::CBumppedGeometryClassID::GetClassId(void)

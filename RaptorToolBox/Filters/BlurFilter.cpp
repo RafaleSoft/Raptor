@@ -189,7 +189,7 @@ void CBlurFilter::glRenderFilter()
 	getColorInput()->glvkRender();
 
     hBlur->glRender();
-    glDrawBuffer();
+	glDrawFilter();
 	hBlur->glStop();
 
 	glBindTexture(GL_TEXTURE_2D,0);
@@ -206,7 +206,7 @@ void CBlurFilter::glRenderFilterOutput()
 	xKernelPass->glvkRender();
 
 	vBlur->glRender();
-    glDrawBuffer();
+	glDrawFilter();
 	vBlur->glStop();
 
 	glBindTexture(GL_TEXTURE_2D,0);
@@ -238,6 +238,7 @@ bool CBlurFilter::glBuildFilter(int width,int height)
 		float dim = (dirs == 0 ? width : height);
 
 		//	Write texel offsets
+		shader_src << "#version 460" << ENDL << ENDL;
 		shader_src << "const float offset[" << sz << "] = float[]( ";
 		for (size_t i=0;i<sz-1;i++)
 			shader_src << m_gaussian_offsets[i] / dim << " , ";
@@ -247,15 +248,17 @@ bool CBlurFilter::glBuildFilter(int width,int height)
 		{
 			//	Write main code
 			shader_src << "uniform sampler2D diffuseMap;" << ENDL << ENDL;
+			shader_src << "layout(location = 1) in vec4 g_TexCoord;" << ENDL;
+			shader_src << "layout(location = 0) out vec4 o_Color;" << ENDL << ENDL;
 			shader_src << "void main (void)" << ENDL;
 			shader_src << "{" << ENDL;
 			shader_src << "	vec4    finalColor = vec4(0.0,0.0,0.0,0.0);" << ENDL << ENDL;
 
 			shader_src << "	for (int i=0;i<" << sz << ";i++)" << ENDL;
 			shader_src << "	{" << ENDL;
-			shader_src << "		finalColor += texture2D(diffuseMap,gl_TexCoord[0].xy + " << offsets[dirs] << ENDL;
+			shader_src << "		finalColor += texture(diffuseMap,g_TexCoord.xy + " << offsets[dirs] << ENDL;
 			shader_src << "	}" << ENDL << ENDL;
-			shader_src << "	gl_FragColor = " << 1.0f / sz << " * finalColor;" << ENDL;
+			shader_src << "	o_Color = " << 1.0f / sz << " * finalColor;" << ENDL;
 			shader_src << "}" << ENDL;
 		}
 		else if ((BLUR_GAUSSIAN == m_model) || (BLUR_GAUSSIAN_LINEAR == m_model))
@@ -268,15 +271,17 @@ bool CBlurFilter::glBuildFilter(int width,int height)
 
 			//	Write main code
 			shader_src << "uniform sampler2D diffuseMap;" << ENDL << ENDL;
+			shader_src << "layout(location = 1) in vec4 g_TexCoord;" << ENDL;
+			shader_src << "layout(location = 0) out vec4 o_Color;" << ENDL << ENDL;
 			shader_src << "void main (void)" << ENDL;
 			shader_src << "{" << ENDL;
 			shader_src << "	vec4    finalColor = vec4(0.0,0.0,0.0,0.0);" << ENDL << ENDL;
 
 			shader_src << "	for (int i=0;i<" << sz << ";i++)" << ENDL;
 			shader_src << "	{" << ENDL;
-			shader_src << "		finalColor += weights[i] * texture2D(diffuseMap,gl_TexCoord[0].xy + " << offsets[dirs] << ENDL;
+			shader_src << "		finalColor += weights[i] * texture(diffuseMap,g_TexCoord.xy + " << offsets[dirs] << ENDL;
 			shader_src << "	}" << ENDL << ENDL;
-			shader_src << "	gl_FragColor = finalColor;" << ENDL;
+			shader_src << "	o_Color = finalColor;" << ENDL;
 			shader_src << "}" << ENDL;
 		}
 		srcs[dirs] = shader_src.str();
@@ -285,23 +290,20 @@ bool CBlurFilter::glBuildFilter(int width,int height)
 	params.clear();
 	params.addParameter("diffuseMap",CTextureUnitSetup::IMAGE_UNIT_0);
 	
+	CVertexProgram *vp = hBlur->glGetVertexProgram("EMPTY_PROGRAM");
+	CGeometryProgram *gp = hBlur->glGetGeometryProgram("FULL_SCREEN_GEO_PROGRAM");
 	CFragmentProgram *fp = hBlur->glGetFragmentProgram("hBlur_fp");
 	res = fp->glLoadProgram(srcs[0]);
-	if (res)
-	{
-		fp->setProgramParameters(params);
-		res &= hBlur->glCompileShader();
-	}
-	else
-		return res;
+	fp->setProgramParameters(params);
+	res = res && hBlur->glCompileShader();
 
+	vp = vBlur->glGetVertexProgram("EMPTY_PROGRAM");
+	gp = vBlur->glGetGeometryProgram("FULL_SCREEN_GEO_PROGRAM");
 	fp = vBlur->glGetFragmentProgram("vBlur_fp");
-	res = fp->glLoadProgram(srcs[1]);
-	if (res)
-	{
-		fp->setProgramParameters(params);
-		res &= vBlur->glCompileShader();
-	}
+	res = res && fp->glLoadProgram(srcs[1]);
+	fp->setProgramParameters(params);
+
+	res = res && vBlur->glCompileShader();
 
 	// Update filtering
 	if ((BLUR_BOX_LINEAR == m_model) || (BLUR_GAUSSIAN_LINEAR == m_model))

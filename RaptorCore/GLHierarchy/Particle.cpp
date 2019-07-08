@@ -73,130 +73,6 @@ static float *cachePointer = NULL;
 
 RAPTOR_NAMESPACE_END
 
-
-static const std::string vp_src =
-"#version 440 compatibility\n\
-\n\
-uniform float fPointSize; \n\
-\n\
-layout(location = 0) in vec4 i_Position; \n\
-layout(location = 1) in float i_Size; \n\
-layout(location = 3) in vec4 i_Color; \n\
-layout(location = 5) in float i_Angle; \n\
-\n\
-out float angle; \n\
-out float size; \n\
-out vec4 v_color; \n\
-\n\
-void main (void) \n\
-{\n\
-	vec4 pos = vec4(fPointSize * vec3(i_Position.xyz),1.0); \n\
-	gl_Position =  gl_ModelViewProjectionMatrix * pos; \n\
-	angle = i_Angle; \n\
-	size = fPointSize * i_Size; \n\
-	v_color = i_Color; \n\
-}";
-
-static const std::string gp_src =
-"#version 440\n\
-\n\
-//	Expect the geometry shader extension to be available, warn if not. \n\
-#extension GL_ARB_geometry_shader4 : enable \n\
-\n\
-in float angle[]; \n\
-in float size[]; \n\
-in vec4 v_color[]; \n\
-\n\
-layout(points) in; \n\
-layout(triangle_strip, max_vertices=4) out; \n\
-layout(location = 1) out vec4 g_TexCoord[1]; \n\
-out vec4 g_color; \n\
-\n\
-void main() \n\
-{\n\
-	float cs = cos(angle[0]); \n\
-	float ss = sin(angle[0]);	\n\
-	float Hx = 0.5 * size[0] * (cs - ss);	\n\
-	float Hy = 0.5 * size[0] * (cs + ss);	\n\
-	g_color = v_color[0]; \n\
-	\n\
-	gl_Position = gl_in[0].gl_Position + vec4(-Hx, -Hy, 0.0, 0.0); \n\
-	g_TexCoord[0] = vec4(0.0,0.0,0.0,0.0); \n\
-	EmitVertex(); \n\
-	\n\
-	gl_Position = gl_in[0].gl_Position + vec4(Hy,-Hx,0.0,0.0); \n\
-	g_TexCoord[0] = vec4(1.0,0.0,0.0,0.0); \n\
-	EmitVertex(); \n\
-	\n\
-	gl_Position = gl_in[0].gl_Position + vec4(-Hy,Hx,0.0,0.0); \n\
-	g_TexCoord[0] = vec4(0.0,1.0,0.0,0.0); \n\
-	EmitVertex(); \n\
-	\n\
-	gl_Position = gl_in[0].gl_Position + vec4(Hx,Hy,0.0,0.0); \n\
-	g_TexCoord[0] = vec4(1.0,1.0,0.0,0.0); \n\
-	EmitVertex(); \n\
-	\n\
-	EndPrimitive(); \n\
-}";
-
-static const std::string gp_src2 =
-"#version 440\n\
-\n\
-//	Expect the geometry shader extension to be available, warn if not. \n\
-#extension GL_ARB_geometry_shader4 : enable \n\
-\n\
-in float angle[]; \n\
-in float size[]; \n\
-in vec4 v_color[]; \n\
-\n\
-layout(points) in; \n\
-layout(triangle_strip, max_vertices=4) out; \n\
-layout(location = 1) out vec4 g_TexCoord[1]; \n\
-out vec4 g_color; \n\
-\n\
-void main() \n\
-{\n\
-	float cs = cos(angle[0]); \n\
-	float ss = sin(angle[0]);	\n\
-	float Hx = 0.5 * size[0] * (cs - ss);	\n\
-	float Hy = 0.5 * size[0] * (cs + ss);	\n\
-	\n\
-	g_color = v_color[0]; \n\
-	float z = 1.0f - g_color.a;	\n\
-	\n\
-	gl_Position = gl_in[0].gl_Position + vec4(-Hx, -Hy, 0.0, 0.0); \n\
-	g_TexCoord[0] = vec4(0.0,0.0,z,0.0); \n\
-	EmitVertex(); \n\
-	\n\
-	gl_Position = gl_in[0].gl_Position + vec4(Hy,-Hx,0.0,0.0); \n\
-	g_TexCoord[0] = vec4(1.0,0.0,z,0.0); \n\
-	EmitVertex(); \n\
-	\n\
-	gl_Position = gl_in[0].gl_Position + vec4(-Hy,Hx,0.0,0.0); \n\
-	g_TexCoord[0] = vec4(0.0,1.0,z,0.0); \n\
-	EmitVertex(); \n\
-	\n\
-	gl_Position = gl_in[0].gl_Position + vec4(Hx,Hy,0.0,0.0); \n\
-	g_TexCoord[0] = vec4(1.0,1.0,z,0.0); \n\
-	EmitVertex(); \n\
-	\n\
-	EndPrimitive(); \n\
-}";
-
-static const std::string fp_src2 =
-"#version 440\n\
-\n\
-uniform	sampler3D diffuseMap; \n\
-\n\
-in vec4 g_color; \n\
-layout(location = 1) in vec4 g_TexCoord; \n\
-layout(location = 0) out vec4 o_Color;	\n\
-\n\
-void main (void) \n\
-{\n\
-	o_Color = g_color * texture(diffuseMap,vec3(g_TexCoord.stp)); \n\
-}";
-
 RAPTOR_NAMESPACE
 
 //////////////////////////////////////////////////////////////////////
@@ -259,43 +135,38 @@ void CParticle::glInitParticle(void)
 	if (m_type == CGL_PARTICLE_TEXTURE)
 	{
 		m_pShader = new CShader(getName()+"_SHADER");
-		CVertexProgram *vp = m_pShader->glGetVertexProgram();
-		res = vp->glLoadProgram(vp_src);
+		CVertexProgram *vp = m_pShader->glGetVertexProgram("PARTICLE_VTX_PROGRAM");
 		CProgramParameters params;
 		params.addParameter("fPointSize", GL_COORD_VERTEX(m_fPointSize,0.0f,0.0f,0.0f));
 		vp->setProgramParameters(params);
 
-		CGeometryProgram *gp = m_pShader->glGetGeometryProgram();
+		CGeometryProgram *gp = m_pShader->glGetGeometryProgram("PARTICLE2D_GEO_PROGRAM");
 		gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
-		res = res & gp->glLoadProgram(gp_src);
 
 		CFragmentProgram *fs = m_pShader->glGetFragmentProgram("TEXTURE_QUAD_TEX_PROGRAM");
 		params.clear();
 		params.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);
 		fs->setProgramParameters(params);
 
-		res = res & m_pShader->glCompileShader();
+		res = m_pShader->glCompileShader();
 	}
 	else if (m_type == CGL_PARTICLE_VOLUMETRIC)
 	{
 		m_pShader = new CShader(getName() + "_VOLUME_SHADER");
-		CVertexProgram *vp = m_pShader->glGetVertexProgram();
-		res = vp->glLoadProgram(vp_src);
+		CVertexProgram *vp = m_pShader->glGetVertexProgram("PARTICLE_VTX_PROGRAM");
 		CProgramParameters params;
 		params.addParameter("fPointSize", GL_COORD_VERTEX(m_fPointSize, 0.0f, 0.0f, 0.0f));
 		vp->setProgramParameters(params);
 
-		CGeometryProgram *gp = m_pShader->glGetGeometryProgram();
+		CGeometryProgram *gp = m_pShader->glGetGeometryProgram("PARTICLE3D_GEO_PROGRAM");
 		gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
-		res = res & gp->glLoadProgram(gp_src2);
 
-		CFragmentProgram *fs = m_pShader->glGetFragmentProgram();
-		res = res & fs->glLoadProgram(fp_src2);
+		CFragmentProgram *fs = m_pShader->glGetFragmentProgram("PARTICLE3D_TEX_PROGRAM");
 		params.clear();
 		params.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);
 		fs->setProgramParameters(params);
 
-		res = res & m_pShader->glCompileShader();
+		res = m_pShader->glCompileShader();
 	}
 
 	//	Precompute data
