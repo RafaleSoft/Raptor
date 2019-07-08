@@ -1,5 +1,21 @@
-// RaptorServer.cpp : Defines the class behaviors for the application.
-//
+/***************************************************************************/
+/*                                                                         */
+/*  RaptorServerApp.cpp                                                           */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
 
 #include "stdafx.h"
 
@@ -28,7 +44,7 @@ int main(int argc, char* argv[])
 	parser.addOption("port","p",(unsigned short)2048);
 	parser.addOption("width","w",(unsigned short)256);
 	parser.addOption("height","h",(unsigned short)256);
-	parser.addOption("host_addr","a","127.0.0.1");
+	parser.addOption("host_addr","a",std::string("127.0.0.1"));
 	parser.parse(argc,argv);
 
 	CRaptorServer	*p_Server = new CRaptorServer;
@@ -45,29 +61,6 @@ int WINAPI WinMain(	HINSTANCE hInstance,  // handle to current instance
                     int nCmdShow          // show state of window
 )
 {
-	/*
-	string cmdLine = lpCmdLine;
-	vector<string> args;
-
-	size_t pos = cmdLine.find_first_of(' ');
-	while (string::npos != pos)
-	{
-		args.push_back(cmdLine.substr(0,pos));
-		cmdLine = cmdLine.substr(pos+1);
-		pos = cmdLine.find_first_of(' ');
-	}
-	args.push_back(cmdLine);
-
-	const char **argv = new const char*[args.size()+1];
-	for (pos = 0;pos<args.size();pos++)
-		argv[pos] = args[pos].c_str();
-	argv[args.size()] = NULL;
-
-	char **c_argv = const_cast<char**>(argv);
-	int res = main(args.size(),c_argv);
-
-	delete [] argv;
-	*/
 	int res = main(__argc,__argv);
     return res;
 }

@@ -59,9 +59,9 @@ public:
 	//!	Create a singleton instance or returns the current isntance.
 	static CRaptorInstance &GetInstance(void);
 
-	//!	Creates a new RaptorInstance intance abd returns the previous instance.
+	//!	Creates a new RaptorInstance intance and returns the previous instance.
 	//!	The user shall manage the list of instance.
-	CRaptorInstance* createNewInstance(void);
+	static CRaptorInstance* createNewInstance(void);
 
 	//! (Re)Initialise all instance objects.
 	void initInstance();

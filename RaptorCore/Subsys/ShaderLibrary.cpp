@@ -174,7 +174,7 @@ bool CShaderLibrary::glAddToLibrary(const std::string& shader_name,
 	if (s_factoryShaders.find(shader_name) != s_factoryShaders.end())
 	{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
-		Raptor::GetErrorManager()->generateRaptorError(Global::CShaderClassID::GetClassId(),
+		Raptor::GetErrorManager()->generateRaptorError(CShader::CShaderClassID::GetClassId(),
 													   CRaptorErrorManager::RAPTOR_WARNING,
 													   "Raptor ShaderLibrary cannot import already existing shader type");
 #endif
@@ -202,7 +202,7 @@ bool CShaderLibrary::glAddToLibrary(const std::string& shader_name,
 	else
 	{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
-				Raptor::GetErrorManager()->generateRaptorError(Global::CShaderClassID::GetClassId(),
+				Raptor::GetErrorManager()->generateRaptorError(CShader::CShaderClassID::GetClassId(),
 															   CRaptorErrorManager::RAPTOR_WARNING,
 															   "Raptor ShaderLibrary cannot import unknown shader type");
 #endif

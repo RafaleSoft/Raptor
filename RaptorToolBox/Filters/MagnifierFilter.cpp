@@ -64,7 +64,7 @@ static const int KERNEL_SIZE = 256;
 
 #if defined(GL_ARB_geometry_shader4)
 	static const std::string gp_src =
-	"#version 460\n\
+	"#version 440\n\
 	\n\
 	//	Expect the geometry shader extension to be available, warn if not. \n\
 	#extension GL_ARB_geometry_shader4 : enable \n\
@@ -97,7 +97,7 @@ static const int KERNEL_SIZE = 256;
 	}";
 
 	static const string xk_ps2 =
-	"#version 460 			\n\
+	"#version 440 			\n\
 	\n\
 	uniform sampler2D color;	\n\
 	uniform sampler2D factor;	\n\
@@ -128,7 +128,7 @@ static const int KERNEL_SIZE = 256;
 	}";
 
 	static const string yk_ps2 =
-	"#version 460 			\n\
+	"#version 440 			\n\
 	\n\
 	uniform sampler2D color;	\n\
 	uniform sampler2D factor;	\n\

@@ -55,7 +55,7 @@
 
 #if defined(GL_ARB_geometry_shader4)
 static const std::string dof_gp =
-	"#version 460\n\
+	"#version 440\n\
 	\n\
 	//	Expect the geometry shader extension to be available, warn if not. \n\
 	#extension GL_ARB_geometry_shader4 : enable \n\
@@ -115,7 +115,7 @@ static const std::string dof_gp =
 
 	//	C = A * m * |S2 - S1| / S2
 	static const string dof_fp =
-	"#version 460\n\
+	"#version 440\n\
 	\n\
 	uniform sampler2D colorMap;\n\
 	uniform sampler2D depthMap;\n\

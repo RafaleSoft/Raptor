@@ -109,7 +109,7 @@ in vec4 v_color[]; \n\
 \n\
 layout(points) in; \n\
 layout(triangle_strip, max_vertices=4) out; \n\
-layout(location = 1) out vec4 g_TexCoord[1]; \n\
+layout(location = 1) out vec4 g_TexCoord; \n\
 out vec4 g_color; \n\
 \n\
 void main() \n\
@@ -121,19 +121,19 @@ void main() \n\
 	g_color = v_color[0]; \n\
 	\n\
 	gl_Position = gl_in[0].gl_Position + vec4(-Hx, -Hy, 0.0, 0.0); \n\
-	g_TexCoord[0] = vec4(0.0,0.0,0.0,0.0); \n\
+	g_TexCoord = vec4(0.0,0.0,0.0,0.0); \n\
 	EmitVertex(); \n\
 	\n\
 	gl_Position = gl_in[0].gl_Position + vec4(Hy,-Hx,0.0,0.0); \n\
-	g_TexCoord[0] = vec4(1.0,0.0,0.0,0.0); \n\
+	g_TexCoord = vec4(1.0,0.0,0.0,0.0); \n\
 	EmitVertex(); \n\
 	\n\
 	gl_Position = gl_in[0].gl_Position + vec4(-Hy,Hx,0.0,0.0); \n\
-	g_TexCoord[0] = vec4(0.0,1.0,0.0,0.0); \n\
+	g_TexCoord = vec4(0.0,1.0,0.0,0.0); \n\
 	EmitVertex(); \n\
 	\n\
 	gl_Position = gl_in[0].gl_Position + vec4(Hx,Hy,0.0,0.0); \n\
-	g_TexCoord[0] = vec4(1.0,1.0,0.0,0.0); \n\
+	g_TexCoord = vec4(1.0,1.0,0.0,0.0); \n\
 	EmitVertex(); \n\
 	\n\
 	EndPrimitive(); \n\
@@ -151,7 +151,7 @@ in vec4 v_color[]; \n\
 \n\
 layout(points) in; \n\
 layout(triangle_strip, max_vertices=4) out; \n\
-layout(location = 1) out vec4 g_TexCoord[1]; \n\
+layout(location = 1) out vec4 g_TexCoord; \n\
 out vec4 g_color; \n\
 \n\
 void main() \n\
@@ -165,19 +165,19 @@ void main() \n\
 	float z = 1.0f - g_color.a;	\n\
 	\n\
 	gl_Position = gl_in[0].gl_Position + vec4(-Hx, -Hy, 0.0, 0.0); \n\
-	g_TexCoord[0] = vec4(0.0,0.0,z,0.0); \n\
+	g_TexCoord = vec4(0.0,0.0,z,0.0); \n\
 	EmitVertex(); \n\
 	\n\
 	gl_Position = gl_in[0].gl_Position + vec4(Hy,-Hx,0.0,0.0); \n\
-	g_TexCoord[0] = vec4(1.0,0.0,z,0.0); \n\
+	g_TexCoord = vec4(1.0,0.0,z,0.0); \n\
 	EmitVertex(); \n\
 	\n\
 	gl_Position = gl_in[0].gl_Position + vec4(-Hy,Hx,0.0,0.0); \n\
-	g_TexCoord[0] = vec4(0.0,1.0,z,0.0); \n\
+	g_TexCoord = vec4(0.0,1.0,z,0.0); \n\
 	EmitVertex(); \n\
 	\n\
 	gl_Position = gl_in[0].gl_Position + vec4(Hx,Hy,0.0,0.0); \n\
-	g_TexCoord[0] = vec4(1.0,1.0,z,0.0); \n\
+	g_TexCoord = vec4(1.0,1.0,z,0.0); \n\
 	EmitVertex(); \n\
 	\n\
 	EndPrimitive(); \n\

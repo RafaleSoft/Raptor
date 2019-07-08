@@ -1,6 +1,21 @@
-// ServerTransport.h: interface for the CServerTransport class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  RaysServerUtils.h                                                      */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
 #if !defined(AFX_RAYSSERVERUTILS_H__1CC878E3_B301_4A19_8211_F3B5977D3781__INCLUDED_)
 #define AFX_RAYSSERVERUTILS_H__1CC878E3_B301_4A19_8211_F3B5977D3781__INCLUDED_
 
@@ -9,36 +24,28 @@
 #endif // _MSC_VER > 1000
 
 #include "Subsys/CodeGeneration.h"
+namespace raptor
+{
+	class CRaptorIO;
+};
+#include "../RaysSettings.h"
 
-namespace RaysServer {
 
+namespace RaysServer
+{
 	class CDeamonManager;
 
-	public ref class RaysServerUtils
+	class RaysServerUtils
 	{
 	public:
-		ref class RAYS_CONFIG
+		class ILogger
 		{
 		public:
-			RAYS_CONFIG();
-			~RAYS_CONFIG() {};
-
-			System::String^	host;
-			System::Int32	port;
-			System::Int32	wu_priority;	// NORMAL_PRIORITY_CLASS = 1
-			System::Int32	deamon_delay;
-			System::Int32	nb_wu_per_job;
-			System::Collections::ArrayList^	deamons;
+			virtual void Log(const std::string& msg) = 0;
+		protected:
+			ILogger() {};
+			virtual ~ILogger() {};
 		};
-
-		interface class ILogger
-		{
-		public:
-			void Log(System::String^ msg);
-		};
-
-		//!	Convert a System::String into a char*.
-		static char* convertSystemString(System::String^ str);
 
 		//!	Load application config file
 		static bool loadConfig(void);
@@ -47,25 +54,38 @@ namespace RaysServer {
 		static bool saveConfig(void);
 
 		//!	Returns the server configuration structure (from file)
-		static RaysServerUtils::RAYS_CONFIG^ getConfig(void);
+		//static RaysServerUtils::RAYS_CONFIG& getConfig(void);
+
+		//!	Returns the application Settings.
+		static const CCRaysettings& getSettings(void);
 
 		//!	Returns the current logger.
-		static ILogger^ getLog();
+		static ILogger& getLog();
 
 		//!	Defines the current logger.
 		//!	Returns the previous logger if any.
-		static ILogger^ setLog(ILogger^ logger);
+		static ILogger* setLog(ILogger* pLogger);
 
 
 	private:
-		static RaysServerUtils();
-		~RaysServerUtils() {};
+		RaysServerUtils();
+		RaysServerUtils(const RaysServerUtils&);
+		~RaysServerUtils();
+		RaysServerUtils& operator=(const RaysServerUtils&);
 
-		//!	Server configuration for deamons management
-		static RAYS_CONFIG^	rays_config;
+		//!	Initialise instance if necessary.
+		static RaysServerUtils& getUtils();
+
+		//!	Load server settings section.
+		bool importSettings(raptor::CRaptorIO *conf);
+
+		static RaysServerUtils *s_pUtils;
 
 		//!	A unique logger for simplicity
-		static ILogger^ m_logger;
+		ILogger *m_pLogger;
+
+		//! A global set of application settings.
+		CCRaysettings m_settings;
 	};
 }
 

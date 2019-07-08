@@ -36,6 +36,17 @@ public:
 	static unsigned long GetVersion(void);
 	static const char* GetVersionString(void);
 
+	//! Create and initialise a new RaptorInstance.
+	//!	Initialize the entire Raptor SDK. 
+	//! This method must be called before any other method. It returns false
+	//! if Raptor cannot start initialisation. Otherwise, init errors can be retrieved
+	//! using error manager.
+	CRaptorInstance* glvkCreateInstance(const CRaptorConfig& config);
+
+	//!	Switch the current RaptorInstance
+	//! @return the previous instance, NULL if none.
+	CRaptorInstance* switchInstance(CRaptorInstance* instance);
+
 	//!	Initialize the entire Raptor SDK. 
     //! This method must be called before any other method. It returns false
     //! if Raptor cannot start initialisation. Otherwise, init errors can be retrieved
@@ -93,12 +104,6 @@ public:
     //! Error management use internal messages.
     static CRaptorErrorManager * const GetErrorManager(void);
     static CRaptorMessages * const GetMessages(void);
-
-	//! Create and initialise a new RaptorInstance.
-	CRaptorInstance* createInstance(const CRaptorConfig& config);
-
-	//!	Switch the current RaptorInstance
-	CRaptorInstance* switchInstance(CRaptorInstance* instance);
 
 
 private:

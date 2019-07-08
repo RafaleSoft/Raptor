@@ -104,7 +104,7 @@ public:
 
 #if defined(GL_ARB_geometry_shader4)
 	const string CAccumulator::accum_gp =
-	"#version 460\n\
+	"#version 440\n\
 	\n\
 	//	Expect the geometry shader extension to be available, warn if not. \n\
 	#extension GL_ARB_geometry_shader4 : enable \n\
@@ -135,7 +135,7 @@ public:
 	}";
 
 	const string CAccumulator::accum_fp =
-	"#version 460 			\n\
+	"#version 440 			\n\
 	\n\
 	uniform sampler2D color;	\n\
 	uniform sampler2D accum;	\n\
@@ -151,7 +151,7 @@ public:
 	}";
 
 	const string CAccumulator::accum_fp2 =
-	"#version 460\n\
+	"#version 440\n\
 	\n\
 	uniform	sampler2D diffuseMap; \n\
 	\n\
