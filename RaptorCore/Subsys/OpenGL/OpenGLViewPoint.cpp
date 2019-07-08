@@ -20,8 +20,8 @@ RAPTOR_NAMESPACE
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
-COpenGLViewPoint::COpenGLViewPoint(const std::string& name) :
-	IViewPoint(name)
+COpenGLViewPoint::COpenGLViewPoint(const std::string& name)
+	:IViewPoint(name)
 {
 }
 

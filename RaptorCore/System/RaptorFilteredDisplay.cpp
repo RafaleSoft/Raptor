@@ -73,6 +73,13 @@
 #if !defined(AFX_OPENGL_H__6C8840CA_BEFA_41DE_9879_5777FBBA7147__INCLUDED_)
 	#include "Subsys/OpenGL/RaptorOpenGL.h"
 #endif
+#if !defined(AFX_FRAGMENTPROGRAM_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
+	#include "GLHierarchy/FragmentProgram.h"
+#endif
+#if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
+	#include "System/RaptorGLExtensions.h"
+#endif
+
 
 RAPTOR_NAMESPACE
 
@@ -83,7 +90,7 @@ RAPTOR_NAMESPACE
 
 CRaptorFilteredDisplay::CRaptorFilteredDisplay(const CRaptorDisplayConfig& pcs)
 	:CRaptorScreenDisplay(pcs),m_pDisplay(NULL),m_pFSAADisplay(NULL),
-	m_bBufferBound(false), m_pImageSet(NULL), m_pDrawBuffer(NULL)
+	m_bBufferBound(false), m_pImageSet(NULL)
 {
     filter_cs = pcs;
 	cs.overlay = false;
@@ -144,7 +151,7 @@ CRaptorFilteredDisplay::CRaptorFilteredDisplay(const CRaptorDisplayConfig& pcs)
 
 CRaptorFilteredDisplay::~CRaptorFilteredDisplay()
 {
-	if (NULL != m_pDrawBuffer)
+	if (NULL != s_pIdentity)
 	{
 		//delete m_pDrawBuffer;
 		//m_pDrawBuffer = NULL;
@@ -366,7 +373,7 @@ bool CRaptorFilteredDisplay::glCreateRenderDisplay(void)
             }
         }
 
-
+#if defined(GL_COMPATIBILITY_profile)
         drawBuffer.handle(glGenLists(1));
         glNewList(drawBuffer.handle(),GL_COMPILE);
             glBegin(GL_QUADS);
@@ -376,12 +383,33 @@ bool CRaptorFilteredDisplay::glCreateRenderDisplay(void)
                 glTexCoord2f(0.0f,1.0f);glVertex4f(-1.0,1.0,-1.0f,1.0f);
             glEnd();
         glEndList();
+#else
+		s_pIdentity = new CShader("FILTER_IDENTITY");
+		s_pIdentity->glGetVertexProgram("EMPTY_PROGRAM");
+		s_pIdentity->glGetGeometryProgram("FULL_SCREEN_GEO_PROGRAM");
+		CFragmentProgram *fp = s_pIdentity->glGetFragmentProgram("DIFFUSE_PROGRAM");
 
-		//m_pDrawBuffer = new CTextureQuad();
-		//m_pDrawBuffer->setQuadTexture(m_pImageSet->getTexture(0));
-		//m_pDrawBuffer->glSetQuadAttributes(	GL_COORD_VERTEX(0.0f, 0.0f, 0.0f, 1.0f),
-		//									CColor::RGBA(1.0f, 1.0f, 1.0f, 1.0f),
-		//									GL_COORD_VERTEX(1.0f, 1.0f, 0.0f, 0.0f));
+		CProgramParameters identityParams;
+		identityParams.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);
+		fp->setProgramParameters(identityParams);
+		if (!s_pIdentity->glCompileShader())
+			return false;
+
+		CGeometryAllocator *pAllocator = CGeometryAllocator::GetInstance();
+		bool lock = pAllocator->isMemoryLocked();
+		if (lock)
+			pAllocator->glvkLockMemory(false);
+
+		size_t s = sizeof(GL_COORD_VERTEX) / sizeof(float);
+		s_attributes = (GL_COORD_VERTEX*)(pAllocator->allocateVertices(s));
+
+		s_attributes = (GL_COORD_VERTEX*)pAllocator->glvkMapPointer((float*)s_attributes);
+		*s_attributes = GL_COORD_VERTEX(0.0f, 0.0f, 0.0f, 0.0f);
+		s_attributes = (GL_COORD_VERTEX*)pAllocator->glvkUnMapPointer((float*)s_attributes);
+
+		if (lock)
+			pAllocator->glvkLockMemory(true);
+#endif
 	}
 
     CATCH_GL_ERROR
@@ -581,9 +609,21 @@ void CRaptorFilteredDisplay::glRenderScene(void)
 	{
 		CTextureObject *T = m_pImageSet->getTexture(0);
 		T->glvkRender();
-
+#if defined(GL_COMPATIBILITY_profile)
         if (drawBuffer.handle() > 0)
             glCallList(drawBuffer.handle());
+#else
+		s_pIdentity->glRender();
+		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+
+		pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::POSITION);
+		pExtensions->glVertexAttribPointerARB(CProgramParameters::POSITION, 4, GL_FLOAT, false, 0, s_attributes);
+
+		glDrawArrays(GL_POINTS, 0, 1);
+
+		pExtensions->glDisableVertexAttribArrayARB(CProgramParameters::POSITION);
+		s_pIdentity->glStop();
+#endif
 			
 		//m_pDrawBuffer->glRender();
 		glBindTexture(GL_TEXTURE_2D,0);

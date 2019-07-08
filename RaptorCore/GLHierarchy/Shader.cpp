@@ -859,7 +859,7 @@ bool CShader::glCompileShader()
 
         if ((abort) && (m_shaderProgram.handle() != 0))
         {
-            GLint maxLength = 0;
+            GLint maxLength = 255;
             GLint length = 0;
 	        pExtensions->glGetObjectParameterivARB(m_shaderProgram.handle(),GL_OBJECT_INFO_LOG_LENGTH_ARB, &maxLength);
 	        char *pInfoLog = (char*) malloc(maxLength * sizeof(char));

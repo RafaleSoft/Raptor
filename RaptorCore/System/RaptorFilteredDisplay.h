@@ -21,6 +21,7 @@ class CTextureSet;
 class CVertexShader;
 class CRaptorDisplayFilter;
 class CTextureQuad;
+class CShader;
 
 
 class CRaptorFilteredDisplay : public CRaptorScreenDisplay
@@ -87,9 +88,12 @@ private:
 	CRaptorDisplay	*m_pDisplay;
     CRaptorDisplay	*m_pFSAADisplay;
 
+#if defined(GL_COMPATIBILITY_profile)
     RAPTOR_HANDLE	drawBuffer;
-	CTextureQuad	*m_pDrawBuffer;
-
+#else
+	GL_COORD_VERTEX	*s_attributes;
+	CShader			*s_pIdentity;
+#endif
 	bool			m_bBufferBound;
 	CTextureSet		*m_pImageSet;
 	vector<CRaptorDisplayFilter*> m_pFilters;

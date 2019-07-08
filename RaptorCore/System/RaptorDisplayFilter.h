@@ -205,11 +205,11 @@ private:
     CRaptorDisplayFilter(const CRaptorDisplayFilter& ) {};
     CRaptorDisplayFilter& operator=(const CRaptorDisplayFilter& ) { return *this; };
 
-	static GL_COORD_VERTEX	*s_attributes;
-	static CShader	*s_pIdentity;
-
 #if defined(GL_COMPATIBILITY_profile)
 	static RAPTOR_HANDLE	s_drawBuffer;
+#else
+	static GL_COORD_VERTEX	*s_attributes;
+	static CShader	*s_pIdentity;
 #endif
 };
 
