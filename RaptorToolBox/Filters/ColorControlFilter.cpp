@@ -51,9 +51,8 @@
 
 
 #if defined(GL_ARB_geometry_shader4)
-
 	static const string colorcontrol_fp =
-	"#version 460 			\n\
+	"#version 440 			\n\
 	\n\
 	const vec3 luminance = vec3(0.299, 0.587, 0.114);	\n\
 	const vec3 u_chrominance = vec3(-0.14713, -0.28886, 0.436);	\n\

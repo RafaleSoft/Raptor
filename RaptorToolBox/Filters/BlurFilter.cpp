@@ -238,7 +238,7 @@ bool CBlurFilter::glBuildFilter(int width,int height)
 		float dim = (dirs == 0 ? width : height);
 
 		//	Write texel offsets
-		shader_src << "#version 460" << ENDL << ENDL;
+		shader_src << "#version 440" << ENDL << ENDL;
 		shader_src << "const float offset[" << sz << "] = float[]( ";
 		for (size_t i=0;i<sz-1;i++)
 			shader_src << m_gaussian_offsets[i] / dim << " , ";

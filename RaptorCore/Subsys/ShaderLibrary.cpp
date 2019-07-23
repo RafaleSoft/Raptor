@@ -102,7 +102,7 @@ static factory_shader fsh[NB_FACTORY_SHADERS] = {	{ "BUMP_TEX_SHADER", "bump.fp"
 													{ "PARTICLE_VTX_PROGRAM", "particle.vs", "VertexProgram" },
 													{ "PARTICLE2D_GEO_PROGRAM", "particle2D.gs", "GeometryProgram" }, 
 													{ "PARTICLE3D_GEO_PROGRAM", "particle3D.gs", "GeometryProgram" },
-													{ "PARTICLE3D_TEX_PROGRAM", "particle3D.fs", "FragmentProgram" }, };
+													{ "PARTICLE3D_TEX_PROGRAM", "particle3D.ps", "FragmentProgram" }, };
 
 static map<std::string, factory_shader>	s_factoryShaders;
 
@@ -179,7 +179,7 @@ bool CShaderLibrary::glAddToLibrary(const std::string& shader_name,
 	if (s_factoryShaders.find(shader_name) != s_factoryShaders.end())
 	{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
-		Raptor::GetErrorManager()->generateRaptorError(Global::CShaderClassID::GetClassId(),
+		Raptor::GetErrorManager()->generateRaptorError(CShader::CShaderClassID::GetClassId(),
 													   CRaptorErrorManager::RAPTOR_WARNING,
 													   "Raptor ShaderLibrary cannot import already existing shader type");
 #endif

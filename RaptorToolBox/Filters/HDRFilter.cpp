@@ -66,7 +66,7 @@
 	//  Compute luminance with bilinear components, averaging
 	//  the 4 surrouding of the texel's center.
 	static const string treshhold2_ps =
-	"#version 460				\n\
+	"#version 440				\n\
 	uniform sampler2D color;	\n\
 	uniform vec4 offset;		\n\
 	uniform vec4 treshhold;		\n\
@@ -102,7 +102,7 @@
 
 	//!	Tone mapping shader
 	static const string composer_ps =
-	"#version 460				\n\
+	"#version 440				\n\
 	uniform sampler2D color;	\n\
 	uniform sampler2D blur;		\n\
 	uniform sampler2D lwhite;	\n\
@@ -122,7 +122,7 @@
 	}";
 
 	static const string luminanceMax_ps =
-	"#version 460				\n\
+	"#version 440				\n\
 	uniform sampler2D color;	\n\
 	uniform vec4 offset;		\n\
 	\n\
@@ -153,7 +153,7 @@
 	//	for the tone mapping in order to have the brightest parts
 	//	at 1.0. (L>1 => x 1/L is in range [0..1])
 	static const string lastLuminanceMax_ps =
-	"#version 460				\n\
+	"#version 440				\n\
 	uniform sampler2D color;	\n\
 	uniform vec4 offset;		\n\
 	\n\

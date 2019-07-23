@@ -81,24 +81,24 @@ in vec2 v_size[]; \n\
 \n\
 layout(points) in; \n\
 layout(triangle_strip, max_vertices=4) out; \n\
-layout(location = 1) out vec4 g_TexCoord[1]; \n\
+layout(location = 1) out vec4 g_TexCoord; \n\
 \n\
 void main() \n\
 {\n\
 	gl_Position = gl_in[0].gl_Position; \n\
-	g_TexCoord[0] = vec4(v_texCoord[0].x, v_texCoord[0].y, 0.0, 0.0); \n\
+	g_TexCoord = vec4(v_texCoord[0].x, v_texCoord[0].y, 0.0, 0.0); \n\
 	EmitVertex(); \n\
 	\n\
 	gl_Position = gl_in[0].gl_Position + vec4(v_size[0].x, 0.0, 0.0, 0.0); \n\
-	g_TexCoord[0] = vec4(v_texCoord[0].x + v_texCoord[0].z, v_texCoord[0].y, 0.0, 0.0); \n\
+	g_TexCoord = vec4(v_texCoord[0].x + v_texCoord[0].z, v_texCoord[0].y, 0.0, 0.0); \n\
 	EmitVertex(); \n\
 	\n\
 	gl_Position = gl_in[0].gl_Position + vec4(0.0, v_size[0].y, 0.0, 0.0); \n\
-	g_TexCoord[0] = vec4(v_texCoord[0].x, v_texCoord[0].y + v_texCoord[0].w, 0.0, 0.0); \n\
+	g_TexCoord = vec4(v_texCoord[0].x, v_texCoord[0].y + v_texCoord[0].w, 0.0, 0.0); \n\
 	EmitVertex(); \n\
 	\n\
 	gl_Position = gl_in[0].gl_Position + vec4(v_size[0].x,v_size[0].y, 0.0, 0.0); \n\
-	g_TexCoord[0] = vec4(v_texCoord[0].x + v_texCoord[0].z, v_texCoord[0].y + v_texCoord[0].w, 0.0, 0.0); \n\
+	g_TexCoord = vec4(v_texCoord[0].x + v_texCoord[0].z, v_texCoord[0].y + v_texCoord[0].w, 0.0, 0.0); \n\
 	EmitVertex(); \n\
 	\n\
 	EndPrimitive(); \n\

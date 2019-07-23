@@ -275,7 +275,7 @@ bool CRaptorScreenDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
 			
 			bool hasSwapControl = CContextManager::GetInstance()->glSwapVSync(m_framerate);
 
-			//	Manage vertex/pixel buffer objects.
+			//	Create rendering context resources.
 			allocateResources();
 
             return res;
@@ -381,6 +381,9 @@ void CRaptorScreenDisplay::allocateResources(void)
         m_pTOldAllocator->glvkLockMemory(false);
 	if ((m_pUOldAllocator != m_pUAllocator) && (m_pUOldAllocator != NULL))
 		m_pUOldAllocator->glvkLockMemory(false);
+
+	if (instance.initialised)
+		instance.glInitShaders();
 }
 
 bool CRaptorScreenDisplay::glvkUnBindDisplay(void)

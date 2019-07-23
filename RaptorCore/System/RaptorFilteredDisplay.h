@@ -88,12 +88,6 @@ private:
 	CRaptorDisplay	*m_pDisplay;
     CRaptorDisplay	*m_pFSAADisplay;
 
-#if defined(GL_COMPATIBILITY_profile)
-    RAPTOR_HANDLE	drawBuffer;
-#else
-	GL_COORD_VERTEX	*s_attributes;
-	CShader			*s_pIdentity;
-#endif
 	bool			m_bBufferBound;
 	CTextureSet		*m_pImageSet;
 	vector<CRaptorDisplayFilter*> m_pFilters;

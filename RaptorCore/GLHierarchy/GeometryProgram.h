@@ -80,7 +80,7 @@ public:
     //! linking and validation. Checking is performed on the handle to accept only valid programs.
     //! CShader use this method only when necessary
     //! @return : true if binding is done without errors, false otherwise.
-    bool glBindProgram(RAPTOR_HANDLE program);
+    virtual bool glBindProgram(RAPTOR_HANDLE program);
 
 	//!	Configure the geometry chader.
 	//!	The shader code must be conformant to these parameters.

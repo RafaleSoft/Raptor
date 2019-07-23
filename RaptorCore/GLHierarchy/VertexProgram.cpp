@@ -108,7 +108,7 @@ void CVertexProgram::glInitShaders()
 			arg.arg_sz = "GLSL vertex";
 			vector<CRaptorMessages::MessageArgument> args;
 			args.push_back(arg);
-			Raptor::GetErrorManager()->generateRaptorError(CShaderProgram::CShaderProgramClassID::GetClassId(),
+			Raptor::GetErrorManager()->generateRaptorError(CVertexProgram::CVertexProgramClassID::GetClassId(),
 														   CRaptorErrorManager::RAPTOR_WARNING,
 														   CRaptorMessages::ID_NO_GPU_PROGRAM,
 														   args);
@@ -172,8 +172,23 @@ bool CVertexProgram::glLoadProgram(const std::string &program)
 
 bool CVertexProgram::glBindProgram(RAPTOR_HANDLE program)
 {
-#if defined(GL_ARB_shader_objects)
 	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+
+#if defined(GL_ARB_vertex_shader)
+	GLint value = 0;
+	pExtensions->glGetObjectParameterivARB(m_handle.handle(), GL_OBJECT_SUBTYPE_ARB, &value);
+	if (value != GL_VERTEX_SHADER_ARB)
+	{
+		Raptor::GetErrorManager()->generateRaptorError(CVertexProgram::CVertexProgramClassID::GetClassId(),
+													   CRaptorErrorManager::RAPTOR_WARNING,
+													   "Vertex Program is invalid in this context");
+		
+		CATCH_GL_ERROR
+		return false;
+	}
+#endif
+
+#if defined(GL_ARB_shader_objects)
 	if (CUnifiedProgram::glBindProgram(program))
 	{
 		for (unsigned int idx = 0; idx < m_parameters.getNbParameters(); idx++)

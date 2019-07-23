@@ -172,6 +172,35 @@ bool CFragmentProgram::glLoadProgram(const std::string &program)
     return m_bValid;
 }
 
+bool CFragmentProgram::glBindProgram(RAPTOR_HANDLE program)
+{
+	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+
+#if defined(GL_ARB_fragment_shader)
+	GLint value = 0;
+	pExtensions->glGetObjectParameterivARB(m_handle.handle(), GL_OBJECT_SUBTYPE_ARB, &value);
+	if (value != GL_FRAGMENT_SHADER_ARB)
+	{
+		Raptor::GetErrorManager()->generateRaptorError(CFragmentProgram::CFragmentProgramClassID::GetClassId(),
+													   CRaptorErrorManager::RAPTOR_WARNING,
+													   "Fragment Program is invalid in this context");
+
+		CATCH_GL_ERROR
+		return false;
+	}
+#endif
+
+#if defined(GL_ARB_shader_objects)
+	if (CUnifiedProgram::glBindProgram(program))
+	{
+		CATCH_GL_ERROR
+		return true;
+	}
+	else
+#endif
+		return false;
+}
+
 bool CFragmentProgram::glGetProgramCaps(GL_FRAGMENT_PROGRAM_CAPS& caps)
 {
 	if (CRaptorInstance::GetInstance().m_bFragmentProgramReady)

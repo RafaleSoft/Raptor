@@ -52,6 +52,18 @@
 #if !defined(AFX_SHADERLIBRARY_H__E2A8C35E_23A4_4AD1_8467_884E6B183B4F__INCLUDED_)
 	#include "Subsys/ShaderLibrary.h"
 #endif
+#if !defined(AFX_SHADER_H__4D405EC2_7151_465D_86B6_1CA99B906777__INCLUDED_)
+	#include "GLHierarchy/Shader.h"
+#endif
+#if !defined(AFX_TEXUREUNITSETUP_H__4A6ADC72_02E5_4F2A_931E_A736B6D6E0F0__INCLUDED_)
+	#include "GLHierarchy/TextureUnitSetup.h"
+#endif
+#if !defined(AFX_FRAGMENTPROGRAM_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
+	#include "GLHierarchy/FragmentProgram.h"
+#endif
+#if !defined(AFX_GEOMETRYALLOCATOR_H__802B3C7A_43F7_46B2_A79E_DDDC9012D371__INCLUDED_)
+	#include "Subsys/GeometryAllocator.h"
+#endif
 
 
 
@@ -85,21 +97,24 @@ CRaptorInstance::CRaptorInstance()
 	m_bGeometryProgramReady = false;
 	m_bVertexReady = false;
 	m_bFragmentReady = false;
+
+	m_pAttributes = NULL;
+	m_pIdentity = NULL;
 }
 
 CRaptorInstance &CRaptorInstance::GetInstance(void)
 {
 	if (m_pInstance == NULL)
-	{
 		m_pInstance = new CRaptorInstance();
-	}
 
 	return *m_pInstance;
 }
 
 CRaptorInstance* CRaptorInstance::createNewInstance(void)
 {
-	return NULL;
+	CRaptorInstance *previous = m_pInstance;
+	m_pInstance = new CRaptorInstance();
+	return previous;
 }
 
 bool CRaptorInstance::destroy(void)
@@ -141,6 +156,20 @@ CRaptorInstance::~CRaptorInstance()
 	if (pShaderLib != NULL)
 		pShaderLib->destroy();
 
+#if defined(GL_COMPATIBILITY_profile)
+	if (m_drawBuffer.handle() > 0)
+	{
+		glDeleteLists(m_drawBuffer.handle(), 1);
+		m_drawBuffer.handle(0);
+	}
+#else
+	if (NULL != m_pAttributes)
+	{
+		CGeometryAllocator *pAllocator = CGeometryAllocator::GetInstance();
+		pAllocator->releaseVertices(*m_pAttributes);
+	}
+#endif
+
 	CImage::IImageOP *op = CImage::getImageKindOP(CImage::IImageOP::BUMPMAP_LOADER);
 	delete op;
 
@@ -173,7 +202,6 @@ CRaptorInstance::~CRaptorInstance()
 	//    glDestroyDisplay(status.defaultDisplay);
 	CContextManager::GetInstance()->glDestroyWindow(defaultWindow);
 
-
 	delete CContextManager::GetInstance();
 	delete CHostMemoryManager::GetInstance();
 
@@ -188,10 +216,14 @@ CRaptorInstance::~CRaptorInstance()
 void CRaptorInstance::initInstance()
 {
 	//!	Initialize error manager.
+	if (pErrorMgr != NULL)
+		delete pErrorMgr;
 	pErrorMgr = new CRaptorErrorManager();
 	pErrorMgr->logToFile(config.m_logFile);
 
 	//! Initialise error mesasges.
+	if (pMessages != NULL)
+		delete pMessages;
 	pMessages = new CRaptorMessages();
 	CRaptorDataManager  *dataManager = CRaptorDataManager::GetInstance();
 	if (dataManager != NULL)
@@ -248,6 +280,64 @@ void CRaptorInstance::initInstance()
 #endif
 
 	initialised = true;
+}
+
+bool CRaptorInstance::glInitShaders(void)
+{
+	CShaderLibrary* pShaderLib = CShaderLibrary::GetInstance();
+	if (pShaderLib == NULL)
+		return false;
+	else
+		pShaderLib->glInitFactory();
+
+#if defined(GL_COMPATIBILITY_profile)
+	if (0 == m_drawBuffer.handle())
+	{
+		m_drawBuffer.handle(glGenLists(1));
+		glNewList(m_drawBuffer.handle(), GL_COMPILE);
+			glBegin(GL_QUADS);
+				glTexCoord2f(0.0f, 0.0f); glVertex4f(-1.0, -1.0, -1.0f, 1.0f);
+				glTexCoord2f(1.0f, 0.0f); glVertex4f(1.0, -1.0, -1.0f, 1.0f);
+				glTexCoord2f(1.0f, 1.0f); glVertex4f(1.0, 1.0, -1.0f, 1.0f);
+				glTexCoord2f(0.0f, 1.0f); glVertex4f(-1.0, 1.0, -1.0f, 1.0f);
+			glEnd();
+		glEndList();
+	}
+#else
+	if (NULL == m_pIdentity)
+	{
+		m_pIdentity = new CShader("HDR_IDENTITY");
+		CVertexProgram *vp = m_pIdentity->glGetVertexProgram("EMPTY_PROGRAM");
+		CGeometryProgram *gp = m_pIdentity->glGetGeometryProgram("FULL_SCREEN_GEO_PROGRAM");
+		CFragmentProgram *fp = m_pIdentity->glGetFragmentProgram("DIFFUSE_PROGRAM");
+
+		CProgramParameters identityParams;
+		identityParams.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);
+		fp->setProgramParameters(identityParams);
+		if (!m_pIdentity->glCompileShader())
+			return false;
+	}
+
+	if (NULL == m_pAttributes)
+	{
+		CGeometryAllocator *pAllocator = CGeometryAllocator::GetInstance();
+		bool lock = pAllocator->isMemoryLocked();
+		if (lock)
+			pAllocator->glvkLockMemory(false);
+
+		size_t s = sizeof(GL_COORD_VERTEX) / sizeof(float);
+		m_pAttributes = (GL_COORD_VERTEX*)(pAllocator->allocateVertices(s));
+
+		m_pAttributes = (GL_COORD_VERTEX*)pAllocator->glvkMapPointer((float*)m_pAttributes);
+		*m_pAttributes = GL_COORD_VERTEX(0.0f, 0.0f, 0.0f, 0.0f);
+		m_pAttributes = (GL_COORD_VERTEX*)pAllocator->glvkUnMapPointer((float*)m_pAttributes);
+
+		if (lock)
+			pAllocator->glvkLockMemory(true);
+	}
+#endif
+
+	return true;
 }
 
 void CRaptorInstance::setDefaultConfig(const CRaptorDisplayConfig& pcs)

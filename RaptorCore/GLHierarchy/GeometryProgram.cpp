@@ -199,8 +199,23 @@ bool CGeometryProgram::glLoadProgram(const std::string &program)
 
 bool CGeometryProgram::glBindProgram(RAPTOR_HANDLE program)
 {
+	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+
+#if defined(GL_ARB_geometry_shader4)
+	GLint value = 0;
+	pExtensions->glGetObjectParameterivARB(m_handle.handle(), GL_OBJECT_SUBTYPE_ARB, &value);
+	if (value != GL_GEOMETRY_SHADER_ARB)
+	{
+		Raptor::GetErrorManager()->generateRaptorError(CGeometryProgram::CGeometryProgramClassID::GetClassId(),
+													   CRaptorErrorManager::RAPTOR_WARNING,
+													   "Geometry Program is invalid in this context");
+
+		CATCH_GL_ERROR
+		return false;
+	}
+#endif
+
 #if defined(GL_ARB_shader_objects)
-    const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 	if (CUnifiedProgram::glBindProgram(program))
 	{
 #if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)

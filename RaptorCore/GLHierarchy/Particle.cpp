@@ -73,6 +73,7 @@ static float *cachePointer = NULL;
 
 RAPTOR_NAMESPACE_END
 
+
 RAPTOR_NAMESPACE
 
 //////////////////////////////////////////////////////////////////////
@@ -132,41 +133,44 @@ void CParticle::glInitParticle(void)
 {
 	bool res = false;
 
-	if (m_type == CGL_PARTICLE_TEXTURE)
+	if (NULL == m_pShader)
 	{
-		m_pShader = new CShader(getName()+"_SHADER");
-		CVertexProgram *vp = m_pShader->glGetVertexProgram("PARTICLE_VTX_PROGRAM");
-		CProgramParameters params;
-		params.addParameter("fPointSize", GL_COORD_VERTEX(m_fPointSize,0.0f,0.0f,0.0f));
-		vp->setProgramParameters(params);
+		if (m_type == CGL_PARTICLE_TEXTURE)
+		{
+			m_pShader = new CShader(getName() + "_SHADER");
+			CVertexProgram *vp = m_pShader->glGetVertexProgram("PARTICLE_VTX_PROGRAM");
+			CProgramParameters params;
+			params.addParameter("fPointSize", GL_COORD_VERTEX(m_fPointSize, 0.0f, 0.0f, 0.0f));
+			vp->setProgramParameters(params);
 
-		CGeometryProgram *gp = m_pShader->glGetGeometryProgram("PARTICLE2D_GEO_PROGRAM");
-		gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
+			CGeometryProgram *gp = m_pShader->glGetGeometryProgram("PARTICLE2D_GEO_PROGRAM");
+			gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
 
-		CFragmentProgram *fs = m_pShader->glGetFragmentProgram("TEXTURE_QUAD_TEX_PROGRAM");
-		params.clear();
-		params.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);
-		fs->setProgramParameters(params);
+			CFragmentProgram *fs = m_pShader->glGetFragmentProgram("TEXTURE_QUAD_TEX_PROGRAM");
+			params.clear();
+			params.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);
+			fs->setProgramParameters(params);
 
-		res = m_pShader->glCompileShader();
-	}
-	else if (m_type == CGL_PARTICLE_VOLUMETRIC)
-	{
-		m_pShader = new CShader(getName() + "_VOLUME_SHADER");
-		CVertexProgram *vp = m_pShader->glGetVertexProgram("PARTICLE_VTX_PROGRAM");
-		CProgramParameters params;
-		params.addParameter("fPointSize", GL_COORD_VERTEX(m_fPointSize, 0.0f, 0.0f, 0.0f));
-		vp->setProgramParameters(params);
+			res = m_pShader->glCompileShader();
+		}
+		else if ((m_type == CGL_PARTICLE_VOLUMETRIC) && (NULL == m_pShader))
+		{
+			m_pShader = new CShader(getName() + "_VOLUME_SHADER");
+			CVertexProgram *vp = m_pShader->glGetVertexProgram("PARTICLE_VTX_PROGRAM");
+			CProgramParameters params;
+			params.addParameter("fPointSize", GL_COORD_VERTEX(m_fPointSize, 0.0f, 0.0f, 0.0f));
+			vp->setProgramParameters(params);
 
-		CGeometryProgram *gp = m_pShader->glGetGeometryProgram("PARTICLE3D_GEO_PROGRAM");
-		gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
+			CGeometryProgram *gp = m_pShader->glGetGeometryProgram("PARTICLE3D_GEO_PROGRAM");
+			gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
 
-		CFragmentProgram *fs = m_pShader->glGetFragmentProgram("PARTICLE3D_TEX_PROGRAM");
-		params.clear();
-		params.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);
-		fs->setProgramParameters(params);
+			CFragmentProgram *fs = m_pShader->glGetFragmentProgram("PARTICLE3D_TEX_PROGRAM");
+			params.clear();
+			params.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);
+			fs->setProgramParameters(params);
 
-		res = m_pShader->glCompileShader();
+			res = m_pShader->glCompileShader();
+		}
 	}
 
 	//	Precompute data

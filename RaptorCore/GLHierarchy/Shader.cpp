@@ -262,6 +262,23 @@ const CShader& CShader::getShader(const std::string& shaderName)
 
 CShader::~CShader()
 {
+	if (m_shaderProgram.handle() != 0)
+	{
+		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+		GLint value = 0;
+		pExtensions->glGetObjectParameterivARB(m_shaderProgram.handle(), GL_OBJECT_TYPE_ARB, &value);
+		if (value != GL_PROGRAM_OBJECT_ARB)
+		{
+			Raptor::GetErrorManager()->generateRaptorError(CShader::CShaderClassID::GetClassId(),
+														   CRaptorErrorManager::RAPTOR_WARNING,
+														   "Shader Program is invalid in this context");
+
+			CATCH_GL_ERROR
+			return;
+		}
+	}
+
+
 	// TODO : delete program only if not shared !!!
 #if defined(GL_ARB_shader_objects)
     if ((m_shaderProgram.handle() != 0) &&
@@ -279,7 +296,6 @@ CShader::~CShader()
         for (GLsizei i=0;((i<count) && (i<maxCount));i++)
             pExtensions->glDetachObjectARB(m_shaderProgram.handle(), pHandles[i]);
 
-        pExtensions->glDeleteObjectARB(m_shaderProgram.handle());
         delete [] pHandles;
     }
 #endif
@@ -292,6 +308,12 @@ CShader::~CShader()
 	glRemoveFragmentProgram();
 	glRemoveGeometryProgram();
 	vkRemoveVulkanProgram();
+
+	if (m_shaderProgram.handle() != 0)
+	{
+		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+		pExtensions->glDeleteObjectARB(m_shaderProgram.handle());
+	}
 }
 
 void CShader::setAmbient(GLfloat r,GLfloat g,GLfloat b,GLfloat a) 
@@ -813,6 +835,14 @@ bool CShader::glCompileShader()
                                                                CRaptorErrorManager::RAPTOR_ERROR,
                                                                CRaptorMessages::ID_CREATE_FAILED,CRaptorMessages::no_args);
             }
+
+			GLint value = 0;
+			pExtensions->glGetObjectParameterivARB(m_shaderProgram.handle(), GL_OBJECT_TYPE_ARB, &value);
+			if (value != GL_PROGRAM_OBJECT_ARB)
+			{
+				CATCH_GL_ERROR
+				return false;
+			}
         }
 
         // Attach programs before linking.
@@ -824,7 +854,7 @@ bool CShader::glCompileShader()
                 abort = true;
         }
 
-        if ((!abort) && (m_pFProgram != NULL))
+		if ((!abort) && (m_pFProgram != NULL))
         {
             if ((!m_pFProgram->isValid()) || (!m_pFProgram->glBindProgram(m_shaderProgram)))
                 abort = true;
@@ -836,14 +866,18 @@ bool CShader::glCompileShader()
                 abort = true;
         }
 
-        // link
+        // link the program with bound shaders
         if (!abort)
         {
             pExtensions->glLinkProgramARB(m_shaderProgram.handle());
             GLint linkStatus = GL_FALSE;
+
             pExtensions->glGetObjectParameterivARB(m_shaderProgram.handle(),GL_OBJECT_LINK_STATUS_ARB,&linkStatus);
-            if (linkStatus == GL_FALSE)
-                abort = true;
+			if (linkStatus == GL_FALSE)
+			{
+				CATCH_GL_ERROR
+				abort = true;
+			}
         }
 
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
@@ -861,19 +895,26 @@ bool CShader::glCompileShader()
         {
             GLint maxLength = 255;
             GLint length = 0;
+			CRaptorMessages::MessageArgument arg;
+			char *pInfoLog = NULL;
 	        pExtensions->glGetObjectParameterivARB(m_shaderProgram.handle(),GL_OBJECT_INFO_LOG_LENGTH_ARB, &maxLength);
-	        char *pInfoLog = (char*) malloc(maxLength * sizeof(char));
-	        pExtensions->glGetInfoLogARB(m_shaderProgram.handle(), maxLength, &length, pInfoLog);
-
-            CRaptorMessages::MessageArgument arg;
-            arg.arg_sz = pInfoLog;
+			if (maxLength > 0)
+			{
+				char *pInfoLog = (char*)malloc(maxLength * sizeof(char));
+				pExtensions->glGetInfoLogARB(m_shaderProgram.handle(), maxLength, &length, pInfoLog);
+				arg.arg_sz = pInfoLog;
+			}
+			else
+				arg.arg_sz = "Unknown Error";
+            
             vector<CRaptorMessages::MessageArgument> args;
             args.push_back(arg);
 			Raptor::GetErrorManager()->generateRaptorError(	CShader::CShaderClassID::GetClassId(),
 															CRaptorErrorManager::RAPTOR_ERROR,
 															CRaptorMessages::ID_PROGRAM_ERROR,
 															args);
-            free(pInfoLog);
+			if (maxLength > 0)
+				free(pInfoLog);
         }
 
         CATCH_GL_ERROR

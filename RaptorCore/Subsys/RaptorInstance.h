@@ -48,6 +48,7 @@ class CRaptorErrorManager;
 class CRaptorDisplay;
 class CRenderEntryPoint;
 class CRaptorConsole;
+class CShader;
 
 
 class CRaptorInstance
@@ -56,9 +57,9 @@ public:
 	//!	Create a singleton instance or returns the current isntance.
 	static CRaptorInstance &GetInstance(void);
 
-	//!	Creates a new RaptorInstance intance abd returns the previous instance.
+	//!	Creates a new RaptorInstance intance and returns the previous instance.
 	//!	The user shall manage the list of instance.
-	CRaptorInstance* createNewInstance(void);
+	static CRaptorInstance* createNewInstance(void);
 
 	//! (Re)Initialise all instance objects.
 	void initInstance();
@@ -98,7 +99,8 @@ public:
 	RAPTOR_HANDLE			defaultWindow;
 	//!	The default context for the default dispplay.
 	long					defaultContext;
-	//! The set of all Raptor displays.
+	
+	//! The set of all Raptor displays for this instance.
 	std::vector<CRaptorDisplay*>	displays;
 	//!	Raptor Console interactors.
 	std::vector<CRaptorConsole::CInputCollectorBase*>	inputCollectors;
@@ -115,6 +117,15 @@ public:
 	//!	Fragment Shader state
 	bool m_bFragmentReady;
 
+#if defined(GL_COMPATIBILITY_profile)
+	//!	Full screen quad rendering display list
+	RAPTOR_HANDLE	m_drawBuffer;
+#else
+	//!	Center vertex attributes for full screen rendering (0,0,0,0).
+	GL_COORD_VERTEX	*m_pAttributes;
+	//!	Identity shader for full screen quad texture mapping.
+	CShader	*m_pIdentity;
+#endif
 
 	//! Stores Display attributes for delayed creation.
 	//! The physical display creation is delegated to the underlying API, 
@@ -130,7 +141,9 @@ public:
 	//! Delete Raptor status and any allocated resource.
 	bool	destroy(void);
 
-	
+	//!	Initialise base shaders for this instance.
+	bool glInitShaders(void);
+
 
 private:
 	//! Constructor.
