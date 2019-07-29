@@ -39,6 +39,9 @@
 #if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
 	#include "System/Raptor.h"
 #endif
+#if !defined(AFX_RAYSSETTINGS_H__40662BB9_6FC8_40CA_A8A0_F2A701AD70BD__INCLUDED_)
+	#include "RaysSettings.h"
+#endif
 
 
 RAPTOR_NAMESPACE
@@ -142,6 +145,12 @@ bool RaysServerUtils::importSettings(raptor::CRaptorIO *conf)
 			*conf >> name;
 		else if ("value" == data)
 			*conf >> value;
+		else if ("wu_priority" == data)
+			*conf >> value;
+		else if ("deamon_delay" == data)
+			*conf >> value;
+		else if ("nb_wu_per_job" == data)
+			*conf >> value;
 		else
 			*conf >> data;
 
@@ -150,9 +159,12 @@ bool RaysServerUtils::importSettings(raptor::CRaptorIO *conf)
 			m_settings.setValue(name, value.c_str());
 			value = "";
 			name = "";
+
+			data = conf->getValueName();
+			*conf >> data;
 		}
 		
-		data = conf->getValueName();	
+		data = conf->getValueName();
 	}
 
 	return true;
@@ -191,24 +203,10 @@ bool RaysServerUtils::loadConfig(void)
 
 			data = conf->getValueName();
 		}
-		/*
-		KeyValueConfigurationElement^ item = settings->Settings["port"];
-		if (nullptr != item)
-			rays_config->port = System::Int32::Parse(item->Value);
-		item = settings->Settings["host"];
-		if (nullptr != item)
-			rays_config->host = item->Value;
-		item = settings->Settings["wu_priority"];
-		if (nullptr != item)
-			rays_config->wu_priority = System::Int32::Parse(item->Value);
-		item = settings->Settings["deamon_delay"];
-		if (nullptr != item)
-			rays_config->deamon_delay = System::Int32::Parse(item->Value);
-		item = settings->Settings["nb_wu_per_job"];
-		if (nullptr != item)
-			rays_config->nb_wu_per_job = System::Int32::Parse(item->Value);
-			*/
-		return (CRaptorIO::IO_OK == conf->getStatus());
+
+		bool res = (CRaptorIO::IO_OK == conf->getStatus());
+		delete conf;
+		return res;
 	}
 	else
 		return false;
@@ -221,16 +219,16 @@ bool RaysServerUtils::saveConfig(void)
 										CRaptorIO::IO_KIND::DISK_WRITE,
 										CRaptorIO::ASCII_XML);
 
+	const CRaysettings &settings = RaysServerUtils::getSettings();
 	if (CRaptorIO::IO_OK == conf->getStatus())
 	{
+		getUtils().importSettings(conf);
+
 		return true;
 	}
 	else
 		return false;
 	/*
-	Configuration^ conf = ConfigurationManager::OpenExeConfiguration(ConfigurationUserLevel::None);
-	if (conf->HasFile)
-	{
 		AppSettingsSection^ settings = conf->AppSettings;
 		KeyValueConfigurationElement^ item = settings->Settings["port"];
 		if (nullptr != item)
@@ -263,10 +261,7 @@ bool RaysServerUtils::saveConfig(void)
 			settings->Settings->Add("nb_wu_per_job",rays_config->nb_wu_per_job.ToString());
 
 		conf->Save(ConfigurationSaveMode::Modified);
-		return true;
-	}
-
-	return false;*/
+*/
 }
 
 const CCRaysettings& RaysServerUtils::getSettings(void)

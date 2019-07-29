@@ -60,7 +60,9 @@ CRaptorRenderBufferDisplay::CRaptorRenderBufferDisplay(const CRaptorDisplayConfi
 CRaptorRenderBufferDisplay::~CRaptorRenderBufferDisplay()
 {
     //  Unbind, in case it is forgotten by the user.
-    glvkUnBindDisplay();
+    //glvkUnBindDisplay();
+	RAPTOR_HANDLE noDisplay(0, (void*)0);
+	glvkBindDisplay(noDisplay);
 
 	if (m_pAttachments != NULL)
 	{
@@ -71,6 +73,8 @@ CRaptorRenderBufferDisplay::~CRaptorRenderBufferDisplay()
 	}
 
 	glDestroyBuffer();
+
+	glvkUnBindDisplay();
 }
 
 void CRaptorRenderBufferDisplay::unLink(const CPersistence* obj)

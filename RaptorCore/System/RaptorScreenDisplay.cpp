@@ -77,6 +77,9 @@ CRaptorScreenDisplay::CRaptorScreenDisplay(const CRaptorDisplayConfig& pcs)
 
 CRaptorScreenDisplay::~CRaptorScreenDisplay()
 {
+	RAPTOR_HANDLE noDisplay(0, (void*)0);
+	glvkBindDisplay(noDisplay);
+
 	if (NULL != m_pGOldAllocator)
 		CGeometryAllocator::SetCurrentInstance(m_pGOldAllocator);
 	if (NULL != m_pGAllocator)
@@ -394,7 +397,7 @@ bool CRaptorScreenDisplay::glvkUnBindDisplay(void)
 
 	CRaptorDisplay::glvkUnBindDisplay();
 
-	RAPTOR_HANDLE device;
+	RAPTOR_HANDLE device(0, (void*)0);
 	CContextManager::GetInstance()->glMakeCurrentContext(device,m_context);
 
 	return true;

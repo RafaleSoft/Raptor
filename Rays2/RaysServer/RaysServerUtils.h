@@ -28,7 +28,10 @@ namespace raptor
 {
 	class CRaptorIO;
 };
-#include "../RaysSettings.h"
+
+#if !defined(AFX_RAYSSETTINGS_H__40662BB9_6FC8_40CA_A8A0_F2A701AD70BD__INCLUDED_)
+	#include "../RaysSettings.h"
+#endif
 
 
 namespace RaysServer
@@ -57,7 +60,7 @@ namespace RaysServer
 		//static RaysServerUtils::RAYS_CONFIG& getConfig(void);
 
 		//!	Returns the application Settings.
-		static const CCRaysettings& getSettings(void);
+		static const CRaysettings& getSettings(void);
 
 		//!	Returns the current logger.
 		static ILogger& getLog();
@@ -85,7 +88,7 @@ namespace RaysServer
 		ILogger *m_pLogger;
 
 		//! A global set of application settings.
-		CCRaysettings m_settings;
+		CRaysettings m_settings;
 	};
 }
 

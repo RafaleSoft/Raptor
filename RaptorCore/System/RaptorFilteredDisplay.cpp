@@ -144,6 +144,9 @@ CRaptorFilteredDisplay::CRaptorFilteredDisplay(const CRaptorDisplayConfig& pcs)
 
 CRaptorFilteredDisplay::~CRaptorFilteredDisplay()
 {
+	RAPTOR_HANDLE noDisplay(0, (void*)0);
+	glvkBindDisplay(noDisplay);
+
 	if (NULL != m_pDrawBuffer)
 	{
 		//delete m_pDrawBuffer;
@@ -154,6 +157,7 @@ CRaptorFilteredDisplay::~CRaptorFilteredDisplay()
 	{
 		m_pImageSet->unregisterDestruction(this);
 		delete m_pImageSet;
+		m_pImageSet = NULL;
 	}
 
 	if (NULL != m_pFSAADisplay)
@@ -162,6 +166,7 @@ CRaptorFilteredDisplay::~CRaptorFilteredDisplay()
 		if (m_bBufferBound)
 			m_pFSAADisplay->glvkUnBindDisplay();
 		Raptor::glDestroyDisplay(m_pFSAADisplay);
+		m_pFSAADisplay = NULL;
 	}
 
 	if (NULL != m_pDisplay)
@@ -170,6 +175,7 @@ CRaptorFilteredDisplay::~CRaptorFilteredDisplay()
 		if (m_bBufferBound)
 			m_pDisplay->glvkUnBindDisplay();
 		Raptor::glDestroyDisplay(m_pDisplay);
+		m_pDisplay = NULL;
 	}
 
     if (m_pFilters.size() > 0)
@@ -181,6 +187,8 @@ CRaptorFilteredDisplay::~CRaptorFilteredDisplay()
 			filter->releaseReference();
         }
     }
+
+	glvkUnBindDisplay();
 }
 
 void CRaptorFilteredDisplay::glReleaseResources(void)
@@ -448,7 +456,7 @@ bool CRaptorFilteredDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
             return false;
 
 		m_bBufferBound = true;
-		RAPTOR_HANDLE noDevice;
+		RAPTOR_HANDLE noDevice(0,(void*)0);
 
 		if (CRaptorDisplayConfig::ANTIALIAS_NONE != filter_cs.antialias)
 			return m_pFSAADisplay->glvkBindDisplay(noDevice);

@@ -371,7 +371,7 @@ CRaptorInstance* Raptor::glvkCreateInstance(const CRaptorConfig& config)
 	CATCH_GL_ERROR
 
 	//! Release context and return init state.
-	RAPTOR_HANDLE noDevice;
+	RAPTOR_HANDLE noDevice(0, (void*)0);
 	CContextManager::GetInstance()->glMakeCurrentContext(noDevice, 
 														 new_instance.defaultContext);
 
