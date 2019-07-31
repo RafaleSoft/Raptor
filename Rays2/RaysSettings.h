@@ -16,7 +16,7 @@ using std::string;
 using std::vector;
 
 
-class CCRaysettings
+class CRaysettings
 {
 public:
 	//! Defines a command line option
@@ -61,10 +61,10 @@ public:
 
 
 	//!	Constructor.
-	CCRaysettings(void);
+	CRaysettings(void);
 
 	//!	Destructor.
-	~CCRaysettings(void);
+	~CRaysettings(void);
 
 	//!	Add an option to request parsing.
 	//! @param name : the option name
@@ -88,7 +88,7 @@ private:
 
 
 template <class T>
-bool CCRaysettings::addSetting(const string &name, T defaultValue)
+bool CRaysettings::addSetting(const string &name, T defaultValue)
 {
 	bool exist = false;
 	for (unsigned int i = 0; !exist && i<m_settings.size(); i++)
@@ -105,7 +105,7 @@ bool CCRaysettings::addSetting(const string &name, T defaultValue)
 }
 
 template <class T>
-bool CCRaysettings::getValue(const string& settingsName, T& t) const
+bool CRaysettings::getValue(const string& settingsName, T& t) const
 {
 	for (unsigned int o = 0; o<m_settings.size(); o++)
 	{
@@ -123,7 +123,7 @@ bool CCRaysettings::getValue(const string& settingsName, T& t) const
 }
 
 template <>
-CCRaysettings::CSettingsOptionValue<const char*>::CSettingsOptionValue(	const string &name,
+CRaysettings::CSettingsOptionValue<const char*>::CSettingsOptionValue(const string &name,
 																		const char* defaultValue)
 	:CSettingsOption(name), m_value(NULL)
 {
@@ -132,28 +132,28 @@ CCRaysettings::CSettingsOptionValue<const char*>::CSettingsOptionValue(	const st
 }
 
 template <>
-CCRaysettings::CSettingsOptionValue<const char*>::~CSettingsOptionValue()
+CRaysettings::CSettingsOptionValue<const char*>::~CSettingsOptionValue()
 {
 	if (m_value != NULL)
 		free((void*)m_value);
 }
 
 template <>
-bool CCRaysettings::CSettingsOptionValue<uint32_t>::parse(const char* argv)
+bool CRaysettings::CSettingsOptionValue<uint32_t>::parse(const char* argv)
 {
 	m_value = atoi(argv);
 	return true;
 }
 
 template <>
-bool CCRaysettings::CSettingsOptionValue<uint16_t>::parse(const char* argv)
+bool CRaysettings::CSettingsOptionValue<uint16_t>::parse(const char* argv)
 {
 	m_value = (unsigned short)(0xffff & atoi(argv));
 	return true;
 }
 
 template <>
-bool CCRaysettings::CSettingsOptionValue<const char*>::parse(const char* argv)
+bool CRaysettings::CSettingsOptionValue<const char*>::parse(const char* argv)
 {
 	if (m_value != NULL)
 		free((void*)m_value);
@@ -165,14 +165,14 @@ bool CCRaysettings::CSettingsOptionValue<const char*>::parse(const char* argv)
 
 
 template <>
-bool CCRaysettings::CSettingsOptionValue<vector<uint32_t>>::parse(const char* argv)
+bool CRaysettings::CSettingsOptionValue<vector<uint32_t>>::parse(const char* argv)
 {
 	m_value.push_back((unsigned int)(0xffff & atoi(argv)));
 	return true;
 }
 
 template <>
-bool CCRaysettings::CSettingsOptionValue<vector<string>>::parse(const char* argv)
+bool CRaysettings::CSettingsOptionValue<vector<string>>::parse(const char* argv)
 {
 	if (argv != NULL)
 		m_value.push_back(string(argv));

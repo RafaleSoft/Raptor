@@ -23,7 +23,6 @@
 //////////////////////////////////////////////////////////////////////
 RAPTOR_NAMESPACE_BEGIN
 
-
 static CShaderProgram::CShaderProgramClassID shaderId;
 const CPersistence::CPersistenceClassID& CShaderProgram::CShaderProgramClassID::GetClassId(void)
 {

@@ -156,7 +156,9 @@ void HeatSpots::glRenderFilterOutput()
 
 	glActiveTextureARB(GL_TEXTURE0_ARB);
 	colorInput->glvkRender();
-    glDrawBuffer();
+	getIdentityShader()->glRender();
+	glDrawFilter();
+	getIdentityShader()->glStop();
 
     glPushAttrib(GL_ENABLE_BIT);
     glDisable(GL_LIGHTING);

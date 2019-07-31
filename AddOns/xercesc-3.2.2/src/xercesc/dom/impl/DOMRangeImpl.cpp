@@ -469,7 +469,7 @@ void DOMRangeImpl::selectNode(const DOMNode* refNode)
             DOMRangeException::INVALID_NODE_TYPE_ERR, 0, fMemoryManager);
     }
     //First check for the text type node
-    short type = refNode->getNodeType();
+	DOMNode::NodeType type = refNode->getNodeType();
     if((type == DOMNode::TEXT_NODE
         || type == DOMNode::CDATA_SECTION_NODE
         || type == DOMNode::COMMENT_NODE
@@ -512,7 +512,7 @@ void DOMRangeImpl::selectNodeContents(const DOMNode* node)
     fEndContainer = (DOMNode*) node;
 
     fStartOffset = 0;
-    short type = node->getNodeType();
+	DOMNode::NodeType type = node->getNodeType();
 
     if((type == DOMNode::TEXT_NODE
         || type == DOMNode::CDATA_SECTION_NODE
@@ -829,7 +829,7 @@ const XMLCh* DOMRangeImpl::toString() const
     DOMNode* stopNode = fEndContainer;
 
     XMLBuffer retStringBuf(1023, ((DOMDocumentImpl *)fDocument)->getMemoryManager());
-    short type = fStartContainer->getNodeType();
+	DOMNode::NodeType type = fStartContainer->getNodeType();
     if((type == DOMNode::TEXT_NODE
         || type == DOMNode::CDATA_SECTION_NODE
         || type == DOMNode::COMMENT_NODE
@@ -970,7 +970,7 @@ void DOMRangeImpl::release()
 bool DOMRangeImpl::isValidAncestorType(const DOMNode* node) const
 {
     for (DOMNode* aNode = (DOMNode*) node; aNode!=0; aNode = aNode->getParentNode()) {
-        short type = aNode->getNodeType();
+		DOMNode::NodeType type = aNode->getNodeType();
         if ( type == DOMNode::ENTITY_NODE
             || type == DOMNode::NOTATION_NODE
             || type == DOMNode::DOCUMENT_TYPE_NODE)
@@ -1085,7 +1085,7 @@ const DOMNode* DOMRangeImpl::commonAncestorOf(const DOMNode* pointA, const DOMNo
 
 void DOMRangeImpl::checkIndex(const DOMNode* node, XMLSize_t offset) const
 {
-    short type = node->getNodeType();
+	DOMNode::NodeType type = node->getNodeType();
 
     if((type == DOMNode::TEXT_NODE
         || type == DOMNode::CDATA_SECTION_NODE
@@ -1240,7 +1240,7 @@ DOMDocumentFragment* DOMRangeImpl::traverseSameContainer( int how )
     DOMNode* cloneCurrent = 0;
 
     // Text node needs special case handling
-    short type = fStartContainer->getNodeType();
+	DOMNode::NodeType type = fStartContainer->getNodeType();
     if((type == DOMNode::TEXT_NODE
         || type == DOMNode::CDATA_SECTION_NODE
         || type == DOMNode::COMMENT_NODE
@@ -1599,7 +1599,7 @@ DOMNode* DOMRangeImpl::traverseNode( DOMNode* n, bool isFullySelected, bool isLe
     if ( isFullySelected )
         return traverseFullySelected( n, how );
 
-    short type = n->getNodeType();
+	DOMNode::NodeType type = n->getNodeType();
 
     if((type == DOMNode::TEXT_NODE
         || type == DOMNode::CDATA_SECTION_NODE
@@ -1799,7 +1799,7 @@ DOMNode* DOMRangeImpl::traverseTextNode( DOMNode*n, bool isLeft, int how )
  */
 DOMNode* DOMRangeImpl::getSelectedNode( DOMNode*container, int offset )
 {
-    short type = container->getNodeType();
+	DOMNode::NodeType type = container->getNodeType();
     if((type == DOMNode::TEXT_NODE
         || type == DOMNode::CDATA_SECTION_NODE
         || type == DOMNode::COMMENT_NODE
@@ -1828,7 +1828,7 @@ void DOMRangeImpl::checkReadOnly(DOMNode* start, DOMNode* end,
     if ((start == 0) || (end == 0) ) return;
     DOMNode*sNode = 0;
 
-    short type = start->getNodeType();
+	DOMNode::NodeType type = start->getNodeType();
     if ( type == DOMNode::DOCUMENT_TYPE_NODE )
     {
         throw DOMException(
@@ -1927,7 +1927,7 @@ void DOMRangeImpl::receiveReplacedText(DOMNode* node)
 {
     if (node == 0) return;
 
-    short type = fStartContainer->getNodeType();
+	DOMNode::NodeType type = fStartContainer->getNodeType();
     if (node == fStartContainer
         && (type == DOMNode::TEXT_NODE
         || type == DOMNode::CDATA_SECTION_NODE
@@ -1956,7 +1956,7 @@ void DOMRangeImpl::updateRangeForDeletedText(DOMNode* node, XMLSize_t offset, XM
 {
     if (node == 0) return;
 
-    short type = fStartContainer->getNodeType();
+	DOMNode::NodeType type = fStartContainer->getNodeType();
     if (node == fStartContainer
         && (type == DOMNode::TEXT_NODE
         || type == DOMNode::CDATA_SECTION_NODE
@@ -1994,7 +1994,7 @@ void DOMRangeImpl::updateRangeForInsertedText(DOMNode* node, XMLSize_t offset, X
 {
     if (node == 0) return;
 
-    short type = fStartContainer->getNodeType();
+	DOMNode::NodeType type = fStartContainer->getNodeType();
     if (node == fStartContainer
         && (type == DOMNode::TEXT_NODE
         || type == DOMNode::CDATA_SECTION_NODE
@@ -2083,7 +2083,7 @@ void DOMRangeImpl::updateSplitInfo(DOMNode* oldNode, DOMNode* startNode, XMLSize
 {
     if (startNode == 0) return;
 
-    short type = fStartContainer->getNodeType();
+	DOMNode::NodeType type = fStartContainer->getNodeType();
     if (oldNode == fStartContainer
         && (type == DOMNode::TEXT_NODE
         || type == DOMNode::CDATA_SECTION_NODE

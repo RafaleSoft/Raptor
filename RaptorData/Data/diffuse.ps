@@ -1,6 +1,6 @@
 /***************************************************************************/
 /*                                                                         */
-/*  Raysettings.cpp                                                        */
+/*  diffuse.ps                                                             */
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
@@ -15,29 +15,14 @@
 /*                                                                         */
 /***************************************************************************/
 
+#version 440
 
-#if !defined(AFX_RAYSSETTINGS_H__40662BB9_6FC8_40CA_A8A0_F2A701AD70BD__INCLUDED_)
-	#include "RaysSettings.h"
-#endif
+uniform	sampler2D diffuseMap;
 
-CRaysettings::CRaysettings(void)
+layout(location = 1) in vec4 g_TexCoord;
+layout(location = 0) out vec4 o_Color;
+
+void main (void)
 {
-}
-
-CRaysettings::~CRaysettings(void)
-{
-	for (unsigned int i = 0; i<m_settings.size(); i++)
-		delete m_settings[i];
-}
-
-bool CRaysettings::setValue(const string& settingsName, const char* value)
-{
-	for (unsigned int o = 0; o<m_settings.size(); o++)
-	{
-		CSettingsOption* option = m_settings[o];
-		if (option->getName() == settingsName)
-			return option->parse(value);
-	}
-
-	return false;
+	o_Color = texture(diffuseMap,vec2(g_TexCoord.st));
 }

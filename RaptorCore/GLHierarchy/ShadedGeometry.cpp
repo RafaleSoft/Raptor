@@ -38,9 +38,6 @@
 
 RAPTOR_NAMESPACE
 
-//////////////////////////////////////////////////////////////////////
-// Construction/Destruction
-//////////////////////////////////////////////////////////////////////
 static CShadedGeometry::CShadedGeometryClassID shadedId;
 static CPersistentObjectType<CShadedGeometry> geometryFactory(shadedId);
 const CPersistence::CPersistenceClassID& CShadedGeometry::CShadedGeometryClassID::GetClassId(void)
@@ -48,6 +45,9 @@ const CPersistence::CPersistenceClassID& CShadedGeometry::CShadedGeometryClassID
 	return shadedId;
 }
 
+//////////////////////////////////////////////////////////////////////
+// Construction/Destruction
+//////////////////////////////////////////////////////////////////////
 CShadedGeometry::CShadedGeometry(const std::string& name)
 	:CGeometry(name,shadedId),
 	m_pShader(NULL),m_pAOShader(NULL),m_pOverride(NULL)

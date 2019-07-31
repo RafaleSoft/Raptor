@@ -26,13 +26,9 @@
 
 RAPTOR_NAMESPACE_BEGIN
 
-static CParticleManager::CParticleManagerClassID particleId;
-const CPersistence::CPersistenceClassID& CParticleManager::CParticleManagerClassID::GetClassId(void)
-{
-	return particleId;
-}
+IMPLEMENT_CLASS_ID(CParticleManager, particleId)
 
-static CPersistentType<CParticleManager> particleFactory(particleId);
+
 static map<std::string,CParticleManager::CParticleCompute*> m_ComputeModels;
 
 size_t	CParticleManager::avgParallelTasks = 0;

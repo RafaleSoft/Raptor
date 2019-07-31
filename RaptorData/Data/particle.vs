@@ -1,6 +1,6 @@
 /***************************************************************************/
 /*                                                                         */
-/*  Raysettings.cpp                                                        */
+/*  particle.vs                                                            */
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
@@ -15,29 +15,26 @@
 /*                                                                         */
 /***************************************************************************/
 
+#version 440 compatibility
 
-#if !defined(AFX_RAYSSETTINGS_H__40662BB9_6FC8_40CA_A8A0_F2A701AD70BD__INCLUDED_)
-	#include "RaysSettings.h"
-#endif
+uniform float fPointSize;
 
-CRaysettings::CRaysettings(void)
+layout(location = 0) in vec4 i_Position;
+layout(location = 1) in float i_Size;
+layout(location = 3) in vec4 i_Color;
+layout(location = 5) in float i_Angle;
+
+out float angle;
+out float size;
+out vec4 v_color;
+
+void main (void)
 {
+	vec4 pos = vec4(fPointSize * vec3(i_Position.xyz),1.0);
+	gl_Position =  gl_ModelViewProjectionMatrix * pos;
+	angle = i_Angle;
+	size = fPointSize * i_Size;
+	v_color = i_Color;
 }
 
-CRaysettings::~CRaysettings(void)
-{
-	for (unsigned int i = 0; i<m_settings.size(); i++)
-		delete m_settings[i];
-}
 
-bool CRaysettings::setValue(const string& settingsName, const char* value)
-{
-	for (unsigned int o = 0; o<m_settings.size(); o++)
-	{
-		CSettingsOption* option = m_settings[o];
-		if (option->getName() == settingsName)
-			return option->parse(value);
-	}
-
-	return false;
-}

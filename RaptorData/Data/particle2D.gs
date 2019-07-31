@@ -1,6 +1,6 @@
 /***************************************************************************/
 /*                                                                         */
-/*  Raysettings.cpp                                                        */
+/*  particle2D.gs                                                          */
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
@@ -15,29 +15,43 @@
 /*                                                                         */
 /***************************************************************************/
 
+#version 440
 
-#if !defined(AFX_RAYSSETTINGS_H__40662BB9_6FC8_40CA_A8A0_F2A701AD70BD__INCLUDED_)
-	#include "RaysSettings.h"
-#endif
+//	Expect the geometry shader extension to be available, warn if not. \n\
+#extension GL_ARB_geometry_shader4 : enable
 
-CRaysettings::CRaysettings(void)
+in float angle[];
+in float size[];
+in vec4 v_color[];
+
+layout(points) in;
+layout(triangle_strip, max_vertices=4) out;
+layout(location = 1) out vec4 g_TexCoord;
+out vec4 g_color;
+
+void main()
 {
-}
+	float cs = cos(angle[0]);
+	float ss = sin(angle[0]);
+	float Hx = 0.5 * size[0] * (cs - ss);
+	float Hy = 0.5 * size[0] * (cs + ss);
+	g_color = v_color[0];
 
-CRaysettings::~CRaysettings(void)
-{
-	for (unsigned int i = 0; i<m_settings.size(); i++)
-		delete m_settings[i];
-}
+	gl_Position = gl_in[0].gl_Position + vec4(-Hx, -Hy, 0.0, 0.0);
+	g_TexCoord = vec4(0.0,0.0,0.0,0.0);
+	EmitVertex();
 
-bool CRaysettings::setValue(const string& settingsName, const char* value)
-{
-	for (unsigned int o = 0; o<m_settings.size(); o++)
-	{
-		CSettingsOption* option = m_settings[o];
-		if (option->getName() == settingsName)
-			return option->parse(value);
-	}
+	gl_Position = gl_in[0].gl_Position + vec4(Hy,-Hx,0.0,0.0);
+	g_TexCoord = vec4(1.0,0.0,0.0,0.0);
+	EmitVertex();
 
-	return false;
+	gl_Position = gl_in[0].gl_Position + vec4(-Hy,Hx,0.0,0.0);
+	g_TexCoord = vec4(0.0,1.0,0.0,0.0);
+	EmitVertex();
+
+	gl_Position = gl_in[0].gl_Position + vec4(Hx,Hy,0.0,0.0);
+	g_TexCoord = vec4(1.0,1.0,0.0,0.0);
+	EmitVertex();
+
+	EndPrimitive();
 }

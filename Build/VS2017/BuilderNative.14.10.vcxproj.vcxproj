@@ -71,7 +71,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>BUILDERNATIVE_EXPORTS;WIN32;_DEBUG;_WINDOWS;_USRDLL;BUILDERNATIVE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -154,11 +154,6 @@
     <ClCompile Include="..\..\Builder\BuilderNative\BuilderNative.cpp" />
     <ClCompile Include="..\..\Builder\BuilderNative\dllmain.cpp" />
     <ClCompile Include="..\..\Builder\BuilderNative\GLBuilder.cpp" />
-    <ClCompile Include="..\..\Builder\BuilderNative\stdafx.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">Create</PrecompiledHeader>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\..\Builder\BuilderNative.rc">

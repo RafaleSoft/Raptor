@@ -101,6 +101,7 @@ const CPersistence::CPersistenceClassID& C3DSet::C3DSetClassID::GetClassId(void)
 	return setId;
 }
 
+
 C3DSet::C3DSet(const std::string& name)
     :CObject3D(setId,name),
     m_pRoot(NULL)

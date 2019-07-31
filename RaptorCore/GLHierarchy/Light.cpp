@@ -64,17 +64,12 @@
 
 RAPTOR_NAMESPACE
 
+IMPLEMENT_CLASS_ID(CLight, lightID)
+
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
-static CLight::CLightClassID lightID;
-static CPersistentType<CLight> lightFactory(lightID);
-const CPersistence::CPersistenceClassID& CLight::CLightClassID::GetClassId(void)
-{
-	return lightID;
-}
-
 CLight::CLight(const std::string& name)
 	:CMaterial(	CGL_NO_MATERIAL,CGL_NO_MATERIAL,CGL_NO_MATERIAL,
 				0.0, CGL_NO_MATERIAL, lightID, name),

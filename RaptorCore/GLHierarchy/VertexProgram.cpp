@@ -33,16 +33,15 @@
 #if !defined(AFX_OBJECTFACTORY_H__7F891C52_9E32_489C_B09C_5E5803522D91__INCLUDED_)
 	#include "ObjectFactory.h"
 #endif
+#if !defined(AFX_RAPTORINSTANCE_H__90219068_202B_46C2_BFF0_73C24D048903__INCLUDED_)
+	#include "Subsys/RaptorInstance.h"
+#endif
+
 
 RAPTOR_NAMESPACE
 
-bool CVertexProgram::m_bVertexProgramReady = false;
-static CVertexProgram::CVertexProgramClassID vertexId;
-static CPersistentType<CVertexProgram> shaderFactory(vertexId);
-const CPersistence::CPersistenceClassID& CVertexProgram::CVertexProgramClassID::GetClassId(void)
-{
-	return vertexId;
-}
+IMPLEMENT_CLASS_ID(CVertexProgram, vertexId)
+
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -70,7 +69,7 @@ CVertexProgram* CVertexProgram::glClone(void)
 CVertexProgram::~CVertexProgram()
 {
 #if defined(GL_ARB_vertex_shader)
-	if (!m_bVertexProgramReady)
+	if (!CRaptorInstance::GetInstance().m_bVertexProgramReady)
 	{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
         Raptor::GetErrorManager()->generateRaptorError(	CVertexProgram::CVertexProgramClassID::GetClassId(),
@@ -91,15 +90,15 @@ void CVertexProgram::glInitShaders()
 {
 	m_parameters.clear();
 
-	if (!m_bVertexProgramReady)
+	if (!CRaptorInstance::GetInstance().m_bVertexProgramReady)
 	{
 		if (Raptor::glIsExtensionSupported(GL_ARB_VERTEX_SHADER_EXTENSION_NAME))
 		{
 #if defined(GL_ARB_vertex_shader)
 			const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
-			m_bVertexProgramReady = (NULL != pExtensions->glCreateShaderObjectARB);
+			CRaptorInstance::GetInstance().m_bVertexProgramReady = (NULL != pExtensions->glCreateShaderObjectARB);
 #else
-			m_bVertexProgramReady = false;
+			CRaptorInstance::GetInstance().m_bVertexProgramReady = false;
 #endif
 		}
 		else
@@ -109,7 +108,7 @@ void CVertexProgram::glInitShaders()
 			arg.arg_sz = "GLSL vertex";
 			vector<CRaptorMessages::MessageArgument> args;
 			args.push_back(arg);
-			Raptor::GetErrorManager()->generateRaptorError(CShaderProgram::CShaderProgramClassID::GetClassId(),
+			Raptor::GetErrorManager()->generateRaptorError(CVertexProgram::CVertexProgramClassID::GetClassId(),
 														   CRaptorErrorManager::RAPTOR_WARNING,
 														   CRaptorMessages::ID_NO_GPU_PROGRAM,
 														   args);
@@ -124,7 +123,7 @@ bool CVertexProgram::glLoadProgram(const std::string &program)
 	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 
 #if defined(GL_ARB_vertex_shader)
-	if (m_bVertexProgramReady)
+	if (CRaptorInstance::GetInstance().m_bVertexProgramReady)
 	{
 		if (m_handle.handle() > 0)
 			pExtensions->glDeleteObjectARB(m_handle.handle());
@@ -173,8 +172,23 @@ bool CVertexProgram::glLoadProgram(const std::string &program)
 
 bool CVertexProgram::glBindProgram(RAPTOR_HANDLE program)
 {
-#if defined(GL_ARB_shader_objects)
 	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+
+#if defined(GL_ARB_vertex_shader)
+	GLint value = 0;
+	pExtensions->glGetObjectParameterivARB(m_handle.handle(), GL_OBJECT_SUBTYPE_ARB, &value);
+	if (value != GL_VERTEX_SHADER_ARB)
+	{
+		Raptor::GetErrorManager()->generateRaptorError(CVertexProgram::CVertexProgramClassID::GetClassId(),
+													   CRaptorErrorManager::RAPTOR_WARNING,
+													   "Vertex Program is invalid in this context");
+		
+		CATCH_GL_ERROR
+		return false;
+	}
+#endif
+
+#if defined(GL_ARB_shader_objects)
 	if (CUnifiedProgram::glBindProgram(program))
 	{
 		for (unsigned int idx = 0; idx < m_parameters.getNbParameters(); idx++)
@@ -199,7 +213,7 @@ bool CVertexProgram::glBindProgram(RAPTOR_HANDLE program)
 
 bool CVertexProgram::glGetProgramCaps(GL_VERTEX_PROGRAM_CAPS& caps)
 {
-	if (m_bVertexProgramReady)
+	if (CRaptorInstance::GetInstance().m_bVertexProgramReady)
 	{
 #if defined(GL_ARB_vertex_shader)
 		glGetIntegerv(GL_MAX_VERTEX_UNIFORM_COMPONENTS_ARB,&caps.max_vertex_uniform_components);
@@ -231,7 +245,7 @@ bool CVertexProgram::glGetProgramStatus(void)
 	if (m_handle.handle() == 0)
 		return false;
 
-	if (!m_bVertexProgramReady)
+	if (!CRaptorInstance::GetInstance().m_bVertexProgramReady)
 		return false;
 
 #if defined(GL_ARB_vertex_shader)

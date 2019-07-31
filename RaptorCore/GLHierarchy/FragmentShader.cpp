@@ -31,16 +31,15 @@
 #if !defined(AFX_OBJECTFACTORY_H__7F891C52_9E32_489C_B09C_5E5803522D91__INCLUDED_)
 	#include "ObjectFactory.h"
 #endif
+#if !defined(AFX_RAPTORINSTANCE_H__90219068_202B_46C2_BFF0_73C24D048903__INCLUDED_)
+	#include "Subsys/RaptorInstance.h"
+#endif
+
 
 RAPTOR_NAMESPACE
 
-bool CFragmentShader::m_bFragmentReady = false;
-static CFragmentShader::CFragmentShaderClassID fragmentId;
-static CPersistentType<CFragmentShader> shaderFactory(fragmentId);
-const CPersistence::CPersistenceClassID& CFragmentShader::CFragmentShaderClassID::GetClassId(void)
-{
-	return fragmentId;
-}
+IMPLEMENT_CLASS_ID(CFragmentShader, fragmentId)
+
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -69,7 +68,7 @@ CFragmentShader* CFragmentShader::glClone()
 CFragmentShader::~CFragmentShader()
 {
 #ifdef GL_ARB_fragment_program
-	if (m_bFragmentReady)
+	if (CRaptorInstance::GetInstance().m_bFragmentReady)
 	{
 		glStop();
 
@@ -94,14 +93,14 @@ void CFragmentShader::glInitShaders()
 
     CATCH_GL_ERROR
 
-	if (!m_bFragmentReady)
+	if (!CRaptorInstance::GetInstance().m_bFragmentReady)
 	{
 		if (Raptor::glIsExtensionSupported(GL_ARB_FRAGMENT_PROGRAM_EXTENSION_NAME))
 		{
 #if defined(GL_ARB_fragment_program)
-			m_bFragmentReady = pExtensions->glIsProgramARB != NULL;
+			CRaptorInstance::GetInstance().m_bFragmentReady = pExtensions->glIsProgramARB != NULL;
 #else
-			m_bFragmentReady = false;
+			CRaptorInstance::GetInstance().m_bFragmentReady = false;
 #endif
 		}
 		else
@@ -124,7 +123,7 @@ void CFragmentShader::glInitShaders()
 bool CFragmentShader::glGetProgramCaps(GL_FRAGMENT_SHADER_CAPS& caps)
 {
 #ifdef GL_ARB_fragment_program
-	if (m_bFragmentReady)
+	if (CRaptorInstance::GetInstance().m_bFragmentReady)
 	{
 		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 
@@ -164,7 +163,7 @@ void CFragmentShader::glRender(void)
 		return;
 
 #ifdef GL_ARB_fragment_program
-	if (m_bFragmentReady)
+	if (CRaptorInstance::GetInstance().m_bFragmentReady)
 	{
 		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 		if (pExtensions->glIsProgramARB(m_handle.handle()))
@@ -205,7 +204,7 @@ bool CFragmentShader::glLoadProgram(const std::string &program)
 	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 
 #ifdef GL_ARB_fragment_program
-	if (m_bFragmentReady)
+	if (CRaptorInstance::GetInstance().m_bFragmentReady)
 	{
         //!    In case of a previous error, we need to initialize error checking
         //!    to be sure that the error detected will only be due to shader loading.
@@ -278,7 +277,7 @@ std::string CFragmentShader::glGetProgramString(void)
 	if (m_handle.handle() == 0)
 		return "";
 
-	if (!m_bFragmentReady)
+	if (!CRaptorInstance::GetInstance().m_bFragmentReady)
 		return "";
 
 #if defined(GL_ARB_vertex_program)
@@ -307,7 +306,7 @@ bool CFragmentShader::glGetProgramStatus(void)
 	if (m_handle.handle() == 0)
 		return false;
 
-	if (!m_bFragmentReady)
+	if (!CRaptorInstance::GetInstance().m_bFragmentReady)
 		return false;
 
 #if defined(GL_ARB_fragment_program)
@@ -392,7 +391,7 @@ const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 void CFragmentShader::glProgramParameter(unsigned int numParam,const GL_COORD_VERTEX &v) const
 {
 #if defined(GL_ARB_fragment_program)
-	if (m_bFragmentReady)
+	if (CRaptorInstance::GetInstance().m_bFragmentReady)
 	{
 		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 		pExtensions->glProgramLocalParameter4fvARB(GL_FRAGMENT_PROGRAM_ARB, numParam, v);
@@ -405,7 +404,7 @@ void CFragmentShader::glProgramParameter(unsigned int numParam,const GL_COORD_VE
 void CFragmentShader::glProgramParameter(unsigned int numParam,const CColor::RGBA &v) const
 {
 #if defined(GL_ARB_fragment_program)
-	if (m_bFragmentReady)
+	if (CRaptorInstance::GetInstance().m_bFragmentReady)
 	{
 		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 		pExtensions->glProgramLocalParameter4fvARB(GL_FRAGMENT_PROGRAM_ARB, numParam, v);
