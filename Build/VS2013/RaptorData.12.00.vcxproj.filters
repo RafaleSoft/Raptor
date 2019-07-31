@@ -141,6 +141,21 @@
     <None Include="..\..\RaptorData\Data\tquad.vs">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="..\..\RaptorData\Data\diffuse.ps">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\RaptorData\Data\particle.vs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\RaptorData\Data\particle2D.gs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\RaptorData\Data\particle3D.gs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\RaptorData\Data\particle3D.ps">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\RaptorData\RaptorDataManager.cpp">

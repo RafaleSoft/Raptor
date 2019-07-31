@@ -48,6 +48,13 @@ class CRaptorIO;
 		static const CPersistenceClassID& GetClassId(void);\
 	};\
 
+#define IMPLEMENT_CLASS_ID(className, factory) \
+	static className::className##ClassID factory; \
+	static CPersistentType<className> classFactory(factory); \
+	const CPersistence::CPersistenceClassID& className::className##ClassID::GetClassId(void) \
+	{ return factory; }
+
+
 
 //!		This class is not intended to work standalone
 //!		because it is the root af any Raptor

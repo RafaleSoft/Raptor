@@ -20,8 +20,8 @@ RAPTOR_NAMESPACE
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
-COpenGLViewPoint::COpenGLViewPoint(const std::string& name) :
-	IViewPoint(name)
+COpenGLViewPoint::COpenGLViewPoint(const std::string& name)
+	:IViewPoint(name)
 {
 }
 
@@ -32,10 +32,11 @@ COpenGLViewPoint::~COpenGLViewPoint()
 
 void COpenGLViewPoint::glvkRender(void)
 {
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
+	recomputeTransform();
 
-	glScalef(Scale.X(),Scale.Y(),Scale.Z());
+	glMatrixMode(GL_MODELVIEW);
+	
+	glLoadMatrixf(Transform.matrix());
 
 	glRotatef(m_lfGamma,0.0f,0.0f,1.0f);
 	glRotatef(-m_lfBeta,1.0f,0.0f,0.0f);
@@ -51,15 +52,12 @@ void COpenGLViewPoint::glvkRender(void)
 void COpenGLViewPoint::glvkRenderViewPointModel(void)
 {
 	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
 
 	CGenericMatrix<float, 4> frustum;
 	getTransposeFrustum(frustum);
-	glMultMatrixf(frustum.matrix());
+	glLoadMatrixf(frustum.matrix());
 
 	glMatrixMode(GL_MODELVIEW);
-
-	//glConfigureEngine(this);
 
 	CATCH_GL_ERROR
 }

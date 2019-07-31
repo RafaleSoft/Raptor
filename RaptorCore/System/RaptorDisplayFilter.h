@@ -168,13 +168,13 @@ protected:
 	//!	Must be implemented by filters implementation.
 	virtual void glRenderFilterOutput(void) = 0;
 
-    //! Call this method to render the buffer as a full quad covering the entire buffer surface.
-    //! User can draw the filter any other way, this method is only a helper
-    void glDrawBuffer(void);
-
 	//! Call this method to render the buffer as a full quad covering the entire buffer surface.
 	//! User can draw the filter any other way, this method is only a helper
-	void glDrawFilter(void);
+	void glDrawFilter(void) const;
+
+	//!	Provides the common identity shader.
+	CShader	*getIdentityShader(void) const;
+
 
     //! Enable state of this filter
     bool			m_bEnabled;
@@ -185,11 +185,7 @@ protected:
     float   m_fXfactor;
     float   m_fYfactor;
 
-    RAPTOR_HANDLE	drawBuffer;
-    
-    CShader     *pFilter;
-
-	CRaptorDisplayFilter	*m_pPreviousFilter;
+    CRaptorDisplayFilter	*m_pPreviousFilter;
 
     ITextureGenerator	*colorExternalSource;
     ITextureGenerator	*depthExternalSource;
@@ -204,11 +200,10 @@ protected:
 	CTextureSet			*m_pRenderTextures;
 	CTextureSet			*m_pOutputTextures;
 
+
 private:
     CRaptorDisplayFilter(const CRaptorDisplayFilter& ) {};
     CRaptorDisplayFilter& operator=(const CRaptorDisplayFilter& ) { return *this; };
-
-	static GL_COORD_VERTEX	*s_attributes;
 };
 
 RAPTOR_NAMESPACE_END

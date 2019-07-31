@@ -120,23 +120,23 @@ typedef struct {
 /*
  * Load any state that may be changed during decoding.
  */
-#define	CACHE_STATE(tif, sp) do {					\
+#define	CACHE_STATE(tif, sp) {					\
     BitAcc = sp->data;							\
     BitsAvail = sp->bit;						\
     EOLcnt = sp->EOLcnt;						\
     cp = (unsigned char*) tif->tif_rawcp;				\
     ep = cp + tif->tif_rawcc;						\
-} while (0)
+}
 /*
  * Save state possibly changed during decoding.
  */
-#define	UNCACHE_STATE(tif, sp) do {					\
+#define	UNCACHE_STATE(tif, sp) {					\
     sp->bit = BitsAvail;						\
     sp->data = BitAcc;							\
     sp->EOLcnt = EOLcnt;						\
     tif->tif_rawcc -= (tmsize_t)((uint8*) cp - tif->tif_rawcp);		\
     tif->tif_rawcp = (uint8*) cp;					\
-} while (0)
+}
 
 /*
  * Setup state for decoding a strip.

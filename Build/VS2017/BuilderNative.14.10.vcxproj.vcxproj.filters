@@ -7,9 +7,6 @@
     <ClCompile Include="..\..\Builder\BuilderNative\dllmain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Builder\BuilderNative\stdafx.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Builder\BuilderNative\GLBuilder.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

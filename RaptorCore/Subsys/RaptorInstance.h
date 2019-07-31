@@ -25,9 +25,6 @@
 
 #include "Subsys/CodeGeneration.h"
 
-#if !defined(AFX_IMAGE_H__F545D0D5_5F10_4EFA_BE3B_3F3D34D4DBF3__INCLUDED_)
-	//#include "System/Image.h"
-#endif
 #if !defined(AFX_RAPTORCONFIG_H__29B753B8_17DE_44DF_A4D2_9D19C5AC53D5__INCLUDED_)
 	#include "System/RaptorConfig.h"
 #endif
@@ -51,6 +48,7 @@ class CRaptorErrorManager;
 class CRaptorDisplay;
 class CRenderEntryPoint;
 class CRaptorConsole;
+class CShader;
 
 
 class CRaptorInstance
@@ -101,13 +99,33 @@ public:
 	RAPTOR_HANDLE			defaultWindow;
 	//!	The default context for the default dispplay.
 	long					defaultContext;
-	//! The set of all Raptor displays.
+	
+	//! The set of all Raptor displays for this instance.
 	std::vector<CRaptorDisplay*>	displays;
 	//!	Raptor Console interactors.
 	std::vector<CRaptorConsole::CInputCollectorBase*>	inputCollectors;
 	//!	The full list of persistence objects active in this instance.
 	MapStringToPtr	objects;
+	//! Fragment Program state.
+	bool m_bFragmentProgramReady;
+	//! Vertex Program state.
+	bool m_bVertexProgramReady;
+	//! Geometry Program state.
+	bool m_bGeometryProgramReady;
+	//!	Vertex Shader state
+	bool m_bVertexReady;
+	//!	Fragment Shader state
+	bool m_bFragmentReady;
 
+#if defined(GL_COMPATIBILITY_profile)
+	//!	Full screen quad rendering display list
+	RAPTOR_HANDLE	m_drawBuffer;
+#else
+	//!	Center vertex attributes for full screen rendering (0,0,0,0).
+	GL_COORD_VERTEX	*m_pAttributes;
+	//!	Identity shader for full screen quad texture mapping.
+	CShader	*m_pIdentity;
+#endif
 
 	//! Stores Display attributes for delayed creation.
 	//! The physical display creation is delegated to the underlying API, 
@@ -123,7 +141,9 @@ public:
 	//! Delete Raptor status and any allocated resource.
 	bool	destroy(void);
 
-	
+	//!	Initialise base shaders for this instance.
+	bool glInitShaders(void);
+
 
 private:
 	//! Constructor.

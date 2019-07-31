@@ -228,43 +228,9 @@ bool RaysServerUtils::saveConfig(void)
 	}
 	else
 		return false;
-	/*
-		AppSettingsSection^ settings = conf->AppSettings;
-		KeyValueConfigurationElement^ item = settings->Settings["port"];
-		if (nullptr != item)
-			item->Value = rays_config->port.ToString();
-		else
-			settings->Settings->Add("port",rays_config->port.ToString());
-
-		item = settings->Settings["host"];
-		if (nullptr != item)
-			item->Value = rays_config->host;
-		else
-			settings->Settings->Add("host",rays_config->host);
-
-		item = settings->Settings["wu_priority"];
-		if (nullptr != item)
-			item->Value = rays_config->wu_priority.ToString();
-		else
-			settings->Settings->Add("wu_priority",rays_config->wu_priority.ToString());
-
-		item = settings->Settings["deamon_delay"];
-		if (nullptr != item)
-			item->Value = rays_config->deamon_delay.ToString();
-		else
-			settings->Settings->Add("deamon_delay",rays_config->deamon_delay.ToString());
-
-		item = settings->Settings["nb_wu_per_job"];
-		if (nullptr != item)
-			item->Value = rays_config->nb_wu_per_job.ToString();
-		else
-			settings->Settings->Add("nb_wu_per_job",rays_config->nb_wu_per_job.ToString());
-
-		conf->Save(ConfigurationSaveMode::Modified);
-*/
 }
 
-const CCRaysettings& RaysServerUtils::getSettings(void)
+const CRaysettings& RaysServerUtils::getSettings(void)
 {
 	return getUtils().m_settings;
 }

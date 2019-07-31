@@ -71,7 +71,7 @@ typedef struct
 	const char *shader_fname;
 	const char *class_name;
 } factory_shader;
-static const size_t NB_FACTORY_SHADERS = 26;
+static const size_t NB_FACTORY_SHADERS = 31;
 static factory_shader fsh[NB_FACTORY_SHADERS] = {	{ "BUMP_TEX_SHADER", "bump.fp", "FragmentShader" },
 													{ "EMBM_TEX_SHADER", "embm.fp", "FragmentShader" },
 													{ "BUMP_VTX_SHADER", "bump.vp", "VertexShader" },
@@ -97,7 +97,12 @@ static factory_shader fsh[NB_FACTORY_SHADERS] = {	{ "BUMP_TEX_SHADER", "bump.fp"
 													{ "BLENDER_8X_TEX_PROGRAM", "blenderX_8x.ps", "FragmentProgram" },
 													{ "BLENDER_8Y_TEX_PROGRAM", "blenderY_8x.ps", "FragmentProgram" },
 													{ "EMPTY_PROGRAM", "empty.vs", "VertexProgram" },
-													{ "FULL_SCREEN_GEO_PROGRAM", "blender_8x.gs", "GeometryProgram" } };
+													{ "DIFFUSE_PROGRAM", "diffuse.ps", "FragmentProgram" },
+													{ "FULL_SCREEN_GEO_PROGRAM", "blender_8x.gs", "GeometryProgram" },
+													{ "PARTICLE_VTX_PROGRAM", "particle.vs", "VertexProgram" },
+													{ "PARTICLE2D_GEO_PROGRAM", "particle2D.gs", "GeometryProgram" }, 
+													{ "PARTICLE3D_GEO_PROGRAM", "particle3D.gs", "GeometryProgram" },
+													{ "PARTICLE3D_TEX_PROGRAM", "particle3D.ps", "FragmentProgram" }, };
 
 static map<std::string, factory_shader>	s_factoryShaders;
 
@@ -232,6 +237,17 @@ bool CShaderLibrary::glLoadShadersFromDataPackage()
 				program = static_cast<CShaderProgram*>(persistence);
 				if (program->glLoadProgramFromFile(shader_path))
 					s_factoryShaders.insert(map<std::string, factory_shader>::value_type(fs.shader_name, fs));
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+				std::string msg = "ShaderLibrary loaded shader type ";
+				msg += fs.class_name;
+				msg += " from file ";
+				msg += shader_path;
+				msg += " named ";
+				msg += fs.shader_name;
+				Raptor::GetErrorManager()->generateRaptorError(CShader::CShaderClassID::GetClassId(),
+															   CRaptorErrorManager::RAPTOR_NO_ERROR,
+															   msg);
+#endif
 			}
 		}
 	}

@@ -55,12 +55,8 @@
 
 RAPTOR_NAMESPACE
 
-static CTextureFactory::CTextureFactoryClassID factoryId;
-static CPersistentType<CTextureFactory> textureFactory(factoryId);
-const CPersistence::CPersistenceClassID& CTextureFactory::CTextureFactoryClassID::GetClassId(void)
-{
-	return factoryId;
-}
+IMPLEMENT_CLASS_ID(CTextureFactory, factoryId)
+
 
 CTextureFactory *CTextureFactory::m_pDefault = NULL;
 

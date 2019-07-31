@@ -69,8 +69,6 @@ public:
 		CTextureUnitSetup *tmu = s->glGetTextureUnitsSetup();
 		tmu->setDiffuseMap(output);
 		tmu->glBuildSetup();
-
-		glRenderFilter();
 	};
 
 	virtual ~Foreground() {};

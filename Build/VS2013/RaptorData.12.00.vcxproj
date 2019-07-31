@@ -418,12 +418,17 @@ copy $(SolutionDir)$(ProjectName)\RaptorData.pck "%RAPTOR_ROOT%\Redist\bin\"
     <None Include="..\..\RaptorData\Data\bump_att_2light.vp" />
     <None Include="..\..\RaptorData\Data\bump_att_3light.fp" />
     <None Include="..\..\RaptorData\Data\bump_att_3light.vp" />
+    <None Include="..\..\RaptorData\Data\diffuse.ps" />
     <None Include="..\..\RaptorData\Data\embm.fp" />
     <None Include="..\..\RaptorData\Data\embm.vp" />
     <None Include="..\..\RaptorData\Data\embm_0light.fp" />
     <None Include="..\..\RaptorData\Data\embm_0light.vp" />
     <None Include="..\..\RaptorData\Data\embm_std.vp" />
     <None Include="..\..\RaptorData\Data\empty.vs" />
+    <None Include="..\..\RaptorData\Data\particle.vs" />
+    <None Include="..\..\RaptorData\Data\particle2D.gs" />
+    <None Include="..\..\RaptorData\Data\particle3D.gs" />
+    <None Include="..\..\RaptorData\Data\particle3D.ps" />
     <None Include="..\..\RaptorData\Data\phong.ps" />
     <None Include="..\..\RaptorData\Data\phong.vs" />
     <None Include="..\..\RaptorData\Data\projection.fp" />

@@ -84,7 +84,7 @@ public:
     //! linking and validation. Checking is performed on the handle to accept only valid programs.
     //! CShader use this method only when necessary
     //! @return : true if binding is done without errors, false otherwise.
-    bool glBindProgram(RAPTOR_HANDLE program);
+    virtual bool glBindProgram(RAPTOR_HANDLE program);
 
 	//!	Implements CPersistence
 	DECLARE_CLASS_ID(CVertexProgramClassID,"VertexProgram",CShaderProgram)
@@ -99,8 +99,6 @@ private:
 
     //! Specific init of shader parameters
     virtual void	glInitShaders();
-
-	static bool		m_bVertexProgramReady;
 };
 
 RAPTOR_NAMESPACE_END

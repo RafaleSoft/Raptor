@@ -104,7 +104,7 @@ bool RaysServer::CRaysServerApp::Start(const std::string &addrStr, uint16_t port
 	bool res = m_pTransport->startServer(addrStr, port);
 	if (NULL != getDeamonManager())
 	{
-		const CCRaysettings &settings = RaysServerUtils::getSettings();
+		const CRaysettings &settings = RaysServerUtils::getSettings();
 		uint32_t delay = 0;
 		if (settings.getValue("deamon_delay", delay))
 			getDeamonManager()->setPollingDelay(delay);

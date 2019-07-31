@@ -51,36 +51,6 @@
 
 
 #if defined(GL_ARB_geometry_shader4)
-	static const std::string colorcontrol_gp =
-	"#version 440\n\
-	\n\
-	//	Expect the geometry shader extension to be available, warn if not. \n\
-	#extension GL_ARB_geometry_shader4 : enable \n\
-	\n\
-	layout(points) in; \n\
-	layout(triangle_strip, max_vertices=4) out; \n\
-	layout(location = 1) out vec4 g_TexCoord; \n\
-	\n\
-	void main() \n\
-	{\n\
-		gl_Position = vec4(-1.0, -1.0, 0.0, 1.0); \n\
-		g_TexCoord = vec4(0.0,0.0,0.0,0.0); \n\
-		EmitVertex(); \n\
-		\n\
-		gl_Position = vec4(1.0, -1.0, 0.0, 1.0); \n\
-		g_TexCoord = vec4(1.0,0.0,0.0,0.0); \n\
-		EmitVertex(); \n\
-		\n\
-		gl_Position = vec4(-1.0, 1.0, 0.0, 1.0); \n\
-		g_TexCoord = vec4(0.0, 1.0, 0.0, 0.0); \n\
-		EmitVertex(); \n\
-		\n\
-		gl_Position = vec4(1.0, 1.0, 0.0, 1.0); \n\
-		g_TexCoord = vec4(1.0, 1.0, 0.0, 0.0); \n\
-		EmitVertex(); \n\
-		\n\
-		EndPrimitive(); \n\
-	}";
 	static const string colorcontrol_fp =
 	"#version 440 			\n\
 	\n\
@@ -227,12 +197,10 @@ bool CColorControlFilter::glInitFilter(void)
 
 	bool res = false;
 #if defined(GL_ARB_geometry_shader4)
-	CVertexProgram *vp = BWShader->glGetVertexProgram("EMPTY_PROGRAM");
-	CGeometryProgram *gp = BWShader->glGetGeometryProgram("bw_gp");
-	res = gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
-	res = res & gp->glLoadProgram(colorcontrol_gp);
+	BWShader->glGetVertexProgram("EMPTY_PROGRAM");
+	BWShader->glGetGeometryProgram("FULL_SCREEN_GEO_PROGRAM");
 	CFragmentProgram *ps = BWShader->glGetFragmentProgram("bw_fp");
-	res = res && ps->glLoadProgram(colorcontrol_fp);
+	res = ps->glLoadProgram(colorcontrol_fp);
 	res = res && BWShader->glCompileShader();
 	fp_params.addParameter("source", CTextureUnitSetup::IMAGE_UNIT_0);
 #elif defined(GL_ARB_vertex_shader)
