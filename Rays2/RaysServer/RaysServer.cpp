@@ -96,29 +96,34 @@ bool RaysServer::CRaysServerApp::Start(const std::string &addrStr, uint16_t port
 
 	if (NULL == m_pDeamonManager)
 		m_pDeamonManager = new CDeamonManager(m_pTransport);
-	if (m_pDeamonManager->getNbDeamons() > 0)
-		RaysServerUtils::getLog().Log("Server initialized.");
-	else
-		RaysServerUtils::getLog().Log("Server not ready, no Work Units registered !");
-
+	
 	bool res = m_pTransport->startServer(addrStr, port);
-	if (NULL != getDeamonManager())
+	
+	const CRaysettings &settings = RaysServerUtils::getSettings();
+	uint32_t delay = 0;
+	if (settings.getValue("deamon_delay", delay))
+		m_pDeamonManager->setPollingDelay(delay);
+	
+	std::vector<std::string> ips;
+	if (settings.getValue("deamon", ips))
 	{
-		const CRaysettings &settings = RaysServerUtils::getSettings();
-		uint32_t delay = 0;
-		if (settings.getValue("deamon_delay", delay))
-			getDeamonManager()->setPollingDelay(delay);
+		for (size_t i = 0; i < ips.size(); i++)
+			res = res && m_pDeamonManager->registerDeamon(ips[i]);
 	}
 
-	return true;
+	if (m_pDeamonManager->getNbDeamons() == ips.size())
+		RaysServerUtils::getLog().Log("Server initialized.");
+	else
+		RaysServerUtils::getLog().Log("Server not ready, some Work Units are not registered !");
+
+	return res;
 }
 
 int main(int argc, char* argv[])
 {
-	unsigned long v = Raptor::GetVersion();
 	stringstream title;
 	title << "Raptor Rays Server ";
-	title << ((v >> 24) & 0xFF) << "." << ((v >> 16) & 0xFF) << "." << ((v >> 8) & 0xFF);
+	title << RAPTOR_VERSION_STR;
 	title << " Release test";
 
 	RaysServer::CRaysServerApp *pApp = new RaysServer::CRaysServerApp();

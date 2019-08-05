@@ -98,6 +98,7 @@ RaysServerUtils::RaysServerUtils()
 	m_settings.addSetting<uint32_t>("deamon_delay", (uint32_t)10);
 	m_settings.addSetting<uint32_t>("nb_wu_per_job", (uint32_t)1);
 	m_settings.addSetting<string>("host", string("127.0.0.1"));
+	m_settings.addSetting<vector<string>>("deamon", vector<string>());
 }
 
 RaysServerUtils::~RaysServerUtils()
@@ -127,6 +128,7 @@ RaysServerUtils::ILogger* RaysServerUtils::setLog(ILogger* pLogger)
 
 bool RaysServerUtils::importSettings(raptor::CRaptorIO *conf)
 {
+	size_t nb_deamon = 0;
 	string value;
 	string name;
 
@@ -145,15 +147,9 @@ bool RaysServerUtils::importSettings(raptor::CRaptorIO *conf)
 			*conf >> name;
 		else if ("value" == data)
 			*conf >> value;
-		else if ("wu_priority" == data)
-			*conf >> value;
-		else if ("deamon_delay" == data)
-			*conf >> value;
-		else if ("nb_wu_per_job" == data)
-			*conf >> value;
 		else
 			*conf >> data;
-
+		
 		if (!value.empty() && !name.empty())
 		{
 			m_settings.setValue(name, value.c_str());

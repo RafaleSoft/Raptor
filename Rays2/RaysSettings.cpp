@@ -30,7 +30,7 @@ CRaysettings::~CRaysettings(void)
 		delete m_settings[i];
 }
 
-bool CRaysettings::setValue(const string& settingsName, const char* value)
+bool CRaysettings::setValue(const std::string& settingsName, const char* value)
 {
 	for (unsigned int o = 0; o<m_settings.size(); o++)
 	{
