@@ -1,7 +1,21 @@
-// RaysDeamon.cpp : Defines the class behaviors for the application.
-//
+/***************************************************************************/
+/*                                                                         */
+/*  RaysDeamon.cpp                                                         */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
 
-#include "stdafx.h"
+
 #include "Subsys/CodeGeneration.h"
 
 #if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
@@ -61,28 +75,29 @@ BOOL CtrlHandler(DWORD fdwCtrlType)
 int main(int argc, char* argv[])
 {
 	std::cout << std::endl;
-	std::cout << "        Rays Deamon.        " << std::endl;
-	std::cout << "----------------------------" << std::endl;
+	std::cout << "        Raptor Rays Deamon.        " << std::endl;
+	std::cout << "        version: " << RAPTOR_VERSION_STR << std::endl;
+	std::cout << "-----------------------------------" << std::endl;
 	std::cout << std::endl;
 
-#ifdef WIN32
-	if (!Network::initSocketLayer())
-		return 1;
-#endif
-
+	
 	CCmdLineParser parser;
-	parser.addOption("port","p",(unsigned short)2048);
-	parser.addOption("width","w",(unsigned short)256);
-	parser.addOption("height","h",(unsigned short)256);
-	parser.addOption("host_addr","a","127.0.0.1");
-
 	vector<string> wus;
 	vector<unsigned int> cpus;
-	parser.addOption("work_unit","u",wus);
+	parser.addOption("port", "p", (uint16_t)2049);
+	parser.addOption("host_addr", "a", std::string("127.0.0.1"));
+	parser.addOption("config_file", "f", std::string("RaysDeamon.config"));
+	parser.addOption("work_unit","w",wus);
 	parser.addOption("cpu","c",cpus);
 	if (!parser.parse(argc,argv))
 	{
 		std::cout << "Deamon failed to parse command line. Exiting, bye!" << std::endl;
+		return -1;
+	}
+
+	if (!Network::initSocketLayer())
+	{
+		std::cout << "Network layer not initialized properly.  Exiting, bye!" << std::endl;
 		return -1;
 	}
 
@@ -99,7 +114,7 @@ int main(int argc, char* argv[])
 
 		while (!p_Server->doExit())
 			Sleep(500);
-		bool res = (p_Server->stopServer() ? 1 : 0);
+		int res = (p_Server->stopServer() ? 1 : 0);
 		delete p_Server;
 
 		std::cout << "Rays Deamon exiting with code " << res << ". Bye!" << std::endl;
@@ -383,7 +398,7 @@ bool CRaysDeamon::start(const CCmdLineParser& cmdline )
 		return false;
 	}
 
-	char* addrStr = "127.0.0.1";
+	std::string addrStr = "127.0.0.1";
 	unsigned short port = 2048;
 	cmdline.getValue("port",port);
 	cmdline.getValue("host_addr",addrStr);

@@ -91,11 +91,18 @@ namespace RaysServer
 
 		bool Start(const std::string &addrStr, uint16_t port);
 		bool Quit(void);
-		CDeamonManager* getDeamonManager(void) const { return m_pDeamonManager; };
+
+		//!	Returns application deamon manager.
+		//CDeamonManager* getDeamonManager(void) const { return m_pDeamonManager; };
+		
+		//!	Request Server stop.
+		void requestExit() { m_bExit = true; };
+
+		//!	Return Server status.
+		bool doExit(void) const { return m_bExit; };
 
 		// Implementation
 		void DisconnectDeamon(const std::string &sname, unsigned int port);
-
 		void WriteMessage(UINT id, const std::string &msg);
 		void ManageMsg(MSGSTRUCT& msg, unsigned char raw_data[]);
 
@@ -129,14 +136,13 @@ namespace RaysServer
 		unsigned char				m_nbWUperJOB;
 		int32_t						m_wUnitPriority;
 		uint32_t					m_deamonDelay;
-		CServer<CServerSocket, CClientSocket>	*m_Server;
-		unsigned char				m_nbProcs;
 		LARGE_INTEGER				m_baseFrequency;
-
+		bool						m_started;			//! Flag for server start & stop status.
+		bool						m_bExit;			//!	Flag for server start & stop requests.
 		CRaptorMutex				processLock;
 
+
 		int32_t		m_counter;			//! counter for unique job IDs
-		bool		m_started;			//! Flag for server start & stop requests.
 		std::vector<job_struct*>	m_pFinishedJobs;	//! array of all finished jobs for further query	
 		float		m_globalJobDone;	//!	Percentage of overall work performed.
 

@@ -21,13 +21,13 @@
     <ClCompile Include="..\..\Rays2\RaysServer\RaysServer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Rays2\RaysServer\RaysServerUtils.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Rays2\RaysServer\ServerTransport.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Rays2\RaysSettings.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Rays2\RaysUtils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -38,12 +38,6 @@
     <ClInclude Include="..\..\Rays2\Messages.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Rays2\RaysServer\RaysServerDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Rays2\RaysServer\RaysServerUtils.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Rays2\RaysServer\ServerTransport.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -51,6 +45,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Rays2\RaysSettings.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Rays2\RaysUtils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Rays2\StdAfx.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
