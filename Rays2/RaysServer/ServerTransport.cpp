@@ -21,9 +21,12 @@
 #if !defined(AFX_SERVERTRANSPORT_H__AC7E8C33_37A1_4BE2_8B73_B463DA99E328__INCLUDED_)
     #include "ServerTransport.h"
 #endif
+#if !defined(AFX_RAYSUTILS_H__1CC878E3_B301_4A19_8211_F3B5977D3781__INCLUDED_)
+	#include "../RaysUtils.h"
+#endif
 
-#include "RaysServerUtils.h"
 using namespace RaysServer;
+
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -107,14 +110,7 @@ bool CServerTransport::handleReply(request_handler_t::request_id id, const void 
 
 bool CServerTransport::stopServer(void)
 {
-	//CRaptorInstance *pHandler = CRaptorInstance::GetInstance();
-	
-	if (true) //pHandler->stop())
-	{
-		return CServer<CServerSocket,CClientSocket>::stopServer();
-	}
-	else
-		return false;
+	return CServer<CServerSocket,CClientSocket>::stopServer();
 }
 
 int CServerTransport::onNewClient(const CClientSocket &client)
@@ -124,8 +120,6 @@ int CServerTransport::onNewClient(const CClientSocket &client)
 
 bool CServerTransport::onClientClose(const CClientSocket &client)
 {
-	//CRaptorInstance *pHandler = CRaptorInstance::GetInstance();
-	//return pHandler->closeSession((request_handler_t::request_id)&client);
 	return false;
 }
 

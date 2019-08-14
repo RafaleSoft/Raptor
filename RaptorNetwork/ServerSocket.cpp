@@ -10,6 +10,8 @@
 	#include "ClientSocket.h"
 #endif
 
+#include <sstream>
+
 size_t	CServerSocket::readBufferSize = 2048;
 size_t	CServerSocket::writeBufferSize = 65536;
 struct timeval iosock_collection_t::timeout;
@@ -231,31 +233,50 @@ bool CServerSocket::connect(const std::string& address,unsigned short port)
 
 	m_ip = getServer()->getHostAddr(0);
 
-	size_t tmpRead = 0;
 	bool reportError = (0 != setsockopt(m_socket, SOL_SOCKET, SO_RCVBUF, (char *)&readBufferSize, sizeof(size_t)));
 	if (!reportError)
 	{
+		size_t tmpRead = 0;
 		int	tmpSize = sizeof(size_t);
 		if (0 != getsockopt(m_socket,SOL_SOCKET,SO_RCVBUF,(char *)&tmpRead,&tmpSize))
 			Network::userOutput(INetworkLogger::NETWORK_WARNING,
 								Network::networkErrors("Server socket failed to update read buffer size"));
+		if (tmpRead != readBufferSize)
+		{
+			std::stringstream msg;
+			msg << "Server socket read buffer size could not be set to ";
+			msg << readBufferSize;
+			msg << ". Actual size is: ";
+			msg << tmpRead;
+			Network::userOutput(INetworkLogger::NETWORK_WARNING,
+								Network::networkErrors(msg.str()));
+		}
 	}
 
-	size_t tmpWrite = 0;
 	reportError = reportError && (0 != setsockopt(m_socket, SOL_SOCKET, SO_SNDBUF, (char *)&writeBufferSize, sizeof(size_t)));
 	if (!reportError)
 	{
+		size_t tmpWrite = 0;
 		int	tmpSize = sizeof(size_t);
 		if (0 != getsockopt(m_socket,SOL_SOCKET,SO_SNDBUF,(char *)&tmpWrite,&tmpSize))
 			Network::userOutput(INetworkLogger::NETWORK_WARNING,
 								Network::networkErrors("Server socket failed to update write buffer size"));
+		if (tmpWrite != writeBufferSize)
+		{
+			std::stringstream msg;
+			msg << "Server socket write buffer size could not be set to ";
+			msg << writeBufferSize;
+			msg << ". Actual size is: ";
+			msg << tmpWrite;
+			Network::userOutput(INetworkLogger::NETWORK_WARNING,
+								Network::networkErrors(msg.str()));
+		}
 	}
 
-	if (reportError || (tmpRead != readBufferSize) || (tmpWrite != writeBufferSize))
+	if (reportError)
 		Network::userOutput(INetworkLogger::NETWORK_WARNING,
-		Network::networkErrors("Server socket failed to update read/write buffer size"));
+		Network::networkErrors("Server socket failed to update read or write buffer size"));
 
-	// TODO check socket sizes were set according to user request.
 	listen(m_socket, 0);
 
 	clearCollection();

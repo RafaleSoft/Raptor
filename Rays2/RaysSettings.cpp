@@ -20,17 +20,19 @@
 	#include "RaysSettings.h"
 #endif
 
-CRaysettings::CRaysettings(void)
+using namespace Rays;
+
+CRaysSettings::CRaysSettings(void)
 {
 }
 
-CRaysettings::~CRaysettings(void)
+CRaysSettings::~CRaysSettings(void)
 {
 	for (unsigned int i = 0; i<m_settings.size(); i++)
 		delete m_settings[i];
 }
 
-bool CRaysettings::setValue(const string& settingsName, const char* value)
+bool CRaysSettings::setValue(const std::string& settingsName, const char* value)
 {
 	for (unsigned int o = 0; o<m_settings.size(); o++)
 	{

@@ -309,7 +309,7 @@ copy "%OPENEXRLIB_BIN_PATH%\IlmThread.dll" "%RAPTOR_ROOT%\Redist\bin"
 copy "%OPENEXRLIB_LIB_PATH%\IlmImf.lib" "%RAPTOR_ROOT%\Redist\lib"
 copy "%OPENEXRLIB_BIN_PATH%\IlmImf.dll" "%RAPTOR_ROOT%\Redist\bin"
 
-ECHO Redist complete > Builder.Net\Redist.log
+ECHO Redist complete > Builder\Configure\Redist.log
 
 
 :END

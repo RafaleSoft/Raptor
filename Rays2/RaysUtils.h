@@ -1,6 +1,6 @@
 /***************************************************************************/
 /*                                                                         */
-/*  RaysServerUtils.h                                                      */
+/*  RaysUtils.h                                                            */
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
@@ -16,8 +16,8 @@
 /***************************************************************************/
 
 
-#if !defined(AFX_RAYSSERVERUTILS_H__1CC878E3_B301_4A19_8211_F3B5977D3781__INCLUDED_)
-#define AFX_RAYSSERVERUTILS_H__1CC878E3_B301_4A19_8211_F3B5977D3781__INCLUDED_
+#if !defined(AFX_RAYSUTILS_H__1CC878E3_B301_4A19_8211_F3B5977D3781__INCLUDED_)
+#define AFX_RAYSUTILS_H__1CC878E3_B301_4A19_8211_F3B5977D3781__INCLUDED_
 
 #if _MSC_VER > 1000
 #pragma once
@@ -30,15 +30,15 @@ namespace raptor
 };
 
 #if !defined(AFX_RAYSSETTINGS_H__40662BB9_6FC8_40CA_A8A0_F2A701AD70BD__INCLUDED_)
-	#include "../RaysSettings.h"
+	#include "RaysSettings.h"
 #endif
 
 
-namespace RaysServer
+namespace Rays
 {
 	class CDeamonManager;
 
-	class RaysServerUtils
+	class RaysUtils
 	{
 	public:
 		class ILogger
@@ -51,7 +51,7 @@ namespace RaysServer
 		};
 
 		//!	Load application config file
-		static bool loadConfig(void);
+		static bool loadConfig(const std::string &config_file);
 
 		//!	Save application config file
 		static bool saveConfig(void);
@@ -60,7 +60,7 @@ namespace RaysServer
 		//static RaysServerUtils::RAYS_CONFIG& getConfig(void);
 
 		//!	Returns the application Settings.
-		static const CRaysettings& getSettings(void);
+		static const CRaysSettings& getSettings(void);
 
 		//!	Returns the current logger.
 		static ILogger& getLog();
@@ -71,25 +71,25 @@ namespace RaysServer
 
 
 	private:
-		RaysServerUtils();
-		RaysServerUtils(const RaysServerUtils&);
-		~RaysServerUtils();
-		RaysServerUtils& operator=(const RaysServerUtils&);
+		RaysUtils();
+		RaysUtils(const RaysUtils&);
+		~RaysUtils();
+		RaysUtils& operator=(const RaysUtils&);
 
 		//!	Initialise instance if necessary.
-		static RaysServerUtils& getUtils();
+		static RaysUtils& getUtils();
 
 		//!	Load server settings section.
 		bool importSettings(raptor::CRaptorIO *conf);
 
-		static RaysServerUtils *s_pUtils;
+		static RaysUtils *s_pUtils;
 
 		//!	A unique logger for simplicity
 		ILogger *m_pLogger;
 
 		//! A global set of application settings.
-		CRaysettings m_settings;
+		CRaysSettings m_settings;
 	};
 }
 
-#endif // !defined(AFX_RAYSSERVERUTILS_H__1CC878E3_B301_4A19_8211_F3B5977D3781__INCLUDED_)
+#endif // !defined(AFX_RAYSUTILS_H__1CC878E3_B301_4A19_8211_F3B5977D3781__INCLUDED_)

@@ -1,6 +1,6 @@
 /***************************************************************************/
 /*                                                                         */
-/*  RaysServerDlg.h                                                        */
+/*  StdAfx.h                                                               */
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
@@ -15,41 +15,18 @@
 /*                                                                         */
 /***************************************************************************/
 
-#pragma once
 
-#include "RaysServerForm.h"
+#if !defined(AFX_STDAFX_H__B11AA2C1_D1B1_4A4D_B931_8AC832AA6498__INCLUDED_)
+#define AFX_STDAFX_H__B11AA2C1_D1B1_4A4D_B931_8AC832AA6498__INCLUDED_
 
-#if !defined(AFX_RAYSSERVERUTILS_H__1CC878E3_B301_4A19_8211_F3B5977D3781__INCLUDED_)
-	#include "RaysServerUtils.h"
+#ifdef WIN32
+    #if _MSC_VER > 1000
+    #pragma once
+    #endif // _MSC_VER > 1000
+
+    #define VC_EXTRALEAN		// Exclude rarely-used stuff from Windows headers
+	#include <windows.h>
 #endif
 
-namespace RaysServer
-{
+#endif // !defined(AFX_STDAFX_H__B11AA2C1_D1B1_4A4D_B931_8AC832AA6498__INCLUDED_)
 
-	class CServerTransport;
-	class CDeamonManager;
-
-	class RaysServerDlg
-	{
-	public:
-		RaysServerDlg(void);
-		virtual ~RaysServerDlg(void);
-
-	protected:
-		
-	
-	private:
-		class RaysLogger : public RaysServerUtils::ILogger
-		{
-		public:
-			RaysLogger(RaysServerDlg^ userOutput):m_pLogger(userOutput) {};
-			virtual ~RaysLogger() {};
-			virtual void Log(System::String^ msg)
-			{ m_pLogger->AddLog(msg); }
-		private:
-			RaysServerDlg^ m_pLogger;
-		};
-
-
-	};
-}
