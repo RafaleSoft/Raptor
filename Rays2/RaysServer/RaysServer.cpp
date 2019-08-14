@@ -229,7 +229,7 @@ int main(int argc, char* argv[])
 		str << addrStr;
 		RaysUtils::getLog().Log(str.str());
 	}
-
+	
 	delete pApp;
 	return (res ? 1: 0);
 }

@@ -373,7 +373,7 @@ bool CRaysDeamon::start(const CCmdLineParser& cmdline )
 	vector<unsigned int> cpus;
 	CRaysDeamon::WORKUNITSTRUCT wu;
 
-	cmdline.getValue("u", wus);
+	cmdline.getValue("w", wus);
 	cmdline.getValue("c", cpus);
 	if (wus.size() > 0)
 	{
