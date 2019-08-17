@@ -617,6 +617,12 @@
     <ClCompile Include="..\..\RaptorCore\Subsys\Vulkan\RaptorVulkan.cpp">
       <Filter>Source Files\Subsys src\Vulkan</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\OpenGLProgramStage.cpp">
+      <Filter>Source Files\GLHierarchy src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\OpenGLShaderStage.cpp">
+      <Filter>Source Files\GLHierarchy src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Xsd Include="Subsys\ObjectModels\Raptor.xsd">
@@ -1184,6 +1190,12 @@
     </ClInclude>
     <ClInclude Include="..\..\RaptorCore\Subsys\Vulkan\RaptorVulkan.h">
       <Filter>Header Files\Subsys include\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\OpenGLShaderStage.h">
+      <Filter>Header Files\GLHierarchy include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\OpenGLProgramStage.h">
+      <Filter>Header Files\GLHierarchy include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

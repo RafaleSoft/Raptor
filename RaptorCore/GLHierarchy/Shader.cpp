@@ -52,6 +52,12 @@
 #if !defined(AFX_VULKANSHADERSTAGE_H__EF5769B8_470D_467F_9FDE_553142C81698__INCLUDED_)
 	#include "VulkanShaderStage.h"
 #endif
+#if !defined(AFX_OPENGLPROGRAMSTAGE_H__0BCE3B42_6E10_4F50_BB27_1993345ADBCF__INCLUDED_)
+	#include "OpenGLProgramStage.h"
+#endif
+#if !defined(AFX_OPENGLSHADERSTAGE_H__56B00FE3_E508_4FD6_9363_90E6E67446D9__INCLUDED_)
+	#include "OpenGLShaderStage.h"
+#endif
 #if !defined(AFX_PROJECTOR_H__0AEE2092_215F_40FA_BBAE_7D8A2F5A482F__INCLUDED_)
     #include "Projector.h"
 #endif
@@ -101,7 +107,8 @@ CShader::CShader(const std::string& name)
 	m_pTMUSetup(NULL),m_pMaterial(NULL),
     m_pVShader(NULL),m_pFShader(NULL),
     m_pVProgram(NULL),m_pFProgram(NULL),
-	m_pGProgram(NULL),m_pVulkanProgram(NULL)
+	m_pGProgram(NULL),m_pVulkanProgram(NULL),
+	m_pOpenGLProgram(NULL), m_pOpenGLShaderProgram(NULL)
 {
 	m_textureUnitSetup.handle(0);
 	m_textureUnitSetup.hClass(CTextureUnitSetup::CTextureUnitSetupClassID::GetClassId().ID());
@@ -129,7 +136,8 @@ CShader::CShader(const CShader& shader)
 	m_pTMUSetup(NULL), m_pMaterial(NULL),
 	m_pVShader(NULL), m_pFShader(NULL),
 	m_pVProgram(NULL), m_pFProgram(NULL),
-	m_pGProgram(NULL),m_pVulkanProgram(NULL)
+	m_pGProgram(NULL),m_pVulkanProgram(NULL),
+	m_pOpenGLProgram(NULL), m_pOpenGLShaderProgram(NULL)
 {
 	m_color = shader.m_color;
 	m_ambient = shader.m_ambient;
@@ -342,6 +350,10 @@ void CShader::unLink(const CPersistence* p)
         m_pGProgram = NULL;
 	else if (p == static_cast<CPersistence*>(m_pVulkanProgram))
 		m_pVulkanProgram = NULL;
+	else if (p == static_cast<CPersistence*>(m_pOpenGLProgram))
+		m_pOpenGLProgram = NULL;
+	else if (p == static_cast<CPersistence*>(m_pOpenGLShaderProgram))
+		m_pOpenGLShaderProgram = NULL;
 }
 
 CMaterial * const CShader::getMaterial(void)

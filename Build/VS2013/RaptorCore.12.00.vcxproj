@@ -501,6 +501,8 @@ $(SolutionDir)\$(ProjectName)\Subsys\Redist.bat
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\Object3DShadow.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\ObjectFactory.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\ObjectProperties.cpp" />
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\OpenGLProgramStage.cpp" />
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\OpenGLShaderStage.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\Particle.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\PerlinNoise.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\Persistence.cpp" />
@@ -789,6 +791,8 @@ copy CodeGeneration.h "%RAPTOR_ROOT%\Redist\Include\Subsys"
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\ObjectFactory.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\ObjectProperties.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\ObjectReference.h" />
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\OpenGLProgramStage.h" />
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\OpenGLShaderStage.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\Particle.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\PerlinNoise.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\Persistence.h" />

@@ -44,6 +44,9 @@ class CVertexProgram;
 class CFragmentProgram;
 class CGeometryProgram;
 class CVulkanShaderStage;
+class COpenGLProgramStage;
+class COpenGLShaderStage;
+
 
 class RAPTOR_API CShader : public CPersistence, public CObjectReference
 {
@@ -221,6 +224,8 @@ private:
     CFragmentProgram    *m_pFProgram;
 	CGeometryProgram	*m_pGProgram;
 	CVulkanShaderStage	*m_pVulkanProgram;
+	COpenGLShaderStage	*m_pOpenGLProgram;
+	COpenGLProgramStage	*m_pOpenGLShaderProgram;
 
 	bool				m_bDeleteVShader;
 	bool				m_bDeleteFShader;
