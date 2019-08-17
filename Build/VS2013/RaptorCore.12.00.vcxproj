@@ -711,12 +711,12 @@ $(SolutionDir)\$(ProjectName)\Subsys\Redist.bat
 "%RAPTOR_ROOT%\Redist\bin\Builder.Net.exe" %(FullPath)
 copy $(SolutionDir)\$(ProjectName)\Subsys\CodeGeneration.h "%RAPTOR_ROOT%\Redist\Include\Subsys"</Command>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">cd $(TargetDir)
-Builder.Net.exe %(FullPath)
+Builder.exe %(FullPath)
 copy CodeGeneration.h  $(SolutionDir)\$(ProjectName)\Subsys\CodeGeneration.h
 copy CodeGeneration.h "%RAPTOR_ROOT%\Redist\Include\Subsys"
 </Command>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">cd $(TargetDir)
-Builder.Net.exe %(FullPath)
+Builder.exe %(FullPath)
 copy CodeGeneration.h  $(SolutionDir)\$(ProjectName)\Subsys\CodeGeneration.h
 copy CodeGeneration.h "%RAPTOR_ROOT%\Redist\Include\Subsys"
 </Command>
@@ -727,7 +727,7 @@ copy CodeGeneration.h "%RAPTOR_ROOT%\Redist\Include\Subsys"
       <Message Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">Building OpenGL extensions</Message>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Building OpenGL extensions</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='Optimized|Win32'">cd $(TargetDir)
-Builder.Net.exe %(FullPath)
+Builder.exe %(FullPath)
 copy CodeGeneration.h  $(SolutionDir)\$(ProjectName)\Subsys\CodeGeneration.h
 copy CodeGeneration.h "%RAPTOR_ROOT%\Redist\Include\Subsys"
 </Command>
