@@ -6,7 +6,7 @@
 #include "GenericDisplay.h"
 #include "GLHierarchy/TextureUnitSetup.h"
 #include "GLHierarchy/FragmentShader.h"
-#include "GLHierarchy/VertexShader.h"
+#include "GLHierarchy/VertexProgram_old.h"
 #include "GLHierarchy/IRenderingProperties.h"
 #include "System/RaptorDisplay.h"
 

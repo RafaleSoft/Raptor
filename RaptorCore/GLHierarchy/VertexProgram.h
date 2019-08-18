@@ -33,12 +33,6 @@
 RAPTOR_NAMESPACE_BEGIN
 
 
-//!
-//! This class handles OpenGL2.0 vertex shaders. It is conceived to handle a program
-//! rather than being only a shader because OGL2 shading language relates more to the concept
-//! of a program with variables, compilation, linking and so on.
-//! CAUTION : this class embbeds a vertex shader extension object, while CVertexShader holds
-//! an assembly program only.
 class RAPTOR_API CVertexProgram : public CUnifiedProgram  
 {
 public:

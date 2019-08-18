@@ -74,8 +74,8 @@ typedef struct
 static const size_t NB_FACTORY_SHADERS = 31;
 static factory_shader fsh[NB_FACTORY_SHADERS] = {	{ "BUMP_TEX_SHADER", "bump.fp", "FragmentShader" },
 													{ "EMBM_TEX_SHADER", "embm.fp", "FragmentShader" },
-													{ "BUMP_VTX_SHADER", "bump.vp", "VertexShader" },
-													{ "EMBM_VTX_SHADER", "embm.vp", "VertexShader" },
+													{ "BUMP_VTX_SHADER", "bump.vp", "VertexProgram_old" },
+													{ "EMBM_VTX_SHADER", "embm.vp", "VertexProgram_old" },
 													{ "PROJECTION_TEX_SHADER", "projection.fp", "FragmentShader" },
 													{ "SHADOWMAP_TEX_SHADER", "shadowmap.fp", "FragmentShader" },
 													{ "SHADOWMAP_TEX_SHADER_PCF", "shadowmap_pcf.fp", "FragmentShader" },
@@ -92,8 +92,8 @@ static factory_shader fsh[NB_FACTORY_SHADERS] = {	{ "BUMP_TEX_SHADER", "bump.fp"
 													{ "TEXTURE_QUAD_TEX_PROGRAM", "tquad.ps", "FragmentProgram" },
 													{ "TEXTURE_QUAD_GEO_PROGRAM", "tquad.gs", "GeometryProgram" },
 													{ "BLENDER_8X", "blender_8x.fp", "FragmentShader" },
-													{ "BLENDER_8X_XOFFSETS", "blenderX_8x.vp", "VertexShader" },
-													{ "BLENDER_8X_YOFFSETS", "blenderY_8x.vp", "VertexShader" },
+													{ "BLENDER_8X_XOFFSETS", "blenderX_8x.vp", "VertexProgram_old" },
+													{ "BLENDER_8X_YOFFSETS", "blenderY_8x.vp", "VertexProgram_old" },
 													{ "BLENDER_8X_TEX_PROGRAM", "blenderX_8x.ps", "FragmentProgram" },
 													{ "BLENDER_8Y_TEX_PROGRAM", "blenderY_8x.ps", "FragmentProgram" },
 													{ "EMPTY_PROGRAM", "empty.vs", "VertexProgram" },
@@ -231,7 +231,15 @@ bool CShaderLibrary::glLoadShadersFromDataPackage()
 		{
 			const CPersistentObject & po = pFactory->createObject(fs.class_name);
 			CPersistence* persistence = po;
-			if (persistence->getId().ClassName() == fs.class_name)
+			if (NULL == persistence)
+			{
+				std::string msg = "ShaderLibrary unsupported shader class type: ";
+				msg += fs.class_name;
+				Raptor::GetErrorManager()->generateRaptorError(CShader::CShaderClassID::GetClassId(),
+															   CRaptorErrorManager::RAPTOR_ERROR,
+															   msg);
+			}
+			else if (persistence->getId().ClassName() == fs.class_name)
 			{
 				persistence->setName(fs.shader_name);
 				program = static_cast<CShaderProgram*>(persistence);

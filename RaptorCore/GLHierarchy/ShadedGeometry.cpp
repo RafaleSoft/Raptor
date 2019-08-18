@@ -13,8 +13,8 @@
 #if !defined(AFX_AMBIENTOCCLUSIONSHADER_H__FA8234C4_82B1_49D3_ABAA_7FCE45EDDCAD__INCLUDED_)
 	#include "Subsys/AmbientOcclusionShader.h"
 #endif
-#if !defined(AFX_VERTEXSHADER_H__F2D3BBC6_87A1_4695_B667_2B8C3C4CF022__INCLUDED_)
-	#include "VertexShader.h"
+#if !defined(AFX_VERTEXPROGRAM_OLD_H__F2D3BBC6_87A1_4695_B667_2B8C3C4CF022__INCLUDED_)
+	#include "VertexProgram_old.h"
 #endif
 #if !defined(AFX_FRAGMENTSHADER_H__66B3089A_2919_4678_9273_6CDEF7E5787F__INCLUDED_)
 	#include "FragmentShader.h"
@@ -181,9 +181,9 @@ void CShadedGeometry::glRender()
 	if (!properties.isVisible())
 		return;
 
-    if (m_pOverride != NULL)
-        m_pOverride->glPushProperties();
-
+	if (m_pOverride != NULL)
+		m_pOverride->glPushProperties();
+	
 	if (m_pShader != NULL)
 	{
 		// apply material

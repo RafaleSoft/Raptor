@@ -23,7 +23,7 @@ RAPTOR_NAMESPACE_BEGIN
 class IViewPoint;
 class CRaptorDisplay;
 class CTextureObject;
-class CVertexShader ;
+class CVertexProgram_old;
 class CFragmentShader;
 
 
@@ -61,7 +61,7 @@ private:
     IViewPoint*			m_pViewPoint;
     CRaptorDisplay*		m_pShadowCubeMap;
     CTextureObject*		m_pShadowTexture;
-    CVertexShader*		m_pVSShadowMap;
+	CVertexProgram_old*	m_pVSShadowMap;
     CFragmentShader*	m_pFSShadowMap;
 };
 

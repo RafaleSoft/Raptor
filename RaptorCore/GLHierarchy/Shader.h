@@ -38,7 +38,7 @@ RAPTOR_NAMESPACE_BEGIN
 
 class CMaterial;
 class CTextureUnitSetup;
-class CVertexShader;
+class CVertexProgram_old;
 class CFragmentShader;
 class CVertexProgram;
 class CFragmentProgram;
@@ -124,7 +124,7 @@ public:
     //!
 	//!	Returns the vertex shader
 	//!	Allocate a new one if necessary
-	CVertexShader * const glGetVertexShader(const std::string& name = "");
+	CVertexProgram_old * const glGetVertexShader(const std::string& name = "");
 
 	//!	Returns true if shader has a Vertex Shader already
 	bool hasVertexShader(void) const { return m_pVShader != NULL; };
@@ -218,7 +218,7 @@ private:
 
 	CMaterial			*m_pMaterial;
 	CTextureUnitSetup	*m_pTMUSetup;
-	CVertexShader		*m_pVShader;
+	CVertexProgram_old	*m_pVShader;
 	CFragmentShader		*m_pFShader;
     CVertexProgram      *m_pVProgram;
     CFragmentProgram    *m_pFProgram;
