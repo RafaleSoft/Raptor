@@ -30,8 +30,8 @@
 #if !defined(AFX_VERTEXPROGRAM_OLD_H__F2D3BBC6_87A1_4695_B667_2B8C3C4CF022__INCLUDED_)
 	#include "GLHierarchy/VertexProgram_old.h"
 #endif
-#if !defined(AFX_FRAGMENTSHADER_H__66B3089A_2919_4678_9273_6CDEF7E5787F__INCLUDED_)
-	#include "GLHierarchy/FragmentShader.h"
+#if !defined(AFX_FRAGMENTPROGRAM_OLD_H__DD0AD51D_3BFF_4C65_8099_BA7696D7BDDF__INCLUDED_)
+	#include "GLHierarchy/FragmentProgram_old.h"
 #endif
 #if !defined(AFX_RAPTORDISPLAYCONFIG_H__DA0759DF_6CF9_44A7_9ADE_D404FEEC2DDF__INCLUDED_)
 	#include "RaptorDisplayConfig.h"

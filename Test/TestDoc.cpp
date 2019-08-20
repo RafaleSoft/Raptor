@@ -13,7 +13,7 @@
 #include "GLHierarchy/TextureFactory.h"
 #include "GLHierarchy/TextureFactoryConfig.h"
 #include "GLHierarchy/TextureObject.h"
-#include "GLHierarchy/FragmentShader.h"
+#include "GLHierarchy/FragmentProgram_old.h"
 #include "GLHierarchy/VertexProgram_old.h"
 #include "GLHierarchy/Shader.h"
 #include "Engine/ViewModifier.h"

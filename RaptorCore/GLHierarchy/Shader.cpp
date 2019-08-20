@@ -37,8 +37,8 @@
 #if !defined(AFX_VERTEXPROGRAM_H__204F7213_B40B_4B6A_9BCA_828409871B68__INCLUDED_)
     #include "VertexProgram.h"
 #endif
-#if !defined(AFX_FRAGMENTSHADER_H__66B3089A_2919_4678_9273_6CDEF7E5787F__INCLUDED_)
-	#include "FragmentShader.h"
+#if !defined(AFX_FRAGMENTPROGRAM_OLD_H__DD0AD51D_3BFF_4C65_8099_BA7696D7BDDF__INCLUDED_)
+	#include "FragmentProgram_old.h"
 #endif
 #if !defined(AFX_FRAGMENTPROGRAM_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
     #include "FragmentProgram.h"
@@ -582,7 +582,7 @@ bool CShader::glRemoveFragmentProgram(void)
 	}
 }
 
-CFragmentShader * const CShader::glGetFragmentShader(const std::string& name)
+CFragmentProgram_old * const CShader::glGetFragmentShader(const std::string& name)
 {
 	if (m_pFShader == NULL) 
 	{
@@ -594,11 +594,11 @@ CFragmentShader * const CShader::glGetFragmentShader(const std::string& name)
 			pShader = CPersistence::FindObject(name);
 		if (pShader == NULL)
 		{
-			m_pFShader = new CFragmentShader(name);
+			m_pFShader = new CFragmentProgram_old(name);
 			m_bDeleteFShader = true;
 		}
-		else if	(pShader->getId().isSubClassOf(CFragmentShader::CFragmentShaderClassID::GetClassId()))
-			m_pFShader = (CFragmentShader*)pShader;
+		else if (pShader->getId().isSubClassOf(CFragmentProgram_old::CFragmentProgram_oldClassID::GetClassId()))
+			m_pFShader = (CFragmentProgram_old*)pShader;
 
 		m_pFShader->registerDestruction(this);
 

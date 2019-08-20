@@ -21,8 +21,8 @@
 #if !defined(AFX_TEXTUREFACTORY_H__1B470EC4_4B68_11D3_9142_9A502CBADC6B__INCLUDED_)
 	#include "GLHierarchy/TextureFactory.h"
 #endif
-#if !defined(AFX_FRAGMENTSHADER_H__66B3089A_2919_4678_9273_6CDEF7E5787F__INCLUDED_)
-	#include "GLHierarchy/FragmentShader.h"
+#if !defined(AFX_FRAGMENTPROGRAM_OLD_H__DD0AD51D_3BFF_4C65_8099_BA7696D7BDDF__INCLUDED_)
+	#include "GLHierarchy/FragmentProgram_old.h"
 #endif
 #if !defined(AFX_VERTEXPROGRAM_OLD_H__F2D3BBC6_87A1_4695_B667_2B8C3C4CF022__INCLUDED_)
 	#include "GLHierarchy/VertexProgram_old.h"
@@ -198,7 +198,7 @@ DP3 depth.x, iTex0, iTex0; \
 RCP finalDepth.z, depth.x; \
 END" ;
 */
-    m_pFSShadowMap = new CFragmentShader();
+	m_pFSShadowMap = new CFragmentProgram_old();
     m_pFSShadowMap->glLoadProgram(texShader);
 
 	return true;

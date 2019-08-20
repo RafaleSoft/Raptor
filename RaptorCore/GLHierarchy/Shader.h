@@ -39,7 +39,7 @@ RAPTOR_NAMESPACE_BEGIN
 class CMaterial;
 class CTextureUnitSetup;
 class CVertexProgram_old;
-class CFragmentShader;
+class CFragmentProgram_old;
 class CVertexProgram;
 class CFragmentProgram;
 class CGeometryProgram;
@@ -135,7 +135,7 @@ public:
 
 	//!	Returns the fragment shader
 	//!	Allocate a new one if necessary
-	CFragmentShader * const glGetFragmentShader(const std::string& name = "");
+	CFragmentProgram_old * const glGetFragmentShader(const std::string& name = "");
 
 	//!	Returns true if shader has a Fragment Shader already
 	bool hasFragmentShader(void) const { return m_pFShader != NULL; };
@@ -219,7 +219,7 @@ private:
 	CMaterial			*m_pMaterial;
 	CTextureUnitSetup	*m_pTMUSetup;
 	CVertexProgram_old	*m_pVShader;
-	CFragmentShader		*m_pFShader;
+	CFragmentProgram_old *m_pFShader;
     CVertexProgram      *m_pVProgram;
     CFragmentProgram    *m_pFProgram;
 	CGeometryProgram	*m_pGProgram;

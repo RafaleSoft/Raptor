@@ -10,7 +10,7 @@
 
 #include "GLHierarchy/GeometryEditor.h"
 #include "GLHierarchy/GLFont.h"
-#include "GLHierarchy/FragmentShader.h"
+#include "GLHierarchy/FragmentProgram_old.h"
 #include "GLHierarchy/SimpleObject.h"
 #include "GLHierarchy/VertexProgram_old.h"
 #include "Engine/3DScene.h"

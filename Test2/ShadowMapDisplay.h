@@ -39,7 +39,7 @@ private:
 
 	IViewPoint			*vp;
 
-	CFragmentShader		*pfsSetup;
+	CFragmentProgram_old	*pfsSetup;
 	CVertexProgram_old  *pvsSetup;
 
 	C3DScene			*m_pScene;

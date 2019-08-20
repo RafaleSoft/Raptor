@@ -1,6 +1,6 @@
 /***************************************************************************/
 /*                                                                         */
-/*  FragmentShader.cpp                                                     */
+/*  FragmentProgram.cpp                                                    */
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
@@ -22,8 +22,8 @@
 #if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
 	#include "System/Raptor.h"
 #endif
-#if !defined(AFX_FRAGMENTSHADER_H__66B3089A_2919_4678_9273_6CDEF7E5787F__INCLUDED_)
-	#include "FragmentShader.h"
+#if !defined(AFX_FRAGMENTPROGRAM_OLD_H__DD0AD51D_3BFF_4C65_8099_BA7696D7BDDF__INCLUDED_)
+	#include "FragmentProgram_old.h"
 #endif
 #if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
 	#include "System/RaptorGLExtensions.h"
@@ -38,34 +38,34 @@
 
 RAPTOR_NAMESPACE
 
-IMPLEMENT_CLASS_ID(CFragmentShader, fragmentId)
+IMPLEMENT_CLASS_ID(CFragmentProgram_old, fragmentId)
 
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
-CFragmentShader::CFragmentShader(const std::string& name)
+CFragmentProgram_old::CFragmentProgram_old(const std::string& name)
 	:CShaderProgram(fragmentId,name)
 {
     m_bValid = false;
 	m_handle.handle(0);	// default openGL vertex processing pipeline
-	m_handle.hClass(CFragmentShader::CFragmentShaderClassID::GetClassId().ID());
+	m_handle.hClass(CFragmentProgram_old::CFragmentProgram_oldClassID::GetClassId().ID());
 
     glInitShaders();
 }
 
-CFragmentShader::CFragmentShader(const CFragmentShader& shader)
+CFragmentProgram_old::CFragmentProgram_old(const CFragmentProgram_old& shader)
 	:CShaderProgram(shader)
 {
 	m_bValid = shader.m_bValid;
 }
 
-CFragmentShader* CFragmentShader::glClone()
+CFragmentProgram_old* CFragmentProgram_old::glClone()
 {
-	return new CFragmentShader(*this);
+	return new CFragmentProgram_old(*this);
 }
 
-CFragmentShader::~CFragmentShader()
+CFragmentProgram_old::~CFragmentProgram_old()
 {
 #ifdef GL_ARB_fragment_program
 	if (CRaptorInstance::GetInstance().m_bFragmentReady)
@@ -80,7 +80,7 @@ CFragmentShader::~CFragmentShader()
 #endif
 }
 
-void CFragmentShader::glInitShaders()
+void CFragmentProgram_old::glInitShaders()
 {
     GLint maxLocals = 24;    //  implementation dependant, but at least 24
     GLint maxMats = 8;
@@ -120,7 +120,7 @@ void CFragmentShader::glInitShaders()
 }
 
 
-bool CFragmentShader::glGetProgramCaps(GL_FRAGMENT_SHADER_CAPS& caps)
+bool CFragmentProgram_old::glGetProgramCaps(GL_FRAGMENT_SHADER_CAPS& caps)
 {
 #ifdef GL_ARB_fragment_program
 	if (CRaptorInstance::GetInstance().m_bFragmentReady)
@@ -157,7 +157,7 @@ bool CFragmentShader::glGetProgramCaps(GL_FRAGMENT_SHADER_CAPS& caps)
 }
 
 
-void CFragmentShader::glRender(void)
+void CFragmentProgram_old::glRender(void)
 {
 	if (m_handle.handle() == 0)
 		return;
@@ -189,7 +189,7 @@ void CFragmentShader::glRender(void)
 	CATCH_GL_ERROR
 }
 
-void CFragmentShader::glStop(void)
+void CFragmentProgram_old::glStop(void)
 {
 #ifdef GL_ARB_fragment_program
 	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
@@ -198,7 +198,7 @@ void CFragmentShader::glStop(void)
 #endif
 }
 
-bool CFragmentShader::glLoadProgram(const std::string &program)
+bool CFragmentProgram_old::glLoadProgram(const std::string &program)
 {
     m_bValid = false;
 	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
@@ -211,7 +211,7 @@ bool CFragmentShader::glLoadProgram(const std::string &program)
         GLenum err = glGetError();
         if (err != GL_NO_ERROR)
         {
-            Raptor::GetErrorManager()->generateRaptorError(	CFragmentShader::CFragmentShaderClassID::GetClassId(),
+			Raptor::GetErrorManager()->generateRaptorError(	CFragmentProgram_old::CFragmentProgram_oldClassID::GetClassId(),
 															CRaptorErrorManager::RAPTOR_WARNING,
 															"Raptor encountered errors before loading vertex shader, check with debug infos.");
             while (err != GL_NO_ERROR)
@@ -246,7 +246,7 @@ bool CFragmentShader::glLoadProgram(const std::string &program)
             arg2.arg_sz = (const char*)str;
             args.push_back(arg2);
 
-            Raptor::GetErrorManager()->generateRaptorError(CFragmentShader::CFragmentShaderClassID::GetClassId(),
+			Raptor::GetErrorManager()->generateRaptorError(CFragmentProgram_old::CFragmentProgram_oldClassID::GetClassId(),
                                                            CRaptorErrorManager::RAPTOR_ERROR,
 											               CRaptorMessages::ID_PROGRAM_ERROR,args); 
 		}
@@ -254,10 +254,10 @@ bool CFragmentShader::glLoadProgram(const std::string &program)
         m_bValid = ((err == GL_NO_ERROR) && glGetProgramStatus());
         if (!m_bValid)
 		{
-			Raptor::GetErrorManager()->generateRaptorError(	CFragmentShader::CFragmentShaderClassID::GetClassId(),
+			Raptor::GetErrorManager()->generateRaptorError(CFragmentProgram_old::CFragmentProgram_oldClassID::GetClassId(),
 															CRaptorErrorManager::RAPTOR_WARNING,
 															CRaptorMessages::ID_NO_GPU_PROGRAM);
-			Raptor::GetErrorManager()->generateRaptorError(CFragmentShader::CFragmentShaderClassID::GetClassId(),
+			Raptor::GetErrorManager()->generateRaptorError(CFragmentProgram_old::CFragmentProgram_oldClassID::GetClassId(),
 														   CRaptorErrorManager::RAPTOR_WARNING,
 														   getName().data());
 		}
@@ -272,7 +272,7 @@ bool CFragmentShader::glLoadProgram(const std::string &program)
 	return m_bValid;
 }
 
-std::string CFragmentShader::glGetProgramString(void)
+std::string CFragmentProgram_old::glGetProgramString(void)
 {
 	if (m_handle.handle() == 0)
 		return "";
@@ -301,7 +301,7 @@ std::string CFragmentShader::glGetProgramString(void)
 #endif
 }
 
-bool CFragmentShader::glGetProgramStatus(void)
+bool CFragmentProgram_old::glGetProgramStatus(void)
 {
 	if (m_handle.handle() == 0)
 		return false;
@@ -388,7 +388,7 @@ const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 	return false;
 }
 
-void CFragmentShader::glProgramParameter(unsigned int numParam,const GL_COORD_VERTEX &v) const
+void CFragmentProgram_old::glProgramParameter(unsigned int numParam, const GL_COORD_VERTEX &v) const
 {
 #if defined(GL_ARB_fragment_program)
 	if (CRaptorInstance::GetInstance().m_bFragmentReady)
@@ -401,7 +401,7 @@ void CFragmentShader::glProgramParameter(unsigned int numParam,const GL_COORD_VE
 	CATCH_GL_ERROR
 }
 
-void CFragmentShader::glProgramParameter(unsigned int numParam,const CColor::RGBA &v) const
+void CFragmentProgram_old::glProgramParameter(unsigned int numParam, const CColor::RGBA &v) const
 {
 #if defined(GL_ARB_fragment_program)
 	if (CRaptorInstance::GetInstance().m_bFragmentReady)

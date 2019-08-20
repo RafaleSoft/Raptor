@@ -27,8 +27,8 @@
 #if !defined(AFX_TEXTURESET_H__26F3022D_70FE_414D_9479_F9CCD3DCD445__INCLUDED_)
 	#include "GLHierarchy/TextureSet.h"
 #endif
-#if !defined(AFX_FRAGMENTSHADER_H__66B3089A_2919_4678_9273_6CDEF7E5787F__INCLUDED_)
-	#include "GLHierarchy/FragmentShader.h"
+#if !defined(AFX_FRAGMENTPROGRAM_OLD_H__DD0AD51D_3BFF_4C65_8099_BA7696D7BDDF__INCLUDED_)
+	#include "GLHierarchy/FragmentProgram_old.h"
 #endif
 #if !defined(AFX_FRAGMENTPROGRAM_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
     #include "GLHierarchy/FragmentProgram.h"
@@ -748,11 +748,11 @@ bool CHDRFilter::glBuildShaders(void)
 		shaderLib->releaseReference();
 
 		m_pTreshholdFreqs = new CShader("HDR_TRESHOLDS");
-		CFragmentShader *fs = m_pTreshholdFreqs->glGetFragmentShader("treshhold2_fs");
+		CFragmentProgram_old *fs = m_pTreshholdFreqs->glGetFragmentShader("treshhold2_fs");
 		bool res = res && fs->glLoadProgram(treshhold2_fp);
 
 		m_pComposite = new CShader("HDR_COMPOSITE");
-		CFragmentShader *fs = m_pComposite->glGetFragmentShader("composite_fs");
+		CFragmentProgram_old *fs = m_pComposite->glGetFragmentShader("composite_fs");
 		res = res && fs->glLoadProgram(composer_fp);
 
 		m_maxLuminance = new CShader("HDR_MAXLUMINANCE");

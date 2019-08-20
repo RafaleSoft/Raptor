@@ -1,6 +1,6 @@
 /***************************************************************************/
 /*                                                                         */
-/*  VertexProgram.h                                                         */
+/*  VertexProgram.h                                                        */
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */

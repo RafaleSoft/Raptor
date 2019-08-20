@@ -30,7 +30,7 @@ public:
 
 protected:
 	CShadedGeometry	*m_pSG;
-    CFragmentShader	*m_pFS;
+	CFragmentProgram_old	*m_pFS;
 	CVertexProgram_old	*m_pVS;
 	CVertexProgram_old	*m_pVS2;
 
