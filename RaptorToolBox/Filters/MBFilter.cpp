@@ -45,8 +45,8 @@
 #if !defined(AFX_FRAGMENTPROGRAM_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
 	#include "GLHierarchy/FragmentProgram.h"
 #endif
-#if !defined(AFX_GEOMETRYPROGRAM_H__1981EA98_8F3C_4881_9429_A9ACA5B285D3__INCLUDED_)
-	#include "GLHierarchy/GeometryProgram.h"
+#if !defined(AFX_GEOMETRYSHADER_H__1981EA98_8F3C_4881_9429_A9ACA5B285D3__INCLUDED_)
+	#include "GLHierarchy/GeometryShader.h"
 #endif
 #if !defined(AFX_MBFILTER_H__53A619DD_DBAB_4709_9EAD_72C5D6C401E9__INCLUDED_)
     #include "MBFilter.h"
@@ -341,7 +341,7 @@ bool CMBFilter::glInitFilter(void)
 #if defined(GL_ARB_geometry_shader4)
 	m_pFinalShader = new CShader("MotionBlurShader");
 	CVertexProgram *vp = m_pMotionBlurShader->glGetVertexProgram("EMPTY_PROGRAM");
-	CGeometryProgram *gp = m_pMotionBlurShader->glGetGeometryProgram("FULL_SCREEN_GEO_PROGRAM");
+	CGeometryShader *gp = m_pMotionBlurShader->glGetGeometryProgram("FULL_SCREEN_GEO_PROGRAM");
 	CFragmentProgram *fp = m_pMotionBlurShader->glGetFragmentProgram("mb_fp");
 	bool res = fp->glLoadProgram(CAccumulator::accum_fp);
 	res = res && m_pMotionBlurShader->glCompileShader();

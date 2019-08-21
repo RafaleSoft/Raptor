@@ -43,8 +43,8 @@
 #if !defined(AFX_FRAGMENTPROGRAM_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
     #include "FragmentProgram.h"
 #endif
-#if !defined(AFX_GEOMETRYPROGRAM_H__1981EA98_8F3C_4881_9429_A9ACA5B285D3__INCLUDED_)
-    #include "GeometryProgram.h"
+#if !defined(AFX_GEOMETRYSHADER_H__1981EA98_8F3C_4881_9429_A9ACA5B285D3__INCLUDED_)
+    #include "GeometryShader.h"
 #endif
 #if !defined(AFX_SHADERLIBRARY_H__E2A8C35E_23A4_4AD1_8467_884E6B183B4F__INCLUDED_)
 	#include "Subsys/ShaderLibrary.h"
@@ -627,7 +627,7 @@ bool CShader::glRemoveFragmentShader(void)
 	}
 }
 
-CGeometryProgram* const CShader::glGetGeometryProgram(const std::string& name)
+CGeometryShader* const CShader::glGetGeometryProgram(const std::string& name)
 {
 	if (m_pGProgram == NULL) 
 	{
@@ -639,11 +639,11 @@ CGeometryProgram* const CShader::glGetGeometryProgram(const std::string& name)
 			pProgram = CPersistence::FindObject(name);
         if (pProgram == NULL)
 		{
-			m_pGProgram = new CGeometryProgram(name);
+			m_pGProgram = new CGeometryShader(name);
 			m_bDeleteGProgram = true;
 		}
-		else if (pProgram->getId().isSubClassOf(CGeometryProgram::CGeometryProgramClassID::GetClassId()))
-			m_pGProgram = (CGeometryProgram*)pProgram;
+		else if (pProgram->getId().isSubClassOf(CGeometryShader::CGeometryShaderClassID::GetClassId()))
+			m_pGProgram = (CGeometryShader*)pProgram;
 
 		m_pGProgram->registerDestruction(this);
 

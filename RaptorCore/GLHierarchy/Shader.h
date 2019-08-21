@@ -42,7 +42,7 @@ class CVertexProgram_old;
 class CFragmentProgram_old;
 class CVertexProgram;
 class CFragmentProgram;
-class CGeometryProgram;
+class CGeometryShader;
 class CVulkanShaderStage;
 class COpenGLProgramStage;
 class COpenGLShaderStage;
@@ -168,7 +168,7 @@ public:
 
 	//!	Returns the geometry Program
 	//!	Allocate a new one if necessary
-	CGeometryProgram * const glGetGeometryProgram(const std::string& name = "");
+	CGeometryShader * const glGetGeometryProgram(const std::string& name = "");
 
 	//!	Returns true if Program has a Vertex Program already
 	bool hasGeometryProgram(void) const { return m_pGProgram != NULL; };
@@ -222,7 +222,7 @@ private:
 	CFragmentProgram_old *m_pFShader;
     CVertexProgram      *m_pVProgram;
     CFragmentProgram    *m_pFProgram;
-	CGeometryProgram	*m_pGProgram;
+	CGeometryShader		*m_pGProgram;
 	CVulkanShaderStage	*m_pVulkanProgram;
 	COpenGLShaderStage	*m_pOpenGLProgram;
 	COpenGLProgramStage	*m_pOpenGLShaderProgram;

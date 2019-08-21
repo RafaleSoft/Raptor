@@ -90,7 +90,7 @@ static factory_shader fsh[NB_FACTORY_SHADERS] = {	{ "BUMP_TEX_SHADER", "bump.fp"
 													{ "AMBIENT_OCCLUSION_TEX_PROGRAM", "AO.ps", "FragmentProgram" },
 													{ "TEXTURE_QUAD_VTX_PROGRAM", "tquad.vs", "VertexProgram" },
 													{ "TEXTURE_QUAD_TEX_PROGRAM", "tquad.ps", "FragmentProgram" },
-													{ "TEXTURE_QUAD_GEO_PROGRAM", "tquad.gs", "GeometryProgram" },
+													{ "TEXTURE_QUAD_GEO_PROGRAM", "tquad.gs", "GeometryShader" },
 													{ "BLENDER_8X", "blender_8x.fp", "FragmentProgram_old" },
 													{ "BLENDER_8X_XOFFSETS", "blenderX_8x.vp", "VertexProgram_old" },
 													{ "BLENDER_8X_YOFFSETS", "blenderY_8x.vp", "VertexProgram_old" },
@@ -98,10 +98,10 @@ static factory_shader fsh[NB_FACTORY_SHADERS] = {	{ "BUMP_TEX_SHADER", "bump.fp"
 													{ "BLENDER_8Y_TEX_PROGRAM", "blenderY_8x.ps", "FragmentProgram" },
 													{ "EMPTY_PROGRAM", "empty.vs", "VertexProgram" },
 													{ "DIFFUSE_PROGRAM", "diffuse.ps", "FragmentProgram" },
-													{ "FULL_SCREEN_GEO_PROGRAM", "blender_8x.gs", "GeometryProgram" },
+													{ "FULL_SCREEN_GEO_PROGRAM", "blender_8x.gs", "GeometryShader" },
 													{ "PARTICLE_VTX_PROGRAM", "particle.vs", "VertexProgram" },
-													{ "PARTICLE2D_GEO_PROGRAM", "particle2D.gs", "GeometryProgram" }, 
-													{ "PARTICLE3D_GEO_PROGRAM", "particle3D.gs", "GeometryProgram" },
+													{ "PARTICLE2D_GEO_PROGRAM", "particle2D.gs", "GeometryShader" }, 
+													{ "PARTICLE3D_GEO_PROGRAM", "particle3D.gs", "GeometryShader" },
 													{ "PARTICLE3D_TEX_PROGRAM", "particle3D.ps", "FragmentProgram" }, };
 
 static map<std::string, factory_shader>	s_factoryShaders;

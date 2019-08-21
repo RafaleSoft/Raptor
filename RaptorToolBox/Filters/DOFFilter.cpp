@@ -39,8 +39,8 @@
 #if !defined(AFX_FRAGMENTPROGRAM_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
     #include "GLHierarchy/FragmentProgram.h"
 #endif
-#if !defined(AFX_GEOMETRYPROGRAM_H__1981EA98_8F3C_4881_9429_A9ACA5B285D3__INCLUDED_)
-	#include "GLHierarchy/GeometryProgram.h"
+#if !defined(AFX_GEOMETRYSHADER_H__1981EA98_8F3C_4881_9429_A9ACA5B285D3__INCLUDED_)
+	#include "GLHierarchy/GeometryShader.h"
 #endif
 #if !defined(AFX_SHADER_H__4D405EC2_7151_465D_86B6_1CA99B906777__INCLUDED_)
 	#include "GLHierarchy/Shader.h"
@@ -503,7 +503,7 @@ void CDOFFilter::glInitShaders(void)
 	// Create & load shaders to perform a 2 pass blur using depth value.
 #if defined(GL_ARB_geometry_shader4)
 	DOFShader->glGetVertexProgram("EMPTY_PROGRAM");
-	CGeometryProgram *gp = DOFShader->glGetGeometryProgram("dof_gp");
+	CGeometryShader *gp = DOFShader->glGetGeometryProgram("dof_gp");
 	bool res = gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
 	res = res & gp->glLoadProgram(dof_gp);
 	CFragmentProgram *fp = DOFShader->glGetFragmentProgram("dof_fp");

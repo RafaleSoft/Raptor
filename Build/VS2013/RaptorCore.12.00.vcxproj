@@ -479,7 +479,7 @@ $(SolutionDir)\$(ProjectName)\Subsys\Redist.bat
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\Geometry.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\GeometryEditor.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\GeometryPrimitive.cpp" />
-    <ClCompile Include="..\..\RaptorCore\GLHierarchy\GeometryProgram.cpp" />
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\GeometryShader.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\GL2DFont.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\GL2DTextureFont.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\GL3DFont.cpp" />
@@ -768,7 +768,7 @@ copy CodeGeneration.h "%RAPTOR_ROOT%\Redist\Include\Subsys"
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\Geometry.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\GeometryEditor.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\GeometryPrimitive.h" />
-    <ClInclude Include="..\..\RaptorCore\GLHierarchy\GeometryProgram.h" />
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\GeometryShader.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\GL2DFont.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\GL2DTextureFont.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\GL3DFont.h" />

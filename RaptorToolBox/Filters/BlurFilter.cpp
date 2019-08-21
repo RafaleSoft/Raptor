@@ -16,6 +16,9 @@
 #if !defined(AFX_FRAGMENTPROGRAM_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
     #include "GLHierarchy/FragmentProgram.h"
 #endif
+#if !defined(AFX_GEOMETRYSHADER_H__1981EA98_8F3C_4881_9429_A9ACA5B285D3__INCLUDED_)
+	#include "GLHierarchy/GeometryShader.h"
+#endif
 #if !defined(AFX_IRENDERINGPROPERTIES_H__634BCF2B_84B4_47F2_B460_D7FDC0F3B698__INCLUDED_)
 	#include "GLHierarchy/IRenderingProperties.h"
 #endif
@@ -291,7 +294,7 @@ bool CBlurFilter::glBuildFilter(int width,int height)
 	params.addParameter("diffuseMap",CTextureUnitSetup::IMAGE_UNIT_0);
 	
 	CVertexProgram *vp = hBlur->glGetVertexProgram("EMPTY_PROGRAM");
-	CGeometryProgram *gp = hBlur->glGetGeometryProgram("FULL_SCREEN_GEO_PROGRAM");
+	CGeometryShader *gp = hBlur->glGetGeometryProgram("FULL_SCREEN_GEO_PROGRAM");
 	CFragmentProgram *fp = hBlur->glGetFragmentProgram("hBlur_fp");
 	res = fp->glLoadProgram(srcs[0]);
 	fp->setProgramParameters(params);

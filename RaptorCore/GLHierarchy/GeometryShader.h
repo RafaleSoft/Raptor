@@ -1,6 +1,6 @@
 /***************************************************************************/
 /*                                                                         */
-/*  GeometryProgram.h                                                      */
+/*  GeometryShader.h                                                       */
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
@@ -16,8 +16,8 @@
 /***************************************************************************/
 
 
-#if !defined(AFX_GEOMETRYPROGRAM_H__1981EA98_8F3C_4881_9429_A9ACA5B285D3__INCLUDED_)
-#define AFX_GEOMETRYPROGRAM_H__1981EA98_8F3C_4881_9429_A9ACA5B285D3__INCLUDED_
+#if !defined(AFX_GEOMETRYSHADER_H__1981EA98_8F3C_4881_9429_A9ACA5B285D3__INCLUDED_)
+#define AFX_GEOMETRYSHADER_H__1981EA98_8F3C_4881_9429_A9ACA5B285D3__INCLUDED_
 
 #if _MSC_VER > 1000
 #pragma once
@@ -33,7 +33,7 @@
 RAPTOR_NAMESPACE_BEGIN
 
 
-class RAPTOR_API CGeometryProgram : public CUnifiedProgram  
+class RAPTOR_API CGeometryShader : public CUnifiedProgram  
 {
 public:
     typedef struct GL_GEOMETRY_PROGRAM_CAPS_t
@@ -51,13 +51,13 @@ public:
 
 public:
 	//!	Default constructor.
-	CGeometryProgram(const std::string& name="GEOMETRY_PROGRAM");
+	CGeometryShader(const std::string& name = "GEOMETRY_SHADER");
 
 	//! Destructor.
-	virtual ~CGeometryProgram();
+	virtual ~CGeometryShader();
 
 	//!	Clone this shader.
-	virtual CGeometryProgram* glClone();
+	virtual CGeometryShader* glClone();
 
     //! Loads an OpenGL 2.0 vertex shader program.
 	virtual bool glLoadProgram(const std::string &program);
@@ -83,15 +83,15 @@ public:
 
 
 	//!	Implements CPersistence
-	DECLARE_CLASS_ID(CGeometryProgramClassID,"GeometryProgram",CShaderProgram)
+	DECLARE_CLASS_ID(CGeometryShaderClassID,"GeometryShader",CShaderProgram)
 
 
 private:
 	//!	Forbidden operators
-	CGeometryProgram& operator=(const CGeometryProgram&);
+	CGeometryShader& operator=(const CGeometryShader&);
 
 	//! Copy constructor.
-	CGeometryProgram(const CGeometryProgram& shader);
+	CGeometryShader(const CGeometryShader& shader);
 
     //! Specific init of shader parameters
     virtual void	glInitShaders();
@@ -108,5 +108,5 @@ private:
 
 RAPTOR_NAMESPACE_END
 
-#endif // !defined(AFX_GEOMETRYPROGRAM_H__1981EA98_8F3C_4881_9429_A9ACA5B285D3__INCLUDED_)
+#endif // !defined(AFX_GEOMETRYSHADER_H__1981EA98_8F3C_4881_9429_A9ACA5B285D3__INCLUDED_)
 

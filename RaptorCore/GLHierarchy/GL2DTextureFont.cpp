@@ -38,8 +38,8 @@
 #if !defined(AFX_VERTEXPROGRAM_H__204F7213_B40B_4B6A_9BCA_828409871B68__INCLUDED_)
 	#include "GLHierarchy/VertexProgram.h"
 #endif
-#if !defined(AFX_GEOMETRYPROGRAM_H__1981EA98_8F3C_4881_9429_A9ACA5B285D3__INCLUDED_)
-	#include "GLHierarchy/GeometryProgram.h"
+#if !defined(AFX_GEOMETRYSHADER_H__1981EA98_8F3C_4881_9429_A9ACA5B285D3__INCLUDED_)
+	#include "GLHierarchy/GeometryShader.h"
 #endif
 #if !defined(AFX_SHADER_H__4D405EC2_7151_465D_86B6_1CA99B906777__INCLUDED_)
 	#include "GLHierarchy/Shader.h"
@@ -349,7 +349,7 @@ bool CGL2DTextureFont::glGenGlyphs(float precision,
 		params.addParameter("viewport", viewport);
 		vp->setProgramParameters(params);
 
-		CGeometryProgram *gp = m_pShader->glGetGeometryProgram();
+		CGeometryShader *gp = m_pShader->glGetGeometryProgram();
 		gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
 		res = res & gp->glLoadProgram(font_gp_src);
 

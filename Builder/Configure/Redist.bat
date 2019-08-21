@@ -111,7 +111,7 @@ copy .\RaptorCore\GLHierarchy\GLLod.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\Geometry.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\GeometryEditor.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\GeometryPrimitive.h Redist\Include\GLHierarchy
-copy .\RaptorCore\GLHierarchy\GeometryProgram.h Redist\Include\GLHierarchy
+copy .\RaptorCore\GLHierarchy\GeometryShader.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\ITextureObject.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\Light.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\LightGlow.h Redist\Include\GLHierarchy

@@ -1,6 +1,6 @@
 /***************************************************************************/
 /*                                                                         */
-/*  GeometryProgram.cpp                                                    */
+/*  GeometryShader.cpp                                                     */
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
@@ -19,8 +19,8 @@
 
 #include "Subsys/CodeGeneration.h"
 
-#if !defined(AFX_GEOMETRYPROGRAM_H__1981EA98_8F3C_4881_9429_A9ACA5B285D3__INCLUDED_)
-    #include "GeometryProgram.h"
+#if !defined(AFX_GEOMETRYSHADER_H__1981EA98_8F3C_4881_9429_A9ACA5B285D3__INCLUDED_)
+    #include "GeometryShader.h"
 #endif
 #if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
 	#include "System/RaptorGLExtensions.h"
@@ -41,33 +41,33 @@
 
 RAPTOR_NAMESPACE
 
-IMPLEMENT_CLASS_ID(CGeometryProgram, geometryId)
+IMPLEMENT_CLASS_ID(CGeometryShader, geometryId)
 
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CGeometryProgram::CGeometryProgram(const std::string& name)
+CGeometryShader::CGeometryShader(const std::string& name)
 	:CUnifiedProgram(geometryId, name), m_inputType(0), m_outputType(0), m_verticesOut(0)
 {
     m_handle.handle(0);	// default openGL vertex processing pipeline
-	m_handle.hClass(CGeometryProgram::CGeometryProgramClassID::GetClassId().ID());
+	m_handle.hClass(CGeometryShader::CGeometryShaderClassID::GetClassId().ID());
 
     glInitShaders();
 }
 
-CGeometryProgram::CGeometryProgram(const CGeometryProgram& shader)
+CGeometryShader::CGeometryShader(const CGeometryShader& shader)
 	:CUnifiedProgram(shader)
 {
 }
 
-CGeometryProgram* CGeometryProgram::glClone()
+CGeometryShader* CGeometryShader::glClone()
 {
-	return new CGeometryProgram(*this);
+	return new CGeometryShader(*this);
 }
 
-CGeometryProgram::~CGeometryProgram()
+CGeometryShader::~CGeometryShader()
 {
 #if defined(GL_ARB_geometry_shader4)
 	if (!CRaptorInstance::GetInstance().m_bGeometryProgramReady)
@@ -87,7 +87,7 @@ CGeometryProgram::~CGeometryProgram()
 #endif
 }
 
-void CGeometryProgram::glInitShaders()
+void CGeometryShader::glInitShaders()
 {
 	m_parameters.clear();
 
@@ -118,7 +118,7 @@ void CGeometryProgram::glInitShaders()
 	}
 }
 
-bool CGeometryProgram::setGeometry(uint32_t inputType, uint32_t outputType, uint32_t verticesOut)
+bool CGeometryShader::setGeometry(uint32_t inputType, uint32_t outputType, uint32_t verticesOut)
 {
 	if ((inputType == GL_POINTS) ||
 		(inputType == GL_LINES) ||
@@ -144,7 +144,7 @@ bool CGeometryProgram::setGeometry(uint32_t inputType, uint32_t outputType, uint
 	return true;
 }
 
-bool CGeometryProgram::glLoadProgram(const std::string &program)
+bool CGeometryShader::glLoadProgram(const std::string &program)
 {
     m_bValid = false;
 	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
@@ -158,7 +158,7 @@ bool CGeometryProgram::glLoadProgram(const std::string &program)
         m_handle.handle(pExtensions->glCreateShaderObjectARB(GL_GEOMETRY_SHADER_ARB));
         if (m_handle.handle() == 0)
         {
-            Raptor::GetErrorManager()->generateRaptorError(	CGeometryProgram::CGeometryProgramClassID::GetClassId(),
+			Raptor::GetErrorManager()->generateRaptorError(	CGeometryShader::CGeometryShaderClassID::GetClassId(),
 															CRaptorErrorManager::RAPTOR_WARNING,
 															CRaptorMessages::ID_NO_GPU_PROGRAM);
             return false;
@@ -183,7 +183,7 @@ bool CGeometryProgram::glLoadProgram(const std::string &program)
             arg.arg_sz = pInfoLog;
             vector<CRaptorMessages::MessageArgument> args;
             args.push_back(arg);
-            Raptor::GetErrorManager()->generateRaptorError(	CGeometryProgram::CGeometryProgramClassID::GetClassId(),
+			Raptor::GetErrorManager()->generateRaptorError(	CGeometryShader::CGeometryShaderClassID::GetClassId(),
 															CRaptorErrorManager::RAPTOR_ERROR,
 															CRaptorMessages::ID_PROGRAM_ERROR,args);
             free(pInfoLog);
@@ -197,7 +197,7 @@ bool CGeometryProgram::glLoadProgram(const std::string &program)
     return m_bValid;
 }
 
-bool CGeometryProgram::glBindProgram(RAPTOR_HANDLE program)
+bool CGeometryShader::glBindProgram(RAPTOR_HANDLE program)
 {
 	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 
@@ -206,7 +206,7 @@ bool CGeometryProgram::glBindProgram(RAPTOR_HANDLE program)
 	pExtensions->glGetObjectParameterivARB(m_handle.handle(), GL_OBJECT_SUBTYPE_ARB, &value);
 	if (value != GL_GEOMETRY_SHADER_ARB)
 	{
-		Raptor::GetErrorManager()->generateRaptorError(CGeometryProgram::CGeometryProgramClassID::GetClassId(),
+		Raptor::GetErrorManager()->generateRaptorError(CGeometryShader::CGeometryShaderClassID::GetClassId(),
 													   CRaptorErrorManager::RAPTOR_WARNING,
 													   "Geometry Program is invalid in this context");
 
@@ -246,7 +246,7 @@ bool CGeometryProgram::glBindProgram(RAPTOR_HANDLE program)
 }
 
 
-bool CGeometryProgram::glGetProgramCaps(GL_GEOMETRY_PROGRAM_CAPS& caps)
+bool CGeometryShader::glGetProgramCaps(GL_GEOMETRY_PROGRAM_CAPS& caps)
 {
 	if (CRaptorInstance::GetInstance().m_bGeometryProgramReady)
 	{
@@ -268,7 +268,7 @@ bool CGeometryProgram::glGetProgramCaps(GL_GEOMETRY_PROGRAM_CAPS& caps)
 		return false;
 }
 
-bool CGeometryProgram::glGetProgramStatus(void)
+bool CGeometryShader::glGetProgramStatus(void)
 {
 	if (m_handle.handle() == 0)
 		return false;

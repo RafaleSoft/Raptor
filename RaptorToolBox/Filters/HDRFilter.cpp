@@ -40,8 +40,8 @@
 	#include "GLHierarchy/VertexProgram.h"
 #endif
 #if defined(GL_ARB_geometry_shader4)
-	#if !defined(AFX_GEOMETRYPROGRAM_H__1981EA98_8F3C_4881_9429_A9ACA5B285D3__INCLUDED_)
-		#include "GLHierarchy/GeometryProgram.h"
+	#if !defined(AFX_GEOMETRYSHADER_H__1981EA98_8F3C_4881_9429_A9ACA5B285D3__INCLUDED_)
+		#include "GLHierarchy/GeometryShader.h"
 	#endif
 #endif
 #if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
@@ -615,7 +615,7 @@ bool CHDRFilter::glBuildShaders(void)
 {
 	m_pBlenderX = new CShader("HDR_BLENDER_X");
 	CVertexProgram *vp = m_pBlenderX->glGetVertexProgram("EMPTY_PROGRAM");
-	CGeometryProgram *gp = m_pBlenderX->glGetGeometryProgram("FULL_SCREEN_GEO_PROGRAM");
+	CGeometryShader *gp = m_pBlenderX->glGetGeometryProgram("FULL_SCREEN_GEO_PROGRAM");
 	CFragmentProgram *fp = m_pBlenderX->glGetFragmentProgram("BLENDER_8X_TEX_PROGRAM");
 	bool res = m_pBlenderX->glCompileShader();
 	m_pBlenderY = new CShader("HDR_BLENDER_Y");

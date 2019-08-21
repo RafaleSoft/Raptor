@@ -48,8 +48,8 @@
 #if !defined(AFX_VERTEXPROGRAM_H__204F7213_B40B_4B6A_9BCA_828409871B68__INCLUDED_)
 	#include "GLHierarchy/VertexProgram.h"
 #endif
-#if !defined(AFX_GEOMETRYPROGRAM_H__1981EA98_8F3C_4881_9429_A9ACA5B285D3__INCLUDED_)
-	#include "GLHierarchy/GeometryProgram.h"
+#if !defined(AFX_GEOMETRYSHADER_H__1981EA98_8F3C_4881_9429_A9ACA5B285D3__INCLUDED_)
+	#include "GLHierarchy/GeometryShader.h"
 #endif
 #if !defined(AFX_TEXTURESET_H__26F3022D_70FE_414D_9479_F9CCD3DCD445__INCLUDED_)
 	#include "GLHierarchy/TextureSet.h"
@@ -420,7 +420,7 @@ bool CMagnifierFilter::glInitFilter(void)
 
 #if defined(GL_ARB_geometry_shader4)
 	CVertexProgram *vp = m_pXKernelShader->glGetVertexProgram("EMPTY_PROGRAM");
-	CGeometryProgram *gp = m_pXKernelShader->glGetGeometryProgram("magnifier_gp2");
+	CGeometryShader *gp = m_pXKernelShader->glGetGeometryProgram("magnifier_gp2");
 	bool res = gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
 	res = res & gp->glLoadProgram(gp_src);
 	CFragmentProgram *ps = m_pXKernelShader->glGetFragmentProgram("xk_ps2");

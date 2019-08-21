@@ -218,9 +218,6 @@
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\GeometryPrimitive.cpp">
       <Filter>Source Files\GLHierarchy src</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\RaptorCore\GLHierarchy\GeometryProgram.cpp">
-      <Filter>Source Files\GLHierarchy src</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\GLFont.cpp">
       <Filter>Source Files\GLHierarchy src</Filter>
     </ClCompile>
@@ -623,6 +620,9 @@
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\FragmentProgram_old.cpp">
       <Filter>Source Files\GLHierarchy src</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\GeometryShader.cpp">
+      <Filter>Source Files\GLHierarchy src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Xsd Include="Subsys\ObjectModels\Raptor.xsd">
@@ -712,9 +712,6 @@
       <Filter>Header Files\GLHierarchy include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\GeometryPrimitive.h">
-      <Filter>Header Files\GLHierarchy include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\RaptorCore\GLHierarchy\GeometryProgram.h">
       <Filter>Header Files\GLHierarchy include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\GLFont.h">
@@ -1195,6 +1192,9 @@
       <Filter>Header Files\GLHierarchy include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\FragmentProgram_old.h">
+      <Filter>Header Files\GLHierarchy include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\GeometryShader.h">
       <Filter>Header Files\GLHierarchy include</Filter>
     </ClInclude>
   </ItemGroup>
