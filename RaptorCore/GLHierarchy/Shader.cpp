@@ -31,14 +31,14 @@
 #if !defined(AFX_TEXTUREUNITSETUP_H__4A6ADC72_02E5_4F2A_931E_A736B6D6E0F0__INCLUDED_)
 	#include "TextureUnitSetup.h"
 #endif
-#if !defined(AFX_VERTEXSHADER_H__F2D3BBC6_87A1_4695_B667_2B8C3C4CF022__INCLUDED_)
-	#include "VertexShader.h"
+#if !defined(AFX_VERTEXPROGRAM_OLD_H__F2D3BBC6_87A1_4695_B667_2B8C3C4CF022__INCLUDED_)
+	#include "VertexProgram_old.h"
 #endif
 #if !defined(AFX_VERTEXPROGRAM_H__204F7213_B40B_4B6A_9BCA_828409871B68__INCLUDED_)
     #include "VertexProgram.h"
 #endif
-#if !defined(AFX_FRAGMENTSHADER_H__66B3089A_2919_4678_9273_6CDEF7E5787F__INCLUDED_)
-	#include "FragmentShader.h"
+#if !defined(AFX_FRAGMENTPROGRAM_OLD_H__DD0AD51D_3BFF_4C65_8099_BA7696D7BDDF__INCLUDED_)
+	#include "FragmentProgram_old.h"
 #endif
 #if !defined(AFX_FRAGMENTPROGRAM_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
     #include "FragmentProgram.h"
@@ -51,6 +51,12 @@
 #endif
 #if !defined(AFX_VULKANSHADERSTAGE_H__EF5769B8_470D_467F_9FDE_553142C81698__INCLUDED_)
 	#include "VulkanShaderStage.h"
+#endif
+#if !defined(AFX_OPENGLPROGRAMSTAGE_H__0BCE3B42_6E10_4F50_BB27_1993345ADBCF__INCLUDED_)
+	#include "OpenGLProgramStage.h"
+#endif
+#if !defined(AFX_OPENGLSHADERSTAGE_H__56B00FE3_E508_4FD6_9363_90E6E67446D9__INCLUDED_)
+	#include "OpenGLShaderStage.h"
 #endif
 #if !defined(AFX_PROJECTOR_H__0AEE2092_215F_40FA_BBAE_7D8A2F5A482F__INCLUDED_)
     #include "Projector.h"
@@ -101,7 +107,8 @@ CShader::CShader(const std::string& name)
 	m_pTMUSetup(NULL),m_pMaterial(NULL),
     m_pVShader(NULL),m_pFShader(NULL),
     m_pVProgram(NULL),m_pFProgram(NULL),
-	m_pGProgram(NULL),m_pVulkanProgram(NULL)
+	m_pGProgram(NULL),m_pVulkanProgram(NULL),
+	m_pOpenGLProgram(NULL), m_pOpenGLShaderProgram(NULL)
 {
 	m_textureUnitSetup.handle(0);
 	m_textureUnitSetup.hClass(CTextureUnitSetup::CTextureUnitSetupClassID::GetClassId().ID());
@@ -129,7 +136,8 @@ CShader::CShader(const CShader& shader)
 	m_pTMUSetup(NULL), m_pMaterial(NULL),
 	m_pVShader(NULL), m_pFShader(NULL),
 	m_pVProgram(NULL), m_pFProgram(NULL),
-	m_pGProgram(NULL),m_pVulkanProgram(NULL)
+	m_pGProgram(NULL),m_pVulkanProgram(NULL),
+	m_pOpenGLProgram(NULL), m_pOpenGLShaderProgram(NULL)
 {
 	m_color = shader.m_color;
 	m_ambient = shader.m_ambient;
@@ -342,6 +350,10 @@ void CShader::unLink(const CPersistence* p)
         m_pGProgram = NULL;
 	else if (p == static_cast<CPersistence*>(m_pVulkanProgram))
 		m_pVulkanProgram = NULL;
+	else if (p == static_cast<CPersistence*>(m_pOpenGLProgram))
+		m_pOpenGLProgram = NULL;
+	else if (p == static_cast<CPersistence*>(m_pOpenGLShaderProgram))
+		m_pOpenGLShaderProgram = NULL;
 }
 
 CMaterial * const CShader::getMaterial(void)
@@ -478,7 +490,7 @@ bool CShader::glRemoveVertexProgram(void)
 	}
 }
 
-CVertexShader * const CShader::glGetVertexShader(const std::string& name)
+CVertexProgram_old * const CShader::glGetVertexShader(const std::string& name)
 {
 	if (m_pVShader == NULL) 
 	{
@@ -490,11 +502,11 @@ CVertexShader * const CShader::glGetVertexShader(const std::string& name)
 			pShader = CPersistence::FindObject(name);
 		if (pShader == NULL)
 		{
-			m_pVShader = new CVertexShader(name);
+			m_pVShader = new CVertexProgram_old(name);
 			m_bDeleteVShader = true;
 		}
-		else if (pShader->getId().isSubClassOf(CVertexShader::CVertexShaderClassID::GetClassId()))
-			m_pVShader = (CVertexShader*)pShader;
+		else if (pShader->getId().isSubClassOf(CVertexProgram_old::CVertexProgram_oldClassID::GetClassId()))
+			m_pVShader = (CVertexProgram_old*)pShader;
 
 		m_pVShader->registerDestruction(this);
 
@@ -570,7 +582,7 @@ bool CShader::glRemoveFragmentProgram(void)
 	}
 }
 
-CFragmentShader * const CShader::glGetFragmentShader(const std::string& name)
+CFragmentProgram_old * const CShader::glGetFragmentShader(const std::string& name)
 {
 	if (m_pFShader == NULL) 
 	{
@@ -582,11 +594,11 @@ CFragmentShader * const CShader::glGetFragmentShader(const std::string& name)
 			pShader = CPersistence::FindObject(name);
 		if (pShader == NULL)
 		{
-			m_pFShader = new CFragmentShader(name);
+			m_pFShader = new CFragmentProgram_old(name);
 			m_bDeleteFShader = true;
 		}
-		else if	(pShader->getId().isSubClassOf(CFragmentShader::CFragmentShaderClassID::GetClassId()))
-			m_pFShader = (CFragmentShader*)pShader;
+		else if (pShader->getId().isSubClassOf(CFragmentProgram_old::CFragmentProgram_oldClassID::GetClassId()))
+			m_pFShader = (CFragmentProgram_old*)pShader;
 
 		m_pFShader->registerDestruction(this);
 

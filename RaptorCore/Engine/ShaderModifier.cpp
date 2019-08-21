@@ -12,14 +12,14 @@
 #if !defined(AFX_VERTEXPROGRAM_H__204F7213_B40B_4B6A_9BCA_828409871B68__INCLUDED_)
 	#include "GLHierarchy/VertexProgram.h"
 #endif
-#if !defined(AFX_VERTEXSHADER_H__F2D3BBC6_87A1_4695_B667_2B8C3C4CF022__INCLUDED_)
-	#include "GLHierarchy/VertexShader.h"
+#if !defined(AFX_VERTEXPROGRAM_OLD_H__F2D3BBC6_87A1_4695_B667_2B8C3C4CF022__INCLUDED_)
+	#include "GLHierarchy/VertexProgram_old.h"
 #endif
 #if !defined(AFX_FRAGMENTPROGRAM_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
 	#include "GLHierarchy/FragmentProgram.h"
 #endif
-#if !defined(AFX_FRAGMENTSHADER_H__66B3089A_2919_4678_9273_6CDEF7E5787F__INCLUDED_)
-	#include "GLHierarchy/FragmentShader.h"
+#if !defined(AFX_FRAGMENTPROGRAM_OLD_H__DD0AD51D_3BFF_4C65_8099_BA7696D7BDDF__INCLUDED_)
+	#include "GLHierarchy/FragmentProgram_old.h"
 #endif
 #if !defined(AFX_GEOMETRYPROGRAM_H__1981EA98_8F3C_4881_9429_A9ACA5B285D3__INCLUDED_)
 	#include "GLHierarchy/GeometryProgram.h"

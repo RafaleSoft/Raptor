@@ -247,13 +247,7 @@
     <None Include="..\..\RaptorToolBox\Filters\MagnifierFilter.shaders">
       <Filter>Source Files\Filters</Filter>
     </None>
-    <None Include="..\..\RaptorToolBox\Filters\ColotControlFilter.shaders">
-      <Filter>Source Files\Filters</Filter>
-    </None>
     <None Include="..\..\RaptorToolBox\Filters\MagnifierFilter.programs">
-      <Filter>Source Files\Filters</Filter>
-    </None>
-    <None Include="..\..\RaptorToolBox\Filters\ColotControlFilter.programs">
       <Filter>Source Files\Filters</Filter>
     </None>
     <None Include="..\..\RaptorToolBox\Filters\MBFilter.programs">
@@ -273,6 +267,12 @@
     </None>
     <None Include="..\..\RaptorToolBox\buildpak.bat">
       <Filter>Source Files</Filter>
+    </None>
+    <None Include="..\..\RaptorToolBox\Filters\ColorControlFilter.programs">
+      <Filter>Source Files\Filters</Filter>
+    </None>
+    <None Include="..\..\RaptorToolBox\Filters\ColorControlFilter.shaders">
+      <Filter>Source Files\Filters</Filter>
     </None>
   </ItemGroup>
 </Project>

@@ -67,6 +67,7 @@ VULKAN_BIN_PATH=c:/windows/system32
 # Projects target building dependencies and order
 #
 all: \
+	configure \
 	simd \
 	microlex \
 	buildernative \
@@ -98,13 +99,19 @@ generators:	$(REDIST)/Bin/eLut $(REDIST)/Bin/toFloat $(REDIST)/Bin/b44ExpLogTabl
 
 raptordatapackager:	builder $(REDIST)/Bin/RaptorDataPackager
 
-builder:	simd microlex buildernative $(REDIST)/Bin/Builder
+builder:	configure simd microlex buildernative $(REDIST)/Bin/Builder
 
 buildernative:	$(REDIST)/Lib/libBuilderNative.lib $(REDIST)/Bin/libBuilderNative.so.$(RAPTOR_VERSION)
 
 microlex:	$(REDIST)/Bin/Microlex
 
 simd:	$(REDIST)/Lib/libsimd.lib $(REDIST)/Bin/libsimd.so.$(RAPTOR_VERSION)
+
+configure:	Builder/Configure/Redist.sh
+	@echo "Configuring Raptor projects ..."
+	cd Builder/Configure; ls ; chmod +x ./Redist.sh ; ./Redist.sh
+	@echo "Configuration done."
+
 
 
 #

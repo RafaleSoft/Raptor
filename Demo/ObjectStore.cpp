@@ -35,7 +35,7 @@
 #include "GLHierarchy/TextureObject.h"
 #include "GLHierarchy/TextureFactoryConfig.h"
 #include "GLHierarchy/Shader.h"
-#include "GLHierarchy/FragmentShader.h"
+#include "GLHierarchy/FragmentProgram_old.h"
 #include "GLHierarchy/ShadedGeometry.h"
 #include "System/RaptorDisplay.h"
 #include "Engine/3DScene.h"

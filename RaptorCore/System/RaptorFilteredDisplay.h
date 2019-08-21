@@ -16,12 +16,9 @@
 
 RAPTOR_NAMESPACE_BEGIN
 
-//class CFragmentShader;
+
 class CTextureSet;
-class CVertexShader;
 class CRaptorDisplayFilter;
-class CTextureQuad;
-class CShader;
 
 
 class CRaptorFilteredDisplay : public CRaptorScreenDisplay
