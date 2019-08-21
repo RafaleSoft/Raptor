@@ -175,7 +175,7 @@ public:
 	bool glRemoveGeometryProgram(void);
 
 
-	//!	Returns the geometry Program
+	//!	Returns the Vulkan Program.
 	//!	Allocate a new one if necessary
 	CVulkanShaderStage * const vkGetVulkanProgram(const std::string& name = "");
 

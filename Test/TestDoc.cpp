@@ -69,6 +69,9 @@ public:
 		CTextureUnitSetup *tmu = s->glGetTextureUnitsSetup();
 		tmu->setDiffuseMap(output);
 		tmu->glBuildSetup();
+
+		//Geometry Allocator is not locked.
+		//glRenderFilter();
 	};
 
 	virtual ~Foreground() {};
