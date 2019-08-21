@@ -107,8 +107,8 @@ CShader::CShader(const std::string& name)
 	m_pTMUSetup(NULL),m_pMaterial(NULL),
     m_pVShader(NULL),m_pFShader(NULL),
     m_pVProgram(NULL),m_pFProgram(NULL),
-	m_pGProgram(NULL),m_pVulkanProgram(NULL),
-	m_pOpenGLProgram(NULL), m_pOpenGLShaderProgram(NULL)
+	m_pGProgram(NULL), m_pVulkanShader(NULL),
+	m_pOpenGLProgram(NULL), m_pOpenGLShader(NULL)
 {
 	m_textureUnitSetup.handle(0);
 	m_textureUnitSetup.hClass(CTextureUnitSetup::CTextureUnitSetupClassID::GetClassId().ID());
@@ -127,7 +127,8 @@ CShader::CShader(const std::string& name)
     m_bDeleteFProgram = false;
 	m_bDeleteVProgram = false;
 	m_bDeleteGProgram = false;
-	m_bDeleteVulkanProgram = false;
+	m_bDeleteVulkanShader = false;
+	m_bDeleteOpenGLProgram = false;
 	m_bDeleteTMUSetup = false;
 }
 
@@ -136,8 +137,8 @@ CShader::CShader(const CShader& shader)
 	m_pTMUSetup(NULL), m_pMaterial(NULL),
 	m_pVShader(NULL), m_pFShader(NULL),
 	m_pVProgram(NULL), m_pFProgram(NULL),
-	m_pGProgram(NULL),m_pVulkanProgram(NULL),
-	m_pOpenGLProgram(NULL), m_pOpenGLShaderProgram(NULL)
+	m_pGProgram(NULL), m_pVulkanShader(NULL),
+	m_pOpenGLProgram(NULL), m_pOpenGLShader(NULL)
 {
 	m_color = shader.m_color;
 	m_ambient = shader.m_ambient;
@@ -202,21 +203,21 @@ CShader::CShader(const CShader& shader)
 	}
 	if (NULL != shader.m_pGProgram)
 	{
-		glRemoveGeometryProgram();
+		glRemoveGeometryShader();
 		if (shader.m_bDeleteGProgram)
 			m_pGProgram = shader.m_pGProgram->glClone();
 		else
 			m_pGProgram = shader.m_pGProgram;
 		m_pGProgram->registerDestruction(this);
 	}
-	if (NULL != shader.m_pVulkanProgram)
+	if (NULL != shader.m_pVulkanShader)
 	{
-		vkRemoveVulkanProgram();
-		if (shader.m_bDeleteVulkanProgram)
-			m_pVulkanProgram = shader.m_pVulkanProgram->vkClone();
+		vkRemoveVulkanShader();
+		if (shader.m_bDeleteVulkanShader)
+			m_pVulkanShader = shader.m_pVulkanShader->vkClone();
 		else
-			m_pVulkanProgram = shader.m_pVulkanProgram;
-		m_pVulkanProgram->registerDestruction(this);
+			m_pVulkanShader = shader.m_pVulkanShader;
+		m_pVulkanShader->registerDestruction(this);
 	}
 
 	if (0 != shader.m_shaderProgram.handle())
@@ -227,7 +228,8 @@ CShader::CShader(const CShader& shader)
 	m_bDeleteVProgram = shader.m_bDeleteVProgram;
 	m_bDeleteFProgram = shader.m_bDeleteFProgram;
 	m_bDeleteGProgram = shader.m_bDeleteGProgram;
-	m_bDeleteVulkanProgram = shader.m_bDeleteVulkanProgram;
+	m_bDeleteVulkanShader = shader.m_bDeleteVulkanShader;
+	m_bDeleteOpenGLProgram = shader.m_bDeleteOpenGLProgram;
 	m_bDeleteTMUSetup = shader.m_bDeleteTMUSetup;
 }
 
@@ -314,8 +316,8 @@ CShader::~CShader()
 	glRemoveFragmentShader();
 	glRemoveVertexProgram();
 	glRemoveFragmentProgram();
-	glRemoveGeometryProgram();
-	vkRemoveVulkanProgram();
+	glRemoveGeometryShader();
+	vkRemoveVulkanShader();
 
 	if (m_shaderProgram.handle() != 0)
 	{
@@ -348,12 +350,12 @@ void CShader::unLink(const CPersistence* p)
         m_pFProgram = NULL;
 	else if (p == static_cast<CPersistence*>(m_pGProgram))
         m_pGProgram = NULL;
-	else if (p == static_cast<CPersistence*>(m_pVulkanProgram))
-		m_pVulkanProgram = NULL;
+	else if (p == static_cast<CPersistence*>(m_pVulkanShader))
+		m_pVulkanShader = NULL;
 	else if (p == static_cast<CPersistence*>(m_pOpenGLProgram))
 		m_pOpenGLProgram = NULL;
-	else if (p == static_cast<CPersistence*>(m_pOpenGLShaderProgram))
-		m_pOpenGLShaderProgram = NULL;
+	else if (p == static_cast<CPersistence*>(m_pOpenGLShader))
+		m_pOpenGLShader = NULL;
 }
 
 CMaterial * const CShader::getMaterial(void)
@@ -627,7 +629,7 @@ bool CShader::glRemoveFragmentShader(void)
 	}
 }
 
-CGeometryShader* const CShader::glGetGeometryProgram(const std::string& name)
+CGeometryShader* const CShader::glGetGeometryShader(const std::string& name)
 {
 	if (m_pGProgram == NULL) 
 	{
@@ -653,7 +655,7 @@ CGeometryShader* const CShader::glGetGeometryProgram(const std::string& name)
 	return m_pGProgram;
 }
 
-bool CShader::glRemoveGeometryProgram(void)
+bool CShader::glRemoveGeometryShader(void)
 {
 	if (m_pGProgram == NULL)
 		return false;
@@ -674,9 +676,55 @@ bool CShader::glRemoveGeometryProgram(void)
 	}
 }
 
-CVulkanShaderStage * const CShader::vkGetVulkanProgram(const std::string& name)
+COpenGLProgramStage * const CShader::glGetOpenGLProgram(const std::string& name)
 {
-	if (m_pVulkanProgram == NULL) 
+	if (m_pOpenGLProgram == NULL)
+	{
+		CShaderLibrary *lib = CShaderLibrary::GetInstance();
+		//lib->vkInitFactory();
+
+		CPersistence *pProgram = NULL;
+		if (!name.empty())
+			pProgram = CPersistence::FindObject(name);
+		if (pProgram == NULL)
+		{
+			m_pOpenGLProgram = new COpenGLProgramStage(name);
+			m_bDeleteOpenGLProgram = true;
+		}
+		else if (pProgram->getId().isSubClassOf(COpenGLProgramStage::COpenGLProgramStageClassID::GetClassId()))
+			m_pOpenGLProgram = (COpenGLProgramStage*)pProgram;
+
+		m_pOpenGLProgram->registerDestruction(this);
+
+		CATCH_GL_ERROR
+	}
+
+	return m_pOpenGLProgram;
+}
+
+bool CShader::glRemoveOpenGLProgram(void)
+{
+	if (m_pOpenGLProgram == NULL)
+		return false;
+	else
+	{
+		m_pOpenGLProgram->unregisterDestruction(this);
+		// TODO : ressource linked to pipeline
+
+		if (m_bDeleteOpenGLProgram)
+			delete m_pOpenGLProgram;
+		m_pOpenGLProgram = NULL;
+		m_bDeleteOpenGLProgram = false;
+
+		CATCH_GL_ERROR
+
+		return true;
+	}
+}
+
+CVulkanShaderStage * const CShader::vkGetVulkanShader(const std::string& name)
+{
+	if (m_pVulkanShader == NULL)
 	{
 		CShaderLibrary *lib = CShaderLibrary::GetInstance();
 		//lib->vkInitFactory();
@@ -686,33 +734,33 @@ CVulkanShaderStage * const CShader::vkGetVulkanProgram(const std::string& name)
 			pProgram = CPersistence::FindObject(name);
         if (pProgram == NULL)
 		{
-			m_pVulkanProgram = new CVulkanShaderStage(name);
-			m_bDeleteVulkanProgram = true;
+			m_pVulkanShader = new CVulkanShaderStage(name);
+			m_bDeleteVulkanShader = true;
 		}
 		else if (pProgram->getId().isSubClassOf(CVulkanShaderStage::CVulkanShaderStageClassID::GetClassId()))
-			m_pVulkanProgram = (CVulkanShaderStage*)pProgram;
+			m_pVulkanShader = (CVulkanShaderStage*)pProgram;
 
-		m_pVulkanProgram->registerDestruction(this);
+		m_pVulkanShader->registerDestruction(this);
 
         CATCH_GL_ERROR
 	}
 
-	return m_pVulkanProgram;
+	return m_pVulkanShader;
 }
 
-bool CShader::vkRemoveVulkanProgram(void)
+bool CShader::vkRemoveVulkanShader(void)
 {
-	if (m_pVulkanProgram == NULL)
+	if (m_pVulkanShader == NULL)
 		return false;
 	else
 	{
-		m_pVulkanProgram->unregisterDestruction(this);
+		m_pVulkanShader->unregisterDestruction(this);
 		// TODO : ressource linked to pipeline
 
-		if (m_bDeleteVulkanProgram)
-			delete m_pVulkanProgram;
-		m_pVulkanProgram = NULL;
-		m_bDeleteVulkanProgram = false;
+		if (m_bDeleteVulkanShader)
+			delete m_pVulkanShader;
+		m_pVulkanShader = NULL;
+		m_bDeleteVulkanShader = false;
 
 		CATCH_GL_ERROR
 
@@ -981,9 +1029,9 @@ bool CShader::importObject(CRaptorIO& io)
 			glGetVertexProgram();
 			m_pVProgram->importObject(io);
 		}
-		else if (data == "GeometryProgram")
+		else if (data == "GeometryShader")
 		{
-			glGetGeometryProgram();
+			glGetGeometryShader();
 			m_pGProgram->importObject(io);
 		}
 		else if (data == "FragmentProgram")
@@ -991,10 +1039,10 @@ bool CShader::importObject(CRaptorIO& io)
 			glGetFragmentProgram();
 			m_pFProgram->importObject(io);
 		}
-		else if (data == "VulkanProgram")
+		else if (data == "VulkanShader")
 		{
-			vkGetVulkanProgram();
-			m_pVulkanProgram->importObject(io);
+			vkGetVulkanShader();
+			m_pVulkanShader->importObject(io);
 		}
 		else
 			io >> name;

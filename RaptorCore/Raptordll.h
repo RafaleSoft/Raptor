@@ -64,7 +64,7 @@ class CGLLayer;
 class CGLLod;
 class CGeometry;
 class CGeometryPrimitive;
-class CGeometryProgram;
+class CGeometryShader;
 class CLight;
 class CLightGlow;
 class CLightObserver;

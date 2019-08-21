@@ -89,8 +89,8 @@ void CShaderWrapper::glRender()
 			m_pShader->glGetFragmentShader()->setProgramParameters(f);
 
 		m_bUpdateGeometryParameters = false;
-		if (m_pShader->hasGeometryProgram())
-			m_pShader->glGetGeometryProgram()->setProgramParameters(g);
+		if (m_pShader->hasGeometryShader())
+			m_pShader->glGetGeometryShader()->setProgramParameters(g);
 	}
 
 	m_pShader->glRender();

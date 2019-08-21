@@ -143,7 +143,7 @@ void CParticle::glInitParticle(void)
 			params.addParameter("fPointSize", GL_COORD_VERTEX(m_fPointSize, 0.0f, 0.0f, 0.0f));
 			vp->setProgramParameters(params);
 
-			CGeometryShader *gp = m_pShader->glGetGeometryProgram("PARTICLE2D_GEO_PROGRAM");
+			CGeometryShader *gp = m_pShader->glGetGeometryShader("PARTICLE2D_GEO_PROGRAM");
 			gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
 
 			CFragmentProgram *fs = m_pShader->glGetFragmentProgram("TEXTURE_QUAD_TEX_PROGRAM");
@@ -161,7 +161,7 @@ void CParticle::glInitParticle(void)
 			params.addParameter("fPointSize", GL_COORD_VERTEX(m_fPointSize, 0.0f, 0.0f, 0.0f));
 			vp->setProgramParameters(params);
 
-			CGeometryShader *gp = m_pShader->glGetGeometryProgram("PARTICLE3D_GEO_PROGRAM");
+			CGeometryShader *gp = m_pShader->glGetGeometryShader("PARTICLE3D_GEO_PROGRAM");
 			gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
 
 			CFragmentProgram *fs = m_pShader->glGetFragmentProgram("PARTICLE3D_TEX_PROGRAM");

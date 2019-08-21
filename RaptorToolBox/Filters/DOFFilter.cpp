@@ -273,7 +273,7 @@ void CDOFFilter::glRenderFilter()
 
 
 #if defined(GL_ARB_geometry_shader4)
-	DOFShader->glGetGeometryProgram()->setProgramParameters(vp_paramsX);
+	DOFShader->glGetGeometryShader()->setProgramParameters(vp_paramsX);
 	DOFShader->glGetFragmentProgram()->setProgramParameters(fp_params);
 #elif defined(GL_ARB_vertex_shader)
 	DOFShader->glGetVertexProgram()->setProgramParameters(vp_paramsX);
@@ -298,7 +298,7 @@ void CDOFFilter::glRenderFilter()
 		tmpTexture->glvkRender();
 
 	#if defined(GL_ARB_geometry_shader4)
-		DOFShader->glGetGeometryProgram()->setProgramParameters(vp_paramsY);
+		DOFShader->glGetGeometryShader()->setProgramParameters(vp_paramsY);
 		DOFShader->glGetFragmentProgram()->setProgramParameters(fp_params);
 	#elif defined(GL_ARB_vertex_shader)
 		DOFShader->glGetVertexProgram()->setProgramParameters(vp_paramsY);
@@ -320,7 +320,7 @@ void CDOFFilter::glRenderFilter()
 		tmpTexture2->glvkRender();
 
 #if defined(GL_ARB_geometry_shader4)
-		DOFShader->glGetGeometryProgram()->setProgramParameters(vp_paramsX);
+		DOFShader->glGetGeometryShader()->setProgramParameters(vp_paramsX);
 		DOFShader->glGetFragmentProgram()->setProgramParameters(fp_params);
 #elif defined(GL_ARB_vertex_shader)
 		DOFShader->glGetVertexProgram()->setProgramParameters(vp_paramsX);
@@ -353,7 +353,7 @@ void CDOFFilter::glRenderFilterOutput()
 	tmpTexture->glvkRender();
 
 #if defined(GL_ARB_geometry_shader4)
-	DOFShader->glGetGeometryProgram()->setProgramParameters(vp_paramsY);
+	DOFShader->glGetGeometryShader()->setProgramParameters(vp_paramsY);
 	DOFShader->glGetFragmentProgram()->setProgramParameters(fp_params);
 #elif defined(GL_ARB_vertex_shader)
 	DOFShader->glGetVertexProgram()->setProgramParameters(vp_paramsY);
@@ -503,7 +503,7 @@ void CDOFFilter::glInitShaders(void)
 	// Create & load shaders to perform a 2 pass blur using depth value.
 #if defined(GL_ARB_geometry_shader4)
 	DOFShader->glGetVertexProgram("EMPTY_PROGRAM");
-	CGeometryShader *gp = DOFShader->glGetGeometryProgram("dof_gp");
+	CGeometryShader *gp = DOFShader->glGetGeometryShader("dof_gp");
 	bool res = gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
 	res = res & gp->glLoadProgram(dof_gp);
 	CFragmentProgram *fp = DOFShader->glGetFragmentProgram("dof_fp");

@@ -196,7 +196,7 @@ void CTest5Doc::GLInitContext(void)
 
 
 #ifdef VULKAN_TEST
-	CVulkanShaderStage *ss = s->vkGetVulkanProgram();
+	CVulkanShaderStage *ss = s->vkGetVulkanShader();
 	ss->vkLoadShader("shader3.vert");
 	ss->vkLoadShader("shader3.frag");
 	

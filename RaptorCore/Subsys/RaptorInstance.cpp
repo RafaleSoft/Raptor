@@ -94,7 +94,7 @@ CRaptorInstance::CRaptorInstance()
 
 	m_bFragmentProgramReady = false;
 	m_bVertexProgramReady = false;
-	m_bGeometryProgramReady = false;
+	m_bGeometryShaderReady = false;
 	m_bVertexReady = false;
 	m_bFragmentReady = false;
 
@@ -308,7 +308,7 @@ bool CRaptorInstance::glInitShaders(void)
 	{
 		m_pIdentity = new CShader("HDR_IDENTITY");
 		CVertexProgram *vp = m_pIdentity->glGetVertexProgram("EMPTY_PROGRAM");
-		CGeometryShader *gp = m_pIdentity->glGetGeometryProgram("FULL_SCREEN_GEO_PROGRAM");
+		CGeometryShader *gp = m_pIdentity->glGetGeometryShader("FULL_SCREEN_GEO_PROGRAM");
 		CFragmentProgram *fp = m_pIdentity->glGetFragmentProgram("DIFFUSE_PROGRAM");
 
 		CProgramParameters identityParams;

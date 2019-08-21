@@ -349,7 +349,7 @@ bool CGL2DTextureFont::glGenGlyphs(float precision,
 		params.addParameter("viewport", viewport);
 		vp->setProgramParameters(params);
 
-		CGeometryShader *gp = m_pShader->glGetGeometryProgram();
+		CGeometryShader *gp = m_pShader->glGetGeometryShader();
 		gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
 		res = res & gp->glLoadProgram(font_gp_src);
 

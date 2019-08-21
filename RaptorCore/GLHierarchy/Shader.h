@@ -168,26 +168,38 @@ public:
 
 	//!	Returns the geometry Program
 	//!	Allocate a new one if necessary
-	CGeometryShader * const glGetGeometryProgram(const std::string& name = "");
+	CGeometryShader * const glGetGeometryShader(const std::string& name = "");
 
 	//!	Returns true if Program has a Vertex Program already
-	bool hasGeometryProgram(void) const { return m_pGProgram != NULL; };
+	bool hasGeometryShader(void) const { return m_pGProgram != NULL; };
 
 	//! Removes the geometry program.
 	//! @return true if the geometry program has been deleted
-	bool glRemoveGeometryProgram(void);
+	bool glRemoveGeometryShader(void);
 
 
-	//!	Returns the Vulkan Program.
+	//!	Returns the OpenGL Program.
 	//!	Allocate a new one if necessary
-	CVulkanShaderStage * const vkGetVulkanProgram(const std::string& name = "");
+	COpenGLProgramStage * const glGetOpenGLProgram(const std::string& name = "");
+
+	//!	Returns true if Program has a OpenGL Program already
+	bool hasOpenGLProgram(void) const { return m_pOpenGLProgram != NULL; };
+
+	//! Removes the OpenGL program.
+	//! @return true if the OpenGL program has been deleted
+	bool glRemoveOpenGLProgram(void);
+
+
+	//!	Returns the Vulkan Shader.
+	//!	Allocate a new one if necessary
+	CVulkanShaderStage * const vkGetVulkanShader(const std::string& name = "");
 
 	//!	Returns true if Program has a Vulkan Shader already
-	bool hasVulkanProgram(void) const { return m_pVulkanProgram != NULL; };
+	bool hasVulkanShader(void) const { return m_pVulkanShader != NULL; };
 
-	//! Removes the Vulkan program.
+	//! Removes the Vulkan Shader.
 	//! @return true if the Vulkan program has been deleted
-	bool vkRemoveVulkanProgram(void);
+	bool vkRemoveVulkanShader(void);
 
 
 	//!	Streams : implement CPersistence
@@ -223,16 +235,17 @@ private:
     CVertexProgram      *m_pVProgram;
     CFragmentProgram    *m_pFProgram;
 	CGeometryShader		*m_pGProgram;
-	CVulkanShaderStage	*m_pVulkanProgram;
-	COpenGLShaderStage	*m_pOpenGLProgram;
-	COpenGLProgramStage	*m_pOpenGLShaderProgram;
+	CVulkanShaderStage	*m_pVulkanShader;
+	COpenGLShaderStage	*m_pOpenGLShader;
+	COpenGLProgramStage	*m_pOpenGLProgram;
 
 	bool				m_bDeleteVShader;
 	bool				m_bDeleteFShader;
     bool				m_bDeleteVProgram;
 	bool				m_bDeleteFProgram;
 	bool				m_bDeleteGProgram;
-	bool				m_bDeleteVulkanProgram;
+	bool				m_bDeleteVulkanShader;
+	bool				m_bDeleteOpenGLProgram;
 	bool				m_bDeleteTMUSetup;
 };
 

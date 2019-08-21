@@ -70,10 +70,10 @@ CGeometryShader* CGeometryShader::glClone()
 CGeometryShader::~CGeometryShader()
 {
 #if defined(GL_ARB_geometry_shader4)
-	if (!CRaptorInstance::GetInstance().m_bGeometryProgramReady)
+	if (!CRaptorInstance::GetInstance().m_bGeometryShaderReady)
 	{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
-        Raptor::GetErrorManager()->generateRaptorError(	CGeometryProgram::CGeometryProgramClassID::GetClassId(),
+        Raptor::GetErrorManager()->generateRaptorError(	CGeometryShader::CGeometryShaderClassID::GetClassId(),
 														CRaptorErrorManager::RAPTOR_ERROR,
 														CRaptorMessages::ID_NO_GPU_PROGRAM);
 #endif
@@ -91,15 +91,15 @@ void CGeometryShader::glInitShaders()
 {
 	m_parameters.clear();
 
-	if (!CRaptorInstance::GetInstance().m_bGeometryProgramReady)
+	if (!CRaptorInstance::GetInstance().m_bGeometryShaderReady)
 	{
 		if (Raptor::glIsExtensionSupported(GL_ARB_GEOMETRY_SHADER4_EXTENSION_NAME))
 		{
 #if defined(GL_ARB_geometry_shader4)
 			const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
-			CRaptorInstance::GetInstance().m_bGeometryProgramReady = (NULL != pExtensions->glCreateShaderObjectARB);
+			CRaptorInstance::GetInstance().m_bGeometryShaderReady = (NULL != pExtensions->glCreateShaderObjectARB);
 #else
-			CRaptorInstance::GetInstance().m_bGeometryProgramReady = false;
+			CRaptorInstance::GetInstance().m_bGeometryShaderReady = false;
 #endif
 		}
 		else
@@ -150,7 +150,7 @@ bool CGeometryShader::glLoadProgram(const std::string &program)
 	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 
 #if defined(GL_ARB_geometry_shader4)
-	if (CRaptorInstance::GetInstance().m_bGeometryProgramReady)
+	if (CRaptorInstance::GetInstance().m_bGeometryShaderReady)
 	{
 		if (m_handle.handle() > 0)
 			pExtensions->glDeleteObjectARB(m_handle.handle());
@@ -248,7 +248,7 @@ bool CGeometryShader::glBindProgram(RAPTOR_HANDLE program)
 
 bool CGeometryShader::glGetProgramCaps(GL_GEOMETRY_PROGRAM_CAPS& caps)
 {
-	if (CRaptorInstance::GetInstance().m_bGeometryProgramReady)
+	if (CRaptorInstance::GetInstance().m_bGeometryShaderReady)
 	{
 #if defined(GL_ARB_geometry_shader4)
 		glGetIntegerv(GL_MAX_GEOMETRY_TEXTURE_IMAGE_UNITS_ARB,&caps.max_geometry_texture_image_units);
@@ -273,7 +273,7 @@ bool CGeometryShader::glGetProgramStatus(void)
 	if (m_handle.handle() == 0)
 		return false;
 
-	if (!CRaptorInstance::GetInstance().m_bGeometryProgramReady)
+	if (!CRaptorInstance::GetInstance().m_bGeometryShaderReady)
 		return false;
 
 #if defined(GL_ARB_geometry_shader4)

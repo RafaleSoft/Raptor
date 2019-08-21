@@ -294,14 +294,14 @@ bool CBlurFilter::glBuildFilter(int width,int height)
 	params.addParameter("diffuseMap",CTextureUnitSetup::IMAGE_UNIT_0);
 	
 	CVertexProgram *vp = hBlur->glGetVertexProgram("EMPTY_PROGRAM");
-	CGeometryShader *gp = hBlur->glGetGeometryProgram("FULL_SCREEN_GEO_PROGRAM");
+	CGeometryShader *gp = hBlur->glGetGeometryShader("FULL_SCREEN_GEO_PROGRAM");
 	CFragmentProgram *fp = hBlur->glGetFragmentProgram("hBlur_fp");
 	res = fp->glLoadProgram(srcs[0]);
 	fp->setProgramParameters(params);
 	res = res && hBlur->glCompileShader();
 
 	vp = vBlur->glGetVertexProgram("EMPTY_PROGRAM");
-	gp = vBlur->glGetGeometryProgram("FULL_SCREEN_GEO_PROGRAM");
+	gp = vBlur->glGetGeometryShader("FULL_SCREEN_GEO_PROGRAM");
 	fp = vBlur->glGetFragmentProgram("vBlur_fp");
 	res = res && fp->glLoadProgram(srcs[1]);
 	fp->setProgramParameters(params);

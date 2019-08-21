@@ -163,12 +163,12 @@ void CShadedGeometry::vkRender(	CVulkanCommandBuffer& commandBuffer,
 {
 	if (m_pShader != NULL)
 	{
-		if (m_pShader->hasVulkanProgram())
+		if (m_pShader->hasVulkanShader())
 		{
 			CTextureUnitSetup *tmus = NULL;
 			if (m_pShader->hasTextureUnitSetup())
 				tmus = m_pShader->glGetTextureUnitsSetup();
-			CVulkanShaderStage *ss = m_pShader->vkGetVulkanProgram();
+			CVulkanShaderStage *ss = m_pShader->vkGetVulkanShader();
 			ss->vkRender(commandBuffer, tmus);
 		}
 	}
