@@ -25,7 +25,7 @@
 #include "GLHierarchy/TextureFactoryConfig.h"
 #include "GLHierarchy/TextureUnitSetup.h"
 #include "GLHierarchy/TextureObject.h"
-#include "GLHierarchy/VertexShader.h"
+#include "GLHierarchy/VertexProgram_old.h"
 #include "System/Raptor.h"
 #include "System/Memory.h"
 
@@ -246,7 +246,7 @@ void Display::GLInitContext()
 		glEnd();
 	glEndList();
 
-	CVertexShader s("GL_SHADER");
+	CVertexProgram_old s("GL_SHADER");
 	GL_COORD_VERTEX texCoord1(0, 0, 0, 1);
 	square2 = glGenLists(1);
 	glNewList(square2, GL_COMPILE);

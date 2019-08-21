@@ -99,7 +99,7 @@ ECHO       GLHierarchy:
 copy .\RaptorCore\GLHierarchy\3DSet.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\BumppedGeometry.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\FragmentProgram.h Redist\Include\GLHierarchy
-copy .\RaptorCore\GLHierarchy\FragmentShader.h Redist\Include\GLHierarchy
+copy .\RaptorCore\GLHierarchy\FragmentProgram_old.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\GLFont.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\GL2DFont.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\GL2DTextureFont.h Redist\Include\GLHierarchy
@@ -145,7 +145,7 @@ copy .\RaptorCore\GLHierarchy\TextureSet.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\TextureUnitSetup.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\UnifiedProgram.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\VertexProgram.h Redist\Include\GLHierarchy
-copy .\RaptorCore\GLHierarchy\VertexShader.h Redist\Include\GLHierarchy
+copy .\RaptorCore\GLHierarchy\VertexProgram_old.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\VulkanShaderStage.h Redist\Include\GLHierarchy
 
 ECHO       SSE_Engine:

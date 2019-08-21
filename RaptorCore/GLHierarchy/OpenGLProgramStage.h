@@ -1,6 +1,6 @@
 /***************************************************************************/
 /*                                                                         */
-/*  VulkanShaderStage.h                                                    */
+/*  OpenGLProgramStage.h                                                   */
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
@@ -16,8 +16,8 @@
 /***************************************************************************/
 
 
-#if !defined(AFX_VULKANSHADERSTAGE_H__EF5769B8_470D_467F_9FDE_553142C81698__INCLUDED_)
-#define AFX_VULKANSHADERSTAGE_H__EF5769B8_470D_467F_9FDE_553142C81698__INCLUDED_
+#if !defined(AFX_OPENGLPROGRAMSTAGE_H__0BCE3B42_6E10_4F50_BB27_1993345ADBCF__INCLUDED_)
+#define AFX_OPENGLPROGRAMSTAGE_H__0BCE3B42_6E10_4F50_BB27_1993345ADBCF__INCLUDED_
 
 #if _MSC_VER > 1000
 #pragma once
@@ -26,21 +26,19 @@
 #include "Subsys/CodeGeneration.h"
 
 #if !defined(AFX_SHADERPROGRAM_H__936BEC73_3903_46CE_86C9_9CA0005B31F5__INCLUDED_)
-	#include "ShaderProgram.h"
+#include "ShaderProgram.h"
 #endif
 
 
 RAPTOR_NAMESPACE_BEGIN
 
-class CVulkanShader;
-class CVulkanCommandBuffer;
 
-class RAPTOR_API CVulkanShaderStage : public CShaderProgram
+class RAPTOR_API COpenGLProgramStage : public CShaderProgram
 {
 public:
-	CVulkanShaderStage(const std::string& name);
+	COpenGLProgramStage(const std::string& name);
 
-	virtual ~CVulkanShaderStage(void);
+	virtual ~COpenGLProgramStage(void);
 
 	//! Implements base class
 	virtual bool glLoadProgram(const std::string &program)
@@ -53,14 +51,8 @@ public:
 	{
 	};
 
-	//! Apply parameters and bind descriptor sets for shader rendering
-	void vkRender(CVulkanCommandBuffer &commandBuffer, CTextureUnitSetup *tmu_setup = NULL);
-	
-	//! Compute descriptor sets layout and create the pipeline layout
-	VkPipelineLayout getPipelineLayout() const;
-
 	//! Implements base class
-	virtual void glStop(void) { };
+	virtual void glStop(void) {};
 
 	//! Implements base class
 	virtual bool glGetProgramStatus(void)
@@ -72,10 +64,14 @@ public:
 	virtual std::string glGetProgramString(void) { return ""; }
 
 	virtual void glProgramParameter(unsigned int numParam,
-									const GL_COORD_VERTEX &v) const { };
+									const GL_COORD_VERTEX &v) const
+	{
+	};
 
 	virtual void glProgramParameter(unsigned int numParam,
-									const CColor::RGBA &v) const { };
+									const CColor::RGBA &v) const
+	{
+	};
 
 	//! Provide gl-like shader parameters from RaptorCore.
 	//!	Attention : parameter shall be copied before next call because return value is reused.
@@ -85,47 +81,20 @@ public:
 	//!	@see CShaderProgram
 	virtual void setProgramParameters(const CProgramParameters &v);
 
-	//!	Clone the whole shader stage.
-	CVulkanShaderStage* vkClone(void) const;
-
-	//!	Returns the shader number numShader, or NULL if out of bounds.
-	CVulkanShader* getShader(void) const
-	{
-		return m_pShaderStages;
-	};
-
-	//!	Loads a shader stage.
-	bool vkLoadShader(const std::string& filename);
-
 
 	//! Inherited from CPersistence
-    DECLARE_IO
-	DECLARE_CLASS_ID(CVulkanShaderStageClassID, "VulkanShaderStage", CShaderProgram)
+	DECLARE_IO
+	DECLARE_CLASS_ID(COpenGLProgramStageClassID, "OpenGLProgramStage", CShaderProgram)
 
 
 private:
 	//! Denied operators
-	CVulkanShaderStage();
-    CVulkanShaderStage& operator=(const CVulkanShaderStage& );
-
-	//!	Identify predefined OpenGL shader names variables
-	bool IsPredefinedGLVariable(const std::string& name);
-
-
-	//!	Vulkan shader modules
-	CVulkanShader*	m_pShaderStages;
-
-	//!	Last default parameter
-	CProgramParameters::CParameterBase* m_param;
-
-	//!	Uniform buffer
-	VkDescriptorBufferInfo m_bufferInfo;
-	unsigned char*	uniforms;
-	uint64_t		uniforms_size;
+	COpenGLProgramStage();
+	COpenGLProgramStage& operator=(const COpenGLProgramStage&);
 };
 
 
 RAPTOR_NAMESPACE_END
 
-#endif // !defined(AFX_VULKANSHADERSTAGE_H__EF5769B8_470D_467F_9FDE_553142C81698__INCLUDED_)
+#endif // !defined(AFX_OPENGLPROGRAMSTAGE_H__0BCE3B42_6E10_4F50_BB27_1993345ADBCF__INCLUDED_)
 

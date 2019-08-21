@@ -460,10 +460,10 @@ copy $(SolutionDir)$(ProjectName)\Toolbox.pck "%RAPTOR_ROOT%\Redist\bin\"
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\RaptorToolBox\buildpak.bat" />
-    <None Include="..\..\RaptorToolBox\Filters\ColotControlFilter.programs">
+    <None Include="..\..\RaptorToolBox\Filters\ColorControlFilter.programs">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">true</ExcludedFromBuild>
     </None>
-    <None Include="..\..\RaptorToolBox\Filters\ColotControlFilter.shaders">
+    <None Include="..\..\RaptorToolBox\Filters\ColorControlFilter.shaders">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">true</ExcludedFromBuild>
     </None>
     <None Include="..\..\RaptorToolBox\Filters\DOF.programs">

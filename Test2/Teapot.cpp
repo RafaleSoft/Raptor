@@ -36,7 +36,7 @@
 #include "GLHierarchy/BumppedGeometry.h"
 #include "GLHierarchy/3DSet.h"
 #include "GLHierarchy/Shader.h"
-#include "GLHierarchy/VertexShader.h"
+#include "GLHierarchy/VertexProgram_old.h"
 #include "GLHierarchy/TextureObject.h"
 #include "GLHierarchy/ShadedGeometry.h"
 #include "GLHierarchy/GeometryEditor.h"
@@ -108,7 +108,7 @@ void CTeapot::GLInitContext()
 	// point parameter settings
 	if (Raptor::glIsExtensionSupported(GL_EXT_POINT_PARAMETERS_EXTENSION_NAME))
 	{
-		CVertexShader s;
+		CVertexProgram_old s;
 		GL_COORD_VERTEX quadric(-40.0f, 0.0f, 0.1f, 1.0f);
 		s.glPointParameter(0.0f,20.0,quadric);
 	}

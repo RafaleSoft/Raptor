@@ -14,7 +14,7 @@
 #include "GLHierarchy/TextureObject.h"
 #include "Engine/3DEngine.h"
 #include "GLHierarchy/ShadedGeometry.h"
-#include "GLHierarchy/VertexShader.h"
+#include "GLHierarchy/VertexProgram_old.h"
 #include "GLHierarchy/Object3DInstance.h"
 #include "GLHierarchy/SimpleObject.h"
 #include "GLHierarchy/Shader.h"
@@ -37,7 +37,7 @@ public:
 		setBoundingBox(	GL_COORD_VERTEX(-70.0f,-50.0f,0.0f,1.0f),
 						GL_COORD_VERTEX(70.0f,50.0f,0.1f,1.0f));
 		//	Use a default shader to create a simple geometry
-		CVertexShader s("GL_SHADER");
+		CVertexProgram_old s("GL_SHADER");
 		GL_COORD_VERTEX texCoord1(0,0,0,1);
 
 		//	background;
@@ -349,7 +349,7 @@ void CGlassObject::glRender()
 	m_pShader->glRender();
 	
 	//	Use a default shader to create a simple geometry
-	CVertexShader s("GL_SHADER");
+	CVertexProgram_old s("GL_SHADER");
 
 	glBegin(GL_QUADS);
 		glTexCoord2f(x_sz,y_sz);

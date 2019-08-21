@@ -1,6 +1,6 @@
 /***************************************************************************/
 /*                                                                         */
-/*  stdafx.h                                                               */
+/*  OpenGLProgramStage.cpp                                                 */
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
@@ -16,8 +16,51 @@
 /***************************************************************************/
 
 
-#pragma once
+#include "Subsys/CodeGeneration.h"
 
-#define WIN32_LEAN_AND_MEAN             // Exclude rarely-used stuff from Windows headers
-// Windows Header Files:
-#include <windows.h>
+#if !defined(AFX_OPENGLPROGRAMSTAGE_H__0BCE3B42_6E10_4F50_BB27_1993345ADBCF__INCLUDED_)
+	#include "OpenGLProgramStage.h"
+#endif
+
+
+
+//////////////////////////////////////////////////////////////////////
+// Static data
+//////////////////////////////////////////////////////////////////////
+RAPTOR_NAMESPACE_BEGIN
+
+static COpenGLProgramStage::COpenGLProgramStageClassID stageId;
+const CPersistence::CPersistenceClassID& COpenGLProgramStage::COpenGLProgramStageClassID::GetClassId(void)
+{
+	return stageId;
+}
+
+RAPTOR_NAMESPACE_END
+
+
+RAPTOR_NAMESPACE
+
+COpenGLProgramStage::COpenGLProgramStage(const std::string& name)
+	:CShaderProgram(stageId, name)
+{
+}
+
+COpenGLProgramStage::~COpenGLProgramStage(void)
+{
+}
+
+bool COpenGLProgramStage::exportObject(CRaptorIO& o)
+{
+	return true;
+}
+
+bool COpenGLProgramStage::importObject(CRaptorIO& i)
+{
+	return true;
+}
+
+void COpenGLProgramStage::setProgramParameters(const CProgramParameters &v)
+{
+	CShaderProgram::setProgramParameters(v);
+}
+
