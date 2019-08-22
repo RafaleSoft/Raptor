@@ -37,7 +37,7 @@ CAOComputeShader::~CAOComputeShader(void)
 
 void CAOComputeShader::glInit(void)
 {
-	CVertexShader *vs = glGetVertexProgram("AMBIENT_OCCLUSION_VTX_PROGRAM");
+	CVertexShader *vs = glGetVertexShader("AMBIENT_OCCLUSION_VTX_PROGRAM");
 	
 	CProgramParameters v_params;
 	GL_MATRIX Id;

@@ -138,7 +138,7 @@ void CParticle::glInitParticle(void)
 		if (m_type == CGL_PARTICLE_TEXTURE)
 		{
 			m_pShader = new CShader(getName() + "_SHADER");
-			CVertexShader *vp = m_pShader->glGetVertexProgram("PARTICLE_VTX_PROGRAM");
+			CVertexShader *vp = m_pShader->glGetVertexShader("PARTICLE_VTX_PROGRAM");
 			CProgramParameters params;
 			params.addParameter("fPointSize", GL_COORD_VERTEX(m_fPointSize, 0.0f, 0.0f, 0.0f));
 			vp->setProgramParameters(params);
@@ -156,7 +156,7 @@ void CParticle::glInitParticle(void)
 		else if ((m_type == CGL_PARTICLE_VOLUMETRIC) && (NULL == m_pShader))
 		{
 			m_pShader = new CShader(getName() + "_VOLUME_SHADER");
-			CVertexShader *vp = m_pShader->glGetVertexProgram("PARTICLE_VTX_PROGRAM");
+			CVertexShader *vp = m_pShader->glGetVertexShader("PARTICLE_VTX_PROGRAM");
 			CProgramParameters params;
 			params.addParameter("fPointSize", GL_COORD_VERTEX(m_fPointSize, 0.0f, 0.0f, 0.0f));
 			vp->setProgramParameters(params);
@@ -208,7 +208,7 @@ void CParticle::usePointSprite(bool use,float size)
 
 	if (NULL != m_pShader)
 	{
-		CVertexShader *vp = m_pShader->glGetVertexProgram();
+		CVertexShader *vp = m_pShader->glGetVertexShader();
 		CProgramParameters params;
 		params.addParameter("fPointSize", GL_COORD_VERTEX(m_fPointSize, 0.0f, 0.0f, 0.0f));
 		vp->setProgramParameters(params);

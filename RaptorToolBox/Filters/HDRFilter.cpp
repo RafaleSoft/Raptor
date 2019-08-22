@@ -614,19 +614,19 @@ bool CHDRFilter::glInitFilter(void)
 bool CHDRFilter::glBuildShaders(void)
 {
 	m_pBlenderX = new CShader("HDR_BLENDER_X");
-	CVertexShader *vp = m_pBlenderX->glGetVertexProgram("EMPTY_PROGRAM");
+	CVertexShader *vp = m_pBlenderX->glGetVertexShader("EMPTY_PROGRAM");
 	CGeometryShader *gp = m_pBlenderX->glGetGeometryShader("FULL_SCREEN_GEO_PROGRAM");
 	CFragmentProgram *fp = m_pBlenderX->glGetFragmentProgram("BLENDER_8X_TEX_PROGRAM");
 	bool res = m_pBlenderX->glCompileShader();
 	m_pBlenderY = new CShader("HDR_BLENDER_Y");
-	vp = m_pBlenderY->glGetVertexProgram("EMPTY_PROGRAM");
+	vp = m_pBlenderY->glGetVertexShader("EMPTY_PROGRAM");
 	gp = m_pBlenderY->glGetGeometryShader("FULL_SCREEN_GEO_PROGRAM");
 	fp = m_pBlenderY->glGetFragmentProgram("BLENDER_8Y_TEX_PROGRAM");
 	res = res && m_pBlenderY->glCompileShader();
 	blurOffsets.addParameter("color", CTextureUnitSetup::IMAGE_UNIT_0);
 	
 	m_pTreshholdFreqs = new CShader("HDR_TRESHOLDS");
-	vp = m_pTreshholdFreqs->glGetVertexProgram("EMPTY_PROGRAM");
+	vp = m_pTreshholdFreqs->glGetVertexShader("EMPTY_PROGRAM");
 	gp = m_pTreshholdFreqs->glGetGeometryShader("FULL_SCREEN_GEO_PROGRAM");
 	// Set it only once since it is a library shader (move this call to the rendering stage)
 	//res = res && gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
@@ -640,7 +640,7 @@ bool CHDRFilter::glBuildShaders(void)
 	res = res && m_pTreshholdFreqs->glCompileShader();
 
 	m_pComposite = new CShader("HDR_COMPOSITE");
-	vp = m_pComposite->glGetVertexProgram("EMPTY_PROGRAM");
+	vp = m_pComposite->glGetVertexShader("EMPTY_PROGRAM");
 	gp = m_pComposite->glGetGeometryShader("FULL_SCREEN_GEO_PROGRAM");
 	fp = m_pComposite->glGetFragmentProgram("composite_fp");
 	res = res && fp->glLoadProgram(composer_ps);
@@ -656,7 +656,7 @@ bool CHDRFilter::glBuildShaders(void)
 
 	m_maxLuminance = new CShader("HDR_MAXLUMINANCE");
 	maxLuminanceParams.addParameter("offset", luminanceParams.p);
-	vp = m_maxLuminance->glGetVertexProgram("EMPTY_PROGRAM");
+	vp = m_maxLuminance->glGetVertexShader("EMPTY_PROGRAM");
 	gp = m_maxLuminance->glGetGeometryShader("FULL_SCREEN_GEO_PROGRAM");
 	fp = m_maxLuminance->glGetFragmentProgram("luminanceMax_fp");
 	res = res && fp->glLoadProgram(luminanceMax_ps);
@@ -668,7 +668,7 @@ bool CHDRFilter::glBuildShaders(void)
 	res = res && m_maxLuminance->glCompileShader();
 
 	m_lastMaxLuminance = new CShader("HDR_LASTMAXLUMINANCE");
-	vp = m_lastMaxLuminance->glGetVertexProgram("EMPTY_PROGRAM");
+	vp = m_lastMaxLuminance->glGetVertexShader("EMPTY_PROGRAM");
 	gp = m_lastMaxLuminance->glGetGeometryShader("FULL_SCREEN_GEO_PROGRAM");
 	fp = m_lastMaxLuminance->glGetFragmentProgram("lastluminanceMax_fp");
 	res = res && fp->glLoadProgram(lastLuminanceMax_ps);

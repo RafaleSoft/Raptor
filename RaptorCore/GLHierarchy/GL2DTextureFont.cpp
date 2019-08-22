@@ -342,7 +342,7 @@ bool CGL2DTextureFont::glGenGlyphs(float precision,
 	{
 		m_pShader = new CShader(getName() + "_SHADER");
 
-		CVertexShader *vp = m_pShader->glGetVertexProgram();
+		CVertexShader *vp = m_pShader->glGetVertexShader();
 		bool res = vp->glLoadProgram(font_vp_src);
 		CProgramParameters params;
 		GL_COORD_VERTEX viewport(0, 0, 640, 480);
@@ -413,7 +413,7 @@ void CGL2DTextureFont::glWrite(const std::string &text, int x, int y, const CCol
 	CProgramParameters params;
 	GL_COORD_VERTEX vp(viewport[0], viewport[1], 0.5f * viewport[2], 0.5f * viewport[3]);
 	params.addParameter("viewport", vp);
-	m_pShader->glGetVertexProgram()->updateProgramParameters(params);
+	m_pShader->glGetVertexShader()->updateProgramParameters(params);
 	params.clear();
 	params.addParameter("color", color);
 	m_pShader->glGetFragmentProgram()->updateProgramParameters(params);
@@ -500,7 +500,7 @@ void CGL2DTextureFont::glWrite(const std::vector<FONT_TEXT_ITEM> &lines)
 	CProgramParameters params;
 	GL_COORD_VERTEX vp(viewport[0], viewport[1], 0.5f * viewport[2], 0.5f * viewport[3]);
 	params.addParameter("viewport", vp);
-	m_pShader->glGetVertexProgram()->updateProgramParameters(params);
+	m_pShader->glGetVertexShader()->updateProgramParameters(params);
 	params.clear();
 	params.addParameter("color", color);
 	m_pShader->glGetFragmentProgram()->updateProgramParameters(params);

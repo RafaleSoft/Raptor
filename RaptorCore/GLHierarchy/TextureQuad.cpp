@@ -205,7 +205,7 @@ void CTextureQuad::glRender(void)
 	{
 		m_pShader = new CShader(getName() + "_SHADER");
 
-		CVertexShader *vp = m_pShader->glGetVertexProgram("TEXTURE_QUAD_VTX_PROGRAM");
+		CVertexShader *vp = m_pShader->glGetVertexShader("TEXTURE_QUAD_VTX_PROGRAM");
 		CGeometryShader *gp = m_pShader->glGetGeometryShader("TEXTURE_QUAD_GEO_PROGRAM");
 		gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
 		CFragmentProgram *fs = m_pShader->glGetFragmentProgram("TEXTURE_QUAD_TEX_PROGRAM");

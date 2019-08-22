@@ -197,7 +197,7 @@ bool CColorControlFilter::glInitFilter(void)
 
 	bool res = false;
 #if defined(GL_ARB_geometry_shader4)
-	BWShader->glGetVertexProgram("EMPTY_PROGRAM");
+	BWShader->glGetVertexShader("EMPTY_PROGRAM");
 	BWShader->glGetGeometryShader("FULL_SCREEN_GEO_PROGRAM");
 	CFragmentProgram *ps = BWShader->glGetFragmentProgram("bw_fp");
 	res = ps->glLoadProgram(colorcontrol_fp);

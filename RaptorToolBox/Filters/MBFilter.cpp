@@ -340,13 +340,13 @@ bool CMBFilter::glInitFilter(void)
 
 #if defined(GL_ARB_geometry_shader4)
 	m_pFinalShader = new CShader("MotionBlurShader");
-	CVertexShader *vp = m_pMotionBlurShader->glGetVertexProgram("EMPTY_PROGRAM");
+	CVertexShader *vp = m_pMotionBlurShader->glGetVertexShader("EMPTY_PROGRAM");
 	CGeometryShader *gp = m_pMotionBlurShader->glGetGeometryShader("FULL_SCREEN_GEO_PROGRAM");
 	CFragmentProgram *fp = m_pMotionBlurShader->glGetFragmentProgram("mb_fp");
 	bool res = fp->glLoadProgram(CAccumulator::accum_fp);
 	res = res && m_pMotionBlurShader->glCompileShader();
 
-	vp = m_pFinalShader->glGetVertexProgram("EMPTY_PROGRAM");
+	vp = m_pFinalShader->glGetVertexShader("EMPTY_PROGRAM");
 	gp = m_pFinalShader->glGetGeometryShader("FULL_SCREEN_GEO_PROGRAM");
 	fp = m_pFinalShader->glGetFragmentProgram("mb_fp2");
 	res = res && fp->glLoadProgram(CAccumulator::accum_fp2);

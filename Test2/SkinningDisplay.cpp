@@ -239,7 +239,7 @@ void main (void) \
     
     skinning  = new CShader("SKINNING_SHADER");
 	tube2->setShader(skinning);
-	CVertexShader *vp = skinning->glGetVertexProgram("Skinning_VP");
+	CVertexShader *vp = skinning->glGetVertexShader("Skinning_VP");
     CFragmentProgram *fp = skinning->glGetFragmentProgram("Skinning_FP");
 
     if (vp->glLoadProgram(skinning_vp_src) &&
@@ -303,7 +303,7 @@ void CSkinningDisplay::Display()
 	C3DEngine::Generic_to_MATRIX(skinningMatrix.p, gm);
 	CProgramParameters::CParameterBase &matrix = params[0];
 	matrix.copy(skinningMatrix);
-    skinning->glGetVertexProgram("Skinning_VP")->setProgramParameters(params);
+	skinning->glGetVertexShader("Skinning_VP")->setProgramParameters(params);
 
 	glColor4f(1.0f,1.0f,1.0f,1.0f);
 	layer->manageSprite(t2,75,75,dt*360);

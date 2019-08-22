@@ -124,36 +124,36 @@ public:
     //!
 	//!	Returns the vertex shader
 	//!	Allocate a new one if necessary
-	CVertexProgram_old * const glGetVertexShader(const std::string& name = "");
+	CVertexProgram_old * const glGetVertexProgram_old(const std::string& name = "");
 
 	//!	Returns true if shader has a Vertex Shader already
-	bool hasVertexShader(void) const { return m_pVShader != NULL; };
+	bool hasVertexProgram_old(void) const { return m_pVProgram_old != NULL; };
 
 	//! Removes the vertex shader.
 	//! @return true if the vertex shader has been deleted
-	bool glRemoveVertexShader(void);
+	bool glRemoveVertexProgram_old(void);
 
 	//!	Returns the fragment shader
 	//!	Allocate a new one if necessary
-	CFragmentProgram_old * const glGetFragmentShader(const std::string& name = "");
+	CFragmentProgram_old * const glGetFragmentProgram_old(const std::string& name = "");
 
 	//!	Returns true if shader has a Fragment Shader already
-	bool hasFragmentShader(void) const { return m_pFShader != NULL; };
+	bool hasFragmentProgram_old(void) const { return m_pFProgram_old != NULL; };
 
 	//! Removes the fragment shader.
 	//! @return true if the fragment shader has been deleted
-	bool glRemoveFragmentShader(void);
+	bool glRemoveFragmentProgram_old(void);
 
     //!	Returns the vertex Program, allocate a new one if necessary.
 	//!	EMPTY_PROGRAM is a special name for a void program (i.e. doing nothing)
-	CVertexShader * const glGetVertexProgram(const std::string& name = "");
+	CVertexShader * const glGetVertexShader(const std::string& name = "");
 
 	//!	Returns true if Program has a Vertex Program already
-	bool hasVertexProgram(void) const { return m_pVProgram != NULL; };
+	bool hasVertexShader(void) const { return m_pVShader != NULL; };
 
 	//! Removes the vertex program.
 	//! @return true if the vertex program has been deleted
-	bool glRemoveVertexProgram(void);
+	bool glRemoveVertexShader(void);
 
 	//!	Returns the fragment Program
 	//!	Allocate a new one if necessary
@@ -171,7 +171,7 @@ public:
 	CGeometryShader * const glGetGeometryShader(const std::string& name = "");
 
 	//!	Returns true if Program has a Vertex Program already
-	bool hasGeometryShader(void) const { return m_pGProgram != NULL; };
+	bool hasGeometryShader(void) const { return m_pGShader != NULL; };
 
 	//! Removes the geometry program.
 	//! @return true if the geometry program has been deleted
@@ -230,20 +230,20 @@ private:
 
 	CMaterial			*m_pMaterial;
 	CTextureUnitSetup	*m_pTMUSetup;
-	CVertexProgram_old	*m_pVShader;
-	CFragmentProgram_old *m_pFShader;
-    CVertexShader      *m_pVProgram;
+	CVertexProgram_old	*m_pVProgram_old;
+	CFragmentProgram_old *m_pFProgram_old;
+    CVertexShader		*m_pVShader;
     CFragmentProgram    *m_pFProgram;
-	CGeometryShader		*m_pGProgram;
+	CGeometryShader		*m_pGShader;
 	CVulkanShaderStage	*m_pVulkanShader;
 	COpenGLShaderStage	*m_pOpenGLShader;
 	COpenGLProgramStage	*m_pOpenGLProgram;
 
-	bool				m_bDeleteVShader;
-	bool				m_bDeleteFShader;
-    bool				m_bDeleteVProgram;
+	bool				m_bDeleteVProgram_old;
+	bool				m_bDeleteFProgram_old;
+    bool				m_bDeleteVShader;
 	bool				m_bDeleteFProgram;
-	bool				m_bDeleteGProgram;
+	bool				m_bDeleteGShader;
 	bool				m_bDeleteVulkanShader;
 	bool				m_bDeleteOpenGLProgram;
 	bool				m_bDeleteTMUSetup;

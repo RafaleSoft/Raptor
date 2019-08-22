@@ -66,7 +66,7 @@ void CAmbientOcclusionDisplay::Init()
 	CGenericDisplay::Init();
 	
 	CShader *AO_shader = new CShader("AO_SHADER");
-	CVertexShader *vp = AO_shader->glGetVertexProgram("AO_VP");
+	CVertexShader *vp = AO_shader->glGetVertexShader("AO_VP");
 	CFragmentProgram *fp = AO_shader->glGetFragmentProgram("AO_FP");
 
 	CProgramParameters ao_params;

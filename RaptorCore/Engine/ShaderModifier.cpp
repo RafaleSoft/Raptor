@@ -77,16 +77,16 @@ void CShaderWrapper::glRender()
 	if (m_bUpdateVertexParameters)
 	{
 		m_bUpdateVertexParameters = false;
-		if (m_pShader->hasVertexProgram())
-			m_pShader->glGetVertexProgram()->setProgramParameters(v);
-		else if (m_pShader->hasVertexShader())
+		if (m_pShader->hasVertexShader())
 			m_pShader->glGetVertexShader()->setProgramParameters(v);
+		else if (m_pShader->hasVertexProgram_old())
+			m_pShader->glGetVertexProgram_old()->setProgramParameters(v);
 
 		m_bUpdateFragmentParameters = false;
 		if (m_pShader->hasFragmentProgram())
 			m_pShader->glGetFragmentProgram()->setProgramParameters(f);
-		else if (m_pShader->hasFragmentShader())
-			m_pShader->glGetFragmentShader()->setProgramParameters(f);
+		else if (m_pShader->hasFragmentProgram_old())
+			m_pShader->glGetFragmentProgram_old()->setProgramParameters(f);
 
 		m_bUpdateGeometryParameters = false;
 		if (m_pShader->hasGeometryShader())

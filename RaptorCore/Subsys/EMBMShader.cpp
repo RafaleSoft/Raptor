@@ -75,7 +75,7 @@ CEMBMShader::~CEMBMShader(void)
 void CEMBMShader::glInit()
 {
 	CShader *shaderLib = new CShader();
-	CVertexShader *vp = shaderLib->glGetVertexProgram("PPIXEL_BUMP_VTX_PROGRAM");
+	CVertexShader *vp = shaderLib->glGetVertexShader("PPIXEL_BUMP_VTX_PROGRAM");
 	CFragmentProgram *fp = shaderLib->glGetFragmentProgram("PPIXEL_BUMP_TEX_PROGRAM");
 	std::string embm_vertexshader = vp->glGetProgramString();
 	std::string embm_pixelshader = fp->glGetProgramString();
@@ -103,7 +103,7 @@ void CEMBMShader::glInit()
 	}
 	fp->glLoadProgram(embm_pixelshader);
 
-	vp = glGetVertexProgram("PPIXEL_BUMP_VTX_PROGRAM");
+	vp = glGetVertexShader("PPIXEL_BUMP_VTX_PROGRAM");
 	fp = glGetFragmentProgram("PPIXEL_BUMP_TEX_PROGRAM");
 
 	glCompileShader();
@@ -175,7 +175,7 @@ void CEMBMShader::enableEmbm(bool enable)
 {
 	if (enable != m_bEnabled)
 	{
-		glRemoveVertexProgram();
+		glRemoveVertexShader();
 		glRemoveFragmentProgram();
 
 		CProgramParameters params;
@@ -186,12 +186,12 @@ void CEMBMShader::enableEmbm(bool enable)
 	
 		if (enable)
 		{
-			vp = glGetVertexProgram("PPIXEL_EMBM_VTX_PROGRAM");
+			vp = glGetVertexShader("PPIXEL_EMBM_VTX_PROGRAM");
 			fp = glGetFragmentProgram("PPIXEL_EMBM_TEX_PROGRAM");
 		}
 		else
 		{
-			vp = glGetVertexProgram("PPIXEL_BUMP_VTX_PROGRAM");
+			vp = glGetVertexShader("PPIXEL_BUMP_VTX_PROGRAM");
 			fp = glGetFragmentProgram("PPIXEL_BUMP_TEX_PROGRAM");
 		}
 

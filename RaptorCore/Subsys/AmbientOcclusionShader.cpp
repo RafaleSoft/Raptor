@@ -209,7 +209,7 @@ void CAmbientOcclusionShader::glRender()
 #ifdef GL_ARB_texture_rectangle
 	glEnable(GL_TEXTURE_RECTANGLE_ARB);
 #endif
-	m_pAOcomputeRef->glGetVertexProgram()->setProgramParameters(v_params);
+	m_pAOcomputeRef->glGetVertexShader()->setProgramParameters(v_params);
 	m_pAOcomputeRef->glGetFragmentProgram()->setProgramParameters(f_params);
 	glCallList(m_occluders[0]->m_AOMapSetup.handle());
 	m_pAOcomputeRef->glRender();
