@@ -40,7 +40,7 @@ class CMaterial;
 class CTextureUnitSetup;
 class CVertexProgram_old;
 class CFragmentProgram_old;
-class CVertexProgram;
+class CVertexShader;
 class CFragmentProgram;
 class CGeometryShader;
 class CVulkanShaderStage;
@@ -146,7 +146,7 @@ public:
 
     //!	Returns the vertex Program, allocate a new one if necessary.
 	//!	EMPTY_PROGRAM is a special name for a void program (i.e. doing nothing)
-	CVertexProgram * const glGetVertexProgram(const std::string& name = "");
+	CVertexShader * const glGetVertexProgram(const std::string& name = "");
 
 	//!	Returns true if Program has a Vertex Program already
 	bool hasVertexProgram(void) const { return m_pVProgram != NULL; };
@@ -232,7 +232,7 @@ private:
 	CTextureUnitSetup	*m_pTMUSetup;
 	CVertexProgram_old	*m_pVShader;
 	CFragmentProgram_old *m_pFShader;
-    CVertexProgram      *m_pVProgram;
+    CVertexShader      *m_pVProgram;
     CFragmentProgram    *m_pFProgram;
 	CGeometryShader		*m_pGProgram;
 	CVulkanShaderStage	*m_pVulkanShader;

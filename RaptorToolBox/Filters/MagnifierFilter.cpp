@@ -45,8 +45,8 @@
 #if !defined(AFX_VERTEXPROGRAM_OLD_H__F2D3BBC6_87A1_4695_B667_2B8C3C4CF022__INCLUDED_)
 	#include "GLHierarchy/VertexProgram_old.h"
 #endif
-#if !defined(AFX_VERTEXPROGRAM_H__204F7213_B40B_4B6A_9BCA_828409871B68__INCLUDED_)
-	#include "GLHierarchy/VertexProgram.h"
+#if !defined(AFX_VERTEXSHADER_H__204F7213_B40B_4B6A_9BCA_828409871B68__INCLUDED_)
+	#include "GLHierarchy/VertexShader.h"
 #endif
 #if !defined(AFX_GEOMETRYSHADER_H__1981EA98_8F3C_4881_9429_A9ACA5B285D3__INCLUDED_)
 	#include "GLHierarchy/GeometryShader.h"
@@ -419,7 +419,7 @@ bool CMagnifierFilter::glInitFilter(void)
 	m_pYKernelShader = new CShader("YKERNEL_SHADER");
 
 #if defined(GL_ARB_geometry_shader4)
-	CVertexProgram *vp = m_pXKernelShader->glGetVertexProgram("EMPTY_PROGRAM");
+	CVertexShader *vp = m_pXKernelShader->glGetVertexProgram("EMPTY_PROGRAM");
 	CGeometryShader *gp = m_pXKernelShader->glGetGeometryShader("magnifier_gp2");
 	bool res = gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
 	res = res & gp->glLoadProgram(gp_src);
@@ -436,7 +436,7 @@ bool CMagnifierFilter::glInitFilter(void)
 	f_params.addParameter("color", CTextureUnitSetup::IMAGE_UNIT_0);
 	f_params.addParameter("factor", CTextureUnitSetup::IMAGE_UNIT_1);
 #elif defined(GL_ARB_vertex_shader)
-	CVertexProgram *vp = m_pXKernelShader->glGetVertexProgram("magnifier_vp");
+	CVertexShader *vp = m_pXKernelShader->glGetVertexProgram("magnifier_vp");
     bool res = vp->glLoadProgram(kernel_vs);
 	CFragmentProgram *ps = m_pXKernelShader->glGetFragmentProgram("xk_ps");
     res = res && ps->glLoadProgram(xk_ps);

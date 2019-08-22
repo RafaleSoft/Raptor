@@ -42,8 +42,8 @@
 #if !defined(AFX_SHADER_H__4D405EC2_7151_465D_86B6_1CA99B906777__INCLUDED_)
 	#include "GLHierarchy/Shader.h"
 #endif
-#if !defined(AFX_VERTEXPROGRAM_H__204F7213_B40B_4B6A_9BCA_828409871B68__INCLUDED_)
-    #include "GLHierarchy/VertexProgram.h"
+#if !defined(AFX_VERTEXSHADER_H__204F7213_B40B_4B6A_9BCA_828409871B68__INCLUDED_)
+	#include "GLHierarchy/VertexShader.h"
 #endif
 #if !defined(AFX_GEOMETRYSHADER_H__1981EA98_8F3C_4881_9429_A9ACA5B285D3__INCLUDED_)
     #include "GLHierarchy/GeometryShader.h"
@@ -138,7 +138,7 @@ void CParticle::glInitParticle(void)
 		if (m_type == CGL_PARTICLE_TEXTURE)
 		{
 			m_pShader = new CShader(getName() + "_SHADER");
-			CVertexProgram *vp = m_pShader->glGetVertexProgram("PARTICLE_VTX_PROGRAM");
+			CVertexShader *vp = m_pShader->glGetVertexProgram("PARTICLE_VTX_PROGRAM");
 			CProgramParameters params;
 			params.addParameter("fPointSize", GL_COORD_VERTEX(m_fPointSize, 0.0f, 0.0f, 0.0f));
 			vp->setProgramParameters(params);
@@ -156,7 +156,7 @@ void CParticle::glInitParticle(void)
 		else if ((m_type == CGL_PARTICLE_VOLUMETRIC) && (NULL == m_pShader))
 		{
 			m_pShader = new CShader(getName() + "_VOLUME_SHADER");
-			CVertexProgram *vp = m_pShader->glGetVertexProgram("PARTICLE_VTX_PROGRAM");
+			CVertexShader *vp = m_pShader->glGetVertexProgram("PARTICLE_VTX_PROGRAM");
 			CProgramParameters params;
 			params.addParameter("fPointSize", GL_COORD_VERTEX(m_fPointSize, 0.0f, 0.0f, 0.0f));
 			vp->setProgramParameters(params);
@@ -208,7 +208,7 @@ void CParticle::usePointSprite(bool use,float size)
 
 	if (NULL != m_pShader)
 	{
-		CVertexProgram *vp = m_pShader->glGetVertexProgram();
+		CVertexShader *vp = m_pShader->glGetVertexProgram();
 		CProgramParameters params;
 		params.addParameter("fPointSize", GL_COORD_VERTEX(m_fPointSize, 0.0f, 0.0f, 0.0f));
 		vp->setProgramParameters(params);

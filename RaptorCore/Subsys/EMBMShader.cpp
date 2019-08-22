@@ -15,8 +15,8 @@
 #if !defined(AFX_TEXTUREUNITSETUP_H__4A6ADC72_02E5_4F2A_931E_A736B6D6E0F0__INCLUDED_)
 	#include "GLHierarchy/TextureUnitSetup.h"
 #endif
-#if !defined(AFX_VERTEXPROGRAM_H__204F7213_B40B_4B6A_9BCA_828409871B68__INCLUDED_)
-    #include "GLHierarchy/VertexProgram.h"
+#if !defined(AFX_VERTEXSHADER_H__204F7213_B40B_4B6A_9BCA_828409871B68__INCLUDED_)
+	#include "GLHierarchy/VertexShader.h"
 #endif
 #if !defined(AFX_FRAGMENTPROGRAM_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
     #include "GLHierarchy/FragmentProgram.h"
@@ -75,7 +75,7 @@ CEMBMShader::~CEMBMShader(void)
 void CEMBMShader::glInit()
 {
 	CShader *shaderLib = new CShader();
-	CVertexProgram *vp = shaderLib->glGetVertexProgram("PPIXEL_BUMP_VTX_PROGRAM");
+	CVertexShader *vp = shaderLib->glGetVertexProgram("PPIXEL_BUMP_VTX_PROGRAM");
 	CFragmentProgram *fp = shaderLib->glGetFragmentProgram("PPIXEL_BUMP_TEX_PROGRAM");
 	std::string embm_vertexshader = vp->glGetProgramString();
 	std::string embm_pixelshader = fp->glGetProgramString();
@@ -83,7 +83,7 @@ void CEMBMShader::glInit()
 
 	//!	First create the program, to get it with the shader
 	//!	and unset auto delete shader
-	vp = new CVertexProgram("PPIXEL_EMBM_VTX_PROGRAM");
+	vp = new CVertexShader("PPIXEL_EMBM_VTX_PROGRAM");
 	size_t pos = embm_vertexshader.find("#version");
 	if (pos < embm_vertexshader.length())
 	{
@@ -181,7 +181,7 @@ void CEMBMShader::enableEmbm(bool enable)
 		CProgramParameters params;
 		params.addParameter("tangent", CProgramParameters::ADDITIONAL_PARAM1);
 		CProgramParameters params2;
-		CVertexProgram *vp = NULL;
+		CVertexShader *vp = NULL;
 		CFragmentProgram *fp = NULL;
 	
 		if (enable)

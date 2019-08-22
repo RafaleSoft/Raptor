@@ -525,7 +525,7 @@ $(SolutionDir)\$(ProjectName)\Subsys\Redist.bat
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\TextureSet.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\TextureUnitSetup.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\UnifiedProgram.cpp" />
-    <ClCompile Include="..\..\RaptorCore\GLHierarchy\VertexProgram.cpp" />
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\VertexShader.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\VertexProgram_old.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\VulkanShaderStage.cpp" />
     <ClCompile Include="..\..\RaptorCore\Raptordll.cpp">
@@ -811,7 +811,7 @@ copy CodeGeneration.h "%RAPTOR_ROOT%\Redist\Include\Subsys"
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\TextureSet.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\TextureUnitSetup.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\UnifiedProgram.h" />
-    <ClInclude Include="..\..\RaptorCore\GLHierarchy\VertexProgram.h" />
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\VertexShader.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\VertexProgram_old.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\VulkanShaderStage.h" />
     <ClInclude Include="..\..\RaptorCore\Raptordll.h" />

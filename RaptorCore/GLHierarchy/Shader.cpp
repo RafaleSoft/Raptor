@@ -34,8 +34,8 @@
 #if !defined(AFX_VERTEXPROGRAM_OLD_H__F2D3BBC6_87A1_4695_B667_2B8C3C4CF022__INCLUDED_)
 	#include "VertexProgram_old.h"
 #endif
-#if !defined(AFX_VERTEXPROGRAM_H__204F7213_B40B_4B6A_9BCA_828409871B68__INCLUDED_)
-    #include "VertexProgram.h"
+#if !defined(AFX_VERTEXSHADER_H__204F7213_B40B_4B6A_9BCA_828409871B68__INCLUDED_)
+    #include "VertexShader.h"
 #endif
 #if !defined(AFX_FRAGMENTPROGRAM_OLD_H__DD0AD51D_3BFF_4C65_8099_BA7696D7BDDF__INCLUDED_)
 	#include "FragmentProgram_old.h"
@@ -445,7 +445,7 @@ bool CShader::glRemoveTextureUnitSetup(void)
     }
 }
 
-CVertexProgram* const CShader::glGetVertexProgram(const std::string& name)
+CVertexShader* const CShader::glGetVertexProgram(const std::string& name)
 {
 	if (m_pVProgram == NULL) 
 	{
@@ -457,11 +457,11 @@ CVertexProgram* const CShader::glGetVertexProgram(const std::string& name)
 			pProgram = CPersistence::FindObject(name);
         if (pProgram == NULL)
 		{
-			m_pVProgram = new CVertexProgram(name);
+			m_pVProgram = new CVertexShader(name);
 			m_bDeleteVProgram = true;
 		}
-		else if (pProgram->getId().isSubClassOf(CVertexProgram::CVertexProgramClassID::GetClassId()))
-			m_pVProgram = (CVertexProgram*)pProgram;
+		else if (pProgram->getId().isSubClassOf(CVertexShader::CVertexShaderClassID::GetClassId()))
+			m_pVProgram = (CVertexShader*)pProgram;
 
 		m_pVProgram->registerDestruction(this);
 
@@ -1024,7 +1024,7 @@ bool CShader::importObject(CRaptorIO& io)
 			glGetFragmentShader();
 			m_pFShader->importObject(io);
 		}
-        else if (data == "VertexProgram")
+        else if (data == "VertexShader")
 		{
 			glGetVertexProgram();
 			m_pVProgram->importObject(io);

@@ -302,9 +302,6 @@
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\UnifiedProgram.cpp">
       <Filter>Source Files\GLHierarchy src</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\RaptorCore\GLHierarchy\VertexProgram.cpp">
-      <Filter>Source Files\GLHierarchy src</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\RaptorCore\Subsys\3DSceneAttributes.cpp">
       <Filter>Source Files\Subsys src</Filter>
     </ClCompile>
@@ -623,6 +620,9 @@
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\GeometryShader.cpp">
       <Filter>Source Files\GLHierarchy src</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\VertexShader.cpp">
+      <Filter>Source Files\GLHierarchy src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Xsd Include="Subsys\ObjectModels\Raptor.xsd">
@@ -799,9 +799,6 @@
       <Filter>Header Files\GLHierarchy include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\UnifiedProgram.h">
-      <Filter>Header Files\GLHierarchy include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\RaptorCore\GLHierarchy\VertexProgram.h">
       <Filter>Header Files\GLHierarchy include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\RaptorCore\SSE_Engine\SSE_3DEngine.h">
@@ -1195,6 +1192,9 @@
       <Filter>Header Files\GLHierarchy include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\GeometryShader.h">
+      <Filter>Header Files\GLHierarchy include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\VertexShader.h">
       <Filter>Header Files\GLHierarchy include</Filter>
     </ClInclude>
   </ItemGroup>

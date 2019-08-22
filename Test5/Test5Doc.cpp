@@ -14,7 +14,7 @@
 #include "GLHierarchy/Light.h"
 #include "GLHierarchy/Shader.h"
 #include "GLHierarchy/ShaderProgram.h"
-#include "GLHierarchy/VertexProgram.h"
+#include "GLHierarchy/VertexShader.h"
 #include "GLHierarchy/VertexProgram_old.h"
 #include "GLHierarchy/VulkanShaderStage.h"
 #include "GLHierarchy/TextureFactory.h"
@@ -168,7 +168,7 @@ void CTest5Doc::GLInitContext(void)
 
 	C3DScene *pScene = m_pDisplay->getRootScene();
 	//CShader *shader = new CShader("uniforms-shader");
-	//CVertexProgram *p = shader->glGetVertexProgram("uniforms");
+	//CVertexShader *p = shader->glGetVertexProgram("uniforms");
 	//p->glLoadProgramFromStream(*shdr);
 	//bool res = shader->glCompileShader();
 

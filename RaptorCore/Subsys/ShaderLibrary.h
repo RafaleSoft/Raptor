@@ -30,9 +30,6 @@
 
 RAPTOR_NAMESPACE_BEGIN
 
-class CVertexProgram;
-class CFragmentProgram;
-class CGeometryShader;
 class CShader;
 
 //!

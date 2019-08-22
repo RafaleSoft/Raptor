@@ -1,6 +1,6 @@
 /***************************************************************************/
 /*                                                                         */
-/*  VertexProgram.cpp                                                      */
+/*  VertexShader.cpp                                                       */
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
@@ -18,8 +18,8 @@
 
 #include "Subsys/CodeGeneration.h"
 
-#if !defined(AFX_VERTEXPROGRAM_H__204F7213_B40B_4B6A_9BCA_828409871B68__INCLUDED_)
-    #include "VertexProgram.h"
+#if !defined(AFX_VERTEXSHADER_H__204F7213_B40B_4B6A_9BCA_828409871B68__INCLUDED_)
+    #include "GLHierarchy/VertexShader.h"
 #endif
 #if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
 	#include "System/RaptorGLExtensions.h"
@@ -40,39 +40,39 @@
 
 RAPTOR_NAMESPACE
 
-IMPLEMENT_CLASS_ID(CVertexProgram, vertexId)
+IMPLEMENT_CLASS_ID(CVertexShader, vertexId)
 
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CVertexProgram::CVertexProgram(const std::string& name):
+CVertexShader::CVertexShader(const std::string& name) :
     CUnifiedProgram(vertexId,name)
 {
     m_handle.handle(0);	// default openGL vertex processing pipeline
-	m_handle.hClass(CVertexProgram::CVertexProgramClassID::GetClassId().ID());
+	m_handle.hClass(CVertexShader::CVertexShaderClassID::GetClassId().ID());
 
     glInitShaders();
 }
 
-CVertexProgram::CVertexProgram(const CVertexProgram& shader)
+CVertexShader::CVertexShader(const CVertexShader& shader)
 	:CUnifiedProgram(shader)
 {
 }
 
-CVertexProgram* CVertexProgram::glClone(void)
+CVertexShader* CVertexShader::glClone(void)
 {
-	return new CVertexProgram(*this);
+	return new CVertexShader(*this);
 }
 
-CVertexProgram::~CVertexProgram()
+CVertexShader::~CVertexShader()
 {
 #if defined(GL_ARB_vertex_shader)
 	if (!CRaptorInstance::GetInstance().m_bVertexProgramReady)
 	{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
-        Raptor::GetErrorManager()->generateRaptorError(	CVertexProgram::CVertexProgramClassID::GetClassId(),
+        Raptor::GetErrorManager()->generateRaptorError(	CVertexShader::CVertexShaderClassID::GetClassId(),
 														CRaptorErrorManager::RAPTOR_ERROR,
 														CRaptorMessages::ID_NO_GPU_PROGRAM);
 #endif
@@ -86,7 +86,7 @@ CVertexProgram::~CVertexProgram()
 #endif
 }
 
-void CVertexProgram::glInitShaders()
+void CVertexShader::glInitShaders()
 {
 	m_parameters.clear();
 
@@ -108,7 +108,7 @@ void CVertexProgram::glInitShaders()
 			arg.arg_sz = "GLSL vertex";
 			vector<CRaptorMessages::MessageArgument> args;
 			args.push_back(arg);
-			Raptor::GetErrorManager()->generateRaptorError(CVertexProgram::CVertexProgramClassID::GetClassId(),
+			Raptor::GetErrorManager()->generateRaptorError(CVertexShader::CVertexShaderClassID::GetClassId(),
 														   CRaptorErrorManager::RAPTOR_WARNING,
 														   CRaptorMessages::ID_NO_GPU_PROGRAM,
 														   args);
@@ -117,7 +117,7 @@ void CVertexProgram::glInitShaders()
 	}
 }
 
-bool CVertexProgram::glLoadProgram(const std::string &program)
+bool CVertexShader::glLoadProgram(const std::string &program)
 {
     m_bValid = false;
 	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
@@ -131,7 +131,7 @@ bool CVertexProgram::glLoadProgram(const std::string &program)
         m_handle.handle(pExtensions->glCreateShaderObjectARB(GL_VERTEX_SHADER_ARB));
         if (m_handle.handle() == 0)
         {
-            Raptor::GetErrorManager()->generateRaptorError(	CVertexProgram::CVertexProgramClassID::GetClassId(),
+			Raptor::GetErrorManager()->generateRaptorError(	CVertexShader::CVertexShaderClassID::GetClassId(),
 															CRaptorErrorManager::RAPTOR_WARNING,
 															CRaptorMessages::ID_NO_GPU_PROGRAM);
             return false;
@@ -156,7 +156,7 @@ bool CVertexProgram::glLoadProgram(const std::string &program)
             arg.arg_sz = pInfoLog;
             vector<CRaptorMessages::MessageArgument> args;
             args.push_back(arg);
-            Raptor::GetErrorManager()->generateRaptorError(	CVertexProgram::CVertexProgramClassID::GetClassId(),
+			Raptor::GetErrorManager()->generateRaptorError(	CVertexShader::CVertexShaderClassID::GetClassId(),
 															CRaptorErrorManager::RAPTOR_ERROR,
 															CRaptorMessages::ID_PROGRAM_ERROR,args);
             free(pInfoLog);
@@ -170,7 +170,7 @@ bool CVertexProgram::glLoadProgram(const std::string &program)
     return m_bValid;
 }
 
-bool CVertexProgram::glBindProgram(RAPTOR_HANDLE program)
+bool CVertexShader::glBindProgram(RAPTOR_HANDLE program)
 {
 	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 
@@ -179,7 +179,7 @@ bool CVertexProgram::glBindProgram(RAPTOR_HANDLE program)
 	pExtensions->glGetObjectParameterivARB(m_handle.handle(), GL_OBJECT_SUBTYPE_ARB, &value);
 	if (value != GL_VERTEX_SHADER_ARB)
 	{
-		Raptor::GetErrorManager()->generateRaptorError(CVertexProgram::CVertexProgramClassID::GetClassId(),
+		Raptor::GetErrorManager()->generateRaptorError(CVertexShader::CVertexShaderClassID::GetClassId(),
 													   CRaptorErrorManager::RAPTOR_WARNING,
 													   "Vertex Program is invalid in this context");
 		
@@ -211,7 +211,7 @@ bool CVertexProgram::glBindProgram(RAPTOR_HANDLE program)
 }
 
 
-bool CVertexProgram::glGetProgramCaps(GL_VERTEX_PROGRAM_CAPS& caps)
+bool CVertexShader::glGetProgramCaps(GL_VERTEX_PROGRAM_CAPS& caps)
 {
 	if (CRaptorInstance::GetInstance().m_bVertexProgramReady)
 	{
@@ -240,7 +240,7 @@ bool CVertexProgram::glGetProgramCaps(GL_VERTEX_PROGRAM_CAPS& caps)
 		return false;
 }
 
-bool CVertexProgram::glGetProgramStatus(void)
+bool CVertexShader::glGetProgramStatus(void)
 {
 	if (m_handle.handle() == 0)
 		return false;

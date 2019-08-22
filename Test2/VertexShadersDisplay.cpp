@@ -7,7 +7,7 @@
 #include "VertexShadersDisplay.h"
 #include "GLHierarchy/VertexProgram_old.h"
 #include "GLHierarchy/FragmentProgram_old.h"
-#include "GLHierarchy/VertexProgram.h"
+#include "GLHierarchy/VertexShader.h"
 #include "GLHierarchy/FragmentProgram.h"
 #include "Engine/3DEngine.h"
 #include "Engine/3DScene.h"
@@ -546,7 +546,7 @@ public:
 		CVertexProgram_old *vs = m_pShader->glGetVertexShader();
 		vs->setProgramParameters(params);
 #else
-		CVertexProgram *vp = m_pShader->glGetVertexProgram();
+		CVertexShader *vp = m_pShader->glGetVertexProgram();
 		vp->setProgramParameters(params);
 #endif
 		params2.addParameter("",GL_COORD_VERTEX(0.0f,0.6f,0.8f,0.8f));
@@ -794,7 +794,7 @@ void CVertexShadersDisplay::Init()
 	fs->glLoadProgram(waterFragments);
 	fs->glStop();
 #else
-	CVertexProgram *vp = pShader->glGetVertexProgram();
+	CVertexShader *vp = pShader->glGetVertexProgram();
 	vp->glLoadProgram(waterVertexProgram);
 	CFragmentProgram *fp = pShader->glGetFragmentProgram();
 	fp->glLoadProgram(waterFragmentProgram);

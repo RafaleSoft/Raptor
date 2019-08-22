@@ -35,8 +35,8 @@
 #if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
 	#include "System/RaptorGLExtensions.h"
 #endif
-#if !defined(AFX_VERTEXPROGRAM_H__204F7213_B40B_4B6A_9BCA_828409871B68__INCLUDED_)
-	#include "GLHierarchy/VertexProgram.h"
+#if !defined(AFX_VERTEXSHADER_H__204F7213_B40B_4B6A_9BCA_828409871B68__INCLUDED_)
+	#include "GLHierarchy/VertexShader.h"
 #endif
 #if !defined(AFX_GEOMETRYSHADER_H__1981EA98_8F3C_4881_9429_A9ACA5B285D3__INCLUDED_)
 	#include "GLHierarchy/GeometryShader.h"
@@ -342,7 +342,7 @@ bool CGL2DTextureFont::glGenGlyphs(float precision,
 	{
 		m_pShader = new CShader(getName() + "_SHADER");
 
-		CVertexProgram *vp = m_pShader->glGetVertexProgram();
+		CVertexShader *vp = m_pShader->glGetVertexProgram();
 		bool res = vp->glLoadProgram(font_vp_src);
 		CProgramParameters params;
 		GL_COORD_VERTEX viewport(0, 0, 640, 480);

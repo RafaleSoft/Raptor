@@ -1,6 +1,6 @@
 /***************************************************************************/
 /*                                                                         */
-/*  VertexProgram.h                                                        */
+/*  VertexShader.h                                                         */
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
@@ -16,8 +16,8 @@
 /***************************************************************************/
 
 
-#if !defined(AFX_VERTEXPROGRAM_H__204F7213_B40B_4B6A_9BCA_828409871B68__INCLUDED_)
-#define AFX_VERTEXPROGRAM_H__204F7213_B40B_4B6A_9BCA_828409871B68__INCLUDED_
+#if !defined(AFX_VERTEXSHADER_H__204F7213_B40B_4B6A_9BCA_828409871B68__INCLUDED_)
+#define AFX_VERTEXSHADER_H__204F7213_B40B_4B6A_9BCA_828409871B68__INCLUDED_
 
 #if _MSC_VER > 1000
 #pragma once
@@ -33,7 +33,7 @@
 RAPTOR_NAMESPACE_BEGIN
 
 
-class RAPTOR_API CVertexProgram : public CUnifiedProgram  
+class RAPTOR_API CVertexShader : public CUnifiedProgram  
 {
 public:
     typedef struct GL_VERTEX_PROGRAM_CAPS_t
@@ -55,13 +55,13 @@ public:
 
 public:
 	//!	Default Constructor.
-	CVertexProgram(const std::string& name="VERTEX_PROGRAM");
+	CVertexShader(const std::string& name = "VERTEX_SHADER");
 
 	//!	Destructor.
-	virtual ~CVertexProgram();
+	virtual ~CVertexShader();
 
 	//!	Clone this shader.
-	virtual CVertexProgram* glClone();
+	virtual CVertexShader* glClone();
 
     //! Loads an OpenGL vertex shader program.
 	virtual bool glLoadProgram(const std::string &program);
@@ -81,15 +81,15 @@ public:
     virtual bool glBindProgram(RAPTOR_HANDLE program);
 
 	//!	Implements CPersistence
-	DECLARE_CLASS_ID(CVertexProgramClassID,"VertexProgram",CShaderProgram)
+	DECLARE_CLASS_ID(CVertexShaderClassID, "VertexShader", CShaderProgram)
 
 
 private:
 	//!	Forbidden operators
-	CVertexProgram& operator=(const CVertexProgram&);
+	CVertexShader& operator=(const CVertexShader&);
 
 	//! Copy constructor.
-	CVertexProgram(const CVertexProgram& shader);
+	CVertexShader(const CVertexShader& shader);
 
     //! Specific init of shader parameters
     virtual void	glInitShaders();
@@ -97,5 +97,5 @@ private:
 
 RAPTOR_NAMESPACE_END
 
-#endif // !defined(AFX_VERTEXPROGRAM_H__204F7213_B40B_4B6A_9BCA_828409871B68__INCLUDED_)
+#endif // !defined(AFX_VERTEXSHADER_H__204F7213_B40B_4B6A_9BCA_828409871B68__INCLUDED_)
 
