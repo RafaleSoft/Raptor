@@ -18,7 +18,7 @@
 #include "GLHierarchy/Object3DInstance.h"
 #include "GLHierarchy/SimpleObject.h"
 #include "GLHierarchy/Shader.h"
-#include "GLHierarchy/FragmentProgram.h"
+#include "GLHierarchy/FragmentShader.h"
 #include "System/Raptor.h"
 #include "System/RaptorGLExtensions.h"
 #include "GLHierarchy/IRenderingProperties.h"
@@ -315,7 +315,7 @@ void main (void)						\n\
 	gl_FragColor = texture2D(diffuseMap,vec2(offset.rg) + vec2(gl_TexCoord[0].st)); \n\
 }";
 
-	CFragmentProgram *fp = m_pShader->glGetFragmentProgram();
+	CFragmentShader *fp = m_pShader->glGetFragmentProgram();
 	fp->glLoadProgram(program);
 	CProgramParameters params;
 	params.addParameter("diffuseMap",CTextureUnitSetup::IMAGE_UNIT_0);

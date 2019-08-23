@@ -30,8 +30,8 @@
 #if !defined(AFX_FRAGMENTPROGRAM_OLD_H__DD0AD51D_3BFF_4C65_8099_BA7696D7BDDF__INCLUDED_)
 	#include "GLHierarchy/FragmentProgram_old.h"
 #endif
-#if !defined(AFX_FRAGMENTPROGRAM_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
-    #include "GLHierarchy/FragmentProgram.h"
+#if !defined(AFX_FRAGMENTSHADER_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
+    #include "GLHierarchy/FragmentShader.h"
 #endif
 #if !defined(AFX_VERTEXPROGRAM_OLD_H__F2D3BBC6_87A1_4695_B667_2B8C3C4CF022__INCLUDED_)
 	#include "GLHierarchy/VertexProgram_old.h"
@@ -616,7 +616,7 @@ bool CHDRFilter::glBuildShaders(void)
 	m_pBlenderX = new CShader("HDR_BLENDER_X");
 	CVertexShader *vp = m_pBlenderX->glGetVertexShader("EMPTY_PROGRAM");
 	CGeometryShader *gp = m_pBlenderX->glGetGeometryShader("FULL_SCREEN_GEO_PROGRAM");
-	CFragmentProgram *fp = m_pBlenderX->glGetFragmentProgram("BLENDER_8X_TEX_PROGRAM");
+	CFragmentShader *fp = m_pBlenderX->glGetFragmentProgram("BLENDER_8X_TEX_PROGRAM");
 	bool res = m_pBlenderX->glCompileShader();
 	m_pBlenderY = new CShader("HDR_BLENDER_Y");
 	vp = m_pBlenderY->glGetVertexShader("EMPTY_PROGRAM");
@@ -692,7 +692,7 @@ bool CHDRFilter::glBuildShaders(void)
 		shaderLib->releaseReference();
 
 		m_pTreshholdFreqs = new CShader("HDR_TRESHOLDS");
-		CFragmentProgram *fp = m_pTreshholdFreqs->glGetFragmentProgram("treshhold2_fp");
+		CFragmentShader *fp = m_pTreshholdFreqs->glGetFragmentProgram("treshhold2_fp");
 		bool res = fp->glLoadProgram(treshhold2_ps);
 		if (res)
 		{

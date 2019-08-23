@@ -33,8 +33,8 @@
 #if !defined(AFX_VERTEXSHADER_H__204F7213_B40B_4B6A_9BCA_828409871B68__INCLUDED_)
 	#include "GLHierarchy/VertexShader.h"
 #endif
-#if !defined(AFX_FRAGMENTPROGRAM_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
-    #include "GLHierarchy/FragmentProgram.h"
+#if !defined(AFX_FRAGMENTSHADER_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
+    #include "GLHierarchy/FragmentShader.h"
 #endif
 #if !defined(AFX_GEOMETRYSHADER_H__1981EA98_8F3C_4881_9429_A9ACA5B285D3__INCLUDED_)
 	#include "GLHierarchy/GeometryShader.h"
@@ -199,12 +199,12 @@ bool CColorControlFilter::glInitFilter(void)
 #if defined(GL_ARB_geometry_shader4)
 	BWShader->glGetVertexShader("EMPTY_PROGRAM");
 	BWShader->glGetGeometryShader("FULL_SCREEN_GEO_PROGRAM");
-	CFragmentProgram *ps = BWShader->glGetFragmentProgram("bw_fp");
+	CFragmentShader *ps = BWShader->glGetFragmentProgram("bw_fp");
 	res = ps->glLoadProgram(colorcontrol_fp);
 	res = res && BWShader->glCompileShader();
 	fp_params.addParameter("source", CTextureUnitSetup::IMAGE_UNIT_0);
 #elif defined(GL_ARB_vertex_shader)
-	CFragmentProgram *fp = BWShader->glGetFragmentProgram("bw_fp");
+	CFragmentShader *fp = BWShader->glGetFragmentProgram("bw_fp");
 	res = fp->glLoadProgram(colorcontrol_fprogram);
 	if (res)
 		fp_params.addParameter("source",CTextureUnitSetup::IMAGE_UNIT_0);

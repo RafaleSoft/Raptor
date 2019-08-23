@@ -48,8 +48,8 @@
 #if !defined(AFX_GEOMETRYSHADER_H__1981EA98_8F3C_4881_9429_A9ACA5B285D3__INCLUDED_)
     #include "GLHierarchy/GeometryShader.h"
 #endif
-#if !defined(AFX_FRAGMENTPROGRAM_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
-	#include "GLHierarchy/FragmentProgram.h"
+#if !defined(AFX_FRAGMENTSHADER_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
+	#include "GLHierarchy/FragmentShader.h"
 #endif
 
 RAPTOR_NAMESPACE_BEGIN
@@ -146,7 +146,7 @@ void CParticle::glInitParticle(void)
 			CGeometryShader *gp = m_pShader->glGetGeometryShader("PARTICLE2D_GEO_PROGRAM");
 			gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
 
-			CFragmentProgram *fs = m_pShader->glGetFragmentProgram("TEXTURE_QUAD_TEX_PROGRAM");
+			CFragmentShader *fs = m_pShader->glGetFragmentProgram("TEXTURE_QUAD_TEX_PROGRAM");
 			params.clear();
 			params.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);
 			fs->setProgramParameters(params);
@@ -164,7 +164,7 @@ void CParticle::glInitParticle(void)
 			CGeometryShader *gp = m_pShader->glGetGeometryShader("PARTICLE3D_GEO_PROGRAM");
 			gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
 
-			CFragmentProgram *fs = m_pShader->glGetFragmentProgram("PARTICLE3D_TEX_PROGRAM");
+			CFragmentShader *fs = m_pShader->glGetFragmentProgram("PARTICLE3D_TEX_PROGRAM");
 			params.clear();
 			params.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);
 			fs->setProgramParameters(params);

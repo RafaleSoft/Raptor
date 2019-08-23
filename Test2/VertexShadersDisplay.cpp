@@ -8,7 +8,7 @@
 #include "GLHierarchy/VertexProgram_old.h"
 #include "GLHierarchy/FragmentProgram_old.h"
 #include "GLHierarchy/VertexShader.h"
-#include "GLHierarchy/FragmentProgram.h"
+#include "GLHierarchy/FragmentShader.h"
 #include "Engine/3DEngine.h"
 #include "Engine/3DScene.h"
 #include "Engine/IViewPoint.h"
@@ -796,7 +796,7 @@ void CVertexShadersDisplay::Init()
 #else
 	CVertexShader *vp = pShader->glGetVertexShader();
 	vp->glLoadProgram(waterVertexProgram);
-	CFragmentProgram *fp = pShader->glGetFragmentProgram();
+	CFragmentShader *fp = pShader->glGetFragmentProgram();
 	fp->glLoadProgram(waterFragmentProgram);
 	pShader->glCompileShader();
 	pShader->glStop();

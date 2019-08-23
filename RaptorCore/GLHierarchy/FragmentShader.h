@@ -1,6 +1,6 @@
 /***************************************************************************/
 /*                                                                         */
-/*  FragmentProgram.h                                                      */
+/*  FragmentShader.h                                                       */
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
@@ -15,8 +15,9 @@
 /*                                                                         */
 /***************************************************************************/
 
-#if !defined(AFX_FRAGMENTPROGRAM_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
-#define AFX_FRAGMENTPROGRAM_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_
+
+#if !defined(AFX_FRAGMENTSHADER_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
+#define AFX_FRAGMENTSHADER_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_
 
 #if _MSC_VER > 1000
 #pragma once
@@ -33,12 +34,9 @@ RAPTOR_NAMESPACE_BEGIN
 
 
 //!
-//! This class handles OpenGL2.0 fragment shaders. It is conceived to handle a program
-//! rather than being only a shader because OGL2 shading language relates more to the concept
-//! of a program with variables, compilation, linking and so on.
-//! CAUTION : this class embbeds a fragment shader extension object, while CFragmentShader holds
-//! an assembly program only.
-class RAPTOR_API CFragmentProgram : public CUnifiedProgram  
+//! This class handles OpenGL2.0 fragment shaders.
+//!
+class RAPTOR_API CFragmentShader : public CUnifiedProgram  
 {
 public:
     typedef struct GL_FRAGMENT_PROGRAM_CAPS_t
@@ -51,13 +49,13 @@ public:
 
 public:
 	//!	Default Constructor.
-	CFragmentProgram(const std::string& name="FRAGMENT_PROGRAM");
+	CFragmentShader(const std::string& name = "FRAGMENT_PROGRAM");
 
 	//!	Destructor.
-	virtual ~CFragmentProgram();
+	virtual ~CFragmentShader();
 
 	//!	Clone this shader.
-	virtual CFragmentProgram* glClone();
+	virtual CFragmentShader* glClone();
 
     //! Loads an OpenGL 2.0 vertex shader program.
 	bool glLoadProgram(const std::string &program);
@@ -78,15 +76,15 @@ public:
 	virtual bool glBindProgram(RAPTOR_HANDLE program);
 
 	//!	Implements CPersistence
-	DECLARE_CLASS_ID(CFragmentProgramClassID,"FragmentProgram",CShaderProgram)
+	DECLARE_CLASS_ID(CFragmentShaderClassID,"FragmentShader",CShaderProgram)
 	
 
 private:
 	//!	Forbidden operators
-	CFragmentProgram& operator=(const CFragmentProgram&);
+	CFragmentShader& operator=(const CFragmentShader&);
 
 	//! Copy constructor.
-	CFragmentProgram(const CFragmentProgram& shader);
+	CFragmentShader(const CFragmentShader& shader);
 
     //! Specific init of shader parameters
     virtual void	glInitShaders();

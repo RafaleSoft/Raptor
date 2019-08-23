@@ -36,8 +36,8 @@
 #if !defined(AFX_SHADER_H__4D405EC2_7151_465D_86B6_1CA99B906777__INCLUDED_)
 	#include "GLHierarchy/Shader.h"
 #endif
-#if !defined(AFX_FRAGMENTPROGRAM_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
-	#include "GLHierarchy/FragmentProgram.h"
+#if !defined(AFX_FRAGMENTSHADER_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
+	#include "GLHierarchy/FragmentShader.h"
 #endif
 #if !defined(AFX_FRAGMENTPROGRAM_OLD_H__DD0AD51D_3BFF_4C65_8099_BA7696D7BDDF__INCLUDED_)
 	#include "GLHierarchy/FragmentProgram_old.h"
@@ -423,7 +423,7 @@ bool CMagnifierFilter::glInitFilter(void)
 	CGeometryShader *gp = m_pXKernelShader->glGetGeometryShader("magnifier_gp2");
 	bool res = gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
 	res = res & gp->glLoadProgram(gp_src);
-	CFragmentProgram *ps = m_pXKernelShader->glGetFragmentProgram("xk_ps2");
+	CFragmentShader *ps = m_pXKernelShader->glGetFragmentProgram("xk_ps2");
 	res = res && ps->glLoadProgram(xk_ps2);
 	res = res && m_pXKernelShader->glCompileShader();
 
@@ -438,7 +438,7 @@ bool CMagnifierFilter::glInitFilter(void)
 #elif defined(GL_ARB_vertex_shader)
 	CVertexShader *vp = m_pXKernelShader->glGetVertexProgram("magnifier_vp");
     bool res = vp->glLoadProgram(kernel_vs);
-	CFragmentProgram *ps = m_pXKernelShader->glGetFragmentProgram("xk_ps");
+	CFragmentShader *ps = m_pXKernelShader->glGetFragmentProgram("xk_ps");
     res = res && ps->glLoadProgram(xk_ps);
 	res = res && m_pXKernelShader->glCompileShader();
 

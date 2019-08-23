@@ -21,7 +21,7 @@
 #include "GLHierarchy/Object3DInstance.h"
 #include "GLHierarchy/Shader.h"
 #include "GLHierarchy/VertexShader.h"
-#include "GLHierarchy/FragmentProgram.h"
+#include "GLHierarchy/FragmentShader.h"
 #include "GLHierarchy/TextureFactory.h"
 #include "GLHierarchy/TextureFactoryConfig.h"
 #include "GLHierarchy/TextureSet.h"
@@ -67,7 +67,7 @@ void CAmbientOcclusionDisplay::Init()
 	
 	CShader *AO_shader = new CShader("AO_SHADER");
 	CVertexShader *vp = AO_shader->glGetVertexShader("AO_VP");
-	CFragmentProgram *fp = AO_shader->glGetFragmentProgram("AO_FP");
+	CFragmentShader *fp = AO_shader->glGetFragmentProgram("AO_FP");
 
 	CProgramParameters ao_params;
 	ao_params.addParameter("AOMap", CTextureUnitSetup::IMAGE_UNIT_2);

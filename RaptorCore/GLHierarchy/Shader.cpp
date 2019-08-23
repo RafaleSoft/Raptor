@@ -40,8 +40,8 @@
 #if !defined(AFX_FRAGMENTPROGRAM_OLD_H__DD0AD51D_3BFF_4C65_8099_BA7696D7BDDF__INCLUDED_)
 	#include "FragmentProgram_old.h"
 #endif
-#if !defined(AFX_FRAGMENTPROGRAM_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
-    #include "FragmentProgram.h"
+#if !defined(AFX_FRAGMENTSHADER_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
+    #include "FragmentShader.h"
 #endif
 #if !defined(AFX_GEOMETRYSHADER_H__1981EA98_8F3C_4881_9429_A9ACA5B285D3__INCLUDED_)
     #include "GeometryShader.h"
@@ -537,7 +537,7 @@ bool CShader::glRemoveVertexProgram_old(void)
 	}
 }
 
-CFragmentProgram * const CShader::glGetFragmentProgram(const std::string& name)
+CFragmentShader * const CShader::glGetFragmentProgram(const std::string& name)
 {
 	if (m_pFProgram == NULL) 
 	{
@@ -549,11 +549,11 @@ CFragmentProgram * const CShader::glGetFragmentProgram(const std::string& name)
 			pProgram = CPersistence::FindObject(name);
 		if (pProgram == NULL)
 		{
-			m_pFProgram = new CFragmentProgram(name);
+			m_pFProgram = new CFragmentShader(name);
 			m_bDeleteFProgram = true;
 		}
-		else if	(pProgram->getId().isSubClassOf(CFragmentProgram::CFragmentProgramClassID::GetClassId()))
-			m_pFProgram = (CFragmentProgram*)pProgram;
+		else if (pProgram->getId().isSubClassOf(CFragmentShader::CFragmentShaderClassID::GetClassId()))
+			m_pFProgram = (CFragmentShader*)pProgram;
 
 		m_pFProgram->registerDestruction(this);
 
@@ -1014,12 +1014,12 @@ bool CShader::importObject(CRaptorIO& io)
 			glGetTextureUnitsSetup();
 			m_pTMUSetup->importObject(io);
 		}
-		else if (data == "VertexShader")
+		else if (data == "VertexProgram")
 		{
 			glGetVertexProgram_old();
 			m_pVProgram_old->importObject(io);
 		}
-		else if (data == "FragmentShader")
+		else if (data == "FragmentProgram")
 		{
 			glGetFragmentProgram_old();
 			m_pFProgram_old->importObject(io);
@@ -1034,7 +1034,7 @@ bool CShader::importObject(CRaptorIO& io)
 			glGetGeometryShader();
 			m_pGShader->importObject(io);
 		}
-		else if (data == "FragmentProgram")
+		else if (data == "FragmentShader")
 		{
 			glGetFragmentProgram();
 			m_pFProgram->importObject(io);

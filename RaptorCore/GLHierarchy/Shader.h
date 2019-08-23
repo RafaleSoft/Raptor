@@ -41,7 +41,7 @@ class CTextureUnitSetup;
 class CVertexProgram_old;
 class CFragmentProgram_old;
 class CVertexShader;
-class CFragmentProgram;
+class CFragmentShader;
 class CGeometryShader;
 class CVulkanShaderStage;
 class COpenGLProgramStage;
@@ -157,7 +157,7 @@ public:
 
 	//!	Returns the fragment Program
 	//!	Allocate a new one if necessary
-	CFragmentProgram * const glGetFragmentProgram(const std::string& name = "");
+	CFragmentShader * const glGetFragmentProgram(const std::string& name = "");
 
 	//!	Returns true if Program has a Fragment Program already
 	bool hasFragmentProgram(void) const { return m_pFProgram != NULL; };
@@ -233,7 +233,7 @@ private:
 	CVertexProgram_old	*m_pVProgram_old;
 	CFragmentProgram_old *m_pFProgram_old;
     CVertexShader		*m_pVShader;
-    CFragmentProgram    *m_pFProgram;
+	CFragmentShader		*m_pFProgram;
 	CGeometryShader		*m_pGShader;
 	CVulkanShaderStage	*m_pVulkanShader;
 	COpenGLShaderStage	*m_pOpenGLShader;

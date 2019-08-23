@@ -36,8 +36,8 @@
 #if !defined(AFX_VERTEXSHADER_H__204F7213_B40B_4B6A_9BCA_828409871B68__INCLUDED_)
 	#include "GLHierarchy/VertexShader.h"
 #endif
-#if !defined(AFX_FRAGMENTPROGRAM_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
-    #include "GLHierarchy/FragmentProgram.h"
+#if !defined(AFX_FRAGMENTSHADER_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
+    #include "GLHierarchy/FragmentShader.h"
 #endif
 #if !defined(AFX_GEOMETRYSHADER_H__1981EA98_8F3C_4881_9429_A9ACA5B285D3__INCLUDED_)
 	#include "GLHierarchy/GeometryShader.h"
@@ -506,7 +506,7 @@ void CDOFFilter::glInitShaders(void)
 	CGeometryShader *gp = DOFShader->glGetGeometryShader("dof_gp");
 	bool res = gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
 	res = res & gp->glLoadProgram(dof_gp);
-	CFragmentProgram *fp = DOFShader->glGetFragmentProgram("dof_fp");
+	CFragmentShader *fp = DOFShader->glGetFragmentProgram("dof_fp");
 	res = res && fp->glLoadProgram(dof_fp);
 	if (res)
 		fp->setProgramParameters(fp_params);
@@ -518,7 +518,7 @@ void CDOFFilter::glInitShaders(void)
 	if (res)
 		vp->setProgramParameters(vp_paramsX);
 
-	CFragmentProgram *fp = DOFShader->glGetFragmentProgram("dof_fp");
+	CFragmentShader *fp = DOFShader->glGetFragmentProgram("dof_fp");
 	res = res && fp->glLoadProgram(dof_fp);
 	if (res)
 		fp->setProgramParameters(fp_params);

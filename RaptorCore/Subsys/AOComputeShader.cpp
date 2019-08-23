@@ -18,8 +18,8 @@
 #if !defined(AFX_VERTEXSHADER_H__204F7213_B40B_4B6A_9BCA_828409871B68__INCLUDED_)
 	#include "GLHierarchy/VertexShader.h"
 #endif
-#if !defined(AFX_FRAGMENTPROGRAM_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
-    #include "GLHierarchy/FragmentProgram.h"
+#if !defined(AFX_FRAGMENTSHADER_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
+    #include "GLHierarchy/FragmentShader.h"
 #endif
 
 
@@ -46,7 +46,7 @@ void CAOComputeShader::glInit(void)
 	v_params.addParameter("normalMat",Id);
 	vs->setProgramParameters(v_params);
 
-	CFragmentProgram *fs = glGetFragmentProgram("AMBIENT_OCCLUSION_TEX_PROGRAM");
+	CFragmentShader *fs = glGetFragmentProgram("AMBIENT_OCCLUSION_TEX_PROGRAM");
 
 	CProgramParameters f_params;
 	f_params.addParameter("posMap",CTextureUnitSetup::IMAGE_UNIT_0);

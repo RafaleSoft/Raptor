@@ -21,7 +21,7 @@
 #include "GLHierarchy/Shader.h"
 #include "GLHierarchy/SimpleObject.h"
 #include "GLHierarchy/VertexShader.h"
-#include "GLHierarchy/FragmentProgram.h"
+#include "GLHierarchy/FragmentShader.h"
 #include "Engine/ImageModifier.h"
 #include "System/Raptor.h"
 #include "GLHierarchy/IRenderingProperties.h"
@@ -240,7 +240,7 @@ void main (void) \
     skinning  = new CShader("SKINNING_SHADER");
 	tube2->setShader(skinning);
 	CVertexShader *vp = skinning->glGetVertexShader("Skinning_VP");
-    CFragmentProgram *fp = skinning->glGetFragmentProgram("Skinning_FP");
+	CFragmentShader *fp = skinning->glGetFragmentProgram("Skinning_FP");
 
     if (vp->glLoadProgram(skinning_vp_src) &&
         fp->glLoadProgram(skinning_fp_src))

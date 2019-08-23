@@ -98,7 +98,7 @@ copy .\RaptorCore\Engine\IViewPoint.h Redist\Include\Engine
 ECHO       GLHierarchy:
 copy .\RaptorCore\GLHierarchy\3DSet.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\BumppedGeometry.h Redist\Include\GLHierarchy
-copy .\RaptorCore\GLHierarchy\FragmentProgram.h Redist\Include\GLHierarchy
+copy .\RaptorCore\GLHierarchy\FragmentShader.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\FragmentProgram_old.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\GLFont.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\GL2DFont.h Redist\Include\GLHierarchy
