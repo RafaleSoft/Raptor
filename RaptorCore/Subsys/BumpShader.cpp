@@ -69,7 +69,7 @@ void CBumpShader::glInit(void)
 	params.addParameter("tangent", CProgramParameters::ADDITIONAL_PARAM1);
 	vp->setProgramParameters(params);
 
-	CFragmentShader *fp = glGetFragmentProgram("PPIXEL_BUMP_TEX_PROGRAM");
+	CFragmentShader *fp = glGetFragmentShader("PPIXEL_BUMP_TEX_PROGRAM");
 	CProgramParameters params2;
 	fp->setProgramParameters(params2);
 

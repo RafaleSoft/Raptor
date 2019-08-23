@@ -157,14 +157,14 @@ public:
 
 	//!	Returns the fragment Program
 	//!	Allocate a new one if necessary
-	CFragmentShader * const glGetFragmentProgram(const std::string& name = "");
+	CFragmentShader * const glGetFragmentShader(const std::string& name = "");
 
 	//!	Returns true if Program has a Fragment Program already
-	bool hasFragmentProgram(void) const { return m_pFProgram != NULL; };
+	bool hasFragmentShader(void) const { return m_pFShader != NULL; };
 
 	//! Removes the fragment program.
 	//! @return true if the fragment program has been deleted
-	bool glRemoveFragmentProgram(void);
+	bool glRemoveFragmentShader(void);
 
 	//!	Returns the geometry Program
 	//!	Allocate a new one if necessary
@@ -230,11 +230,13 @@ private:
 
 	CMaterial			*m_pMaterial;
 	CTextureUnitSetup	*m_pTMUSetup;
+
 	CVertexProgram_old	*m_pVProgram_old;
 	CFragmentProgram_old *m_pFProgram_old;
     CVertexShader		*m_pVShader;
-	CFragmentShader		*m_pFProgram;
+	CFragmentShader		*m_pFShader;
 	CGeometryShader		*m_pGShader;
+
 	CVulkanShaderStage	*m_pVulkanShader;
 	COpenGLShaderStage	*m_pOpenGLShader;
 	COpenGLProgramStage	*m_pOpenGLProgram;
@@ -242,10 +244,11 @@ private:
 	bool				m_bDeleteVProgram_old;
 	bool				m_bDeleteFProgram_old;
     bool				m_bDeleteVShader;
-	bool				m_bDeleteFProgram;
+	bool				m_bDeleteFShader;
 	bool				m_bDeleteGShader;
 	bool				m_bDeleteVulkanShader;
 	bool				m_bDeleteOpenGLProgram;
+	bool				m_bDeleteOpenGLShader;
 	bool				m_bDeleteTMUSetup;
 };
 

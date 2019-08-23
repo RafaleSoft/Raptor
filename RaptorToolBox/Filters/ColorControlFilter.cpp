@@ -161,7 +161,7 @@ void CColorControlFilter::glRenderFilterOutput()
 
     //! Filter shaders Rendering
 #if defined(GL_ARB_geometry_shader4) || defined(GL_ARB_vertex_shader)
-	BWShader->glGetFragmentProgram()->setProgramParameters(fp_params);
+	BWShader->glGetFragmentShader()->setProgramParameters(fp_params);
 #elif defined(GL_ARB_vertex_program)
 	BWShader->glGetFragmentShader()->setProgramParameters(fp_params);
 #endif
@@ -199,7 +199,7 @@ bool CColorControlFilter::glInitFilter(void)
 #if defined(GL_ARB_geometry_shader4)
 	BWShader->glGetVertexShader("EMPTY_PROGRAM");
 	BWShader->glGetGeometryShader("FULL_SCREEN_GEO_PROGRAM");
-	CFragmentShader *ps = BWShader->glGetFragmentProgram("bw_fp");
+	CFragmentShader *ps = BWShader->glGetFragmentShader("bw_fp");
 	res = ps->glLoadProgram(colorcontrol_fp);
 	res = res && BWShader->glCompileShader();
 	fp_params.addParameter("source", CTextureUnitSetup::IMAGE_UNIT_0);

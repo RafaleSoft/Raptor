@@ -218,7 +218,7 @@ void CMBFilter::glRenderFilter()
     glActiveTextureARB(GL_TEXTURE0_ARB);
 	getColorInput()->glvkRender();
 
-	m_pMotionBlurShader->glGetFragmentProgram()->setProgramParameters(f_params);
+	m_pMotionBlurShader->glGetFragmentShader()->setProgramParameters(f_params);
     m_pMotionBlurShader->glRender();
 	glDrawFilter();
 	m_pMotionBlurShader->glStop();
@@ -234,7 +234,7 @@ void CMBFilter::glRenderFilterOutput()
 	
 	pAccum->m_pCurrentColorAccum->glvkRender();
 
-	m_pFinalShader->glGetFragmentProgram()->setProgramParameters(f_params2);
+	m_pFinalShader->glGetFragmentShader()->setProgramParameters(f_params2);
 	m_pFinalShader->glRender();
     glDrawFilter();
 	m_pFinalShader->glStop();
@@ -342,13 +342,13 @@ bool CMBFilter::glInitFilter(void)
 	m_pFinalShader = new CShader("MotionBlurShader");
 	CVertexShader *vp = m_pMotionBlurShader->glGetVertexShader("EMPTY_PROGRAM");
 	CGeometryShader *gp = m_pMotionBlurShader->glGetGeometryShader("FULL_SCREEN_GEO_PROGRAM");
-	CFragmentShader *fp = m_pMotionBlurShader->glGetFragmentProgram("mb_fp");
+	CFragmentShader *fp = m_pMotionBlurShader->glGetFragmentShader("mb_fp");
 	bool res = fp->glLoadProgram(CAccumulator::accum_fp);
 	res = res && m_pMotionBlurShader->glCompileShader();
 
 	vp = m_pFinalShader->glGetVertexShader("EMPTY_PROGRAM");
 	gp = m_pFinalShader->glGetGeometryShader("FULL_SCREEN_GEO_PROGRAM");
-	fp = m_pFinalShader->glGetFragmentProgram("mb_fp2");
+	fp = m_pFinalShader->glGetFragmentShader("mb_fp2");
 	res = res && fp->glLoadProgram(CAccumulator::accum_fp2);
 	res = res && m_pFinalShader->glCompileShader();
 #elif defined(GL_ARB_vertex_shader)

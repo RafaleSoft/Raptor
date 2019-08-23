@@ -48,7 +48,7 @@ CBlinnShader::~CBlinnShader(void)
 void CBlinnShader::glInit()
 {
 	glGetVertexShader("PPIXEL_BLINN_VTX_PROGRAM");
-	glGetFragmentProgram("PPIXEL_BLINN_TEX_PROGRAM");
+	glGetFragmentShader("PPIXEL_BLINN_TEX_PROGRAM");
 	glCompileShader();
 }
 

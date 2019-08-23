@@ -309,7 +309,7 @@ bool CRaptorInstance::glInitShaders(void)
 		m_pIdentity = new CShader("HDR_IDENTITY");
 		CVertexShader *vp = m_pIdentity->glGetVertexShader("EMPTY_PROGRAM");
 		CGeometryShader *gp = m_pIdentity->glGetGeometryShader("FULL_SCREEN_GEO_PROGRAM");
-		CFragmentShader *fp = m_pIdentity->glGetFragmentProgram("DIFFUSE_PROGRAM");
+		CFragmentShader *fp = m_pIdentity->glGetFragmentShader("DIFFUSE_PROGRAM");
 
 		CProgramParameters identityParams;
 		identityParams.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);

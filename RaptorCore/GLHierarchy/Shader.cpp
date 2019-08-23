@@ -106,7 +106,7 @@ CShader::CShader(const std::string& name)
 	:CPersistence(shaderID, name), CObjectReference(),
 	m_pTMUSetup(NULL),m_pMaterial(NULL),
 	m_pVProgram_old(NULL), m_pFProgram_old(NULL),
-	m_pVShader(NULL), m_pFProgram(NULL),
+	m_pVShader(NULL), m_pFShader(NULL),
 	m_pGShader(NULL), m_pVulkanShader(NULL),
 	m_pOpenGLProgram(NULL), m_pOpenGLShader(NULL)
 {
@@ -124,11 +124,12 @@ CShader::CShader(const std::string& name)
 
 	m_bDeleteFProgram_old = false;
 	m_bDeleteVProgram_old = false;
-    m_bDeleteFProgram = false;
+	m_bDeleteFShader = false;
 	m_bDeleteVShader = false;
 	m_bDeleteGShader = false;
 	m_bDeleteVulkanShader = false;
 	m_bDeleteOpenGLProgram = false;
+	m_bDeleteOpenGLShader = false;
 	m_bDeleteTMUSetup = false;
 }
 
@@ -136,7 +137,7 @@ CShader::CShader(const CShader& shader)
 	:CPersistence(shaderID, shader.getName()), CObjectReference(),
 	m_pTMUSetup(NULL), m_pMaterial(NULL),
 	m_pVProgram_old(NULL), m_pFProgram_old(NULL),
-	m_pVShader(NULL), m_pFProgram(NULL),
+	m_pVShader(NULL), m_pFShader(NULL),
 	m_pGShader(NULL), m_pVulkanShader(NULL),
 	m_pOpenGLProgram(NULL), m_pOpenGLShader(NULL)
 {
@@ -192,14 +193,14 @@ CShader::CShader(const CShader& shader)
 			m_pVShader = shader.m_pVShader;
 		m_pVShader->registerDestruction(this);
 	}
-	if (NULL != shader.m_pFProgram)
+	if (NULL != shader.m_pFShader)
 	{
-		glRemoveFragmentProgram();
-		if (shader.m_bDeleteFProgram)
-			m_pFProgram = shader.m_pFProgram->glClone();
+		glRemoveFragmentShader();
+		if (shader.m_bDeleteFShader)
+			m_pFShader = shader.m_pFShader->glClone();
 		else
-			m_pFProgram = shader.m_pFProgram;
-		m_pFProgram->registerDestruction(this);
+			m_pFShader = shader.m_pFShader;
+		m_pFShader->registerDestruction(this);
 	}
 	if (NULL != shader.m_pGShader)
 	{
@@ -226,10 +227,11 @@ CShader::CShader(const CShader& shader)
 	m_bDeleteVProgram_old = shader.m_bDeleteVProgram_old;
 	m_bDeleteFProgram_old = shader.m_bDeleteFProgram_old;
 	m_bDeleteVShader = shader.m_bDeleteVShader;
-	m_bDeleteFProgram = shader.m_bDeleteFProgram;
+	m_bDeleteFShader = shader.m_bDeleteFShader;
 	m_bDeleteGShader = shader.m_bDeleteGShader;
 	m_bDeleteVulkanShader = shader.m_bDeleteVulkanShader;
 	m_bDeleteOpenGLProgram = shader.m_bDeleteOpenGLProgram;
+	m_bDeleteOpenGLShader = shader.m_bDeleteOpenGLShader;
 	m_bDeleteTMUSetup = shader.m_bDeleteTMUSetup;
 }
 
@@ -292,7 +294,7 @@ CShader::~CShader()
 	// TODO : delete program only if not shared !!!
 #if defined(GL_ARB_shader_objects)
     if ((m_shaderProgram.handle() != 0) &&
-		(m_bDeleteVShader || m_bDeleteFProgram || m_bDeleteGShader))
+		(m_bDeleteVShader || m_bDeleteFShader || m_bDeleteGShader))
     {
         const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 
@@ -315,7 +317,7 @@ CShader::~CShader()
 	glRemoveVertexProgram_old();
 	glRemoveFragmentProgram_old();
 	glRemoveVertexShader();
-	glRemoveFragmentProgram();
+	glRemoveFragmentShader();
 	glRemoveGeometryShader();
 	vkRemoveVulkanShader();
 
@@ -346,8 +348,8 @@ void CShader::unLink(const CPersistence* p)
 		m_pFProgram_old = NULL;
 	else if (p == static_cast<CPersistence*>(m_pVShader))
 		m_pVShader = NULL;
-    else if (p == static_cast<CPersistence*>(m_pFProgram))
-        m_pFProgram = NULL;
+	else if (p == static_cast<CPersistence*>(m_pFShader))
+		m_pFShader = NULL;
 	else if (p == static_cast<CPersistence*>(m_pGShader))
 		m_pGShader = NULL;
 	else if (p == static_cast<CPersistence*>(m_pVulkanShader))
@@ -537,9 +539,9 @@ bool CShader::glRemoveVertexProgram_old(void)
 	}
 }
 
-CFragmentShader * const CShader::glGetFragmentProgram(const std::string& name)
+CFragmentShader * const CShader::glGetFragmentShader(const std::string& name)
 {
-	if (m_pFProgram == NULL) 
+	if (m_pFShader == NULL)
 	{
 		CShaderLibrary *lib = CShaderLibrary::GetInstance();
 		lib->glInitFactory();
@@ -549,34 +551,34 @@ CFragmentShader * const CShader::glGetFragmentProgram(const std::string& name)
 			pProgram = CPersistence::FindObject(name);
 		if (pProgram == NULL)
 		{
-			m_pFProgram = new CFragmentShader(name);
-			m_bDeleteFProgram = true;
+			m_pFShader = new CFragmentShader(name);
+			m_bDeleteFShader = true;
 		}
 		else if (pProgram->getId().isSubClassOf(CFragmentShader::CFragmentShaderClassID::GetClassId()))
-			m_pFProgram = (CFragmentShader*)pProgram;
+			m_pFShader = (CFragmentShader*)pProgram;
 
-		m_pFProgram->registerDestruction(this);
+		m_pFShader->registerDestruction(this);
 
         CATCH_GL_ERROR
 	}
 
-	return m_pFProgram;
+	return m_pFShader;
 }
 
-bool CShader::glRemoveFragmentProgram(void)
+bool CShader::glRemoveFragmentShader(void)
 {
-	if (m_pFProgram == NULL)
+	if (m_pFShader == NULL)
 		return false;
 	else
 	{
-		m_pFProgram->unregisterDestruction(this);
+		m_pFShader->unregisterDestruction(this);
 		RAPTOR_HANDLE handle(0, m_shaderProgram.handle());
-		m_pFProgram->glUnbindProgram(handle);
+		m_pFShader->glUnbindProgram(handle);
 
-		if (m_bDeleteFProgram)
-			delete m_pFProgram;
-		m_pFProgram = NULL;
-		m_bDeleteFProgram = false;
+		if (m_bDeleteFShader)
+			delete m_pFShader;
+		m_pFShader = NULL;
+		m_bDeleteFShader = false;
 
 		CATCH_GL_ERROR
 
@@ -830,8 +832,8 @@ void CShader::glRender()
 		if (m_pGShader != NULL)
 			m_pGShader->glRender();
 
-        if (m_pFProgram != NULL)
-            m_pFProgram->glRender();
+		if (m_pFShader != NULL)
+			m_pFShader->glRender();
 #endif
     }
     else
@@ -879,7 +881,7 @@ bool CShader::glCompileShader()
 
     // First try to generate programs.
     // This step is mandatory and must succeed if there are programs.
-	if ((m_pFProgram != NULL) || (m_pVShader != NULL) || (m_pGShader != NULL))
+	if ((m_pFShader != NULL) || (m_pVShader != NULL) || (m_pGShader != NULL))
     {
 #if defined(GL_ARB_shader_objects)
         bool abort = false;
@@ -914,9 +916,9 @@ bool CShader::glCompileShader()
                 abort = true;
         }
 
-		if ((!abort) && (m_pFProgram != NULL))
+		if ((!abort) && (m_pFShader != NULL))
         {
-            if ((!m_pFProgram->isValid()) || (!m_pFProgram->glBindProgram(m_shaderProgram)))
+			if ((!m_pFShader->isValid()) || (!m_pFShader->glBindProgram(m_shaderProgram)))
                 abort = true;
         }
 
@@ -1036,8 +1038,8 @@ bool CShader::importObject(CRaptorIO& io)
 		}
 		else if (data == "FragmentShader")
 		{
-			glGetFragmentProgram();
-			m_pFProgram->importObject(io);
+			glGetFragmentShader();
+			m_pFShader->importObject(io);
 		}
 		else if (data == "VulkanShader")
 		{

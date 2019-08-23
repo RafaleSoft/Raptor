@@ -67,7 +67,7 @@ void CAmbientOcclusionDisplay::Init()
 	
 	CShader *AO_shader = new CShader("AO_SHADER");
 	CVertexShader *vp = AO_shader->glGetVertexShader("AO_VP");
-	CFragmentShader *fp = AO_shader->glGetFragmentProgram("AO_FP");
+	CFragmentShader *fp = AO_shader->glGetFragmentShader("AO_FP");
 
 	CProgramParameters ao_params;
 	ao_params.addParameter("AOMap", CTextureUnitSetup::IMAGE_UNIT_2);

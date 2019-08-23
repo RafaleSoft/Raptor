@@ -76,7 +76,7 @@ void CEMBMShader::glInit()
 {
 	CShader *shaderLib = new CShader();
 	CVertexShader *vp = shaderLib->glGetVertexShader("PPIXEL_BUMP_VTX_PROGRAM");
-	CFragmentShader *fp = shaderLib->glGetFragmentProgram("PPIXEL_BUMP_TEX_PROGRAM");
+	CFragmentShader *fp = shaderLib->glGetFragmentShader("PPIXEL_BUMP_TEX_PROGRAM");
 	std::string embm_vertexshader = vp->glGetProgramString();
 	std::string embm_pixelshader = fp->glGetProgramString();
 	shaderLib->releaseReference();
@@ -104,7 +104,7 @@ void CEMBMShader::glInit()
 	fp->glLoadProgram(embm_pixelshader);
 
 	vp = glGetVertexShader("PPIXEL_BUMP_VTX_PROGRAM");
-	fp = glGetFragmentProgram("PPIXEL_BUMP_TEX_PROGRAM");
+	fp = glGetFragmentShader("PPIXEL_BUMP_TEX_PROGRAM");
 
 	glCompileShader();
 
@@ -176,7 +176,7 @@ void CEMBMShader::enableEmbm(bool enable)
 	if (enable != m_bEnabled)
 	{
 		glRemoveVertexShader();
-		glRemoveFragmentProgram();
+		glRemoveFragmentShader();
 
 		CProgramParameters params;
 		params.addParameter("tangent", CProgramParameters::ADDITIONAL_PARAM1);
@@ -187,12 +187,12 @@ void CEMBMShader::enableEmbm(bool enable)
 		if (enable)
 		{
 			vp = glGetVertexShader("PPIXEL_EMBM_VTX_PROGRAM");
-			fp = glGetFragmentProgram("PPIXEL_EMBM_TEX_PROGRAM");
+			fp = glGetFragmentShader("PPIXEL_EMBM_TEX_PROGRAM");
 		}
 		else
 		{
 			vp = glGetVertexShader("PPIXEL_BUMP_VTX_PROGRAM");
-			fp = glGetFragmentProgram("PPIXEL_BUMP_TEX_PROGRAM");
+			fp = glGetFragmentShader("PPIXEL_BUMP_TEX_PROGRAM");
 		}
 
 		vp->setProgramParameters(params);

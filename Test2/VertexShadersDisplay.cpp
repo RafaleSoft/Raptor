@@ -796,7 +796,7 @@ void CVertexShadersDisplay::Init()
 #else
 	CVertexShader *vp = pShader->glGetVertexShader();
 	vp->glLoadProgram(waterVertexProgram);
-	CFragmentShader *fp = pShader->glGetFragmentProgram();
+	CFragmentShader *fp = pShader->glGetFragmentShader();
 	fp->glLoadProgram(waterFragmentProgram);
 	pShader->glCompileShader();
 	pShader->glStop();

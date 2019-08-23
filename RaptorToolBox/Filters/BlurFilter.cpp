@@ -295,14 +295,14 @@ bool CBlurFilter::glBuildFilter(int width,int height)
 	
 	CVertexShader *vp = hBlur->glGetVertexShader("EMPTY_PROGRAM");
 	CGeometryShader *gp = hBlur->glGetGeometryShader("FULL_SCREEN_GEO_PROGRAM");
-	CFragmentShader *fp = hBlur->glGetFragmentProgram("hBlur_fp");
+	CFragmentShader *fp = hBlur->glGetFragmentShader("hBlur_fp");
 	res = fp->glLoadProgram(srcs[0]);
 	fp->setProgramParameters(params);
 	res = res && hBlur->glCompileShader();
 
 	vp = vBlur->glGetVertexShader("EMPTY_PROGRAM");
 	gp = vBlur->glGetGeometryShader("FULL_SCREEN_GEO_PROGRAM");
-	fp = vBlur->glGetFragmentProgram("vBlur_fp");
+	fp = vBlur->glGetFragmentShader("vBlur_fp");
 	res = res && fp->glLoadProgram(srcs[1]);
 	fp->setProgramParameters(params);
 

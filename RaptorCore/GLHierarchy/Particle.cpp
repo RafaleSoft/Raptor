@@ -146,7 +146,7 @@ void CParticle::glInitParticle(void)
 			CGeometryShader *gp = m_pShader->glGetGeometryShader("PARTICLE2D_GEO_PROGRAM");
 			gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
 
-			CFragmentShader *fs = m_pShader->glGetFragmentProgram("TEXTURE_QUAD_TEX_PROGRAM");
+			CFragmentShader *fs = m_pShader->glGetFragmentShader("TEXTURE_QUAD_TEX_PROGRAM");
 			params.clear();
 			params.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);
 			fs->setProgramParameters(params);
@@ -164,7 +164,7 @@ void CParticle::glInitParticle(void)
 			CGeometryShader *gp = m_pShader->glGetGeometryShader("PARTICLE3D_GEO_PROGRAM");
 			gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
 
-			CFragmentShader *fs = m_pShader->glGetFragmentProgram("PARTICLE3D_TEX_PROGRAM");
+			CFragmentShader *fs = m_pShader->glGetFragmentShader("PARTICLE3D_TEX_PROGRAM");
 			params.clear();
 			params.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);
 			fs->setProgramParameters(params);

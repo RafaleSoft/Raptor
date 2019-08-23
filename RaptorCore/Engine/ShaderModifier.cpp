@@ -83,8 +83,8 @@ void CShaderWrapper::glRender()
 			m_pShader->glGetVertexProgram_old()->setProgramParameters(v);
 
 		m_bUpdateFragmentParameters = false;
-		if (m_pShader->hasFragmentProgram())
-			m_pShader->glGetFragmentProgram()->setProgramParameters(f);
+		if (m_pShader->hasFragmentShader())
+			m_pShader->glGetFragmentShader()->setProgramParameters(f);
 		else if (m_pShader->hasFragmentProgram_old())
 			m_pShader->glGetFragmentProgram_old()->setProgramParameters(f);
 

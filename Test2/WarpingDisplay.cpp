@@ -315,7 +315,7 @@ void main (void)						\n\
 	gl_FragColor = texture2D(diffuseMap,vec2(offset.rg) + vec2(gl_TexCoord[0].st)); \n\
 }";
 
-	CFragmentShader *fp = m_pShader->glGetFragmentProgram();
+	CFragmentShader *fp = m_pShader->glGetFragmentShader();
 	fp->glLoadProgram(program);
 	CProgramParameters params;
 	params.addParameter("diffuseMap",CTextureUnitSetup::IMAGE_UNIT_0);

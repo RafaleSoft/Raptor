@@ -240,7 +240,7 @@ void main (void) \
     skinning  = new CShader("SKINNING_SHADER");
 	tube2->setShader(skinning);
 	CVertexShader *vp = skinning->glGetVertexShader("Skinning_VP");
-	CFragmentShader *fp = skinning->glGetFragmentProgram("Skinning_FP");
+	CFragmentShader *fp = skinning->glGetFragmentShader("Skinning_FP");
 
     if (vp->glLoadProgram(skinning_vp_src) &&
         fp->glLoadProgram(skinning_fp_src))

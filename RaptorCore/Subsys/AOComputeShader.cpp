@@ -46,7 +46,7 @@ void CAOComputeShader::glInit(void)
 	v_params.addParameter("normalMat",Id);
 	vs->setProgramParameters(v_params);
 
-	CFragmentShader *fs = glGetFragmentProgram("AMBIENT_OCCLUSION_TEX_PROGRAM");
+	CFragmentShader *fs = glGetFragmentShader("AMBIENT_OCCLUSION_TEX_PROGRAM");
 
 	CProgramParameters f_params;
 	f_params.addParameter("posMap",CTextureUnitSetup::IMAGE_UNIT_0);

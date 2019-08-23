@@ -353,7 +353,7 @@ bool CGL2DTextureFont::glGenGlyphs(float precision,
 		gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
 		res = res & gp->glLoadProgram(font_gp_src);
 
-		CFragmentShader *fs = m_pShader->glGetFragmentProgram();
+		CFragmentShader *fs = m_pShader->glGetFragmentShader();
 		res = res & fs->glLoadProgram(font_fp_src);
 		params.clear();
 		params.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);
@@ -416,7 +416,7 @@ void CGL2DTextureFont::glWrite(const std::string &text, int x, int y, const CCol
 	m_pShader->glGetVertexShader()->updateProgramParameters(params);
 	params.clear();
 	params.addParameter("color", color);
-	m_pShader->glGetFragmentProgram()->updateProgramParameters(params);
+	m_pShader->glGetFragmentShader()->updateProgramParameters(params);
 
 	FONT_CACHEELT_t* pCache = (FONT_CACHEELT_t*)font_linePointer;
 #if defined(GL_ARB_vertex_program)
@@ -503,7 +503,7 @@ void CGL2DTextureFont::glWrite(const std::vector<FONT_TEXT_ITEM> &lines)
 	m_pShader->glGetVertexShader()->updateProgramParameters(params);
 	params.clear();
 	params.addParameter("color", color);
-	m_pShader->glGetFragmentProgram()->updateProgramParameters(params);
+	m_pShader->glGetFragmentShader()->updateProgramParameters(params);
 
 	GLsizei count = 0;
 	for (size_t l = 0; l < lines.size(); l++)
