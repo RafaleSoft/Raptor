@@ -13,8 +13,8 @@
 #include "GLHierarchy/TextureFactory.h"
 #include "GLHierarchy/TextureFactoryConfig.h"
 #include "GLHierarchy/TextureObject.h"
-#include "GLHierarchy/FragmentShader.h"
-#include "GLHierarchy/VertexShader.h"
+#include "GLHierarchy/FragmentProgram_old.h"
+#include "GLHierarchy/VertexProgram_old.h"
 #include "GLHierarchy/Shader.h"
 #include "Engine/ViewModifier.h"
 #include "Engine/3DScene.h"
@@ -70,7 +70,8 @@ public:
 		tmu->setDiffuseMap(output);
 		tmu->glBuildSetup();
 
-		glRenderFilter();
+		//Geometry Allocator is not locked.
+		//glRenderFilter();
 	};
 
 	virtual ~Foreground() {};
@@ -182,7 +183,8 @@ void CTestDoc::GLInitContext(void)
     l_model.addModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
     l_model.addModel(CGeometry::CRenderingModel::CGL_NORMALS);
 	l_model.addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
-    C3DSet::C3DSetIterator it = sponge->getIterator();
+
+	C3DSet::C3DSetIterator it = sponge->getIterator();
     CShadedGeometry *g = (CShadedGeometry *)(sponge->getChild(it++));
 	while (g != NULL)
 	{
@@ -204,11 +206,12 @@ void CTestDoc::GLInitContext(void)
 	background->setDimensions(40.0f,24.0f);
 	background->translate(0.0f,0.0f,-7.0f);
 	background->setRenderingModel(l_model);
+
 	background->glLockData();
-		background->setTexCoord(0,0,0);
-		background->setTexCoord(1,2,0);
-		background->setTexCoord(2,2,2);
-		background->setTexCoord(3,0,2);
+		background->setTexCoord(0,0.0f,0.0f);
+		background->setTexCoord(1,2.0f,0.0f);
+		background->setTexCoord(2,2.0f,2.0f);
+		background->setTexCoord(3,0.0f,2.0f);
     background->glUnLockData();
 
 	CTextureFactory &fct = CTextureFactory::getDefaultFactory();

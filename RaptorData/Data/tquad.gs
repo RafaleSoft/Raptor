@@ -15,7 +15,7 @@
 /*                                                                         */
 /***************************************************************************/
 
-#version 460
+#version 440
 
 //	Expect the geometry shader extension to be available, warn if not.
 #extension GL_ARB_geometry_shader4 : enable

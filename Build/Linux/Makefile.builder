@@ -19,22 +19,16 @@
 export
 
 OUTPUT = $(RAPTOR_ROOT)/Build/Linux/Release/Builder
-SRCDIR = $(RAPTOR_ROOT)/Builder.Net
+SRCDIR = $(RAPTOR_ROOT)/Builder
 INCDIRS = -I$(SRCDIR) -I$(RAPTOR_ROOT)/Builder/BuilderNative -I$(VULKAN_INCLUDE_PATH) -I$(REDIST)/include -I/usr/include
 CCCFLAGS = -DSIMD_NO_ASSEMBLY -DLINUX -DGLX_EXTENSIONS
 LDFLAGS = $(LIBGL) $(LIBX11) $(REDIST)/Bin/libBuilderNative.so.$(RAPTOR_VERSION) $(REDIST)/Bin/libsimd.so.$(RAPTOR_VERSION)
 
-all:	redist $(OUTPUT)/Builder
+all:	$(OUTPUT)/Builder
 
 clean:
 	rm -rf $(OUTPUT)
 	mkdir -p $(OUTPUT)
-	
-redist:
-	mkdir -p $(OUTPUT)
-	cp $(SRCDIR)/Redist.sh $(OUTPUT)/Redist.sh 
-	chmod +x $(OUTPUT)/Redist.sh; $(OUTPUT)/Redist.sh
-	
 
 SRC = \
 	$(SRCDIR)/main.cpp

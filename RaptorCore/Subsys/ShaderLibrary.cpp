@@ -72,37 +72,37 @@ typedef struct
 	const char *class_name;
 } factory_shader;
 static const size_t NB_FACTORY_SHADERS = 31;
-static factory_shader fsh[NB_FACTORY_SHADERS] = {	{ "BUMP_TEX_SHADER", "bump.fp", "FragmentShader" },
-													{ "EMBM_TEX_SHADER", "embm.fp", "FragmentShader" },
-													{ "BUMP_VTX_SHADER", "bump.vp", "VertexShader" },
-													{ "EMBM_VTX_SHADER", "embm.vp", "VertexShader" },
-													{ "PROJECTION_TEX_SHADER", "projection.fp", "FragmentShader" },
-													{ "SHADOWMAP_TEX_SHADER", "shadowmap.fp", "FragmentShader" },
-													{ "SHADOWMAP_TEX_SHADER_PCF", "shadowmap_pcf.fp", "FragmentShader" },
-													{ "SHADOWMAP_TEX_SHADER_PCF_4X", "shadowmap_pcf_4x.fp", "FragmentShader" },
-													{ "PPIXEL_BLINN_VTX_PROGRAM", "blinn.vs", "VertexProgram" },
-													{ "PPIXEL_BLINN_TEX_PROGRAM", "blinn.ps", "FragmentProgram" },
-													{ "PPIXEL_PHONG_VTX_PROGRAM", "phong.vs", "VertexProgram" },
-													{ "PPIXEL_PHONG_TEX_PROGRAM", "phong.ps", "FragmentProgram" },
-													{ "PPIXEL_BUMP_VTX_PROGRAM", "bump.vs", "VertexProgram" },
-													{ "PPIXEL_BUMP_TEX_PROGRAM", "bump.ps", "FragmentProgram" },
-													{ "AMBIENT_OCCLUSION_VTX_PROGRAM", "AO.vs", "VertexProgram" },
-													{ "AMBIENT_OCCLUSION_TEX_PROGRAM", "AO.ps", "FragmentProgram" },
-													{ "TEXTURE_QUAD_VTX_PROGRAM", "tquad.vs", "VertexProgram" },
-													{ "TEXTURE_QUAD_TEX_PROGRAM", "tquad.ps", "FragmentProgram" },
-													{ "TEXTURE_QUAD_GEO_PROGRAM", "tquad.gs", "GeometryProgram" },
-													{ "BLENDER_8X", "blender_8x.fp", "FragmentShader" },
-													{ "BLENDER_8X_XOFFSETS", "blenderX_8x.vp", "VertexShader" },
-													{ "BLENDER_8X_YOFFSETS", "blenderY_8x.vp", "VertexShader" },
-													{ "BLENDER_8X_TEX_PROGRAM", "blenderX_8x.ps", "FragmentProgram" },
-													{ "BLENDER_8Y_TEX_PROGRAM", "blenderY_8x.ps", "FragmentProgram" },
-													{ "EMPTY_PROGRAM", "empty.vs", "VertexProgram" },
-													{ "DIFFUSE_PROGRAM", "diffuse.ps", "FragmentProgram" },
-													{ "FULL_SCREEN_GEO_PROGRAM", "blender_8x.gs", "GeometryProgram" },
-													{ "PARTICLE_VTX_PROGRAM", "particle.vs", "VertexProgram" },
-													{ "PARTICLE2D_GEO_PROGRAM", "particle2D.gs", "GeometryProgram" }, 
-													{ "PARTICLE3D_GEO_PROGRAM", "particle3D.gs", "GeometryProgram" },
-													{ "PARTICLE3D_TEX_PROGRAM", "particle3D.fs", "FragmentProgram" }, };
+static factory_shader fsh[NB_FACTORY_SHADERS] = {	{ "BUMP_TEX_SHADER", "bump.fp", "FragmentProgram_old" },
+													{ "EMBM_TEX_SHADER", "embm.fp", "FragmentProgram_old" },
+													{ "BUMP_VTX_SHADER", "bump.vp", "VertexProgram_old" },
+													{ "EMBM_VTX_SHADER", "embm.vp", "VertexProgram_old" },
+													{ "PROJECTION_TEX_SHADER", "projection.fp", "FragmentProgram_old" },
+													{ "SHADOWMAP_TEX_SHADER", "shadowmap.fp", "FragmentProgram_old" },
+													{ "SHADOWMAP_TEX_SHADER_PCF", "shadowmap_pcf.fp", "FragmentProgram_old" },
+													{ "SHADOWMAP_TEX_SHADER_PCF_4X", "shadowmap_pcf_4x.fp", "FragmentProgram_old" },
+													{ "PPIXEL_BLINN_VTX_PROGRAM", "blinn.vs", "VertexShader" },
+													{ "PPIXEL_BLINN_TEX_PROGRAM", "blinn.ps", "FragmentShader" },
+													{ "PPIXEL_PHONG_VTX_PROGRAM", "phong.vs", "VertexShader" },
+													{ "PPIXEL_PHONG_TEX_PROGRAM", "phong.ps", "FragmentShader" },
+													{ "PPIXEL_BUMP_VTX_PROGRAM", "bump.vs", "VertexShader" },
+													{ "PPIXEL_BUMP_TEX_PROGRAM", "bump.ps", "FragmentShader" },
+													{ "AMBIENT_OCCLUSION_VTX_PROGRAM", "AO.vs", "VertexShader" },
+													{ "AMBIENT_OCCLUSION_TEX_PROGRAM", "AO.ps", "FragmentShader" },
+													{ "TEXTURE_QUAD_VTX_PROGRAM", "tquad.vs", "VertexShader" },
+													{ "TEXTURE_QUAD_TEX_PROGRAM", "tquad.ps", "FragmentShader" },
+													{ "TEXTURE_QUAD_GEO_PROGRAM", "tquad.gs", "GeometryShader" },
+													{ "BLENDER_8X", "blender_8x.fp", "FragmentProgram_old" },
+													{ "BLENDER_8X_XOFFSETS", "blenderX_8x.vp", "VertexProgram_old" },
+													{ "BLENDER_8X_YOFFSETS", "blenderY_8x.vp", "VertexProgram_old" },
+													{ "BLENDER_8X_TEX_PROGRAM", "blenderX_8x.ps", "FragmentShader" },
+													{ "BLENDER_8Y_TEX_PROGRAM", "blenderY_8x.ps", "FragmentShader" },
+													{ "EMPTY_PROGRAM", "empty.vs", "VertexShader" },
+													{ "DIFFUSE_PROGRAM", "diffuse.ps", "FragmentShader" },
+													{ "FULL_SCREEN_GEO_PROGRAM", "blender_8x.gs", "GeometryShader" },
+													{ "PARTICLE_VTX_PROGRAM", "particle.vs", "VertexShader" },
+													{ "PARTICLE2D_GEO_PROGRAM", "particle2D.gs", "GeometryShader" }, 
+													{ "PARTICLE3D_GEO_PROGRAM", "particle3D.gs", "GeometryShader" },
+													{ "PARTICLE3D_TEX_PROGRAM", "particle3D.ps", "FragmentShader" }, };
 
 static map<std::string, factory_shader>	s_factoryShaders;
 
@@ -179,7 +179,7 @@ bool CShaderLibrary::glAddToLibrary(const std::string& shader_name,
 	if (s_factoryShaders.find(shader_name) != s_factoryShaders.end())
 	{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
-		Raptor::GetErrorManager()->generateRaptorError(Global::CShaderClassID::GetClassId(),
+		Raptor::GetErrorManager()->generateRaptorError(CShader::CShaderClassID::GetClassId(),
 													   CRaptorErrorManager::RAPTOR_WARNING,
 													   "Raptor ShaderLibrary cannot import already existing shader type");
 #endif
@@ -231,7 +231,15 @@ bool CShaderLibrary::glLoadShadersFromDataPackage()
 		{
 			const CPersistentObject & po = pFactory->createObject(fs.class_name);
 			CPersistence* persistence = po;
-			if (persistence->getId().ClassName() == fs.class_name)
+			if (NULL == persistence)
+			{
+				std::string msg = "ShaderLibrary unsupported shader class type: ";
+				msg += fs.class_name;
+				Raptor::GetErrorManager()->generateRaptorError(CShader::CShaderClassID::GetClassId(),
+															   CRaptorErrorManager::RAPTOR_ERROR,
+															   msg);
+			}
+			else if (persistence->getId().ClassName() == fs.class_name)
 			{
 				persistence->setName(fs.shader_name);
 				program = static_cast<CShaderProgram*>(persistence);

@@ -15,7 +15,7 @@
 /*                                                                         */
 /***************************************************************************/
 
-#version 460 compatibility
+#version 440 compatibility
 
 //uniform Transform {
 //	mat4 ModelViewMatrix;

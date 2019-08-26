@@ -39,14 +39,14 @@
 #if !defined(AFX_IRENDERINGPROPERTIES_H__634BCF2B_84B4_47F2_B460_D7FDC0F3B698__INCLUDED_)
 	#include "GLHierarchy/IRenderingProperties.h"
 #endif
-#if !defined(AFX_VERTEXPROGRAM_H__204F7213_B40B_4B6A_9BCA_828409871B68__INCLUDED_)
-	#include "GLHierarchy/VertexProgram.h"
+#if !defined(AFX_VERTEXSHADER_H__204F7213_B40B_4B6A_9BCA_828409871B68__INCLUDED_)
+	#include "GLHierarchy/VertexShader.h"
 #endif
-#if !defined(AFX_FRAGMENTPROGRAM_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
-	#include "GLHierarchy/FragmentProgram.h"
+#if !defined(AFX_FRAGMENTSHADER_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
+	#include "GLHierarchy/FragmentShader.h"
 #endif
-#if !defined(AFX_GEOMETRYPROGRAM_H__1981EA98_8F3C_4881_9429_A9ACA5B285D3__INCLUDED_)
-	#include "GLHierarchy/GeometryProgram.h"
+#if !defined(AFX_GEOMETRYSHADER_H__1981EA98_8F3C_4881_9429_A9ACA5B285D3__INCLUDED_)
+	#include "GLHierarchy/GeometryShader.h"
 #endif
 #if !defined(AFX_MBFILTER_H__53A619DD_DBAB_4709_9EAD_72C5D6C401E9__INCLUDED_)
     #include "MBFilter.h"
@@ -103,7 +103,7 @@ public:
 
 #if defined(GL_ARB_geometry_shader4)
 	const string CAccumulator::accum_fp =
-	"#version 460 			\n\
+	"#version 440 			\n\
 	\n\
 	uniform sampler2D color;	\n\
 	uniform sampler2D accum;	\n\
@@ -119,7 +119,7 @@ public:
 	}";
 
 	const string CAccumulator::accum_fp2 =
-	"#version 460\n\
+	"#version 440\n\
 	\n\
 	uniform	sampler2D diffuseMap; \n\
 	\n\
@@ -218,7 +218,7 @@ void CMBFilter::glRenderFilter()
     glActiveTextureARB(GL_TEXTURE0_ARB);
 	getColorInput()->glvkRender();
 
-	m_pMotionBlurShader->glGetFragmentProgram()->setProgramParameters(f_params);
+	m_pMotionBlurShader->glGetFragmentShader()->setProgramParameters(f_params);
     m_pMotionBlurShader->glRender();
 	glDrawFilter();
 	m_pMotionBlurShader->glStop();
@@ -234,7 +234,7 @@ void CMBFilter::glRenderFilterOutput()
 	
 	pAccum->m_pCurrentColorAccum->glvkRender();
 
-	m_pFinalShader->glGetFragmentProgram()->setProgramParameters(f_params2);
+	m_pFinalShader->glGetFragmentShader()->setProgramParameters(f_params2);
 	m_pFinalShader->glRender();
     glDrawFilter();
 	m_pFinalShader->glStop();
@@ -340,19 +340,19 @@ bool CMBFilter::glInitFilter(void)
 
 #if defined(GL_ARB_geometry_shader4)
 	m_pFinalShader = new CShader("MotionBlurShader");
-	CVertexProgram *vp = m_pMotionBlurShader->glGetVertexProgram("EMPTY_PROGRAM");
-	CGeometryProgram *gp = m_pMotionBlurShader->glGetGeometryProgram("FULL_SCREEN_GEO_PROGRAM");
-	CFragmentProgram *fp = m_pMotionBlurShader->glGetFragmentProgram("mb_fp");
+	CVertexShader *vp = m_pMotionBlurShader->glGetVertexShader("EMPTY_PROGRAM");
+	CGeometryShader *gp = m_pMotionBlurShader->glGetGeometryShader("FULL_SCREEN_GEO_PROGRAM");
+	CFragmentShader *fp = m_pMotionBlurShader->glGetFragmentShader("mb_fp");
 	bool res = fp->glLoadProgram(CAccumulator::accum_fp);
 	res = res && m_pMotionBlurShader->glCompileShader();
 
-	vp = m_pFinalShader->glGetVertexProgram("EMPTY_PROGRAM");
-	gp = m_pFinalShader->glGetGeometryProgram("FULL_SCREEN_GEO_PROGRAM");
-	fp = m_pFinalShader->glGetFragmentProgram("mb_fp2");
+	vp = m_pFinalShader->glGetVertexShader("EMPTY_PROGRAM");
+	gp = m_pFinalShader->glGetGeometryShader("FULL_SCREEN_GEO_PROGRAM");
+	fp = m_pFinalShader->glGetFragmentShader("mb_fp2");
 	res = res && fp->glLoadProgram(CAccumulator::accum_fp2);
 	res = res && m_pFinalShader->glCompileShader();
 #elif defined(GL_ARB_vertex_shader)
-	CFragmentProgram *fs = m_pMotionBlurShader->glGetFragmentProgram("mb_fp");
+	CFragmentShader *fs = m_pMotionBlurShader->glGetFragmentProgram("mb_fp");
 	bool res = fs->glLoadProgram(CAccumulator::accum_fp);
 	res = res && m_pMotionBlurShader->glCompileShader();
 #elif defined(GL_ARB_vertex_program)

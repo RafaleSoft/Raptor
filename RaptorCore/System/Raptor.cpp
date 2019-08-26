@@ -338,28 +338,46 @@ void Raptor::glDestroyDisplay(CRaptorDisplay* pDisplay)
 	}
 }
 
-//! Create and initialise a new RaptorInstance.
-CRaptorInstance* Raptor::createInstance(const CRaptorConfig& config)
+CRaptorInstance* Raptor::glvkCreateInstance(const CRaptorConfig& config)
 {
-	//	A first instance needs to be initialised.
-	CRaptorInstance &instance = CRaptorInstance::GetInstance();
-	if (!instance.initialised)
-		return false;
+	CRaptorInstance* previous = CRaptorInstance::createNewInstance();
+	
+	CRaptorInstance &new_instance = CRaptorInstance::GetInstance();
+	new_instance.config = config;
+	new_instance.initInstance();
 
-	CRaptorInstance* previous = instance.createNewInstance();
-	if (NULL != previous)
-	{
-		CRaptorInstance &new_instance = CRaptorInstance::GetInstance();
-		new_instance.config = config;
-		new_instance.initInstance();
+	//	Create a dummy window to initialize GL
+	CRaptorDisplayConfig glCS;
+	glCS.width = -1;
+	glCS.height = -1;
+	glCS.caption = "Raptor Default Display";
+	glCS.display_mode = CGL_RGBA;
+	glCS.acceleration = CRaptorDisplayConfig::GENERIC;
+	glCS.refresh_rate.fps = CGL_MAXREFRESHRATE;
 
+	CRaptorDisplay *pDisplay = NULL;
+	CContextManager *ctxMgr = CContextManager::GetInstance();
+	CContextManager::RENDERING_CONTEXT_ID ctx = CContextManager::INVALID_CONTEXT;
+	RAPTOR_HANDLE wnd = ctxMgr->glCreateWindow(glCS, pDisplay, ctx);
 
-	}
+	new_instance.defaultWindow = wnd;
+	new_instance.defaultContext = ctx;
+	new_instance.defaultDisplay = pDisplay;
+
+	//	Initialize platform dependant datas.
+	CContextManager::GetInstance()->glMakeCurrentContext(new_instance.defaultWindow, 
+														 new_instance.defaultContext);
+	CTextureFactory::getDefaultFactory().getConfig();
+	CATCH_GL_ERROR
+
+	//! Release context and return init state.
+	RAPTOR_HANDLE noDevice(0, (void*)0);
+	CContextManager::GetInstance()->glMakeCurrentContext(noDevice, 
+														 new_instance.defaultContext);
 
 	return previous;
 }
 
-//!	Switch the current RaptorInstance
 CRaptorInstance* Raptor::switchInstance(CRaptorInstance* pInstance)
 {
 	if (NULL == pInstance)
@@ -454,6 +472,7 @@ bool Raptor::glQuitRaptor(void)
 	if ((!instance.initialised) || (instance.terminate))
         return false;
 
+	//glPurgeRaptor(false);
     bool res = instance.destroy();
 
 	glPurgeRaptor(false);

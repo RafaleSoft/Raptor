@@ -38,12 +38,15 @@ RAPTOR_NAMESPACE_BEGIN
 
 class CMaterial;
 class CTextureUnitSetup;
+class CVertexProgram_old;
+class CFragmentProgram_old;
 class CVertexShader;
 class CFragmentShader;
-class CVertexProgram;
-class CFragmentProgram;
-class CGeometryProgram;
+class CGeometryShader;
 class CVulkanShaderStage;
+class COpenGLProgramStage;
+class COpenGLShaderStage;
+
 
 class RAPTOR_API CShader : public CPersistence, public CObjectReference
 {
@@ -121,70 +124,82 @@ public:
     //!
 	//!	Returns the vertex shader
 	//!	Allocate a new one if necessary
-	CVertexShader * const glGetVertexShader(const std::string& name = "");
+	CVertexProgram_old * const glGetVertexProgram_old(const std::string& name = "");
 
 	//!	Returns true if shader has a Vertex Shader already
-	bool hasVertexShader(void) const { return m_pVShader != NULL; };
+	bool hasVertexProgram_old(void) const { return m_pVProgram_old != NULL; };
 
 	//! Removes the vertex shader.
 	//! @return true if the vertex shader has been deleted
-	bool glRemoveVertexShader(void);
+	bool glRemoveVertexProgram_old(void);
 
 	//!	Returns the fragment shader
 	//!	Allocate a new one if necessary
-	CFragmentShader * const glGetFragmentShader(const std::string& name = "");
+	CFragmentProgram_old * const glGetFragmentProgram_old(const std::string& name = "");
 
 	//!	Returns true if shader has a Fragment Shader already
-	bool hasFragmentShader(void) const { return m_pFShader != NULL; };
+	bool hasFragmentProgram_old(void) const { return m_pFProgram_old != NULL; };
 
 	//! Removes the fragment shader.
 	//! @return true if the fragment shader has been deleted
-	bool glRemoveFragmentShader(void);
+	bool glRemoveFragmentProgram_old(void);
 
     //!	Returns the vertex Program, allocate a new one if necessary.
 	//!	EMPTY_PROGRAM is a special name for a void program (i.e. doing nothing)
-	CVertexProgram * const glGetVertexProgram(const std::string& name = "");
+	CVertexShader * const glGetVertexShader(const std::string& name = "");
 
 	//!	Returns true if Program has a Vertex Program already
-	bool hasVertexProgram(void) const { return m_pVProgram != NULL; };
+	bool hasVertexShader(void) const { return m_pVShader != NULL; };
 
 	//! Removes the vertex program.
 	//! @return true if the vertex program has been deleted
-	bool glRemoveVertexProgram(void);
+	bool glRemoveVertexShader(void);
 
 	//!	Returns the fragment Program
 	//!	Allocate a new one if necessary
-	CFragmentProgram * const glGetFragmentProgram(const std::string& name = "");
+	CFragmentShader * const glGetFragmentShader(const std::string& name = "");
 
 	//!	Returns true if Program has a Fragment Program already
-	bool hasFragmentProgram(void) const { return m_pFProgram != NULL; };
+	bool hasFragmentShader(void) const { return m_pFShader != NULL; };
 
 	//! Removes the fragment program.
 	//! @return true if the fragment program has been deleted
-	bool glRemoveFragmentProgram(void);
+	bool glRemoveFragmentShader(void);
 
 	//!	Returns the geometry Program
 	//!	Allocate a new one if necessary
-	CGeometryProgram * const glGetGeometryProgram(const std::string& name = "");
+	CGeometryShader * const glGetGeometryShader(const std::string& name = "");
 
 	//!	Returns true if Program has a Vertex Program already
-	bool hasGeometryProgram(void) const { return m_pGProgram != NULL; };
+	bool hasGeometryShader(void) const { return m_pGShader != NULL; };
 
 	//! Removes the geometry program.
 	//! @return true if the geometry program has been deleted
-	bool glRemoveGeometryProgram(void);
+	bool glRemoveGeometryShader(void);
 
 
-	//!	Returns the geometry Program
+	//!	Returns the OpenGL Program.
 	//!	Allocate a new one if necessary
-	CVulkanShaderStage * const vkGetVulkanProgram(const std::string& name = "");
+	COpenGLProgramStage * const glGetOpenGLProgram(const std::string& name = "");
+
+	//!	Returns true if Program has a OpenGL Program already
+	bool hasOpenGLProgram(void) const { return m_pOpenGLProgram != NULL; };
+
+	//! Removes the OpenGL program.
+	//! @return true if the OpenGL program has been deleted
+	bool glRemoveOpenGLProgram(void);
+
+
+	//!	Returns the Vulkan Shader.
+	//!	Allocate a new one if necessary
+	CVulkanShaderStage * const vkGetVulkanShader(const std::string& name = "");
 
 	//!	Returns true if Program has a Vulkan Shader already
-	bool hasVulkanProgram(void) const { return m_pVulkanProgram != NULL; };
+	bool hasVulkanShader(void) const { return m_pVulkanShader != NULL; };
 
-	//! Removes the Vulkan program.
+	//! Removes the Vulkan Shader.
 	//! @return true if the Vulkan program has been deleted
-	bool vkRemoveVulkanProgram(void);
+	bool vkRemoveVulkanShader(void);
 
 
 	//!	Streams : implement CPersistence
@@ -215,19 +230,25 @@ private:
 
 	CMaterial			*m_pMaterial;
 	CTextureUnitSetup	*m_pTMUSetup;
-	CVertexShader		*m_pVShader;
-	CFragmentShader		*m_pFShader;
-    CVertexProgram      *m_pVProgram;
-    CFragmentProgram    *m_pFProgram;
-	CGeometryProgram	*m_pGProgram;
-	CVulkanShaderStage	*m_pVulkanProgram;
 
-	bool				m_bDeleteVShader;
+	CVertexProgram_old	*m_pVProgram_old;
+	CFragmentProgram_old *m_pFProgram_old;
+    CVertexShader		*m_pVShader;
+	CFragmentShader		*m_pFShader;
+	CGeometryShader		*m_pGShader;
+
+	CVulkanShaderStage	*m_pVulkanShader;
+	COpenGLShaderStage	*m_pOpenGLShader;
+	COpenGLProgramStage	*m_pOpenGLProgram;
+
+	bool				m_bDeleteVProgram_old;
+	bool				m_bDeleteFProgram_old;
+    bool				m_bDeleteVShader;
 	bool				m_bDeleteFShader;
-    bool				m_bDeleteVProgram;
-	bool				m_bDeleteFProgram;
-	bool				m_bDeleteGProgram;
-	bool				m_bDeleteVulkanProgram;
+	bool				m_bDeleteGShader;
+	bool				m_bDeleteVulkanShader;
+	bool				m_bDeleteOpenGLProgram;
+	bool				m_bDeleteOpenGLShader;
 	bool				m_bDeleteTMUSetup;
 };
 

@@ -92,7 +92,7 @@ C3DSceneObject::C3DSceneObject(CObject3D* obj)
 			m_pPipeline = rDevice.createPipeline();
 			CShadedGeometry *sg = (CShadedGeometry *)obj;
 			CShader* s = sg->getShader();
-			CVulkanShaderStage *ss = s->vkGetVulkanProgram();
+			CVulkanShaderStage *ss = s->vkGetVulkanShader();
 
 			if (!m_pPipeline->initPipeline(ss,sg))
 			{

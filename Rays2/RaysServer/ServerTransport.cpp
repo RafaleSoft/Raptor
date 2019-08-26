@@ -1,6 +1,19 @@
-// ServerTransport.cpp: implementation of the CServerTransport class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  ServerTransport.cpp                                                    */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
 
 #include "stdafx.h"
 #include <windows.h>
@@ -8,9 +21,12 @@
 #if !defined(AFX_SERVERTRANSPORT_H__AC7E8C33_37A1_4BE2_8B73_B463DA99E328__INCLUDED_)
     #include "ServerTransport.h"
 #endif
+#if !defined(AFX_RAYSUTILS_H__1CC878E3_B301_4A19_8211_F3B5977D3781__INCLUDED_)
+	#include "../RaysUtils.h"
+#endif
 
-#include "RaysServerUtils.h"
 using namespace RaysServer;
+
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -94,14 +110,7 @@ bool CServerTransport::handleReply(request_handler_t::request_id id, const void 
 
 bool CServerTransport::stopServer(void)
 {
-	//CRaptorInstance *pHandler = CRaptorInstance::GetInstance();
-	
-	if (true) //pHandler->stop())
-	{
-		return CServer<CServerSocket,CClientSocket>::stopServer();
-	}
-	else
-		return false;
+	return CServer<CServerSocket,CClientSocket>::stopServer();
 }
 
 int CServerTransport::onNewClient(const CClientSocket &client)
@@ -111,8 +120,6 @@ int CServerTransport::onNewClient(const CClientSocket &client)
 
 bool CServerTransport::onClientClose(const CClientSocket &client)
 {
-	//CRaptorInstance *pHandler = CRaptorInstance::GetInstance();
-	//return pHandler->closeSession((request_handler_t::request_id)&client);
 	return false;
 }
 

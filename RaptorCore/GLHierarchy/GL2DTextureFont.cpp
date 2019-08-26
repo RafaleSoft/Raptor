@@ -35,17 +35,17 @@
 #if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
 	#include "System/RaptorGLExtensions.h"
 #endif
-#if !defined(AFX_VERTEXPROGRAM_H__204F7213_B40B_4B6A_9BCA_828409871B68__INCLUDED_)
-	#include "GLHierarchy/VertexProgram.h"
+#if !defined(AFX_VERTEXSHADER_H__204F7213_B40B_4B6A_9BCA_828409871B68__INCLUDED_)
+	#include "GLHierarchy/VertexShader.h"
 #endif
-#if !defined(AFX_GEOMETRYPROGRAM_H__1981EA98_8F3C_4881_9429_A9ACA5B285D3__INCLUDED_)
-	#include "GLHierarchy/GeometryProgram.h"
+#if !defined(AFX_GEOMETRYSHADER_H__1981EA98_8F3C_4881_9429_A9ACA5B285D3__INCLUDED_)
+	#include "GLHierarchy/GeometryShader.h"
 #endif
 #if !defined(AFX_SHADER_H__4D405EC2_7151_465D_86B6_1CA99B906777__INCLUDED_)
 	#include "GLHierarchy/Shader.h"
 #endif
-#if !defined(AFX_FRAGMENTPROGRAM_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
-	#include "GLHierarchy/FragmentProgram.h"
+#if !defined(AFX_FRAGMENTSHADER_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
+	#include "GLHierarchy/FragmentShader.h"
 #endif
 
 
@@ -81,24 +81,24 @@ in vec2 v_size[]; \n\
 \n\
 layout(points) in; \n\
 layout(triangle_strip, max_vertices=4) out; \n\
-layout(location = 1) out vec4 g_TexCoord[1]; \n\
+layout(location = 1) out vec4 g_TexCoord; \n\
 \n\
 void main() \n\
 {\n\
 	gl_Position = gl_in[0].gl_Position; \n\
-	g_TexCoord[0] = vec4(v_texCoord[0].x, v_texCoord[0].y, 0.0, 0.0); \n\
+	g_TexCoord = vec4(v_texCoord[0].x, v_texCoord[0].y, 0.0, 0.0); \n\
 	EmitVertex(); \n\
 	\n\
 	gl_Position = gl_in[0].gl_Position + vec4(v_size[0].x, 0.0, 0.0, 0.0); \n\
-	g_TexCoord[0] = vec4(v_texCoord[0].x + v_texCoord[0].z, v_texCoord[0].y, 0.0, 0.0); \n\
+	g_TexCoord = vec4(v_texCoord[0].x + v_texCoord[0].z, v_texCoord[0].y, 0.0, 0.0); \n\
 	EmitVertex(); \n\
 	\n\
 	gl_Position = gl_in[0].gl_Position + vec4(0.0, v_size[0].y, 0.0, 0.0); \n\
-	g_TexCoord[0] = vec4(v_texCoord[0].x, v_texCoord[0].y + v_texCoord[0].w, 0.0, 0.0); \n\
+	g_TexCoord = vec4(v_texCoord[0].x, v_texCoord[0].y + v_texCoord[0].w, 0.0, 0.0); \n\
 	EmitVertex(); \n\
 	\n\
 	gl_Position = gl_in[0].gl_Position + vec4(v_size[0].x,v_size[0].y, 0.0, 0.0); \n\
-	g_TexCoord[0] = vec4(v_texCoord[0].x + v_texCoord[0].z, v_texCoord[0].y + v_texCoord[0].w, 0.0, 0.0); \n\
+	g_TexCoord = vec4(v_texCoord[0].x + v_texCoord[0].z, v_texCoord[0].y + v_texCoord[0].w, 0.0, 0.0); \n\
 	EmitVertex(); \n\
 	\n\
 	EndPrimitive(); \n\
@@ -342,18 +342,18 @@ bool CGL2DTextureFont::glGenGlyphs(float precision,
 	{
 		m_pShader = new CShader(getName() + "_SHADER");
 
-		CVertexProgram *vp = m_pShader->glGetVertexProgram();
+		CVertexShader *vp = m_pShader->glGetVertexShader();
 		bool res = vp->glLoadProgram(font_vp_src);
 		CProgramParameters params;
 		GL_COORD_VERTEX viewport(0, 0, 640, 480);
 		params.addParameter("viewport", viewport);
 		vp->setProgramParameters(params);
 
-		CGeometryProgram *gp = m_pShader->glGetGeometryProgram();
+		CGeometryShader *gp = m_pShader->glGetGeometryShader();
 		gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
 		res = res & gp->glLoadProgram(font_gp_src);
 
-		CFragmentProgram *fs = m_pShader->glGetFragmentProgram();
+		CFragmentShader *fs = m_pShader->glGetFragmentShader();
 		res = res & fs->glLoadProgram(font_fp_src);
 		params.clear();
 		params.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);
@@ -413,10 +413,10 @@ void CGL2DTextureFont::glWrite(const std::string &text, int x, int y, const CCol
 	CProgramParameters params;
 	GL_COORD_VERTEX vp(viewport[0], viewport[1], 0.5f * viewport[2], 0.5f * viewport[3]);
 	params.addParameter("viewport", vp);
-	m_pShader->glGetVertexProgram()->updateProgramParameters(params);
+	m_pShader->glGetVertexShader()->updateProgramParameters(params);
 	params.clear();
 	params.addParameter("color", color);
-	m_pShader->glGetFragmentProgram()->updateProgramParameters(params);
+	m_pShader->glGetFragmentShader()->updateProgramParameters(params);
 
 	FONT_CACHEELT_t* pCache = (FONT_CACHEELT_t*)font_linePointer;
 #if defined(GL_ARB_vertex_program)
@@ -500,10 +500,10 @@ void CGL2DTextureFont::glWrite(const std::vector<FONT_TEXT_ITEM> &lines)
 	CProgramParameters params;
 	GL_COORD_VERTEX vp(viewport[0], viewport[1], 0.5f * viewport[2], 0.5f * viewport[3]);
 	params.addParameter("viewport", vp);
-	m_pShader->glGetVertexProgram()->updateProgramParameters(params);
+	m_pShader->glGetVertexShader()->updateProgramParameters(params);
 	params.clear();
 	params.addParameter("color", color);
-	m_pShader->glGetFragmentProgram()->updateProgramParameters(params);
+	m_pShader->glGetFragmentShader()->updateProgramParameters(params);
 
 	GLsizei count = 0;
 	for (size_t l = 0; l < lines.size(); l++)

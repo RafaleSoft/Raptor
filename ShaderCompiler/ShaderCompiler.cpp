@@ -13,10 +13,10 @@
 #include "GLHierarchy/TextureFactory.h"
 #include "GLHierarchy/IRenderingProperties.h"
 #include "GLHierarchy/Shader.h"
+#include "GLHierarchy/VertexProgram_old.h"
 #include "GLHierarchy/VertexShader.h"
-#include "GLHierarchy/VertexProgram.h"
+#include "GLHierarchy/FragmentProgram_old.h"
 #include "GLHierarchy/FragmentShader.h"
-#include "GLHierarchy/FragmentProgram.h"
 
 #include "ToolBox/Imaging.h"
 #include "MFCExtension/RaptorMFCApplication.h"
@@ -109,7 +109,7 @@ void CDisplay::checkVShader(const string &src)
         pos = code.find('\\',pos);
     }
 
-    CVertexShader vs;
+    CVertexProgram_old vs;
     if (vs.glLoadProgram(code))
         nbShadersOK++;
     else
@@ -137,7 +137,7 @@ void CDisplay::checkFShader(const string &src)
         pos = code.find('\\',pos);
     }
 
-    CFragmentShader fs;
+	CFragmentProgram_old fs;
     if (fs.glLoadProgram(code))
         nbShadersOK++;
     else
@@ -156,7 +156,7 @@ void CDisplay::checkVProgram(const string &src)
         pos = code.find('\\',pos);
     }
 
-    CVertexProgram vp;
+    CVertexShader vp;
     if (vp.glLoadProgram(code))
             nbShadersOK++;
     else
@@ -175,7 +175,7 @@ void CDisplay::checkFProgram(const string &src)
         pos = code.find('\\',pos);
     }
 
-    CFragmentProgram fp;
+	CFragmentShader fp;
     if (fp.glLoadProgram(code))
             nbShadersOK++;
     else

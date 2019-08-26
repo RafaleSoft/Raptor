@@ -39,16 +39,16 @@ public:
 	CGenericAlignedVector(T v0,T v1,T v2,T v3);
 	virtual ~CGenericAlignedVector();
 
-	virtual void Zero()		{ m_vector[0] = m_vector[1] = m_vector[2] = m_vector[3] = 0; };
+	virtual void Zero()	NOEXCEPT { m_vector[0] = m_vector[1] = m_vector[2] = m_vector[3] = 0; };
 
-	virtual void One()		{ m_vector[0] = m_vector[1] = m_vector[2] = m_vector[3] = 1; };
+	virtual void One()	NOEXCEPT { m_vector[0] = m_vector[1] = m_vector[2] = m_vector[3] = 1; };
 
-	virtual void Set(T v0,T v1,T v2,T v3)	{ m_vector[0] = v0;m_vector[1] = v1;m_vector[2] = v2;m_vector[3] = v3;};
+	virtual void Set(T v0,T v1,T v2,T v3) NOEXCEPT { m_vector[0] = v0;m_vector[1] = v1;m_vector[2] = v2;m_vector[3] = v3;};
 
 	
 	// data access
 	T* const vector(void) const { return (T*)(m_vector); };
-	T& SIMD_CALL operator[] ( const int i ) const {  return m_vector[i]; };
+	T& SIMD_CALL operator[] ( const int i ) const NOEXCEPT {  return m_vector[i]; };
 
 	T& X() { return m_vector[0]; };
 	T& Y() { return m_vector[1]; };
@@ -72,9 +72,9 @@ public:
 	//operations
 	bool SIMD_CALL operator== ( const CGenericAlignedVector<T>& v ) const;
 	bool SIMD_CALL operator== ( const T v[4] ) const;
-	virtual double SIMD_CALL Norm() const;
-	virtual double SIMD_CALL Normalize();
-	virtual T SIMD_CALL Length() const;
+	virtual double SIMD_CALL Norm() const NOEXCEPT;
+	virtual double SIMD_CALL Normalize() NOEXCEPT;
+	virtual T SIMD_CALL Length() const NOEXCEPT;
 
 
 	// unary operations

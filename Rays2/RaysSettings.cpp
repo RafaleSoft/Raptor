@@ -1,6 +1,6 @@
 /***************************************************************************/
 /*                                                                         */
-/*  Builder.Net.cpp                                                        */
+/*  Raysettings.cpp                                                        */
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
@@ -16,20 +16,30 @@
 /***************************************************************************/
 
 
-#include "stdafx.h"
-#include "Form1.h"
-#include "BuilderForm.h"
+#if !defined(AFX_RAYSSETTINGS_H__40662BB9_6FC8_40CA_A8A0_F2A701AD70BD__INCLUDED_)
+	#include "RaysSettings.h"
+#endif
 
-using namespace BuilderNet;
+using namespace Rays;
 
-[STAThreadAttribute]
-int main()
+CRaysSettings::CRaysSettings(void)
 {
-	// Activation des effets visuels de Windows XP avant la création de tout contrôle
-	Application::EnableVisualStyles();
-	Application::SetCompatibleTextRenderingDefault(false); 
+}
 
-	// Créer la fenêtre principale et l'exécuter
-	Application::Run(gcnew BuilderForm());
-	return 0;
+CRaysSettings::~CRaysSettings(void)
+{
+	for (unsigned int i = 0; i<m_settings.size(); i++)
+		delete m_settings[i];
+}
+
+bool CRaysSettings::setValue(const std::string& settingsName, const char* value)
+{
+	for (unsigned int o = 0; o<m_settings.size(); o++)
+	{
+		CSettingsOption* option = m_settings[o];
+		if (option->getName() == settingsName)
+			return option->parse(value);
+	}
+
+	return false;
 }

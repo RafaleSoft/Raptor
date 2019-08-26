@@ -57,14 +57,14 @@ class C3DSet;
 class C3DSqueleton;
 class CBumppedGeometry;
 class CEMBMGeometry;
-class CFragmentProgram;
 class CFragmentShader;
+class CFragmentProgram_old;
 class CGLFont;
 class CGLLayer;
 class CGLLod;
 class CGeometry;
 class CGeometryPrimitive;
-class CGeometryProgram;
+class CGeometryShader;
 class CLight;
 class CLightGlow;
 class CLightObserver;
@@ -91,8 +91,8 @@ class CTextureFactoryConfig;
 class CTextureObject;
 class CTextureSet;
 class CTextureUnitSetup;
-class CVertexProgram;
 class CVertexShader;
+class CVertexProgram_old;
 class ITextureObject;
 
 // SSE Engine section

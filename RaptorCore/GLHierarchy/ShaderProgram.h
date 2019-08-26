@@ -1,6 +1,20 @@
-// ShaderProgram.h: interface for the CShaderProgram class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  ShaderProgram.h                                                        */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
 
 #if !defined(AFX_SHADERPROGRAM_H__936BEC73_3903_46CE_86C9_9CA0005B31F5__INCLUDED_)
 #define AFX_SHADERPROGRAM_H__936BEC73_3903_46CE_86C9_9CA0005B31F5__INCLUDED_
@@ -76,7 +90,7 @@ public:
 
 	//! This method can be used to update only a subset of the actual parameter set.
 	//! They will be actually applied after a successfull link is issued.
-	virtual void updateProgramParameters(const CProgramParameters &v);
+	void updateProgramParameters(const CProgramParameters &v);
 
 
 	//! Inherited from CPersistence
