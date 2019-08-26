@@ -16,8 +16,8 @@
 /***************************************************************************/
 
 
-#if !defined(AFX_UNIFIEDPROGRAM_H__CBCD5C66_88D0_4EAD_A5FD_B0F235B8FED6__INCLUDED_)
-#define AFX_UNIFIEDPROGRAM_H__CBCD5C66_88D0_4EAD_A5FD_B0F235B8FED6__INCLUDED_
+#if !defined(AFX_UNIFIEDSHADER_H__CBCD5C66_88D0_4EAD_A5FD_B0F235B8FED6__INCLUDED_)
+#define AFX_UNIFIEDSHADER_H__CBCD5C66_88D0_4EAD_A5FD_B0F235B8FED6__INCLUDED_
 
 #if _MSC_VER > 1000
 #pragma once
@@ -31,11 +31,11 @@
 RAPTOR_NAMESPACE_BEGIN
 
 
-class RAPTOR_API CUnifiedProgram : public CShaderProgram  
+class RAPTOR_API CUnifiedShader : public CShaderProgram  
 {
 public:
 	//!	Destructor.
-	virtual ~CUnifiedProgram();
+	virtual ~CUnifiedShader();
 
 	//!	Load OpenGL parameters all at once
 	virtual void glRender(void);
@@ -68,11 +68,11 @@ public:
 
 protected:
 	//!	Default Constructor.
-    CUnifiedProgram(const CPersistence::CPersistenceClassID &classId, 
+	CUnifiedShader(const CPersistence::CPersistenceClassID &classId,
 					const std::string& name);
 
 	//! Copy constructor.
-	CUnifiedProgram(const CUnifiedProgram& shader);
+	CUnifiedShader(const CUnifiedShader& shader);
 
     //! Updates locations of uniform variables
     void glQueryUniformLocations(RAPTOR_HANDLE program);
@@ -86,14 +86,14 @@ protected:
 
 private:
 	//!	Forbidden operators
-	CUnifiedProgram& operator=(const CUnifiedProgram&);
+	CUnifiedShader& operator=(const CUnifiedShader&);
 
     //! factorize uniform settings
-    void glParameter( unsigned int numParam,const float *v) const;
+    void glParameter(unsigned int numParam,const float *v) const;
 };
 
 
 RAPTOR_NAMESPACE_END
 
-#endif // !defined(AFX_UNIFIEDPROGRAM_H__CBCD5C66_88D0_4EAD_A5FD_B0F235B8FED6__INCLUDED_)
+#endif // !defined(AFX_UNIFIEDSHADER_H__CBCD5C66_88D0_4EAD_A5FD_B0F235B8FED6__INCLUDED_)
 

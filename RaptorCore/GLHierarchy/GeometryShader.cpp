@@ -49,7 +49,7 @@ IMPLEMENT_CLASS_ID(CGeometryShader, geometryId)
 //////////////////////////////////////////////////////////////////////
 
 CGeometryShader::CGeometryShader(const std::string& name)
-	:CUnifiedProgram(geometryId, name), m_inputType(0), m_outputType(0), m_verticesOut(0)
+	:CUnifiedShader(geometryId, name), m_inputType(0), m_outputType(0), m_verticesOut(0)
 {
     m_handle.handle(0);	// default openGL vertex processing pipeline
 	m_handle.hClass(CGeometryShader::CGeometryShaderClassID::GetClassId().ID());
@@ -58,7 +58,7 @@ CGeometryShader::CGeometryShader(const std::string& name)
 }
 
 CGeometryShader::CGeometryShader(const CGeometryShader& shader)
-	:CUnifiedProgram(shader)
+	:CUnifiedShader(shader)
 {
 }
 
@@ -216,7 +216,7 @@ bool CGeometryShader::glBindProgram(RAPTOR_HANDLE program)
 #endif
 
 #if defined(GL_ARB_shader_objects)
-	if (CUnifiedProgram::glBindProgram(program))
+	if (CUnifiedShader::glBindProgram(program))
 	{
 #if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
 	// Since OpenGL 3.2, geometry parameters shall be defined with a layout in shader source.

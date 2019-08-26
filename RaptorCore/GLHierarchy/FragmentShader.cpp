@@ -48,7 +48,7 @@ IMPLEMENT_CLASS_ID(CFragmentShader, fragmentId)
 //////////////////////////////////////////////////////////////////////
 
 CFragmentShader::CFragmentShader(const std::string& name) :
-	CUnifiedProgram(fragmentId, name)
+	CUnifiedShader(fragmentId, name)
 {
 	m_handle.handle(0);	// default openGL vertex processing pipeline
 	m_handle.hClass(CFragmentShader::CFragmentShaderClassID::GetClassId().ID());
@@ -58,7 +58,7 @@ CFragmentShader::CFragmentShader(const std::string& name) :
 
 
 CFragmentShader::CFragmentShader(const CFragmentShader& shader)
-	:CUnifiedProgram(shader)
+	:CUnifiedShader(shader)
 {
 }
 
@@ -191,7 +191,7 @@ bool CFragmentShader::glBindProgram(RAPTOR_HANDLE program)
 #endif
 
 #if defined(GL_ARB_shader_objects)
-	if (CUnifiedProgram::glBindProgram(program))
+	if (CUnifiedShader::glBindProgram(program))
 	{
 		CATCH_GL_ERROR
 		return true;

@@ -25,8 +25,8 @@
 
 #include "Subsys/CodeGeneration.h"
 
-#if !defined(AFX_UNIFIEDPROGRAM_H__CBCD5C66_88D0_4EAD_A5FD_B0F235B8FED6__INCLUDED_)
-	#include "UnifiedProgram.h"
+#if !defined(AFX_UNIFIEDSHADER_H__CBCD5C66_88D0_4EAD_A5FD_B0F235B8FED6__INCLUDED_)
+	#include "UnifiedShader.h"
 #endif
 
 
@@ -36,7 +36,7 @@ RAPTOR_NAMESPACE_BEGIN
 //!
 //! This class handles OpenGL2.0 fragment shaders.
 //!
-class RAPTOR_API CFragmentShader : public CUnifiedProgram  
+class RAPTOR_API CFragmentShader : public CUnifiedShader  
 {
 public:
     typedef struct GL_FRAGMENT_SHADER_CAPS_t

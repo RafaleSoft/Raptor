@@ -143,7 +143,7 @@ copy .\RaptorCore\GLHierarchy\TextureGenerator.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\TextureObject.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\TextureSet.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\TextureUnitSetup.h Redist\Include\GLHierarchy
-copy .\RaptorCore\GLHierarchy\UnifiedProgram.h Redist\Include\GLHierarchy
+copy .\RaptorCore\GLHierarchy\UnifiedShader.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\VertexShader.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\VertexProgram_old.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\VulkanShaderStage.h Redist\Include\GLHierarchy

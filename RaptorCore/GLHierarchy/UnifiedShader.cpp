@@ -18,8 +18,8 @@
 
 #include "Subsys/CodeGeneration.h"
 
-#if !defined(AFX_UNIFIEDPROGRAM_H__CBCD5C66_88D0_4EAD_A5FD_B0F235B8FED6__INCLUDED_)
-    #include "UnifiedProgram.h"
+#if !defined(AFX_UNIFIEDSHADER_H__CBCD5C66_88D0_4EAD_A5FD_B0F235B8FED6__INCLUDED_)
+    #include "UnifiedShader.h"
 #endif
 
 #if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
@@ -41,15 +41,15 @@ RAPTOR_NAMESPACE
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CUnifiedProgram::CUnifiedProgram(const CPersistence::CPersistenceClassID &classId, const std::string& name):
-    CShaderProgram(classId,name)
+CUnifiedShader::CUnifiedShader(const CPersistence::CPersistenceClassID &classId, const std::string& name)
+	:CShaderProgram(classId,name)
 {
     m_bReLinked = true;
     m_bValid = false;
 }
 
 
-CUnifiedProgram::CUnifiedProgram(const CUnifiedProgram& shader)
+CUnifiedShader::CUnifiedShader(const CUnifiedShader& shader)
 	:CShaderProgram(shader)
 {
 	m_bReLinked = shader.m_bReLinked;
@@ -57,20 +57,12 @@ CUnifiedProgram::CUnifiedProgram(const CUnifiedProgram& shader)
 }
 
 
-CUnifiedProgram::~CUnifiedProgram()
+CUnifiedShader::~CUnifiedShader()
 {
 
 }
 
-void CUnifiedProgram::glProgramParameter(unsigned int numParam,const GL_COORD_VERTEX &v) const
-{
-    if (m_handle.handle() == 0)
-        return;
-
-    glParameter(numParam,v);
-}
-
-void CUnifiedProgram::glProgramParameter(unsigned int numParam,const CColor::RGBA &v) const
+void CUnifiedShader::glProgramParameter(unsigned int numParam, const GL_COORD_VERTEX &v) const
 {
     if (m_handle.handle() == 0)
         return;
@@ -78,8 +70,16 @@ void CUnifiedProgram::glProgramParameter(unsigned int numParam,const CColor::RGB
     glParameter(numParam,v);
 }
 
+void CUnifiedShader::glProgramParameter(unsigned int numParam, const CColor::RGBA &v) const
+{
+    if (m_handle.handle() == 0)
+        return;
 
-void CUnifiedProgram::glParameter(unsigned int numParam,const float *v) const
+    glParameter(numParam,v);
+}
+
+
+void CUnifiedShader::glParameter(unsigned int numParam, const float *v) const
 {
 #if defined(GL_ARB_shader_objects)
 	if (numParam < m_parameters.getNbParameters())
@@ -105,7 +105,7 @@ void CUnifiedProgram::glParameter(unsigned int numParam,const float *v) const
 }
 
 
-std::string CUnifiedProgram::glGetProgramString(void)
+std::string CUnifiedShader::glGetProgramString(void)
 {
 	if (m_handle.handle() == 0)
 		return "";
@@ -127,7 +127,7 @@ std::string CUnifiedProgram::glGetProgramString(void)
 #endif
 }
 
-bool CUnifiedProgram::glBindProgram(RAPTOR_HANDLE program)
+bool CUnifiedShader::glBindProgram(RAPTOR_HANDLE program)
 {
 #if defined(GL_ARB_shader_objects)
 	if (program.handle() == 0)
@@ -151,7 +151,7 @@ bool CUnifiedProgram::glBindProgram(RAPTOR_HANDLE program)
 #endif
 }
 
-bool CUnifiedProgram::glUnbindProgram(RAPTOR_HANDLE program)
+bool CUnifiedShader::glUnbindProgram(RAPTOR_HANDLE program)
 {
 #if defined(GL_ARB_shader_objects)
 	if ((program.handle() == 0) || (m_handle.handle() == 0))
@@ -173,7 +173,7 @@ bool CUnifiedProgram::glUnbindProgram(RAPTOR_HANDLE program)
 #endif
 }
 
-void CUnifiedProgram::glRender(void)
+void CUnifiedShader::glRender(void)
 {
 	if (m_handle.handle() == 0)
 		return;
@@ -315,7 +315,7 @@ void CUnifiedProgram::glRender(void)
 /*
  *	The API is missing interface for doubles.
  *
-void CUnifiedProgram::glProgramParameter(unsigned int numParam,GL_HIRES_COORD_VERTEX &v)
+void CUnifiedShader::glProgramParameter(unsigned int numParam,GL_HIRES_COORD_VERTEX &v)
 {
 	if (m_handle.handle == 0)
         return;
@@ -345,7 +345,7 @@ void CUnifiedProgram::glProgramParameter(unsigned int numParam,GL_HIRES_COORD_VE
 */
 
 
-uint64_t CUnifiedProgram::glGetBufferMemoryRequirements(RAPTOR_HANDLE program)
+uint64_t CUnifiedShader::glGetBufferMemoryRequirements(RAPTOR_HANDLE program)
 {
 	if (program.handle() == 0)
 		return 0;
@@ -478,7 +478,7 @@ bool isTypeSampler(unsigned int shaderKind)
 	return false;
 #endif
 }
-void CUnifiedProgram::glQueryUniformLocations(RAPTOR_HANDLE program)
+void CUnifiedShader::glQueryUniformLocations(RAPTOR_HANDLE program)
 {
     if (program.handle() == 0)
         return;
@@ -532,7 +532,7 @@ void CUnifiedProgram::glQueryUniformLocations(RAPTOR_HANDLE program)
     CATCH_GL_ERROR
 }
 
-void CUnifiedProgram::glQueryAttributeLocations(RAPTOR_HANDLE program)
+void CUnifiedShader::glQueryAttributeLocations(RAPTOR_HANDLE program)
 {
     if (program.handle() == 0)
         return;

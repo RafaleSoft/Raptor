@@ -48,7 +48,7 @@ IMPLEMENT_CLASS_ID(CVertexShader, vertexId)
 //////////////////////////////////////////////////////////////////////
 
 CVertexShader::CVertexShader(const std::string& name) :
-    CUnifiedProgram(vertexId,name)
+    CUnifiedShader(vertexId,name)
 {
     m_handle.handle(0);	// default openGL vertex processing pipeline
 	m_handle.hClass(CVertexShader::CVertexShaderClassID::GetClassId().ID());
@@ -57,7 +57,7 @@ CVertexShader::CVertexShader(const std::string& name) :
 }
 
 CVertexShader::CVertexShader(const CVertexShader& shader)
-	:CUnifiedProgram(shader)
+	:CUnifiedShader(shader)
 {
 }
 
@@ -189,7 +189,7 @@ bool CVertexShader::glBindProgram(RAPTOR_HANDLE program)
 #endif
 
 #if defined(GL_ARB_shader_objects)
-	if (CUnifiedProgram::glBindProgram(program))
+	if (CUnifiedShader::glBindProgram(program))
 	{
 		for (unsigned int idx = 0; idx < m_parameters.getNbParameters(); idx++)
 		{
