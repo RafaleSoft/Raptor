@@ -36,7 +36,7 @@ RAPTOR_NAMESPACE_BEGIN
 class RAPTOR_API CVertexShader : public CUnifiedProgram  
 {
 public:
-    typedef struct GL_VERTEX_PROGRAM_CAPS_t
+    typedef struct GL_VERTEX_SHADER_CAPS_t
 	{
 		int		max_vertex_uniform_components;
 		int		max_varying_floats;
@@ -50,7 +50,7 @@ public:
 		int		max_combined_vertex_uniform_components;
 		int		max_uniform_block_size;
 		int		max_vertex_uniform_blocks;
-	} GL_VERTEX_PROGRAM_CAPS;
+	} GL_VERTEX_SHADER_CAPS;
 
 
 public:
@@ -72,7 +72,7 @@ public:
 	//! This method returns the underlying hardware capabilities to render a vertex program. the capabilities fill
 	//! the structure given in caps parameter.
 	//!	Refer to official ARB documentation for detailed information on each capability item.
-	static bool glGetProgramCaps(GL_VERTEX_PROGRAM_CAPS& caps);
+	static bool glGetShaderCaps(GL_VERTEX_SHADER_CAPS& caps);
 
     //! This method attaches the vertex program to a program object for
     //! linking and validation. Checking is performed on the handle to accept only valid programs.

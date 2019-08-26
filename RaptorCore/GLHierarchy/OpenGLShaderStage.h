@@ -32,6 +32,10 @@
 
 RAPTOR_NAMESPACE_BEGIN
 
+class CVertexShader;
+class CFragmentShader;
+class CGeometryShader;
+
 
 class RAPTOR_API COpenGLShaderStage : public CShaderProgram
 {
@@ -91,6 +95,10 @@ private:
 	//! Denied operators
 	COpenGLShaderStage();
 	COpenGLShaderStage& operator=(const COpenGLShaderStage&) { return *this; };
+
+	CVertexShader	*m_pVShader;
+	CFragmentShader	*m_pFShader;
+	CGeometryShader	*m_pGShader;
 };
 
 

@@ -201,7 +201,7 @@ bool CFragmentShader::glBindProgram(RAPTOR_HANDLE program)
 		return false;
 }
 
-bool CFragmentShader::glGetProgramCaps(GL_FRAGMENT_PROGRAM_CAPS& caps)
+bool CFragmentShader::glGetShaderCaps(GL_FRAGMENT_SHADER_CAPS& caps)
 {
 	if (CRaptorInstance::GetInstance().m_bFragmentProgramReady)
 	{
@@ -230,8 +230,8 @@ bool CFragmentShader::glGetProgramStatus(void)
 #if defined(GL_ARB_fragment_shader)
 	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 
-	GL_FRAGMENT_PROGRAM_CAPS caps;
-	if (glGetProgramCaps(caps))
+	GL_FRAGMENT_SHADER_CAPS caps;
+	if (glGetShaderCaps(caps))
 	{
         //  Check program status and compare to shader caps to return global status
         GLint value = 0;

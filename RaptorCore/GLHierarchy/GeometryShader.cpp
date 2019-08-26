@@ -246,7 +246,7 @@ bool CGeometryShader::glBindProgram(RAPTOR_HANDLE program)
 }
 
 
-bool CGeometryShader::glGetProgramCaps(GL_GEOMETRY_PROGRAM_CAPS& caps)
+bool CGeometryShader::glGetShaderCaps(GL_GEOMETRY_SHADER_CAPS& caps)
 {
 	if (CRaptorInstance::GetInstance().m_bGeometryShaderReady)
 	{
@@ -279,8 +279,8 @@ bool CGeometryShader::glGetProgramStatus(void)
 #if defined(GL_ARB_geometry_shader4)
 	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 
-	GL_GEOMETRY_PROGRAM_CAPS caps;
-	if (glGetProgramCaps(caps))
+	GL_GEOMETRY_SHADER_CAPS caps;
+	if (glGetShaderCaps(caps))
 	{
         //  Check program status and compare to shader caps to return global status
         GLint value = 0;

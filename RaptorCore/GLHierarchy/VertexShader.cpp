@@ -211,7 +211,7 @@ bool CVertexShader::glBindProgram(RAPTOR_HANDLE program)
 }
 
 
-bool CVertexShader::glGetProgramCaps(GL_VERTEX_PROGRAM_CAPS& caps)
+bool CVertexShader::glGetShaderCaps(GL_VERTEX_SHADER_CAPS& caps)
 {
 	if (CRaptorInstance::GetInstance().m_bVertexProgramReady)
 	{
@@ -251,8 +251,8 @@ bool CVertexShader::glGetProgramStatus(void)
 #if defined(GL_ARB_vertex_shader)
 	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 
-	GL_VERTEX_PROGRAM_CAPS caps;
-	if (glGetProgramCaps(caps))
+	GL_VERTEX_SHADER_CAPS caps;
+	if (glGetShaderCaps(caps))
 	{
         //  Check program status and compare to shader caps to return global status
         GLint value = 0;

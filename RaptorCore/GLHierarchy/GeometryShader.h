@@ -36,7 +36,7 @@ RAPTOR_NAMESPACE_BEGIN
 class RAPTOR_API CGeometryShader : public CUnifiedProgram  
 {
 public:
-    typedef struct GL_GEOMETRY_PROGRAM_CAPS_t
+    typedef struct GL_GEOMETRY_SHADER_CAPS_t
 	{
 		int		max_geometry_texture_image_units;
 		int		max_geometry_varying_components;
@@ -46,7 +46,7 @@ public:
 		int		max_geometry_output_vertices;
 		int		max_geometry_total_output_components;
 		int		max_geometry_uniform_blocks;
-	} GL_GEOMETRY_PROGRAM_CAPS;
+	} GL_GEOMETRY_SHADER_CAPS;
 
 
 public:
@@ -68,7 +68,7 @@ public:
 	//! This method returns the underlying hardware capabilities to render a vertex program. the capabilities fill
 	//! the structure given in caps parameter.
 	//!	Refer to official ARB documentation for detailed information on each capability item.
-	static bool glGetProgramCaps(GL_GEOMETRY_PROGRAM_CAPS& caps);
+	static bool glGetShaderCaps(GL_GEOMETRY_SHADER_CAPS& caps);
 
     //! This method attaches the vertex program to a program object for
     //! linking and validation. Checking is performed on the handle to accept only valid programs.
