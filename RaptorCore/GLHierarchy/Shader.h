@@ -214,9 +214,10 @@ protected:
 	//! Destructor.
 	virtual ~CShader();
 
+
 private:
     //! Denied operators
-    CShader& operator=(const CShader&) { return *this; }
+	CShader& operator=(const CShader&);
 
     //! Implements CPersistence
     virtual void unLink(const CPersistence* p);

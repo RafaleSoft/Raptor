@@ -21,15 +21,12 @@
 #if !defined(AFX_UNIFIEDSHADER_H__CBCD5C66_88D0_4EAD_A5FD_B0F235B8FED6__INCLUDED_)
     #include "UnifiedShader.h"
 #endif
-
 #if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
 	#include "System/RaptorGLExtensions.h"
 #endif
-
 #if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
 	#include "System/Raptor.h"
 #endif
-
 #if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
     #include "System/RaptorErrorManager.h"
 #endif
@@ -105,7 +102,7 @@ void CUnifiedShader::glParameter(unsigned int numParam, const float *v) const
 }
 
 
-std::string CUnifiedShader::glGetProgramString(void)
+std::string CUnifiedShader::glGetProgramString(void) const
 {
 	if (m_handle.handle() == 0)
 		return "";

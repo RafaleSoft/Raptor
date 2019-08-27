@@ -272,7 +272,7 @@ bool CFragmentProgram_old::glLoadProgram(const std::string &program)
 	return m_bValid;
 }
 
-std::string CFragmentProgram_old::glGetProgramString(void)
+std::string CFragmentProgram_old::glGetProgramString(void) const
 {
 	if (m_handle.handle() == 0)
 		return "";
@@ -301,7 +301,7 @@ std::string CFragmentProgram_old::glGetProgramString(void)
 #endif
 }
 
-bool CFragmentProgram_old::glGetProgramStatus(void)
+bool CFragmentProgram_old::glGetProgramStatus(void) const
 {
 	if (m_handle.handle() == 0)
 		return false;

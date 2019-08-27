@@ -486,7 +486,7 @@ bool CVertexProgram_old::glLoadProgram(const std::string &program)
 	return m_bValid;
 }
 
-std::string CVertexProgram_old::glGetProgramString(void)
+std::string CVertexProgram_old::glGetProgramString(void) const
 {
 	if (m_handle.handle() == 0)
 		return "";
@@ -515,7 +515,7 @@ std::string CVertexProgram_old::glGetProgramString(void)
 #endif
 }
 
-bool CVertexProgram_old::glGetProgramStatus(void)
+bool CVertexProgram_old::glGetProgramStatus(void) const
 {
 	if (m_handle.handle() == 0)
 		return false;

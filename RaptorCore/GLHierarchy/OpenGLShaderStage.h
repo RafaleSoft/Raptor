@@ -56,16 +56,19 @@ public:
 	};
 
 	//! Implements base class
-	virtual void glStop(void) {};
+	virtual void glStop(void)
+	{
+	};
 
 	//! Implements base class
-	virtual bool glGetProgramStatus(void)
+	virtual bool glGetProgramStatus(void) const
 	{
 		return m_bValid;
 	};
 
 	//! Implements base class
-	virtual std::string glGetProgramString(void) { return ""; }
+	virtual std::string glGetProgramString(void) const;
+
 
 	virtual void glProgramParameter(unsigned int numParam,
 									const GL_COORD_VERTEX &v) const
@@ -77,7 +80,47 @@ public:
 	{
 	};
 
-	//! Provide gl-like shader parameters from RaptorCore.
+	//! Generate the shader as a compiled object ( program objects / display lists ).
+	//! The compile state must be correct to render the shader.
+	//! @return true if successfully compiled, false otherwise.
+	bool glCompileShader(void);
+
+
+	//!	Returns the vertex Program, allocate a new one if necessary.
+	//!	EMPTY_PROGRAM is a special name for a void program (i.e. doing nothing)
+	CVertexShader * const glGetVertexShader(const std::string& name = "");
+
+	//!	Returns true if Program has a Vertex Program already
+	bool hasVertexShader(void) const { return m_pVShader != NULL; };
+
+	//! Removes the vertex program.
+	//! @return true if the vertex program has been deleted
+	bool glRemoveVertexShader(void);
+
+	//!	Returns the fragment Program
+	//!	Allocate a new one if necessary
+	CFragmentShader * const glGetFragmentShader(const std::string& name = "");
+
+	//!	Returns true if Program has a Fragment Program already
+	bool hasFragmentShader(void) const { return m_pFShader != NULL; };
+
+	//! Removes the fragment program.
+	//! @return true if the fragment program has been deleted
+	bool glRemoveFragmentShader(void);
+
+	//!	Returns the geometry Program
+	//!	Allocate a new one if necessary
+	CGeometryShader * const glGetGeometryShader(const std::string& name = "");
+
+	//!	Returns true if Program has a Vertex Program already
+	bool hasGeometryShader(void) const { return m_pGShader != NULL; };
+
+	//! Removes the geometry program.
+	//! @return true if the geometry program has been deleted
+	bool glRemoveGeometryShader(void);
+
+
+		//! Provide gl-like shader parameters from RaptorCore.
 	//!	Attention : parameter shall be copied before next call because return value is reused.
 	CProgramParameters::CParameterBase& getDefaultParameter(const std::string& parameter_name, int locationIndex);
 
@@ -91,10 +134,24 @@ public:
 	DECLARE_CLASS_ID(COpenGLShaderStageClassID, "OpenGLShaderStage", CShaderProgram)
 
 
+protected:
+	//! Copy constructor.
+	COpenGLShaderStage(const COpenGLShaderStage&);
+
+
 private:
 	//! Denied operators
 	COpenGLShaderStage();
-	COpenGLShaderStage& operator=(const COpenGLShaderStage&) { return *this; };
+	COpenGLShaderStage& operator=(const COpenGLShaderStage&);
+
+	//! Implements CPersistence
+	virtual void unLink(const CPersistence* p);
+
+	bool			m_bDeleteVShader;
+	bool			m_bDeleteFShader;
+	bool			m_bDeleteGShader;
+
+	RAPTOR_HANDLE	m_shaderProgram;
 
 	CVertexShader	*m_pVShader;
 	CFragmentShader	*m_pFShader;

@@ -89,11 +89,11 @@ public:
 
     //! Returns the status of this shader
 	//!	@see CShaderProgram.
-	virtual bool glGetProgramStatus(void);
+	virtual bool glGetProgramStatus(void) const;
 
 	//! Implements base class
 	//!	@see CShaderProgram.
-	virtual std::string glGetProgramString(void);
+	virtual std::string glGetProgramString(void) const;
 
 	//! This method returns the underlying hardware capabilities
 	//! to render a vertex program. the capabilities fill
