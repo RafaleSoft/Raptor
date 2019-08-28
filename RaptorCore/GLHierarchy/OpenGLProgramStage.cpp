@@ -91,6 +91,10 @@ COpenGLProgramStage::~COpenGLProgramStage(void)
 	glRemoveFragmentProgram();
 }
 
+COpenGLProgramStage* COpenGLProgramStage::glClone() const
+{
+	return new COpenGLProgramStage(*this);
+}
 
 void COpenGLProgramStage::unLink(const CPersistence* p)
 {
@@ -108,6 +112,22 @@ bool COpenGLProgramStage::glGetProgramStatus(void) const
 std::string COpenGLProgramStage::glGetProgramString(void) const
 {
 	return "";
+}
+
+void COpenGLProgramStage::glRender(void)
+{
+	if (NULL != m_pVProgram)
+		m_pVProgram->glRender();
+	if (NULL != m_pFProgram)
+		m_pFProgram->glRender();
+}
+
+void COpenGLProgramStage::glStop(void)
+{
+	if (NULL != m_pVProgram)
+		m_pVProgram->glStop();
+	if (NULL != m_pFProgram)
+		m_pFProgram->glStop();
 }
 
 void COpenGLProgramStage::setProgramParameters(const CProgramParameters &v)

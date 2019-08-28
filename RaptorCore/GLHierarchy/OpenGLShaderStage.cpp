@@ -112,6 +112,14 @@ COpenGLShaderStage::COpenGLShaderStage(const COpenGLShaderStage& stage)
 
 COpenGLShaderStage::~COpenGLShaderStage(void)
 {
+	glRemoveVertexShader();
+	glRemoveFragmentShader();
+	glRemoveGeometryShader();
+}
+
+COpenGLShaderStage* COpenGLShaderStage::glClone() const
+{
+	return new COpenGLShaderStage(*this);
 }
 
 

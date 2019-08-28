@@ -44,6 +44,10 @@ public:
 
 	virtual ~COpenGLShaderStage(void);
 
+		//!	Clone current stage.
+	COpenGLShaderStage* glClone() const;
+
+
 	//! Implements base class
 	virtual bool glLoadProgram(const std::string &program)
 	{

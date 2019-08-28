@@ -31,14 +31,8 @@
 #if !defined(AFX_TEXTUREUNITSETUP_H__4A6ADC72_02E5_4F2A_931E_A736B6D6E0F0__INCLUDED_)
 	#include "TextureUnitSetup.h"
 #endif
-#if !defined(AFX_VERTEXPROGRAM_OLD_H__F2D3BBC6_87A1_4695_B667_2B8C3C4CF022__INCLUDED_)
-	#include "VertexProgram_old.h"
-#endif
 #if !defined(AFX_VERTEXSHADER_H__204F7213_B40B_4B6A_9BCA_828409871B68__INCLUDED_)
     #include "VertexShader.h"
-#endif
-#if !defined(AFX_FRAGMENTPROGRAM_OLD_H__DD0AD51D_3BFF_4C65_8099_BA7696D7BDDF__INCLUDED_)
-	#include "FragmentProgram_old.h"
 #endif
 #if !defined(AFX_FRAGMENTSHADER_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
     #include "FragmentShader.h"
@@ -102,7 +96,6 @@ CColor::RGBA CShader::getAmbient(void)
 CShader::CShader(const std::string& name)
 	:CPersistence(shaderID, name), CObjectReference(),
 	m_pTMUSetup(NULL),m_pMaterial(NULL),
-	m_pVProgram_old(NULL), m_pFProgram_old(NULL),
 	m_pVShader(NULL), m_pFShader(NULL),
 	m_pGShader(NULL), m_pVulkanShader(NULL),
 	m_pOpenGLProgram(NULL), m_pOpenGLShader(NULL)
@@ -119,8 +112,6 @@ CShader::CShader(const std::string& name)
 	m_color.b = 0.0f;
 	m_color.a = 1.0f;
 
-	m_bDeleteFProgram_old = false;
-	m_bDeleteVProgram_old = false;
 	m_bDeleteFShader = false;
 	m_bDeleteVShader = false;
 	m_bDeleteGShader = false;
@@ -133,7 +124,6 @@ CShader::CShader(const std::string& name)
 CShader::CShader(const CShader& shader)
 	:CPersistence(shaderID, shader.getName()), CObjectReference(),
 	m_pTMUSetup(NULL), m_pMaterial(NULL),
-	m_pVProgram_old(NULL), m_pFProgram_old(NULL),
 	m_pVShader(NULL), m_pFShader(NULL),
 	m_pGShader(NULL), m_pVulkanShader(NULL),
 	m_pOpenGLProgram(NULL), m_pOpenGLShader(NULL)
@@ -162,24 +152,6 @@ CShader::CShader(const CShader& shader)
 		else
 			m_pTMUSetup = shader.m_pTMUSetup;
 		m_pTMUSetup->registerDestruction(this);
-	}
-	if (NULL != shader.m_pVProgram_old)
-	{
-		glRemoveVertexProgram_old();
-		if (shader.m_bDeleteVProgram_old)
-			m_pVProgram_old = shader.m_pVProgram_old->glClone();
-		else
-			m_pVProgram_old = shader.m_pVProgram_old;
-		m_pVProgram_old->registerDestruction(this);
-	}
-	if (NULL != shader.m_pFProgram_old)
-	{
-		glRemoveFragmentProgram_old();
-		if (shader.m_bDeleteFProgram_old)
-			m_pFProgram_old = shader.m_pFProgram_old->glClone();
-		else
-			m_pFProgram_old = shader.m_pFProgram_old;
-		m_pFProgram_old->registerDestruction(this);
 	}
 	if (NULL != shader.m_pVShader)
 	{
@@ -218,11 +190,28 @@ CShader::CShader(const CShader& shader)
 		m_pVulkanShader->registerDestruction(this);
 	}
 
+	if (NULL != shader.m_pOpenGLProgram)
+	{
+		glRemoveOpenGLProgram();
+		if (shader.m_bDeleteOpenGLProgram)
+			m_pOpenGLProgram = shader.m_pOpenGLProgram->glClone();
+		else
+			m_pOpenGLProgram = shader.m_pOpenGLProgram;
+		m_pOpenGLProgram->registerDestruction(this);
+	}
+	if (NULL != shader.m_pOpenGLShader)
+	{
+		glRemoveOpenGLShader();
+		if (shader.m_bDeleteOpenGLShader)
+			m_pOpenGLShader = shader.m_pOpenGLShader->glClone();
+		else
+			m_pOpenGLShader = shader.m_pOpenGLShader;
+		m_pOpenGLShader->registerDestruction(this);
+	}
+
 	if (0 != shader.m_shaderProgram.handle())
 		glCompileShader();
 
-	m_bDeleteVProgram_old = shader.m_bDeleteVProgram_old;
-	m_bDeleteFProgram_old = shader.m_bDeleteFProgram_old;
 	m_bDeleteVShader = shader.m_bDeleteVShader;
 	m_bDeleteFShader = shader.m_bDeleteFShader;
 	m_bDeleteGShader = shader.m_bDeleteGShader;
@@ -311,8 +300,8 @@ CShader::~CShader()
 
 	glRemoveMaterial();
 	glRemoveTextureUnitSetup();
-	glRemoveVertexProgram_old();
-	glRemoveFragmentProgram_old();
+	glRemoveOpenGLProgram();
+	glRemoveOpenGLShader();
 	glRemoveVertexShader();
 	glRemoveFragmentShader();
 	glRemoveGeometryShader();
@@ -339,10 +328,6 @@ void CShader::unLink(const CPersistence* p)
         m_pMaterial = NULL;
     else if (p == static_cast<CPersistence*>(m_pTMUSetup))
         m_pTMUSetup = NULL;
-	else if (p == static_cast<CPersistence*>(m_pVProgram_old))
-		m_pVProgram_old = NULL;
-	else if (p == static_cast<CPersistence*>(m_pFProgram_old))
-		m_pFProgram_old = NULL;
 	else if (p == static_cast<CPersistence*>(m_pVShader))
 		m_pVShader = NULL;
 	else if (p == static_cast<CPersistence*>(m_pFShader))
@@ -491,51 +476,6 @@ bool CShader::glRemoveVertexShader(void)
 	}
 }
 
-CVertexProgram_old * const CShader::glGetVertexProgram_old(const std::string& name)
-{
-	if (m_pVProgram_old == NULL)
-	{
-		CShaderLibrary *lib = CShaderLibrary::GetInstance();
-		lib->glInitFactory();
-
-		CPersistence *pShader = NULL;
-		if (!name.empty())
-			pShader = CPersistence::FindObject(name);
-		if (pShader == NULL)
-		{
-			m_pVProgram_old = new CVertexProgram_old(name);
-			m_bDeleteVProgram_old = true;
-		}
-		else if (pShader->getId().isSubClassOf(CVertexProgram_old::CVertexProgram_oldClassID::GetClassId()))
-			m_pVProgram_old = (CVertexProgram_old*)pShader;
-
-		m_pVProgram_old->registerDestruction(this);
-
-        CATCH_GL_ERROR
-	}
-
-	return m_pVProgram_old;
-}
-
-bool CShader::glRemoveVertexProgram_old(void)
-{
-	if (m_pVProgram_old == NULL)
-		return false;
-	else
-	{
-		m_pVProgram_old->unregisterDestruction(this);
-
-		if (m_bDeleteVProgram_old)
-			delete m_pVProgram_old;
-		m_pVProgram_old = NULL;
-		m_bDeleteVProgram_old = false;
-
-		CATCH_GL_ERROR
-
-		return true;
-	}
-}
-
 CFragmentShader * const CShader::glGetFragmentShader(const std::string& name)
 {
 	if (m_pFShader == NULL)
@@ -576,51 +516,6 @@ bool CShader::glRemoveFragmentShader(void)
 			delete m_pFShader;
 		m_pFShader = NULL;
 		m_bDeleteFShader = false;
-
-		CATCH_GL_ERROR
-
-		return true;
-	}
-}
-
-CFragmentProgram_old * const CShader::glGetFragmentProgram_old(const std::string& name)
-{
-	if (m_pFProgram_old == NULL)
-	{
-		CShaderLibrary *lib = CShaderLibrary::GetInstance();
-		lib->glInitFactory();
-
-		CPersistence *pShader = NULL;
-		if (!name.empty())
-			pShader = CPersistence::FindObject(name);
-		if (pShader == NULL)
-		{
-			m_pFProgram_old = new CFragmentProgram_old(name);
-			m_bDeleteFProgram_old = true;
-		}
-		else if (pShader->getId().isSubClassOf(CFragmentProgram_old::CFragmentProgram_oldClassID::GetClassId()))
-			m_pFProgram_old = (CFragmentProgram_old*)pShader;
-
-		m_pFProgram_old->registerDestruction(this);
-
-        CATCH_GL_ERROR
-	}
-
-	return m_pFProgram_old;
-}
-
-bool CShader::glRemoveFragmentProgram_old(void)
-{
-	if (m_pFProgram_old == NULL)
-		return false;
-	else
-	{
-		m_pFProgram_old->unregisterDestruction(this);
-
-		if (m_bDeleteFProgram_old)
-			delete m_pFProgram_old;
-		m_pFProgram_old = NULL;
-		m_bDeleteFProgram_old = false;
 
 		CATCH_GL_ERROR
 
@@ -714,6 +609,52 @@ bool CShader::glRemoveOpenGLProgram(void)
 			delete m_pOpenGLProgram;
 		m_pOpenGLProgram = NULL;
 		m_bDeleteOpenGLProgram = false;
+
+		CATCH_GL_ERROR
+
+		return true;
+	}
+}
+
+COpenGLShaderStage * const CShader::glGetOpenGLShader(const std::string& name)
+{
+	if (m_pOpenGLShader == NULL)
+	{
+		CShaderLibrary *lib = CShaderLibrary::GetInstance();
+		//lib->vkInitFactory();
+
+		CPersistence *pShader = NULL;
+		if (!name.empty())
+			pShader = CPersistence::FindObject(name);
+		if (pShader == NULL)
+		{
+			m_pOpenGLShader = new COpenGLShaderStage(name);
+			m_bDeleteOpenGLShader = true;
+		}
+		else if (pShader->getId().isSubClassOf(COpenGLShaderStage::COpenGLShaderStageClassID::GetClassId()))
+			m_pOpenGLShader = (COpenGLShaderStage*)pShader;
+
+		m_pOpenGLShader->registerDestruction(this);
+
+		CATCH_GL_ERROR
+	}
+
+	return m_pOpenGLShader;
+}
+
+bool CShader::glRemoveOpenGLShader(void)
+{
+	if (m_pOpenGLShader == NULL)
+		return false;
+	else
+	{
+		m_pOpenGLShader->unregisterDestruction(this);
+		// TODO : ressource linked to pipeline
+
+		if (m_bDeleteOpenGLShader)
+			delete m_pOpenGLShader;
+		m_pOpenGLShader = NULL;
+		m_bDeleteOpenGLShader = false;
 
 		CATCH_GL_ERROR
 
@@ -833,13 +774,8 @@ void CShader::glRender()
 			m_pFShader->glRender();
 #endif
     }
-    else
-    {
-		if (m_pVProgram_old != NULL)
-			m_pVProgram_old->glRender();
-		if (m_pFProgram_old != NULL)
-			m_pFProgram_old->glRender();
-    }
+    else if (NULL != m_pOpenGLProgram)
+			m_pOpenGLProgram->glRender();
 
     CATCH_GL_ERROR
 }
@@ -853,13 +789,8 @@ void CShader::glStop()
 		pExtensions->glUseProgramObjectARB(0);
 #endif
 	}
-	else
-	{
-		if (m_pVProgram_old != NULL)
-			m_pVProgram_old->glStop();
-		if (m_pFProgram_old != NULL)
-			m_pFProgram_old->glStop();
-	}
+	else if (NULL != m_pOpenGLProgram)
+			m_pOpenGLProgram->glStop();
 
 	//	This call generates too much load in GL client/server.
 	//	Derived classes shall implement own UnSetup until a more general
@@ -1012,16 +943,6 @@ bool CShader::importObject(CRaptorIO& io)
 		{
 			glGetTextureUnitsSetup();
 			m_pTMUSetup->importObject(io);
-		}
-		else if (data == "VertexProgram")
-		{
-			glGetVertexProgram_old();
-			m_pVProgram_old->importObject(io);
-		}
-		else if (data == "FragmentProgram")
-		{
-			glGetFragmentProgram_old();
-			m_pFProgram_old->importObject(io);
 		}
         else if (data == "VertexShader")
 		{

@@ -126,6 +126,8 @@ copy .\RaptorCore\GLHierarchy\Object3DShadow.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\ObjectFactory.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\ObjectProperties.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\ObjectReference.h Redist\Include\GLHierarchy
+copy .\RaptorCore\GLHierarchy\OpenGLProgramStage.h Redist\Include\GLHierarchy
+copy .\RaptorCore\GLHierarchy\OpenGLShaderStage.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\Reference.cxx Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\Particle.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\PerlinNoise.h Redist\Include\GLHierarchy

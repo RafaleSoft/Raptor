@@ -24,6 +24,9 @@
 #if !defined(AFX_GEOMETRYSHADER_H__1981EA98_8F3C_4881_9429_A9ACA5B285D3__INCLUDED_)
 	#include "GLHierarchy/GeometryShader.h"
 #endif
+#if !defined(AFX_OPENGLPROGRAMSTAGE_H__0BCE3B42_6E10_4F50_BB27_1993345ADBCF__INCLUDED_)
+	#include "GLHierarchy/OpenGLProgramStage.h"
+#endif
 
 
 RAPTOR_NAMESPACE_BEGIN
@@ -79,14 +82,16 @@ void CShaderWrapper::glRender()
 		m_bUpdateVertexParameters = false;
 		if (m_pShader->hasVertexShader())
 			m_pShader->glGetVertexShader()->setProgramParameters(v);
-		else if (m_pShader->hasVertexProgram_old())
-			m_pShader->glGetVertexProgram_old()->setProgramParameters(v);
+		else if (m_pShader->hasOpenGLProgram())
+			if (m_pShader->glGetOpenGLProgram()->hasVertexProgram())
+				m_pShader->glGetOpenGLProgram()->glGetVertexProgram()->setProgramParameters(v);
 
 		m_bUpdateFragmentParameters = false;
 		if (m_pShader->hasFragmentShader())
 			m_pShader->glGetFragmentShader()->setProgramParameters(f);
-		else if (m_pShader->hasFragmentProgram_old())
-			m_pShader->glGetFragmentProgram_old()->setProgramParameters(f);
+		else if (m_pShader->hasOpenGLProgram())
+			if (m_pShader->glGetOpenGLProgram()->hasFragmentProgram())
+				m_pShader->glGetOpenGLProgram()->glGetFragmentProgram()->setProgramParameters(f);
 
 		m_bUpdateGeometryParameters = false;
 		if (m_pShader->hasGeometryShader())

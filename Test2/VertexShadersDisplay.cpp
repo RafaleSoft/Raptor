@@ -25,6 +25,7 @@
 #include "GLHierarchy/SimpleObject.h"
 #include "GLHierarchy/ShadedGeometry.h"
 #include "GLHierarchy/IRenderingProperties.h"
+#include "GLHierarchy/OpenGLProgramStage.h"
 
 #include "ToolBox/BasicObjects.h"
 
@@ -595,10 +596,10 @@ public:
 			vpoint->glvkRenderViewPointModel();
 			
 			pShader = new CShader("WATER_SHADER2");
-			CVertexProgram_old *vp = pShader->glGetVertexProgram_old();
+			CVertexProgram_old *vp = pShader->glGetOpenGLProgram()->glGetVertexProgram();
 			vp->glLoadProgram(waterShader4.data());
 			vp->glStop();
-			CFragmentProgram_old *fp = pShader->glGetFragmentProgram_old();
+			CFragmentProgram_old *fp = pShader->glGetOpenGLProgram()->glGetFragmentProgram();
 			fp->glLoadProgram(waterFragments2.data());
 			fp->glStop();
 		pBuffer->glvkUnBindDisplay();
@@ -661,7 +662,7 @@ public:
 	{
 		RAPTOR_HANDLE handle;
 		pBuffer->glvkBindDisplay(handle);
-			CVertexProgram_old *vp = pShader->glGetVertexProgram_old();
+			CVertexProgram_old *vp = pShader->glGetOpenGLProgram()->glGetVertexProgram();
 			float t = CTimeObject::GetGlobalTime();
 			GL_COORD_VERTEX v(	0.2 * t,
 								0.1 * t,
@@ -682,7 +683,7 @@ public:
 			GL_COORD_VERTEX w789(freqs[6],freqs[7],freqs[0],1.0f);
 			vp->glProgramParameter(11,w789);
 
-			CFragmentProgram_old *fp = pShader->glGetFragmentProgram_old();
+			CFragmentProgram_old *fp = pShader->glGetOpenGLProgram()->glGetFragmentProgram();
 			fp->glRender();
 			pCosTable->glvkRender();
 			glBegin(GL_QUADS);

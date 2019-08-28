@@ -45,6 +45,10 @@ public:
 
 	virtual ~COpenGLProgramStage(void);
 
+	//!	Clone current stage.
+	COpenGLProgramStage* glClone() const;
+
+
 	//! Implements base class
 	virtual bool glLoadProgram(const std::string &program)
 	{
@@ -52,12 +56,10 @@ public:
 	};
 
 	//! Implements base class
-	virtual void glRender(void)
-	{
-	};
+	virtual void glRender(void);
 
 	//! Implements base class
-	virtual void glStop(void) {};
+	virtual void glStop(void);
 
 	//! Implements base class
 	virtual bool glGetProgramStatus(void) const;
