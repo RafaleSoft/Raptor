@@ -42,8 +42,8 @@
 #if !defined(AFX_FRAGMENTPROGRAM_OLD_H__DD0AD51D_3BFF_4C65_8099_BA7696D7BDDF__INCLUDED_)
 	#include "GLHierarchy/FragmentProgram_old.h"
 #endif
-#if !defined(AFX_VERTEXPROGRAM_OLD_H__F2D3BBC6_87A1_4695_B667_2B8C3C4CF022__INCLUDED_)
-	#include "GLHierarchy/VertexProgram_old.h"
+#if !defined(AFX_VERTEXPROGRAM_H__F2D3BBC6_87A1_4695_B667_2B8C3C4CF022__INCLUDED_)
+	#include "GLHierarchy/VertexProgram.h"
 #endif
 #if !defined(AFX_VERTEXSHADER_H__204F7213_B40B_4B6A_9BCA_828409871B68__INCLUDED_)
 	#include "GLHierarchy/VertexShader.h"
@@ -450,7 +450,7 @@ bool CMagnifierFilter::glInitFilter(void)
 	f_params.addParameter("color",CTextureUnitSetup::IMAGE_UNIT_0);
 	f_params.addParameter("factor",CTextureUnitSetup::IMAGE_UNIT_1);
 #elif defined(GL_ARB_vertex_program)
-	CVertexProgram_old *vs = m_pXKernelShader->glGetVertexShader("magnifier_vp");
+	CVertexProgram *vs = m_pXKernelShader->glGetVertexShader("magnifier_vp");
     bool res = vs->glLoadProgram(kernel_vp);
 	CFragmentProgram_old *fs = m_pXKernelShader->glGetFragmentShader("xk_fp");
     res = res && fs->glLoadProgram(xk_fp);

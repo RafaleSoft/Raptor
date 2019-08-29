@@ -31,8 +31,8 @@ public:
 protected:
 	CShadedGeometry	*m_pSG;
 	CFragmentProgram_old	*m_pFS;
-	CVertexProgram_old	*m_pVS;
-	CVertexProgram_old	*m_pVS2;
+	CVertexProgram	*m_pVS;
+	CVertexProgram	*m_pVS2;
 
     CRaptorDisplay	*m_pDisplay;
     RAPTOR_HANDLE	m_wnd;

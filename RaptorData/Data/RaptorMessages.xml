@@ -50,7 +50,7 @@
 		<Message id="ID_NO_RESOURCE" str="GLSL attribute location does not exist"/>
 		<Message id="ID_WRONG_RENDERING" str="GLSL no active program"/>
 	</Class>
-	<Class name="CVertexProgram_old">
+	<Class name="CVertexProgram">
 		<Message id="ID_NO_GPU_PROGRAM" str="Vertex ASM program not supported or cannot be run 100% hardware"/>
 		<Message id="ID_PROGRAM_ERROR" str="Error in vertex ASM program at pos %d : %s"/>
 	</Class>

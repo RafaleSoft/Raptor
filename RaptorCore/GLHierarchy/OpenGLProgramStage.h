@@ -34,7 +34,7 @@
 
 RAPTOR_NAMESPACE_BEGIN
 
-class CVertexProgram_old;
+class CVertexProgram;
 class CFragmentProgram_old;
 
 
@@ -83,7 +83,7 @@ public:
 	//!
 	//!	Returns the vertex shader
 	//!	Allocate a new one if necessary
-	CVertexProgram_old * const glGetVertexProgram(const std::string& name = "");
+	CVertexProgram * const glGetVertexProgram(const std::string& name = "");
 
 	//!	Returns true if shader has a Vertex Shader already
 	bool hasVertexProgram(void) const { return m_pVProgram != NULL; };
@@ -135,7 +135,7 @@ private:
 	bool				m_bDeleteVProgram;
 	bool				m_bDeleteFProgram;
 
-	CVertexProgram_old	*m_pVProgram;
+	CVertexProgram		*m_pVProgram;
 	CFragmentProgram_old *m_pFProgram;
 };
 

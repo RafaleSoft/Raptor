@@ -16,8 +16,8 @@
 /***************************************************************************/
 
 
-#if !defined(AFX_VERTEXPROGRAM_OLD_H__F2D3BBC6_87A1_4695_B667_2B8C3C4CF022__INCLUDED_)
-#define AFX_VERTEXPROGRAM_OLD_H__F2D3BBC6_87A1_4695_B667_2B8C3C4CF022__INCLUDED_
+#if !defined(AFX_VERTEXPROGRAM_H__F2D3BBC6_87A1_4695_B667_2B8C3C4CF022__INCLUDED_)
+#define AFX_VERTEXPROGRAM_H__F2D3BBC6_87A1_4695_B667_2B8C3C4CF022__INCLUDED_
 
 #if _MSC_VER > 1000
 #pragma once
@@ -33,7 +33,7 @@
 RAPTOR_NAMESPACE_BEGIN
 
 
-class RAPTOR_API CVertexProgram_old : public CShaderProgram  
+class RAPTOR_API CVertexProgram : public CShaderProgram  
 {
 public:
 	typedef struct GL_VERTEX_PROGRAM_CAPS_t
@@ -59,13 +59,13 @@ public:
 
 public:
 	//! Default constructor.
-	CVertexProgram_old(const std::string& name = "VERTEX_PROGRAM_OLD");
+	CVertexProgram(const std::string& name = "VERTEX_PROGRAM");
 
 	//!	Destructor.
-	virtual ~CVertexProgram_old();
+	virtual ~CVertexProgram();
 
 	//!	Clone this shader.
-	virtual CVertexProgram_old* glClone();
+	virtual CVertexProgram* glClone();
 
     //! Implements base class
 	//!	@see CShaderProgram.
@@ -149,16 +149,16 @@ public:
 
 
 	//! Implements CPersistence
-	DECLARE_CLASS_ID(CVertexProgram_oldClassID, "VertexProgram_old", CShaderProgram)
+	DECLARE_CLASS_ID(CVertexProgramClassID, "VertexProgram", CShaderProgram)
 
 
 
 private:
 	//!	Forbidden operators
-	CVertexProgram_old& operator=(const CVertexProgram_old&);
+	CVertexProgram& operator=(const CVertexProgram&);
 
 	//! Copy constructor.
-	CVertexProgram_old(const CVertexProgram_old& shader);
+	CVertexProgram(const CVertexProgram& shader);
 
     //! Specific init of shader parameters
     virtual void	glInitShaders();
@@ -166,5 +166,5 @@ private:
 
 RAPTOR_NAMESPACE_END
 
-#endif // !defined(AFX_VERTEXPROGRAM_OLD_H__F2D3BBC6_87A1_4695_B667_2B8C3C4CF022__INCLUDED_)
+#endif // !defined(AFX_VERTEXPROGRAM_H__F2D3BBC6_87A1_4695_B667_2B8C3C4CF022__INCLUDED_)
 

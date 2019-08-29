@@ -92,7 +92,7 @@ class CTextureObject;
 class CTextureSet;
 class CTextureUnitSetup;
 class CVertexShader;
-class CVertexProgram_old;
+class CVertexProgram;
 class ITextureObject;
 
 // SSE Engine section

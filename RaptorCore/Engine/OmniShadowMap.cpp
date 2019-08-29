@@ -24,8 +24,8 @@
 #if !defined(AFX_FRAGMENTPROGRAM_OLD_H__DD0AD51D_3BFF_4C65_8099_BA7696D7BDDF__INCLUDED_)
 	#include "GLHierarchy/FragmentProgram_old.h"
 #endif
-#if !defined(AFX_VERTEXPROGRAM_OLD_H__F2D3BBC6_87A1_4695_B667_2B8C3C4CF022__INCLUDED_)
-	#include "GLHierarchy/VertexProgram_old.h"
+#if !defined(AFX_VERTEXPROGRAM_H__F2D3BBC6_87A1_4695_B667_2B8C3C4CF022__INCLUDED_)
+	#include "GLHierarchy/VertexProgram.h"
 #endif
 #if !defined(AFX_3DSCENEOBJECT_H__96A34268_AD58_4F73_B633_F6C3E92FE0A9__INCLUDED_)
 	#include "Subsys/3DSceneObject.h"
@@ -173,7 +173,7 @@ DP4 vpos.w, mv[3], iPos; \
 MOV oTex0, vpos; \
 END" ;
 
-	m_pVSShadowMap = new CVertexProgram_old();
+	m_pVSShadowMap = new CVertexProgram();
     m_pVSShadowMap->glLoadProgram(vtxShader);
 
     string texShader = 

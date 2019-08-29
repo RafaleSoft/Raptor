@@ -24,8 +24,8 @@
 #if !defined(AFX_SHADERLIBRARY_H__E2A8C35E_23A4_4AD1_8467_884E6B183B4F__INCLUDED_)
 	#include "Subsys/ShaderLibrary.h"
 #endif
-#if !defined(AFX_VERTEXPROGRAM_OLD_H__F2D3BBC6_87A1_4695_B667_2B8C3C4CF022__INCLUDED_)
-	#include "VertexProgram_old.h"
+#if !defined(AFX_VERTEXPROGRAM_H__F2D3BBC6_87A1_4695_B667_2B8C3C4CF022__INCLUDED_)
+	#include "VertexProgram.h"
 #endif
 #if !defined(AFX_FRAGMENTPROGRAM_OLD_H__DD0AD51D_3BFF_4C65_8099_BA7696D7BDDF__INCLUDED_)
 	#include "FragmentProgram_old.h"
@@ -136,7 +136,7 @@ void COpenGLProgramStage::setProgramParameters(const CProgramParameters &v)
 }
 
 
-CVertexProgram_old * const COpenGLProgramStage::glGetVertexProgram(const std::string& name)
+CVertexProgram * const COpenGLProgramStage::glGetVertexProgram(const std::string& name)
 {
 	if (m_pVProgram == NULL)
 	{
@@ -148,11 +148,11 @@ CVertexProgram_old * const COpenGLProgramStage::glGetVertexProgram(const std::st
 			pShader = CPersistence::FindObject(name);
 		if (pShader == NULL)
 		{
-			m_pVProgram = new CVertexProgram_old(name);
+			m_pVProgram = new CVertexProgram(name);
 			m_bDeleteVProgram = true;
 		}
-		else if (pShader->getId().isSubClassOf(CVertexProgram_old::CVertexProgram_oldClassID::GetClassId()))
-			m_pVProgram = (CVertexProgram_old*)pShader;
+		else if (pShader->getId().isSubClassOf(CVertexProgram::CVertexProgramClassID::GetClassId()))
+			m_pVProgram = (CVertexProgram*)pShader;
 
 		m_pVProgram->registerDestruction(this);
 
