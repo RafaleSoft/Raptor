@@ -27,8 +27,8 @@
 #if !defined(AFX_VERTEXPROGRAM_H__F2D3BBC6_87A1_4695_B667_2B8C3C4CF022__INCLUDED_)
 	#include "VertexProgram.h"
 #endif
-#if !defined(AFX_FRAGMENTPROGRAM_OLD_H__DD0AD51D_3BFF_4C65_8099_BA7696D7BDDF__INCLUDED_)
-	#include "FragmentProgram_old.h"
+#if !defined(AFX_FRAGMENTPROGRAM_H__DD0AD51D_3BFF_4C65_8099_BA7696D7BDDF__INCLUDED_)
+	#include "FragmentProgram.h"
 #endif
 #if !defined(AFX_RAPTORIO_H__87D52C27_9117_4675_95DC_6AD2CCD2E78D__INCLUDED_)
 	#include "System/RaptorIO.h"
@@ -181,7 +181,7 @@ bool COpenGLProgramStage::glRemoveVertexProgram(void)
 	}
 }
 
-CFragmentProgram_old * const COpenGLProgramStage::glGetFragmentProgram(const std::string& name)
+CFragmentProgram * const COpenGLProgramStage::glGetFragmentProgram(const std::string& name)
 {
 	if (m_pFProgram == NULL)
 	{
@@ -193,11 +193,11 @@ CFragmentProgram_old * const COpenGLProgramStage::glGetFragmentProgram(const std
 			pShader = CPersistence::FindObject(name);
 		if (pShader == NULL)
 		{
-			m_pFProgram = new CFragmentProgram_old(name);
+			m_pFProgram = new CFragmentProgram(name);
 			m_bDeleteFProgram = true;
 		}
-		else if (pShader->getId().isSubClassOf(CFragmentProgram_old::CFragmentProgram_oldClassID::GetClassId()))
-			m_pFProgram = (CFragmentProgram_old*)pShader;
+		else if (pShader->getId().isSubClassOf(CFragmentProgram::CFragmentProgramClassID::GetClassId()))
+			m_pFProgram = (CFragmentProgram*)pShader;
 
 		m_pFProgram->registerDestruction(this);
 

@@ -26,7 +26,7 @@ class IViewPoint;
 class CRaptorDisplay;
 class CTextureObject;
 class CVertexProgram;
-class CFragmentProgram_old;
+class CFragmentProgram;
 class CShadowMapPersistence;
 class CPersistence;
 
@@ -76,11 +76,11 @@ private:
 	CGenericMatrix<float>		m_lightProjection;
 	COpenGLRenderingProperties	m_lightProperties;
 
-    IViewPoint		*m_pViewPoint;
-    CRaptorDisplay	*m_pShadowMap;
-    CTextureObject	*m_pShadowTexture;
-	CVertexProgram	*m_pVSShadowMap;
-	CFragmentProgram_old	*m_pFSShadowMap;
+    IViewPoint			*m_pViewPoint;
+    CRaptorDisplay		*m_pShadowMap;
+    CTextureObject		*m_pShadowTexture;
+	CVertexProgram		*m_pVSShadowMap;
+	CFragmentProgram	*m_pFSShadowMap;
 };
 
 RAPTOR_NAMESPACE_END

@@ -6,7 +6,7 @@
 
 #include "VertexShadersDisplay.h"
 #include "GLHierarchy/VertexProgram.h"
-#include "GLHierarchy/FragmentProgram_old.h"
+#include "GLHierarchy/FragmentProgram.h"
 #include "GLHierarchy/VertexShader.h"
 #include "GLHierarchy/FragmentShader.h"
 #include "Engine/3DEngine.h"
@@ -554,7 +554,7 @@ public:
 		params2.addParameter("",GL_COORD_VERTEX(8.0f,0.0f,0.0f,1.0f));
 
 #ifdef VERTEX_SHADER
-		CFragmentProgram_old *fp = m_pShader->glGetFragmentShader();
+		CFragmentProgram *fp = m_pShader->glGetFragmentShader();
 		fp->setProgramParameters(params2);
 #endif
 	}
@@ -599,7 +599,7 @@ public:
 			CVertexProgram *vp = pShader->glGetOpenGLProgram()->glGetVertexProgram();
 			vp->glLoadProgram(waterShader4.data());
 			vp->glStop();
-			CFragmentProgram_old *fp = pShader->glGetOpenGLProgram()->glGetFragmentProgram();
+			CFragmentProgram *fp = pShader->glGetOpenGLProgram()->glGetFragmentProgram();
 			fp->glLoadProgram(waterFragments2.data());
 			fp->glStop();
 		pBuffer->glvkUnBindDisplay();
@@ -683,7 +683,7 @@ public:
 			GL_COORD_VERTEX w789(freqs[6],freqs[7],freqs[0],1.0f);
 			vp->glProgramParameter(11,w789);
 
-			CFragmentProgram_old *fp = pShader->glGetOpenGLProgram()->glGetFragmentProgram();
+			CFragmentProgram *fp = pShader->glGetOpenGLProgram()->glGetFragmentProgram();
 			fp->glRender();
 			pCosTable->glvkRender();
 			glBegin(GL_QUADS);

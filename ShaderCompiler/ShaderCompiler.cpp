@@ -15,7 +15,7 @@
 #include "GLHierarchy/Shader.h"
 #include "GLHierarchy/VertexProgram.h"
 #include "GLHierarchy/VertexShader.h"
-#include "GLHierarchy/FragmentProgram_old.h"
+#include "GLHierarchy/FragmentProgram.h"
 #include "GLHierarchy/FragmentShader.h"
 
 #include "ToolBox/Imaging.h"
@@ -137,7 +137,7 @@ void CDisplay::checkFShader(const string &src)
         pos = code.find('\\',pos);
     }
 
-	CFragmentProgram_old fs;
+	CFragmentProgram fs;
     if (fs.glLoadProgram(code))
         nbShadersOK++;
     else

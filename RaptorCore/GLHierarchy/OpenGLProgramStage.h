@@ -26,16 +26,15 @@
 #include "Subsys/CodeGeneration.h"
 
 #if !defined(AFX_SHADERPROGRAM_H__936BEC73_3903_46CE_86C9_9CA0005B31F5__INCLUDED_)
-#include "ShaderProgram.h"
+	#include "ShaderProgram.h"
 #endif
-
 
 
 
 RAPTOR_NAMESPACE_BEGIN
 
 class CVertexProgram;
-class CFragmentProgram_old;
+class CFragmentProgram;
 
 
 class RAPTOR_API COpenGLProgramStage : public CShaderProgram
@@ -94,7 +93,7 @@ public:
 
 	//!	Returns the fragment shader
 	//!	Allocate a new one if necessary
-	CFragmentProgram_old * const glGetFragmentProgram(const std::string& name = "");
+	CFragmentProgram * const glGetFragmentProgram(const std::string& name = "");
 
 	//!	Returns true if shader has a Fragment Shader already
 	bool hasFragmentProgram(void) const { return m_pFProgram != NULL; };
@@ -136,7 +135,7 @@ private:
 	bool				m_bDeleteFProgram;
 
 	CVertexProgram		*m_pVProgram;
-	CFragmentProgram_old *m_pFProgram;
+	CFragmentProgram	*m_pFProgram;
 };
 
 

@@ -15,7 +15,7 @@
 #include "GLHierarchy/Shader.h"
 #include "GLHierarchy/ShaderProgram.h"
 #include "GLHierarchy/VertexShader.h"
-#include "GLHierarchy/VertexProgram_old.h"
+#include "GLHierarchy/VertexProgram.h"
 #include "GLHierarchy/VulkanShaderStage.h"
 #include "GLHierarchy/TextureFactory.h"
 #include "GLHierarchy/TextureFactoryConfig.h"

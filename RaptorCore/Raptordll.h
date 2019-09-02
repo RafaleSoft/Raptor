@@ -58,7 +58,7 @@ class C3DSqueleton;
 class CBumppedGeometry;
 class CEMBMGeometry;
 class CFragmentShader;
-class CFragmentProgram_old;
+class CFragmentProgram;
 class CGLFont;
 class CGLLayer;
 class CGLLod;

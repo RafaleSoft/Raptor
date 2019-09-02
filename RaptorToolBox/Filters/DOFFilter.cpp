@@ -27,8 +27,8 @@
 #if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
     #include "System/RaptorGLExtensions.h"
 #endif
-#if !defined(AFX_FRAGMENTPROGRAM_OLD_H__DD0AD51D_3BFF_4C65_8099_BA7696D7BDDF__INCLUDED_)
-	#include "GLHierarchy/FragmentProgram_old.h"
+#if !defined(AFX_FRAGMENTPROGRAM_H__DD0AD51D_3BFF_4C65_8099_BA7696D7BDDF__INCLUDED_)
+	#include "GLHierarchy/FragmentProgram.h"
 #endif
 #if !defined(AFX_VERTEXPROGRAM_H__F2D3BBC6_87A1_4695_B667_2B8C3C4CF022__INCLUDED_)
 	#include "GLHierarchy/VertexProgram.h"
@@ -527,7 +527,7 @@ void CDOFFilter::glInitShaders(void)
 #elif defined(GL_ARB_vertex_program)
 	CVertexProgram *vs = DOFShader->glGetVertexShader("dof_vs");
 	bool res = vs->glLoadProgram(dof_vs);
-	CFragmentProgram_old *fs = DOFShader->glGetFragmentShader("dof_fs");
+	CFragmentProgram *fs = DOFShader->glGetFragmentShader("dof_fs");
 	res = res && fs->glLoadProgram(dof_fs);
 #endif
 }

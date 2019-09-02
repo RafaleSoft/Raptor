@@ -31,8 +31,8 @@
 #if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
 	#include "System/RaptorGLExtensions.h"
 #endif
-#if !defined(AFX_FRAGMENTPROGRAM_OLD_H__DD0AD51D_3BFF_4C65_8099_BA7696D7BDDF__INCLUDED_)
-	#include "GLHierarchy/FragmentProgram_old.h"
+#if !defined(AFX_FRAGMENTPROGRAM_H__DD0AD51D_3BFF_4C65_8099_BA7696D7BDDF__INCLUDED_)
+	#include "GLHierarchy/FragmentProgram.h"
 #endif
 #if !defined(AFX_3DSCENEOBJECT_H__96A34268_AD58_4F73_B633_F6C3E92FE0A9__INCLUDED_)
 	#include "Subsys/3DSceneObject.h"
@@ -179,9 +179,9 @@ void CShadowMap::glInitRenderBuffer(unsigned int width,unsigned int height)
 		m_pShadowTexture = factory.glCreateTexture( ITextureObject::CGL_DEPTH24,
 													CTextureObject::CGL_OPAQUE,
 													ITextureObject::CGL_BILINEAR);
-		m_pFSShadowMap = (CFragmentProgram_old*)CPersistence::FindObject("SHADOWMAP_TEX_SHADER_PCF_16X");
-		//m_pFSShadowMap = (CFragmentProgram_old*)CPersistence::FindObject("SHADOWMAP_TEX_SHADER_PCF_4X");
-        //m_pFSShadowMap = (CFragmentProgram_old*)CPersistence::FindObject("SHADOWMAP_TEX_SHADER_PCF");
+		m_pFSShadowMap = (CFragmentProgram*)CPersistence::FindObject("SHADOWMAP_TEX_SHADER_PCF_16X");
+		//m_pFSShadowMap = (CFragmentProgram*)CPersistence::FindObject("SHADOWMAP_TEX_SHADER_PCF_4X");
+        //m_pFSShadowMap = (CFragmentProgram*)CPersistence::FindObject("SHADOWMAP_TEX_SHADER_PCF");
         if (((m_pFSShadowMap != NULL) && (!m_pFSShadowMap->isValid())) ||
             (m_pFSShadowMap == NULL))
         {
@@ -189,7 +189,7 @@ void CShadowMap::glInitRenderBuffer(unsigned int width,unsigned int height)
             m_pShadowTexture = factory.glCreateTexture( ITextureObject::CGL_DEPTH24,
                                                         CTextureObject::CGL_OPAQUE,
 														ITextureObject::CGL_UNFILTERED);
-			m_pFSShadowMap = (CFragmentProgram_old*)CPersistence::FindObject("SHADOWMAP_TEX_SHADER");
+			m_pFSShadowMap = (CFragmentProgram*)CPersistence::FindObject("SHADOWMAP_TEX_SHADER");
         }
 	}
 	else
@@ -201,7 +201,7 @@ void CShadowMap::glInitRenderBuffer(unsigned int width,unsigned int height)
     m_pShadowTexture = factory.glCreateTexture(	ITextureObject::CGL_DEPTH24,
 												CTextureObject::CGL_OPAQUE,
 												ITextureObject::CGL_UNFILTERED);
-	m_pFSShadowMap = (CFragmentProgram_old*)CPersistence::FindObject("SHADOWMAP_TEX_SHADER");
+	m_pFSShadowMap = (CFragmentProgram*)CPersistence::FindObject("SHADOWMAP_TEX_SHADER");
 #endif
 
 	CTextureSet *pImageSet = new CTextureSet();
@@ -246,9 +246,9 @@ void CShadowMap::glInitPixelBuffer(unsigned int width,unsigned int height)
                                                            CTextureObject::CGL_MULTIPLY,
                                                            ITextureObject::CGL_BILINEAR,
                                                            m_pShadowMap);
-		m_pFSShadowMap = (CFragmentProgram_old*)CPersistence::FindObject("SHADOWMAP_TEX_SHADER_PCF_16X");
-        //m_pFSShadowMap = (CFragmentProgram_old*)CPersistence::FindObject("SHADOWMAP_TEX_SHADER_PCF_4X");
-        //m_pFSShadowMap = (CFragmentProgram_old*)CPersistence::FindObject("SHADOWMAP_TEX_SHADER_PCF");
+		m_pFSShadowMap = (CFragmentProgram*)CPersistence::FindObject("SHADOWMAP_TEX_SHADER_PCF_16X");
+        //m_pFSShadowMap = (CFragmentProgram*)CPersistence::FindObject("SHADOWMAP_TEX_SHADER_PCF_4X");
+        //m_pFSShadowMap = (CFragmentProgram*)CPersistence::FindObject("SHADOWMAP_TEX_SHADER_PCF");
         if (((m_pFSShadowMap != NULL) && (!m_pFSShadowMap->isValid())) ||
             (m_pFSShadowMap == NULL))
         {
@@ -257,7 +257,7 @@ void CShadowMap::glInitPixelBuffer(unsigned int width,unsigned int height)
                                                                CTextureObject::CGL_MULTIPLY,
                                                                ITextureObject::CGL_UNFILTERED,
                                                                m_pShadowMap);
-			m_pFSShadowMap = (CFragmentProgram_old*)CPersistence::FindObject("SHADOWMAP_TEX_SHADER");
+			m_pFSShadowMap = (CFragmentProgram*)CPersistence::FindObject("SHADOWMAP_TEX_SHADER");
         }
     }
     else
@@ -270,7 +270,7 @@ void CShadowMap::glInitPixelBuffer(unsigned int width,unsigned int height)
 														CTextureObject::CGL_MULTIPLY,
 														ITextureObject::CGL_UNFILTERED,
 														m_pShadowMap);
-	m_pFSShadowMap = (CFragmentProgram_old*)CPersistence::FindObject("SHADOWMAP_TEX_SHADER");
+	m_pFSShadowMap = (CFragmentProgram*)CPersistence::FindObject("SHADOWMAP_TEX_SHADER");
 #endif
 
     // check shader to switch to default base ARB_shadow rendering

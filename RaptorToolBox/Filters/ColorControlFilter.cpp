@@ -27,8 +27,8 @@
 #if !defined(AFX_TEXTUREFACTORY_H__1B470EC4_4B68_11D3_9142_9A502CBADC6B__INCLUDED_)
 	#include "GLHierarchy/TextureFactory.h"
 #endif
-#if !defined(AFX_FRAGMENTPROGRAM_OLD_H__DD0AD51D_3BFF_4C65_8099_BA7696D7BDDF__INCLUDED_)
-	#include "GLHierarchy/FragmentProgram_old.h"
+#if !defined(AFX_FRAGMENTPROGRAM_H__DD0AD51D_3BFF_4C65_8099_BA7696D7BDDF__INCLUDED_)
+	#include "GLHierarchy/FragmentProgram.h"
 #endif
 #if !defined(AFX_VERTEXSHADER_H__204F7213_B40B_4B6A_9BCA_828409871B68__INCLUDED_)
 	#include "GLHierarchy/VertexShader.h"
@@ -210,7 +210,7 @@ bool CColorControlFilter::glInitFilter(void)
 		fp_params.addParameter("source",CTextureUnitSetup::IMAGE_UNIT_0);
 	res = res && BWShader->glCompileShader();
 #elif defined(GL_ARB_vertex_program)
-	CFragmentProgram_old *fs = BWShader->glGetFragmentShader("bw_fp");
+	CFragmentProgram *fs = BWShader->glGetFragmentShader("bw_fp");
 	res = fs->glLoadProgram(colorcontrol_fp);
 #endif
 
