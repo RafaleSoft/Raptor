@@ -1,6 +1,21 @@
-// PhongShader.cpp: implementation of the CPhongShader class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  BumpShader.cpp                                                         */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
 #include "Subsys/CodeGeneration.h"
 
 #if !defined(AFX_BUMPSHADER_H__6201C4A1_1F09_41C4_836F_2AAC79D36A42__INCLUDED_)
@@ -29,6 +44,9 @@
 #endif
 #if !defined(AFX_TEXTUREOBJECT_H__D32B6294_B42B_4E6F_AB73_13B33C544AD0__INCLUDED_)
 	#include "GLHierarchy/TextureObject.h"
+#endif
+#if !defined(AFX_OPENGLSHADERSTAGE_H__56B00FE3_E508_4FD6_9363_90E6E67446D9__INCLUDED_)
+	#include "GLHierarchy/OpenGLShaderStage.h"
 #endif
 
 
@@ -64,16 +82,18 @@ CBumpShader::~CBumpShader(void)
 
 void CBumpShader::glInit(void)
 {
-	CVertexShader *vp = glGetVertexShader("PPIXEL_BUMP_VTX_PROGRAM");
+	COpenGLShaderStage *stage = glGetOpenGLShader();
+
+	CVertexShader *vp = stage->glGetVertexShader("PPIXEL_BUMP_VTX_PROGRAM");
 	CProgramParameters params;
 	params.addParameter("tangent", CProgramParameters::ADDITIONAL_PARAM1);
 	vp->setProgramParameters(params);
 
-	CFragmentShader *fp = glGetFragmentShader("PPIXEL_BUMP_TEX_PROGRAM");
+	CFragmentShader *fp = stage->glGetFragmentShader("PPIXEL_BUMP_TEX_PROGRAM");
 	CProgramParameters params2;
 	fp->setProgramParameters(params2);
 
-	glCompileShader();
+	stage->glCompileShader();
 }
 
 void CBumpShader::glRender(void)

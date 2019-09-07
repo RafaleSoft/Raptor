@@ -1,6 +1,21 @@
-// ShaderModifier.cpp: implementation of the CShaderModifier class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  ShaderModifier.cpp                                                     */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
 #include "Subsys/CodeGeneration.h"
 
 #if !defined(AFX_SHADERMODIFIER_H__5ED408B3_1FAE_4869_8A40_6ABF39D8DF1E__INCLUDED_)
@@ -26,6 +41,9 @@
 #endif
 #if !defined(AFX_OPENGLPROGRAMSTAGE_H__0BCE3B42_6E10_4F50_BB27_1993345ADBCF__INCLUDED_)
 	#include "GLHierarchy/OpenGLProgramStage.h"
+#endif
+#if !defined(AFX_OPENGLSHADERSTAGE_H__56B00FE3_E508_4FD6_9363_90E6E67446D9__INCLUDED_)
+	#include "GLHierarchy/OpenGLShaderStage.h"
 #endif
 
 
@@ -79,23 +97,28 @@ void CShaderWrapper::glRender()
 {
 	if (m_bUpdateVertexParameters)
 	{
+		if (m_pShader->hasOpenGLShader())
+		{
+			COpenGLShaderStage* stage = m_pShader->glGetOpenGLShader();
+			if (stage->hasVertexShader())
+				stage->glGetVertexShader()->setProgramParameters(v);
+			if (stage->hasFragmentShader())
+				stage->glGetFragmentShader()->setProgramParameters(f);
+			if (stage->hasGeometryShader())
+				stage->glGetGeometryShader()->setProgramParameters(g);
+		}
+		else if (m_pShader->hasOpenGLProgram())
+		{
+			COpenGLProgramStage* stage = m_pShader->glGetOpenGLProgram();
+			if (stage->hasVertexProgram())
+				stage->glGetVertexProgram()->setProgramParameters(v);
+			if (stage->hasFragmentProgram())
+				stage->glGetFragmentProgram()->setProgramParameters(f);
+		}
+
 		m_bUpdateVertexParameters = false;
-		if (m_pShader->hasVertexShader())
-			m_pShader->glGetVertexShader()->setProgramParameters(v);
-		else if (m_pShader->hasOpenGLProgram())
-			if (m_pShader->glGetOpenGLProgram()->hasVertexProgram())
-				m_pShader->glGetOpenGLProgram()->glGetVertexProgram()->setProgramParameters(v);
-
 		m_bUpdateFragmentParameters = false;
-		if (m_pShader->hasFragmentShader())
-			m_pShader->glGetFragmentShader()->setProgramParameters(f);
-		else if (m_pShader->hasOpenGLProgram())
-			if (m_pShader->glGetOpenGLProgram()->hasFragmentProgram())
-				m_pShader->glGetOpenGLProgram()->glGetFragmentProgram()->setProgramParameters(f);
-
 		m_bUpdateGeometryParameters = false;
-		if (m_pShader->hasGeometryShader())
-			m_pShader->glGetGeometryShader()->setProgramParameters(g);
 	}
 
 	m_pShader->glRender();

@@ -67,16 +67,6 @@ public:
 	virtual std::string glGetProgramString(void) const;
 
 
-	virtual void glProgramParameter(unsigned int numParam,
-									const GL_COORD_VERTEX &v) const
-	{
-	};
-
-	virtual void glProgramParameter(unsigned int numParam,
-									const CColor::RGBA &v) const
-	{
-	};
-
 	//!
 	//! Shaders configuration
 	//!

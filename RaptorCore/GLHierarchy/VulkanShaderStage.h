@@ -71,12 +71,6 @@ public:
 	//! Implements base class
 	virtual std::string glGetProgramString(void) const { return ""; }
 
-	virtual void glProgramParameter(unsigned int numParam,
-									const GL_COORD_VERTEX &v) const { };
-
-	virtual void glProgramParameter(unsigned int numParam,
-									const CColor::RGBA &v) const { };
-
 	//! Provide gl-like shader parameters from RaptorCore.
 	//!	Attention : parameter shall be copied before next call because return value is reused.
 	CProgramParameters::CParameterBase& getDefaultParameter(const std::string& parameter_name, int locationIndex);

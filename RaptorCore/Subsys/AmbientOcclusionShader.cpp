@@ -1,6 +1,21 @@
-// AmbientOcclusionShader.cpp: implementation of the CAmbientOcclusionShader class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  AmbientOcclusionShader.cpp                                             */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
 #include "Subsys/CodeGeneration.h"
 
 #if !defined(AFX_AMBIENTOCCLUSIONSHADER_H__FA8234C4_82B1_49D3_ABAA_7FCE45EDDCAD__INCLUDED_)
@@ -35,6 +50,9 @@
 #endif
 #if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
 	#include "System/RaptorGLExtensions.h"
+#endif
+#if !defined(AFX_OPENGLSHADERSTAGE_H__56B00FE3_E508_4FD6_9363_90E6E67446D9__INCLUDED_)
+	#include "GLHierarchy/OpenGLShaderStage.h"
 #endif
 
 
@@ -209,8 +227,8 @@ void CAmbientOcclusionShader::glRender()
 #ifdef GL_ARB_texture_rectangle
 	glEnable(GL_TEXTURE_RECTANGLE_ARB);
 #endif
-	m_pAOcomputeRef->glGetVertexShader()->setProgramParameters(v_params);
-	m_pAOcomputeRef->glGetFragmentShader()->setProgramParameters(f_params);
+	m_pAOcomputeRef->glGetOpenGLShader()->glGetVertexShader()->setProgramParameters(v_params);
+	m_pAOcomputeRef->glGetOpenGLShader()->glGetFragmentShader()->setProgramParameters(f_params);
 	glCallList(m_occluders[0]->m_AOMapSetup.handle());
 	m_pAOcomputeRef->glRender();
 

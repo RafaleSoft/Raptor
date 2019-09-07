@@ -22,6 +22,7 @@
 #include "System/Raptor.h"
 #include "System/RaptorGLExtensions.h"
 #include "GLHierarchy/IRenderingProperties.h"
+#include "GLHierarchy/OpenGLShaderStage.h"
 
 #include "ToolBox/BasicObjects.h"
 
@@ -315,13 +316,13 @@ void main (void)						\n\
 	gl_FragColor = texture2D(diffuseMap,vec2(offset.rg) + vec2(gl_TexCoord[0].st)); \n\
 }";
 
-	CFragmentShader *fp = m_pShader->glGetFragmentShader();
+	CFragmentShader *fp = m_pShader->glGetOpenGLShader()->glGetFragmentShader();
 	fp->glLoadProgram(program);
 	CProgramParameters params;
 	params.addParameter("diffuseMap",CTextureUnitSetup::IMAGE_UNIT_0);
 	params.addParameter("normalMap",CTextureUnitSetup::IMAGE_UNIT_1);
 	fp->setProgramParameters(params);
-	m_pShader->glCompileShader();
+	m_pShader->glGetOpenGLShader()->glCompileShader();
 #endif
 }
 

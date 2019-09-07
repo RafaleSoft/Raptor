@@ -55,14 +55,10 @@ public:
 	};
 
 	//! Implements base class
-	virtual void glRender(void)
-	{
-	};
+	virtual void glRender(void);
 
 	//! Implements base class
-	virtual void glStop(void)
-	{
-	};
+	virtual void glStop(void);
 
 	//! Implements base class
 	virtual bool glGetProgramStatus(void) const
@@ -73,16 +69,6 @@ public:
 	//! Implements base class
 	virtual std::string glGetProgramString(void) const;
 
-
-	virtual void glProgramParameter(unsigned int numParam,
-									const GL_COORD_VERTEX &v) const
-	{
-	};
-
-	virtual void glProgramParameter(unsigned int numParam,
-									const CColor::RGBA &v) const
-	{
-	};
 
 	//! Generate the shader as a compiled object ( program objects / display lists ).
 	//! The compile state must be correct to render the shader.

@@ -1,6 +1,20 @@
-// BlurFilter.cpp: implementation of the CBlurFilter class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  BlurFilter.cpp                                                         */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
 
 #include "Subsys/CodeGeneration.h"
 
@@ -31,6 +45,10 @@
 #if !defined(AFX_TEXTURESET_H__26F3022D_70FE_414D_9479_F9CCD3DCD445__INCLUDED_)
 	#include "GLHierarchy/TextureSet.h"
 #endif
+#if !defined(AFX_OPENGLSHADERSTAGE_H__56B00FE3_E508_4FD6_9363_90E6E67446D9__INCLUDED_)
+	#include "GLHierarchy/OpenGLShaderStage.h"
+#endif
+
 
 // With RGBA32 pixel model, gaussian coefficients can
 // be expanded because scaled filter buffer will produce 
@@ -293,20 +311,22 @@ bool CBlurFilter::glBuildFilter(int width,int height)
 	params.clear();
 	params.addParameter("diffuseMap",CTextureUnitSetup::IMAGE_UNIT_0);
 	
-	CVertexShader *vp = hBlur->glGetVertexShader("EMPTY_PROGRAM");
-	CGeometryShader *gp = hBlur->glGetGeometryShader("FULL_SCREEN_GEO_PROGRAM");
-	CFragmentShader *fp = hBlur->glGetFragmentShader("hBlur_fp");
+	COpenGLShaderStage *stage = hBlur->glGetOpenGLShader();
+	CVertexShader *vp = stage->glGetVertexShader("EMPTY_PROGRAM");
+	CGeometryShader *gp = stage->glGetGeometryShader("FULL_SCREEN_GEO_PROGRAM");
+	CFragmentShader *fp = stage->glGetFragmentShader("hBlur_fp");
 	res = fp->glLoadProgram(srcs[0]);
 	fp->setProgramParameters(params);
-	res = res && hBlur->glCompileShader();
+	res = res && stage->glCompileShader();
 
-	vp = vBlur->glGetVertexShader("EMPTY_PROGRAM");
-	gp = vBlur->glGetGeometryShader("FULL_SCREEN_GEO_PROGRAM");
-	fp = vBlur->glGetFragmentShader("vBlur_fp");
+	stage = vBlur->glGetOpenGLShader();
+	vp = stage->glGetVertexShader("EMPTY_PROGRAM");
+	gp = stage->glGetGeometryShader("FULL_SCREEN_GEO_PROGRAM");
+	fp = stage->glGetFragmentShader("vBlur_fp");
 	res = res && fp->glLoadProgram(srcs[1]);
 	fp->setProgramParameters(params);
 
-	res = res && vBlur->glCompileShader();
+	res = res && stage->glCompileShader();
 
 	// Update filtering
 	if ((BLUR_BOX_LINEAR == m_model) || (BLUR_GAUSSIAN_LINEAR == m_model))

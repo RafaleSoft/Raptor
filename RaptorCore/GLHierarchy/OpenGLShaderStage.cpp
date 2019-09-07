@@ -1,6 +1,6 @@
 /***************************************************************************/
 /*                                                                         */
-/*  OpenGLShaderStage.cpp                                                 */
+/*  OpenGLShaderStage.cpp                                                  */
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
@@ -105,6 +105,9 @@ COpenGLShaderStage::COpenGLShaderStage(const COpenGLShaderStage& stage)
 		m_pGShader->registerDestruction(this);
 	}
 
+	if (0 != stage.m_shaderProgram.handle())
+		glCompileShader();
+
 	m_bDeleteVShader = stage.m_bDeleteVShader;
 	m_bDeleteFShader = stage.m_bDeleteFShader;
 	m_bDeleteGShader = stage.m_bDeleteGShader;
@@ -112,9 +115,52 @@ COpenGLShaderStage::COpenGLShaderStage(const COpenGLShaderStage& stage)
 
 COpenGLShaderStage::~COpenGLShaderStage(void)
 {
+	if (m_shaderProgram.handle() != 0)
+	{
+		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+		GLint value = 0;
+		pExtensions->glGetObjectParameterivARB(m_shaderProgram.handle(), GL_OBJECT_TYPE_ARB, &value);
+		if (value != GL_PROGRAM_OBJECT_ARB)
+		{
+			Raptor::GetErrorManager()->generateRaptorError(COpenGLShaderStage::COpenGLShaderStageClassID::GetClassId(),
+														   CRaptorErrorManager::RAPTOR_WARNING,
+														   "Shader Program is invalid in this context");
+
+			CATCH_GL_ERROR
+				return;
+		}
+	}
+
+	// TODO : delete program only if not shared !!!
+#if defined(GL_ARB_shader_objects)
+	if ((m_shaderProgram.handle() != 0) &&
+		(m_bDeleteVShader || m_bDeleteFShader || m_bDeleteGShader))
+	{
+		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+
+		GLsizei maxCount = 0;
+		pExtensions->glGetObjectParameterivARB(m_shaderProgram.handle(), GL_OBJECT_ATTACHED_OBJECTS_ARB, &maxCount);
+
+		GLsizei count = 0;
+		GLhandleARB *pHandles = new GLhandleARB[maxCount];
+		pExtensions->glGetAttachedObjectsARB(m_shaderProgram.handle(), maxCount, &count, pHandles);
+
+		for (GLsizei i = 0; ((i<count) && (i<maxCount)); i++)
+			pExtensions->glDetachObjectARB(m_shaderProgram.handle(), pHandles[i]);
+
+		delete[] pHandles;
+	}
+#endif
+
 	glRemoveVertexShader();
 	glRemoveFragmentShader();
 	glRemoveGeometryShader();
+
+	if (m_shaderProgram.handle() != 0)
+	{
+		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+		pExtensions->glDeleteObjectARB(m_shaderProgram.handle());
+	}
 }
 
 COpenGLShaderStage* COpenGLShaderStage::glClone() const
@@ -143,6 +189,37 @@ std::string COpenGLShaderStage::glGetProgramString(void) const
 void COpenGLShaderStage::setProgramParameters(const CProgramParameters &v)
 {
 	CShaderProgram::setProgramParameters(v);
+}
+
+void COpenGLShaderStage::glRender(void)
+{
+	if (m_shaderProgram.handle() != 0)
+	{
+#if defined(GL_ARB_shader_objects)
+		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+		pExtensions->glUseProgramObjectARB(m_shaderProgram.handle());
+
+		if (m_pVShader != NULL)
+			m_pVShader->glRender();
+
+		if (m_pGShader != NULL)
+			m_pGShader->glRender();
+
+		if (m_pFShader != NULL)
+			m_pFShader->glRender();
+#endif
+	}
+}
+
+void COpenGLShaderStage::glStop(void)
+{
+	if (m_shaderProgram.handle() != 0)
+	{
+#if defined(GL_ARB_shader_objects)
+		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+		pExtensions->glUseProgramObjectARB(0);
+#endif
+	}
 }
 
 

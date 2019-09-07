@@ -26,6 +26,8 @@
 #include "GLHierarchy/ShadedGeometry.h"
 #include "GLHierarchy/IRenderingProperties.h"
 #include "GLHierarchy/OpenGLProgramStage.h"
+#include "GLHierarchy/OpenGLShaderStage.h"
+
 
 #include "ToolBox/BasicObjects.h"
 
@@ -547,7 +549,7 @@ public:
 		CVertexProgram *vs = m_pShader->glGetVertexShader();
 		vs->setProgramParameters(params);
 #else
-		CVertexShader *vp = m_pShader->glGetVertexShader();
+		CVertexShader *vp = m_pShader->glGetOpenGLShader()->glGetVertexShader();
 		vp->setProgramParameters(params);
 #endif
 		params2.addParameter("",GL_COORD_VERTEX(0.0f,0.6f,0.8f,0.8f));
@@ -788,18 +790,18 @@ void CVertexShadersDisplay::Init()
 
     string fullWaterShader = waterShader+waterShader2+waterShader3;
 #ifdef VERTEX_SHADER
-	CVertexProgram *vs = pShader->glGetVertexShader();
+	CVertexProgram *vs = pShader->glGetOpenGLProgram()->glGetVertexProgram();
 	vs->glLoadProgram(fullWaterShader);
 	vs->glStop();
-	CFragmentShader *fs = pShader->glGetFragmentShader();
+	CFragmentShader *fs = pShader->glGetOpenGLProgram()->glGetFragmentProgram();
 	fs->glLoadProgram(waterFragments);
 	fs->glStop();
 #else
-	CVertexShader *vp = pShader->glGetVertexShader();
+	CVertexShader *vp = pShader->glGetOpenGLShader()->glGetVertexShader();
 	vp->glLoadProgram(waterVertexProgram);
-	CFragmentShader *fp = pShader->glGetFragmentShader();
+	CFragmentShader *fp = pShader->glGetOpenGLShader()->glGetFragmentShader();
 	fp->glLoadProgram(waterFragmentProgram);
-	pShader->glCompileShader();
+	pShader->glGetOpenGLShader()->glCompileShader();
 	pShader->glStop();
 #endif
 	

@@ -57,6 +57,10 @@
 #if !defined(AFX_MAGNIFIERFILTER_H__3660D446_2F92_4D02_A795_BFF8336D61D2__INCLUDED_)
     #include "MagnifierFilter.h"
 #endif
+#if !defined(AFX_OPENGLSHADERSTAGE_H__56B00FE3_E508_4FD6_9363_90E6E67446D9__INCLUDED_)
+	#include "GLHierarchy/OpenGLShaderStage.h"
+#endif
+
 
 RAPTOR_NAMESPACE
 
@@ -263,14 +267,14 @@ void CMagnifierFilter::glRenderFilter()
 	colorInput->glvkRender();
 
 #if defined(GL_ARB_geometry_shader4)
-	m_pYKernelShader->glGetGeometryShader()->setProgramParameters(v_params_y);
-	m_pYKernelShader->glGetFragmentShader()->setProgramParameters(f_params);
+	m_pYKernelShader->glGetOpenGLShader()->glGetGeometryShader()->setProgramParameters(v_params_y);
+	m_pYKernelShader->glGetOpenGLShader()->glGetFragmentShader()->setProgramParameters(f_params);
 #elif defined(GL_ARB_vertex_shader)
-	m_pYKernelShader->glGetVertexProgram()->setProgramParameters(v_params_y);
-	m_pYKernelShader->glGetFragmentProgram()->setProgramParameters(f_params);
+	m_pYKernelShader->glGetOpenGLShader()->glGetVertexShader()->setProgramParameters(v_params_y);
+	m_pYKernelShader->glGetOpenGLShader()->glGetFragmentShader()->setProgramParameters(f_params);
 #elif defined(GL_ARB_vertex_program)
-	m_pYKernelShader->glGetVertexShader()->setProgramParameters(v_params_y);
-	m_pYKernelShader->glGetFragmentShader()->setProgramParameters(f_params);
+	m_pYKernelShader->glGetOpenGLProgram()->glGetVertexProgram()->setProgramParameters(v_params_y);
+	m_pYKernelShader->glGetOpenGLProgram()->glGetFragmentProgram()->setProgramParameters(f_params);
 #endif
 	m_pYKernelShader->glRender();
 
@@ -296,14 +300,14 @@ void CMagnifierFilter::glRenderFilterOutput()
 	xKernelPass->glvkRender();
 
 #if defined(GL_ARB_geometry_shader4)
-	m_pXKernelShader->glGetGeometryShader()->setProgramParameters(v_params_x);
-	m_pXKernelShader->glGetFragmentShader()->setProgramParameters(f_params);
+	m_pXKernelShader->glGetOpenGLShader()->glGetGeometryShader()->setProgramParameters(v_params_x);
+	m_pXKernelShader->glGetOpenGLShader()->glGetFragmentShader()->setProgramParameters(f_params);
 #elif defined(GL_ARB_vertex_shader)
-	m_pXKernelShader->glGetVertexProgram()->setProgramParameters(v_params_x);
-	m_pXKernelShader->glGetFragmentProgram()->setProgramParameters(f_params);
+	m_pXKernelShader->glGetOpenGLShader()->glGetVertexShader()->setProgramParameters(v_params_x);
+	m_pXKernelShader->glGetOpenGLShader()->glGetFragmentShader()->setProgramParameters(f_params);
 #elif defined(GL_ARB_vertex_program)
-	m_pXKernelShader->glGetVertexShader()->setProgramParameters(v_params_x);
-	m_pXKernelShader->glGetFragmentShader()->setProgramParameters(f_params);
+	m_pXKernelShader->glGetOpenGLProgram()->glGetVertexProgram()->setProgramParameters(v_params_x);
+	m_pXKernelShader->glGetOpenGLProgram()->glGetFragmentProgram()->setProgramParameters(f_params);
 #endif
 	m_pXKernelShader->glRender();
 
@@ -419,44 +423,44 @@ bool CMagnifierFilter::glInitFilter(void)
 	m_pYKernelShader = new CShader("YKERNEL_SHADER");
 
 #if defined(GL_ARB_geometry_shader4)
-	CVertexShader *vp = m_pXKernelShader->glGetVertexShader("EMPTY_PROGRAM");
-	CGeometryShader *gp = m_pXKernelShader->glGetGeometryShader("magnifier_gp2");
+	CVertexShader *vp = m_pXKernelShader->glGetOpenGLShader()->glGetVertexShader("EMPTY_PROGRAM");
+	CGeometryShader *gp = m_pXKernelShader->glGetOpenGLShader()->glGetGeometryShader("magnifier_gp2");
 	bool res = gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
 	res = res & gp->glLoadProgram(gp_src);
-	CFragmentShader *ps = m_pXKernelShader->glGetFragmentShader("xk_ps2");
+	CFragmentShader *ps = m_pXKernelShader->glGetOpenGLShader()->glGetFragmentShader("xk_ps2");
 	res = res && ps->glLoadProgram(xk_ps2);
-	res = res && m_pXKernelShader->glCompileShader();
+	res = res && m_pXKernelShader->glGetOpenGLShader()->glCompileShader();
 
-	vp = m_pYKernelShader->glGetVertexShader("EMPTY_PROGRAM");
-	gp = m_pYKernelShader->glGetGeometryShader("magnifier_gp2");
-	ps = m_pYKernelShader->glGetFragmentShader("yk_ps2");
+	vp = m_pYKernelShader->glGetOpenGLShader()->glGetVertexShader("EMPTY_PROGRAM");
+	gp = m_pYKernelShader->glGetOpenGLShader()->glGetGeometryShader("magnifier_gp2");
+	ps = m_pYKernelShader->glGetOpenGLShader()->glGetFragmentShader("yk_ps2");
 	res = res && ps->glLoadProgram(yk_ps2);
-	res = res && m_pYKernelShader->glCompileShader();
+	res = res && m_pYKernelShader->glGetOpenGLShader()->glCompileShader();
 
 	f_params.addParameter("color", CTextureUnitSetup::IMAGE_UNIT_0);
 	f_params.addParameter("factor", CTextureUnitSetup::IMAGE_UNIT_1);
 #elif defined(GL_ARB_vertex_shader)
-	CVertexShader *vp = m_pXKernelShader->glGetVertexProgram("magnifier_vp");
+	CVertexShader *vp = m_pXKernelShader->glGetOpenGLShader()->glGetVertexShader("magnifier_vp");
     bool res = vp->glLoadProgram(kernel_vs);
-	CFragmentShader *ps = m_pXKernelShader->glGetFragmentProgram("xk_ps");
+	CFragmentShader *ps = m_pXKernelShader->glGetOpenGLShader()->glGetFragmentShader("xk_ps");
     res = res && ps->glLoadProgram(xk_ps);
-	res = res && m_pXKernelShader->glCompileShader();
+	res = res && m_pXKernelShader->glGetOpenGLShader()->glCompileShader();
 
-	vp = m_pYKernelShader->glGetVertexProgram("magnifier_vp");
-	ps = m_pYKernelShader->glGetFragmentProgram("yk_ps");
+	vp = m_pYKernelShader->glGetOpenGLShader()->glGetVertexShader("magnifier_vp");
+	ps = m_pYKernelShader->glGetOpenGLShader()->glGetFragmentShader("yk_ps");
     res = res && ps->glLoadProgram(yk_ps);
-	m_pYKernelShader->glCompileShader();
+	m_pYKernelShader->glGetOpenGLShader()->glCompileShader();
 
 	f_params.addParameter("color",CTextureUnitSetup::IMAGE_UNIT_0);
 	f_params.addParameter("factor",CTextureUnitSetup::IMAGE_UNIT_1);
 #elif defined(GL_ARB_vertex_program)
-	CVertexProgram *vs = m_pXKernelShader->glGetVertexShader("magnifier_vp");
+	CVertexProgram *vs = m_pXKernelShader->glGetOpenGLProgram()->glGetVertexProgram("magnifier_vp");
     bool res = vs->glLoadProgram(kernel_vp);
-	CFragmentProgram *fs = m_pXKernelShader->glGetFragmentShader("xk_fp");
+	CFragmentProgram *fs = m_pXKernelShader->glGetOpenGLProgram()->glGetFragmentProgram("xk_fp");
     res = res && fs->glLoadProgram(xk_fp);
 
-    vs = m_pYKernelShader->glGetVertexShader("magnifier_vp");
-    fs = m_pYKernelShader->glGetFragmentShader("yk_fp");
+	vs = m_pYKernelShader->glGetOpenGLProgram()->glGetVertexProgram("magnifier_vp");
+	fs = m_pYKernelShader->glGetOpenGLProgram()->glGetFragmentProgram("yk_fp");
     res = res && fs->glLoadProgram(yk_fp);
 #endif
 

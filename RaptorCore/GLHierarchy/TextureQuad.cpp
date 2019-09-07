@@ -48,6 +48,9 @@
 #if !defined(AFX_OPENGL_H__6C8840CA_BEFA_41DE_9879_5777FBBA7147__INCLUDED_)
 	#include "Subsys/OpenGL/RaptorOpenGL.h"
 #endif
+#if !defined(AFX_OPENGLSHADERSTAGE_H__56B00FE3_E508_4FD6_9363_90E6E67446D9__INCLUDED_)
+	#include "GLHierarchy/OpenGLShaderStage.h"
+#endif
 
 
 RAPTOR_NAMESPACE
@@ -204,15 +207,16 @@ void CTextureQuad::glRender(void)
 	if (NULL == m_pShader)
 	{
 		m_pShader = new CShader(getName() + "_SHADER");
+		COpenGLShaderStage *stage = m_pShader->glGetOpenGLShader();
 
-		CVertexShader *vp = m_pShader->glGetVertexShader("TEXTURE_QUAD_VTX_PROGRAM");
-		CGeometryShader *gp = m_pShader->glGetGeometryShader("TEXTURE_QUAD_GEO_PROGRAM");
+		CVertexShader *vp = stage->glGetVertexShader("TEXTURE_QUAD_VTX_PROGRAM");
+		CGeometryShader *gp = stage->glGetGeometryShader("TEXTURE_QUAD_GEO_PROGRAM");
 		gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
-		CFragmentShader *fs = m_pShader->glGetFragmentShader("TEXTURE_QUAD_TEX_PROGRAM");
+		CFragmentShader *fs = stage->glGetFragmentShader("TEXTURE_QUAD_TEX_PROGRAM");
 		CProgramParameters params;
 		params.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);
 
-		res = res & m_pShader->glCompileShader();
+		res = res & stage->glCompileShader();
 	}
 
 	//!	Render (activate) shader and texture.
