@@ -1,0 +1,100 @@
+###########################################################################
+#                                                                         #
+#  Makefile.jpeglib                                                       #
+#                                                                         #
+#    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       #
+#                                                                         #
+#  Copyright 1998-2019 by                                                 #
+#  Fabrice FERRAND.                                                       #
+#                                                                         #
+#  This file is part of the Raptor project, and may only be used,         #
+#  modified, and distributed under the terms of the Raptor project        #
+#  license, LICENSE.  By continuing to use, modify, or distribute         #
+#  this file you indicate that you have read the license and              #
+#  understand and accept it fully.                                        #
+#                                                                         #
+###########################################################################
+
+
+export
+
+CCCFLAGS = -DLINUX -fPIC
+OUTPUT = $(RAPTOR_ROOT)/Build/Linux/Release/libjpeg
+SRCDIR = $(RAPTOR_ROOT)/AddOns/JpegLib-v9/source
+INCDIRS = -I$(RAPTOR_ROOT)/AddOns/JpegLib-v9/include -I$(SRCDIR)
+LDFLAGS = -Bdynamic -shared -lstdc++
+
+SO = $(OUTPUT)/libjpeg.so.$(RAPTOR_VERSION)
+LIB = $(OUTPUT)/libjpeg.a
+
+SRC = \
+	$(SRCDIR)/jaricom.c \
+	$(SRCDIR)/jcdctmgr.c \
+	$(SRCDIR)/jcomapi.c \
+	$(SRCDIR)/jdapistd.c \
+	$(SRCDIR)/jddctmgr.c \
+	$(SRCDIR)/jdmerge.c \
+	$(SRCDIR)/jfdctfst.c \
+	$(SRCDIR)/jmemname.c \
+	$(SRCDIR)/jcapimin.c \
+	$(SRCDIR)/jchuff.c \
+	$(SRCDIR)/jcparam.c \
+	$(SRCDIR)/jdarith.c \
+	$(SRCDIR)/jdhuff.c \
+	$(SRCDIR)/jdpostct.c \
+	$(SRCDIR)/jfdctint.c \
+	$(SRCDIR)/jquant1.c \
+	$(SRCDIR)/jcapistd.c \
+	$(SRCDIR)/jcinit.c \
+	$(SRCDIR)/jcprepct.c \
+	$(SRCDIR)/jdatadst.c \
+	$(SRCDIR)/jdinput.c \
+	$(SRCDIR)/jdsample.c \
+	$(SRCDIR)/jidctflt.c \
+	$(SRCDIR)/jquant2.c \
+	$(SRCDIR)/jcarith.c \
+	$(SRCDIR)/jcmainct.c \
+	$(SRCDIR)/jcsample.c \
+	$(SRCDIR)/jdatasrc.c \
+	$(SRCDIR)/jdmainct.c \
+	$(SRCDIR)/jdtrans.c \
+	$(SRCDIR)/jidctfst.c \
+	$(SRCDIR)/jutils.c \
+	$(SRCDIR)/jccoefct.c \
+	$(SRCDIR)/jcmarker.c \
+	$(SRCDIR)/jctrans.c \
+	$(SRCDIR)/jdcoefct.c \
+	$(SRCDIR)/jdmarker.c \
+	$(SRCDIR)/jerror.c \
+	$(SRCDIR)/jidctint.c \
+	$(SRCDIR)/jccolor.c \
+	$(SRCDIR)/jcmaster.c \
+	$(SRCDIR)/jdapimin.c \
+	$(SRCDIR)/jdcolor.c \
+	$(SRCDIR)/jdmaster.c \
+	$(SRCDIR)/jfdctflt.c \
+	$(SRCDIR)/jmemmgr.c
+
+OBJ = $(SRC:$(SRCDIR)/%.c=$(OUTPUT)/%.o)
+
+all:	$(LIB) $(SO)
+
+clean:
+	rm -rf $(OUTPUT)
+	mkdir -p $(OUTPUT)
+
+$(SO):	$(OBJ)
+	g++ -o $(SO) $(LDFLAGS) $(OBJ)
+	cp $(SO) $(REDIST)/Bin/
+
+$(LIB):	$(OBJ) 
+	ar -qcv $(LIB) $(OBJ)
+	cp $(LIB) $(REDIST)/Lib/
+
+$(OBJ):	$(SRC)
+	g++ $(CCCFLAGS) $(INCDIRS) -c $(<D)/$(*F).c  -o $(OUTPUT)/$(@F)
+
+
+
+	
+

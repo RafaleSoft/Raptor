@@ -40,7 +40,7 @@ RAPTOR_NAMESPACE_BEGIN
 class RAPTOR_API CFragmentProgram_old : public CShaderProgram
 {
 public:
-	typedef struct GL_FRAGMENT_SHADER_CAPS_t
+	typedef struct GL_FRAGMENT_PROGRAM_CAPS_t
 	{
 		int		max_instructions;
 		int		max_native_instructions;
@@ -62,7 +62,7 @@ public:
 		int		max_program_matrix_stack_depth;
 		int		max_texture_coords;
 		int		max_texture_image_units;
-	} GL_FRAGMENT_SHADER_CAPS;
+	} GL_FRAGMENT_PROGRAM_CAPS;
 
 
 public:
@@ -100,7 +100,7 @@ public:
 	//! the structure given in caps parameter.
 	//!	Refer to official ARB documentation for detailed information
 	//! on each capability item.
-	static bool glGetProgramCaps(GL_FRAGMENT_SHADER_CAPS& caps);
+	static bool glGetProgramCaps(GL_FRAGMENT_PROGRAM_CAPS& caps);
 	
 	//!	Direct access to program parameters
 	virtual void glProgramParameter(unsigned int numParam,const GL_COORD_VERTEX &v) const;

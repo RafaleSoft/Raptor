@@ -21,6 +21,7 @@
 RAPTOR_NAMESPACE_BEGIN
 
 class CRaptorGLExtensions;
+class CRaptorDisplayConfig;
 
 
 class CGLXContextManager : public CContextManager  
@@ -106,13 +107,11 @@ private:
         Display     *display;
         Window      window;
         XVisualInfo *visual;
+		CRaptorGLExtensions*	pExtensions;
 	} context_t;
-
 
 	string					extensions;
 	string					glx_extensions;
-	CRaptorGLExtensions*	pExtensions;
-	CRaptorGLExtensions*	pExtensionsTmp;
 	
 
     Display*                pGlobalDisplay;                 
@@ -128,8 +127,7 @@ private:
 
 	RENDERING_CONTEXT_ID	m_currentContext;
 
-	virtual void glInitExtensions(void);
-
+	
 #if defined(VK_VERSION_1_0)
 	//! See base class
 	virtual uint32_t getPresentationSuppotQueueFamily(RENDERING_CONTEXT_ID ctx);

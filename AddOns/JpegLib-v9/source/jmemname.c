@@ -17,6 +17,10 @@
 #include "jpeglib.h"
 #include "jmemsys.h"		/* import the system-dependent declarations */
 
+#if defined (LINUX)
+	#include <unistd.h>
+#endif
+
 #ifndef HAVE_STDLIB_H		/* <stdlib.h> should declare malloc(),free() */
 extern void * malloc JPP((size_t size));
 extern void free JPP((void *ptr));
@@ -127,7 +131,15 @@ select_file_name (char * fname)
 {
   next_file_num++;		/* advance counter */
   sprintf(fname, TEMP_FILE_NAME, TEMP_DIRECTORY, next_file_num);
+
+#if defined(WIN32)
   _mktemp(fname);		/* make sure file name is unique */
+#elif defined (LINUX)
+  mktemp(fname);		/* make sure file name is unique */
+#else
+  mktemp(fname);		/* make sure file name is unique */
+#endif
+
   /* mktemp replaces the trailing XXXXXX with a unique string of characters */
 }
 
@@ -230,7 +242,15 @@ METHODDEF(void)
 close_backing_store (j_common_ptr cinfo, backing_store_ptr info)
 {
   fclose(info->temp_file);	/* close the file */
+
+#if defined(WIN32)
   _unlink(info->temp_name);	/* delete the file */
+#elif defined (LINUX)
+  unlink(info->temp_name);	/* delete the file */
+#else
+  unlink(info->temp_name);	/* delete the file */
+#endif
+
 /* If your system doesn't have unlink(), use remove() instead.
  * remove() is the ANSI-standard name for this function, but if
  * your system was ANSI you'd be using jmemansi.c, right?

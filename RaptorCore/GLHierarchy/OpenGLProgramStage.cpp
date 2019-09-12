@@ -41,7 +41,8 @@ RAPTOR_NAMESPACE_END
 RAPTOR_NAMESPACE
 
 COpenGLProgramStage::COpenGLProgramStage(const std::string& name)
-	:CShaderProgram(stageId, name)
+	:CShaderProgram(stageId, name),
+	m_pVShader(NULL), m_pFShader(NULL)
 {
 }
 

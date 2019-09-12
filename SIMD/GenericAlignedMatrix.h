@@ -56,17 +56,17 @@ public:
 	// construction/destruction
 	CGenericAlignedMatrix() NOEXCEPT;
 	virtual ~CGenericAlignedMatrix();
-	virtual void Zero()
+	virtual void Zero() NOEXCEPT
 	{
 		for (int i=0;i<16;i++)
 			m_matrix[i]=0;
 	};
-	virtual void One()
+	virtual void One() NOEXCEPT
 	{
 		for (int i=0;i<16;i++)
 			m_matrix[i]=1;
 	};
-	virtual void Ident()
+	virtual void Ident() NOEXCEPT
 	{
 		for (int i=0;i<16;i++)
 			m_matrix[i]=0;

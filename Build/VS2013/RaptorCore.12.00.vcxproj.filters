@@ -206,9 +206,6 @@
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\BumppedGeometry.cpp">
       <Filter>Source Files\GLHierarchy src</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\RaptorCore\GLHierarchy\FragmentProgram.cpp">
-      <Filter>Source Files\GLHierarchy src</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\Geometry.cpp">
       <Filter>Source Files\GLHierarchy src</Filter>
     </ClCompile>
@@ -216,9 +213,6 @@
       <Filter>Source Files\GLHierarchy src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\GeometryPrimitive.cpp">
-      <Filter>Source Files\GLHierarchy src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\RaptorCore\GLHierarchy\GeometryProgram.cpp">
       <Filter>Source Files\GLHierarchy src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\GLFont.cpp">
@@ -300,12 +294,6 @@
       <Filter>Source Files\GLHierarchy src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\TextureUnitSetup.cpp">
-      <Filter>Source Files\GLHierarchy src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\RaptorCore\GLHierarchy\UnifiedProgram.cpp">
-      <Filter>Source Files\GLHierarchy src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\RaptorCore\GLHierarchy\VertexProgram.cpp">
       <Filter>Source Files\GLHierarchy src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\RaptorCore\Subsys\3DSceneAttributes.cpp">
@@ -623,6 +611,18 @@
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\FragmentProgram_old.cpp">
       <Filter>Source Files\GLHierarchy src</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\GeometryShader.cpp">
+      <Filter>Source Files\GLHierarchy src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\VertexShader.cpp">
+      <Filter>Source Files\GLHierarchy src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\FragmentShader.cpp">
+      <Filter>Source Files\GLHierarchy src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\UnifiedShader.cpp">
+      <Filter>Source Files\GLHierarchy src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Xsd Include="Subsys\ObjectModels\Raptor.xsd">
@@ -702,9 +702,6 @@
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\BumppedGeometry.h">
       <Filter>Header Files\GLHierarchy include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\RaptorCore\GLHierarchy\FragmentProgram.h">
-      <Filter>Header Files\GLHierarchy include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\Geometry.h">
       <Filter>Header Files\GLHierarchy include</Filter>
     </ClInclude>
@@ -712,9 +709,6 @@
       <Filter>Header Files\GLHierarchy include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\GeometryPrimitive.h">
-      <Filter>Header Files\GLHierarchy include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\RaptorCore\GLHierarchy\GeometryProgram.h">
       <Filter>Header Files\GLHierarchy include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\GLFont.h">
@@ -799,12 +793,6 @@
       <Filter>Header Files\GLHierarchy include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\TextureUnitSetup.h">
-      <Filter>Header Files\GLHierarchy include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\RaptorCore\GLHierarchy\UnifiedProgram.h">
-      <Filter>Header Files\GLHierarchy include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\RaptorCore\GLHierarchy\VertexProgram.h">
       <Filter>Header Files\GLHierarchy include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\RaptorCore\SSE_Engine\SSE_3DEngine.h">
@@ -1195,6 +1183,18 @@
       <Filter>Header Files\GLHierarchy include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\FragmentProgram_old.h">
+      <Filter>Header Files\GLHierarchy include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\GeometryShader.h">
+      <Filter>Header Files\GLHierarchy include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\VertexShader.h">
+      <Filter>Header Files\GLHierarchy include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\FragmentShader.h">
+      <Filter>Header Files\GLHierarchy include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\UnifiedShader.h">
       <Filter>Header Files\GLHierarchy include</Filter>
     </ClInclude>
   </ItemGroup>

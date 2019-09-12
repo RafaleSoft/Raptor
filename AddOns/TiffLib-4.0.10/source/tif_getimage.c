@@ -2827,10 +2827,10 @@ static int
 BuildMapUaToAa(TIFFRGBAImage* img)
 {
 	static const char module[]="BuildMapUaToAa";
-	uint8* m;
-	uint16 na,nv;
+	uint8* m = NULL;
+	uint16 na = 0,nv = 0;
 	assert(img->UaToAa==NULL);
-	img->UaToAa=_TIFFmalloc(65536);
+	img->UaToAa=(uint8*)_TIFFmalloc(65536);
 	if (img->UaToAa==NULL)
 	{
 		TIFFErrorExt(img->tif->tif_clientdata,module,"Out of memory");
@@ -2849,10 +2849,10 @@ static int
 BuildMapBitdepth16To8(TIFFRGBAImage* img)
 {
 	static const char module[]="BuildMapBitdepth16To8";
-	uint8* m;
-	uint32 n;
+	uint8* m = NULL;
+	uint32 n = 0;
 	assert(img->Bitdepth16To8==NULL);
-	img->Bitdepth16To8=_TIFFmalloc(65536);
+	img->Bitdepth16To8 = (uint8*)_TIFFmalloc(65536);
 	if (img->Bitdepth16To8==NULL)
 	{
 		TIFFErrorExt(img->tif->tif_clientdata,module,"Out of memory");

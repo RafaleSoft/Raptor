@@ -12,6 +12,9 @@
 #if !defined(AFX_3DENGINETASKMANAGER_H__04149C60_C594_4009_A2C9_F852497146A3__INCLUDED_)
     #include "Engine/3DEngineTaskManager.h"
 #endif
+#ifndef __CGLTYPES_HPP__
+    #include "System/CGLTypes.h"
+#endif
 
 #include <pthread.h>
 

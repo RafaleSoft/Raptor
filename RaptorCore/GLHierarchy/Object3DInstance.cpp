@@ -322,10 +322,10 @@ void CObject3DInstance::glRender()
     if (m_pShader != NULL)
 	{
         // render shaders
-		if (m_pShader->hasVertexShader())
-			m_pShader->glGetVertexShader()->glRender();
-		if (m_pShader->hasFragmentShader())
-			m_pShader->glGetFragmentShader()->glRender();
+		if (m_pShader->hasVertexProgram_old())
+			m_pShader->glGetVertexProgram_old()->glRender();
+		if (m_pShader->hasFragmentProgram_old())
+			m_pShader->glGetFragmentProgram_old()->glRender();
 	}
 
 	if (m_pReference != NULL)
@@ -338,10 +338,10 @@ void CObject3DInstance::glRender()
 
     if (m_pShader != NULL)
 	{
-		if (m_pShader->hasVertexShader())
-			m_pShader->glGetVertexShader()->glStop();
-		if (m_pShader->hasFragmentShader())
-			m_pShader->glGetFragmentShader()->glStop();
+		if (m_pShader->hasVertexProgram_old())
+			m_pShader->glGetVertexProgram_old()->glStop();
+		if (m_pShader->hasFragmentProgram_old())
+			m_pShader->glGetFragmentProgram_old()->glStop();
 	}
 
     if (m_pOverride != NULL)
@@ -368,10 +368,10 @@ void CObject3DInstance::glClipRender()
     if (m_pShader != NULL)
 	{
         // render shaders
-		if (m_pShader->hasVertexShader())
-			m_pShader->glGetVertexShader()->glRender();
-		if (m_pShader->hasFragmentShader())
-			m_pShader->glGetFragmentShader()->glRender();
+		if (m_pShader->hasVertexProgram_old())
+			m_pShader->glGetVertexProgram_old()->glRender();
+		if (m_pShader->hasFragmentProgram_old())
+			m_pShader->glGetFragmentProgram_old()->glRender();
 	}
 
 	if (m_pReference != NULL)
@@ -384,10 +384,10 @@ void CObject3DInstance::glClipRender()
 
     if (m_pShader != NULL)
 	{
-		if (m_pShader->hasVertexShader())
-			m_pShader->glGetVertexShader()->glStop();
-		if (m_pShader->hasFragmentShader())
-			m_pShader->glGetFragmentShader()->glStop();
+		if (m_pShader->hasVertexProgram_old())
+			m_pShader->glGetVertexProgram_old()->glStop();
+		if (m_pShader->hasFragmentProgram_old())
+			m_pShader->glGetFragmentProgram_old()->glStop();
 	}
 
     if (m_pOverride != NULL)

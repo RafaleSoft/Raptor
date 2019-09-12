@@ -13,8 +13,11 @@
 #if !defined(AFX_SHADER_H__4D405EC2_7151_465D_86B6_1CA99B906777__INCLUDED_)
 	#include "GLHierarchy/Shader.h"
 #endif
-#if !defined(AFX_FRAGMENTPROGRAM_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
-    #include "GLHierarchy/FragmentProgram.h"
+#if !defined(AFX_FRAGMENTSHADER_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
+    #include "GLHierarchy/FragmentShader.h"
+#endif
+#if !defined(AFX_GEOMETRYSHADER_H__1981EA98_8F3C_4881_9429_A9ACA5B285D3__INCLUDED_)
+	#include "GLHierarchy/GeometryShader.h"
 #endif
 #if !defined(AFX_IRENDERINGPROPERTIES_H__634BCF2B_84B4_47F2_B460_D7FDC0F3B698__INCLUDED_)
 	#include "GLHierarchy/IRenderingProperties.h"
@@ -290,16 +293,16 @@ bool CBlurFilter::glBuildFilter(int width,int height)
 	params.clear();
 	params.addParameter("diffuseMap",CTextureUnitSetup::IMAGE_UNIT_0);
 	
-	CVertexProgram *vp = hBlur->glGetVertexProgram("EMPTY_PROGRAM");
-	CGeometryProgram *gp = hBlur->glGetGeometryProgram("FULL_SCREEN_GEO_PROGRAM");
-	CFragmentProgram *fp = hBlur->glGetFragmentProgram("hBlur_fp");
+	CVertexShader *vp = hBlur->glGetVertexShader("EMPTY_PROGRAM");
+	CGeometryShader *gp = hBlur->glGetGeometryShader("FULL_SCREEN_GEO_PROGRAM");
+	CFragmentShader *fp = hBlur->glGetFragmentShader("hBlur_fp");
 	res = fp->glLoadProgram(srcs[0]);
 	fp->setProgramParameters(params);
 	res = res && hBlur->glCompileShader();
 
-	vp = vBlur->glGetVertexProgram("EMPTY_PROGRAM");
-	gp = vBlur->glGetGeometryProgram("FULL_SCREEN_GEO_PROGRAM");
-	fp = vBlur->glGetFragmentProgram("vBlur_fp");
+	vp = vBlur->glGetVertexShader("EMPTY_PROGRAM");
+	gp = vBlur->glGetGeometryShader("FULL_SCREEN_GEO_PROGRAM");
+	fp = vBlur->glGetFragmentShader("vBlur_fp");
 	res = res && fp->glLoadProgram(srcs[1]);
 	fp->setProgramParameters(params);
 

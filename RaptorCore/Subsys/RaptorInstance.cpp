@@ -58,8 +58,8 @@
 #if !defined(AFX_TEXUREUNITSETUP_H__4A6ADC72_02E5_4F2A_931E_A736B6D6E0F0__INCLUDED_)
 	#include "GLHierarchy/TextureUnitSetup.h"
 #endif
-#if !defined(AFX_FRAGMENTPROGRAM_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
-	#include "GLHierarchy/FragmentProgram.h"
+#if !defined(AFX_FRAGMENTSHADER_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
+	#include "GLHierarchy/FragmentShader.h"
 #endif
 #if !defined(AFX_GEOMETRYALLOCATOR_H__802B3C7A_43F7_46B2_A79E_DDDC9012D371__INCLUDED_)
 	#include "Subsys/GeometryAllocator.h"
@@ -94,7 +94,7 @@ CRaptorInstance::CRaptorInstance()
 
 	m_bFragmentProgramReady = false;
 	m_bVertexProgramReady = false;
-	m_bGeometryProgramReady = false;
+	m_bGeometryShaderReady = false;
 	m_bVertexReady = false;
 	m_bFragmentReady = false;
 
@@ -307,9 +307,9 @@ bool CRaptorInstance::glInitShaders(void)
 	if (NULL == m_pIdentity)
 	{
 		m_pIdentity = new CShader("HDR_IDENTITY");
-		CVertexProgram *vp = m_pIdentity->glGetVertexProgram("EMPTY_PROGRAM");
-		CGeometryProgram *gp = m_pIdentity->glGetGeometryProgram("FULL_SCREEN_GEO_PROGRAM");
-		CFragmentProgram *fp = m_pIdentity->glGetFragmentProgram("DIFFUSE_PROGRAM");
+		CVertexShader *vp = m_pIdentity->glGetVertexShader("EMPTY_PROGRAM");
+		CGeometryShader *gp = m_pIdentity->glGetGeometryShader("FULL_SCREEN_GEO_PROGRAM");
+		CFragmentShader *fp = m_pIdentity->glGetFragmentShader("DIFFUSE_PROGRAM");
 
 		CProgramParameters identityParams;
 		identityParams.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);

@@ -27,14 +27,14 @@
 #if !defined(AFX_SHADER_H__4D405EC2_7151_465D_86B6_1CA99B906777__INCLUDED_)
 	#include "GLHierarchy/Shader.h"
 #endif
-#if !defined(AFX_VERTEXPROGRAM_H__204F7213_B40B_4B6A_9BCA_828409871B68__INCLUDED_)
-	#include "GLHierarchy/VertexProgram.h"
+#if !defined(AFX_VERTEXSHADER_H__204F7213_B40B_4B6A_9BCA_828409871B68__INCLUDED_)
+	#include "GLHierarchy/VertexShader.h"
 #endif
-#if !defined(AFX_GEOMETRYPROGRAM_H__1981EA98_8F3C_4881_9429_A9ACA5B285D3__INCLUDED_)
-	#include "GLHierarchy/GeometryProgram.h"
+#if !defined(AFX_GEOMETRYSHADER_H__1981EA98_8F3C_4881_9429_A9ACA5B285D3__INCLUDED_)
+	#include "GLHierarchy/GeometryShader.h"
 #endif
-#if !defined(AFX_FRAGMENTPROGRAM_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
-	#include "GLHierarchy/FragmentProgram.h"
+#if !defined(AFX_FRAGMENTSHADER_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
+	#include "GLHierarchy/FragmentShader.h"
 #endif
 #if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
 	#include "System/RaptorGLExtensions.h"
@@ -205,10 +205,10 @@ void CTextureQuad::glRender(void)
 	{
 		m_pShader = new CShader(getName() + "_SHADER");
 
-		CVertexProgram *vp = m_pShader->glGetVertexProgram("TEXTURE_QUAD_VTX_PROGRAM");
-		CGeometryProgram *gp = m_pShader->glGetGeometryProgram("TEXTURE_QUAD_GEO_PROGRAM");
+		CVertexShader *vp = m_pShader->glGetVertexShader("TEXTURE_QUAD_VTX_PROGRAM");
+		CGeometryShader *gp = m_pShader->glGetGeometryShader("TEXTURE_QUAD_GEO_PROGRAM");
 		gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
-		CFragmentProgram *fs = m_pShader->glGetFragmentProgram("TEXTURE_QUAD_TEX_PROGRAM");
+		CFragmentShader *fs = m_pShader->glGetFragmentShader("TEXTURE_QUAD_TEX_PROGRAM");
 		CProgramParameters params;
 		params.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);
 
