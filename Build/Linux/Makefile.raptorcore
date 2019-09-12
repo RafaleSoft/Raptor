@@ -28,14 +28,14 @@ LDFLAGS = -Bdynamic -shared -lstdc++
 CCCFLAGS += -DGL_MESA_shader_object -DGL_MESA_shader_debug
 CCCFLAGS += -DMAX_PATH=PATH_MAX -DGLX_EXTENSIONS
 
-SO = $(OUTPUT)/RaptorCore.so.$(RAPTOR_VERSION)
-LIB = $(OUTPUT)/RaptorCore.lib
+SO = $(OUTPUT)/libRaptorCore.so.$(RAPTOR_VERSION)
+LIB = $(OUTPUT)/libRaptorCore.a
 
 
 HIERARCHY_SRC = \
 	$(SRCDIR)/GLHierarchy/3DSet.cpp \
 	$(SRCDIR)/GLHierarchy/BumppedGeometry.cpp \
-	$(SRCDIR)/GLHierarchy/FragmentShader.cpp \
+	$(SRCDIR)/GLHierarchy/FragmentProgram_old.cpp \
 	$(SRCDIR)/GLHierarchy/FragmentProgram.cpp \
 	$(SRCDIR)/GLHierarchy/Geometry.cpp \
 	$(SRCDIR)/GLHierarchy/GeometryEditor.cpp \
@@ -64,7 +64,7 @@ HIERARCHY_SRC = \
 	$(SRCDIR)/GLHierarchy/ITextureObject.cpp \
 	$(SRCDIR)/GLHierarchy/TextureSet.cpp \
 	$(SRCDIR)/GLHierarchy/TextureUnitSetup.cpp \
-	$(SRCDIR)/GLHierarchy/VertexShader.cpp \
+	$(SRCDIR)/GLHierarchy/VertexProgram_old.cpp \
 	$(SRCDIR)/GLHierarchy/VertexProgram.cpp \
 	$(SRCDIR)/GLHierarchy/Particle.cpp \
 	$(SRCDIR)/GLHierarchy/ObjectFactory.cpp \
@@ -128,9 +128,9 @@ SUBSYS_SRC = \
 	$(SRCDIR)/Subsys/Collisions.cpp \
 	$(SRCDIR)/Subsys/ContextManager.cpp \
 	$(SRCDIR)/Subsys/ContourAttributes.cpp \
+	$(SRCDIR)/Subsys/DefaultAlphaTransparency.cpp \
 	$(SRCDIR)/Subsys/DefaultBumpmapLoader.cpp \
 	$(SRCDIR)/Subsys/DefaultImageScaler.cpp \
-	$(SRCDIR)/Subsys/DefaultMipmapBuilder.cpp \
 	$(SRCDIR)/Subsys/GeometryAllocator.cpp \
 	$(SRCDIR)/Subsys/Interpreters.cpp \
 	$(SRCDIR)/Subsys/LightAttributes.cpp \
@@ -208,7 +208,7 @@ $(SYSTEM_OBJS):	$(SYSTEM_SRC) $(CODE_GENERATION)
 $(SUBSYS_OBJS):	$(SUBSYS_SRC) $(CODE_GENERATION)
 	g++ $(CCCFLAGS) $(INCDIRS) $(INCXERCES) -c $(<D)/$(*F).cpp  -o $(OUTPUT)/$(@F)
 
-$(OUTPUT)/Simplex.o:	Subsys/Hershey/Simplex.cpp $(CODE_GENERATION)
+$(OUTPUT)/Simplex.o:	$(SRCDIR)/Subsys/Hershey/Simplex.cpp $(CODE_GENERATION)
 	g++ $(CCCFLAGS) $(INCDIRS) -c $(<D)/$(*F).cpp  -o $(OUTPUT)/$(@F)
 
 $(SUBSYS_SCRIPT_OBJS):	$(SUBSYS_SCRIPT_SRC) $(CODE_GENERATION)

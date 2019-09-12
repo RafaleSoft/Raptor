@@ -196,9 +196,9 @@ bool CShaderLibrary::glAddToLibrary(const std::string& shader_name,
 		if (program->glLoadProgram(shader_source))
 		{
 			factory_shader fs;
-			fs.class_name = _strdup(class_name.c_str());
+			fs.class_name = strdup(class_name.c_str());
 			fs.shader_fname = NULL;
-			fs.shader_name = _strdup(shader_name.c_str());
+			fs.shader_name = strdup(shader_name.c_str());
 			s_factoryShaders.insert(map<std::string, factory_shader>::value_type(fs.shader_name, fs));
 		}
 

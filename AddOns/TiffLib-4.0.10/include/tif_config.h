@@ -21,7 +21,10 @@
 #define HAVE_SYS_TYPES_H 1
 
 /* Define to 1 if you have the <io.h> header file. */
-#define HAVE_IO_H 1
+//#define HAVE_IO_H 0
+#ifdef LINUX
+	#define HAVE_UNISTD_H 1
+#endif
 
 /* Define to 1 if you have the <search.h> header file. */
 #define HAVE_SEARCH_H 1
@@ -42,13 +45,13 @@
 #define TIFF_INT64_FORMAT "%I64d"
 
 /* Signed 64-bit type */
-#define TIFF_INT64_T signed __int64
+#define TIFF_INT64_T int64_t
 
 /* Unsigned 64-bit type formatter */
 #define TIFF_UINT64_FORMAT "%I64u"
 
 /* Unsigned 64-bit type */
-#define TIFF_UINT64_T unsigned __int64
+#define TIFF_UINT64_T uint64_t
 
 #if _WIN64
 /*

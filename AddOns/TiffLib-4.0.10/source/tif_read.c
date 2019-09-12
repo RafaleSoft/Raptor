@@ -531,9 +531,9 @@ TIFFReadEncodedStrip(TIFF* tif, uint32 strip, void* buf, tmsize_t size)
 
         if (!isFillOrder(tif, td->td_fillorder) &&
             (tif->tif_flags & TIFF_NOBITREV) == 0)
-            TIFFReverseBits(buf,stripsize);
+            TIFFReverseBits((uint8*)buf,stripsize);
 
-        (*tif->tif_postdecode)(tif,buf,stripsize);
+        (*tif->tif_postdecode)(tif,(uint8*)buf,stripsize);
         return (stripsize);
     }
 
@@ -541,9 +541,9 @@ TIFFReadEncodedStrip(TIFF* tif, uint32 strip, void* buf, tmsize_t size)
 		stripsize=size;
 	if (!TIFFFillStrip(tif,strip))
 		return((tmsize_t)(-1));
-	if ((*tif->tif_decodestrip)(tif,buf,stripsize,plane)<=0)
+	if ((*tif->tif_decodestrip)(tif, (uint8*)buf, stripsize, plane) <= 0)
 		return((tmsize_t)(-1));
-	(*tif->tif_postdecode)(tif,buf,stripsize);
+	(*tif->tif_postdecode)(tif, (uint8*)buf, stripsize);
 	return(stripsize);
 }
 
@@ -559,7 +559,7 @@ _TIFFReadEncodedStripAndAllocBuffer(TIFF* tif, uint32 strip,
                                     tmsize_t size_to_read)
 {
     tmsize_t this_stripsize;
-    uint16 plane;
+    uint16 plane = 0;
 
     if( *buf != NULL )
     {
@@ -582,9 +582,9 @@ _TIFFReadEncodedStripAndAllocBuffer(TIFF* tif, uint32 strip,
     }
     _TIFFmemset(*buf, 0, bufsizetoalloc);
 
-    if ((*tif->tif_decodestrip)(tif,*buf,this_stripsize,plane)<=0)
+    if ((*tif->tif_decodestrip)(tif,(uint8*)*buf,this_stripsize,plane)<=0)
             return((tmsize_t)(-1));
-    (*tif->tif_postdecode)(tif,*buf,this_stripsize);
+    (*tif->tif_postdecode)(tif,(uint8*)*buf,this_stripsize);
     return(this_stripsize);
 
 
@@ -1004,9 +1004,9 @@ TIFFReadEncodedTile(TIFF* tif, uint32 tile, void* buf, tmsize_t size)
 
         if (!isFillOrder(tif, td->td_fillorder) &&
             (tif->tif_flags & TIFF_NOBITREV) == 0)
-            TIFFReverseBits(buf,tilesize);
+            TIFFReverseBits((uint8*)buf,tilesize);
 
-        (*tif->tif_postdecode)(tif,buf,tilesize);
+		(*tif->tif_postdecode)(tif, (uint8*)buf, tilesize);
         return (tilesize);
     }
 
@@ -1015,8 +1015,8 @@ TIFFReadEncodedTile(TIFF* tif, uint32 tile, void* buf, tmsize_t size)
 	else if (size > tilesize)
 		size = tilesize;
 	if (TIFFFillTile(tif, tile) && (*tif->tif_decodetile)(tif,
-	    (uint8*) buf, size, (uint16)(tile/td->td_stripsperimage))) {
-		(*tif->tif_postdecode)(tif, (uint8*) buf, size);
+	    (uint8*)buf, size, (uint16)(tile/td->td_stripsperimage))) {
+		(*tif->tif_postdecode)(tif, (uint8*)buf, size);
 		return (size);
 	} else
 		return ((tmsize_t)(-1));

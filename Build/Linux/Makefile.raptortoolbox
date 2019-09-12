@@ -1,66 +1,91 @@
-OUTPUT = Release
-INCDIRS = -I. -I../RaptorCore
-CCCFLAGS =  -DSIMD_NO_ASSEMBLY -DLINUX -DGL_MESA_shader_debug -g
-INCDIR_TIFF = -I../AddOns/TiffLib/include
+###########################################################################
+#                                                                         #
+#  Makefile.raptortoolbox                                                 #
+#                                                                         #
+#    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       #
+#                                                                         #
+#  Copyright 1998-2019 by                                                 #
+#  Fabrice FERRAND.                                                       #
+#                                                                         #
+#  This file is part of the Raptor project, and may only be used,         #
+#  modified, and distributed under the terms of the Raptor project        #
+#  license, LICENSE.  By continuing to use, modify, or distribute         #
+#  this file you indicate that you have read the license and              #
+#  understand and accept it fully.                                        #
+#                                                                         #
+###########################################################################
+
+
+export
+
+OUTPUT = $(RAPTOR_ROOT)/Build/Linux/Release/RaptorToolBox
+CCCFLAGS =  -DSIMD_NO_ASSEMBLY -DLINUX -fPIC -std=c++11 -fopenmp -msse -msse2 -msse3 -mssse3 -msse4.1 -msse4.2 
+SRCDIR = $(RAPTOR_ROOT)/RaptorToolBox
+INCDIRS = -I$(SRCDIR) -I$(RAPTOR_ROOT)/Redist/Include -I$(VULKAN_INCLUDE_PATH) -I$(JPEGLIB_INCLUDE_PATH) -I$(TIFFLIB_INCLUDE_PATH) -I$(PNGLIB_INCLUDE_PATH)
 
 # Remove MESA options before all GL extensions are included.
-CCCFLAGS += -DGL_MESA_shader_object
+CCCFLAGS += -DGL_MESA_shader_object  -DGL_MESA_shader_debug
+CCCFLAGS += -DMAX_PATH=PATH_MAX -DGLX_EXTENSIONS
 
-all:	$(OUTPUT)/libraptortoolbox.a $(OUTPUT)/libraptortoolbox.so
+SO = $(OUTPUT)/libRaptorToolBox.so.$(RAPTOR_VERSION)
+LIB = $(OUTPUT)/libRaptorToolBox.a
+
+
+SRC_BASE = \
+	$(SRCDIR)/Controllers.cpp \
+	$(SRCDIR)/Imaging.cpp \
+	$(SRCDIR)/Loaders.cpp \
+	$(SRCDIR)/Merge.cpp \
+	$(SRCDIR)/Renders.cpp \
+	$(SRCDIR)/BasicObjects.cpp
+
+SRC_IMAGING = \
+	$(SRCDIR)/Imaging/BMPImaging.cpp \
+	$(SRCDIR)/Imaging/ICOImaging.cpp \
+	$(SRCDIR)/Imaging/TGAImaging.cpp \
+	$(SRCDIR)/Imaging/JPGImaging.cpp \
+	$(SRCDIR)/Imaging/PNGImaging.cpp \
+	$(SRCDIR)/Imaging/TIFFImaging.cpp
+
+SRC_LOADERS = \
+	$(SRCDIR)/Loaders/3DSfile.cpp \
+	$(SRCDIR)/Loaders/OBJFile.cpp \
+	$(SRCDIR)/Loaders/OBJScript_lex.cpp \
+	$(SRCDIR)/Loaders/OBJScript_yacc.cpp \
+	$(SRCDIR)/Loaders/OBJScript_tree.cpp
+
+SRC_FILTERS = \
+	$(SRCDIR)/Filters/BlurFilter.cpp \
+	$(SRCDIR)/Filters/ColorControlFilter.cpp \
+	$(SRCDIR)/Filters/DOFFilter.cpp \
+	$(SRCDIR)/Filters/HDRFilter.cpp \
+	$(SRCDIR)/Filters/MagnifierFilter.cpp \
+	$(SRCDIR)/Filters/MBFilter.cpp
+
+SRC_CONTROLLERS = \
+	$(SRCDIR)/Controllers/ViewPointController.cpp
+
+OBJ_BASE = $(SRC_BASE:$(SRCDIR)/%.cpp=$(OUTPUT)/%.o)
+OBJ_IMAGING = $(SRC_IMAGING:$(SRCDIR)/Imaging%.cpp=$(OUTPUT)%.o)
+OBJ_LOADERS = $(SRC_LOADERS:$(SRCDIR)/Loaders%.cpp=$(OUTPUT)%.o)
+OBJ_FILTERS = $(SRC_FILTERS:$(SRCDIR)/Filters%.cpp=$(OUTPUT)%.o)
+OBJ_CONTROLLERS = $(SRC_CONTROLLERS:$(SRCDIR)/Controllers%.cpp=$(OUTPUT)%.o)
+ALL_OBJS = $(OBJ_BASE) $(OBJ_IMAGING) $(OBJ_FILTERS) $(OBJ_LOADERS) $(OBJ_CONTROLLERS)
+
+	
+all:    $(LIB) $(SO)
 
 clean:
-	rm -f $(OUTPUT)/*.o $(OUTPUT)/libraptortoolbox.*
 	rm -rf $(OUTPUT)
 	mkdir -p $(OUTPUT)
 
-SRC_BASE = \
-	Controllers.cpp \
-	Imaging.cpp \
-	Loaders.cpp \
-	Merge.cpp \
-	Renders.cpp \
-	BasicObjects.cpp
+$(LIB):  $(ALL_OBJS)
+	ar -qcv $(LIB) $(ALL_OBJS)
+	cp $(LIB) $(RAPTOR_ROOT)/Redist/Lib
 
-SRC_IMAGING = \
-	Imaging/BMPImaging.cpp \
-	Imaging/ICOImaging.cpp \
-	Imaging/TGAImaging.cpp \
-	Imaging/JPGImaging.cpp \
-	Imaging/PNGImaging.cpp \
-	Imaging/TIFFImaging.cpp
-
-SRC_LOADERS = \
-	Loaders/3DSfile.cpp \
-	Loaders/OBJFile.cpp \
-	Loaders/OBJScript_lex.cpp \
-	Loaders/OBJScript_yacc.cpp \
-	Loaders/OBJScript_tree.cpp
-
-SRC_FILTERS = \
-	Filters/BlurFilter.cpp \
-	Filters/ColorControlFilter.cpp \
-	Filters/DOFFilter.cpp \
-	Filters/HDRFilter.cpp \
-	Filters/MagnifierFilter.cpp \
-	Filters/MBFilter.cpp
-
-SRC_CONTROLLERS = \
-	Controllers/ViewPointController.cpp
-
-OBJ_BASE = $(SRC_BASE:%.cpp=$(OUTPUT)/%.o)
-OBJ_IMAGING = $(SRC_IMAGING:Imaging%.cpp=$(OUTPUT)%.o)
-OBJ_LOADERS = $(SRC_LOADERS:Loaders%.cpp=$(OUTPUT)%.o)
-OBJ_FILTERS = $(SRC_FILTERS:Filters%.cpp=$(OUTPUT)%.o)
-OBJ_CONTROLLERS = $(SRC_CONTROLLERS:Controllers%.cpp=$(OUTPUT)%.o)
-ALL_OBJS = $(OBJ_BASE) $(OBJ_IMAGING) $(OBJ_FILTERS) $(OBJ_LOADERS) $(OBJ_CONTROLLERS)
-
-$(OUTPUT)/libraptortoolbox.a:  $(ALL_OBJS)
-	ar r $(OUTPUT)/libraptortoolbox.a $(ALL_OBJS)
-	cp $(OUTPUT)/libraptortoolbox.a $(RAPTOR_ROOT)/Redist/Lib
-
-$(OUTPUT)/libraptortoolbox.so:  $(ALL_OBJS)
-	ld -shared $(ALL_OBJS) -o $(OUTPUT)/libraptortoolbox.so 
-	cp $(OUTPUT)/libraptortoolbox.so $(RAPTOR_ROOT)/Redist/Bin
+$(SO):  $(ALL_OBJS)
+	g++ -o $(SO) $(LDFLAGS) $(ALL_OBJS)
+	cp $(SO) $(RAPTOR_ROOT)/Redist/Bin
 
 $(OBJ_BASE): $(SRC_BASE)
 	g++ $(CCCFLAGS) $(INCDIRS) -c $(<D)/$(*F).cpp  -o $(OUTPUT)/$(@F)
@@ -77,6 +102,6 @@ $(OBJ_IMAGING): $(SRC_IMAGING)
 $(OBJ_CONTROLLERS): $(SRC_CONTROLLERS)
 	g++ $(CCCFLAGS) $(INCDIRS) -c $(<D)/$(*F).cpp  -o $(OUTPUT)/$(@F)
 
-Loaders/OBJScript_lex.cpp Loaders/OBJScript_yacc.cpp Loaders/OBJScript_tree.cpp : Loaders/OBJ.lex
-	cd Loaders; $(RAPTOR_ROOT)/Redist/Bin/Microlex -f OBJ.lex -o OBJScript -v; cd ..
+$(SRC_LOADERS) : Loaders/OBJ.lex
+	(cd $(SRCDIR)/Loaders && $(RAPTOR_ROOT)/Redist/Bin/Microlex -f OBJ.lex -o OBJScript -v)
 

@@ -25,7 +25,7 @@ INCDIRS = -I$(SRCDIR) -I$(VULKAN_INCLUDE_PATH) -I$(REDIST)/include -I/usr/includ
 LDFLAGS = -Bdynamic -shared -lstdc++
 
 SO = $(OUTPUT)/libBuilderNative.so.$(RAPTOR_VERSION)
-LIB = $(OUTPUT)/libBuilderNative.lib
+LIB = $(OUTPUT)/libBuilderNative.a
 
 all:	$(LIB) $(SO)
 

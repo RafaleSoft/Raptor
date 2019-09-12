@@ -50,4 +50,8 @@ typedef unsigned char boolean;
 
 #endif /* JPEG_CJPEG_DJPEG */
 
-#define TEMP_DIRECTORY "C:\\Temp\\"
+#if defined(WIN32)
+	#define TEMP_DIRECTORY "C:\\Temp\\"
+#elif defined(LINUX)
+	#define TEMP_DIRECTORY "/tmp/"
+#endif

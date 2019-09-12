@@ -25,7 +25,7 @@ INCDIRS = -I$(SRCDIR)
 LDFLAGS = -Bdynamic -shared -lstdc++
 
 SO = $(OUTPUT)/libsimd.so.$(RAPTOR_VERSION)
-LIB = $(OUTPUT)/libsimd.lib
+LIB = $(OUTPUT)/libsimd.a
 
 all:	$(LIB) $(SO)
 

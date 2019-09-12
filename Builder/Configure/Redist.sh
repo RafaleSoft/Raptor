@@ -74,7 +74,7 @@ echo "		GLHierarchy:"
 cp ./RaptorCore/GLHierarchy/3DSet.h Redist/Include/GLHierarchy
 cp ./RaptorCore/GLHierarchy/BumppedGeometry.h Redist/Include/GLHierarchy
 cp ./RaptorCore/GLHierarchy/FragmentProgram.h Redist/Include/GLHierarchy
-cp ./RaptorCore/GLHierarchy/FragmentShader.h Redist/Include/GLHierarchy
+cp ./RaptorCore/GLHierarchy/FragmentProgram_old.h Redist/Include/GLHierarchy
 cp ./RaptorCore/GLHierarchy/GLFont.h Redist/Include/GLHierarchy
 cp ./RaptorCore/GLHierarchy/GL2DFont.h Redist/Include/GLHierarchy
 cp ./RaptorCore/GLHierarchy/GL2DTextureFont.h Redist/Include/GLHierarchy
@@ -88,6 +88,8 @@ cp ./RaptorCore/GLHierarchy/GeometryEditor.h Redist/Include/GLHierarchy
 cp ./RaptorCore/GLHierarchy/GeometryPrimitive.h Redist/Include/GLHierarchy
 cp ./RaptorCore/GLHierarchy/GeometryProgram.h Redist/Include/GLHierarchy
 cp ./RaptorCore/GLHierarchy/Light.h Redist/Include/GLHierarchy
+cp ./RaptorCore/GLHierarchy/IRenderingProperties.h Redist/Include/GLHierarchy
+cp ./RaptorCore/GLHierarchy/ITextureObject.h Redist/Include/GLHierarchy
 cp ./RaptorCore/GLHierarchy/LightGlow.h Redist/Include/GLHierarchy
 cp ./RaptorCore/GLHierarchy/LightObserver.h Redist/Include/GLHierarchy
 cp ./RaptorCore/GLHierarchy/Material.h Redist/Include/GLHierarchy
@@ -105,7 +107,6 @@ cp ./RaptorCore/GLHierarchy/PerlinNoise.h Redist/Include/GLHierarchy
 cp ./RaptorCore/GLHierarchy/Persistence.h Redist/Include/GLHierarchy
 cp ./RaptorCore/GLHierarchy/ProgramParameters.h Redist/Include/GLHierarchy
 cp ./RaptorCore/GLHierarchy/Projector.h Redist/Include/GLHierarchy
-cp ./RaptorCore/GLHierarchy/IRenderingProperties.h Redist/Include/GLHierarchy
 cp ./RaptorCore/GLHierarchy/ShadedGeometry.h Redist/Include/GLHierarchy
 cp ./RaptorCore/GLHierarchy/Shader.h Redist/Include/GLHierarchy
 cp ./RaptorCore/GLHierarchy/ShaderProgram.h Redist/Include/GLHierarchy
@@ -118,7 +119,7 @@ cp ./RaptorCore/GLHierarchy/TextureSet.h Redist/Include/GLHierarchy
 cp ./RaptorCore/GLHierarchy/TextureUnitSetup.h Redist/Include/GLHierarchy
 cp ./RaptorCore/GLHierarchy/UnifiedProgram.h Redist/Include/GLHierarchy
 cp ./RaptorCore/GLHierarchy/VertexProgram.h Redist/Include/GLHierarchy
-cp ./RaptorCore/GLHierarchy/VertexShader.h Redist/Include/GLHierarchy
+cp ./RaptorCore/GLHierarchy/VertexProgram_old.h Redist/Include/GLHierarchy
 cp ./RaptorCore/GLHierarchy/VulkanShaderStage.h Redist/Include/GLHierarchy
 
 echo "		SSE_Engine:"
@@ -130,6 +131,7 @@ echo "		System:"
 cp ./RaptorCore/System/CGLTypes.h Redist/Include/System
 cp ./RaptorCore/System/Color.h Redist/Include/System
 cp ./RaptorCore/System/Glext.h Redist/Include/System
+cp ./RaptorCore/System/Image.h Redist/Include/System
 cp ./RaptorCore/System/Memory.h Redist/Include/System
 cp ./RaptorCore/System/Raptor.h Redist/Include/System
 cp ./RaptorCore/System/RaptorApplication.h Redist/Include/System
@@ -193,30 +195,30 @@ cp ./RaptorNetwork/ClientSocket.h Redist/Include/RaptorNetwork
 echo "	Copying sub-system files ..."
 echo "		Simd files ..."
 
-cp ./SIMD/BVector.h Redist/Include/Subsys/SimdLib
-cp ./SIMD/GenericAlignedMatrix.h Redist/Include/Subsys/SimdLib
-cp ./SIMD/GenericAlignedVector.h Redist/Include/Subsys/SimdLib
-cp ./SIMD/GenericMatrix.h Redist/Include/Subsys/SimdLib
-cp ./SIMD/GenericVector.h Redist/Include/Subsys/SimdLib
-cp ./SIMD/MMXBVector.h Redist/Include/Subsys/SimdLib
-cp ./SIMD/MMXWVector.h Redist/Include/Subsys/SimdLib
-cp ./SIMD/MMXWMatrix.h Redist/Include/Subsys/SimdLib
-cp ./SIMD/SIMD.H Redist/Include/Subsys/SimdLib
-cp ./SIMD/SSEFMatrix.h Redist/Include/Subsys/SimdLib
-cp ./SIMD/SSEFVector.h Redist/Include/Subsys/SimdLib
-cp ./SIMD/WVector.h Redist/Include/Subsys/SimdLib
-cp ./SIMD/SIMDRegister.h Redist/Include/Subsys/SimdLib
-cp ./SIMD/Registers.h Redist/Include/Subsys/SimdLib
-cp ./SIMD/simdMacros.h Redist/Include/Subsys/SimdLib
-cp ./SIMD/Vector4f.h Redist/Include/Subsys/SimdLib
-cp ./SIMD/Matrix4f.h Redist/Include/Subsys/SimdLib
+cp ./SIMD/BVector.h Redist/Include/SimdLib
+cp ./SIMD/GenericAlignedMatrix.h Redist/Include/SimdLib
+cp ./SIMD/GenericAlignedVector.h Redist/Include/SimdLib
+cp ./SIMD/GenericMatrix.h Redist/Include/SimdLib
+cp ./SIMD/GenericVector.h Redist/Include/SimdLib
+cp ./SIMD/MMXBVector.h Redist/Include/SimdLib
+cp ./SIMD/MMXWVector.h Redist/Include/SimdLib
+cp ./SIMD/MMXWMatrix.h Redist/Include/SimdLib
+cp ./SIMD/SIMD.H Redist/Include/SimdLib
+cp ./SIMD/SSEFMatrix.h Redist/Include/SimdLib
+cp ./SIMD/SSEFVector.h Redist/Include/SimdLib
+cp ./SIMD/WVector.h Redist/Include/SimdLib
+cp ./SIMD/SIMDRegister.h Redist/Include/SimdLib
+cp ./SIMD/Registers.h Redist/Include/SimdLib
+cp ./SIMD/simdMacros.h Redist/Include/SimdLib
+cp ./SIMD/Vector4f.h Redist/Include/SimdLib
+cp ./SIMD/Matrix4f.h Redist/Include/SimdLib
 
-cp ./SIMD/SIMDRegister.cxx Redist/Include/Subsys/SimdLib
-cp ./SIMD/GenericVector.cxx Redist/Include/Subsys/SimdLib
-cp ./SIMD/GenericAlignedVector.cxx Redist/Include/Subsys/SimdLib
-cp ./SIMD/GenericMatrix.cxx Redist/Include/Subsys/SimdLib
-cp ./SIMD/Vector4f.cxx Redist/Include/Subsys/SimdLib
-cp ./SIMD/Matrix4f.cxx Redist/Include/Subsys/SimdLib
+cp ./SIMD/SIMDRegister.cxx Redist/Include/SimdLib
+cp ./SIMD/GenericVector.cxx Redist/Include/SimdLib
+cp ./SIMD/GenericAlignedVector.cxx Redist/Include/SimdLib
+cp ./SIMD/GenericMatrix.cxx Redist/Include/SimdLib
+cp ./SIMD/Vector4f.cxx Redist/Include/SimdLib
+cp ./SIMD/Matrix4f.cxx Redist/Include/SimdLib
 
 echo "		Copying help files ..."
 

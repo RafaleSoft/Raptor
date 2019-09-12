@@ -25,7 +25,7 @@ INCDIRS = -I$(SRCDIR)
 LDFLAGS = -Bdynamic -shared -lstdc++
 
 SO = $(OUTPUT)/libRaptorData.so.$(RAPTOR_VERSION)
-LIB = $(OUTPUT)/libRaptorData.lib
+LIB = $(OUTPUT)/libRaptorData.a
 
 all:	$(LIB) $(SO) $(REDIST)/Bin/RaptorData.pck
 

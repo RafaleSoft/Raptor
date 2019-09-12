@@ -393,7 +393,7 @@ unsigned short	* const	CGeometryAllocator::allocateIndexes(uint64_t size)
 		currentAddress = (unsigned short*)relocatedFaceIndexes->getRelocationOffset();
 
 	//	Address should be aligned on a 16byte boundary
-	unsigned short* address = (unsigned short*)(((unsigned int)(currentAddress) + 0x0f) & 0xfffffff0);
+	unsigned short* address = (unsigned short*)(((uint64_t)(currentAddress)+0x0f) & ~0x0f);
 	indexBlocs[address] = sz;
 
 	return address;
@@ -486,12 +486,11 @@ float * const CGeometryAllocator::allocateVertices(uint64_t size)
 		currentAddress = (float*)relocatedVertices->getRelocationOffset();
 
 	//	Address should be aligned on a 16byte boundary
-	float* address = (float*)(((unsigned int)(currentAddress) + 0x0f) & 0xfffffff0);
+	float* address = (float*)(((uint64_t)(currentAddress)+0x0f) & ~0x0f);
 	vertexBlocs[address] = sz;
 
 	return address;
 }
-
 
 bool CGeometryAllocator::releaseVertices(float *index)
 {

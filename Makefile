@@ -72,14 +72,24 @@ all: \
 	microlex \
 	buildernative \
 	builder \
+	addons \
 	raptordatapackager \
 	raptordata \
 	openexr \
-	raptorcore
+	raptorcore \
+	raptortoolbox
 
-raptorcore: builder simd microlex raptordata $(REDIST)/Lib/libRaptorCore.lib $(REDIST)/Bin/libRaptorCore.so.$(RAPTOR_VERSION)
+raptortoolbox: builder raptorcore raptordata $(REDIST)/Lib/libRaptorToolBox.a $(REDIST)/Bin/libRaptorToolBox.so.$(RAPTOR_VERSION)
 
-raptordata:	builder raptordatapackager $(REDIST)/Bin/RaptorData.pck $(REDIST)/Lib/libRaptorData.lib $(REDIST)/Bin/libRaptorData.so.$(RAPTOR_VERSION)
+addons: jpeglib tifflib
+
+jpeglib: $(REDIST)/Lib/libjpeg.a $(REDIST)/Bin/libjpeg.so.$(RAPTOR_VERSION)
+
+tifflib: $(REDIST)/Lib/libtiff.a $(REDIST)/Bin/libtiff.so.$(RAPTOR_VERSION)
+
+raptorcore: builder simd microlex raptordata $(REDIST)/Lib/libRaptorCore.a $(REDIST)/Bin/libRaptorCore.so.$(RAPTOR_VERSION)
+
+raptordata:	builder raptordatapackager $(REDIST)/Bin/RaptorData.pck $(REDIST)/Lib/libRaptorData.a $(REDIST)/Bin/libRaptorData.so.$(RAPTOR_VERSION)
 
 openexr: half IlmImf
 
@@ -101,11 +111,11 @@ raptordatapackager:	builder $(REDIST)/Bin/RaptorDataPackager
 
 builder:	configure simd microlex buildernative $(REDIST)/Bin/Builder
 
-buildernative:	$(REDIST)/Lib/libBuilderNative.lib $(REDIST)/Bin/libBuilderNative.so.$(RAPTOR_VERSION)
+buildernative:	$(REDIST)/Lib/libBuilderNative.a $(REDIST)/Bin/libBuilderNative.so.$(RAPTOR_VERSION)
 
 microlex:	$(REDIST)/Bin/Microlex
 
-simd:	$(REDIST)/Lib/libsimd.lib $(REDIST)/Bin/libsimd.so.$(RAPTOR_VERSION)
+simd:	$(REDIST)/Lib/libsimd.a $(REDIST)/Bin/libsimd.so.$(RAPTOR_VERSION)
 
 configure:	Builder/Configure/Redist.sh
 	@echo "Configuring Raptor projects ..."
@@ -117,12 +127,27 @@ configure:	Builder/Configure/Redist.sh
 #
 # Projects building rules
 #
-$(REDIST)/Lib/libRaptorCore.lib $(REDIST)/Bin/libRaptorCore.so.$(RAPTOR_VERSION):
+$(REDIST)/Lib/libRaptorToolBox.a $(REDIST)/Bin/libRaptorToolBox.so.$(RAPTOR_VERSION):
+	@echo "Building RaptorToolBox project ..."
+	make -C Build/Linux -f Makefile.raptortoolbox all
+	@echo "RaptorToolBox project done."
+
+$(REDIST)/Lib/libtiff.a $(REDIST)/Bin/libtiff.so.$(RAPTOR_VERSION):
+	@echo "Building libtiff project ..."
+	make -C Build/Linux -f Makefile.tifflib all
+	@echo "libjpeg libtiff done."
+
+$(REDIST)/Lib/libjpeg.a $(REDIST)/Bin/libjpeg.so.$(RAPTOR_VERSION):
+	@echo "Building libjpeg project ..."
+	make -C Build/Linux -f Makefile.jpeglib all
+	@echo "libjpeg project done."
+		
+$(REDIST)/Lib/libRaptorCore.a $(REDIST)/Bin/libRaptorCore.so.$(RAPTOR_VERSION):
 	@echo "Building RaptorCore project ..."
 	make -C Build/Linux -f Makefile.raptorcore all
 	@echo "RaptorCore project done."
 
-$(REDIST)/Lib/libRaptorData.lib $(REDIST)/Bin/libRaptorData.so.$(RAPTOR_VERSION) $(REDIST)/Bin/RaptorData.pck:
+$(REDIST)/Lib/libRaptorData.a $(REDIST)/Bin/libRaptorData.so.$(RAPTOR_VERSION) $(REDIST)/Bin/RaptorData.pck:
 	@echo "Building RaptorData project ..."
 	make -C Build/Linux -f Makefile.raptordata all
 	@echo "RaptorData project done."
@@ -137,7 +162,7 @@ $(REDIST)/Bin/Builder:	$(REDIST)/Bin/libBuilderNative.so.$(RAPTOR_VERSION)
 	make -C Build/Linux -f Makefile.builder all
 	@echo "Builder project done."
 
-$(REDIST)/Lib/libBuilderNative.lib $(REDIST)/Bin/libBuilderNative.so.$(RAPTOR_VERSION):
+$(REDIST)/Lib/libBuilderNative.a $(REDIST)/Bin/libBuilderNative.so.$(RAPTOR_VERSION):
 	@echo "Building BuilderNative project ..."
 	make -C Build/Linux -f Makefile.BuilderNative all
 	@echo "BuilderNative project done."
@@ -147,7 +172,7 @@ $(REDIST)/Bin/Microlex:
 	make -C Build/Linux -f Makefile.microlex all
 	@echo "Microlex project done."
 
-$(REDIST)/Lib/libsimd.lib $(REDIST)/Bin/libsimd.so.$(RAPTOR_VERSION):
+$(REDIST)/Lib/libsimd.a $(REDIST)/Bin/libsimd.so.$(RAPTOR_VERSION):
 	@echo "Building simd project ..."
 	make -C Build/Linux -f Makefile.simd all
 	@echo "simd project done."
@@ -208,6 +233,9 @@ $(REDIST)/Bin/dwaLookups:	$(REDIST)/Bin/libHalf.so.$(RAPTOR_VERSION) $(REDIST)/B
 #
 clean:
 	@echo "Cleaning intermediate build files..."
+	make -C Build/Linux -f Makefile.raptortoolbox clean
+	make -C Build/Linux -f Makefile.tifflib clean
+	make -C Build/Linux -f Makefile.jpeglib clean
 	make -C Build/Linux -f Makefile.raptorcore clean
 	make -C Build/Linux -f Makefile.raptordata clean
 	make -C Build/Linux -f Makefile.raptordatapackager clean

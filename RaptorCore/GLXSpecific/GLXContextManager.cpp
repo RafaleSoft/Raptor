@@ -8,19 +8,20 @@
 #if !defined(AFX_GLXCONTEXTMANAGER_H__B6CE3CDF_D7E4_4B9C_89BF_5E934062BC97__INCLUDED_)
     #include "GLXContextManager.h"
 #endif
-
 #if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
 	#include "System/Raptor.h"
+#endif
+#if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
+    #include "System/RaptorErrorManager.h"
 #endif
 #if !defined(AFX_PERSISTENCE_H__5561BA28_831B_11D3_9142_EEB51CEBBDB0__INCLUDED_)
 	#include "GLHierarchy/Persistence.h"
 #endif
-
-#if !defined(AFX_RAPTOREXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
-	#include "System/RaptorExtensions.h"
+#if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
+	#include "System/RaptorGLExtensions.h"
 #endif
-#ifndef __GLOBAL_H__
-	#include "System/Global.h"
+#if !defined(AFX_OPENGL_H__6C8840CA_BEFA_41DE_9879_5777FBBA7147__INCLUDED_)
+	#include "Subsys/OpenGL/RaptorOpenGL.h"
 #endif
 #if !defined(AFX_GLXVIEW_H__4B65A453_8F4F_4F97_835F_23EE19B5657E__INCLUDED_)
     #include "GLXView.h"
@@ -122,10 +123,8 @@ RAPTOR_NAMESPACE
 //////////////////////////////////////////////////////////////////////
 
 CGLXContextManager::CGLXContextManager():
-	pExtensions(NULL),pExtensionsTmp(NULL),pGlobalDisplay(NULL)
+	pGlobalDisplay(NULL)
 {
-	pExtensions = new CRaptorExtensions();
-
 	glGlobalRC = NULL;
 	glGlobalExtendedRC = NULL;
 
@@ -153,6 +152,7 @@ CGLXContextManager::CGLXContextManager():
 		pContext[i].display = 0;
 		pContext[i].visual = 0;
 		pContext[i].OGLContext = 0;
+		pContext[i].pExtensions = 0;
 	}
 
     pGlobalDisplay = XOpenDisplay(NULL);
@@ -161,34 +161,32 @@ CGLXContextManager::CGLXContextManager():
 	int dummy;
 	if ((pGlobalDisplay == NULL) || !glXQueryExtension(pGlobalDisplay, &dummy, &dummy))
 	{
-		Raptor::GetErrorManager()->generateRaptorError(	Global::COpenGLClassID::GetClassId(),
-                                                            CRaptorErrorManager::RAPTOR_FATAL,
-										                    "OpenGL GLX Extensions are not supported or display is invalid!");
+		Raptor::GetErrorManager()->generateRaptorError(	COpenGL::COpenGLClassID::GetClassId(),
+														CRaptorErrorManager::RAPTOR_FATAL,
+														"OpenGL GLX Extensions are not supported or display is invalid!");
 	}
 }
 
 CGLXContextManager::~CGLXContextManager()
 {
-	delete pExtensions;
+    //	delete pExtensions;
+    for (unsigned int i=0;i<MAX_CONTEXT;i++)
+	{
+        if (pContext[i].pExtensions != NULL)
+            delete pContext[i].pExtensions;
+	}
+    delete [] pContext;
 }
 
-const CRaptorExtensions *const CGLXContextManager::glGetExtensions(void)
+const CRaptorGLExtensions *const CGLXContextManager::glGetExtensions(void)
 {
-	return pExtensions;
+	if ((m_currentGLContext >= 0) && (m_currentGLContext < MAX_CONTEXT))
+		return pContext[m_currentGLContext].pExtensions;
+    else
+   //! If the current context is not valid, try at least to return the first context,
+   //!  which should be initialized by Raptor.  
+	    return pContext[0].pExtensions;
 }
-
-void CGLXContextManager::glInitExtensions(void)
-{
-	pExtensions->glInitExtensions();
-#if defined(WGL_ARB_extensions_string)
-	HDC hdc = wglGetCurrentDC();
-	if ((wgl_extensions.IsEmpty()) && (pExtensions->wglGetExtensionsStringARB))
-		wgl_extensions = pExtensions->wglGetExtensionsStringARB(hdc);
-#endif
-
-    CATCH_GL_ERROR
-}
-
 
 RAPTOR_HANDLE CGLXContextManager::getDevice(RENDERING_CONTEXT_ID ctx) const
 {
@@ -197,8 +195,8 @@ RAPTOR_HANDLE CGLXContextManager::getDevice(RENDERING_CONTEXT_ID ctx) const
     if ((ctx >= 0) && (ctx < MAX_CONTEXT))
 	{
 		context_t& context = pContext[ctx];
-        device.handle = (unsigned int)context.display;
-        device.hClass = DEVICE_CONTEXT_CLASS;
+        device.ptr(context.display);
+        device.hClass(DEVICE_CONTEXT_CLASS);
     }
 
     return device;
@@ -207,15 +205,15 @@ RAPTOR_HANDLE CGLXContextManager::getDevice(RENDERING_CONTEXT_ID ctx) const
 CContextManager::RENDERING_CONTEXT_ID CGLXContextManager::getContext(RAPTOR_HANDLE device) const
 {
     RENDERING_CONTEXT_ID ctx = -1;
-    if (device.handle == 0)
+    if (device.handle() == 0)
         return ctx;
 
     for (unsigned int i=0;i<MAX_CONTEXT;i++)
     {
         context_t& context = pContext[i];
-        if ((device.hClass == WINDOW_CLASS) && (context.window == (Window)(device.handle)))
+        if ((device.hClass() == WINDOW_CLASS) && (device.handle() == context.window))
             ctx = i;
-        else if (((unsigned int)context.OGLContext) == device.handle)
+        else if (device.ptr<void>() == context.OGLContext)
             ctx = i;
     }
 
@@ -227,20 +225,20 @@ void CGLXContextManager::glMakeCurrentContext(const RAPTOR_HANDLE& device,RENDER
 	if ((ctx >= 0) && (ctx < MAX_CONTEXT))
 	{
 		context_t& context = pContext[ctx];
-        if (context.window != 0)
+        if (0 != context.window)
         {
-            if (device.handle != 0)
+            if (0 != device.handle())
             {
-                if (device.hClass == WINDOW_CLASS)
+                if (WINDOW_CLASS == device.hClass())
                 {
-                    CGLXView* wnd = (CGLXView*)(device.handle);
+                    CGLXView* wnd = device.ptr<CGLXView>();
                     Display *display = context.display;
-                    Window window = (Window)(wnd->getWindow().handle);
+                    Window window = (Window)(wnd->getWindow().handle());
                     glXMakeCurrent(display, window, context.OGLContext);
                 }
                 else
                 {
-                    Display* display = (Display*)(device.handle);
+                    Display* display = device.ptr<Display>();
                     glXMakeCurrent(display, context.window, context.OGLContext);
                 }
             }
@@ -256,7 +254,7 @@ void CGLXContextManager::glMakeCurrentContext(const RAPTOR_HANDLE& device,RENDER
 	}
 	else
 	{
-        //glXMakeCurrent(context.display, context.window, NULL);
+        //glXMakeCurrent(context.display, (Window)0, NULL);
 		m_currentContext = -1;
 	}
 }
@@ -270,6 +268,10 @@ void CGLXContextManager::glDestroyContext(RENDERING_CONTEXT_ID ctx)
         glXDestroyContext( context.display, context.OGLContext );
 
 		context.OGLContext = NULL;
+		
+		if (context.pExtensions != NULL)
+		    delete context.pExtensions;
+		context.pExtensions = NULL;
 	}
 }
 
@@ -342,8 +344,6 @@ RAPTOR_HANDLE CGLXContextManager::glCreateWindow(const CRaptorDisplayConfig& pcs
     int top = pcs.y;
     int left = pcs.x;
 
-	Raptor::SetDefaultDisplayConfig(pcs);
-
     if ((width <0) || (height <0))
     {
         width = 1;
@@ -353,14 +353,14 @@ RAPTOR_HANDLE CGLXContextManager::glCreateWindow(const CRaptorDisplayConfig& pcs
     }
 
 	RAPTOR_HANDLE device;
-	device.handle = (unsigned int)(pGlobalDisplay);
+	device.ptr(pGlobalDisplay);
 
 	RENDERING_CONTEXT_ID id;
     bool destroyDisplay = (pDisplay == NULL);
     
-    if ((pcs.display_mode & CGL_GENERIC) == CGL_GENERIC)
+    if (pcs.acceleration == CRaptorDisplayConfig::GL_ACCELERATION::GENERIC)
     {
-        id = glCreateContext(device,pcs.display_mode);
+        id = glCreateContext(device,pcs);
         pDisplay = NULL;
 		ctx = id;
     }
@@ -369,11 +369,11 @@ RAPTOR_HANDLE CGLXContextManager::glCreateWindow(const CRaptorDisplayConfig& pcs
         if (destroyDisplay)
             pDisplay = Raptor::glCreateDisplay(pcs);
         id = 0;
-        if (!pDisplay->glBindDisplay(device))
+        if (!pDisplay->glvkBindDisplay(device))
             id = -1;
         else
             id = m_currentContext;
-        if (!pDisplay->glUnBindDisplay())
+        if (!pDisplay->glvkUnBindDisplay())
             id = -1;
     }
 
@@ -401,16 +401,15 @@ RAPTOR_HANDLE CGLXContextManager::glCreateWindow(const CRaptorDisplayConfig& pcs
 
         pContext[id].window = window;
         glMakeCurrentContext(device, id);
-	    glInitExtensions();
 	    glMakeCurrentContext(device, -1);
     
         CGLXView *w = new CGLXView();
-        w->m_wnd.handle =  (unsigned int)(window);
-        w->m_wnd.hClass = WINDOW_CLASS;
+        w->m_wnd.handle(window);
+        w->m_wnd.hClass(WINDOW_CLASS);
         w->m_pDisplay = pDisplay;
 
-        wnd.handle = (unsigned int)(w);
-        wnd.hClass = WINDOW_CLASS;
+        wnd.ptr(w);
+        wnd.hClass(WINDOW_CLASS);
 	}
     else
     {
@@ -420,8 +419,8 @@ RAPTOR_HANDLE CGLXContextManager::glCreateWindow(const CRaptorDisplayConfig& pcs
             pDisplay = NULL;
         }
 
-        wnd.handle = (unsigned int)(0);
-        wnd.hClass = WINDOW_CLASS;
+        wnd.handle(0);
+        wnd.hClass(WINDOW_CLASS);
     }
 
 	return wnd;
@@ -435,9 +434,9 @@ CContextManager::RENDERING_CONTEXT_ID CGLXContextManager::glCreateContext(const 
 {
 	if (nbContext >= MAX_CONTEXT)
 	{
-		Raptor::GetErrorManager()->generateRaptorError(	Global::COpenGLClassID::GetClassId(),
-                                                            CRaptorErrorManager::RAPTOR_ERROR,
-										                    "Too many Rendering Context created");
+		Raptor::GetErrorManager()->generateRaptorError(	COpenGL::COpenGLClassID::GetClassId(),
+                                                        CRaptorErrorManager::RAPTOR_ERROR,
+										                "Too many Rendering Context created");
 		return -1;
 	}
 
@@ -448,7 +447,7 @@ CContextManager::RENDERING_CONTEXT_ID CGLXContextManager::glCreateContext(const 
 		
     int flags[256];
     int numFlags = 0;
-	int m_mode = displayMode;
+	int m_mode = config.display_mode;
     
     flags[numFlags++] = GLX_RGBA;
     flags[numFlags++] = GLX_USE_GL;
@@ -465,20 +464,23 @@ CContextManager::RENDERING_CONTEXT_ID CGLXContextManager::glCreateContext(const 
     }
 
     
-	if (m_mode & CGL_DOUBLE) flags[numFlags++] = GLX_DOUBLEBUFFER;
+	if (config.double_buffer)
+		flags[numFlags++] = GLX_DOUBLEBUFFER;
 
-    flags[numFlags++] = GLX_DEPTH_SIZE;
-	if ((m_mode & CGL_DEPTH_32) == CGL_DEPTH_32) flags[numFlags++] = 32;
-	else if (m_mode & CGL_DEPTH_16) flags[numFlags++] = 16;
-	else if (m_mode & CGL_DEPTH_24)	flags[numFlags++] = 24;
-	else flags[numFlags++] = 16;
-
-	if (m_mode & CGL_STENCIL)
+	if (config.depth_buffer)
+	{
+		flags[numFlags++] = GLX_DEPTH_SIZE;
+		if ((m_mode & CGL_DEPTH_32) == CGL_DEPTH_32) flags[numFlags++] = 32;
+		else if (m_mode & CGL_DEPTH_16) flags[numFlags++] = 16;
+		else if (m_mode & CGL_DEPTH_24)	flags[numFlags++] = 24;
+		else flags[numFlags++] = 16;
+	}
+	if (config.stencil_buffer)
     {
         flags[numFlags++] = GLX_STENCIL_SIZE;
         flags[numFlags++] = 8;
     }
-	if (m_mode & CGL_ACCUM)
+	if (config.accumulator_buffer)
     {
         flags[numFlags++] = GLX_ACCUM_RED_SIZE;
         flags[numFlags++] = 8;
@@ -497,40 +499,35 @@ CContextManager::RENDERING_CONTEXT_ID CGLXContextManager::glCreateContext(const 
     flags[numFlags++] = None;
 
     int screen = DefaultScreen(pGlobalDisplay);
-    Display *display = (Display*)(device.handle);
+    Display *display = device.ptr<Display>();
     XVisualInfo *visual = glXChooseVisual(display, screen, flags);
 
 	if ( visual == 0 ) 
 	{
-		Raptor::GetErrorManager()->generateRaptorError(Global::COpenGLClassID::GetClassId(),
-                                                           CRaptorErrorManager::RAPTOR_FATAL,
-                                                           "Raptor Context Manager failed to choose pixel format");
+		Raptor::GetErrorManager()->generateRaptorError(COpenGL::COpenGLClassID::GetClassId(),
+                                                       CRaptorErrorManager::RAPTOR_FATAL,
+                                                       "Raptor Context Manager failed to choose pixel format");
 		return -1; 
 	}
 
 	defaultGLRC = glXCreateContext(display,visual,0,True);
 	if (!defaultGLRC)
 	{
-		Raptor::GetErrorManager()->generateRaptorError(Global::COpenGLClassID::GetClassId(),
-                                                           CRaptorErrorManager::RAPTOR_FATAL,
-                                                           "Raptor Context Manager failed to create OpenGL context");
+		Raptor::GetErrorManager()->generateRaptorError(COpenGL::COpenGLClassID::GetClassId(),
+                                                       CRaptorErrorManager::RAPTOR_FATAL,
+                                                       "Raptor Context Manager failed to create OpenGL context");
 		return -1;
 	}
 
-	if (global)
-	{
-		if (glGlobalRC == NULL)
-			glGlobalRC = defaultGLRC;
-		glhrc = glGlobalRC;
-	}
-	else
-	{	
-		glhrc = defaultGLRC;
-	}
+	glhrc = defaultGLRC;
 
-	//glXMakeCurrent(pGlobalDisplay, glhrc);
-	//glInitExtensions();
-	//glXMakeCurrent(pGlobalDisplay, NULL);
+
+	glXMakeCurrent(pGlobalDisplay, (Window)0, glhrc);
+	glXMakeCurrent(pGlobalDisplay, (Window)0, NULL);
+	
+	std::string extensions = (const char*)glGetString(GL_EXTENSIONS);
+	CRaptorGLExtensions *pExtensions = new CRaptorGLExtensions(extensions);
+	pExtensions->glInitExtensions();
 
 	unsigned int pos = 0;
 	while ((pos < nbContext) && (pContext[pos].OGLContext != NULL))
@@ -540,6 +537,7 @@ CContextManager::RENDERING_CONTEXT_ID CGLXContextManager::glCreateContext(const 
 	pContext[pos].display = display;
 	pContext[pos].window = (Window)0;
     pContext[pos].visual = visual;
+	pContext[pos].pExtensions = pExtensions;
 	nbContext++;
 
 	return pos;
@@ -558,13 +556,13 @@ CContextManager::RENDERING_CONTEXT_ID  CGLXContextManager::glCreateExtendedConte
 {
 	if (nbContext >= MAX_CONTEXT)
 	{
-		Raptor::GetErrorManager()->generateRaptorError(Global::COpenGLClassID::GetClassId(),
-                                                            CRaptorErrorManager::RAPTOR_ERROR,
-										                    "Too many Rendering Context created");
+		Raptor::GetErrorManager()->generateRaptorError(	COpenGL::COpenGLClassID::GetClassId(),
+                                                        CRaptorErrorManager::RAPTOR_ERROR,
+										                "Too many Rendering Context created");
 		return -1;
 	}
 
-    return glCreateContext(device,displayMode,global);
+    return glCreateContext(device,config);
 }
 
 
@@ -574,9 +572,9 @@ CContextManager::RENDERING_CONTEXT_ID  CGLXContextManager::glCreateExtendedConte
 	{
 		if (nbPBuffers >= MAX_PBUFFERS)
 		{
-			Raptor::GetErrorManager()->generateRaptorError(Global::COpenGLClassID::GetClassId(),
-                                                                                           CRaptorErrorManager::RAPTOR_ERROR,
-                                                                                           "Too many Pixel Buffers created");
+			Raptor::GetErrorManager()->generateRaptorError(	COpenGL::COpenGLClassID::GetClassId(),
+															CRaptorErrorManager::RAPTOR_ERROR,
+															"Too many Pixel Buffers created");
 			return 0;
 		}
 
@@ -584,9 +582,9 @@ CContextManager::RENDERING_CONTEXT_ID  CGLXContextManager::glCreateExtendedConte
 			(pExtensions->wglChoosePixelFormatARB == NULL) || 
 			(pExtensions->wglGetPBufferDCARB == NULL))
 		{
-			Raptor::GetErrorManager()->generateRaptorError(Global::COpenGLClassID::GetClassId(),
-                                                                                           CRaptorErrorManager::RAPTOR_FATAL,
-                                                                                           "Your driver or GPU does not support Pixel Buffers");
+			Raptor::GetErrorManager()->generateRaptorError(	COpenGL::COpenGLClassID::GetClassId(),
+															CRaptorErrorManager::RAPTOR_FATAL,
+															"Your driver or GPU does not support Pixel Buffers");
 			return 0;
 		}
 
@@ -643,9 +641,9 @@ CContextManager::RENDERING_CONTEXT_ID  CGLXContextManager::glCreateExtendedConte
 				(pExtensions->wglReleaseTexImageARB == NULL) || 
 				(pExtensions->wglSetPbufferAttribARB == NULL))
 			{
-				Raptor::GetErrorManager()->generateRaptorError(Global::COpenGLClassID::GetClassId(),
-                                                                                               CRaptorErrorManager::RAPTOR_FATAL,
-                                                                                               "Your driver or GPU does not support texture rendering");
+				Raptor::GetErrorManager()->generateRaptorError(	COpenGL::COpenGLClassID::GetClassId(),
+																CRaptorErrorManager::RAPTOR_FATAL,
+																"Your driver or GPU does not support texture rendering");
 				return 0;
 			}
 		}
@@ -656,9 +654,9 @@ CContextManager::RENDERING_CONTEXT_ID  CGLXContextManager::glCreateExtendedConte
 		int pixelformat;
 		if (( pExtensions->wglChoosePixelFormatARB(hdc, piAttribIList,NULL,1,&pixelformat,&nNumFormats) == 0 ) || (nNumFormats == 0))
 		{
-			Raptor::GetErrorManager()->generateRaptorError(Global::COpenGLClassID::GetClassId(),
-                                                                                           CRaptorErrorManager::RAPTOR_FATAL,
-                                                                                           "Raptor failed to choose pixel format for PBuffer");
+			Raptor::GetErrorManager()->generateRaptorError(	COpenGL::COpenGLClassID::GetClassId(),
+															CRaptorErrorManager::RAPTOR_FATAL,
+															"Raptor failed to choose pixel format for PBuffer");
 
 			delete [] piAttribIList;
 			return 0; 
@@ -690,27 +688,27 @@ CContextManager::RENDERING_CONTEXT_ID  CGLXContextManager::glCreateExtendedConte
 		HPBUFFERARB hpbuf = pExtensions->wglCreatePBufferARB(hdc,pixelformat,pcs.width,pcs.height,pBufferAttribs);
 		if (hpbuf == NULL)
 		{
-			Raptor::GetErrorManager()->generateRaptorError(Global::COpenGLClassID::GetClassId(),
-                                                                                           CRaptorErrorManager::RAPTOR_FATAL,
-                                                                                           "Raptor failed to create PBuffer");
+			Raptor::GetErrorManager()->generateRaptorError(	COpenGL::COpenGLClassID::GetClassId(),
+															CRaptorErrorManager::RAPTOR_FATAL,
+															"Raptor failed to create PBuffer");
 			return 0;
 		}
 
 		HDC hpbufdc = pExtensions->wglGetPBufferDCARB(hpbuf);
 		if (!hpbufdc)
 		{
-			Raptor::GetErrorManager()->generateRaptorError(Global::COpenGLClassID::GetClassId(),
-                                                                                           CRaptorErrorManager::RAPTOR_FATAL,
-                                                                                           "Raptor failed to create PBuffer device context");
+			Raptor::GetErrorManager()->generateRaptorError(	COpenGL::COpenGLClassID::GetClassId(),
+															CRaptorErrorManager::RAPTOR_FATAL,
+															"Raptor failed to create PBuffer device context");
 			return 0;
 		}
 
 		HGLRC hpbufglhrc = wglCreateContext(hpbufdc);
 		if (!hpbufglhrc)
 		{
-			Raptor::GetErrorManager()->generateRaptorError(Global::COpenGLClassID::GetClassId(),
-                                                                                           CRaptorErrorManager::RAPTOR_FATAL,
-                                                                                           "Raptor failed to create PBuffer OpenGL context");
+			Raptor::GetErrorManager()->generateRaptorError(	COpenGL::COpenGLClassID::GetClassId(),
+															CRaptorErrorManager::RAPTOR_FATAL,
+															"Raptor failed to create PBuffer OpenGL context");
 			return 0;
 		}
 		
@@ -730,9 +728,9 @@ CContextManager::RENDERING_CONTEXT_ID  CGLXContextManager::glCreateExtendedConte
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 		if (res == FALSE)
 		{
-			Raptor::GetErrorManager()->generateRaptorError(	Global::COpenGLClassID::GetClassId(),
-                                                                                            CRaptorErrorManager::RAPTOR_WARNING,
-											                                                "Unable to share PBuffer display lists");
+			Raptor::GetErrorManager()->generateRaptorError(	COpenGL::COpenGLClassID::GetClassId(),
+															CRaptorErrorManager::RAPTOR_WARNING,
+															"Unable to share PBuffer display lists");
 		}
 #endif
 
@@ -743,9 +741,9 @@ CContextManager::RENDERING_CONTEXT_ID  CGLXContextManager::glCreateExtendedConte
 	{
 		if (pbuffer > MAX_PBUFFERS)
 		{
-			Raptor::GetErrorManager()->generateRaptorError(Global::COpenGLClassID::GetClassId(),
-                                                                                           CRaptorErrorManager::RAPTOR_ERROR,
-                                                                                           "Exceeded max number of pBuffers");
+			Raptor::GetErrorManager()->generateRaptorError(	COpenGL::COpenGLClassID::GetClassId(),
+															CRaptorErrorManager::RAPTOR_ERROR,
+															"Exceeded max number of pBuffers");
 			return false;
 		}
 
@@ -754,25 +752,25 @@ CContextManager::RENDERING_CONTEXT_ID  CGLXContextManager::glCreateExtendedConte
 
 		if (FALSE == wglDeleteContext(pBuffers[pbuffer].pbufferGLRC))
 		{
-			Raptor::GetErrorManager()->generateRaptorError(Global::COpenGLClassID::GetClassId(),
-                                                                                           CRaptorErrorManager::RAPTOR_FATAL,
-                                                                                           "Raptor failed to destroy PBuffer OpenGL context");
+			Raptor::GetErrorManager()->generateRaptorError(	COpenGL::COpenGLClassID::GetClassId(),
+															CRaptorErrorManager::RAPTOR_FATAL,
+															"Raptor failed to destroy PBuffer OpenGL context");
 			return false;
 		}
 
 		if (0 == pExtensions->wglReleasePBufferDCARB(pBuffers[pbuffer].pbuffer,pBuffers[pbuffer].pbufferDC))
 		{
-			Raptor::GetErrorManager()->generateRaptorError(Global::COpenGLClassID::GetClassId(),
-                                                                                           CRaptorErrorManager::RAPTOR_FATAL,
-                                                                                           "Raptor failed to release PBuffer device context");
+			Raptor::GetErrorManager()->generateRaptorError(	COpenGL::COpenGLClassID::GetClassId(),
+															CRaptorErrorManager::RAPTOR_FATAL,
+															"Raptor failed to release PBuffer device context");
 			return false;
 		}
 
 		if (0 == pExtensions->wglDestroyPBufferARB(pBuffers[pbuffer].pbuffer))
 		{
-			Raptor::GetErrorManager()->generateRaptorError(Global::COpenGLClassID::GetClassId(),
-                                                                                           CRaptorErrorManager::RAPTOR_FATAL,
-                                                                                           "Raptor failed to destroy PBuffer");
+			Raptor::GetErrorManager()->generateRaptorError(	COpenGL::COpenGLClassID::GetClassId(),
+															CRaptorErrorManager::RAPTOR_FATAL,
+                                                            "Raptor failed to destroy PBuffer");
 			return false;
 		}
 
@@ -793,8 +791,8 @@ CContextManager::RENDERING_CONTEXT_ID  CGLXContextManager::glCreateExtendedConte
             sprintf(numbuffer,"%d",pbuffer+1);
             str += numbuffer;
             str += " does not exist";
-			Raptor::GetErrorManager()->generateRaptorError(Global::COpenGLClassID::GetClassId(),
-                                                                                           CRaptorErrorManager::RAPTOR_ERROR,str);
+			Raptor::GetErrorManager()->generateRaptorError(	COpenGL::COpenGLClassID::GetClassId(),
+															CRaptorErrorManager::RAPTOR_ERROR,str);
 			return;
 		}
   
@@ -810,9 +808,9 @@ CContextManager::RENDERING_CONTEXT_ID  CGLXContextManager::glCreateExtendedConte
 	{
 		if (pbuffer > MAX_PBUFFERS)
 		{
-			Raptor::GetErrorManager()->generateRaptorError(Global::COpenGLClassID::GetClassId(),
-                                                                                           CRaptorErrorManager::RAPTOR_ERROR,
-                                                                                           "Exceeded max number of pBuffers");
+			Raptor::GetErrorManager()->generateRaptorError(COpenGL::COpenGLClassID::GetClassId(),
+                                                           CRaptorErrorManager::RAPTOR_ERROR,
+                                                           "Exceeded max number of pBuffers");
 			return false;
 		}
 
@@ -824,27 +822,11 @@ CContextManager::RENDERING_CONTEXT_ID  CGLXContextManager::glCreateExtendedConte
             sprintf(numbuffer,"%d",pbuffer+1);
             str += numbuffer;
             str += " does not exist or texture rendering not supported";
-			Raptor::GetErrorManager()->generateRaptorError(Global::COpenGLClassID::GetClassId(),
-                                                                                           CRaptorErrorManager::RAPTOR_ERROR,str);
+			Raptor::GetErrorManager()->generateRaptorError(COpenGL::COpenGLClassID::GetClassId(),
+                                                           CRaptorErrorManager::RAPTOR_ERROR,str);
 			return false;
 		}
-/*
-		int iValue = 0;
-		BOOL res = wglQueryPBufferARB(pBuffers[pbuffer].pbuffer,WGL_PBUFFER_WIDTH_ARB,&iValue);
-		res = wglQueryPBufferARB(pBuffers[pbuffer].pbuffer,WGL_PBUFFER_HEIGHT_ARB,&iValue);
-		res = wglQueryPBufferARB(pBuffers[pbuffer].pbuffer,WGL_PBUFFER_LOST_ARB,&iValue);
-		res = wglQueryPBufferARB(pBuffers[pbuffer].pbuffer,WGL_TEXTURE_TARGET_ARB,&iValue);
-		res = wglQueryPBufferARB(pBuffers[pbuffer].pbuffer,WGL_MIPMAP_TEXTURE_ARB,&iValue);
-		res = wglQueryPBufferARB(pBuffers[pbuffer].pbuffer,WGL_MIPMAP_LEVEL_ARB,&iValue);
-		res = wglQueryPBufferARB(pBuffers[pbuffer].pbuffer,WGL_CUBE_MAP_FACE_ARB,&iValue);
-		res = wglQueryPBufferARB(pBuffers[pbuffer].pbuffer,WGL_TEXTURE_FORMAT_ARB,&iValue);
 
-		int attribs[3];
-		attribs[0] = WGL_MIPMAP_LEVEL_ARB;
-		attribs[1] = 0;
-		attribs[2] = 0;
-		wglSetPbufferAttribARB(pBuffers[pbuffer].pbuffer,attribs);
-*/
 		return (FALSE != pExtensions->wglBindTexImageARB(pBuffers[pbuffer].pbuffer,iBuffer));
 	}
 
@@ -852,9 +834,9 @@ CContextManager::RENDERING_CONTEXT_ID  CGLXContextManager::glCreateExtendedConte
 	{
 		if (pbuffer > MAX_PBUFFERS)
 		{
-			Raptor::GetErrorManager()->generateRaptorError(Global::COpenGLClassID::GetClassId(),
-                                                                                           CRaptorErrorManager::RAPTOR_ERROR,
-                                                                                           "Exceeded max number of pBuffers");
+			Raptor::GetErrorManager()->generateRaptorError(COpenGL::COpenGLClassID::GetClassId(),
+                                                           CRaptorErrorManager::RAPTOR_ERROR,
+                                                           "Exceeded max number of pBuffers");
 			return false;
 		}
 
@@ -866,8 +848,8 @@ CContextManager::RENDERING_CONTEXT_ID  CGLXContextManager::glCreateExtendedConte
             sprintf(numbuffer,"%d",pbuffer+1);
             str += numbuffer;
             str += " does not exist or texture rendering not supported";
-			Raptor::GetErrorManager()->generateRaptorError(Global::COpenGLClassID::GetClassId(),
-                                                                                           CRaptorErrorManager::RAPTOR_ERROR,str);
+			Raptor::GetErrorManager()->generateRaptorError(COpenGL::COpenGLClassID::GetClassId(),
+                                                           CRaptorErrorManager::RAPTOR_ERROR,str);
 			return false;
 		}
 
@@ -877,7 +859,7 @@ CContextManager::RENDERING_CONTEXT_ID  CGLXContextManager::glCreateExtendedConte
 #else
 	CContextManager::PIXEL_BUFFER_ID CGLXContextManager::glCreatePBuffer(const CRaptorDisplayConfig& ) { return 0; }
 	bool CGLXContextManager::glDestroyPBuffer(PIXEL_BUFFER_ID ) { return false; };
-	void CGLXContextManager::glBindPBuffer(PIXEL_BUFFER_ID, unsigned int ) { };
+	void CGLXContextManager::glBindPBuffer(PIXEL_BUFFER_ID, CTextureObject::CUBE_FACE ) { };
 	bool CGLXContextManager::glIsPBuffer(PIXEL_BUFFER_ID ) const { return false; };
 	bool CGLXContextManager::glBindTexImageARB(PIXEL_BUFFER_ID ,int ) { return false; };
 	bool CGLXContextManager::glReleaseTexImageARB(PIXEL_BUFFER_ID ,int ) { return false; };
