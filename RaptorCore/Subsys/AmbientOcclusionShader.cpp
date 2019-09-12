@@ -24,11 +24,11 @@
 #if !defined(AFX_SHADERPROGRAM_H__936BEC73_3903_46CE_86C9_9CA0005B31F5__INCLUDED_)
 	#include "GLHierarchy/ShaderProgram.h"
 #endif
-#if !defined(AFX_VERTEXPROGRAM_H__204F7213_B40B_4B6A_9BCA_828409871B68__INCLUDED_)
-    #include "GLHierarchy/VertexProgram.h"
+#if !defined(AFX_VERTEXSHADER_H__204F7213_B40B_4B6A_9BCA_828409871B68__INCLUDED_)
+	#include "GLHierarchy/VertexShader.h"
 #endif
-#if !defined(AFX_FRAGMENTPROGRAM_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
-    #include "GLHierarchy/FragmentProgram.h"
+#if !defined(AFX_FRAGMENTSHADER_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
+    #include "GLHierarchy/FragmentShader.h"
 #endif
 #if !defined(AFX_3DENGINE_H__DB24F018_80B9_11D3_97C1_FC2841000000__INCLUDED_)
 	#include "Engine/3DEngine.h"
@@ -209,8 +209,8 @@ void CAmbientOcclusionShader::glRender()
 #ifdef GL_ARB_texture_rectangle
 	glEnable(GL_TEXTURE_RECTANGLE_ARB);
 #endif
-	m_pAOcomputeRef->glGetVertexProgram()->setProgramParameters(v_params);
-	m_pAOcomputeRef->glGetFragmentProgram()->setProgramParameters(f_params);
+	m_pAOcomputeRef->glGetVertexShader()->setProgramParameters(v_params);
+	m_pAOcomputeRef->glGetFragmentShader()->setProgramParameters(f_params);
 	glCallList(m_occluders[0]->m_AOMapSetup.handle());
 	m_pAOcomputeRef->glRender();
 

@@ -98,7 +98,7 @@ copy .\RaptorCore\Engine\IViewPoint.h Redist\Include\Engine
 ECHO       GLHierarchy:
 copy .\RaptorCore\GLHierarchy\3DSet.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\BumppedGeometry.h Redist\Include\GLHierarchy
-copy .\RaptorCore\GLHierarchy\FragmentProgram.h Redist\Include\GLHierarchy
+copy .\RaptorCore\GLHierarchy\FragmentShader.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\FragmentProgram_old.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\GLFont.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\GL2DFont.h Redist\Include\GLHierarchy
@@ -111,7 +111,7 @@ copy .\RaptorCore\GLHierarchy\GLLod.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\Geometry.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\GeometryEditor.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\GeometryPrimitive.h Redist\Include\GLHierarchy
-copy .\RaptorCore\GLHierarchy\GeometryProgram.h Redist\Include\GLHierarchy
+copy .\RaptorCore\GLHierarchy\GeometryShader.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\ITextureObject.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\Light.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\LightGlow.h Redist\Include\GLHierarchy
@@ -143,8 +143,8 @@ copy .\RaptorCore\GLHierarchy\TextureGenerator.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\TextureObject.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\TextureSet.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\TextureUnitSetup.h Redist\Include\GLHierarchy
-copy .\RaptorCore\GLHierarchy\UnifiedProgram.h Redist\Include\GLHierarchy
-copy .\RaptorCore\GLHierarchy\VertexProgram.h Redist\Include\GLHierarchy
+copy .\RaptorCore\GLHierarchy\UnifiedShader.h Redist\Include\GLHierarchy
+copy .\RaptorCore\GLHierarchy\VertexShader.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\VertexProgram_old.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\VulkanShaderStage.h Redist\Include\GLHierarchy
 

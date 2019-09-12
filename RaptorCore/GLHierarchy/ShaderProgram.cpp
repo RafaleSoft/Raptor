@@ -1,6 +1,21 @@
-// ShaderProgram.cpp: implementation of the CShaderProgram class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  ShaderProgram.cpp                                                      */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
 #include "Subsys/CodeGeneration.h"
 
 
@@ -18,9 +33,6 @@
 #endif
 
 
-//////////////////////////////////////////////////////////////////////
-// Static data
-//////////////////////////////////////////////////////////////////////
 RAPTOR_NAMESPACE_BEGIN
 
 static CShaderProgram::CShaderProgramClassID shaderId;
@@ -31,9 +43,7 @@ const CPersistence::CPersistenceClassID& CShaderProgram::CShaderProgramClassID::
 
 RAPTOR_NAMESPACE_END
 
-//////////////////////////////////////////////////////////////////////
-// Static datas
-//////////////////////////////////////////////////////////////////////
+
 RAPTOR_NAMESPACE
 
 
@@ -73,8 +83,8 @@ void CShaderProgram::setProgramParameters(const CProgramParameters &v)
 
 void CShaderProgram::updateProgramParameters(const CProgramParameters &v)
 {
-	m_parameters.updateParameters(v);
-	m_bApplyParameters = true;
+	bool apply = m_parameters.updateParameters(v);
+	m_bApplyParameters = apply;
 }
 
 bool CShaderProgram::glLoadProgramFromFile(const std::string &program)

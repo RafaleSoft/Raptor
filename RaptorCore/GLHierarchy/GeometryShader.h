@@ -1,6 +1,6 @@
 /***************************************************************************/
 /*                                                                         */
-/*  VertexProgram.h                                                        */
+/*  GeometryShader.h                                                       */
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
@@ -16,8 +16,8 @@
 /***************************************************************************/
 
 
-#if !defined(AFX_VERTEXPROGRAM_H__204F7213_B40B_4B6A_9BCA_828409871B68__INCLUDED_)
-#define AFX_VERTEXPROGRAM_H__204F7213_B40B_4B6A_9BCA_828409871B68__INCLUDED_
+#if !defined(AFX_GEOMETRYSHADER_H__1981EA98_8F3C_4881_9429_A9ACA5B285D3__INCLUDED_)
+#define AFX_GEOMETRYSHADER_H__1981EA98_8F3C_4881_9429_A9ACA5B285D3__INCLUDED_
 
 #if _MSC_VER > 1000
 #pragma once
@@ -25,45 +25,41 @@
 
 #include "Subsys/CodeGeneration.h"
 
-#if !defined(AFX_UNIFIEDPROGRAM_H__CBCD5C66_88D0_4EAD_A5FD_B0F235B8FED6__INCLUDED_)
-	#include "UnifiedProgram.h"
+#if !defined(AFX_UNIFIEDSHADER_H__CBCD5C66_88D0_4EAD_A5FD_B0F235B8FED6__INCLUDED_)
+	#include "UnifiedShader.h"
 #endif
 
 
 RAPTOR_NAMESPACE_BEGIN
 
 
-class RAPTOR_API CVertexProgram : public CUnifiedProgram  
+class RAPTOR_API CGeometryShader : public CUnifiedShader
 {
 public:
-    typedef struct GL_VERTEX_PROGRAM_CAPS_t
+    typedef struct GL_GEOMETRY_SHADER_CAPS_t
 	{
-		int		max_vertex_uniform_components;
-		int		max_varying_floats;
-		int		max_vertex_attribs;
-		int		max_texture_image_units;
-		int		max_vertex_texture_image_units;
-		int		max_combined_texture_image_units;
-		int		max_texture_coords;
-		bool	vertex_program_point_size;
-		bool	vertex_program_two_side;
-		int		max_combined_vertex_uniform_components;
-		int		max_uniform_block_size;
-		int		max_vertex_uniform_blocks;
-	} GL_VERTEX_PROGRAM_CAPS;
+		int		max_geometry_texture_image_units;
+		int		max_geometry_varying_components;
+		int		max_vertex_varying_components;
+		int		max_varying_components;
+		int		max_geometry_uniform_components;
+		int		max_geometry_output_vertices;
+		int		max_geometry_total_output_components;
+		int		max_geometry_uniform_blocks;
+	} GL_GEOMETRY_SHADER_CAPS;
 
 
 public:
-	//!	Default Constructor.
-	CVertexProgram(const std::string& name="VERTEX_PROGRAM");
+	//!	Default constructor.
+	CGeometryShader(const std::string& name = "GEOMETRY_SHADER");
 
-	//!	Destructor.
-	virtual ~CVertexProgram();
+	//! Destructor.
+	virtual ~CGeometryShader();
 
 	//!	Clone this shader.
-	virtual CVertexProgram* glClone();
+	virtual CGeometryShader* glClone();
 
-    //! Loads an OpenGL vertex shader program.
+    //! Loads an OpenGL 2.0 vertex shader program.
 	virtual bool glLoadProgram(const std::string &program);
 
     //!	Implements CShaderProgram.
@@ -72,7 +68,7 @@ public:
 	//! This method returns the underlying hardware capabilities to render a vertex program. the capabilities fill
 	//! the structure given in caps parameter.
 	//!	Refer to official ARB documentation for detailed information on each capability item.
-	static bool glGetProgramCaps(GL_VERTEX_PROGRAM_CAPS& caps);
+	static bool glGetShaderCaps(GL_GEOMETRY_SHADER_CAPS& caps);
 
     //! This method attaches the vertex program to a program object for
     //! linking and validation. Checking is performed on the handle to accept only valid programs.
@@ -80,22 +76,37 @@ public:
     //! @return : true if binding is done without errors, false otherwise.
     virtual bool glBindProgram(RAPTOR_HANDLE program);
 
+	//!	Configure the geometry chader.
+	//!	The shader code must be conformant to these parameters.
+	//! @return false in case of invallid parameter.
+	bool setGeometry(uint32_t inputType, uint32_t outputType, uint32_t verticesOut);
+
+
 	//!	Implements CPersistence
-	DECLARE_CLASS_ID(CVertexProgramClassID,"VertexProgram",CShaderProgram)
+	DECLARE_CLASS_ID(CGeometryShaderClassID,"GeometryShader",CShaderProgram)
 
 
 private:
 	//!	Forbidden operators
-	CVertexProgram& operator=(const CVertexProgram&);
+	CGeometryShader& operator=(const CGeometryShader&);
 
 	//! Copy constructor.
-	CVertexProgram(const CVertexProgram& shader);
+	CGeometryShader(const CGeometryShader& shader);
 
     //! Specific init of shader parameters
     virtual void	glInitShaders();
+
+	//! Input primitive type.
+	uint32_t	m_inputType;
+
+	//! Output primitive type.
+	uint32_t	m_outputType;
+
+	//! Number of vertivces emitted by primitive.
+	uint32_t	m_verticesOut;
 };
 
 RAPTOR_NAMESPACE_END
 
-#endif // !defined(AFX_VERTEXPROGRAM_H__204F7213_B40B_4B6A_9BCA_828409871B68__INCLUDED_)
+#endif // !defined(AFX_GEOMETRYSHADER_H__1981EA98_8F3C_4881_9429_A9ACA5B285D3__INCLUDED_)
 

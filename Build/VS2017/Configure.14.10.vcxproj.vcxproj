@@ -18,10 +18,11 @@
     <ProjectGuid>{C9E4DB51-7755-42F0-A3BD-7981799AC84E}</ProjectGuid>
     <RootNamespace>Configure</RootNamespace>
     <ProjectName>Configure</ProjectName>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>Utility</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
@@ -75,7 +76,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PreBuildEvent>
-      <Command>$(SolutionDir)\Builder\$(ProjectName)\Redist.bat</Command>
+      <Command>set PUBLISH=$(TargetDir) &amp;&amp; $(SolutionDir)\Builder\$(ProjectName)\Publish.bat &amp;&amp; $(SolutionDir)\Builder\$(ProjectName)\Redist.bat</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -113,6 +114,7 @@
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <None Include="..\..\Builder\Configure\Publish.bat" />
     <None Include="..\..\Builder\Configure\Redist.bat" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

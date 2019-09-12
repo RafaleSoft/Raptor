@@ -36,7 +36,7 @@ RAPTOR_NAMESPACE_BEGIN
 class RAPTOR_API CVertexProgram_old : public CShaderProgram  
 {
 public:
-	typedef struct GL_VERTEX_SHADER_CAPS_t
+	typedef struct GL_VERTEX_PROGRAM_CAPS_t
 	{
 		int		max_instructions;
 		int		max_native_instructions;
@@ -55,7 +55,7 @@ public:
 		int		max_program_matrix_stack_depth;
         bool	vertex_program_point_size;
 		bool	vertex_program_two_side;
-	} GL_VERTEX_SHADER_CAPS;
+	} GL_VERTEX_PROGRAM_CAPS;
 
 public:
 	//! Default constructor.
@@ -92,7 +92,7 @@ public:
 	//! the structure given in caps parameter.
 	//!	Refer to official ARB documentation for detailed information
 	//! on each capability item.
-	static bool glGetProgramCaps(GL_VERTEX_SHADER_CAPS& caps);
+	static bool glGetProgramCaps(GL_VERTEX_PROGRAM_CAPS& caps);
 
 
 	//!	These methods will have the same behaviour as standard

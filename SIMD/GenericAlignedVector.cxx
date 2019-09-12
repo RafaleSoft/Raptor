@@ -147,20 +147,20 @@ __inline bool SIMD_CALL CGenericAlignedVector<T>::operator== ( const T v[4] ) co
 };
 
 template <class T>
-__inline double SIMD_CALL CGenericAlignedVector<T>::Norm() const
+__inline double SIMD_CALL CGenericAlignedVector<T>::Norm() const NOEXCEPT
 { 
 	return sqrt( m_vector[0]*m_vector[0] + m_vector[1]*m_vector[1] + m_vector[2]*m_vector[2] ) ; 
 };
 
 template <class T>
-__inline double SIMD_CALL CGenericAlignedVector<T>::Normalize()
+__inline double SIMD_CALL CGenericAlignedVector<T>::Normalize() NOEXCEPT
 {
 	#pragma warning(disable:4244)
-	double n = sqrt( m_vector[0]*m_vector[0] + m_vector[1]*m_vector[1] + m_vector[2]*m_vector[2] ) ;
+	const double n = sqrt( m_vector[0]*m_vector[0] + m_vector[1]*m_vector[1] + m_vector[2]*m_vector[2] ) ;
 
 	if (n != 0)
 	{
-		double oneovern = 1.0/n;
+		const double oneovern = 1.0/n;
 		m_vector[0] *= oneovern;
 		m_vector[1] *= oneovern;
 		m_vector[2] *= oneovern;
@@ -171,7 +171,7 @@ __inline double SIMD_CALL CGenericAlignedVector<T>::Normalize()
 };
 
 template <class T>
-__inline T SIMD_CALL CGenericAlignedVector<T>::Length() const
+__inline T SIMD_CALL CGenericAlignedVector<T>::Length() const NOEXCEPT
 { 
 	return (T)(m_vector[0]+m_vector[1]+m_vector[2]+m_vector[3]); 
 };

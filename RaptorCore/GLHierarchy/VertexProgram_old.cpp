@@ -535,7 +535,7 @@ bool CVertexProgram_old::glGetProgramStatus(void)
 	pExtensions->glGetProgramivARB(GL_VERTEX_PROGRAM_ARB, GL_PROGRAM_UNDER_NATIVE_LIMITS_ARB, &value);
 	if (value < 1)
 	{
-		GL_VERTEX_SHADER_CAPS caps;
+		GL_VERTEX_PROGRAM_CAPS caps;
 		if (glGetProgramCaps(caps))
 		{
 			pExtensions->glGetProgramivARB(GL_VERTEX_PROGRAM_ARB, GL_PROGRAM_INSTRUCTIONS_ARB, &value);
@@ -591,7 +591,7 @@ bool CVertexProgram_old::glGetProgramStatus(void)
 		return true;
 }
 
-bool CVertexProgram_old::glGetProgramCaps(GL_VERTEX_SHADER_CAPS& caps)
+bool CVertexProgram_old::glGetProgramCaps(GL_VERTEX_PROGRAM_CAPS& caps)
 {
 	if (CRaptorInstance::GetInstance().m_bVertexReady)
 	{

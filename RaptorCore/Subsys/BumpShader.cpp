@@ -15,11 +15,11 @@
 #if !defined(AFX_TEXTUREUNITSETUP_H__4A6ADC72_02E5_4F2A_931E_A736B6D6E0F0__INCLUDED_)
 	#include "GLHierarchy/TextureUnitSetup.h"
 #endif
-#if !defined(AFX_VERTEXPROGRAM_H__204F7213_B40B_4B6A_9BCA_828409871B68__INCLUDED_)
-    #include "GLHierarchy/VertexProgram.h"
+#if !defined(AFX_VERTEXSHADER_H__204F7213_B40B_4B6A_9BCA_828409871B68__INCLUDED_)
+	#include "GLHierarchy/VertexShader.h"
 #endif
-#if !defined(AFX_FRAGMENTPROGRAM_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
-    #include "GLHierarchy/FragmentProgram.h"
+#if !defined(AFX_FRAGMENTSHADER_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
+    #include "GLHierarchy/FragmentShader.h"
 #endif
 #if !defined(AFX_LIGHTATTRIBUTES_H__B0A3AF95_90DC_4185_9747_B7F631DDB2BF__INCLUDED_)
 	#include "LightAttributes.h"
@@ -64,12 +64,12 @@ CBumpShader::~CBumpShader(void)
 
 void CBumpShader::glInit(void)
 {
-	CVertexProgram *vp = glGetVertexProgram("PPIXEL_BUMP_VTX_PROGRAM");
+	CVertexShader *vp = glGetVertexShader("PPIXEL_BUMP_VTX_PROGRAM");
 	CProgramParameters params;
 	params.addParameter("tangent", CProgramParameters::ADDITIONAL_PARAM1);
 	vp->setProgramParameters(params);
 
-	CFragmentProgram *fp = glGetFragmentProgram("PPIXEL_BUMP_TEX_PROGRAM");
+	CFragmentShader *fp = glGetFragmentShader("PPIXEL_BUMP_TEX_PROGRAM");
 	CProgramParameters params2;
 	fp->setProgramParameters(params2);
 

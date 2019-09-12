@@ -30,7 +30,12 @@
 #endif
 
 
+
+
 RAPTOR_NAMESPACE_BEGIN
+
+class CVertexProgram_old;
+class CFragmentProgram_old;
 
 
 class RAPTOR_API COpenGLProgramStage : public CShaderProgram
@@ -91,6 +96,9 @@ private:
 	//! Denied operators
 	COpenGLProgramStage();
 	COpenGLProgramStage& operator=(const COpenGLProgramStage&);
+
+	CVertexProgram_old	*m_pVShader;
+	CFragmentProgram_old *m_pFShader;
 };
 
 

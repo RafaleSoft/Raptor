@@ -9,20 +9,20 @@
 #if !defined(AFX_SHADER_H__4D405EC2_7151_465D_86B6_1CA99B906777__INCLUDED_)
 	#include "GLHierarchy/Shader.h"
 #endif
-#if !defined(AFX_VERTEXPROGRAM_H__204F7213_B40B_4B6A_9BCA_828409871B68__INCLUDED_)
-	#include "GLHierarchy/VertexProgram.h"
+#if !defined(AFX_VERTEXSHADER_H__204F7213_B40B_4B6A_9BCA_828409871B68__INCLUDED_)
+	#include "GLHierarchy/VertexShader.h"
 #endif
 #if !defined(AFX_VERTEXPROGRAM_OLD_H__F2D3BBC6_87A1_4695_B667_2B8C3C4CF022__INCLUDED_)
 	#include "GLHierarchy/VertexProgram_old.h"
 #endif
-#if !defined(AFX_FRAGMENTPROGRAM_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
-	#include "GLHierarchy/FragmentProgram.h"
+#if !defined(AFX_FRAGMENTSHADER_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
+	#include "GLHierarchy/FragmentShader.h"
 #endif
 #if !defined(AFX_FRAGMENTPROGRAM_OLD_H__DD0AD51D_3BFF_4C65_8099_BA7696D7BDDF__INCLUDED_)
 	#include "GLHierarchy/FragmentProgram_old.h"
 #endif
-#if !defined(AFX_GEOMETRYPROGRAM_H__1981EA98_8F3C_4881_9429_A9ACA5B285D3__INCLUDED_)
-	#include "GLHierarchy/GeometryProgram.h"
+#if !defined(AFX_GEOMETRYSHADER_H__1981EA98_8F3C_4881_9429_A9ACA5B285D3__INCLUDED_)
+	#include "GLHierarchy/GeometryShader.h"
 #endif
 
 
@@ -77,20 +77,20 @@ void CShaderWrapper::glRender()
 	if (m_bUpdateVertexParameters)
 	{
 		m_bUpdateVertexParameters = false;
-		if (m_pShader->hasVertexProgram())
-			m_pShader->glGetVertexProgram()->setProgramParameters(v);
-		else if (m_pShader->hasVertexShader())
+		if (m_pShader->hasVertexShader())
 			m_pShader->glGetVertexShader()->setProgramParameters(v);
+		else if (m_pShader->hasVertexProgram_old())
+			m_pShader->glGetVertexProgram_old()->setProgramParameters(v);
 
 		m_bUpdateFragmentParameters = false;
-		if (m_pShader->hasFragmentProgram())
-			m_pShader->glGetFragmentProgram()->setProgramParameters(f);
-		else if (m_pShader->hasFragmentShader())
+		if (m_pShader->hasFragmentShader())
 			m_pShader->glGetFragmentShader()->setProgramParameters(f);
+		else if (m_pShader->hasFragmentProgram_old())
+			m_pShader->glGetFragmentProgram_old()->setProgramParameters(f);
 
 		m_bUpdateGeometryParameters = false;
-		if (m_pShader->hasGeometryProgram())
-			m_pShader->glGetGeometryProgram()->setProgramParameters(g);
+		if (m_pShader->hasGeometryShader())
+			m_pShader->glGetGeometryShader()->setProgramParameters(g);
 	}
 
 	m_pShader->glRender();

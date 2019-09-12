@@ -120,7 +120,7 @@ void CFragmentProgram_old::glInitShaders()
 }
 
 
-bool CFragmentProgram_old::glGetProgramCaps(GL_FRAGMENT_SHADER_CAPS& caps)
+bool CFragmentProgram_old::glGetProgramCaps(GL_FRAGMENT_PROGRAM_CAPS& caps)
 {
 #ifdef GL_ARB_fragment_program
 	if (CRaptorInstance::GetInstance().m_bFragmentReady)
@@ -317,7 +317,7 @@ const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 	else
 		return false;
 
-	GL_FRAGMENT_SHADER_CAPS caps;
+	GL_FRAGMENT_PROGRAM_CAPS caps;
 	if (glGetProgramCaps(caps))
 	{
 		int value = 0;

@@ -111,7 +111,7 @@ public:
 	//! Vertex Program state.
 	bool m_bVertexProgramReady;
 	//! Geometry Program state.
-	bool m_bGeometryProgramReady;
+	bool m_bGeometryShaderReady;
 	//!	Vertex Shader state
 	bool m_bVertexReady;
 	//!	Fragment Shader state
