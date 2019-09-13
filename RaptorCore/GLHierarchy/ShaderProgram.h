@@ -73,17 +73,6 @@ public:
 	//! the source, then an empty string is returned.
 	virtual std::string glGetProgramString(void) const = 0;
 
-	//!	This method sets a program parameter ( 4 components vector ):
-	//! The number of parameters is limited by hardware ( get shader caps in derived classes ). 
-    //! The first parameter selects the program paramater, the second is the actual data.
-    //! CAUTION : Accessing parameters directly is unsafe and should be avoided, except for performance issues.
-	//virtual void glProgramParameter( unsigned int numParam,
-    //                                 const GL_COORD_VERTEX &v) const = 0;
-
-	//! Same as above but passes a color instead of a geo vector
-	//virtual void glProgramParameter( unsigned int numParam,
-    //                                 const CColor::RGBA &v) const = 0;
-
     //! This method can be used to pass in the whole parameter set.
     //! They will be actually applied after a successfull link is issued.
     virtual void setProgramParameters(const CProgramParameters &v);

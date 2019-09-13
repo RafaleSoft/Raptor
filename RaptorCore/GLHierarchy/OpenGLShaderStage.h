@@ -61,10 +61,7 @@ public:
 	virtual void glStop(void);
 
 	//! Implements base class
-	virtual bool glGetProgramStatus(void) const
-	{
-		return m_bValid;
-	};
+	virtual bool glGetProgramStatus(void) const;
 
 	//! Implements base class
 	virtual std::string glGetProgramString(void) const;

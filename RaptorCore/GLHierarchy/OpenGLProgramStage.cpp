@@ -99,14 +99,28 @@ COpenGLProgramStage* COpenGLProgramStage::glClone() const
 void COpenGLProgramStage::unLink(const CPersistence* p)
 {
 	if (p == static_cast<CPersistence*>(m_pVProgram))
+	{
+		if (m_bValid && (NULL != m_pVProgram))
+			m_bValid = false;
 		m_pVProgram = NULL;
+	}
 	else if (p == static_cast<CPersistence*>(m_pFProgram))
+	{
+		if (m_bValid && (NULL != m_pFProgram))
+			m_bValid = false;
 		m_pFProgram = NULL;
+	}
 }
 
 bool COpenGLProgramStage::glGetProgramStatus(void) const
 {
-	return m_bValid;
+	bool valid = m_bValid;
+	if (valid && (NULL != m_pVProgram))
+		valid = m_pVProgram->glGetProgramStatus();
+	if (valid && (NULL != m_pFProgram))
+		valid = m_pFProgram->glGetProgramStatus();
+	
+	return valid;
 }
 
 std::string COpenGLProgramStage::glGetProgramString(void) const

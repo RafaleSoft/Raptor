@@ -67,9 +67,6 @@ bool CProgramParameters::addParameter(const CParameterBase& param)
 
 CProgramParameters& CProgramParameters::operator=(const CProgramParameters& params)
 {
-	// The case that is not handled is when
-	//	params is used to update only a part of currently registered parameters.
-	// TODO: try to solve by setting m_bRelinked = true when params has more parameters than mValues.
 	if (m_parameters.size() != params.getNbParameters())
 	{
 		for (size_t i = 0; i < m_parameters.size(); i++)

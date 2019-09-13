@@ -172,13 +172,37 @@ COpenGLShaderStage* COpenGLShaderStage::glClone() const
 void COpenGLShaderStage::unLink(const CPersistence* p)
 {
 	if (p == static_cast<CPersistence*>(m_pVShader))
+	{
 		m_pVShader = NULL;
+		if (m_shaderProgram.handle() == 0)
+			m_bValid = false;
+	}
 	else if (p == static_cast<CPersistence*>(m_pFShader))
+	{
 		m_pFShader = NULL;
+		if (m_shaderProgram.handle() == 0)
+			m_bValid = false;
+	}
 	else if (p == static_cast<CPersistence*>(m_pGShader))
+	{
 		m_pGShader = NULL;
+		if (m_shaderProgram.handle() == 0)
+			m_bValid = false;
+	}
 }
 
+bool COpenGLShaderStage::glGetProgramStatus(void) const
+{
+	bool valid = m_bValid;
+	if (valid && (NULL != m_pVShader))
+		valid = m_pVShader->glGetProgramStatus();
+	if (valid && (NULL != m_pFShader))
+		valid = m_pFShader->glGetProgramStatus();
+	if (valid && (NULL != m_pGShader))
+		valid = m_pGShader->glGetProgramStatus();
+
+	return valid;
+}
 
 std::string COpenGLShaderStage::glGetProgramString(void) const
 {
@@ -243,6 +267,9 @@ CVertexShader* const COpenGLShaderStage::glGetVertexShader(const std::string& na
 
 		m_pVShader->registerDestruction(this);
 
+		if (m_shaderProgram.handle() == 0)
+			m_bValid = false;
+
 		CATCH_GL_ERROR
 	}
 
@@ -264,9 +291,12 @@ bool COpenGLShaderStage::glRemoveVertexShader(void)
 		m_pVShader = NULL;
 		m_bDeleteVShader = false;
 
+		if (m_shaderProgram.handle() == 0)
+			m_bValid = false;
+
 		CATCH_GL_ERROR
 
-			return true;
+		return true;
 	}
 }
 
@@ -290,6 +320,9 @@ CFragmentShader * const COpenGLShaderStage::glGetFragmentShader(const std::strin
 
 		m_pFShader->registerDestruction(this);
 
+		if (m_shaderProgram.handle() == 0)
+			m_bValid = false;
+
 		CATCH_GL_ERROR
 	}
 
@@ -310,6 +343,9 @@ bool COpenGLShaderStage::glRemoveFragmentShader(void)
 			delete m_pFShader;
 		m_pFShader = NULL;
 		m_bDeleteFShader = false;
+
+		if (m_shaderProgram.handle() == 0)
+			m_bValid = false;
 
 		CATCH_GL_ERROR
 
@@ -338,6 +374,9 @@ CGeometryShader* const COpenGLShaderStage::glGetGeometryShader(const std::string
 
 		m_pGShader->registerDestruction(this);
 
+		if (m_shaderProgram.handle() == 0)
+			m_bValid = false;
+
 		CATCH_GL_ERROR
 	}
 
@@ -359,6 +398,9 @@ bool COpenGLShaderStage::glRemoveGeometryShader(void)
 		m_pGShader = NULL;
 		m_bDeleteGShader = false;
 
+		if (m_shaderProgram.handle() == 0)
+			m_bValid = false;
+
 		CATCH_GL_ERROR
 
 		return true;
@@ -368,6 +410,7 @@ bool COpenGLShaderStage::glRemoveGeometryShader(void)
 
 bool COpenGLShaderStage::glCompileShader()
 {
+	m_bValid = false;
 	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 
 	// First try to generate programs.
@@ -429,7 +472,7 @@ bool COpenGLShaderStage::glCompileShader()
 			if (linkStatus == GL_FALSE)
 			{
 				CATCH_GL_ERROR
-					abort = true;
+				abort = true;
 			}
 		}
 
@@ -472,6 +515,7 @@ bool COpenGLShaderStage::glCompileShader()
 
 		CATCH_GL_ERROR
 
+		m_bValid = true;
 		return !abort;
 #endif
 	}
