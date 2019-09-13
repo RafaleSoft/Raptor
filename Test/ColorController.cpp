@@ -4,8 +4,8 @@
 #include "ColorController.h"
 
 #include "System/Raptor.h"
-#include "GLHierarchy/FragmentProgram_old.h"
-#include "GLHierarchy/VertexProgram_old.h"
+#include "GLHierarchy/FragmentProgram.h"
+#include "GLHierarchy/VertexProgram.h"
 
 #include "ToolBox/Filters/ColorControlFilter.h"
 #include "ToolBox/Filters/HDRFilter.h"

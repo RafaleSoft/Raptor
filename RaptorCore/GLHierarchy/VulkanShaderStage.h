@@ -63,19 +63,13 @@ public:
 	virtual void glStop(void) { };
 
 	//! Implements base class
-	virtual bool glGetProgramStatus(void)
+	virtual bool glGetProgramStatus(void) const
 	{
 		return m_bValid;
 	};
 
 	//! Implements base class
-	virtual std::string glGetProgramString(void) { return ""; }
-
-	virtual void glProgramParameter(unsigned int numParam,
-									const GL_COORD_VERTEX &v) const { };
-
-	virtual void glProgramParameter(unsigned int numParam,
-									const CColor::RGBA &v) const { };
+	virtual std::string glGetProgramString(void) const { return ""; }
 
 	//! Provide gl-like shader parameters from RaptorCore.
 	//!	Attention : parameter shall be copied before next call because return value is reused.

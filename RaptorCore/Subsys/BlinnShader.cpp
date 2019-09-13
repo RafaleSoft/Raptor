@@ -1,9 +1,22 @@
-// BlinnShader.cpp: implementation of the CBlinnShader class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  BlinnShader.cpp                                                        */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
 #include "Subsys/CodeGeneration.h"
-
-
 
 #if !defined(AFX_BLINNSHADER_H__7C69D948_B286_4840_8101_00E84647D812__INCLUDED_)
 	#include "BlinnShader.h"
@@ -20,6 +33,10 @@
 #if !defined(AFX_TEXTUREUNITSETUP_H__4A6ADC72_02E5_4F2A_931E_A736B6D6E0F0__INCLUDED_)
 	#include "GLHierarchy/TextureUnitSetup.h"
 #endif
+#if !defined(AFX_OPENGLSHADERSTAGE_H__56B00FE3_E508_4FD6_9363_90E6E67446D9__INCLUDED_)
+	#include "GLHierarchy/OpenGLShaderStage.h"
+#endif
+
 
 RAPTOR_NAMESPACE
 
@@ -47,9 +64,11 @@ CBlinnShader::~CBlinnShader(void)
 
 void CBlinnShader::glInit()
 {
-	glGetVertexShader("PPIXEL_BLINN_VTX_PROGRAM");
-	glGetFragmentShader("PPIXEL_BLINN_TEX_PROGRAM");
-	glCompileShader();
+	COpenGLShaderStage *stage = glGetOpenGLShader();
+
+	stage->glGetVertexShader("PPIXEL_BLINN_VTX_PROGRAM");
+	stage->glGetFragmentShader("PPIXEL_BLINN_TEX_PROGRAM");
+	stage->glCompileShader();
 }
 
 void CBlinnShader::glRender(void)

@@ -219,7 +219,7 @@ bool CFragmentShader::glGetShaderCaps(GL_FRAGMENT_SHADER_CAPS& caps)
 		return false;
 }
 
-bool CFragmentShader::glGetProgramStatus(void)
+bool CFragmentShader::glGetProgramStatus(void) const
 {
 	if (m_handle.handle() == 0)
 		return false;

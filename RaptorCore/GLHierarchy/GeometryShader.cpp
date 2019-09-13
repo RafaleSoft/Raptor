@@ -268,7 +268,7 @@ bool CGeometryShader::glGetShaderCaps(GL_GEOMETRY_SHADER_CAPS& caps)
 		return false;
 }
 
-bool CGeometryShader::glGetProgramStatus(void)
+bool CGeometryShader::glGetProgramStatus(void) const
 {
 	if (m_handle.handle() == 0)
 		return false;

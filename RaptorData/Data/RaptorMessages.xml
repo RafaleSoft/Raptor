@@ -40,7 +40,7 @@
 		<Message id="ID_NO_RESOURCE" str="System failed to allocate requested memory block!!!"/>
 		<Message id="ID_CREATE_FAILED" str="Object Factory failed to create object: missing or duplicate object"/>
 	</Class>
-	<Class name="FragmentProgram_old">
+	<Class name="FragmentProgram">
 		<Message id="ID_NO_GPU_PROGRAM" str="Fragment ASM program not supported or cannot be run 100% hardware"/>
 		<Message id="ID_PROGRAM_ERROR" str="Error in fragment ASM program at pos %d: %s"/>
 	</Class>
@@ -50,7 +50,7 @@
 		<Message id="ID_NO_RESOURCE" str="GLSL attribute location does not exist"/>
 		<Message id="ID_WRONG_RENDERING" str="GLSL no active program"/>
 	</Class>
-	<Class name="CVertexProgram_old">
+	<Class name="CVertexProgram">
 		<Message id="ID_NO_GPU_PROGRAM" str="Vertex ASM program not supported or cannot be run 100% hardware"/>
 		<Message id="ID_PROGRAM_ERROR" str="Error in vertex ASM program at pos %d : %s"/>
 	</Class>

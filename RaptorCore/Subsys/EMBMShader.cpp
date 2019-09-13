@@ -1,6 +1,21 @@
-// PhongShader.cpp: implementation of the CPhongShader class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  EMBMShader.cpp                                                         */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
 #include "Subsys/CodeGeneration.h"
 
 #if !defined(AFX_EMBMSHADER_H__99A5AF45_D5C7_4F43_851C_A31FC52DB237__INCLUDED_)
@@ -32,6 +47,9 @@
 #endif
 #if !defined(AFX_TEXTUREFACTORY_H__1B470EC4_4B68_11D3_9142_9A502CBADC6B__INCLUDED_)
 	#include "GLHierarchy/TextureFactory.h"
+#endif
+#if !defined(AFX_OPENGLSHADERSTAGE_H__56B00FE3_E508_4FD6_9363_90E6E67446D9__INCLUDED_)
+	#include "GLHierarchy/OpenGLShaderStage.h"
 #endif
 
 
@@ -75,8 +93,10 @@ CEMBMShader::~CEMBMShader(void)
 void CEMBMShader::glInit()
 {
 	CShader *shaderLib = new CShader();
-	CVertexShader *vp = shaderLib->glGetVertexShader("PPIXEL_BUMP_VTX_PROGRAM");
-	CFragmentShader *fp = shaderLib->glGetFragmentShader("PPIXEL_BUMP_TEX_PROGRAM");
+	COpenGLShaderStage *stage = glGetOpenGLShader();
+
+	CVertexShader *vp = stage->glGetVertexShader("PPIXEL_BUMP_VTX_PROGRAM");
+	CFragmentShader *fp = stage->glGetFragmentShader("PPIXEL_BUMP_TEX_PROGRAM");
 	std::string embm_vertexshader = vp->glGetProgramString();
 	std::string embm_pixelshader = fp->glGetProgramString();
 	shaderLib->releaseReference();
@@ -103,10 +123,10 @@ void CEMBMShader::glInit()
 	}
 	fp->glLoadProgram(embm_pixelshader);
 
-	vp = glGetVertexShader("PPIXEL_BUMP_VTX_PROGRAM");
-	fp = glGetFragmentShader("PPIXEL_BUMP_TEX_PROGRAM");
+	vp = stage->glGetVertexShader("PPIXEL_BUMP_VTX_PROGRAM");
+	fp = stage->glGetFragmentShader("PPIXEL_BUMP_TEX_PROGRAM");
 
-	glCompileShader();
+	stage->glCompileShader();
 
 #ifdef PROCEDURAL_PERLIN
 	CTextureFactory &filterFactory = CTextureFactory::getDefaultFactory();
@@ -175,8 +195,10 @@ void CEMBMShader::enableEmbm(bool enable)
 {
 	if (enable != m_bEnabled)
 	{
-		glRemoveVertexShader();
-		glRemoveFragmentShader();
+		COpenGLShaderStage *stage = glGetOpenGLShader();
+
+		stage->glRemoveVertexShader();
+		stage->glRemoveFragmentShader();
 
 		CProgramParameters params;
 		params.addParameter("tangent", CProgramParameters::ADDITIONAL_PARAM1);
@@ -186,19 +208,19 @@ void CEMBMShader::enableEmbm(bool enable)
 	
 		if (enable)
 		{
-			vp = glGetVertexShader("PPIXEL_EMBM_VTX_PROGRAM");
-			fp = glGetFragmentShader("PPIXEL_EMBM_TEX_PROGRAM");
+			vp = stage->glGetVertexShader("PPIXEL_EMBM_VTX_PROGRAM");
+			fp = stage->glGetFragmentShader("PPIXEL_EMBM_TEX_PROGRAM");
 		}
 		else
 		{
-			vp = glGetVertexShader("PPIXEL_BUMP_VTX_PROGRAM");
-			fp = glGetFragmentShader("PPIXEL_BUMP_TEX_PROGRAM");
+			vp = stage->glGetVertexShader("PPIXEL_BUMP_VTX_PROGRAM");
+			fp = stage->glGetFragmentShader("PPIXEL_BUMP_TEX_PROGRAM");
 		}
 
 		vp->setProgramParameters(params);
 		fp->setProgramParameters(params2);
 
-		glCompileShader();
+		stage->glCompileShader();
 		m_bEnabled = enable;
 	}
 }

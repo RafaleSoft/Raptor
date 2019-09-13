@@ -27,11 +27,11 @@
 #if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
     #include "System/RaptorGLExtensions.h"
 #endif
-#if !defined(AFX_FRAGMENTPROGRAM_OLD_H__DD0AD51D_3BFF_4C65_8099_BA7696D7BDDF__INCLUDED_)
-	#include "GLHierarchy/FragmentProgram_old.h"
+#if !defined(AFX_FRAGMENTPROGRAM_H__DD0AD51D_3BFF_4C65_8099_BA7696D7BDDF__INCLUDED_)
+	#include "GLHierarchy/FragmentProgram.h"
 #endif
-#if !defined(AFX_VERTEXPROGRAM_OLD_H__F2D3BBC6_87A1_4695_B667_2B8C3C4CF022__INCLUDED_)
-	#include "GLHierarchy/VertexProgram_old.h"
+#if !defined(AFX_VERTEXPROGRAM_H__F2D3BBC6_87A1_4695_B667_2B8C3C4CF022__INCLUDED_)
+	#include "GLHierarchy/VertexProgram.h"
 #endif
 #if !defined(AFX_VERTEXSHADER_H__204F7213_B40B_4B6A_9BCA_828409871B68__INCLUDED_)
 	#include "GLHierarchy/VertexShader.h"
@@ -50,6 +50,9 @@
 #endif
 #if !defined(AFX_DOFFILTER_H__A4FA0FE9_04AA_4887_9B4A_3CFAF930D840__INCLUDED_)
     #include "DOFFilter.h"
+#endif
+#if !defined(AFX_OPENGLSHADERSTAGE_H__56B00FE3_E508_4FD6_9363_90E6E67446D9__INCLUDED_)
+	#include "GLHierarchy/OpenGLShaderStage.h"
 #endif
 
 
@@ -273,14 +276,14 @@ void CDOFFilter::glRenderFilter()
 
 
 #if defined(GL_ARB_geometry_shader4)
-	DOFShader->glGetGeometryShader()->setProgramParameters(vp_paramsX);
-	DOFShader->glGetFragmentShader()->setProgramParameters(fp_params);
+	DOFShader->glGetOpenGLShader()->glGetGeometryShader()->setProgramParameters(vp_paramsX);
+	DOFShader->glGetOpenGLShader()->glGetFragmentShader()->setProgramParameters(fp_params);
 #elif defined(GL_ARB_vertex_shader)
-	DOFShader->glGetVertexProgram()->setProgramParameters(vp_paramsX);
-	DOFShader->glGetFragmentProgram()->setProgramParameters(fp_params);
+	DOFShader->glGetOpenGLShader()->glGetVertexShader()->setProgramParameters(vp_paramsX);
+	DOFShader->glGetOpenGLShader()->glGetFragmentShader()->setProgramParameters(fp_params);
 #elif defined(GL_ARB_vertex_program)
-	DOFShader->glGetVertexShader()->setProgramParameters(vp_paramsX);
-	DOFShader->glGetFragmentShader()->setProgramParameters(fp_params);
+	DOFShader->glGetOpenGLProgram()->glGetVertexProgram()->setProgramParameters(vp_paramsX);
+	DOFShader->glGetOpenGLProgram()->glGetFragmentProgram()->setProgramParameters(fp_params);
 #endif
 
 	DOFShader->glRender();
@@ -298,14 +301,14 @@ void CDOFFilter::glRenderFilter()
 		tmpTexture->glvkRender();
 
 	#if defined(GL_ARB_geometry_shader4)
-		DOFShader->glGetGeometryShader()->setProgramParameters(vp_paramsY);
-		DOFShader->glGetFragmentShader()->setProgramParameters(fp_params);
+		DOFShader->glGetOpenGLShader()->glGetGeometryShader()->setProgramParameters(vp_paramsY);
+		DOFShader->glGetOpenGLShader()->glGetFragmentShader()->setProgramParameters(fp_params);
 	#elif defined(GL_ARB_vertex_shader)
-		DOFShader->glGetVertexProgram()->setProgramParameters(vp_paramsY);
-		DOFShader->glGetFragmentProgram()->setProgramParameters(fp_params);
+		DOFShader->glGetOpenGLShader()->glGetVertexShader()->setProgramParameters(vp_paramsY);
+		DOFShader->glGetOpenGLShader()->glGetFragmentShader()->setProgramParameters(fp_params);
 	#elif defined(GL_ARB_vertex_program)
-		DOFShader->glGetVertexShader()->setProgramParameters(vp_paramsY);
-		DOFShader->glGetFragmentShader()->setProgramParameters(fp_params);
+		DOFShader->glGetOpenGLProgram()->glGetVertexProgram()->setProgramParameters(vp_paramsY);
+		DOFShader->glGetOpenGLProgram()->glGetFragmentProgram()->setProgramParameters(fp_params);
 	#endif
 
 		DOFShader->glRender();
@@ -320,14 +323,14 @@ void CDOFFilter::glRenderFilter()
 		tmpTexture2->glvkRender();
 
 #if defined(GL_ARB_geometry_shader4)
-		DOFShader->glGetGeometryShader()->setProgramParameters(vp_paramsX);
-		DOFShader->glGetFragmentShader()->setProgramParameters(fp_params);
+		DOFShader->glGetOpenGLShader()->glGetGeometryShader()->setProgramParameters(vp_paramsX);
+		DOFShader->glGetOpenGLShader()->glGetFragmentShader()->setProgramParameters(fp_params);
 #elif defined(GL_ARB_vertex_shader)
-		DOFShader->glGetVertexProgram()->setProgramParameters(vp_paramsX);
-		DOFShader->glGetFragmentProgram()->setProgramParameters(fp_params);
+		DOFShader->glGetOpenGLShader()->glGetVertexShader()->setProgramParameters(vp_paramsX);
+		DOFShader->glGetOpenGLShader()->glGetFragmentShader()->setProgramParameters(fp_params);
 #elif defined(GL_ARB_vertex_program)
-		DOFShader->glGetVertexShader()->setProgramParameters(vp_paramsX);
-		DOFShader->glGetFragmentShader()->setProgramParameters(fp_params);
+		DOFShader->glGetOpenGLProgram()->glGetVertexProgram()->setProgramParameters(vp_paramsX);
+		DOFShader->glGetOpenGLProgram()->glGetFragmentProgram()->setProgramParameters(fp_params);
 #endif
 
 		DOFShader->glRender();
@@ -353,14 +356,14 @@ void CDOFFilter::glRenderFilterOutput()
 	tmpTexture->glvkRender();
 
 #if defined(GL_ARB_geometry_shader4)
-	DOFShader->glGetGeometryShader()->setProgramParameters(vp_paramsY);
-	DOFShader->glGetFragmentShader()->setProgramParameters(fp_params);
+	DOFShader->glGetOpenGLShader()->glGetGeometryShader()->setProgramParameters(vp_paramsY);
+	DOFShader->glGetOpenGLShader()->glGetFragmentShader()->setProgramParameters(fp_params);
 #elif defined(GL_ARB_vertex_shader)
-	DOFShader->glGetVertexProgram()->setProgramParameters(vp_paramsY);
-	DOFShader->glGetFragmentProgram()->setProgramParameters(fp_params);
+	DOFShader->glGetOpenGLShader()->glGetVertexShader()->setProgramParameters(vp_paramsY);
+	DOFShader->glGetOpenGLShader()->glGetFragmentShader()->setProgramParameters(fp_params);
 #elif defined(GL_ARB_vertex_program)
-	DOFShader->glGetVertexShader()->setProgramParameters(vp_paramsY);
-	DOFShader->glGetFragmentShader()->setProgramParameters(fp_params);
+	DOFShader->glGetOpenGLProgram()->glGetVertexProgram()->setProgramParameters(vp_paramsY);
+	DOFShader->glGetOpenGLProgram()->glGetFragmentProgram()->setProgramParameters(fp_params);
 #endif
 
 	DOFShader->glRender();
@@ -502,32 +505,32 @@ void CDOFFilter::glInitShaders(void)
 
 	// Create & load shaders to perform a 2 pass blur using depth value.
 #if defined(GL_ARB_geometry_shader4)
-	DOFShader->glGetVertexShader("EMPTY_PROGRAM");
-	CGeometryShader *gp = DOFShader->glGetGeometryShader("dof_gp");
+	DOFShader->glGetOpenGLShader()->glGetVertexShader("EMPTY_PROGRAM");
+	CGeometryShader *gp = DOFShader->glGetOpenGLShader()->glGetGeometryShader("dof_gp");
 	bool res = gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
 	res = res & gp->glLoadProgram(dof_gp);
-	CFragmentShader *fp = DOFShader->glGetFragmentShader("dof_fp");
+	CFragmentShader *fp = DOFShader->glGetOpenGLShader()->glGetFragmentShader("dof_fp");
 	res = res && fp->glLoadProgram(dof_fp);
 	if (res)
 		fp->setProgramParameters(fp_params);
 
-	res = res && DOFShader->glCompileShader();
+	res = res && DOFShader->glGetOpenGLShader()->glCompileShader();
 #elif defined(GL_ARB_vertex_shader)
-	CVertexShader *vp = DOFShader->glGetVertexProgram("dof_vp");
+	CVertexShader *vp = DOFShader->glGetOpenGLShader()->glGetVertexShader("dof_vp");
 	bool res = vp->glLoadProgram(dof_vp);
 	if (res)
 		vp->setProgramParameters(vp_paramsX);
 
-	CFragmentShader *fp = DOFShader->glGetFragmentProgram("dof_fp");
+	CFragmentShader *fp = DOFShader->glGetOpenGLShader()->glGetFragmentShader("dof_fp");
 	res = res && fp->glLoadProgram(dof_fp);
 	if (res)
 		fp->setProgramParameters(fp_params);
 
-	res = res && DOFShader->glCompileShader();
+	res = res && DOFShader->glGetOpenGLShader()->glCompileShader();
 #elif defined(GL_ARB_vertex_program)
-	CVertexProgram_old *vs = DOFShader->glGetVertexShader("dof_vs");
+	CVertexProgram *vs = DOFShader->glGetOpenGLProgram()->glGetVertexProgram("dof_vs");
 	bool res = vs->glLoadProgram(dof_vs);
-	CFragmentProgram_old *fs = DOFShader->glGetFragmentShader("dof_fs");
+	CFragmentProgram *fs = DOFShader->glGetOpenGLProgram()->glGetFragmentProgram("dof_fs");
 	res = res && fs->glLoadProgram(dof_fs);
 #endif
 }

@@ -605,12 +605,6 @@
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\OpenGLShaderStage.cpp">
       <Filter>Source Files\GLHierarchy src</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\RaptorCore\GLHierarchy\VertexProgram_old.cpp">
-      <Filter>Source Files\GLHierarchy src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\RaptorCore\GLHierarchy\FragmentProgram_old.cpp">
-      <Filter>Source Files\GLHierarchy src</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\GeometryShader.cpp">
       <Filter>Source Files\GLHierarchy src</Filter>
     </ClCompile>
@@ -621,6 +615,12 @@
       <Filter>Source Files\GLHierarchy src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\UnifiedShader.cpp">
+      <Filter>Source Files\GLHierarchy src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\VertexProgram.cpp">
+      <Filter>Source Files\GLHierarchy src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\FragmentProgram.cpp">
       <Filter>Source Files\GLHierarchy src</Filter>
     </ClCompile>
   </ItemGroup>
@@ -1179,12 +1179,6 @@
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\OpenGLProgramStage.h">
       <Filter>Header Files\GLHierarchy include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\RaptorCore\GLHierarchy\VertexProgram_old.h">
-      <Filter>Header Files\GLHierarchy include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\RaptorCore\GLHierarchy\FragmentProgram_old.h">
-      <Filter>Header Files\GLHierarchy include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\GeometryShader.h">
       <Filter>Header Files\GLHierarchy include</Filter>
     </ClInclude>
@@ -1195,6 +1189,12 @@
       <Filter>Header Files\GLHierarchy include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\UnifiedShader.h">
+      <Filter>Header Files\GLHierarchy include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\VertexProgram.h">
+      <Filter>Header Files\GLHierarchy include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\FragmentProgram.h">
       <Filter>Header Files\GLHierarchy include</Filter>
     </ClInclude>
   </ItemGroup>

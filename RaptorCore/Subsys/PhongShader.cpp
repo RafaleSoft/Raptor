@@ -1,6 +1,21 @@
-// PhongShader.cpp: implementation of the CPhongShader class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  PhongShader.cpp                                                        */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
 #include "Subsys/CodeGeneration.h"
 
 #if !defined(AFX_PHONGSHADER_H__C6904117_2A9C_42A8_A20B_A71A22A9C00B__INCLUDED_)
@@ -17,6 +32,9 @@
 #endif
 #if !defined(AFX_TEXTUREUNITSETUP_H__4A6ADC72_02E5_4F2A_931E_A736B6D6E0F0__INCLUDED_)
 	#include "GLHierarchy/TextureUnitSetup.h"
+#endif
+#if !defined(AFX_OPENGLSHADERSTAGE_H__56B00FE3_E508_4FD6_9363_90E6E67446D9__INCLUDED_)
+	#include "GLHierarchy/OpenGLShaderStage.h"
 #endif
 
 
@@ -46,9 +64,11 @@ CShader* CPhongShader::glClone(const std::string& newShaderName) const
 
 void CPhongShader::glInit(void)
 {
-	glGetVertexShader("PPIXEL_PHONG_VTX_PROGRAM");
-	glGetFragmentShader("PPIXEL_PHONG_TEX_PROGRAM");
-	glCompileShader();
+	COpenGLShaderStage *stage = glGetOpenGLShader();
+
+	stage->glGetVertexShader("PPIXEL_PHONG_VTX_PROGRAM");
+	stage->glGetFragmentShader("PPIXEL_PHONG_TEX_PROGRAM");
+	stage->glCompileShader();
 }
 
 void CPhongShader::glRender(void)

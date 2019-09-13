@@ -23,8 +23,8 @@ RAPTOR_NAMESPACE_BEGIN
 class IViewPoint;
 class CRaptorDisplay;
 class CTextureObject;
-class CVertexProgram_old;
-class CFragmentProgram_old;
+class CVertexProgram;
+class CFragmentProgram;
 
 
 class COmniShadowMap : public CEnvironment  
@@ -61,8 +61,8 @@ private:
     IViewPoint*			m_pViewPoint;
     CRaptorDisplay*		m_pShadowCubeMap;
     CTextureObject*		m_pShadowTexture;
-	CVertexProgram_old*	m_pVSShadowMap;
-	CFragmentProgram_old*	m_pFSShadowMap;
+	CVertexProgram*		m_pVSShadowMap;
+	CFragmentProgram*	m_pFSShadowMap;
 };
 
 RAPTOR_NAMESPACE_END
