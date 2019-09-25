@@ -36,13 +36,16 @@ HIERARCHY_SRC = \
 	$(SRCDIR)/GLHierarchy/3DSet.cpp \
 	$(SRCDIR)/GLHierarchy/BumppedGeometry.cpp \
 	$(SRCDIR)/GLHierarchy/FragmentProgram_old.cpp \
-	$(SRCDIR)/GLHierarchy/FragmentProgram.cpp \
+	$(SRCDIR)/GLHierarchy/FragmentShader.cpp \
 	$(SRCDIR)/GLHierarchy/Geometry.cpp \
 	$(SRCDIR)/GLHierarchy/GeometryEditor.cpp \
 	$(SRCDIR)/GLHierarchy/GeometryPrimitive.cpp \
+	$(SRCDIR)/GLHierarchy/GeometryShader.cpp \
 	$(SRCDIR)/GLHierarchy/GLFont.cpp \
 	$(SRCDIR)/GLHierarchy/GLLayer.cpp \
 	$(SRCDIR)/GLHierarchy/GLLod.cpp \
+	$(SRCDIR)/GLHierarchy/IRenderingProperties.cpp \
+	$(SRCDIR)/GLHierarchy/ITextureObject.cpp \
 	$(SRCDIR)/GLHierarchy/Light.cpp \
 	$(SRCDIR)/GLHierarchy/LightObserver.cpp \
 	$(SRCDIR)/GLHierarchy/Material.cpp \
@@ -51,25 +54,24 @@ HIERARCHY_SRC = \
 	$(SRCDIR)/GLHierarchy/Object3DInstance.cpp \
 	$(SRCDIR)/GLHierarchy/Object3DInstanceSet.cpp \
 	$(SRCDIR)/GLHierarchy/Object3DShadow.cpp \
+	$(SRCDIR)/GLHierarchy/ObjectFactory.cpp \
+	$(SRCDIR)/GLHierarchy/ObjectProperties.cpp \
+	$(SRCDIR)/GLHierarchy/Particle.cpp \
 	$(SRCDIR)/GLHierarchy/PerlinNoise.cpp \
 	$(SRCDIR)/GLHierarchy/Persistence.cpp \
 	$(SRCDIR)/GLHierarchy/Projector.cpp \
-	$(SRCDIR)/GLHierarchy/IRenderingProperties.cpp \
 	$(SRCDIR)/GLHierarchy/ShadedGeometry.cpp \
 	$(SRCDIR)/GLHierarchy/Shader.cpp \
 	$(SRCDIR)/GLHierarchy/ShaderProgram.cpp \
 	$(SRCDIR)/GLHierarchy/SimpleObject.cpp \
 	$(SRCDIR)/GLHierarchy/TextureFactory.cpp \
 	$(SRCDIR)/GLHierarchy/TextureFactoryConfig.cpp \
-	$(SRCDIR)/GLHierarchy/ITextureObject.cpp \
 	$(SRCDIR)/GLHierarchy/TextureSet.cpp \
 	$(SRCDIR)/GLHierarchy/TextureUnitSetup.cpp \
+	$(SRCDIR)/GLHierarchy/UnifiedShader.cpp \
 	$(SRCDIR)/GLHierarchy/VertexProgram_old.cpp \
-	$(SRCDIR)/GLHierarchy/VertexProgram.cpp \
-	$(SRCDIR)/GLHierarchy/Particle.cpp \
-	$(SRCDIR)/GLHierarchy/ObjectFactory.cpp \
-	$(SRCDIR)/GLHierarchy/ObjectProperties.cpp \
-	$(SRCDIR)/GLHierarchy/UnifiedProgram.cpp
+	$(SRCDIR)/GLHierarchy/VertexShader.cpp
+	
 
 ENGINE_SRC = \
 	$(SRCDIR)/Engine/Animator.cpp \

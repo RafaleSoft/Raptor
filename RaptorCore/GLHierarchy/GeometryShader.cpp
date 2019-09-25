@@ -122,9 +122,11 @@ bool CGeometryShader::setGeometry(uint32_t inputType, uint32_t outputType, uint3
 {
 	if ((inputType == GL_POINTS) ||
 		(inputType == GL_LINES) ||
+#if defined(GL_ARB_geometry_shader4)
 		(inputType == GL_LINES_ADJACENCY_ARB) ||
-		(inputType == GL_TRIANGLES) ||
-		(inputType == GL_TRIANGLES_ADJACENCY_ARB))
+		(inputType == GL_TRIANGLES_ADJACENCY_ARB) ||
+#endif
+		(inputType == GL_TRIANGLES))
 		m_inputType = inputType; 
 	else
 		return false;
