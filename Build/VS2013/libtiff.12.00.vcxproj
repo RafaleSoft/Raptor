@@ -15,7 +15,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\AddOns\TiffLib-4.0.10\source\mkg3states.c" />
     <ClCompile Include="..\..\AddOns\TiffLib-4.0.10\source\port\getopt.c" />
     <ClCompile Include="..\..\AddOns\TiffLib-4.0.10\source\port\snprintf.c" />
     <ClCompile Include="..\..\AddOns\TiffLib-4.0.10\source\port\strcasecmp.c" />
@@ -63,14 +62,14 @@
     <ClCompile Include="..\..\AddOns\TiffLib-4.0.10\source\tif_zstd.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\AddOns\TiffLib-4.0.10\include\tiff.h" />
+    <ClInclude Include="..\..\AddOns\TiffLib-4.0.10\include\tiffconf.h" />
+    <ClInclude Include="..\..\AddOns\TiffLib-4.0.10\include\tif_config.h" />
     <ClInclude Include="..\..\AddOns\TiffLib-4.0.10\source\t4.h" />
-    <ClInclude Include="..\..\AddOns\TiffLib-4.0.10\source\tiff.h" />
-    <ClInclude Include="..\..\AddOns\TiffLib-4.0.10\source\tiffconf.h" />
     <ClInclude Include="..\..\AddOns\TiffLib-4.0.10\source\tiffio.h" />
     <ClInclude Include="..\..\AddOns\TiffLib-4.0.10\source\tiffio.hxx" />
     <ClInclude Include="..\..\AddOns\TiffLib-4.0.10\source\tiffiop.h" />
     <ClInclude Include="..\..\AddOns\TiffLib-4.0.10\source\tiffvers.h" />
-    <ClInclude Include="..\..\AddOns\TiffLib-4.0.10\source\tif_config.h" />
     <ClInclude Include="..\..\AddOns\TiffLib-4.0.10\source\tif_dir.h" />
     <ClInclude Include="..\..\AddOns\TiffLib-4.0.10\source\tif_fax3.h" />
     <ClInclude Include="..\..\AddOns\TiffLib-4.0.10\source\tif_predict.h" />

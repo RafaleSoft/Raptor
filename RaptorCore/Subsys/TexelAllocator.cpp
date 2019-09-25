@@ -202,7 +202,7 @@ unsigned char*	const CTexelAllocator::allocateTexels(uint64_t size)
 
 	//	Address should be aligned on a 16byte boundary
 	data_bloc db;
-	db.address = (unsigned char*)(((unsigned int)(currentAddress) + 0x0f) & 0xfffffff0);
+	db.address = (unsigned char*)(((uint64_t)(currentAddress)+0x0f) & ~0x0f);
 	db.size = size;
 	texelBlocs[db.address] = db;
 

@@ -301,7 +301,7 @@
     <ClCompile>
       <Optimization>Full</Optimization>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
-      <AdditionalIncludeDirectories>$(SolutionDir)AddOns\xercesc-3.2.2\src\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)AddOns\xercesc-3.2.2\src\;$(ProjectDir)\xercesc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_DEPRECATE;NDEBUG;WIN32;_WINDOWS;XERCES_BUILDING_LIBRARY;XERCES_USE_TRANSCODER_WINDOWS;XERCES_USE_WIN32_MSGLOADER;XERCES_USE_MSGLOADER_INMEMORY;XERCES_USE_NETACCESSOR_WINSOCK;XERCES_USE_FILEMGR_WINDOWS;XERCES_USE_MUTEXMGR_WINDOWS;XERCES_PATH_DELIMITER_BACKSLASH;HAVE_STRICMP;HAVE_STRNICMP;HAVE_LIMITS_H;HAVE_SYS_TIMEB_H;HAVE_FTIME;HAVE_WCSUPR;HAVE_WCSLWR;HAVE_WCSICMP;HAVE_WCSNICMP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -547,6 +547,7 @@ copy $(OutDir)xerces-c_3.lib "%RAPTOR_ROOT%\Redist\lib\"
       <WarningLevel>Level3</WarningLevel>
       <CompileAs>Default</CompileAs>
       <DisableSpecificWarnings>4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -605,6 +606,7 @@ copy $(OutDir)xerces-c_3.lib "%RAPTOR_ROOT%\Redist\lib\"
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
       <DisableSpecificWarnings>4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -663,6 +665,7 @@ copy $(OutDir)xerces-c_3.lib "%RAPTOR_ROOT%\Redist\lib\"
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
       <DisableSpecificWarnings>4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -748,6 +751,7 @@ copy $(OutDir)xerces-c_3.lib "%RAPTOR_ROOT%\Redist\lib\"
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
       <DisableSpecificWarnings>4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -1503,6 +1507,7 @@ copy "%(RootDir)%(Directory)%(Filename).msvc.hpp" "%(FullPath)"
     <ClCompile Include="..\..\AddOns\xercesc-3.2.2\src\xercesc\util\EncodingValidator.cpp" />
     <ClCompile Include="..\..\AddOns\xercesc-3.2.2\src\xercesc\util\FileManagers\WindowsFileMgr.cpp" />
     <ClCompile Include="..\..\AddOns\xercesc-3.2.2\src\xercesc\util\HexBin.cpp" />
+    <ClCompile Include="..\..\AddOns\xercesc-3.2.2\src\xercesc\util\JanitorExports.cpp" />
     <ClCompile Include="..\..\AddOns\xercesc-3.2.2\src\xercesc\util\KVStringPair.cpp" />
     <ClCompile Include="..\..\AddOns\xercesc-3.2.2\src\xercesc\util\MsgLoaders\InMemory\InMemMsgLoader.cpp" />
     <ClCompile Include="..\..\AddOns\xercesc-3.2.2\src\xercesc\util\Mutexes.cpp" />

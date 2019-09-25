@@ -418,9 +418,10 @@ TIFFWriteDirectorySec(TIFF* tif, int isimage, int imagedone, uint64* pdiroff)
 		}
 		tif->tif_flags &= ~(TIFF_BEENWRITING|TIFF_BUFFERSETUP);
 	}
-	dir=NULL;
-	dirmem=NULL;
-	dirsize=0;
+
+	dir = NULL;
+	dirmem = NULL;
+	dirsize = 0;
 	while (1)
 	{
 		ndir=0;
@@ -685,7 +686,7 @@ TIFFWriteDirectorySec(TIFF* tif, int isimage, int imagedone, uint64* pdiroff)
 							case TIFF_SETGET_C32_UINT8:
 								{
 									uint32 pa;
-									void* pb;
+									uint8* pb;
 									assert(o->field_type==TIFF_UNDEFINED);
 									assert(o->field_readcount==TIFF_VARIABLE2);
 									assert(o->field_passcount==1);
@@ -712,67 +713,67 @@ TIFFWriteDirectorySec(TIFF* tif, int isimage, int imagedone, uint64* pdiroff)
 			switch (tif->tif_dir.td_customValues[m].info->field_type)
 			{
 				case TIFF_ASCII:
-					if (!TIFFWriteDirectoryTagAscii(tif,&ndir,dir,tag,count,tif->tif_dir.td_customValues[m].value))
+					if (!TIFFWriteDirectoryTagAscii(tif,&ndir,dir,tag,count,(char*)tif->tif_dir.td_customValues[m].value))
 						goto bad;
 					break;
 				case TIFF_UNDEFINED:
-					if (!TIFFWriteDirectoryTagUndefinedArray(tif,&ndir,dir,tag,count,tif->tif_dir.td_customValues[m].value))
+					if (!TIFFWriteDirectoryTagUndefinedArray(tif,&ndir,dir,tag,count,(uint8*)tif->tif_dir.td_customValues[m].value))
 						goto bad;
 					break;
 				case TIFF_BYTE:
-					if (!TIFFWriteDirectoryTagByteArray(tif,&ndir,dir,tag,count,tif->tif_dir.td_customValues[m].value))
+					if (!TIFFWriteDirectoryTagByteArray(tif,&ndir,dir,tag,count,(uint8*)tif->tif_dir.td_customValues[m].value))
 						goto bad;
 					break;
 				case TIFF_SBYTE:
-					if (!TIFFWriteDirectoryTagSbyteArray(tif,&ndir,dir,tag,count,tif->tif_dir.td_customValues[m].value))
+					if (!TIFFWriteDirectoryTagSbyteArray(tif,&ndir,dir,tag,count,(int8*)tif->tif_dir.td_customValues[m].value))
 						goto bad;
 					break;
 				case TIFF_SHORT:
-					if (!TIFFWriteDirectoryTagShortArray(tif,&ndir,dir,tag,count,tif->tif_dir.td_customValues[m].value))
+					if (!TIFFWriteDirectoryTagShortArray(tif,&ndir,dir,tag,count,(uint16*)tif->tif_dir.td_customValues[m].value))
 						goto bad;
 					break;
 				case TIFF_SSHORT:
-					if (!TIFFWriteDirectoryTagSshortArray(tif,&ndir,dir,tag,count,tif->tif_dir.td_customValues[m].value))
+					if (!TIFFWriteDirectoryTagSshortArray(tif,&ndir,dir,tag,count,(int16*)tif->tif_dir.td_customValues[m].value))
 						goto bad;
 					break;
 				case TIFF_LONG:
-					if (!TIFFWriteDirectoryTagLongArray(tif,&ndir,dir,tag,count,tif->tif_dir.td_customValues[m].value))
+					if (!TIFFWriteDirectoryTagLongArray(tif,&ndir,dir,tag,count,(uint32*)tif->tif_dir.td_customValues[m].value))
 						goto bad;
 					break;
 				case TIFF_SLONG:
-					if (!TIFFWriteDirectoryTagSlongArray(tif,&ndir,dir,tag,count,tif->tif_dir.td_customValues[m].value))
+					if (!TIFFWriteDirectoryTagSlongArray(tif,&ndir,dir,tag,count,(int32*)tif->tif_dir.td_customValues[m].value))
 						goto bad;
 					break;
 				case TIFF_LONG8:
-					if (!TIFFWriteDirectoryTagLong8Array(tif,&ndir,dir,tag,count,tif->tif_dir.td_customValues[m].value))
+					if (!TIFFWriteDirectoryTagLong8Array(tif,&ndir,dir,tag,count,(uint64*)tif->tif_dir.td_customValues[m].value))
 						goto bad;
 					break;
 				case TIFF_SLONG8:
-					if (!TIFFWriteDirectoryTagSlong8Array(tif,&ndir,dir,tag,count,tif->tif_dir.td_customValues[m].value))
+					if (!TIFFWriteDirectoryTagSlong8Array(tif,&ndir,dir,tag,count,(int64*)tif->tif_dir.td_customValues[m].value))
 						goto bad;
 					break;
 				case TIFF_RATIONAL:
-					if (!TIFFWriteDirectoryTagRationalArray(tif,&ndir,dir,tag,count,tif->tif_dir.td_customValues[m].value))
+					if (!TIFFWriteDirectoryTagRationalArray(tif,&ndir,dir,tag,count,(float*)tif->tif_dir.td_customValues[m].value))
 						goto bad;
 					break;
 				case TIFF_SRATIONAL:
-					if (!TIFFWriteDirectoryTagSrationalArray(tif,&ndir,dir,tag,count,tif->tif_dir.td_customValues[m].value))
+					if (!TIFFWriteDirectoryTagSrationalArray(tif,&ndir,dir,tag,count,(float*)tif->tif_dir.td_customValues[m].value))
 						goto bad;
 					break;
 				case TIFF_FLOAT:
-					if (!TIFFWriteDirectoryTagFloatArray(tif,&ndir,dir,tag,count,tif->tif_dir.td_customValues[m].value))
+					if (!TIFFWriteDirectoryTagFloatArray(tif,&ndir,dir,tag,count,(float*)tif->tif_dir.td_customValues[m].value))
 						goto bad;
 					break;
 				case TIFF_DOUBLE:
-					if (!TIFFWriteDirectoryTagDoubleArray(tif,&ndir,dir,tag,count,tif->tif_dir.td_customValues[m].value))
+					if (!TIFFWriteDirectoryTagDoubleArray(tif,&ndir,dir,tag,count,(double*)tif->tif_dir.td_customValues[m].value))
 						goto bad;
 					break;
 				case TIFF_IFD:
-					if (!TIFFWriteDirectoryTagIfdArray(tif,&ndir,dir,tag,count,tif->tif_dir.td_customValues[m].value))
+					if (!TIFFWriteDirectoryTagIfdArray(tif,&ndir,dir,tag,count,(uint32*)tif->tif_dir.td_customValues[m].value))
 						goto bad;
 					break;
 				case TIFF_IFD8:
-					if (!TIFFWriteDirectoryTagIfdIfd8Array(tif,&ndir,dir,tag,count,tif->tif_dir.td_customValues[m].value))
+					if (!TIFFWriteDirectoryTagIfdIfd8Array(tif,&ndir,dir,tag,count,(uint64*)tif->tif_dir.td_customValues[m].value))
 						goto bad;
 					break;
 				default:
@@ -782,7 +783,7 @@ TIFFWriteDirectorySec(TIFF* tif, int isimage, int imagedone, uint64* pdiroff)
 		}
 		if (dir!=NULL)
 			break;
-		dir=_TIFFmalloc(ndir*sizeof(TIFFDirEntry));
+		dir = (TIFFDirEntry*)_TIFFmalloc(ndir*sizeof(TIFFDirEntry));
 		if (dir==NULL)
 		{
 			TIFFErrorExt(tif->tif_clientdata,module,"Out of memory");
@@ -837,6 +838,7 @@ TIFFWriteDirectorySec(TIFF* tif, int isimage, int imagedone, uint64* pdiroff)
 				tif->tif_subifdoff=tif->tif_diroff+8+na*20+12;
 		}
 	}
+
 	dirmem=_TIFFmalloc(dirsize);
 	if (dirmem==NULL)
 	{
@@ -845,34 +847,34 @@ TIFFWriteDirectorySec(TIFF* tif, int isimage, int imagedone, uint64* pdiroff)
 	}
 	if (!(tif->tif_flags&TIFF_BIGTIFF))
 	{
-		uint8* n;
-		uint32 nTmp;
+		uint8* n = NULL;
+		uint32 nTmp = 0;
 		TIFFDirEntry* o;
-		n=dirmem;
+		n = (uint8*)dirmem;
 		*(uint16*)n=(uint16)ndir;
 		if (tif->tif_flags&TIFF_SWAB)
 			TIFFSwabShort((uint16*)n);
-		n+=2;
-		o=dir;
+		n += 2;
+		o = dir;
 		for (m=0; m<ndir; m++)
 		{
 			*(uint16*)n=o->tdir_tag;
 			if (tif->tif_flags&TIFF_SWAB)
 				TIFFSwabShort((uint16*)n);
-			n+=2;
+			n += 2;
 			*(uint16*)n=o->tdir_type;
 			if (tif->tif_flags&TIFF_SWAB)
 				TIFFSwabShort((uint16*)n);
-			n+=2;
+			n += 2;
 			nTmp = (uint32)o->tdir_count;
 			_TIFFmemcpy(n,&nTmp,4);
 			if (tif->tif_flags&TIFF_SWAB)
 				TIFFSwabLong((uint32*)n);
-			n+=4;
+			n += 4;
 			/* This is correct. The data has been */
 			/* swabbed previously in TIFFWriteDirectoryTagData */
 			_TIFFmemcpy(n,&o->tdir_offset,4);
-			n+=4;
+			n += 4;
 			o++;
 		}
 		nTmp = (uint32)tif->tif_nextdiroff;
@@ -882,14 +884,14 @@ TIFFWriteDirectorySec(TIFF* tif, int isimage, int imagedone, uint64* pdiroff)
 	}
 	else
 	{
-		uint8* n;
-		TIFFDirEntry* o;
-		n=dirmem;
+		uint8* n = NULL;
+		TIFFDirEntry* o = NULL;
+		n = (uint8*)dirmem;
 		*(uint64*)n=ndir;
 		if (tif->tif_flags&TIFF_SWAB)
 			TIFFSwabLong8((uint64*)n);
-		n+=8;
-		o=dir;
+		n += 8;
+		o = dir;
 		for (m=0; m<ndir; m++)
 		{
 			*(uint16*)n=o->tdir_tag;
@@ -1268,16 +1270,16 @@ static int
 TIFFWriteDirectoryTagShortPerSample(TIFF* tif, uint32* ndir, TIFFDirEntry* dir, uint16 tag, uint16 value)
 {
 	static const char module[] = "TIFFWriteDirectoryTagShortPerSample";
-	uint16* m;
-	uint16* na;
-	uint16 nb;
-	int o;
+	uint16* m = NULL;
+	uint16* na = NULL;
+	uint16 nb = 0;
+	int o = 0;
 	if (dir==NULL)
 	{
 		(*ndir)++;
 		return(1);
 	}
-	m=_TIFFmalloc(tif->tif_dir.td_samplesperpixel*sizeof(uint16));
+	m = (uint16*)_TIFFmalloc(tif->tif_dir.td_samplesperpixel*sizeof(uint16));
 	if (m==NULL)
 	{
 		TIFFErrorExt(tif->tif_clientdata,module,"Out of memory");
@@ -1285,7 +1287,7 @@ TIFFWriteDirectoryTagShortPerSample(TIFF* tif, uint32* ndir, TIFFDirEntry* dir, 
 	}
 	for (na=m, nb=0; nb<tif->tif_dir.td_samplesperpixel; na++, nb++)
 		*na=value;
-	o=TIFFWriteDirectoryTagCheckedShortArray(tif,ndir,dir,tag,tif->tif_dir.td_samplesperpixel,m);
+	o = TIFFWriteDirectoryTagCheckedShortArray(tif,ndir,dir,tag,tif->tif_dir.td_samplesperpixel,m);
 	_TIFFfree(m);
 	return(o);
 }
@@ -1672,11 +1674,11 @@ static int
 TIFFWriteDirectoryTagLongLong8Array(TIFF* tif, uint32* ndir, TIFFDirEntry* dir, uint16 tag, uint32 count, uint64* value)
 {
     static const char module[] = "TIFFWriteDirectoryTagLongLong8Array";
-    uint64* ma;
-    uint32 mb;
-    uint32* p;
-    uint32* q;
-    int o;
+    uint64* ma = 0;
+    uint32 mb = 0;
+    uint32* p = 0;
+    uint32* q = 0;
+    int o = 0;
 
     /* is this just a counting pass? */
     if (dir==NULL)
@@ -1695,8 +1697,8 @@ TIFFWriteDirectoryTagLongLong8Array(TIFF* tif, uint32* ndir, TIFFDirEntry* dir, 
     ** and convert to long format.
     */
 
-    p = _TIFFmalloc(count*sizeof(uint32));
-    if (p==NULL)
+    p = (uint32*)_TIFFmalloc(count*sizeof(uint32));
+    if (p == NULL)
     {
         TIFFErrorExt(tif->tif_clientdata,module,"Out of memory");
         return(0);
@@ -1714,7 +1716,7 @@ TIFFWriteDirectoryTagLongLong8Array(TIFF* tif, uint32* ndir, TIFFDirEntry* dir, 
         *q= (uint32)(*ma);
     }
 
-    o=TIFFWriteDirectoryTagCheckedLongArray(tif,ndir,dir,tag,count,p);
+    o = TIFFWriteDirectoryTagCheckedLongArray(tif,ndir,dir,tag,count,p);
     _TIFFfree(p);
 
     return(o);
@@ -1730,11 +1732,11 @@ static int
 TIFFWriteDirectoryTagIfdIfd8Array(TIFF* tif, uint32* ndir, TIFFDirEntry* dir, uint16 tag, uint32 count, uint64* value)
 {
     static const char module[] = "TIFFWriteDirectoryTagIfdIfd8Array";
-    uint64* ma;
-    uint32 mb;
-    uint32* p;
-    uint32* q;
-    int o;
+    uint64* ma = NULL;
+    uint32 mb = 0;
+    uint32* p = NULL;
+    uint32* q = NULL;
+    int o = 0;
 
     /* is this just a counting pass? */
     if (dir==NULL)
@@ -1753,7 +1755,7 @@ TIFFWriteDirectoryTagIfdIfd8Array(TIFF* tif, uint32* ndir, TIFFDirEntry* dir, ui
     ** and convert to long format.
     */
 
-    p = _TIFFmalloc(count*sizeof(uint32));
+    p = (uint32*)_TIFFmalloc(count*sizeof(uint32));
     if (p==NULL)
     {
         TIFFErrorExt(tif->tif_clientdata,module,"Out of memory");
@@ -1769,10 +1771,10 @@ TIFFWriteDirectoryTagIfdIfd8Array(TIFF* tif, uint32* ndir, TIFFDirEntry* dir, ui
             _TIFFfree(p);
             return(0);
         }
-        *q= (uint32)(*ma);
+        *q = (uint32)(*ma);
     }
 
-    o=TIFFWriteDirectoryTagCheckedIfdArray(tif,ndir,dir,tag,count,p);
+    o = TIFFWriteDirectoryTagCheckedIfdArray(tif,ndir,dir,tag,count,p);
     _TIFFfree(p);
 
     return(o);
@@ -1845,16 +1847,16 @@ static int
 TIFFWriteDirectoryTagColormap(TIFF* tif, uint32* ndir, TIFFDirEntry* dir)
 {
 	static const char module[] = "TIFFWriteDirectoryTagColormap";
-	uint32 m;
-	uint16* n;
-	int o;
-	if (dir==NULL)
+	uint32 m = 0;
+	uint16* n = NULL;
+	int o = 0;
+	if (dir == NULL)
 	{
 		(*ndir)++;
 		return(1);
 	}
-	m=(1<<tif->tif_dir.td_bitspersample);
-	n=_TIFFmalloc(3*m*sizeof(uint16));
+	m = (1<<tif->tif_dir.td_bitspersample);
+	n = (uint16*)_TIFFmalloc(3*m*sizeof(uint16));
 	if (n==NULL)
 	{
 		TIFFErrorExt(tif->tif_clientdata,module,"Out of memory");
@@ -1872,17 +1874,17 @@ static int
 TIFFWriteDirectoryTagTransferfunction(TIFF* tif, uint32* ndir, TIFFDirEntry* dir)
 {
 	static const char module[] = "TIFFWriteDirectoryTagTransferfunction";
-	uint32 m;
-	uint16 n;
-	uint16* o;
-	int p;
-	if (dir==NULL)
+	uint32 m = 0; 
+	uint16 n = 0;
+	uint16* o = NULL;
+	int p = 0;
+	if (dir == NULL)
 	{
 		(*ndir)++;
 		return(1);
 	}
-	m=(1<<tif->tif_dir.td_bitspersample);
-	n=tif->tif_dir.td_samplesperpixel-tif->tif_dir.td_extrasamples;
+	m = (1<<tif->tif_dir.td_bitspersample);
+	n = tif->tif_dir.td_samplesperpixel-tif->tif_dir.td_extrasamples;
 	/*
 	 * Check if the table can be written as a single column,
 	 * or if it must be written as 3 columns.  Note that we
@@ -1903,7 +1905,7 @@ TIFFWriteDirectoryTagTransferfunction(TIFF* tif, uint32* ndir, TIFFDirEntry* dir
 	}
 	if (n==0)
 		n=1;
-	o=_TIFFmalloc(n*m*sizeof(uint16));
+	o = (uint16*)_TIFFmalloc(n*m*sizeof(uint16));
 	if (o==NULL)
 	{
 		TIFFErrorExt(tif->tif_clientdata,module,"Out of memory");
@@ -1923,7 +1925,7 @@ static int
 TIFFWriteDirectoryTagSubifd(TIFF* tif, uint32* ndir, TIFFDirEntry* dir)
 {
 	static const char module[] = "TIFFWriteDirectoryTagSubifd";
-	uint64 m;
+	uint64 m = 0;
 	int n;
 	if (tif->tif_dir.td_nsubifd==0)
 		return(1);
@@ -1935,11 +1937,11 @@ TIFFWriteDirectoryTagSubifd(TIFF* tif, uint32* ndir, TIFFDirEntry* dir)
 	m=tif->tif_dataoff;
 	if (!(tif->tif_flags&TIFF_BIGTIFF))
 	{
-		uint32* o;
-		uint64* pa;
-		uint32* pb;
-		uint16 p;
-		o=_TIFFmalloc(tif->tif_dir.td_nsubifd*sizeof(uint32));
+		uint32* o = NULL;
+		uint64* pa = NULL;
+		uint32* pb = NULL;
+		uint16 p = 0;
+		o = (uint32*)_TIFFmalloc(tif->tif_dir.td_nsubifd*sizeof(uint32));
 		if (o==NULL)
 		{
 			TIFFErrorExt(tif->tif_clientdata,module,"Out of memory");
@@ -2228,13 +2230,13 @@ static int
 TIFFWriteDirectoryTagCheckedRationalArray(TIFF* tif, uint32* ndir, TIFFDirEntry* dir, uint16 tag, uint32 count, float* value)
 {
 	static const char module[] = "TIFFWriteDirectoryTagCheckedRationalArray";
-	uint32* m;
-	float* na;
-	uint32* nb;
-	uint32 nc;
-	int o;
+	uint32* m = NULL;
+	float* na = NULL;
+	uint32* nb = NULL;
+	uint32 nc = 0;
+	int o = 0;
 	assert(sizeof(uint32)==4);
-	m=_TIFFmalloc(count*2*sizeof(uint32));
+	m = (uint32*)_TIFFmalloc(count*2*sizeof(uint32));
 	if (m==NULL)
 	{
 		TIFFErrorExt(tif->tif_clientdata,module,"Out of memory");
@@ -2275,14 +2277,14 @@ static int
 TIFFWriteDirectoryTagCheckedSrationalArray(TIFF* tif, uint32* ndir, TIFFDirEntry* dir, uint16 tag, uint32 count, float* value)
 {
 	static const char module[] = "TIFFWriteDirectoryTagCheckedSrationalArray";
-	int32* m;
-	float* na;
-	int32* nb;
-	uint32 nc;
-	int o;
+	int32* m = NULL;
+	float* na = NULL;
+	int32* nb = NULL;
+	uint32 nc = 0;
+	int o = 0;
 	assert(sizeof(int32)==4);
-	m=_TIFFmalloc(count*2*sizeof(int32));
-	if (m==NULL)
+	m = (int32*)_TIFFmalloc(count*2*sizeof(int32));
+	if (m == NULL)
 	{
 		TIFFErrorExt(tif->tif_clientdata,module,"Out of memory");
 		return(0);

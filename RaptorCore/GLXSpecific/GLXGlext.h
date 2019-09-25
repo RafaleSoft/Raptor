@@ -28,8 +28,13 @@
 #ifdef GLX_EXTENSIONS
 	#include <malloc.h>
 	
-	typedef ptrdiff_t GLintptr;
-	typedef ptrdiff_t GLsizeiptr;
+	//!	Mandatory standard base types
+	typedef ptrdiff_t	GLintptr;
+	typedef ptrdiff_t	GLsizeiptr;
+	typedef char		GLchar;
+
+	//!	Aliases
+	typedef GLintptr	GLintptrARB;
 	
 	#include <GL/glx.h>
 #endif

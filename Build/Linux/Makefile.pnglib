@@ -1,6 +1,6 @@
 ###########################################################################
 #                                                                         #
-#  Makefile.simd                                                          #
+#  Makefile.pnglib                                                        #
 #                                                                         #
 #    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       #
 #                                                                         #
@@ -18,14 +18,33 @@
 
 export
 
-CCCFLAGS =  -DSIMD_NO_ASSEMBLY -DLINUX -fPIC
-OUTPUT = $(RAPTOR_ROOT)/Build/Linux/Release/SIMD
-SRCDIR = $(RAPTOR_ROOT)/SIMD
-INCDIRS = -I$(SRCDIR)
+CCCFLAGS = -DLINUX -fPIC
+OUTPUT = $(RAPTOR_ROOT)/Build/Linux/Release/libpng
+SRCDIR = $(RAPTOR_ROOT)/AddOns/libpng-$(PNGLIB_VERSION)/source
+INCDIRS = -I$(RAPTOR_ROOT)/AddOns/libpng-$(PNGLIB_VERSION)/include -I$(SRCDIR)
 LDFLAGS = -Bdynamic -shared -lstdc++
 
-SO = $(OUTPUT)/libsimd.so.$(RAPTOR_VERSION)
-LIB = $(OUTPUT)/libsimd.a
+SO = $(OUTPUT)/libpng.so.$(PNGLIB_VERSION)
+LIB = $(OUTPUT)/libpng.a
+
+SRC = \
+	$(SRCDIR)/png.c \
+	$(SRCDIR)/pngerror.c \
+	$(SRCDIR)/pngpread.c \
+	$(SRCDIR)/pngrio.c \
+	$(SRCDIR)/pngset.c \
+	$(SRCDIR)/pngwrite.c \
+	$(SRCDIR)/pngget.c \
+	$(SRCDIR)/pngrtran.c \
+	$(SRCDIR)/pngwtran.c \
+	$(SRCDIR)/pngmem.c \
+	$(SRCDIR)/pngread.c \
+	$(SRCDIR)/pngrutil.c \
+	$(SRCDIR)/pngtrans.c \
+	$(SRCDIR)/pngwio.c \
+	$(SRCDIR)/pngwutil.c
+
+OBJ = $(SRC:$(SRCDIR)/%.c=$(OUTPUT)/%.o)
 
 all:	$(LIB) $(SO)
 
@@ -33,18 +52,7 @@ clean:
 	rm -rf $(OUTPUT)
 	mkdir -p $(OUTPUT)
 
-SRC = \
-	$(SRCDIR)/MMXBVector.cpp \
-	$(SRCDIR)/MMXWMatrix.cpp \
-	$(SRCDIR)/MMXWVector.cpp \
-	$(SRCDIR)/simd.cpp \
-	$(SRCDIR)/SSEFMatrix.cpp \
-	$(SRCDIR)/SSEFVector.cpp \
-	$(SRCDIR)/WVector.cpp
-
-OBJ = $(SRC:$(SRCDIR)/%.cpp=$(OUTPUT)/%.o)
-	
-$(SO):	$(OBJ) 
+$(SO):	$(OBJ)
 	g++ -o $(SO) $(LDFLAGS) $(OBJ)
 	cp $(SO) $(REDIST)/Bin/
 
@@ -53,4 +61,9 @@ $(LIB):	$(OBJ)
 	cp $(LIB) $(REDIST)/Lib/
 
 $(OBJ):	$(SRC)
-	g++ $(CCCFLAGS) $(INCDIRS) -c $(<D)/$(*F).cpp  -o $(OUTPUT)/$(@F)
+	g++ $(CCCFLAGS) $(INCDIRS) -c $(<D)/$(*F).c  -o $(OUTPUT)/$(@F)
+
+
+
+	
+
