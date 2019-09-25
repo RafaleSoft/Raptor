@@ -84,6 +84,7 @@ public:
 	//! @return true if the vertex program has been deleted
 	bool glRemoveVertexShader(void);
 
+
 	//!	Returns the fragment Program
 	//!	Allocate a new one if necessary
 	CFragmentShader * const glGetFragmentShader(const std::string& name = "");
@@ -94,6 +95,7 @@ public:
 	//! Removes the fragment program.
 	//! @return true if the fragment program has been deleted
 	bool glRemoveFragmentShader(void);
+
 
 	//!	Returns the geometry Program
 	//!	Allocate a new one if necessary
@@ -125,18 +127,29 @@ protected:
 	//! Copy constructor.
 	COpenGLShaderStage(const COpenGLShaderStage&);
 
+	//! Program has been re-linked, perform post processing again
+	bool    m_bReLinked;
+
 
 private:
 	//! Denied operators
 	COpenGLShaderStage();
 	COpenGLShaderStage& operator=(const COpenGLShaderStage&);
 
-	//! Implements CPersistence
+	//! Implements CPersistence.
 	virtual void unLink(const CPersistence* p);
+
+	//!	Initialise uniforms binding of program.
+	void glQueryUniformLocations(void);
+
+	//!	Initialise attributes binding of program.
+	void glQueryAttributeLocations(void);
+
 
 	bool			m_bDeleteVShader;
 	bool			m_bDeleteFShader;
 	bool			m_bDeleteGShader;
+	bool			m_bUpdateLocations;
 
 	RAPTOR_HANDLE	m_shaderProgram;
 
