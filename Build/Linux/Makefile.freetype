@@ -1,0 +1,341 @@
+###########################################################################
+#                                                                         #
+#  Makefile.freetype                                                      #
+#                                                                         #
+#    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       #
+#                                                                         #
+#  Copyright 1998-2019 by                                                 #
+#  Fabrice FERRAND.                                                       #
+#                                                                         #
+#  This file is part of the Raptor project, and may only be used,         #
+#  modified, and distributed under the terms of the Raptor project        #
+#  license, LICENSE.  By continuing to use, modify, or distribute         #
+#  this file you indicate that you have read the license and              #
+#  understand and accept it fully.                                        #
+#                                                                         #
+###########################################################################
+
+
+export
+
+CCCFLAGS = -DSTDC -DLINUX -fPIC -DFT2_BUILD_LIBRARY
+OUTPUT = $(RAPTOR_ROOT)/Build/Linux/Release/freetype
+SRCDIR = $(RAPTOR_ROOT)/AddOns/freetype-$(FREETYPE_VERSION)/source
+INCDIRS = -I$(RAPTOR_ROOT)/AddOns/freetype-$(FREETYPE_VERSION)/include -I$(SRCDIR) -I$(SRCDIR)/internal/internal
+LDFLAGS = -Bdynamic -shared -lstdc++
+
+SO = $(OUTPUT)/libfreetype.so.$(FREETYPE_VERSION)
+LIB = $(OUTPUT)/libfreetype.a
+
+AUTOFIT_SRC = \
+	$(SRCDIR)/autofit/autofit.c \
+	$(SRCDIR)/autofit/afangles.c \
+	$(SRCDIR)/autofit/afcjk.c \
+	$(SRCDIR)/autofit/afglobal.c \
+	$(SRCDIR)/autofit/afindic.c \
+	$(SRCDIR)/autofit/aflatin.c \
+	$(SRCDIR)/autofit/afmodule.c \
+	$(SRCDIR)/autofit/afranges.c \
+	$(SRCDIR)/autofit/afwarp.c \
+	$(SRCDIR)/autofit/afblue.c \
+	$(SRCDIR)/autofit/afdummy.c \
+	$(SRCDIR)/autofit/afhints.c \
+	$(SRCDIR)/autofit/afloader.c \
+	$(SRCDIR)/autofit/afpic.c \
+	$(SRCDIR)/autofit/afshaper.c
+	
+BASE_SRC = \
+	$(SRCDIR)/base/ftbase.c \
+	$(SRCDIR)/base/ftbdf.c \
+	$(SRCDIR)/base/ftcid.c \
+	$(SRCDIR)/base/ftdebug.c \
+	$(SRCDIR)/base/ftfstype.c \
+	$(SRCDIR)/base/ftgasp.c \
+	$(SRCDIR)/base/ftglyph.c \
+	$(SRCDIR)/base/ftgxval.c \
+	$(SRCDIR)/base/ftinit.c \
+	$(SRCDIR)/base/ftmm.c \
+	$(SRCDIR)/base/ftpatent.c \
+	$(SRCDIR)/base/ftpfr.c \
+	$(SRCDIR)/base/ftstroke.c \
+	$(SRCDIR)/base/ftsynth.c \
+	$(SRCDIR)/base/fttype1.c \
+	$(SRCDIR)/base/ftwinfnt.c
+	
+INTERNAL_SRC = \
+	$(SRCDIR)/base/basepic.c \
+	$(SRCDIR)/base/basepic.c \
+	$(SRCDIR)/base/ftmac.c \
+	$(SRCDIR)/base/ftsnames.c \
+	$(SRCDIR)/base/fttrigon.c \
+	$(SRCDIR)/base/ftadvanc.c \
+	$(SRCDIR)/base/ftbitmap.c \
+	$(SRCDIR)/base/ftfntfmt.c \
+	$(SRCDIR)/base/ftstream.c \
+	$(SRCDIR)/base/ftapi.c \
+	$(SRCDIR)/base/ftcalc.c \
+	$(SRCDIR)/base/fthash.c \
+	$(SRCDIR)/base/ftobjs.c \
+	$(SRCDIR)/base/ftpic.c \
+	$(SRCDIR)/base/ftutil.c \
+	$(SRCDIR)/base/ftotval.c \
+	$(SRCDIR)/base/ftpsprop.c \
+	$(SRCDIR)/base/ftbbox.c \
+	$(SRCDIR)/base/ftdbgmem.c \
+	$(SRCDIR)/base/ftgloadr.c \
+	$(SRCDIR)/base/ftlcdfil.c \
+	$(SRCDIR)/base/ftoutln.c \
+	$(SRCDIR)/base/ftrfork.c \
+	$(SRCDIR)/base/ftsystem.c \
+	$(SRCDIR)/base/md5.c
+
+BDF_SRC = \
+	$(SRCDIR)/bdf/bdf.c \
+	$(SRCDIR)/bdf/bdflib.c \
+	$(SRCDIR)/bdf/bdfdrivr.c
+
+CACHE_SRC = \
+	$(SRCDIR)/cache/ftcache.c \
+	$(SRCDIR)/cache/ftccache.c \
+	$(SRCDIR)/cache/ftcbasic.c \
+	$(SRCDIR)/cache/ftccmap.c \
+	$(SRCDIR)/cache/ftcglyph.c \
+	$(SRCDIR)/cache/ftcimage.c \
+	$(SRCDIR)/cache/ftcmanag.c \
+	$(SRCDIR)/cache/ftcmru.c \
+	$(SRCDIR)/cache/ftcsbits.c
+
+CFF_SRC = \
+	$(SRCDIR)/cff/cff.c \
+	$(SRCDIR)/cff/cffgload.c \
+	$(SRCDIR)/cff/cffload.c \
+	$(SRCDIR)/cff/cffobjs.c \
+	$(SRCDIR)/cff/cffparse.c \
+	$(SRCDIR)/cff/cffpic.c \
+	$(SRCDIR)/cff/cffcmap.c \
+	$(SRCDIR)/cff/cffdrivr.c
+
+CID_SRC = \
+	$(SRCDIR)/cid/type1cid.c \
+	$(SRCDIR)/cid/cidgload.c \
+	$(SRCDIR)/cid/cidload.c \
+	$(SRCDIR)/cid/cidobjs.c \
+	$(SRCDIR)/cid/cidparse.c \
+	$(SRCDIR)/cid/cidriver.c
+
+GZIP_SRC = \
+	$(SRCDIR)/gzip/ftgzip.c \
+	$(SRCDIR)/gzip/adler32.c \
+	$(SRCDIR)/gzip/inflate.c \
+	$(SRCDIR)/gzip/infblock.c \
+	$(SRCDIR)/gzip/infcodes.c \
+	$(SRCDIR)/gzip/inftrees.c \
+	$(SRCDIR)/gzip/infutil.c \
+	$(SRCDIR)/gzip/zutil.c
+
+LZW_SRC = \
+	$(SRCDIR)/lzw/ftlzw.c \
+	$(SRCDIR)/lzw/ftzopen.c
+
+PCF_SRC = \
+	$(SRCDIR)/pcf/pcf.c \
+	$(SRCDIR)/pcf/pcfdrivr.c \
+	$(SRCDIR)/pcf/pcfread.c \
+	$(SRCDIR)/pcf/pcfutil.c
+
+PFR_SRC = \
+	$(SRCDIR)/pfr/pfr.c \
+	$(SRCDIR)/pfr/pfrcmap.c \
+	$(SRCDIR)/pfr/pfrdrivr.c \
+	$(SRCDIR)/pfr/pfrgload.c \
+	$(SRCDIR)/pfr/pfrload.c \
+	$(SRCDIR)/pfr/pfrobjs.c \
+	$(SRCDIR)/pfr/pfrsbit.c
+
+PSAUX_SRC = \
+	$(SRCDIR)/psaux/psaux.c \
+	$(SRCDIR)/psaux/afmparse.c \
+	$(SRCDIR)/psaux/psarrst.c \
+	$(SRCDIR)/psaux/pserror.c \
+	$(SRCDIR)/psaux/psft.c \
+	$(SRCDIR)/psaux/psintrp.c \
+	$(SRCDIR)/psaux/psblues.c \
+	$(SRCDIR)/psaux/psstack.c \
+	$(SRCDIR)/psaux/t1decode.c \
+	$(SRCDIR)/psaux/cffdecode.c \
+	$(SRCDIR)/psaux/psobjs.c \
+	$(SRCDIR)/psaux/psconv.c \
+	$(SRCDIR)/psaux/psfont.c \
+	$(SRCDIR)/psaux/pshints.c \
+	$(SRCDIR)/psaux/psauxmod.c \
+	$(SRCDIR)/psaux/psread.c \
+	$(SRCDIR)/psaux/t1cmap.c
+
+PSHINTER_SRC = \
+	$(SRCDIR)/pshinter/pshinter.c \
+	$(SRCDIR)/pshinter/pshmod.c \
+	$(SRCDIR)/pshinter/pshalgo.c \
+	$(SRCDIR)/pshinter/pshglob.c \
+	$(SRCDIR)/pshinter/pshinter.c \
+	$(SRCDIR)/pshinter/pshpic.c \
+	$(SRCDIR)/pshinter/pshrec.c
+
+PSNAMES_SRC = \
+	$(SRCDIR)/psnames/psnames.c \
+	$(SRCDIR)/psnames/psmodule.c \
+	$(SRCDIR)/psnames/pspic.c
+
+RASTER_SRC = \
+	$(SRCDIR)/raster/raster.c \
+	$(SRCDIR)/raster/ftraster.c \
+	$(SRCDIR)/raster/ftrend1.c \
+	$(SRCDIR)/raster/rastpic.c
+
+SFNT_SRC = \
+	$(SRCDIR)/sfnt/sfnt.c \
+	$(SRCDIR)/sfnt/sfdriver.c \
+	$(SRCDIR)/sfnt/sfobjs.c \
+	$(SRCDIR)/sfnt/ttload.c \
+	$(SRCDIR)/sfnt/ttsbit.c \
+	$(SRCDIR)/sfnt/pngshim.c \
+	$(SRCDIR)/sfnt/sfntpic.c \
+	$(SRCDIR)/sfnt/ttcmap.c \
+	$(SRCDIR)/sfnt/ttkern.c \
+	$(SRCDIR)/sfnt/ttpost.c \
+	$(SRCDIR)/sfnt/ttbdf.c \
+	$(SRCDIR)/sfnt/ttmtx.c 
+
+SMOOTH_SRC = \
+	$(SRCDIR)/smooth/smooth.c \
+	$(SRCDIR)/smooth/ftgrays.c \
+	$(SRCDIR)/smooth/ftsmooth.c \
+	$(SRCDIR)/smooth/ftspic.c
+
+TRUETYPE_SRC = \
+	$(SRCDIR)/truetype/truetype.c \
+	$(SRCDIR)/truetype/ttinterp.c \
+	$(SRCDIR)/truetype/ttpload.c \
+	$(SRCDIR)/truetype/ttgxvar.c \
+	$(SRCDIR)/truetype/ttpic.c \
+	$(SRCDIR)/truetype/ttdriver.c \
+	$(SRCDIR)/truetype/ttgload.c \
+	$(SRCDIR)/truetype/ttobjs.c \
+	$(SRCDIR)/truetype/ttsubpix.c
+
+TYPE1_SRC = \
+	$(SRCDIR)/type1/type1.c \
+	$(SRCDIR)/type1/t1gload.c \
+	$(SRCDIR)/type1/t1load.c \
+	$(SRCDIR)/type1/t1objs.c \
+	$(SRCDIR)/type1/t1parse.c \
+	$(SRCDIR)/type1/t1afm.c \
+	$(SRCDIR)/type1/t1driver.c
+	
+TYPE42_SRC = \
+	$(SRCDIR)/type42/t42objs.c \
+	$(SRCDIR)/type42/t42parse.c \
+	$(SRCDIR)/type42/t42drivr.c \
+	$(SRCDIR)/type42/type42.c
+
+WINFNT_SRC = \
+	$(SRCDIR)/winfonts/winfnt.c
+	
+	
+AUTOFIT_OBJS = $(OUTPUT)/autofit.o
+BASE_OBJS = $(BASE_SRC:$(SRCDIR)/base%.c=$(OUTPUT)%.o)
+BDF_OBJS = $(OUTPUT)/bdf.o
+CACHE_OBJS = $(OUTPUT)/ftcache.o
+CFF_OBJS = $(OUTPUT)/cff.o
+CID_OBJS = $(OUTPUT)/type1cid.o
+GZIP_OBJS = $(OUTPUT)/ftgzip.o
+LZW_OBJS = $(OUTPUT)/ftlzw.o
+PCF_OBJS = $(OUTPUT)/pcf.o
+PFR_OBJS = $(OUTPUT)/pfr.o
+PSAUX_OBJS = $(OUTPUT)/psaux.o
+PSHINTER_OBJS = $(OUTPUT)/pshinter.o
+PSNAMES_OBJS = $(OUTPUT)/psnames.o
+RASTER_OBJS = $(OUTPUT)/raster.o
+SFNT_OBJS = $(OUTPUT)/sfnt.o
+SMOOTH_OBJS = $(OUTPUT)/smooth.o
+TRUETYPE_OBJS = $(OUTPUT)/truetype.o
+TYPE1_OBJS = $(OUTPUT)/type1.o
+TYPE42_OBJS = $(OUTPUT)/type42.o
+WINFNT_OBJS = $(OUTPUT)/winfnt.o
+
+ALL_OBJS = $(AUTOFIT_OBJS) $(BASE_OBJS) $(BDF_OBJS) $(CACHE_OBJS) $(CFF_OBJS) $(CID_OBJS) $(GZIP_OBJS) $(LZW_OBJS) $(PCF_OBJS) $(PFR_OBJS) $(PSAUX_OBJS) $(PSHINTER_OBJS) $(PSNAMES_OBJS) $(RASTER_OBJS) $(SFNT_OBJS) $(SMOOTH_OBJS) $(TRUETYPE_OBJS) $(TYPE1_OBJS) $(TYPE42_OBJS) $(WINFNT_OBJS)
+
+
+all:	$(LIB) $(SO)
+
+clean:
+	rm -rf $(OUTPUT)
+	mkdir -p $(OUTPUT)
+
+$(SO):	$(ALL_OBJS)
+	g++ -o $(SO) $(LDFLAGS) $(ALL_OBJS)
+	cp $(SO) $(REDIST)/Bin/
+
+$(LIB):	$(ALL_OBJS)
+	ar -qcv $(LIB) $(ALL_OBJS)
+	cp $(LIB) $(REDIST)/Lib/
+
+$(AUTOFIT_OBJS): $(AUTOFIT_SRC)
+	g++ $(CCCFLAGS) $(INCDIRS) -c $(<D)/$(*F).c  -o $(OUTPUT)/$(@F)
+	
+$(BASE_OBJS): $(BASE_SRC) $(INTERNAL_SRC)
+	g++ $(CCCFLAGS) $(INCDIRS) -c $(<D)/$(*F).c  -o $(OUTPUT)/$(@F)
+
+$(BDF_OBJS): $(BDF_SRC)
+	g++ $(CCCFLAGS) $(INCDIRS) -c $(<D)/$(*F).c  -o $(OUTPUT)/$(@F)
+
+$(CACHE_OBJS):	$(CACHE_SRC)
+	g++ $(CCCFLAGS) $(INCDIRS) -c $(<D)/$(*F).c  -o $(OUTPUT)/$(@F)
+
+$(CFF_OBJS):	$(CFF_SRC)
+	g++ $(CCCFLAGS) $(INCDIRS) -c $(<D)/$(*F).c  -o $(OUTPUT)/$(@F)	
+
+$(CID_OBJS):	$(CID_SRC)
+	g++ $(CCCFLAGS) $(INCDIRS) -c $(<D)/$(*F).c  -o $(OUTPUT)/$(@F)	
+
+$(GZIP_OBJS):	$(GZIP_SRC)
+	g++ $(CCCFLAGS) $(INCDIRS) -c $(<D)/$(*F).c  -o $(OUTPUT)/$(@F)
+
+$(LZW_OBJS):	$(LZW_SRC)
+	g++ $(CCCFLAGS) $(INCDIRS) -c $(<D)/$(*F).c  -o $(OUTPUT)/$(@F)
+
+$(PCF_OBJS):	$(PCF_SRC)
+	g++ $(CCCFLAGS) $(INCDIRS) -c $(<D)/$(*F).c  -o $(OUTPUT)/$(@F)
+	
+$(PFR_OBJS):	$(PFR_SRC)
+	g++ $(CCCFLAGS) $(INCDIRS) -c $(<D)/$(*F).c  -o $(OUTPUT)/$(@F)
+
+$(PSAUX_OBJS):	$(PSAUX_SRC)
+	g++ $(CCCFLAGS) $(INCDIRS) -c $(<D)/$(*F).c  -o $(OUTPUT)/$(@F)
+
+$(PSHINTER_OBJS):	$(PSHINTER_SRC)
+	g++ $(CCCFLAGS) $(INCDIRS) -c $(<D)/$(*F).c  -o $(OUTPUT)/$(@F)
+
+$(PSNAMES_OBJS):	$(PSNAMES_SRC)
+	g++ $(CCCFLAGS) $(INCDIRS) -c $(<D)/$(*F).c  -o $(OUTPUT)/$(@F)
+	
+$(RASTER_OBJS):	$(RASTER_SRC)
+	g++ $(CCCFLAGS) $(INCDIRS) -c $(<D)/$(*F).c  -o $(OUTPUT)/$(@F)
+	
+$(SFNT_OBJS):	$(SFNT_SRC)
+	g++ $(CCCFLAGS) $(INCDIRS) -c $(<D)/$(*F).c  -o $(OUTPUT)/$(@F)
+	
+$(SMOOTH_OBJS):	$(SMOOTH_SRC)
+	g++ $(CCCFLAGS) $(INCDIRS) -c $(<D)/$(*F).c  -o $(OUTPUT)/$(@F)
+
+$(TRUETYPE_OBJS):	$(TRUETYPE_SRC)
+	g++ $(CCCFLAGS) $(INCDIRS) -c $(<D)/$(*F).c  -o $(OUTPUT)/$(@F)
+	
+$(TYPE1_OBJS):	$(TYPE1_SRC)
+	g++ $(CCCFLAGS) $(INCDIRS) -c $(<D)/$(*F).c  -o $(OUTPUT)/$(@F)
+
+$(TYPE42_OBJS): $(TYPE42_SRC)
+	g++ $(CCCFLAGS) $(INCDIRS) -c $(<D)/$(*F).c  -o $(OUTPUT)/$(@F)
+
+$(WINFNT_OBJS):	$(WINFNT_SRC)
+	g++ $(CCCFLAGS) $(INCDIRS) -c $(<D)/$(*F).c  -o $(OUTPUT)/$(@F)
+

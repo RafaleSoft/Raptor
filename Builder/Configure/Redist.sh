@@ -73,8 +73,8 @@ cp ./RaptorCore/Engine/IViewPoint.h Redist/Include/Engine
 echo "		GLHierarchy:"
 cp ./RaptorCore/GLHierarchy/3DSet.h Redist/Include/GLHierarchy
 cp ./RaptorCore/GLHierarchy/BumppedGeometry.h Redist/Include/GLHierarchy
-cp ./RaptorCore/GLHierarchy/FragmentProgram.h Redist/Include/GLHierarchy
 cp ./RaptorCore/GLHierarchy/FragmentProgram_old.h Redist/Include/GLHierarchy
+cp ./RaptorCore/GLHierarchy/FragmentShader.h Redist/Include/GLHierarchy
 cp ./RaptorCore/GLHierarchy/GLFont.h Redist/Include/GLHierarchy
 cp ./RaptorCore/GLHierarchy/GL2DFont.h Redist/Include/GLHierarchy
 cp ./RaptorCore/GLHierarchy/GL2DTextureFont.h Redist/Include/GLHierarchy
@@ -86,7 +86,7 @@ cp ./RaptorCore/GLHierarchy/GLLod.h Redist/Include/GLHierarchy
 cp ./RaptorCore/GLHierarchy/Geometry.h Redist/Include/GLHierarchy
 cp ./RaptorCore/GLHierarchy/GeometryEditor.h Redist/Include/GLHierarchy
 cp ./RaptorCore/GLHierarchy/GeometryPrimitive.h Redist/Include/GLHierarchy
-cp ./RaptorCore/GLHierarchy/GeometryProgram.h Redist/Include/GLHierarchy
+cp ./RaptorCore/GLHierarchy/GeometryShader.h Redist/Include/GLHierarchy
 cp ./RaptorCore/GLHierarchy/Light.h Redist/Include/GLHierarchy
 cp ./RaptorCore/GLHierarchy/IRenderingProperties.h Redist/Include/GLHierarchy
 cp ./RaptorCore/GLHierarchy/ITextureObject.h Redist/Include/GLHierarchy
@@ -117,9 +117,9 @@ cp ./RaptorCore/GLHierarchy/TextureGenerator.h Redist/Include/GLHierarchy
 cp ./RaptorCore/GLHierarchy/TextureObject.h Redist/Include/GLHierarchy
 cp ./RaptorCore/GLHierarchy/TextureSet.h Redist/Include/GLHierarchy
 cp ./RaptorCore/GLHierarchy/TextureUnitSetup.h Redist/Include/GLHierarchy
-cp ./RaptorCore/GLHierarchy/UnifiedProgram.h Redist/Include/GLHierarchy
-cp ./RaptorCore/GLHierarchy/VertexProgram.h Redist/Include/GLHierarchy
+cp ./RaptorCore/GLHierarchy/UnifiedShader.h Redist/Include/GLHierarchy
 cp ./RaptorCore/GLHierarchy/VertexProgram_old.h Redist/Include/GLHierarchy
+cp ./RaptorCore/GLHierarchy/VertexShader.h Redist/Include/GLHierarchy
 cp ./RaptorCore/GLHierarchy/VulkanShaderStage.h Redist/Include/GLHierarchy
 
 echo "		SSE_Engine:"

@@ -20,11 +20,11 @@ export
 
 CCCFLAGS = -DLINUX -fPIC
 OUTPUT = $(RAPTOR_ROOT)/Build/Linux/Release/libjpeg
-SRCDIR = $(RAPTOR_ROOT)/AddOns/JpegLib-v9/source
-INCDIRS = -I$(RAPTOR_ROOT)/AddOns/JpegLib-v9/include -I$(SRCDIR)
+SRCDIR = $(RAPTOR_ROOT)/AddOns/JpegLib-$(JPEGLIB_VERSION)/source
+INCDIRS = -I$(RAPTOR_ROOT)/AddOns/JpegLib-$(JPEGLIB_VERSION)/include -I$(SRCDIR)
 LDFLAGS = -Bdynamic -shared -lstdc++
 
-SO = $(OUTPUT)/libjpeg.so.$(RAPTOR_VERSION)
+SO = $(OUTPUT)/libjpeg.so.$(JPEGLIB_VERSION)
 LIB = $(OUTPUT)/libjpeg.a
 
 SRC = \

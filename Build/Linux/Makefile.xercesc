@@ -1,0 +1,284 @@
+###########################################################################
+#                                                                         #
+#  Makefile.xercesc                                                       #
+#                                                                         #
+#    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       #
+#                                                                         #
+#  Copyright 1998-2019 by                                                 #
+#  Fabrice FERRAND.                                                       #
+#                                                                         #
+#  This file is part of the Raptor project, and may only be used,         #
+#  modified, and distributed under the terms of the Raptor project        #
+#  license, LICENSE.  By continuing to use, modify, or distribute         #
+#  this file you indicate that you have read the license and              #
+#  understand and accept it fully.                                        #
+#                                                                         #
+###########################################################################
+
+
+export
+
+CCCFLAGS = -DSTDC -DLINUX -fPIC -DZLIB_EXPORTS -std=c++11 -fopenmp -msse -msse2 -msse3 -mssse3 -msse4.1 -msse4.2 
+CCCFLAGS += -DXERCES_USE_MSGLOADER_INMEMORY -DXERCES_USE_TRANSCODER_ICONV -DXERCES_USE_FILEMGR_POSIX -DXERCES_USE_MUTEXMGR_POSIX 
+CCCFLAGS += -DHAVE_CONFIG_H -DHAVE_CPUID_H 
+OUTPUT = $(RAPTOR_ROOT)/Build/Linux/Release/xercesc
+SRCDIR = $(RAPTOR_ROOT)/AddOns/xercesc-$(XERCES_VERSION)/src/xercesc
+INCDIRS = -I$(RAPTOR_ROOT)/AddOns/xercesc-$(XERCES_VERSION)/include -I$(RAPTOR_ROOT)/Build/Linux/xercesc -I$(RAPTOR_ROOT)/AddOns/xercesc-$(XERCES_VERSION)/src/
+LDFLAGS = -Bdynamic -shared -lstdc++
+
+SO = $(OUTPUT)/libxerces-c.so.$(XERCES_VERSION)
+LIB = $(OUTPUT)/libxerces-c.a
+
+DOM_SRC = \
+	$(SRCDIR)/dom/DOMException.cpp \
+	$(SRCDIR)/dom/DOMLSException.cpp \
+	$(SRCDIR)/dom/DOMRangeException.cpp \
+	$(SRCDIR)/dom/DOMXPathException.cpp
+	
+DOM_IMPL_SRC = \
+	$(SRCDIR)/dom/impl/DOMAttrImpl.cpp \
+	$(SRCDIR)/dom/impl/DOMAttrMapImpl.cpp \
+	$(SRCDIR)/dom/impl/DOMAttrNSImpl.cpp \
+	$(SRCDIR)/dom/impl/DOMCDATASectionImpl.cpp \
+	$(SRCDIR)/dom/impl/DOMCharacterDataImpl.cpp \
+	$(SRCDIR)/dom/impl/DOMChildNode.cpp \
+	$(SRCDIR)/dom/impl/DOMCommentImpl.cpp \
+	$(SRCDIR)/dom/impl/DOMConfigurationImpl.cpp \
+	$(SRCDIR)/dom/impl/DOMDeepNodeListImpl.cpp \
+	$(SRCDIR)/dom/impl/DOMDocumentFragmentImpl.cpp \
+	$(SRCDIR)/dom/impl/DOMDocumentImpl.cpp \
+	$(SRCDIR)/dom/impl/DOMDocumentTypeImpl.cpp \
+	$(SRCDIR)/dom/impl/DOMElementImpl.cpp \
+	$(SRCDIR)/dom/impl/DOMElementNSImpl.cpp \
+	$(SRCDIR)/dom/impl/DOMEntityImpl.cpp \
+	$(SRCDIR)/dom/impl/DOMEntityReferenceImpl.cpp \
+	$(SRCDIR)/dom/impl/DOMErrorImpl.cpp \
+	$(SRCDIR)/dom/impl/DOMImplementationImpl.cpp \
+	$(SRCDIR)/dom/impl/DOMImplementationListImpl.cpp \
+	$(SRCDIR)/dom/impl/DOMImplementationRegistry.cpp \
+	$(SRCDIR)/dom/impl/DOMLocatorImpl.cpp \
+	$(SRCDIR)/dom/impl/DOMLSInputImpl.cpp \
+	$(SRCDIR)/dom/impl/DOMLSOutputImpl.cpp \
+	$(SRCDIR)/dom/impl/DOMLSSerializerImpl.cpp \
+	$(SRCDIR)/dom/impl/DOMNamedNodeMapImpl.cpp \
+	$(SRCDIR)/dom/impl/DOMNodeIDMap.cpp \
+	$(SRCDIR)/dom/impl/DOMNodeImpl.cpp \
+	$(SRCDIR)/dom/impl/DOMNodeIteratorImpl.cpp \
+	$(SRCDIR)/dom/impl/DOMNodeListImpl.cpp \
+	$(SRCDIR)/dom/impl/DOMNodeVector.cpp \
+	$(SRCDIR)/dom/impl/DOMNormalizer.cpp \
+	$(SRCDIR)/dom/impl/DOMNotationImpl.cpp \
+	$(SRCDIR)/dom/impl/DOMParentNode.cpp \
+	$(SRCDIR)/dom/impl/DOMProcessingInstructionImpl.cpp \
+	$(SRCDIR)/dom/impl/DOMRangeImpl.cpp \
+	$(SRCDIR)/dom/impl/DOMStringListImpl.cpp \
+	$(SRCDIR)/dom/impl/DOMStringPool.cpp \
+	$(SRCDIR)/dom/impl/DOMTextImpl.cpp \
+	$(SRCDIR)/dom/impl/DOMTreeWalkerImpl.cpp \
+	$(SRCDIR)/dom/impl/DOMTypeInfoImpl.cpp \
+	$(SRCDIR)/dom/impl/DOMXPathExpressionImpl.cpp \
+	$(SRCDIR)/dom/impl/DOMXPathNSResolverImpl.cpp \
+	$(SRCDIR)/dom/impl/DOMXPathResultImpl.cpp \
+	$(SRCDIR)/dom/impl/XSDElementNSImpl.cpp
+
+FMWK_SRC = \
+	$(SRCDIR)/framework/BinOutputStream.cpp \
+	$(SRCDIR)/framework/LocalFileFormatTarget.cpp \
+	$(SRCDIR)/framework/LocalFileInputSource.cpp \
+	$(SRCDIR)/framework/MemBufFormatTarget.cpp \
+	$(SRCDIR)/framework/MemBufInputSource.cpp \
+	$(SRCDIR)/framework/StdInInputSource.cpp \
+	$(SRCDIR)/framework/StdOutFormatTarget.cpp \
+	$(SRCDIR)/framework/URLInputSource.cpp \
+	$(SRCDIR)/framework/Wrapper4DOMLSInput.cpp \
+	$(SRCDIR)/framework/Wrapper4InputSource.cpp \
+	$(SRCDIR)/framework/XMLAttDef.cpp \
+	$(SRCDIR)/framework/XMLAttDefList.cpp \
+	$(SRCDIR)/framework/XMLAttr.cpp \
+	$(SRCDIR)/framework/XMLBuffer.cpp \
+	$(SRCDIR)/framework/XMLBufferMgr.cpp \
+	$(SRCDIR)/framework/XMLContentModel.cpp \
+	$(SRCDIR)/framework/XMLDTDDescription.cpp \
+	$(SRCDIR)/framework/XMLElementDecl.cpp \
+	$(SRCDIR)/framework/XMLEntityDecl.cpp \
+	$(SRCDIR)/framework/XMLFormatter.cpp \
+	$(SRCDIR)/framework/XMLGrammarDescription.cpp \
+	$(SRCDIR)/framework/XMLGrammarPoolImpl.cpp \
+	$(SRCDIR)/framework/XMLNotationDecl.cpp \
+	$(SRCDIR)/framework/XMLRecognizer.cpp \
+	$(SRCDIR)/framework/XMLRefInfo.cpp \
+	$(SRCDIR)/framework/XMLSchemaDescription.cpp \
+	$(SRCDIR)/framework/XMLValidator.cpp
+
+FMWK_PSVI_SRC = \
+	$(SRCDIR)/framework/psvi/PSVIAttribute.cpp \
+	$(SRCDIR)/framework/psvi/PSVIAttributeList.cpp \
+	$(SRCDIR)/framework/psvi/PSVIElement.cpp \
+	$(SRCDIR)/framework/psvi/PSVIItem.cpp \
+	$(SRCDIR)/framework/psvi/XSAnnotation.cpp \
+	$(SRCDIR)/framework/psvi/XSAttributeDeclaration.cpp \
+	$(SRCDIR)/framework/psvi/XSAttributeGroupDefinition.cpp \
+	$(SRCDIR)/framework/psvi/XSAttributeUse.cpp \
+	$(SRCDIR)/framework/psvi/XSComplexTypeDefinition.cpp \
+	$(SRCDIR)/framework/psvi/XSElementDeclaration.cpp \
+	$(SRCDIR)/framework/psvi/XSFacet.cpp \
+	$(SRCDIR)/framework/psvi/XSIDCDefinition.cpp \
+	$(SRCDIR)/framework/psvi/XSModel.cpp \
+	$(SRCDIR)/framework/psvi/XSModelGroup.cpp \
+	$(SRCDIR)/framework/psvi/XSModelGroupDefinition.cpp \
+	$(SRCDIR)/framework/psvi/XSMultiValueFacet.cpp \
+	$(SRCDIR)/framework/psvi/XSNamespaceItem.cpp \
+	$(SRCDIR)/framework/psvi/XSNotationDeclaration.cpp \
+	$(SRCDIR)/framework/psvi/XSObject.cpp \
+	$(SRCDIR)/framework/psvi/XSParticle.cpp \
+	$(SRCDIR)/framework/psvi/XSSimpleTypeDefinition.cpp \
+	$(SRCDIR)/framework/psvi/XSTypeDefinition.cpp \
+	$(SRCDIR)/framework/psvi/XSValue.cpp \
+	$(SRCDIR)/framework/psvi/XSWildcard.cpp
+
+INTERNAL_SRC = \
+	$(SRCDIR)/internal/BinFileOutputStream.cpp \
+	$(SRCDIR)/internal/BinMemOutputStream.cpp \
+	$(SRCDIR)/internal/DGXMLScanner.cpp \
+	$(SRCDIR)/internal/ElemStack.cpp \
+	$(SRCDIR)/internal/IGXMLScanner2.cpp \
+	$(SRCDIR)/internal/IGXMLScanner.cpp \
+	$(SRCDIR)/internal/MemoryManagerImpl.cpp \
+	$(SRCDIR)/internal/ReaderMgr.cpp \
+	$(SRCDIR)/internal/SGXMLScanner.cpp \
+	$(SRCDIR)/internal/ValidationContextImpl.cpp \
+	$(SRCDIR)/internal/VecAttributesImpl.cpp \
+	$(SRCDIR)/internal/VecAttrListImpl.cpp \
+	$(SRCDIR)/internal/WFXMLScanner.cpp \
+	$(SRCDIR)/internal/XMLReader.cpp \
+	$(SRCDIR)/internal/XMLScanner.cpp \
+	$(SRCDIR)/internal/XMLScannerResolver.cpp \
+	$(SRCDIR)/internal/XProtoType.cpp \
+	$(SRCDIR)/internal/XSAXMLScanner.cpp \
+	$(SRCDIR)/internal/XSerializeEngine.cpp \
+	$(SRCDIR)/internal/XSObjectFactory.cpp \
+	$(SRCDIR)/internal/XTemplateSerializer.cpp
+
+PARSERS_SRC = \
+	$(SRCDIR)/parsers/AbstractDOMParser.cpp \
+	$(SRCDIR)/parsers/SAX2XMLReaderImpl.cpp \
+	$(SRCDIR)/parsers/SAX2XMLFilterImpl.cpp \
+	$(SRCDIR)/parsers/XercesDOMParser.cpp \
+	$(SRCDIR)/parsers/DOMLSParserImpl.cpp \
+	$(SRCDIR)/parsers/SAXParser.cpp
+
+SAX_SRC = \
+	$(SRCDIR)/sax/Dummy.cpp \
+	$(SRCDIR)/sax/InputSource.cpp \
+	$(SRCDIR)/sax/SAXParseException.cpp \
+	$(SRCDIR)/sax/SAXException.cpp
+
+SAX2_SRC = \
+	$(SRCDIR)/sax2/sax2Dummy.cpp
+
+UTIL_SRC = \
+	$(SRCDIR)/util/Base64.cpp \
+	$(SRCDIR)/util/BinFileInputStream.cpp \
+	$(SRCDIR)/util/BinInputStream.cpp \
+	$(SRCDIR)/util/BinMemInputStream.cpp \
+	$(SRCDIR)/util/BitSet.cpp \
+	$(SRCDIR)/util/DefaultPanicHandler.cpp \
+	$(SRCDIR)/util/EncodingValidator.cpp \
+	$(SRCDIR)/util/HeaderDummy.cpp \
+	$(SRCDIR)/util/HexBin.cpp \
+	$(SRCDIR)/util/JanitorExports.cpp \
+	$(SRCDIR)/util/KVStringPair.cpp \
+	$(SRCDIR)/util/Mutexes.cpp \
+	$(SRCDIR)/util/PanicHandler.cpp \
+	$(SRCDIR)/util/PlatformUtils.cpp \
+	$(SRCDIR)/util/PSVIUni.cpp \
+	$(SRCDIR)/util/QName.cpp \
+	$(SRCDIR)/util/StringPool.cpp \
+	$(SRCDIR)/util/SynchronizedStringPool.cpp \
+	$(SRCDIR)/util/TransService.cpp \
+	$(SRCDIR)/util/XMemory.cpp \
+	$(SRCDIR)/util/XML256TableTranscoder.cpp \
+	$(SRCDIR)/util/XML88591Transcoder.cpp \
+	$(SRCDIR)/util/XMLAbstractDoubleFloat.cpp \
+	$(SRCDIR)/util/XMLASCIITranscoder.cpp \
+	$(SRCDIR)/util/XMLBigDecimal.cpp \
+	$(SRCDIR)/util/XMLBigInteger.cpp \
+	$(SRCDIR)/util/XMLChar.cpp \
+	$(SRCDIR)/util/XMLChTranscoder.cpp \
+	$(SRCDIR)/util/XMLDateTime.cpp \
+	$(SRCDIR)/util/XMLDouble.cpp \
+	$(SRCDIR)/util/XMLEBCDICTranscoder.cpp \
+	$(SRCDIR)/util/XMLException.cpp \
+	$(SRCDIR)/util/XMLFloat.cpp \
+	$(SRCDIR)/util/XMLIBM1047Transcoder.cpp \
+	$(SRCDIR)/util/XMLIBM1140Transcoder.cpp \
+	$(SRCDIR)/util/XMLInitializer.cpp \
+	$(SRCDIR)/util/XMLMsgLoader.cpp \
+	$(SRCDIR)/util/XMLNumber.cpp \
+	$(SRCDIR)/util/XMLString.cpp \
+	$(SRCDIR)/util/XMLStringTokenizer.cpp \
+	$(SRCDIR)/util/XMLUCS4Transcoder.cpp \
+	$(SRCDIR)/util/XMLUni.cpp \
+	$(SRCDIR)/util/XMLUri.cpp \
+	$(SRCDIR)/util/XMLURL.cpp \
+	$(SRCDIR)/util/XMLUTF16Transcoder.cpp \
+	$(SRCDIR)/util/XMLUTF8Transcoder.cpp \
+	$(SRCDIR)/util/XMLWin1252Transcoder.cpp
+
+
+OBJ_DOM = $(DOM_SRC:$(SRCDIR)/dom/%.cpp=$(OUTPUT)/%.o)
+OBJ_DOM_IMPL = $(DOM_IMPL_SRC:$(SRCDIR)/dom/impl/%.cpp=$(OUTPUT)/%.o)
+OBJ_FMWK = $(FMWK_SRC:$(SRCDIR)/framework/%.cpp=$(OUTPUT)/%.o)
+OBJ_FMWK_PSVI = $(FMWK_PSVI_SRC:$(SRCDIR)/framework/psvi/%.cpp=$(OUTPUT)/%.o)
+OBJ_INTERNAL = $(INTERNAL_SRC:$(SRCDIR)/internal/%.cpp=$(OUTPUT)/%.o)
+OBJ_PARSERS = $(PARSERS_SRC:$(SRCDIR)/parsers/%.cpp=$(OUTPUT)/%.o)
+OBJ_SAX = $(SAX_SRC:$(SRCDIR)/sax/%.cpp=$(OUTPUT)/%.o)
+OBJ_SAX2 = $(SAX2_SRC:$(SRCDIR)/sax2/%.cpp=$(OUTPUT)/%.o)
+OBJ_UTIL = $(UTIL_SRC:$(SRCDIR)/util/%.cpp=$(OUTPUT)/%.o)
+
+ALL_OBJS = $(OBJ_DOM) $(OBJ_DOM_IMPL) $(OBJ_FMWK) $(OBJ_FMWK_PSVI) $(OBJ_INTERNAL) $(OBJ_PARSERS) $(OBJ_SAX) $(OBJ_SAX2) $(OBJ_UTIL)
+
+all:	$(LIB) $(SO)
+
+clean:
+	rm -rf $(OUTPUT)
+	mkdir -p $(OUTPUT)
+
+$(SO):	$(ALL_OBJS)
+	g++ -o $(SO) $(LDFLAGS) $(ALL_OBJS)
+	cp $(SO) $(REDIST)/Bin/
+
+$(LIB):	$(ALL_OBJS)
+	ar -qcv $(LIB) $(ALL_OBJS)
+	cp $(LIB) $(REDIST)/Lib/
+
+$(OBJ_DOM): $(DOM_SRC)
+	g++ $(CCCFLAGS) $(INCDIRS) -c $(<D)/$(*F).cpp  -o $(OUTPUT)/$(@F)
+
+$(OBJ_DOM_IMPL): $(DOM_IMPL_SRC)
+	g++ $(CCCFLAGS) $(INCDIRS) -c $(<D)/$(*F).cpp  -o $(OUTPUT)/$(@F)
+
+$(OBJ_FMWK): $(FMWK_SRC)
+	g++ $(CCCFLAGS) $(INCDIRS) -c $(<D)/$(*F).cpp  -o $(OUTPUT)/$(@F)
+
+$(OBJ_FMWK_PSVI): $(FMWK_PSVI_SRC)
+	g++ $(CCCFLAGS) $(INCDIRS) -c $(<D)/$(*F).cpp  -o $(OUTPUT)/$(@F)
+
+$(OBJ_INTERNAL): $(INTERNAL_SRC)
+	g++ $(CCCFLAGS) $(INCDIRS) -c $(<D)/$(*F).cpp  -o $(OUTPUT)/$(@F)
+
+$(OBJ_PARSERS): $(PARSERS_SRC)
+	g++ $(CCCFLAGS) $(INCDIRS) -c $(<D)/$(*F).cpp  -o $(OUTPUT)/$(@F)
+
+$(OBJ_SAX): $(SAX_SRC)
+	g++ $(CCCFLAGS) $(INCDIRS) -c $(<D)/$(*F).cpp  -o $(OUTPUT)/$(@F)
+
+$(OBJ_SAX2): $(SAX2_SRC)
+	g++ $(CCCFLAGS) $(INCDIRS) -c $(<D)/$(*F).cpp  -o $(OUTPUT)/$(@F)
+
+$(OBJ_UTIL): $(UTIL_SRC)
+	g++ $(CCCFLAGS) $(INCDIRS) -c $(<D)/$(*F).cpp  -o $(OUTPUT)/$(@F)
+
+
+
+
