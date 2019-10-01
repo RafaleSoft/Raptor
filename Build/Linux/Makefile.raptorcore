@@ -35,7 +35,7 @@ LIB = $(OUTPUT)/libRaptorCore.a
 HIERARCHY_SRC = \
 	$(SRCDIR)/GLHierarchy/3DSet.cpp \
 	$(SRCDIR)/GLHierarchy/BumppedGeometry.cpp \
-	$(SRCDIR)/GLHierarchy/FragmentProgram_old.cpp \
+	$(SRCDIR)/GLHierarchy/FragmentProgram.cpp \
 	$(SRCDIR)/GLHierarchy/FragmentShader.cpp \
 	$(SRCDIR)/GLHierarchy/Geometry.cpp \
 	$(SRCDIR)/GLHierarchy/GeometryEditor.cpp \
@@ -56,6 +56,8 @@ HIERARCHY_SRC = \
 	$(SRCDIR)/GLHierarchy/Object3DShadow.cpp \
 	$(SRCDIR)/GLHierarchy/ObjectFactory.cpp \
 	$(SRCDIR)/GLHierarchy/ObjectProperties.cpp \
+	$(SRCDIR)/GLHierarchy/OpenGLProgramStage.cpp \
+	$(SRCDIR)/GLHierarchy/OpenGLShaderStage.cpp \
 	$(SRCDIR)/GLHierarchy/Particle.cpp \
 	$(SRCDIR)/GLHierarchy/PerlinNoise.cpp \
 	$(SRCDIR)/GLHierarchy/Persistence.cpp \
@@ -69,7 +71,7 @@ HIERARCHY_SRC = \
 	$(SRCDIR)/GLHierarchy/TextureSet.cpp \
 	$(SRCDIR)/GLHierarchy/TextureUnitSetup.cpp \
 	$(SRCDIR)/GLHierarchy/UnifiedShader.cpp \
-	$(SRCDIR)/GLHierarchy/VertexProgram_old.cpp \
+	$(SRCDIR)/GLHierarchy/VertexProgram.cpp \
 	$(SRCDIR)/GLHierarchy/VertexShader.cpp
 	
 
