@@ -62,7 +62,7 @@ public:
 
     //! Returns current status of this fragment program
     //!	@see CShaderProgram.
-	virtual bool glGetProgramStatus(void);
+	virtual bool glGetProgramStatus(void) const;
 
 	//! This method returns the underlying hardware capabilities to render a vertex program. the capabilities fill
 	//! the structure given in caps parameter.

@@ -49,7 +49,7 @@ public:
 									const CColor::RGBA &v) const;
 
 	//! Implements CShaderProgram.
-	virtual std::string glGetProgramString(void);
+	virtual std::string glGetProgramString(void) const;
 
 	//! This method attaches the vertex program to a program object for
 	//! linking and validation. Checking is performed on the handle to accept only valid programs.

@@ -62,7 +62,7 @@ int main(int argc, char* argv[])
 
 	CImaging::installImagers();
 	CParticleCompute::installComputers();
-
+	/*
     if (!Raptor::glCheckDisplayConfig(glcs))
     {
         Raptor::GetMessages()->displayMessage("Some hardware features are missing. Will use lower config, disabling some effects");
@@ -80,7 +80,7 @@ int main(int argc, char* argv[])
             }
         }
     }
-
+	*/
 	CRaptorApplication  *app = CRaptorApplication::CreateApplication();
     app->initApplication();
 

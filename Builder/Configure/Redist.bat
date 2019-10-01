@@ -99,7 +99,7 @@ ECHO       GLHierarchy:
 copy .\RaptorCore\GLHierarchy\3DSet.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\BumppedGeometry.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\FragmentShader.h Redist\Include\GLHierarchy
-copy .\RaptorCore\GLHierarchy\FragmentProgram_old.h Redist\Include\GLHierarchy
+copy .\RaptorCore\GLHierarchy\FragmentProgram.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\GLFont.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\GL2DFont.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\GL2DTextureFont.h Redist\Include\GLHierarchy
@@ -126,6 +126,8 @@ copy .\RaptorCore\GLHierarchy\Object3DShadow.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\ObjectFactory.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\ObjectProperties.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\ObjectReference.h Redist\Include\GLHierarchy
+copy .\RaptorCore\GLHierarchy\OpenGLProgramStage.h Redist\Include\GLHierarchy
+copy .\RaptorCore\GLHierarchy\OpenGLShaderStage.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\Reference.cxx Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\Particle.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\PerlinNoise.h Redist\Include\GLHierarchy
@@ -145,7 +147,7 @@ copy .\RaptorCore\GLHierarchy\TextureSet.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\TextureUnitSetup.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\UnifiedShader.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\VertexShader.h Redist\Include\GLHierarchy
-copy .\RaptorCore\GLHierarchy\VertexProgram_old.h Redist\Include\GLHierarchy
+copy .\RaptorCore\GLHierarchy\VertexProgram.h Redist\Include\GLHierarchy
 copy .\RaptorCore\GLHierarchy\VulkanShaderStage.h Redist\Include\GLHierarchy
 
 ECHO       SSE_Engine:

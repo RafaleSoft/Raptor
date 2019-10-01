@@ -21,11 +21,11 @@
 #if !defined(AFX_TEXTUREFACTORY_H__1B470EC4_4B68_11D3_9142_9A502CBADC6B__INCLUDED_)
 	#include "GLHierarchy/TextureFactory.h"
 #endif
-#if !defined(AFX_FRAGMENTPROGRAM_OLD_H__DD0AD51D_3BFF_4C65_8099_BA7696D7BDDF__INCLUDED_)
-	#include "GLHierarchy/FragmentProgram_old.h"
+#if !defined(AFX_FRAGMENTPROGRAM_H__DD0AD51D_3BFF_4C65_8099_BA7696D7BDDF__INCLUDED_)
+	#include "GLHierarchy/FragmentProgram.h"
 #endif
-#if !defined(AFX_VERTEXPROGRAM_OLD_H__F2D3BBC6_87A1_4695_B667_2B8C3C4CF022__INCLUDED_)
-	#include "GLHierarchy/VertexProgram_old.h"
+#if !defined(AFX_VERTEXPROGRAM_H__F2D3BBC6_87A1_4695_B667_2B8C3C4CF022__INCLUDED_)
+	#include "GLHierarchy/VertexProgram.h"
 #endif
 #if !defined(AFX_3DSCENEOBJECT_H__96A34268_AD58_4F73_B633_F6C3E92FE0A9__INCLUDED_)
 	#include "Subsys/3DSceneObject.h"
@@ -173,7 +173,7 @@ DP4 vpos.w, mv[3], iPos; \
 MOV oTex0, vpos; \
 END" ;
 
-	m_pVSShadowMap = new CVertexProgram_old();
+	m_pVSShadowMap = new CVertexProgram();
     m_pVSShadowMap->glLoadProgram(vtxShader);
 
     string texShader = 
@@ -198,7 +198,7 @@ DP3 depth.x, iTex0, iTex0; \
 RCP finalDepth.z, depth.x; \
 END" ;
 */
-	m_pFSShadowMap = new CFragmentProgram_old();
+	m_pFSShadowMap = new CFragmentProgram();
     m_pFSShadowMap->glLoadProgram(texShader);
 
 	return true;

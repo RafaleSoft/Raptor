@@ -13,9 +13,9 @@
 #include "GLHierarchy/TextureFactory.h"
 #include "GLHierarchy/IRenderingProperties.h"
 #include "GLHierarchy/Shader.h"
-#include "GLHierarchy/VertexProgram_old.h"
+#include "GLHierarchy/VertexProgram.h"
 #include "GLHierarchy/VertexShader.h"
-#include "GLHierarchy/FragmentProgram_old.h"
+#include "GLHierarchy/FragmentProgram.h"
 #include "GLHierarchy/FragmentShader.h"
 
 #include "ToolBox/Imaging.h"
@@ -109,7 +109,7 @@ void CDisplay::checkVShader(const string &src)
         pos = code.find('\\',pos);
     }
 
-    CVertexProgram_old vs;
+    CVertexProgram vs;
     if (vs.glLoadProgram(code))
         nbShadersOK++;
     else
@@ -137,7 +137,7 @@ void CDisplay::checkFShader(const string &src)
         pos = code.find('\\',pos);
     }
 
-	CFragmentProgram_old fs;
+	CFragmentProgram fs;
     if (fs.glLoadProgram(code))
         nbShadersOK++;
     else

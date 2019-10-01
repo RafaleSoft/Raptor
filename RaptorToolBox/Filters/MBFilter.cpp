@@ -51,6 +51,9 @@
 #if !defined(AFX_MBFILTER_H__53A619DD_DBAB_4709_9EAD_72C5D6C401E9__INCLUDED_)
     #include "MBFilter.h"
 #endif
+#if !defined(AFX_OPENGLSHADERSTAGE_H__56B00FE3_E508_4FD6_9363_90E6E67446D9__INCLUDED_)
+	#include "GLHierarchy/OpenGLShaderStage.h"
+#endif
 
 
 // Specific texture generator to flip between buffer display of previous frame
@@ -218,7 +221,7 @@ void CMBFilter::glRenderFilter()
     glActiveTextureARB(GL_TEXTURE0_ARB);
 	getColorInput()->glvkRender();
 
-	m_pMotionBlurShader->glGetFragmentShader()->setProgramParameters(f_params);
+	m_pMotionBlurShader->glGetOpenGLShader()->glGetFragmentShader()->setProgramParameters(f_params);
     m_pMotionBlurShader->glRender();
 	glDrawFilter();
 	m_pMotionBlurShader->glStop();
@@ -234,7 +237,7 @@ void CMBFilter::glRenderFilterOutput()
 	
 	pAccum->m_pCurrentColorAccum->glvkRender();
 
-	m_pFinalShader->glGetFragmentShader()->setProgramParameters(f_params2);
+	m_pFinalShader->glGetOpenGLShader()->glGetFragmentShader()->setProgramParameters(f_params2);
 	m_pFinalShader->glRender();
     glDrawFilter();
 	m_pFinalShader->glStop();
@@ -340,21 +343,23 @@ bool CMBFilter::glInitFilter(void)
 
 #if defined(GL_ARB_geometry_shader4)
 	m_pFinalShader = new CShader("MotionBlurShader");
-	CVertexShader *vp = m_pMotionBlurShader->glGetVertexShader("EMPTY_PROGRAM");
-	CGeometryShader *gp = m_pMotionBlurShader->glGetGeometryShader("FULL_SCREEN_GEO_PROGRAM");
-	CFragmentShader *fp = m_pMotionBlurShader->glGetFragmentShader("mb_fp");
+	COpenGLShaderStage *stage = m_pMotionBlurShader->glGetOpenGLShader();
+	CVertexShader *vp = stage->glGetVertexShader("EMPTY_PROGRAM");
+	CGeometryShader *gp = stage->glGetGeometryShader("FULL_SCREEN_GEO_PROGRAM");
+	CFragmentShader *fp = stage->glGetFragmentShader("mb_fp");
 	bool res = fp->glLoadProgram(CAccumulator::accum_fp);
-	res = res && m_pMotionBlurShader->glCompileShader();
+	res = res && stage->glCompileShader();
 
-	vp = m_pFinalShader->glGetVertexShader("EMPTY_PROGRAM");
-	gp = m_pFinalShader->glGetGeometryShader("FULL_SCREEN_GEO_PROGRAM");
-	fp = m_pFinalShader->glGetFragmentShader("mb_fp2");
+	stage = m_pFinalShader->glGetOpenGLShader();
+	vp = stage->glGetVertexShader("EMPTY_PROGRAM");
+	gp = stage->glGetGeometryShader("FULL_SCREEN_GEO_PROGRAM");
+	fp = stage->glGetFragmentShader("mb_fp2");
 	res = res && fp->glLoadProgram(CAccumulator::accum_fp2);
-	res = res && m_pFinalShader->glCompileShader();
+	res = res && stage->glCompileShader();
 #elif defined(GL_ARB_vertex_shader)
-	CFragmentShader *fs = m_pMotionBlurShader->glGetFragmentProgram("mb_fp");
+	CFragmentShader *fs = m_pMotionBlurShader->glGetOpenGLShader()->glGetFragmentShader("mb_fp");
 	bool res = fs->glLoadProgram(CAccumulator::accum_fp);
-	res = res && m_pMotionBlurShader->glCompileShader();
+	res = res && m_pMotionBlurShader->glGetOpenGLShader()->glCompileShader();
 #elif defined(GL_ARB_vertex_program)
 	#error "Unsupported deprecated vertex program feature."
 #endif

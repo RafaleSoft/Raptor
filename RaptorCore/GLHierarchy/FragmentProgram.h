@@ -16,8 +16,8 @@
 /***************************************************************************/
 
 
-#if !defined(AFX_FRAGMENTPROGRAM_OLD_H__DD0AD51D_3BFF_4C65_8099_BA7696D7BDDF__INCLUDED_)
-#define AFX_FRAGMENTPROGRAM_OLD_H__DD0AD51D_3BFF_4C65_8099_BA7696D7BDDF__INCLUDED_
+#if !defined(AFX_FRAGMENTPROGRAM_H__DD0AD51D_3BFF_4C65_8099_BA7696D7BDDF__INCLUDED_)
+#define AFX_FRAGMENTPROGRAM_H__DD0AD51D_3BFF_4C65_8099_BA7696D7BDDF__INCLUDED_
 
 #if _MSC_VER > 1000
 #pragma once
@@ -37,7 +37,7 @@
 RAPTOR_NAMESPACE_BEGIN
 
 
-class RAPTOR_API CFragmentProgram_old : public CShaderProgram
+class RAPTOR_API CFragmentProgram : public CShaderProgram
 {
 public:
 	typedef struct GL_FRAGMENT_PROGRAM_CAPS_t
@@ -67,13 +67,13 @@ public:
 
 public:
 	//!	Default Constructor.
-	CFragmentProgram_old(const std::string& name = "FRAGMENT_PROGRAM_OLD");
+	CFragmentProgram(const std::string& name = "FRAGMENT_PROGRAM");
 
 	//!	Destructor.
-	virtual ~CFragmentProgram_old();
+	virtual ~CFragmentProgram();
 
 	//!	Clone this shader.
-	virtual CFragmentProgram_old* glClone();
+	virtual CFragmentProgram* glClone();
 
     //! Implements subclass of CShaderProgram : loads a valid ASM shader code source
 	//!	@see CShaderProgram.
@@ -89,11 +89,11 @@ public:
 
     //! Returns the status of this shader
 	//!	@see CShaderProgram.
-	virtual bool glGetProgramStatus(void);
+	virtual bool glGetProgramStatus(void) const;
 
 	//! Implements base class
 	//!	@see CShaderProgram.
-	virtual std::string glGetProgramString(void);
+	virtual std::string glGetProgramString(void) const;
 
 	//! This method returns the underlying hardware capabilities
 	//! to render a vertex program. the capabilities fill
@@ -107,15 +107,15 @@ public:
 	virtual void glProgramParameter(unsigned int numParam,const CColor::RGBA &v) const;
 
 	//!	Implements CPersistence
-	DECLARE_CLASS_ID(CFragmentProgram_oldClassID, "FragmentProgram_old", CShaderProgram)
+	DECLARE_CLASS_ID(CFragmentProgramClassID, "FragmentProgram", CShaderProgram)
 
 
 private:
 	//!	Forbidden operators
-	CFragmentProgram_old& operator=(const CFragmentProgram_old&);
+	CFragmentProgram& operator=(const CFragmentProgram&);
 
 	//! Copy constructor.
-	CFragmentProgram_old(const CFragmentProgram_old& shader);
+	CFragmentProgram(const CFragmentProgram& shader);
 
     //! Specific init of shader parameters
     virtual void	glInitShaders();
@@ -123,5 +123,5 @@ private:
 
 RAPTOR_NAMESPACE_END
 
-#endif // !defined(AFX_FRAGMENTPROGRAM_OLD_H__DD0AD51D_3BFF_4C65_8099_BA7696D7BDDF__INCLUDED_)
+#endif // !defined(AFX_FRAGMENTPROGRAM_H__DD0AD51D_3BFF_4C65_8099_BA7696D7BDDF__INCLUDED_)
 

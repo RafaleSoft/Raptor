@@ -37,7 +37,7 @@
 
 RAPTOR_NAMESPACE_BEGIN
 class CRaptorDisplay;
-class CVertexProgram_old;
+class CVertexProgram;
 class CFragmentShader;
 RAPTOR_NAMESPACE_END
 
@@ -108,9 +108,9 @@ private:
 	CShader			*m_pBlenderX;
 	CShader			*m_pBlenderY;
 #else
-	CVertexProgram_old   *m_pBlurXOffsets;
-	CVertexProgram_old   *m_pBlurYOffsets;
-    CFragmentShader *m_pBlur;
+	CVertexProgram  *m_pBlurXOffsets;
+	CVertexProgram  *m_pBlurYOffsets;
+    CFragmentShader	*m_pBlur;
 #endif
 	//! Final image composition with tone mapping
     CShader *m_pComposite;

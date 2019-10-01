@@ -14,7 +14,7 @@
 #include "GLHierarchy/TextureObject.h"
 #include "Engine/3DEngine.h"
 #include "GLHierarchy/ShadedGeometry.h"
-#include "GLHierarchy/VertexProgram_old.h"
+#include "GLHierarchy/VertexProgram.h"
 #include "GLHierarchy/Object3DInstance.h"
 #include "GLHierarchy/SimpleObject.h"
 #include "GLHierarchy/Shader.h"
@@ -22,6 +22,7 @@
 #include "System/Raptor.h"
 #include "System/RaptorGLExtensions.h"
 #include "GLHierarchy/IRenderingProperties.h"
+#include "GLHierarchy/OpenGLShaderStage.h"
 
 #include "ToolBox/BasicObjects.h"
 
@@ -37,7 +38,7 @@ public:
 		setBoundingBox(	GL_COORD_VERTEX(-70.0f,-50.0f,0.0f,1.0f),
 						GL_COORD_VERTEX(70.0f,50.0f,0.1f,1.0f));
 		//	Use a default shader to create a simple geometry
-		CVertexProgram_old s("GL_SHADER");
+		CVertexProgram s("GL_SHADER");
 		GL_COORD_VERTEX texCoord1(0,0,0,1);
 
 		//	background;
@@ -315,13 +316,13 @@ void main (void)						\n\
 	gl_FragColor = texture2D(diffuseMap,vec2(offset.rg) + vec2(gl_TexCoord[0].st)); \n\
 }";
 
-	CFragmentShader *fp = m_pShader->glGetFragmentShader();
+	CFragmentShader *fp = m_pShader->glGetOpenGLShader()->glGetFragmentShader();
 	fp->glLoadProgram(program);
 	CProgramParameters params;
 	params.addParameter("diffuseMap",CTextureUnitSetup::IMAGE_UNIT_0);
 	params.addParameter("normalMap",CTextureUnitSetup::IMAGE_UNIT_1);
 	fp->setProgramParameters(params);
-	m_pShader->glCompileShader();
+	m_pShader->glGetOpenGLShader()->glCompileShader();
 #endif
 }
 
@@ -349,7 +350,7 @@ void CGlassObject::glRender()
 	m_pShader->glRender();
 	
 	//	Use a default shader to create a simple geometry
-	CVertexProgram_old s("GL_SHADER");
+	CVertexProgram s("GL_SHADER");
 
 	glBegin(GL_QUADS);
 		glTexCoord2f(x_sz,y_sz);

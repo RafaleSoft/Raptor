@@ -27,6 +27,7 @@
 #include "GLHierarchy/TextureSet.h"
 #include "GLHierarchy/TextureUnitSetup.h"
 #include "GLHierarchy/Light.h"
+#include "GLHierarchy/OpenGLShaderStage.h"
 
 #include "Toolbox/BasicObjects.h"
 
@@ -66,8 +67,8 @@ void CAmbientOcclusionDisplay::Init()
 	CGenericDisplay::Init();
 	
 	CShader *AO_shader = new CShader("AO_SHADER");
-	CVertexShader *vp = AO_shader->glGetVertexShader("AO_VP");
-	CFragmentShader *fp = AO_shader->glGetFragmentShader("AO_FP");
+	CVertexShader *vp = AO_shader->glGetOpenGLShader()->glGetVertexShader("AO_VP");
+	CFragmentShader *fp = AO_shader->glGetOpenGLShader()->glGetFragmentShader("AO_FP");
 
 	CProgramParameters ao_params;
 	ao_params.addParameter("AOMap", CTextureUnitSetup::IMAGE_UNIT_2);
@@ -75,7 +76,7 @@ void CAmbientOcclusionDisplay::Init()
 
 	bool res = vp->glLoadProgram(AO_vp_src);
 	res &= fp->glLoadProgram(AO_fp_src);
-	res &= AO_shader->glCompileShader();
+	res &= AO_shader->glGetOpenGLShader()->glCompileShader();
 	
 	m_pLight = new CLight("AOLight");
     m_pLight->setAmbient(1.0f,1.0f,1.0f,1.0f);

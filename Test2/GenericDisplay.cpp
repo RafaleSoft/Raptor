@@ -5,8 +5,8 @@
 #include "stdafx.h"
 #include "GenericDisplay.h"
 #include "GLHierarchy/TextureUnitSetup.h"
-#include "GLHierarchy/FragmentProgram_old.h"
-#include "GLHierarchy/VertexProgram_old.h"
+#include "GLHierarchy/FragmentProgram.h"
+#include "GLHierarchy/VertexProgram.h"
 #include "GLHierarchy/IRenderingProperties.h"
 #include "System/RaptorDisplay.h"
 

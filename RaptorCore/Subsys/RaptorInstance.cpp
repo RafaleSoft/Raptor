@@ -35,6 +35,10 @@
 #if !defined(AFX_VULKAN_H__625F6BC5_F386_44C2_85C1_EDBA23B16921__INCLUDED_)
 	#include "Subsys/Vulkan/RaptorVulkan.h"
 #endif
+#if !defined(AFX_OPENGLSHADERSTAGE_H__56B00FE3_E508_4FD6_9363_90E6E67446D9__INCLUDED_)
+	#include "GLHierarchy/OpenGLShaderStage.h"
+#endif
+
 
 //! Default Imaging functionnalities
 #if !defined(AFX_BUFFERIMAGE_H__B28C75CD_81D5_473F_A247_608FB6E02949__INCLUDED_)
@@ -307,14 +311,16 @@ bool CRaptorInstance::glInitShaders(void)
 	if (NULL == m_pIdentity)
 	{
 		m_pIdentity = new CShader("HDR_IDENTITY");
-		CVertexShader *vp = m_pIdentity->glGetVertexShader("EMPTY_PROGRAM");
-		CGeometryShader *gp = m_pIdentity->glGetGeometryShader("FULL_SCREEN_GEO_PROGRAM");
-		CFragmentShader *fp = m_pIdentity->glGetFragmentShader("DIFFUSE_PROGRAM");
+		COpenGLShaderStage *stage = m_pIdentity->glGetOpenGLShader();
+
+		CVertexShader *vp = stage->glGetVertexShader("EMPTY_PROGRAM");
+		CGeometryShader *gp = stage->glGetGeometryShader("FULL_SCREEN_GEO_PROGRAM");
+		CFragmentShader *fp = stage->glGetFragmentShader("DIFFUSE_PROGRAM");
 
 		CProgramParameters identityParams;
 		identityParams.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);
 		fp->setProgramParameters(identityParams);
-		if (!m_pIdentity->glCompileShader())
+		if (!stage->glCompileShader())
 			return false;
 	}
 

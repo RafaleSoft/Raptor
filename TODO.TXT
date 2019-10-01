@@ -3,6 +3,9 @@
 - CObject3DInstance:
 	- supprimer le shader ou bien le rendre générique (c.f. ShadedGeometry)
 
+- CPhongShader, CBumpShader, CBlinnShader, CEMBMShader:
+	- hériter de OpenGLShaderStage et pas de Shader ?
+
 - CTextureQuad:
 	- ajouter une méthode pour faire le render sur une liste de Quads.
 

@@ -1,6 +1,21 @@
-// PhongShader.cpp: implementation of the CPhongShader class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  AOComputeShader.cpp                                                    */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
 #include "Subsys/CodeGeneration.h"
 
 #if !defined(AFX_AOCOMPUTESHADER_H__7CD66380_1000_47A3_AA98_47E0EDBD728E__INCLUDED_)
@@ -21,6 +36,9 @@
 #if !defined(AFX_FRAGMENTSHADER_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
     #include "GLHierarchy/FragmentShader.h"
 #endif
+#if !defined(AFX_OPENGLSHADERSTAGE_H__56B00FE3_E508_4FD6_9363_90E6E67446D9__INCLUDED_)
+	#include "GLHierarchy/OpenGLShaderStage.h"
+#endif
 
 
 RAPTOR_NAMESPACE
@@ -37,7 +55,9 @@ CAOComputeShader::~CAOComputeShader(void)
 
 void CAOComputeShader::glInit(void)
 {
-	CVertexShader *vs = glGetVertexShader("AMBIENT_OCCLUSION_VTX_PROGRAM");
+	COpenGLShaderStage *stage = glGetOpenGLShader();
+
+	CVertexShader *vs = stage->glGetVertexShader("AMBIENT_OCCLUSION_VTX_PROGRAM");
 	
 	CProgramParameters v_params;
 	GL_MATRIX Id;
@@ -46,7 +66,7 @@ void CAOComputeShader::glInit(void)
 	v_params.addParameter("normalMat",Id);
 	vs->setProgramParameters(v_params);
 
-	CFragmentShader *fs = glGetFragmentShader("AMBIENT_OCCLUSION_TEX_PROGRAM");
+	CFragmentShader *fs = stage->glGetFragmentShader("AMBIENT_OCCLUSION_TEX_PROGRAM");
 
 	CProgramParameters f_params;
 	f_params.addParameter("posMap",CTextureUnitSetup::IMAGE_UNIT_0);
@@ -54,7 +74,7 @@ void CAOComputeShader::glInit(void)
 	f_params.addParameter("numRows",GL_COORD_VERTEX());
 	fs->setProgramParameters(f_params);
 
-	glCompileShader();
+	stage->glCompileShader();
 }
 
 void CAOComputeShader::glStop(void)

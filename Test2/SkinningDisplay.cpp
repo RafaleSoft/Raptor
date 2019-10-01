@@ -27,6 +27,7 @@
 #include "GLHierarchy/IRenderingProperties.h"
 #include "GLHierarchy/Object3DInstance.h"
 #include "SSE_Engine/SSE_GLLayer.h"
+#include "GLHierarchy/OpenGLShaderStage.h"
 
 
 class MyModifier : public CImageModifier
@@ -239,8 +240,8 @@ void main (void) \
     
     skinning  = new CShader("SKINNING_SHADER");
 	tube2->setShader(skinning);
-	CVertexShader *vp = skinning->glGetVertexShader("Skinning_VP");
-	CFragmentShader *fp = skinning->glGetFragmentShader("Skinning_FP");
+	CVertexShader *vp = skinning->glGetOpenGLShader()->glGetVertexShader("Skinning_VP");
+	CFragmentShader *fp = skinning->glGetOpenGLShader()->glGetFragmentShader("Skinning_FP");
 
     if (vp->glLoadProgram(skinning_vp_src) &&
         fp->glLoadProgram(skinning_fp_src))
@@ -250,7 +251,7 @@ void main (void) \
 
         //params2.addParameter("diffuseMap",CTextureUnitSetup::IMAGE_UNIT_0);
 
-        skinning->glCompileShader();
+		skinning->glGetOpenGLShader()->glCompileShader();
 	}
 
 	C3DScene *pScene = new C3DScene("SKINNING_SCENE");
@@ -303,7 +304,7 @@ void CSkinningDisplay::Display()
 	C3DEngine::Generic_to_MATRIX(skinningMatrix.p, gm);
 	CProgramParameters::CParameterBase &matrix = params[0];
 	matrix.copy(skinningMatrix);
-	skinning->glGetVertexShader("Skinning_VP")->setProgramParameters(params);
+	skinning->glGetOpenGLShader()->glGetVertexShader("Skinning_VP")->setProgramParameters(params);
 
 	glColor4f(1.0f,1.0f,1.0f,1.0f);
 	layer->manageSprite(t2,75,75,dt*360);

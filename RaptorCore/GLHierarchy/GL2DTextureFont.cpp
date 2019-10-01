@@ -44,6 +44,9 @@
 #if !defined(AFX_SHADER_H__4D405EC2_7151_465D_86B6_1CA99B906777__INCLUDED_)
 	#include "GLHierarchy/Shader.h"
 #endif
+#if !defined(AFX_OPENGLSHADERSTAGE_H__56B00FE3_E508_4FD6_9363_90E6E67446D9__INCLUDED_)
+	#include "GLHierarchy/OpenGLShaderStage.h"
+#endif
 #if !defined(AFX_FRAGMENTSHADER_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
 	#include "GLHierarchy/FragmentShader.h"
 #endif
@@ -341,26 +344,27 @@ bool CGL2DTextureFont::glGenGlyphs(float precision,
 	if (NULL == m_pShader)
 	{
 		m_pShader = new CShader(getName() + "_SHADER");
+		COpenGLShaderStage *stage = m_pShader->glGetOpenGLShader();
 
-		CVertexShader *vp = m_pShader->glGetVertexShader();
+		CVertexShader *vp = stage->glGetVertexShader();
 		bool res = vp->glLoadProgram(font_vp_src);
 		CProgramParameters params;
 		GL_COORD_VERTEX viewport(0, 0, 640, 480);
 		params.addParameter("viewport", viewport);
 		vp->setProgramParameters(params);
 
-		CGeometryShader *gp = m_pShader->glGetGeometryShader();
+		CGeometryShader *gp = stage->glGetGeometryShader();
 		gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
 		res = res & gp->glLoadProgram(font_gp_src);
 
-		CFragmentShader *fs = m_pShader->glGetFragmentShader();
+		CFragmentShader *fs = stage->glGetFragmentShader();
 		res = res & fs->glLoadProgram(font_fp_src);
 		params.clear();
 		params.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);
 		params.addParameter("color", CColor::RGBA(1.0, 0.0, 0.0, 1.0));
 		fs->setProgramParameters(params);
 
-		res = res & m_pShader->glCompileShader();
+		res = res & stage->glCompileShader();
 		if (!res)
 			return false;
 	}
@@ -413,10 +417,10 @@ void CGL2DTextureFont::glWrite(const std::string &text, int x, int y, const CCol
 	CProgramParameters params;
 	GL_COORD_VERTEX vp(viewport[0], viewport[1], 0.5f * viewport[2], 0.5f * viewport[3]);
 	params.addParameter("viewport", vp);
-	m_pShader->glGetVertexShader()->updateProgramParameters(params);
+	m_pShader->glGetOpenGLShader()->glGetVertexShader()->updateProgramParameters(params);
 	params.clear();
 	params.addParameter("color", color);
-	m_pShader->glGetFragmentShader()->updateProgramParameters(params);
+	m_pShader->glGetOpenGLShader()->glGetFragmentShader()->updateProgramParameters(params);
 
 	FONT_CACHEELT_t* pCache = (FONT_CACHEELT_t*)font_linePointer;
 #if defined(GL_ARB_vertex_program)
@@ -500,10 +504,10 @@ void CGL2DTextureFont::glWrite(const std::vector<FONT_TEXT_ITEM> &lines)
 	CProgramParameters params;
 	GL_COORD_VERTEX vp(viewport[0], viewport[1], 0.5f * viewport[2], 0.5f * viewport[3]);
 	params.addParameter("viewport", vp);
-	m_pShader->glGetVertexShader()->updateProgramParameters(params);
+	m_pShader->glGetOpenGLShader()->glGetVertexShader()->updateProgramParameters(params);
 	params.clear();
 	params.addParameter("color", color);
-	m_pShader->glGetFragmentShader()->updateProgramParameters(params);
+	m_pShader->glGetOpenGLShader()->glGetFragmentShader()->updateProgramParameters(params);
 
 	GLsizei count = 0;
 	for (size_t l = 0; l < lines.size(); l++)
