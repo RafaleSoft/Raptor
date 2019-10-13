@@ -25,7 +25,8 @@ ColorController::ColorController(CColorControlFilter* ccf,
 	
 	CGLFont::FONT_TEXT_ITEM item;
 	{
-		float b,c;
+		float b = 0.0f;
+		float c = 0.0f;
 		if (ccf != NULL)
 			ccf->getCorrection(b,c);
 		stringstream str;

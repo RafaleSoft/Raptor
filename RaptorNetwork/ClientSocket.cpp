@@ -71,7 +71,7 @@ bool CClientSocket::connect(const std::string& address,unsigned short port)
 	s_in.sin_family			= AF_INET;
 	s_in.sin_port			= htons(m_port);
 
-	if ((address.length()>0) && isalpha(address[0]))
+	if ((address.length()>0) && isalpha((unsigned char)address[0]))
 	{
 		struct hostent *remoteHost = gethostbyname(address.c_str());
 		if (NULL != remoteHost)

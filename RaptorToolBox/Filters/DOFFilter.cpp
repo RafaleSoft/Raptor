@@ -56,121 +56,6 @@
 #endif
 
 
-#if defined(GL_ARB_geometry_shader4)
-static const std::string dof_gp =
-	"#version 440\n\
-	\n\
-	//	Expect the geometry shader extension to be available, warn if not. \n\
-	#extension GL_ARB_geometry_shader4 : enable \n\
-	\n\
-	uniform vec4 offset; \n\
-	uniform vec4 vector; \n\
-	\n\
-	layout(points) in; \n\
-	layout(triangle_strip, max_vertices=4) out; \n\
-	layout(location = 1) out vec4 g_TexCoord[7]; \n\
-	\n\
-	void main() \n\
-	{\n\
-		gl_Position = vec4(-1.0, -1.0, 0.0, 1.0); \n\
-		g_TexCoord[0] = vec4(0.0,0.0,0.0,0.0); \n\
-		g_TexCoord[1] = vec4(0.0,0.0,0.0,0.0) + offset.x*vector; \n\
-		g_TexCoord[2] = vec4(0.0,0.0,0.0,0.0) - offset.x*vector; \n\
-		g_TexCoord[3] = vec4(0.0,0.0,0.0,0.0) + offset.y*vector; \n\
-		g_TexCoord[4] = vec4(0.0,0.0,0.0,0.0) - offset.y*vector; \n\
-		g_TexCoord[5] = vec4(0.0,0.0,0.0,0.0) + offset.z*vector; \n\
-		g_TexCoord[6] = vec4(0.0,0.0,0.0,0.0) - offset.z*vector; \n\
-		EmitVertex(); \n\
-		\n\
-		gl_Position = vec4(1.0, -1.0, 0.0, 1.0); \n\
-		g_TexCoord[0] = vec4(1.0,0.0,0.0,0.0); \n\
-		g_TexCoord[1] = vec4(1.0,0.0,0.0,0.0) + offset.x*vector; \n\
-		g_TexCoord[2] = vec4(1.0,0.0,0.0,0.0) - offset.x*vector; \n\
-		g_TexCoord[3] = vec4(1.0,0.0,0.0,0.0) + offset.y*vector; \n\
-		g_TexCoord[4] = vec4(1.0,0.0,0.0,0.0) - offset.y*vector; \n\
-		g_TexCoord[5] = vec4(1.0,0.0,0.0,0.0) + offset.z*vector; \n\
-		g_TexCoord[6] = vec4(1.0,0.0,0.0,0.0) - offset.z*vector; \n\
-		EmitVertex(); \n\
-		\n\
-		gl_Position = vec4(-1.0, 1.0, 0.0, 1.0); \n\
-		g_TexCoord[0] = vec4(0.0, 1.0, 0.0, 0.0); \n\
-		g_TexCoord[1] = vec4(0.0, 1.0, 0.0, 0.0) + offset.x*vector; \n\
-		g_TexCoord[2] = vec4(0.0, 1.0, 0.0, 0.0) - offset.x*vector; \n\
-		g_TexCoord[3] = vec4(0.0, 1.0, 0.0, 0.0) + offset.y*vector; \n\
-		g_TexCoord[4] = vec4(0.0, 1.0, 0.0, 0.0) - offset.y*vector; \n\
-		g_TexCoord[5] = vec4(0.0, 1.0, 0.0, 0.0) + offset.z*vector; \n\
-		g_TexCoord[6] = vec4(0.0, 1.0, 0.0, 0.0) - offset.z*vector; \n\
-		EmitVertex(); \n\
-		\n\
-		gl_Position = vec4(1.0, 1.0, 0.0, 1.0); \n\
-		g_TexCoord[0] = vec4(1.0, 1.0, 0.0, 0.0); \n\
-		g_TexCoord[1] = vec4(1.0, 1.0, 0.0, 0.0) + offset.x*vector; \n\
-		g_TexCoord[2] = vec4(1.0, 1.0, 0.0, 0.0) - offset.x*vector; \n\
-		g_TexCoord[3] = vec4(1.0, 1.0, 0.0, 0.0) + offset.y*vector; \n\
-		g_TexCoord[4] = vec4(1.0, 1.0, 0.0, 0.0) - offset.y*vector; \n\
-		g_TexCoord[5] = vec4(1.0, 1.0, 0.0, 0.0) + offset.z*vector; \n\
-		g_TexCoord[6] = vec4(1.0, 1.0, 0.0, 0.0) - offset.z*vector; \n\
-		EmitVertex(); \n\
-		\n\
-		EndPrimitive(); \n\
-	}";
-
-
-	//	C = A * m * |S2 - S1| / S2
-	static const string dof_fp =
-	"#version 440\n\
-	\n\
-	uniform sampler2D colorMap;\n\
-	uniform sampler2D depthMap;\n\
-	uniform vec4 dofParams; \n\
-	const float CoC_mag = 2.66; \n\
-	\n\
-	layout(location = 1) in vec4 g_TexCoord[7]; \n\
-	layout(location = 0) out vec4 o_Color;	\n\
-	void main (void) \n\
-	{\n\
-		vec4 color_base  = texture(colorMap,g_TexCoord[0].xy);\n\
-		float depth_base = texture(depthMap,g_TexCoord[0].xy).r;\n\
-		\n\
-		float CoC_radius = dofParams.z * CoC_mag * abs(depth_base - dofParams.y) / depth_base;\n\
-		\n\
-		if (CoC_radius > 1.0) \n\
-		{\n\
-			vec4 color = color_base;\n\
-			color += texture(colorMap,g_TexCoord[1].xy);\n\
-			color += texture(colorMap,g_TexCoord[2].xy);\n\
-			color_base = mix(color_base,color / 3.0,(CoC_radius - 1.0)); \n\
-			//		color_base = vec4(1.0, 0.0, 0.0, 1.0); \n\
-			\n\
-			if (CoC_radius > 2.0) \n\
-			{\n\
-				vec4 color2 = color; \n\
-				color2 += texture(colorMap,g_TexCoord[3].xy);\n\
-				color2 += texture(colorMap,g_TexCoord[4].xy);\n\
-				color_base = mix(color / 3.0,color2 / 5.0,(CoC_radius - 2.0)); \n\
-				//			color_base = vec4(0.0, 1.0, 0.0, 1.0); \n\
-				\n\
-				if (CoC_radius > 3.0) \n\
-				{\n\
-					vec4 color3 = color2; \n\
-					color3 += texture(colorMap,g_TexCoord[5].xy);\n\
-					color3 += texture(colorMap,g_TexCoord[6].xy);\n\
-					color_base = mix(color2 / 5.0,color3 / 7.0,(min(CoC_radius,4.0) - 3.0)); \n\
-					//				color_base = vec4(0.0, 0.0, 1.0, 1.0); \n\
-				} \n\
-			}\n\
-			\n\
-		}\n\
-		\n\
-		o_Color = color_base; \n\
-	}\n\
-	";
-
-#elif defined(GL_ARB_vertex_shader)
-	#include "DOF.programs"
-#elif defined(GL_ARB_vertex_program)
-	#include "DOF.shaders"
-#endif
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -186,15 +71,17 @@ CDOFFilter::CDOFFilter()
 	m_nbBlur(1),
 	dofParams(GL_COORD_VERTEX(0.0f,0.95f,50.0f,0.0f))
 {
-	vp_paramsX.addParameter("offset", GL_COORD_VERTEX(0.0f, 0.0f, 0.0f, 0.0f));
-	vp_paramsX.addParameter("vector", GL_COORD_VERTEX(1.0f, 0.0f, 0.0f, 0.0f));
+	paramsX.addParameter("offset", GL_COORD_VERTEX(0.0f, 0.0f, 0.0f, 0.0f));
+	paramsX.addParameter("vector", GL_COORD_VERTEX(1.0f, 0.0f, 0.0f, 0.0f));
+	paramsX.addParameter("dofParams", dofParams.p);
+	paramsX.addParameter("colorMap", CTextureUnitSetup::IMAGE_UNIT_0);
+	paramsX.addParameter("depthMap", CTextureUnitSetup::IMAGE_UNIT_1);
 
-	vp_paramsY.addParameter("offset", GL_COORD_VERTEX(0.0f, 0.0f, 0.0f, 0.0f));
-	vp_paramsY.addParameter("vector", GL_COORD_VERTEX(0.0f, 1.0f, 0.0f, 0.0f));
-
-	fp_params.addParameter("dofParams",dofParams.p);
-	fp_params.addParameter("colorMap", CTextureUnitSetup::IMAGE_UNIT_0);
-	fp_params.addParameter("depthMap", CTextureUnitSetup::IMAGE_UNIT_1);
+	paramsY.addParameter("offset", GL_COORD_VERTEX(0.0f, 0.0f, 0.0f, 0.0f));
+	paramsY.addParameter("vector", GL_COORD_VERTEX(0.0f, 1.0f, 0.0f, 0.0f));
+	paramsY.addParameter("dofParams", dofParams.p);
+	paramsY.addParameter("colorMap", CTextureUnitSetup::IMAGE_UNIT_0);
+	paramsY.addParameter("depthMap", CTextureUnitSetup::IMAGE_UNIT_1);
 }
 
 CDOFFilter::~CDOFFilter()
@@ -252,7 +139,8 @@ void CDOFFilter::setDOFParams(float percentageOfDepthFiltered, float filterAmpli
     if (dofParams.p.z < 0)
         dofParams.p.z = 50.0f;
 
-	fp_params[0].copy(dofParams);
+	paramsX[2].copy(dofParams);
+	paramsY[2].copy(dofParams);
 }
 
 void CDOFFilter::setBlurNbPass(unsigned int nb)
@@ -275,12 +163,8 @@ void CDOFFilter::glRenderFilter()
 	getColorInput()->glvkRender();
 
 
-#if defined(GL_ARB_geometry_shader4)
-	DOFShader->glGetOpenGLShader()->glGetGeometryShader()->setProgramParameters(vp_paramsX);
-	DOFShader->glGetOpenGLShader()->glGetFragmentShader()->setProgramParameters(fp_params);
-#elif defined(GL_ARB_vertex_shader)
-	DOFShader->glGetOpenGLShader()->glGetVertexShader()->setProgramParameters(vp_paramsX);
-	DOFShader->glGetOpenGLShader()->glGetFragmentShader()->setProgramParameters(fp_params);
+#if defined(GL_ARB_geometry_shader4) || defined(GL_ARB_vertex_shader)
+	DOFShader->glGetOpenGLShader()->setProgramParameters(paramsX);
 #elif defined(GL_ARB_vertex_program)
 	DOFShader->glGetOpenGLProgram()->glGetVertexProgram()->setProgramParameters(vp_paramsX);
 	DOFShader->glGetOpenGLProgram()->glGetFragmentProgram()->setProgramParameters(fp_params);
@@ -300,12 +184,8 @@ void CDOFFilter::glRenderFilter()
 		tmpDisplay2->glvkBindDisplay(noDevice);
 		tmpTexture->glvkRender();
 
-	#if defined(GL_ARB_geometry_shader4)
-		DOFShader->glGetOpenGLShader()->glGetGeometryShader()->setProgramParameters(vp_paramsY);
-		DOFShader->glGetOpenGLShader()->glGetFragmentShader()->setProgramParameters(fp_params);
-	#elif defined(GL_ARB_vertex_shader)
-		DOFShader->glGetOpenGLShader()->glGetVertexShader()->setProgramParameters(vp_paramsY);
-		DOFShader->glGetOpenGLShader()->glGetFragmentShader()->setProgramParameters(fp_params);
+	#if defined(GL_ARB_geometry_shader4) || defined(GL_ARB_vertex_shader)
+		DOFShader->glGetOpenGLShader()->setProgramParameters(paramsY);
 	#elif defined(GL_ARB_vertex_program)
 		DOFShader->glGetOpenGLProgram()->glGetVertexProgram()->setProgramParameters(vp_paramsY);
 		DOFShader->glGetOpenGLProgram()->glGetFragmentProgram()->setProgramParameters(fp_params);
@@ -322,16 +202,12 @@ void CDOFFilter::glRenderFilter()
 		tmpDisplay->glvkBindDisplay(noDevice);
 		tmpTexture2->glvkRender();
 
-#if defined(GL_ARB_geometry_shader4)
-		DOFShader->glGetOpenGLShader()->glGetGeometryShader()->setProgramParameters(vp_paramsX);
-		DOFShader->glGetOpenGLShader()->glGetFragmentShader()->setProgramParameters(fp_params);
-#elif defined(GL_ARB_vertex_shader)
-		DOFShader->glGetOpenGLShader()->glGetVertexShader()->setProgramParameters(vp_paramsX);
-		DOFShader->glGetOpenGLShader()->glGetFragmentShader()->setProgramParameters(fp_params);
-#elif defined(GL_ARB_vertex_program)
+	#if defined(GL_ARB_geometry_shader4) || defined(GL_ARB_vertex_shader)
+		DOFShader->glGetOpenGLShader()->setProgramParameters(paramsX);
+	#elif defined(GL_ARB_vertex_program)
 		DOFShader->glGetOpenGLProgram()->glGetVertexProgram()->setProgramParameters(vp_paramsX);
 		DOFShader->glGetOpenGLProgram()->glGetFragmentProgram()->setProgramParameters(fp_params);
-#endif
+	#endif
 
 		DOFShader->glRender();
 
@@ -355,12 +231,8 @@ void CDOFFilter::glRenderFilterOutput()
 	glActiveTextureARB(GL_TEXTURE0_ARB);
 	tmpTexture->glvkRender();
 
-#if defined(GL_ARB_geometry_shader4)
-	DOFShader->glGetOpenGLShader()->glGetGeometryShader()->setProgramParameters(vp_paramsY);
-	DOFShader->glGetOpenGLShader()->glGetFragmentShader()->setProgramParameters(fp_params);
-#elif defined(GL_ARB_vertex_shader)
-	DOFShader->glGetOpenGLShader()->glGetVertexShader()->setProgramParameters(vp_paramsY);
-	DOFShader->glGetOpenGLShader()->glGetFragmentShader()->setProgramParameters(fp_params);
+#if defined(GL_ARB_geometry_shader4) || defined(GL_ARB_vertex_shader)
+	DOFShader->glGetOpenGLShader()->setProgramParameters(paramsY);
 #elif defined(GL_ARB_vertex_program)
 	DOFShader->glGetOpenGLProgram()->glGetVertexProgram()->setProgramParameters(vp_paramsY);
 	DOFShader->glGetOpenGLProgram()->glGetFragmentProgram()->setProgramParameters(fp_params);
@@ -493,45 +365,31 @@ void CDOFFilter::glInitShaders(void)
 	float delta = 1.0f / depthInput->getWidth();
 	GL_COORD_VERTEX     vsParameter_Xoffset(1.0f * delta, 2.0f * delta, 3.0f * delta, 0.0f);
 	CProgramParameters::CParameter<GL_COORD_VERTEX> px(vsParameter_Xoffset);
-	vp_paramsX[0].copy(px);
+	paramsX[0].copy(px);
 
 	delta = 1.0f / depthInput->getHeight();
 	GL_COORD_VERTEX     vsParameter_Yoffset(1.0f * delta, 2.0f * delta, 3.0f * delta, 0.0f);
 	CProgramParameters::CParameter<GL_COORD_VERTEX> py(vsParameter_Yoffset);
-	vp_paramsY[0].copy(py);
+	paramsY[0].copy(py);
 
-	fp_params[0].copy(dofParams);
+	paramsX[2].copy(dofParams);
+	paramsY[2].copy(dofParams);
 	
 
 	// Create & load shaders to perform a 2 pass blur using depth value.
 #if defined(GL_ARB_geometry_shader4)
 	DOFShader->glGetOpenGLShader()->glGetVertexShader("EMPTY_PROGRAM");
-	CGeometryShader *gp = DOFShader->glGetOpenGLShader()->glGetGeometryShader("dof_gp");
-	bool res = gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
-	res = res & gp->glLoadProgram(dof_gp);
-	CFragmentShader *fp = DOFShader->glGetOpenGLShader()->glGetFragmentShader("dof_fp");
-	res = res && fp->glLoadProgram(dof_fp);
-	if (res)
-		fp->setProgramParameters(fp_params);
-
-	res = res && DOFShader->glGetOpenGLShader()->glCompileShader();
+	CGeometryShader *gp = DOFShader->glGetOpenGLShader()->glGetGeometryShader("DOF_GEO_SHADER");
+	gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
+	DOFShader->glGetOpenGLShader()->glGetFragmentShader("DOF_TEX_SHADER");
+	DOFShader->glGetOpenGLShader()->glCompileShader();
 #elif defined(GL_ARB_vertex_shader)
-	CVertexShader *vp = DOFShader->glGetOpenGLShader()->glGetVertexShader("dof_vp");
-	bool res = vp->glLoadProgram(dof_vp);
-	if (res)
-		vp->setProgramParameters(vp_paramsX);
-
-	CFragmentShader *fp = DOFShader->glGetOpenGLShader()->glGetFragmentShader("dof_fp");
-	res = res && fp->glLoadProgram(dof_fp);
-	if (res)
-		fp->setProgramParameters(fp_params);
-
-	res = res && DOFShader->glGetOpenGLShader()->glCompileShader();
+	CVertexShader *vp = DOFShader->glGetOpenGLShader()->glGetVertexShader("DOF_OLD_VTX_SHADER");
+	CFragmentShader *fp = DOFShader->glGetOpenGLShader()->glGetFragmentShader("DOF_OLD_TEX_SHADER");
+	DOFShader->glGetOpenGLShader()->glCompileShader();
 #elif defined(GL_ARB_vertex_program)
-	CVertexProgram *vs = DOFShader->glGetOpenGLProgram()->glGetVertexProgram("dof_vs");
-	bool res = vs->glLoadProgram(dof_vs);
-	CFragmentProgram *fs = DOFShader->glGetOpenGLProgram()->glGetFragmentProgram("dof_fs");
-	res = res && fs->glLoadProgram(dof_fs);
+	CVertexProgram *vs = DOFShader->glGetOpenGLProgram()->glGetVertexProgram("DOF_VTX_PROGRAM");
+	CFragmentProgram *fs = DOFShader->glGetOpenGLProgram()->glGetFragmentProgram("DOF_TEX_PROGRAM");
 #endif
 }
 

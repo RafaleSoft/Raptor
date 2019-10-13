@@ -156,6 +156,15 @@
     <None Include="..\..\RaptorData\Data\particle3D.ps">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="..\..\RaptorData\Data\font2D.vs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\RaptorData\Data\font2D.gs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\RaptorData\Data\font2D.ps">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\RaptorData\RaptorDataManager.cpp">

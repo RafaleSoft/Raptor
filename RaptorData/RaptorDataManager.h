@@ -101,6 +101,7 @@ private:
     static CRaptorDataManager  *m_pInstance;
 
 	//!	The list of packages managed.
+#pragma warning(disable:4251)	// dll interface
 	std::vector<Package>	m_packages;
 };
 

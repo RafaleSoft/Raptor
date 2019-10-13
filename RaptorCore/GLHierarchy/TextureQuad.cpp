@@ -216,6 +216,7 @@ void CTextureQuad::glRender(void)
 		CProgramParameters params;
 		params.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);
 
+		stage->setProgramParameters(params);
 		res = res & stage->glCompileShader();
 	}
 

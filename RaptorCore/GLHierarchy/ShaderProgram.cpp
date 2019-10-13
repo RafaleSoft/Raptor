@@ -31,6 +31,9 @@
 #if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
     #include "System/RaptorErrorManager.h"
 #endif
+#if !defined(AFX_SHADERLIBRARY_H__E2A8C35E_23A4_4AD1_8467_884E6B183B4F__INCLUDED_)
+	#include "Subsys/ShaderLibrary.h"
+#endif
 
 
 RAPTOR_NAMESPACE_BEGIN
@@ -73,6 +76,16 @@ CShaderProgram::~CShaderProgram()
 	// TODO : Recycle handle
 }
 
+bool CShaderProgram::glAddToLibrary(const std::string& shader_name,
+									const std::string& shader_source_file,
+									const std::string& class_name)
+{
+	CShaderLibrary *library = CShaderLibrary::GetInstance();
+	if (NULL != library)
+		return library->glAddToLibrary(shader_name, shader_source_file, class_name);
+	else
+		return false;
+}
 
 void CShaderProgram::setProgramParameters(const CProgramParameters &v)
 {

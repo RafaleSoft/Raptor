@@ -425,6 +425,9 @@ copy $(SolutionDir)$(ProjectName)\RaptorData.pck "%RAPTOR_ROOT%\Redist\bin\"
     <None Include="..\..\RaptorData\Data\embm_0light.vp" />
     <None Include="..\..\RaptorData\Data\embm_std.vp" />
     <None Include="..\..\RaptorData\Data\empty.vs" />
+    <None Include="..\..\RaptorData\Data\font2D.gs" />
+    <None Include="..\..\RaptorData\Data\font2D.ps" />
+    <None Include="..\..\RaptorData\Data\font2D.vs" />
     <None Include="..\..\RaptorData\Data\particle.vs" />
     <None Include="..\..\RaptorData\Data\particle2D.gs" />
     <None Include="..\..\RaptorData\Data\particle3D.gs" />

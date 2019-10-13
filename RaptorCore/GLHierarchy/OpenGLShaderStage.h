@@ -145,6 +145,9 @@ private:
 	//!	Initialise attributes binding of program.
 	void glQueryAttributeLocations(void);
 
+	//!	Set parameters values.
+	void glSetProgramParameters();
+
 
 	bool			m_bDeleteVShader;
 	bool			m_bDeleteFShader;

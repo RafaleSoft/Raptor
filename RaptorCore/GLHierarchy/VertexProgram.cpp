@@ -404,9 +404,9 @@ bool CVertexProgram::glLoadProgram(const std::string &program)
 #if defined(GL_ARB_vertex_program)
 	if (CRaptorInstance::GetInstance().m_bVertexReady)
 	{
-		GLuint program = m_handle.handle();
-		if (pExtensions->glIsProgramARB(program))
-			pExtensions->glDeleteProgramsARB(1,&program);
+		GLuint hProgram = m_handle.handle();
+		if (pExtensions->glIsProgramARB(hProgram))
+			pExtensions->glDeleteProgramsARB(1, &hProgram);
 	}
 #endif
 

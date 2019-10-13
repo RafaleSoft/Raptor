@@ -1,0 +1,51 @@
+/***************************************************************************/
+/*                                                                         */
+/*  DOF.vp                                                                 */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+!!ARBvp1.0
+
+ATTRIB iPos = vertex.position;
+ATTRIB iTexCoord = vertex.texcoord[0];
+
+PARAM mvp[4] = { state.matrix.mvp };
+PARAM offset = program.local[0];
+PARAM vector = program.local[1];
+
+TEMP pos;
+
+OUTPUT oPos = result.position;
+OUTPUT oTex0 = result.texcoord[0];
+OUTPUT oTex2 = result.texcoord[2];
+OUTPUT oTex3 = result.texcoord[3];
+OUTPUT oTex4 = result.texcoord[4];
+OUTPUT oTex5 = result.texcoord[5];
+OUTPUT oTex6 = result.texcoord[6];
+OUTPUT oTex7 = result.texcoord[7];
+
+DP4 oPos.x , mvp[0] , iPos;
+DP4 oPos.y , mvp[1] , iPos;
+DP4 oPos.z , mvp[2] , iPos;
+DP4 oPos.w, mvp[3] ,iPos;
+
+MOV oTex0, iTexCoord;
+MAD oTex2 , offset.x, vector, iTexCoord ;
+MAD oTex3 , offset.y, vector, iTexCoord ;
+MAD oTex4 , offset.z, vector, iTexCoord ;
+MAD oTex5 , -offset.x, vector, iTexCoord ;
+MAD oTex6 , -offset.y, vector, iTexCoord ;
+MAD oTex7 , -offset.z, vector, iTexCoord ;
+
+END

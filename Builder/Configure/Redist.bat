@@ -203,6 +203,7 @@ copy .\RaptorToolBox\Controllers.h Redist\Include\ToolBox
 copy .\RaptorToolBox\Imaging.h Redist\Include\ToolBox
 copy .\RaptorToolBox\ParticleCompute.h Redist\Include\ToolBox
 copy .\RaptorToolBox\RaptorToolBox.h Redist\Include\ToolBox
+copy .\RaptorToolBox\Filters.h Redist\Include\ToolBox
 copy .\RaptorToolBox\Streaming.h Redist\Include\ToolBox
 copy .\RaptorToolBox\Filters\BlurFilter.h Redist\Include\ToolBox\Filters
 copy .\RaptorToolBox\Filters\ColorControlFilter.h Redist\Include\ToolBox\Filters

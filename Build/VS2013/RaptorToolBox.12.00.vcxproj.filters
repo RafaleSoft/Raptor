@@ -143,6 +143,9 @@
     <ClCompile Include="..\..\RaptorToolBox\Imaging\writepng.c">
       <Filter>Source Files\Imaging</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\RaptorToolBox\Filters.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\RaptorToolBox\Loaders\OBJScript_lex.h">
@@ -232,6 +235,9 @@
     <ClInclude Include="..\..\RaptorToolBox\resource.h">
       <Filter>Resource Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\RaptorToolBox\Filters.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\RaptorToolBox\Loaders\OBJ.lex">
@@ -253,12 +259,6 @@
     <None Include="..\..\RaptorToolBox\Filters\MBFilter.programs">
       <Filter>Source Files\Filters</Filter>
     </None>
-    <None Include="..\..\RaptorToolBox\Filters\DOF.programs">
-      <Filter>Source Files\Filters</Filter>
-    </None>
-    <None Include="..\..\RaptorToolBox\Filters\DOF.shaders">
-      <Filter>Source Files\Filters</Filter>
-    </None>
     <None Include="..\..\RaptorToolBox\Filters\HDR.programs">
       <Filter>Source Files\Filters</Filter>
     </None>
@@ -272,6 +272,24 @@
       <Filter>Source Files\Filters</Filter>
     </None>
     <None Include="..\..\RaptorToolBox\Filters\ColorControlFilter.shaders">
+      <Filter>Source Files\Filters</Filter>
+    </None>
+    <None Include="..\..\RaptorToolBox\Filters\DOF.gs">
+      <Filter>Source Files\Filters</Filter>
+    </None>
+    <None Include="..\..\RaptorToolBox\Filters\DOF.ps">
+      <Filter>Source Files\Filters</Filter>
+    </None>
+    <None Include="..\..\RaptorToolBox\Filters\DOF.vs">
+      <Filter>Source Files\Filters</Filter>
+    </None>
+    <None Include="..\..\RaptorToolBox\Filters\DOF_old.ps">
+      <Filter>Source Files\Filters</Filter>
+    </None>
+    <None Include="..\..\RaptorToolBox\Filters\DOF.fp">
+      <Filter>Source Files\Filters</Filter>
+    </None>
+    <None Include="..\..\RaptorToolBox\Filters\DOF.vp">
       <Filter>Source Files\Filters</Filter>
     </None>
   </ItemGroup>

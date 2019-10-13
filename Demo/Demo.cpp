@@ -24,6 +24,7 @@
 #include "System/RaptorErrorManager.h"
 #include "System/RaptorApplication.h"
 
+#include "ToolBox/Filters.h"
 #include "ToolBox/Imaging.h"
 #include "ToolBox/Controllers.h"
 #include "ToolBox/ParticleCompute.h"
@@ -62,6 +63,7 @@ int main(int argc, char* argv[])
 
 	CImaging::installImagers();
 	CParticleCompute::installComputers();
+
 	/*
     if (!Raptor::glCheckDisplayConfig(glcs))
     {
@@ -94,6 +96,8 @@ int main(int argc, char* argv[])
 	bool res = pDisplay->glvkBindDisplay(wnd);
     if (res)
 	{
+		CFilters::glInstallFilters();
+
         pDoc->GLInitContext();
 
 		CControllers::createViewpointController(pDisplay->getViewPoint());
