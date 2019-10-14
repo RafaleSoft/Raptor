@@ -23,13 +23,16 @@ typedef struct
 	const char *shader_fname;
 	const char *class_name;
 } factory_shader;
-static const size_t NB_FACTORY_SHADERS = 6;
+static const size_t NB_FACTORY_SHADERS = 9;
 static factory_shader fsh[NB_FACTORY_SHADERS] = {	{ "DOF_GEO_SHADER", "DOF.gs", "GeometryShader" },
 													{ "DOF_TEX_SHADER", "DOF.ps", "FragmentShader" },
 													{ "DOF_OLD_VTX_SHADER", "DOF.vs", "VertexShader" },
 													{ "DOF_OLD_TEX_SHADER", "DOF_old.ps", "FragmentShader" },
-													{ "DOF_VTX_PROGRAM", "bump.vp", "VertexProgram" },
-													{ "DOF_TEX_PROGRAM", "bump.vp", "FragmentProgram" } };
+													{ "DOF_VTX_PROGRAM", "DOF.vp", "VertexProgram" },
+													{ "DOF_TEX_PROGRAM", "DOF.fp", "FragmentProgram" },
+													{ "COLOR_TEX_SHADER", "Color.ps", "FragmentShader" },
+													{ "COLOR_OLD_TEX_SHADER", "Color_old.ps", "FragmentShader" },
+													{ "COLOR_TEX_PROGRAM", "Color.fp", "FragmentProgram" } };
 
 static map<std::string, factory_shader>	s_factoryShaders;
 

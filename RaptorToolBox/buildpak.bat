@@ -30,7 +30,7 @@ IF NOT EXIST "%RAPTOR_ROOT%\Redist\Bin\RaptorDataPackager.exe" (
 	ECHO "%RAPTOR_ROOT%\Redist\Bin\RaptorDataPackager.exe"
 )
 
-"%RAPTOR_ROOT%\Redist\Bin\RaptorDataPackager.exe" -C Toolbox.pck DOF.gs DOF.ps DOF.vs DOF_old.ps DOF.vp DOF.fp
+"%RAPTOR_ROOT%\Redist\Bin\RaptorDataPackager.exe" -C Toolbox.pck DOF.gs DOF.ps DOF.vs DOF_old.ps DOF.vp DOF.fp Color.ps Color_old.ps Color.fp
 
 ECHO Removing temporary files
 DEL /F "*.zip"

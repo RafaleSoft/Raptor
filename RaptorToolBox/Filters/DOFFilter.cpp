@@ -164,16 +164,16 @@ void CDOFFilter::glRenderFilter()
 
 
 #if defined(GL_ARB_geometry_shader4) || defined(GL_ARB_vertex_shader)
-	DOFShader->glGetOpenGLShader()->setProgramParameters(paramsX);
+	COpenGLShaderStage *stage = DOFShader->glGetOpenGLShader();
+	stage->setProgramParameters(paramsX);
 #elif defined(GL_ARB_vertex_program)
-	DOFShader->glGetOpenGLProgram()->glGetVertexProgram()->setProgramParameters(vp_paramsX);
-	DOFShader->glGetOpenGLProgram()->glGetFragmentProgram()->setProgramParameters(fp_params);
+	COpenGLProgramStage *stage = DOFShader->glGetOpenGLProgram();
+	stage->glGetVertexProgram()->setProgramParameters(vp_paramsX);
+	stage->glGetFragmentProgram()->setProgramParameters(fp_params);
 #endif
 
 	DOFShader->glRender();
-	
 	glDrawFilter();
-
 	DOFShader->glStop();
 
 	tmpDisplay->glvkUnBindDisplay();
@@ -185,17 +185,16 @@ void CDOFFilter::glRenderFilter()
 		tmpTexture->glvkRender();
 
 	#if defined(GL_ARB_geometry_shader4) || defined(GL_ARB_vertex_shader)
-		DOFShader->glGetOpenGLShader()->setProgramParameters(paramsY);
+		stage->setProgramParameters(paramsY);
 	#elif defined(GL_ARB_vertex_program)
-		DOFShader->glGetOpenGLProgram()->glGetVertexProgram()->setProgramParameters(vp_paramsY);
-		DOFShader->glGetOpenGLProgram()->glGetFragmentProgram()->setProgramParameters(fp_params);
+		stage->glGetVertexProgram()->setProgramParameters(vp_paramsY);
+		stage->glGetFragmentProgram()->setProgramParameters(fp_params);
 	#endif
 
 		DOFShader->glRender();
-
 		glDrawFilter();
-		
 		DOFShader->glStop();
+	
 		tmpDisplay2->glvkUnBindDisplay();
 
 		//  Render X-blur in pixel buffer
@@ -203,16 +202,14 @@ void CDOFFilter::glRenderFilter()
 		tmpTexture2->glvkRender();
 
 	#if defined(GL_ARB_geometry_shader4) || defined(GL_ARB_vertex_shader)
-		DOFShader->glGetOpenGLShader()->setProgramParameters(paramsX);
+		stage->setProgramParameters(paramsX);
 	#elif defined(GL_ARB_vertex_program)
-		DOFShader->glGetOpenGLProgram()->glGetVertexProgram()->setProgramParameters(vp_paramsX);
-		DOFShader->glGetOpenGLProgram()->glGetFragmentProgram()->setProgramParameters(fp_params);
+		stage->glGetVertexProgram()->setProgramParameters(vp_paramsX);
+		stage->glGetFragmentProgram()->setProgramParameters(fp_params);
 	#endif
 
 		DOFShader->glRender();
-
 		glDrawFilter();
-
 		DOFShader->glStop();
 
 		tmpDisplay->glvkUnBindDisplay();
@@ -239,9 +236,7 @@ void CDOFFilter::glRenderFilterOutput()
 #endif
 
 	DOFShader->glRender();
-
 	glDrawFilter();
-
 	DOFShader->glStop();
 
 	glActiveTextureARB(GL_TEXTURE1_ARB);
