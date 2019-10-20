@@ -36,17 +36,11 @@
 #if !defined(AFX_SHADER_H__4D405EC2_7151_465D_86B6_1CA99B906777__INCLUDED_)
 	#include "GLHierarchy/Shader.h"
 #endif
-#if !defined(AFX_FRAGMENTSHADER_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
-	#include "GLHierarchy/FragmentShader.h"
-#endif
 #if !defined(AFX_FRAGMENTPROGRAM_H__DD0AD51D_3BFF_4C65_8099_BA7696D7BDDF__INCLUDED_)
 	#include "GLHierarchy/FragmentProgram.h"
 #endif
 #if !defined(AFX_VERTEXPROGRAM_H__F2D3BBC6_87A1_4695_B667_2B8C3C4CF022__INCLUDED_)
 	#include "GLHierarchy/VertexProgram.h"
-#endif
-#if !defined(AFX_VERTEXSHADER_H__204F7213_B40B_4B6A_9BCA_828409871B68__INCLUDED_)
-	#include "GLHierarchy/VertexShader.h"
 #endif
 #if !defined(AFX_GEOMETRYSHADER_H__1981EA98_8F3C_4881_9429_A9ACA5B285D3__INCLUDED_)
 	#include "GLHierarchy/GeometryShader.h"
@@ -66,106 +60,6 @@ RAPTOR_NAMESPACE
 
 static const int KERNEL_SIZE = 256;
 
-#if defined(GL_ARB_geometry_shader4)
-	static const std::string gp_src =
-	"#version 440\n\
-	\n\
-	//	Expect the geometry shader extension to be available, warn if not. \n\
-	#extension GL_ARB_geometry_shader4 : enable \n\
-	\n\
-	uniform vec4 center;				\n\
-	\n\
-	layout(points) in; \n\
-	layout(triangle_strip, max_vertices=4) out; \n\
-	layout(location = 1) out vec4 g_TexCoord; \n\
-	\n\
-	void main() \n\
-	{\n\
-		gl_Position = vec4(-1.0, -1.0, 0.0, 1.0); \n\
-		g_TexCoord = center + vec4(0.0,0.0,0.0,0.0); \n\
-		EmitVertex(); \n\
-		\n\
-		gl_Position = vec4(1.0, -1.0, 0.0, 1.0); \n\
-		g_TexCoord = center + vec4(1.0,0.0,0.0,0.0); \n\
-		EmitVertex(); \n\
-		\n\
-		gl_Position = vec4(-1.0, 1.0, 0.0, 1.0); \n\
-		g_TexCoord = center + vec4(0.0, 1.0, 0.0, 0.0); \n\
-		EmitVertex(); \n\
-		\n\
-		gl_Position = vec4(1.0, 1.0, 0.0, 1.0); \n\
-		g_TexCoord = center + vec4(1.0, 1.0, 0.0, 0.0); \n\
-		EmitVertex(); \n\
-		\n\
-		EndPrimitive(); \n\
-	}";
-
-	static const string xk_ps2 =
-	"#version 440 			\n\
-	\n\
-	uniform sampler2D color;	\n\
-	uniform sampler2D factor;	\n\
-	\n\
-	uniform vec4 size;			\n\
-	uniform vec4 offset;		\n\
-	\n\
-	layout(location = 1) in vec4 g_TexCoord; \n\
-	layout(location = 0) out vec4 o_Color;	\n\
-	void main(void)			\n\
-	{						\n\
-		vec4 subpixels = fract(size * g_TexCoord); \n\
-		vec2 texcoord = g_TexCoord.xy; \n\
-		vec4 factors = texture(factor,subpixels.xy); \n\
-		\n\
-		vec4 colors = texture(color,texcoord); \n\
-		vec4 colorsum = colors * factors.zzzz; \n\
-		\n\
-		colors = texture(color,texcoord + offset.xz); \n\
-		colorsum = colorsum + colors * factors.wwww; \n\
-		\n\
-		colors = texture(color,texcoord - offset.xz); \n\
-		colorsum = colorsum + colors * factors.yyyy; \n\
-		\n\
-		colors = texture(color,texcoord - offset.xz - offset.xz); \n\
-		o_Color = colorsum + colors * factors.xxxx; \n\
-		o_Color.w = 1.0; \n\
-	}";
-
-	static const string yk_ps2 =
-	"#version 440 			\n\
-	\n\
-	uniform sampler2D color;	\n\
-	uniform sampler2D factor;	\n\
-	\n\
-	uniform vec4 size;			\n\
-	uniform vec4 offset;		\n\
-	\n\
-	layout(location = 1) in vec4 g_TexCoord; \n\
-	layout(location = 0) out vec4 o_Color;	\n\
-	void main(void)			\n\
-	{						\n\
-		vec4 subpixels = fract(size * g_TexCoord); \n\
-		vec2 texcoord = g_TexCoord.xy; \n\
-		vec4 factors = texture(factor,subpixels.yx); \n\
-		\n\
-		vec4 colors = texture(color,texcoord); \n\
-		vec4 colorsum = colors * factors.zzzz; \n\
-		\n\
-		colors = texture(color,texcoord + offset.zy); \n\
-		colorsum = colorsum + colors * factors.wwww; \n\
-		\n\
-		colors = texture(color,texcoord - offset.zy); \n\
-		colorsum = colorsum + colors * factors.yyyy; \n\
-		\n\
-		colors = texture(color,texcoord - offset.zy - offset.zy); \n\
-		o_Color = colorsum + colors * factors.xxxx; \n\
-		o_Color.w = 1.0; \n\
-	}";
-#elif defined(GL_ARB_vertex_shader)
-	#include "MagnifierFilter.programs"
-#elif defined(GL_ARB_vertex_program)
-	#include "MagnifierFilter.shaders"
-#endif
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -266,12 +160,8 @@ void CMagnifierFilter::glRenderFilter()
     glActiveTextureARB(GL_TEXTURE0_ARB);
 	colorInput->glvkRender();
 
-#if defined(GL_ARB_geometry_shader4)
-	m_pYKernelShader->glGetOpenGLShader()->glGetGeometryShader()->setProgramParameters(v_params_y);
-	m_pYKernelShader->glGetOpenGLShader()->glGetFragmentShader()->setProgramParameters(f_params);
-#elif defined(GL_ARB_vertex_shader)
-	m_pYKernelShader->glGetOpenGLShader()->glGetVertexShader()->setProgramParameters(v_params_y);
-	m_pYKernelShader->glGetOpenGLShader()->glGetFragmentShader()->setProgramParameters(f_params);
+#if defined(GL_ARB_geometry_shader4) || defined(GL_ARB_vertex_shader)
+	m_pYKernelShader->glGetOpenGLShader()->setProgramParameters(params_y);
 #elif defined(GL_ARB_vertex_program)
 	m_pYKernelShader->glGetOpenGLProgram()->glGetVertexProgram()->setProgramParameters(v_params_y);
 	m_pYKernelShader->glGetOpenGLProgram()->glGetFragmentProgram()->setProgramParameters(f_params);
@@ -299,12 +189,8 @@ void CMagnifierFilter::glRenderFilterOutput()
     glActiveTextureARB(GL_TEXTURE0_ARB);
 	xKernelPass->glvkRender();
 
-#if defined(GL_ARB_geometry_shader4)
-	m_pXKernelShader->glGetOpenGLShader()->glGetGeometryShader()->setProgramParameters(v_params_x);
-	m_pXKernelShader->glGetOpenGLShader()->glGetFragmentShader()->setProgramParameters(f_params);
-#elif defined(GL_ARB_vertex_shader)
-	m_pXKernelShader->glGetOpenGLShader()->glGetVertexShader()->setProgramParameters(v_params_x);
-	m_pXKernelShader->glGetOpenGLShader()->glGetFragmentShader()->setProgramParameters(f_params);
+#if defined(GL_ARB_geometry_shader4) || defined(GL_ARB_vertex_shader)
+	m_pXKernelShader->glGetOpenGLShader()->setProgramParameters(params_x);
 #elif defined(GL_ARB_vertex_program)
 	m_pXKernelShader->glGetOpenGLProgram()->glGetVertexProgram()->setProgramParameters(v_params_x);
 	m_pXKernelShader->glGetOpenGLProgram()->glGetFragmentProgram()->setProgramParameters(f_params);
@@ -413,55 +299,47 @@ bool CMagnifierFilter::glInitFilter(void)
 	
 	//!	0.5 factor for offset to locate texel center
     GL_COORD_VERTEX ofsy(0.0, 0.5f * offsetParams.y, 0.0, 0.0);
-	v_params_y.addParameter("center",ofsy);
+	params_y.addParameter("center",ofsy);
+	params_y.addParameter("offset", offsetParams);
+	params_y.addParameter("size", sizeParams);
+	params_y.addParameter("color", CTextureUnitSetup::IMAGE_UNIT_0);
+	params_y.addParameter("factor", CTextureUnitSetup::IMAGE_UNIT_1);
+
 	GL_COORD_VERTEX ofsx(0.5f * offsetParams.x, 0.0, 0.0, 0.0);
-	v_params_x.addParameter("center",ofsx);
-	f_params.addParameter("offset",offsetParams);
-	f_params.addParameter("size",sizeParams);
+	params_x.addParameter("center",ofsx);
+	params_x.addParameter("offset",offsetParams);
+	params_x.addParameter("size",sizeParams);
+	params_x.addParameter("color", CTextureUnitSetup::IMAGE_UNIT_0);
+	params_x.addParameter("factor", CTextureUnitSetup::IMAGE_UNIT_1);
 
     m_pXKernelShader = new CShader("XKERNEL_SHADER");
 	m_pYKernelShader = new CShader("YKERNEL_SHADER");
 
 #if defined(GL_ARB_geometry_shader4)
-	CVertexShader *vp = m_pXKernelShader->glGetOpenGLShader()->glGetVertexShader("EMPTY_PROGRAM");
-	CGeometryShader *gp = m_pXKernelShader->glGetOpenGLShader()->glGetGeometryShader("magnifier_gp2");
+	m_pXKernelShader->glGetOpenGLShader()->glGetVertexShader("EMPTY_PROGRAM");
+	CGeometryShader *gp = m_pXKernelShader->glGetOpenGLShader()->glGetGeometryShader("MAGNIFIER_GEO_SHADER");
 	bool res = gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
-	res = res & gp->glLoadProgram(gp_src);
-	CFragmentShader *ps = m_pXKernelShader->glGetOpenGLShader()->glGetFragmentShader("xk_ps2");
-	res = res && ps->glLoadProgram(xk_ps2);
+	m_pXKernelShader->glGetOpenGLShader()->glGetFragmentShader("MAGNIFIER_X_TEX_SHADER");
 	res = res && m_pXKernelShader->glGetOpenGLShader()->glCompileShader();
 
-	vp = m_pYKernelShader->glGetOpenGLShader()->glGetVertexShader("EMPTY_PROGRAM");
-	gp = m_pYKernelShader->glGetOpenGLShader()->glGetGeometryShader("magnifier_gp2");
-	ps = m_pYKernelShader->glGetOpenGLShader()->glGetFragmentShader("yk_ps2");
-	res = res && ps->glLoadProgram(yk_ps2);
+	m_pYKernelShader->glGetOpenGLShader()->glGetVertexShader("EMPTY_PROGRAM");
+	m_pYKernelShader->glGetOpenGLShader()->glGetGeometryShader("MAGNIFIER_GEO_SHADER");
+	m_pYKernelShader->glGetOpenGLShader()->glGetFragmentShader("MAGNIFIER_Y_TEX_SHADER");
 	res = res && m_pYKernelShader->glGetOpenGLShader()->glCompileShader();
-
-	f_params.addParameter("color", CTextureUnitSetup::IMAGE_UNIT_0);
-	f_params.addParameter("factor", CTextureUnitSetup::IMAGE_UNIT_1);
 #elif defined(GL_ARB_vertex_shader)
-	CVertexShader *vp = m_pXKernelShader->glGetOpenGLShader()->glGetVertexShader("magnifier_vp");
-    bool res = vp->glLoadProgram(kernel_vs);
-	CFragmentShader *ps = m_pXKernelShader->glGetOpenGLShader()->glGetFragmentShader("xk_ps");
-    res = res && ps->glLoadProgram(xk_ps);
-	res = res && m_pXKernelShader->glGetOpenGLShader()->glCompileShader();
+	m_pXKernelShader->glGetOpenGLShader()->glGetVertexShader("MAGNIFIER_VTX_SHADER");
+	m_pXKernelShader->glGetOpenGLShader()->glGetFragmentShader("MAGNIFIER_OLDX_TEX_SHADER");
+	bool res = m_pXKernelShader->glGetOpenGLShader()->glCompileShader();
 
-	vp = m_pYKernelShader->glGetOpenGLShader()->glGetVertexShader("magnifier_vp");
-	ps = m_pYKernelShader->glGetOpenGLShader()->glGetFragmentShader("yk_ps");
-    res = res && ps->glLoadProgram(yk_ps);
-	m_pYKernelShader->glGetOpenGLShader()->glCompileShader();
-
-	f_params.addParameter("color",CTextureUnitSetup::IMAGE_UNIT_0);
-	f_params.addParameter("factor",CTextureUnitSetup::IMAGE_UNIT_1);
+	m_pYKernelShader->glGetOpenGLShader()->glGetVertexShader("MAGNIFIER_VTX_SHADER");
+	m_pYKernelShader->glGetOpenGLShader()->glGetFragmentShader("MAGNIFIER_OLDY_TEX_SHADER");
+	res = res && m_pYKernelShader->glGetOpenGLShader()->glCompileShader();
 #elif defined(GL_ARB_vertex_program)
-	CVertexProgram *vs = m_pXKernelShader->glGetOpenGLProgram()->glGetVertexProgram("magnifier_vp");
-    bool res = vs->glLoadProgram(kernel_vp);
-	CFragmentProgram *fs = m_pXKernelShader->glGetOpenGLProgram()->glGetFragmentProgram("xk_fp");
-    res = res && fs->glLoadProgram(xk_fp);
+	m_pXKernelShader->glGetOpenGLProgram()->glGetVertexProgram("MAGNIFIER_VTX_PROGRAM");
+	m_pXKernelShader->glGetOpenGLProgram()->glGetFragmentProgram("MAGNIFIER_X_TEX_PROGRAM");
 
-	vs = m_pYKernelShader->glGetOpenGLProgram()->glGetVertexProgram("magnifier_vp");
-	fs = m_pYKernelShader->glGetOpenGLProgram()->glGetFragmentProgram("yk_fp");
-    res = res && fs->glLoadProgram(yk_fp);
+	m_pYKernelShader->glGetOpenGLProgram()->glGetVertexProgram("MAGNIFIER_VTX_PROGRAM");
+	m_pYKernelShader->glGetOpenGLProgram()->glGetFragmentProgram("MAGNIFIER_Y_TEX_PROGRAM");
 #endif
 
 	filterFactory.getConfig().useTextureResize(previousResize);

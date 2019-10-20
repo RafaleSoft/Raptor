@@ -23,7 +23,7 @@ typedef struct
 	const char *shader_fname;
 	const char *class_name;
 } factory_shader;
-static const size_t NB_FACTORY_SHADERS = 9;
+static const size_t NB_FACTORY_SHADERS = 18;
 static factory_shader fsh[NB_FACTORY_SHADERS] = {	{ "DOF_GEO_SHADER", "DOF.gs", "GeometryShader" },
 													{ "DOF_TEX_SHADER", "DOF.ps", "FragmentShader" },
 													{ "DOF_OLD_VTX_SHADER", "DOF.vs", "VertexShader" },
@@ -32,7 +32,17 @@ static factory_shader fsh[NB_FACTORY_SHADERS] = {	{ "DOF_GEO_SHADER", "DOF.gs", 
 													{ "DOF_TEX_PROGRAM", "DOF.fp", "FragmentProgram" },
 													{ "COLOR_TEX_SHADER", "Color.ps", "FragmentShader" },
 													{ "COLOR_OLD_TEX_SHADER", "Color_old.ps", "FragmentShader" },
-													{ "COLOR_TEX_PROGRAM", "Color.fp", "FragmentProgram" } };
+													{ "COLOR_TEX_PROGRAM", "Color.fp", "FragmentProgram" },
+													{ "MAGNIFIER_GEO_SHADER", "Magnifier.gs", "GeometryShader" },
+													{ "MAGNIFIER_X_TEX_SHADER", "Magnifier_X.ps", "FragmentShader" },
+													{ "MAGNIFIER_Y_TEX_SHADER", "Magnifier_Y.ps", "FragmentShader" },
+													{ "MAGNIFIER_VTX_SHADER", "Magnifier.vs", "VertexShader" },
+													{ "MAGNIFIER_OLDX_TEX_SHADER", "Magnifier_oldX.ps", "FragmentShader" },
+													{ "MAGNIFIER_OLDY_TEX_SHADER", "Magnifier_oldY.ps", "FragmentShader" },
+													{ "MAGNIFIER_VTX_PROGRAM", "Magnifier.vp", "VertexProgram" },
+													{ "MAGNIFIER_X_TEX_PROGRAM", "Magnifier_X.fp", "FragmentProgram" },
+													{ "MAGNIFIER_Y_TEX_PROGRAM", "Magnifier_Y.fp", "FragmentProgram" }};
+
 
 static map<std::string, factory_shader>	s_factoryShaders;
 

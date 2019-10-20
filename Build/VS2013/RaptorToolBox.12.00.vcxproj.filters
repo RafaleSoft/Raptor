@@ -250,12 +250,6 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\RaptorToolBox\Filters\MagnifierFilter.shaders">
-      <Filter>Source Files\Filters</Filter>
-    </None>
-    <None Include="..\..\RaptorToolBox\Filters\MagnifierFilter.programs">
-      <Filter>Source Files\Filters</Filter>
-    </None>
     <None Include="..\..\RaptorToolBox\Filters\MBFilter.programs">
       <Filter>Source Files\Filters</Filter>
     </None>
@@ -293,6 +287,33 @@
       <Filter>Source Files\Filters</Filter>
     </None>
     <None Include="..\..\RaptorToolBox\Filters\Color.fp">
+      <Filter>Source Files\Filters</Filter>
+    </None>
+    <None Include="..\..\RaptorToolBox\Filters\Magnifier.gs">
+      <Filter>Source Files\Filters</Filter>
+    </None>
+    <None Include="..\..\RaptorToolBox\Filters\Magnifier_X.ps">
+      <Filter>Source Files\Filters</Filter>
+    </None>
+    <None Include="..\..\RaptorToolBox\Filters\Magnifier_Y.ps">
+      <Filter>Source Files\Filters</Filter>
+    </None>
+    <None Include="..\..\RaptorToolBox\Filters\Magnifier.vs">
+      <Filter>Source Files\Filters</Filter>
+    </None>
+    <None Include="..\..\RaptorToolBox\Filters\Magnifier_oldX.ps">
+      <Filter>Source Files\Filters</Filter>
+    </None>
+    <None Include="..\..\RaptorToolBox\Filters\Magnifier_oldY.ps">
+      <Filter>Source Files\Filters</Filter>
+    </None>
+    <None Include="..\..\RaptorToolBox\Filters\Magnifier.vp">
+      <Filter>Source Files\Filters</Filter>
+    </None>
+    <None Include="..\..\RaptorToolBox\Filters\Magnifier_X.fp">
+      <Filter>Source Files\Filters</Filter>
+    </None>
+    <None Include="..\..\RaptorToolBox\Filters\Magnifier_Y.fp">
       <Filter>Source Files\Filters</Filter>
     </None>
   </ItemGroup>

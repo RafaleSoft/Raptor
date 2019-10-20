@@ -473,13 +473,15 @@ copy $(SolutionDir)$(ProjectName)\Toolbox.pck "%RAPTOR_ROOT%\Redist\bin\"
     <None Include="..\..\RaptorToolBox\Filters\DOF_old.ps" />
     <None Include="..\..\RaptorToolBox\Filters\HDR.programs" />
     <None Include="..\..\RaptorToolBox\Filters\HDR.shaders" />
-    <None Include="..\..\RaptorToolBox\Filters\MagnifierFilter.programs">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">true</ExcludedFromBuild>
-    </None>
-    <None Include="..\..\RaptorToolBox\Filters\MagnifierFilter.shaders">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">true</ExcludedFromBuild>
-    </None>
+    <None Include="..\..\RaptorToolBox\Filters\Magnifier.gs" />
+    <None Include="..\..\RaptorToolBox\Filters\Magnifier.vp" />
+    <None Include="..\..\RaptorToolBox\Filters\Magnifier.vs" />
+    <None Include="..\..\RaptorToolBox\Filters\Magnifier_oldX.ps" />
+    <None Include="..\..\RaptorToolBox\Filters\Magnifier_oldY.ps" />
+    <None Include="..\..\RaptorToolBox\Filters\Magnifier_X.fp" />
+    <None Include="..\..\RaptorToolBox\Filters\Magnifier_X.ps" />
+    <None Include="..\..\RaptorToolBox\Filters\Magnifier_Y.fp" />
+    <None Include="..\..\RaptorToolBox\Filters\Magnifier_Y.ps" />
     <None Include="..\..\RaptorToolBox\Filters\MBFilter.programs">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">true</ExcludedFromBuild>
     </None>
