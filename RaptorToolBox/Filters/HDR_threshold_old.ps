@@ -1,0 +1,52 @@
+/***************************************************************************/
+/*                                                                         */
+/*  HDR_threshold_old.ps                                                   */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
+//  Compute luminance with bilinear components, averaging
+//  the 4 surrouding of the texel's center.
+
+#version 120
+
+uniform sampler2D color;
+uniform vec4 offset;
+uniform vec4 treshhold;
+
+const vec4 luminance = vec4(0.299, 0.587, 0.114, 0.0);
+
+void main(void)
+{
+	vec4 L = vec4(0.0, 0.0, 0.0, 0.0);
+
+	vec4 c1 = texture2D(color,gl_TexCoord[0].xy - offset.xy);
+	L.x = dot(c1,luminance);
+
+	vec4 c2 = texture2D(color,gl_TexCoord[0].xy + offset.zy);
+	L.y = dot(c2,luminance);
+
+	vec4 c3 = texture2D(color,gl_TexCoord[0].xy - offset.zy);
+	L.z = dot(c3,luminance);
+
+	vec4 c4 = texture2D(color,gl_TexCoord[0].xy + offset.xy);
+	L.w = dot(c4,luminance);
+
+	L = max(vec4(0.0,0.0,0.0,0.0), L - treshhold.yyyy);
+	vec4 c = c1 * L.xxxx;
+	c = c + c2 * L.yyyy;
+	c = c + c3 * L.zzzz;
+	gl_FragColor = c + c4 * L.wwww;
+	gl_FragColor.w = 1.0;
+}

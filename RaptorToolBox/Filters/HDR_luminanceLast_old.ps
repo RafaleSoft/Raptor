@@ -1,0 +1,48 @@
+/***************************************************************************/
+/*                                                                         */
+/*  HDR_luminanceLast_old.ps                                               */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
+//	Luminance max is scaled to 1.0 to avoid darkening a scene
+//	in the case where no pixels are above 1.0
+//	The final luminance is applied to darken the whole scene
+//	for the tone mapping in order to have the brightest parts
+//	at 1.0. (L>1 => x 1/L is in range [0..1])
+	
+#version 120
+
+uniform sampler2D color;
+uniform vec4 offset;
+
+const vec4 luminance = vec4(0.299, 0.587, 0.114, 0.0);
+
+void main(void)
+{
+	vec4 c = texture2D(color,gl_TexCoord[0].xy - offset.xy);
+	float LMax = dot(c,luminance);
+
+	c = texture2D(color,gl_TexCoord[0].xy + offset.zy);
+	LMax = max(LMax,dot(c,luminance));
+
+	c = texture2D(color,gl_TexCoord[0].xy - offset.zy);
+	LMax = max(LMax,dot(c,luminance));
+
+	c = texture2D(color,gl_TexCoord[0].xy + offset.xy);
+	LMax = max(LMax,dot(c,luminance));
+	LMax = 1.0 / max(1.0,LMax);
+
+	gl_FragColor = vec4(LMax,LMax,LMax,1.0);
+}
