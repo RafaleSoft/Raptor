@@ -1,0 +1,45 @@
+/***************************************************************************/
+/*                                                                         */
+/*  Magnifier_oldX.ps                                                      */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
+#version 120
+
+uniform sampler2D color;
+uniform sampler2D factor;
+
+uniform vec4 size;
+uniform vec4 offset;
+
+void main(void)
+{
+	vec4 subpixels = fract(size * gl_TexCoord[0]);
+	vec2 texcoord = gl_TexCoord[0].xy;
+	vec4 factors = texture2D(factor,subpixels.xy);
+
+	vec4 colors = texture2D(color,texcoord);
+	vec4 colorsum = colors * factors.zzzz;
+
+	colors = texture2D(color,texcoord + offset.xz);
+	colorsum = colorsum + colors * factors.wwww;
+
+	colors = texture2D(color,texcoord - offset.xz);
+	colorsum = colorsum + colors * factors.yyyy;
+
+	colors = texture2D(color,texcoord - offset.xz - offset.xz);
+	gl_FragColor = colorsum + colors * factors.xxxx;
+	gl_FragColor.w = 1.0;
+}

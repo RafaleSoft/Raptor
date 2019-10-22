@@ -1,0 +1,66 @@
+/***************************************************************************/
+/*                                                                         */
+/*  DOF.ps                                                                 */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+//	C = A * m * |S2 - S1| / S2
+	
+#version 440
+
+uniform sampler2D colorMap;
+uniform sampler2D depthMap;
+uniform vec4 dofParams;
+const float CoC_mag = 2.66;
+
+layout(location = 1) in vec4 g_TexCoord[7];
+layout(location = 0) out vec4 o_Color;
+void main (void)
+{
+	vec4 color_base  = texture(colorMap,g_TexCoord[0].xy);
+	float depth_base = texture(depthMap,g_TexCoord[0].xy).r;
+
+	float CoC_radius = dofParams.z * CoC_mag * abs(depth_base - dofParams.y) / depth_base;
+
+	if (CoC_radius > 1.0)
+	{
+		vec4 color = color_base;
+		color += texture(colorMap,g_TexCoord[1].xy);
+		color += texture(colorMap,g_TexCoord[2].xy);
+		color_base = mix(color_base,color / 3.0,(CoC_radius - 1.0));
+		//		color_base = vec4(1.0, 0.0, 0.0, 1.0);
+
+		if (CoC_radius > 2.0)
+		{
+			vec4 color2 = color;
+			color2 += texture(colorMap,g_TexCoord[3].xy);
+			color2 += texture(colorMap,g_TexCoord[4].xy);
+			color_base = mix(color / 3.0,color2 / 5.0,(CoC_radius - 2.0));
+			//			color_base = vec4(0.0, 1.0, 0.0, 1.0);
+
+			if (CoC_radius > 3.0)
+			{
+				vec4 color3 = color2;
+				color3 += texture(colorMap,g_TexCoord[5].xy);
+				color3 += texture(colorMap,g_TexCoord[6].xy);
+				color_base = mix(color2 / 5.0,color3 / 7.0,(min(CoC_radius,4.0) - 3.0));
+				//				color_base = vec4(0.0, 0.0, 1.0, 1.0);
+			}
+		}
+
+	}
+
+	o_Color = color_base;
+}
+

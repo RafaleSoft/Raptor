@@ -1,4 +1,4 @@
-// BasicObjects.cpp: implementation of the CBasicObjects class.
+// ParticleCompute.cpp: implementation of the CParticleCompute class.
 //
 //////////////////////////////////////////////////////////////////////
 

@@ -594,7 +594,7 @@ bool getExtensions(NATIVE_EXTENSION* ext, uint32_t *s)
 			size_t nb = extension.dependencies.size();
 			ext[i].nb_dependencies = nb;
 			ext[i].dependencies = (const char**)(calloc(nb+1,sizeof(char*)));
-			for (size_t j = 0; j < nb; j++)
+			if (NULL != ext[i].dependencies) for(size_t j = 0; j < nb; j++)
 				ext[i].dependencies[j] = STRDUP(extension.dependencies[j].c_str());
 		}
 	}

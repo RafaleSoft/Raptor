@@ -71,7 +71,7 @@ typedef struct
 	const char *shader_fname;
 	const char *class_name;
 } factory_shader;
-static const size_t NB_FACTORY_SHADERS = 31;
+static const size_t NB_FACTORY_SHADERS = 34;
 static factory_shader fsh[NB_FACTORY_SHADERS] = {	{ "BUMP_TEX_SHADER", "bump.fp", "FragmentProgram" },
 													{ "EMBM_TEX_SHADER", "embm.fp", "FragmentProgram" },
 													{ "BUMP_VTX_SHADER", "bump.vp", "VertexProgram" },
@@ -100,9 +100,12 @@ static factory_shader fsh[NB_FACTORY_SHADERS] = {	{ "BUMP_TEX_SHADER", "bump.fp"
 													{ "DIFFUSE_PROGRAM", "diffuse.ps", "FragmentShader" },
 													{ "FULL_SCREEN_GEO_PROGRAM", "blender_8x.gs", "GeometryShader" },
 													{ "PARTICLE_VTX_PROGRAM", "particle.vs", "VertexShader" },
-													{ "PARTICLE2D_GEO_PROGRAM", "particle2D.gs", "GeometryShader" }, 
+													{ "PARTICLE2D_GEO_PROGRAM", "particle2D.gs", "GeometryShader" },
 													{ "PARTICLE3D_GEO_PROGRAM", "particle3D.gs", "GeometryShader" },
-													{ "PARTICLE3D_TEX_PROGRAM", "particle3D.ps", "FragmentShader" }, };
+													{ "PARTICLE3D_TEX_PROGRAM", "particle3D.ps", "FragmentShader" },
+													{ "FONT2D_VTX_PROGRAM", "font2D.vs", "VertexShader" },
+													{ "FONT2D_GEO_PROGRAM", "font2D.gs", "GeometryShader" },
+													{ "FONT2D_TEX_PROGRAM", "font2D.ps", "FragmentShader" }};
 
 static map<std::string, factory_shader>	s_factoryShaders;
 
@@ -170,10 +173,10 @@ void CShaderLibrary::getFactoryShaders(vector<std::string> & res)
 }
 
 bool CShaderLibrary::glAddToLibrary(const std::string& shader_name,
-									const std::string& shader_source,
+									const std::string& shader_source_file,
 									const std::string& class_name)
 {
-	if (shader_name.empty() || shader_source.empty() || class_name.empty())
+	if (shader_name.empty() || shader_source_file.empty() || class_name.empty())
 		return false;
 
 	if (s_factoryShaders.find(shader_name) != s_factoryShaders.end())
@@ -193,12 +196,12 @@ bool CShaderLibrary::glAddToLibrary(const std::string& shader_name,
 	{
 		persistence->setName(shader_name);
 		CShaderProgram *program = static_cast<CShaderProgram*>(persistence);
-		if (program->glLoadProgram(shader_source))
+		if (program->glLoadProgramFromFile(shader_source_file))
 		{
 			factory_shader fs;
-			fs.class_name = strdup(class_name.c_str());
+			fs.class_name = _strdup(class_name.c_str());
 			fs.shader_fname = NULL;
-			fs.shader_name = strdup(shader_name.c_str());
+			fs.shader_name = _strdup(shader_name.c_str());
 			s_factoryShaders.insert(map<std::string, factory_shader>::value_type(fs.shader_name, fs));
 		}
 
@@ -223,7 +226,7 @@ bool CShaderLibrary::glLoadShadersFromDataPackage()
 
 	CObjectFactory *pFactory = CObjectFactory::GetInstance();
 
-	for (size_t nb_shaders = 0; nb_shaders < sizeof(fsh) / sizeof(factory_shader); nb_shaders++)
+	for (size_t nb_shaders = 0; nb_shaders < NB_FACTORY_SHADERS; nb_shaders++)
 	{
 		factory_shader &fs = fsh[nb_shaders];
 		string shader_path = dataManager->ExportFile(fs.shader_fname);

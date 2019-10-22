@@ -39,50 +39,26 @@
 #if !defined(AFX_IRENDERINGPROPERTIES_H__634BCF2B_84B4_47F2_B460_D7FDC0F3B698__INCLUDED_)
 	#include "GLHierarchy/IRenderingProperties.h"
 #endif
-#if !defined(AFX_VERTEXSHADER_H__204F7213_B40B_4B6A_9BCA_828409871B68__INCLUDED_)
-	#include "GLHierarchy/VertexShader.h"
-#endif
-#if !defined(AFX_FRAGMENTSHADER_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
-	#include "GLHierarchy/FragmentShader.h"
-#endif
-#if !defined(AFX_GEOMETRYSHADER_H__1981EA98_8F3C_4881_9429_A9ACA5B285D3__INCLUDED_)
-	#include "GLHierarchy/GeometryShader.h"
-#endif
 #if !defined(AFX_MBFILTER_H__53A619DD_DBAB_4709_9EAD_72C5D6C401E9__INCLUDED_)
     #include "MBFilter.h"
 #endif
 #if !defined(AFX_OPENGLSHADERSTAGE_H__56B00FE3_E508_4FD6_9363_90E6E67446D9__INCLUDED_)
 	#include "GLHierarchy/OpenGLShaderStage.h"
 #endif
+#if !defined(AFX_OPENGLPROGRAMSTAGE_H__0BCE3B42_6E10_4F50_BB27_1993345ADBCF__INCLUDED_)
+	#include "GLHierarchy/OpenGLProgramStage.h"
+#endif
 
 
 // Specific texture generator to flip between buffer display of previous frame
-class CAccumulator : public ITextureGenerator
+class CAccumulator
 {
 public:
     CAccumulator():
-      pCurrentDisplay(NULL),pPreviousDisplay(NULL),
-       m_pCurrentColorAccum(NULL),m_pPreviousColorAccum(NULL){};
+		pCurrentDisplay(NULL),pPreviousDisplay(NULL),
+		m_pCurrentColorAccum(NULL),m_pPreviousColorAccum(NULL){};
+
     virtual ~CAccumulator() {};
-
-    //! Implements TextureGenerator
-    virtual ITextureGenerator::GENERATOR_KIND    getKind(void) const { return ITextureGenerator::BUFFERED; };
-
-    //! The fragment program to compute accumulation;
-	static const string accum_fp;
-	static const string accum_fp2;
-
-    //! Generation is switched each frame
-    virtual void glGenerate(CTextureObject* t)
-    { pCurrentDisplay->glGenerate(t); };
-
-    //! This method returns the width of the generator
-    virtual unsigned int getGenerateWidth(void) const
-    { return pCurrentDisplay->getGenerateWidth(); };
-
-    //! This method returns the height of the generator
-    virtual unsigned int getGenerateHeight(void) const
-    { return pCurrentDisplay->getGenerateHeight(); };
 
     void switchDisplay(void)
     {
@@ -102,43 +78,6 @@ public:
     CRaptorDisplay *pPreviousDisplay;
     CTextureObject  *m_pPreviousColorAccum;
 };
-
-
-#if defined(GL_ARB_geometry_shader4)
-	const string CAccumulator::accum_fp =
-	"#version 440 			\n\
-	\n\
-	uniform sampler2D color;	\n\
-	uniform sampler2D accum;	\n\
-	uniform vec4 percentage;	\n\
-	\n\
-	layout(location = 1) in vec4 g_TexCoord; \n\
-	layout(location = 0) out vec4 o_Color;	\n\
-	void main(void)			\n\
-	{						\n\
-		vec4 c = texture(color,g_TexCoord.xy); \n\
-		vec4 a = texture(accum,g_TexCoord.xy); \n\
-		o_Color = mix(c,a,percentage); \n\
-	}";
-
-	const string CAccumulator::accum_fp2 =
-	"#version 440\n\
-	\n\
-	uniform	sampler2D diffuseMap; \n\
-	\n\
-	in vec4 g_color; \n\
-	layout(location = 1) in vec4 g_TexCoord; \n\
-	layout(location = 0) out vec4 o_Color;	\n\
-	\n\
-	void main (void) \n\
-	{\n\
-		o_Color = texture(diffuseMap,vec2(g_TexCoord.st)); \n\
-	}";
-#elif defined(GL_ARB_vertex_shader)
-	#include "MBFilter.programs"
-#elif defined(GL_ARB_vertex_program)
-	#error "Unsupported deprecated vertex program feature."
-#endif
 
 
 
@@ -221,7 +160,7 @@ void CMBFilter::glRenderFilter()
     glActiveTextureARB(GL_TEXTURE0_ARB);
 	getColorInput()->glvkRender();
 
-	m_pMotionBlurShader->glGetOpenGLShader()->glGetFragmentShader()->setProgramParameters(f_params);
+	m_pMotionBlurShader->glGetOpenGLShader()->setProgramParameters(f_params);
     m_pMotionBlurShader->glRender();
 	glDrawFilter();
 	m_pMotionBlurShader->glStop();
@@ -237,7 +176,7 @@ void CMBFilter::glRenderFilterOutput()
 	
 	pAccum->m_pCurrentColorAccum->glvkRender();
 
-	m_pFinalShader->glGetOpenGLShader()->glGetFragmentShader()->setProgramParameters(f_params2);
+	m_pFinalShader->glGetOpenGLShader()->setProgramParameters(f_params2);
 	m_pFinalShader->glRender();
     glDrawFilter();
 	m_pFinalShader->glStop();
@@ -344,22 +283,20 @@ bool CMBFilter::glInitFilter(void)
 #if defined(GL_ARB_geometry_shader4)
 	m_pFinalShader = new CShader("MotionBlurShader");
 	COpenGLShaderStage *stage = m_pMotionBlurShader->glGetOpenGLShader();
-	CVertexShader *vp = stage->glGetVertexShader("EMPTY_PROGRAM");
-	CGeometryShader *gp = stage->glGetGeometryShader("FULL_SCREEN_GEO_PROGRAM");
-	CFragmentShader *fp = stage->glGetFragmentShader("mb_fp");
-	bool res = fp->glLoadProgram(CAccumulator::accum_fp);
-	res = res && stage->glCompileShader();
+	stage->glGetVertexShader("EMPTY_PROGRAM");
+	stage->glGetGeometryShader("FULL_SCREEN_GEO_PROGRAM");
+	stage->glGetFragmentShader("MB_ACCUM_TEX_SHADER");
+	bool res = stage->glCompileShader();
 
 	stage = m_pFinalShader->glGetOpenGLShader();
-	vp = stage->glGetVertexShader("EMPTY_PROGRAM");
-	gp = stage->glGetGeometryShader("FULL_SCREEN_GEO_PROGRAM");
-	fp = stage->glGetFragmentShader("mb_fp2");
-	res = res && fp->glLoadProgram(CAccumulator::accum_fp2);
+	stage->glGetVertexShader("EMPTY_PROGRAM");
+	stage->glGetGeometryShader("FULL_SCREEN_GEO_PROGRAM");
+	stage->glGetFragmentShader("MB_ACCUM2_TEX_SHADER");
 	res = res && stage->glCompileShader();
 #elif defined(GL_ARB_vertex_shader)
-	CFragmentShader *fs = m_pMotionBlurShader->glGetOpenGLShader()->glGetFragmentShader("mb_fp");
-	bool res = fs->glLoadProgram(CAccumulator::accum_fp);
-	res = res && m_pMotionBlurShader->glGetOpenGLShader()->glCompileShader();
+	COpenGLShaderStage *stage = m_pMotionBlurShader->glGetOpenGLShader();
+	stage->glGetFragmentShader("MB_ACCUM_OLD_TEX_SHADER");
+	bool res = stage->glCompileShader();
 #elif defined(GL_ARB_vertex_program)
 	#error "Unsupported deprecated vertex program feature."
 #endif

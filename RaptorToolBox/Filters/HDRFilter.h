@@ -94,7 +94,7 @@ private:
 	//! Extract high frequencies
 	CProgramParameters::CParameter<GL_COORD_VERTEX> thresholdParam;
 	CProgramParameters thresholdParams;
-    CShader *m_pTreshholdFreqs;
+    CShader			*m_pTreshholdFreqs;
     CRaptorDisplay  *m_pDownHighFreqs;
     CTextureObject  *m_pDownHFBuffer;
 
@@ -104,16 +104,11 @@ private:
     CRaptorDisplay  *m_pDownBlurYDisplay;
     CTextureObject  *m_pDownBlurXBuffer;
     CTextureObject  *m_pDownBlurYBuffer;
-#if defined(GL_ARB_geometry_shader4)
 	CShader			*m_pBlenderX;
 	CShader			*m_pBlenderY;
-#else
-	CVertexProgram  *m_pBlurXOffsets;
-	CVertexProgram  *m_pBlurYOffsets;
-    CFragmentShader	*m_pBlur;
-#endif
+	
 	//! Final image composition with tone mapping
-    CShader *m_pComposite;
+    CShader			*m_pComposite;
     
 	//! Initial display configuration used to build internal subdisplays
     CRaptorDisplayConfig rda;

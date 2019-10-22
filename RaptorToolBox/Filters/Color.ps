@@ -1,0 +1,51 @@
+/***************************************************************************/
+/*                                                                         */
+/*  Color.ps                                                               */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
+#version 440
+
+const vec3 luminance = vec3(0.299, 0.587, 0.114);
+const vec3 u_chrominance = vec3(-0.14713, -0.28886, 0.436);
+const vec3 v_chrominance = vec3(0.615, -0.51498, -0.10001);
+const vec3 red = vec3(1.0, 0.0, 1.13983);
+const vec3 green = vec3(1.0, -0.39465, -0.58060);
+const vec3 blue = vec3(1.0, 2.03211, 0.0);
+
+uniform	sampler2D	source;
+uniform vec4		percentage;
+uniform vec4		baseColor;
+
+layout(location = 1) in vec4 g_TexCoord;
+layout(location = 0) out vec4 o_Color;
+
+void main(void)
+{
+	vec3 color = texture(source,vec2(g_TexCoord.st)).xyz;
+	vec3 yuv = vec3(0.0,0.0,0.0);
+
+	yuv.x = dot(luminance,color);
+	yuv.y = percentage.z * dot(u_chrominance,color);
+	yuv.z = percentage.z * dot(v_chrominance, color);
+
+	color.x = dot(yuv, red);
+	color.y = dot(yuv, green);
+	color.z = dot(yuv, blue);
+
+	o_Color.xyz = mix(percentage.y * color, yuv.x * baseColor.xyz, percentage.x);
+	o_Color.w = 1.0;
+}
+

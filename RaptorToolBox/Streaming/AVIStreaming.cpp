@@ -45,6 +45,9 @@ bool CAVIStreaming::openReader(const std::string &fname)
 			DWORD dwSize = sizeof(BITMAPINFOHEADER);
 
 			AVIBuffer = (LPBITMAPINFOHEADER)malloc(dwSize);
+			if (NULL == AVIBuffer)
+				return false;
+
 			AVIBuffer->biSize = sizeof(BITMAPINFOHEADER) ; 
 			AVIBuffer->biWidth = psi.rcFrame.right - psi.rcFrame.left;
 			AVIBuffer->biHeight = psi.rcFrame.bottom - psi.rcFrame.top;

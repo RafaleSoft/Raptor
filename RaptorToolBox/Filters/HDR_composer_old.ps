@@ -1,0 +1,38 @@
+/***************************************************************************/
+/*                                                                         */
+/*  HDR_composer_old.ps                                                    */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
+//!	Tone mapping shader
+
+
+#version 120
+
+uniform sampler2D color;
+uniform sampler2D blur;
+uniform sampler2D lwhite;
+
+const vec4 luminance = vec4(0.299, 0.587, 0.114, 0.0);
+
+void main(void)
+{
+	vec4 c = texture2D(color,gl_TexCoord[0].xy);
+	vec4 b = texture2D(blur,gl_TexCoord[0].xy);
+	vec4 l = texture2D(lwhite,gl_TexCoord[0].xy);
+
+	gl_FragColor = c*l + b;
+	gl_FragColor.w = 1.0;
+}

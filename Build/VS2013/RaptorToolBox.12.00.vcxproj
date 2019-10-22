@@ -186,7 +186,7 @@ copy $(SolutionDir)$(ProjectName)\Toolbox.pck "%RAPTOR_ROOT%\Redist\bin\"
       <AdditionalIncludeDirectories>$(MSSdk)\Include\mfc;$(MSSdk)\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>opengl32.lib;Raptor.lib;wmvcore.lib;vfw32.lib;libjpeg.lib;zlib.lib;libtiff.lib;ilmimf.lib;half.lib;iex.lib;libpng.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;RaptorData.lib;Raptor.lib;wmvcore.lib;vfw32.lib;libjpeg.lib;zlib.lib;libtiff.lib;ilmimf.lib;half.lib;iex.lib;libpng.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>$(RAPTOR_ROOT)\Redist\lib;</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>libc;libcmt;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
@@ -355,6 +355,7 @@ copy $(SolutionDir)$(ProjectName)\Toolbox.pck "%RAPTOR_ROOT%\Redist\bin\"
     <ClCompile Include="..\..\RaptorToolBox\CmdLineParser.cpp" />
     <ClCompile Include="..\..\RaptorToolBox\Controllers.cpp" />
     <ClCompile Include="..\..\RaptorToolBox\Controllers\ViewPointController.cpp" />
+    <ClCompile Include="..\..\RaptorToolBox\Filters.cpp" />
     <ClCompile Include="..\..\RaptorToolBox\Filters\BlurFilter.cpp" />
     <ClCompile Include="..\..\RaptorToolBox\Filters\ColorControlFilter.cpp" />
     <ClCompile Include="..\..\RaptorToolBox\Filters\DOFFilter.cpp" />
@@ -429,6 +430,7 @@ copy $(SolutionDir)$(ProjectName)\Toolbox.pck "%RAPTOR_ROOT%\Redist\bin\"
     <ClInclude Include="..\..\RaptorToolBox\CmdLineParser.h" />
     <ClInclude Include="..\..\RaptorToolBox\Controllers.h" />
     <ClInclude Include="..\..\RaptorToolBox\Controllers\ViewPointController.h" />
+    <ClInclude Include="..\..\RaptorToolBox\Filters.h" />
     <ClInclude Include="..\..\RaptorToolBox\Filters\BlurFilter.h" />
     <ClInclude Include="..\..\RaptorToolBox\Filters\ColorControlFilter.h" />
     <ClInclude Include="..\..\RaptorToolBox\Filters\DOFFilter.h" />
@@ -460,30 +462,39 @@ copy $(SolutionDir)$(ProjectName)\Toolbox.pck "%RAPTOR_ROOT%\Redist\bin\"
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\RaptorToolBox\buildpak.bat" />
-    <None Include="..\..\RaptorToolBox\Filters\ColorControlFilter.programs">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">true</ExcludedFromBuild>
-    </None>
-    <None Include="..\..\RaptorToolBox\Filters\ColorControlFilter.shaders">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">true</ExcludedFromBuild>
-    </None>
-    <None Include="..\..\RaptorToolBox\Filters\DOF.programs">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">true</ExcludedFromBuild>
-    </None>
-    <None Include="..\..\RaptorToolBox\Filters\DOF.shaders">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">true</ExcludedFromBuild>
-    </None>
-    <None Include="..\..\RaptorToolBox\Filters\HDR.programs" />
-    <None Include="..\..\RaptorToolBox\Filters\HDR.shaders" />
-    <None Include="..\..\RaptorToolBox\Filters\MagnifierFilter.programs">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">true</ExcludedFromBuild>
-    </None>
-    <None Include="..\..\RaptorToolBox\Filters\MagnifierFilter.shaders">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">true</ExcludedFromBuild>
-    </None>
-    <None Include="..\..\RaptorToolBox\Filters\MBFilter.programs">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">true</ExcludedFromBuild>
-    </None>
+    <None Include="..\..\RaptorToolBox\Filters\Color.fp" />
+    <None Include="..\..\RaptorToolBox\Filters\Color.ps" />
+    <None Include="..\..\RaptorToolBox\Filters\Color_old.ps" />
+    <None Include="..\..\RaptorToolBox\Filters\DOF.fp" />
+    <None Include="..\..\RaptorToolBox\Filters\DOF.gs" />
+    <None Include="..\..\RaptorToolBox\Filters\DOF.ps" />
+    <None Include="..\..\RaptorToolBox\Filters\DOF.vp" />
+    <None Include="..\..\RaptorToolBox\Filters\DOF.vs" />
+    <None Include="..\..\RaptorToolBox\Filters\DOF_old.ps" />
+    <None Include="..\..\RaptorToolBox\Filters\HDR_composer.fp" />
+    <None Include="..\..\RaptorToolBox\Filters\HDR_composer.ps" />
+    <None Include="..\..\RaptorToolBox\Filters\HDR_composer_old.ps" />
+    <None Include="..\..\RaptorToolBox\Filters\HDR_luminance.fp" />
+    <None Include="..\..\RaptorToolBox\Filters\HDR_luminance.ps" />
+    <None Include="..\..\RaptorToolBox\Filters\HDR_luminanceLast.fp" />
+    <None Include="..\..\RaptorToolBox\Filters\HDR_luminanceLast.ps" />
+    <None Include="..\..\RaptorToolBox\Filters\HDR_luminanceLast_old.ps" />
+    <None Include="..\..\RaptorToolBox\Filters\HDR_luminance_old.ps" />
+    <None Include="..\..\RaptorToolBox\Filters\HDR_threshold.fp" />
+    <None Include="..\..\RaptorToolBox\Filters\HDR_threshold.ps" />
+    <None Include="..\..\RaptorToolBox\Filters\HDR_threshold_old.ps" />
+    <None Include="..\..\RaptorToolBox\Filters\Magnifier.gs" />
+    <None Include="..\..\RaptorToolBox\Filters\Magnifier.vp" />
+    <None Include="..\..\RaptorToolBox\Filters\Magnifier.vs" />
+    <None Include="..\..\RaptorToolBox\Filters\Magnifier_oldX.ps" />
+    <None Include="..\..\RaptorToolBox\Filters\Magnifier_oldY.ps" />
+    <None Include="..\..\RaptorToolBox\Filters\Magnifier_X.fp" />
+    <None Include="..\..\RaptorToolBox\Filters\Magnifier_X.ps" />
+    <None Include="..\..\RaptorToolBox\Filters\Magnifier_Y.fp" />
+    <None Include="..\..\RaptorToolBox\Filters\Magnifier_Y.ps" />
+    <None Include="..\..\RaptorToolBox\Filters\MB_accum.ps" />
+    <None Include="..\..\RaptorToolBox\Filters\MB_accum2.ps" />
+    <None Include="..\..\RaptorToolBox\Filters\MB_accum_old.ps" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

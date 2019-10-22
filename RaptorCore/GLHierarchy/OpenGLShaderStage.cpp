@@ -65,8 +65,8 @@ RAPTOR_NAMESPACE_END
 RAPTOR_NAMESPACE
 
 COpenGLShaderStage::COpenGLShaderStage(const std::string& name)
-	:CShaderProgram(stageId, name),
-	m_pVShader(NULL), m_pFShader(NULL), m_pGShader(NULL),
+	:CShaderProgram(stageId, name), m_bReLinked(true),
+	m_pVShader(NULL), m_pFShader(NULL), m_pGShader(NULL), m_bUpdateLocations(false),
 	m_bDeleteFShader(false), m_bDeleteVShader(false), m_bDeleteGShader(false)
 {
 	m_shaderProgram.handle(0);
@@ -74,8 +74,8 @@ COpenGLShaderStage::COpenGLShaderStage(const std::string& name)
 }
 
 COpenGLShaderStage::COpenGLShaderStage(const COpenGLShaderStage& stage)
-	:CShaderProgram(stageId, stage.getName()),
-	m_pVShader(NULL), m_pFShader(NULL), m_pGShader(NULL)
+	:CShaderProgram(stageId, stage.getName()), m_bReLinked(stage.m_bReLinked),
+	m_pVShader(NULL), m_pFShader(NULL), m_pGShader(NULL), m_bUpdateLocations(stage.m_bUpdateLocations)
 {
 	if (NULL != stage.m_pVShader)
 	{
@@ -173,18 +173,21 @@ void COpenGLShaderStage::unLink(const CPersistence* p)
 {
 	if (p == static_cast<CPersistence*>(m_pVShader))
 	{
+		m_bReLinked = false;
 		m_pVShader = NULL;
 		if (m_shaderProgram.handle() == 0)
 			m_bValid = false;
 	}
 	else if (p == static_cast<CPersistence*>(m_pFShader))
 	{
+		m_bReLinked = false;
 		m_pFShader = NULL;
 		if (m_shaderProgram.handle() == 0)
 			m_bValid = false;
 	}
 	else if (p == static_cast<CPersistence*>(m_pGShader))
 	{
+		m_bReLinked = false;
 		m_pGShader = NULL;
 		if (m_shaderProgram.handle() == 0)
 			m_bValid = false;
@@ -213,6 +216,14 @@ std::string COpenGLShaderStage::glGetProgramString(void) const
 void COpenGLShaderStage::setProgramParameters(const CProgramParameters &v)
 {
 	CShaderProgram::setProgramParameters(v);
+
+	size_t nbParams = m_parameters.getNbParameters();
+	for (size_t i = 0; i<nbParams && !m_bUpdateLocations; i++)
+	{
+		CProgramParameters::CParameterBase& value = m_parameters[i];
+		if (value.locationIndex < 0)
+			m_bUpdateLocations = true;
+	}
 }
 
 void COpenGLShaderStage::glRender(void)
@@ -222,6 +233,20 @@ void COpenGLShaderStage::glRender(void)
 #if defined(GL_ARB_shader_objects)
 		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 		pExtensions->glUseProgramObjectARB(m_shaderProgram.handle());
+
+		if (m_bUpdateLocations || m_bReLinked)
+		{
+			glQueryUniformLocations();
+			glQueryAttributeLocations();
+			m_bUpdateLocations = false;
+			m_bReLinked = false;
+		}
+
+		if (m_bApplyParameters)
+		{
+			glSetProgramParameters();
+			m_bApplyParameters = false;
+		}
 
 		if (m_pVShader != NULL)
 			m_pVShader->glRender();
@@ -266,6 +291,7 @@ CVertexShader* const COpenGLShaderStage::glGetVertexShader(const std::string& na
 			m_pVShader = (CVertexShader*)pProgram;
 
 		m_pVShader->registerDestruction(this);
+		m_bReLinked = false;
 
 		if (m_shaderProgram.handle() == 0)
 			m_bValid = false;
@@ -290,6 +316,7 @@ bool COpenGLShaderStage::glRemoveVertexShader(void)
 			delete m_pVShader;
 		m_pVShader = NULL;
 		m_bDeleteVShader = false;
+		m_bReLinked = false;
 
 		if (m_shaderProgram.handle() == 0)
 			m_bValid = false;
@@ -319,7 +346,8 @@ CFragmentShader * const COpenGLShaderStage::glGetFragmentShader(const std::strin
 			m_pFShader = (CFragmentShader*)pProgram;
 
 		m_pFShader->registerDestruction(this);
-
+		m_bReLinked = false;
+		
 		if (m_shaderProgram.handle() == 0)
 			m_bValid = false;
 
@@ -343,7 +371,8 @@ bool COpenGLShaderStage::glRemoveFragmentShader(void)
 			delete m_pFShader;
 		m_pFShader = NULL;
 		m_bDeleteFShader = false;
-
+		m_bReLinked = false;
+		
 		if (m_shaderProgram.handle() == 0)
 			m_bValid = false;
 
@@ -373,6 +402,7 @@ CGeometryShader* const COpenGLShaderStage::glGetGeometryShader(const std::string
 			m_pGShader = (CGeometryShader*)pProgram;
 
 		m_pGShader->registerDestruction(this);
+		m_bReLinked = false;
 
 		if (m_shaderProgram.handle() == 0)
 			m_bValid = false;
@@ -397,7 +427,8 @@ bool COpenGLShaderStage::glRemoveGeometryShader(void)
 			delete m_pGShader;
 		m_pGShader = NULL;
 		m_bDeleteGShader = false;
-
+		m_bReLinked = false;
+		
 		if (m_shaderProgram.handle() == 0)
 			m_bValid = false;
 
@@ -496,7 +527,7 @@ bool COpenGLShaderStage::glCompileShader()
 			pExtensions->glGetObjectParameterivARB(m_shaderProgram.handle(), GL_OBJECT_INFO_LOG_LENGTH_ARB, &maxLength);
 			if (maxLength > 0)
 			{
-				char *pInfoLog = (char*)malloc(maxLength * sizeof(char));
+				pInfoLog = (char*)malloc(maxLength * sizeof(char));
 				pExtensions->glGetInfoLogARB(m_shaderProgram.handle(), maxLength, &length, pInfoLog);
 				arg.arg_sz = pInfoLog;
 			}
@@ -509,18 +540,262 @@ bool COpenGLShaderStage::glCompileShader()
 														   CRaptorErrorManager::RAPTOR_ERROR,
 														   CRaptorMessages::ID_PROGRAM_ERROR,
 														   args);
-			if (maxLength > 0)
+			if ((maxLength > 0) && (NULL != pInfoLog))
 				free(pInfoLog);
+		}
+		else
+		{
+			m_bReLinked = true;
+			m_bValid = true;
 		}
 
 		CATCH_GL_ERROR
-
-		m_bValid = true;
 		return !abort;
 #endif
 	}
 
 	return false;
+}
+
+void COpenGLShaderStage::glQueryUniformLocations(void)
+{
+	if (m_shaderProgram.handle() == 0)
+		return;
+
+#if defined(GL_ARB_shader_objects)
+	// Query the size of uniforms
+	GLint attrMaxLength = 0;
+	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+
+	pExtensions->glGetObjectParameterivARB(m_shaderProgram.handle(), GL_OBJECT_ACTIVE_UNIFORM_MAX_LENGTH_ARB, &attrMaxLength);
+	//	Predefined uniforms are not taken into account ! (e.g. gl_ModelViewProjectionMatrix)
+	//	So, take a bit of space.
+	attrMaxLength = MAX(32, attrMaxLength);
+	GLcharARB *name = new GLcharARB[attrMaxLength];
+
+	// Query the number of active uniforms
+	GLint count = 0;
+	pExtensions->glGetObjectParameterivARB(m_shaderProgram.handle(), GL_OBJECT_ACTIVE_UNIFORMS_ARB, &count);
+
+	// Loop over each of the active uniforms, and set their value
+	for (GLint i = 0; i < count; i++)
+	{
+		GLint size = 0;
+		GLenum type = GL_FLOAT_VEC4_ARB;
+
+		pExtensions->glGetActiveUniformARB(m_shaderProgram.handle(), i, attrMaxLength, NULL, &size, &type, name);
+		if (strlen(name) > 0)
+		{
+			GLint location = pExtensions->glGetUniformLocationARB(m_shaderProgram.handle(), name);
+
+			if (location >= 0)
+			{
+				for (unsigned int idx = 0; idx < m_parameters.getNbParameters(); idx++)
+				{
+					CProgramParameters::CParameterBase& value = m_parameters[idx];
+
+					//! TODO : add type checking here
+					if (value.name() == name)
+					{
+						value.locationIndex = location;
+						value.locationType = type;
+					}
+				}
+			}
+		}
+	}
+
+	delete[] name;
+#endif
+
+	CATCH_GL_ERROR
+}
+
+static bool isTypeVector(unsigned int shaderKind)
+{
+#if defined(GL_ARB_shader_objects)
+	switch (shaderKind)
+	{
+		case GL_FLOAT:
+		case GL_FLOAT_VEC2_ARB:
+		case GL_FLOAT_VEC3_ARB:
+		case GL_FLOAT_VEC4_ARB:
+		case GL_INT:
+		case GL_INT_VEC2_ARB:
+		case GL_INT_VEC3_ARB:
+		case GL_INT_VEC4_ARB:
+		{
+			return true;
+			break;
+		}
+		default:
+		{
+			//  boolean values are not handled, they are too far from Raptor float vectors.
+			return false;
+		}
+	}
+#else
+	return false;
+#endif
+}
+
+void COpenGLShaderStage::glQueryAttributeLocations(void)
+{
+	if (m_shaderProgram.handle() == 0)
+		return;
+
+#if defined(GL_ARB_shader_objects)
+	// Query the size of attributes
+	GLint attrMaxLength = 0;
+	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+
+	pExtensions->glGetObjectParameterivARB(m_shaderProgram.handle(), GL_OBJECT_ACTIVE_ATTRIBUTE_MAX_LENGTH_ARB, &attrMaxLength);
+	attrMaxLength = MAX(32, attrMaxLength);
+	GLcharARB *name = new GLcharARB[attrMaxLength];
+
+	// Query the number of active attributes
+	GLint count = 0;
+	pExtensions->glGetObjectParameterivARB(m_shaderProgram.handle(), GL_OBJECT_ACTIVE_ATTRIBUTES_ARB, &count);
+	GLint maxAttribs = 0;
+	glGetIntegerv(GL_MAX_VERTEX_ATTRIBS_ARB, &maxAttribs);
+
+	// Loop over each of the active attributes, and set their value
+	for (GLint i = 0; i < count; i++)
+	{
+		GLint size = 0;
+		GLenum type = GL_FLOAT_VEC4_ARB;
+
+		pExtensions->glGetActiveAttribARB(m_shaderProgram.handle(), i, attrMaxLength, NULL, &size, &type, name);
+		if (strlen(name) > 0)
+		{
+			GLint location = pExtensions->glGetAttribLocationARB(m_shaderProgram.handle(), name);
+			if (location >= 0)
+			{
+				for (unsigned int idx = 0; idx < m_parameters.getNbParameters(); idx++)
+				{
+					CProgramParameters::CParameterBase& value = m_parameters[idx];
+					CProgramParameters::GL_VERTEX_ATTRIB userLocation = CProgramParameters::POSITION;
+					if ((value.name() == name) && value.isA(userLocation) && isTypeVector(type))
+					{
+						userLocation = ((const CProgramParameters::CParameter<CProgramParameters::GL_VERTEX_ATTRIB>&)value).p;
+
+						// the location retrieved will only be used if the user value is invalid.
+						value.locationType = type;
+						if ((userLocation < maxAttribs) && (userLocation != location))
+							value.locationIndex = userLocation;
+						else
+							value.locationIndex = location;
+					}
+				}
+			}
+		}
+	}
+
+	delete[] name;
+#endif
+
+	CATCH_GL_ERROR
+}
+
+void COpenGLShaderStage::glSetProgramParameters()
+{
+#if defined(GL_ARB_vertex_shader)
+	CTextureUnitSetup::TEXTURE_IMAGE_UNIT sampler = CTextureUnitSetup::IMAGE_UNIT_0;
+	GL_COORD_VERTEX vector(0.0f, 0.0f, 0.0f, 0.0f);
+	CColor::RGBA color(0.0f, 0.0f, 0.0f, 0.0f);
+	GL_MATRIX matrix;
+
+	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	for (unsigned int idx = 0; idx < m_parameters.getNbParameters(); idx++)
+	{
+		const CProgramParameters::CParameterBase& param_value = m_parameters[idx];
+		if (param_value.locationIndex >= 0)
+		{
+			if (param_value.isA(vector))
+			{
+				vector = ((const CProgramParameters::CParameter<GL_COORD_VERTEX>&)param_value).p;
+				switch (param_value.locationType)
+				{
+					case GL_FLOAT:
+					{
+						pExtensions->glUniform1fvARB(param_value.locationIndex, 1, vector);
+						break;
+					}
+					case GL_FLOAT_VEC2_ARB:
+					{
+						pExtensions->glUniform2fvARB(param_value.locationIndex, 1, vector);
+						break;
+					}
+					case GL_FLOAT_VEC3_ARB:
+					{
+						pExtensions->glUniform3fvARB(param_value.locationIndex, 1, vector);
+						break;
+					}
+					case GL_FLOAT_VEC4_ARB:
+					{
+						pExtensions->glUniform4fvARB(param_value.locationIndex, 1, vector);
+						break;
+					}
+					case GL_INT:
+					{
+						int val = vector.x;
+						pExtensions->glUniform1iARB(param_value.locationIndex, val);
+						break;
+					}
+					case GL_INT_VEC2_ARB:
+					{
+						int val[2];
+						val[0] = vector.x;
+						val[1] = vector.y;
+						pExtensions->glUniform2iARB(param_value.locationIndex, val[0], val[1]);
+						break;
+					}
+					case GL_INT_VEC3_ARB:
+					{
+						int val[3];
+						val[0] = vector.x;
+						val[1] = vector.y;
+						val[2] = vector.z;
+						pExtensions->glUniform3ivARB(param_value.locationIndex, 1, &val[0]);
+						break;
+					}
+					case GL_INT_VEC4_ARB:
+					{
+						int val[4];
+						val[0] = vector.x;
+						val[1] = vector.y;
+						val[2] = vector.z;
+						val[3] = vector.h;
+						pExtensions->glUniform4ivARB(param_value.locationIndex, 1, &val[0]);
+						break;
+					}
+				}
+			}
+			else if (param_value.isA(sampler))
+			{
+				sampler = ((const CProgramParameters::CParameter<CTextureUnitSetup::TEXTURE_IMAGE_UNIT>&)param_value).p;
+				pExtensions->glUniform1iARB(param_value.locationIndex, sampler);
+			}
+			else if (param_value.isA(matrix))
+			{
+				matrix = ((const CProgramParameters::CParameter<GL_MATRIX>&)param_value).p;
+				pExtensions->glUniformMatrix4fvARB(param_value.locationIndex, 1, GL_TRUE, matrix);
+			}
+			else if (param_value.isA(color))
+			{
+				color = ((const CProgramParameters::CParameter<CColor::RGBA>&)param_value).p;
+				pExtensions->glUniform4fvARB(param_value.locationIndex, 1, color);
+			}
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+			else
+			{
+				RAPTOR_ERROR(CShaderProgram::CShaderProgramClassID::GetClassId(),
+							 CRaptorMessages::ID_UPDATE_FAILED);
+			}
+#endif
+		}
+	}
+#endif
 }
 
 bool COpenGLShaderStage::exportObject(CRaptorIO& o)

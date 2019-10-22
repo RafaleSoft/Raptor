@@ -54,6 +54,17 @@ public:
 	//!	Same behavior as above, but program source is external.
 	virtual bool glLoadProgramFromFile(const std::string &program);
 
+	//!	Adds a shader to current runtime library.
+	//! Instead of loading the shader with the methods above, 
+	//! provide the name of shader, the program source, and the Raptor shader class.
+	//!	The loaded shader can then be reused with CShader::getShader
+	//! @param shader_name: the name of the shader to be retrieved by glGet[Fragment|Geometry|Vertex]Shader.
+	//! @param shader_source_file: the filename to load that contains the shader source.
+	//! @param class_name: the name of the shader class (@see CPersistence)
+	static bool glAddToLibrary(	const std::string& shader_name,
+								const std::string& shader_source_file,
+								const std::string& class_name);
+
 	//!	The Render method has the typical bahaviour
 	//!	of all Raptor Render methods : if the object
 	//!	has no geometry info, Render sets GL state
