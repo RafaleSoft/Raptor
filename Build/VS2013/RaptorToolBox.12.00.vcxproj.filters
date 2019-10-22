@@ -250,9 +250,6 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\RaptorToolBox\Filters\MBFilter.programs">
-      <Filter>Source Files\Filters</Filter>
-    </None>
     <None Include="..\..\RaptorToolBox\buildpak.bat">
       <Filter>Source Files</Filter>
     </None>
@@ -344,6 +341,15 @@
       <Filter>Source Files\Filters</Filter>
     </None>
     <None Include="..\..\RaptorToolBox\Filters\HDR_luminanceLast.fp">
+      <Filter>Source Files\Filters</Filter>
+    </None>
+    <None Include="..\..\RaptorToolBox\Filters\MB_accum2.ps">
+      <Filter>Source Files\Filters</Filter>
+    </None>
+    <None Include="..\..\RaptorToolBox\Filters\MB_accum.ps">
+      <Filter>Source Files\Filters</Filter>
+    </None>
+    <None Include="..\..\RaptorToolBox\Filters\MB_accum_old.ps">
       <Filter>Source Files\Filters</Filter>
     </None>
   </ItemGroup>

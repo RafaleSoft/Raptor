@@ -62,9 +62,6 @@
 #if !defined(AFX_TEXUREUNITSETUP_H__4A6ADC72_02E5_4F2A_931E_A736B6D6E0F0__INCLUDED_)
 	#include "GLHierarchy/TextureUnitSetup.h"
 #endif
-#if !defined(AFX_FRAGMENTSHADER_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
-	#include "GLHierarchy/FragmentShader.h"
-#endif
 #if !defined(AFX_GEOMETRYALLOCATOR_H__802B3C7A_43F7_46B2_A79E_DDDC9012D371__INCLUDED_)
 	#include "Subsys/GeometryAllocator.h"
 #endif
@@ -313,13 +310,13 @@ bool CRaptorInstance::glInitShaders(void)
 		m_pIdentity = new CShader("HDR_IDENTITY");
 		COpenGLShaderStage *stage = m_pIdentity->glGetOpenGLShader();
 
-		CVertexShader *vp = stage->glGetVertexShader("EMPTY_PROGRAM");
-		CGeometryShader *gp = stage->glGetGeometryShader("FULL_SCREEN_GEO_PROGRAM");
-		CFragmentShader *fp = stage->glGetFragmentShader("DIFFUSE_PROGRAM");
+		stage->glGetVertexShader("EMPTY_PROGRAM");
+		stage->glGetGeometryShader("FULL_SCREEN_GEO_PROGRAM");
+		stage->glGetFragmentShader("DIFFUSE_PROGRAM");
 
 		CProgramParameters identityParams;
 		identityParams.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);
-		fp->setProgramParameters(identityParams);
+		stage->setProgramParameters(identityParams);
 		if (!stage->glCompileShader())
 			return false;
 	}

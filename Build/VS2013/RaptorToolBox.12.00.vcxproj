@@ -492,9 +492,9 @@ copy $(SolutionDir)$(ProjectName)\Toolbox.pck "%RAPTOR_ROOT%\Redist\bin\"
     <None Include="..\..\RaptorToolBox\Filters\Magnifier_X.ps" />
     <None Include="..\..\RaptorToolBox\Filters\Magnifier_Y.fp" />
     <None Include="..\..\RaptorToolBox\Filters\Magnifier_Y.ps" />
-    <None Include="..\..\RaptorToolBox\Filters\MBFilter.programs">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">true</ExcludedFromBuild>
-    </None>
+    <None Include="..\..\RaptorToolBox\Filters\MB_accum.ps" />
+    <None Include="..\..\RaptorToolBox\Filters\MB_accum2.ps" />
+    <None Include="..\..\RaptorToolBox\Filters\MB_accum_old.ps" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -54,6 +54,9 @@
 #if !defined(AFX_OPENGLSHADERSTAGE_H__56B00FE3_E508_4FD6_9363_90E6E67446D9__INCLUDED_)
 	#include "GLHierarchy/OpenGLShaderStage.h"
 #endif
+#if !defined(AFX_OPENGLPROGRAMSTAGE_H__0BCE3B42_6E10_4F50_BB27_1993345ADBCF__INCLUDED_)
+	#include "GLHierarchy/OpenGLProgramStage.h"
+#endif
 
 
 RAPTOR_NAMESPACE
@@ -163,8 +166,7 @@ void CMagnifierFilter::glRenderFilter()
 #if defined(GL_ARB_geometry_shader4) || defined(GL_ARB_vertex_shader)
 	m_pYKernelShader->glGetOpenGLShader()->setProgramParameters(params_y);
 #elif defined(GL_ARB_vertex_program)
-	m_pYKernelShader->glGetOpenGLProgram()->glGetVertexProgram()->setProgramParameters(v_params_y);
-	m_pYKernelShader->glGetOpenGLProgram()->glGetFragmentProgram()->setProgramParameters(f_params);
+	m_pYKernelShader->glGetOpenGLProgram()->setProgramParameters(params_y);
 #endif
 	m_pYKernelShader->glRender();
 
@@ -192,8 +194,7 @@ void CMagnifierFilter::glRenderFilterOutput()
 #if defined(GL_ARB_geometry_shader4) || defined(GL_ARB_vertex_shader)
 	m_pXKernelShader->glGetOpenGLShader()->setProgramParameters(params_x);
 #elif defined(GL_ARB_vertex_program)
-	m_pXKernelShader->glGetOpenGLProgram()->glGetVertexProgram()->setProgramParameters(v_params_x);
-	m_pXKernelShader->glGetOpenGLProgram()->glGetFragmentProgram()->setProgramParameters(f_params);
+	m_pXKernelShader->glGetOpenGLProgram()->setProgramParameters(params_x);
 #endif
 	m_pXKernelShader->glRender();
 
@@ -340,6 +341,7 @@ bool CMagnifierFilter::glInitFilter(void)
 
 	m_pYKernelShader->glGetOpenGLProgram()->glGetVertexProgram("MAGNIFIER_VTX_PROGRAM");
 	m_pYKernelShader->glGetOpenGLProgram()->glGetFragmentProgram("MAGNIFIER_Y_TEX_PROGRAM");
+	bool res = true;
 #endif
 
 	filterFactory.getConfig().useTextureResize(previousResize);

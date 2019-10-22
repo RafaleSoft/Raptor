@@ -24,7 +24,7 @@ typedef struct
 	const char *class_name;
 } factory_shader;
 
-static const size_t NB_FACTORY_SHADERS = 30;
+static const size_t NB_FACTORY_SHADERS = 33;
 static factory_shader fsh[NB_FACTORY_SHADERS] = {	{ "DOF_GEO_SHADER", "DOF.gs", "GeometryShader" },
 													{ "DOF_TEX_SHADER", "DOF.ps", "FragmentShader" },
 													{ "DOF_OLD_VTX_SHADER", "DOF.vs", "VertexShader" },
@@ -54,7 +54,11 @@ static factory_shader fsh[NB_FACTORY_SHADERS] = {	{ "DOF_GEO_SHADER", "DOF.gs", 
 													{ "HDR_THRESHOLD_TEX_PROGRAM", "HDR_threshold.fp", "FragmentProgram" },
 													{ "HDR_COMPOSER_TEX_PROGRAM", "HDR_composer.fp", "FragmentProgram" },
 													{ "HDR_LUMINANCE_TEX_PROGRAM", "HDR_luminance.fp", "FragmentProgram" },
-													{ "HDR_LUMINANCELAST_TEX_PROGRAM", "HDR_luminanceLast.fp", "FragmentProgram" } };
+													{ "HDR_LUMINANCELAST_TEX_PROGRAM", "HDR_luminanceLast.fp", "FragmentProgram" },
+													{ "MB_ACCUM_TEX_SHADER", "MB_accum.ps", "FragmentShader" },
+													{ "MB_ACCUM2_TEX_SHADER", "MB_accum2.ps", "FragmentShader" },
+													{ "MB_ACCUM_OLD_TEX_SHADER", "MB_accum_old.ps", "FragmentShader" } };
+
 
 
 static map<std::string, factory_shader>	s_factoryShaders;

@@ -29,7 +29,6 @@
 #endif
 
 
-//#include <GL/glu.h>	// gluScaleImage
 GLint gluScaleImage(GLenum format,
 					GLsizei src_width, GLsizei src_height,
 					GLenum src_type, const GLvoid *src,
@@ -168,12 +167,10 @@ void CDefaultImageScaler::scaleUints(size_t srcw, size_t srch, size_t dstw, size
 //	https://raw.githubusercontent.com/jsgf/pspgl/master/gluScaleImage.c
 //////////////////////////////////////////////////////////////////////
 
-//#include <GL/glu.h>
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
 
-//#include "pspglu.h"
 #define RGBA(r,g,b,a)	((((a)&0xff) << 24) | \
 			 (((b)&0xff) << 16) | \
 			 (((g)&0xff) <<  8) | \
