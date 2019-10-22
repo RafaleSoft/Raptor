@@ -73,10 +73,13 @@ CRaptorDataManager::~CRaptorDataManager()
 			CLOSE(p.package);
 		p.package = 0;
 		p.headerSize = 0;
-		PackageHeader_t *h = (PackageHeader_t*)p.header;
-		clean(*h);
+		if (NULL != p.header)
+		{
+			PackageHeader_t *h = (PackageHeader_t*)p.header;
+			clean(*h);
+			delete h;
+		}
 		p.header = NULL;
-		delete h;
 	}
 
 	m_packages.clear();

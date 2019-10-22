@@ -129,9 +129,10 @@ CWin32EngineTaskManager::~CWin32EngineTaskManager()
     removeAllJobs();
 
 	//	1 second should far enough to terminate thread...
-    while ((0 != engine) && (engineStarted))
+    while ((NULL != engine) && (engineStarted))
 		WaitForSingleObject(engine,1000);
-	CloseHandle(engine);
+	if (NULL != engine)
+		CloseHandle(engine);
 
     for (unsigned int nb = 0; nb<asyncEngines.size();nb++)
 	{

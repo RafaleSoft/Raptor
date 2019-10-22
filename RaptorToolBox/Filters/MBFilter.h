@@ -33,6 +33,7 @@
 
 RAPTOR_NAMESPACE
 
+
 class RAPTOR_API CMBFilter : public CRaptorDisplayFilter  
 {
 public:
@@ -63,7 +64,7 @@ private:
 
     CShader             *m_pMotionBlurShader;
 	CShader             *m_pFinalShader;
-    ITextureGenerator	*m_pAccumulator;
+    void				*m_pAccumulator;
 	CTextureSet			*m_pRenderTextures2;
 
 	CProgramParameters::CParameter<GL_COORD_VERTEX> mbParams;

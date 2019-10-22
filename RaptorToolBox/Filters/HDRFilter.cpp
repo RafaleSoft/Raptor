@@ -18,6 +18,10 @@
 
 #include "Subsys/CodeGeneration.h"
 
+
+#if !defined(AFX_HDRFILTER_H__6E9B4FC8_154A_46DD_A218_6BC438E45C6A__INCLUDED_)
+	#include "HDRFilter.h"
+#endif
 #if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
 	#include "System/Raptor.h"
 #endif
@@ -26,23 +30,6 @@
 #endif
 #if !defined(AFX_TEXTURESET_H__26F3022D_70FE_414D_9479_F9CCD3DCD445__INCLUDED_)
 	#include "GLHierarchy/TextureSet.h"
-#endif
-#if !defined(AFX_FRAGMENTPROGRAM_H__DD0AD51D_3BFF_4C65_8099_BA7696D7BDDF__INCLUDED_)
-	#include "GLHierarchy/FragmentProgram.h"
-#endif
-#if !defined(AFX_FRAGMENTSHADER_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
-    #include "GLHierarchy/FragmentShader.h"
-#endif
-#if !defined(AFX_VERTEXPROGRAM_H__F2D3BBC6_87A1_4695_B667_2B8C3C4CF022__INCLUDED_)
-	#include "GLHierarchy/VertexProgram.h"
-#endif
-#if !defined(AFX_VERTEXSHADER_H__204F7213_B40B_4B6A_9BCA_828409871B68__INCLUDED_)
-	#include "GLHierarchy/VertexShader.h"
-#endif
-#if defined(GL_ARB_geometry_shader4)
-	#if !defined(AFX_GEOMETRYSHADER_H__1981EA98_8F3C_4881_9429_A9ACA5B285D3__INCLUDED_)
-		#include "GLHierarchy/GeometryShader.h"
-	#endif
 #endif
 #if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
   #include "System/RaptorGLExtensions.h"
@@ -56,141 +43,16 @@
 #if !defined(AFX_SHADER_H__4D405EC2_7151_465D_86B6_1CA99B906777__INCLUDED_)
 	#include "GLHierarchy/Shader.h"
 #endif
-#if !defined(AFX_HDRFILTER_H__6E9B4FC8_154A_46DD_A218_6BC438E45C6A__INCLUDED_)
-    #include "HDRFilter.h"
-#endif
 #if !defined(AFX_OPENGLSHADERSTAGE_H__56B00FE3_E508_4FD6_9363_90E6E67446D9__INCLUDED_)
 	#include "GLHierarchy/OpenGLShaderStage.h"
 #endif
-
-
-//#undef GL_ARB_geometry_shader4
-
-#if defined(GL_ARB_geometry_shader4)
-	//  Compute luminance with bilinear components, averaging
-	//  the 4 surrouding of the texel's center.
-	static const string treshhold2_ps =
-	"#version 440				\n\
-	uniform sampler2D color;	\n\
-	uniform vec4 offset;		\n\
-	uniform vec4 treshhold;		\n\
-	\n\
-	const vec4 luminance = vec4(0.299, 0.587, 0.114, 0.0);\n\
-	\n\
-	layout(location = 1) in vec4 g_TexCoord; \n\
-	layout(location = 0) out vec4 o_Color;	\n\
-	\n\
-	void main(void)			\n\
-	{						\n\
-		vec4 L = vec4(0.0, 0.0, 0.0, 0.0); \n\
-		\n\
-		vec4 c1 = texture(color,g_TexCoord.xy - offset.xy); \n\
-		L.x = dot(c1,luminance); \n\
-		\n\
-		vec4 c2 = texture(color,g_TexCoord.xy + offset.zy); \n\
-		L.y = dot(c2,luminance); \n\
-		\n\
-		vec4 c3 = texture(color,g_TexCoord.xy - offset.zy); \n\
-		L.z = dot(c3,luminance); \n\
-		\n\
-		vec4 c4 = texture(color,g_TexCoord.xy + offset.xy); \n\
-		L.w = dot(c4,luminance); \n\
-		\n\
-		L = max(vec4(0.0,0.0,0.0,0.0), L - treshhold.yyyy); \n\
-		vec4 c = c1 * L.xxxx; \n\
-		c = c + c2 * L.yyyy; \n\
-		c = c + c3 * L.zzzz; \n\
-		o_Color = c + c4 * L.wwww; \n\
-		o_Color.w = 1.0; \n\
-	}";
-
-	//!	Tone mapping shader
-	static const string composer_ps =
-	"#version 440				\n\
-	uniform sampler2D color;	\n\
-	uniform sampler2D blur;		\n\
-	uniform sampler2D lwhite;	\n\
-	\n\
-	layout(location = 1) in vec4 g_TexCoord; \n\
-	layout(location = 0) out vec4 o_Color;	\n\
-	\n\
-	const vec4 luminance = vec4(0.299, 0.587, 0.114, 0.0);\n\
-	\n\
-	void main(void)			\n\
-	{						\n\
-		vec4 c = texture(color,g_TexCoord.xy); \n\
-		vec4 b = texture(blur,g_TexCoord.xy); \n\
-		vec4 l = texture(lwhite,g_TexCoord.xy); \n\
-		o_Color = c*l + b; \n\
-		o_Color.w = 1.0; \n\
-	}";
-
-	static const string luminanceMax_ps =
-	"#version 440				\n\
-	uniform sampler2D color;	\n\
-	uniform vec4 offset;		\n\
-	\n\
-	layout(location = 1) in vec4 g_TexCoord; \n\
-	layout(location = 0) out vec4 o_Color;	\n\
-	\n\
-	const vec4 luminance = vec4(0.299, 0.587, 0.114, 0.0);\n\
-	\n\
-	void main(void)			\n\
-	{						\n\
-		vec4 c = texture(color,g_TexCoord.xy - offset.xy); \n\
-		float LMax = dot(c,luminance); \n\
-		\n\
-		c = texture(color,g_TexCoord.xy + offset.zy); \n\
-		LMax = max(LMax,dot(c,luminance)); \n\
-		\n\
-		c = texture(color,g_TexCoord.xy - offset.zy); \n\
-		LMax = max(LMax,dot(c,luminance)); \n\
-		\n\
-		c = texture(color,g_TexCoord.xy + offset.xy); \n\
-		LMax = max(LMax,dot(c,luminance)); \n\
-		o_Color = vec4(LMax,LMax,LMax,0.0); \n\
-	}";
-
-	//	Luminance max is scaled to 1.0 to avoid darkening a scene
-	//	in the case where no pixels are above 1.0
-	//	The final luminance is applied to darken the whole scene
-	//	for the tone mapping in order to have the brightest parts
-	//	at 1.0. (L>1 => x 1/L is in range [0..1])
-	static const string lastLuminanceMax_ps =
-	"#version 440				\n\
-	uniform sampler2D color;	\n\
-	uniform vec4 offset;		\n\
-	\n\
-	const vec4 luminance = vec4(0.299, 0.587, 0.114, 0.0);\n\
-	\n\
-	layout(location = 1) in vec4 g_TexCoord; \n\
-	layout(location = 0) out vec4 o_Color;	\n\
-	\n\
-	void main(void)			\n\
-	{						\n\
-		vec4 c = texture(color,g_TexCoord.xy - offset.xy); \n\
-		float LMax = dot(c,luminance); \n\
-		\n\
-		c = texture(color,g_TexCoord.xy + offset.zy); \n\
-		LMax = max(LMax,dot(c,luminance)); \n\
-		\n\
-		c = texture(color,g_TexCoord.xy - offset.zy); \n\
-		LMax = max(LMax,dot(c,luminance)); \n\
-		\n\
-		c = texture(color,g_TexCoord.xy + offset.xy); \n\
-		LMax = max(LMax,dot(c,luminance)); \n\
-		LMax = 1.0 / max(1.0,LMax); \n\
-		o_Color = vec4(LMax,LMax,LMax,1.0); \n\
-	}";
-
-#elif defined(GL_ARB_vertex_shader)
-	#include "HDR.programs"
-#elif defined(GL_ARB_vertex_program)
-	#include "HDR.shaders"
+#if !defined(AFX_OPENGLPROGRAMSTAGE_H__0BCE3B42_6E10_4F50_BB27_1993345ADBCF__INCLUDED_)
+	#include "GLHierarchy/OpenGLProgramStage.h"
 #endif
 
 
 static const float BLUR_BUFFER_SIZE_FACTOR = 0.125f;
+
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -234,14 +96,8 @@ CHDRFilter::CHDRFilter(const CRaptorDisplayConfig &da)
 	m_maxLuminance = NULL;
 	m_lastMaxLuminance = NULL;
 
-#if defined(GL_ARB_geometry_shader4)
 	m_pBlenderX = NULL;
 	m_pBlenderY = NULL;
-#else
-	m_pBlurXOffsets = NULL;
-	m_pBlurYOffsets = NULL;
-	m_pBlur = NULL;
-#endif
 }
 
 CHDRFilter::~CHDRFilter()
@@ -288,9 +144,9 @@ void CHDRFilter::glRenderFilter()
         else if (i<nLevels-1)
         {
 #if defined(GL_ARB_vertex_shader) || defined(GL_ARB_geometry_shader4)
-			m_maxLuminance->glGetOpenGLShader()->glGetFragmentShader()->setProgramParameters(maxLuminanceParams);
+			m_maxLuminance->glGetOpenGLShader()->setProgramParameters(maxLuminanceParams);
 #elif defined(GL_ARB_vertex_program)
-			m_maxLuminance->glGetOpenGLProgram()->glGetFragmentShader()->setProgramParameters(maxLuminanceParams);
+			m_maxLuminance->glGetOpenGLProgram()->setProgramParameters(maxLuminanceParams);
 #endif
             m_maxLuminance->glRender();
 			glDrawFilter();
@@ -299,9 +155,9 @@ void CHDRFilter::glRenderFilter()
         else
         {
 #if defined(GL_ARB_vertex_shader) || defined(GL_ARB_geometry_shader4)
-			m_lastMaxLuminance->glGetOpenGLShader()->glGetFragmentShader()->setProgramParameters(maxLuminanceParams);
+			m_lastMaxLuminance->glGetOpenGLShader()->setProgramParameters(maxLuminanceParams);
 #elif defined(GL_ARB_vertex_program)
-			m_lastMaxLuminance->glGetOpenGLProgram()->glGetFragmentShader()->setProgramParameters(maxLuminanceParams);
+			m_lastMaxLuminance->glGetOpenGLProgram()->setProgramParameters(maxLuminanceParams);
 #endif
             m_lastMaxLuminance->glRender();
 			glDrawFilter();
@@ -319,9 +175,9 @@ void CHDRFilter::glRenderFilter()
 	m_pDownSizedBuffer[1]->glvkRender();
 	thresholdParams[1].copy(thresholdParam);
 #if defined(GL_ARB_vertex_shader) || defined(GL_ARB_geometry_shader4)
-	m_pTreshholdFreqs->glGetOpenGLShader()->glGetFragmentShader()->setProgramParameters(thresholdParams);
+	m_pTreshholdFreqs->glGetOpenGLShader()->setProgramParameters(thresholdParams);
 #elif defined(GL_ARB_vertex_program)
-    m_pTreshholdFreqs->glGetFragmentShader()->setProgramParameters(threshholdParams);
+    m_pTreshholdFreqs->glGetOpenGLProgram()->setProgramParameters(threshholdParams);
 #endif
     m_pTreshholdFreqs->glRender();
 	glDrawFilter();
@@ -333,37 +189,30 @@ void CHDRFilter::glRenderFilter()
     //
 	m_pDownBlurXDisplay->glvkBindDisplay(nodevice);
 	m_pDownHFBuffer->glvkRender();
+
 #if defined(GL_ARB_geometry_shader4)
-	m_pBlenderX->glGetOpenGLShader()->glGetFragmentShader()->setProgramParameters(blurOffsets);
+	m_pBlenderX->glGetOpenGLShader()->setProgramParameters(blurOffsets);
+#else
+	m_pBlenderX->glGetOpenGLProgram()->setProgramParameters(blurOffsets);
+#endif
+
 	m_pBlenderX->glRender();
 	glDrawFilter();
 	m_pBlenderX->glStop();
-#else
-    m_pBlurXOffsets->setProgramParameters(blurOffsets);
-    m_pBlurXOffsets->glRender();
-    m_pBlur->glRender();
-	glDrawBuffer();
-    m_pBlurXOffsets->glStop();
-    m_pBlur->glStop();
-#endif
 
 	m_pDownBlurXDisplay->glvkUnBindDisplay();
 	m_pDownBlurYDisplay->glvkBindDisplay(nodevice);
 	m_pDownBlurXBuffer->glvkRender();
 
 #if defined(GL_ARB_geometry_shader4)
-	m_pBlenderY->glGetOpenGLShader()->glGetFragmentShader()->setProgramParameters(blurOffsets);
+	m_pBlenderY->glGetOpenGLShader()->setProgramParameters(blurOffsets);
+#else
+	m_pBlenderY->glGetOpenGLProgram()->setProgramParameters(blurOffsets);
+#endif
 	m_pBlenderY->glRender();
 	glDrawFilter();
 	m_pBlenderY->glStop();
-#else
-    m_pBlurYOffsets->setProgramParameters(blurOffsets);
-    m_pBlurYOffsets->glRender();
-    m_pBlur->glRender();
-	glDrawBuffer();
-    m_pBlurYOffsets->glStop();
-    m_pBlur->glStop();
-#endif
+	
 	m_pDownBlurYDisplay->glvkUnBindDisplay();
 
 	for (unsigned int i=2;i<=nBlurPass;i++)
@@ -373,32 +222,19 @@ void CHDRFilter::glRenderFilter()
 		//
 		m_pDownBlurXDisplay->glvkBindDisplay(nodevice);
 		m_pDownBlurYBuffer->glvkRender();
-#if defined(GL_ARB_geometry_shader4)
+
 		m_pBlenderX->glRender();
 		glDrawFilter();
 		m_pBlenderX->glStop();
-#else
-		m_pBlurXOffsets->setProgramParameters(blurOffsets);
-		m_pBlurXOffsets->glRender();
-		m_pBlur->glRender();
-		glDrawBuffer();
-		m_pBlurXOffsets->glStop();
-#endif
+	
 		m_pDownBlurXDisplay->glvkUnBindDisplay();
 		m_pDownBlurYDisplay->glvkBindDisplay(nodevice);
 		m_pDownBlurXBuffer->glvkRender();
 
-#if defined(GL_ARB_geometry_shader4)
 		m_pBlenderY->glRender();
 		glDrawFilter();
 		m_pBlenderY->glStop();
-#else
-		m_pBlurYOffsets->setProgramParameters(blurOffsets);
-		m_pBlurYOffsets->glRender();
-		glDrawBuffer();
-		m_pBlurYOffsets->glStop();
-		m_pBlur->glStop();
-#endif
+	
 		m_pDownBlurYDisplay->glvkUnBindDisplay();
 	}
 
@@ -597,11 +433,17 @@ bool CHDRFilter::glInitFilter(void)
 	blurOffsets.addParameter("offset", GL_COORD_VERTEX(	1.0f / (filter_cs_width * BLUR_BUFFER_SIZE_FACTOR),
 														1.0f / (filter_cs_height * BLUR_BUFFER_SIZE_FACTOR),
 														0.0f, 1.0f));
+	blurOffsets.addParameter("color", CTextureUnitSetup::IMAGE_UNIT_0);
+
 	thresholdParams.addParameter("offset", GL_COORD_VERTEX(	1.0f / (filter_cs_width * 2.0f * BLUR_BUFFER_SIZE_FACTOR),
 															1.0f / (filter_cs_height * 2.0f * BLUR_BUFFER_SIZE_FACTOR),
 															-1.0f / (filter_cs_width * 2.0f * BLUR_BUFFER_SIZE_FACTOR),
 															0.0f));
 	thresholdParams.addParameter("treshhold", thresholdParam.p);
+	thresholdParams.addParameter("color", CTextureUnitSetup::IMAGE_UNIT_0);
+
+	maxLuminanceParams.addParameter("offset", luminanceParams.p);
+	maxLuminanceParams.addParameter("color", CTextureUnitSetup::IMAGE_UNIT_0);
 
 	res = res && glBuildShaders();
 
@@ -619,72 +461,50 @@ bool CHDRFilter::glBuildShaders(void)
 {
 	m_pBlenderX = new CShader("HDR_BLENDER_X");
 	COpenGLShaderStage *stage = m_pBlenderX->glGetOpenGLShader();
-	CVertexShader *vp = stage->glGetVertexShader("EMPTY_PROGRAM");
-	CGeometryShader *gp = stage->glGetGeometryShader("FULL_SCREEN_GEO_PROGRAM");
-	CFragmentShader *fp = stage->glGetFragmentShader("BLENDER_8X_TEX_PROGRAM");
+	stage->glGetVertexShader("EMPTY_PROGRAM");
+	stage->glGetGeometryShader("FULL_SCREEN_GEO_PROGRAM");
+	stage->glGetFragmentShader("BLENDER_8X_TEX_PROGRAM");
 	bool res = stage->glCompileShader();
 
 	m_pBlenderY = new CShader("HDR_BLENDER_Y");
 	stage = m_pBlenderY->glGetOpenGLShader();
-	vp = stage->glGetVertexShader("EMPTY_PROGRAM");
-	gp = stage->glGetGeometryShader("FULL_SCREEN_GEO_PROGRAM");
-	fp = stage->glGetFragmentShader("BLENDER_8Y_TEX_PROGRAM");
+	stage->glGetVertexShader("EMPTY_PROGRAM");
+	stage->glGetGeometryShader("FULL_SCREEN_GEO_PROGRAM");
+	stage->glGetFragmentShader("BLENDER_8Y_TEX_PROGRAM");
 	res = res && stage->glCompileShader();
-	blurOffsets.addParameter("color", CTextureUnitSetup::IMAGE_UNIT_0);
 	
 	m_pTreshholdFreqs = new CShader("HDR_TRESHOLDS");
 	stage = m_pTreshholdFreqs->glGetOpenGLShader();
-	vp = stage->glGetVertexShader("EMPTY_PROGRAM");
-	gp = stage->glGetGeometryShader("FULL_SCREEN_GEO_PROGRAM");
-	// Set it only once since it is a library shader (move this call to the rendering stage)
-	//res = res && gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
-	fp = stage->glGetFragmentShader("treshhold2_fp");
-	res = res && fp->glLoadProgram(treshhold2_ps);
-	if (res)
-	{
-		thresholdParams.addParameter("color",CTextureUnitSetup::IMAGE_UNIT_0);
-		fp->setProgramParameters(thresholdParams);
-	}
+	stage->glGetVertexShader("EMPTY_PROGRAM");
+	stage->glGetGeometryShader("FULL_SCREEN_GEO_PROGRAM");
+	stage->glGetFragmentShader("HDR_THRESHOLD_TEX_SHADER");
 	res = res && stage->glCompileShader();
 
 	m_pComposite = new CShader("HDR_COMPOSITE");
 	stage = m_pComposite->glGetOpenGLShader();
-	vp = stage->glGetVertexShader("EMPTY_PROGRAM");
-	gp = stage->glGetGeometryShader("FULL_SCREEN_GEO_PROGRAM");
-	fp = stage->glGetFragmentShader("composite_fp");
-	res = res && fp->glLoadProgram(composer_ps);
-	if (res)
-	{
-		CProgramParameters	fp_params;
-		fp_params.addParameter("color",CTextureUnitSetup::IMAGE_UNIT_0);
-		fp_params.addParameter("blur",CTextureUnitSetup::IMAGE_UNIT_1);
-		fp_params.addParameter("lwhite",CTextureUnitSetup::IMAGE_UNIT_2);
-		fp->setProgramParameters(fp_params);
-	}
+	stage->glGetVertexShader("EMPTY_PROGRAM");
+	stage->glGetGeometryShader("FULL_SCREEN_GEO_PROGRAM");
+	stage->glGetFragmentShader("HDR_COMPOSER_TEX_SHADER");
+	
+	CProgramParameters	fp_params;
+	fp_params.addParameter("color",CTextureUnitSetup::IMAGE_UNIT_0);
+	fp_params.addParameter("blur",CTextureUnitSetup::IMAGE_UNIT_1);
+	fp_params.addParameter("lwhite",CTextureUnitSetup::IMAGE_UNIT_2);
+	stage->setProgramParameters(fp_params);
 	res = res && stage->glCompileShader();
 
 	m_maxLuminance = new CShader("HDR_MAXLUMINANCE");
 	stage = m_maxLuminance->glGetOpenGLShader();
-	maxLuminanceParams.addParameter("offset", luminanceParams.p);
-	vp = stage->glGetVertexShader("EMPTY_PROGRAM");
-	gp = stage->glGetGeometryShader("FULL_SCREEN_GEO_PROGRAM");
-	fp = stage->glGetFragmentShader("luminanceMax_fp");
-	res = res && fp->glLoadProgram(luminanceMax_ps);
-	if (res)
-	{
-		maxLuminanceParams.addParameter("color",CTextureUnitSetup::IMAGE_UNIT_0);
-		fp->setProgramParameters(maxLuminanceParams);
-	}
+	stage->glGetVertexShader("EMPTY_PROGRAM");
+	stage->glGetGeometryShader("FULL_SCREEN_GEO_PROGRAM");
+	stage->glGetFragmentShader("HDR_LUMINANCE_TEX_SHADER");
 	res = res && stage->glCompileShader();
 
 	m_lastMaxLuminance = new CShader("HDR_LASTMAXLUMINANCE");
 	stage = m_lastMaxLuminance->glGetOpenGLShader();
-	vp = stage->glGetVertexShader("EMPTY_PROGRAM");
-	gp = stage->glGetGeometryShader("FULL_SCREEN_GEO_PROGRAM");
-	fp = stage->glGetFragmentShader("lastluminanceMax_fp");
-	res = res && fp->glLoadProgram(lastLuminanceMax_ps);
-	if (res)
-		fp->setProgramParameters(maxLuminanceParams);
+	stage->glGetVertexShader("EMPTY_PROGRAM");
+	stage->glGetGeometryShader("FULL_SCREEN_GEO_PROGRAM");
+	stage->glGetFragmentShader("HDR_LUMINANCELAST_TEX_SHADER");
 	res = res && stage->glCompileShader();
 
 	return res;
@@ -694,54 +514,42 @@ bool CHDRFilter::glBuildShaders(void)
 
 	bool CHDRFilter::glBuildShaders()
 	{
-		CShader *shaderLib = new CShader();
-		m_pBlur = shaderLib->glGetFragmentShader("BLENDER_8X");
-		m_pBlurXOffsets = shaderLib->glGetVertexShader("BLENDER_8X_XOFFSETS");
-		shaderLib->releaseReference();
-		shaderLib = new CShader();
-		m_pBlurYOffsets = shaderLib->glGetVertexShader("BLENDER_8X_YOFFSETS");
-		shaderLib->releaseReference();
+		m_pBlenderX = new CShader("HDR_BLENDER_X");
+		COpenGLProgramStage *stage = m_pBlenderX->glGetOpenGLProgram();
+		stage->glGetFragmentProgram("BLENDER_8X");
+		stage->glGetVertexProgram("BLENDER_8X_XOFFSETS");
+		
+		m_pBlenderY = new CShader("HDR_BLENDER_Y");
+		stage = m_pBlenderY->glGetOpenGLProgram();
+		stage->glGetFragmentProgram("BLENDER_8X");
+		stage->glGetVertexProgram("BLENDER_8X_YOFFSETS");
+
 
 		m_pTreshholdFreqs = new CShader("HDR_TRESHOLDS");
-		CFragmentShader *fp = m_pTreshholdFreqs->glGetFragmentProgram("treshhold2_fp");
-		bool res = fp->glLoadProgram(treshhold2_ps);
-		if (res)
-		{
-			thresholdParams.addParameter("color",CTextureUnitSetup::IMAGE_UNIT_0);
-			fp->setProgramParameters(thresholdParams);
-		}
-		res = res && m_pTreshholdFreqs->glCompileShader();
+		COpenGLShaderStage *stage2 = m_pTreshholdFreqs->glGetOpenGLShader();
+		stage2->glGetFragmentShader("HDR_THRESHOLD_OLD_TEX_SHADER");
+		bool res = stage2->glCompileShader();
 
 		m_pComposite = new CShader("HDR_COMPOSITE");
-		fp = m_pComposite->glGetFragmentProgram("composite_fp");
-		res = res && fp->glLoadProgram(composer_ps);
-		if (res)
-		{
-			CProgramParameters	fp_params;
-			fp_params.addParameter("color",CTextureUnitSetup::IMAGE_UNIT_0);
-			fp_params.addParameter("blur",CTextureUnitSetup::IMAGE_UNIT_1);
-			fp_params.addParameter("lwhite",CTextureUnitSetup::IMAGE_UNIT_2);
-			fp->setProgramParameters(fp_params);
-		}
-		res = res && m_pComposite->glCompileShader();
+		stage2 = m_pComposite->glGetOpenGLShader();
+		stage2->glGetFragmentShader("HDR_COMPOSER_OLD_TEX_SHADER");
+		
+		CProgramParameters	fp_params;
+		fp_params.addParameter("color",CTextureUnitSetup::IMAGE_UNIT_0);
+		fp_params.addParameter("blur",CTextureUnitSetup::IMAGE_UNIT_1);
+		fp_params.addParameter("lwhite",CTextureUnitSetup::IMAGE_UNIT_2);
+		stage2->setProgramParameters(fp_params);
+		res = res && stage2->glCompileShader();
 
 		m_maxLuminance = new CShader("HDR_MAXLUMINANCE");
-		maxLuminanceParams.addParameter("offset", luminanceParams.p);
-		fp = m_maxLuminance->glGetFragmentProgram("luminanceMax_fp");
-		res = res && fp->glLoadProgram(luminanceMax_ps);
-		if (res)
-		{
-			maxLuminanceParams.addParameter("color",CTextureUnitSetup::IMAGE_UNIT_0);
-			fp->setProgramParameters(maxLuminanceParams);
-		}
-		res = res && m_maxLuminance->glCompileShader();
+		stage2 = m_maxLuminance->glGetOpenGLShader();
+		stage2->glGetFragmentShader("HDR_LUMINANCE_OLD_TEX_SHADER");
+		res = res && stage2->glCompileShader();
 
 		m_lastMaxLuminance = new CShader("HDR_LASTMAXLUMINANCE");
-		fp = m_lastMaxLuminance->glGetFragmentProgram("lastluminanceMax_fp");
-		res = res && fp->glLoadProgram(lastLuminanceMax_ps);
-		if (res)
-			fp->setProgramParameters(maxLuminanceParams);
-		res = res && m_lastMaxLuminance->glCompileShader();
+		stage2 = m_lastMaxLuminance->glGetOpenGLShader();
+		stage2->glGetFragmentShader("HDR_LUMINANCELAST_OLD_TEX_SHADER");
+		res = res && stage2->glCompileShader();
 
 		return res;
 	}
@@ -750,30 +558,31 @@ bool CHDRFilter::glBuildShaders(void)
 
 	bool CHDRFilter::glBuildShaders()
 	{
-		CShader *shaderLib = new CShader();
-		m_pBlur = shaderLib->glGetFragmentShader("BLENDER_8X");
-		m_pBlurXOffsets = shaderLib->glGetVertexShader("BLENDER_8X_XOFFSETS");
-		shaderLib->releaseReference();
-		shaderLib = new CShader();
-		m_pBlurYOffsets = shaderLib->glGetVertexShader("BLENDER_8X_YOFFSETS");
-		shaderLib->releaseReference();
+		m_pBlenderX = new CShader("HDR_BLENDER_X");
+		COpenGLProgramStage *stage = m_pBlenderX->glGetOpenGLProgram();
+		stage->glGetFragmentProgram("BLENDER_8X");
+		stage->glGetVertexProgram("BLENDER_8X_XOFFSETS");
+
+		m_pBlenderY = new CShader("HDR_BLENDER_Y");
+		stage = m_pBlenderY->glGetOpenGLProgram();
+		stage->glGetFragmentProgram("BLENDER_8X");
+		stage->glGetVertexProgram("BLENDER_8X_YOFFSETS");
 
 		m_pTreshholdFreqs = new CShader("HDR_TRESHOLDS");
-		CFragmentProgram *fs = m_pTreshholdFreqs->glGetFragmentShader("treshhold2_fs");
-		bool res = res && fs->glLoadProgram(treshhold2_fp);
-
+		stage = m_pTreshholdFreqs->glGetOpenGLProgram();
+		stage->glGetFragmentProgram("HDR_THRESHOLD_TEX_PROGRAM");
+		
 		m_pComposite = new CShader("HDR_COMPOSITE");
-		CFragmentProgram *fs = m_pComposite->glGetFragmentShader("composite_fs");
-		res = res && fs->glLoadProgram(composer_fp);
+		stage = m_pComposite->glGetOpenGLProgram();
+		stage->glGetFragmentProgram("HDR_COMPOSER_TEX_PROGRAM");
 
 		m_maxLuminance = new CShader("HDR_MAXLUMINANCE");
-		maxLuminanceParams.addParameter("offset", luminanceParams.p);
-		fs = m_maxLuminance->glGetFragmentShader("luminanceMax_fs");
-		res = res && fs->glLoadProgram(luminanceMax_fp);
+		stage = m_maxLuminance->glGetOpenGLProgram();
+		stage->glGetFragmentProgram("HDR_LUMINANCE_TEX_PROGRAM");
 
 		m_lastMaxLuminance = new CShader("HDR_LASTMAXLUMINANCE");
-		fs = m_lastMaxLuminance->glGetFragmentShader("lastluminanceMax_fs");
-		res = res && fs->glLoadProgram(lastLuminanceMax_fp);
+		stage = m_lastMaxLuminance->glGetOpenGLProgram();
+		stage->glGetFragmentProgram("HDR_LUMINANCELAST_TEX_PROGRAM");
 
 		return res;
 	}

@@ -130,6 +130,7 @@ std::string COpenGLProgramStage::glGetProgramString(void) const
 
 void COpenGLProgramStage::glRender(void)
 {
+	// TODO: apply parameters as necessary (c.f. COpenGLShaderStage)
 	if (NULL != m_pVProgram)
 		m_pVProgram->glRender();
 	if (NULL != m_pFProgram)

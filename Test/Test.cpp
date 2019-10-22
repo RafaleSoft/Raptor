@@ -13,6 +13,7 @@
 
 #include "ToolBox/Imaging.h"
 #include "ToolBox/Controllers.h"
+#include "ToolBox/Filters.h"
 #include <sstream>
 
 RAPTOR_NAMESPACE
@@ -75,6 +76,8 @@ int main(int argc, char* argv[])
 	bool res = pDisplay->glvkBindDisplay(wnd);
     if (res)
 	{
+		CFilters::glInstallFilters();
+
         pDoc->GLInitContext();
 
         CRaptorConsole *pConsole = Raptor::GetConsole();

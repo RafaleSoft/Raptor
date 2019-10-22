@@ -146,16 +146,14 @@ void CParticle::glInitParticle(void)
 			CVertexShader *vp = stage->glGetVertexShader("PARTICLE_VTX_PROGRAM");
 			CProgramParameters params;
 			params.addParameter("fPointSize", GL_COORD_VERTEX(m_fPointSize, 0.0f, 0.0f, 0.0f));
-			vp->setProgramParameters(params);
 
 			CGeometryShader *gp = stage->glGetGeometryShader("PARTICLE2D_GEO_PROGRAM");
 			gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
 
 			CFragmentShader *fs = stage->glGetFragmentShader("TEXTURE_QUAD_TEX_PROGRAM");
-			params.clear();
 			params.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);
-			fs->setProgramParameters(params);
 
+			stage->setProgramParameters(params);
 			res = stage->glCompileShader();
 		}
 		else if ((m_type == CGL_PARTICLE_VOLUMETRIC) && (NULL == m_pShader))
@@ -166,16 +164,14 @@ void CParticle::glInitParticle(void)
 			CVertexShader *vp = stage->glGetVertexShader("PARTICLE_VTX_PROGRAM");
 			CProgramParameters params;
 			params.addParameter("fPointSize", GL_COORD_VERTEX(m_fPointSize, 0.0f, 0.0f, 0.0f));
-			vp->setProgramParameters(params);
 
 			CGeometryShader *gp = stage->glGetGeometryShader("PARTICLE3D_GEO_PROGRAM");
 			gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
 
 			CFragmentShader *fs = stage->glGetFragmentShader("PARTICLE3D_TEX_PROGRAM");
-			params.clear();
 			params.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);
-			fs->setProgramParameters(params);
 
+			stage->setProgramParameters(params);
 			res = stage->glCompileShader();
 		}
 	}
@@ -215,10 +211,11 @@ void CParticle::usePointSprite(bool use,float size)
 
 	if (NULL != m_pShader)
 	{
-		CVertexShader *vp = m_pShader->glGetOpenGLShader()->glGetVertexShader();
 		CProgramParameters params;
 		params.addParameter("fPointSize", GL_COORD_VERTEX(m_fPointSize, 0.0f, 0.0f, 0.0f));
-		vp->setProgramParameters(params);
+		
+		COpenGLShaderStage *stage = m_pShader->glGetOpenGLShader();
+		stage->updateProgramParameters(params);
 	}
 
 #if defined(GL_NV_point_sprite)

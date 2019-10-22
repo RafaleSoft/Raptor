@@ -398,7 +398,7 @@ uint64_t CUnifiedShader::glGetBufferMemoryRequirements(RAPTOR_HANDLE program)
 }
 
 
-bool isTypeVector(unsigned int shaderKind)
+static bool isTypeVector(unsigned int shaderKind)
 {
 #if defined(GL_ARB_shader_objects)
     switch (shaderKind)
@@ -426,7 +426,7 @@ bool isTypeVector(unsigned int shaderKind)
 #endif
 }
 
-bool isTypeMatrix(unsigned int shaderKind)
+static bool isTypeMatrix(unsigned int shaderKind)
 {
 #if defined(GL_ARB_shader_objects)
 	switch (shaderKind)
@@ -448,7 +448,8 @@ bool isTypeMatrix(unsigned int shaderKind)
 	return false;
 #endif
 }
-bool isTypeSampler(unsigned int shaderKind)
+
+static bool isTypeSampler(unsigned int shaderKind)
 {
 #if defined(GL_ARB_shader_objects)
 	switch (shaderKind)

@@ -62,6 +62,7 @@ public:
 	//! (4 maximum passes)
 	void setBlurNbPass(unsigned int nb=1);
 
+
 private:
 	//! Fordibben destructor
 	virtual ~CDOFFilter();
@@ -84,9 +85,9 @@ private:
     CTextureObject      *tmpTexture2;
 	CTextureSet			*m_pRenderTextures2;
     CShader             *DOFShader;
-	CProgramParameters	vp_paramsX;
-	CProgramParameters	vp_paramsY;
-	CProgramParameters	fp_params;
+
+	CProgramParameters	paramsX;
+	CProgramParameters	paramsY;
 };
 
 #endif // !defined(AFX_DOFFILTER_H__A4FA0FE9_04AA_4887_9B4A_3CFAF930D840__INCLUDED_)

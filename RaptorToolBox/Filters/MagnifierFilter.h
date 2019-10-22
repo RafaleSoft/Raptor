@@ -31,9 +31,6 @@
 	#include "GLHierarchy/ProgramParameters.h"
 #endif
 
-RAPTOR_NAMESPACE_BEGIN
-class CRaptorDisplay;
-RAPTOR_NAMESPACE_END
 
 RAPTOR_NAMESPACE
 
@@ -83,18 +80,19 @@ private:
 	//!	Rebuild the kernel data in an RGBA texture.
 	void computeKernel(void);
 
+
 	bool			m_bRebuild;
     CTextureObject	*kernelTexture;
 
     CRaptorDisplay	*xBuffer;
     CTextureObject	*xKernelPass;
+
     CShader			*m_pXKernelShader;
     CShader			*m_pYKernelShader;
 
     GL_COORD_VERTEX	kernelParams;
-	CProgramParameters v_params_x;
-	CProgramParameters v_params_y;
-	CProgramParameters f_params;
+	CProgramParameters params_x;
+	CProgramParameters params_y;
 
     float (CMagnifierFilter::*kernelBuilder)(float x,float k1,float k2) const;
 };

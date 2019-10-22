@@ -52,78 +52,6 @@
 #endif
 
 
-
-
-static const std::string font_vp_src =
-"#version 440 \n\
-\n\
-uniform vec4 viewport; \n\
-\n\
-layout(location = 0) in vec4 i_Position; \n\
-layout(location = 8) in vec4 i_TexCoord; \n\
-\n\
-out vec4 v_texCoord; \n\
-out vec2 v_size; \n\
-\n\
-void main (void) \n\
-{\n\
-	vec4 pos = vec4(i_Position.x / viewport.z - 1.0, 1.0 - i_Position.y / viewport.w, 0.0, 1.0); \n\
-	gl_Position = pos; \n\
-	v_texCoord = i_TexCoord; \n\
-	v_size = vec2(i_Position.z / viewport.z, i_Position.w / viewport.w); \n\
-}";
-
-static const std::string font_gp_src =
-"#version 440\n\
-\n\
-//	Expect the geometry shader extension to be available, warn if not. \n\
-#extension GL_ARB_geometry_shader4 : enable \n\
-\n\
-in vec4 v_texCoord[]; \n\
-in vec2 v_size[]; \n\
-\n\
-layout(points) in; \n\
-layout(triangle_strip, max_vertices=4) out; \n\
-layout(location = 1) out vec4 g_TexCoord; \n\
-\n\
-void main() \n\
-{\n\
-	gl_Position = gl_in[0].gl_Position; \n\
-	g_TexCoord = vec4(v_texCoord[0].x, v_texCoord[0].y, 0.0, 0.0); \n\
-	EmitVertex(); \n\
-	\n\
-	gl_Position = gl_in[0].gl_Position + vec4(v_size[0].x, 0.0, 0.0, 0.0); \n\
-	g_TexCoord = vec4(v_texCoord[0].x + v_texCoord[0].z, v_texCoord[0].y, 0.0, 0.0); \n\
-	EmitVertex(); \n\
-	\n\
-	gl_Position = gl_in[0].gl_Position + vec4(0.0, v_size[0].y, 0.0, 0.0); \n\
-	g_TexCoord = vec4(v_texCoord[0].x, v_texCoord[0].y + v_texCoord[0].w, 0.0, 0.0); \n\
-	EmitVertex(); \n\
-	\n\
-	gl_Position = gl_in[0].gl_Position + vec4(v_size[0].x,v_size[0].y, 0.0, 0.0); \n\
-	g_TexCoord = vec4(v_texCoord[0].x + v_texCoord[0].z, v_texCoord[0].y + v_texCoord[0].w, 0.0, 0.0); \n\
-	EmitVertex(); \n\
-	\n\
-	EndPrimitive(); \n\
-}";
-
-static const std::string font_fp_src =
-"#version 440\n\
-\n\
-uniform	sampler2D diffuseMap; \n\
-uniform vec4 color; \n\
-\n\
-layout(location = 1) in vec4 g_TexCoord; \n\
-layout(location = 0) out vec4 o_Color;	\n\
-\n\
-void main (void) \n\
-{\n\
-	vec4 col = texture(diffuseMap,vec2(g_TexCoord.st)); \n\
-	o_Color = color * vec4(col.x,col.x,col.x,col.w); \n\
-}";
-
-
-
 RAPTOR_NAMESPACE
 
 static const size_t TEXTURE_WIDTH = 256;
@@ -346,25 +274,20 @@ bool CGL2DTextureFont::glGenGlyphs(float precision,
 		m_pShader = new CShader(getName() + "_SHADER");
 		COpenGLShaderStage *stage = m_pShader->glGetOpenGLShader();
 
-		CVertexShader *vp = stage->glGetVertexShader();
-		bool res = vp->glLoadProgram(font_vp_src);
+		CVertexShader *vp = stage->glGetVertexShader("FONT2D_VTX_PROGRAM");
 		CProgramParameters params;
 		GL_COORD_VERTEX viewport(0, 0, 640, 480);
 		params.addParameter("viewport", viewport);
-		vp->setProgramParameters(params);
 
-		CGeometryShader *gp = stage->glGetGeometryShader();
+		CGeometryShader *gp = stage->glGetGeometryShader("FONT2D_GEO_PROGRAM");
 		gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
-		res = res & gp->glLoadProgram(font_gp_src);
 
-		CFragmentShader *fs = stage->glGetFragmentShader();
-		res = res & fs->glLoadProgram(font_fp_src);
-		params.clear();
+		CFragmentShader *fs = stage->glGetFragmentShader("FONT2D_TEX_PROGRAM");
 		params.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);
 		params.addParameter("color", CColor::RGBA(1.0, 0.0, 0.0, 1.0));
-		fs->setProgramParameters(params);
 
-		res = res & stage->glCompileShader();
+		stage->setProgramParameters(params);
+		bool res = stage->glCompileShader();
 		if (!res)
 			return false;
 	}
@@ -417,10 +340,9 @@ void CGL2DTextureFont::glWrite(const std::string &text, int x, int y, const CCol
 	CProgramParameters params;
 	GL_COORD_VERTEX vp(viewport[0], viewport[1], 0.5f * viewport[2], 0.5f * viewport[3]);
 	params.addParameter("viewport", vp);
-	m_pShader->glGetOpenGLShader()->glGetVertexShader()->updateProgramParameters(params);
-	params.clear();
 	params.addParameter("color", color);
-	m_pShader->glGetOpenGLShader()->glGetFragmentShader()->updateProgramParameters(params);
+	COpenGLShaderStage *stage = m_pShader->glGetOpenGLShader();
+	stage->updateProgramParameters(params);
 
 	FONT_CACHEELT_t* pCache = (FONT_CACHEELT_t*)font_linePointer;
 #if defined(GL_ARB_vertex_program)
@@ -504,10 +426,9 @@ void CGL2DTextureFont::glWrite(const std::vector<FONT_TEXT_ITEM> &lines)
 	CProgramParameters params;
 	GL_COORD_VERTEX vp(viewport[0], viewport[1], 0.5f * viewport[2], 0.5f * viewport[3]);
 	params.addParameter("viewport", vp);
-	m_pShader->glGetOpenGLShader()->glGetVertexShader()->updateProgramParameters(params);
-	params.clear();
 	params.addParameter("color", color);
-	m_pShader->glGetOpenGLShader()->glGetFragmentShader()->updateProgramParameters(params);
+	COpenGLShaderStage *stage = m_pShader->glGetOpenGLShader();
+	stage->updateProgramParameters(params);
 
 	GLsizei count = 0;
 	for (size_t l = 0; l < lines.size(); l++)

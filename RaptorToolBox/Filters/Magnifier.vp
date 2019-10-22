@@ -1,0 +1,36 @@
+!!ARBvp1.0
+
+#############################################################################
+#                                                                           #
+#   Magnifier.vp                                                            #
+#                                                                           #
+#     Raptor OpenGL & Vulkan realtime 3D Engine SDK.                        #
+#                                                                           #
+#   Copyright 1998-2019 by                                                  #
+#   Fabrice FERRAND.                                                        #
+#                                                                           #
+#   This file is part of the Raptor project, and may only be used,          #
+#   modified, and distributed under the terms of the Raptor project         #
+#   license, LICENSE.  By continuing to use, modify, or distribute          #
+#   this file you indicate that you have read the license and               #
+#   understand and accept it fully.                                         #
+#                                                                           #
+#############################################################################
+
+ATTRIB iPos = vertex.position;
+ATTRIB iTexCoord = vertex.texcoord[0];
+
+PARAM mvp[4] = { state.matrix.mvp };
+PARAM ofs = program.local[0];
+
+OUTPUT oPos = result.position;
+OUTPUT oTex0 = result.texcoord[0];
+
+DP4 oPos.x , mvp[0] , iPos;
+DP4 oPos.y , mvp[1] , iPos;
+DP4 oPos.z , mvp[2] , iPos;
+DP4 oPos.w, mvp[3] ,iPos;
+
+ADD oTex0, iTexCoord, ofs;
+
+END

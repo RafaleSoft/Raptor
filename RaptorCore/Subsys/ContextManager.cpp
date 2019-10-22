@@ -249,6 +249,7 @@ bool CContextManager::vkInitDevice(CContextManager::RENDERING_CONTEXT_ID ctx,con
 		{
 			nbPhysicalDevices = 0;
 			delete[] pPhysicalDevices;
+			pPhysicalDevices = NULL;
 		}
 	}
 
