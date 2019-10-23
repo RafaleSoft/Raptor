@@ -15,6 +15,18 @@
 
 	#include <winsock2.h>
 	#include <windows.h>
+#else	// Linux environment
+	#include <stdint.h>
+	#include <sys/socket.h>
+	#include <netinet/tcp.h>
+	#include <netinet/in.h>
+	#include <netdb.h>
+	#include <arpa/inet.h>
+	#include <errno.h>
+	#include <string.h>
+	#include <pthread.h>
+	#include <unistd.h>
+	typedef struct hostent HOSTENT;
 #endif
 
 #include <iostream>

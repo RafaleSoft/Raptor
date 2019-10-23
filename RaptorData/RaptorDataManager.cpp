@@ -22,11 +22,9 @@
 #if !defined(AFX_RAPTORDATAMANAGER_H__114BFB19_FA00_4E3E_879E_C9130043668E__INCLUDED_)
 	#include "RaptorDataManager.h"
 #endif
-
 #ifndef __PACKAGE_HEADER__
     #include "RaptorDataPackager/PackageHeader.h"
 #endif
-
 #ifndef __PACKAGE_IO__
 	#include "RaptorDataPackager/PackageIO.h"
 #endif

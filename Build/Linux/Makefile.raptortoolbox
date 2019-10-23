@@ -36,6 +36,7 @@ LIB = $(OUTPUT)/libRaptorToolBox.a
 
 SRC_BASE = \
 	$(SRCDIR)/Controllers.cpp \
+	$(SRCDIR)/Filters.cpp \
 	$(SRCDIR)/Imaging.cpp \
 	$(SRCDIR)/Loaders.cpp \
 	$(SRCDIR)/Merge.cpp \

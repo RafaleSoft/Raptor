@@ -118,9 +118,14 @@ bool Network::initSocketLayer()
 string Network::networkErrors(const std::string& extmsg)
 {
 	string msg;
+#ifdef WIN32
 	int error = GetLastError();
+#else // Linux environment
+	int error = errno;
+#endif
 	switch(error)
 	{
+#ifdef WIN32
 		case WSANOTINITIALISED:
 			msg = "WSA Sockets not initialised";
 			break;
@@ -172,6 +177,30 @@ string Network::networkErrors(const std::string& extmsg)
 		case WSAECONNRESET:
 			msg = "WSA existing connection was forcibly closed by the remote host";
 			break;
+#else	// Linux environment
+		case EACCES:
+			msg = "La création d'une socket avec le type et le protocole indiqués n'est pas autorisée.";
+			break;
+		case EAFNOSUPPORT:
+			msg = "L'implémentation ne supporte pas la famille d'adresses indiquée.";
+			break;
+		case EINVAL:
+			msg = "Protocole inconnu, ou famille de protocole inexistante.";
+			break;
+		case EMFILE:
+			msg = "La table des fichiers est pleine.";
+			break;
+		case ENFILE:
+			msg = "La  limite  du nombre total de fichiers ouverts sur le système a	été atteinte.";
+			break;
+		case ENOBUFS:
+		case ENOMEM:
+			msg = "Pas suffisamment d'espace pour allouer les tampons  nécessaires.";
+			break;
+		case EPROTONOSUPPORT:
+			msg = "Le type  de  protocole, ou  le  protocole  lui - même  n'est  pas disponible dans ce domaine de communication.";
+			break;
+#endif
 		default:
         {
 			std::stringstream  str;

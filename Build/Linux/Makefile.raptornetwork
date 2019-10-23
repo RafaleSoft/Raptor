@@ -1,0 +1,57 @@
+###########################################################################
+#                                                                         #
+#  Makefile.raptornetwork                                                 #
+#                                                                         #
+#    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       #
+#                                                                         #
+#  Copyright 1998-2019 by                                                 #
+#  Fabrice FERRAND.                                                       #
+#                                                                         #
+#  This file is part of the Raptor project, and may only be used,         #
+#  modified, and distributed under the terms of the Raptor project        #
+#  license, LICENSE.  By continuing to use, modify, or distribute         #
+#  this file you indicate that you have read the license and              #
+#  understand and accept it fully.                                        #
+#                                                                         #
+###########################################################################
+
+
+export
+
+OUTPUT = $(RAPTOR_ROOT)/Build/Linux/Release/RaptorNetwork
+CCCFLAGS =  -DSIMD_NO_ASSEMBLY -DLINUX -fPIC -std=c++11 -fopenmp -msse -msse2 -msse3 -mssse3 -msse4.1 -msse4.2 
+SRCDIR = $(RAPTOR_ROOT)/RaptorNetwork
+INCDIRS = -I$(SRCDIR) -I$(RAPTOR_ROOT)/Redist/Include
+
+LDFLAGS = -Bdynamic -shared -lstdc++
+
+
+SO = $(OUTPUT)/libRaptorNetwork.so.$(RAPTOR_VERSION)
+LIB = $(OUTPUT)/libRaptorNetwork.a
+
+
+SRC = \
+	$(SRCDIR)/ClientSocket.cpp \
+	$(SRCDIR)/Network.cpp \
+	$(SRCDIR)/RaptorNetwork.cpp \
+	$(SRCDIR)/ServerSocket.cpp \
+	$(SRCDIR)/Server.cpp
+	
+OBJ = $(SRC:$(SRCDIR)/%.cpp=$(OUTPUT)/%.o)
+	
+all:    $(LIB) $(SO)
+
+clean:
+	rm -rf $(OUTPUT)
+	mkdir -p $(OUTPUT)
+
+$(LIB):  $(OBJ)
+	ar -qcv $(LIB) $(OBJ)
+	cp $(LIB) $(RAPTOR_ROOT)/Redist/Lib
+
+$(SO):  $(OBJ)
+	g++ -o $(SO) $(LDFLAGS) $(OBJ)
+	cp $(SO) $(RAPTOR_ROOT)/Redist/Bin
+
+$(OBJ): $(SRC)
+	g++ $(CCCFLAGS) $(INCDIRS) -c $(<D)/$(*F).cpp  -o $(OUTPUT)/$(@F)
