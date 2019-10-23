@@ -202,23 +202,19 @@ void CEMBMShader::enableEmbm(bool enable)
 
 		CProgramParameters params;
 		params.addParameter("tangent", CProgramParameters::ADDITIONAL_PARAM1);
-		CProgramParameters params2;
-		CVertexShader *vp = NULL;
-		CFragmentShader *fp = NULL;
 	
 		if (enable)
 		{
-			vp = stage->glGetVertexShader("PPIXEL_EMBM_VTX_PROGRAM");
-			fp = stage->glGetFragmentShader("PPIXEL_EMBM_TEX_PROGRAM");
+			stage->glGetVertexShader("PPIXEL_EMBM_VTX_PROGRAM");
+			stage->glGetFragmentShader("PPIXEL_EMBM_TEX_PROGRAM");
 		}
 		else
 		{
-			vp = stage->glGetVertexShader("PPIXEL_BUMP_VTX_PROGRAM");
-			fp = stage->glGetFragmentShader("PPIXEL_BUMP_TEX_PROGRAM");
+			stage->glGetVertexShader("PPIXEL_BUMP_VTX_PROGRAM");
+			stage->glGetFragmentShader("PPIXEL_BUMP_TEX_PROGRAM");
 		}
 
-		vp->setProgramParameters(params);
-		fp->setProgramParameters(params2);
+		stage->setProgramParameters(params);
 
 		stage->glCompileShader();
 		m_bEnabled = enable;

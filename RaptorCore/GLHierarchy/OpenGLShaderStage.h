@@ -117,6 +117,8 @@ public:
 	//!	@see CShaderProgram
 	virtual void setProgramParameters(const CProgramParameters &v);
 
+	//!	@see CShaderProgram
+	virtual void updateProgramParameters(const CProgramParameters &v);
 
 	//! Inherited from CPersistence
 	DECLARE_IO

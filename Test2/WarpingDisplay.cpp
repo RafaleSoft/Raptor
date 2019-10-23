@@ -321,8 +321,8 @@ void main (void)						\n\
 	CProgramParameters params;
 	params.addParameter("diffuseMap",CTextureUnitSetup::IMAGE_UNIT_0);
 	params.addParameter("normalMap",CTextureUnitSetup::IMAGE_UNIT_1);
-	fp->setProgramParameters(params);
 	m_pShader->glGetOpenGLShader()->glCompileShader();
+	m_pShader->glGetOpenGLShader()->setProgramParameters(params);
 #endif
 }
 

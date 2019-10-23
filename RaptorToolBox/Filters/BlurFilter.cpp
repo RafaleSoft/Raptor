@@ -312,19 +312,19 @@ bool CBlurFilter::glBuildFilter(int width,int height)
 	params.addParameter("diffuseMap",CTextureUnitSetup::IMAGE_UNIT_0);
 	
 	COpenGLShaderStage *stage = hBlur->glGetOpenGLShader();
-	CVertexShader *vp = stage->glGetVertexShader("EMPTY_PROGRAM");
-	CGeometryShader *gp = stage->glGetGeometryShader("FULL_SCREEN_GEO_PROGRAM");
+	stage->glGetVertexShader("EMPTY_PROGRAM");
+	stage->glGetGeometryShader("FULL_SCREEN_GEO_PROGRAM");
 	CFragmentShader *fp = stage->glGetFragmentShader("hBlur_fp");
 	res = fp->glLoadProgram(srcs[0]);
-	fp->setProgramParameters(params);
+	stage->setProgramParameters(params);
 	res = res && stage->glCompileShader();
 
 	stage = vBlur->glGetOpenGLShader();
-	vp = stage->glGetVertexShader("EMPTY_PROGRAM");
-	gp = stage->glGetGeometryShader("FULL_SCREEN_GEO_PROGRAM");
+	stage->glGetVertexShader("EMPTY_PROGRAM");
+	stage->glGetGeometryShader("FULL_SCREEN_GEO_PROGRAM");
 	fp = stage->glGetFragmentShader("vBlur_fp");
 	res = res && fp->glLoadProgram(srcs[1]);
-	fp->setProgramParameters(params);
+	stage->setProgramParameters(params);
 
 	res = res && stage->glCompileShader();
 
