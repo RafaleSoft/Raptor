@@ -85,7 +85,10 @@ all: \
 	raptordata \
 	raptorcore \
 	raptornetwork \
-	raptortoolbox
+	raptortoolbox \
+	raptorserver
+
+raptorserver: builder raptorcore raptordata raptortoolbox raptornetwork $(REDIST)/Bin/RaptorServer
 
 raptortoolbox: builder raptorcore raptordata $(REDIST)/Lib/libRaptorToolBox.a $(REDIST)/Bin/libRaptorToolBox.so.$(RAPTOR_VERSION)
 
@@ -143,6 +146,11 @@ configure:	Builder/Configure/Redist.sh
 #
 # Projects building rules
 #
+$(REDIST)/Bin/RaptorServer:
+	@echo "Building RaptorServer project ..."
+	make -C Build/Linux -f Makefile.raptorserver all
+	@echo "RaptorServer project done."
+
 $(REDIST)/Lib/libRaptorToolBox.a $(REDIST)/Bin/libRaptorToolBox.so.$(RAPTOR_VERSION):
 	@echo "Building RaptorToolBox project ..."
 	make -C Build/Linux -f Makefile.raptortoolbox all
@@ -274,6 +282,7 @@ $(REDIST)/Bin/dwaLookups:	$(REDIST)/Bin/libHalf.so.$(OPENEXRLIB_VERSION) $(REDIS
 #
 clean:
 	@echo "Cleaning intermediate build files..."
+	make -C Build/Linux -f Makefile.raptorserver clean
 	make -C Build/Linux -f Makefile.raptortoolbox clean
 	make -C Build/Linux -f Makefile.raptornetwork clean
 	make -C Build/Linux -f Makefile.tifflib clean

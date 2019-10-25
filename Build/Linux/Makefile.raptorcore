@@ -194,11 +194,11 @@ clean:
 
 $(LIB):  $(ALL_OBJS)
 	ar -qcv $(LIB) $(ALL_OBJS)
-	cp $(LIB) $(RAPTOR_ROOT)/Redist/Lib
+	cp $(LIB) $(REDIST)/Lib
 
 $(SO): $(ALL_OBJS)
 	g++ -o $(SO) $(LDFLAGS) $(ALL_OBJS)
-	cp $(SO) $(RAPTOR_ROOT)/Redist/Bin
+	cp $(SO) $(REDIST)/Bin
 
 $(HIERARCHY_OBJS): $(HIERARCHY_SRC) $(CODE_GENERATION)
 	g++  $(CCCFLAGS) $(INCDIRS) -c $(<D)/$(*F).cpp  -o $(OUTPUT)/$(@F)

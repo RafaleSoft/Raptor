@@ -1,6 +1,6 @@
 ###########################################################################
 #                                                                         #
-#  Makefile.raptornetwork                                                 #
+#  Makefile.raptorserver                                                  #
 #                                                                         #
 #    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       #
 #                                                                         #
@@ -18,40 +18,34 @@
 
 export
 
-OUTPUT = $(RAPTOR_ROOT)/Build/Linux/Release/RaptorNetwork
+OUTPUT = $(RAPTOR_ROOT)/Build/Linux/Release/RaptorServer
 CCCFLAGS =  -DSIMD_NO_ASSEMBLY -DLINUX -fPIC -std=c++11 -fopenmp -msse -msse2 -msse3 -mssse3 -msse4.1 -msse4.2 
-SRCDIR = $(RAPTOR_ROOT)/RaptorNetwork
+SRCDIR = $(RAPTOR_ROOT)/RaptorServer
 INCDIRS = -I$(SRCDIR) -I$(RAPTOR_ROOT)/Redist/Include
 
-LDFLAGS = -Bdynamic -shared -lstdc++
-
-
-SO = $(OUTPUT)/libRaptorNetwork.so.$(RAPTOR_VERSION)
-LIB = $(OUTPUT)/libRaptorNetwork.a
-
+LDFLAGS = -lstdc++ -L$(RAPTOR_ROOT)/Redist/Lib
+LDFLAGS += -lraptorcore -lraptordata -lraptortoolbox -lraptornetwork
 
 SRC = \
-	$(SRCDIR)/ClientSocket.cpp \
-	$(SRCDIR)/Network.cpp \
-	$(SRCDIR)/RaptorNetwork.cpp \
-	$(SRCDIR)/ServerSocket.cpp \
-	$(SRCDIR)/Server.cpp
+	$(SRCDIR)/RaptorServerApp.cpp \
+	$(SRCDIR)/RaptorServerInstance.cpp \
+	$(SRCDIR)/YUVCompressor.cpp \
+	$(SRCDIR)/RaptorServerCompressor.cpp \
+	$(SRCDIR)/ServerTransport.cpp \
+	$(SRCDIR)/RaptorServer.cpp
+
 	
 OBJ = $(SRC:$(SRCDIR)/%.cpp=$(OUTPUT)/%.o)
 	
-all:    $(LIB) $(SO)
+all:    $(OUTPUT)/RaptorServer
 
 clean:
 	rm -rf $(OUTPUT)
 	mkdir -p $(OUTPUT)
 
-$(LIB):  $(OBJ)
-	ar -qcv $(LIB) $(OBJ)
-	cp $(LIB) $(REDIST)/Lib
-
-$(SO):  $(OBJ)
-	g++ -o $(SO) $(LDFLAGS) $(OBJ)
-	cp $(SO) $(REDIST)/Bin
+$(OUTPUT)/RaptorServer:  $(OBJ)
+	g++ -o $(OBJS) $(LDFLAGS)
+	cp $(OUTPUT)/RaptorServer $(REDIST)/Bin
 
 $(OBJ): $(SRC)
 	g++ $(CCCFLAGS) $(INCDIRS) -c $(<D)/$(*F).cpp  -o $(OUTPUT)/$(@F)
