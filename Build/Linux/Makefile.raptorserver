@@ -21,10 +21,14 @@ export
 OUTPUT = $(RAPTOR_ROOT)/Build/Linux/Release/RaptorServer
 CCCFLAGS =  -DSIMD_NO_ASSEMBLY -DLINUX -fPIC -std=c++11 -fopenmp -msse -msse2 -msse3 -mssse3 -msse4.1 -msse4.2 
 SRCDIR = $(RAPTOR_ROOT)/RaptorServer
-INCDIRS = -I$(SRCDIR) -I$(RAPTOR_ROOT)/Redist/Include
+INCDIRS = -I$(SRCDIR) -I$(RAPTOR_ROOT)/Redist/Include -I$(VULKAN_INCLUDE_PATH)
 
-LDFLAGS = -lstdc++ -L$(RAPTOR_ROOT)/Redist/Lib
-LDFLAGS += -lraptorcore -lraptordata -lraptortoolbox -lraptornetwork
+LDFLAGS = $(LIBGL) $(LIBX11) -fPIC -lstdc++ -Bdynamic -shared 
+LDFLAGS += $(REDIST)/Bin/libRaptorCore.so.$(RAPTOR_VERSION) 
+LDFLAGS += $(REDIST)/Bin/libRaptorData.so.$(RAPTOR_VERSION) 
+LDFLAGS += $(REDIST)/Bin/libRaptorToolBox.so.$(RAPTOR_VERSION)
+LDFLAGS += $(REDIST)/Bin/libRaptorNetwork.so.$(RAPTOR_VERSION)
+LDFLAGS += $(REDIST)/Bin/libxerces-c.so.$(XERCES_VERSION)
 
 SRC = \
 	$(SRCDIR)/RaptorServerApp.cpp \
@@ -44,7 +48,7 @@ clean:
 	mkdir -p $(OUTPUT)
 
 $(OUTPUT)/RaptorServer:  $(OBJ)
-	g++ -o $(OBJS) $(LDFLAGS)
+	g++ $(OBJ) -o $(OUTPUT)/RaptorServer $(LDFLAGS)
 	cp $(OUTPUT)/RaptorServer $(REDIST)/Bin
 
 $(OBJ): $(SRC)

@@ -146,7 +146,8 @@ void CRaptorScreenDisplay::glGenerate(CTextureObject* t)
     CATCH_GL_ERROR
 }
 
-bool CRaptorScreenDisplay::glGrab(unsigned int x, unsigned int y, unsigned int width, unsigned int height,unsigned char* &data,unsigned int& size) const
+bool CRaptorScreenDisplay::glGrab(uint32_t x, uint32_t y, uint32_t width, uint32_t height,
+								  uint8_t* &data, size_t& size) const
 {
     bool res = false;
    //! If buffer is bound, read pixels directly
@@ -180,9 +181,9 @@ bool CRaptorScreenDisplay::glGrab(unsigned int x, unsigned int y, unsigned int w
     return res;
 }
 
-bool CRaptorScreenDisplay::glBlit(	unsigned int xSrc, unsigned int ySrc, unsigned int widthSrc, unsigned int heightSrc,
-									unsigned int xDst, unsigned int yDst, unsigned int widthDst, unsigned int heightDst,
-									CRaptorDisplay *pDst) const
+bool CRaptorScreenDisplay::glBlit(uint32_t xSrc, uint32_t ySrc, uint32_t widthSrc, uint32_t heightSrc,
+								  uint32_t xDst, uint32_t yDst, uint32_t widthDst, uint32_t heightDst,
+								  CRaptorDisplay *pDst) const
 {
 	return false;
 }

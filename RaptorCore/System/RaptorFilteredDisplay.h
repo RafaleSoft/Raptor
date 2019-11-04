@@ -61,8 +61,8 @@ public:
 	virtual IRenderingProperties &getRenderingProperties(void) const;
 
 	//! @see CRaptorDisplay
-	virtual bool glBlit(unsigned int xSrc, unsigned int ySrc, unsigned int widthSrc, unsigned int heightSrc,
-						unsigned int xDst, unsigned int yDst, unsigned int widthDst, unsigned int heightDst,
+	virtual bool glBlit(uint32_t xSrc, uint32_t ySrc, uint32_t widthSrc, uint32_t heightSrc,
+						uint32_t xDst, uint32_t yDst, uint32_t widthDst, uint32_t heightDst,
 						CRaptorDisplay *pDst) const;
 
 private:

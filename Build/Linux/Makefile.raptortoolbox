@@ -29,7 +29,6 @@ CCCFLAGS += -DMAX_PATH=PATH_MAX -DGLX_EXTENSIONS
 
 LDFLAGS = -L$(RAPTOR_ROOT)/Redist/Lib -lraptorcore -Bdynamic -shared -lstdc++
 
-
 SO = $(OUTPUT)/libRaptorToolBox.so.$(RAPTOR_VERSION)
 LIB = $(OUTPUT)/libRaptorToolBox.a
 

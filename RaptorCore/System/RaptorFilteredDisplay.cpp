@@ -660,8 +660,8 @@ IViewPoint *const CRaptorFilteredDisplay::getViewPoint(void) const
 		return m_pDisplay->getViewPoint();
 }
 
-bool CRaptorFilteredDisplay::glBlit(unsigned int xSrc, unsigned int ySrc, unsigned int widthSrc, unsigned int heightSrc,
-									unsigned int xDst, unsigned int yDst, unsigned int widthDst, unsigned int heightDst,
+bool CRaptorFilteredDisplay::glBlit(uint32_t xSrc, uint32_t ySrc, uint32_t widthSrc, uint32_t heightSrc,
+									uint32_t xDst, uint32_t yDst, uint32_t widthDst, uint32_t heightDst,
 									CRaptorDisplay *pDst) const
 {
 	bool res = false;

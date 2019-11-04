@@ -1,6 +1,20 @@
-// RaptorInstance.cpp: implementation of the CRaptorInstance class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  RaptorServerInstance.cpp                                               */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
 
 #include "stdafx.h"
 
@@ -51,6 +65,15 @@
 
 CRaptorServerInstance* CRaptorServerInstance::m_pInstance = NULL;
 
+#if defined(WIN32)
+	#define SLEEP(s)		Sleep(s)
+#else	// Linux environment
+	#include <unistd.h>
+	// For identical behavior when compared to windows : 1 ms = 1000 µs
+	#define SLEEP(s)		usleep(1000*s)
+	#define MAX_PATH		260
+#endif
+
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -79,7 +102,7 @@ CRaptorServerInstance* CRaptorServerInstance::GetInstance(void)
 
 void CRaptorServerInstance::glRender()
 {
-	if (m_pWindow.handle() != NULL)
+	if (m_pWindow.handle() != 0)
 	{
 		request r;
 		int nbr = 0;
@@ -118,7 +141,7 @@ void CRaptorServerInstance::glRender()
 				}
 
 			executeRequest(r);
-			delete [] r.data;
+			delete [] (unsigned char*)r.data;
 
 			if (r.render)
 			{
@@ -161,7 +184,7 @@ void CRaptorServerInstance::glRender()
 				m_sessionsToDestroy.erase(m_sessionsToDestroy.begin());
 				m_pDisplay->glvkUnBindDisplay();
 			}
-			Sleep(1);
+			SLEEP(1);
 		}
 	}
 }
@@ -322,7 +345,7 @@ bool CRaptorServerInstance::handleRequest(request_handler_t::request_id id, cons
 		r.id = id;
 		r.reply = false;
 		r.render = false;
-		r.data = new unsigned char[size];
+		r.data = new uint8_t[size];
 		r.size = size;
 		r.display = NULL;
 		memcpy(r.data,data,size);
@@ -345,7 +368,11 @@ bool CRaptorServerInstance::handleReply(request_handler_t::request_id id, const 
 		CRaptorLock lock(m_rmutex);
 		if (m_replies.size() > 0)
 		{
-			vector<request>::const_iterator it = m_replies.begin();
+#ifdef WIN32
+			std::vector<request>::const_iterator it = m_replies.begin();
+#else
+			std::vector<request>::iterator it = m_replies.begin();
+#endif
 			do
 			{
 				r = *it++;
@@ -366,7 +393,7 @@ bool CRaptorServerInstance::handleReply(request_handler_t::request_id id, const 
 	{
 		//	Server is stopping...
 		//	... log warning/error message ?
-		Sleep(1);
+		SLEEP(1);
 		return false;
 	}
 

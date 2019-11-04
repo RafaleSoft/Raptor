@@ -123,8 +123,19 @@ public:
 
 
 public:
+	//!	Constructor.
 	CImage();
+
+	//!	Destructor.
 	virtual ~CImage();
+
+	//!	Create a new image initialised with the subpart of this image defined by the parameters.
+	//!	@param x: horizontal position of ref point of subimage in this.
+	//!	@param y: vertical position of ref point of subimage in this.
+	//!	@param w: width of subimage in this.
+	//!	@param h: height of subimage in this.
+	//!	@return the subimage or NULL if incorrect parameters of uninitialised this.
+	CImage* createSubImage(size_t x, size_t y, size_t w, size_t h);
 
 	//!	Loads an image file named filename. The file type is used to
 	//!	Determine the appropriate image loader, if any.
@@ -213,6 +224,8 @@ public:
 
 
 private:
+	CImage& operator=(const CImage&);
+
 	static map<std::string,IImageIO*>			IMAGE_KIND_IO;
     static map<IImageOP::OP_KIND,IImageOP*>		IMAGE_KIND_OP;
 

@@ -23,6 +23,7 @@ unsigned long Network::crc32Table[256];
 
 static unsigned int NB_LOGGERS = 0;
 const INetworkLogger * *Network::loggers = 0;
+
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -115,9 +116,9 @@ bool Network::initSocketLayer()
 	return true;
 }
 
-string Network::networkErrors(const std::string& extmsg)
+std::string Network::networkErrors(const std::string& extmsg)
 {
-	string msg;
+	std::string msg;
 #ifdef WIN32
 	int error = GetLastError();
 #else // Linux environment
@@ -218,8 +219,8 @@ string Network::networkErrors(const std::string& extmsg)
 
 unsigned int Network::sockNameToAddr(const std::string& address)
 {
-    string::size_type pos = 0;
-    string::size_type pos2 = 0;
+    std::string::size_type pos = 0;
+    std::string::size_type pos2 = 0;
 
 	pos2 = address.find('.',0);
 	unsigned int ip0 = atoi(address.substr(pos,pos2-pos).data());
