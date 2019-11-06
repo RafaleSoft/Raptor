@@ -4,6 +4,17 @@
 	#include "CmdLineParser.h"
 #endif
 
+
+
+
+#if defined(WIN32)
+	#define STRDUP(s)		_strdup(s)
+#else	// Linux environment
+	#include <string.h>
+	#define STRDUP(s)		strdup(s)
+#endif
+
+
 CCmdLineParser::CCmdLineParser(void)
 {
 }
@@ -58,7 +69,7 @@ template <>
 CCmdLineParser::CCommandLineOptionValue<const char*>::CCommandLineOptionValue(const std::string &name,
 																			  const std::string &shortname,
 																			  const char* defaultValue)
-																			  :CCmdLineParser::CCommandLineOption(name, shortname), m_value(NULL)
+	:CCmdLineParser::CCommandLineOption(name, shortname), m_value(NULL)
 {
 	char *option = (char*)m_value;
 	option = STRDUP(defaultValue);

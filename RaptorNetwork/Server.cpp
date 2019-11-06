@@ -363,11 +363,11 @@ bool server_base_t::readClient(iosock_base_t &client)
 }
 
 #ifdef WIN32
-	DWORD
+	DWORD writeClientsThread(void* pParam)
 #else
-	void*
+	void* writeClientsThread(void* pParam)
 #endif
-writeClientsThread(void* pParam)
+
 {
 	struct threadData_t
 	{

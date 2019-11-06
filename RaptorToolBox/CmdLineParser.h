@@ -12,13 +12,6 @@
 
 RAPTOR_NAMESPACE
 
-#if defined(WIN32)
-	#define STRDUP(s)		_strdup(s)
-#else	// Linux environment
-	#include <string.h>
-	#define STRDUP(s)		strdup(s)
-#endif
-
 
 class RAPTOR_API CCmdLineParser
 {
