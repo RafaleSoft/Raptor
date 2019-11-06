@@ -57,6 +57,7 @@
 #endif
 
 
+
 RAPTOR_NAMESPACE_BEGIN
 
 static bool				s_initialized = false;
@@ -111,6 +112,11 @@ static map<std::string, factory_shader>	s_factoryShaders;
 
 RAPTOR_NAMESPACE_END
 
+#ifdef WIN32
+	#define STRDUP(s) _strdup(s)
+#elif defined(LINUX)
+	#define STRDUP(s) strdup(s)
+#endif
 
 RAPTOR_NAMESPACE
 
@@ -199,9 +205,9 @@ bool CShaderLibrary::glAddToLibrary(const std::string& shader_name,
 		if (program->glLoadProgramFromFile(shader_source_file))
 		{
 			factory_shader fs;
-			fs.class_name = _strdup(class_name.c_str());
+			fs.class_name = STRDUP(class_name.c_str());
 			fs.shader_fname = NULL;
-			fs.shader_name = _strdup(shader_name.c_str());
+			fs.shader_name = STRDUP(shader_name.c_str());
 			s_factoryShaders.insert(map<std::string, factory_shader>::value_type(fs.shader_name, fs));
 		}
 

@@ -1,0 +1,52 @@
+###########################################################################
+#                                                                         #
+#  Makefile.raptorviewer                                                  #
+#                                                                         #
+#    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       #
+#                                                                         #
+#  Copyright 1998-2019 by                                                 #
+#  Fabrice FERRAND.                                                       #
+#                                                                         #
+#  This file is part of the Raptor project, and may only be used,         #
+#  modified, and distributed under the terms of the Raptor project        #
+#  license, LICENSE.  By continuing to use, modify, or distribute         #
+#  this file you indicate that you have read the license and              #
+#  understand and accept it fully.                                        #
+#                                                                         #
+###########################################################################
+
+
+export
+
+OUTPUT = $(RAPTOR_ROOT)/Build/Linux/Release/RaptorViewer
+CCCFLAGS =  -DSIMD_NO_ASSEMBLY -DLINUX -fPIC -std=c++11 -fopenmp -msse -msse2 -msse3 -mssse3 -msse4.1 -msse4.2 
+SRCDIR = $(RAPTOR_ROOT)/RaptorViewer
+INCDIRS = -I$(SRCDIR) -I$(RAPTOR_ROOT)/Redist/Include -I$(VULKAN_INCLUDE_PATH)
+
+LDFLAGS = $(LIBGL) $(LIBX11) -fPIC -lstdc++ -Bdynamic -shared 
+LDFLAGS += $(REDIST)/Bin/libRaptorCore.so.$(RAPTOR_VERSION) 
+LDFLAGS += $(REDIST)/Bin/libRaptorData.so.$(RAPTOR_VERSION) 
+LDFLAGS += $(REDIST)/Bin/libRaptorToolBox.so.$(RAPTOR_VERSION)
+LDFLAGS += $(REDIST)/Bin/libRaptorNetwork.so.$(RAPTOR_VERSION)
+LDFLAGS += $(REDIST)/Bin/libxerces-c.so.$(XERCES_VERSION)
+
+SRC = \
+	$(SRCDIR)/RaptorClient.cpp \
+	$(SRCDIR)/ServerImageRenderer.cpp \
+	$(SRCDIR)/RaptorViewer.cpp
+
+	
+OBJ = $(SRC:$(SRCDIR)/%.cpp=$(OUTPUT)/%.o)
+	
+all:    $(OUTPUT)/RaptorViewer
+
+clean:
+	rm -rf $(OUTPUT)
+	mkdir -p $(OUTPUT)
+
+$(OUTPUT)/RaptorViewer:  $(OBJ)
+	g++ $(OBJ) -o $(OUTPUT)/RaptorViewer $(LDFLAGS)
+	cp $(OUTPUT)/RaptorViewer $(REDIST)/Bin
+
+$(OBJ): $(SRC)
+	g++ $(CCCFLAGS) $(INCDIRS) -c $(<D)/$(*F).cpp  -o $(OUTPUT)/$(@F)

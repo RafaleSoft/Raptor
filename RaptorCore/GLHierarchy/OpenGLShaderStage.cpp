@@ -226,6 +226,11 @@ void COpenGLShaderStage::setProgramParameters(const CProgramParameters &v)
 	}
 }
 
+void COpenGLShaderStage::updateProgramParameters(const CProgramParameters &v)
+{
+	CShaderProgram::updateProgramParameters(v);
+}
+
 void COpenGLShaderStage::glRender(void)
 {
 	if (m_shaderProgram.handle() != 0)

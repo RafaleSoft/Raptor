@@ -91,6 +91,7 @@ private:
 	vector<CCommandLineOption*> m_options;
 };
 
+
 template <class T>
 bool CCmdLineParser::addOption(const std::string &name,
 							   const std::string &shortname,
@@ -129,86 +130,5 @@ bool CCmdLineParser::getValue(const std::string& optionName, T& t) const
 	return false;
 }
 
-
-template <>
-CCmdLineParser::CCommandLineOptionValue<const char*>::CCommandLineOptionValue(const std::string &name,
-																			  const std::string &shortname,
-																			  const char* defaultValue)
-	:CCommandLineOption(name,shortname), m_value(NULL)
-{
-	char *option = (char*)m_value;
-	option = _strdup(defaultValue);
-}
-
-template <>
-CCmdLineParser::CCommandLineOptionValue<const char*>::~CCommandLineOptionValue()
-{
-	if (m_value != NULL)
-		free((void*)m_value);
-}
-
-template <>
-bool CCmdLineParser::CCommandLineOptionValue<unsigned int>::parse(const char* argv)
-{
-	if (NULL == argv)
-		return false;
-
-	m_value = atoi(argv);
-	return true;
-}
-
-template <>
-bool CCmdLineParser::CCommandLineOptionValue<unsigned short>::parse(const char* argv)
-{
-	if (NULL == argv)
-		return false;
-
-	m_value = (unsigned short)(0xffff & atoi(argv));
-	return true;
-}
-
-template <>
-bool CCmdLineParser::CCommandLineOptionValue<const char*>::parse(const char* argv)
-{
-	if (NULL == argv)
-		return false;
-
-	if (m_value != NULL)
-		free((void*)m_value);
-
-	m_value = _strdup(argv);
-	return true;
-}
-
-
-template <>
-bool CCmdLineParser::CCommandLineOptionValue<std::string>::parse(const char* argv)
-{
-	if (NULL == argv)
-		return false;
-
-	m_value = std::string(argv);
-	return true;
-}
-
-template <>
-bool CCmdLineParser::CCommandLineOptionValue<std::vector<unsigned int>>::parse(const char* argv)
-{
-	if (NULL == argv)
-		return false;
-
-	m_value.push_back((unsigned int)(0xffff & atoi(argv)));
-	return true;
-}
-
-template <>
-bool CCmdLineParser::CCommandLineOptionValue<std::vector<std::string>>::parse(const char* argv)
-{
-	if (NULL == argv)
-		return false;
-
-	m_value.push_back(std::string(argv));
-	return true;
-}
 
 #endif // !defined(AFX_CMDLINEPARSER_H__D7D8768A_3D97_491F_8493_588972A3CF62__INCLUDED_)

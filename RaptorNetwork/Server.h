@@ -247,7 +247,7 @@ bool CServer<ServerSocket_T,ClientSocket_T>::readClients(void)
 {
 	if (m_clients.size() > 0)
 	{
-		vector<ClientSocket_T*>::const_iterator iter = m_clients.begin();
+		RAPTOR_TYPENAME vector<ClientSocket_T*>::const_iterator iter = m_clients.begin();
 		while (iter != m_clients.end())
 		{
 			ClientSocket_T *pClient = *iter++;

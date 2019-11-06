@@ -54,7 +54,7 @@ protected:
 		const iosock_base_t*	iosock;
 		bool					readable;
 		bool					writable;
-	};
+	} iosock_collection_item;
 	vector<iosock_collection_item_t> m_collection;
 
 	static	struct timeval timeout;
@@ -99,9 +99,11 @@ private:
 	static	size_t	readBufferSize;
 	static	size_t	writeBufferSize;
 
-	bool	m_bConnected;
-	HANDLE	m_thread;
-	ULONG	m_threadID;
+	bool		m_bConnected;
+	unsigned long int	m_threadID;
+#ifdef WIN32
+	HANDLE		m_thread;
+#endif
 };
 
 #endif // !defined(AFX_SERVERSOCKET_H__A2920B8D_12E4_11D3_9142_D3B83905F198__INCLUDED_)

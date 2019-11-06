@@ -4,6 +4,17 @@
 	#include "CmdLineParser.h"
 #endif
 
+
+
+
+#if defined(WIN32)
+	#define STRDUP(s)		_strdup(s)
+#else	// Linux environment
+	#include <string.h>
+	#define STRDUP(s)		strdup(s)
+#endif
+
+
 CCmdLineParser::CCmdLineParser(void)
 {
 }
@@ -53,3 +64,84 @@ bool CCmdLineParser::parse(int argc, char *argv[])
 	return true;
 }
 
+
+template <>
+CCmdLineParser::CCommandLineOptionValue<const char*>::CCommandLineOptionValue(const std::string &name,
+																			  const std::string &shortname,
+																			  const char* defaultValue)
+	:CCmdLineParser::CCommandLineOption(name, shortname), m_value(NULL)
+{
+	char *option = (char*)m_value;
+	option = STRDUP(defaultValue);
+}
+
+template <>
+CCmdLineParser::CCommandLineOptionValue<const char*>::~CCommandLineOptionValue()
+{
+	if (m_value != NULL)
+		free((void*)m_value);
+}
+
+template <>
+bool CCmdLineParser::CCommandLineOptionValue<unsigned int>::parse(const char* argv)
+{
+	if (NULL == argv)
+		return false;
+
+	m_value = atoi(argv);
+	return true;
+}
+
+template <>
+bool CCmdLineParser::CCommandLineOptionValue<unsigned short>::parse(const char* argv)
+{
+	if (NULL == argv)
+		return false;
+
+	m_value = (unsigned short)(0xffff & atoi(argv));
+	return true;
+}
+
+template <>
+bool CCmdLineParser::CCommandLineOptionValue<const char*>::parse(const char* argv)
+{
+	if (NULL == argv)
+		return false;
+
+	if (m_value != NULL)
+		free((void*)m_value);
+
+	m_value = STRDUP(argv);
+	return true;
+}
+
+
+template <>
+bool CCmdLineParser::CCommandLineOptionValue<std::string>::parse(const char* argv)
+{
+	if (NULL == argv)
+		return false;
+
+	m_value = std::string(argv);
+	return true;
+}
+
+template <>
+bool CCmdLineParser::CCommandLineOptionValue<std::vector<unsigned int>>::parse(const char* argv)
+{
+	if (NULL == argv)
+		return false;
+
+	m_value.push_back((unsigned int)(0xffff & atoi(argv)));
+	return true;
+}
+
+template <>
+bool CCmdLineParser::CCommandLineOptionValue<std::vector<std::string>>::parse(const char* argv)
+{
+	if (NULL == argv)
+		return false;
+
+	m_value.push_back(std::string(argv));
+	return true;
+}

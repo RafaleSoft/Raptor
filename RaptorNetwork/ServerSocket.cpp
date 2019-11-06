@@ -38,7 +38,13 @@ unsigned long waitConnectionEvent(void* pParam)
 	ExitThread(0);
 }
 */
-unsigned long waitConnectionEvent(void* pParam)
+
+#ifdef WIN32
+	DWORD
+#else
+	void*
+#endif
+waitConnectionEvent(void* pParam)
 {
 	CServerSocket *pIOSock = (CServerSocket*)pParam;
 	//CServer<CServerSocket,CClientSocket> *pServer = (CServer<CServerSocket,CClientSocket>*)pIOSock->getServer();
@@ -62,7 +68,11 @@ unsigned long waitConnectionEvent(void* pParam)
 		}
 	}
 
+#ifdef WIN32
 	ExitThread(0);
+#else	// Linux environment
+	pthread_exit(0);
+#endif
 }
 
 iosock_collection_t::iosock_collection_t()
@@ -119,16 +129,18 @@ bool iosock_collection_t::areReadable(void)
 	FD_ZERO(&readfds);
 
 	for (size_t i=0;i<m_collection.size();i++)
-		//FD_SET(m_collection[i]->m_socket, &readfds);
+#ifdef WIN32
 		readfds.fd_array[i] = m_collection[i].iosock->m_socket;
 	readfds.fd_count = m_collection.size();
+#else // Linux environment
+		FD_SET(m_collection[i].iosock->m_socket, &readfds);
+#endif
 
 	int res = select(m_collection.size(),&readfds,NULL,NULL,&timeout);
 
 	if (res > 0)
 		for (size_t i=0;i<m_collection.size();i++)
 			m_collection[i].readable = (0 != FD_ISSET(m_collection[i].iosock->m_socket,&readfds));
-			//m_collection[i].readable = (readfds.fd_array[i] != 0);
 
 	return (1 <= res);
 }
@@ -139,9 +151,12 @@ bool iosock_collection_t::areWritable(void)
 	FD_ZERO(&writefds);
 
 	for (size_t i=0;i<m_collection.size();i++)
-		//FD_SET(m_collection[i]->m_socket, &readfds);
+#ifdef WIN32
 		writefds.fd_array[i] = m_collection[i].iosock->m_socket;
 	writefds.fd_count = m_collection.size();
+#else // Linux environment
+		FD_SET(m_collection[i].iosock->m_socket, &writefds);
+#endif
 
 	int res = select(m_collection.size(),NULL,&writefds,NULL,&timeout);
 
@@ -154,8 +169,10 @@ bool iosock_collection_t::areWritable(void)
 }
 
 CServerSocket::CServerSocket()
-	:m_thread(NULL),
-	m_threadID(0)
+	:m_threadID(0)
+#ifdef WIN32
+	,m_thread(NULL)
+#endif
 {
 }
 
@@ -163,12 +180,19 @@ void CServerSocket::shutdown()
 {
 	iosock_base_t::shutdown();
 
-	if (0 != m_thread)
+	if (0 != m_threadID)
 	{
+#ifdef WIN32
 		/*DWORD res = */WaitForSingleObject(m_thread,INFINITE);
 		CloseHandle(m_thread);
-		m_thread = 0;
+		m_thread = NULL;
+#else // Linux environment
+		void* ret = NULL;
+		pthread_join(m_threadID, &ret);
+#endif
 	}
+
+	m_threadID = 0;
 }
 
 bool CServerSocket::onDataReceived(const void *,size_t ) 
@@ -207,13 +231,12 @@ bool CServerSocket::connect(const std::string& address,unsigned short port)
 		return false;
 	}
 
-	BOOL b = TRUE;
+	bool b = true;
 	if (0 != ::setsockopt(m_socket,IPPROTO_TCP,TCP_NODELAY,(char*)&b,sizeof(bool)))
 	{
 		Network::userOutput(INetworkLogger::NETWORK_WARNING,
 							Network::networkErrors("Server socket tcp_nodelay failed"));
-		closesocket(m_socket);
-		m_socket = 0;
+		close();
 		return false;
 	}
 
@@ -222,12 +245,11 @@ bool CServerSocket::connect(const std::string& address,unsigned short port)
 	s_in.sin_family			= AF_INET;
 	s_in.sin_port			= htons(m_port);
 
-	if (SOCKET_ERROR == bind(m_socket, (SOCKADDR *)&s_in, sizeof(s_in)))
+	if (SOCKET_ERROR == bind(m_socket, (sockaddr*)&s_in, sizeof(s_in)))
 	{
 		Network::userOutput(INetworkLogger::NETWORK_ERROR,
 							Network::networkErrors("Server socket bind failed"));
-		closesocket(m_socket);
-		m_socket = 0;
+		close();
 		return false;
 	}
 
@@ -237,7 +259,11 @@ bool CServerSocket::connect(const std::string& address,unsigned short port)
 	if (!reportError)
 	{
 		size_t tmpRead = 0;
-		int	tmpSize = sizeof(size_t);
+#ifdef WIN32
+		int tmpSize = sizeof(size_t);
+#else // Linux environment
+		unsigned int tmpSize = sizeof(size_t);
+#endif
 		if (0 != getsockopt(m_socket,SOL_SOCKET,SO_RCVBUF,(char *)&tmpRead,&tmpSize))
 			Network::userOutput(INetworkLogger::NETWORK_WARNING,
 								Network::networkErrors("Server socket failed to update read buffer size"));
@@ -257,7 +283,11 @@ bool CServerSocket::connect(const std::string& address,unsigned short port)
 	if (!reportError)
 	{
 		size_t tmpWrite = 0;
-		int	tmpSize = sizeof(size_t);
+#ifdef WIN32
+		int tmpSize = sizeof(size_t);
+#else // Linux environment
+		unsigned int tmpSize = sizeof(size_t);
+#endif
 		if (0 != getsockopt(m_socket,SOL_SOCKET,SO_SNDBUF,(char *)&tmpWrite,&tmpSize))
 			Network::userOutput(INetworkLogger::NETWORK_WARNING,
 								Network::networkErrors("Server socket failed to update write buffer size"));
@@ -282,14 +312,25 @@ bool CServerSocket::connect(const std::string& address,unsigned short port)
 	clearCollection();
 	addToCollection(this);
 
+#ifdef WIN32
 	m_thread = CreateThread(NULL, 
 							0, 
 							(LPTHREAD_START_ROUTINE) waitConnectionEvent,
 							this,
 							0,
 							&m_threadID);
+	if (0 == m_thread)
+	{
 
-	return (NULL != m_thread);
+#else // Linux environment
+	if (0 != pthread_create(&m_threadID, NULL, waitConnectionEvent, this))
+	{
+#endif
+		Network::userOutput(INetworkLogger::NETWORK_WARNING,
+							"Failed to start listening thread");
+	}
+
+	return (0 != m_threadID);
 }
 
 

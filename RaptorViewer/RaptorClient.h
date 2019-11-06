@@ -41,20 +41,26 @@ public:
 	//!	Rendering
 	bool run(unsigned int width, unsigned int height);
 
+	//! Status
+	bool isRunning(void) const { return m_bIsRunning; };
+
+	//!	Returns the current working image (intialised at start)
+	CServerImageRenderer& getImage(void) const;
+
+	//!	Perform a query to the server and refresh the current image
+	void queryServerImage(void);
+
 
 private:
 	//!	Implements CRenderentrypoint
 	virtual void glRender(void);
-	void queryServerImage(void);
-
-	friend unsigned long processClientsThread(void* pParam);
 
 	bool					m_bIsRunning;
 	CClient<CClientSocket>	*m_Client;
 	CRaptorDisplay			*m_pDisplay;
 	RAPTOR_HANDLE			m_window;
 	CServerImageRenderer	*m_pImage;
-	HANDLE					m_hThread;
+	void*					m_hThread;
 };
 
 

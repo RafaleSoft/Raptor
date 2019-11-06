@@ -67,17 +67,21 @@ void CAmbientOcclusionDisplay::Init()
 	CGenericDisplay::Init();
 	
 	CShader *AO_shader = new CShader("AO_SHADER");
-	CVertexShader *vp = AO_shader->glGetOpenGLShader()->glGetVertexShader("AO_VP");
-	CFragmentShader *fp = AO_shader->glGetOpenGLShader()->glGetFragmentShader("AO_FP");
-
-	CProgramParameters ao_params;
-	ao_params.addParameter("AOMap", CTextureUnitSetup::IMAGE_UNIT_2);
-	vp->setProgramParameters(ao_params);
+	COpenGLShaderStage *stage = AO_shader->glGetOpenGLShader();
+	CVertexShader *vp = stage->glGetVertexShader("AO_VP");
+	CFragmentShader *fp = stage->glGetFragmentShader("AO_FP");
 
 	bool res = vp->glLoadProgram(AO_vp_src);
-	res &= fp->glLoadProgram(AO_fp_src);
-	res &= AO_shader->glGetOpenGLShader()->glCompileShader();
+	res = res && fp->glLoadProgram(AO_fp_src);
+	res = res && stage->glCompileShader();
+	if (res)
+	{
+		CProgramParameters ao_params;
+		ao_params.addParameter("AOMap", CTextureUnitSetup::IMAGE_UNIT_2);
+		stage->setProgramParameters(ao_params);
+	}
 	
+
 	m_pLight = new CLight("AOLight");
     m_pLight->setAmbient(1.0f,1.0f,1.0f,1.0f);
     m_pLight->setDiffuse(1.0f,1.0f,1.0f,1.0f);

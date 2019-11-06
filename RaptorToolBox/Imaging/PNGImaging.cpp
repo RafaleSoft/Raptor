@@ -194,15 +194,15 @@ bool CPNGImaging::storeImageFile(const std::string& fname, CImage* const I) cons
 	wpng_info.height = I->getHeight();
 	wpng_info.title = (char*)fname.c_str();	// This shouldn't be, but png.h declares a non-const char* 
 	wpng_info.have_text |= TEXT_TITLE;
-	wpng_info.author = "Fabrice Ferrand";
+	wpng_info.author = (char*)"Fabrice Ferrand";
 	wpng_info.have_text |= TEXT_AUTHOR;
-	wpng_info.desc = "PNG image created with Raptor ToolBox png extension.";
+	wpng_info.desc = (char*)"PNG image created with Raptor ToolBox png extension.";
 	wpng_info.have_text |= TEXT_DESC;
-	wpng_info.copyright = "Rafale Soft Inc. (c)";
+	wpng_info.copyright = (char*)"Rafale Soft Inc. (c)";
 	wpng_info.have_text |= TEXT_COPY;
-	wpng_info.email = "fabfer@wanadoo.fr";
+	wpng_info.email = (char*)"fabfer@wanadoo.fr";
 	wpng_info.have_text |= TEXT_EMAIL;
-	wpng_info.url = "http://github.com/RafaleSoft";
+	wpng_info.url = (char*)"http://github.com/RafaleSoft";
 	wpng_info.have_text |= TEXT_URL;
 	wpng_info.outfile = fopen(fname.c_str(), "wb");
 	if (GL_RGB == I->getBufferFormat())

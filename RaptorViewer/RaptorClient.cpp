@@ -45,17 +45,32 @@
 RAPTOR_NAMESPACE
 
 
-unsigned long processClientsThread(void* pParam)
+#ifdef WIN32
+	DWORD processClientsThread(void* pParam)
+#else
+	void* processClientsThread(void* pParam)
+#endif
 {
 	CRaptorClient *pRaptorClient = (CRaptorClient*)pParam;
 
-	while (pRaptorClient->m_bIsRunning)
+	while (pRaptorClient->isRunning())
 	{
 		pRaptorClient->queryServerImage();
 	}
-	pRaptorClient->m_pImage->setImageData(NULL);
 
+	pRaptorClient->getImage().setImageData(NULL);
+
+#ifdef WIN32
 	ExitThread(0);
+#else	// Linux environment
+	pthread_exit(0);
+#endif
+}
+
+CServerImageRenderer& CRaptorClient::getImage(void) const
+{
+	// Can never bu NULL after a call to start.
+	return *m_pImage;
 }
 
 CRaptorClient::CRaptorClient(void)
@@ -119,6 +134,9 @@ void CRaptorClient::glRender()
 
 bool CRaptorClient::run(unsigned int width, unsigned int height)
 {
+	if ((NULL == m_Client) || (NULL == m_pImage))
+		return false;
+
 	bool res = false;
 
     CRaptorDisplayConfig glcs;
@@ -236,14 +254,19 @@ bool CRaptorClient::start(const CCmdLineParser &cmdLine)
 
 	m_pImage = new CServerImageRenderer(cmd.width,cmd.height);
 
-	ULONG ui_threadID = 0;
-	m_hThread = CreateThread(	NULL,
-								0, 
-								(LPTHREAD_START_ROUTINE) processClientsThread,
-								this,
-								0,
-								&ui_threadID);
-
+	unsigned long int ui_threadID = 0;
+#ifdef WIN32
+	m_hThread = CreateThread(NULL,
+							 0,
+							 (LPTHREAD_START_ROUTINE)processClientsThread,
+							 this,
+							 0,
+							 &ui_threadID);
+#else // Linux environment
+	pthread_create(&ui_threadID, NULL, processClientsThread, this);
+	m_hThread = (void*)ui_threadID;
+#endif
+	
 	return (NULL != m_hThread);
 }
 
@@ -256,8 +279,13 @@ bool CRaptorClient::stop(void)
 		if (0 != m_hThread)
 		{
 			m_bIsRunning = false;
-			WaitForSingleObject(m_hThread,INFINITE);
-			CloseHandle(m_hThread);
+#ifdef WIN32
+			WaitForSingleObject((HANDLE)m_hThread, INFINITE);
+			CloseHandle((HANDLE)m_hThread);
+#else // Linux environment
+			void *ret = NULL;
+			pthread_join((pthread_t)m_hThread, &ret);
+#endif
 			m_hThread = 0;
 		}
 		

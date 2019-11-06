@@ -24,21 +24,6 @@
 #if !defined(AFX_SHADER_H__4D405EC2_7151_465D_86B6_1CA99B906777__INCLUDED_)
 	#include "GLHierarchy/Shader.h"
 #endif
-#if !defined(AFX_VERTEXSHADER_H__204F7213_B40B_4B6A_9BCA_828409871B68__INCLUDED_)
-	#include "GLHierarchy/VertexShader.h"
-#endif
-#if !defined(AFX_VERTEXPROGRAM_H__F2D3BBC6_87A1_4695_B667_2B8C3C4CF022__INCLUDED_)
-	#include "GLHierarchy/VertexProgram.h"
-#endif
-#if !defined(AFX_FRAGMENTSHADER_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
-	#include "GLHierarchy/FragmentShader.h"
-#endif
-#if !defined(AFX_FRAGMENTPROGRAM_H__DD0AD51D_3BFF_4C65_8099_BA7696D7BDDF__INCLUDED_)
-	#include "GLHierarchy/FragmentProgram.h"
-#endif
-#if !defined(AFX_GEOMETRYSHADER_H__1981EA98_8F3C_4881_9429_A9ACA5B285D3__INCLUDED_)
-	#include "GLHierarchy/GeometryShader.h"
-#endif
 #if !defined(AFX_OPENGLPROGRAMSTAGE_H__0BCE3B42_6E10_4F50_BB27_1993345ADBCF__INCLUDED_)
 	#include "GLHierarchy/OpenGLProgramStage.h"
 #endif
@@ -57,9 +42,7 @@ public:
 		:CShader("SHADER_WRAPPER"),
 		m_pModifier(pModifier),
 		m_pShader(NULL),
-		m_bUpdateVertexParameters(false),
-		m_bUpdateFragmentParameters(false),
-		m_bUpdateGeometryParameters(false)
+		m_bUpdateParameters(false)
 	{
 		if (shader != NULL)
 		{
@@ -81,12 +64,9 @@ public:
 		m_pShader = NULL;
 	}
 
-	bool	m_bUpdateVertexParameters;
-	bool	m_bUpdateFragmentParameters;
-	bool	m_bUpdateGeometryParameters;
-	CProgramParameters v;
-	CProgramParameters f;
-	CProgramParameters g;
+	bool				m_bUpdateParameters;
+	CProgramParameters	params;
+
 	CShader	*m_pShader;
 
 private:
@@ -95,30 +75,20 @@ private:
 
 void CShaderWrapper::glRender()
 {
-	if (m_bUpdateVertexParameters)
+	if (m_bUpdateParameters)
 	{
 		if (m_pShader->hasOpenGLShader())
 		{
 			COpenGLShaderStage* stage = m_pShader->glGetOpenGLShader();
-			if (stage->hasVertexShader())
-				stage->glGetVertexShader()->setProgramParameters(v);
-			if (stage->hasFragmentShader())
-				stage->glGetFragmentShader()->setProgramParameters(f);
-			if (stage->hasGeometryShader())
-				stage->glGetGeometryShader()->setProgramParameters(g);
+			stage->setProgramParameters(params);
 		}
 		else if (m_pShader->hasOpenGLProgram())
 		{
 			COpenGLProgramStage* stage = m_pShader->glGetOpenGLProgram();
-			if (stage->hasVertexProgram())
-				stage->glGetVertexProgram()->setProgramParameters(v);
-			if (stage->hasFragmentProgram())
-				stage->glGetFragmentProgram()->setProgramParameters(f);
+			stage->setProgramParameters(params);
 		}
 
-		m_bUpdateVertexParameters = false;
-		m_bUpdateFragmentParameters = false;
-		m_bUpdateGeometryParameters = false;
+		m_bUpdateParameters = false;
 	}
 
 	m_pShader->glRender();
@@ -170,43 +140,19 @@ CShader *CShaderModifier::getObject() const
 void RAPTOR_FASTCALL CShaderModifier::deltaTime(float dt)
 {
 	if (m_pWrapper != NULL)
-	{
-		m_pWrapper->m_bUpdateVertexParameters = true;
-		m_pWrapper->m_bUpdateFragmentParameters = true;
-		m_pWrapper->m_bUpdateGeometryParameters = true;
-	}
+		m_pWrapper->m_bUpdateParameters = true;
 
 	CModifier::deltaTime(dt);
 
 	if (m_pWrapper != NULL)
-	{
-		updateVertexParameters(dt, m_pWrapper->v);
-		updateFragmentParameters(dt, m_pWrapper->f);
-		updateGeometryParameters(dt, m_pWrapper->g);
-	}
+		updateShaderParameters(dt, m_pWrapper->params);
 }
 
-void RAPTOR_FASTCALL CShaderModifier::updateVertexParameters(float dt, CProgramParameters &v)
+void RAPTOR_FASTCALL CShaderModifier::updateShaderParameters(float dt, CProgramParameters &v)
 {
 	if (m_pWrapper != NULL)
 	{
-		m_pWrapper->m_bUpdateVertexParameters = false;
-	}
-}
-
-void RAPTOR_FASTCALL CShaderModifier::updateFragmentParameters(float dt, CProgramParameters &v)
-{
-	if (m_pWrapper != NULL)
-	{
-		m_pWrapper->m_bUpdateFragmentParameters = false;
-	}
-}
-
-void RAPTOR_FASTCALL CShaderModifier::updateGeometryParameters(float dt, CProgramParameters &v)
-{
-	if (m_pWrapper != NULL)
-	{
-		m_pWrapper->m_bUpdateGeometryParameters = false;
+		m_pWrapper->m_bUpdateParameters = false;
 	}
 }
 
