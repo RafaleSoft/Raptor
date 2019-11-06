@@ -34,8 +34,8 @@ using namespace std;
 #include "..\Messages.h"
 
 
-namespace RaysServer {
-
+namespace RaysServer
+{
 	class CDeamonManager
 	{
 	public:

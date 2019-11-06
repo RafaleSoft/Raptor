@@ -84,9 +84,19 @@ all: \
 	raptordatapackager \
 	raptordata \
 	raptorcore \
-	raptortoolbox
+	raptornetwork \
+	raptortoolbox \
+	raptorserver \
+	raptorviewer
+
+
+raptorviewer: builder raptorcore raptordata raptortoolbox raptornetwork raptorserver $(REDIST)/Bin/RaptorViewer
+	
+raptorserver: builder raptorcore raptordata raptortoolbox raptornetwork $(REDIST)/Bin/RaptorServer
 
 raptortoolbox: builder raptorcore raptordata $(REDIST)/Lib/libRaptorToolBox.a $(REDIST)/Bin/libRaptorToolBox.so.$(RAPTOR_VERSION)
+
+raptornetwork: builder $(REDIST)/Lib/libRaptorNetwork.a $(REDIST)/Bin/libRaptorNetwork.so.$(RAPTOR_VERSION)
 
 addons: zlib jpeglib tifflib pnglib freetype xercesc half IlmImf
 
@@ -140,10 +150,25 @@ configure:	Builder/Configure/Redist.sh
 #
 # Projects building rules
 #
+$(REDIST)/Bin/RaptorViewer:
+	@echo "Building RaptorViewer project ..."
+	make -C Build/Linux -f Makefile.raptorviewer all
+	@echo "RaptorViewer project done."
+
+$(REDIST)/Bin/RaptorServer:
+	@echo "Building RaptorServer project ..."
+	make -C Build/Linux -f Makefile.raptorserver all
+	@echo "RaptorServer project done."
+
 $(REDIST)/Lib/libRaptorToolBox.a $(REDIST)/Bin/libRaptorToolBox.so.$(RAPTOR_VERSION):
 	@echo "Building RaptorToolBox project ..."
 	make -C Build/Linux -f Makefile.raptortoolbox all
 	@echo "RaptorToolBox project done."
+
+$(REDIST)/Lib/libRaptorNetwork.a $(REDIST)/Bin/libRaptorNetwork.so.$(RAPTOR_VERSION):
+	@echo "Building RaptorNetwork project ..."
+	make -C Build/Linux -f Makefile.raptornetwork all
+	@echo "RaptorNetwork project done."
 
 $(REDIST)/Lib/libcerces-c.a $(REDIST)/Bin/libxerces-c.so.$(XERCES_VERSION):
 	@echo "Building xerces-c project ..."
@@ -266,7 +291,10 @@ $(REDIST)/Bin/dwaLookups:	$(REDIST)/Bin/libHalf.so.$(OPENEXRLIB_VERSION) $(REDIS
 #
 clean:
 	@echo "Cleaning intermediate build files..."
+	make -C Build/Linux -f Makefile.raptorviewer clean
+	make -C Build/Linux -f Makefile.raptorserver clean
 	make -C Build/Linux -f Makefile.raptortoolbox clean
+	make -C Build/Linux -f Makefile.raptornetwork clean
 	make -C Build/Linux -f Makefile.tifflib clean
 	make -C Build/Linux -f Makefile.jpeglib clean
 	make -C Build/Linux -f Makefile.pnglib clean

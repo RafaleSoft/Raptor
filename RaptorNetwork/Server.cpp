@@ -95,7 +95,7 @@ bool iosock_base_t::isClosing(void) const
 	return (nb_read == 0);	// client gracefully closed
 }
 
-bool iosock_base_t::safeWrite(const void *data,unsigned int size)
+bool iosock_base_t::safeWrite(const void *data, size_t size)
 {
 	unsigned long crc32 = 0;
 	if (m_useCRC)
@@ -116,7 +116,7 @@ bool iosock_base_t::safeWrite(const void *data,unsigned int size)
 		return false;
 }
 
-bool iosock_base_t::write(const void *data,unsigned int size)
+bool iosock_base_t::write(const void *data, size_t size)
 {
 	unsigned int nb_sent = 0;
 	while (nb_sent < size)
@@ -174,7 +174,7 @@ bool iosock_base_t::safeRead(void *&data,size_t &size)
 		return false;
 }
 
-bool iosock_base_t::read(void *data,unsigned int size)
+bool iosock_base_t::read(void *data,size_t size)
 {
 	unsigned int nb_read = 0;
 	while (nb_read < size)
@@ -216,7 +216,7 @@ void iosock_base_t::shutdown()
 
 void iosock_base_t::close()
 {
-	::closesocket(m_socket);
+	CLOSESOCKET(m_socket);
 	m_socket = 0;
 }
 
@@ -230,11 +230,11 @@ public:
 	{};
 
 	//	Server datas
-	bool					m_bWriteClients;
-	vector<HANDLE>			h_WriteClients;
-	string					hostname;
-	vector<string>			m_aliases;
-	vector<unsigned int>	m_addrs;
+	bool						m_bWriteClients;
+	std::vector<void*>			h_WriteClients;
+	std::string					hostname;
+	std::vector<std::string>	m_aliases;
+	std::vector<unsigned int>	m_addrs;
 };
 
 server_base_t::~server_base_t()
@@ -316,12 +316,17 @@ bool server_base_t::stopServer(void)
 	{
 		for (size_t i=0;i<m_pAttrs->h_WriteClients.size();i++)
 		{
-			HANDLE h = m_pAttrs->h_WriteClients[i];
+			void* h = m_pAttrs->h_WriteClients[i];
 			if (h != 0)
 			{
-				/*DWORD res = */WaitForSingleObject(h,INFINITE);
-				CloseHandle(h);
+#ifdef WIN32
+				/*DWORD res = */WaitForSingleObject((HANDLE)h,INFINITE);
+				CloseHandle((HANDLE)h);
 				m_pAttrs->h_WriteClients[i] = 0;
+#else // Linux environment
+				void *ret = NULL;
+				pthread_join((pthread_t)h,&ret);
+#endif
 			}
 		}
 	}
@@ -357,7 +362,12 @@ bool server_base_t::readClient(iosock_base_t &client)
 		return true;
 }
 
-unsigned long writeClientsThread(void* pParam)
+#ifdef WIN32
+	DWORD writeClientsThread(void* pParam)
+#else
+	void* writeClientsThread(void* pParam)
+#endif
+
 {
 	struct threadData_t
 	{
@@ -386,8 +396,11 @@ unsigned long writeClientsThread(void* pParam)
 	}
 	delete threadData;
 
+#ifdef WIN32
 	ExitThread(0);
-//	return 0;
+#else	// Linux environment
+	pthread_exit(0);
+#endif
 }
 
 bool server_base_t::startClientService(const iosock_base_t &client)
@@ -402,7 +415,8 @@ bool server_base_t::startClientService(const iosock_base_t &client)
 	threadData->attrs = m_pAttrs;
 	threadData->client = &client;
 
-	ULONG ui_threadID = 0;
+	unsigned long int ui_threadID = 0;
+#ifdef WIN32
 	HANDLE h_write = CreateThread(NULL,
 								  0, 
 								  (LPTHREAD_START_ROUTINE) writeClientsThread,
@@ -412,8 +426,13 @@ bool server_base_t::startClientService(const iosock_base_t &client)
 
 	if (0 != h_write)
 		m_pAttrs->h_WriteClients.push_back(h_write);
+#else // Linux environment
+	int res = pthread_create(&ui_threadID, NULL, writeClientsThread, threadData);
+	if (0 == res)
+		m_pAttrs->h_WriteClients.push_back((void*)ui_threadID);
+#endif
 
-	return (0 != h_write);
+	return (0 != ui_threadID);
 }
 
 bool server_base_t::startServer(const std::string& /*address*/,unsigned short)

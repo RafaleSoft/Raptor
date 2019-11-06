@@ -16,11 +16,6 @@
 	#include "NetworkLogger.h"
 #endif
 
-#include <iostream>
-#include <strstream>
-using std::string;
-using std::ostrstream;
-
 
 class RAPTORNETWORK_API Network
 {
@@ -54,7 +49,7 @@ public:
 	//!
     static unsigned int sockNameToAddr(const std::string& address);
 	//!	Retrieve the WinSock2 sublayer error.
-	static string networkErrors(const std::string& extmsg);
+	static std::string networkErrors(const std::string& extmsg);
 	//!	Computes a CRC on input buffer.
 	static unsigned long getCRC(unsigned char *buffer,size_t size);
 	//!	Initialise the CRC generator.

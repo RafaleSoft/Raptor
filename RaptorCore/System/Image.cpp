@@ -58,6 +58,51 @@ CImage::~CImage()
 	releasePixels();
 }
 
+CImage* CImage::createSubImage(size_t x, size_t y, size_t w, size_t h)
+{
+	if ((x > getWidth()) || (y > getHeight()))
+		return NULL;
+
+	if (x + w > getWidth())
+		return NULL;
+	if (y + h > getHeight())
+		return NULL;
+
+	if (NULL == pixels)
+		return NULL;
+
+	CImage *res = new CImage();
+	if (res->allocatePixels(w, h, m_pixelType))
+	{
+		size_t y_end = y + h;
+		size_t y_start = y;
+		size_t x_start = x;
+		size_t x_end = x + w;
+
+		uint8_t *pixels2 = res->getPixels();
+		if (NULL != pixels2)
+		{
+			uint8_t *src = getPixels();
+			for (size_t v = y_start, j = 0; v < y_end; v++)
+				for (size_t o = (w * v + x_start) * 4; o < (w * v + x_end) * 4; o++, j++)
+					pixels2[j] = src[o];
+		}
+		else
+		{
+			float *pixels3 = res->getFloatPixels();
+			if (NULL != pixels3)
+			{
+				float *src = getFloatPixels();
+				for (size_t v = y_start, j = 0; v < y_end; v++)
+					for (size_t o = (w * v + x_start) * 4; o < (w * v + x_end) * 4; o++, j++)
+						pixels3[j] = src[o];
+			}
+		}
+	}
+		
+	return res;
+}
+
 uint8_t* CImage::getPixels(uint32_t layer) const
 {
 	uint8_t* ret = NULL;

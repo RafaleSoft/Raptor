@@ -304,7 +304,7 @@ void CSkinningDisplay::Display()
 	C3DEngine::Generic_to_MATRIX(skinningMatrix.p, gm);
 	CProgramParameters::CParameterBase &matrix = params[0];
 	matrix.copy(skinningMatrix);
-	skinning->glGetOpenGLShader()->glGetVertexShader("Skinning_VP")->setProgramParameters(params);
+	skinning->glGetOpenGLShader()->setProgramParameters(params);
 
 	glColor4f(1.0f,1.0f,1.0f,1.0f);
 	layer->manageSprite(t2,75,75,dt*360);

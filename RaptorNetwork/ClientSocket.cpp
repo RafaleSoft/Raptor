@@ -34,13 +34,12 @@ bool CClientSocket::connect(const std::string& address,unsigned short port)
 		return false;
 	}
 
-	BOOL b = TRUE;
+	bool b = true;
 	if (0 != ::setsockopt(m_socket,IPPROTO_TCP,TCP_NODELAY,(char*)&b,sizeof(bool)))
 	{
 		Network::userOutput(INetworkLogger::NETWORK_WARNING,
 							Network::networkErrors("Client socket tcp_nodelay failed"));
-		closesocket(m_socket);
-		m_socket = 0;
+		close();
 		return false;
 	}
 
@@ -49,7 +48,11 @@ bool CClientSocket::connect(const std::string& address,unsigned short port)
 	bool reportError = (0 != setsockopt(m_socket,SOL_SOCKET,SO_RCVBUF,(char *)&readBufferSize,sizeof(size_t)));
 	if (!reportError)
 	{
-		int	tmpSize = sizeof(size_t);
+#ifdef WIN32
+		int tmpSize = sizeof(int);
+#else
+		unsigned int tmpSize = sizeof(unsigned int);
+#endif
 		reportError = (0 != getsockopt(m_socket,SOL_SOCKET,SO_RCVBUF,(char *)&tmpRead,&tmpSize));
 	}
 
@@ -57,7 +60,11 @@ bool CClientSocket::connect(const std::string& address,unsigned short port)
 	reportError = reportError && (0 != setsockopt(m_socket,SOL_SOCKET,SO_SNDBUF,(char *)&writeBufferSize,sizeof(size_t)));
 	if (!reportError)
 	{
-		int	tmpSize = sizeof(size_t);
+#ifdef WIN32
+		int tmpSize = sizeof(int);
+#else
+		unsigned int tmpSize = sizeof(unsigned int);
+#endif
 		if (0 != getsockopt(m_socket,SOL_SOCKET,SO_SNDBUF,(char *)&tmpWrite,&tmpSize))
 			Network::userOutput(INetworkLogger::NETWORK_WARNING,
 								Network::networkErrors("Client socket failed to update write buffer size"));
@@ -78,20 +85,18 @@ bool CClientSocket::connect(const std::string& address,unsigned short port)
 			s_in.sin_addr.s_addr = *(u_long*)remoteHost->h_addr_list[0];
 		else
 		{
-			closesocket(m_socket);
-			m_socket = 0;
+			close();
 			return false;
 		}
 	}
 	else
 		s_in.sin_addr.s_addr	= inet_addr(address.c_str());
 
-	if (SOCKET_ERROR == ::connect(m_socket,(SOCKADDR*) &s_in,sizeof(s_in)))
+	if (SOCKET_ERROR == ::connect(m_socket,(sockaddr*) &s_in,sizeof(s_in)))
 	{
 		Network::userOutput(INetworkLogger::NETWORK_ERROR,
 							Network::networkErrors("Client socket connect failed"));
-		closesocket(m_socket);
-		m_socket = 0;
+		close();
 		return false;
 	}
 
@@ -100,15 +105,19 @@ bool CClientSocket::connect(const std::string& address,unsigned short port)
 
 bool CClientSocket::connect(const iosock_base_t& rsh)
 {
-	SOCKADDR_IN csin;
+	sockaddr_in csin;
+#ifdef WIN32
 	int sinsize = sizeof(csin);
+#else	// Linux environment
+	unsigned int sinsize = sizeof(csin);
+#endif
 
 	CClientSocket cs(rsh);
 
-	if((m_socket = ::accept(cs.m_socket, (SOCKADDR *)&csin, &sinsize)) != INVALID_SOCKET)
+	if ((m_socket = ::accept(cs.m_socket, (sockaddr*)&csin, &sinsize)) != INVALID_SOCKET)
 	{
 		m_port = ntohs(csin.sin_port);
-		m_ip = csin.sin_addr.S_un.S_addr;
+		m_ip = csin.sin_addr.s_addr;
 		m_pServer = cs.m_pServer;
 		return true;
 	}

@@ -642,7 +642,8 @@ void CRaptorRenderBufferDisplay::glResize(unsigned int sx,unsigned int sy,unsign
     CATCH_GL_ERROR
 }
 
-bool CRaptorRenderBufferDisplay::glGrab(unsigned int x, unsigned int y, unsigned int width, unsigned int height, unsigned char* &data,unsigned int& size) const
+bool CRaptorRenderBufferDisplay::glGrab(uint32_t x, uint32_t y, uint32_t width, uint32_t height,
+										uint8_t* &data, size_t& size) const
 {
 	if (m_framebuffer == 0)
 		return false;
@@ -677,8 +678,8 @@ bool CRaptorRenderBufferDisplay::glGrab(unsigned int x, unsigned int y, unsigned
 #endif
 }
 
-bool CRaptorRenderBufferDisplay::glBlit(unsigned int xSrc, unsigned int ySrc, unsigned int widthSrc, unsigned int heightSrc,
-										unsigned int xDst, unsigned int yDst, unsigned int widthDst, unsigned int heightDst,
+bool CRaptorRenderBufferDisplay::glBlit(uint32_t xSrc, uint32_t ySrc, uint32_t widthSrc, uint32_t heightSrc,
+										uint32_t xDst, uint32_t yDst, uint32_t widthDst, uint32_t heightDst,
 										CRaptorDisplay *pDst) const
 {
 	bool res = false;

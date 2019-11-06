@@ -30,12 +30,6 @@
 #if !defined(AFX_TEXTUREUNITSETUP_H__4A6ADC72_02E5_4F2A_931E_A736B6D6E0F0__INCLUDED_)
 	#include "GLHierarchy/TextureUnitSetup.h"
 #endif
-#if !defined(AFX_VERTEXSHADER_H__204F7213_B40B_4B6A_9BCA_828409871B68__INCLUDED_)
-	#include "GLHierarchy/VertexShader.h"
-#endif
-#if !defined(AFX_FRAGMENTSHADER_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
-    #include "GLHierarchy/FragmentShader.h"
-#endif
 #if !defined(AFX_OPENGLSHADERSTAGE_H__56B00FE3_E508_4FD6_9363_90E6E67446D9__INCLUDED_)
 	#include "GLHierarchy/OpenGLShaderStage.h"
 #endif
@@ -58,21 +52,17 @@ void CAOComputeShader::glInit(void)
 	COpenGLShaderStage *stage = glGetOpenGLShader();
 
 	CVertexShader *vs = stage->glGetVertexShader("AMBIENT_OCCLUSION_VTX_PROGRAM");
-	
-	CProgramParameters v_params;
-	GL_MATRIX Id;
-	IDENT_MATRIX(Id);
-	v_params.addParameter("vertexMat",Id);
-	v_params.addParameter("normalMat",Id);
-	vs->setProgramParameters(v_params);
-
 	CFragmentShader *fs = stage->glGetFragmentShader("AMBIENT_OCCLUSION_TEX_PROGRAM");
 
-	CProgramParameters f_params;
-	f_params.addParameter("posMap",CTextureUnitSetup::IMAGE_UNIT_0);
-	f_params.addParameter("normalMap",CTextureUnitSetup::IMAGE_UNIT_1);
-	f_params.addParameter("numRows",GL_COORD_VERTEX());
-	fs->setProgramParameters(f_params);
+	CProgramParameters ao_params;
+	GL_MATRIX Id;
+	IDENT_MATRIX(Id);
+	ao_params.addParameter("vertexMat",Id);
+	ao_params.addParameter("normalMat",Id);
+	ao_params.addParameter("posMap",CTextureUnitSetup::IMAGE_UNIT_0);
+	ao_params.addParameter("normalMap",CTextureUnitSetup::IMAGE_UNIT_1);
+	ao_params.addParameter("numRows",GL_COORD_VERTEX());
+	stage->setProgramParameters(ao_params);
 
 	stage->glCompileShader();
 }

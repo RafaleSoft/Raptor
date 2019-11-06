@@ -20,11 +20,25 @@
 #if !defined(AFX_RAPTORNETWORK_H__D5297BB6_098A_4082_96AA_36A78E76F18C__INCLUDED_)
 #define AFX_RAPTORNETWORK_H__D5297BB6_098A_4082_96AA_36A78E76F18C__INCLUDED_
 
-
-#ifdef EXPORT_RAPTOR_NETWORK
-	#define RAPTORNETWORK_API __declspec(dllexport)
-#else
-	#define RAPTORNETWORK_API __declspec(dllimport)
+#if defined(_WIN32)
+	#ifdef EXPORT_RAPTOR_NETWORK
+		#define RAPTORNETWORK_API __declspec(dllexport)
+	#else
+		#define RAPTORNETWORK_API __declspec(dllimport)
+	#endif
+	#if _MSC_VER > 1200     // 1200 is Visual C++ 6.0
+		#define RAPTOR_TYPENAME typename
+	#else
+		#define RAPTOR_TYPENAME
+	#endif
+	#define CLOSESOCKET ::closesocket
+#else	// Linux environment
+	#define RAPTORNETWORK_API
+	#define RAPTOR_TYPENAME typename
+	#define INVALID_SOCKET -1
+	#define SOCKET_ERROR -1
+	#define SD_BOTH SHUT_RDWR
+	#define CLOSESOCKET ::close
 #endif
 
 

@@ -71,16 +71,8 @@ protected:
 
 private:
 	//!	Handler to be overloaded to declare an update
-	//!	of the managed vertex program/shader
-	virtual void RAPTOR_FASTCALL updateVertexParameters(float dt, CProgramParameters &v);
-
-	//!	Handler to be overloaded to declare an update
-	//!	of the managed fragment program/shader
-	virtual void RAPTOR_FASTCALL updateFragmentParameters(float dt, CProgramParameters &v);
-
-	//!	Handler to be overloaded to declare an update
-	//!	of the managed geometry program/shader
-	virtual void RAPTOR_FASTCALL updateGeometryParameters(float dt, CProgramParameters &v);
+	//!	of the managed program/shader
+	virtual void RAPTOR_FASTCALL updateShaderParameters(float dt, CProgramParameters &v);
 
 	//!	Compute physics resultant after dt time increment
 	//!	This method should not be called directly.

@@ -546,12 +546,12 @@ public:
 		params.addParameter("",LPOS);
 
 #ifdef VERTEX_SHADER
-		CVertexProgram *vs = m_pShader->glGetVertexShader();
-		vs->setProgramParameters(params);
+		COpenGLProgramStage *stage = m_pShader->glGetOpenGLProgram();
 #else
-		CVertexShader *vp = m_pShader->glGetOpenGLShader()->glGetVertexShader();
-		vp->setProgramParameters(params);
+		COpenGLShaderStage *stage = m_pShader->glGetOpenGLShader();
 #endif
+		stage->setProgramParameters(params);
+
 		params2.addParameter("",GL_COORD_VERTEX(0.0f,0.6f,0.8f,0.8f));
 		params2.addParameter("",GL_COORD_VERTEX(8.0f,0.0f,0.0f,1.0f));
 
@@ -792,10 +792,9 @@ void CVertexShadersDisplay::Init()
 #ifdef VERTEX_SHADER
 	CVertexProgram *vs = pShader->glGetOpenGLProgram()->glGetVertexProgram();
 	vs->glLoadProgram(fullWaterShader);
-	vs->glStop();
 	CFragmentShader *fs = pShader->glGetOpenGLProgram()->glGetFragmentProgram();
 	fs->glLoadProgram(waterFragments);
-	fs->glStop();
+	pShader->glGetOpenGLProgram()->glStop();
 #else
 	CVertexShader *vp = pShader->glGetOpenGLShader()->glGetVertexShader();
 	vp->glLoadProgram(waterVertexProgram);

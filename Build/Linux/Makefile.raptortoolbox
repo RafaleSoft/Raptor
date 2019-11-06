@@ -27,12 +27,15 @@ INCDIRS = -I$(SRCDIR) -I$(RAPTOR_ROOT)/Redist/Include -I$(VULKAN_INCLUDE_PATH) -
 CCCFLAGS += -DGL_MESA_shader_object  -DGL_MESA_shader_debug
 CCCFLAGS += -DMAX_PATH=PATH_MAX -DGLX_EXTENSIONS
 
+LDFLAGS = -L$(RAPTOR_ROOT)/Redist/Lib -lraptorcore -Bdynamic -shared -lstdc++
+
 SO = $(OUTPUT)/libRaptorToolBox.so.$(RAPTOR_VERSION)
 LIB = $(OUTPUT)/libRaptorToolBox.a
 
 
 SRC_BASE = \
 	$(SRCDIR)/Controllers.cpp \
+	$(SRCDIR)/Filters.cpp \
 	$(SRCDIR)/Imaging.cpp \
 	$(SRCDIR)/Loaders.cpp \
 	$(SRCDIR)/Merge.cpp \
@@ -65,6 +68,7 @@ SRC_FILTERS = \
 SRC_CONTROLLERS = \
 	$(SRCDIR)/Controllers/ViewPointController.cpp
 
+	
 OBJ_BASE = $(SRC_BASE:$(SRCDIR)/%.cpp=$(OUTPUT)/%.o)
 OBJ_IMAGING = $(SRC_IMAGING:$(SRCDIR)/Imaging%.cpp=$(OUTPUT)%.o)
 OBJ_LOADERS = $(SRC_LOADERS:$(SRCDIR)/Loaders%.cpp=$(OUTPUT)%.o)
@@ -81,11 +85,11 @@ clean:
 
 $(LIB):  $(ALL_OBJS)
 	ar -qcv $(LIB) $(ALL_OBJS)
-	cp $(LIB) $(RAPTOR_ROOT)/Redist/Lib
+	cp $(LIB) $(REDIST)/Lib
 
 $(SO):  $(ALL_OBJS)
 	g++ -o $(SO) $(LDFLAGS) $(ALL_OBJS)
-	cp $(SO) $(RAPTOR_ROOT)/Redist/Bin
+	cp $(SO) $(REDIST)/Bin
 
 $(OBJ_BASE): $(SRC_BASE)
 	g++ $(CCCFLAGS) $(INCDIRS) -c $(<D)/$(*F).cpp  -o $(OUTPUT)/$(@F)
@@ -102,6 +106,6 @@ $(OBJ_IMAGING): $(SRC_IMAGING)
 $(OBJ_CONTROLLERS): $(SRC_CONTROLLERS)
 	g++ $(CCCFLAGS) $(INCDIRS) -c $(<D)/$(*F).cpp  -o $(OUTPUT)/$(@F)
 
-$(SRC_LOADERS) : Loaders/OBJ.lex
+$(SRC_LOADERS) : $(SRCDIR)/Loaders/OBJ.lex
 	(cd $(SRCDIR)/Loaders && $(RAPTOR_ROOT)/Redist/Bin/Microlex -f OBJ.lex -o OBJScript -v)
 
