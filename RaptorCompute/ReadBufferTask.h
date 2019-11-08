@@ -1,9 +1,28 @@
+/***************************************************************************/
+/*                                                                         */
+/*  ReadBufferTask.h                                                       */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
 #if !defined(AFX_READ_BUFFER_TASK_H__52DD0201_11DA_4876_A524_56FD02F8C17F)
 #define AFX_READ_BUFFER_TASK_H__52DD0201_11DA_4876_A524_56FD02F8C17F
 
 #if !defined(AFX_RAPTOR_COMPUTE_TASK_H__F05CF7F9_151A_4760_885A_19FF9C648278__INCLUDED_)
 	#include "RaptorComputeTask.h"
 #endif
+
 
 //!	This class defines read buffer task to be added to 
 //! the list of tasks of a job.
