@@ -228,16 +228,6 @@ bool CGeometryShader::glBindProgram(RAPTOR_HANDLE program)
 			pExtensions->glProgramParameteriARB(program.handle(), GL_GEOMETRY_VERTICES_OUT_ARB, m_verticesOut);
 	#endif
 #endif
-		for (unsigned int idx = 0; idx < m_parameters.getNbParameters(); idx++)
-		{
-			const CProgramParameters::CParameterBase& value = m_parameters[idx];
-			CProgramParameters::GL_VERTEX_ATTRIB p;
-			if (value.isA(p))
-			{
-				p = ((const CProgramParameters::CParameter<CProgramParameters::GL_VERTEX_ATTRIB>&)value).p;
-				pExtensions->glBindAttribLocationARB(program.handle(), p, value.name().data());
-			}
-		}
 
 		CATCH_GL_ERROR
 		return true;

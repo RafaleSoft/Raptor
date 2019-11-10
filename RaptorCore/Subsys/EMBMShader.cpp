@@ -56,11 +56,12 @@
 RAPTOR_NAMESPACE
 
 int CEMBMShader::environmentMap = -1;
+static bool embm_shaders_initialized = false;
 
 //#define PROCEDURAL_PERLIN
 #ifdef PROCEDURAL_PERLIN
-static CTextureObject *permutation = NULL;
-static int permSampler = -1;
+	static CTextureObject *permutation = NULL;
+	static int permSampler = -1;
 #endif
 
 
@@ -82,6 +83,10 @@ CShader* CEMBMShader::glClone(const std::string& newShaderName) const
 	if (!newShaderName.empty())
 		embm->setName(newShaderName);
 	embm->m_bEnabled = m_bEnabled;
+
+	if (hasOpenGLShader())
+		embm->glInit();
+
 	return embm;
 }
 
@@ -95,36 +100,45 @@ void CEMBMShader::glInit()
 	CShader *shaderLib = new CShader();
 	COpenGLShaderStage *stage = glGetOpenGLShader();
 
+	if (!embm_shaders_initialized)
+	{
+		CVertexShader *vp = stage->glGetVertexShader("PPIXEL_BUMP_VTX_PROGRAM");
+		CFragmentShader *fp = stage->glGetFragmentShader("PPIXEL_BUMP_TEX_PROGRAM");
+		std::string embm_vertexshader = vp->glGetProgramString();
+		std::string embm_pixelshader = fp->glGetProgramString();
+		shaderLib->releaseReference();
+
+		//!	First create the program, to get it with the shader
+		//!	and unset auto delete shader
+		vp = new CVertexShader("PPIXEL_EMBM_VTX_PROGRAM");
+		size_t pos = embm_vertexshader.find("#version");
+		if (pos < embm_vertexshader.length())
+		{
+			size_t pos2 = embm_vertexshader.find("\n", pos);
+			embm_vertexshader.insert(pos2 + 1, string("#define EMBM_RENDERING 1\n\n"));
+		}
+		vp->glLoadProgram(embm_vertexshader);
+
+		//!	First create the program, to get it with the shader
+		//!	and unset auto delete shader
+		fp = new CFragmentShader("PPIXEL_EMBM_TEX_PROGRAM");
+		pos = embm_pixelshader.find("#version");
+		if (pos < embm_pixelshader.length())
+		{
+			size_t pos2 = embm_pixelshader.find("\n", pos);
+			embm_pixelshader.insert(pos2 + 1, string("#define EMBM_RENDERING 1\n\n"));
+		}
+		fp->glLoadProgram(embm_pixelshader);
+
+		embm_shaders_initialized = true;
+	}
+
 	CVertexShader *vp = stage->glGetVertexShader("PPIXEL_BUMP_VTX_PROGRAM");
 	CFragmentShader *fp = stage->glGetFragmentShader("PPIXEL_BUMP_TEX_PROGRAM");
-	std::string embm_vertexshader = vp->glGetProgramString();
-	std::string embm_pixelshader = fp->glGetProgramString();
-	shaderLib->releaseReference();
 
-	//!	First create the program, to get it with the shader
-	//!	and unset auto delete shader
-	vp = new CVertexShader("PPIXEL_EMBM_VTX_PROGRAM");
-	size_t pos = embm_vertexshader.find("#version");
-	if (pos < embm_vertexshader.length())
-	{
-		size_t pos2 = embm_vertexshader.find("\n",pos);
-		embm_vertexshader.insert(pos2+1,string("#define EMBM_RENDERING 1\n\n"));
-	}
-	vp->glLoadProgram(embm_vertexshader);
-
-	//!	First create the program, to get it with the shader
-	//!	and unset auto delete shader
-	fp = new CFragmentShader("PPIXEL_EMBM_TEX_PROGRAM");
-	pos = embm_pixelshader.find("#version");
-	if (pos < embm_pixelshader.length())
-	{
-		size_t pos2 = embm_pixelshader.find("\n",pos);
-		embm_pixelshader.insert(pos2+1,string("#define EMBM_RENDERING 1\n\n"));
-	}
-	fp->glLoadProgram(embm_pixelshader);
-
-	vp = stage->glGetVertexShader("PPIXEL_BUMP_VTX_PROGRAM");
-	fp = stage->glGetFragmentShader("PPIXEL_BUMP_TEX_PROGRAM");
+	CProgramParameters params;
+	params.addParameter("tangent", CProgramParameters::ADDITIONAL_PARAM1);
+	stage->setProgramParameters(params);
 
 	stage->glCompileShader();
 
@@ -202,7 +216,9 @@ void CEMBMShader::enableEmbm(bool enable)
 
 		CProgramParameters params;
 		params.addParameter("tangent", CProgramParameters::ADDITIONAL_PARAM1);
-	
+		stage->setProgramParameters(params);
+
+
 		if (enable)
 		{
 			stage->glGetVertexShader("PPIXEL_EMBM_VTX_PROGRAM");
@@ -213,8 +229,6 @@ void CEMBMShader::enableEmbm(bool enable)
 			stage->glGetVertexShader("PPIXEL_BUMP_VTX_PROGRAM");
 			stage->glGetFragmentShader("PPIXEL_BUMP_TEX_PROGRAM");
 		}
-
-		stage->setProgramParameters(params);
 
 		stage->glCompileShader();
 		m_bEnabled = enable;

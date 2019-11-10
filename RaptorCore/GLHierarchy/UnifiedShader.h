@@ -81,7 +81,7 @@ protected:
     void glQueryAttributeLocations(RAPTOR_HANDLE program);
 
     //! Program has been re-linked, perform post processing again
-    bool    m_bReLinked;
+    //bool    m_bReLinked;
 
 
 private:
