@@ -88,8 +88,11 @@ all: \
 	raptortoolbox \
 	raptorcompute \
 	raptorserver \
-	raptorviewer
+	raptorviewer \
+	test
 
+
+test: builder raptorcore raptordata raptortoolbox $(REDIST)/Bin/Test
 
 raptorviewer: builder raptorcore raptordata raptortoolbox raptornetwork raptorserver $(REDIST)/Bin/RaptorViewer
 	
@@ -153,6 +156,11 @@ configure:	Builder/Configure/Redist.sh
 #
 # Projects building rules
 #
+$(REDIST)/Bin/Test:
+	@echo "Building Test project ..."
+	make -C Build/Linux -f Makefile.test all
+	@echo "Test project done."
+
 $(REDIST)/Bin/RaptorViewer:
 	@echo "Building RaptorViewer project ..."
 	make -C Build/Linux -f Makefile.raptorviewer all
@@ -299,6 +307,7 @@ $(REDIST)/Bin/dwaLookups:	$(REDIST)/Bin/libHalf.so.$(OPENEXRLIB_VERSION) $(REDIS
 #
 clean:
 	@echo "Cleaning intermediate build files..."
+	make -C Build/Linux -f Makefile.test clean
 	make -C Build/Linux -f Makefile.raptorviewer clean
 	make -C Build/Linux -f Makefile.raptorserver clean
 	make -C Build/Linux -f Makefile.raptorcompute clean
