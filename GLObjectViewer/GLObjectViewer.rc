@@ -1,4 +1,4 @@
-//Microsoft Developer Studio generated resource script.
+// Microsoft Visual C++ generated resource script.
 //
 #include "resource.h"
 
@@ -13,85 +13,71 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// English (U.S.) resources
+// English (United States) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
-#ifdef _WIN32
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 #pragma code_page(1252)
-#endif //_WIN32
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // Dialog
 //
 
-IDD_ABOUTBOX DIALOG DISCARDABLE  0, 0, 235, 55
-STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+IDD_ABOUTBOX DIALOG 0, 0, 235, 55
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "A propos de GLObjectViewer"
 FONT 8, "MS Sans Serif"
 BEGIN
     ICON            IDR_MAINFRAME,IDC_STATIC,11,17,20,20
-    LTEXT           "GLObjectViewer version 1.0",IDC_STATIC,40,10,119,8,
-                    SS_NOPREFIX
+    LTEXT           "GLObjectViewer version 1.0",IDC_STATIC,40,10,119,8,SS_NOPREFIX
     LTEXT           "Copyright (C) 2009",IDC_STATIC,40,25,119,8
     DEFPUSHBUTTON   "OK",IDOK,178,7,50,14,WS_GROUP
 END
 
-IDD_DIALOGBAR DIALOG DISCARDABLE  0, 0, 120, 88
-STYLE WS_CHILD
+IDD_DIALOGBAR DIALOG 0, 0, 120, 88
+STYLE DS_SETFONT | WS_CHILD
 FONT 8, "MS Sans Serif"
 BEGIN
     GROUPBOX        "Global Settings",IDC_STATIC,2,5,116,81
-    CONTROL         "Back Faces",IDC_BACKFACES,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,12,18,50,10
-    CONTROL         "Wireframe",IDC_WIREFRAME,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,12,32,48,10
-    CONTROL         "Lighting",IDC_LIGHTING,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,12,46,41,10
-    CONTROL         "Texturing",IDC_TEXTURING,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,12,60,45,10
-    CONTROL         "B Boxes",IDC_BBOXES,"Button",BS_AUTO3STATE | WS_TABSTOP,
-                    12,74,45,10
+    CONTROL         "Back Faces",IDC_BACKFACES,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,12,18,50,10
+    CONTROL         "Wireframe",IDC_WIREFRAME,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,12,32,48,10
+    CONTROL         "Lighting",IDC_LIGHTING,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,12,46,41,10
+    CONTROL         "Texturing",IDC_TEXTURING,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,12,60,45,10
+    CONTROL         "B Boxes",IDC_BBOXES,"Button",BS_AUTO3STATE | WS_TABSTOP,12,74,45,10
 END
 
-IDD_DIALOGPROPS DIALOG DISCARDABLE  0, 0, 120, 71
-STYLE WS_CHILD
+IDD_DIALOGPROPS DIALOG 0, 0, 120, 71
+STYLE DS_SETFONT | WS_CHILD
 FONT 8, "MS Sans Serif"
 BEGIN
     LTEXT           "Name:",IDC_STATIC,2,5,22,8
     EDITTEXT        IDC_NAME,32,5,86,12,ES_AUTOHSCROLL
     LTEXT           "Shader:",IDC_STATIC,2,22,26,8
-    COMBOBOX        IDC_SHADERLIST,32,22,86,91,CBS_DROPDOWN | 
-                    CBS_AUTOHSCROLL | CBS_SORT | WS_VSCROLL | WS_TABSTOP
-    CONTROL         "Visible",IDC_VISIBLE,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,10,38,46,13
-    CONTROL         "Tansparent",IDC_TRANSPARENT,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,60,38,50,13
+    COMBOBOX        IDC_SHADERLIST,32,22,86,91,CBS_DROPDOWN | CBS_AUTOHSCROLL | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "Visible",IDC_VISIBLE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,38,46,13
+    CONTROL         "Tansparent",IDC_TRANSPARENT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,60,38,50,13
     PUSHBUTTON      "Apply",IDC_APPLY,68,55,50,14,WS_DISABLED
     PUSHBUTTON      "Editor ...",IDC_EDITOR,2,55,54,14
 END
 
-IDD_DIALOGTREE DIALOG DISCARDABLE  0, 0, 120, 137
-STYLE WS_CHILD
+IDD_DIALOGTREE DIALOG 0, 0, 120, 137
+STYLE DS_SETFONT | WS_CHILD
 FONT 8, "MS Sans Serif"
 BEGIN
     GROUPBOX        "Scene Tree",IDC_STATIC,2,5,116,130
-    CONTROL         "Tree1",IDC_OBJECTTREE,"SysTreeView32",TVS_HASBUTTONS | 
-                    TVS_HASLINES | TVS_LINESATROOT | WS_BORDER | WS_TABSTOP,
-                    4,14,111,118
+    CONTROL         "Tree1",IDC_OBJECTTREE,"SysTreeView32",TVS_HASBUTTONS | TVS_HASLINES | TVS_LINESATROOT | WS_BORDER | WS_TABSTOP,4,14,111,118
 END
 
-IDD_DIALOGSHADER DIALOG DISCARDABLE  0, 0, 210, 199
-STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+IDD_DIALOGSHADER DIALOG 0, 0, 210, 199
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Shader Editor"
 FONT 8, "MS Sans Serif"
 BEGIN
     PUSHBUTTON      "Close",IDCANCEL,176,24,27,14
     PUSHBUTTON      "Apply",IDC_MODIFYSHADER,176,7,27,14
     LTEXT           "Shader:",IDC_STATIC,7,7,26,8
-    COMBOBOX        IDC_SHADERLIST,37,7,134,91,CBS_DROPDOWN | 
-                    CBS_AUTOHSCROLL | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_SHADERLIST,37,7,134,91,CBS_DROPDOWN | CBS_AUTOHSCROLL | CBS_SORT | WS_VSCROLL | WS_TABSTOP
     LTEXT           "Base color:",IDC_STATIC,7,25,36,8
     EDITTEXT        IDC_BASERED,50,24,21,12,ES_AUTOHSCROLL
     LTEXT           "R",IDC_STATIC,44,25,8,8
@@ -144,15 +130,14 @@ BEGIN
     LTEXT           "Env:",IDC_STATIC,12,143,23,10
 END
 
-IDD_DIALOGGEOMETRY DIALOG DISCARDABLE  0, 0, 278, 94
-STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+IDD_DIALOGGEOMETRY DIALOG 0, 0, 278, 94
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Geometry Editor"
 FONT 8, "MS Sans Serif"
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,221,7,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,221,24,50,14
-    LISTBOX         IDC_LIST1,33,27,59,11,LBS_SORT | LBS_NOINTEGRALHEIGHT | 
-                    WS_VSCROLL | WS_TABSTOP
+    LISTBOX         IDC_LIST1,33,27,59,11,LBS_SORT | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
     PUSHBUTTON      "Gen Tex Coords",IDC_GENTEXCOORDS,11,12,53,11
     LTEXT           "Model",IDC_STATIC,12,29,21,10
     EDITTEXT        IDC_SPECULARRED2,123,11,23,12,ES_AUTOHSCROLL
@@ -176,7 +161,7 @@ END
 //
 
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO DISCARDABLE 
+GUIDELINES DESIGNINFO
 BEGIN
     IDD_DIALOGBAR, DIALOG
     BEGIN
@@ -212,7 +197,7 @@ BEGIN
 END
 #endif    // APSTUDIO_INVOKED
 
-#endif    // English (U.S.) resources
+#endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -220,10 +205,8 @@ END
 // French (France) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_FRA)
-#ifdef _WIN32
 LANGUAGE LANG_FRENCH, SUBLANG_FRENCH
 #pragma code_page(1252)
-#endif //_WIN32
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
@@ -231,18 +214,18 @@ LANGUAGE LANG_FRENCH, SUBLANG_FRENCH
 // TEXTINCLUDE
 //
 
-1 TEXTINCLUDE DISCARDABLE 
+1 TEXTINCLUDE 
 BEGIN
     "resource.h\0"
 END
 
-2 TEXTINCLUDE DISCARDABLE 
+2 TEXTINCLUDE 
 BEGIN
     "#include ""afxres.h""\r\n"
     "\0"
 END
 
-3 TEXTINCLUDE DISCARDABLE 
+3 TEXTINCLUDE 
 BEGIN
     "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
     "#define _AFX_NO_OLE_RESOURCES\r\n"
@@ -271,22 +254,22 @@ END
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDR_MAINFRAME           ICON    DISCARDABLE     "res\\GLObjectViewer.ico"
-IDR_GLOBJETYPE          ICON    DISCARDABLE     "res\\GLObjectViewerDoc.ico"
+IDR_MAINFRAME           ICON                    "res\\GLObjectViewer.ico"
+IDR_GLOBJETYPE          ICON                    "res\\GLObjectViewerDoc.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // Bitmap
 //
 
-IDR_MAINFRAME           BITMAP  MOVEABLE PURE   "res\\Toolbar.bmp"
+IDR_MAINFRAME           BITMAP                  "res\\Toolbar.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // Toolbar
 //
 
-IDR_MAINFRAME TOOLBAR DISCARDABLE  16, 15
+IDR_MAINFRAME TOOLBAR 16, 15
 BEGIN
     BUTTON      ID_FILE_NEW
     BUTTON      ID_FILE_OPEN
@@ -307,7 +290,7 @@ END
 // Menu
 //
 
-IDR_MAINFRAME MENU PRELOAD DISCARDABLE 
+IDR_MAINFRAME MENU
 BEGIN
     POPUP "&Fichier"
     BEGIN
@@ -331,7 +314,7 @@ BEGIN
     END
 END
 
-IDR_GLOBJETYPE MENU PRELOAD DISCARDABLE 
+IDR_GLOBJETYPE MENU
 BEGIN
     POPUP "&Fichier"
     BEGIN
@@ -383,7 +366,7 @@ END
 // Accelerator
 //
 
-IDR_MAINFRAME ACCELERATORS PRELOAD MOVEABLE PURE 
+IDR_MAINFRAME ACCELERATORS
 BEGIN
     "N",            ID_FILE_NEW,            VIRTKEY, CONTROL
     "O",            ID_FILE_OPEN,           VIRTKEY, CONTROL
@@ -402,15 +385,14 @@ BEGIN
 END
 
 
-#ifndef _MAC
 /////////////////////////////////////////////////////////////////////////////
 //
 // Version
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,0,1
- PRODUCTVERSION 1,0,0,1
+ FILEVERSION 2,17,1,0
+ PRODUCTVERSION 2,17,1,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -423,17 +405,15 @@ VS_VERSION_INFO VERSIONINFO
 BEGIN
     BLOCK "StringFileInfo"
     BEGIN
-        BLOCK "040C04B0"
+        BLOCK "040c04b0"
         BEGIN
-            VALUE "CompanyName", "\0"
-            VALUE "FileDescription", "Application MFC GLObjectViewer\0"
-            VALUE "FileVersion", "1, 0, 0, 1\0"
-            VALUE "InternalName", "GLObjectViewer\0"
-            VALUE "LegalCopyright", "Copyright (C) 2009\0"
-            VALUE "LegalTrademarks", "\0"
-            VALUE "OriginalFilename", "GLObjectViewer.EXE\0"
-            VALUE "ProductName", "Application GLObjectViewer\0"
-            VALUE "ProductVersion", "1, 0, 0, 1\0"
+            VALUE "FileDescription", "Application MFC GLObjectViewer"
+            VALUE "FileVersion", "2.17.1.0"
+            VALUE "InternalName", "GLObjectViewer"
+            VALUE "LegalCopyright", "Copyright (C) 2009"
+            VALUE "OriginalFilename", "GLObjectViewer.EXE"
+            VALUE "ProductName", "Application GLObjectViewer"
+            VALUE "ProductVersion", "2.17.1.0"
         END
     END
     BLOCK "VarFileInfo"
@@ -442,27 +422,25 @@ BEGIN
     END
 END
 
-#endif    // !_MAC
-
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // String Table
 //
 
-STRINGTABLE PRELOAD DISCARDABLE 
+STRINGTABLE
 BEGIN
     IDR_MAINFRAME           "GLObjectViewer"
     IDR_GLOBJETYPE          "\nGLObje\nGLObje\n\n\nGLObjectViewer.Document\nGLObje Document"
 END
 
-STRINGTABLE PRELOAD DISCARDABLE 
+STRINGTABLE
 BEGIN
     AFX_IDS_APP_TITLE       "GLObjectViewer"
     AFX_IDS_IDLEMESSAGE     "Prêt"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     ID_INDICATOR_EXT        "EXT"
     ID_INDICATOR_CAPS       "MAJ"
@@ -472,7 +450,7 @@ BEGIN
     ID_INDICATOR_REC        "ENR"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     ID_FILE_NEW             "Crée un nouveau document\nNouveau"
     ID_FILE_OPEN            "Ouvre un document existant\nOuvrir"
@@ -485,13 +463,13 @@ BEGIN
     ID_FILE_PRINT_PREVIEW   "Affiche des pages entières\nAperçu avant impression"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     ID_APP_ABOUT            "Affiche des informations sur le programme, le numéro de version et le copyright\nA propos de"
     ID_APP_EXIT             "Ferme l'application ; propose d'enregistrer les documents\nQuitter"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     ID_FILE_MRU_FILE1       "Ouvre ce document"
     ID_FILE_MRU_FILE2       "Ouvre ce document"
@@ -511,13 +489,13 @@ BEGIN
     ID_FILE_MRU_FILE16      "Ouvre ce document"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     ID_NEXT_PANE            "Passe au volet de fenêtre suivant\nVolet suivant"
     ID_PREV_PANE            "Revient au volet précédent\nVolet précédent"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     ID_WINDOW_NEW           "Ouvre une nouvelle fenêtre pour le document actif\nNouvelle fenêtre"
     ID_WINDOW_ARRANGE       "Réorganise les icônes en bas de la fenêtre\nRéorganise les icônes"
@@ -527,7 +505,7 @@ BEGIN
     ID_WINDOW_SPLIT         "Réorganise les fenêtres en une mosaïque\nMosaïque"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     ID_EDIT_CLEAR           "Efface la sélection\nEffacer"
     ID_EDIT_CLEAR_ALL       "Efface tout\nEffacer tout"
@@ -542,13 +520,13 @@ BEGIN
     ID_EDIT_REDO            "Rétablit l'action précédemment annulée\nRétablir"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     ID_VIEW_TOOLBAR         "Affiche ou masque la barre d'outils\nBarre d'outils"
     ID_VIEW_STATUS_BAR      "Affiche ou masque la barre d'état\nBarre d'état"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     AFX_IDS_SCSIZE          "Change la taille de la fenêtre"
     AFX_IDS_SCMOVE          "Change la position de la fenêtre"
@@ -559,19 +537,19 @@ BEGIN
     AFX_IDS_SCCLOSE         "Ferme la fenêtre active et propose l'enregistrement des documents"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     AFX_IDS_SCRESTORE       "Restaure la fenêtre à sa taille d'origine"
     AFX_IDS_SCTASKLIST      "Active la liste des tâches"
     AFX_IDS_MDICHILD        "Active cette fenêtre"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     AFX_IDS_PREVIEW_CLOSE   "Ferme le mode d'aperçu avant impression\nFermer l'aperçu"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     ID_EDITION_SHADEREDITOR "Open the shader editor dialog"
 END

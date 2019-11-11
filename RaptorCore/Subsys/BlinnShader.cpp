@@ -55,7 +55,14 @@ CBlinnShader::CBlinnShader(const CBlinnShader& shader)
 
 CShader* CBlinnShader::glClone(const std::string& newShaderName) const
 {
-	return new CBlinnShader(*this);
+	CBlinnShader* blinn = new CBlinnShader(*this);
+	if (!newShaderName.empty())
+		blinn->setName(newShaderName);
+
+	if (hasOpenGLShader())
+		blinn->glInit();
+
+	return blinn;
 }
 
 CBlinnShader::~CBlinnShader(void)

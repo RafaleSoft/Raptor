@@ -498,6 +498,21 @@ bool COpenGLShaderStage::glCompileShader()
 				abort = true;
 		}
 
+		//	Bind attribute variables
+		if (!abort)
+		{
+			for (unsigned int idx = 0; idx < m_parameters.getNbParameters(); idx++)
+			{
+				const CProgramParameters::CParameterBase& value = m_parameters[idx];
+				CProgramParameters::GL_VERTEX_ATTRIB p;
+				if (value.isA(p))
+				{
+					p = ((const CProgramParameters::CParameter<CProgramParameters::GL_VERTEX_ATTRIB>&)value).p;
+					pExtensions->glBindAttribLocationARB(m_shaderProgram.handle(), p, value.name().data());
+				}
+			}
+		}
+
 		// link the program with bound shaders
 		if (!abort)
 		{
@@ -687,9 +702,15 @@ void COpenGLShaderStage::glQueryAttributeLocations(void)
 						// the location retrieved will only be used if the user value is invalid.
 						value.locationType = type;
 						if ((userLocation < maxAttribs) && (userLocation != location))
+						{
 							value.locationIndex = userLocation;
+
+							//	Vertex attribute index inconsistency with user expectation after link
+							RAPTOR_WARNING(	CShaderProgram::CShaderProgramClassID::GetClassId(),
+											CRaptorMessages::ID_UPDATE_FAILED);
+						}
 						else
-							value.locationIndex = location;
+							value.locationIndex = location; // No effect, but consistent.
 					}
 				}
 			}
