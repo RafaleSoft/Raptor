@@ -1,49 +1,65 @@
-// FragmentShader.cpp: implementation of the CFragmentShader class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  FragmentShader.cpp                                                     */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
 #include "Subsys/CodeGeneration.h"
 
-
-#if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
-	#include "System/Raptor.h"
-#endif
-#ifndef __GLOBAL_H__
-	#include "System/Global.h"
-#endif
-#if !defined(AFX_FRAGMENTSHADER_H__66B3089A_2919_4678_9273_6CDEF7E5787F__INCLUDED_)
-	#include "FragmentShader.h"
+#if !defined(AFX_FRAGMENTSHADER_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
+    #include "FragmentShader.h"
 #endif
 #if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
 	#include "System/RaptorGLExtensions.h"
+#endif
+#if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
+	#include "System/Raptor.h"
+#endif
+#if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
+    #include "System/RaptorErrorManager.h"
+#endif
+#if !defined(AFX_OBJECTFACTORY_H__7F891C52_9E32_489C_B09C_5E5803522D91__INCLUDED_)
+	#include "ObjectFactory.h"
+#endif
+#if !defined(AFX_RAPTORINSTANCE_H__90219068_202B_46C2_BFF0_73C24D048903__INCLUDED_)
+	#include "Subsys/RaptorInstance.h"
 #endif
 
 
 RAPTOR_NAMESPACE
 
-bool CFragmentShader::m_bFragmentReady = false;
-static CFragmentShader::CFragmentShaderClassID fragmentId;
-const CPersistence::CPersistenceClassID& CFragmentShader::CFragmentShaderClassID::GetClassId(void)
-{
-	return fragmentId;
-}
+IMPLEMENT_CLASS_ID(CFragmentShader, fragmentId)
+
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
-CFragmentShader::CFragmentShader(const std::string& name)
-	:CShaderProgram(fragmentId,name)
+
+CFragmentShader::CFragmentShader(const std::string& name) :
+	CUnifiedShader(fragmentId, name)
 {
-    m_bValid = false;
-	m_handle.handle = 0;	// default openGL vertex processing pipeline
-	m_handle.hClass = CFragmentShader::CFragmentShaderClassID::GetClassId().ID();
+	m_handle.handle(0);	// default openGL vertex processing pipeline
+	m_handle.hClass(CFragmentShader::CFragmentShaderClassID::GetClassId().ID());
 
     glInitShaders();
 }
 
+
 CFragmentShader::CFragmentShader(const CFragmentShader& shader)
-	:CShaderProgram(shader)
+	:CUnifiedShader(shader)
 {
-	m_bValid = shader.m_bValid;
 }
 
 CFragmentShader* CFragmentShader::glClone()
@@ -53,134 +69,54 @@ CFragmentShader* CFragmentShader::glClone()
 
 CFragmentShader::~CFragmentShader()
 {
-#ifdef GL_ARB_fragment_program
-	if (m_bFragmentReady)
+#if defined(GL_ARB_fragment_shader)
+	if (!CRaptorInstance::GetInstance().m_bFragmentProgramReady)
 	{
-		glStop();
-
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+		Raptor::GetErrorManager()->generateRaptorError(	CFragmentShader::CFragmentShaderClassID::GetClassId(),
+														CRaptorErrorManager::RAPTOR_ERROR,
+														CRaptorMessages::ID_NO_GPU_PROGRAM);
+#endif
+	}
+	else
+	{
 		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
-		if (pExtensions->glIsProgramARB(m_handle.handle))
-			pExtensions->glDeleteProgramsARB(1,&m_handle.handle);
+		if (m_handle.handle() > 0)
+			pExtensions->glDeleteObjectARB(m_handle.handle());
 	}
 #endif
 }
 
+
 void CFragmentShader::glInitShaders()
 {
-    GLint maxLocals = 24;    //  implementation dependant, but at least 24
-    GLint maxMats = 8;
+	m_parameters.clear();
 
-#if defined(GL_ARB_fragment_program)
-    const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
-    pExtensions->glGetProgramivARB(GL_FRAGMENT_PROGRAM_ARB,GL_MAX_PROGRAM_LOCAL_PARAMETERS_ARB,&maxLocals);
-    glGetIntegerv(GL_MAX_PROGRAM_MATRICES_ARB,&maxMats);
-#endif
-
-    CATCH_GL_ERROR
-
-	if (!m_bFragmentReady)
+	if (!CRaptorInstance::GetInstance().m_bFragmentProgramReady)
 	{
-		if (Raptor::glIsExtensionSupported(GL_ARB_FRAGMENT_PROGRAM_EXTENSION_NAME))
+		if (Raptor::glIsExtensionSupported(GL_ARB_FRAGMENT_SHADER_EXTENSION_NAME))
 		{
-#if defined(GL_ARB_fragment_program)
-			m_bFragmentReady = pExtensions->glIsProgramARB != NULL;
+#if defined(GL_ARB_fragment_shader)
+			const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+			CRaptorInstance::GetInstance().m_bFragmentProgramReady = (NULL != pExtensions->glCreateShaderObjectARB);
 #else
-			m_bFragmentReady = false;
+			CRaptorInstance::GetInstance().m_bFragmentProgramReady = false;
 #endif
 		}
 		else
 		{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 			CRaptorMessages::MessageArgument arg;
-			arg.arg_sz = "ASM fragment";
+			arg.arg_sz = "GLSL fragment";
 			vector<CRaptorMessages::MessageArgument> args;
 			args.push_back(arg);
-			Raptor::GetErrorManager()->generateRaptorError(CShaderProgram::CShaderProgramClassID::GetClassId(),
-															CRaptorErrorManager::RAPTOR_WARNING,
-															CRaptorMessages::ID_NO_GPU_PROGRAM,
-															args);
+			Raptor::GetErrorManager()->generateRaptorError(CFragmentShader::CFragmentShaderClassID::GetClassId(),
+														   CRaptorErrorManager::RAPTOR_WARNING,
+														   CRaptorMessages::ID_NO_GPU_PROGRAM,
+														   args);
 #endif
 		}
 	}
-}
-
-
-bool CFragmentShader::glGetProgramCaps(GL_FRAGMENT_SHADER_CAPS& caps)
-{
-#ifdef GL_ARB_fragment_program
-	if (m_bFragmentReady)
-	{
-		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
-
-		pExtensions->glGetProgramivARB(GL_FRAGMENT_PROGRAM_ARB,GL_MAX_PROGRAM_INSTRUCTIONS_ARB,&caps.max_instructions);
-		pExtensions->glGetProgramivARB(GL_FRAGMENT_PROGRAM_ARB,GL_MAX_PROGRAM_NATIVE_INSTRUCTIONS_ARB,&caps.max_native_instructions);
-		pExtensions->glGetProgramivARB(GL_FRAGMENT_PROGRAM_ARB,GL_MAX_PROGRAM_TEMPORARIES_ARB,&caps.max_temporaries);
-		pExtensions->glGetProgramivARB(GL_FRAGMENT_PROGRAM_ARB,GL_MAX_PROGRAM_NATIVE_TEMPORARIES_ARB,&caps.max_native_temporaries);
-		pExtensions->glGetProgramivARB(GL_FRAGMENT_PROGRAM_ARB,GL_MAX_PROGRAM_PARAMETERS_ARB,&caps.max_parameters);
-		pExtensions->glGetProgramivARB(GL_FRAGMENT_PROGRAM_ARB,GL_MAX_PROGRAM_LOCAL_PARAMETERS_ARB,&caps.max_local_parameters);
-		pExtensions->glGetProgramivARB(GL_FRAGMENT_PROGRAM_ARB,GL_MAX_PROGRAM_ENV_PARAMETERS_ARB,&caps.max_env_parameters);
-		pExtensions->glGetProgramivARB(GL_FRAGMENT_PROGRAM_ARB,GL_MAX_PROGRAM_NATIVE_PARAMETERS_ARB,&caps.max_native_parameters);
-		pExtensions->glGetProgramivARB(GL_FRAGMENT_PROGRAM_ARB,GL_MAX_PROGRAM_ATTRIBS_ARB,&caps.max_attribs);
-		pExtensions->glGetProgramivARB(GL_FRAGMENT_PROGRAM_ARB,GL_MAX_PROGRAM_NATIVE_ATTRIBS_ARB,&caps.max_native_attribs);
-		pExtensions->glGetProgramivARB(GL_FRAGMENT_PROGRAM_ARB,GL_MAX_PROGRAM_ALU_INSTRUCTIONS_ARB,&caps.max_alu_instructions);
-		pExtensions->glGetProgramivARB(GL_FRAGMENT_PROGRAM_ARB,GL_MAX_PROGRAM_NATIVE_ALU_INSTRUCTIONS_ARB,&caps.max_native_alu_instructions);
-		pExtensions->glGetProgramivARB(GL_FRAGMENT_PROGRAM_ARB,GL_MAX_PROGRAM_TEX_INSTRUCTIONS_ARB,&caps.max_tex_instructions);
-		pExtensions->glGetProgramivARB(GL_FRAGMENT_PROGRAM_ARB,GL_MAX_PROGRAM_NATIVE_TEX_INSTRUCTIONS_ARB,&caps.max_native_tex_instructions);
-		pExtensions->glGetProgramivARB(GL_FRAGMENT_PROGRAM_ARB,GL_MAX_PROGRAM_TEX_INDIRECTIONS_ARB,&caps.max_tex_indirections);
-		pExtensions->glGetProgramivARB(GL_FRAGMENT_PROGRAM_ARB,GL_MAX_PROGRAM_NATIVE_TEX_INDIRECTIONS_ARB,&caps.max_native_tex_indirections);
-		
-		glGetIntegerv(GL_MAX_PROGRAM_MATRICES_ARB,&caps.max_program_matrices);
-		glGetIntegerv(GL_MAX_PROGRAM_MATRIX_STACK_DEPTH_ARB,&caps.max_program_matrix_stack_depth);
-		glGetIntegerv(GL_MAX_TEXTURE_COORDS_ARB,&caps.max_texture_coords);
-		glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS_ARB,&caps.max_texture_image_units);
-
-		return true;
-	}
-	else
-#endif
-		return false;
-}
-
-
-void CFragmentShader::glRender(void)
-{
-	if (m_handle.handle == 0)
-		return;
-
-#ifdef GL_ARB_fragment_program
-	if (m_bFragmentReady)
-	{
-		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
-		if (pExtensions->glIsProgramARB(m_handle.handle))
-		{
-			glEnable(GL_FRAGMENT_PROGRAM_ARB);
-			pExtensions->glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB,m_handle.handle);
-
-			if (m_bApplyParameters)
-			{
-				for (unsigned int i=0;i<m_parameters.getNbParameters();i++)
-				{
-					const CProgramParameters::CParameterBase& param_value = m_parameters[i];
-					const GL_COORD_VERTEX &vector = ((const CProgramParameters::CParameter<GL_COORD_VERTEX>&)param_value).p;
-
-					pExtensions->glProgramLocalParameter4fvARB(	GL_FRAGMENT_PROGRAM_ARB, i, vector);
-				}
-				m_bApplyParameters = false;
-			}
-		}
-	}
-#endif
-
-	CATCH_GL_ERROR
-}
-
-void CFragmentShader::glStop(void)
-{
-#ifdef GL_ARB_fragment_program
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
-	pExtensions->glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB,0);
-	glDisable(GL_FRAGMENT_PROGRAM_ARB);
-#endif
 }
 
 bool CFragmentShader::glLoadProgram(const std::string &program)
@@ -188,183 +124,137 @@ bool CFragmentShader::glLoadProgram(const std::string &program)
     m_bValid = false;
 	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 
-#ifdef GL_ARB_fragment_program
-	if (m_bFragmentReady)
+#if defined(GL_ARB_fragment_shader)
+	if (CRaptorInstance::GetInstance().m_bFragmentProgramReady)
 	{
-        //!    In case of a previous error, we need to initialize error checking
-        //!    to be sure that the error detected will only be due to shader loading.
-        GLenum err = glGetError();
-        if (err != GL_NO_ERROR)
+		if (m_handle.handle() > 0)
+			pExtensions->glDeleteObjectARB(m_handle.handle());
+
+        m_handle.handle(pExtensions->glCreateShaderObjectARB(GL_FRAGMENT_SHADER_ARB));
+        if (m_handle.handle() == 0)
         {
-            Raptor::GetErrorManager()->generateRaptorError(	CFragmentShader::CFragmentShaderClassID::GetClassId(),
-															CRaptorErrorManager::RAPTOR_WARNING,
-															"Raptor encountered errors before loading vertex shader, check with debug infos.");
-            while (err != GL_NO_ERROR)
-                err = ::glGetError();
-        }
-
-		if (pExtensions->glIsProgramARB(m_handle.handle))
-			pExtensions->glDeleteProgramsARB(1,&m_handle.handle);
-
-		pExtensions->glGenProgramsARB(1,&m_handle.handle);
-		pExtensions->glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB,m_handle.handle);
-
-	 	pExtensions->glProgramStringARB(GL_FRAGMENT_PROGRAM_ARB,
-										GL_PROGRAM_FORMAT_ASCII_ARB,
-										program.size(),
-										(void*)(program.data()));
-		err = glGetError();
-		
-		if (err != GL_NO_ERROR)// && (err == GL_INVALID_OPERATION))
-		{
-			int pos = 0;
-			glGetIntegerv(GL_PROGRAM_ERROR_POSITION_ARB,&pos);
-			const unsigned char * str = glGetString(GL_PROGRAM_ERROR_STRING_ARB);
-
-            vector<CRaptorMessages::MessageArgument> args;
-            CRaptorMessages::MessageArgument arg1;
-            arg1.arg_int = pos;
-            args.push_back(arg1);
-            CRaptorMessages::MessageArgument arg2;
-            arg2.arg_sz = (const char*)str;
-            args.push_back(arg2);
-
-            Raptor::GetErrorManager()->generateRaptorError(CFragmentShader::CFragmentShaderClassID::GetClassId(),
-                                                           CRaptorErrorManager::RAPTOR_ERROR,
-											               CRaptorMessages::ID_PROGRAM_ERROR,args); 
-		}
-
-        m_bValid = ((err == GL_NO_ERROR) && glGetProgramStatus());
-        if (!m_bValid)
-		{
 			Raptor::GetErrorManager()->generateRaptorError(	CFragmentShader::CFragmentShaderClassID::GetClassId(),
 															CRaptorErrorManager::RAPTOR_WARNING,
 															CRaptorMessages::ID_NO_GPU_PROGRAM);
-			Raptor::GetErrorManager()->generateRaptorError(CFragmentShader::CFragmentShaderClassID::GetClassId(),
-														   CRaptorErrorManager::RAPTOR_WARNING,
-														   getName().data());
-		}
+            return false;
+        }
 
-		// Unbind program to avoid side effects
-		glStop();
+        int length = program.size();
+        const char* source = program.data();
+        pExtensions->glShaderSourceARB(m_handle.handle(),1,&source,&length);
+
+        pExtensions->glCompileShaderARB(m_handle.handle());
+
+        m_bValid = glGetProgramStatus();
+
+        if (!m_bValid) 
+        {
+            GLint maxLength = 0;
+	        pExtensions->glGetObjectParameterivARB(m_handle.handle(),GL_OBJECT_INFO_LOG_LENGTH_ARB, &maxLength);
+	        char *pInfoLog = (char*) malloc(maxLength * sizeof(char));
+	        pExtensions->glGetInfoLogARB(m_handle.handle(), maxLength, &length, pInfoLog);
+
+            CRaptorMessages::MessageArgument arg;
+            arg.arg_sz = pInfoLog;
+            vector<CRaptorMessages::MessageArgument> args;
+            args.push_back(arg);
+			Raptor::GetErrorManager()->generateRaptorError(	CFragmentShader::CFragmentShaderClassID::GetClassId(),
+															CRaptorErrorManager::RAPTOR_ERROR,
+															CRaptorMessages::ID_PROGRAM_ERROR,args);
+            free(pInfoLog);
+	        return false;
+	    }
 	}
 #endif
 
-	CATCH_GL_ERROR
+    CATCH_GL_ERROR
 
-	return m_bValid;
+    return m_bValid;
 }
 
-bool CFragmentShader::glGetProgramStatus(void)
+bool CFragmentShader::glBindProgram(RAPTOR_HANDLE program)
 {
-	if (m_handle.handle == 0)
-		return false;
+	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 
-	if (!m_bFragmentReady)
-		return false;
-
-#if defined(GL_ARB_fragment_program)
-const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
-
-	if (pExtensions->glIsProgramARB(m_handle.handle))
-		pExtensions->glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB,m_handle.handle);
-	else
-		return false;
-
-	GL_FRAGMENT_SHADER_CAPS caps;
-	if (glGetProgramCaps(caps))
+#if defined(GL_ARB_fragment_shader)
+	GLint value = 0;
+	pExtensions->glGetObjectParameterivARB(m_handle.handle(), GL_OBJECT_SUBTYPE_ARB, &value);
+	if (value != GL_FRAGMENT_SHADER_ARB)
 	{
-		int value = 0;
-		pExtensions->glGetProgramivARB(GL_FRAGMENT_PROGRAM_ARB,GL_PROGRAM_INSTRUCTIONS_ARB,&value);
-		if (value > caps.max_instructions)
-			return false;
+		Raptor::GetErrorManager()->generateRaptorError(CFragmentShader::CFragmentShaderClassID::GetClassId(),
+													   CRaptorErrorManager::RAPTOR_WARNING,
+													   "Fragment Program is invalid in this context");
 
-		pExtensions->glGetProgramivARB(GL_FRAGMENT_PROGRAM_ARB,GL_PROGRAM_NATIVE_INSTRUCTIONS_ARB,&value);
-		if (value > caps.max_native_instructions)
-			return false;
+		CATCH_GL_ERROR
+		return false;
+	}
+#endif
 
-		pExtensions->glGetProgramivARB(GL_FRAGMENT_PROGRAM_ARB,GL_PROGRAM_TEMPORARIES_ARB,&value);
-		if (value > caps.max_temporaries)
-			return false;
-
-		pExtensions->glGetProgramivARB(GL_FRAGMENT_PROGRAM_ARB,GL_PROGRAM_NATIVE_TEMPORARIES_ARB,&value);
-		if (value > caps.max_native_temporaries)
-			return false;
-
-		pExtensions->glGetProgramivARB(GL_FRAGMENT_PROGRAM_ARB,GL_PROGRAM_PARAMETERS_ARB,&value);
-		if (value > caps.max_parameters)
-			return false;
-
-		pExtensions->glGetProgramivARB(GL_FRAGMENT_PROGRAM_ARB,GL_PROGRAM_NATIVE_PARAMETERS_ARB,&value);
-		if (value > caps.max_native_parameters)
-			return false;
-
-		pExtensions->glGetProgramivARB(GL_FRAGMENT_PROGRAM_ARB,GL_PROGRAM_ATTRIBS_ARB,&value);
-		if (value > caps.max_attribs)
-			return false;
-
-		pExtensions->glGetProgramivARB(GL_FRAGMENT_PROGRAM_ARB,GL_PROGRAM_NATIVE_ATTRIBS_ARB,&value);
-		if (value > caps.max_native_attribs)
-			return false;
-
-		pExtensions->glGetProgramivARB(GL_FRAGMENT_PROGRAM_ARB,GL_PROGRAM_UNDER_NATIVE_LIMITS_ARB,&value);
-		if (value < 1)
-			return false;
-
-        pExtensions->glGetProgramivARB(GL_FRAGMENT_PROGRAM_ARB,GL_PROGRAM_ALU_INSTRUCTIONS_ARB,&value);
-		if (value > caps.max_alu_instructions)
-			return false;
-
-        pExtensions->glGetProgramivARB(GL_FRAGMENT_PROGRAM_ARB,GL_PROGRAM_TEX_INSTRUCTIONS_ARB,&value);
-		if (value > caps.max_tex_instructions)
-			return false;
-
-        pExtensions->glGetProgramivARB(GL_FRAGMENT_PROGRAM_ARB,GL_PROGRAM_TEX_INDIRECTIONS_ARB,&value);
-		if (value > caps.max_tex_indirections)
-			return false;
-
-        pExtensions->glGetProgramivARB(GL_FRAGMENT_PROGRAM_ARB,GL_PROGRAM_NATIVE_ALU_INSTRUCTIONS_ARB,&value);
-		if (value > caps.max_native_alu_instructions)
-			return false;
-
-        pExtensions->glGetProgramivARB(GL_FRAGMENT_PROGRAM_ARB,GL_PROGRAM_NATIVE_TEX_INSTRUCTIONS_ARB,&value);
-		if (value > caps.max_native_tex_instructions)
-			return false;
-
-        pExtensions->glGetProgramivARB(GL_FRAGMENT_PROGRAM_ARB,GL_PROGRAM_NATIVE_TEX_INDIRECTIONS_ARB,&value);
-		if (value > caps.max_native_tex_indirections)
-			return false;
- 
+#if defined(GL_ARB_shader_objects)
+	if (CUnifiedShader::glBindProgram(program))
+	{
+		CATCH_GL_ERROR
 		return true;
 	}
 	else
 #endif
-	return false;
+		return false;
 }
 
-void CFragmentShader::glProgramParameter(unsigned int numParam,const GL_COORD_VERTEX &v) const
+bool CFragmentShader::glGetShaderCaps(GL_FRAGMENT_SHADER_CAPS& caps)
 {
-#if defined(GL_ARB_fragment_program)
-	if (m_bFragmentReady)
+	if (CRaptorInstance::GetInstance().m_bFragmentProgramReady)
 	{
-		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
-		pExtensions->glProgramLocalParameter4fvARB(GL_FRAGMENT_PROGRAM_ARB, numParam, v);
-	}
+#if defined(GL_ARB_fragment_shader)
+        glGetIntegerv(GL_MAX_FRAGMENT_UNIFORM_COMPONENTS_ARB,&caps.max_fragment_uniform_components);
+        glGetIntegerv(GL_MAX_TEXTURE_COORDS_ARB,&caps.max_texture_coords);
+        glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS_ARB,&caps.max_texture_image_units);
 #endif
-
-	CATCH_GL_ERROR
+#if defined(GL_ARB_uniform_buffer_object)
+		glGetIntegerv(GL_MAX_FRAGMENT_UNIFORM_BLOCKS_ARB, &caps.max_fragment_uniform_blocks);
+#endif
+		return true;
+	}
+	else
+		return false;
 }
 
-void CFragmentShader::glProgramParameter(unsigned int numParam,const CColor::RGBA &v) const
+bool CFragmentShader::glGetProgramStatus(void) const
 {
-#if defined(GL_ARB_fragment_program)
-	if (m_bFragmentReady)
-	{
-		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
-		pExtensions->glProgramLocalParameter4fvARB(GL_FRAGMENT_PROGRAM_ARB, numParam, v);
-	}
-#endif
+	if (m_handle.handle() == 0)
+		return false;
 
-	CATCH_GL_ERROR
+	if (!CRaptorInstance::GetInstance().m_bFragmentProgramReady)
+		return false;
+
+#if defined(GL_ARB_fragment_shader)
+	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+
+	GL_FRAGMENT_SHADER_CAPS caps;
+	if (glGetShaderCaps(caps))
+	{
+        //  Check program status and compare to shader caps to return global status
+        GLint value = 0;
+        pExtensions->glGetObjectParameterivARB(m_handle.handle(), GL_OBJECT_TYPE_ARB,&value);
+        if (value != GL_SHADER_OBJECT_ARB)
+            return false;
+
+        pExtensions->glGetObjectParameterivARB(m_handle.handle(), GL_OBJECT_SUBTYPE_ARB,&value);
+        if (value != GL_FRAGMENT_SHADER_ARB)
+            return false;
+
+        pExtensions->glGetObjectParameterivARB(m_handle.handle(),GL_OBJECT_COMPILE_STATUS_ARB, &value);
+        if (value == 0)
+            return false;
+
+        pExtensions->glGetObjectParameterivARB(m_handle.handle(),GL_OBJECT_DELETE_STATUS_ARB, &value);
+        if (value == 1)
+            return false;
+
+        return true;
+	}
+	else
+#endif
+		return false;
 }
 

@@ -24,7 +24,7 @@
 
 extern CMMXBVector _unalignedMMXByteVector;
 
-CMMXBVector SIMD_CALL CMMXBVector::operator*  (const CMMXBVector& v2) const
+CMMXBVector SIMD_CALL CMMXBVector::operator*  (const CMMXBVector& v2) const NOEXCEPT
 {
 	__asm
 	{
@@ -44,7 +44,7 @@ CMMXBVector SIMD_CALL CMMXBVector::operator*  (const CMMXBVector& v2) const
 	return _unalignedMMXByteVector;
 };
 
-CMMXBVector SIMD_CALL CMMXBVector::operator+  (const CMMXBVector& v2) const
+CMMXBVector SIMD_CALL CMMXBVector::operator+  (const CMMXBVector& v2) const NOEXCEPT
 {
 	__asm
 	{
@@ -60,7 +60,7 @@ CMMXBVector SIMD_CALL CMMXBVector::operator+  (const CMMXBVector& v2) const
 	return _unalignedMMXByteVector;
 };
 
-CMMXBVector SIMD_CALL CMMXBVector::operator-  (const CMMXBVector& v2) const
+CMMXBVector SIMD_CALL CMMXBVector::operator-  (const CMMXBVector& v2) const NOEXCEPT
 {
 	__asm
 	{

@@ -1,6 +1,21 @@
-// ShaderProgram.cpp: implementation of the CShaderProgram class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  ShaderProgram.cpp                                                      */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
 #include "Subsys/CodeGeneration.h"
 
 
@@ -16,13 +31,12 @@
 #if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
     #include "System/RaptorErrorManager.h"
 #endif
+#if !defined(AFX_SHADERLIBRARY_H__E2A8C35E_23A4_4AD1_8467_884E6B183B4F__INCLUDED_)
+	#include "Subsys/ShaderLibrary.h"
+#endif
 
 
-//////////////////////////////////////////////////////////////////////
-// Static data
-//////////////////////////////////////////////////////////////////////
 RAPTOR_NAMESPACE_BEGIN
-
 
 static CShaderProgram::CShaderProgramClassID shaderId;
 const CPersistence::CPersistenceClassID& CShaderProgram::CShaderProgramClassID::GetClassId(void)
@@ -32,9 +46,7 @@ const CPersistence::CPersistenceClassID& CShaderProgram::CShaderProgramClassID::
 
 RAPTOR_NAMESPACE_END
 
-//////////////////////////////////////////////////////////////////////
-// Static datas
-//////////////////////////////////////////////////////////////////////
+
 RAPTOR_NAMESPACE
 
 
@@ -64,6 +76,16 @@ CShaderProgram::~CShaderProgram()
 	// TODO : Recycle handle
 }
 
+bool CShaderProgram::glAddToLibrary(const std::string& shader_name,
+									const std::string& shader_source_file,
+									const std::string& class_name)
+{
+	CShaderLibrary *library = CShaderLibrary::GetInstance();
+	if (NULL != library)
+		return library->glAddToLibrary(shader_name, shader_source_file, class_name);
+	else
+		return false;
+}
 
 void CShaderProgram::setProgramParameters(const CProgramParameters &v)
 {
@@ -74,8 +96,8 @@ void CShaderProgram::setProgramParameters(const CProgramParameters &v)
 
 void CShaderProgram::updateProgramParameters(const CProgramParameters &v)
 {
-	m_parameters.updateParameters(v);
-	m_bApplyParameters = true;
+	bool apply = m_parameters.updateParameters(v);
+	m_bApplyParameters = apply;
 }
 
 bool CShaderProgram::glLoadProgramFromFile(const std::string &program)

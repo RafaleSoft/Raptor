@@ -1,6 +1,20 @@
-// RaptorDisplayFilter.cpp: implementation of the CRaptorDisplayFilter class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  RaptorDisplayFilter.cpp                                                */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
 
 #include "Subsys/CodeGeneration.h"
 
@@ -13,11 +27,11 @@
 #if !defined(AFX_SHADER_H__4D405EC2_7151_465D_86B6_1CA99B906777__INCLUDED_)
 	#include "GLHierarchy/Shader.h"
 #endif
-#if !defined(AFX_VERTEXSHADER_H__F2D3BBC6_87A1_4695_B667_2B8C3C4CF022__INCLUDED_)
-	#include "GLHierarchy/VertexShader.h"
+#if !defined(AFX_VERTEXPROGRAM_H__F2D3BBC6_87A1_4695_B667_2B8C3C4CF022__INCLUDED_)
+	#include "GLHierarchy/VertexProgram.h"
 #endif
-#if !defined(AFX_FRAGMENTSHADER_H__66B3089A_2919_4678_9273_6CDEF7E5787F__INCLUDED_)
-	#include "GLHierarchy/FragmentShader.h"
+#if !defined(AFX_FRAGMENTPROGRAM_H__DD0AD51D_3BFF_4C65_8099_BA7696D7BDDF__INCLUDED_)
+	#include "GLHierarchy/FragmentProgram.h"
 #endif
 #if !defined(AFX_RAPTORDISPLAYCONFIG_H__DA0759DF_6CF9_44A7_9ADE_D404FEEC2DDF__INCLUDED_)
 	#include "RaptorDisplayConfig.h"
@@ -43,16 +57,24 @@
 #if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
     #include "System/RaptorGLExtensions.h"
 #endif
+#if !defined(AFX_FRAGMENTSHADER_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
+	#include "GLHierarchy/FragmentShader.h"
+#endif
+#if !defined(AFX_RAPTORINSTANCE_H__90219068_202B_46C2_BFF0_73C24D048903__INCLUDED_)
+	#include "Subsys/RaptorInstance.h"
+#endif
+
 
 
 RAPTOR_NAMESPACE
+
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
 CRaptorDisplayFilter::CRaptorDisplayFilter():
-	pFilter(NULL),m_fModel(RENDER_BUFFER),
+	m_fModel(RENDER_BUFFER),
     colorExternalSource(NULL),colorInternalSource(NULL),
     depthExternalSource(NULL),depthInternalSource(NULL),
 	colorInput(NULL),depthInput(NULL),
@@ -72,7 +94,7 @@ CRaptorDisplayFilter::operator RAPTOR_HANDLE() const
 
 CRaptorDisplayFilter::~CRaptorDisplayFilter()
 {
-    glDestroyFilter();   
+	glDestroyFilter();
 }
 
 bool CRaptorDisplayFilter::setSizeFactors(float xFactor, float yFactor)
@@ -104,6 +126,12 @@ void CRaptorDisplayFilter::setPreviousFilter(CRaptorDisplayFilter *pFilter)
 	}
 }
 
+CShader	*CRaptorDisplayFilter::getIdentityShader(void) const
+{
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+	return instance.m_pIdentity;
+}
+
 void CRaptorDisplayFilter::glRender(void)
 {
 	if (NULL == getColorInput())
@@ -129,7 +157,14 @@ void CRaptorDisplayFilter::glRender(void)
         glDisable(GL_TEXTURE_2D);
         pExtensions->glActiveTextureARB(GL_TEXTURE0_ARB);
 		getColorInput()->glvkRender();
-        glDrawBuffer();
+#if defined(GL_COMPATIBILITY_profile)
+		glDrawFilter();
+#else
+		CRaptorInstance &instance = CRaptorInstance::GetInstance();
+		instance.m_pIdentity->glRender();
+		glDrawFilter();
+		instance.m_pIdentity->glStop();
+#endif
     }
 
 	if ((colorInternalSource != NULL) && m_bBufferedOutputEnabled)
@@ -147,46 +182,29 @@ void CRaptorDisplayFilter::glRender(void)
 	CATCH_GL_ERROR
 }
 
-void CRaptorDisplayFilter::glRenderFilter(void)
+void CRaptorDisplayFilter::glDrawFilter(void) const
 {
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+#if defined(GL_COMPATIBILITY_profile)
+	glCallList(instance.m_drawBuffer.handle());
+#else
+	if (NULL != instance.m_pAttributes)
+	{
+		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+
+		pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::POSITION);
+		pExtensions->glVertexAttribPointerARB(CProgramParameters::POSITION, 4, GL_FLOAT, false, 0, instance.m_pAttributes);
+
+		glDrawArrays(GL_POINTS, 0, 1);
+
+		pExtensions->glDisableVertexAttribArrayARB(CProgramParameters::POSITION);
+	}
+#endif
 }
 
-void CRaptorDisplayFilter::glRenderFilterOutput(void)
-{
-    if (pFilter)
-    {
-        if (pFilter->hasFragmentShader())
-            pFilter->glGetFragmentShader()->glRender();
-        if (pFilter->hasVertexShader())
-            pFilter->glGetVertexShader()->glRender();
-    }
-
-    if (drawBuffer.handle > 0)
-        glCallList(drawBuffer.handle);
-
-    if (pFilter)
-    {
-        if (pFilter->hasFragmentShader())
-            pFilter->glGetFragmentShader()->glStop();
-        if (pFilter->hasVertexShader())
-            pFilter->glGetVertexShader()->glStop();
-    }
-}
-
-void CRaptorDisplayFilter::glDrawBuffer(void)
-{
-    if (drawBuffer.handle > 0)
-        glCallList(drawBuffer.handle);
-}
 
 void CRaptorDisplayFilter::glDestroyFilter(void)
 {
-    if (drawBuffer.handle > 0)
-    {
-        glDeleteLists(drawBuffer.handle,1);
-        drawBuffer.handle = 0;
-    }
-
     if (colorInternalSource != NULL)
     {
         Raptor::glDestroyDisplay((CRaptorDisplay*)colorInternalSource);
@@ -246,17 +264,7 @@ bool CRaptorDisplayFilter::glInitFilter(void)
 		if (getColorInput() == NULL)
 			return false;
 	}
-
-	drawBuffer.handle = glGenLists(1);
-	glNewList(drawBuffer.handle,GL_COMPILE);
-		glBegin(GL_QUADS);
-			glTexCoord2f(0.0f,0.0f);glVertex4f(-1.0,-1.0,-1.0f,1.0f);
-			glTexCoord2f(1.0f,0.0f);glVertex4f(1.0,-1.0,-1.0f,1.0f);
-			glTexCoord2f(1.0f,1.0f);glVertex4f(1.0,1.0,-1.0f,1.0f);
-			glTexCoord2f(0.0f,1.0f);glVertex4f(-1.0,1.0,-1.0f,1.0f);
-		glEnd();
-	glEndList();
-
+	
 	if (m_fModel == RENDER_BUFFER)
 	{
 		if (m_pRenderTextures != NULL)

@@ -9,6 +9,9 @@
 #if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
 	#include "System/Raptor.h"
 #endif
+#if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
+	#include "System/RaptorErrorManager.h"
+#endif
 #if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
 	#include "System/RaptorGLExtensions.h"
 #endif
@@ -18,15 +21,19 @@
 #if !defined(AFX_RAPTORVULKANSURFACE_H__C377C267_32A8_4963_BC2A_4694F4299A68__INCLUDED_)
 	#include "Subsys/Vulkan/VulkanSurface.h"
 #endif
-#ifndef __GLOBAL_H__
-	#include "System/Global.h"
-#endif
 #if !defined(AFX_WIN32APPLICATION_H__3EADD210_ABF5_4CFD_A511_09047EDBB881__INCLUDED_)
     #include "Win32Application.h"
 #endif
-#if !defined(AFX_RAPTORCONSOLE_H__27656611_2DF3_4416_8124_F608CFAC2122__INCLUDED_)
-	#include "System/RaptorConsole.h"
+#if !defined(AFX_RAPTORINSTANCE_H__90219068_202B_46C2_BFF0_73C24D048903__INCLUDED_)
+	#include "Subsys/RaptorInstance.h"
 #endif
+#if !defined(AFX_OPENGL_H__6C8840CA_BEFA_41DE_9879_5777FBBA7147__INCLUDED_)
+	#include "Subsys/OpenGL/RaptorOpenGL.h"
+#endif
+#if !defined(AFX_VULKAN_H__625F6BC5_F386_44C2_85C1_EDBA23B16921__INCLUDED_)
+	#include "Subsys/Vulkan/RaptorVulkan.h"
+#endif
+
 
 #include <strstream>
 
@@ -263,7 +270,7 @@ void CWin32ContextManager::getLastError(const std::string& file,int line) const
         }
 
 		r_line.rdbuf()->freeze(0);
-		RAPTOR_WARNING(Global::COpenGLClassID::GetClassId(),msgStr);
+		RAPTOR_WARNING(COpenGL::COpenGLClassID::GetClassId(),msgStr);
         SetLastError(0);
     }
 }
@@ -356,8 +363,8 @@ RAPTOR_HANDLE CWin32ContextManager::getDevice(CContextManager::RENDERING_CONTEXT
     if ((ctx >= 0) && (ctx < MAX_CONTEXT))
 	{
 		context_t& context = pContext[ctx];
-        device.handle = (unsigned int)context.WIN32Context;
-        device.hClass = DEVICE_CONTEXT_CLASS;
+        device.handle((unsigned int)context.WIN32Context);
+        device.hClass(DEVICE_CONTEXT_CLASS);
     }
 
     return device;
@@ -366,15 +373,15 @@ RAPTOR_HANDLE CWin32ContextManager::getDevice(CContextManager::RENDERING_CONTEXT
 CContextManager::RENDERING_CONTEXT_ID CWin32ContextManager::getContext(RAPTOR_HANDLE device) const
 {
 	RENDERING_CONTEXT_ID ctx = CContextManager::INVALID_CONTEXT;
-    if (device.handle == 0)
+    if (device.handle() == 0)
         return ctx;
 
     for (unsigned int i=0;i<MAX_CONTEXT;i++)
     {
         context_t& context = pContext[i];
-        if ((device.hClass == WINDOW_CLASS) && (context.WIN32Window == (HWND)(device.handle)))
+        if ((device.hClass() == WINDOW_CLASS) && (context.WIN32Window == (HWND)(device.handle())))
             ctx = i;
-        else if (((unsigned int)context.WIN32Context) == device.handle)
+        else if (((unsigned int)context.WIN32Context) == device.handle())
             ctx = i;
     }
 
@@ -386,24 +393,24 @@ void CWin32ContextManager::glMakeCurrentContext(const RAPTOR_HANDLE& device,REND
 	if ((ctx >= 0) && (ctx < MAX_CONTEXT))
 	{
 		context_t& context = pContext[ctx];
-		if (device.hClass != NULL)
+		if (device.hClass() != NULL)
 		{
-			if ((device.hClass == WINDOW_CLASS) && (device.handle != NULL))
+			if ((device.hClass() == WINDOW_CLASS) && (device.handle() != NULL))
 			{
-				context.WIN32Window = (HWND)(device.handle);
+				context.WIN32Window = (HWND)(device.handle());
                 
 				// Is this better ? yes in case the context does not exist (e.g. windows 7 or iGPU)
 				context.WIN32Context = GetDC(context.WIN32Window);
 				//context.WIN32Context = BeginPaint(context.WIN32Window,&context.WIN32Paint);
 			}
-			else if ((device.hClass == DEVICE_CONTEXT_CLASS) && (device.handle != NULL))
+			else if ((device.hClass() == DEVICE_CONTEXT_CLASS) && (device.handle() != NULL))
 			{
-                HDC hDevice = (HDC)(device.handle);
+                HDC hDevice = (HDC)(device.handle());
                 context.WIN32Context = hDevice;
 			}
-            else if ((device.hClass == DIB_CLASS) && (device.handle != NULL))
+            else if ((device.hClass() == DIB_CLASS) && (device.handle() != NULL))
 			{
-                HDC hDevice = (HDC)(device.handle);
+                HDC hDevice = (HDC)(device.handle());
                 context.WIN32Context = hDevice;
 			}
             if (context.WIN32Context != NULL)
@@ -462,12 +469,6 @@ void CWin32ContextManager::glSwapBuffers(RENDERING_CONTEXT_ID ctx)
 	if ((ctx >= 0) && (ctx < MAX_CONTEXT))
 	{
 		context_t& context = pContext[ctx];
-
-#ifdef SHAREWARE_RELEASE
-		if (Global::GetInstance().getCurrentStatus().runAsShareware)
-			glDrawLogo();
-#endif
-		
         wglSwapLayerBuffers(context.WIN32Context,WGL_SWAP_MAIN_PLANE);
 
         CATCH_WIN32_ERROR
@@ -603,9 +604,7 @@ RAPTOR_HANDLE CWin32ContextManager::glCreateWindow(const CRaptorDisplayConfig& c
 	SetFocus(hwnd);
 
 	HDC dc = GetDC(hwnd);
-	RAPTOR_HANDLE device;
-	device.handle = (unsigned int)(dc);
-    device.hClass = DEVICE_CONTEXT_CLASS;
+	RAPTOR_HANDLE device(DEVICE_CONTEXT_CLASS,(unsigned int)(dc));
 
 	RENDERING_CONTEXT_ID id = CContextManager::INVALID_CONTEXT;
 	if (CRaptorDisplayConfig::GENERIC == pda.acceleration)
@@ -614,8 +613,8 @@ RAPTOR_HANDLE CWin32ContextManager::glCreateWindow(const CRaptorDisplayConfig& c
         pDisplay = NULL;
 		if (CContextManager::INVALID_CONTEXT != id)
 	    {
-		    wnd.handle = (unsigned int)hwnd;
-		    wnd.hClass = WINDOW_CLASS;
+		    wnd.handle((unsigned int)hwnd);
+		    wnd.hClass(WINDOW_CLASS);
             ctx = id;
 	    }
 	    else
@@ -649,8 +648,8 @@ RAPTOR_HANDLE CWin32ContextManager::glCreateWindow(const CRaptorDisplayConfig& c
 		}
 		if (CContextManager::INVALID_CONTEXT != id)
 	    {
-		    wnd.handle = (unsigned int)hwnd;
-		    wnd.hClass = WINDOW_CLASS;
+		    wnd.handle((unsigned int)hwnd);
+		    wnd.hClass(WINDOW_CLASS);
 	    }
 	    else
 	    {
@@ -672,10 +671,10 @@ RAPTOR_HANDLE CWin32ContextManager::glCreateWindow(const CRaptorDisplayConfig& c
 
 bool CWin32ContextManager::glDestroyWindow(const RAPTOR_HANDLE& wnd)
 {
-    if ((wnd.hClass != WINDOW_CLASS) || (wnd.handle == 0))
+    if ((wnd.hClass() != WINDOW_CLASS) || (wnd.handle() == 0))
         return false;
 
-    HWND hwnd = (HWND)(wnd.handle);
+    HWND hwnd = (HWND)(wnd.handle());
     return (0 != DestroyWindow(hwnd));
 }
 
@@ -685,14 +684,14 @@ bool CWin32ContextManager::glDestroyWindow(const RAPTOR_HANDLE& wnd)
 CContextManager::RENDERING_CONTEXT_ID CWin32ContextManager::glCreateContext(const RAPTOR_HANDLE& device,
 																			const CRaptorDisplayConfig& config)
 {
-	if (device.handle == 0)
+	if (device.handle() == 0)
 	{
-		RAPTOR_ERROR( Global::COpenGLClassID::GetClassId(),"Raptor cannot create a valid context on an Invalid device");
+		RAPTOR_ERROR( COpenGL::COpenGLClassID::GetClassId(),"Raptor cannot create a valid context on an Invalid device");
 		return CContextManager::INVALID_CONTEXT;
 	}
 	if (nbContext >= MAX_CONTEXT)
 	{
-		RAPTOR_ERROR( Global::COpenGLClassID::GetClassId(),"Too many Rendering Context created");
+		RAPTOR_ERROR(COpenGL::COpenGLClassID::GetClassId(), "Too many Rendering Context created");
 		return CContextManager::INVALID_CONTEXT;
 	}
 
@@ -707,14 +706,14 @@ CContextManager::RENDERING_CONTEXT_ID CWin32ContextManager::glCreateContext(cons
 	BYTE	overlaybits = 0;
 	BYTE	accumbits = 0;
 
-    if (device.hClass == DIB_CLASS)
+    if (device.hClass() == DIB_CLASS)
     {
-        hDC = (HDC)device.handle;
+        hDC = (HDC)device.handle();
         flags = PFD_DRAW_TO_BITMAP | PFD_SUPPORT_OPENGL | PFD_GENERIC_ACCELERATED;
     }
-    else if (device.hClass == DEVICE_CONTEXT_CLASS)
+    else if (device.hClass() == DEVICE_CONTEXT_CLASS)
     {
-        hDC = (HDC)device.handle;
+        hDC = (HDC)device.handle();
         flags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_SWAP_EXCHANGE;
     }
 	if (0 == hDC)
@@ -757,20 +756,20 @@ CContextManager::RENDERING_CONTEXT_ID CWin32ContextManager::glCreateContext(cons
 
 	if ( (pixelformat = ChoosePixelFormat(hDC, &pfd)) == 0 ) 
 	{
-		RAPTOR_FATAL( Global::COpenGLClassID::GetClassId(),"Raptor Context Manager failed to choose pixel format");
+		RAPTOR_FATAL(COpenGL::COpenGLClassID::GetClassId(), "Raptor Context Manager failed to choose pixel format");
 		return CContextManager::INVALID_CONTEXT;
 	}
 
 	if (SetPixelFormat(hDC, pixelformat, &pfd) == FALSE) 
 	{ 
-		RAPTOR_FATAL( Global::COpenGLClassID::GetClassId(),"Raptor Context Manager failed to set pixel format");
+		RAPTOR_FATAL(COpenGL::COpenGLClassID::GetClassId(), "Raptor Context Manager failed to set pixel format");
 		return CContextManager::INVALID_CONTEXT;
 	}
 
 	glhrc = wglCreateContext(hDC);
 	if (!glhrc)
 	{
-		RAPTOR_FATAL( Global::COpenGLClassID::GetClassId(),"Raptor Context Manager failed to create OpenGL context");
+		RAPTOR_FATAL(COpenGL::COpenGLClassID::GetClassId(), "Raptor Context Manager failed to create OpenGL context");
 		return CContextManager::INVALID_CONTEXT;
 	}
 
@@ -812,15 +811,15 @@ CContextManager::RENDERING_CONTEXT_ID CWin32ContextManager::glCreateContext(cons
 CContextManager::RENDERING_CONTEXT_ID  CWin32ContextManager::glCreateExtendedContext(const RAPTOR_HANDLE& device,
 																					 const CRaptorDisplayConfig& config)
 {
-    if (device.handle == 0)
+    if (device.handle() == 0)
 	{
-		RAPTOR_ERROR( Global::COpenGLClassID::GetClassId(),"Raptor cannot create a valid context on an Invalid device");
+		RAPTOR_ERROR(COpenGL::COpenGLClassID::GetClassId(), "Raptor cannot create a valid context on an Invalid device");
 		return CContextManager::INVALID_CONTEXT;
 	}
 
 	if (nbContext >= MAX_CONTEXT)
 	{
-		RAPTOR_ERROR( Global::COpenGLClassID::GetClassId(),"Too many Rendering Context created");
+		RAPTOR_ERROR(COpenGL::COpenGLClassID::GetClassId(), "Too many Rendering Context created");
 		return CContextManager::INVALID_CONTEXT;
 	}
 
@@ -837,24 +836,24 @@ CContextManager::RENDERING_CONTEXT_ID  CWin32ContextManager::glCreateExtendedCon
 		memset(piAttribIList,0,2*30*sizeof(int));
 		unsigned int attribIndex = 0;
 
-        HDC hDC = (HDC)device.handle;
-        if (device.hClass == DIB_CLASS)
+        HDC hDC = (HDC)device.handle();
+        if (device.hClass() == DIB_CLASS)
         {
             piAttribIList[attribIndex++] = WGL_DRAW_TO_BITMAP_ARB; 
             piAttribIList[attribIndex++] = TRUE;
-			hDC = (HDC)device.handle;
+			hDC = (HDC)device.handle();
         }
-        else if (device.hClass == DEVICE_CONTEXT_CLASS)
+        else if (device.hClass() == DEVICE_CONTEXT_CLASS)
         {
             piAttribIList[attribIndex++] = WGL_DRAW_TO_WINDOW_ARB; 
             piAttribIList[attribIndex++] = TRUE;
-			hDC = (HDC)device.handle;
+			hDC = (HDC)device.handle();
         }
-		else if (device.hClass == WINDOW_CLASS)
+		else if (device.hClass() == WINDOW_CLASS)
 		{
 			piAttribIList[attribIndex++] = WGL_DRAW_TO_WINDOW_ARB; 
             piAttribIList[attribIndex++] = TRUE;
-			hDC = GetDC((HWND)device.handle);
+			hDC = GetDC((HWND)device.handle());
 		}
 
 		//	All this stuff .... is for OpenGL of course !!!
@@ -885,7 +884,7 @@ CContextManager::RENDERING_CONTEXT_ID  CWin32ContextManager::glCreateExtendedCon
 		int pixelformat;
 		if (( CRaptorGLExtensions::wglChoosePixelFormatARB(hDC, piAttribIList,NULL,1,&pixelformat,&nNumFormats) == 0 ) || (nNumFormats == 0))
 		{
-			RAPTOR_FATAL( Global::COpenGLClassID::GetClassId(),"Raptor Context Manager failed to choose EXT pixel format");
+			RAPTOR_FATAL(COpenGL::COpenGLClassID::GetClassId(), "Raptor Context Manager failed to choose EXT pixel format");
 			return CContextManager::INVALID_CONTEXT;
 		}
 
@@ -893,14 +892,14 @@ CContextManager::RENDERING_CONTEXT_ID  CWin32ContextManager::glCreateExtendedCon
 		DescribePixelFormat(hDC, pixelformat,sizeof(PIXELFORMATDESCRIPTOR), &pfd);
 		if (SetPixelFormat(hDC, pixelformat, &pfd) == FALSE) 
 		{ 
-			RAPTOR_FATAL( Global::COpenGLClassID::GetClassId(),"Raptor Context Manager failed to set pixel format");
+			RAPTOR_FATAL(COpenGL::COpenGLClassID::GetClassId(), "Raptor Context Manager failed to set pixel format");
 			return CContextManager::INVALID_CONTEXT;
 		}
 
 		glhrc = wglCreateContext(hDC);
 		if (!glhrc)
 		{
-			RAPTOR_FATAL( Global::COpenGLClassID::GetClassId(),"Raptor Context Manager failed to create OpenGL EXT context");
+			RAPTOR_FATAL(COpenGL::COpenGLClassID::GetClassId(), "Raptor Context Manager failed to create OpenGL EXT context");
 			return CContextManager::INVALID_CONTEXT;
 		}
 
@@ -931,9 +930,9 @@ CContextManager::RENDERING_CONTEXT_ID  CWin32ContextManager::glCreateExtendedCon
 		m_currentGLContext = oldContext;
 		wglMakeCurrent(hDC, NULL);
 
-		if (device.hClass == WINDOW_CLASS)
+		if (device.hClass() == WINDOW_CLASS)
 		{
-			ReleaseDC((HWND)device.handle,hDC);
+			ReleaseDC((HWND)device.handle(),hDC);
 		}
 
         CATCH_WIN32_ERROR
@@ -952,13 +951,13 @@ CContextManager::RENDERING_CONTEXT_ID  CWin32ContextManager::glCreateExtendedCon
 	{
 		if (nbPBuffers >= MAX_PBUFFERS)
 		{
-			RAPTOR_ERROR( Global::COpenGLClassID::GetClassId(),"Too many Pixel Buffers created");
+			RAPTOR_ERROR(COpenGL::COpenGLClassID::GetClassId(), "Too many Pixel Buffers created");
 			return 0;
 		}
 
 		if ((m_currentGLContext < 0) || (m_currentGLContext >= MAX_CONTEXT))
 		{
-            RAPTOR_FATAL( Global::COpenGLClassID::GetClassId(),"No active rendering context to create a pbuffer");
+			RAPTOR_FATAL(COpenGL::COpenGLClassID::GetClassId(), "No active rendering context to create a pbuffer");
             return 0;
 		} 
         
@@ -968,7 +967,7 @@ CContextManager::RENDERING_CONTEXT_ID  CWin32ContextManager::glCreateExtendedCon
 			(context.pExtensions->wglChoosePixelFormatARB == NULL) || 
 			(context.pExtensions->wglGetPBufferDCARB == NULL))
 		{
-			RAPTOR_FATAL( Global::COpenGLClassID::GetClassId(),"Your driver or GPU does not support Pixel Buffers");
+			RAPTOR_FATAL(COpenGL::COpenGLClassID::GetClassId(), "Your driver or GPU does not support Pixel Buffers");
 			return 0;
 		}
 
@@ -1027,7 +1026,7 @@ CContextManager::RENDERING_CONTEXT_ID  CWin32ContextManager::glCreateExtendedCon
 				(context.pExtensions->wglReleaseTexImageARB == NULL) || 
 				(context.pExtensions->wglSetPbufferAttribARB == NULL))
 			{
-				RAPTOR_FATAL( Global::COpenGLClassID::GetClassId(),"Your driver or GPU does not support texture rendering");
+				RAPTOR_FATAL( COpenGL::COpenGLClassID::GetClassId(),"Your driver or GPU does not support texture rendering");
 				return 0;
 			}
 		}
@@ -1038,7 +1037,7 @@ CContextManager::RENDERING_CONTEXT_ID  CWin32ContextManager::glCreateExtendedCon
 		int pixelformat;
 		if ((context.pExtensions->wglChoosePixelFormatARB(hdc, piAttribIList,NULL,1,&pixelformat,&nNumFormats) == 0 ) || (nNumFormats == 0))
 		{
-			RAPTOR_FATAL( Global::COpenGLClassID::GetClassId(),"Raptor failed to choose pixel format for PBuffer");
+			RAPTOR_FATAL(COpenGL::COpenGLClassID::GetClassId(), "Raptor failed to choose pixel format for PBuffer");
 			return 0; 
 		}
 
@@ -1073,21 +1072,21 @@ CContextManager::RENDERING_CONTEXT_ID  CWin32ContextManager::glCreateExtendedCon
 		HPBUFFERARB hpbuf = context.pExtensions->wglCreatePBufferARB(hdc,pixelformat,pcs.width,pcs.height,pBufferAttribs);
 		if (hpbuf == NULL)
 		{
-			RAPTOR_FATAL( Global::COpenGLClassID::GetClassId(),"Raptor failed to create PBuffer");
+			RAPTOR_FATAL(COpenGL::COpenGLClassID::GetClassId(), "Raptor failed to create PBuffer");
 			return 0;
 		}
 
 		HDC hpbufdc = context.pExtensions->wglGetPBufferDCARB(hpbuf);
 		if (!hpbufdc)
 		{
-			RAPTOR_FATAL( Global::COpenGLClassID::GetClassId(),"Raptor failed to create PBuffer device context");
+			RAPTOR_FATAL(COpenGL::COpenGLClassID::GetClassId(), "Raptor failed to create PBuffer device context");
 			return 0;
 		}
 
 		HGLRC hpbufglhrc = wglCreateContext(hpbufdc);
 		if (!hpbufglhrc)
 		{
-			RAPTOR_FATAL( Global::COpenGLClassID::GetClassId(),"Raptor failed to create PBuffer OpenGL context");
+			RAPTOR_FATAL(COpenGL::COpenGLClassID::GetClassId(), "Raptor failed to create PBuffer OpenGL context");
 			return 0;
 		}
 		
@@ -1106,7 +1105,7 @@ CContextManager::RENDERING_CONTEXT_ID  CWin32ContextManager::glCreateExtendedCon
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 		if (res == FALSE)
 		{
-			RAPTOR_WARNING( Global::COpenGLClassID::GetClassId(),"Unable to share PBuffer display lists");
+			RAPTOR_WARNING( COpenGL::COpenGLClassID::GetClassId(),"Unable to share PBuffer display lists");
 		}
 #endif
 
@@ -1118,7 +1117,7 @@ CContextManager::RENDERING_CONTEXT_ID  CWin32ContextManager::glCreateExtendedCon
 	{
 		if (pbuffer > MAX_PBUFFERS)
 		{
-			RAPTOR_ERROR( Global::COpenGLClassID::GetClassId(),"Exceeded max number of pBuffers");
+			RAPTOR_ERROR( COpenGL::COpenGLClassID::GetClassId(),"Exceeded max number of pBuffers");
 			return false;
 		}
 
@@ -1127,20 +1126,20 @@ CContextManager::RENDERING_CONTEXT_ID  CWin32ContextManager::glCreateExtendedCon
 
 		if (FALSE == wglDeleteContext(pBuffers[pbuffer].pbufferGLRC))
 		{
-			RAPTOR_FATAL( Global::COpenGLClassID::GetClassId(),"Raptor failed to destroy PBuffer OpenGL context");
+			RAPTOR_FATAL(COpenGL::COpenGLClassID::GetClassId(), "Raptor failed to destroy PBuffer OpenGL context");
 			return false;
 		}
 		
        const CRaptorGLExtensions *const pExtensions = this->glGetExtensions();
 		if (0 == pExtensions->wglReleasePBufferDCARB(pBuffers[pbuffer].pbuffer,pBuffers[pbuffer].pbufferDC))
 		{
-			RAPTOR_FATAL( Global::COpenGLClassID::GetClassId(),"Raptor failed to release PBuffer device context");
+			RAPTOR_FATAL(COpenGL::COpenGLClassID::GetClassId(), "Raptor failed to release PBuffer device context");
 			return false;
 		}
 
 		if (0 == pExtensions->wglDestroyPBufferARB(pBuffers[pbuffer].pbuffer))
 		{
-			RAPTOR_FATAL( Global::COpenGLClassID::GetClassId(),"Raptor failed to destroy PBuffer");
+			RAPTOR_FATAL(COpenGL::COpenGLClassID::GetClassId(), "Raptor failed to destroy PBuffer");
 			return false;
 		}
 
@@ -1161,7 +1160,7 @@ CContextManager::RENDERING_CONTEXT_ID  CWin32ContextManager::glCreateExtendedCon
 			str << "Raptor pBuffer ";
 			str << (pbuffer+1);
             str << " does not exist";
-			RAPTOR_ERROR( Global::COpenGLClassID::GetClassId(),str.str());
+			RAPTOR_ERROR(COpenGL::COpenGLClassID::GetClassId(), str.str());
 			return;
 		}
   
@@ -1196,7 +1195,7 @@ CContextManager::RENDERING_CONTEXT_ID  CWin32ContextManager::glCreateExtendedCon
 #if defined(WGL_ARB_render_texture)
 		if (pbuffer > MAX_PBUFFERS)
 		{
-			RAPTOR_ERROR( Global::COpenGLClassID::GetClassId(),"Exceeded max number of pBuffers");
+			RAPTOR_ERROR( COpenGL::COpenGLClassID::GetClassId(),"Exceeded max number of pBuffers");
 			return false;
 		}
 		
@@ -1208,7 +1207,7 @@ CContextManager::RENDERING_CONTEXT_ID  CWin32ContextManager::glCreateExtendedCon
 			str << "Raptor pBuffer ";
 			str << (pbuffer+1);
             str << " does not exist or texture rendering not supported";
-			RAPTOR_ERROR( Global::COpenGLClassID::GetClassId(),str.str());
+			RAPTOR_ERROR(COpenGL::COpenGLClassID::GetClassId(), str.str());
 			return false;
 		}
 /*
@@ -1243,7 +1242,7 @@ CContextManager::RENDERING_CONTEXT_ID  CWin32ContextManager::glCreateExtendedCon
 #if defined(WGL_ARB_render_texture)
 		if (pbuffer > MAX_PBUFFERS)
 		{
-			RAPTOR_ERROR( Global::COpenGLClassID::GetClassId(),"Exceeded max number of pBuffers");
+			RAPTOR_ERROR(COpenGL::COpenGLClassID::GetClassId(), "Exceeded max number of pBuffers");
 			return false;
 		}
 
@@ -1255,7 +1254,7 @@ CContextManager::RENDERING_CONTEXT_ID  CWin32ContextManager::glCreateExtendedCon
 			str << "Raptor pBuffer ";
             str << (pbuffer+1);
             str << " does not exist or texture rendering not supported";
-			RAPTOR_ERROR( Global::COpenGLClassID::GetClassId(),str.str());
+			RAPTOR_ERROR(COpenGL::COpenGLClassID::GetClassId(), str.str());
 			return false;
 		}
 
@@ -1287,7 +1286,7 @@ bool CWin32ContextManager::vkInit(void)
 	std::string vkpath = buffer;
 	vkpath += "\\VULKAN-1.DLL";
 	HMODULE module = LoadLibrary(vkpath.c_str());
-	vulkanModule.handle = (unsigned int)module;
+	vulkanModule.handle((unsigned int)module);
 
 	if (NULL != module)
 	{
@@ -1300,7 +1299,7 @@ bool CWin32ContextManager::vkInit(void)
 												instance_extensions.vkIsExtensionSupported(VK_KHR_WIN32_SURFACE_EXTENSION_NAME);
 			if (!surface_rendering_supported)
 			{
-				RAPTOR_ERROR(	Global::CVulkanClassID::GetClassId(),
+				RAPTOR_ERROR(CVulkan::CVulkanClassID::GetClassId(),
 								"Vulkan API does not support rendering to surface");
 			}
 			return surface_rendering_supported;
@@ -1314,9 +1313,9 @@ bool CWin32ContextManager::vkRelease(void)
 {
 	if (CContextManager::vkRelease())
 	{
-		if (0 != vulkanModule.handle)
+		if (0 != vulkanModule.handle())
 		{
-			HMODULE module = (HMODULE)vulkanModule.handle;
+			HMODULE module = (HMODULE)vulkanModule.handle();
 			BOOL res = FreeLibrary(module);
 			return (res == TRUE);
 		}
@@ -1348,7 +1347,7 @@ uint32_t CWin32ContextManager::getPresentationSuppotQueueFamily(RENDERING_CONTEX
 
 	if (MAXUINT == presentation_queue)
 	{
-		RAPTOR_ERROR(Global::CVulkanClassID::GetClassId(),
+		RAPTOR_ERROR(CVulkan::CVulkanClassID::GetClassId(),
 					 "No queue family supports WSI rendering");
 	}
 
@@ -1361,9 +1360,9 @@ uint32_t CWin32ContextManager::getPresentationSuppotQueueFamily(RENDERING_CONTEX
 
 bool CWin32ContextManager::vkCreateSurface(const RAPTOR_HANDLE& handle,RENDERING_CONTEXT_ID ctx)
 {
-	if (WINDOW_CLASS == handle.hClass)
+	if (WINDOW_CLASS == handle.hClass())
 	{
-		HWND hWnd = (HWND)handle.handle;
+		HWND hWnd = (HWND)handle.handle();
 		HINSTANCE hInstance = (HINSTANCE)GetWindowLong(hWnd, GWL_HINSTANCE);
 		VkWin32SurfaceCreateInfoKHR createInfo = {	VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR,
 													NULL,0, //flags,
@@ -1378,7 +1377,7 @@ bool CWin32ContextManager::vkCreateSurface(const RAPTOR_HANDLE& handle,RENDERING
 				res = context.pExtensions->vkCreateWin32SurfaceKHR(CRaptorVKExtensions::getInstance(), &createInfo, NULL, &surface);
 			if (VK_SUCCESS != res)
 			{
-				RAPTOR_ERROR(Global::CVulkanClassID::GetClassId(),
+				RAPTOR_ERROR(CVulkan::CVulkanClassID::GetClassId(),
 							 "Failed to create Vulkan rendering surface");
 				return false;
 			}

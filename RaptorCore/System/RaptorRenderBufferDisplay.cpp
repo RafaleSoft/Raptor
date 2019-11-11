@@ -3,42 +3,36 @@
 #if !defined(AFX_RAPTORRENDERBUFFERDISPLAY_H__AC23F2BD_DAC5_4B9A_9F75_AD9A2CEEAE08__INCLUDED_)
 	#include "RaptorRenderBufferDisplay.h"
 #endif
-
-#ifndef __GLOBAL_H__
-	#include "System/Global.h"
-#endif
-
 #if !defined(AFX_3DSCENE_H__E597E752_BAD4_415D_9C00_8C59D139D32B__INCLUDED_)
 	#include "Engine/3DScene.h"
 #endif
-
 #if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
     #include "Raptor.h"
 #endif
-
 #if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
 	#include "RaptorGLExtensions.h"
 #endif
-
 #if !defined(AFX_TEXTUREOBJECT_H__D32B6294_B42B_4E6F_AB73_13B33C544AD0__INCLUDED_)
 	#include "GLHierarchy/TextureObject.h"
 #endif
-
 #if !defined(AFX_TEXTURESET_H__26F3022D_70FE_414D_9479_F9CCD3DCD445__INCLUDED_)
 	#include "GLHierarchy/TextureSet.h"
 #endif
-
 #if !defined(AFX_IVIEWPOINT_H__82071851_A036_4311_81CB_01E7E25F19E1__INCLUDED_)
 	#include "Engine/IViewPoint.h"
 #endif
-
 #if !defined(AFX_GEOMETRYALLOCATOR_H__802B3C7A_43F7_46B2_A79E_DDDC9012D371__INCLUDED_)
 	#include "Subsys/GeometryAllocator.h"
 #endif
 #if !defined(AFX_TEXELALLOCATOR_H__7C48808C_E838_4BE3_8B0E_286428BB7CF8__INCLUDED_)
 	#include "Subsys/TexelAllocator.h"
 #endif
-
+#if !defined(AFX_OPENGL_H__6C8840CA_BEFA_41DE_9879_5777FBBA7147__INCLUDED_)
+	#include "Subsys/OpenGL/RaptorOpenGL.h"
+#endif
+#if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
+	#include "System/RaptorErrorManager.h"
+#endif
 
 RAPTOR_NAMESPACE
 
@@ -66,7 +60,9 @@ CRaptorRenderBufferDisplay::CRaptorRenderBufferDisplay(const CRaptorDisplayConfi
 CRaptorRenderBufferDisplay::~CRaptorRenderBufferDisplay()
 {
     //  Unbind, in case it is forgotten by the user.
-    glvkUnBindDisplay();
+    //glvkUnBindDisplay();
+	RAPTOR_HANDLE noDisplay(0, (void*)0);
+	glvkBindDisplay(noDisplay);
 
 	if (m_pAttachments != NULL)
 	{
@@ -77,6 +73,8 @@ CRaptorRenderBufferDisplay::~CRaptorRenderBufferDisplay()
 	}
 
 	glDestroyBuffer();
+
+	glvkUnBindDisplay();
 }
 
 void CRaptorRenderBufferDisplay::unLink(const CPersistence* obj)
@@ -207,9 +205,8 @@ bool CRaptorRenderBufferDisplay::glDetachBuffers()
 			if ((T->getWidth() != cs.width) ||
 				(T->getHeight() != cs.height))
 			{
-				Raptor::GetErrorManager()->generateRaptorError(	Global::COpenGLClassID::GetClassId(),
-																CRaptorErrorManager::RAPTOR_ERROR,
-																"Raptor Render Buffer Display is attached to a texture with invalid sizes");
+				RAPTOR_ERROR(	COpenGL::COpenGLClassID::GetClassId(),
+								"Raptor Render Buffer Display is attached to a texture with invalid sizes");
 			}
 
 			ITextureObject::TEXEL_TYPE tt = T->getTexelType();
@@ -461,7 +458,7 @@ bool CRaptorRenderBufferDisplay::createFrameBuffer(void)
 
 bool CRaptorRenderBufferDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
 {
-	if (device.hClass == CTextureSet::CTextureSetClassID::GetClassId().ID())
+	if (device.hClass() == CTextureSet::CTextureSetClassID::GetClassId().ID())
 	{
 		if (m_pAttachments != NULL)
 		{
@@ -469,9 +466,9 @@ bool CRaptorRenderBufferDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
 			m_pAttachments = NULL;
 		}
 
-		if (0 != device.handle)
+		if (0 != device.handle())
 		{
-			m_pAttachments = (CTextureSet*)device.handle;
+			m_pAttachments = device.ptr<CTextureSet>();
 			m_pAttachments->registerDestruction(this);
 			cs.bind_to_texture = true;
 			return (m_pAttachments->getNbTexture() > 0);
@@ -497,8 +494,7 @@ bool CRaptorRenderBufferDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
 	m_bindingStack.push_back(m_framebuffer);
 
 	glPushAttrib(GL_VIEWPORT_BIT);
-	//glViewport(cs.x,cs.y,cs.width,cs.height);
-	glViewport(0,0,cs.width,cs.height); // Viewport is relative to window !!!
+	glViewport(/*cs.x,cs.y*/0,0,cs.width,cs.height); // Viewport is relative to window !!!
 	glMatrixMode(GL_PROJECTION);
 	glPushMatrix();
 	glMatrixMode(GL_MODELVIEW);
@@ -539,9 +535,7 @@ bool CRaptorRenderBufferDisplay::glvkUnBindDisplay(void)
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 		if (previousBinding != m_framebuffer)
 		{
-			Raptor::GetErrorManager()->generateRaptorError(	Global::COpenGLClassID::GetClassId(),
-															CRaptorErrorManager::RAPTOR_ERROR,
-															"Raptor Render Buffer Display bind/unbind mismatch");
+			RAPTOR_ERROR(COpenGL::COpenGLClassID::GetClassId(), "Raptor Render Buffer Display bind/unbind mismatch");
 		}
 #endif
 	}
@@ -607,9 +601,8 @@ void CRaptorRenderBufferDisplay::glResize(unsigned int sx,unsigned int sy,unsign
     if ((sx == 0) || (sy == 0))
     {
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
-        Raptor::GetErrorManager()->generateRaptorError(	Global::COpenGLClassID::GetClassId(),
-														CRaptorErrorManager::RAPTOR_ERROR,
-		    							                "Raptor Render Buffer Display is requested a resize with a wrong dimension ( 0 ) !");
+		RAPTOR_ERROR(	COpenGL::COpenGLClassID::GetClassId(),
+						"Raptor Render Buffer Display is requested a resize with a wrong dimension ( 0 ) !");
 #endif
         return;
     }
@@ -649,7 +642,8 @@ void CRaptorRenderBufferDisplay::glResize(unsigned int sx,unsigned int sy,unsign
     CATCH_GL_ERROR
 }
 
-bool CRaptorRenderBufferDisplay::glGrab(unsigned int x, unsigned int y, unsigned int width, unsigned int height, unsigned char* &data,unsigned int& size) const
+bool CRaptorRenderBufferDisplay::glGrab(uint32_t x, uint32_t y, uint32_t width, uint32_t height,
+										uint8_t* &data, size_t& size) const
 {
 	if (m_framebuffer == 0)
 		return false;
@@ -684,8 +678,8 @@ bool CRaptorRenderBufferDisplay::glGrab(unsigned int x, unsigned int y, unsigned
 #endif
 }
 
-bool CRaptorRenderBufferDisplay::glBlit(unsigned int xSrc, unsigned int ySrc, unsigned int widthSrc, unsigned int heightSrc,
-										unsigned int xDst, unsigned int yDst, unsigned int widthDst, unsigned int heightDst,
+bool CRaptorRenderBufferDisplay::glBlit(uint32_t xSrc, uint32_t ySrc, uint32_t widthSrc, uint32_t heightSrc,
+										uint32_t xDst, uint32_t yDst, uint32_t widthDst, uint32_t heightDst,
 										CRaptorDisplay *pDst) const
 {
 	bool res = false;
@@ -801,7 +795,7 @@ bool CRaptorRenderBufferDisplay::checkBufferStatus(void) const
 	}
            
 	if (status != GL_FRAMEBUFFER_COMPLETE_EXT)
-		RAPTOR_ERROR(	Global::COpenGLClassID::GetClassId(),
+		RAPTOR_ERROR(	COpenGL::COpenGLClassID::GetClassId(),
 						"Raptor Render Buffer Display failed to initialize: " + msg);
 #endif
 

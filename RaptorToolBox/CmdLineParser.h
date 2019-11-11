@@ -9,8 +9,6 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-using std::string;
-
 
 RAPTOR_NAMESPACE
 
@@ -22,30 +20,30 @@ public:
 	class CCommandLineOption
 	{
 	public:
-		CCommandLineOption(const string &name,const string &shortname)
+		CCommandLineOption(const std::string &name, const std::string &shortname)
 			:m_name(name),m_short(shortname) {};
 		virtual ~CCommandLineOption() {};
 
-		virtual const string& getName(void) const
+		virtual const std::string& getName(void) const
 		{ return m_name; };
 
-		virtual const string& getShort(void) const
+		virtual const std::string& getShort(void) const
 		{ return m_short; };
 
 		virtual bool parse(const char* argv)
 		{ return false; };
 
 	private:
-		string	m_name;
-		string	m_short;
+		std::string	m_name;
+		std::string	m_short;
 	};
 	
 	template <class T>
 	class CCommandLineOptionValue : public CCommandLineOption
 	{
 	public:
-		CCommandLineOptionValue(const string &name,
-								const string &shortname,
+		CCommandLineOptionValue(const std::string &name,
+								const std::string &shortname,
 								T defaultValue)
 			:CCommandLineOption(name,shortname),
 			m_value(defaultValue) {};
@@ -78,7 +76,7 @@ public:
 	//!	@param defaultValue : initial or default option value.
 	//!	@return true if option successfully added, false if error (e.g. option already exists).
 	template <class T>
-	bool addOption(const string &name,const string &shortname,T defaultValue);
+	bool addOption(const std::string &name, const std::string &shortname, T defaultValue);
 
 	//!	Parse the command line to retrive values as specified.
 	//!	@param argc : argument count.
@@ -87,15 +85,16 @@ public:
 
 	//!	Retrive an option value by name.
 	template <class T>
-	bool getValue(const string& optionName,T &t) const;
+	bool getValue(const std::string& optionName, T &t) const;
 
 private:
 	vector<CCommandLineOption*> m_options;
 };
 
+
 template <class T>
-bool CCmdLineParser::addOption(	const string &name,
-								const string &shortname,
+bool CCmdLineParser::addOption(const std::string &name,
+							   const std::string &shortname,
 								T defaultValue)
 {
 	bool exist = false;
@@ -113,7 +112,7 @@ bool CCmdLineParser::addOption(	const string &name,
 }
 
 template <class T>
-bool CCmdLineParser::getValue(const string& optionName,T& t) const
+bool CCmdLineParser::getValue(const std::string& optionName, T& t) const
 {
 	for (unsigned int o=0;o<m_options.size();o++)
 	{
@@ -131,65 +130,5 @@ bool CCmdLineParser::getValue(const string& optionName,T& t) const
 	return false;
 }
 
-
-template <>
-CCmdLineParser::CCommandLineOptionValue<const char*>::CCommandLineOptionValue(	const string &name,
-																				const string &shortname,
-																				const char* defaultValue)
-	:CCommandLineOption(name,shortname),
-	m_value(NULL)
-{
-	char *option = (char*)m_value;
-	option = _strdup(defaultValue);
-}
-
-template <>
-CCmdLineParser::CCommandLineOptionValue<const char*>::~CCommandLineOptionValue()
-{
-	if (m_value != NULL)
-		free((void*)m_value);
-}
-
-template <>
-bool CCmdLineParser::CCommandLineOptionValue<unsigned int>::parse(const char* argv)
-{
-	m_value = atoi(argv);
-	return true;
-}
-
-template <>
-bool CCmdLineParser::CCommandLineOptionValue<unsigned short>::parse(const char* argv)
-{
-	m_value = (unsigned short)(0xffff & atoi(argv));
-	return true;
-}
-
-template <>
-bool CCmdLineParser::CCommandLineOptionValue<const char*>::parse(const char* argv)
-{
-	if (m_value != NULL)
-		free((void*)m_value);
-
-	m_value = _strdup(argv);
-
-	return true;
-}
-
-
-template <>
-bool CCmdLineParser::CCommandLineOptionValue<vector<unsigned int>>::parse(const char* argv)
-{
-	m_value.push_back((unsigned int)(0xffff & atoi(argv)));
-	return true;
-}
-
-template <>
-bool CCmdLineParser::CCommandLineOptionValue<vector<string>>::parse(const char* argv)
-{
-	if (argv != NULL)
-		m_value.push_back(string(argv));
-
-	return true;
-}
 
 #endif // !defined(AFX_CMDLINEPARSER_H__D7D8768A_3D97_491F_8493_588972A3CF62__INCLUDED_)

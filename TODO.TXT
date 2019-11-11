@@ -1,10 +1,22 @@
 - Ajouter un dialog pour Vulkan Status comme OpenGL.
 
-- BasicObjects:
-	- Ajouter un TextureQuad le plus simple possible
+- CObject3DInstance:
+	- supprimer le shader ou bien le rendre générique (c.f. ShadedGeometry)
+
+- CTextureQuad:
+	- ajouter une méthode pour faire le render sur une liste de Quads.
 
 - CRaptorDisplay:
 	- déplacer les fps et timings dans CRaptorDisplayConfig ( ==> glQueryStatus )
+
+- glEnableVertexAttribArrayARB / glVertexPointer
+	- faire une helper class qui gère les différentes extensions / profils pour setter les vertex data.
+		==> ArrayState / BindArray ?
+	- constructeur/enable ; destructeur/disable ?
+		==> comment gérer la réentrance et la réutilisaiton ? (offsets)
+
+- CRaptorRenderBufferDisplay:
+	- appels récurrents à glvkRenderViewPointModel. Pourquoi ? c.f. CRaptorDisplay & m_bApplyViewPointModel.
 
 - CContextManager:
 	factoriser getPresentationSuppotQueueFamily et vk_ctx.pSurface->supportPresentation(physical, numQueue):
@@ -39,10 +51,6 @@
 	- Supprimer CBumppedGeometry => remplacer par le shader.
 	- Remplacer / améliorer par displacement map / parallax bump mapping
 	
-- Persistence:
-	- Creer un RootPersitence pour stocker les statiques et l'affecter à un display: créer CRaptorInstance, gérée depuis Global/Raptor
-	( permettre des espaces de noms différentes entre 2 displays).
-	
 - CRaptorDisplayConfig:
 	- faire un sync avec timer (VSync prend 50% CPU!)
 
@@ -65,7 +73,6 @@
 	(pas assez flou ... ?)
 	
 - CParticle
-	- Exploiter les geometry shaders pour générer les quads à partir d'une position ponctuelle
 	- SMP : si défini, créer des Engine jobs ?
 	- OpenCL + GPU computing
 	- Positionner les setFactors sur le particle compute depuis l'import (c.f. demo.xml)
@@ -75,7 +82,7 @@
 	- glow : volume rendering  ?
 	- projection: texture clamping, border fading ...
 	- le volume size ne devrait-il pas etre fonction de dmax ?
-	c'est le volume de l'objet lumière ! eventuellement, attacher un CObject3D
+		c'est le volume de l'objet lumière ! eventuellement, attacher un CObject3D
 	- selection de lumière dans 3DSceneObjet: si dans l'angle du cône !
 	
 - COctree :

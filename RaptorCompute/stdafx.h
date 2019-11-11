@@ -15,6 +15,8 @@
 	#pragma warning(disable: 4275)  // deriving exported class from non-exported
 	#pragma warning(disable: 4251)  // using non-exported as public in exported
 	#include <windows.h>
+#else	// Linux environment
+	#define MAX_PATH		260
 #endif
 
 

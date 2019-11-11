@@ -37,11 +37,25 @@
 
 
 #include <string>
-
+#include <vector>
 
 class RAPTORDATA_API CRaptorDataManager  
 {
 public:
+	typedef enum
+	{
+		VERTEX_SHADER,
+		FRAGMENT_SHADER,
+		VERTEX_PROGRAM,
+		FRAGMENT_PROGRAM,
+		GEOMETRY_PROGRAM,
+		COMPUTE_PROGRAM,
+		TESSELATION_PROGRAM,
+		VIDEO,
+		AUDIO,
+		TEXT
+	} FILE_TYPE;
+
     static CRaptorDataManager  *GetInstance(void);
 
 	virtual ~CRaptorDataManager();
@@ -51,30 +65,44 @@ public:
     //! @return the filepath if export succeeded, an empty string if errors found.
     std::string ExportFile(const std::string& fname, const std::string& topath = "");
 
-    //! Export the about video ( Win32 only, Unix platform in next releases
+    //! Export the about video ( Win32 only, Unix platform in next releases )
     void ExportRaptorVideo(const std::string& path);
 
-    //! Returns default the list of shaders embedded with Raptor
-	const char *const * GetShaderList(void);
-
-	//!	Remove all exported files from the package for a fresh update
-	void ClearExports();
+	//!	Remove all exported files from a managed package for a fresh update.
+	//!	@param packName : the name of the package to clear exports of.
+	//! @return false if package not managed.
+	bool ClearExports(const std::string& packName);
 
 	//!	Defines a package name, different from the default 'RaptorData.pck'
-	bool setPackName(const std::string& packName);
+	bool managePackage(const std::string& packName);
 
 
 private:
     CRaptorDataManager();
 
-    bool openPackage(const std::string& pakName);
+	typedef struct Package_t
+	{
+		int				package;
+		std::string		packPath;
+		size_t			headerSize;
+		void			*header;
+	} Package;
 
+	bool openPackage(Package_t &pack);
+
+	//!	Read an opened file and return the text content.
+	//!	TODO: read long files.
 	std::string readFile(const std::string &fname);
 
-	std::string getPackPath();
+	//!	Returns the path of the given package filename relative to RAPTOR_ROOT.
+	std::string getPackPath(const std::string& packName);
 
+	//!	The only one DAta Manager Instance.
     static CRaptorDataManager  *m_pInstance;
-	std::string					m_packName;
+
+	//!	The list of packages managed.
+#pragma warning(disable:4251)	// dll interface
+	std::vector<Package>	m_packages;
 };
 
 #endif // !defined(AFX_RAPTORDATAMANAGER_H__114BFB19_FA00_4E3E_879E_C9130043668E__INCLUDED_)

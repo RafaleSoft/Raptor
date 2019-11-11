@@ -13,8 +13,8 @@
 #include "GLHierarchy/TextureFactory.h"
 #include "GLHierarchy/TextureFactoryConfig.h"
 #include "GLHierarchy/TextureObject.h"
-#include "GLHierarchy/FragmentShader.h"
-#include "GLHierarchy/VertexShader.h"
+#include "GLHierarchy/FragmentProgram.h"
+#include "GLHierarchy/VertexProgram.h"
 #include "GLHierarchy/Shader.h"
 #include "Engine/ViewModifier.h"
 #include "Engine/3DScene.h"
@@ -70,7 +70,8 @@ public:
 		tmu->setDiffuseMap(output);
 		tmu->glBuildSetup();
 
-		glRenderFilter();
+		//Geometry Allocator is not locked.
+		//glRenderFilter();
 	};
 
 	virtual ~Foreground() {};
@@ -82,8 +83,6 @@ public:
 			status = !status;
 			glRenderFilter();
 		}
-		//if (fgMag->isEnabled())
-		//	glRenderFilter();
 		CShadedGeometry::glRender();
 	};
 
@@ -93,6 +92,7 @@ private:
 		glMatrixMode(GL_PROJECTION);
 		glPushMatrix();
 		glLoadIdentity();
+
 		glOrtho(-1,1,-1,1,1,100);
 		glMatrixMode(GL_MODELVIEW);
 		glPushMatrix();
@@ -137,7 +137,7 @@ void CTestDoc::GLInitContext(void)
     CMaterial *pMaterial = pShader->getMaterial();
     pMaterial->setAmbient(0.2f,0.2f,0.2f,1.0f);
     pMaterial->setDiffuse(0.9f,0.3f,0.7f,1.0f);
-    pMaterial->setSpecular(1.2f,0.8f,0.8f,1.0f);
+    pMaterial->setSpecular(11.0f,10.0f,9.0f,1.0f);
     pMaterial->setShininess(10.0f);
 	m_pSG->getRenderingModel().removeModel(CGeometry::CRenderingModel::CGL_TEXTURE);
 
@@ -183,7 +183,8 @@ void CTestDoc::GLInitContext(void)
     l_model.addModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
     l_model.addModel(CGeometry::CRenderingModel::CGL_NORMALS);
 	l_model.addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
-    C3DSet::C3DSetIterator it = sponge->getIterator();
+
+	C3DSet::C3DSetIterator it = sponge->getIterator();
     CShadedGeometry *g = (CShadedGeometry *)(sponge->getChild(it++));
 	while (g != NULL)
 	{
@@ -205,11 +206,12 @@ void CTestDoc::GLInitContext(void)
 	background->setDimensions(40.0f,24.0f);
 	background->translate(0.0f,0.0f,-7.0f);
 	background->setRenderingModel(l_model);
+
 	background->glLockData();
-		background->setTexCoord(0,0,0);
-		background->setTexCoord(1,2,0);
-		background->setTexCoord(2,2,2);
-		background->setTexCoord(3,0,2);
+		background->setTexCoord(0,0.0f,0.0f);
+		background->setTexCoord(1,2.0f,0.0f);
+		background->setTexCoord(2,2.0f,2.0f);
+		background->setTexCoord(3,0.0f,2.0f);
     background->glUnLockData();
 
 	CTextureFactory &fct = CTextureFactory::getDefaultFactory();

@@ -4,16 +4,21 @@
 
 #include "Subsys/CodeGeneration.h"
 
-#ifndef __GLOBAL_H__
-    #include "System/Global.h"
-#endif
 
 #if !defined(AFX_GLXENGINETASKMANAGER_H__3BCAF192_565C_4D13_81FF_F63FFD989303__INCLUDED_)
     #include "GLXEngineTaskManager.h"
 #endif
-
 #if !defined(AFX_ANIMATOR_H__077150E3_D826_11D3_9142_9866F8B4457F__INCLUDED_)
 	#include "Engine/Animator.h"
+#endif
+#if !defined(AFX_RAPTORINSTANCE_H__90219068_202B_46C2_BFF0_73C24D048903__INCLUDED_)
+	#include "Subsys/RaptorInstance.h"
+#endif
+#ifndef __CGLTYPES_HPP__
+    #include "System/CGLTypes.h"
+#endif
+#if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
+	#include "System/RaptorErrorManager.h"
 #endif
 
 #include <iostream>
@@ -36,31 +41,30 @@ unsigned int	CGLXEngineTaskManager::BATCH_ID = 1;
 #if defined(RAPTOR_SMP_CODE_GENERATION)
 void* engineSyncThread(void* pParam)
 {
-    CGLXEngineTaskManager* manager = (CGLXEngineTaskManager*)pParam;
-
-    Global::RAPTOR_CURRENT_STATUS& status = Global::GetInstance().getCurrentStatus();
+	CGLXEngineTaskManager* manager = (CGLXEngineTaskManager*)pParam;
+    CRaptorInstance& instance = CRaptorInstance::GetInstance();
 
     pthread_mutex_t frameLock = PTHREAD_MUTEX_INITIALIZER;
     pthread_mutex_lock(&frameLock);
 
     //	I know this should mutex protected,
 	//	but is it really important here ?
-	while (!status.terminate)
+	while (!instance.terminate)
 	{
         pthread_cond_wait(&manager->frameEvent,&frameLock);
 
-		if (status.currentAnimator != NULL )
+		if (instance.pAnimator != NULL )
 		{
-			status.currentAnimator->initSynchro();
-			status.currentAnimator->animate();
+			instance.pAnimator->initSynchro();
+			instance.pAnimator->animate();
 		}
 
         pthread_cond_broadcast(&manager->synchroEvent);
 
-		if (status.currentAnimator != NULL )
+		if (instance.pAnimator != NULL )
 		{
-			status.currentAnimator->asyncAnimate();
-			//status.currentAnimator->frameFinished = true;
+			instance.pAnimator->asyncAnimate();
+			//status.pAnimator->frameFinished = true;
 		}
 	}
     
@@ -72,13 +76,12 @@ void* engineSyncThread(void* pParam)
 void* engineAsyncThread(void* pParam)
 {
     CGLXEngineTaskManager* manager = (CGLXEngineTaskManager*)pParam;
+	CRaptorInstance& instance = CRaptorInstance::GetInstance();
 
-    Global::RAPTOR_CURRENT_STATUS& status = Global::GetInstance().getCurrentStatus();
-
-    pthread_mutex_t frameLock = PTHREAD_MUTEX_INITIALIZER;
+	pthread_mutex_t frameLock = PTHREAD_MUTEX_INITIALIZER;
     pthread_mutex_lock(&frameLock);
 
-    while (!status.terminate)
+    while (!instance.terminate)
 	{
         pthread_cond_wait(&manager->jobsEvent,&frameLock);
 
@@ -110,7 +113,7 @@ CGLXEngineTaskManager::~CGLXEngineTaskManager()
 unsigned int CGLXEngineTaskManager::generateBatchId(void)
 {
 #if defined(RAPTOR_SMP_CODE_GENERATION)
-	CThreadLock lock(mutex);
+	CRaptorLock lock(mutex);
 #endif
 
 	return BATCH_ID++;
@@ -175,7 +178,7 @@ bool CGLXEngineTaskManager::synchronizeCore(unsigned long timeLimit)
     bool res = false;
 
 #if defined(RAPTOR_SMP_CODE_GENERATION)
-    Global::RAPTOR_CURRENT_STATUS &st = Global::GetInstance().getCurrentStatus();
+    CRaptorInstance& instance = CRaptorInstance::GetInstance();
 
     pthread_mutex_t synchro = PTHREAD_MUTEX_INITIALIZER;
     pthread_mutex_lock(&synchro);
@@ -189,14 +192,14 @@ bool CGLXEngineTaskManager::synchronizeCore(unsigned long timeLimit)
     switch(wait)
     {
         case ETIMEDOUT:
-            st.errorMgr->generateRaptorError(CPersistence::CPersistenceClassID::GetClassId(),
-                                               CRaptorErrorManager::RAPTOR_WARNING,
-                                               "GLSynchronize core exited on timeout");
+            instance.pErrorMgr->generateRaptorError(CPersistence::CPersistenceClassID::GetClassId(),
+													CRaptorErrorManager::RAPTOR_WARNING,
+													"GLSynchronize core exited on timeout");
             break;
         case EINTR:
-            st.errorMgr->generateRaptorError(CPersistence::CPersistenceClassID::GetClassId(),
-                                               CRaptorErrorManager::RAPTOR_FATAL,
-                                               "GLSynchronize core exited on Interrupt");
+            instance.pErrorMgr->generateRaptorError(CPersistence::CPersistenceClassID::GetClassId(),
+													CRaptorErrorManager::RAPTOR_FATAL,
+													"GLSynchronize core exited on Interrupt");
             break;
         default:
             res = true;

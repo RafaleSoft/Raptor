@@ -53,7 +53,6 @@
 #define XERCES_HAVE_CSTDINT 1
 #define XERCES_HAVE_STDINT_H 1
 #define XERCES_HAVE_INTTYPES_H 1
-#define XERCES_HAVE_INTRIN_H 1
 #define XERCES_HAVE_EMMINTRIN_H 1
 #define XERCES_INCLUDE_WCHAR_H 1
 
@@ -70,23 +69,30 @@
 #define XERCES_HAS_CPP_NAMESPACE 1
 #define XERCES_STD_NAMESPACE 1
 #define XERCES_NEW_IOSTREAMS 1
-/* #undef XERCES_NO_NATIVE_BOOL */
+#undef XERCES_NO_NATIVE_BOOL
 #define XERCES_LSTRSUPPORT 1
-#define XERCES_MFC_SUPPORT 1
+#undef XERCES_MFC_SUPPORT
 
-#define XERCES_HAVE_CPUID_INTRINSIC 1
 #define XERCES_HAVE_SSE2_INTRINSIC 1
-/* #undef XERCES_HAVE_GETCPUID */
 
 /* #undef XERCES_NO_MATCHING_DELETE_OPERATOR */
 
-#define XERCES_DLL_EXPORT 1
-/* #undef XERCES_STATIC_LIBRARY */
-#define XERCES_PLATFORM_EXPORT __declspec(dllexport)
-#define XERCES_PLATFORM_IMPORT __declspec(dllimport)
-#define XERCES_TEMPLATE_EXTERN 
-#ifdef XERCES_DLL_EXPORT
-#  define DLL_EXPORT
+#ifdef WIN32
+	#define XERCES_HAVE_CPUID_INTRINSIC 1
+	#define XERCES_HAVE_INTRIN_H 1
+	#define XERCES_DLL_EXPORT 1
+	/* #undef XERCES_STATIC_LIBRARY */
+	#define XERCES_PLATFORM_EXPORT __declspec(dllexport)
+	#define XERCES_PLATFORM_IMPORT __declspec(dllimport)
+	#define XERCES_TEMPLATE_EXTERN
+	#ifdef XERCES_DLL_EXPORT
+	#  define DLL_EXPORT
+	#endif
+#else
+	#define XERCES_HAVE_GETCPUID 1
+	#define XERCES_PLATFORM_EXPORT
+	#define XERCES_PLATFORM_IMPORT
+	#define XERCES_TEMPLATE_EXTERN	extern 
 #endif
 
 // ---------------------------------------------------------------------------

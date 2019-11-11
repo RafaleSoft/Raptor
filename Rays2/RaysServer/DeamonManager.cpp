@@ -4,6 +4,7 @@
 
 using namespace RaysServer;
 
+/*
 static const char* POLLING_EVENT = "POLLING_EVENT";
 DWORD __stdcall DeamonProcessor( LPVOID pParam )
 {
@@ -19,7 +20,7 @@ DWORD __stdcall DeamonProcessor( LPVOID pParam )
 	CloseHandle(m_pollerEvent);
 	return 0;
 }
-
+*/
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -28,15 +29,16 @@ DWORD __stdcall DeamonProcessor( LPVOID pParam )
 CDeamonManager::CDeamonManager(server_base_t *server)
 	:m_pServer(server), m_counter(0), m_pollingDelay(10), m_bExit(false)
 {
-	m_deamonPoller = CreateThread(NULL, 0, DeamonProcessor, (void*)this, CREATE_SUSPENDED, 0);
-	m_pollerEvent = CreateEventA(NULL, FALSE, FALSE, POLLING_EVENT);
+	//m_deamonPoller = CreateThread(NULL, 0, DeamonProcessor, (void*)this, CREATE_SUSPENDED, 0);
+	//m_pollerEvent = CreateEventA(NULL, FALSE, FALSE, POLLING_EVENT);
 
 	//	Place this in start... ?
-	ResumeThread(m_deamonPoller);
+	//ResumeThread(m_deamonPoller);
 }
 
 CDeamonManager::~CDeamonManager()
 {
+	/*
 	if (NULL != m_deamonPoller)
 	{
 		requestExit();
@@ -61,6 +63,7 @@ CDeamonManager::~CDeamonManager()
 												 System::Windows::Forms::MessageBoxButtons::OK,
 												 System::Windows::Forms::MessageBoxIcon::Exclamation );
 	}
+	*/
 }
 
 bool CDeamonManager::destroyDeamon(unsigned int numWU)
@@ -68,7 +71,7 @@ bool CDeamonManager::destroyDeamon(unsigned int numWU)
 	if (numWU >= m_Deamons.size())
 		return false;
 
-	LPDEAMONSTRUCT lpWU = m_Deamons[numWU];
+	DEAMONSTRUCT *lpWU = m_Deamons[numWU];
 	//!	Chage this condition: check owned jobs instead of available procs.
 	if (lpWU->nbProcsAvailable != lpWU->nbProcs)
 		return false;
@@ -97,7 +100,7 @@ bool CDeamonManager::destroyDeamon(unsigned int numWU)
 
 bool CDeamonManager::registerDeamon(const std::string& deamonIP)
 {
-	CDeamonManager::LPDEAMONSTRUCT WU;
+	CDeamonManager::DEAMONSTRUCT *WU;
 
 	unsigned int pos = 0;
 	while (pos<m_Deamons.size())
@@ -144,7 +147,7 @@ bool CDeamonManager::DeamonStatus(unsigned int numDeamon) const
 
 	if (numDeamon >= m_Deamons.size())
 		return false;
-	CDeamonManager::LPDEAMONSTRUCT WU = m_Deamons[numDeamon];
+	CDeamonManager::DEAMONSTRUCT * WU = m_Deamons[numDeamon];
 
 	if (NULL == WU)
 		return false;
@@ -228,7 +231,7 @@ bool CDeamonManager::InstallPlugin(unsigned int IP,unsigned int port,unsigned in
 }
 */
 
-const CDeamonManager::LPDEAMONSTRUCT CDeamonManager::getDeamon(unsigned int WUID) const
+const CDeamonManager::DEAMONSTRUCT * CDeamonManager::getDeamon(unsigned int WUID) const
 {
 	if (WUID >= m_Deamons.size())
 		return NULL;

@@ -1,6 +1,20 @@
-// SimpleObject.h: interface for the CSimpleObject class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  SimpleObject.h                                                         */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
 
 #if !defined(AFX_SIMPLEOBJECT_H__D7942271_77C5_4514_A44F_67F653C82A16__INCLUDED_)
 #define AFX_SIMPLEOBJECT_H__D7942271_77C5_4514_A44F_67F653C82A16__INCLUDED_
@@ -29,9 +43,14 @@ public:
 
 	//! Void manipulators as we do not need a Geometry,
 	//!	We only add a an overridable glRender call
-	//! @see CObject3D
+	//! @see CObject3D.
 	DECLARE_OBJECT3D_NOMANIPULATORS
 
+
+protected:
+	//!	Dedicated constructor for subclasses.
+	//! @see CObject3D.
+	CSimpleObject(const std::string& name);
 };
 
 RAPTOR_NAMESPACE_END

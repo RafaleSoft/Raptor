@@ -1,0 +1,26 @@
+export
+
+CCCFLAGS =  -DSIMD_NO_ASSEMBLY -DLINUX -fPIC
+OUTPUT = $(RAPTOR_ROOT)/Build/Linux/Release/eLut
+SRCDIR = $(RAPTOR_ROOT)/AddOns/OpenEXR-2.3.0/source/Half
+INCDIRS = -I$(SRCDIR)
+LDFLAGS = -Bdynamic -shared -lstdc++
+
+
+all:	$(OUTPUT)/eLut
+
+clean:
+	rm -rf $(OUTPUT)
+	mkdir -p $(OUTPUT)
+
+SRC = \
+	$(SRCDIR)/eLut.cpp
+
+OBJ = $(SRC:$(SRCDIR)/%.cpp=$(OUTPUT)/%.o)
+	
+$(OUTPUT)/eLut:	$(OBJ) 
+	g++ $(OBJ) -o $(OUTPUT)/eLut
+	cp $(OUTPUT)/eLut $(REDIST)/Bin/
+
+$(OBJ):	$(SRC)
+	g++ $(CCCFLAGS) $(INCDIRS) -c $(<D)/$(*F).cpp  -o $(OUTPUT)/$(@F)

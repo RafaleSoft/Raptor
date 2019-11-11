@@ -76,7 +76,7 @@ setDoubleArrayOneValue(double** vpp, double value, size_t nmemb)
 {
 	if (*vpp)
 		_TIFFfree(*vpp);
-	*vpp = _TIFFmalloc(nmemb*sizeof(double));
+	*vpp = (double*)_TIFFmalloc(nmemb*sizeof(double));
 	if (*vpp)
 	{
 		while (nmemb--)

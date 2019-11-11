@@ -89,6 +89,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <ExtensionsToDeleteOnClean>*.cdf;*.cache;*.obj;*.ilk;*.resources;*.tlb;*.tli;*.tlh;*.tmp;*.rsp;*.pgc;*.pgd;*.meta;*.tlog;*.manifest;*.res;*.pch;*.exp;*.idb;*.rep;*.xdc;*.pdb;*_manifest.rc;*.bsc;*.sbr;*.xml;*.metagen;*.bi; *.pck</ExtensionsToDeleteOnClean>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
@@ -139,6 +140,7 @@
       </DataExecutionPrevention>
       <TargetMachine>MachineX86</TargetMachine>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <Version>$(RAPTOR_RELEASE)</Version>
     </Link>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -146,14 +148,12 @@
     <PostBuildEvent>
       <Command>copy $(OutDir)$(TargetName).lib "%RAPTOR_ROOT%\Redist\lib\"
 copy $(OutDir)$(TargetName).dll "%RAPTOR_ROOT%\Redist\bin\"
-copy "%OPENEXRLIB_BIN_PATH%\IlmImf.dll" "%RAPTOR_ROOT%\Redist\bin\"
-copy "%OPENEXRLIB_BIN_PATH%\Half.dll" "%RAPTOR_ROOT%\Redist\bin\"
-copy "%OPENEXRLIB_BIN_PATH%\Iex.dll" "%RAPTOR_ROOT%\Redist\bin\"
-copy "%OPENEXRLIB_BIN_PATH%\IlmThread.dll" "%RAPTOR_ROOT%\Redist\bin\"
-copy "%PNGLIB_BIN_PATH%\libpng.dll" "%RAPTOR_ROOT%\Redist\bin\"
-
+copy $(SolutionDir)$(ProjectName)\Toolbox.pck "%RAPTOR_ROOT%\Redist\bin\"
 </Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>%RAPTOR_ROOT%\RaptorToolBox\buildpak.bat</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">
     <Midl>
@@ -187,7 +187,7 @@ copy "%PNGLIB_BIN_PATH%\libpng.dll" "%RAPTOR_ROOT%\Redist\bin\"
       <AdditionalIncludeDirectories>$(MSSdk)\Include\mfc;$(MSSdk)\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>opengl32.lib;Raptor.lib;wmvcore.lib;vfw32.lib;libjpeg.lib;zlib.lib;libtiff.lib;ilmimf.lib;half.lib;iex.lib;libpng.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;RaptorData.lib;Raptor.lib;wmvcore.lib;vfw32.lib;libjpeg.lib;zlib.lib;libtiff.lib;ilmimf.lib;half.lib;iex.lib;libpng.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>$(RAPTOR_ROOT)\Redist\lib;</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>libc;libcmt;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
@@ -209,10 +209,12 @@ copy "%PNGLIB_BIN_PATH%\libpng.dll" "%RAPTOR_ROOT%\Redist\bin\"
     <PostBuildEvent>
       <Command>copy $(OutDir)$(TargetName).lib "%RAPTOR_ROOT%\Redist\lib\"
 copy $(OutDir)$(TargetName).dll "%RAPTOR_ROOT%\Redist\bin\"
-
-
+copy $(SolutionDir)$(ProjectName)\Toolbox.pck "%RAPTOR_ROOT%\Redist\bin\"
 </Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>%RAPTOR_ROOT%\RaptorToolBox\buildpak.bat</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Midl>
@@ -229,7 +231,7 @@ copy $(OutDir)$(TargetName).dll "%RAPTOR_ROOT%\Redist\bin\"
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(SolutionDir)\$(ProjectName);$(ZLIB_INCLUDE_PATH);$(PNGLIB_INCLUDE_PATH);$(OPENEXRLIB_INCLUDE_PATH);$(TIFFLIB_INCLUDE_PATH);$(JPEGLIB_INCLUDE_PATH);$(RAPTOR_ROOT)\Redist\Include;$(VULKAN_INCLUDE_PATH);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;EXPORT_RAPTOR_CORE;ZLIB_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>Subsys\CodeGeneration.h</PrecompiledHeaderFile>
       <WarningLevel>Level4</WarningLevel>
@@ -260,6 +262,7 @@ copy $(OutDir)$(TargetName).dll "%RAPTOR_ROOT%\Redist\bin\"
       </DataExecutionPrevention>
       <TargetMachine>MachineX86</TargetMachine>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <Version>$(RAPTOR_RELEASE)</Version>
     </Link>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -267,14 +270,12 @@ copy $(OutDir)$(TargetName).dll "%RAPTOR_ROOT%\Redist\bin\"
     <PostBuildEvent>
       <Command>copy $(OutDir)$(TargetName).lib "%RAPTOR_ROOT%\Redist\lib\"
 copy $(OutDir)$(TargetName).dll "%RAPTOR_ROOT%\Redist\bin\"
-copy "%OPENEXRLIB_BIN_PATH%\IlmImf.dll" "%RAPTOR_ROOT%\Redist\bin\"
-copy "%OPENEXRLIB_BIN_PATH%\Half.dll" "%RAPTOR_ROOT%\Redist\bin\"
-copy "%OPENEXRLIB_BIN_PATH%\Iex.dll" "%RAPTOR_ROOT%\Redist\bin\"
-copy "%OPENEXRLIB_BIN_PATH%\IlmThread.dll" "%RAPTOR_ROOT%\Redist\bin\"
-copy "%PNGLIB_BIN_PATH%\libpng.dll" "%RAPTOR_ROOT%\Redist\bin\"
-
+copy $(SolutionDir)$(ProjectName)\Toolbox.pck "%RAPTOR_ROOT%\Redist\bin\"
 </Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>%RAPTOR_ROOT%\RaptorToolBox\buildpak.bat</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Optimized|Win32'">
     <Midl>
@@ -317,7 +318,7 @@ copy "%PNGLIB_BIN_PATH%\libpng.dll" "%RAPTOR_ROOT%\Redist\bin\"
     <Link>
       <AdditionalDependencies>opengl32.lib;Raptor.lib;wmvcore.lib;vfw32.lib;libjpeg.lib;zlib.lib;libtiff.lib;ilmimf.lib;half.lib;iex.lib;libpng.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>Release\RaptorToolBox.dll</OutputFile>
-      <Version>2.16.0</Version>
+      <Version>$(RAPTOR_RELEASE)</Version>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>$(RAPTOR_ROOT)\Redist\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>libc;libcd;libcmt;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
@@ -341,21 +342,21 @@ copy "%PNGLIB_BIN_PATH%\libpng.dll" "%RAPTOR_ROOT%\Redist\bin\"
       <OutputFile>.\Release/RaptorToolBox.bsc</OutputFile>
     </Bscmake>
     <PostBuildEvent>
-      <Command>copy Release\RaptorToolBox.lib "%RAPTOR_ROOT%\Redist\lib\"
-copy Release\RaptorToolBox.dll "%RAPTOR_ROOT%\Redist\bin\"
-copy OpenEXRLib\bin\vc9\IlmImf.dll "%RAPTOR_ROOT%\Redist\bin\"
-copy OpenEXRLib\bin\vc9\Half.dll "%RAPTOR_ROOT%\Redist\bin\"
-copy OpenEXRLib\bin\vc9\Iex.dll "%RAPTOR_ROOT%\Redist\bin\"
-copy OpenEXRLib\bin\vc9\IlmThread.dll "%RAPTOR_ROOT%\Redist\bin\"
-copy OpenEXRLib\bin\vc9\zdll.dll "%RAPTOR_ROOT%\Redist\bin\zlib1.dll"
+      <Command>copy $(OutDir)$(TargetName).lib "%RAPTOR_ROOT%\Redist\lib\"
+copy $(OutDir)$(TargetName).dll "%RAPTOR_ROOT%\Redist\bin\"
+copy $(SolutionDir)$(ProjectName)\Toolbox.pck "%RAPTOR_ROOT%\Redist\bin\"
 </Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>%RAPTOR_ROOT%\RaptorToolBox\buildpak.bat</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\RaptorToolBox\BasicObjects.cpp" />
     <ClCompile Include="..\..\RaptorToolBox\CmdLineParser.cpp" />
     <ClCompile Include="..\..\RaptorToolBox\Controllers.cpp" />
     <ClCompile Include="..\..\RaptorToolBox\Controllers\ViewPointController.cpp" />
+    <ClCompile Include="..\..\RaptorToolBox\Filters.cpp" />
     <ClCompile Include="..\..\RaptorToolBox\Filters\BlurFilter.cpp" />
     <ClCompile Include="..\..\RaptorToolBox\Filters\ColorControlFilter.cpp" />
     <ClCompile Include="..\..\RaptorToolBox\Filters\DOFFilter.cpp" />
@@ -430,6 +431,7 @@ copy OpenEXRLib\bin\vc9\zdll.dll "%RAPTOR_ROOT%\Redist\bin\zlib1.dll"
     <ClInclude Include="..\..\RaptorToolBox\CmdLineParser.h" />
     <ClInclude Include="..\..\RaptorToolBox\Controllers.h" />
     <ClInclude Include="..\..\RaptorToolBox\Controllers\ViewPointController.h" />
+    <ClInclude Include="..\..\RaptorToolBox\Filters.h" />
     <ClInclude Include="..\..\RaptorToolBox\Filters\BlurFilter.h" />
     <ClInclude Include="..\..\RaptorToolBox\Filters\ColorControlFilter.h" />
     <ClInclude Include="..\..\RaptorToolBox\Filters\DOFFilter.h" />
@@ -458,6 +460,42 @@ copy OpenEXRLib\bin\vc9\zdll.dll "%RAPTOR_ROOT%\Redist\bin\zlib1.dll"
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\..\RaptorToolBox\RaptorToolBox.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\RaptorToolBox\buildpak.bat" />
+    <None Include="..\..\RaptorToolBox\Filters\Color.fp" />
+    <None Include="..\..\RaptorToolBox\Filters\Color.ps" />
+    <None Include="..\..\RaptorToolBox\Filters\Color_old.ps" />
+    <None Include="..\..\RaptorToolBox\Filters\DOF.fp" />
+    <None Include="..\..\RaptorToolBox\Filters\DOF.gs" />
+    <None Include="..\..\RaptorToolBox\Filters\DOF.ps" />
+    <None Include="..\..\RaptorToolBox\Filters\DOF.vp" />
+    <None Include="..\..\RaptorToolBox\Filters\DOF.vs" />
+    <None Include="..\..\RaptorToolBox\Filters\DOF_old.ps" />
+    <None Include="..\..\RaptorToolBox\Filters\HDR_composer.fp" />
+    <None Include="..\..\RaptorToolBox\Filters\HDR_composer.ps" />
+    <None Include="..\..\RaptorToolBox\Filters\HDR_composer_old.ps" />
+    <None Include="..\..\RaptorToolBox\Filters\HDR_luminance.fp" />
+    <None Include="..\..\RaptorToolBox\Filters\HDR_luminance.ps" />
+    <None Include="..\..\RaptorToolBox\Filters\HDR_luminanceLast.fp" />
+    <None Include="..\..\RaptorToolBox\Filters\HDR_luminanceLast.ps" />
+    <None Include="..\..\RaptorToolBox\Filters\HDR_luminanceLast_old.ps" />
+    <None Include="..\..\RaptorToolBox\Filters\HDR_luminance_old.ps" />
+    <None Include="..\..\RaptorToolBox\Filters\HDR_threshold.fp" />
+    <None Include="..\..\RaptorToolBox\Filters\HDR_threshold.ps" />
+    <None Include="..\..\RaptorToolBox\Filters\HDR_threshold_old.ps" />
+    <None Include="..\..\RaptorToolBox\Filters\Magnifier.gs" />
+    <None Include="..\..\RaptorToolBox\Filters\Magnifier.vp" />
+    <None Include="..\..\RaptorToolBox\Filters\Magnifier.vs" />
+    <None Include="..\..\RaptorToolBox\Filters\Magnifier_oldX.ps" />
+    <None Include="..\..\RaptorToolBox\Filters\Magnifier_oldY.ps" />
+    <None Include="..\..\RaptorToolBox\Filters\Magnifier_X.fp" />
+    <None Include="..\..\RaptorToolBox\Filters\Magnifier_X.ps" />
+    <None Include="..\..\RaptorToolBox\Filters\Magnifier_Y.fp" />
+    <None Include="..\..\RaptorToolBox\Filters\Magnifier_Y.ps" />
+    <None Include="..\..\RaptorToolBox\Filters\MB_accum.ps" />
+    <None Include="..\..\RaptorToolBox\Filters\MB_accum2.ps" />
+    <None Include="..\..\RaptorToolBox\Filters\MB_accum_old.ps" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

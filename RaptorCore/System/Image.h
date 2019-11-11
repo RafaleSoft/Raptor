@@ -1,6 +1,20 @@
-// Image.h: interface for the CImage class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  Image.h                                                                */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
 
 #if !defined(AFX_IMAGE_H__F545D0D5_5F10_4EFA_BE3B_3F3D34D4DBF3__INCLUDED_)
 #define AFX_IMAGE_H__F545D0D5_5F10_4EFA_BE3B_3F3D34D4DBF3__INCLUDED_
@@ -82,11 +96,11 @@ public:
 			NB_OP_KIND
         } OP_KIND;
 
-		typedef struct operation_param_t
+		typedef struct 
 		{
 			float		bump_scale;
 			uint32_t	transparency;
-		};
+		} operation_param_t;
 
 		//!	Virtual destructor
 		virtual ~IImageOP() {};
@@ -109,8 +123,19 @@ public:
 
 
 public:
+	//!	Constructor.
 	CImage();
+
+	//!	Destructor.
 	virtual ~CImage();
+
+	//!	Create a new image initialised with the subpart of this image defined by the parameters.
+	//!	@param x: horizontal position of ref point of subimage in this.
+	//!	@param y: vertical position of ref point of subimage in this.
+	//!	@param w: width of subimage in this.
+	//!	@param h: height of subimage in this.
+	//!	@return the subimage or NULL if incorrect parameters of uninitialised this.
+	CImage* createSubImage(size_t x, size_t y, size_t w, size_t h);
 
 	//!	Loads an image file named filename. The file type is used to
 	//!	Determine the appropriate image loader, if any.
@@ -199,6 +224,8 @@ public:
 
 
 private:
+	CImage& operator=(const CImage&);
+
 	static map<std::string,IImageIO*>			IMAGE_KIND_IO;
     static map<IImageOP::OP_KIND,IImageOP*>		IMAGE_KIND_OP;
 

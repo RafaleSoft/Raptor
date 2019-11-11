@@ -81,7 +81,7 @@ int main(int argc, char* argv[])
 	parser.addOption("port","p",(unsigned short)2048);
 	parser.addOption("width","w",(unsigned short)256);
 	parser.addOption("height","h",(unsigned short)256);
-	parser.addOption("host_addr","a","127.0.0.1");
+	parser.addOption("host_addr","a",std::string("127.0.0.1"));
 
 	if (!parser.parse(argc,argv))
 	{
@@ -125,12 +125,12 @@ bool CRaysWorkUnit::start(const CCmdLineParser &cmdline)
 {
 	unsigned short id = 0;
 	unsigned short port = 2049;
-	const char* address = "127.0.0.1";
-	cmdline.getValue("host_addr",address);
+	std::string addrStr = "127.0.0.1";
+	cmdline.getValue("host_addr", addrStr);
 	cmdline.getValue("port",port);
 	cmdline.getValue("id",id);
 
-	if (connectToServer(address,port))
+	if (connectToServer(addrStr, port))
 	{
 		//	write back ID to acknowledge Workunit availability
 		MSGSTRUCT msg;

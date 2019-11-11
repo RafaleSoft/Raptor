@@ -1,3 +1,21 @@
+/***************************************************************************/
+/*                                                                         */
+/*  RaptorComputeTask.h                                                    */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
 #if !defined(AFX_RAPTOR_COMPUTE_TASK_H__F05CF7F9_151A_4760_885A_19FF9C648278__INCLUDED_)
 #define AFX_RAPTOR_COMPUTE_TASK_H__F05CF7F9_151A_4760_885A_19FF9C648278__INCLUDED_
 
@@ -8,8 +26,9 @@
 	#include "GLHierarchy/ProgramParameters.h"
 #endif
 
+
 // Cette classe est exportée de RaptorCompute.dll
-class RAPTORCOMPUTE_API CRaptorComputeTask
+class RAPTOR_API CRaptorComputeTask
 {
 public:
 	//!	Constructor

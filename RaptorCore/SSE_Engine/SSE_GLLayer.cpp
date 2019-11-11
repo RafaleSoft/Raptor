@@ -408,7 +408,7 @@ void CSSE_GLLayer::drawRectangle(unsigned int x0,unsigned int y0,unsigned int x1
 	// This code can be slower ... need investigations
 	//	and/or optimisations.
 	//
-#ifdef RAPTOR_AVX_CODE_GENERATION
+#if 0 //RAPTOR_AVX_CODE_GENERATION
 	unsigned int * buffer = (unsigned int * )getBuffer();
 	__m256 *m256_buffer = (__m256*)buffer;
 	__m256 newcolor;

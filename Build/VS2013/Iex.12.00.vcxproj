@@ -73,7 +73,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;IEX_EXPORTS;OPENEXR_DLL;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(OPENEXRLIB_INCLUDE_PATH);$(OPENEXRLIB_INCLUDE_PATH)\..\source\config;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(OPENEXRLIB_INCLUDE_PATH);$(Configuration);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
@@ -88,7 +88,7 @@
       <Optimization>Full</Optimization>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;IEX_EXPORTS;OPENEXR_DLL;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(OPENEXRLIB_INCLUDE_PATH);$(OPENEXRLIB_INCLUDE_PATH)\..\source\config;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(OPENEXRLIB_INCLUDE_PATH);$(Configuration);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
@@ -117,6 +117,7 @@ copy $(OutDir)$(TargetName).dll "%RAPTOR_ROOT%\Redist\bin\"
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;IEX_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(OPENEXRLIB_INCLUDE_PATH);$(Configuration);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -138,7 +139,7 @@ copy $(OutDir)$(TargetName).dll "%RAPTOR_ROOT%\Redist\bin\"
     <ClInclude Include="..\..\AddOns\OpenEXR-2.3.0\include\IexMathIeeeExc.h" />
     <ClInclude Include="..\..\AddOns\OpenEXR-2.3.0\include\IexNamespace.h" />
     <ClInclude Include="..\..\AddOns\OpenEXR-2.3.0\include\IexThrowErrnoExc.h" />
-    <ClInclude Include="..\..\AddOns\OpenEXR-2.3.0\source\config\IlmBaseConfig.h" />
+    <ClInclude Include="..\..\AddOns\OpenEXR-2.3.0\include\IlmBaseConfig.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\AddOns\OpenEXR-2.3.0\source\Iex\IexBaseExc.cpp" />

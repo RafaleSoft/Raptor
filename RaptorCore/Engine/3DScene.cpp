@@ -9,8 +9,8 @@
 #if !defined(AFX_LIGHT_H__AA8BABD6_059A_4939_A4B6_A0A036E12E1E__INCLUDED_)
 	#include "GLHierarchy/Light.h"
 #endif
-#if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
-	#include "System/Raptor.h"
+#if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
+	#include "System/RaptorErrorManager.h"
 #endif
 #if !defined(AFX_OBJECT3D_H__DB24F017_80B9_11D3_97C1_FC2841000000__INCLUDED_)
 	#include "GLHierarchy/Object3D.h"
@@ -18,15 +18,9 @@
 #if !defined(AFX_PROJECTOR_H__0AEE2092_215F_40FA_BBAE_7D8A2F5A482F__INCLUDED_)
     #include "GLHierarchy/Projector.h"
 #endif
-
-#ifndef __GLOBAL_H__
-	#include "System/Global.h"
-#endif
-
 #if !defined(AFX_3DENGINETASKMANAGER_H__04149C60_C594_4009_A2C9_F852497146A3__INCLUDED_)
     #include "Engine/3DEngineTaskManager.h"
 #endif
-
 #if !defined(AFX_RAPTORIO_H__87D52C27_9117_4675_95DC_6AD2CCD2E78D__INCLUDED_)
 	#include "System/RaptorIO.h"
 #endif
@@ -36,7 +30,6 @@
 #if !defined(AFX_IRENDERINGPROPERTIES_H__634BCF2B_84B4_47F2_B460_D7FDC0F3B698__INCLUDED_)
 	#include "GLHierarchy/IRenderingProperties.h"
 #endif
-
 #if !defined(AFX_3DSCENEOBJECT_H__96A34268_AD58_4F73_B633_F6C3E92FE0A9__INCLUDED_)
 	#include "Subsys/3DSceneObject.h"
 #endif
@@ -172,35 +165,6 @@ bool C3DScene::addObject(CObject3D *object)
     return true;
 }
 
-bool C3DScene::glAddObject(RAPTOR_HANDLE handle)
-{
-    if (handle.handle == 0)
-        return false;
-
-	if (handle.hClass == Global::COpenGLClassID::GetClassId().ID())
-    {
-        if (glIsList(handle.handle))
-        {
-            // This is the only valid case: a correct handle
-            m_pAttributes->m_pHandles.push_back(handle);
-
-            CATCH_GL_ERROR
-
-            return true;
-        }
-        else
-            return false;
-    }
-    else
-    {
-        // Assume the handle is correct.
-        // Should raise a warning.
-        m_pAttributes->m_pHandles.push_back(handle);
-        return true;
-    }
-}
- 
-
 void C3DScene::glRenderObjects(	const vector<C3DSceneObject*>& objects)
 {
     vector<CObject3D*>  transparents;
@@ -257,14 +221,6 @@ void C3DScene::glRenderObjects(	const vector<C3DSceneObject*>& objects)
             unsortedObjects.push_back(sc);
         }
     }
-
-    //
-	// Rendering 
-    //  First step : undefined OGL display lists / Raptor handles
-	//
-    for (unsigned int i=0;i<m_pAttributes->m_pHandles.size();i++)
-		glCallList(m_pAttributes->m_pHandles.at(i).handle);
-
 
     //
 	// Rendering 
@@ -400,12 +356,27 @@ void C3DScene::glRender(void)
 
 	glPopMatrix();
 	
+	int	blendSrc;
+	int	blendDst;
+	glGetIntegerv(GL_BLEND_SRC, &blendSrc);
+	glGetIntegerv(GL_BLEND_DST, &blendDst);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+
+	glPushMatrix();
+	glDepthMask(GL_FALSE);
+	glDisable(GL_LIGHTING);
     for (unsigned int i=0;i<requiredLights.size();i++)
     {
-        m_pAttributes->m_pLights[i]->glRenderGlow();
-        m_pAttributes->m_pLights[i]->glRenderFlare();
-        m_pAttributes->m_pLights[i]->glDeActivate();
+		//m_pAttributes->m_pLights[i]->glRenderEffects();
+		requiredLights[i]->glRenderEffects();
     }
+	glDepthMask(GL_TRUE);
+	glPopMatrix();
+	glBlendFunc(blendSrc, blendDst);
+
+	for (unsigned int i = 0; i<requiredLights.size(); i++)
+		//m_pAttributes->m_pLights[i]->glDeActivate();
+		requiredLights[i]->glDeActivate();
 
 	CATCH_GL_ERROR
 }

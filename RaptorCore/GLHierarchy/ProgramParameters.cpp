@@ -52,11 +52,10 @@ bool CProgramParameters::addParameter(const CParameterBase& param)
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 	for (size_t i = 0; i < m_parameters.size(); i++)
 	{
-		if (m_parameters[i]->name() == name)
+		if (m_parameters[i]->name() == param.name())
 		{
-			Raptor::GetErrorManager()->generateRaptorError(CPersistence::CPersistenceClassID::GetClassId(),
-														   CRaptorErrorManager::RAPTOR_WARNING,
-														   "Duplicate parameter name");
+			RAPTOR_WARNING(	CPersistence::CPersistenceClassID::GetClassId(),
+							"Duplicate parameter name");
 			return false;
 		}
 	}
@@ -68,9 +67,6 @@ bool CProgramParameters::addParameter(const CParameterBase& param)
 
 CProgramParameters& CProgramParameters::operator=(const CProgramParameters& params)
 {
-	// The case that is not handled is when
-	//	params is used to update only a part of currently registered parameters.
-	// TODO: try to solve by setting m_bRelinked = true when params has more parameters than mValues.
 	if (m_parameters.size() != params.getNbParameters())
 	{
 		for (size_t i = 0; i < m_parameters.size(); i++)

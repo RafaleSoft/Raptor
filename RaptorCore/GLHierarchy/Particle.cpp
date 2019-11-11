@@ -21,15 +21,11 @@
 #if !defined(AFX_PARTICLE_H__12CF5A59_2AA5_464D_9D42_81048A2B4E68__INCLUDED_)
 	#include "Particle.h"
 #endif
-
-#ifndef __GLOBAL_H__
-	#include "System/Global.h"
+#if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
+	#include "System/RaptorErrorManager.h"
 #endif
 #if !defined(AFX_TEXTUREFACTORY_H__1B470EC4_4B68_11D3_9142_9A502CBADC6B__INCLUDED_)
 	#include "TextureFactory.h"
-#endif
-#if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
-	#include "System/Raptor.h"
 #endif
 #if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
 	#include "System/RaptorGLExtensions.h"
@@ -46,14 +42,17 @@
 #if !defined(AFX_SHADER_H__4D405EC2_7151_465D_86B6_1CA99B906777__INCLUDED_)
 	#include "GLHierarchy/Shader.h"
 #endif
-#if !defined(AFX_VERTEXPROGRAM_H__204F7213_B40B_4B6A_9BCA_828409871B68__INCLUDED_)
-    #include "GLHierarchy/VertexProgram.h"
+#if !defined(AFX_OPENGLSHADERSTAGE_H__56B00FE3_E508_4FD6_9363_90E6E67446D9__INCLUDED_)
+	#include "GLHierarchy/OpenGLShaderStage.h"
 #endif
-#if !defined(AFX_GEOMETRYPROGRAM_H__1981EA98_8F3C_4881_9429_A9ACA5B285D3__INCLUDED_)
-    #include "GLHierarchy/GeometryProgram.h"
+#if !defined(AFX_VERTEXSHADER_H__204F7213_B40B_4B6A_9BCA_828409871B68__INCLUDED_)
+	#include "GLHierarchy/VertexShader.h"
 #endif
-#if !defined(AFX_FRAGMENTPROGRAM_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
-	#include "GLHierarchy/FragmentProgram.h"
+#if !defined(AFX_GEOMETRYSHADER_H__1981EA98_8F3C_4881_9429_A9ACA5B285D3__INCLUDED_)
+    #include "GLHierarchy/GeometryShader.h"
+#endif
+#if !defined(AFX_FRAGMENTSHADER_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
+	#include "GLHierarchy/FragmentShader.h"
 #endif
 
 RAPTOR_NAMESPACE_BEGIN
@@ -66,8 +65,9 @@ static bool cacheReady = false;
 struct CACHEELT_t
 {
 	GL_COORD_VERTEX coord;
-	CColor::RGBA	colors;
-	float			texDepth;
+	GL_COORD_VERTEX	colors;
+	float			angle;
+	float			size;
 } CACHEELT;
 static CACHEELT_t cache[CACHE_SIZE];
 static size_t CACHEPOINTER_SIZE = sizeof(CACHEELT)*CACHE_SIZE/sizeof(float);
@@ -76,88 +76,8 @@ static float *cachePointer = NULL;
 
 RAPTOR_NAMESPACE_END
 
-static const std::string particle_vp_src =
-"#version 120 \n\
-\n\
-vec4 tcoords[4] = vec4[4](vec4(1.0,1.0,0.0,1.0), \n\
-					      vec4(0.0,1.0,0.0,1.0), \n\
-						  vec4(0.0,0.0,0.0,1.0), \n\
-						  vec4(1.0,0.0,0.0,1.0));\n\
-void main (void) \n\
-{\n\
-	int t_index = int(gl_Vertex.w); \n\
-	gl_TexCoord[0] = tcoords[t_index]; \n\
-	gl_FrontColor = gl_Color; \n\
-	vec4 pos = vec4(vec3(gl_Vertex.xyz),1.0); \n\
-	gl_Position =  gl_ModelViewProjectionMatrix * pos; \n\
-}\n\
-";
-
-static const std::string particle2_vp_src =
-"#version 120 \n\
-\n\
-attribute float	texDepth; \n\
-\n\
-vec4 tcoords[4] = vec4[4](vec4(1.0,1.0,0.0,1.0), \n\
-						  vec4(0.0,1.0,0.0,1.0), \n\
-						  vec4(0.0,0.0,0.0,1.0), \n\
-						  vec4(1.0,0.0,0.0,1.0));\n\
-void main (void) \n\
-{\n\
-	int t_index = int(gl_Vertex.w); \n\
-	gl_TexCoord[0] = tcoords[t_index]; \n\
-	gl_TexCoord[0].z = texDepth; \n\
-	gl_FrontColor = gl_Color; \n\
-	vec4 pos = vec4(vec3(gl_Vertex.xyz),1.0); \n\
-	gl_Position =  gl_ModelViewProjectionMatrix * pos; \n\
-}\n\
-";
-
-static const std::string particle_gp_src =
-"#version 460 compatibility\n\
-\n\
-#extension GL_ARB_geometry_shader4 : enable \n\
-\n\
-layout(points) in; \n\
-layout(triangle_strip, max_vertices=4) out; \n\
-\n\
-void main() \n\
-{\n\
-	gl_Position = gl_in[0].gl_Position; \n\
-	gl_TexCoord[0] = vec4(0.0,0.0,0.0,0.0); \n\
-	EmitVertex(); \n\
-\n\
-	gl_Position = gl_in[0].gl_Position + vec4(0.2,0.0,0.0,0.0); \n\
-	gl_TexCoord[0] = vec4(1.0,0.0,0.0,0.0); \n\
-	EmitVertex(); \n\
-\n\
-	gl_Position = gl_in[0].gl_Position + vec4(0.0,0.2,0.0,0.0); \n\
-	gl_TexCoord[0] = vec4(0.0,1.0,0.0,0.0); \n\
-	EmitVertex(); \n\
-\n\
-	gl_Position = gl_in[0].gl_Position + vec4(0.2,0.2,0.0,0.0); \n\
-	gl_TexCoord[0] = vec4(1.0,1.0,0.0,0.0); \n\
-	EmitVertex(); \n\
-\n\
-	EndPrimitive(); \n\
-}\n\
-";
-
-static const std::string fp_src =
-"#version 460 compatibility\n\
-\n\
-uniform	sampler2D diffuseMap; \n\
-\n\
-void main (void) \n\
-{\n\
-	gl_FragColor = texture2D(diffuseMap,vec2(gl_TexCoord[0].st)); \n\
-}\n\
-";
-
 
 RAPTOR_NAMESPACE
-
-//#define GEOMETRY_TEST 1
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -216,35 +136,45 @@ void CParticle::glInitParticle(void)
 {
 	bool res = false;
 
-	if (m_type == CGL_PARTICLE_TEXTURE)
+	if (NULL == m_pShader)
 	{
-		m_pShader = new CShader(getName()+"_SHADER");
-		CVertexProgram *vp = m_pShader->glGetVertexProgram();
-		res = vp->glLoadProgram(particle_vp_src);
-#ifdef GEOMETRY_TEST
-		CGeometryProgram *gp = m_pShader->glGetGeometryProgram();
-		gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
-		res = res & gp->glLoadProgram(particle_gp_src);
+		if (m_type == CGL_PARTICLE_TEXTURE)
+		{
+			m_pShader = new CShader(getName() + "_SHADER");
+			COpenGLShaderStage *stage = m_pShader->glGetOpenGLShader();
 
-		CFragmentProgram *fs = m_pShader->glGetFragmentProgram();
-		res = res & fs->glLoadProgram(fp_src);
-		CProgramParameters params;
-		params.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);
-#endif
-		res = res & m_pShader->glCompileShader();
+			CVertexShader *vp = stage->glGetVertexShader("PARTICLE_VTX_PROGRAM");
+			CProgramParameters params;
+			params.addParameter("fPointSize", GL_COORD_VERTEX(m_fPointSize, 0.0f, 0.0f, 0.0f));
+
+			CGeometryShader *gp = stage->glGetGeometryShader("PARTICLE2D_GEO_PROGRAM");
+			gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
+
+			CFragmentShader *fs = stage->glGetFragmentShader("TEXTURE_QUAD_TEX_PROGRAM");
+			params.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);
+
+			stage->setProgramParameters(params);
+			res = stage->glCompileShader();
+		}
+		else if ((m_type == CGL_PARTICLE_VOLUMETRIC) && (NULL == m_pShader))
+		{
+			m_pShader = new CShader(getName() + "_VOLUME_SHADER");
+			COpenGLShaderStage *stage = m_pShader->glGetOpenGLShader();
+
+			CVertexShader *vp = stage->glGetVertexShader("PARTICLE_VTX_PROGRAM");
+			CProgramParameters params;
+			params.addParameter("fPointSize", GL_COORD_VERTEX(m_fPointSize, 0.0f, 0.0f, 0.0f));
+
+			CGeometryShader *gp = stage->glGetGeometryShader("PARTICLE3D_GEO_PROGRAM");
+			gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
+
+			CFragmentShader *fs = stage->glGetFragmentShader("PARTICLE3D_TEX_PROGRAM");
+			params.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);
+
+			stage->setProgramParameters(params);
+			res = stage->glCompileShader();
+		}
 	}
-	else if (m_type == CGL_PARTICLE_VOLUMETRIC)
-	{
-		m_pShader = new CShader(getName()+"_VOLUME_SHADER");
-		CVertexProgram *vp = m_pShader->glGetVertexProgram();
-		CProgramParameters params;
-		params.addParameter("texDepth", CProgramParameters::ADDITIONAL_PARAM1);
-		vp->setProgramParameters(params);
-
-		res = vp->glLoadProgram(particle2_vp_src);
-		res = res & m_pShader->glCompileShader();
-	}
-
 
 	//	Precompute data
 	if (!cacheReady)
@@ -278,6 +208,16 @@ void CParticle::setTexture(CTextureObject* texture)
 void CParticle::usePointSprite(bool use,float size) 
 {
 	m_fPointSize = size;
+
+	if (NULL != m_pShader)
+	{
+		CProgramParameters params;
+		params.addParameter("fPointSize", GL_COORD_VERTEX(m_fPointSize, 0.0f, 0.0f, 0.0f));
+		
+		COpenGLShaderStage *stage = m_pShader->glGetOpenGLShader();
+		stage->updateProgramParameters(params);
+	}
+
 #if defined(GL_NV_point_sprite)
 	if ((Raptor::glIsExtensionSupported(GL_NV_POINT_SPRITE_EXTENSION_NAME)) ||
 		(Raptor::glIsExtensionSupported(GL_ARB_POINT_SPRITE_EXTENSION_NAME)))
@@ -316,21 +256,28 @@ void RAPTOR_FASTCALL CParticle::glRenderPoints(void)
 	else
 		glDisable(GL_TEXTURE_2D);
 
-	glPushClientAttrib(GL_CLIENT_VERTEX_ARRAY_BIT);
-	glEnableClientState(GL_COLOR_ARRAY);
+	CACHEELT_t* pCache = (CACHEELT_t*)cachePointer;
+#if defined(GL_ARB_vertex_program)
+	pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::POSITION);
+	pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::PRIMARY_COLOR);
+#else
 	glEnableClientState(GL_VERTEX_ARRAY);
+	glEnableClientState(GL_COLOR_ARRAY);
+#endif
 
 	glEnable(GL_POINT_SMOOTH);
 
 	CGeometryAllocator *pAllocator = CGeometryAllocator::GetInstance();
 	if (pAllocator->isMemoryRelocated())
 	{
-		CACHEELT_t* pCache = (CACHEELT_t*)cachePointer;
-		glVertexPointer(3, GL_FLOAT, sizeof(CACHEELT), &pCache[0].coord);
-		glColorPointer(4, GL_FLOAT, sizeof(CACHEELT), &pCache[0].colors);
-
+#if defined(GL_ARB_vertex_program)
+		pExtensions->glVertexAttribPointerARB(CProgramParameters::POSITION, 4, GL_FLOAT, false, sizeof(CACHEELT), &pCache[0].coord);
+		pExtensions->glVertexAttribPointerARB(CProgramParameters::PRIMARY_COLOR, 4, GL_FLOAT, false, sizeof(CACHEELT), &pCache[0].colors);
+#else
+		glVertexPointer( 4, GL_FLOAT, sizeof(CACHEELT), &pCache[0].coord);
+		glColorPointer( 4, GL_FLOAT, sizeof(CACHEELT), &pCache[0].colors);
+#endif
 		unsigned int nbElt = 0;
-
 		while ((nbElt+CACHE_SIZE) < m_uiQuantity)
 		{
 			for (size_t i=0;i<CACHE_SIZE;i++)
@@ -360,13 +307,24 @@ void RAPTOR_FASTCALL CParticle::glRenderPoints(void)
 	}
 	else
 	{
-		glVertexPointer(3, GL_FLOAT, sizeof(PARTICLE_ATTRIBUTE), &m_attributes[0].position);
-		glColorPointer(4, GL_FLOAT, sizeof(PARTICLE_ATTRIBUTE), &m_attributes[0].color);
-
+#if defined(GL_ARB_vertex_program)
+		pExtensions->glVertexAttribPointerARB(CProgramParameters::POSITION, 4, GL_FLOAT, false, sizeof(PARTICLE_ATTRIBUTE), &m_attributes[0].position);
+		pExtensions->glVertexAttribPointerARB(CProgramParameters::PRIMARY_COLOR, 4, GL_FLOAT, false, sizeof(PARTICLE_ATTRIBUTE), &m_attributes[0].color);
+#else
+		glVertexPointer(4, GL_FLOAT, sizeof(CACHEELT), &m_attributes[0].position);
+		glColorPointer(4, GL_FLOAT, sizeof(CACHEELT), &m_attributes[0].color);
+#endif
 		glDrawArrays(GL_POINTS, 0, m_uiQuantity);
 	}
 
-    glPopClientAttrib();
+#if defined(GL_ARB_vertex_program)
+	pExtensions->glDisableVertexAttribArrayARB(CProgramParameters::POSITION);
+	pExtensions->glDisableVertexAttribArrayARB(CProgramParameters::PRIMARY_COLOR);
+#else
+	glDisableClientState(GL_VERTEX_ARRAY);
+	glDisableClientState(GL_COLOR_ARRAY);
+#endif
+
 	glPointSize(oldSize);
 
 	if (m_bPointSprite)
@@ -392,17 +350,22 @@ void RAPTOR_FASTCALL CParticle::glRenderLines(void)
 #endif
 
 	glDisable(GL_TEXTURE_2D);
-	glPushClientAttrib(GL_CLIENT_VERTEX_ARRAY_BIT);
-	glEnableClientState(GL_COLOR_ARRAY);
-	glEnableClientState(GL_VERTEX_ARRAY);
 
 	CACHEELT_t* pCache = (CACHEELT_t*)cachePointer;
-	glVertexPointer(3, GL_FLOAT, sizeof(CACHEELT), &pCache[0].coord);
+#if defined(GL_ARB_vertex_program)
+	pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::POSITION);
+	pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::PRIMARY_COLOR);
+	pExtensions->glVertexAttribPointerARB(CProgramParameters::POSITION, 4, GL_FLOAT, false, sizeof(CACHEELT), &pCache[0].coord);
+	pExtensions->glVertexAttribPointerARB(CProgramParameters::PRIMARY_COLOR, 4, GL_FLOAT, false, sizeof(CACHEELT), &pCache[0].colors);
+#else
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glEnableClientState(GL_COLOR_ARRAY);
+	glVertexPointer( 4, GL_FLOAT, sizeof(CACHEELT), &pCache[0].coord);
 	glColorPointer(4, GL_FLOAT, sizeof(CACHEELT), &pCache[0].colors);
+#endif
 
 	unsigned int nbElt = 0;
 	CGenericVector<float> position;
-	CGenericVector<float> speed;
 
 	for(unsigned int i = 0; i < m_uiQuantity; i++)
 	{
@@ -415,7 +378,6 @@ void RAPTOR_FASTCALL CParticle::glRenderLines(void)
 
 		float size = attrs.size;
 		position = attrs.position;
-		speed = attrs.speed;
 
 		cache[nbElt].coord.x = position.X() - size;
 		cache[nbElt].coord.y = position.Y() - size;
@@ -449,7 +411,13 @@ void RAPTOR_FASTCALL CParticle::glRenderLines(void)
 		nbElt = 0;
 	}
 
-	glPopClientAttrib();
+#if defined(GL_ARB_vertex_program)
+	pExtensions->glDisableVertexAttribArrayARB(CProgramParameters::POSITION);
+	pExtensions->glDisableVertexAttribArrayARB(CProgramParameters::PRIMARY_COLOR);
+#else
+	glDisableClientState(GL_VERTEX_ARRAY);
+	glDisableClientState(GL_COLOR_ARRAY);
+#endif
 }
 
 
@@ -466,118 +434,72 @@ void RAPTOR_FASTCALL CParticle::glRenderTextures(void)
 	glEnable(GL_TEXTURE_2D);
 	m_pTexture->glvkRender();
 
-	CGenericMatrix<float> transform;
-	glGetTransposeFloatv(GL_MODELVIEW_MATRIX,transform);
-	glPushMatrix();
-	glLoadIdentity();
-
-	CGenericVector<float> position;
-	unsigned int nbElt = 0;
-
-    glColor4f(1.0f,1.0f,1.0f,1.0f);
-
-	glPushClientAttrib(GL_CLIENT_VERTEX_ARRAY_BIT);
-	glEnableClientState(GL_VERTEX_ARRAY);
-    glEnableClientState(GL_COLOR_ARRAY);
-
+	
 	CACHEELT_t* pCache = (CACHEELT_t*)cachePointer;
+#if defined(GL_ARB_vertex_program)
+	pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::POSITION);
+	pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::PRIMARY_COLOR);
+	pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::WEIGHTS);
+	pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::FOG_COORDINATE);
+	pExtensions->glVertexAttribPointerARB(CProgramParameters::POSITION, 4, GL_FLOAT, false, sizeof(CACHEELT), &pCache[0].coord);
+	pExtensions->glVertexAttribPointerARB(CProgramParameters::PRIMARY_COLOR, 4, GL_FLOAT, false, sizeof(CACHEELT), &pCache[0].colors);
+	pExtensions->glVertexAttribPointerARB(CProgramParameters::WEIGHTS, 1, GL_FLOAT, false, sizeof(CACHEELT), &pCache[0].size);
+	pExtensions->glVertexAttribPointerARB(CProgramParameters::FOG_COORDINATE, 1, GL_FLOAT, false, sizeof(CACHEELT), &pCache[0].angle);
+#else
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glEnableClientState(GL_COLOR_ARRAY);
+	glEnableClientState(GL_VERTEX_WEIGHT_ARRAY_EXT);
+	glEnableClientState(GL_FOG_COORDINATE_ARRAY_EXT);
 	glVertexPointer(4, GL_FLOAT, sizeof(CACHEELT), &pCache[0].coord);
 	glColorPointer(4, GL_FLOAT, sizeof(CACHEELT), &pCache[0].colors);
+	pExtensions->glVertexWeightPointerEXT(1, sizeof(CACHEELT), &pCache[0].size);
+	pExtensions->glFogCoordPointerEXT(GL_FLOAT, sizeof(CACHEELT), &pCache[0].angle);
+#endif
 
-	for(unsigned int i = 0; i < m_uiQuantity; i++)
+	CGeometryAllocator *pAllocator = CGeometryAllocator::GetInstance();
+	unsigned int nbElt = 0;
+	CGenericVector<float> position;
+	for (unsigned int i = 0; i < m_uiQuantity; i++)
 	{
 		CParticle::PARTICLE_ATTRIBUTE &attrs = m_attributes[i];
+		memcpy(&cache[nbElt].coord, attrs.position, 4 * sizeof(float));
+		memcpy(&cache[nbElt].colors, attrs.color, 4 * sizeof(float));
+		cache[nbElt].size = attrs.size;
+		cache[nbElt].angle = TO_RADIAN(attrs.angle);
 
-		float halfSize = m_fPointSize * 0.5f * attrs.size;
-        float f = TO_RADIAN(attrs.angle);
-        float cs = cos(f);
-        float ss = sin(f);
-
-		float *c = attrs.color;
-		position = attrs.position;
-        position *= m_fPointSize;   // is this correct ?
-        position.H(1.0f);
-		position *= transform;
-
-		float Hx = halfSize * (cs - ss);
-		float Hy = halfSize * (cs + ss);
-
-#ifdef RAPTOR_SSE_CODE_GENERATION
-		__m128 colors = _mm_loadu_ps(c);
-		_mm_storeu_ps(cache[nbElt].colors, colors);
-		_mm_storeu_ps(cache[nbElt+1].colors, colors);
-		_mm_storeu_ps(cache[nbElt+2].colors, colors);
-		_mm_storeu_ps(cache[nbElt+3].colors, colors);
-
-		float Hs[8] = { Hx, Hy, 0, -1.0f, Hy, -Hx, 0, 0 };
-
-		__m128 pos = _mm_loadu_ps(position.vector());
-		__m128 hxy = _mm_loadu_ps(&Hs[0]);
-		_mm_storeu_ps(cache[nbElt].coord, _mm_add_ps(pos, hxy));
-		__m128 hxy2 = _mm_loadu_ps(&Hs[4]);
-		_mm_storeu_ps(cache[nbElt+1].coord, _mm_sub_ps(pos, hxy2));
-		_mm_storeu_ps(cache[nbElt+2].coord, _mm_sub_ps(pos, hxy));
-		_mm_storeu_ps(cache[nbElt+3].coord, _mm_add_ps(pos, hxy2));
-		cache[nbElt + 3].coord.h = 3.0; //position.H();
-#else
-		memcpy(&cache[nbElt].colors,c,4*sizeof(float));
-		memcpy(&cache[nbElt+1].colors,c,4*sizeof(float));
-		memcpy(&cache[nbElt+2].colors,c,4*sizeof(float));
-		memcpy(&cache[nbElt+3].colors,c,4*sizeof(float));
-		
-		cache[nbElt].coord.x = position.X() + Hx;
-		cache[nbElt].coord.y = position.Y() + Hy;
-		cache[nbElt].coord.z = position.Z();
-		cache[nbElt].coord.h = 0.0; //position.H();
-		cache[nbElt+1].coord.x = position.X() - Hy;
-		cache[nbElt+1].coord.y = position.Y() + Hx;
-		cache[nbElt+1].coord.z = position.Z();
-		cache[nbElt+1].coord.h = 1.0; //position.H();
-		cache[nbElt+2].coord.x = position.X() - Hx;
-		cache[nbElt+2].coord.y = position.Y() - Hy;
-		cache[nbElt+2].coord.z = position.Z();
-		cache[nbElt+2].coord.h = 2.0; //position.H();
-		cache[nbElt+3].coord.x = position.X() + Hy;
-		cache[nbElt+3].coord.y = position.Y() - Hx;
-		cache[nbElt+3].coord.z = position.Z();
-		cache[nbElt+3].coord.h = 3.0; //position.H();
-#endif
-
-		nbElt += 4;
+		nbElt += 1;
 		if (nbElt == CACHE_SIZE)
 		{
-			CGeometryAllocator *pAllocator = CGeometryAllocator::GetInstance();
 			if (pAllocator->isMemoryRelocated())
-				pAllocator->glvkCopyPointer(cachePointer,&cache[0].coord.x,CACHEPOINTER_SIZE);
-#ifdef GEOMETRY_TEST
+				pAllocator->glvkCopyPointer(cachePointer, &cache[0].coord.x, CACHEPOINTER_SIZE);
 			glDrawArrays(GL_POINTS, 0, CACHE_SIZE);
-#else
-			glDrawArrays(GL_QUADS, 0, CACHE_SIZE);
-#endif
 			nbElt = 0;
 		}
 	}
 	if (nbElt > 0)
 	{
-		CGeometryAllocator *pAllocator = CGeometryAllocator::GetInstance();
 		if (pAllocator->isMemoryRelocated())
-			pAllocator->glvkCopyPointer(cachePointer,&cache[0].coord.x,sizeof(CACHEELT)*nbElt/sizeof(float));
-#ifdef GEOMETRY_TEST
+			pAllocator->glvkCopyPointer(cachePointer, &cache[0].coord.x, sizeof(CACHEELT)*nbElt / sizeof(float));
 		glDrawArrays(GL_POINTS, 0, nbElt);
-#else
-		glDrawArrays(GL_QUADS, 0, nbElt);
-#endif
-		
 		nbElt = 0;
 	}
 
 	m_pShader->glStop();
-
 	glDisable(GL_TEXTURE_2D);
 
-	glPopClientAttrib();
-	glPopMatrix();
+#if defined(GL_ARB_vertex_program)
+	pExtensions->glDisableVertexAttribArrayARB(CProgramParameters::POSITION);
+	pExtensions->glDisableVertexAttribArrayARB(CProgramParameters::PRIMARY_COLOR);
+	pExtensions->glDisableVertexAttribArrayARB(CProgramParameters::WEIGHTS);
+	pExtensions->glDisableVertexAttribArrayARB(CProgramParameters::FOG_COORDINATE);
+#else
+	glDisableClientState(GL_VERTEX_ARRAY);
+	glDisableClientState(GL_COLOR_ARRAY);
+	glDisableClientState(GL_VERTEX_WEIGHT_ARRAY_EXT);
+	glDisableClientState(GL_FOG_COORDINATE_ARRAY_EXT);
+#endif
 }
+
 
 void RAPTOR_FASTCALL CParticle::glRenderVolumes(void)
 {
@@ -593,102 +515,77 @@ void RAPTOR_FASTCALL CParticle::glRenderVolumes(void)
 	glEnable(GL_TEXTURE_3D_EXT);
 	m_pTexture->glvkRender();
 
-	CGenericMatrix<float> transform;
-	glGetTransposeFloatv(GL_MODELVIEW_MATRIX,transform);
-	glPushMatrix();
-	glLoadIdentity();
-
-	CGenericVector<float> position;
-	unsigned int nbElt = 0;
-
-	glPushClientAttrib(GL_CLIENT_VERTEX_ARRAY_BIT);
-	glEnableClientState(GL_COLOR_ARRAY);
-	glEnableClientState(GL_VERTEX_ARRAY);
-	pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::ADDITIONAL_PARAM1);
-	
 	CACHEELT_t* pCache = (CACHEELT_t*)cachePointer;
+#if defined(GL_ARB_vertex_program)
+	pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::POSITION);
+	pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::PRIMARY_COLOR);
+	pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::FOG_COORDINATE);
+	pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::WEIGHTS);
+	pExtensions->glVertexAttribPointerARB(CProgramParameters::POSITION, 4, GL_FLOAT, false, sizeof(CACHEELT), &pCache[0].coord);
+	pExtensions->glVertexAttribPointerARB(CProgramParameters::PRIMARY_COLOR, 4, GL_FLOAT, false, sizeof(CACHEELT), &pCache[0].colors);
+	pExtensions->glVertexAttribPointerARB(CProgramParameters::WEIGHTS, 1, GL_FLOAT, false, sizeof(CACHEELT), &pCache[0].size);
+	pExtensions->glVertexAttribPointerARB(CProgramParameters::FOG_COORDINATE, 1, GL_FLOAT, false, sizeof(CACHEELT), &pCache[0].angle);
+#else
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glEnableClientState(GL_COLOR_ARRAY);
+	glEnableClientState(GL_VERTEX_WEIGHT_ARRAY_EXT);
+	glEnableClientState(GL_FOG_COORDINATE_ARRAY_EXT);
 	glVertexPointer(4, GL_FLOAT, sizeof(CACHEELT), &pCache[0].coord);
 	glColorPointer(4, GL_FLOAT, sizeof(CACHEELT), &pCache[0].colors);
-	pExtensions->glVertexAttribPointerARB(CProgramParameters::ADDITIONAL_PARAM1, 1, GL_FLOAT, false, sizeof(CACHEELT), &pCache[0].texDepth);
+	pExtensions->glVertexWeightPointerEXT(1, sizeof(CACHEELT), &pCache[0].size);
+	pExtensions->glFogCoordPointerEXT(GL_FLOAT, sizeof(CACHEELT), &pCache[0].angle);
+#endif
 
+	CGeometryAllocator *pAllocator = CGeometryAllocator::GetInstance();
+	unsigned int nbElt = 0;
+	CGenericVector<float> position;
 	for(unsigned int i = 0; i < m_uiQuantity; i++)
 	{
 		CParticle::PARTICLE_ATTRIBUTE &attrs = m_attributes[i];
-		float halfSize = m_fPointSize * 0.5f * attrs.size;
-        float f = TO_RADIAN(attrs.angle);
-        float cs = cos(f);
-        float ss = sin(f);
+		memcpy(&cache[nbElt].coord, attrs.position, 4 * sizeof(float));
+		memcpy(&cache[nbElt].colors, attrs.color, 4 * sizeof(float));
+		cache[nbElt].size = attrs.size;
+		cache[nbElt].angle = TO_RADIAN(attrs.angle);
 
-		float *c = attrs.color;
-		position = attrs.position;
-        position *= m_fPointSize;
-        position.H(1.0f);
-		position *= transform;
-
-		// With this instruction, the compiler do not compute the last row of the previous
-		// vector * matrix product. Well, this suppose it is a smart compiler
-		position.H(1.0f);
-		float Hx = halfSize * (cs - ss);
-		float Hy = halfSize * (cs + ss);
-		//float angle = attrs.angle / 360.0f;
-		float angle = 1.0f - attrs.color.h;
-
-		cache[nbElt].texDepth = angle;
-		cache[nbElt+1].texDepth = angle;
-		cache[nbElt+2].texDepth = angle;
-		cache[nbElt+3].texDepth = angle;
-
-		memcpy(&cache[nbElt].colors,c,4*sizeof(float));
-		memcpy(&cache[nbElt+1].colors,c,4*sizeof(float));
-		memcpy(&cache[nbElt+2].colors,c,4*sizeof(float));
-		memcpy(&cache[nbElt+3].colors,c,4*sizeof(float));
-		
-		cache[nbElt].coord.x = position.X() + Hx;
-		cache[nbElt].coord.y = position.Y() + Hy;
-		cache[nbElt].coord.z = position.Z();
-		cache[nbElt].coord.h = 0.0; //position.H();
-		cache[nbElt+1].coord.x = position.X() - Hy;
-		cache[nbElt+1].coord.y = position.Y() + Hx;
-		cache[nbElt+1].coord.z = position.Z();
-		cache[nbElt+1].coord.h = 1.0; //position.H();
-		cache[nbElt+2].coord.x = position.X() - Hx;
-		cache[nbElt+2].coord.y = position.Y() - Hy;
-		cache[nbElt+2].coord.z = position.Z();
-		cache[nbElt+2].coord.h = 2.0; //position.H();
-		cache[nbElt+3].coord.x = position.X() + Hy;
-		cache[nbElt+3].coord.y = position.Y() - Hx;
-		cache[nbElt+3].coord.z = position.Z();
-		cache[nbElt+3].coord.h = 3.0; //position.H();
-
-		nbElt += 4;
-
+		nbElt += 1;
 		if (nbElt == CACHE_SIZE)
 		{
-			CGeometryAllocator *pAllocator = CGeometryAllocator::GetInstance();
 			if (pAllocator->isMemoryRelocated())
 				pAllocator->glvkCopyPointer(cachePointer,&cache[0].coord.x,CACHEPOINTER_SIZE);
 
-			glDrawArrays(GL_QUADS, 0, CACHE_SIZE);
+			glDrawArrays(GL_POINTS, 0, CACHE_SIZE);
 			nbElt = 0;
 		}
 	}
+
 	if (nbElt > 0)
 	{
-		CGeometryAllocator *pAllocator = CGeometryAllocator::GetInstance();
 		if (pAllocator->isMemoryRelocated())
 			pAllocator->glvkCopyPointer(cachePointer,&cache[0].coord.x,sizeof(CACHEELT)*nbElt/sizeof(float));
 
-		glDrawArrays(GL_QUADS, 0, nbElt);
+		glDrawArrays(GL_POINTS, 0, nbElt);
 		nbElt = 0;
 	}
 
 	m_pShader->glStop();
+	glDisable(GL_TEXTURE_3D_EXT);
 
-	glPopClientAttrib();
-	glPopMatrix();
-    glDisable(GL_TEXTURE_3D_EXT);
+#if defined(GL_ARB_vertex_program)
+	pExtensions->glDisableVertexAttribArrayARB(CProgramParameters::POSITION);
+	pExtensions->glDisableVertexAttribArrayARB(CProgramParameters::PRIMARY_COLOR);
+	pExtensions->glDisableVertexAttribArrayARB(CProgramParameters::WEIGHTS);
+	pExtensions->glDisableVertexAttribArrayARB(CProgramParameters::FOG_COORDINATE);
+#else
+	glDisableClientState(GL_VERTEX_ARRAY);
+	glDisableClientState(GL_COLOR_ARRAY);
+	glDisableClientState(GL_VERTEX_WEIGHT_ARRAY_EXT);
+	glDisableClientState(GL_FOG_COORDINATE_ARRAY_EXT);
+#endif
+
 #endif
 }
+
+
 
 //////////////////////////////////////////////////////////////////////
 void CParticle::glRender()

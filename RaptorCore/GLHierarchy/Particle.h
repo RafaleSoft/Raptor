@@ -1,6 +1,20 @@
-// Particle.h: interface for the CParticle class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  Particle.h													           */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
 
 #if !defined(AFX_PARTICLE_H__12CF5A59_2AA5_464D_9D42_81048A2B4E68__INCLUDED_)
 #define AFX_PARTICLE_H__12CF5A59_2AA5_464D_9D42_81048A2B4E68__INCLUDED_
@@ -49,9 +63,9 @@ public:
 	typedef struct PARTICLE_ATTRIBUTE_t
 	{
 		GL_COORD_VERTEX	position;
+		GL_COORD_VERTEX color;
 		GL_COORD_VERTEX speed;
 		GL_COORD_VERTEX pull;
-		GL_COORD_VERTEX color;
 		float size;
 		float fade;
 		float angle;

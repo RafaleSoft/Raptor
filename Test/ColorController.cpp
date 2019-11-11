@@ -4,8 +4,8 @@
 #include "ColorController.h"
 
 #include "System/Raptor.h"
-#include "GLHierarchy/FragmentShader.h"
-#include "GLHierarchy/VertexShader.h"
+#include "GLHierarchy/FragmentProgram.h"
+#include "GLHierarchy/VertexProgram.h"
 
 #include "ToolBox/Filters/ColorControlFilter.h"
 #include "ToolBox/Filters/HDRFilter.h"
@@ -23,9 +23,10 @@ ColorController::ColorController(CColorControlFilter* ccf,
 {
 	CRaptorConsole *pConsole = Raptor::GetConsole();
 	
-	CRaptorConsole::TEXT_ITEM item;
+	CGLFont::FONT_TEXT_ITEM item;
 	{
-		float b,c;
+		float b = 0.0f;
+		float c = 0.0f;
 		if (ccf != NULL)
 			ccf->getCorrection(b,c);
 		stringstream str;
@@ -174,7 +175,7 @@ void ColorController::handleCharacterInput(char c)
 	pBF->setBlurModel(m);
 
 	CRaptorConsole *pConsole = Raptor::GetConsole();
-	CRaptorConsole::TEXT_ITEM item;
+	CGLFont::FONT_TEXT_ITEM item;
 	{
 		stringstream str;
 		str << "ColorControl: brightness=" << br << " saturation=" << ct << "    ";

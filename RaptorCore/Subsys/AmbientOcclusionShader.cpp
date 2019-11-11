@@ -1,6 +1,21 @@
-// AmbientOcclusionShader.cpp: implementation of the CAmbientOcclusionShader class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  AmbientOcclusionShader.cpp                                             */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
 #include "Subsys/CodeGeneration.h"
 
 #if !defined(AFX_AMBIENTOCCLUSIONSHADER_H__FA8234C4_82B1_49D3_ABAA_7FCE45EDDCAD__INCLUDED_)
@@ -24,17 +39,20 @@
 #if !defined(AFX_SHADERPROGRAM_H__936BEC73_3903_46CE_86C9_9CA0005B31F5__INCLUDED_)
 	#include "GLHierarchy/ShaderProgram.h"
 #endif
-#if !defined(AFX_VERTEXPROGRAM_H__204F7213_B40B_4B6A_9BCA_828409871B68__INCLUDED_)
-    #include "GLHierarchy/VertexProgram.h"
+#if !defined(AFX_VERTEXSHADER_H__204F7213_B40B_4B6A_9BCA_828409871B68__INCLUDED_)
+	#include "GLHierarchy/VertexShader.h"
 #endif
-#if !defined(AFX_FRAGMENTPROGRAM_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
-    #include "GLHierarchy/FragmentProgram.h"
+#if !defined(AFX_FRAGMENTSHADER_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
+    #include "GLHierarchy/FragmentShader.h"
 #endif
 #if !defined(AFX_3DENGINE_H__DB24F018_80B9_11D3_97C1_FC2841000000__INCLUDED_)
 	#include "Engine/3DEngine.h"
 #endif
 #if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
 	#include "System/RaptorGLExtensions.h"
+#endif
+#if !defined(AFX_OPENGLSHADERSTAGE_H__56B00FE3_E508_4FD6_9363_90E6E67446D9__INCLUDED_)
+	#include "GLHierarchy/OpenGLShaderStage.h"
 #endif
 
 
@@ -192,16 +210,12 @@ void CAmbientOcclusionShader::glRender()
 	C3DEngine::Generic_to_MATRIX(vertexMat,M);
 	C3DEngine::Generic_to_MATRIX(normalMat,M_inv);
 
-	CProgramParameters v_params;
-	v_params.addParameter("vertexMat",vertexMat);
-	v_params.addParameter("normalMat",normalMat);
-
-	// Prepare shader parameters: 
-	//	- texture maps
-	CProgramParameters f_params;
-	f_params.addParameter("posMap",CTextureUnitSetup::IMAGE_UNIT_0);
-	f_params.addParameter("normalMap",CTextureUnitSetup::IMAGE_UNIT_1);
-	f_params.addParameter("numRows",GL_COORD_VERTEX(m_occluders[0]->m_refNbVertex/64,0,0,0));
+	CProgramParameters ao_params;
+	ao_params.addParameter("vertexMat",vertexMat);
+	ao_params.addParameter("normalMat",normalMat);
+	ao_params.addParameter("posMap",CTextureUnitSetup::IMAGE_UNIT_0);
+	ao_params.addParameter("normalMap",CTextureUnitSetup::IMAGE_UNIT_1);
+	ao_params.addParameter("numRows",GL_COORD_VERTEX(m_occluders[0]->m_refNbVertex/64,0,0,0));
 
 	RAPTOR_HANDLE noDevice;
 	m_pAOBuffer->glvkBindDisplay(noDevice);
@@ -209,9 +223,8 @@ void CAmbientOcclusionShader::glRender()
 #ifdef GL_ARB_texture_rectangle
 	glEnable(GL_TEXTURE_RECTANGLE_ARB);
 #endif
-	m_pAOcomputeRef->glGetVertexProgram()->setProgramParameters(v_params);
-	m_pAOcomputeRef->glGetFragmentProgram()->setProgramParameters(f_params);
-	glCallList(m_occluders[0]->m_AOMapSetup.handle);
+	m_pAOcomputeRef->glGetOpenGLShader()->setProgramParameters(ao_params);
+	glCallList(m_occluders[0]->m_AOMapSetup.handle());
 	m_pAOcomputeRef->glRender();
 
 	glEnableClientState(GL_VERTEX_ARRAY);

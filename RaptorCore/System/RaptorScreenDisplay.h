@@ -23,6 +23,8 @@ class CGeometryAllocator;
 class CTexelAllocator;
 class CUniformAllocator;
 class CAnimatorStream;
+class CTextureQuad;
+
 
 //! This class implements an OGL display for direct screen rendering
 class CRaptorScreenDisplay : public CRaptorDisplay  
@@ -68,11 +70,12 @@ public:
 	virtual float getRenderTime(void) const { return rtime; };
 
     //! @see CRaptorDisplay
-    virtual bool glGrab(unsigned int x, unsigned int y, unsigned int width, unsigned int height, unsigned char* &data,unsigned int& size) const;
+	virtual bool glGrab(uint32_t x, uint32_t y, uint32_t width, uint32_t height,
+						uint8_t* &data, size_t& size) const;
 
 	//! @see CRaptorDisplay
-	virtual bool glBlit(unsigned int xSrc, unsigned int ySrc, unsigned int widthSrc, unsigned int heightSrc,
-						unsigned int xDst, unsigned int yDst, unsigned int widthDst, unsigned int heightDst,
+	virtual bool glBlit(uint32_t xSrc, uint32_t ySrc, uint32_t widthSrc, uint32_t heightSrc,
+						uint32_t xDst, uint32_t yDst, uint32_t widthDst, uint32_t heightDst,
 						CRaptorDisplay *pDst) const;
 
     //! Implement base class CTextureGenerator of CRaptorDisplay
@@ -84,7 +87,13 @@ public:
 
 
 protected:
+	//! Inherited to handle occlusion queries display resources
+	virtual void unLink(const CPersistence*);
+
+	//!	Renders the main display scene.
 	virtual void glRenderScene();
+
+	void glDrawLogo(void);
 
 	//! number of frames in previous second
 	float	fps;
@@ -125,9 +134,14 @@ protected:
 	IDeviceMemoryManager	*m_pDeviceMemory;
 
 private:
+	//!	Implement Display Status.
     virtual bool glQueryStatus(CRaptorDisplayConfig &state,unsigned long query) const;
 
+	//!	Allocates Geometry, Textures and Uniforms resources
 	void allocateResources(void);
+
+	CTextureQuad*	glBuildLogo(void);
+	CTextureQuad*	pLogo;
 
 	//!	Frame number in current second.
 	int		nbFramesPerSecond;

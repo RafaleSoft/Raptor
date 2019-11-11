@@ -6,15 +6,11 @@
 #if !defined(AFX_RAPTORSCREENDISPLAY_H__D3165157_E39B_4770_990F_26D44A7BD1A3__INCLUDED_)
 	#include "RaptorScreenDisplay.h"
 #endif
-
-#ifndef __GLOBAL_H__
-	#include "Global.h"
+#if !defined(AFX_RAPTORDATAMANAGER_H__114BFB19_FA00_4E3E_879E_C9130043668E__INCLUDED_)
+	#include "DataManager/RaptorDataManager.h"
 #endif
-#if !defined(AFX_CONTEXTMANAGER_H__F992F5F0_D8A5_475F_9777_B0EB30E7648E__INCLUDED_)
-	#include "Subsys/ContextManager.h"
-#endif
-#if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
-	#include "Raptor.h"
+#if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
+	#include "System/RaptorErrorManager.h"
 #endif
 #if !defined(AFX_TIMEOBJECT_H__C06AC4B9_4DD7_49E2_9C5C_050EF5C39780__INCLUDED_)
 	#include "Engine/TimeObject.h"
@@ -43,6 +39,15 @@
 #if !defined(AFX_OPENGLMEMORY_H__C344567B_877F_4F43_8961_C4E59E3BBF7E__INCLUDED_)
 	#include "Subsys/OpenGL/OpenGLMemory.h"
 #endif
+#if !defined(AFX_TEXTUREQUAD_H__1712AF34_6723_4E39_BC72_05ED6FA28418__INCLUDED_)
+	#include "GLHierarchy/TextureQuad.h"
+#endif
+#if !defined(AFX_RAPTORINSTANCE_H__90219068_202B_46C2_BFF0_73C24D048903__INCLUDED_)
+	#include "Subsys/RaptorInstance.h"
+#endif
+#if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
+	#include "System/Raptor.h"
+#endif
 
 
 RAPTOR_NAMESPACE
@@ -59,7 +64,7 @@ const CPersistence::CPersistenceClassID& CRaptorScreenDisplay::CRaptorScreenDisp
 
 CRaptorScreenDisplay::CRaptorScreenDisplay(const CRaptorDisplayConfig& pcs)
     :CRaptorDisplay(bufferID,pcs.caption),cs(pcs),
-	fps(0.0f),ftime(0.0f),rtfps(0.0f),rtime(0.0f),
+	fps(0.0f), ftime(0.0f), rtfps(0.0f), rtime(0.0f), pLogo(NULL),
 	m_context(CContextManager::INVALID_CONTEXT),
 	m_layerContext(CContextManager::INVALID_CONTEXT),
 	m_framerate(0), lastfreq(0), l1(0), m_streamer(NULL),
@@ -72,6 +77,9 @@ CRaptorScreenDisplay::CRaptorScreenDisplay(const CRaptorDisplayConfig& pcs)
 
 CRaptorScreenDisplay::~CRaptorScreenDisplay()
 {
+	RAPTOR_HANDLE noDisplay(0, (void*)0);
+	glvkBindDisplay(noDisplay);
+
 	if (NULL != m_pGOldAllocator)
 		CGeometryAllocator::SetCurrentInstance(m_pGOldAllocator);
 	if (NULL != m_pGAllocator)
@@ -90,9 +98,23 @@ CRaptorScreenDisplay::~CRaptorScreenDisplay()
 	if (NULL != m_pDeviceMemory)
 		delete m_pDeviceMemory;
 
+	if (NULL != pLogo)
+	{
+		pLogo->unregisterDestruction(this);
+		delete pLogo;
+	}
+
 	glvkUnBindDisplay();
 
 	CContextManager::GetInstance()->glDestroyContext(m_context);
+}
+
+void CRaptorScreenDisplay::unLink(const CPersistence* obj)
+{
+	if (obj == static_cast<CPersistence*>(pLogo))
+		pLogo = NULL;
+	else
+		CRaptorDisplay::unLink(obj);
 }
 
 bool CRaptorScreenDisplay::glQueryStatus(CRaptorDisplayConfig &state,unsigned long query) const
@@ -124,7 +146,8 @@ void CRaptorScreenDisplay::glGenerate(CTextureObject* t)
     CATCH_GL_ERROR
 }
 
-bool CRaptorScreenDisplay::glGrab(unsigned int x, unsigned int y, unsigned int width, unsigned int height,unsigned char* &data,unsigned int& size) const
+bool CRaptorScreenDisplay::glGrab(uint32_t x, uint32_t y, uint32_t width, uint32_t height,
+								  uint8_t* &data, size_t& size) const
 {
     bool res = false;
    //! If buffer is bound, read pixels directly
@@ -158,9 +181,9 @@ bool CRaptorScreenDisplay::glGrab(unsigned int x, unsigned int y, unsigned int w
     return res;
 }
 
-bool CRaptorScreenDisplay::glBlit(	unsigned int xSrc, unsigned int ySrc, unsigned int widthSrc, unsigned int heightSrc,
-									unsigned int xDst, unsigned int yDst, unsigned int widthDst, unsigned int heightDst,
-									CRaptorDisplay *pDst) const
+bool CRaptorScreenDisplay::glBlit(uint32_t xSrc, uint32_t ySrc, uint32_t widthSrc, uint32_t heightSrc,
+								  uint32_t xDst, uint32_t yDst, uint32_t widthDst, uint32_t heightDst,
+								  CRaptorDisplay *pDst) const
 {
 	return false;
 }
@@ -202,13 +225,13 @@ RAPTOR_HANDLE CRaptorScreenDisplay::getCurrentDevice(void) const
 
 bool CRaptorScreenDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
 {
-	if (device.handle != CGL_NULL)
+	if (device.handle() != CGL_NULL)
 	{
 		if (CContextManager::INVALID_CONTEXT == m_context)
 		{
             // last chance to get some valid display atributes
 			if (cs.display_mode == CGL_NULL)
-				cs = Global::GetInstance().getDefaultConfig();
+				cs = CRaptorInstance::GetInstance().getDefaultConfig();
 
 			//	Initialise frame rate management
 			l1 = CTimeObject::GetGlobalTime();
@@ -256,7 +279,7 @@ bool CRaptorScreenDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
 			
 			bool hasSwapControl = CContextManager::GetInstance()->glSwapVSync(m_framerate);
 
-			//	Manage vertex/pixel buffer objects.
+			//	Create rendering context resources.
 			allocateResources();
 
             return res;
@@ -295,7 +318,8 @@ void CRaptorScreenDisplay::allocateResources(void)
     m_pTAllocator = CTexelAllocator::GetInstance();
 	m_pUAllocator = CUniformAllocator::GetInstance();
 
-    const CRaptorConfig& config = Global::GetInstance().getConfig();
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+    const CRaptorConfig& config = instance.config;
 	bool relocResource = true;
     if (config.m_bRelocation)
     {
@@ -361,6 +385,9 @@ void CRaptorScreenDisplay::allocateResources(void)
         m_pTOldAllocator->glvkLockMemory(false);
 	if ((m_pUOldAllocator != m_pUAllocator) && (m_pUOldAllocator != NULL))
 		m_pUOldAllocator->glvkLockMemory(false);
+
+	if (instance.initialised)
+		instance.glInitShaders();
 }
 
 bool CRaptorScreenDisplay::glvkUnBindDisplay(void)
@@ -374,7 +401,7 @@ bool CRaptorScreenDisplay::glvkUnBindDisplay(void)
 
 	CRaptorDisplay::glvkUnBindDisplay();
 
-	RAPTOR_HANDLE device;
+	RAPTOR_HANDLE device(0, (void*)0);
 	CContextManager::GetInstance()->glMakeCurrentContext(device,m_context);
 
 	return true;
@@ -393,22 +420,26 @@ bool CRaptorScreenDisplay::glRender(void)
 {
 	if (CContextManager::INVALID_CONTEXT != m_context)
 	{
-		CTimeObject::markTime(this);
-
         m_pGAllocator->glvkLockMemory(true);
 		m_pTAllocator->glvkLockMemory(true);
 		m_pUAllocator->glvkLockMemory(true);
 
+		CTimeObject::markTime(this);
 		glRenderScene();
+		rtime = CTimeObject::deltaMarkTime(this);
+
+		CRaptorInstance &instance = CRaptorInstance::GetInstance();
+		if (instance.pConsole != NULL)
+			instance.pConsole->glRender();
+		
+#ifdef SHAREWARE_RELEASE
+		if (CRaptorInstance::GetInstance().runAsShareware)
+			glDrawLogo();
+#endif
 
         m_pGAllocator->glvkLockMemory(false);
 		m_pTAllocator->glvkLockMemory(false);
 		m_pUAllocator->glvkLockMemory(false);
-
-		rtime = CTimeObject::deltaMarkTime(this);
-
-        if (Global::GetInstance().getConsole() != NULL)
-		    Global::GetInstance().getConsole()->glRender();
 
 		CContextManager::GetInstance()->glSwapBuffers(m_context);
 
@@ -440,3 +471,57 @@ bool CRaptorScreenDisplay::glRender(void)
 		return false;
 }
 
+
+void CRaptorScreenDisplay::glDrawLogo(void)
+{
+	if (pLogo == NULL)
+		pLogo = glBuildLogo();
+	
+	glPushAttrib(GL_ENABLE_BIT | GL_TEXTURE_BIT | GL_POLYGON_BIT);
+	
+	glMatrixMode(GL_PROJECTION);
+	glPushMatrix();
+	glLoadIdentity();
+	glOrtho(-1.0f, 1.0f, -1.0f, 1.0f, -1.0, 1.0);
+	
+	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();
+	glLoadIdentity();
+
+	glDisable(GL_DEPTH_TEST);
+	glDisable(GL_CULL_FACE);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	pLogo->glRender();
+
+	glPopMatrix();
+	glMatrixMode(GL_PROJECTION);
+	glPopMatrix();
+	glMatrixMode(GL_MODELVIEW);
+	
+	glPopAttrib();
+	
+	CATCH_GL_ERROR
+}
+
+CTextureQuad* CRaptorScreenDisplay::glBuildLogo(void)
+{
+	CRaptorDataManager  *dataManager = CRaptorDataManager::GetInstance();
+	if (NULL == dataManager)
+		return NULL;
+
+	string filepath = dataManager->ExportFile("Raptor_logo_sml.txt");
+	pLogo = new CTextureQuad();
+	pLogo->glLoadTexture(filepath, true);
+	pLogo->glSetQuadAttributes(GL_COORD_VERTEX(0.85f, -0.925f, 1.0f, 1.0f),
+							   CColor::RGBA(0.6f, 0.9f, 1.0f, 0.4f),
+							   GL_COORD_VERTEX(0.15f, 0.075f, 0.0f, 0.0f));
+
+	pLogo->registerDestruction(this);
+
+	CATCH_GL_ERROR
+
+	return pLogo;
+}

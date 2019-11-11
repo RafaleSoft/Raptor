@@ -39,8 +39,8 @@ private:
 
 	IViewPoint			*vp;
 
-	CFragmentShader		*pfsSetup;
-    CVertexShader       *pvsSetup;
+	CFragmentProgram	*pfsSetup;
+	CVertexProgram		*pvsSetup;
 
 	C3DScene			*m_pScene;
 	CObject3DInstance	**m_pInstances;

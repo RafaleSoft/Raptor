@@ -1,6 +1,20 @@
-// ShaderProgram.h: interface for the CShaderProgram class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  ShaderProgram.h                                                        */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
 
 #if !defined(AFX_SHADERPROGRAM_H__936BEC73_3903_46CE_86C9_9CA0005B31F5__INCLUDED_)
 #define AFX_SHADERPROGRAM_H__936BEC73_3903_46CE_86C9_9CA0005B31F5__INCLUDED_
@@ -40,6 +54,17 @@ public:
 	//!	Same behavior as above, but program source is external.
 	virtual bool glLoadProgramFromFile(const std::string &program);
 
+	//!	Adds a shader to current runtime library.
+	//! Instead of loading the shader with the methods above, 
+	//! provide the name of shader, the program source, and the Raptor shader class.
+	//!	The loaded shader can then be reused with CShader::getShader
+	//! @param shader_name: the name of the shader to be retrieved by glGet[Fragment|Geometry|Vertex]Shader.
+	//! @param shader_source_file: the filename to load that contains the shader source.
+	//! @param class_name: the name of the shader class (@see CPersistence)
+	static bool glAddToLibrary(	const std::string& shader_name,
+								const std::string& shader_source_file,
+								const std::string& class_name);
+
 	//!	The Render method has the typical bahaviour
 	//!	of all Raptor Render methods : if the object
 	//!	has no geometry info, Render sets GL state
@@ -51,26 +76,13 @@ public:
 	//!	within the capabilities computed in the method below.
 	//!	If result is true, it means the program will run properly
 	//!	giving expected result.
-	virtual bool glGetProgramStatus(void) = 0;
+	virtual bool glGetProgramStatus(void) const = 0;
 
-	//!	This method sets a program parameter ( 4 components vector ):
-	//! The number of parameters is limited by hardware ( get shader caps in derived classes ). 
-    //! The first parameter selects the program paramater, the second is the actual data.
-    //! CAUTION : Accessing parameters directly is unsafe and should be avoided, except for performance issues.
-	virtual void glProgramParameter( unsigned int numParam,
-                                     const GL_COORD_VERTEX &v) const = 0;
-
-	//! Same as above but passes a color instead of a geo vector
-	virtual void glProgramParameter( unsigned int numParam,
-                                     const CColor::RGBA &v) const = 0;
-
-    //! This method can be used to pass in the whole parameter set.
-    //! They will be actually applied after a successfull link is issued.
-    virtual void setProgramParameters(const CProgramParameters &v);
-
-	//! This method can be used to upadte only a subset of the actual parameter set.
-	//! They will be actually applied after a successfull link is issued.
-	virtual void updateProgramParameters(const CProgramParameters &v);
+	//! This method returns the shader program source loaded
+	//! with glLoadProgram or glLoadProgramFromFile.
+	//! If the shader is not valid or if any error prevent accessing 
+	//! the source, then an empty string is returned.
+	virtual std::string glGetProgramString(void) const = 0;
 
 
 	//! Inherited from CPersistence
@@ -84,6 +96,15 @@ protected:
 	//!	Copy constructor.
 	CShaderProgram(const CShaderProgram&);
 	
+	//! This method can be used to pass in the whole parameter set.
+	//! They will be actually applied after a successfull link is issued.
+	virtual void setProgramParameters(const CProgramParameters &v);
+
+	//! This method can be used to update only a subset of the actual parameter set.
+	//! They will be actually applied after a successfull link is issued.
+	virtual void updateProgramParameters(const CProgramParameters &v);
+
+
 	//! Valid status
 	bool					m_bValid;
 

@@ -7,15 +7,15 @@
 #include "Engine/IViewPoint.h"
 #include "Engine/ViewModifier.h"
 #include "Engine/LightModifier.h"
-#include "GLHierarchy/FragmentProgram.h"
+#include "GLHierarchy/FragmentShader.h"
 #include "GLHierarchy/GeometryEditor.h"
 #include "GLHierarchy/Object3DInstance.h"
 #include "GLHierarchy/IRenderingProperties.h"
 #include "GLHierarchy/Light.h"
 #include "GLHierarchy/Shader.h"
 #include "GLHierarchy/ShaderProgram.h"
-#include "GLHierarchy/VertexProgram.h"
 #include "GLHierarchy/VertexShader.h"
+#include "GLHierarchy/VertexProgram.h"
 #include "GLHierarchy/VulkanShaderStage.h"
 #include "GLHierarchy/TextureFactory.h"
 #include "GLHierarchy/TextureFactoryConfig.h"
@@ -87,7 +87,7 @@ CTest5Doc::CTest5Doc(const RAPTOR_HANDLE& device,const char* title)
 	CImaging::installImagers();
 
 	RECT r;
-	GetClientRect((HWND)(device.handle),&r);
+	GetClientRect((HWND)(device.handle()),&r);
 	CRaptorDisplayConfig glcs;
 	glcs.width = r.right - r.left;
 	glcs.height = r.bottom - r.top;
@@ -168,7 +168,7 @@ void CTest5Doc::GLInitContext(void)
 
 	C3DScene *pScene = m_pDisplay->getRootScene();
 	//CShader *shader = new CShader("uniforms-shader");
-	//CVertexProgram *p = shader->glGetVertexProgram("uniforms");
+	//CVertexShader *p = shader->glGetVertexProgram("uniforms");
 	//p->glLoadProgramFromStream(*shdr);
 	//bool res = shader->glCompileShader();
 
@@ -196,7 +196,7 @@ void CTest5Doc::GLInitContext(void)
 
 
 #ifdef VULKAN_TEST
-	CVulkanShaderStage *ss = s->vkGetVulkanProgram();
+	CVulkanShaderStage *ss = s->vkGetVulkanShader();
 	ss->vkLoadShader("shader3.vert");
 	ss->vkLoadShader("shader3.frag");
 	

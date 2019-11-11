@@ -1,6 +1,20 @@
-// VulkanShaderStage.h: interface for the CVulkanShaderStage class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  VulkanShaderStage.h                                                    */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
 
 #if !defined(AFX_VULKANSHADERSTAGE_H__EF5769B8_470D_467F_9FDE_553142C81698__INCLUDED_)
 #define AFX_VULKANSHADERSTAGE_H__EF5769B8_470D_467F_9FDE_553142C81698__INCLUDED_
@@ -49,16 +63,13 @@ public:
 	virtual void glStop(void) { };
 
 	//! Implements base class
-	virtual bool glGetProgramStatus(void)
+	virtual bool glGetProgramStatus(void) const
 	{
 		return m_bValid;
 	};
 
-	virtual void glProgramParameter(unsigned int numParam,
-									const GL_COORD_VERTEX &v) const { };
-
-	virtual void glProgramParameter(unsigned int numParam,
-									const CColor::RGBA &v) const { };
+	//! Implements base class
+	virtual std::string glGetProgramString(void) const { return ""; }
 
 	//! Provide gl-like shader parameters from RaptorCore.
 	//!	Attention : parameter shall be copied before next call because return value is reused.
@@ -89,7 +100,7 @@ public:
 private:
 	//! Denied operators
 	CVulkanShaderStage();
-    CVulkanShaderStage& operator=(const CVulkanShaderStage& ) { return *this;};
+    CVulkanShaderStage& operator=(const CVulkanShaderStage& );
 
 	//!	Identify predefined OpenGL shader names variables
 	bool IsPredefinedGLVariable(const std::string& name);

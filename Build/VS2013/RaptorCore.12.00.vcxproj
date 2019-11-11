@@ -155,8 +155,7 @@
       <LinkStatus>
       </LinkStatus>
       <ProgramDatabaseFile>$(OutDir)Raptor.pdb</ProgramDatabaseFile>
-      <Version>
-      </Version>
+      <Version>$(RAPTOR_RELEASE)</Version>
     </Link>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -240,7 +239,6 @@ $(SolutionDir)\$(ProjectName)\Subsys\Redist.bat
       <Message>Build redistribuable package</Message>
       <Command>copy $(OutDir)\Raptor.lib "%RAPTOR_ROOT%\Redist\lib\"
 copy $(OutDir)\Raptor.dll "%RAPTOR_ROOT%\Redist\bin\"
-copy $(OutDir)\xerces-c_3_2.dll "%RAPTOR_ROOT%\Redist\bin\"
 copy $(SolutionDir)$(ProjectName)\Subsys\ObjectModels\Raptor.xsd %RAPTOR_ROOT%\Redist\bin\
 copy $(SolutionDir)$(ProjectName)\Subsys\ObjectModels\RaptorMessages.xsd %RAPTOR_ROOT%\Redist\bin\
 cd $(SolutionDir)\$(ProjectName)
@@ -266,7 +264,7 @@ $(SolutionDir)\$(ProjectName)\Subsys\Redist.bat
       <AdditionalIncludeDirectories>$(SolutionDir)\$(ProjectName);$(RAPTOR_ROOT)\Redist\Include;$(XERCES_INCLUDE_PATH);$(FREETYPE_INCLUDE_PATH);$(VULKAN_INCLUDE_PATH);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;EXPORT_RAPTOR_CORE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <StructMemberAlignment>16Bytes</StructMemberAlignment>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <PrecompiledHeader>Use</PrecompiledHeader>
@@ -307,8 +305,7 @@ $(SolutionDir)\$(ProjectName)\Subsys\Redist.bat
       <LinkStatus>
       </LinkStatus>
       <ProgramDatabaseFile>$(OutDir)Raptor.pdb</ProgramDatabaseFile>
-      <Version>
-      </Version>
+      <Version>$(RAPTOR_RELEASE)</Version>
     </Link>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -317,7 +314,6 @@ $(SolutionDir)\$(ProjectName)\Subsys\Redist.bat
       <Message>Build redistribuable package</Message>
       <Command>copy $(OutDir)\Raptor.lib "%RAPTOR_ROOT%\Redist\lib\"
 copy $(OutDir)\Raptor.dll "%RAPTOR_ROOT%\Redist\bin\"
-copy $(OutDir)\xerces-c_3_2.dll "%RAPTOR_ROOT%\Redist\bin\"
 copy $(SolutionDir)$(ProjectName)\Subsys\ObjectModels\Raptor.xsd %RAPTOR_ROOT%\Redist\bin\
 copy $(SolutionDir)$(ProjectName)\Subsys\ObjectModels\RaptorMessages.xsd %RAPTOR_ROOT%\Redist\bin\
 cd $(SolutionDir)\$(ProjectName)
@@ -370,7 +366,7 @@ $(SolutionDir)\$(ProjectName)\Subsys\Redist.bat
     <Link>
       <AdditionalDependencies>RaptorData.lib;opengl32.lib;glu32.lib;simd.lib;Subsys\GlttLib\gltt.2.3.lib;Subsys\GlttLib\freetype.lib;Subsys\xercesc_2_7\vc9\xerces-c_2.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>Release\Raptor.dll</OutputFile>
-      <Version>2.16.0</Version>
+      <Version>$(RAPTOR_RELEASE)</Version>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>$(PLATFORM_SDK)\Lib;$(RAPTOR_ROOT)\Redist\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
@@ -396,10 +392,12 @@ $(SolutionDir)\$(ProjectName)\Subsys\Redist.bat
     </Bscmake>
     <PostBuildEvent>
       <Message>Build redistribuable package</Message>
-      <Command>copy Release\Raptor.lib "%RAPTOR_ROOT%\Redist\lib\"
-copy Release\Raptor.dll "%RAPTOR_ROOT%\Redist\bin\"
-copy Subsys\xercesc_2_7\vc9\xerces-c_2_7.dll "%RAPTOR_ROOT%\Redist\bin\"
-Subsys\Redist.bat
+      <Command>copy $(OutDir)\Raptor.lib "%RAPTOR_ROOT%\Redist\lib\"
+copy $(OutDir)\Raptor.dll "%RAPTOR_ROOT%\Redist\bin\"
+copy $(SolutionDir)$(ProjectName)\Subsys\ObjectModels\Raptor.xsd %RAPTOR_ROOT%\Redist\bin\
+copy $(SolutionDir)$(ProjectName)\Subsys\ObjectModels\RaptorMessages.xsd %RAPTOR_ROOT%\Redist\bin\
+cd $(SolutionDir)\$(ProjectName)
+$(SolutionDir)\$(ProjectName)\Subsys\Redist.bat
 </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -476,12 +474,12 @@ Subsys\Redist.bat
     <ClCompile Include="..\..\RaptorCore\Engine\ViewModifier.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\3DSet.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\BumppedGeometry.cpp" />
-    <ClCompile Include="..\..\RaptorCore\GLHierarchy\FragmentProgram.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\FragmentShader.cpp" />
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\FragmentProgram.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\Geometry.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\GeometryEditor.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\GeometryPrimitive.cpp" />
-    <ClCompile Include="..\..\RaptorCore\GLHierarchy\GeometryProgram.cpp" />
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\GeometryShader.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\GL2DFont.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\GL2DTextureFont.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\GL3DFont.cpp" />
@@ -492,6 +490,7 @@ Subsys\Redist.bat
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\GLVectorFont.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\ITextureObject.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\Light.cpp" />
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\LightFlare.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\LightGlow.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\LightObserver.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\Material.cpp" />
@@ -502,6 +501,8 @@ Subsys\Redist.bat
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\Object3DShadow.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\ObjectFactory.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\ObjectProperties.cpp" />
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\OpenGLProgramStage.cpp" />
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\OpenGLShaderStage.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\Particle.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\PerlinNoise.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\Persistence.cpp" />
@@ -520,11 +521,12 @@ Subsys\Redist.bat
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\TextureFactory.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\TextureFactoryConfig.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\TextureObject.cpp" />
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\TextureQuad.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\TextureSet.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\TextureUnitSetup.cpp" />
-    <ClCompile Include="..\..\RaptorCore\GLHierarchy\UnifiedProgram.cpp" />
-    <ClCompile Include="..\..\RaptorCore\GLHierarchy\VertexProgram.cpp" />
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\UnifiedShader.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\VertexShader.cpp" />
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\VertexProgram.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\VulkanShaderStage.cpp" />
     <ClCompile Include="..\..\RaptorCore\Raptordll.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
@@ -645,8 +647,10 @@ Subsys\Redist.bat
     <ClCompile Include="..\..\RaptorCore\Subsys\OpenGL\OpenGLMemory.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\OpenGL\OpenGLRenderingProperties.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\OpenGL\OpenGLViewPoint.cpp" />
+    <ClCompile Include="..\..\RaptorCore\Subsys\OpenGL\RaptorOpenGL.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\PhongShader.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\PlayFrameJob.cpp" />
+    <ClCompile Include="..\..\RaptorCore\Subsys\RaptorInstance.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\RegisterCombiner.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\ResourceAllocator.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\ShaderLibrary.cpp" />
@@ -656,6 +660,7 @@ Subsys\Redist.bat
     <ClCompile Include="..\..\RaptorCore\Subsys\TexelAllocator.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\UniformAllocator.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\VideoStream.cpp" />
+    <ClCompile Include="..\..\RaptorCore\Subsys\Vulkan\RaptorVulkan.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\Vulkan\VulkanCommandBuffer.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\Vulkan\VulkanDevice.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\Vulkan\VulkanMemory.cpp" />
@@ -667,7 +672,6 @@ Subsys\Redist.bat
     <ClCompile Include="..\..\RaptorCore\Subsys\XMLRaptorIO.cpp" />
     <ClCompile Include="..\..\RaptorCore\System\CGLTypes.cpp" />
     <ClCompile Include="..\..\RaptorCore\System\Color.cpp" />
-    <ClCompile Include="..\..\RaptorCore\System\Global.cpp" />
     <ClCompile Include="..\..\RaptorCore\System\Image.cpp" />
     <ClCompile Include="..\..\RaptorCore\System\Memory.cpp" />
     <ClCompile Include="..\..\RaptorCore\System\Raptor.cpp" />
@@ -708,18 +712,29 @@ Subsys\Redist.bat
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">cd $(SolutionDir)\$(ProjectName)\Subsys
 "%RAPTOR_ROOT%\Redist\bin\Builder.Net.exe" %(FullPath)
 copy $(SolutionDir)\$(ProjectName)\Subsys\CodeGeneration.h "%RAPTOR_ROOT%\Redist\Include\Subsys"</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">cd $(SolutionDir)\$(ProjectName)\Subsys
-"%RAPTOR_ROOT%\Redist\bin\Builder.Net.exe" %(FullPath)
-copy $(SolutionDir)\$(ProjectName)\Subsys\CodeGeneration.h "%RAPTOR_ROOT%\Redist\Include\Subsys"</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">cd $(SolutionDir)\$(ProjectName)\Subsys
-"%RAPTOR_ROOT%\Redist\bin\Builder.Net.exe" %(FullPath)
-copy $(SolutionDir)\$(ProjectName)\Subsys\CodeGeneration.h "%RAPTOR_ROOT%\Redist\Include\Subsys"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">cd $(TargetDir)
+Builder.exe %(FullPath)
+copy CodeGeneration.h  $(SolutionDir)\$(ProjectName)\Subsys\CodeGeneration.h
+copy CodeGeneration.h "%RAPTOR_ROOT%\Redist\Include\Subsys"
+</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">cd $(TargetDir)
+Builder.exe %(FullPath)
+copy CodeGeneration.h  $(SolutionDir)\$(ProjectName)\Subsys\CodeGeneration.h
+copy CodeGeneration.h "%RAPTOR_ROOT%\Redist\Include\Subsys"
+</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(RelativeDir)\..\Subsys\CodeGeneration.h</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">%(RelativeDir)\..\Subsys\CodeGeneration.h</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(RelativeDir)\..\Subsys\CodeGeneration.h</Outputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Building OpenGL extensions</Message>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">Building OpenGL extensions</Message>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Building OpenGL extensions</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Optimized|Win32'">cd $(TargetDir)
+Builder.exe %(FullPath)
+copy CodeGeneration.h  $(SolutionDir)\$(ProjectName)\Subsys\CodeGeneration.h
+copy CodeGeneration.h "%RAPTOR_ROOT%\Redist\Include\Subsys"
+</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Optimized|Win32'">Building OpenGL extensions</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Optimized|Win32'">%(RelativeDir)\..\Subsys\CodeGeneration.h</Outputs>
     </CustomBuild>
     <ClInclude Include="..\..\RaptorCore\Engine\3DEngine.h" />
     <ClInclude Include="..\..\RaptorCore\Engine\3DEngineMatrix.h" />
@@ -748,12 +763,12 @@ copy $(SolutionDir)\$(ProjectName)\Subsys\CodeGeneration.h "%RAPTOR_ROOT%\Redist
     <ClInclude Include="..\..\RaptorCore\Engine\ViewModifier.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\3DSet.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\BumppedGeometry.h" />
-    <ClInclude Include="..\..\RaptorCore\GLHierarchy\FragmentProgram.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\FragmentShader.h" />
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\FragmentProgram.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\Geometry.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\GeometryEditor.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\GeometryPrimitive.h" />
-    <ClInclude Include="..\..\RaptorCore\GLHierarchy\GeometryProgram.h" />
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\GeometryShader.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\GL2DFont.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\GL2DTextureFont.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\GL3DFont.h" />
@@ -764,6 +779,7 @@ copy $(SolutionDir)\$(ProjectName)\Subsys\CodeGeneration.h "%RAPTOR_ROOT%\Redist
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\GLVectorFont.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\ITextureObject.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\Light.h" />
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\LightFlare.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\LightGlow.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\LightObserver.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\Material.h" />
@@ -775,6 +791,8 @@ copy $(SolutionDir)\$(ProjectName)\Subsys\CodeGeneration.h "%RAPTOR_ROOT%\Redist
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\ObjectFactory.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\ObjectProperties.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\ObjectReference.h" />
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\OpenGLProgramStage.h" />
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\OpenGLShaderStage.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\Particle.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\PerlinNoise.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\Persistence.h" />
@@ -789,11 +807,12 @@ copy $(SolutionDir)\$(ProjectName)\Subsys\CodeGeneration.h "%RAPTOR_ROOT%\Redist
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\TextureFactoryConfig.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\TextureGenerator.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\TextureObject.h" />
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\TextureQuad.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\TextureSet.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\TextureUnitSetup.h" />
-    <ClInclude Include="..\..\RaptorCore\GLHierarchy\UnifiedProgram.h" />
-    <ClInclude Include="..\..\RaptorCore\GLHierarchy\VertexProgram.h" />
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\UnifiedShader.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\VertexShader.h" />
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\VertexProgram.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\VulkanShaderStage.h" />
     <ClInclude Include="..\..\RaptorCore\Raptordll.h" />
     <ClInclude Include="..\..\RaptorCore\resource.h" />
@@ -845,11 +864,13 @@ copy $(SolutionDir)\$(ProjectName)\Subsys\CodeGeneration.h "%RAPTOR_ROOT%\Redist
     <ClInclude Include="..\..\RaptorCore\Subsys\ObjectModels\RaptorScript_tree.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\ObjectModels\RaptorScript_yacc.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\Octree.h" />
+    <ClInclude Include="..\..\RaptorCore\Subsys\OpenGL\RaptorOpenGL.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\OpenGL\OpenGLMemory.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\OpenGL\OpenGLRenderingProperties.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\OpenGL\OpenGLViewPoint.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\PhongShader.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\PlayFrameJob.h" />
+    <ClInclude Include="..\..\RaptorCore\Subsys\RaptorInstance.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\RegisterCombiner.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\ResourceAllocator.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\ShaderLibrary.h" />
@@ -860,6 +881,7 @@ copy $(SolutionDir)\$(ProjectName)\Subsys\CodeGeneration.h "%RAPTOR_ROOT%\Redist
     <ClInclude Include="..\..\RaptorCore\Subsys\TimeObjectImpl.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\UniformAllocator.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\VideoStream.h" />
+    <ClInclude Include="..\..\RaptorCore\Subsys\Vulkan\RaptorVulkan.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\Vulkan\VulkanBufferObject.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\Vulkan\VulkanCommandBuffer.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\Vulkan\VulkanDevice.h" />
@@ -873,7 +895,6 @@ copy $(SolutionDir)\$(ProjectName)\Subsys\CodeGeneration.h "%RAPTOR_ROOT%\Redist
     <ClInclude Include="..\..\RaptorCore\System\CGLTypes.h" />
     <ClInclude Include="..\..\RaptorCore\System\Color.h" />
     <ClInclude Include="..\..\RaptorCore\System\GLEXTMacros.h" />
-    <ClInclude Include="..\..\RaptorCore\System\Global.h" />
     <ClInclude Include="..\..\RaptorCore\System\Image.h" />
     <ClInclude Include="..\..\RaptorCore\System\Memory.h" />
     <ClInclude Include="..\..\RaptorCore\System\Raptor.h" />

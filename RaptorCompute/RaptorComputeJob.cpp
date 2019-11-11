@@ -1,3 +1,21 @@
+/***************************************************************************/
+/*                                                                         */
+/*  RaptorComputeJob.cpp                                                   */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
 #include "StdAfx.h"
 
 #if !defined(AFX_RAPTOR_COMPUTE_H__7FDED2CB_7AA2_4D6E_BF22_50923FD45212__INCLUDED_)
@@ -267,7 +285,7 @@ bool CRaptorComputeJob::run(bool waitCompletion)
 											0,			// offset in buffer
 											pTask->getGlobalSize()[0],
 											dst.p,
-											NULL,NULL,pevt);
+											0,NULL,pevt);
 				if (CL_SUCCESS != err)
 				{
 					stringstream str;
@@ -418,11 +436,11 @@ bool CRaptorComputeJob::clLoadProgramString(const std::string &programString)
 std::string CRaptorComputeJob::loadProgramSource(const std::string &programFile)
 {
 	if (programFile.empty())
-		return false;
+		return "";
 
 	CRaptorIO *stream = CRaptorIO::Create(programFile.c_str(),CRaptorIO::DISK_READ);
 	if (NULL == stream)
-		return false;
+		return "";
 
 	string programstr;
 

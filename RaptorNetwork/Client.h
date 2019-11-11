@@ -10,6 +10,7 @@
 #endif // _MSC_VER >= 1000
 
 using std::string;
+using std::stringstream;
 
 #if !defined(AFX_NETWORK_H__AC9D546D_A00A_4BFC_AC0C_288BE137CD20__INCLUDED_)
     #include "Network.h"
@@ -30,8 +31,8 @@ public:
 	virtual unsigned short  getPort() const {return m_socket.getPort();};
 	virtual unsigned int  getAddr() const {return m_socket.getIP();};
 
-	void write(void *data,unsigned int size);
-	void read(void *&data,unsigned int& size);
+	void write(void *data,size_t size);
+	void read(void *&data,size_t& size);
 
 
 protected:
@@ -63,13 +64,13 @@ CClient<ClientSocket_T>::~CClient()
 
 
 template <class ClientSocket_T> 
-void CClient<ClientSocket_T>::write(void *data,unsigned int size)
+void CClient<ClientSocket_T>::write(void *data,size_t size)
 {
 	m_socket.safeWrite(data,size);
 }
 
 template <class ClientSocket_T> 
-void CClient<ClientSocket_T>::read(void *&data,unsigned int& size)
+void CClient<ClientSocket_T>::read(void *&data,size_t& size)
 {
 	m_socket.safeRead(data,size);
 }

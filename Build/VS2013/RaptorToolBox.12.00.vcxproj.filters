@@ -143,6 +143,9 @@
     <ClCompile Include="..\..\RaptorToolBox\Imaging\writepng.c">
       <Filter>Source Files\Imaging</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\RaptorToolBox\Filters.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\RaptorToolBox\Loaders\OBJScript_lex.h">
@@ -232,6 +235,9 @@
     <ClInclude Include="..\..\RaptorToolBox\resource.h">
       <Filter>Resource Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\RaptorToolBox\Filters.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\RaptorToolBox\Loaders\OBJ.lex">
@@ -242,5 +248,109 @@
     <ResourceCompile Include="..\..\RaptorToolBox\RaptorToolBox.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\RaptorToolBox\buildpak.bat">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="..\..\RaptorToolBox\Filters\DOF.gs">
+      <Filter>Source Files\Filters</Filter>
+    </None>
+    <None Include="..\..\RaptorToolBox\Filters\DOF.ps">
+      <Filter>Source Files\Filters</Filter>
+    </None>
+    <None Include="..\..\RaptorToolBox\Filters\DOF.vs">
+      <Filter>Source Files\Filters</Filter>
+    </None>
+    <None Include="..\..\RaptorToolBox\Filters\DOF_old.ps">
+      <Filter>Source Files\Filters</Filter>
+    </None>
+    <None Include="..\..\RaptorToolBox\Filters\DOF.fp">
+      <Filter>Source Files\Filters</Filter>
+    </None>
+    <None Include="..\..\RaptorToolBox\Filters\DOF.vp">
+      <Filter>Source Files\Filters</Filter>
+    </None>
+    <None Include="..\..\RaptorToolBox\Filters\Color.ps">
+      <Filter>Source Files\Filters</Filter>
+    </None>
+    <None Include="..\..\RaptorToolBox\Filters\Color_old.ps">
+      <Filter>Source Files\Filters</Filter>
+    </None>
+    <None Include="..\..\RaptorToolBox\Filters\Color.fp">
+      <Filter>Source Files\Filters</Filter>
+    </None>
+    <None Include="..\..\RaptorToolBox\Filters\Magnifier.gs">
+      <Filter>Source Files\Filters</Filter>
+    </None>
+    <None Include="..\..\RaptorToolBox\Filters\Magnifier_X.ps">
+      <Filter>Source Files\Filters</Filter>
+    </None>
+    <None Include="..\..\RaptorToolBox\Filters\Magnifier_Y.ps">
+      <Filter>Source Files\Filters</Filter>
+    </None>
+    <None Include="..\..\RaptorToolBox\Filters\Magnifier.vs">
+      <Filter>Source Files\Filters</Filter>
+    </None>
+    <None Include="..\..\RaptorToolBox\Filters\Magnifier_oldX.ps">
+      <Filter>Source Files\Filters</Filter>
+    </None>
+    <None Include="..\..\RaptorToolBox\Filters\Magnifier_oldY.ps">
+      <Filter>Source Files\Filters</Filter>
+    </None>
+    <None Include="..\..\RaptorToolBox\Filters\Magnifier.vp">
+      <Filter>Source Files\Filters</Filter>
+    </None>
+    <None Include="..\..\RaptorToolBox\Filters\Magnifier_X.fp">
+      <Filter>Source Files\Filters</Filter>
+    </None>
+    <None Include="..\..\RaptorToolBox\Filters\Magnifier_Y.fp">
+      <Filter>Source Files\Filters</Filter>
+    </None>
+    <None Include="..\..\RaptorToolBox\Filters\HDR_threshold.ps">
+      <Filter>Source Files\Filters</Filter>
+    </None>
+    <None Include="..\..\RaptorToolBox\Filters\HDR_composer.ps">
+      <Filter>Source Files\Filters</Filter>
+    </None>
+    <None Include="..\..\RaptorToolBox\Filters\HDR_luminance.ps">
+      <Filter>Source Files\Filters</Filter>
+    </None>
+    <None Include="..\..\RaptorToolBox\Filters\HDR_luminanceLast.ps">
+      <Filter>Source Files\Filters</Filter>
+    </None>
+    <None Include="..\..\RaptorToolBox\Filters\HDR_threshold_old.ps">
+      <Filter>Source Files\Filters</Filter>
+    </None>
+    <None Include="..\..\RaptorToolBox\Filters\HDR_composer_old.ps">
+      <Filter>Source Files\Filters</Filter>
+    </None>
+    <None Include="..\..\RaptorToolBox\Filters\HDR_luminance_old.ps">
+      <Filter>Source Files\Filters</Filter>
+    </None>
+    <None Include="..\..\RaptorToolBox\Filters\HDR_luminanceLast_old.ps">
+      <Filter>Source Files\Filters</Filter>
+    </None>
+    <None Include="..\..\RaptorToolBox\Filters\HDR_composer.fp">
+      <Filter>Source Files\Filters</Filter>
+    </None>
+    <None Include="..\..\RaptorToolBox\Filters\HDR_threshold.fp">
+      <Filter>Source Files\Filters</Filter>
+    </None>
+    <None Include="..\..\RaptorToolBox\Filters\HDR_luminance.fp">
+      <Filter>Source Files\Filters</Filter>
+    </None>
+    <None Include="..\..\RaptorToolBox\Filters\HDR_luminanceLast.fp">
+      <Filter>Source Files\Filters</Filter>
+    </None>
+    <None Include="..\..\RaptorToolBox\Filters\MB_accum2.ps">
+      <Filter>Source Files\Filters</Filter>
+    </None>
+    <None Include="..\..\RaptorToolBox\Filters\MB_accum.ps">
+      <Filter>Source Files\Filters</Filter>
+    </None>
+    <None Include="..\..\RaptorToolBox\Filters\MB_accum_old.ps">
+      <Filter>Source Files\Filters</Filter>
+    </None>
   </ItemGroup>
 </Project>

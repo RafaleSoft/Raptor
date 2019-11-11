@@ -6,14 +6,8 @@
 #if !defined(AFX_OBJECT3DINSTANCESET_H__4552BADA_3CE7_40A5_9FE3_C10D58360193__INCLUDED_)
 	#include "Object3DInstanceSet.h"
 #endif
-#if !defined(AFX_3DENGINE_H__DB24F018_80B9_11D3_97C1_FC2841000000__INCLUDED_)
-	#include "Engine/3DEngine.h"
-#endif
-#if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
-	#include "System/Raptor.h"
-#endif
-#ifndef __GLOBAL_H__
-	#include "System/Global.h"
+#if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
+	#include "System/RaptorErrorManager.h"
 #endif
 #if !defined(AFX_OBJECTFACTORY_H__7F891C52_9E32_489C_B09C_5E5803522D91__INCLUDED_)
 	#include "ObjectFactory.h"

@@ -9,11 +9,8 @@
 #if !defined(AFX_MATERIAL_H__B42ABB88_80E8_11D3_97C2_DE5C28000000__INCLUDED_)
 	#include "Material.h"
 #endif
-#if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
-	#include "System/Raptor.h"
-#endif
-#ifndef __GLOBAL_H__
-	#include "System/Global.h"
+#if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
+	#include "System/RaptorErrorManager.h"
 #endif
 #if !defined(AFX_RAPTORIO_H__87D52C27_9117_4675_95DC_6AD2CCD2E78D__INCLUDED_)
 	#include "System/RaptorIO.h"
@@ -236,8 +233,8 @@ static real_mat_t REAL_MATERIALS[29] =
 	    var[3]=COLOR_MATERIAL[mat][3]; \
 	}
 #define DEL_LIST \
-	if (handle.handle > 0) \
-		glDeleteLists(handle.handle,1);
+	if (handle.handle() > 0) \
+		glDeleteLists(handle.handle(),1);
 #define SET_COLOR(var) \
 	{\
 		var[0]=r;\
@@ -258,12 +255,8 @@ static real_mat_t REAL_MATERIALS[29] =
 		var[2]=MIN(var[2]*dd,1.0f);\
 	}
 
-static CMaterial::CMaterialClassID materialID;
-static CPersistentType<CMaterial> materialFactory(materialID);
-const CPersistence::CPersistenceClassID& CMaterial::CMaterialClassID::GetClassId(void)
-{
-	return materialID;
-}
+IMPLEMENT_CLASS_ID(CMaterial, materialID)
+
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -274,8 +267,8 @@ CMaterial::CMaterial(REAL_MATERIAL material,
 {
 	m_bRebuild = true;
 
-	handle.handle = 0;
-	handle.hClass = CMaterial::CMaterialClassID::GetClassId().ID();
+	handle.handle(0);
+	handle.hClass(CMaterial::CMaterialClassID::GetClassId().ID());
 
 	emission_enabled = false;
 	SET_MATERIAL(emission,CGL_BLACK_MATERIAL)
@@ -313,8 +306,8 @@ CMaterial::CMaterial(BASE_MATERIAL amb,
 {
     m_bRebuild = true;
 
-	handle.handle = 0;
-	handle.hClass = CMaterial::CMaterialClassID::GetClassId().ID();
+	handle.handle(0);
+	handle.hClass(CMaterial::CMaterialClassID::GetClassId().ID());
 
 	if (amb>=CGL_NO_MATERIAL)
 	{
@@ -369,8 +362,8 @@ CMaterial::CMaterial(BASE_MATERIAL amb,
 {
     m_bRebuild = true;
 
-	handle.handle = 0;
-	handle.hClass = CMaterial::CMaterialClassID::GetClassId().ID();
+	handle.handle(0);
+	handle.hClass(CMaterial::CMaterialClassID::GetClassId().ID());
 
 	if (amb>=CGL_NO_MATERIAL)
 	{
@@ -544,7 +537,7 @@ void CMaterial::glRender()
     if(m_bRebuild)
     {
         DEL_LIST
-        handle.handle = 0;
+        handle.handle(0);
         m_bRebuild = false;
     }
 	else if (pCurrentMaterial == this)
@@ -554,14 +547,12 @@ void CMaterial::glRender()
 
 	//if (glIsList(handle.handle))
     //  This is much faster ...
-    if (handle.handle > 0)
-	{
-		glCallList(handle.handle);
-	}
+    if (handle.handle() > 0)
+		glCallList(handle.handle());
 	else
 	{
-		handle.handle = glGenLists(1);
-		glNewList(handle.handle,GL_COMPILE_AND_EXECUTE);
+		handle.handle(glGenLists(1));
+		glNewList(handle.handle(),GL_COMPILE_AND_EXECUTE);
 			if (ambient_enabled)
 				glMaterialfv(GL_FRONT,GL_AMBIENT,ambient);
 			if (diffuse_enabled)
@@ -582,10 +573,7 @@ void CMaterial::glRender()
 
 CMaterial::operator RAPTOR_HANDLE() const
 {
-	RAPTOR_HANDLE handle;
-	handle.hClass = getId().ID();
-	handle.handle = (unsigned int)(this);
-
+	RAPTOR_HANDLE handle(getId().ID(),(void*)this);
 	return handle;
 }
 

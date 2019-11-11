@@ -1,43 +1,47 @@
-// TexureUnitSetup.cpp: implementation of the CTexureUnitSetup class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  TexureUnitSetup.cpp                                                    */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
 #include "Subsys/CodeGeneration.h"
 
 #if !defined(AFX_TEXTUREFACTORY_H__1B470EC4_4B68_11D3_9142_9A502CBADC6B__INCLUDED_)
 	#include "TextureFactory.h"
 #endif
-
 #if !defined(AFX_TEXUREUNITSETUP_H__4A6ADC72_02E5_4F2A_931E_A736B6D6E0F0__INCLUDED_)
 	#include "TextureUnitSetup.h"
 #endif
-
 #if !defined(AFX_TEXTURESET_H__26F3022D_70FE_414D_9479_F9CCD3DCD445__INCLUDED_)
 	#include "TextureSet.h"
 #endif
-
-#if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
-	#include "System/Raptor.h"
-#endif
-
-#ifndef __GLOBAL_H__
-	#include "System/Global.h"
-#endif
-
 #if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
 	#include "System/RaptorGLExtensions.h"
 #endif
 #if !defined(AFX_RAPTORIO_H__87D52C27_9117_4675_95DC_6AD2CCD2E78D__INCLUDED_)
 	#include "System/RaptorIO.h"
 #endif
-
 #if !defined(AFX_REGISTERCOMBINER_H__734BF776_1E3A_45AA_9ED4_7F3344110DB3__INCLUDED_)
     #include "Subsys/RegisterCombiner.h"
 #endif
-
-#if !defined(AFX_TEXTUREFACTORYCONFIG_H__7A20D208_423F_4E02_AA4D_D736E0A7959F__INCLUDED_)
-    #include "TextureFactoryConfig.h"
+#if !defined(AFX_OPENGL_H__6C8840CA_BEFA_41DE_9879_5777FBBA7147__INCLUDED_)
+	#include "Subsys/OpenGL/RaptorOpenGL.h"
 #endif
-
+#if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
+	#include "System/RaptorErrorManager.h"
+#endif
 
 
 RAPTOR_NAMESPACE
@@ -507,11 +511,8 @@ bool RAPTOR_FASTCALL CTextureUnitSetup::glRender(CTextureUnitSetup::GL_TEXTURE_S
 
 RAPTOR_HANDLE CTextureUnitSetup::glBuildSetup(void)
 {
-	RAPTOR_HANDLE handle;
-	handle.hClass = Global::COpenGLClassID::GetClassId().ID();
-	handle.handle = glGenLists(1);
-
-
+	RAPTOR_HANDLE handle(COpenGL::COpenGLClassID::GetClassId().ID(),glGenLists(1));
+	
 	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 	PFN_GL_ACTIVE_TEXTURE_ARB_PROC glActiveTextureARB = pExtensions->glActiveTextureARB;
 
@@ -540,7 +541,7 @@ RAPTOR_HANDLE CTextureUnitSetup::glBuildSetup(void)
 	else
 		glGetIntegerv(GL_ACTIVE_TEXTURE_ARB,&previousTMU);
 
-	glNewList(handle.handle,GL_COMPILE);
+	glNewList(handle.handle(),GL_COMPILE);
 
     for (unsigned int i=0;i<nbUnits;i++)
     {
@@ -595,10 +596,7 @@ RAPTOR_HANDLE CTextureUnitSetup::glBuildSetup(void)
 
 RAPTOR_HANDLE CTextureUnitSetup::glBuildUnSetup(void)
 {
-	RAPTOR_HANDLE handle;
-	handle.hClass = Global::COpenGLClassID::GetClassId().ID();
-	handle.handle = glGenLists(1);
-
+	RAPTOR_HANDLE handle(COpenGL::COpenGLClassID::GetClassId().ID(), glGenLists(1));
 
 	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 	PFN_GL_ACTIVE_TEXTURE_ARB_PROC glActiveTextureARB = pExtensions->glActiveTextureARB;
@@ -628,7 +626,7 @@ RAPTOR_HANDLE CTextureUnitSetup::glBuildUnSetup(void)
 	else
 		glGetIntegerv(GL_ACTIVE_TEXTURE_ARB,&previousTMU);
 
-	glNewList(handle.handle,GL_COMPILE);
+	glNewList(handle.handle(),GL_COMPILE);
 
 	for (unsigned int i=0;i<nbUnits;i++)
     {

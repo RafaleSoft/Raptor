@@ -14,7 +14,7 @@
     <ClCompile Include="..\..\Rays2\RaysDeamon\RaysDeamon.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Rays2\RaysDeamon\StdAfx.cpp">
+    <ClCompile Include="..\..\Rays2\RaysSettings.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -26,6 +26,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Rays2\RaysDeamon\StdAfx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Rays2\RaysSettings.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

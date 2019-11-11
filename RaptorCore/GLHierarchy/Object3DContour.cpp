@@ -38,8 +38,6 @@
 #endif
 
 
-//#include <GL/glu.h>
-
 RAPTOR_NAMESPACE
 
 static CObject3DContour::CObject3DContourClassID contourId;

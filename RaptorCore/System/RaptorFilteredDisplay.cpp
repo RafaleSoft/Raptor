@@ -1,7 +1,24 @@
-// RaptorFilteredDisplay.cpp: implementation of the CRaptorFilteredDisplay class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  RaptorFilteredDisplay.cpp                                              */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
+
 #include "Subsys/CodeGeneration.h"
+
 
 #if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
 	#include "Raptor.h"
@@ -21,8 +38,8 @@
 #if !defined(AFX_RAPTORDISPLAYFILTER_H__805D8523_96EA_427B_ABEC_C39EE1BC094C__INCLUDED_)
     #include "RaptorDisplayFilter.h"
 #endif
-#ifndef __GLOBAL_H__
-    #include "Global.h"
+#if !defined(AFX_RAPTORINSTANCE_H__90219068_202B_46C2_BFF0_73C24D048903__INCLUDED_)
+	#include "Subsys/RaptorInstance.h"
 #endif
 #if !defined(AFX_TEXTUREFACTORY_H__1B470EC4_4B68_11D3_9142_9A502CBADC6B__INCLUDED_)
 	#include "GLHierarchy/TextureFactory.h"
@@ -51,8 +68,22 @@
 #if !defined(AFX_ANIMATORSTREAM_H__3D03D0B9_A350_4226_8AB4_BABDD53D68B6__INCLUDED_)
 	#include "Subsys/AnimatorStream.h"
 #endif
+#if !defined(AFX_TEXTUREQUAD_H__1712AF34_6723_4E39_BC72_05ED6FA28418__INCLUDED_)
+	#include "GLHierarchy/TextureQuad.h"
+#endif
+#if !defined(AFX_OPENGL_H__6C8840CA_BEFA_41DE_9879_5777FBBA7147__INCLUDED_)
+	#include "Subsys/OpenGL/RaptorOpenGL.h"
+#endif
+#if !defined(AFX_FRAGMENTSHADER_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
+	#include "GLHierarchy/FragmentShader.h"
+#endif
+#if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
+	#include "System/RaptorGLExtensions.h"
+#endif
+
 
 RAPTOR_NAMESPACE
+
 
 
 //////////////////////////////////////////////////////////////////////
@@ -61,7 +92,7 @@ RAPTOR_NAMESPACE
 
 CRaptorFilteredDisplay::CRaptorFilteredDisplay(const CRaptorDisplayConfig& pcs)
 	:CRaptorScreenDisplay(pcs),m_pDisplay(NULL),m_pFSAADisplay(NULL),
-	m_bBufferBound(false),m_pImageSet(NULL)
+	m_bBufferBound(false), m_pImageSet(NULL)
 {
     filter_cs = pcs;
 	cs.overlay = false;
@@ -104,7 +135,7 @@ CRaptorFilteredDisplay::CRaptorFilteredDisplay(const CRaptorDisplayConfig& pcs)
 	//	nVidia does not support separate Depth + Stencil framebuffers, except
 	//	in combination with EXT_packed_depth_stencil or pixel buffers
 #if !defined(GL_EXT_packed_depth_stencil)
-	if ((filter_cs.stencil) &&
+	if ((filter_cs.stencil_buffer) &&
 		((filter_cs.display_mode & CGL_DEPTH) == CGL_DEPTH) &&
 		(filter_cs.renderer == CRaptorDisplayConfig::RENDER_BUFFER))
 		filter_cs.renderer = CRaptorDisplayConfig::PIXEL_BUFFER;
@@ -122,26 +153,29 @@ CRaptorFilteredDisplay::CRaptorFilteredDisplay(const CRaptorDisplayConfig& pcs)
 
 CRaptorFilteredDisplay::~CRaptorFilteredDisplay()
 {
-	if (m_pImageSet != NULL)
+	if (NULL != m_pImageSet)
 	{
 		m_pImageSet->unregisterDestruction(this);
 		delete m_pImageSet;
+		m_pImageSet = NULL;
 	}
 
-	if (m_pFSAADisplay != NULL)
+	if (NULL != m_pFSAADisplay)
 	{
 		m_pFSAADisplay->unregisterDestruction(this);
 		if (m_bBufferBound)
 			m_pFSAADisplay->glvkUnBindDisplay();
 		Raptor::glDestroyDisplay(m_pFSAADisplay);
+		m_pFSAADisplay = NULL;
 	}
 
-	if (m_pDisplay != NULL)
+	if (NULL != m_pDisplay)
 	{
 		m_pDisplay->unregisterDestruction(this);
 		if (m_bBufferBound)
 			m_pDisplay->glvkUnBindDisplay();
 		Raptor::glDestroyDisplay(m_pDisplay);
+		m_pDisplay = NULL;
 	}
 
     if (m_pFilters.size() > 0)
@@ -153,6 +187,8 @@ CRaptorFilteredDisplay::~CRaptorFilteredDisplay()
 			filter->releaseReference();
         }
     }
+
+	glvkUnBindDisplay();
 }
 
 void CRaptorFilteredDisplay::glReleaseResources(void)
@@ -210,8 +246,8 @@ bool CRaptorFilteredDisplay::glCreateRenderDisplay(void)
     if (m_pDisplay == NULL)
 	{
 		// Then create buffered rendering display
-		CRaptorDisplayConfig rda = Global::GetInstance().getDefaultConfig();
-        const CRaptorConfig& config = Global::GetInstance().getConfig();
+		CRaptorDisplayConfig rda = CRaptorInstance::GetInstance().getDefaultConfig();
+		const CRaptorConfig& config = CRaptorInstance::GetInstance().config;
 
 		rda.width = cs.width * config.getFilterSizeFactor();
 		rda.height = cs.height * config.getFilterSizeFactor();
@@ -333,22 +369,10 @@ bool CRaptorFilteredDisplay::glCreateRenderDisplay(void)
 			else 
 #endif
             {
-                Raptor::GetErrorManager()->generateRaptorError( Global::COpenGLClassID::GetClassId(),
-                                                                CRaptorErrorManager::RAPTOR_ERROR,
-		    							                        "Float Display Buffer is not supported !");
+                RAPTOR_ERROR(	COpenGL::COpenGLClassID::GetClassId(),
+								"Float Display Buffer is not supported !");
             }
         }
-
-
-        drawBuffer.handle = glGenLists(1);
-        glNewList(drawBuffer.handle,GL_COMPILE);
-            glBegin(GL_QUADS);
-                glTexCoord2f(0.0f,0.0f);glVertex4f(-1.0,-1.0,-1.0f,1.0f);
-                glTexCoord2f(1.0f,0.0f);glVertex4f(1.0,-1.0,-1.0f,1.0f);
-                glTexCoord2f(1.0f,1.0f);glVertex4f(1.0,1.0,-1.0f,1.0f);
-                glTexCoord2f(0.0f,1.0f);glVertex4f(-1.0,1.0,-1.0f,1.0f);
-            glEnd();
-        glEndList();
 	}
 
     CATCH_GL_ERROR
@@ -358,11 +382,11 @@ bool CRaptorFilteredDisplay::glCreateRenderDisplay(void)
 
 bool CRaptorFilteredDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
 {
-	if (device.hClass == CShader::CShaderClassID::GetClassId().ID())
+	if (device.hClass() == CShader::CShaderClassID::GetClassId().ID())
     {
-        if (device.handle != 0)
+        if (device.handle() != 0)
         {
-            CRaptorDisplayFilter *shader = static_cast<CRaptorDisplayFilter*>((void*)device.handle);
+			CRaptorDisplayFilter *shader = device.ptr<CRaptorDisplayFilter>();
 			bool useRenderBuffers = (CRaptorDisplayConfig::RENDER_BUFFER == filter_cs.renderer);
 			if (useRenderBuffers)
 				shader->setFilterModel(CRaptorDisplayFilter::RENDER_BUFFER);
@@ -390,9 +414,8 @@ bool CRaptorFilteredDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
 				CATCH_GL_ERROR
 
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
-                Raptor::GetErrorManager()->generateRaptorError(	Global::COpenGLClassID::GetClassId(),
-                                                                CRaptorErrorManager::RAPTOR_ERROR,
-		    							                        "Raptor Filter Display failed to initialize filter !");
+					RAPTOR_ERROR(COpenGL::COpenGLClassID::GetClassId(),
+								"Raptor Filter Display failed to initialize filter !");
 #endif
 				return false;
             }
@@ -416,7 +439,7 @@ bool CRaptorFilteredDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
             return false;
 
 		m_bBufferBound = true;
-		RAPTOR_HANDLE noDevice;
+		RAPTOR_HANDLE noDevice(0,(void*)0);
 
 		if (CRaptorDisplayConfig::ANTIALIAS_NONE != filter_cs.antialias)
 			return m_pFSAADisplay->glvkBindDisplay(noDevice);
@@ -456,9 +479,8 @@ void CRaptorFilteredDisplay::glResize(unsigned int sx,unsigned int sy,unsigned i
     if ((sx == 0) || (sy == 0))
     {
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
-        Raptor::GetErrorManager()->generateRaptorError(	Global::COpenGLClassID::GetClassId(),
-														CRaptorErrorManager::RAPTOR_ERROR,
-														"Raptor Display is requested a resize with a wrong dimension ( 0 ) !");
+		RAPTOR_ERROR(COpenGL::COpenGLClassID::GetClassId(),
+					"Raptor Display is requested a resize with a wrong dimension ( 0 ) !");
 #endif
         return;
     }
@@ -546,15 +568,28 @@ void CRaptorFilteredDisplay::glRenderScene(void)
 			}
         }
     }
-
-	if (!filterRendered || m_pFilters.empty())
-    {
+	else if (!filterRendered)
+	{
 		CTextureObject *T = m_pImageSet->getTexture(0);
 		T->glvkRender();
 
-        if (drawBuffer.handle > 0)
-            glCallList(drawBuffer.handle);
+		CRaptorInstance &instance = CRaptorInstance::GetInstance();
 
+#if defined(GL_COMPATIBILITY_profile)
+		glCallList(instance.m_drawBuffer.handle());
+#else
+		instance.m_pIdentity->glRender();
+		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+
+		pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::POSITION);
+		pExtensions->glVertexAttribPointerARB(CProgramParameters::POSITION, 4, GL_FLOAT, false, 0, instance.m_pAttributes);
+
+		glDrawArrays(GL_POINTS, 0, 1);
+
+		pExtensions->glDisableVertexAttribArrayARB(CProgramParameters::POSITION);
+		instance.m_pIdentity->glStop();
+#endif
+			
 		glBindTexture(GL_TEXTURE_2D,0);
     }
 
@@ -600,18 +635,16 @@ void CRaptorFilteredDisplay::setViewPoint(IViewPoint *viewPoint)
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 		else
 		{
-			Raptor::GetErrorManager()->generateRaptorError(	Global::COpenGLClassID::GetClassId(),
-															CRaptorErrorManager::RAPTOR_WARNING,
-															"Raptor Buffer Display cannot setViewPoint because buffer not bound!");
+			RAPTOR_WARNING(	COpenGL::COpenGLClassID::GetClassId(),
+							"Raptor Buffer Display cannot setViewPoint because buffer not bound!");
 		}
 #endif
 	}
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 	else
 	{
-		Raptor::GetErrorManager()->generateRaptorError(	Global::COpenGLClassID::GetClassId(),
-														CRaptorErrorManager::RAPTOR_WARNING,
-														"Raptor Buffer Display cannot setViewPoint because buffer not initialised!");
+		RAPTOR_WARNING(	COpenGL::COpenGLClassID::GetClassId(),
+						"Raptor Buffer Display cannot setViewPoint because buffer not initialised!");
 	}
 #endif
 }
@@ -627,8 +660,8 @@ IViewPoint *const CRaptorFilteredDisplay::getViewPoint(void) const
 		return m_pDisplay->getViewPoint();
 }
 
-bool CRaptorFilteredDisplay::glBlit(unsigned int xSrc, unsigned int ySrc, unsigned int widthSrc, unsigned int heightSrc,
-									unsigned int xDst, unsigned int yDst, unsigned int widthDst, unsigned int heightDst,
+bool CRaptorFilteredDisplay::glBlit(uint32_t xSrc, uint32_t ySrc, uint32_t widthSrc, uint32_t heightSrc,
+									uint32_t xDst, uint32_t yDst, uint32_t widthDst, uint32_t heightDst,
 									CRaptorDisplay *pDst) const
 {
 	bool res = false;

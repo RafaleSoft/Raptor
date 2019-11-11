@@ -1,35 +1,42 @@
-// Image.cpp: implementation of the CImage class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  Image.cpp                                                              */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
 #include "Subsys/CodeGeneration.h"
 
 #if !defined(AFX_IMAGE_H__F545D0D5_5F10_4EFA_BE3B_3F3D34D4DBF3__INCLUDED_)
 	#include "Image.h"
 #endif
-
 #ifndef __CGLTYPES_HPP__
 	#include "CGLTypes.h"
 #endif
-
-#ifndef __GLOBAL_H__
-	#include "Global.h"
-#endif
-
 #if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
 	#include "RaptorGLExtensions.h"
 #endif
-
-#if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
-	#include "Raptor.h"
+#if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
+	#include "System/RaptorErrorManager.h"
 #endif
-
 #if !defined(AFX_MEMORY_H__81A6CA9A_4ED9_4260_B6E4_C03276C38DBC__INCLUDED_)
 	#include "System/Memory.h"
 #endif
-
 #if !defined(AFX_TEXTUREFACTORY_H__1B470EC4_4B68_11D3_9142_9A502CBADC6B__INCLUDED_)
 	#include "GLHierarchy/TextureFactory.h"
 #endif
+
 
 RAPTOR_NAMESPACE
 
@@ -49,6 +56,51 @@ CImage::CImage()
 CImage::~CImage()
 {
 	releasePixels();
+}
+
+CImage* CImage::createSubImage(size_t x, size_t y, size_t w, size_t h)
+{
+	if ((x > getWidth()) || (y > getHeight()))
+		return NULL;
+
+	if (x + w > getWidth())
+		return NULL;
+	if (y + h > getHeight())
+		return NULL;
+
+	if (NULL == pixels)
+		return NULL;
+
+	CImage *res = new CImage();
+	if (res->allocatePixels(w, h, m_pixelType))
+	{
+		size_t y_end = y + h;
+		size_t y_start = y;
+		size_t x_start = x;
+		size_t x_end = x + w;
+
+		uint8_t *pixels2 = res->getPixels();
+		if (NULL != pixels2)
+		{
+			uint8_t *src = getPixels();
+			for (size_t v = y_start, j = 0; v < y_end; v++)
+				for (size_t o = (w * v + x_start) * 4; o < (w * v + x_end) * 4; o++, j++)
+					pixels2[j] = src[o];
+		}
+		else
+		{
+			float *pixels3 = res->getFloatPixels();
+			if (NULL != pixels3)
+			{
+				float *src = getFloatPixels();
+				for (size_t v = y_start, j = 0; v < y_end; v++)
+					for (size_t o = (w * v + x_start) * 4; o < (w * v + x_end) * 4; o++, j++)
+						pixels3[j] = src[o];
+			}
+		}
+	}
+		
+	return res;
 }
 
 uint8_t* CImage::getPixels(uint32_t layer) const

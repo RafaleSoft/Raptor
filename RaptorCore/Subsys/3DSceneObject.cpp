@@ -1,6 +1,20 @@
-// 3DSceneObject.cpp: implementation of the C3DSceneObject class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  3DSceneObject.cpp                                                      */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
 
 #include "Subsys/CodeGeneration.h"
 
@@ -78,7 +92,7 @@ C3DSceneObject::C3DSceneObject(CObject3D* obj)
 			m_pPipeline = rDevice.createPipeline();
 			CShadedGeometry *sg = (CShadedGeometry *)obj;
 			CShader* s = sg->getShader();
-			CVulkanShaderStage *ss = s->vkGetVulkanProgram();
+			CVulkanShaderStage *ss = s->vkGetVulkanShader();
 
 			if (!m_pPipeline->initPipeline(ss,sg))
 			{
@@ -107,14 +121,14 @@ void C3DSceneObject::vkRender(	CVulkanCommandBuffer& commandBuffer,
 										VK_PIPELINE_BIND_POINT_GRAPHICS,
 										pipe);
 
-		CObject3D* obj = (CObject3D*)(object.handle);
+		CObject3D* obj = object.ptr<CObject3D>();
 		obj->vkRender(commandBuffer, vertexBinding, indexBinding);
 	}
 }
 
 CObject3D* C3DSceneObject::getObject(void) const
 {
-	CObject3D* obj = (CObject3D*)(object.handle);
+	CObject3D* obj = object.ptr<CObject3D>();
 
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 	if (!obj->getId().isSubClassOf(CObject3D::CObject3DClassID::GetClassId()))
@@ -174,7 +188,7 @@ void C3DSceneObject::glRenderBBoxOcclusion(unsigned int passNumber)
 
     passVisibility[passNumber] = 0;
 
-	CObject3D *obj = (CObject3D*)(object.handle);
+	CObject3D *obj = object.ptr<CObject3D>();
     obj->glRenderBBox(true);
 
 	pExtensions->glEndQueryARB(GL_SAMPLES_PASSED_ARB);
@@ -228,7 +242,7 @@ bool C3DSceneObject::glRenderPass(	unsigned int passNumber,
 	glRenderLights(proceedLights,lights);
 
 	bool ret = true;
-    CObject3D *obj = (CObject3D*)(object.handle);
+	CObject3D *obj = object.ptr<CObject3D>();
 
 #if defined(GL_ARB_occlusion_query)
     GLuint query = visibilityQuery[passNumber];
@@ -280,7 +294,7 @@ void C3DSceneObject::selectLights(const vector<CLight*> &lights,const CGenericMa
 		return;
 	}
 
-    CObject3D *obj = (CObject3D*)(object.handle);
+	CObject3D *obj = object.ptr<CObject3D>();
     const CBoundingBox * const bbox = obj->boundingBox();
     
     GL_COORD_VERTEX r_max;
@@ -291,7 +305,7 @@ void C3DSceneObject::selectLights(const vector<CLight*> &lights,const CGenericMa
 	memcpy(Transform, transform.matrix(), sizeof(GL_MATRIX));
 	bbox->get(r_min, r_max, Transform);
     bbox->getCenter(center);
-    CGenericVector<float> c = center;
+	CGenericVector<float> c = CGenericVector<float>(center);
     c = c * transform; // T is transposed
 
     multiset<CLightObserver::lightCompare,CLightObserver::lightCompare>	sortedLights;

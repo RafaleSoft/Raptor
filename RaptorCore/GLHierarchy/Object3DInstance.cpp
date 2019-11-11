@@ -9,19 +9,11 @@
 #if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
 	#include "System/Raptor.h"
 #endif
-
 #if !defined(AFX_OBJECT3DINSTANCE_H__A2627662_F5F9_11D3_9142_CFEB8E9F2745__INCLUDED_)
 	#include "Object3DInstance.h"
 #endif
-
-#ifndef __GLOBAL_H__
-	#include "System/Global.h"
-#endif
 #if !defined(AFX_RAPTORIO_H__87D52C27_9117_4675_95DC_6AD2CCD2E78D__INCLUDED_)
 	#include "System/RaptorIO.h"
-#endif
-#if !defined(AFX_3DENGINE_H__DB24F018_80B9_11D3_97C1_FC2841000000__INCLUDED_)
-	#include "Engine/3DEngine.h"
 #endif
 #if !defined(AFX_OBJECTFACTORY_H__7F891C52_9E32_489C_B09C_5E5803522D91__INCLUDED_)
 	#include "ObjectFactory.h"
@@ -32,17 +24,14 @@
 #if !defined(AFX_SHADER_H__4D405EC2_7151_465D_86B6_1CA99B906777__INCLUDED_)
 	#include "GLHierarchy/Shader.h"
 #endif
-#if !defined(AFX_VERTEXSHADER_H__F2D3BBC6_87A1_4695_B667_2B8C3C4CF022__INCLUDED_)
-	#include "VertexShader.h"
-#endif
-#if !defined(AFX_FRAGMENTSHADER_H__66B3089A_2919_4678_9273_6CDEF7E5787F__INCLUDED_)
-	#include "FragmentShader.h"
-#endif
 #if !defined(AFX_OBJECT3DCONTAINERNOTIFIER_H__BF1EABCD_500E_4D7C_8561_2C535DF0640A__INCLUDED_)
     #include "Subsys/Object3DContainerNotifier.h"
 #endif
 #if !defined(AFX_3DENGINEMATRIX_H__6CD1110E_1174_4f38_A452_30FB312022D0__INCLUDED_)
 	#include "Engine/3DEngineMatrix.h"
+#endif
+#if !defined(AFX_OPENGLPROGRAMSTAGE_H__0BCE3B42_6E10_4F50_BB27_1993345ADBCF__INCLUDED_)
+	#include "GLHierarchy/OpenGLProgramStage.h"
 #endif
 
 
@@ -328,13 +317,8 @@ void CObject3DInstance::glRender()
         m_pOverride->glPushProperties();
 
     if (m_pShader != NULL)
-	{
-        // render shaders
-		if (m_pShader->hasVertexShader())
-			m_pShader->glGetVertexShader()->glRender();
-		if (m_pShader->hasFragmentShader())
-			m_pShader->glGetFragmentShader()->glRender();
-	}
+		if (m_pShader->hasOpenGLProgram())
+			m_pShader->glGetOpenGLProgram()->glRender();
 
 	if (m_pReference != NULL)
 	{
@@ -345,12 +329,8 @@ void CObject3DInstance::glRender()
 	}
 
     if (m_pShader != NULL)
-	{
-		if (m_pShader->hasVertexShader())
-			m_pShader->glGetVertexShader()->glStop();
-		if (m_pShader->hasFragmentShader())
-			m_pShader->glGetFragmentShader()->glStop();
-	}
+		if (m_pShader->hasOpenGLProgram())
+			m_pShader->glGetOpenGLProgram()->glStop();
 
     if (m_pOverride != NULL)
         m_pOverride->glPopProperties();
@@ -374,13 +354,8 @@ void CObject3DInstance::glClipRender()
         m_pOverride->glPushProperties();
 
     if (m_pShader != NULL)
-	{
-        // render shaders
-		if (m_pShader->hasVertexShader())
-			m_pShader->glGetVertexShader()->glRender();
-		if (m_pShader->hasFragmentShader())
-			m_pShader->glGetFragmentShader()->glRender();
-	}
+		if (m_pShader->hasOpenGLProgram())
+			m_pShader->glGetOpenGLProgram()->glRender();
 
 	if (m_pReference != NULL)
 	{
@@ -391,12 +366,8 @@ void CObject3DInstance::glClipRender()
 	}
 
     if (m_pShader != NULL)
-	{
-		if (m_pShader->hasVertexShader())
-			m_pShader->glGetVertexShader()->glStop();
-		if (m_pShader->hasFragmentShader())
-			m_pShader->glGetFragmentShader()->glStop();
-	}
+		if (m_pShader->hasOpenGLProgram())
+			m_pShader->glGetOpenGLProgram()->glStop();
 
     if (m_pOverride != NULL)
         m_pOverride->glPopProperties();

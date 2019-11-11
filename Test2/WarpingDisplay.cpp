@@ -14,14 +14,15 @@
 #include "GLHierarchy/TextureObject.h"
 #include "Engine/3DEngine.h"
 #include "GLHierarchy/ShadedGeometry.h"
-#include "GLHierarchy/VertexShader.h"
+#include "GLHierarchy/VertexProgram.h"
 #include "GLHierarchy/Object3DInstance.h"
 #include "GLHierarchy/SimpleObject.h"
 #include "GLHierarchy/Shader.h"
-#include "GLHierarchy/FragmentProgram.h"
+#include "GLHierarchy/FragmentShader.h"
 #include "System/Raptor.h"
 #include "System/RaptorGLExtensions.h"
 #include "GLHierarchy/IRenderingProperties.h"
+#include "GLHierarchy/OpenGLShaderStage.h"
 
 #include "ToolBox/BasicObjects.h"
 
@@ -37,12 +38,12 @@ public:
 		setBoundingBox(	GL_COORD_VERTEX(-70.0f,-50.0f,0.0f,1.0f),
 						GL_COORD_VERTEX(70.0f,50.0f,0.1f,1.0f));
 		//	Use a default shader to create a simple geometry
-		CVertexShader s("GL_SHADER");
+		CVertexProgram s("GL_SHADER");
 		GL_COORD_VERTEX texCoord1(0,0,0,1);
 
 		//	background;
-		list.handle = glGenLists(1);
-		glNewList(list.handle,GL_COMPILE);
+		list.handle(glGenLists(1));
+		glNewList(list.handle(),GL_COMPILE);
 			glBegin(GL_QUADS);
 				glTexCoord2d(0.0,0.0);
 				texCoord1.x = -1.0; texCoord1.y = -1.0;
@@ -86,8 +87,8 @@ public:
 	{ glRender(); };
 	virtual void glRender(void)
 	{
-		glCallList(bg.handle);
-		glCallList(list.handle);
+		glCallList(bg.handle());
+		glCallList(list.handle());
 
 		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 		pExtensions->glActiveTextureARB(GL_TEXTURE1_ARB);
@@ -315,13 +316,13 @@ void main (void)						\n\
 	gl_FragColor = texture2D(diffuseMap,vec2(offset.rg) + vec2(gl_TexCoord[0].st)); \n\
 }";
 
-	CFragmentProgram *fp = m_pShader->glGetFragmentProgram();
+	CFragmentShader *fp = m_pShader->glGetOpenGLShader()->glGetFragmentShader();
 	fp->glLoadProgram(program);
 	CProgramParameters params;
 	params.addParameter("diffuseMap",CTextureUnitSetup::IMAGE_UNIT_0);
 	params.addParameter("normalMap",CTextureUnitSetup::IMAGE_UNIT_1);
-	fp->setProgramParameters(params);
-	m_pShader->glCompileShader();
+	m_pShader->glGetOpenGLShader()->glCompileShader();
+	m_pShader->glGetOpenGLShader()->setProgramParameters(params);
 #endif
 }
 
@@ -349,7 +350,7 @@ void CGlassObject::glRender()
 	m_pShader->glRender();
 	
 	//	Use a default shader to create a simple geometry
-	CVertexShader s("GL_SHADER");
+	CVertexProgram s("GL_SHADER");
 
 	glBegin(GL_QUADS);
 		glTexCoord2f(x_sz,y_sz);

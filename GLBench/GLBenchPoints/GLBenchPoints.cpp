@@ -9,7 +9,7 @@
 #include "MFCExtension/CWnd/GLWnd.h"
 #include "GLHierarchy/TextureFactory.h"
 #include "GLHierarchy/TextureObject.h"
-#include "GLHierarchy/VertexShader.h"
+#include "GLHierarchy/VertexProgram.h"
 #include "GLHierarchy/Geometry.h"
 
 
@@ -320,7 +320,7 @@ extern "C" void GLBENCH_API Bench(CWnd *parent)
 #if defined(GL_EXT_point_parameters)
 	if (Raptor::glIsExtensionSupported(GL_EXT_POINT_PARAMETERS_EXTENSION_NAME))
 	{
-		CVertexShader s;
+		CVertexProgram s;
 		GL_COORD_VERTEX quadric(1.0f, 1.0f, 10.0f, 1.0f);
 		s.glPointParameter(0.0f,20.0,quadric);
 	}
@@ -354,7 +354,7 @@ extern "C" void GLBENCH_API Bench(CWnd *parent)
 #if defined(GL_EXT_point_parameters)
 	if (Raptor::glIsExtensionSupported(GL_EXT_POINT_PARAMETERS_EXTENSION_NAME))
 	{
-		CVertexShader s;
+		CVertexProgram s;
 		GL_COORD_VERTEX quadric(1.0f, 1.0f, 10.0f, 1.0f);
 		s.glPointParameter(0.0f,32.0,quadric);
 	}
@@ -388,7 +388,7 @@ extern "C" void GLBENCH_API Bench(CWnd *parent)
 	#if defined(GL_EXT_point_parameters)
 		if (Raptor::glIsExtensionSupported(GL_EXT_POINT_PARAMETERS_EXTENSION_NAME))
 		{
-			CVertexShader s;
+			CVertexProgram s;
 			GL_COORD_VERTEX quadric(1.0f, 0.2f, 0.0f, 1.0f);
 			s.glPointParameter(0.0f,16.0,quadric);
 		}

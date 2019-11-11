@@ -129,7 +129,7 @@ CFrameWnd *CRaptorMFCApplication::createRootWindow(const CRaptorDisplayConfig& g
 
 void CRaptorMFCApplication::setRootWindow(const RAPTOR_HANDLE& root)
 {
-    if ((root.handle == 0) || (root.hClass != WINDOW_CLASS))
+    if ((root.handle() == 0) || (root.hClass() != WINDOW_CLASS))
     {
         Raptor::GetErrorManager()->generateRaptorError( CPersistence::CPersistenceClassID::GetClassId(),
 														CRaptorErrorManager::RAPTOR_ERROR,
@@ -137,7 +137,7 @@ void CRaptorMFCApplication::setRootWindow(const RAPTOR_HANDLE& root)
         return;
     }
 
-    CFrameWnd *wnd = (CFrameWnd*)(root.handle);
+	CFrameWnd *wnd = root.ptr<CFrameWnd>();
     internal->m_pMainWnd = wnd;
 
     CRaptorApplication::setRootWindow(root);

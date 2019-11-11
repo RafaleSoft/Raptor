@@ -1,6 +1,21 @@
-// VulkanTextureObject.cpp: implementation of the CVulkanTextureObject class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  VulkanTextureObject.cpp                                                */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
 
 #include "Subsys/CodeGeneration.h"
 
@@ -25,6 +40,10 @@
 #if !defined(AFX_RAPTORVULKANCOMMANDBUFFER_H__0398BABD_747B_4DFE_94AA_B026BDBD03B1__INCLUDED_)
 	#include "Subsys/Vulkan/VulkanCommandBuffer.h"
 #endif
+#if !defined(AFX_VULKAN_H__625F6BC5_F386_44C2_85C1_EDBA23B16921__INCLUDED_)
+	#include "Subsys/Vulkan/RaptorVulkan.h"
+#endif
+
 
 RAPTOR_NAMESPACE
 
@@ -68,9 +87,8 @@ void CVulkanTextureObject::vkLoadTexture(VkComponentMapping swizzle,
 	if ((0 == getWidth()) || (0 == getHeight()) || (0 == getDepth()))
 	{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
-		Raptor::GetErrorManager()->generateRaptorError(Global::CVulkanClassID::GetClassId(),
-													   CRaptorErrorManager::RAPTOR_WARNING,
-													   "CVulkanTextureObject wrong size update");
+		RAPTOR_WARNING(	CVulkan::CVulkanClassID::GetClassId(),
+						"CVulkanTextureObject wrong size update");
 #endif
 		return;
 	}
@@ -193,9 +211,8 @@ void CVulkanTextureObject::vkLoadTexture(VkComponentMapping swizzle,
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 	else
 	{
-		Raptor::GetErrorManager()->generateRaptorError(Global::CVulkanClassID::GetClassId(),
-													   CRaptorErrorManager::RAPTOR_ERROR,
-													   "CVulkanTextureObject failed to allocate texture image");
+		RAPTOR_ERROR(	CVulkan::CVulkanClassID::GetClassId(),
+						"CVulkanTextureObject failed to allocate texture image");
 	}
 #endif
 }
@@ -206,9 +223,8 @@ void CVulkanTextureObject::clean(void)
 	if (VK_NULL_HANDLE != m_sampler)
 	{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
-		Raptor::GetErrorManager()->generateRaptorError(Global::CVulkanClassID::GetClassId(),
-													   CRaptorErrorManager::RAPTOR_WARNING,
-													   "CVulkanTextureObject has a previous texture sampler");
+		RAPTOR_WARNING(	CVulkan::CVulkanClassID::GetClassId(),
+						"CVulkanTextureObject has a previous texture sampler");
 #endif
 		vkDestroySampler(m_device, m_sampler, CVulkanMemory::GetAllocator());
 		m_view = VK_NULL_HANDLE;
@@ -217,9 +233,8 @@ void CVulkanTextureObject::clean(void)
 	if (VK_NULL_HANDLE != m_view)
 	{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
-		Raptor::GetErrorManager()->generateRaptorError(Global::CVulkanClassID::GetClassId(),
-													   CRaptorErrorManager::RAPTOR_WARNING,
-													   "CVulkanTextureObject has a previous image view");
+		RAPTOR_WARNING(	CVulkan::CVulkanClassID::GetClassId(),
+						"CVulkanTextureObject has a previous image view");
 #endif
 		vkDestroyImageView(m_device, m_view, CVulkanMemory::GetAllocator());
 		m_view = VK_NULL_HANDLE;
@@ -228,9 +243,8 @@ void CVulkanTextureObject::clean(void)
 	if (VK_NULL_HANDLE != m_image)
 	{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
-		Raptor::GetErrorManager()->generateRaptorError(Global::CVulkanClassID::GetClassId(),
-													   CRaptorErrorManager::RAPTOR_WARNING,
-													   "CVulkanTextureObject has a previous image");
+		RAPTOR_WARNING(	CVulkan::CVulkanClassID::GetClassId(),
+						"CVulkanTextureObject has a previous image");
 #endif
 		CVulkanMemory::CVulkanMemoryWrapper* memory = CVulkanDevice::getCurrentDevice().getMemory();
 		memory->releaseImage(m_image);

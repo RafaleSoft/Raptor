@@ -1,6 +1,21 @@
-// Geometry.cpp: implementation of the CGeometry class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  Geometry.cpp                                                           */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
 #include "Subsys/CodeGeneration.h"
 
 
@@ -10,17 +25,14 @@
 #if !defined(AFX_GEOMETRY_H__B42ABB87_80E8_11D3_97C2_DE5C28000000__INCLUDED_)
 	#include "Geometry.h"
 #endif
-#if !defined(AFX_3DENGINE_H__DB24F018_80B9_11D3_97C1_FC2841000000__INCLUDED_)
-	#include "Engine/3DEngine.h"
-#endif
 #if !defined(AFX_SHADER_H__4D405EC2_7151_465D_86B6_1CA99B906777__INCLUDED_)
 	#include "Shader.h"
 #endif
 #if !defined(AFX_TEXTUREUNITSETUP_H__4A6ADC72_02E5_4F2A_931E_A736B6D6E0F0__INCLUDED_)
 	#include "TextureUnitSetup.h"
 #endif
-#ifndef __GLOBAL_H__
-	#include "System/Global.h"
+#if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
+	#include "System/RaptorErrorManager.h"
 #endif
 #if !defined(AFX_MEMORY_H__81A6CA9A_4ED9_4260_B6E4_C03276C38DBC__INCLUDED_)
 	#include "System/Memory.h"
@@ -37,8 +49,8 @@
 #if !defined(AFX_GEOMETRYALLOCATOR_H__802B3C7A_43F7_46B2_A79E_DDDC9012D371__INCLUDED_)
 	#include "Subsys/GeometryAllocator.h"
 #endif
-#if !defined(AFX_VERTEXSHADER_H__F2D3BBC6_87A1_4695_B667_2B8C3C4CF022__INCLUDED_)
-	#include "VertexShader.h"
+#if !defined(AFX_VERTEXPROGRAM_H__F2D3BBC6_87A1_4695_B667_2B8C3C4CF022__INCLUDED_)
+	#include "VertexProgram.h"
 #endif
 #if !defined(AFX_GEOMETRYEDITOR_H__2D77E428_ED3D_416B_8DE9_DABFD45A38A7__INCLUDED_)
     #include "GeometryEditor.h"
@@ -52,6 +64,10 @@
 #if !defined(AFX_RAPTORVULKANCOMMANDBUFFER_H__0398BABD_747B_4DFE_94AA_B026BDBD03B1__INCLUDED_)
 	#include "Subsys/Vulkan/VulkanCommandBuffer.h"
 #endif
+#if !defined(AFX_RAPTORINSTANCE_H__90219068_202B_46C2_BFF0_73C24D048903__INCLUDED_)
+	#include "Subsys/RaptorInstance.h"
+#endif
+
 
 RAPTOR_NAMESPACE
 
@@ -61,6 +77,7 @@ const CPersistence::CPersistenceClassID& CGeometry::CGeometryClassID::GetClassId
 {
 	return geometryID;
 }
+
 
 //////////////////////////////////////////////////////////////////////
 // Rendering Model Implementation
@@ -169,9 +186,6 @@ CGeometry::~CGeometry()
 	if (polys != NULL)
 		CGeometryAllocator::GetInstance()->releaseIndexes(polys);
 #endif	
-
-	if (fogcoords != NULL)
-		delete [] fogcoords;
 
 	if (0 != m_pPrimitives.size())
 	{
@@ -962,7 +976,7 @@ bool CGeometry::getVertexInputState( std::vector<VkVertexInputBindingDescription
 	//!	TexCoords
 	IRenderingProperties *props = IRenderingProperties::GetCurrentProperties();
 	if ((m_renderingModel.hasModel(CRenderingModel::CGL_TEXTURE)))
-//		(props->getCurrentTexturing() == CRenderingProperties::ENABLE))
+//		(props->getCurrentTexturing() == IRenderingProperties::ENABLE))
 	{
 		bindings.push_back({ nb_bindings, 2 * sizeof(float), VK_VERTEX_INPUT_RATE_VERTEX });
 		vertexInput.push_back({ 1, nb_bindings, VK_FORMAT_R32G32_SFLOAT, 0 });
@@ -1035,12 +1049,12 @@ void CGeometry::glRenderGeometry()
 		&& (NULL != normals))
 #endif
 	{
-		glEnableClientState(GL_NORMAL_ARRAY);
         popNormalArray = true;
+		pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::NORMAL);
 #if defined(DATA_EXTENDED)
         glNormalPointer( GL_FLOAT , sizeof(GL_VERTEX_DATA) , &geometry[0].normal);
 #elif defined(DATA_PACKED)
-		glNormalPointer( GL_FLOAT , sizeof(GL_COORD_VERTEX) , normals);
+		pExtensions->glVertexAttribPointerARB(CProgramParameters::NORMAL,4, GL_FLOAT, false, 0, normals);
 #endif
 	}
 
@@ -1058,8 +1072,7 @@ void CGeometry::glRenderGeometry()
 #if defined(DATA_EXTENDED)
         pExtensions->glVertexAttribPointerARB(CShaderProgram::ADDITIONAL_PARAM1,4,GL_FLOAT,false,sizeof(GL_VERTEX_DATA),&geometry[0].tangent);
 #elif defined(DATA_PACKED)
-        if (tangents != NULL)
-			pExtensions->glVertexAttribPointerARB(CProgramParameters::ADDITIONAL_PARAM1, 4, GL_FLOAT, false, 0, tangents);
+		pExtensions->glVertexAttribPointerARB(CProgramParameters::ADDITIONAL_PARAM1, 4, GL_FLOAT, false, 0, tangents);
 #endif
 	}
 #endif
@@ -1072,12 +1085,12 @@ void CGeometry::glRenderGeometry()
 		&& (NULL != colors))
 #endif
 	{
-		glEnableClientState(GL_COLOR_ARRAY);
+		pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::PRIMARY_COLOR);
         popColorArray = true;
 #if defined(DATA_EXTENDED)
-        glColorPointer( 4 , GL_FLOAT , sizeof(GL_VERTEX_DATA), &geometry[0].color);
+		pExtensions->glVertexAttribPointerARB(CProgramParameters::PRIMARY_COLOR, 4, GL_FLOAT, false, sizeof(GL_VERTEX_DATA), &geometry[0].color);
 #elif defined(DATA_PACKED)
-		glColorPointer( 4 , GL_FLOAT , 0, colors);
+		pExtensions->glVertexAttribPointerARB(CProgramParameters::PRIMARY_COLOR, 4, GL_FLOAT, false, 0, colors);
 #endif
 	}
 
@@ -1089,12 +1102,12 @@ void CGeometry::glRenderGeometry()
 		&& (texcoords != NULL))
 #endif
 	{
-			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+			pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::TEXCOORD0);
             popTexCoordArray = true;
 #if defined(DATA_EXTENDED)
-            glTexCoordPointer( 2,GL_FLOAT,sizeof(GL_VERTEX_DATA),&geometry[0].texCoord0);
+			pExtensions->glVertexAttribPointerARB(CProgramParameters::TEXCOORD0, 2, GL_FLOAT, false, sizeof(GL_VERTEX_DATA), &geometry[0].texCoord0);
 #elif defined(DATA_PACKED)
-			glTexCoordPointer( 2,GL_FLOAT,0,texcoords);
+			pExtensions->glVertexAttribPointerARB(CProgramParameters::TEXCOORD0, 2, GL_FLOAT, false, 0, texcoords);
 #endif
 	}
 
@@ -1102,7 +1115,12 @@ void CGeometry::glRenderGeometry()
 // shaders enable a more powerfull blending.
 
 	// extract vertex weighting
-	if (m_renderingModel.hasModel(CRenderingModel::CGL_WEIGHT))
+	if (m_renderingModel.hasModel(CRenderingModel::CGL_WEIGHT)
+#if defined (DATA_EXTENDED)
+		&& (geometry != NULL))
+#elif defined(DATA_PACKED)
+		&& (NULL != weightcoords))
+#endif
 	{
 #ifdef GL_EXT_vertex_weighting
 		if (pExtensions->glVertexWeightPointerEXT != NULL)
@@ -1124,11 +1142,11 @@ void CGeometry::glRenderGeometry()
 #else
         {
 			pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::WEIGHTS);
+			popWeightArray = true;
 #if defined(DATA_EXTENDED)
             pExtensions->glVertexAttribPointerARB(CShaderProgram::WEIGHTS,1,GL_FLOAT,false,sizeof(GL_VERTEX_DATA),&geometry[0].weight);
 #elif defined(DATA_PACKED)
-            if (weightcoords != NULL)
-				pExtensions->glVertexAttribPointerARB(CProgramParameters::WEIGHTS, 1, GL_FLOAT, false, 0, weightcoords);
+			pExtensions->glVertexAttribPointerARB(CProgramParameters::WEIGHTS, 1, GL_FLOAT, false, 0, weightcoords);
 #endif
         }
 #endif
@@ -1173,13 +1191,14 @@ void CGeometry::glRenderGeometry()
 	if (m_renderingModel.hasModel(CRenderingModel::CGL_BACK_GEOMETRY))
 		glCullFace(GL_BACK);
 	
+
     glDisableClientState(GL_VERTEX_ARRAY);
     if (popNormalArray)
-        glDisableClientState(GL_NORMAL_ARRAY);
+		pExtensions->glDisableVertexAttribArrayARB(CProgramParameters::NORMAL);
     if (popColorArray)
-        glDisableClientState(GL_COLOR_ARRAY);
+		pExtensions->glDisableVertexAttribArrayARB(CProgramParameters::PRIMARY_COLOR);
     if (popTexCoordArray)
-        glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+		pExtensions->glDisableVertexAttribArrayARB(CProgramParameters::TEXCOORD0);
 #ifdef GL_EXT_vertex_weighting
     if (popWeightArray)
     {
@@ -1199,8 +1218,8 @@ void CGeometry::glRenderGeometry()
 		pExtensions->glDisableVertexAttribArrayARB(CProgramParameters::ADDITIONAL_PARAM1);
 #endif
 
-	Global::GetInstance().getCurrentStatus().iRenderedObjects++;
-	Global::GetInstance().getCurrentStatus().iRenderedTriangles += m_nbPolys;
+	CRaptorInstance::GetInstance().iRenderedObjects++;
+	CRaptorInstance::GetInstance().iRenderedTriangles += m_nbPolys;
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -1400,6 +1419,26 @@ void CGeometry::glSetColors(unsigned int nbC, CColor::RGBA* rgbaColors)
 #endif
 }
 
+void CGeometry::glSetFogs(unsigned int nbF, float* fogs)
+{
+#if defined (DATA_PACKED)
+	if (fogs == NULL)
+	{
+		if (fogcoords != NULL)
+			CGeometryAllocator::GetInstance()->releaseVertices(fogcoords);
+
+		fogcoords = CGeometryAllocator::GetInstance()->allocateVertices(nbF);
+	}
+	else if ((nbF > 0) && (fogcoords != NULL))
+	{
+		CGeometryAllocator *pAllocator = CGeometryAllocator::GetInstance();
+		if (!pAllocator->isMemoryRelocated() || m_bDataLocked)
+			memcpy(fogcoords, fogs, nbF*sizeof(float));
+		else
+			pAllocator->glvkCopyPointer(fogcoords, fogs, nbF);
+	}
+#endif
+}
 
 bool CGeometry::glLockData()
 {

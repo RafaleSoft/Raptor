@@ -1,6 +1,20 @@
-// MBFilter.cpp: implementation of the CMBFilter class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  MBFilter.cpp                                                           */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
 
 #include "Subsys/CodeGeneration.h"
 
@@ -25,39 +39,26 @@
 #if !defined(AFX_IRENDERINGPROPERTIES_H__634BCF2B_84B4_47F2_B460_D7FDC0F3B698__INCLUDED_)
 	#include "GLHierarchy/IRenderingProperties.h"
 #endif
-#if !defined(AFX_FRAGMENTPROGRAM_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
-    #include "GLHierarchy/FragmentProgram.h"
-#endif
 #if !defined(AFX_MBFILTER_H__53A619DD_DBAB_4709_9EAD_72C5D6C401E9__INCLUDED_)
     #include "MBFilter.h"
 #endif
+#if !defined(AFX_OPENGLSHADERSTAGE_H__56B00FE3_E508_4FD6_9363_90E6E67446D9__INCLUDED_)
+	#include "GLHierarchy/OpenGLShaderStage.h"
+#endif
+#if !defined(AFX_OPENGLPROGRAMSTAGE_H__0BCE3B42_6E10_4F50_BB27_1993345ADBCF__INCLUDED_)
+	#include "GLHierarchy/OpenGLProgramStage.h"
+#endif
+
 
 // Specific texture generator to flip between buffer display of previous frame
-class CAccumulator : public ITextureGenerator
+class CAccumulator
 {
 public:
     CAccumulator():
-      pCurrentDisplay(NULL),pPreviousDisplay(NULL),
-       m_pCurrentColorAccum(NULL),m_pPreviousColorAccum(NULL){};
+		pCurrentDisplay(NULL),pPreviousDisplay(NULL),
+		m_pCurrentColorAccum(NULL),m_pPreviousColorAccum(NULL){};
+
     virtual ~CAccumulator() {};
-
-    //! Implements TextureGenerator
-    virtual ITextureGenerator::GENERATOR_KIND    getKind(void) const { return ITextureGenerator::BUFFERED; };
-
-    //! The fragment program to compute accumulation;
-    static const string accum_ps;
-
-    //! Generation is switched each frame
-    virtual void glGenerate(CTextureObject* t)
-    { pCurrentDisplay->glGenerate(t); };
-
-    //! This method returns the width of the generator
-    virtual unsigned int getGenerateWidth(void) const
-    { return pCurrentDisplay->getGenerateWidth(); };
-
-    //! This method returns the height of the generator
-    virtual unsigned int getGenerateHeight(void) const
-    { return pCurrentDisplay->getGenerateHeight(); };
 
     void switchDisplay(void)
     {
@@ -78,30 +79,22 @@ public:
     CTextureObject  *m_pPreviousColorAccum;
 };
 
-const string CAccumulator::accum_ps =
-"#version 120				\n\
-uniform sampler2D color;	\n\
-uniform sampler2D accum;	\n\
-uniform vec4 percentage;	\n\
-void main(void)			\n\
-{						\n\
-	vec4 c = texture2D(color,gl_TexCoord[0].xy); \n\
-	vec4 a = texture2D(accum,gl_TexCoord[0].xy); \n\
-	gl_FragColor = mix(c,a,percentage); \n\
-}";
+
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CMBFilter::CMBFilter():
-    m_pMotionBlurShader(NULL),m_pAccumulator(NULL),
-	m_pRenderTextures2(NULL),
+CMBFilter::CMBFilter() :
+	m_pMotionBlurShader(NULL), m_pFinalShader(NULL),
+	m_pAccumulator(NULL), m_pRenderTextures2(NULL),
 	mbParams(GL_COORD_VERTEX(0.75f, 0.75f, 0.75f, 1.0f))
 {
 	f_params.addParameter("percentage",mbParams.p);
 	f_params.addParameter("color",CTextureUnitSetup::IMAGE_UNIT_0);
 	f_params.addParameter("accum",CTextureUnitSetup::IMAGE_UNIT_1);
+
+	f_params2.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);
 }
 
 CMBFilter::~CMBFilter()
@@ -167,9 +160,9 @@ void CMBFilter::glRenderFilter()
     glActiveTextureARB(GL_TEXTURE0_ARB);
 	getColorInput()->glvkRender();
 
-	m_pMotionBlurShader->glGetFragmentProgram()->setProgramParameters(f_params);
+	m_pMotionBlurShader->glGetOpenGLShader()->setProgramParameters(f_params);
     m_pMotionBlurShader->glRender();
-    glDrawBuffer();
+	glDrawFilter();
 	m_pMotionBlurShader->glStop();
 
 	glBindTexture(GL_TEXTURE_2D,0);
@@ -182,7 +175,11 @@ void CMBFilter::glRenderFilterOutput()
     CAccumulator *pAccum = (CAccumulator*)m_pAccumulator;
 	
 	pAccum->m_pCurrentColorAccum->glvkRender();
-    glDrawBuffer();
+
+	m_pFinalShader->glGetOpenGLShader()->setProgramParameters(f_params2);
+	m_pFinalShader->glRender();
+    glDrawFilter();
+	m_pFinalShader->glStop();
 
 	glBindTexture(GL_TEXTURE_2D,0);
 
@@ -281,12 +278,30 @@ bool CMBFilter::glInitFilter(void)
 																					accumulator->pPreviousDisplay);
 	}
 
-    m_pMotionBlurShader = new CShader("MB_SHADER");
-    CFragmentProgram *fs = m_pMotionBlurShader->glGetFragmentProgram("mb_fp");
-    bool res = fs->glLoadProgram(CAccumulator::accum_ps);
-	res = res && m_pMotionBlurShader->glCompileShader();
+	m_pMotionBlurShader = new CShader("MB_SHADER");
 
-	filterFactory.getConfig().useTextureResize(previousResize);
+#if defined(GL_ARB_geometry_shader4)
+	m_pFinalShader = new CShader("MotionBlurShader");
+	COpenGLShaderStage *stage = m_pMotionBlurShader->glGetOpenGLShader();
+	stage->glGetVertexShader("EMPTY_PROGRAM");
+	stage->glGetGeometryShader("FULL_SCREEN_GEO_PROGRAM");
+	stage->glGetFragmentShader("MB_ACCUM_TEX_SHADER");
+	bool res = stage->glCompileShader();
+
+	stage = m_pFinalShader->glGetOpenGLShader();
+	stage->glGetVertexShader("EMPTY_PROGRAM");
+	stage->glGetGeometryShader("FULL_SCREEN_GEO_PROGRAM");
+	stage->glGetFragmentShader("MB_ACCUM2_TEX_SHADER");
+	res = res && stage->glCompileShader();
+#elif defined(GL_ARB_vertex_shader)
+	COpenGLShaderStage *stage = m_pMotionBlurShader->glGetOpenGLShader();
+	stage->glGetFragmentShader("MB_ACCUM_OLD_TEX_SHADER");
+	bool res = stage->glCompileShader();
+#elif defined(GL_ARB_vertex_program)
+	#error "Unsupported deprecated vertex program feature."
+#endif
+
+    filterFactory.getConfig().useTextureResize(previousResize);
 
     return res;
 }

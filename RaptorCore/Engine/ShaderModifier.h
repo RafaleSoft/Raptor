@@ -1,6 +1,20 @@
-// ShaderModifier.h: interface for the CShaderModifier class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  ShaderModifier.h                                                       */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
 
 #if !defined(AFX_SHADERMODIFIER_H__5ED408B3_1FAE_4869_8A40_6ABF39D8DF1E__INCLUDED_)
 #define AFX_SHADERMODIFIER_H__5ED408B3_1FAE_4869_8A40_6ABF39D8DF1E__INCLUDED_
@@ -57,16 +71,8 @@ protected:
 
 private:
 	//!	Handler to be overloaded to declare an update
-	//!	of the managed vertex program/shader
-	virtual void RAPTOR_FASTCALL updateVertexParameters(float dt, CProgramParameters &v);
-
-	//!	Handler to be overloaded to declare an update
-	//!	of the managed fragment program/shader
-	virtual void RAPTOR_FASTCALL updateFragmentParameters(float dt, CProgramParameters &v);
-
-	//!	Handler to be overloaded to declare an update
-	//!	of the managed geometry program/shader
-	virtual void RAPTOR_FASTCALL updateGeometryParameters(float dt, CProgramParameters &v);
+	//!	of the managed program/shader
+	virtual void RAPTOR_FASTCALL updateShaderParameters(float dt, CProgramParameters &v);
 
 	//!	Compute physics resultant after dt time increment
 	//!	This method should not be called directly.

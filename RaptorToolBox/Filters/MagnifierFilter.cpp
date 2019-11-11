@@ -1,6 +1,20 @@
-// MagnifierFilter.cpp: implementation of the CMagnifierFilter class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  MagnifierFilter.cpp                                                    */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
 
 #include "Subsys/CodeGeneration.h"
 
@@ -22,17 +36,14 @@
 #if !defined(AFX_SHADER_H__4D405EC2_7151_465D_86B6_1CA99B906777__INCLUDED_)
 	#include "GLHierarchy/Shader.h"
 #endif
-#if !defined(AFX_FRAGMENTPROGRAM_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
+#if !defined(AFX_FRAGMENTPROGRAM_H__DD0AD51D_3BFF_4C65_8099_BA7696D7BDDF__INCLUDED_)
 	#include "GLHierarchy/FragmentProgram.h"
 #endif
-#if !defined(AFX_FRAGMENTSHADER_H__66B3089A_2919_4678_9273_6CDEF7E5787F__INCLUDED_)
-	#include "GLHierarchy/FragmentShader.h"
-#endif
-#if !defined(AFX_VERTEXSHADER_H__F2D3BBC6_87A1_4695_B667_2B8C3C4CF022__INCLUDED_)
-	#include "GLHierarchy/VertexShader.h"
-#endif
-#if !defined(AFX_VERTEXPROGRAM_H__204F7213_B40B_4B6A_9BCA_828409871B68__INCLUDED_)
+#if !defined(AFX_VERTEXPROGRAM_H__F2D3BBC6_87A1_4695_B667_2B8C3C4CF022__INCLUDED_)
 	#include "GLHierarchy/VertexProgram.h"
+#endif
+#if !defined(AFX_GEOMETRYSHADER_H__1981EA98_8F3C_4881_9429_A9ACA5B285D3__INCLUDED_)
+	#include "GLHierarchy/GeometryShader.h"
 #endif
 #if !defined(AFX_TEXTURESET_H__26F3022D_70FE_414D_9479_F9CCD3DCD445__INCLUDED_)
 	#include "GLHierarchy/TextureSet.h"
@@ -40,147 +51,18 @@
 #if !defined(AFX_MAGNIFIERFILTER_H__3660D446_2F92_4D02_A795_BFF8336D61D2__INCLUDED_)
     #include "MagnifierFilter.h"
 #endif
+#if !defined(AFX_OPENGLSHADERSTAGE_H__56B00FE3_E508_4FD6_9363_90E6E67446D9__INCLUDED_)
+	#include "GLHierarchy/OpenGLShaderStage.h"
+#endif
+#if !defined(AFX_OPENGLPROGRAMSTAGE_H__0BCE3B42_6E10_4F50_BB27_1993345ADBCF__INCLUDED_)
+	#include "GLHierarchy/OpenGLProgramStage.h"
+#endif
 
+
+RAPTOR_NAMESPACE
 
 static const int KERNEL_SIZE = 256;
 
-#if defined(GL_ARB_vertex_shader)
-	static const string kernel_vs = 
-	"#version 120			\n\
-	uniform vec4 center;	\n\
-	void main(void)			\n\
-	{						\n\
-		gl_Position = ftransform();\n\
-		gl_TexCoord[0] = gl_MultiTexCoord0 + center;\n\
-	}";
-
-	static const string xk_ps =
-	"#version 120				\n\
-	\n\
-	uniform sampler2D color;	\n\
-	uniform sampler2D factor;	\n\
-	\n\
-	uniform vec4 size;			\n\
-	uniform vec4 offset;		\n\
-	void main(void)			\n\
-	{						\n\
-		vec4 subpixels = fract(size * gl_TexCoord[0]); \n\
-		vec2 texcoord = gl_TexCoord[0].xy; \n\
-		vec4 factors = texture2D(factor,subpixels.xy); \n\
-	\n\
-		vec4 colors = texture2D(color,texcoord); \n\
-		vec4 colorsum = colors * factors.zzzz; \n\
-	\n\
-		colors = texture2D(color,texcoord + offset.xz); \n\
-		colorsum = colorsum + colors * factors.wwww; \n\
-	\n\
-		colors = texture2D(color,texcoord - offset.xz); \n\
-		colorsum = colorsum + colors * factors.yyyy; \n\
-	\n\
-		colors = texture2D(color,texcoord - offset.xz - offset.xz); \n\
-		gl_FragColor = colorsum + colors * factors.xxxx; \n\
-		gl_FragColor.w = 1.0; \n\
-	}";
-
-	static const string yk_ps =
-	"#version 120				\n\
-	\n\
-	uniform sampler2D color;	\n\
-	uniform sampler2D factor;	\n\
-	\n\
-	uniform vec4 size;			\n\
-	uniform vec4 offset;		\n\
-	void main(void)			\n\
-	{						\n\
-		vec4 subpixels = fract(size * gl_TexCoord[0]); \n\
-		vec2 texcoord = gl_TexCoord[0].xy; \n\
-		vec4 factors = texture2D(factor,subpixels.yx); \n\
-	\n\
-		vec4 colors = texture2D(color,texcoord); \n\
-		vec4 colorsum = colors * factors.zzzz; \n\
-	\n\
-		colors = texture2D(color,texcoord + offset.zy); \n\
-		colorsum = colorsum + colors * factors.wwww; \n\
-	\n\
-		colors = texture2D(color,texcoord - offset.zy); \n\
-		colorsum = colorsum + colors * factors.yyyy; \n\
-	\n\
-		colors = texture2D(color,texcoord - offset.zy - offset.zy); \n\
-		gl_FragColor = colorsum + colors * factors.xxxx; \n\
-		gl_FragColor.w = 1.0; \n\
-	}";
-#elif defined(GL_ARB_vertex_program)
-	static const string kernel_vp = 
-	"!!ARBvp1.0 \
-	ATTRIB iPos = vertex.position; \
-	ATTRIB iTexCoord = vertex.texcoord[0]; \
-	PARAM mvp[4] = { state.matrix.mvp }; \
-	PARAM ofs = program.local[0]; \
-	OUTPUT oPos = result.position; \
-	OUTPUT oTex0 = result.texcoord[0]; \
-	DP4 oPos.x , mvp[0] , iPos; \
-	DP4 oPos.y , mvp[1] , iPos; \
-	DP4 oPos.z , mvp[2] , iPos; \
-	DP4 oPos.w, mvp[3] ,iPos; \
-	ADD oTex0, iTexCoord, ofs; \
-	END";
-
-	static const string xk_fp =
-	"!!ARBfp1.0 \
-	ATTRIB iTex0 = fragment.texcoord[0]; \
-	PARAM one_plusx = program.local[0];\
-	PARAM size = program.local[1];\
-	TEMP color; \
-	TEMP factors; \
-	TEMP subpixels; \
-	TEMP colorsum; \
-	TEMP offset; \
-	OUTPUT finalColor = result.color; \
-	MUL subpixels, iTex0, size; \
-	FRC subpixels, subpixels; \
-	TEX color, iTex0, texture[0] , 2D ; \
-	TEX factors, subpixels.xyzw, texture[1], 2D; \
-	MUL colorsum, color, factors.zzzz; \
-	ADD offset, iTex0, one_plusx.xzzz; \
-	TEX color, offset, texture[0] , 2D ; \
-	MAD colorsum, color, factors.wwww, colorsum;\
-	SUB offset, iTex0, one_plusx.xzzz; \
-	TEX color, offset, texture[0] , 2D ; \
-	MAD colorsum, color, factors.yyyy, colorsum; \
-	SUB offset, offset, one_plusx.xzzz; \
-	TEX color, offset, texture[0] , 2D ; \
-	MAD finalColor, color, factors.xxxx, colorsum; \
-	MOV finalColor.w, size.w; \
-	END";
-
-	static const string yk_fp = 
-	"!!ARBfp1.0 \
-	ATTRIB iTex0 = fragment.texcoord[0]; \
-	PARAM one_plusy = program.local[0];\
-	PARAM size = program.local[1];\
-	TEMP color; \
-	TEMP factors; \
-	TEMP subpixels; \
-	TEMP colorsum; \
-	TEMP offset; \
-	OUTPUT finalColor = result.color; \
-	MUL subpixels, iTex0, size; \
-	FRC subpixels, subpixels; \
-	TEX color, iTex0, texture[0] , 2D ; \
-	TEX factors, subpixels.yxzw, texture[1], 2D; \
-	MUL colorsum, color, factors.zzzz; \
-	ADD offset, iTex0, one_plusy.zyzz; \
-	TEX color, offset, texture[0] , 2D ; \
-	MAD colorsum, color, factors.wwww, colorsum;\
-	SUB offset, iTex0, one_plusy.zyzz; \
-	TEX color, offset, texture[0] , 2D ; \
-	MAD colorsum, color, factors.yyyy, colorsum; \
-	SUB offset, offset, one_plusy.zyzz; \
-	TEX color, offset, texture[0] , 2D ; \
-	MAD finalColor, color, factors.xxxx, colorsum; \
-	MOV finalColor.w, size.w; \
-	END";
-#endif
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -281,15 +163,15 @@ void CMagnifierFilter::glRenderFilter()
     glActiveTextureARB(GL_TEXTURE0_ARB);
 	colorInput->glvkRender();
 
-#if defined(GL_ARB_vertex_shader)
-	m_pYKernelShader->glGetVertexProgram()->setProgramParameters(v_params_y);
-	m_pYKernelShader->glGetFragmentProgram()->setProgramParameters(f_params);
+#if defined(GL_ARB_geometry_shader4) || defined(GL_ARB_vertex_shader)
+	m_pYKernelShader->glGetOpenGLShader()->setProgramParameters(params_y);
 #elif defined(GL_ARB_vertex_program)
-	m_pYKernelShader->glGetVertexShader()->setProgramParameters(v_params_y);
-	m_pYKernelShader->glGetFragmentShader()->setProgramParameters(f_params);
+	m_pYKernelShader->glGetOpenGLProgram()->setProgramParameters(params_y);
 #endif
 	m_pYKernelShader->glRender();
-    glDrawBuffer();
+
+	glDrawFilter();
+
 	m_pYKernelShader->glStop();
 
 	xBuffer->glvkUnBindDisplay();
@@ -309,15 +191,15 @@ void CMagnifierFilter::glRenderFilterOutput()
     glActiveTextureARB(GL_TEXTURE0_ARB);
 	xKernelPass->glvkRender();
 
-#if defined(GL_ARB_vertex_shader)
-	m_pXKernelShader->glGetVertexProgram()->setProgramParameters(v_params_x);
-	m_pXKernelShader->glGetFragmentProgram()->setProgramParameters(f_params);
+#if defined(GL_ARB_geometry_shader4) || defined(GL_ARB_vertex_shader)
+	m_pXKernelShader->glGetOpenGLShader()->setProgramParameters(params_x);
 #elif defined(GL_ARB_vertex_program)
-	m_pXKernelShader->glGetVertexShader()->setProgramParameters(v_params_x);
-	m_pXKernelShader->glGetFragmentShader()->setProgramParameters(f_params);
+	m_pXKernelShader->glGetOpenGLProgram()->setProgramParameters(params_x);
 #endif
 	m_pXKernelShader->glRender();
-    glDrawBuffer();
+
+	glDrawFilter();
+	
 	m_pXKernelShader->glStop();
 
 	glBindTexture(GL_TEXTURE_2D,0);
@@ -418,38 +300,48 @@ bool CMagnifierFilter::glInitFilter(void)
 	
 	//!	0.5 factor for offset to locate texel center
     GL_COORD_VERTEX ofsy(0.0, 0.5f * offsetParams.y, 0.0, 0.0);
-	v_params_y.addParameter("center",ofsy);
+	params_y.addParameter("center",ofsy);
+	params_y.addParameter("offset", offsetParams);
+	params_y.addParameter("size", sizeParams);
+	params_y.addParameter("color", CTextureUnitSetup::IMAGE_UNIT_0);
+	params_y.addParameter("factor", CTextureUnitSetup::IMAGE_UNIT_1);
+
 	GL_COORD_VERTEX ofsx(0.5f * offsetParams.x, 0.0, 0.0, 0.0);
-	v_params_x.addParameter("center",ofsx);
-	f_params.addParameter("offset",offsetParams);
-	f_params.addParameter("size",sizeParams);
+	params_x.addParameter("center",ofsx);
+	params_x.addParameter("offset",offsetParams);
+	params_x.addParameter("size",sizeParams);
+	params_x.addParameter("color", CTextureUnitSetup::IMAGE_UNIT_0);
+	params_x.addParameter("factor", CTextureUnitSetup::IMAGE_UNIT_1);
 
     m_pXKernelShader = new CShader("XKERNEL_SHADER");
 	m_pYKernelShader = new CShader("YKERNEL_SHADER");
 
-#if defined(GL_ARB_vertex_shader)
-	CVertexProgram *vp = m_pXKernelShader->glGetVertexProgram("magnifier_vp");
-    bool res = vp->glLoadProgram(kernel_vs);
-	CFragmentProgram *ps = m_pXKernelShader->glGetFragmentProgram("xk_ps");
-    res = res && ps->glLoadProgram(xk_ps);
-	res = res && m_pXKernelShader->glCompileShader();
+#if defined(GL_ARB_geometry_shader4)
+	m_pXKernelShader->glGetOpenGLShader()->glGetVertexShader("EMPTY_PROGRAM");
+	CGeometryShader *gp = m_pXKernelShader->glGetOpenGLShader()->glGetGeometryShader("MAGNIFIER_GEO_SHADER");
+	bool res = gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
+	m_pXKernelShader->glGetOpenGLShader()->glGetFragmentShader("MAGNIFIER_X_TEX_SHADER");
+	res = res && m_pXKernelShader->glGetOpenGLShader()->glCompileShader();
 
-	vp = m_pYKernelShader->glGetVertexProgram("magnifier_vp");
-	ps = m_pYKernelShader->glGetFragmentProgram("yk_ps");
-    res = res && ps->glLoadProgram(yk_ps);
-	m_pYKernelShader->glCompileShader();
+	m_pYKernelShader->glGetOpenGLShader()->glGetVertexShader("EMPTY_PROGRAM");
+	m_pYKernelShader->glGetOpenGLShader()->glGetGeometryShader("MAGNIFIER_GEO_SHADER");
+	m_pYKernelShader->glGetOpenGLShader()->glGetFragmentShader("MAGNIFIER_Y_TEX_SHADER");
+	res = res && m_pYKernelShader->glGetOpenGLShader()->glCompileShader();
+#elif defined(GL_ARB_vertex_shader)
+	m_pXKernelShader->glGetOpenGLShader()->glGetVertexShader("MAGNIFIER_VTX_SHADER");
+	m_pXKernelShader->glGetOpenGLShader()->glGetFragmentShader("MAGNIFIER_OLDX_TEX_SHADER");
+	bool res = m_pXKernelShader->glGetOpenGLShader()->glCompileShader();
 
-	f_params.addParameter("color",CTextureUnitSetup::IMAGE_UNIT_0);
-	f_params.addParameter("factor",CTextureUnitSetup::IMAGE_UNIT_1);
+	m_pYKernelShader->glGetOpenGLShader()->glGetVertexShader("MAGNIFIER_VTX_SHADER");
+	m_pYKernelShader->glGetOpenGLShader()->glGetFragmentShader("MAGNIFIER_OLDY_TEX_SHADER");
+	res = res && m_pYKernelShader->glGetOpenGLShader()->glCompileShader();
 #elif defined(GL_ARB_vertex_program)
-    CVertexShader *vs = m_pXKernelShader->glGetVertexShader("magnifier_vp");
-    bool res = vs->glLoadProgram(kernel_vp);
-    CFragmentShader *fs = m_pXKernelShader->glGetFragmentShader("xk_fp");
-    res = res && fs->glLoadProgram(xk_fp);
+	m_pXKernelShader->glGetOpenGLProgram()->glGetVertexProgram("MAGNIFIER_VTX_PROGRAM");
+	m_pXKernelShader->glGetOpenGLProgram()->glGetFragmentProgram("MAGNIFIER_X_TEX_PROGRAM");
 
-    vs = m_pYKernelShader->glGetVertexShader("magnifier_vp");
-    fs = m_pYKernelShader->glGetFragmentShader("yk_fp");
-    res = res && fs->glLoadProgram(yk_fp);
+	m_pYKernelShader->glGetOpenGLProgram()->glGetVertexProgram("MAGNIFIER_VTX_PROGRAM");
+	m_pYKernelShader->glGetOpenGLProgram()->glGetFragmentProgram("MAGNIFIER_Y_TEX_PROGRAM");
+	bool res = true;
 #endif
 
 	filterFactory.getConfig().useTextureResize(previousResize);

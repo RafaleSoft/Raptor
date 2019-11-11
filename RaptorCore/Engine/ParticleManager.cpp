@@ -7,17 +7,14 @@
 #if !defined(AFX_PARTICLEMANAGER_H__687B445A_C015_43DA_95A4_EC8AB1AED606__INCLUDED_)
     #include "ParticleManager.h"
 #endif
-#ifndef __GLOBAL_H__
-	#include "System/Global.h"
-#endif
 #if !defined(AFX_OBJECTFACTORY_H__7F891C52_9E32_489C_B09C_5E5803522D91__INCLUDED_)
 	#include "GLHierarchy/ObjectFactory.h"
 #endif
 #if !defined(AFX_RAPTORIO_H__87D52C27_9117_4675_95DC_6AD2CCD2E78D__INCLUDED_)
 	#include "System/RaptorIO.h"
 #endif
-#if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
-	#include "System/Raptor.h"
+#if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
+	#include "System/RaptorErrorManager.h"
 #endif
 #if !defined(AFX_TEXTURESET_H__26F3022D_70FE_414D_9479_F9CCD3DCD445__INCLUDED_)
 	#include "GLHierarchy/TextureSet.h"
@@ -29,13 +26,9 @@
 
 RAPTOR_NAMESPACE_BEGIN
 
-static CParticleManager::CParticleManagerClassID particleId;
-const CPersistence::CPersistenceClassID& CParticleManager::CParticleManagerClassID::GetClassId(void)
-{
-	return particleId;
-}
+IMPLEMENT_CLASS_ID(CParticleManager, particleId)
 
-static CPersistentType<CParticleManager> particleFactory(particleId);
+
 static map<std::string,CParticleManager::CParticleCompute*> m_ComputeModels;
 
 size_t	CParticleManager::avgParallelTasks = 0;

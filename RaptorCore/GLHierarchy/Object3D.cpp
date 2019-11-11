@@ -6,19 +6,12 @@
 #ifndef __RAPTOR_GLEXT_H__
 	#include "System/Glext.h"
 #endif
-
-#if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
-	#include "System/Raptor.h"
+#if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
+	#include "System/RaptorErrorManager.h"
 #endif
-
 #if !defined(AFX_OBJECT3D_H__DB24F017_80B9_11D3_97C1_FC2841000000__INCLUDED_)
 	#include "Object3D.h"
 #endif
-
-#ifndef __GLOBAL_H__
-	#include "System/Global.h"
-#endif
-
 #ifdef RAPTOR_SSE_CODE_GENERATION
 	#if !defined(AFX_SSE_BOUNDINGBOX_H__DD1B683A_C345_4399_B1CF_4059B5C3A744__INCLUDED_)
 		#include "SSE_Engine/SSE_BoundingBox.h"
@@ -27,13 +20,14 @@
 #if !defined(AFX_GEOMETRYALLOCATOR_H__802B3C7A_43F7_46B2_A79E_DDDC9012D371__INCLUDED_)
 	#include "Subsys/GeometryAllocator.h"
 #endif
-
 #if !defined(AFX_RAPTORIO_H__87D52C27_9117_4675_95DC_6AD2CCD2E78D__INCLUDED_)
 	#include "System/RaptorIO.h"
 #endif
-
 #if !defined(AFX_OBJECT3DCONTAINERNOTIFIER_H__BF1EABCD_500E_4D7C_8561_2C535DF0640A__INCLUDED_)
     #include "Subsys/Object3DContainerNotifier.h"
+#endif
+#if !defined(AFX_RAPTORINSTANCE_H__90219068_202B_46C2_BFF0_73C24D048903__INCLUDED_)
+	#include "Subsys/RaptorInstance.h"
 #endif
 
 
@@ -194,10 +188,10 @@ void CObject3D::glAllocateBBox(void)
     boxArrayOffset = boxIndex;
     boxIndex += BBOX_VERTEX_SIZE;
 #else
-	filledBox.handle = 0;
-	filledBox.hClass = 0;
-	wireBox.handle = 0;
-	wireBox.hClass = 0;
+	filledBox.handle(0);
+	filledBox.hClass(0);
+	wireBox.handle(0);
+	wireBox.hClass(0);
 #endif
 }
 
@@ -248,10 +242,7 @@ bool CObject3D::removeContainerNotifier(CContainerNotifier<CObject3D*> *pNotifie
 
 CObject3D::operator RAPTOR_HANDLE() const
 {
-	RAPTOR_HANDLE handle;
-	handle.hClass = getId().ID();
-	handle.handle = (unsigned int)(this);
-
+	RAPTOR_HANDLE handle(getId().ID(),(void*)this);
 	return handle;
 }
 
@@ -355,13 +346,13 @@ void CObject3D::extendBoundingBox(const GL_COORD_VERTEX& min, const GL_COORD_VER
 		if (boxValue != value)
 		{
 			boxValue = value;
-			if (filledBox.handle != 0)
-				glDeleteLists(filledBox.handle,1);
-			if (wireBox.handle != 0)
-				glDeleteLists(wireBox.handle,1);
+			if (filledBox.handle() != 0)
+				glDeleteLists(filledBox.handle(),1);
+			if (wireBox.handle() != 0)
+				glDeleteLists(wireBox.handle(),1);
 			
-			filledBox.handle = glGenLists(1);
-			glNewList(filledBox.handle,GL_COMPILE);
+			filledBox.handle(glGenLists(1));
+			glNewList(filledBox.handle(),GL_COMPILE);
 				glBegin(GL_QUADS);
 					// front: 4, 5, 6, 7
 					glVertex3f(xmin,ymin,zmax);
@@ -401,8 +392,8 @@ void CObject3D::extendBoundingBox(const GL_COORD_VERTEX& min, const GL_COORD_VER
 				glEnd();
 			glEndList();
 			
-			wireBox.handle = glGenLists(1);
-			glNewList(wireBox.handle,GL_COMPILE);
+			wireBox.handle(glGenLists(1));
+			glNewList(wireBox.handle(),GL_COMPILE);
 				glBegin(GL_LINE_STRIP);
 					// back: 0, 1, 2, 3
 					glVertex3f(xmin,ymin,zmin);
@@ -431,10 +422,10 @@ void CObject3D::extendBoundingBox(const GL_COORD_VERTEX& min, const GL_COORD_VER
 			glEndList();
 		}
 
-		glCallList(filled ? filledBox.handle : wireBox.handle);
+		glCallList(filled ? filledBox.handle() : wireBox.handle());
 
-		Global::GetInstance().getCurrentStatus().iRenderedObjects++;
-		Global::GetInstance().getCurrentStatus().iRenderedTriangles += 12;
+		CRaptorInstance::GetInstance().iRenderedObjects++;
+		CRaptorInstance::GetInstance().iRenderedTriangles += 12;
 
 		CATCH_GL_ERROR
 	}

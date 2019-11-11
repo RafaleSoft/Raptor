@@ -81,7 +81,7 @@ public:
 		*((int*)m_vector) = 0x01010101;
 	};
 
-	CMMXBVector& SIMD_CALL operator*= (const char& t)
+	CMMXBVector& SIMD_CALL operator*= (const char& t) NOEXCEPT
 	{
 		m_vector[0] = m_vector[0] * t;
 		m_vector[1] = m_vector[1] * t;
@@ -93,7 +93,7 @@ public:
 
 	//	Real MMX Stuff starts here...
 #ifndef SIMD_NO_ASSEMBLY
-	CMMXBVector& operator!()
+	CMMXBVector& operator!() NOEXCEPT
 	{
 		__asm
 		{
@@ -107,7 +107,7 @@ public:
 		return *this;
 	}
 	
-	CMMXBVector& operator-= (const CMMXBVector& v)
+	CMMXBVector& operator-= (const CMMXBVector& v) NOEXCEPT
 	{ 
 		__asm
 		{
@@ -122,7 +122,7 @@ public:
 		return *this; 
 	};
 
-	CMMXBVector& operator+= (const CMMXBVector& v)
+	CMMXBVector& operator+= (const CMMXBVector& v) NOEXCEPT
 	{ 
 		__asm
 		{
@@ -137,7 +137,7 @@ public:
 		return *this; 
 	};
 
-	CMMXBVector& operator*= (const CMMXBVector& v)
+	CMMXBVector& operator*= (const CMMXBVector& v) NOEXCEPT
 	{ 
 		__asm
 		{
@@ -157,12 +157,12 @@ public:
 	};
 
 	// dot product
-	CMMXBVector SIMD_CALL operator*  (const CMMXBVector& v2) const;
+	CMMXBVector SIMD_CALL operator*  (const CMMXBVector& v2) const NOEXCEPT;
 	
 	// scalar operations
-	CMMXBVector SIMD_CALL operator+  (const CMMXBVector& v2) const;
+	CMMXBVector SIMD_CALL operator+  (const CMMXBVector& v2) const NOEXCEPT;
 	
-	CMMXBVector SIMD_CALL operator-  (const CMMXBVector& v2) const;
+	CMMXBVector SIMD_CALL operator-  (const CMMXBVector& v2) const NOEXCEPT;
 #endif
 };
 

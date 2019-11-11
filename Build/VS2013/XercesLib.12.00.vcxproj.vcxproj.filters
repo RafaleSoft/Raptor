@@ -898,6 +898,9 @@
     <ClCompile Include="..\..\AddOns\xercesc-3.2.2\src\xercesc\util\EncodingValidator.cpp">
       <Filter>util</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\AddOns\xercesc-3.2.2\src\xercesc\util\JanitorExports.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\AddOns\xercesc-3.2.2\src\xercesc\util\Base64.hpp">

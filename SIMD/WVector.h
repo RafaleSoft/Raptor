@@ -31,11 +31,11 @@ class CWVector : public CGenericVector<unsigned short>
 {
 public:
 	// Construction/Destruction
-	CWVector(){};
+	CWVector() NOEXCEPT {};
 	virtual ~CWVector(){};
 
 #ifndef SIMD_NO_ASSEMBLY
-	CWVector& operator= ( const CWVector& v )
+	CWVector& operator= ( const CWVector& v ) NOEXCEPT
 	{
 		__asm
 		{
@@ -48,7 +48,7 @@ public:
 		}
 		return *this;
 	};
-	CWVector& operator= ( const CGenericVector<unsigned short>& v )
+	CWVector& operator= ( const CGenericVector<unsigned short>& v ) NOEXCEPT
 	{
 		__asm
 		{
@@ -61,7 +61,7 @@ public:
 		}
 		return *this;
 	};
-	CWVector& operator= ( const unsigned short v[4] )
+	CWVector& operator= ( const unsigned short v[4] ) NOEXCEPT
 	{
 		__asm
 		{
@@ -76,7 +76,7 @@ public:
 	};	
 
 	//operations
-	bool operator== ( const CGenericVector<unsigned short>& v ) const
+	bool operator== ( const CGenericVector<unsigned short>& v ) const NOEXCEPT
 	{
 		__asm
 		{
@@ -97,7 +97,7 @@ public:
 	};
 #pragma warning(default:4035)
 
-	bool operator== ( const CWVector& v ) const
+	bool operator== ( const CWVector& v ) const NOEXCEPT
 	{
 		__asm
 		{
@@ -118,7 +118,7 @@ public:
 	};
 #pragma warning(default:4035)
 
-	bool operator== ( const unsigned short v[4] ) const
+	bool operator== ( const unsigned short v[4] ) const NOEXCEPT
 	{
 		__asm
 		{
@@ -139,7 +139,7 @@ public:
 	};
 #pragma warning(default:4035)
 
-	void SIMD_CALL Zero()
+	void SIMD_CALL Zero() NOEXCEPT
 	{
 		__asm
 		{
@@ -150,7 +150,7 @@ public:
 		}
 	};
 
-	void SIMD_CALL One()
+	void SIMD_CALL One() NOEXCEPT
 	{
 		__asm
 		{

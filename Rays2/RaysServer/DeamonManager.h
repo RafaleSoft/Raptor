@@ -1,10 +1,27 @@
-#pragma once
+/***************************************************************************/
+/*                                                                         */
+/*  DeamonManager.h                                                        */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
 
-#include <windows.h>
-#include "..\Messages.h"
+#if !defined(AFX_DEAMONMANAGER_H__F7EF715A_5E86_4C65_B6E7_2751FAE87A91__INCLUDED_)
+#define AFX_DEAMONMANAGER_H__F7EF715A_5E86_4C65_B6E7_2751FAE87A91__INCLUDED_
+
 
 #include <string>
 #include <vector>
+#include <stdint.h>
 using namespace std;
 
 #if !defined(AFX_CLIENTSOCKET_H__A2920B8E_12E4_11D3_9142_D3B83905F198__INCLUDED_)
@@ -14,8 +31,11 @@ using namespace std;
 	#include "RaptorNetwork/Client.h"
 #endif
 
-namespace RaysServer {
+#include "..\Messages.h"
 
+
+namespace RaysServer
+{
 	class CDeamonManager
 	{
 	public:
@@ -36,7 +56,6 @@ namespace RaysServer {
 			std::string		deamonIP;
 			CDeamonClient	*connection;
 		} DEAMONSTRUCT;
-		typedef DEAMONSTRUCT* LPDEAMONSTRUCT;
 	/*
 		typedef struct Message_reg_t
 		{
@@ -77,7 +96,7 @@ namespace RaysServer {
 		unsigned int getNbDeamons(void) const { return m_Deamons.size(); };
 		
 		//!	Returns the deamon descritor structure.
-		const LPDEAMONSTRUCT getDeamon(unsigned int WUID) const;
+		const DEAMONSTRUCT* getDeamon(unsigned int WUID) const;
 
 		//!	Update deamon status.
 		bool DeamonStatus(unsigned int numDeamon) const;
@@ -100,13 +119,15 @@ namespace RaysServer {
 
 	private:
 		server_base_t			*m_pServer;
-		vector<LPDEAMONSTRUCT>	m_Deamons;	// array of registered work units
-		unsigned int			m_counter;		// unique work Unit ID counter
-		unsigned int			m_pollingDelay;
-		HANDLE					m_deamonPoller;
-		HANDLE					m_pollerEvent;
+		vector<DEAMONSTRUCT*>	m_Deamons;	// array of registered work units
+		uint32_t				m_counter;		// unique work Unit ID counter
+		uint32_t				m_pollingDelay;
+		//HANDLE					m_deamonPoller;
+		//HANDLE					m_pollerEvent;
 		bool					m_bExit;
 
 		//int* SelectWorkUnits(unsigned int requestedWU);
 	};
 }
+
+#endif // !defined(AFX_DEAMONMANAGER_H__F7EF715A_5E86_4C65_B6E7_2751FAE87A91__INCLUDED_)

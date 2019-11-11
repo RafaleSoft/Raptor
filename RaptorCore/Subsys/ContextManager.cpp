@@ -1,6 +1,20 @@
-// ContextManager.cpp: implementation of the CContextManager class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  ContextManager.cpp                                                     */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
 
 #include "Subsys/CodeGeneration.h"
 
@@ -17,16 +31,12 @@
 #if !defined(AFX_RAPTORVKEXTENSIONS_H__B17D6B7F_5AFC_4E34_9D49_8DC6CE9192D6__INCLUDED_)
 	#include "System/RaptorVKExtensions.h"
 #endif
-#if !defined(AFX_TEXTUREFACTORY_H__1B470EC4_4B68_11D3_9142_9A502CBADC6B__INCLUDED_)
-	#include "GLHierarchy/TextureFactory.h"
-#endif
 #if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
     #include "System/RaptorErrorManager.h"
 #endif
-#ifndef __GLOBAL_H__
-	#include "System/Global.h"
+#if !defined(AFX_VULKAN_H__625F6BC5_F386_44C2_85C1_EDBA23B16921__INCLUDED_)
+	#include "Subsys/Vulkan/RaptorVulkan.h"
 #endif
-
 
 #if defined(_WIN32)
     #if !defined(AFX_WIN32CONTEXTMANAGER_H__A1D82397_7E92_4D01_A04D_782BCFD17689__INCLUDED_)
@@ -38,10 +48,8 @@
     #if !defined(AFX_GLXCONTEXTMANAGER_H__B6CE3CDF_D7E4_4B9C_89BF_5E934062BC97__INCLUDED_)
         #include "GLXSpecific/GLXContextManager.h"
     #endif
-#endif
-
-#if !defined(AFX_RAPTORDATAMANAGER_H__114BFB19_FA00_4E3E_879E_C9130043668E__INCLUDED_)
-    #include "DataManager/RaptorDataManager.h"
+	#define MAXUINT64   ((uint64_t)~((uint64_t)0))
+	#define MAXUINT     ((uint32_t)~((uint32_t)0))
 #endif
 
 #if defined(VK_VERSION_1_0)
@@ -74,8 +82,7 @@ static CVulkanDevice defaultDevice;
 //////////////////////////////////////////////////////////////////////
 
 CContextManager::CContextManager()
-	:m_logo(),
-	m_currentGLContext(CContextManager::INVALID_CONTEXT)
+	:m_currentGLContext(CContextManager::INVALID_CONTEXT)
 #if defined(VK_VERSION_1_0)
 	,m_currentVKContext(CContextManager::INVALID_CONTEXT)
 	,m_pVkContext(NULL)
@@ -96,8 +103,6 @@ CContextManager::~CContextManager()
 	if (NULL != m_pVkContext)
 		delete [] m_pVkContext;
 #endif
-
-	glRemoveLogo();
 }
 
 CContextManager *CContextManager::GetInstance(void)
@@ -112,118 +117,6 @@ CContextManager *CContextManager::GetInstance(void)
 	}
 
 	return p_manager;
-}
-
-void CContextManager::glDrawLogo(void)
-{
-	if (m_logo.handle != NULL)
-		glCallList(m_logo.handle);
-	else
-	{
-		if (m_pLogo == NULL)
-			m_pLogo = glBuildLogo();
-
-		m_logo.handle = glGenLists(1);
-		glNewList(m_logo.handle,GL_COMPILE_AND_EXECUTE);
-
-		glPushAttrib(GL_ENABLE_BIT|GL_TEXTURE_BIT|GL_POLYGON_BIT);
-		glPushMatrix();
-		glMatrixMode(GL_PROJECTION);
-		glPushMatrix();
-
-		glLoadIdentity();
-		glOrtho(-1.0f,1.0f,-1.0f,1.0f,-1.0,1.0);
-		glMatrixMode(GL_MODELVIEW);
-		glLoadIdentity();
-		glDisable(GL_DEPTH_TEST);
-		glDisable(GL_LIGHTING);
-		glDisable(GL_CULL_FACE);
-		glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-
-	#if defined(GL_ARB_multitexture)
-		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
-		if (pExtensions->glActiveTextureARB != NULL)
-		{
-			pExtensions->glActiveTextureARB(GL_TEXTURE3_ARB);
-			glDisable(GL_TEXTURE_2D);
-			pExtensions->glActiveTextureARB(GL_TEXTURE2_ARB);
-			glDisable(GL_TEXTURE_2D);
-			pExtensions->glActiveTextureARB(GL_TEXTURE1_ARB);
-			glDisable(GL_TEXTURE_2D);
-			pExtensions->glActiveTextureARB(GL_TEXTURE0_ARB);
-		}
-	#endif
-
-	#if defined(GL_ARB_fragment_program)
-		glDisable(GL_FRAGMENT_PROGRAM_ARB);
-	#endif
-	#if defined(GL_NV_texture_shader)
-		glDisable(GL_TEXTURE_SHADER_NV);
-	#endif
-
-		glEnable(GL_TEXTURE_2D);
-		glColor4f(1.0f,1.0f,1.0f,0.75f);
-		if (!(m_pLogo == NULL))
-			m_pLogo->glvkRender();
-		glBegin(GL_QUADS);
-			glTexCoord2f(0.0f,1.0f);		glVertex3f(0.7f,-0.85f,1.0f);
-			glTexCoord2f(0.0f,0.0f);		glVertex3f(0.7f,-1.0f,1.0f);
-			glTexCoord2f(1.0f,0.0f);		glVertex3f(1.0f,-1.0f,1.0f);
-			glTexCoord2f(1.0f,1.0f);		glVertex3f(1.0f,-0.85f,1.0f);
-		glEnd();
-
-		glMatrixMode(GL_PROJECTION);
-		glPopMatrix();
-		glMatrixMode(GL_MODELVIEW);
-		glPopMatrix();
-		glPopAttrib();
-
-		glEndList();
-	}
-
-	CATCH_GL_ERROR
-}
-
-CTextureObject* CContextManager::glBuildLogo(void)
-{
-    glPushAttrib(GL_TEXTURE_BIT);
-
-	CTextureFactory &Txt = CTextureFactory::getDefaultFactory();
-	CTextureObject *p_Logo = Txt.glCreateTexture(	ITextureObject::CGL_COLOR24_ALPHA,
-													CTextureObject::CGL_MULTIPLY,
-													ITextureObject::CGL_BILINEAR);
-
-    CRaptorDataManager  *dataManager = CRaptorDataManager::GetInstance();
-    if (dataManager == NULL)
-        return NULL;
-
-	string filepath = dataManager->ExportFile("Raptor_logo_sml.txt");
-	if (!filepath.empty())
-    {
-        p_Logo->glSetTransparency(256);
-		Txt.glLoadCompressedTexture(p_Logo,filepath);
-    }
-	/*
-	p_Logo->glSetTransparency(256);
-	if (Txt.glLoadTexture(p_Logo,"Raptor_logo_sml.tga",CGL_USER_MIPMAPPED))
-		Txt.glExportCompressedTexture("Raptor_logo_sml.txt",p_Logo);
-	*/
-
-    glPopAttrib();
-
-	CATCH_GL_ERROR
-
-    return p_Logo;
-}
-
-
-void CContextManager::glRemoveLogo(void)
-{
-    m_pLogo = NULL;
-
-	CATCH_GL_ERROR
 }
 
 bool CContextManager::validateConfig(CRaptorDisplayConfig& rdc)
@@ -356,6 +249,7 @@ bool CContextManager::vkInitDevice(CContextManager::RENDERING_CONTEXT_ID ctx,con
 		{
 			nbPhysicalDevices = 0;
 			delete[] pPhysicalDevices;
+			pPhysicalDevices = NULL;
 		}
 	}
 
@@ -464,14 +358,14 @@ void CContextManager::vkResize(RENDERING_CONTEXT_ID ctx,const CRaptorDisplayConf
 #if defined(VK_KHR_display)
 	if (!context.pSurface->vkResize(context.physicalDevice))
 	{
-		RAPTOR_ERROR(	Global::CVulkanClassID::GetClassId(),
+		RAPTOR_ERROR(	CVulkan::CVulkanClassID::GetClassId(),
 						"Failed to obtain Vulkan surface capabilities");
 	}
 	else
 	{
 		if (!context.device.vkCreateSwapChain(context.pSurface, config))
 		{
-			RAPTOR_ERROR(	Global::CVulkanClassID::GetClassId(),
+			RAPTOR_ERROR(	CVulkan::CVulkanClassID::GetClassId(),
 							"Failed to recreate Vulkan swap chain");
 		}
 	}
@@ -486,14 +380,14 @@ CContextManager::RENDERING_CONTEXT_ID CContextManager::vkCreateContext(const RAP
 		ctx++;
 	if (ctx >= MAX_CONTEXT)
 	{
-		RAPTOR_ERROR(Global::CVulkanClassID::GetClassId(), "Too many Vulkan Context created");
+		RAPTOR_ERROR(CVulkan::CVulkanClassID::GetClassId(), "Too many Vulkan Context created");
 		return CContextManager::INVALID_CONTEXT;
 	}
 
 	VK_CONTEXT &context = m_pVkContext[ctx];
 	context.pExtensions = new CRaptorVKExtensions("");
 	
-	if (WINDOW_CLASS == handle.hClass)
+	if (WINDOW_CLASS == handle.hClass())
 	{
 		if (!vkCreateSurface(handle, ctx))
 		{
@@ -532,14 +426,12 @@ void CContextManager::vkMakeCurrentContext(const RAPTOR_HANDLE& device,RENDERING
 		//	Use a timeout coherent with vkSwapVSync
 		uint64_t timeout = MAXUINT64;	// infinite wait
 		VK_CONTEXT& context = m_pVkContext[ctx];
-		if (NULL != device.hClass)
+		if (0 != device.hClass())
 		{
 			if (!context.device.acquireSwapChainImage(timeout))
 			{
-				CRaptorErrorManager *pErrMgr = Raptor::GetErrorManager();
-				pErrMgr->generateRaptorError(	Global::CVulkanClassID::GetClassId(),
-												CRaptorErrorManager::RAPTOR_WARNING,
-												"Vulkan Device failed to provide rendering Image!");
+				RAPTOR_WARNING(	CVulkan::CVulkanClassID::GetClassId(),
+								"Vulkan Device failed to provide rendering Image!");
 
 				// onWindowSizeChanged()
 				m_currentVKContext = CContextManager::INVALID_CONTEXT;
@@ -559,10 +451,8 @@ void CContextManager::vkSwapBuffers(RENDERING_CONTEXT_ID ctx)
 		VK_CONTEXT& context = m_pVkContext[ctx];
 		if (!context.device.presentSwapChainImage())
 		{
-			CRaptorErrorManager *pErrMgr = Raptor::GetErrorManager();
-			pErrMgr->generateRaptorError(	Global::CVulkanClassID::GetClassId(),
-											CRaptorErrorManager::RAPTOR_WARNING,
-											"Vulkan Device failed to submit and present rendering queue!");
+			RAPTOR_WARNING(	CVulkan::CVulkanClassID::GetClassId(),
+							"Vulkan Device failed to submit and present rendering queue!");
 
 			// onWindowSizeChanged()
 		}
@@ -590,10 +480,8 @@ void CContextManager::vkDestroyContext(RENDERING_CONTEXT_ID ctx)
 	}
 	else
 	{
-		CRaptorErrorManager *pErrMgr = Raptor::GetErrorManager();
-		pErrMgr->generateRaptorError(	Global::CVulkanClassID::GetClassId(),
-										CRaptorErrorManager::RAPTOR_ERROR,
-										"Unable to destroy unknown Vulkan context");
+		RAPTOR_ERROR(	CVulkan::CVulkanClassID::GetClassId(),
+						"Unable to destroy unknown Vulkan context");
 	}
 }
 
@@ -613,8 +501,8 @@ RAPTOR_HANDLE CContextManager::getDevice(RENDERING_CONTEXT_ID ctx) const
 	RAPTOR_HANDLE device;
 	if ((ctx >= 0) && (ctx < MAX_CONTEXT))
 	{
-		device.handle = 0;
-		device.hClass = DEVICE_CONTEXT_CLASS;
+		device.handle(0);
+		device.hClass(DEVICE_CONTEXT_CLASS);
 	}
 
 	return device;

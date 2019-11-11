@@ -257,7 +257,7 @@ void DOMNodeImpl::setReadOnly(bool readOnl, bool deep)
             mykid != 0;
             mykid = mykid->getNextSibling()) {
 
-            short kidNodeType = mykid->getNodeType();
+			DOMNode::NodeType kidNodeType = mykid->getNodeType();
 
             switch (kidNodeType) {
             case DOMNode::ENTITY_REFERENCE_NODE:
@@ -432,7 +432,7 @@ const XMLCh* DOMNodeImpl::lookupPrefix(const XMLCh* namespaceURI) const {
 
     const DOMNode *thisNode = getContainingNode();
 
-    short type = thisNode->getNodeType();
+	DOMNode::NodeType type = thisNode->getNodeType();
 
     switch (type) {
     case DOMNode::ELEMENT_NODE: {
@@ -468,7 +468,7 @@ const XMLCh* DOMNodeImpl::lookupPrefix(const XMLCh* namespaceURI) const {
 DOMNode* DOMNodeImpl::getElementAncestor (const DOMNode* currentNode) const {
     DOMNode* parent = currentNode->getParentNode();
     while(parent != 0) {
-        short type = parent->getNodeType();
+		DOMNode::NodeType type = parent->getNodeType();
         if (type == DOMNode::ELEMENT_NODE) {
             return parent;
         }
@@ -529,7 +529,7 @@ const XMLCh* DOMNodeImpl::lookupPrefix(const XMLCh* const namespaceURI, DOMEleme
 const XMLCh* DOMNodeImpl::lookupNamespaceURI(const XMLCh* specifiedPrefix) const  {
     const DOMNode *thisNode = getContainingNode();
 
-    short type = thisNode->getNodeType();
+	DOMNode::NodeType type = thisNode->getNodeType();
     switch (type) {
     case DOMNode::ELEMENT_NODE : {
         const XMLCh* ns = thisNode->getNamespaceURI();
@@ -615,7 +615,7 @@ const DOMNode*   DOMNodeImpl::getTreeParentNode(const DOMNode* node) const {
     const DOMNode* parent=node->getParentNode();
     if(parent)
         return parent;
-    short nodeType=node->getNodeType();
+	DOMNode::NodeType nodeType = node->getNodeType();
     switch(nodeType)
     {
     case DOMNode::ATTRIBUTE_NODE: return ((const DOMAttr*)node)->getOwnerElement();
@@ -715,8 +715,8 @@ short DOMNodeImpl::compareDocumentPosition(const DOMNode* other) const {
         hisRoot = getTreeParentNode(hisRoot);
     }
 
-    short myNodeType=myNodeP->getNodeType();
-    short hisNodeType=hisNodeP->getNodeType();
+	DOMNode::NodeType myNodeType = myNodeP->getNodeType();
+	DOMNode::NodeType hisNodeType = hisNodeP->getNodeType();
     bool bMyNodeIsChild=(myNodeType!=DOMNode::ATTRIBUTE_NODE && myNodeType!=DOMNode::ENTITY_NODE && myNodeType!=DOMNode::NOTATION_NODE);
     bool bHisNodeIsChild=(hisNodeType!=DOMNode::ATTRIBUTE_NODE && hisNodeType!=DOMNode::ENTITY_NODE && hisNodeType!=DOMNode::NOTATION_NODE);
 
@@ -976,7 +976,7 @@ void DOMNodeImpl::setTextContent(const XMLCh* textContent) {
 
 bool DOMNodeImpl::isDefaultNamespace(const XMLCh* namespaceURI) const {
 	const DOMNode *thisNode = getContainingNode();
-    short type = thisNode->getNodeType();
+	DOMNode::NodeType type = thisNode->getNodeType();
     switch (type) {
     case DOMNode::ELEMENT_NODE: {
         const XMLCh *prefix = thisNode->getPrefix();

@@ -1,6 +1,20 @@
-// DOFFilter.h: interface for the CDOFFilter class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  DOFFilter.h                                                            */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
 
 #if !defined(AFX_DOFFILTER_H__A4FA0FE9_04AA_4887_9B4A_3CFAF930D840__INCLUDED_)
 #define AFX_DOFFILTER_H__A4FA0FE9_04AA_4887_9B4A_3CFAF930D840__INCLUDED_
@@ -48,6 +62,7 @@ public:
 	//! (4 maximum passes)
 	void setBlurNbPass(unsigned int nb=1);
 
+
 private:
 	//! Fordibben destructor
 	virtual ~CDOFFilter();
@@ -70,9 +85,9 @@ private:
     CTextureObject      *tmpTexture2;
 	CTextureSet			*m_pRenderTextures2;
     CShader             *DOFShader;
-	CProgramParameters	vp_paramsX;
-	CProgramParameters	vp_paramsY;
-	CProgramParameters	fp_params;
+
+	CProgramParameters	paramsX;
+	CProgramParameters	paramsY;
 };
 
 #endif // !defined(AFX_DOFFILTER_H__A4FA0FE9_04AA_4887_9B4A_3CFAF930D840__INCLUDED_)

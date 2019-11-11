@@ -1,5 +1,20 @@
-// Demo.cpp : Defines the class behaviors for the application.
-//
+/***************************************************************************/
+/*                                                                         */
+/*  Demo.cpp                                                               */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
 
 #include "StdAfx.h"
 
@@ -9,6 +24,7 @@
 #include "System/RaptorErrorManager.h"
 #include "System/RaptorApplication.h"
 
+#include "ToolBox/Filters.h"
 #include "ToolBox/Imaging.h"
 #include "ToolBox/Controllers.h"
 #include "ToolBox/ParticleCompute.h"
@@ -48,6 +64,7 @@ int main(int argc, char* argv[])
 	CImaging::installImagers();
 	CParticleCompute::installComputers();
 
+	/*
     if (!Raptor::glCheckDisplayConfig(glcs))
     {
         Raptor::GetMessages()->displayMessage("Some hardware features are missing. Will use lower config, disabling some effects");
@@ -65,7 +82,7 @@ int main(int argc, char* argv[])
             }
         }
     }
-
+	*/
 	CRaptorApplication  *app = CRaptorApplication::CreateApplication();
     app->initApplication();
 
@@ -79,6 +96,8 @@ int main(int argc, char* argv[])
 	bool res = pDisplay->glvkBindDisplay(wnd);
     if (res)
 	{
+		CFilters::glInstallFilters();
+
         pDoc->GLInitContext();
 
 		CControllers::createViewpointController(pDisplay->getViewPoint());

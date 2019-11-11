@@ -13,10 +13,10 @@
 #include "GLHierarchy/TextureFactory.h"
 #include "GLHierarchy/IRenderingProperties.h"
 #include "GLHierarchy/Shader.h"
-#include "GLHierarchy/VertexShader.h"
 #include "GLHierarchy/VertexProgram.h"
-#include "GLHierarchy/FragmentShader.h"
+#include "GLHierarchy/VertexShader.h"
 #include "GLHierarchy/FragmentProgram.h"
+#include "GLHierarchy/FragmentShader.h"
 
 #include "ToolBox/Imaging.h"
 #include "MFCExtension/RaptorMFCApplication.h"
@@ -109,7 +109,7 @@ void CDisplay::checkVShader(const string &src)
         pos = code.find('\\',pos);
     }
 
-    CVertexShader vs;
+    CVertexProgram vs;
     if (vs.glLoadProgram(code))
         nbShadersOK++;
     else
@@ -137,7 +137,7 @@ void CDisplay::checkFShader(const string &src)
         pos = code.find('\\',pos);
     }
 
-    CFragmentShader fs;
+	CFragmentProgram fs;
     if (fs.glLoadProgram(code))
         nbShadersOK++;
     else
@@ -156,7 +156,7 @@ void CDisplay::checkVProgram(const string &src)
         pos = code.find('\\',pos);
     }
 
-    CVertexProgram vp;
+    CVertexShader vp;
     if (vp.glLoadProgram(code))
             nbShadersOK++;
     else
@@ -175,7 +175,7 @@ void CDisplay::checkFProgram(const string &src)
         pos = code.find('\\',pos);
     }
 
-    CFragmentProgram fp;
+	CFragmentShader fp;
     if (fp.glLoadProgram(code))
             nbShadersOK++;
     else
@@ -296,14 +296,14 @@ void CDisplay::glRender(void)
         CRaptorConsole *pConsole = Raptor::GetConsole();
         pConsole->clear();
 
-        CRaptorConsole::TEXT_ITEM item;
-        item.offset = 20;
+        CGLFont::FONT_TEXT_ITEM item;
+        item.x_offset = 20;
         strstream text;
         text << "Shaders compiled: " << nbShadersOK << ends;
         item.text = text.str();
         pConsole->addItem(item);
 
-        item.offset = 20;
+        item.x_offset = 20;
         strstream text2;
         text2 << "Shaders failed: " << nbShadersKO << ends;
         item.text = text2.str();

@@ -21,11 +21,11 @@
 #if !defined(AFX_TEXTUREFACTORY_H__1B470EC4_4B68_11D3_9142_9A502CBADC6B__INCLUDED_)
 	#include "GLHierarchy/TextureFactory.h"
 #endif
-#if !defined(AFX_FRAGMENTSHADER_H__66B3089A_2919_4678_9273_6CDEF7E5787F__INCLUDED_)
-	#include "GLHierarchy/FragmentShader.h"
+#if !defined(AFX_FRAGMENTPROGRAM_H__DD0AD51D_3BFF_4C65_8099_BA7696D7BDDF__INCLUDED_)
+	#include "GLHierarchy/FragmentProgram.h"
 #endif
-#if !defined(AFX_VERTEXSHADER_H__F2D3BBC6_87A1_4695_B667_2B8C3C4CF022__INCLUDED_)
-	#include "GLHierarchy/VertexShader.h"
+#if !defined(AFX_VERTEXPROGRAM_H__F2D3BBC6_87A1_4695_B667_2B8C3C4CF022__INCLUDED_)
+	#include "GLHierarchy/VertexProgram.h"
 #endif
 #if !defined(AFX_3DSCENEOBJECT_H__96A34268_AD58_4F73_B633_F6C3E92FE0A9__INCLUDED_)
 	#include "Subsys/3DSceneObject.h"
@@ -39,8 +39,8 @@
 #if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
 	#include "System/RaptorGLExtensions.h"
 #endif
-#ifndef __GLOBAL_H__
-	#include "System/Global.h"
+#if !defined(AFX_OPENGL_H__6C8840CA_BEFA_41DE_9879_5777FBBA7147__INCLUDED_)
+	#include "Subsys/OpenGL/RaptorOpenGL.h"
 #endif
 
 
@@ -105,7 +105,7 @@ bool COmniShadowMap::glInitEnvironment(unsigned int width,unsigned int height)
 		!(Raptor::glIsExtensionSupported(GL_ARB_COLOR_BUFFER_FLOAT_EXTENSION_NAME) || 
 		Raptor::glIsExtensionSupported(WGL_ATI_PIXEL_FORMAT_FLOAT_EXTENSION_NAME)))
     {
-		Raptor::GetErrorManager()->generateRaptorError(	Global::COpenGLClassID::GetClassId(),
+		Raptor::GetErrorManager()->generateRaptorError(	COpenGL::COpenGLClassID::GetClassId(),
 														CRaptorErrorManager::RAPTOR_ERROR,
 														"Missing hardware texture capabilities to render omni-directional Shadow Maps");
         return false;
@@ -173,7 +173,7 @@ DP4 vpos.w, mv[3], iPos; \
 MOV oTex0, vpos; \
 END" ;
 
-    m_pVSShadowMap = new CVertexShader();
+	m_pVSShadowMap = new CVertexProgram();
     m_pVSShadowMap->glLoadProgram(vtxShader);
 
     string texShader = 
@@ -198,7 +198,7 @@ DP3 depth.x, iTex0, iTex0; \
 RCP finalDepth.z, depth.x; \
 END" ;
 */
-    m_pFSShadowMap = new CFragmentShader();
+	m_pFSShadowMap = new CFragmentProgram();
     m_pFSShadowMap->glLoadProgram(texShader);
 
 	return true;
@@ -290,7 +290,7 @@ void COmniShadowMap::glRenderMap(const CLight* currentLight,const vector<C3DScen
 	
      for (unsigned int i=0 ; i<6 ; i++)
     {
-        RAPTOR_HANDLE _display(cubefaces[i],0);
+        RAPTOR_HANDLE _display(cubefaces[i],(void*)0);
 	    m_pShadowCubeMap->glvkBindDisplay(_display);
 
         glLoadIdentity();
@@ -335,8 +335,7 @@ void COmniShadowMap::glRenderShadow(const vector<C3DSceneObject*>& objects)
 	{
 		m_pShadowTexture->glvkRender();
 
-		RAPTOR_HANDLE renderTexture;
-		renderTexture.hClass = CTextureFactory::CTextureFactoryClassID::GetClassId().ID();
+		RAPTOR_HANDLE renderTexture(CTextureFactory::CTextureFactoryClassID::GetClassId().ID(), (void*)0);
 		m_pShadowCubeMap->glvkBindDisplay(renderTexture);
 	}
 
@@ -362,8 +361,7 @@ void COmniShadowMap::glRenderTexture(void)
     glEnable(GL_TEXTURE_CUBE_MAP_ARB);
 	m_pShadowTexture->glvkRender();
 
-	RAPTOR_HANDLE renderTexture;
-	renderTexture.hClass = CTextureFactory::CTextureFactoryClassID::GetClassId().ID();
+	RAPTOR_HANDLE renderTexture(CTextureFactory::CTextureFactoryClassID::GetClassId().ID(), (void*)0);
 	m_pShadowCubeMap->glvkBindDisplay(renderTexture);
 #endif
 }

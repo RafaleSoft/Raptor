@@ -28,9 +28,6 @@
 #if !defined(AFX_TIMEOBJECT_H__C06AC4B9_4DD7_49E2_9C5C_050EF5C39780__INCLUDED_)
 	#include "Engine/TimeObject.h"
 #endif
-#ifndef __GLOBAL_H__
-	#include "Global.h"
-#endif
 #if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
 	#include "System/Raptor.h"
 #endif
@@ -65,6 +62,9 @@
 #endif
 #if !defined(AFX_IRENDERINGPROPERTIES_H__634BCF2B_84B4_47F2_B460_D7FDC0F3B698__INCLUDED_)
 	#include "GLHierarchy/IRenderingProperties.h"
+#endif
+#if !defined(AFX_RAPTORINSTANCE_H__90219068_202B_46C2_BFF0_73C24D048903__INCLUDED_)
+	#include "Subsys/RaptorInstance.h"
 #endif
 
 
@@ -195,8 +195,9 @@ bool CRaptorVulkanDisplay::glRender(void)
 
 		rtime = CTimeObject::deltaMarkTime(this);
 
-        if (Global::GetInstance().getConsole() != NULL)
-		    Global::GetInstance().getConsole()->glRender();
+		CRaptorInstance &instance = CRaptorInstance::GetInstance();
+		if (instance.pConsole != NULL)
+			instance.pConsole->glRender();
 
 		CContextManager::GetInstance()->vkSwapBuffers(m_context);
 
@@ -226,15 +227,15 @@ bool CRaptorVulkanDisplay::glRender(void)
 		return false;
 }
 
-bool CRaptorVulkanDisplay::glGrab(	unsigned int x, unsigned int y, unsigned int width, unsigned int height,
-									unsigned char* &data,unsigned int& size) const
+bool CRaptorVulkanDisplay::glGrab(uint32_t x, uint32_t y, uint32_t width, uint32_t height,
+								  uint8_t* &data, size_t& size) const
 {
 	return false;
 }
 
-bool CRaptorVulkanDisplay::glBlit(unsigned int xSrc, unsigned int ySrc, unsigned int widthSrc, unsigned int heightSrc,
-						unsigned int xDst, unsigned int yDst, unsigned int widthDst, unsigned int heightDst,
-						CRaptorDisplay *pDst) const
+bool CRaptorVulkanDisplay::glBlit(uint32_t xSrc, uint32_t ySrc, uint32_t widthSrc, uint32_t heightSrc,
+								  uint32_t xDst, uint32_t yDst, uint32_t widthDst, uint32_t heightDst,
+								  CRaptorDisplay *pDst) const
 {
 	return false;
 }
@@ -245,11 +246,11 @@ void CRaptorVulkanDisplay::glGenerate(CTextureObject* )
 
 bool CRaptorVulkanDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
 {
-	if (device.handle != CGL_NULL)
+	if (device.handle() != CGL_NULL)
 	{
 		CContextManager *manager = CContextManager::GetInstance();
 
-		if ((CContextManager::INVALID_CONTEXT == m_context) && (WINDOW_CLASS == device.hClass))
+		if ((CContextManager::INVALID_CONTEXT == m_context) && (WINDOW_CLASS == device.hClass()))
 		{
 			unsigned int m_framerate = cs.refresh_rate.fps;
 			if (cs.refresh_rate.sync_to_monitor)
@@ -326,7 +327,7 @@ void CRaptorVulkanDisplay::allocateResources(void)
 	IDeviceMemoryManager* pDeviceMemory = vk_device.getMemory();
 
 	//!	Vulkan will not work without buffer reallocation to device memory
-    const CRaptorConfig& config = Global::GetInstance().getConfig();
+	const CRaptorConfig& config = CRaptorInstance::GetInstance().config;
 	if ((!config.m_bRelocation) || (0 == config.m_uiVertices) || (0 == config.m_uiPolygons))
     {
 		Raptor::GetErrorManager()->generateRaptorError(	CGeometry::CGeometryClassID::GetClassId(),

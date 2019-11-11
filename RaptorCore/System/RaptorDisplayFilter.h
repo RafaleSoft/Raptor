@@ -1,6 +1,20 @@
-// RaptorDisplayFilter.h: interface for the CRaptorDisplayFilter class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  RaptorDisplayFilter.h                                                  */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
 
 #if !defined(AFX_RAPTORDISPLAYFILTER_H__805D8523_96EA_427B_ABEC_C39EE1BC094C__INCLUDED_)
 #define AFX_RAPTORDISPLAYFILTER_H__805D8523_96EA_427B_ABEC_C39EE1BC094C__INCLUDED_
@@ -24,6 +38,8 @@ class CShader;
 class ITextureGenerator;
 class CTextureObject;
 class CTextureSet;
+class CTextureQuad;
+
 
 
 //! This class manages filtering process of a display.
@@ -152,9 +168,13 @@ protected:
 	//!	Must be implemented by filters implementation.
 	virtual void glRenderFilterOutput(void) = 0;
 
-    //! Call this method to render the buffer as a full quad covering the entire buffer surface.
-    //! User can draw the filter any other way, this method is only a helper
-    void glDrawBuffer(void);
+	//! Call this method to render the buffer as a full quad covering the entire buffer surface.
+	//! User can draw the filter any other way, this method is only a helper
+	void glDrawFilter(void) const;
+
+	//!	Provides the common identity shader.
+	CShader	*getIdentityShader(void) const;
+
 
     //! Enable state of this filter
     bool			m_bEnabled;
@@ -165,11 +185,7 @@ protected:
     float   m_fXfactor;
     float   m_fYfactor;
 
-    RAPTOR_HANDLE drawBuffer;
-    
-    CShader     *pFilter;
-
-	CRaptorDisplayFilter	*m_pPreviousFilter;
+    CRaptorDisplayFilter	*m_pPreviousFilter;
 
     ITextureGenerator	*colorExternalSource;
     ITextureGenerator	*depthExternalSource;
@@ -183,6 +199,7 @@ protected:
 
 	CTextureSet			*m_pRenderTextures;
 	CTextureSet			*m_pOutputTextures;
+
 
 private:
     CRaptorDisplayFilter(const CRaptorDisplayFilter& ) {};

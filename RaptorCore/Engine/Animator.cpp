@@ -1,23 +1,39 @@
-// Animator.cpp: implementation of the CAnimator class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  Animator.cpp                                                           */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
 #include "Subsys/CodeGeneration.h"
 
 #if !defined(AFX_ANIMATOR_H__077150E3_D826_11D3_9142_9866F8B4457F__INCLUDED_)
 	#include "Animator.h"
 #endif
 
-#ifndef __GLOBAL_H__
-	#include "System/Global.h"
+#if !defined(AFX_RAPTORINSTANCE_H__90219068_202B_46C2_BFF0_73C24D048903__INCLUDED_)
+	#include "Subsys/RaptorInstance.h"
 #endif
 
 #if !defined(AFX_TIMEOBJECT_H__C06AC4B9_4DD7_49E2_9C5C_050EF5C39780__INCLUDED_)
 	#include "TimeObject.h"
 #endif
 
-#if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
-	#include "System/Raptor.h"
+#if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
+	#include "System/RaptorErrorManager.h"
 #endif
+
 #if !defined(AFX_VIDEOSTREAM_H__F651DAEA_2E78_45B6_B06E_BBAD563283E5__INCLUDED_)
     #include "Subsys/VideoStream.h"
 #endif
@@ -56,12 +72,12 @@ CAnimator::~CAnimator()
 
 void CAnimator::SetAnimator(CAnimator *Animator)
 {
-	Global::GetInstance().getCurrentStatus().currentAnimator = Animator;
+	CRaptorInstance::GetInstance().pAnimator = Animator;
 }
 
 CAnimator *CAnimator::GetAnimator(void)
 {
-	return Global::GetInstance().getCurrentStatus().currentAnimator;
+	return CRaptorInstance::GetInstance().pAnimator;
 }
 
 

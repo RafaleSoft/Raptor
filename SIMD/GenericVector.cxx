@@ -25,7 +25,7 @@
 
 
 template <class T,int D>
-__inline CGenericVector<T,D>::CGenericVector() 
+__inline CGenericVector<T,D>::CGenericVector() NOEXCEPT
 {
 	for (int i=0;i<D-1;i++)
 		m_vector[i] = 0; 
@@ -59,14 +59,14 @@ __inline CGenericVector<T,D>::~CGenericVector()
 /////////////////////////////////////////////////////////////////////////////////////////////
 
 template <class T,int D>
-__inline void SIMD_CALL CGenericVector<T,D>::Zero()
+__inline void SIMD_CALL CGenericVector<T,D>::Zero() NOEXCEPT
 {
 	for (int i=0;i<D;i++)
 		m_vector[i] = 0;
 };
 
 template <class T,int D>
-__inline void SIMD_CALL CGenericVector<T,D>::One()
+__inline void SIMD_CALL CGenericVector<T,D>::One() NOEXCEPT
 {
 	for (int i=0;i<D;i++)
 		m_vector[i] = 1;
@@ -77,11 +77,11 @@ template <class T,int D>
 __inline double SIMD_CALL CGenericVector<T,D>::Normalize()
 {
 	#pragma warning(disable:4244)
-	double n = sqrt( (float)(m_vector[0]*m_vector[0] + m_vector[1]*m_vector[1] + m_vector[2]*m_vector[2]) ) ;
+	const double n = sqrt( (float)(m_vector[0]*m_vector[0] + m_vector[1]*m_vector[1] + m_vector[2]*m_vector[2]) ) ;
 
 	if (n != 0)
 	{
-		double oneovern = 1.0/n;
+		const double oneovern = 1.0/n;
 
 		m_vector[0] *= oneovern;
 		m_vector[1] *= oneovern;
@@ -131,13 +131,13 @@ __inline bool SIMD_CALL CGenericVector<T,D>::operator== ( const T v[D] ) const
 };
 
 template <class T,int D>
-__inline double SIMD_CALL CGenericVector<T,D>::Norm() const
+__inline double SIMD_CALL CGenericVector<T,D>::Norm() const NOEXCEPT
 { 
 	return sqrt( (float)(m_vector[0]*m_vector[0] + m_vector[1]*m_vector[1] + m_vector[2]*m_vector[2] ) ); 
 };
 
 template <class T,int D>
-__inline T SIMD_CALL CGenericVector<T,D>::Length() const
+__inline T SIMD_CALL CGenericVector<T,D>::Length() const NOEXCEPT
 { 
 	return (T)(m_vector[0]+m_vector[1]+m_vector[2]+m_vector[3]); 
 };

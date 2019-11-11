@@ -15,20 +15,20 @@
 #if !defined(AFX_TEXTUREFACTORY_H__1B470EC4_4B68_11D3_9142_9A502CBADC6B__INCLUDED_)
 	#include "TextureFactory.h"
 #endif
-#ifndef __GLOBAL_H__
-	#include "System/Global.h"
-#endif
 #if !defined(AFX_RAPTORIO_H__87D52C27_9117_4675_95DC_6AD2CCD2E78D__INCLUDED_)
 	#include "System/RaptorIO.h"
-#endif
-#if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
-	#include "System/Raptor.h"
 #endif
 #if !defined(AFX_MEMORY_H__81A6CA9A_4ED9_4260_B6E4_C03276C38DBC__INCLUDED_)
 	#include "System/Memory.h"
 #endif
 #if !defined(AFX_TEXELALLOCATOR_H__7C48808C_E838_4BE3_8B0E_286428BB7CF8__INCLUDED_)
 	#include "Subsys/TexelAllocator.h"
+#endif
+#if !defined(AFX_OPENGL_H__6C8840CA_BEFA_41DE_9879_5777FBBA7147__INCLUDED_)
+	#include "Subsys/OpenGL/RaptorOpenGL.h"
+#endif
+#if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
+	#include "System/RaptorErrorManager.h"
 #endif
 
 #include "Subsys/FreeType/FTGlyphBitmap.h"
@@ -46,8 +46,8 @@ CGLLayer::CGLLayer(int xpos,int ypos,unsigned int width,unsigned int height)
 	m_bRebuild(true),m_bRedraw(false),
 	m_pPlane(NULL),m_pBuffer(NULL),m_pBufferPointer(NULL)
 {
-	layer.handle = 0;
-	layer.hClass = Global::COpenGLClassID::GetClassId().ID();
+	layer.handle(0);
+	layer.hClass(COpenGL::COpenGLClassID::GetClassId().ID());
 
 	m_xpos = xpos;
 	m_ypos = ypos;
@@ -139,12 +139,12 @@ void CGLLayer::glMakeList()
 {
     m_bRebuild = false;
 
-	if (glIsList(layer.handle))
-		glDeleteLists(layer.handle,1);
+	if (glIsList(layer.handle()))
+		glDeleteLists(layer.handle(),1);
 
-	layer.handle = glGenLists(1);
+	layer.handle(glGenLists(1));
 
-	glNewList(layer.handle,GL_COMPILE);	
+	glNewList(layer.handle(),GL_COMPILE);	
 
 		glRenderSingleBuffer(this);
 
@@ -216,7 +216,7 @@ void CGLLayer::setPlaneDepth(float depth)
 void CGLLayer::clear(unsigned char r,unsigned char g,unsigned char b,unsigned char a)
 {
 	//	ABGR ordering to match memory byte ordering
-	unsigned long color = (unsigned long(a<<24)) + (unsigned long(b<<16)) + (unsigned long(g<<8)) + (unsigned long(r));
+	unsigned long color = ((unsigned long)(a<<24)) + ((unsigned long)(b<<16)) + ((unsigned long)(g<<8)) + ((unsigned long)(r));
 	clear(color);
 }
 
@@ -273,7 +273,7 @@ void CGLLayer::glRender()
 
     if (m_bRebuild)
         glMakeList();
-	glCallList(layer.handle);
+	glCallList(layer.handle());
 
 	glEnable(GL_SCISSOR_TEST);
 	glScissor(m_xpos,m_ypos,m_layerWidth,m_layerHeight);

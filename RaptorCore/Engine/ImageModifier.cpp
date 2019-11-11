@@ -13,12 +13,10 @@
 #if !defined(AFX_TEXELALLOCATOR_H__7C48808C_E838_4BE3_8B0E_286428BB7CF8__INCLUDED_)
 	#include "Subsys/TexelAllocator.h"
 #endif
-#if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
-	#include "System/Raptor.h"
+#if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
+	#include "System/RaptorErrorManager.h"
 #endif
-#ifndef __GLOBAL_H__
-	#include "System/Global.h"
-#endif
+
 
 RAPTOR_NAMESPACE
 
@@ -129,9 +127,8 @@ bool CImageModifier::setImage(const ITextureObject* image)
     }
     else
     {
-		Raptor::GetErrorManager()->generateRaptorError(	CModifier::CModifierClassID::GetClassId(),
-														CRaptorErrorManager::RAPTOR_ERROR,
-														CRaptorMessages::ID_TEXTURE_MISS);
+		RAPTOR_ERROR(	CModifier::CModifierClassID::GetClassId(),
+						CRaptorMessages::ID_TEXTURE_MISS);
     }
 	
 	CATCH_GL_ERROR

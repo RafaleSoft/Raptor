@@ -1,6 +1,20 @@
-// GLXApplication.cpp: implementation of the CGLXApplication class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  GLXApplication.cpp                                                     */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
 
 #include "Subsys/CodeGeneration.h"
 
@@ -16,11 +30,11 @@
 #if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
     #include "System/RaptorErrorManager.h"
 #endif
+#if !defined(AFX_OPENGL_H__6C8840CA_BEFA_41DE_9879_5777FBBA7147__INCLUDED_)
+	#include "Subsys/OpenGL/RaptorOpenGL.h"
+#endif
 #if !defined(AFX_GLXVIEW_H__4B65A453_8F4F_4F97_835F_23EE19B5657E__INCLUDED_)
     #include "GLXView.h"
-#endif
-#ifndef __GLOBAL_H__
-	#include "System/Global.h"
 #endif
 #if !defined(AFX_RAPTORCONSOLE_H__27656611_2DF3_4416_8124_F608CFAC2122__INCLUDED_)
 	#include "System/RaptorConsole.h"
@@ -54,6 +68,11 @@ void CGLXApplication::setRootWindow(const RAPTOR_HANDLE& root)
     CRaptorApplication::setRootWindow(root);
 }
 
+void CGLXApplication::grabCursor(bool grab)
+{
+
+}
+
 typedef struct
 {
     int x;
@@ -62,10 +81,10 @@ typedef struct
 
 bool CGLXApplication::run()
 {
-    if ((m_root.handle == 0) || (m_root.hClass != WINDOW_CLASS))
+    if ((m_root.handle() == 0) || (m_root.hClass() != WINDOW_CLASS))
     {
         Raptor::GetErrorManager()->generateRaptorError(
-                Global::COpenGLClassID::GetClassId(),
+                COpenGL::COpenGLClassID::GetClassId(),
                 CRaptorErrorManager::RAPTOR_ERROR,
                 "RaptorApplication has no root window !.");
         return false;
@@ -75,9 +94,9 @@ bool CGLXApplication::run()
     int buttonPress = 0;
     XY currentpos;
 
-    CGLXView *pView = (CGLXView*)m_root.handle;
-    Display *display = (Display*)(pView->getDisplay()->getCurrentDevice().handle);
-    Window window = (Window)(pView->getWindow().handle);
+    CGLXView *pView = m_root.ptr<CGLXView>();
+    Display *display = pView->getDisplay()->getCurrentDevice().ptr<Display>();
+    Window window = (Window)(pView->getWindow().handle());
 
     while (!done)
     {
@@ -179,7 +198,7 @@ bool CGLXApplication::run()
                 XKeyEvent evt = report.xkey;
                 cout << "Key Press:" << evt.keycode << endl;
                 
-                CRaptorConsole *pConsole = Global::GetInstance().getConsole();
+                CRaptorConsole *pConsole = Raptor::GetConsole();
                 if (pConsole != NULL)
                 {
                     if (evt.keycode == 49)

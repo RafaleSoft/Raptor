@@ -89,6 +89,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <ExtensionsToDeleteOnClean>*.cdf;*.cache;*.obj;*.ilk;*.resources;*.tlb;*.tli;*.tlh;*.tmp;*.rsp;*.pgc;*.pgd;*.meta;*.tlog;*.manifest;*.res;*.pch;*.exp;*.idb;*.rep;*.xdc;*.pdb;*_manifest.rc;*.bsc;*.sbr;*.xml;*.metagen;*.bi; *.pck</ExtensionsToDeleteOnClean>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
@@ -149,6 +150,7 @@
       <ImportLibrary>$(OutDir)RaptorData.lib</ImportLibrary>
       <TargetMachine>MachineX86</TargetMachine>
       <AdditionalDependencies>zlib.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <Version>$(RAPTOR_RELEASE)</Version>
     </Link>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -248,7 +250,7 @@ copy $(SolutionDir)$(ProjectName)\RaptorData.pck "%RAPTOR_ROOT%\Redist\bin\"
       <AdditionalIncludeDirectories>$(ZLIB_INCLUDE_PATH);$(RAPTOR_ROOT)\redist\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;EXPORT_RAPTOR_DATA_MANAGER;ZLIB_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
@@ -284,6 +286,7 @@ copy $(SolutionDir)$(ProjectName)\RaptorData.pck "%RAPTOR_ROOT%\Redist\bin\"
       <ImportLibrary>$(OutDir)RaptorData.lib</ImportLibrary>
       <TargetMachine>MachineX86</TargetMachine>
       <AdditionalDependencies>zlib.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <Version>$(RAPTOR_RELEASE)</Version>
     </Link>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -343,7 +346,7 @@ copy $(SolutionDir)$(ProjectName)\RaptorData.pck "%RAPTOR_ROOT%\Redist\bin\"
     </ProjectReference>
     <Link>
       <OutputFile>$(OutDir)RaptorData.dll</OutputFile>
-      <Version>2.16.0</Version>
+      <Version>$(RAPTOR_RELEASE)</Version>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>$(PLATFORM_SDK)\Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ModuleDefinitionFile>.\RaptorData.def</ModuleDefinitionFile>
@@ -367,14 +370,15 @@ copy $(SolutionDir)$(ProjectName)\RaptorData.pck "%RAPTOR_ROOT%\Redist\bin\"
       <OutputFile>.\Release/RaptorData.bsc</OutputFile>
     </Bscmake>
     <PostBuildEvent>
-      <Command>copy $(OutDir)RaptorData.lib "%RAPTOR_ROOT%\Redist\lib\"
-copy $(OutDir)RaptorData.dll "%RAPTOR_ROOT%\Redist\bin\"
-copy RaptorData.pck "%RAPTOR_ROOT%\Redist\bin\"
+      <Command>copy $(OutDir)$(TargetName).lib "%RAPTOR_ROOT%\Redist\lib\"
+copy $(OutDir)$(TargetName).dll "%RAPTOR_ROOT%\Redist\bin\"
+copy $(SolutionDir)$(ProjectName)\RaptorData.pck "%RAPTOR_ROOT%\Redist\bin\"
 </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\RaptorData\RaptorDataManager.cpp" />
+    <ClCompile Include="..\..\RaptorData\RaptorDataPackager\PackageIO.cpp" />
     <ClCompile Include="..\..\RaptorData\StdAfx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">Create</PrecompiledHeader>
@@ -383,6 +387,7 @@ copy RaptorData.pck "%RAPTOR_ROOT%\Redist\bin\"
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\RaptorData\RaptorDataManager.h" />
+    <ClInclude Include="..\..\RaptorData\RaptorDataPackager\PackageIO.h" />
     <ClInclude Include="..\..\RaptorData\resource.h" />
     <ClInclude Include="..\..\RaptorData\StdAfx.h" />
   </ItemGroup>
@@ -394,9 +399,12 @@ copy RaptorData.pck "%RAPTOR_ROOT%\Redist\bin\"
     </None>
     <None Include="..\..\RaptorData\Data\AO.ps" />
     <None Include="..\..\RaptorData\Data\AO.vs" />
+    <None Include="..\..\RaptorData\Data\blenderX_8x.ps" />
     <None Include="..\..\RaptorData\Data\blenderX_8x.vp" />
+    <None Include="..\..\RaptorData\Data\blenderY_8x.ps" />
     <None Include="..\..\RaptorData\Data\blenderY_8x.vp" />
     <None Include="..\..\RaptorData\Data\blender_8x.fp" />
+    <None Include="..\..\RaptorData\Data\blender_8x.gs" />
     <None Include="..\..\RaptorData\Data\blinn.ps" />
     <None Include="..\..\RaptorData\Data\blinn.vs" />
     <None Include="..\..\RaptorData\Data\bump.fp" />
@@ -411,11 +419,20 @@ copy RaptorData.pck "%RAPTOR_ROOT%\Redist\bin\"
     <None Include="..\..\RaptorData\Data\bump_att_2light.vp" />
     <None Include="..\..\RaptorData\Data\bump_att_3light.fp" />
     <None Include="..\..\RaptorData\Data\bump_att_3light.vp" />
+    <None Include="..\..\RaptorData\Data\diffuse.ps" />
     <None Include="..\..\RaptorData\Data\embm.fp" />
     <None Include="..\..\RaptorData\Data\embm.vp" />
     <None Include="..\..\RaptorData\Data\embm_0light.fp" />
     <None Include="..\..\RaptorData\Data\embm_0light.vp" />
     <None Include="..\..\RaptorData\Data\embm_std.vp" />
+    <None Include="..\..\RaptorData\Data\empty.vs" />
+    <None Include="..\..\RaptorData\Data\font2D.gs" />
+    <None Include="..\..\RaptorData\Data\font2D.ps" />
+    <None Include="..\..\RaptorData\Data\font2D.vs" />
+    <None Include="..\..\RaptorData\Data\particle.vs" />
+    <None Include="..\..\RaptorData\Data\particle2D.gs" />
+    <None Include="..\..\RaptorData\Data\particle3D.gs" />
+    <None Include="..\..\RaptorData\Data\particle3D.ps" />
     <None Include="..\..\RaptorData\Data\phong.ps" />
     <None Include="..\..\RaptorData\Data\phong.vs" />
     <None Include="..\..\RaptorData\Data\projection.fp" />
@@ -424,6 +441,9 @@ copy RaptorData.pck "%RAPTOR_ROOT%\Redist\bin\"
     <None Include="..\..\RaptorData\Data\shadowmap_pcf.fp" />
     <None Include="..\..\RaptorData\Data\shadowmap_pcf_16x.fp" />
     <None Include="..\..\RaptorData\Data\shadowmap_pcf_4x.fp" />
+    <None Include="..\..\RaptorData\Data\tquad.gs" />
+    <None Include="..\..\RaptorData\Data\tquad.ps" />
+    <None Include="..\..\RaptorData\Data\tquad.vs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="RaptorDataPackager.12.00.vcxproj">

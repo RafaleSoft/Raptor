@@ -13,16 +13,17 @@
 	#include "Raptor.h"
 #endif
 #if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
-    #include "RaptorErrorManager.h"
-#endif
-#ifndef __GLOBAL_H__
-	#include "Global.h"
+    #include "System/RaptorErrorManager.h"
 #endif
 #if defined(VK_VERSION_1_0)
 	#if !defined(AFX_RAPTORVULKANMEMORY_H__72256FF7_DBB9_4B9C_9BF7_C36F425CF811__INCLUDED_)
 		#include "Subsys/Vulkan/VulkanMemory.h"
 	#endif
 #endif
+#if !defined(AFX_VULKAN_H__625F6BC5_F386_44C2_85C1_EDBA23B16921__INCLUDED_)
+	#include "Subsys/Vulkan/RaptorVulkan.h"
+#endif
+
 
 RAPTOR_NAMESPACE_BEGIN
 
@@ -37,7 +38,7 @@ RAPTOR_NAMESPACE_BEGIN
 	PFN_vkEnumerateInstanceLayerProperties CRaptorVKExtensions::vkEnumerateInstanceLayerProperties = NULL;
 	PFN_vkCreateInstance CRaptorVKExtensions::vkCreateInstance = NULL;
 
-	IMPLEMENT_RAPTOR_VK_instance(CRaptorVKExtensions::)
+	IMPLEMENT_RAPTOR_VK_instance(CRaptorVKExtensions)
 #endif
 
 RAPTOR_NAMESPACE_END
@@ -53,9 +54,9 @@ CRaptorVKExtensions::CRaptorVKExtensions(const std::string &ext)
 	:extensions(ext)
 {
 #if defined(VK_VERSION_1_0)
-	IMPLEMENT_VK_win32(this->, instance);
-	IMPLEMENT_VK_xlib(this->, instance);
-	IMPLEMENT_VK_KHR_surface(this->, instance);
+	IMPLEMENT_VK_win32(this, instance);
+	IMPLEMENT_VK_xlib(this, instance);
+	IMPLEMENT_VK_KHR_surface(this, instance);
 #endif
 }
 
@@ -68,9 +69,8 @@ bool CRaptorVKExtensions::vkInitExtensions(void)
 	CRaptorErrorManager *pErrMgr = Raptor::GetErrorManager();
 	if (NULL == vkGetInstanceProcAddr)
 	{
-		pErrMgr->generateRaptorError(Global::CVulkanClassID::GetClassId(),
-										CRaptorErrorManager::RAPTOR_ERROR,
-										"Unable to initialise a Vulkan entry points");
+		RAPTOR_ERROR(	CVulkan::CVulkanClassID::GetClassId(),
+						"Unable to initialise a Vulkan entry points");
 		return false;
 	}
 		
@@ -79,9 +79,8 @@ bool CRaptorVKExtensions::vkInitExtensions(void)
 		(NULL != vkEnumerateInstanceLayerProperties) ||
 		(NULL != vkCreateInstance))
 	{
-		pErrMgr->generateRaptorError(Global::CVulkanClassID::GetClassId(),
-									 CRaptorErrorManager::RAPTOR_WARNING,
-									 "Vulkan Extensions already initialised");
+		RAPTOR_WARNING(	CVulkan::CVulkanClassID::GetClassId(),
+						"Vulkan Extensions already initialised");
 	}
 #endif
 
@@ -151,9 +150,8 @@ bool CRaptorVKExtensions::vkInitInstanceExtensions(void)
 	CRaptorErrorManager *pErrMgr = Raptor::GetErrorManager();
 	if (NULL == vkCreateInstance)
 	{
-		pErrMgr->generateRaptorError(Global::CVulkanClassID::GetClassId(),
-									 CRaptorErrorManager::RAPTOR_ERROR,
-									 "Unable to initialise a Vulkan Instance");
+		RAPTOR_ERROR(	CVulkan::CVulkanClassID::GetClassId(),
+						"Unable to initialise a Vulkan Instance");
 		return false;
 	}
 
@@ -206,7 +204,7 @@ bool CRaptorVKExtensions::vkInitInstanceExtensions(void)
 	if (VK_SUCCESS != res)
 		pErrMgr->vkGetError(res, __FILE__, __LINE__);
 
-	IMPLEMENT_VK_instance(CRaptorVKExtensions::, instance);
+	IMPLEMENT_VK_instance(CRaptorVKExtensions, instance);
 
 	return true;
 }

@@ -31,12 +31,6 @@
 #ifndef __vkext_macros_h_
 	#include "System/VKEXTMacros.h"
 #endif
-#if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
-	#include "System/Raptor.h"
-#endif
-#if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
-    #include "System/RaptorErrorManager.h"
-#endif
 #if !defined(AFX_RAPTORIO_H__87D52C27_9117_4675_95DC_6AD2CCD2E78D__INCLUDED_)
 	#include "System/RaptorIO.h"
 #endif
@@ -337,7 +331,7 @@ bool CVulkanShader::loadShader(const std::string &filename)
 															  }; 
 
 		res = vkCreateShaderModule( device, &shader_module_create_info, NULL, &module.shader_module );
-		CATCH_VK_ERROR(err)
+		CATCH_VK_ERROR(res)
 
 		delete [] code;
 		if (VK_SUCCESS == res)

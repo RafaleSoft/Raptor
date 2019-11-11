@@ -1,3 +1,21 @@
+/***************************************************************************/
+/*                                                                         */
+/*  RaptorComputeManager.h                                                 */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
 #if !defined(AFX_RAPTOR_COMPUTE_MANAGER_H__876B757E_63F1_4E8A_847E_205C3AE2E132__INCLUDED_)
 #define AFX_RAPTOR_COMPUTE_MANAGER_H__876B757E_63F1_4E8A_847E_205C3AE2E132__INCLUDED_
 
@@ -16,9 +34,8 @@
 #include "CL/cl.h"
 #include "CL/cl_gl.h"
 
-RAPTOR_NAMESPACE
 
-class CRaptorComputeManager
+class RAPTOR_API CRaptorComputeManager
 {
 public:
 	typedef struct PLATFORM_IDt
@@ -67,7 +84,7 @@ public:
 	{ return m_platformIDs; };
 
 	//! Emulates CPersistence for global opengl classes IDs & global namespace
-	DECLARE_API_CLASS_ID(RAPTORCOMPUTE_API,COpenCLClassID,"OpenCL",CPersistence);
+	DECLARE_API_CLASS_ID(RAPTOR_API,COpenCLClassID,"OpenCL",CPersistence);
 
 
 private:

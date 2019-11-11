@@ -9,9 +9,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\AddOns\OpenEXR-2.3.0\source\config\IlmBaseConfig.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\AddOns\OpenEXR-2.3.0\include\Iex.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -46,6 +43,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\AddOns\OpenEXR-2.3.0\include\IexThrowErrnoExc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\AddOns\OpenEXR-2.3.0\include\IlmBaseConfig.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

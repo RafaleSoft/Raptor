@@ -19,6 +19,9 @@
 #if !defined(AFX_BUFFEROBJECT_H__FFF8C159_E959_496B_9962_0AF829E7FB4F__INCLUDED_)
 	#include "Subsys/BufferObject.h"
 #endif
+#if !defined(AFX_OPENGL_H__6C8840CA_BEFA_41DE_9879_5777FBBA7147__INCLUDED_)
+	#include "Subsys/OpenGL/RaptorOpenGL.h"
+#endif
 
 
 RAPTOR_NAMESPACE
@@ -62,16 +65,15 @@ bool COpenGLMemory::relocationAvailable(void) const
 	bool COpenGLMemory::isBufferObjectValid(unsigned int buffer) const
 	{
 	#if defined(GL_ARB_vertex_buffer_object) || defined(GL_ARB_pixel_buffer_object)
-		const CRaptorExtensions *const pExtensions = Raptor::glGetExtensions();
+		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 
 		if (pExtensions->glIsBufferARB(buffer))
 			return true;
 		else
 		{
 	#ifdef RAPTOR_DEBUG_MODE_GENERATION
-			Raptor::GetErrorManager()->generateRaptorError(	CPersistence::CPersistenceClassID::GetClassId(),
-															CRaptorErrorManager::RAPTOR_WARNING,
-															"Buffer Object extension is not properly supported by your driver !");
+			RAPTOR_WARNING(	COpenGL::COpenGLClassID::GetClassId(),
+							"Buffer Object extension is not properly supported by your driver !");
 	#endif
 			//	Here, we could also check all other glIsXXX to strengthen the check
 			if (buffer > 0)
@@ -81,6 +83,11 @@ bool COpenGLMemory::relocationAvailable(void) const
 		}
 		CATCH_GL_ERROR
 	#endif
+	}
+#else
+	__inline bool COpenGLMemory::isBufferObjectValid(unsigned int buffer) const
+	{
+		return( buffer > 0);
 	}
 #endif
 
@@ -109,11 +116,7 @@ COpenGLMemory::createBufferObject(	IDeviceMemoryManager::IBufferObject::BUFFER_K
 
 		CATCH_GL_ERROR
 
-#ifdef RAPTOR_DEBUG_MODE_GENERATION
 		if (isBufferObjectValid(buffer))
-#else
-		if (buffer > 0)
-#endif
 		{
         	//	Store the buffer in the high part
 			//	and store the memory type in the low part.
@@ -139,9 +142,8 @@ COpenGLMemory::createBufferObject(	IDeviceMemoryManager::IBufferObject::BUFFER_K
 		else
 		{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
-			Raptor::GetErrorManager()->generateRaptorError(	CPersistence::CPersistenceClassID::GetClassId(),
-															CRaptorErrorManager::RAPTOR_WARNING,
-				                                            "The requested Buffer Object could not be allocated");
+			RAPTOR_WARNING(	COpenGL::COpenGLClassID::GetClassId(),
+							"The requested Buffer Object could not be allocated");
 #endif
 			return NULL;
 		}
@@ -170,20 +172,16 @@ bool COpenGLMemory::setBufferObjectData(IDeviceMemoryManager::IBufferObject &bo,
 #ifdef GL_ARB_vertex_buffer_object
 	// Is it a VBO ?
 	uint32_t buffer = bo.getBufferId();
-#ifdef RAPTOR_DEBUG_MODE_GENERATION
+	
 	if (isBufferObjectValid(buffer))
-#else
-	if (buffer > 0)
-#endif
 	{
 		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 		IDeviceMemoryManager::IBufferObject::BUFFER_KIND storage = bo.getStorage();
 		if (storage > IDeviceMemoryManager::IBufferObject::PIXEL_SOURCE)
 		{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
-			Raptor::GetErrorManager()->generateRaptorError(	CPersistence::CPersistenceClassID::GetClassId(),
-															CRaptorErrorManager::RAPTOR_WARNING,
-															"Buffer Object storage is not supported by RaptorCore COpenGLMemory");
+			RAPTOR_WARNING(	COpenGL::COpenGLClassID::GetClassId(),
+							"Buffer Object storage is not supported by RaptorCore COpenGLMemory");
 #endif
 			return false;
 		}
@@ -242,11 +240,8 @@ bool COpenGLMemory::getBufferObjectData(IDeviceMemoryManager::IBufferObject &vb,
 #ifdef GL_ARB_vertex_buffer_object
 	// Is it a VBO ?
 	uint32_t buffer = vb.getBufferId();
-#ifdef RAPTOR_DEBUG_MODE_GENERATION
+	
 	if (isBufferObjectValid(buffer))
-#else
-	if (buffer > 0)
-#endif
 	{
 		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 		
@@ -255,9 +250,8 @@ bool COpenGLMemory::getBufferObjectData(IDeviceMemoryManager::IBufferObject &vb,
 		if (storage > IDeviceMemoryManager::IBufferObject::PIXEL_SOURCE)
 		{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
-			Raptor::GetErrorManager()->generateRaptorError(	CPersistence::CPersistenceClassID::GetClassId(),
-															CRaptorErrorManager::RAPTOR_WARNING,
-															"Buffer Object storage is not supported by RaptorCore COpenGLMemory");
+			RAPTOR_WARNING(	COpenGL::COpenGLClassID::GetClassId(),
+							"Buffer Object storage is not supported by RaptorCore COpenGLMemory");
 #endif
 			return false;
 		}
@@ -314,9 +308,8 @@ bool COpenGLMemory::releaseBufferObject(IDeviceMemoryManager::IBufferObject* &vb
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 	if (m_deviceHeap.end() == itr)
 	{
-		Raptor::GetErrorManager()->generateRaptorError(	CPersistence::CPersistenceClassID::GetClassId(),
-														CRaptorErrorManager::RAPTOR_WARNING,
-														"You are trying to free a block that was not properly allocated");
+		RAPTOR_WARNING(	COpenGL::COpenGLClassID::GetClassId(),
+						"You are trying to free a block that was not properly allocated");
 		return false;
 	}
 	else
@@ -360,9 +353,8 @@ bool COpenGLMemory::lockBufferObject(IDeviceMemoryManager::IBufferObject &bo)
 	if (bo.getStorage() > IDeviceMemoryManager::IBufferObject::PIXEL_SOURCE)
 	{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
-		Raptor::GetErrorManager()->generateRaptorError(	CPersistence::CPersistenceClassID::GetClassId(),
-														CRaptorErrorManager::RAPTOR_WARNING,
-														"Buffer Object storage is not supported by RaptorCore COpenGLMemory");
+		RAPTOR_WARNING(	COpenGL::COpenGLClassID::GetClassId(),
+						"Buffer Object storage is not supported by RaptorCore COpenGLMemory");
 #endif
 		return false;
 	}
@@ -388,6 +380,7 @@ bool COpenGLMemory::lockBufferObject(IDeviceMemoryManager::IBufferObject &bo)
 
         currentBuffers[storage] = buffer;
 
+#if defined(GL_COMPATIBILITY_profile) && !defined (GL_FULL_profile)
 	//!	compiled vertex array locking is subject to deprecation
 #if defined(GL_EXT_compiled_vertex_array)
 		if (pExtensions->glLockArraysEXT != NULL)
@@ -409,6 +402,7 @@ bool COpenGLMemory::lockBufferObject(IDeviceMemoryManager::IBufferObject &bo)
 				pExtensions->glLockArraysEXT(0, size / 2);	// unsigned short, big geometry will need attention.
 		}
 #endif
+#endif // #if !defined(GL_COMPATIBILITY_profile) || !defined (GL_FULL_profile)
 
 		return true;
 	}
@@ -424,9 +418,8 @@ bool COpenGLMemory::unlockBufferObject(IDeviceMemoryManager::IBufferObject &bo)
 	if (bo.getStorage() > IDeviceMemoryManager::IBufferObject::PIXEL_SOURCE)
 	{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
-		Raptor::GetErrorManager()->generateRaptorError(	CPersistence::CPersistenceClassID::GetClassId(),
-														CRaptorErrorManager::RAPTOR_WARNING,
-														"Buffer Object storage is not supported by RaptorCore COpenGLMemory");
+		RAPTOR_WARNING(	COpenGL::COpenGLClassID::GetClassId(),
+						"Buffer Object storage is not supported by RaptorCore COpenGLMemory");
 #endif
 		return false;
 	}
@@ -453,12 +446,13 @@ bool COpenGLMemory::unlockBufferObject(IDeviceMemoryManager::IBufferObject &bo)
 
         currentBuffers[storage] = 0;
 
+#if defined(GL_COMPATIBILITY_profile) && defined (GL_FULL_profile)
 //!	compiled vertex array locking is subject to deprecation
 #if defined(GL_EXT_compiled_vertex_array)
 		if (pExtensions->glUnlockArraysEXT != NULL)
 			pExtensions->glUnlockArraysEXT();
 #endif
-
+#endif // defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
 		return true;
 	}
 	else 

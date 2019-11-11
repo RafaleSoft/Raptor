@@ -1,0 +1,96 @@
+###########################################################################
+#                                                                         #
+#  Makefile.tifflib                                                       #
+#                                                                         #
+#    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       #
+#                                                                         #
+#  Copyright 1998-2019 by                                                 #
+#  Fabrice FERRAND.                                                       #
+#                                                                         #
+#  This file is part of the Raptor project, and may only be used,         #
+#  modified, and distributed under the terms of the Raptor project        #
+#  license, LICENSE.  By continuing to use, modify, or distribute         #
+#  this file you indicate that you have read the license and              #
+#  understand and accept it fully.                                        #
+#                                                                         #
+###########################################################################
+
+
+export
+
+CCCFLAGS = -DLINUX -fPIC
+OUTPUT = $(RAPTOR_ROOT)/Build/Linux/Release/libtiff
+SRCDIR = $(RAPTOR_ROOT)/AddOns/TiffLib-$(TIFFLIB_VERSION)/source
+INCDIRS = -I$(RAPTOR_ROOT)/AddOns/TiffLib-$(TIFFLIB_VERSION)/include -I$(SRCDIR)
+LDFLAGS = -Bdynamic -shared -lstdc++
+
+SO = $(OUTPUT)/libtiff.so.$(TIFFLIB_VERSION)
+LIB = $(OUTPUT)/libtiff.a
+
+SRC = \
+	$(SRCDIR)/tif_dirinfo.c \
+	$(SRCDIR)/tif_fax3sm.c \
+	$(SRCDIR)/tif_lzma.c \
+	$(SRCDIR)/tif_predict.c \
+	$(SRCDIR)/tif_unix.c \
+	$(SRCDIR)/tif_zstd.c \
+	$(SRCDIR)/tif_aux.c \
+	$(SRCDIR)/tif_dirread.c \
+	$(SRCDIR)/tif_flush.c \
+	$(SRCDIR)/tif_lzw.c \
+	$(SRCDIR)/tif_print.c \
+	$(SRCDIR)/tif_version.c \
+	$(SRCDIR)/tif_close.c \
+	$(SRCDIR)/tif_dirwrite.c \
+	$(SRCDIR)/tif_getimage.c \
+	$(SRCDIR)/tif_next.c \
+	$(SRCDIR)/tif_read.c \
+	$(SRCDIR)/tif_warning.c \
+	$(SRCDIR)/tif_codec.c \
+	$(SRCDIR)/tif_dumpmode.c \
+	$(SRCDIR)/tif_jbig.c \
+	$(SRCDIR)/tif_ojpeg.c \
+	$(SRCDIR)/tif_strip.c \
+	$(SRCDIR)/tif_webp.c \
+	$(SRCDIR)/tif_color.c \
+	$(SRCDIR)/tif_error.c \
+	$(SRCDIR)/tif_jpeg_12.c \
+	$(SRCDIR)/tif_open.c \
+	$(SRCDIR)/tif_swab.c \
+	$(SRCDIR)/tif_compress.c \
+	$(SRCDIR)/tif_extension.c \
+	$(SRCDIR)/tif_jpeg.c \
+	$(SRCDIR)/tif_packbits.c \
+	$(SRCDIR)/tif_thunder.c \
+	$(SRCDIR)/tif_write.c \
+	$(SRCDIR)/tif_dir.c \
+	$(SRCDIR)/tif_fax3.c \
+	$(SRCDIR)/tif_luv.c \
+	$(SRCDIR)/tif_pixarlog.c \
+	$(SRCDIR)/tif_tile.c \
+	$(SRCDIR)/tif_zip.c
+
+
+OBJ = $(SRC:$(SRCDIR)/%.c=$(OUTPUT)/%.o)
+
+all:	$(LIB) $(SO)
+
+clean:
+	rm -rf $(OUTPUT)
+	mkdir -p $(OUTPUT)
+
+$(SO):	$(OBJ)
+	g++ -o $(SO) $(LDFLAGS) $(OBJ)
+	cp $(SO) $(REDIST)/Bin/
+
+$(LIB):	$(OBJ) 
+	ar -qcv $(LIB) $(OBJ)
+	cp $(LIB) $(REDIST)/Lib/
+
+$(OBJ):	$(SRC)
+	g++ $(CCCFLAGS) $(INCDIRS) -c $(<D)/$(*F).c  -o $(OUTPUT)/$(@F)
+
+
+
+	
+

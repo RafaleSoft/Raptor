@@ -1,6 +1,21 @@
-// PhongShader.cpp: implementation of the CPhongShader class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  BumpShader.cpp                                                         */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
 #include "Subsys/CodeGeneration.h"
 
 #if !defined(AFX_BUMPSHADER_H__6201C4A1_1F09_41C4_836F_2AAC79D36A42__INCLUDED_)
@@ -15,12 +30,6 @@
 #if !defined(AFX_TEXTUREUNITSETUP_H__4A6ADC72_02E5_4F2A_931E_A736B6D6E0F0__INCLUDED_)
 	#include "GLHierarchy/TextureUnitSetup.h"
 #endif
-#if !defined(AFX_VERTEXPROGRAM_H__204F7213_B40B_4B6A_9BCA_828409871B68__INCLUDED_)
-    #include "GLHierarchy/VertexProgram.h"
-#endif
-#if !defined(AFX_FRAGMENTPROGRAM_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
-    #include "GLHierarchy/FragmentProgram.h"
-#endif
 #if !defined(AFX_LIGHTATTRIBUTES_H__B0A3AF95_90DC_4185_9747_B7F631DDB2BF__INCLUDED_)
 	#include "LightAttributes.h"
 #endif
@@ -29,6 +38,9 @@
 #endif
 #if !defined(AFX_TEXTUREOBJECT_H__D32B6294_B42B_4E6F_AB73_13B33C544AD0__INCLUDED_)
 	#include "GLHierarchy/TextureObject.h"
+#endif
+#if !defined(AFX_OPENGLSHADERSTAGE_H__56B00FE3_E508_4FD6_9363_90E6E67446D9__INCLUDED_)
+	#include "GLHierarchy/OpenGLShaderStage.h"
 #endif
 
 
@@ -55,6 +67,10 @@ CShader* CBumpShader::glClone(const std::string& newShaderName) const
 	CBumpShader* bump = new CBumpShader(*this);
 	if (!newShaderName.empty())
 		bump->setName(newShaderName);
+
+	if (hasOpenGLShader())
+		bump->glInit();
+
 	return bump;
 }
 
@@ -64,16 +80,16 @@ CBumpShader::~CBumpShader(void)
 
 void CBumpShader::glInit(void)
 {
-	CVertexProgram *vp = glGetVertexProgram("PPIXEL_BUMP_VTX_PROGRAM");
+	COpenGLShaderStage *stage = glGetOpenGLShader();
+
+	stage->glGetVertexShader("PPIXEL_BUMP_VTX_PROGRAM");
+	stage->glGetFragmentShader("PPIXEL_BUMP_TEX_PROGRAM");
+	
 	CProgramParameters params;
 	params.addParameter("tangent", CProgramParameters::ADDITIONAL_PARAM1);
-	vp->setProgramParameters(params);
+	stage->setProgramParameters(params);
 
-	CFragmentProgram *fp = glGetFragmentProgram("PPIXEL_BUMP_TEX_PROGRAM");
-	CProgramParameters params2;
-	fp->setProgramParameters(params2);
-
-	glCompileShader();
+	stage->glCompileShader();
 }
 
 void CBumpShader::glRender(void)

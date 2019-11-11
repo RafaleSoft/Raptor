@@ -1,16 +1,28 @@
-// RaptorConsole.cpp: implementation of the CRaptorConsole class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  RaptorConsole.cpp                                                      */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
 #include "Subsys/CodeGeneration.h"
 
 #if !defined(AFX_RAPTORCONSOLE_H__27656611_2DF3_4416_8124_F608CFAC2122__INCLUDED_)
 	#include "RaptorConsole.h"
 #endif
-#ifndef __GLOBAL_H__
-	#include "System/Global.h"
-#endif
-#if !defined(AFX_GLFONT_H__D451FE62_5FE1_11D3_9142_BA23BC92E77C__INCLUDED_)
-	#include "GLHierarchy/GLFont.h"
+#if !defined(AFX_OPENGL_H__6C8840CA_BEFA_41DE_9879_5777FBBA7147__INCLUDED_)
+	#include "Subsys/OpenGL/RaptorOpenGL.h"
 #endif
 #if !defined(AFX_GLFONTFACTORY_H__E18CD490_4CB0_4ECA_916D_85B155FF04C3__INCLUDED_)
 	#include "GLHierarchy/GLFontFactory.h"
@@ -33,8 +45,16 @@
 #if !defined(AFX_RAPTORIO_H__87D52C27_9117_4675_95DC_6AD2CCD2E78D__INCLUDED_)
 	#include "System/RaptorIO.h"
 #endif
+#if !defined(AFX_RAPTORINSTANCE_H__90219068_202B_46C2_BFF0_73C24D048903__INCLUDED_)
+	#include "Subsys/RaptorInstance.h"
+#endif
+#if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
+	#include "System/RaptorErrorManager.h"
+#endif
 
 #include "Subsys/Interpreters.h"
+
+
 
 static const float CONSOLE_DELAY = 0.016667f;
 
@@ -42,19 +62,19 @@ RAPTOR_NAMESPACE
 
 CRaptorConsole::CInputCollectorBase::CInputCollectorBase(void)	
 {
-	Global::RAPTOR_CURRENT_STATUS& status = Global::GetInstance().getCurrentStatus();
-	status.inputCollectors.push_back(this);
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+	instance.inputCollectors.push_back(this);
 }
 
 CRaptorConsole::CInputCollectorBase::~CInputCollectorBase(void)
 {
-	Global::RAPTOR_CURRENT_STATUS& status = Global::GetInstance().getCurrentStatus();
-	vector<CRaptorConsole::CInputCollectorBase*>::iterator it = status.inputCollectors.begin();
-	while (it != status.inputCollectors.end())
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+	vector<CRaptorConsole::CInputCollectorBase*>::iterator it = instance.inputCollectors.begin();
+	while (it != instance.inputCollectors.end())
 	{
 		if (*it == this)
 		{
-			status.inputCollectors.erase(it);
+			instance.inputCollectors.erase(it);
 			break;
 		}
 		it++;
@@ -63,25 +83,25 @@ CRaptorConsole::CInputCollectorBase::~CInputCollectorBase(void)
 
 void CRaptorConsole::CInputCollectorBase::broadcastCharacterInput(char c)
 {
-	Global::RAPTOR_CURRENT_STATUS& status = Global::GetInstance().getCurrentStatus();
-	vector<CRaptorConsole::CInputCollectorBase*>::iterator it = status.inputCollectors.begin();
-	while (it != status.inputCollectors.end())
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+	vector<CRaptorConsole::CInputCollectorBase*>::iterator it = instance.inputCollectors.begin();
+	while (it != instance.inputCollectors.end())
 		(*it++)->handleCharacterInput(c);
 }
 
 void CRaptorConsole::CInputCollectorBase::broadcastSpecialKeyInput(unsigned char c)
 {
-	Global::RAPTOR_CURRENT_STATUS& status = Global::GetInstance().getCurrentStatus();
-	vector<CRaptorConsole::CInputCollectorBase*>::iterator it = status.inputCollectors.begin();
-	while (it != status.inputCollectors.end())
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+	vector<CRaptorConsole::CInputCollectorBase*>::iterator it = instance.inputCollectors.begin();
+	while (it != instance.inputCollectors.end())
 		(*it++)->handleSpecialKeyInput(c);
 }
 
 void CRaptorConsole::CInputCollectorBase::broadcastMouseInput(int button, int xpos, int ypos)
 {
-	Global::RAPTOR_CURRENT_STATUS& status = Global::GetInstance().getCurrentStatus();
-	vector<CRaptorConsole::CInputCollectorBase*>::iterator it = status.inputCollectors.begin();
-	while (it != status.inputCollectors.end())
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+	vector<CRaptorConsole::CInputCollectorBase*>::iterator it = instance.inputCollectors.begin();
+	while (it != instance.inputCollectors.end())
 		(*it++)->handleMouseInput(button,xpos,ypos);
 }
 
@@ -188,14 +208,14 @@ bool CRaptorConsole::activateConsole(bool activate)
     return ret;
 }
 
-unsigned int CRaptorConsole::addItem(TEXT_ITEM t)
+unsigned int CRaptorConsole::addItem(CGLFont::FONT_TEXT_ITEM &t)
 {
 	unsigned int id = m_items.size();
     m_items.push_back(t);
 	return id;
 }
 
-bool CRaptorConsole::updateItem(TEXT_ITEM t,unsigned int id)
+bool CRaptorConsole::updateItem(CGLFont::FONT_TEXT_ITEM &t,unsigned int id)
 {
 	if (id >= m_items.size())
 		return false;
@@ -228,13 +248,12 @@ bool CRaptorConsole::runBatch(const std::string& filename)
     if (ret)
     {
         msg = "Raptor console running batch " + filename;
-        RAPTOR_NO_ERROR(Global::COpenGLClassID::GetClassId(),msg);
-                                                         
+        RAPTOR_NO_ERROR(COpenGL::COpenGLClassID::GetClassId(),msg);
     }
     else
     {
         msg = "Raptor console failed to load batch " + filename;
-        RAPTOR_ERROR(Global::COpenGLClassID::GetClassId(),msg);
+		RAPTOR_ERROR(COpenGL::COpenGLClassID::GetClassId(), msg);
     }
 
     while (ret)
@@ -255,12 +274,12 @@ bool CRaptorConsole::runBatch(const std::string& filename)
             if (ret)
             {
                 msg += " OK: " + yacc->getErrorMsg();
-                RAPTOR_NO_ERROR(Global::COpenGLClassID::GetClassId(),msg);
+				RAPTOR_NO_ERROR(COpenGL::COpenGLClassID::GetClassId(), msg);
             }
             else
             {
                 msg += " script error: " + yacc->getErrorMsg();
-				RAPTOR_ERROR(Global::COpenGLClassID::GetClassId(),msg);
+				RAPTOR_ERROR(COpenGL::COpenGLClassID::GetClassId(), msg);
             }
         }
     }
@@ -332,27 +351,27 @@ void CRaptorConsole::handleMouseInput(int button, int xpos, int ypos)
 
 void CRaptorConsole::displayHelp(void)
 {
-	TEXT_ITEM t;
+	CGLFont::FONT_TEXT_ITEM t;
 
 	m_items.clear();
 
-	t.offset = 1; t.text = " ";
+	t.x_offset = 1; t.text = " ";
 	m_items.push_back(t);
-	t.offset = 1; t.text = "help: display this help";
+	t.x_offset = 1; t.text = "help: display this help";
 	m_items.push_back(t);
-	t.offset = 1; t.text = "clear: clear the console";
+	t.x_offset = 1; t.text = "clear: clear the console";
 	m_items.push_back(t);
-	t.offset = 1; t.text = "select \"<ObjectName>\": selects an object as current object for subsequent commands";
+	t.x_offset = 1; t.text = "select \"<ObjectName>\": selects an object as current object for subsequent commands";
 	m_items.push_back(t);
-	t.offset = 1; t.text = "scale(float sx,float sy,float sz): scales the selected object in all dimensions";
+	t.x_offset = 1; t.text = "scale(float sx,float sy,float sz): scales the selected object in all dimensions";
 	m_items.push_back(t);
-	t.offset = 1; t.text = "translate(float tx,float ty,float tz): translates the selected object in all dimensions";
+	t.x_offset = 1; t.text = "translate(float tx,float ty,float tz): translates the selected object in all dimensions";
 	m_items.push_back(t);
-	t.offset = 1; t.text = "translate_absolute(float tx,float ty,float tz): moves the selected object to the specified position";
+	t.x_offset = 1; t.text = "translate_absolute(float tx,float ty,float tz): moves the selected object to the specified position";
 	m_items.push_back(t);
-	t.offset = 1; t.text = "visible(<true|false>): turns visible/invisible the selected object";
+	t.x_offset = 1; t.text = "visible(<true|false>): turns visible/invisible the selected object";
 	m_items.push_back(t);
-	t.offset = 1; t.text = "rotation(float a,float ax,float ay,float az): rotates the selected object of the specified angle(a) around the axis (ax,ay,az)";
+	t.x_offset = 1; t.text = "rotation(float a,float ax,float ay,float az): rotates the selected object of the specified angle(a) around the axis (ax,ay,az)";
 	m_items.push_back(t);
 }
 
@@ -404,53 +423,28 @@ void CRaptorConsole::glInit(const std::string &fontPath,bool useVectors)
 	}
 }
 
-void CRaptorConsole::glWriteLine(const std::string& line,int x,int y)
-{
-	if (!m_bUseVectors)
-		m_pFont->glWrite(line,x,y);
-	else
-	{
-		m_pFont->selectCurrentGlyphset(0);
-		glPushMatrix();
-		glColor4fv(m_secondColor);
-		glLineWidth(3.0f);
-		m_pFont->glWrite(line,x,-y);
-		glColor4fv(m_color);
-		glLineWidth(1.1f);
-		m_pFont->glWrite(line,x,-y);
-		glPopMatrix();
-	}
-}
-
 void CRaptorConsole::glRender(void)
 {
     if ((m_pFont != NULL) && m_bIsActive)
     {
-        const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
-	    PFN_GL_ACTIVE_TEXTURE_ARB_PROC glActiveTextureARB = pExtensions->glActiveTextureARB;
-
 	    glPushAttrib(GL_ENABLE_BIT);
-        if (glActiveTextureARB != NULL)
-        {
-            glActiveTextureARB(GL_TEXTURE3_ARB);
-	        glDisable(GL_TEXTURE_2D);
-            glActiveTextureARB(GL_TEXTURE2_ARB);
-	        glDisable(GL_TEXTURE_2D);
-            glActiveTextureARB(GL_TEXTURE1_ARB);
-	        glDisable(GL_TEXTURE_2D);
-            glActiveTextureARB(GL_TEXTURE0_ARB);
-        }
-	    glDisable(GL_TEXTURE_2D);
+	    
+		glDisable(GL_TEXTURE_2D);
 	    glDisable(GL_LIGHTING);
 	    glDisable(GL_DEPTH_TEST);
         glDisable(GL_CULL_FACE);
         glDisable(GL_STENCIL_TEST);
         glDisable(GL_BLEND);
 
+		float lineWidth = 1.0f;
+
 		if (m_bUseVectors)
 		{
+			glGetFloatv(GL_LINE_WIDTH, &lineWidth);
+
 			GLfloat viewport[4];
 			glGetFloatv(GL_VIEWPORT,viewport);
+			
 			glMatrixMode(GL_PROJECTION);	
 			glPushMatrix();
 			glLoadIdentity();
@@ -464,13 +458,8 @@ void CRaptorConsole::glRender(void)
 			glHint(GL_LINE_SMOOTH,GL_NICEST);
 		}
 
-		CColor::RGBA oldColor;
-		float lineWidth = 1.0f;
-		glGetFloatv(GL_CURRENT_COLOR,oldColor);
-		glGetFloatv(GL_LINE_WIDTH,&lineWidth);
-	    glColor4fv(m_color);
-
 		int currentLine = -1;
+		std::vector<CGLFont::FONT_TEXT_ITEM> lines;
 
 		if (m_bShowStatus)
         {
@@ -484,7 +473,7 @@ void CRaptorConsole::glRender(void)
 				status << " [";
 				status << pDisplay->getRTFPS();
 				status << "]";
-                glWriteLine(status.str(),1,currentLine+=10);
+				lines.push_back(CGLFont::FONT_TEXT_ITEM(1, currentLine+=10, status.str(), m_color));
             }
 
 			if ((m_bShowFrameTime) && (pDisplay != NULL))
@@ -497,46 +486,57 @@ void CRaptorConsole::glRender(void)
 				status << " ms] render time: [";
 				status << 1000.0f*pDisplay->getRenderTime();
 				status << " ms]";
-                glWriteLine(status.str(),1,currentLine+=10);
+				lines.push_back(CGLFont::FONT_TEXT_ITEM(1, currentLine+=10, status.str(), m_color));
             }
             
+			CRaptorInstance &instance = CRaptorInstance::GetInstance();
             if (m_bShowObjects)
             {
-                unsigned int nbRendered = Global::GetInstance().getCurrentStatus().iRenderedObjects;
+                unsigned int nbRendered = instance.iRenderedObjects;
                 stringstream status2;
                 status2 << "nb objs: " << nbRendered;
-                glWriteLine(status2.str(),1,currentLine+=10);
+				lines.push_back(CGLFont::FONT_TEXT_ITEM(1, currentLine+=10, status2.str(), m_color));
             }
 
             if (m_bShowTriangles)
             {
-                unsigned int nbRendered = Global::GetInstance().getCurrentStatus().iRenderedTriangles;
+                unsigned int nbRendered = instance.iRenderedTriangles;
                 stringstream status3;
                 status3 << "nb tris: " << nbRendered;
-                glWriteLine(status3.str(),1,currentLine+=10);
+				lines.push_back(CGLFont::FONT_TEXT_ITEM(1, currentLine+=10, status3.str(), m_color));
             }
         }
 
-		glWriteLine(promptString+cmdString,1,currentLine+=10);
-	    glWriteLine(lastResult,1,currentLine+=10);
-
+		lines.push_back(CGLFont::FONT_TEXT_ITEM(1, currentLine+=10, promptString + cmdString, m_color));
+		lines.push_back(CGLFont::FONT_TEXT_ITEM(1, currentLine+=10, lastResult, m_color));
 
         for (unsigned int i=0;i<m_items.size();i++)
         {
-            TEXT_ITEM &t = m_items[i];
-            glWriteLine(t.text,t.offset,currentLine+=10);
+			CGLFont::FONT_TEXT_ITEM &t = m_items[i];
+			lines.push_back(CGLFont::FONT_TEXT_ITEM(t.x_offset, currentLine+=10, t.text, m_color));
         }
 
 		if (m_bUseVectors)
 		{
+			m_pFont->selectCurrentGlyphset(0);
+			glPushMatrix();
+			glColor4fv(m_secondColor);
+			glLineWidth(3.0f);
+			m_pFont->glWrite(lines);
+			glColor4fv(m_color);
+			glLineWidth(1.1f);
+			m_pFont->glWrite(lines);
+			glPopMatrix();
+
 			glMatrixMode(GL_PROJECTION);
 			glPopMatrix();
 			glMatrixMode(GL_MODELVIEW);
 			glPopMatrix();
+			glLineWidth(lineWidth);
 		}
+		else
+			m_pFont->glWrite(lines);
 
-		glColor4fv(oldColor);
-		glLineWidth(lineWidth);
 	    glPopAttrib();
     }
 

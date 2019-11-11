@@ -20,8 +20,8 @@
 #if !defined(AFX_TEXTUREUNITSETUP_H__4A6ADC72_02E5_4F2A_931E_A736B6D6E0F0__INCLUDED_)
 	#include "GLHierarchy/TextureUnitSetup.h"
 #endif
-#ifndef __GLOBAL_H__
-	#include "System/Global.h"
+#if !defined(AFX_RAPTORINSTANCE_H__90219068_202B_46C2_BFF0_73C24D048903__INCLUDED_)
+	#include "Subsys/RaptorInstance.h"
 #endif
 #if !defined(AFX_3DENGINEMATRIX_H__6CD1110E_1174_4f38_A452_30FB312022D0__INCLUDED_)
 	#include "Engine/3DEngineMatrix.h"
@@ -180,7 +180,8 @@ unsigned int CDOT3BumppedGeometry::glUpdateLightPosition(void)
 	}
 
 #ifdef RAPTOR_SSE_CODE_GENERATION
-	if (Global::GetInstance().getCurrentStatus().forceSSE)
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+	if (instance.forceSSE)
 		setLightPositionDOT3SSE();
 	else
 		setLightPositionDOT3();
@@ -217,6 +218,7 @@ void CDOT3BumppedGeometry::glRender()
 #endif
 
 	//	diffuse
+	//	obsolete : remove generic attributes binding
 	glEnableClientState(GL_COLOR_ARRAY);
 	glColorPointer(4, GL_UNSIGNED_BYTE, 0, bumpDiffusePx);
 
@@ -260,7 +262,7 @@ void CDOT3BumppedGeometry::glRender()
 	glDepthFunc(GL_EQUAL);
 
 	//	specular
-
+	//	obsolete : remove generic attributes binding
 	glColorPointer(4, GL_UNSIGNED_BYTE, 0, bumpSpecularPx);
 	normalMap->glvkRender();
 

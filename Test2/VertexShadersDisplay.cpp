@@ -5,10 +5,10 @@
 #include "stdafx.h"
 
 #include "VertexShadersDisplay.h"
-#include "GLHierarchy/VertexShader.h"
-#include "GLHierarchy/FragmentShader.h"
 #include "GLHierarchy/VertexProgram.h"
 #include "GLHierarchy/FragmentProgram.h"
+#include "GLHierarchy/VertexShader.h"
+#include "GLHierarchy/FragmentShader.h"
 #include "Engine/3DEngine.h"
 #include "Engine/3DScene.h"
 #include "Engine/IViewPoint.h"
@@ -25,6 +25,9 @@
 #include "GLHierarchy/SimpleObject.h"
 #include "GLHierarchy/ShadedGeometry.h"
 #include "GLHierarchy/IRenderingProperties.h"
+#include "GLHierarchy/OpenGLProgramStage.h"
+#include "GLHierarchy/OpenGLShaderStage.h"
+
 
 #include "ToolBox/BasicObjects.h"
 
@@ -543,17 +546,17 @@ public:
 		params.addParameter("",LPOS);
 
 #ifdef VERTEX_SHADER
-		CVertexShader *vs = m_pShader->glGetVertexShader();
-		vs->setProgramParameters(params);
+		COpenGLProgramStage *stage = m_pShader->glGetOpenGLProgram();
 #else
-		CVertexProgram *vp = m_pShader->glGetVertexProgram();
-		vp->setProgramParameters(params);
+		COpenGLShaderStage *stage = m_pShader->glGetOpenGLShader();
 #endif
+		stage->setProgramParameters(params);
+
 		params2.addParameter("",GL_COORD_VERTEX(0.0f,0.6f,0.8f,0.8f));
 		params2.addParameter("",GL_COORD_VERTEX(8.0f,0.0f,0.0f,1.0f));
 
 #ifdef VERTEX_SHADER
-		CFragmentShader *fp = m_pShader->glGetFragmentShader();
+		CFragmentProgram *fp = m_pShader->glGetFragmentShader();
 		fp->setProgramParameters(params2);
 #endif
 	}
@@ -595,10 +598,10 @@ public:
 			vpoint->glvkRenderViewPointModel();
 			
 			pShader = new CShader("WATER_SHADER2");
-			CVertexShader *vp = pShader->glGetVertexShader();
+			CVertexProgram *vp = pShader->glGetOpenGLProgram()->glGetVertexProgram();
 			vp->glLoadProgram(waterShader4.data());
 			vp->glStop();
-			CFragmentShader *fp = pShader->glGetFragmentShader();
+			CFragmentProgram *fp = pShader->glGetOpenGLProgram()->glGetFragmentProgram();
 			fp->glLoadProgram(waterFragments2.data());
 			fp->glStop();
 		pBuffer->glvkUnBindDisplay();
@@ -661,7 +664,7 @@ public:
 	{
 		RAPTOR_HANDLE handle;
 		pBuffer->glvkBindDisplay(handle);
-			CVertexShader *vp = pShader->glGetVertexShader();
+			CVertexProgram *vp = pShader->glGetOpenGLProgram()->glGetVertexProgram();
 			float t = CTimeObject::GetGlobalTime();
 			GL_COORD_VERTEX v(	0.2 * t,
 								0.1 * t,
@@ -682,7 +685,7 @@ public:
 			GL_COORD_VERTEX w789(freqs[6],freqs[7],freqs[0],1.0f);
 			vp->glProgramParameter(11,w789);
 
-			CFragmentShader *fp = pShader->glGetFragmentShader();
+			CFragmentProgram *fp = pShader->glGetOpenGLProgram()->glGetFragmentProgram();
 			fp->glRender();
 			pCosTable->glvkRender();
 			glBegin(GL_QUADS);
@@ -787,18 +790,17 @@ void CVertexShadersDisplay::Init()
 
     string fullWaterShader = waterShader+waterShader2+waterShader3;
 #ifdef VERTEX_SHADER
-	CVertexShader *vs = pShader->glGetVertexShader();
+	CVertexProgram *vs = pShader->glGetOpenGLProgram()->glGetVertexProgram();
 	vs->glLoadProgram(fullWaterShader);
-	vs->glStop();
-	CFragmentShader *fs = pShader->glGetFragmentShader();
+	CFragmentShader *fs = pShader->glGetOpenGLProgram()->glGetFragmentProgram();
 	fs->glLoadProgram(waterFragments);
-	fs->glStop();
+	pShader->glGetOpenGLProgram()->glStop();
 #else
-	CVertexProgram *vp = pShader->glGetVertexProgram();
+	CVertexShader *vp = pShader->glGetOpenGLShader()->glGetVertexShader();
 	vp->glLoadProgram(waterVertexProgram);
-	CFragmentProgram *fp = pShader->glGetFragmentProgram();
+	CFragmentShader *fp = pShader->glGetOpenGLShader()->glGetFragmentShader();
 	fp->glLoadProgram(waterFragmentProgram);
-	pShader->glCompileShader();
+	pShader->glGetOpenGLShader()->glCompileShader();
 	pShader->glStop();
 #endif
 	

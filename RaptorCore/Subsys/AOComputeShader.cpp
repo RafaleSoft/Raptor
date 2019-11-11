@@ -1,6 +1,21 @@
-// PhongShader.cpp: implementation of the CPhongShader class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  AOComputeShader.cpp                                                    */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
 #include "Subsys/CodeGeneration.h"
 
 #if !defined(AFX_AOCOMPUTESHADER_H__7CD66380_1000_47A3_AA98_47E0EDBD728E__INCLUDED_)
@@ -15,11 +30,8 @@
 #if !defined(AFX_TEXTUREUNITSETUP_H__4A6ADC72_02E5_4F2A_931E_A736B6D6E0F0__INCLUDED_)
 	#include "GLHierarchy/TextureUnitSetup.h"
 #endif
-#if !defined(AFX_VERTEXPROGRAM_H__204F7213_B40B_4B6A_9BCA_828409871B68__INCLUDED_)
-    #include "GLHierarchy/VertexProgram.h"
-#endif
-#if !defined(AFX_FRAGMENTPROGRAM_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
-    #include "GLHierarchy/FragmentProgram.h"
+#if !defined(AFX_OPENGLSHADERSTAGE_H__56B00FE3_E508_4FD6_9363_90E6E67446D9__INCLUDED_)
+	#include "GLHierarchy/OpenGLShaderStage.h"
 #endif
 
 
@@ -37,24 +49,22 @@ CAOComputeShader::~CAOComputeShader(void)
 
 void CAOComputeShader::glInit(void)
 {
-	CVertexProgram *vs = glGetVertexProgram("AMBIENT_OCCLUSION_VTX_PROGRAM");
-	
-	CProgramParameters v_params;
+	COpenGLShaderStage *stage = glGetOpenGLShader();
+
+	CVertexShader *vs = stage->glGetVertexShader("AMBIENT_OCCLUSION_VTX_PROGRAM");
+	CFragmentShader *fs = stage->glGetFragmentShader("AMBIENT_OCCLUSION_TEX_PROGRAM");
+
+	CProgramParameters ao_params;
 	GL_MATRIX Id;
 	IDENT_MATRIX(Id);
-	v_params.addParameter("vertexMat",Id);
-	v_params.addParameter("normalMat",Id);
-	vs->setProgramParameters(v_params);
+	ao_params.addParameter("vertexMat",Id);
+	ao_params.addParameter("normalMat",Id);
+	ao_params.addParameter("posMap",CTextureUnitSetup::IMAGE_UNIT_0);
+	ao_params.addParameter("normalMap",CTextureUnitSetup::IMAGE_UNIT_1);
+	ao_params.addParameter("numRows",GL_COORD_VERTEX());
+	stage->setProgramParameters(ao_params);
 
-	CFragmentProgram *fs = glGetFragmentProgram("AMBIENT_OCCLUSION_TEX_PROGRAM");
-
-	CProgramParameters f_params;
-	f_params.addParameter("posMap",CTextureUnitSetup::IMAGE_UNIT_0);
-	f_params.addParameter("normalMap",CTextureUnitSetup::IMAGE_UNIT_1);
-	f_params.addParameter("numRows",GL_COORD_VERTEX());
-	fs->setProgramParameters(f_params);
-
-	glCompileShader();
+	stage->glCompileShader();
 }
 
 void CAOComputeShader::glStop(void)

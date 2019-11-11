@@ -11,6 +11,18 @@
 #if !defined(AFX_RAPTORDISPLAYCONFIG_H__DA0759DF_6CF9_44A7_9ADE_D404FEEC2DDF__INCLUDED_)
 	#include "RaptorDisplayConfig.h"
 #endif
+#if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
+#else
+	#if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
+		#include "System/Raptor.h"
+	#endif
+	#if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
+		#include "System/RaptorGLExtensions.h"
+	#endif
+	#if !defined(AFX_PROGRAMPARAMETERS_H__E28A74BB_DE78_470A_A8A2_5A3EBB3F4F90__INCLUDED_)
+		#include "GLHierarchy/ProgramParameters.h"
+	#endif
+#endif
 
 RAPTOR_NAMESPACE
 
@@ -250,12 +262,21 @@ bool CRaptorDisplayConfig::glQueryConfig(unsigned long query)
 		glGetIntegerv(GL_TEXTURE_COORD_ARRAY_STRIDE,&arraysState.textureArray.arrayStride);
 		glGetIntegerv(GL_EDGE_FLAG_ARRAY_STRIDE,&arraysState.edgeArray.arrayStride);
 
+#if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
 		glGetPointerv(GL_VERTEX_ARRAY_POINTER,&arraysState.vertexArray.arrayPointer);
 		glGetPointerv(GL_NORMAL_ARRAY_POINTER,&arraysState.normalArray.arrayPointer);
 		glGetPointerv(GL_COLOR_ARRAY_POINTER,&arraysState.colorArray.arrayPointer);
 		glGetPointerv(GL_INDEX_ARRAY_POINTER,&arraysState.indexArray.arrayPointer);
 		glGetPointerv(GL_TEXTURE_COORD_ARRAY_POINTER,&arraysState.textureArray.arrayPointer);
 		glGetPointerv(GL_EDGE_FLAG_ARRAY_POINTER,&arraysState.edgeArray.arrayPointer);
+#else
+		arraysState.vertexArray.arrayPointer = NULL;
+		arraysState.normalArray.arrayPointer = NULL;
+		arraysState.colorArray.arrayPointer = NULL;
+		arraysState.indexArray.arrayPointer = NULL;
+		arraysState.textureArray.arrayPointer = NULL;
+		arraysState.edgeArray.arrayPointer = NULL;
+#endif
 
 #ifdef GL_EXT_vertex_weighting
 		arraysState.weightArray.enable = glIsEnabled(GL_VERTEX_WEIGHT_ARRAY_EXT);
@@ -305,11 +326,13 @@ bool CRaptorDisplayConfig::glQueryConfig(unsigned long query)
 		lightingState.colorMaterialEnable = (GL_TRUE == glIsEnabled(GL_COLOR_MATERIAL));
 		glGetIntegerv(GL_COLOR_MATERIAL_PARAMETER,&lightingState.colorMaterialParameter);
 		glGetIntegerv(GL_COLOR_MATERIAL_FACE,&lightingState.colorMaterialFace);
+#if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
 		glGetMaterialfv(GL_FRONT,GL_AMBIENT,lightingState.materialAmbient);
 		glGetMaterialfv(GL_FRONT,GL_DIFFUSE,lightingState.materialDiffuse);
 		glGetMaterialfv(GL_FRONT,GL_EMISSION,lightingState.materialEmission);
 		glGetMaterialfv(GL_FRONT,GL_SPECULAR,lightingState.materialSpecular);
 		glGetMaterialfv(GL_FRONT,GL_SHININESS,&lightingState.materialShininess);
+#endif
 		glGetFloatv(GL_LIGHT_MODEL_AMBIENT,lightingState.lightModelAmbient);
 
 		GLboolean b = GL_FALSE;
@@ -331,6 +354,7 @@ bool CRaptorDisplayConfig::glQueryConfig(unsigned long query)
 			CRaptorDisplayConfig::GL_LIGHT_STATE* gls = &lightingState.light0 + i;
 
 			gls->enable = (GL_TRUE == glIsEnabled(GL_LIGHT0 + i));
+#if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
 			glGetLightfv(GL_LIGHT0 + i,GL_AMBIENT,gls->ambient);
 			glGetLightfv(GL_LIGHT0 + i,GL_DIFFUSE,gls->diffuse);
 			glGetLightfv(GL_LIGHT0 + i,GL_SPECULAR,gls->specular);
@@ -342,6 +366,7 @@ bool CRaptorDisplayConfig::glQueryConfig(unsigned long query)
 			glGetLightfv(GL_LIGHT0 + i,GL_SPOT_EXPONENT,&gls->spotExponent);
 			glGetLightfv(GL_LIGHT0 + i,GL_SPOT_CUTOFF,&gls->spotCutOff);
 			glGetMaterialfv(GL_FRONT,GL_COLOR_INDEXES ,gls->colorIndexes);
+#endif
 		}
 	}
 
@@ -445,7 +470,12 @@ bool CRaptorDisplayConfig::glApplyConfig(unsigned long query) const
 {
 	if (query & GL_CURRENT_STATE_QUERY)
 	{
+#if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
 		glColor4fv(currentState.currentColor);
+#else
+		CColor::RGBA c = currentState.currentColor;
+		glColor4f(c.r,c.g,c.b,c.a);
+#endif
 		glIndexi(currentState.currentIndex);
 		glTexCoord4fv(currentState.currentTextureCoords);
 		glNormal3fv(currentState.currentNormal);
@@ -455,28 +485,87 @@ bool CRaptorDisplayConfig::glApplyConfig(unsigned long query) const
 
 	if (query & GL_ARRAYS_STATE_QUERY)
 	{
+#if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
+#else
+		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+#endif
+
 		if(arraysState.vertexArray.enable)
 		{
+#if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
 			glEnableClientState(GL_VERTEX_ARRAY);
 			glVertexPointer(arraysState.vertexArray.arraySize,
 							arraysState.vertexArray.arrayType,
 							arraysState.vertexArray.arrayStride,
 							arraysState.vertexArray.arrayPointer);
+#else
+			pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::POSITION);
+			pExtensions->glVertexAttribPointerARB(CProgramParameters::POSITION,
+												  arraysState.vertexArray.arraySize,
+												  arraysState.vertexArray.arrayType,
+												  false, // normalize
+												  arraysState.vertexArray.arrayStride,
+												  arraysState.vertexArray.arrayPointer);
+#endif
+		}
+		else
+		{
+#if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
+			glDisableClientState(GL_VERTEX_ARRAY);
+#else
+			pExtensions->glDisableVertexAttribArrayARB(CProgramParameters::POSITION);
+#endif
 		}
 		if(arraysState.normalArray.enable)
 		{
+#if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
 			glEnableClientState(GL_NORMAL_ARRAY);
 			glNormalPointer(arraysState.normalArray.arrayType,
 							arraysState.normalArray.arrayStride,
 							arraysState.normalArray.arrayPointer);
+#else
+			pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::NORMAL);
+			pExtensions->glVertexAttribPointerARB(CProgramParameters::NORMAL,
+												  arraysState.normalArray.arraySize,
+												  arraysState.normalArray.arrayType,
+												  false, // normalize
+												  arraysState.normalArray.arrayStride,
+												  arraysState.normalArray.arrayPointer);
+#endif
+		}
+		else
+		{
+#if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
+			glDisableClientState(GL_NORMAL_ARRAY);
+#else
+			pExtensions->glDisableVertexAttribArrayARB(CProgramParameters::NORMAL);
+#endif
 		}
 		if(arraysState.colorArray.enable)
 		{
+#if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
 			glEnableClientState(GL_COLOR_ARRAY);
 			glColorPointer(	arraysState.colorArray.arraySize,
 							arraysState.colorArray.arrayType,
 							arraysState.colorArray.arrayStride,
 							arraysState.colorArray.arrayPointer);
+#else
+			pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::PRIMARY_COLOR);
+			pExtensions->glVertexAttribPointerARB(CProgramParameters::PRIMARY_COLOR,
+												  arraysState.colorArray.arraySize,
+												  arraysState.colorArray.arrayType,
+												  false, // normalize
+												  arraysState.colorArray.arrayStride,
+												  arraysState.colorArray.arrayPointer);
+#endif
+		}
+		else
+		{
+#if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
+			glDisableClientState(GL_COLOR_ARRAY);
+#else
+			pExtensions->glDisableVertexAttribArrayARB(CProgramParameters::PRIMARY_COLOR);
+#endif
 		}
 		if(arraysState.indexArray.enable)
 		{
@@ -487,11 +576,21 @@ bool CRaptorDisplayConfig::glApplyConfig(unsigned long query) const
 		}
 		if(arraysState.textureArray.enable)
 		{
+#if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
 			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 			glTexCoordPointer(	arraysState.textureArray.arraySize,
 								arraysState.textureArray.arrayType,
 								arraysState.textureArray.arrayStride,
 								arraysState.textureArray.arrayPointer);
+#else
+			pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::TEXCOORD0);
+			pExtensions->glVertexAttribPointerARB(CProgramParameters::TEXCOORD0,
+												  arraysState.textureArray.arraySize,
+												  arraysState.textureArray.arrayType,
+												  false, // normalize
+												  arraysState.textureArray.arrayStride,
+												  arraysState.textureArray.arrayPointer);
+#endif
 		}
 		if(arraysState.edgeArray.enable)
 		{
@@ -573,18 +672,23 @@ bool CRaptorDisplayConfig::glApplyConfig(unsigned long query) const
 		else
 			glDisable(GL_COLOR_MATERIAL);
 
-		glColorMaterial(lightingState.colorMaterialFace,lightingState.colorMaterialParameter);
+		
 		glMaterialfv(GL_FRONT,GL_AMBIENT,lightingState.materialAmbient);
 		glMaterialfv(GL_FRONT,GL_DIFFUSE,lightingState.materialDiffuse);
 		glMaterialfv(GL_FRONT,GL_EMISSION,lightingState.materialEmission);
 		glMaterialfv(GL_FRONT,GL_SPECULAR,lightingState.materialSpecular);
 		glMaterialfv(GL_FRONT,GL_SHININESS,&lightingState.materialShininess);
 		glLightModelfv(GL_LIGHT_MODEL_AMBIENT,lightingState.lightModelAmbient);
+
 		glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER,lightingState.lightModelLocalViewer);
+
+#if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
+		glColorMaterial(lightingState.colorMaterialFace,lightingState.colorMaterialParameter);
 		glLightModeli(GL_LIGHT_MODEL_TWO_SIDE,lightingState.lightModelTwoSide);
-#if defined GL_VERSION_1_2
+	#if defined GL_VERSION_1_2
 		glLightModeli(	GL_LIGHT_MODEL_COLOR_CONTROL,
 						(lightingState.lightModelSeparateSpecular ? GL_SEPARATE_SPECULAR_COLOR : GL_SINGLE_COLOR));
+	#endif
 #endif
 		for (int i=0;i<8;i++)
 		{
@@ -722,15 +826,19 @@ bool CRaptorDisplayConfig::glApplyConfig(unsigned long query) const
 	if (query & GL_FRAME_STATE_QUERY)
 	{
 		glDrawBuffer(framebufferState.drawBuffer);
-		glIndexMask(framebufferState.indexWriteMask);
 		glColorMask(framebufferState.colorWriteMask[0],framebufferState.colorWriteMask[1],framebufferState.colorWriteMask[2],framebufferState.colorWriteMask[3]);
 		glDepthMask(framebufferState.depthWriteMask);
 		glStencilMask(framebufferState.stencilWriteMask);
 		glClearColor(framebufferState.colorClearValue.r,framebufferState.colorClearValue.g,framebufferState.colorClearValue.b,framebufferState.colorClearValue.a);
-		glClearIndex(framebufferState.indexClearValue);
 		glClearDepth(framebufferState.depthClearValue);
 		glClearStencil(framebufferState.stencilClearValue);
+
+#if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
+		glIndexMask(framebufferState.indexWriteMask);
+		glClearIndex(framebufferState.indexClearValue);
 		glClearAccum(framebufferState.accumClearValue.r,framebufferState.accumClearValue.g,framebufferState.accumClearValue.b,framebufferState.accumClearValue.a);
+#endif
+
 	}
 
 	if (query & GL_HINT_STATE_QUERY)

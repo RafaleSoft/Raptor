@@ -4,10 +4,9 @@
 #include "Subsys/CodeGeneration.h"
 
 
-#if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
-	#include "System/Raptor.h"
+#if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
+	#include "System/RaptorErrorManager.h"
 #endif
-
 #if !defined(AFX_OBJECT3DSHADOW_H__A502A78F_0575_4F30_BCE2_0658B60EB490__INCLUDED_)
 	#include "Object3DShadow.h"
 #endif
@@ -20,18 +19,12 @@
 #if !defined(AFX_OBJECT3DINSTANCE_H__A2627662_F5F9_11D3_9142_CFEB8E9F2745__INCLUDED_)
 	#include "Object3DInstance.h"
 #endif
-
-#ifndef __GLOBAL_H__
-	#include "System/Global.h"
-#endif
-
 #if !defined(AFX_MEMORY_H__81A6CA9A_4ED9_4260_B6E4_C03276C38DBC__INCLUDED_)
 	#include "System/Memory.h"
 #endif
 #if !defined(AFX_GEOMETRYALLOCATOR_H__802B3C7A_43F7_46B2_A79E_DDDC9012D371__INCLUDED_)
 	#include "Subsys/GeometryAllocator.h"
 #endif
-
 #if !defined(AFX_LIGHT_H__AA8BABD6_059A_4939_A4B6_A0A036E12E1E__INCLUDED_)
 	#include "Light.h"
 #endif
@@ -44,7 +37,6 @@
 #if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
 	#include "System/RaptorGLExtensions.h"
 #endif
-
 #if !defined(AFX_SHADOWVOLUMEJOB_H__3C3EB9C3_88DF_4C32_B66E_5265B65D8648__INCLUDED_)
     #include "Subsys/ShadowVolumeJob.h"
 #endif
@@ -54,10 +46,9 @@
 #if !defined(AFX_GLLOD_H__95ED92DC_1BF7_4869_912C_655779B2ED7B__INCLUDED_)
 	#include "GLHierarchy/GLLod.h"
 #endif
-#if !defined(AFX_3DENGINEMATRIX_H__6CD1110E_1174_4f38_A452_30FB312022D0__INCLUDED_)
-	#include "Engine/3DEngineMatrix.h"
+#if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
+	#include "System/Raptor.h"
 #endif
-
 
 
 
@@ -91,9 +82,8 @@ CObject3DShadow::CObject3DShadow(CObject3D *source,SHADOW_TYPE shadowType):
 
 	if (source == NULL)
 	{
-		Raptor::GetErrorManager()->generateRaptorError(	CObject3DShadow::CObject3DShadowClassID::GetClassId(),
-														CRaptorErrorManager::RAPTOR_WARNING,
-														CRaptorMessages::ID_NULL_OBJECT);
+		RAPTOR_WARNING(	CObject3DShadow::CObject3DShadowClassID::GetClassId(),
+						CRaptorMessages::ID_NULL_OBJECT);
 	}
     else
     {

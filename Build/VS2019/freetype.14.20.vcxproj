@@ -1,0 +1,651 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug Static|Win32">
+      <Configuration>Debug Static</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug Static|x64">
+      <Configuration>Debug Static</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release_with_AddOns|Win32">
+      <Configuration>Release_with_AddOns</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release_with_AddOns|x64">
+      <Configuration>Release_with_AddOns</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release Static|Win32">
+      <Configuration>Release Static</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release Static|x64">
+      <Configuration>Release Static</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <!--
+    Switch the PlatformToolset based on the Visual Studio Version
+-->
+  <PropertyGroup>
+    <!-- Assume Visual Studio 2010 / 4.0 as the default -->
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">4.0</VisualStudioVersion>
+  </PropertyGroup>
+  <!-- Visual Studio 2010 (4.0) -->
+  <PropertyGroup Condition="'$(VisualStudioVersion)' == '4.0'">
+    <PlatformToolset>v100</PlatformToolset>
+  </PropertyGroup>
+  <!-- Visual Studio 2013 (12.0) -->
+  <PropertyGroup Condition="'$(VisualStudioVersion)' == '12.0'">
+    <PlatformToolset>v120</PlatformToolset>
+  </PropertyGroup>
+  <!-- Visual Studio 2015 (14.0) -->
+  <PropertyGroup Condition="'$(VisualStudioVersion)' == '14.0'">
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <!-- Visual Studio 2017 (15.0) -->
+  <PropertyGroup Condition="'$(VisualStudioVersion)' == '15.0'">
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <!--
+    End of: Switch the PlatformToolset based on the Visual Studio Version
+-->
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{78B079BD-9FC7-4B9E-B4A6-96DA0F00248B}</ProjectGuid>
+    <RootNamespace>FreeType</RootNamespace>
+    <ProjectName>freetype</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug Static|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug Static|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release Static|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release Static|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <PropertyGroup>
+    <OutDir>$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\$(ProjectName)\</IntDir>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules />
+    <CodeAnalysisRuleAssemblies />
+    <TargetName>$(ProjectName)</TargetName>
+  </PropertyGroup>
+  <Import Project="$(SolutionDir)\freetype.user.props" Condition="exists('$(SolutionDir)\freetype.user.props')" Label="UserProperties" />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>$(SolutionDir)\AddOns\$(ProjectName)-2.9.1\source;$(SolutionDir)\AddOns\$(ProjectName)-2.9.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;FT_DEBUG_LEVEL_ERROR;FT_DEBUG_LEVEL_TRACE;FT2_BUILD_LIBRARY;$(UserDefines);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <DisableLanguageExtensions>true</DisableLanguageExtensions>
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <CompileAs>Default</CompileAs>
+      <DisableSpecificWarnings>4001</DisableSpecificWarnings>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <CompileAsManaged>false</CompileAsManaged>
+      <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;_DLL;$(UserDefines);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+    </ResourceCompile>
+    <Lib>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetMachine>MachineX86</TargetMachine>
+      <AdditionalLibraryDirectories>$(UserLibraryDirectories);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>$(UserDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+    </Lib>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>$(UserOptionDirectory);..\..\..\include;$(UserIncludeDirectories);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;FT_DEBUG_LEVEL_ERROR;FT_DEBUG_LEVEL_TRACE;FT2_BUILD_LIBRARY;$(UserDefines);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <DisableLanguageExtensions>true</DisableLanguageExtensions>
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <CompileAs>Default</CompileAs>
+      <DisableSpecificWarnings>4001</DisableSpecificWarnings>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <CompileAsManaged>false</CompileAsManaged>
+      <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;_DLL;$(UserDefines);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+    </ResourceCompile>
+    <Lib>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetMachine>MachineX64</TargetMachine>
+      <AdditionalLibraryDirectories>$(UserLibraryDirectories);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>$(UserDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug Static|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>$(SolutionDir)\AddOns\$(ProjectName)-2.9.1\source;$(SolutionDir)\AddOns\$(ProjectName)-2.9.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;FT_DEBUG_LEVEL_ERROR;FT_DEBUG_LEVEL_TRACE;FT2_BUILD_LIBRARY;$(UserDefines);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <DisableLanguageExtensions>true</DisableLanguageExtensions>
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <CompileAs>Default</CompileAs>
+      <DisableSpecificWarnings>4001</DisableSpecificWarnings>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <CompileAsManaged>false</CompileAsManaged>
+      <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;$(UserDefines);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+    </ResourceCompile>
+    <Lib>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetMachine>MachineX86</TargetMachine>
+      <AdditionalLibraryDirectories>$(UserLibraryDirectories);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>$(UserDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug Static|x64'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>$(UserOptionDirectory);..\..\..\include;$(UserIncludeDirectories);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;FT_DEBUG_LEVEL_ERROR;FT_DEBUG_LEVEL_TRACE;FT2_BUILD_LIBRARY;$(UserDefines);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <DisableLanguageExtensions>true</DisableLanguageExtensions>
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <CompileAs>Default</CompileAs>
+      <DisableSpecificWarnings>4001</DisableSpecificWarnings>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <CompileAsManaged>false</CompileAsManaged>
+      <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;$(UserDefines);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+    </ResourceCompile>
+    <Lib>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetMachine>MachineX64</TargetMachine>
+      <AdditionalLibraryDirectories>$(UserLibraryDirectories);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>$(UserDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <AdditionalIncludeDirectories>$(SolutionDir)\AddOns\$(ProjectName)-2.9.1\source;$(SolutionDir)\AddOns\$(ProjectName)-2.9.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;FT2_BUILD_LIBRARY;$(UserDefines);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <DisableLanguageExtensions>true</DisableLanguageExtensions>
+      <WarningLevel>Level4</WarningLevel>
+      <CompileAs>Default</CompileAs>
+      <DisableSpecificWarnings>4001</DisableSpecificWarnings>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <FloatingPointExceptions>false</FloatingPointExceptions>
+      <CreateHotpatchableImage>false</CreateHotpatchableImage>
+      <CompileAsManaged>false</CompileAsManaged>
+      <ProgramDataBaseFileName>
+      </ProgramDataBaseFileName>
+      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
+      <OmitFramePointers>true</OmitFramePointers>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;_DLL;$(UserDefines);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+    </ResourceCompile>
+    <Lib>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <LinkTimeCodeGeneration>true</LinkTimeCodeGeneration>
+      <TargetMachine>MachineX86</TargetMachine>
+      <AdditionalLibraryDirectories>$(UserLibraryDirectories);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>$(UserDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <AdditionalIncludeDirectories>$(SolutionDir)\AddOns\$(ProjectName)-2.9.1\source;$(SolutionDir)\AddOns\$(ProjectName)-2.9.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;FT2_BUILD_LIBRARY;$(UserDefines);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <DisableLanguageExtensions>true</DisableLanguageExtensions>
+      <WarningLevel>Level4</WarningLevel>
+      <CompileAs>Default</CompileAs>
+      <DisableSpecificWarnings>4001</DisableSpecificWarnings>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <FloatingPointExceptions>false</FloatingPointExceptions>
+      <CreateHotpatchableImage>false</CreateHotpatchableImage>
+      <CompileAsManaged>false</CompileAsManaged>
+      <ProgramDataBaseFileName>
+      </ProgramDataBaseFileName>
+      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <OmitFramePointers>true</OmitFramePointers>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;_DLL;$(UserDefines);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+    </ResourceCompile>
+    <Lib>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <LinkTimeCodeGeneration>true</LinkTimeCodeGeneration>
+      <TargetMachine>MachineX86</TargetMachine>
+      <AdditionalLibraryDirectories>$(UserLibraryDirectories);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>$(UserDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+    </Lib>
+    <PostBuildEvent>
+      <Command>copy $(TargetPath) $(RAPTOR_ROOT)\Redist\bin</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <AdditionalIncludeDirectories>$(UserOptionDirectory);..\..\..\include;$(UserIncludeDirectories);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;FT2_BUILD_LIBRARY;$(UserDefines);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <DisableLanguageExtensions>true</DisableLanguageExtensions>
+      <WarningLevel>Level4</WarningLevel>
+      <CompileAs>Default</CompileAs>
+      <DisableSpecificWarnings>4001</DisableSpecificWarnings>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <FloatingPointExceptions>false</FloatingPointExceptions>
+      <CreateHotpatchableImage>false</CreateHotpatchableImage>
+      <CompileAsManaged>false</CompileAsManaged>
+      <ProgramDataBaseFileName>
+      </ProgramDataBaseFileName>
+      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
+      <OmitFramePointers>true</OmitFramePointers>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;_DLL;$(UserDefines);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+    </ResourceCompile>
+    <Lib>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <LinkTimeCodeGeneration>true</LinkTimeCodeGeneration>
+      <TargetMachine>MachineX64</TargetMachine>
+      <AdditionalLibraryDirectories>$(UserLibraryDirectories);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>$(UserDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|x64'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <AdditionalIncludeDirectories>$(UserOptionDirectory);..\..\..\include;$(UserIncludeDirectories);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;FT2_BUILD_LIBRARY;$(UserDefines);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <DisableLanguageExtensions>true</DisableLanguageExtensions>
+      <WarningLevel>Level4</WarningLevel>
+      <CompileAs>Default</CompileAs>
+      <DisableSpecificWarnings>4001</DisableSpecificWarnings>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <FloatingPointExceptions>false</FloatingPointExceptions>
+      <CreateHotpatchableImage>false</CreateHotpatchableImage>
+      <CompileAsManaged>false</CompileAsManaged>
+      <ProgramDataBaseFileName>
+      </ProgramDataBaseFileName>
+      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
+      <OmitFramePointers>true</OmitFramePointers>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;_DLL;$(UserDefines);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+    </ResourceCompile>
+    <Lib>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <LinkTimeCodeGeneration>true</LinkTimeCodeGeneration>
+      <TargetMachine>MachineX64</TargetMachine>
+      <AdditionalLibraryDirectories>$(UserLibraryDirectories);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>$(UserDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release Static|Win32'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <AdditionalIncludeDirectories>$(SolutionDir)\AddOns\$(ProjectName)-2.9.1\source;$(SolutionDir)\AddOns\$(ProjectName)-2.9.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;FT2_BUILD_LIBRARY;$(UserDefines);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <DisableLanguageExtensions>true</DisableLanguageExtensions>
+      <WarningLevel>Level4</WarningLevel>
+      <CompileAs>Default</CompileAs>
+      <DisableSpecificWarnings>4001</DisableSpecificWarnings>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <FloatingPointExceptions>false</FloatingPointExceptions>
+      <CreateHotpatchableImage>false</CreateHotpatchableImage>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <CompileAsManaged>false</CompileAsManaged>
+      <ProgramDataBaseFileName>
+      </ProgramDataBaseFileName>
+      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
+      <OmitFramePointers>true</OmitFramePointers>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;$(UserDefines);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+    </ResourceCompile>
+    <Lib>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <LinkTimeCodeGeneration>true</LinkTimeCodeGeneration>
+      <TargetMachine>MachineX86</TargetMachine>
+      <AdditionalLibraryDirectories>$(UserLibraryDirectories);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>$(UserDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release Static|x64'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <AdditionalIncludeDirectories>$(UserOptionDirectory);..\..\..\include;$(UserIncludeDirectories);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;FT2_BUILD_LIBRARY;$(UserDefines);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <DisableLanguageExtensions>true</DisableLanguageExtensions>
+      <WarningLevel>Level4</WarningLevel>
+      <CompileAs>Default</CompileAs>
+      <DisableSpecificWarnings>4001</DisableSpecificWarnings>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <FloatingPointExceptions>false</FloatingPointExceptions>
+      <CreateHotpatchableImage>false</CreateHotpatchableImage>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <CompileAsManaged>false</CompileAsManaged>
+      <ProgramDataBaseFileName>
+      </ProgramDataBaseFileName>
+      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
+      <OmitFramePointers>true</OmitFramePointers>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;$(UserDefines);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+    </ResourceCompile>
+    <Lib>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <LinkTimeCodeGeneration>true</LinkTimeCodeGeneration>
+      <TargetMachine>MachineX64</TargetMachine>
+      <AdditionalLibraryDirectories>$(UserLibraryDirectories);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>$(UserDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\AddOns\freetype-2.9.1\source\autofit\autofit.c" />
+    <ClCompile Include="..\..\AddOns\freetype-2.9.1\source\base\ftbase.c" />
+    <ClCompile Include="..\..\AddOns\freetype-2.9.1\source\base\ftbbox.c" />
+    <ClCompile Include="..\..\AddOns\freetype-2.9.1\source\base\ftbdf.c" />
+    <ClCompile Include="..\..\AddOns\freetype-2.9.1\source\base\ftbitmap.c" />
+    <ClCompile Include="..\..\AddOns\freetype-2.9.1\source\base\ftcid.c" />
+    <ClCompile Include="..\..\AddOns\freetype-2.9.1\source\base\ftdebug.c" />
+    <ClCompile Include="..\..\AddOns\freetype-2.9.1\source\base\ftfstype.c" />
+    <ClCompile Include="..\..\AddOns\freetype-2.9.1\source\base\ftgasp.c" />
+    <ClCompile Include="..\..\AddOns\freetype-2.9.1\source\base\ftglyph.c" />
+    <ClCompile Include="..\..\AddOns\freetype-2.9.1\source\base\ftgxval.c" />
+    <ClCompile Include="..\..\AddOns\freetype-2.9.1\source\base\ftinit.c" />
+    <ClCompile Include="..\..\AddOns\freetype-2.9.1\source\base\ftmm.c" />
+    <ClCompile Include="..\..\AddOns\freetype-2.9.1\source\base\ftotval.c" />
+    <ClCompile Include="..\..\AddOns\freetype-2.9.1\source\base\ftpatent.c" />
+    <ClCompile Include="..\..\AddOns\freetype-2.9.1\source\base\ftpfr.c" />
+    <ClCompile Include="..\..\AddOns\freetype-2.9.1\source\base\ftstroke.c" />
+    <ClCompile Include="..\..\AddOns\freetype-2.9.1\source\base\ftsynth.c" />
+    <ClCompile Include="..\..\AddOns\freetype-2.9.1\source\base\ftsystem.c" />
+    <ClCompile Include="..\..\AddOns\freetype-2.9.1\source\base\fttype1.c" />
+    <ClCompile Include="..\..\AddOns\freetype-2.9.1\source\base\ftwinfnt.c" />
+    <ClCompile Include="..\..\AddOns\freetype-2.9.1\source\bdf\bdf.c" />
+    <ClCompile Include="..\..\AddOns\freetype-2.9.1\source\cache\ftcache.c" />
+    <ClCompile Include="..\..\AddOns\freetype-2.9.1\source\cff\cff.c" />
+    <ClCompile Include="..\..\AddOns\freetype-2.9.1\source\cid\type1cid.c" />
+    <ClCompile Include="..\..\AddOns\freetype-2.9.1\source\gzip\ftgzip.c" />
+    <ClCompile Include="..\..\AddOns\freetype-2.9.1\source\lzw\ftlzw.c" />
+    <ClCompile Include="..\..\AddOns\freetype-2.9.1\source\pcf\pcf.c" />
+    <ClCompile Include="..\..\AddOns\freetype-2.9.1\source\pfr\pfr.c" />
+    <ClCompile Include="..\..\AddOns\freetype-2.9.1\source\psaux\psaux.c" />
+    <ClCompile Include="..\..\AddOns\freetype-2.9.1\source\pshinter\pshinter.c" />
+    <ClCompile Include="..\..\AddOns\freetype-2.9.1\source\psnames\psnames.c" />
+    <ClCompile Include="..\..\AddOns\freetype-2.9.1\source\raster\raster.c" />
+    <ClCompile Include="..\..\AddOns\freetype-2.9.1\source\sfnt\sfnt.c" />
+    <ClCompile Include="..\..\AddOns\freetype-2.9.1\source\smooth\smooth.c" />
+    <ClCompile Include="..\..\AddOns\freetype-2.9.1\source\truetype\truetype.c" />
+    <ClCompile Include="..\..\AddOns\freetype-2.9.1\source\type1\type1.c" />
+    <ClCompile Include="..\..\AddOns\freetype-2.9.1\source\type42\type42.c" />
+    <ClCompile Include="..\..\AddOns\freetype-2.9.1\source\winfonts\winfnt.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\include\freetype\config\ftconfig.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\include\freetype\config\ftheader.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\include\freetype\config\ftmodule.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\include\freetype\config\ftoption.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\include\freetype\config\ftstdlib.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\include\freetype\freetype.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\include\freetype\fterrdef.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\include\freetype\fterrors.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\include\freetype\ftimage.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\include\freetype\ftmoderr.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\include\freetype\ftsystem.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\include\freetype\fttypes.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\include\ft2build.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\source\freetype\ftadvanc.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\source\freetype\ftbbox.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\source\freetype\ftbdf.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\source\freetype\ftbitmap.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\source\freetype\ftbzip2.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\source\freetype\ftcache.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\source\freetype\ftcid.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\source\freetype\ftdriver.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\source\freetype\ftfntfmt.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\source\freetype\ftgasp.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\source\freetype\ftglyph.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\source\freetype\ftgxval.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\source\freetype\ftgzip.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\source\freetype\ftincrem.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\source\freetype\ftlcdfil.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\source\freetype\ftlist.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\source\freetype\ftlzw.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\source\freetype\ftmac.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\source\freetype\ftmm.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\source\freetype\ftmodapi.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\source\freetype\ftotval.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\source\freetype\ftoutln.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\source\freetype\ftparams.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\source\freetype\ftpfr.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\source\freetype\ftrender.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\source\freetype\ftsizes.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\source\freetype\ftsnames.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\source\freetype\ftstroke.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\source\freetype\ftsynth.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\source\freetype\fttrigon.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\source\freetype\ftwinfnt.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\source\freetype\internal\autohint.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\source\freetype\internal\cffotypes.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\source\freetype\internal\cfftypes.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\source\freetype\internal\ftcalc.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\source\freetype\internal\ftdebug.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\source\freetype\internal\ftdrv.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\source\freetype\internal\ftgloadr.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\source\freetype\internal\fthash.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\source\freetype\internal\ftmemory.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\source\freetype\internal\ftobjs.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\source\freetype\internal\ftpic.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\source\freetype\internal\ftpsprop.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\source\freetype\internal\ftrfork.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\source\freetype\internal\ftserv.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\source\freetype\internal\ftstream.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\source\freetype\internal\fttrace.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\source\freetype\internal\ftvalid.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\source\freetype\internal\internal.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\source\freetype\internal\psaux.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\source\freetype\internal\pshints.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\source\freetype\internal\services\svbdf.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\source\freetype\internal\services\svcfftl.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\source\freetype\internal\services\svcid.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\source\freetype\internal\services\svfntfmt.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\source\freetype\internal\services\svgldict.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\source\freetype\internal\services\svgxval.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\source\freetype\internal\services\svkern.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\source\freetype\internal\services\svmetric.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\source\freetype\internal\services\svmm.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\source\freetype\internal\services\svotval.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\source\freetype\internal\services\svpfr.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\source\freetype\internal\services\svpostnm.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\source\freetype\internal\services\svprop.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\source\freetype\internal\services\svpscmap.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\source\freetype\internal\services\svpsinfo.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\source\freetype\internal\services\svsfnt.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\source\freetype\internal\services\svttcmap.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\source\freetype\internal\services\svtteng.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\source\freetype\internal\services\svttglyf.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\source\freetype\internal\services\svwinfnt.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\source\freetype\internal\sfnt.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\source\freetype\internal\t1types.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\source\freetype\internal\tttypes.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\source\freetype\t1tables.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\source\freetype\ttnameid.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\source\freetype\tttables.h" />
+    <ClInclude Include="..\..\AddOns\freetype-2.9.1\source\freetype\tttags.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\..\AddOns\freetype-2.9.1\source\base\ftver.rc" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+  <Target Name="AfterBuild">
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="..\..\..\objs" />
+  </Target>
+</Project>

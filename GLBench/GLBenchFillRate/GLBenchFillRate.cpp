@@ -25,7 +25,7 @@
 #include "GLHierarchy/TextureFactoryConfig.h"
 #include "GLHierarchy/TextureUnitSetup.h"
 #include "GLHierarchy/TextureObject.h"
-#include "GLHierarchy/VertexShader.h"
+#include "GLHierarchy/VertexProgram.h"
 #include "System/Raptor.h"
 #include "System/Memory.h"
 
@@ -246,7 +246,7 @@ void Display::GLInitContext()
 		glEnd();
 	glEndList();
 
-	CVertexShader s("GL_SHADER");
+	CVertexProgram s("GL_SHADER");
 	GL_COORD_VERTEX texCoord1(0, 0, 0, 1);
 	square2 = glGenLists(1);
 	glNewList(square2, GL_COMPILE);
@@ -394,7 +394,7 @@ extern "C" GLBENCH_API void Bench(CWnd *parent)
 	if (dataManager != NULL)
 	{
 		//	Change package and erase previous files in case of updates
-		dataManager->setPackName("GLBench.pck");
+		dataManager->managePackage("GLBench.pck");
 
 		M1_1024_path = dataManager->ExportFile("M1_1024.jpg");
 		if (M1_1024_path.empty()) return;

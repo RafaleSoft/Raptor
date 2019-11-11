@@ -4,6 +4,9 @@
   from this file in your programs.
 */
 
+#include <stdint.h>
+
+
 #ifndef _TIFFCONF_
 #define _TIFFCONF_
 
@@ -11,40 +14,40 @@
 #define SIZEOF_INT 4
 
 /* Signed 8-bit type */
-#define TIFF_INT8_T signed char
+#define TIFF_INT8_T int8_t
 
 /* Unsigned 8-bit type */
-#define TIFF_UINT8_T unsigned char
+#define TIFF_UINT8_T uint8_t
 
 /* Signed 16-bit type */
-#define TIFF_INT16_T signed short
+#define TIFF_INT16_T int16_t
 
 /* Unsigned 16-bit type */
-#define TIFF_UINT16_T unsigned short
+#define TIFF_UINT16_T uint16_t
 
 /* Signed 32-bit type formatter */
 #define TIFF_INT32_FORMAT "%d"
 
 /* Signed 32-bit type */
-#define TIFF_INT32_T signed int
+#define TIFF_INT32_T int32_t
 
 /* Unsigned 32-bit type formatter */
 #define TIFF_UINT32_FORMAT "%u"
 
 /* Unsigned 32-bit type */
-#define TIFF_UINT32_T unsigned int
+#define TIFF_UINT32_T uint32_t
 
 /* Signed 64-bit type formatter */
 #define TIFF_INT64_FORMAT "%I64d"
 
 /* Signed 64-bit type */
-#define TIFF_INT64_T signed __int64
+#define TIFF_INT64_T int64_t
 
 /* Unsigned 64-bit type formatter */
 #define TIFF_UINT64_FORMAT "%I64u"
 
 /* Unsigned 64-bit type */
-#define TIFF_UINT64_T unsigned __int64
+#define TIFF_UINT64_T uint64_t
 
 #if _WIN64
 /*

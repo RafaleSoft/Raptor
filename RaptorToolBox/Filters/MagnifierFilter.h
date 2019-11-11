@@ -1,6 +1,20 @@
-// MagnifierFilter.h: interface for the CMagnifierFilter class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  MagnifierFilter.h                                                      */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
 
 #if !defined(AFX_MAGNIFIERFILTER_H__3660D446_2F92_4D02_A795_BFF8336D61D2__INCLUDED_)
 #define AFX_MAGNIFIERFILTER_H__3660D446_2F92_4D02_A795_BFF8336D61D2__INCLUDED_
@@ -17,9 +31,6 @@
 	#include "GLHierarchy/ProgramParameters.h"
 #endif
 
-RAPTOR_NAMESPACE_BEGIN
-class CRaptorDisplay;
-RAPTOR_NAMESPACE_END
 
 RAPTOR_NAMESPACE
 
@@ -69,18 +80,19 @@ private:
 	//!	Rebuild the kernel data in an RGBA texture.
 	void computeKernel(void);
 
+
 	bool			m_bRebuild;
     CTextureObject	*kernelTexture;
 
     CRaptorDisplay	*xBuffer;
     CTextureObject	*xKernelPass;
+
     CShader			*m_pXKernelShader;
     CShader			*m_pYKernelShader;
 
     GL_COORD_VERTEX	kernelParams;
-	CProgramParameters v_params_x;
-	CProgramParameters v_params_y;
-	CProgramParameters f_params;
+	CProgramParameters params_x;
+	CProgramParameters params_y;
 
     float (CMagnifierFilter::*kernelBuilder)(float x,float k1,float k2) const;
 };

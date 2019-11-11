@@ -835,7 +835,7 @@ static enum TIFFReadDirEntryErr TIFFReadDirEntryArrayWithLimit(
 	uint32 datasize;
 	void* data;
         uint64 target_count64;
-	typesize=TIFFDataWidth(direntry->tdir_type);
+		typesize = TIFFDataWidth((TIFFDataType)direntry->tdir_type);
 
         target_count64 = (direntry->tdir_count > maxcount) ?
                 maxcount : direntry->tdir_count;
@@ -4942,7 +4942,7 @@ TIFFFetchNormalTag(TIFF* tif, TIFFDirEntry* dp, int recover)
 				if (err==TIFFReadDirEntryErrOk)
 				{
 					uint32 mb = 0;
-					int n;
+					int n = 0;
 					if (data != NULL)
 					{
 					    uint8* ma = data;
@@ -4958,12 +4958,12 @@ TIFFFetchNormalTag(TIFF* tif, TIFFDirEntry* dp, int recover)
 						TIFFWarningExt(tif->tif_clientdata,module,"ASCII value for tag \"%s\" contains null byte in value; value incorrectly truncated during reading due to implementation limitations",fip->field_name);
 					else if (mb+1>(uint32)dp->tdir_count)
 					{
-						uint8* o;
+						uint8* o = NULL;
 						TIFFWarningExt(tif->tif_clientdata,module,"ASCII value for tag \"%s\" does not end in null byte",fip->field_name);
 						if ((uint32)dp->tdir_count+1!=dp->tdir_count+1)
-							o=NULL;
+							o = NULL;
 						else
-							o=_TIFFmalloc((uint32)dp->tdir_count+1);
+							o = (uint8*)_TIFFmalloc((uint32)dp->tdir_count+1);
 						if (o==NULL)
 						{
 							if (data!=NULL)

@@ -1,3 +1,20 @@
+/***************************************************************************/
+/*                                                                         */
+/*  GLEXTMacros.h    											           */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
 #ifndef __glext_macros_h_
 #define __glext_macros_h_
 
@@ -1406,6 +1423,22 @@
 			}
 	#else
 		#define IMPLEMENT_GL_ARB_uniform_buffer_object(target)
+	#endif
+#endif
+
+#ifndef	IMPLEMENT_WGL_ARB_create_context
+	#ifdef WGL_ARB_create_context
+	#define IMPLEMENT_WGL_ARB_create_context(target)\
+		if (Raptor::glIsExtensionSupported(WGL_ARB_RENDER_TEXTURE_EXTENSION_NAME))\
+		{\
+			target->wglCreateContextAttribsARB = (PFN_WGL_CREATE_CONTEXT_ATTRIBS_PROC)GET_PROC_ADDRESS("wglCreateContextAttribsARB");\
+		}\
+		else\
+		{\
+			target->wglCreateContextAttribsARB = NULL; \
+		}
+	#else
+		#define IMPLEMENT_WGL_ARB_create_context(target)
 	#endif
 #endif
 

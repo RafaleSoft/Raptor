@@ -10,9 +10,9 @@
 
 #include "GLHierarchy/GeometryEditor.h"
 #include "GLHierarchy/GLFont.h"
-#include "GLHierarchy/FragmentShader.h"
+#include "GLHierarchy/FragmentProgram.h"
 #include "GLHierarchy/SimpleObject.h"
-#include "GLHierarchy/VertexShader.h"
+#include "GLHierarchy/VertexProgram.h"
 #include "Engine/3DScene.h"
 #include "GLHierarchy/TextureFactory.h"
 #include "GLHierarchy/TextureFactoryConfig.h"
@@ -59,9 +59,9 @@ void Ground::glRender()
 	glColor4f(1.0f,1.0f,1.0f,1.0f);
 
 	if (glIsEnabled(GL_TEXTURE_2D))
-		glCallList(c1.handle);
+		glCallList(c1.handle());
 
-	CVertexShader s("GL_SHADER");
+	CVertexProgram s("GL_SHADER");
 	GL_COORD_VERTEX texCoord1(0,0,0,1);
 	GL_COORD_VERTEX position(-20.0f,-5.0f,-20.0f,1.0f);
 
@@ -170,7 +170,7 @@ void Ground::glRender()
 	glEnable(GL_LIGHTING);
 
 	if (glIsEnabled(GL_TEXTURE_2D))
-		glCallList(c2.handle);
+		glCallList(c2.handle());
 
 	dt+=0.001f;
 	if (dt>1.0) dt=0.0;

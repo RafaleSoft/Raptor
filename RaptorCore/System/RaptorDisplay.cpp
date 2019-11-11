@@ -27,11 +27,11 @@
 #if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
 	#include "RaptorGLExtensions.h"
 #endif
-#ifndef __GLOBAL_H__
-	#include "Global.h"
+#if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
+	#include "System/RaptorErrorManager.h"
 #endif
-#if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
-	#include "Raptor.h"
+#if !defined(AFX_OPENGL_H__6C8840CA_BEFA_41DE_9879_5777FBBA7147__INCLUDED_)
+	#include "Subsys/OpenGL/RaptorOpenGL.h"
 #endif
 #if !defined(AFX_3DENGINE_H__DB24F018_80B9_11D3_97C1_FC2841000000__INCLUDED_)
 	#include "Engine/3DEngine.h"
@@ -53,6 +53,9 @@
 #endif
 #if !defined(AFX_GEOMETRYALLOCATOR_H__802B3C7A_43F7_46B2_A79E_DDDC9012D371__INCLUDED_)
 	#include "Subsys/GeometryAllocator.h"
+#endif
+#if !defined(AFX_RAPTORINSTANCE_H__90219068_202B_46C2_BFF0_73C24D048903__INCLUDED_)
+	#include "Subsys/RaptorInstance.h"
 #endif
 
 
@@ -168,7 +171,7 @@ void CRaptorDisplay::addScene(C3DScene* const scene )
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 	else
 	{
-		Raptor::GetErrorManager()->generateRaptorError(Global::COpenGLClassID::GetClassId(),
+		Raptor::GetErrorManager()->generateRaptorError(COpenGL::COpenGLClassID::GetClassId(),
                                                        CRaptorErrorManager::RAPTOR_WARNING,
 										               "Raptor Display already manages the scene in call to addScene!");
 	}
@@ -191,7 +194,7 @@ bool CRaptorDisplay::selectScene( const std::string& sname)
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 	if (!selected)
 	{
-		Raptor::GetErrorManager()->generateRaptorError(Global::COpenGLClassID::GetClassId(),
+		Raptor::GetErrorManager()->generateRaptorError(COpenGL::COpenGLClassID::GetClassId(),
                                                        CRaptorErrorManager::RAPTOR_WARNING,
 										               "Raptor Display cannot find the scene in call to SceneScene!");
 	}
@@ -236,7 +239,7 @@ void CRaptorDisplay::setViewPoint(IViewPoint *viewPoint)
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 		else
 		{
-			Raptor::GetErrorManager()->generateRaptorError(Global::COpenGLClassID::GetClassId(),
+			Raptor::GetErrorManager()->generateRaptorError(COpenGL::COpenGLClassID::GetClassId(),
                                                            CRaptorErrorManager::RAPTOR_WARNING,
 											               "Raptor Display cannot setViewPoint because it is not bound!");
 		}
@@ -248,20 +251,21 @@ void CRaptorDisplay::setViewPoint(IViewPoint *viewPoint)
 
 bool CRaptorDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
 {
-	if (device.handle != CGL_NULL)
+	if (device.handle() != CGL_NULL)
 	{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 		if ((m_pCurrentDisplay != NULL) && (m_pCurrentDisplay != this))
 		{
-			Raptor::GetErrorManager()->generateRaptorError(Global::COpenGLClassID::GetClassId(),
+			Raptor::GetErrorManager()->generateRaptorError(COpenGL::COpenGLClassID::GetClassId(),
                                                            CRaptorErrorManager::RAPTOR_WARNING,
 											               "Another RaptorDisplay is already bound !");
 		}
 #endif
 		m_pCurrentDisplay = this;
 
-        Global::GetInstance().getCurrentStatus().iRenderedObjects = 0;
-		Global::GetInstance().getCurrentStatus().iRenderedTriangles = 0;
+		CRaptorInstance &instance = CRaptorInstance::GetInstance();
+        instance.iRenderedObjects = 0;
+		instance.iRenderedTriangles = 0;
 	}
 
 	if (m_pViewPoint != NULL)
@@ -312,25 +316,23 @@ bool CRaptorDisplay::glvkUnBindDisplay(void)
 void CRaptorDisplay::glRender(const RAPTOR_HANDLE& handle)
 {
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
-	if ((handle.handle == 0) || (handle.hClass == 0))
+	if ((handle.handle() == 0) || (handle.hClass() == 0))
 	{
-		Raptor::GetErrorManager()->generateRaptorError(	Global::COpenGLClassID::GetClassId(),
-														CRaptorErrorManager::RAPTOR_ERROR,
-														"Invalid Raptor Handle in call to generic Render !");
+		RAPTOR_ERROR(	COpenGL::COpenGLClassID::GetClassId(),
+						"Invalid Raptor Handle in call to generic Render !");
 		return;
 	}
 #endif
 
-	if (handle.hClass == Global::COpenGLClassID::GetClassId().ID())
+	if (handle.hClass() == COpenGL::COpenGLClassID::GetClassId().ID())
 	{
-		if (glIsList(handle.handle))
-			glCallList(handle.handle);
+		if (glIsList(handle.handle()))
+			glCallList(handle.handle());
 		else
 		{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
-			Raptor::GetErrorManager()->generateRaptorError(	Global::COpenGLClassID::GetClassId(),
-															CRaptorErrorManager::RAPTOR_WARNING,
-															"Unsupported Raptor Handle in call to generic Render !");
+			RAPTOR_WARNING(	COpenGL::COpenGLClassID::GetClassId(),
+							"Unsupported Raptor Handle in call to generic Render !");
 #endif
 		}
 	}
@@ -415,7 +417,8 @@ bool CRaptorDisplay::importObject(CRaptorIO& io)
 	da.acceleration = CRaptorDisplayConfig::SOFTWARE;
 	da.depth_buffer = true;
 	da.double_buffer = true;
-	Global::GetInstance().setDefaultConfig(da);
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+	instance.setDefaultConfig(da);
 
 	return true;
 }
@@ -433,7 +436,7 @@ bool CRaptorDisplay::glQueryStatus(CRaptorDisplayConfig &state,unsigned long que
 	if (((m_pCurrentDisplay == NULL) || (m_pCurrentDisplay != this)) &&
 		 (GL_CONFIG_STATE_QUERY != query))
 	{
-		Raptor::GetErrorManager()->generateRaptorError(Global::COpenGLClassID::GetClassId(),
+		Raptor::GetErrorManager()->generateRaptorError(COpenGL::COpenGLClassID::GetClassId(),
                                                        CRaptorErrorManager::RAPTOR_WARNING,
 										               "None or another RaptorDisplay is already bound !");
 	}
@@ -448,7 +451,7 @@ bool CRaptorDisplay::glApplyStatus(const CRaptorDisplayConfig& state,unsigned lo
 	if (((m_pCurrentDisplay == NULL) || (m_pCurrentDisplay != this)) &&
 		(GL_CONFIG_STATE_QUERY != query))
 	{
-		Raptor::GetErrorManager()->generateRaptorError(Global::COpenGLClassID::GetClassId(),
+		Raptor::GetErrorManager()->generateRaptorError(COpenGL::COpenGLClassID::GetClassId(),
                                                        CRaptorErrorManager::RAPTOR_WARNING,
 										               "None or another RaptorDisplay is already bound !");
 	}

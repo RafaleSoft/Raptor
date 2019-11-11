@@ -46,7 +46,9 @@
 	 *  With Visual Studio 2013, no penalty for this declaration.
 	 */
 	#define NOEXCEPT throw() 
-#else	
+#elif defined(LINUX)
+	#define NOEXCEPT throw()
+#else
 	#define NOEXCEPT noexcept	
 #endif
 

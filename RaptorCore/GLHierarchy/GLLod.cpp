@@ -7,21 +7,15 @@
 #if !defined(AFX_GLLOD_H__95ED92DC_1BF7_4869_912C_655779B2ED7B__INCLUDED_)
 	#include "GLLod.h"
 #endif
-
 #if !defined(AFX_3DSET_H__DB24F01B_80B9_11D3_97C1_FC2841000000__INCLUDED_)
 	#include "3DSet.h"
 #endif
-
 #if !defined(AFX_GEOMETRY_H__B42ABB87_80E8_11D3_97C2_DE5C28000000__INCLUDED_)
 	#include "Geometry.h"
 #endif
-#if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
-	#include "System/Raptor.h"
+#if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
+	#include "System/RaptorErrorManager.h"
 #endif
-#ifndef __GLOBAL_H__
-	#include "System/Global.h"
-#endif
-
 #if !defined(AFX_RAPTORIO_H__87D52C27_9117_4675_95DC_6AD2CCD2E78D__INCLUDED_)
 	#include "System/RaptorIO.h"
 #endif
@@ -35,10 +29,6 @@
 
 RAPTOR_NAMESPACE
 
-
-//////////////////////////////////////////////////////////////////////
-// Construction/Destruction
-//////////////////////////////////////////////////////////////////////
 static CGLLod::CGLLodClassID lodId;
 static CPersistentObjectType<CGLLod> lodFactory(lodId);
 const CPersistence::CPersistenceClassID& CGLLod::CGLLodClassID::GetClassId(void)
@@ -46,6 +36,10 @@ const CPersistence::CPersistenceClassID& CGLLod::CGLLodClassID::GetClassId(void)
 	return lodId;
 }
 
+
+//////////////////////////////////////////////////////////////////////
+// Construction/Destruction
+//////////////////////////////////////////////////////////////////////
 CGLLod::CGLLod(CObject3D * const level0, const std::string& name)
 	:CObject3DInstance(lodId,name)
 {

@@ -20,13 +20,14 @@
 #include "GLHierarchy/IRenderingProperties.h"
 #include "GLHierarchy/Object3DInstance.h"
 #include "GLHierarchy/Shader.h"
-#include "GLHierarchy/VertexProgram.h"
-#include "GLHierarchy/FragmentProgram.h"
+#include "GLHierarchy/VertexShader.h"
+#include "GLHierarchy/FragmentShader.h"
 #include "GLHierarchy/TextureFactory.h"
 #include "GLHierarchy/TextureFactoryConfig.h"
 #include "GLHierarchy/TextureSet.h"
 #include "GLHierarchy/TextureUnitSetup.h"
 #include "GLHierarchy/Light.h"
+#include "GLHierarchy/OpenGLShaderStage.h"
 
 #include "Toolbox/BasicObjects.h"
 
@@ -66,17 +67,21 @@ void CAmbientOcclusionDisplay::Init()
 	CGenericDisplay::Init();
 	
 	CShader *AO_shader = new CShader("AO_SHADER");
-	CVertexProgram *vp = AO_shader->glGetVertexProgram("AO_VP");
-	CFragmentProgram *fp = AO_shader->glGetFragmentProgram("AO_FP");
-
-	CProgramParameters ao_params;
-	ao_params.addParameter("AOMap", CTextureUnitSetup::IMAGE_UNIT_2);
-	vp->setProgramParameters(ao_params);
+	COpenGLShaderStage *stage = AO_shader->glGetOpenGLShader();
+	CVertexShader *vp = stage->glGetVertexShader("AO_VP");
+	CFragmentShader *fp = stage->glGetFragmentShader("AO_FP");
 
 	bool res = vp->glLoadProgram(AO_vp_src);
-	res &= fp->glLoadProgram(AO_fp_src);
-	res &= AO_shader->glCompileShader();
+	res = res && fp->glLoadProgram(AO_fp_src);
+	res = res && stage->glCompileShader();
+	if (res)
+	{
+		CProgramParameters ao_params;
+		ao_params.addParameter("AOMap", CTextureUnitSetup::IMAGE_UNIT_2);
+		stage->setProgramParameters(ao_params);
+	}
 	
+
 	m_pLight = new CLight("AOLight");
     m_pLight->setAmbient(1.0f,1.0f,1.0f,1.0f);
     m_pLight->setDiffuse(1.0f,1.0f,1.0f,1.0f);
@@ -190,8 +195,8 @@ void CAmbientOcclusionDisplay::ReInit()
 	IRenderingProperties &rp = pDisplay->getRenderingProperties();
 	rp.setTexturing(IRenderingProperties::ENABLE);
 	rp.setLighting(IRenderingProperties::ENABLE);
-	//rp->setWireframe(CRenderingProperties::ENABLE);
-	//rp->setCullFace(CRenderingProperties::DISABLE);
+	//rp->setWireframe(IRenderingProperties::ENABLE);
+	//rp->setCullFace(IRenderingProperties::DISABLE);
 
 	pDisplay->selectScene("AO_SCENE");
 }

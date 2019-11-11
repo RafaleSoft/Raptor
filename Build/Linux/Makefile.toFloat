@@ -1,0 +1,26 @@
+export
+
+CCCFLAGS =  -DSIMD_NO_ASSEMBLY -DLINUX -fPIC
+OUTPUT = $(RAPTOR_ROOT)/Build/Linux/Release/toFloat
+SRCDIR = $(RAPTOR_ROOT)/AddOns/OpenEXR-2.3.0/source/Half
+INCDIRS = -I$(SRCDIR)
+LDFLAGS = -Bdynamic -shared -lstdc++
+
+
+all:	$(OUTPUT)/toFloat
+
+clean:
+	rm -rf $(OUTPUT)
+	mkdir -p $(OUTPUT)
+
+SRC = \
+	$(SRCDIR)/toFloat.cpp
+
+OBJ = $(SRC:$(SRCDIR)/%.cpp=$(OUTPUT)/%.o)
+	
+$(OUTPUT)/toFloat:	$(OBJ) 
+	g++ $(OBJ) -o $(OUTPUT)/toFloat
+	cp $(OUTPUT)/toFloat $(REDIST)/Bin/
+
+$(OBJ):	$(SRC)
+	g++ $(CCCFLAGS) $(INCDIRS) -c $(<D)/$(*F).cpp  -o $(OUTPUT)/$(@F)

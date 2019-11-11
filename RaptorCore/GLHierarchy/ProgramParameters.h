@@ -11,13 +11,13 @@
 
 #include "Subsys/CodeGeneration.h"
 
-
-#ifndef __CGLTYPES_HPP__
-	#include "System/CGLTypes.h"
-#endif
 #if !defined(AFX_TEXTUREUNITSETUP_H__4A6ADC72_02E5_4F2A_931E_A736B6D6E0F0__INCLUDED_)
 	#include "GLHierarchy/TextureUnitSetup.h"
 #endif
+#if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
+	#include "System/RaptorErrorManager.h"
+#endif
+
 
 RAPTOR_NAMESPACE_BEGIN
 
@@ -71,24 +71,24 @@ public:
 			return *this;
 		}
 
-#if _MSC_VER == 1500
+#if (_MSC_VER <= 1500) || defined(LINUX)
 		static size_t hash_value(const std::string& s)
 		{	
 			const char *ptr = s.c_str();
 			const char *end = ptr + s.size();
 			size_t hash = 2166136261U;
-			while(end != end)
+			while(ptr != end)
 				hash = 16777619U * hash ^ (size_t)*ptr++;
 			return (hash);
 		}
 #endif
 		virtual size_t getTypeId(void) const
 		{
-#if _MSC_VER > 1500
-			static size_t ti = typeid(void*).hash_code();
-#else
+#if (_MSC_VER <= 1500) || defined(LINUX)
 			const std::string nm = std::string(typeid(void*).name());
 			static size_t ti = hash_value(nm);
+#else
+			static size_t ti = typeid(void*).hash_code();
 #endif		
 			return ti;
 		}
@@ -225,9 +225,8 @@ bool CProgramParameters::addParameter(const std::string& name, const P& param)
 	{
 		if (m_parameters[i]->name() == name)
 		{
-			Raptor::GetErrorManager()->generateRaptorError(CPersistence::CPersistenceClassID::GetClassId(),
-														   CRaptorErrorManager::RAPTOR_WARNING,
-														   "Duplicate parameter name");
+			RAPTOR_WARNING(	CPersistence::CPersistenceClassID::GetClassId(),
+							"Duplicate parameter name");
 			return false;
 		}
 	}

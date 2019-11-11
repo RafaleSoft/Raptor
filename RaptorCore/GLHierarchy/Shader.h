@@ -1,6 +1,20 @@
-// Shader.h: interface for the CShader class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  Shader.h                                                               */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
 
 #if !defined(AFX_SHADER_H__4D405EC2_7151_465D_86B6_1CA99B906777__INCLUDED_)
 #define AFX_SHADER_H__4D405EC2_7151_465D_86B6_1CA99B906777__INCLUDED_
@@ -24,12 +38,10 @@ RAPTOR_NAMESPACE_BEGIN
 
 class CMaterial;
 class CTextureUnitSetup;
-class CVertexShader;
-class CFragmentShader;
-class CVertexProgram;
-class CFragmentProgram;
-class CGeometryProgram;
 class CVulkanShaderStage;
+class COpenGLProgramStage;
+class COpenGLShaderStage;
+
 
 class RAPTOR_API CShader : public CPersistence, public CObjectReference
 {
@@ -49,12 +61,6 @@ public:
 	virtual void glRender(void);
 	//! Make the fixed GL pipeline the default shader.
     virtual void glStop(void);
-
-    //! Generate the shader as a compiled object ( program objects / display lists ).
-    //! The compile state must be correct to render the shader.
-	//! @return true if successfully compiled, false otherwise.
-    bool glCompileShader(void); 
-
 
 
     //!
@@ -102,75 +108,49 @@ public:
 	void glRenderTexture(void);
 
 
-    //!
-    //! Shaders configuration
-    //!
-	//!	Returns the vertex shader
+	//!
+	//! OpenGL programs configuration
+	//!
+	//!	Returns the OpenGL Program.
 	//!	Allocate a new one if necessary
-	CVertexShader * const glGetVertexShader(const std::string& name = "");
+	COpenGLProgramStage * const glGetOpenGLProgram(const std::string& name = "");
 
-	//!	Returns true if shader has a Vertex Shader already
-	bool hasVertexShader(void) const { return m_pVShader != NULL; };
+	//!	Returns true if Program has a OpenGL Program already
+	bool hasOpenGLProgram(void) const { return m_pOpenGLProgram != NULL; };
 
-	//! Removes the vertex shader.
-	//! @return true if the vertex shader has been deleted
-	bool glRemoveVertexShader(void);
+	//! Removes the OpenGL program.
+	//! @return true if the OpenGL program has been deleted
+	bool glRemoveOpenGLProgram(void);
 
-	//!	Returns the fragment shader
+
+	//!
+	//! OpenGL shaders configuration
+	//!
+	//!	Returns the OpenGL Shader.
 	//!	Allocate a new one if necessary
-	CFragmentShader * const glGetFragmentShader(const std::string& name = "");
+	COpenGLShaderStage * const glGetOpenGLShader(const std::string& name = "");
 
-	//!	Returns true if shader has a Fragment Shader already
-	bool hasFragmentShader(void) const { return m_pFShader != NULL; };
+	//!	Returns true if Program has a OpenGL Program already
+	bool hasOpenGLShader(void) const { return m_pOpenGLShader != NULL; };
 
-	//! Removes the fragment shader.
-	//! @return true if the fragment shader has been deleted
-	bool glRemoveFragmentShader(void);
+	//! Removes the OpenGL program.
+	//! @return true if the OpenGL program has been deleted
+	bool glRemoveOpenGLShader(void);
 
-    //!	Returns the vertex Program
+
+	//!
+	//! Vulkan shaders configuration
+	//!
+	//!	Returns the Vulkan Shader.
 	//!	Allocate a new one if necessary
-	CVertexProgram * const glGetVertexProgram(const std::string& name = "");
-
-	//!	Returns true if Program has a Vertex Program already
-	bool hasVertexProgram(void) const { return m_pVProgram != NULL; };
-
-	//! Removes the vertex program.
-	//! @return true if the vertex program has been deleted
-	bool glRemoveVertexProgram(void);
-
-	//!	Returns the fragment Program
-	//!	Allocate a new one if necessary
-	CFragmentProgram * const glGetFragmentProgram(const std::string& name = "");
-
-	//!	Returns true if Program has a Fragment Program already
-	bool hasFragmentProgram(void) const { return m_pFProgram != NULL; };
-
-	//! Removes the fragment program.
-	//! @return true if the fragment program has been deleted
-	bool glRemoveFragmentProgram(void);
-
-	//!	Returns the geometry Program
-	//!	Allocate a new one if necessary
-	CGeometryProgram * const glGetGeometryProgram(const std::string& name = "");
-
-	//!	Returns true if Program has a Vertex Program already
-	bool hasGeometryProgram(void) const { return m_pGProgram != NULL; };
-
-	//! Removes the geometry program.
-	//! @return true if the geometry program has been deleted
-	bool glRemoveGeometryProgram(void);
-
-
-	//!	Returns the geometry Program
-	//!	Allocate a new one if necessary
-	CVulkanShaderStage * const vkGetVulkanProgram(const std::string& name = "");
+	CVulkanShaderStage * const vkGetVulkanShader(const std::string& name = "");
 
 	//!	Returns true if Program has a Vulkan Shader already
-	bool hasVulkanProgram(void) const { return m_pVulkanProgram != NULL; };
+	bool hasVulkanShader(void) const { return m_pVulkanShader != NULL; };
 
-	//! Removes the Vulkan program.
+	//! Removes the Vulkan Shader.
 	//! @return true if the Vulkan program has been deleted
-	bool vkRemoveVulkanProgram(void);
+	bool vkRemoveVulkanShader(void);
 
 
 	//!	Streams : implement CPersistence
@@ -185,9 +165,10 @@ protected:
 	//! Destructor.
 	virtual ~CShader();
 
+
 private:
     //! Denied operators
-    CShader& operator=(const CShader&) { return *this; }
+	CShader& operator=(const CShader&);
 
     //! Implements CPersistence
     virtual void unLink(const CPersistence* p);
@@ -195,25 +176,19 @@ private:
 	CColor::RGBA		m_color;
     static CColor::RGBA	m_ambient;
 
-    RAPTOR_HANDLE       m_shaderProgram;
 	RAPTOR_HANDLE		m_textureUnitSetup;
 	RAPTOR_HANDLE		m_textureUnitUnSetup;
 
 	CMaterial			*m_pMaterial;
 	CTextureUnitSetup	*m_pTMUSetup;
-	CVertexShader		*m_pVShader;
-	CFragmentShader		*m_pFShader;
-    CVertexProgram      *m_pVProgram;
-    CFragmentProgram    *m_pFProgram;
-	CGeometryProgram	*m_pGProgram;
-	CVulkanShaderStage	*m_pVulkanProgram;
 
-	bool				m_bDeleteVShader;
-	bool				m_bDeleteFShader;
-    bool				m_bDeleteVProgram;
-	bool				m_bDeleteFProgram;
-	bool				m_bDeleteGProgram;
-	bool				m_bDeleteVulkanProgram;
+	CVulkanShaderStage	*m_pVulkanShader;
+	COpenGLShaderStage	*m_pOpenGLShader;
+	COpenGLProgramStage	*m_pOpenGLProgram;
+
+	bool				m_bDeleteVulkanShader;
+	bool				m_bDeleteOpenGLProgram;
+	bool				m_bDeleteOpenGLShader;
 	bool				m_bDeleteTMUSetup;
 };
 

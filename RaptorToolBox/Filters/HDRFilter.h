@@ -1,6 +1,20 @@
-// HDRFilter.h: interface for the CHDRFilter class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  HDRFilter.h                                                            */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
 
 #if !defined(AFX_HDRFILTER_H__6E9B4FC8_154A_46DD_A218_6BC438E45C6A__INCLUDED_)
 #define AFX_HDRFILTER_H__6E9B4FC8_154A_46DD_A218_6BC438E45C6A__INCLUDED_
@@ -23,7 +37,7 @@
 
 RAPTOR_NAMESPACE_BEGIN
 class CRaptorDisplay;
-class CVertexShader;
+class CVertexProgram;
 class CFragmentShader;
 RAPTOR_NAMESPACE_END
 
@@ -62,7 +76,7 @@ private:
 	virtual void glRenderFilterOutput(void);
 
 	//!	Build all intermediate and final shaders
-	bool glBuildShaders(unsigned int width,unsigned int height);
+	bool glBuildShaders(void);
 
 	//! HDR rendering attributes
     unsigned int    nLevels;
@@ -80,7 +94,7 @@ private:
 	//! Extract high frequencies
 	CProgramParameters::CParameter<GL_COORD_VERTEX> thresholdParam;
 	CProgramParameters thresholdParams;
-    CShader *m_pTreshholdFreqs;
+    CShader			*m_pTreshholdFreqs;
     CRaptorDisplay  *m_pDownHighFreqs;
     CTextureObject  *m_pDownHFBuffer;
 
@@ -90,12 +104,11 @@ private:
     CRaptorDisplay  *m_pDownBlurYDisplay;
     CTextureObject  *m_pDownBlurXBuffer;
     CTextureObject  *m_pDownBlurYBuffer;
-    CVertexShader   *m_pBlurXOffsets;
-    CVertexShader   *m_pBlurYOffsets;
-    CFragmentShader *m_pBlur;
-
+	CShader			*m_pBlenderX;
+	CShader			*m_pBlenderY;
+	
 	//! Final image composition with tone mapping
-    CShader *m_pComposite;
+    CShader			*m_pComposite;
     
 	//! Initial display configuration used to build internal subdisplays
     CRaptorDisplayConfig rda;

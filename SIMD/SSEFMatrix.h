@@ -36,13 +36,13 @@
 class CSSEFMatrix : public CGenericAlignedMatrix<float>
 {
 public:
-	CSSEFMatrix();
+	CSSEFMatrix() NOEXCEPT;
 	virtual ~CSSEFMatrix();
 
 #ifndef SIMD_NO_ASSEMBLY
 	#pragma warning(disable:4100) // unreferenced parameter
 	#pragma warning(disable:4035) // no return value
-	CSSEFMatrix& SIMD_CALL operator= ( const CSSEFMatrix& m )
+	CSSEFMatrix& SIMD_CALL operator= ( const CSSEFMatrix& m ) NOEXCEPT
 	{
 		__asm
 		{
@@ -56,7 +56,7 @@ public:
 	};
 
 	#pragma warning(disable:4100) // unreferenced parameter
-	CSSEFMatrix& SIMD_CALL operator= ( const float m[16] )
+	CSSEFMatrix& SIMD_CALL operator= ( const float m[16] ) NOEXCEPT
 	{
 		__asm
 		{
@@ -69,7 +69,7 @@ public:
 	};
 
 	#pragma warning(disable:4100) // unreferenced parameter
-	CSSEFMatrix& SIMD_CALL operator= ( const CGenericAlignedMatrix<float>& m )
+	CSSEFMatrix& SIMD_CALL operator= ( const CGenericAlignedMatrix<float>& m ) NOEXCEPT
 	{
 		__asm
 		{
@@ -86,31 +86,31 @@ public:
 	float SIMD_CALL Det(void);
 
 	// unary operations
-	CSSEFMatrix& SIMD_CALL operator-(void);
-	CSSEFMatrix& SIMD_CALL operator!(void);
-	CSSEFMatrix& SIMD_CALL operator-=(const CSSEFMatrix& m);
-	CSSEFMatrix& SIMD_CALL operator+=(const CSSEFMatrix& m);
+	CSSEFMatrix& SIMD_CALL operator-(void) NOEXCEPT;
+	CSSEFMatrix& SIMD_CALL operator!(void) NOEXCEPT;
+	CSSEFMatrix& SIMD_CALL operator-=(const CSSEFMatrix& m) NOEXCEPT;
+	CSSEFMatrix& SIMD_CALL operator+=(const CSSEFMatrix& m) NOEXCEPT;
 
-	CSSEFMatrix& SIMD_CALL operator*=(const CSSEFMatrix& m);
-	CSSEFMatrix& SIMD_CALL operator*=(const float& t);
+	CSSEFMatrix& SIMD_CALL operator*=(const CSSEFMatrix& m) NOEXCEPT;
+	CSSEFMatrix& SIMD_CALL operator*=(const float& t) NOEXCEPT;
 
 	// binary operations
-	CSSEFMatrix& SIMD_CALL operator+(const CSSEFMatrix& m2) const;
-	CSSEFMatrix& SIMD_CALL operator-(const CSSEFMatrix& m2) const;
+	CSSEFMatrix& SIMD_CALL operator+(const CSSEFMatrix& m2) const NOEXCEPT;
+	CSSEFMatrix& SIMD_CALL operator-(const CSSEFMatrix& m2) const NOEXCEPT;
 #endif
 };
 
 #ifndef SIMD_NO_ASSEMBLY
-CSSEFMatrix& SIMD_CALL operator*(const CSSEFMatrix& m1, const CSSEFMatrix& m2);
-CSSEFMatrix& SIMD_CALL operator*(const float& v, const CSSEFMatrix& m);
-CSSEFMatrix& SIMD_CALL operator*(const CSSEFMatrix& m, const float& v);
+CSSEFMatrix& SIMD_CALL operator*(const CSSEFMatrix& m1, const CSSEFMatrix& m2) NOEXCEPT;
+CSSEFMatrix& SIMD_CALL operator*(const float& v, const CSSEFMatrix& m) NOEXCEPT;
+CSSEFMatrix& SIMD_CALL operator*(const CSSEFMatrix& m, const float& v) NOEXCEPT;
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 // implementation
 /////////////////////////////////////////////////////////////////////////////////////////////
 extern CSSEFMatrix _alignedSSEFloatMatrix;
 
-__inline CSSEFMatrix& SIMD_CALL CSSEFMatrix::operator-(void)
+__inline CSSEFMatrix& SIMD_CALL CSSEFMatrix::operator-(void) NOEXCEPT
 {
 	__asm
 	{
@@ -140,7 +140,7 @@ __inline CSSEFMatrix& SIMD_CALL CSSEFMatrix::operator-(void)
 	sse_storeaps(0x1f)		// v4
 }
 
-__inline CSSEFMatrix& SIMD_CALL CSSEFMatrix::operator!(void)
+__inline CSSEFMatrix& SIMD_CALL CSSEFMatrix::operator!(void) NOEXCEPT
 {
 	__asm
 	{
@@ -169,7 +169,7 @@ __inline CSSEFMatrix& SIMD_CALL CSSEFMatrix::operator!(void)
 	sse_storeaps(0x1f)		// v4
 }
 
-__inline CSSEFMatrix& SIMD_CALL CSSEFMatrix::operator-=(const CSSEFMatrix& m)
+__inline CSSEFMatrix& SIMD_CALL CSSEFMatrix::operator-=(const CSSEFMatrix& m) NOEXCEPT
 {
 	__asm
 	{
@@ -198,7 +198,7 @@ __inline CSSEFMatrix& SIMD_CALL CSSEFMatrix::operator-=(const CSSEFMatrix& m)
 	sse_storeaps(0x1f)
 }
 
-__inline CSSEFMatrix& SIMD_CALL CSSEFMatrix::operator+=(const CSSEFMatrix& m)
+__inline CSSEFMatrix& SIMD_CALL CSSEFMatrix::operator+=(const CSSEFMatrix& m) NOEXCEPT
 {
 	__asm
 	{
@@ -227,7 +227,7 @@ __inline CSSEFMatrix& SIMD_CALL CSSEFMatrix::operator+=(const CSSEFMatrix& m)
 	sse_storeaps(0x1f)
 }
 
-__inline CSSEFMatrix& SIMD_CALL CSSEFMatrix::operator*=(const float& t)
+__inline CSSEFMatrix& SIMD_CALL CSSEFMatrix::operator*=(const float& t) NOEXCEPT
 {
 	__asm
 	{

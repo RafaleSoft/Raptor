@@ -1,6 +1,20 @@
-// BlurFilter.cpp: implementation of the CBlurFilter class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  BlurFilter.cpp                                                         */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
 
 #include "Subsys/CodeGeneration.h"
 
@@ -13,8 +27,11 @@
 #if !defined(AFX_SHADER_H__4D405EC2_7151_465D_86B6_1CA99B906777__INCLUDED_)
 	#include "GLHierarchy/Shader.h"
 #endif
-#if !defined(AFX_FRAGMENTPROGRAM_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
-    #include "GLHierarchy/FragmentProgram.h"
+#if !defined(AFX_FRAGMENTSHADER_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
+    #include "GLHierarchy/FragmentShader.h"
+#endif
+#if !defined(AFX_GEOMETRYSHADER_H__1981EA98_8F3C_4881_9429_A9ACA5B285D3__INCLUDED_)
+	#include "GLHierarchy/GeometryShader.h"
 #endif
 #if !defined(AFX_IRENDERINGPROPERTIES_H__634BCF2B_84B4_47F2_B460_D7FDC0F3B698__INCLUDED_)
 	#include "GLHierarchy/IRenderingProperties.h"
@@ -28,6 +45,10 @@
 #if !defined(AFX_TEXTURESET_H__26F3022D_70FE_414D_9479_F9CCD3DCD445__INCLUDED_)
 	#include "GLHierarchy/TextureSet.h"
 #endif
+#if !defined(AFX_OPENGLSHADERSTAGE_H__56B00FE3_E508_4FD6_9363_90E6E67446D9__INCLUDED_)
+	#include "GLHierarchy/OpenGLShaderStage.h"
+#endif
+
 
 // With RGBA32 pixel model, gaussian coefficients can
 // be expanded because scaled filter buffer will produce 
@@ -189,7 +210,7 @@ void CBlurFilter::glRenderFilter()
 	getColorInput()->glvkRender();
 
     hBlur->glRender();
-    glDrawBuffer();
+	glDrawFilter();
 	hBlur->glStop();
 
 	glBindTexture(GL_TEXTURE_2D,0);
@@ -206,7 +227,7 @@ void CBlurFilter::glRenderFilterOutput()
 	xKernelPass->glvkRender();
 
 	vBlur->glRender();
-    glDrawBuffer();
+	glDrawFilter();
 	vBlur->glStop();
 
 	glBindTexture(GL_TEXTURE_2D,0);
@@ -238,6 +259,7 @@ bool CBlurFilter::glBuildFilter(int width,int height)
 		float dim = (dirs == 0 ? width : height);
 
 		//	Write texel offsets
+		shader_src << "#version 440" << ENDL << ENDL;
 		shader_src << "const float offset[" << sz << "] = float[]( ";
 		for (size_t i=0;i<sz-1;i++)
 			shader_src << m_gaussian_offsets[i] / dim << " , ";
@@ -247,15 +269,17 @@ bool CBlurFilter::glBuildFilter(int width,int height)
 		{
 			//	Write main code
 			shader_src << "uniform sampler2D diffuseMap;" << ENDL << ENDL;
+			shader_src << "layout(location = 1) in vec4 g_TexCoord;" << ENDL;
+			shader_src << "layout(location = 0) out vec4 o_Color;" << ENDL << ENDL;
 			shader_src << "void main (void)" << ENDL;
 			shader_src << "{" << ENDL;
 			shader_src << "	vec4    finalColor = vec4(0.0,0.0,0.0,0.0);" << ENDL << ENDL;
 
 			shader_src << "	for (int i=0;i<" << sz << ";i++)" << ENDL;
 			shader_src << "	{" << ENDL;
-			shader_src << "		finalColor += texture2D(diffuseMap,gl_TexCoord[0].xy + " << offsets[dirs] << ENDL;
+			shader_src << "		finalColor += texture(diffuseMap,g_TexCoord.xy + " << offsets[dirs] << ENDL;
 			shader_src << "	}" << ENDL << ENDL;
-			shader_src << "	gl_FragColor = " << 1.0f / sz << " * finalColor;" << ENDL;
+			shader_src << "	o_Color = " << 1.0f / sz << " * finalColor;" << ENDL;
 			shader_src << "}" << ENDL;
 		}
 		else if ((BLUR_GAUSSIAN == m_model) || (BLUR_GAUSSIAN_LINEAR == m_model))
@@ -268,15 +292,17 @@ bool CBlurFilter::glBuildFilter(int width,int height)
 
 			//	Write main code
 			shader_src << "uniform sampler2D diffuseMap;" << ENDL << ENDL;
+			shader_src << "layout(location = 1) in vec4 g_TexCoord;" << ENDL;
+			shader_src << "layout(location = 0) out vec4 o_Color;" << ENDL << ENDL;
 			shader_src << "void main (void)" << ENDL;
 			shader_src << "{" << ENDL;
 			shader_src << "	vec4    finalColor = vec4(0.0,0.0,0.0,0.0);" << ENDL << ENDL;
 
 			shader_src << "	for (int i=0;i<" << sz << ";i++)" << ENDL;
 			shader_src << "	{" << ENDL;
-			shader_src << "		finalColor += weights[i] * texture2D(diffuseMap,gl_TexCoord[0].xy + " << offsets[dirs] << ENDL;
+			shader_src << "		finalColor += weights[i] * texture(diffuseMap,g_TexCoord.xy + " << offsets[dirs] << ENDL;
 			shader_src << "	}" << ENDL << ENDL;
-			shader_src << "	gl_FragColor = finalColor;" << ENDL;
+			shader_src << "	o_Color = finalColor;" << ENDL;
 			shader_src << "}" << ENDL;
 		}
 		srcs[dirs] = shader_src.str();
@@ -285,23 +311,22 @@ bool CBlurFilter::glBuildFilter(int width,int height)
 	params.clear();
 	params.addParameter("diffuseMap",CTextureUnitSetup::IMAGE_UNIT_0);
 	
-	CFragmentProgram *fp = hBlur->glGetFragmentProgram("hBlur_fp");
+	COpenGLShaderStage *stage = hBlur->glGetOpenGLShader();
+	stage->glGetVertexShader("EMPTY_PROGRAM");
+	stage->glGetGeometryShader("FULL_SCREEN_GEO_PROGRAM");
+	CFragmentShader *fp = stage->glGetFragmentShader("hBlur_fp");
 	res = fp->glLoadProgram(srcs[0]);
-	if (res)
-	{
-		fp->setProgramParameters(params);
-		res &= hBlur->glCompileShader();
-	}
-	else
-		return res;
+	stage->setProgramParameters(params);
+	res = res && stage->glCompileShader();
 
-	fp = vBlur->glGetFragmentProgram("vBlur_fp");
-	res = fp->glLoadProgram(srcs[1]);
-	if (res)
-	{
-		fp->setProgramParameters(params);
-		res &= vBlur->glCompileShader();
-	}
+	stage = vBlur->glGetOpenGLShader();
+	stage->glGetVertexShader("EMPTY_PROGRAM");
+	stage->glGetGeometryShader("FULL_SCREEN_GEO_PROGRAM");
+	fp = stage->glGetFragmentShader("vBlur_fp");
+	res = res && fp->glLoadProgram(srcs[1]);
+	stage->setProgramParameters(params);
+
+	res = res && stage->glCompileShader();
 
 	// Update filtering
 	if ((BLUR_BOX_LINEAR == m_model) || (BLUR_GAUSSIAN_LINEAR == m_model))

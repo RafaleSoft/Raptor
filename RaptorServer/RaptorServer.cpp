@@ -1,6 +1,20 @@
-// RaptorServer.cpp: implementation of the CRaptorServer class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  RaptorServer.cpp                                                       */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
 
 #include "stdafx.h"
 
@@ -13,8 +27,8 @@
 #if !defined(AFX_RAPTORSERVER_H__713A4063_7F42_4900_B42D_6574E4FA796C__INCLUDED_)
     #include "RaptorServer.h"
 #endif
-#if !defined(AFX_RAPTORINSTANCE_H__602E9801_E82B_41B1_9B90_DD498DDF468F__INCLUDED_)
-    #include "RaptorInstance.h"
+#if !defined(AFX_RAPTORSERVERINSTANCE_H__602E9801_E82B_41B1_9B90_DD498DDF468F__INCLUDED_)
+    #include "RaptorServerInstance.h"
 #endif
 #if !defined(AFX_SERVERTRANSPORT_H__AC7E8C33_37A1_4BE2_8B73_B463DA99E328__INCLUDED_)
     #include "ServerTransport.h"
@@ -46,7 +60,7 @@ CRaptorServer::~CRaptorServer()
 bool CRaptorServer::Start(const CCmdLineParser& cmdline)
 {
     if (m_pInstance == NULL)
-        m_pInstance = CRaptorInstance::GetInstance();
+		m_pInstance = CRaptorServerInstance::GetInstance();
 
 	unsigned short width = 256;
 	unsigned short height = 256;
@@ -68,8 +82,8 @@ bool CRaptorServer::Start(const CCmdLineParser& cmdline)
 
 	if (m_pTransport == NULL)
         m_pTransport = new CServerTransport();
-
-	char* addrStr = "127.0.0.1";
+	
+	string addrStr = "127.0.0.1";
 	unsigned short port = 2048;
 	cmdline.getValue("port",port);
 	cmdline.getValue("host_addr",addrStr);

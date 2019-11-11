@@ -20,13 +20,14 @@
 #include "GLHierarchy/TextureUnitSetup.h"
 #include "GLHierarchy/Shader.h"
 #include "GLHierarchy/SimpleObject.h"
-#include "GLHierarchy/VertexProgram.h"
-#include "GLHierarchy/FragmentProgram.h"
+#include "GLHierarchy/VertexShader.h"
+#include "GLHierarchy/FragmentShader.h"
 #include "Engine/ImageModifier.h"
 #include "System/Raptor.h"
 #include "GLHierarchy/IRenderingProperties.h"
 #include "GLHierarchy/Object3DInstance.h"
 #include "SSE_Engine/SSE_GLLayer.h"
+#include "GLHierarchy/OpenGLShaderStage.h"
 
 
 class MyModifier : public CImageModifier
@@ -55,8 +56,8 @@ public:
 	{
 		setBoundingBox(GL_COORD_VERTEX(-10.0f, -10.0f, -15.1f, 1.0f), GL_COORD_VERTEX(10.0f, 10.0f, -15.0f, 1.0f));
 
-		bg.handle = glGenLists(1);
-		glNewList(bg.handle, GL_COMPILE);
+		bg.handle(glGenLists(1));
+		glNewList(bg.handle(), GL_COMPILE);
 			glBegin(GL_QUADS);
 			glTexCoord2f(0.0f, 0.0f);
 			glVertex3f(-10.0f, -10.0f, 0.0f);
@@ -94,7 +95,7 @@ void SkinningBackGround::glRender()
 	glPushMatrix();
 		glRotatef(360.0f*dt, 0, 0, 1);
 		glTranslatef(0, 0, -15.0f);
-		glCallList(bg.handle);
+		glCallList(bg.handle());
 	glPopMatrix();
 }
 
@@ -239,8 +240,8 @@ void main (void) \
     
     skinning  = new CShader("SKINNING_SHADER");
 	tube2->setShader(skinning);
-    CVertexProgram *vp = skinning->glGetVertexProgram("Skinning_VP");
-    CFragmentProgram *fp = skinning->glGetFragmentProgram("Skinning_FP");
+	CVertexShader *vp = skinning->glGetOpenGLShader()->glGetVertexShader("Skinning_VP");
+	CFragmentShader *fp = skinning->glGetOpenGLShader()->glGetFragmentShader("Skinning_FP");
 
     if (vp->glLoadProgram(skinning_vp_src) &&
         fp->glLoadProgram(skinning_fp_src))
@@ -250,7 +251,7 @@ void main (void) \
 
         //params2.addParameter("diffuseMap",CTextureUnitSetup::IMAGE_UNIT_0);
 
-        skinning->glCompileShader();
+		skinning->glGetOpenGLShader()->glCompileShader();
 	}
 
 	C3DScene *pScene = new C3DScene("SKINNING_SCENE");
@@ -303,7 +304,7 @@ void CSkinningDisplay::Display()
 	C3DEngine::Generic_to_MATRIX(skinningMatrix.p, gm);
 	CProgramParameters::CParameterBase &matrix = params[0];
 	matrix.copy(skinningMatrix);
-    skinning->glGetVertexProgram("Skinning_VP")->setProgramParameters(params);
+	skinning->glGetOpenGLShader()->setProgramParameters(params);
 
 	glColor4f(1.0f,1.0f,1.0f,1.0f);
 	layer->manageSprite(t2,75,75,dt*360);

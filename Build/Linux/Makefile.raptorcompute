@@ -1,0 +1,59 @@
+###########################################################################
+#                                                                         #
+#  Makefile.raptorcompute                                                 #
+#                                                                         #
+#    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       #
+#                                                                         #
+#  Copyright 1998-2019 by                                                 #
+#  Fabrice FERRAND.                                                       #
+#                                                                         #
+#  This file is part of the Raptor project, and may only be used,         #
+#  modified, and distributed under the terms of the Raptor project        #
+#  license, LICENSE.  By continuing to use, modify, or distribute         #
+#  this file you indicate that you have read the license and              #
+#  understand and accept it fully.                                        #
+#                                                                         #
+###########################################################################
+
+
+export
+
+OUTPUT = $(RAPTOR_ROOT)/Build/Linux/Release/RaptorCompute
+CCCFLAGS =  -DSIMD_NO_ASSEMBLY -DLINUX -DGLX_EXTENSIONS -fPIC -std=c++11 -fopenmp -msse -msse2 -msse3 -mssse3 -msse4.1 -msse4.2 
+SRCDIR = $(RAPTOR_ROOT)/RaptorCompute
+INCDIRS = -I$(SRCDIR) -I$(RAPTOR_ROOT)/Redist/Include -I$(VULKAN_INCLUDE_PATH)
+
+LDFLAGS = -L$(RAPTOR_ROOT)/Redist/Lib -lraptorcore -Bdynamic -shared -lstdc++
+
+SO = $(OUTPUT)/libRaptorCompute.so.$(RAPTOR_VERSION)
+LIB = $(OUTPUT)/libRaptorCompute.a
+
+
+SRC = \
+	$(SRCDIR)/RaptorComputeManager.cpp \
+	$(SRCDIR)/ReadBufferTask.cpp \
+	$(SRCDIR)/RaptorComputeMemory.cpp \
+	$(SRCDIR)/RaptorCompute.cpp \
+	$(SRCDIR)/RaptorComputeJob.cpp \
+	$(SRCDIR)/RaptorComputeTask.cpp
+
+
+OBJ = $(SRC:$(SRCDIR)/%.cpp=$(OUTPUT)/%.o)
+
+
+all:    $(LIB) $(SO)
+
+clean:
+	rm -rf $(OUTPUT)
+	mkdir -p $(OUTPUT)
+
+$(LIB):  $(OBJ)
+	ar -qcv $(LIB) $(OBJ)
+	cp $(LIB) $(REDIST)/Lib
+
+$(SO):  $(OBJ)
+	g++ -o $(SO) $(LDFLAGS) $(OBJ)
+	cp $(SO) $(REDIST)/Bin
+
+$(OBJ): $(SRC)
+	g++ $(CCCFLAGS) $(INCDIRS) -c $(<D)/$(*F).cpp  -o $(OUTPUT)/$(@F)
