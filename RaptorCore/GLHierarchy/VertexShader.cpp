@@ -191,17 +191,6 @@ bool CVertexShader::glBindProgram(RAPTOR_HANDLE program)
 #if defined(GL_ARB_shader_objects)
 	if (CUnifiedShader::glBindProgram(program))
 	{
-		for (unsigned int idx = 0; idx < m_parameters.getNbParameters(); idx++)
-		{
-			const CProgramParameters::CParameterBase& value = m_parameters[idx];
-			CProgramParameters::GL_VERTEX_ATTRIB p;
-			if (value.isA(p))
-			{
-				p = ((const CProgramParameters::CParameter<CProgramParameters::GL_VERTEX_ATTRIB>&)value).p;
-				pExtensions->glBindAttribLocationARB(program.handle(), p, value.name().data());
-			}
-		}
-
 		CATCH_GL_ERROR
 		return true;
 	}

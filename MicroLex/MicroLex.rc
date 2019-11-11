@@ -60,8 +60,8 @@ IDI_ICON1               ICON                    "icon1.ico"
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 2,17,0,0
- PRODUCTVERSION 2,17,0,0
+ FILEVERSION 2,17,1,0
+ PRODUCTVERSION 2,17,1,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -79,12 +79,12 @@ BEGIN
             VALUE "Comments", "A small language parser and analyser generator"
             VALUE "CompanyName", "Rafale Soft Inc. ©"
             VALUE "FileDescription", "Raptor OpenGL & Vulkan SDK Language Parser generator"
-            VALUE "FileVersion", "2.17.0.0"
+            VALUE "FileVersion", "2.17.1.0"
             VALUE "InternalName", "MicroLex.exe"
             VALUE "LegalCopyright", "Copyright © 1998-2019 Fabrice Ferrand <fabfer@wanadoo.fr>"
             VALUE "OriginalFilename", "MicroLex.exe"
             VALUE "ProductName", "Raptor"
-            VALUE "ProductVersion", "2.17.0.0"
+            VALUE "ProductVersion", "2.17.1.0"
         END
     END
     BLOCK "VarFileInfo"

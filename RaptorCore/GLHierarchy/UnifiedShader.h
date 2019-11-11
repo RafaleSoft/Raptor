@@ -80,9 +80,6 @@ protected:
     //! Updates locations of attributes variables
     void glQueryAttributeLocations(RAPTOR_HANDLE program);
 
-    //! Program has been re-linked, perform post processing again
-    bool    m_bReLinked;
-
 
 private:
 	//!	Forbidden operators

@@ -35,7 +35,7 @@
 #include "CL/cl_gl.h"
 
 
-class CRaptorComputeManager
+class RAPTOR_API CRaptorComputeManager
 {
 public:
 	typedef struct PLATFORM_IDt
