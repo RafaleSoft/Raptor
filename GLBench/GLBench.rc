@@ -114,8 +114,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,0,1
- PRODUCTVERSION 1,0,0,1
+ FILEVERSION 2,17,1,0
+ PRODUCTVERSION 2,17,1,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -128,15 +128,15 @@ VS_VERSION_INFO VERSIONINFO
 BEGIN
     BLOCK "StringFileInfo"
     BEGIN
-        BLOCK "040C04B0"
+        BLOCK "040c04b0"
         BEGIN
             VALUE "FileDescription", "Application MFC GLBench"
-            VALUE "FileVersion", "1, 0, 0, 1"
+            VALUE "FileVersion", "2.17.1.0"
             VALUE "InternalName", "GLBench"
             VALUE "LegalCopyright", "Copyright (C) 2003"
             VALUE "OriginalFilename", "GLBench.EXE"
             VALUE "ProductName", "Application GLBench"
-            VALUE "ProductVersion", "1, 0, 0, 1"
+            VALUE "ProductVersion", "2.17.1.0"
         END
     END
     BLOCK "VarFileInfo"
