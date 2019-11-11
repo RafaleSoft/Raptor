@@ -34,7 +34,7 @@ class CRaptorIO;
 	virtual bool importObject(CRaptorIO& i);
 
 #define DECLARE_CLASS_ID(classID,className,parentClass)\
-	DECLARE_API_CLASS_ID(RAPTOR_API,classID,className,parentClass)\
+	DECLARE_API_CLASS_ID(RAPTOR_API,classID,className,parentClass)
 	
 
 #define DECLARE_API_CLASS_ID(API,classID,className,parentClass)\
@@ -46,7 +46,7 @@ class CRaptorIO;
 		virtual bool isSubClassOf(const CPersistence::CPersistenceClassID& id) const\
 		{ return ((id.ID() == ID()) || parentClass::parentClass##ClassID::GetClassId().isSubClassOf(id)); };\
 		static const CPersistenceClassID& GetClassId(void);\
-	};\
+	};
 
 #define IMPLEMENT_CLASS_ID(className, factory) \
 	static className::className##ClassID factory; \

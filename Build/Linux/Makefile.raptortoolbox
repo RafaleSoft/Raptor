@@ -77,7 +77,7 @@ OBJ_CONTROLLERS = $(SRC_CONTROLLERS:$(SRCDIR)/Controllers%.cpp=$(OUTPUT)%.o)
 ALL_OBJS = $(OBJ_BASE) $(OBJ_IMAGING) $(OBJ_FILTERS) $(OBJ_LOADERS) $(OBJ_CONTROLLERS)
 
 	
-all:    $(LIB) $(SO)
+all:    $(LIB) $(SO) $(REDIST)/Bin/Toolbox.pck
 
 clean:
 	rm -rf $(OUTPUT)
@@ -109,3 +109,7 @@ $(OBJ_CONTROLLERS): $(SRC_CONTROLLERS)
 $(SRC_LOADERS) : $(SRCDIR)/Loaders/OBJ.lex
 	(cd $(SRCDIR)/Loaders && $(RAPTOR_ROOT)/Redist/Bin/Microlex -f OBJ.lex -o OBJScript -v)
 
+$(REDIST)/Bin/ToolBox.pck:
+	(cd $(SRCDIR) ; ./buildpak.sh)
+	cp $(SRCDIR)/Toolbox.pck $(REDIST)/Bin/Toolbox.pck
+	

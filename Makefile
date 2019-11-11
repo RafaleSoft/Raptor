@@ -63,10 +63,10 @@ OPENEXRLIB_INCLUDE_PATH = $(RAPTOR_ROOT)/AddOns/OpenEXRLib-$(OPENEXRLIB_VERSION)
 OPENEXRLIB_LIB_PATH = $(RAPTOR_ROOT)/AddOns/OpenEXRLib-$(OPENEXRLIB_VERSION)/lib
 OPENEXRLIB_BIN_PATH = $(RAPTOR_ROOT)/AddOns/OpenEXRLib-$(OPENEXRLIB_VERSION)/bin
 
-OPENCL_VERSION = 1.1
-OPENCL_INCLUDE_PATH=C:/Intel/OpenCL/sdk/include
-OPENCL_LIB_PATH=C:/Intel/OpenCL/sdk/lib/x86
-OPENCL_BIN_PATH=C:/Intel/OpenCL/sdk/bin/x86
+OPENCL_VERSION = 2.2
+OPENCL_INCLUDE_PATH=/usr/include
+OPENCL_LIB_PATH=/usr/lib64
+OPENCL_BIN_PATH=/usr/lib64
 
 VULKAN_INCLUDE_PATH=$(RAPTOR_ROOT)/AddOns/vulkan/include
 VULKAN_BIN_PATH=c:/windows/system32
@@ -86,13 +86,19 @@ all: \
 	raptorcore \
 	raptornetwork \
 	raptortoolbox \
+	raptorcompute \
 	raptorserver \
-	raptorviewer
+	raptorviewer \
+	test
 
+
+test: builder raptorcore raptordata raptortoolbox $(REDIST)/Bin/Test
 
 raptorviewer: builder raptorcore raptordata raptortoolbox raptornetwork raptorserver $(REDIST)/Bin/RaptorViewer
 	
 raptorserver: builder raptorcore raptordata raptortoolbox raptornetwork $(REDIST)/Bin/RaptorServer
+
+raptorcompute: builder raptorcore $(REDIST)/Lib/libRaptorCompute.a $(REDIST)/Bin/libRaptorCompute.so.$(RAPTOR_VERSION)
 
 raptortoolbox: builder raptorcore raptordata $(REDIST)/Lib/libRaptorToolBox.a $(REDIST)/Bin/libRaptorToolBox.so.$(RAPTOR_VERSION)
 
@@ -150,6 +156,11 @@ configure:	Builder/Configure/Redist.sh
 #
 # Projects building rules
 #
+$(REDIST)/Bin/Test:
+	@echo "Building Test project ..."
+	make -C Build/Linux -f Makefile.test all
+	@echo "Test project done."
+
 $(REDIST)/Bin/RaptorViewer:
 	@echo "Building RaptorViewer project ..."
 	make -C Build/Linux -f Makefile.raptorviewer all
@@ -160,6 +171,11 @@ $(REDIST)/Bin/RaptorServer:
 	make -C Build/Linux -f Makefile.raptorserver all
 	@echo "RaptorServer project done."
 
+$(REDIST)/Lib/libRaptorCompute.a $(REDIST)/Bin/libRaptorCompute.so.$(RAPTOR_VERSION):
+	@echo "Building RaptorCompute project ..."
+	make -C Build/Linux -f Makefile.raptorcompute all
+	@echo "RaptorCompute project done."
+	
 $(REDIST)/Lib/libRaptorToolBox.a $(REDIST)/Bin/libRaptorToolBox.so.$(RAPTOR_VERSION):
 	@echo "Building RaptorToolBox project ..."
 	make -C Build/Linux -f Makefile.raptortoolbox all
@@ -291,8 +307,10 @@ $(REDIST)/Bin/dwaLookups:	$(REDIST)/Bin/libHalf.so.$(OPENEXRLIB_VERSION) $(REDIS
 #
 clean:
 	@echo "Cleaning intermediate build files..."
+	make -C Build/Linux -f Makefile.test clean
 	make -C Build/Linux -f Makefile.raptorviewer clean
 	make -C Build/Linux -f Makefile.raptorserver clean
+	make -C Build/Linux -f Makefile.raptorcompute clean
 	make -C Build/Linux -f Makefile.raptortoolbox clean
 	make -C Build/Linux -f Makefile.raptornetwork clean
 	make -C Build/Linux -f Makefile.tifflib clean
