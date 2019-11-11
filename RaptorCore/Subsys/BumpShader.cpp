@@ -67,6 +67,10 @@ CShader* CBumpShader::glClone(const std::string& newShaderName) const
 	CBumpShader* bump = new CBumpShader(*this);
 	if (!newShaderName.empty())
 		bump->setName(newShaderName);
+
+	if (hasOpenGLShader())
+		bump->glInit();
+
 	return bump;
 }
 

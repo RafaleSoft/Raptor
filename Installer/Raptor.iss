@@ -2,7 +2,7 @@
 
 [Setup]
 AppName=Raptor SDK
-AppVerName=Raptor SDK 2.17.0
+AppVerName=Raptor SDK 2.17.1
 DefaultDirName={pf}\Raptor
 DefaultGroupName=Raptor
 UninstallDisplayIcon={app}\MyProg.exe
@@ -11,8 +11,8 @@ OutputBaseFilename=RaptorSDK
 SolidCompression=yes
 VersionInfoCompany=Rafale Soft Inc.(c)
 VersionInfoProductName=Raptor SDK
-VersionInfoProductVersion=2.17.0.0
-VersionInfoVersion=2.17.0.0
+VersionInfoProductVersion=2.17.1.0
+VersionInfoVersion=2.17.1.0
 
 [Files]
 Source: "..\*.sln";               DestDir: "{app}"
@@ -21,25 +21,21 @@ Source: "..\*.bat";               DestDir: "{app}"
 Source: "..\Makefile";            DestDir: "{app}"
 Source: "..\TODO.txt";            DestDir: "{app}"
 Source: "..\README.md";           DestDir: "{app}"
+Source: "..\LICENSE";             DestDir: "{app}"
+Source: "..\.gitignore";          DestDir: "{app}"
+Source: "..\.gitattributes";      DestDir: "{app}"
 
 Source: "..\AddOns\*.lib";            DestDir: "{app}\AddOns"
 Source: "..\AddOns\*.pdb";            DestDir: "{app}\AddOns"
 Source: "..\AddOns\usertype.dat";     DestDir: "{app}\AddOns"
-Source: "..\AddOns\freetype-2.5.5\*";  DestDir: "{app}\AddOns\freetype-2.5.5\"; Flags: recursesubdirs
 Source: "..\AddOns\freetype-2.9.1\*";  DestDir: "{app}\AddOns\freetype-2.9.1\"; Flags: recursesubdirs
-Source: "..\AddOns\JpegLib\*";         DestDir: "{app}\AddOns\JpegLib\";        Flags: recursesubdirs
 Source: "..\AddOns\JpegLib-v9\*";      DestDir: "{app}\AddOns\JpegLib-v9\";     Flags: recursesubdirs
-Source: "..\AddOns\libpng-1.6.16\*";   DestDir: "{app}\AddOns\libpng-1.6.16\";  Flags: recursesubdirs
 Source: "..\AddOns\libpng-1.6.36\*";   DestDir: "{app}\AddOns\libpng-1.6.36\";  Flags: recursesubdirs
 Source: "..\AddOns\Opencl\Intel_v11\*.*";           DestDir: "{app}\AddOns\Opencl\Intel_v11"
-Source: "..\AddOns\OpenEXRLib\*";       DestDir: "{app}\AddOns\OpenEXRLib\";    Flags: recursesubdirs
 Source: "..\AddOns\OpenEXR-2.3.0\*";    DestDir: "{app}\AddOns\OpenEXRLib-2.3.0\";    Flags: recursesubdirs
 Source: "..\AddOns\Openmp\*";           DestDir: "{app}\AddOns\Openmp\";        Flags: recursesubdirs
-Source: "..\AddOns\TiffLib\*";         DestDir: "{app}\AddOns\TiffLib\";        Flags: recursesubdirs
 Source: "..\AddOns\TiffLib-4.0.10\*";   DestDir: "{app}\AddOns\TiffLib-4.0.10\";        Flags: recursesubdirs
-Source: "..\AddOns\zlib128\*";         DestDir: "{app}\AddOns\zlib128\";        Flags: recursesubdirs
 Source: "..\AddOns\zlib-1.2.11\*";         DestDir: "{app}\AddOns\zlib-1.2.11\";        Flags: recursesubdirs
-Source: "..\AddOns\xercesc_3_1\*";         DestDir: "{app}\AddOns\xercesc_3_1\";        Flags: recursesubdirs
 Source: "..\AddOns\xercesc-3.2.2\*";       DestDir: "{app}\AddOns\xercesc-3.2.2\";        Flags: recursesubdirs
 Source: "..\AddOns\vulkan\*";         DestDir: "{app}\AddOns\vulkan\";        Flags: recursesubdirs
 
@@ -52,14 +48,23 @@ Source: "../Build/VS2013/*.vcxproj";  DestDir: "{app}/Build/VS2013"
 Source: "../Build/VS2013/*.filters";  DestDir: "{app}/Build/VS2013"
 Source: "../Build/VS2017/*.vcxproj";  DestDir: "{app}/Build/VS2017"
 Source: "../Build/VS2017/*.filters";  DestDir: "{app}/Build/VS2017"
+Source: "../Build/VS2019/*.vcxproj";  DestDir: "{app}/Build/VS2019"
+Source: "../Build/VS2019/*.filters";  DestDir: "{app}/Build/VS2019"
+Source: "../Build/Doxyfile";          DestDir: "{app}/Build"
 
-Source: "../Builder.Net/*.cpp";           DestDir: "{app}/Builder.Net"
-Source: "../Builder.Net/*.h";             DestDir: "{app}/Builder.Net"
-Source: "../Builder.Net/*.resx";          DestDir: "{app}/Builder.Net"
-Source: "../Builder.Net/res/*.*";         DestDir: "{app}/Builder.Net/res"
-Source: "../Builder.Net/Redist.sh";       DestDir: "{app}/Builder.Net"
-Source: "../Builder.Net/Redist.bat";      DestDir: "{app}/Builder.Net"
-Source: "../Builder.Net/Microlex*";       DestDir: "{app}/Builder.Net"
+Source: "../Builder/BuilderNative/*.cpp";           DestDir: "{app}/Builder/BuilderNative"
+Source: "../Builder/BuilderNative/*.h";             DestDir: "{app}/Builder/BuilderNative"
+Source: "../Builder/Configure/*.bat";               DestDir: "{app}/Builder/Configure"
+Source: "../Builder/Configure/*.sh";                DestDir: "{app}/Builder/Configure"
+Source: "../Builder/Properties/*.*";                DestDir: "{app}/Builder/Properties"
+Source: "../Builder/Resource Files/*.*";            DestDir: "{app}/Builder/Resource Files"
+Source: "../Builder/*.config";                      DestDir: "{app}/Builder"
+Source: "../Builder/*.csproj";                      DestDir: "{app}/Builder"
+Source: "../Builder/*.cs";                          DestDir: "{app}/Builder"
+Source: "../Builder/*.resx";                        DestDir: "{app}/Builder"
+Source: "../Builder/*.cpp";                         DestDir: "{app}/Builder"
+Source: "../Builder/*.rc";                          DestDir: "{app}/Builder"
+Source: "../Builder/*.h";                           DestDir: "{app}/Builder"
 
 Source: "../Demo/Datas/*.*";          DestDir: "{app}/Demo/Datas"
 Source: "../Demo/Ressources/*.*";     DestDir: "{app}/Demo/Ressources"
@@ -67,14 +72,14 @@ Source: "../Demo/Demo.cmd";           DestDir: "{app}/Demo"
 Source: "../Demo/*.cpp";              DestDir: "{app}/Demo"
 Source: "../Demo/*.h";                DestDir: "{app}/Demo"
 Source: "../Demo/Demo.xml";           DestDir: "{app}/Demo"
-Source: "../Demo/buildpak.bat";       DestDir: "{app}/Demo"
+Source: "../Demo/buildpak.*";         DestDir: "{app}/Demo"
 
 Source: "../GLBench/Datas/*.*";       DestDir: "{app}/GLBench/Datas"
 Source: "../GLBench/res/*.*";         DestDir: "{app}/GLBench/res"
 Source: "../GLBench/*.rc";            DestDir: "{app}/GLBench"
 Source: "../GLBench/*.cpp";           DestDir: "{app}/GLBench"
 Source: "../GLBench/*.h";             DestDir: "{app}/GLBench"
-Source: "../GLBench/buildpak.bat";    DestDir: "{app}/GLBench"
+Source: "../GLBench/buildpak.*";      DestDir: "{app}/GLBench"
 Source: "../GLBench/GLBenchFillRate/*.cpp";           DestDir: "{app}/GLBench/GLBenchFillRate"
 Source: "../GLBench/GLBenchFillRate/*.h";             DestDir: "{app}/GLBench/GLBenchFillRate"
 Source: "../GLBench/GLBenchModuleTemplate/*.cpp";           DestDir: "{app}/GLBench/GLBenchModuleTemplate"
@@ -98,6 +103,7 @@ Source: "../Installer/Raptor.iss";              DestDir: "{app}/Installer"
 Source: "../Installer/Raptor.html";             DestDir: "{app}/Installer"
 
 Source: "../Licenses/*.*";                       DestDir: "{app}/Licenses"
+Source: "../Licenses/README";                    DestDir: "{app}/Licenses"
 
 Source: "../MicroLex/*.*";                      DestDir: "{app}/MicroLex"
     
@@ -114,15 +120,20 @@ Source: "../RaptorCore/Subsys/*.*";             DestDir: "{app}/RaptorCore/Subsy
 Source: "../RaptorCore/Subsys/Hershey/*.*";     DestDir: "{app}/RaptorCore/Subsys/Hershey"
 Source: "../RaptorCore/Subsys/ObjectModels/*.*";     DestDir: "{app}/RaptorCore/Subsys/ObjectModels"
 Source: "../RaptorCore/Subsys/FreeType/*.*";    DestDir: "{app}/RaptorCore/Subsys/SimdLib"
+Source: "../RaptorCore/Subsys/OpenGL/*.*";      DestDir: "{app}/RaptorCore/Subsys/SimdLib"
+Source: "../RaptorCore/Subsys/Vulkan/*.*";      DestDir: "{app}/RaptorCore/Subsys/SimdLib"
 Source: "../RaptorCore/*.cpp";                  DestDir: "{app}/RaptorCore"
 Source: "../RaptorCore/*.h";                    DestDir: "{app}/RaptorCore"
+Source: "../RaptorCore/*.rc";                   DestDir: "{app}/RaptorCore"
 
 Source: "../RaptorData/RaptorDataPackager/*.cpp";           DestDir: "{app}/RaptorData/RaptorDataPackager"
 Source: "../RaptorData/RaptorDataPackager/*.h";             DestDir: "{app}/RaptorData/RaptorDataPackager"
+Source: "../RaptorData/RaptorDataPackager/*.rc";            DestDir: "{app}/RaptorData/RaptorDataPackager"
 Source: "../RaptorData/Data/*.*";                           DestDir: "{app}/RaptorData/Data"
-Source: "../RaptorData/buildpak.bat";                       DestDir: "{app}/RaptorData"
+Source: "../RaptorData/buildpak.*";                         DestDir: "{app}/RaptorData"
 Source: "../RaptorData/*.cpp";                              DestDir: "{app}/RaptorData"
 Source: "../RaptorData/*.h";                                DestDir: "{app}/RaptorData"
+Source: "../RaptorData/*.rc";                               DestDir: "{app}/RaptorData"
 
 Source: "../RaptorMFCExtension/res/*.*";            DestDir: "{app}/RaptorMFCExtension/res"
 Source: "../RaptorMFCExtension/*.cpp";              DestDir: "{app}/RaptorMFCExtension"
@@ -133,12 +144,15 @@ Source: "../RaptorMFCExtension/CWnd/*.*";           DestDir: "{app}/RaptorMFCExt
 
 Source: "../RaptorNetwork/*.cpp";                    DestDir: "{app}/RaptorNetwork"
 Source: "../RaptorNetwork/*.h";                      DestDir: "{app}/RaptorNetwork"
+Source: "../RaptorNetwork/*.rc";                     DestDir: "{app}/RaptorNetwork"
 
 Source: "../RaptorServer/*.cpp";                    DestDir: "{app}/RaptorServer"
 Source: "../RaptorServer/*.h";                      DestDir: "{app}/RaptorServer"
+Source: "../RaptorServer/*.rc";                     DestDir: "{app}/RaptorServer"
 
 Source: "../RaptorToolBox/*.cpp";                   DestDir: "{app}/RaptorToolBox"
 Source: "../RaptorToolBox/*.h";                     DestDir: "{app}/RaptorToolBox"
+Source: "../RaptorToolBox/*.rc";                    DestDir: "{app}/RaptorToolBox"
 Source: "../RaptorToolBox/Controllers/*.*";         DestDir: "{app}/RaptorToolBox/Controllers"
 Source: "../RaptorToolBox/Filters/*.*";             DestDir: "{app}/RaptorToolBox/Filters"
 Source: "../RaptorToolBox/Imaging/*.*";             DestDir: "{app}/RaptorToolBox/Imaging"
@@ -147,6 +161,7 @@ Source: "../RaptorToolBox/Streaming/*.*";           DestDir: "{app}/RaptorToolBo
 
 Source: "../RaptorViewer/*.cpp";                    DestDir: "{app}/RaptorViewer"
 Source: "../RaptorViewer/*.h";                      DestDir: "{app}/RaptorViewer"
+Source: "../RaptorViewer/*.rc";                     DestDir: "{app}/RaptorViewer"
 Source: "../RaptorViewer/Demo.xml";                 DestDir: "{app}/RaptorViewer"
 
 Source: "../Rays2/*.*";                             DestDir: "{app}/Rays2"
@@ -198,6 +213,10 @@ Source: "../Test5/*.h";                             DestDir: "{app}/Test5"
 Source: "../Test5/*.rc";                            DestDir: "{app}/Test5"
 Source: "../Test5/*.ico";                           DestDir: "{app}/Test5"
 Source: "../Test5/*.tga";                           DestDir: "{app}/Test5"
+Source: "../Test5/*.vert";                          DestDir: "{app}/Test5"
+Source: "../Test5/*.frag";                          DestDir: "{app}/Test5"
+
+Source: "../Test6/*.*";                             DestDir: "{app}/Test6"
 
 [Icons]
-Name: "{group}\Raptor SDK"; Filename: "{app}\MyProg.exe"
+Name: "{group}\Raptor SDK"; Filename: "{app}\RaptorSDK.exe"
