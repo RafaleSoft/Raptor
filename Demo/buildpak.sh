@@ -17,7 +17,7 @@
 #!/bin/sh
 
 
-echo 	Making ToolBox data package  ...
+echo 	Making Demo data package  ...
 echo    Root of Raptor is set to: [$RAPTOR_ROOT] 
 
 if  ( test -z "$RAPTOR_ROOT" )
@@ -26,7 +26,9 @@ then
 	exit 1
 fi
 
-cd $RAPTOR_ROOT/RaptorToolBox/Filters
+
+cd $RAPTOR_ROOT/Demo/Datas
+
 
 if !( test -f $RAPTOR_ROOT/Redist/Bin/RaptorDataPackager)
 then
@@ -39,7 +41,7 @@ else
 	echo $RAPTOR_ROOT/Redist/Bin/RaptorDataPackager
 fi
 
-$RAPTOR_ROOT/Redist/Bin/RaptorDataPackager -C Toolbox.pck DOF.gs DOF.ps DOF.vs DOF_old.ps DOF.vp DOF.fp Color.ps Color_old.ps Color.fp Magnifier.gs Magnifier_X.ps Magnifier_Y.ps Magnifier.vs Magnifier_oldX.ps Magnifier_oldY.ps Magnifier.vp Magnifier_X.fp Magnifier_Y.fp HDR_threshold.ps HDR_composer.ps HDR_luminance.ps HDR_luminanceLast.ps HDR_threshold_old.ps HDR_composer_old.ps HDR_luminance_old.ps HDR_luminanceLast_old.ps HDR_threshold.fp HDR_composer.fp HDR_luminance.fp HDR_luminanceLast.fp MB_accum.ps MB_accum2.ps MB_accum_old.ps
+$RAPTOR_ROOT/Redist/Bin/RaptorDataPackager -C Demo.pck BRICKS.jpg BRICKS2.jpg BRICKS3.jpg BRICKS4.jpg BRICKS5.jpg BRICKS6.jpg BRICKS7.jpg BRICKS8.jpg BRICKS9.jpg BRICKS10.jpg colonneLow.3DS Columns.3DS ColumnsLow.3DS Marble.jpg Marble2.jpg Marble3.jpg Marble4.jpg Marble5.jpg Marble6.jpg Sculpt.tga OLDWOOD2.JPG LensFlare2.tga lrock049.jpg Fire.tga flare0.jpg flare1.jpg flare3.jpg flare4.jpg flare5.jpg flare6.jpg flare7.jpg flare8.jpg flare10.jpg
 
 pwd
 
@@ -53,12 +55,13 @@ fi
 echo Delivering package ...
 cd ..
 
-if ( test -f Toolbox.pck )
+if ( test -f Demo.pck )
 then
-	echo Toolbox package already exist, it will be replaced !
-	rm -rf Toolbox.pck
+	echo Demo package already exist, it will be replaced !
+	rm -rf Demo.pck
 fi
 
-mv Filters/Toolbox.pck .
+mv Datas/Demo.pck .
+
 
 

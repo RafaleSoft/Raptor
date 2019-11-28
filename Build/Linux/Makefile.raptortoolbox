@@ -109,7 +109,7 @@ $(OBJ_CONTROLLERS): $(SRC_CONTROLLERS)
 $(SRC_LOADERS) : $(SRCDIR)/Loaders/OBJ.lex
 	(cd $(SRCDIR)/Loaders && $(RAPTOR_ROOT)/Redist/Bin/Microlex -f OBJ.lex -o OBJScript -v)
 
-$(REDIST)/Bin/ToolBox.pck:
+$(REDIST)/Bin/Toolbox.pck:
 	(cd $(SRCDIR) ; ./buildpak.sh)
 	cp $(SRCDIR)/Toolbox.pck $(REDIST)/Bin/Toolbox.pck
 	
