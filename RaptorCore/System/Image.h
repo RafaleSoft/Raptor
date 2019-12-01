@@ -96,11 +96,11 @@ public:
 			NB_OP_KIND
         } OP_KIND;
 
-		typedef struct 
-		{
-			float		bump_scale;
-			uint32_t	transparency;
-		} operation_param_t;
+		//typedef struct 
+		//{
+		//	float		bump_scale;
+		//	uint32_t	transparency;
+		//} operation_param_t;
 
 		//!	Virtual destructor
 		virtual ~IImageOP() {};
@@ -111,13 +111,13 @@ public:
 		//! Apply the specific operator to the image ( it must be valid and have been loaded )
 		//! @param src : a valid image object, defined as the source of pixels
 		//! @return true if no error, false otherwise.
-		virtual bool apply(CImage* const src,
-						   const operation_param_t& param) const = 0;
+		virtual bool apply(CImage* const src) const = 0;
+						   //,const operation_param_t& param) const = 0;
 
     protected:
         IImageOP() {};
         IImageOP(const IImageOP&) {}
-		IImageOP& operator=(const IImageOP&) { return *this;  };
+		IImageOP& operator=(const IImageOP&) { return *this; };
     };
 
 
@@ -141,8 +141,8 @@ public:
 	//!	Determine the appropriate image loader, if any.
 	//! @return false if the an error is encountered when trying to access filename of no loader found.
 	bool loadImage(const std::string &filename,
-				   const CVaArray<CImage::IImageOP::OP_KIND>& ops,
-				   const CImage::IImageOP::operation_param_t& param);
+				   const CVaArray<CImage::IImageOP*>& ops);
+				   //,const CImage::IImageOP::operation_param_t& param);
 
 	//! texture name ( default is the source filename )
 	const std::string & getName(void) const { return m_name; };

@@ -537,9 +537,9 @@ bool CTextureFactory::glLoadTexture(ITextureObject* const T,
 	}
 #endif
 
-	CImage::IImageOP::operation_param_t param;
-	param.bump_scale = mConfig.getBumpAmplitude();
-	param.transparency = T->getTransparency();
+	//CImage::IImageOP::operation_param_t param;
+	//param.bump_scale = mConfig.getBumpAmplitude();
+	//param.transparency = T->getTransparency();
 	CVaArray<CImage::IImageOP::OP_KIND> iops = ops;
 	if (mConfig.useTextureResize() && !ops.hasValue(CImage::IImageOP::IMAGE_SCALER))
 		iops.addValue(CImage::IImageOP::IMAGE_SCALER);
@@ -547,7 +547,7 @@ bool CTextureFactory::glLoadTexture(ITextureObject* const T,
 		iops.addValue(CImage::IImageOP::ALPHA_TRANSPARENCY);
 
 	CImage loadImage;
-	if (loadImage.loadImage(fname, iops, param))
+	if (loadImage.loadImage(fname, iops))//, param))
 	{
 		CTextureObject *t = T->getGLTextureObject();
 		if (NULL != t)

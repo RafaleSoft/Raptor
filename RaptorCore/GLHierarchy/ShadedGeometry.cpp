@@ -188,9 +188,8 @@ void CShadedGeometry::glRender()
 	{
 		// apply material
 		if (getRenderingModel().hasModel(CRenderingModel::CGL_NORMALS))
-		{
-		    m_pShader->glRenderMaterial();
-		}
+			if (m_pShader->hasMaterial())
+				m_pShader->glRenderMaterial();
 
 		// apply texture
 		if (getRenderingModel().hasModel(CRenderingModel::CGL_TEXTURE))

@@ -43,7 +43,8 @@ public:
     virtual OP_KIND getKind(void) const { return IMAGE_SCALER; };
 
 	//! Implements CImageOP
-	virtual bool apply(CImage* const src, const operation_param_t& param) const;
+	virtual bool apply(CImage* const src) const; // , const operation_param_t& param) const;
+
 
 private:
 	CDefaultImageScaler();

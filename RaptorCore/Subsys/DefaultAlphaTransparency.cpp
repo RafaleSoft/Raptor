@@ -45,12 +45,13 @@ CDefaultAlphaTransparency::~CDefaultAlphaTransparency()
 }
 
 
-bool CDefaultAlphaTransparency::apply(CImage* const src, const operation_param_t& param) const
+bool CDefaultAlphaTransparency::apply(CImage* const src) const //, const operation_param_t& param) const
 {
 	if (NULL == src)
 		return false;
 
-	uint32_t alpha = param.transparency;
+	//uint32_t alpha = param.transparency;
+	uint32_t alpha = transparency;
 
 	uint8_t* ppixels = src->getPixels();
 	if (ppixels != NULL)

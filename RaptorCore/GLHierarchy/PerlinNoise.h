@@ -26,7 +26,7 @@ RAPTOR_NAMESPACE_BEGIN
 class RAPTOR_API CPerlinNoise : public ITextureGenerator  
 {
 public:
-	typedef CImage::IImageOP::OP_KIND OPS;
+	typedef CImage::IImageOP* OPS;
 	typedef enum
 	{
 		NOISE1,

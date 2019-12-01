@@ -66,7 +66,7 @@ CDefaultImageScaler::~CDefaultImageScaler()
 
 }
 
-bool CDefaultImageScaler::apply(CImage* const src, const operation_param_t& ) const
+bool CDefaultImageScaler::apply(CImage* const src) const //, const operation_param_t& ) const
 {
 	unsigned int powx = 1;
 	unsigned int powy = 1;

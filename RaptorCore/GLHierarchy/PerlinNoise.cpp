@@ -325,10 +325,10 @@ void CPerlinNoise::glGenerate(CTextureObject* t)
 
 	CTextureFactory &f = CTextureFactory::getDefaultFactory();
 
-	CImage::IImageOP::operation_param_t param;
-	param.bump_scale = f.getConfig().getBumpAmplitude();
-	param.transparency = t->getTransparency();
-	noise.loadImage(".buffer", m_ImageOps, param);
+	//CImage::IImageOP::operation_param_t param;
+	//param.bump_scale = f.getConfig().getBumpAmplitude();
+	//param.transparency = t->getTransparency();
+	noise.loadImage(".buffer", m_ImageOps); // , param);
 		
 	f.glLoadTexture(t, noise);
 

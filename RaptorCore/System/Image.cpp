@@ -147,8 +147,8 @@ float* CImage::getFloatPixels(uint32_t layer) const
 }
 
 bool CImage::loadImage(const std::string &filename,
-					   const CVaArray<CImage::IImageOP::OP_KIND>& ops,
-					   const CImage::IImageOP::operation_param_t& param)
+					   const CVaArray<CImage::IImageOP*>& ops)
+					   //const CImage::IImageOP::operation_param_t& param)
 {
 	if (filename.empty())
 		return false;
@@ -162,16 +162,21 @@ bool CImage::loadImage(const std::string &filename,
 		{
 			m_name = filename;
 
-			std::map<IImageOP::OP_KIND, IImageOP*>::const_iterator it = IMAGE_KIND_OP.begin();
+			/*std::map<IImageOP::OP_KIND, IImageOP*>::const_iterator it = IMAGE_KIND_OP.begin();
 			while (it != IMAGE_KIND_OP.end())
 			{
 				if (ops.hasValue((*it).first))		//	CImage::IImageOP::OP_KIND
 				{
 					CImage::IImageOP* op = (*it).second;	//	CImage::IImageOP *
-					op->apply(this, param);
+					op->apply(this); // , param);
 				}
 
 				it++;
+			}*/
+			for (size_t i = 0; i < ops.size();i++)
+			{
+				CImage::IImageOP *op = ops[i];
+				op->apply(this);
 			}
 		}
 		else	// load from file failed
