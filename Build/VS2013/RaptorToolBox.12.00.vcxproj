@@ -364,9 +364,13 @@ copy $(SolutionDir)$(ProjectName)\Toolbox.pck "%RAPTOR_ROOT%\Redist\bin\"
     <ClCompile Include="..\..\RaptorToolBox\Filters\MagnifierFilter.cpp" />
     <ClCompile Include="..\..\RaptorToolBox\Filters\MBFilter.cpp" />
     <ClCompile Include="..\..\RaptorToolBox\Imaging.cpp" />
+    <ClCompile Include="..\..\RaptorToolBox\Imaging\AlphaTransparency.cpp" />
     <ClCompile Include="..\..\RaptorToolBox\Imaging\BMPImaging.cpp" />
+    <ClCompile Include="..\..\RaptorToolBox\Imaging\BumpmapLoader.cpp" />
     <ClCompile Include="..\..\RaptorToolBox\Imaging\ICOImaging.cpp" />
+    <ClCompile Include="..\..\RaptorToolBox\Imaging\ImageScaler.cpp" />
     <ClCompile Include="..\..\RaptorToolBox\Imaging\JPGImaging.cpp" />
+    <ClCompile Include="..\..\RaptorToolBox\Imaging\MipmapBuilder.cpp" />
     <ClCompile Include="..\..\RaptorToolBox\Imaging\OpenEXRImaging.cpp" />
     <ClCompile Include="..\..\RaptorToolBox\Imaging\PNGImaging.cpp" />
     <ClCompile Include="..\..\RaptorToolBox\Imaging\TGAImaging.cpp" />
@@ -439,9 +443,13 @@ copy $(SolutionDir)$(ProjectName)\Toolbox.pck "%RAPTOR_ROOT%\Redist\bin\"
     <ClInclude Include="..\..\RaptorToolBox\Filters\MagnifierFilter.h" />
     <ClInclude Include="..\..\RaptorToolBox\Filters\MBFilter.h" />
     <ClInclude Include="..\..\RaptorToolBox\Imaging.h" />
+    <ClInclude Include="..\..\RaptorToolBox\Imaging\AlphaTransparency.h" />
     <ClInclude Include="..\..\RaptorToolBox\Imaging\BMPImaging.h" />
+    <ClInclude Include="..\..\RaptorToolBox\Imaging\BumpmapLoader.h" />
     <ClInclude Include="..\..\RaptorToolBox\Imaging\ICOImaging.h" />
+    <ClInclude Include="..\..\RaptorToolBox\Imaging\ImageScaler.h" />
     <ClInclude Include="..\..\RaptorToolBox\Imaging\JPGImaging.h" />
+    <ClInclude Include="..\..\RaptorToolBox\Imaging\MipmapBuilder.h" />
     <ClInclude Include="..\..\RaptorToolBox\Imaging\OpenEXRImaging.h" />
     <ClInclude Include="..\..\RaptorToolBox\Imaging\PNGImaging.h" />
     <ClInclude Include="..\..\RaptorToolBox\Imaging\TGAImaging.h" />

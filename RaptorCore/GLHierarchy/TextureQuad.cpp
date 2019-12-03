@@ -177,10 +177,7 @@ bool CTextureQuad::glLoadTexture(const std::string &texname, bool compressed)
 		if (compressed)
 			Txt.glLoadCompressedTexture(T, texname);
 		else
-		{
-			CVaArray<CImage::IImageOP::OP_KIND> iops;
-			Txt.glLoadTexture(T, texname, iops);
-		}
+			Txt.glLoadTexture(T, texname);
 
 		m_rTexture = T;
 

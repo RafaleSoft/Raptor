@@ -34,6 +34,9 @@
 #if !defined(AFX_RAPTORDISPLAYCONFIG_H__DA0759DF_6CF9_44A7_9ADE_D404FEEC2DDF__INCLUDED_)
 	#include "System/RaptorDisplayConfig.h"
 #endif
+#if !defined(AFX_IMAGE_H__F545D0D5_5F10_4EFA_BE3B_3F3D34D4DBF3__INCLUDED_)
+	#include "System/Image.h"
+#endif
 
 
 RAPTOR_NAMESPACE_BEGIN
@@ -100,6 +103,9 @@ public:
 	//!	The default context for the default dispplay.
 	long					defaultContext;
 	
+	//!	Imaging input/output interfaces.
+	map<std::string, CImage::IImageIO*>	imageKindIO;
+
 	//! The set of all Raptor displays for this instance.
 	std::vector<CRaptorDisplay*>	displays;
 	//!	Raptor Console interactors.

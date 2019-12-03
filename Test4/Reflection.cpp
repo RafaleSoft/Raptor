@@ -12,7 +12,7 @@
 #include "GLHierarchy/TextureFactoryConfig.h"
 
 #include "Reflection.h"
-
+#include "ToolBox/Imaging/BumpmapLoader.h"
 
 CReflection::CReflection(float width,float height,int hcels,int vcels)
     :CBasicObjects::CRectMesh()
@@ -38,17 +38,17 @@ CReflection::CReflection(float width,float height,int hcels,int vcels)
     config.setBumpAmplitude(3.0f);
     config.setCurrentAnisotropy(16.0f);
 
-	CPerlinNoise *pNoise = new CPerlinNoise(CVaArray<CImage::IImageOP::OP_KIND>(CImage::IImageOP::BUMPMAP_LOADER));
-    CTextureObject *T = f.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
-													CTextureObject::CGL_MULTIPLY,
-													ITextureObject::CGL_TRILINEAR,
-													pNoise);
+	CBumpmapLoader loader(f.getConfig().getBumpAmplitude());
+	CPerlinNoise pNoise(&loader);
+    CTextureObject *T = f.glCreateTexture(	ITextureObject::CGL_COLOR24_ALPHA,
+											CTextureObject::CGL_MULTIPLY,
+											ITextureObject::CGL_TRILINEAR);
 	T->glvkUpdateClamping(ITextureObject::CGL_REPEAT);
 
 	CTextureUnitSetup *tus = pShader->glGetTextureUnitsSetup();
 
     T->setSize(512,512);
-    pNoise->glGenerate(T);
+    pNoise.glGenerate(T);
     tus->setNormalMap(T);
 
     T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_MULTIPLY,ITextureObject::CGL_BILINEAR);

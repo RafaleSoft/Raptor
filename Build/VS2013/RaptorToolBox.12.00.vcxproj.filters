@@ -146,6 +146,18 @@
     <ClCompile Include="..\..\RaptorToolBox\Filters.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\RaptorToolBox\Imaging\AlphaTransparency.cpp">
+      <Filter>Source Files\Imaging</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorToolBox\Imaging\BumpmapLoader.cpp">
+      <Filter>Source Files\Imaging</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorToolBox\Imaging\ImageScaler.cpp">
+      <Filter>Source Files\Imaging</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorToolBox\Imaging\MipmapBuilder.cpp">
+      <Filter>Source Files\Imaging</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\RaptorToolBox\Loaders\OBJScript_lex.h">
@@ -237,6 +249,18 @@
     </ClInclude>
     <ClInclude Include="..\..\RaptorToolBox\Filters.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorToolBox\Imaging\AlphaTransparency.h">
+      <Filter>Header Files\Imaging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorToolBox\Imaging\BumpmapLoader.h">
+      <Filter>Header Files\Imaging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorToolBox\Imaging\ImageScaler.h">
+      <Filter>Header Files\Imaging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorToolBox\Imaging\MipmapBuilder.h">
+      <Filter>Header Files\Imaging</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

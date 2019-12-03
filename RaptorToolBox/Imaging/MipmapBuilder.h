@@ -1,6 +1,6 @@
 /***************************************************************************/
 /*                                                                         */
-/*  Imaging.h                                                              */
+/*  MipmapBuilder.h                                                        */
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
@@ -16,29 +16,39 @@
 /***************************************************************************/
 
 
-#if !defined(AFX_IMAGING_H__BD40E48F_EE12_49CF_BFBD_93658FCD0529__INCLUDED_)
-#define AFX_IMAGING_H__BD40E48F_EE12_49CF_BFBD_93658FCD0529__INCLUDED_
+#if !defined(AFX_MIPMAPBUILDER_H__9C508D96_B614_4920_8816_B670295B6CE2__INCLUDED_)
+#define AFX_MIPMAPBUILDER_H__9C508D96_B614_4920_8816_B670295B6CE2__INCLUDED_
 
 #if _MSC_VER > 1000
 #pragma once
 #endif // _MSC_VER > 1000
 
+#if !defined(AFX_IMAGE_H__F545D0D5_5F10_4EFA_BE3B_3F3D34D4DBF3__INCLUDED_)
+	#include "System/Image.h"
+#endif
 
-RAPTOR_NAMESPACE
+RAPTOR_NAMESPACE_BEGIN
 
 
-class RAPTOR_API CImaging  
+class RAPTOR_API CMipmapBuilder : public CImage::IImageOP
 {
 public:
-    //! Install image manipulators into current instance of Raptor
-    static bool installImagers(void) ;
+	CMipmapBuilder();
+	virtual ~CMipmapBuilder();
+  
+    //! Implements CImageOP
+	virtual OP_KIND getKind(void) const { return CImage::IImageOP::MIPMAP_BUILDER; };
 
-    //! Install one selected image manipulator into current instance of Raptor
-	static bool installImager(const std::string& imageType);
-
-private:
-    CImaging();
-	virtual ~CImaging();
+    //! Implaments CImageOP
+    virtual bool apply(	CTextureObject* const src,
+						unsigned int innerFormat,
+						unsigned int texelFormat,
+						unsigned int texelType,
+						const CTextureFactoryConfig& config) const;
 };
 
-#endif // !defined(AFX_IMAGING_H__BD40E48F_EE12_49CF_BFBD_93658FCD0529__INCLUDED_)
+RAPTOR_NAMESPACE_END
+
+#endif // !defined(AFX_DEFAULTMIPMAPBUILDER_H__9C508D96_B614_4920_8816_B670295B6CE2__INCLUDED_)
+
+

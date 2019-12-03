@@ -132,7 +132,7 @@ public:
 	//! - the numeric format
 	bool glLoadTexture(	ITextureObject* const T,
 						const std::string &fname,
-						const CVaArray<CImage::IImageOP::OP_KIND>& ops = CVaArray<CImage::IImageOP::OP_KIND>());
+						const CVaArray<CImage::IImageOP*>& ops = CVaArray<CImage::IImageOP*>());
 
 	bool glLoadTexture(CTextureObject* const T,
 					   const CImage &image);
@@ -144,7 +144,7 @@ public:
 	//! A subsequent call to glLoadTexture will finalize texture loading.
 	RAPTOR_HANDLE glvkPreloadTexture(	CTextureObject* const T,
 										const std::string &fname,
-										const CVaArray<CImage::IImageOP::OP_KIND>& ops = CVaArray<CImage::IImageOP::OP_KIND>());
+										const CVaArray<CImage::IImageOP*>& ops = CVaArray<CImage::IImageOP*>());
 
 	//!	@param preload : the result of a texture preload
 	//!	@param mode : @see glLoadTexture

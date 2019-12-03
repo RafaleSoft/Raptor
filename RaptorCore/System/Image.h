@@ -92,6 +92,7 @@ public:
             BUMPMAP_LOADER,
             IMAGE_SCALER,
 			ALPHA_TRANSPARENCY,
+			MIPMAP_BUILDER,
 			OTHER_OP,
 			NB_OP_KIND
         } OP_KIND;
@@ -205,29 +206,19 @@ public:
 	//!	Adds a loader/storer class for a specific kind of image (used mainly by LoadTexture ).
 	//!	The different imagers are choosen by the file extension when LoadTexture is called. 
     //! If there is already an imager for an extension, the one given here replaces the existing one.
-	//!	By default, there is only a buffer loader set. Some basics are provided by CRaptorToolBox
+	//!	By default, there is only a buffer loader set. Some basic loaders are provided by CRaptorToolBox
 	static void setImageKindIO(IImageIO *imager);
 
 	//!	Returns a loader given a file name or file extension.
 	//! The loader is one defined above.
 	static IImageIO* const getImageKindIO(const std::string &extension);
 
-	//!	set an operator class for a specific kind of image (used mainly by LoadTexture ).
-    //! If there is already an operator for a kind, the one given here replaces the existing one.
-	//!	By default, there is an operator defined for each kind. Some basics are provided by CRaptorToolBox
-	static void setImageKindOP(IImageOP *op);
-
-	//!	Returns a loader given a file extension.
-	//! The loader is one defined above.
-    static IImageOP* const getImageKindOP(IImageOP::OP_KIND kind);
 
 
 
 private:
+	//!	Forbidden assignment operator
 	CImage& operator=(const CImage&);
-
-	static map<std::string,IImageIO*>			IMAGE_KIND_IO;
-    static map<IImageOP::OP_KIND,IImageOP*>		IMAGE_KIND_OP;
 
 	//!	Object name ( default is filename )
 	std::string	m_name;

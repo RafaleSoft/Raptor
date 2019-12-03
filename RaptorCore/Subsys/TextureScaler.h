@@ -1,6 +1,6 @@
 /***************************************************************************/
 /*                                                                         */
-/*  Imaging.h                                                              */
+/*  TextureScaler.h                                                        */
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
@@ -16,29 +16,47 @@
 /***************************************************************************/
 
 
-#if !defined(AFX_IMAGING_H__BD40E48F_EE12_49CF_BFBD_93658FCD0529__INCLUDED_)
-#define AFX_IMAGING_H__BD40E48F_EE12_49CF_BFBD_93658FCD0529__INCLUDED_
+#if !defined(AFX_TEXTURESCALER_H__6EB6436B_D35C_41F6_96EA_B079626A43A0__INCLUDED_)
+#define AFX_TEXTURESCALER_H__6EB6436B_D35C_41F6_96EA_B079626A43A0__INCLUDED_
 
 #if _MSC_VER > 1000
 #pragma once
 #endif // _MSC_VER > 1000
 
+#if !defined(AFX_IMAGE_H__F545D0D5_5F10_4EFA_BE3B_3F3D34D4DBF3__INCLUDED_)
+	#include "System/Image.h"
+#endif
 
-RAPTOR_NAMESPACE
+RAPTOR_NAMESPACE_BEGIN
 
 
-class RAPTOR_API CImaging  
+class CTextureScaler : public CImage::IImageOP
 {
 public:
-    //! Install image manipulators into current instance of Raptor
-    static bool installImagers(void) ;
+	CTextureScaler(float sx, float sy);
+	CTextureScaler(const CTextureScaler& scaler);
+	CTextureScaler& operator=(const CTextureScaler& scaler);
+	
 
-    //! Install one selected image manipulator into current instance of Raptor
-	static bool installImager(const std::string& imageType);
+	virtual ~CTextureScaler();
+
+    //! Implements CImageOP
+    virtual OP_KIND getKind(void) const { return IMAGE_SCALER; };
+
+	//! Implements CImageOP
+	virtual bool apply(CImage* const src) const;
+
 
 private:
-    CImaging();
-	virtual ~CImaging();
+	CTextureScaler();
+
+	//!	Texture resize factors.
+	float scale_x;
+	float scale_y;
 };
 
-#endif // !defined(AFX_IMAGING_H__BD40E48F_EE12_49CF_BFBD_93658FCD0529__INCLUDED_)
+RAPTOR_NAMESPACE_END
+
+#endif // !defined(AFX_TEXTURESCALER_H__6EB6436B_D35C_41F6_96EA_B079626A43A0__INCLUDED_)
+
+

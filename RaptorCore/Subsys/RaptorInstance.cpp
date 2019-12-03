@@ -171,18 +171,7 @@ CRaptorInstance::~CRaptorInstance()
 	}
 #endif
 
-	CImage::IImageOP *op = CImage::getImageKindOP(CImage::IImageOP::BUMPMAP_LOADER);
-	delete op;
-
-	op = CImage::getImageKindOP(CImage::IImageOP::IMAGE_SCALER);
-	delete op;
-
-	op = CImage::getImageKindOP(CImage::IImageOP::ALPHA_TRANSPARENCY);
-	delete op;
-
-	CImage::IImageIO *pIO = CImage::getImageKindIO("BUFFER");
-	delete pIO;
-
+	
 #if defined (VK_VERSION_1_0)
 	if (config.m_bVulkan)
 		if (!CContextManager::GetInstance()->vkRelease())
@@ -212,6 +201,20 @@ CRaptorInstance::~CRaptorInstance()
 	if (pErrorMgr != NULL)
 		delete pErrorMgr;
 	pErrorMgr = NULL;
+
+	//	Release imagers
+	map<std::string, CImage::IImageIO*>::iterator it = imageKindIO.begin();
+	while (it != imageKindIO.end())
+	{
+		CImage::IImageIO *op = it->second;
+		std::vector<std::string> exts = op->getImageKind();
+		for (size_t i = 0; i < exts.size(); i++)
+			imageKindIO.erase(exts[i]);
+
+		delete op;
+		it = imageKindIO.begin();
+	}
+	imageKindIO.clear();
 }
 
 void CRaptorInstance::initInstance()
@@ -258,15 +261,6 @@ void CRaptorInstance::initInstance()
 	defaultConfig.refresh_rate.sync_to_monitor = false;
 	defaultConfig.x = 0;
 	defaultConfig.y = 0;
-
-	CDefaultBumpmapLoader *pDefaultBumpmapLoader = new CDefaultBumpmapLoader(1.0f);
-	CImage::setImageKindOP(pDefaultBumpmapLoader);
-
-	CDefaultImageScaler *pDefaultImageScaler = new CDefaultImageScaler(1.0f, 1.0f);
-	CImage::setImageKindOP(pDefaultImageScaler);
-
-	CDefaultAlphaTransparency *pDefaultAlphaTransparency = new CDefaultAlphaTransparency(255);
-	CImage::setImageKindOP(pDefaultAlphaTransparency);
 
 	CImage::IImageIO *pIO = new CBufferImage();
 	CImage::setImageKindIO(pIO);

@@ -36,12 +36,13 @@
 #if !defined(AFX_TEXTUREFACTORY_H__1B470EC4_4B68_11D3_9142_9A502CBADC6B__INCLUDED_)
 	#include "GLHierarchy/TextureFactory.h"
 #endif
+#if !defined(AFX_RAPTORINSTANCE_H__90219068_202B_46C2_BFF0_73C24D048903__INCLUDED_)
+	#include "Subsys/RaptorInstance.h"
+#endif
 
 
 RAPTOR_NAMESPACE
 
-std::map<std::string, CImage::IImageIO*>				CImage::IMAGE_KIND_IO;
-std::map<CImage::IImageOP::OP_KIND, CImage::IImageOP*>	CImage::IMAGE_KIND_OP;
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -148,7 +149,6 @@ float* CImage::getFloatPixels(uint32_t layer) const
 
 bool CImage::loadImage(const std::string &filename,
 					   const CVaArray<CImage::IImageOP*>& ops)
-					   //const CImage::IImageOP::operation_param_t& param)
 {
 	if (filename.empty())
 		return false;
@@ -161,22 +161,11 @@ bool CImage::loadImage(const std::string &filename,
 		if (imager->loadImageFile(filename, this))
 		{
 			m_name = filename;
-
-			/*std::map<IImageOP::OP_KIND, IImageOP*>::const_iterator it = IMAGE_KIND_OP.begin();
-			while (it != IMAGE_KIND_OP.end())
-			{
-				if (ops.hasValue((*it).first))		//	CImage::IImageOP::OP_KIND
-				{
-					CImage::IImageOP* op = (*it).second;	//	CImage::IImageOP *
-					op->apply(this); // , param);
-				}
-
-				it++;
-			}*/
 			for (size_t i = 0; i < ops.size();i++)
 			{
 				CImage::IImageOP *op = ops[i];
-				op->apply(this);
+				if (NULL != op)
+					op->apply(this);
 			}
 		}
 		else	// load from file failed
@@ -272,7 +261,8 @@ void CImage::setImageKindIO(IImageIO *imager)
 		for (unsigned int i=0;i<extensionKind[j].size();i++)
 			ext += toupper(extensionKind[j][i]);
 
-		IMAGE_KIND_IO.insert(std::map<std::string,IImageIO*>::value_type(ext,imager));
+		CRaptorInstance &instance = CRaptorInstance::GetInstance();
+		instance.imageKindIO.insert(std::map<std::string, IImageIO*>::value_type(ext, imager));
 	}
 }
 
@@ -288,39 +278,13 @@ CImage::IImageIO* const CImage::getImageKindIO(const std::string &extension)
 	for (pos=0;pos<ext.size();pos++)
         ext[pos] = toupper(ext[pos]);
 
-	std::map<std::string,IImageIO*>::const_iterator itr = IMAGE_KIND_IO.find(ext);
-	if (IMAGE_KIND_IO.end() != itr)
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+	std::map<std::string,IImageIO*>::const_iterator itr = instance.imageKindIO.find(ext);
+	if (instance.imageKindIO.end() != itr)
 		return (*itr).second;
 	else 
 		return NULL;
 }
-
-
-void CImage::setImageKindOP(IImageOP *op)
-{
-#ifdef RAPTOR_DEBUG_MODE_GENERATION
-    if (op == NULL)
-	{
-        Raptor::GetErrorManager()->generateRaptorError(	CTextureFactory::CTextureFactoryClassID::GetClassId(),
-														CRaptorErrorManager::RAPTOR_WARNING,
-														CRaptorMessages::ID_PROCEDURE_FAILED);
-		return;
-	}
-#endif
-
-	IMAGE_KIND_OP.insert(std::map<IImageOP::OP_KIND,IImageOP*>::value_type(op->getKind(),op));
-}
-
-
-CImage::IImageOP* const CImage::getImageKindOP(IImageOP::OP_KIND kind)
-{
-    std::map<IImageOP::OP_KIND,IImageOP*>::const_iterator itr = IMAGE_KIND_OP.find(kind);
-	if (IMAGE_KIND_OP.end() != itr)
-		return (*itr).second;
-	else 
-		return NULL;
-}
-
 
 
 unsigned int CImage::getBufferType(void) const
