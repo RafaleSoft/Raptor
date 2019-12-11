@@ -53,34 +53,43 @@ RAPTOR_NAMESPACE_BEGIN
 class RAPTOR_API RAPTOR_HANDLE
 {
 public:
-	RAPTOR_HANDLE() :c(0) { h.handle = 0;  }
-	RAPTOR_HANDLE(uint32_t c, void* p) :c(c) { h.handle = p; }
-	RAPTOR_HANDLE(uint32_t c, uint32_t p) :c(c) { h.glhandle = p; }
-	~RAPTOR_HANDLE() {};
+	RAPTOR_HANDLE(void) :c(0), h({ uint64_t(0) }) { }
+	RAPTOR_HANDLE(uint32_t c, void* p) :c(c), h({ uint64_t(0) }) { h.handle = p; }
+	RAPTOR_HANDLE(uint32_t c, GLuint p) :c(c), h({ uint64_t(0) }) { h.glhandle = p; }
+	RAPTOR_HANDLE(uint32_t c, GLhandleARB p) :c(c), h({ uint64_t(0) }) { h.glhandle = p; }
+	RAPTOR_HANDLE(uint32_t c, uint64_t p) :c(c), h({ uint64_t(0) }) { h.longhandle = p; }
+	~RAPTOR_HANDLE(void) {};
 	
 	//!	Getters.
 	uint32_t hClass(void) const { return c; };
 	template<class T>
 	T *ptr(void) const { return static_cast<T*>(h.handle); };
-	uint32_t handle(void) const { return h.glhandle; };
+	uint32_t handle(void) const { return h.longhandle; };
+	GLhandleARB glhandle(void) const { return h.glhandle; };
 
 	//!	Setters.
 	void hClass(uint32_t hc) { c = hc; };
 	void ptr(void* p) { h.handle = p; };
-	void handle(uint32_t g) { h.glhandle = g; };
+	void glhandle(GLhandleARB g) { h.glhandle = g; };
+	void handle(uint64_t g) { h.longhandle = g; };
 
 	//!	Operators.
-	operator uint32_t() const { return h.glhandle; };
 	bool operator==(const RAPTOR_HANDLE &rh) const
-	{ return (c == rh.c) && (h.handle == rh.h.handle); }
+	{
+		return (c == rh.c) && (h.longhandle == rh.h.longhandle);
+	}
 
 
 private:
+	//! avoid 32/64 mixing
+	operator uint64_t() const;
+
 	uint32_t c;
 	union hd
 	{
 		void*		handle;
-		uint32_t	glhandle;
+		uint64_t	longhandle;
+		GLhandleARB	glhandle;
 	} h;
 };
 

@@ -69,7 +69,7 @@ public:
 
 
 	//!	Raptor Instance has been initialised.
-	bool					initialised;
+	bool					isInitialised(void) const { return m_bInitialised; };
 	//!	The second pipeline has exited, raptor can be closed safely.
 	bool					terminate;
 	//!	Number of objects rendered in the current frame.
@@ -112,16 +112,17 @@ public:
 	std::vector<CRaptorConsole::CInputCollectorBase*>	inputCollectors;
 	//!	The full list of persistence objects active in this instance.
 	MapStringToPtr	objects;
+
 	//! Fragment Program state.
-	bool m_bFragmentProgramReady;
+	bool isFragmentShaderReady(void) const { return m_bFragmentShaderReady; };
 	//! Vertex Program state.
-	bool m_bVertexProgramReady;
+	bool isVertexShaderReady(void) const { return m_bVertexShaderReady; };
 	//! Geometry Program state.
-	bool m_bGeometryShaderReady;
+	bool isGeometryShaderReady(void) const { return m_bGeometryShaderReady; };
 	//!	Vertex Shader state
-	bool m_bVertexReady;
+	bool isVertexProgramReady(void) const { return m_bVertexProgramReady; };
 	//!	Fragment Shader state
-	bool m_bFragmentReady;
+	bool isFragmentProgramReady(void) const { return m_bFragmentProgramReady; };
 
 #if defined(GL_COMPATIBILITY_profile)
 	//!	Full screen quad rendering display list
@@ -145,7 +146,7 @@ public:
 	const CRaptorDisplayConfig& getDefaultConfig(void) const { return defaultConfig; }
 
 	//! Delete Raptor status and any allocated resource.
-	bool	destroy(void);
+	bool destroy(void);
 
 	//!	Initialise base shaders for this instance.
 	bool glInitShaders(void);
@@ -163,6 +164,18 @@ private:
 
 	//!	Raptor default display creation structure and defaut initial state of the renderer.
 	CRaptorDisplayConfig	defaultConfig;
+	//!	Raptor Instance has been initialised.
+	bool					m_bInitialised;
+	//! Fragment Program state.
+	bool					m_bFragmentShaderReady;
+	//! Vertex Program state.
+	bool					m_bVertexShaderReady;
+	//! Geometry Program state.
+	bool					m_bGeometryShaderReady;
+	//!	Vertex Shader state
+	bool					m_bVertexProgramReady;
+	//!	Fragment Shader state
+	bool					m_bFragmentProgramReady;
 };
 
 RAPTOR_NAMESPACE_END

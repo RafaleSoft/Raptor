@@ -142,6 +142,25 @@ CRaptorDisplayConfig::CRaptorDisplayConfig()
 	transformState.viewport[1] = 0;
 	transformState.viewport[2] = 640;
 	transformState.viewport[3] = 480;
+
+	arraysState.vertexArray.arrayName = GL_VERTEX_ARRAY;
+	arraysState.vertexArray.arrayIndex = CProgramParameters::POSITION;
+	arraysState.colorArray.arrayName = GL_COLOR_ARRAY;
+	arraysState.colorArray.arrayIndex = CProgramParameters::PRIMARY_COLOR;
+	arraysState.normalArray.arrayName = GL_NORMAL_ARRAY;
+	arraysState.normalArray.arrayIndex = CProgramParameters::NORMAL;
+	arraysState.textureArray.arrayName = GL_TEXTURE_COORD_ARRAY;
+	arraysState.textureArray.arrayIndex = CProgramParameters::TEXCOORD0;
+	arraysState.indexArray.arrayName = GL_INDEX_ARRAY;
+	arraysState.indexArray.arrayIndex = 0;
+#ifdef GL_EXT_vertex_weighting
+	arraysState.weightArray.arrayName = GL_VERTEX_WEIGHT_ARRAY_EXT;
+#else
+	arraysState.weightArray.arrayName = 0;
+#endif
+	arraysState.weightArray.arrayIndex = CProgramParameters::WEIGHTS;
+	arraysState.edgeArray.arrayName = GL_EDGE_FLAG_ARRAY;
+	arraysState.edgeArray.arrayIndex = 0;
 }
 
 CRaptorDisplayConfig::~CRaptorDisplayConfig()

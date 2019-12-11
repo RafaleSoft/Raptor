@@ -2909,6 +2909,25 @@ extern "C" {
 #endif
 
 
+#if defined(GL_ARB_vertex_array_object)
+	#define GL_VERTEX_ARRAY_BINDING_ARB				0x85B5
+
+	typedef GLvoid(RAPTOR_APICALL * PFN_GL_BIND_VERTEX_ARRAY_ARB_PROC)(GLuint array);
+	typedef GLvoid(RAPTOR_APICALL * PFN_GL_DELETE_VERTEX_ARRAYS_ARB_PROC)(GLsizei n, const GLuint *arrays);
+	typedef GLvoid(RAPTOR_APICALL * PFN_GL_GEN_VERTEX_ARRAYS_ARB_PROC)(GLsizei n, GLuint *arrays);
+	typedef GLboolean(RAPTOR_APICALL * PFN_GL_IS_VERTEX_ARRAY_ARB_PROC)(GLuint array);
+
+	#ifndef DECLARE_GL_ARB_vertex_array_object
+	#define DECLARE_GL_ARB_vertex_array_object(LINKAGE) \
+		LINKAGE PFN_GL_BIND_VERTEX_ARRAY_ARB_PROC glBindVertexArrayARB; \
+		LINKAGE PFN_GL_DELETE_VERTEX_ARRAYS_ARB_PROC glDeleteVertexArrays; \
+		LINKAGE PFN_GL_GEN_VERTEX_ARRAYS_ARB_PROC glGenVertexArrays; \
+		LINKAGE PFN_GL_IS_VERTEX_ARRAY_ARB_PROC glIsVertexArray;
+	#endif
+#else
+	#define DECLARE_GL_ARB_vertex_array_object(LINKAGE)
+#endif
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //!
 //! WIN32 SPECIFIC

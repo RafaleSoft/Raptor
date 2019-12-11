@@ -67,7 +67,7 @@ void CGLView::OnDraw(CDC* pDC)
 	CGLDocument* pDoc = (CGLDocument* )GetDocument();
 
 	//	Select current rendering context
-	RAPTOR_HANDLE display(DEVICE_CONTEXT_CLASS, (unsigned int)(pDC->m_hDC));
+	RAPTOR_HANDLE display(DEVICE_CONTEXT_CLASS, (void*)(pDC->m_hDC));
 	m_pDisplay->glvkBindDisplay(display);
 
 	pDoc->GLDisplayFunc(m_viewID);
@@ -108,7 +108,7 @@ int CGLView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	if (m_pDisplay == NULL)
 		return -1;
 
-	RAPTOR_HANDLE display(DEVICE_CONTEXT_CLASS, (unsigned int)(dc.m_hDC));
+	RAPTOR_HANDLE display(DEVICE_CONTEXT_CLASS, (void*)(dc.m_hDC));
 	if (m_pDisplay->glvkBindDisplay(display))
 	{
 		m_pDisplay->glvkUnBindDisplay();
@@ -161,7 +161,7 @@ void CGLView::OnSize(UINT nType, int cx, int cy)
 	CClientDC dc(this) ;
 	CGLDocument* pDoc = (CGLDocument* )GetDocument();
 	
-	RAPTOR_HANDLE display(DEVICE_CONTEXT_CLASS, (unsigned int)(dc.m_hDC));
+	RAPTOR_HANDLE display(DEVICE_CONTEXT_CLASS, (void*)(dc.m_hDC));
 	m_pDisplay->glvkBindDisplay(display);
 	m_pDisplay->glResize(cx,cy,0,0);
 
@@ -179,7 +179,7 @@ void CGLView::glMakeCurrent(bool restoreContext)
 	if (restoreContext == true)
 	{
 		CClientDC dc(this);
-		RAPTOR_HANDLE display(DEVICE_CONTEXT_CLASS, (unsigned int)(dc.m_hDC));
+		RAPTOR_HANDLE display(DEVICE_CONTEXT_CLASS, (void*)(dc.m_hDC));
 		m_pDisplay->glvkBindDisplay(display);
 	}
 	else
@@ -198,7 +198,7 @@ void CGLView::OnInitialUpdate()
 	CGLDocument* pDoc = (CGLDocument* )GetDocument();
 
 	//	Select current rendering context
-	RAPTOR_HANDLE display(DEVICE_CONTEXT_CLASS, (unsigned int)(dc.m_hDC));
+	RAPTOR_HANDLE display(DEVICE_CONTEXT_CLASS, (void*)(dc.m_hDC));
 	m_pDisplay->glvkBindDisplay(display);
 
 	//	Initialise linked document if necessary

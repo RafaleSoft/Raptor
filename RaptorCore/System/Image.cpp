@@ -137,7 +137,7 @@ float* CImage::getFloatPixels(uint32_t layer) const
 		case CGL_COLOR_FLOAT16_ALPHA:
 		case CGL_COLOR_FLOAT32:
 		case CGL_COLOR_FLOAT32_ALPHA:
-			ret = (float*)pixels + layer*(sizeof(float) * m_width*m_height);;
+			ret = (float*)pixels + layer*(sizeof(float) * m_width*m_height);
 			break;
 		default:
 			ret = NULL;

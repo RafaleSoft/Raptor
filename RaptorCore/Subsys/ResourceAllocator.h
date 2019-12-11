@@ -52,6 +52,16 @@ public:
 		CResourceBinder(const CResourceBinder&);
 		CResourceBinder& operator=(const CResourceBinder&);
 
+		//! Bind a single array.
+		bool bindArray(CRaptorDisplayConfig::GL_ARRAY_STATE &state);
+
+		//! Unbind a single array.
+		bool unbindArray(CRaptorDisplayConfig::GL_ARRAY_STATE &state);
+
+		//!	This resource binder arrays bindings.
+		CRaptorDisplayConfig::GL_ARRAYS_STATE			bindings;
+
+		//! Global arrays binding state.
 		static CRaptorDisplayConfig::GL_ARRAYS_STATE	bindingState;
 	};
 

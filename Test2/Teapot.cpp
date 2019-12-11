@@ -43,6 +43,7 @@
 #include "GLHierarchy/Material.h"
 
 #include "ToolBox/RaptorToolBox.h"
+#include "ToolBox/Imaging/BumpmapLoader.h"
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -204,7 +205,8 @@ void CTeapot::GLInitContext()
     s->getMaterial()->setShininess(10.0f);
 	teapot->setDiffuseMap(t->getTexture(0));
 	CTextureObject* normalMap = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_MULTIPLY,ITextureObject::CGL_BILINEAR);
-    f.glLoadTexture(normalMap,"Datas\\bump3.tga",CImage::IImageOP::BUMPMAP_LOADER);
+	CBumpmapLoader loader(f.getConfig().getBumpAmplitude());
+    f.glLoadTexture(normalMap,"Datas\\bump3.tga",&loader);
 	teapot->setNormalMap(normalMap);
 	t->addTexture(normalMap);
 	teapot->setEnvironmentMap(t->getTexture("Datas\\ciel_07_small.jpg"));

@@ -125,41 +125,6 @@ bool CDefaultImageScaler::apply(CImage* const src) const //, const operation_par
 	return true;
 }
 
-void CDefaultImageScaler::scaleFloats(size_t srcw, size_t srch, size_t dstw, size_t dsth, float *srcpx, float *dstpx)
-{
-	size_t offset_dst = 0;
-	size_t offset_src = 0;
-	float pixel = 0;
-
-	for (size_t j = 0; j < dsth; j++)
-	{
-		offset_dst = j * dstw;
-		offset_src = j * srcw;
-		for (size_t i = 0; i < dstw; i++)
-		{
-			pixel = srcpx[offset_src + i];
-			dstpx[offset_dst + i] = pixel;
-		}
-	}
-}
-
-void CDefaultImageScaler::scaleUints(size_t srcw, size_t srch, size_t dstw, size_t dsth, uint32_t *srcpx, uint32_t *dstpx)
-{
-	size_t offset_dst = 0;
-	size_t offset_src = 0;
-	uint32_t pixel = 0;
-
-	for (size_t j = 0; j < dsth; j++)
-	{
-		offset_dst = j * dstw;
-		offset_src = j * srcw;
-		for (size_t i = 0; i < dstw; i++)
-		{
-			pixel = srcpx[offset_src + i];
-			dstpx[offset_dst + i] = pixel;
-		}
-	}
-}
 
 
 //////////////////////////////////////////////////////////////////////

@@ -386,7 +386,7 @@ void CRaptorScreenDisplay::allocateResources(void)
 	if ((m_pUOldAllocator != m_pUAllocator) && (m_pUOldAllocator != NULL))
 		m_pUOldAllocator->glvkLockMemory(false);
 
-	if (instance.initialised)
+	if (instance.isInitialised())
 		instance.glInitShaders();
 }
 

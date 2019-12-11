@@ -43,12 +43,10 @@ CUnifiedShader::CUnifiedShader(const CPersistence::CPersistenceClassID &classId,
 {
 }
 
-
 CUnifiedShader::CUnifiedShader(const CUnifiedShader& shader)
 	:CShaderProgram(shader)
 {
 }
-
 
 CUnifiedShader::~CUnifiedShader()
 {
@@ -70,7 +68,6 @@ void CUnifiedShader::glProgramParameter(unsigned int numParam, const CColor::RGB
 
     glParameter(numParam,v);
 }
-
 
 void CUnifiedShader::glParameter(unsigned int numParam, const float *v) const
 {
@@ -97,7 +94,6 @@ void CUnifiedShader::glParameter(unsigned int numParam, const float *v) const
     CATCH_GL_ERROR
 }
 
-
 std::string CUnifiedShader::glGetProgramString(void) const
 {
 	if (m_handle.handle() == 0)
@@ -107,10 +103,10 @@ std::string CUnifiedShader::glGetProgramString(void) const
 	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 
 	int value = 0;
-	pExtensions->glGetObjectParameterivARB(m_handle, GL_OBJECT_SHADER_SOURCE_LENGTH_ARB, &value);
+	pExtensions->glGetObjectParameterivARB(m_handle.handle(), GL_OBJECT_SHADER_SOURCE_LENGTH_ARB, &value);
 	char *source = new char[value];
 	GLsizei length = 0;
-	pExtensions->glGetShaderSourceARB(m_handle, value, &length, source);
+	pExtensions->glGetShaderSourceARB(m_handle.handle(), value, &length, source);
 
 	std::string program_source = source;
 	delete[] source;

@@ -56,6 +56,8 @@ public:
 	typedef struct GL_ARRAY_STATE_TAG
 	{
 		bool		enable;
+		int			arrayName;
+		int			arrayIndex;
 		int			arraySize;
 		int			arrayType;
 		int			arrayStride;

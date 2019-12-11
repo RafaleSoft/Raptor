@@ -49,10 +49,6 @@ public:
 private:
 	CDefaultImageScaler();
 
-	void scaleFloats(size_t srcw, size_t srch, size_t dstw, size_t dsth, float *srcpx, float *dstpx);
-
-	void scaleUints(size_t srcw, size_t srch, size_t dstw, size_t dsth, uint32_t *srcpx, uint32_t *dstpx);
-
 	//!	Texture resize factors.
 	float scale_x;
 	float scale_y;

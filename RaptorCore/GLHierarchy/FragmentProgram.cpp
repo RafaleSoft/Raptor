@@ -50,8 +50,6 @@ CFragmentProgram::CFragmentProgram(const std::string& name)
     m_bValid = false;
 	m_handle.handle(0);	// default openGL vertex processing pipeline
 	m_handle.hClass(CFragmentProgram::CFragmentProgramClassID::GetClassId().ID());
-
-    glInitShaders();
 }
 
 CFragmentProgram::CFragmentProgram(const CFragmentProgram& shader)
@@ -68,62 +66,22 @@ CFragmentProgram* CFragmentProgram::glClone()
 CFragmentProgram::~CFragmentProgram()
 {
 #ifdef GL_ARB_fragment_program
-	if (CRaptorInstance::GetInstance().m_bFragmentReady)
+	if (CRaptorInstance::GetInstance().isFragmentProgramReady())
 	{
 		glStop();
 
 		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
-		GLuint program = m_handle.handle();
+		GLuint program = m_handle.glhandle();
 		if (pExtensions->glIsProgramARB(program))
 			pExtensions->glDeleteProgramsARB(1,&program);
 	}
 #endif
 }
 
-void CFragmentProgram::glInitShaders()
-{
-    GLint maxLocals = 24;    //  implementation dependant, but at least 24
-    GLint maxMats = 8;
-
-#if defined(GL_ARB_fragment_program)
-    const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
-    pExtensions->glGetProgramivARB(GL_FRAGMENT_PROGRAM_ARB,GL_MAX_PROGRAM_LOCAL_PARAMETERS_ARB,&maxLocals);
-    glGetIntegerv(GL_MAX_PROGRAM_MATRICES_ARB,&maxMats);
-#endif
-
-    CATCH_GL_ERROR
-
-	if (!CRaptorInstance::GetInstance().m_bFragmentReady)
-	{
-		if (Raptor::glIsExtensionSupported(GL_ARB_FRAGMENT_PROGRAM_EXTENSION_NAME))
-		{
-#if defined(GL_ARB_fragment_program)
-			CRaptorInstance::GetInstance().m_bFragmentReady = pExtensions->glIsProgramARB != NULL;
-#else
-			CRaptorInstance::GetInstance().m_bFragmentReady = false;
-#endif
-		}
-		else
-		{
-#ifdef RAPTOR_DEBUG_MODE_GENERATION
-			CRaptorMessages::MessageArgument arg;
-			arg.arg_sz = "ASM fragment";
-			vector<CRaptorMessages::MessageArgument> args;
-			args.push_back(arg);
-			Raptor::GetErrorManager()->generateRaptorError(CShaderProgram::CShaderProgramClassID::GetClassId(),
-															CRaptorErrorManager::RAPTOR_WARNING,
-															CRaptorMessages::ID_NO_GPU_PROGRAM,
-															args);
-#endif
-		}
-	}
-}
-
-
 bool CFragmentProgram::glGetProgramCaps(GL_FRAGMENT_PROGRAM_CAPS& caps)
 {
 #ifdef GL_ARB_fragment_program
-	if (CRaptorInstance::GetInstance().m_bFragmentReady)
+	if (CRaptorInstance::GetInstance().isFragmentProgramReady())
 	{
 		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 
@@ -163,7 +121,7 @@ void CFragmentProgram::glRender(void)
 		return;
 
 #ifdef GL_ARB_fragment_program
-	if (CRaptorInstance::GetInstance().m_bFragmentReady)
+	if (CRaptorInstance::GetInstance().isFragmentProgramReady())
 	{
 		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 		if (pExtensions->glIsProgramARB(m_handle.handle()))
@@ -201,11 +159,12 @@ void CFragmentProgram::glStop(void)
 bool CFragmentProgram::glLoadProgram(const std::string &program)
 {
     m_bValid = false;
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 
 #ifdef GL_ARB_fragment_program
-	if (CRaptorInstance::GetInstance().m_bFragmentReady)
+	if (CRaptorInstance::GetInstance().isFragmentProgramReady())
 	{
+		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+
         //!    In case of a previous error, we need to initialize error checking
         //!    to be sure that the error detected will only be due to shader loading.
         GLenum err = glGetError();
@@ -277,12 +236,11 @@ std::string CFragmentProgram::glGetProgramString(void) const
 	if (m_handle.handle() == 0)
 		return "";
 
-	if (!CRaptorInstance::GetInstance().m_bFragmentReady)
+	if (!CRaptorInstance::GetInstance().isFragmentProgramReady())
 		return "";
 
-#if defined(GL_ARB_vertex_program)
+#if defined(GL_ARB_fragment_program)
 	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
-
 	if (pExtensions->glIsProgramARB(m_handle.handle()))
 		pExtensions->glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB, m_handle.handle());
 	else
@@ -306,12 +264,11 @@ bool CFragmentProgram::glGetProgramStatus(void) const
 	if (m_handle.handle() == 0)
 		return false;
 
-	if (!CRaptorInstance::GetInstance().m_bFragmentReady)
+	if (!CRaptorInstance::GetInstance().isFragmentProgramReady())
 		return false;
 
 #if defined(GL_ARB_fragment_program)
-const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
-
+	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 	if (pExtensions->glIsProgramARB(m_handle.handle()))
 		pExtensions->glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB,m_handle.handle());
 	else
@@ -391,7 +348,7 @@ const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 void CFragmentProgram::glProgramParameter(unsigned int numParam, const GL_COORD_VERTEX &v) const
 {
 #if defined(GL_ARB_fragment_program)
-	if (CRaptorInstance::GetInstance().m_bFragmentReady)
+	if (CRaptorInstance::GetInstance().isFragmentProgramReady())
 	{
 		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 		pExtensions->glProgramLocalParameter4fvARB(GL_FRAGMENT_PROGRAM_ARB, numParam, v);
@@ -404,7 +361,7 @@ void CFragmentProgram::glProgramParameter(unsigned int numParam, const GL_COORD_
 void CFragmentProgram::glProgramParameter(unsigned int numParam, const CColor::RGBA &v) const
 {
 #if defined(GL_ARB_fragment_program)
-	if (CRaptorInstance::GetInstance().m_bFragmentReady)
+	if (CRaptorInstance::GetInstance().isFragmentProgramReady())
 	{
 		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 		pExtensions->glProgramLocalParameter4fvARB(GL_FRAGMENT_PROGRAM_ARB, numParam, v);

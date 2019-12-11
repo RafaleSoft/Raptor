@@ -230,7 +230,7 @@ CGLBuilder::CGLBuilder():
 	addExtension(ARB, "GL_ARB_shader_objects");
 	addExtension(ARB, "GL_ARB_half_float_pixel");
 	addExtension(ARB, "GL_ARB_window_pos");
-	addExtension(ARB, "GL_ARB_vertex_array_object");
+	addExtension(ARB, "GL_ARB_vertex_array_object", "GL_VERSION_2_1");
 	addExtension(ARB, "GL_ARB_texture_compression", "GL_ARB_texture_cube_map");
 	addExtension(ARB, "GL_ARB_texture_mirror_clamp_to_edge", "GL_VERSION_1_4");
 	addExtension(ARB, "GL_ARB_texture_env_combine", "GL_ARB_multitexture");
