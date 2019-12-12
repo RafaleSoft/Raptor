@@ -225,7 +225,7 @@ RAPTOR_HANDLE CRaptorScreenDisplay::getCurrentDevice(void) const
 
 bool CRaptorScreenDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
 {
-	if (device.handle() != CGL_NULL)
+	if (device.handle() != 0)
 	{
 		if (CContextManager::INVALID_CONTEXT == m_context)
 		{

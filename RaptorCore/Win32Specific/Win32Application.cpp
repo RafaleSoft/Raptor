@@ -122,7 +122,7 @@ bool CWin32Application::run(void)
         return false;
     }
 
-	HWND wnd = (HWND)getRootWindow().handle();
+	HWND wnd = getRootWindow().ptr<HWND__>();
 	SetForegroundWindow(wnd);	// Slightly Higher Priority
 	SetFocus(wnd);
 	
@@ -270,7 +270,7 @@ LRESULT CALLBACK WindowProc(  HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
             if (pApp == NULL)
                 return (DefWindowProc(hwnd, msg, wparam, lparam));
 
-            if (pApp->getRootWindow().handle() == (unsigned int)hwnd)
+            if (pApp->getRootWindow().ptr<HWND__>() == hwnd)
                 PostQuitMessage(0);
 
 		    return(0);

@@ -105,7 +105,7 @@ COpenGLShaderStage::COpenGLShaderStage(const COpenGLShaderStage& stage)
 		m_pGShader->registerDestruction(this);
 	}
 
-	if (0 != stage.m_shaderProgram.handle())
+	if (0 != stage.m_shaderProgram.glhandle())
 		glCompileShader();
 
 	m_bDeleteVShader = stage.m_bDeleteVShader;
@@ -115,11 +115,11 @@ COpenGLShaderStage::COpenGLShaderStage(const COpenGLShaderStage& stage)
 
 COpenGLShaderStage::~COpenGLShaderStage(void)
 {
-	if (m_shaderProgram.handle() != 0)
+	if (m_shaderProgram.glhandle() != 0)
 	{
 		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 		GLint value = 0;
-		pExtensions->glGetObjectParameterivARB(m_shaderProgram.handle(), GL_OBJECT_TYPE_ARB, &value);
+		pExtensions->glGetObjectParameterivARB(m_shaderProgram.glhandle(), GL_OBJECT_TYPE_ARB, &value);
 		if (value != GL_PROGRAM_OBJECT_ARB)
 		{
 			Raptor::GetErrorManager()->generateRaptorError(COpenGLShaderStage::COpenGLShaderStageClassID::GetClassId(),
@@ -133,7 +133,7 @@ COpenGLShaderStage::~COpenGLShaderStage(void)
 
 	// TODO : delete program only if not shared !!!
 #if defined(GL_ARB_shader_objects)
-	if ((m_shaderProgram.handle() != 0) &&
+	if ((m_shaderProgram.glhandle() != 0) &&
 		(m_bDeleteVShader || m_bDeleteFShader || m_bDeleteGShader))
 	{
 		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
@@ -508,7 +508,7 @@ bool COpenGLShaderStage::glCompileShader()
 				if (value.isA(p))
 				{
 					p = ((const CProgramParameters::CParameter<CProgramParameters::GL_VERTEX_ATTRIB>&)value).p;
-					pExtensions->glBindAttribLocationARB(m_shaderProgram.handle(), p, value.name().data());
+					pExtensions->glBindAttribLocationARB(m_shaderProgram.glhandle(), p, value.name().data());
 				}
 			}
 		}
@@ -538,7 +538,7 @@ bool COpenGLShaderStage::glCompileShader()
 		}
 #endif
 
-		if ((abort) && (m_shaderProgram.handle() != 0))
+		if ((abort) && (m_shaderProgram.glhandle() != 0))
 		{
 			GLint maxLength = 255;
 			GLint length = 0;

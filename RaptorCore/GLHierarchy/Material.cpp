@@ -547,12 +547,12 @@ void CMaterial::glRender()
 
 	//if (glIsList(handle.handle))
     //  This is much faster ...
-    if (handle.handle() > 0)
-		glCallList(handle.handle());
+    if (handle.glname() > 0)
+		glCallList(handle.glname());
 	else
 	{
-		handle.handle(glGenLists(1));
-		glNewList(handle.handle(),GL_COMPILE_AND_EXECUTE);
+		handle.glname(glGenLists(1));
+		glNewList(handle.glname(), GL_COMPILE_AND_EXECUTE);
 			if (ambient_enabled)
 				glMaterialfv(GL_FRONT,GL_AMBIENT,ambient);
 			if (diffuse_enabled)

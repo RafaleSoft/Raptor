@@ -229,7 +229,7 @@ bool CGeometryShader::glGetShaderCaps(GL_GEOMETRY_SHADER_CAPS& caps)
 
 bool CGeometryShader::glGetProgramStatus(void) const
 {
-	if (m_handle.handle() == 0)
+	if (m_handle.glhandle() == 0)
 		return false;
 
 	if (!CRaptorInstance::GetInstance().isGeometryShaderReady())

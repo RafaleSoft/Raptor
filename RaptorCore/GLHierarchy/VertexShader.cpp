@@ -78,7 +78,7 @@ CVertexShader::~CVertexShader()
 	else
 	{
 		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
-		if (m_handle.handle() > 0)
+		if (m_handle.glhandle() > 0)
 			pExtensions->glDeleteObjectARB(m_handle.glhandle());
 	}
 #endif
@@ -92,11 +92,11 @@ bool CVertexShader::glLoadProgram(const std::string &program)
 #if defined(GL_ARB_vertex_shader)
 	if (CRaptorInstance::GetInstance().isVertexShaderReady())
 	{
-		if (m_handle.handle() > 0)
+		if (m_handle.glhandle() > 0)
 			pExtensions->glDeleteObjectARB(m_handle.glhandle());
 
         m_handle.handle(pExtensions->glCreateShaderObjectARB(GL_VERTEX_SHADER_ARB));
-        if (m_handle.handle() == 0)
+		if (m_handle.glhandle() == 0)
         {
 			Raptor::GetErrorManager()->generateRaptorError(	CVertexShader::CVertexShaderClassID::GetClassId(),
 															CRaptorErrorManager::RAPTOR_WARNING,

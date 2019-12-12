@@ -55,7 +55,7 @@ class RAPTOR_API RAPTOR_HANDLE
 public:
 	RAPTOR_HANDLE(void) :c(0), h({ uint64_t(0) }) { }
 	RAPTOR_HANDLE(uint32_t c, void* p) :c(c), h({ uint64_t(0) }) { h.handle = p; }
-	RAPTOR_HANDLE(uint32_t c, GLuint p) :c(c), h({ uint64_t(0) }) { h.glhandle = p; }
+	RAPTOR_HANDLE(uint32_t c, GLuint p) :c(c), h({ uint64_t(0) }) { h.glname = p; }
 	RAPTOR_HANDLE(uint32_t c, GLhandleARB p) :c(c), h({ uint64_t(0) }) { h.glhandle = p; }
 	RAPTOR_HANDLE(uint32_t c, uint64_t p) :c(c), h({ uint64_t(0) }) { h.longhandle = p; }
 	~RAPTOR_HANDLE(void) {};
@@ -64,12 +64,14 @@ public:
 	uint32_t hClass(void) const { return c; };
 	template<class T>
 	T *ptr(void) const { return static_cast<T*>(h.handle); };
-	uint32_t handle(void) const { return h.longhandle; };
+	uint64_t handle(void) const { return h.longhandle; };
 	GLhandleARB glhandle(void) const { return h.glhandle; };
+	GLuint glname(void) const { return h.glname; };
 
 	//!	Setters.
 	void hClass(uint32_t hc) { c = hc; };
 	void ptr(void* p) { h.handle = p; };
+	void glname(GLuint g) { h.glname = g; };
 	void glhandle(GLhandleARB g) { h.glhandle = g; };
 	void handle(uint64_t g) { h.longhandle = g; };
 
@@ -90,6 +92,7 @@ private:
 		void*		handle;
 		uint64_t	longhandle;
 		GLhandleARB	glhandle;
+		GLuint		glname;
 	} h;
 };
 

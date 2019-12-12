@@ -246,7 +246,7 @@ void CRaptorVulkanDisplay::glGenerate(CTextureObject* )
 
 bool CRaptorVulkanDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
 {
-	if (device.handle() != CGL_NULL)
+	if (device.handle() != 0)
 	{
 		CContextManager *manager = CContextManager::GetInstance();
 

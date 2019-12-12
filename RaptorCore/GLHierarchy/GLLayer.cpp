@@ -139,12 +139,12 @@ void CGLLayer::glMakeList()
 {
     m_bRebuild = false;
 
-	if (glIsList(layer.handle()))
-		glDeleteLists(layer.handle(),1);
+	if (glIsList(layer.glname()))
+		glDeleteLists(layer.glname(),1);
 
 	layer.handle(glGenLists(1));
 
-	glNewList(layer.handle(),GL_COMPILE);	
+	glNewList(layer.glname(),GL_COMPILE);	
 
 		glRenderSingleBuffer(this);
 
@@ -273,7 +273,7 @@ void CGLLayer::glRender()
 
     if (m_bRebuild)
         glMakeList();
-	glCallList(layer.handle());
+	glCallList(layer.glname());
 
 	glEnable(GL_SCISSOR_TEST);
 	glScissor(m_xpos,m_ypos,m_layerWidth,m_layerHeight);

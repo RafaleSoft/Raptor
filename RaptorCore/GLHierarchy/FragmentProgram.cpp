@@ -117,17 +117,17 @@ bool CFragmentProgram::glGetProgramCaps(GL_FRAGMENT_PROGRAM_CAPS& caps)
 
 void CFragmentProgram::glRender(void)
 {
-	if (m_handle.handle() == 0)
+	if (m_handle.glhandle() == 0)
 		return;
 
 #ifdef GL_ARB_fragment_program
 	if (CRaptorInstance::GetInstance().isFragmentProgramReady())
 	{
 		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
-		if (pExtensions->glIsProgramARB(m_handle.handle()))
+		if (pExtensions->glIsProgramARB(m_handle.glhandle()))
 		{
 			glEnable(GL_FRAGMENT_PROGRAM_ARB);
-			pExtensions->glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB,m_handle.handle());
+			pExtensions->glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB, m_handle.glhandle());
 
 			if (m_bApplyParameters)
 			{
@@ -177,7 +177,7 @@ bool CFragmentProgram::glLoadProgram(const std::string &program)
                 err = ::glGetError();
         }
 
-		GLuint hd = m_handle.handle();
+		GLuint hd = m_handle.glhandle();
 		if (pExtensions->glIsProgramARB(hd))
 			pExtensions->glDeleteProgramsARB(1,&hd);
 
@@ -233,7 +233,7 @@ bool CFragmentProgram::glLoadProgram(const std::string &program)
 
 std::string CFragmentProgram::glGetProgramString(void) const
 {
-	if (m_handle.handle() == 0)
+	if (m_handle.glhandle() == 0)
 		return "";
 
 	if (!CRaptorInstance::GetInstance().isFragmentProgramReady())
@@ -241,8 +241,8 @@ std::string CFragmentProgram::glGetProgramString(void) const
 
 #if defined(GL_ARB_fragment_program)
 	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
-	if (pExtensions->glIsProgramARB(m_handle.handle()))
-		pExtensions->glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB, m_handle.handle());
+	if (pExtensions->glIsProgramARB(m_handle.glhandle()))
+		pExtensions->glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB, m_handle.glhandle());
 	else
 		return "";
 
@@ -261,7 +261,7 @@ std::string CFragmentProgram::glGetProgramString(void) const
 
 bool CFragmentProgram::glGetProgramStatus(void) const
 {
-	if (m_handle.handle() == 0)
+	if (m_handle.glhandle() == 0)
 		return false;
 
 	if (!CRaptorInstance::GetInstance().isFragmentProgramReady())
@@ -269,8 +269,8 @@ bool CFragmentProgram::glGetProgramStatus(void) const
 
 #if defined(GL_ARB_fragment_program)
 	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
-	if (pExtensions->glIsProgramARB(m_handle.handle()))
-		pExtensions->glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB,m_handle.handle());
+	if (pExtensions->glIsProgramARB(m_handle.glhandle()))
+		pExtensions->glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB, m_handle.glhandle());
 	else
 		return false;
 

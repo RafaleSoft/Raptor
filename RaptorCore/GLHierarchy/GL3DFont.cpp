@@ -124,7 +124,7 @@ bool CGL3DFont::glGenGlyphs(float precision,
 											&(glyphs[i].halfWidth),
 											&(glyphs[i].height));
 		glyphs[i].advance = -2 * glyphs[i].halfWidth;
-		glyphs[i].glList = h.handle();
+		glyphs[i].glList = h.glname();
 	}
 
 	m_glfontglyph.push_back(glyphs);
