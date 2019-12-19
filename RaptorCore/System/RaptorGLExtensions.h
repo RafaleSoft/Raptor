@@ -65,6 +65,7 @@ public:
 	DECLARE_GL_EXT_framebuffer_blit(DEFAULT_LINKAGE)
 	DECLARE_GL_EXT_framebuffer_multisample(DEFAULT_LINKAGE)
 	DECLARE_GL_ARB_uniform_buffer_object(DEFAULT_LINKAGE)
+	DECLARE_GL_ARB_vertex_array_object(DEFAULT_LINKAGE)
 
 	//!	Initialise all extensions on drivers/hardware.
 	void glInitExtensions(void);

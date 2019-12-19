@@ -209,7 +209,7 @@ int Raptor::glPurgeRaptor(bool count)
 bool Raptor::glCheckDisplayConfig(const CRaptorDisplayConfig &pcs)
 {
 	CRaptorInstance &instance = CRaptorInstance::GetInstance();
-	if ((!instance.initialised) || (instance.terminate))
+	if ((!instance.isInitialised()) || (instance.terminate))
 	{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 		RAPTOR_ERROR(COpenGL::COpenGLClassID::GetClassId(), "Raptor is not Initialised !");
@@ -252,7 +252,7 @@ RAPTOR_HANDLE Raptor::glCreateWindow(const CRaptorDisplayConfig& pcs,CRaptorDisp
 	RAPTOR_HANDLE result;
 
 	CRaptorInstance &instance = CRaptorInstance::GetInstance();
-	if ((!instance.initialised) || (instance.terminate))
+	if ((!instance.isInitialised()) || (instance.terminate))
 	{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 		RAPTOR_ERROR(COpenGL::COpenGLClassID::GetClassId(), "Raptor is not Initialised !");
@@ -272,7 +272,7 @@ RAPTOR_HANDLE Raptor::glCreateWindow(const CRaptorDisplayConfig& pcs,CRaptorDisp
 CRaptorDisplay* Raptor::glCreateDisplay(const CRaptorDisplayConfig& pcs)
 {
 	CRaptorInstance &instance = CRaptorInstance::GetInstance();
-	if ((!instance.initialised) || (instance.terminate))
+	if ((!instance.isInitialised()) || (instance.terminate))
 	{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 		RAPTOR_ERROR(COpenGL::COpenGLClassID::GetClassId(), "Raptor is not Initialised !");
@@ -304,7 +304,7 @@ CRaptorDisplay* Raptor::glCreateDisplay(const CRaptorDisplayConfig& pcs)
 void Raptor::glDestroyDisplay(CRaptorDisplay* pDisplay)
 {
 	CRaptorInstance &instance = CRaptorInstance::GetInstance();
-	if (!instance.initialised)
+	if (!instance.isInitialised())
 	{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 		RAPTOR_ERROR(CRaptorDisplay::CRaptorDisplayClassID::GetClassId(), "Raptor is not Initialised !");
@@ -385,7 +385,7 @@ CRaptorInstance* Raptor::switchInstance(CRaptorInstance* pInstance)
 
 	//	A first instance needs to be initialised.
 	CRaptorInstance &instance = CRaptorInstance::GetInstance();
-	if (!instance.initialised)
+	if (!instance.isInitialised())
 		return NULL;
 }
 
@@ -395,7 +395,7 @@ bool Raptor::glInitRaptor(const CRaptorConfig& config)
 
 	//	Initialise global Raptor data
 	CRaptorInstance &instance = CRaptorInstance::GetInstance();
-	if (instance.initialised)
+	if (instance.isInitialised())
         return true;
 
 	//  store configuration and initialize platform dependant datas. 
@@ -442,7 +442,7 @@ void Raptor::glRender(void)
 	//! Do not display debug information,
 	//!	because this method is likely to be called in a loop!
 	CRaptorInstance &instance = CRaptorInstance::GetInstance();
-	if ((!instance.initialised) || (instance.terminate))
+	if ((!instance.isInitialised()) || (instance.terminate))
 		return;
 
 	vector<CRenderEntryPoint*>::iterator itr = instance.renderEntryPoints.begin();
@@ -469,7 +469,7 @@ void Raptor::glRender(void)
 bool Raptor::glQuitRaptor(void)
 {
 	CRaptorInstance &instance = CRaptorInstance::GetInstance();
-	if ((!instance.initialised) || (instance.terminate))
+	if ((!instance.isInitialised()) || (instance.terminate))
         return false;
 
 	//glPurgeRaptor(false);

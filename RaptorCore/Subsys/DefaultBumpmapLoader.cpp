@@ -42,13 +42,14 @@ CDefaultBumpmapLoader::~CDefaultBumpmapLoader()
 
 }
 
-bool CDefaultBumpmapLoader::apply(CImage* const src,
-								  const operation_param_t& param) const
+bool CDefaultBumpmapLoader::apply(CImage* const src) const
+								  //,const operation_param_t& param) const
 {
     if (src == NULL)
 		return false;
 
-	float scale = param.bump_scale;
+	//float scale = param.bump_scale;
+	float scale = bump_scale;
 
 	int w = src->getWidth();
 	int w_4 = w * 4;

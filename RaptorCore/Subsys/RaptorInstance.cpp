@@ -39,19 +39,9 @@
 	#include "GLHierarchy/OpenGLShaderStage.h"
 #endif
 
-
 //! Default Imaging functionnalities
 #if !defined(AFX_BUFFERIMAGE_H__B28C75CD_81D5_473F_A247_608FB6E02949__INCLUDED_)
 	#include "Subsys/BufferImage.h"
-#endif
-#if !defined(AFX_DEFAULTBUMPMAPLOADER_H__3841D5F8_284B_4DC5_9E4B_56EF18AF80F4__INCLUDED_)
-	#include "Subsys/DefaultBumpmapLoader.h"
-#endif
-#if !defined(AFX_DEFAULTIMAGESCALER_H__E3E63A13_79FC_4E46_A1D5_BCD41CF86360__INCLUDED_)
-	#include "Subsys/DefaultImageScaler.h"
-#endif
-#if !defined(AFX_DEFAULTALPHATRANSPARENCY_H__8EAD8C9F_DC40_4063_8E0A_0C2AB300AD16__INCLUDED_)
-	#include "Subsys/DefaultAlphaTransparency.h"
 #endif
 #if !defined(AFX_SHADERLIBRARY_H__E2A8C35E_23A4_4AD1_8467_884E6B183B4F__INCLUDED_)
 	#include "Subsys/ShaderLibrary.h"
@@ -66,6 +56,9 @@
 	#include "Subsys/GeometryAllocator.h"
 #endif
 
+#if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
+	#include "System/RaptorGLExtensions.h"
+#endif
 
 
 RAPTOR_NAMESPACE
@@ -83,7 +76,7 @@ CRaptorInstance::CRaptorInstance()
 	pConsole = NULL;
 	
 	terminate = false;
-	initialised = false;
+	m_bInitialised = false;
 	forceSSE = false;
 	runAsShareware = false;
 	iRenderedObjects = 0;
@@ -93,14 +86,16 @@ CRaptorInstance::CRaptorInstance()
 	defaultWindow.handle(0);
 	defaultWindow.hClass(0);
 
-	m_bFragmentProgramReady = false;
-	m_bVertexProgramReady = false;
+	m_bFragmentShaderReady = false;
+	m_bVertexShaderReady = false;
 	m_bGeometryShaderReady = false;
-	m_bVertexReady = false;
-	m_bFragmentReady = false;
+	m_bVertexProgramReady = false;
+	m_bFragmentProgramReady = false;
 
 	m_pAttributes = NULL;
 	m_pIdentity = NULL;
+
+	arrays_initialized = false;
 }
 
 CRaptorInstance &CRaptorInstance::GetInstance(void)
@@ -132,7 +127,7 @@ bool CRaptorInstance::destroy(void)
 CRaptorInstance::~CRaptorInstance()
 {
 	terminate = true;
-	initialised = false;
+	m_bInitialised = false;
 
 	//! Destroy glObjects : we need a context.
 	CContextManager::GetInstance()->glMakeCurrentContext(defaultWindow, defaultContext);
@@ -171,18 +166,7 @@ CRaptorInstance::~CRaptorInstance()
 	}
 #endif
 
-	CImage::IImageOP *op = CImage::getImageKindOP(CImage::IImageOP::BUMPMAP_LOADER);
-	delete op;
-
-	op = CImage::getImageKindOP(CImage::IImageOP::IMAGE_SCALER);
-	delete op;
-
-	op = CImage::getImageKindOP(CImage::IImageOP::ALPHA_TRANSPARENCY);
-	delete op;
-
-	CImage::IImageIO *pIO = CImage::getImageKindIO("BUFFER");
-	delete pIO;
-
+	
 #if defined (VK_VERSION_1_0)
 	if (config.m_bVulkan)
 		if (!CContextManager::GetInstance()->vkRelease())
@@ -212,6 +196,23 @@ CRaptorInstance::~CRaptorInstance()
 	if (pErrorMgr != NULL)
 		delete pErrorMgr;
 	pErrorMgr = NULL;
+
+	//	Release imagers
+	map<std::string, CImage::IImageIO*>::iterator it = imageKindIO.begin();
+	while (it != imageKindIO.end())
+	{
+		CImage::IImageIO *op = it->second;
+		if (NULL != op)
+		{
+			std::vector<std::string> exts = op->getImageKind();
+			for (size_t i = 0; i < exts.size(); i++)
+				imageKindIO.erase(exts[i]);
+
+			delete op;
+		}
+		it = imageKindIO.begin();
+	}
+	imageKindIO.clear();
 }
 
 void CRaptorInstance::initInstance()
@@ -259,15 +260,6 @@ void CRaptorInstance::initInstance()
 	defaultConfig.x = 0;
 	defaultConfig.y = 0;
 
-	CDefaultBumpmapLoader *pDefaultBumpmapLoader = new CDefaultBumpmapLoader(1.0f);
-	CImage::setImageKindOP(pDefaultBumpmapLoader);
-
-	CDefaultImageScaler *pDefaultImageScaler = new CDefaultImageScaler(1.0f, 1.0f);
-	CImage::setImageKindOP(pDefaultImageScaler);
-
-	CDefaultAlphaTransparency *pDefaultAlphaTransparency = new CDefaultAlphaTransparency(255);
-	CImage::setImageKindOP(pDefaultAlphaTransparency);
-
 	CImage::IImageIO *pIO = new CBufferImage();
 	CImage::setImageKindIO(pIO);
 
@@ -280,17 +272,96 @@ void CRaptorInstance::initInstance()
 		}
 #endif
 
-	initialised = true;
+	m_bInitialised = true;
 }
 
 bool CRaptorInstance::glInitShaders(void)
 {
+	//!	Check shaders extensions availability
+	m_bVertexProgramReady = false;
+	m_bFragmentProgramReady = false;
+	m_bVertexProgramReady = false;
+
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+	CRaptorMessages::MessageArgument arg;
+	vector<CRaptorMessages::MessageArgument> args;
+#endif
+
+	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	if (Raptor::glIsExtensionSupported(GL_ARB_VERTEX_PROGRAM_EXTENSION_NAME))
+#if defined(GL_ARB_vertex_program)
+		m_bVertexProgramReady = (NULL != pExtensions->glGenProgramsARB);
+#endif
+	else
+	{
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+		arg.arg_sz = "ASM vertex";
+		args.clear(); args.push_back(arg);
+		Raptor::GetErrorManager()->generateRaptorError(CVertexProgram::CVertexProgramClassID::GetClassId(),
+													   CRaptorErrorManager::RAPTOR_WARNING, CRaptorMessages::ID_NO_GPU_PROGRAM, args);
+#endif
+	}
+	if (Raptor::glIsExtensionSupported(GL_ARB_FRAGMENT_PROGRAM_EXTENSION_NAME))
+#if defined(GL_ARB_fragment_program)
+		m_bFragmentProgramReady = (NULL != pExtensions->glGenProgramsARB);
+#endif
+	else
+	{
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+		arg.arg_sz = "ASM fragment";
+		args.clear(); args.push_back(arg);
+		Raptor::GetErrorManager()->generateRaptorError(CShaderProgram::CShaderProgramClassID::GetClassId(),
+													   CRaptorErrorManager::RAPTOR_WARNING, CRaptorMessages::ID_NO_GPU_PROGRAM, args);
+#endif
+	}
+	if (Raptor::glIsExtensionSupported(GL_ARB_VERTEX_SHADER_EXTENSION_NAME))
+#if defined(GL_ARB_vertex_shader)
+		m_bVertexShaderReady = (NULL != pExtensions->glCreateShaderObjectARB);
+#endif
+	else
+	{
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+		arg.arg_sz = "GLSL vertex";
+		args.clear(); args.push_back(arg);
+		Raptor::GetErrorManager()->generateRaptorError(CVertexShader::CVertexShaderClassID::GetClassId(),
+													   CRaptorErrorManager::RAPTOR_WARNING, CRaptorMessages::ID_NO_GPU_PROGRAM, args);
+#endif
+	}
+	if (Raptor::glIsExtensionSupported(GL_ARB_GEOMETRY_SHADER4_EXTENSION_NAME))
+#if defined(GL_ARB_geometry_shader4)
+		m_bGeometryShaderReady = (NULL != pExtensions->glCreateShaderObjectARB);
+#endif
+	else
+	{
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+		arg.arg_sz = "GLSL geometry";
+		args.clear(); args.push_back(arg);
+		Raptor::GetErrorManager()->generateRaptorError(CShaderProgram::CShaderProgramClassID::GetClassId(),
+													   CRaptorErrorManager::RAPTOR_WARNING, CRaptorMessages::ID_NO_GPU_PROGRAM, args);
+#endif
+	}
+	if (Raptor::glIsExtensionSupported(GL_ARB_FRAGMENT_SHADER_EXTENSION_NAME))
+#if defined(GL_ARB_fragment_shader)
+		m_bFragmentShaderReady = (NULL != pExtensions->glCreateShaderObjectARB);
+#endif
+	else
+	{
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+		arg.arg_sz = "GLSL fragment";
+		args.clear(); args.push_back(arg);
+		Raptor::GetErrorManager()->generateRaptorError(CFragmentShader::CFragmentShaderClassID::GetClassId(),
+													   CRaptorErrorManager::RAPTOR_WARNING, CRaptorMessages::ID_NO_GPU_PROGRAM, args);
+#endif
+	}
+
+	//!	Initialise the shader library
 	CShaderLibrary* pShaderLib = CShaderLibrary::GetInstance();
 	if (pShaderLib == NULL)
 		return false;
 	else
 		pShaderLib->glInitFactory();
 
+	//!	Create minimal shaders for Raptor displays logo.
 #if defined(GL_COMPATIBILITY_profile)
 	if (0 == m_drawBuffer.handle())
 	{

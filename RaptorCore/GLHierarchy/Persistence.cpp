@@ -101,9 +101,12 @@ CPersistence::CPersistence(const CPersistence::CPersistenceClassID &classID,
 			m_name += "#2";
 		else
 		{
-            char nb[32];
-			sprintf(nb,"%d",atoi(m_name.data() + pos+1)+1);
-			m_name = m_name.substr(0,pos) + "#" + nb;
+			stringstream nb;
+			nb << m_name.substr(0, pos);
+			nb << "#";
+			nb << atoi(m_name.data() + pos + 1) + 1;
+			nb << std::ends;
+			m_name = nb.str();
 		}
 		itr = instance.objects.find(m_name);
 	}
@@ -227,9 +230,12 @@ void CPersistence::setName(const std::string &name)
 				p->m_name += "#2";
 			else
 			{
-                char nb[32];
-			    sprintf(nb,"%d",atoi(p->m_name.data()+pos+1)+1);
-				p->m_name = p->m_name.substr(0,pos) + "#" + nb;
+				stringstream nb;
+				nb << m_name.substr(0, pos);
+				nb << "#";
+				nb << atoi(m_name.data() + pos + 1) + 1;
+				nb << std::ends;
+				p->m_name = nb.str();
 			}
 			itr = instance.objects.find(p->m_name);
 		}

@@ -116,9 +116,6 @@ private:
 
 	//! Copy constructor.
 	CFragmentProgram(const CFragmentProgram& shader);
-
-    //! Specific init of shader parameters
-    virtual void	glInitShaders();
 };
 
 RAPTOR_NAMESPACE_END

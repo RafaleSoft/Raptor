@@ -33,6 +33,9 @@
 #if !defined(AFX_OPENGLPROGRAMSTAGE_H__0BCE3B42_6E10_4F50_BB27_1993345ADBCF__INCLUDED_)
 	#include "GLHierarchy/OpenGLProgramStage.h"
 #endif
+#if !defined(AFX_OPENGLSHADERSTAGE_H__56B00FE3_E508_4FD6_9363_90E6E67446D9__INCLUDED_)
+	#include "GLHierarchy/OpenGLShaderStage.h"
+#endif
 
 
 #include <math.h>
@@ -115,15 +118,15 @@ CObject3DInstance::~CObject3DInstance()
 void CObject3DInstance::unLink(const CPersistence* obj)
 {
     if (obj == static_cast<CPersistence*>(m_pShader))
-    {
         m_pShader = NULL;
-    }
     else if (obj == static_cast<CPersistence*>(m_pReference))
     {
         m_pReference = NULL;
         GL_COORD_VERTEX nullPosition(0,0,0,1);
 	    setBoundingBox(nullPosition,nullPosition);
     }
+	else
+		CObject3D::unLink(obj);
 }
 
 void CObject3DInstance::notifyFromReference(CObject3D* reference)
@@ -316,9 +319,8 @@ void CObject3DInstance::glRender()
     if (m_pOverride != NULL)
         m_pOverride->glPushProperties();
 
-    if (m_pShader != NULL)
-		if (m_pShader->hasOpenGLProgram())
-			m_pShader->glGetOpenGLProgram()->glRender();
+	if (m_pShader != NULL)
+		m_pShader->glRender();
 
 	if (m_pReference != NULL)
 	{
@@ -353,9 +355,8 @@ void CObject3DInstance::glClipRender()
     if (m_pOverride != NULL)
         m_pOverride->glPushProperties();
 
-    if (m_pShader != NULL)
-		if (m_pShader->hasOpenGLProgram())
-			m_pShader->glGetOpenGLProgram()->glRender();
+	if (m_pShader != NULL)
+		m_pShader->glRender();
 
 	if (m_pReference != NULL)
 	{

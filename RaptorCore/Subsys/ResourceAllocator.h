@@ -26,6 +26,9 @@
 #if !defined(AFX_RAPTORDISPLAYCONFIG_H__DA0759DF_6CF9_44A7_9ADE_D404FEEC2DDF__INCLUDED_)
 	#include "System/RaptorDisplayConfig.h"
 #endif
+#if !defined(AFX_PROGRAMPARAMETERS_H__E28A74BB_DE78_470A_A8A2_5A3EBB3F4F90__INCLUDED_)
+	#include "GLHierarchy/ProgramParameters.h"
+#endif
 #if !defined(AFX_MEMORY_H__81A6CA9A_4ED9_4260_B6E4_C03276C38DBC__INCLUDED_)
 	#include "System/Memory.h"
 #endif
@@ -43,16 +46,29 @@ public:
 		CResourceBinder(void);
 		~CResourceBinder(void);
 
-		bool setVertexArray(void *vertexPointer, int stride);
+		bool setArray(CProgramParameters::GL_VERTEX_ATTRIB attribute, void *vertexPointer, int stride);
 
 		bool glvkBindArrays(void);
 		bool glvkUnbindArrays(void);
+
 
 	private:
 		CResourceBinder(const CResourceBinder&);
 		CResourceBinder& operator=(const CResourceBinder&);
 
-		static CRaptorDisplayConfig::GL_ARRAYS_STATE	bindingState;
+		//! Bind a single array.
+		bool bindArray(CRaptorDisplayConfig::GL_ARRAY_STATE &state);
+		bool bindAttribArray(CRaptorDisplayConfig::GL_ARRAY_STATE &state);
+
+		//! Unbind a single array.
+		bool unbindArray(CRaptorDisplayConfig::GL_ARRAY_STATE &state);
+
+		//!	This resource binder arrays bindings.
+		CRaptorDisplayConfig::GL_ARRAYS_STATE			bindings;
+
+		//!	Vertex Array Object.
+		GLuint	array;
+		bool	updateArray;
 	};
 
 public:

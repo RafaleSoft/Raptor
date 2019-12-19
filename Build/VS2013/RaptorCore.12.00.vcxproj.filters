@@ -332,12 +332,6 @@
     <ClCompile Include="..\..\RaptorCore\Subsys\ContourAttributes.cpp">
       <Filter>Source Files\Subsys src</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\RaptorCore\Subsys\DefaultBumpmapLoader.cpp">
-      <Filter>Source Files\Subsys src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\RaptorCore\Subsys\DefaultImageScaler.cpp">
-      <Filter>Source Files\Subsys src</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\RaptorCore\Subsys\GeometryAllocator.cpp">
       <Filter>Source Files\Subsys src</Filter>
     </ClCompile>
@@ -548,9 +542,6 @@
     <ClCompile Include="..\..\RaptorCore\System\Image.cpp">
       <Filter>Source Files\System src</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\RaptorCore\Subsys\DefaultAlphaTransparency.cpp">
-      <Filter>Source Files\Subsys src</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\ITextureObject.cpp">
       <Filter>Source Files\GLHierarchy src</Filter>
     </ClCompile>
@@ -622,6 +613,12 @@
     </ClCompile>
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\FragmentProgram.cpp">
       <Filter>Source Files\GLHierarchy src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\TextureScaler.cpp">
+      <Filter>Source Files\Subsys src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\TextureAlpha.cpp">
+      <Filter>Source Files\Subsys src</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -847,12 +844,6 @@
       <Filter>Header Files\Subsys include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\RaptorCore\Subsys\ContourAttributes.h">
-      <Filter>Header Files\Subsys include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\RaptorCore\Subsys\DefaultBumpmapLoader.h">
-      <Filter>Header Files\Subsys include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\RaptorCore\Subsys\DefaultImageScaler.h">
       <Filter>Header Files\Subsys include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\RaptorCore\Subsys\GeometryAllocator.h">
@@ -1116,9 +1107,6 @@
     <ClInclude Include="..\..\RaptorCore\System\Image.h">
       <Filter>Header Files\System include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\RaptorCore\Subsys\DefaultAlphaTransparency.h">
-      <Filter>Header Files\Subsys include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\ITextureObject.h">
       <Filter>Header Files\GLHierarchy include</Filter>
     </ClInclude>
@@ -1196,6 +1184,12 @@
     </ClInclude>
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\FragmentProgram.h">
       <Filter>Header Files\GLHierarchy include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\TextureScaler.h">
+      <Filter>Header Files\Subsys include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\TextureAlpha.h">
+      <Filter>Header Files\Subsys include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

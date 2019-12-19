@@ -305,14 +305,14 @@ bool CShader::glRemoveTextureUnitSetup(void)
         m_pTMUSetup = NULL;
 		m_bDeleteTMUSetup = false;
 
-		if (m_textureUnitSetup.handle() != 0)
+		if (m_textureUnitSetup.glname() != 0)
 		{
-			glDeleteLists(m_textureUnitSetup.handle(), 1);
+			glDeleteLists(m_textureUnitSetup.glname(), 1);
 			m_textureUnitSetup.handle(0);
 		}
-		if (m_textureUnitUnSetup.handle() != 0)
+		if (m_textureUnitUnSetup.glname() != 0)
 		{
-			glDeleteLists(m_textureUnitUnSetup.handle(), 1);
+			glDeleteLists(m_textureUnitUnSetup.glname(), 1);
 			m_textureUnitUnSetup.handle(0);
 		}
 
@@ -488,13 +488,13 @@ void CShader::glRenderTexture(void)
 	{
 		if (m_textureUnitSetup.handle() > 0)
         {
-		    glCallList(m_textureUnitSetup.handle());
+			glCallList(m_textureUnitSetup.glname());
         }
 		else if (m_pTMUSetup != NULL)
 		{
 			m_textureUnitUnSetup = m_pTMUSetup->glBuildUnSetup();
 			m_textureUnitSetup = m_pTMUSetup->glBuildSetup();
-			glCallList(m_textureUnitSetup.handle());
+			glCallList(m_textureUnitSetup.glname());
 		}
 	}
 

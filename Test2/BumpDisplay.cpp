@@ -24,6 +24,8 @@
 
 #include "GLHierarchy/PerlinNoise.h"
 #include "Toolbox/BasicObjects.h"
+#include "ToolBox/Imaging/BumpmapLoader.h"
+
 
 class BackGround : public CSimpleObject
 {
@@ -143,7 +145,8 @@ void CBumpDisplay::Init()
 											CTextureObject::CGL_ALPHA_TRANSPARENT,
 											ITextureObject::CGL_BILINEAR);
 	f.glResizeTexture(tt,512,512);
-	CPerlinNoise noise = CPerlinNoise(CImage::IImageOP::BUMPMAP_LOADER);
+	CBumpmapLoader loader(f.getConfig().getBumpAmplitude());
+	CPerlinNoise noise(&loader);
 	noise.setNoiseModel(CPerlinNoise::NOISE2);
 	noise.generateMirrorTexture(true);
 /*
