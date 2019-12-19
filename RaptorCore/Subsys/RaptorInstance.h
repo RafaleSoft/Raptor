@@ -134,6 +134,12 @@ public:
 	CShader	*m_pIdentity;
 #endif
 
+	//! Global ResourceAllocator arrays binding state.
+	CRaptorDisplayConfig::GL_ARRAYS_STATE	bindingState;
+	//!	Default ResourceAllocator arrays bindings initialised.
+	bool arrays_initialized;
+
+
 	//! Stores Display attributes for delayed creation.
 	//! The physical display creation is delegated to the underlying API, 
 	//! and might not be synchronous to the return of the creation method.

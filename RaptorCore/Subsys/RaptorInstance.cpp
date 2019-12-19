@@ -94,6 +94,8 @@ CRaptorInstance::CRaptorInstance()
 
 	m_pAttributes = NULL;
 	m_pIdentity = NULL;
+
+	arrays_initialized = false;
 }
 
 CRaptorInstance &CRaptorInstance::GetInstance(void)

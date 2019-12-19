@@ -2920,9 +2920,9 @@ extern "C" {
 	#ifndef DECLARE_GL_ARB_vertex_array_object
 	#define DECLARE_GL_ARB_vertex_array_object(LINKAGE) \
 		LINKAGE PFN_GL_BIND_VERTEX_ARRAY_ARB_PROC glBindVertexArrayARB; \
-		LINKAGE PFN_GL_DELETE_VERTEX_ARRAYS_ARB_PROC glDeleteVertexArrays; \
-		LINKAGE PFN_GL_GEN_VERTEX_ARRAYS_ARB_PROC glGenVertexArrays; \
-		LINKAGE PFN_GL_IS_VERTEX_ARRAY_ARB_PROC glIsVertexArray;
+		LINKAGE PFN_GL_DELETE_VERTEX_ARRAYS_ARB_PROC glDeleteVertexArraysARB; \
+		LINKAGE PFN_GL_GEN_VERTEX_ARRAYS_ARB_PROC glGenVertexArraysARB; \
+		LINKAGE PFN_GL_IS_VERTEX_ARRAY_ARB_PROC glIsVertexArrayARB;
 	#endif
 #else
 	#define DECLARE_GL_ARB_vertex_array_object(LINKAGE)

@@ -1448,16 +1448,16 @@
 		if (Raptor::glIsExtensionSupported(GL_ARB_VERTEX_ARRAY_OBJECT_EXTENSION_NAME))\
 		{\
 			target->glBindVertexArrayARB = (PFN_GL_BIND_VERTEX_ARRAY_ARB_PROC)GET_PROC_ADDRESS("glBindVertexArray");\
-			target->glDeleteVertexArrays = (PFN_GL_DELETE_VERTEX_ARRAYS_ARB_PROC)GET_PROC_ADDRESS("glDeleteVertexArrays");\
-			target->glGenVertexArrays = (PFN_GL_GEN_VERTEX_ARRAYS_ARB_PROC)GET_PROC_ADDRESS("glGenVertexArrays");\
-			target->glIsVertexArray = (PFN_GL_IS_VERTEX_ARRAY_ARB_PROC)GET_PROC_ADDRESS("glIsVertexArray");\
+			target->glDeleteVertexArraysARB = (PFN_GL_DELETE_VERTEX_ARRAYS_ARB_PROC)GET_PROC_ADDRESS("glDeleteVertexArrays");\
+			target->glGenVertexArraysARB = (PFN_GL_GEN_VERTEX_ARRAYS_ARB_PROC)GET_PROC_ADDRESS("glGenVertexArrays");\
+			target->glIsVertexArrayARB = (PFN_GL_IS_VERTEX_ARRAY_ARB_PROC)GET_PROC_ADDRESS("glIsVertexArray");\
 		}\
 		else\
 		{\
 			target->glBindVertexArrayARB = NULL;\
-			target->glDeleteVertexArrays = NULL;\
-			target->glGenVertexArrays = NULL;\
-			target->glIsVertexArray = NULL;\
+			target->glDeleteVertexArraysARB = NULL;\
+			target->glGenVertexArraysARB = NULL;\
+			target->glIsVertexArrayARB = NULL;\
 		}
 	#else
 		#define IMPLEMENT_GL_ARB_vertex_array_object(target)
