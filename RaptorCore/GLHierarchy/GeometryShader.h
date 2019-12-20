@@ -93,9 +93,6 @@ private:
 	//! Copy constructor.
 	CGeometryShader(const CGeometryShader& shader);
 
-    //! Specific init of shader parameters
-    virtual void	glInitShaders();
-
 	//! Input primitive type.
 	uint32_t	m_inputType;
 

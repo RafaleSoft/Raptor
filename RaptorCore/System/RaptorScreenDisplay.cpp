@@ -225,7 +225,7 @@ RAPTOR_HANDLE CRaptorScreenDisplay::getCurrentDevice(void) const
 
 bool CRaptorScreenDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
 {
-	if (device.handle() != CGL_NULL)
+	if (device.handle() != 0)
 	{
 		if (CContextManager::INVALID_CONTEXT == m_context)
 		{
@@ -386,7 +386,7 @@ void CRaptorScreenDisplay::allocateResources(void)
 	if ((m_pUOldAllocator != m_pUAllocator) && (m_pUOldAllocator != NULL))
 		m_pUOldAllocator->glvkLockMemory(false);
 
-	if (instance.initialised)
+	if (instance.isInitialised())
 		instance.glInitShaders();
 }
 

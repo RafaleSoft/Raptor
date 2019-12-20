@@ -34,6 +34,9 @@
 #if !defined(AFX_RAPTORDISPLAYCONFIG_H__DA0759DF_6CF9_44A7_9ADE_D404FEEC2DDF__INCLUDED_)
 	#include "System/RaptorDisplayConfig.h"
 #endif
+#if !defined(AFX_IMAGE_H__F545D0D5_5F10_4EFA_BE3B_3F3D34D4DBF3__INCLUDED_)
+	#include "System/Image.h"
+#endif
 
 
 RAPTOR_NAMESPACE_BEGIN
@@ -66,7 +69,7 @@ public:
 
 
 	//!	Raptor Instance has been initialised.
-	bool					initialised;
+	bool					isInitialised(void) const { return m_bInitialised; };
 	//!	The second pipeline has exited, raptor can be closed safely.
 	bool					terminate;
 	//!	Number of objects rendered in the current frame.
@@ -100,22 +103,26 @@ public:
 	//!	The default context for the default dispplay.
 	long					defaultContext;
 	
+	//!	Imaging input/output interfaces.
+	map<std::string, CImage::IImageIO*>	imageKindIO;
+
 	//! The set of all Raptor displays for this instance.
 	std::vector<CRaptorDisplay*>	displays;
 	//!	Raptor Console interactors.
 	std::vector<CRaptorConsole::CInputCollectorBase*>	inputCollectors;
 	//!	The full list of persistence objects active in this instance.
 	MapStringToPtr	objects;
+
 	//! Fragment Program state.
-	bool m_bFragmentProgramReady;
+	bool isFragmentShaderReady(void) const { return m_bFragmentShaderReady; };
 	//! Vertex Program state.
-	bool m_bVertexProgramReady;
+	bool isVertexShaderReady(void) const { return m_bVertexShaderReady; };
 	//! Geometry Program state.
-	bool m_bGeometryShaderReady;
+	bool isGeometryShaderReady(void) const { return m_bGeometryShaderReady; };
 	//!	Vertex Shader state
-	bool m_bVertexReady;
+	bool isVertexProgramReady(void) const { return m_bVertexProgramReady; };
 	//!	Fragment Shader state
-	bool m_bFragmentReady;
+	bool isFragmentProgramReady(void) const { return m_bFragmentProgramReady; };
 
 #if defined(GL_COMPATIBILITY_profile)
 	//!	Full screen quad rendering display list
@@ -126,6 +133,12 @@ public:
 	//!	Identity shader for full screen quad texture mapping.
 	CShader	*m_pIdentity;
 #endif
+
+	//! Global ResourceAllocator arrays binding state.
+	CRaptorDisplayConfig::GL_ARRAYS_STATE	bindingState;
+	//!	Default ResourceAllocator arrays bindings initialised.
+	bool arrays_initialized;
+
 
 	//! Stores Display attributes for delayed creation.
 	//! The physical display creation is delegated to the underlying API, 
@@ -139,7 +152,7 @@ public:
 	const CRaptorDisplayConfig& getDefaultConfig(void) const { return defaultConfig; }
 
 	//! Delete Raptor status and any allocated resource.
-	bool	destroy(void);
+	bool destroy(void);
 
 	//!	Initialise base shaders for this instance.
 	bool glInitShaders(void);
@@ -157,6 +170,18 @@ private:
 
 	//!	Raptor default display creation structure and defaut initial state of the renderer.
 	CRaptorDisplayConfig	defaultConfig;
+	//!	Raptor Instance has been initialised.
+	bool					m_bInitialised;
+	//! Fragment Program state.
+	bool					m_bFragmentShaderReady;
+	//! Vertex Program state.
+	bool					m_bVertexShaderReady;
+	//! Geometry Program state.
+	bool					m_bGeometryShaderReady;
+	//!	Vertex Shader state
+	bool					m_bVertexProgramReady;
+	//!	Fragment Shader state
+	bool					m_bFragmentProgramReady;
 };
 
 RAPTOR_NAMESPACE_END

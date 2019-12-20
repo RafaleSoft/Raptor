@@ -96,6 +96,7 @@ void CRaptorGLExtensions::glInitExtensions(void)
 	IMPLEMENT_GL_EXT_framebuffer_blit(this)
 	IMPLEMENT_GL_EXT_framebuffer_multisample(this)
 	IMPLEMENT_GL_ARB_uniform_buffer_object(this)
+	IMPLEMENT_GL_ARB_vertex_array_object(this)
 
     CATCH_GL_ERROR
 	

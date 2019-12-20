@@ -92,6 +92,9 @@
       <HeaderFileName>
       </HeaderFileName>
     </Midl>
+    <PostBuildEvent>
+      <Command>"%RAPTOR_ROOT%\Redist\bin\UnitTest.exe"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Midl>

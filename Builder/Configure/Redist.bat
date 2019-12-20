@@ -58,6 +58,7 @@ IF EXIST Redist (
 	mkdir SimdLib
 	cd ToolBox
 	mkdir Filters
+	mkdir Imaging
 	cd ..
 	mkdir DataManager
 	mkdir MFCExtension
@@ -201,6 +202,10 @@ copy .\RaptorToolBox\BasicObjects.h Redist\Include\ToolBox
 copy .\RaptorToolBox\CmdLineParser.h Redist\Include\ToolBox
 copy .\RaptorToolBox\Controllers.h Redist\Include\ToolBox
 copy .\RaptorToolBox\Imaging.h Redist\Include\ToolBox
+copy .\RaptorToolBox\Imaging\AlphaTransparency.h Redist\Include\ToolBox\Imaging
+copy .\RaptorToolBox\Imaging\BumpmapLoader.h Redist\Include\ToolBox\Imaging
+copy .\RaptorToolBox\Imaging\ImageScaler.h Redist\Include\ToolBox\Imaging
+copy .\RaptorToolBox\Imaging\MipmapBuilder.h Redist\Include\ToolBox\Imaging
 copy .\RaptorToolBox\ParticleCompute.h Redist\Include\ToolBox
 copy .\RaptorToolBox\RaptorToolBox.h Redist\Include\ToolBox
 copy .\RaptorToolBox\Filters.h Redist\Include\ToolBox
