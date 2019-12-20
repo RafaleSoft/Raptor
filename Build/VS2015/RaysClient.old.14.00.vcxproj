@@ -15,7 +15,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectName>RaysClient</ProjectName>
+    <ProjectName>RaysClient.old</ProjectName>
     <ProjectGuid>{C37F7493-F36D-45B3-8A91-E7D77013C2CF}</ProjectGuid>
     <RootNamespace>RaysClient</RootNamespace>
     <Keyword>ManagedCProj</Keyword>
@@ -180,42 +180,42 @@ copy $(OutDir)$(TargetFileName).config "%RAPTOR_ROOT%\Redist\bin"</Command>
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Rays2\RaysClient\AssemblyInfo.cpp" />
-    <ClCompile Include="..\..\Rays2\RaysClient\RaysClient.cpp" />
-    <ClCompile Include="..\..\Rays2\RaysClient\RaysClientData.cpp">
+    <ClCompile Include="..\..\Rays2\RaysClient.old\AssemblyInfo.cpp" />
+    <ClCompile Include="..\..\Rays2\RaysClient.old\RaysClient.cpp" />
+    <ClCompile Include="..\..\Rays2\RaysClient.old\RaysClientData.cpp">
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsManaged>
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">false</CompileAsManaged>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\..\Rays2\RaysClient\RaysClientDlg.cpp" />
-    <ClCompile Include="..\..\Rays2\RaysClient\RaysClientForm.cpp" />
-    <ClCompile Include="..\..\Rays2\RaysClient\RaysClientUtils.cpp" />
-    <ClCompile Include="..\..\Rays2\RaysClient\stdafx.cpp">
+    <ClCompile Include="..\..\Rays2\RaysClient.old\RaysClientDlg.cpp" />
+    <ClCompile Include="..\..\Rays2\RaysClient.old\RaysClientForm.cpp" />
+    <ClCompile Include="..\..\Rays2\RaysClient.old\RaysClientUtils.cpp" />
+    <ClCompile Include="..\..\Rays2\RaysClient.old\stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Rays2\RaysClient\RaysClientData.h" />
-    <ClInclude Include="..\..\Rays2\RaysClient\RaysClientDlg.h" />
-    <ClInclude Include="..\..\Rays2\RaysClient\RaysClientForm.h">
+    <ClInclude Include="..\..\Rays2\RaysClient.old\RaysClientData.h" />
+    <ClInclude Include="..\..\Rays2\RaysClient.old\RaysClientDlg.h" />
+    <ClInclude Include="..\..\Rays2\RaysClient.old\RaysClientForm.h">
       <FileType>CppForm</FileType>
     </ClInclude>
-    <ClInclude Include="..\..\Rays2\RaysClient\RaysClientUtils.h" />
-    <ClInclude Include="..\..\Rays2\RaysClient\stdafx.h" />
+    <ClInclude Include="..\..\Rays2\RaysClient.old\RaysClientUtils.h" />
+    <ClInclude Include="..\..\Rays2\RaysClient.old\stdafx.h" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="..\..\Rays2\RaysClient\Rays.ico" />
+    <Image Include="..\..\Rays2\RaysClient.old\Rays.ico" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="..\..\Rays2\RaysClient\RaysClientForm.resx">
-      <DependentUpon>..\..\Rays2\RaysClient\RaysClientForm.h</DependentUpon>
+    <EmbeddedResource Include="..\..\Rays2\RaysClient.old\RaysClientForm.resx">
+      <DependentUpon>..\..\Rays2\RaysClient.old\RaysClientForm.h</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\Rays2\RaysClient\RaysClient.config" />
+    <None Include="..\..\Rays2\RaysClient.old\RaysClient.config" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

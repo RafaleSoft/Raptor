@@ -18,6 +18,7 @@
     <ProjectGuid>{0A91CB22-4E60-4129-8B9A-D9A391F5A1F1}</ProjectGuid>
     <RootNamespace>SOAR</RootNamespace>
     <Keyword>Win32Proj</Keyword>
+    <ProjectName>SOAR2</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
