@@ -9,6 +9,9 @@
       <UniqueIdentifier>{8159203a-583c-4b6d-b164-53dc73aed5e8}</UniqueIdentifier>
       <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
     </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{929b2a3d-3c3c-42bd-9d90-3c6648b57f19}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Demo\DemoDoc.h">
@@ -19,6 +22,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Demo\StdAfx.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Demo\resource.h">
+      <Filter>Resource Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -38,5 +44,10 @@
   <ItemGroup>
     <None Include="..\..\Demo\Demo.cmd" />
     <None Include="..\..\Demo\buildpak.bat" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\..\Demo\Demo.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

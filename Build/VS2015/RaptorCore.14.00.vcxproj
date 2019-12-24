@@ -209,10 +209,10 @@ $(SolutionDir)\$(ProjectName)\Subsys\Redist.bat
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
     </ProjectReference>
     <Link>
-      <AdditionalDependencies>RaptorData.lib;opengl32.lib;glu32.lib;simd.lib;$(FREETYPE_LIB_PATH)\freetype.lib;xerces-c_3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>RaptorData.lib;opengl32.lib;glu32.lib;simd.lib;freetype.lib;xerces-c_3.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)Raptor.dll</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>$(SolutionDir)\$(ProjectName);$(XERCES_BIN_PATH);$(RAPTOR_ROOT)\Redist\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)\$(ProjectName);$(RAPTOR_ROOT)\Redist\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <IgnoreSpecificDefaultLibraries>libcp;libc;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <ModuleDefinitionFile>
@@ -555,10 +555,6 @@ $(SolutionDir)\$(ProjectName)\Subsys\Redist.bat
     <ClCompile Include="..\..\RaptorCore\Subsys\Collisions.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\ContextManager.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\ContourAttributes.cpp" />
-    <ClCompile Include="..\..\RaptorCore\Subsys\DefaultAlphaTransparency.cpp" />
-    <ClCompile Include="..\..\RaptorCore\Subsys\DefaultBumpmapLoader.cpp" />
-    <ClCompile Include="..\..\RaptorCore\Subsys\DefaultImageScaler.cpp" />
-    <ClCompile Include="..\..\RaptorCore\Subsys\DOT3BumppedGeometry.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\EMBMShader.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\FreeType\FTEngine.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
@@ -658,6 +654,8 @@ $(SolutionDir)\$(ProjectName)\Subsys\Redist.bat
     <ClCompile Include="..\..\RaptorCore\Subsys\SubBoundingBox.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\Tesselator.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\TexelAllocator.cpp" />
+    <ClCompile Include="..\..\RaptorCore\Subsys\TextureAlpha.cpp" />
+    <ClCompile Include="..\..\RaptorCore\Subsys\TextureScaler.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\UniformAllocator.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\VideoStream.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\Vulkan\RaptorVulkan.cpp" />
@@ -836,10 +834,6 @@ copy CodeGeneration.h "%RAPTOR_ROOT%\Redist\Include\Subsys"
     <ClInclude Include="..\..\RaptorCore\Subsys\Collisions.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\ContextManager.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\ContourAttributes.h" />
-    <ClInclude Include="..\..\RaptorCore\Subsys\DefaultAlphaTransparency.h" />
-    <ClInclude Include="..\..\RaptorCore\Subsys\DefaultBumpmapLoader.h" />
-    <ClInclude Include="..\..\RaptorCore\Subsys\DefaultImageScaler.h" />
-    <ClInclude Include="..\..\RaptorCore\Subsys\DOT3BumppedGeometry.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\EMBMShader.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\FreeType\FTEngine.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\FreeType\FTFace.h" />
@@ -878,6 +872,8 @@ copy CodeGeneration.h "%RAPTOR_ROOT%\Redist\Include\Subsys"
     <ClInclude Include="..\..\RaptorCore\Subsys\SubBoundingBox.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\Tesselator.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\TexelAllocator.h" />
+    <ClInclude Include="..\..\RaptorCore\Subsys\TextureAlpha.h" />
+    <ClInclude Include="..\..\RaptorCore\Subsys\TextureScaler.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\TimeObjectImpl.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\UniformAllocator.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\VideoStream.h" />
