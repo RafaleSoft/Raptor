@@ -18,7 +18,7 @@
 
 namespace Builder
 {
-    partial class Form1
+    partial class BuilderForm
     {
         /// <summary>
         /// Required designer variable.
@@ -51,7 +51,7 @@ namespace Builder
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(BuilderForm));
             this.OK = new System.Windows.Forms.Button();
             this.Cancel = new System.Windows.Forms.Button();
             this.SelectAll = new System.Windows.Forms.Button();

@@ -256,20 +256,16 @@ void CBasicObjects::CIsocahedron::setDimensions(float radius, unsigned int nbLev
 	{
 		glLockData();
 
-		unsigned int nbVrtx = 0;
-		unsigned int nbFc = 0;
-		unsigned int i = 0;
-		for (i=0 ; i<nbLevel ; i++)
+		uint32_t nbVrtx = 0;
+		for (uint32_t i=0 ; i<nbLevel ; i++)
 			nbVrtx += pow(4.0f,(float)i);
 		nbVrtx = nbVrtx * 3 * 20 + 12;
-		nbFc = pow(4.0f,(float)nbLevel) * 20;
+		uint32_t nbFc = pow(4.0f,(float)nbLevel) * 20;
 
 		vector<CGenericVector<float> > newCoords;
 		vector<unsigned int> newFaces;
 
-
-		unsigned int j=0;
-		for (j=0;j<nbVertex();j++)
+		for (uint32_t j=0;j<nbVertex();j++)
 		{
 			CGenericVector<float> v(VERTEX(j));
 			float n = v.Norm();
@@ -277,7 +273,7 @@ void CBasicObjects::CIsocahedron::setDimensions(float radius, unsigned int nbLev
 			v.H(1.0f);
 			newCoords.push_back(v);
 		}
-		for (i=0;i<nbFace();i++)
+		for (uint32_t i=0;i<nbFace();i++)
 		{
 			unsigned int p1,p2,p3;
 			getFace(i,p1,p2,p3);
@@ -346,9 +342,9 @@ void CBasicObjects::CIsocahedron::setDimensions(float radius, unsigned int nbLev
 			newFaces = tmpFaces;
 		}
 
-		for (j=0;j<newCoords.size();j++)
+		for (size_t j=0;j < newCoords.size();j++)
 			addVertex(newCoords[j].X(),newCoords[j].Y(),newCoords[j].Z(),1.0f);
-		for (j=0;j<newFaces.size() / 3;j++)
+		for (size_t j=0;j < newFaces.size() / 3;j++)
 			addFace(newFaces[3*j],newFaces[3*j+1],newFaces[3*j+2]);
 
 		glUnLockData();
@@ -361,7 +357,7 @@ void CBasicObjects::CIsocahedron::setDimensions(float radius, unsigned int nbLev
 		glLockData();
 
 		GL_VERTEX_DATA vrtx;
-		for (i=0;i<nbVertex();i++)
+		for (uint32_t i=0;i<nbVertex();i++)
 		{
 			getVertex(i,vrtx);
 			float v = 0.5f + 2 * asin(vrtx.vertex.y/radius) / PI;

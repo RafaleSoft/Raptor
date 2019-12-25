@@ -53,6 +53,9 @@
     <ClInclude Include="..\..\Rays2\StdAfx.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Rays2\RaysServer\resource.h">
+      <Filter>Resource Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\..\Rays2\RaysServer\Rays.ico">
@@ -63,5 +66,10 @@
     <None Include="..\..\Rays2\RaysServer\RaysServer.config">
       <Filter>Resource Files</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\..\Rays2\RaysServer\RaysServer.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

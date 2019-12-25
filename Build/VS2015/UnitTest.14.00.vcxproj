@@ -135,12 +135,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\UnitTest\RaptorHandleTest.h" />
+    <ClInclude Include="..\..\UnitTest\resource.h" />
     <ClInclude Include="..\..\UnitTest\stdafx.h" />
     <ClInclude Include="..\..\UnitTest\targetver.h" />
-    <ClInclude Include="resource1.h" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="UnitTest.rc" />
+    <ResourceCompile Include="..\..\UnitTest\UnitTest.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

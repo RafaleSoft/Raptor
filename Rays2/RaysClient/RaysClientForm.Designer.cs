@@ -36,7 +36,7 @@
             this.Connect = new System.Windows.Forms.Button();
             this.Open = new System.Windows.Forms.Button();
             this.Log = new System.Windows.Forms.ListBox();
-            this.button2 = new System.Windows.Forms.Button();
+            this.Quit = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -116,14 +116,15 @@
             this.Log.Size = new System.Drawing.Size(311, 95);
             this.Log.TabIndex = 5;
             // 
-            // button2
+            // Quit
             // 
-            this.button2.Location = new System.Drawing.Point(241, 63);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(75, 23);
-            this.button2.TabIndex = 4;
-            this.button2.Text = "Quit";
-            this.button2.UseVisualStyleBackColor = true;
+            this.Quit.Location = new System.Drawing.Point(241, 63);
+            this.Quit.Name = "Quit";
+            this.Quit.Size = new System.Drawing.Size(75, 23);
+            this.Quit.TabIndex = 4;
+            this.Quit.Text = "Quit";
+            this.Quit.UseVisualStyleBackColor = true;
+            this.Quit.Click += new System.EventHandler(this.OnClick);
             // 
             // RaysClientForm
             // 
@@ -132,7 +133,7 @@
             this.ClientSize = new System.Drawing.Size(335, 231);
             this.Controls.Add(this.Open);
             this.Controls.Add(this.Log);
-            this.Controls.Add(this.button2);
+            this.Controls.Add(this.Quit);
             this.Controls.Add(this.groupBox1);
             this.Name = "RaysClientForm";
             this.Text = "Rays Client";
@@ -153,7 +154,7 @@
         private System.Windows.Forms.Button Connect;
         private System.Windows.Forms.Button Open;
         private System.Windows.Forms.ListBox Log;
-        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button Quit;
     }
 }
 
