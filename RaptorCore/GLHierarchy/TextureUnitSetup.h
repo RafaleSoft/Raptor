@@ -190,8 +190,6 @@ private:
 
     bool importMap(TEXTURE_IMAGE_UNIT unit,CRaptorIO& io);
 
-    RAPTOR_HANDLE	m_handle;
-
     //	Register combiners and generic texture combiners are exclusive
 	bool				use_register_combiners;
     CRegisterCombiner   *register_combiners;

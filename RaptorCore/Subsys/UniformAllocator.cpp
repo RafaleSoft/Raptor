@@ -231,13 +231,9 @@ bool CUniformAllocator::glvkLockMemory(bool lock)
 	if ((NULL != deviceMemoryManager) && (relocatedUniforms != NULL))
 	{
 		if (lock && !m_bLocked)
-		{
-			deviceMemoryManager->lockBufferObject(*relocatedUniforms);
-		}
+			res = deviceMemoryManager->lockBufferObject(*relocatedUniforms);
 		else if (!lock && m_bLocked)
-		{
-			deviceMemoryManager->unlockBufferObject(*relocatedUniforms);
-		}
+			res = deviceMemoryManager->unlockBufferObject(*relocatedUniforms);
 		else
 			res = false;
 	}

@@ -11,6 +11,10 @@
 #if !defined(AFX_RAPTORDISPLAYCONFIG_H__DA0759DF_6CF9_44A7_9ADE_D404FEEC2DDF__INCLUDED_)
 	#include "RaptorDisplayConfig.h"
 #endif
+#if !defined(AFX_PROGRAMPARAMETERS_H__E28A74BB_DE78_470A_A8A2_5A3EBB3F4F90__INCLUDED_)
+	#include "GLHierarchy/ProgramParameters.h"
+#endif
+
 #if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
 #else
 	#if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
@@ -19,10 +23,8 @@
 	#if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
 		#include "System/RaptorGLExtensions.h"
 	#endif
-	#if !defined(AFX_PROGRAMPARAMETERS_H__E28A74BB_DE78_470A_A8A2_5A3EBB3F4F90__INCLUDED_)
-		#include "GLHierarchy/ProgramParameters.h"
-	#endif
 #endif
+
 
 RAPTOR_NAMESPACE
 
