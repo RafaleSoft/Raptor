@@ -530,8 +530,7 @@ bool _glSaveWavefront(const string &fname,C3DSet *scene)
 		unsigned int nbVertex = g->nbVertex();
 		objfile << "#	" << nbVertex << " vertices" << endl;
 		
-		unsigned int i=0;
-		for (i=0;i<nbVertex;i++)
+		for (uint32_t i=0;i < nbVertex;i++)
 		{
 			GL_VERTEX_DATA v;
 			g->getVertex(i,v);
@@ -546,14 +545,14 @@ bool _glSaveWavefront(const string &fname,C3DSet *scene)
 		objfile << endl;
 
 		unsigned int nbFace = g->nbFace();
-		for (i=0; i<nbFace; i++)
+		for (uint32_t i=0; i < nbFace; i++)
 		{
 		}
 
 		g->glUnLockData();
 
 		vector<CGeometryPrimitive*> primitives = g->getPrimitives();
-		for (i=0;i<primitives.size();i++)
+		for (size_t i=0;i<primitives.size();i++)
 		{
 			CGeometryPrimitive *p = primitives[i];
 

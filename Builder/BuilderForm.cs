@@ -29,9 +29,9 @@ using System.Windows.Forms;
 
 namespace Builder
 {
-    public partial class Form1 : Form
+    public partial class BuilderForm : Form
     {
-        public Form1()
+        public BuilderForm()
         {
             InitializeComponent();
             InitTree();

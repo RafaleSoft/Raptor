@@ -177,7 +177,7 @@ bool COpenGLMemory::setBufferObjectData(IDeviceMemoryManager::IBufferObject &bo,
 	{
 		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 		IDeviceMemoryManager::IBufferObject::BUFFER_KIND storage = bo.getStorage();
-		if (storage > IDeviceMemoryManager::IBufferObject::PIXEL_SOURCE)
+		if (storage > IDeviceMemoryManager::IBufferObject::UNIFORM_BUFFER)
 		{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 			RAPTOR_WARNING(	COpenGL::COpenGLClassID::GetClassId(),
@@ -247,7 +247,7 @@ bool COpenGLMemory::getBufferObjectData(IDeviceMemoryManager::IBufferObject &vb,
 		
 		IDeviceMemoryManager::IBufferObject::BUFFER_KIND storage = vb.getStorage();
         GLenum glStorage = BufferKindToGL(storage);
-		if (storage > IDeviceMemoryManager::IBufferObject::PIXEL_SOURCE)
+		if (storage > IDeviceMemoryManager::IBufferObject::UNIFORM_BUFFER)
 		{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 			RAPTOR_WARNING(	COpenGL::COpenGLClassID::GetClassId(),
@@ -350,7 +350,7 @@ bool COpenGLMemory::releaseBufferObject(IDeviceMemoryManager::IBufferObject* &vb
 
 bool COpenGLMemory::lockBufferObject(IDeviceMemoryManager::IBufferObject &bo)
 {
-	if (bo.getStorage() > IDeviceMemoryManager::IBufferObject::PIXEL_SOURCE)
+	if (bo.getStorage() > IDeviceMemoryManager::IBufferObject::UNIFORM_BUFFER)
 	{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 		RAPTOR_WARNING(	COpenGL::COpenGLClassID::GetClassId(),
@@ -415,7 +415,7 @@ bool COpenGLMemory::lockBufferObject(IDeviceMemoryManager::IBufferObject &bo)
 
 bool COpenGLMemory::unlockBufferObject(IDeviceMemoryManager::IBufferObject &bo)
 {
-	if (bo.getStorage() > IDeviceMemoryManager::IBufferObject::PIXEL_SOURCE)
+	if (bo.getStorage() > IDeviceMemoryManager::IBufferObject::UNIFORM_BUFFER)
 	{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 		RAPTOR_WARNING(	COpenGL::COpenGLClassID::GetClassId(),

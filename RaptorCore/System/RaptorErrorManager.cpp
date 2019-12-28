@@ -115,9 +115,7 @@ void CRaptorErrorManager::generateRaptorError(	const CPersistence::CPersistenceC
 void CRaptorErrorManager::addRaptorErrorHandler(CRaptorErrorHandler* errHandler)
 {
     if (errHandler != NULL)
-    {
         RaptorErrorHandlers.push_back(errHandler);
-    }
 }
 
 void CRaptorErrorManager::addRaptorError(GL_RAPTOR_ERROR& err)
@@ -182,9 +180,7 @@ void CRaptorErrorManager::getRaptorError(unsigned int index,GL_RAPTOR_ERROR& err
 	err.error = "";
 
 	if (index < RaptorErrors.size())
-	{
 		err = RaptorErrors[index];
-	}
 }
 
 void CRaptorErrorManager::glGetError(const std::string& file,int line)
@@ -207,7 +203,6 @@ void CRaptorErrorManager::glGetError(const std::string& file,int line)
     r_line << " [line:";
     r_line << line;
     r_line << "]";
-    r_line << ends;
 
 	while ( GL_NO_ERROR != err )
 	{
@@ -225,25 +220,29 @@ void CRaptorErrorManager::glGetError(const std::string& file,int line)
 			case GL_NO_ERROR:
 				break;
 			case GL_INVALID_ENUM:
-				r_err.error = "Invalid enum (class " + r_file + r_line.str() + ")";
+				r_err.error = "Invalid enum ";
 				break;
 			case GL_INVALID_VALUE:
-				r_err.error = "Invalid value (class " + r_file + r_line.str() + ")";
+				r_err.error = "Invalid value ";
 				break;
 			case GL_INVALID_OPERATION:
-				r_err.error = "Invalid operation (class " + r_file + r_line.str() + ")";
+				r_err.error = "Invalid operation ";
 				break;
 			case GL_STACK_OVERFLOW:
-				r_err.error = "Stack overflow (class " + r_file + r_line.str() + ")";
+				r_err.error = "Stack overflow ";
 				break;
 			case GL_STACK_UNDERFLOW:
-				r_err.error = "Stack underflow (class " + r_file + r_line.str() + ")";
+				r_err.error = "Stack underflow ";
 				break;
 			case GL_OUT_OF_MEMORY:
-				r_err.error = "Out of memory (class " + r_file + r_line.str() + ")";
+				r_err.error = "Out of memory ";
 				break;
 		}
 
+		r_err.error += "(class ";
+		r_err.error += r_file;
+		r_err.error += r_line.str().c_str();
+		r_err.error += ")";
 		if (GL_NO_ERROR != err )
 			addRaptorError(r_err);
 
@@ -276,84 +275,89 @@ void CRaptorErrorManager::vkGetError(VkResult err, const std::string& file,int l
 	switch (err)
 	{
 		case VK_SUCCESS:
-			r_err.error = "No error, success (class " + r_file + r_line.str() + ")";
+			r_err.error = "No error, success ";
 			break;
 		case VK_NOT_READY:
-			r_err.error = "Not ready (class " + r_file + r_line.str() + ")";
+			r_err.error = "Not ready ";
 			break;
 		case VK_TIMEOUT:
-			r_err.error = "Timeout (class " + r_file + r_line.str() + ")";
+			r_err.error = "Timeout ";
 			break;
 		case VK_EVENT_SET:
-			r_err.error = "Event Set (class " + r_file + r_line.str() + ")";
+			r_err.error = "Event Set ";
 			break;
 		case VK_EVENT_RESET:
-			r_err.error = "Event Reset (class " + r_file + r_line.str() + ")";
+			r_err.error = "Event Reset ";
 			break;
 		case VK_INCOMPLETE:
-			r_err.error = "Incomplete (class " + r_file + r_line.str() + ")";
+			r_err.error = "Incomplete ";
 			break;
 		case VK_ERROR_OUT_OF_HOST_MEMORY:
-			r_err.error = "Error Out of Host Memory (class " + r_file + r_line.str() + ")";
+			r_err.error = "Error Out of Host Memory ";
 			break;
 		case VK_ERROR_OUT_OF_DEVICE_MEMORY:
-			r_err.error = "Error Out of Host Memory (class " + r_file + r_line.str() + ")";
+			r_err.error = "Error Out of Host Memory ";
 			break;
 		case VK_ERROR_INITIALIZATION_FAILED:
-			r_err.error = "Error initialization failed (class " + r_file + r_line.str() + ")";
+			r_err.error = "Error initialization failed ";
 			break;
 		case VK_ERROR_DEVICE_LOST:
-			r_err.error = "Error device lost (class " + r_file + r_line.str() + ")";
+			r_err.error = "Error device lost ";
 			break;
 		case VK_ERROR_MEMORY_MAP_FAILED:
-			r_err.error = "Error memory map failed (class " + r_file + r_line.str() + ")";
+			r_err.error = "Error memory map failed ";
 			break;
 		case VK_ERROR_LAYER_NOT_PRESENT:
-			r_err.error = "Error layer not present (class " + r_file + r_line.str() + ")";
+			r_err.error = "Error layer not present ";
 			break;
 		case VK_ERROR_EXTENSION_NOT_PRESENT:
-			r_err.error = "Error extension not present (class " + r_file + r_line.str() + ")";
+			r_err.error = "Error extension not present ";
 			break;
 		case VK_ERROR_FEATURE_NOT_PRESENT:
-			r_err.error = "Error feature not present (class " + r_file + r_line.str() + ")";
+			r_err.error = "Error feature not present ";
 			break;
 		case VK_ERROR_INCOMPATIBLE_DRIVER:
-			r_err.error = "Error incompatible driver (class " + r_file + r_line.str() + ")";
+			r_err.error = "Error incompatible driver ";
 			break;
 		case VK_ERROR_TOO_MANY_OBJECTS:
-			r_err.error = "Error too maby objects (class " + r_file + r_line.str() + ")";
+			r_err.error = "Error too maby objects ";
 			break;
 		case VK_ERROR_FORMAT_NOT_SUPPORTED:
-			r_err.error = "Error format not supported (class " + r_file + r_line.str() + ")";
+			r_err.error = "Error format not supported ";
 			break;
 		case VK_ERROR_FRAGMENTED_POOL:
-			r_err.error = "Error fragmented pool (class " + r_file + r_line.str() + ")";
+			r_err.error = "Error fragmented pool ";
 			break;
 		case VK_ERROR_SURFACE_LOST_KHR:
-			r_err.error = "Error surface lost (class " + r_file + r_line.str() + ")";
+			r_err.error = "Error surface lost ";
 			break;
 		case VK_ERROR_NATIVE_WINDOW_IN_USE_KHR:
-			r_err.error = "Error native window in use (class " + r_file + r_line.str() + ")";
+			r_err.error = "Error native window in use ";
 			break;
 		case VK_SUBOPTIMAL_KHR:
-			r_err.error = "Error suboptimal (class " + r_file + r_line.str() + ")";
+			r_err.error = "Error suboptimal ";
 			break;
 		case VK_ERROR_OUT_OF_DATE_KHR:
-			r_err.error = "Error out of date (class " + r_file + r_line.str() + ")";
+			r_err.error = "Error out of date ";
 			break;
 		case VK_ERROR_INCOMPATIBLE_DISPLAY_KHR:
-			r_err.error = "Error incompatible display (class " + r_file + r_line.str() + ")";
+			r_err.error = "Error incompatible display ";
 			break;
 		case VK_ERROR_VALIDATION_FAILED_EXT:
-			r_err.error = "Error validation failed (class " + r_file + r_line.str() + ")";
+			r_err.error = "Error validation failed ";
 			break;
 		case VK_ERROR_INVALID_SHADER_NV:
-			r_err.error = "Error invalid shader NV (class " + r_file + r_line.str() + ")";
+			r_err.error = "Error invalid shader NV ";
 			break;
 		default:
-			r_err.error = "Unknown Error (class " + r_file + r_line.str() + ")";
+			r_err.error = "Unknown Error ";
 			break;
 	}
+
+	r_err.error += "(class ";
+	r_err.error += r_file;
+	r_err.error += r_line.str().c_str();
+	r_err.error += ")";
 
 	if (VK_SUCCESS != err)
 		addRaptorError(r_err);

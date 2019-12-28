@@ -43,7 +43,7 @@ OBJ = $(SRC:$(SRCDIR)/%.cpp=$(OUTPUT)/%.o)
 all:	$(OUTPUT)/Test
 
 clean:
-	rm -f $(OUTPUT)
+	rm -rf $(OUTPUT)
 	mkdir -p $(OUTPUT)
 
 $(OUTPUT)/Test:	$(OBJ) 
