@@ -1,15 +1,30 @@
+/***************************************************************************/
+/*                                                                         */
+/*  RaptorCompute.h                                                        */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
 #if !defined(AFX_RAPTOR_COMPUTE_H__7FDED2CB_7AA2_4D6E_BF22_50923FD45212__INCLUDED_)
 #define AFX_RAPTOR_COMPUTE_H__7FDED2CB_7AA2_4D6E_BF22_50923FD45212__INCLUDED_
 
-#ifdef EXPORT_RAPTOR_COMPUTE
-	#define RAPTORCOMPUTE_API __declspec(dllexport)
-#else
-	#define RAPTORCOMPUTE_API __declspec(dllimport)
-#endif
+
+#include "Subsys/CodeGeneration.h"
+#include <stdint.h>
 
 
-#include <string>
-#include <vector>
+RAPTOR_NAMESPACE
 
 class CRaptorComputeManager;
 class CRaptorComputeJob;
@@ -17,7 +32,7 @@ class CRaptorComputeJob;
 
 //! Raptor Compute entry point
 //!
-class RAPTORCOMPUTE_API CRaptorCompute
+class RAPTOR_API CRaptorCompute
 {
 public:
 
@@ -34,45 +49,45 @@ public:
 		std::string			name;
 		unsigned long		queue_properties;
 		unsigned long		execution_capabilities;
-		unsigned __int32	compiler_available;
-		unsigned __int32	available;
-		unsigned __int32	endian_little;
+		uint32_t			compiler_available;
+		uint32_t			available;
+		uint32_t			endian_little;
 		size_t				timer_resolution;
-		unsigned __int32	error_correction;
-		unsigned __int64	local_memory_size;
+		uint32_t			error_correction;
+		uint64_t			local_memory_size;
 		unsigned long		local_memory_type;
-		unsigned __int32	max_constants;
-		unsigned __int64	max_constant_buffer;
-		unsigned __int64	global_memory_size;
-		unsigned __int64	global_memory_cache_size;
-		unsigned __int32	global_memory_cacheline_size;
+		uint32_t			max_constants;
+		uint64_t			max_constant_buffer;
+		uint64_t			global_memory_size;
+		uint64_t			global_memory_cache_size;
+		uint32_t			global_memory_cacheline_size;
 		unsigned long		global_memory_cache_type;
-		unsigned __int64	single_fp_config;
-		unsigned __int32	min_align_size;
-		unsigned __int32	base_address_align;
-		unsigned __int32	max_samplers;
+		uint64_t			single_fp_config;
+		uint32_t			min_align_size;
+		uint32_t			base_address_align;
+		uint32_t			max_samplers;
 		size_t				max_parameter_size;
 		size_t				image3d_max_width;
 		size_t				image3d_max_height;
 		size_t				image3d_max_depth;
 		size_t				image2d_max_width;
 		size_t				image2d_max_height;
-		unsigned __int32	max_image_write;
-		unsigned __int32	max_image_read;
+		uint32_t			max_image_write;
+		uint32_t			max_image_read;
 		unsigned long		image_support;
-		unsigned __int64	max_alloc_size;
-		unsigned __int32	address_size;
-		unsigned __int32	frequency;
-		unsigned __int32	max_compute_units;
-		unsigned __int32	max_work_item_dimensions;
+		uint64_t			max_alloc_size;
+		uint32_t			address_size;
+		uint32_t			frequency;
+		uint32_t			max_compute_units;
+		uint32_t			max_work_item_dimensions;
 		size_t				*max_work_item_sizes;
 		size_t				max_work_item_group_size;
-		unsigned __int32	vector_width_char;
-		unsigned __int32	vector_width_short;
-		unsigned __int32	vector_width_int;
-		unsigned __int32	vector_width_long;
-		unsigned __int32	vector_width_float;
-		unsigned __int32	vector_width_double;
+		uint32_t			vector_width_char;
+		uint32_t			vector_width_short;
+		uint32_t			vector_width_int;
+		uint32_t			vector_width_long;
+		uint32_t			vector_width_float;
+		uint32_t			vector_width_double;
 	} DEVICE;
 	
 	//! Platforms
@@ -98,7 +113,7 @@ public:
 
 	//!	Releases computing platform
 	//! @return true if all resources released without errors.
-	static bool CRaptorCompute::clReleaseRaptorCompute(void);
+	static bool clReleaseRaptorCompute(void);
 
 	//! Retrieve platform description, after initialization.
 	//! @return the platforms descriptors.

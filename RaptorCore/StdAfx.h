@@ -26,6 +26,8 @@
 
     #define VC_EXTRALEAN		// Exclude rarely-used stuff from Windows headers
 	#include <windows.h>
+#else	// Linux environment
+	#define MAX_PATH		260
 #endif
 
 #endif // !defined(AFX_STDAFX_H__B11AA2C1_D1B1_4A4D_B931_8AC832AA6498__INCLUDED_)

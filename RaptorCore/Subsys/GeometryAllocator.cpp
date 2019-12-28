@@ -535,13 +535,13 @@ bool CGeometryAllocator::glvkLockMemory(bool lock)
     {
         if (lock && !m_bLocked)
         {
-            deviceMemoryManager->lockBufferObject(*relocatedVertices);
-            deviceMemoryManager->lockBufferObject(*relocatedFaceIndexes);
+            res = deviceMemoryManager->lockBufferObject(*relocatedVertices);
+            res = res && deviceMemoryManager->lockBufferObject(*relocatedFaceIndexes);
         }
         else if (!lock && m_bLocked)
         {
-            deviceMemoryManager->unlockBufferObject(*relocatedVertices);
-            deviceMemoryManager->unlockBufferObject(*relocatedFaceIndexes);
+            res = deviceMemoryManager->unlockBufferObject(*relocatedVertices);
+            res = res && deviceMemoryManager->unlockBufferObject(*relocatedFaceIndexes);
         }
         else
             res = false;

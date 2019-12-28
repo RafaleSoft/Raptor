@@ -163,6 +163,7 @@ echo "	Copying ToolBox files:"
 cp ./RaptorToolBox/BasicObjects.h Redist/Include/ToolBox
 cp ./RaptorToolBox/CmdLineParser.h Redist/Include/ToolBox
 cp ./RaptorToolBox/Controllers.h Redist/Include/ToolBox
+cp ./RaptorToolBox/Filters.h Redist/Include/ToolBox
 cp ./RaptorToolBox/Imaging.h Redist/Include/ToolBox
 cp ./RaptorToolBox/ParticleCompute.h Redist/Include/ToolBox
 cp ./RaptorToolBox/RaptorToolBox.h Redist/Include/ToolBox

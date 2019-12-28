@@ -1,11 +1,35 @@
+/***************************************************************************/
+/*                                                                         */
+/*  RaptorComputeManager.cpp                                               */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
 #include "StdAfx.h"
 
 #if !defined(AFX_RAPTOR_COMPUTE_MANAGER_H__876B757E_63F1_4E8A_847E_205C3AE2E132__INCLUDED_)
 	#include "RaptorComputeManager.h"
 #endif
+#ifdef LINUX
+	#ifndef __GLX_RAPTOR_GLEXT_H__
+		#include "GLXSpecific/GLXGlext.h"
+	#endif
+#endif
 
 
 #include <stdlib.h>
+
 
 RAPTOR_NAMESPACE 
 
@@ -93,14 +117,19 @@ bool CRaptorComputeManager::clCreateContext(unsigned int numPlatform,
 
 	cl_int ciErrNum = CL_SUCCESS;
 
-	int *pProperties = NULL;
+	cl_context_properties *pProperties = NULL;
 	size_t nbProperties = 0;
 
 	if (NULL != dsp)
 	{
 		if ((dsp->getCurrentDevice().handle() == 0) ||
+#ifdef WIN32
 			(dsp->getCurrentDevice().handle() != (int)wglGetCurrentDC()) ||
 			(wglGetCurrentContext() == 0))
+#else	// Linux environment
+			(dsp->getCurrentDevice().ptr<Display>() != glXGetCurrentDisplay()) ||
+			(glXGetCurrentContext() == 0))
+#endif
 		{
 			RAPTOR_ERROR(CRaptorComputeManager::COpenCLClassID::GetClassId(),
 						"Unable to get current OpenGL Context from CRaptorDisplay.");
@@ -109,11 +138,18 @@ bool CRaptorComputeManager::clCreateContext(unsigned int numPlatform,
 		if (string::npos != m_platforms[numPlatform].extensions.find("cl_khr_gl_sharing"))
 		{
 			nbProperties = 4;
-			pProperties = new int[4];
+			pProperties = new cl_context_properties[4];
 			pProperties[0] = CL_GL_CONTEXT_KHR;
-			pProperties[1] = (int)wglGetCurrentContext();
+
+#ifdef WIN32
+			pProperties[1] = (cl_context_properties)wglGetCurrentContext();
 			pProperties[2] = CL_WGL_HDC_KHR;
-			pProperties[3] = (int)wglGetCurrentDC();
+			pProperties[3] = (cl_context_properties)wglGetCurrentDC();
+#else	// Linux environment
+			pProperties[1] = (cl_context_properties)glXGetCurrentContext;
+			pProperties[2] = CL_GLX_DISPLAY_KHR;
+			pProperties[3] = (cl_context_properties)glXGetCurrentDisplay();
+#endif
 		}
 		else
 		{
@@ -294,15 +330,15 @@ bool CRaptorComputeManager::clInitPlatforms(void)
 					if (ciErrNum != CL_SUCCESS)
 						return false;
 
-					ciErrNum = clGetDeviceInfo(clDeviceIDs[j],CL_DEVICE_COMPILER_AVAILABLE,sizeof(unsigned __int32),&D.compiler_available,NULL);
+					ciErrNum = clGetDeviceInfo(clDeviceIDs[j],CL_DEVICE_COMPILER_AVAILABLE,sizeof(uint32_t),&D.compiler_available,NULL);
 					if (ciErrNum != CL_SUCCESS)
 						return false;
 
-					ciErrNum = clGetDeviceInfo(clDeviceIDs[j],CL_DEVICE_AVAILABLE,sizeof(unsigned __int32),&D.available,NULL);
+					ciErrNum = clGetDeviceInfo(clDeviceIDs[j], CL_DEVICE_AVAILABLE, sizeof(uint32_t), &D.available, NULL);
 					if (ciErrNum != CL_SUCCESS)
 						return false;
 
-					ciErrNum = clGetDeviceInfo(clDeviceIDs[j],CL_DEVICE_ENDIAN_LITTLE,sizeof(unsigned __int32),&D.endian_little,NULL);
+					ciErrNum = clGetDeviceInfo(clDeviceIDs[j], CL_DEVICE_ENDIAN_LITTLE, sizeof(uint32_t), &D.endian_little, NULL);
 					if (ciErrNum != CL_SUCCESS)
 						return false;
 
@@ -310,11 +346,11 @@ bool CRaptorComputeManager::clInitPlatforms(void)
 					if (ciErrNum != CL_SUCCESS)
 						return false;
 
-					ciErrNum = clGetDeviceInfo(clDeviceIDs[j],CL_DEVICE_ERROR_CORRECTION_SUPPORT,sizeof(unsigned __int32),&D.error_correction,NULL);
+					ciErrNum = clGetDeviceInfo(clDeviceIDs[j], CL_DEVICE_ERROR_CORRECTION_SUPPORT, sizeof(uint32_t), &D.error_correction, NULL);
 					if (ciErrNum != CL_SUCCESS)
 						return false;
 
-					ciErrNum = clGetDeviceInfo(clDeviceIDs[j],CL_DEVICE_LOCAL_MEM_SIZE,sizeof(unsigned __int64),&D.local_memory_size,NULL);
+					ciErrNum = clGetDeviceInfo(clDeviceIDs[j], CL_DEVICE_LOCAL_MEM_SIZE, sizeof(uint64_t), &D.local_memory_size, NULL);
 					if (ciErrNum != CL_SUCCESS)
 						return false;
 
@@ -322,23 +358,23 @@ bool CRaptorComputeManager::clInitPlatforms(void)
 					if (ciErrNum != CL_SUCCESS)
 						return false;
 
-					ciErrNum = clGetDeviceInfo(clDeviceIDs[j],CL_DEVICE_MAX_CONSTANT_ARGS,sizeof(unsigned __int32),&D.max_constants,NULL);
+					ciErrNum = clGetDeviceInfo(clDeviceIDs[j], CL_DEVICE_MAX_CONSTANT_ARGS, sizeof(uint32_t), &D.max_constants, NULL);
 					if (ciErrNum != CL_SUCCESS)
 						return false;
 
-					ciErrNum = clGetDeviceInfo(clDeviceIDs[j],CL_DEVICE_MAX_CONSTANT_BUFFER_SIZE,sizeof(unsigned __int64),&D.max_constant_buffer,NULL);
+					ciErrNum = clGetDeviceInfo(clDeviceIDs[j], CL_DEVICE_MAX_CONSTANT_BUFFER_SIZE, sizeof(uint64_t), &D.max_constant_buffer, NULL);
 					if (ciErrNum != CL_SUCCESS)
 						return false;
 
-					ciErrNum = clGetDeviceInfo(clDeviceIDs[j],CL_DEVICE_GLOBAL_MEM_SIZE,sizeof(unsigned __int64),&D.global_memory_size,NULL);
+					ciErrNum = clGetDeviceInfo(clDeviceIDs[j], CL_DEVICE_GLOBAL_MEM_SIZE, sizeof(uint64_t), &D.global_memory_size, NULL);
 					if (ciErrNum != CL_SUCCESS)
 						return false;
 
-					ciErrNum = clGetDeviceInfo(clDeviceIDs[j],CL_DEVICE_GLOBAL_MEM_CACHE_SIZE,sizeof(unsigned __int64),&D.global_memory_cache_size,NULL);
+					ciErrNum = clGetDeviceInfo(clDeviceIDs[j], CL_DEVICE_GLOBAL_MEM_CACHE_SIZE, sizeof(uint64_t), &D.global_memory_cache_size, NULL);
 					if (ciErrNum != CL_SUCCESS)
 						return false;
 
-					ciErrNum = clGetDeviceInfo(clDeviceIDs[j],CL_DEVICE_GLOBAL_MEM_CACHELINE_SIZE,sizeof(unsigned __int32),&D.global_memory_cacheline_size,NULL);
+					ciErrNum = clGetDeviceInfo(clDeviceIDs[j], CL_DEVICE_GLOBAL_MEM_CACHELINE_SIZE, sizeof(uint32_t), &D.global_memory_cacheline_size, NULL);
 					if (ciErrNum != CL_SUCCESS)
 						return false;
 
@@ -346,19 +382,19 @@ bool CRaptorComputeManager::clInitPlatforms(void)
 					if (ciErrNum != CL_SUCCESS)
 						return false;
 
-					ciErrNum = clGetDeviceInfo(clDeviceIDs[j],CL_DEVICE_SINGLE_FP_CONFIG,sizeof(unsigned __int64),&D.single_fp_config,NULL);
+					ciErrNum = clGetDeviceInfo(clDeviceIDs[j], CL_DEVICE_SINGLE_FP_CONFIG, sizeof(uint64_t), &D.single_fp_config, NULL);
 					if (ciErrNum != CL_SUCCESS)
 						return false;
 
-					ciErrNum = clGetDeviceInfo(clDeviceIDs[j],CL_DEVICE_MIN_DATA_TYPE_ALIGN_SIZE,sizeof(unsigned __int32),&D.min_align_size,NULL);
+					ciErrNum = clGetDeviceInfo(clDeviceIDs[j], CL_DEVICE_MIN_DATA_TYPE_ALIGN_SIZE, sizeof(uint32_t), &D.min_align_size, NULL);
 					if (ciErrNum != CL_SUCCESS)
 						return false;
 
-					ciErrNum = clGetDeviceInfo(clDeviceIDs[j],CL_DEVICE_MEM_BASE_ADDR_ALIGN,sizeof(unsigned __int32),&D.base_address_align,NULL);
+					ciErrNum = clGetDeviceInfo(clDeviceIDs[j], CL_DEVICE_MEM_BASE_ADDR_ALIGN, sizeof(uint32_t), &D.base_address_align, NULL);
 					if (ciErrNum != CL_SUCCESS)
 						return false;
 
-					ciErrNum = clGetDeviceInfo(clDeviceIDs[j],CL_DEVICE_MAX_SAMPLERS,sizeof(unsigned __int32),&D.max_samplers,NULL);
+					ciErrNum = clGetDeviceInfo(clDeviceIDs[j], CL_DEVICE_MAX_SAMPLERS, sizeof(uint32_t), &D.max_samplers, NULL);
 					if (ciErrNum != CL_SUCCESS)
 						return false;
 
@@ -386,11 +422,11 @@ bool CRaptorComputeManager::clInitPlatforms(void)
 					if (ciErrNum != CL_SUCCESS)
 						return false;
 
-					ciErrNum = clGetDeviceInfo(clDeviceIDs[j],CL_DEVICE_MAX_WRITE_IMAGE_ARGS,sizeof(unsigned __int32),&D.max_image_write,NULL);
+					ciErrNum = clGetDeviceInfo(clDeviceIDs[j], CL_DEVICE_MAX_WRITE_IMAGE_ARGS, sizeof(uint32_t), &D.max_image_write, NULL);
 					if (ciErrNum != CL_SUCCESS)
 						return false;
 
-					ciErrNum = clGetDeviceInfo(clDeviceIDs[j],CL_DEVICE_MAX_READ_IMAGE_ARGS,sizeof(unsigned __int32),&D.max_image_read,NULL);
+					ciErrNum = clGetDeviceInfo(clDeviceIDs[j], CL_DEVICE_MAX_READ_IMAGE_ARGS, sizeof(uint32_t), &D.max_image_read, NULL);
 					if (ciErrNum != CL_SUCCESS)
 						return false;
 
@@ -398,15 +434,15 @@ bool CRaptorComputeManager::clInitPlatforms(void)
 					if (ciErrNum != CL_SUCCESS)
 						return false;
 
-					ciErrNum = clGetDeviceInfo(clDeviceIDs[j],CL_DEVICE_MAX_MEM_ALLOC_SIZE,sizeof(unsigned __int64),&D.max_alloc_size,NULL);
+					ciErrNum = clGetDeviceInfo(clDeviceIDs[j], CL_DEVICE_MAX_MEM_ALLOC_SIZE, sizeof(uint64_t), &D.max_alloc_size, NULL);
 					if (ciErrNum != CL_SUCCESS)
 						return false;
 
-					ciErrNum = clGetDeviceInfo(clDeviceIDs[j],CL_DEVICE_ADDRESS_BITS,sizeof(unsigned __int32),&D.address_size,NULL);
+					ciErrNum = clGetDeviceInfo(clDeviceIDs[j], CL_DEVICE_ADDRESS_BITS, sizeof(uint32_t), &D.address_size, NULL);
 					if (ciErrNum != CL_SUCCESS)
 						return false;
 
-					ciErrNum = clGetDeviceInfo(clDeviceIDs[j],CL_DEVICE_MAX_CLOCK_FREQUENCY,sizeof(unsigned __int32),&D.frequency,NULL);
+					ciErrNum = clGetDeviceInfo(clDeviceIDs[j], CL_DEVICE_MAX_CLOCK_FREQUENCY, sizeof(uint32_t), &D.frequency, NULL);
 					if (ciErrNum != CL_SUCCESS)
 						return false;
 
@@ -414,11 +450,11 @@ bool CRaptorComputeManager::clInitPlatforms(void)
 					if (ciErrNum != CL_SUCCESS)
 						return false;
 
-					ciErrNum = clGetDeviceInfo(clDeviceIDs[j],CL_DEVICE_MAX_COMPUTE_UNITS,sizeof(unsigned __int32),&D.max_compute_units,NULL);
+					ciErrNum = clGetDeviceInfo(clDeviceIDs[j], CL_DEVICE_MAX_COMPUTE_UNITS, sizeof(uint32_t), &D.max_compute_units, NULL);
 					if (ciErrNum != CL_SUCCESS)
 						return false;
 
-					ciErrNum = clGetDeviceInfo(clDeviceIDs[j],CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS,sizeof(unsigned __int32),&D.max_work_item_dimensions,NULL);
+					ciErrNum = clGetDeviceInfo(clDeviceIDs[j], CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS, sizeof(uint32_t), &D.max_work_item_dimensions, NULL);
 					if (ciErrNum != CL_SUCCESS)
 						return false;
 
@@ -432,27 +468,27 @@ bool CRaptorComputeManager::clInitPlatforms(void)
 					if (ciErrNum != CL_SUCCESS)
 						return false;
 
-					ciErrNum = clGetDeviceInfo(clDeviceIDs[j],CL_DEVICE_PREFERRED_VECTOR_WIDTH_CHAR,sizeof(unsigned __int32),&D.vector_width_char,NULL);
+					ciErrNum = clGetDeviceInfo(clDeviceIDs[j], CL_DEVICE_PREFERRED_VECTOR_WIDTH_CHAR, sizeof(uint32_t), &D.vector_width_char, NULL);
 					if (ciErrNum != CL_SUCCESS)
 						return false;
 
-					ciErrNum = clGetDeviceInfo(clDeviceIDs[j],CL_DEVICE_PREFERRED_VECTOR_WIDTH_SHORT,sizeof(unsigned __int32),&D.vector_width_short,NULL);
+					ciErrNum = clGetDeviceInfo(clDeviceIDs[j], CL_DEVICE_PREFERRED_VECTOR_WIDTH_SHORT, sizeof(uint32_t), &D.vector_width_short, NULL);
 					if (ciErrNum != CL_SUCCESS)
 						return false;
 
-					ciErrNum = clGetDeviceInfo(clDeviceIDs[j],CL_DEVICE_PREFERRED_VECTOR_WIDTH_INT,sizeof(unsigned __int32),&D.vector_width_int,NULL);
+					ciErrNum = clGetDeviceInfo(clDeviceIDs[j], CL_DEVICE_PREFERRED_VECTOR_WIDTH_INT, sizeof(uint32_t), &D.vector_width_int, NULL);
 					if (ciErrNum != CL_SUCCESS)
 						return false;
 
-					ciErrNum = clGetDeviceInfo(clDeviceIDs[j],CL_DEVICE_PREFERRED_VECTOR_WIDTH_LONG,sizeof(unsigned __int32),&D.vector_width_long,NULL);
+					ciErrNum = clGetDeviceInfo(clDeviceIDs[j], CL_DEVICE_PREFERRED_VECTOR_WIDTH_LONG, sizeof(uint32_t), &D.vector_width_long, NULL);
 					if (ciErrNum != CL_SUCCESS)
 						return false;
 
-					ciErrNum = clGetDeviceInfo(clDeviceIDs[j],CL_DEVICE_PREFERRED_VECTOR_WIDTH_FLOAT,sizeof(unsigned __int32),&D.vector_width_float,NULL);
+					ciErrNum = clGetDeviceInfo(clDeviceIDs[j], CL_DEVICE_PREFERRED_VECTOR_WIDTH_FLOAT, sizeof(uint32_t), &D.vector_width_float, NULL);
 					if (ciErrNum != CL_SUCCESS)
 						return false;
 
-					ciErrNum = clGetDeviceInfo(clDeviceIDs[j],CL_DEVICE_PREFERRED_VECTOR_WIDTH_DOUBLE,sizeof(unsigned __int32),&D.vector_width_double,NULL);
+					ciErrNum = clGetDeviceInfo(clDeviceIDs[j], CL_DEVICE_PREFERRED_VECTOR_WIDTH_DOUBLE, sizeof(uint32_t), &D.vector_width_double, NULL);
 					if (ciErrNum != CL_SUCCESS)
 						return false;
 
