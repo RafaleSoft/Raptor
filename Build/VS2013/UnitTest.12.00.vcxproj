@@ -14,6 +14,7 @@
     <ProjectGuid>{B202C1C4-5DB7-4E80-9A01-85BABFC0AC42}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>UnitTest</RootNamespace>
+    <ProjectName>UnitTest</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -84,17 +85,20 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="RaptorHandleTest.h" />
-    <ClInclude Include="stdafx.h" />
-    <ClInclude Include="targetver.h" />
+    <ClInclude Include="..\..\UnitTest\RaptorHandleTest.h" />
+    <ClInclude Include="..\..\UnitTest\resource.h" />
+    <ClInclude Include="..\..\UnitTest\stdafx.h" />
+    <ClInclude Include="..\..\UnitTest\targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="RaptorHandleTest.cpp" />
-    <ClCompile Include="stdafx.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+    <ClCompile Include="..\..\UnitTest\RaptorHandleTest.cpp" />
+    <ClCompile Include="..\..\UnitTest\stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="UnitTest.cpp" />
+    <ClCompile Include="..\..\UnitTest\UnitTest.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\..\UnitTest\UnitTest.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

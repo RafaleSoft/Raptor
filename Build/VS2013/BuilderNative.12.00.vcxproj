@@ -18,6 +18,7 @@
     <ProjectGuid>{23ECCA7C-B9D2-48FE-BA8C-642D1AC450C0}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>BuilderNative</RootNamespace>
+    <ProjectName>BuilderNative</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
