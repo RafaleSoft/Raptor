@@ -79,7 +79,9 @@ bool CRaptorErrorManager::logToFile(const std::string &filename)
 
 void CRaptorErrorManager::generateRaptorError(	const CPersistence::CPersistenceClassID& classID,
 												RAPTOR_ERROR_TYPE type,
-												const std::string &str)
+												const std::string &str,
+												const char *file,
+												uint32_t line)
 {
 	if (m_pLogger == NULL)
 		return;
@@ -89,6 +91,8 @@ void CRaptorErrorManager::generateRaptorError(	const CPersistence::CPersistenceC
 	err.className = classID.ClassName();
 	err.type = type;
 	err.error = str;
+	err.filename = file;
+	err.line = line;
 	
 	addRaptorError(err);
 }
@@ -96,12 +100,16 @@ void CRaptorErrorManager::generateRaptorError(	const CPersistence::CPersistenceC
 void CRaptorErrorManager::generateRaptorError(	const CPersistence::CPersistenceClassID& classID,
 												RAPTOR_ERROR_TYPE type,
 												CRaptorMessages::MESSAGE_ID id,
+												const char *file,
+												uint32_t line,
 												vector<CRaptorMessages::MessageArgument> &args)
 {
     GL_RAPTOR_ERROR err;
 
 	err.className = classID.ClassName();
 	err.type = type;
+	err.filename = file;
+	err.line = line;
 
 	CRaptorInstance &instance = CRaptorInstance::GetInstance();
     if (instance.pMessages != NULL)
@@ -193,6 +201,8 @@ void CRaptorErrorManager::glGetError(const std::string& file,int line)
 	GL_RAPTOR_ERROR r_err;
 	r_err.className = COpenGL::COpenGLClassID::GetClassId().ClassName();
 	r_err.type = RAPTOR_GL_ERROR;
+	r_err.filename = file;
+	r_err.line = line;
 
 	//	extract class name based on file name
     string::size_type pos1 = file.rfind('\\');
@@ -260,6 +270,8 @@ void CRaptorErrorManager::vkGetError(VkResult err, const std::string& file,int l
 
 	r_err.className = CVulkan::CVulkanClassID::GetClassId().ClassName();
 	r_err.type = RAPTOR_VK_ERROR;
+	r_err.filename = file;
+	r_err.line = line;
 
 	//	extract class name based on file name
     string::size_type pos1 = file.rfind('\\');

@@ -52,7 +52,7 @@
     <StartupObject>Builder.Program</StartupObject>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>Builder.ico</ApplicationIcon>
+    <ApplicationIcon>Resource Files\Builder.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release_with_AddOns|AnyCPU'">
     <OutputPath>bin\Release_with_AddOns\</OutputPath>
@@ -120,19 +120,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Form1.resx">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <EmbeddedResource Include="BuilderForm.resx">
+      <DependentUpon>BuilderForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <Compile Include="Form1.cs">
+    <Compile Include="BuilderForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form1.designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="BuilderForm.designer.cs">
+      <DependentUpon>BuilderForm.cs</DependentUpon>
     </Compile>
     <Compile Include="NativeWrapper.cs" />
     <Compile Include="Program.cs" />
@@ -154,7 +154,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Builder.ico" />
     <None Include="Resource Files\Builder.ico" />
     <None Include="Resource Files\Raptor_logo_sml.bmp" />
   </ItemGroup>

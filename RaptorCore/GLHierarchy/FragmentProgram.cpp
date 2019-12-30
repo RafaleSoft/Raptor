@@ -207,18 +207,17 @@ bool CFragmentProgram::glLoadProgram(const std::string &program)
 
 			Raptor::GetErrorManager()->generateRaptorError(CFragmentProgram::CFragmentProgramClassID::GetClassId(),
                                                            CRaptorErrorManager::RAPTOR_ERROR,
-											               CRaptorMessages::ID_PROGRAM_ERROR,args); 
+											               CRaptorMessages::ID_PROGRAM_ERROR,
+														   __FILE__, __LINE__, args); 
 		}
 
         m_bValid = ((err == GL_NO_ERROR) && glGetProgramStatus());
         if (!m_bValid)
 		{
-			Raptor::GetErrorManager()->generateRaptorError(CFragmentProgram::CFragmentProgramClassID::GetClassId(),
-															CRaptorErrorManager::RAPTOR_WARNING,
-															CRaptorMessages::ID_NO_GPU_PROGRAM);
-			Raptor::GetErrorManager()->generateRaptorError(CFragmentProgram::CFragmentProgramClassID::GetClassId(),
-														   CRaptorErrorManager::RAPTOR_WARNING,
-														   getName().data());
+			RAPTOR_WARNING(	CFragmentProgram::CFragmentProgramClassID::GetClassId(),
+							CRaptorMessages::ID_NO_GPU_PROGRAM)
+			RAPTOR_WARNING(	CFragmentProgram::CFragmentProgramClassID::GetClassId(),
+							getName().data())
 		}
 
 		// Unbind program to avoid side effects

@@ -463,9 +463,8 @@ bool COpenGLShaderStage::glCompileShader()
 			if (m_shaderProgram.glhandle() == 0)
 			{
 				abort = true;
-				Raptor::GetErrorManager()->generateRaptorError(COpenGLShaderStage::COpenGLShaderStageClassID::GetClassId(),
-															   CRaptorErrorManager::RAPTOR_ERROR,
-															   CRaptorMessages::ID_CREATE_FAILED, CRaptorMessages::no_args);
+				RAPTOR_ERROR(COpenGLShaderStage::COpenGLShaderStageClassID::GetClassId(),
+							 CRaptorMessages::ID_CREATE_FAILED)
 			}
 
 			GLint value = 0;
@@ -559,7 +558,7 @@ bool COpenGLShaderStage::glCompileShader()
 			Raptor::GetErrorManager()->generateRaptorError(COpenGLShaderStage::COpenGLShaderStageClassID::GetClassId(),
 														   CRaptorErrorManager::RAPTOR_ERROR,
 														   CRaptorMessages::ID_PROGRAM_ERROR,
-														   args);
+														   __FILE__, __LINE__, args);
 			if ((maxLength > 0) && (NULL != pInfoLog))
 				free(pInfoLog);
 		}

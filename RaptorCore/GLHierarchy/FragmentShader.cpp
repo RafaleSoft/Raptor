@@ -101,7 +101,8 @@ bool CFragmentShader::glLoadProgram(const std::string &program)
         {
 			Raptor::GetErrorManager()->generateRaptorError(	CFragmentShader::CFragmentShaderClassID::GetClassId(),
 															CRaptorErrorManager::RAPTOR_WARNING,
-															CRaptorMessages::ID_NO_GPU_PROGRAM);
+															CRaptorMessages::ID_NO_GPU_PROGRAM,
+															__FILE__, __LINE__);
             return false;
         }
 
@@ -126,7 +127,8 @@ bool CFragmentShader::glLoadProgram(const std::string &program)
             args.push_back(arg);
 			Raptor::GetErrorManager()->generateRaptorError(	CFragmentShader::CFragmentShaderClassID::GetClassId(),
 															CRaptorErrorManager::RAPTOR_ERROR,
-															CRaptorMessages::ID_PROGRAM_ERROR,args);
+															CRaptorMessages::ID_PROGRAM_ERROR,
+															__FILE__,__LINE__,args);
             free(pInfoLog);
 	        return false;
 	    }
@@ -149,7 +151,8 @@ bool CFragmentShader::glBindProgram(RAPTOR_HANDLE program)
 	{
 		Raptor::GetErrorManager()->generateRaptorError(CFragmentShader::CFragmentShaderClassID::GetClassId(),
 													   CRaptorErrorManager::RAPTOR_WARNING,
-													   "Fragment Program is invalid in this context");
+													   "Fragment Program is invalid in this context",
+													   __FILE__, __LINE__);
 
 		CATCH_GL_ERROR
 		return false;

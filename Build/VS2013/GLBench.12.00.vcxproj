@@ -374,20 +374,6 @@ copy $(SolutionDir)$(ProjectName)\GLBench.pck "%RAPTOR_ROOT%\Redist\bin\"
     <None Include="..\..\GLBench\buildpak.bat" />
     <None Include="..\..\GLBench\res\GLBench.rc2" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="GLBenchFillRate.12.00.vcxproj">
-      <Project>{1746ec38-4e7f-4ca1-9003-a227633f8198}</Project>
-    </ProjectReference>
-    <ProjectReference Include="GLBenchModuleTemplate.12.00.vcxproj">
-      <Project>{eb59a975-6f2e-45d9-9694-c9b8a01b1708}</Project>
-    </ProjectReference>
-    <ProjectReference Include="GLBenchPoints.12.00.vcxproj">
-      <Project>{95c076b2-102a-4402-a860-4a7eceba3814}</Project>
-    </ProjectReference>
-    <ProjectReference Include="GLBenchPolygons.12.00.vcxproj">
-      <Project>{714effef-216f-47e4-9349-5193e9bd5ba4}</Project>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
