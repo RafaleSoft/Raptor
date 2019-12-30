@@ -27,6 +27,9 @@
     <ClInclude Include="..\..\UnitTest\stdafx.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\UnitTest\RaptorImageTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\UnitTest\RaptorHandleTest.cpp">
@@ -36,6 +39,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\UnitTest\stdafx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\UnitTest\RaptorImageTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

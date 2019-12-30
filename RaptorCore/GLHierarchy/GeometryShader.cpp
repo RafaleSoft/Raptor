@@ -127,9 +127,8 @@ bool CGeometryShader::glLoadProgram(const std::string &program)
         m_handle.handle(pExtensions->glCreateShaderObjectARB(GL_GEOMETRY_SHADER_ARB));
 		if (m_handle.glhandle() == 0)
         {
-			Raptor::GetErrorManager()->generateRaptorError(	CGeometryShader::CGeometryShaderClassID::GetClassId(),
-															CRaptorErrorManager::RAPTOR_WARNING,
-															CRaptorMessages::ID_NO_GPU_PROGRAM);
+			RAPTOR_WARNING(CGeometryShader::CGeometryShaderClassID::GetClassId(),
+						   CRaptorMessages::ID_NO_GPU_PROGRAM)
             return false;
         }
 
@@ -154,7 +153,8 @@ bool CGeometryShader::glLoadProgram(const std::string &program)
             args.push_back(arg);
 			Raptor::GetErrorManager()->generateRaptorError(	CGeometryShader::CGeometryShaderClassID::GetClassId(),
 															CRaptorErrorManager::RAPTOR_ERROR,
-															CRaptorMessages::ID_PROGRAM_ERROR,args);
+															CRaptorMessages::ID_PROGRAM_ERROR,
+															__FILE__, __LINE__, args);
             free(pInfoLog);
 	        return false;
 	    }

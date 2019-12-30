@@ -357,6 +357,7 @@ copy $(SolutionDir)$(ProjectName)\Demo.pck "%RAPTOR_ROOT%\Redist\bin\"
   <ItemGroup>
     <ClInclude Include="..\..\Demo\DemoDoc.h" />
     <ClInclude Include="..\..\Demo\ObjectStore.h" />
+    <ClInclude Include="..\..\Demo\resource.h" />
     <ClInclude Include="..\..\Demo\StdAfx.h" />
   </ItemGroup>
   <ItemGroup>
@@ -376,6 +377,9 @@ copy $(SolutionDir)$(ProjectName)\Demo.pck "%RAPTOR_ROOT%\Redist\bin\"
   <ItemGroup>
     <None Include="..\..\Demo\buildpak.bat" />
     <None Include="..\..\Demo\Demo.cmd" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\..\Demo\Demo.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

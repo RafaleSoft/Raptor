@@ -39,15 +39,17 @@ public:
         RAPTOR_WARNING,
         RAPTOR_ERROR,
         RAPTOR_GL_ERROR,
-		RAPTOR_VK_ERROR,
+        RAPTOR_VK_ERROR,
         RAPTOR_FATAL
     } RAPTOR_ERROR_TYPE;
 
     typedef struct GL_RAPTOR_ERROR_TAG
     {
-		string				className;
+		std::string			className;
 	    RAPTOR_ERROR_TYPE	type;
-	    string				error;
+	    std::string			error;
+		std::string			filename;
+		uint32_t			line;
     } GL_RAPTOR_ERROR;
 
     typedef GL_RAPTOR_ERROR* LP_GL_RAPTOR_ERROR;
@@ -98,16 +100,18 @@ public:
 	void vkGetError(VkResult err, const std::string& file,int line);
 
     //!	Errors management  ( Need an active OpenGL Context )
-	void generateRaptorError(	const CPersistence::CPersistenceClassID& classID,
-								RAPTOR_ERROR_TYPE type,
-								const std::string &str);
+	void generateRaptorError(const CPersistence::CPersistenceClassID& classID,
+							 RAPTOR_ERROR_TYPE type,
+							 const std::string &str,
+							 const char *file = "",
+							 uint32_t line = 0);
 
 	//!	Simple Marcros to raise errors.
-#define RAPTOR_GEN_ERROR(cid,str,err)\
+#define RAPTOR_GEN_ERROR(cid, str, err)\
 	{\
 		CRaptorErrorManager* mgr = Raptor::GetErrorManager();\
 		if (NULL != mgr)\
-			mgr->generateRaptorError(cid,err,str);\
+			mgr->generateRaptorError(cid, err, str, __FILE__, __LINE__);\
 	}
 #define RAPTOR_NO_ERROR(cid,str) RAPTOR_GEN_ERROR(cid,str,CRaptorErrorManager::RAPTOR_NO_ERROR)
 #define RAPTOR_WARNING(cid,str) RAPTOR_GEN_ERROR(cid,str,CRaptorErrorManager::RAPTOR_WARNING)
@@ -121,6 +125,8 @@ public:
     void generateRaptorError(	const CPersistence::CPersistenceClassID& classID,
 								RAPTOR_ERROR_TYPE type,
 								CRaptorMessages::MESSAGE_ID id,
+								const char *file = "",
+								uint32_t line = 0,
 								vector<CRaptorMessages::MessageArgument> &args = CRaptorMessages::no_args);
 
     //! Logs errors in a file in addition to memory
@@ -131,8 +137,8 @@ public:
 private:
     CRaptorIO    *m_pLogger;
 
-	std:: vector<GL_RAPTOR_ERROR>	RaptorErrors;
-	std::vector<CRaptorErrorHandler*> RaptorErrorHandlers;
+	std::vector<GL_RAPTOR_ERROR>		RaptorErrors;
+	std::vector<CRaptorErrorHandler*>	RaptorErrorHandlers;
 };
 
 RAPTOR_NAMESPACE_END

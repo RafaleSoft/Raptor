@@ -3,6 +3,7 @@
 
 #include "stdafx.h"
 #include "RaptorHandleTest.h"
+#include "RaptorImageTest.h"
 
 #include "core/TestResult.h"
 #include "core/TestSuite.h"
@@ -14,8 +15,9 @@ int _tmain(int argc, _TCHAR* argv[])
 	CppUnit::TextUi::TestRunner runner;
 
 	runner.addTest(CRaptorHandleTest::suite());
-	runner.run();
+	runner.addTest(CRaptorImageTest::suite());
+	bool res = runner.run();
 
-	return 0;
+	return (res ? 0 : 1);
 }
 
