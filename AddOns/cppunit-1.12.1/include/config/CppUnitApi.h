@@ -7,26 +7,34 @@
 
 // define CPPUNIT_DLL_BUILD when building CppUnit dll.
 #ifdef CPPUNIT_BUILD_DLL
-#define CPPUNIT_API __declspec(dllexport)
+	#define CPPUNIT_API __declspec(dllexport)
+	#define EXPIMP_TEMPLATE	
 #endif
 
 // define CPPUNIT_DLL when linking to CppUnit dll.
 #ifdef CPPUNIT_DLL
-#define CPPUNIT_API __declspec(dllimport)
+	#define CPPUNIT_API __declspec(dllimport)
+	#define EXPIMP_TEMPLATE extern
 #endif
 
 #ifdef CPPUNIT_API
-#undef CPPUNIT_NEED_DLL_DECL
-#define CPPUNIT_NEED_DLL_DECL 1
+	#undef CPPUNIT_NEED_DLL_DECL
+	#define CPPUNIT_NEED_DLL_DECL 1
 #endif
+
+// std::string needs to have dll-interface to be used by clients of cppunit_dll
+#include <string>
+EXPIMP_TEMPLATE template class CPPUNIT_API std::basic_string<char, std::char_traits<char>, std::allocator<char>>;
+#include <deque>
+EXPIMP_TEMPLATE template class CPPUNIT_API std::deque<std::string, std::allocator<std::string>>;
 
 #endif
 
 
 #ifndef CPPUNIT_API
-#define CPPUNIT_API
-#undef CPPUNIT_NEED_DLL_DECL
-#define CPPUNIT_NEED_DLL_DECL 0
+	#define CPPUNIT_API
+	#undef CPPUNIT_NEED_DLL_DECL
+	#define CPPUNIT_NEED_DLL_DECL 0
 #endif
 
  

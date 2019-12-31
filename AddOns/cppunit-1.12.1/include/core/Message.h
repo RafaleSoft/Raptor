@@ -1,23 +1,12 @@
 #ifndef CPPUNIT_MESSAGE_H
 #define CPPUNIT_MESSAGE_H
 
-#include <Portability.h>
-
-#if CPPUNIT_NEED_DLL_DECL
-#pragma warning( push )
-#pragma warning( disable: 4251 )  // X needs to have dll-interface to be used by clients of class Z
-#endif
-
 #include <portability/CppUnitDeque.h>
 #include <string>
 
 
 CPPUNIT_NS_BEGIN
 
-
-#if CPPUNIT_NEED_DLL_DECL
-//  template class CPPUNIT_API std::deque<std::string>;
-#endif
 
 /*! \brief Message associated to an Exception.
  * \ingroup CreatingNewAssertions
@@ -147,10 +136,6 @@ private:
 
 
 CPPUNIT_NS_END
-
-#if CPPUNIT_NEED_DLL_DECL
-#pragma warning( pop )
-#endif
 
 
 #endif  // CPPUNIT_MESSAGE_H

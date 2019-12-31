@@ -395,18 +395,17 @@ bool CVertexProgram::glLoadProgram(const std::string &program)
 
 			Raptor::GetErrorManager()->generateRaptorError(CVertexProgram::CVertexProgramClassID::GetClassId(),
                                                             CRaptorErrorManager::RAPTOR_ERROR,
-											                CRaptorMessages::ID_PROGRAM_ERROR,args); 
+											                CRaptorMessages::ID_PROGRAM_ERROR,
+															__FILE__, __LINE__, args); 
 		}
 
 		m_bValid = ((err == GL_NO_ERROR) && glGetProgramStatus());
 		if (!m_bValid)
 		{
-			Raptor::GetErrorManager()->generateRaptorError(CVertexProgram::CVertexProgramClassID::GetClassId(),
-														   CRaptorErrorManager::RAPTOR_WARNING,
-														   CRaptorMessages::ID_NO_GPU_PROGRAM);
-			Raptor::GetErrorManager()->generateRaptorError(CVertexProgram::CVertexProgramClassID::GetClassId(),
-														   CRaptorErrorManager::RAPTOR_WARNING,
-														   getName().data());
+			RAPTOR_WARNING(CVertexProgram::CVertexProgramClassID::GetClassId(),
+						   CRaptorMessages::ID_NO_GPU_PROGRAM)
+			RAPTOR_WARNING(CVertexProgram::CVertexProgramClassID::GetClassId(),
+						   getName().data())
 		}
 		
 		// Unbind program to avoid side effects

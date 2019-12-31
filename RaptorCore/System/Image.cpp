@@ -176,7 +176,8 @@ bool CImage::loadImage(const std::string &filename,
 			args.push_back(arg);
 			Raptor::GetErrorManager()->generateRaptorError(CTextureFactory::CTextureFactoryClassID::GetClassId(),
 														   CRaptorErrorManager::RAPTOR_WARNING,
-														   CRaptorMessages::ID_TEXTURE_MISS, args);
+														   CRaptorMessages::ID_TEXTURE_MISS, 
+														   __FILE__, __LINE__, args);
 			ret = false;
 		}
 	}

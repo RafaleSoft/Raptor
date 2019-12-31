@@ -1,13 +1,6 @@
 #ifndef CPPUNIT_TESTPATH_H
 #define CPPUNIT_TESTPATH_H
 
-#include <Portability.h>
-
-#if CPPUNIT_NEED_DLL_DECL
-#pragma warning( push )
-#pragma warning( disable: 4251 )  // X needs to have dll-interface to be used by clients of class Z
-#endif
-
 #include <portability/CppUnitDeque.h>
 #include <string>
 
@@ -16,8 +9,8 @@ CPPUNIT_NS_BEGIN
 
 class Test;
 
-#if CPPUNIT_NEED_DLL_DECL
-//  template class CPPUNIT_API std::deque<Test *>;
+#ifdef WIN32
+	EXPIMP_TEMPLATE template class CPPUNIT_API std::deque<CppUnit::Test *, std::allocator<CppUnit::Test *>>;
 #endif
 
 
