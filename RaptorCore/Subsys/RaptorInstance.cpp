@@ -49,6 +49,21 @@
 #if !defined(AFX_SHADER_H__4D405EC2_7151_465D_86B6_1CA99B906777__INCLUDED_)
 	#include "GLHierarchy/Shader.h"
 #endif
+#if !defined(AFX_VERTEXPROGRAM_H__F2D3BBC6_87A1_4695_B667_2B8C3C4CF022__INCLUDED_)
+	#include "GLHierarchy/VertexProgram.h"
+#endif
+#if !defined(AFX_FRAGMENTPROGRAM_H__DD0AD51D_3BFF_4C65_8099_BA7696D7BDDF__INCLUDED_)
+	#include "GLHierarchy/FragmentProgram.h"
+#endif
+#if !defined(AFX_VERTEXSHADER_H__204F7213_B40B_4B6A_9BCA_828409871B68__INCLUDED_)
+	#include "GLHierarchy/VertexShader.h"
+#endif
+#if !defined(AFX_FRAGMENTSHADER_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
+	#include "GLHierarchy/FragmentShader.h"
+#endif
+#if !defined(AFX_GEOMETRYSHADER_H__1981EA98_8F3C_4881_9429_A9ACA5B285D3__INCLUDED_)
+	#include "GLHierarchy/GeometryShader.h"
+#endif
 #if !defined(AFX_TEXUREUNITSETUP_H__4A6ADC72_02E5_4F2A_931E_A736B6D6E0F0__INCLUDED_)
 	#include "GLHierarchy/TextureUnitSetup.h"
 #endif
@@ -298,7 +313,9 @@ bool CRaptorInstance::glInitShaders(void)
 		arg.arg_sz = "ASM vertex";
 		args.clear(); args.push_back(arg);
 		Raptor::GetErrorManager()->generateRaptorError(CVertexProgram::CVertexProgramClassID::GetClassId(),
-													   CRaptorErrorManager::RAPTOR_WARNING, CRaptorMessages::ID_NO_GPU_PROGRAM, args);
+													   CRaptorErrorManager::RAPTOR_WARNING,
+													   CRaptorMessages::ID_NO_GPU_PROGRAM, 
+													   __FILE__, __LINE__, args);
 #endif
 	}
 	if (Raptor::glIsExtensionSupported(GL_ARB_FRAGMENT_PROGRAM_EXTENSION_NAME))
@@ -310,8 +327,10 @@ bool CRaptorInstance::glInitShaders(void)
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 		arg.arg_sz = "ASM fragment";
 		args.clear(); args.push_back(arg);
-		Raptor::GetErrorManager()->generateRaptorError(CShaderProgram::CShaderProgramClassID::GetClassId(),
-													   CRaptorErrorManager::RAPTOR_WARNING, CRaptorMessages::ID_NO_GPU_PROGRAM, args);
+		Raptor::GetErrorManager()->generateRaptorError(CFragmentProgram::CFragmentProgramClassID::GetClassId(),
+													   CRaptorErrorManager::RAPTOR_WARNING, 
+													   CRaptorMessages::ID_NO_GPU_PROGRAM, 
+													   __FILE__, __LINE__, args);
 #endif
 	}
 	if (Raptor::glIsExtensionSupported(GL_ARB_VERTEX_SHADER_EXTENSION_NAME))
@@ -324,7 +343,9 @@ bool CRaptorInstance::glInitShaders(void)
 		arg.arg_sz = "GLSL vertex";
 		args.clear(); args.push_back(arg);
 		Raptor::GetErrorManager()->generateRaptorError(CVertexShader::CVertexShaderClassID::GetClassId(),
-													   CRaptorErrorManager::RAPTOR_WARNING, CRaptorMessages::ID_NO_GPU_PROGRAM, args);
+													   CRaptorErrorManager::RAPTOR_WARNING, 
+													   CRaptorMessages::ID_NO_GPU_PROGRAM, 
+													   __FILE__, __LINE__, args);
 #endif
 	}
 	if (Raptor::glIsExtensionSupported(GL_ARB_GEOMETRY_SHADER4_EXTENSION_NAME))
@@ -336,8 +357,10 @@ bool CRaptorInstance::glInitShaders(void)
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 		arg.arg_sz = "GLSL geometry";
 		args.clear(); args.push_back(arg);
-		Raptor::GetErrorManager()->generateRaptorError(CShaderProgram::CShaderProgramClassID::GetClassId(),
-													   CRaptorErrorManager::RAPTOR_WARNING, CRaptorMessages::ID_NO_GPU_PROGRAM, args);
+		Raptor::GetErrorManager()->generateRaptorError(CGeometryShader::CGeometryShaderClassID::GetClassId(),
+													   CRaptorErrorManager::RAPTOR_WARNING, 
+													   CRaptorMessages::ID_NO_GPU_PROGRAM, 
+													   __FILE__, __LINE__, args);
 #endif
 	}
 	if (Raptor::glIsExtensionSupported(GL_ARB_FRAGMENT_SHADER_EXTENSION_NAME))
@@ -350,7 +373,9 @@ bool CRaptorInstance::glInitShaders(void)
 		arg.arg_sz = "GLSL fragment";
 		args.clear(); args.push_back(arg);
 		Raptor::GetErrorManager()->generateRaptorError(CFragmentShader::CFragmentShaderClassID::GetClassId(),
-													   CRaptorErrorManager::RAPTOR_WARNING, CRaptorMessages::ID_NO_GPU_PROGRAM, args);
+													   CRaptorErrorManager::RAPTOR_WARNING, 
+													   CRaptorMessages::ID_NO_GPU_PROGRAM, 
+													   __FILE__, __LINE__, args);
 #endif
 	}
 

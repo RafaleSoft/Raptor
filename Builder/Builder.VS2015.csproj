@@ -33,7 +33,8 @@
     <StartupObject>Builder.Program</StartupObject>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>Builder.ico</ApplicationIcon>
+    <ApplicationIcon>
+    </ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
@@ -126,7 +127,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Builder.ico" />
     <None Include="Resource Files\Builder.ico" />
     <None Include="Resource Files\Raptor_logo_sml.bmp" />
   </ItemGroup>

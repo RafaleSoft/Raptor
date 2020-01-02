@@ -495,7 +495,7 @@ bool CWin32ContextManager::glSwapVSync(unsigned int nbVSync) const
 		    mode.dmDriverExtra = 0;
 		    mode.dmFields = DM_BITSPERPEL|DM_PELSWIDTH|DM_PELSHEIGHT|DM_DISPLAYFLAGS|DM_DISPLAYFREQUENCY;
 
-		    if (0!=EnumDisplaySettings(NULL,ENUM_CURRENT_SETTINGS,&mode))
+		    if (0 != EnumDisplaySettings(NULL,ENUM_CURRENT_SETTINGS,&mode))
 		    {
 			    DWORD freq = mode.dmDisplayFrequency;
 
@@ -506,8 +506,10 @@ bool CWin32ContextManager::glSwapVSync(unsigned int nbVSync) const
 						 (context.pExtensions->glIsExtensionSupported(WGL_EXT_SWAP_CONTROL_TEAR_EXTENSION_NAME)))
 					context.pExtensions->wglSwapIntervalEXT(-1);
 #endif
-				else
+				else if (nbVSync > 0)
 				    context.pExtensions->wglSwapIntervalEXT(freq / nbVSync);
+				else
+					context.pExtensions->wglSwapIntervalEXT(0);
 		    }
 		    else
 			    swapControl = false;

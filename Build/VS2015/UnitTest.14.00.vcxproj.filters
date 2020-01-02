@@ -24,6 +24,9 @@
     <ClCompile Include="..\..\UnitTest\UnitTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\UnitTest\RaptorImageTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\UnitTest\RaptorHandleTest.h">
@@ -37,6 +40,9 @@
     </ClInclude>
     <ClInclude Include="..\..\UnitTest\resource.h">
       <Filter>Resource Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\UnitTest\RaptorImageTest.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

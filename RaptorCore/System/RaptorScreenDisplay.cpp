@@ -194,9 +194,8 @@ void CRaptorScreenDisplay::glResize(unsigned int sx,unsigned int sy,unsigned int
 
     if ((sx == 0) || (sy == 0))
     {
-		Raptor::GetErrorManager()->generateRaptorError(	CRaptorDisplay::CRaptorDisplayClassID::GetClassId(),
-														CRaptorErrorManager::RAPTOR_ERROR,
-														CRaptorMessages::ID_UPDATE_FAILED);
+		RAPTOR_ERROR(	CRaptorDisplay::CRaptorDisplayClassID::GetClassId(),
+						CRaptorMessages::ID_UPDATE_FAILED);
         return;
     }
 
@@ -216,9 +215,7 @@ RAPTOR_HANDLE CRaptorScreenDisplay::getCurrentDevice(void) const
     RAPTOR_HANDLE device;
 
     if (m_context >= 0)
-    {
         device = CContextManager::GetInstance()->getDevice(m_context);
-    }
 
     return device;
 }
@@ -248,9 +245,8 @@ bool CRaptorScreenDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
 					int res2 = CContextManager::GetInstance()->glCreateContext(device, cs);
 					if (CContextManager::INVALID_CONTEXT == res2)
 					{
-						Raptor::GetErrorManager()->generateRaptorError(	CRaptorDisplay::CRaptorDisplayClassID::GetClassId(),
-																		CRaptorErrorManager::RAPTOR_FATAL,
-																		CRaptorMessages::ID_CREATE_FAILED);
+						RAPTOR_FATAL(	CRaptorDisplay::CRaptorDisplayClassID::GetClassId(),
+										CRaptorMessages::ID_CREATE_FAILED);
 					}
 				}
 			}
@@ -260,9 +256,8 @@ bool CRaptorScreenDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
 				m_context = CContextManager::GetInstance()->glCreateExtendedContext(device, cs);
 				if (CContextManager::INVALID_CONTEXT == m_context)
 				{
-					Raptor::GetErrorManager()->generateRaptorError(	CRaptorDisplay::CRaptorDisplayClassID::GetClassId(),
-																	CRaptorErrorManager::RAPTOR_FATAL,
-																	CRaptorMessages::ID_CREATE_FAILED);
+					RAPTOR_FATAL(	CRaptorDisplay::CRaptorDisplayClassID::GetClassId(),
+									CRaptorMessages::ID_CREATE_FAILED);
 					return false;
 				}
 			}
@@ -330,9 +325,8 @@ void CRaptorScreenDisplay::allocateResources(void)
 			relocResource = m_pGAllocator->glvkInitMemory(m_pDeviceMemory,config.m_uiPolygons,config.m_uiVertices);
 			if (!relocResource)
 			{
-				Raptor::GetErrorManager()->generateRaptorError(	CGeometry::CGeometryClassID::GetClassId(),
-																CRaptorErrorManager::RAPTOR_FATAL,
-	    		        										CRaptorMessages::ID_NO_RESOURCE);
+				RAPTOR_FATAL(	CGeometry::CGeometryClassID::GetClassId(),
+								CRaptorMessages::ID_NO_RESOURCE);
 			}
 		}
 
@@ -341,9 +335,8 @@ void CRaptorScreenDisplay::allocateResources(void)
 			relocResource = m_pTAllocator->glvkInitMemory(m_pDeviceMemory, config.m_uiTexels);
 			if (!relocResource)
 			{
-				Raptor::GetErrorManager()->generateRaptorError(	CGeometry::CGeometryClassID::GetClassId(),
-																CRaptorErrorManager::RAPTOR_FATAL,
-	    		        										CRaptorMessages::ID_NO_RESOURCE);
+				RAPTOR_FATAL(	CGeometry::CGeometryClassID::GetClassId(),
+								CRaptorMessages::ID_NO_RESOURCE);
 			}
 		}
 
@@ -352,26 +345,24 @@ void CRaptorScreenDisplay::allocateResources(void)
 			relocResource = m_pUAllocator->glvkInitMemory(m_pDeviceMemory, config.m_uiUniforms);
 			if (!relocResource)
 			{
-				Raptor::GetErrorManager()->generateRaptorError(	CGeometry::CGeometryClassID::GetClassId(),
-																CRaptorErrorManager::RAPTOR_FATAL,
-																CRaptorMessages::ID_NO_RESOURCE);
+				RAPTOR_FATAL(	CGeometry::CGeometryClassID::GetClassId(),
+								CRaptorMessages::ID_NO_RESOURCE);
 			}
 		}
     }
 	else
 	{
 		if ((config.m_uiPolygons > 0) || (config.m_uiVertices > 0))
-			relocResource &= m_pGAllocator->glvkInitMemory(NULL,config.m_uiPolygons,config.m_uiVertices);
+			relocResource = relocResource && m_pGAllocator->glvkInitMemory(NULL,config.m_uiPolygons,config.m_uiVertices);
 		if (config.m_uiTexels > 0)
-			relocResource &= m_pTAllocator->glvkInitMemory(NULL, config.m_uiTexels);
+			relocResource = relocResource && m_pTAllocator->glvkInitMemory(NULL, config.m_uiTexels);
 		if (config.m_uiUniforms > 0)
-			relocResource &= m_pUAllocator->glvkInitMemory(NULL, config.m_uiUniforms);
+			relocResource = relocResource && m_pUAllocator->glvkInitMemory(NULL, config.m_uiUniforms);
 
 		if (!relocResource)
 		{
-			Raptor::GetErrorManager()->generateRaptorError(	CGeometry::CGeometryClassID::GetClassId(),
-															CRaptorErrorManager::RAPTOR_FATAL,
-    		        										CRaptorMessages::ID_NO_RESOURCE);
+			RAPTOR_FATAL(	CGeometry::CGeometryClassID::GetClassId(),
+							CRaptorMessages::ID_NO_RESOURCE);
 		}
 	}
 
