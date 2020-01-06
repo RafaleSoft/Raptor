@@ -1,14 +1,7 @@
 #ifndef CPPUNIT_PLUGIN_PLUGINMANAGER_H
 #define CPPUNIT_PLUGIN_PLUGINMANAGER_H
 
-#include <Portability.h>
-
 #if !defined(CPPUNIT_NO_TESTPLUGIN)
-
-#if CPPUNIT_NEED_DLL_DECL
-#pragma warning( push )
-#pragma warning( disable: 4251 )  // X needs to have dll-interface to be used by clients of class Z
-#endif
 
 #include <plugin/PlugInParameters.h>
 struct CppUnitTestPlugIn;
@@ -93,7 +86,7 @@ private:
   PlugInManager( const PlugInManager &copy );
 
   /// Prevents the use of the copy operator.
-  void operator =( const PlugInManager &copy );
+  void operator=( const PlugInManager &copy );
 
 private:
   typedef CppUnitDeque<PlugInInfo> PlugIns;
@@ -102,10 +95,6 @@ private:
 
 
 CPPUNIT_NS_END
-
-#if CPPUNIT_NEED_DLL_DECL
-#pragma warning( pop )
-#endif
 
 #endif // !defined(CPPUNIT_NO_TESTPLUGIN)
 

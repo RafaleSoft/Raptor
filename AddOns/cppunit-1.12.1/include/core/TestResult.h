@@ -16,9 +16,7 @@ class Test;
 class TestFailure;
 class TestListener;
 
-#ifdef WIN32
-	EXPIMP_TEMPLATE template class CPPUNIT_API std::deque<CppUnit::TestListener *, std::allocator<CppUnit::TestListener *>>;
-#endif
+DLL_EXPORT_DEQUE(TestListener)
 
 
 /*! \brief Manages TestListener.

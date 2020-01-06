@@ -1,23 +1,14 @@
 #ifndef CPPUNIT_TESTRESULTCOLLECTOR_H
 #define CPPUNIT_TESTRESULTCOLLECTOR_H
 
-#include <Portability.h>
-
-#if CPPUNIT_NEED_DLL_DECL
-#pragma warning( push )
-#pragma warning( disable: 4251 4660 )  // X needs to have dll-interface to be used by clients of class Z
-#endif
-
 #include <TestSuccessListener.h>
 #include <portability/CppUnitDeque.h>
 
 
 CPPUNIT_NS_BEGIN
 
-#if CPPUNIT_NEED_DLL_DECL
-//  template class CPPUNIT_API std::deque<TestFailure *>;
-//  template class CPPUNIT_API std::deque<Test *>;
-#endif
+DLL_EXPORT_DEQUE(Test)
+DLL_EXPORT_DEQUE(TestFailure)
 
 
 /*! \brief Collects test result.
@@ -78,10 +69,6 @@ private:
 
 
 CPPUNIT_NS_END
-
-#if CPPUNIT_NEED_DLL_DECL
-#pragma warning( pop )
-#endif
 
 
 #endif  // CPPUNIT_TESTRESULTCOLLECTOR_H

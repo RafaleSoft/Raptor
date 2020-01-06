@@ -1,18 +1,10 @@
 #ifndef CPPUNIT_TOOLS_XMLDOCUMENT_H
 #define CPPUNIT_TOOLS_XMLDOCUMENT_H
 
-#include <Portability.h>
-
-#if CPPUNIT_NEED_DLL_DECL
-#pragma warning( push )
-#pragma warning( disable: 4251 )  // X needs to have dll-interface to be used by clients of class Z
-#endif
 
 #include <string>
 
-
 CPPUNIT_NS_BEGIN
-
 
 class XmlElement;
 
@@ -66,7 +58,7 @@ private:
   XmlDocument( const XmlDocument &copy );
 
   /// Prevents the use of the copy operator.
-  void operator =( const XmlDocument &copy );
+  void operator=( const XmlDocument &copy );
 
 protected:
   std::string m_encoding;
@@ -75,10 +67,6 @@ protected:
   bool m_standalone;
 };
 
-
-#if CPPUNIT_NEED_DLL_DECL
-#pragma warning( pop )
-#endif
 
 
 CPPUNIT_NS_END
