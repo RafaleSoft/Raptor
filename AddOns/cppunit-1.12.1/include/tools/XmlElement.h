@@ -1,12 +1,6 @@
 #ifndef CPPUNIT_TOOLS_XMLELEMENT_H
 #define CPPUNIT_TOOLS_XMLELEMENT_H
 
-#include <Portability.h>
-
-#if CPPUNIT_NEED_DLL_DECL
-#pragma warning( push )
-#pragma warning( disable: 4251 )  // X needs to have dll-interface to be used by clients of class Z
-#endif
 
 #include <portability/CppUnitDeque.h>
 #include <string>
@@ -16,10 +10,7 @@ CPPUNIT_NS_BEGIN
 
 
 class XmlElement;
-
-#if CPPUNIT_NEED_DLL_DECL
-//  template class CPPUNIT_API std::deque<XmlElement *>;
-#endif
+DLL_EXPORT_DEQUE(XmlElement)
 
 
 /*! \brief A XML Element.
@@ -140,10 +131,6 @@ private:
 
 
 CPPUNIT_NS_END
-
-#if CPPUNIT_NEED_DLL_DECL
-#pragma warning( pop )
-#endif
 
 
 #endif  // CPPUNIT_TOOLS_XMLELEMENT_H

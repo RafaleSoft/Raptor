@@ -4,13 +4,12 @@
 #include <protector/Protector.h>
 #include <portability/CppUnitDeque.h>
 
-#if CPPUNIT_NEED_DLL_DECL
-#pragma warning( push )
-#pragma warning( disable: 4251 )  // X needs to have dll-interface to be used by clients of class Z
-#endif
-
 
 CPPUNIT_NS_BEGIN
+
+DLL_EXPORT_DEQUE(Protector)
+
+
 
 /*! \brief Protector chain (Implementation).
  * Implementation detail.
@@ -43,9 +42,6 @@ private:
 
 CPPUNIT_NS_END
 
-#if CPPUNIT_NEED_DLL_DECL
-#pragma warning( pop )
-#endif
 
 #endif // CPPUNIT_PROTECTORCHAIN_H
 

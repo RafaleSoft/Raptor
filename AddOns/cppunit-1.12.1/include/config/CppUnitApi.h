@@ -17,15 +17,17 @@
 	#define EXPIMP_TEMPLATE extern
 #endif
 
-#ifdef CPPUNIT_API
-	#undef CPPUNIT_NEED_DLL_DECL
-	#define CPPUNIT_NEED_DLL_DECL 1
-#endif
 
 // std::string needs to have dll-interface to be used by clients of cppunit_dll
 #include <string>
-EXPIMP_TEMPLATE template class CPPUNIT_API std::basic_string<char, std::char_traits<char>, std::allocator<char>>;
 #include <deque>
+EXPIMP_TEMPLATE template union CPPUNIT_API std::_String_val<std::_Simple_types<char>>::_Bxty;
+EXPIMP_TEMPLATE struct CPPUNIT_API std::_Container_base12;
+EXPIMP_TEMPLATE template class CPPUNIT_API std::_Deque_val<std::_Deque_simple_types<std::basic_string<char, std::char_traits<char>, std::allocator<char>>>>;
+EXPIMP_TEMPLATE template class CPPUNIT_API std::_Compressed_pair<std::_Wrap_alloc<std::allocator<std::string>>, std::_Deque_val<std::_Deque_simple_types<std::basic_string<char, std::char_traits<char>, std::allocator<char>>>>, true>;
+EXPIMP_TEMPLATE template class CPPUNIT_API std::_String_val<std::_Simple_types<char>>;
+EXPIMP_TEMPLATE template class CPPUNIT_API std::_Compressed_pair<std::_Wrap_alloc<std::allocator<char>>, std::_String_val<std::_Simple_types<char>>, true>;
+EXPIMP_TEMPLATE template class CPPUNIT_API std::basic_string<char, std::char_traits<char>, std::allocator<char>>;
 EXPIMP_TEMPLATE template class CPPUNIT_API std::deque<std::string, std::allocator<std::string>>;
 
 #endif
@@ -33,8 +35,6 @@ EXPIMP_TEMPLATE template class CPPUNIT_API std::deque<std::string, std::allocato
 
 #ifndef CPPUNIT_API
 	#define CPPUNIT_API
-	#undef CPPUNIT_NEED_DLL_DECL
-	#define CPPUNIT_NEED_DLL_DECL 0
 #endif
 
  

@@ -1,13 +1,6 @@
 #ifndef CPPUNIT_EXTENSIONS_TESTFACTORYREGISTRY_H
 #define CPPUNIT_EXTENSIONS_TESTFACTORYREGISTRY_H
 
-#include <Portability.h>
-
-#if CPPUNIT_NEED_DLL_DECL
-#pragma warning( push )
-#pragma warning( disable: 4251)  // X needs to have dll-interface to be used by clients of class Z
-#endif
-
 #include <portability/CppUnitSet.h>
 #include <helper/TestFactory.h>
 #include <string>
@@ -17,8 +10,11 @@ CPPUNIT_NS_BEGIN
 
 class TestSuite;
 
-#if CPPUNIT_NEED_DLL_DECL
-//  template class CPPUNIT_API std::set<TestFactory *>;
+#ifdef WIN32
+	EXPIMP_TEMPLATE template class CPPUNIT_API std::_Tree_val<std::_Tree_simple_types<CppUnit::TestFactory *>>;
+	EXPIMP_TEMPLATE template class CPPUNIT_API std::_Compressed_pair<std::_Wrap_alloc<std::allocator<std::_Tree_node<CppUnit::TestFactory *, void *>>>, std::_Tree_val<std::_Tree_simple_types<CppUnit::TestFactory *>>, true>;
+	EXPIMP_TEMPLATE template class CPPUNIT_API std::_Compressed_pair<std::less<CppUnit::TestFactory *>, std::_Compressed_pair<std::_Wrap_alloc<std::allocator<std::_Tree_node<CppUnit::TestFactory *, void *>>>, std::_Tree_val<std::_Tree_simple_types<CppUnit::TestFactory *>>, true>, true>;
+	EXPIMP_TEMPLATE template class CPPUNIT_API std::set<TestFactory *>;
 #endif
 
 
@@ -173,10 +169,6 @@ private:
 
 
 CPPUNIT_NS_END
-
-#if CPPUNIT_NEED_DLL_DECL
-#pragma warning( pop )
-#endif
 
 
 #endif  // CPPUNIT_EXTENSIONS_TESTFACTORYREGISTRY_H

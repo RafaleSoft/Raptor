@@ -88,9 +88,12 @@ CPersistence::CPersistence(const CPersistence::CPersistenceClassID &classID,
 
 			CRaptorErrorManager* mgr = Raptor::GetErrorManager();
 			if (NULL != mgr)
-				mgr->generateRaptorError(	CPersistence::CPersistenceClassID::GetClassId(), 
-											CRaptorErrorManager::RAPTOR_WARNING,
-											CRaptorMessages::ID_OBJECT_DUPLICATE, args);
+			{
+				mgr->generateRaptorError(CPersistence::CPersistenceClassID::GetClassId(),
+										 CRaptorErrorManager::RAPTOR_WARNING,
+										 CRaptorMessages::ID_OBJECT_DUPLICATE,
+										 __FILE__, __LINE__, args);
+			}
             firstfind = false;
         }
 #endif

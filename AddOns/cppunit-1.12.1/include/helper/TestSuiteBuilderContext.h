@@ -1,14 +1,8 @@
 #ifndef CPPUNIT_HELPER_TESTSUITEBUILDERCONTEXT_H
 #define CPPUNIT_HELPER_TESTSUITEBUILDERCONTEXT_H
 
-#include <Portability.h>
 #include <portability/CppUnitMap.h>
 #include <string>
-
-#if CPPUNIT_NEED_DLL_DECL
-#pragma warning( push )
-#pragma warning( disable: 4251 )  // X needs to have dll-interface to be used by clients of class Z
-#endif
 
 
 CPPUNIT_NS_BEGIN
@@ -17,6 +11,12 @@ class TestSuite;
 class TestFixture;
 class TestFixtureFactory;
 class TestNamer;
+class TestSuiteBuilderContextBase;
+
+#ifdef WIN32
+	//EXPIMP_TEMPLATE template class CPPUNIT_API std::vector<CppUnit::TestSuiteBuilderContextBase::Property, std::allocator<CppUnit::TestSuiteBuilderContextBase::Property>>;
+#endif
+
 
 /*! \brief Context used when creating test suite in HelperMacros.
  *
@@ -122,10 +122,6 @@ public:
 
 
 CPPUNIT_NS_END
-
-#if CPPUNIT_NEED_DLL_DECL
-#pragma warning( pop )
-#endif
 
 #endif // CPPUNIT_HELPER_TESTSUITEBUILDERCONTEXT_H
 

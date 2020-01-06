@@ -206,7 +206,7 @@ void CShadedGeometry::glRender()
 	CATCH_GL_ERROR
 
 	glRenderGeometry();
-
+	
 	if (m_pShader != NULL)
 		m_pShader->glStop();
 

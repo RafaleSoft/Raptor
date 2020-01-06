@@ -6,6 +6,9 @@
 #include <core/SourceLine.h>
 #include <exception>
 
+#ifdef WIN32
+	EXPIMP_TEMPLATE class CPPUNIT_API std::exception;
+#endif
 
 CPPUNIT_NS_BEGIN
 
