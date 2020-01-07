@@ -110,7 +110,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;CPPUNIT_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(CPPUNIT_INCLUDE_PATH);$(RAPTOR_ROOT)\Redist\Include;$(VULKAN_INCLUDE_PATH);</AdditionalIncludeDirectories>
     </ClCompile>
@@ -128,6 +128,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\UnitTest\RaptorHandleTest.cpp" />
+    <ClCompile Include="..\..\UnitTest\RaptorImageTest.cpp" />
     <ClCompile Include="..\..\UnitTest\stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">Create</PrecompiledHeader>
     </ClCompile>
@@ -135,6 +136,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\UnitTest\RaptorHandleTest.h" />
+    <ClInclude Include="..\..\UnitTest\RaptorImageTest.h" />
     <ClInclude Include="..\..\UnitTest\resource.h" />
     <ClInclude Include="..\..\UnitTest\stdafx.h" />
     <ClInclude Include="..\..\UnitTest\targetver.h" />

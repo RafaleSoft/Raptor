@@ -782,7 +782,8 @@ CTextureObject* const CTextureFactory::glCreateCubemap(  ITextureObject::TEXEL_T
 		args.push_back(arg);
         Raptor::GetErrorManager()->generateRaptorError(	CTextureFactory::CTextureFactoryClassID::GetClassId(),
 														CRaptorErrorManager::RAPTOR_ERROR,
-														CRaptorMessages::ID_FORMAT_NOT_SUPPORTED,args);
+														CRaptorMessages::ID_FORMAT_NOT_SUPPORTED,
+														__FILE__, __LINE__, args);
 #endif
         return NULL;
     }
@@ -829,7 +830,8 @@ ITextureObject* const CTextureFactory::vkCreateTexture(ITextureObject::TEXEL_TYP
 		args.push_back(arg);
 		Raptor::GetErrorManager()->generateRaptorError(CTextureFactory::CTextureFactoryClassID::GetClassId(),
 													   CRaptorErrorManager::RAPTOR_WARNING,
-													   CRaptorMessages::ID_FORMAT_NOT_SUPPORTED, args);
+													   CRaptorMessages::ID_FORMAT_NOT_SUPPORTED, 
+													   __FILE__, __LINE__, args);
 	}
 #endif
 
@@ -861,7 +863,8 @@ CTextureObject* const CTextureFactory::glCreateTexture( ITextureObject::TEXEL_TY
 		args.push_back(arg);
         Raptor::GetErrorManager()->generateRaptorError(	CTextureFactory::CTextureFactoryClassID::GetClassId(),
 														CRaptorErrorManager::RAPTOR_WARNING,
-														CRaptorMessages::ID_FORMAT_NOT_SUPPORTED,args);
+														CRaptorMessages::ID_FORMAT_NOT_SUPPORTED,
+														__FILE__, __LINE__, args);
     }
 #endif
 	if ((type == ITextureObject::CGL_DEPTH24_STENCIL8) &&
@@ -874,7 +877,8 @@ CTextureObject* const CTextureFactory::glCreateTexture( ITextureObject::TEXEL_TY
 		args.push_back(arg);
         Raptor::GetErrorManager()->generateRaptorError(	CTextureFactory::CTextureFactoryClassID::GetClassId(),
 														CRaptorErrorManager::RAPTOR_ERROR,
-														CRaptorMessages::ID_FORMAT_NOT_SUPPORTED,args);
+														CRaptorMessages::ID_FORMAT_NOT_SUPPORTED,
+														__FILE__, __LINE__, args);
 #endif
 		return NULL;
 	}
@@ -917,7 +921,8 @@ CTextureObject* const CTextureFactory::glCreateRectangleTexture( ITextureObject:
 		args.push_back(arg);
         Raptor::GetErrorManager()->generateRaptorError(	CTextureFactory::CTextureFactoryClassID::GetClassId(),
 														CRaptorErrorManager::RAPTOR_ERROR,
-														CRaptorMessages::ID_FORMAT_NOT_SUPPORTED,args);
+														CRaptorMessages::ID_FORMAT_NOT_SUPPORTED,
+														__FILE__, __LINE__, args);
 #endif
         return NULL;
     }
@@ -1015,7 +1020,8 @@ CTextureObject* const CTextureFactory::glCreateVolumeTexture(ITextureObject::TEX
 		args.push_back(arg);
 		Raptor::GetErrorManager()->generateRaptorError(	CTextureFactory::CTextureFactoryClassID::GetClassId(),
 														CRaptorErrorManager::RAPTOR_ERROR,
-														CRaptorMessages::ID_FORMAT_NOT_SUPPORTED,args);
+														CRaptorMessages::ID_FORMAT_NOT_SUPPORTED,
+														__FILE__, __LINE__, args);
 #endif
         return NULL;
     }

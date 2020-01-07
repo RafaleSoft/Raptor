@@ -33,7 +33,7 @@
     <StartupObject>RaysClient.Program</StartupObject>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>Rays.ico</ApplicationIcon>
+    <ApplicationIcon>Resource Files\Rays.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
     <TargetZone>LocalIntranet</TargetZone>
@@ -127,7 +127,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Rays.ico" />
+    <Content Include="Resource Files\Rays.ico" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.6.1">

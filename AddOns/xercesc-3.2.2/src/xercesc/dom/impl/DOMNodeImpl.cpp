@@ -757,9 +757,6 @@ short DOMNodeImpl::compareDocumentPosition(const DOMNode* other) const {
         // or removing additional attributes might change the order between existing attributes.
         return DOMNode::DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC | ((myNodeP<hisNodeP)?DOMNode::DOCUMENT_POSITION_FOLLOWING:DOMNode::DOCUMENT_POSITION_PRECEDING);
     }
-    // REVISIT:  shouldn't get here.   Should probably throw an
-    // exception
-    return 0;
 }
 
 short DOMNodeImpl::reverseTreeOrderBitPattern(short pattern) const {

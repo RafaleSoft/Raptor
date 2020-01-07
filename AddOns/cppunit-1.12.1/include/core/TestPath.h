@@ -6,12 +6,8 @@
 
 CPPUNIT_NS_BEGIN
 
-
 class Test;
-
-#ifdef WIN32
-	EXPIMP_TEMPLATE template class CPPUNIT_API std::deque<CppUnit::Test *, std::allocator<CppUnit::Test *>>;
-#endif
+DLL_EXPORT_DEQUE(Test)
 
 
 /*! \brief A List of Test representing a path to access a Test.

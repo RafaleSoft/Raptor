@@ -108,7 +108,7 @@ public:
 
 private:
 	CBasicObjects();
-	virtual ~CBasicObjects();
+	virtual ~CBasicObjects() {};
 
 };
 

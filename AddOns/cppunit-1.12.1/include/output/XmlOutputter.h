@@ -1,12 +1,6 @@
 #ifndef CPPUNIT_XMLTESTRESULTOUTPUTTER_H
 #define CPPUNIT_XMLTESTRESULTOUTPUTTER_H
 
-#include <Portability.h>
-
-#if CPPUNIT_NEED_DLL_DECL
-#pragma warning( push )
-#pragma warning( disable: 4251 )  // X needs to have dll-interface to be used by clients of class Z
-#endif
 
 #include <output/Outputter.h>
 #include <portability/CppUnitDeque.h>
@@ -151,17 +145,13 @@ private:
   XmlOutputter( const XmlOutputter &copy );
 
   /// Prevents the use of the copy operator.
-  void operator =( const XmlOutputter &copy );
+  void operator=( const XmlOutputter &copy );
 
 private:
 };
 
 
 CPPUNIT_NS_END
-
-#if CPPUNIT_NEED_DLL_DECL
-#pragma warning( pop )
-#endif
 
 
 #endif  // CPPUNIT_XMLTESTRESULTOUTPUTTER_H
