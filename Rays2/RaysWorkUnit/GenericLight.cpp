@@ -177,16 +177,17 @@ void CGenericLight::BuildPhotonMap(CRaytracerData& World,unsigned int nbPhotons)
 	}
 }
 
-void CGenericLight::GetPhotonColor(const CGenericVector<float>& hit,CColor::RGBA& color)
+void CGenericLight::GetPhotonColor(const CGenericVector<float>& hit,CColor::RGBA& clr)
 {
 	if (m_pPhotonMap != NULL)
 	{
 		m_pPhotonMap->GetDensity(hit,tmpColor);
 
 		CColor::RGBA &c = tmpColor;
+#if !defined(_WIN64)
 		__asm
 		{
-			mov edi,color
+			mov edi,clr
 			mov esi,c
 			movq mm0,[edi+4]	//	mm0 = color
 			movq mm1,[esi+4]	//	mm1 = tmpColor
@@ -194,6 +195,9 @@ void CGenericLight::GetPhotonColor(const CGenericVector<float>& hit,CColor::RGBA
 			movq [edi+4],mm0
 			emms
 		}
+#else
+		// TODO
+#endif
 	}
 }
 

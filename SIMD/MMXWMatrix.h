@@ -55,7 +55,7 @@ public:
 		return *this; 
 	};
 
-#ifndef SIMD_NO_ASSEMBLY
+#if (!defined(SIMD_NO_ASSEMBLY) && !defined(_WIN64))
 	CMMXWMatrix&	SIMD_CALL operator-= (const CMMXWMatrix& m)
 	{ 
 		_asm

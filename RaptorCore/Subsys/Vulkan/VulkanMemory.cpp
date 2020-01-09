@@ -432,7 +432,7 @@ VkImage CVulkanMemory::CVulkanMemoryWrapper::createImage(const VkImageCreateInfo
 			VkDeviceSize offset = 0;
 			if (!m_images.empty())
 			{
-				std::map<VkImage, data_bloc>::iterator it = m_images.end();
+				std::map<VkDeviceSize, data_bloc>::iterator it = m_images.end();
 				it--;
 				data_bloc &db = (*it).second;
 
@@ -475,15 +475,24 @@ bool CVulkanMemory::CVulkanMemoryWrapper::releaseImage(VkImage image)
 	if (VK_NULL_HANDLE == m_device)
 		return false;
 	
-	std::map<VkImage, data_bloc>::iterator it = m_images.find(image);
-	if (m_images.end() == it)
+	bool found = false;
+	std::map<VkDeviceSize, data_bloc>::iterator it = m_images.begin(); // find(image);
+	while (!found && it != m_images.end())
+	{
+		data_bloc &db = (*it).second;
+		found = (db.image == image);
+		if (!found)
+			it++;
+	}
+
+	if (found)
+	{
+		m_images.erase(it);
+		vkDestroyImage(m_device, image, &s_vulkanAllocator);
+		return true;
+	}
+	else
 		return false;
-
-	m_images.erase(it);
-
-	vkDestroyImage(m_device, image, &s_vulkanAllocator);
-
-	return true;
 }
 
 const VkAllocationCallbacks* CVulkanMemory::GetAllocator(void)

@@ -42,7 +42,7 @@ protected:
 	//{{AFX_MSG(CAboutDialog)
 	virtual BOOL OnInitDialog();
 	virtual void OnOK();
-	afx_msg void OnTimer(UINT nIDEvent);
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnPaint();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()

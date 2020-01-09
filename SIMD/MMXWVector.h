@@ -44,7 +44,7 @@ public:
 		return *this;
 	};
 
-#ifndef SIMD_NO_ASSEMBLY
+#if (!defined(SIMD_NO_ASSEMBLY) && !defined(_WIN64))
 	CMMXWVector& operator= ( const CMMXWVector& v ) NOEXCEPT
 	{ 
 		__asm

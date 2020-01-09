@@ -60,7 +60,7 @@ public:
 	{
 		VkImage				image;
 		VkBufferImageCopy	bufferCopy;
-	};
+	} unsynchronizedImage_t;
 	std::vector<unsynchronizedImage>	m_unsynchronizedImages;
 
 

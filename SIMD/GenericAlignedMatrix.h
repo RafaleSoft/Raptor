@@ -31,21 +31,6 @@
 template <class T> class CGenericAlignedVector;
 class CSSEFMatrix;
 
-	//		16 bytes more space is allocated,
-	//		to store alignment and to store align offset
-	//	char *pT = new char[16*sizeof(##T)+16];
-	//		align data
-	//	vector = (##T*)((int(pT)+0x00000010) & 0xfffffff0);
-	//		store offset
-	//	*((char*)vector-1)=char(int(pT)&0xf);
-
-#define ALLOC_MATRIX(T) \
-{\
-char *pT = new char[16*sizeof(T)+16]; \
-m_matrix = (T*)((long(pT)+0x00000010) & 0xfffffff0);\
-*((char*)m_matrix-1)=char(long(pT)&0xf);\
-}
-
 template<class T>
 class CGenericAlignedMatrix
 {
@@ -165,7 +150,23 @@ public:
 template <class T>
 CGenericAlignedMatrix<T>::CGenericAlignedMatrix() NOEXCEPT
 {
-	ALLOC_MATRIX(T)
+	//		16 bytes more space is allocated,
+	//		to store alignment and to store align offset
+	//	char *pT = new char[16*sizeof(##T)+16];
+	//		align data
+	//	vector = (##T*)((int(pT)+0x00000010) & 0xfffffff0);
+	//		store offset
+	//	*((char*)vector-1)=char(int(pT)&0xf);
+
+	char *pT = new char[16 * sizeof(T) + 16];
+
+#if defined(_WIN64)
+	m_matrix = (T*)((uint64_t(pT) + 0x0000000000000010) & 0xfffffffffffffff0);
+	*((char*)m_matrix - 1) = char(uint64_t(pT) & 0xf);
+#elif defined(WIN32) || defined(LINUX)
+	m_matrix = (T*)((long(pT) + 0x00000010) & 0xfffffff0);
+	*((char*)m_matrix - 1) = char(long(pT) & 0xf);
+#endif
 }
 
 template <class T>

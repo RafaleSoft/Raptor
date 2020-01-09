@@ -25,6 +25,10 @@
 
 
 
+//	Vector is aligned to a 16 bytes boundery
+template <class T>
+CGenericAlignedVector<T>::CGenericAlignedVector()
+{
 	//		16 bytes more space is allocated,
 	//		to store alignment and to store align offset
 	//	char *pT = new char[4*sizeof(T)+16]; 
@@ -33,20 +37,15 @@
 	//		store offset
 	//	*((char*)m_vector-1)=char(int(pT)&0xf);
 
-#define ALLOC_VECTOR(T) \
-{\
-char *pT = new char[4*sizeof(T)+16]; \
-m_vector = (T*)((long(pT)+0x00000010) & 0xfffffff0);\
-*((char*)m_vector-1)=char(long(pT)&0xf);\
-}
+	char *pT = new char[4 * sizeof(T) + 16];
 
-
-
-//	Vector is aligned to a 16 bytes boundery
-template <class T>
-CGenericAlignedVector<T>::CGenericAlignedVector()
-{ 
-	ALLOC_VECTOR(T)
+#if defined(_WIN64)
+	m_vector = (T*)((uint64_t(pT) + 0x0000000000000010) & 0xfffffffffffffff0);
+	*((char*)m_vector - 1) = char(uint64_t(pT) & 0xf);
+#elif defined(WIN32) || defined(LINUX)
+	m_vector = (T*)((long(pT) + 0x00000010) & 0xfffffff0);
+	*((char*)m_vector - 1) = char(long(pT) & 0xf);
+#endif
 }
 
 //	Copy constructor, because of pointer
