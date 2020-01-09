@@ -128,20 +128,20 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.21006.1</_ProjectFileVersion>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)\$(Platform)\</OutDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">$(Configuration)\$(Platform)\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Configuration)\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Configuration)\$(Platform)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)\$(Platform)\$(ProjectName)\</IntDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">$(Configuration)\$(Platform)\$(ProjectName)\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Configuration)\$(ProjectName)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Configuration)\$(Platform)\$(ProjectName)\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">false</LinkIncremental>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|x64'">false</LinkIncremental>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkIncremental>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkIncremental>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Optimized|Win32'">$(Configuration)\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Optimized|Win32'">$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Optimized|Win32'">$(Configuration)\$(Platform)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Optimized|Win32'">$(Configuration)\$(Platform)\$(ProjectName)\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Optimized|Win32'">false</LinkIncremental>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Optimized|x64'">false</LinkIncremental>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Raptor</TargetName>
@@ -209,10 +209,10 @@
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
     </ProjectReference>
     <Link>
-      <AdditionalDependencies>RaptorData.lib;opengl32.lib;glu32.lib;simd.lib;$(FREETYPE_LIB_PATH)\freetype.lib;xerces-c_3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>RaptorData.lib;opengl32.lib;glu32.lib;simd.lib;freetype.lib;xerces-c_3.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)Raptor.dll</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>$(SolutionDir)\$(ProjectName);$(XERCES_BIN_PATH);$(RAPTOR_ROOT)\Redist\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(RAPTOR_ROOT)\Redist\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <IgnoreSpecificDefaultLibraries>libcp;libc;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <ModuleDefinitionFile>
@@ -283,7 +283,7 @@ $(SolutionDir)\$(ProjectName)\Subsys\Redist.bat
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
     </ProjectReference>
     <Link>
-      <AdditionalDependencies>RaptorData.lib;opengl32.lib;glu32.lib;simd.lib;$(FREETYPE_LIB_PATH)\freetype.lib;xerces-c_3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>RaptorData.lib;opengl32.lib;glu32.lib;simd.lib;freetype.lib;xerces-c_3.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)Raptor.dll</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>$(SolutionDir)\$(ProjectName);$(XERCES_BIN_PATH);$(RAPTOR_ROOT)\Redist\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -505,7 +505,7 @@ $(SolutionDir)\$(ProjectName)\Subsys\Redist.bat
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
     </ProjectReference>
     <Link>
-      <AdditionalDependencies>RaptorData.lib;opengl32.lib;glu32.lib;simd.lib;$(FREETYPE_LIB_PATH)\freetype.lib;xerces-c_3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>RaptorData.lib;opengl32.lib;glu32.lib;simd.lib;freetype.lib;xerces-c_3.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)Raptor.dll</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>$(SolutionDir)\$(ProjectName);$(XERCES_BIN_PATH);$(RAPTOR_ROOT)\Redist\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -579,7 +579,7 @@ $(SolutionDir)\$(ProjectName)\Subsys\Redist.bat
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
     </ProjectReference>
     <Link>
-      <AdditionalDependencies>RaptorData.lib;opengl32.lib;glu32.lib;simd.lib;$(FREETYPE_LIB_PATH)\freetype.lib;xerces-c_3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>RaptorData.lib;opengl32.lib;glu32.lib;simd.lib;freetype.lib;xerces-c_3.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)Raptor.dll</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>$(SolutionDir)\$(ProjectName);$(XERCES_BIN_PATH);$(RAPTOR_ROOT)\Redist\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -658,7 +658,7 @@ $(SolutionDir)\$(ProjectName)\Subsys\Redist.bat
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
     </ProjectReference>
     <Link>
-      <AdditionalDependencies>RaptorData.lib;opengl32.lib;glu32.lib;simd.lib;Subsys\GlttLib\gltt.2.3.lib;Subsys\GlttLib\freetype.lib;Subsys\xercesc_2_7\vc9\xerces-c_2.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>RaptorData.lib;opengl32.lib;glu32.lib;simd.lib;freetype.lib;xerces-c_3.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>Release\Raptor.dll</OutputFile>
       <Version>$(RAPTOR_RELEASE)</Version>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -737,7 +737,7 @@ $(SolutionDir)\$(ProjectName)\Subsys\Redist.bat
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
     </ProjectReference>
     <Link>
-      <AdditionalDependencies>RaptorData.lib;opengl32.lib;glu32.lib;simd.lib;Subsys\GlttLib\gltt.2.3.lib;Subsys\GlttLib\freetype.lib;Subsys\xercesc_2_7\vc9\xerces-c_2.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>RaptorData.lib;opengl32.lib;glu32.lib;simd.lib;freetype.lib;xerces-c_3.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>Release\Raptor.dll</OutputFile>
       <Version>$(RAPTOR_RELEASE)</Version>
       <SuppressStartupBanner>true</SuppressStartupBanner>

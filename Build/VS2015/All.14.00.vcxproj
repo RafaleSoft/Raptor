@@ -125,14 +125,14 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.21006.1</_ProjectFileVersion>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)\$(Platform)\</OutDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">$(Configuration)\$(Platform)\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Configuration)\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Configuration)\$(Platform)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)\$(Platform)\$(ProjectName)\</IntDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">$(Configuration)\$(Platform)\$(ProjectName)\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Configuration)\$(ProjectName)\</IntDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Optimized|Win32'">$(Configuration)\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Optimized|Win32'">$(Configuration)\$(ProjectName)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Configuration)\$(Platform)\$(ProjectName)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Optimized|Win32'">$(Configuration)\$(Platform)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Optimized|Win32'">$(Configuration)\$(Platform)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|x64'">
     <OutDir>$(Configuration)\$(Platform)\</OutDir>
@@ -144,6 +144,10 @@
       <HeaderFileName>
       </HeaderFileName>
     </Midl>
+    <PostBuildEvent>
+      <Message>Raptor Core Unit Tests</Message>
+      <Command>%RAPTOR_ROOT%\Redist\bin\UnitTest.exe</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Midl>
@@ -151,6 +155,10 @@
       <HeaderFileName>
       </HeaderFileName>
     </Midl>
+    <PostBuildEvent>
+      <Message>Raptor Core Unit Tests</Message>
+      <Command>%RAPTOR_ROOT%\Redist\bin\UnitTest.exe</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">
     <Midl>
@@ -184,6 +192,10 @@
       <HeaderFileName>
       </HeaderFileName>
     </Midl>
+    <PostBuildEvent>
+      <Message>Raptor Core Unit Tests</Message>
+      <Command>%RAPTOR_ROOT%\Redist\bin\UnitTest.exe</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Midl>
@@ -191,6 +203,10 @@
       <HeaderFileName>
       </HeaderFileName>
     </Midl>
+    <PostBuildEvent>
+      <Message>Raptor Core Unit Tests</Message>
+      <Command>%RAPTOR_ROOT%\Redist\bin\UnitTest.exe</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Optimized|Win32'">
     <Midl>
@@ -198,6 +214,10 @@
       <HeaderFileName>
       </HeaderFileName>
     </Midl>
+    <PostBuildEvent>
+      <Message>Raptor Core Unit Tests</Message>
+      <Command>%RAPTOR_ROOT%\Redist\bin\UnitTest.exe</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Optimized|x64'">
     <Midl>
@@ -205,6 +225,10 @@
       <HeaderFileName>
       </HeaderFileName>
     </Midl>
+    <PostBuildEvent>
+      <Message>Raptor Core Unit Tests</Message>
+      <Command>%RAPTOR_ROOT%\Redist\bin\UnitTest.exe</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

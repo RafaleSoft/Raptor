@@ -121,16 +121,16 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>$(Configuration)\</OutDir>
-    <IntDir>$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir>$(Configuration)\$(Platform)\</OutDir>
+    <IntDir>$(Configuration)\$(Platform)\$(ProjectName)\</IntDir>
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>.\ReleaseDll\</OutDir>
-    <IntDir>.\ReleaseDll\</IntDir>
+    <OutDir>$(Configuration)\$(Platform)\</OutDir>
+    <IntDir>$(Configuration)\$(Platform)\$(ProjectName)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -143,6 +143,10 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|x64'">
     <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(Configuration)\$(Platform)\</OutDir>
+    <IntDir>$(Configuration)\$(Platform)\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">
     <OutDir>$(Configuration)\$(Platform)\</OutDir>
     <IntDir>$(Configuration)\$(Platform)\$(ProjectName)\</IntDir>
   </PropertyGroup>
@@ -159,15 +163,13 @@
       <AdditionalIncludeDirectories>$(CPPUNIT_INCLUDE_PATH);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;CPPUNIT_BUILD_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AssemblerListingLocation>.\DebugDll\</AssemblerListingLocation>
-      <PrecompiledHeaderOutputFile>.\DebugDll\cppunit_dll.pch</PrecompiledHeaderOutputFile>
       <ObjectFileName>.\DebugDll\</ObjectFileName>
       <ProgramDataBaseFileName>.\DebugDll\</ProgramDataBaseFileName>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
     </ClCompile>
     <PostBuildEvent>
       <Command>copy $(OutDir)$(TargetName).lib "%RAPTOR_ROOT%\Redist\lib\"
-copy $(OutDir)$(TargetName).dll "%RAPTOR_ROOT%\Redist\bin\"
-</Command>
+copy $(OutDir)$(TargetName).dll "%RAPTOR_ROOT%\Redist\bin\"</Command>
       <Message>Copying target to lib/</Message>
     </PostBuildEvent>
     <Midl>
@@ -191,7 +193,7 @@ copy $(OutDir)$(TargetName).dll "%RAPTOR_ROOT%\Redist\bin\"
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <OutputFile>DebugDll\cppunitd_dll.dll</OutputFile>
-      <ImportLibrary>.\DebugDll\cppunitd_dll.lib</ImportLibrary>
+      <ImportLibrary>$(OutDir)$(TargetName).lib</ImportLibrary>
       <AdditionalDependencies>odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -207,15 +209,13 @@ copy $(OutDir)$(TargetName).dll "%RAPTOR_ROOT%\Redist\bin\"
       <AdditionalIncludeDirectories>$(CPPUNIT_INCLUDE_PATH);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;CPPUNIT_BUILD_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AssemblerListingLocation>.\DebugDll\</AssemblerListingLocation>
-      <PrecompiledHeaderOutputFile>.\DebugDll\cppunit_dll.pch</PrecompiledHeaderOutputFile>
       <ObjectFileName>.\DebugDll\</ObjectFileName>
       <ProgramDataBaseFileName>.\DebugDll\</ProgramDataBaseFileName>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
     </ClCompile>
     <PostBuildEvent>
       <Command>copy $(OutDir)$(TargetName).lib "%RAPTOR_ROOT%\Redist\lib\"
-copy $(OutDir)$(TargetName).dll "%RAPTOR_ROOT%\Redist\bin\"
-</Command>
+copy $(OutDir)$(TargetName).dll "%RAPTOR_ROOT%\Redist\bin\"</Command>
       <Message>Copying target to lib/</Message>
     </PostBuildEvent>
     <Midl>
@@ -238,7 +238,7 @@ copy $(OutDir)$(TargetName).dll "%RAPTOR_ROOT%\Redist\bin\"
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <OutputFile>DebugDll\cppunitd_dll.dll</OutputFile>
-      <ImportLibrary>.\DebugDll\cppunitd_dll.lib</ImportLibrary>
+      <ImportLibrary>$(OutDir)$(TargetName).lib</ImportLibrary>
       <AdditionalDependencies>odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -253,16 +253,12 @@ copy $(OutDir)$(TargetName).dll "%RAPTOR_ROOT%\Redist\bin\"
       <WarningLevel>Level3</WarningLevel>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
-      <AdditionalIncludeDirectories>..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(CPPUNIT_INCLUDE_PATH);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;CPPUNIT_BUILD_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AssemblerListingLocation>.\ReleaseDll\</AssemblerListingLocation>
-      <PrecompiledHeaderOutputFile>.\ReleaseDll\cppunit_dll.pch</PrecompiledHeaderOutputFile>
-      <ObjectFileName>.\ReleaseDll\</ObjectFileName>
-      <ProgramDataBaseFileName>.\ReleaseDll\</ProgramDataBaseFileName>
     </ClCompile>
     <PostBuildEvent>
-      <Command>copy "$(TargetPath)" ..\..\lib\$(TargetName).dll
-copy "$(TargetDir)$(TargetName).lib" ..\..\lib\$(TargetName).lib</Command>
+      <Command>copy $(OutDir)$(TargetName).lib "%RAPTOR_ROOT%\Redist\lib\"
+copy $(OutDir)$(TargetName).dll "%RAPTOR_ROOT%\Redist\bin\"</Command>
       <Message>Copying target to lib/</Message>
     </PostBuildEvent>
     <Midl>
@@ -284,8 +280,8 @@ copy "$(TargetDir)$(TargetName).lib" ..\..\lib\$(TargetName).lib</Command>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <LinkDLL>true</LinkDLL>
       <SubSystem>Console</SubSystem>
-      <OutputFile>.\ReleaseDll\cppunit_dll.dll</OutputFile>
-      <ImportLibrary>.\ReleaseDll\cppunit_dll.lib</ImportLibrary>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+      <ImportLibrary>$(OutDir)$(TargetName).lib</ImportLibrary>
       <AdditionalDependencies>odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -303,13 +299,12 @@ copy "$(TargetDir)$(TargetName).lib" ..\..\lib\$(TargetName).lib</Command>
       <AdditionalIncludeDirectories>..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;CPPUNIT_BUILD_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AssemblerListingLocation>.\ReleaseDll\</AssemblerListingLocation>
-      <PrecompiledHeaderOutputFile>.\ReleaseDll\cppunit_dll.pch</PrecompiledHeaderOutputFile>
       <ObjectFileName>.\ReleaseDll\</ObjectFileName>
       <ProgramDataBaseFileName>.\ReleaseDll\</ProgramDataBaseFileName>
     </ClCompile>
     <PostBuildEvent>
-      <Command>copy "$(TargetPath)" ..\..\lib\$(TargetName).dll
-copy "$(TargetDir)$(TargetName).lib" ..\..\lib\$(TargetName).lib</Command>
+      <Command>copy $(OutDir)$(TargetName).lib "%RAPTOR_ROOT%\Redist\lib\"
+copy $(OutDir)$(TargetName).dll "%RAPTOR_ROOT%\Redist\bin\"</Command>
       <Message>Copying target to lib/</Message>
     </PostBuildEvent>
     <Midl>
@@ -331,7 +326,7 @@ copy "$(TargetDir)$(TargetName).lib" ..\..\lib\$(TargetName).lib</Command>
       <LinkDLL>true</LinkDLL>
       <SubSystem>Console</SubSystem>
       <OutputFile>.\ReleaseDll\cppunit_dll.dll</OutputFile>
-      <ImportLibrary>.\ReleaseDll\cppunit_dll.lib</ImportLibrary>
+      <ImportLibrary>$(OutDir)$(TargetName).lib</ImportLibrary>
       <AdditionalDependencies>odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -348,10 +343,6 @@ copy "$(TargetDir)$(TargetName).lib" ..\..\lib\$(TargetName).lib</Command>
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
       <AdditionalIncludeDirectories>$(CPPUNIT_INCLUDE_PATH);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;CPPUNIT_BUILD_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
-      <PrecompiledHeaderOutputFile>$(IntDir)$(TargetName).pch</PrecompiledHeaderOutputFile>
-      <ObjectFileName>$(IntDir)</ObjectFileName>
-      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
     </ClCompile>
     <PostBuildEvent>
       <Command>copy $(OutDir)$(TargetName).lib "%RAPTOR_ROOT%\Redist\lib\"
@@ -396,7 +387,6 @@ copy $(OutDir)$(TargetName).dll "%RAPTOR_ROOT%\Redist\bin\"</Command>
       <AdditionalIncludeDirectories>$(CPPUNIT_INCLUDE_PATH);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;CPPUNIT_BUILD_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
-      <PrecompiledHeaderOutputFile>$(IntDir)$(TargetName).pch</PrecompiledHeaderOutputFile>
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
     </ClCompile>
@@ -426,6 +416,26 @@ copy $(OutDir)$(TargetName).dll "%RAPTOR_ROOT%\Redist\bin\"</Command>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <ImportLibrary>$(OutDir)$(TargetName).lib</ImportLibrary>
       <AdditionalDependencies>odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Template|x64'">
+    <PostBuildEvent>
+      <Command>copy $(OutDir)$(TargetName).lib "%RAPTOR_ROOT%\Redist\lib\"
+copy $(OutDir)$(TargetName).dll "%RAPTOR_ROOT%\Redist\bin\"</Command>
+      <Message>Copying target to lib/</Message>
+    </PostBuildEvent>
+    <Link>
+      <ImportLibrary>$(OutDir)$(TargetName).lib</ImportLibrary>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">
+    <PostBuildEvent>
+      <Command>copy $(OutDir)$(TargetName).lib "%RAPTOR_ROOT%\Redist\lib\"
+copy $(OutDir)$(TargetName).dll "%RAPTOR_ROOT%\Redist\bin\"</Command>
+      <Message>Copying target to lib/</Message>
+    </PostBuildEvent>
+    <Link>
+      <ImportLibrary>$(OutDir)$(TargetName).lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
