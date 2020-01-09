@@ -126,7 +126,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PreBuildEvent>
-      <Command>$(SolutionDir)\Builder\$(ProjectName)\Redist.bat</Command>
+      <Command>set PUBLISH=$(TargetDir) &amp;&amp; $(SolutionDir)\Builder\$(ProjectName)\Publish.bat &amp;&amp; $(SolutionDir)\Builder\$(ProjectName)\Redist.bat $(Platform)</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -139,7 +139,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PreBuildEvent>
-      <Command>$(SolutionDir)\Builder\$(ProjectName)\Redist.bat</Command>
+      <Command>set PUBLISH=$(TargetDir) &amp;&amp; $(SolutionDir)\Builder\$(ProjectName)\Publish.bat &amp;&amp; $(SolutionDir)\Builder\$(ProjectName)\Redist.bat $(Platform)</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -156,7 +156,7 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <PreBuildEvent>
-      <Command>$(SolutionDir)\Builder\$(ProjectName)\Redist.bat</Command>
+      <Command>set PUBLISH=$(TargetDir) &amp;&amp; $(SolutionDir)\Builder\$(ProjectName)\Publish.bat &amp;&amp; $(SolutionDir)\Builder\$(ProjectName)\Redist.bat $(Platform)</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -173,7 +173,7 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <PreBuildEvent>
-      <Command>$(SolutionDir)\Builder\$(ProjectName)\Redist.bat</Command>
+      <Command>set PUBLISH=$(TargetDir) &amp;&amp; $(SolutionDir)\Builder\$(ProjectName)\Publish.bat &amp;&amp; $(SolutionDir)\Builder\$(ProjectName)\Redist.bat $(Platform)</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">
@@ -190,7 +190,7 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <PreBuildEvent>
-      <Command>set PUBLISH=$(TargetDir) &amp;&amp; $(SolutionDir)\Builder\$(ProjectName)\Publish.bat &amp;&amp; $(SolutionDir)\Builder\$(ProjectName)\Redist.bat</Command>
+      <Command>set PUBLISH=$(TargetDir) &amp;&amp; $(SolutionDir)\Builder\$(ProjectName)\Publish.bat &amp;&amp; $(SolutionDir)\Builder\$(ProjectName)\Redist.bat $(Platform)</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|x64'">
@@ -207,7 +207,7 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <PreBuildEvent>
-      <Command>set PUBLISH=$(TargetDir) &amp;&amp; $(SolutionDir)\Builder\$(ProjectName)\Publish.bat &amp;&amp; $(SolutionDir)\Builder\$(ProjectName)\Redist.bat</Command>
+      <Command>set PUBLISH=$(TargetDir) &amp;&amp; $(SolutionDir)\Builder\$(ProjectName)\Publish.bat &amp;&amp; $(SolutionDir)\Builder\$(ProjectName)\Redist.bat $(Platform)</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
