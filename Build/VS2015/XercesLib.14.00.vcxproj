@@ -117,6 +117,10 @@
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">$(ProjectName)_3_2</TargetName>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|x64'">$(ProjectName)_3_2</TargetName>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(Configuration)\$(Platform)\</OutDir>
+    <IntDir>$(Configuration)\$(Platform)\$(ProjectName)\</IntDir>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Midl>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
