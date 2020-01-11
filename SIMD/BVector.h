@@ -55,6 +55,7 @@ public:
 		return *this; 
 	};	
 
+#if (!defined(SIMD_NO_ASSEMBLY) && !defined(_WIN64))
 	//operations
 	bool operator== ( const CGenericVector<char>& v ) const NOEXCEPT
 	{ 
@@ -131,6 +132,7 @@ public:
 			mov [edi+4],eax
 		}
 	};
+#endif
 
 	// input/output for special case : chars as signed bytes
 	std::istream& operator>> (std::istream& i)

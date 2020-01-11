@@ -251,7 +251,7 @@ void blowFader(int width, int height, unsigned char *src, unsigned char *dst, un
 
 	unsigned int val = 0;
 
-#ifdef RAPTOR_SSE_CODE_GENERATION
+#if defined(RAPTOR_SSE_CODE_GENERATION) && !defined(_WIN64)
 	__m64 param = _mm_unpacklo_pi8(_mm_cvtsi32_si64(dwParam), _mm_setzero_si64());
 
 	for (int i = 0; i<height; i++)
@@ -330,7 +330,7 @@ void blowFader(int width, int height, unsigned char *src, unsigned char *dst, un
 
 void motionFader(int width, int height, unsigned char *src, unsigned char *dst, unsigned long dwParam)
 {
-#ifdef RAPTOR_SSE_CODE_GENERATION
+#if defined(RAPTOR_SSE_CODE_GENERATION) && !defined(_WIN64)
 
 	unsigned char *ofsdst = dst;
 	unsigned char *ofssrc = src;
@@ -395,7 +395,7 @@ void motionFader(int width, int height, unsigned char *src, unsigned char *dst, 
 
 void staticFader(int width, int height, unsigned char *src, unsigned char *dst, unsigned long dwParam)
 {
-#ifdef RAPTOR_SSE_CODE_GENERATION
+#if defined(RAPTOR_SSE_CODE_GENERATION) && !defined(_WIN64)
 
 	unsigned char *ofsdst = dst;
 	unsigned char *ofssrc = src;
@@ -470,7 +470,7 @@ void spinFader(int width, int height, unsigned char *src, unsigned char *dst, un
 
 	unsigned int val = 0;
 
-#ifdef RAPTOR_SSE_CODE_GENERATION
+#if defined(RAPTOR_SSE_CODE_GENERATION) && !defined(_WIN64)
 
 	__m64 param = _mm_unpacklo_pi8(_mm_cvtsi32_si64(dwParam), _mm_setzero_si64());
 

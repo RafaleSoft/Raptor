@@ -162,6 +162,8 @@ CGenericVector<float>& SSE_CTriangle::GetTexel( const CGenericVector<float> &hit
 		//tmpVect = (tmpVect - w) * (1.0f / coeffs[1]) + w;
 		
 		coeffs[1] = 1.0f / coeffs[1];
+
+#if !defined(_WIN64)
 		__asm
 		{
 			mov esi,this
@@ -187,6 +189,9 @@ CGenericVector<float>& SSE_CTriangle::GetTexel( const CGenericVector<float> &hit
 
 			sse_storeupsofs(XMM1_EDI,TMPVECT_OFFSET+4)
 		}
+#else
+		// TODO
+#endif
 	}
 	else
 		tmpVect.Set(0.0f,0.0f,0.0f,0.0f);
@@ -207,6 +212,8 @@ CGenericVector<float>& SSE_CTriangle::Normal( const CGenericVector<float> &hit )
 		//tmpVect = (tmpVect - nc) * (1.0f / coeffs[1]) + nc;
 
 		coeffs[1] = 1.0f / coeffs[1];
+
+#if !defined(_WIN64)
 		__asm
 		{
 			mov esi,this
@@ -232,6 +239,9 @@ CGenericVector<float>& SSE_CTriangle::Normal( const CGenericVector<float> &hit )
 
 			sse_storeupsofs(XMM1_EDI,TMPVECT_OFFSET+4)
 		}
+#else
+		// TODO
+#endif
 	}
 	else
 		tmpVect.Set(0.0f,0.0f,0.0f,0.0f);
@@ -260,6 +270,7 @@ float SSE_CTriangle::Intersect( CGenericRay &ray )
 	// --- trouve le point d'intersection ---
 	
 	//	tmpVect = ray.origin  +  (t * ray.direction) ;
+#if !defined(_WIN64)
 	__asm
 	{
 		lea edi,t
@@ -274,6 +285,9 @@ float SSE_CTriangle::Intersect( CGenericRay &ray )
 		sse_addps(XMM0_XMM2)
 		sse_storeupsofs(XMM0_EDI,TMPVECT_OFFSET+4)
 	}
+#else
+	// TODO
+#endif
 
 	// --- ce point est il dans le polygonne ? ---
 	switch( index ) 

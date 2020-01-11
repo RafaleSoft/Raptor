@@ -377,8 +377,8 @@ public:
     void	unlock () const;
 
 private:
-	CRaptorMutex (const CRaptorMutex& M);
-	void operator = (const CRaptorMutex& M);
+	CRaptorMutex(const CRaptorMutex& M);
+	void operator=(const CRaptorMutex& M) {};
 
 #if defined(_WIN32) || defined(_WIN64)
 	mutable CRITICAL_SECTION _mutex;

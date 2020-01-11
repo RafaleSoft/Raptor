@@ -44,6 +44,7 @@ void CSSE_GLLayer::clear(unsigned long color)
 
 void CSSE_GLLayer::drawAPoint(unsigned int x,unsigned int y,unsigned long color)
 {
+#if !defined(_WIN64)
 	unsigned __int32 *buffer = (unsigned __int32*)getBuffer();
 
 	// expand colors
@@ -64,7 +65,8 @@ void CSSE_GLLayer::drawAPoint(unsigned int x,unsigned int y,unsigned long color)
 	buffer[y*m_layerWidth+x] = _mm_cvtsi64_si32(_mm_packs_pu16(newcolor,newcolor));
 	 _mm_empty();
 
-    m_bRedraw = true;
+	 m_bRedraw = true;
+#endif
 }
 
 
@@ -219,6 +221,7 @@ positif:
 //	Bresenham algorithm for line drawing
 void CSSE_GLLayer::drawALine(int x1,int y1,int x2,int y2,unsigned long color)
 {
+#if !defined(_WIN64)
 	m_bRedraw = true;
 	
 	int xinc1 = 0;
@@ -288,11 +291,12 @@ void CSSE_GLLayer::drawALine(int x1,int y1,int x2,int y2,unsigned long color)
 	}
 
 	_mm_empty();
+#endif
 }
 
 void CSSE_GLLayer::drawARectangle(unsigned int x0,unsigned int y0,unsigned int x1,unsigned int y1,unsigned long color)
 {
-#if 1
+#if !defined(_WIN64)
 	unsigned __int32 *buffer = (unsigned __int32*)getBuffer();
 	__m64 newcolor = _mm_unpacklo_pi8(_mm_cvtsi32_si64(color),_mm_setzero_si64());
 	unsigned int a = ((color>>16)&0xff00)/255;
@@ -319,7 +323,12 @@ void CSSE_GLLayer::drawARectangle(unsigned int x0,unsigned int y0,unsigned int x
 		offset += m_layerWidth;
 	}
 	 _mm_empty();
-#else	// This code can be faster if loop is reduced but not portable
+
+	 m_bRedraw = true;
+#endif
+
+// This code can be faster if loop is reduced but not portable
+#if 0
 	__asm
 	{
 		mov edi,this
@@ -398,8 +407,8 @@ line:
 
 		emms
 	}
+	m_bRedraw = true;
 #endif
-    m_bRedraw = true;
 }
 
 void CSSE_GLLayer::drawRectangle(unsigned int x0,unsigned int y0,unsigned int x1,unsigned int y1,unsigned long color)
@@ -460,6 +469,7 @@ void CSSE_GLLayer::drawRectangle(unsigned int x0,unsigned int y0,unsigned int x1
 
 void CSSE_GLLayer::drawAPixels(unsigned int x0,unsigned int y0,unsigned int width,unsigned int height,const unsigned char *pixels)
 {
+#if !defined(_WIN64)
 	unsigned int offset = x0 + y0 * m_layerWidth;
 	unsigned int o = 0;
 
@@ -494,12 +504,14 @@ void CSSE_GLLayer::drawAPixels(unsigned int x0,unsigned int y0,unsigned int widt
 
 	_mm_empty();
     m_bRedraw = true;
+#endif
 }
 
 
 void CSSE_GLLayer::drawAText(int x0,int y0,const std::string& text,
 							 CGL2DFont *font,unsigned long color)
 {
+#if !defined(_WIN64)
 	const TTBitmapFont *fnt = font->getBitmapFont();
 	FTGlyphBitmap* gbitmap;
 	
@@ -569,6 +581,7 @@ void CSSE_GLLayer::drawAText(int x0,int y0,const std::string& text,
 
 	_mm_empty();
     m_bRedraw = true;
+#endif
 }
 
 #endif

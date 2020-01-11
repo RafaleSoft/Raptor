@@ -43,7 +43,7 @@ class CSSERegister5;
 class CSSERegister6;
 class CSSERegister7;
 
-#ifndef SIMD_NO_ASSEMBLY
+#if (!defined(SIMD_NO_ASSEMBLY) && !defined(_WIN64))
 
 #pragma warning(disable:4035) // no return value
 #define SSE_REGISTER_OPERATOR_EQ(thisClass,operandClass)\
@@ -222,7 +222,7 @@ SSE_REGISTER_CLASS(5,0,1,2,3,4,6,7)
 SSE_REGISTER_CLASS(6,0,1,2,3,4,5,7)
 SSE_REGISTER_CLASS(7,0,1,2,3,4,5,6)
 
-#endif
+#endif	//(!defined(SIMD_NO_ASSEMBLY) || defined(_WIN64))
 
 
 #endif // !defined(AFX_SIMDREGISTER_H__7A170774_BE41_42B3_8BA3_415C50B6FD6D__INCLUDED_)

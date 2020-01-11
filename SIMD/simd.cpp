@@ -79,7 +79,10 @@ static CPU_INFO	cpuInfo;
 //! @param func : int, cpuid function passed in EAX
 //! @param leaf : int, cpuid subfunction passed in ECX
 #ifdef WIN32
-	#if _MSC_VER >= 1600
+	#if defined(_WIN64)
+		// function defined in intrin.h
+		//__cpuidex(regs,func,leaf);
+	#elif _MSC_VER >= 1600
 		// function defined in intrin.h
 		//__cpuidex(regs,func,leaf);
 	#else
@@ -92,8 +95,8 @@ static CPU_INFO	cpuInfo;
 				__asm mov dword ptr [regs+8], ecx \
 				__asm mov dword ptr [regs+12], edx
 	#endif
-  #define CPUID(function,regs)  __cpuid(regs,function)
-  #define CPUIDEX(function,subfunction,regs)  __cpuidex(regs,function,subfunction)
+	#define CPUID(function,regs)  __cpuid(regs,function)
+	#define CPUIDEX(function,subfunction,regs)  __cpuidex(regs,function,subfunction)
 #elif defined(LINUX)
   static __inline int __get_cpuidex(unsigned int __level, unsigned int __subfunction,
                                     unsigned int *__eax, unsigned int *__ebx,
@@ -383,7 +386,7 @@ const CPU_INFO& SIMD_API getCPUINFO()
 		cpuScanned = true;
 		memset(&cpuInfo,0,sizeof(CPU_INFO));
 
-#ifdef WIN32
+#if defined(WIN32)
 		int cpuidRegs[4];
 #elif defined(LINUX)
 		unsigned int cpuidRegs[4];

@@ -594,12 +594,12 @@ bool _glSaveWavefront(const string &fname,C3DSet *scene)
 					p->getIndexes(polygonSizes,polygonFaces);
 
 					unsigned short offset = 0;
-					for (unsigned int i=0;i<polygonSizes.size();i++)
+					for (unsigned int j=0;j<polygonSizes.size();j++)
 					{
 						objfile << "f ";
 
-						unsigned short size = polygonSizes[i];
-						for (unsigned short j=0;j<size;j++)
+						unsigned short size = polygonSizes[j];
+						for (unsigned short k=0;k<size;k++)
 						{
 							unsigned short idx = vertexCounter+polygonFaces[offset++];
 							objfile << idx << "/" << idx << "/" << idx << " ";
