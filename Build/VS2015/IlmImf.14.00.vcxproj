@@ -101,6 +101,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(Configuration)\$(Platform)\</OutDir>
+    <IntDir>$(Configuration)\$(Platform)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">
     <LinkIncremental>true</LinkIncremental>
@@ -129,7 +131,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;ILMIMF_EXPORTS;OPENEXR_DLL;ZLIB_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ZLIB_INCLUDE_PATH);$(OPENEXRLIB_INCLUDE_PATH);$(Configuration);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ZLIB_INCLUDE_PATH);$(OPENEXRLIB_INCLUDE_PATH);$(Configuration)\$(Platform)\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -143,8 +145,8 @@
     <PreBuildEvent>
       <Command>echo Generating coding tables ...
 
-$(Configuration)\b44ExpLogTable.exe &gt; $(Configuration)\b44ExpLogTable.h
-$(Configuration)\dwaLookups.exe &gt; $(Configuration)\dwaLookups.h
+$(Configuration)\$(Platform)\b44ExpLogTable.exe &gt; $(Configuration)\$(Platform)\b44ExpLogTable.h
+$(Configuration)\$(Platform)\dwaLookups.exe &gt; $(Configuration)\$(Platform)\dwaLookups.h
 
 echo Done.</Command>
     </PreBuildEvent>
@@ -156,10 +158,11 @@ echo Done.</Command>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;ILMIMF_EXPORTS;OPENEXR_DLL;ZLIB_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ZLIB_INCLUDE_PATH);$(OPENEXRLIB_INCLUDE_PATH);$(Configuration);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ZLIB_INCLUDE_PATH);$(OPENEXRLIB_INCLUDE_PATH);$(Configuration)\$(Platform)\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -170,8 +173,8 @@ echo Done.</Command>
     <PreBuildEvent>
       <Command>echo Generating coding tables ...
 
-$(Configuration)\b44ExpLogTable.exe &gt; $(Configuration)\b44ExpLogTable.h
-$(Configuration)\dwaLookups.exe &gt; $(Configuration)\dwaLookups.h
+$(Configuration)\$(Platform)\b44ExpLogTable.exe &gt; $(Configuration)\$(Platform)\b44ExpLogTable.h
+$(Configuration)\$(Platform)\dwaLookups.exe &gt; $(Configuration)\$(Platform)\dwaLookups.h
 
 echo Done.</Command>
     </PreBuildEvent>
@@ -229,6 +232,7 @@ copy $(OutDir)$(TargetName).dll "%RAPTOR_ROOT%\Redist\bin\"
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -259,7 +263,7 @@ copy $(OutDir)$(TargetName).dll "%RAPTOR_ROOT%\Redist\bin\"
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;ILMIMF_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ZLIB_INCLUDE_PATH);$(OPENEXRLIB_INCLUDE_PATH);$(Configuration);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ZLIB_INCLUDE_PATH);$(OPENEXRLIB_INCLUDE_PATH);$(Configuration)\$(Platform)\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -270,8 +274,8 @@ copy $(OutDir)$(TargetName).dll "%RAPTOR_ROOT%\Redist\bin\"
     <PreBuildEvent>
       <Command>echo Generating coding tables ...
 
-$(Configuration)\b44ExpLogTable.exe &gt; $(Configuration)\b44ExpLogTable.h
-$(Configuration)\dwaLookups.exe &gt; $(Configuration)\dwaLookups.h
+$(Configuration)\$(Platform)\b44ExpLogTable.exe &gt; $(Configuration)\$(Platform)\b44ExpLogTable.h
+$(Configuration)\$(Platform)\dwaLookups.exe &gt; $(Configuration)\$(Platform)\dwaLookups.h
 
 echo Done.</Command>
     </PreBuildEvent>
@@ -286,6 +290,7 @@ echo Done.</Command>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;ILMIMF_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(ZLIB_INCLUDE_PATH);$(OPENEXRLIB_INCLUDE_PATH);$(Configuration);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -296,8 +301,8 @@ echo Done.</Command>
     <PreBuildEvent>
       <Command>echo Generating coding tables ...
 
-$(Configuration)\b44ExpLogTable.exe &gt; $(Configuration)\b44ExpLogTable.h
-$(Configuration)\dwaLookups.exe &gt; $(Configuration)\dwaLookups.h
+$(Configuration)\$(Platform)\b44ExpLogTable.exe &gt; $(Configuration)\$(Platform)\b44ExpLogTable.h
+$(Configuration)\$(Platform)\dwaLookups.exe &gt; $(Configuration)\$(Platform)\dwaLookups.h
 
 echo Done.</Command>
     </PreBuildEvent>

@@ -104,7 +104,7 @@ LRESULT CALLBACK WindowProc(  HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
                 HDC hdc = GetDC(hwnd);
 
                 RAPTOR_HANDLE display;
-	            display.handle((unsigned int)(hdc));
+	            display.ptr(hdc);
 	            display.hClass(CLIENT_HANDLE_CLASS);
 				if (pDisplay->glvkBindDisplay(display))
 	            {
@@ -140,7 +140,7 @@ LRESULT CALLBACK WindowProc(  HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
             unsigned int nHeight = HIWORD(lparam); // height of client area 
 
             RAPTOR_HANDLE display;
-	        display.handle((unsigned int)(hdc));
+	        display.ptr(hdc);
 	        display.hClass(CLIENT_HANDLE_CLASS);
 			if (pDisplay->glvkBindDisplay(display))
 	        {
