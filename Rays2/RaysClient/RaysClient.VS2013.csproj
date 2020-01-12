@@ -63,7 +63,7 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release_with_AddOns|x86'">
-    <OutputPath>..\..\Build\VS2013\Release_with_AddOns\</OutputPath>
+    <OutputPath>..\..\Build\VS2013\Release_with_AddOns\Win32\</OutputPath>
     <DefineConstants>
     </DefineConstants>
     <Optimize>false</Optimize>
