@@ -21,6 +21,7 @@
 
 #include <iostream>
 #include <math.h>
+#include <stdint.h>
 
 #ifndef __SIMDMACROS_H__
     #include "simdMacros.h"

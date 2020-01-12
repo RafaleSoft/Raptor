@@ -52,7 +52,7 @@ int main(int argc, char* argv[])
 	glcs.depth_buffer = true;
 	glcs.stencil_buffer = true;
 	glcs.display_mode = CGL_FLOAT_16 | CGL_DEPTH;
-	glcs.refresh_rate.sync_to_monitor = true;
+	//glcs.refresh_rate.sync_to_monitor = true;
  
     CRaptorDisplay *pDisplay = NULL;
     RAPTOR_HANDLE wnd = Raptor::glCreateWindow(glcs,pDisplay);
