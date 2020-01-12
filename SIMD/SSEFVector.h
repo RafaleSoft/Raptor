@@ -43,7 +43,7 @@ public:
 	CSSEFVector() {};
 	virtual ~CSSEFVector() {};
 
-#ifndef SIMD_NO_ASSEMBLY
+#if (!defined(SIMD_NO_ASSEMBLY) && !defined(_WIN64))
 	CSSEFVector& operator= ( const CSSEFVector& v ) NOEXCEPT
 	{
 		__asm
@@ -175,7 +175,7 @@ public:
 #endif
 };
 
-#ifndef SIMD_NO_ASSEMBLY
+#if (!defined(SIMD_NO_ASSEMBLY) && !defined(_WIN64))
 // cross product
 CSSEFVector& SIMD_CALL operator^  (const CSSEFVector&, const CSSEFVector&) NOEXCEPT;
 // scalar operations

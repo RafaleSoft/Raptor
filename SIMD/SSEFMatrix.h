@@ -39,7 +39,7 @@ public:
 	CSSEFMatrix() NOEXCEPT;
 	virtual ~CSSEFMatrix();
 
-#ifndef SIMD_NO_ASSEMBLY
+#if (!defined(SIMD_NO_ASSEMBLY) && !defined(_WIN64))
 	#pragma warning(disable:4100) // unreferenced parameter
 	#pragma warning(disable:4035) // no return value
 	CSSEFMatrix& SIMD_CALL operator= ( const CSSEFMatrix& m ) NOEXCEPT
@@ -100,7 +100,7 @@ public:
 #endif
 };
 
-#ifndef SIMD_NO_ASSEMBLY
+#if (!defined(SIMD_NO_ASSEMBLY) && !defined(_WIN64))
 CSSEFMatrix& SIMD_CALL operator*(const CSSEFMatrix& m1, const CSSEFMatrix& m2) NOEXCEPT;
 CSSEFMatrix& SIMD_CALL operator*(const float& v, const CSSEFMatrix& m) NOEXCEPT;
 CSSEFMatrix& SIMD_CALL operator*(const CSSEFMatrix& m, const float& v) NOEXCEPT;

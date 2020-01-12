@@ -363,7 +363,7 @@ RAPTOR_HANDLE CWin32ContextManager::getDevice(CContextManager::RENDERING_CONTEXT
     if ((ctx >= 0) && (ctx < MAX_CONTEXT))
 	{
 		context_t& context = pContext[ctx];
-        device.handle((unsigned int)context.WIN32Context);
+        device.ptr(context.WIN32Context);
         device.hClass(DEVICE_CONTEXT_CLASS);
     }
 
@@ -606,7 +606,7 @@ RAPTOR_HANDLE CWin32ContextManager::glCreateWindow(const CRaptorDisplayConfig& c
 	SetFocus(hwnd);
 
 	HDC dc = GetDC(hwnd);
-	RAPTOR_HANDLE device(DEVICE_CONTEXT_CLASS,(unsigned int)(dc));
+	RAPTOR_HANDLE device(DEVICE_CONTEXT_CLASS,dc);
 
 	RENDERING_CONTEXT_ID id = CContextManager::INVALID_CONTEXT;
 	if (CRaptorDisplayConfig::GENERIC == pda.acceleration)
@@ -615,7 +615,7 @@ RAPTOR_HANDLE CWin32ContextManager::glCreateWindow(const CRaptorDisplayConfig& c
         pDisplay = NULL;
 		if (CContextManager::INVALID_CONTEXT != id)
 	    {
-		    wnd.handle((unsigned int)hwnd);
+		    wnd.ptr(hwnd);
 		    wnd.hClass(WINDOW_CLASS);
             ctx = id;
 	    }
@@ -650,7 +650,7 @@ RAPTOR_HANDLE CWin32ContextManager::glCreateWindow(const CRaptorDisplayConfig& c
 		}
 		if (CContextManager::INVALID_CONTEXT != id)
 	    {
-		    wnd.handle((unsigned int)hwnd);
+		    wnd.ptr(hwnd);
 		    wnd.hClass(WINDOW_CLASS);
 	    }
 	    else
@@ -1365,7 +1365,7 @@ bool CWin32ContextManager::vkCreateSurface(const RAPTOR_HANDLE& handle,RENDERING
 	if (WINDOW_CLASS == handle.hClass())
 	{
 		HWND hWnd = handle.ptr<HWND__>();
-		HINSTANCE hInstance = (HINSTANCE)GetWindowLong(hWnd, GWL_HINSTANCE);
+		HINSTANCE hInstance = (HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE);
 		VkWin32SurfaceCreateInfoKHR createInfo = {	VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR,
 													NULL,0, //flags,
 													hInstance,hWnd };

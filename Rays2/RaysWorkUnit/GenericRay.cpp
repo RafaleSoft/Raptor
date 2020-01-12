@@ -22,6 +22,7 @@ __inline void __fastcall A_plus_x_B_saturate(CColor::RGBA &A, CColor::RGBA &B, f
 {
 	color_buffer[1] = color_buffer[0] = (unsigned short)(255 * f);
 
+#if !defined(_WIN64)
 	__asm
 	{
 		mov edi,B
@@ -39,12 +40,16 @@ __inline void __fastcall A_plus_x_B_saturate(CColor::RGBA &A, CColor::RGBA &B, f
 		movq [edi+4],mm0
 		emms
 	}
+#else
+	// TODO
+#endif
 }
 
 __inline void __fastcall A_plus_x_B_plus_C_saturate(CColor::RGBA &A, CColor::RGBA &B, CColor::RGBA &C, float f)
 {
 	color_buffer[1] = color_buffer[0] = (unsigned short)(255 * f);
 
+#if !defined(_WIN64)
 	__asm
 	{
 		mov edi,C
@@ -65,6 +70,9 @@ __inline void __fastcall A_plus_x_B_plus_C_saturate(CColor::RGBA &A, CColor::RGB
 		movq [edi+4],mm0
 		emms
 	}
+#else
+	// TODO
+#endif
 }
 
 //////////////////////////////////////////////////////////////////////

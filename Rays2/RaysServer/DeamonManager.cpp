@@ -163,7 +163,7 @@ bool CDeamonManager::DeamonStatus(unsigned int numDeamon) const
 	WU->connection->write(&msg, MSGSIZE);
 
 	void * new_msg = NULL;
-	unsigned int size = 0;
+	size_t size = 0;
 	WU->connection->read(new_msg, size);
 	// check returned IP in msg.msg_data[4] for full safe query
 	if ((size != MSGSIZE) || (NULL == new_msg))

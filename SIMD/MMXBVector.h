@@ -92,7 +92,7 @@ public:
 
 
 	//	Real MMX Stuff starts here...
-#ifndef SIMD_NO_ASSEMBLY
+#if (!defined(SIMD_NO_ASSEMBLY) && !defined(_WIN64))
 	CMMXBVector& operator!() NOEXCEPT
 	{
 		__asm

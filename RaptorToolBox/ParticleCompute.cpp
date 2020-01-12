@@ -121,7 +121,7 @@ void CParticleCompute::CRamdomParticle::initialize(CParticle& particle)
 void CParticleCompute::CRamdomParticle::computeLife(CParticle::PARTICLE_ATTRIBUTE& attrs,float dt)
 {
 	// Compute displacement : pull is added to speed (acceleration)
-#ifdef RAPTOR_SSE_CODE_GENERATION
+#if defined(RAPTOR_SSE_CODE_GENERATION) && !defined(_WIN64)
 	CSSERegister0 sse0;
 	CSSERegister1 sse1;
     CSSERegister2 sse2;
@@ -256,7 +256,7 @@ void CParticleCompute::CFireParticle::initialize(CParticle& particle)
 void CParticleCompute::CFireParticle::computeLife(CParticle::PARTICLE_ATTRIBUTE& attrs,float dt)
 {
 	// Compute displacement : pull is added to speed (acceleration)
-#ifdef RAPTOR_SSE_CODE_GENERATION
+#if defined(RAPTOR_SSE_CODE_GENERATION) && !defined(_WIN64)
 	CSSERegister0 sse0;
 	CSSERegister1 sse1;
     CSSERegister2 sse2;
@@ -390,7 +390,7 @@ void CParticleCompute::CSmokeParticle::initialize(CParticle& particle)
 void CParticleCompute::CSmokeParticle::computeLife(CParticle::PARTICLE_ATTRIBUTE& attrs,float dt)
 {
 	// Compute displacement : pull is added to speed (acceleration)
-#ifdef RAPTOR_SSE_CODE_GENERATION
+#if defined(RAPTOR_SSE_CODE_GENERATION) && !defined(_WIN64)
 	CSSERegister0 sse0;
 	CSSERegister1 sse1;
     CSSERegister2 sse2;
@@ -524,7 +524,7 @@ void CParticleCompute::CStaticParticle::initialize(CParticle& particle)
 void CParticleCompute::CStaticParticle::computeLife(CParticle::PARTICLE_ATTRIBUTE& attrs,float dt)
 {
 	// Compute displacement : pull is added to speed (acceleration)
-#ifdef RAPTOR_SSE_CODE_GENERATION
+#if defined(RAPTOR_SSE_CODE_GENERATION) && !defined(_WIN64)
 	CSSERegister0 sse0;
 	CSSERegister1 sse1;
     CSSERegister2 sse2;

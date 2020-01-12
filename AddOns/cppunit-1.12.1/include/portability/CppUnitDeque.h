@@ -23,13 +23,13 @@ public:
 
 #ifdef WIN32
 	#if _MSC_VER > 1800
-	#define DLL_EXPORT_DEQUE(type) \
-		EXPIMP_TEMPLATE template class CPPUNIT_API std::_Deque_val<std::_Deque_simple_types<CppUnit::type *>>; \
-		EXPIMP_TEMPLATE template class CPPUNIT_API std::_Compressed_pair<std::_Wrap_alloc<std::allocator<CppUnit::type *>>, std::_Deque_val<std::_Deque_simple_types<CppUnit::type *>>, true>; \
-		EXPIMP_TEMPLATE template class CPPUNIT_API std::deque<CppUnit::type *>;
+		#define DLL_EXPORT_DEQUE(type) \
+			EXPIMP_TEMPLATE template class CPPUNIT_API std::_Deque_val<std::_Deque_simple_types<CppUnit::type *>>; \
+			EXPIMP_TEMPLATE template class CPPUNIT_API std::_Compressed_pair<std::_Wrap_alloc<std::allocator<CppUnit::type *>>, std::_Deque_val<std::_Deque_simple_types<CppUnit::type *>>, true>; \
+			EXPIMP_TEMPLATE template class CPPUNIT_API std::deque<CppUnit::type *>;
 	#else
-	#define DLL_EXPORT_DEQUE(type) \
-		EXPIMP_TEMPLATE template class CPPUNIT_API std::deque<CppUnit::type *>;
+		#define DLL_EXPORT_DEQUE(type) \
+			EXPIMP_TEMPLATE template class CPPUNIT_API std::deque<CppUnit::type *>;
 	#endif
 #else
 	#define DLL_EXPORT_DEQUE(type)

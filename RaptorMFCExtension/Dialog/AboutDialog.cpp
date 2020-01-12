@@ -291,7 +291,7 @@ void CAboutDialog::OnOK()
 	CDialog::OnOK();
 }
 
-void CAboutDialog::OnTimer(UINT nIDEvent)
+void CAboutDialog::OnTimer(UINT_PTR nIDEvent)
 {
 	::InvalidateRect(m_hWnd,&rect,FALSE);
 	CTimeObject::deltaTime();

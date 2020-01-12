@@ -55,6 +55,7 @@ void CTexture::SetTexture(unsigned int w,unsigned int h,unsigned char *data)
 		{
 			m_map = tmp;
 
+#if !defined(_WIN64)
 			__asm
 			{
 				mov esi,data
@@ -74,6 +75,9 @@ bcl:
 
 				emms
 			}
+#else
+			// TODO
+#endif
 		}
 
 		stringstream offsets;
@@ -154,10 +158,10 @@ CColor::RGBA& CTexture::GetMapColor(const CGenericVector<float> &texel)
 
 		// Cas ou le point est au dessus du centre du texel			
 		if (dy < 0.5f)
-		/* Dans ce cas, les trois texels 	*/
-		/* supplementaires a entrer en compte	*/
-		/* sont les trois adjacents en haut et	*/
-		/* sur la gauche.			*/
+			/* Dans ce cas, les trois texels 	*/
+			/* supplementaires a entrer en compte	*/
+			/* sont les trois adjacents en haut et	*/
+			/* sur la gauche.			*/
 		{
 			dy = (0.5f - dy);
 			p1 = (1.0f - dx) * (1.0f - dy);
@@ -170,64 +174,80 @@ CColor::RGBA& CTexture::GetMapColor(const CGenericVector<float> &texel)
 			pix3[0] = pix3[1] = pix3[2] = pix3[3] = (short)(255 * p3);
 			pix4[0] = pix4[1] = pix4[2] = pix4[3] = (short)(255 * p4);
 
+#if !defined(_WIN64)
 			__asm
 			{
-				mov edi,data
-				add edi,ofs
-				lea esi,pix1
-				movq mm0,[edi]
-				movq mm1,[esi]
-				pmullw mm0,mm1
+				mov edi, data
+				add edi, ofs
+				lea esi, pix1
+				movq mm0, [edi]
+				movq mm1, [esi]
+				pmullw mm0, mm1
 			}
-
-			if (tx > 0) 
+#else
+			// TODO
+#endif
+			if (tx > 0)
 			{
+#if !defined(_WIN64)
 				__asm
 				{
-					lea esi,pix2
-					movq mm2,[edi-8]
-					movq mm1,[esi]
-					pmullw mm2,mm1
-					paddw mm0,mm2
+					lea esi, pix2
+					movq mm2, [edi - 8]
+					movq mm1, [esi]
+					pmullw mm2, mm1
+					paddw mm0, mm2
 				}
 			}
 			else
 				BLEND_PIXEL(2)
-		
-			if ((tx > 0) && (ty > 0)) 
+#else
+			}
+			// TODO
+#endif
+
+			if ((tx > 0) && (ty > 0))
 			{
+#if !defined(_WIN64)
 				__asm
 				{
 					push edi
-					mov eax,row
-					sub edi,8
-					sub edi,eax
+					mov eax, row
+					sub edi, 8
+					sub edi, eax
 					BLEND_PIXEL(3)
 					pop edi
 				}
 			}
 			else
 				BLEND_PIXEL(3)
-		
-			if (ty > 0) 
+#else
+			}
+			// TODO
+#endif
+
+
+			if (ty > 0)
 			{
+#if !defined(_WIN64)
 				__asm
 				{
 					push edi
-					mov eax,row
-					sub edi,eax
+					mov eax, row
+					sub edi, eax
 					BLEND_PIXEL(4)
 					pop edi
 				}
 			}
 			else
 				BLEND_PIXEL(4)
+#else
+			}
+			// TODO
+#endif
+
+
 		}
-
-
-
-
-
 		// Cas ou le point est en dessous du 	centre du texel			
 		else
 		{
@@ -242,58 +262,77 @@ CColor::RGBA& CTexture::GetMapColor(const CGenericVector<float> &texel)
 			pix3[0] = pix3[1] = pix3[2] = pix3[3] = (short)(255 * p3);
 			pix4[0] = pix4[1] = pix4[2] = pix4[3] = (short)(255 * p4);
 
+#if !defined(_WIN64)
 			__asm
 			{
-				mov edi,data
-				add edi,ofs
-				lea esi,pix1
-				movq mm0,[edi]
-				movq mm1,[esi]
-				pmullw mm0,mm1
+				mov edi, data
+				add edi, ofs
+				lea esi, pix1
+				movq mm0, [edi]
+				movq mm1, [esi]
+				pmullw mm0, mm1
 			}
+#else
+				// TODO
+#endif
 
-			if (tx > 0) 
+			if (tx > 0)
 			{
+#if !defined(_WIN64)
 				__asm
 				{
-					lea esi,pix2
-					movq mm2,[edi-8]
-					movq mm1,[esi]
-					pmullw mm2,mm1
-					paddw mm0,mm2
+					lea esi, pix2
+					movq mm2, [edi - 8]
+					movq mm1, [esi]
+					pmullw mm2, mm1
+					paddw mm0, mm2
 				}
 			}
 			else
 				BLEND_PIXEL(2)
+#else
+			}
+				// TODO
+#endif
 
-			if ((tx > 0) && (ty < m_height - 1)) 
+			if ((tx > 0) && (ty < m_height - 1))
 			{
+#if !defined(_WIN64)
 				__asm
 				{
 					push edi
-					mov eax,row
-					sub edi,8
-					add edi,eax
+					mov eax, row
+					sub edi, 8
+					add edi, eax
 					BLEND_PIXEL(3)
 					pop edi
 				}
 			}
 			else
 				BLEND_PIXEL(3)
+#else
+			}
+			// TODO
+#endif
 
-			if (ty < m_height - 1) 
+			if (ty < m_height - 1)
 			{
+#if !defined(_WIN64)
 				__asm
 				{
 					push edi
-					mov eax,row
-					add edi,eax
+					mov eax, row
+					add edi, eax
 					BLEND_PIXEL(4)
 					pop edi
 				}
 			}
 			else
 				BLEND_PIXEL(4)
+#else
+			}
+				// TODO
+#endif
 		}
 	}
 
@@ -307,10 +346,10 @@ CColor::RGBA& CTexture::GetMapColor(const CGenericVector<float> &texel)
 
 		// Cas ou le point est au dessus du centre du texel
 		if (dy < 0.5f)
-		/* Dans ce cas, les trois texels 	*/
-		/* supplementaires a entrer en compte	*/
-		/* sont les trois adjacents en haut et	*/
-		/* sur la droite.			*/
+			/* Dans ce cas, les trois texels 	*/
+			/* supplementaires a entrer en compte	*/
+			/* sont les trois adjacents en haut et	*/
+			/* sur la droite.			*/
 		{
 			dy = (0.5f - dy);
 			p1 = (1.0f - dx) * (1.0f - dy);
@@ -323,59 +362,75 @@ CColor::RGBA& CTexture::GetMapColor(const CGenericVector<float> &texel)
 			pix3[0] = pix3[1] = pix3[2] = pix3[3] = (short)(255 * p3);
 			pix4[0] = pix4[1] = pix4[2] = pix4[3] = (short)(255 * p4);
 
+#if !defined(_WIN64)
 			__asm
 			{
-				mov edi,data
-				add edi,ofs
-				lea esi,pix1
-				movq mm0,[edi]
-				movq mm1,[esi]
-				pmullw mm0,mm1
+				mov edi, data
+				add edi, ofs
+				lea esi, pix1
+				movq mm0, [edi]
+				movq mm1, [esi]
+				pmullw mm0, mm1
 			}
-			
+#endif
 
 			if (tx < m_width - 1)
 			{
+#if !defined(_WIN64)
 				__asm
 				{
-					lea esi,pix2
-					movq mm2,[edi+8]
-					movq mm1,[esi]
-					pmullw mm2,mm1
-					paddw mm0,mm2
+					lea esi, pix2
+					movq mm2, [edi + 8]
+					movq mm1, [esi]
+					pmullw mm2, mm1
+					paddw mm0, mm2
 				}
 			}
 			else
 				BLEND_PIXEL(2)
-			
-			if ((tx < m_width - 1) && (ty > 0))
-			{
-				__asm
-				{
-					push edi
-					mov eax,row
-					add edi,8
-					sub edi,eax
-					BLEND_PIXEL(3)
-					pop edi
-				}
-			}
-			else
-				BLEND_PIXEL(3)
+#else
+		}
+			// TODO
+#endif
 
-			if (ty > 0)
-			{
-				__asm
+				if ((tx < m_width - 1) && (ty > 0))
 				{
-					push edi
-					mov eax,row
-					sub edi,eax
-					BLEND_PIXEL(4)
-					pop edi
+#if !defined(_WIN64)
+					__asm
+					{
+						push edi
+						mov eax, row
+						add edi, 8
+						sub edi, eax
+						BLEND_PIXEL(3)
+						pop edi
+					}
 				}
-			}
-			else
-				BLEND_PIXEL(4)
+				else
+					BLEND_PIXEL(3)
+#else
+		}
+			// TODO
+#endif
+
+					if (ty > 0)
+					{
+#if !defined(_WIN64)
+						__asm
+						{
+							push edi
+							mov eax, row
+							sub edi, eax
+							BLEND_PIXEL(4)
+							pop edi
+						}
+					}
+					else
+						BLEND_PIXEL(4)
+#else
+		}
+			// TODO
+#endif
 		}
 
 
@@ -392,69 +447,88 @@ CColor::RGBA& CTexture::GetMapColor(const CGenericVector<float> &texel)
 			pix2[0] = pix2[1] = pix2[2] = pix2[3] = (short)(255 * p2);
 			pix3[0] = pix3[1] = pix3[2] = pix3[3] = (short)(255 * p3);
 			pix4[0] = pix4[1] = pix4[2] = pix4[3] = (short)(255 * p4);
-
+#if !defined(_WIN64)
 			__asm
 			{
-				mov edi,data
-				add edi,ofs
-				lea esi,pix1
-				movq mm0,[edi]
-				movq mm1,[esi]
-				pmullw mm0,mm1
+				mov edi, data
+				add edi, ofs
+				lea esi, pix1
+				movq mm0, [edi]
+				movq mm1, [esi]
+				pmullw mm0, mm1
 			}
-
+#endif
 			if (tx < m_width - 1)
 			{
+#if !defined(_WIN64)
 				__asm
 				{
-					lea esi,pix2
-					movq mm2,[edi+8]
-					movq mm1,[esi]
-					pmullw mm2,mm1
-					paddw mm0,mm2
+					lea esi, pix2
+					movq mm2, [edi + 8]
+					movq mm1, [esi]
+					pmullw mm2, mm1
+					paddw mm0, mm2
 				}
 			}
 			else
 				BLEND_PIXEL(2)
+#else
+		}
+			// TODO
+#endif
 
-			if ((tx < m_width - 1) && (ty < m_height - 1))
-			{
-				__asm
+				if ((tx < m_width - 1) && (ty < m_height - 1))
 				{
-					push edi
-					mov eax,row
-					add edi,8
-					add edi,eax
+#if !defined(_WIN64)
+					__asm
+					{
+						push edi
+						mov eax, row
+						add edi, 8
+						add edi, eax
+						BLEND_PIXEL(3)
+						pop edi
+					}
+				}
+				else
 					BLEND_PIXEL(3)
-					pop edi
-				}
-			}
-			else
-				BLEND_PIXEL(3)
+#else
+		}
+			//TODO
+#endif
 
-			if (ty < m_height - 1)
-			{
-				__asm
-				{
-					push edi
-					mov eax,row
-					add edi,eax
-					BLEND_PIXEL(4)
-					pop edi
-				}
-			}
-			else
-				BLEND_PIXEL(4)
+					if (ty < m_height - 1)
+					{
+#if !defined(_WIN64)
+						__asm
+						{
+							push edi
+							mov eax, row
+							add edi, eax
+							BLEND_PIXEL(4)
+							pop edi
+						}
+					}
+					else
+						BLEND_PIXEL(4)
+#else
+		}
+			// TODO
+#endif
 		}
 	}
 
 	float *vect = tmpColor.operator float *();
+#if !defined(_WIN64)
 	__asm
 	{
 		mov edi,vect
 		movq [edi],mm0
 		emms
 	}
+#else
+	// TODO
+#endif
 
 	return tmpColor;
 }
