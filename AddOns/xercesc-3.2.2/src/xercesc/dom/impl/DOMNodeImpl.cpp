@@ -168,7 +168,7 @@ DOMDocument *DOMNodeImpl::getOwnerDocument() const
     if (!this->isLeafNode())
     {
         const DOMNode *ep = getContainingNode();
-        const DOMParentNode* parent = castToParentImpl(getContainingNode());
+        const DOMParentNode* parent = castToParentImpl(ep);
         return parent ? parent->fOwnerDocument : 0;
     }
 

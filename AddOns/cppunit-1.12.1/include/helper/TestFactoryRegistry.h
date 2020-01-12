@@ -12,8 +12,10 @@ class TestSuite;
 
 #ifdef WIN32
 	EXPIMP_TEMPLATE template class CPPUNIT_API std::_Tree_val<std::_Tree_simple_types<CppUnit::TestFactory *>>;
+#if _MSC_VER > 1800
 	EXPIMP_TEMPLATE template class CPPUNIT_API std::_Compressed_pair<std::_Wrap_alloc<std::allocator<std::_Tree_node<CppUnit::TestFactory *, void *>>>, std::_Tree_val<std::_Tree_simple_types<CppUnit::TestFactory *>>, true>;
 	EXPIMP_TEMPLATE template class CPPUNIT_API std::_Compressed_pair<std::less<CppUnit::TestFactory *>, std::_Compressed_pair<std::_Wrap_alloc<std::allocator<std::_Tree_node<CppUnit::TestFactory *, void *>>>, std::_Tree_val<std::_Tree_simple_types<CppUnit::TestFactory *>>, true>, true>;
+#endif
 	EXPIMP_TEMPLATE template class CPPUNIT_API std::set<TestFactory *>;
 #endif
 

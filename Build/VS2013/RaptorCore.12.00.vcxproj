@@ -5,10 +5,6 @@
       <Configuration>Debug</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Optimized|Win32">
-      <Configuration>Optimized</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="Release_with_AddOns|Win32">
       <Configuration>Release_with_AddOns</Configuration>
       <Platform>Win32</Platform>
@@ -25,12 +21,6 @@
     <Keyword>MFCProj</Keyword>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized|Win32'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <UseOfMfc>false</UseOfMfc>
-    <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v120</PlatformToolset>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
@@ -51,10 +41,6 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
-  </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Optimized|Win32'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
-    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC60.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
@@ -80,9 +66,6 @@
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">false</LinkIncremental>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkIncremental>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Optimized|Win32'">$(Configuration)\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Optimized|Win32'">$(Configuration)\$(ProjectName)\</IntDir>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Optimized|Win32'">false</LinkIncremental>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Raptor</TargetName>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">Raptor</TargetName>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Raptor</TargetName>
@@ -309,86 +292,6 @@ $(SolutionDir)\$(ProjectName)\Subsys\Redist.bat
     </Link>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-    </Bscmake>
-    <PostBuildEvent>
-      <Message>Build redistribuable package</Message>
-      <Command>copy $(OutDir)\Raptor.lib "%RAPTOR_ROOT%\Redist\lib\"
-copy $(OutDir)\Raptor.dll "%RAPTOR_ROOT%\Redist\bin\"
-copy $(SolutionDir)$(ProjectName)\Subsys\ObjectModels\Raptor.xsd %RAPTOR_ROOT%\Redist\bin\
-copy $(SolutionDir)$(ProjectName)\Subsys\ObjectModels\RaptorMessages.xsd %RAPTOR_ROOT%\Redist\bin\
-cd $(SolutionDir)\$(ProjectName)
-$(SolutionDir)\$(ProjectName)\Subsys\Redist.bat
-</Command>
-    </PostBuildEvent>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Optimized|Win32'">
-    <Midl>
-      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MkTypLibCompatible>true</MkTypLibCompatible>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <TargetEnvironment>Win32</TargetEnvironment>
-      <TypeLibraryName>.\Release/RaptorCore.tlb</TypeLibraryName>
-      <HeaderFileName>
-      </HeaderFileName>
-    </Midl>
-    <ClCompile>
-      <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
-      <Optimization>Full</Optimization>
-      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <WholeProgramOptimization>true</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>./;$(PLATFORM_SDK)\Include;$(RAPTOR_ROOT)\Redist\Include;.\Subsys\xercesc_2_7;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;EXPORT_RAPTOR_CORE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <StringPooling>true</StringPooling>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <StructMemberAlignment>16Bytes</StructMemberAlignment>
-      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
-      <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>Subsys\CodeGeneration.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderOutputFile>.\Release/RaptorCore.pch</PrecompiledHeaderOutputFile>
-      <AssemblerListingLocation>.\Release/</AssemblerListingLocation>
-      <ObjectFileName>.\Release/</ObjectFileName>
-      <ProgramDataBaseFileName>.\Release/</ProgramDataBaseFileName>
-      <WarningLevel>Level4</WarningLevel>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <DebugInformationFormat>
-      </DebugInformationFormat>
-    </ClCompile>
-    <ResourceCompile>
-      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <Culture>0x040c</Culture>
-      <AdditionalIncludeDirectories>$(MSSdk)\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-    </ResourceCompile>
-    <ProjectReference>
-      <LinkLibraryDependencies>false</LinkLibraryDependencies>
-    </ProjectReference>
-    <Link>
-      <AdditionalDependencies>RaptorData.lib;opengl32.lib;glu32.lib;simd.lib;Subsys\GlttLib\gltt.2.3.lib;Subsys\GlttLib\freetype.lib;Subsys\xercesc_2_7\vc9\xerces-c_2.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>Release\Raptor.dll</OutputFile>
-      <Version>$(RAPTOR_RELEASE)</Version>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>$(PLATFORM_SDK)\Lib;$(RAPTOR_ROOT)\Redist\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
-      <IgnoreSpecificDefaultLibraries>libc;libcp;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <ModuleDefinitionFile>.\RaptorCore.def</ModuleDefinitionFile>
-      <GenerateDebugInformation>false</GenerateDebugInformation>
-      <GenerateMapFile>false</GenerateMapFile>
-      <MapFileName>
-      </MapFileName>
-      <SubSystem>Windows</SubSystem>
-      <OptimizeReferences>true</OptimizeReferences>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
-      <RandomizedBaseAddress>false</RandomizedBaseAddress>
-      <DataExecutionPrevention>
-      </DataExecutionPrevention>
-      <ImportLibrary>Release\Raptor.lib</ImportLibrary>
-      <TargetMachine>MachineX86</TargetMachine>
-    </Link>
-    <Bscmake>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <OutputFile>.\Release/RaptorCore.bsc</OutputFile>
     </Bscmake>
     <PostBuildEvent>
       <Message>Build redistribuable package</Message>
@@ -700,7 +603,6 @@ $(SolutionDir)\$(ProjectName)\Subsys\Redist.bat
   </ItemGroup>
   <ItemGroup>
     <Xsd Include="Subsys\ObjectModels\Raptor.xsd">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Optimized|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
@@ -727,13 +629,6 @@ copy CodeGeneration.h "%RAPTOR_ROOT%\Redist\Include\Subsys"
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Building OpenGL extensions</Message>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">Building OpenGL extensions</Message>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Building OpenGL extensions</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Optimized|Win32'">cd $(TargetDir)
-Builder.exe %(FullPath)
-copy CodeGeneration.h  $(SolutionDir)\$(ProjectName)\Subsys\CodeGeneration.h
-copy CodeGeneration.h "%RAPTOR_ROOT%\Redist\Include\Subsys"
-</Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Optimized|Win32'">Building OpenGL extensions</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Optimized|Win32'">%(RelativeDir)\..\Subsys\CodeGeneration.h</Outputs>
     </CustomBuild>
     <ClInclude Include="..\..\RaptorCore\Engine\3DEngine.h" />
     <ClInclude Include="..\..\RaptorCore\Engine\3DEngineMatrix.h" />

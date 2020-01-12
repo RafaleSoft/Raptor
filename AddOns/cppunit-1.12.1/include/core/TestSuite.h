@@ -9,7 +9,9 @@ CPPUNIT_NS_BEGIN
 
 #ifdef WIN32
 	EXPIMP_TEMPLATE template class CPPUNIT_API std::_Vector_val<std::_Simple_types<CppUnit::Test *>>;
+#if _MSC_VER > 1800
 	EXPIMP_TEMPLATE template class CPPUNIT_API std::_Compressed_pair<std::_Wrap_alloc<std::allocator<CppUnit::Test *>>, std::_Vector_val<std::_Simple_types<CppUnit::Test *>>, true>;
+#endif
 	EXPIMP_TEMPLATE template class CPPUNIT_API std::vector<Test *>;
 #endif
 
