@@ -126,6 +126,9 @@
       <HeaderFileName>
       </HeaderFileName>
     </Midl>
+    <PostBuildEvent>
+      <Command>"%RAPTOR_ROOT%\Redist\bin\UnitTest.exe"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">
     <Midl>
@@ -160,6 +163,9 @@
       <HeaderFileName>
       </HeaderFileName>
     </Midl>
+    <PostBuildEvent>
+      <Command>"%RAPTOR_ROOT%\Redist\bin\UnitTest.exe"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

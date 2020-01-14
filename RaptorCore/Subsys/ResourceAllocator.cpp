@@ -85,7 +85,7 @@ CResourceAllocator::CResourceBinder::~CResourceBinder(void)
 }
 
 bool CResourceAllocator::CResourceBinder::setArray(CProgramParameters::GL_VERTEX_ATTRIB attribute, 
-												   void *vertexPointer, 
+												   void *attribPointer, 
 												   int stride)
 {
 	CRaptorDisplayConfig::GL_ARRAY_STATE *array = NULL;
@@ -105,10 +105,10 @@ bool CResourceAllocator::CResourceBinder::setArray(CProgramParameters::GL_VERTEX
 			break;
 	}
 
-	if (NULL != vertexPointer)
+	if (NULL != attribPointer)
 	{
 		array->enable = true;
-		array->arrayPointer = vertexPointer;
+		array->arrayPointer = attribPointer;
 		array->arrayStride = stride;
 	}
 	else

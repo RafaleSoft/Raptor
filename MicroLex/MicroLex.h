@@ -70,8 +70,8 @@ public:
 	unsigned int	ID(void) const { return m_atomID; };
 	rule*			GetRule(void) const { return m_macroAtom; };
 	unsigned int	NbValidChars(void) const { return m_validChars.size(); };
-	string			GetValidChars(unsigned int pos);
-	void			SetValidChars(unsigned int pos,const string& chars);
+	string			GetValidChars(size_t pos);
+	void			SetValidChars(size_t pos,const string& chars);
 	void			AddValidChars(const string& chars);
 	string			MapType(void) const { return m_mapType; };
 	void			MapType(const string& map) { m_mapType = map; };
