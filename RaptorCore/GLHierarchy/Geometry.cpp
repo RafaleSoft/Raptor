@@ -979,7 +979,7 @@ bool CGeometry::getVertexInputState( std::vector<VkVertexInputBindingDescription
 //		(props->getCurrentTexturing() == IRenderingProperties::ENABLE))
 	{
 		bindings.push_back({ nb_bindings, 2 * sizeof(float), VK_VERTEX_INPUT_RATE_VERTEX });
-		vertexInput.push_back({ 1, nb_bindings, VK_FORMAT_R32G32_SFLOAT, 0 });
+		vertexInput.push_back({ CProgramParameters::TEXCOORD0, nb_bindings, VK_FORMAT_R32G32_SFLOAT, 0 });
 		nb_bindings++;
 	}
 
@@ -987,7 +987,7 @@ bool CGeometry::getVertexInputState( std::vector<VkVertexInputBindingDescription
 	if (m_renderingModel.hasModel(CRenderingModel::CGL_COLORS))
 	{
 		bindings.push_back({ nb_bindings, 4 * sizeof(float), VK_VERTEX_INPUT_RATE_VERTEX });
-		vertexInput.push_back({ 2, nb_bindings, VK_FORMAT_R32G32B32A32_SFLOAT, 0 });
+		vertexInput.push_back({ CProgramParameters::PRIMARY_COLOR, nb_bindings, VK_FORMAT_R32G32B32A32_SFLOAT, 0 });
 		nb_bindings++;
 	}
 
@@ -1002,17 +1002,21 @@ void CGeometry::glRender()
     glRenderGeometry();
 }
 
+
+#if defined(DATA_EXTENDED)
+
+#elif defined(DATA_PACKED)
 void CGeometry::glRenderGeometry()
 {
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
-    if (m_bUpdateBBox)
-    {
+	if (m_bUpdateBBox)
+	{
 		Raptor::GetErrorManager()->generateRaptorError(CGeometry::CGeometryClassID::GetClassId(),
-                                                       CRaptorErrorManager::RAPTOR_WARNING,
-		    							               "A geometry is requested for rendering with an unfinished bounding box!");
+													   CRaptorErrorManager::RAPTOR_WARNING,
+													   "A geometry is requested for rendering with an unfinished bounding box!");
 		glLockData();
 		glUnLockData();
-    }
+	}
 #endif
 
 	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
@@ -1020,117 +1024,72 @@ void CGeometry::glRenderGeometry()
 
 	//	Store arrays state + texture state
 	IRenderingProperties *props = IRenderingProperties::GetCurrentProperties();
-    bool popNormalArray = false;
-    bool popTangentArray = false;
-    bool popColorArray = false;
-    bool popTexCoordArray = false;
-    bool popWeightArray = false;
-    bool popFogArray = false;
+	bool popNormalArray = false;
+	bool popTangentArray = false;
+	bool popColorArray = false;
+	bool popTexCoordArray = false;
+	bool popWeightArray = false;
+	bool popFogArray = false;
 	bool proceedLighting = (props->getCurrentLighting() == IRenderingProperties::ENABLE);
 	bool proceedTexturing = (props->getCurrentTexturing() == IRenderingProperties::ENABLE);
-    
+
 
 	if (m_renderingModel.hasModel(CRenderingModel::CGL_BACK_GEOMETRY))
 		glCullFace(GL_FRONT);
 
 	// always extract geometry
 	glEnableClientState(GL_VERTEX_ARRAY);
-#if defined(DATA_EXTENDED)
-    glVertexPointer( 3,GL_FLOAT,sizeof(GL_VERTEX_DATA),&geometry[0].vertex);
-#elif defined(DATA_PACKED)
-	glVertexPointer( 3 , GL_FLOAT , sizeof(GL_COORD_VERTEX) , vertex);
-#endif
+	glVertexPointer(3, GL_FLOAT, sizeof(GL_COORD_VERTEX), vertex);
 
 	// extract normals
-	if (m_renderingModel.hasModel(CRenderingModel::CGL_NORMALS) && proceedLighting
-#if defined (DATA_EXTENDED)
-		&& (geometry != NULL))
-#elif defined(DATA_PACKED)
-		&& (NULL != normals))
-#endif
+	if (m_renderingModel.hasModel(CRenderingModel::CGL_NORMALS) && proceedLighting && (NULL != normals))
 	{
-        popNormalArray = true;
+		popNormalArray = true;
 		pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::NORMAL);
-#if defined(DATA_EXTENDED)
-        glNormalPointer( GL_FLOAT , sizeof(GL_VERTEX_DATA) , &geometry[0].normal);
-#elif defined(DATA_PACKED)
-		pExtensions->glVertexAttribPointerARB(CProgramParameters::NORMAL,4, GL_FLOAT, false, 0, normals);
-#endif
+		pExtensions->glVertexAttribPointerARB(CProgramParameters::NORMAL, 4, GL_FLOAT, false, 0, normals);
 	}
 
-    // extract tangents
+	// extract tangents
 #if defined(GL_ARB_vertex_program)
-	if (m_renderingModel.hasModel(CRenderingModel::CGL_TANGENTS) && proceedLighting
-#if defined (DATA_EXTENDED)
-		&& (geometry != NULL))
-#elif defined(DATA_PACKED)
-		&& (NULL != tangents))
-#endif
+	if (m_renderingModel.hasModel(CRenderingModel::CGL_TANGENTS) && proceedLighting && (NULL != tangents))
 	{
-        popTangentArray = true;
+		popTangentArray = true;
 		pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::ADDITIONAL_PARAM1);
-#if defined(DATA_EXTENDED)
-        pExtensions->glVertexAttribPointerARB(CShaderProgram::ADDITIONAL_PARAM1,4,GL_FLOAT,false,sizeof(GL_VERTEX_DATA),&geometry[0].tangent);
-#elif defined(DATA_PACKED)
 		pExtensions->glVertexAttribPointerARB(CProgramParameters::ADDITIONAL_PARAM1, 4, GL_FLOAT, false, 0, tangents);
-#endif
 	}
 #endif
 
 	// extract colors
-	if (m_renderingModel.hasModel(CRenderingModel::CGL_COLORS)
-#if defined (DATA_EXTENDED)
-		&& (geometry != NULL))
-#elif defined(DATA_PACKED)
-		&& (NULL != colors))
-#endif
+	if (m_renderingModel.hasModel(CRenderingModel::CGL_COLORS) && (NULL != colors))
 	{
 		pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::PRIMARY_COLOR);
-        popColorArray = true;
-#if defined(DATA_EXTENDED)
-		pExtensions->glVertexAttribPointerARB(CProgramParameters::PRIMARY_COLOR, 4, GL_FLOAT, false, sizeof(GL_VERTEX_DATA), &geometry[0].color);
-#elif defined(DATA_PACKED)
+		popColorArray = true;
 		pExtensions->glVertexAttribPointerARB(CProgramParameters::PRIMARY_COLOR, 4, GL_FLOAT, false, 0, colors);
-#endif
 	}
 
 	// extract texture
-	if (m_renderingModel.hasModel(CRenderingModel::CGL_TEXTURE) && proceedTexturing
-#if defined (DATA_EXTENDED)
-        && (geometry != NULL))
-#elif defined(DATA_PACKED)
-		&& (texcoords != NULL))
-#endif
+	if (m_renderingModel.hasModel(CRenderingModel::CGL_TEXTURE) && proceedTexturing && (texcoords != NULL))
 	{
-			pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::TEXCOORD0);
-            popTexCoordArray = true;
-#if defined(DATA_EXTENDED)
-			pExtensions->glVertexAttribPointerARB(CProgramParameters::TEXCOORD0, 2, GL_FLOAT, false, sizeof(GL_VERTEX_DATA), &geometry[0].texCoord0);
-#elif defined(DATA_PACKED)
-			pExtensions->glVertexAttribPointerARB(CProgramParameters::TEXCOORD0, 2, GL_FLOAT, false, 0, texcoords);
-#endif
+		pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::TEXCOORD0);
+		popTexCoordArray = true;
+		pExtensions->glVertexAttribPointerARB(CProgramParameters::TEXCOORD0, 2, GL_FLOAT, false, 0, texcoords);
 	}
 
-// Vertex weighting is no supported anymore by drivers because
-// shaders enable a more powerfull blending.
+	// Vertex weighting is no supported anymore by drivers because
+	// shaders enable a more powerfull blending.
 
 	// extract vertex weighting
-	if (m_renderingModel.hasModel(CRenderingModel::CGL_WEIGHT)
-#if defined (DATA_EXTENDED)
-		&& (geometry != NULL))
-#elif defined(DATA_PACKED)
-		&& (NULL != weightcoords))
-#endif
+	if (m_renderingModel.hasModel(CRenderingModel::CGL_WEIGHT) && (NULL != weightcoords))
 	{
 #ifdef GL_EXT_vertex_weighting
 		if (pExtensions->glVertexWeightPointerEXT != NULL)
 		{
 			glEnable(GL_VERTEX_WEIGHTING_EXT);
 			glEnableClientState(GL_VERTEX_WEIGHT_ARRAY_EXT);
-            popWeightArray = true;
-			pExtensions->glVertexWeightPointerEXT(1,GL_FLOAT,0,weightcoords);
-			CGenericMatrix<float> gm,gm2;
-			glGetFloatv(GL_MODELVIEW_MATRIX,gm.matrix());
+			popWeightArray = true;
+			pExtensions->glVertexWeightPointerEXT(1, GL_FLOAT, 0, weightcoords);
+			CGenericMatrix<float> gm, gm2;
+			glGetFloatv(GL_MODELVIEW_MATRIX, gm.matrix());
 			CGenericMatrix<float> gm2;
 			gm2 = weightMatrix;
 			gm2 *= gm;
@@ -1138,17 +1097,13 @@ void CGeometry::glRenderGeometry()
 			glLoadMatrixf(gm2.matrix());
 			glMatrixMode(GL_MODELVIEW0_EXT);
 		}
-        else
+		else
 #else
-        {
+		{
 			pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::WEIGHTS);
 			popWeightArray = true;
-#if defined(DATA_EXTENDED)
-            pExtensions->glVertexAttribPointerARB(CShaderProgram::WEIGHTS,1,GL_FLOAT,false,sizeof(GL_VERTEX_DATA),&geometry[0].weight);
-#elif defined(DATA_PACKED)
 			pExtensions->glVertexAttribPointerARB(CProgramParameters::WEIGHTS, 1, GL_FLOAT, false, 0, weightcoords);
-#endif
-        }
+		}
 #endif
 	}
 
@@ -1158,16 +1113,16 @@ void CGeometry::glRenderGeometry()
 	{
 		if (pExtensions->glFogCoordPointerEXT != NULL)
 		{
-			glFogi(GL_FOG_COORDINATE_SOURCE_EXT,GL_FOG_COORDINATE_EXT);
+			glFogi(GL_FOG_COORDINATE_SOURCE_EXT, GL_FOG_COORDINATE_EXT);
 			glEnableClientState(GL_FOG_COORDINATE_ARRAY_EXT);
-            popFogArray = true;
-			pExtensions->glFogCoordPointerEXT(GL_FLOAT,0,fogcoords);
+			popFogArray = true;
+			pExtensions->glFogCoordPointerEXT(GL_FLOAT, 0, fogcoords);
 		}
 	}
 #endif
 
 	if (m_pPrimitives.size() == 0)
-		glDrawElements( GL_TRIANGLES, 3*m_nbPolys, GL_UNSIGNED_SHORT,polys);
+		glDrawElements(GL_TRIANGLES, 3 * m_nbPolys, GL_UNSIGNED_SHORT, polys);
 	else
 	{
 		vector<CGeometryPrimitive*>::const_iterator itr = m_pPrimitives.begin();
@@ -1182,45 +1137,48 @@ void CGeometry::glRenderGeometry()
 	CATCH_GL_ERROR
 
 #ifdef GL_EXT_fog_coord
-	//	restore fog model
-	if (m_renderingModel.hasModel(CRenderingModel::CGL_FOG))
-		glFogi(GL_FOG_COORDINATE_SOURCE_EXT,GL_FRAGMENT_DEPTH_EXT);
+		//	restore fog model
+		if (m_renderingModel.hasModel(CRenderingModel::CGL_FOG))
+			glFogi(GL_FOG_COORDINATE_SOURCE_EXT, GL_FRAGMENT_DEPTH_EXT);
 #endif
 
 	//	Restore status	
 	if (m_renderingModel.hasModel(CRenderingModel::CGL_BACK_GEOMETRY))
 		glCullFace(GL_BACK);
-	
 
-    glDisableClientState(GL_VERTEX_ARRAY);
-    if (popNormalArray)
+
+	glDisableClientState(GL_VERTEX_ARRAY);
+	if (popNormalArray)
 		pExtensions->glDisableVertexAttribArrayARB(CProgramParameters::NORMAL);
-    if (popColorArray)
+	if (popColorArray)
 		pExtensions->glDisableVertexAttribArrayARB(CProgramParameters::PRIMARY_COLOR);
-    if (popTexCoordArray)
+	if (popTexCoordArray)
 		pExtensions->glDisableVertexAttribArrayARB(CProgramParameters::TEXCOORD0);
 #ifdef GL_EXT_vertex_weighting
-    if (popWeightArray)
-    {
-        glDisableClientState(GL_VERTEX_WEIGHT_ARRAY_EXT);
-        glDisable(GL_VERTEX_WEIGHTING_EXT);
-    }
+	if (popWeightArray)
+	{
+		glDisableClientState(GL_VERTEX_WEIGHT_ARRAY_EXT);
+		glDisable(GL_VERTEX_WEIGHTING_EXT);
+	}
 #else
-    if (popWeightArray)
+	if (popWeightArray)
 		pExtensions->glDisableVertexAttribArrayARB(CProgramParameters::WEIGHTS);
 #endif
 #ifdef GL_EXT_fog_coord
-    if (popFogArray)
-        glDisableClientState(GL_FOG_COORDINATE_ARRAY_EXT);
+	if (popFogArray)
+		glDisableClientState(GL_FOG_COORDINATE_ARRAY_EXT);
 #endif
 #if defined(GL_ARB_vertex_program)
-    if (popTangentArray)
+	if (popTangentArray)
 		pExtensions->glDisableVertexAttribArrayARB(CProgramParameters::ADDITIONAL_PARAM1);
 #endif
 
 	CRaptorInstance::GetInstance().iRenderedObjects++;
 	CRaptorInstance::GetInstance().iRenderedTriangles += m_nbPolys;
 }
+
+#endif
+
 
 //////////////////////////////////////////////////////////////////////
 //	Manual data loading

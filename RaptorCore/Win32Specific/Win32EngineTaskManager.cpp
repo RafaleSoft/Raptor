@@ -60,11 +60,11 @@ DWORD WINAPI engineSyncThread(void* pParam)
 	//	but is it really important here ?
     manager->engineStarted = true;
 	
-	while (!instance.terminate)
+	while (!instance.terminate())
 	{
 		WaitForSingleObject(manager->processFrameEvt,INFINITE);
 		ResetEvent(manager->processFrameEvt);
-		if (instance.terminate)
+		if (instance.terminate())
 			break;
 
 		ResetEvent(manager->synchroFrameEvt);
@@ -278,10 +278,10 @@ void CWin32EngineTaskManager::computeAsyncJobs(DWORD id)
 	asyncEngines[stack].started = true;
 
 	CRaptorInstance &instance = CRaptorInstance::GetInstance();
-	while (!instance.terminate)
+	while (!instance.terminate())
 	{
 		DWORD res = WaitForSingleObject(asyncEngines[stack].hEvent,INFINITE);
-		if (instance.terminate)
+		if (instance.terminate())
 			break;
 
 		if (res == WAIT_FAILED)

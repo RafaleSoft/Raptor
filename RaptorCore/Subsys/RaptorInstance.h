@@ -71,7 +71,7 @@ public:
 	//!	Raptor Instance has been initialised.
 	bool					isInitialised(void) const { return m_bInitialised; };
 	//!	The second pipeline has exited, raptor can be closed safely.
-	bool					terminate;
+	bool					terminate(void) const { return m_bTerminate; };
 	//!	Number of objects rendered in the current frame.
 	uint32_t				iRenderedObjects;
 	//!	Number of triangles rendered in the current frame.
@@ -138,6 +138,8 @@ public:
 	CRaptorDisplayConfig::GL_ARRAYS_STATE	bindingState;
 	//!	Default ResourceAllocator arrays bindings initialised.
 	bool arrays_initialized;
+	//!	Texture Quad global shader.
+	CShader	*m_pQuadShader;
 
 
 	//! Stores Display attributes for delayed creation.
@@ -172,6 +174,8 @@ private:
 	CRaptorDisplayConfig	defaultConfig;
 	//!	Raptor Instance has been initialised.
 	bool					m_bInitialised;
+	//!	Raptor Instance has been requested to terminate.
+	bool					m_bTerminate;
 	//! Fragment Program state.
 	bool					m_bFragmentShaderReady;
 	//! Vertex Program state.

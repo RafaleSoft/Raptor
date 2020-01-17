@@ -64,15 +64,24 @@ public:
 		void*		arrayPointer;
 	} GL_ARRAY_STATE;
 
-	typedef struct GL_ARRAYS_STATE_TAG
+	typedef union
 	{
-		GL_ARRAY_STATE	vertexArray;
-		GL_ARRAY_STATE	normalArray;
-		GL_ARRAY_STATE	colorArray;
-		GL_ARRAY_STATE	indexArray;
-		GL_ARRAY_STATE	textureArray;
-		GL_ARRAY_STATE	edgeArray;
-		GL_ARRAY_STATE	weightArray;
+		//!	Order is the same as GL_VERTEX_ATTRIB.
+		//! @see CProgramParameters
+		struct GL_ARRAYS_STATE_TAG
+		{
+			GL_ARRAY_STATE	vertexArray;
+			GL_ARRAY_STATE	weightArray;
+			GL_ARRAY_STATE	normalArray;
+			GL_ARRAY_STATE	colorArray;
+			GL_ARRAY_STATE	sColorArray;
+			GL_ARRAY_STATE	additionalArray;
+			GL_ARRAY_STATE	additionalArray2;
+			GL_ARRAY_STATE	textureArray;
+			GL_ARRAY_STATE	indexArray;
+			GL_ARRAY_STATE	edgeArray;
+		} attributes;
+		GL_ARRAY_STATE arrays[16];
 	} GL_ARRAYS_STATE;
 
 	typedef struct GL_TRANSFORM_STATE_TAG
@@ -350,6 +359,9 @@ public:
 	GL_PIXEL_STATE			pixelState;
 	GL_FRAME_STATE			framebufferState;
 	GL_HINT_STATE			hintState;
+
+	//!	Vertex Input State Resource binder
+	void				*m_pBinder;
 };
 
 RAPTOR_NAMESPACE_END

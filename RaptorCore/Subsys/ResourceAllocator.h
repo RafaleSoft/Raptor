@@ -62,6 +62,7 @@ public:
 
 		//! Unbind a single array.
 		bool unbindArray(CRaptorDisplayConfig::GL_ARRAY_STATE &state);
+		bool unbindAttribArray(CRaptorDisplayConfig::GL_ARRAY_STATE &state);
 
 		//!	This resource binder arrays bindings.
 		CRaptorDisplayConfig::GL_ARRAYS_STATE			bindings;

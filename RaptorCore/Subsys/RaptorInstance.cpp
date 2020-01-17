@@ -90,8 +90,8 @@ CRaptorInstance::CRaptorInstance()
 	pAnimator = NULL;
 	pConsole = NULL;
 	
-	terminate = false;
 	m_bInitialised = false;
+	m_bTerminate = false;
 	forceSSE = false;
 	runAsShareware = false;
 	iRenderedObjects = 0;
@@ -109,6 +109,7 @@ CRaptorInstance::CRaptorInstance()
 
 	m_pAttributes = NULL;
 	m_pIdentity = NULL;
+	m_pQuadShader = NULL;
 
 	arrays_initialized = false;
 }
@@ -141,7 +142,7 @@ bool CRaptorInstance::destroy(void)
 
 CRaptorInstance::~CRaptorInstance()
 {
-	terminate = true;
+	m_bTerminate = true;
 	m_bInitialised = false;
 
 	//! Destroy glObjects : we need a context.
@@ -413,6 +414,23 @@ bool CRaptorInstance::glInitShaders(void)
 		CProgramParameters identityParams;
 		identityParams.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);
 		stage->setProgramParameters(identityParams);
+		if (!stage->glCompileShader())
+			return false;
+	}
+
+	if (NULL == m_pQuadShader)
+	{
+		m_pQuadShader = new CShader("QUAD_SHADER");
+		COpenGLShaderStage *stage = m_pQuadShader->glGetOpenGLShader();
+
+		CVertexShader *vp = stage->glGetVertexShader("TEXTURE_QUAD_VTX_PROGRAM");
+		CGeometryShader *gp = stage->glGetGeometryShader("TEXTURE_QUAD_GEO_PROGRAM");
+		gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
+		CFragmentShader *fs = stage->glGetFragmentShader("TEXTURE_QUAD_TEX_PROGRAM");
+		CProgramParameters params;
+		params.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);
+
+		stage->setProgramParameters(params);
 		if (!stage->glCompileShader())
 			return false;
 	}

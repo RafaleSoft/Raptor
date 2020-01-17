@@ -757,15 +757,15 @@ void WriteAtomAlternater(StreamManager& stream,unsigned int file_ID,rule *r)
 
 	str="	if (";
 	int nb = r->GetNbAtoms();
-	for (int j=nb-1;j>=0;j--)
+	for (int j=nb-1; j >= 0; j--)
 	{
 		atom *a = r->GetAtom(j);
 
-		str+="(result!=ATOM_"+a->Name()+"_ID)";
-		if (j>0)
-			str+="&&";
+		str += "(result!=ATOM_"+a->Name()+"_ID)";
+		if (j > 0)
+			str += "&&";
 		else
-			str+=")\n";
+			str += ")\n";
 	}
 	WRITE;
 

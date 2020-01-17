@@ -262,6 +262,9 @@ private:
     //! The rendering model of the geometry
     CRenderingModel		m_renderingModel;
 
+	//!	Vertex Input State Resource binder
+	void				*m_pBinder;
+
     //! The list of base primitives
 	vector<CGeometryPrimitive*>	m_pPrimitives;
 };
