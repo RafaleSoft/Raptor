@@ -985,29 +985,43 @@ $(SolutionDir)\$(ProjectName)\Subsys\Redist.bat
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\RaptorCore\System\Glext.h">
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">cd $(SolutionDir)\$(ProjectName)\Subsys
-"%RAPTOR_ROOT%\Redist\bin\Builder.Net.exe" %(FullPath)
-copy $(SolutionDir)\$(ProjectName)\Subsys\CodeGeneration.h "%RAPTOR_ROOT%\Redist\Include\Subsys"</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">cd $(SolutionDir)\$(ProjectName)\Subsys
-"%RAPTOR_ROOT%\Redist\bin\Builder.Net.exe" %(FullPath)
-copy $(SolutionDir)\$(ProjectName)\Subsys\CodeGeneration.h "%RAPTOR_ROOT%\Redist\Include\Subsys"</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">cd $(TargetDir)
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">cd $(TargetDir)
+
 Builder.exe %(FullPath)
+
+copy CodeGeneration.h  $(SolutionDir)\$(ProjectName)\Subsys\CodeGeneration.h
+copy CodeGeneration.h "%RAPTOR_ROOT%\Redist\Include\Subsys"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">cd $(TargetDir)
+
+Builder.exe %(FullPath)
+
+copy CodeGeneration.h  $(SolutionDir)\$(ProjectName)\Subsys\CodeGeneration.h
+copy CodeGeneration.h "%RAPTOR_ROOT%\Redist\Include\Subsys"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">cd $(TargetDir)
+
+Builder.exe %(FullPath)
+
 copy CodeGeneration.h  $(SolutionDir)\$(ProjectName)\Subsys\CodeGeneration.h
 copy CodeGeneration.h "%RAPTOR_ROOT%\Redist\Include\Subsys"
 </Command>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|x64'">cd $(TargetDir)
+
 Builder.exe %(FullPath)
+
 copy CodeGeneration.h  $(SolutionDir)\$(ProjectName)\Subsys\CodeGeneration.h
 copy CodeGeneration.h "%RAPTOR_ROOT%\Redist\Include\Subsys"
 </Command>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">cd $(TargetDir)
+
 Builder.exe %(FullPath)
+
 copy CodeGeneration.h  $(SolutionDir)\$(ProjectName)\Subsys\CodeGeneration.h
 copy CodeGeneration.h "%RAPTOR_ROOT%\Redist\Include\Subsys"
 </Command>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">cd $(TargetDir)
+
 Builder.exe %(FullPath)
+
 copy CodeGeneration.h  $(SolutionDir)\$(ProjectName)\Subsys\CodeGeneration.h
 copy CodeGeneration.h "%RAPTOR_ROOT%\Redist\Include\Subsys"
 </Command>

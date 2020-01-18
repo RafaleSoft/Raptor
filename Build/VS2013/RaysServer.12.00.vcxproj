@@ -138,7 +138,7 @@
       <OpenMPSupport>true</OpenMPSupport>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>RaptorToolBox.lib;RaptorNetwork.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Raptor.lib;RaptorToolBox.lib;RaptorNetwork.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <EntryPointSymbol>main</EntryPointSymbol>
@@ -164,7 +164,7 @@
       <OpenMPSupport>true</OpenMPSupport>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>RaptorToolBox.lib;RaptorNetwork.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Raptor.lib;RaptorToolBox.lib;RaptorNetwork.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <EntryPointSymbol>main</EntryPointSymbol>
@@ -193,7 +193,7 @@
       <OpenMPSupport>true</OpenMPSupport>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>RaptorToolBox.lib;RaptorNetwork.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Raptor.lib;RaptorToolBox.lib;RaptorNetwork.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <Version>$(RAPTOR_RELEASE)</Version>
       <AdditionalLibraryDirectories>$(RAPTOR_ROOT)\redist\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -228,7 +228,7 @@ copy $(OutDir)$(TargetFileName).config "%RAPTOR_ROOT%\Redist\bin"
       <OpenMPSupport>true</OpenMPSupport>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>RaptorToolBox.lib;RaptorNetwork.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Raptor.lib;RaptorToolBox.lib;RaptorNetwork.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <Version>$(RAPTOR_RELEASE)</Version>
       <AdditionalLibraryDirectories>$(RAPTOR_ROOT)\redist\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>

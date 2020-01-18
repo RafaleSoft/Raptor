@@ -180,7 +180,7 @@
     <Link>
       <OutputFile>$(OutDir)RaptorData.dll</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>$(ZLIB_LIB_PATH);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(RAPTOR_ROOT)\Redist\lib;</AdditionalLibraryDirectories>
       <ModuleDefinitionFile>
       </ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -247,7 +247,7 @@ copy $(SolutionDir)$(ProjectName)\RaptorData.pck "%RAPTOR_ROOT%\Redist\bin\"
     <Link>
       <OutputFile>$(OutDir)RaptorData.dll</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>$(ZLIB_LIB_PATH);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(RAPTOR_ROOT)\Redist\lib;</AdditionalLibraryDirectories>
       <ModuleDefinitionFile>
       </ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
