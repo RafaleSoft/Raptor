@@ -98,31 +98,32 @@ CResourceAllocator::CResourceBinder::~CResourceBinder(void)
 }
 
 bool CResourceAllocator::CResourceBinder::setArray(CProgramParameters::GL_VERTEX_ATTRIB attribute, 
-												   void *attribPointer, 
-												   int stride)
+												   void *attribPointer,
+												   size_t size,
+												   size_t stride)
 {
 	CRaptorDisplayConfig::GL_ARRAY_STATE *array = NULL;
 	switch (attribute)
 	{
 		case CProgramParameters::POSITION:
 			array = &bindings.attributes.vertexArray;
-			array->arraySize = 4;
+			array->arraySize = size;
 			break;
 		case CProgramParameters::PRIMARY_COLOR:
 			array = &bindings.attributes.colorArray;
-			array->arraySize = 4;
+			array->arraySize = size;
 			break;
 		case CProgramParameters::NORMAL:
 			array = &bindings.attributes.normalArray;
-			array->arraySize = 4;
+			array->arraySize = size;
 			break;
 		case CProgramParameters::TEXCOORD0:
 			array = &bindings.attributes.textureArray;
-			array->arraySize = 2;
+			array->arraySize = size;
 			break;
 		case CProgramParameters::ADDITIONAL_PARAM1:
 			array = &bindings.attributes.additionalArray;
-			array->arraySize = 4;
+			array->arraySize = size;
 			break;
 		default:
 			array = NULL;
@@ -146,7 +147,6 @@ bool CResourceAllocator::CResourceBinder::setArray(CProgramParameters::GL_VERTEX
 
 bool CResourceAllocator::CResourceBinder::glvkBindArrays(void)
 {
-#if 0
 #if defined(GL_ARB_VERTEX_ARRAY_OBJECT_EXTENSION_NAME)
 	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 
@@ -155,45 +155,48 @@ bool CResourceAllocator::CResourceBinder::glvkBindArrays(void)
 	
 	pExtensions->glBindVertexArrayARB(array);
 
+	bool res = true;
 	if (updateArray)
 	{
-		bindAttribArray(bindings.vertexArray);
+		for (size_t i = 0; i < CProgramParameters::GL_VERTEX_ATTRIB_t::MAX_VERTEX_ATTRIB; i++)
+			res = res && bindAttribArray(bindings.arrays[i]);
+
 		updateArray = false;
 	}
 
-	return true;
+	return res;
+#elif defined(GL_ARB_vertex_program)
+	bool res = true;
+	for (size_t i = 0; i < CProgramParameters::GL_VERTEX_ATTRIB_t::MAX_VERTEX_ATTRIB; i++)
+		res = res && bindAttribArray(bindings.arrays[i]);
+	
+	return res;
 #else
-	return	bindArray(bindings.vertexArray) &&
-			bindArray(bindings.colorArray);
+	bool res = true;
+	for (size_t i = 0; i < 16; i++)
+		res = res && bindArray(bindings.arrays[i]);
+
+	return res;
 #endif
-#else
-	return	bindAttribArray(bindings.attributes.vertexArray) &&
-		bindAttribArray(bindings.attributes.colorArray) &&
-		bindAttribArray(bindings.attributes.textureArray) &&
-		bindAttribArray(bindings.attributes.normalArray) &&
-		bindAttribArray(bindings.attributes.additionalArray);
-#endif
-	//MAX_VERTEX_ATTRIBS_ARB
 }
 
 
 bool CResourceAllocator::CResourceBinder::glvkUnbindArrays(void)
 {
-#if 0
 #if defined(GL_ARB_VERTEX_ARRAY_OBJECT_EXTENSION_NAME)
 	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 	pExtensions->glBindVertexArrayARB(0);
 	return true;
+#elif defined(GL_ARB_vertex_program)
+	bool res = true;
+	for (size_t i = 0; i < CProgramParameters::GL_VERTEX_ATTRIB_t::MAX_VERTEX_ATTRIB; i++)
+		res = res && unbindAttribArray(bindings.arrays[i]);
+	return res;
 #else
-	return	unbindArray(bindings.vertexArray) &&
-			unbindArray(bindings.colorArray);
-#endif
-#else
-	return	unbindAttribArray(bindings.attributes.vertexArray) &&
-		unbindAttribArray(bindings.attributes.colorArray) &&
-		unbindAttribArray(bindings.attributes.textureArray) &&
-		unbindAttribArray(bindings.attributes.normalArray) &&
-		unbindAttribArray(bindings.attributes.additionalArray);
+	bool res = true;
+	for (size_t i = 0; i < CProgramParameters::GL_VERTEX_ATTRIB_t::MAX_VERTEX_ATTRIB; i++)
+		res = res && unbindArray(bindings.arrays[i]);
+	return res;
 #endif
 }
 
@@ -222,9 +225,7 @@ bool CResourceAllocator::CResourceBinder::unbindAttribArray(CRaptorDisplayConfig
 #if defined(GL_ARB_vertex_program)
 	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 	if (state.enable)
-	{
 		pExtensions->glDisableVertexAttribArrayARB(state.arrayIndex);
-	}
 	return true;
 #else
 	return false;

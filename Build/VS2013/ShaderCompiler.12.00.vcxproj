@@ -211,7 +211,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <StringPooling>false</StringPooling>
       <StructMemberAlignment>16Bytes</StructMemberAlignment>
-      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <IntrinsicFunctions>true</IntrinsicFunctions>
     </ClCompile>
@@ -316,7 +316,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <StringPooling>false</StringPooling>
       <StructMemberAlignment>16Bytes</StructMemberAlignment>
-      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <IntrinsicFunctions>true</IntrinsicFunctions>
     </ClCompile>
@@ -422,7 +422,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <StringPooling>false</StringPooling>
       <StructMemberAlignment>16Bytes</StructMemberAlignment>
-      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <IntrinsicFunctions>false</IntrinsicFunctions>
       <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>

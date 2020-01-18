@@ -31,7 +31,7 @@ public:
 	//! Nevertheless, GLSL bindings can coexist with conventionnal mapping.
 	typedef enum GL_VERTEX_ATTRIB_t
 	{
-		POSITION,
+		POSITION = 0,
 		WEIGHTS,
 		NORMAL,
 		PRIMARY_COLOR,
@@ -46,7 +46,8 @@ public:
 		TEXCOORD4,
 		TEXCOORD5,
 		TEXCOORD6,
-		TEXCOORD7
+		TEXCOORD7,
+		MAX_VERTEX_ATTRIB
 	} GL_VERTEX_ATTRIB;
 
 	class CParameterBase

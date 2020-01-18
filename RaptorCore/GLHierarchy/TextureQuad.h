@@ -71,10 +71,6 @@ public:
 	//!	@return true if texture quad updated without errors or texture not null.
 	bool setQuadTexture(CTextureObject *pTexture);
 
-	//!	Update the texture object rendered by this quad.
-	//! @param center : defines the center of the quad for drawing (model view reference).
-	bool glSetQuadCenter(const GL_COORD_VERTEX &center);
-
 	//!	Set quad attributes.
 	//!	@param center : defines the center of the quad for drawing (model view reference)
 	//!	@param color : defines the base color of the quad (multiplied by texture color)

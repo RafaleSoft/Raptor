@@ -146,12 +146,13 @@ void rule::Display(void)
 	cout << "RULE parsed:" << endl;
 	cout << "   rule: " << m_name << endl;
 	cout << "  atoms: ";
-	unsigned int i = 0;
-	unsigned int nb = m_atomList.size();
+	
+	size_t i = 0;
+	size_t nb = m_atomList.size();
 
 	if (nb > 0)
 	{
-		for (i=0;i<nb-1;i++)
+		for (i=0; i < nb-1; i++)
         {
 			cout << (m_atomList[i].pAtom)->Name();
             if (m_atomList[i].occurences > 1)

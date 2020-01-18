@@ -11,7 +11,7 @@
 	#include "Imaging/OpenEXRImaging.h"
 #endif
 
-
+#include <algorithm>
 
 // the source from Ilm cannot compile with old compilers like VC++6.0
 // Exr support will only be enabled in later versions.
@@ -40,8 +40,11 @@ COpenEXRImaging::~COpenEXRImaging(void)
 
 
 bool COpenEXRImaging::isOfKind(const std::string &kind) const 
-{ 
-	return ("EXR" == kind);
+{
+	std::string ext = kind;
+	std::transform(ext.begin(), ext.end(), ext.begin(), ::toupper);
+
+	return ("EXR" == ext);
 }
 
 vector<std::string> COpenEXRImaging::getImageKind(void) const

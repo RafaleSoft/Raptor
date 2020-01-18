@@ -10,6 +10,8 @@
 	#include "Imaging/JPGImaging.h"
 #endif
 
+#include <algorithm>
+
 
 //  jpeg 6b support
 #ifndef JPEGLIB_H
@@ -46,10 +48,13 @@ CJPGImaging::~CJPGImaging(void)
 }
 
 bool CJPGImaging::isOfKind(const std::string &kind) const 
-{ 
-	return (("JPG" == kind) || 
-			("JPE" == kind) ||
-			("JPEG" == kind));
+{
+	std::string ext = kind;
+	std::transform(ext.begin(), ext.end(), ext.begin(), ::toupper);
+
+	return (("JPG" == ext) || 
+			("JPE" == ext) ||
+			("JPEG" == ext));
 }
 
 vector<std::string> CJPGImaging::getImageKind(void) const

@@ -66,6 +66,13 @@ CTextureQuad::~CTextureQuad()
 {
 	m_rTexture = NULL;
 	nb_quads--;
+
+	if (NULL != m_pBinder)
+	{
+		CResourceAllocator::CResourceBinder *binder = (CResourceAllocator::CResourceBinder*)m_pBinder;
+		delete binder;
+	}
+
 	if (0 == nb_quads)
 	{
 		CGeometryAllocator *pAllocator = CGeometryAllocator::GetInstance();
@@ -85,34 +92,6 @@ bool CTextureQuad::setQuadTexture(CTextureObject *pTexture)
 	m_rTexture = pTexture;
 
 	return (NULL != pTexture);
-}
-
-bool CTextureQuad::glSetQuadCenter(const GL_COORD_VERTEX &center)
-{
-	if ((max_index >= max_texture_quad) || (m_index > max_index))
-		return false;
-
-	CGeometryAllocator *pAllocator = CGeometryAllocator::GetInstance();
-	bool lock = pAllocator->isMemoryLocked();
-	if (lock)
-		pAllocator->glvkLockMemory(false);
-
-	if (NULL == s_attributes)
-	{
-		size_t s = sizeof(Attributes) / sizeof(float);
-		s_attributes = (Attributes*)(pAllocator->allocateVertices(max_texture_quad * s));
-	}
-
-	//! Update vertex buffer
-	s_attributes = (Attributes*)pAllocator->glvkMapPointer((float*)s_attributes);
-	CTextureQuad::Attributes& attrs = s_attributes[m_index];
-	attrs.m_center = center;
-	s_attributes = (Attributes*)pAllocator->glvkUnMapPointer((float*)s_attributes);
-
-	if (lock)
-		pAllocator->glvkLockMemory(true);
-
-	return true;
 }
 
 bool CTextureQuad::glSetQuadAttributes(	const GL_COORD_VERTEX &center,
@@ -136,9 +115,9 @@ bool CTextureQuad::glSetQuadAttributes(	const GL_COORD_VERTEX &center,
 	if (NULL == m_pBinder)
 	{
 		CResourceAllocator::CResourceBinder *binder = new CResourceAllocator::CResourceBinder();
-		binder->setArray(CProgramParameters::POSITION, &s_attributes[m_index].m_center, sizeof(Attributes));
-		binder->setArray(CProgramParameters::PRIMARY_COLOR, &s_attributes[m_index].m_color, sizeof(Attributes));
-		binder->setArray(CProgramParameters::ADDITIONAL_PARAM1, &s_attributes[m_index].m_sizes, sizeof(Attributes));
+		binder->setArray(CProgramParameters::POSITION, &s_attributes[m_index].m_center, 4, sizeof(Attributes));
+		binder->setArray(CProgramParameters::PRIMARY_COLOR, &s_attributes[m_index].m_color, 4, sizeof(Attributes));
+		binder->setArray(CProgramParameters::ADDITIONAL_PARAM1, &s_attributes[m_index].m_sizes, 4, sizeof(Attributes));
 		m_pBinder = binder;
 	}
 

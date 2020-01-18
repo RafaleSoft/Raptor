@@ -11,6 +11,9 @@
 	#include "Imaging/PNGImaging.h"
 #endif
 
+#include <algorithm>
+
+
 // libpng support
 #include "png.h"
 // libpng sample
@@ -169,8 +172,11 @@ CPNGImaging::~CPNGImaging(void)
 
 
 bool CPNGImaging::isOfKind(const std::string &kind) const 
-{ 
-	return ("PNG" == kind); 
+{
+	std::string ext = kind;
+	std::transform(ext.begin(), ext.end(), ext.begin(), ::toupper);
+
+	return ("PNG" == ext); 
 }
 
 vector<std::string> CPNGImaging::getImageKind(void) const

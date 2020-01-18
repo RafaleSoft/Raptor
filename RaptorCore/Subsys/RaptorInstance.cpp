@@ -110,6 +110,7 @@ CRaptorInstance::CRaptorInstance()
 	m_pAttributes = NULL;
 	m_pIdentity = NULL;
 	m_pQuadShader = NULL;
+	m_pFontShader = NULL;
 
 	arrays_initialized = false;
 }
@@ -164,6 +165,12 @@ CRaptorInstance::~CRaptorInstance()
 		pConsole = NULL;
 	}
 
+	//if (NULL != m_pQuadShader)
+	//	m_pQuadShader->releaseReference();
+	//m_pQuadShader = NULL;
+	//if (NULL != m_pFontShader)
+	//	m_pFontShader->releaseReference();
+	//m_pFontShader = NULL;
 	CShaderLibrary* pShaderLib = CShaderLibrary::GetInstance();
 	if (pShaderLib != NULL)
 		pShaderLib->destroy();
@@ -417,24 +424,6 @@ bool CRaptorInstance::glInitShaders(void)
 		if (!stage->glCompileShader())
 			return false;
 	}
-
-	if (NULL == m_pQuadShader)
-	{
-		m_pQuadShader = new CShader("QUAD_SHADER");
-		COpenGLShaderStage *stage = m_pQuadShader->glGetOpenGLShader();
-
-		CVertexShader *vp = stage->glGetVertexShader("TEXTURE_QUAD_VTX_PROGRAM");
-		CGeometryShader *gp = stage->glGetGeometryShader("TEXTURE_QUAD_GEO_PROGRAM");
-		gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
-		CFragmentShader *fs = stage->glGetFragmentShader("TEXTURE_QUAD_TEX_PROGRAM");
-		CProgramParameters params;
-		params.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);
-
-		stage->setProgramParameters(params);
-		if (!stage->glCompileShader())
-			return false;
-	}
-
 	if (NULL == m_pAttributes)
 	{
 		CGeometryAllocator *pAllocator = CGeometryAllocator::GetInstance();
@@ -453,6 +442,45 @@ bool CRaptorInstance::glInitShaders(void)
 			pAllocator->glvkLockMemory(true);
 	}
 #endif
+
+	if (NULL == m_pQuadShader)
+	{
+		m_pQuadShader = new CShader("QUAD_SHADER");
+		COpenGLShaderStage *stage = m_pQuadShader->glGetOpenGLShader();
+
+		CVertexShader *vp = stage->glGetVertexShader("TEXTURE_QUAD_VTX_PROGRAM");
+		CGeometryShader *gp = stage->glGetGeometryShader("TEXTURE_QUAD_GEO_PROGRAM");
+		gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
+		CFragmentShader *fs = stage->glGetFragmentShader("TEXTURE_QUAD_TEX_PROGRAM");
+		CProgramParameters params;
+		params.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);
+
+		stage->setProgramParameters(params);
+		if (!stage->glCompileShader())
+			return false;
+	}
+	if (NULL == m_pFontShader)
+	{
+		m_pFontShader = new CShader("PARTICLE_SHADER");
+		COpenGLShaderStage *stage = m_pFontShader->glGetOpenGLShader();
+
+		CVertexShader *vp = stage->glGetVertexShader("FONT2D_VTX_PROGRAM");
+		CProgramParameters params;
+		GL_COORD_VERTEX viewport(0, 0, 640, 480);
+		params.addParameter("viewport", viewport);
+
+		CGeometryShader *gp = stage->glGetGeometryShader("FONT2D_GEO_PROGRAM");
+		gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
+
+		CFragmentShader *fs = stage->glGetFragmentShader("FONT2D_TEX_PROGRAM");
+		params.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);
+		params.addParameter("color", CColor::RGBA(1.0, 0.0, 0.0, 1.0));
+
+		stage->setProgramParameters(params);
+		bool res = stage->glCompileShader();
+		if (!res)
+			return false;
+	}
 
 	return true;
 }

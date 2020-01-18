@@ -140,6 +140,8 @@ public:
 	bool arrays_initialized;
 	//!	Texture Quad global shader.
 	CShader	*m_pQuadShader;
+	//! 2D Texture Font global shaders
+	CShader	*m_pFontShader;
 
 
 	//! Stores Display attributes for delayed creation.

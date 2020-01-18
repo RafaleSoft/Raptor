@@ -10,6 +10,8 @@
 	#include "Imaging/TGAImaging.h"
 #endif
 
+#include <algorithm>
+
 
 #if defined(WIN32)
 	#include <share.h>
@@ -42,8 +44,11 @@ CTGAImaging::~CTGAImaging(void)
 
 
 bool CTGAImaging::isOfKind(const std::string &kind) const 
-{ 
-	return ("TGA" == kind); 
+{
+	std::string ext = kind;
+	std::transform(ext.begin(), ext.end(), ext.begin(), ::toupper);
+
+	return ("TGA" == ext); 
 }
 
 vector<std::string> CTGAImaging::getImageKind(void) const
