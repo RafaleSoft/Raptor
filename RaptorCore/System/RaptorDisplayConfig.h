@@ -75,6 +75,7 @@ public:
 			GL_ARRAY_STATE	normalArray;
 			GL_ARRAY_STATE	colorArray;
 			GL_ARRAY_STATE	sColorArray;
+			GL_ARRAY_STATE	fogCoordArray;
 			GL_ARRAY_STATE	additionalArray;
 			GL_ARRAY_STATE	additionalArray2;
 			GL_ARRAY_STATE	textureArray;

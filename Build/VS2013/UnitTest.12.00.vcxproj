@@ -136,6 +136,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <Version>$(RAPTOR_RELEASE)</Version>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -149,6 +150,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <Version>$(RAPTOR_RELEASE)</Version>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -170,6 +172,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>opengl32.lib;Raptor.lib;RaptorToolBox.lib;libpng.lib;libtiff.lib;libjpeg.lib;zlib.lib;cppunit_dll.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(RAPTOR_ROOT)\Redist\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <Version>$(RAPTOR_RELEASE)</Version>
     </Link>
     <PostBuildEvent>
       <Command>copy $(OutDir)$(ProjectName).exe "%RAPTOR_ROOT%\Redist\bin\"</Command>
@@ -194,6 +197,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>opengl32.lib;Raptor.lib;RaptorToolBox.lib;libpng.lib;libtiff.lib;libjpeg.lib;zlib.lib;cppunit_dll.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(RAPTOR_ROOT)\Redist\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <Version>$(RAPTOR_RELEASE)</Version>
     </Link>
     <PostBuildEvent>
       <Command>copy $(OutDir)$(ProjectName).exe "%RAPTOR_ROOT%\Redist\bin\"</Command>
@@ -218,6 +222,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>opengl32.lib;Raptor.lib;RaptorToolBox.lib;libpng.lib;libtiff.lib;libjpeg.lib;zlib.lib;cppunit_dll.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(RAPTOR_ROOT)\Redist\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <Version>$(RAPTOR_RELEASE)</Version>
     </Link>
     <PostBuildEvent>
       <Command>copy $(OutDir)$(ProjectName).exe "%RAPTOR_ROOT%\Redist\bin\"</Command>
@@ -242,6 +247,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>opengl32.lib;Raptor.lib;RaptorToolBox.lib;libpng.lib;libtiff.lib;libjpeg.lib;zlib.lib;cppunit_dll.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(RAPTOR_ROOT)\Redist\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <Version>$(RAPTOR_RELEASE)</Version>
     </Link>
     <PostBuildEvent>
       <Command>copy $(OutDir)$(ProjectName).exe "%RAPTOR_ROOT%\Redist\bin\"</Command>

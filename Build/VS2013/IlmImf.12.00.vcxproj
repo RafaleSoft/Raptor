@@ -140,6 +140,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(Configuration)\$(Platform)\;$(RAPTOR_ROOT)\Redist\lib;</AdditionalLibraryDirectories>
       <AdditionalDependencies>zlib.lib;IMath.lib;Half.lib;IlmThread.lib;Iex.lib;zlib.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <Version>$(OPENEXRLIB_VERSION)</Version>
     </Link>
     <PreBuildEvent>
       <Command>echo Generating coding tables ...
@@ -167,6 +168,7 @@ echo Done.</Command>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(Configuration)\$(Platform)\;$(RAPTOR_ROOT)\Redist\lib;</AdditionalLibraryDirectories>
       <AdditionalDependencies>zlib.lib;IMath.lib;Half.lib;IlmThread.lib;Iex.lib;zlib.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <Version>$(OPENEXRLIB_VERSION)</Version>
     </Link>
     <PreBuildEvent>
       <Command>echo Generating coding tables ...
@@ -199,6 +201,7 @@ echo Done.</Command>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(Configuration)\$(Platform)\;$(RAPTOR_ROOT)\Redist\lib;</AdditionalLibraryDirectories>
       <AdditionalDependencies>zlib.lib;IMath.lib;Half.lib;IlmThread.lib;Iex.lib;zlib.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <Version>$(OPENEXRLIB_VERSION)</Version>
     </Link>
     <PreBuildEvent>
       <Command>echo Generating coding tables ...
@@ -236,6 +239,7 @@ copy $(OutDir)$(TargetName).dll "%RAPTOR_ROOT%\Redist\bin\"
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(Configuration)\$(Platform)\;$(RAPTOR_ROOT)\Redist\lib;</AdditionalLibraryDirectories>
       <AdditionalDependencies>zlib.lib;IMath.lib;Half.lib;IlmThread.lib;Iex.lib;zlib.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <Version>$(OPENEXRLIB_VERSION)</Version>
     </Link>
     <PreBuildEvent>
       <Command>echo Generating coding tables ...
@@ -268,6 +272,7 @@ copy $(OutDir)$(TargetName).dll "%RAPTOR_ROOT%\Redist\bin\"
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>$(Configuration)\$(Platform)\;$(RAPTOR_ROOT)\Redist\lib;</AdditionalLibraryDirectories>
+      <Version>$(OPENEXRLIB_VERSION)</Version>
     </Link>
     <PreBuildEvent>
       <Command>echo Generating coding tables ...
@@ -295,6 +300,7 @@ echo Done.</Command>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>$(Configuration)\$(Platform)\;$(RAPTOR_ROOT)\Redist\lib;</AdditionalLibraryDirectories>
+      <Version>$(OPENEXRLIB_VERSION)</Version>
     </Link>
     <PreBuildEvent>
       <Command>echo Generating coding tables ...

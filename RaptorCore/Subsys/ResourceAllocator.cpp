@@ -89,6 +89,24 @@ CResourceAllocator::CResourceBinder::CResourceBinder(void)
 		s.additionalArray.arrayName = 0;
 		s.additionalArray.arrayType = GL_FLOAT;
 		s.additionalArray.arraySize = 4;
+
+		s.additionalArray.arrayIndex = CProgramParameters::FOG_COORDINATE;
+#ifdef GL_EXT_fog_coord
+		s.additionalArray.arrayName = GL_FOG_COORDINATE_ARRAY_EXT;
+#else
+		s.additionalArray.arrayName = 0;
+#endif
+		s.additionalArray.arrayType = GL_FLOAT;
+		s.additionalArray.arraySize = 1;
+
+		s.additionalArray.arrayIndex = CProgramParameters::WEIGHTS;
+#ifdef GL_EXT_vertex_weighting
+		s.additionalArray.arrayName = GL_VERTEX_WEIGHT_ARRAY_EXT;
+#else
+		s.additionalArray.arrayName = 0;
+#endif
+		s.additionalArray.arrayType = GL_FLOAT;
+		s.additionalArray.arraySize = 1;
 	}
 }
 
@@ -113,6 +131,10 @@ bool CResourceAllocator::CResourceBinder::setArray(CProgramParameters::GL_VERTEX
 			array = &bindings.attributes.colorArray;
 			array->arraySize = size;
 			break;
+		case CProgramParameters::SECONDARY_COLOR:
+			array = &bindings.attributes.sColorArray;
+			array->arraySize = size;
+			break;
 		case CProgramParameters::NORMAL:
 			array = &bindings.attributes.normalArray;
 			array->arraySize = size;
@@ -123,6 +145,14 @@ bool CResourceAllocator::CResourceBinder::setArray(CProgramParameters::GL_VERTEX
 			break;
 		case CProgramParameters::ADDITIONAL_PARAM1:
 			array = &bindings.attributes.additionalArray;
+			array->arraySize = size;
+			break;
+		case CProgramParameters::FOG_COORDINATE:
+			array = &bindings.attributes.fogCoordArray;
+			array->arraySize = size;
+			break;
+		case CProgramParameters::WEIGHTS:
+			array = &bindings.attributes.weightArray;
 			array->arraySize = size;
 			break;
 		default:
@@ -214,6 +244,8 @@ bool CResourceAllocator::CResourceBinder::bindAttribArray(CRaptorDisplayConfig::
 											  state.arrayStride,
 											  state.arrayPointer);
 	}
+	//	TODO: Need an else to disable existing array in current state ?
+	//	Likely if vertex array object not supperted.
 	return true;
 #else
 	return false;
@@ -264,6 +296,16 @@ bool CResourceAllocator::CResourceBinder::bindArray(CRaptorDisplayConfig::GL_ARR
 			case GL_TEXTURE_COORD_ARRAY:
 				glTexCoordPointer(state.arraySize, state.arrayType, state.arrayStride, state.arrayPointer);
 				break;
+#ifdef GL_EXT_fog_coord
+			case GL_FOG_COORDINATE_ARRAY_EXT:
+				pExtensions->glFogCoordPointerEXT(state.arrayType, state.arrayStride, state.arrayPointer);
+				break;
+#endif
+#ifdef GL_EXT_vertex_weighting
+			case GL_VERTEX_WEIGHT_ARRAY_EXT:
+				pExtensions->glVertexWeightPointerEXT(state.arraySize, state.arrayType, state.arrayStride, state.arrayPointer);
+				break;
+#endif
 		}
 #elif defined(GL_ARB_vertex_program)
 		pExtensions->glVertexAttribPointerARB(state.arrayIndex,

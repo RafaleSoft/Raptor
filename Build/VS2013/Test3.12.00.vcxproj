@@ -157,6 +157,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <TargetMachine>MachineX86</TargetMachine>
+      <Version>$(RAPTOR_RELEASE)</Version>
     </Link>
     <PostBuildEvent>
       <Command>copy $(OutDir)$(ProjectName).exe "%RAPTOR_ROOT%\Redist\bin\"</Command>
@@ -188,6 +189,7 @@
       <SubSystem>Console</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <Version>$(RAPTOR_RELEASE)</Version>
     </Link>
     <PostBuildEvent>
       <Command>copy $(OutDir)$(ProjectName).exe "%RAPTOR_ROOT%\Redist\bin\"</Command>
@@ -287,6 +289,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <TargetMachine>MachineX86</TargetMachine>
+      <Version>$(RAPTOR_RELEASE)</Version>
     </Link>
     <PostBuildEvent>
       <Command>copy $(OutDir)$(ProjectName).exe "%RAPTOR_ROOT%\Redist\bin\"</Command>
@@ -320,6 +323,7 @@
       <SubSystem>Console</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <Version>$(RAPTOR_RELEASE)</Version>
     </Link>
     <PostBuildEvent>
       <Command>copy $(OutDir)$(ProjectName).exe "%RAPTOR_ROOT%\Redist\bin\"</Command>

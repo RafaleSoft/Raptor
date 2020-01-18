@@ -791,11 +791,11 @@ vector<string> *BuildRulePath(atom* start, atom* a,unsigned int id)
 	{
 		rule *r = a->GetRule();
 		
-		unsigned int max = 1;
+		size_t max = 1;
 		if (!r->IsSequence())
 			max = r->GetNbAtoms();
 
-		for (unsigned int j=0;j<max;j++)
+		for (size_t j=0; j < max; j++)
 		{
 			atom *aa = r->GetAtom(j);
 			vector<string> *p = NULL;
@@ -807,7 +807,7 @@ vector<string> *BuildRulePath(atom* start, atom* a,unsigned int id)
 			{
 				if (paths == NULL)
 					paths = new vector<string>;
-				for (unsigned int i=0;i<p->size();i++)
+				for (size_t i=0; i < p->size(); i++)
 					paths->push_back(string(a->Name()+"="+p->at(i)));
 				delete p;
 			}

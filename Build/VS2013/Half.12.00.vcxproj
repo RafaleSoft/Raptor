@@ -136,6 +136,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <Version>$(OPENEXRLIB_VERSION)</Version>
     </Link>
     <PreBuildEvent>
       <Command>$(Configuration)\$(Platform)\eLut.exe &gt; $(Configuration)\$(Platform)\eLut.h
@@ -159,6 +160,7 @@ copy $(OutDir)$(TargetName).dll "%RAPTOR_ROOT%\Redist\bin\"</Command>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <Version>$(OPENEXRLIB_VERSION)</Version>
     </Link>
     <PreBuildEvent>
       <Command>$(Configuration)\$(Platform)\eLut.exe &gt; $(Configuration)\$(Platform)\eLut.h
@@ -189,6 +191,7 @@ copy $(OutDir)$(TargetName).dll "%RAPTOR_ROOT%\Redist\bin\"</Command>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>false</GenerateDebugInformation>
+      <Version>$(OPENEXRLIB_VERSION)</Version>
     </Link>
     <PreBuildEvent>
       <Command>$(Configuration)\$(Platform)\eLut.exe &gt; $(Configuration)\$(Platform)\eLut.h
@@ -219,6 +222,7 @@ copy $(OutDir)$(TargetName).dll "%RAPTOR_ROOT%\Redist\bin\"</Command>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>false</GenerateDebugInformation>
+      <Version>$(OPENEXRLIB_VERSION)</Version>
     </Link>
     <PreBuildEvent>
       <Command>$(Configuration)\$(Platform)\eLut.exe &gt; $(Configuration)\$(Platform)\eLut.h
@@ -245,6 +249,7 @@ copy $(OutDir)$(TargetName).dll "%RAPTOR_ROOT%\Redist\bin\"</Command>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <Version>$(OPENEXRLIB_VERSION)</Version>
     </Link>
     <PreBuildEvent>
       <Command>$(Configuration)\$(Platform)\eLut.exe &gt; $(Configuration)\$(Platform)\eLut.h
@@ -267,6 +272,7 @@ $(Configuration)\$(Platform)\toFloat.exe &gt; $(Configuration)\$(Platform)\toFlo
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <Version>$(OPENEXRLIB_VERSION)</Version>
     </Link>
     <PreBuildEvent>
       <Command>$(Configuration)\$(Platform)\eLut.exe &gt; $(Configuration)\$(Platform)\eLut.h

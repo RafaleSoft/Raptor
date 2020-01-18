@@ -161,6 +161,7 @@
       </LinkTimeCodeGeneration>
       <TargetMachine>MachineX86</TargetMachine>
       <Profile>true</Profile>
+      <Version>$(RAPTOR_RELEASE)</Version>
     </Link>
     <PostBuildEvent>
       <Command>copy $(OutDir)$(ProjectName).exe "%RAPTOR_ROOT%\Redist\bin\"</Command>
@@ -196,6 +197,7 @@
       <LinkTimeCodeGeneration>
       </LinkTimeCodeGeneration>
       <Profile>true</Profile>
+      <Version>$(RAPTOR_RELEASE)</Version>
     </Link>
     <PostBuildEvent>
       <Command>copy $(OutDir)$(ProjectName).exe "%RAPTOR_ROOT%\Redist\bin\"</Command>
@@ -306,6 +308,7 @@
       </LinkTimeCodeGeneration>
       <TargetMachine>MachineX86</TargetMachine>
       <Profile>true</Profile>
+      <Version>$(RAPTOR_RELEASE)</Version>
     </Link>
     <PostBuildEvent>
       <Command>copy $(OutDir)$(ProjectName).exe "%RAPTOR_ROOT%\Redist\bin\"</Command>
@@ -342,6 +345,7 @@
       <LinkTimeCodeGeneration>
       </LinkTimeCodeGeneration>
       <Profile>true</Profile>
+      <Version>$(RAPTOR_RELEASE)</Version>
     </Link>
     <PostBuildEvent>
       <Command>copy $(OutDir)$(ProjectName).exe "%RAPTOR_ROOT%\Redist\bin\"</Command>
