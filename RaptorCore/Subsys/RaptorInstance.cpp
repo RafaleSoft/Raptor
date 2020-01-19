@@ -70,7 +70,6 @@
 #if !defined(AFX_GEOMETRYALLOCATOR_H__802B3C7A_43F7_46B2_A79E_DDDC9012D371__INCLUDED_)
 	#include "Subsys/GeometryAllocator.h"
 #endif
-
 #if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
 	#include "System/RaptorGLExtensions.h"
 #endif
@@ -111,6 +110,7 @@ CRaptorInstance::CRaptorInstance()
 	m_pIdentity = NULL;
 	m_pQuadShader = NULL;
 	m_pFontShader = NULL;
+	m_displayBinder = NULL;
 
 	arrays_initialized = false;
 }
@@ -163,6 +163,12 @@ CRaptorInstance::~CRaptorInstance()
 	{
 		delete pConsole;
 		pConsole = NULL;
+	}
+
+	if (NULL != m_displayBinder)
+	{
+		delete m_displayBinder;
+		m_displayBinder = NULL;
 	}
 
 	//if (NULL != m_pQuadShader)
@@ -298,7 +304,7 @@ void CRaptorInstance::initInstance()
 	m_bInitialised = true;
 }
 
-bool CRaptorInstance::glInitShaders(void)
+bool CRaptorInstance::glInitSharedRsources(void)
 {
 	//!	Check shaders extensions availability
 	m_bVertexProgramReady = false;
@@ -480,6 +486,12 @@ bool CRaptorInstance::glInitShaders(void)
 		bool res = stage->glCompileShader();
 		if (!res)
 			return false;
+	}
+
+	if (NULL == m_displayBinder)
+	{
+		m_displayBinder = new CResourceAllocator::CResourceBinder();
+		m_displayBinder->setArray(CProgramParameters::POSITION, m_pAttributes);
 	}
 
 	return true;

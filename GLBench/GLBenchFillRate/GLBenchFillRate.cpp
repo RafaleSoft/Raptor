@@ -51,8 +51,8 @@ static const char* DESCRIPTION = "Benchmark for pixel and texel fill rate";
 static char RESULT_DESCRIPTION[NB_RESULTS][256] = 
 	{	"HAL Swap buffers: ",
 		"Draw Pixel Transfer RGBA: ",
-		"Texel Transfer RGBA (1024x1024): ",
-		"Texel Transfer BGRA (1024x1024): ",
+		"Texel Transfer RGBA ",
+		"Texel Transfer BGRA ",
 		"Clear 32bits color buffer: ",
 		"Clear 24bits Z-buffer: ",
 		"Single texturing small ( 256x256 ): ",
@@ -494,6 +494,9 @@ GLDisplay->glMakeCurrent(false);
 
 GLDisplay->glMakeCurrent();
 		glGetIntegerv(GL_MAX_TEXTURE_SIZE,&maxSize);
+#if !defined(_WIN64)
+		maxSize = min(4096, maxSize);
+#endif
 		T = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA);
 		load.allocatePixels(maxSize, maxSize);
 
@@ -512,7 +515,9 @@ GLDisplay->glMakeCurrent(false);
 		results.result_items[resultCount].score = megatexelspersec;
 		results.result_items[resultCount].fps_rate = nb / bench_dt;
 		results.result_items[resultCount].fragment_rate = megatexelspersec;
-
+		char bufdesc[256];
+		sprintf(bufdesc, "(%d x %d): ",maxSize,maxSize);
+		strcat(RESULT_DESCRIPTION[resultCount], bufdesc);
 
 		resultCount++;
 		nb = 0;
@@ -535,6 +540,8 @@ GLDisplay->glMakeCurrent(false);
 		results.result_items[resultCount].fragment_rate = megatexelspersec;
 
 		T->releaseReference();
+
+		strcat(RESULT_DESCRIPTION[resultCount], bufdesc);
 	}
 
 

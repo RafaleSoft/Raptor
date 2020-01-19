@@ -18,9 +18,6 @@
 
 #include "Subsys\CodeGeneration.h"
 
-#if !defined(AFX_RESOURCEALLOCATOR_H__4BAB58CE_942B_450D_88C9_AF0DDDF03718__INCLUDED_)
-	#include "ResourceAllocator.h"
-#endif
 #if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
 	#include "System/RaptorGLExtensions.h"
 #endif
@@ -80,10 +77,15 @@ CResourceAllocator::CResourceBinder::CResourceBinder(void)
 		s.colorArray.arrayType = GL_FLOAT;
 		s.colorArray.arraySize = 4;
 
-		s.textureArray.arrayIndex = CProgramParameters::TEXCOORD0;
-		s.textureArray.arrayName = GL_TEXTURE_COORD_ARRAY;
-		s.textureArray.arrayType = GL_FLOAT;
-		s.textureArray.arraySize = 2;
+		s.texture0Array.arrayIndex = CProgramParameters::TEXCOORD0;
+		s.texture0Array.arrayName = GL_TEXTURE_COORD_ARRAY;
+		s.texture0Array.arrayType = GL_FLOAT;
+		s.texture0Array.arraySize = 2;
+
+		s.texture0Array.arrayIndex = CProgramParameters::TEXCOORD1;
+		s.texture0Array.arrayName = GL_TEXTURE_COORD_ARRAY;
+		s.texture0Array.arrayType = GL_FLOAT;
+		s.texture0Array.arraySize = 2;
 
 		s.additionalArray.arrayIndex = CProgramParameters::ADDITIONAL_PARAM1;
 		s.additionalArray.arrayName = 0;
@@ -140,7 +142,11 @@ bool CResourceAllocator::CResourceBinder::setArray(CProgramParameters::GL_VERTEX
 			array->arraySize = size;
 			break;
 		case CProgramParameters::TEXCOORD0:
-			array = &bindings.attributes.textureArray;
+			array = &bindings.attributes.texture0Array;
+			array->arraySize = size;
+			break;
+		case CProgramParameters::TEXCOORD1:
+			array = &bindings.attributes.texture1Array;
 			array->arraySize = size;
 			break;
 		case CProgramParameters::ADDITIONAL_PARAM1:

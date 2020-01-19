@@ -6,6 +6,12 @@
 	- parser les .rc et mettre à jour la version réelle selon RAPTOR_VERSION ou Version.h
 	(synchroniser Version.h à partir de la var env si elle est définie)
 
+- GeometryAllocator:
+	- ajouter methode de copy entre arrays et appeler depuis CGeometry.
+
+- CGeometry:
+	- ajouter un cas aux méthodes SetVertices/SetColors/.... si nbV > nb_vertex
+
 - GL2DTextureFont:
 	- traiter le cas où les listes de lignes de texte sont trop grandes pour le cache.
 

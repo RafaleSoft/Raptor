@@ -78,7 +78,8 @@ public:
 			GL_ARRAY_STATE	fogCoordArray;
 			GL_ARRAY_STATE	additionalArray;
 			GL_ARRAY_STATE	additionalArray2;
-			GL_ARRAY_STATE	textureArray;
+			GL_ARRAY_STATE	texture0Array;
+			GL_ARRAY_STATE	texture1Array;
 			GL_ARRAY_STATE	indexArray;
 			GL_ARRAY_STATE	edgeArray;
 		} attributes;

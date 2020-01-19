@@ -151,8 +151,10 @@ CRaptorDisplayConfig::CRaptorDisplayConfig()
 	arraysState.attributes.colorArray.arrayIndex = CProgramParameters::PRIMARY_COLOR;
 	arraysState.attributes.normalArray.arrayName = GL_NORMAL_ARRAY;
 	arraysState.attributes.normalArray.arrayIndex = CProgramParameters::NORMAL;
-	arraysState.attributes.textureArray.arrayName = GL_TEXTURE_COORD_ARRAY;
-	arraysState.attributes.textureArray.arrayIndex = CProgramParameters::TEXCOORD0;
+	arraysState.attributes.texture0Array.arrayName = GL_TEXTURE_COORD_ARRAY;
+	arraysState.attributes.texture0Array.arrayIndex = CProgramParameters::TEXCOORD0;
+	arraysState.attributes.texture1Array.arrayName = 0;
+	arraysState.attributes.texture1Array.arrayIndex = CProgramParameters::TEXCOORD1;
 	arraysState.attributes.indexArray.arrayName = GL_INDEX_ARRAY;
 	arraysState.attributes.indexArray.arrayIndex = 0;
 #ifdef GL_EXT_vertex_weighting
@@ -261,28 +263,28 @@ bool CRaptorDisplayConfig::glQueryConfig(unsigned long query)
 		arraysState.attributes.normalArray.enable = (GL_TRUE == glIsEnabled(GL_NORMAL_ARRAY));
 		arraysState.attributes.colorArray.enable = (GL_TRUE == glIsEnabled(GL_COLOR_ARRAY));
 		arraysState.attributes.indexArray.enable = (GL_TRUE == glIsEnabled(GL_INDEX_ARRAY));
-		arraysState.attributes.textureArray.enable = (GL_TRUE == glIsEnabled(GL_TEXTURE_COORD_ARRAY));
+		arraysState.attributes.texture0Array.enable = (GL_TRUE == glIsEnabled(GL_TEXTURE_COORD_ARRAY));
 		arraysState.attributes.edgeArray.enable = (GL_TRUE == glIsEnabled(GL_EDGE_FLAG_ARRAY));
 
 		glGetIntegerv(GL_VERTEX_ARRAY_SIZE, &arraysState.attributes.vertexArray.arraySize);
 		arraysState.attributes.normalArray.arraySize = 3;
 		glGetIntegerv(GL_COLOR_ARRAY_SIZE, &arraysState.attributes.colorArray.arraySize);
 		arraysState.attributes.indexArray.arraySize = 1;
-		glGetIntegerv(GL_TEXTURE_COORD_ARRAY_SIZE, &arraysState.attributes.textureArray.arraySize);
+		glGetIntegerv(GL_TEXTURE_COORD_ARRAY_SIZE, &arraysState.attributes.texture0Array.arraySize);
 		arraysState.attributes.edgeArray.arraySize = 1;
 
 		glGetIntegerv(GL_VERTEX_ARRAY_TYPE, &arraysState.attributes.vertexArray.arrayType);
 		glGetIntegerv(GL_NORMAL_ARRAY_TYPE, &arraysState.attributes.normalArray.arrayType);
 		glGetIntegerv(GL_COLOR_ARRAY_TYPE, &arraysState.attributes.colorArray.arrayType);
 		glGetIntegerv(GL_INDEX_ARRAY_TYPE, &arraysState.attributes.indexArray.arrayType);
-		glGetIntegerv(GL_TEXTURE_COORD_ARRAY_TYPE, &arraysState.attributes.textureArray.arrayType);
+		glGetIntegerv(GL_TEXTURE_COORD_ARRAY_TYPE, &arraysState.attributes.texture0Array.arrayType);
 		arraysState.attributes.edgeArray.arrayType = 0;	// must be GLboolean
 
 		glGetIntegerv(GL_VERTEX_ARRAY_STRIDE, &arraysState.attributes.vertexArray.arrayStride);
 		glGetIntegerv(GL_NORMAL_ARRAY_STRIDE, &arraysState.attributes.normalArray.arrayStride);
 		glGetIntegerv(GL_COLOR_ARRAY_STRIDE, &arraysState.attributes.colorArray.arrayStride);
 		glGetIntegerv(GL_INDEX_ARRAY_STRIDE, &arraysState.attributes.indexArray.arrayStride);
-		glGetIntegerv(GL_TEXTURE_COORD_ARRAY_STRIDE, &arraysState.attributes.textureArray.arrayStride);
+		glGetIntegerv(GL_TEXTURE_COORD_ARRAY_STRIDE, &arraysState.attributes.texture0Array.arrayStride);
 		glGetIntegerv(GL_EDGE_FLAG_ARRAY_STRIDE, &arraysState.attributes.edgeArray.arrayStride);
 
 #if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
@@ -290,14 +292,14 @@ bool CRaptorDisplayConfig::glQueryConfig(unsigned long query)
 		glGetPointerv(GL_NORMAL_ARRAY_POINTER,&arraysState.attributes.normalArray.arrayPointer);
 		glGetPointerv(GL_COLOR_ARRAY_POINTER,&arraysState.attributes.colorArray.arrayPointer);
 		glGetPointerv(GL_INDEX_ARRAY_POINTER,&arraysState.attributes.indexArray.arrayPointer);
-		glGetPointerv(GL_TEXTURE_COORD_ARRAY_POINTER,&arraysState.attributes.textureArray.arrayPointer);
+		glGetPointerv(GL_TEXTURE_COORD_ARRAY_POINTER,&arraysState.attributes.texture0Array.arrayPointer);
 		glGetPointerv(GL_EDGE_FLAG_ARRAY_POINTER,&arraysState.attributes.edgeArray.arrayPointer);
 #else
 		arraysState.attributes.vertexArray.arrayPointer = NULL;
 		arraysState.attributes.normalArray.arrayPointer = NULL;
 		arraysState.attributes.colorArray.arrayPointer = NULL;
 		arraysState.attributes.indexArray.arrayPointer = NULL;
-		arraysState.attributes.textureArray.arrayPointer = NULL;
+		arraysState.attributes.texture0Array.arrayPointer = NULL;
 		arraysState.attributes.edgeArray.arrayPointer = NULL;
 #endif
 
@@ -597,7 +599,7 @@ bool CRaptorDisplayConfig::glApplyConfig(unsigned long query) const
 						   arraysState.attributes.indexArray.arrayStride,
 						   arraysState.attributes.indexArray.arrayPointer);
 		}
-		if (arraysState.attributes.textureArray.enable)
+		if (arraysState.attributes.texture0Array.enable)
 		{
 #if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
 			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -608,11 +610,11 @@ bool CRaptorDisplayConfig::glApplyConfig(unsigned long query) const
 #else
 			pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::TEXCOORD0);
 			pExtensions->glVertexAttribPointerARB(CProgramParameters::TEXCOORD0,
-												  arraysState.attributes.textureArray.arraySize,
-												  arraysState.attributes.textureArray.arrayType,
+												  arraysState.attributes.texture0Array.arraySize,
+												  arraysState.attributes.texture0Array.arrayType,
 												  false, // normalize
-												  arraysState.attributes.textureArray.arrayStride,
-												  arraysState.attributes.textureArray.arrayPointer);
+												  arraysState.attributes.texture0Array.arrayStride,
+												  arraysState.attributes.texture0Array.arrayPointer);
 #endif
 		}
 		if (arraysState.attributes.edgeArray.enable)
