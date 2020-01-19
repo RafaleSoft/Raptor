@@ -69,9 +69,9 @@ public:
 	const string&	Name(void) const { return m_name; };
 	unsigned int	ID(void) const { return m_atomID; };
 	rule*			GetRule(void) const { return m_macroAtom; };
-	unsigned int	NbValidChars(void) const { return m_validChars.size(); };
-	string			GetValidChars(unsigned int pos);
-	void			SetValidChars(unsigned int pos,const string& chars);
+	size_t			NbValidChars(void) const { return m_validChars.size(); };
+	string			GetValidChars(size_t pos);
+	void			SetValidChars(size_t pos,const string& chars);
 	void			AddValidChars(const string& chars);
 	string			MapType(void) const { return m_mapType; };
 	void			MapType(const string& map) { m_mapType = map; };
@@ -84,7 +84,7 @@ public:
 // with public access
 static bool			AddAtom(atom *a);
 static atom*		GetAtom(unsigned int pos);
-static unsigned int	GetNbAtoms(void) { return m_atoms.size(); }
+static size_t		GetNbAtoms(void) { return m_atoms.size(); }
 static atom*		FindAtom(const string& name);
 static void			DestroyAtoms(void);
 
@@ -118,7 +118,7 @@ public:
 	void			Loop(bool loop) { m_loop = loop; };
 	bool			AllowEmpty(void) const { return m_allowEmpty; };
 	void			AllowEmpty(bool allowempty) { m_allowEmpty = allowempty; };
-	unsigned int	GetNbAtoms(void) const { return m_atomList.size(); };
+	size_t			GetNbAtoms(void) const { return m_atomList.size(); };
 	atom*			GetAtom(unsigned int pos);
 	void			AddAtom(atom* a);
 	bool			RemoveAtom(unsigned int pos);
@@ -133,7 +133,7 @@ public:
 // with a public access
 static int			AddRule(rule *r);
 static rule*		GetRule(unsigned int pos);
-static unsigned int	GetNbRules(void) { return m_rules.size(); }
+static size_t		GetNbRules(void) { return m_rules.size(); }
 static rule*		FindRule(const string& name);
 static void			DestroyRules(void);
 

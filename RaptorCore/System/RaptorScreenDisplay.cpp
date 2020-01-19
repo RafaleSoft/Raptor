@@ -378,7 +378,7 @@ void CRaptorScreenDisplay::allocateResources(void)
 		m_pUOldAllocator->glvkLockMemory(false);
 
 	if (instance.isInitialised())
-		instance.glInitShaders();
+		instance.glInitSharedRsources();
 }
 
 bool CRaptorScreenDisplay::glvkUnBindDisplay(void)

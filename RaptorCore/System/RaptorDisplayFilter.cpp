@@ -55,7 +55,7 @@
 	#include "GLHierarchy/TextureSet.h"
 #endif
 #if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
-    #include "System/RaptorGLExtensions.h"
+   #include "System/RaptorGLExtensions.h"
 #endif
 #if !defined(AFX_FRAGMENTSHADER_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
 	#include "GLHierarchy/FragmentShader.h"
@@ -190,14 +190,9 @@ void CRaptorDisplayFilter::glDrawFilter(void) const
 #else
 	if (NULL != instance.m_pAttributes)
 	{
-		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
-
-		pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::POSITION);
-		pExtensions->glVertexAttribPointerARB(CProgramParameters::POSITION, 4, GL_FLOAT, false, 0, instance.m_pAttributes);
-
+		instance.m_displayBinder->glvkBindArrays();
 		glDrawArrays(GL_POINTS, 0, 1);
-
-		pExtensions->glDisableVertexAttribArrayARB(CProgramParameters::POSITION);
+		instance.m_displayBinder->glvkUnbindArrays();
 	}
 #endif
 }

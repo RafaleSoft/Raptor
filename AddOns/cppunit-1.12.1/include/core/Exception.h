@@ -7,7 +7,9 @@
 #include <exception>
 
 #ifdef WIN32
-	EXPIMP_TEMPLATE class CPPUNIT_API std::exception;
+	#if _MSC_VER > 1800
+		EXPIMP_TEMPLATE class CPPUNIT_API std::exception;
+	#endif
 #endif
 
 CPPUNIT_NS_BEGIN

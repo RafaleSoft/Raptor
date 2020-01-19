@@ -50,7 +50,7 @@ public:
 
 
     //! Returns the number of opened streams in this streamer.
-    unsigned int getNbStream(void) const { return m_pCurrentStreams.size(); };
+    size_t getNbStream(void) const { return m_pCurrentStreams.size(); };
 
 	//!	This method returns a stream buffer produced from playFrame ( of stream number nStream )
     virtual const unsigned char* const glGetStreamBuffer(unsigned int nStream);

@@ -11,6 +11,8 @@
 	#include "Imaging/ICOImaging.h"
 #endif
 
+#include <algorithm>
+
 
 CICOImaging::CICOImaging(void)
 {
@@ -21,10 +23,13 @@ CICOImaging::~CICOImaging(void)
 }
 
 bool CICOImaging::isOfKind(const std::string &kind) const 
-{ 
-	return (("ICO" == kind) ||
-			("DLL" == kind) ||
-			("EXE" == kind));
+{
+	std::string ext = kind;
+	std::transform(ext.begin(), ext.end(), ext.begin(), ::toupper);
+
+	return (("ICO" == ext) ||
+			("DLL" == ext) ||
+			("EXE" == ext));
 }
 
 vector<std::string> CICOImaging::getImageKind(void) const

@@ -70,7 +70,6 @@
 #if !defined(AFX_GEOMETRYALLOCATOR_H__802B3C7A_43F7_46B2_A79E_DDDC9012D371__INCLUDED_)
 	#include "Subsys/GeometryAllocator.h"
 #endif
-
 #if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
 	#include "System/RaptorGLExtensions.h"
 #endif
@@ -90,8 +89,8 @@ CRaptorInstance::CRaptorInstance()
 	pAnimator = NULL;
 	pConsole = NULL;
 	
-	terminate = false;
 	m_bInitialised = false;
+	m_bTerminate = false;
 	forceSSE = false;
 	runAsShareware = false;
 	iRenderedObjects = 0;
@@ -109,6 +108,9 @@ CRaptorInstance::CRaptorInstance()
 
 	m_pAttributes = NULL;
 	m_pIdentity = NULL;
+	m_pQuadShader = NULL;
+	m_pFontShader = NULL;
+	m_displayBinder = NULL;
 
 	arrays_initialized = false;
 }
@@ -141,7 +143,7 @@ bool CRaptorInstance::destroy(void)
 
 CRaptorInstance::~CRaptorInstance()
 {
-	terminate = true;
+	m_bTerminate = true;
 	m_bInitialised = false;
 
 	//! Destroy glObjects : we need a context.
@@ -163,6 +165,18 @@ CRaptorInstance::~CRaptorInstance()
 		pConsole = NULL;
 	}
 
+	if (NULL != m_displayBinder)
+	{
+		delete m_displayBinder;
+		m_displayBinder = NULL;
+	}
+
+	//if (NULL != m_pQuadShader)
+	//	m_pQuadShader->releaseReference();
+	//m_pQuadShader = NULL;
+	//if (NULL != m_pFontShader)
+	//	m_pFontShader->releaseReference();
+	//m_pFontShader = NULL;
 	CShaderLibrary* pShaderLib = CShaderLibrary::GetInstance();
 	if (pShaderLib != NULL)
 		pShaderLib->destroy();
@@ -290,7 +304,7 @@ void CRaptorInstance::initInstance()
 	m_bInitialised = true;
 }
 
-bool CRaptorInstance::glInitShaders(void)
+bool CRaptorInstance::glInitSharedRsources(void)
 {
 	//!	Check shaders extensions availability
 	m_bVertexProgramReady = false;
@@ -416,7 +430,6 @@ bool CRaptorInstance::glInitShaders(void)
 		if (!stage->glCompileShader())
 			return false;
 	}
-
 	if (NULL == m_pAttributes)
 	{
 		CGeometryAllocator *pAllocator = CGeometryAllocator::GetInstance();
@@ -435,6 +448,51 @@ bool CRaptorInstance::glInitShaders(void)
 			pAllocator->glvkLockMemory(true);
 	}
 #endif
+
+	if (NULL == m_pQuadShader)
+	{
+		m_pQuadShader = new CShader("QUAD_SHADER");
+		COpenGLShaderStage *stage = m_pQuadShader->glGetOpenGLShader();
+
+		CVertexShader *vp = stage->glGetVertexShader("TEXTURE_QUAD_VTX_PROGRAM");
+		CGeometryShader *gp = stage->glGetGeometryShader("TEXTURE_QUAD_GEO_PROGRAM");
+		gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
+		CFragmentShader *fs = stage->glGetFragmentShader("TEXTURE_QUAD_TEX_PROGRAM");
+		CProgramParameters params;
+		params.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);
+
+		stage->setProgramParameters(params);
+		if (!stage->glCompileShader())
+			return false;
+	}
+	if (NULL == m_pFontShader)
+	{
+		m_pFontShader = new CShader("PARTICLE_SHADER");
+		COpenGLShaderStage *stage = m_pFontShader->glGetOpenGLShader();
+
+		CVertexShader *vp = stage->glGetVertexShader("FONT2D_VTX_PROGRAM");
+		CProgramParameters params;
+		GL_COORD_VERTEX viewport(0, 0, 640, 480);
+		params.addParameter("viewport", viewport);
+
+		CGeometryShader *gp = stage->glGetGeometryShader("FONT2D_GEO_PROGRAM");
+		gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
+
+		CFragmentShader *fs = stage->glGetFragmentShader("FONT2D_TEX_PROGRAM");
+		params.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);
+		params.addParameter("color", CColor::RGBA(1.0, 0.0, 0.0, 1.0));
+
+		stage->setProgramParameters(params);
+		bool res = stage->glCompileShader();
+		if (!res)
+			return false;
+	}
+
+	if (NULL == m_displayBinder)
+	{
+		m_displayBinder = new CResourceAllocator::CResourceBinder();
+		m_displayBinder->setArray(CProgramParameters::POSITION, m_pAttributes);
+	}
 
 	return true;
 }

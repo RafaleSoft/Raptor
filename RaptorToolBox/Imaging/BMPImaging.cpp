@@ -10,6 +10,8 @@
 	#include "Imaging/BMPImaging.h"
 #endif
 
+#include <algorithm>
+
 
 CBMPImaging::CBMPImaging(void)
 {
@@ -20,8 +22,11 @@ CBMPImaging::~CBMPImaging(void)
 }
 
 bool CBMPImaging::isOfKind(const std::string &kind) const 
-{ 
-	return ("BMP" == kind); 
+{
+	std::string ext = kind;
+	std::transform(ext.begin(), ext.end(), ext.begin(), ::toupper);
+
+	return ("BMP" == ext); 
 }
 
 vector<std::string> CBMPImaging::getImageKind(void) const

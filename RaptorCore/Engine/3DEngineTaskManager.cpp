@@ -87,8 +87,8 @@ unsigned int C3DEngineTaskManager::getNbRegisteredJobs(void) const
 {
 	CRaptorLock lock(*stackMutex);
 
-    unsigned int nb = 0;
-    for (unsigned int i=0;i<jobStackPool.size();i++)
+    size_t nb = 0;
+    for (size_t i=0; i < jobStackPool.size(); i++)
 		nb += jobStackPool[i].jobStack.size();
 
     return nb;
@@ -107,8 +107,8 @@ bool C3DEngineTaskManager::registerJob(CEngineJob *job)
     else
     {
         vector<JOBSTACK>::iterator it = jobStackPool.begin();
-		unsigned int sz = (*it).jobStack.size();
-        unsigned int sz2 = sz;
+		size_t sz = (*it).jobStack.size();
+        size_t sz2 = sz;
         while ((sz == sz2) && (++it != jobStackPool.end()))
             sz2 = (*it).jobStack.size();
 

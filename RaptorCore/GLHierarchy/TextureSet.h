@@ -29,7 +29,7 @@ public:
 	virtual ~CTextureSet(void);
 
 	//! Returns the numbre of holded texture objects.
-    unsigned int getNbTexture(void) const { return m_pTextures.size(); };
+    size_t getNbTexture(void) const { return m_pTextures.size(); };
 
 	//! Adds a texture object to this vector. 
 	//!	TextureObject ref count is incremented.
