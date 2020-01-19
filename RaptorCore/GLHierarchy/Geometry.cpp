@@ -1302,7 +1302,7 @@ void CGeometry::glSetVertices(unsigned int nbV, GL_COORD_VERTEX* vertices)
 		normals = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->allocateVertices(nbV*4));
 
 		CResourceAllocator::CResourceBinder *binder = (CResourceAllocator::CResourceBinder *)m_pBinder;
-		binder->setArray(CProgramParameters::POSITION, vertex);
+		binder->setArray(CProgramParameters::POSITION, vertex, 3);
 		binder->setArray(CProgramParameters::NORMAL, normals);
 #endif
 
@@ -1346,7 +1346,7 @@ void CGeometry::glSetTexCoords(unsigned int nbT, GL_TEX_VERTEX* texCoords)
 		texcoords = (GL_TEX_VERTEX*)(CGeometryAllocator::GetInstance()->allocateVertices(nbT*2));
 
 		CResourceAllocator::CResourceBinder *binder = (CResourceAllocator::CResourceBinder *)m_pBinder;
-		binder->setArray(CProgramParameters::TEXCOORD0, texcoords);
+		binder->setArray(CProgramParameters::TEXCOORD0, texcoords, 2);
 	}
 	else if ((nbT > 0) && (texcoords != NULL))
 	{
@@ -1370,7 +1370,7 @@ void CGeometry::glSetTexCoords2(unsigned int nbT, GL_TEX_VERTEX* texCoords)
 		texcoords2 = (GL_TEX_VERTEX*)(CGeometryAllocator::GetInstance()->allocateVertices(nbT*2));
 
 		CResourceAllocator::CResourceBinder *binder = (CResourceAllocator::CResourceBinder *)m_pBinder;
-		binder->setArray(CProgramParameters::TEXCOORD1, texcoords2);
+		binder->setArray(CProgramParameters::TEXCOORD1, texcoords2, 2);
 	}
 	else if ((nbT > 0) && (texcoords2 != NULL))
 	{
@@ -1394,7 +1394,7 @@ void CGeometry::glSetWeights(unsigned int nbW, float* weights)
 		weightcoords = CGeometryAllocator::GetInstance()->allocateVertices(nbW);
 
 		CResourceAllocator::CResourceBinder *binder = (CResourceAllocator::CResourceBinder *)m_pBinder;
-		binder->setArray(CProgramParameters::WEIGHTS, weightcoords);
+		binder->setArray(CProgramParameters::WEIGHTS, weightcoords, 1);
 	}
 	else if ((nbW > 0) && (weightcoords != NULL))
 	{
@@ -1418,7 +1418,7 @@ void CGeometry::glSetColors(unsigned int nbC, CColor::RGBA* rgbaColors)
 		colors = (CColor::RGBA*)(CGeometryAllocator::GetInstance()->allocateVertices(nbC*4));
 
 		CResourceAllocator::CResourceBinder *binder = (CResourceAllocator::CResourceBinder *)m_pBinder;
-		binder->setArray(CProgramParameters::WEIGHTS, weightcoords);
+		binder->setArray(CProgramParameters::PRIMARY_COLOR, colors);
 	}
 	else if ((nbC > 0) && (colors != NULL))
 	{
@@ -1442,7 +1442,7 @@ void CGeometry::glSetFogs(unsigned int nbF, float* fogs)
 		fogcoords = CGeometryAllocator::GetInstance()->allocateVertices(nbF);
 
 		CResourceAllocator::CResourceBinder *binder = (CResourceAllocator::CResourceBinder *)m_pBinder;
-		binder->setArray(CProgramParameters::FOG_COORDINATE, weightcoords);
+		binder->setArray(CProgramParameters::FOG_COORDINATE, weightcoords, 1);
 	}
 	else if ((nbF > 0) && (fogcoords != NULL))
 	{
