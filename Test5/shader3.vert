@@ -6,8 +6,8 @@ layout(binding = 0) uniform UniformBufferObject {
 } ubo;
 
 layout(location = 0) in vec4 i_Position;
-layout(location = 1) in vec2 i_TexCoord;
-layout(location = 2) in vec4 i_Color;
+layout(location = 8) in vec2 i_TexCoord;
+layout(location = 3) in vec4 i_Color;
 
 out gl_PerVertex
 {

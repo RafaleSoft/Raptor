@@ -153,6 +153,9 @@ private:
 	//! Particle shaders
 	CShader			*m_pShader;
 
+	//!	Vertex Input State Resource binder
+	void	*m_pBinder;
+
 	// Particles attributes
 	std::vector<PARTICLE_ATTRIBUTE>	m_attributes;
 };

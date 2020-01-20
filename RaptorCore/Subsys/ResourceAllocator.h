@@ -46,7 +46,10 @@ public:
 		CResourceBinder(void);
 		~CResourceBinder(void);
 
-		bool setArray(CProgramParameters::GL_VERTEX_ATTRIB attribute, void *vertexPointer, int stride);
+		bool setArray(CProgramParameters::GL_VERTEX_ATTRIB attribute, 
+					  void *vertexPointer, 
+					  size_t size = 4,
+					  size_t stride = 0);
 
 		bool glvkBindArrays(void);
 		bool glvkUnbindArrays(void);
@@ -62,6 +65,7 @@ public:
 
 		//! Unbind a single array.
 		bool unbindArray(CRaptorDisplayConfig::GL_ARRAY_STATE &state);
+		bool unbindAttribArray(CRaptorDisplayConfig::GL_ARRAY_STATE &state);
 
 		//!	This resource binder arrays bindings.
 		CRaptorDisplayConfig::GL_ARRAYS_STATE			bindings;
@@ -95,6 +99,11 @@ protected:
 	//!	Memory manager for the device hosting the display holding this allocator.
 	//! (Vulkan host memory is per device)
 	IDeviceMemoryManager	*deviceMemoryManager;
+
+
+private:
+	CResourceAllocator(const CResourceAllocator &);
+	CResourceAllocator& operator = (const CResourceAllocator&);
 };
 
 

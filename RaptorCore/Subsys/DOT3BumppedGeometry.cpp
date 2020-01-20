@@ -364,8 +364,7 @@ void CDOT3BumppedGeometry::setLightPositionDOT3(void)
 }
 
 
-#ifdef RAPTOR_SSE_CODE_GENERATION
-
+#if defined(RAPTOR_SSE_CODE_GENERATION) && !defined(_WIN64)
 
 static CSSERegister0 xmm0;
 static CSSERegister1 xmm1;
@@ -376,11 +375,14 @@ static CSSERegister5 xmm5;
 static CSSERegister6 xmm6;
 static CSSERegister7 xmm7;
 
+#endif
+
 static float half[4] = { 0.5f, 0.5f, 0.5f, 0.5f };
 
 
 void CDOT3BumppedGeometry::setLightPositionDOT3SSE(void)
 {
+#if defined(RAPTOR_SSE_CODE_GENERATION) && !defined(_WIN64)
 	//	inverse transform
 	GL_COORD_VERTEX	diffuse;
 	GL_COORD_VERTEX	specular;
@@ -479,6 +481,6 @@ void CDOT3BumppedGeometry::setLightPositionDOT3SSE(void)
 
 		index += 4;
 	}
+#endif
 }
 
-#endif

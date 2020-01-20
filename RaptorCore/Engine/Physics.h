@@ -118,7 +118,7 @@ public:
 	//	Force management
 	void SetPfd(FORCES_PROC newpfd)	{ pfd = newpfd; };
 
-	unsigned int getNbForces(void) const { return forces.size(); };
+	size_t getNbForces(void) const { return forces.size(); };
 
 	CForce* RAPTOR_FASTCALL getForce(unsigned int index) const;
 	//	Adds the gravity force to the object.

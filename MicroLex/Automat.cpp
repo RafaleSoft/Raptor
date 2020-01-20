@@ -133,14 +133,14 @@ bool CAutomat::AddBranch(vector<branch*> &branchesArray,branch *b)
 //	Computes the length of an atom
 int Length(atom *a)
 {
-	unsigned int maxlength = a->NbValidChars();
+	size_t maxlength = a->NbValidChars();
 	unsigned int length = 0;
 
-	for (unsigned int i=0;i<maxlength;i++)
+	for (size_t i=0; i < maxlength; i++)
 	{
 		string chrs = a->GetValidChars(i);
 
-		if ((chrs[0]=='\\')&&(chrs[1]=='*'))
+		if ((chrs[0] == '\\') && (chrs[1] == '*'))
 		{
 			length = 65535;
 			break;

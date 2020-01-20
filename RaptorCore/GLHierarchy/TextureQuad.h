@@ -33,8 +33,8 @@
 
 RAPTOR_NAMESPACE_BEGIN
 
-class CShader;
 class CTextureObject;
+
 
 //!
 //!	This class implements a simple object 
@@ -71,10 +71,6 @@ public:
 	//!	@return true if texture quad updated without errors or texture not null.
 	bool setQuadTexture(CTextureObject *pTexture);
 
-	//!	Update the texture object rendered by this quad.
-	//! @param center : defines the center of the quad for drawing (model view reference).
-	bool setQuadCenter(const GL_COORD_VERTEX &center);
-
 	//!	Set quad attributes.
 	//!	@param center : defines the center of the quad for drawing (model view reference)
 	//!	@param color : defines the base color of the quad (multiplied by texture color)
@@ -90,11 +86,11 @@ private:
 	CTextureQuad(const CTextureQuad&);
 	CTextureQuad& operator=(const CTextureQuad&);
 
-	//!	Common texture quad shader.
-	static CShader		*m_pShader;
-
 	//!	Quad texture.
 	CReference<CTextureObject>	m_rTexture;
+
+	//!	Vertex Input State Resource binder
+	void	*m_pBinder;
 
 	//!	Attributes.
 	static uint32_t		nb_quads;

@@ -22,6 +22,8 @@
 	#include "tiffio.h"
 #endif
 
+#include <algorithm>
+
 
 void RaptorTIFFErrorHandler(const char* module , const char* fmt, va_list ap)
 {
@@ -71,9 +73,12 @@ CTIFFImaging::~CTIFFImaging(void)
 }
 
 bool CTIFFImaging::isOfKind(const std::string &kind) const 
-{ 
-	return (("TIF" == kind) ||
-			("TIFF" == kind));
+{
+	std::string ext = kind;
+	std::transform(ext.begin(), ext.end(), ext.begin(), ::toupper);
+
+	return (("TIF" == ext) ||
+			("TIFF" == ext));
 }
 
 vector<std::string> CTIFFImaging::getImageKind(void) const
