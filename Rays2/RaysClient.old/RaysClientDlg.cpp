@@ -27,14 +27,6 @@ RaysClientDlg::RaysClientDlg()
 	AddLog("Rays Client initialized.");
 }
 
-RaysClientDlg::~RaysClientDlg()
-{
-	if (NULL != m_raysClient)
-		delete m_raysClient;
-	if (NULL != m_pData)
-		delete m_pData;
-}
-
 bool RaysClientDlg::Start(int argc,char *argv[])
 {
 	if (!m_started)
@@ -69,11 +61,6 @@ bool RaysClientDlg::Start(int argc,char *argv[])
 	return m_started;
 }
 
-
-bool RaysClientDlg::Quit(void)
-{
-	return !m_started;
-}
 
 bool RaysClientDlg::LoadData(String^ filename)
 {
