@@ -192,6 +192,7 @@
       </LinkTimeCodeGeneration>
       <TargetMachine>MachineX86</TargetMachine>
       <Profile>true</Profile>
+      <Version>$(RAPTOR_RELEASE)</Version>
     </Link>
     <PostBuildEvent>
       <Command>copy $(OutDir)$(ProjectName).exe "%RAPTOR_ROOT%\Redist\bin\"</Command>
@@ -228,6 +229,7 @@
       <LinkTimeCodeGeneration>
       </LinkTimeCodeGeneration>
       <Profile>true</Profile>
+      <Version>$(RAPTOR_RELEASE)</Version>
     </Link>
     <PostBuildEvent>
       <Command>copy $(OutDir)$(ProjectName).exe "%RAPTOR_ROOT%\Redist\bin\"</Command>
@@ -339,6 +341,7 @@
       </LinkTimeCodeGeneration>
       <TargetMachine>MachineX86</TargetMachine>
       <Profile>true</Profile>
+      <Version>$(RAPTOR_RELEASE)</Version>
     </Link>
     <PostBuildEvent>
       <Command>copy $(OutDir)$(ProjectName).exe "%RAPTOR_ROOT%\Redist\bin\"</Command>
@@ -376,6 +379,7 @@
       <LinkTimeCodeGeneration>
       </LinkTimeCodeGeneration>
       <Profile>true</Profile>
+      <Version>$(RAPTOR_RELEASE)</Version>
     </Link>
     <PostBuildEvent>
       <Command>copy $(OutDir)$(ProjectName).exe "%RAPTOR_ROOT%\Redist\bin\"</Command>
@@ -404,7 +408,7 @@
     <Link>
       <AdditionalDependencies>Raptor.lib;RaptorData.lib;opengl32.lib;RaptorToolBox.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(ProjectName).exe</OutputFile>
-      <Version>2.16.0</Version>
+      <Version>$(RAPTOR_RELEASE)</Version>
       <AdditionalLibraryDirectories>$(RAPTOR_ROOT)\Redist\lib;$(PLATFORM_SDK)\Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -436,7 +440,7 @@
     <Link>
       <AdditionalDependencies>Raptor.lib;RaptorData.lib;opengl32.lib;RaptorToolBox.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(ProjectName).exe</OutputFile>
-      <Version>2.16.0</Version>
+      <Version>$(RAPTOR_RELEASE)</Version>
       <AdditionalLibraryDirectories>$(RAPTOR_ROOT)\Redist\lib;$(PLATFORM_SDK)\Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>

@@ -173,7 +173,7 @@ TestPath::getTestAt( int index ) const
 Test *
 TestPath::getChildTest() const
 {
-  return getTestAt( getTestCount() -1 );
+  return getTestAt( getTestCount() - 1 );
 }
 
 
