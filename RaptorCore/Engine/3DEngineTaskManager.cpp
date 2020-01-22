@@ -83,7 +83,7 @@ void C3DEngineTaskManager::createJobStack(void)
     jobStackPool.push_back(js);
 }
 
-unsigned int C3DEngineTaskManager::getNbRegisteredJobs(void) const
+size_t C3DEngineTaskManager::getNbRegisteredJobs(void) const
 {
 	CRaptorLock lock(*stackMutex);
 
@@ -221,9 +221,9 @@ unsigned int C3DEngineTaskManager::getNbJobsToProceed(void) const
     while (it != jobStackPool.end())
     {
         const JOBSTACK &js = (*it++);
-        unsigned int stack_size = js.jobStack.size();
+        size_t stack_size = js.jobStack.size();
     
-        for (unsigned int job_index=0;job_index<stack_size;job_index++)
+        for (size_t job_index=0; job_index < stack_size; job_index++)
             remaining += ( js.jobStack.at(job_index)->isJobDone() ? 0 : 1 );
     }
 

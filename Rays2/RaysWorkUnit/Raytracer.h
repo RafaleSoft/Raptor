@@ -109,7 +109,7 @@ public:
 	float *getZBuffer(void) const
 	{ return ZBuffer; }
 
-	unsigned int getNbObjects(void) const { return objects.size(); }
+	size_t getNbObjects(void) const { return objects.size(); }
 	void addObject(CGenericRenderObject *pObject) { objects.push_back(pObject); }
 	CGenericRenderObject * const getObject(unsigned int numObject) const
 	{ if (numObject < objects.size()) return objects[numObject]; else return NULL; }

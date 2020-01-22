@@ -1107,6 +1107,7 @@ $(SolutionDir)\$(ProjectName)\Subsys\Redist.bat
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\RaptorCore\Subsys\OpenGL\OpenGLMemory.cpp" />
+    <ClCompile Include="..\..\RaptorCore\Subsys\OpenGL\OpenGLPipeline.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\OpenGL\OpenGLRenderingProperties.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\OpenGL\OpenGLViewPoint.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\OpenGL\RaptorOpenGL.cpp" />
@@ -1356,6 +1357,7 @@ copy CodeGeneration.h "%RAPTOR_ROOT%\Redist\Include\Subsys"
     <ClInclude Include="..\..\RaptorCore\Subsys\ObjectModels\RaptorScript_tree.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\ObjectModels\RaptorScript_yacc.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\Octree.h" />
+    <ClInclude Include="..\..\RaptorCore\Subsys\OpenGL\OpenGLPipeline.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\OpenGL\RaptorOpenGL.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\OpenGL\OpenGLMemory.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\OpenGL\OpenGLRenderingProperties.h" />

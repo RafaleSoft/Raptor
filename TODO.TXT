@@ -3,6 +3,9 @@
 - OpenGLMemory:
 	- utiliser *MapBufferRange plutot que de mapper la totalite du buffer pour acceder à uniquement un bloc.
 
+- RaptorDisplay:
+	- renommer glGrab en glBlit en utilisant un CImage.
+
 - Portabilité:
 	- déplacer dans un seul endroit les définitions spécifiques WIN32/LINUX (CodeGeneration.h ?)
 	p.ex.: RaptorErrorManager a 2 defines specifiques: LOCALTIME & ASCTIME
