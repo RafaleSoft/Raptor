@@ -492,6 +492,7 @@ bool CRaptorInstance::glInitSharedRsources(void)
 	{
 		m_displayBinder = new CResourceAllocator::CResourceBinder();
 		m_displayBinder->setArray(CProgramParameters::POSITION, m_pAttributes);
+		m_displayBinder->useVertexArrayObjects();
 	}
 
 	return true;

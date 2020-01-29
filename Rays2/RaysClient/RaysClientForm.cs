@@ -18,6 +18,8 @@
 
 using System;
 using System.Windows.Forms;
+using System.IO;
+using System.Collections.Specialized;
 
 
 namespace RaysClient
@@ -31,19 +33,29 @@ namespace RaysClient
             Properties.Settings settings = Properties.Settings.Default;
             host.Text = settings.host;
             port.Text = settings.port.ToString();
+            Render.Enabled = false;
+            scene_filepath = "";
         }
+
+
 
         private void RaysClientForm_Load(object sender, EventArgs e)
         {
 
         }
 
-        private void OnClick(object sender, EventArgs e)
+        private void OnQuit(object sender, EventArgs e)
         {
-            // TODO: check active connections.
-            DialogResult res = MessageBox.Show("Are you sure you want to quit ?","Information",MessageBoxButtons.YesNo);
-            if (DialogResult.No != res)
-                Close();
+            if (network.IsConnected())
+            {
+                MessageBox.Show("A connection to the render server is still active", "Information", MessageBoxButtons.OK);
+            }
+            else
+            {
+                DialogResult res = MessageBox.Show("Are you sure you want to quit ?", "Information", MessageBoxButtons.YesNo);
+                if (DialogResult.No != res)
+                    Close();
+            }
         }
 
         private void onOpen(object sender, EventArgs e)
@@ -57,6 +69,23 @@ namespace RaysClient
             if (DialogResult.OK == res)
             {
                 Log.Items.Add("Opening file: " + open.FileName);
+                string ext = Path.GetExtension(open.FileName);
+                if ( ext == ".xml")
+                {
+                    Scene.Text = "Scene: " + Path.GetFileName(open.FileName);
+                    scene_filepath = open.FileName;
+
+                    Log.Items.Add("Loading scene: " + Path.GetFileName(open.FileName));
+                }
+                else
+                {
+                    if (supported_exts.Contains(ext))
+                    {
+                        Assets.Items.Add(Path.GetFileName(open.FileName));
+                        assets.Add(open.FileName);
+                        Log.Items.Add("Loading asset: " + Path.GetFileName(open.FileName));
+                    }
+                }
             }
             
             open.Dispose();
@@ -97,5 +126,54 @@ namespace RaysClient
                 Connect.Enabled = false;
             }
         }
+
+        private void onSceneChanged(object sender, EventArgs e)
+        {
+            if (Assets.Items.Count > 0)
+            {
+                DialogResult res = MessageBox.Show("Reset assets ?", "Information", MessageBoxButtons.YesNo);
+                if (DialogResult.Yes == res)
+                    Assets.Items.Clear();
+            }
+
+            if (network.IsConnected() && (scene_filepath.Length > 0))
+                Render.Enabled = true;
+            else
+                Render.Enabled = false;
+        }
+
+        private void onConnect(object sender, EventArgs e)
+        {
+            short p = 0;
+            bool b = short.TryParse(port.Text, out p);
+
+            if (b && network.Connect(host.Text, p))
+            {
+                if (network.IsConnected() && (scene_filepath.Length > 0))
+                {
+                    Log.Items.Add("Connected to server: " + host.Text + " on port " + port.Text);
+                    Connect.Text = "Disconnect";
+                    Render.Enabled = true;
+                }
+                else
+                    Render.Enabled = false;
+            }
+            else
+                MessageBox.Show("Uable to connect to the render server", "Error", MessageBoxButtons.OK);
+        }
+
+        private void onRender(object sender, EventArgs e)
+        {
+
+        }
+
+
+        /**
+         * Client Main data
+         */
+        private RaysClientNetwork network = new RaysClientNetwork();
+        private String scene_filepath = new String("".ToCharArray());
+        private StringCollection assets = new StringCollection();
+        StringCollection supported_exts = new StringCollection { "jpg", "png", "bmp", "exr", "tiff" };
     }
 }

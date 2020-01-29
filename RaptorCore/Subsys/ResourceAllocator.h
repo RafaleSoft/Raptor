@@ -46,6 +46,8 @@ public:
 		CResourceBinder(void);
 		~CResourceBinder(void);
 
+		bool useVertexArrayObjects(void);
+
 		bool setArray(CProgramParameters::GL_VERTEX_ATTRIB attribute, 
 					  void *vertexPointer, 
 					  size_t size = 4,
@@ -60,11 +62,13 @@ public:
 		CResourceBinder& operator=(const CResourceBinder&);
 
 		//! Bind a single array.
-		bool bindArray(CRaptorDisplayConfig::GL_ARRAY_STATE &state);
+		bool bindArray(CRaptorDisplayConfig::GL_ARRAY_STATE &state,
+					   CRaptorDisplayConfig::GL_ARRAY_STATE &global_state);
 		bool bindAttribArray(CRaptorDisplayConfig::GL_ARRAY_STATE &state);
 
 		//! Unbind a single array.
-		bool unbindArray(CRaptorDisplayConfig::GL_ARRAY_STATE &state);
+		bool unbindArray(CRaptorDisplayConfig::GL_ARRAY_STATE &state,
+						 CRaptorDisplayConfig::GL_ARRAY_STATE &global_state);
 		bool unbindAttribArray(CRaptorDisplayConfig::GL_ARRAY_STATE &state);
 
 		//!	This resource binder arrays bindings.
@@ -73,10 +77,12 @@ public:
 		//!	Vertex Array Object.
 		GLuint	array;
 		bool	updateArray;
+		bool	legacy;
+		bool	vao;
 	};
 
+
 public:
-	CResourceAllocator();
 	virtual ~CResourceAllocator();
 
 	//! Returns the lock state ( set with the method below ).
@@ -89,6 +95,10 @@ protected:
 		uint8_t		*address;
 		uint64_t	size;
 	} data_bloc;
+
+
+	//!	The constructor, for subclasses (Geometry, Texels, Uniforms).
+	CResourceAllocator();
 
 	//!	The memory state
 	bool    m_bLocked;

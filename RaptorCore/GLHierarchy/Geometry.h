@@ -191,6 +191,12 @@ public:
 
 
 protected:
+	//!	Pure geometric rendering
+	virtual void glRenderGeometry();
+
+	//! Specific constructor for derived classes
+	CGeometry(const std::string& name, const CPersistence::CPersistenceClassID &classID);
+
     friend class CGeometryEditor;
 
 	unsigned int	m_nbVertex;
@@ -238,11 +244,8 @@ protected:
     //! Default primitive : triangles when the geometry has no primitive list.
 	unsigned short	*polys;	
 
-	//!	Pure geometric rendering
-	virtual void glRenderGeometry();
-
-    //! Specific constructor for derived classes
-    CGeometry(const std::string& name,const CPersistence::CPersistenceClassID &classID);
+	//!	Vertex Input State Resource binder
+	void				*m_pBinder;
 
 
 
@@ -261,9 +264,6 @@ private:
 
     //! The rendering model of the geometry
     CRenderingModel		m_renderingModel;
-
-	//!	Vertex Input State Resource binder
-	void				*m_pBinder;
 
     //! The list of base primitives
 	vector<CGeometryPrimitive*>	m_pPrimitives;

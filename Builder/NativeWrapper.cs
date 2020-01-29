@@ -91,9 +91,11 @@ namespace Builder
 
                         List<string> ls = GetAllStrings(ptr, nb);
 
+                        string extName = Marshal.PtrToStringAnsi(exts[i].extensionName);
+
                         extensions[i].kind = exts[i].kind;
                         extensions[i].active = exts[i].active;
-                        extensions[i].extensionName = exts[i].extensionName;
+                        extensions[i].extensionName = extName;
                         extensions[i].dependencies = ls.ToArray();
                     }
 
@@ -136,7 +138,7 @@ namespace Builder
         {
             public EXTENSION_KIND kind;
             public bool active;
-            public string extensionName;
+            public IntPtr extensionName;
             public uint nb_dependencies;
             public IntPtr dependencies;
         }

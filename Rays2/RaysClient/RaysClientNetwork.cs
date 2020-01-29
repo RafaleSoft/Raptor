@@ -1,12 +1,11 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 using System.Net.Sockets;
 
 namespace RaysClient
 {
     class RaysClientNetwork
     {
-        public bool Connect(string address, int port)
+        public bool Connect(string address, short port)
         {
             if (server == null)
             {
@@ -38,9 +37,12 @@ namespace RaysClient
 
         public bool IsConnected()
         {
+            if (null == server)
+                return false;
+            
             return server.Connected;
         }
 
-        private Socket server;
+        private Socket server = null;
     }
 }
