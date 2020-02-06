@@ -190,6 +190,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "RaysClientForm";
             this.Text = "Rays Client";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.onClose);
             this.Load += new System.EventHandler(this.RaysClientForm_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();

@@ -172,7 +172,7 @@ int main(int argc, char* argv[])
 
 	CCmdLineParser parser;
 	parser.addOption("port", "p", (uint16_t)2048);
-	parser.addOption("host_addr", "a", std::string("127.0.0.1"));
+	parser.addOption("host_addr", "h", std::string("127.0.0.1"));
 	parser.addOption("config_file", "f", std::string("RaysServer.config"));
 	if (!parser.parse(argc, argv))
 	{
@@ -191,17 +191,18 @@ int main(int argc, char* argv[])
 	std::string config_file = "";
 	parser.getValue("config_file", config_file);
 
+	CRaysSettings &settings = RaysUtils::getSettings();
+	settings.setSettings(parser);
 	if (!RaysUtils::loadConfig(config_file))
 		RaysUtils::getLog().Log("Rays Server configuration file failed to load.");
 
-	const CRaysSettings &settings = RaysUtils::getSettings();
-
 	std::string addrStr = "127.0.0.1";
 	uint16_t port = 2048;
-	if (!settings.getValue("port", port))
-		parser.getValue("port", port);
-	if (!settings.getValue("host_addr", addrStr))
-		parser.getValue("host_addr", addrStr);
+	if (!settings.getValue("port", port) || !settings.getValue("host_addr", addrStr))
+	{
+		RaysUtils::getLog().Log("Impossible to know Rays Server settings to use. Exiting");
+		return -1;
+	}
 
 	bool res = pApp->Start(addrStr, port);
 	if (res)

@@ -111,9 +111,9 @@
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</LinkIncremental>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectName)_3_2</TargetName>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">xerces-c_3_1D</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjectName)_3_2</TargetName>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectName)_3_2</TargetName>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">xerces-c_3_2</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ProjectName)_3_2</TargetName>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">$(ProjectName)_3_2</TargetName>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|x64'">$(ProjectName)_3_2</TargetName>
   </PropertyGroup>
@@ -135,7 +135,7 @@
     <ClCompile>
       <Optimization>MinSpace</Optimization>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
-      <AdditionalIncludeDirectories>$(SolutionDir)AddOns\xercesc-3.2.2\src\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)AddOns\xercesc-3.2.2\src\;$(ProjectDir)\xercesc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_DEPRECATE;NDEBUG;WIN32;_WINDOWS;XERCES_BUILDING_LIBRARY;XERCES_USE_TRANSCODER_WINDOWS;XERCES_USE_WIN32_MSGLOADER;XERCES_USE_MSGLOADER_INMEMORY;XERCES_USE_NETACCESSOR_WINSOCK;XERCES_USE_FILEMGR_WINDOWS;XERCES_USE_MUTEXMGR_WINDOWS;XERCES_PATH_DELIMITER_BACKSLASH;HAVE_STRICMP;HAVE_STRNICMP;HAVE_LIMITS_H;HAVE_SYS_TIMEB_H;HAVE_FTIME;HAVE_WCSUPR;HAVE_WCSLWR;HAVE_WCSICMP;HAVE_WCSNICMP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -145,7 +145,7 @@
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <ProgramDataBaseFileName>$(IntDir)XercesLib_vc120.pdb</ProgramDataBaseFileName>
       <WarningLevel>Level4</WarningLevel>
-      <DebugInformationFormat>None</DebugInformationFormat>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
       <DisableSpecificWarnings>4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -172,7 +172,12 @@
       <DataExecutionPrevention>
       </DataExecutionPrevention>
       <ImportLibrary>$(OutDir)xerces-c_3.lib</ImportLibrary>
+      <Version>3.2</Version>
     </Link>
+    <PostBuildEvent>
+      <Command>copy $(TargetPath) "%RAPTOR_ROOT%\Redist\bin\"
+copy $(OutDir)xerces-c_3.lib "%RAPTOR_ROOT%\Redist\lib\"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Midl>
@@ -183,7 +188,7 @@
     <ClCompile>
       <Optimization>MinSpace</Optimization>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
-      <AdditionalIncludeDirectories>$(SolutionDir)AddOns\xercesc-3.2.2\src\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)AddOns\xercesc-3.2.2\src\;$(ProjectDir)\xercesc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_DEPRECATE;NDEBUG;WIN32;_WINDOWS;XERCES_BUILDING_LIBRARY;XERCES_USE_TRANSCODER_WINDOWS;XERCES_USE_WIN32_MSGLOADER;XERCES_USE_MSGLOADER_INMEMORY;XERCES_USE_NETACCESSOR_WINSOCK;XERCES_USE_FILEMGR_WINDOWS;XERCES_USE_MUTEXMGR_WINDOWS;XERCES_PATH_DELIMITER_BACKSLASH;HAVE_STRICMP;HAVE_STRNICMP;HAVE_LIMITS_H;HAVE_SYS_TIMEB_H;HAVE_FTIME;HAVE_WCSUPR;HAVE_WCSLWR;HAVE_WCSICMP;HAVE_WCSNICMP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -193,7 +198,7 @@
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <ProgramDataBaseFileName>$(IntDir)XercesLib_vc120.pdb</ProgramDataBaseFileName>
       <WarningLevel>Level4</WarningLevel>
-      <DebugInformationFormat>None</DebugInformationFormat>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
       <DisableSpecificWarnings>4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -221,7 +226,12 @@
       <DataExecutionPrevention>
       </DataExecutionPrevention>
       <ImportLibrary>$(OutDir)xerces-c_3.lib</ImportLibrary>
+      <Version>3.2</Version>
     </Link>
+    <PostBuildEvent>
+      <Command>copy $(TargetPath) "%RAPTOR_ROOT%\Redist\bin\"
+copy $(OutDir)xerces-c_3.lib "%RAPTOR_ROOT%\Redist\lib\"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">
     <Midl>
@@ -272,11 +282,11 @@
       <DataExecutionPrevention>
       </DataExecutionPrevention>
       <ImportLibrary>$(OutDir)xerces-c_3.lib</ImportLibrary>
+      <Version>3.2</Version>
     </Link>
     <PostBuildEvent>
       <Command>copy $(TargetPath) "%RAPTOR_ROOT%\Redist\bin\"
-copy $(OutDir)xerces-c_3.lib "%RAPTOR_ROOT%\Redist\lib\"
-</Command>
+copy $(OutDir)xerces-c_3.lib "%RAPTOR_ROOT%\Redist\lib\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|x64'">
@@ -328,11 +338,11 @@ copy $(OutDir)xerces-c_3.lib "%RAPTOR_ROOT%\Redist\lib\"
       <DataExecutionPrevention>
       </DataExecutionPrevention>
       <ImportLibrary>$(OutDir)xerces-c_3.lib</ImportLibrary>
+      <Version>3.2</Version>
     </Link>
     <PostBuildEvent>
       <Command>copy $(TargetPath) "%RAPTOR_ROOT%\Redist\bin\"
-copy $(OutDir)xerces-c_3.lib "%RAPTOR_ROOT%\Redist\lib\"
-</Command>
+copy $(OutDir)xerces-c_3.lib "%RAPTOR_ROOT%\Redist\lib\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -344,7 +354,7 @@ copy $(OutDir)xerces-c_3.lib "%RAPTOR_ROOT%\Redist\lib\"
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(SolutionDir)AddOns\xercesc-3.2.2\src\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)AddOns\xercesc-3.2.2\src\;$(ProjectDir)\xercesc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_DEPRECATE;_DEBUG;WIN32;_WINDOWS;XERCES_BUILDING_LIBRARY;XERCES_USE_TRANSCODER_WINDOWS;XERCES_USE_WIN32_MSGLOADER;XERCES_USE_MSGLOADER_INMEMORY;XERCES_USE_NETACCESSOR_WINSOCK;XERCES_USE_FILEMGR_WINDOWS;XERCES_USE_MUTEXMGR_WINDOWS;XERCES_PATH_DELIMITER_BACKSLASH;HAVE_STRICMP;HAVE_STRNICMP;HAVE_LIMITS_H;HAVE_SYS_TIMEB_H;HAVE_FTIME;HAVE_WCSUPR;HAVE_WCSLWR;HAVE_WCSICMP;HAVE_WCSNICMP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
@@ -369,15 +379,23 @@ copy $(OutDir)xerces-c_3.lib "%RAPTOR_ROOT%\Redist\lib\"
       <OutputFile>$(TargetPath)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ProgramDatabaseFile>$(OutDir)xerces-c_3_1D.pdb</ProgramDatabaseFile>
+      <ProgramDatabaseFile>$(OutDir)xerces-c_3_2.fullpdb</ProgramDatabaseFile>
       <SubSystem>Windows</SubSystem>
       <SetChecksum>false</SetChecksum>
       <BaseAddress>0x12000000</BaseAddress>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention>
       </DataExecutionPrevention>
-      <ImportLibrary>$(OutDir)xerces-c_3D.lib</ImportLibrary>
+      <ImportLibrary>$(OutDir)xerces-c_3.lib</ImportLibrary>
+      <StripPrivateSymbols>$(OutDir)xerces-c_3_2.pdb</StripPrivateSymbols>
+      <GenerateMapFile>true</GenerateMapFile>
+      <MapFileName>$(IntDir)xerces-c_3_2.map</MapFileName>
+      <Version>3.2</Version>
     </Link>
+    <PostBuildEvent>
+      <Command>copy $(TargetPath) "%RAPTOR_ROOT%\Redist\bin\"
+copy $(OutDir)xerces-c_3.lib "%RAPTOR_ROOT%\Redist\lib\"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Midl>
@@ -387,7 +405,7 @@ copy $(OutDir)xerces-c_3.lib "%RAPTOR_ROOT%\Redist\lib\"
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(SolutionDir)AddOns\xercesc-3.2.2\src\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)AddOns\xercesc-3.2.2\src\;$(ProjectDir)\xercesc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_DEPRECATE;_DEBUG;WIN32;_WINDOWS;XERCES_BUILDING_LIBRARY;XERCES_USE_TRANSCODER_WINDOWS;XERCES_USE_WIN32_MSGLOADER;XERCES_USE_MSGLOADER_INMEMORY;XERCES_USE_NETACCESSOR_WINSOCK;XERCES_USE_FILEMGR_WINDOWS;XERCES_USE_MUTEXMGR_WINDOWS;XERCES_PATH_DELIMITER_BACKSLASH;HAVE_STRICMP;HAVE_STRNICMP;HAVE_LIMITS_H;HAVE_SYS_TIMEB_H;HAVE_FTIME;HAVE_WCSUPR;HAVE_WCSLWR;HAVE_WCSICMP;HAVE_WCSNICMP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
@@ -413,15 +431,23 @@ copy $(OutDir)xerces-c_3.lib "%RAPTOR_ROOT%\Redist\lib\"
       <OutputFile>$(TargetPath)</OutputFile>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ProgramDatabaseFile>$(OutDir)xerces-c_3_1D.pdb</ProgramDatabaseFile>
+      <ProgramDatabaseFile>$(OutDir)xerces-c_3_2.fullpdb</ProgramDatabaseFile>
       <SubSystem>Windows</SubSystem>
       <SetChecksum>false</SetChecksum>
       <BaseAddress>0x12000000</BaseAddress>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention>
       </DataExecutionPrevention>
-      <ImportLibrary>$(OutDir)xerces-c_3D.lib</ImportLibrary>
+      <ImportLibrary>$(OutDir)xerces-c_3.lib</ImportLibrary>
+      <StripPrivateSymbols>$(OutDir)xerces-c_3_2.pdb</StripPrivateSymbols>
+      <GenerateMapFile>true</GenerateMapFile>
+      <MapFileName>$(IntDir)xerces-c_3_2.map</MapFileName>
+      <Version>3.2</Version>
     </Link>
+    <PostBuildEvent>
+      <Command>copy $(TargetPath) "%RAPTOR_ROOT%\Redist\bin\"
+copy $(OutDir)xerces-c_3.lib "%RAPTOR_ROOT%\Redist\lib\"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\AddOns\xercesc-3.2.2\src\xercesc\util\EncodingValidator.hpp" />

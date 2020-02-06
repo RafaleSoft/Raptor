@@ -27,6 +27,10 @@
 #if !defined(AFX_RAPTORINSTANCE_H__90219068_202B_46C2_BFF0_73C24D048903__INCLUDED_)
 	#include "Subsys/RaptorInstance.h"
 #endif
+#if !defined(AFX_OPENGL_H__6C8840CA_BEFA_41DE_9879_5777FBBA7147__INCLUDED_)
+	#include "Subsys/OpenGL/RaptorOpenGL.h"
+#endif
+
 
 
 RAPTOR_NAMESPACE
@@ -120,7 +124,7 @@ bool CResourceAllocator::CResourceBinder::useVertexArrayObjects(void)
 	{
 		vao = false;
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
-		Raptor::GetErrorManager()->generateRaptorError(C3DScene::C3DSceneClassID::GetClassId(),
+		Raptor::GetErrorManager()->generateRaptorError(COpenGL::COpenGLClassID::GetClassId(),
 													   CRaptorErrorManager::RAPTOR_ERROR,
 													   "Resource Binder has no Vertex Arrays Objects to render Geometry");
 #endif
@@ -137,7 +141,7 @@ bool CResourceAllocator::CResourceBinder::useVertexArrayObjects(void)
 	if (!Raptor::glIsExtensionSupported(GL_ARB_VERTEX_PROGRAM_EXTENSION_NAME))
 	{
 	#ifdef RAPTOR_DEBUG_MODE_GENERATION
-			Raptor::GetErrorManager()->generateRaptorError(C3DScene::C3DSceneClassID::GetClassId(),
+			Raptor::GetErrorManager()->generateRaptorError(COpenGL::COpenGLClassID::GetClassId(),
 														   CRaptorErrorManager::RAPTOR_FATAL,
 														   "Resource Binder has no Vertex Arrays to render Geometry");
 	#endif

@@ -25,6 +25,23 @@ CCmdLineParser::~CCmdLineParser(void)
 		delete m_options[i];
 }
 
+bool CCmdLineParser::removeOption(const std::string &name)
+{
+	for (unsigned int o = 0; o<m_options.size(); o++)
+	{
+		CCommandLineOption* cmdline = m_options[o];
+		if ((cmdline->getName() == name) || (cmdline->getShort() == name))
+		{
+			CCommandLineOption* last = m_options.back();
+			m_options[o] = last;
+			m_options.pop_back();
+			return true;
+		}
+	}
+
+	return false;
+}
+
 bool CCmdLineParser::parse(int argc, char *argv[])
 {
 	int i = 0;

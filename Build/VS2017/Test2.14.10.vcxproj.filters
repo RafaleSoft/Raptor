@@ -71,11 +71,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="..\..\Test2\Test2.rc">
-      <Filter>Source Files</Filter>
-    </ResourceCompile>
-  </ItemGroup>
-  <ItemGroup>
     <Image Include="..\..\Test2\RES\Test2.ico">
       <Filter>Resource Files</Filter>
     </Image>
@@ -146,5 +141,10 @@
     <ClInclude Include="..\..\Test2\WarpingDisplay.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\..\Test2\Test2.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

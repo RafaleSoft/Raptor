@@ -22,14 +22,29 @@ namespace RaysClient
                 return false;
             }
 
+            bool connect = false;
             try
             {
                 server.Connect(addr,port);
+                connect = server.Connected;
             }
             catch(SocketException e)
             {
                 // TODO: log not supported address family (v6)
+            }
+
+            return connect;
+        }
+
+        public bool Disconnect()
+        {
+            if (null == server)
                 return false;
+
+            if (server.Connected)
+            {
+                server.Close();
+                server = null;
             }
 
             return true;
@@ -41,6 +56,12 @@ namespace RaysClient
                 return false;
             
             return server.Connected;
+        }
+
+        ~RaysClientNetwork()
+        {
+            if (Disconnect())
+                server.Dispose();
         }
 
         private Socket server = null;

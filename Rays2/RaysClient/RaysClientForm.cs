@@ -37,11 +37,14 @@ namespace RaysClient
             scene_filepath = "";
         }
 
-
-
         private void RaysClientForm_Load(object sender, EventArgs e)
         {
 
+        }
+
+        private void onClose(object sender, FormClosingEventArgs e)
+        {
+            network.Disconnect();
         }
 
         private void OnQuit(object sender, EventArgs e)
@@ -54,7 +57,10 @@ namespace RaysClient
             {
                 DialogResult res = MessageBox.Show("Are you sure you want to quit ?", "Information", MessageBoxButtons.YesNo);
                 if (DialogResult.No != res)
+                {
+                    network.Disconnect();
                     Close();
+                }
             }
         }
 
@@ -144,22 +150,35 @@ namespace RaysClient
 
         private void onConnect(object sender, EventArgs e)
         {
-            short p = 0;
-            bool b = short.TryParse(port.Text, out p);
+            Render.Enabled = false;
 
-            if (b && network.Connect(host.Text, p))
+            if (network.IsConnected())
             {
-                if (network.IsConnected() && (scene_filepath.Length > 0))
-                {
-                    Log.Items.Add("Connected to server: " + host.Text + " on port " + port.Text);
-                    Connect.Text = "Disconnect";
-                    Render.Enabled = true;
-                }
+                if (!network.Disconnect())
+                    MessageBox.Show("Unable to disconnect from the render server", "Error", MessageBoxButtons.OK);
                 else
-                    Render.Enabled = false;
+                    Log.Items.Add("Disconnect from the render server");
+                Connect.Text = "Connect";
             }
             else
-                MessageBox.Show("Uable to connect to the render server", "Error", MessageBoxButtons.OK);
+            {
+                short p = 0;
+                bool b = short.TryParse(port.Text, out p);
+
+                if (b && network.Connect(host.Text, p))
+                {
+                    if (network.IsConnected())
+                    {
+                        Log.Items.Add("Connected to server: " + host.Text + " on port " + port.Text);
+                        Connect.Text = "Disconnect";
+
+                        if (scene_filepath.Length > 0)
+                            Render.Enabled = true;
+                    }
+                }
+                else
+                    MessageBox.Show("Unable to connect to the render server", "Error", MessageBoxButtons.OK);
+            }
         }
 
         private void onRender(object sender, EventArgs e)

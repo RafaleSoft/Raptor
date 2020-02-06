@@ -85,11 +85,9 @@ RaysUtils::RaysUtils()
 	Network::addLogger(logger);
 	m_pLogger = NULL;
 
-	m_settings.addSetting<uint32_t>("port", (uint32_t)2048);
 	m_settings.addSetting<uint32_t>("wu_priority", (uint32_t)1);
 	m_settings.addSetting<uint32_t>("deamon_delay", (uint32_t)10);
 	m_settings.addSetting<uint32_t>("nb_wu_per_job", (uint32_t)1);
-	m_settings.addSetting<string>("host_addr", string("127.0.0.1"));
 	m_settings.addSetting<vector<string>>("deamon", vector<string>());
 }
 
@@ -118,46 +116,6 @@ RaysUtils::ILogger* RaysUtils::setLog(ILogger* pLogger)
 }
 
 
-bool RaysUtils::importSettings(raptor::CRaptorIO *conf)
-{
-	size_t nb_deamon = 0;
-	string value;
-	string name;
-
-	*conf >> name;
-	string data = conf->getValueName();
-
-	while (!data.empty())
-	{
-		if (data == "add")
-		{
-			value = "";
-			name = "";
-			*conf >> data;
-		}
-		else if ("key" == data)
-			*conf >> name;
-		else if ("value" == data)
-			*conf >> value;
-		else
-			*conf >> data;
-		
-		if (!value.empty() && !name.empty())
-		{
-			m_settings.setValue(name, value.c_str());
-			value = "";
-			name = "";
-
-			data = conf->getValueName();
-			*conf >> data;
-		}
-		
-		data = conf->getValueName();
-	}
-
-	return true;
-}
-
 bool RaysUtils::loadConfig(const std::string &config_file)
 {
 	CRaptorIO *conf = CRaptorIO::Create(config_file,
@@ -184,7 +142,7 @@ bool RaysUtils::loadConfig(const std::string &config_file)
 		while (!data.empty())
 		{
 			if ("appSettings" == data)
-				getUtils().importSettings(conf);
+				getUtils().getSettings().importSettings(conf);
 			else
 				*conf >> name;
 
@@ -206,10 +164,9 @@ bool RaysUtils::saveConfig(void)
 										CRaptorIO::IO_KIND::DISK_WRITE,
 										CRaptorIO::ASCII_XML);
 
-	const CRaysSettings &settings = RaysUtils::getSettings();
 	if (CRaptorIO::IO_OK == conf->getStatus())
 	{
-		getUtils().importSettings(conf);
+		getUtils().getSettings().exportSettings(conf);
 
 		return true;
 	}
@@ -217,7 +174,7 @@ bool RaysUtils::saveConfig(void)
 		return false;
 }
 
-const CRaysSettings& RaysUtils::getSettings(void)
+CRaysSettings& RaysUtils::getSettings()
 {
 	return getUtils().m_settings;
 }

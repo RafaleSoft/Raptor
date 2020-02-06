@@ -273,6 +273,8 @@ bool CServer<ServerSocket_T,ClientSocket_T>::newClient(void)
 		pClient->setServer(this);
 		m_clients.push_back(pClient);
 
+		onNewClient(*pClient);
+
 		return startClientService(*pClient);
 	}
 	else
