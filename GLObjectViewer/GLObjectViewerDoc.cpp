@@ -98,7 +98,8 @@ BOOL CGLObjectViewerDoc::OnOpenDocument(LPCTSTR lpszPathName)
         if (!res)
         {
             CString msg;
-            msg.Format(TEXT("Failed to load file %s"),CA2T(fname.c_str()));
+			LPSTR f = CA2T(fname.c_str());
+            msg.Format(TEXT("Failed to load file %s"),f);
             AfxMessageBox(msg);
         }
         else

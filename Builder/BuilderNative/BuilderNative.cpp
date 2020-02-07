@@ -574,7 +574,7 @@ bool getExtensions(NATIVE_EXTENSION* ext, uint32_t *s)
 
 	if (NULL == ext)
 		if (NULL != s)
-			*s = builder->getExtensions().size();
+			*s = (uint32_t)builder->getExtensions().size();
 		else
 			return false;
 	else
@@ -591,7 +591,7 @@ bool getExtensions(NATIVE_EXTENSION* ext, uint32_t *s)
 			ext[i].active = extension.active;
 			ext[i].extensionName = STRDUP(extension.extensionName.c_str());
 
-			size_t nb = extension.dependencies.size();
+			uint32_t nb = (uint32_t)extension.dependencies.size();
 			ext[i].nb_dependencies = nb;
 			ext[i].dependencies = (const char**)(calloc(nb+1,sizeof(char*)));
 			if (NULL != ext[i].dependencies)
