@@ -190,9 +190,8 @@ void Display::GLInitContext()
 	glClearColor(0.0f,0.0f,0.0f,0.0f);
 	
 	m_points = new CGeometry("BenchPoints");
-	CGeometry::CRenderingModel model(	CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY|
-										CGeometry::CRenderingModel::CGL_COLORS);
-	m_points->setRenderingModel(model);
+	m_points->addModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
+	m_points->addModel(CGeometry::CRenderingModel::CGL_COLORS);
 
 	m_points->glSetVertices(MAX_VERTEX,NULL);
 	m_points->glSetColors(MAX_VERTEX,NULL);

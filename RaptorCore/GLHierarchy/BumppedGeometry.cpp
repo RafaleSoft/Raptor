@@ -154,10 +154,8 @@ void CBumppedGeometry::setRenderingModel(const CRenderingModel& model)
 	pEditor.genBinormals();
 
     //  render material normals is mandatory for this kind of geometry
-    CRenderingModel l_model = model;
-	l_model.addModel(CRenderingModel::CGL_NORMALS);
-    l_model.addModel(CRenderingModel::CGL_TANGENTS);
-    CGeometry::setRenderingModel(l_model);
+	addModel(CRenderingModel::CGL_NORMALS);
+    addModel(CRenderingModel::CGL_TANGENTS);
 	
 	if ((normalMap == NULL) || (diffuseMap == NULL))
 	{

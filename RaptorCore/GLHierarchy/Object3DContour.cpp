@@ -499,7 +499,7 @@ void CObject3DContour::findEdges()
 void CObject3DContour::findContour()
 {
 	unsigned int size = 0;
-    unsigned int nbEdges = m_pContour->edges.size();
+    size_t nbEdges = m_pContour->edges.size();
 	for (unsigned int i=0;i<nbEdges;i++)
 	{
 		const CContourAttributes::edge &e = m_pContour->edgeList[i];
@@ -538,7 +538,7 @@ void CObject3DContour::buildVolume(const GL_COORD_VERTEX &pos,float extrusion)
 
     {
 	    unsigned int size = 0;
-        unsigned int nbEdges = m_pContour->edges.size();
+        size_t nbEdges = m_pContour->edges.size();
         unsigned int csize = m_pContour->contourVolumeSize;
 
         unsigned int *pVolume = &m_pContour->volume[0];
