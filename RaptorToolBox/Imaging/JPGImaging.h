@@ -24,7 +24,7 @@ public:
 
 	virtual bool isOfKind(const std::string &kind) const;
 
-	virtual vector<std::string> getImageKind(void) const;
+	virtual std::vector<std::string> getImageKind(void) const;
 
 	//! Method prototype for image loading 'from file'
 	//!	@param fname : full filename, with path and file extensions

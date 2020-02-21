@@ -142,10 +142,9 @@ void CSkinningDisplay::Init()
 	tube->rotationX(-90.0f);
 	tube->getCenter(c);
 	tube->translate(-c.x,-c.y,-c.z);
-    CGeometry::CRenderingModel l_model(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
-    l_model.addModel(CGeometry::CRenderingModel::CGL_NORMALS);
-    l_model.addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
-	tube->setRenderingModel(l_model);
+	tube->addModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
+	tube->addModel(CGeometry::CRenderingModel::CGL_NORMALS);
+	tube->addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
 
 	tube2 = new CShadedGeometry();
 	*tube2 = *tube;
@@ -154,8 +153,10 @@ void CSkinningDisplay::Init()
 	GL_VERTEX_DATA v;
 	tube2->getBoundingBox(m,M);
 
-    l_model.addModel(CGeometry::CRenderingModel::CGL_WEIGHT);
-    tube2->setRenderingModel(l_model);
+	tube2->addModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
+	tube2->addModel(CGeometry::CRenderingModel::CGL_NORMALS);
+	tube2->addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
+	tube2->addModel(CGeometry::CRenderingModel::CGL_WEIGHT);
 	int nbV = tube2->nbVertex();
     tube2->glSetWeights(nbV);
 	tube2->glLockData();

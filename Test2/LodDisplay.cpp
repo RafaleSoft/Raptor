@@ -131,15 +131,13 @@ void CLodDisplay::Init()
     CRaptorToolBox::load3DStudioScene("Datas\\Zipplane.3DS",set,&options);
 	set->translateAbsolute(0.0f,0.0f,0.0f);
 
-    CGeometry::CRenderingModel l_model(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
-    l_model.addModel(CGeometry::CRenderingModel::CGL_NORMALS);
-
     C3DSet::C3DSetIterator it = set->getIterator();
 	g = (CShadedGeometry*)(set->getChild(it++));
 	while (g != NULL)
 	{
 		g->setShader(s);
-		g->setRenderingModel(l_model);
+		g->addModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
+		g->addModel(CGeometry::CRenderingModel::CGL_NORMALS);
 
 		g = (CShadedGeometry*)(set->getChild(it++));
 	}
@@ -154,7 +152,8 @@ void CLodDisplay::Init()
 	while (g != NULL)
 	{
 		g->setShader(s);
-		g->setRenderingModel(l_model);
+		g->addModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
+		g->addModel(CGeometry::CRenderingModel::CGL_NORMALS);
 		g = (CShadedGeometry*)(set->getChild(it++));
 	}
 	lod->addLevel(600,set);
@@ -168,7 +167,8 @@ void CLodDisplay::Init()
 	while (g != NULL)
 	{
 		g->setShader(s);
-		g->setRenderingModel(l_model);
+		g->addModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
+		g->addModel(CGeometry::CRenderingModel::CGL_NORMALS);
 		g = (CShadedGeometry*)(set->getChild(it++));
 	}
 	lod->addLevel(900,set);
@@ -182,7 +182,8 @@ void CLodDisplay::Init()
 	while (g != NULL)
 	{
 		g->setShader(s);
-		g->setRenderingModel(l_model);
+		g->addModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
+		g->addModel(CGeometry::CRenderingModel::CGL_NORMALS);
 		g = (CShadedGeometry*)(set->getChild(it++));
 	}
 	lod->addLevel(1200,set);
@@ -196,7 +197,8 @@ void CLodDisplay::Init()
 	while (g != NULL)
 	{
 		g->setShader(s);
-		g->setRenderingModel(l_model);
+		g->addModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
+		g->addModel(CGeometry::CRenderingModel::CGL_NORMALS);
 		g = (CShadedGeometry*)(set->getChild(it++));
 	}
 	lod->addLevel(1600,set);

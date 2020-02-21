@@ -171,7 +171,7 @@ CWarpObject::CWarpObject(float width,float height,int hcels,int vcels)
 
 	CBasicObjects::CRectMesh *mesh = new CBasicObjects::CRectMesh();
 	mesh->setDimensions(width,height,m_hcels,m_vcels);
-	mesh->getRenderingModel().removeModel(CGeometry::CRenderingModel::CGL_NORMALS);
+	mesh->removeModel(CGeometry::CRenderingModel::CGL_NORMALS);
 
 	setGeometry(mesh);
 }

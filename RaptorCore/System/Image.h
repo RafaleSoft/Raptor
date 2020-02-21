@@ -60,7 +60,7 @@ public:
 		virtual bool isOfKind(const std::string &kind) const = 0;
 
 		//! Returns the list of extension kind handled by this imageIO.
-		virtual vector<std::string> getImageKind(void) const = 0;
+		virtual std::vector<std::string> getImageKind(void) const = 0;
 
 		//! Method prototype for image loading 'from file'
 		//!	@param fname : full filename, with path and file extensions
@@ -96,12 +96,6 @@ public:
 			OTHER_OP,
 			NB_OP_KIND
         } OP_KIND;
-
-		//typedef struct 
-		//{
-		//	float		bump_scale;
-		//	uint32_t	transparency;
-		//} operation_param_t;
 
 		//!	Virtual destructor
 		virtual ~IImageOP() {};
@@ -143,7 +137,6 @@ public:
 	//! @return false if the an error is encountered when trying to access filename of no loader found.
 	bool loadImage(const std::string &filename,
 				   const CVaArray<CImage::IImageOP*>& ops);
-				   //,const CImage::IImageOP::operation_param_t& param);
 
 	//! texture name ( default is the source filename )
 	const std::string & getName(void) const { return m_name; };
@@ -218,7 +211,7 @@ public:
 
 private:
 	//!	Forbidden assignment operator
-	CImage& operator=(const CImage&);
+	CImage& operator=(const CImage&) { return *this; };
 
 	//!	Object name ( default is filename )
 	std::string	m_name;
