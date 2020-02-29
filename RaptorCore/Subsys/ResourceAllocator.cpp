@@ -16,8 +16,11 @@
 /***************************************************************************/
 
 
-#include "Subsys\CodeGeneration.h"
+#include "Subsys/CodeGeneration.h"
 
+#if !defined(AFX_RESOURCEALLOCATOR_H__4BAB58CE_942B_450D_88C9_AF0DDDF03718__INCLUDED_)
+	#include "Subsys/ResourceAllocator.h"
+#endif
 #if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
 	#include "System/RaptorGLExtensions.h"
 #endif
@@ -248,6 +251,8 @@ bool CResourceAllocator::CResourceBinder::setArray(CProgramParameters::GL_VERTEX
 
 bool CResourceAllocator::CResourceBinder::glvkBindArrays(void)
 {
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+
 	if (!legacy)
 	{
 		bool res = true;
@@ -265,7 +270,7 @@ bool CResourceAllocator::CResourceBinder::glvkBindArrays(void)
 			if (updateArray)
 			{
 				for (size_t i = 0; i < CProgramParameters::GL_VERTEX_ATTRIB_t::MAX_VERTEX_ATTRIB; i++)
-					res = res && bindAttribArray(bindings.arrays[i]);
+					res = res && bindAttribArray(bindings.arrays[i], instance.bindingState.arrays[i]);
 
 				updateArray = false;
 			}
@@ -273,15 +278,13 @@ bool CResourceAllocator::CResourceBinder::glvkBindArrays(void)
 		else
 		{
 			for (size_t i = 0; i < CProgramParameters::GL_VERTEX_ATTRIB_t::MAX_VERTEX_ATTRIB; i++)
-				res = res && bindAttribArray(bindings.arrays[i]);
+				res = res && bindAttribArray(bindings.arrays[i], instance.bindingState.arrays[i]);
 		}
 		return res;
 	}
 	else
 	{
 		bool res = true;
-		CRaptorInstance &instance = CRaptorInstance::GetInstance();
-
 		for (size_t i = 0; i < CProgramParameters::GL_VERTEX_ATTRIB_t::MAX_VERTEX_ATTRIB; i++)
 			res = res && bindArray(bindings.arrays[i], instance.bindingState.arrays[i]);
 
@@ -294,6 +297,8 @@ bool CResourceAllocator::CResourceBinder::glvkBindArrays(void)
 
 bool CResourceAllocator::CResourceBinder::glvkUnbindArrays(void)
 {
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+
 	if (!legacy)
 	{
 		if (vao)
@@ -306,15 +311,13 @@ bool CResourceAllocator::CResourceBinder::glvkUnbindArrays(void)
 		{
 			bool res = true;
 			for (size_t i = 0; i < CProgramParameters::GL_VERTEX_ATTRIB_t::MAX_VERTEX_ATTRIB; i++)
-				res = res && unbindAttribArray(bindings.arrays[i]);
+				res = res && unbindAttribArray(bindings.arrays[i], instance.bindingState.arrays[i]);
 			return res;
 		}
 	}
 	else
 	{
 		bool res = true;
-		CRaptorInstance &instance = CRaptorInstance::GetInstance();
-
 		for (size_t i = 0; i < CProgramParameters::GL_VERTEX_ATTRIB_t::MAX_VERTEX_ATTRIB; i++)
 			res = res && unbindArray(bindings.arrays[i], instance.bindingState.arrays[i]);
 		return res;
@@ -323,13 +326,19 @@ bool CResourceAllocator::CResourceBinder::glvkUnbindArrays(void)
 	CATCH_GL_ERROR
 }
 
-bool CResourceAllocator::CResourceBinder::bindAttribArray(CRaptorDisplayConfig::GL_ARRAY_STATE &state)
+bool CResourceAllocator::CResourceBinder::bindAttribArray(	CRaptorDisplayConfig::GL_ARRAY_STATE &state,
+															CRaptorDisplayConfig::GL_ARRAY_STATE &global_state)
 {
 #if defined(GL_ARB_vertex_program)
 	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 	if (state.enable)
 	{
-		pExtensions->glEnableVertexAttribArrayARB(state.arrayIndex);
+		if (!global_state.enable)
+		{
+			global_state.enable = true;
+			pExtensions->glEnableVertexAttribArrayARB(state.arrayIndex);
+		}
+		
 		pExtensions->glVertexAttribPointerARB(state.arrayIndex,
 											  state.arraySize,
 											  state.arrayType,
@@ -337,15 +346,20 @@ bool CResourceAllocator::CResourceBinder::bindAttribArray(CRaptorDisplayConfig::
 											  state.arrayStride,
 											  state.arrayPointer);
 	}
-	//	TODO: Need an else to disable existing array in current state ?
-	//	Likely if vertex array object not supperted.
+	else if (global_state.enable)
+	{
+		global_state.enable = false;
+		pExtensions->glDisableVertexAttribArrayARB(state.arrayIndex);
+	}
+	
 	return true;
 #else
 	return false;
 #endif
 }
 
-bool CResourceAllocator::CResourceBinder::unbindAttribArray(CRaptorDisplayConfig::GL_ARRAY_STATE &state)
+bool CResourceAllocator::CResourceBinder::unbindAttribArray(CRaptorDisplayConfig::GL_ARRAY_STATE &state,
+															CRaptorDisplayConfig::GL_ARRAY_STATE &global_state)
 {
 #if defined(GL_ARB_vertex_program)
 	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
