@@ -25,6 +25,10 @@
 	#endif
 #endif
 
+#if !defined(AFX_RESOURCEALLOCATOR_H__4BAB58CE_942B_450D_88C9_AF0DDDF03718__INCLUDED_)
+	#include "Subsys/ResourceAllocator.h"
+#endif
+
 
 RAPTOR_NAMESPACE
 
@@ -167,11 +171,17 @@ CRaptorDisplayConfig::CRaptorDisplayConfig()
 	arraysState.attributes.edgeArray.arrayIndex = 0;
 	arraysState.attributes.additionalArray.arrayName = 0;
 	arraysState.attributes.additionalArray.arrayIndex = CProgramParameters::ADDITIONAL_PARAM1;
+
+	m_pBinder = NULL;
 }
 
 CRaptorDisplayConfig::~CRaptorDisplayConfig()
 {
-
+	if (NULL != m_pBinder)
+	{
+		CResourceAllocator::CResourceBinder *binder = (CResourceAllocator::CResourceBinder*)m_pBinder;
+		delete binder;
+	}
 }
 
 void CRaptorDisplayConfig::copyBaseConfig(const CRaptorDisplayConfig& config)
@@ -259,6 +269,11 @@ bool CRaptorDisplayConfig::glQueryConfig(unsigned long query)
 
 	if (query & GL_ARRAYS_STATE_QUERY)
 	{
+		if (NULL == m_pBinder)
+			m_pBinder = new CResourceAllocator::CResourceBinder();
+		CResourceAllocator::CResourceBinder *binder = (CResourceAllocator::CResourceBinder*)m_pBinder;
+		binder->glScanBindings();
+
 		arraysState.attributes.vertexArray.enable = (GL_TRUE == glIsEnabled(GL_VERTEX_ARRAY));
 		arraysState.attributes.normalArray.enable = (GL_TRUE == glIsEnabled(GL_NORMAL_ARRAY));
 		arraysState.attributes.colorArray.enable = (GL_TRUE == glIsEnabled(GL_COLOR_ARRAY));
@@ -510,6 +525,11 @@ bool CRaptorDisplayConfig::glApplyConfig(unsigned long query) const
 
 	if (query & GL_ARRAYS_STATE_QUERY)
 	{
+//		if (NULL == m_pBinder)
+//			m_pBinder = new CResourceAllocator::CResourceBinder();
+//		CResourceAllocator::CResourceBinder *binder = (CResourceAllocator::CResourceBinder*)m_pBinder;
+//		binder->glvkBindArrays();
+
 #if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
 #else
 		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();

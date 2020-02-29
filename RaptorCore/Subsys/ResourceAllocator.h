@@ -46,13 +46,19 @@ public:
 		CResourceBinder(void);
 		~CResourceBinder(void);
 
+		//!	Defines array binding data.
 		bool setArray(CProgramParameters::GL_VERTEX_ATTRIB attribute, 
 					  void *vertexPointer, 
 					  size_t size = 4,
 					  size_t stride = 0);
 
+		//!	Bind arrays to current state for rendering.
 		bool glvkBindArrays(void);
+		//!	Revert to unbound state (default array binding).
 		bool glvkUnbindArrays(void);
+
+		//! Init arrays binding data and state with current state.
+		bool glScanBindings(void);
 
 
 	private:

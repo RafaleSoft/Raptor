@@ -21,14 +21,17 @@
 #endif
 
 #ifndef __REGISTERS_H__
-	#include "registers.h"
+	#include "Registers.h"
 #endif
 
 #if defined(WIN32)
 	#include <intrin.h>
 #elif defined(LINUX)
-	#include <cpuid.h>
-  #include <string.h>
+	#ifndef __arm__
+		#include <cpuid.h>
+	#else
+	#endif
+	#include <string.h>
 #endif
 
 #ifndef __GENERIC_ALIGNED_VECTOR_IMPL__
@@ -98,20 +101,35 @@ static CPU_INFO	cpuInfo;
 	#define CPUID(function,regs)  __cpuid(regs,function)
 	#define CPUIDEX(function,subfunction,regs)  __cpuidex(regs,function,subfunction)
 #elif defined(LINUX)
-  static __inline int __get_cpuidex(unsigned int __level, unsigned int __subfunction,
-                                    unsigned int *__eax, unsigned int *__ebx,
-                                    unsigned int *__ecx, unsigned int *__edx)
-  {
-    unsigned int __ext = __level & 0x80000000;
+	#ifndef __arm__
+		static __inline int __get_cpuidex(unsigned int __level, unsigned int __subfunction,
+										unsigned int *__eax, unsigned int *__ebx,
+										unsigned int *__ecx, unsigned int *__edx)
+		{
+			unsigned int __ext = __level & 0x80000000;
 
-    if (__get_cpuid_max (__ext, 0) < __level)
-      return 0;
+			if (__get_cpuid_max (__ext, 0) < __level)
+				return 0;
 
-    __cpuid_count(__level, __subfunction, *__eax, *__ebx, *__ecx, *__edx);
-    return 1;
-  }
-  #define CPUID(level,regs)  __get_cpuid(level,&regs[0],&regs[1],&regs[2],&regs[3])
-  #define CPUIDEX(level,subfunction,regs)  __get_cpuidex(level,subfunction,&regs[0],&regs[1],&regs[2],&regs[3])
+			__cpuid_count(__level, __subfunction, *__eax, *__ebx, *__ecx, *__edx);
+			return 1;
+		}
+		#define CPUID(level,regs)  __get_cpuid(level,&regs[0],&regs[1],&regs[2],&regs[3])
+		#define CPUIDEX(level,subfunction,regs)  __get_cpuidex(level,subfunction,&regs[0],&regs[1],&regs[2],&regs[3])
+	#else
+		static __inline int __get_cpuid(unsigned int __level, unsigned int __subfunction,
+										unsigned int *__eax, unsigned int *__ebx,
+										unsigned int *__ecx, unsigned int *__edx)
+		{
+			if (__eax) *__eax = 0;
+			if (__ebx) *__ebx = 0;
+			if (__ecx) *__ecx = 0;
+			if (__edx) *__edx = 0;
+			return 0;
+		}
+		#define CPUID(level,regs)  __get_cpuid(level, 0, &regs[0],&regs[1],&regs[2],&regs[3])
+		#define CPUIDEX(level,subfunction,regs)  __get_cpuid(level, subfunction, &regs[0],&regs[1],&regs[2],&regs[3])
+	#endif
 #endif
 
 //!

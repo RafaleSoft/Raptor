@@ -1126,14 +1126,6 @@ void CGeometry::glRenderGeometry()
 			glEnableClientState(GL_VERTEX_WEIGHT_ARRAY_EXT);
 			popWeightArray = true;
 			pExtensions->glVertexWeightPointerEXT(1, GL_FLOAT, 0, weightcoords);
-			CGenericMatrix<float> gm, gm2;
-			glGetFloatv(GL_MODELVIEW_MATRIX, gm.matrix());
-			CGenericMatrix<float> gm2;
-			gm2 = weightMatrix;
-			gm2 *= gm;
-			glMatrixMode(GL_MODELVIEW1_EXT);
-			glLoadMatrixf(gm2.matrix());
-			glMatrixMode(GL_MODELVIEW0_EXT);
 		}
 		else
 #else

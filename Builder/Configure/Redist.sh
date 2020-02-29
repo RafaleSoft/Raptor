@@ -179,11 +179,11 @@ echo "	Copying RaptorData files:"
 cp ./RaptorData/RaptorDataManager.h Redist/Include/DataManager
 
 echo "	Copying RaptorCompute files:"
-cp ./Raptorcompute/RaptorCompute.h Redist/Include/RaptorCompute
-cp ./Raptorcompute/RaptorComputeJob.h Redist/Include/RaptorCompute
-cp ./Raptorcompute/RaptorComputeMemory.h Redist/Include/RaptorCompute
-cp ./Raptorcompute/RaptorComputeTask.h Redist/Include/RaptorCompute
-cp ./Raptorcompute/ReadBufferTask.h Redist/Include/RaptorCompute
+cp ./RaptorCompute/RaptorCompute.h Redist/Include/RaptorCompute
+cp ./RaptorCompute/RaptorComputeJob.h Redist/Include/RaptorCompute
+cp ./RaptorCompute/RaptorComputeMemory.h Redist/Include/RaptorCompute
+cp ./RaptorCompute/RaptorComputeTask.h Redist/Include/RaptorCompute
+cp ./RaptorCompute/ReadBufferTask.h Redist/Include/RaptorCompute
 
 echo "	Copying RaptorNetwork files:"
 cp ./RaptorNetwork/RaptorNetwork.h Redist/Include/RaptorNetwork
@@ -206,7 +206,7 @@ cp ./SIMD/GenericVector.h Redist/Include/SimdLib
 cp ./SIMD/MMXBVector.h Redist/Include/SimdLib
 cp ./SIMD/MMXWVector.h Redist/Include/SimdLib
 cp ./SIMD/MMXWMatrix.h Redist/Include/SimdLib
-cp ./SIMD/SIMD.H Redist/Include/SimdLib
+cp ./SIMD/simd.h Redist/Include/SimdLib
 cp ./SIMD/SSEFMatrix.h Redist/Include/SimdLib
 cp ./SIMD/SSEFVector.h Redist/Include/SimdLib
 cp ./SIMD/WVector.h Redist/Include/SimdLib
@@ -241,7 +241,7 @@ cp ./Licenses/lgpl-3.0.txt Redist/Licenses
 cp ./Licenses/LIBPNG.TXT Redist/Licenses
 cp ./Licenses/LICENSE.md Redist/Licenses
 cp ./Licenses/LICENSE.TXT Redist/Licenses
-cp ./Licenses/OPENEXR.TXT Redist/Licenses
+cp ./Licenses/OPENEXR.txt Redist/Licenses
 cp ./Licenses/PNG_LICENSE Redist/Licenses
 cp ./Licenses/README Redist/Licenses
 cp ./Licenses/XERCESC.txt Redist/Licenses

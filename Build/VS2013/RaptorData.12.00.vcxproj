@@ -614,11 +614,6 @@ copy $(SolutionDir)$(ProjectName)\RaptorData.pck "%RAPTOR_ROOT%\Redist\bin\"
     <None Include="..\..\RaptorData\Data\tquad.vs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="RaptorDataPackager.12.00.vcxproj">
-      <Project>{8a89c7b7-4197-452c-8b2a-cdd4a889bfe5}</Project>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Text Include="..\..\RaptorData\Data\Raptor_logo_sml.txt" />
   </ItemGroup>
   <ItemGroup>

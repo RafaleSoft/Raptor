@@ -17,7 +17,7 @@
 
 
 #ifndef __REGISTERS_H__
-	#include "registers.h"
+	#include "Registers.h"
 #endif
 
 #include "SSEFVector.h"

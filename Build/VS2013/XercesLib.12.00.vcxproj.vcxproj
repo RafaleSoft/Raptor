@@ -166,7 +166,7 @@
       <DataExecutionPrevention>
       </DataExecutionPrevention>
       <ImportLibrary>$(OutDir)xerces-c_3.lib</ImportLibrary>
-      <Version>$(XERCES_VERSION)</Version>
+      <Version>3.2</Version>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">
@@ -218,7 +218,7 @@
       <DataExecutionPrevention>
       </DataExecutionPrevention>
       <ImportLibrary>$(OutDir)xerces-c_3.lib</ImportLibrary>
-      <Version>$(XERCES_VERSION)</Version>
+      <Version>3.2</Version>
     </Link>
     <PostBuildEvent>
       <Command>copy $(TargetPath) "%RAPTOR_ROOT%\Redist\bin\"
@@ -271,7 +271,7 @@ copy $(OutDir)xerces-c_3.lib "%RAPTOR_ROOT%\Redist\lib\"
       </DataExecutionPrevention>
       <ImportLibrary>$(OutDir)xerces-c_3.lib</ImportLibrary>
       <TargetMachine>MachineX64</TargetMachine>
-      <Version>$(XERCES_VERSION)</Version>
+      <Version>3.2</Version>
     </Link>
     <PostBuildEvent>
       <Command>copy $(TargetPath) "%RAPTOR_ROOT%\Redist\bin\"
@@ -323,7 +323,7 @@ copy $(OutDir)xerces-c_3.lib "%RAPTOR_ROOT%\Redist\lib\"
       </DataExecutionPrevention>
       <ImportLibrary>$(OutDir)xerces-c_3.lib</ImportLibrary>
       <TargetMachine>MachineX64</TargetMachine>
-      <Version>$(XERCES_VERSION)</Version>
+      <Version>3.2</Version>
     </Link>
     <PostBuildEvent>
       <Command>copy $(TargetPath) "%RAPTOR_ROOT%\Redist\bin\"
@@ -373,7 +373,7 @@ copy $(OutDir)xerces-c_3.lib "%RAPTOR_ROOT%\Redist\lib\"
       <DataExecutionPrevention>
       </DataExecutionPrevention>
       <ImportLibrary>$(OutDir)xerces-c_3D.lib</ImportLibrary>
-      <Version>$(XERCES_VERSION)</Version>
+      <Version>3.2</Version>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -415,7 +415,7 @@ copy $(OutDir)xerces-c_3.lib "%RAPTOR_ROOT%\Redist\lib\"
       </DataExecutionPrevention>
       <ImportLibrary>$(OutDir)xerces-c_3D.lib</ImportLibrary>
       <TargetMachine>MachineX64</TargetMachine>
-      <Version>$(XERCES_VERSION)</Version>
+      <Version>3.2</Version>
     </Link>
     <PostBuildEvent>
       <Command>copy $(TargetPath) "%RAPTOR_ROOT%\Redist\bin\"
