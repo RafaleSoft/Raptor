@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(RaysClientForm));
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.port = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
@@ -60,7 +61,8 @@
             this.port.Name = "port";
             this.port.Size = new System.Drawing.Size(54, 20);
             this.port.TabIndex = 4;
-            this.port.Text = "2048";
+            this.port.Text = "0";
+            this.port.TextChanged += new System.EventHandler(this.onPortChanged);
             // 
             // label2
             // 
@@ -78,6 +80,7 @@
             this.host.Size = new System.Drawing.Size(100, 20);
             this.host.TabIndex = 2;
             this.host.Text = "0.0.0.0";
+            this.host.TextChanged += new System.EventHandler(this.onIPChanged);
             // 
             // label1
             // 
@@ -106,6 +109,7 @@
             this.Open.TabIndex = 6;
             this.Open.Text = "Open...";
             this.Open.UseVisualStyleBackColor = true;
+            this.Open.Click += new System.EventHandler(this.onOpen);
             // 
             // Log
             // 
@@ -130,11 +134,13 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.ClientSize = new System.Drawing.Size(335, 231);
             this.Controls.Add(this.Open);
             this.Controls.Add(this.Log);
             this.Controls.Add(this.Quit);
             this.Controls.Add(this.groupBox1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "RaysClientForm";
             this.Text = "Rays Client";
             this.Load += new System.EventHandler(this.RaysClientForm_Load);

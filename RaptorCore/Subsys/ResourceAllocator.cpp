@@ -214,6 +214,8 @@ bool CResourceAllocator::CResourceBinder::glvkBindArrays(void)
 
 	return res;
 #endif
+
+	CATCH_GL_ERROR
 }
 
 
@@ -234,6 +236,8 @@ bool CResourceAllocator::CResourceBinder::glvkUnbindArrays(void)
 		res = res && unbindArray(bindings.arrays[i]);
 	return res;
 #endif
+
+	CATCH_GL_ERROR
 }
 
 bool CResourceAllocator::CResourceBinder::bindAttribArray(CRaptorDisplayConfig::GL_ARRAY_STATE &state)

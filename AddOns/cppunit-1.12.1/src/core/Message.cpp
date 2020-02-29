@@ -71,7 +71,7 @@ Message::shortDescription() const
 }
 
 
-int 
+size_t 
 Message::detailCount() const
 {
   return m_details.size();

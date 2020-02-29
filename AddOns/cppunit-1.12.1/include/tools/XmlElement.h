@@ -88,7 +88,7 @@ public:
   /*! \brief Returns the number of child elements.
    * \return Number of child elements (element added with addElement()).
    */
-  int elementCount() const;
+  size_t elementCount() const;
 
   /*! \brief Returns the child element at the specified index.
    * \param index Zero based index of the element to return.

@@ -91,7 +91,7 @@ XmlElement::addElement( XmlElement *node )
 }
 
 
-int 
+size_t 
 XmlElement::elementCount() const
 {
   return m_elements.size();

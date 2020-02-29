@@ -18,6 +18,9 @@ class XmlDocument;
 class XmlElement;
 class XmlOutputterHook;
 
+DLL_EXPORT_DEQUE(XmlOutputterHook)
+
+
 
 /*! \brief Outputs a TestResultCollector in XML format.
  * \ingroup WritingTestResult

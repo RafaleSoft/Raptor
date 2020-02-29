@@ -1,6 +1,20 @@
-// Memory.h: interface for the CHostMemoryManager class and IDeviceMemoryManager interface
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  Memory.h                                                               */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
 
 #if !defined(AFX_MEMORY_H__81A6CA9A_4ED9_4260_B6E4_C03276C38DBC__INCLUDED_)
 #define AFX_MEMORY_H__81A6CA9A_4ED9_4260_B6E4_C03276C38DBC__INCLUDED_
@@ -72,10 +86,8 @@ public:
 
 	//! This method creates a new buffer object :
     //! @param kind : selects a kind of buffer ( vertex, pixel, memory ... )
+	//!	@param mode : selects the buffer acces dynamics to data,
     //! @param size : sets the size of the buffer and allocates uninitialized memory
-	//! @param size2 : sets the 2nd dimension size of the buffer
-	//! @param size3 : sets the 3nd dimension size of the buffer
-	//!	@param 
     //! @return the newly allocated buffer object or NULL if allocation failed.
 	virtual IDeviceMemoryManager::IBufferObject *
 			createBufferObject(	IDeviceMemoryManager::IBufferObject::BUFFER_KIND kind, 

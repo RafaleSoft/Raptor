@@ -56,7 +56,7 @@ public:
   /*! \brief Returns the number of detail string.
    * \return Number of detail string.
    */
-  int detailCount() const;
+  size_t detailCount() const;
 
   /*! \brief Returns the detail at the specified index.
    * \param index Zero based index of the detail string to return.

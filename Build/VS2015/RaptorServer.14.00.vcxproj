@@ -440,6 +440,7 @@
       <DataExecutionPrevention>
       </DataExecutionPrevention>
       <TargetMachine>MachineX86</TargetMachine>
+      <Version>$(RAPTOR_RELEASE)</Version>
     </Link>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -496,6 +497,7 @@
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention>
       </DataExecutionPrevention>
+      <Version>$(RAPTOR_RELEASE)</Version>
     </Link>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -553,7 +555,7 @@
     <Link>
       <AdditionalDependencies>opengl32.lib;glu32.lib;Raptor.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>RaptorServer.exe</OutputFile>
-      <Version>2.16.0</Version>
+      <Version>$(RAPTOR_RELEASE)</Version>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>$(RAPTOR_ROOT)\redist\lib;$(PLATFORM_SDK)\Lib;../AddOns;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>false</GenerateDebugInformation>
@@ -616,7 +618,7 @@
     <Link>
       <AdditionalDependencies>opengl32.lib;glu32.lib;Raptor.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>RaptorServer.exe</OutputFile>
-      <Version>2.16.0</Version>
+      <Version>$(RAPTOR_RELEASE)</Version>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>$(RAPTOR_ROOT)\redist\lib;$(PLATFORM_SDK)\Lib;../AddOns;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>false</GenerateDebugInformation>

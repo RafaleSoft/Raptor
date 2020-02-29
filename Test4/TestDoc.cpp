@@ -65,7 +65,7 @@ void CTestDoc::translateMenu(float dx)
 void CTestDoc::GLInitContext(HDC hdc)
 {
     RAPTOR_HANDLE display;
-    display.handle((unsigned int)(hdc));
+    display.ptr(hdc);
 	display.hClass(CLIENT_HANDLE_CLASS);
 
 	m_pDisplay->glvkBindDisplay(display);
@@ -231,7 +231,7 @@ void CTestDoc::glDisplay(HDC hdc)
 	}
 
     RAPTOR_HANDLE display;
-    display.handle((unsigned int)(hdc));
+    display.ptr(hdc);
 	display.hClass(CLIENT_HANDLE_CLASS);
 
 	m_pDisplay->glvkBindDisplay(display);

@@ -123,12 +123,12 @@ void C3DPath::reInitCoeffs(void)
 {
 	ucoeffs.clear();
 
-	int max = uknots.size();
+	size_t max = uknots.size();
 
-	for (int i=0;i<max;i++)
+	for (size_t i=0; i < max; i++)
 	{
 		float coeff = 1;
-		for (int j=0;j<max;j++)
+		for (size_t j=0; j < max; j++)
 		{
 			if (i != j)
 				coeff *= (uknots[i]-uknots[j]);

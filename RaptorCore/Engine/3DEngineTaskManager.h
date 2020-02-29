@@ -67,7 +67,7 @@ public:
     bool unregisterJob(CEngineJob *job);
 
     //! Returns the number of jobs registered using the method here above.
-    unsigned int getNbRegisteredJobs(void) const;
+    size_t getNbRegisteredJobs(void) const;
 
     //! Returns the numbre of registered jobs that remain to proceed for the
     //! current call to ProcessJobs.

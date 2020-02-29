@@ -59,5 +59,15 @@ namespace RaysClient.Properties {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap M1_1280 {
+            get {
+                object obj = ResourceManager.GetObject("M1_1280", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
     }
 }

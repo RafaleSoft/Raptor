@@ -62,6 +62,9 @@
 #if !defined(AFX_TEXELALLOCATOR_H__7C48808C_E838_4BE3_8B0E_286428BB7CF8__INCLUDED_)
 	#include "Subsys/TexelAllocator.h"
 #endif
+#if !defined(AFX_UNIFORMALLOCATOR_H__4DD62C99_E476_4FE5_AEE4_EEC71F7B0F38__INCLUDED_)
+	#include "Subsys/UniformAllocator.h"
+#endif
 #if !defined(AFX_SHADER_H__4D405EC2_7151_465D_86B6_1CA99B906777__INCLUDED_)
 	#include "GLHierarchy/Shader.h"
 #endif
@@ -600,6 +603,7 @@ bool CRaptorFilteredDisplay::glRender(void)
     //! once it is locked, it is kept unchanged.
     m_pGAllocator->glvkLockMemory(true);
 	m_pTAllocator->glvkLockMemory(true);
+	m_pUAllocator->glvkLockMemory(true);
 
 	CRaptorScreenDisplay::glRenderScene();
 
