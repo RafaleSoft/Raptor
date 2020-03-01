@@ -34,6 +34,9 @@
 #if !defined(AFX_OBJECTFACTORY_H__7F891C52_9E32_489C_B09C_5E5803522D91__INCLUDED_)
 	#include "ObjectFactory.h"
 #endif
+#if !defined(AFX_RESOURCEALLOCATOR_H__4BAB58CE_942B_450D_88C9_AF0DDDF03718__INCLUDED_)
+	#include "Subsys/ResourceAllocator.h"
+#endif
 
 
 RAPTOR_NAMESPACE
@@ -76,6 +79,12 @@ CShader * const CShadedGeometry::getShader(void)
 	{
 		m_pShader = new CShader(getName()+"_Shader");
 		m_pShader->registerDestruction(this);
+
+		//if (NULL != m_pBinder)
+		//{
+		//	CResourceAllocator::CResourceBinder *binder = (CResourceAllocator::CResourceBinder *)m_pBinder;
+		//	binder->useVertexArrayObjects();
+		//}
 	}
 	return m_pShader;
 }
@@ -129,7 +138,7 @@ CShader * const CShadedGeometry::getAmbientOcclusionShader(void)
 void CShadedGeometry::setShader(CShader *shader)
 {
     if (shader == m_pShader)
-        return ;
+        return;
 
     if (m_pShader != NULL)
     {
@@ -140,10 +149,40 @@ void CShadedGeometry::setShader(CShader *shader)
 
     if (shader != NULL)
     {
+		//if (NULL != m_pBinder)
+		//{
+		//	CResourceAllocator::CResourceBinder *binder = (CResourceAllocator::CResourceBinder *)m_pBinder;
+		//	binder->useVertexArrayObjects();
+		//}
+
         m_pShader = shader;
         m_pShader->addReference();
         m_pShader->registerDestruction(this);
     }
+}
+
+
+void CShadedGeometry::removeModel(CRenderingModel::MODEL model)
+{
+	CGeometry::removeModel(model);
+
+	COpenGLRenderingProperties props;
+	
+	switch (model)
+	{
+	case CRenderingModel::CGL_NORMALS:
+		props.disableLighting;
+		break;
+	case CRenderingModel::CGL_TANGENTS:
+		break;
+	case CRenderingModel::CGL_TEXTURE:
+		props.disableTexturing;
+		break;
+	default:
+		break;
+	}
+
+	overrideShading(props);
 }
 
 void CShadedGeometry::overrideShading(const IRenderingProperties& override)
@@ -187,12 +226,12 @@ void CShadedGeometry::glRender()
 	if (m_pShader != NULL)
 	{
 		// apply material
-		if (getRenderingModel().hasModel(CRenderingModel::CGL_NORMALS))
+		if (hasModel(CRenderingModel::CGL_NORMALS))
 			if (m_pShader->hasMaterial())
 				m_pShader->glRenderMaterial();
 
 		// apply texture
-		if (getRenderingModel().hasModel(CRenderingModel::CGL_TEXTURE))
+		if (hasModel(CRenderingModel::CGL_TEXTURE))
 		{
 		    m_pShader->glRenderTexture();
 			if (m_pAOShader != NULL)

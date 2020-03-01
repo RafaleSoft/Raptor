@@ -1,12 +1,11 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 using System.Net.Sockets;
 
 namespace RaysClient
 {
     class RaysClientNetwork
     {
-        public bool Connect(string address, int port)
+        public bool Connect(string address, short port)
         {
             if (server == null)
             {
@@ -23,14 +22,29 @@ namespace RaysClient
                 return false;
             }
 
+            bool connect = false;
             try
             {
                 server.Connect(addr,port);
+                connect = server.Connected;
             }
             catch(SocketException e)
             {
                 // TODO: log not supported address family (v6)
+            }
+
+            return connect;
+        }
+
+        public bool Disconnect()
+        {
+            if (null == server)
                 return false;
+
+            if (server.Connected)
+            {
+                server.Close();
+                server = null;
             }
 
             return true;
@@ -38,9 +52,18 @@ namespace RaysClient
 
         public bool IsConnected()
         {
+            if (null == server)
+                return false;
+            
             return server.Connected;
         }
 
-        private Socket server;
+        ~RaysClientNetwork()
+        {
+            if (Disconnect())
+                server.Dispose();
+        }
+
+        private Socket server = null;
     }
 }

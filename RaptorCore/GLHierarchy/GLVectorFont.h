@@ -29,6 +29,18 @@ protected:
 							 float extrusion = 0.0f,
 							 float scale = 1.0f);
 
+	//!	Write a single line of text at position (x,y), origin is at bottom-left corner of window.
+	//! @see CGLFont
+	virtual void glWrite(	const std::string &text,
+							int x,
+							int y,
+							const CColor::RGBA	&color);
+
+	//!	Write a list of lines, origin is at bottom-left corner of window.
+	//! @see CGLFont
+	virtual void glWrite(const std::vector<CGLFont::FONT_TEXT_ITEM> &lines);
+
+
 private:
 	//!	This method generates a display list independantly for a vector font.
 	//!	It is called by genGlyphs sequentially for each char of the font.

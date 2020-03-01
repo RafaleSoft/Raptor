@@ -218,7 +218,6 @@ void CEMBMShader::enableEmbm(bool enable)
 		params.addParameter("tangent", CProgramParameters::ADDITIONAL_PARAM1);
 		stage->setProgramParameters(params);
 
-
 		if (enable)
 		{
 			stage->glGetVertexShader("PPIXEL_EMBM_VTX_PROGRAM");

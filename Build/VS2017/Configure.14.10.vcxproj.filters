@@ -18,5 +18,8 @@
     <None Include="..\..\Builder\Configure\Redist.bat">
       <Filter>Source Files</Filter>
     </None>
+    <None Include="..\..\Builder\Configure\Publish.bat">
+      <Filter>Source Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

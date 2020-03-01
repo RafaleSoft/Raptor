@@ -1,6 +1,21 @@
-// Geometry.h: interface for the CGeometry class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  Geometry.h                                                             */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
 #if !defined(AFX_GEOMETRY_H__B42ABB87_80E8_11D3_97C2_DE5C28000000__INCLUDED_)
 #define AFX_GEOMETRY_H__B42ABB87_80E8_11D3_97C2_DE5C28000000__INCLUDED_
 
@@ -55,20 +70,20 @@ public:
 		CRenderingModel(long);
 
 		//! Returns true if the model feature is set
-		bool RAPTOR_FASTCALL hasModel(MODEL model) const { return ((m_renderingModel & model) == model); };
+		//bool RAPTOR_FASTCALL hasModel(MODEL model) const { return ((m_renderingModel & model) == model); };
 
 		//!	appends a rendering model feature
-		void addModel(MODEL);
+		//void addModel(MODEL);
 
 		//!	removes a rendering model feature
-		void removeModel(MODEL);
+		//void removeModel(MODEL);
 
 		//!	assignment operator
-		const CRenderingModel& operator=(const CRenderingModel& model);
+		//const CRenderingModel& operator=(const CRenderingModel& model);
 
 	private:
-		CRenderingModel();
-		long	m_renderingModel;
+		//CRenderingModel();
+		//long	m_renderingModel;
 	};
 
 
@@ -82,8 +97,13 @@ public:
 	//!
 	//! Manage rendered elements of object
 	//!
-	virtual void setRenderingModel(const CRenderingModel& model);
-	CRenderingModel& getRenderingModel(void) { return m_renderingModel; };
+	//virtual void setRenderingModel(CRenderingModel::MODEL model);
+	//CRenderingModel& getRenderingModel(void) { return m_renderingModel; };
+	long getRenderingModel(void) { return m_renderingModel; };
+	void addModel(CRenderingModel::MODEL);
+	virtual void removeModel(CRenderingModel::MODEL);
+	bool RAPTOR_FASTCALL hasModel(CRenderingModel::MODEL model) const { return ((m_renderingModel & model) == model); };
+	long	m_renderingModel;
 	
 	//!
 	//!	Geometry creation
@@ -115,14 +135,14 @@ public:
 	//!	If 2nd parameter pointer argument is not null, geometry data is updated, memory must have been reserved, 
 	//!		and the number of vertex attributes is not changed.
 	//!	In all methods, the number of items (nbV, nbN, nbT, ... ) is a multiple of the second parameter type.
-	void glSetVertices(unsigned int nbV, GL_COORD_VERTEX* vertices = NULL);
-	void glSetNormals(unsigned int nbN, GL_COORD_VERTEX* normals = NULL);
-	void glSetTexCoords(unsigned int nbT, GL_TEX_VERTEX* texcoords = NULL);
-	void glSetTexCoords2(unsigned int nbT, GL_TEX_VERTEX* texcoords = NULL);
-	void glSetWeights(unsigned int nbW, float* weights = NULL);
-	void glSetFogs(unsigned int nbW, float* fogs = NULL);
-	void glSetColors(unsigned int nbC, CColor::RGBA* rgbaColors = NULL);
-	void glSetPolygons(unsigned int nbP, unsigned short* polygons = NULL);
+	void glSetVertices(size_t nbV, GL_COORD_VERTEX* vertices = NULL);
+	void glSetNormals(size_t nbN, GL_COORD_VERTEX* normals = NULL);
+	void glSetTexCoords(size_t nbT, GL_TEX_VERTEX* texcoords = NULL);
+	void glSetTexCoords2(size_t nbT, GL_TEX_VERTEX* texcoords = NULL);
+	void glSetWeights(size_t nbW, float* weights = NULL);
+	void glSetFogs(size_t nbW, float* fogs = NULL);
+	void glSetColors(size_t nbC, CColor::RGBA* rgbaColors = NULL);
+	void glSetPolygons(size_t nbP, uint16_t* polygons = NULL);
 
 	//!
 	//!		After allocs, data can be set ...
@@ -142,27 +162,27 @@ public:
     //!
 	void addVertex(float x,float y,float z,float h);
 	void addFace(int p1,int p2,int p3);
-	void setCoord(unsigned int numvtx,float x,float y,float z,float h);
-	void setTexCoord(unsigned int numvtx,float u,float v);
-	void setWeight(unsigned int numvtx,float w);
-	void setColor(unsigned int numvtx,float r,float g,float b,float a);
-	void setFogCoord(unsigned int numvtx,float f);
-	void setNormal(unsigned int numvtx,float x,float y,float z,float h);
+	void setCoord(size_t numvtx,float x,float y,float z,float h);
+	void setTexCoord(size_t numvtx,float u,float v);
+	void setWeight(size_t numvtx,float w);
+	void setColor(size_t numvtx,float r,float g,float b,float a);
+	void setFogCoord(size_t numvtx,float f);
+	void setNormal(size_t numvtx,float x,float y,float z,float h);
     void updateBBox(void);
 	//!
 	//!	Getters:
 	//!
 	unsigned int nbVertex(void) const { return m_nbVertex; };
 	unsigned int nbFace(void) const { return m_nbPolys; };
-	void getVertex(unsigned  int numvtx,GL_VERTEX_DATA &v) const;
-	float getWeight(unsigned  int numvtx) const;
-	void getColor(unsigned  int numvtx,CColor::RGBA &v) const;
-	float getFogCoord(unsigned int numvtx) const;
-	void getFace(unsigned int numface,unsigned int &p1,unsigned int &p2,unsigned int &p3) const;
-	void getCoord(unsigned  int numvtx,GL_COORD_VERTEX &v) const;
-	void getNormal(unsigned  int numvtx,GL_COORD_VERTEX &v) const;
-    void getTangent(unsigned  int numvtx,GL_COORD_VERTEX &v) const;
-    void getBiNormal(unsigned  int numvtx,GL_COORD_VERTEX &v) const;
+	void getVertex(size_t numvtx,GL_VERTEX_DATA &v) const;
+	float getWeight(size_t numvtx) const;
+	void getColor(size_t numvtx,CColor::RGBA &v) const;
+	float getFogCoord(size_t numvtx) const;
+	void getFace(size_t numface,unsigned int &p1,unsigned int &p2,unsigned int &p3) const;
+	void getCoord(size_t numvtx,GL_COORD_VERTEX &v) const;
+	void getNormal(size_t numvtx,GL_COORD_VERTEX &v) const;
+    void getTangent(size_t numvtx,GL_COORD_VERTEX &v) const;
+    void getBiNormal(size_t numvtx,GL_COORD_VERTEX &v) const;
 	
     //!
     //!  Geometry operations are performed in a GeometryEditor
@@ -191,6 +211,12 @@ public:
 
 
 protected:
+	//!	Pure geometric rendering
+	virtual void glRenderGeometry();
+
+	//! Specific constructor for derived classes
+	CGeometry(const std::string& name, const CPersistence::CPersistenceClassID &classID);
+
     friend class CGeometryEditor;
 
 	unsigned int	m_nbVertex;
@@ -238,11 +264,8 @@ protected:
     //! Default primitive : triangles when the geometry has no primitive list.
 	unsigned short	*polys;	
 
-	//!	Pure geometric rendering
-	virtual void glRenderGeometry();
-
-    //! Specific constructor for derived classes
-    CGeometry(const std::string& name,const CPersistence::CPersistenceClassID &classID);
+	//!	Vertex Input State Resource binder
+	void			*m_pBinder;
 
 
 
@@ -260,10 +283,7 @@ private:
     CGeometryEditor*    m_pEditor;
 
     //! The rendering model of the geometry
-    CRenderingModel		m_renderingModel;
-
-	//!	Vertex Input State Resource binder
-	void				*m_pBinder;
+    //CRenderingModel		m_renderingModel;
 
     //! The list of base primitives
 	vector<CGeometryPrimitive*>	m_pPrimitives;

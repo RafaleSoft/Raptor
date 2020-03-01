@@ -26,7 +26,7 @@
     <ClInclude Include="..\..\AddOns\OpenEXR-2.3.0\include\IexMathIeeeExc.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\AddOns\OpenEXR-2.3.0\source\config\IlmBaseConfig.h">
+    <ClInclude Include="..\..\AddOns\OpenEXR-2.3.0\include\IlmBaseConfig.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

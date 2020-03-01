@@ -27,7 +27,10 @@ EXPIMP_TEMPLATE template union CPPUNIT_API std::_String_val<std::_Simple_types<c
 #endif
 EXPIMP_TEMPLATE template class CPPUNIT_API std::_Deque_val<std::_Deque_simple_types<std::basic_string<char, std::char_traits<char>, std::allocator<char>>>>;
 EXPIMP_TEMPLATE template class CPPUNIT_API std::_String_val<std::_Simple_types<char>>;
-#if _MSC_VER > 1800
+#if _MSC_VER > 1900
+	EXPIMP_TEMPLATE template class CPPUNIT_API std::_Compressed_pair<std::allocator<char>, std::_String_val<std::_Simple_types<char>>, true>;
+	EXPIMP_TEMPLATE template class CPPUNIT_API std::_Compressed_pair<std::allocator<std::string>, std::_Deque_val<std::_Deque_simple_types<std::basic_string<char, std::char_traits<char>, std::allocator<char>>>>, true>;
+#elif _MSC_VER > 1800
 	EXPIMP_TEMPLATE template class CPPUNIT_API std::_Compressed_pair<std::_Wrap_alloc<std::allocator<std::string>>, std::_Deque_val<std::_Deque_simple_types<std::basic_string<char, std::char_traits<char>, std::allocator<char>>>>, true>;
 	EXPIMP_TEMPLATE template class CPPUNIT_API std::_Compressed_pair<std::_Wrap_alloc<std::allocator<char>>, std::_String_val<std::_Simple_types<char>>, true>;
 #endif

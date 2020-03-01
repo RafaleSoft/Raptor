@@ -3,9 +3,7 @@
 //////////////////////////////////////////////////////////////////////
 #include "Subsys/CodeGeneration.h"
 
-#if !defined(AFX_TEXTUREOBJECT_H__D32B6294_B42B_4E6F_AB73_13B33C544AD0__INCLUDED_)
-	#include "GLHierarchy/TextureObject.h"
-#endif
+
 #if !defined(AFX_BMPIMAGING_H__C9C42555_D3BF_42BE_8CC2_FA35410B79AD__INCLUDED_)
 	#include "Imaging/BMPImaging.h"
 #endif
@@ -29,9 +27,9 @@ bool CBMPImaging::isOfKind(const std::string &kind) const
 	return ("BMP" == ext); 
 }
 
-vector<std::string> CBMPImaging::getImageKind(void) const
+std::vector<std::string> CBMPImaging::getImageKind(void) const
 {
-	vector<string> result;
+	std::vector<std::string> result;
 	result.push_back("BMP");
 	return result;
 }

@@ -21,10 +21,10 @@
 uniform sampler2D color;
 uniform vec4 offset;
 
-const vec4 luminance = vec4(0.299, 0.587, 0.114, 0.0);
-
 layout(location = 1) in vec4 g_TexCoord;
 layout(location = 0) out vec4 o_Color;
+
+const vec4 luminance = vec4(0.299, 0.587, 0.114, 0.0);
 
 void main(void)
 {
@@ -39,7 +39,8 @@ void main(void)
 
 	c = texture(color,g_TexCoord.xy + offset.xy);
 	LMax = max(LMax,dot(c,luminance));
-	LMax = 1.0 / max(1.0,LMax);
+
+	LMax = 1.0 / max(1.0, LMax);
 
 	//	Luminance max is scaled to 1.0 to avoid darkening a scene
 	//	in the case where no pixels are above 1.0

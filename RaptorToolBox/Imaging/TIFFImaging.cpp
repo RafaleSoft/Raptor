@@ -3,9 +3,7 @@
 //////////////////////////////////////////////////////////////////////
 #include "Subsys/CodeGeneration.h"
 
-#if !defined(AFX_TEXTUREOBJECT_H__D32B6294_B42B_4E6F_AB73_13B33C544AD0__INCLUDED_)
-	#include "GLHierarchy/TextureObject.h"
-#endif
+
 #if !defined(AFX_TIFFIMAGING_H__3AD77410_776F_446A_860E_496C8D13CB0F__INCLUDED_)
 	#include "Imaging/TIFFImaging.h"
 #endif
@@ -81,9 +79,9 @@ bool CTIFFImaging::isOfKind(const std::string &kind) const
 			("TIFF" == ext));
 }
 
-vector<std::string> CTIFFImaging::getImageKind(void) const
+std::vector<std::string> CTIFFImaging::getImageKind(void) const
 {
-	vector<string> result;
+	std::vector<std::string> result;
 
 	result.push_back("TIF");
 	result.push_back("TIFF");

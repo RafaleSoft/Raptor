@@ -115,11 +115,13 @@ bool CServerTransport::stopServer(void)
 
 int CServerTransport::onNewClient(const CClientSocket &client)
 {
+	Network::userOutput(INetworkLogger::NETWORK_INFO, "New client connected");
 	return 0;
 }
 
 bool CServerTransport::onClientClose(const CClientSocket &client)
 {
+	Network::userOutput(INetworkLogger::NETWORK_INFO, "Client disconnected");
 	return false;
 }
 

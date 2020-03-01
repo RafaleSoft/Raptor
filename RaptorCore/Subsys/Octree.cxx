@@ -141,9 +141,9 @@ unsigned int COctree<USER_DATA_t>::getMaxDepth() const
 }
 
 template <class USER_DATA_t>
-unsigned int COctree<USER_DATA_t>::getNbObjects(void) const
+size_t COctree<USER_DATA_t>::getNbObjects(void) const
 {
-    unsigned int res = CBaseTree<USER_DATA_t>::m_objects.size();
+    size_t res = CBaseTree<USER_DATA_t>::m_objects.size();
 
     for (unsigned int i=0 ; i<8 && child[i] != NULL ; i++)
         res += child[i]->getNbObjects();

@@ -1,6 +1,20 @@
-// Animator.h: interface for the CAnimator class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  Animator.h                                                             */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
 #if !defined(AFX_ANIMATOR_H__077150E3_D826_11D3_9142_9866F8B4457F__INCLUDED_)
 #define AFX_ANIMATOR_H__077150E3_D826_11D3_9142_9866F8B4457F__INCLUDED_
 
@@ -150,7 +164,7 @@ public:
     void setFrameDelay(short framedelay) { m_sFrameDelay = framedelay; };
 
     //! Returns the number of time objects that remain for update
-    unsigned int getAnimateRemaining(void) const { return m_uiAnimateRemaining; }
+    size_t getAnimateRemaining(void) const { return m_uiAnimateRemaining; }
 
 
 
@@ -202,16 +216,16 @@ private:
 	CAnimatorStream	*m_pStream;
 
     //! The number of time object that remaining for update.
-    unsigned int m_uiAnimateRemaining;
+    size_t	m_uiAnimateRemaining;
 
     //! The amount of time ( in ms ) since last frame
-	float		deltat;
+	float	deltat;
 
     //!	Number of frames to skip between each animation
-    short		m_sFrameDelay;
+    short	m_sFrameDelay;
 
     //!	Number of frames skipped
-	short		m_sCount;
+	short	m_sCount;
 };
 
 RAPTOR_NAMESPACE_END

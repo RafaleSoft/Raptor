@@ -255,10 +255,10 @@ void CImage::setImageKindIO(IImageIO *imager)
 	}
 #endif
 
-	vector<std::string> extensionKind = imager->getImageKind();
+	std::vector<std::string> extensionKind = imager->getImageKind();
 	for (size_t j=0;j<extensionKind.size();j++)
 	{
-		string ext;
+		std::string ext;
 		for (unsigned int i=0;i<extensionKind[j].size();i++)
 			ext += toupper(extensionKind[j][i]);
 
@@ -270,7 +270,7 @@ void CImage::setImageKindIO(IImageIO *imager)
 CImage::IImageIO* const CImage::getImageKindIO(const std::string &extension)
 {
 	//	extract the right image loader
-    string ext = extension;
+    std::string ext = extension;
 	std::string::size_type pos = ext.rfind('.');
     if (pos < ext.size())
         ext = ext.substr(pos+1);

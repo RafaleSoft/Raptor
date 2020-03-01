@@ -198,10 +198,8 @@ bool CObjectStore::IsAColumn(CGeometry *&g)
 		factory.glLoadTexture(normalMap,BUMP_0);
 		bump->setNormalMap(normalMap);
 
-        CGeometry::CRenderingModel l_model(0);
-        l_model.addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
-        l_model.addModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
-        bump->setRenderingModel(l_model);
+        bump->addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
+		bump->addModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
 
 		m_columnBump = bump;
 		res = true;
@@ -241,10 +239,8 @@ bool CObjectStore::loadColumn(void)
 	{
 		CShadedGeometry *next = (CShadedGeometry*)(m_columnLow->getChild(it++));
 
-        CGeometry::CRenderingModel l_model(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
-        l_model.addModel(CGeometry::CRenderingModel::CGL_NORMALS);
-        l_model.addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
-		g->setRenderingModel(l_model);
+		g->addModel(CGeometry::CRenderingModel::CGL_NORMALS);
+		g->addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
 
         const string& name = g->getName();
         if (name == "Column#2")
@@ -656,10 +652,8 @@ void CObjectStore::LoadModels(void)
 	{
 		CGeometry *next = (CGeometry*)(root->getChild(it++));
 		
-        CGeometry::CRenderingModel l_model(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
-        l_model.addModel(CGeometry::CRenderingModel::CGL_NORMALS);
-        l_model.addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
-		g->setRenderingModel(l_model);
+		g->addModel(CGeometry::CRenderingModel::CGL_NORMALS);
+		g->addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
 
 		if (IsAColumn(g))
         {
@@ -784,10 +778,8 @@ void CObjectStore::BuildObjects(void)
     m_pBumpKnot->setDiffuseMap(m_textures->getTexture(MARBLE5));
 	m_pBumpKnot->setNormalMap(normalMap);
 	
-    CGeometry::CRenderingModel l_model(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
-    l_model.addModel(CGeometry::CRenderingModel::CGL_NORMALS);
-    l_model.addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
-	m_pBumpKnot->setRenderingModel(l_model);
+	m_pBumpKnot->addModel(CGeometry::CRenderingModel::CGL_NORMALS);
+	m_pBumpKnot->addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
 
 	if (!Raptor::glIsExtensionSupported(GL_ARB_VERTEX_PROGRAM_EXTENSION_NAME))
     {

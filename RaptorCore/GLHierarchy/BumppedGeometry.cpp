@@ -43,6 +43,9 @@
 #if !defined(AFX_IRENDERINGPROPERTIES_H__634BCF2B_84B4_47F2_B460_D7FDC0F3B698__INCLUDED_)
 	#include "IRenderingProperties.h"
 #endif
+#if !defined(AFX_RESOURCEALLOCATOR_H__4BAB58CE_942B_450D_88C9_AF0DDDF03718__INCLUDED_)
+	#include "Subsys/ResourceAllocator.h"
+#endif
 
 
 RAPTOR_NAMESPACE
@@ -90,6 +93,9 @@ void CBumppedGeometry::init(void)
 	m_pBumpShader = (CEMBMShader*)CShader::getShader("EMBM_SHADER").glClone("BUMP_GEOMETRY_SHADER");
 	m_pBumpShader->registerDestruction(this);
 
+	CResourceAllocator::CResourceBinder *binder = (CResourceAllocator::CResourceBinder *)m_pBinder;
+	binder->useVertexArrayObjects();
+	
 	CATCH_GL_ERROR
 }
 
@@ -144,21 +150,21 @@ void CBumppedGeometry::setEnvironmentMap(CTextureObject* environment)
 	m_pBumpShader->enableEmbm(envMap != NULL);
 }
 
-void CBumppedGeometry::setRenderingModel(const CRenderingModel& model)
+//void CBumppedGeometry::setRenderingModel(const CRenderingModel& model)
+void CBumppedGeometry::addModel(CRenderingModel::MODEL model)
 {
 	const CGeometryEditor &pEditor = getEditor();
     if (normals == NULL)
         pEditor.genNormals(true);
     else if (tangents == NULL)
         pEditor.genNormals(false);
-	pEditor.genBinormals();
-
-    //  render material normals is mandatory for this kind of geometry
-    CRenderingModel l_model = model;
-	l_model.addModel(CRenderingModel::CGL_NORMALS);
-    l_model.addModel(CRenderingModel::CGL_TANGENTS);
-    CGeometry::setRenderingModel(l_model);
 	
+	if (binormals == NULL)
+		pEditor.genBinormals();
+	
+	// Model needs to be added once arrays pointers are available.
+	CGeometry::addModel(model);
+
 	if ((normalMap == NULL) || (diffuseMap == NULL))
 	{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
@@ -172,8 +178,10 @@ void CBumppedGeometry::setRenderingModel(const CRenderingModel& model)
 	}
 
 	CTextureUnitSetup *setup = m_pBumpShader->glGetTextureUnitsSetup();
-	setup->setDiffuseMap(diffuseMap);
-	setup->setNormalMap(normalMap);
+	if (setup->getDiffuseMap() != diffuseMap)
+		setup->setDiffuseMap(diffuseMap);
+	if (setup->getNormalMap() != normalMap)
+		setup->setNormalMap(normalMap);
 	setup->useRegisterCombiners(false);
 	
 	if (!Raptor::glIsExtensionSupported(GL_EXT_SECONDARY_COLOR_EXTENSION_NAME) ||
@@ -190,20 +198,30 @@ void CBumppedGeometry::setRenderingModel(const CRenderingModel& model)
 
 CBumppedGeometry& CBumppedGeometry::operator=(const CGeometry &geo)
 {
-	CGeometry::operator =(geo);
+	CGeometry::operator=(geo);
 
-    const CGeometryEditor &pEditor = getEditor();
+	const CGeometryEditor &pEditor = getEditor();
 	pEditor.genBinormals();
+
+	//  render material normals is mandatory for this kind of geometry
+	// (rendering is made by shaders using attributes)
+	CGeometry::addModel(CRenderingModel::CGL_NORMALS);
+	CGeometry::addModel(CRenderingModel::CGL_TANGENTS);
 
 	return *this;
 }
 
 CBumppedGeometry& CBumppedGeometry::operator=(const CBumppedGeometry &geo)
 {
-    CGeometry::operator =(geo);
+    CGeometry::operator=(geo);
 
 	const CGeometryEditor &pEditor = getEditor();
 	pEditor.genBinormals();
+
+	//  render material normals is mandatory for this kind of geometry
+	// (rendering is made by shaders using attributes)
+	CGeometry::addModel(CRenderingModel::CGL_NORMALS);
+	CGeometry::addModel(CRenderingModel::CGL_TANGENTS);
 
     return *this;
 }

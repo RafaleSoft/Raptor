@@ -136,7 +136,7 @@ bool CAmbientOcclusion::registerForAmbientOcclusion(CShadedGeometry* shaded,
 		editor.minimize();
 	if (!editor.hasSurfaceElements())
 		editor.genSurfaceElements();
-	shaded->getRenderingModel().addModel(CGeometry::CRenderingModel::CGL_COLORS);
+	shaded->addModel(CGeometry::CRenderingModel::CGL_COLORS);
 
 	//	Now add the ambient occlusion shader
 	CShader* AO = shaded->getAmbientOcclusionShader();

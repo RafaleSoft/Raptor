@@ -9,18 +9,11 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
     <Filter Include="Source Files\port">
       <UniqueIdentifier>{b2b7d88b-60c0-4aa6-b283-c03c8c1f0cc1}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\AddOns\TiffLib-4.0.10\source\mkg3states.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\AddOns\TiffLib-4.0.10\source\tif_aux.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -161,9 +154,6 @@
     <ClInclude Include="..\..\AddOns\TiffLib-4.0.10\source\t4.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\AddOns\TiffLib-4.0.10\source\tif_config.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\AddOns\TiffLib-4.0.10\source\tif_dir.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -171,12 +161,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\AddOns\TiffLib-4.0.10\source\tif_predict.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\AddOns\TiffLib-4.0.10\source\tiff.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\AddOns\TiffLib-4.0.10\source\tiffconf.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\AddOns\TiffLib-4.0.10\source\tiffio.h">
@@ -192,6 +176,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\AddOns\TiffLib-4.0.10\source\uvcode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\AddOns\TiffLib-4.0.10\include\tiff.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\AddOns\TiffLib-4.0.10\include\tiffconf.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\AddOns\TiffLib-4.0.10\include\tif_config.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
