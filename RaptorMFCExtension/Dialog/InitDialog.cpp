@@ -109,21 +109,25 @@ BOOL CInitDialog::OnInitDialog()
 	}
 
 	w=this->GetDlgItem(IDC_VENDOR);
-	s.Format(TEXT("Vendor: %s"),CA2T((char*)glGetString(GL_VENDOR)));
+	LPSTR v = CA2T((char*)glGetString(GL_VENDOR));
+	s.Format(TEXT("Vendor: %s"),v);
 	w->SetWindowText(s);
 
 	w=this->GetDlgItem(IDC_RENDERER);
-	s.Format(TEXT("Renderer: %s"), CA2T((char*)glGetString(GL_RENDERER)));
+	LPSTR r = CA2T((char*)glGetString(GL_RENDERER));
+	s.Format(TEXT("Renderer: %s"), r);
 	w->SetWindowText(s);
 
 	w=this->GetDlgItem(IDC_VERSION);
-	s.Format(TEXT("Version: %s"), CA2T((char*)glGetString(GL_VERSION)));
+	LPSTR vv = CA2T((char*)glGetString(GL_VERSION));
+	s.Format(TEXT("Version: %s"), vv);
     w->SetWindowText(s);
 
 
     w=this->GetDlgItem(IDC_SL_VERSION);
 #if defined(GL_ARB_shading_language_100)
-	s.Format(TEXT("GLSL: %s"), CA2T((char*)glGetString(GL_SHADING_LANGUAGE_VERSION_ARB)));
+	LPSTR g = CA2T((char*)glGetString(GL_SHADING_LANGUAGE_VERSION_ARB));
+	s.Format(TEXT("GLSL: %s"), g);
 #else
     s = "GLSL: not supported";
 #endif

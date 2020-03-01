@@ -23,11 +23,8 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+
 #include "Subsys/CodeGeneration.h"
-namespace raptor
-{
-	class CRaptorIO;
-};
 
 #if !defined(AFX_RAYSSETTINGS_H__40662BB9_6FC8_40CA_A8A0_F2A701AD70BD__INCLUDED_)
 	#include "RaysSettings.h"
@@ -56,11 +53,8 @@ namespace Rays
 		//!	Save application config file
 		static bool saveConfig(void);
 
-		//!	Returns the server configuration structure (from file)
-		//static RaysServerUtils::RAYS_CONFIG& getConfig(void);
-
 		//!	Returns the application Settings.
-		static const CRaysSettings& getSettings(void);
+		static CRaysSettings& getSettings(void);
 
 		//!	Returns the current logger.
 		static ILogger& getLog();
@@ -79,9 +73,7 @@ namespace Rays
 		//!	Initialise instance if necessary.
 		static RaysUtils& getUtils();
 
-		//!	Load server settings section.
-		bool importSettings(raptor::CRaptorIO *conf);
-
+		//!	The single instance.
 		static RaysUtils *s_pUtils;
 
 		//!	A unique logger for simplicity

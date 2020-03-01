@@ -27,6 +27,10 @@
 #if !defined(AFX_RAPTORINSTANCE_H__90219068_202B_46C2_BFF0_73C24D048903__INCLUDED_)
 	#include "Subsys/RaptorInstance.h"
 #endif
+#if !defined(AFX_OPENGL_H__6C8840CA_BEFA_41DE_9879_5777FBBA7147__INCLUDED_)
+	#include "Subsys/OpenGL/RaptorOpenGL.h"
+#endif
+
 
 
 RAPTOR_NAMESPACE
@@ -48,14 +52,11 @@ CResourceAllocator::~CResourceAllocator()
 }
 
 CResourceAllocator::CResourceBinder::CResourceBinder(void)
-#if defined(GL_ARB_VERTEX_ARRAY_OBJECT_EXTENSION_NAME)
-	: array(0), updateArray(false)
-#endif
+	: array(0), updateArray(false), legacy(true), vao(false)
 {
 	memset(&bindings, 0, sizeof(CRaptorDisplayConfig::GL_ARRAYS_STATE));
 
 	CRaptorInstance &instance = CRaptorInstance::GetInstance();
-
 	if (!instance.arrays_initialized)
 	{
 		memset(&instance.bindingState, 0, sizeof(CRaptorDisplayConfig::GL_ARRAYS_STATE));
@@ -72,20 +73,25 @@ CResourceAllocator::CResourceBinder::CResourceBinder(void)
 		s.colorArray.arrayType = GL_FLOAT;
 		s.colorArray.arraySize = 4;
 
-		s.colorArray.arrayIndex = CProgramParameters::NORMAL;
-		s.colorArray.arrayName = GL_NORMAL_ARRAY;
-		s.colorArray.arrayType = GL_FLOAT;
-		s.colorArray.arraySize = 4;
+		s.sColorArray.arrayIndex = CProgramParameters::SECONDARY_COLOR;
+		s.sColorArray.arrayName = GL_SECONDARY_COLOR_ARRAY;
+		s.sColorArray.arrayType = GL_FLOAT;
+		s.sColorArray.arraySize = 4;
+
+		s.normalArray.arrayIndex = CProgramParameters::NORMAL;
+		s.normalArray.arrayName = GL_NORMAL_ARRAY;
+		s.normalArray.arrayType = GL_FLOAT;
+		s.normalArray.arraySize = 4;
 
 		s.texture0Array.arrayIndex = CProgramParameters::TEXCOORD0;
 		s.texture0Array.arrayName = GL_TEXTURE_COORD_ARRAY;
 		s.texture0Array.arrayType = GL_FLOAT;
 		s.texture0Array.arraySize = 2;
 
-		s.texture0Array.arrayIndex = CProgramParameters::TEXCOORD1;
-		s.texture0Array.arrayName = GL_TEXTURE_COORD_ARRAY;
-		s.texture0Array.arrayType = GL_FLOAT;
-		s.texture0Array.arraySize = 2;
+		s.texture1Array.arrayIndex = CProgramParameters::TEXCOORD1;
+		s.texture1Array.arrayName = GL_TEXTURE_COORD_ARRAY;
+		s.texture1Array.arrayType = GL_FLOAT;
+		s.texture1Array.arraySize = 2;
 
 		s.additionalArray.arrayIndex = CProgramParameters::ADDITIONAL_PARAM1;
 		s.additionalArray.arrayName = 0;
@@ -112,6 +118,47 @@ CResourceAllocator::CResourceBinder::CResourceBinder(void)
 	}
 }
 
+bool CResourceAllocator::CResourceBinder::useVertexArrayObjects(void)
+{
+	if (!Raptor::glIsExtensionSupported(GL_ARB_VERTEX_ARRAY_OBJECT_EXTENSION_NAME))
+	{
+		vao = false;
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+		Raptor::GetErrorManager()->generateRaptorError(COpenGL::COpenGLClassID::GetClassId(),
+													   CRaptorErrorManager::RAPTOR_ERROR,
+													   "Resource Binder has no Vertex Arrays Objects to render Geometry");
+#endif
+	}
+	else
+	{
+		vao = false; // true;
+		legacy = false;
+		return true;
+	}
+
+#if defined(GL_ARB_vertex_program) || defined(GL_CORE_profile)
+	//! If VAO are not available, at least use Vertey Attrib Arrays.
+	if (!Raptor::glIsExtensionSupported(GL_ARB_VERTEX_PROGRAM_EXTENSION_NAME))
+	{
+	#ifdef RAPTOR_DEBUG_MODE_GENERATION
+			Raptor::GetErrorManager()->generateRaptorError(COpenGL::COpenGLClassID::GetClassId(),
+														   CRaptorErrorManager::RAPTOR_FATAL,
+														   "Resource Binder has no Vertex Arrays to render Geometry");
+	#endif
+		legacy = true;
+		return false;
+	}
+	else
+	{
+		legacy = false;
+		return true;
+	}
+#else
+	legacy = true;
+	return false;
+#endif
+}
+
 CResourceAllocator::CResourceBinder::~CResourceBinder(void)
 {
 	glvkUnbindArrays();
@@ -128,38 +175,56 @@ bool CResourceAllocator::CResourceBinder::setArray(CProgramParameters::GL_VERTEX
 		case CProgramParameters::POSITION:
 			array = &bindings.attributes.vertexArray;
 			array->arraySize = size;
+			array->arrayName = GL_VERTEX_ARRAY;
 			break;
 		case CProgramParameters::PRIMARY_COLOR:
 			array = &bindings.attributes.colorArray;
 			array->arraySize = size;
+			array->arrayName = GL_COLOR_ARRAY;
 			break;
 		case CProgramParameters::SECONDARY_COLOR:
 			array = &bindings.attributes.sColorArray;
 			array->arraySize = size;
+			array->arrayName = GL_SECONDARY_COLOR_ARRAY;
 			break;
 		case CProgramParameters::NORMAL:
 			array = &bindings.attributes.normalArray;
 			array->arraySize = size;
+			array->arrayName = GL_NORMAL_ARRAY;
 			break;
 		case CProgramParameters::TEXCOORD0:
 			array = &bindings.attributes.texture0Array;
 			array->arraySize = size;
+			array->arrayName = GL_TEXTURE_COORD_ARRAY;
 			break;
 		case CProgramParameters::TEXCOORD1:
 			array = &bindings.attributes.texture1Array;
 			array->arraySize = size;
+			array->arrayName = 0;
 			break;
 		case CProgramParameters::ADDITIONAL_PARAM1:
 			array = &bindings.attributes.additionalArray;
 			array->arraySize = size;
+			array->arrayName = 0;
 			break;
 		case CProgramParameters::FOG_COORDINATE:
 			array = &bindings.attributes.fogCoordArray;
 			array->arraySize = size;
+			array->arrayName = 0;
+#ifdef GL_EXT_fog_coord
+			array->arrayName = GL_FOG_COORDINATE_ARRAY_EXT;
+#else
+			array->arrayName = 0;
+#endif
 			break;
 		case CProgramParameters::WEIGHTS:
 			array = &bindings.attributes.weightArray;
 			array->arraySize = size;
+#ifdef GL_EXT_vertex_weighting
+			array->arrayName = GL_VERTEX_WEIGHT_ARRAY_EXT;
+#else
+			array->arrayName = 0;
+#endif
 			break;
 		default:
 			array = NULL;
@@ -183,37 +248,45 @@ bool CResourceAllocator::CResourceBinder::setArray(CProgramParameters::GL_VERTEX
 
 bool CResourceAllocator::CResourceBinder::glvkBindArrays(void)
 {
-#if defined(GL_ARB_VERTEX_ARRAY_OBJECT_EXTENSION_NAME)
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
-
-	if (array == 0)
-		pExtensions->glGenVertexArraysARB(1, &array);
-	
-	pExtensions->glBindVertexArrayARB(array);
-
-	bool res = true;
-	if (updateArray)
+	if (!legacy)
 	{
-		for (size_t i = 0; i < CProgramParameters::GL_VERTEX_ATTRIB_t::MAX_VERTEX_ATTRIB; i++)
-			res = res && bindAttribArray(bindings.arrays[i]);
+		bool res = true;
+		if (vao)
+		{
+			const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 
-		updateArray = false;
+			if (array == 0)
+				pExtensions->glGenVertexArraysARB(1, &array);
+
+			pExtensions->glBindVertexArrayARB(array);
+
+			// TODO : Re-bind buffers.
+
+			if (updateArray)
+			{
+				for (size_t i = 0; i < CProgramParameters::GL_VERTEX_ATTRIB_t::MAX_VERTEX_ATTRIB; i++)
+					res = res && bindAttribArray(bindings.arrays[i]);
+
+				updateArray = false;
+			}
+		}
+		else
+		{
+			for (size_t i = 0; i < CProgramParameters::GL_VERTEX_ATTRIB_t::MAX_VERTEX_ATTRIB; i++)
+				res = res && bindAttribArray(bindings.arrays[i]);
+		}
+		return res;
 	}
+	else
+	{
+		bool res = true;
+		CRaptorInstance &instance = CRaptorInstance::GetInstance();
 
-	return res;
-#elif defined(GL_ARB_vertex_program)
-	bool res = true;
-	for (size_t i = 0; i < CProgramParameters::GL_VERTEX_ATTRIB_t::MAX_VERTEX_ATTRIB; i++)
-		res = res && bindAttribArray(bindings.arrays[i]);
-	
-	return res;
-#else
-	bool res = true;
-	for (size_t i = 0; i < 16; i++)
-		res = res && bindArray(bindings.arrays[i]);
+		for (size_t i = 0; i < CProgramParameters::GL_VERTEX_ATTRIB_t::MAX_VERTEX_ATTRIB; i++)
+			res = res && bindArray(bindings.arrays[i], instance.bindingState.arrays[i]);
 
-	return res;
-#endif
+		return res;
+	}
 
 	CATCH_GL_ERROR
 }
@@ -221,21 +294,31 @@ bool CResourceAllocator::CResourceBinder::glvkBindArrays(void)
 
 bool CResourceAllocator::CResourceBinder::glvkUnbindArrays(void)
 {
-#if defined(GL_ARB_VERTEX_ARRAY_OBJECT_EXTENSION_NAME)
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
-	pExtensions->glBindVertexArrayARB(0);
-	return true;
-#elif defined(GL_ARB_vertex_program)
-	bool res = true;
-	for (size_t i = 0; i < CProgramParameters::GL_VERTEX_ATTRIB_t::MAX_VERTEX_ATTRIB; i++)
-		res = res && unbindAttribArray(bindings.arrays[i]);
-	return res;
-#else
-	bool res = true;
-	for (size_t i = 0; i < CProgramParameters::GL_VERTEX_ATTRIB_t::MAX_VERTEX_ATTRIB; i++)
-		res = res && unbindArray(bindings.arrays[i]);
-	return res;
-#endif
+	if (!legacy)
+	{
+		if (vao)
+		{
+			const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+			pExtensions->glBindVertexArrayARB(0);
+			return true;
+		}
+		else
+		{
+			bool res = true;
+			for (size_t i = 0; i < CProgramParameters::GL_VERTEX_ATTRIB_t::MAX_VERTEX_ATTRIB; i++)
+				res = res && unbindAttribArray(bindings.arrays[i]);
+			return res;
+		}
+	}
+	else
+	{
+		bool res = true;
+		CRaptorInstance &instance = CRaptorInstance::GetInstance();
+
+		for (size_t i = 0; i < CProgramParameters::GL_VERTEX_ATTRIB_t::MAX_VERTEX_ATTRIB; i++)
+			res = res && unbindArray(bindings.arrays[i], instance.bindingState.arrays[i]);
+		return res;
+	}
 
 	CATCH_GL_ERROR
 }
@@ -274,25 +357,20 @@ bool CResourceAllocator::CResourceBinder::unbindAttribArray(CRaptorDisplayConfig
 #endif
 }
 
-bool CResourceAllocator::CResourceBinder::bindArray(CRaptorDisplayConfig::GL_ARRAY_STATE &state)
+bool CResourceAllocator::CResourceBinder::bindArray(CRaptorDisplayConfig::GL_ARRAY_STATE &state,
+													CRaptorDisplayConfig::GL_ARRAY_STATE &global_state)
 {
 	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
-	CRaptorInstance &instance = CRaptorInstance::GetInstance();
 
 	if (state.enable)
 	{
-		if (!instance.bindingState.attributes.vertexArray.enable)
+		if (!global_state.enable)
 		{
-			instance.bindingState.attributes.vertexArray.enable = true;
-#if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
+			global_state.enable = true;
 			glEnableClientState(state.arrayName);
-#elif defined(GL_ARB_vertex_program)
-			pExtensions->glEnableVertexAttribArrayARB(state.arrayIndex);
-#endif
 		}
 
-#if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
-		switch(state.arrayName)
+		switch (state.arrayName)
 		{
 			case GL_VERTEX_ARRAY:
 				glVertexPointer(state.arraySize, state.arrayType, state.arrayStride, state.arrayPointer);
@@ -317,48 +395,26 @@ bool CResourceAllocator::CResourceBinder::bindArray(CRaptorDisplayConfig::GL_ARR
 				break;
 #endif
 		}
-#elif defined(GL_ARB_vertex_program)
-		pExtensions->glVertexAttribPointerARB(state.arrayIndex,
-											  state.arraySize,
-											  state.arrayType,
-											  false,
-											  state.arrayStride,
-											  state.arrayPointer);
-#else
-		return false;
-#endif
 	}
-	else if (instance.bindingState.attributes.vertexArray.enable)
+	else if (global_state.enable)
 	{
-		instance.bindingState.attributes.vertexArray.enable = false;
-#if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
+		global_state.enable = false;
 		glDisableClientState(state.arrayName);
-#elif defined(GL_ARB_vertex_program)
-		pExtensions->glDisableVertexAttribArrayARB(state.arrayIndex);
-#else
-		return false;
-#endif
 	}
 
 	return true;
 }
 
 
-bool CResourceAllocator::CResourceBinder::unbindArray(CRaptorDisplayConfig::GL_ARRAY_STATE &state)
+bool CResourceAllocator::CResourceBinder::unbindArray(CRaptorDisplayConfig::GL_ARRAY_STATE &state,
+													  CRaptorDisplayConfig::GL_ARRAY_STATE &global_state)
 {
 	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
-	CRaptorInstance &instance = CRaptorInstance::GetInstance();
 
-	if (instance.bindingState.attributes.vertexArray.enable)
+	if (global_state.enable)
 	{
-		instance.bindingState.attributes.vertexArray.enable = false;
-#if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
+		global_state.enable = false;
 		glDisableClientState(state.arrayName);
-#elif defined(GL_ARB_vertex_program)
-		pExtensions->glDisableVertexAttribArrayARB(state.arrayIndex);
-#else
-		return false;
-#endif
 	}
 
 	return true;

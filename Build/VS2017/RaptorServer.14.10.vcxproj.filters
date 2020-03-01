@@ -9,11 +9,11 @@
       <UniqueIdentifier>{b399895c-6cc6-4865-87c8-6d98d981b3d7}</UniqueIdentifier>
       <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
     </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{a3e3c184-371c-4645-a46a-fd114df6f382}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\RaptorServer\RaptorInstance.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\RaptorServer\RaptorServer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -32,11 +32,11 @@
     <ClCompile Include="..\..\RaptorServer\YUVCompressor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\RaptorServer\RaptorServerInstance.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\RaptorServer\RaptorInstance.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\RaptorServer\RaptorServer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -52,5 +52,16 @@
     <ClInclude Include="..\..\RaptorServer\YUVCompressor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\RaptorServer\resource.h">
+      <Filter>Resource Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorServer\RaptorServerInstance.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\..\RaptorServer\RaptorServer.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

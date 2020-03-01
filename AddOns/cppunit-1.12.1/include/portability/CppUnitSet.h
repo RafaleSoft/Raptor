@@ -25,8 +25,14 @@ public:
 #endif
 
 #ifdef WIN32
-	#if _MSC_VER > 1800
+	#if _MSC_VER > 1900
 		#define DLL_EXPORT_SET(type) \
+			EXPIMP_TEMPLATE template class CPPUNIT_API std::_Tree_val<std::_Tree_simple_types<CppUnit::type *>>; \
+			EXPIMP_TEMPLATE template class CPPUNIT_API std::_Compressed_pair<std::allocator<std::_Tree_node<CppUnit::type *, void *>>, std::_Tree_val<std::_Tree_simple_types<CppUnit::type *>>, true>; \
+			EXPIMP_TEMPLATE template class CPPUNIT_API std::_Compressed_pair<std::less<CppUnit::type *>, std::_Compressed_pair<std::allocator<std::_Tree_node<CppUnit::type *, void *>>, std::_Tree_val<std::_Tree_simple_types<CppUnit::type *>>, true>, true>; \
+			EXPIMP_TEMPLATE template class CPPUNIT_API std::set<CppUnit::type *>;
+	#elif _MSC_VER > 1800
+	#define DLL_EXPORT_SET(type) \
 			EXPIMP_TEMPLATE template class CPPUNIT_API std::_Tree_val<std::_Tree_simple_types<CppUnit::type *>>; \
 			EXPIMP_TEMPLATE template class CPPUNIT_API std::_Compressed_pair<std::_Wrap_alloc<std::allocator<std::_Tree_node<CppUnit::type *, void *>>>, std::_Tree_val<std::_Tree_simple_types<CppUnit::type *>>, true>; \
 			EXPIMP_TEMPLATE template class CPPUNIT_API std::_Compressed_pair<std::less<CppUnit::type *>, std::_Compressed_pair<std::_Wrap_alloc<std::allocator<std::_Tree_node<CppUnit::type *, void *>>>, std::_Tree_val<std::_Tree_simple_types<CppUnit::type *>>, true>, true>; \

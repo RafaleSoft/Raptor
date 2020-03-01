@@ -270,6 +270,7 @@ bool CGL2DTextureFont::glGenGlyphs(float precision,
 		CResourceAllocator::CResourceBinder *binder = new CResourceAllocator::CResourceBinder();
 		binder->setArray(CProgramParameters::POSITION, &pCache[0].coord, 4, sizeof(FONT_CACHEELT));
 		binder->setArray(CProgramParameters::TEXCOORD0, &pCache[0].texcoord, 4, sizeof(FONT_CACHEELT));
+		binder->useVertexArrayObjects();
 		m_pBinder = binder;
 	}
 

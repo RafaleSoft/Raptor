@@ -23,7 +23,12 @@ public:
 
 
 #ifdef WIN32
-	#if _MSC_VER > 1800
+	#if _MSC_VER > 1900
+		#define DLL_EXPORT_VECTOR(type) \
+			EXPIMP_TEMPLATE template class CPPUNIT_API std::_Vector_val<std::_Simple_types<CppUnit::type *>>; \
+			EXPIMP_TEMPLATE template class CPPUNIT_API std::_Compressed_pair<std::allocator<CppUnit::type *>, std::_Vector_val<std::_Simple_types<CppUnit::type *>>, true>; \
+			EXPIMP_TEMPLATE template class CPPUNIT_API std::vector<type *>;
+	#elif _MSC_VER > 1800
 		#define DLL_EXPORT_VECTOR(type) \
 			EXPIMP_TEMPLATE template class CPPUNIT_API std::_Vector_val<std::_Simple_types<CppUnit::type *>>; \
 			EXPIMP_TEMPLATE template class CPPUNIT_API std::_Compressed_pair<std::_Wrap_alloc<std::allocator<CppUnit::type *>>, std::_Vector_val<std::_Simple_types<CppUnit::type *>>, true>; \

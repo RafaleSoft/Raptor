@@ -110,7 +110,8 @@ void CRaptorConsole::CInputCollectorBase::broadcastMouseInput(int button, int xp
 //////////////////////////////////////////////////////////////////////
  
 CRaptorConsole::CRaptorConsole():
-    m_pFont(NULL),m_bIsActive(false),m_bShowStatus(false),
+    m_pFont(NULL), m_pInput(NULL),
+	m_bIsActive(false),m_bShowStatus(false),
     m_bShowFPS(true),m_bShowObjects(false),m_bShowTriangles(false),
 	m_bShowFrameTime(false),m_bUseVectors(false)
 {
