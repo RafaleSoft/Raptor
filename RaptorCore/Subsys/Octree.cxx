@@ -141,11 +141,11 @@ unsigned int COctree<USER_DATA_t>::getMaxDepth() const
 }
 
 template <class USER_DATA_t>
-unsigned int COctree<USER_DATA_t>::getNbObjects(void) const
+size_t COctree<USER_DATA_t>::getNbObjects(void) const
 {
-    unsigned int res = CBaseTree<USER_DATA_t>::m_objects.size();
+    size_t res = CBaseTree<USER_DATA_t>::m_objects.size();
 
-    for (unsigned int i=0 ; i<8 && child[i] != NULL ; i++)
+    for (uint32_t i=0 ; i<8 && child[i] != NULL ; i++)
         res += child[i]->getNbObjects();
 
     return res;
@@ -154,12 +154,12 @@ unsigned int COctree<USER_DATA_t>::getNbObjects(void) const
 template <class USER_DATA_t>
 vector<RAPTOR_TYPENAME COctree<USER_DATA_t>::BASETREE_ITEM> COctree<USER_DATA_t>::getObjects(void) const
 {
-    vector<BASETREE_ITEM> res = CBaseTree<USER_DATA_t>::m_objects;
-    for (unsigned int i=0 ; i<8 && child[i] != NULL ; i++)
+    std::vector<BASETREE_ITEM> res = CBaseTree<USER_DATA_t>::m_objects;
+    for (uint32_t i=0 ; i<8 && child[i] != NULL ; i++)
 	{
         vector<BASETREE_ITEM> childObjects = child[i]->getObjects();
 
-        RAPTOR_TYPENAME vector<BASETREE_ITEM>::const_iterator it = childObjects.begin();
+        RAPTOR_TYPENAME std::vector<BASETREE_ITEM>::const_iterator it = childObjects.begin();
 	    while (it != childObjects.end())
 	        res.push_back(*it++);
 	}

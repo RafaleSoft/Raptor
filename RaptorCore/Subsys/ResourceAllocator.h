@@ -60,7 +60,8 @@ public:
 		bool glvkUnbindArrays(void);
 
 		//! Init arrays binding data and state with current state.
-		bool glScanBindings(void);
+		//!	Current state is also returned into arrays parameter.
+		bool glScanBindings(CRaptorDisplayConfig::GL_ARRAYS_STATE &arrays);
 
 
 	private:
@@ -78,7 +79,7 @@ public:
 		bool unbindAttribArray(CRaptorDisplayConfig::GL_ARRAY_STATE &state);
 
 		//!	This resource binder arrays bindings.
-		CRaptorDisplayConfig::GL_ARRAYS_STATE			bindings;
+		CRaptorDisplayConfig::GL_ARRAYS_STATE	bindings;
 
 		//!	Vertex Array Object.
 		GLuint	array;

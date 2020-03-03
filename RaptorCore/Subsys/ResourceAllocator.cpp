@@ -421,9 +421,8 @@ bool CResourceAllocator::CResourceBinder::unbindArray(CRaptorDisplayConfig::GL_A
 }
 
 
-bool CResourceAllocator::CResourceBinder::glScanBindings(void)
+bool CResourceAllocator::CResourceBinder::glScanBindings(CRaptorDisplayConfig::GL_ARRAYS_STATE &arrays)
 {
-
 	bindings.attributes.vertexArray.enable = (GL_TRUE == glIsEnabled(GL_VERTEX_ARRAY));
 	bindings.attributes.normalArray.enable = (GL_TRUE == glIsEnabled(GL_NORMAL_ARRAY));
 	bindings.attributes.colorArray.enable = (GL_TRUE == glIsEnabled(GL_COLOR_ARRAY));
@@ -475,6 +474,8 @@ bool CResourceAllocator::CResourceBinder::glScanBindings(void)
 	glGetIntegerv(GL_VERTEX_WEIGHT_ARRAY_STRIDE_EXT, &bindings.attributes.weightArray.arrayStride);
 	glGetPointerv(GL_VERTEX_WEIGHT_ARRAY_POINTER_EXT, &bindings.attributes.weightArray.arrayPointer);
 #endif
+
+	arrays = bindings;
 
 	return true;
 }

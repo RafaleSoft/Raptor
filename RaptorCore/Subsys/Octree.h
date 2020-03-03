@@ -57,7 +57,7 @@ public:
     //!
 
     //!  Returns the number of objects in this tree.
-    unsigned int getNbObjects(void) const;
+    size_t getNbObjects(void) const;
 
     //! Returns the deepest tree branch from this level.
     unsigned int getMaxDepth() const;

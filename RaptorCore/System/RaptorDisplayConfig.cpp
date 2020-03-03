@@ -148,30 +148,7 @@ CRaptorDisplayConfig::CRaptorDisplayConfig()
 	transformState.viewport[1] = 0;
 	transformState.viewport[2] = 640;
 	transformState.viewport[3] = 480;
-
-	arraysState.attributes.vertexArray.arrayName = GL_VERTEX_ARRAY;
-	arraysState.attributes.vertexArray.arrayIndex = CProgramParameters::POSITION;
-	arraysState.attributes.colorArray.arrayName = GL_COLOR_ARRAY;
-	arraysState.attributes.colorArray.arrayIndex = CProgramParameters::PRIMARY_COLOR;
-	arraysState.attributes.normalArray.arrayName = GL_NORMAL_ARRAY;
-	arraysState.attributes.normalArray.arrayIndex = CProgramParameters::NORMAL;
-	arraysState.attributes.texture0Array.arrayName = GL_TEXTURE_COORD_ARRAY;
-	arraysState.attributes.texture0Array.arrayIndex = CProgramParameters::TEXCOORD0;
-	arraysState.attributes.texture1Array.arrayName = 0;
-	arraysState.attributes.texture1Array.arrayIndex = CProgramParameters::TEXCOORD1;
-	arraysState.attributes.indexArray.arrayName = GL_INDEX_ARRAY;
-	arraysState.attributes.indexArray.arrayIndex = 0;
-#ifdef GL_EXT_vertex_weighting
-	arraysState.attributes.weightArray.arrayName = GL_VERTEX_WEIGHT_ARRAY_EXT;
-#else
-	arraysState.attributes.weightArray.arrayName = 0;
-#endif
-	arraysState.attributes.weightArray.arrayIndex = CProgramParameters::WEIGHTS;
-	arraysState.attributes.edgeArray.arrayName = GL_EDGE_FLAG_ARRAY;
-	arraysState.attributes.edgeArray.arrayIndex = 0;
-	arraysState.attributes.additionalArray.arrayName = 0;
-	arraysState.attributes.additionalArray.arrayIndex = CProgramParameters::ADDITIONAL_PARAM1;
-
+	
 	m_pBinder = NULL;
 }
 
@@ -272,59 +249,7 @@ bool CRaptorDisplayConfig::glQueryConfig(unsigned long query)
 		if (NULL == m_pBinder)
 			m_pBinder = new CResourceAllocator::CResourceBinder();
 		CResourceAllocator::CResourceBinder *binder = (CResourceAllocator::CResourceBinder*)m_pBinder;
-		binder->glScanBindings();
-
-		arraysState.attributes.vertexArray.enable = (GL_TRUE == glIsEnabled(GL_VERTEX_ARRAY));
-		arraysState.attributes.normalArray.enable = (GL_TRUE == glIsEnabled(GL_NORMAL_ARRAY));
-		arraysState.attributes.colorArray.enable = (GL_TRUE == glIsEnabled(GL_COLOR_ARRAY));
-		arraysState.attributes.indexArray.enable = (GL_TRUE == glIsEnabled(GL_INDEX_ARRAY));
-		arraysState.attributes.texture0Array.enable = (GL_TRUE == glIsEnabled(GL_TEXTURE_COORD_ARRAY));
-		arraysState.attributes.edgeArray.enable = (GL_TRUE == glIsEnabled(GL_EDGE_FLAG_ARRAY));
-
-		glGetIntegerv(GL_VERTEX_ARRAY_SIZE, &arraysState.attributes.vertexArray.arraySize);
-		arraysState.attributes.normalArray.arraySize = 3;
-		glGetIntegerv(GL_COLOR_ARRAY_SIZE, &arraysState.attributes.colorArray.arraySize);
-		arraysState.attributes.indexArray.arraySize = 1;
-		glGetIntegerv(GL_TEXTURE_COORD_ARRAY_SIZE, &arraysState.attributes.texture0Array.arraySize);
-		arraysState.attributes.edgeArray.arraySize = 1;
-
-		glGetIntegerv(GL_VERTEX_ARRAY_TYPE, &arraysState.attributes.vertexArray.arrayType);
-		glGetIntegerv(GL_NORMAL_ARRAY_TYPE, &arraysState.attributes.normalArray.arrayType);
-		glGetIntegerv(GL_COLOR_ARRAY_TYPE, &arraysState.attributes.colorArray.arrayType);
-		glGetIntegerv(GL_INDEX_ARRAY_TYPE, &arraysState.attributes.indexArray.arrayType);
-		glGetIntegerv(GL_TEXTURE_COORD_ARRAY_TYPE, &arraysState.attributes.texture0Array.arrayType);
-		arraysState.attributes.edgeArray.arrayType = 0;	// must be GLboolean
-
-		glGetIntegerv(GL_VERTEX_ARRAY_STRIDE, &arraysState.attributes.vertexArray.arrayStride);
-		glGetIntegerv(GL_NORMAL_ARRAY_STRIDE, &arraysState.attributes.normalArray.arrayStride);
-		glGetIntegerv(GL_COLOR_ARRAY_STRIDE, &arraysState.attributes.colorArray.arrayStride);
-		glGetIntegerv(GL_INDEX_ARRAY_STRIDE, &arraysState.attributes.indexArray.arrayStride);
-		glGetIntegerv(GL_TEXTURE_COORD_ARRAY_STRIDE, &arraysState.attributes.texture0Array.arrayStride);
-		glGetIntegerv(GL_EDGE_FLAG_ARRAY_STRIDE, &arraysState.attributes.edgeArray.arrayStride);
-
-#if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
-		glGetPointerv(GL_VERTEX_ARRAY_POINTER,&arraysState.attributes.vertexArray.arrayPointer);
-		glGetPointerv(GL_NORMAL_ARRAY_POINTER,&arraysState.attributes.normalArray.arrayPointer);
-		glGetPointerv(GL_COLOR_ARRAY_POINTER,&arraysState.attributes.colorArray.arrayPointer);
-		glGetPointerv(GL_INDEX_ARRAY_POINTER,&arraysState.attributes.indexArray.arrayPointer);
-		glGetPointerv(GL_TEXTURE_COORD_ARRAY_POINTER,&arraysState.attributes.texture0Array.arrayPointer);
-		glGetPointerv(GL_EDGE_FLAG_ARRAY_POINTER,&arraysState.attributes.edgeArray.arrayPointer);
-#else
-		arraysState.attributes.vertexArray.arrayPointer = NULL;
-		arraysState.attributes.normalArray.arrayPointer = NULL;
-		arraysState.attributes.colorArray.arrayPointer = NULL;
-		arraysState.attributes.indexArray.arrayPointer = NULL;
-		arraysState.attributes.texture0Array.arrayPointer = NULL;
-		arraysState.attributes.edgeArray.arrayPointer = NULL;
-#endif
-
-#ifdef GL_EXT_vertex_weighting
-		arraysState.weightArray.enable = glIsEnabled(GL_VERTEX_WEIGHT_ARRAY_EXT);
-		glGetIntegerv(GL_VERTEX_WEIGHT_ARRAY_SIZE_EXT,&arraysState.attributes.weightArray.arraySize);
-		glGetIntegerv(GL_VERTEX_WEIGHT_ARRAY_TYPE_EXT,&arraysState.attributes.weightArray.arrayType);
-		glGetIntegerv(GL_VERTEX_WEIGHT_ARRAY_STRIDE_EXT,&arraysState.attributes.weightArray.arrayStride);
-		glGetPointerv(GL_VERTEX_WEIGHT_ARRAY_POINTER_EXT,&arraysState.attributes.weightArray.arrayPointer);
-#endif
+		binder->glScanBindings(arraysState);
 	}
 
 	if (query & GL_TRANSFORM_STATE_QUERY)
@@ -506,7 +431,7 @@ bool CRaptorDisplayConfig::glQueryConfig(unsigned long query)
 	return true;
 }
 
-bool CRaptorDisplayConfig::glApplyConfig(unsigned long query) const
+bool CRaptorDisplayConfig::glApplyConfig(unsigned long query)
 {
 	if (query & GL_CURRENT_STATE_QUERY)
 	{
@@ -525,142 +450,10 @@ bool CRaptorDisplayConfig::glApplyConfig(unsigned long query) const
 
 	if (query & GL_ARRAYS_STATE_QUERY)
 	{
-//		if (NULL == m_pBinder)
-//			m_pBinder = new CResourceAllocator::CResourceBinder();
-//		CResourceAllocator::CResourceBinder *binder = (CResourceAllocator::CResourceBinder*)m_pBinder;
-//		binder->glvkBindArrays();
-
-#if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
-#else
-		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
-#endif
-
-		if (arraysState.attributes.vertexArray.enable)
-		{
-#if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
-			glEnableClientState(GL_VERTEX_ARRAY);
-			glVertexPointer(arraysState.vertexArray.arraySize,
-							arraysState.vertexArray.arrayType,
-							arraysState.vertexArray.arrayStride,
-							arraysState.vertexArray.arrayPointer);
-#else
-			pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::POSITION);
-			pExtensions->glVertexAttribPointerARB(CProgramParameters::POSITION,
-												  arraysState.attributes.vertexArray.arraySize,
-												  arraysState.attributes.vertexArray.arrayType,
-												  false, // normalize
-												  arraysState.attributes.vertexArray.arrayStride,
-												  arraysState.attributes.vertexArray.arrayPointer);
-#endif
-		}
-		else
-		{
-#if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
-			glDisableClientState(GL_VERTEX_ARRAY);
-#else
-			pExtensions->glDisableVertexAttribArrayARB(CProgramParameters::POSITION);
-#endif
-		}
-		if (arraysState.attributes.normalArray.enable)
-		{
-#if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
-			glEnableClientState(GL_NORMAL_ARRAY);
-			glNormalPointer(arraysState.normalArray.arrayType,
-							arraysState.normalArray.arrayStride,
-							arraysState.normalArray.arrayPointer);
-#else
-			pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::NORMAL);
-			pExtensions->glVertexAttribPointerARB(CProgramParameters::NORMAL,
-												  arraysState.attributes.normalArray.arraySize,
-												  arraysState.attributes.normalArray.arrayType,
-												  false, // normalize
-												  arraysState.attributes.normalArray.arrayStride,
-												  arraysState.attributes.normalArray.arrayPointer);
-#endif
-		}
-		else
-		{
-#if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
-			glDisableClientState(GL_NORMAL_ARRAY);
-#else
-			pExtensions->glDisableVertexAttribArrayARB(CProgramParameters::NORMAL);
-#endif
-		}
-		if (arraysState.attributes.colorArray.enable)
-		{
-#if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
-			glEnableClientState(GL_COLOR_ARRAY);
-			glColorPointer(	arraysState.colorArray.arraySize,
-							arraysState.colorArray.arrayType,
-							arraysState.colorArray.arrayStride,
-							arraysState.colorArray.arrayPointer);
-#else
-			pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::PRIMARY_COLOR);
-			pExtensions->glVertexAttribPointerARB(CProgramParameters::PRIMARY_COLOR,
-												  arraysState.attributes.colorArray.arraySize,
-												  arraysState.attributes.colorArray.arrayType,
-												  false, // normalize
-												  arraysState.attributes.colorArray.arrayStride,
-												  arraysState.attributes.colorArray.arrayPointer);
-#endif
-		}
-		else
-		{
-#if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
-			glDisableClientState(GL_COLOR_ARRAY);
-#else
-			pExtensions->glDisableVertexAttribArrayARB(CProgramParameters::PRIMARY_COLOR);
-#endif
-		}
-		if (arraysState.attributes.indexArray.enable)
-		{
-			glEnableClientState(GL_INDEX_ARRAY);
-			glIndexPointer(arraysState.attributes.indexArray.arrayType,
-						   arraysState.attributes.indexArray.arrayStride,
-						   arraysState.attributes.indexArray.arrayPointer);
-		}
-		if (arraysState.attributes.texture0Array.enable)
-		{
-#if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
-			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-			glTexCoordPointer(	arraysState.textureArray.arraySize,
-								arraysState.textureArray.arrayType,
-								arraysState.textureArray.arrayStride,
-								arraysState.textureArray.arrayPointer);
-#else
-			pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::TEXCOORD0);
-			pExtensions->glVertexAttribPointerARB(CProgramParameters::TEXCOORD0,
-												  arraysState.attributes.texture0Array.arraySize,
-												  arraysState.attributes.texture0Array.arrayType,
-												  false, // normalize
-												  arraysState.attributes.texture0Array.arrayStride,
-												  arraysState.attributes.texture0Array.arrayPointer);
-#endif
-		}
-		if (arraysState.attributes.edgeArray.enable)
-		{
-			glEnableClientState(GL_EDGE_FLAG_ARRAY);
-			glEdgeFlagPointer(arraysState.attributes.edgeArray.arrayStride,
-							  arraysState.attributes.edgeArray.arrayPointer);
-		}
-
-#ifdef GL_EXT_vertex_weighting
-		if(arraysState.weightArray.enable)
-		{
-			const CRaptorExtensions *const pExtensions = 
-				CContextManager::GetInstance()->glGetExtensions();
-
-			if (pExtensions->glVertexWeightPointerEXT != NULL)
-			{
-				glEnableClientState(GL_VERTEX_WEIGHT_ARRAY_EXT);
-				pExtensions->glVertexWeightPointerEXT(	arraysState.weightArray.arraySize,
-											arraysState.weightArray.arrayType,
-											arraysState.weightArray.arrayStride,
-											arraysState.weightArray.arrayPointer);
-			}
-		}
-#endif
-
+		if (NULL == m_pBinder)
+			m_pBinder = new CResourceAllocator::CResourceBinder();
+		CResourceAllocator::CResourceBinder *binder = (CResourceAllocator::CResourceBinder*)m_pBinder;
+		binder->glvkBindArrays();
 	}
 
 	if (query & GL_TRANSFORM_STATE_QUERY)

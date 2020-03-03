@@ -445,7 +445,7 @@ bool CRaptorDisplay::glQueryStatus(CRaptorDisplayConfig &state,unsigned long que
 	return state.glQueryConfig(query);
 }
 
-bool CRaptorDisplay::glApplyStatus(const CRaptorDisplayConfig& state,unsigned long query)
+bool CRaptorDisplay::glApplyStatus(CRaptorDisplayConfig& state,unsigned long query)
 {
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 	if (((m_pCurrentDisplay == NULL) || (m_pCurrentDisplay != this)) &&
