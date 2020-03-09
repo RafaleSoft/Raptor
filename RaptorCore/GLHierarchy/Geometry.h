@@ -82,8 +82,15 @@ public:
 	//!
 	//! Manage rendered elements of object
 	//!
-	virtual void setRenderingModel(const CRenderingModel& model);
+public: virtual void setRenderingModel(const CRenderingModel& model);
+public:
+	void setRenderingModel(CRenderingModel::MODEL model);
 	CRenderingModel& getRenderingModel(void) { return m_renderingModel; };
+
+	void addModel(CRenderingModel::MODEL model);
+	virtual void removeModel(CRenderingModel::MODEL model);
+	bool RAPTOR_FASTCALL hasModel(CRenderingModel::MODEL model) const { return m_renderingModel.hasModel(model); };
+	//long m_model;
 	
 	//!
 	//!	Geometry creation

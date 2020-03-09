@@ -69,8 +69,8 @@ public:
     //! Assigns a shader to the shadedgeometry. The previous one is released.
     virtual void setShader(CShader *shader);
 
-    //! Override Display rendering properties tu use local object specific shading.
-	void overrideShading(const IRenderingProperties& override);
+	//!	Implement base class to override shading.
+	virtual void removeModel(CRenderingModel::MODEL);
 
 	//! Implements CPersistence
     DECLARE_IO
@@ -81,6 +81,9 @@ public:
 protected:
 	//!	Inherit from persistence to observe shader life-cycle
 	void unLink(const CPersistence* obj);
+
+	//! Override Display rendering properties tu use local object specific shading.
+	void overrideShading(const IRenderingProperties& override);
 
 
 private:

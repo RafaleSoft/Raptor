@@ -37,7 +37,7 @@ public:
 	virtual bool addLevel(float fromDepth, CObject3D *obj);
 
     //! Returns the number of levels of this lod.
-	virtual unsigned int getNbLod(void) const { return lods.size(); };
+	virtual size_t getNbLod(void) const { return lods.size(); };
 
     //! Returns the 'numLod' level;
 	virtual CObject3D* const getLod(unsigned int numLod) const;

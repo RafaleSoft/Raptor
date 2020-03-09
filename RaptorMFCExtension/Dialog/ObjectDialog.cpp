@@ -254,10 +254,10 @@ RAPTOR_NAMESPACE
 		Add(tree,item,(CObject3DInstance*)obj);
 
 		CString str;
-		str.Format(TEXT("Number of LODs: %u"), obj->getNbLod());
+		str.Format(TEXT("Number of LODs: %lu"), obj->getNbLod());
 		tree->InsertItem(str,item);
 
-		for (unsigned int i=0;i<obj->getNbLod();i++)
+		for (size_t i=0;i<obj->getNbLod();i++)
 		{
 			Add(tree,item,obj->getLod(i));
 		}

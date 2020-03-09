@@ -34,11 +34,9 @@
 //////////////////////////////////////////////////////////////////////
 CBasicObjects::CCube::CCube()
 {
-	CGeometry::CRenderingModel l_model(0);
-    l_model.addModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
-    l_model.addModel(CGeometry::CRenderingModel::CGL_NORMALS);
-	l_model.addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
-    setRenderingModel(l_model);
+	setRenderingModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
+	addModel(CGeometry::CRenderingModel::CGL_NORMALS);
+	addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
 	glSetVertices(24);
 	glSetTexCoords(24);
 	glSetPolygons(12);
@@ -193,11 +191,9 @@ void CBasicObjects::CCube::setDimensions(float width,float height,float depth)
 
 CBasicObjects::CIsocahedron::CIsocahedron()
 {
-	CGeometry::CRenderingModel l_model(0);
-    l_model.addModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
-    l_model.addModel(CGeometry::CRenderingModel::CGL_NORMALS);
-	l_model.addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
-    setRenderingModel(l_model);
+	setRenderingModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
+	addModel(CGeometry::CRenderingModel::CGL_NORMALS);
+	addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
 	glSetVertices(12);
 	glSetPolygons(20);
 
@@ -372,11 +368,9 @@ void CBasicObjects::CIsocahedron::setDimensions(float radius, unsigned int nbLev
 
 CBasicObjects::CGeoSphere::CGeoSphere()
 {
-	CGeometry::CRenderingModel l_model(0);
-    l_model.addModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
-    l_model.addModel(CGeometry::CRenderingModel::CGL_NORMALS);
-	l_model.addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
-    setRenderingModel(l_model);
+	setRenderingModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
+	addModel(CGeometry::CRenderingModel::CGL_NORMALS);
+	addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
 	setDimensions(1.0f,16,16);
 }
 
@@ -462,25 +456,14 @@ void CBasicObjects::CGeoSphere::setDimensions(float radius,unsigned int nbMeridi
 
     glUnLockData();
 }
-/*
-void CBasicObjects::CGeoSphere::glRender(void)
-{
-	CShadedGeometry::glRender();
-
-	GL_RGBA_COLOR c(1.0f,0.0f,0.0f,1.0f);
-	CRaptorToolBox::RenderNormals(this,c,0.2f);
-}
-*/
 
 CBasicObjects::CRectMesh::CRectMesh()
 {
 	setDimensions(1.0f,1.0f,50,50);
 
-	CGeometry::CRenderingModel l_model(0);
-    l_model.addModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
-    l_model.addModel(CGeometry::CRenderingModel::CGL_NORMALS);
-	l_model.addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
-    setRenderingModel(l_model);
+	setRenderingModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
+	addModel(CGeometry::CRenderingModel::CGL_NORMALS);
+	addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
 }
 
 CBasicObjects::CRectMesh::~CRectMesh()
@@ -571,11 +554,9 @@ CBasicObjects::CRectangle::CRectangle()
 		addFace(2,3,0);
 	glUnLockData();
 
-	CGeometry::CRenderingModel l_model(0);
-    l_model.addModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
-    l_model.addModel(CGeometry::CRenderingModel::CGL_NORMALS);
-	l_model.addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
-    setRenderingModel(l_model);
+	setRenderingModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
+	addModel(CGeometry::CRenderingModel::CGL_NORMALS);
+	addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
 }
 
 CBasicObjects::CRectangle::~CRectangle()

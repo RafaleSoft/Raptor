@@ -768,7 +768,7 @@ void CObject3DShadow::glSelectContours(void)
         
         CGLLod *pLod = ((CGLLod*)m_pAttributes->m_pObject);
     
-        unsigned int size = pLod->getNbLod();
+        size_t size = pLod->getNbLod();
         C3DEngine::CLIP_RESULT  res = pLod->glClip();
 
         if (res == C3DEngine::CLIP_FULL)
@@ -776,7 +776,7 @@ void CObject3DShadow::glSelectContours(void)
         else
         {
             CObject3D *lod = pLod->glGetLod();
-            for (unsigned int i=0;i<size;i++)
+            for (size_t i=0;i<size;i++)
             {
                 if (pLod->getLod(i) == lod)
                     m_pVisibleContours.push_back(m_pContours[i]);

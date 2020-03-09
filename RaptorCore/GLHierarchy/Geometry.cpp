@@ -117,6 +117,22 @@ const CGeometryEditor& CGeometry::getEditor(void)
 }
 
 
+void CGeometry::setRenderingModel(CRenderingModel::MODEL model)
+{
+	setRenderingModel(CRenderingModel(model));
+}
+
+void CGeometry::addModel(CRenderingModel::MODEL model)
+{
+	m_renderingModel.addModel(model);
+}
+
+void CGeometry::removeModel(CRenderingModel::MODEL model)
+{
+	m_renderingModel.removeModel(model);
+}
+
+
 //////////////////////////////////////////////////////////////////////
 // CGeometry implementation
 //////////////////////////////////////////////////////////////////////
@@ -969,7 +985,7 @@ void CGeometry::vkRender(CVulkanCommandBuffer& commandBuffer,
 {
 	VkBuffer bindings[3] = { vertexBinding, 0, 0 };
 	VkDeviceSize offsets[3] = { (VkDeviceSize)&vertex[0], 0, 0 };
-	size_t nb_bindings = 1;	// always extract geometry
+	uint32_t nb_bindings = 1;	// always extract geometry
 
 	if (m_renderingModel.hasModel(CRenderingModel::CGL_TEXTURE))
 	{
@@ -1001,7 +1017,7 @@ bool CGeometry::getVertexInputState( std::vector<VkVertexInputBindingDescription
 {
 	bindings.clear();
 	vertexInput.clear();
-	size_t nb_bindings = 0;
+	uint32_t nb_bindings = 0;
 
 	//!	Vertex
 	bindings.push_back({ nb_bindings, 4 * sizeof(float), VK_VERTEX_INPUT_RATE_VERTEX });
@@ -1225,8 +1241,8 @@ bool CGeometry::removePrimitive(CGeometryPrimitive *primitive)
 {
 	if (primitive == NULL)
 	{
-		for (unsigned int i=m_pPrimitives.size();i>0;i--)
-			m_pPrimitives[i-1]->releaseReference();
+		for (size_t i = 0; i< m_pPrimitives.size(); i++)
+			m_pPrimitives[i]->releaseReference();
 		m_pPrimitives.clear();
 		return true;
 	}

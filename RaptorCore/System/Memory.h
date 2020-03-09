@@ -174,7 +174,7 @@ public:
         Allocator() {};
         virtual ~Allocator() {};
 
-        T* allocate(unsigned int count);
+        T* allocate(size_t count);
     };
 
 
@@ -202,7 +202,7 @@ public:
 
 	//!	Allocation method with aligned data
 	//! allocate count chuncks of size bytes, aligned with alignment
-	void *allocate(size_t size,unsigned int count,size_t alignment = 0) const;
+	void *allocate(size_t size, size_t count,size_t alignment = 0) const;
 
 	//!	Reallocation method with aligned data
 	//! allocate count chuncks of size bytes, aligned with alignment, preserving old content.
@@ -241,7 +241,7 @@ private:
 
 
 template <class T,int a>
-T* CHostMemoryManager::Allocator<T,a>::allocate(unsigned int count)
+T* CHostMemoryManager::Allocator<T,a>::allocate(size_t count)
 {
     void* bloc = CHostMemoryManager::GetInstance()->allocate(sizeof(T),count,a);
     return new(bloc) T;
