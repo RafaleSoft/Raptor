@@ -72,6 +72,7 @@ public:
 	//!	Implement base class to override shading.
 	virtual void removeModel(CRenderingModel::MODEL);
 
+
 	//! Implements CPersistence
     DECLARE_IO
 	DECLARE_CLASS_ID(CShadedGeometryClassID,"ShadedGeometry",CGeometry)

@@ -34,12 +34,13 @@
 //////////////////////////////////////////////////////////////////////
 CBasicObjects::CCube::CCube()
 {
-	setRenderingModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
-	addModel(CGeometry::CRenderingModel::CGL_NORMALS);
-	addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
 	glSetVertices(24);
 	glSetTexCoords(24);
 	glSetPolygons(12);
+	
+	setRenderingModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
+	addModel(CGeometry::CRenderingModel::CGL_NORMALS);
+	addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
 
     glLockData();
 
@@ -191,11 +192,12 @@ void CBasicObjects::CCube::setDimensions(float width,float height,float depth)
 
 CBasicObjects::CIsocahedron::CIsocahedron()
 {
+	glSetVertices(12);
+	glSetPolygons(20);
+
 	setRenderingModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
 	addModel(CGeometry::CRenderingModel::CGL_NORMALS);
 	addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
-	glSetVertices(12);
-	glSetPolygons(20);
 
 	glLockData();
 
@@ -277,7 +279,7 @@ void CBasicObjects::CIsocahedron::setDimensions(float radius, unsigned int nbLev
 			newFaces.push_back(p2);
 			newFaces.push_back(p3);
 		}
-		unsigned int numFaces = newCoords.size(); 
+		size_t numFaces = newCoords.size(); 
 
 		glUnLockData();
 		
@@ -368,10 +370,11 @@ void CBasicObjects::CIsocahedron::setDimensions(float radius, unsigned int nbLev
 
 CBasicObjects::CGeoSphere::CGeoSphere()
 {
+	setDimensions(1.0f,16,16);
+
 	setRenderingModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
 	addModel(CGeometry::CRenderingModel::CGL_NORMALS);
 	addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
-	setDimensions(1.0f,16,16);
 }
 
 CBasicObjects::CGeoSphere::~CGeoSphere()

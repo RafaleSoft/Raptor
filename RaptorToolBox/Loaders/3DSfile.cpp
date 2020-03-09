@@ -609,6 +609,7 @@ bool RAPTOR_FASTCALL ProcessChunk4xxxH(long length)
 			if(it != matlib->end())
 			{
                 m = (Material*)((*it).second);
+
 				if (geo->getId().isSubClassOf(CShadedGeometry::CShadedGeometryClassID::GetClassId()))
                 {
                     CShadedGeometry *sh = static_cast<CShadedGeometry*>(geo);

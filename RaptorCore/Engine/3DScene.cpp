@@ -339,7 +339,7 @@ void C3DScene::glRender(void)
     vector<C3DSceneObject*> viewableObjects = m_pAttributes->glGetObjects();
     vector<CLight*>	requiredLights = m_pAttributes->glGetLights(viewableObjects);
 
-    unsigned int nbEnvs = m_pAttributes->m_pEnvironments.size();
+    size_t nbEnvs = m_pAttributes->m_pEnvironments.size();
     if (nbEnvs > 0)
     {
         for (unsigned int i=0;i<nbEnvs;i++)
@@ -398,7 +398,7 @@ CEnvironment * const C3DScene::getEnvironment(CEnvironment::ENVIRONMENT_KIND kin
 {
     CEnvironment * res = NULL;
 
-    unsigned int nbEnvs = m_pAttributes->m_pEnvironments.size();
+    size_t nbEnvs = m_pAttributes->m_pEnvironments.size();
 
     if (nbEnvs > 0)
     {
