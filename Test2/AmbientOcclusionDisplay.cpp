@@ -95,7 +95,6 @@ void CAmbientOcclusionDisplay::Init()
 		m_pTeapot = new CShadedGeometry();
 		*m_pTeapot = *((CGeometry *)p);
 		m_pTeapot->translateAbsolute(0,0,0);
-
 		m_pTeapot->setRenderingModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
 		m_pTeapot->addModel(CGeometry::CRenderingModel::CGL_NORMALS);
 		m_pTeapot->addModel(CGeometry::CRenderingModel::CGL_TEXTURE);

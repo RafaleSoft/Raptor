@@ -276,7 +276,7 @@ void *CHostMemoryManager::allocate(size_t size,size_t count,size_t alignment) co
     if (!found)
     {
 	    //	minimum non nul alignment is 4
-	    unsigned int align = (unsigned int)(alignment & 0xfc);
+	    size_t align = alignment & 0xfc;
         if (align == 0)
             align = 4;
 	    

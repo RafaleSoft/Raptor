@@ -13,8 +13,6 @@
 #include "GLHierarchy/TextureFactory.h"
 #include "GLHierarchy/TextureFactoryConfig.h"
 #include "GLHierarchy/TextureObject.h"
-#include "GLHierarchy/FragmentProgram.h"
-#include "GLHierarchy/VertexProgram.h"
 #include "GLHierarchy/Shader.h"
 #include "Engine/ViewModifier.h"
 #include "Engine/3DScene.h"
@@ -116,7 +114,6 @@ private:
 void CTestDoc::GLInitContext(void)
 {
 	CAnimator::SetAnimator(new CAnimator());
-    //glClearColor(0.2f,0.6f,0.7f,0.0f);
 	glClearColor(0.0f,0.0f,0.0f,0.0f);
 
 	CRaptorDisplay *dsp = CRaptorDisplay::GetCurrentDisplay();
@@ -137,7 +134,7 @@ void CTestDoc::GLInitContext(void)
     CMaterial *pMaterial = pShader->getMaterial();
     pMaterial->setAmbient(0.2f,0.2f,0.2f,1.0f);
     pMaterial->setDiffuse(0.9f,0.3f,0.7f,1.0f);
-    pMaterial->setSpecular(6.0f,5.0f,4.0f,1.0f);
+    pMaterial->setSpecular(5.0f,4.0f,3.0f,1.0f);
     pMaterial->setShininess(10.0f);
 	m_pSG->removeModel(CGeometry::CRenderingModel::CGL_TEXTURE);
 

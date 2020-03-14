@@ -4,9 +4,6 @@
 #include "Subsys/CodeGeneration.h"
 
 
-#if !defined(AFX_TEXTUREOBJECT_H__D32B6294_B42B_4E6F_AB73_13B33C544AD0__INCLUDED_)
-	#include "GLHierarchy/TextureObject.h"
-#endif
 #if !defined(AFX_OPENEXRIMAGING_H__A2B2F9B8_4DA0_4D06_AD64_40805C2A14C3__INCLUDED_)
 	#include "Imaging/OpenEXRImaging.h"
 #endif
@@ -47,9 +44,9 @@ bool COpenEXRImaging::isOfKind(const std::string &kind) const
 	return ("EXR" == ext);
 }
 
-vector<std::string> COpenEXRImaging::getImageKind(void) const
+std::vector<std::string> COpenEXRImaging::getImageKind(void) const
 {
-	vector<string> result;
+	std::vector<std::string> result;
 
 	result.push_back("EXR");
 

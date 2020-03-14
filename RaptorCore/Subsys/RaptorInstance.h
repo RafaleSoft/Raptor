@@ -154,7 +154,7 @@ public:
 	long					defaultContext;
 	
 	//!	Imaging input/output interfaces.
-	map<std::string, CImage::IImageIO*>	imageKindIO;
+	std::map<std::string, CImage::IImageIO*>	imageKindIO;
 
 	//! The set of all Raptor displays for this instance.
 	std::vector<CRaptorDisplay*>	displays;
