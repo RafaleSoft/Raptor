@@ -6,6 +6,10 @@
 	- parser les .rc et mettre à jour la version réelle selon RAPTOR_VERSION ou Version.h
 	(synchroniser Version.h à partir de la var env si elle est définie)
 
+- CRaptorScreenDisplay:
+	- déplacer les resource allocator, ou faire un CRaptorInstance::switchDisplay : 
+	sous MFC, le changement de display ne suit pas les ressources ==> plantage de la video dans Test2/About
+
 - GeometryAllocator:
 	- ajouter methode de copy entre arrays et appeler depuis CGeometry.
 
