@@ -85,7 +85,7 @@ public:
 protected: virtual void setRenderingModel(const CRenderingModel& model);
 public:
 	void setRenderingModel(CRenderingModel::MODEL model);
-	CRenderingModel& getRenderingModel(void) { return m_renderingModel; };
+	//CRenderingModel& getRenderingModel(void) { return m_renderingModel; };
 
 	void addModel(CRenderingModel::MODEL model);
 	virtual void removeModel(CRenderingModel::MODEL model);

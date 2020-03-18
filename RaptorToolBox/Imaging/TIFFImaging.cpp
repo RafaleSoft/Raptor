@@ -156,7 +156,7 @@ bool CTIFFImaging::loadImageFile(const std::string& fname, CImage* const I) cons
 
 	unsigned short samplesperpixel = 0;
 	TIFFGetField(in, TIFFTAG_SAMPLESPERPIXEL, &samplesperpixel);
-	if (samplesperpixel != 3)
+	if ((samplesperpixel != 3) && (samplesperpixel != 4))
 		return false;   //  only 24 && 32 bits supported
 
 	unsigned short bitspersample = 0;
@@ -188,16 +188,16 @@ bool CTIFFImaging::loadImageFile(const std::string& fname, CImage* const I) cons
 		//	eventual extra processing
 		//	starting at the end of the buffer
 		int base_4 = w * 4 * (h - row - 1);
-		int base_3 = 0;
+		int base_var = 0;
 
 		for (unsigned int i = 0; i<w; i++)
 		{
 			//	I know i read an octet off the end of the buffer
 			//	but this is faster. Moreover, the data should be 
 			//	aligned to a dword address for each row, so ...
-			*((unsigned int*)(&image_buffer[base_4])) = *((unsigned int*)(&(inbuf[base_3])));
+			*((unsigned int*)(&image_buffer[base_4])) = *((unsigned int*)(&(inbuf[base_var])));
 
-			base_3 += 3;
+			base_var += samplesperpixel;
 			base_4 += 4;
 		}
 	}

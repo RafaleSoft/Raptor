@@ -2006,7 +2006,7 @@ bool CGeometry::importObject(CRaptorIO& io)
 	vector<GL_TEX_VERTEX> tcoords;
 	vector<CColor::RGBA> rgbacolors;
 	vector<unsigned int> faces;
-	CRenderingModel l_model(getRenderingModel());
+	CRenderingModel l_model(m_renderingModel);
 	bool modelImported = false;
 
     string data = io.getValueName();
