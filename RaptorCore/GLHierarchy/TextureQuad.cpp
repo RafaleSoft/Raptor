@@ -118,6 +118,7 @@ bool CTextureQuad::glSetQuadAttributes(	const GL_COORD_VERTEX &center,
 		binder->setArray(CProgramParameters::POSITION, &s_attributes[m_index].m_center, 4, sizeof(Attributes));
 		binder->setArray(CProgramParameters::PRIMARY_COLOR, &s_attributes[m_index].m_color, 4, sizeof(Attributes));
 		binder->setArray(CProgramParameters::ADDITIONAL_PARAM1, &s_attributes[m_index].m_sizes, 4, sizeof(Attributes));
+		binder->useVertexArrayObjects();
 		m_pBinder = binder;
 	}
 

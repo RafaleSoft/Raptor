@@ -250,8 +250,6 @@ void blowFader(int width, int height, unsigned char *src, unsigned char *dst, un
 	unsigned int width4 = width * 4;
 
 	unsigned int val = 0;
-
-#if defined(RAPTOR_SSE_CODE_GENERATION) && !defined(_WIN64)
 	__m64 param = _mm_unpacklo_pi8(_mm_cvtsi32_si64(dwParam), _mm_setzero_si64());
 
 	for (int i = 0; i<height; i++)
@@ -282,7 +280,7 @@ void blowFader(int width, int height, unsigned char *src, unsigned char *dst, un
 				finaloffset = ofssrc + xinc + yinc;
 
 			unsigned int* pixels = (unsigned int*)finaloffset;
-
+#if defined(RAPTOR_SSE_CODE_GENERATION) && !defined(_WIN64)
 			// read pixels
 			//	... on current line ...
 			__m64 c1 = _mm_unpacklo_pi8(_mm_cvtsi32_si64(*(pixels - 1)), _mm_setzero_si64());
@@ -298,6 +296,7 @@ void blowFader(int width, int height, unsigned char *src, unsigned char *dst, un
 			c1 = _mm_unpacklo_pi8(_mm_cvtsi32_si64(*(pixels + 1)), _mm_setzero_si64());
 			pixels = pixels - width - width;
 			c7 = _mm_add_pi16(c7, c1);
+
 
 			// ... on line over ...
 			c1 = _mm_unpacklo_pi8(_mm_cvtsi32_si64(*(pixels)), _mm_setzero_si64());
@@ -315,23 +314,22 @@ void blowFader(int width, int height, unsigned char *src, unsigned char *dst, un
 			c7 = _mm_srli_pi16(c7, 1);
 			c7 = _mm_sub_pi16(c7, param);
 			c7 = _mm_packs_pu16(c7, _mm_setzero_si64());
-
+		
 			// store pixel
 			*((unsigned int*)ofsdst) = _mm_cvtsi64_si32(c7);
-
+#endif
 			ofsdst += 4;
 			ofssrc += 4;
 		}
 	}
 
+#if defined(RAPTOR_SSE_CODE_GENERATION) && !defined(_WIN64)
 	_mm_empty();
 #endif
 }
 
 void motionFader(int width, int height, unsigned char *src, unsigned char *dst, unsigned long dwParam)
 {
-#if defined(RAPTOR_SSE_CODE_GENERATION) && !defined(_WIN64)
-
 	unsigned char *ofsdst = dst;
 	unsigned char *ofssrc = src;
 
@@ -346,7 +344,7 @@ void motionFader(int width, int height, unsigned char *src, unsigned char *dst, 
 		for (int j = 0; j < width; j++)
 		{
 			unsigned int* pixels = (unsigned int*)ofssrc;
-
+#if defined(RAPTOR_SSE_CODE_GENERATION) && !defined(_WIN64)
 			// read pixels
 			//	... on current line ...
 			__m64 c1 = _mm_unpacklo_pi8(_mm_cvtsi32_si64(*(pixels - 1)), _mm_setzero_si64());
@@ -382,21 +380,19 @@ void motionFader(int width, int height, unsigned char *src, unsigned char *dst, 
 
 			// store pixel
 			*((unsigned int*)ofsdst) = _mm_cvtsi64_si32(c7);
-
+#endif
 			ofsdst += 4;
 			ofssrc += 4;
 		}
 	}
 
+#if defined(RAPTOR_SSE_CODE_GENERATION) && !defined(_WIN64)
 	_mm_empty();
-
 #endif
 }
 
 void staticFader(int width, int height, unsigned char *src, unsigned char *dst, unsigned long dwParam)
 {
-#if defined(RAPTOR_SSE_CODE_GENERATION) && !defined(_WIN64)
-
 	unsigned char *ofsdst = dst;
 	unsigned char *ofssrc = src;
 
@@ -409,6 +405,7 @@ void staticFader(int width, int height, unsigned char *src, unsigned char *dst, 
 		{
 			unsigned int* pixels = (unsigned int*)ofssrc;
 
+#if defined(RAPTOR_SSE_CODE_GENERATION) && !defined(_WIN64)
 			// read pixels
 			//	... on current line ...
 			__m64 c1 = _mm_unpacklo_pi8(_mm_cvtsi32_si64(*(pixels - 1)), _mm_setzero_si64());
@@ -444,14 +441,13 @@ void staticFader(int width, int height, unsigned char *src, unsigned char *dst, 
 
 			// store pixel
 			*((unsigned int*)ofsdst) = _mm_cvtsi64_si32(c7);
-
+#endif
 			ofsdst += 4;
 			ofssrc += 4;
 		}
 	}
-
+#if defined(RAPTOR_SSE_CODE_GENERATION) && !defined(_WIN64)
 	_mm_empty();
-
 #endif
 }
 
@@ -469,8 +465,6 @@ void spinFader(int width, int height, unsigned char *src, unsigned char *dst, un
 	unsigned int width4 = width * 4;
 
 	unsigned int val = 0;
-
-#if defined(RAPTOR_SSE_CODE_GENERATION) && !defined(_WIN64)
 
 	__m64 param = _mm_unpacklo_pi8(_mm_cvtsi32_si64(dwParam), _mm_setzero_si64());
 
@@ -500,7 +494,7 @@ void spinFader(int width, int height, unsigned char *src, unsigned char *dst, un
 			}
 
 			unsigned int* pixels = (unsigned int*)finaloffset;
-
+#if defined(RAPTOR_SSE_CODE_GENERATION) && !defined(_WIN64)
 			// read pixels
 			//	... on current line ...
 			__m64 c1 = _mm_unpacklo_pi8(_mm_cvtsi32_si64(*(pixels - 1)), _mm_setzero_si64());
@@ -536,14 +530,13 @@ void spinFader(int width, int height, unsigned char *src, unsigned char *dst, un
 
 			// store pixel
 			*((unsigned int*)ofsdst) = _mm_cvtsi64_si32(c7);
-
+#endif
 			ofsdst += 4;
 			ofssrc += 4;
 		}
 	}
-
+#if defined(RAPTOR_SSE_CODE_GENERATION) && !defined(_WIN64)
 	_mm_empty();
-
 #endif
 }
 

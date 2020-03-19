@@ -184,12 +184,12 @@ LRESULT CALLBACK WindowProc(  HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
 #ifdef WIN32
 int WINAPI WinMain(  HINSTANCE hinstance,
-		                            HINSTANCE hprevinstance,
-		                            LPSTR lpcmdline,
-		                            int ncmdshow)
+		             HINSTANCE hprevinstance,
+		             LPSTR lpcmdline,
+		             int ncmdshow)
 {
     CRaptorConfig config;
-    config.m_bRelocation = true;
+    config.m_bRelocation = false;
     config.m_uiPolygons = 10000;
     config.m_uiVertices = 40000;
     config.m_uiTexels = 3000000;
@@ -267,7 +267,9 @@ int WINAPI WinMain(  HINSTANCE hinstance,
     } // end while
 
     delete pDoc;
-    Raptor::glPurgeRaptor(false);
+    
+	if (Raptor::GetConfig().m_bAutoDestroy)
+		Raptor::glQuitRaptor();
 
     // return to Windows like this
     return(msg.wParam);

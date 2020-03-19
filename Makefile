@@ -21,7 +21,6 @@ export
 # Projects ependencies sources
 #
 RAPTOR_VERSION = 2.17.0
-RAPTOR_ROOT = /media/sf_OPENGL/Raptor
 REDIST = $(RAPTOR_ROOT)/Redist
 
 LIBGL = -L/usr/lib64 -lGL
@@ -291,7 +290,7 @@ $(REDIST)/Lib/libIlmThread.a $(REDIST)/Bin/libIlmThread.so.$(OPENEXRLIB_VERSION)
 
 $(REDIST)/Lib/libImath.a $(REDIST)/Bin/libImath.so.$(OPENEXRLIB_VERSION):
 	@echo "Building OpenEXR IMath project ..."
-	make -C Build/Linux -f Makefile.IMath all
+	make -C Build/Linux -f Makefile.Imath all
 	@echo "IMath project done."
 
 $(REDIST)/Lib/libIexMath.a $(REDIST)/Bin/libIexMath.so.$(OPENEXRLIB_VERSION):
@@ -339,7 +338,7 @@ clean:
 	make -C Build/Linux -f Makefile.Half clean
 	make -C Build/Linux -f Makefile.Iex clean
 	make -C Build/Linux -f Makefile.IlmThread clean
-	make -C Build/Linux -f Makefile.IMath clean
+	make -C Build/Linux -f Makefile.Imath clean
 	make -C Build/Linux -f Makefile.IexMath clean
 	make -C Build/Linux -f Makefile.b44ExpLogTable clean
 	make -C Build/Linux -f Makefile.dwaLookups clean

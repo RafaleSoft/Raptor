@@ -46,6 +46,7 @@ public:
 		CResourceBinder(void);
 		~CResourceBinder(void);
 
+		//!	Defines array binding data.
 		bool useVertexArrayObjects(void);
 
 		bool setArray(CProgramParameters::GL_VERTEX_ATTRIB attribute, 
@@ -53,8 +54,14 @@ public:
 					  size_t size = 4,
 					  size_t stride = 0);
 
+		//!	Bind arrays to current state for rendering.
 		bool glvkBindArrays(void);
+		//!	Revert to unbound state (default array binding).
 		bool glvkUnbindArrays(void);
+
+		//! Init arrays binding data and state with current state.
+		//!	Current state is also returned into arrays parameter.
+		bool glScanBindings(CRaptorDisplayConfig::GL_ARRAYS_STATE &arrays);
 
 
 	private:
@@ -74,7 +81,7 @@ public:
 							   CRaptorDisplayConfig::GL_ARRAY_STATE &global_state);
 
 		//!	This resource binder arrays bindings.
-		CRaptorDisplayConfig::GL_ARRAYS_STATE			bindings;
+		CRaptorDisplayConfig::GL_ARRAYS_STATE	bindings;
 
 		//!	Vertex Array Object.
 		GLuint	array;

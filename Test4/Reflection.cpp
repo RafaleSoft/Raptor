@@ -57,7 +57,7 @@ CReflection::CReflection(float width,float height,int hcels,int vcels)
     f.glLoadTexture(T,"Datas\\marble5.jpg");
     tus->setDiffuseMap(T);
 
-	addModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
+	setRenderingModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
 	addModel(CGeometry::CRenderingModel::CGL_NORMALS);
 	addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
 }

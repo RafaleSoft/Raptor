@@ -37,7 +37,8 @@ CBasicObjects::CCube::CCube()
 	glSetVertices(24);
 	glSetTexCoords(24);
 	glSetPolygons(12);
-	addModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
+	
+	setRenderingModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
 	addModel(CGeometry::CRenderingModel::CGL_NORMALS);
 	addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
 
@@ -193,7 +194,8 @@ CBasicObjects::CIsocahedron::CIsocahedron()
 {
 	glSetVertices(12);
 	glSetPolygons(20);
-	addModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
+
+	setRenderingModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
 	addModel(CGeometry::CRenderingModel::CGL_NORMALS);
 	addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
 
@@ -369,7 +371,8 @@ void CBasicObjects::CIsocahedron::setDimensions(float radius, unsigned int nbLev
 CBasicObjects::CGeoSphere::CGeoSphere()
 {
 	setDimensions(1.0f,16,16);
-	addModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
+
+	setRenderingModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
 	addModel(CGeometry::CRenderingModel::CGL_NORMALS);
 	addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
 }
@@ -456,21 +459,12 @@ void CBasicObjects::CGeoSphere::setDimensions(float radius,unsigned int nbMeridi
 
     glUnLockData();
 }
-/*
-void CBasicObjects::CGeoSphere::glRender(void)
-{
-	CShadedGeometry::glRender();
-
-	GL_RGBA_COLOR c(1.0f,0.0f,0.0f,1.0f);
-	CRaptorToolBox::RenderNormals(this,c,0.2f);
-}
-*/
 
 CBasicObjects::CRectMesh::CRectMesh()
 {
 	setDimensions(1.0f,1.0f,50,50);
 
-	addModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
+	setRenderingModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
 	addModel(CGeometry::CRenderingModel::CGL_NORMALS);
 	addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
 }
@@ -563,7 +557,7 @@ CBasicObjects::CRectangle::CRectangle()
 		addFace(2,3,0);
 	glUnLockData();
 
-	addModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
+	setRenderingModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
 	addModel(CGeometry::CRenderingModel::CGL_NORMALS);
 	addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
 }

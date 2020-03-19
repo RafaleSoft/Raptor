@@ -39,7 +39,7 @@ public:
 			EXPIMP_TEMPLATE template class CPPUNIT_API std::set<CppUnit::type *>;
 	#else
 		#define DLL_EXPORT_SET(type) \
-			EXPIMP_TEMPLATE template class CPPUNIT_API std::_Tree_val<std::_Tree_simple_types<CppUnit::type *>>;
+			EXPIMP_TEMPLATE template class CPPUNIT_API std::_Tree_val<std::_Tree_simple_types<CppUnit::type *>>; \
 			EXPIMP_TEMPLATE template class CPPUNIT_API std::set<CppUnit::type *>;
 	#endif
 #endif

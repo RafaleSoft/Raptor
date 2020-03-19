@@ -134,7 +134,7 @@ void CTestDoc::GLInitContext(void)
     CMaterial *pMaterial = pShader->getMaterial();
     pMaterial->setAmbient(0.2f,0.2f,0.2f,1.0f);
     pMaterial->setDiffuse(0.9f,0.3f,0.7f,1.0f);
-    pMaterial->setSpecular(6.0f,5.0f,4.0f,1.0f);
+    pMaterial->setSpecular(5.0f,4.0f,3.0f,1.0f);
     pMaterial->setShininess(10.0f);
 	m_pSG->removeModel(CGeometry::CRenderingModel::CGL_TEXTURE);
 
@@ -184,7 +184,7 @@ void CTestDoc::GLInitContext(void)
         g->getShader()->getMaterial()->setDiffuse(0.4f,0.4f,0.9f,1.0f);
         g->getShader()->getMaterial()->setSpecular(1.4f,1.4f,1.6f,1.0f);
         g->getShader()->getMaterial()->setShininess(20.0f);
-		g->addModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
+		g->setRenderingModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
 		g->addModel(CGeometry::CRenderingModel::CGL_NORMALS);
 		g->addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
         g = (CShadedGeometry *)(sponge->getChild(it++));
@@ -199,7 +199,7 @@ void CTestDoc::GLInitContext(void)
 	CBasicObjects::CRectangle *background = new CBasicObjects::CRectangle;
 	background->setDimensions(40.0f,24.0f);
 	background->translate(0.0f,0.0f,-7.0f);
-	background->addModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
+	background->setRenderingModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
 	background->addModel(CGeometry::CRenderingModel::CGL_NORMALS);
 	background->addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
 
@@ -268,7 +268,7 @@ void CTestDoc::GLInitContext(void)
 	CBasicObjects::CRectangle *pForeground = new Foreground(pMag);
 	pForeground->setDimensions(10.0f,10.0f);
 	pForeground->translate(10.0f,-5.0f,-6.0f);
-	pForeground->addModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
+	pForeground->setRenderingModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
 	pForeground->addModel(CGeometry::CRenderingModel::CGL_NORMALS);
 	pForeground->addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
 	pScene->addObject(pForeground);

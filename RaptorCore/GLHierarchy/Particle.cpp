@@ -205,17 +205,20 @@ void CParticle::glInitParticle(void)
 	{
 		binder->setArray(CProgramParameters::POSITION, &m_attributes[0].position, 4, sizeof(PARTICLE_ATTRIBUTE));
 		binder->setArray(CProgramParameters::PRIMARY_COLOR, &m_attributes[0].color, 4, sizeof(PARTICLE_ATTRIBUTE));
+		binder->useVertexArrayObjects();
 	}
 	else
 	{
 		binder->setArray(CProgramParameters::POSITION, &pCache[0].coord, 4, sizeof(CACHEELT));
 		binder->setArray(CProgramParameters::PRIMARY_COLOR, &pCache[0].colors, 4, sizeof(CACHEELT));
+		binder->useVertexArrayObjects();
 	}
 	if ((CGL_PARTICLE_TEXTURE == m_type) ||
 		(CGL_PARTICLE_VOLUMETRIC == m_type))
 	{
 		binder->setArray(CProgramParameters::WEIGHTS, &pCache[0].size, 1, sizeof(CACHEELT));
 		binder->setArray(CProgramParameters::FOG_COORDINATE, &pCache[0].angle, 1, sizeof(CACHEELT));
+		binder->useVertexArrayObjects();
 	}
 
 	m_pBinder = binder;

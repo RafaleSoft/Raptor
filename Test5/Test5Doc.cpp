@@ -23,9 +23,10 @@
 #include "System/RaptorConsole.h"
 #include "System/RaptorErrorManager.h"
 #include "System/RaptorIO.h"
+
 #include "ToolBox/BasicObjects.h"
 #include "ToolBox/Imaging.h"
-
+#include "ToolBox/Imaging/BumpmapLoader.h"
 
 RAPTOR_NAMESPACE
 
@@ -241,7 +242,8 @@ void CTest5Doc::GLInitContext(void)
 	pScene->addObject(obj);
 #else	
 	m_pTexture = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_MULTIPLY,ITextureObject::CGL_BILINEAR);
-    f.glLoadTexture(m_pTexture,"bump3.tga",CVaArray<CImage::IImageOP::OP_KIND>(CImage::IImageOP::BUMPMAP_LOADER));
+	CBumpmapLoader *loader = new CBumpmapLoader(f.getConfig().getBumpAmplitude());
+    f.glLoadTexture(m_pTexture,"bump3.tga", loader);
 	//f.getConfig().setBumpAmplitude(4.0f);
 	//f.glLoadTexture(m_pTexture,"BlurCircle.TGA",CGL_CREATE_NORMAL_MAP);
 	tus->setNormalMap(m_pTexture);

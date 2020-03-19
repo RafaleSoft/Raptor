@@ -390,7 +390,7 @@ void OBJYacc::buildGeometry()
 	//rEditor.genTexCoords(CGeometryEditor::XY_PLANE,0.55f,-0.5f,1.0f,0.0f);
 	rEditor.genTexCoords(CGeometryEditor::XY_PLANE,0.014f,0.4915f,0.016f,0.395f);
 
-	m_pCurrentGeometry->addModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
+	m_pCurrentGeometry->setRenderingModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
 	m_pCurrentGeometry->addModel(CGeometry::CRenderingModel::CGL_NORMALS);
 	m_pCurrentGeometry->addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
 }

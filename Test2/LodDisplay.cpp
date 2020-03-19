@@ -136,9 +136,8 @@ void CLodDisplay::Init()
 	while (g != NULL)
 	{
 		g->setShader(s);
-		g->addModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
+		g->setRenderingModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
 		g->addModel(CGeometry::CRenderingModel::CGL_NORMALS);
-
 		g = (CShadedGeometry*)(set->getChild(it++));
 	}
 	lod->addLevel(0,set);
@@ -152,7 +151,7 @@ void CLodDisplay::Init()
 	while (g != NULL)
 	{
 		g->setShader(s);
-		g->addModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
+		g->setRenderingModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
 		g->addModel(CGeometry::CRenderingModel::CGL_NORMALS);
 		g = (CShadedGeometry*)(set->getChild(it++));
 	}
@@ -167,7 +166,7 @@ void CLodDisplay::Init()
 	while (g != NULL)
 	{
 		g->setShader(s);
-		g->addModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
+		g->setRenderingModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
 		g->addModel(CGeometry::CRenderingModel::CGL_NORMALS);
 		g = (CShadedGeometry*)(set->getChild(it++));
 	}
@@ -182,7 +181,7 @@ void CLodDisplay::Init()
 	while (g != NULL)
 	{
 		g->setShader(s);
-		g->addModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
+		g->setRenderingModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
 		g->addModel(CGeometry::CRenderingModel::CGL_NORMALS);
 		g = (CShadedGeometry*)(set->getChild(it++));
 	}
@@ -197,7 +196,7 @@ void CLodDisplay::Init()
 	while (g != NULL)
 	{
 		g->setShader(s);
-		g->addModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
+		g->setRenderingModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
 		g->addModel(CGeometry::CRenderingModel::CGL_NORMALS);
 		g = (CShadedGeometry*)(set->getChild(it++));
 	}

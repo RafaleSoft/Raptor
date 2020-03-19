@@ -1,11 +1,11 @@
 export
 
 CCCFLAGS =  -DSIMD_NO_ASSEMBLY
-OUTPUT = $(RAPTOR_ROOT)/Build/Linux/Release/Microlex
-SRCDIR = $(RAPTOR_ROOT)/Microlex
+OUTPUT = $(RAPTOR_ROOT)/Build/Linux/Release/MicroLex
+SRCDIR = $(RAPTOR_ROOT)/MicroLex
 INCDIRS = -I$(SRCDIR)
 
-all:	$(OUTPUT)/Microlex
+all:	$(OUTPUT)/MicroLex
 
 clean:
 	rm -rf $(OUTPUT)
@@ -22,9 +22,9 @@ SRC = \
 
 OBJ = $(SRC:$(SRCDIR)/%.cpp=$(OUTPUT)/%.o)
 	
-$(OUTPUT)/Microlex:	$(OBJ) 
-	g++ $(OBJ) -o $(OUTPUT)/Microlex
-	cp $(OUTPUT)/Microlex $(REDIST)/Bin/
+$(OUTPUT)/MicroLex:	$(OBJ) 
+	g++ $(OBJ) -o $(OUTPUT)/MicroLex
+	cp $(OUTPUT)/MicroLex $(REDIST)/Bin/
 
 $(OBJ):	$(SRC)
 	g++ $(CCCFLAGS) $(INCDIRS) -c $(<D)/$(*F).cpp  -o $(OUTPUT)/$(@F)

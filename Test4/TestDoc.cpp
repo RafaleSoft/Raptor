@@ -16,6 +16,7 @@
 #include "ToolBox/Filters/HDRFilter.h"
 #include "ToolBox/Filters/MBFilter.h"
 #include "ToolBox/Filters/ColorControlFilter.h"
+#include "ToolBox/Filters.h"
 
 #include "Reflection.h"
 #include "Slide.h"
@@ -69,6 +70,7 @@ void CTestDoc::GLInitContext(HDC hdc)
 	display.hClass(CLIENT_HANDLE_CLASS);
 
 	m_pDisplay->glvkBindDisplay(display);
+	CFilters::glInstallFilters();
 
     glClearColor(0.0f,0.0f,0.0f,0.0f);
 

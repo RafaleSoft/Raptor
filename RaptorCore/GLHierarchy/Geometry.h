@@ -1,21 +1,6 @@
-/***************************************************************************/
-/*                                                                         */
-/*  Geometry.h                                                             */
-/*                                                                         */
-/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
-/*                                                                         */
-/*  Copyright 1998-2019 by                                                 */
-/*  Fabrice FERRAND.                                                       */
-/*                                                                         */
-/*  This file is part of the Raptor project, and may only be used,         */
-/*  modified, and distributed under the terms of the Raptor project        */
-/*  license, LICENSE.  By continuing to use, modify, or distribute         */
-/*  this file you indicate that you have read the license and              */
-/*  understand and accept it fully.                                        */
-/*                                                                         */
-/***************************************************************************/
-
-
+// Geometry.h: interface for the CGeometry class.
+//
+//////////////////////////////////////////////////////////////////////
 #if !defined(AFX_GEOMETRY_H__B42ABB87_80E8_11D3_97C2_DE5C28000000__INCLUDED_)
 #define AFX_GEOMETRY_H__B42ABB87_80E8_11D3_97C2_DE5C28000000__INCLUDED_
 
@@ -70,20 +55,20 @@ public:
 		CRenderingModel(long);
 
 		//! Returns true if the model feature is set
-		//bool RAPTOR_FASTCALL hasModel(MODEL model) const { return ((m_renderingModel & model) == model); };
+		bool RAPTOR_FASTCALL hasModel(MODEL model) const { return ((m_renderingModel & model) == model); };
 
 		//!	appends a rendering model feature
-		//void addModel(MODEL);
+		void addModel(MODEL);
 
 		//!	removes a rendering model feature
-		//void removeModel(MODEL);
+		void removeModel(MODEL);
 
 		//!	assignment operator
-		//const CRenderingModel& operator=(const CRenderingModel& model);
+		const CRenderingModel& operator=(const CRenderingModel& model);
 
 	private:
-		//CRenderingModel();
-		//long	m_renderingModel;
+		CRenderingModel();
+		long	m_renderingModel;
 	};
 
 
@@ -97,13 +82,11 @@ public:
 	//!
 	//! Manage rendered elements of object
 	//!
-	//virtual void setRenderingModel(CRenderingModel::MODEL model);
-	//CRenderingModel& getRenderingModel(void) { return m_renderingModel; };
-	long getRenderingModel(void) { return m_renderingModel; };
-	void addModel(CRenderingModel::MODEL);
-	virtual void removeModel(CRenderingModel::MODEL);
-	bool RAPTOR_FASTCALL hasModel(CRenderingModel::MODEL model) const { return ((m_renderingModel & model) == model); };
-	long	m_renderingModel;
+public:
+	virtual void setRenderingModel(CRenderingModel::MODEL model);
+	void addModel(CRenderingModel::MODEL model);
+	virtual void removeModel(CRenderingModel::MODEL model);
+	bool RAPTOR_FASTCALL hasModel(CRenderingModel::MODEL model) const { return m_renderingModel.hasModel(model); };
 	
 	//!
 	//!	Geometry creation
@@ -265,7 +248,7 @@ protected:
 	unsigned short	*polys;	
 
 	//!	Vertex Input State Resource binder
-	void			*m_pBinder;
+	void				*m_pBinder;
 
 
 
@@ -283,7 +266,7 @@ private:
     CGeometryEditor*    m_pEditor;
 
     //! The rendering model of the geometry
-    //CRenderingModel		m_renderingModel;
+    CRenderingModel		m_renderingModel;
 
     //! The list of base primitives
 	vector<CGeometryPrimitive*>	m_pPrimitives;

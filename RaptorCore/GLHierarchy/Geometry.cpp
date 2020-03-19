@@ -117,6 +117,22 @@ const CGeometryEditor& CGeometry::getEditor(void)
 }
 
 
+void CGeometry::setRenderingModel(CRenderingModel::MODEL model)
+{
+	m_renderingModel = model;	//	Preserve all bits for derived classes
+}
+
+void CGeometry::addModel(CRenderingModel::MODEL model)
+{
+	m_renderingModel.addModel(model);
+}
+
+void CGeometry::removeModel(CRenderingModel::MODEL model)
+{
+	m_renderingModel.removeModel(model);
+}
+
+
 //////////////////////////////////////////////////////////////////////
 // CGeometry implementation
 //////////////////////////////////////////////////////////////////////
@@ -212,20 +228,6 @@ CGeometry::~CGeometry()
 		CResourceAllocator::CResourceBinder *binder = (CResourceAllocator::CResourceBinder *)m_pBinder;
 		delete binder;
 	}
-}
-
-void CGeometry::setRenderingModel(const CRenderingModel& model) 
-{
-	m_renderingModel = model;	//	Preserve all bits for derived classes
-
-	//	But remove unsupported extensions
-#ifdef GL_EXT_vertex_weighting
-	if (!Raptor::glIsExtensionSupported(GL_EXT_VERTEX_WEIGHTING_EXTENSION_NAME))
-		m_renderingModel.removeModel(CRenderingModel::CGL_WEIGHT);
-#endif
-
-	if (!Raptor::glIsExtensionSupported(GL_EXT_FOG_COORD_EXTENSION_NAME))
-		m_renderingModel.removeModel(CRenderingModel::CGL_FOG);
 }
 
 vector<CObject3DContour*> CGeometry::createContours(void)
@@ -969,7 +971,7 @@ void CGeometry::vkRender(CVulkanCommandBuffer& commandBuffer,
 {
 	VkBuffer bindings[3] = { vertexBinding, 0, 0 };
 	VkDeviceSize offsets[3] = { (VkDeviceSize)&vertex[0], 0, 0 };
-	size_t nb_bindings = 1;	// always extract geometry
+	uint32_t nb_bindings = 1;	// always extract geometry
 
 	if (m_renderingModel.hasModel(CRenderingModel::CGL_TEXTURE))
 	{
@@ -1001,7 +1003,7 @@ bool CGeometry::getVertexInputState( std::vector<VkVertexInputBindingDescription
 {
 	bindings.clear();
 	vertexInput.clear();
-	size_t nb_bindings = 0;
+	uint32_t nb_bindings = 0;
 
 	//!	Vertex
 	bindings.push_back({ nb_bindings, 4 * sizeof(float), VK_VERTEX_INPUT_RATE_VERTEX });
@@ -1126,14 +1128,6 @@ void CGeometry::glRenderGeometry()
 			glEnableClientState(GL_VERTEX_WEIGHT_ARRAY_EXT);
 			popWeightArray = true;
 			pExtensions->glVertexWeightPointerEXT(1, GL_FLOAT, 0, weightcoords);
-			CGenericMatrix<float> gm, gm2;
-			glGetFloatv(GL_MODELVIEW_MATRIX, gm.matrix());
-			CGenericMatrix<float> gm2;
-			gm2 = weightMatrix;
-			gm2 *= gm;
-			glMatrixMode(GL_MODELVIEW1_EXT);
-			glLoadMatrixf(gm2.matrix());
-			glMatrixMode(GL_MODELVIEW0_EXT);
 		}
 		else
 #else
@@ -1233,8 +1227,8 @@ bool CGeometry::removePrimitive(CGeometryPrimitive *primitive)
 {
 	if (primitive == NULL)
 	{
-		for (unsigned int i=m_pPrimitives.size();i>0;i--)
-			m_pPrimitives[i-1]->releaseReference();
+		for (size_t i = 0; i< m_pPrimitives.size(); i++)
+			m_pPrimitives[i]->releaseReference();
 		m_pPrimitives.clear();
 		return true;
 	}
@@ -1255,7 +1249,7 @@ bool CGeometry::removePrimitive(CGeometryPrimitive *primitive)
 	}
 }
 
-void CGeometry::glSetPolygons(unsigned int nbP, unsigned short* polygons)
+void CGeometry::glSetPolygons(size_t nbP, unsigned short* polygons)
 {
 	if (polygons == NULL)
 	{
@@ -1284,7 +1278,7 @@ void CGeometry::glSetPolygons(unsigned int nbP, unsigned short* polygons)
 	}
 }
 
-void CGeometry::glSetVertices(unsigned int nbV, GL_COORD_VERTEX* vertices)
+void CGeometry::glSetVertices(size_t nbV, GL_COORD_VERTEX* vertices)
 {
 	if (vertices == NULL)
 	{
@@ -1321,7 +1315,7 @@ void CGeometry::glSetVertices(unsigned int nbV, GL_COORD_VERTEX* vertices)
 #endif
 }
 
-void CGeometry::glSetNormals(unsigned int nbN, GL_COORD_VERTEX* norms)
+void CGeometry::glSetNormals(size_t nbN, GL_COORD_VERTEX* norms)
 {
 #if defined (DATA_PACKED)
 	if ((norms != NULL) && (nbN > 0) && (normals != NULL))
@@ -1335,7 +1329,7 @@ void CGeometry::glSetNormals(unsigned int nbN, GL_COORD_VERTEX* norms)
 #endif
 }
 
-void CGeometry::glSetTexCoords(unsigned int nbT, GL_TEX_VERTEX* texCoords)
+void CGeometry::glSetTexCoords(size_t nbT, GL_TEX_VERTEX* texCoords)
 {
 #if defined (DATA_PACKED)
 	if (texCoords == NULL)
@@ -1359,7 +1353,7 @@ void CGeometry::glSetTexCoords(unsigned int nbT, GL_TEX_VERTEX* texCoords)
 #endif
 }
 
-void CGeometry::glSetTexCoords2(unsigned int nbT, GL_TEX_VERTEX* texCoords)
+void CGeometry::glSetTexCoords2(size_t nbT, GL_TEX_VERTEX* texCoords)
 {
 #if defined (DATA_PACKED)
 	if (texCoords == NULL)
@@ -1383,7 +1377,7 @@ void CGeometry::glSetTexCoords2(unsigned int nbT, GL_TEX_VERTEX* texCoords)
 #endif
 }
 
-void CGeometry::glSetWeights(unsigned int nbW, float* weights)
+void CGeometry::glSetWeights(size_t nbW, float* weights)
 {
 #if defined (DATA_PACKED)
 	if (weights == NULL)
@@ -1407,7 +1401,7 @@ void CGeometry::glSetWeights(unsigned int nbW, float* weights)
 #endif
 }
 
-void CGeometry::glSetColors(unsigned int nbC, CColor::RGBA* rgbaColors)
+void CGeometry::glSetColors(size_t nbC, CColor::RGBA* rgbaColors)
 {
 #if defined (DATA_PACKED)
 	if (rgbaColors == NULL)
@@ -1431,7 +1425,7 @@ void CGeometry::glSetColors(unsigned int nbC, CColor::RGBA* rgbaColors)
 #endif
 }
 
-void CGeometry::glSetFogs(unsigned int nbF, float* fogs)
+void CGeometry::glSetFogs(size_t nbF, float* fogs)
 {
 #if defined (DATA_PACKED)
 	if (fogs == NULL)
@@ -1584,7 +1578,7 @@ void CGeometry::addVertex(float x, float y, float z,float h)
 	}
 }
 
-void CGeometry::setCoord(unsigned int numvtx,GLfloat x,GLfloat y,GLfloat z,GLfloat h)
+void CGeometry::setCoord(size_t numvtx, GLfloat x, GLfloat y, GLfloat z, GLfloat h)
 {
 #if defined (DATA_EXTENDED)
     if ((numvtx<m_nbVertex) && (geometry != NULL))
@@ -1601,7 +1595,7 @@ void CGeometry::setCoord(unsigned int numvtx,GLfloat x,GLfloat y,GLfloat z,GLflo
 	}
 }
 
-void CGeometry::setTexCoord(unsigned int numvtx,float u,float v)
+void CGeometry::setTexCoord(size_t numvtx, float u, float v)
 {
 #if defined (DATA_EXTENDED)
     if ((numvtx<m_nbVertex) && (geometry != NULL))
@@ -1646,7 +1640,7 @@ void CGeometry::addFace(int p1,int p2,int p3)
 	}
 }
 
-void CGeometry::getFace(unsigned int numface,unsigned int &p1,unsigned int &p2,unsigned int &p3) const
+void CGeometry::getFace(size_t numface, unsigned int &p1, unsigned int &p2, unsigned int &p3) const
 {
 	if ((numface<m_nbPolys) && (polys != NULL))
 	{
@@ -1660,7 +1654,7 @@ void CGeometry::getFace(unsigned int numface,unsigned int &p1,unsigned int &p2,u
 	}
 }
 
-void CGeometry::setWeight(unsigned int numvtx,float w)
+void CGeometry::setWeight(size_t numvtx, float w)
 {
 #if defined (DATA_EXTENDED)
     if ((numvtx<m_nbVertex) && (geometry != NULL))
@@ -1670,7 +1664,7 @@ void CGeometry::setWeight(unsigned int numvtx,float w)
 		WEIGHT(numvtx) = w;
 }
 
-float CGeometry::getWeight(unsigned int numvtx) const
+float CGeometry::getWeight(size_t numvtx) const
 {
 #if defined (DATA_EXTENDED)
     if ((numvtx<m_nbVertex) && (geometry != NULL))
@@ -1683,7 +1677,7 @@ float CGeometry::getWeight(unsigned int numvtx) const
 }
 
 
-void CGeometry::setFogCoord(unsigned int numvtx,GLfloat f)
+void CGeometry::setFogCoord(size_t numvtx, GLfloat f)
 {
 #if defined (DATA_EXTENDED)
     if ((numvtx<m_nbVertex) && (geometry != NULL))
@@ -1693,7 +1687,7 @@ void CGeometry::setFogCoord(unsigned int numvtx,GLfloat f)
 		FOGCOORD(numvtx) = f;
 }
 
-float CGeometry::getFogCoord(unsigned int numvtx) const
+float CGeometry::getFogCoord(size_t numvtx) const
 {
 #if defined (DATA_EXTENDED)
     if ((numvtx<m_nbVertex) && (geometry != NULL))
@@ -1705,7 +1699,7 @@ float CGeometry::getFogCoord(unsigned int numvtx) const
 		return 0.0f;
 }
 
-void CGeometry::getCoord(unsigned int numvtx,GL_COORD_VERTEX &v) const
+void CGeometry::getCoord(size_t numvtx, GL_COORD_VERTEX &v) const
 {
 #if defined (DATA_EXTENDED)
     if ((numvtx<m_nbVertex) && (geometry != NULL))
@@ -1715,7 +1709,7 @@ void CGeometry::getCoord(unsigned int numvtx,GL_COORD_VERTEX &v) const
 		v = VERTEX(numvtx);
 }
 
-void CGeometry::getVertex(unsigned int numvtx,GL_VERTEX_DATA &v) const
+void CGeometry::getVertex(size_t numvtx, GL_VERTEX_DATA &v) const
 {
 #if defined (DATA_EXTENDED)
     if ((numvtx<m_nbVertex) && (geometry != NULL))
@@ -1746,7 +1740,7 @@ void CGeometry::getVertex(unsigned int numvtx,GL_VERTEX_DATA &v) const
 #endif
 }
 
-void CGeometry::setNormal(unsigned int numvtx,GLfloat x,GLfloat y,GLfloat z,GLfloat h)
+void CGeometry::setNormal(size_t numvtx, GLfloat x, GLfloat y, GLfloat z, GLfloat h)
 {
 #if defined (DATA_EXTENDED)
     if ((numvtx<m_nbVertex) && (geometry != NULL))
@@ -1761,7 +1755,7 @@ void CGeometry::setNormal(unsigned int numvtx,GLfloat x,GLfloat y,GLfloat z,GLfl
 	}
 }
 
-void CGeometry::getNormal(unsigned int numvtx,GL_COORD_VERTEX &v) const
+void CGeometry::getNormal(size_t numvtx, GL_COORD_VERTEX &v) const
 {
 #if defined (DATA_EXTENDED)
     if ((numvtx<m_nbVertex) && (geometry != NULL))
@@ -1771,7 +1765,7 @@ void CGeometry::getNormal(unsigned int numvtx,GL_COORD_VERTEX &v) const
 		v = NORMAL(numvtx);
 }
 
-void CGeometry::getTangent(unsigned int numvtx,GL_COORD_VERTEX &v) const
+void CGeometry::getTangent(size_t numvtx, GL_COORD_VERTEX &v) const
 {
 #if defined (DATA_EXTENDED)
     if ((numvtx<m_nbVertex) && (geometry != NULL))
@@ -1781,7 +1775,7 @@ void CGeometry::getTangent(unsigned int numvtx,GL_COORD_VERTEX &v) const
 		v = TANGENT(numvtx);
 }
 
-void CGeometry::getBiNormal(unsigned int numvtx,GL_COORD_VERTEX &v) const
+void CGeometry::getBiNormal(size_t numvtx, GL_COORD_VERTEX &v) const
 {
 #if defined (DATA_EXTENDED)
     if ((numvtx<m_nbVertex) && (geometry != NULL))
@@ -1791,7 +1785,7 @@ void CGeometry::getBiNormal(unsigned int numvtx,GL_COORD_VERTEX &v) const
 		v = BINORMAL(numvtx);
 }
 
-void CGeometry::setColor(unsigned int numvtx,float r,float g,float b,float a)
+void CGeometry::setColor(size_t numvtx, float r, float g, float b, float a)
 {
 #if defined (DATA_EXTENDED)
     if ((numvtx<m_nbVertex) && (geometry != NULL))
@@ -1806,7 +1800,7 @@ void CGeometry::setColor(unsigned int numvtx,float r,float g,float b,float a)
 	}
 }
 
-void CGeometry::getColor(unsigned int numvtx,CColor::RGBA &v) const
+void CGeometry::getColor(size_t numvtx, CColor::RGBA &v) const
 {
 #if defined (DATA_EXTENDED)
     if ((numvtx<m_nbVertex) && (geometry != NULL))
@@ -1998,7 +1992,6 @@ bool CGeometry::importObject(CRaptorIO& io)
 	vector<GL_TEX_VERTEX> tcoords;
 	vector<CColor::RGBA> rgbacolors;
 	vector<unsigned int> faces;
-	CRenderingModel l_model(getRenderingModel());
 	bool modelImported = false;
 
     string data = io.getValueName();
@@ -2072,14 +2065,14 @@ bool CGeometry::importObject(CRaptorIO& io)
 	if (!coords.empty())
 	{
 		if (!modelImported)
-			l_model.addModel(CRenderingModel::CGL_FRONT_GEOMETRY);
+			addModel(CRenderingModel::CGL_FRONT_GEOMETRY);
 		glSetVertices(coords.size());
 	}
 	
 	if (!tcoords.empty())
 	{
 		if (!modelImported)
-			l_model.addModel(CRenderingModel::CGL_TEXTURE);
+			addModel(CRenderingModel::CGL_TEXTURE);
 		glSetTexCoords(tcoords.size());
 	}
 
@@ -2089,12 +2082,9 @@ bool CGeometry::importObject(CRaptorIO& io)
 	if (!rgbacolors.empty())
 	{
 		if (!modelImported)
-			l_model.addModel(CRenderingModel::CGL_COLORS);
+			addModel(CRenderingModel::CGL_COLORS);
 		glSetColors(rgbacolors.size());
 	}
-
-	if (!modelImported)
-		setRenderingModel(l_model);
 
     glLockData();
 

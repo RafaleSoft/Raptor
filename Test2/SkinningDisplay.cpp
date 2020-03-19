@@ -142,7 +142,7 @@ void CSkinningDisplay::Init()
 	tube->rotationX(-90.0f);
 	tube->getCenter(c);
 	tube->translate(-c.x,-c.y,-c.z);
-	tube->addModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
+	tube->setRenderingModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
 	tube->addModel(CGeometry::CRenderingModel::CGL_NORMALS);
 	tube->addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
 
@@ -152,8 +152,7 @@ void CSkinningDisplay::Init()
 	GL_COORD_VERTEX m,M;
 	GL_VERTEX_DATA v;
 	tube2->getBoundingBox(m,M);
-
-	tube2->addModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
+	tube2->setRenderingModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
 	tube2->addModel(CGeometry::CRenderingModel::CGL_NORMALS);
 	tube2->addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
 	tube2->addModel(CGeometry::CRenderingModel::CGL_WEIGHT);

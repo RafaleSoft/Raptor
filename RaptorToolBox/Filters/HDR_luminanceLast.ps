@@ -28,17 +28,17 @@ const vec4 luminance = vec4(0.299, 0.587, 0.114, 0.0);
 
 void main(void)
 {
-	vec4 c = texture(color,g_TexCoord.xy - offset.xy);
-	float LMax = dot(c,luminance);
+	vec4 c = texture(color, g_TexCoord.xy - offset.xy);
+	float LMax = dot(c, luminance);
 
-	c = texture(color,g_TexCoord.xy + offset.zy);
-	LMax = max(LMax,dot(c,luminance));
+	c = texture(color, g_TexCoord.xy + offset.zy);
+	LMax = max(LMax, dot(c, luminance));
 
-	c = texture(color,g_TexCoord.xy - offset.zy);
-	LMax = max(LMax,dot(c,luminance));
+	c = texture(color, g_TexCoord.xy - offset.zy);
+	LMax = max(LMax, dot(c, luminance));
 
 	c = texture(color,g_TexCoord.xy + offset.xy);
-	LMax = max(LMax,dot(c,luminance));
+	LMax = max(LMax, dot(c, luminance));
 
 	LMax = 1.0 / max(1.0, LMax);
 
@@ -48,5 +48,5 @@ void main(void)
 	//	for the tone mapping in order to have the brightest parts
 	//	at 1.0. (L>1 => x 1/L is in range [0..1])
 
-	o_Color = vec4(LMax,LMax,LMax,1.0);
+	o_Color = vec4(LMax, LMax, LMax, 1.0);
 }

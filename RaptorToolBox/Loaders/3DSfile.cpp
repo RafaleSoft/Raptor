@@ -468,7 +468,7 @@ bool RAPTOR_FASTCALL ProcessChunk4xxxH(long length)
 			if (geo != NULL)
 				FlushGeometry(geo);
             geo = new CShadedGeometry(CurrentState.name);
-			geo->addModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
+			geo->setRenderingModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
            
 			// read object datas:
 			int l=pos;

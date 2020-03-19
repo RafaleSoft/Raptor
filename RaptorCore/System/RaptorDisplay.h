@@ -121,7 +121,7 @@ public:
 
 	//! Applies a status like one returned here above,
 	//! except the basic config which can only be set at creation.
-	bool glApplyStatus(const CRaptorDisplayConfig &state,unsigned long query);
+	bool glApplyStatus(CRaptorDisplayConfig &state,unsigned long query);
 
 	//!	Return the number of frames rendered during the last second.
 	virtual float getFPS(void) const { return 0.0f; };

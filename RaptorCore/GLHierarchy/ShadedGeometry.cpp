@@ -161,25 +161,24 @@ void CShadedGeometry::setShader(CShader *shader)
     }
 }
 
-
 void CShadedGeometry::removeModel(CRenderingModel::MODEL model)
 {
 	CGeometry::removeModel(model);
 
 	COpenGLRenderingProperties props;
-	
+
 	switch (model)
 	{
-	case CRenderingModel::CGL_NORMALS:
-		props.disableLighting;
-		break;
-	case CRenderingModel::CGL_TANGENTS:
-		break;
-	case CRenderingModel::CGL_TEXTURE:
-		props.disableTexturing;
-		break;
-	default:
-		break;
+		case CRenderingModel::CGL_NORMALS:
+			props.disableLighting;
+			break;
+		case CRenderingModel::CGL_TANGENTS:
+			break;
+		case CRenderingModel::CGL_TEXTURE:
+			props.disableTexturing;
+			break;
+		default:
+			break;
 	}
 
 	overrideShading(props);

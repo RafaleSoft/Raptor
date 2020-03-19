@@ -620,6 +620,9 @@
     <ClCompile Include="..\..\RaptorCore\Subsys\TextureAlpha.cpp">
       <Filter>Source Files\Subsys src</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\OpenGL\OpenGLPipeline.cpp">
+      <Filter>Source Files\Subsys src\OpenGL</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Xsd Include="Subsys\ObjectModels\Raptor.xsd">
@@ -1190,6 +1193,9 @@
     </ClInclude>
     <ClInclude Include="..\..\RaptorCore\Subsys\TextureAlpha.h">
       <Filter>Header Files\Subsys include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\OpenGL\OpenGLPipeline.h">
+      <Filter>Header Files\Subsys include\OpenGL</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
