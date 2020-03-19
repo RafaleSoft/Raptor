@@ -120,7 +120,6 @@ const CGeometryEditor& CGeometry::getEditor(void)
 void CGeometry::setRenderingModel(CRenderingModel::MODEL model)
 {
 	m_renderingModel = model;	//	Preserve all bits for derived classes
-	//setRenderingModel(CRenderingModel(model));
 }
 
 void CGeometry::addModel(CRenderingModel::MODEL model)
@@ -230,21 +229,7 @@ CGeometry::~CGeometry()
 		delete binder;
 	}
 }
-/*
-void CGeometry::setRenderingModel(const CRenderingModel& model) 
-{
-	m_renderingModel = model;	//	Preserve all bits for derived classes
 
-	//	But remove unsupported extensions
-#ifdef GL_EXT_vertex_weighting
-	if (!Raptor::glIsExtensionSupported(GL_EXT_VERTEX_WEIGHTING_EXTENSION_NAME))
-		m_renderingModel.removeModel(CRenderingModel::CGL_WEIGHT);
-#endif
-
-	if (!Raptor::glIsExtensionSupported(GL_EXT_FOG_COORD_EXTENSION_NAME))
-		m_renderingModel.removeModel(CRenderingModel::CGL_FOG);
-}
-*/
 vector<CObject3DContour*> CGeometry::createContours(void)
 {
     vector<CObject3DContour*>  res;
@@ -2007,7 +1992,6 @@ bool CGeometry::importObject(CRaptorIO& io)
 	vector<GL_TEX_VERTEX> tcoords;
 	vector<CColor::RGBA> rgbacolors;
 	vector<unsigned int> faces;
-	//CRenderingModel l_model(m_renderingModel);
 	bool modelImported = false;
 
     string data = io.getValueName();
@@ -2101,9 +2085,6 @@ bool CGeometry::importObject(CRaptorIO& io)
 			addModel(CRenderingModel::CGL_COLORS);
 		glSetColors(rgbacolors.size());
 	}
-
-	//if (!modelImported)
-	//	setRenderingModel(l_model);
 
     glLockData();
 

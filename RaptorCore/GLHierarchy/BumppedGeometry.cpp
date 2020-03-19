@@ -150,7 +150,6 @@ void CBumppedGeometry::setEnvironmentMap(CTextureObject* environment)
 	m_pBumpShader->enableEmbm(envMap != NULL);
 }
 
-//void CBumppedGeometry::setRenderingModel(const CRenderingModel& model)
 void CBumppedGeometry::setRenderingModel(CRenderingModel::MODEL model)
 {
 	const CGeometryEditor &pEditor = getEditor();

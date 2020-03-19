@@ -342,6 +342,7 @@ bool CResourceAllocator::CResourceBinder::bindAttribArray(CRaptorDisplayConfig::
 			global_state.enable = true;
 			pExtensions->glEnableVertexAttribArrayARB(state.arrayIndex);
 		}
+
 		pExtensions->glVertexAttribPointerARB(state.arrayIndex,
 											  state.arraySize,
 											  state.arrayType,
