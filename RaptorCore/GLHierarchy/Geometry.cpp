@@ -119,7 +119,8 @@ const CGeometryEditor& CGeometry::getEditor(void)
 
 void CGeometry::setRenderingModel(CRenderingModel::MODEL model)
 {
-	setRenderingModel(CRenderingModel(model));
+	m_renderingModel = model;	//	Preserve all bits for derived classes
+	//setRenderingModel(CRenderingModel(model));
 }
 
 void CGeometry::addModel(CRenderingModel::MODEL model)
@@ -229,7 +230,7 @@ CGeometry::~CGeometry()
 		delete binder;
 	}
 }
-
+/*
 void CGeometry::setRenderingModel(const CRenderingModel& model) 
 {
 	m_renderingModel = model;	//	Preserve all bits for derived classes
@@ -243,7 +244,7 @@ void CGeometry::setRenderingModel(const CRenderingModel& model)
 	if (!Raptor::glIsExtensionSupported(GL_EXT_FOG_COORD_EXTENSION_NAME))
 		m_renderingModel.removeModel(CRenderingModel::CGL_FOG);
 }
-
+*/
 vector<CObject3DContour*> CGeometry::createContours(void)
 {
     vector<CObject3DContour*>  res;
@@ -2006,7 +2007,7 @@ bool CGeometry::importObject(CRaptorIO& io)
 	vector<GL_TEX_VERTEX> tcoords;
 	vector<CColor::RGBA> rgbacolors;
 	vector<unsigned int> faces;
-	CRenderingModel l_model(m_renderingModel);
+	//CRenderingModel l_model(m_renderingModel);
 	bool modelImported = false;
 
     string data = io.getValueName();
@@ -2080,14 +2081,14 @@ bool CGeometry::importObject(CRaptorIO& io)
 	if (!coords.empty())
 	{
 		if (!modelImported)
-			l_model.addModel(CRenderingModel::CGL_FRONT_GEOMETRY);
+			addModel(CRenderingModel::CGL_FRONT_GEOMETRY);
 		glSetVertices(coords.size());
 	}
 	
 	if (!tcoords.empty())
 	{
 		if (!modelImported)
-			l_model.addModel(CRenderingModel::CGL_TEXTURE);
+			addModel(CRenderingModel::CGL_TEXTURE);
 		glSetTexCoords(tcoords.size());
 	}
 
@@ -2097,12 +2098,12 @@ bool CGeometry::importObject(CRaptorIO& io)
 	if (!rgbacolors.empty())
 	{
 		if (!modelImported)
-			l_model.addModel(CRenderingModel::CGL_COLORS);
+			addModel(CRenderingModel::CGL_COLORS);
 		glSetColors(rgbacolors.size());
 	}
 
-	if (!modelImported)
-		setRenderingModel(l_model);
+	//if (!modelImported)
+	//	setRenderingModel(l_model);
 
     glLockData();
 

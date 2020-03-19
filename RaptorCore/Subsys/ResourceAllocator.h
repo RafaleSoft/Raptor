@@ -71,12 +71,14 @@ public:
 		//! Bind a single array.
 		bool bindArray(CRaptorDisplayConfig::GL_ARRAY_STATE &state,
 					   CRaptorDisplayConfig::GL_ARRAY_STATE &global_state);
-		bool bindAttribArray(CRaptorDisplayConfig::GL_ARRAY_STATE &state);
+		bool bindAttribArray(CRaptorDisplayConfig::GL_ARRAY_STATE &state,
+							 CRaptorDisplayConfig::GL_ARRAY_STATE &global_state);
 
 		//! Unbind a single array.
 		bool unbindArray(CRaptorDisplayConfig::GL_ARRAY_STATE &state,
 						 CRaptorDisplayConfig::GL_ARRAY_STATE &global_state);
-		bool unbindAttribArray(CRaptorDisplayConfig::GL_ARRAY_STATE &state);
+		bool unbindAttribArray(CRaptorDisplayConfig::GL_ARRAY_STATE &state,
+							   CRaptorDisplayConfig::GL_ARRAY_STATE &global_state);
 
 		//!	This resource binder arrays bindings.
 		CRaptorDisplayConfig::GL_ARRAYS_STATE	bindings;

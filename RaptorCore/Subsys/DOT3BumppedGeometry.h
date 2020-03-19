@@ -54,7 +54,8 @@ private:
 	void setLightPositionDOT3(void);
 
 	//!	Configure internal shader texture unit setup
-	virtual void setRenderingModel(const CRenderingModel& model);
+	//virtual void setRenderingModel(const CRenderingModel& model);
+	virtual void setRenderingModel(CRenderingModel::MODEL model);
 	
 	//!	A light observer to be notified from lightupdates.
 	static CSimpleLightObserver	*m_pObserver;

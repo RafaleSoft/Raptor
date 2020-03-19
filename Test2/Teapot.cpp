@@ -188,12 +188,9 @@ void CTeapot::GLInitContext()
 
 	teapot = new CBumppedGeometry("Bump teapot");
     CRaptorToolBox::load3DStudioScene("Datas\\Teapot.3DS",set,&options);
-
 	set->scale(0.5f,0.5f,0.5f);
-
     C3DSet::C3DSetIterator it = set->getIterator();
 	object = (CGeometry*)(set->getChild(it++));
-
 	GL_COORD_VERTEX c;
 	object->getCenter(c);
 	object->translate(-c.x,-c.y,-c.z);

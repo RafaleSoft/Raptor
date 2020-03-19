@@ -82,10 +82,9 @@ public:
 	//!
 	//! Manage rendered elements of object
 	//!
-protected: virtual void setRenderingModel(const CRenderingModel& model);
+//protected: virtual void setRenderingModel(const CRenderingModel& model);
 public:
-	void setRenderingModel(CRenderingModel::MODEL model);
-	//CRenderingModel& getRenderingModel(void) { return m_renderingModel; };
+	virtual void setRenderingModel(CRenderingModel::MODEL model);
 
 	void addModel(CRenderingModel::MODEL model);
 	virtual void removeModel(CRenderingModel::MODEL model);
