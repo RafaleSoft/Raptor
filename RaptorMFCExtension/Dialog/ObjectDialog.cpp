@@ -215,9 +215,9 @@ RAPTOR_NAMESPACE
 			tree->InsertItem(str,item);
 		}
 
-		bool n = obj->hasModel(CGeometry::CRenderingModel::CGL_NORMALS);
-		bool t = obj->hasModel(CGeometry::CRenderingModel::CGL_TEXTURE);
-		bool c = obj->hasModel(CGeometry::CRenderingModel::CGL_COLORS);
+		bool n = obj->hasModel(CGeometry::CGL_NORMALS);
+		bool t = obj->hasModel(CGeometry::CGL_TEXTURE);
+		bool c = obj->hasModel(CGeometry::CGL_COLORS);
 		str.Format(TEXT("Rendering model: colors: %s, normals: %s, texture: %s"), 
 				   (c ? "yes" : "no"), (n ? "yes" : "no"), (t ? "yes" : "no"));
 		tree->InsertItem(str,item);

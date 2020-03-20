@@ -76,7 +76,7 @@ CBumppedGeometry& CDOT3BumppedGeometry::operator=(const CDOT3BumppedGeometry &ge
 
 
 //void CDOT3BumppedGeometry::setRenderingModel(const CRenderingModel& model)
-void CDOT3BumppedGeometry::setRenderingModel(CRenderingModel::MODEL model)
+void CDOT3BumppedGeometry::setRenderingModel(CGeometry::RENDERING_MODEL model)
 {
 	CBumppedGeometry::setRenderingModel(model);
 

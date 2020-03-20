@@ -33,46 +33,6 @@ class CGeometryEditor;
 class RAPTOR_API CGeometry : public CObject3D
 {
 public:
-    //////////////////////////////////////////////////////////////////////
-	//	Geometry rendering management
-	class RAPTOR_API CRenderingModel
-	{
-	public:
-		typedef enum
-		{
-			CGL_FRONT_GEOMETRY	=0x1,
-			CGL_BACK_GEOMETRY	=0x2,
-			CGL_NORMALS			=0x4,
-            CGL_TANGENTS		=0x8,
-			CGL_TEXTURE			=0x10,
-			CGL_WEIGHT			=0x20,
-			CGL_COLORS			=0x40,
-			CGL_FOG				=0x80,
-			CGL_FULLRENDER		=0xFF,	// CGL_FRONT_GEOMETRY|CGL_BACK_GEOMETRY|CGL_MATERIAL|
-										// CGL_TEXTURE|CGL_WIREFRAME|CGL_COLORS|CGL_FOG
-		} MODEL;
-
-		CRenderingModel(long);
-
-		//! Returns true if the model feature is set
-		bool RAPTOR_FASTCALL hasModel(MODEL model) const { return ((m_renderingModel & model) == model); };
-
-		//!	appends a rendering model feature
-		void addModel(MODEL);
-
-		//!	removes a rendering model feature
-		void removeModel(MODEL);
-
-		//!	assignment operator
-		const CRenderingModel& operator=(const CRenderingModel& model);
-
-	private:
-		CRenderingModel();
-		long	m_renderingModel;
-	};
-
-
-public:
 	//!
 	//! Construction/Destruction
 	//!
@@ -83,10 +43,24 @@ public:
 	//! Manage rendered elements of object
 	//!
 public:
-	virtual void setRenderingModel(CRenderingModel::MODEL model);
-	void addModel(CRenderingModel::MODEL model);
-	virtual void removeModel(CRenderingModel::MODEL model);
-	bool RAPTOR_FASTCALL hasModel(CRenderingModel::MODEL model) const { return m_renderingModel.hasModel(model); };
+	typedef enum
+	{
+		CGL_FRONT_GEOMETRY = 0x1,
+		CGL_BACK_GEOMETRY = 0x2,
+		CGL_NORMALS = 0x4,
+		CGL_TANGENTS = 0x8,
+		CGL_TEXTURE = 0x10,
+		CGL_WEIGHT = 0x20,
+		CGL_COLORS = 0x40,
+		CGL_FOG = 0x80,
+		CGL_FULLRENDER = 0xFF,	// CGL_FRONT_GEOMETRY|CGL_BACK_GEOMETRY|CGL_MATERIAL|
+								// CGL_TEXTURE|CGL_WIREFRAME|CGL_COLORS|CGL_FOG
+	} RENDERING_MODEL;
+
+	virtual void setRenderingModel(RENDERING_MODEL model);
+	void addModel(RENDERING_MODEL model);
+	virtual void removeModel(RENDERING_MODEL model);
+	bool RAPTOR_FASTCALL hasModel(RENDERING_MODEL model) const { return ((m_renderingModel & model) == model); };
 	
 	//!
 	//!	Geometry creation
@@ -266,7 +240,7 @@ private:
     CGeometryEditor*    m_pEditor;
 
     //! The rendering model of the geometry
-    CRenderingModel		m_renderingModel;
+	long	m_renderingModel;
 
     //! The list of base primitives
 	vector<CGeometryPrimitive*>	m_pPrimitives;

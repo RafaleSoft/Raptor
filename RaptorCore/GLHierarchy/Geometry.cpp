@@ -79,35 +79,6 @@ const CPersistence::CPersistenceClassID& CGeometry::CGeometryClassID::GetClassId
 }
 
 
-//////////////////////////////////////////////////////////////////////
-// Rendering Model Implementation
-//////////////////////////////////////////////////////////////////////
-void CGeometry::CRenderingModel::addModel(MODEL model)
-{
-	unsigned int m = ((m_renderingModel | model) & CGL_FULLRENDER);
-	m_renderingModel = m;
-}
-
-void CGeometry::CRenderingModel::removeModel(MODEL model)
-{
-	m_renderingModel &= ~model;
-}
-
-CGeometry::CRenderingModel::CRenderingModel(long model)
-{
-	m_renderingModel = (model & CGL_FULLRENDER);
-	if ((m_renderingModel == 0) || (m_renderingModel > CGL_FULLRENDER))
-		m_renderingModel = CGL_FRONT_GEOMETRY;
-}
-
-const CGeometry::CRenderingModel& CGeometry::CRenderingModel::operator=(const CGeometry::CRenderingModel& model)
-{
-	m_renderingModel = (model.m_renderingModel & CGL_FULLRENDER);
-	if ((m_renderingModel == 0) || (m_renderingModel > CGL_FULLRENDER))
-		m_renderingModel = CGL_FRONT_GEOMETRY;
-	return *this;
-}
-
 const CGeometryEditor& CGeometry::getEditor(void)
 {
     if (m_pEditor == NULL)
@@ -116,20 +87,22 @@ const CGeometryEditor& CGeometry::getEditor(void)
     return *m_pEditor;
 }
 
-
-void CGeometry::setRenderingModel(CRenderingModel::MODEL model)
+void CGeometry::setRenderingModel(CGeometry::RENDERING_MODEL model)
 {
-	m_renderingModel = model;	//	Preserve all bits for derived classes
+	m_renderingModel = (model & CGeometry::CGL_FULLRENDER);
+	if ((m_renderingModel == 0) || (m_renderingModel > CGeometry::CGL_FULLRENDER))
+		m_renderingModel = CGeometry::CGL_FRONT_GEOMETRY;
 }
 
-void CGeometry::addModel(CRenderingModel::MODEL model)
+void CGeometry::addModel(CGeometry::RENDERING_MODEL model)
 {
-	m_renderingModel.addModel(model);
+	unsigned int m = ((m_renderingModel | model) & CGeometry::CGL_FULLRENDER);
+	m_renderingModel = m;
 }
 
-void CGeometry::removeModel(CRenderingModel::MODEL model)
+void CGeometry::removeModel(CGeometry::RENDERING_MODEL model)
 {
-	m_renderingModel.removeModel(model);
+	m_renderingModel &= ~model;
 }
 
 
@@ -145,7 +118,7 @@ CGeometry::CGeometry(const std::string& name):
 	texcoords(NULL),texcoords2(NULL),tangents(NULL),binormals(NULL),
 	fogcoords(NULL),weightcoords(NULL),
 #endif
-    polys(NULL),m_renderingModel(CRenderingModel::CGL_FRONT_GEOMETRY),
+    polys(NULL),m_renderingModel(CGeometry::CGL_FRONT_GEOMETRY),
 	m_pEditor(NULL), m_pBinder(NULL)
 {
 	m_nbVertex = m_nbPolys = 0;
@@ -165,7 +138,7 @@ CGeometry::CGeometry(const std::string& name,const CPersistence::CPersistenceCla
 	texcoords(NULL),texcoords2(NULL),tangents(NULL),binormals(NULL),
 	fogcoords(NULL),weightcoords(NULL),
 #endif
-	polys(NULL),m_renderingModel(CRenderingModel::CGL_FRONT_GEOMETRY),
+	polys(NULL), m_renderingModel(CGeometry::CGL_FRONT_GEOMETRY),
 	m_pEditor(NULL), m_pBinder(NULL)
 {
     m_nbVertex = m_nbPolys = 0;
@@ -973,14 +946,14 @@ void CGeometry::vkRender(CVulkanCommandBuffer& commandBuffer,
 	VkDeviceSize offsets[3] = { (VkDeviceSize)&vertex[0], 0, 0 };
 	uint32_t nb_bindings = 1;	// always extract geometry
 
-	if (m_renderingModel.hasModel(CRenderingModel::CGL_TEXTURE))
+	if (hasModel(CGeometry::CGL_TEXTURE))
 	{
 		bindings[nb_bindings] = vertexBinding;
 		offsets[nb_bindings] = (VkDeviceSize)&texcoords[0];
 		nb_bindings++;
 	}
 
-	if (m_renderingModel.hasModel(CRenderingModel::CGL_COLORS))
+	if (hasModel(CGeometry::CGL_COLORS))
 	{
 		bindings[nb_bindings] = vertexBinding;
 		offsets[nb_bindings] = (VkDeviceSize)&colors[0];
@@ -1012,7 +985,7 @@ bool CGeometry::getVertexInputState( std::vector<VkVertexInputBindingDescription
 
 	//!	TexCoords
 	IRenderingProperties *props = IRenderingProperties::GetCurrentProperties();
-	if ((m_renderingModel.hasModel(CRenderingModel::CGL_TEXTURE)))
+	if ((hasModel(CGeometry::CGL_TEXTURE)))
 //		(props->getCurrentTexturing() == IRenderingProperties::ENABLE))
 	{
 		bindings.push_back({ nb_bindings, 2 * sizeof(float), VK_VERTEX_INPUT_RATE_VERTEX });
@@ -1021,7 +994,7 @@ bool CGeometry::getVertexInputState( std::vector<VkVertexInputBindingDescription
 	}
 
 	//!	Colors
-	if (m_renderingModel.hasModel(CRenderingModel::CGL_COLORS))
+	if (hasModel(CGeometry::CGL_COLORS))
 	{
 		bindings.push_back({ nb_bindings, 4 * sizeof(float), VK_VERTEX_INPUT_RATE_VERTEX });
 		vertexInput.push_back({ CProgramParameters::PRIMARY_COLOR, nb_bindings, VK_FORMAT_R32G32B32A32_SFLOAT, 0 });
@@ -1072,7 +1045,7 @@ void CGeometry::glRenderGeometry()
 	bool proceedTexturing = (props->getCurrentTexturing() == IRenderingProperties::ENABLE);
 
 
-	if (m_renderingModel.hasModel(CRenderingModel::CGL_BACK_GEOMETRY))
+	if (hasModel(CGeometry::CGL_BACK_GEOMETRY))
 		glCullFace(GL_FRONT);
 
 	CResourceAllocator::CResourceBinder *binder = (CResourceAllocator::CResourceBinder *)m_pBinder;
@@ -1082,7 +1055,7 @@ void CGeometry::glRenderGeometry()
 	glVertexPointer(3, GL_FLOAT, sizeof(GL_COORD_VERTEX), vertex);
 
 	// extract normals
-	if (m_renderingModel.hasModel(CRenderingModel::CGL_NORMALS) && proceedLighting && (NULL != normals))
+	if (hasModel(CGeometry::CGL_NORMALS) && proceedLighting && (NULL != normals))
 	{
 		popNormalArray = true;
 		pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::NORMAL);
@@ -1091,7 +1064,7 @@ void CGeometry::glRenderGeometry()
 
 	// extract tangents
 #if defined(GL_ARB_vertex_program)
-	if (m_renderingModel.hasModel(CRenderingModel::CGL_TANGENTS) && proceedLighting && (NULL != tangents))
+	if (hasModel(CGeometry::CGL_TANGENTS) && proceedLighting && (NULL != tangents))
 	{
 		popTangentArray = true;
 		pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::ADDITIONAL_PARAM1);
@@ -1100,7 +1073,7 @@ void CGeometry::glRenderGeometry()
 #endif
 
 	// extract colors
-	if (m_renderingModel.hasModel(CRenderingModel::CGL_COLORS) && (NULL != colors))
+	if (hasModel(CGeometry::CGL_COLORS) && (NULL != colors))
 	{
 		pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::PRIMARY_COLOR);
 		popColorArray = true;
@@ -1108,7 +1081,7 @@ void CGeometry::glRenderGeometry()
 	}
 
 	// extract texture
-	if (m_renderingModel.hasModel(CRenderingModel::CGL_TEXTURE) && proceedTexturing && (texcoords != NULL))
+	if (hasModel(CGeometry::CGL_TEXTURE) && proceedTexturing && (texcoords != NULL))
 	{
 		pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::TEXCOORD0);
 		popTexCoordArray = true;
@@ -1119,7 +1092,7 @@ void CGeometry::glRenderGeometry()
 	// shaders enable a more powerfull blending.
 
 	// extract vertex weighting
-	if (m_renderingModel.hasModel(CRenderingModel::CGL_WEIGHT) && (NULL != weightcoords))
+	if (hasModel(CGeometry::CGL_WEIGHT) && (NULL != weightcoords))
 	{
 #ifdef GL_EXT_vertex_weighting
 		if (pExtensions->glVertexWeightPointerEXT != NULL)
@@ -1141,7 +1114,7 @@ void CGeometry::glRenderGeometry()
 
 #ifdef GL_EXT_fog_coord
 	//	extract fog coords
-	if (m_renderingModel.hasModel(CRenderingModel::CGL_FOG))
+	if (hasModel(CGeometry::CGL_FOG))
 	{
 		if (pExtensions->glFogCoordPointerEXT != NULL)
 		{
@@ -1169,13 +1142,13 @@ void CGeometry::glRenderGeometry()
 	CATCH_GL_ERROR
 
 #ifdef GL_EXT_fog_coord
-		//	restore fog model
-		if (m_renderingModel.hasModel(CRenderingModel::CGL_FOG))
-			glFogi(GL_FOG_COORDINATE_SOURCE_EXT, GL_FRAGMENT_DEPTH_EXT);
+	//	restore fog model
+	if (hasModel(CGeometry::CGL_FOG))
+		glFogi(GL_FOG_COORDINATE_SOURCE_EXT, GL_FRAGMENT_DEPTH_EXT);
 #endif
 
 	//	Restore status	
-	if (m_renderingModel.hasModel(CRenderingModel::CGL_BACK_GEOMETRY))
+	if (hasModel(CGeometry::CGL_BACK_GEOMETRY))
 		glCullFace(GL_BACK);
 
 
@@ -1912,65 +1885,65 @@ bool CGeometry::importRenderingModel(CRaptorIO& io)
         {    
             io >> bool_value; 
             if (bool_value)
-                m_renderingModel.addModel(CRenderingModel::CGL_FRONT_GEOMETRY);
+				addModel(CGeometry::CGL_FRONT_GEOMETRY);
             else
-                m_renderingModel.removeModel(CRenderingModel::CGL_FRONT_GEOMETRY);
+				removeModel(CGeometry::CGL_FRONT_GEOMETRY);
         }
         else if (data == "back_geometry")
         {    
             io >> bool_value; 
             if (bool_value)
-                m_renderingModel.addModel(CRenderingModel::CGL_BACK_GEOMETRY);
+				addModel(CGeometry::CGL_BACK_GEOMETRY);
             else
-                m_renderingModel.removeModel(CRenderingModel::CGL_BACK_GEOMETRY);
+				removeModel(CGeometry::CGL_BACK_GEOMETRY);
         }
         else if (data == "normals")
         {    
             io >> bool_value; 
             if (bool_value)
-                m_renderingModel.addModel(CRenderingModel::CGL_NORMALS);
+				addModel(CGeometry::CGL_NORMALS);
             else
-                m_renderingModel.removeModel(CRenderingModel::CGL_NORMALS);
+				removeModel(CGeometry::CGL_NORMALS);
         }
         else if (data == "tangents")
         {    
             io >> bool_value; 
             if (bool_value)
-                m_renderingModel.addModel(CRenderingModel::CGL_TANGENTS);
+				addModel(CGeometry::CGL_TANGENTS);
             else
-                m_renderingModel.removeModel(CRenderingModel::CGL_TANGENTS);
+				removeModel(CGeometry::CGL_TANGENTS);
         }
         else if (data == "texture")
         {    
             io >> bool_value; 
             if (bool_value)
-                m_renderingModel.addModel(CRenderingModel::CGL_TEXTURE);
+				addModel(CGeometry::CGL_TEXTURE);
             else
-                m_renderingModel.removeModel(CRenderingModel::CGL_TEXTURE);
+				removeModel(CGeometry::CGL_TEXTURE);
         }
         else if (data == "weights")
         {    
             io >> bool_value; 
             if (bool_value)
-                m_renderingModel.addModel(CRenderingModel::CGL_WEIGHT);
+				addModel(CGeometry::CGL_WEIGHT);
             else
-                m_renderingModel.removeModel(CRenderingModel::CGL_WEIGHT);
+				removeModel(CGeometry::CGL_WEIGHT);
         }
         else if (data == "colors")
         {    
             io >> bool_value; 
             if (bool_value)
-                m_renderingModel.addModel(CRenderingModel::CGL_COLORS);
+				addModel(CGeometry::CGL_COLORS);
             else
-                m_renderingModel.removeModel(CRenderingModel::CGL_COLORS);
+				removeModel(CGeometry::CGL_COLORS);
         }
         else if (data == "fog")
         {    
             io >> bool_value; 
             if (bool_value)
-                m_renderingModel.addModel(CRenderingModel::CGL_FOG);
+				addModel(CGeometry::CGL_FOG);
             else
-                m_renderingModel.removeModel(CRenderingModel::CGL_FOG);
+				removeModel(CGeometry::CGL_FOG);
         }
         else
 			io >> name;
@@ -2065,14 +2038,14 @@ bool CGeometry::importObject(CRaptorIO& io)
 	if (!coords.empty())
 	{
 		if (!modelImported)
-			addModel(CRenderingModel::CGL_FRONT_GEOMETRY);
+			addModel(CGeometry::CGL_FRONT_GEOMETRY);
 		glSetVertices(coords.size());
 	}
 	
 	if (!tcoords.empty())
 	{
 		if (!modelImported)
-			addModel(CRenderingModel::CGL_TEXTURE);
+			addModel(CGeometry::CGL_TEXTURE);
 		glSetTexCoords(tcoords.size());
 	}
 
@@ -2082,7 +2055,7 @@ bool CGeometry::importObject(CRaptorIO& io)
 	if (!rgbacolors.empty())
 	{
 		if (!modelImported)
-			addModel(CRenderingModel::CGL_COLORS);
+			addModel(CGeometry::CGL_COLORS);
 		glSetColors(rgbacolors.size());
 	}
 

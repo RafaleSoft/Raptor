@@ -98,9 +98,9 @@ void CProjectionDisplay::Init()
 	if (p->getId().isSubClassOf(CShadedGeometry::CShadedGeometryClassID::GetClassId()))
 		ball = (CShadedGeometry*)p;
 	
-	ball->setRenderingModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
-	ball->addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
-	ball->addModel(CGeometry::CRenderingModel::CGL_NORMALS);
+	ball->setRenderingModel(CGeometry::CGL_FRONT_GEOMETRY);
+	ball->addModel(CGeometry::CGL_TEXTURE);
+	ball->addModel(CGeometry::CGL_NORMALS);
 	ball->translate(0,-5,0);
 	ball->scale(5,5,5);
 
