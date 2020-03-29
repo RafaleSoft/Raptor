@@ -105,7 +105,7 @@ void CRaptorServerInstance::glRender()
 	if (m_pWindow.handle() != 0)
 	{
 		request r;
-		int nbr = 0;
+		size_t nbr = 0;
 		{
 			CRaptorLock lock(m_mutex);
 			nbr = m_requests.size();
@@ -204,13 +204,15 @@ bool CRaptorServerInstance::start(unsigned int width, unsigned int height)
     CRaptorConfig config;
 	config.m_logFile = "Raptor_Server.log";
 	if (Raptor::glInitRaptor(config))
-	{
 		CAnimator::SetAnimator(new CAnimator());
-	}
 	else
+	{
+		std::cout << "Failed to initialize Raptor layer." << std::endl;
 		return false;
+	}
 
 	CImaging::installImagers();
+	std::cout << "Raptor Toolbox initialized. " << std::endl;
 
 	CRaptorDisplayConfig glcs;
 	glcs.width = width;
@@ -229,29 +231,30 @@ bool CRaptorServerInstance::start(unsigned int width, unsigned int height)
 
 	if (!Raptor::glCheckDisplayConfig(glcs))
     {
-        Raptor::GetMessages()->displayMessage("Some hardware features are missing. Will use lower config, disabling some effects");
+		std::cout << "Some hardware features are missing. Will use lower config, disabling some effects" << std::endl;
 		glcs.antialias = CRaptorDisplayConfig::ANTIALIAS_NONE;
         if (!Raptor::glCheckDisplayConfig(glcs))
         {
-            Raptor::GetMessages()->displayMessage("Some hardware features are missing. Will use minimal config, disabling all advanced effects");
+			std::cout << "Some hardware features are missing. Will use minimal config, disabling all advanced effects" << std::endl;
 			glcs.renderer = CRaptorDisplayConfig::NATIVE_GL;
             if (!Raptor::glCheckDisplayConfig(glcs))
             {
-                Raptor::GetMessages()->displayMessage("Minimum required display config cannot be created. Sorry, demo will abort. Bye.");
+				std::cout << "Minimum required display config cannot be created. Sorry, demo will abort. Bye." << std::endl;
                 return false;
             }
         }
     }
 
+	std::cout << "Raptor Display configuration checked, creating rendering window. " << std::endl;
 	glcs.refresh_rate.fps = CGL_MAXREFRESHRATE;
 	m_pWindow = Raptor::glCreateWindow(glcs,m_pDisplay);
 	if (m_pWindow.handle() == 0)
     {
-		RAPTOR_FATAL(	CPersistence::CPersistenceClassID::GetClassId(),
-						"Raptor Render Server has no resources: hardware OpenGL rendering not supported, exiting...");
+		std::cout << "Raptor Render Server has no resources: hardware OpenGL rendering not supported, exiting..." << std::endl;
         return false;
     }
 
+	std::cout << "Creating Raptor Main Display. " << std::endl;
 	m_pDisplay->glvkBindDisplay(m_pWindow);
 		CRaptorConsole *pConsole = Raptor::GetConsole();
 		pConsole->glInit();
@@ -273,6 +276,7 @@ bool CRaptorServerInstance::start(unsigned int width, unsigned int height)
 		props.clear(CGL_RGBA);
 	m_pDisplay->glvkUnBindDisplay();
 
+	std::cout << "Creating Raptor Application. " << std::endl;
 	m_pApplication = CRaptorApplication::CreateApplication();
 	m_pApplication->grabCursor(false);
 	m_pApplication->initApplication();
@@ -280,16 +284,28 @@ bool CRaptorServerInstance::start(unsigned int width, unsigned int height)
 
     if (m_pTranslator == NULL)
 	{
-        m_pTranslator = CRaptorIO::Create("XMLIO",CRaptorIO::MEMORY,CRaptorIO::ASCII_XML);
 		char shemaLocation[MAX_PATH];
-		strcpy(shemaLocation,getenv("RAPTOR_ROOT"));
-		strcat(shemaLocation,"/Redist/bin/Raptor.xsd");
-		m_pTranslator->parse(shemaLocation,0);
+		char* root = getenv("RAPTOR_ROOT");
+		if (NULL == root)
+		{
+			std::cout << "Raptor root data path is unknown. Is RAPTOR_ROOT defined ?" << std::endl;
+			std::cout << "Using current path. " << std::endl;
+			strcpy(shemaLocation, "./Raptor.xsd");
+		}
+		else
+		{
+			strcpy(shemaLocation, root);
+			strcat(shemaLocation, "/Redist/bin/Raptor.xsd");
+		}
+
+		m_pTranslator = CRaptorIO::Create("XMLIO", CRaptorIO::MEMORY, CRaptorIO::ASCII_XML);
+		m_pTranslator->parse(shemaLocation, 0);
 	}
 
 	if (m_pCompressor == NULL)
 		m_pCompressor = new CYUVCompressor();
 
+	std::cout << "Raptor Server Ready. " << std::endl;
 	m_bStarted = true;
     return true;
 }

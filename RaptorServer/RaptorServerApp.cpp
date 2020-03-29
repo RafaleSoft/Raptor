@@ -21,6 +21,9 @@
 
 #include "Subsys/CodeGeneration.h"
 
+#if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
+	#include "System/Raptor.h"
+#endif
 #if !defined(AFX_RAPTORSERVER_H__713A4063_7F42_4900_B42D_6574E4FA796C__INCLUDED_)
     #include "RaptorServer.h"
 #endif
@@ -32,22 +35,79 @@
 #endif
 
 
+CRaptorServer	*p_Server = NULL;
+
+
+BOOL CtrlHandler(DWORD fdwCtrlType)
+{
+	switch (fdwCtrlType)
+	{
+		// Handle the CTRL-C signal.
+	case CTRL_C_EVENT:
+	{
+		std::cout << "Deamon user exit requested by Ctrl-C. Exiting, bye!" << std::endl;
+		return (p_Server->Stop() ? TRUE : FALSE);
+		break;
+	}
+	// CTRL-CLOSE: confirm that the user wants to exit.
+	case CTRL_CLOSE_EVENT:
+	{
+		std::cout << "Deamon user exit requested by Ctrl-close. Exiting, bye!" << std::endl;
+		return (p_Server->Stop() ? TRUE : FALSE);
+		return(TRUE);
+		break;
+	}
+	// Pass other signals to the next handler.
+	case CTRL_BREAK_EVENT:
+		return FALSE;
+	case CTRL_LOGOFF_EVENT:
+		return FALSE;
+	case CTRL_SHUTDOWN_EVENT:
+		return FALSE;
+	default:
+		return FALSE;
+	}
+}
 
 int main(int argc, char* argv[])
 {
+	std::cout << std::endl;
+	std::cout << "        Raptor Server.        " << std::endl;
+	std::cout << "        version: " << RAPTOR_VERSION_STR << std::endl;
+	std::cout << "-----------------------------------" << std::endl;
+	std::cout << std::endl;
+
 #ifdef WIN32
 	if (!Network::initSocketLayer())
-		return 1;
+	{
+		std::cout << "Network layer not initialized properly." << std::endl;
+		return -1;
+	}
+	else
 #endif
+		std::cout << "Network layer ready." << std::endl;
 
 	CCmdLineParser parser;
 	parser.addOption("port","p",(unsigned short)2048);
 	parser.addOption("width","w",(unsigned short)256);
 	parser.addOption("height","h",(unsigned short)256);
 	parser.addOption("host_addr","a",std::string("127.0.0.1"));
-	parser.parse(argc,argv);
+	if (!parser.parse(argc, argv))
+	{
+		std::cout << "Server failed to parse command line. Exiting, bye!" << std::endl;
+		return -1;
+	}
+	
+	std::cout << "Server parameters acquired." << std::endl;
 
-	CRaptorServer	*p_Server = new CRaptorServer;
+	if (!SetConsoleCtrlHandler((PHANDLER_ROUTINE)CtrlHandler, TRUE))
+	{
+		std::cout << "Failed to install server crtl handler!" << std::endl;
+		return -1;
+	}
+
+	std::cout << "Starting server." << std::endl;
+	p_Server = new CRaptorServer;
     if (p_Server->Start(parser))
 		return (p_Server->Stop() ? 1 : 0);
 	else

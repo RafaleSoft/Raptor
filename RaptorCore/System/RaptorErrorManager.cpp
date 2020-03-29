@@ -186,7 +186,9 @@ void CRaptorErrorManager::addRaptorError(GL_RAPTOR_ERROR& err)
                 break;
         }
 
-		*m_pLogger << buffer << "): " << err.error.data() << '\n';
+		*m_pLogger << buffer << "): ";
+		*m_pLogger << err.filename << ":" << err.line << " ";
+		*m_pLogger << err.error.data() << '\n';
     }
 }
 

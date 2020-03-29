@@ -84,17 +84,21 @@ CRaptorClient::~CRaptorClient(void)
 
 bool CRaptorClient::load(const std::string& fname)
 {
-	CRaptorIO *io = CRaptorIO::Create(fname.data(),CRaptorIO::DISK_READ,CRaptorIO::ASCII_TEXT);
+	CRaptorIO *io = CRaptorIO::Create(fname.data(),CRaptorIO::DISK_READ,CRaptorIO::BINARY);
 	
-	string text;
-	while (io->getStatus() == CRaptorIO::IO_OK)
+	std::streampos fsize = io->getSize();
+	if (io->getStatus() == CRaptorIO::IO_OK)
 	{
-		string line;
-		io->operator >>(line);
-		text += line;
+		std::cout << "Sending file " << fname << " to server." << std::endl;
+		uint8_t *buffer = new uint8_t[fsize];
+		io->read(buffer, fsize);
+		m_Client->write(buffer, fsize);
+		delete[] buffer;
 	}
-
-	m_Client->write((void*)text.data(),text.length());
+	else
+	{
+		std::cout << "Unable to send file " << fname << " to server." << std::endl;
+	}
 
 	delete io;
 	return true;

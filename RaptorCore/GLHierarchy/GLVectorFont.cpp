@@ -97,9 +97,40 @@ RAPTOR_HANDLE CGLVectorFont::glBuildVectors(const std::string &str,
 	return result;
 }
 
-void CGLVectorFont::glWrite(const std::string &text, int x, int y, const CColor::RGBA	&color)
+void CGLVectorFont::glWrite(const std::string &text, int x, int y, const CColor::RGBA &color)
 {
+	float lineWidth = 1.0f;
+	glGetFloatv(GL_LINE_WIDTH, &lineWidth);
 
+	GLfloat viewport[4];
+	glGetFloatv(GL_VIEWPORT, viewport);
+
+	glMatrixMode(GL_PROJECTION);
+	glPushMatrix();
+	glLoadIdentity();
+	glOrtho(viewport[0], viewport[2], viewport[1], viewport[3], 1, 20);
+	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();
+	glLoadIdentity();
+	glTranslatef(0.0f, 0.0f, -5.0f);
+	glEnable(GL_BLEND);
+	glEnable(GL_LINE_SMOOTH);
+	glHint(GL_LINE_SMOOTH, GL_NICEST);
+
+	selectCurrentGlyphset(0);
+	glPushMatrix();
+	glLineWidth(3.0f);
+	CGLFont::glWrite(text, x, y, CColor::RGBA(0.0f, 0.0f, 0.0f, 1.0f));
+	glLineWidth(1.1f);
+	CGLFont::glWrite(text, x, y, color);
+	glPopMatrix();
+
+	glPopMatrix();
+	glMatrixMode(GL_PROJECTION);
+	glPopMatrix();
+	glMatrixMode(GL_MODELVIEW);
+
+	glLineWidth(lineWidth);
 }
 
 void CGLVectorFont::glWrite(const std::vector<CGLFont::FONT_TEXT_ITEM> &lines)
@@ -127,7 +158,6 @@ void CGLVectorFont::glWrite(const std::vector<CGLFont::FONT_TEXT_ITEM> &lines)
 	glColor4f(0.0f, 0.0f, 0.0f, 1.0f);
 	glLineWidth(3.0f);
 	CGLFont::glWrite(lines);
-	glColor4f(1.0f, 0.0f, 0.0f, 1.0f);
 	glLineWidth(1.1f);
 	CGLFont::glWrite(lines);
 	glPopMatrix();

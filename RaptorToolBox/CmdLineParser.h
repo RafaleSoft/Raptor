@@ -203,6 +203,11 @@ CCmdLineParser::CCommandLineOptionValue<const char*>::CCommandLineOptionValue(co
 																			  const char* defaultValue);
 
 template <> RAPTOR_API
+CCmdLineParser::CCommandLineOptionValue<char*>::CCommandLineOptionValue(const std::string &name,
+																		const std::string &shortname,
+																		char* defaultValue);
+
+template <> RAPTOR_API
 CCmdLineParser::CCommandLineOptionValue<const char*>::~CCommandLineOptionValue();
 
 template <> RAPTOR_API
@@ -214,6 +219,8 @@ bool CCmdLineParser::CCommandLineOptionValue<unsigned short>::parse(const char* 
 template <> RAPTOR_API
 bool CCmdLineParser::CCommandLineOptionValue<const char*>::parse(const char* argv);
 
+template <> RAPTOR_API
+bool CCmdLineParser::CCommandLineOptionValue<char*>::parse(const char* argv);
 
 template <> RAPTOR_API
 bool CCmdLineParser::CCommandLineOptionValue<std::string>::parse(const char* argv);

@@ -59,6 +59,16 @@ bool CServerTransport::stopServer(void)
 
 bool CServerTransport::onClientClose(const CClientSocket &client)
 {
+	std::cout << "New client connected" << std::endl;
+
 	CRaptorServerInstance *pHandler = CRaptorServerInstance::GetInstance();
 	return pHandler->closeSession((request_handler_t::request_id)&client);
+}
+
+
+size_t CServerTransport::onNewClient(const CClientSocket &client)
+{
+	std::cout << "New client connected" << std::endl;
+
+	return getNumClients();
 }
