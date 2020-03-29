@@ -24,25 +24,19 @@ public:
 	CWin32Application();
 	virtual ~CWin32Application();
 
-	//!	@return a safe pointer to the application class
-	static CWin32Application* GetInstance();
-
 	//!	The prototype of the window based event handler
 	typedef LRESULT (CALLBACK *windowProc)(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 
 	//! @return the default application window event handler
 	static windowProc getWindowProc(void);
 
+	//!	Temporary
+	//!	TODO: find something cleaner !!!
+	static bool destroyWindow;
 
 protected:
 	//! Implements CRaptorApplication
-	virtual bool initApplication(void);
-
-	//! Implements CRaptorApplication
     virtual bool run(void);
-
-	//! Implements CRaptorApplication
-    virtual void setRootWindow(const RAPTOR_HANDLE& root);
 
 	//! Implements CRaptorApplication
 	virtual void grabCursor(bool grab);

@@ -38,9 +38,6 @@ CGLView::CGLView()
 
 CGLView::~CGLView()
 {
-//  Should be removed by purge at Raptor exit
-//	if (m_pDisplay != NULL)
-//		Raptor::glDestroyDisplay(m_pDisplay);
 }
 
 
@@ -149,6 +146,21 @@ BOOL CGLView::PreCreateWindow(CREATESTRUCT& cs)
 
 void CGLView::OnDestroy() 
 {
+	if (NULL != m_pDisplay)
+	{
+		RAPTOR_HANDLE handle;
+		handle.hClass(DEVICE_CONTEXT_CLASS);
+		CClientDC dc(this);
+		handle.ptr(dc.m_hDC);
+
+		bool res = m_pDisplay->glvkBindDisplay(handle);
+		m_pDisplay->glvkReleaseResources();
+		res = res && m_pDisplay->glvkUnBindDisplay();
+
+		Raptor::glDestroyDisplay(m_pDisplay);
+		m_pDisplay = NULL;
+	}
+
 	CView::OnDestroy();
 }
 

@@ -191,7 +191,12 @@ CRaptorFilteredDisplay::~CRaptorFilteredDisplay()
 	glvkUnBindDisplay();
 }
 
-void CRaptorFilteredDisplay::glReleaseResources(void)
+void CRaptorFilteredDisplay::glvkAllocateResources(void)
+{
+	CRaptorScreenDisplay::glvkAllocateResources();
+}
+
+void CRaptorFilteredDisplay::glvkReleaseResources(void)
 {
     //!  Should place destructor body here,
     //! it would be better, allowing to catch errors
@@ -206,7 +211,7 @@ void CRaptorFilteredDisplay::glReleaseResources(void)
     }
     m_pFilters.clear();
 
-    CRaptorScreenDisplay::glReleaseResources();
+	CRaptorScreenDisplay::glvkReleaseResources();
 }
 
 void CRaptorFilteredDisplay::unLink(const CPersistence* obj)

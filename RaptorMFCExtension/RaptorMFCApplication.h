@@ -37,13 +37,10 @@ public:
 
 protected:
 	//! Implements CRaptorApplication
-	virtual bool initApplication(void);
+	virtual bool initApplication(CRaptorDisplayConfig &config);
 
 	//! Implements CRaptorApplication
     virtual bool run(void);
-
-    //! Implements CRaptorApplication
-    virtual void setRootWindow(const RAPTOR_HANDLE& root);
 
 	//! Implements CRaptorApplication
     virtual void grabCursor(bool grab);

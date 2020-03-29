@@ -55,6 +55,7 @@ class CRaptorDisplay;
 class CRenderEntryPoint;
 class CRaptorConsole;
 class CShader;
+class CShaderLibrary;
 
 
 class CRaptorInstance
@@ -92,7 +93,11 @@ public:
 	//! Calling this method requires a valid graphic context made current because
 	//!	many resource objects are identified with an Id unique to this context.
 	//!	@return true if resources properly allocated.
-	bool glInitSharedRsources(void);
+	bool glvkInitSharedResources(void);
+
+	//!	Release resources allocated for this instance.
+	//!	@return true if resources properly released.
+	bool glvkReleaseSharedRsources(void);
 
 	//!	Raptor Instance has been initialised.
 	bool isInitialised(void) const { return m_bInitialised; };
@@ -115,6 +120,8 @@ public:
 	//!	Fragment Shader state
 	bool isFragmentProgramReady(void) const { return m_bFragmentProgramReady; };
 
+	//!	Returns the default null shader.
+	const CShader& getNullShader(void) const { return *m_pNullShader; };
 
 
 
@@ -184,6 +191,8 @@ public:
 	//! 2D Texture Font global shaders
 	CShader	*m_pFontShader;
 
+	//! The instance.
+	CShaderLibrary	*m_pShaderLibraryInstance;
 
 
 private:
@@ -199,19 +208,21 @@ private:
 	//!	Raptor default display creation structure and defaut initial state of the renderer.
 	CRaptorDisplayConfig	defaultConfig;
 	//!	Raptor Instance has been initialised.
-	bool					m_bInitialised;
+	bool			m_bInitialised;
 	//!	Raptor Instance has been requested to terminate.
-	bool					m_bTerminate;
+	bool			m_bTerminate;
 	//! Fragment Program state.
-	bool					m_bFragmentShaderReady;
+	bool			m_bFragmentShaderReady;
 	//! Vertex Program state.
-	bool					m_bVertexShaderReady;
+	bool			m_bVertexShaderReady;
 	//! Geometry Program state.
-	bool					m_bGeometryShaderReady;
+	bool			m_bGeometryShaderReady;
 	//!	Vertex Shader state
-	bool					m_bVertexProgramReady;
+	bool			m_bVertexProgramReady;
 	//!	Fragment Shader state
-	bool					m_bFragmentProgramReady;
+	bool			m_bFragmentProgramReady;
+	//!	A default shader.
+	CShader			*m_pNullShader;
 };
 
 RAPTOR_NAMESPACE_END

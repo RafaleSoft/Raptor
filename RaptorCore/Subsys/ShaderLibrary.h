@@ -41,24 +41,29 @@ class CShader;
 class CShaderLibrary
 {
 public:
-	static CShaderLibrary*	GetInstance(void);
+	typedef struct
+	{
+		const char *shader_name;
+		const char *shader_fname;
+		const char *class_name;
+	} factory_shader;
 
-	//!	Destroy the library.
-	void destroy();
+
+	//!	Library constructor
+	CShaderLibrary();
+
+	//! Destroy the library
+	~CShaderLibrary();
 
 	//! Initialise default factory shaders.
 	//! Depends on Raptor versions.
 	//!	Returns true if library is initialized, false if failed or already initialized.
 	bool glInitFactory(void);
 
-	//!	Returns the default null shader.
-	const CShader& getNullShader(void)
-	{ return *m_pNullShader; };
-
 	//! Returns the list off shaders names.
 	//! Each name refers to a corresponding object
 	//! in memory, that can be retrived through its persistence name.
-	void getFactoryShaders(vector<std::string> &);
+	void getFactoryShaders(std::vector<std::string> &);
 
 	//!	Adds a shader to this library: 
 	//! provide the name of shader, the program source, and the Raptor shader class
@@ -68,20 +73,12 @@ public:
 	
 
 private:
-	//!	Unavailable instance constructor
-	CShaderLibrary();
-
-	//! Unavailable instance destructor;
-	virtual ~CShaderLibrary();
-
 	//!	Load RaptorCore Shaders from currently loaded Raptor Data Packages.
 	bool glLoadShadersFromDataPackage();
 
-	//! The instance.
-	static CShaderLibrary *m_pInstance;
+	bool s_initialized;
 
-	//!	A default shader.
-	static CShader *m_pNullShader;
+	std::map<std::string, CShaderLibrary::factory_shader>	s_factoryShaders;
 };
 
 RAPTOR_NAMESPACE_END

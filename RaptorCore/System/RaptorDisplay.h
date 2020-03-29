@@ -69,11 +69,6 @@ public:
 	//! unbounded before call or if there is an error.
 	virtual bool glvkUnBindDisplay(void);
 
-
-	//!
-	//!	Display management
-	//!
-
 	//!	Current user ( eye ) viewpoint used to render the current root scene of the display. 
     //! The viewpoint has priority over any user OpenGL transforms in rendering: the initial MODELVIEW
 	//!	transform is updated according to the point of view before glRender is called
@@ -86,7 +81,16 @@ public:
 	//! Creates a view point compatible with this display.
 	virtual IViewPoint *const createViewPoint(void) const;
 
+	//!	Allocates Geometry, Textures and Uniforms resources for this display.
+	virtual void glvkAllocateResources(void);
 
+	//!	Release allocated Geometry, Textures and Uniforms resources for this display.
+	virtual void glvkReleaseResources(void);
+
+
+	//!
+	//!	Display usage
+	//!
 
 	//! Resize the display to handle user interface events.
 	//! - sx,sy : define the width and height of the display
@@ -179,11 +183,6 @@ protected:
 
     //! Implements CPersistence
     virtual void unLink(const CPersistence* obj);
-
-    //! This method is for internal use only. Raptor call it to
-    //! free all possible ressources while the display is still usable, 
-    //! and before the purge is effective.
-    virtual void glReleaseResources(void);
 
 	//! This method enables subclasses to replace rendering properties
 	//!	Registration is not implemented, it remains the responsibility of subclasses

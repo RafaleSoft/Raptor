@@ -189,7 +189,7 @@ int WINAPI WinMain(  HINSTANCE hinstance,
 		             int ncmdshow)
 {
     CRaptorConfig config;
-    config.m_bRelocation = false;
+    config.m_bRelocation = true;
     config.m_uiPolygons = 10000;
     config.m_uiVertices = 40000;
     config.m_uiTexels = 3000000;

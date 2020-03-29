@@ -378,8 +378,6 @@ void GLinterop(CRaptorDisplay *pDisplay,RAPTOR_HANDLE wnd)
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-	CRaptorDisplay *pDisplay = NULL;
-	
 	CRaptorConfig config;
 	config.m_bRelocation = true;
     config.m_uiPolygons = 30000;
@@ -399,7 +397,13 @@ int _tmain(int argc, _TCHAR* argv[])
 	glcs.stencil_buffer = true;
 	glcs.display_mode = CGL_RGBA | CGL_DEPTH;
 	//glcs.refresh_rate.fps = 12;
-    RAPTOR_HANDLE wnd = Raptor::glCreateWindow(glcs,pDisplay);
+
+	CRaptorApplication *pApp = CRaptorApplication::CreateApplication();
+	pApp->initApplication(glcs);
+	pApp->grabCursor(false);
+
+	RAPTOR_HANDLE wnd = pApp->getRootWindow();
+	CRaptorDisplay *pDisplay = pApp->getRootDisplay();
 	pDisplay->glvkBindDisplay(wnd);
 
 	IViewPoint *vp = pDisplay->getViewPoint();
@@ -427,10 +431,6 @@ int _tmain(int argc, _TCHAR* argv[])
 		}
 	}
 
-	CRaptorApplication *pApp = CRaptorApplication::CreateApplication();
-	pApp->initApplication();
-	pApp->setRootWindow(wnd);
-	pApp->grabCursor(false);
 	CTimeObject::setTimeFactor(1.0f);
 	CAnimator *animator = new CAnimator();
 	CAnimator::SetAnimator(animator);
@@ -484,6 +484,6 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	CRaptorCompute::clReleaseRaptorCompute();
 
-	return 0;
+	return (pApp->quitApplication() ? 1 : 0);
 }
 

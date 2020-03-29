@@ -155,9 +155,6 @@ CVertexProgram * const COpenGLProgramStage::glGetVertexProgram(const std::string
 {
 	if (m_pVProgram == NULL)
 	{
-		CShaderLibrary *lib = CShaderLibrary::GetInstance();
-		lib->glInitFactory();
-
 		CPersistence *pShader = NULL;
 		if (!name.empty())
 			pShader = CPersistence::FindObject(name);
@@ -200,9 +197,6 @@ CFragmentProgram * const COpenGLProgramStage::glGetFragmentProgram(const std::st
 {
 	if (m_pFProgram == NULL)
 	{
-		CShaderLibrary *lib = CShaderLibrary::GetInstance();
-		lib->glInitFactory();
-
 		CPersistence *pShader = NULL;
 		if (!name.empty())
 			pShader = CPersistence::FindObject(name);

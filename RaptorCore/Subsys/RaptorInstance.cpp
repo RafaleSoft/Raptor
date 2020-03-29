@@ -113,6 +113,8 @@ CRaptorInstance::CRaptorInstance()
 	m_displayBinder = NULL;
 
 	arrays_initialized = false;
+	m_pShaderLibraryInstance = NULL;
+	m_pNullShader = NULL;
 }
 
 CRaptorInstance &CRaptorInstance::GetInstance(void)
@@ -165,37 +167,9 @@ CRaptorInstance::~CRaptorInstance()
 		pConsole = NULL;
 	}
 
-	if (NULL != m_displayBinder)
-	{
-		delete m_displayBinder;
-		m_displayBinder = NULL;
-	}
+	glvkReleaseSharedRsources();
 
-	//if (NULL != m_pQuadShader)
-	//	m_pQuadShader->releaseReference();
-	//m_pQuadShader = NULL;
-	//if (NULL != m_pFontShader)
-	//	m_pFontShader->releaseReference();
-	//m_pFontShader = NULL;
-	CShaderLibrary* pShaderLib = CShaderLibrary::GetInstance();
-	if (pShaderLib != NULL)
-		pShaderLib->destroy();
 
-#if defined(GL_COMPATIBILITY_profile)
-	if (m_drawBuffer.handle() > 0)
-	{
-		glDeleteLists(m_drawBuffer.handle(), 1);
-		m_drawBuffer.handle(0);
-	}
-#else
-	if (NULL != m_pAttributes)
-	{
-		CGeometryAllocator *pAllocator = CGeometryAllocator::GetInstance();
-		pAllocator->releaseVertices(*m_pAttributes);
-	}
-#endif
-
-	
 #if defined (VK_VERSION_1_0)
 	if (config.m_bVulkan)
 		if (!CContextManager::GetInstance()->vkRelease())
@@ -304,7 +278,7 @@ void CRaptorInstance::initInstance()
 	m_bInitialised = true;
 }
 
-bool CRaptorInstance::glInitSharedRsources(void)
+bool CRaptorInstance::glvkInitSharedResources(void)
 {
 	//!	Check shaders extensions availability
 	m_bVertexProgramReady = false;
@@ -394,11 +368,15 @@ bool CRaptorInstance::glInitSharedRsources(void)
 	}
 
 	//!	Initialise the shader library
-	CShaderLibrary* pShaderLib = CShaderLibrary::GetInstance();
-	if (pShaderLib == NULL)
-		return false;
-	else
-		pShaderLib->glInitFactory();
+	if (NULL == m_pShaderLibraryInstance)
+	{
+		m_pShaderLibraryInstance = new CShaderLibrary();
+		m_pShaderLibraryInstance->glInitFactory();
+	}
+	if (NULL == m_pNullShader)
+	{
+		m_pNullShader= new CShader("NULL_SHADER");
+	}
 
 	//!	Create minimal shaders for Raptor displays logo.
 #if defined(GL_COMPATIBILITY_profile)
@@ -493,6 +471,61 @@ bool CRaptorInstance::glInitSharedRsources(void)
 		m_displayBinder = new CResourceAllocator::CResourceBinder();
 		m_displayBinder->setArray(CProgramParameters::POSITION, m_pAttributes);
 		m_displayBinder->useVertexArrayObjects();
+	}
+
+	return true;
+}
+
+bool CRaptorInstance::glvkReleaseSharedRsources()
+{
+#if defined(GL_COMPATIBILITY_profile)
+	if (m_drawBuffer.handle() > 0)
+	{
+		glDeleteLists(m_drawBuffer.handle(), 1);
+		m_drawBuffer.handle(0);
+	}
+#else
+	if (NULL != m_pIdentity)
+	{
+		m_pIdentity->releaseReference();
+		m_pIdentity = NULL;
+	}
+	if (NULL != m_pAttributes)
+	{
+		CGeometryAllocator *pAllocator = CGeometryAllocator::GetInstance();
+		pAllocator->releaseVertices(*m_pAttributes);
+		m_pAttributes = NULL;
+	}
+#endif
+
+	if (NULL != m_pQuadShader)
+	{
+		m_pQuadShader->releaseReference();
+		m_pQuadShader = NULL;
+	}
+
+	if (NULL != m_pFontShader)
+	{
+		m_pFontShader->releaseReference();
+		m_pFontShader = NULL;
+	}
+
+	if (NULL != m_displayBinder)
+	{
+		delete m_displayBinder;
+		m_displayBinder = NULL;
+	}
+
+	if (NULL != m_pNullShader)
+	{
+		m_pNullShader = new CShader("NULL_SHADER");
+		m_pNullShader = NULL;
+	}
+
+	if (NULL != m_pShaderLibraryInstance)
+	{
+		delete m_pShaderLibraryInstance;
+		m_pShaderLibraryInstance = NULL;
 	}
 
 	return true;

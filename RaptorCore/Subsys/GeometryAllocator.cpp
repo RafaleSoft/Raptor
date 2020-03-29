@@ -66,6 +66,9 @@ CGeometryAllocator::~CGeometryAllocator()
 		deviceMemoryManager->releaseBufferObject(relocatedFaceIndexes);
 	if (relocatedVertices != NULL)
 		deviceMemoryManager->releaseBufferObject(relocatedVertices);
+
+	if (this == m_pInstance)
+		m_pInstance = NULL;
 }
 
 CGeometryAllocator	*CGeometryAllocator::GetInstance(void)

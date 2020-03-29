@@ -55,6 +55,10 @@
 #if !defined(AFX_IRENDERINGPROPERTIES_H__634BCF2B_84B4_47F2_B460_D7FDC0F3B698__INCLUDED_)
 	#include "IRenderingProperties.h"
 #endif
+#if !defined(AFX_RAPTORINSTANCE_H__90219068_202B_46C2_BFF0_73C24D048903__INCLUDED_)
+	#include "Subsys/RaptorInstance.h"
+#endif
+
 
 //////////////////////////////////////////////////////////////////////
 // Static data
@@ -190,18 +194,17 @@ CShader* CShader::glClone(const std::string& newShaderName) const
 
 const CShader& CShader::getShader(const std::string& shaderName)
 {
-	CShaderLibrary *lib = CShaderLibrary::GetInstance();
-	lib->glInitFactory();
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
 
 	CPersistence *ppShader = NULL;
 	if (!shaderName.empty())
 		ppShader = CPersistence::FindObject(shaderName);
 	if (ppShader == NULL)
-		return CShaderLibrary::GetInstance()->getNullShader();
+		return instance.getNullShader();
 	else if (ppShader->getId().isSubClassOf(CShader::CShaderClassID::GetClassId()))
 		return *(CShader*)ppShader;
 	else
-		return CShaderLibrary::GetInstance()->getNullShader();
+		return instance.getNullShader();
 }
 
 CShader::~CShader()
@@ -326,8 +329,6 @@ COpenGLProgramStage * const CShader::glGetOpenGLProgram(const std::string& name)
 {
 	if (m_pOpenGLProgram == NULL)
 	{
-		CShaderLibrary *lib = CShaderLibrary::GetInstance();
-
 		CPersistence *pProgram = NULL;
 		if (!name.empty())
 			pProgram = CPersistence::FindObject(name);
@@ -371,8 +372,6 @@ COpenGLShaderStage * const CShader::glGetOpenGLShader(const std::string& name)
 {
 	if (m_pOpenGLShader == NULL)
 	{
-		CShaderLibrary *lib = CShaderLibrary::GetInstance();
-
 		CPersistence *pShader = NULL;
 		if (!name.empty())
 			pShader = CPersistence::FindObject(name);
@@ -416,8 +415,6 @@ CVulkanShaderStage * const CShader::vkGetVulkanShader(const std::string& name)
 {
 	if (m_pVulkanShader == NULL)
 	{
-		CShaderLibrary *lib = CShaderLibrary::GetInstance();
-
 		CPersistence *pProgram = NULL;
 		if (!name.empty())
 			pProgram = CPersistence::FindObject(name);
