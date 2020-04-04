@@ -38,9 +38,9 @@ CBasicObjects::CCube::CCube()
 	glSetTexCoords(24);
 	glSetPolygons(12);
 	
-	setRenderingModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
-	addModel(CGeometry::CRenderingModel::CGL_NORMALS);
-	addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
+	setRenderingModel(CGeometry::CGL_FRONT_GEOMETRY);
+	addModel(CGeometry::CGL_NORMALS);
+	addModel(CGeometry::CGL_TEXTURE);
 
     glLockData();
 
@@ -195,9 +195,9 @@ CBasicObjects::CIsocahedron::CIsocahedron()
 	glSetVertices(12);
 	glSetPolygons(20);
 
-	setRenderingModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
-	addModel(CGeometry::CRenderingModel::CGL_NORMALS);
-	addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
+	setRenderingModel(CGeometry::CGL_FRONT_GEOMETRY);
+	addModel(CGeometry::CGL_NORMALS);
+	addModel(CGeometry::CGL_TEXTURE);
 
 	glLockData();
 
@@ -372,9 +372,9 @@ CBasicObjects::CGeoSphere::CGeoSphere()
 {
 	setDimensions(1.0f,16,16);
 
-	setRenderingModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
-	addModel(CGeometry::CRenderingModel::CGL_NORMALS);
-	addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
+	setRenderingModel(CGeometry::CGL_FRONT_GEOMETRY);
+	addModel(CGeometry::CGL_NORMALS);
+	addModel(CGeometry::CGL_TEXTURE);
 }
 
 CBasicObjects::CGeoSphere::~CGeoSphere()
@@ -464,9 +464,9 @@ CBasicObjects::CRectMesh::CRectMesh()
 {
 	setDimensions(1.0f,1.0f,50,50);
 
-	setRenderingModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
-	addModel(CGeometry::CRenderingModel::CGL_NORMALS);
-	addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
+	setRenderingModel(CGeometry::CGL_FRONT_GEOMETRY);
+	addModel(CGeometry::CGL_NORMALS);
+	addModel(CGeometry::CGL_TEXTURE);
 }
 
 CBasicObjects::CRectMesh::~CRectMesh()
@@ -557,9 +557,9 @@ CBasicObjects::CRectangle::CRectangle()
 		addFace(2,3,0);
 	glUnLockData();
 
-	setRenderingModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
-	addModel(CGeometry::CRenderingModel::CGL_NORMALS);
-	addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
+	setRenderingModel(CGeometry::CGL_FRONT_GEOMETRY);
+	addModel(CGeometry::CGL_NORMALS);
+	addModel(CGeometry::CGL_TEXTURE);
 }
 
 CBasicObjects::CRectangle::~CRectangle()

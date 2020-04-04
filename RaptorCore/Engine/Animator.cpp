@@ -59,7 +59,7 @@ const CPersistence::CPersistenceClassID& CAnimator::CAnimatorClassID::GetClassId
 //////////////////////////////////////////////////////////////////////
 CAnimator::CAnimator(const std::string& name)
     :CPersistence(animatorId,name),
-    m_sFrameDelay(0),m_uiAnimateRemaining(0),deltat(0.0f)
+    m_sFrameDelay(0),deltat(0.0f)
 {
 	m_pStream = new CAnimatorStream();
 	m_sCount = 0;
@@ -90,17 +90,18 @@ void CAnimator::animate(void)
 
 	if (m_sCount == m_sFrameDelay)
 	{
-		const vector<CTimeObject*>& root = CTimeObject::getTimeObjects();
-		//	Update animation objects
-        m_uiAnimateRemaining = root.size(); 
-		vector<CTimeObject*>::const_iterator itr = root.begin();
-		while (itr != root.end())
+		//! Lock only the section manipulating timed objects
 		{
-			CTimeObject *value = (*itr);
-			itr++;
-			value->synchronize(dt, true);
+			CRaptorLock lock(CTimeObject::getLock());
 
-            m_uiAnimateRemaining--;
+			const vector<CTimeObject*>& root = CTimeObject::getTimeObjects();
+			
+			vector<CTimeObject*>::const_iterator itr = root.begin();
+			while (itr != root.end())
+			{
+				CTimeObject *value = (*itr++);
+				value->synchronize(dt, true);
+			}
 		}
 
 		m_pStream->playFrames(dt);
@@ -117,9 +118,7 @@ void CAnimator::animateAll(bool animate)
 	vector<CTimeObject*>::const_iterator itr = root.begin();
 	while (itr != root.end())
 	{
-		CTimeObject *value = (*itr);
-		itr++;
-
+		CTimeObject *value = (*itr++);
 		value->animate(animate);
 	}
 }
@@ -132,13 +131,13 @@ void CAnimator::initSynchro(void)
 {
 	if (m_sCount == m_sFrameDelay)
 	{
+		CRaptorLock lock(CTimeObject::getLock());
+
 		const vector<CTimeObject*>& root = CTimeObject::getTimeObjects();
 		vector<CTimeObject*>::const_iterator itr = root.begin();
 		while (itr != root.end())
 		{
-			CTimeObject *value = (*itr);
-			itr++;
-
+			CTimeObject *value = (*itr++);
 			value->synchronize(0.0f, false);
 		}
 

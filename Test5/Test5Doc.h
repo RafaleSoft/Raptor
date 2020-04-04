@@ -19,6 +19,8 @@ public:
 
     virtual void glRender();
 
+	void glDestroy();
+
 	void resize(unsigned int width, unsigned int height);
 
 private:

@@ -199,11 +199,11 @@ void CGeometricModifier::setGeometry(CGeometry *geometry)
 		//	(i.e. nbVertex == 0, even if allocated)
 		m_pWrapper->vertexWrap = new GL_COORD_VERTEX[geometry->nbVertex()];
 
-		if (geometry->hasModel(CGeometry::CRenderingModel::CGL_NORMALS))
+		if (geometry->hasModel(CGeometry::CGL_NORMALS))
 		{
 			m_pWrapper->normalWrap = new GL_COORD_VERTEX[geometry->nbVertex()];
 		}
-		if (geometry->hasModel(CGeometry::CRenderingModel::CGL_TEXTURE))
+		if (geometry->hasModel(CGeometry::CGL_TEXTURE))
 		{
 			m_pWrapper->texWrap = new GL_TEX_VERTEX[geometry->nbVertex()];
 		}

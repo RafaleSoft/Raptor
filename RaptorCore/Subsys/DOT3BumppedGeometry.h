@@ -55,7 +55,7 @@ private:
 
 	//!	Configure internal shader texture unit setup
 	//virtual void setRenderingModel(const CRenderingModel& model);
-	virtual void setRenderingModel(CRenderingModel::MODEL model);
+	virtual void setRenderingModel(CGeometry::RENDERING_MODEL model);
 	
 	//!	A light observer to be notified from lightupdates.
 	static CSimpleLightObserver	*m_pObserver;

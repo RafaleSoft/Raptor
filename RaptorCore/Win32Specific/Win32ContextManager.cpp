@@ -634,6 +634,7 @@ RAPTOR_HANDLE CWin32ContextManager::glCreateWindow(const CRaptorDisplayConfig& c
 			id = CContextManager::INVALID_CONTEXT;
         else
 		{
+			id = nbContext - 1;
 			RECT rect2;
 			GetWindowRect(hwnd,&rect);
 			GetClientRect(hwnd,&rect2);
@@ -648,6 +649,7 @@ RAPTOR_HANDLE CWin32ContextManager::glCreateWindow(const CRaptorDisplayConfig& c
 			if (!pDisplay->glvkUnBindDisplay())
 				id = CContextManager::INVALID_CONTEXT;
 		}
+
 		if (CContextManager::INVALID_CONTEXT != id)
 	    {
 		    wnd.ptr(hwnd);
@@ -662,6 +664,7 @@ RAPTOR_HANDLE CWin32ContextManager::glCreateWindow(const CRaptorDisplayConfig& c
             }
 		    DestroyWindow(hwnd);
 	    }
+		ctx = id;
     }
     
     ReleaseDC(hwnd,dc);
@@ -676,8 +679,17 @@ bool CWin32ContextManager::glDestroyWindow(const RAPTOR_HANDLE& wnd)
     if ((wnd.hClass() != WINDOW_CLASS) || (wnd.handle() == 0))
         return false;
 
-    HWND hwnd = wnd.ptr<HWND__>();
-    return (0 != DestroyWindow(hwnd));
+	RENDERING_CONTEXT_ID id = getContext(wnd);
+	if (CContextManager::INVALID_CONTEXT != id)
+		glDestroyContext(id);
+
+	if (CWin32Application::destroyWindow)
+	{
+		HWND hwnd = wnd.ptr<HWND__>();
+		return (0 != DestroyWindow(hwnd));
+	}
+	else
+		return true;
 }
 
 //	
@@ -843,13 +855,11 @@ CContextManager::RENDERING_CONTEXT_ID  CWin32ContextManager::glCreateExtendedCon
         {
             piAttribIList[attribIndex++] = WGL_DRAW_TO_BITMAP_ARB; 
             piAttribIList[attribIndex++] = TRUE;
-			hDC = device.ptr<HDC__>();
         }
         else if (device.hClass() == DEVICE_CONTEXT_CLASS)
         {
             piAttribIList[attribIndex++] = WGL_DRAW_TO_WINDOW_ARB; 
             piAttribIList[attribIndex++] = TRUE;
-			hDC = device.ptr<HDC__>();
         }
 		else if (device.hClass() == WINDOW_CLASS)
 		{

@@ -62,8 +62,8 @@ CSlide::CSlide(const string& name,CPathObject& path)
 
         C3DSet::C3DSetIterator it = set->getIterator();
 	    m_pSlide = (CShadedGeometry*)(set->getChild(it++));
-		m_pSlide->setRenderingModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
-		m_pSlide->addModel(CGeometry::CRenderingModel::CGL_NORMALS);
+		m_pSlide->setRenderingModel(CGeometry::CGL_FRONT_GEOMETRY);
+		m_pSlide->addModel(CGeometry::CGL_NORMALS);
         m_pSlide->translateAbsolute(0.0f,0.0f,0.0f);
     }
 }

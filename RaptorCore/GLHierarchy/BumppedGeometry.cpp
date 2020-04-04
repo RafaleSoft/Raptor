@@ -150,7 +150,7 @@ void CBumppedGeometry::setEnvironmentMap(CTextureObject* environment)
 	m_pBumpShader->enableEmbm(envMap != NULL);
 }
 
-void CBumppedGeometry::setRenderingModel(CRenderingModel::MODEL model)
+void CBumppedGeometry::setRenderingModel(CGeometry::RENDERING_MODEL model)
 {
 	const CGeometryEditor &pEditor = getEditor();
     if (normals == NULL)
@@ -161,8 +161,8 @@ void CBumppedGeometry::setRenderingModel(CRenderingModel::MODEL model)
 
     //  render material normals is mandatory for this kind of geometry
 	CGeometry::setRenderingModel(model);
-	addModel(CRenderingModel::CGL_NORMALS);
-	addModel(CRenderingModel::CGL_TANGENTS);
+	addModel(CGeometry::CGL_NORMALS);
+	addModel(CGeometry::CGL_TANGENTS);
 	
 	if ((normalMap == NULL) || (diffuseMap == NULL))
 	{
@@ -202,8 +202,8 @@ CBumppedGeometry& CBumppedGeometry::operator=(const CGeometry &geo)
     const CGeometryEditor &pEditor = getEditor();
 	pEditor.genBinormals();
 
-	addModel(CRenderingModel::CGL_NORMALS);
-	addModel(CRenderingModel::CGL_TANGENTS);
+	addModel(CGeometry::CGL_NORMALS);
+	addModel(CGeometry::CGL_TANGENTS);
 
 	return *this;
 }
@@ -215,8 +215,8 @@ CBumppedGeometry& CBumppedGeometry::operator=(const CBumppedGeometry &geo)
 	const CGeometryEditor &pEditor = getEditor();
 	pEditor.genBinormals();
 
-	addModel(CRenderingModel::CGL_NORMALS);
-	addModel(CRenderingModel::CGL_TANGENTS);
+	addModel(CGeometry::CGL_NORMALS);
+	addModel(CGeometry::CGL_TANGENTS);
 
     return *this;
 }

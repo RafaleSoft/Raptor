@@ -167,6 +167,19 @@ LRESULT CALLBACK WindowProc(  HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
 	    case WM_DESTROY: 
 		{
+			HDC hdc = GetDC(hwnd);
+			RAPTOR_HANDLE display;
+			display.ptr(hdc);
+			display.hClass(CLIENT_HANDLE_CLASS);
+			if (pDisplay->glvkBindDisplay(display))
+			{
+				pDisplay->glvkReleaseResources();
+				pDisplay->glvkUnBindDisplay();
+			}
+
+			Raptor::glDestroyDisplay(pDisplay);
+			pDisplay = NULL;
+
 		    // kill the application, this sends a WM_QUIT message 
 		    PostQuitMessage(0);
 		    return(0);
@@ -189,7 +202,7 @@ int WINAPI WinMain(  HINSTANCE hinstance,
 		             int ncmdshow)
 {
     CRaptorConfig config;
-    config.m_bRelocation = false;
+    config.m_bRelocation = true;
     config.m_uiPolygons = 10000;
     config.m_uiVertices = 40000;
     config.m_uiTexels = 3000000;
@@ -268,6 +281,8 @@ int WINAPI WinMain(  HINSTANCE hinstance,
 
     delete pDoc;
     
+	DestroyWindow(hwnd);
+
 	if (Raptor::GetConfig().m_bAutoDestroy)
 		Raptor::glQuitRaptor();
 

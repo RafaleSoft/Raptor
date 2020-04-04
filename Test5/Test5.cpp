@@ -74,6 +74,8 @@ int WINAPI wWinMain(HINSTANCE hInstance,
 
     } // end while
 
+	delete pDoc;
+
 	Raptor::glQuitRaptor();
 
 	return (int) msg.wParam;
@@ -208,7 +210,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		}
 		case WM_DESTROY:
 		{
+			pDoc->glDestroy();
 			PostQuitMessage(0);
+			return DefWindowProc(hWnd, message, wParam, lParam);
 			break;
 		}
 		default:

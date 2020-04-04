@@ -76,7 +76,10 @@ private:
     virtual bool glQueryStatus(CRaptorDisplayConfig &state,unsigned long query) const;
 
     //! Inherited from CRaptorScreenDisplay
-    virtual void glReleaseResources(void);
+	virtual void glvkAllocateResources(void);
+
+	//! Inherited from CRaptorScreenDisplay
+	virtual void glvkReleaseResources(void);
 
     //! Internal for private use only.
     bool glCreateRenderDisplay(void);

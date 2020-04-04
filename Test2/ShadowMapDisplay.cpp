@@ -323,9 +323,9 @@ void CShadowMapDisplay::Init()
 		obj = (CGeometry *)p;
 		obj->translateAbsolute(0,0,0);
 		obj->rotationX(-90.0f);
-		obj->setRenderingModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
-		obj->addModel(CGeometry::CRenderingModel::CGL_NORMALS);
-		obj->addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
+		obj->setRenderingModel(CGeometry::CGL_FRONT_GEOMETRY);
+		obj->addModel(CGeometry::CGL_NORMALS);
+		obj->addModel(CGeometry::CGL_TEXTURE);
 		
 		*redBall = *obj;
         const CGeometryEditor &pEditor = redBall->getEditor();

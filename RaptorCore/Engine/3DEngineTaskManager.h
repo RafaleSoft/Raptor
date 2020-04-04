@@ -34,6 +34,12 @@ public:
     //! It must be called once per frame before any rendering.
     virtual bool run(void) = 0;
 
+	//! This method waits for active engine tasks to terminate
+	//!	and then release all used resources.
+	//! In order to run the engine again, a new call to initEngine 
+	//!	must be called.
+	virtual bool stopEngine(void) = 0;
+
 	//!	This method generates a unique batch Id for user batch jobs.
 	virtual unsigned int generateBatchId(void) = 0;
 

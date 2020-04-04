@@ -244,15 +244,16 @@ bool CRaptorServerInstance::start(unsigned int width, unsigned int height)
     }
 
 	glcs.refresh_rate.fps = CGL_MAXREFRESHRATE;
-	m_pWindow = Raptor::glCreateWindow(glcs,m_pDisplay);
-	if (m_pWindow.handle() == 0)
+	m_pApplication->initApplication(glcs);
+	if (!m_pApplication->initApplication(glcs))
     {
 		RAPTOR_FATAL(	CPersistence::CPersistenceClassID::GetClassId(),
 						"Raptor Render Server has no resources: hardware OpenGL rendering not supported, exiting...");
         return false;
     }
 
-	m_pDisplay->glvkBindDisplay(m_pWindow);
+	m_pDisplay = m_pApplication->getRootDisplay();
+	m_pDisplay->glvkBindDisplay(m_pApplication->getRootWindow());
 		CRaptorConsole *pConsole = Raptor::GetConsole();
 		pConsole->glInit();
 		pConsole->showStatus(true);
@@ -275,9 +276,7 @@ bool CRaptorServerInstance::start(unsigned int width, unsigned int height)
 
 	m_pApplication = CRaptorApplication::CreateApplication();
 	m_pApplication->grabCursor(false);
-	m_pApplication->initApplication();
-	m_pApplication->setRootWindow(m_pWindow);
-
+	
     if (m_pTranslator == NULL)
 	{
         m_pTranslator = CRaptorIO::Create("XMLIO",CRaptorIO::MEMORY,CRaptorIO::ASCII_XML);

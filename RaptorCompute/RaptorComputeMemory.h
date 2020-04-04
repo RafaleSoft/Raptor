@@ -32,11 +32,11 @@ public:
 	class RAPTOR_API IBufferObject : public IDeviceMemoryManager::IBufferObject
     {
     public:
-		static const BUFFER_KIND COMPUTE_BUFFER = IDeviceMemoryManager::IBufferObject::NB_BUFFER_KIND;				// 6
-		static const BUFFER_KIND INTEROP_COMPUTE_BUFFER = IDeviceMemoryManager::IBufferObject::NB_BUFFER_KIND + 1;	// 7
-		static const BUFFER_KIND LOCAL_BUFFER = IDeviceMemoryManager::IBufferObject::NB_BUFFER_KIND + 2;			// 8
-		static const BUFFER_KIND IMAGE_BUFFER = IDeviceMemoryManager::IBufferObject::NB_BUFFER_KIND + 3;			// 9
-		static const BUFFER_KIND NB_BUFFER_KIND = IDeviceMemoryManager::IBufferObject::NB_BUFFER_KIND + 4;			// 10
+		static const BUFFER_KIND COMPUTE_BUFFER = IDeviceMemoryManager::IBufferObject::NB_BUFFER_KIND;				// 5
+		static const BUFFER_KIND INTEROP_COMPUTE_BUFFER = IDeviceMemoryManager::IBufferObject::NB_BUFFER_KIND + 1;	// 6
+		static const BUFFER_KIND LOCAL_BUFFER = IDeviceMemoryManager::IBufferObject::NB_BUFFER_KIND + 2;			// 7
+		static const BUFFER_KIND IMAGE_BUFFER = IDeviceMemoryManager::IBufferObject::NB_BUFFER_KIND + 3;			// 8
+		static const BUFFER_KIND NB_BUFFER_KIND = IDeviceMemoryManager::IBufferObject::NB_BUFFER_KIND + 4;			// 9
 
     protected:
         IBufferObject() {};

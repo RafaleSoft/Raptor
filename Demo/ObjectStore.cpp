@@ -198,8 +198,8 @@ bool CObjectStore::IsAColumn(CGeometry *&g)
 		factory.glLoadTexture(normalMap,BUMP_0);
 		bump->setNormalMap(normalMap);
 
-		bump->setRenderingModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
-		bump->addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
+		bump->setRenderingModel(CGeometry::CGL_FRONT_GEOMETRY);
+		bump->addModel(CGeometry::CGL_TEXTURE);
 
 		m_columnBump = bump;
 		res = true;
@@ -239,9 +239,9 @@ bool CObjectStore::loadColumn(void)
 	{
 		CShadedGeometry *next = (CShadedGeometry*)(m_columnLow->getChild(it++));
 
-		g->setRenderingModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
-		g->addModel(CGeometry::CRenderingModel::CGL_NORMALS);
-		g->addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
+		g->setRenderingModel(CGeometry::CGL_FRONT_GEOMETRY);
+		g->addModel(CGeometry::CGL_NORMALS);
+		g->addModel(CGeometry::CGL_TEXTURE);
 
         const string& name = g->getName();
         if (name == "Column#2")
@@ -653,9 +653,9 @@ void CObjectStore::LoadModels(void)
 	{
 		CGeometry *next = (CGeometry*)(root->getChild(it++));
 		
-		g->setRenderingModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
-		g->addModel(CGeometry::CRenderingModel::CGL_NORMALS);
-		g->addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
+		g->setRenderingModel(CGeometry::CGL_FRONT_GEOMETRY);
+		g->addModel(CGeometry::CGL_NORMALS);
+		g->addModel(CGeometry::CGL_TEXTURE);
 
 		if (IsAColumn(g))
         {
@@ -780,9 +780,9 @@ void CObjectStore::BuildObjects(void)
     m_pBumpKnot->setDiffuseMap(m_textures->getTexture(MARBLE5));
 	m_pBumpKnot->setNormalMap(normalMap);
 	
-	m_pBumpKnot->setRenderingModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
-	m_pBumpKnot->addModel(CGeometry::CRenderingModel::CGL_NORMALS);
-	m_pBumpKnot->addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
+	m_pBumpKnot->setRenderingModel(CGeometry::CGL_FRONT_GEOMETRY);
+	m_pBumpKnot->addModel(CGeometry::CGL_NORMALS);
+	m_pBumpKnot->addModel(CGeometry::CGL_TEXTURE);
 
 	if (!Raptor::glIsExtensionSupported(GL_ARB_VERTEX_PROGRAM_EXTENSION_NAME))
     {

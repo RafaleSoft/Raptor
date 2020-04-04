@@ -46,6 +46,8 @@ CModifier::CModifier(TIME_FUNCTION_TYPE	timeFunction,
 
 CModifier::~CModifier()
 {
+	//!	Avoid Engine continue to use this object beeing deleted.
+	animate(false);
 }
 
 void RAPTOR_FASTCALL CModifier::deltaTime(float dt)

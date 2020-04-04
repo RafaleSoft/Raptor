@@ -208,9 +208,9 @@ void CTeapot::GLInitContext()
 	t->addTexture(normalMap);
 	teapot->setEnvironmentMap(t->getTexture("Datas\\ciel_07_small.jpg"));
 
-	teapot->setRenderingModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
-	teapot->addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
-	teapot->addModel(CGeometry::CRenderingModel::CGL_NORMALS);
+	teapot->setRenderingModel(CGeometry::CGL_FRONT_GEOMETRY);
+	teapot->addModel(CGeometry::CGL_TEXTURE);
+	teapot->addModel(CGeometry::CGL_NORMALS);
 	if (!Raptor::glIsExtensionSupported(GL_ARB_VERTEX_PROGRAM_EXTENSION_NAME))
 		Raptor::GetMessages()->displayMessage("Hardware unable to render bump mapping");
 

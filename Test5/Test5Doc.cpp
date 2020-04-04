@@ -130,6 +130,18 @@ CTest5Doc::~CTest5Doc(void)
 {
 }
 
+void CTest5Doc::glDestroy()
+{
+	if (m_pDisplay->glvkBindDisplay(m_device))
+	{
+		m_pDisplay->glvkReleaseResources();
+		m_pDisplay->glvkUnBindDisplay();
+	}
+
+	Raptor::glDestroyDisplay(m_pDisplay);
+	m_pDisplay = NULL;
+}
+
 void CTest5Doc::resize(unsigned int width, unsigned int height)
 {
 	if (m_pDisplay->glvkBindDisplay(m_device))
@@ -141,6 +153,9 @@ void CTest5Doc::resize(unsigned int width, unsigned int height)
 
 void CTest5Doc::glRender(void)
 {
+	if (NULL == m_pDisplay)
+		return;
+
 	bool res = m_pDisplay->glvkBindDisplay(m_device);
     if (res)
 	{
