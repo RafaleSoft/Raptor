@@ -334,7 +334,7 @@ int main(int argc, char* argv[])
 
 
     CRaptorConfig config;
-    config.m_bAutoDestroy = false;
+    config.m_bAutoDestroy = true;
     config.m_bRelocation = true;
     config.m_uiPolygons = 100;
     config.m_uiVertices = 400;
@@ -407,9 +407,7 @@ int main(int argc, char* argv[])
     app->run();
 
     int st = d->getStatus();
-
     delete d;
-	app->quitApplication();
 
     return st;
 }

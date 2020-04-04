@@ -211,6 +211,13 @@ void CRaptorFilteredDisplay::glvkReleaseResources(void)
     }
     m_pFilters.clear();
 
+	if ((CRaptorDisplayConfig::PIXEL_BUFFER == filter_cs.renderer) ||
+		(CRaptorDisplayConfig::PIXEL_BUFFER_FILTER_CHAIN == filter_cs.renderer))
+	{
+		if (m_bBufferBound)
+			m_pDisplay->glvkUnBindDisplay();
+	}
+
 	CRaptorScreenDisplay::glvkReleaseResources();
 }
 

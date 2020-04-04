@@ -475,7 +475,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	// sample 2 : GL/CL interop
 	GLinterop(pDisplay,wnd);
 
-	return 0;
+	return (pApp->quitApplication() ? 1 : 0);
 
 	// sample 3 : build a Kd-Tree
 	CBDDGPU bddGPU;

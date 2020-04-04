@@ -163,9 +163,6 @@ public:
 	//!	done every 3 frames )
     void setFrameDelay(short framedelay) { m_sFrameDelay = framedelay; };
 
-    //! Returns the number of time objects that remain for update
-    size_t getAnimateRemaining(void) const { return m_uiAnimateRemaining; }
-
 
 
     //!
@@ -214,9 +211,6 @@ public:
 
 private:
 	CAnimatorStream	*m_pStream;
-
-    //! The number of time object that remaining for update.
-    size_t	m_uiAnimateRemaining;
 
     //! The amount of time ( in ms ) since last frame
 	float	deltat;

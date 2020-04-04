@@ -73,6 +73,16 @@
 #if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
 	#include "System/RaptorGLExtensions.h"
 #endif
+#if defined(_WIN32)
+	#if !defined(AFX_WIN32TIMEOBJECT_H__81BA3EBB_33AF_411A_80D9_9E83894B0D30__INCLUDED_)
+		#include "Win32Specific/Win32TimeObject.h"
+	#endif
+#endif
+#if defined(LINUX)
+	#if !defined(AFX_GLXTIMEOBJECT_H__3079A145_D92D_45B8_BF7A_19FD1261159D__INCLUDED_)
+		#include "GLXSpecific/GLXTimeObject.h"
+	#endif
+#endif
 
 
 RAPTOR_NAMESPACE
@@ -115,6 +125,8 @@ CRaptorInstance::CRaptorInstance()
 	arrays_initialized = false;
 	m_pShaderLibraryInstance = NULL;
 	m_pNullShader = NULL;
+
+	m_timeImplementation = NULL;
 }
 
 CRaptorInstance &CRaptorInstance::GetInstance(void)
@@ -137,6 +149,12 @@ bool CRaptorInstance::destroy(void)
 	if (m_pInstance == NULL)
 		return false;
 
+	m_bTerminate = true;
+	m_bInitialised = false;
+
+	if (NULL != engineTaskMgr)
+		engineTaskMgr->stopEngine();
+
 	delete m_pInstance;
 	m_pInstance = NULL;
 
@@ -145,12 +163,6 @@ bool CRaptorInstance::destroy(void)
 
 CRaptorInstance::~CRaptorInstance()
 {
-	m_bTerminate = true;
-	m_bInitialised = false;
-
-	//! Destroy glObjects : we need a context.
-	CContextManager::GetInstance()->glMakeCurrentContext(defaultWindow, defaultContext);
-
 	//! Terminate Engine:
 	if (engineTaskMgr != NULL)
 	{
@@ -166,6 +178,9 @@ CRaptorInstance::~CRaptorInstance()
 		delete pConsole;
 		pConsole = NULL;
 	}
+
+	//! Destroy glObjects : we need a context.
+	CContextManager::GetInstance()->glMakeCurrentContext(defaultWindow, defaultContext);
 
 	glvkReleaseSharedRsources();
 
@@ -199,6 +214,11 @@ CRaptorInstance::~CRaptorInstance()
 	if (pErrorMgr != NULL)
 		delete pErrorMgr;
 	pErrorMgr = NULL;
+
+	if (NULL != m_timeImplementation)
+		delete m_timeImplementation;
+	m_timeImplementation = NULL;
+
 
 	//	Release imagers
 	map<std::string, CImage::IImageIO*>::iterator it = imageKindIO.begin();
@@ -274,6 +294,15 @@ void CRaptorInstance::initInstance()
 						 "Unable to load Vulkan module !");
 		}
 #endif
+
+	if (0 == m_timeImplementation)
+	{
+#if defined(_WIN32)
+		m_timeImplementation = new CWin32TimeObject();
+#elif defined(LINUX)
+		m_timeImplementation = new CGLXTimeObject();
+#endif
+	}
 
 	m_bInitialised = true;
 }

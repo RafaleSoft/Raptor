@@ -29,6 +29,13 @@
 #if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
 	#include "System/Raptor.h"
 #endif
+#if !defined(AFX_RAPTORINSTANCE_H__90219068_202B_46C2_BFF0_73C24D048903__INCLUDED_)
+	#include "Subsys/RaptorInstance.h"
+#endif
+#if !defined(AFX_3DENGINETASKMANAGER_H__04149C60_C594_4009_A2C9_F852497146A3__INCLUDED_)
+	#include "Engine/3DEngineTaskManager.h"
+#endif
+
 
 
 //////////////////////////////////////////////////////////////////////
@@ -54,12 +61,24 @@ CRaptorApplication::~CRaptorApplication()
     m_pInstance = NULL;
 }
 
-CRaptorApplication   *CRaptorApplication ::GetInstance(void)
+CRaptorApplication   *CRaptorApplication::GetInstance(void)
 { 
     return m_pInstance; 
 }
 
-CRaptorApplication  *CRaptorApplication ::CreateApplication(void)
+void CRaptorApplication::SetInstance(CRaptorApplication *application)
+{
+	if (m_pInstance != NULL)
+	{
+		RAPTOR_ERROR(CPersistence::CPersistenceClassID::GetClassId(),
+					 "RaptorApplication has already and instance !");
+		return;
+	}
+
+	m_pInstance = application;
+}
+
+CRaptorApplication  *CRaptorApplication::CreateApplication(void)
 {
     if (m_pInstance != NULL)
         return m_pInstance;
@@ -79,7 +98,7 @@ void CRaptorApplication::setRootWindow(const RAPTOR_HANDLE& root)
 	if ((root.handle() == 0) || (root.hClass() != WINDOW_CLASS))
 	{
 		RAPTOR_ERROR(CPersistence::CPersistenceClassID::GetClassId(),
-					 "RaptorApplication has no root window !.");
+					 "RaptorApplication has no root window !");
 		return;
 	}
 
@@ -109,6 +128,10 @@ bool CRaptorApplication::quitApplication(void)
 
 	if (NULL != m_root.ptr<HWND__>())
 	{
+		CRaptorInstance &instance = CRaptorInstance::GetInstance();
+		if (NULL != instance.engineTaskMgr)
+			instance.engineTaskMgr->stopEngine();
+
 		if (NULL != m_pDisplay)
 		{
 			res = res && m_pDisplay->glvkBindDisplay(m_root);

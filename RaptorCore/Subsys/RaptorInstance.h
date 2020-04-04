@@ -56,6 +56,7 @@ class CRenderEntryPoint;
 class CRaptorConsole;
 class CShader;
 class CShaderLibrary;
+RAPTOR_INTERFACE ITImeObjectImpl;
 
 
 class CRaptorInstance
@@ -193,6 +194,10 @@ public:
 
 	//! The instance.
 	CShaderLibrary	*m_pShaderLibraryInstance;
+
+
+	//!	Time management
+	ITImeObjectImpl	*m_timeImplementation;
 
 
 private:

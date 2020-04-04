@@ -75,6 +75,8 @@ IViewPoint::IViewPoint(const std::string& name) :
 
 IViewPoint::~IViewPoint()
 {
+	//!	Avoid Engine continue to use this object beeing deleted.
+	animate(false);
 }
 
 void IViewPoint::setPosition(float x, float y, float z, VIEW_POINT_POSITION p)

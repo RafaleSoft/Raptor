@@ -30,10 +30,6 @@ public:
 	CRaptorMFCApplication();
 	virtual ~CRaptorMFCApplication();
 
-    //!    Creates a new CGLFrameWnd using Raptor Defaut Display Config and then 
-    //!    sets this window as the application's root window.
-    CFrameWnd *createRootWindow(const CRaptorDisplayConfig& glcs);
-
 
 protected:
 	//! Implements CRaptorApplication
@@ -47,6 +43,10 @@ protected:
 
 
 private:
+	//!    Creates a new CGLFrameWnd using Raptor Defaut Display Config and then 
+	//!    sets this window as the application's root window.
+	CFrameWnd *createRootWindow(const CRaptorDisplayConfig& glcs);
+
 	//!	We need a real CWinApp to handle window messages.
 	CWinApp	*internal;
 };

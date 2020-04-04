@@ -10,6 +10,9 @@
 	- déplacer les resource allocator, ou faire un CRaptorInstance::switchDisplay : 
 	sous MFC, le changement de display ne suit pas les ressources ==> plantage de la video dans Test2/About
 
+- CTimeObject:
+	- déplacer les statiques dans CRaptorInstance.
+
 - GeometryAllocator:
 	- ajouter methode de copy entre arrays et appeler depuis CGeometry.
 

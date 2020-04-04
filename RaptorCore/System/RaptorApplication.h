@@ -76,6 +76,10 @@ public:
 protected:
     CRaptorApplication();
 
+	//! Sets the unique instance of application in the process.
+	//!	Helper for Raptor extensions, e.g. RaptorMFCApplication.
+	static void SetInstance(CRaptorApplication *application);
+
     static CRaptorApplication* m_pInstance;
 
 	//!	Application is in a running state.

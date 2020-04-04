@@ -12,14 +12,16 @@
 
 #include "Subsys/CodeGeneration.h"
 
+
 RAPTOR_NAMESPACE_BEGIN
 
-RAPTOR_INTERFACE ITImeObjectImpl;
+class CRaptorMutex;
+
 
 //!	CTimeObject class:
 //!	Implements a behaviour of a time dependant object.
 //!	Synchronization is managed by the current animator.
-class RAPTOR_API CTimeObject  
+class RAPTOR_API CTimeObject
 {
 public:
 	bool isAnimate(void) const
@@ -40,6 +42,8 @@ public:
 	bool isSynchronized(void) const { return m_synchronized; };
 	//!	Return false if another object had priority.
 	bool prioritize(void);
+	//!	Returns the global time mutex for locking objects in another thread.
+	static CRaptorMutex& getLock(void);
 
 	
 	//!
@@ -70,7 +74,7 @@ public:
 	static float deltaMarkTime(void *mark);
 
 	//!	Returns the array of all time objects.
-	static const vector<CTimeObject*>& getTimeObjects(void);
+	static const std::vector<CTimeObject*>& getTimeObjects(void);
 
 	//!	Compute physics resultant after dt time increment
 	virtual void RAPTOR_FASTCALL deltaTime(float dt) = 0;
@@ -80,16 +84,15 @@ protected:
 	CTimeObject();
 	virtual ~CTimeObject();
 
+
 private:
 	bool			m_animate;
 	bool			m_synchronized;
 
-	static ITImeObjectImpl	*m_impl;
-
 	static float	m_time;
 	static float	m_globalTime;
 	static float	m_deltat;
-	static			vector<CTimeObject*>	m_rootTimeObjects;
+	static			std::vector<CTimeObject*>	m_rootTimeObjects;
 };
 
 RAPTOR_NAMESPACE_END

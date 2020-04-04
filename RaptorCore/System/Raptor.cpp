@@ -163,16 +163,6 @@ int Raptor::glPurgeRaptor(bool count)
 
 	if (!count)
 	{
-		CRaptorInstance &instance = CRaptorInstance::GetInstance();
-
-        //! Use integer pos because glvkReleaseResources may destroy some displays
-		unsigned int dPos = 0;
-		while (dPos < instance.displays.size())
-		{
-			CRaptorDisplay *pDisplay = instance.displays[dPos++];
-            pDisplay->glvkReleaseResources();
-        }
-
 		while (nb>0)
 		{
 			void *pos = NULL;
@@ -454,14 +444,14 @@ bool Raptor::glInitRaptor(const CRaptorConfig& config)
 
 void Raptor::glRender(void)
 {
-	//!	Update global time reference.
-	CTimeObject::deltaTime();
-
 	//! Do not display debug information,
 	//!	because this method is likely to be called in a loop!
 	CRaptorInstance &instance = CRaptorInstance::GetInstance();
 	if ((!instance.isInitialised()) || (instance.terminate()))
 		return;
+
+	//!	Update global time reference.
+	CTimeObject::deltaTime();
 
 	vector<CRenderEntryPoint*>::iterator itr = instance.renderEntryPoints.begin();
 	vector<CRenderEntryPoint*>::iterator end = instance.renderEntryPoints.end();
