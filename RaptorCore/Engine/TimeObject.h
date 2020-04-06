@@ -92,7 +92,6 @@ private:
 	static float	m_time;
 	static float	m_globalTime;
 	static float	m_deltat;
-	static			std::vector<CTimeObject*>	m_rootTimeObjects;
 };
 
 RAPTOR_NAMESPACE_END

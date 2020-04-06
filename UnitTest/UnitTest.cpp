@@ -4,6 +4,7 @@
 #include "stdafx.h"
 #include "RaptorHandleTest.h"
 #include "RaptorImageTest.h"
+#include "RaptorSynchroTest.h"
 
 #include "core/TestResult.h"
 #include "core/TestSuite.h"
@@ -50,6 +51,10 @@ int _tmain(int argc, _TCHAR* argv[])
 	//	Create the test suite for Raptor CImage
 	suite = CRaptorImageTest::suite();
 	runner.addTest(suite);
+
+	//	Create the test suite for Raptor CRaptorMutex
+	//suite = CRaptorSynchroTest::suite();
+	//runner.addTest(suite);
 
 	bool res = runner.run();
 

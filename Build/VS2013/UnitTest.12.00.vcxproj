@@ -268,6 +268,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\UnitTest\RaptorHandleTest.h" />
     <ClInclude Include="..\..\UnitTest\RaptorImageTest.h" />
+    <ClInclude Include="..\..\UnitTest\RaptorSynchroTest.h" />
     <ClInclude Include="..\..\UnitTest\resource.h" />
     <ClInclude Include="..\..\UnitTest\stdafx.h" />
     <ClInclude Include="..\..\UnitTest\targetver.h" />
@@ -275,6 +276,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\UnitTest\RaptorHandleTest.cpp" />
     <ClCompile Include="..\..\UnitTest\RaptorImageTest.cpp" />
+    <ClCompile Include="..\..\UnitTest\RaptorSynchroTest.cpp" />
     <ClCompile Include="..\..\UnitTest\stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>

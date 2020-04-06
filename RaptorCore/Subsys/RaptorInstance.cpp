@@ -502,6 +502,8 @@ bool CRaptorInstance::glvkInitSharedResources(void)
 		m_displayBinder->useVertexArrayObjects();
 	}
 
+	CATCH_GL_ERROR
+
 	return true;
 }
 
@@ -556,6 +558,8 @@ bool CRaptorInstance::glvkReleaseSharedRsources()
 		delete m_pShaderLibraryInstance;
 		m_pShaderLibraryInstance = NULL;
 	}
+
+	CATCH_GL_ERROR
 
 	return true;
 }

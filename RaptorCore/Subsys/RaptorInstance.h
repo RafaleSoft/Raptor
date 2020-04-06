@@ -57,6 +57,7 @@ class CRaptorConsole;
 class CShader;
 class CShaderLibrary;
 RAPTOR_INTERFACE ITImeObjectImpl;
+class CTimeObject;
 
 
 class CRaptorInstance
@@ -192,12 +193,15 @@ public:
 	//! 2D Texture Font global shaders
 	CShader	*m_pFontShader;
 
-	//! The instance.
+	//! The shader library instance.
 	CShaderLibrary	*m_pShaderLibraryInstance;
 
 
 	//!	Time management
 	ITImeObjectImpl	*m_timeImplementation;
+	//!	Time objects of this instance.
+	std::vector<CTimeObject*>	m_rootTimeObjects;
+
 
 
 private:
