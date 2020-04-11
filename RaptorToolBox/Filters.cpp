@@ -90,7 +90,7 @@ bool CFilters::glInstallFilters(void)
 	for (size_t nb_shaders = 0; nb_shaders < NB_FACTORY_SHADERS; nb_shaders++)
 	{
 		factory_shader &fs = fsh[nb_shaders];
-		string shader_path = dataManager->ExportFile(fs.shader_fname);
+		string shader_path = dataManager->exportFile(fs.shader_fname);
 		if (!shader_path.empty())
 			res = res && CShaderProgram::glAddToLibrary(fs.shader_name, shader_path, fs.class_name);
 	}

@@ -90,9 +90,17 @@ bool CRaptorClient::load(const std::string& fname)
 	if (io->getStatus() == CRaptorIO::IO_OK)
 	{
 		std::cout << "Sending file " << fname << " to server." << std::endl;
-		uint8_t *buffer = new uint8_t[fsize];
-		io->read(buffer, fsize);
-		m_Client->write(buffer, fsize);
+		
+		CRaptorNetwork::DATA_COMMAND cmd = CRaptorNetwork::getDataPackageCommand();
+		size_t datasize = (size_t)fsize + (size_t)cmd.command.requestLen;
+		cmd.size = fsize;
+		cmd.pData = 0;
+
+		uint8_t *buffer = new uint8_t[datasize];
+		memcpy(buffer, &cmd, (size_t)cmd.command.requestLen);
+		io->read(&buffer[(size_t)cmd.command.requestLen], fsize);
+		
+		m_Client->write(buffer, datasize);
 		delete[] buffer;
 	}
 	else

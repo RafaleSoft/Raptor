@@ -235,7 +235,7 @@ bool CShaderLibrary::glLoadShadersFromDataPackage()
 	for (size_t nb_shaders = 0; nb_shaders < NB_FACTORY_SHADERS; nb_shaders++)
 	{
 		factory_shader &fs = fsh[nb_shaders];
-		string shader_path = dataManager->ExportFile(fs.shader_fname);
+		string shader_path = dataManager->exportFile(fs.shader_fname);
 		if (!shader_path.empty())
 		{
 			const CPersistentObject & po = pFactory->createObject(fs.class_name);

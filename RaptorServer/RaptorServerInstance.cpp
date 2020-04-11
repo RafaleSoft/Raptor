@@ -61,6 +61,10 @@
 	#include "GLHierarchy/IRenderingProperties.h"
 #endif
 
+#if !defined(AFX_RAPTORDATAMANAGER_H__114BFB19_FA00_4E3E_879E_C9130043668E__INCLUDED_)
+	#include "DataManager/RaptorDataManager.h"
+#endif
+
 #include "YUVCompressor.h"
 
 CRaptorServerInstance* CRaptorServerInstance::m_pInstance = NULL;
@@ -423,9 +427,6 @@ bool CRaptorServerInstance::handleReply(request_handler_t::request_id id, const 
 
 bool CRaptorServerInstance::executeRequest(request &r)
 {
-	if (m_pTranslator == NULL)
-		return false;
-
 	CRaptorNetwork::SERVER_COMMAND *command = (CRaptorNetwork::SERVER_COMMAND *)r.data;
 	// on the fly XML parsing is too low !!!
 	const CRaptorNetwork::SERVER_COMMAND& cmd = CRaptorNetwork::getRenderCommand();
@@ -444,8 +445,15 @@ bool CRaptorServerInstance::executeRequest(request &r)
 		return false;
 	}
 
-	const CRaptorNetwork::SESSION_COMMAND& cmd3 = CRaptorNetwork::getOpenSessionCommand();
-	if (!strncmp(command->command,cmd3.command.command,cmd3.command.commandLen))
+	const CRaptorNetwork::DATA_COMMAND& cmd3 = CRaptorNetwork::getDataPackageCommand();
+	if (!strncmp(command->command, cmd3.command.command, cmd3.command.commandLen))
+	{
+		r.reply = false;
+		return loadPackage(cmd3, r);
+	}
+
+	const CRaptorNetwork::SESSION_COMMAND& cmd4 = CRaptorNetwork::getOpenSessionCommand();
+	if (!strncmp(command->command,cmd4.command.command,cmd4.command.commandLen))
 	{
 		r.reply = true;
 		session s;
@@ -485,54 +493,94 @@ bool CRaptorServerInstance::executeRequest(request &r)
 		return true;
 	}
 
-
-	m_pTranslator->read((unsigned char*)r.data,r.size);
-
-	string name;
-	*m_pTranslator >> name;
-	string itemname = m_pTranslator->getValueName();
-
-	//  skip data intro
-	if (itemname == "Data")
-	{
-		*m_pTranslator  >> name; 
-		itemname = m_pTranslator->getValueName();
-
-		while (!itemname.empty())
-		{
-			CPersistence* obj = NULL;
-
-			if (itemname == "Update")
-			{
-				*m_pTranslator >> name;
-				itemname = m_pTranslator->getValueName();
-				if (itemname == "name")
-				{
-					*m_pTranslator >> name;
-					obj = CPersistence::FindObject(name);
-				}
-				if ((obj != NULL) && (obj == m_pDisplay))
-				{
-					// Map to display of current session
-					obj = r.display;
-				}
-			}
-			else
-			{
-				const CPersistentObject & po = CObjectFactory::GetInstance()->createObject(itemname);
-				obj = po;
-			}
-			if (obj != NULL)
-				obj->importObject(*m_pTranslator);
-			else
-				*m_pTranslator >> name;
-
-			itemname = m_pTranslator->getValueName();
-		}
-
-		return true;
-	}
-	else
-		return false;
+	return false;
 }
 
+bool CRaptorServerInstance::loadPackage(const CRaptorNetwork::DATA_COMMAND& cmd3, request& r)
+{
+	if (NULL == m_pTranslator)
+		return false;
+
+	CRaptorIO *io = CRaptorIO::Create("data.pck", CRaptorIO::DISK_WRITE, CRaptorIO::BINARY);
+
+	//!	Cannot open file
+	if (io->getStatus() != CRaptorIO::IO_OK)
+		return false;
+
+	std::cout << "Storing data package file to server." << std::endl;
+
+	std::streampos fsize = cmd3.size;
+	io->write(&cmd3.pData, fsize);
+	delete io;
+
+	CRaptorDataManager *datamanager = CRaptorDataManager::GetInstance();
+	datamanager->managePackage("data.pck");
+
+	//!	Package is empty
+	std::vector<std::string> files = datamanager->getManagedFiles("data.pck");
+	if (0 == files.size())
+		return false;
+
+
+	CRaptorDisplay * const pCurrentDisplay = CRaptorDisplay::GetCurrentDisplay();
+	m_pTranslator->parse("Demo.xml", 0);
+
+	std::string name;
+	//  skip data intro
+	*m_pTranslator >> name;
+	std::string data = m_pTranslator->getValueName();
+
+	while (!data.empty())
+	{
+		CPersistence* obj = NULL;
+
+		string itemname = m_pTranslator->getValueName();
+
+		//  skip data intro
+		if (itemname == "Data")
+		{
+			*m_pTranslator >> name;
+			itemname = m_pTranslator->getValueName();
+
+			while (!itemname.empty())
+			{
+				CPersistence* obj = NULL;
+
+				if (itemname == "Update")
+				{
+					*m_pTranslator >> name;
+					itemname = m_pTranslator->getValueName();
+					if (itemname == "name")
+					{
+						*m_pTranslator >> name;
+						obj = CPersistence::FindObject(name);
+					}
+					if ((obj != NULL) && (obj == m_pDisplay))
+					{
+						// Map to display of current session
+						for (size_t i = 0; i<m_sessions.size(); i++)
+							if (m_sessions[i].id == r.id)
+							{
+								obj = m_sessions[i].display;
+								break;
+							}
+					}
+				}
+				else
+				{
+					const CPersistentObject & po = CObjectFactory::GetInstance()->createObject(itemname);
+					obj = po;
+				}
+
+				if (obj != NULL)
+					obj->importObject(*m_pTranslator);
+				else
+					*m_pTranslator >> name;
+
+				itemname = m_pTranslator->getValueName();
+			}
+		}
+	}
+
+	return true;
+}

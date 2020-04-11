@@ -203,7 +203,7 @@
       </Command>
     </PreLinkEvent>
     <Link>
-      <AdditionalDependencies>opengl32.lib;glu32.lib;Raptor.lib;RaptorToolBox.lib;RaptorNetwork.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;glu32.lib;RaptorData.lib;Raptor.lib;RaptorToolBox.lib;RaptorNetwork.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>%(OutputFile)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>$(RAPTOR_ROOT)\redist\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -260,7 +260,7 @@
       </Command>
     </PreLinkEvent>
     <Link>
-      <AdditionalDependencies>opengl32.lib;glu32.lib;Raptor.lib;RaptorToolBox.lib;RaptorNetwork.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;glu32.lib;RaptorData.lib;Raptor.lib;RaptorToolBox.lib;RaptorNetwork.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>%(OutputFile)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>$(RAPTOR_ROOT)\redist\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -316,7 +316,7 @@
       </Command>
     </PreLinkEvent>
     <Link>
-      <AdditionalDependencies>opengl32.lib;glu32.lib;Raptor.lib;RaptorToolBox.lib;RaptorNetwork.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;glu32.lib;RaptorData.lib;Raptor.lib;RaptorToolBox.lib;RaptorNetwork.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>%(OutputFile)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>$(RAPTOR_ROOT)\redist\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -373,7 +373,7 @@
       </Command>
     </PreLinkEvent>
     <Link>
-      <AdditionalDependencies>opengl32.lib;glu32.lib;Raptor.lib;RaptorToolBox.lib;RaptorNetwork.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;glu32.lib;RaptorData.lib;Raptor.lib;RaptorToolBox.lib;RaptorNetwork.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>%(OutputFile)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>$(RAPTOR_ROOT)\redist\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -431,10 +431,10 @@
       </Command>
     </PreLinkEvent>
     <Link>
-      <AdditionalDependencies>opengl32.lib;glu32.lib;Raptor.lib;RaptorToolBox.lib;RaptorNetwork.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;glu32.lib;RaptorData.lib;Raptor.lib;RaptorToolBox.lib;RaptorNetwork.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>%(OutputFile)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>$(RAPTOR_ROOT)\redist\lib;$(SolutionDir)\AddOns;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(RAPTOR_ROOT)\redist\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -489,10 +489,10 @@
       </Command>
     </PreLinkEvent>
     <Link>
-      <AdditionalDependencies>opengl32.lib;glu32.lib;Raptor.lib;RaptorToolBox.lib;RaptorNetwork.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;glu32.lib;RaptorData.lib;Raptor.lib;RaptorToolBox.lib;RaptorNetwork.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>%(OutputFile)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>$(RAPTOR_ROOT)\redist\lib;$(SolutionDir)\AddOns;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(RAPTOR_ROOT)\redist\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -554,11 +554,11 @@
       </Command>
     </PreLinkEvent>
     <Link>
-      <AdditionalDependencies>opengl32.lib;glu32.lib;Raptor.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>RaptorServer.exe</OutputFile>
+      <AdditionalDependencies>opengl32.lib;glu32.lib;RaptorData.lib;Raptor.lib;RaptorToolBox.lib;RaptorNetwork.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>%(OutputFile)</OutputFile>
       <Version>$(RAPTOR_RELEASE)</Version>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>$(RAPTOR_ROOT)\redist\lib;$(PLATFORM_SDK)\Lib;../AddOns;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(RAPTOR_ROOT)\redist\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <ProgramDatabaseFile>.\Release/RaptorServer.pdb</ProgramDatabaseFile>
       <SubSystem>Console</SubSystem>
@@ -620,11 +620,11 @@
       </Command>
     </PreLinkEvent>
     <Link>
-      <AdditionalDependencies>opengl32.lib;glu32.lib;Raptor.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>RaptorServer.exe</OutputFile>
+      <AdditionalDependencies>opengl32.lib;glu32.lib;RaptorData.lib;Raptor.lib;RaptorToolBox.lib;RaptorNetwork.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>%(OutputFile)</OutputFile>
       <Version>$(RAPTOR_RELEASE)</Version>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>$(RAPTOR_ROOT)\redist\lib;$(PLATFORM_SDK)\Lib;../AddOns;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(RAPTOR_ROOT)\redist\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <ProgramDatabaseFile>.\Release/RaptorServer.pdb</ProgramDatabaseFile>
       <SubSystem>Console</SubSystem>

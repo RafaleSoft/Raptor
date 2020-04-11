@@ -259,7 +259,7 @@ void CRaptorInstance::initInstance()
 	CRaptorDataManager  *dataManager = CRaptorDataManager::GetInstance();
 	if (dataManager != NULL)
 	{
-		string filepath = dataManager->ExportFile("RaptorMessages.xml");
+		string filepath = dataManager->exportFile("RaptorMessages.xml");
 		if (!filepath.empty())
 			pMessages->LoadMessages(filepath);
 	}

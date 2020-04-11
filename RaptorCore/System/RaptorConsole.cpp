@@ -386,7 +386,7 @@ void CRaptorConsole::glInit(const std::string &fontPath,bool useVectors)
 	if ((filepath.empty()) && (!useVectors))
 	{
 		CRaptorDataManager  *dataManager = CRaptorDataManager::GetInstance();
-		filepath = dataManager->ExportFile("lucon.ttf");
+		filepath = dataManager->exportFile("lucon.ttf");
 	}
 
 	if ((!filepath.empty()) && (!useVectors))

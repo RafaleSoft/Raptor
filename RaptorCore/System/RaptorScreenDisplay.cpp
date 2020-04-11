@@ -518,7 +518,7 @@ CTextureQuad* CRaptorScreenDisplay::glBuildLogo(void)
 	if (NULL == dataManager)
 		return NULL;
 
-	string filepath = dataManager->ExportFile("Raptor_logo_sml.txt");
+	string filepath = dataManager->exportFile("Raptor_logo_sml.txt");
 	pLogo = new CTextureQuad();
 	pLogo->glLoadTexture(filepath, true);
 	pLogo->glSetQuadAttributes(GL_COORD_VERTEX(0.85f, -0.925f, 1.0f, 1.0f),
