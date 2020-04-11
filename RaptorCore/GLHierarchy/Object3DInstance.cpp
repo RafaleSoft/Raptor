@@ -24,21 +24,12 @@
 #if !defined(AFX_OPENGLRENDERINGPROPERTIES_H__1F0F1E67_FC84_4772_A6EE_923BD81F91D3__INCLUDED_)
 	#include "Subsys/OpenGL/OpenGLRenderingProperties.h"
 #endif
-//#if !defined(AFX_SHADER_H__4D405EC2_7151_465D_86B6_1CA99B906777__INCLUDED_)
-//	#include "GLHierarchy/Shader.h"
-//#endif
 #if !defined(AFX_OBJECT3DCONTAINERNOTIFIER_H__BF1EABCD_500E_4D7C_8561_2C535DF0640A__INCLUDED_)
     #include "Subsys/Object3DContainerNotifier.h"
 #endif
 #if !defined(AFX_3DENGINEMATRIX_H__6CD1110E_1174_4f38_A452_30FB312022D0__INCLUDED_)
 	#include "Engine/3DEngineMatrix.h"
 #endif
-//#if !defined(AFX_OPENGLPROGRAMSTAGE_H__0BCE3B42_6E10_4F50_BB27_1993345ADBCF__INCLUDED_)
-//	#include "GLHierarchy/OpenGLProgramStage.h"
-//#endif
-//#if !defined(AFX_OPENGLSHADERSTAGE_H__56B00FE3_E508_4FD6_9363_90E6E67446D9__INCLUDED_)
-//	#include "GLHierarchy/OpenGLShaderStage.h"
-//#endif
 
 
 #include <math.h>
@@ -57,7 +48,7 @@ const CPersistence::CPersistenceClassID& CObject3DInstance::CObject3DInstanceCla
 
 CObject3DInstance::CObject3DInstance(CObject3D * const instance,const std::string& name)
 	:CObject3D(instanceId,name),
-	m_pReference(instance), m_pOverride(NULL), m_pObserver(NULL) //,m_pShader(NULL)
+	m_pReference(instance), m_pOverride(NULL), m_pObserver(NULL)
 {
 	if (instance == this)
 		m_pReference = NULL;
@@ -88,7 +79,6 @@ CObject3DInstance::CObject3DInstance(CObject3D * const instance,const std::strin
 
 CObject3DInstance::CObject3DInstance(const CPersistence::CPersistenceClassID & classID,const std::string& name)
 	:CObject3D(classID, name), m_pOverride(NULL)
-//	,m_pShader(NULL)
 {
 	IDENT_MATRIX(m_transform);
 
@@ -104,11 +94,6 @@ CObject3DInstance::CObject3DInstance(const CPersistence::CPersistenceClassID & c
 
 CObject3DInstance::~CObject3DInstance()
 {
-	//if (m_pShader !=NULL)
-    //{
-    //    m_pShader->unregisterDestruction(this);
-	//	m_pShader->releaseReference();
-    //}
     if (m_pReference != NULL)
     {
         m_pReference->unregisterDestruction(this);
@@ -121,8 +106,6 @@ CObject3DInstance::~CObject3DInstance()
 
 void CObject3DInstance::unLink(const CPersistence* obj)
 {
-    //if (obj == static_cast<CPersistence*>(m_pShader))
-    //    m_pShader = NULL;
     if (obj == static_cast<CPersistence*>(m_pReference))
     {
         m_pReference = NULL;
@@ -156,37 +139,6 @@ vector<CObject3DContour*> CObject3DInstance::createContours(void)
         return res;
     }
 }
-/*
-void CObject3DInstance::setShader(CShader *shader)
-{
-    if (shader == m_pShader)
-        return ;
-
-    if (m_pShader != NULL)
-    {
-		m_pShader->unregisterDestruction(this);
-        m_pShader->releaseReference();
-        m_pShader = NULL;
-    }
-
-    if (shader != NULL)
-    {
-        m_pShader = shader;
-        m_pShader->addReference();
-        m_pShader->registerDestruction(this);
-    }
-}
-
-CShader * const CObject3DInstance::getShader(void)
-{
-	if (m_pShader == NULL)
-	{
-		m_pShader = new CShader(getName()+"_Shader");
-		m_pShader->registerDestruction(this);
-	}
-	return m_pShader;
-}
-*/
 
 void CObject3DInstance::overrideShading(const IRenderingProperties& override)
 {
@@ -323,9 +275,6 @@ void CObject3DInstance::glRender()
     if (m_pOverride != NULL)
         m_pOverride->glPushProperties();
 
-	//if (m_pShader != NULL)
-	//	m_pShader->glRender();
-
 	if (m_pReference != NULL)
 	{
 		glPushMatrix();
@@ -333,10 +282,6 @@ void CObject3DInstance::glRender()
 		m_pReference->glRender();
 		glPopMatrix();
 	}
-
-    //if (m_pShader != NULL)
-	//	if (m_pShader->hasOpenGLProgram())
-	//		m_pShader->glGetOpenGLProgram()->glStop();
 
     if (m_pOverride != NULL)
         m_pOverride->glPopProperties();
@@ -359,9 +304,6 @@ void CObject3DInstance::glClipRender()
     if (m_pOverride != NULL)
         m_pOverride->glPushProperties();
 
-	//if (m_pShader != NULL)
-	//	m_pShader->glRender();
-
 	if (m_pReference != NULL)
 	{
 		glPushMatrix();
@@ -369,10 +311,6 @@ void CObject3DInstance::glClipRender()
 		m_pReference->glClipRender();
 		glPopMatrix();
 	}
-
-    //if (m_pShader != NULL)
-	//	if (m_pShader->hasOpenGLProgram())
-	//		m_pShader->glGetOpenGLProgram()->glStop();
 
     if (m_pOverride != NULL)
         m_pOverride->glPopProperties();
@@ -717,22 +655,6 @@ bool CObject3DInstance::importObject(CRaptorIO& io)
             props.importObject(io);
             overrideShading(props);
         }
-		/*
-        else if (data == "Shader")
-        {
-            io >> name;
-			string data2 = io.getValueName();
-			if (data2 == "name")
-			{
-				io >> name;
-				CPersistence* object = CPersistence::FindObject(name);
-                if ((object != NULL) && 
-					(object->getId().isSubClassOf(CShader::CShaderClassID::GetClassId())))
-                    setShader(static_cast<CShader*>(object));
-                io >> name;
-            }
-        }
-		*/
 		else if (data == "Transform")
 		{
 			GL_MATRIX m;

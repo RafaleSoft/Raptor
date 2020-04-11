@@ -25,6 +25,7 @@ RAPTOR_NAMESPACE_BEGIN
 	#if defined(WGL_ARB_extensions_string)
 		PFN_WGL_GET_EXTENSIONS_STRING_ARB_PROC CRaptorGLExtensions::wglGetExtensionsStringARB = NULL;
 	#endif
+		IMPLEMENT_RAPTOR_WGL_ARB_create_context(CRaptorGLExtensions)
 		IMPLEMENT_RAPTOR_WGL_ARB_pixel_format(CRaptorGLExtensions)
 		IMPLEMENT_RAPTOR_WGL_ARB_pbuffer(CRaptorGLExtensions)
 		IMPLEMENT_RAPTOR_WGL_ARB_render_texture(CRaptorGLExtensions)
@@ -63,7 +64,8 @@ void CRaptorGLExtensions::glInitExtensions(void)
 		wglChoosePixelFormatARB = (PFN_WGL_CHOOSE_PIXEL_FORMAT_ARB_PROC)wglGetProcAddress("wglChoosePixelFormatARB");
 	#endif
 	
-		IMPLEMENT_WGL_ARB_render_texture(this)
+	IMPLEMENT_WGL_ARB_create_context(this);
+	IMPLEMENT_WGL_ARB_render_texture(this)
 	IMPLEMENT_WGL_ARB_pbuffer(this)
 #endif
 
@@ -97,6 +99,7 @@ void CRaptorGLExtensions::glInitExtensions(void)
 	IMPLEMENT_GL_EXT_framebuffer_multisample(this)
 	IMPLEMENT_GL_ARB_uniform_buffer_object(this)
 	IMPLEMENT_GL_ARB_vertex_array_object(this)
+	IMPLEMENT_GL_ARB_debug_output(this)
 
     CATCH_GL_ERROR
 	

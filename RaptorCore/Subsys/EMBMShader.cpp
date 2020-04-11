@@ -55,6 +55,7 @@
 
 RAPTOR_NAMESPACE
 
+
 int CEMBMShader::environmentMap = -1;
 static bool embm_shaders_initialized = false;
 

@@ -252,6 +252,7 @@ CGLBuilder::CGLBuilder():
 	addExtension(ARB, "GL_ARB_texture_compression_bptc", "GL_ARB_texture_compression", "GL_VERSION_3_1");
 	addExtension(ARB, "GL_ARB_uniform_buffer_object", "GL_ARB_shader_objects", "GL_ARB_vertex_buffer_object");
 	addExtension(ARB, "GL_ARB_compatibility");
+	addExtension(ARB, "GL_ARB_debug_output");
 
 	EXTENSION extension;
     extension.dependencies.clear(); 

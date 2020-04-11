@@ -16,11 +16,13 @@
 /***************************************************************************/
 
 
-#version 120
+#version 440 compatibility
 
+//	Maximum number of lights due to number of interpolators available
 const int MAX_LIGHTS = 5;
+const int GL_MAX_LIGHTS = 8;
 
-uniform int lightEnable[gl_MaxLights];
+uniform int lightEnable[GL_MAX_LIGHTS];
 uniform	sampler2D diffuseMap;
 
 //#define TEXTURE_PERLIN
@@ -37,8 +39,13 @@ uniform	sampler2D diffuseMap;
 	varying vec3 rr;
 #endif
 
-varying vec4 lightDirs[MAX_LIGHTS];
-varying vec3 eyedir;
+
+in vec4 lightDirs[MAX_LIGHTS];
+in vec3 eyedir;
+in vec4 o_texCoord;
+
+layout(location = 0) out vec4 o_Color;
+
 
 vec3 G[16] = vec3[16](	vec3(1.0,1.0,0.0),
 						vec3(-1.0,1.0,0.0),
@@ -105,19 +112,21 @@ vec3 G[16] = vec3[16](	vec3(1.0,1.0,0.0),
 	}
 #endif
 
+
+
 void main (void)
 {
 #ifdef TEXTURE3D_PERLIN
-	vec3 tn = vec3(texture3D(normalMap,vec3(gl_TexCoord[0].s,gl_TexCoord[0].t,0.0)));
+	vec3 tn = vec3(texture(normalMap,vec3(o_texCoord.s,o_texCoord.t,0.0)));
 #else
-	vec3 tn = vec3(texture2D(normalMap,vec2(gl_TexCoord[0].st)));
+	vec3 tn = vec3(texture(normalMap,vec2(o_texCoord.st)));
 #endif
 	vec3 N = 2*tn - vec3(1.0,1.0,1.0);
 
 #ifdef PROCEDURAL_PERLIN
 	float frequency = 4.0 / 128.0;
 	float amplitude = 1.0;
-	vec3 pos = vec3(gl_TexCoord[0].xyz);
+	vec3 pos = vec3(o_texCoord.xyz);
 	float n = 0.0;
 	for (int k=0 ; k<8 ; k++)
 	{
@@ -155,8 +164,9 @@ void main (void)
 #endif
 
 #ifdef EMBM_RENDERING
-	specular = specular + 0.2 * textureCube(environmentMap,rr);
+	specular = specular + 0.2 * texture(environmentMap,rr);
 #endif
 
-	gl_FragColor = specular + diffuse * texture2D(diffuseMap,vec2(gl_TexCoord[0].st));
+
+	o_Color = specular + diffuse * texture(diffuseMap,vec2(o_texCoord.st));
 }

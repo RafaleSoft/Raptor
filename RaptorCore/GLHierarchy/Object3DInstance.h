@@ -79,13 +79,6 @@ public:
     //! Override Display rendering properties tu use local object specific shading.
 	void overrideShading(const IRenderingProperties& override);
 
-    //! Returns the internal shader. A new shader is allocated if necessary.
-    //virtual CShader	* const getShader(void);
-
-     //! Assigns a shader to the instance ( and not to the holded object). The previous one is released.
-    //virtual void setShader(CShader *shader);
-
-
 	//!	I/O object serialization is implemented
     //! @see CPersistence.
 	DECLARE_IO
@@ -116,7 +109,6 @@ protected:
 
 
 private:
-    //CShader					*m_pShader;
 	IRenderingProperties	*m_pOverride;
     CContainerNotifier<CObject3D*> *m_pObserver;
 };
