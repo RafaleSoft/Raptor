@@ -322,14 +322,14 @@ void CLight::glRender(void)
 	if (0 != hwMapping)
 	{
 		glLightfv(hwMapping,GL_POSITION,m_pAttributes->m_position.vector());
-		glLightfv(hwMapping,GL_AMBIENT,ambient);
-		glLightfv(hwMapping,GL_DIFFUSE,diffuse);
-		glLightfv(hwMapping,GL_SPECULAR,specular);
+		glLightfv(hwMapping,GL_AMBIENT, M.ambient);
+		glLightfv(hwMapping,GL_DIFFUSE, M.diffuse);
+		glLightfv(hwMapping,GL_SPECULAR, M.specular);
 
 		if (m_pAttributes->m_spot)
 		{
 			glLightfv(hwMapping,GL_SPOT_DIRECTION,m_pAttributes->m_direction.vector());
-			glLightfv(hwMapping,GL_SPOT_EXPONENT,&shininess[0]);
+			glLightfv(hwMapping,GL_SPOT_EXPONENT,&M.shininess);
 			glLightfv(hwMapping,GL_SPOT_CUTOFF,&m_pAttributes->m_spotParams[3]);
 			glLightfv(hwMapping,GL_CONSTANT_ATTENUATION,&m_pAttributes->m_spotParams[2]);
 			glLightfv(hwMapping,GL_LINEAR_ATTENUATION,&m_pAttributes->m_spotParams[1]);

@@ -75,7 +75,7 @@ bool CVulkanPipeline::destroyPipeline()
 }
 
 
-bool CVulkanPipeline::initPipeline(const CVulkanShaderStage* shaderStages,
+bool CVulkanPipeline::initPipeline(const CShaderProgram* shaderStages,
 								   const CGeometry* geometry)
 {
 	VkResult res = VK_NOT_READY;
@@ -84,8 +84,8 @@ bool CVulkanPipeline::initPipeline(const CVulkanShaderStage* shaderStages,
 		return false;
 
 	//VkPipelineCache pipelineCache;
-
-	CVulkanShader* pShaderStage = shaderStages->getShader();
+	CVulkanShaderStage *stages = (CVulkanShaderStage*)shaderStages;
+	CVulkanShader* pShaderStage = stages->getShader();
 	if (NULL == pShaderStage)
 		return false;
 
@@ -188,7 +188,7 @@ bool CVulkanPipeline::initPipeline(const CVulkanShaderStage* shaderStages,
 	uint32_t subpass = 0;
 	VkPipeline basePipelineHandle = VK_NULL_HANDLE;
 	int32_t basePipelineIndex = -1;
-	VkPipelineLayout layout = shaderStages->getPipelineLayout();
+	VkPipelineLayout layout = stages->getPipelineLayout();
 
 	VkGraphicsPipelineCreateInfo pipeline_create_info = {VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
 														NULL,	// const void *pNext 

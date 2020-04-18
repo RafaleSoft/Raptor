@@ -128,7 +128,7 @@ unsigned int CRaptorIO::getSize(void) const
 //  Extensible io management
 std::string CRaptorIO::getValueName(void) const 
 { 
-	return NULL; 
+	return ""; 
 };
 
 

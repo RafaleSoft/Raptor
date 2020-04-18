@@ -27,6 +27,12 @@
 const int MAX_LIGHTS = 5;
 const int GL_MAX_LIGHTS = 8;
 
+layout (binding = 0) uniform Transform {
+	mat4 ModelViewMatrix;
+	mat4 ModelViewProjectionMatrix;
+} gl_Transform;
+
+
 uniform int lightEnable[GL_MAX_LIGHTS];
 uniform vec4 eyePos;
 

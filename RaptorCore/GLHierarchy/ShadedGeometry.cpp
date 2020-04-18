@@ -1,6 +1,20 @@
-// ShadedGeometry.cpp: implementation of the CShadedGeometry class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  ShadedGeometry.cpp                                                     */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
 
 #include "Subsys/CodeGeneration.h"
 
@@ -37,6 +51,12 @@
 #if !defined(AFX_RESOURCEALLOCATOR_H__4BAB58CE_942B_450D_88C9_AF0DDDF03718__INCLUDED_)
 	#include "Subsys/ResourceAllocator.h"
 #endif
+#if !defined(AFX_RAPTORVULKANDEVICE_H__2FDEDD40_444E_4CC2_96AA_CBF9E79C3ABE__INCLUDED_)
+	#include "Subsys/Vulkan/VulkanDevice.h"
+#endif
+#if !defined(AFX_RAPTORVULKANPIPELINE_H__C2997B30_C6E2_4EF2_AFE3_FCD27AB5CBB7__INCLUDED_)
+	#include "Subsys/Vulkan/VulkanPipeline.h"
+#endif
 
 
 RAPTOR_NAMESPACE
@@ -72,6 +92,25 @@ CShadedGeometry::~CShadedGeometry()
     if (m_pOverride != NULL)
         delete m_pOverride;
 }
+
+
+IRaptorPipeline* CShadedGeometry::glvkCreatePipeline(void)
+{
+	const CVulkanDevice& rDevice = CVulkanDevice::getCurrentDevice();
+	CVulkanPipeline *pPipeline = rDevice.createPipeline();
+	CShader* s = getShader();
+	CVulkanShaderStage *ss = s->vkGetVulkanShader();
+
+	if (!pPipeline->initPipeline(ss, this))
+	{
+		Raptor::GetErrorManager()->generateRaptorError(CShadedGeometry::CShadedGeometryClassID::GetClassId(),
+			CRaptorErrorManager::RAPTOR_FATAL,
+			"Failed to create vulkan pipeline object");
+	}
+
+	return pPipeline;
+}
+
 
 CShader * const CShadedGeometry::getShader(void)
 {

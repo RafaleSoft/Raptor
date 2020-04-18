@@ -59,7 +59,7 @@ COpenGLMemory::~COpenGLMemory(void)
 
 bool COpenGLMemory::relocationAvailable(void) const
 {
-#if (defined(GL_ARB_vertex_buffer_object) || defined(GL_NV_vertex_array_range))
+#if (defined(GL_ARB_vertex_buffer_object) || defined(GL_ARB_pixel_buffer_object) || defined(GL_NV_vertex_array_range) || defined(GL_ARB_uniform_buffer_object))
 	if (Raptor::glIsExtensionSupported(GL_ARB_VERTEX_BUFFER_OBJECT_EXTENSION_NAME) ||
 		Raptor::glIsExtensionSupported(GL_NV_VERTEX_ARRAY_RANGE_EXTENSION_NAME) ||
 		Raptor::glIsExtensionSupported(GL_ARB_PIXEL_BUFFER_OBJECT_EXTENSION_NAME) ||
@@ -480,7 +480,7 @@ bool COpenGLMemory::unlockBufferObject(IDeviceMemoryManager::IBufferObject &bo)
 GLenum  COpenGLMemory::BufferKindToGL(IDeviceMemoryManager::IBufferObject::BUFFER_KIND kind) const
 {
 #if defined(GL_ARB_vertex_buffer_object)
-    GLenum res = GL_ARRAY_BUFFER_ARB;
+    GLenum res = CGL_NULL;
 
     switch(kind)
     {
@@ -504,8 +504,14 @@ GLenum  COpenGLMemory::BufferKindToGL(IDeviceMemoryManager::IBufferObject::BUFFE
 			break;
 #endif
         default:
-            res = GL_ARRAY_BUFFER_ARB;
-            break;
+		{
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+			RAPTOR_WARNING(	COpenGL::COpenGLClassID::GetClassId(),
+							"The requested Buffer kind is not supported");
+#endif
+			res = CGL_NULL;
+			break;
+		}
     }
 
     return res;

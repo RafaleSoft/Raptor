@@ -216,6 +216,34 @@ CShader::~CShader()
 	vkRemoveVulkanShader();
 }
 
+void CShader::glRender()
+{
+	if (NULL != m_pOpenGLShader)
+		m_pOpenGLShader->glRender();
+	else if (NULL != m_pOpenGLProgram)
+		m_pOpenGLProgram->glRender();
+
+	CATCH_GL_ERROR
+}
+
+void CShader::glStop()
+{
+	if (NULL != m_pOpenGLShader)
+		m_pOpenGLShader->glStop();
+	else if (NULL != m_pOpenGLProgram)
+		m_pOpenGLProgram->glStop();
+
+	//	This call generates too much load in GL client/server.
+	//	Derived classes shall implement own UnSetup until a more general
+	//	TMU resource allocation manager can be used
+	/*
+	if ((0 != m_textureUnitSetup.handle) &&
+		(0 != m_textureUnitUnSetup.handle))
+		if (IRenderingProperties::GetCurrentProperties()->getCurrentTexturing() == IRenderingProperties::ENABLE)
+			glCallList(m_textureUnitUnSetup.handle);
+	*/
+}
+
 void CShader::setAmbient(GLfloat r,GLfloat g,GLfloat b,GLfloat a) 
 { 
     m_ambient.r = r; 
@@ -456,16 +484,30 @@ bool CShader::vkRemoveVulkanShader(void)
 
 void CShader::glRenderMaterial(void)
 {
+	if ((NULL != m_pMaterial) && (NULL != m_pOpenGLShader))
+	{
+		if (m_pMaterial->doRebuild())
+		{
+			CProgramParameters::CParameter<CMaterial::Material_t> material(m_pMaterial->getMaterial());
+			material.name("Material");
+			material.locationType = GL_UNIFORM_BLOCK_BINDING_ARB;
+			CProgramParameters params;
+			params.addParameter(material);
+
+			m_pOpenGLShader->updateProgramParameters(params);
+		}
+	}
+
 	if (IRenderingProperties::GetCurrentProperties()->getCurrentLighting() == IRenderingProperties::ENABLE)
 	{
-		if (m_pMaterial!=NULL)
+		if (m_pMaterial != NULL)
 		    m_pMaterial->glRender();
 		else
 			glColor4f(m_color.r, m_color.g, m_color.b, m_color.a);
 	}
 	else
     {
-        if (m_pMaterial!=NULL)
+        if (m_pMaterial != NULL)
         {
             //  Apply a color proportional to global ambient and material ambient settings
             CColor::RGBA ambientMat = m_pMaterial->getAmbient();
@@ -498,33 +540,6 @@ void CShader::glRenderTexture(void)
 	CATCH_GL_ERROR
 }
 
-void CShader::glRender()
-{
-	if (NULL != m_pOpenGLShader)
-		m_pOpenGLShader->glRender();
-    else if (NULL != m_pOpenGLProgram)
-		m_pOpenGLProgram->glRender();
-
-    CATCH_GL_ERROR
-}
-
-void CShader::glStop()
-{
-	if (NULL != m_pOpenGLShader)
-		m_pOpenGLShader->glStop();
-	else if (NULL != m_pOpenGLProgram)
-		m_pOpenGLProgram->glStop();
-
-	//	This call generates too much load in GL client/server.
-	//	Derived classes shall implement own UnSetup until a more general
-	//	TMU resource allocation manager can be used
-	/*
-	if ((0 != m_textureUnitSetup.handle) &&
-		(0 != m_textureUnitUnSetup.handle))
-		if (IRenderingProperties::GetCurrentProperties()->getCurrentTexturing() == IRenderingProperties::ENABLE)
-			glCallList(m_textureUnitUnSetup.handle);
-	*/
-}
 
 bool CShader::exportObject(CRaptorIO& o)
 {

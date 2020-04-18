@@ -60,10 +60,6 @@ public:
 	//! Symetric as above : detaches the vertex program from the program object, performing checking.
 	bool glUnbindProgram(RAPTOR_HANDLE program);
 
-	//! Computes and returns and size required to allocate a uniform
-	//! buffer object backing uniform blocks
-	//! @return the required size in bytes.
-	uint64_t glGetBufferMemoryRequirements(RAPTOR_HANDLE program);
 
 
 protected:
