@@ -38,6 +38,7 @@ public:
     {
         ASCII_TEXT,
         ASCII_XML,
+		BINARY
     } IO_FORMAT;
 
     typedef enum
@@ -113,7 +114,7 @@ protected:
 	CRaptorIO(const std::string& streamName, CRaptorIO::IO_KIND kind);
 
     IO_STATUS		m_status;
-	unsigned int	m_size;
+	std::streampos	m_size;
 	std::ofstream	m_outFile;
 	std::ifstream	m_inFile;
 

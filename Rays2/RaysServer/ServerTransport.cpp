@@ -113,7 +113,7 @@ bool CServerTransport::stopServer(void)
 	return CServer<CServerSocket,CClientSocket>::stopServer();
 }
 
-int CServerTransport::onNewClient(const CClientSocket &client)
+size_t CServerTransport::onNewClient(const CClientSocket &client)
 {
 	Network::userOutput(INetworkLogger::NETWORK_INFO, "New client connected");
 	return 0;

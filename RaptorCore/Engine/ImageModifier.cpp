@@ -250,7 +250,12 @@ void blowFader(int width, int height, unsigned char *src, unsigned char *dst, un
 	unsigned int width4 = width * 4;
 
 	unsigned int val = 0;
+
+#if defined(RAPTOR_SSE_CODE_GENERATION) && !defined(_WIN64)
 	__m64 param = _mm_unpacklo_pi8(_mm_cvtsi32_si64(dwParam), _mm_setzero_si64());
+#elif defined(RAPTOR_SSE2_CODE_GENERATION)
+	__m128i param = _mm_unpacklo_epi8(_mm_cvtsi32_si128(dwParam), _mm_setzero_si128());
+#endif
 
 	for (int i = 0; i<height; i++)
 	{
@@ -280,6 +285,7 @@ void blowFader(int width, int height, unsigned char *src, unsigned char *dst, un
 				finaloffset = ofssrc + xinc + yinc;
 
 			unsigned int* pixels = (unsigned int*)finaloffset;
+
 #if defined(RAPTOR_SSE_CODE_GENERATION) && !defined(_WIN64)
 			// read pixels
 			//	... on current line ...
@@ -317,6 +323,43 @@ void blowFader(int width, int height, unsigned char *src, unsigned char *dst, un
 		
 			// store pixel
 			*((unsigned int*)ofsdst) = _mm_cvtsi64_si32(c7);
+
+#elif defined(RAPTOR_SSE2_CODE_GENERATION)
+			// read pixels
+			//	... on current line ...
+			__m128i c1 = _mm_unpacklo_epi8(_mm_cvtsi32_si128(*(pixels - 1)), _mm_setzero_si128());
+			__m128i c0 = _mm_unpacklo_epi8(_mm_cvtsi32_si128(*(pixels + 1)), _mm_setzero_si128());
+			__m128i c7 = _mm_add_epi16(c1, c0);
+			pixels += width;
+
+			// ... on line below ...
+			c1 = _mm_unpacklo_epi8(_mm_cvtsi32_si128(*pixels), _mm_setzero_si128());
+			c0 = _mm_unpacklo_epi8(_mm_cvtsi32_si128(*(pixels - 1)), _mm_setzero_si128());
+			c7 = _mm_add_epi16(c7, c1);
+			c7 = _mm_add_epi16(c7, c0);
+			c1 = _mm_unpacklo_epi8(_mm_cvtsi32_si128(*(pixels + 1)), _mm_setzero_si128());
+			pixels = pixels - width - width;
+			c7 = _mm_add_epi16(c7, c1);
+
+			// ... on line over ...
+			c1 = _mm_unpacklo_epi8(_mm_cvtsi32_si128(*(pixels)), _mm_setzero_si128());
+			c0 = _mm_unpacklo_epi8(_mm_cvtsi32_si128(*(pixels - 1)), _mm_setzero_si128());
+			c7 = _mm_add_epi16(c7, c1);
+			c7 = _mm_add_epi16(c7, c0);
+			c1 = _mm_unpacklo_epi8(_mm_cvtsi32_si128(*(pixels + 1)), _mm_setzero_si128());
+			pixels += width;
+			c7 = _mm_add_epi16(c7, c1);
+
+			// compute fading
+			c7 = _mm_srli_epi16(c7, 3);
+			c0 = _mm_unpacklo_epi8(_mm_cvtsi32_si128(*(pixels)), _mm_setzero_si128());
+			c7 = _mm_add_epi16(c7, c0);
+			c7 = _mm_srli_epi16(c7, 1);
+			c7 = _mm_sub_epi16(c7, param);
+			c7 = _mm_packus_epi16(c7, _mm_setzero_si128());
+
+			// store pixel
+			*((unsigned int*)ofsdst) = _mm_cvtsi128_si32(c7);
 #endif
 			ofsdst += 4;
 			ofssrc += 4;
@@ -336,14 +379,18 @@ void motionFader(int width, int height, unsigned char *src, unsigned char *dst, 
 	// to perform motion : source pixels are one line below destination
 	ofssrc += 4 * width;
 
-	// fading parameter
+#if defined(RAPTOR_SSE_CODE_GENERATION) && !defined(_WIN64)
 	__m64 param = _mm_unpacklo_pi8(_mm_cvtsi32_si64(dwParam), _mm_setzero_si64());
+#elif defined(RAPTOR_SSE2_CODE_GENERATION)
+	__m128i param = _mm_unpacklo_epi8(_mm_cvtsi32_si128(dwParam), _mm_setzero_si128());
+#endif
 
 	for (int i = 0; i < height; i++)
 	{
 		for (int j = 0; j < width; j++)
 		{
 			unsigned int* pixels = (unsigned int*)ofssrc;
+
 #if defined(RAPTOR_SSE_CODE_GENERATION) && !defined(_WIN64)
 			// read pixels
 			//	... on current line ...
@@ -380,6 +427,43 @@ void motionFader(int width, int height, unsigned char *src, unsigned char *dst, 
 
 			// store pixel
 			*((unsigned int*)ofsdst) = _mm_cvtsi64_si32(c7);
+
+#elif defined(RAPTOR_SSE2_CODE_GENERATION)
+			// read pixels
+			//	... on current line ...
+			__m128i c1 = _mm_unpacklo_epi8(_mm_cvtsi32_si128(*(pixels - 1)), _mm_setzero_si128());
+			__m128i c0 = _mm_unpacklo_epi8(_mm_cvtsi32_si128(*(pixels + 1)), _mm_setzero_si128());
+			__m128i c7 = _mm_add_epi16(c1, c0);
+			pixels += width;
+
+			// ... on line below ...
+			c1 = _mm_unpacklo_epi8(_mm_cvtsi32_si128(*pixels), _mm_setzero_si128());
+			c0 = _mm_unpacklo_epi8(_mm_cvtsi32_si128(*(pixels - 1)), _mm_setzero_si128());
+			c7 = _mm_add_epi16(c7, c1);
+			c7 = _mm_add_epi16(c7, c0);
+			c1 = _mm_unpacklo_epi8(_mm_cvtsi32_si128(*(pixels + 1)), _mm_setzero_si128());
+			pixels = pixels - width - width;
+			c7 = _mm_add_epi16(c7, c1);
+
+			// ... on line over ...
+			c1 = _mm_unpacklo_epi8(_mm_cvtsi32_si128(*(pixels)), _mm_setzero_si128());
+			c0 = _mm_unpacklo_epi8(_mm_cvtsi32_si128(*(pixels - 1)), _mm_setzero_si128());
+			c7 = _mm_add_epi16(c7, c1);
+			c7 = _mm_add_epi16(c7, c0);
+			c1 = _mm_unpacklo_epi8(_mm_cvtsi32_si128(*(pixels + 1)), _mm_setzero_si128());
+			pixels += width;
+			c7 = _mm_add_epi16(c7, c1);
+
+			// compute fading
+			c7 = _mm_srli_epi16(c7, 3);
+			c0 = _mm_unpacklo_epi8(_mm_cvtsi32_si128(*(pixels)), _mm_setzero_si128());
+			c7 = _mm_add_epi16(c7, c0);
+			c7 = _mm_srli_epi16(c7, 1);
+			c7 = _mm_sub_epi16(c7, param);
+			c7 = _mm_packus_epi16(c7, _mm_setzero_si128());
+
+			// store pixel
+			*((unsigned int*)ofsdst) = _mm_cvtsi128_si32(c7);
 #endif
 			ofsdst += 4;
 			ofssrc += 4;
@@ -397,7 +481,11 @@ void staticFader(int width, int height, unsigned char *src, unsigned char *dst, 
 	unsigned char *ofssrc = src;
 
 	// fading parameter
+#if defined(RAPTOR_SSE_CODE_GENERATION) && !defined(_WIN64)
 	__m64 param = _mm_unpacklo_pi8(_mm_cvtsi32_si64(dwParam), _mm_setzero_si64());
+#elif defined(RAPTOR_SSE2_CODE_GENERATION)
+	__m128i param = _mm_unpacklo_epi8(_mm_cvtsi32_si128(dwParam), _mm_setzero_si128());
+#endif
 
 	for (int i = 0; i < height; i++)
 	{
@@ -441,11 +529,49 @@ void staticFader(int width, int height, unsigned char *src, unsigned char *dst, 
 
 			// store pixel
 			*((unsigned int*)ofsdst) = _mm_cvtsi64_si32(c7);
+
+#elif defined(RAPTOR_SSE2_CODE_GENERATION)
+			// read pixels
+			//	... on current line ...
+			__m128i c1 = _mm_unpacklo_epi8(_mm_cvtsi32_si128(*(pixels - 1)), _mm_setzero_si128());
+			__m128i c0 = _mm_unpacklo_epi8(_mm_cvtsi32_si128(*(pixels + 1)), _mm_setzero_si128());
+			__m128i c7 = _mm_add_epi16(c1, c0);
+			pixels += width;
+
+			// ... on line below ...
+			c1 = _mm_unpacklo_epi8(_mm_cvtsi32_si128(*pixels), _mm_setzero_si128());
+			c0 = _mm_unpacklo_epi8(_mm_cvtsi32_si128(*(pixels - 1)), _mm_setzero_si128());
+			c7 = _mm_add_epi16(c7, c1);
+			c7 = _mm_add_epi16(c7, c0);
+			c1 = _mm_unpacklo_epi8(_mm_cvtsi32_si128(*(pixels + 1)), _mm_setzero_si128());
+			pixels = pixels - width - width;
+			c7 = _mm_add_epi16(c7, c1);
+
+			// ... on line over ...
+			c1 = _mm_unpacklo_epi8(_mm_cvtsi32_si128(*(pixels)), _mm_setzero_si128());
+			c0 = _mm_unpacklo_epi8(_mm_cvtsi32_si128(*(pixels - 1)), _mm_setzero_si128());
+			c7 = _mm_add_epi16(c7, c1);
+			c7 = _mm_add_epi16(c7, c0);
+			c1 = _mm_unpacklo_epi8(_mm_cvtsi32_si128(*(pixels + 1)), _mm_setzero_si128());
+			pixels += width;
+			c7 = _mm_add_epi16(c7, c1);
+
+			// compute fading
+			c7 = _mm_srli_epi16(c7, 3);
+			c0 = _mm_unpacklo_epi8(_mm_cvtsi32_si128(*(pixels)), _mm_setzero_si128());
+			c7 = _mm_add_epi16(c7, c0);
+			c7 = _mm_srli_epi16(c7, 1);
+			c7 = _mm_sub_epi16(c7, param);
+			c7 = _mm_packus_epi16(c7, _mm_setzero_si128());
+
+			// store pixel
+			*((unsigned int*)ofsdst) = _mm_cvtsi128_si32(c7);
 #endif
 			ofsdst += 4;
 			ofssrc += 4;
 		}
 	}
+
 #if defined(RAPTOR_SSE_CODE_GENERATION) && !defined(_WIN64)
 	_mm_empty();
 #endif
@@ -466,7 +592,12 @@ void spinFader(int width, int height, unsigned char *src, unsigned char *dst, un
 
 	unsigned int val = 0;
 
+	// fading parameter
+#if defined(RAPTOR_SSE_CODE_GENERATION) && !defined(_WIN64)
 	__m64 param = _mm_unpacklo_pi8(_mm_cvtsi32_si64(dwParam), _mm_setzero_si64());
+#elif defined(RAPTOR_SSE2_CODE_GENERATION)
+	__m128i param = _mm_unpacklo_epi8(_mm_cvtsi32_si128(dwParam), _mm_setzero_si128());
+#endif
 
 	for (int i = 0; i<height; i++)
 	{
@@ -494,6 +625,7 @@ void spinFader(int width, int height, unsigned char *src, unsigned char *dst, un
 			}
 
 			unsigned int* pixels = (unsigned int*)finaloffset;
+
 #if defined(RAPTOR_SSE_CODE_GENERATION) && !defined(_WIN64)
 			// read pixels
 			//	... on current line ...
@@ -530,11 +662,49 @@ void spinFader(int width, int height, unsigned char *src, unsigned char *dst, un
 
 			// store pixel
 			*((unsigned int*)ofsdst) = _mm_cvtsi64_si32(c7);
+
+#elif defined(RAPTOR_SSE2_CODE_GENERATION)
+			// read pixels
+			//	... on current line ...
+			__m128i c1 = _mm_unpacklo_epi8(_mm_cvtsi32_si128(*(pixels - 1)), _mm_setzero_si128());
+			__m128i c0 = _mm_unpacklo_epi8(_mm_cvtsi32_si128(*(pixels + 1)), _mm_setzero_si128());
+			__m128i c7 = _mm_add_epi16(c1, c0);
+			pixels += width;
+
+			// ... on line below ...
+			c1 = _mm_unpacklo_epi8(_mm_cvtsi32_si128(*pixels), _mm_setzero_si128());
+			c0 = _mm_unpacklo_epi8(_mm_cvtsi32_si128(*(pixels - 1)), _mm_setzero_si128());
+			c7 = _mm_add_epi16(c7, c1);
+			c7 = _mm_add_epi16(c7, c0);
+			c1 = _mm_unpacklo_epi8(_mm_cvtsi32_si128(*(pixels + 1)), _mm_setzero_si128());
+			pixels = pixels - width - width;
+			c7 = _mm_add_epi16(c7, c1);
+
+			// ... on line over ...
+			c1 = _mm_unpacklo_epi8(_mm_cvtsi32_si128(*(pixels)), _mm_setzero_si128());
+			c0 = _mm_unpacklo_epi8(_mm_cvtsi32_si128(*(pixels - 1)), _mm_setzero_si128());
+			c7 = _mm_add_epi16(c7, c1);
+			c7 = _mm_add_epi16(c7, c0);
+			c1 = _mm_unpacklo_epi8(_mm_cvtsi32_si128(*(pixels + 1)), _mm_setzero_si128());
+			pixels += width;
+			c7 = _mm_add_epi16(c7, c1);
+
+			// compute fading
+			c7 = _mm_srli_epi16(c7, 3);
+			c0 = _mm_unpacklo_epi8(_mm_cvtsi32_si128(*(pixels)), _mm_setzero_si128());
+			c7 = _mm_add_epi16(c7, c0);
+			c7 = _mm_srli_epi16(c7, 1);
+			c7 = _mm_sub_epi16(c7, param);
+			c7 = _mm_packus_epi16(c7, _mm_setzero_si128());
+
+			// store pixel
+			*((unsigned int*)ofsdst) = _mm_cvtsi128_si32(c7);
 #endif
 			ofsdst += 4;
 			ofssrc += 4;
 		}
 	}
+
 #if defined(RAPTOR_SSE_CODE_GENERATION) && !defined(_WIN64)
 	_mm_empty();
 #endif
