@@ -766,8 +766,8 @@ void CVertexShadersDisplay::Init()
 	CBasicObjects::CRectMesh *water = new CBasicObjects::CRectMesh();
 	water->setDimensions(3000.0f,3000.0f,100,100);
 	water->rotationX(-90.0f);
-	water->addModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
-	water->addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
+	water->setRenderingModel(CGeometry::CGL_FRONT_GEOMETRY);
+	water->addModel(CGeometry::CGL_TEXTURE);
 
 	CShader *pShader = water->getShader();
 	shaderModifier = new ShaderModifier(pShader);
@@ -818,8 +818,8 @@ void CVertexShadersDisplay::Init()
 	CShadedGeometry *sky = new CShadedGeometry();
 	CGeometry* skydome = (CGeometry*)CPersistence::FindObject("SKYDOME");
 	*sky = *skydome;
-	sky->addModel(CGeometry::CRenderingModel::CGL_BACK_GEOMETRY);
-	sky->addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
+	sky->setRenderingModel(CGeometry::CGL_BACK_GEOMETRY);
+	sky->addModel(CGeometry::CGL_TEXTURE);
 	CShader *sh = sky->getShader();
 	CTextureUnitSetup* tus = sh->glGetTextureUnitsSetup();
 	T = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_OPAQUE,ITextureObject::CGL_BILINEAR);

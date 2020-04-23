@@ -30,8 +30,6 @@ int main(int argc, char* argv[])
 
     CImaging::installImagers();
 
-    CRaptorApplication  *app = CRaptorApplication::CreateApplication();
-    app->initApplication();
 
     unsigned long v = Raptor::GetVersion();
 	stringstream title;
@@ -54,26 +52,22 @@ int main(int argc, char* argv[])
 	glcs.display_mode = CGL_FLOAT_16 | CGL_DEPTH;
 	//glcs.refresh_rate.sync_to_monitor = true;
  
-    CRaptorDisplay *pDisplay = NULL;
-    RAPTOR_HANDLE wnd = Raptor::glCreateWindow(glcs,pDisplay);
-
-    if (wnd.handle() == 0)
+    CRaptorApplication  *app = CRaptorApplication::CreateApplication();
+	if (!app->initApplication(glcs))
     {
         Raptor::GetMessages()->displayMessage("Sorry: Test cannot run : full display config is not supported, trying basic window...");
         glcs.display_mode = CGL_RGBA| CGL_DEPTH;
-        wnd = Raptor::glCreateWindow(glcs,pDisplay);
-        if (wnd.handle() == 0)
+		if (!app->initApplication(glcs))
         {
             Raptor::GetMessages()->displayMessage("Sorry: Test cannot run : hardware OpenGL rendering not supported, exiting...");
             return -1;
         }
     }
 
-    app->setRootWindow(wnd);
+	CRaptorDisplay *pDisplay = app->getRootDisplay();
+    CTestDoc *pDoc = new CTestDoc(app->getRootWindow(),pDisplay);
 
-    CTestDoc *pDoc = new CTestDoc(wnd,pDisplay);
-
-	bool res = pDisplay->glvkBindDisplay(wnd);
+	bool res = pDisplay->glvkBindDisplay(app->getRootWindow());
     if (res)
 	{
 		CFilters::glInstallFilters();
@@ -91,7 +85,7 @@ int main(int argc, char* argv[])
 	app->grabCursor(false);
     app->run();
 
-    //delete pDoc;
+	app->quitApplication();
 
     return 0;
 }

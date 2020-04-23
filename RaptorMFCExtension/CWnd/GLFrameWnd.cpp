@@ -86,11 +86,7 @@ void CGLFrameWnd::OnDestroy()
 
     CWinApp* pApp = AfxGetApp();
     if ((pApp != NULL) && (pApp->m_pMainWnd == this))
-	{
-		if (Raptor::GetConfig().m_bAutoDestroy)
-		    Raptor::glQuitRaptor();
         PostQuitMessage(0);
-	}
 }
 
 void CGLFrameWnd::OnSize(UINT nType, int cx, int cy) 

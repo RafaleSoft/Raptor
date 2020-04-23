@@ -95,10 +95,9 @@ void CAmbientOcclusionDisplay::Init()
 		m_pTeapot = new CShadedGeometry();
 		*m_pTeapot = *((CGeometry *)p);
 		m_pTeapot->translateAbsolute(0,0,0);
-
-		m_pTeapot->addModel(CGeometry::CRenderingModel::CGL_NORMALS);
-		m_pTeapot->addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
-		m_pTeapot->addModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
+		m_pTeapot->setRenderingModel(CGeometry::CGL_FRONT_GEOMETRY);
+		m_pTeapot->addModel(CGeometry::CGL_NORMALS);
+		m_pTeapot->addModel(CGeometry::CGL_TEXTURE);
 	}
 	
 	if (m_pTeapot != NULL)
@@ -137,7 +136,7 @@ void CAmbientOcclusionDisplay::Init()
 		//	Prepare Ambient occlusion
 		
 		m_pTeapot->getEditor().genBinormals();
-		m_pTeapot->addModel(CGeometry::CRenderingModel::CGL_TANGENTS);
+		m_pTeapot->addModel(CGeometry::CGL_TANGENTS);
 		m_pTeapot->setShader(CShader::getShader("BUMP_SHADER").glClone("AO_BUMP"));
 		
 		CTextureFactory &f = CTextureFactory::getDefaultFactory();

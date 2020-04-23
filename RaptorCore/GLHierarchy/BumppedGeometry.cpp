@@ -95,7 +95,7 @@ void CBumppedGeometry::init(void)
 
 	CResourceAllocator::CResourceBinder *binder = (CResourceAllocator::CResourceBinder *)m_pBinder;
 	binder->useVertexArrayObjects();
-	
+
 	CATCH_GL_ERROR
 }
 
@@ -150,21 +150,20 @@ void CBumppedGeometry::setEnvironmentMap(CTextureObject* environment)
 	m_pBumpShader->enableEmbm(envMap != NULL);
 }
 
-//void CBumppedGeometry::setRenderingModel(const CRenderingModel& model)
-void CBumppedGeometry::addModel(CRenderingModel::MODEL model)
+void CBumppedGeometry::setRenderingModel(CGeometry::RENDERING_MODEL model)
 {
 	const CGeometryEditor &pEditor = getEditor();
     if (normals == NULL)
         pEditor.genNormals(true);
     else if (tangents == NULL)
         pEditor.genNormals(false);
-	
-	if (binormals == NULL)
-		pEditor.genBinormals();
-	
-	// Model needs to be added once arrays pointers are available.
-	CGeometry::addModel(model);
+	pEditor.genBinormals();
 
+    //  render material normals is mandatory for this kind of geometry
+	CGeometry::setRenderingModel(model);
+	addModel(CGeometry::CGL_NORMALS);
+	addModel(CGeometry::CGL_TANGENTS);
+	
 	if ((normalMap == NULL) || (diffuseMap == NULL))
 	{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
@@ -200,13 +199,11 @@ CBumppedGeometry& CBumppedGeometry::operator=(const CGeometry &geo)
 {
 	CGeometry::operator=(geo);
 
-	const CGeometryEditor &pEditor = getEditor();
+    const CGeometryEditor &pEditor = getEditor();
 	pEditor.genBinormals();
 
-	//  render material normals is mandatory for this kind of geometry
-	// (rendering is made by shaders using attributes)
-	CGeometry::addModel(CRenderingModel::CGL_NORMALS);
-	CGeometry::addModel(CRenderingModel::CGL_TANGENTS);
+	addModel(CGeometry::CGL_NORMALS);
+	addModel(CGeometry::CGL_TANGENTS);
 
 	return *this;
 }
@@ -218,10 +215,8 @@ CBumppedGeometry& CBumppedGeometry::operator=(const CBumppedGeometry &geo)
 	const CGeometryEditor &pEditor = getEditor();
 	pEditor.genBinormals();
 
-	//  render material normals is mandatory for this kind of geometry
-	// (rendering is made by shaders using attributes)
-	CGeometry::addModel(CRenderingModel::CGL_NORMALS);
-	CGeometry::addModel(CRenderingModel::CGL_TANGENTS);
+	addModel(CGeometry::CGL_NORMALS);
+	addModel(CGeometry::CGL_TANGENTS);
 
     return *this;
 }

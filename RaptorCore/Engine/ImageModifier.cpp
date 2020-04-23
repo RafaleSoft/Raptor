@@ -251,7 +251,6 @@ void blowFader(int width, int height, unsigned char *src, unsigned char *dst, un
 
 	unsigned int val = 0;
 
-
 #if defined(RAPTOR_SSE_CODE_GENERATION) && !defined(_WIN64)
 	__m64 param = _mm_unpacklo_pi8(_mm_cvtsi32_si64(dwParam), _mm_setzero_si64());
 #elif defined(RAPTOR_SSE2_CODE_GENERATION)
@@ -304,6 +303,7 @@ void blowFader(int width, int height, unsigned char *src, unsigned char *dst, un
 			pixels = pixels - width - width;
 			c7 = _mm_add_pi16(c7, c1);
 
+
 			// ... on line over ...
 			c1 = _mm_unpacklo_pi8(_mm_cvtsi32_si64(*(pixels)), _mm_setzero_si64());
 			c0 = _mm_unpacklo_pi8(_mm_cvtsi32_si64(*(pixels - 1)), _mm_setzero_si64());
@@ -320,7 +320,7 @@ void blowFader(int width, int height, unsigned char *src, unsigned char *dst, un
 			c7 = _mm_srli_pi16(c7, 1);
 			c7 = _mm_sub_pi16(c7, param);
 			c7 = _mm_packs_pu16(c7, _mm_setzero_si64());
-
+		
 			// store pixel
 			*((unsigned int*)ofsdst) = _mm_cvtsi64_si32(c7);
 
@@ -427,6 +427,7 @@ void motionFader(int width, int height, unsigned char *src, unsigned char *dst, 
 
 			// store pixel
 			*((unsigned int*)ofsdst) = _mm_cvtsi64_si32(c7);
+
 #elif defined(RAPTOR_SSE2_CODE_GENERATION)
 			// read pixels
 			//	... on current line ...
@@ -528,6 +529,7 @@ void staticFader(int width, int height, unsigned char *src, unsigned char *dst, 
 
 			// store pixel
 			*((unsigned int*)ofsdst) = _mm_cvtsi64_si32(c7);
+
 #elif defined(RAPTOR_SSE2_CODE_GENERATION)
 			// read pixels
 			//	... on current line ...
@@ -660,6 +662,7 @@ void spinFader(int width, int height, unsigned char *src, unsigned char *dst, un
 
 			// store pixel
 			*((unsigned int*)ofsdst) = _mm_cvtsi64_si32(c7);
+
 #elif defined(RAPTOR_SSE2_CODE_GENERATION)
 			// read pixels
 			//	... on current line ...

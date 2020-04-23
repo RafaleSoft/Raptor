@@ -315,7 +315,7 @@ public:
 
 	//! Applies a status like one returned here above,
 	//! except the basic config which can only be set at creation.
-	bool glApplyConfig(unsigned long query) const;
+	bool glApplyConfig(unsigned long query);
 
 	//!	Copy base attributes and leaves OpenGL states unchanged.
 	//!	A whole copy is simply by using default copy operator.
@@ -349,6 +349,7 @@ public:
 		bool			sync_to_monitor;
 	} refresh_rate;
 	string			caption;
+
 
 	//	Current state
 	GL_CURRENT_STATE		currentState;

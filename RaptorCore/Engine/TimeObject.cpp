@@ -3,59 +3,66 @@
 //////////////////////////////////////////////////////////////////////
 #include "Subsys/CodeGeneration.h"
 
+#ifndef __CGLTYPES_HPP__
+	#include "System/CGLTypes.h"
+#endif
 #if !defined(AFX_TIMEOBJECT_H__C06AC4B9_4DD7_49E2_9C5C_050EF5C39780__INCLUDED_)
 	#include "TimeObject.h"
 #endif
-
-
+#if !defined(AFX_RAPTORINSTANCE_H__90219068_202B_46C2_BFF0_73C24D048903__INCLUDED_)
+	#include "Subsys/RaptorInstance.h"
+#endif
 #if defined(_WIN32)
-    #if !defined(AFX_WIN32TIMEOBJECT_H__81BA3EBB_33AF_411A_80D9_9E83894B0D30__INCLUDED_)
-	    #include "Win32Specific/Win32TimeObject.h"
-    #endif
+	#if !defined(AFX_WIN32TIMEOBJECT_H__81BA3EBB_33AF_411A_80D9_9E83894B0D30__INCLUDED_)
+		#include "Win32Specific/Win32TimeObject.h"
+	#endif
 #endif
 #if defined(LINUX)
-    #if !defined(AFX_GLXTIMEOBJECT_H__3079A145_D92D_45B8_BF7A_19FD1261159D__INCLUDED_)
-        #include "GLXSpecific/GLXTimeObject.h"
-    #endif
+	#if !defined(AFX_GLXTIMEOBJECT_H__3079A145_D92D_45B8_BF7A_19FD1261159D__INCLUDED_)
+		#include "GLXSpecific/GLXTimeObject.h"
+	#endif
 #endif
 
 RAPTOR_NAMESPACE_BEGIN
 
+static CRaptorMutex     *tmMutex = NULL;
+
 float CTimeObject::m_time = 0.0f;
 float CTimeObject::m_globalTime = 0.0f;
 float CTimeObject::m_deltat = 0.05f;	// Should this value be changed ?
-ITImeObjectImpl	*CTimeObject::m_impl = NULL;
 
-vector<CTimeObject*>	CTimeObject::m_rootTimeObjects;
+std::vector<CTimeObject*>	CTimeObject::m_rootTimeObjects;
 
 RAPTOR_NAMESPACE_END
 
 
 RAPTOR_NAMESPACE
 
+CRaptorMutex& CTimeObject::getLock(void)
+{
+	return *tmMutex;
+}
+
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CTimeObject::CTimeObject() : 
-		m_animate(true)
-		,m_synchronized(false)
+CTimeObject::CTimeObject()
+	:m_animate(true), m_synchronized(false)
 {
 	m_rootTimeObjects.push_back(this);
 	m_time = 0;
 
-	if (0 == m_impl)
+	if (NULL == tmMutex)
 	{
-#if defined(_WIN32)
-		m_impl = new CWin32TimeObject();
-#elif defined(LINUX)
-		m_impl = new CGLXTimeObject();
-#endif
+		tmMutex = new CRaptorMutex();
 	}
 }
 
 CTimeObject::~CTimeObject()
 {
+	CRaptorLock lock(*tmMutex);
+
 	vector<CTimeObject*>::iterator itr = m_rootTimeObjects.begin();
 
 	while ((*itr) != this)
@@ -65,8 +72,9 @@ CTimeObject::~CTimeObject()
 		m_rootTimeObjects.erase(itr);
 }
 
-const vector<CTimeObject*>& CTimeObject::getTimeObjects(void)
+const std::vector<CTimeObject*>& CTimeObject::getTimeObjects(void)
 {
+	CRaptorLock lock(*tmMutex);
 	return m_rootTimeObjects;
 }
 
@@ -77,7 +85,8 @@ void CTimeObject::setTimeFactor(float factor)
 
 float CTimeObject::deltaTime(void)
 {
-	float delta = m_impl->deltaTime();
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+	float delta = instance.m_timeImplementation->deltaTime();
 
 	m_time += (m_deltat * delta);
 	m_globalTime += delta;
@@ -87,12 +96,14 @@ float CTimeObject::deltaTime(void)
 
 void CTimeObject::markTime(void* mark)
 {
-	m_impl->markTime(mark);
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+	instance.m_timeImplementation->markTime(mark);
 }
 
 float CTimeObject::deltaMarkTime(void *mark)
 {
-	return m_impl->deltaMarkTime(mark);
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+	return instance.m_timeImplementation->deltaMarkTime(mark);
 }
 
 float RAPTOR_FASTCALL CTimeObject::GetGlobalTime(void) 
@@ -118,7 +129,9 @@ void CTimeObject::synchronize(float dt, bool synchro)
 
 bool CTimeObject::prioritize(void)
 {
-	vector<CTimeObject*>::iterator itr = m_rootTimeObjects.begin();
+	CRaptorLock lock(*tmMutex);
+
+	std::vector<CTimeObject*>::iterator itr = m_rootTimeObjects.begin();
 
 	while ((*itr) != this)
 		itr++;

@@ -114,6 +114,14 @@ CRaptorDisplay::~CRaptorDisplay()
 		delete m_pViewPoint;
 }
 
+void CRaptorDisplay::glvkAllocateResources(void)
+{
+}
+
+void CRaptorDisplay::glvkReleaseResources(void)
+{
+}
+
 IRenderingProperties *const CRaptorDisplay::createRenderingProperties(void) const
 {
 	return new COpenGLRenderingProperties();
@@ -125,12 +133,6 @@ IViewPoint *const CRaptorDisplay::createViewPoint(void) const
 		return new COpenGLViewPoint(m_pRootScene->getName() + "_VIEWPOINT");
 	else
 		return new COpenGLViewPoint("RAPTORDISPLAY_VIEWPOINT");
-}
-
-void CRaptorDisplay::glReleaseResources(void)
-{
-    //!  Should place destructor body here,
-    //! it would be better, allowing to catch errors
 }
 
 void CRaptorDisplay::unLink(const CPersistence* obj)
@@ -445,7 +447,7 @@ bool CRaptorDisplay::glQueryStatus(CRaptorDisplayConfig &state,unsigned long que
 	return state.glQueryConfig(query);
 }
 
-bool CRaptorDisplay::glApplyStatus(const CRaptorDisplayConfig& state,unsigned long query)
+bool CRaptorDisplay::glApplyStatus(CRaptorDisplayConfig& state,unsigned long query)
 {
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 	if (((m_pCurrentDisplay == NULL) || (m_pCurrentDisplay != this)) &&

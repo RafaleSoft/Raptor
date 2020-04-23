@@ -45,7 +45,6 @@ class CRaptorScreenDisplay : public CRaptorDisplay
 {
 public:
 	CRaptorScreenDisplay(const CRaptorDisplayConfig& pcs);
-	virtual ~CRaptorScreenDisplay();
 
 	//! Implements CTextureGenerator
     virtual ITextureGenerator::GENERATOR_KIND getKind(void) const { return ITextureGenerator::ANIMATED; };
@@ -101,12 +100,22 @@ public:
 
 
 protected:
+	//!	Destroying a display must be done by Raptor to properly manage resources deallocation.
+	virtual ~CRaptorScreenDisplay();
+
+	//!	Allocates Geometry, Textures and Uniforms resources for this display.
+	virtual void glvkAllocateResources(void);
+
+	//!	Release allocated Geometry, Textures and Uniforms resources for this display.
+	virtual void glvkReleaseResources(void);
+
 	//! Inherited to handle occlusion queries display resources
 	virtual void unLink(const CPersistence*);
 
 	//!	Renders the main display scene.
 	virtual void glRenderScene();
 
+	//!	Renders the Raptor logo when in shareware release.
 	void glDrawLogo(void);
 
 	//! number of frames in previous second
@@ -147,12 +156,10 @@ protected:
 
 	IDeviceMemoryManager	*m_pDeviceMemory;
 
+
 private:
 	//!	Implement Display Status.
     virtual bool glQueryStatus(CRaptorDisplayConfig &state,unsigned long query) const;
-
-	//!	Allocates Geometry, Textures and Uniforms resources
-	void allocateResources(void);
 
 	CTextureQuad*	glBuildLogo(void);
 	CTextureQuad*	pLogo;

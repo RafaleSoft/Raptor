@@ -248,7 +248,7 @@ void *CHostMemoryManager::reallocate(void *olddata, size_t size, unsigned int co
 	}
 }
 
-void *CHostMemoryManager::allocate(size_t size,unsigned int count,size_t alignment) const
+void *CHostMemoryManager::allocate(size_t size,size_t count,size_t alignment) const
 {
     //! After this point, we are in critical section
     CRaptorLock lock(m_pHeap->memoryMutex);

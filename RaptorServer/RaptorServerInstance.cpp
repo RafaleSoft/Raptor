@@ -251,15 +251,17 @@ bool CRaptorServerInstance::start(unsigned int width, unsigned int height)
 
 	std::cout << "Raptor Display configuration checked, creating rendering window. " << std::endl;
 	glcs.refresh_rate.fps = CGL_MAXREFRESHRATE;
-	m_pWindow = Raptor::glCreateWindow(glcs,m_pDisplay);
-	if (m_pWindow.handle() == 0)
+	m_pApplication->initApplication(glcs);
+	if (!m_pApplication->initApplication(glcs))
     {
 		std::cout << "Raptor Render Server has no resources: hardware OpenGL rendering not supported, exiting..." << std::endl;
         return false;
     }
 
+	m_pDisplay = m_pApplication->getRootDisplay();
+	
 	std::cout << "Creating Raptor Main Display. " << std::endl;
-	m_pDisplay->glvkBindDisplay(m_pWindow);
+	m_pDisplay->glvkBindDisplay(m_pApplication->getRootWindow());
 		CRaptorConsole *pConsole = Raptor::GetConsole();
 		pConsole->glInit();
 		pConsole->showStatus(true);
@@ -283,9 +285,7 @@ bool CRaptorServerInstance::start(unsigned int width, unsigned int height)
 	std::cout << "Creating Raptor Application. " << std::endl;
 	m_pApplication = CRaptorApplication::CreateApplication();
 	m_pApplication->grabCursor(false);
-	m_pApplication->initApplication();
-	m_pApplication->setRootWindow(m_pWindow);
-
+	
     if (m_pTranslator == NULL)
 	{
 		char shemaLocation[MAX_PATH];

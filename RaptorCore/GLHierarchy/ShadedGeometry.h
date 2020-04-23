@@ -70,7 +70,7 @@ public:
     virtual void setShader(CShader *shader);
 
 	//!	Implement base class to override shading.
-	virtual void removeModel(CRenderingModel::MODEL);
+	virtual void removeModel(CGeometry::RENDERING_MODEL);
 
 
 	//! Implements CPersistence

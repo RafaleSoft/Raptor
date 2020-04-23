@@ -92,36 +92,8 @@ CRaptorScreenDisplay::CRaptorScreenDisplay(const CRaptorDisplayConfig& pcs)
 
 CRaptorScreenDisplay::~CRaptorScreenDisplay()
 {
-	RAPTOR_HANDLE noDisplay(0, (void*)0);
-	glvkBindDisplay(noDisplay);
-
-	if (NULL != m_pGOldAllocator)
-		CGeometryAllocator::SetCurrentInstance(m_pGOldAllocator);
-	if (NULL != m_pGAllocator)
-		delete m_pGAllocator;
-
-	if (NULL != m_pTOldAllocator)
-		CTexelAllocator::SetCurrentInstance(m_pTOldAllocator);
-	if (NULL != m_pTAllocator)
-		delete m_pTAllocator;
-
-	if (NULL != m_pUOldAllocator)
-		CUniformAllocator::SetCurrentInstance(m_pUOldAllocator);
-	if (NULL != m_pUAllocator)
-		delete m_pUAllocator;
-
-	if (NULL != m_pDeviceMemory)
-		delete m_pDeviceMemory;
-
-	if (NULL != pLogo)
-	{
-		pLogo->unregisterDestruction(this);
-		delete pLogo;
-	}
-
-	glvkUnBindDisplay();
-
-	CContextManager::GetInstance()->glDestroyContext(m_context);
+	if (CContextManager::INVALID_CONTEXT != m_context)
+		CContextManager::GetInstance()->glDestroyContext(m_context);
 }
 
 void CRaptorScreenDisplay::unLink(const CPersistence* obj)
@@ -290,7 +262,7 @@ bool CRaptorScreenDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
 			bool hasSwapControl = CContextManager::GetInstance()->glSwapVSync(m_framerate);
 
 			//	Create rendering context resources.
-			allocateResources();
+			glvkAllocateResources();
 
             return res;
 		}
@@ -317,7 +289,7 @@ bool CRaptorScreenDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
 	return CRaptorDisplay::glvkBindDisplay(device);
 }
 
-void CRaptorScreenDisplay::allocateResources(void)
+void CRaptorScreenDisplay::glvkAllocateResources(void)
 {
     //  Ensure no current allocator.
     m_pGOldAllocator = CGeometryAllocator::SetCurrentInstance(NULL);
@@ -393,7 +365,41 @@ void CRaptorScreenDisplay::allocateResources(void)
 		m_pUOldAllocator->glvkLockMemory(false);
 
 	if (instance.isInitialised())
-		instance.glInitSharedRsources();
+		instance.glvkInitSharedResources();
+}
+
+void CRaptorScreenDisplay::glvkReleaseResources(void)
+{
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+	if (instance.isInitialised())
+		instance.glvkReleaseSharedRsources();
+
+
+	if (NULL != m_pGOldAllocator)
+		CGeometryAllocator::SetCurrentInstance(m_pGOldAllocator);
+	if (NULL != m_pGAllocator)
+		delete m_pGAllocator;
+
+	if (NULL != m_pTOldAllocator)
+		CTexelAllocator::SetCurrentInstance(m_pTOldAllocator);
+	if (NULL != m_pTAllocator)
+		delete m_pTAllocator;
+
+	if (NULL != m_pUOldAllocator)
+		CUniformAllocator::SetCurrentInstance(m_pUOldAllocator);
+	if (NULL != m_pUAllocator)
+		delete m_pUAllocator;
+
+	if (NULL != m_pDeviceMemory)
+		delete m_pDeviceMemory;
+
+	if (NULL != pLogo)
+	{
+		pLogo->unregisterDestruction(this);
+		delete pLogo;
+	}
+
+	CRaptorDisplay::glvkReleaseResources();
 }
 
 bool CRaptorScreenDisplay::glvkUnBindDisplay(void)

@@ -40,8 +40,7 @@ public:
 	//!	Specific additional bump rendering properties
 	//!	to the CGeometry rendering model ( CGeometry::SetRenderingModel
 	//!	is called from this method, so only one set is necessary )
-	//virtual void setRenderingModel(const CRenderingModel& model);
-	virtual void addModel(CRenderingModel::MODEL model);
+	virtual void setRenderingModel(CGeometry::RENDERING_MODEL model);
 
 	virtual CShader	* const getShader(void) const;
 

@@ -60,11 +60,11 @@ DWORD WINAPI engineSyncThread(void* pParam)
 	//	but is it really important here ?
     manager->engineStarted = true;
 	
-	while (!instance.terminate())
+	while (!manager->isStopRequested())
 	{
 		WaitForSingleObject(manager->processFrameEvt,INFINITE);
 		ResetEvent(manager->processFrameEvt);
-		if (instance.terminate())
+		if (manager->isStopRequested())
 			break;
 
 		ResetEvent(manager->synchroFrameEvt);
@@ -113,6 +113,7 @@ CWin32EngineTaskManager::CWin32EngineTaskManager()
     engineStarted = false;
 
 #if defined(RAPTOR_SMP_CODE_GENERATION)
+	stopRequested = false;
     engine = NULL;
 	processFrameEvt = NULL;
 	synchroFrameEvt = NULL;
@@ -122,31 +123,7 @@ CWin32EngineTaskManager::CWin32EngineTaskManager()
 CWin32EngineTaskManager::~CWin32EngineTaskManager()
 {
 #if defined(RAPTOR_SMP_CODE_GENERATION)
-	if (processFrameEvt != NULL)
-		SetEvent(processFrameEvt);
-
-    cancelJobs();
-    removeAllJobs();
-
-	//	1 second should far enough to terminate thread...
-    while ((NULL != engine) && (engineStarted))
-		WaitForSingleObject(engine,1000);
-	if (NULL != engine)
-		CloseHandle(engine);
-
-    for (unsigned int nb = 0; nb<asyncEngines.size();nb++)
-	{
-		SetEvent(asyncEngines[nb].hEvent);
-        while (asyncEngines[nb].started)
-			WaitForSingleObject(asyncEngines[nb].handle,1000);
-		CloseHandle(asyncEngines[nb].handle);
-		CloseHandle(asyncEngines[nb].hEvent);
-	}
-
-	if (processFrameEvt != NULL)
-		CloseHandle(processFrameEvt);
-	if (synchroFrameEvt != NULL)
-		CloseHandle(synchroFrameEvt);
+	stopEngine();
 #endif
 }
 
@@ -166,6 +143,7 @@ bool CWin32EngineTaskManager::initEngine(void)
 	synchroFrameEvt = CreateEvent(NULL,TRUE,TRUE,"SYNCHREVT");
 	processFrameEvt = CreateEvent(NULL,TRUE,FALSE,"THREADEVT");
 
+	stopRequested = false;
 	engine = CreateThread( NULL, 0, engineSyncThread, this , CREATE_SUSPENDED, NULL );
 	if (0 == engine)
 		return false;
@@ -237,8 +215,8 @@ bool CWin32EngineTaskManager::run(void)
 
 	if (status.currentAnimator != NULL )
 	{
-		status.currentAnimator->animate();
 		status.currentAnimator->initSynchro();
+		status.currentAnimator->animate();
 	}
 
     if (status.currentAnimator != NULL )
@@ -247,6 +225,55 @@ bool CWin32EngineTaskManager::run(void)
 
     return true;
 }
+
+
+bool CWin32EngineTaskManager::stopEngine(void)
+{
+#if defined(RAPTOR_SMP_CODE_GENERATION)
+	stopRequested = true;
+	if (processFrameEvt != NULL)
+		SetEvent(processFrameEvt);
+
+	cancelJobs();
+	removeAllJobs();
+
+	//	1 second should far enough to terminate thread...
+	while ((NULL != engine) && (engineStarted))
+		WaitForSingleObject(engine, 1000);
+	if (NULL != engine)
+	{
+		CloseHandle(engine);
+		engine = NULL;
+	}
+
+	for (unsigned int nb = 0; nb<asyncEngines.size(); nb++)
+	{
+		SetEvent(asyncEngines[nb].hEvent);
+		while (asyncEngines[nb].started)
+			WaitForSingleObject(asyncEngines[nb].handle, 1000);
+		CloseHandle(asyncEngines[nb].handle);
+		CloseHandle(asyncEngines[nb].hEvent);
+	}
+
+	asyncEngines.clear();
+
+	if (processFrameEvt != NULL)
+	{
+		CloseHandle(processFrameEvt);
+		processFrameEvt = NULL;
+	}
+	if (synchroFrameEvt != NULL)
+	{
+		CloseHandle(synchroFrameEvt);
+		synchroFrameEvt = NULL;
+	}
+	stopRequested = false;
+	return true;
+#else
+	return false;
+#endif
+}
+
 
 bool CWin32EngineTaskManager::batchJobs(unsigned int batchId)
 {
@@ -277,16 +304,16 @@ void CWin32EngineTaskManager::computeAsyncJobs(DWORD id)
 	//	but is it really important here ?
 	asyncEngines[stack].started = true;
 
-	CRaptorInstance &instance = CRaptorInstance::GetInstance();
-	while (!instance.terminate())
+	while (!isStopRequested())
 	{
 		DWORD res = WaitForSingleObject(asyncEngines[stack].hEvent,INFINITE);
-		if (instance.terminate())
+		if (isStopRequested())
 			break;
 
 		if (res == WAIT_FAILED)
 		{
 			res = GetLastError();
+			CRaptorInstance &instance = CRaptorInstance::GetInstance();
 			instance.pErrorMgr->generateRaptorError(CPersistence::CPersistenceClassID::GetClassId(),
 													CRaptorErrorManager::RAPTOR_FATAL,
 													"Engine Async Thread will terminate, failed to synchronize");

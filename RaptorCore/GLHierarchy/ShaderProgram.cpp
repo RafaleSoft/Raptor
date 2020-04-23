@@ -34,6 +34,9 @@
 #if !defined(AFX_SHADERLIBRARY_H__E2A8C35E_23A4_4AD1_8467_884E6B183B4F__INCLUDED_)
 	#include "Subsys/ShaderLibrary.h"
 #endif
+#if !defined(AFX_RAPTORINSTANCE_H__90219068_202B_46C2_BFF0_73C24D048903__INCLUDED_)
+	#include "Subsys/RaptorInstance.h"
+#endif
 
 
 RAPTOR_NAMESPACE_BEGIN
@@ -80,7 +83,8 @@ bool CShaderProgram::glAddToLibrary(const std::string& shader_name,
 									const std::string& shader_source_file,
 									const std::string& class_name)
 {
-	CShaderLibrary *library = CShaderLibrary::GetInstance();
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+	CShaderLibrary *library = instance.m_pShaderLibraryInstance;
 	if (NULL != library)
 		return library->glAddToLibrary(shader_name, shader_source_file, class_name);
 	else

@@ -11,5 +11,7 @@
 #include <tchar.h>
 #include <Windows.h>
 
+//	Base path to test data
+extern char *datapath;
 
 // TODO: reference additional headers your program requires here

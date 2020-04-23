@@ -78,9 +78,9 @@ void CShadowDisplay::Init()
 	if (p->getId().isSubClassOf(CGeometry::CGeometryClassID::GetClassId()))
 	{
 		knot = (CShadedGeometry*)p;
-		knot->addModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
-		knot->addModel(CGeometry::CRenderingModel::CGL_NORMALS);
-		knot->addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
+		knot->setRenderingModel(CGeometry::CGL_FRONT_GEOMETRY);
+		knot->addModel(CGeometry::CGL_NORMALS);
+		knot->addModel(CGeometry::CGL_TEXTURE);
 		knotShader = knot->getShader();
 	}
 
@@ -118,9 +118,9 @@ void CShadowDisplay::Init()
     textShader->getMaterial()->setSpecular(0.9f,0.9f,0.9f,1.0f);
     textShader->getMaterial()->setShininess(20.0f);
     textShader->setColor(0.1f,0.1f,0.1f,1.0f);
-	fulltext->addModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
-	fulltext->addModel(CGeometry::CRenderingModel::CGL_NORMALS);
-	fulltext->addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
+	fulltext->setRenderingModel(CGeometry::CGL_FRONT_GEOMETRY);
+	fulltext->addModel(CGeometry::CGL_NORMALS);
+	fulltext->addModel(CGeometry::CGL_TEXTURE);
 
     m_pScene = new C3DScene("SHADOWVOLUME_SCENE");
     m_pScene->addLight(m_light);
@@ -134,9 +134,9 @@ void CShadowDisplay::Init()
 	{
 		g->getShader()->setColor(0.2f,0.2f,0.2f,1.0f);
         g->getShader()->getMaterial()->setAmbient(0.5f,0.5f,0.5f,1.0f);
-		g->addModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
-		g->addModel(CGeometry::CRenderingModel::CGL_NORMALS);
-		g->addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
+		g->setRenderingModel(CGeometry::CGL_FRONT_GEOMETRY);
+		g->addModel(CGeometry::CGL_NORMALS);
+		g->addModel(CGeometry::CGL_TEXTURE);
 		g->getProperties().setCastShadow(false);
 		g = (CShadedGeometry*)(sponge->getChild(it++));
 		m_pScene->addObject(g);

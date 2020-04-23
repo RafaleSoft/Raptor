@@ -120,7 +120,7 @@
       </HeaderFileName>
     </Midl>
     <PostBuildEvent>
-      <Command>"%RAPTOR_ROOT%\Redist\bin\UnitTest.exe"</Command>
+      <Command>"%RAPTOR_ROOT%\Redist\bin\UnitTest.exe" $(SolutionDir)\UnitTest</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -130,7 +130,7 @@
       </HeaderFileName>
     </Midl>
     <PostBuildEvent>
-      <Command>"%RAPTOR_ROOT%\Redist\bin\UnitTest.exe"</Command>
+      <Command>"%RAPTOR_ROOT%\Redist\bin\UnitTest.exe" $(SolutionDir)\UnitTest</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">
@@ -140,7 +140,7 @@
       </HeaderFileName>
     </Midl>
     <PostBuildEvent>
-      <Command>"%RAPTOR_ROOT%\Redist\bin\UnitTest.exe"</Command>
+      <Command>"%RAPTOR_ROOT%\Redist\bin\UnitTest.exe" $(SolutionDir)\UnitTest</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|x64'">
@@ -150,7 +150,7 @@
       </HeaderFileName>
     </Midl>
     <PostBuildEvent>
-      <Command>"%RAPTOR_ROOT%\Redist\bin\UnitTest.exe"</Command>
+      <Command>"%RAPTOR_ROOT%\Redist\bin\UnitTest.exe" $(SolutionDir)\UnitTest</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -160,7 +160,7 @@
       </HeaderFileName>
     </Midl>
     <PostBuildEvent>
-      <Command>"%RAPTOR_ROOT%\Redist\bin\UnitTest.exe"</Command>
+      <Command>"%RAPTOR_ROOT%\Redist\bin\UnitTest.exe" $(SolutionDir)\UnitTest</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -170,7 +170,7 @@
       </HeaderFileName>
     </Midl>
     <PostBuildEvent>
-      <Command>"%RAPTOR_ROOT%\Redist\bin\UnitTest.exe"</Command>
+      <Command>"%RAPTOR_ROOT%\Redist\bin\UnitTest.exe" $(SolutionDir)\UnitTest</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

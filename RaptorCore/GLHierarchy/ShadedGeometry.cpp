@@ -161,25 +161,24 @@ void CShadedGeometry::setShader(CShader *shader)
     }
 }
 
-
-void CShadedGeometry::removeModel(CRenderingModel::MODEL model)
+void CShadedGeometry::removeModel(CGeometry::RENDERING_MODEL model)
 {
 	CGeometry::removeModel(model);
 
 	COpenGLRenderingProperties props;
-	
+
 	switch (model)
 	{
-	case CRenderingModel::CGL_NORMALS:
-		props.disableLighting;
-		break;
-	case CRenderingModel::CGL_TANGENTS:
-		break;
-	case CRenderingModel::CGL_TEXTURE:
-		props.disableTexturing;
-		break;
-	default:
-		break;
+		case CGeometry::CGL_NORMALS:
+			props.disableLighting;
+			break;
+		case CGeometry::CGL_TANGENTS:
+			break;
+		case CGeometry::CGL_TEXTURE:
+			props.disableTexturing;
+			break;
+		default:
+			break;
 	}
 
 	overrideShading(props);
@@ -226,12 +225,12 @@ void CShadedGeometry::glRender()
 	if (m_pShader != NULL)
 	{
 		// apply material
-		if (hasModel(CRenderingModel::CGL_NORMALS))
+		if (hasModel(CGeometry::CGL_NORMALS))
 			if (m_pShader->hasMaterial())
 				m_pShader->glRenderMaterial();
 
 		// apply texture
-		if (hasModel(CRenderingModel::CGL_TEXTURE))
+		if (hasModel(CGeometry::CGL_TEXTURE))
 		{
 		    m_pShader->glRenderTexture();
 			if (m_pAOShader != NULL)

@@ -47,7 +47,6 @@
 #endif
 
 
-
 //////////////////////////////////////////////////////////////////////
 // Static data
 //////////////////////////////////////////////////////////////////////
@@ -127,7 +126,7 @@ COpenGLShaderStage::~COpenGLShaderStage(void)
 														   "Shader Program is invalid in this context");
 
 			CATCH_GL_ERROR
-				return;
+			return;
 		}
 	}
 
@@ -281,9 +280,6 @@ CVertexShader* const COpenGLShaderStage::glGetVertexShader(const std::string& na
 {
 	if (m_pVShader == NULL)
 	{
-		CShaderLibrary *lib = CShaderLibrary::GetInstance();
-		lib->glInitFactory();
-
 		CPersistence *pProgram = NULL;
 		if (!name.empty())
 			pProgram = CPersistence::FindObject(name);
@@ -336,9 +332,6 @@ CFragmentShader * const COpenGLShaderStage::glGetFragmentShader(const std::strin
 {
 	if (m_pFShader == NULL)
 	{
-		CShaderLibrary *lib = CShaderLibrary::GetInstance();
-		lib->glInitFactory();
-
 		CPersistence *pProgram = NULL;
 		if (!name.empty())
 			pProgram = CPersistence::FindObject(name);
@@ -392,9 +385,6 @@ CGeometryShader* const COpenGLShaderStage::glGetGeometryShader(const std::string
 {
 	if (m_pGShader == NULL)
 	{
-		CShaderLibrary *lib = CShaderLibrary::GetInstance();
-		lib->glInitFactory();
-
 		CPersistence *pProgram = NULL;
 		if (!name.empty())
 			pProgram = CPersistence::FindObject(name);

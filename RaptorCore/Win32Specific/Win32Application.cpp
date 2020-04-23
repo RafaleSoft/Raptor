@@ -1,6 +1,20 @@
-// Win32Application.cpp: implementation of the CWin32Application class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  Win32Application.cpp                                                   */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
 
 #include "Subsys/CodeGeneration.h"
 
@@ -24,88 +38,18 @@
 
 RAPTOR_NAMESPACE
 
-CWin32Application* CWin32Application::GetInstance()
-{
-	return (CWin32Application*)(CRaptorApplication::GetInstance());
-}
-
-static bool m_bRunning = false;
+bool CWin32Application::destroyWindow = true;
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 CWin32Application::CWin32Application():
-	m_VMouseXPos(0),m_VMouseYPos(0),m_bGrab(true)
+m_VMouseXPos(0), m_VMouseYPos(0), m_bGrab(true)
 {
 }
 
 CWin32Application::~CWin32Application()
 {
-}
-
-
-bool CWin32Application::initApplication(void)
-{
-	bool res = CRaptorApplication::initApplication();
-	/*
-	UINT nDevices = 0;
-	PRAWINPUTDEVICELIST pRawInputDeviceList;
-	if (res)
-		res &= (0 == GetRawInputDeviceList(NULL, &nDevices, sizeof(RAWINPUTDEVICELIST)));
-
-	if (res)
-		res &= (NULL != (pRawInputDeviceList = (PRAWINPUTDEVICELIST)malloc(sizeof(RAWINPUTDEVICELIST) * nDevices)));
-
-	if (res)
-		res &= (nDevices == GetRawInputDeviceList(pRawInputDeviceList, &nDevices, sizeof(RAWINPUTDEVICELIST)));
-
-	if (res)
-	{
-		RAWINPUTDEVICE Rid[4];
-        
-		Rid[0].usUsagePage = 0x01; 
-		Rid[0].usUsage = 0x05; 
-		Rid[0].dwFlags = 0;                 // adds game pad
-		Rid[0].hwndTarget = 0;
-
-		Rid[1].usUsagePage = 0x01; 
-		Rid[1].usUsage = 0x04; 
-		Rid[1].dwFlags = 0;                 // adds joystick
-		Rid[1].hwndTarget = 0;
-
-		// This would support multi-mouse input, but
-		// still there is keyboard latency.
-		// May be enabled in future versions.
-		Rid[2].usUsagePage = 0x01; 
-		Rid[2].usUsage = 0x02; 
-		Rid[2].dwFlags = 0;//RIDEV_NOLEGACY;   // adds HID mouse and also ignores legacy mouse messages
-		Rid[2].hwndTarget = 0;
-
-		Rid[3].usUsagePage = 0x01; 
-		Rid[3].usUsage = 0x06; 
-		Rid[3].dwFlags = 0;//RIDEV_NOLEGACY;   // adds HID keyboard and also ignores legacy keyboard messages
-		Rid[3].hwndTarget = 0;
-		
-		res = (TRUE == RegisterRawInputDevices(Rid, 2, sizeof(Rid[0]))); 
-	}
-	
-	// after the job, free the RAWINPUTDEVICELIST
-	free(pRawInputDeviceList);
-	*/
-
-    return res;
-}
-
-void CWin32Application::setRootWindow(const RAPTOR_HANDLE& root)
-{
-    if ((root.handle() == 0) || (root.hClass() != WINDOW_CLASS))
-    {
-        RAPTOR_ERROR(	COpenGL::COpenGLClassID::GetClassId(),
-						"RaptorApplication has no root window !.");
-        return;
-    }
-
-    CRaptorApplication::setRootWindow(root);
 }
 
 void CWin32Application::grabCursor(bool grab)
@@ -160,17 +104,17 @@ bool CWin32Application::run(void)
             DispatchMessage(&msg);
         }
 
-		asyncWindowProc(xCenter,yCenter);
-
-		Raptor::glRender();
+		if (!exitMainloop)
+		{
+			asyncWindowProc(xCenter, yCenter);
+			Raptor::glRender();
+		}
     } // end while
 
 	if (m_bGrab)
 		ShowCursor(TRUE);
 
-	if (Raptor::GetConfig().m_bAutoDestroy)
-		Raptor::glQuitRaptor();
-
+	m_bRunning = false;
     return true;
 }
 
@@ -238,9 +182,12 @@ void CWin32Application::asyncWindowProc(LONG xCenter,LONG yCenter)
 	}
 }
 
-LRESULT CALLBACK WindowProc(  HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
+LRESULT CALLBACK WindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
-	if (!m_bRunning)
+	CRaptorApplication *pApp = CRaptorApplication::GetInstance();
+	if (NULL == pApp)
+		return (DefWindowProc(hwnd, msg, wparam, lparam));
+	if (!pApp->isRunning())
 		return (DefWindowProc(hwnd, msg, wparam, lparam));
 
     switch(msg)
@@ -263,15 +210,23 @@ LRESULT CALLBACK WindowProc(  HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			return 0;
 			break;
 		}
-	    case WM_DESTROY: 
+	    case WM_DESTROY:
 		{
 		    // kill the application, this sends a WM_QUIT message 
-            CWin32Application *pApp = CWin32Application::GetInstance();
+			
             if (pApp == NULL)
                 return (DefWindowProc(hwnd, msg, wparam, lparam));
 
-            if (pApp->getRootWindow().ptr<HWND__>() == hwnd)
-                PostQuitMessage(0);
+			if (pApp->getRootWindow().ptr<HWND__>() == hwnd)
+			{
+				//! Temporary !
+				CWin32Application::destroyWindow = false;
+
+				//! TODO: Destroy display and resources here ! 
+				pApp->quitApplication();
+				//! This is the last point where device context is still usable.
+				PostQuitMessage(0);
+			}
 
 		    return(0);
             break;
@@ -326,9 +281,54 @@ LRESULT CALLBACK WindowProc(  HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
     return (DefWindowProc(hwnd, msg, wparam, lparam));
 } // end WinProc
 
-
 CWin32Application::windowProc CWin32Application::getWindowProc(void)
 {
 	return &WindowProc;
 }
 
+
+/*
+UINT nDevices = 0;
+PRAWINPUTDEVICELIST pRawInputDeviceList;
+if (res)
+res &= (0 == GetRawInputDeviceList(NULL, &nDevices, sizeof(RAWINPUTDEVICELIST)));
+
+if (res)
+res &= (NULL != (pRawInputDeviceList = (PRAWINPUTDEVICELIST)malloc(sizeof(RAWINPUTDEVICELIST) * nDevices)));
+
+if (res)
+res &= (nDevices == GetRawInputDeviceList(pRawInputDeviceList, &nDevices, sizeof(RAWINPUTDEVICELIST)));
+
+if (res)
+{
+RAWINPUTDEVICE Rid[4];
+
+Rid[0].usUsagePage = 0x01;
+Rid[0].usUsage = 0x05;
+Rid[0].dwFlags = 0;                 // adds game pad
+Rid[0].hwndTarget = 0;
+
+Rid[1].usUsagePage = 0x01;
+Rid[1].usUsage = 0x04;
+Rid[1].dwFlags = 0;                 // adds joystick
+Rid[1].hwndTarget = 0;
+
+// This would support multi-mouse input, but
+// still there is keyboard latency.
+// May be enabled in future versions.
+Rid[2].usUsagePage = 0x01;
+Rid[2].usUsage = 0x02;
+Rid[2].dwFlags = 0;//RIDEV_NOLEGACY;   // adds HID mouse and also ignores legacy mouse messages
+Rid[2].hwndTarget = 0;
+
+Rid[3].usUsagePage = 0x01;
+Rid[3].usUsage = 0x06;
+Rid[3].dwFlags = 0;//RIDEV_NOLEGACY;   // adds HID keyboard and also ignores legacy keyboard messages
+Rid[3].hwndTarget = 0;
+
+res = (TRUE == RegisterRawInputDevices(Rid, 2, sizeof(Rid[0])));
+}
+
+// after the job, free the RAWINPUTDEVICELIST
+free(pRawInputDeviceList);
+*/

@@ -53,7 +53,7 @@ bool CRaptorComputeBufferObject::addBuffer(const CRaptorComputeBufferObject* cb)
 	const CRaptorComputeMemory::IBufferObject* bo = cb;
 	std::map<const CRaptorComputeMemory::IBufferObject*,const CRaptorComputeBufferObject*>::iterator it = 
 		CRaptorComputeBufferObject::s_pBuffers.find(bo);
-	if (CRaptorComputeBufferObject::s_pBuffers.end() == it)
+	if (CRaptorComputeBufferObject::s_pBuffers.end() != it)
 		return false;
 	else
 		s_pBuffers[bo] = cb;
@@ -169,6 +169,7 @@ CRaptorComputeMemory::clCreateBuffer(	size_t size,
 	if (CRaptorComputeMemory::IBufferObject::LOCAL_BUFFER == kind)
 	{
 		res = new CRaptorComputeBufferObject(size);
+		CRaptorComputeBufferObject::addBuffer(res);
 		return res;
 	}
 	

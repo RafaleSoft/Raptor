@@ -35,7 +35,6 @@
 #endif
 
 
-
 RAPTOR_NAMESPACE
 
 
@@ -270,7 +269,8 @@ bool CResourceAllocator::CResourceBinder::glvkBindArrays(void)
 			if (updateArray)
 			{
 				for (size_t i = 0; i < CProgramParameters::GL_VERTEX_ATTRIB_t::MAX_VERTEX_ATTRIB; i++)
-					res = res && bindAttribArray(bindings.arrays[i], instance.bindingState.arrays[i]);
+					res = res && bindAttribArray(	bindings.arrays[i],
+													instance.bindingState.arrays[i]);
 
 				updateArray = false;
 			}
@@ -278,7 +278,8 @@ bool CResourceAllocator::CResourceBinder::glvkBindArrays(void)
 		else
 		{
 			for (size_t i = 0; i < CProgramParameters::GL_VERTEX_ATTRIB_t::MAX_VERTEX_ATTRIB; i++)
-				res = res && bindAttribArray(bindings.arrays[i], instance.bindingState.arrays[i]);
+				res = res && bindAttribArray(	bindings.arrays[i],
+												instance.bindingState.arrays[i]);
 		}
 		return res;
 	}
@@ -286,7 +287,8 @@ bool CResourceAllocator::CResourceBinder::glvkBindArrays(void)
 	{
 		bool res = true;
 		for (size_t i = 0; i < CProgramParameters::GL_VERTEX_ATTRIB_t::MAX_VERTEX_ATTRIB; i++)
-			res = res && bindArray(bindings.arrays[i], instance.bindingState.arrays[i]);
+			res = res && bindArray(	bindings.arrays[i], 
+									instance.bindingState.arrays[i]);
 
 		return res;
 	}
@@ -311,7 +313,8 @@ bool CResourceAllocator::CResourceBinder::glvkUnbindArrays(void)
 		{
 			bool res = true;
 			for (size_t i = 0; i < CProgramParameters::GL_VERTEX_ATTRIB_t::MAX_VERTEX_ATTRIB; i++)
-				res = res && unbindAttribArray(bindings.arrays[i], instance.bindingState.arrays[i]);
+				res = res && unbindAttribArray(	bindings.arrays[i],
+												instance.bindingState.arrays[i]);
 			return res;
 		}
 	}
@@ -319,15 +322,16 @@ bool CResourceAllocator::CResourceBinder::glvkUnbindArrays(void)
 	{
 		bool res = true;
 		for (size_t i = 0; i < CProgramParameters::GL_VERTEX_ATTRIB_t::MAX_VERTEX_ATTRIB; i++)
-			res = res && unbindArray(bindings.arrays[i], instance.bindingState.arrays[i]);
+			res = res && unbindArray(	bindings.arrays[i],
+										instance.bindingState.arrays[i]);
 		return res;
 	}
 
 	CATCH_GL_ERROR
 }
 
-bool CResourceAllocator::CResourceBinder::bindAttribArray(	CRaptorDisplayConfig::GL_ARRAY_STATE &state,
-															CRaptorDisplayConfig::GL_ARRAY_STATE &global_state)
+bool CResourceAllocator::CResourceBinder::bindAttribArray(CRaptorDisplayConfig::GL_ARRAY_STATE &state,
+														  CRaptorDisplayConfig::GL_ARRAY_STATE &global_state)
 {
 #if defined(GL_ARB_vertex_program)
 	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
@@ -338,7 +342,7 @@ bool CResourceAllocator::CResourceBinder::bindAttribArray(	CRaptorDisplayConfig:
 			global_state.enable = true;
 			pExtensions->glEnableVertexAttribArrayARB(state.arrayIndex);
 		}
-		
+
 		pExtensions->glVertexAttribPointerARB(state.arrayIndex,
 											  state.arraySize,
 											  state.arrayType,
@@ -351,7 +355,7 @@ bool CResourceAllocator::CResourceBinder::bindAttribArray(	CRaptorDisplayConfig:
 		global_state.enable = false;
 		pExtensions->glDisableVertexAttribArrayARB(state.arrayIndex);
 	}
-	
+
 	return true;
 #else
 	return false;
@@ -362,9 +366,14 @@ bool CResourceAllocator::CResourceBinder::unbindAttribArray(CRaptorDisplayConfig
 															CRaptorDisplayConfig::GL_ARRAY_STATE &global_state)
 {
 #if defined(GL_ARB_vertex_program)
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
-	if (state.enable)
+	
+	if (global_state.enable)
+	{
+		global_state.enable = false;
+		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 		pExtensions->glDisableVertexAttribArrayARB(state.arrayIndex);
+	}
+
 	return true;
 #else
 	return false;
@@ -430,6 +439,66 @@ bool CResourceAllocator::CResourceBinder::unbindArray(CRaptorDisplayConfig::GL_A
 		global_state.enable = false;
 		glDisableClientState(state.arrayName);
 	}
+
+	return true;
+}
+
+
+bool CResourceAllocator::CResourceBinder::glScanBindings(CRaptorDisplayConfig::GL_ARRAYS_STATE &arrays)
+{
+	bindings.attributes.vertexArray.enable = (GL_TRUE == glIsEnabled(GL_VERTEX_ARRAY));
+	bindings.attributes.normalArray.enable = (GL_TRUE == glIsEnabled(GL_NORMAL_ARRAY));
+	bindings.attributes.colorArray.enable = (GL_TRUE == glIsEnabled(GL_COLOR_ARRAY));
+	bindings.attributes.indexArray.enable = (GL_TRUE == glIsEnabled(GL_INDEX_ARRAY));
+	bindings.attributes.texture0Array.enable = (GL_TRUE == glIsEnabled(GL_TEXTURE_COORD_ARRAY));
+	bindings.attributes.edgeArray.enable = (GL_TRUE == glIsEnabled(GL_EDGE_FLAG_ARRAY));
+
+	glGetIntegerv(GL_VERTEX_ARRAY_SIZE, &bindings.attributes.vertexArray.arraySize);
+	bindings.attributes.normalArray.arraySize = 3;
+	glGetIntegerv(GL_COLOR_ARRAY_SIZE, &bindings.attributes.colorArray.arraySize);
+	bindings.attributes.indexArray.arraySize = 1;
+	glGetIntegerv(GL_TEXTURE_COORD_ARRAY_SIZE, &bindings.attributes.texture0Array.arraySize);
+	bindings.attributes.edgeArray.arraySize = 1;
+
+	glGetIntegerv(GL_VERTEX_ARRAY_TYPE, &bindings.attributes.vertexArray.arrayType);
+	glGetIntegerv(GL_NORMAL_ARRAY_TYPE, &bindings.attributes.normalArray.arrayType);
+	glGetIntegerv(GL_COLOR_ARRAY_TYPE, &bindings.attributes.colorArray.arrayType);
+	glGetIntegerv(GL_INDEX_ARRAY_TYPE, &bindings.attributes.indexArray.arrayType);
+	glGetIntegerv(GL_TEXTURE_COORD_ARRAY_TYPE, &bindings.attributes.texture0Array.arrayType);
+	bindings.attributes.edgeArray.arrayType = 0;	// must be GLboolean
+
+	glGetIntegerv(GL_VERTEX_ARRAY_STRIDE, &bindings.attributes.vertexArray.arrayStride);
+	glGetIntegerv(GL_NORMAL_ARRAY_STRIDE, &bindings.attributes.normalArray.arrayStride);
+	glGetIntegerv(GL_COLOR_ARRAY_STRIDE, &bindings.attributes.colorArray.arrayStride);
+	glGetIntegerv(GL_INDEX_ARRAY_STRIDE, &bindings.attributes.indexArray.arrayStride);
+	glGetIntegerv(GL_TEXTURE_COORD_ARRAY_STRIDE, &bindings.attributes.texture0Array.arrayStride);
+	glGetIntegerv(GL_EDGE_FLAG_ARRAY_STRIDE, &bindings.attributes.edgeArray.arrayStride);
+
+#if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
+	glGetPointerv(GL_VERTEX_ARRAY_POINTER, &bindings.attributes.vertexArray.arrayPointer);
+	glGetPointerv(GL_NORMAL_ARRAY_POINTER, &bindings.attributes.normalArray.arrayPointer);
+	glGetPointerv(GL_COLOR_ARRAY_POINTER, &bindings.attributes.colorArray.arrayPointer);
+	glGetPointerv(GL_INDEX_ARRAY_POINTER, &bindings.attributes.indexArray.arrayPointer);
+	glGetPointerv(GL_TEXTURE_COORD_ARRAY_POINTER, &bindings.attributes.texture0Array.arrayPointer);
+	glGetPointerv(GL_EDGE_FLAG_ARRAY_POINTER, &bindings.attributes.edgeArray.arrayPointer);
+#else
+	bindings.attributes.vertexArray.arrayPointer = NULL;
+	bindings.attributes.normalArray.arrayPointer = NULL;
+	bindings.attributes.colorArray.arrayPointer = NULL;
+	bindings.attributes.indexArray.arrayPointer = NULL;
+	bindings.attributes.texture0Array.arrayPointer = NULL;
+	bindings.attributes.edgeArray.arrayPointer = NULL;
+#endif
+
+#ifdef GL_EXT_vertex_weighting
+	bindings.attributes.weightArray.enable = glIsEnabled(GL_VERTEX_WEIGHT_ARRAY_EXT);
+	glGetIntegerv(GL_VERTEX_WEIGHT_ARRAY_SIZE_EXT, &bindings.attributes.weightArray.arraySize);
+	glGetIntegerv(GL_VERTEX_WEIGHT_ARRAY_TYPE_EXT, &bindings.attributes.weightArray.arrayType);
+	glGetIntegerv(GL_VERTEX_WEIGHT_ARRAY_STRIDE_EXT, &bindings.attributes.weightArray.arrayStride);
+	glGetPointerv(GL_VERTEX_WEIGHT_ARRAY_POINTER_EXT, &bindings.attributes.weightArray.arrayPointer);
+#endif
+
+	arrays = bindings;
 
 	return true;
 }

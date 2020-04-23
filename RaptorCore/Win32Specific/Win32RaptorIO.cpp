@@ -63,7 +63,7 @@ CRaptorIO& CWin32RaptorIO::operator>>(std::string & s)
 	    m_inFile.getline(buffer,MAX_PATH,'\n');
         if (m_inFile.good())
             m_status = IO_OK;
-        int len = strlen(buffer);
+        size_t len = strlen(buffer);
         if (len > 0)
             if (buffer[len-1] == 0x0d)
                 buffer[len-1] = 0;
