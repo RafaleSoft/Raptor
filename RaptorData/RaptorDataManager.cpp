@@ -127,7 +127,6 @@ std::vector<std::string> CRaptorDataManager::getManagedFiles(const std::string &
 	return result;
 }
 
-
 bool CRaptorDataManager::managePackage(const std::string& packName)
 {
 	if (packName.length() < 4)
@@ -152,14 +151,26 @@ bool CRaptorDataManager::managePackage(const std::string& packName)
 	pack.header = NULL;
 	pack.headerSize = 0;
 
+	//! First try in a standard location: $RAPTOR_PATH
 	if (openPackage(pack))
 	{
 		m_packages.push_back(pack);
 		//	Erase previous files in case of updates
 		return clearExports(packName);
 	}
+	//!	If not found, then try a local file
 	else
-		return false;
+	{
+		pack.packPath = packName;
+		if (openPackage(pack))
+		{
+			m_packages.push_back(pack);
+			//	Erase previous files in case of updates
+			return clearExports(packName);
+		}
+		else
+			return false;
+	}
 }
 
 bool CRaptorDataManager::clearExports(const std::string& packName)

@@ -67,19 +67,24 @@ public:
 		uint8_t	commandLen;
 		uint8_t	replyLen;
 		uint8_t	requestLen;
-		char	command[16];
+		// 16 chars length + 0 to end string ==> align structure to DWORD.
+		char	command[17];
 	} SERVER_COMMAND;
+
 	typedef struct SESSION_COMMAND_t
 	{
 		SERVER_COMMAND	command;
 		uint16_t		width;
 		uint16_t		height;
 	} SESSION_COMMAND;
+
 	typedef struct DATA_COMMAND_t
 	{
 		SERVER_COMMAND	command;
 		uint32_t		size;
-		uint8_t			*pData;
+		uint8_t			packnameLen;
+		// 32 chars length + 0 to end string ==> align structure to DWORD.
+		char			packname[33];
 	} DATA_COMMAND;
 
 	static const CRaptorNetwork::SERVER_COMMAND& getRenderCommand(void);

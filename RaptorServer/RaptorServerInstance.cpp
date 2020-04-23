@@ -302,7 +302,7 @@ bool CRaptorServerInstance::start(unsigned int width, unsigned int height)
 			strcat(shemaLocation, "/Redist/bin/Raptor.xsd");
 		}
 
-		m_pTranslator = CRaptorIO::Create("XMLIO", CRaptorIO::MEMORY, CRaptorIO::ASCII_XML);
+		m_pTranslator = CRaptorIO::Create("XMLIO", CRaptorIO::DISK_READ, CRaptorIO::ASCII_XML);
 		m_pTranslator->parse(shemaLocation, 0);
 	}
 
@@ -449,7 +449,8 @@ bool CRaptorServerInstance::executeRequest(request &r)
 	if (!strncmp(command->command, cmd3.command.command, cmd3.command.commandLen))
 	{
 		r.reply = false;
-		return loadPackage(cmd3, r);
+		CRaptorNetwork::DATA_COMMAND *data = (CRaptorNetwork::DATA_COMMAND*)r.data;
+		return loadPackage(*data, r.id);
 	}
 
 	const CRaptorNetwork::SESSION_COMMAND& cmd4 = CRaptorNetwork::getOpenSessionCommand();
@@ -496,90 +497,81 @@ bool CRaptorServerInstance::executeRequest(request &r)
 	return false;
 }
 
-bool CRaptorServerInstance::loadPackage(const CRaptorNetwork::DATA_COMMAND& cmd3, request& r)
+bool CRaptorServerInstance::loadPackage(const CRaptorNetwork::DATA_COMMAND& data, request_handler_t::request_id id)
 {
 	if (NULL == m_pTranslator)
 		return false;
 
-	CRaptorIO *io = CRaptorIO::Create("data.pck", CRaptorIO::DISK_WRITE, CRaptorIO::BINARY);
+	std::cout << "Storing data package file to server." << std::endl;
+
+	std::streampos fsize = data.size;
+	const unsigned char *pData = (unsigned char*)&data;
+	std::string fname = data.packname;
+
+	CRaptorIO *io = CRaptorIO::Create(fname, CRaptorIO::DISK_WRITE, CRaptorIO::BINARY);
 
 	//!	Cannot open file
 	if (io->getStatus() != CRaptorIO::IO_OK)
+	{
+		std::cout << "Unable to create server file " << fname << " !" << std::endl;
 		return false;
+	}
 
-	std::cout << "Storing data package file to server." << std::endl;
-
-	std::streampos fsize = cmd3.size;
-	io->write(&cmd3.pData, fsize);
+	io->write(&pData[data.command.requestLen], fsize);
 	delete io;
 
 	CRaptorDataManager *datamanager = CRaptorDataManager::GetInstance();
-	datamanager->managePackage("data.pck");
+	datamanager->managePackage(fname);
 
 	//!	Package is empty
-	std::vector<std::string> files = datamanager->getManagedFiles("data.pck");
+	std::vector<std::string> files = datamanager->getManagedFiles(fname);
 	if (0 == files.size())
 		return false;
 
-
-	CRaptorDisplay * const pCurrentDisplay = CRaptorDisplay::GetCurrentDisplay();
-	m_pTranslator->parse("Demo.xml", 0);
+	fname = datamanager->exportFile("Demo.xml");
+	m_pTranslator->parse(fname.c_str(), 0);
 
 	std::string name;
 	//  skip data intro
 	*m_pTranslator >> name;
-	std::string data = m_pTranslator->getValueName();
-
-	while (!data.empty())
+	std::string name_data = m_pTranslator->getValueName();
+	while (!name_data.empty())
 	{
 		CPersistence* obj = NULL;
 
-		string itemname = m_pTranslator->getValueName();
-
 		//  skip data intro
-		if (itemname == "Data")
+		if (name_data == "Update")
 		{
 			*m_pTranslator >> name;
-			itemname = m_pTranslator->getValueName();
-
-			while (!itemname.empty())
+			name_data = m_pTranslator->getValueName();
+			if (name_data == "name")
 			{
-				CPersistence* obj = NULL;
-
-				if (itemname == "Update")
+				*m_pTranslator >> name;
+				obj = CPersistence::FindObject(name);
+				if ((obj != NULL) && (obj == m_pDisplay))
 				{
-					*m_pTranslator >> name;
-					itemname = m_pTranslator->getValueName();
-					if (itemname == "name")
-					{
-						*m_pTranslator >> name;
-						obj = CPersistence::FindObject(name);
-					}
-					if ((obj != NULL) && (obj == m_pDisplay))
-					{
-						// Map to display of current session
-						for (size_t i = 0; i<m_sessions.size(); i++)
-							if (m_sessions[i].id == r.id)
-							{
-								obj = m_sessions[i].display;
-								break;
-							}
-					}
+					// Map to display of current session
+					for (size_t i = 0; i < m_sessions.size(); i++)
+						if (m_sessions[i].id == id)
+						{
+							obj = m_sessions[i].display;
+							break;
+						}
 				}
-				else
-				{
-					const CPersistentObject & po = CObjectFactory::GetInstance()->createObject(itemname);
-					obj = po;
-				}
-
-				if (obj != NULL)
-					obj->importObject(*m_pTranslator);
-				else
-					*m_pTranslator >> name;
-
-				itemname = m_pTranslator->getValueName();
 			}
 		}
+		else
+		{
+			const CPersistentObject & po = CObjectFactory::GetInstance()->createObject(name_data);
+			obj = po;
+		}
+
+		if (obj != NULL)
+			obj->importObject(*m_pTranslator);
+		else
+			*m_pTranslator >> name;
+			
+		name_data = m_pTranslator->getValueName();
 	}
 
 	return true;

@@ -87,7 +87,7 @@ private:
 	void processOutputFrame(request &r);
 
 	//!	Helper method to load a Data Package received from clients
-	bool loadPackage(const CRaptorNetwork::DATA_COMMAND& cmd3, request& r);
+	bool loadPackage(const CRaptorNetwork::DATA_COMMAND& cmd3, request_handler_t::request_id id);
 
 
 	static CRaptorServerInstance* m_pInstance;

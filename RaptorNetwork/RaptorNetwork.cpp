@@ -43,7 +43,8 @@ static CRaptorNetwork::DATA_COMMAND DATA_PACKAGE_COMMAND =
 		"DataPackage"
 	},
 	0,
-	0
+	0,
+	""
 };
 
 

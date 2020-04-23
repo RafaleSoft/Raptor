@@ -94,7 +94,8 @@ bool CRaptorClient::load(const std::string& fname)
 		CRaptorNetwork::DATA_COMMAND cmd = CRaptorNetwork::getDataPackageCommand();
 		size_t datasize = (size_t)fsize + (size_t)cmd.command.requestLen;
 		cmd.size = fsize;
-		cmd.pData = 0;
+		cmd.packnameLen = fname.size();
+		strcpy(cmd.packname, fname.c_str());
 
 		uint8_t *buffer = new uint8_t[datasize];
 		memcpy(buffer, &cmd, (size_t)cmd.command.requestLen);

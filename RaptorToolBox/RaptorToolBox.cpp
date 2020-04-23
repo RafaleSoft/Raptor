@@ -2,6 +2,10 @@
 //
 
 #include "Subsys/CodeGeneration.h"
+#include "RaptorToolBox.h"
+
+#include "GLHierarchy/3DSet.h"
+
 
 extern "C" int APIENTRY
 DllMain(HINSTANCE , DWORD dwReason)
@@ -15,4 +19,9 @@ DllMain(HINSTANCE , DWORD dwReason)
 
 	}
 	return 1;   // ok
+}
+
+bool CRaptorToolBox::loadRaptorData(const std::string &fname, C3DSet *scene)
+{
+	return false;
 }
