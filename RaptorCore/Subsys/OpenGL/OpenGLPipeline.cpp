@@ -41,7 +41,7 @@ bool COpenGLPipeline::destroyPipeline()
 }
 
 
-bool COpenGLPipeline::initPipeline(void)
+bool COpenGLPipeline::initPipeline(const CShaderProgram* shaderStages, const CGeometry* geometry)
 {
 	return true;
 }

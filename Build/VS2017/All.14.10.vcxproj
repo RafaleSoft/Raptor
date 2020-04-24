@@ -154,7 +154,7 @@
     </Midl>
     <PostBuildEvent>
       <Message>Raptor Core Unit Tests</Message>
-      <Command>%RAPTOR_ROOT%\Redist\bin\UnitTest.exe</Command>
+      <Command>%RAPTOR_ROOT%\Redist\bin\UnitTest.exe F:\VisualStudioProjects\Raptor\UnitTest</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -165,7 +165,7 @@
     </Midl>
     <PostBuildEvent>
       <Message>Raptor Core Unit Tests</Message>
-      <Command>%RAPTOR_ROOT%\Redist\bin\UnitTest.exe</Command>
+      <Command>%RAPTOR_ROOT%\Redist\bin\UnitTest.exe F:\VisualStudioProjects\Raptor\UnitTest</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">
@@ -175,7 +175,7 @@
       </HeaderFileName>
     </Midl>
     <PostBuildEvent>
-      <Command>%RAPTOR_ROOT%\Redist\bin\UnitTest.exe</Command>
+      <Command>%RAPTOR_ROOT%\Redist\bin\UnitTest.exe F:\VisualStudioProjects\Raptor\UnitTest</Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>Raptor Core Unit Tests</Message>
@@ -188,7 +188,7 @@
       </HeaderFileName>
     </Midl>
     <PostBuildEvent>
-      <Command>%RAPTOR_ROOT%\Redist\bin\UnitTest.exe</Command>
+      <Command>%RAPTOR_ROOT%\Redist\bin\UnitTest.exe F:\VisualStudioProjects\Raptor\UnitTest</Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>Raptor Core Unit Tests</Message>
@@ -202,7 +202,7 @@
     </Midl>
     <PostBuildEvent>
       <Message>Raptor Core Unit Tests</Message>
-      <Command>%RAPTOR_ROOT%\Redist\bin\UnitTest.exe</Command>
+      <Command>%RAPTOR_ROOT%\Redist\bin\UnitTest.exe F:\VisualStudioProjects\Raptor\UnitTest</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -213,7 +213,7 @@
     </Midl>
     <PostBuildEvent>
       <Message>Raptor Core Unit Tests</Message>
-      <Command>%RAPTOR_ROOT%\Redist\bin\UnitTest.exe</Command>
+      <Command>%RAPTOR_ROOT%\Redist\bin\UnitTest.exe F:\VisualStudioProjects\Raptor\UnitTest</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Optimized|Win32'">
@@ -224,7 +224,7 @@
     </Midl>
     <PostBuildEvent>
       <Message>Raptor Core Unit Tests</Message>
-      <Command>%RAPTOR_ROOT%\Redist\bin\UnitTest.exe</Command>
+      <Command>%RAPTOR_ROOT%\Redist\bin\UnitTest.exe F:\VisualStudioProjects\Raptor\UnitTest</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Optimized|x64'">
@@ -235,7 +235,7 @@
     </Midl>
     <PostBuildEvent>
       <Message>Raptor Core Unit Tests</Message>
-      <Command>%RAPTOR_ROOT%\Redist\bin\UnitTest.exe</Command>
+      <Command>%RAPTOR_ROOT%\Redist\bin\UnitTest.exe F:\VisualStudioProjects\Raptor\UnitTest</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

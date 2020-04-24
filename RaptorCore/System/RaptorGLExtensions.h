@@ -29,6 +29,7 @@ public:
     //! Use static linkage for wgl extensions as they are necessary for
     //! all kind of commands for rendering context management
 #if defined(_WIN32)
+	DECLARE_WGL_ARB_create_context(STATIC_LINKAGE)
 	DECLARE_WGL_ARB_extensions_string(STATIC_LINKAGE)
 	DECLARE_WGL_ARB_pixel_format(STATIC_LINKAGE)
 	DECLARE_WGL_ARB_pbuffer(STATIC_LINKAGE)
@@ -66,6 +67,8 @@ public:
 	DECLARE_GL_EXT_framebuffer_multisample(DEFAULT_LINKAGE)
 	DECLARE_GL_ARB_uniform_buffer_object(DEFAULT_LINKAGE)
 	DECLARE_GL_ARB_vertex_array_object(DEFAULT_LINKAGE)
+	DECLARE_GL_ARB_debug_output(DEFAULT_LINKAGE)
+
 
 	//!	Initialise all extensions on drivers/hardware.
 	void glInitExtensions(void);

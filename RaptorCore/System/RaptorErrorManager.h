@@ -75,7 +75,7 @@ public:
         CRaptorErrorHandler() {};
         virtual ~CRaptorErrorHandler() {};
 
-        virtual void handleError(const GL_RAPTOR_ERROR& err);
+        virtual void handleError(const GL_RAPTOR_ERROR& err) = 0;
     };
 
     
@@ -106,6 +106,11 @@ public:
     //! This method is rather dedicated to internal error handling,
     //! but user can use it to unify external API errors.
 	void addRaptorError(GL_RAPTOR_ERROR& err);
+
+	//!	Attach a debug callback to collect OpenGL Debug Log
+	//!	A debug context should be created for this functionality.
+	//!	DebugLog is enabled in any cases.
+	void glGetDebugErrors(void);
 
     //! Intercepts openGL errors and manage them as RaptorErrors
 	void glGetError(const std::string& file,int line);

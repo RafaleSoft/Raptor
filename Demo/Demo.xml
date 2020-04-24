@@ -3,7 +3,7 @@
   	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<TextureSet name="MAIN_TEXTURES">
       <Texture name="Datas\\LensFlare2.tga" function="multiply" filter="bilinear" mode="compressed"/>
-		  <Texture name="Datas\\flare0.jpg" function="multiply" filter="bilinear" mode="compressed"/>
+	  <Texture name="Datas\\flare0.jpg" function="multiply" filter="bilinear" mode="compressed"/>
       <Texture name="Datas\\flare1.jpg" function="multiply" filter="bilinear" mode="compressed"/>
       <Texture name="Datas\\flare3.jpg" function="multiply" filter="bilinear" mode="compressed"/>
       <Texture name="Datas\\flare4.jpg" function="multiply" filter="bilinear" mode="compressed"/>
@@ -49,7 +49,7 @@
 			<Ambient r="0.6" g="0.6" b="0.6" a="1.0"/>
 			<Diffuse r="0.6" g="0.6" b="0.6" a="1.0"/>
 			<Specular r="0.9" g="0.9" b="0.9" a="1.0"/>
-			<Shininess r="20.0" g="1.0" b="1.0" a="1.0"/>
+			<Shininess exp="20.0"/>
 		</Material>
 	</Shader>
   <Light name="mainlight" active="1" volumesize="2.0">

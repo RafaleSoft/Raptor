@@ -48,14 +48,8 @@
 #if !defined(AFX_CONTEXTMANAGER_H__F992F5F0_D8A5_475F_9777_B0EB30E7648E__INCLUDED_)
 	#include "Subsys/ContextManager.h"
 #endif
-#if !defined(AFX_VULKANSHADERSTAGE_H__EF5769B8_470D_467F_9FDE_553142C81698__INCLUDED_)
-	#include "GLHierarchy/VulkanShaderStage.h"
-#endif
 #if !defined(AFX_SHADEDGEOMETRY_H__E56C66F7_2DF6_497B_AA0F_19DDC11390F9__INCLUDED_)
 	#include "GLHierarchy/ShadedGeometry.h"
-#endif
-#if !defined(AFX_SHADER_H__4D405EC2_7151_465D_86B6_1CA99B906777__INCLUDED_)
-	#include "GLHierarchy/Shader.h"
 #endif
 
 #include <set>      // to sort the lights
@@ -88,18 +82,8 @@ C3DSceneObject::C3DSceneObject(CObject3D* obj)
 	{
 		if (obj->getId().isSubClassOf(CShadedGeometry::CShadedGeometryClassID::GetClassId()))
 		{
-			const CVulkanDevice& rDevice = CVulkanDevice::getCurrentDevice();
-			m_pPipeline = rDevice.createPipeline();
 			CShadedGeometry *sg = (CShadedGeometry *)obj;
-			CShader* s = sg->getShader();
-			CVulkanShaderStage *ss = s->vkGetVulkanShader();
-
-			if (!m_pPipeline->initPipeline(ss,sg))
-			{
-				Raptor::GetErrorManager()->generateRaptorError(CShadedGeometry::CShadedGeometryClassID::GetClassId(),
-															   CRaptorErrorManager::RAPTOR_FATAL,
-															   "Failed to create vulkan pipeline object");
-			}
+			m_pPipeline = sg->glvkCreatePipeline();
 		}
 	}
 }
@@ -116,7 +100,8 @@ void C3DSceneObject::vkRender(	CVulkanCommandBuffer& commandBuffer,
 {
 	if (NULL != m_pPipeline)
 	{
-		VkPipeline pipe = m_pPipeline->getPipeline();
+		CVulkanPipeline *pPipeline = (CVulkanPipeline*)m_pPipeline;
+		VkPipeline pipe = pPipeline->getPipeline();
 		commandBuffer.vkCmdBindPipeline(commandBuffer.commandBuffer,
 										VK_PIPELINE_BIND_POINT_GRAPHICS,
 										pipe);

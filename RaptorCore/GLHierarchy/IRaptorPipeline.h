@@ -1,6 +1,6 @@
 /***************************************************************************/
 /*                                                                         */
-/*  OpenGLPipeline.h                                                       */
+/*  RaptorPipeline.h                                                       */
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
@@ -15,43 +15,33 @@
 /*                                                                         */
 /***************************************************************************/
 
-
-#if !defined(AFX_RAPTOROPENGLPIPELINE_H__E386000E_D01F_4FD9_B15B_ED5E14685241__INCLUDED_)
-#define AFX_RAPTOROPENGLPIPELINE_H__E386000E_D01F_4FD9_B15B_ED5E14685241__INCLUDED_
-
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
-
-#if !defined(AFX_PERSISTENCE_H__5561BA28_831B_11D3_9142_EEB51CEBBDB0__INCLUDED_)
-	#include "GLHierarchy/Persistence.h"
-#endif
 #if !defined(AFX_RAPTORPIPELINE_972B6860_BDAE_4303_962E_3DAC4ECF7F7B__INCLUDED_)
-	#include "GLHierarchy/IRaptorPipeline.h"
-#endif
+#define AFX_RAPTORPIPELINE_972B6860_BDAE_4303_962E_3DAC4ECF7F7B__INCLUDED_
 
+#pragma once
+
+#include "Subsys/CodeGeneration.h"
 
 
 RAPTOR_NAMESPACE_BEGIN
 
 
-class COpenGLPipeline : public IRaptorPipeline
+class CShaderProgram;
+class CGeometry;
+
+
+RAPTOR_INTERFACE RAPTOR_API IRaptorPipeline
 {
 public:
-	COpenGLPipeline(void);
-	virtual ~COpenGLPipeline(void);
+	//!	Creation and initialisation of all resources of the pipeline.
+	//! @return true if pipeline succesfully initialized, false in case of error.
+	virtual bool initPipeline(const CShaderProgram* shaderStages, const CGeometry* geometry) = 0;
 
-	//! Implement base class. @see IRaptorPipeline.
-	bool initPipeline(const CShaderProgram* shaderStages, const CGeometry* geometry);
-
-	//! Implement base class. @see IRaptorPipeline.
-	bool destroyPipeline(void);
-
-
-private:
+	//!	Releation of all resources of the pipeline.
+	//! @return true if pipeline succesfully destroyed, false in case of error.
+	virtual bool destroyPipeline(void) = 0;
 };
 
+#endif	// !defined(AFX_RAPTORPIPELINE_972B6860_BDAE_4303_962E_3DAC4ECF7F7B__INCLUDED_)
 
 RAPTOR_NAMESPACE_END
-
-#endif // !defined(AFX_RAPTOROPENGLPIPELINE_H__E386000E_D01F_4FD9_B15B_ED5E14685241__INCLUDED_)

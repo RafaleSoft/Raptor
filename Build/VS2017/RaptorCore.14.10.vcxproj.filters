@@ -620,6 +620,9 @@
     <ClCompile Include="..\..\RaptorCore\Subsys\OpenGL\OpenGLPipeline.cpp">
       <Filter>Source Files\Subsys src\OpenGL</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\IRaptorPipeline.cpp">
+      <Filter>Source Files\GLHierarchy src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Xsd Include="Subsys\ObjectModels\Raptor.xsd">
@@ -1190,6 +1193,12 @@
     </ClInclude>
     <ClInclude Include="..\..\RaptorCore\Subsys\OpenGL\OpenGLPipeline.h">
       <Filter>Header Files\Subsys include\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\RaptorPipeline.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\IRaptorPipeline.h">
+      <Filter>Header Files\GLHierarchy include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

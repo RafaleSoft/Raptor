@@ -96,7 +96,7 @@ public:
 
 	//! Activates the buffer object : bo is now the currently selected buffer for
     //! all subsequent calls related to the kind of buffer
-	virtual bool lockBufferObject(IBufferObject &bo) = 0;
+	virtual bool lockBufferObject(IDeviceMemoryManager::IBufferObject &bo) = 0;
 
 	//! Deactivates the buffer object selected above.
 	virtual bool unlockBufferObject(IDeviceMemoryManager::IBufferObject &bo) = 0;

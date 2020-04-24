@@ -490,6 +490,18 @@
 #endif
 
 
+#if defined(WGL_ARB_create_context)
+	#ifndef IMPLEMENT_RAPTOR_WGL_ARB_create_context
+	#define IMPLEMENT_RAPTOR_WGL_ARB_create_context(target) \
+			PFN_WGL_CREATE_CONTEXT_ATTRIBS_PROC	target::wglCreateContextAttribsARB = NULL;
+	#endif
+#else
+	#define IMPLEMENT_RAPTOR_WGL_ARB_create_context(target)
+#endif
+
+
+
+
 //!
 //!
 //!     Macro definition for extensions initialisation
@@ -1461,6 +1473,49 @@
 		}
 	#else
 		#define IMPLEMENT_GL_ARB_vertex_array_object(target)
+	#endif
+#endif
+
+
+#ifndef IMPLEMENT_GL_ARB_debug_output
+	#ifdef GL_ARB_debug_output
+	#define IMPLEMENT_GL_ARB_debug_output(target) \
+		if (Raptor::glIsExtensionSupported(GL_ARB_VERTEX_ARRAY_OBJECT_EXTENSION_NAME))\
+		{\
+			target->glDebugMessageControlARB = (PFN_GL_DEBUG_MESSAGE_CONTROL_ARB)GET_PROC_ADDRESS("glDebugMessageControlARB");\
+			target->glDebugMessageInsertARB = (PFN_GL_DEBUG_MESSAGE_INSERT_ARB)GET_PROC_ADDRESS("glDebugMessageInsertARB");\
+			target->glDebugMessageCallbackARB = (PFN_GL_DEBUG_MESSAGE_CALLBACK_ARB)GET_PROC_ADDRESS("glDebugMessageCallbackARB");\
+			target->glGetDebugMessageLogARB = (PFN_GL_GET_DEBUG_MESSAGE_LOG_ARB)GET_PROC_ADDRESS("glGetDebugMessageLogARB");\
+			target->glGetPointerv = (PFN_GL_GET_POINTERV)GET_PROC_ADDRESS("glGetPointerv");\
+		}\
+		else\
+		{\
+			target->glDebugMessageControlARB = NULL;\
+			target->glDebugMessageInsertARB = NULL;\
+			target->glDebugMessageCallbackARB = NULL;\
+			target->glGetDebugMessageLogARB = NULL;\
+			target->glGetPointerv = NULL;\
+		}
+	#else
+		#define IMPLEMENT_GL_ARB_debug_output(target)
+	#endif
+#endif
+
+
+
+#ifndef IMPLEMENT_WGL_ARB_create_context
+	#ifdef WGL_ARB_create_context
+	#define IMPLEMENT_WGL_ARB_create_context(target)\
+			if (Raptor::glIsExtensionSupported(WGL_ARB_CREATE_CONTEXT_EXTENSION_NAME))\
+			{\
+				target->wglCreateContextAttribsARB = (PFN_WGL_CREATE_CONTEXT_ATTRIBS_PROC)GET_PROC_ADDRESS("wglCreateContextAttribsARB");\
+			}\
+			else\
+			{\
+				target->glTexImage3DEXT = NULL;\
+			}
+	#else
+		#define IMPLEMENT_WGL_ARB_create_context(target)
 	#endif
 #endif
 

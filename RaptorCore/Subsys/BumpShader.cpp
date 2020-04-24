@@ -42,6 +42,9 @@
 #if !defined(AFX_OPENGLSHADERSTAGE_H__56B00FE3_E508_4FD6_9363_90E6E67446D9__INCLUDED_)
 	#include "GLHierarchy/OpenGLShaderStage.h"
 #endif
+#if !defined(AFX_MATERIAL_H__B42ABB88_80E8_11D3_97C2_DE5C28000000__INCLUDED_)
+	#include "GLHierarchy/Material.h"
+#endif
 
 
 RAPTOR_NAMESPACE
@@ -87,6 +90,15 @@ void CBumpShader::glInit(void)
 	
 	CProgramParameters params;
 	params.addParameter("tangent", CProgramParameters::ADDITIONAL_PARAM1);
+
+#if defined(GL_ARB_uniform_buffer_object)
+	CMaterial::Material_t M;
+	CProgramParameters::CParameter<CMaterial::Material_t> material(M);
+	material.name("Material");
+	material.locationType = GL_UNIFORM_BLOCK_BINDING_ARB;
+	params.addParameter(material);
+#endif
+
 	stage->setProgramParameters(params);
 
 	stage->glCompileShader();

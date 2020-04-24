@@ -36,6 +36,9 @@
 #if !defined(AFX_VULKAN_H__625F6BC5_F386_44C2_85C1_EDBA23B16921__INCLUDED_)
 	#include "Subsys/Vulkan/RaptorVulkan.h"
 #endif
+#if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
+	#include "System/RaptorGLExtensions.h"
+#endif
 
 #include <time.h>
 
@@ -89,6 +92,121 @@ bool CRaptorErrorManager::logToFile(const std::string &filename)
     }
 
     return opened;
+}
+
+void APIENTRY OPENGL_DEBUG_CALLBACK(GLenum source,
+									GLenum type, 
+									GLuint id, 
+									GLenum severity, 
+									GLsizei length, 
+									const char* message, 
+									const GLvoid* userParam)
+{
+	CRaptorErrorManager::GL_RAPTOR_ERROR err;
+
+	err.className = COpenGL::COpenGLClassID::GetClassId().ClassName();
+	switch (source)
+	{
+		case GL_DEBUG_SOURCE_API_ARB:
+			err.className += "_SOURCE_API";
+			break;
+		case GL_DEBUG_SOURCE_WINDOW_SYSTEM_ARB:
+			err.className += "_SOURCE_WINDOW_SYSTEM";
+			break;
+		case GL_DEBUG_SOURCE_SHADER_COMPILER_ARB:
+			err.className += "_SOURCE_SHADER_COMPILER";
+			break;
+		case GL_DEBUG_SOURCE_THIRD_PARTY_ARB:
+			err.className += "_SOURCE_THIRD_PARTY";
+			break;
+		case GL_DEBUG_SOURCE_APPLICATION_ARB:
+			err.className += "_SOURCE_APPLICATION";
+			break;
+		case GL_DEBUG_SOURCE_OTHER_ARB:
+			err.className += "_SOURCE_OTHER";
+			break;
+		default:
+			err.className += "_UNKNOWN_SOURCE";
+			break;
+	}
+
+	switch (severity)
+	{
+		case GL_DEBUG_SEVERITY_HIGH_ARB:
+			err.type = CRaptorErrorManager::RAPTOR_FATAL;
+			break;
+		case GL_DEBUG_SEVERITY_MEDIUM_ARB:
+			err.type = CRaptorErrorManager::RAPTOR_GL_ERROR;
+			break;
+		case GL_DEBUG_SEVERITY_LOW_ARB:
+			err.type = CRaptorErrorManager::RAPTOR_WARNING;
+			break;
+#ifdef GL_VERSION_4_3
+		case GL_DEBUG_SEVERITY_NOTIFICATION:
+			err.type = CRaptorErrorManager::RAPTOR_NO_ERROR;
+			break;
+#endif
+		default:
+			err.type = CRaptorErrorManager::RAPTOR_ERROR;
+			break;
+	}
+	
+	switch (type)
+	{
+		case GL_DEBUG_TYPE_ERROR_ARB:
+			err.error = "API Error: ";
+			break;
+		case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR_ARB:
+			err.error = "Deprecation Error: ";
+			break;
+		case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR_ARB:
+			err.error = "Undefined behavior Error: ";
+			break;
+		case GL_DEBUG_TYPE_PORTABILITY_ARB:
+			err.error = "Portability Error: ";
+			break;
+		case GL_DEBUG_TYPE_PERFORMANCE_ARB:
+			err.error = "Performance Error: ";
+			break;
+#ifdef GL_VERSION_4_3
+		case GL_DEBUG_TYPE_MARKER:
+			err.error = "Performance Error: ";
+			break;
+		case GL_DEBUG_TYPE_PUSH_GROUP:
+			err.error = "Performance Error: ";
+			break;
+		case GL_DEBUG_TYPE_POP_GROUP:
+			err.error = "Performance Error: ";
+			break;
+#endif
+		case GL_DEBUG_TYPE_OTHER:
+			err.error = "Other Info: ";
+			break;
+		default:
+			err.error = "Unknown Type: ";
+			break;
+	}
+
+	err.error += message;
+	err.filename = "OpenGL";
+	err.line = 0;
+
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+	instance.pErrorMgr->addRaptorError(err);
+}
+
+void CRaptorErrorManager::glGetDebugErrors(void)
+{
+	const CRaptorGLExtensions *pextensions = Raptor::glGetExtensions();
+
+#if defined(GL_ARB_debug_output)
+	if (NULL != pextensions->glDebugMessageCallbackARB)
+		pextensions->glDebugMessageCallbackARB(OPENGL_DEBUG_CALLBACK, NULL);
+
+	//!	Synchronous messages will avoid multiple access precaution,
+	//!	Performance loss for debugging is not a problem.
+	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB);
+#endif
 }
 
 void CRaptorErrorManager::generateRaptorError(	const CPersistence::CPersistenceClassID& classID,
