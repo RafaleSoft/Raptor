@@ -132,18 +132,25 @@ COpenGLMemory::createBufferObject(	IDeviceMemoryManager::IBufferObject::BUFFER_K
 
 		if (isBufferObjectValid(buffer))
 		{
+			GLint relocate_offset = RELOCATE_OFFSET;
+#if defined(GL_ARB_uniform_buffer_object)
+			if (IBufferObject::UNIFORM_BUFFER == kind)
+			{
+				glGetIntegerv(GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT_ARB, &relocate_offset);
+			}
+#endif
         	//	Store the buffer in the high part
 			//	and store the memory type in the low part.
 			//	This format is odd enough to be sure it cannot
 			//	be an address.
 			CBufferObject* pbuffer = new CBufferObject;
 			pbuffer->m_buffer = ((buffer & 0xffff) << 16) + 1;
-			pbuffer->m_size = size + RELOCATE_OFFSET;
+			pbuffer->m_size = size + relocate_offset;
             pbuffer->m_storage = kind;
-			pbuffer->m_granularity = RELOCATE_OFFSET;
+			pbuffer->m_granularity = relocate_offset;
 
 			//	Allocate uninitialised data space
-			pExtensions->glBufferDataARB(glStorage, size + RELOCATE_OFFSET, NULL, glMode);
+			pExtensions->glBufferDataARB(glStorage, size + relocate_offset, NULL, glMode);
 
             //	0 should by to the "GL default" array model.
 		    pExtensions->glBindBufferARB(glStorage,0);

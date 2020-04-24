@@ -78,7 +78,7 @@ private:
 	//!	The unique allocator instance
 	static CUniformAllocator	*m_pInstance;
 	
-	//!	Global array for texel allocation when GPU relocation is not available
+	//!	Global array for uniforms allocation when GPU relocation is not available
 	data_bloc	uniforms;
 
 	//!	If relocated, High Performance buffer object

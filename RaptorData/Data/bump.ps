@@ -153,7 +153,7 @@ void main (void)
 		if (numl >= 0)
 		{
 			float att = lightDirs[numl].w;
-			diffuse += att * gl_FrontLightProduct[numl].ambient + gl_Material.ambient + gl_Material.diffuse;
+			diffuse += att * gl_FrontLightProduct[numl].ambient;
 			float NdotL = max(0.0,dot(N,normalize(lightDirs[numl].xyz)));
 			if (NdotL > 0.0)
 			{

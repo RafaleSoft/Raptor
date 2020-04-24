@@ -53,8 +53,8 @@ int _tmain(int argc, _TCHAR* argv[])
 	runner.addTest(suite);
 
 	//	Create the test suite for Raptor CRaptorMutex
-	//suite = CRaptorSynchroTest::suite();
-	//runner.addTest(suite);
+	suite = CRaptorSynchroTest::suite();
+	runner.addTest(suite);
 
 	bool res = runner.run();
 

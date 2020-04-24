@@ -6,6 +6,9 @@
 	- parser les .rc et mettre à jour la version réelle selon RAPTOR_VERSION ou Version.h
 	(synchroniser Version.h à partir de la var env si elle est définie)
 
+- CShaderrogram:
+	- ajouter un preprocesseur.
+
 - COpenGLShaderStage:
 	- fusionner vkLoadShader & glLoadProgram (methode virtuelle de CShaderProgram)
 	- fusionner vkRender & glRender (methode virtuelle de CShaderProgram)

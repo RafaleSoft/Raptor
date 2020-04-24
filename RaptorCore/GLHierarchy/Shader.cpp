@@ -484,6 +484,7 @@ bool CShader::vkRemoveVulkanShader(void)
 
 void CShader::glRenderMaterial(void)
 {
+	/*
 	if ((NULL != m_pMaterial) && (NULL != m_pOpenGLShader))
 	{
 		if (m_pMaterial->doRebuild())
@@ -497,6 +498,7 @@ void CShader::glRenderMaterial(void)
 			m_pOpenGLShader->updateProgramParameters(params);
 		}
 	}
+	*/
 
 	if (IRenderingProperties::GetCurrentProperties()->getCurrentLighting() == IRenderingProperties::ENABLE)
 	{

@@ -247,7 +247,8 @@ bool CUniformAllocator::glvkLockMemory(bool lock)
 
 bool CUniformAllocator::glvkBindUniform(uint8_t *uniform, int32_t index)
 {
-	if (m_bLocked)
+	//! In locked state, the buffer is bound, we are in rendering.
+	if (!m_bLocked)
 		return false;
 
 	map<uint8_t*, uint64_t>::iterator blocPos = uniformBlocs.find(uniform);

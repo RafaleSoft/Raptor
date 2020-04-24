@@ -68,7 +68,7 @@ RAPTOR_NAMESPACE_END
 RAPTOR_NAMESPACE
 
 COpenGLShaderStage::COpenGLShaderStage(const std::string& name)
-	:CShaderProgram(stageId, name), m_bReLinked(true),
+	:CShaderProgram(stageId, name), m_bReLinked(false),
 	m_pVShader(NULL), m_pFShader(NULL), m_pGShader(NULL), m_bUpdateLocations(false),
 	m_bDeleteFShader(false), m_bDeleteVShader(false), m_bDeleteGShader(false)
 {
@@ -107,8 +107,10 @@ COpenGLShaderStage::COpenGLShaderStage(const COpenGLShaderStage& stage)
 		m_pGShader->registerDestruction(this);
 	}
 
-	if (0 != stage.m_handle.glhandle())
-		glCompileShader();
+	//!	Do not compile the shader at this stage because 
+	//!	derived classes will likely modify the shaders after this point.
+	//if (0 != stage.m_handle.glhandle())
+	//	glCompileShader();
 
 	m_bDeleteVShader = stage.m_bDeleteVShader;
 	m_bDeleteFShader = stage.m_bDeleteFShader;
@@ -284,11 +286,14 @@ void COpenGLShaderStage::glRender(void)
 			m_bApplyParameters = false;
 		}
 
+		/*
 		if (NULL != m_uniforms)
 		{
+			// TODO : provide uniform index binding point
 			CUniformAllocator*	pUAllocator = CUniformAllocator::GetInstance();
 			pUAllocator->glvkBindUniform(m_uniforms, 0);
 		}
+		*/
 
 		if (m_pVShader != NULL)
 			m_pVShader->glRender();

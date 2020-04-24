@@ -29,7 +29,9 @@ const int GL_MAX_LIGHTS = 8;
 
 layout (binding = 0) uniform Transform {
 	mat4 ModelViewMatrix;
+	mat4 ModelViewMatrixInverse;
 	mat4 ModelViewProjectionMatrix;
+	mat4 NormalMatrix;
 } gl_Transform;
 
 
