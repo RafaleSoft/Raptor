@@ -104,7 +104,7 @@ LRESULT CALLBACK WindowProc(  HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
                 HDC hdc = GetDC(hwnd);
 
                 RAPTOR_HANDLE display;
-	            display.handle((unsigned int)(hdc));
+	            display.ptr(hdc);
 	            display.hClass(CLIENT_HANDLE_CLASS);
 				if (pDisplay->glvkBindDisplay(display))
 	            {
@@ -140,7 +140,7 @@ LRESULT CALLBACK WindowProc(  HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
             unsigned int nHeight = HIWORD(lparam); // height of client area 
 
             RAPTOR_HANDLE display;
-	        display.handle((unsigned int)(hdc));
+	        display.ptr(hdc);
 	        display.hClass(CLIENT_HANDLE_CLASS);
 			if (pDisplay->glvkBindDisplay(display))
 	        {
@@ -167,6 +167,19 @@ LRESULT CALLBACK WindowProc(  HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
 	    case WM_DESTROY: 
 		{
+			HDC hdc = GetDC(hwnd);
+			RAPTOR_HANDLE display;
+			display.ptr(hdc);
+			display.hClass(CLIENT_HANDLE_CLASS);
+			if (pDisplay->glvkBindDisplay(display))
+			{
+				pDisplay->glvkReleaseResources();
+				pDisplay->glvkUnBindDisplay();
+			}
+
+			Raptor::glDestroyDisplay(pDisplay);
+			pDisplay = NULL;
+
 		    // kill the application, this sends a WM_QUIT message 
 		    PostQuitMessage(0);
 		    return(0);
@@ -184,9 +197,9 @@ LRESULT CALLBACK WindowProc(  HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
 #ifdef WIN32
 int WINAPI WinMain(  HINSTANCE hinstance,
-		                            HINSTANCE hprevinstance,
-		                            LPSTR lpcmdline,
-		                            int ncmdshow)
+		             HINSTANCE hprevinstance,
+		             LPSTR lpcmdline,
+		             int ncmdshow)
 {
     CRaptorConfig config;
     config.m_bRelocation = true;
@@ -267,7 +280,11 @@ int WINAPI WinMain(  HINSTANCE hinstance,
     } // end while
 
     delete pDoc;
-    Raptor::glPurgeRaptor(false);
+    
+	DestroyWindow(hwnd);
+
+	if (Raptor::GetConfig().m_bAutoDestroy)
+		Raptor::glQuitRaptor();
 
     // return to Windows like this
     return(msg.wParam);

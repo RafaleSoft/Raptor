@@ -1,6 +1,21 @@
-// VulkanDevice.cpp: implementation of the CVulkanPipeline class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  VulkanPipeline.cpp                                                     */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
 #include "Subsys/CodeGeneration.h"
 
 #if !defined(AFX_RAPTORVULKANPIPELINE_H__C2997B30_C6E2_4EF2_AFE3_FCD27AB5CBB7__INCLUDED_)
@@ -60,7 +75,7 @@ bool CVulkanPipeline::destroyPipeline()
 }
 
 
-bool CVulkanPipeline::initPipeline(const CVulkanShaderStage* shaderStages,
+bool CVulkanPipeline::initPipeline(const CShaderProgram* shaderStages,
 								   const CGeometry* geometry)
 {
 	VkResult res = VK_NOT_READY;
@@ -69,8 +84,8 @@ bool CVulkanPipeline::initPipeline(const CVulkanShaderStage* shaderStages,
 		return false;
 
 	//VkPipelineCache pipelineCache;
-
-	CVulkanShader* pShaderStage = shaderStages->getShader();
+	CVulkanShaderStage *stages = (CVulkanShaderStage*)shaderStages;
+	CVulkanShader* pShaderStage = stages->getShader();
 	if (NULL == pShaderStage)
 		return false;
 
@@ -173,7 +188,7 @@ bool CVulkanPipeline::initPipeline(const CVulkanShaderStage* shaderStages,
 	uint32_t subpass = 0;
 	VkPipeline basePipelineHandle = VK_NULL_HANDLE;
 	int32_t basePipelineIndex = -1;
-	VkPipelineLayout layout = shaderStages->getPipelineLayout();
+	VkPipelineLayout layout = stages->getPipelineLayout();
 
 	VkGraphicsPipelineCreateInfo pipeline_create_info = {VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
 														NULL,	// const void *pNext 

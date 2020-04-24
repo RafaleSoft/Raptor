@@ -19,9 +19,7 @@
 #if !defined(AFX_OPENGLSHADERSTAGE_H__56B00FE3_E508_4FD6_9363_90E6E67446D9__INCLUDED_)
 #define AFX_OPENGLSHADERSTAGE_H__56B00FE3_E508_4FD6_9363_90E6E67446D9__INCLUDED_
 
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
 
 #include "Subsys/CodeGeneration.h"
 
@@ -49,10 +47,7 @@ public:
 
 
 	//! Implements base class
-	virtual bool glLoadProgram(const std::string &program)
-	{
-		return NULL;
-	};
+	virtual bool glLoadProgram(const std::string &program);
 
 	//! Implements base class
 	virtual void glRender(void);
@@ -109,7 +104,7 @@ public:
 	bool glRemoveGeometryShader(void);
 
 
-		//! Provide gl-like shader parameters from RaptorCore.
+	//! Provide gl-like shader parameters from RaptorCore.
 	//!	Attention : parameter shall be copied before next call because return value is reused.
 	CProgramParameters::CParameterBase& getDefaultParameter(const std::string& parameter_name, int locationIndex);
 
@@ -155,8 +150,6 @@ private:
 	bool			m_bDeleteFShader;
 	bool			m_bDeleteGShader;
 	bool			m_bUpdateLocations;
-
-	RAPTOR_HANDLE	m_shaderProgram;
 
 	CVertexShader	*m_pVShader;
 	CFragmentShader	*m_pFShader;

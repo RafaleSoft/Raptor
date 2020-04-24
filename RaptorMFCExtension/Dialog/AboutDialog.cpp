@@ -177,7 +177,7 @@ void CGLDisplay::GLInitContext()
 
     CRaptorDataManager  *dataManager = CRaptorDataManager::GetInstance();
     if (dataManager != NULL)
-		dataManager->ExportFile("rapsplsh.AVI","");
+		dataManager->exportFile("rapsplsh.AVI","");
 
 	TCHAR Tbuffer[1024];
     DWORD res = GetEnvironmentVariable(TEXT("TMP"),Tbuffer,1024);
@@ -291,7 +291,7 @@ void CAboutDialog::OnOK()
 	CDialog::OnOK();
 }
 
-void CAboutDialog::OnTimer(UINT nIDEvent)
+void CAboutDialog::OnTimer(UINT_PTR nIDEvent)
 {
 	::InvalidateRect(m_hWnd,&rect,FALSE);
 	CTimeObject::deltaTime();

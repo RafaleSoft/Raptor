@@ -19,9 +19,10 @@
 RAPTOR_NAMESPACE_BEGIN
 
 class CLight;
-class CVulkanPipeline;
+RAPTOR_INTERFACE IRaptorPipeline;
 class CObject3D;
 class CVulkanCommandBuffer;
+
 
 class C3DSceneObject  
 {
@@ -110,7 +111,7 @@ private:
 	RAPTOR_HANDLE	object;
 
 	//!	Object's rendering pipeline
-	CVulkanPipeline *m_pPipeline;
+	IRaptorPipeline *m_pPipeline;
 };
 
 RAPTOR_NAMESPACE_END

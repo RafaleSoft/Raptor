@@ -198,10 +198,8 @@ bool CObjectStore::IsAColumn(CGeometry *&g)
 		factory.glLoadTexture(normalMap,BUMP_0);
 		bump->setNormalMap(normalMap);
 
-        CGeometry::CRenderingModel l_model(0);
-        l_model.addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
-        l_model.addModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
-        bump->setRenderingModel(l_model);
+		bump->setRenderingModel(CGeometry::CGL_FRONT_GEOMETRY);
+		bump->addModel(CGeometry::CGL_TEXTURE);
 
 		m_columnBump = bump;
 		res = true;
@@ -241,10 +239,9 @@ bool CObjectStore::loadColumn(void)
 	{
 		CShadedGeometry *next = (CShadedGeometry*)(m_columnLow->getChild(it++));
 
-        CGeometry::CRenderingModel l_model(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
-        l_model.addModel(CGeometry::CRenderingModel::CGL_NORMALS);
-        l_model.addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
-		g->setRenderingModel(l_model);
+		g->setRenderingModel(CGeometry::CGL_FRONT_GEOMETRY);
+		g->addModel(CGeometry::CGL_NORMALS);
+		g->addModel(CGeometry::CGL_TEXTURE);
 
         const string& name = g->getName();
         if (name == "Column#2")
@@ -442,56 +439,56 @@ void CObjectStore::LoadPack(void)
 		//	Change package and erase previous files in case of updates
 		dataManager->managePackage("Demo.pck");
 		
-		BRICKS_0 = dataManager->ExportFile("BRICKS.jpg");
+		BRICKS_0 = dataManager->exportFile("BRICKS.jpg");
 		if (BRICKS_0.empty()) return;
-		BRICKS_1 = dataManager->ExportFile("BRICKS2.jpg");
+		BRICKS_1 = dataManager->exportFile("BRICKS2.jpg");
 		if (BRICKS_1.empty()) return;
-		BRICKS_2 = dataManager->ExportFile("BRICKS3.jpg");
+		BRICKS_2 = dataManager->exportFile("BRICKS3.jpg");
 		if (BRICKS_2.empty()) return;
-		BRICKS_3 = dataManager->ExportFile("BRICKS4.jpg");
+		BRICKS_3 = dataManager->exportFile("BRICKS4.jpg");
 		if (BRICKS_3.empty()) return;
-		BRICKS_4 = dataManager->ExportFile("BRICKS5.jpg");
+		BRICKS_4 = dataManager->exportFile("BRICKS5.jpg");
 		if (BRICKS_4.empty()) return;
-		BRICKS_5 = dataManager->ExportFile("BRICKS6.jpg");
+		BRICKS_5 = dataManager->exportFile("BRICKS6.jpg");
 		if (BRICKS_5.empty()) return;
-		BRICKS_6 = dataManager->ExportFile("BRICKS7.jpg");
+		BRICKS_6 = dataManager->exportFile("BRICKS7.jpg");
 		if (BRICKS_6.empty()) return;
-		BRICKS_7 = dataManager->ExportFile("BRICKS8.jpg");
+		BRICKS_7 = dataManager->exportFile("BRICKS8.jpg");
 		if (BRICKS_7.empty()) return;
-		BRICKS_8 = dataManager->ExportFile("BRICKS9.jpg");
+		BRICKS_8 = dataManager->exportFile("BRICKS9.jpg");
 		if (BRICKS_8.empty()) return;
-		BRICKS_9 = dataManager->ExportFile("BRICKS10.jpg");
+		BRICKS_9 = dataManager->exportFile("BRICKS10.jpg");
 		if (BRICKS_9.empty()) return;
 
-		COLUMNLOW = dataManager->ExportFile("colonneLow.3DS");
+		COLUMNLOW = dataManager->exportFile("colonneLow.3DS");
 		if (COLUMNLOW.empty()) return;
-		MODELSHIGH = dataManager->ExportFile("Columns.3DS");
+		MODELSHIGH = dataManager->exportFile("Columns.3DS");
 		if (MODELSHIGH.empty()) return;
-		MODELSLOW = dataManager->ExportFile("ColumnsLow.3DS");
+		MODELSLOW = dataManager->exportFile("ColumnsLow.3DS");
 		if (MODELSLOW.empty()) return;
 
-		MARBLE_0 = dataManager->ExportFile("Marble.jpg");
+		MARBLE_0 = dataManager->exportFile("Marble.jpg");
 		if (MARBLE_0.empty()) return;
-		MARBLE_1 = dataManager->ExportFile("Marble2.jpg");
+		MARBLE_1 = dataManager->exportFile("Marble2.jpg");
 		if (MARBLE_1.empty()) return;
-		MARBLE_2 = dataManager->ExportFile("Marble3.jpg");
+		MARBLE_2 = dataManager->exportFile("Marble3.jpg");
 		if (MARBLE_2.empty()) return;
-		MARBLE_3 = dataManager->ExportFile("Marble4.jpg");
+		MARBLE_3 = dataManager->exportFile("Marble4.jpg");
 		if (MARBLE_3.empty()) return;
-		MARBLE_4 = dataManager->ExportFile("Marble5.jpg");
+		MARBLE_4 = dataManager->exportFile("Marble5.jpg");
 		if (MARBLE_4.empty()) return;
-		MARBLE_5 = dataManager->ExportFile("Marble6.jpg");
+		MARBLE_5 = dataManager->exportFile("Marble6.jpg");
 		if (MARBLE_5.empty()) return;
 
-		BUMP_0 = dataManager->ExportFile("Sculpt.tga");
+		BUMP_0 = dataManager->exportFile("Sculpt.tga");
 		if (BUMP_0.empty()) return;
 
-		OLDWOOD_1 = dataManager->ExportFile("OLDWOOD2.JPG");
+		OLDWOOD_1 = dataManager->exportFile("OLDWOOD2.JPG");
 		if (OLDWOOD_1.empty()) return;
 
-		FLARE_BASE = dataManager->ExportFile("LensFlare2.tga");
+		FLARE_BASE = dataManager->exportFile("LensFlare2.tga");
 		if (FLARE_BASE.empty()) return;
-		ROCKSCULPT = dataManager->ExportFile("lrock049.jpg");
+		ROCKSCULPT = dataManager->exportFile("lrock049.jpg");
 		if (ROCKSCULPT.empty()) return;
 	}
 }
@@ -656,10 +653,9 @@ void CObjectStore::LoadModels(void)
 	{
 		CGeometry *next = (CGeometry*)(root->getChild(it++));
 		
-        CGeometry::CRenderingModel l_model(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
-        l_model.addModel(CGeometry::CRenderingModel::CGL_NORMALS);
-        l_model.addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
-		g->setRenderingModel(l_model);
+		g->setRenderingModel(CGeometry::CGL_FRONT_GEOMETRY);
+		g->addModel(CGeometry::CGL_NORMALS);
+		g->addModel(CGeometry::CGL_TEXTURE);
 
 		if (IsAColumn(g))
         {
@@ -784,10 +780,9 @@ void CObjectStore::BuildObjects(void)
     m_pBumpKnot->setDiffuseMap(m_textures->getTexture(MARBLE5));
 	m_pBumpKnot->setNormalMap(normalMap);
 	
-    CGeometry::CRenderingModel l_model(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
-    l_model.addModel(CGeometry::CRenderingModel::CGL_NORMALS);
-    l_model.addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
-	m_pBumpKnot->setRenderingModel(l_model);
+	m_pBumpKnot->setRenderingModel(CGeometry::CGL_FRONT_GEOMETRY);
+	m_pBumpKnot->addModel(CGeometry::CGL_NORMALS);
+	m_pBumpKnot->addModel(CGeometry::CGL_TEXTURE);
 
 	if (!Raptor::glIsExtensionSupported(GL_ARB_VERTEX_PROGRAM_EXTENSION_NAME))
     {

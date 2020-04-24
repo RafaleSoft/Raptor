@@ -129,19 +129,6 @@ public:
 												float param4 = 0.0f);
 
 
-	//!	The sum af all the above
-	//!	NOT IMPLEMENTED YET
-	void RAPTOR_FASTCALL glVertex(const GL_VERTEX_DATA &v);
-
-	//!	This function is the equivalent of all the standard
-	//!	OpenGL client state pointer functions. The type of pointer
-	//!	is selected by the first parameter.
-	void RAPTOR_FASTCALL glVertexPointer(CProgramParameters::GL_VERTEX_ATTRIB numParam,
-										 GLint size,
-										 GLenum type,
-										 GLsizei stride,
-										 const void* pointer);
-
 	//!	Direct access to program parameters
 	virtual void glProgramParameter(unsigned int numParam,const GL_COORD_VERTEX &v) const;
 	virtual void glProgramParameter(unsigned int numParam,const CColor::RGBA &v) const;
@@ -159,9 +146,6 @@ private:
 
 	//! Copy constructor.
 	CVertexProgram(const CVertexProgram& shader);
-
-    //! Specific init of shader parameters
-    virtual void	glInitShaders();
 };
 
 RAPTOR_NAMESPACE_END

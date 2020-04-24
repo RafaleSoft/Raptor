@@ -761,7 +761,7 @@ bool C3DEngine::isVisible(const CBoundingBox* bbox)
 	map<const CBoundingBox*,vector<C3DEngineAttributes::visibleZone> >::iterator itr = m_pAttributes->visibleBBox.find(bbox);
 	if (itr != m_pAttributes->visibleBBox.end())
 	{
-		unsigned int nb = (*itr).second.size();
+		size_t nb = (*itr).second.size();
 		return (nb > 0);
 	}
 	else

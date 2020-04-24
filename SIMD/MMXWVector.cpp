@@ -21,7 +21,7 @@
 	#include "MMXWVector.h"
 #endif
 
-#ifndef SIMD_NO_ASSEMBLY
+#if (!defined(SIMD_NO_ASSEMBLY) && !defined(_WIN64))
 
 extern CMMXWVector _unalignedMMXShortVector;
 

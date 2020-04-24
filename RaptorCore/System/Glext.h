@@ -1,3 +1,21 @@
+/***************************************************************************/
+/*                                                                         */
+/*  Glext.h                                                                */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
 //! This header must be included instead of any generic glext.h extensions file.
 //! It provides the necessary extensions to the SDK, they have been extensively
 //! tested, and obselete extentions are removed despite backward compatibility needs.
@@ -375,6 +393,8 @@ extern "C" {
 	#define GL_STENCIL_BACK_REF               0x8CA3
 	#define GL_STENCIL_BACK_VALUE_MASK        0x8CA4
 	#define GL_STENCIL_BACK_WRITEMASK         0x8CA5
+
+	typedef char GLchar;
 #endif
 
 /*	GL VERSION 2.1	*/
@@ -404,6 +424,38 @@ extern "C" {
 	#define GL_CURRENT_RASTER_SECONDARY_COLOR 0x845F
 #endif
 
+#if defined(GL_VERSION_4_3)
+	#define GL_DEBUG_OUTPUT_SYNCHRONOUS       0x8242
+	#define GL_DEBUG_NEXT_LOGGED_MESSAGE_LENGTH 0x8243
+	#define GL_DEBUG_CALLBACK_FUNCTION        0x8244
+	#define GL_DEBUG_CALLBACK_USER_PARAM      0x8245
+	#define GL_DEBUG_SOURCE_API               0x8246
+	#define GL_DEBUG_SOURCE_WINDOW_SYSTEM     0x8247
+	#define GL_DEBUG_SOURCE_SHADER_COMPILER   0x8248
+	#define GL_DEBUG_SOURCE_THIRD_PARTY       0x8249
+	#define GL_DEBUG_SOURCE_APPLICATION       0x824A
+	#define GL_DEBUG_SOURCE_OTHER             0x824B
+	#define GL_DEBUG_TYPE_ERROR               0x824C
+	#define GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR 0x824D
+	#define GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR  0x824E
+	#define GL_DEBUG_TYPE_PORTABILITY         0x824F
+	#define GL_DEBUG_TYPE_PERFORMANCE         0x8250
+	#define GL_DEBUG_TYPE_OTHER               0x8251
+	#define GL_MAX_DEBUG_MESSAGE_LENGTH       0x9143
+	#define GL_MAX_DEBUG_LOGGED_MESSAGES      0x9144
+	#define GL_DEBUG_LOGGED_MESSAGES          0x9145
+	#define GL_DEBUG_SEVERITY_HIGH            0x9146
+	#define GL_DEBUG_SEVERITY_MEDIUM          0x9147
+	#define GL_DEBUG_SEVERITY_LOW             0x9148
+	#define GL_DEBUG_TYPE_MARKER              0x8268
+	#define GL_DEBUG_TYPE_PUSH_GROUP          0x8269
+	#define GL_DEBUG_TYPE_POP_GROUP           0x826A
+	#define GL_DEBUG_SEVERITY_NOTIFICATION    0x826B
+	#define GL_MAX_DEBUG_GROUP_STACK_DEPTH    0x826C
+	#define GL_DEBUG_GROUP_STACK_DEPTH        0x826D
+
+	typedef void (APIENTRY  *GLDEBUGPROC)(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *userParam);
+#endif
 
 /* EXT_abgr */
 #if defined(GL_EXT_abgr)
@@ -2906,6 +2958,71 @@ extern "C" {
 	#endif
 #else
 	#define DECLARE_GL_ARB_uniform_buffer_object(LINKAGE)
+#endif
+
+
+#if defined(GL_ARB_vertex_array_object)
+	#define GL_VERTEX_ARRAY_BINDING_ARB				0x85B5
+
+	typedef GLvoid(RAPTOR_APICALL * PFN_GL_BIND_VERTEX_ARRAY_ARB_PROC)(GLuint array);
+	typedef GLvoid(RAPTOR_APICALL * PFN_GL_DELETE_VERTEX_ARRAYS_ARB_PROC)(GLsizei n, const GLuint *arrays);
+	typedef GLvoid(RAPTOR_APICALL * PFN_GL_GEN_VERTEX_ARRAYS_ARB_PROC)(GLsizei n, GLuint *arrays);
+	typedef GLboolean(RAPTOR_APICALL * PFN_GL_IS_VERTEX_ARRAY_ARB_PROC)(GLuint array);
+
+	#ifndef DECLARE_GL_ARB_vertex_array_object
+	#define DECLARE_GL_ARB_vertex_array_object(LINKAGE) \
+		LINKAGE PFN_GL_BIND_VERTEX_ARRAY_ARB_PROC glBindVertexArrayARB; \
+		LINKAGE PFN_GL_DELETE_VERTEX_ARRAYS_ARB_PROC glDeleteVertexArraysARB; \
+		LINKAGE PFN_GL_GEN_VERTEX_ARRAYS_ARB_PROC glGenVertexArraysARB; \
+		LINKAGE PFN_GL_IS_VERTEX_ARRAY_ARB_PROC glIsVertexArrayARB;
+	#endif
+#else
+	#define DECLARE_GL_ARB_vertex_array_object(LINKAGE)
+#endif
+
+
+#if defined(GL_ARB_debug_output)
+	#define GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB                      0x8242
+	#define GL_MAX_DEBUG_MESSAGE_LENGTH_ARB                      0x9143
+	#define GL_MAX_DEBUG_LOGGED_MESSAGES_ARB                     0x9144
+	#define GL_DEBUG_LOGGED_MESSAGES_ARB                         0x9145
+	#define GL_DEBUG_NEXT_LOGGED_MESSAGE_LENGTH_ARB              0x8243
+	#define GL_DEBUG_CALLBACK_FUNCTION_ARB                       0x8244
+	#define GL_DEBUG_CALLBACK_USER_PARAM_ARB                     0x8245
+	#define GL_DEBUG_SOURCE_API_ARB                              0x8246
+	#define GL_DEBUG_SOURCE_WINDOW_SYSTEM_ARB                    0x8247
+	#define GL_DEBUG_SOURCE_SHADER_COMPILER_ARB                  0x8248
+	#define GL_DEBUG_SOURCE_THIRD_PARTY_ARB                      0x8249
+	#define GL_DEBUG_SOURCE_APPLICATION_ARB                      0x824A
+	#define GL_DEBUG_SOURCE_OTHER_ARB                            0x824B
+	#define GL_DEBUG_TYPE_ERROR_ARB                              0x824C
+	#define GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR_ARB                0x824D
+	#define GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR_ARB                 0x824E
+	#define GL_DEBUG_TYPE_PORTABILITY_ARB                        0x824F
+	#define GL_DEBUG_TYPE_PERFORMANCE_ARB                        0x8250
+	#define GL_DEBUG_TYPE_OTHER_ARB                              0x8251
+	#define GL_DEBUG_SEVERITY_HIGH_ARB                           0x9146
+	#define GL_DEBUG_SEVERITY_MEDIUM_ARB                         0x9147
+	#define GL_DEBUG_SEVERITY_LOW_ARB                            0x9148
+
+	typedef void (APIENTRY *DEBUGPROCARB)(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const char* message, const GLvoid* userParam);
+
+	typedef GLvoid(RAPTOR_APICALL * PFN_GL_DEBUG_MESSAGE_CONTROL_ARB)(GLenum source, GLenum type, GLenum severity, GLsizei count, const GLuint* ids, GLboolean enabled);
+	typedef GLvoid(RAPTOR_APICALL * PFN_GL_DEBUG_MESSAGE_INSERT_ARB)(GLenum source,	GLenum type, GLuint id,	GLenum severity, GLsizei length, const char* buf);
+	typedef GLvoid(RAPTOR_APICALL * PFN_GL_DEBUG_MESSAGE_CALLBACK_ARB)(DEBUGPROCARB callback, const GLvoid* userParam);
+	typedef GLuint(RAPTOR_APICALL * PFN_GL_GET_DEBUG_MESSAGE_LOG_ARB)(GLuint count, GLsizei bufSize, GLenum* sources, GLenum* types, GLuint* ids, GLenum* severities, GLsizei* lengths,	char* messageLog);
+	typedef GLvoid(RAPTOR_APICALL * PFN_GL_GET_POINTERV)(GLenum pname,GLvoid** params);
+
+	#ifndef DECLARE_GL_ARB_debug_output
+	#define DECLARE_GL_ARB_debug_output(LINKAGE) \
+		LINKAGE PFN_GL_DEBUG_MESSAGE_CONTROL_ARB glDebugMessageControlARB; \
+		LINKAGE PFN_GL_DEBUG_MESSAGE_INSERT_ARB glDebugMessageInsertARB; \
+		LINKAGE PFN_GL_DEBUG_MESSAGE_CALLBACK_ARB glDebugMessageCallbackARB; \
+		LINKAGE PFN_GL_GET_DEBUG_MESSAGE_LOG_ARB glGetDebugMessageLogARB; \
+		LINKAGE PFN_GL_GET_POINTERV glGetPointerv;
+	#endif
+#else
+	#define DECLARE_GL_ARB_debug_output(LINKAGE)
 #endif
 
 

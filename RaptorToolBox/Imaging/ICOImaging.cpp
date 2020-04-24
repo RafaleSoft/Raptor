@@ -4,12 +4,11 @@
 #include "Subsys/CodeGeneration.h"
 
 
-#if !defined(AFX_TEXTUREOBJECT_H__D32B6294_B42B_4E6F_AB73_13B33C544AD0__INCLUDED_)
-	#include "GLHierarchy/TextureObject.h"
-#endif
 #if !defined(AFX_ICOIMAGING_H__6E2B8113_3111_4770_97A8_A786982CF05F__INCLUDED_)
 	#include "Imaging/ICOImaging.h"
 #endif
+
+#include <algorithm>
 
 
 CICOImaging::CICOImaging(void)
@@ -21,15 +20,18 @@ CICOImaging::~CICOImaging(void)
 }
 
 bool CICOImaging::isOfKind(const std::string &kind) const 
-{ 
-	return (("ICO" == kind) ||
-			("DLL" == kind) ||
-			("EXE" == kind));
+{
+	std::string ext = kind;
+	std::transform(ext.begin(), ext.end(), ext.begin(), ::toupper);
+
+	return (("ICO" == ext) ||
+			("DLL" == ext) ||
+			("EXE" == ext));
 }
 
-vector<std::string> CICOImaging::getImageKind(void) const
+std::vector<std::string> CICOImaging::getImageKind(void) const
 {
-	vector<string> result;
+	std::vector<std::string> result;
 
 	result.push_back("ICO");
 	result.push_back("DLL");

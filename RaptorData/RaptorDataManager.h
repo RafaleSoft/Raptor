@@ -63,18 +63,26 @@ public:
     //! Exports a file in a data package. The file is extracted to the specified path 
     //! or to system TMP if path is empty
     //! @return the filepath if export succeeded, an empty string if errors found.
-    std::string ExportFile(const std::string& fname, const std::string& topath = "");
+    std::string exportFile(const std::string& fname, const std::string& topath = "");
 
     //! Export the about video ( Win32 only, Unix platform in next releases )
-    void ExportRaptorVideo(const std::string& path);
+    void exportRaptorVideo(const std::string& path);
 
 	//!	Remove all exported files from a managed package for a fresh update.
 	//!	@param packName : the name of the package to clear exports of.
 	//! @return false if package not managed.
-	bool ClearExports(const std::string& packName);
+	bool clearExports(const std::string& packName);
 
 	//!	Defines a package name, different from the default 'RaptorData.pck'
 	bool managePackage(const std::string& packName);
+
+	//!	Returns the names of the packages managed
+	std::vector<std::string> getManagedPackages(void) const;
+
+	//! Returns the names of the files contained in the given package.
+	//! If packName is empty, returns all the files from all packages.
+	std::vector<std::string> getManagedFiles(const std::string &packName) const;
+
 
 
 private:

@@ -26,11 +26,15 @@ public:
 
     virtual bool initEngine(void);
     virtual bool run(void);
+	virtual bool stopEngine(void);
+
 	virtual unsigned int generateBatchId(void);
     virtual bool batchJobs(unsigned int batchId = 0);
     virtual bool synchronizeCore(unsigned long timeLimit = ~0);
 
 #if defined(RAPTOR_SMP_CODE_GENERATION)
+	bool isStopRequested(void) const { return stopRequested; }
+
     //!	Called by each async engines to process its own jobs stack
 	void computeAsyncJobs(DWORD id);
 
@@ -41,13 +45,14 @@ public:
     bool	engineStarted;
 
 	//! An event for the sync engine awakening
-	HANDLE			processFrameEvt;
+	HANDLE	processFrameEvt;
 	
 	//!	An event object to unlock the synchronizeCore method.
-	HANDLE			synchroFrameEvt;
+	HANDLE	synchroFrameEvt;
 
 
 private:
+	bool	stopRequested;
 	HANDLE	engine;
 
 	typedef struct ENGINE_STATE_t

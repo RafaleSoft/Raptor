@@ -36,7 +36,7 @@
 
 /*
  *  Define this macro to compile code without assembler sources.
- *  Of course only low performance code will be available.
+ *  Of course only 'standard' performance code will be available.
  */
 //#define SIMD_NO_ASSEMBLY
 
@@ -49,7 +49,7 @@
 #elif defined(LINUX)
 	#define NOEXCEPT throw()
 #else
-	#define NOEXCEPT noexcept	
+	#define NOEXCEPT noexcept
 #endif
 
 //	Include intrinsics if available

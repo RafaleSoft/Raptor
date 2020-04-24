@@ -40,7 +40,7 @@ bool CGLVectorFont::glGenGlyphs(float precision,
 										 &(glyphs[i].halfWidth),
 										 &(glyphs[i].height));
 		glyphs[i].advance = -2 * glyphs[i].halfWidth;
-		glyphs[i].glList = h.handle();
+		glyphs[i].glList = h.glname();
 	}
 
 	m_glfontglyph.push_back(glyphs);
@@ -57,10 +57,10 @@ RAPTOR_HANDLE CGLVectorFont::glBuildVectors(const std::string &str,
 	const int text_length = str.size();
 
 	RAPTOR_HANDLE result(CGLFont::CGLFontClassID::GetClassId().ID(), glGenLists(1));
-	glNewList(result.handle(), GL_COMPILE);
+	glNewList(result.glname(), GL_COMPILE);
 
 	if (height != NULL)
-		*height = -25.0f;
+		*height = -25.0f * scale;
 
 	for (int i = 0; i < text_length; ++i)
 	{
@@ -80,8 +80,8 @@ RAPTOR_HANDLE CGLVectorFont::glBuildVectors(const std::string &str,
 					glBegin(GL_LINE_STRIP);
 				}
 				else
-					glVertex2f(scale * simplex[ch][j],
-					scale * simplex[ch][j + 1]);
+					glVertex2f(	scale * simplex[ch][j],
+								scale * simplex[ch][j + 1]);
 			}
 			glEnd();
 		}
@@ -95,4 +95,77 @@ RAPTOR_HANDLE CGLVectorFont::glBuildVectors(const std::string &str,
 		*width = -0.5f * w;
 
 	return result;
+}
+
+void CGLVectorFont::glWrite(const std::string &text, int x, int y, const CColor::RGBA &color)
+{
+	float lineWidth = 1.0f;
+	glGetFloatv(GL_LINE_WIDTH, &lineWidth);
+
+	GLfloat viewport[4];
+	glGetFloatv(GL_VIEWPORT, viewport);
+
+	glMatrixMode(GL_PROJECTION);
+	glPushMatrix();
+	glLoadIdentity();
+	glOrtho(viewport[0], viewport[2], viewport[1], viewport[3], 1, 20);
+	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();
+	glLoadIdentity();
+	glTranslatef(0.0f, 0.0f, -5.0f);
+	glEnable(GL_BLEND);
+	glEnable(GL_LINE_SMOOTH);
+	glHint(GL_LINE_SMOOTH, GL_NICEST);
+
+	selectCurrentGlyphset(0);
+	glPushMatrix();
+	glLineWidth(3.0f);
+	CGLFont::glWrite(text, x, y, CColor::RGBA(0.0f, 0.0f, 0.0f, 1.0f));
+	glLineWidth(1.1f);
+	CGLFont::glWrite(text, x, y, color);
+	glPopMatrix();
+
+	glPopMatrix();
+	glMatrixMode(GL_PROJECTION);
+	glPopMatrix();
+	glMatrixMode(GL_MODELVIEW);
+
+	glLineWidth(lineWidth);
+}
+
+void CGLVectorFont::glWrite(const std::vector<CGLFont::FONT_TEXT_ITEM> &lines)
+{
+	float lineWidth = 1.0f;
+	glGetFloatv(GL_LINE_WIDTH, &lineWidth);
+
+	GLfloat viewport[4];
+	glGetFloatv(GL_VIEWPORT, viewport);
+
+	glMatrixMode(GL_PROJECTION);
+	glPushMatrix();
+	glLoadIdentity();
+	glOrtho(viewport[0], viewport[2], viewport[1], viewport[3], 1, 20);
+	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();
+	glLoadIdentity();
+	glTranslatef(0.0f, 0.0f, -5.0f);
+	glEnable(GL_BLEND);
+	glEnable(GL_LINE_SMOOTH);
+	glHint(GL_LINE_SMOOTH, GL_NICEST);
+
+	selectCurrentGlyphset(0);
+	glPushMatrix();
+	glColor4f(0.0f, 0.0f, 0.0f, 1.0f);
+	glLineWidth(3.0f);
+	CGLFont::glWrite(lines);
+	glLineWidth(1.1f);
+	CGLFont::glWrite(lines);
+	glPopMatrix();
+
+	glPopMatrix();
+	glMatrixMode(GL_PROJECTION);
+	glPopMatrix();
+	glMatrixMode(GL_MODELVIEW);
+
+	glLineWidth(lineWidth);
 }

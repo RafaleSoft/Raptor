@@ -31,8 +31,14 @@
 #if !defined(AFX_RAPTORCONSOLE_H__27656611_2DF3_4416_8124_F608CFAC2122__INCLUDED_)
 	#include "System/RaptorConsole.h"
 #endif
+#if !defined(AFX_RESOURCEALLOCATOR_H__4BAB58CE_942B_450D_88C9_AF0DDDF03718__INCLUDED_)
+	#include "Subsys/ResourceAllocator.h"
+#endif
 #if !defined(AFX_RAPTORDISPLAYCONFIG_H__DA0759DF_6CF9_44A7_9ADE_D404FEEC2DDF__INCLUDED_)
 	#include "System/RaptorDisplayConfig.h"
+#endif
+#if !defined(AFX_IMAGE_H__F545D0D5_5F10_4EFA_BE3B_3F3D34D4DBF3__INCLUDED_)
+	#include "System/Image.h"
 #endif
 
 
@@ -49,11 +55,18 @@ class CRaptorDisplay;
 class CRenderEntryPoint;
 class CRaptorConsole;
 class CShader;
+class CShaderLibrary;
+RAPTOR_INTERFACE ITImeObjectImpl;
+class CTimeObject;
 
 
 class CRaptorInstance
 {
 public:
+	//!
+	//!	Raptor Instance method (operate only on instance specific attributes).
+	//!
+
 	//!	Create a singleton instance or returns the current isntance.
 	static CRaptorInstance &GetInstance(void);
 
@@ -64,11 +77,60 @@ public:
 	//! (Re)Initialise all instance objects.
 	void initInstance();
 
+	//! Stores Display attributes for delayed creation.
+	//! The physical display creation is delegated to the underlying API, 
+	//! and might not be synchronous to the return of the creation method.
+	//! Thus, attributes can be saved temporarily until the real creation happens.
+	//! When a display is created directly (@see Raptor class ), this method is unnecessary
+	void setDefaultConfig(const CRaptorDisplayConfig &pcs);
+
+	//! Returns the defaut initial state of the renderer.
+	//! Data is gathered from RaptorData, so different run state can be used with various RaptorData.
+	const CRaptorDisplayConfig& getDefaultConfig(void) const { return defaultConfig; }
+
+	//! Delete Raptor status and any allocated resource.
+	bool destroy(void);
+
+	//!	Initialise base shaders for this instance.
+	//! Calling this method requires a valid graphic context made current because
+	//!	many resource objects are identified with an Id unique to this context.
+	//!	@return true if resources properly allocated.
+	bool glvkInitSharedResources(void);
+
+	//!	Release resources allocated for this instance.
+	//!	@return true if resources properly released.
+	bool glvkReleaseSharedRsources(void);
 
 	//!	Raptor Instance has been initialised.
-	bool					initialised;
+	bool isInitialised(void) const { return m_bInitialised; };
+
 	//!	The second pipeline has exited, raptor can be closed safely.
-	bool					terminate;
+	bool terminate(void) const { return m_bTerminate; };
+
+	//! Fragment Program state.
+	bool isFragmentShaderReady(void) const { return m_bFragmentShaderReady; };
+
+	//! Vertex Program state.
+	bool isVertexShaderReady(void) const { return m_bVertexShaderReady; };
+
+	//! Geometry Program state.
+	bool isGeometryShaderReady(void) const { return m_bGeometryShaderReady; };
+
+	//!	Vertex Shader state
+	bool isVertexProgramReady(void) const { return m_bVertexProgramReady; };
+
+	//!	Fragment Shader state
+	bool isFragmentProgramReady(void) const { return m_bFragmentProgramReady; };
+
+	//!	Returns the default null shader.
+	const CShader& getNullShader(void) const { return *m_pNullShader; };
+
+
+
+	//!
+	//!	Raptor Instance specific attributes.
+	//!
+	
 	//!	Number of objects rendered in the current frame.
 	uint32_t				iRenderedObjects;
 	//!	Number of triangles rendered in the current frame.
@@ -100,22 +162,16 @@ public:
 	//!	The default context for the default dispplay.
 	long					defaultContext;
 	
+	//!	Imaging input/output interfaces.
+	std::map<std::string, CImage::IImageIO*>	imageKindIO;
+
 	//! The set of all Raptor displays for this instance.
 	std::vector<CRaptorDisplay*>	displays;
 	//!	Raptor Console interactors.
 	std::vector<CRaptorConsole::CInputCollectorBase*>	inputCollectors;
 	//!	The full list of persistence objects active in this instance.
 	MapStringToPtr	objects;
-	//! Fragment Program state.
-	bool m_bFragmentProgramReady;
-	//! Vertex Program state.
-	bool m_bVertexProgramReady;
-	//! Geometry Program state.
-	bool m_bGeometryShaderReady;
-	//!	Vertex Shader state
-	bool m_bVertexReady;
-	//!	Fragment Shader state
-	bool m_bFragmentReady;
+
 
 #if defined(GL_COMPATIBILITY_profile)
 	//!	Full screen quad rendering display list
@@ -126,23 +182,26 @@ public:
 	//!	Identity shader for full screen quad texture mapping.
 	CShader	*m_pIdentity;
 #endif
+	CResourceAllocator::CResourceBinder *m_displayBinder;
 
-	//! Stores Display attributes for delayed creation.
-	//! The physical display creation is delegated to the underlying API, 
-	//! and might not be synchronous to the return of the creation method.
-	//! Thus, attributes can be saved temporarily until the real creation happens.
-	//! When a display is created directly (@see Raptor class ), this method is unnecessary
-	void setDefaultConfig(const CRaptorDisplayConfig &pcs);
+	//! Global ResourceAllocator arrays binding state.
+	CRaptorDisplayConfig::GL_ARRAYS_STATE	bindingState;
+	//!	Default ResourceAllocator arrays bindings initialised.
+	bool arrays_initialized;
+	//!	Texture Quad global shader.
+	CShader	*m_pQuadShader;
+	//! 2D Texture Font global shaders
+	CShader	*m_pFontShader;
 
-	//! Returns the defaut initial state of the renderer.
-	//! Data is gathered from RaptorData, so different run state can be used with various RaptorData.
-	const CRaptorDisplayConfig& getDefaultConfig(void) const { return defaultConfig; }
+	//! The shader library instance.
+	CShaderLibrary	*m_pShaderLibraryInstance;
 
-	//! Delete Raptor status and any allocated resource.
-	bool	destroy(void);
 
-	//!	Initialise base shaders for this instance.
-	bool glInitShaders(void);
+	//!	Time management
+	ITImeObjectImpl	*m_timeImplementation;
+	//!	Time objects of this instance.
+	std::vector<CTimeObject*>	m_rootTimeObjects;
+
 
 
 private:
@@ -157,6 +216,22 @@ private:
 
 	//!	Raptor default display creation structure and defaut initial state of the renderer.
 	CRaptorDisplayConfig	defaultConfig;
+	//!	Raptor Instance has been initialised.
+	bool			m_bInitialised;
+	//!	Raptor Instance has been requested to terminate.
+	bool			m_bTerminate;
+	//! Fragment Program state.
+	bool			m_bFragmentShaderReady;
+	//! Vertex Program state.
+	bool			m_bVertexShaderReady;
+	//! Geometry Program state.
+	bool			m_bGeometryShaderReady;
+	//!	Vertex Shader state
+	bool			m_bVertexProgramReady;
+	//!	Fragment Shader state
+	bool			m_bFragmentProgramReady;
+	//!	A default shader.
+	CShader			*m_pNullShader;
 };
 
 RAPTOR_NAMESPACE_END

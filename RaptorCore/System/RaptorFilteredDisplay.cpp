@@ -62,6 +62,9 @@
 #if !defined(AFX_TEXELALLOCATOR_H__7C48808C_E838_4BE3_8B0E_286428BB7CF8__INCLUDED_)
 	#include "Subsys/TexelAllocator.h"
 #endif
+#if !defined(AFX_UNIFORMALLOCATOR_H__4DD62C99_E476_4FE5_AEE4_EEC71F7B0F38__INCLUDED_)
+	#include "Subsys/UniformAllocator.h"
+#endif
 #if !defined(AFX_SHADER_H__4D405EC2_7151_465D_86B6_1CA99B906777__INCLUDED_)
 	#include "GLHierarchy/Shader.h"
 #endif
@@ -76,9 +79,6 @@
 #endif
 #if !defined(AFX_FRAGMENTSHADER_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
 	#include "GLHierarchy/FragmentShader.h"
-#endif
-#if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
-	#include "System/RaptorGLExtensions.h"
 #endif
 
 
@@ -191,7 +191,12 @@ CRaptorFilteredDisplay::~CRaptorFilteredDisplay()
 	glvkUnBindDisplay();
 }
 
-void CRaptorFilteredDisplay::glReleaseResources(void)
+void CRaptorFilteredDisplay::glvkAllocateResources(void)
+{
+	CRaptorScreenDisplay::glvkAllocateResources();
+}
+
+void CRaptorFilteredDisplay::glvkReleaseResources(void)
 {
     //!  Should place destructor body here,
     //! it would be better, allowing to catch errors
@@ -206,7 +211,14 @@ void CRaptorFilteredDisplay::glReleaseResources(void)
     }
     m_pFilters.clear();
 
-    CRaptorScreenDisplay::glReleaseResources();
+	if ((CRaptorDisplayConfig::PIXEL_BUFFER == filter_cs.renderer) ||
+		(CRaptorDisplayConfig::PIXEL_BUFFER_FILTER_CHAIN == filter_cs.renderer))
+	{
+		if (m_bBufferBound)
+			m_pDisplay->glvkUnBindDisplay();
+	}
+
+	CRaptorScreenDisplay::glvkReleaseResources();
 }
 
 void CRaptorFilteredDisplay::unLink(const CPersistence* obj)
@@ -579,14 +591,9 @@ void CRaptorFilteredDisplay::glRenderScene(void)
 		glCallList(instance.m_drawBuffer.handle());
 #else
 		instance.m_pIdentity->glRender();
-		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
-
-		pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::POSITION);
-		pExtensions->glVertexAttribPointerARB(CProgramParameters::POSITION, 4, GL_FLOAT, false, 0, instance.m_pAttributes);
-
+		instance.m_displayBinder->glvkBindArrays();
 		glDrawArrays(GL_POINTS, 0, 1);
-
-		pExtensions->glDisableVertexAttribArrayARB(CProgramParameters::POSITION);
+		instance.m_displayBinder->glvkUnbindArrays();
 		instance.m_pIdentity->glStop();
 #endif
 			
@@ -608,6 +615,7 @@ bool CRaptorFilteredDisplay::glRender(void)
     //! once it is locked, it is kept unchanged.
     m_pGAllocator->glvkLockMemory(true);
 	m_pTAllocator->glvkLockMemory(true);
+	m_pUAllocator->glvkLockMemory(true);
 
 	CRaptorScreenDisplay::glRenderScene();
 

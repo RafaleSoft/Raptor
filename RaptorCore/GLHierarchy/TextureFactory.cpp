@@ -26,6 +26,12 @@
 #if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
 	#include "System/Raptor.h"
 #endif
+#if !defined(AFX_TEXTURESCALER_H__6EB6436B_D35C_41F6_96EA_B079626A43A0__INCLUDED_)
+	#include "Subsys/TextureScaler.h"
+#endif
+#if !defined(AFX_TEXTUREALPHA_H__479A98C2_8277_4153_B96F_0706D8FB8A8A__INCLUDED_)
+	#include "Subsys/TextureAlpha.h"
+#endif
 #if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
     #include "System/RaptorErrorManager.h"
 #endif
@@ -48,9 +54,9 @@
 	#include "Subsys/Vulkan/VulkanDevice.h"
 #endif
 
-#ifdef WIN32
-#pragma warning(disable:4786)
-#endif
+//#ifdef WIN32
+//#pragma warning(disable:4786)
+//#endif
 
 
 RAPTOR_NAMESPACE
@@ -524,7 +530,7 @@ bool CTextureFactory::glLoadTexture(CTextureObject* const T,
 
 bool CTextureFactory::glLoadTexture(ITextureObject* const T,
 									const std::string& fname,
-									const CVaArray<CImage::IImageOP::OP_KIND>& ops)
+									const CVaArray<CImage::IImageOP*>& ops)
 {
 	//	ensure we can do something ...
 #ifndef RAPTOR_DEBUG_MODE_GENERATION
@@ -537,17 +543,25 @@ bool CTextureFactory::glLoadTexture(ITextureObject* const T,
 	}
 #endif
 
-	CImage::IImageOP::operation_param_t param;
-	param.bump_scale = mConfig.getBumpAmplitude();
-	param.transparency = T->getTransparency();
-	CVaArray<CImage::IImageOP::OP_KIND> iops = ops;
-	if (mConfig.useTextureResize() && !ops.hasValue(CImage::IImageOP::IMAGE_SCALER))
-		iops.addValue(CImage::IImageOP::IMAGE_SCALER);
-	if (!ops.hasValue(CImage::IImageOP::ALPHA_TRANSPARENCY))
-		iops.addValue(CImage::IImageOP::ALPHA_TRANSPARENCY);
+	bool need_scaler = true;
+	bool need_alpha = true;
+	CTextureScaler scaler(1.0f,1.0f);
+	CTextureAlpha alpha(T->getTransparency());
+
+	CVaArray<CImage::IImageOP*> iops = ops;
+	for (size_t i = 0; i < ops.size(); i++)
+		if (ops[i]->getKind() == CImage::IImageOP::IMAGE_SCALER)
+			need_scaler = false;
+		else if (ops[i]->getKind() == CImage::IImageOP::ALPHA_TRANSPARENCY)
+			need_alpha = false;
+
+	if (mConfig.useTextureResize() && need_scaler)
+		iops.addValue(&scaler);
+	if (need_alpha)
+		iops.addValue(&alpha);
 
 	CImage loadImage;
-	if (loadImage.loadImage(fname, iops, param))
+	if (loadImage.loadImage(fname, iops))
 	{
 		CTextureObject *t = T->getGLTextureObject();
 		if (NULL != t)
@@ -768,7 +782,8 @@ CTextureObject* const CTextureFactory::glCreateCubemap(  ITextureObject::TEXEL_T
 		args.push_back(arg);
         Raptor::GetErrorManager()->generateRaptorError(	CTextureFactory::CTextureFactoryClassID::GetClassId(),
 														CRaptorErrorManager::RAPTOR_ERROR,
-														CRaptorMessages::ID_FORMAT_NOT_SUPPORTED,args);
+														CRaptorMessages::ID_FORMAT_NOT_SUPPORTED,
+														__FILE__, __LINE__, args);
 #endif
         return NULL;
     }
@@ -815,7 +830,8 @@ ITextureObject* const CTextureFactory::vkCreateTexture(ITextureObject::TEXEL_TYP
 		args.push_back(arg);
 		Raptor::GetErrorManager()->generateRaptorError(CTextureFactory::CTextureFactoryClassID::GetClassId(),
 													   CRaptorErrorManager::RAPTOR_WARNING,
-													   CRaptorMessages::ID_FORMAT_NOT_SUPPORTED, args);
+													   CRaptorMessages::ID_FORMAT_NOT_SUPPORTED, 
+													   __FILE__, __LINE__, args);
 	}
 #endif
 
@@ -847,7 +863,8 @@ CTextureObject* const CTextureFactory::glCreateTexture( ITextureObject::TEXEL_TY
 		args.push_back(arg);
         Raptor::GetErrorManager()->generateRaptorError(	CTextureFactory::CTextureFactoryClassID::GetClassId(),
 														CRaptorErrorManager::RAPTOR_WARNING,
-														CRaptorMessages::ID_FORMAT_NOT_SUPPORTED,args);
+														CRaptorMessages::ID_FORMAT_NOT_SUPPORTED,
+														__FILE__, __LINE__, args);
     }
 #endif
 	if ((type == ITextureObject::CGL_DEPTH24_STENCIL8) &&
@@ -860,7 +877,8 @@ CTextureObject* const CTextureFactory::glCreateTexture( ITextureObject::TEXEL_TY
 		args.push_back(arg);
         Raptor::GetErrorManager()->generateRaptorError(	CTextureFactory::CTextureFactoryClassID::GetClassId(),
 														CRaptorErrorManager::RAPTOR_ERROR,
-														CRaptorMessages::ID_FORMAT_NOT_SUPPORTED,args);
+														CRaptorMessages::ID_FORMAT_NOT_SUPPORTED,
+														__FILE__, __LINE__, args);
 #endif
 		return NULL;
 	}
@@ -903,7 +921,8 @@ CTextureObject* const CTextureFactory::glCreateRectangleTexture( ITextureObject:
 		args.push_back(arg);
         Raptor::GetErrorManager()->generateRaptorError(	CTextureFactory::CTextureFactoryClassID::GetClassId(),
 														CRaptorErrorManager::RAPTOR_ERROR,
-														CRaptorMessages::ID_FORMAT_NOT_SUPPORTED,args);
+														CRaptorMessages::ID_FORMAT_NOT_SUPPORTED,
+														__FILE__, __LINE__, args);
 #endif
         return NULL;
     }
@@ -1001,7 +1020,8 @@ CTextureObject* const CTextureFactory::glCreateVolumeTexture(ITextureObject::TEX
 		args.push_back(arg);
 		Raptor::GetErrorManager()->generateRaptorError(	CTextureFactory::CTextureFactoryClassID::GetClassId(),
 														CRaptorErrorManager::RAPTOR_ERROR,
-														CRaptorMessages::ID_FORMAT_NOT_SUPPORTED,args);
+														CRaptorMessages::ID_FORMAT_NOT_SUPPORTED,
+														__FILE__, __LINE__, args);
 #endif
         return NULL;
     }

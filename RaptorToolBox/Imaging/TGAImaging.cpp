@@ -3,12 +3,12 @@
 //////////////////////////////////////////////////////////////////////
 #include "Subsys/CodeGeneration.h"
 
-#if !defined(AFX_TEXTUREOBJECT_H__D32B6294_B42B_4E6F_AB73_13B33C544AD0__INCLUDED_)
-	#include "GLHierarchy/TextureObject.h"
-#endif
+
 #if !defined(AFX_TGAIMAGING_H__EF9F065C_C2BE_4C41_BD50_3DA107B5050B__INCLUDED_)
 	#include "Imaging/TGAImaging.h"
 #endif
+
+#include <algorithm>
 
 
 #if defined(WIN32)
@@ -42,13 +42,16 @@ CTGAImaging::~CTGAImaging(void)
 
 
 bool CTGAImaging::isOfKind(const std::string &kind) const 
-{ 
-	return ("TGA" == kind); 
+{
+	std::string ext = kind;
+	std::transform(ext.begin(), ext.end(), ext.begin(), ::toupper);
+
+	return ("TGA" == ext); 
 }
 
-vector<std::string> CTGAImaging::getImageKind(void) const
+std::vector<std::string> CTGAImaging::getImageKind(void) const
 {
-	vector<string> result;
+	std::vector<std::string> result;
 	result.push_back("TGA");
 	return result;
 }

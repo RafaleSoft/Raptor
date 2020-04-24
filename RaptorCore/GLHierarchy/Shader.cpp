@@ -55,6 +55,10 @@
 #if !defined(AFX_IRENDERINGPROPERTIES_H__634BCF2B_84B4_47F2_B460_D7FDC0F3B698__INCLUDED_)
 	#include "IRenderingProperties.h"
 #endif
+#if !defined(AFX_RAPTORINSTANCE_H__90219068_202B_46C2_BFF0_73C24D048903__INCLUDED_)
+	#include "Subsys/RaptorInstance.h"
+#endif
+
 
 //////////////////////////////////////////////////////////////////////
 // Static data
@@ -190,18 +194,17 @@ CShader* CShader::glClone(const std::string& newShaderName) const
 
 const CShader& CShader::getShader(const std::string& shaderName)
 {
-	CShaderLibrary *lib = CShaderLibrary::GetInstance();
-	lib->glInitFactory();
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
 
 	CPersistence *ppShader = NULL;
 	if (!shaderName.empty())
 		ppShader = CPersistence::FindObject(shaderName);
 	if (ppShader == NULL)
-		return CShaderLibrary::GetInstance()->getNullShader();
+		return instance.getNullShader();
 	else if (ppShader->getId().isSubClassOf(CShader::CShaderClassID::GetClassId()))
 		return *(CShader*)ppShader;
 	else
-		return CShaderLibrary::GetInstance()->getNullShader();
+		return instance.getNullShader();
 }
 
 CShader::~CShader()
@@ -211,6 +214,34 @@ CShader::~CShader()
 	glRemoveOpenGLProgram();
 	glRemoveOpenGLShader();
 	vkRemoveVulkanShader();
+}
+
+void CShader::glRender()
+{
+	if (NULL != m_pOpenGLShader)
+		m_pOpenGLShader->glRender();
+	else if (NULL != m_pOpenGLProgram)
+		m_pOpenGLProgram->glRender();
+
+	CATCH_GL_ERROR
+}
+
+void CShader::glStop()
+{
+	if (NULL != m_pOpenGLShader)
+		m_pOpenGLShader->glStop();
+	else if (NULL != m_pOpenGLProgram)
+		m_pOpenGLProgram->glStop();
+
+	//	This call generates too much load in GL client/server.
+	//	Derived classes shall implement own UnSetup until a more general
+	//	TMU resource allocation manager can be used
+	/*
+	if ((0 != m_textureUnitSetup.handle) &&
+		(0 != m_textureUnitUnSetup.handle))
+		if (IRenderingProperties::GetCurrentProperties()->getCurrentTexturing() == IRenderingProperties::ENABLE)
+			glCallList(m_textureUnitUnSetup.handle);
+	*/
 }
 
 void CShader::setAmbient(GLfloat r,GLfloat g,GLfloat b,GLfloat a) 
@@ -305,14 +336,14 @@ bool CShader::glRemoveTextureUnitSetup(void)
         m_pTMUSetup = NULL;
 		m_bDeleteTMUSetup = false;
 
-		if (m_textureUnitSetup.handle() != 0)
+		if (m_textureUnitSetup.glname() != 0)
 		{
-			glDeleteLists(m_textureUnitSetup.handle(), 1);
+			glDeleteLists(m_textureUnitSetup.glname(), 1);
 			m_textureUnitSetup.handle(0);
 		}
-		if (m_textureUnitUnSetup.handle() != 0)
+		if (m_textureUnitUnSetup.glname() != 0)
 		{
-			glDeleteLists(m_textureUnitUnSetup.handle(), 1);
+			glDeleteLists(m_textureUnitUnSetup.glname(), 1);
 			m_textureUnitUnSetup.handle(0);
 		}
 
@@ -326,8 +357,6 @@ COpenGLProgramStage * const CShader::glGetOpenGLProgram(const std::string& name)
 {
 	if (m_pOpenGLProgram == NULL)
 	{
-		CShaderLibrary *lib = CShaderLibrary::GetInstance();
-
 		CPersistence *pProgram = NULL;
 		if (!name.empty())
 			pProgram = CPersistence::FindObject(name);
@@ -371,8 +400,6 @@ COpenGLShaderStage * const CShader::glGetOpenGLShader(const std::string& name)
 {
 	if (m_pOpenGLShader == NULL)
 	{
-		CShaderLibrary *lib = CShaderLibrary::GetInstance();
-
 		CPersistence *pShader = NULL;
 		if (!name.empty())
 			pShader = CPersistence::FindObject(name);
@@ -416,8 +443,6 @@ CVulkanShaderStage * const CShader::vkGetVulkanShader(const std::string& name)
 {
 	if (m_pVulkanShader == NULL)
 	{
-		CShaderLibrary *lib = CShaderLibrary::GetInstance();
-
 		CPersistence *pProgram = NULL;
 		if (!name.empty())
 			pProgram = CPersistence::FindObject(name);
@@ -459,16 +484,32 @@ bool CShader::vkRemoveVulkanShader(void)
 
 void CShader::glRenderMaterial(void)
 {
+	/*
+	if ((NULL != m_pMaterial) && (NULL != m_pOpenGLShader))
+	{
+		if (m_pMaterial->doRebuild())
+		{
+			CProgramParameters::CParameter<CMaterial::Material_t> material(m_pMaterial->getMaterial());
+			material.name("Material");
+			material.locationType = GL_UNIFORM_BLOCK_BINDING_ARB;
+			CProgramParameters params;
+			params.addParameter(material);
+
+			m_pOpenGLShader->updateProgramParameters(params);
+		}
+	}
+	*/
+
 	if (IRenderingProperties::GetCurrentProperties()->getCurrentLighting() == IRenderingProperties::ENABLE)
 	{
-		if (m_pMaterial!=NULL)
+		if (m_pMaterial != NULL)
 		    m_pMaterial->glRender();
 		else
 			glColor4f(m_color.r, m_color.g, m_color.b, m_color.a);
 	}
 	else
     {
-        if (m_pMaterial!=NULL)
+        if (m_pMaterial != NULL)
         {
             //  Apply a color proportional to global ambient and material ambient settings
             CColor::RGBA ambientMat = m_pMaterial->getAmbient();
@@ -488,46 +529,19 @@ void CShader::glRenderTexture(void)
 	{
 		if (m_textureUnitSetup.handle() > 0)
         {
-		    glCallList(m_textureUnitSetup.handle());
+			glCallList(m_textureUnitSetup.glname());
         }
 		else if (m_pTMUSetup != NULL)
 		{
 			m_textureUnitUnSetup = m_pTMUSetup->glBuildUnSetup();
 			m_textureUnitSetup = m_pTMUSetup->glBuildSetup();
-			glCallList(m_textureUnitSetup.handle());
+			glCallList(m_textureUnitSetup.glname());
 		}
 	}
 
 	CATCH_GL_ERROR
 }
 
-void CShader::glRender()
-{
-	if (NULL != m_pOpenGLShader)
-		m_pOpenGLShader->glRender();
-    else if (NULL != m_pOpenGLProgram)
-		m_pOpenGLProgram->glRender();
-
-    CATCH_GL_ERROR
-}
-
-void CShader::glStop()
-{
-	if (NULL != m_pOpenGLShader)
-		m_pOpenGLShader->glStop();
-	else if (NULL != m_pOpenGLProgram)
-		m_pOpenGLProgram->glStop();
-
-	//	This call generates too much load in GL client/server.
-	//	Derived classes shall implement own UnSetup until a more general
-	//	TMU resource allocation manager can be used
-	/*
-	if ((0 != m_textureUnitSetup.handle) &&
-		(0 != m_textureUnitUnSetup.handle))
-		if (IRenderingProperties::GetCurrentProperties()->getCurrentTexturing() == IRenderingProperties::ENABLE)
-			glCallList(m_textureUnitUnSetup.handle);
-	*/
-}
 
 bool CShader::exportObject(CRaptorIO& o)
 {

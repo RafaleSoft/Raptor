@@ -22,6 +22,7 @@ Installer/Output
 MicroLex/MicroLex.exe
 SIMD/simd.lib
 CodeGeneration.h
+Test2/raptor.jpg
 
 # Build results
 [Dd]ebug/
@@ -29,7 +30,6 @@ CodeGeneration.h
 [Rr]elease/
 [Oo]ptimi[zs]ed/
 Release_with_AddOns/
-x64/
 bld/
 # Thrid-party COTS are in bin, so do not remove them
 #[Bb]in/
@@ -87,6 +87,8 @@ ipch/
 *.opensdf
 *.sdf
 *.cachefile
+*.db
+*.opendb
 
 # Visual Studio profiler
 *.psess

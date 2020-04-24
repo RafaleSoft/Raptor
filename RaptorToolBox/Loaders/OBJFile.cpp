@@ -390,11 +390,9 @@ void OBJYacc::buildGeometry()
 	//rEditor.genTexCoords(CGeometryEditor::XY_PLANE,0.55f,-0.5f,1.0f,0.0f);
 	rEditor.genTexCoords(CGeometryEditor::XY_PLANE,0.014f,0.4915f,0.016f,0.395f);
 
-	CGeometry::CRenderingModel model(0);
-	model.addModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
-	model.addModel(CGeometry::CRenderingModel::CGL_NORMALS);
-	model.addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
-	m_pCurrentGeometry->setRenderingModel(model);
+	m_pCurrentGeometry->setRenderingModel(CGeometry::CGL_FRONT_GEOMETRY);
+	m_pCurrentGeometry->addModel(CGeometry::CGL_NORMALS);
+	m_pCurrentGeometry->addModel(CGeometry::CGL_TEXTURE);
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -530,8 +528,7 @@ bool _glSaveWavefront(const string &fname,C3DSet *scene)
 		unsigned int nbVertex = g->nbVertex();
 		objfile << "#	" << nbVertex << " vertices" << endl;
 		
-		unsigned int i=0;
-		for (i=0;i<nbVertex;i++)
+		for (uint32_t i=0;i < nbVertex;i++)
 		{
 			GL_VERTEX_DATA v;
 			g->getVertex(i,v);
@@ -546,14 +543,14 @@ bool _glSaveWavefront(const string &fname,C3DSet *scene)
 		objfile << endl;
 
 		unsigned int nbFace = g->nbFace();
-		for (i=0; i<nbFace; i++)
+		for (uint32_t i=0; i < nbFace; i++)
 		{
 		}
 
 		g->glUnLockData();
 
 		vector<CGeometryPrimitive*> primitives = g->getPrimitives();
-		for (i=0;i<primitives.size();i++)
+		for (size_t i=0;i<primitives.size();i++)
 		{
 			CGeometryPrimitive *p = primitives[i];
 
@@ -595,12 +592,12 @@ bool _glSaveWavefront(const string &fname,C3DSet *scene)
 					p->getIndexes(polygonSizes,polygonFaces);
 
 					unsigned short offset = 0;
-					for (unsigned int i=0;i<polygonSizes.size();i++)
+					for (unsigned int j=0;j<polygonSizes.size();j++)
 					{
 						objfile << "f ";
 
-						unsigned short size = polygonSizes[i];
-						for (unsigned short j=0;j<size;j++)
+						unsigned short size = polygonSizes[j];
+						for (unsigned short k=0;k<size;k++)
 						{
 							unsigned short idx = vertexCounter+polygonFaces[offset++];
 							objfile << idx << "/" << idx << "/" << idx << " ";

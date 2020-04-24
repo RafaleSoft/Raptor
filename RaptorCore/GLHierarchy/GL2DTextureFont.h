@@ -77,8 +77,8 @@ private:
 	int				m_char_h;
 	CTextureObject	*m_texture;
 
-	//! Particle shaders
-	static CShader	*m_pShader;
+	//!	Vertex Input State Resource binder
+	void	*m_pBinder;
 };
 
 

@@ -41,9 +41,10 @@ public:
 // Overrides
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CGLView)
-	public:
+public:
 	virtual void OnInitialUpdate();
-	protected:
+
+protected:
 	virtual void OnDraw(CDC* pDC);      // overridden to draw this view
 	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
 	//}}AFX_VIRTUAL
@@ -52,10 +53,6 @@ public:
 protected:
 	CGLView();           // protected constructor used by dynamic creation
 	virtual ~CGLView();
-#ifdef _DEBUG
-	virtual void AssertValid() const;
-	virtual void Dump(CDumpContext& dc) const;
-#endif
 
 	// Generated message map functions
 	//{{AFX_MSG(CGLView)

@@ -49,36 +49,48 @@ public:
 
 	typedef struct BLOC_HEADER_t
 	{
-		unsigned short blocWidth;
-		unsigned short blocHeight;
-		unsigned short xOffset;
-		unsigned short yOffset;
-		unsigned short compressionType;
+		uint16_t blocWidth;
+		uint16_t blocHeight;
+		uint16_t xOffset;
+		uint16_t yOffset;
+		uint16_t compressionType;
 	} BLOC_HEADER;
 
 	typedef struct BLOC_DATA_t
 	{
-		BLOC_HEADER		header;
-		unsigned char	*pData;
+		BLOC_HEADER	header;
+		uint8_t		*pData;
 	} BLOC_DATA;
 
 	typedef struct SERVER_COMMAND_t
 	{
-		unsigned char	commandLen;
-		unsigned char	replyLen;
-		unsigned char	requestLen;
-		char			command[13];
+		uint8_t	commandLen;
+		uint8_t	replyLen;
+		uint8_t	requestLen;
+		// 16 chars length + 0 to end string ==> align structure to DWORD.
+		char	command[17];
 	} SERVER_COMMAND;
+
 	typedef struct SESSION_COMMAND_t
 	{
 		SERVER_COMMAND	command;
-		unsigned short width;
-		unsigned short height;
+		uint16_t		width;
+		uint16_t		height;
 	} SESSION_COMMAND;
+
+	typedef struct DATA_COMMAND_t
+	{
+		SERVER_COMMAND	command;
+		uint32_t		size;
+		uint8_t			packnameLen;
+		// 32 chars length + 0 to end string ==> align structure to DWORD.
+		char			packname[33];
+	} DATA_COMMAND;
 
 	static const CRaptorNetwork::SERVER_COMMAND& getRenderCommand(void);
 	static const CRaptorNetwork::SERVER_COMMAND& getStatusCommand(void);
 	static const CRaptorNetwork::SESSION_COMMAND& getOpenSessionCommand(void);
+	static const CRaptorNetwork::DATA_COMMAND& getDataPackageCommand(void);
 
 private:
 	CRaptorNetwork(void);

@@ -4,12 +4,12 @@
 #include "Subsys/CodeGeneration.h"
 
 
-#if !defined(AFX_TEXTUREOBJECT_H__D32B6294_B42B_4E6F_AB73_13B33C544AD0__INCLUDED_)
-	#include "GLHierarchy/TextureObject.h"
-#endif
 #if !defined(AFX_PNGIMAGING_H__73E7FD82_0C63_4CB0_BFEC_33475DAABE35__INCLUDED_)
 	#include "Imaging/PNGImaging.h"
 #endif
+
+#include <algorithm>
+
 
 // libpng support
 #include "png.h"
@@ -169,13 +169,16 @@ CPNGImaging::~CPNGImaging(void)
 
 
 bool CPNGImaging::isOfKind(const std::string &kind) const 
-{ 
-	return ("PNG" == kind); 
+{
+	std::string ext = kind;
+	std::transform(ext.begin(), ext.end(), ext.begin(), ::toupper);
+
+	return ("PNG" == ext); 
 }
 
-vector<std::string> CPNGImaging::getImageKind(void) const
+std::vector<std::string> CPNGImaging::getImageKind(void) const
 {
-	vector<string> result;
+	std::vector<std::string> result;
 	result.push_back("PNG");
 	return result;
 }

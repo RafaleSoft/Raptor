@@ -110,7 +110,8 @@ void CRaptorConsole::CInputCollectorBase::broadcastMouseInput(int button, int xp
 //////////////////////////////////////////////////////////////////////
  
 CRaptorConsole::CRaptorConsole():
-    m_pFont(NULL),m_bIsActive(false),m_bShowStatus(false),
+    m_pFont(NULL), m_pInput(NULL),
+	m_bIsActive(false),m_bShowStatus(false),
     m_bShowFPS(true),m_bShowObjects(false),m_bShowTriangles(false),
 	m_bShowFrameTime(false),m_bUseVectors(false)
 {
@@ -385,7 +386,7 @@ void CRaptorConsole::glInit(const std::string &fontPath,bool useVectors)
 	if ((filepath.empty()) && (!useVectors))
 	{
 		CRaptorDataManager  *dataManager = CRaptorDataManager::GetInstance();
-		filepath = dataManager->ExportFile("lucon.ttf");
+		filepath = dataManager->exportFile("lucon.ttf");
 	}
 
 	if ((!filepath.empty()) && (!useVectors))
@@ -435,28 +436,6 @@ void CRaptorConsole::glRender(void)
         glDisable(GL_CULL_FACE);
         glDisable(GL_STENCIL_TEST);
         glDisable(GL_BLEND);
-
-		float lineWidth = 1.0f;
-
-		if (m_bUseVectors)
-		{
-			glGetFloatv(GL_LINE_WIDTH, &lineWidth);
-
-			GLfloat viewport[4];
-			glGetFloatv(GL_VIEWPORT,viewport);
-			
-			glMatrixMode(GL_PROJECTION);	
-			glPushMatrix();
-			glLoadIdentity();
-			glOrtho(viewport[0],viewport[2],viewport[1],viewport[3],1,20);
-			glMatrixMode(GL_MODELVIEW);
-			glPushMatrix();
-			glLoadIdentity();
-			glTranslatef(0.0f,viewport[3],-5.0f);
-			glEnable(GL_BLEND);
-			glEnable(GL_LINE_SMOOTH);
-			glHint(GL_LINE_SMOOTH,GL_NICEST);
-		}
 
 		int currentLine = -1;
 		std::vector<CGLFont::FONT_TEXT_ITEM> lines;
@@ -516,26 +495,7 @@ void CRaptorConsole::glRender(void)
 			lines.push_back(CGLFont::FONT_TEXT_ITEM(t.x_offset, currentLine+=10, t.text, m_color));
         }
 
-		if (m_bUseVectors)
-		{
-			m_pFont->selectCurrentGlyphset(0);
-			glPushMatrix();
-			glColor4fv(m_secondColor);
-			glLineWidth(3.0f);
-			m_pFont->glWrite(lines);
-			glColor4fv(m_color);
-			glLineWidth(1.1f);
-			m_pFont->glWrite(lines);
-			glPopMatrix();
-
-			glMatrixMode(GL_PROJECTION);
-			glPopMatrix();
-			glMatrixMode(GL_MODELVIEW);
-			glPopMatrix();
-			glLineWidth(lineWidth);
-		}
-		else
-			m_pFont->glWrite(lines);
+		m_pFont->glWrite(lines);
 
 	    glPopAttrib();
     }

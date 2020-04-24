@@ -52,8 +52,6 @@ CFragmentShader::CFragmentShader(const std::string& name) :
 {
 	m_handle.handle(0);	// default openGL vertex processing pipeline
 	m_handle.hClass(CFragmentShader::CFragmentShaderClassID::GetClassId().ID());
-
-    glInitShaders();
 }
 
 
@@ -70,7 +68,7 @@ CFragmentShader* CFragmentShader::glClone()
 CFragmentShader::~CFragmentShader()
 {
 #if defined(GL_ARB_fragment_shader)
-	if (!CRaptorInstance::GetInstance().m_bFragmentProgramReady)
+	if (!CRaptorInstance::GetInstance().isFragmentShaderReady())
 	{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 		Raptor::GetErrorManager()->generateRaptorError(	CFragmentShader::CFragmentShaderClassID::GetClassId(),
@@ -81,42 +79,10 @@ CFragmentShader::~CFragmentShader()
 	else
 	{
 		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
-		if (m_handle.handle() > 0)
-			pExtensions->glDeleteObjectARB(m_handle.handle());
+		if (m_handle.glhandle() > 0)
+			pExtensions->glDeleteObjectARB(m_handle.glhandle());
 	}
 #endif
-}
-
-
-void CFragmentShader::glInitShaders()
-{
-	m_parameters.clear();
-
-	if (!CRaptorInstance::GetInstance().m_bFragmentProgramReady)
-	{
-		if (Raptor::glIsExtensionSupported(GL_ARB_FRAGMENT_SHADER_EXTENSION_NAME))
-		{
-#if defined(GL_ARB_fragment_shader)
-			const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
-			CRaptorInstance::GetInstance().m_bFragmentProgramReady = (NULL != pExtensions->glCreateShaderObjectARB);
-#else
-			CRaptorInstance::GetInstance().m_bFragmentProgramReady = false;
-#endif
-		}
-		else
-		{
-#ifdef RAPTOR_DEBUG_MODE_GENERATION
-			CRaptorMessages::MessageArgument arg;
-			arg.arg_sz = "GLSL fragment";
-			vector<CRaptorMessages::MessageArgument> args;
-			args.push_back(arg);
-			Raptor::GetErrorManager()->generateRaptorError(CFragmentShader::CFragmentShaderClassID::GetClassId(),
-														   CRaptorErrorManager::RAPTOR_WARNING,
-														   CRaptorMessages::ID_NO_GPU_PROGRAM,
-														   args);
-#endif
-		}
-	}
 }
 
 bool CFragmentShader::glLoadProgram(const std::string &program)
@@ -125,34 +91,35 @@ bool CFragmentShader::glLoadProgram(const std::string &program)
 	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 
 #if defined(GL_ARB_fragment_shader)
-	if (CRaptorInstance::GetInstance().m_bFragmentProgramReady)
+	if (CRaptorInstance::GetInstance().isFragmentShaderReady())
 	{
-		if (m_handle.handle() > 0)
-			pExtensions->glDeleteObjectARB(m_handle.handle());
+		if (m_handle.glhandle() > 0)
+			pExtensions->glDeleteObjectARB(m_handle.glhandle());
 
         m_handle.handle(pExtensions->glCreateShaderObjectARB(GL_FRAGMENT_SHADER_ARB));
-        if (m_handle.handle() == 0)
+		if (m_handle.glhandle() == 0)
         {
 			Raptor::GetErrorManager()->generateRaptorError(	CFragmentShader::CFragmentShaderClassID::GetClassId(),
 															CRaptorErrorManager::RAPTOR_WARNING,
-															CRaptorMessages::ID_NO_GPU_PROGRAM);
+															CRaptorMessages::ID_NO_GPU_PROGRAM,
+															__FILE__, __LINE__);
             return false;
         }
 
         int length = program.size();
         const char* source = program.data();
-        pExtensions->glShaderSourceARB(m_handle.handle(),1,&source,&length);
+		pExtensions->glShaderSourceARB(m_handle.glhandle(), 1, &source, &length);
 
-        pExtensions->glCompileShaderARB(m_handle.handle());
+		pExtensions->glCompileShaderARB(m_handle.glhandle());
 
         m_bValid = glGetProgramStatus();
 
         if (!m_bValid) 
         {
             GLint maxLength = 0;
-	        pExtensions->glGetObjectParameterivARB(m_handle.handle(),GL_OBJECT_INFO_LOG_LENGTH_ARB, &maxLength);
+			pExtensions->glGetObjectParameterivARB(m_handle.glhandle(), GL_OBJECT_INFO_LOG_LENGTH_ARB, &maxLength);
 	        char *pInfoLog = (char*) malloc(maxLength * sizeof(char));
-	        pExtensions->glGetInfoLogARB(m_handle.handle(), maxLength, &length, pInfoLog);
+			pExtensions->glGetInfoLogARB(m_handle.glhandle(), maxLength, &length, pInfoLog);
 
             CRaptorMessages::MessageArgument arg;
             arg.arg_sz = pInfoLog;
@@ -160,7 +127,8 @@ bool CFragmentShader::glLoadProgram(const std::string &program)
             args.push_back(arg);
 			Raptor::GetErrorManager()->generateRaptorError(	CFragmentShader::CFragmentShaderClassID::GetClassId(),
 															CRaptorErrorManager::RAPTOR_ERROR,
-															CRaptorMessages::ID_PROGRAM_ERROR,args);
+															CRaptorMessages::ID_PROGRAM_ERROR,
+															__FILE__,__LINE__,args);
             free(pInfoLog);
 	        return false;
 	    }
@@ -178,12 +146,13 @@ bool CFragmentShader::glBindProgram(RAPTOR_HANDLE program)
 
 #if defined(GL_ARB_fragment_shader)
 	GLint value = 0;
-	pExtensions->glGetObjectParameterivARB(m_handle.handle(), GL_OBJECT_SUBTYPE_ARB, &value);
+	pExtensions->glGetObjectParameterivARB(m_handle.glhandle(), GL_OBJECT_SUBTYPE_ARB, &value);
 	if (value != GL_FRAGMENT_SHADER_ARB)
 	{
 		Raptor::GetErrorManager()->generateRaptorError(CFragmentShader::CFragmentShaderClassID::GetClassId(),
 													   CRaptorErrorManager::RAPTOR_WARNING,
-													   "Fragment Program is invalid in this context");
+													   "Fragment Program is invalid in this context",
+													   __FILE__, __LINE__);
 
 		CATCH_GL_ERROR
 		return false;
@@ -203,7 +172,7 @@ bool CFragmentShader::glBindProgram(RAPTOR_HANDLE program)
 
 bool CFragmentShader::glGetShaderCaps(GL_FRAGMENT_SHADER_CAPS& caps)
 {
-	if (CRaptorInstance::GetInstance().m_bFragmentProgramReady)
+	if (CRaptorInstance::GetInstance().isFragmentShaderReady())
 	{
 #if defined(GL_ARB_fragment_shader)
         glGetIntegerv(GL_MAX_FRAGMENT_UNIFORM_COMPONENTS_ARB,&caps.max_fragment_uniform_components);
@@ -221,10 +190,10 @@ bool CFragmentShader::glGetShaderCaps(GL_FRAGMENT_SHADER_CAPS& caps)
 
 bool CFragmentShader::glGetProgramStatus(void) const
 {
-	if (m_handle.handle() == 0)
+	if (m_handle.glhandle() == 0)
 		return false;
 
-	if (!CRaptorInstance::GetInstance().m_bFragmentProgramReady)
+	if (!CRaptorInstance::GetInstance().isFragmentShaderReady())
 		return false;
 
 #if defined(GL_ARB_fragment_shader)
@@ -235,19 +204,19 @@ bool CFragmentShader::glGetProgramStatus(void) const
 	{
         //  Check program status and compare to shader caps to return global status
         GLint value = 0;
-        pExtensions->glGetObjectParameterivARB(m_handle.handle(), GL_OBJECT_TYPE_ARB,&value);
+		pExtensions->glGetObjectParameterivARB(m_handle.glhandle(), GL_OBJECT_TYPE_ARB, &value);
         if (value != GL_SHADER_OBJECT_ARB)
             return false;
 
-        pExtensions->glGetObjectParameterivARB(m_handle.handle(), GL_OBJECT_SUBTYPE_ARB,&value);
+		pExtensions->glGetObjectParameterivARB(m_handle.glhandle(), GL_OBJECT_SUBTYPE_ARB, &value);
         if (value != GL_FRAGMENT_SHADER_ARB)
             return false;
 
-        pExtensions->glGetObjectParameterivARB(m_handle.handle(),GL_OBJECT_COMPILE_STATUS_ARB, &value);
+		pExtensions->glGetObjectParameterivARB(m_handle.glhandle(), GL_OBJECT_COMPILE_STATUS_ARB, &value);
         if (value == 0)
             return false;
 
-        pExtensions->glGetObjectParameterivARB(m_handle.handle(),GL_OBJECT_DELETE_STATUS_ARB, &value);
+		pExtensions->glGetObjectParameterivARB(m_handle.glhandle(), GL_OBJECT_DELETE_STATUS_ARB, &value);
         if (value == 1)
             return false;
 

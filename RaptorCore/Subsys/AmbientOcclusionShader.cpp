@@ -224,7 +224,7 @@ void CAmbientOcclusionShader::glRender()
 	glEnable(GL_TEXTURE_RECTANGLE_ARB);
 #endif
 	m_pAOcomputeRef->glGetOpenGLShader()->setProgramParameters(ao_params);
-	glCallList(m_occluders[0]->m_AOMapSetup.handle());
+	glCallList(m_occluders[0]->m_AOMapSetup.glname());
 	m_pAOcomputeRef->glRender();
 
 	glEnableClientState(GL_VERTEX_ARRAY);

@@ -56,21 +56,34 @@ public:
 	typedef struct GL_ARRAY_STATE_TAG
 	{
 		bool		enable;
+		int			arrayName;
+		int			arrayIndex;
 		int			arraySize;
 		int			arrayType;
 		int			arrayStride;
 		void*		arrayPointer;
 	} GL_ARRAY_STATE;
 
-	typedef struct GL_ARRAYS_STATE_TAG
+	typedef union
 	{
-		GL_ARRAY_STATE	vertexArray;
-		GL_ARRAY_STATE	normalArray;
-		GL_ARRAY_STATE	colorArray;
-		GL_ARRAY_STATE	indexArray;
-		GL_ARRAY_STATE	textureArray;
-		GL_ARRAY_STATE	edgeArray;
-		GL_ARRAY_STATE	weightArray;
+		//!	Order is the same as GL_VERTEX_ATTRIB.
+		//! @see CProgramParameters
+		struct GL_ARRAYS_STATE_TAG
+		{
+			GL_ARRAY_STATE	vertexArray;
+			GL_ARRAY_STATE	weightArray;
+			GL_ARRAY_STATE	normalArray;
+			GL_ARRAY_STATE	colorArray;
+			GL_ARRAY_STATE	sColorArray;
+			GL_ARRAY_STATE	fogCoordArray;
+			GL_ARRAY_STATE	additionalArray;
+			GL_ARRAY_STATE	additionalArray2;
+			GL_ARRAY_STATE	texture0Array;
+			GL_ARRAY_STATE	texture1Array;
+			GL_ARRAY_STATE	indexArray;
+			GL_ARRAY_STATE	edgeArray;
+		} attributes;
+		GL_ARRAY_STATE arrays[16];
 	} GL_ARRAYS_STATE;
 
 	typedef struct GL_TRANSFORM_STATE_TAG
@@ -302,7 +315,7 @@ public:
 
 	//! Applies a status like one returned here above,
 	//! except the basic config which can only be set at creation.
-	bool glApplyConfig(unsigned long query) const;
+	bool glApplyConfig(unsigned long query);
 
 	//!	Copy base attributes and leaves OpenGL states unchanged.
 	//!	A whole copy is simply by using default copy operator.
@@ -337,6 +350,7 @@ public:
 	} refresh_rate;
 	string			caption;
 
+
 	//	Current state
 	GL_CURRENT_STATE		currentState;
 	GL_ARRAYS_STATE			arraysState;	
@@ -348,6 +362,9 @@ public:
 	GL_PIXEL_STATE			pixelState;
 	GL_FRAME_STATE			framebufferState;
 	GL_HINT_STATE			hintState;
+
+	//!	Vertex Input State Resource binder
+	void				*m_pBinder;
 };
 
 RAPTOR_NAMESPACE_END

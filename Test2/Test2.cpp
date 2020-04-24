@@ -185,6 +185,7 @@ void CTest2App::OnAppAbout()
 
 int CTest2App::ExitInstance() 
 {
+	Raptor::glQuitRaptor();
 	return CWinApp::ExitInstance();
 }
 

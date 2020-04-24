@@ -3,12 +3,12 @@
 //////////////////////////////////////////////////////////////////////
 #include "Subsys/CodeGeneration.h"
 
-#if !defined(AFX_TEXTUREOBJECT_H__D32B6294_B42B_4E6F_AB73_13B33C544AD0__INCLUDED_)
-	#include "GLHierarchy/TextureObject.h"
-#endif
+
 #if !defined(AFX_BMPIMAGING_H__C9C42555_D3BF_42BE_8CC2_FA35410B79AD__INCLUDED_)
 	#include "Imaging/BMPImaging.h"
 #endif
+
+#include <algorithm>
 
 
 CBMPImaging::CBMPImaging(void)
@@ -20,13 +20,16 @@ CBMPImaging::~CBMPImaging(void)
 }
 
 bool CBMPImaging::isOfKind(const std::string &kind) const 
-{ 
-	return ("BMP" == kind); 
+{
+	std::string ext = kind;
+	std::transform(ext.begin(), ext.end(), ext.begin(), ::toupper);
+
+	return ("BMP" == ext); 
 }
 
-vector<std::string> CBMPImaging::getImageKind(void) const
+std::vector<std::string> CBMPImaging::getImageKind(void) const
 {
-	vector<string> result;
+	std::vector<std::string> result;
 	result.push_back("BMP");
 	return result;
 }
@@ -34,6 +37,37 @@ vector<std::string> CBMPImaging::getImageKind(void) const
 bool CBMPImaging::storeImageFile(const std::string&, CImage* const I) const
 {
 	return false;
+}
+
+DWORD ColorTableLength(BITMAPINFOHEADER& h)
+{
+	DWORD result = 0;
+
+	DWORD biClrUsed = h.biClrUsed;
+	WORD  biBitCount = h.biBitCount;
+	DWORD biCompression = h.biCompression;
+
+	switch (biBitCount)
+	{
+		case 24:
+			result = biClrUsed;
+			break;
+		case 16:
+		case 32:
+			if (biCompression == BI_RGB)
+				result = biClrUsed;
+			else if (biCompression == BI_BITFIELDS)
+				result = 3;
+			break;
+		default: // for 0, 1, 2, 4, and 8
+			if (biClrUsed == 0)
+				result = (1 << biBitCount); // 2^biBitCount
+			else
+				result = biClrUsed;
+			break;
+	}
+
+	return result;
 }
 
 bool CBMPImaging::loadImageFile(const std::string& fname, CImage* const I) const
@@ -46,24 +80,29 @@ bool CBMPImaging::loadImageFile(const std::string& fname, CImage* const I) const
 
 	HBITMAP bmp = (HBITMAP)h;
 
-
 	HDC hdc = GetDC(NULL);
 	BITMAPINFO bi;
+	memset(&bi, 0, sizeof(BITMAPINFO));
+	bi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
 	GetDIBits(hdc, bmp, 0, 0, NULL, &bi, DIB_RGB_COLORS);
 
+	DWORD ctsize = ColorTableLength(bi.bmiHeader);
+	BITMAPINFO *lpbi = (BITMAPINFO *)new uint8_t[bi.bmiHeader.biSize + ctsize * sizeof(RGBQUAD)];
+	lpbi->bmiHeader = bi.bmiHeader;
+	
 	int size = bi.bmiHeader.biBitCount / 8;
 	int dim = bi.bmiHeader.biWidth * bi.bmiHeader.biHeight;
 
 	I->allocatePixels(bi.bmiHeader.biWidth, bi.bmiHeader.biHeight, CImage::CGL_COLOR24_ALPHA);
 	unsigned char *texturedata = (unsigned char*)I->getPixels();
-
 	unsigned char *buffer = new unsigned char[dim*size];
-	if (bi.bmiHeader.biHeight != GetDIBits(hdc, bmp, 0, bi.bmiHeader.biHeight, buffer, &bi, DIB_RGB_COLORS))
+	
+	if (bi.bmiHeader.biHeight != GetDIBits(hdc, bmp, 0, bi.bmiHeader.biHeight, buffer, lpbi, DIB_RGB_COLORS))
 		return false;
 
 	int t_pos = 0;
 	int b_pos = 0;
-
+	
 	for (int i = 0; i < dim; i++)
 	{
 		switch (size)
@@ -90,9 +129,11 @@ bool CBMPImaging::loadImageFile(const std::string& fname, CImage* const I) const
 		t_pos += 4;
 	}
 
+	delete[] buffer;
 	ReleaseDC(NULL, hdc);
 	DeleteObject(h);
-	delete[] buffer;
+	delete[] lpbi;
+
 	return true;
 #else
 	return false;

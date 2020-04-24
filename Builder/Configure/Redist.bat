@@ -18,8 +18,21 @@ REM		/**************************************************************************
 
 ECHO OFF
 
+SET PLATFORM=x86
+
+:PARSE
+IF "%~1"=="" GOTO ENDPARSE
+SET PLATFORM=%~1
+REM IF "%~1"=="-a" REM do something
+REM IF "%~1"=="-b" REM do something else
+SHIFT
+GOTO PARSE
+:ENDPARSE
+
+
 ECHO    Preparing redist structure...
 ECHO    Root of Raptor is set to: [%RAPTOR_ROOT%]
+ECHO    Platform is defined as: [%PLATFORM%]
 
 IF NOT DEFINED RAPTOR_ROOT (
 	ECHO    Root is not defined, job aborted !
@@ -58,6 +71,7 @@ IF EXIST Redist (
 	mkdir SimdLib
 	cd ToolBox
 	mkdir Filters
+	mkdir Imaging
 	cd ..
 	mkdir DataManager
 	mkdir MFCExtension
@@ -201,6 +215,10 @@ copy .\RaptorToolBox\BasicObjects.h Redist\Include\ToolBox
 copy .\RaptorToolBox\CmdLineParser.h Redist\Include\ToolBox
 copy .\RaptorToolBox\Controllers.h Redist\Include\ToolBox
 copy .\RaptorToolBox\Imaging.h Redist\Include\ToolBox
+copy .\RaptorToolBox\Imaging\AlphaTransparency.h Redist\Include\ToolBox\Imaging
+copy .\RaptorToolBox\Imaging\BumpmapLoader.h Redist\Include\ToolBox\Imaging
+copy .\RaptorToolBox\Imaging\ImageScaler.h Redist\Include\ToolBox\Imaging
+copy .\RaptorToolBox\Imaging\MipmapBuilder.h Redist\Include\ToolBox\Imaging
 copy .\RaptorToolBox\ParticleCompute.h Redist\Include\ToolBox
 copy .\RaptorToolBox\RaptorToolBox.h Redist\Include\ToolBox
 copy .\RaptorToolBox\Filters.h Redist\Include\ToolBox
@@ -288,29 +306,32 @@ copy .\Licenses\XERCESC.txt Redist\Licenses
 
 ECHO    Copying sub-system files ...
 
-copy "%JPEGLIB_LIB_PATH%\libjpeg.lib" "%RAPTOR_ROOT%\Redist\lib"
-copy "%ZLIB_BIN_PATH%\zlib.dll" "%RAPTOR_ROOT%\Redist\bin"
-copy "%ZLIB_LIB_PATH%\zlibs.lib" "%RAPTOR_ROOT%\Redist\lib"
-copy "%ZLIB_LIB_PATH%\zlib.lib" "%RAPTOR_ROOT%\Redist\lib"
-copy "%TIFFLIB_LIB_PATH%\libtiff.lib" "%RAPTOR_ROOT%\Redist\lib"
-copy "%PNGLIB_BIN_PATH%\libpng.dll" "%RAPTOR_ROOT%\Redist\bin"
-copy "%PNGLIB_LIB_PATH%\libpng.lib" "%RAPTOR_ROOT%\Redist\lib"
-copy "%FREETYPE_BIN_PATH%\freetype.dll" "%RAPTOR_ROOT%\Redist\bin"
-copy "%FREETYPE_BIN_PATH%\freetype.lib" "%RAPTOR_ROOT%\Redist\lib"
-copy "%XERCES_BIN_PATH%\xerces-c_3_2.dll" "%RAPTOR_ROOT%\Redist\bin"
-copy "%XERCES_LIB_PATH%\xerces-c_3.lib" "%RAPTOR_ROOT%\Redist\lib"
-copy "%OPENEXRLIB_LIB_PATH%\Half.lib" "%RAPTOR_ROOT%\Redist\lib"
-copy "%OPENEXRLIB_BIN_PATH%\Half.dll" "%RAPTOR_ROOT%\Redist\bin"
-copy "%OPENEXRLIB_LIB_PATH%\Iex.lib" "%RAPTOR_ROOT%\Redist\lib"
-copy "%OPENEXRLIB_BIN_PATH%\Iex.dll" "%RAPTOR_ROOT%\Redist\bin"
-copy "%OPENEXRLIB_LIB_PATH%\IexMath.lib" "%RAPTOR_ROOT%\Redist\lib"
-copy "%OPENEXRLIB_BIN_PATH%\IexMath.dll" "%RAPTOR_ROOT%\Redist\bin"
-copy "%OPENEXRLIB_LIB_PATH%\IMath.lib" "%RAPTOR_ROOT%\Redist\lib"
-copy "%OPENEXRLIB_BIN_PATH%\IMath.dll" "%RAPTOR_ROOT%\Redist\bin"
-copy "%OPENEXRLIB_LIB_PATH%\IlmThread.lib" "%RAPTOR_ROOT%\Redist\lib"
-copy "%OPENEXRLIB_BIN_PATH%\IlmThread.dll" "%RAPTOR_ROOT%\Redist\bin"
-copy "%OPENEXRLIB_LIB_PATH%\IlmImf.lib" "%RAPTOR_ROOT%\Redist\lib"
-copy "%OPENEXRLIB_BIN_PATH%\IlmImf.dll" "%RAPTOR_ROOT%\Redist\bin"
+
+copy "%JPEGLIB_LIB_PATH%\%PLATFORM%\libjpeg.lib" "%RAPTOR_ROOT%\Redist\lib"
+copy "%ZLIB_BIN_PATH%\%PLATFORM%\zlib.dll" "%RAPTOR_ROOT%\Redist\bin"
+copy "%ZLIB_LIB_PATH%\%PLATFORM%\zlibs.lib" "%RAPTOR_ROOT%\Redist\lib"
+copy "%ZLIB_LIB_PATH%\%PLATFORM%\zlib.lib" "%RAPTOR_ROOT%\Redist\lib"
+copy "%TIFFLIB_LIB_PATH%\%PLATFORM%\libtiff.lib" "%RAPTOR_ROOT%\Redist\lib"
+copy "%PNGLIB_BIN_PATH%\%PLATFORM%\libpng.dll" "%RAPTOR_ROOT%\Redist\bin"
+copy "%PNGLIB_LIB_PATH%\%PLATFORM%\libpng.lib" "%RAPTOR_ROOT%\Redist\lib"
+copy "%FREETYPE_BIN_PATH%\%PLATFORM%\freetype.dll" "%RAPTOR_ROOT%\Redist\bin"
+copy "%FREETYPE_BIN_PATH%\%PLATFORM%\freetype.lib" "%RAPTOR_ROOT%\Redist\lib"
+copy "%XERCES_BIN_PATH%\%PLATFORM%\xerces-c_3_2.dll" "%RAPTOR_ROOT%\Redist\bin"
+copy "%XERCES_LIB_PATH%\%PLATFORM%\xerces-c_3.lib" "%RAPTOR_ROOT%\Redist\lib"
+copy "%OPENEXRLIB_LIB_PATH%\%PLATFORM%\Half.lib" "%RAPTOR_ROOT%\Redist\lib"
+copy "%OPENEXRLIB_BIN_PATH%\%PLATFORM%\Half.dll" "%RAPTOR_ROOT%\Redist\bin"
+copy "%OPENEXRLIB_LIB_PATH%\%PLATFORM%\Iex.lib" "%RAPTOR_ROOT%\Redist\lib"
+copy "%OPENEXRLIB_BIN_PATH%\%PLATFORM%\Iex.dll" "%RAPTOR_ROOT%\Redist\bin"
+copy "%OPENEXRLIB_LIB_PATH%\%PLATFORM%\IexMath.lib" "%RAPTOR_ROOT%\Redist\lib"
+copy "%OPENEXRLIB_BIN_PATH%\%PLATFORM%\IexMath.dll" "%RAPTOR_ROOT%\Redist\bin"
+copy "%OPENEXRLIB_LIB_PATH%\%PLATFORM%\IMath.lib" "%RAPTOR_ROOT%\Redist\lib"
+copy "%OPENEXRLIB_BIN_PATH%\%PLATFORM%\IMath.dll" "%RAPTOR_ROOT%\Redist\bin"
+copy "%OPENEXRLIB_LIB_PATH%\%PLATFORM%\IlmThread.lib" "%RAPTOR_ROOT%\Redist\lib"
+copy "%OPENEXRLIB_BIN_PATH%\%PLATFORM%\IlmThread.dll" "%RAPTOR_ROOT%\Redist\bin"
+copy "%OPENEXRLIB_LIB_PATH%\%PLATFORM%\IlmImf.lib" "%RAPTOR_ROOT%\Redist\lib"
+copy "%OPENEXRLIB_BIN_PATH%\%PLATFORM%\IlmImf.dll" "%RAPTOR_ROOT%\Redist\bin"
+copy "%CPPUNIT_BIN_PATH%\%PLATFORM%\cppunit_dll.dll" "%RAPTOR_ROOT%\Redist\bin"
+copy "%CPPUNIT_LIB_PATH%\%PLATFORM%\cppunit_dll.lib" "%RAPTOR_ROOT%\Redist\lib"
 
 ECHO Redist complete > Builder\Configure\Redist.log
 

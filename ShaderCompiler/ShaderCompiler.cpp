@@ -31,7 +31,7 @@ RAPTOR_NAMESPACE
 class CDisplay : public CRenderEntryPoint
 {
 public:
-    CDisplay(CFrameWnd *wnd,CRaptorDisplay *pDisplay)
+    CDisplay(RAPTOR_HANDLE wnd,CRaptorDisplay *pDisplay)
     {
         nbShadersOK = nbShadersKO = 0;
 
@@ -78,7 +78,7 @@ private:
     void checkVProgram(const string &);
     void checkFProgram(const string &);
     
-    CFrameWnd *m_wnd;
+    RAPTOR_HANDLE m_wnd;
     CRaptorDisplay *m_pDisplay;
     CTextureObject *background;
 
@@ -283,9 +283,7 @@ void CDisplay::glRender(void)
     if (m_pDisplay == NULL)
         return ;
 
-    CClientDC DC(m_wnd);
-    RAPTOR_HANDLE device(DEVICE_CONTEXT_CLASS,DC.m_hDC);
-	m_pDisplay->glvkBindDisplay(device);
+	m_pDisplay->glvkBindDisplay(m_wnd);
 
     if (!fileSources.empty())
     {
@@ -336,7 +334,7 @@ int main(int argc, char* argv[])
 
 
     CRaptorConfig config;
-    config.m_bAutoDestroy = false;
+    config.m_bAutoDestroy = true;
     config.m_bRelocation = true;
     config.m_uiPolygons = 100;
     config.m_uiVertices = 400;
@@ -366,15 +364,11 @@ int main(int argc, char* argv[])
     glcs.refresh_rate.fps = 15; // enough, do not need full speed    
 
     CRaptorApplication  *app = new CRaptorMFCApplication();
-    app->initApplication();
-    CFrameWnd *wnd = ((CRaptorMFCApplication*)app)->createRootWindow(glcs); 
-
-    CDisplay *d = NULL;
-    CClientDC *pDC = new CClientDC(wnd);
-    RAPTOR_HANDLE device(DEVICE_CONTEXT_CLASS,pDC->m_hDC);
-
-    CRaptorDisplay *pDisplay = Raptor::glCreateDisplay(glcs);
-	if (pDisplay->glvkBindDisplay(device))
+    app->initApplication(glcs);
+    
+	CDisplay *d = NULL;
+    CRaptorDisplay *pDisplay = app->getRootDisplay();
+	if (pDisplay->glvkBindDisplay(app->getRootWindow()))
 	{
 		if (!Raptor::glIsExtensionSupported(GL_ARB_VERTEX_PROGRAM_EXTENSION_NAME) ||
 			!Raptor::glIsExtensionSupported(GL_ARB_VERTEX_SHADER_EXTENSION_NAME) ||
@@ -386,7 +380,7 @@ int main(int argc, char* argv[])
             return -1;
         }
 
-        d = new CDisplay(wnd,pDisplay);
+		d = new CDisplay(app->getRootWindow(), pDisplay);
 
 		IRenderingProperties &props = pDisplay->getRenderingProperties();
 		props.setTexturing(IRenderingProperties::ENABLE);
@@ -407,18 +401,13 @@ int main(int argc, char* argv[])
         return -1;
     }
 
-    delete pDC;
-
-
     for (int i = 1; i<argc;i++)
         d->addSource(argv[i]);
 
     app->run();
 
     int st = d->getStatus();
-
     delete d;
-    Raptor::glQuitRaptor();
 
     return st;
 }

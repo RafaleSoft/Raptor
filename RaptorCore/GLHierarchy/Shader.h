@@ -59,6 +59,7 @@ public:
 
     //! Applyies the shader, the shader must be compiled.
 	virtual void glRender(void);
+
 	//! Make the fixed GL pipeline the default shader.
     virtual void glStop(void);
 
@@ -79,7 +80,7 @@ public:
 	CMaterial * const getMaterial(void);
 
     //! Returns true if shader has a material
-	bool hasMaterial(void) const { return m_pMaterial != NULL; };
+	bool hasMaterial(void) const { return NULL != m_pMaterial; };
 
     //! Removes the material if it has been created.
     //! Returns true if a material is deleted.
@@ -98,7 +99,7 @@ public:
 	CTextureUnitSetup * const glGetTextureUnitsSetup(const std::string& name = "");
 
 	//!	Returns true if shader has a TMU Setup already
-	bool hasTextureUnitSetup(void) const { return m_pTMUSetup != NULL; };
+	bool hasTextureUnitSetup(void) const { return NULL != m_pTMUSetup; };
 
     //! Removes the TMUSetup if it has been created.
     //! @return true if a TMUSetup is deleted.
@@ -116,7 +117,7 @@ public:
 	COpenGLProgramStage * const glGetOpenGLProgram(const std::string& name = "");
 
 	//!	Returns true if Program has a OpenGL Program already
-	bool hasOpenGLProgram(void) const { return m_pOpenGLProgram != NULL; };
+	bool hasOpenGLProgram(void) const { return NULL != m_pOpenGLProgram; };
 
 	//! Removes the OpenGL program.
 	//! @return true if the OpenGL program has been deleted
@@ -131,7 +132,7 @@ public:
 	COpenGLShaderStage * const glGetOpenGLShader(const std::string& name = "");
 
 	//!	Returns true if Program has a OpenGL Program already
-	bool hasOpenGLShader(void) const { return m_pOpenGLShader != NULL; };
+	bool hasOpenGLShader(void) const { return NULL != m_pOpenGLShader; };
 
 	//! Removes the OpenGL program.
 	//! @return true if the OpenGL program has been deleted
@@ -146,7 +147,7 @@ public:
 	CVulkanShaderStage * const vkGetVulkanShader(const std::string& name = "");
 
 	//!	Returns true if Program has a Vulkan Shader already
-	bool hasVulkanShader(void) const { return m_pVulkanShader != NULL; };
+	bool hasVulkanShader(void) const { return NULL != m_pVulkanShader; };
 
 	//! Removes the Vulkan Shader.
 	//! @return true if the Vulkan program has been deleted

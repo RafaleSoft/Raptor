@@ -215,7 +215,11 @@ RAPTOR_NAMESPACE
 			tree->InsertItem(str,item);
 		}
 
-		str.Format(TEXT("Rendering model: %x"), obj->getRenderingModel());
+		bool n = obj->hasModel(CGeometry::CGL_NORMALS);
+		bool t = obj->hasModel(CGeometry::CGL_TEXTURE);
+		bool c = obj->hasModel(CGeometry::CGL_COLORS);
+		str.Format(TEXT("Rendering model: colors: %s, normals: %s, texture: %s"), 
+				   (c ? "yes" : "no"), (n ? "yes" : "no"), (t ? "yes" : "no"));
 		tree->InsertItem(str,item);
 
 		str.Format(TEXT("nbVertex: %u"), obj->nbVertex());
@@ -254,10 +258,10 @@ RAPTOR_NAMESPACE
 		Add(tree,item,(CObject3DInstance*)obj);
 
 		CString str;
-		str.Format(TEXT("Number of LODs: %u"), obj->getNbLod());
+		str.Format(TEXT("Number of LODs: %lu"), obj->getNbLod());
 		tree->InsertItem(str,item);
 
-		for (unsigned int i=0;i<obj->getNbLod();i++)
+		for (size_t i=0;i<obj->getNbLod();i++)
 		{
 			Add(tree,item,obj->getLod(i));
 		}

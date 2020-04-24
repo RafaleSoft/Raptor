@@ -363,7 +363,7 @@ RAPTOR_HANDLE CWin32ContextManager::getDevice(CContextManager::RENDERING_CONTEXT
     if ((ctx >= 0) && (ctx < MAX_CONTEXT))
 	{
 		context_t& context = pContext[ctx];
-        device.handle((unsigned int)context.WIN32Context);
+        device.ptr(context.WIN32Context);
         device.hClass(DEVICE_CONTEXT_CLASS);
     }
 
@@ -379,9 +379,9 @@ CContextManager::RENDERING_CONTEXT_ID CWin32ContextManager::getContext(RAPTOR_HA
     for (unsigned int i=0;i<MAX_CONTEXT;i++)
     {
         context_t& context = pContext[i];
-        if ((device.hClass() == WINDOW_CLASS) && (context.WIN32Window == (HWND)(device.handle())))
+        if ((device.hClass() == WINDOW_CLASS) && (context.WIN32Window == device.ptr<HWND__>()))
             ctx = i;
-        else if (((unsigned int)context.WIN32Context) == device.handle())
+        else if (context.WIN32Context == device.ptr<HDC__>())
             ctx = i;
     }
 
@@ -397,7 +397,7 @@ void CWin32ContextManager::glMakeCurrentContext(const RAPTOR_HANDLE& device,REND
 		{
 			if ((device.hClass() == WINDOW_CLASS) && (device.handle() != NULL))
 			{
-				context.WIN32Window = (HWND)(device.handle());
+				context.WIN32Window = device.ptr<HWND__>();
                 
 				// Is this better ? yes in case the context does not exist (e.g. windows 7 or iGPU)
 				context.WIN32Context = GetDC(context.WIN32Window);
@@ -405,12 +405,12 @@ void CWin32ContextManager::glMakeCurrentContext(const RAPTOR_HANDLE& device,REND
 			}
 			else if ((device.hClass() == DEVICE_CONTEXT_CLASS) && (device.handle() != NULL))
 			{
-                HDC hDevice = (HDC)(device.handle());
+                HDC hDevice = device.ptr<HDC__>();
                 context.WIN32Context = hDevice;
 			}
             else if ((device.hClass() == DIB_CLASS) && (device.handle() != NULL))
 			{
-                HDC hDevice = (HDC)(device.handle());
+                HDC hDevice = device.ptr<HDC__>();
                 context.WIN32Context = hDevice;
 			}
             if (context.WIN32Context != NULL)
@@ -495,7 +495,7 @@ bool CWin32ContextManager::glSwapVSync(unsigned int nbVSync) const
 		    mode.dmDriverExtra = 0;
 		    mode.dmFields = DM_BITSPERPEL|DM_PELSWIDTH|DM_PELSHEIGHT|DM_DISPLAYFLAGS|DM_DISPLAYFREQUENCY;
 
-		    if (0!=EnumDisplaySettings(NULL,ENUM_CURRENT_SETTINGS,&mode))
+		    if (0 != EnumDisplaySettings(NULL,ENUM_CURRENT_SETTINGS,&mode))
 		    {
 			    DWORD freq = mode.dmDisplayFrequency;
 
@@ -506,8 +506,10 @@ bool CWin32ContextManager::glSwapVSync(unsigned int nbVSync) const
 						 (context.pExtensions->glIsExtensionSupported(WGL_EXT_SWAP_CONTROL_TEAR_EXTENSION_NAME)))
 					context.pExtensions->wglSwapIntervalEXT(-1);
 #endif
-				else
+				else if (nbVSync > 0)
 				    context.pExtensions->wglSwapIntervalEXT(freq / nbVSync);
+				else
+					context.pExtensions->wglSwapIntervalEXT(0);
 		    }
 		    else
 			    swapControl = false;
@@ -604,7 +606,7 @@ RAPTOR_HANDLE CWin32ContextManager::glCreateWindow(const CRaptorDisplayConfig& c
 	SetFocus(hwnd);
 
 	HDC dc = GetDC(hwnd);
-	RAPTOR_HANDLE device(DEVICE_CONTEXT_CLASS,(unsigned int)(dc));
+	RAPTOR_HANDLE device(DEVICE_CONTEXT_CLASS,dc);
 
 	RENDERING_CONTEXT_ID id = CContextManager::INVALID_CONTEXT;
 	if (CRaptorDisplayConfig::GENERIC == pda.acceleration)
@@ -613,7 +615,7 @@ RAPTOR_HANDLE CWin32ContextManager::glCreateWindow(const CRaptorDisplayConfig& c
         pDisplay = NULL;
 		if (CContextManager::INVALID_CONTEXT != id)
 	    {
-		    wnd.handle((unsigned int)hwnd);
+		    wnd.ptr(hwnd);
 		    wnd.hClass(WINDOW_CLASS);
             ctx = id;
 	    }
@@ -632,6 +634,7 @@ RAPTOR_HANDLE CWin32ContextManager::glCreateWindow(const CRaptorDisplayConfig& c
 			id = CContextManager::INVALID_CONTEXT;
         else
 		{
+			id = nbContext - 1;
 			RECT rect2;
 			GetWindowRect(hwnd,&rect);
 			GetClientRect(hwnd,&rect2);
@@ -646,9 +649,10 @@ RAPTOR_HANDLE CWin32ContextManager::glCreateWindow(const CRaptorDisplayConfig& c
 			if (!pDisplay->glvkUnBindDisplay())
 				id = CContextManager::INVALID_CONTEXT;
 		}
+
 		if (CContextManager::INVALID_CONTEXT != id)
 	    {
-		    wnd.handle((unsigned int)hwnd);
+		    wnd.ptr(hwnd);
 		    wnd.hClass(WINDOW_CLASS);
 	    }
 	    else
@@ -660,6 +664,7 @@ RAPTOR_HANDLE CWin32ContextManager::glCreateWindow(const CRaptorDisplayConfig& c
             }
 		    DestroyWindow(hwnd);
 	    }
+		ctx = id;
     }
     
     ReleaseDC(hwnd,dc);
@@ -674,8 +679,17 @@ bool CWin32ContextManager::glDestroyWindow(const RAPTOR_HANDLE& wnd)
     if ((wnd.hClass() != WINDOW_CLASS) || (wnd.handle() == 0))
         return false;
 
-    HWND hwnd = (HWND)(wnd.handle());
-    return (0 != DestroyWindow(hwnd));
+	RENDERING_CONTEXT_ID id = getContext(wnd);
+	if (CContextManager::INVALID_CONTEXT != id)
+		glDestroyContext(id);
+
+	if (CWin32Application::destroyWindow)
+	{
+		HWND hwnd = wnd.ptr<HWND__>();
+		return (0 != DestroyWindow(hwnd));
+	}
+	else
+		return true;
 }
 
 //	
@@ -708,12 +722,12 @@ CContextManager::RENDERING_CONTEXT_ID CWin32ContextManager::glCreateContext(cons
 
     if (device.hClass() == DIB_CLASS)
     {
-        hDC = (HDC)device.handle();
+        hDC = device.ptr<HDC__>();
         flags = PFD_DRAW_TO_BITMAP | PFD_SUPPORT_OPENGL | PFD_GENERIC_ACCELERATED;
     }
     else if (device.hClass() == DEVICE_CONTEXT_CLASS)
     {
-        hDC = (HDC)device.handle();
+        hDC = device.ptr<HDC__>();
         flags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_SWAP_EXCHANGE;
     }
 	if (0 == hDC)
@@ -836,24 +850,22 @@ CContextManager::RENDERING_CONTEXT_ID  CWin32ContextManager::glCreateExtendedCon
 		memset(piAttribIList,0,2*30*sizeof(int));
 		unsigned int attribIndex = 0;
 
-        HDC hDC = (HDC)device.handle();
+        HDC hDC = device.ptr<HDC__>();
         if (device.hClass() == DIB_CLASS)
         {
             piAttribIList[attribIndex++] = WGL_DRAW_TO_BITMAP_ARB; 
             piAttribIList[attribIndex++] = TRUE;
-			hDC = (HDC)device.handle();
         }
         else if (device.hClass() == DEVICE_CONTEXT_CLASS)
         {
             piAttribIList[attribIndex++] = WGL_DRAW_TO_WINDOW_ARB; 
             piAttribIList[attribIndex++] = TRUE;
-			hDC = (HDC)device.handle();
         }
 		else if (device.hClass() == WINDOW_CLASS)
 		{
 			piAttribIList[attribIndex++] = WGL_DRAW_TO_WINDOW_ARB; 
             piAttribIList[attribIndex++] = TRUE;
-			hDC = GetDC((HWND)device.handle());
+			hDC = GetDC(device.ptr<HWND__>());
 		}
 
 		//	All this stuff .... is for OpenGL of course !!!
@@ -916,10 +928,9 @@ CContextManager::RENDERING_CONTEXT_ID  CWin32ContextManager::glCreateExtendedCon
 		context.pExtensions = NULL; 
 		nbContext++;
 
-		wglMakeCurrent(hDC, glhrc);
 		RENDERING_CONTEXT_ID	oldContext = m_currentGLContext;
 		m_currentGLContext = pos;
-        context.OGLContext = glhrc; 
+		wglMakeCurrent(hDC, glhrc);
 
 		PFN_WGL_GET_EXTENSIONS_STRING_ARB_PROC wglGetExtensionsStringARB = (PFN_WGL_GET_EXTENSIONS_STRING_ARB_PROC)wglGetProcAddress("wglGetExtensionsStringARB");
 		std::string extensions = (const char*)glGetString(GL_EXTENSIONS);
@@ -927,13 +938,50 @@ CContextManager::RENDERING_CONTEXT_ID  CWin32ContextManager::glCreateExtendedCon
 		context.pExtensions = new CRaptorGLExtensions(extensions);
 		context.pExtensions->glInitExtensions();
 
+		//!	Try to create an extended context with attribs
+#ifdef WGL_ARB_create_context
+		int attribs[] =
+		{
+			WGL_CONTEXT_MAJOR_VERSION_ARB, 4,
+			WGL_CONTEXT_MINOR_VERSION_ARB, 6,
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+			WGL_CONTEXT_FLAGS_ARB, WGL_CONTEXT_DEBUG_BIT_ARB,
+#else
+			WGL_CONTEXT_FLAGS_ARB, WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB,
+#endif
+#if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
+			WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB,
+#elif defined(GL_CORE_profile)
+			WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
+#endif
+			0
+		};
+
+		if ((std::string::npos != extensions.find("WGL_ARB_create_context")) &&
+			(NULL != context.pExtensions->wglCreateContextAttribsARB))
+		{
+			HGLRC hrc = context.pExtensions->wglCreateContextAttribsARB(hDC, 0, attribs);
+			wglMakeCurrent(NULL, NULL);
+			wglDeleteContext(glhrc);
+			wglMakeCurrent(hDC, hrc);
+			glhrc = hrc;
+		}
+#endif
+
+#ifndef RAPTOR_DEBUG_MODE_GENERATION
+		if (std::string::npos != extensions.find("GL_ARB_debug_output"))
+		{
+			CRaptorInstance &instance = CRaptorInstance::GetInstance();
+			instance.pErrorMgr->glGetDebugErrors();
+		}
+#endif
+
+		context.OGLContext = glhrc;
 		m_currentGLContext = oldContext;
 		wglMakeCurrent(hDC, NULL);
 
 		if (device.hClass() == WINDOW_CLASS)
-		{
-			ReleaseDC((HWND)device.handle(),hDC);
-		}
+			ReleaseDC(device.ptr<HWND__>(),hDC);
 
         CATCH_WIN32_ERROR
 
@@ -1286,7 +1334,7 @@ bool CWin32ContextManager::vkInit(void)
 	std::string vkpath = buffer;
 	vkpath += "\\VULKAN-1.DLL";
 	HMODULE module = LoadLibrary(vkpath.c_str());
-	vulkanModule.handle((unsigned int)module);
+	vulkanModule.ptr(module);
 
 	if (NULL != module)
 	{
@@ -1315,7 +1363,7 @@ bool CWin32ContextManager::vkRelease(void)
 	{
 		if (0 != vulkanModule.handle())
 		{
-			HMODULE module = (HMODULE)vulkanModule.handle();
+			HMODULE module = vulkanModule.ptr<HINSTANCE__>();
 			BOOL res = FreeLibrary(module);
 			return (res == TRUE);
 		}
@@ -1362,8 +1410,8 @@ bool CWin32ContextManager::vkCreateSurface(const RAPTOR_HANDLE& handle,RENDERING
 {
 	if (WINDOW_CLASS == handle.hClass())
 	{
-		HWND hWnd = (HWND)handle.handle();
-		HINSTANCE hInstance = (HINSTANCE)GetWindowLong(hWnd, GWL_HINSTANCE);
+		HWND hWnd = handle.ptr<HWND__>();
+		HINSTANCE hInstance = (HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE);
 		VkWin32SurfaceCreateInfoKHR createInfo = {	VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR,
 													NULL,0, //flags,
 													hInstance,hWnd };

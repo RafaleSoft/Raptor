@@ -185,6 +185,17 @@ void CRaptorBufferDisplay::glGenerate(CTextureObject* T)
 bool CRaptorBufferDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
 {
 #if defined(WGL_ARB_pbuffer)
+	bool res = false;
+	
+	CGeometryAllocator *allocatorG = CGeometryAllocator::GetInstance();
+	bool bRelocGeometry = allocatorG->isMemoryLocked();
+	if (bRelocGeometry)
+		allocatorG->glvkLockMemory(false);
+	CTexelAllocator *allocatorT = CTexelAllocator::GetInstance();
+	bool bRelocTexels = allocatorT->isMemoryLocked();
+	if (bRelocTexels)
+		allocatorT->glvkLockMemory(false);
+
 	if (m_pBuffer == 0)
 	{
 		CContextManager *manager = CContextManager::GetInstance();
@@ -195,7 +206,7 @@ bool CRaptorBufferDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
 			RAPTOR_ERROR(	COpenGL::COpenGLClassID::GetClassId(),
 							"Raptor Display cannot create a buffered display with no device context active");
 #endif
-			return false;
+			res = false;
 		}
 		else
 		{
@@ -212,21 +223,11 @@ bool CRaptorBufferDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
 			CATCH_GL_ERROR
 
 			RAPTOR_HANDLE noDevice;
-			return CRaptorDisplay::glvkBindDisplay(noDevice);
+			res = CRaptorDisplay::glvkBindDisplay(noDevice);
 		}
 	}
 	else
 	{
-		bool res = false;
-		CGeometryAllocator *allocatorG = CGeometryAllocator::GetInstance();
-		bool bRelocGeometry = allocatorG->isMemoryLocked();
-		if (bRelocGeometry)
-			allocatorG->glvkLockMemory(false);
-		CTexelAllocator *allocatorT = CTexelAllocator::GetInstance();
-		bool bRelocTexels = allocatorT->isMemoryLocked();
-		if (bRelocTexels)
-			allocatorT->glvkLockMemory(false);
-
 		// The current rendering context is saved for restoring after pBuffer is used
 		// Save the context only once, in case of using multiple Pixel Buffers
 		if (CContextManager::INVALID_CONTEXT == m_previousContext)
@@ -267,128 +268,6 @@ bool CRaptorBufferDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
 		{
             res = false;
 		}
-		
-		if (bRelocGeometry)
-			allocatorG->glvkLockMemory(true);
-		if (bRelocTexels)
-			allocatorT->glvkLockMemory(true);
-
-		return res;
-	}
-#else
-	return false;
-#endif
-}
-
-/*
-
-
-bool CRaptorBufferDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
-{
-	#if defined(WGL_ARB_pbuffer)
-	bool res = false;
-
-	CGeometryAllocator *allocatorG = CGeometryAllocator::GetInstance();
-	bool bRelocGeometry = allocatorG->isMemoryLocked();
-	if (bRelocGeometry)
-	allocatorG->glvkLockMemory(false);
-	CTexelAllocator *allocatorT = CTexelAllocator::GetInstance();
-	bool bRelocTexels = allocatorT->isMemoryLocked();
-	if (bRelocTexels)
-	allocatorT->glvkLockMemory(false);
-
-	if (m_pBuffer == 0)
-	{
-		CContextManager *manager = CContextManager::GetInstance();
-
-		if (CContextManager::INVALID_CONTEXT == manager->glGetCurrentContext())
-		{
-	#ifdef RAPTOR_DEBUG_MODE_GENERATION
-			Raptor::GetErrorManager()->generateRaptorError(	Global::COpenGLClassID::GetClassId(),
-															CRaptorErrorManager::RAPTOR_ERROR,
-															"Raptor Display cannot create a buffered display with no device context active");
-	#endif
-			//return false;
-			res = false;
-		}
-		else
-		{
-			m_pBuffer = 1 + manager->glCreatePBuffer(cs);
-
-			m_previousContext = manager->glGetCurrentContext();
-			manager->glBindPBuffer(m_pBuffer - 1);
-
-			m_bindingStack.push_back(m_pBuffer);
-
-			//  Display shading configuration
-			glApplyStatus(cs, GL_PIXEL_STATE_QUERY | GL_HINT_STATE_QUERY | GL_LIGHT_STATE_QUERY);
-
-			CATCH_GL_ERROR
-
-				RAPTOR_HANDLE noDevice;
-			//return CRaptorDisplay::glvkBindDisplay(noDevice);
-			res = CRaptorDisplay::glvkBindDisplay(noDevice);
-		}
-	}
-	else
-	{
-		//bool res = false;
-		//CGeometryAllocator *allocatorG = CGeometryAllocator::GetInstance();
-		//bool bRelocGeometry = allocatorG->isMemoryLocked();
-		//if (bRelocGeometry)
-		//allocatorG->glvkLockMemory(false);
-		//CTexelAllocator *allocatorT = CTexelAllocator::GetInstance();
-		//bool bRelocTexels = allocatorT->isMemoryLocked();
-		//if (bRelocTexels)
-		//allocatorT->glvkLockMemory(false);
-
-		// The current rendering context is saved for restoring after pBuffer is used
-		// Save the context only once, in case of using multiple Pixel Buffers
-		if (CContextManager::INVALID_CONTEXT == m_previousContext)
-		{
-			// Remove texture binding because writing is incompatible
-			// with texturing. Explicit unbinding can be avoided for
-			// performance reasons, but future drivers might be faster.
-			if (m_bBoundToTexture)
-				glvkUnBindDisplay();
-
-			CContextManager *manager = CContextManager::GetInstance();
-
-			m_previousContext = manager->glGetCurrentContext();
-			manager->glBindPBuffer(m_pBuffer - 1);
-
-			m_bindingStack.push_back(m_pBuffer);
-
-			CATCH_GL_ERROR
-
-				res = CRaptorDisplay::glvkBindDisplay(device);
-		}
-		// Specific case for BufferDisplay :
-		//  a configuration parameter can be transmitted to the underlying
-		//  pixel buffer. Here under, for temporary testing, a selection of the
-		//  cube face mapping of the pixel buffer ( but should also select
-		//  mipmapping level ).
-		//  This else case lacks some tests : already bound ? / buffer valid ? / render target compatible ? ...
-		//  ... so it might disappear or remain stricly internal.
-		else if ((device.hClass() >= CTextureObject::CGL_CUBEMAP_PX) &&
-				 (device.hClass() <= CTextureObject::CGL_CUBEMAP_NZ))
-		{
-			CContextManager *manager = CContextManager::GetInstance();
-			manager->glBindPBuffer(m_pBuffer - 1, (CTextureObject::CUBE_FACE)(device.hClass()));
-			res = true;
-		}
-		// Context already bound !!! Raise warning ?
-		else
-		{
-			res = false;
-		}
-		
-		//if (bRelocGeometry)
-		//allocatorG->glvkLockMemory(true);
-		//if (bRelocTexels)
-		//allocatorT->glvkLockMemory(true);
-		//
-		//return res;
 	}
 
 	if (bRelocGeometry)
@@ -397,12 +276,10 @@ bool CRaptorBufferDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
 		allocatorT->glvkLockMemory(true);
 
 	return res;
-
 #else
-return false;
+	return false;
 #endif
 }
-*/
 
 bool CRaptorBufferDisplay::glvkUnBindDisplay(void)
 {

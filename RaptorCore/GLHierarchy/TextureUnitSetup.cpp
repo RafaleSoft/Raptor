@@ -128,39 +128,41 @@ raptor::CTextureUnitSetup::GL_TEXTURE_SHADER_TAG::GL_TEXTURE_SHADER_TAG()
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CTextureUnitSetup::CTextureUnitSetup():
-	CPersistence(textureId,"TMU_Setup")
+CTextureUnitSetup::CTextureUnitSetup() :
+	CPersistence(textureId, "TMU_Setup")
 {
-    //! For optimisation and compatibility purposes, only enable the first 4 TMU image units as a default state.
+	//! For optimisation and compatibility purposes, only enable the first 4 TMU image units as a default state.
 	nbUnits = CTextureFactory::getDefaultFactory().getConfig().getNumTextureImages();
 
-    useUnit = new bool[nbUnits];
-    imageUnit = new ITextureObject*[nbUnits];
-    tmuShader = new GL_TEXTURE_SHADER[nbUnits];
-    tmuCombiner = new GL_TEXTURE_COMBINER[nbUnits];
+	useUnit = new bool[nbUnits];
+	imageUnit = new ITextureObject*[nbUnits];
+	tmuShader = new GL_TEXTURE_SHADER[nbUnits];
+	tmuCombiner = new GL_TEXTURE_COMBINER[nbUnits];
 
-    for (unsigned int i=0;i<nbUnits;i++)
-    {
-        useUnit[i] = (i < 4);
-        imageUnit[i] = NULL;
-        tmuCombiner[i].rgb_combiner = false;
-    }
+	for (unsigned int i = 0; i < nbUnits; i++)
+	{
+		useUnit[i] = (i < 4);
+		imageUnit[i] = NULL;
+		tmuCombiner[i].rgb_combiner = false;
+	}
 
 	use_register_combiners = false;
-    register_combiners = new CRegisterCombiner;
+	register_combiners = new CRegisterCombiner;
 
 #ifdef GL_ARB_texture_env_combine
 	if (!Raptor::glIsExtensionSupported(GL_ARB_TEXTURE_ENV_COMBINE_EXTENSION_NAME))
-		Raptor::GetErrorManager()->generateRaptorError(	CTextureUnitSetup::CTextureUnitSetupClassID::GetClassId(),
-                                                        CRaptorErrorManager::RAPTOR_WARNING,
-                                                        "No texture combiners available for TextureUnitSetup instances");
+	{
+		RAPTOR_WARNING(CTextureUnitSetup::CTextureUnitSetupClassID::GetClassId(),
+					   "No texture combiners available for TextureUnitSetup instances");
+	}
 #endif
 
 #ifdef GL_NV_texture_shader
 	if (!Raptor::glIsExtensionSupported(GL_NV_TEXTURE_SHADER_EXTENSION_NAME))
-		Raptor::GetErrorManager()->generateRaptorError(	CTextureUnitSetup::CTextureUnitSetupClassID::GetClassId(),
-                                                        CRaptorErrorManager::RAPTOR_WARNING,
-                                                        "No texture shaders available for TextureUnitSetup instances");
+	{
+		RAPTOR_WARNING(	CTextureUnitSetup::CTextureUnitSetupClassID::GetClassId(),
+						"No texture shaders available for TextureUnitSetup instances");
+	}
 #endif
 
 }
@@ -530,9 +532,8 @@ RAPTOR_HANDLE CTextureUnitSetup::glBuildSetup(void)
 
 	if (glActiveTextureARB == NULL)
 	{
-        Raptor::GetErrorManager()->generateRaptorError(	CTextureUnitSetup::CTextureUnitSetupClassID::GetClassId(),
-														CRaptorErrorManager::RAPTOR_WARNING,
-														CRaptorMessages::ID_TEXTURE_MISS);
+        RAPTOR_WARNING(	CTextureUnitSetup::CTextureUnitSetupClassID::GetClassId(),
+						CRaptorMessages::ID_TEXTURE_MISS);
 
         //! Disables all image unit above 1, there is always a texture unit available ( 0 )
         for (unsigned int i=1;i<nbUnits;i++)
@@ -541,7 +542,7 @@ RAPTOR_HANDLE CTextureUnitSetup::glBuildSetup(void)
 	else
 		glGetIntegerv(GL_ACTIVE_TEXTURE_ARB,&previousTMU);
 
-	glNewList(handle.handle(),GL_COMPILE);
+	glNewList(handle.glname(),GL_COMPILE);
 
     for (unsigned int i=0;i<nbUnits;i++)
     {
@@ -626,7 +627,7 @@ RAPTOR_HANDLE CTextureUnitSetup::glBuildUnSetup(void)
 	else
 		glGetIntegerv(GL_ACTIVE_TEXTURE_ARB,&previousTMU);
 
-	glNewList(handle.handle(),GL_COMPILE);
+	glNewList(handle.glname(),GL_COMPILE);
 
 	for (unsigned int i=0;i<nbUnits;i++)
     {

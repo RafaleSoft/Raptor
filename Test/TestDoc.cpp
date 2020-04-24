@@ -13,8 +13,6 @@
 #include "GLHierarchy/TextureFactory.h"
 #include "GLHierarchy/TextureFactoryConfig.h"
 #include "GLHierarchy/TextureObject.h"
-#include "GLHierarchy/FragmentProgram.h"
-#include "GLHierarchy/VertexProgram.h"
 #include "GLHierarchy/Shader.h"
 #include "Engine/ViewModifier.h"
 #include "Engine/3DScene.h"
@@ -116,7 +114,6 @@ private:
 void CTestDoc::GLInitContext(void)
 {
 	CAnimator::SetAnimator(new CAnimator());
-    //glClearColor(0.2f,0.6f,0.7f,0.0f);
 	glClearColor(0.0f,0.0f,0.0f,0.0f);
 
 	CRaptorDisplay *dsp = CRaptorDisplay::GetCurrentDisplay();
@@ -137,9 +134,9 @@ void CTestDoc::GLInitContext(void)
     CMaterial *pMaterial = pShader->getMaterial();
     pMaterial->setAmbient(0.2f,0.2f,0.2f,1.0f);
     pMaterial->setDiffuse(0.9f,0.3f,0.7f,1.0f);
-    pMaterial->setSpecular(11.0f,10.0f,9.0f,1.0f);
+    pMaterial->setSpecular(5.0f,4.0f,3.0f,1.0f);
     pMaterial->setShininess(10.0f);
-	m_pSG->getRenderingModel().removeModel(CGeometry::CRenderingModel::CGL_TEXTURE);
+	m_pSG->removeModel(CGeometry::CGL_TEXTURE);
 
     CLight *pLight = new CLight;
     pLight->setAmbient(1.0f,1.0f,1.0f,1.0f);
@@ -179,20 +176,17 @@ void CTestDoc::GLInitContext(void)
 	sponge->rotationX(-90.0);
 	sponge->scale(0.025f,0.025f,0.025f);
 
-    CGeometry::CRenderingModel l_model(0);
-    l_model.addModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
-    l_model.addModel(CGeometry::CRenderingModel::CGL_NORMALS);
-	l_model.addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
-
 	C3DSet::C3DSetIterator it = sponge->getIterator();
     CShadedGeometry *g = (CShadedGeometry *)(sponge->getChild(it++));
 	while (g != NULL)
 	{
         g->getShader()->getMaterial()->setAmbient(0.1f,0.1f,0.1f,1.0f);
         g->getShader()->getMaterial()->setDiffuse(0.4f,0.4f,0.9f,1.0f);
-        g->getShader()->getMaterial()->setSpecular(0.4f,0.4f,0.6f,1.0f);
+        g->getShader()->getMaterial()->setSpecular(1.4f,1.4f,1.6f,1.0f);
         g->getShader()->getMaterial()->setShininess(20.0f);
-        g->setRenderingModel(l_model);
+		g->setRenderingModel(CGeometry::CGL_FRONT_GEOMETRY);
+		g->addModel(CGeometry::CGL_NORMALS);
+		g->addModel(CGeometry::CGL_TEXTURE);
         g = (CShadedGeometry *)(sponge->getChild(it++));
     }
 
@@ -205,7 +199,9 @@ void CTestDoc::GLInitContext(void)
 	CBasicObjects::CRectangle *background = new CBasicObjects::CRectangle;
 	background->setDimensions(40.0f,24.0f);
 	background->translate(0.0f,0.0f,-7.0f);
-	background->setRenderingModel(l_model);
+	background->setRenderingModel(CGeometry::CGL_FRONT_GEOMETRY);
+	background->addModel(CGeometry::CGL_NORMALS);
+	background->addModel(CGeometry::CGL_TEXTURE);
 
 	background->glLockData();
 		background->setTexCoord(0,0.0f,0.0f);
@@ -272,7 +268,9 @@ void CTestDoc::GLInitContext(void)
 	CBasicObjects::CRectangle *pForeground = new Foreground(pMag);
 	pForeground->setDimensions(10.0f,10.0f);
 	pForeground->translate(10.0f,-5.0f,-6.0f);
-	pForeground->setRenderingModel(l_model);
+	pForeground->setRenderingModel(CGeometry::CGL_FRONT_GEOMETRY);
+	pForeground->addModel(CGeometry::CGL_NORMALS);
+	pForeground->addModel(CGeometry::CGL_TEXTURE);
 	pScene->addObject(pForeground);
 }
 

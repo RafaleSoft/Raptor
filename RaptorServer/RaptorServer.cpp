@@ -37,8 +37,6 @@
 	#include "ToolBox/CmdLineParser.h"
 #endif
 
-using std::cout;
-using std::endl;
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -69,15 +67,9 @@ bool CRaptorServer::Start(const CCmdLineParser& cmdline)
 
 	bool res = m_pInstance->start(width,height);
     if (res)
-    {
-		RAPTOR_NO_ERROR(CPersistence::CPersistenceClassID::GetClassId(),
-						"Raptor Renderer initialized. ");
-    }
+		std::cout << "Raptor Renderer initialized. " << std::endl;
     else
-    {
-		RAPTOR_FATAL(	CPersistence::CPersistenceClassID::GetClassId(),
-						"Failed to initialize Raptor. ");
-    }
+		std::cout << "Failed to initialize Raptor. " << std::endl;
 
 
 	if (m_pTransport == NULL)

@@ -32,23 +32,14 @@
 #if !defined(AFX_GEOMETRYALLOCATOR_H__802B3C7A_43F7_46B2_A79E_DDDC9012D371__INCLUDED_)
 	#include "Subsys/GeometryAllocator.h"
 #endif
-#if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
-	#include "System/RaptorGLExtensions.h"
-#endif
-#if !defined(AFX_VERTEXSHADER_H__204F7213_B40B_4B6A_9BCA_828409871B68__INCLUDED_)
-	#include "GLHierarchy/VertexShader.h"
-#endif
-#if !defined(AFX_GEOMETRYSHADER_H__1981EA98_8F3C_4881_9429_A9ACA5B285D3__INCLUDED_)
-	#include "GLHierarchy/GeometryShader.h"
-#endif
 #if !defined(AFX_SHADER_H__4D405EC2_7151_465D_86B6_1CA99B906777__INCLUDED_)
 	#include "GLHierarchy/Shader.h"
 #endif
 #if !defined(AFX_OPENGLSHADERSTAGE_H__56B00FE3_E508_4FD6_9363_90E6E67446D9__INCLUDED_)
 	#include "GLHierarchy/OpenGLShaderStage.h"
 #endif
-#if !defined(AFX_FRAGMENTSHADER_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
-	#include "GLHierarchy/FragmentShader.h"
+#if !defined(AFX_RAPTORINSTANCE_H__90219068_202B_46C2_BFF0_73C24D048903__INCLUDED_)
+	#include "Subsys/RaptorInstance.h"
 #endif
 
 
@@ -71,8 +62,6 @@ static size_t LINE_CACHEPOINTER_SIZE = sizeof(FONT_CACHEELT)*LINE_SIZE / sizeof(
 static FONT_CACHEELT_t font_line[LINE_SIZE];
 static float *font_linePointer = NULL;
 
-CShader *CGL2DTextureFont::m_pShader = NULL;
-
 
 
 CGL2DTextureFont::CGL2DTextureFont(const std::string& name)
@@ -80,13 +69,19 @@ CGL2DTextureFont::CGL2DTextureFont(const std::string& name)
 	m_texture(NULL),
 	m_bAntialiased(false),
 	m_char_w(0),
-	m_char_h(0)
+	m_char_h(0),
+	m_pBinder(NULL)
 {
 }
 
 
 CGL2DTextureFont::~CGL2DTextureFont()
 {
+	if (NULL != m_pBinder)
+	{
+		CResourceAllocator::CResourceBinder *binder = (CResourceAllocator::CResourceBinder*)m_pBinder;
+		delete binder;
+	}
 }
 
 bool CGL2DTextureFont::glInit(const std::string &filename, unsigned int size, bool antialiased)
@@ -269,27 +264,14 @@ bool CGL2DTextureFont::glGenGlyphs(float precision,
 			font_linePointer = &font_line[0].coord.x;
 	}
 
-	if (NULL == m_pShader)
+	if (NULL == m_pBinder)
 	{
-		m_pShader = new CShader(getName() + "_SHADER");
-		COpenGLShaderStage *stage = m_pShader->glGetOpenGLShader();
-
-		CVertexShader *vp = stage->glGetVertexShader("FONT2D_VTX_PROGRAM");
-		CProgramParameters params;
-		GL_COORD_VERTEX viewport(0, 0, 640, 480);
-		params.addParameter("viewport", viewport);
-
-		CGeometryShader *gp = stage->glGetGeometryShader("FONT2D_GEO_PROGRAM");
-		gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
-
-		CFragmentShader *fs = stage->glGetFragmentShader("FONT2D_TEX_PROGRAM");
-		params.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);
-		params.addParameter("color", CColor::RGBA(1.0, 0.0, 0.0, 1.0));
-
-		stage->setProgramParameters(params);
-		bool res = stage->glCompileShader();
-		if (!res)
-			return false;
+		FONT_CACHEELT_t* pCache = (FONT_CACHEELT_t*)font_linePointer;
+		CResourceAllocator::CResourceBinder *binder = new CResourceAllocator::CResourceBinder();
+		binder->setArray(CProgramParameters::POSITION, &pCache[0].coord, 4, sizeof(FONT_CACHEELT));
+		binder->setArray(CProgramParameters::TEXCOORD0, &pCache[0].texcoord, 4, sizeof(FONT_CACHEELT));
+		binder->useVertexArrayObjects();
+		m_pBinder = binder;
 	}
 
 	int H = m_char_w * m_char_h;
@@ -334,6 +316,8 @@ void CGL2DTextureFont::glWrite(const std::string &text, int x, int y, const CCol
 	}
 #endif
 
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+
 	GLfloat viewport[4];
 	glGetFloatv(GL_VIEWPORT, viewport);
 
@@ -341,19 +325,12 @@ void CGL2DTextureFont::glWrite(const std::string &text, int x, int y, const CCol
 	GL_COORD_VERTEX vp(viewport[0], viewport[1], 0.5f * viewport[2], 0.5f * viewport[3]);
 	params.addParameter("viewport", vp);
 	params.addParameter("color", color);
-	COpenGLShaderStage *stage = m_pShader->glGetOpenGLShader();
+	COpenGLShaderStage *stage = instance.m_pFontShader->glGetOpenGLShader();
 	stage->updateProgramParameters(params);
 
-	FONT_CACHEELT_t* pCache = (FONT_CACHEELT_t*)font_linePointer;
-#if defined(GL_ARB_vertex_program)
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
-	pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::POSITION);
-	pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::TEXCOORD0);
 
-	pExtensions->glVertexAttribPointerARB(CProgramParameters::POSITION, 4, GL_FLOAT, false, sizeof(FONT_CACHEELT), &pCache[0].coord);
-	pExtensions->glVertexAttribPointerARB(CProgramParameters::TEXCOORD0, 4, GL_FLOAT, false, sizeof(FONT_CACHEELT), &pCache[0].texcoord);
-#else
-#endif
+	CResourceAllocator::CResourceBinder *binder = (CResourceAllocator::CResourceBinder*)m_pBinder;
+	binder->glvkBindArrays();
 
 	float advance = x;
 	size_t sz = text.size();
@@ -377,18 +354,14 @@ void CGL2DTextureFont::glWrite(const std::string &text, int x, int y, const CCol
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	
-	m_pShader->glRender();
+	instance.m_pFontShader->glRender();
 	m_texture->glvkRender();
 
 	glDrawArrays(GL_POINTS, 0, sz);
 
-	m_pShader->glStop();
+	instance.m_pFontShader->glStop();
 
-#if defined(GL_ARB_vertex_program)
-	pExtensions->glDisableVertexAttribArrayARB(CProgramParameters::POSITION);
-	pExtensions->glDisableVertexAttribArrayARB(CProgramParameters::TEXCOORD0);
-#else
-#endif
+	binder->glvkUnbindArrays();
 
 	glDisable(GL_TEXTURE_2D);
 	glDisable(GL_BLEND);
@@ -408,26 +381,20 @@ void CGL2DTextureFont::glWrite(const std::vector<FONT_TEXT_ITEM> &lines)
 	}
 #endif
 
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+
 	GLfloat viewport[4];
 	glGetFloatv(GL_VIEWPORT, viewport);
 	CColor::RGBA color = CColor::RGBA(1.0f, 0.0f, 0.0f, 1.0f);
 
-	FONT_CACHEELT_t* pCache = (FONT_CACHEELT_t*)font_linePointer;
-#if defined(GL_ARB_vertex_program)
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
-	pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::POSITION);
-	pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::TEXCOORD0);
-
-	pExtensions->glVertexAttribPointerARB(CProgramParameters::POSITION, 4, GL_FLOAT, false, sizeof(FONT_CACHEELT), &pCache[0].coord);
-	pExtensions->glVertexAttribPointerARB(CProgramParameters::TEXCOORD0, 4, GL_FLOAT, false, sizeof(FONT_CACHEELT), &pCache[0].texcoord);
-#else
-#endif
+	CResourceAllocator::CResourceBinder *binder = (CResourceAllocator::CResourceBinder*)m_pBinder;
+	binder->glvkBindArrays();
 
 	CProgramParameters params;
 	GL_COORD_VERTEX vp(viewport[0], viewport[1], 0.5f * viewport[2], 0.5f * viewport[3]);
 	params.addParameter("viewport", vp);
 	params.addParameter("color", color);
-	COpenGLShaderStage *stage = m_pShader->glGetOpenGLShader();
+	COpenGLShaderStage *stage = instance.m_pFontShader->glGetOpenGLShader();
 	stage->updateProgramParameters(params);
 
 	GLsizei count = 0;
@@ -460,18 +427,14 @@ void CGL2DTextureFont::glWrite(const std::vector<FONT_TEXT_ITEM> &lines)
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	m_pShader->glRender();
+	instance.m_pFontShader->glRender();
 	m_texture->glvkRender();
 
 	glDrawArrays(GL_POINTS, 0, count);
 
-	m_pShader->glStop();
+	instance.m_pFontShader->glStop();
 
-#if defined(GL_ARB_vertex_program)
-	pExtensions->glDisableVertexAttribArrayARB(CProgramParameters::POSITION);
-	pExtensions->glDisableVertexAttribArrayARB(CProgramParameters::TEXCOORD0);
-#else
-#endif
+	binder->glvkUnbindArrays();
 
 	glDisable(GL_TEXTURE_2D);
 	glDisable(GL_BLEND);

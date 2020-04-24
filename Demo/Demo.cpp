@@ -40,7 +40,15 @@ int main(int argc, char* argv[])
     config.m_uiPolygons = 1000000;
     config.m_uiVertices = 2000000;
 	config.m_uiTexels = 2000000;
+	config.m_uiUniforms = 16384;
 
+	//	initialize Raptor classes and settings
+	Raptor::glInitRaptor(config);
+	CImaging::installImagers();
+	CParticleCompute::installComputers();
+
+
+	//	initialise display settings
 	CRaptorDisplayConfig glcs;
 	glcs.width = 1024;
 	glcs.height = 768;
@@ -57,15 +65,8 @@ int main(int argc, char* argv[])
     glcs.display_mode = CGL_FLOAT_16 | CGL_DEPTH;
 	glcs.draw_logo = true;
 	glcs.lightingState.lightModelSeparateSpecular = true;
-
-    //	initialize Raptor classes and settings
-	Raptor::glInitRaptor(config);
-
-	CImaging::installImagers();
-	CParticleCompute::installComputers();
-
-	/*
-    if (!Raptor::glCheckDisplayConfig(glcs))
+    
+	if (!Raptor::glCheckDisplayConfig(glcs))
     {
         Raptor::GetMessages()->displayMessage("Some hardware features are missing. Will use lower config, disabling some effects");
         glcs.display_mode = CGL_RGBA | CGL_DEPTH;
@@ -82,18 +83,14 @@ int main(int argc, char* argv[])
             }
         }
     }
-	*/
+	
 	CRaptorApplication  *app = CRaptorApplication::CreateApplication();
-    app->initApplication();
+	app->initApplication(glcs);
 
-	CRaptorDisplay *pDisplay = NULL;
-    RAPTOR_HANDLE wnd = Raptor::glCreateWindow(glcs,pDisplay);
+	CRaptorDisplay *pDisplay = app->getRootDisplay();
+	CDemoDoc *pDoc = new CDemoDoc(app->getRootWindow(), pDisplay);
 
-    app->setRootWindow(wnd);
-
-    CDemoDoc *pDoc = new CDemoDoc(wnd,pDisplay);
-
-	bool res = pDisplay->glvkBindDisplay(wnd);
+	bool res = pDisplay->glvkBindDisplay(app->getRootWindow());
     if (res)
 	{
 		CFilters::glInstallFilters();
@@ -112,7 +109,7 @@ int main(int argc, char* argv[])
 	sprintf(msg,"Bench results :\nMin fps : %f\nMax fps : %f\nAvg fps : %f",pDoc->minfps,pDoc->maxfps,avgfps);
 	Raptor::GetMessages()->displayMessage(msg);
 
-    Raptor::glQuitRaptor();
+	app->quitApplication();
 
 	return 0;
 }

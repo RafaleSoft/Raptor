@@ -43,6 +43,7 @@
 #include "GLHierarchy/Material.h"
 
 #include "ToolBox/RaptorToolBox.h"
+#include "ToolBox/Imaging/BumpmapLoader.h"
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -187,12 +188,9 @@ void CTeapot::GLInitContext()
 
 	teapot = new CBumppedGeometry("Bump teapot");
     CRaptorToolBox::load3DStudioScene("Datas\\Teapot.3DS",set,&options);
-
 	set->scale(0.5f,0.5f,0.5f);
-
     C3DSet::C3DSetIterator it = set->getIterator();
 	object = (CGeometry*)(set->getChild(it++));
-
 	GL_COORD_VERTEX c;
 	object->getCenter(c);
 	object->translate(-c.x,-c.y,-c.z);
@@ -204,14 +202,15 @@ void CTeapot::GLInitContext()
     s->getMaterial()->setShininess(10.0f);
 	teapot->setDiffuseMap(t->getTexture(0));
 	CTextureObject* normalMap = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_MULTIPLY,ITextureObject::CGL_BILINEAR);
-    f.glLoadTexture(normalMap,"Datas\\bump3.tga",CImage::IImageOP::BUMPMAP_LOADER);
+	CBumpmapLoader loader(f.getConfig().getBumpAmplitude());
+    f.glLoadTexture(normalMap,"Datas\\bump3.tga",&loader);
 	teapot->setNormalMap(normalMap);
 	t->addTexture(normalMap);
 	teapot->setEnvironmentMap(t->getTexture("Datas\\ciel_07_small.jpg"));
 
-    CGeometry::CRenderingModel l_model(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
-    l_model.addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
-	teapot->setRenderingModel(l_model);
+	teapot->setRenderingModel(CGeometry::CGL_FRONT_GEOMETRY);
+	teapot->addModel(CGeometry::CGL_TEXTURE);
+	teapot->addModel(CGeometry::CGL_NORMALS);
 	if (!Raptor::glIsExtensionSupported(GL_ARB_VERTEX_PROGRAM_EXTENSION_NAME))
 		Raptor::GetMessages()->displayMessage("Hardware unable to render bump mapping");
 

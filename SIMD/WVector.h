@@ -34,7 +34,7 @@ public:
 	CWVector() NOEXCEPT {};
 	virtual ~CWVector(){};
 
-#ifndef SIMD_NO_ASSEMBLY
+#if (!defined(SIMD_NO_ASSEMBLY) && !defined(_WIN64))
 	CWVector& operator= ( const CWVector& v ) NOEXCEPT
 	{
 		__asm

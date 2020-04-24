@@ -1,6 +1,20 @@
-// RaptorErrorManager.cpp: implementation of the CRaptorErrorManager class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  RaptorErrorManager.cpp                                                 */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
 
 #include "Subsys/CodeGeneration.h"
 
@@ -21,6 +35,9 @@
 #endif
 #if !defined(AFX_VULKAN_H__625F6BC5_F386_44C2_85C1_EDBA23B16921__INCLUDED_)
 	#include "Subsys/Vulkan/RaptorVulkan.h"
+#endif
+#if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
+	#include "System/RaptorGLExtensions.h"
 #endif
 
 #include <time.h>
@@ -77,9 +94,126 @@ bool CRaptorErrorManager::logToFile(const std::string &filename)
     return opened;
 }
 
+void APIENTRY OPENGL_DEBUG_CALLBACK(GLenum source,
+									GLenum type, 
+									GLuint id, 
+									GLenum severity, 
+									GLsizei length, 
+									const char* message, 
+									const GLvoid* userParam)
+{
+	CRaptorErrorManager::GL_RAPTOR_ERROR err;
+
+	err.className = COpenGL::COpenGLClassID::GetClassId().ClassName();
+	switch (source)
+	{
+		case GL_DEBUG_SOURCE_API_ARB:
+			err.className += "_SOURCE_API";
+			break;
+		case GL_DEBUG_SOURCE_WINDOW_SYSTEM_ARB:
+			err.className += "_SOURCE_WINDOW_SYSTEM";
+			break;
+		case GL_DEBUG_SOURCE_SHADER_COMPILER_ARB:
+			err.className += "_SOURCE_SHADER_COMPILER";
+			break;
+		case GL_DEBUG_SOURCE_THIRD_PARTY_ARB:
+			err.className += "_SOURCE_THIRD_PARTY";
+			break;
+		case GL_DEBUG_SOURCE_APPLICATION_ARB:
+			err.className += "_SOURCE_APPLICATION";
+			break;
+		case GL_DEBUG_SOURCE_OTHER_ARB:
+			err.className += "_SOURCE_OTHER";
+			break;
+		default:
+			err.className += "_UNKNOWN_SOURCE";
+			break;
+	}
+
+	switch (severity)
+	{
+		case GL_DEBUG_SEVERITY_HIGH_ARB:
+			err.type = CRaptorErrorManager::RAPTOR_FATAL;
+			break;
+		case GL_DEBUG_SEVERITY_MEDIUM_ARB:
+			err.type = CRaptorErrorManager::RAPTOR_GL_ERROR;
+			break;
+		case GL_DEBUG_SEVERITY_LOW_ARB:
+			err.type = CRaptorErrorManager::RAPTOR_WARNING;
+			break;
+#ifdef GL_VERSION_4_3
+		case GL_DEBUG_SEVERITY_NOTIFICATION:
+			err.type = CRaptorErrorManager::RAPTOR_NO_ERROR;
+			break;
+#endif
+		default:
+			err.type = CRaptorErrorManager::RAPTOR_ERROR;
+			break;
+	}
+	
+	switch (type)
+	{
+		case GL_DEBUG_TYPE_ERROR_ARB:
+			err.error = "API Error: ";
+			break;
+		case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR_ARB:
+			err.error = "Deprecation Error: ";
+			break;
+		case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR_ARB:
+			err.error = "Undefined behavior Error: ";
+			break;
+		case GL_DEBUG_TYPE_PORTABILITY_ARB:
+			err.error = "Portability Error: ";
+			break;
+		case GL_DEBUG_TYPE_PERFORMANCE_ARB:
+			err.error = "Performance Error: ";
+			break;
+#ifdef GL_VERSION_4_3
+		case GL_DEBUG_TYPE_MARKER:
+			err.error = "Performance Error: ";
+			break;
+		case GL_DEBUG_TYPE_PUSH_GROUP:
+			err.error = "Performance Error: ";
+			break;
+		case GL_DEBUG_TYPE_POP_GROUP:
+			err.error = "Performance Error: ";
+			break;
+#endif
+		case GL_DEBUG_TYPE_OTHER:
+			err.error = "Other Info: ";
+			break;
+		default:
+			err.error = "Unknown Type: ";
+			break;
+	}
+
+	err.error += message;
+	err.filename = "OpenGL";
+	err.line = 0;
+
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+	instance.pErrorMgr->addRaptorError(err);
+}
+
+void CRaptorErrorManager::glGetDebugErrors(void)
+{
+	const CRaptorGLExtensions *pextensions = Raptor::glGetExtensions();
+
+#if defined(GL_ARB_debug_output)
+	if (NULL != pextensions->glDebugMessageCallbackARB)
+		pextensions->glDebugMessageCallbackARB(OPENGL_DEBUG_CALLBACK, NULL);
+
+	//!	Synchronous messages will avoid multiple access precaution,
+	//!	Performance loss for debugging is not a problem.
+	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB);
+#endif
+}
+
 void CRaptorErrorManager::generateRaptorError(	const CPersistence::CPersistenceClassID& classID,
 												RAPTOR_ERROR_TYPE type,
-												const std::string &str)
+												const std::string &str,
+												const char *file,
+												uint32_t line)
 {
 	if (m_pLogger == NULL)
 		return;
@@ -89,6 +223,8 @@ void CRaptorErrorManager::generateRaptorError(	const CPersistence::CPersistenceC
 	err.className = classID.ClassName();
 	err.type = type;
 	err.error = str;
+	err.filename = file;
+	err.line = line;
 	
 	addRaptorError(err);
 }
@@ -96,12 +232,16 @@ void CRaptorErrorManager::generateRaptorError(	const CPersistence::CPersistenceC
 void CRaptorErrorManager::generateRaptorError(	const CPersistence::CPersistenceClassID& classID,
 												RAPTOR_ERROR_TYPE type,
 												CRaptorMessages::MESSAGE_ID id,
+												const char *file,
+												uint32_t line,
 												vector<CRaptorMessages::MessageArgument> &args)
 {
     GL_RAPTOR_ERROR err;
 
 	err.className = classID.ClassName();
 	err.type = type;
+	err.filename = file;
+	err.line = line;
 
 	CRaptorInstance &instance = CRaptorInstance::GetInstance();
     if (instance.pMessages != NULL)
@@ -115,9 +255,7 @@ void CRaptorErrorManager::generateRaptorError(	const CPersistence::CPersistenceC
 void CRaptorErrorManager::addRaptorErrorHandler(CRaptorErrorHandler* errHandler)
 {
     if (errHandler != NULL)
-    {
         RaptorErrorHandlers.push_back(errHandler);
-    }
 }
 
 void CRaptorErrorManager::addRaptorError(GL_RAPTOR_ERROR& err)
@@ -166,7 +304,9 @@ void CRaptorErrorManager::addRaptorError(GL_RAPTOR_ERROR& err)
                 break;
         }
 
-		*m_pLogger << buffer << "): " << err.error.data() << '\n';
+		*m_pLogger << buffer << "): ";
+		*m_pLogger << err.filename << ":" << err.line << " ";
+		*m_pLogger << err.error.data() << '\n';
     }
 }
 
@@ -182,9 +322,7 @@ void CRaptorErrorManager::getRaptorError(unsigned int index,GL_RAPTOR_ERROR& err
 	err.error = "";
 
 	if (index < RaptorErrors.size())
-	{
 		err = RaptorErrors[index];
-	}
 }
 
 void CRaptorErrorManager::glGetError(const std::string& file,int line)
@@ -197,6 +335,8 @@ void CRaptorErrorManager::glGetError(const std::string& file,int line)
 	GL_RAPTOR_ERROR r_err;
 	r_err.className = COpenGL::COpenGLClassID::GetClassId().ClassName();
 	r_err.type = RAPTOR_GL_ERROR;
+	r_err.filename = file;
+	r_err.line = line;
 
 	//	extract class name based on file name
     string::size_type pos1 = file.rfind('\\');
@@ -207,7 +347,6 @@ void CRaptorErrorManager::glGetError(const std::string& file,int line)
     r_line << " [line:";
     r_line << line;
     r_line << "]";
-    r_line << ends;
 
 	while ( GL_NO_ERROR != err )
 	{
@@ -225,25 +364,29 @@ void CRaptorErrorManager::glGetError(const std::string& file,int line)
 			case GL_NO_ERROR:
 				break;
 			case GL_INVALID_ENUM:
-				r_err.error = "Invalid enum (class " + r_file + r_line.str() + ")";
+				r_err.error = "Invalid enum ";
 				break;
 			case GL_INVALID_VALUE:
-				r_err.error = "Invalid value (class " + r_file + r_line.str() + ")";
+				r_err.error = "Invalid value ";
 				break;
 			case GL_INVALID_OPERATION:
-				r_err.error = "Invalid operation (class " + r_file + r_line.str() + ")";
+				r_err.error = "Invalid operation ";
 				break;
 			case GL_STACK_OVERFLOW:
-				r_err.error = "Stack overflow (class " + r_file + r_line.str() + ")";
+				r_err.error = "Stack overflow ";
 				break;
 			case GL_STACK_UNDERFLOW:
-				r_err.error = "Stack underflow (class " + r_file + r_line.str() + ")";
+				r_err.error = "Stack underflow ";
 				break;
 			case GL_OUT_OF_MEMORY:
-				r_err.error = "Out of memory (class " + r_file + r_line.str() + ")";
+				r_err.error = "Out of memory ";
 				break;
 		}
 
+		r_err.error += "(class ";
+		r_err.error += r_file;
+		r_err.error += r_line.str().c_str();
+		r_err.error += ")";
 		if (GL_NO_ERROR != err )
 			addRaptorError(r_err);
 
@@ -261,6 +404,8 @@ void CRaptorErrorManager::vkGetError(VkResult err, const std::string& file,int l
 
 	r_err.className = CVulkan::CVulkanClassID::GetClassId().ClassName();
 	r_err.type = RAPTOR_VK_ERROR;
+	r_err.filename = file;
+	r_err.line = line;
 
 	//	extract class name based on file name
     string::size_type pos1 = file.rfind('\\');
@@ -276,84 +421,89 @@ void CRaptorErrorManager::vkGetError(VkResult err, const std::string& file,int l
 	switch (err)
 	{
 		case VK_SUCCESS:
-			r_err.error = "No error, success (class " + r_file + r_line.str() + ")";
+			r_err.error = "No error, success ";
 			break;
 		case VK_NOT_READY:
-			r_err.error = "Not ready (class " + r_file + r_line.str() + ")";
+			r_err.error = "Not ready ";
 			break;
 		case VK_TIMEOUT:
-			r_err.error = "Timeout (class " + r_file + r_line.str() + ")";
+			r_err.error = "Timeout ";
 			break;
 		case VK_EVENT_SET:
-			r_err.error = "Event Set (class " + r_file + r_line.str() + ")";
+			r_err.error = "Event Set ";
 			break;
 		case VK_EVENT_RESET:
-			r_err.error = "Event Reset (class " + r_file + r_line.str() + ")";
+			r_err.error = "Event Reset ";
 			break;
 		case VK_INCOMPLETE:
-			r_err.error = "Incomplete (class " + r_file + r_line.str() + ")";
+			r_err.error = "Incomplete ";
 			break;
 		case VK_ERROR_OUT_OF_HOST_MEMORY:
-			r_err.error = "Error Out of Host Memory (class " + r_file + r_line.str() + ")";
+			r_err.error = "Error Out of Host Memory ";
 			break;
 		case VK_ERROR_OUT_OF_DEVICE_MEMORY:
-			r_err.error = "Error Out of Host Memory (class " + r_file + r_line.str() + ")";
+			r_err.error = "Error Out of Host Memory ";
 			break;
 		case VK_ERROR_INITIALIZATION_FAILED:
-			r_err.error = "Error initialization failed (class " + r_file + r_line.str() + ")";
+			r_err.error = "Error initialization failed ";
 			break;
 		case VK_ERROR_DEVICE_LOST:
-			r_err.error = "Error device lost (class " + r_file + r_line.str() + ")";
+			r_err.error = "Error device lost ";
 			break;
 		case VK_ERROR_MEMORY_MAP_FAILED:
-			r_err.error = "Error memory map failed (class " + r_file + r_line.str() + ")";
+			r_err.error = "Error memory map failed ";
 			break;
 		case VK_ERROR_LAYER_NOT_PRESENT:
-			r_err.error = "Error layer not present (class " + r_file + r_line.str() + ")";
+			r_err.error = "Error layer not present ";
 			break;
 		case VK_ERROR_EXTENSION_NOT_PRESENT:
-			r_err.error = "Error extension not present (class " + r_file + r_line.str() + ")";
+			r_err.error = "Error extension not present ";
 			break;
 		case VK_ERROR_FEATURE_NOT_PRESENT:
-			r_err.error = "Error feature not present (class " + r_file + r_line.str() + ")";
+			r_err.error = "Error feature not present ";
 			break;
 		case VK_ERROR_INCOMPATIBLE_DRIVER:
-			r_err.error = "Error incompatible driver (class " + r_file + r_line.str() + ")";
+			r_err.error = "Error incompatible driver ";
 			break;
 		case VK_ERROR_TOO_MANY_OBJECTS:
-			r_err.error = "Error too maby objects (class " + r_file + r_line.str() + ")";
+			r_err.error = "Error too maby objects ";
 			break;
 		case VK_ERROR_FORMAT_NOT_SUPPORTED:
-			r_err.error = "Error format not supported (class " + r_file + r_line.str() + ")";
+			r_err.error = "Error format not supported ";
 			break;
 		case VK_ERROR_FRAGMENTED_POOL:
-			r_err.error = "Error fragmented pool (class " + r_file + r_line.str() + ")";
+			r_err.error = "Error fragmented pool ";
 			break;
 		case VK_ERROR_SURFACE_LOST_KHR:
-			r_err.error = "Error surface lost (class " + r_file + r_line.str() + ")";
+			r_err.error = "Error surface lost ";
 			break;
 		case VK_ERROR_NATIVE_WINDOW_IN_USE_KHR:
-			r_err.error = "Error native window in use (class " + r_file + r_line.str() + ")";
+			r_err.error = "Error native window in use ";
 			break;
 		case VK_SUBOPTIMAL_KHR:
-			r_err.error = "Error suboptimal (class " + r_file + r_line.str() + ")";
+			r_err.error = "Error suboptimal ";
 			break;
 		case VK_ERROR_OUT_OF_DATE_KHR:
-			r_err.error = "Error out of date (class " + r_file + r_line.str() + ")";
+			r_err.error = "Error out of date ";
 			break;
 		case VK_ERROR_INCOMPATIBLE_DISPLAY_KHR:
-			r_err.error = "Error incompatible display (class " + r_file + r_line.str() + ")";
+			r_err.error = "Error incompatible display ";
 			break;
 		case VK_ERROR_VALIDATION_FAILED_EXT:
-			r_err.error = "Error validation failed (class " + r_file + r_line.str() + ")";
+			r_err.error = "Error validation failed ";
 			break;
 		case VK_ERROR_INVALID_SHADER_NV:
-			r_err.error = "Error invalid shader NV (class " + r_file + r_line.str() + ")";
+			r_err.error = "Error invalid shader NV ";
 			break;
 		default:
-			r_err.error = "Unknown Error (class " + r_file + r_line.str() + ")";
+			r_err.error = "Unknown Error ";
 			break;
 	}
+
+	r_err.error += "(class ";
+	r_err.error += r_file;
+	r_err.error += r_line.str().c_str();
+	r_err.error += ")";
 
 	if (VK_SUCCESS != err)
 		addRaptorError(r_err);

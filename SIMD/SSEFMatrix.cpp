@@ -35,7 +35,7 @@ CSSEFMatrix::~CSSEFMatrix()
 {
 }
 
-#ifndef SIMD_NO_ASSEMBLY
+#if (!defined(SIMD_NO_ASSEMBLY) && !defined(_WIN64))
 
 SIMD_ENTRY CSSEFMatrix& SIMD_CALL CSSEFMatrix::operator-(const CSSEFMatrix& m2) const NOEXCEPT
 {

@@ -119,13 +119,9 @@ bool CTexelAllocator::glvkLockMemory(bool lock)
     if ((NULL != deviceMemoryManager) && (relocatedTexels != NULL))
     {
         if (lock && !m_bLocked)
-        {
-            deviceMemoryManager->lockBufferObject(*relocatedTexels);
-        }
+			res = deviceMemoryManager->lockBufferObject(*relocatedTexels);
         else if (!lock && m_bLocked)
-        {
-            deviceMemoryManager->unlockBufferObject(*relocatedTexels);
-        }
+			res = deviceMemoryManager->unlockBufferObject(*relocatedTexels);
         else
             res = false;
     }

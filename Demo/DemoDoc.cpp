@@ -225,7 +225,7 @@ bool HeatSpots::glInitFilter()
 
 	CBasicObjects::CRectMesh *mesh = new CBasicObjects::CRectMesh();
 	mesh->setDimensions(HEAT_SIZE,HEAT_SIZE,m_hcels,m_vcels);
-	mesh->getRenderingModel().removeModel(CGeometry::CRenderingModel::CGL_NORMALS);
+	mesh->removeModel(CGeometry::CGL_NORMALS);
 
 	setGeometry(mesh);
 

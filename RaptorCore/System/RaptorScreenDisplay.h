@@ -1,6 +1,20 @@
-// RaptorScreenDisplay.h: interface for the CRaptorGDIDisplay class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  RaptorScreenDisplay.h                                                  */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
 
 #if !defined(AFX_RAPTORSCREENDISPLAY_H__D3165157_E39B_4770_990F_26D44A7BD1A3__INCLUDED_)
 #define AFX_RAPTORSCREENDISPLAY_H__D3165157_E39B_4770_990F_26D44A7BD1A3__INCLUDED_
@@ -31,7 +45,6 @@ class CRaptorScreenDisplay : public CRaptorDisplay
 {
 public:
 	CRaptorScreenDisplay(const CRaptorDisplayConfig& pcs);
-	virtual ~CRaptorScreenDisplay();
 
 	//! Implements CTextureGenerator
     virtual ITextureGenerator::GENERATOR_KIND getKind(void) const { return ITextureGenerator::ANIMATED; };
@@ -87,12 +100,22 @@ public:
 
 
 protected:
+	//!	Destroying a display must be done by Raptor to properly manage resources deallocation.
+	virtual ~CRaptorScreenDisplay();
+
+	//!	Allocates Geometry, Textures and Uniforms resources for this display.
+	virtual void glvkAllocateResources(void);
+
+	//!	Release allocated Geometry, Textures and Uniforms resources for this display.
+	virtual void glvkReleaseResources(void);
+
 	//! Inherited to handle occlusion queries display resources
 	virtual void unLink(const CPersistence*);
 
 	//!	Renders the main display scene.
 	virtual void glRenderScene();
 
+	//!	Renders the Raptor logo when in shareware release.
 	void glDrawLogo(void);
 
 	//! number of frames in previous second
@@ -133,12 +156,10 @@ protected:
 
 	IDeviceMemoryManager	*m_pDeviceMemory;
 
+
 private:
 	//!	Implement Display Status.
     virtual bool glQueryStatus(CRaptorDisplayConfig &state,unsigned long query) const;
-
-	//!	Allocates Geometry, Textures and Uniforms resources
-	void allocateResources(void);
 
 	CTextureQuad*	glBuildLogo(void);
 	CTextureQuad*	pLogo;

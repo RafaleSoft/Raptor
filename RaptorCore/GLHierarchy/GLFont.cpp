@@ -163,8 +163,12 @@ void CGLFont::glWrite(const std::string &text, int x, int y, const CColor::RGBA	
 
 	glyph *glyphs = (glyph*)m_glfontglyph.at(glyphset);
 
+	GLfloat viewport[4];
+	glGetFloatv(GL_VIEWPORT, viewport);
+
 	glPushMatrix();
-	glTranslatef(x, y, 0.0);
+	glTranslatef(x, viewport[3] - y, 0.0);
+	glColor4fv(color);
 
 	for (unsigned int i=0;i<text.size();i++)
 	{
@@ -186,12 +190,18 @@ void CGLFont::glWrite(const std::vector<FONT_TEXT_ITEM> &lines)
 
 	glyph *glyphs = (glyph*)m_glfontglyph.at(glyphset);
 
+	GLfloat viewport[4];
+	glGetFloatv(GL_VIEWPORT, viewport);
+
 	for (size_t j = 0; j < lines.size(); j++)
 	{
 		glPushMatrix();
 
 		const FONT_TEXT_ITEM &item = lines[j];
-		glTranslatef(item.x_offset, item.y_offset, 0.0);
+
+		//Viewport has origin at bottom-left corner in ortho.
+		glTranslatef(item.x_offset, viewport[3] - item.y_offset, 0.0);
+		glColor4fv(item.color);
 
 		for (unsigned int i = 0; i < item.text.size(); i++)
 		{

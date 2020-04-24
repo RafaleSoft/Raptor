@@ -25,32 +25,28 @@
 
 RAPTOR_NAMESPACE_BEGIN
 
+class CRaptorMFCApplication;
+
 class APP : public CWinApp
 {
 public:
-    APP() {};
+	APP() {};
 
-    BOOL OnIdle(LONG lCount) 
+	virtual BOOL OnIdle(LONG lCount)
     {
 	    Raptor::glRender();
 	    CWinThread::OnIdle(lCount);
 	    return TRUE;	// we want animation, so need more idle time
     };
 
-    int ExitInstance()
+	virtual int ExitInstance()
     {
+		CRaptorApplication *application = CRaptorApplication::GetInstance();
+		if (NULL != application)
+			application->quitApplication();
         if (Raptor::GetConfig().m_bAutoDestroy)
             Raptor::glQuitRaptor();
         return CWinApp::ExitInstance();
-    }
-
-    BOOL ProcessMessageFilter(int code, LPMSG lpMsg)
-    {
-        if (lpMsg->message == WM_QUIT)
-        {
-            return Raptor::glQuitRaptor();
-        }
-        else return CWinThread::ProcessMessageFilter(code,lpMsg);
     }
 };
 
@@ -63,12 +59,14 @@ RAPTOR_NAMESPACE_END
 RAPTOR_NAMESPACE
 
 
+
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 CRaptorMFCApplication::CRaptorMFCApplication()
 {
     internal = &app;
+	CRaptorApplication::SetInstance(this);
 }
 
 CRaptorMFCApplication::~CRaptorMFCApplication()
@@ -80,9 +78,21 @@ void CRaptorMFCApplication::grabCursor(bool grab)
 	//m_bGrab = grab;
 }
 
-bool CRaptorMFCApplication::initApplication(void)
+bool CRaptorMFCApplication::initApplication(CRaptorDisplayConfig &config)
 {
-    return CRaptorApplication::initApplication();
+	//! A defaut config if Raptor has not been initialised.
+	CRaptorConfig cfg;
+	bool res = Raptor::glInitRaptor(cfg);
+
+	if (res)
+	{
+		CFrameWnd *wnd = createRootWindow(config);
+		internal->m_pMainWnd = wnd;
+
+		res = (NULL != m_root.ptr<HWND__>());
+	}
+
+	return res;
 }
 
 CFrameWnd *CRaptorMFCApplication::createRootWindow(const CRaptorDisplayConfig& glcs)
@@ -97,8 +107,20 @@ CFrameWnd *CRaptorMFCApplication::createRootWindow(const CRaptorDisplayConfig& g
     rect.right = glcs.x + glcs.width;
     rect.bottom = glcs.y + glcs.height;
 
+	WNDCLASSEX   winclass;	// this will hold the class we create
+	winclass.cbSize = sizeof(WNDCLASSEX);
+	if (FALSE == GetClassInfoEx(GetModuleHandle(NULL), L"RaptorWindow", &winclass))
+	{
+		if (NULL != wnd)
+			wnd->DestroyWindow();
+		Raptor::GetErrorManager()->generateRaptorError(CPersistence::CPersistenceClassID::GetClassId(),
+													   CRaptorErrorManager::RAPTOR_ERROR,
+													   "RaptorMFCApplication cannot find RaptorWindow class!.");
+		return NULL;
+	}
+
 	BOOL res = wnd->CreateEx(	WS_EX_TOPMOST,
-								NULL,
+								L"RaptorWindow",
 								CA2T(glcs.caption.data()),
 								WS_VISIBLE|WS_OVERLAPPED|WS_SYSMENU,
 								rect,
@@ -107,17 +129,17 @@ CFrameWnd *CRaptorMFCApplication::createRootWindow(const CRaptorDisplayConfig& g
 								NULL);
 	if (TRUE == res)
     {
-		//RECT rect2;
-		//wnd->GetWindowRect(&rect);
-		//wnd->GetClientRect(&rect2);
+		m_pDisplay = Raptor::glCreateDisplay(glcs);
 
-        internal->m_pMainWnd = wnd;
-
-        RAPTOR_HANDLE hWnd(WINDOW_CLASS,wnd);
-        CRaptorApplication::setRootWindow(hWnd);
+		RAPTOR_HANDLE h;
+		h.ptr(wnd->GetSafeHwnd());
+		h.hClass(WINDOW_CLASS);
+		setRootWindow(h);
     }
     else
     {
+		if (NULL != wnd)
+			wnd->DestroyWindow();
         wnd = NULL;
 		Raptor::GetErrorManager()->generateRaptorError( CPersistence::CPersistenceClassID::GetClassId(),
 														CRaptorErrorManager::RAPTOR_ERROR,
@@ -125,22 +147,6 @@ CFrameWnd *CRaptorMFCApplication::createRootWindow(const CRaptorDisplayConfig& g
     }
 
     return wnd;
-}
-
-void CRaptorMFCApplication::setRootWindow(const RAPTOR_HANDLE& root)
-{
-    if ((root.handle() == 0) || (root.hClass() != WINDOW_CLASS))
-    {
-        Raptor::GetErrorManager()->generateRaptorError( CPersistence::CPersistenceClassID::GetClassId(),
-														CRaptorErrorManager::RAPTOR_ERROR,
-														"RaptorApplication has no root window !.");
-        return;
-    }
-
-	CFrameWnd *wnd = root.ptr<CFrameWnd>();
-    internal->m_pMainWnd = wnd;
-
-    CRaptorApplication::setRootWindow(root);
 }
 
 bool CRaptorMFCApplication::run(void)
@@ -153,7 +159,10 @@ bool CRaptorMFCApplication::run(void)
         return false;
     }
 
+	m_bRunning = true;
+
     internal->Run();
  
     return true;
 }
+

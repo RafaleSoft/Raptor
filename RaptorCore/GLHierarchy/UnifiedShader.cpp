@@ -43,12 +43,10 @@ CUnifiedShader::CUnifiedShader(const CPersistence::CPersistenceClassID &classId,
 {
 }
 
-
 CUnifiedShader::CUnifiedShader(const CUnifiedShader& shader)
 	:CShaderProgram(shader)
 {
 }
-
 
 CUnifiedShader::~CUnifiedShader()
 {
@@ -57,7 +55,7 @@ CUnifiedShader::~CUnifiedShader()
 
 void CUnifiedShader::glProgramParameter(unsigned int numParam, const GL_COORD_VERTEX &v) const
 {
-    if (m_handle.handle() == 0)
+	if (m_handle.glhandle() == 0)
         return;
 
     glParameter(numParam,v);
@@ -65,12 +63,11 @@ void CUnifiedShader::glProgramParameter(unsigned int numParam, const GL_COORD_VE
 
 void CUnifiedShader::glProgramParameter(unsigned int numParam, const CColor::RGBA &v) const
 {
-    if (m_handle.handle() == 0)
+	if (m_handle.glhandle() == 0)
         return;
 
     glParameter(numParam,v);
 }
-
 
 void CUnifiedShader::glParameter(unsigned int numParam, const float *v) const
 {
@@ -97,20 +94,19 @@ void CUnifiedShader::glParameter(unsigned int numParam, const float *v) const
     CATCH_GL_ERROR
 }
 
-
 std::string CUnifiedShader::glGetProgramString(void) const
 {
-	if (m_handle.handle() == 0)
+	if (m_handle.glhandle() == 0)
 		return "";
 
 #if defined(GL_ARB_shader_objects)
 	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 
 	int value = 0;
-	pExtensions->glGetObjectParameterivARB(m_handle, GL_OBJECT_SHADER_SOURCE_LENGTH_ARB, &value);
+	pExtensions->glGetObjectParameterivARB(m_handle.glhandle(), GL_OBJECT_SHADER_SOURCE_LENGTH_ARB, &value);
 	char *source = new char[value];
 	GLsizei length = 0;
-	pExtensions->glGetShaderSourceARB(m_handle, value, &length, source);
+	pExtensions->glGetShaderSourceARB(m_handle.glhandle(), value, &length, source);
 
 	std::string program_source = source;
 	delete[] source;
@@ -123,16 +119,16 @@ std::string CUnifiedShader::glGetProgramString(void) const
 bool CUnifiedShader::glBindProgram(RAPTOR_HANDLE program)
 {
 #if defined(GL_ARB_shader_objects)
-	if (program.handle() == 0)
+	if (program.glhandle() == 0)
 		return false;
 
 	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 	GLint value = 0;
-	pExtensions->glGetObjectParameterivARB(program.handle(), GL_OBJECT_TYPE_ARB, &value);
+	pExtensions->glGetObjectParameterivARB(program.glhandle(), GL_OBJECT_TYPE_ARB, &value);
 	if (value != GL_PROGRAM_OBJECT_ARB)
 		return false;
 
-	pExtensions->glAttachObjectARB(program.handle(), m_handle.handle());
+	pExtensions->glAttachObjectARB(program.glhandle(), m_handle.glhandle());
 
 	CATCH_GL_ERROR
 
@@ -145,16 +141,16 @@ bool CUnifiedShader::glBindProgram(RAPTOR_HANDLE program)
 bool CUnifiedShader::glUnbindProgram(RAPTOR_HANDLE program)
 {
 #if defined(GL_ARB_shader_objects)
-	if ((program.handle() == 0) || (m_handle.handle() == 0))
+	if ((program.glhandle() == 0) || (m_handle.glhandle() == 0))
 		return false;
 
 	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 	GLint value = 0;
-	pExtensions->glGetObjectParameterivARB(program.handle(), GL_OBJECT_TYPE_ARB, &value);
+	pExtensions->glGetObjectParameterivARB(program.glhandle(), GL_OBJECT_TYPE_ARB, &value);
 	if (value != GL_PROGRAM_OBJECT_ARB)
 		return false;
 
-	pExtensions->glDetachObjectARB(program.handle(), m_handle.handle());
+	pExtensions->glDetachObjectARB(program.glhandle(), m_handle.glhandle());
 
 	CATCH_GL_ERROR
 
@@ -166,7 +162,7 @@ bool CUnifiedShader::glUnbindProgram(RAPTOR_HANDLE program)
 
 void CUnifiedShader::glRender(void)
 {
-	if (m_handle.handle() == 0)
+	if (m_handle.glhandle() == 0)
 		return;
 	
 	CATCH_GL_ERROR
@@ -203,63 +199,6 @@ void CUnifiedShader::glProgramParameter(unsigned int numParam,GL_HIRES_COORD_VER
     CATCH_GL_ERROR
 }
 */
-
-
-uint64_t CUnifiedShader::glGetBufferMemoryRequirements(RAPTOR_HANDLE program)
-{
-	if (program.handle() == 0)
-		return 0;
-
-	uint64_t uniform_size = 0;
-
-#if defined(GL_ARB_uniform_buffer_object)
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
-
-	GLint active_blocks_count = 0;
-
-	//! Despite the fact that the GL_VERSION text is greater than 3.1, it seems there is a bug in the call
-	//! below : the actual value should be returned by glGetProgramiv and not by glGetObjectParameteriv.
-	//pExtensions->glGetProgramivARB(program.handle, GL_ACTIVE_UNIFORM_BLOCKS_ARB, &active_blocks_count);
-	pExtensions->glGetObjectParameterivARB(program.handle(), GL_ACTIVE_UNIFORM_BLOCKS_ARB, &active_blocks_count);
-
-	for (GLint i = 0; i < active_blocks_count; i++)
-	{
-		GLint block_size = 0;
-		pExtensions->glGetActiveUniformBlockivARB(program.handle(), i, GL_UNIFORM_BLOCK_DATA_SIZE_ARB, &block_size);
-
-		uniform_size += block_size;
-
-		GLint active_uniforms = 0;
-		pExtensions->glGetActiveUniformBlockivARB(program.handle(), i, GL_UNIFORM_BLOCK_ACTIVE_UNIFORMS_ARB, &active_uniforms);
-		GLint indices[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
-		pExtensions->glGetActiveUniformBlockivARB(program.handle(), i, GL_UNIFORM_BLOCK_ACTIVE_UNIFORM_INDICES_ARB, &indices[0]);
-
-		GLint active_uniform_max_length = 0;
-		//pExtensions->glGetProgramivARB(program.handle, GL_ACTIVE_UNIFORM_BLOCK_MAX_NAME_LENGTH_ARB, &active_uniform_max_length);
-		pExtensions->glGetObjectParameterivARB(program.handle(), GL_ACTIVE_UNIFORM_BLOCK_MAX_NAME_LENGTH_ARB, &active_uniform_max_length);
-
-		GLint active_uniform_length = 0;
-		pExtensions->glGetActiveUniformBlockivARB(program.handle(), i, GL_UNIFORM_BLOCK_NAME_LENGTH_ARB, &active_uniform_length);
-
-		GLsizei length = 0;
-		char uniformBlockName[256];
-		pExtensions->glGetActiveUniformBlockNameARB(program.handle(), i, 256, &length, uniformBlockName);
-
-		GLuint uniformBlockIndex = pExtensions->glGetUniformBlockIndexARB(program.handle(), uniformBlockName);
-
-		GLint binding = 0;
-		pExtensions->glGetActiveUniformBlockivARB(program.handle(), i, GL_UNIFORM_BLOCK_BINDING_ARB, &binding);
-
-		GLint max_bindings = 0;
-		glGetIntegerv(GL_MAX_UNIFORM_BUFFER_BINDINGS_ARB, &max_bindings);
-
-		pExtensions->glGetActiveUniformBlockivARB(program.handle(), i, GL_UNIFORM_BLOCK_BINDING_ARB, &binding);
-	}
-#endif
-
-	return uniform_size;
-}
-
 
 static bool isTypeVector(unsigned int shaderKind)
 {

@@ -3,9 +3,7 @@
 //////////////////////////////////////////////////////////////////////
 #include "Subsys/CodeGeneration.h"
 
-#if !defined(AFX_TEXTUREOBJECT_H__D32B6294_B42B_4E6F_AB73_13B33C544AD0__INCLUDED_)
-	#include "GLHierarchy/TextureObject.h"
-#endif
+
 #if !defined(AFX_TIFFIMAGING_H__3AD77410_776F_446A_860E_496C8D13CB0F__INCLUDED_)
 	#include "Imaging/TIFFImaging.h"
 #endif
@@ -21,6 +19,8 @@
 #ifndef _TIFFIO_
 	#include "tiffio.h"
 #endif
+
+#include <algorithm>
 
 
 void RaptorTIFFErrorHandler(const char* module , const char* fmt, va_list ap)
@@ -71,14 +71,17 @@ CTIFFImaging::~CTIFFImaging(void)
 }
 
 bool CTIFFImaging::isOfKind(const std::string &kind) const 
-{ 
-	return (("TIF" == kind) ||
-			("TIFF" == kind));
+{
+	std::string ext = kind;
+	std::transform(ext.begin(), ext.end(), ext.begin(), ::toupper);
+
+	return (("TIF" == ext) ||
+			("TIFF" == ext));
 }
 
-vector<std::string> CTIFFImaging::getImageKind(void) const
+std::vector<std::string> CTIFFImaging::getImageKind(void) const
 {
-	vector<string> result;
+	std::vector<std::string> result;
 
 	result.push_back("TIF");
 	result.push_back("TIFF");
@@ -153,7 +156,7 @@ bool CTIFFImaging::loadImageFile(const std::string& fname, CImage* const I) cons
 
 	unsigned short samplesperpixel = 0;
 	TIFFGetField(in, TIFFTAG_SAMPLESPERPIXEL, &samplesperpixel);
-	if (samplesperpixel != 3)
+	if ((samplesperpixel != 3) && (samplesperpixel != 4))
 		return false;   //  only 24 && 32 bits supported
 
 	unsigned short bitspersample = 0;
@@ -185,16 +188,16 @@ bool CTIFFImaging::loadImageFile(const std::string& fname, CImage* const I) cons
 		//	eventual extra processing
 		//	starting at the end of the buffer
 		int base_4 = w * 4 * (h - row - 1);
-		int base_3 = 0;
+		int base_var = 0;
 
 		for (unsigned int i = 0; i<w; i++)
 		{
 			//	I know i read an octet off the end of the buffer
 			//	but this is faster. Moreover, the data should be 
 			//	aligned to a dword address for each row, so ...
-			*((unsigned int*)(&image_buffer[base_4])) = *((unsigned int*)(&(inbuf[base_3])));
+			*((unsigned int*)(&image_buffer[base_4])) = *((unsigned int*)(&(inbuf[base_var])));
 
-			base_3 += 3;
+			base_var += samplesperpixel;
 			base_4 += 4;
 		}
 	}

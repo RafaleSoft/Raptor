@@ -1,6 +1,21 @@
-// RaptorScreenDisplay.cpp: implementation of the CRaptorScreenDisplay class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  RaptorScreenDisplay.cpp                                                */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
 #include "Subsys/CodeGeneration.h"
 
 #if !defined(AFX_RAPTORSCREENDISPLAY_H__D3165157_E39B_4770_990F_26D44A7BD1A3__INCLUDED_)
@@ -77,36 +92,8 @@ CRaptorScreenDisplay::CRaptorScreenDisplay(const CRaptorDisplayConfig& pcs)
 
 CRaptorScreenDisplay::~CRaptorScreenDisplay()
 {
-	RAPTOR_HANDLE noDisplay(0, (void*)0);
-	glvkBindDisplay(noDisplay);
-
-	if (NULL != m_pGOldAllocator)
-		CGeometryAllocator::SetCurrentInstance(m_pGOldAllocator);
-	if (NULL != m_pGAllocator)
-		delete m_pGAllocator;
-
-	if (NULL != m_pTOldAllocator)
-		CTexelAllocator::SetCurrentInstance(m_pTOldAllocator);
-	if (NULL != m_pTAllocator)
-		delete m_pTAllocator;
-
-	if (NULL != m_pUOldAllocator)
-		CUniformAllocator::SetCurrentInstance(m_pUOldAllocator);
-	if (NULL != m_pUAllocator)
-		delete m_pUAllocator;
-
-	if (NULL != m_pDeviceMemory)
-		delete m_pDeviceMemory;
-
-	if (NULL != pLogo)
-	{
-		pLogo->unregisterDestruction(this);
-		delete pLogo;
-	}
-
-	glvkUnBindDisplay();
-
-	CContextManager::GetInstance()->glDestroyContext(m_context);
+	if (CContextManager::INVALID_CONTEXT != m_context)
+		CContextManager::GetInstance()->glDestroyContext(m_context);
 }
 
 void CRaptorScreenDisplay::unLink(const CPersistence* obj)
@@ -194,9 +181,8 @@ void CRaptorScreenDisplay::glResize(unsigned int sx,unsigned int sy,unsigned int
 
     if ((sx == 0) || (sy == 0))
     {
-		Raptor::GetErrorManager()->generateRaptorError(	CRaptorDisplay::CRaptorDisplayClassID::GetClassId(),
-														CRaptorErrorManager::RAPTOR_ERROR,
-														CRaptorMessages::ID_UPDATE_FAILED);
+		RAPTOR_ERROR(	CRaptorDisplay::CRaptorDisplayClassID::GetClassId(),
+						CRaptorMessages::ID_UPDATE_FAILED);
         return;
     }
 
@@ -216,16 +202,14 @@ RAPTOR_HANDLE CRaptorScreenDisplay::getCurrentDevice(void) const
     RAPTOR_HANDLE device;
 
     if (m_context >= 0)
-    {
         device = CContextManager::GetInstance()->getDevice(m_context);
-    }
 
     return device;
 }
 
 bool CRaptorScreenDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
 {
-	if (device.handle() != CGL_NULL)
+	if (device.handle() != 0)
 	{
 		if (CContextManager::INVALID_CONTEXT == m_context)
 		{
@@ -248,9 +232,8 @@ bool CRaptorScreenDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
 					int res2 = CContextManager::GetInstance()->glCreateContext(device, cs);
 					if (CContextManager::INVALID_CONTEXT == res2)
 					{
-						Raptor::GetErrorManager()->generateRaptorError(	CRaptorDisplay::CRaptorDisplayClassID::GetClassId(),
-																		CRaptorErrorManager::RAPTOR_FATAL,
-																		CRaptorMessages::ID_CREATE_FAILED);
+						RAPTOR_FATAL(	CRaptorDisplay::CRaptorDisplayClassID::GetClassId(),
+										CRaptorMessages::ID_CREATE_FAILED);
 					}
 				}
 			}
@@ -260,9 +243,8 @@ bool CRaptorScreenDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
 				m_context = CContextManager::GetInstance()->glCreateExtendedContext(device, cs);
 				if (CContextManager::INVALID_CONTEXT == m_context)
 				{
-					Raptor::GetErrorManager()->generateRaptorError(	CRaptorDisplay::CRaptorDisplayClassID::GetClassId(),
-																	CRaptorErrorManager::RAPTOR_FATAL,
-																	CRaptorMessages::ID_CREATE_FAILED);
+					RAPTOR_FATAL(	CRaptorDisplay::CRaptorDisplayClassID::GetClassId(),
+									CRaptorMessages::ID_CREATE_FAILED);
 					return false;
 				}
 			}
@@ -280,7 +262,7 @@ bool CRaptorScreenDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
 			bool hasSwapControl = CContextManager::GetInstance()->glSwapVSync(m_framerate);
 
 			//	Create rendering context resources.
-			allocateResources();
+			glvkAllocateResources();
 
             return res;
 		}
@@ -307,7 +289,7 @@ bool CRaptorScreenDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
 	return CRaptorDisplay::glvkBindDisplay(device);
 }
 
-void CRaptorScreenDisplay::allocateResources(void)
+void CRaptorScreenDisplay::glvkAllocateResources(void)
 {
     //  Ensure no current allocator.
     m_pGOldAllocator = CGeometryAllocator::SetCurrentInstance(NULL);
@@ -330,9 +312,8 @@ void CRaptorScreenDisplay::allocateResources(void)
 			relocResource = m_pGAllocator->glvkInitMemory(m_pDeviceMemory,config.m_uiPolygons,config.m_uiVertices);
 			if (!relocResource)
 			{
-				Raptor::GetErrorManager()->generateRaptorError(	CGeometry::CGeometryClassID::GetClassId(),
-																CRaptorErrorManager::RAPTOR_FATAL,
-	    		        										CRaptorMessages::ID_NO_RESOURCE);
+				RAPTOR_FATAL(	CGeometry::CGeometryClassID::GetClassId(),
+								CRaptorMessages::ID_NO_RESOURCE);
 			}
 		}
 
@@ -341,9 +322,8 @@ void CRaptorScreenDisplay::allocateResources(void)
 			relocResource = m_pTAllocator->glvkInitMemory(m_pDeviceMemory, config.m_uiTexels);
 			if (!relocResource)
 			{
-				Raptor::GetErrorManager()->generateRaptorError(	CGeometry::CGeometryClassID::GetClassId(),
-																CRaptorErrorManager::RAPTOR_FATAL,
-	    		        										CRaptorMessages::ID_NO_RESOURCE);
+				RAPTOR_FATAL(	CGeometry::CGeometryClassID::GetClassId(),
+								CRaptorMessages::ID_NO_RESOURCE);
 			}
 		}
 
@@ -352,26 +332,24 @@ void CRaptorScreenDisplay::allocateResources(void)
 			relocResource = m_pUAllocator->glvkInitMemory(m_pDeviceMemory, config.m_uiUniforms);
 			if (!relocResource)
 			{
-				Raptor::GetErrorManager()->generateRaptorError(	CGeometry::CGeometryClassID::GetClassId(),
-																CRaptorErrorManager::RAPTOR_FATAL,
-																CRaptorMessages::ID_NO_RESOURCE);
+				RAPTOR_FATAL(	CGeometry::CGeometryClassID::GetClassId(),
+								CRaptorMessages::ID_NO_RESOURCE);
 			}
 		}
     }
 	else
 	{
 		if ((config.m_uiPolygons > 0) || (config.m_uiVertices > 0))
-			relocResource &= m_pGAllocator->glvkInitMemory(NULL,config.m_uiPolygons,config.m_uiVertices);
+			relocResource = relocResource && m_pGAllocator->glvkInitMemory(NULL,config.m_uiPolygons,config.m_uiVertices);
 		if (config.m_uiTexels > 0)
-			relocResource &= m_pTAllocator->glvkInitMemory(NULL, config.m_uiTexels);
+			relocResource = relocResource && m_pTAllocator->glvkInitMemory(NULL, config.m_uiTexels);
 		if (config.m_uiUniforms > 0)
-			relocResource &= m_pUAllocator->glvkInitMemory(NULL, config.m_uiUniforms);
+			relocResource = relocResource && m_pUAllocator->glvkInitMemory(NULL, config.m_uiUniforms);
 
 		if (!relocResource)
 		{
-			Raptor::GetErrorManager()->generateRaptorError(	CGeometry::CGeometryClassID::GetClassId(),
-															CRaptorErrorManager::RAPTOR_FATAL,
-    		        										CRaptorMessages::ID_NO_RESOURCE);
+			RAPTOR_FATAL(	CGeometry::CGeometryClassID::GetClassId(),
+							CRaptorMessages::ID_NO_RESOURCE);
 		}
 	}
 
@@ -386,8 +364,42 @@ void CRaptorScreenDisplay::allocateResources(void)
 	if ((m_pUOldAllocator != m_pUAllocator) && (m_pUOldAllocator != NULL))
 		m_pUOldAllocator->glvkLockMemory(false);
 
-	if (instance.initialised)
-		instance.glInitShaders();
+	if (instance.isInitialised())
+		instance.glvkInitSharedResources();
+}
+
+void CRaptorScreenDisplay::glvkReleaseResources(void)
+{
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+	if (instance.isInitialised())
+		instance.glvkReleaseSharedRsources();
+
+
+	if (NULL != m_pGOldAllocator)
+		CGeometryAllocator::SetCurrentInstance(m_pGOldAllocator);
+	if (NULL != m_pGAllocator)
+		delete m_pGAllocator;
+
+	if (NULL != m_pTOldAllocator)
+		CTexelAllocator::SetCurrentInstance(m_pTOldAllocator);
+	if (NULL != m_pTAllocator)
+		delete m_pTAllocator;
+
+	if (NULL != m_pUOldAllocator)
+		CUniformAllocator::SetCurrentInstance(m_pUOldAllocator);
+	if (NULL != m_pUAllocator)
+		delete m_pUAllocator;
+
+	if (NULL != m_pDeviceMemory)
+		delete m_pDeviceMemory;
+
+	if (NULL != pLogo)
+	{
+		pLogo->unregisterDestruction(this);
+		delete pLogo;
+	}
+
+	CRaptorDisplay::glvkReleaseResources();
 }
 
 bool CRaptorScreenDisplay::glvkUnBindDisplay(void)
@@ -512,7 +524,7 @@ CTextureQuad* CRaptorScreenDisplay::glBuildLogo(void)
 	if (NULL == dataManager)
 		return NULL;
 
-	string filepath = dataManager->ExportFile("Raptor_logo_sml.txt");
+	string filepath = dataManager->exportFile("Raptor_logo_sml.txt");
 	pLogo = new CTextureQuad();
 	pLogo->glLoadTexture(filepath, true);
 	pLogo->glSetQuadAttributes(GL_COORD_VERTEX(0.85f, -0.925f, 1.0f, 1.0f),

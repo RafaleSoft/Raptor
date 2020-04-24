@@ -70,7 +70,12 @@
 	#include "Subsys/OpenGL/RaptorOpenGL.h"
 #endif
 
+
 RAPTOR_NAMESPACE
+
+static const char* RAPTOR_VERSION_STRING = RAPTOR_VERSION_STR;
+
+
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -148,7 +153,7 @@ unsigned long Raptor::GetVersion(void)
 
 const char* Raptor::GetVersionString(void)
 {
-	return RAPTOR_VERSION_STR;
+	return RAPTOR_VERSION_STRING;
 }
 
 int Raptor::glPurgeRaptor(bool count)
@@ -158,16 +163,6 @@ int Raptor::glPurgeRaptor(bool count)
 
 	if (!count)
 	{
-		CRaptorInstance &instance = CRaptorInstance::GetInstance();
-
-        //! Use integer pos because glReleaseResources may destroy some displays
-		unsigned int dPos = 0;
-		while (dPos < instance.displays.size())
-		{
-			CRaptorDisplay *pDisplay = instance.displays[dPos++];
-            pDisplay->glReleaseResources();
-        }
-
 		while (nb>0)
 		{
 			void *pos = NULL;
@@ -209,7 +204,7 @@ int Raptor::glPurgeRaptor(bool count)
 bool Raptor::glCheckDisplayConfig(const CRaptorDisplayConfig &pcs)
 {
 	CRaptorInstance &instance = CRaptorInstance::GetInstance();
-	if ((!instance.initialised) || (instance.terminate))
+	if ((!instance.isInitialised()) || (instance.terminate()))
 	{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 		RAPTOR_ERROR(COpenGL::COpenGLClassID::GetClassId(), "Raptor is not Initialised !");
@@ -218,30 +213,43 @@ bool Raptor::glCheckDisplayConfig(const CRaptorDisplayConfig &pcs)
 	}
 
 
-    bool valid = false;
+    bool valid = true;
     CContextManager *ctxMgr = CContextManager::GetInstance();
 
-	if (pcs.renderer == CRaptorDisplayConfig::PIXEL_BUFFER)
+	if ((pcs.renderer == CRaptorDisplayConfig::PIXEL_BUFFER) ||
+		(pcs.renderer == CRaptorDisplayConfig::PIXEL_BUFFER_FILTER_CHAIN))
     {
-        // TODO
-		//	Also check texture binding ?
+		//	Also check texture binding
+		if (!Raptor::glIsExtensionSupported(GL_ARB_PIXEL_BUFFER_OBJECT_EXTENSION_NAME))
+			valid = false;
     }
     else
     {
-        // copy config to create an invisible window
-        CRaptorDisplayConfig pcs2 = pcs;
-        pcs2.width = -1;
-        pcs2.height = -1;
+		if ((pcs.renderer == CRaptorDisplayConfig::RENDER_BUFFER) ||
+			(pcs.renderer == CRaptorDisplayConfig::RENDER_BUFFER_FILTER_CHAIN))
+		{
+			if ((!Raptor::glIsExtensionSupported(GL_EXT_FRAMEBUFFER_OBJECT_EXTENSION_NAME)) ||
+				(!Raptor::glIsExtensionSupported(GL_EXT_FRAMEBUFFER_BLIT_EXTENSION_NAME)))
+				valid = false;
+		}
 
-        CRaptorDisplay *pDisplay = NULL;
-		CContextManager::RENDERING_CONTEXT_ID ctx = CContextManager::INVALID_CONTEXT;
-        RAPTOR_HANDLE wnd = ctxMgr->glCreateWindow(pcs2,pDisplay,ctx);
-        if (wnd.handle() != 0)
-        {
-            valid = true;
-            glDestroyDisplay(pDisplay);
-            ctxMgr->glDestroyWindow(wnd);
-        }
+		if (valid)
+		{
+			// copy config to create an invisible window
+			CRaptorDisplayConfig pcs2 = pcs;
+			pcs2.width = -1;
+			pcs2.height = -1;
+
+			CRaptorDisplay *pDisplay = NULL;
+			CContextManager::RENDERING_CONTEXT_ID ctx = CContextManager::INVALID_CONTEXT;
+			//RAPTOR_HANDLE wnd = ctxMgr->glCreateWindow(pcs2, pDisplay, ctx);
+			//if (wnd.handle() != 0)
+			{
+				valid = true;
+				//glDestroyDisplay(pDisplay);
+				//ctxMgr->glDestroyWindow(wnd);
+			}
+		}
     }
 
     return valid;
@@ -252,7 +260,7 @@ RAPTOR_HANDLE Raptor::glCreateWindow(const CRaptorDisplayConfig& pcs,CRaptorDisp
 	RAPTOR_HANDLE result;
 
 	CRaptorInstance &instance = CRaptorInstance::GetInstance();
-	if ((!instance.initialised) || (instance.terminate))
+	if ((!instance.isInitialised()) || (instance.terminate()))
 	{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 		RAPTOR_ERROR(COpenGL::COpenGLClassID::GetClassId(), "Raptor is not Initialised !");
@@ -272,7 +280,7 @@ RAPTOR_HANDLE Raptor::glCreateWindow(const CRaptorDisplayConfig& pcs,CRaptorDisp
 CRaptorDisplay* Raptor::glCreateDisplay(const CRaptorDisplayConfig& pcs)
 {
 	CRaptorInstance &instance = CRaptorInstance::GetInstance();
-	if ((!instance.initialised) || (instance.terminate))
+	if ((!instance.isInitialised()) || (instance.terminate()))
 	{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 		RAPTOR_ERROR(COpenGL::COpenGLClassID::GetClassId(), "Raptor is not Initialised !");
@@ -304,7 +312,7 @@ CRaptorDisplay* Raptor::glCreateDisplay(const CRaptorDisplayConfig& pcs)
 void Raptor::glDestroyDisplay(CRaptorDisplay* pDisplay)
 {
 	CRaptorInstance &instance = CRaptorInstance::GetInstance();
-	if (!instance.initialised)
+	if (!instance.isInitialised())
 	{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 		RAPTOR_ERROR(CRaptorDisplay::CRaptorDisplayClassID::GetClassId(), "Raptor is not Initialised !");
@@ -316,25 +324,25 @@ void Raptor::glDestroyDisplay(CRaptorDisplay* pDisplay)
 	{
 		if (pDisplay == CRaptorDisplay::GetCurrentDisplay())
 		{
+			pDisplay->glvkReleaseResources();
+
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 			RAPTOR_WARNING(CRaptorDisplay::CRaptorDisplayClassID::GetClassId(), "Cannot destroy a Display currently bound !");
 #endif
 			pDisplay->glvkUnBindDisplay();
 		}
-	//	else
-		{
-			vector<CRaptorDisplay*>::iterator itr = instance.displays.begin();
-			
-			while (itr != instance.displays.end())
-			{
-				if ((*itr) == pDisplay)
-					itr = instance.displays.erase(itr);
-				else
-					itr++;
-			}
 
-			delete pDisplay;
+		vector<CRaptorDisplay*>::iterator itr = instance.displays.begin();
+			
+		while (itr != instance.displays.end())
+		{
+			if ((*itr) == pDisplay)
+				itr = instance.displays.erase(itr);
+			else
+				itr++;
 		}
+
+		delete pDisplay;
 	}
 }
 
@@ -385,7 +393,7 @@ CRaptorInstance* Raptor::switchInstance(CRaptorInstance* pInstance)
 
 	//	A first instance needs to be initialised.
 	CRaptorInstance &instance = CRaptorInstance::GetInstance();
-	if (!instance.initialised)
+	if (!instance.isInitialised())
 		return NULL;
 }
 
@@ -395,7 +403,7 @@ bool Raptor::glInitRaptor(const CRaptorConfig& config)
 
 	//	Initialise global Raptor data
 	CRaptorInstance &instance = CRaptorInstance::GetInstance();
-	if (instance.initialised)
+	if (instance.isInitialised())
         return true;
 
 	//  store configuration and initialize platform dependant datas. 
@@ -436,14 +444,14 @@ bool Raptor::glInitRaptor(const CRaptorConfig& config)
 
 void Raptor::glRender(void)
 {
-	//!	Update global time reference.
-	CTimeObject::deltaTime();
-
 	//! Do not display debug information,
 	//!	because this method is likely to be called in a loop!
 	CRaptorInstance &instance = CRaptorInstance::GetInstance();
-	if ((!instance.initialised) || (instance.terminate))
+	if ((!instance.isInitialised()) || (instance.terminate()))
 		return;
+
+	//!	Update global time reference.
+	CTimeObject::deltaTime();
 
 	vector<CRenderEntryPoint*>::iterator itr = instance.renderEntryPoints.begin();
 	vector<CRenderEntryPoint*>::iterator end = instance.renderEntryPoints.end();
@@ -469,10 +477,9 @@ void Raptor::glRender(void)
 bool Raptor::glQuitRaptor(void)
 {
 	CRaptorInstance &instance = CRaptorInstance::GetInstance();
-	if ((!instance.initialised) || (instance.terminate))
+	if ((!instance.isInitialised()) || (instance.terminate()))
         return false;
 
-	//glPurgeRaptor(false);
     bool res = instance.destroy();
 
 	glPurgeRaptor(false);

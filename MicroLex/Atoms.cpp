@@ -92,7 +92,7 @@ void atom::AddValidChars(const string& chars)
 	m_validChars.push_back(chars);
 }
 
-void atom::SetValidChars(unsigned int pos,const string& chars)
+void atom::SetValidChars(size_t pos, const string& chars)
 {
 	if (pos >= m_validChars.size())
 		return;
@@ -100,7 +100,7 @@ void atom::SetValidChars(unsigned int pos,const string& chars)
 		m_validChars[pos]=chars;
 }
 
-string	atom::GetValidChars(unsigned int pos)
+string	atom::GetValidChars(size_t pos)
 {
 	if (pos >= m_validChars.size())
 		return "";

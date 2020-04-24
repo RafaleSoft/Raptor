@@ -1,6 +1,21 @@
-// BumppedGeometry.cpp: implementation of the CBumppedGeometry class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  BumppedGeometry.cpp                                                    */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
 #include "Subsys/CodeGeneration.h"
 
 
@@ -42,6 +57,9 @@
 #endif
 #if !defined(AFX_IRENDERINGPROPERTIES_H__634BCF2B_84B4_47F2_B460_D7FDC0F3B698__INCLUDED_)
 	#include "IRenderingProperties.h"
+#endif
+#if !defined(AFX_RESOURCEALLOCATOR_H__4BAB58CE_942B_450D_88C9_AF0DDDF03718__INCLUDED_)
+	#include "Subsys/ResourceAllocator.h"
 #endif
 
 
@@ -89,6 +107,9 @@ void CBumppedGeometry::init(void)
 	
 	m_pBumpShader = (CEMBMShader*)CShader::getShader("EMBM_SHADER").glClone("BUMP_GEOMETRY_SHADER");
 	m_pBumpShader->registerDestruction(this);
+
+	CResourceAllocator::CResourceBinder *binder = (CResourceAllocator::CResourceBinder *)m_pBinder;
+	binder->useVertexArrayObjects();
 
 	CATCH_GL_ERROR
 }
@@ -144,7 +165,7 @@ void CBumppedGeometry::setEnvironmentMap(CTextureObject* environment)
 	m_pBumpShader->enableEmbm(envMap != NULL);
 }
 
-void CBumppedGeometry::setRenderingModel(const CRenderingModel& model)
+void CBumppedGeometry::setRenderingModel(CGeometry::RENDERING_MODEL model)
 {
 	const CGeometryEditor &pEditor = getEditor();
     if (normals == NULL)
@@ -154,10 +175,9 @@ void CBumppedGeometry::setRenderingModel(const CRenderingModel& model)
 	pEditor.genBinormals();
 
     //  render material normals is mandatory for this kind of geometry
-    CRenderingModel l_model = model;
-	l_model.addModel(CRenderingModel::CGL_NORMALS);
-    l_model.addModel(CRenderingModel::CGL_TANGENTS);
-    CGeometry::setRenderingModel(l_model);
+	CGeometry::setRenderingModel(model);
+	addModel(CGeometry::CGL_NORMALS);
+	addModel(CGeometry::CGL_TANGENTS);
 	
 	if ((normalMap == NULL) || (diffuseMap == NULL))
 	{
@@ -172,8 +192,10 @@ void CBumppedGeometry::setRenderingModel(const CRenderingModel& model)
 	}
 
 	CTextureUnitSetup *setup = m_pBumpShader->glGetTextureUnitsSetup();
-	setup->setDiffuseMap(diffuseMap);
-	setup->setNormalMap(normalMap);
+	if (setup->getDiffuseMap() != diffuseMap)
+		setup->setDiffuseMap(diffuseMap);
+	if (setup->getNormalMap() != normalMap)
+		setup->setNormalMap(normalMap);
 	setup->useRegisterCombiners(false);
 	
 	if (!Raptor::glIsExtensionSupported(GL_EXT_SECONDARY_COLOR_EXTENSION_NAME) ||
@@ -190,20 +212,26 @@ void CBumppedGeometry::setRenderingModel(const CRenderingModel& model)
 
 CBumppedGeometry& CBumppedGeometry::operator=(const CGeometry &geo)
 {
-	CGeometry::operator =(geo);
+	CGeometry::operator=(geo);
 
     const CGeometryEditor &pEditor = getEditor();
 	pEditor.genBinormals();
+
+	addModel(CGeometry::CGL_NORMALS);
+	addModel(CGeometry::CGL_TANGENTS);
 
 	return *this;
 }
 
 CBumppedGeometry& CBumppedGeometry::operator=(const CBumppedGeometry &geo)
 {
-    CGeometry::operator =(geo);
+    CGeometry::operator=(geo);
 
 	const CGeometryEditor &pEditor = getEditor();
 	pEditor.genBinormals();
+
+	addModel(CGeometry::CGL_NORMALS);
+	addModel(CGeometry::CGL_TANGENTS);
 
     return *this;
 }

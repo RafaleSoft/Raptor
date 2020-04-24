@@ -90,9 +90,6 @@ private:
 
 	//! Copy constructor.
 	CVertexShader(const CVertexShader& shader);
-
-    //! Specific init of shader parameters
-    virtual void	glInitShaders();
 };
 
 RAPTOR_NAMESPACE_END

@@ -17,7 +17,6 @@ VersionInfoVersion=2.17.1.0
 [Files]
 Source: "..\*.sln";               DestDir: "{app}"
 Source: "..\*.Cmd";               DestDir: "{app}"
-Source: "..\*.bat";               DestDir: "{app}"
 Source: "..\Makefile";            DestDir: "{app}"
 Source: "..\TODO.txt";            DestDir: "{app}"
 Source: "..\README.md";           DestDir: "{app}"
@@ -28,10 +27,10 @@ Source: "..\.gitattributes";      DestDir: "{app}"
 Source: "..\AddOns\*.lib";            DestDir: "{app}\AddOns"
 Source: "..\AddOns\*.pdb";            DestDir: "{app}\AddOns"
 Source: "..\AddOns\usertype.dat";     DestDir: "{app}\AddOns"
+Source: "..\AddOns\cppunit-1.12.1\*";  DestDir: "{app}\AddOns\cppunit-1.12.1\"; Flags: recursesubdirs
 Source: "..\AddOns\freetype-2.9.1\*";  DestDir: "{app}\AddOns\freetype-2.9.1\"; Flags: recursesubdirs
 Source: "..\AddOns\JpegLib-v9\*";      DestDir: "{app}\AddOns\JpegLib-v9\";     Flags: recursesubdirs
 Source: "..\AddOns\libpng-1.6.36\*";   DestDir: "{app}\AddOns\libpng-1.6.36\";  Flags: recursesubdirs
-Source: "..\AddOns\Opencl\Intel_v11\*.*";           DestDir: "{app}\AddOns\Opencl\Intel_v11"
 Source: "..\AddOns\OpenEXR-2.3.0\*";    DestDir: "{app}\AddOns\OpenEXRLib-2.3.0\";    Flags: recursesubdirs
 Source: "..\AddOns\Openmp\*";           DestDir: "{app}\AddOns\Openmp\";        Flags: recursesubdirs
 Source: "..\AddOns\TiffLib-4.0.10\*";   DestDir: "{app}\AddOns\TiffLib-4.0.10\";        Flags: recursesubdirs
@@ -103,6 +102,9 @@ Source: "../Installer/Raptor.iss";              DestDir: "{app}/Installer"
 Source: "../Installer/Raptor.html";             DestDir: "{app}/Installer"
 
 Source: "../Licenses/*.*";                       DestDir: "{app}/Licenses"
+Source: "../Licenses/COPYRIGHT";                 DestDir: "{app}/Licenses"
+Source: "../Licenses/COPYING";                   DestDir: "{app}/Licenses"
+Source: "../Licenses/PNG_LICENSE";               DestDir: "{app}/Licenses"
 Source: "../Licenses/README";                    DestDir: "{app}/Licenses"
 
 Source: "../MicroLex/*.*";                      DestDir: "{app}/MicroLex"
@@ -176,6 +178,8 @@ Source: "../Rays2/ModuleTemplate/*.*";              DestDir: "{app}/Rays2/Module
 Source: "../Rays2/ModuleTemplate/res/*.*";          DestDir: "{app}/Rays2/ModuleTemplate/res"
 Source: "../Rays2/ModuleTester/*.*";                DestDir: "{app}/Rays2/ModuleTester"
 Source: "../Rays2/RaysClient/*.*";                  DestDir: "{app}/Rays2/RaysClient"
+Source: "../Rays2/RaysClient/Resource Files/*.*";   DestDir: "{app}/Rays2/RaysClient"
+Source: "../Rays2/RaysClient/Properties/*.*";       DestDir: "{app}/Rays2/RaysClient"
 Source: "../Rays2/RaysDeamon/*.*";                  DestDir: "{app}/Rays2/RaysDeamon"
 Source: "../Rays2/RaysServer/*.*";                  DestDir: "{app}/Rays2/RaysServer"
 Source: "../Rays2/RaysWorkUnit/*.*";                DestDir: "{app}/Rays2/WorkUnit"
@@ -217,6 +221,8 @@ Source: "../Test5/*.vert";                          DestDir: "{app}/Test5"
 Source: "../Test5/*.frag";                          DestDir: "{app}/Test5"
 
 Source: "../Test6/*.*";                             DestDir: "{app}/Test6"
+
+Source: "../UnitTest/*.*";                          DestDir: "{app}/Test6"
 
 [Icons]
 Name: "{group}\Raptor SDK"; Filename: "{app}\RaptorSDK.exe"

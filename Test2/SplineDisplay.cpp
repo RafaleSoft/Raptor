@@ -67,10 +67,9 @@ void CSplineDisplay::Init()
 	m->setDiffuse(0.5f,0.5f,0.5f,1.0f);
 	m->setSpecular(0.5f,0.5f,0.5f,1.0f);
 	m->setShininess(50.0f);
-    CGeometry::CRenderingModel l_model(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY);
-    l_model.addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
-	l_model.addModel(CGeometry::CRenderingModel::CGL_NORMALS);
-	bspline->setRenderingModel(l_model);
+	bspline->setRenderingModel(CGeometry::CGL_FRONT_GEOMETRY);
+	bspline->addModel(CGeometry::CGL_TEXTURE);
+	bspline->addModel(CGeometry::CGL_NORMALS);
 	GLfloat ctrlpoints[16][4] = 
 	{
 		{-1.5,-1.5,4.0,1.0},{-0.5,-1.5,2.0,1.0},{0.5,-1.5,-1.0,1.0},{1.5,-1.5,2.0,1.0},

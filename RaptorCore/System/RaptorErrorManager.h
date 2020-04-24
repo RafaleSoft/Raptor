@@ -1,6 +1,20 @@
-// RaptorErrorManager.h: interface for the CRaptorErrorManager class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  RaptorErrorManager.h                                                   */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
 
 #if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
 #define AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_
@@ -39,15 +53,17 @@ public:
         RAPTOR_WARNING,
         RAPTOR_ERROR,
         RAPTOR_GL_ERROR,
-		RAPTOR_VK_ERROR,
+        RAPTOR_VK_ERROR,
         RAPTOR_FATAL
     } RAPTOR_ERROR_TYPE;
 
     typedef struct GL_RAPTOR_ERROR_TAG
     {
-		string				className;
+		std::string			className;
 	    RAPTOR_ERROR_TYPE	type;
-	    string				error;
+	    std::string			error;
+		std::string			filename;
+		uint32_t			line;
     } GL_RAPTOR_ERROR;
 
     typedef GL_RAPTOR_ERROR* LP_GL_RAPTOR_ERROR;
@@ -59,7 +75,7 @@ public:
         CRaptorErrorHandler() {};
         virtual ~CRaptorErrorHandler() {};
 
-        virtual void handleError(const GL_RAPTOR_ERROR& err);
+        virtual void handleError(const GL_RAPTOR_ERROR& err) = 0;
     };
 
     
@@ -91,6 +107,11 @@ public:
     //! but user can use it to unify external API errors.
 	void addRaptorError(GL_RAPTOR_ERROR& err);
 
+	//!	Attach a debug callback to collect OpenGL Debug Log
+	//!	A debug context should be created for this functionality.
+	//!	DebugLog is enabled in any cases.
+	void glGetDebugErrors(void);
+
     //! Intercepts openGL errors and manage them as RaptorErrors
 	void glGetError(const std::string& file,int line);
 
@@ -98,16 +119,18 @@ public:
 	void vkGetError(VkResult err, const std::string& file,int line);
 
     //!	Errors management  ( Need an active OpenGL Context )
-	void generateRaptorError(	const CPersistence::CPersistenceClassID& classID,
-								RAPTOR_ERROR_TYPE type,
-								const std::string &str);
+	void generateRaptorError(const CPersistence::CPersistenceClassID& classID,
+							 RAPTOR_ERROR_TYPE type,
+							 const std::string &str,
+							 const char *file = "",
+							 uint32_t line = 0);
 
 	//!	Simple Marcros to raise errors.
-#define RAPTOR_GEN_ERROR(cid,str,err)\
+#define RAPTOR_GEN_ERROR(cid, str, err)\
 	{\
 		CRaptorErrorManager* mgr = Raptor::GetErrorManager();\
 		if (NULL != mgr)\
-			mgr->generateRaptorError(cid,err,str);\
+			mgr->generateRaptorError(cid, err, str, __FILE__, __LINE__);\
 	}
 #define RAPTOR_NO_ERROR(cid,str) RAPTOR_GEN_ERROR(cid,str,CRaptorErrorManager::RAPTOR_NO_ERROR)
 #define RAPTOR_WARNING(cid,str) RAPTOR_GEN_ERROR(cid,str,CRaptorErrorManager::RAPTOR_WARNING)
@@ -121,6 +144,8 @@ public:
     void generateRaptorError(	const CPersistence::CPersistenceClassID& classID,
 								RAPTOR_ERROR_TYPE type,
 								CRaptorMessages::MESSAGE_ID id,
+								const char *file = "",
+								uint32_t line = 0,
 								vector<CRaptorMessages::MessageArgument> &args = CRaptorMessages::no_args);
 
     //! Logs errors in a file in addition to memory
@@ -131,8 +156,8 @@ public:
 private:
     CRaptorIO    *m_pLogger;
 
-	std:: vector<GL_RAPTOR_ERROR>	RaptorErrors;
-	std::vector<CRaptorErrorHandler*> RaptorErrorHandlers;
+	std::vector<GL_RAPTOR_ERROR>		RaptorErrors;
+	std::vector<CRaptorErrorHandler*>	RaptorErrorHandlers;
 };
 
 RAPTOR_NAMESPACE_END

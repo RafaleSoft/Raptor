@@ -93,7 +93,7 @@ namespace RaysServer
 		//!	Create a new deamon
 		bool registerDeamon(const std::string& deamonIP);
 
-		unsigned int getNbDeamons(void) const { return m_Deamons.size(); };
+		size_t getNbDeamons(void) const { return m_Deamons.size(); };
 		
 		//!	Returns the deamon descritor structure.
 		const DEAMONSTRUCT* getDeamon(unsigned int WUID) const;

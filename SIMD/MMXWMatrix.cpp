@@ -25,7 +25,7 @@
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-#ifndef SIMD_NO_ASSEMBLY
+#if (!defined(SIMD_NO_ASSEMBLY) && !defined(_WIN64))
 
 CMMXWMatrix&	SIMD_CALL CMMXWMatrix::operator*= (const CMMXWMatrix& m)
 {

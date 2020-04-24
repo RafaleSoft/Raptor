@@ -141,6 +141,9 @@ CPhysics::CPhysics(CObject3DInstance *obj,const std::string& name)
 
 CPhysics::~CPhysics()
 {
+	//!	Avoid Engine continue to use this object beeing deleted.
+	animate(false);
+
     if (object != NULL)
         object->unregisterDestruction(this);
 }

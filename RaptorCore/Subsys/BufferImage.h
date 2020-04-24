@@ -26,7 +26,10 @@ RAPTOR_NAMESPACE_BEGIN
 class CBufferImage : public CImage::IImageIO
 {
 public:
-	virtual bool isOfKind(const std::string &kind) const { return ("BUFFER" == kind); }
+	virtual bool isOfKind(const std::string &kind) const 
+	{ 
+		return ("BUFFER" == kind); 
+	}
 
 	virtual vector<std::string> getImageKind(void) const
 	{

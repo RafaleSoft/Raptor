@@ -20,7 +20,7 @@
 	#include "MMXBVector.h"
 #endif
 
-#ifndef SIMD_NO_ASSEMBLY
+#if (!defined(SIMD_NO_ASSEMBLY) && !defined(_WIN64))
 
 extern CMMXBVector _unalignedMMXByteVector;
 

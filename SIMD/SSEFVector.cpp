@@ -17,7 +17,7 @@
 
 
 #ifndef __REGISTERS_H__
-	#include "registers.h"
+	#include "Registers.h"
 #endif
 
 #include "SSEFVector.h"
@@ -27,7 +27,7 @@
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
-#ifndef SIMD_NO_ASSEMBLY
+#if (!defined(SIMD_NO_ASSEMBLY) && !defined(_WIN64))
 
 SIMD_ENTRY CSSEFVector& SIMD_CALL operator^  (const CSSEFVector& v1, const CSSEFVector& v2) NOEXCEPT
 {

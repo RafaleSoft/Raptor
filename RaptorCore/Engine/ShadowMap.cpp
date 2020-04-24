@@ -111,9 +111,6 @@ bool CShadowMap::glInitEnvironment(unsigned int width,unsigned int height)
 						"Shadow map environment is beeing passed inconsistent or invalid dimensions !");
     }
 
-    CShaderLibrary *lib = CShaderLibrary::GetInstance();
-    lib->glInitFactory();
-
 #if defined(GL_EXT_framebuffer_object)
 	if (Raptor::glIsExtensionSupported(GL_EXT_FRAMEBUFFER_OBJECT_EXTENSION_NAME))
 		glInitRenderBuffer(width,height);

@@ -24,7 +24,7 @@ public:
 
 	virtual bool isOfKind(const std::string &kind) const;
 
-	virtual vector<std::string> getImageKind(void) const;
+	virtual std::vector<std::string> getImageKind(void) const;
 
 	virtual bool storeImageFile(const std::string& fname, CImage* const I) const;
 

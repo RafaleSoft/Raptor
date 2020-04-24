@@ -1,6 +1,20 @@
-// OpenGLMemory.cpp: implementation of the COpenGLMemory class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  OpenGLMemory.cpp                                                       */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
 
 #include "Subsys\CodeGeneration.h"
 
@@ -45,7 +59,7 @@ COpenGLMemory::~COpenGLMemory(void)
 
 bool COpenGLMemory::relocationAvailable(void) const
 {
-#if (defined(GL_ARB_vertex_buffer_object) || defined(GL_NV_vertex_array_range))
+#if (defined(GL_ARB_vertex_buffer_object) || defined(GL_ARB_pixel_buffer_object) || defined(GL_NV_vertex_array_range) || defined(GL_ARB_uniform_buffer_object))
 	if (Raptor::glIsExtensionSupported(GL_ARB_VERTEX_BUFFER_OBJECT_EXTENSION_NAME) ||
 		Raptor::glIsExtensionSupported(GL_NV_VERTEX_ARRAY_RANGE_EXTENSION_NAME) ||
 		Raptor::glIsExtensionSupported(GL_ARB_PIXEL_BUFFER_OBJECT_EXTENSION_NAME) ||
@@ -118,18 +132,25 @@ COpenGLMemory::createBufferObject(	IDeviceMemoryManager::IBufferObject::BUFFER_K
 
 		if (isBufferObjectValid(buffer))
 		{
+			GLint relocate_offset = RELOCATE_OFFSET;
+#if defined(GL_ARB_uniform_buffer_object)
+			if (IBufferObject::UNIFORM_BUFFER == kind)
+			{
+				glGetIntegerv(GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT_ARB, &relocate_offset);
+			}
+#endif
         	//	Store the buffer in the high part
 			//	and store the memory type in the low part.
 			//	This format is odd enough to be sure it cannot
 			//	be an address.
 			CBufferObject* pbuffer = new CBufferObject;
 			pbuffer->m_buffer = ((buffer & 0xffff) << 16) + 1;
-			pbuffer->m_size = size + RELOCATE_OFFSET;
+			pbuffer->m_size = size + relocate_offset;
             pbuffer->m_storage = kind;
-			pbuffer->m_granularity = RELOCATE_OFFSET;
+			pbuffer->m_granularity = relocate_offset;
 
 			//	Allocate uninitialised data space
-			pExtensions->glBufferDataARB(glStorage, size + RELOCATE_OFFSET, NULL, glMode);
+			pExtensions->glBufferDataARB(glStorage, size + relocate_offset, NULL, glMode);
 
             //	0 should by to the "GL default" array model.
 		    pExtensions->glBindBufferARB(glStorage,0);
@@ -177,7 +198,7 @@ bool COpenGLMemory::setBufferObjectData(IDeviceMemoryManager::IBufferObject &bo,
 	{
 		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 		IDeviceMemoryManager::IBufferObject::BUFFER_KIND storage = bo.getStorage();
-		if (storage > IDeviceMemoryManager::IBufferObject::PIXEL_SOURCE)
+		if (storage > IDeviceMemoryManager::IBufferObject::UNIFORM_BUFFER)
 		{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 			RAPTOR_WARNING(	COpenGL::COpenGLClassID::GetClassId(),
@@ -247,7 +268,7 @@ bool COpenGLMemory::getBufferObjectData(IDeviceMemoryManager::IBufferObject &vb,
 		
 		IDeviceMemoryManager::IBufferObject::BUFFER_KIND storage = vb.getStorage();
         GLenum glStorage = BufferKindToGL(storage);
-		if (storage > IDeviceMemoryManager::IBufferObject::PIXEL_SOURCE)
+		if (storage > IDeviceMemoryManager::IBufferObject::UNIFORM_BUFFER)
 		{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 			RAPTOR_WARNING(	COpenGL::COpenGLClassID::GetClassId(),
@@ -350,7 +371,7 @@ bool COpenGLMemory::releaseBufferObject(IDeviceMemoryManager::IBufferObject* &vb
 
 bool COpenGLMemory::lockBufferObject(IDeviceMemoryManager::IBufferObject &bo)
 {
-	if (bo.getStorage() > IDeviceMemoryManager::IBufferObject::PIXEL_SOURCE)
+	if (bo.getStorage() > IDeviceMemoryManager::IBufferObject::UNIFORM_BUFFER)
 	{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 		RAPTOR_WARNING(	COpenGL::COpenGLClassID::GetClassId(),
@@ -415,7 +436,7 @@ bool COpenGLMemory::lockBufferObject(IDeviceMemoryManager::IBufferObject &bo)
 
 bool COpenGLMemory::unlockBufferObject(IDeviceMemoryManager::IBufferObject &bo)
 {
-	if (bo.getStorage() > IDeviceMemoryManager::IBufferObject::PIXEL_SOURCE)
+	if (bo.getStorage() > IDeviceMemoryManager::IBufferObject::UNIFORM_BUFFER)
 	{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 		RAPTOR_WARNING(	COpenGL::COpenGLClassID::GetClassId(),
@@ -466,7 +487,7 @@ bool COpenGLMemory::unlockBufferObject(IDeviceMemoryManager::IBufferObject &bo)
 GLenum  COpenGLMemory::BufferKindToGL(IDeviceMemoryManager::IBufferObject::BUFFER_KIND kind) const
 {
 #if defined(GL_ARB_vertex_buffer_object)
-    GLenum res = GL_ARRAY_BUFFER_ARB;
+    GLenum res = CGL_NULL;
 
     switch(kind)
     {
@@ -490,8 +511,14 @@ GLenum  COpenGLMemory::BufferKindToGL(IDeviceMemoryManager::IBufferObject::BUFFE
 			break;
 #endif
         default:
-            res = GL_ARRAY_BUFFER_ARB;
-            break;
+		{
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+			RAPTOR_WARNING(	COpenGL::COpenGLClassID::GetClassId(),
+							"The requested Buffer kind is not supported");
+#endif
+			res = CGL_NULL;
+			break;
+		}
     }
 
     return res;

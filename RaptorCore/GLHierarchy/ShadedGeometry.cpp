@@ -1,6 +1,20 @@
-// ShadedGeometry.cpp: implementation of the CShadedGeometry class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  ShadedGeometry.cpp                                                     */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
 
 #include "Subsys/CodeGeneration.h"
 
@@ -33,6 +47,15 @@
 #endif
 #if !defined(AFX_OBJECTFACTORY_H__7F891C52_9E32_489C_B09C_5E5803522D91__INCLUDED_)
 	#include "ObjectFactory.h"
+#endif
+#if !defined(AFX_RESOURCEALLOCATOR_H__4BAB58CE_942B_450D_88C9_AF0DDDF03718__INCLUDED_)
+	#include "Subsys/ResourceAllocator.h"
+#endif
+#if !defined(AFX_RAPTORVULKANDEVICE_H__2FDEDD40_444E_4CC2_96AA_CBF9E79C3ABE__INCLUDED_)
+	#include "Subsys/Vulkan/VulkanDevice.h"
+#endif
+#if !defined(AFX_RAPTORVULKANPIPELINE_H__C2997B30_C6E2_4EF2_AFE3_FCD27AB5CBB7__INCLUDED_)
+	#include "Subsys/Vulkan/VulkanPipeline.h"
 #endif
 
 
@@ -70,12 +93,37 @@ CShadedGeometry::~CShadedGeometry()
         delete m_pOverride;
 }
 
+
+IRaptorPipeline* CShadedGeometry::glvkCreatePipeline(void)
+{
+	const CVulkanDevice& rDevice = CVulkanDevice::getCurrentDevice();
+	CVulkanPipeline *pPipeline = rDevice.createPipeline();
+	CShader* s = getShader();
+	CVulkanShaderStage *ss = s->vkGetVulkanShader();
+
+	if (!pPipeline->initPipeline(ss, this))
+	{
+		Raptor::GetErrorManager()->generateRaptorError(CShadedGeometry::CShadedGeometryClassID::GetClassId(),
+			CRaptorErrorManager::RAPTOR_FATAL,
+			"Failed to create vulkan pipeline object");
+	}
+
+	return pPipeline;
+}
+
+
 CShader * const CShadedGeometry::getShader(void)
 {
 	if (m_pShader == NULL)
 	{
 		m_pShader = new CShader(getName()+"_Shader");
 		m_pShader->registerDestruction(this);
+
+		//if (NULL != m_pBinder)
+		//{
+		//	CResourceAllocator::CResourceBinder *binder = (CResourceAllocator::CResourceBinder *)m_pBinder;
+		//	binder->useVertexArrayObjects();
+		//}
 	}
 	return m_pShader;
 }
@@ -129,7 +177,7 @@ CShader * const CShadedGeometry::getAmbientOcclusionShader(void)
 void CShadedGeometry::setShader(CShader *shader)
 {
     if (shader == m_pShader)
-        return ;
+        return;
 
     if (m_pShader != NULL)
     {
@@ -140,10 +188,39 @@ void CShadedGeometry::setShader(CShader *shader)
 
     if (shader != NULL)
     {
+		//if (NULL != m_pBinder)
+		//{
+		//	CResourceAllocator::CResourceBinder *binder = (CResourceAllocator::CResourceBinder *)m_pBinder;
+		//	binder->useVertexArrayObjects();
+		//}
+
         m_pShader = shader;
         m_pShader->addReference();
         m_pShader->registerDestruction(this);
     }
+}
+
+void CShadedGeometry::removeModel(CGeometry::RENDERING_MODEL model)
+{
+	CGeometry::removeModel(model);
+
+	COpenGLRenderingProperties props;
+
+	switch (model)
+	{
+		case CGeometry::CGL_NORMALS:
+			props.disableLighting;
+			break;
+		case CGeometry::CGL_TANGENTS:
+			break;
+		case CGeometry::CGL_TEXTURE:
+			props.disableTexturing;
+			break;
+		default:
+			break;
+	}
+
+	overrideShading(props);
 }
 
 void CShadedGeometry::overrideShading(const IRenderingProperties& override)
@@ -187,13 +264,12 @@ void CShadedGeometry::glRender()
 	if (m_pShader != NULL)
 	{
 		// apply material
-		if (getRenderingModel().hasModel(CRenderingModel::CGL_NORMALS))
-		{
-		    m_pShader->glRenderMaterial();
-		}
+		if (hasModel(CGeometry::CGL_NORMALS))
+			if (m_pShader->hasMaterial())
+				m_pShader->glRenderMaterial();
 
 		// apply texture
-		if (getRenderingModel().hasModel(CRenderingModel::CGL_TEXTURE))
+		if (hasModel(CGeometry::CGL_TEXTURE))
 		{
 		    m_pShader->glRenderTexture();
 			if (m_pAOShader != NULL)
@@ -207,7 +283,7 @@ void CShadedGeometry::glRender()
 	CATCH_GL_ERROR
 
 	glRenderGeometry();
-
+	
 	if (m_pShader != NULL)
 		m_pShader->glStop();
 

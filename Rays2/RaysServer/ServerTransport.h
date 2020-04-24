@@ -61,7 +61,7 @@ namespace RaysServer {
 		} request;
 
 		//!	Implement base class.
-		virtual int onNewClient(const CClientSocket &client);
+		virtual size_t onNewClient(const CClientSocket &client);
 
 		//!	Implement base class.
 		virtual bool onClientClose(const CClientSocket &client);

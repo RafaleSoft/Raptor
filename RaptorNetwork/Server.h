@@ -166,7 +166,7 @@ public:
 	virtual unsigned short  getPort() const {return m_socket.getPort();};
 	virtual unsigned int  getAddr() const {return m_socket.getIP();};
 
-	size_t getNumClients(void) const { return m_clients.GetSize(); };
+	size_t getNumClients(void) const { return m_clients.size(); };
 
     virtual bool startServer(const std::string& address,unsigned short port);
 	virtual bool stopServer(void);
@@ -175,7 +175,7 @@ public:
 	virtual void removeClient(size_t numClient);
 
 	//	Callbacks
-	virtual int onNewClient(const ClientSocket_T &client);
+	virtual size_t onNewClient(const ClientSocket_T &client);
 	virtual bool onClientClose(const ClientSocket_T &client) { return true; };
 
 
@@ -190,8 +190,8 @@ protected:
 	ServerSocket_T	m_socket;
 
 	//	clients management
-    vector<ClientSocket_T*>	m_clients;
-	vector<ClientSocket_T*>	m_failedClients;
+    std::vector<ClientSocket_T*>	m_clients;
+	std::vector<ClientSocket_T*>	m_failedClients;
 };
 
 
@@ -273,6 +273,8 @@ bool CServer<ServerSocket_T,ClientSocket_T>::newClient(void)
 		pClient->setServer(this);
 		m_clients.push_back(pClient);
 
+		onNewClient(*pClient);
+
 		return startClientService(*pClient);
 	}
 	else
@@ -280,7 +282,7 @@ bool CServer<ServerSocket_T,ClientSocket_T>::newClient(void)
 }
 
 template <class ServerSocket_T,class ClientSocket_T> 
-int CServer<ServerSocket_T,ClientSocket_T>::onNewClient(const ClientSocket_T &client)
+size_t CServer<ServerSocket_T,ClientSocket_T>::onNewClient(const ClientSocket_T &client)
 {
 	return m_clients.size();
 }

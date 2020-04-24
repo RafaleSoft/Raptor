@@ -26,6 +26,9 @@
 #if !defined(AFX_RAPTORDISPLAYCONFIG_H__DA0759DF_6CF9_44A7_9ADE_D404FEEC2DDF__INCLUDED_)
 	#include "System/RaptorDisplayConfig.h"
 #endif
+#if !defined(AFX_PROGRAMPARAMETERS_H__E28A74BB_DE78_470A_A8A2_5A3EBB3F4F90__INCLUDED_)
+	#include "GLHierarchy/ProgramParameters.h"
+#endif
 #if !defined(AFX_MEMORY_H__81A6CA9A_4ED9_4260_B6E4_C03276C38DBC__INCLUDED_)
 	#include "System/Memory.h"
 #endif
@@ -43,20 +46,52 @@ public:
 		CResourceBinder(void);
 		~CResourceBinder(void);
 
-		bool setVertexArray(void *vertexPointer, int stride);
+		//!	Defines array binding data.
+		bool useVertexArrayObjects(void);
 
+		bool setArray(CProgramParameters::GL_VERTEX_ATTRIB attribute, 
+					  void *vertexPointer, 
+					  size_t size = 4,
+					  size_t stride = 0);
+
+		//!	Bind arrays to current state for rendering.
 		bool glvkBindArrays(void);
+		//!	Revert to unbound state (default array binding).
 		bool glvkUnbindArrays(void);
+
+		//! Init arrays binding data and state with current state.
+		//!	Current state is also returned into arrays parameter.
+		bool glScanBindings(CRaptorDisplayConfig::GL_ARRAYS_STATE &arrays);
+
 
 	private:
 		CResourceBinder(const CResourceBinder&);
 		CResourceBinder& operator=(const CResourceBinder&);
 
-		static CRaptorDisplayConfig::GL_ARRAYS_STATE	bindingState;
+		//! Bind a single array.
+		bool bindArray(CRaptorDisplayConfig::GL_ARRAY_STATE &state,
+					   CRaptorDisplayConfig::GL_ARRAY_STATE &global_state);
+		bool bindAttribArray(CRaptorDisplayConfig::GL_ARRAY_STATE &state,
+							 CRaptorDisplayConfig::GL_ARRAY_STATE &global_state);
+
+		//! Unbind a single array.
+		bool unbindArray(CRaptorDisplayConfig::GL_ARRAY_STATE &state,
+						 CRaptorDisplayConfig::GL_ARRAY_STATE &global_state);
+		bool unbindAttribArray(CRaptorDisplayConfig::GL_ARRAY_STATE &state,
+							   CRaptorDisplayConfig::GL_ARRAY_STATE &global_state);
+
+		//!	This resource binder arrays bindings.
+		CRaptorDisplayConfig::GL_ARRAYS_STATE	bindings;
+
+		//!	Vertex Array Object.
+		GLuint	array;
+		bool	updateArray;
+		bool	legacy;
+		bool	vao;
 	};
 
+
 public:
-	CResourceAllocator();
 	virtual ~CResourceAllocator();
 
 	//! Returns the lock state ( set with the method below ).
@@ -70,6 +105,10 @@ protected:
 		uint64_t	size;
 	} data_bloc;
 
+
+	//!	The constructor, for subclasses (Geometry, Texels, Uniforms).
+	CResourceAllocator();
+
 	//!	The memory state
 	bool    m_bLocked;
 
@@ -79,6 +118,11 @@ protected:
 	//!	Memory manager for the device hosting the display holding this allocator.
 	//! (Vulkan host memory is per device)
 	IDeviceMemoryManager	*deviceMemoryManager;
+
+
+private:
+	CResourceAllocator(const CResourceAllocator &);
+	CResourceAllocator& operator = (const CResourceAllocator&);
 };
 
 

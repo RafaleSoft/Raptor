@@ -16,6 +16,9 @@
 #if !defined(AFX_OPENGL_H__6C8840CA_BEFA_41DE_9879_5777FBBA7147__INCLUDED_)
 	#include "Subsys/OpenGL/RaptorOpenGL.h"
 #endif
+#if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
+	#include "System/RaptorGLExtensions.h"
+#endif
 
 
 RAPTOR_NAMESPACE_BEGIN
@@ -104,7 +107,7 @@ bool CUniformAllocator::glvkInitMemory(	IDeviceMemoryManager* pDeviceMemory,
 }
 
 
-void CUniformAllocator::glvkCopyPointer(unsigned char *dst, unsigned char *src, uint64_t size)
+void CUniformAllocator::glvkCopyPointer(uint8_t *dst, uint8_t *src, uint64_t size)
 {
 	if ((NULL == deviceMemoryManager) || (NULL == relocatedUniforms) || (NULL == src) || (NULL == dst))
 		return;
@@ -112,7 +115,7 @@ void CUniformAllocator::glvkCopyPointer(unsigned char *dst, unsigned char *src, 
 	if (0 == size)
 	{
 		// find memory bloc and map a copy to local memory.
-		map<unsigned char*, uint64_t>::const_iterator blocPos = uniformBlocs.find(dst);
+		map<uint8_t*, uint64_t>::const_iterator blocPos = uniformBlocs.find(dst);
 		if (blocPos != uniformBlocs.end())
 		{
 			deviceMemoryManager->setBufferObjectData(	*relocatedUniforms,
@@ -137,7 +140,7 @@ void CUniformAllocator::glvkCopyPointer(unsigned char *dst, unsigned char *src, 
 													size);
 }
 
-unsigned char * const CUniformAllocator::allocateUniforms(uint64_t size)
+uint8_t * const CUniformAllocator::allocateUniforms(uint64_t size)
 {
 	if ((0 == size) || (m_bLocked) || ((NULL == uniforms.address) && (NULL == relocatedUniforms)))
 		return NULL;
@@ -164,13 +167,13 @@ unsigned char * const CUniformAllocator::allocateUniforms(uint64_t size)
 			}
 			if (reuse)
 			{
-				unsigned char* addr = freeUniformBlocs[blocPos].address;
+				uint8_t* addr = freeUniformBlocs[blocPos].address;
 				freeUniformBlocs.erase(freeUniformBlocs.begin() + blocPos);
 				return addr;
 			}
 		}
 
-		map<unsigned char*, uint64_t>::iterator it = uniformBlocs.end();
+		map<uint8_t*, uint64_t>::iterator it = uniformBlocs.end();
 		it--;
 		currentAddress = (*it).first + (*it).second;
 	}
@@ -189,23 +192,23 @@ unsigned char * const CUniformAllocator::allocateUniforms(uint64_t size)
 	//  and no NULL offset to distinguish nil pointers
 	base = (base + 1) * relocatedUniforms->getRelocationOffset();
 
-	unsigned char* address = (unsigned char*)(base);
+	uint8_t* address = (uint8_t*)(base);
 	uniformBlocs[address] = size;
 
 	return address;
 }
 
-bool CUniformAllocator::releaseUniforms(unsigned char *uniform)
+bool CUniformAllocator::releaseUniforms(uint8_t *uniform)
 {
 	if (m_bLocked)
 		return false;
 
 	bool res = false;
 
-	map<unsigned char*, uint64_t>::iterator blocPos = uniformBlocs.find(uniform);
+	map<uint8_t*, uint64_t>::iterator blocPos = uniformBlocs.find(uniform);
 	if (blocPos != uniformBlocs.end())
 	{
-		map<unsigned char*, uint64_t>::iterator last = uniformBlocs.end();
+		map<uint8_t*, uint64_t>::iterator last = uniformBlocs.end();
 		last--;
 		if ((*blocPos).first == (*last).first)
 		{
@@ -231,18 +234,43 @@ bool CUniformAllocator::glvkLockMemory(bool lock)
 	if ((NULL != deviceMemoryManager) && (relocatedUniforms != NULL))
 	{
 		if (lock && !m_bLocked)
-		{
-			deviceMemoryManager->lockBufferObject(*relocatedUniforms);
-		}
+			res = deviceMemoryManager->lockBufferObject(*relocatedUniforms);
 		else if (!lock && m_bLocked)
-		{
-			deviceMemoryManager->unlockBufferObject(*relocatedUniforms);
-		}
+			res = deviceMemoryManager->unlockBufferObject(*relocatedUniforms);
 		else
 			res = false;
 	}
 
 	m_bLocked = lock;
 	return res;
+}
+
+bool CUniformAllocator::glvkBindUniform(uint8_t *uniform, int32_t index)
+{
+	//! In locked state, the buffer is bound, we are in rendering.
+	if (!m_bLocked)
+		return false;
+
+	map<uint8_t*, uint64_t>::iterator blocPos = uniformBlocs.find(uniform);
+	if (blocPos != uniformBlocs.end())
+	{
+		uint64_t size = (*blocPos).second;
+		if (0 == size)
+			return false;
+
+		uint8_t *base = (*blocPos).first;
+		uint32_t buffer = relocatedUniforms->getBufferId();
+
+		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+		if (pExtensions->glBindBufferRangeARB != NULL)
+		{
+			pExtensions->glBindBufferRangeARB(GL_UNIFORM_BUFFER_ARB, index, buffer, (GLintptrARB)base, size);
+			CATCH_GL_ERROR
+		}
+
+		return true;
+	}
+	else
+		return false;
 }
 

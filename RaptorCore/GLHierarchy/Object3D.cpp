@@ -347,12 +347,12 @@ void CObject3D::extendBoundingBox(const GL_COORD_VERTEX& min, const GL_COORD_VER
 		{
 			boxValue = value;
 			if (filledBox.handle() != 0)
-				glDeleteLists(filledBox.handle(),1);
+				glDeleteLists(filledBox.glname(),1);
 			if (wireBox.handle() != 0)
-				glDeleteLists(wireBox.handle(),1);
+				glDeleteLists(wireBox.glname(),1);
 			
-			filledBox.handle(glGenLists(1));
-			glNewList(filledBox.handle(),GL_COMPILE);
+			filledBox.glname(glGenLists(1));
+			glNewList(filledBox.glname(), GL_COMPILE);
 				glBegin(GL_QUADS);
 					// front: 4, 5, 6, 7
 					glVertex3f(xmin,ymin,zmax);
@@ -393,7 +393,7 @@ void CObject3D::extendBoundingBox(const GL_COORD_VERTEX& min, const GL_COORD_VER
 			glEndList();
 			
 			wireBox.handle(glGenLists(1));
-			glNewList(wireBox.handle(),GL_COMPILE);
+			glNewList(wireBox.glname(), GL_COMPILE);
 				glBegin(GL_LINE_STRIP);
 					// back: 0, 1, 2, 3
 					glVertex3f(xmin,ymin,zmin);
@@ -422,7 +422,7 @@ void CObject3D::extendBoundingBox(const GL_COORD_VERTEX& min, const GL_COORD_VER
 			glEndList();
 		}
 
-		glCallList(filled ? filledBox.handle() : wireBox.handle());
+		glCallList(filled ? filledBox.glname() : wireBox.glname());
 
 		CRaptorInstance::GetInstance().iRenderedObjects++;
 		CRaptorInstance::GetInstance().iRenderedTriangles += 12;

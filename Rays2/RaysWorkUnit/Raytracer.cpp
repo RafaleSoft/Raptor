@@ -210,11 +210,7 @@ CColor::RGBA variance(float centerx,float centery,float scale,int depth,
 			
 
 			// special care for data overflow
-			/*
-			m.X() = ((ULONG)c1.X() + (ULONG)c2.X() + (ULONG)c3.X() + (ULONG)c4.X()) * 0.25f;
-			m.Y() = ((ULONG)c1.Y() + (ULONG)c2.Y() + (ULONG)c3.Y() + (ULONG)c4.Y()) * 0.25f;
-			m.Z() = ((ULONG)c1.Z() + (ULONG)c2.Z() + (ULONG)c3.Z() + (ULONG)c4.Z()) * 0.25f;
-			*/
+#if !defined(_WIN64)
 			__asm
 			{
 				lea esi,m
@@ -241,11 +237,14 @@ CColor::RGBA variance(float centerx,float centery,float scale,int depth,
 
 				movq [esi+4],mm0
 			}
+#else
+			//m.X() = ((ULONG)c1.X() + (ULONG)c2.X() + (ULONG)c3.X() + (ULONG)c4.X()) * 0.25f;
+			//m.Y() = ((ULONG)c1.Y() + (ULONG)c2.Y() + (ULONG)c3.Y() + (ULONG)c4.Y()) * 0.25f;
+			//m.Z() = ((ULONG)c1.Z() + (ULONG)c2.Z() + (ULONG)c3.Z() + (ULONG)c4.Z()) * 0.25f;
+#endif
 
 			// calcul des variances des couleurs
-			/*
-			v = (c1-m)*(c1-m) + (c2-m)*(c2-m) + (c3-m)*(c3-m) + (c4-m)*(c4-m);
-			*/
+#if !defined(_WIN64)
 			__asm
 			{
 				//lea esi,m			// already set
@@ -282,6 +281,9 @@ CColor::RGBA variance(float centerx,float centery,float scale,int depth,
 
 				emms
 			}
+#else
+			//v = (c1 - m)*(c1 - m) + (c2 - m)*(c2 - m) + (c3 - m)*(c3 - m) + (c4 - m)*(c4 - m);
+#endif
 		}
 
 		//	Return if hit background
@@ -296,11 +298,7 @@ CColor::RGBA variance(float centerx,float centery,float scale,int depth,
 			c3=variance(centerx-scale,centery+scale,0.5f*scale,depth-1,r,raytracer_data);
 			c4=variance(centerx+scale,centery+scale,0.5f*scale,depth-1,r,raytracer_data);
 
-/*
-			m.X() = ((ULONG)c1.X() + (ULONG)c2.X() + (ULONG)c3.X() + (ULONG)c4.X()) * 0.25f;
-			m.Y() = ((ULONG)c1.Y() + (ULONG)c2.Y() + (ULONG)c3.Y() + (ULONG)c4.Y()) * 0.25f;
-			m.Z() = ((ULONG)c1.Z() + (ULONG)c2.Z() + (ULONG)c3.Z() + (ULONG)c4.Z()) * 0.25f;
-*/
+#if !defined(_WIN64)
 			__asm
 			{
 				lea esi,m
@@ -329,6 +327,14 @@ CColor::RGBA variance(float centerx,float centery,float scale,int depth,
 
 				emms
 			}
+#else
+			/*
+			m.X() = ((ULONG)c1.X() + (ULONG)c2.X() + (ULONG)c3.X() + (ULONG)c4.X()) * 0.25f;
+			m.Y() = ((ULONG)c1.Y() + (ULONG)c2.Y() + (ULONG)c3.Y() + (ULONG)c4.Y()) * 0.25f;
+			m.Z() = ((ULONG)c1.Z() + (ULONG)c2.Z() + (ULONG)c3.Z() + (ULONG)c4.Z()) * 0.25f;
+			*/
+
+#endif
 		}
 
 		return m;

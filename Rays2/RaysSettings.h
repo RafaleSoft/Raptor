@@ -23,68 +23,25 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include <string>
-#include <vector>
-#include <stdint.h>
+#include "Subsys/CodeGeneration.h"
+
+namespace raptor
+{
+	class CRaptorIO;
+};
+
+#if !defined(AFX_CMDLINEPARSER_H__D7D8768A_3D97_491F_8493_588972A3CF62__INCLUDED_)
+	#include "ToolBox/CmdLineParser.h"
+#endif
+
+RAPTOR_NAMESPACE
+
 
 namespace Rays
 {
 	class CRaysSettings
 	{
 	public:
-		//! Defines a command line option
-		class CSettingsOption
-		{
-		public:
-			CSettingsOption(const std::string &name) :m_name(name) {};
-			virtual ~CSettingsOption() {};
-
-			virtual const std::string& getName(void) const
-			{
-				return m_name;
-			};
-
-			virtual bool parse(const char*)
-			{
-				return false;
-			};
-
-		private:
-			std::string	m_name;
-		};
-
-		template <class T>
-		class CSettingsOptionValue : public CSettingsOption
-		{
-		public:
-			CSettingsOptionValue(const std::string &name, T defaultValue)
-				:CSettingsOption(name),
-				m_value(defaultValue)
-			{
-			};
-
-			virtual ~CSettingsOptionValue() {};
-
-			T getValue(T* t) const
-			{
-				return m_value;
-			};
-
-			void setValue(T t)
-			{
-				m_value = t;
-			};
-
-			virtual bool parse(const char* argv)
-			{
-				return false;
-			};
-
-		private:
-			T	m_value;
-		};
-
-
 		//!	Constructor.
 		CRaysSettings(void);
 
@@ -98,136 +55,49 @@ namespace Rays
 		template <class T>
 		bool addSetting(const std::string &name, T defaultValue);
 
-		//!	Retrive a settings value by name.
-		bool setValue(const std::string& settingsName, const char* value);
+		//!	Set a settings value by name.
+		template <class T>
+		bool setValue(const std::string& settingsName, T value);
 
 		//!	Retrive a settings value by name.
 		template <class T>
 		bool getValue(const std::string& settingsName, T &t) const;
 
+		//!	Load Rays settings.
+		bool importSettings(raptor::CRaptorIO *conf);
+
+		//!	Save Rays settings.
+		bool exportSettings(raptor::CRaptorIO *conf);
+
+		//!	Update the server configuration data
+		bool setSettings(const CCmdLineParser& parser);
+
 
 	private:
 		//! Usually not enough settings to justify a map.
-		std::vector<CSettingsOption*> m_settings;
+		//!	Define a setting as a set of command line options to factorize handling.
+		CCmdLineParser m_settings;
 	};
 }
+
 
 template <class T>
 bool Rays::CRaysSettings::addSetting(const std::string &name, T defaultValue)
 {
-	bool exist = false;
-	for (unsigned int i = 0; !exist && i<m_settings.size(); i++)
-		exist = (m_settings[i]->getName() == name);
-
-	if (exist)
-		return false;
-	else
-	{
-		CSettingsOptionValue<T> *setting = new CSettingsOptionValue<T>(name, defaultValue);
-		m_settings.push_back(setting);
-		return true;
-	}
+	std::string shortname = name.substr(0,1);
+	return m_settings.addOption<T>(name, shortname, defaultValue);
 }
 
 template <class T>
 bool Rays::CRaysSettings::getValue(const std::string& settingsName, T& t) const
 {
-	for (unsigned int o = 0; o<m_settings.size(); o++)
-	{
-		CSettingsOption* option = m_settings[o];
-		if (option->getName() == settingsName)
-		{
-			//!	Need to avoid cast to check improper type.
-			CSettingsOptionValue<T>* setting = (CSettingsOptionValue<T>*)option;
-			t = setting->getValue((T*)0);
-			return true;
-		}
-	}
-
-	return false;
+	return m_settings.getValue<T>(settingsName, t);
 }
 
-template <>
-Rays::CRaysSettings::CSettingsOptionValue<const char*>::CSettingsOptionValue(const std::string &name,
-																		const char* defaultValue)
-	:CSettingsOption(name), m_value(NULL)
+template <class T>
+bool Rays::CRaysSettings::setValue(const std::string& settingsName, T value)
 {
-	char *option = (char*)m_value;
-	option = _strdup(defaultValue);
-}
-
-template <>
-Rays::CRaysSettings::CSettingsOptionValue<const char*>::~CSettingsOptionValue()
-{
-	if (m_value != NULL)
-		free((void*)m_value);
-}
-
-template <>
-bool Rays::CRaysSettings::CSettingsOptionValue<uint32_t>::parse(const char* argv)
-{
-	if (NULL == argv)
-		return false;
-
-	m_value = atoi(argv);
-	return true;
-}
-
-template <>
-bool Rays::CRaysSettings::CSettingsOptionValue<uint16_t>::parse(const char* argv)
-{
-	if (NULL == argv)
-		return false;
-	
-	m_value = (unsigned short)(0xffff & atoi(argv));
-	return true;
-}
-
-template <>
-bool Rays::CRaysSettings::CSettingsOptionValue<const char*>::parse(const char* argv)
-{
-	if (NULL == argv)
-		return false;
-
-	if (m_value != NULL)
-	{
-		free((void*)m_value);
-		m_value = NULL;
-	}
-
-	m_value = _strdup(argv);
-	return true;
-}
-
-
-template <>
-bool Rays::CRaysSettings::CSettingsOptionValue<std::vector<uint32_t>>::parse(const char* argv)
-{
-	if (NULL == argv)
-		return false;
-
-	m_value.push_back((unsigned int)(0xffff & atoi(argv)));
-	return true;
-}
-
-template <>
-bool Rays::CRaysSettings::CSettingsOptionValue<std::string>::parse(const char* argv)
-{
-	if (NULL == argv)
-		return false;
-
-	m_value = std::string(argv);
-	return true;
-}
-
-template <>
-bool Rays::CRaysSettings::CSettingsOptionValue<std::vector<std::string>>::parse(const char* argv)
-{
-	if (NULL == argv)
-		return false;
-
-	m_value.push_back(std::string(argv));
-	return true;
+	return m_settings.setValue<T>(settingsName, value);
 }
 
 #endif // !defined(AFX_RAYSSETTINGS_H__40662BB9_6FC8_40CA_A8A0_F2A701AD70BD__INCLUDED_)

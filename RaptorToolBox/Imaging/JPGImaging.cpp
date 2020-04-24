@@ -3,12 +3,12 @@
 //////////////////////////////////////////////////////////////////////
 #include "Subsys/CodeGeneration.h"
 
-#if !defined(AFX_TEXTUREOBJECT_H__D32B6294_B42B_4E6F_AB73_13B33C544AD0__INCLUDED_)
-	#include "GLHierarchy/TextureObject.h"
-#endif
+
 #if !defined(AFX_JPGIMAGING_H__E268D39E_46E2_4CE0_B8C7_D5C3DE2B5F91__INCLUDED_)
 	#include "Imaging/JPGImaging.h"
 #endif
+
+#include <algorithm>
 
 
 //  jpeg 6b support
@@ -46,15 +46,18 @@ CJPGImaging::~CJPGImaging(void)
 }
 
 bool CJPGImaging::isOfKind(const std::string &kind) const 
-{ 
-	return (("JPG" == kind) || 
-			("JPE" == kind) ||
-			("JPEG" == kind));
+{
+	std::string ext = kind;
+	std::transform(ext.begin(), ext.end(), ext.begin(), ::toupper);
+
+	return (("JPG" == ext) || 
+			("JPE" == ext) ||
+			("JPEG" == ext));
 }
 
-vector<std::string> CJPGImaging::getImageKind(void) const
+std::vector<std::string> CJPGImaging::getImageKind(void) const
 {
-	vector<string> result;
+	std::vector<std::string> result;
 
 	result.push_back("JPG");
 	result.push_back("JPE");

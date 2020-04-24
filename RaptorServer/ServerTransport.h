@@ -41,11 +41,17 @@ public:
 	CServerTransport();
 	virtual ~CServerTransport();
 
+	//!	Returns this
 	virtual request_handler_t &getRequestHandler(const iosock_base_t& client) const;
 
+	//!	Implement base class.
 	virtual bool stopServer(void);
 
+	//!	Implement base class.
 	virtual bool onClientClose(const CClientSocket &client);
+
+	//!	Implement base class.
+	virtual size_t onNewClient(const CClientSocket &client);
 
 private:
 };

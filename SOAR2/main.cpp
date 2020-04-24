@@ -21,9 +21,6 @@ int main(int argc, char* argv[])
     config.m_uiVertices = 800000;
     Raptor::glInitRaptor(config);
 
-    CRaptorApplication  *app = CRaptorApplication::CreateApplication();
-    app->initApplication();
-
 	string logname = "SOAR2.log";
     Raptor::GetErrorManager()->logToFile(logname);
 
@@ -45,20 +42,18 @@ int main(int argc, char* argv[])
 	glcs.depth_buffer = true;
 	glcs.display_mode = CGL_RGBA | CGL_DEPTH;
  
-    CRaptorDisplay *pDisplay = NULL;
-    RAPTOR_HANDLE wnd = Raptor::glCreateWindow(glcs,pDisplay);
-
-    if (wnd.handle() == 0)
+    
+	CRaptorApplication  *app = CRaptorApplication::CreateApplication();
+	if (!app->initApplication(glcs))
     {
 		Raptor::GetMessages()->displayMessage("Sorry: Test cannot run : hardware OpenGL rendering not supported, exiting...");
         return -1;
     }
 
-    app->setRootWindow(wnd);
+	CRaptorDisplay *pDisplay = app->getRootDisplay();
+	CSOARDoc *pDoc = new CSOARDoc(app->getRootWindow(), pDisplay);
 
-    CSOARDoc *pDoc = new CSOARDoc(wnd,pDisplay);
-
-	bool res = pDisplay->glvkBindDisplay(wnd);
+	bool res = pDisplay->glvkBindDisplay(app->getRootWindow());
     if (res)
 	{
         pDoc->GLInitContext(argc,argv);
@@ -74,7 +69,7 @@ int main(int argc, char* argv[])
 
     app->run();
 
-    //delete pDoc;
+	app->quitApplication();
 
     return 0;
 }

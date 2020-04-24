@@ -21,7 +21,6 @@ export
 # Projects ependencies sources
 #
 RAPTOR_VERSION = 2.17.0
-RAPTOR_ROOT = /media/sf_OPENGL/Raptor
 REDIST = $(RAPTOR_ROOT)/Redist
 
 LIBGL = -L/usr/lib64 -lGL
@@ -89,9 +88,12 @@ all: \
 	raptorcompute \
 	raptorserver \
 	raptorviewer \
-	test
+	test \
+	demo
 
 
+demo: builder raptorcore raptordata raptortoolbox $(REDIST)/Bin/Demo
+	
 test: builder raptorcore raptordata raptortoolbox $(REDIST)/Bin/Test
 
 raptorviewer: builder raptorcore raptordata raptortoolbox raptornetwork raptorserver $(REDIST)/Bin/RaptorViewer
@@ -156,6 +158,11 @@ configure:	Builder/Configure/Redist.sh
 #
 # Projects building rules
 #
+$(REDIST)/Bin/Demo:
+	@echo "Building Demo project ..."
+	make -C Build/Linux -f Makefile.demo all
+	@echo "Demo project done."
+
 $(REDIST)/Bin/Test:
 	@echo "Building Test project ..."
 	make -C Build/Linux -f Makefile.test all
@@ -283,7 +290,7 @@ $(REDIST)/Lib/libIlmThread.a $(REDIST)/Bin/libIlmThread.so.$(OPENEXRLIB_VERSION)
 
 $(REDIST)/Lib/libImath.a $(REDIST)/Bin/libImath.so.$(OPENEXRLIB_VERSION):
 	@echo "Building OpenEXR IMath project ..."
-	make -C Build/Linux -f Makefile.IMath all
+	make -C Build/Linux -f Makefile.Imath all
 	@echo "IMath project done."
 
 $(REDIST)/Lib/libIexMath.a $(REDIST)/Bin/libIexMath.so.$(OPENEXRLIB_VERSION):
@@ -307,6 +314,7 @@ $(REDIST)/Bin/dwaLookups:	$(REDIST)/Bin/libHalf.so.$(OPENEXRLIB_VERSION) $(REDIS
 #
 clean:
 	@echo "Cleaning intermediate build files..."
+	make -C Build/Linux -f Makefile.demo clean
 	make -C Build/Linux -f Makefile.test clean
 	make -C Build/Linux -f Makefile.raptorviewer clean
 	make -C Build/Linux -f Makefile.raptorserver clean
@@ -330,7 +338,7 @@ clean:
 	make -C Build/Linux -f Makefile.Half clean
 	make -C Build/Linux -f Makefile.Iex clean
 	make -C Build/Linux -f Makefile.IlmThread clean
-	make -C Build/Linux -f Makefile.IMath clean
+	make -C Build/Linux -f Makefile.Imath clean
 	make -C Build/Linux -f Makefile.IexMath clean
 	make -C Build/Linux -f Makefile.b44ExpLogTable clean
 	make -C Build/Linux -f Makefile.dwaLookups clean

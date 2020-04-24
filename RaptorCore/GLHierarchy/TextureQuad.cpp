@@ -27,15 +27,6 @@
 #if !defined(AFX_SHADER_H__4D405EC2_7151_465D_86B6_1CA99B906777__INCLUDED_)
 	#include "GLHierarchy/Shader.h"
 #endif
-#if !defined(AFX_VERTEXSHADER_H__204F7213_B40B_4B6A_9BCA_828409871B68__INCLUDED_)
-	#include "GLHierarchy/VertexShader.h"
-#endif
-#if !defined(AFX_GEOMETRYSHADER_H__1981EA98_8F3C_4881_9429_A9ACA5B285D3__INCLUDED_)
-	#include "GLHierarchy/GeometryShader.h"
-#endif
-#if !defined(AFX_FRAGMENTSHADER_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
-	#include "GLHierarchy/FragmentShader.h"
-#endif
 #if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
 	#include "System/RaptorGLExtensions.h"
 #endif
@@ -48,17 +39,15 @@
 #if !defined(AFX_OPENGL_H__6C8840CA_BEFA_41DE_9879_5777FBBA7147__INCLUDED_)
 	#include "Subsys/OpenGL/RaptorOpenGL.h"
 #endif
-#if !defined(AFX_OPENGLSHADERSTAGE_H__56B00FE3_E508_4FD6_9363_90E6E67446D9__INCLUDED_)
-	#include "GLHierarchy/OpenGLShaderStage.h"
+#if !defined(AFX_RAPTORINSTANCE_H__90219068_202B_46C2_BFF0_73C24D048903__INCLUDED_)
+	#include "Subsys/RaptorInstance.h"
 #endif
-
 
 RAPTOR_NAMESPACE
 
 
 //!	The shader is common to all texture quads by definition.
 const uint32_t CTextureQuad::max_texture_quad = 256;
-CShader	*CTextureQuad::m_pShader = NULL;
 uint32_t CTextureQuad::max_index = 0;
 uint32_t CTextureQuad::nb_quads = 0;
 CTextureQuad::Attributes*	CTextureQuad::s_attributes = NULL;
@@ -68,7 +57,7 @@ CTextureQuad::Attributes*	CTextureQuad::s_attributes = NULL;
 //////////////////////////////////////////////////////////////////////
 
 CTextureQuad::CTextureQuad()
-	:CSimpleObject("TEXTURE_QUAD"), m_index(max_index++)
+	:CSimpleObject("TEXTURE_QUAD"), m_index(max_index++), m_pBinder(NULL)
 {
 	nb_quads++;
 }
@@ -77,6 +66,13 @@ CTextureQuad::~CTextureQuad()
 {
 	m_rTexture = NULL;
 	nb_quads--;
+
+	if (NULL != m_pBinder)
+	{
+		CResourceAllocator::CResourceBinder *binder = (CResourceAllocator::CResourceBinder*)m_pBinder;
+		delete binder;
+	}
+
 	if (0 == nb_quads)
 	{
 		CGeometryAllocator *pAllocator = CGeometryAllocator::GetInstance();
@@ -98,34 +94,6 @@ bool CTextureQuad::setQuadTexture(CTextureObject *pTexture)
 	return (NULL != pTexture);
 }
 
-bool CTextureQuad::setQuadCenter(const GL_COORD_VERTEX &center)
-{
-	if ((max_index >= max_texture_quad) || (m_index > max_index))
-		return false;
-
-	CGeometryAllocator *pAllocator = CGeometryAllocator::GetInstance();
-	bool lock = pAllocator->isMemoryLocked();
-	if (lock)
-		pAllocator->glvkLockMemory(false);
-
-	if (NULL == s_attributes)
-	{
-		size_t s = sizeof(Attributes) / sizeof(float);
-		s_attributes = (Attributes*)(pAllocator->allocateVertices(max_texture_quad * s));
-	}
-
-	//! Update vertex buffer
-	s_attributes = (Attributes*)pAllocator->glvkMapPointer((float*)s_attributes);
-	CTextureQuad::Attributes& attrs = s_attributes[m_index];
-	attrs.m_center = center;
-	s_attributes = (Attributes*)pAllocator->glvkUnMapPointer((float*)s_attributes);
-
-	if (lock)
-		pAllocator->glvkLockMemory(true);
-
-	return true;
-}
-
 bool CTextureQuad::glSetQuadAttributes(	const GL_COORD_VERTEX &center,
 										const CColor::RGBA& color,
 										const GL_COORD_VERTEX &sizes)
@@ -143,6 +111,17 @@ bool CTextureQuad::glSetQuadAttributes(	const GL_COORD_VERTEX &center,
 		size_t s = sizeof(Attributes) / sizeof(float);
 		s_attributes = (Attributes*)(pAllocator->allocateVertices(max_texture_quad * s));
 	}
+
+	if (NULL == m_pBinder)
+	{
+		CResourceAllocator::CResourceBinder *binder = new CResourceAllocator::CResourceBinder();
+		binder->setArray(CProgramParameters::POSITION, &s_attributes[m_index].m_center, 4, sizeof(Attributes));
+		binder->setArray(CProgramParameters::PRIMARY_COLOR, &s_attributes[m_index].m_color, 4, sizeof(Attributes));
+		binder->setArray(CProgramParameters::ADDITIONAL_PARAM1, &s_attributes[m_index].m_sizes, 4, sizeof(Attributes));
+		binder->useVertexArrayObjects();
+		m_pBinder = binder;
+	}
+
 
 	//! Update vertex buffer
 	s_attributes = (Attributes*)pAllocator->glvkMapPointer((float*)s_attributes);
@@ -177,10 +156,7 @@ bool CTextureQuad::glLoadTexture(const std::string &texname, bool compressed)
 		if (compressed)
 			Txt.glLoadCompressedTexture(T, texname);
 		else
-		{
-			CVaArray<CImage::IImageOP::OP_KIND> iops;
-			Txt.glLoadTexture(T, texname, iops);
-		}
+			Txt.glLoadTexture(T, texname);
 
 		m_rTexture = T;
 
@@ -204,43 +180,24 @@ bool CTextureQuad::glLoadTexture(const std::string &texname, bool compressed)
 void CTextureQuad::glRender(void)
 {
 	bool res = true;
-	if (NULL == m_pShader)
-	{
-		m_pShader = new CShader(getName() + "_SHADER");
-		COpenGLShaderStage *stage = m_pShader->glGetOpenGLShader();
-
-		CVertexShader *vp = stage->glGetVertexShader("TEXTURE_QUAD_VTX_PROGRAM");
-		CGeometryShader *gp = stage->glGetGeometryShader("TEXTURE_QUAD_GEO_PROGRAM");
-		gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
-		CFragmentShader *fs = stage->glGetFragmentShader("TEXTURE_QUAD_TEX_PROGRAM");
-		CProgramParameters params;
-		params.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);
-
-		stage->setProgramParameters(params);
-		res = res & stage->glCompileShader();
-	}
 
 	//!	Render (activate) shader and texture.
 	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 	if (pExtensions->glActiveTextureARB != NULL)
 		pExtensions->glActiveTextureARB(GL_TEXTURE0_ARB);
 	glEnable(GL_TEXTURE_2D);
-	m_pShader->glRender();
+
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+	instance.m_pQuadShader->glRender();
 	m_rTexture->glvkRender();
 
-	pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::POSITION);
-	pExtensions->glVertexAttribPointerARB(CProgramParameters::POSITION, 4, GL_FLOAT, false, sizeof(Attributes), &s_attributes[m_index].m_center);
-	pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::PRIMARY_COLOR);
-	pExtensions->glVertexAttribPointerARB(CProgramParameters::PRIMARY_COLOR, 4, GL_FLOAT, false, sizeof(Attributes), &s_attributes[m_index].m_color);
-	pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::ADDITIONAL_PARAM1);
-	pExtensions->glVertexAttribPointerARB(CProgramParameters::ADDITIONAL_PARAM1, 4, GL_FLOAT, false, sizeof(Attributes), &s_attributes[m_index].m_sizes);
+	CResourceAllocator::CResourceBinder *binder = (CResourceAllocator::CResourceBinder*)m_pBinder;
+	binder->glvkBindArrays();
 
 	glDrawArrays(GL_POINTS, 0, 1);
 
-	pExtensions->glDisableVertexAttribArrayARB(CProgramParameters::POSITION);
-	pExtensions->glDisableVertexAttribArrayARB(CProgramParameters::PRIMARY_COLOR);
-	pExtensions->glDisableVertexAttribArrayARB(CProgramParameters::ADDITIONAL_PARAM1);
+	binder->glvkUnbindArrays();
 
-	m_pShader->glStop();
+	instance.m_pQuadShader->glStop();
 }
 

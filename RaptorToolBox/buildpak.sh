@@ -55,7 +55,7 @@ cd ..
 
 if ( test -f Toolbox.pck )
 then
-	echo RaptorToolbox package already exist, it will be replaced !
+	echo Toolbox package already exist, it will be replaced !
 	rm -rf Toolbox.pck
 fi
 

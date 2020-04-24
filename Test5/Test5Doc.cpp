@@ -23,9 +23,10 @@
 #include "System/RaptorConsole.h"
 #include "System/RaptorErrorManager.h"
 #include "System/RaptorIO.h"
+
 #include "ToolBox/BasicObjects.h"
 #include "ToolBox/Imaging.h"
-
+#include "ToolBox/Imaging/BumpmapLoader.h"
 
 RAPTOR_NAMESPACE
 
@@ -129,6 +130,18 @@ CTest5Doc::~CTest5Doc(void)
 {
 }
 
+void CTest5Doc::glDestroy()
+{
+	if (m_pDisplay->glvkBindDisplay(m_device))
+	{
+		m_pDisplay->glvkReleaseResources();
+		m_pDisplay->glvkUnBindDisplay();
+	}
+
+	Raptor::glDestroyDisplay(m_pDisplay);
+	m_pDisplay = NULL;
+}
+
 void CTest5Doc::resize(unsigned int width, unsigned int height)
 {
 	if (m_pDisplay->glvkBindDisplay(m_device))
@@ -140,6 +153,9 @@ void CTest5Doc::resize(unsigned int width, unsigned int height)
 
 void CTest5Doc::glRender(void)
 {
+	if (NULL == m_pDisplay)
+		return;
+
 	bool res = m_pDisplay->glvkBindDisplay(m_device);
     if (res)
 	{
@@ -241,7 +257,8 @@ void CTest5Doc::GLInitContext(void)
 	pScene->addObject(obj);
 #else	
 	m_pTexture = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_MULTIPLY,ITextureObject::CGL_BILINEAR);
-    f.glLoadTexture(m_pTexture,"bump3.tga",CVaArray<CImage::IImageOP::OP_KIND>(CImage::IImageOP::BUMPMAP_LOADER));
+	CBumpmapLoader *loader = new CBumpmapLoader(f.getConfig().getBumpAmplitude());
+    f.glLoadTexture(m_pTexture,"bump3.tga", loader);
 	//f.getConfig().setBumpAmplitude(4.0f);
 	//f.glLoadTexture(m_pTexture,"BlurCircle.TGA",CGL_CREATE_NORMAL_MAP);
 	tus->setNormalMap(m_pTexture);

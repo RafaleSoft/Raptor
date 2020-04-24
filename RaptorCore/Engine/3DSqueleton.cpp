@@ -100,9 +100,9 @@ C3DSqueleton::~C3DSqueleton()
 
 void C3DSqueleton::deletePivots(lp_bone bone)
 {
-	int nb_pivots = bone->links.size();
+	size_t nb_pivots = bone->links.size();
 
-	for (int i=0;i<nb_pivots;i++)
+	for (size_t i = 0; i < nb_pivots; i++)
 	{
 		lp_object_link p_l = bone->links[i];
 
@@ -122,7 +122,7 @@ void C3DSqueleton::deletePivots(lp_bone bone)
 
 void C3DSqueleton::glRenderBone(bone *bone)
 {
-	int nb_lnks = bone->links.size();
+	size_t nb_lnks = bone->links.size();
 
 	if (nb_lnks > 1)
 		glPushMatrix();
@@ -133,7 +133,7 @@ void C3DSqueleton::glRenderBone(bone *bone)
 
 	bone->rendered = m_renderState;
 
-	for (int i=0;i<nb_lnks;i++)
+	for (size_t i = 0; i < nb_lnks; i++)
 	{
 		if (bone->links[i]->rendered != m_renderState)
 			glRenderPivot(bone->links[i]);

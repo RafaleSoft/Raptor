@@ -51,8 +51,8 @@ static const char* DESCRIPTION = "Benchmark for pixel and texel fill rate";
 static char RESULT_DESCRIPTION[NB_RESULTS][256] = 
 	{	"HAL Swap buffers: ",
 		"Draw Pixel Transfer RGBA: ",
-		"Texel Transfer RGBA (1024x1024): ",
-		"Texel Transfer BGRA (1024x1024): ",
+		"Texel Transfer RGBA ",
+		"Texel Transfer BGRA ",
 		"Clear 32bits color buffer: ",
 		"Clear 24bits Z-buffer: ",
 		"Single texturing small ( 256x256 ): ",
@@ -396,32 +396,32 @@ extern "C" GLBENCH_API void Bench(CWnd *parent)
 		//	Change package and erase previous files in case of updates
 		dataManager->managePackage("GLBench.pck");
 
-		M1_1024_path = dataManager->ExportFile("M1_1024.jpg");
+		M1_1024_path = dataManager->exportFile("M1_1024.jpg");
 		if (M1_1024_path.empty()) return;
-		M1_512_path = dataManager->ExportFile("M1_512.jpg");
+		M1_512_path = dataManager->exportFile("M1_512.jpg");
 		if (M1_512_path.empty()) return;
-		M1_256_path = dataManager->ExportFile("M1_256.jpg");
+		M1_256_path = dataManager->exportFile("M1_256.jpg");
 		if (M1_256_path.empty()) return;
-		M1_128_path = dataManager->ExportFile("M1_128.jpg");
+		M1_128_path = dataManager->exportFile("M1_128.jpg");
 		if (M1_128_path.empty()) return;
-		M1_64_path = dataManager->ExportFile("M1_64.jpg");
+		M1_64_path = dataManager->exportFile("M1_64.jpg");
 		if (M1_64_path.empty()) return;
-		M1_32_path = dataManager->ExportFile("M1_32.jpg");
+		M1_32_path = dataManager->exportFile("M1_32.jpg");
 		if (M1_32_path.empty()) return;
-		M1_16_path = dataManager->ExportFile("M1_16.jpg");
+		M1_16_path = dataManager->exportFile("M1_16.jpg");
 		if (M1_16_path.empty()) return;
-		M1_8_path = dataManager->ExportFile("M1_8.jpg");
+		M1_8_path = dataManager->exportFile("M1_8.jpg");
 		if (M1_8_path.empty()) return;
-		M1_4_path = dataManager->ExportFile("M1_4.jpg");
+		M1_4_path = dataManager->exportFile("M1_4.jpg");
 		if (M1_4_path.empty()) return;
-		M1_2_path = dataManager->ExportFile("M1_2.jpg");
+		M1_2_path = dataManager->exportFile("M1_2.jpg");
 		if (M1_2_path.empty()) return;
-		M1_1_path = dataManager->ExportFile("M1_1.jpg");
+		M1_1_path = dataManager->exportFile("M1_1.jpg");
 		if (M1_1_path.empty()) return;
 
-		M74_1024_path = dataManager->ExportFile("M74_1024.jpg");
+		M74_1024_path = dataManager->exportFile("M74_1024.jpg");
 		if (M74_1024_path.empty()) return;
-		M74_256_path = dataManager->ExportFile("M74_256.jpg");
+		M74_256_path = dataManager->exportFile("M74_256.jpg");
 		if (M74_256_path.empty()) return;
 	}
 
@@ -494,6 +494,9 @@ GLDisplay->glMakeCurrent(false);
 
 GLDisplay->glMakeCurrent();
 		glGetIntegerv(GL_MAX_TEXTURE_SIZE,&maxSize);
+#if !defined(_WIN64)
+		maxSize = min(4096, maxSize);
+#endif
 		T = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA);
 		load.allocatePixels(maxSize, maxSize);
 
@@ -512,7 +515,9 @@ GLDisplay->glMakeCurrent(false);
 		results.result_items[resultCount].score = megatexelspersec;
 		results.result_items[resultCount].fps_rate = nb / bench_dt;
 		results.result_items[resultCount].fragment_rate = megatexelspersec;
-
+		char bufdesc[256];
+		sprintf(bufdesc, "(%d x %d): ",maxSize,maxSize);
+		strcat(RESULT_DESCRIPTION[resultCount], bufdesc);
 
 		resultCount++;
 		nb = 0;
@@ -535,6 +540,8 @@ GLDisplay->glMakeCurrent(false);
 		results.result_items[resultCount].fragment_rate = megatexelspersec;
 
 		T->releaseReference();
+
+		strcat(RESULT_DESCRIPTION[resultCount], bufdesc);
 	}
 
 

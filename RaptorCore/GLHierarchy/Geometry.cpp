@@ -79,41 +79,30 @@ const CPersistence::CPersistenceClassID& CGeometry::CGeometryClassID::GetClassId
 }
 
 
-//////////////////////////////////////////////////////////////////////
-// Rendering Model Implementation
-//////////////////////////////////////////////////////////////////////
-void CGeometry::CRenderingModel::addModel(MODEL model)
-{
-	unsigned int m = ((m_renderingModel | model) & CGL_FULLRENDER);
-	m_renderingModel = m;
-}
-
-void CGeometry::CRenderingModel::removeModel(MODEL model)
-{
-	m_renderingModel &= ~model;
-}
-
-CGeometry::CRenderingModel::CRenderingModel(long model)
-{
-	m_renderingModel = (model & CGL_FULLRENDER);
-	if ((m_renderingModel == 0) || (m_renderingModel > CGL_FULLRENDER))
-		m_renderingModel = CGL_FRONT_GEOMETRY;
-}
-
-const CGeometry::CRenderingModel& CGeometry::CRenderingModel::operator=(const CGeometry::CRenderingModel& model)
-{
-	m_renderingModel = (model.m_renderingModel & CGL_FULLRENDER);
-	if ((m_renderingModel == 0) || (m_renderingModel > CGL_FULLRENDER))
-		m_renderingModel = CGL_FRONT_GEOMETRY;
-	return *this;
-}
-
 const CGeometryEditor& CGeometry::getEditor(void)
 {
     if (m_pEditor == NULL)
         m_pEditor = new CGeometryEditor(this);
 
     return *m_pEditor;
+}
+
+void CGeometry::setRenderingModel(CGeometry::RENDERING_MODEL model)
+{
+	m_renderingModel = (model & CGeometry::CGL_FULLRENDER);
+	if ((m_renderingModel == 0) || (m_renderingModel > CGeometry::CGL_FULLRENDER))
+		m_renderingModel = CGeometry::CGL_FRONT_GEOMETRY;
+}
+
+void CGeometry::addModel(CGeometry::RENDERING_MODEL model)
+{
+	unsigned int m = ((m_renderingModel | model) & CGeometry::CGL_FULLRENDER);
+	m_renderingModel = m;
+}
+
+void CGeometry::removeModel(CGeometry::RENDERING_MODEL model)
+{
+	m_renderingModel &= ~model;
 }
 
 
@@ -129,12 +118,15 @@ CGeometry::CGeometry(const std::string& name):
 	texcoords(NULL),texcoords2(NULL),tangents(NULL),binormals(NULL),
 	fogcoords(NULL),weightcoords(NULL),
 #endif
-    polys(NULL),m_renderingModel(CRenderingModel::CGL_FRONT_GEOMETRY),
-    m_pEditor(NULL)
+    polys(NULL),m_renderingModel(CGeometry::CGL_FRONT_GEOMETRY),
+	m_pEditor(NULL), m_pBinder(NULL)
 {
 	m_nbVertex = m_nbPolys = 0;
     m_bDataLocked = false;
     m_bUpdateBBox = false;
+
+	CResourceAllocator::CResourceBinder *binder = new CResourceAllocator::CResourceBinder();
+	m_pBinder = binder;
 }
 
 CGeometry::CGeometry(const std::string& name,const CPersistence::CPersistenceClassID &classID):
@@ -146,12 +138,15 @@ CGeometry::CGeometry(const std::string& name,const CPersistence::CPersistenceCla
 	texcoords(NULL),texcoords2(NULL),tangents(NULL),binormals(NULL),
 	fogcoords(NULL),weightcoords(NULL),
 #endif
-	polys(NULL),m_renderingModel(CRenderingModel::CGL_FRONT_GEOMETRY),
-    m_pEditor(NULL)
+	polys(NULL), m_renderingModel(CGeometry::CGL_FRONT_GEOMETRY),
+	m_pEditor(NULL), m_pBinder(NULL)
 {
     m_nbVertex = m_nbPolys = 0;
     m_bDataLocked = false;
     m_bUpdateBBox = false;
+
+	CResourceAllocator::CResourceBinder *binder = new CResourceAllocator::CResourceBinder();
+	m_pBinder = binder;
 }
 
 CGeometry::~CGeometry()
@@ -200,20 +195,12 @@ CGeometry::~CGeometry()
 		m_pEditor = NULL;
 		ed->destroy();
 	}
-}
 
-void CGeometry::setRenderingModel(const CRenderingModel& model) 
-{
-	m_renderingModel = model;	//	Preserve all bits for derived classes
-
-	//	But remove unsupported extensions
-#ifdef GL_EXT_vertex_weighting
-	if (!Raptor::glIsExtensionSupported(GL_EXT_VERTEX_WEIGHTING_EXTENSION_NAME))
-		m_renderingModel.removeModel(CRenderingModel::CGL_WEIGHT);
-#endif
-
-	if (!Raptor::glIsExtensionSupported(GL_EXT_FOG_COORD_EXTENSION_NAME))
-		m_renderingModel.removeModel(CRenderingModel::CGL_FOG);
+	if (NULL != m_pBinder)
+	{
+		CResourceAllocator::CResourceBinder *binder = (CResourceAllocator::CResourceBinder *)m_pBinder;
+		delete binder;
+	}
 }
 
 vector<CObject3DContour*> CGeometry::createContours(void)
@@ -273,7 +260,9 @@ CGeometry& CGeometry::operator=(const CGeometry &geo)
 	tangents = NULL;
 	binormals = NULL;
 
-    
+	CResourceAllocator::CResourceBinder *binder = (CResourceAllocator::CResourceBinder *)m_pBinder;
+	binder->setArray(CProgramParameters::POSITION, vertex);
+	binder->setArray(CProgramParameters::NORMAL, normals);
 
     //! Transfer normals and vertex data.
     GL_COORD_VERTEX* geo_vertex = geo.vertex;
@@ -303,6 +292,7 @@ CGeometry& CGeometry::operator=(const CGeometry &geo)
 	{
 		texcoords = (GL_TEX_VERTEX*)(pAllocator->allocateVertices(m_nbVertex*2));
         GL_TEX_VERTEX* geo_texcoords = geo.texcoords;
+		binder->setArray(CProgramParameters::TEXCOORD0, texcoords);
 
         if (pAllocator->isMemoryRelocated())
         {
@@ -325,6 +315,7 @@ CGeometry& CGeometry::operator=(const CGeometry &geo)
 	{
 		texcoords2 = (GL_TEX_VERTEX*)(pAllocator->allocateVertices(m_nbVertex*2));
         GL_TEX_VERTEX* geo_texcoords = geo.texcoords2;
+		binder->setArray(CProgramParameters::TEXCOORD1, texcoords2);
 
         if (pAllocator->isMemoryRelocated())
         {
@@ -347,6 +338,7 @@ CGeometry& CGeometry::operator=(const CGeometry &geo)
 	{
 		colors = (CColor::RGBA*)(pAllocator->allocateVertices(m_nbVertex*4));
         CColor::RGBA* geo_colors = geo.colors;
+		binder->setArray(CProgramParameters::PRIMARY_COLOR, colors);
 
         if (pAllocator->isMemoryRelocated())
         {
@@ -390,27 +382,45 @@ CGeometry& CGeometry::operator=(const CGeometry &geo)
 	if (geo.fogcoords != NULL)
 	{
 		fogcoords = pAllocator->allocateVertices(m_nbVertex);
-        if (pAllocator->isMemoryRelocated())
-            fogcoords = pAllocator->glvkMapPointer(fogcoords);
+		float *geo_fogcoords = geo.fogcoords;
+		binder->setArray(CProgramParameters::FOG_COORDINATE, fogcoords);
+
+		if (pAllocator->isMemoryRelocated())
+		{
+			fogcoords = pAllocator->glvkMapPointer(fogcoords);
+			geo_fogcoords = pAllocator->glvkMapPointer(geo.fogcoords);
+		}
 
 		for (unsigned int i = 0; i<m_nbVertex; i++)
 			fogcoords[i] = geo.fogcoords[i];
 
-        if (pAllocator->isMemoryRelocated())
-            fogcoords = pAllocator->glvkUnMapPointer(fogcoords);
+		if (pAllocator->isMemoryRelocated())
+		{
+			fogcoords = pAllocator->glvkUnMapPointer(fogcoords);
+			pAllocator->glvkUnMapPointer(geo_fogcoords);
+		}
 	}
 
 	if (geo.weightcoords != NULL)
 	{
 		weightcoords = pAllocator->allocateVertices(m_nbVertex);
-        if (pAllocator->isMemoryRelocated())
-            weightcoords = pAllocator->glvkMapPointer(weightcoords);
+		float *geo_weightcoords = geo.weightcoords;
+		binder->setArray(CProgramParameters::WEIGHTS, weightcoords);
+
+		if (pAllocator->isMemoryRelocated())
+		{
+			weightcoords = pAllocator->glvkMapPointer(weightcoords);
+			geo_weightcoords = pAllocator->glvkMapPointer(geo.weightcoords);
+		}
 
 		for (unsigned int i = 0; i<m_nbVertex; i++)
 			weightcoords[i] = geo.weightcoords[i];
 
-        if (pAllocator->isMemoryRelocated())
-            weightcoords = pAllocator->glvkUnMapPointer(weightcoords);
+		if (pAllocator->isMemoryRelocated())
+		{
+			weightcoords = pAllocator->glvkUnMapPointer(weightcoords);
+			pAllocator->glvkUnMapPointer(geo_weightcoords);
+		}
 	}
 
 	m_renderingModel = geo.m_renderingModel;
@@ -934,16 +944,16 @@ void CGeometry::vkRender(CVulkanCommandBuffer& commandBuffer,
 {
 	VkBuffer bindings[3] = { vertexBinding, 0, 0 };
 	VkDeviceSize offsets[3] = { (VkDeviceSize)&vertex[0], 0, 0 };
-	size_t nb_bindings = 1;	// always extract geometry
+	uint32_t nb_bindings = 1;	// always extract geometry
 
-	if (m_renderingModel.hasModel(CRenderingModel::CGL_TEXTURE))
+	if (hasModel(CGeometry::CGL_TEXTURE))
 	{
 		bindings[nb_bindings] = vertexBinding;
 		offsets[nb_bindings] = (VkDeviceSize)&texcoords[0];
 		nb_bindings++;
 	}
 
-	if (m_renderingModel.hasModel(CRenderingModel::CGL_COLORS))
+	if (hasModel(CGeometry::CGL_COLORS))
 	{
 		bindings[nb_bindings] = vertexBinding;
 		offsets[nb_bindings] = (VkDeviceSize)&colors[0];
@@ -966,7 +976,7 @@ bool CGeometry::getVertexInputState( std::vector<VkVertexInputBindingDescription
 {
 	bindings.clear();
 	vertexInput.clear();
-	size_t nb_bindings = 0;
+	uint32_t nb_bindings = 0;
 
 	//!	Vertex
 	bindings.push_back({ nb_bindings, 4 * sizeof(float), VK_VERTEX_INPUT_RATE_VERTEX });
@@ -975,19 +985,19 @@ bool CGeometry::getVertexInputState( std::vector<VkVertexInputBindingDescription
 
 	//!	TexCoords
 	IRenderingProperties *props = IRenderingProperties::GetCurrentProperties();
-	if ((m_renderingModel.hasModel(CRenderingModel::CGL_TEXTURE)))
+	if ((hasModel(CGeometry::CGL_TEXTURE)))
 //		(props->getCurrentTexturing() == IRenderingProperties::ENABLE))
 	{
 		bindings.push_back({ nb_bindings, 2 * sizeof(float), VK_VERTEX_INPUT_RATE_VERTEX });
-		vertexInput.push_back({ 1, nb_bindings, VK_FORMAT_R32G32_SFLOAT, 0 });
+		vertexInput.push_back({ CProgramParameters::TEXCOORD0, nb_bindings, VK_FORMAT_R32G32_SFLOAT, 0 });
 		nb_bindings++;
 	}
 
 	//!	Colors
-	if (m_renderingModel.hasModel(CRenderingModel::CGL_COLORS))
+	if (hasModel(CGeometry::CGL_COLORS))
 	{
 		bindings.push_back({ nb_bindings, 4 * sizeof(float), VK_VERTEX_INPUT_RATE_VERTEX });
-		vertexInput.push_back({ 2, nb_bindings, VK_FORMAT_R32G32B32A32_SFLOAT, 0 });
+		vertexInput.push_back({ CProgramParameters::PRIMARY_COLOR, nb_bindings, VK_FORMAT_R32G32B32A32_SFLOAT, 0 });
 		nb_bindings++;
 	}
 
@@ -1002,17 +1012,22 @@ void CGeometry::glRender()
     glRenderGeometry();
 }
 
+
+#if defined(DATA_EXTENDED)
+
+#elif defined(DATA_PACKED)
+
 void CGeometry::glRenderGeometry()
 {
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
-    if (m_bUpdateBBox)
-    {
+	if (m_bUpdateBBox)
+	{
 		Raptor::GetErrorManager()->generateRaptorError(CGeometry::CGeometryClassID::GetClassId(),
-                                                       CRaptorErrorManager::RAPTOR_WARNING,
-		    							               "A geometry is requested for rendering with an unfinished bounding box!");
+													   CRaptorErrorManager::RAPTOR_WARNING,
+													   "A geometry is requested for rendering with an unfinished bounding box!");
 		glLockData();
 		glUnLockData();
-    }
+	}
 #endif
 
 	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
@@ -1020,154 +1035,99 @@ void CGeometry::glRenderGeometry()
 
 	//	Store arrays state + texture state
 	IRenderingProperties *props = IRenderingProperties::GetCurrentProperties();
-    bool popNormalArray = false;
-    bool popTangentArray = false;
-    bool popColorArray = false;
-    bool popTexCoordArray = false;
-    bool popWeightArray = false;
-    bool popFogArray = false;
+	bool popNormalArray = false;
+	bool popTangentArray = false;
+	bool popColorArray = false;
+	bool popTexCoordArray = false;
+	bool popWeightArray = false;
+	bool popFogArray = false;
 	bool proceedLighting = (props->getCurrentLighting() == IRenderingProperties::ENABLE);
 	bool proceedTexturing = (props->getCurrentTexturing() == IRenderingProperties::ENABLE);
-    
 
-	if (m_renderingModel.hasModel(CRenderingModel::CGL_BACK_GEOMETRY))
+
+	if (hasModel(CGeometry::CGL_BACK_GEOMETRY))
 		glCullFace(GL_FRONT);
+
+	CResourceAllocator::CResourceBinder *binder = (CResourceAllocator::CResourceBinder *)m_pBinder;
 
 	// always extract geometry
 	glEnableClientState(GL_VERTEX_ARRAY);
-#if defined(DATA_EXTENDED)
-    glVertexPointer( 3,GL_FLOAT,sizeof(GL_VERTEX_DATA),&geometry[0].vertex);
-#elif defined(DATA_PACKED)
-	glVertexPointer( 3 , GL_FLOAT , sizeof(GL_COORD_VERTEX) , vertex);
-#endif
+	glVertexPointer(3, GL_FLOAT, sizeof(GL_COORD_VERTEX), vertex);
 
 	// extract normals
-	if (m_renderingModel.hasModel(CRenderingModel::CGL_NORMALS) && proceedLighting
-#if defined (DATA_EXTENDED)
-		&& (geometry != NULL))
-#elif defined(DATA_PACKED)
-		&& (NULL != normals))
-#endif
+	if (hasModel(CGeometry::CGL_NORMALS) && proceedLighting && (NULL != normals))
 	{
-        popNormalArray = true;
+		popNormalArray = true;
 		pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::NORMAL);
-#if defined(DATA_EXTENDED)
-        glNormalPointer( GL_FLOAT , sizeof(GL_VERTEX_DATA) , &geometry[0].normal);
-#elif defined(DATA_PACKED)
-		pExtensions->glVertexAttribPointerARB(CProgramParameters::NORMAL,4, GL_FLOAT, false, 0, normals);
-#endif
+		pExtensions->glVertexAttribPointerARB(CProgramParameters::NORMAL, 4, GL_FLOAT, false, 0, normals);
 	}
 
-    // extract tangents
+	// extract tangents
 #if defined(GL_ARB_vertex_program)
-	if (m_renderingModel.hasModel(CRenderingModel::CGL_TANGENTS) && proceedLighting
-#if defined (DATA_EXTENDED)
-		&& (geometry != NULL))
-#elif defined(DATA_PACKED)
-		&& (NULL != tangents))
-#endif
+	if (hasModel(CGeometry::CGL_TANGENTS) && proceedLighting && (NULL != tangents))
 	{
-        popTangentArray = true;
+		popTangentArray = true;
 		pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::ADDITIONAL_PARAM1);
-#if defined(DATA_EXTENDED)
-        pExtensions->glVertexAttribPointerARB(CShaderProgram::ADDITIONAL_PARAM1,4,GL_FLOAT,false,sizeof(GL_VERTEX_DATA),&geometry[0].tangent);
-#elif defined(DATA_PACKED)
 		pExtensions->glVertexAttribPointerARB(CProgramParameters::ADDITIONAL_PARAM1, 4, GL_FLOAT, false, 0, tangents);
-#endif
 	}
 #endif
 
 	// extract colors
-	if (m_renderingModel.hasModel(CRenderingModel::CGL_COLORS)
-#if defined (DATA_EXTENDED)
-		&& (geometry != NULL))
-#elif defined(DATA_PACKED)
-		&& (NULL != colors))
-#endif
+	if (hasModel(CGeometry::CGL_COLORS) && (NULL != colors))
 	{
 		pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::PRIMARY_COLOR);
-        popColorArray = true;
-#if defined(DATA_EXTENDED)
-		pExtensions->glVertexAttribPointerARB(CProgramParameters::PRIMARY_COLOR, 4, GL_FLOAT, false, sizeof(GL_VERTEX_DATA), &geometry[0].color);
-#elif defined(DATA_PACKED)
+		popColorArray = true;
 		pExtensions->glVertexAttribPointerARB(CProgramParameters::PRIMARY_COLOR, 4, GL_FLOAT, false, 0, colors);
-#endif
 	}
 
 	// extract texture
-	if (m_renderingModel.hasModel(CRenderingModel::CGL_TEXTURE) && proceedTexturing
-#if defined (DATA_EXTENDED)
-        && (geometry != NULL))
-#elif defined(DATA_PACKED)
-		&& (texcoords != NULL))
-#endif
+	if (hasModel(CGeometry::CGL_TEXTURE) && proceedTexturing && (texcoords != NULL))
 	{
-			pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::TEXCOORD0);
-            popTexCoordArray = true;
-#if defined(DATA_EXTENDED)
-			pExtensions->glVertexAttribPointerARB(CProgramParameters::TEXCOORD0, 2, GL_FLOAT, false, sizeof(GL_VERTEX_DATA), &geometry[0].texCoord0);
-#elif defined(DATA_PACKED)
-			pExtensions->glVertexAttribPointerARB(CProgramParameters::TEXCOORD0, 2, GL_FLOAT, false, 0, texcoords);
-#endif
+		pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::TEXCOORD0);
+		popTexCoordArray = true;
+		pExtensions->glVertexAttribPointerARB(CProgramParameters::TEXCOORD0, 2, GL_FLOAT, false, 0, texcoords);
 	}
 
-// Vertex weighting is no supported anymore by drivers because
-// shaders enable a more powerfull blending.
+	// Vertex weighting is no supported anymore by drivers because
+	// shaders enable a more powerfull blending.
 
 	// extract vertex weighting
-	if (m_renderingModel.hasModel(CRenderingModel::CGL_WEIGHT)
-#if defined (DATA_EXTENDED)
-		&& (geometry != NULL))
-#elif defined(DATA_PACKED)
-		&& (NULL != weightcoords))
-#endif
+	if (hasModel(CGeometry::CGL_WEIGHT) && (NULL != weightcoords))
 	{
 #ifdef GL_EXT_vertex_weighting
 		if (pExtensions->glVertexWeightPointerEXT != NULL)
 		{
 			glEnable(GL_VERTEX_WEIGHTING_EXT);
 			glEnableClientState(GL_VERTEX_WEIGHT_ARRAY_EXT);
-            popWeightArray = true;
-			pExtensions->glVertexWeightPointerEXT(1,GL_FLOAT,0,weightcoords);
-			CGenericMatrix<float> gm,gm2;
-			glGetFloatv(GL_MODELVIEW_MATRIX,gm.matrix());
-			CGenericMatrix<float> gm2;
-			gm2 = weightMatrix;
-			gm2 *= gm;
-			glMatrixMode(GL_MODELVIEW1_EXT);
-			glLoadMatrixf(gm2.matrix());
-			glMatrixMode(GL_MODELVIEW0_EXT);
+			popWeightArray = true;
+			pExtensions->glVertexWeightPointerEXT(1, GL_FLOAT, 0, weightcoords);
 		}
-        else
+		else
 #else
-        {
+		{
 			pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::WEIGHTS);
 			popWeightArray = true;
-#if defined(DATA_EXTENDED)
-            pExtensions->glVertexAttribPointerARB(CShaderProgram::WEIGHTS,1,GL_FLOAT,false,sizeof(GL_VERTEX_DATA),&geometry[0].weight);
-#elif defined(DATA_PACKED)
 			pExtensions->glVertexAttribPointerARB(CProgramParameters::WEIGHTS, 1, GL_FLOAT, false, 0, weightcoords);
-#endif
-        }
+		}
 #endif
 	}
 
 #ifdef GL_EXT_fog_coord
 	//	extract fog coords
-	if (m_renderingModel.hasModel(CRenderingModel::CGL_FOG))
+	if (hasModel(CGeometry::CGL_FOG))
 	{
 		if (pExtensions->glFogCoordPointerEXT != NULL)
 		{
-			glFogi(GL_FOG_COORDINATE_SOURCE_EXT,GL_FOG_COORDINATE_EXT);
+			glFogi(GL_FOG_COORDINATE_SOURCE_EXT, GL_FOG_COORDINATE_EXT);
 			glEnableClientState(GL_FOG_COORDINATE_ARRAY_EXT);
-            popFogArray = true;
-			pExtensions->glFogCoordPointerEXT(GL_FLOAT,0,fogcoords);
+			popFogArray = true;
+			pExtensions->glFogCoordPointerEXT(GL_FLOAT, 0, fogcoords);
 		}
 	}
 #endif
 
 	if (m_pPrimitives.size() == 0)
-		glDrawElements( GL_TRIANGLES, 3*m_nbPolys, GL_UNSIGNED_SHORT,polys);
+		glDrawElements(GL_TRIANGLES, 3 * m_nbPolys, GL_UNSIGNED_SHORT, polys);
 	else
 	{
 		vector<CGeometryPrimitive*>::const_iterator itr = m_pPrimitives.begin();
@@ -1183,44 +1143,47 @@ void CGeometry::glRenderGeometry()
 
 #ifdef GL_EXT_fog_coord
 	//	restore fog model
-	if (m_renderingModel.hasModel(CRenderingModel::CGL_FOG))
-		glFogi(GL_FOG_COORDINATE_SOURCE_EXT,GL_FRAGMENT_DEPTH_EXT);
+	if (hasModel(CGeometry::CGL_FOG))
+		glFogi(GL_FOG_COORDINATE_SOURCE_EXT, GL_FRAGMENT_DEPTH_EXT);
 #endif
 
 	//	Restore status	
-	if (m_renderingModel.hasModel(CRenderingModel::CGL_BACK_GEOMETRY))
+	if (hasModel(CGeometry::CGL_BACK_GEOMETRY))
 		glCullFace(GL_BACK);
-	
 
-    glDisableClientState(GL_VERTEX_ARRAY);
-    if (popNormalArray)
+
+	glDisableClientState(GL_VERTEX_ARRAY);
+	if (popNormalArray)
 		pExtensions->glDisableVertexAttribArrayARB(CProgramParameters::NORMAL);
-    if (popColorArray)
+	if (popColorArray)
 		pExtensions->glDisableVertexAttribArrayARB(CProgramParameters::PRIMARY_COLOR);
-    if (popTexCoordArray)
+	if (popTexCoordArray)
 		pExtensions->glDisableVertexAttribArrayARB(CProgramParameters::TEXCOORD0);
 #ifdef GL_EXT_vertex_weighting
-    if (popWeightArray)
-    {
-        glDisableClientState(GL_VERTEX_WEIGHT_ARRAY_EXT);
-        glDisable(GL_VERTEX_WEIGHTING_EXT);
-    }
+	if (popWeightArray)
+	{
+		glDisableClientState(GL_VERTEX_WEIGHT_ARRAY_EXT);
+		glDisable(GL_VERTEX_WEIGHTING_EXT);
+	}
 #else
-    if (popWeightArray)
+	if (popWeightArray)
 		pExtensions->glDisableVertexAttribArrayARB(CProgramParameters::WEIGHTS);
 #endif
 #ifdef GL_EXT_fog_coord
-    if (popFogArray)
-        glDisableClientState(GL_FOG_COORDINATE_ARRAY_EXT);
+	if (popFogArray)
+		glDisableClientState(GL_FOG_COORDINATE_ARRAY_EXT);
 #endif
 #if defined(GL_ARB_vertex_program)
-    if (popTangentArray)
+	if (popTangentArray)
 		pExtensions->glDisableVertexAttribArrayARB(CProgramParameters::ADDITIONAL_PARAM1);
 #endif
 
 	CRaptorInstance::GetInstance().iRenderedObjects++;
 	CRaptorInstance::GetInstance().iRenderedTriangles += m_nbPolys;
 }
+
+#endif
+
 
 //////////////////////////////////////////////////////////////////////
 //	Manual data loading
@@ -1237,8 +1200,8 @@ bool CGeometry::removePrimitive(CGeometryPrimitive *primitive)
 {
 	if (primitive == NULL)
 	{
-		for (unsigned int i=m_pPrimitives.size();i>0;i--)
-			m_pPrimitives[i-1]->releaseReference();
+		for (size_t i = 0; i< m_pPrimitives.size(); i++)
+			m_pPrimitives[i]->releaseReference();
 		m_pPrimitives.clear();
 		return true;
 	}
@@ -1259,7 +1222,7 @@ bool CGeometry::removePrimitive(CGeometryPrimitive *primitive)
 	}
 }
 
-void CGeometry::glSetPolygons(unsigned int nbP, unsigned short* polygons)
+void CGeometry::glSetPolygons(size_t nbP, unsigned short* polygons)
 {
 	if (polygons == NULL)
 	{
@@ -1288,7 +1251,7 @@ void CGeometry::glSetPolygons(unsigned int nbP, unsigned short* polygons)
 	}
 }
 
-void CGeometry::glSetVertices(unsigned int nbV, GL_COORD_VERTEX* vertices)
+void CGeometry::glSetVertices(size_t nbV, GL_COORD_VERTEX* vertices)
 {
 	if (vertices == NULL)
 	{
@@ -1304,6 +1267,10 @@ void CGeometry::glSetVertices(unsigned int nbV, GL_COORD_VERTEX* vertices)
 		
 		vertex = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->allocateVertices(nbV*4));
 		normals = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->allocateVertices(nbV*4));
+
+		CResourceAllocator::CResourceBinder *binder = (CResourceAllocator::CResourceBinder *)m_pBinder;
+		binder->setArray(CProgramParameters::POSITION, vertex, 3);
+		binder->setArray(CProgramParameters::NORMAL, normals);
 #endif
 
 		m_nbVertex = 0;
@@ -1321,7 +1288,7 @@ void CGeometry::glSetVertices(unsigned int nbV, GL_COORD_VERTEX* vertices)
 #endif
 }
 
-void CGeometry::glSetNormals(unsigned int nbN, GL_COORD_VERTEX* norms)
+void CGeometry::glSetNormals(size_t nbN, GL_COORD_VERTEX* norms)
 {
 #if defined (DATA_PACKED)
 	if ((norms != NULL) && (nbN > 0) && (normals != NULL))
@@ -1335,7 +1302,7 @@ void CGeometry::glSetNormals(unsigned int nbN, GL_COORD_VERTEX* norms)
 #endif
 }
 
-void CGeometry::glSetTexCoords(unsigned int nbT, GL_TEX_VERTEX* texCoords)
+void CGeometry::glSetTexCoords(size_t nbT, GL_TEX_VERTEX* texCoords)
 {
 #if defined (DATA_PACKED)
 	if (texCoords == NULL)
@@ -1344,6 +1311,9 @@ void CGeometry::glSetTexCoords(unsigned int nbT, GL_TEX_VERTEX* texCoords)
 			CGeometryAllocator::GetInstance()->releaseVertices((float*)texcoords);
 
 		texcoords = (GL_TEX_VERTEX*)(CGeometryAllocator::GetInstance()->allocateVertices(nbT*2));
+
+		CResourceAllocator::CResourceBinder *binder = (CResourceAllocator::CResourceBinder *)m_pBinder;
+		binder->setArray(CProgramParameters::TEXCOORD0, texcoords, 2);
 	}
 	else if ((nbT > 0) && (texcoords != NULL))
 	{
@@ -1356,7 +1326,7 @@ void CGeometry::glSetTexCoords(unsigned int nbT, GL_TEX_VERTEX* texCoords)
 #endif
 }
 
-void CGeometry::glSetTexCoords2(unsigned int nbT, GL_TEX_VERTEX* texCoords)
+void CGeometry::glSetTexCoords2(size_t nbT, GL_TEX_VERTEX* texCoords)
 {
 #if defined (DATA_PACKED)
 	if (texCoords == NULL)
@@ -1365,6 +1335,9 @@ void CGeometry::glSetTexCoords2(unsigned int nbT, GL_TEX_VERTEX* texCoords)
 			CGeometryAllocator::GetInstance()->releaseVertices((float*)texcoords2);
 
 		texcoords2 = (GL_TEX_VERTEX*)(CGeometryAllocator::GetInstance()->allocateVertices(nbT*2));
+
+		CResourceAllocator::CResourceBinder *binder = (CResourceAllocator::CResourceBinder *)m_pBinder;
+		binder->setArray(CProgramParameters::TEXCOORD1, texcoords2, 2);
 	}
 	else if ((nbT > 0) && (texcoords2 != NULL))
 	{
@@ -1377,7 +1350,7 @@ void CGeometry::glSetTexCoords2(unsigned int nbT, GL_TEX_VERTEX* texCoords)
 #endif
 }
 
-void CGeometry::glSetWeights(unsigned int nbW, float* weights)
+void CGeometry::glSetWeights(size_t nbW, float* weights)
 {
 #if defined (DATA_PACKED)
 	if (weights == NULL)
@@ -1386,6 +1359,9 @@ void CGeometry::glSetWeights(unsigned int nbW, float* weights)
 			CGeometryAllocator::GetInstance()->releaseVertices(weightcoords);
 
 		weightcoords = CGeometryAllocator::GetInstance()->allocateVertices(nbW);
+
+		CResourceAllocator::CResourceBinder *binder = (CResourceAllocator::CResourceBinder *)m_pBinder;
+		binder->setArray(CProgramParameters::WEIGHTS, weightcoords, 1);
 	}
 	else if ((nbW > 0) && (weightcoords != NULL))
 	{
@@ -1398,7 +1374,7 @@ void CGeometry::glSetWeights(unsigned int nbW, float* weights)
 #endif
 }
 
-void CGeometry::glSetColors(unsigned int nbC, CColor::RGBA* rgbaColors)
+void CGeometry::glSetColors(size_t nbC, CColor::RGBA* rgbaColors)
 {
 #if defined (DATA_PACKED)
 	if (rgbaColors == NULL)
@@ -1407,6 +1383,9 @@ void CGeometry::glSetColors(unsigned int nbC, CColor::RGBA* rgbaColors)
 			CGeometryAllocator::GetInstance()->releaseVertices((float*)colors);
 
 		colors = (CColor::RGBA*)(CGeometryAllocator::GetInstance()->allocateVertices(nbC*4));
+
+		CResourceAllocator::CResourceBinder *binder = (CResourceAllocator::CResourceBinder *)m_pBinder;
+		binder->setArray(CProgramParameters::PRIMARY_COLOR, colors);
 	}
 	else if ((nbC > 0) && (colors != NULL))
 	{
@@ -1419,7 +1398,7 @@ void CGeometry::glSetColors(unsigned int nbC, CColor::RGBA* rgbaColors)
 #endif
 }
 
-void CGeometry::glSetFogs(unsigned int nbF, float* fogs)
+void CGeometry::glSetFogs(size_t nbF, float* fogs)
 {
 #if defined (DATA_PACKED)
 	if (fogs == NULL)
@@ -1428,6 +1407,9 @@ void CGeometry::glSetFogs(unsigned int nbF, float* fogs)
 			CGeometryAllocator::GetInstance()->releaseVertices(fogcoords);
 
 		fogcoords = CGeometryAllocator::GetInstance()->allocateVertices(nbF);
+
+		CResourceAllocator::CResourceBinder *binder = (CResourceAllocator::CResourceBinder *)m_pBinder;
+		binder->setArray(CProgramParameters::FOG_COORDINATE, weightcoords, 1);
 	}
 	else if ((nbF > 0) && (fogcoords != NULL))
 	{
@@ -1569,7 +1551,7 @@ void CGeometry::addVertex(float x, float y, float z,float h)
 	}
 }
 
-void CGeometry::setCoord(unsigned int numvtx,GLfloat x,GLfloat y,GLfloat z,GLfloat h)
+void CGeometry::setCoord(size_t numvtx, GLfloat x, GLfloat y, GLfloat z, GLfloat h)
 {
 #if defined (DATA_EXTENDED)
     if ((numvtx<m_nbVertex) && (geometry != NULL))
@@ -1586,7 +1568,7 @@ void CGeometry::setCoord(unsigned int numvtx,GLfloat x,GLfloat y,GLfloat z,GLflo
 	}
 }
 
-void CGeometry::setTexCoord(unsigned int numvtx,float u,float v)
+void CGeometry::setTexCoord(size_t numvtx, float u, float v)
 {
 #if defined (DATA_EXTENDED)
     if ((numvtx<m_nbVertex) && (geometry != NULL))
@@ -1631,7 +1613,7 @@ void CGeometry::addFace(int p1,int p2,int p3)
 	}
 }
 
-void CGeometry::getFace(unsigned int numface,unsigned int &p1,unsigned int &p2,unsigned int &p3) const
+void CGeometry::getFace(size_t numface, unsigned int &p1, unsigned int &p2, unsigned int &p3) const
 {
 	if ((numface<m_nbPolys) && (polys != NULL))
 	{
@@ -1645,7 +1627,7 @@ void CGeometry::getFace(unsigned int numface,unsigned int &p1,unsigned int &p2,u
 	}
 }
 
-void CGeometry::setWeight(unsigned int numvtx,float w)
+void CGeometry::setWeight(size_t numvtx, float w)
 {
 #if defined (DATA_EXTENDED)
     if ((numvtx<m_nbVertex) && (geometry != NULL))
@@ -1655,7 +1637,7 @@ void CGeometry::setWeight(unsigned int numvtx,float w)
 		WEIGHT(numvtx) = w;
 }
 
-float CGeometry::getWeight(unsigned int numvtx) const
+float CGeometry::getWeight(size_t numvtx) const
 {
 #if defined (DATA_EXTENDED)
     if ((numvtx<m_nbVertex) && (geometry != NULL))
@@ -1668,7 +1650,7 @@ float CGeometry::getWeight(unsigned int numvtx) const
 }
 
 
-void CGeometry::setFogCoord(unsigned int numvtx,GLfloat f)
+void CGeometry::setFogCoord(size_t numvtx, GLfloat f)
 {
 #if defined (DATA_EXTENDED)
     if ((numvtx<m_nbVertex) && (geometry != NULL))
@@ -1678,7 +1660,7 @@ void CGeometry::setFogCoord(unsigned int numvtx,GLfloat f)
 		FOGCOORD(numvtx) = f;
 }
 
-float CGeometry::getFogCoord(unsigned int numvtx) const
+float CGeometry::getFogCoord(size_t numvtx) const
 {
 #if defined (DATA_EXTENDED)
     if ((numvtx<m_nbVertex) && (geometry != NULL))
@@ -1690,7 +1672,7 @@ float CGeometry::getFogCoord(unsigned int numvtx) const
 		return 0.0f;
 }
 
-void CGeometry::getCoord(unsigned int numvtx,GL_COORD_VERTEX &v) const
+void CGeometry::getCoord(size_t numvtx, GL_COORD_VERTEX &v) const
 {
 #if defined (DATA_EXTENDED)
     if ((numvtx<m_nbVertex) && (geometry != NULL))
@@ -1700,7 +1682,7 @@ void CGeometry::getCoord(unsigned int numvtx,GL_COORD_VERTEX &v) const
 		v = VERTEX(numvtx);
 }
 
-void CGeometry::getVertex(unsigned int numvtx,GL_VERTEX_DATA &v) const
+void CGeometry::getVertex(size_t numvtx, GL_VERTEX_DATA &v) const
 {
 #if defined (DATA_EXTENDED)
     if ((numvtx<m_nbVertex) && (geometry != NULL))
@@ -1731,7 +1713,7 @@ void CGeometry::getVertex(unsigned int numvtx,GL_VERTEX_DATA &v) const
 #endif
 }
 
-void CGeometry::setNormal(unsigned int numvtx,GLfloat x,GLfloat y,GLfloat z,GLfloat h)
+void CGeometry::setNormal(size_t numvtx, GLfloat x, GLfloat y, GLfloat z, GLfloat h)
 {
 #if defined (DATA_EXTENDED)
     if ((numvtx<m_nbVertex) && (geometry != NULL))
@@ -1746,7 +1728,7 @@ void CGeometry::setNormal(unsigned int numvtx,GLfloat x,GLfloat y,GLfloat z,GLfl
 	}
 }
 
-void CGeometry::getNormal(unsigned int numvtx,GL_COORD_VERTEX &v) const
+void CGeometry::getNormal(size_t numvtx, GL_COORD_VERTEX &v) const
 {
 #if defined (DATA_EXTENDED)
     if ((numvtx<m_nbVertex) && (geometry != NULL))
@@ -1756,7 +1738,7 @@ void CGeometry::getNormal(unsigned int numvtx,GL_COORD_VERTEX &v) const
 		v = NORMAL(numvtx);
 }
 
-void CGeometry::getTangent(unsigned int numvtx,GL_COORD_VERTEX &v) const
+void CGeometry::getTangent(size_t numvtx, GL_COORD_VERTEX &v) const
 {
 #if defined (DATA_EXTENDED)
     if ((numvtx<m_nbVertex) && (geometry != NULL))
@@ -1766,7 +1748,7 @@ void CGeometry::getTangent(unsigned int numvtx,GL_COORD_VERTEX &v) const
 		v = TANGENT(numvtx);
 }
 
-void CGeometry::getBiNormal(unsigned int numvtx,GL_COORD_VERTEX &v) const
+void CGeometry::getBiNormal(size_t numvtx, GL_COORD_VERTEX &v) const
 {
 #if defined (DATA_EXTENDED)
     if ((numvtx<m_nbVertex) && (geometry != NULL))
@@ -1776,7 +1758,7 @@ void CGeometry::getBiNormal(unsigned int numvtx,GL_COORD_VERTEX &v) const
 		v = BINORMAL(numvtx);
 }
 
-void CGeometry::setColor(unsigned int numvtx,float r,float g,float b,float a)
+void CGeometry::setColor(size_t numvtx, float r, float g, float b, float a)
 {
 #if defined (DATA_EXTENDED)
     if ((numvtx<m_nbVertex) && (geometry != NULL))
@@ -1791,7 +1773,7 @@ void CGeometry::setColor(unsigned int numvtx,float r,float g,float b,float a)
 	}
 }
 
-void CGeometry::getColor(unsigned int numvtx,CColor::RGBA &v) const
+void CGeometry::getColor(size_t numvtx, CColor::RGBA &v) const
 {
 #if defined (DATA_EXTENDED)
     if ((numvtx<m_nbVertex) && (geometry != NULL))
@@ -1903,65 +1885,65 @@ bool CGeometry::importRenderingModel(CRaptorIO& io)
         {    
             io >> bool_value; 
             if (bool_value)
-                m_renderingModel.addModel(CRenderingModel::CGL_FRONT_GEOMETRY);
+				addModel(CGeometry::CGL_FRONT_GEOMETRY);
             else
-                m_renderingModel.removeModel(CRenderingModel::CGL_FRONT_GEOMETRY);
+				removeModel(CGeometry::CGL_FRONT_GEOMETRY);
         }
         else if (data == "back_geometry")
         {    
             io >> bool_value; 
             if (bool_value)
-                m_renderingModel.addModel(CRenderingModel::CGL_BACK_GEOMETRY);
+				addModel(CGeometry::CGL_BACK_GEOMETRY);
             else
-                m_renderingModel.removeModel(CRenderingModel::CGL_BACK_GEOMETRY);
+				removeModel(CGeometry::CGL_BACK_GEOMETRY);
         }
         else if (data == "normals")
         {    
             io >> bool_value; 
             if (bool_value)
-                m_renderingModel.addModel(CRenderingModel::CGL_NORMALS);
+				addModel(CGeometry::CGL_NORMALS);
             else
-                m_renderingModel.removeModel(CRenderingModel::CGL_NORMALS);
+				removeModel(CGeometry::CGL_NORMALS);
         }
         else if (data == "tangents")
         {    
             io >> bool_value; 
             if (bool_value)
-                m_renderingModel.addModel(CRenderingModel::CGL_TANGENTS);
+				addModel(CGeometry::CGL_TANGENTS);
             else
-                m_renderingModel.removeModel(CRenderingModel::CGL_TANGENTS);
+				removeModel(CGeometry::CGL_TANGENTS);
         }
         else if (data == "texture")
         {    
             io >> bool_value; 
             if (bool_value)
-                m_renderingModel.addModel(CRenderingModel::CGL_TEXTURE);
+				addModel(CGeometry::CGL_TEXTURE);
             else
-                m_renderingModel.removeModel(CRenderingModel::CGL_TEXTURE);
+				removeModel(CGeometry::CGL_TEXTURE);
         }
         else if (data == "weights")
         {    
             io >> bool_value; 
             if (bool_value)
-                m_renderingModel.addModel(CRenderingModel::CGL_WEIGHT);
+				addModel(CGeometry::CGL_WEIGHT);
             else
-                m_renderingModel.removeModel(CRenderingModel::CGL_WEIGHT);
+				removeModel(CGeometry::CGL_WEIGHT);
         }
         else if (data == "colors")
         {    
             io >> bool_value; 
             if (bool_value)
-                m_renderingModel.addModel(CRenderingModel::CGL_COLORS);
+				addModel(CGeometry::CGL_COLORS);
             else
-                m_renderingModel.removeModel(CRenderingModel::CGL_COLORS);
+				removeModel(CGeometry::CGL_COLORS);
         }
         else if (data == "fog")
         {    
             io >> bool_value; 
             if (bool_value)
-                m_renderingModel.addModel(CRenderingModel::CGL_FOG);
+				addModel(CGeometry::CGL_FOG);
             else
-                m_renderingModel.removeModel(CRenderingModel::CGL_FOG);
+				removeModel(CGeometry::CGL_FOG);
         }
         else
 			io >> name;
@@ -1983,7 +1965,6 @@ bool CGeometry::importObject(CRaptorIO& io)
 	vector<GL_TEX_VERTEX> tcoords;
 	vector<CColor::RGBA> rgbacolors;
 	vector<unsigned int> faces;
-	CRenderingModel l_model(getRenderingModel());
 	bool modelImported = false;
 
     string data = io.getValueName();
@@ -2057,14 +2038,14 @@ bool CGeometry::importObject(CRaptorIO& io)
 	if (!coords.empty())
 	{
 		if (!modelImported)
-			l_model.addModel(CRenderingModel::CGL_FRONT_GEOMETRY);
+			addModel(CGeometry::CGL_FRONT_GEOMETRY);
 		glSetVertices(coords.size());
 	}
 	
 	if (!tcoords.empty())
 	{
 		if (!modelImported)
-			l_model.addModel(CRenderingModel::CGL_TEXTURE);
+			addModel(CGeometry::CGL_TEXTURE);
 		glSetTexCoords(tcoords.size());
 	}
 
@@ -2074,12 +2055,9 @@ bool CGeometry::importObject(CRaptorIO& io)
 	if (!rgbacolors.empty())
 	{
 		if (!modelImported)
-			l_model.addModel(CRenderingModel::CGL_COLORS);
+			addModel(CGeometry::CGL_COLORS);
 		glSetColors(rgbacolors.size());
 	}
-
-	if (!modelImported)
-		setRenderingModel(l_model);
 
     glLockData();
 

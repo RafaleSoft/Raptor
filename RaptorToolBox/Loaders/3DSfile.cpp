@@ -468,7 +468,7 @@ bool RAPTOR_FASTCALL ProcessChunk4xxxH(long length)
 			if (geo != NULL)
 				FlushGeometry(geo);
             geo = new CShadedGeometry(CurrentState.name);
-			geo->setRenderingModel(CGeometry::CRenderingModel(CGeometry::CRenderingModel::CGL_FRONT_GEOMETRY));
+			geo->setRenderingModel(CGeometry::CGL_FRONT_GEOMETRY);
            
 			// read object datas:
 			int l=pos;
@@ -610,14 +610,12 @@ bool RAPTOR_FASTCALL ProcessChunk4xxxH(long length)
 			{
                 m = (Material*)((*it).second);
 
-                CGeometry::CRenderingModel& model = geo->getRenderingModel();
-
 				if (geo->getId().isSubClassOf(CShadedGeometry::CShadedGeometryClassID::GetClassId()))
                 {
                     CShadedGeometry *sh = static_cast<CShadedGeometry*>(geo);
 				    CShader *s = sh->getShader();
 				    *s->getMaterial() = *m->mat;
-                    model.addModel(CGeometry::CRenderingModel::CGL_NORMALS);
+					geo->addModel(CGeometry::CGL_NORMALS);
 				    if (m->tp.nTexture >= 0)
 				    {
                         CTextureUnitSetup* ts = s->glGetTextureUnitsSetup();
@@ -631,15 +629,14 @@ bool RAPTOR_FASTCALL ProcessChunk4xxxH(long length)
 							v.v = v.v * m->tp.vscale + m->tp.voffset;
 						}
 
-                        model.addModel(CGeometry::CRenderingModel::CGL_TEXTURE);
+						geo->addModel(CGeometry::CGL_TEXTURE);
                     }
 				}
 				else
 				{
 					//	remove texture from rendering model
-					model.removeModel(CGeometry::CRenderingModel::CGL_TEXTURE);
+					geo->removeModel(CGeometry::CGL_TEXTURE);
 				}
-                geo->setRenderingModel(model);
 			}
 			C3DSFile->read( &nfaces,2);
 			
