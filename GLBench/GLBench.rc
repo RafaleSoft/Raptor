@@ -1,356 +1,356 @@
-// Microsoft Visual C++ generated resource script.          
-//          
-#include "resource.h"          
-#define APSTUDIO_READONLY_SYMBOLS          
-/////////////////////////////////////////////////////////////////////////////          
-//          
-// Generated from the TEXTINCLUDE 2 resource.          
-//          
-#include "afxres.h"          
-/////////////////////////////////////////////////////////////////////////////          
-#undef APSTUDIO_READONLY_SYMBOLS          
-/////////////////////////////////////////////////////////////////////////////          
-// French (France) resources          
-#if defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_FRA)          
-LANGUAGE LANG_FRENCH, SUBLANG_FRENCH          
-#pragma code_page(1252)          
-#ifdef APSTUDIO_INVOKED          
-/////////////////////////////////////////////////////////////////////////////          
-//          
-// TEXTINCLUDE          
-//          
-1 TEXTINCLUDE           
-BEGIN          
-    "resource.h\0"          
-END          
-2 TEXTINCLUDE           
-BEGIN          
-    "#include ""afxres.h""\r\n"          
-    "\0"          
-END          
-3 TEXTINCLUDE           
-BEGIN          
-    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"          
-    "#define _AFX_NO_OLE_RESOURCES\r\n"          
-    "#define _AFX_NO_TRACKER_RESOURCES\r\n"          
-    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"          
-    "\r\n"          
-    "#if defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_FRA)\r\n"          
-    "#ifdef _WIN32\r\n"          
-    "LANGUAGE 12, 1\r\n"          
-    "#pragma code_page(1252)\r\n"          
-    "#endif //_WIN32\r\n"          
-    "#include ""res\\GLBench.rc2""  // non-Microsoft Visual C++ edited resources\r\n"          
-    "#include ""l.fra\\afxres.rc""          // Standard components\r\n"          
-    "#endif\r\n"          
-    "\0"          
-END          
-#endif    // APSTUDIO_INVOKED          
-/////////////////////////////////////////////////////////////////////////////          
-//          
-// Icon          
-//          
-// Icon with lowest ID value placed first to ensure application icon          
-// remains consistent on all systems.          
-IDR_MAINFRAME           ICON                    "res\\GLBench.ico"          
-/////////////////////////////////////////////////////////////////////////////          
-//          
-// Dialog          
-//          
-IDD_GLBENCH_DIALOG DIALOGEX 0, 0, 317, 122          
-STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU          
-EXSTYLE WS_EX_APPWINDOW          
-CAPTION "GLBench"          
-FONT 8, "MS Sans Serif", 0, 0, 0x1          
-BEGIN          
-    DEFPUSHBUTTON   "Quit",IDOK,261,7,50,14          
-    LISTBOX         IDC_LIST,7,7,103,79,LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP          
-    GROUPBOX        "Module infos ...",IDC_STATIC,115,7,140,79          
-    LTEXT           "Author:",IDC_STATIC,120,20,34,10,SS_CENTERIMAGE          
-    LTEXT           "Name:",IDC_STATIC,120,30,34,10,SS_CENTERIMAGE          
-    LTEXT           "Description:",IDC_STATIC,120,40,40,10,SS_CENTERIMAGE          
-    LTEXT           ".",IDC_AUTHOR,160,20,90,10,SS_CENTERIMAGE          
-    LTEXT           ".",IDC_NAME,160,30,90,10,SS_CENTERIMAGE          
-    LTEXT           ".",IDC_DESCRIPTION,160,40,90,40          
-    PUSHBUTTON      "Bench",IDC_BENCH,261,25,50,14          
-    CONTROL         IDB_BITMAP1,IDC_STATIC,"Static",SS_BITMAP,7,87,101,34          
-    CONTROL         IDB_BITMAP2,IDC_STATIC,"Static",SS_BITMAP,169,87,85,28          
-    LTEXT           "           Featuring: .........OpenGL 4.6........ ........Raptor 2.17.1.......",IDC_STATIC,94,87,73,28          
-    CONTROL         "640x480",IDC_RADIO1,"Button",BS_AUTORADIOBUTTON,260,60,39,10          
-    CONTROL         "800x600",IDC_RADIO2,"Button",BS_AUTORADIOBUTTON,260,70,43,10          
-    CONTROL         "1024x768",IDC_RADIO3,"Button",BS_AUTORADIOBUTTON,260,80,47,10          
-    CONTROL         "1280x1024",IDC_RADIO4,"Button",BS_AUTORADIOBUTTON,260,90,51,10          
-    CONTROL         "Full Screen",IDC_RADIO5,"Button",BS_AUTORADIOBUTTON,260,100,51,10          
-    PUSHBUTTON      "Sys. Info",IDC_SYSINFO,261,40,50,14          
-END          
-IDD_BENCH_RESULTS DIALOG 0, 0, 248, 166          
-STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU          
-CAPTION "Bench Results"          
-FONT 8, "MS Sans Serif"          
-BEGIN          
-    DEFPUSHBUTTON   "OK",IDOK,191,7,50,14          
-    LISTBOX         IDC_LIST,7,7,182,152,LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_HSCROLL | WS_TABSTOP          
-END          
-/////////////////////////////////////////////////////////////////////////////          
-//          
-// Version          
-//          
-VS_VERSION_INFO VERSIONINFO          
+// Microsoft Visual C++ generated resource script.           
+//           
+#include "resource.h"           
+#define APSTUDIO_READONLY_SYMBOLS           
+/////////////////////////////////////////////////////////////////////////////           
+//           
+// Generated from the TEXTINCLUDE 2 resource.           
+//           
+#include "afxres.h"           
+/////////////////////////////////////////////////////////////////////////////           
+#undef APSTUDIO_READONLY_SYMBOLS           
+/////////////////////////////////////////////////////////////////////////////           
+// French (France) resources           
+#if defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_FRA)           
+LANGUAGE LANG_FRENCH, SUBLANG_FRENCH           
+#pragma code_page(1252)           
+#ifdef APSTUDIO_INVOKED           
+/////////////////////////////////////////////////////////////////////////////           
+//           
+// TEXTINCLUDE           
+//           
+1 TEXTINCLUDE            
+BEGIN           
+    "resource.h\0"           
+END           
+2 TEXTINCLUDE            
+BEGIN           
+    "#include ""afxres.h""\r\n"           
+    "\0"           
+END           
+3 TEXTINCLUDE            
+BEGIN           
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"           
+    "#define _AFX_NO_OLE_RESOURCES\r\n"           
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"           
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"           
+    "\r\n"           
+    "#if defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_FRA)\r\n"           
+    "#ifdef _WIN32\r\n"           
+    "LANGUAGE 12, 1\r\n"           
+    "#pragma code_page(1252)\r\n"           
+    "#endif //_WIN32\r\n"           
+    "#include ""res\\GLBench.rc2""  // non-Microsoft Visual C++ edited resources\r\n"           
+    "#include ""l.fra\\afxres.rc""          // Standard components\r\n"           
+    "#endif\r\n"           
+    "\0"           
+END           
+#endif    // APSTUDIO_INVOKED           
+/////////////////////////////////////////////////////////////////////////////           
+//           
+// Icon           
+//           
+// Icon with lowest ID value placed first to ensure application icon           
+// remains consistent on all systems.           
+IDR_MAINFRAME           ICON                    "res\\GLBench.ico"           
+/////////////////////////////////////////////////////////////////////////////           
+//           
+// Dialog           
+//           
+IDD_GLBENCH_DIALOG DIALOGEX 0, 0, 317, 122           
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU           
+EXSTYLE WS_EX_APPWINDOW           
+CAPTION "GLBench"           
+FONT 8, "MS Sans Serif", 0, 0, 0x1           
+BEGIN           
+    DEFPUSHBUTTON   "Quit",IDOK,261,7,50,14           
+    LISTBOX         IDC_LIST,7,7,103,79,LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP           
+    GROUPBOX        "Module infos ...",IDC_STATIC,115,7,140,79           
+    LTEXT           "Author:",IDC_STATIC,120,20,34,10,SS_CENTERIMAGE           
+    LTEXT           "Name:",IDC_STATIC,120,30,34,10,SS_CENTERIMAGE           
+    LTEXT           "Description:",IDC_STATIC,120,40,40,10,SS_CENTERIMAGE           
+    LTEXT           ".",IDC_AUTHOR,160,20,90,10,SS_CENTERIMAGE           
+    LTEXT           ".",IDC_NAME,160,30,90,10,SS_CENTERIMAGE           
+    LTEXT           ".",IDC_DESCRIPTION,160,40,90,40           
+    PUSHBUTTON      "Bench",IDC_BENCH,261,25,50,14           
+    CONTROL         IDB_BITMAP1,IDC_STATIC,"Static",SS_BITMAP,7,87,101,34           
+    CONTROL         IDB_BITMAP2,IDC_STATIC,"Static",SS_BITMAP,169,87,85,28           
+    LTEXT           "           Featuring: .........OpenGL 4.6........ ........Raptor 2.17.1.......",IDC_STATIC,94,87,73,28           
+    CONTROL         "640x480",IDC_RADIO1,"Button",BS_AUTORADIOBUTTON,260,60,39,10           
+    CONTROL         "800x600",IDC_RADIO2,"Button",BS_AUTORADIOBUTTON,260,70,43,10           
+    CONTROL         "1024x768",IDC_RADIO3,"Button",BS_AUTORADIOBUTTON,260,80,47,10           
+    CONTROL         "1280x1024",IDC_RADIO4,"Button",BS_AUTORADIOBUTTON,260,90,51,10           
+    CONTROL         "Full Screen",IDC_RADIO5,"Button",BS_AUTORADIOBUTTON,260,100,51,10           
+    PUSHBUTTON      "Sys. Info",IDC_SYSINFO,261,40,50,14           
+END           
+IDD_BENCH_RESULTS DIALOG 0, 0, 248, 166           
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU           
+CAPTION "Bench Results"           
+FONT 8, "MS Sans Serif"           
+BEGIN           
+    DEFPUSHBUTTON   "OK",IDOK,191,7,50,14           
+    LISTBOX         IDC_LIST,7,7,182,152,LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_HSCROLL | WS_TABSTOP           
+END           
+/////////////////////////////////////////////////////////////////////////////           
+//           
+// Version           
+//           
+VS_VERSION_INFO VERSIONINFO           
  FILEVERSION 2,17,2,0 
  PRODUCTVERSION 2,17,2,0 
- FILEFLAGSMASK 0x3fL          
-#ifdef _DEBUG          
- FILEFLAGS 0x1L          
-#else          
- FILEFLAGS 0x0L          
-#endif          
- FILEOS 0x4L          
- FILETYPE 0x1L          
- FILESUBTYPE 0x0L          
-BEGIN          
-    BLOCK "StringFileInfo"          
-    BEGIN          
-        BLOCK "040c04b0"          
-        BEGIN          
-            VALUE "FileDescription", "Application MFC GLBench"          
+ FILEFLAGSMASK 0x3fL           
+#ifdef _DEBUG           
+ FILEFLAGS 0x1L           
+#else           
+ FILEFLAGS 0x0L           
+#endif           
+ FILEOS 0x4L           
+ FILETYPE 0x1L           
+ FILESUBTYPE 0x0L           
+BEGIN           
+    BLOCK "StringFileInfo"           
+    BEGIN           
+        BLOCK "040c04b0"           
+        BEGIN           
+            VALUE "FileDescription", "Application MFC GLBench"           
             VALUE "FileVersion", "2.17.2.0" 
-            VALUE "InternalName", "GLBench"          
-            VALUE "LegalCopyright", "Copyright (C) 2003"          
-            VALUE "OriginalFilename", "GLBench.exe"          
-            VALUE "ProductName", "Application GLBench"          
+            VALUE "InternalName", "GLBench"           
+            VALUE "LegalCopyright", "Copyright (C) 2003"           
+            VALUE "OriginalFilename", "GLBench.exe"           
+            VALUE "ProductName", "Application GLBench"           
             VALUE "ProductVersion", "2.17.2.0" 
-        END          
-    END          
-    BLOCK "VarFileInfo"          
-    BEGIN          
-        VALUE "Translation", 0x40c, 1200          
-    END          
-END          
-/////////////////////////////////////////////////////////////////////////////          
-//          
-// DESIGNINFO          
-//          
-#ifdef APSTUDIO_INVOKED          
-GUIDELINES DESIGNINFO          
-BEGIN          
-    IDD_GLBENCH_DIALOG, DIALOG          
-    BEGIN          
-        LEFTMARGIN, 7          
-        RIGHTMARGIN, 311          
-        TOPMARGIN, 7          
-        BOTTOMMARGIN, 115          
-    END          
-    IDD_BENCH_RESULTS, DIALOG          
-    BEGIN          
-        LEFTMARGIN, 7          
-        RIGHTMARGIN, 241          
-        TOPMARGIN, 7          
-        BOTTOMMARGIN, 159          
-    END          
-END          
-#endif    // APSTUDIO_INVOKED          
-/////////////////////////////////////////////////////////////////////////////          
-//          
-// Bitmap          
-//          
-IDB_BITMAP2             BITMAP                  "res\\Raptor_logo_sml.bmp"          
-IDB_BITMAP1             BITMAP                  "res\\OGL_logo_sml.bmp"          
-#endif    // French (France) resources          
-/////////////////////////////////////////////////////////////////////////////          
-#ifndef APSTUDIO_INVOKED          
-/////////////////////////////////////////////////////////////////////////////          
-//          
-// Generated from the TEXTINCLUDE 3 resource.          
-//          
-#define _AFX_NO_SPLITTER_RESOURCES          
-#define _AFX_NO_OLE_RESOURCES          
-#define _AFX_NO_TRACKER_RESOURCES          
-#define _AFX_NO_PROPERTY_RESOURCES          
-#if defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_FRA)          
-#ifdef _WIN32          
-LANGUAGE 12, 1          
-#pragma code_page(1252)          
-#endif //_WIN32          
-#include "res\GLBench.rc2"  // non-Microsoft Visual C++ edited resources          
-#include "l.fra\afxres.rc"          // Standard components          
-#endif          
-/////////////////////////////////////////////////////////////////////////////          
-#endif    // not APSTUDIO_INVOKED          
-// Microsoft Visual C++ generated resource script.          
-//          
-#include "resource.h"          
-#define APSTUDIO_READONLY_SYMBOLS          
-/////////////////////////////////////////////////////////////////////////////          
-//          
-// Generated from the TEXTINCLUDE 2 resource.          
-//          
-#include "afxres.h"          
-/////////////////////////////////////////////////////////////////////////////          
-#undef APSTUDIO_READONLY_SYMBOLS          
-/////////////////////////////////////////////////////////////////////////////          
-// French (France) resources          
-#if defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_FRA)          
-LANGUAGE LANG_FRENCH, SUBLANG_FRENCH          
-#pragma code_page(1252)          
-#ifdef APSTUDIO_INVOKED          
-/////////////////////////////////////////////////////////////////////////////          
-//          
-// TEXTINCLUDE          
-//          
-1 TEXTINCLUDE           
-BEGIN          
-    "resource.h\0"          
-END          
-2 TEXTINCLUDE           
-BEGIN          
-    "#include ""afxres.h""\r\n"          
-    "\0"          
-END          
-3 TEXTINCLUDE           
-BEGIN          
-    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"          
-    "#define _AFX_NO_OLE_RESOURCES\r\n"          
-    "#define _AFX_NO_TRACKER_RESOURCES\r\n"          
-    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"          
-    "\r\n"          
-    "#if defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_FRA)\r\n"          
-    "#ifdef _WIN32\r\n"          
-    "LANGUAGE 12, 1\r\n"          
-    "#pragma code_page(1252)\r\n"          
-    "#endif //_WIN32\r\n"          
-    "#include ""res\\GLBench.rc2""  // non-Microsoft Visual C++ edited resources\r\n"          
-    "#include ""l.fra\\afxres.rc""          // Standard components\r\n"          
-    "#endif\r\n"          
-    "\0"          
-END          
-#endif    // APSTUDIO_INVOKED          
-/////////////////////////////////////////////////////////////////////////////          
-//          
-// Icon          
-//          
-// Icon with lowest ID value placed first to ensure application icon          
-// remains consistent on all systems.          
-IDR_MAINFRAME           ICON                    "res\\GLBench.ico"          
-/////////////////////////////////////////////////////////////////////////////          
-//          
-// Dialog          
-//          
-IDD_GLBENCH_DIALOG DIALOGEX 0, 0, 317, 122          
-STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU          
-EXSTYLE WS_EX_APPWINDOW          
-CAPTION "GLBench"          
-FONT 8, "MS Sans Serif", 0, 0, 0x1          
-BEGIN          
-    DEFPUSHBUTTON   "Quit",IDOK,261,7,50,14          
-    LISTBOX         IDC_LIST,7,7,103,79,LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP          
-    GROUPBOX        "Module infos ...",IDC_STATIC,115,7,140,79          
-    LTEXT           "Author:",IDC_STATIC,120,20,34,10,SS_CENTERIMAGE          
-    LTEXT           "Name:",IDC_STATIC,120,30,34,10,SS_CENTERIMAGE          
-    LTEXT           "Description:",IDC_STATIC,120,40,40,10,SS_CENTERIMAGE          
-    LTEXT           ".",IDC_AUTHOR,160,20,90,10,SS_CENTERIMAGE          
-    LTEXT           ".",IDC_NAME,160,30,90,10,SS_CENTERIMAGE          
-    LTEXT           ".",IDC_DESCRIPTION,160,40,90,40          
-    PUSHBUTTON      "Bench",IDC_BENCH,261,25,50,14          
-    CONTROL         IDB_BITMAP1,IDC_STATIC,"Static",SS_BITMAP,7,87,101,34          
-    CONTROL         IDB_BITMAP2,IDC_STATIC,"Static",SS_BITMAP,169,87,85,28          
-    LTEXT           "           Featuring: .........OpenGL 4.6........ ........Raptor 2.17.1.......",IDC_STATIC,94,87,73,28          
-    CONTROL         "640x480",IDC_RADIO1,"Button",BS_AUTORADIOBUTTON,260,60,39,10          
-    CONTROL         "800x600",IDC_RADIO2,"Button",BS_AUTORADIOBUTTON,260,70,43,10          
-    CONTROL         "1024x768",IDC_RADIO3,"Button",BS_AUTORADIOBUTTON,260,80,47,10          
-    CONTROL         "1280x1024",IDC_RADIO4,"Button",BS_AUTORADIOBUTTON,260,90,51,10          
-    CONTROL         "Full Screen",IDC_RADIO5,"Button",BS_AUTORADIOBUTTON,260,100,51,10          
-    PUSHBUTTON      "Sys. Info",IDC_SYSINFO,261,40,50,14          
-END          
-IDD_BENCH_RESULTS DIALOG 0, 0, 248, 166          
-STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU          
-CAPTION "Bench Results"          
-FONT 8, "MS Sans Serif"          
-BEGIN          
-    DEFPUSHBUTTON   "OK",IDOK,191,7,50,14          
-    LISTBOX         IDC_LIST,7,7,182,152,LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_HSCROLL | WS_TABSTOP          
-END          
-/////////////////////////////////////////////////////////////////////////////          
-//          
-// Version          
-//          
-VS_VERSION_INFO VERSIONINFO          
+        END           
+    END           
+    BLOCK "VarFileInfo"           
+    BEGIN           
+        VALUE "Translation", 0x40c, 1200           
+    END           
+END           
+/////////////////////////////////////////////////////////////////////////////           
+//           
+// DESIGNINFO           
+//           
+#ifdef APSTUDIO_INVOKED           
+GUIDELINES DESIGNINFO           
+BEGIN           
+    IDD_GLBENCH_DIALOG, DIALOG           
+    BEGIN           
+        LEFTMARGIN, 7           
+        RIGHTMARGIN, 311           
+        TOPMARGIN, 7           
+        BOTTOMMARGIN, 115           
+    END           
+    IDD_BENCH_RESULTS, DIALOG           
+    BEGIN           
+        LEFTMARGIN, 7           
+        RIGHTMARGIN, 241           
+        TOPMARGIN, 7           
+        BOTTOMMARGIN, 159           
+    END           
+END           
+#endif    // APSTUDIO_INVOKED           
+/////////////////////////////////////////////////////////////////////////////           
+//           
+// Bitmap           
+//           
+IDB_BITMAP2             BITMAP                  "res\\Raptor_logo_sml.bmp"           
+IDB_BITMAP1             BITMAP                  "res\\OGL_logo_sml.bmp"           
+#endif    // French (France) resources           
+/////////////////////////////////////////////////////////////////////////////           
+#ifndef APSTUDIO_INVOKED           
+/////////////////////////////////////////////////////////////////////////////           
+//           
+// Generated from the TEXTINCLUDE 3 resource.           
+//           
+#define _AFX_NO_SPLITTER_RESOURCES           
+#define _AFX_NO_OLE_RESOURCES           
+#define _AFX_NO_TRACKER_RESOURCES           
+#define _AFX_NO_PROPERTY_RESOURCES           
+#if defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_FRA)           
+#ifdef _WIN32           
+LANGUAGE 12, 1           
+#pragma code_page(1252)           
+#endif //_WIN32           
+#include "res\GLBench.rc2"  // non-Microsoft Visual C++ edited resources           
+#include "l.fra\afxres.rc"          // Standard components           
+#endif           
+/////////////////////////////////////////////////////////////////////////////           
+#endif    // not APSTUDIO_INVOKED           
+// Microsoft Visual C++ generated resource script.           
+//           
+#include "resource.h"           
+#define APSTUDIO_READONLY_SYMBOLS           
+/////////////////////////////////////////////////////////////////////////////           
+//           
+// Generated from the TEXTINCLUDE 2 resource.           
+//           
+#include "afxres.h"           
+/////////////////////////////////////////////////////////////////////////////           
+#undef APSTUDIO_READONLY_SYMBOLS           
+/////////////////////////////////////////////////////////////////////////////           
+// French (France) resources           
+#if defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_FRA)           
+LANGUAGE LANG_FRENCH, SUBLANG_FRENCH           
+#pragma code_page(1252)           
+#ifdef APSTUDIO_INVOKED           
+/////////////////////////////////////////////////////////////////////////////           
+//           
+// TEXTINCLUDE           
+//           
+1 TEXTINCLUDE            
+BEGIN           
+    "resource.h\0"           
+END           
+2 TEXTINCLUDE            
+BEGIN           
+    "#include ""afxres.h""\r\n"           
+    "\0"           
+END           
+3 TEXTINCLUDE            
+BEGIN           
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"           
+    "#define _AFX_NO_OLE_RESOURCES\r\n"           
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"           
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"           
+    "\r\n"           
+    "#if defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_FRA)\r\n"           
+    "#ifdef _WIN32\r\n"           
+    "LANGUAGE 12, 1\r\n"           
+    "#pragma code_page(1252)\r\n"           
+    "#endif //_WIN32\r\n"           
+    "#include ""res\\GLBench.rc2""  // non-Microsoft Visual C++ edited resources\r\n"           
+    "#include ""l.fra\\afxres.rc""          // Standard components\r\n"           
+    "#endif\r\n"           
+    "\0"           
+END           
+#endif    // APSTUDIO_INVOKED           
+/////////////////////////////////////////////////////////////////////////////           
+//           
+// Icon           
+//           
+// Icon with lowest ID value placed first to ensure application icon           
+// remains consistent on all systems.           
+IDR_MAINFRAME           ICON                    "res\\GLBench.ico"           
+/////////////////////////////////////////////////////////////////////////////           
+//           
+// Dialog           
+//           
+IDD_GLBENCH_DIALOG DIALOGEX 0, 0, 317, 122           
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU           
+EXSTYLE WS_EX_APPWINDOW           
+CAPTION "GLBench"           
+FONT 8, "MS Sans Serif", 0, 0, 0x1           
+BEGIN           
+    DEFPUSHBUTTON   "Quit",IDOK,261,7,50,14           
+    LISTBOX         IDC_LIST,7,7,103,79,LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP           
+    GROUPBOX        "Module infos ...",IDC_STATIC,115,7,140,79           
+    LTEXT           "Author:",IDC_STATIC,120,20,34,10,SS_CENTERIMAGE           
+    LTEXT           "Name:",IDC_STATIC,120,30,34,10,SS_CENTERIMAGE           
+    LTEXT           "Description:",IDC_STATIC,120,40,40,10,SS_CENTERIMAGE           
+    LTEXT           ".",IDC_AUTHOR,160,20,90,10,SS_CENTERIMAGE           
+    LTEXT           ".",IDC_NAME,160,30,90,10,SS_CENTERIMAGE           
+    LTEXT           ".",IDC_DESCRIPTION,160,40,90,40           
+    PUSHBUTTON      "Bench",IDC_BENCH,261,25,50,14           
+    CONTROL         IDB_BITMAP1,IDC_STATIC,"Static",SS_BITMAP,7,87,101,34           
+    CONTROL         IDB_BITMAP2,IDC_STATIC,"Static",SS_BITMAP,169,87,85,28           
+    LTEXT           "           Featuring: .........OpenGL 4.6........ ........Raptor 2.17.1.......",IDC_STATIC,94,87,73,28           
+    CONTROL         "640x480",IDC_RADIO1,"Button",BS_AUTORADIOBUTTON,260,60,39,10           
+    CONTROL         "800x600",IDC_RADIO2,"Button",BS_AUTORADIOBUTTON,260,70,43,10           
+    CONTROL         "1024x768",IDC_RADIO3,"Button",BS_AUTORADIOBUTTON,260,80,47,10           
+    CONTROL         "1280x1024",IDC_RADIO4,"Button",BS_AUTORADIOBUTTON,260,90,51,10           
+    CONTROL         "Full Screen",IDC_RADIO5,"Button",BS_AUTORADIOBUTTON,260,100,51,10           
+    PUSHBUTTON      "Sys. Info",IDC_SYSINFO,261,40,50,14           
+END           
+IDD_BENCH_RESULTS DIALOG 0, 0, 248, 166           
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU           
+CAPTION "Bench Results"           
+FONT 8, "MS Sans Serif"           
+BEGIN           
+    DEFPUSHBUTTON   "OK",IDOK,191,7,50,14           
+    LISTBOX         IDC_LIST,7,7,182,152,LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_HSCROLL | WS_TABSTOP           
+END           
+/////////////////////////////////////////////////////////////////////////////           
+//           
+// Version           
+//           
+VS_VERSION_INFO VERSIONINFO           
  FILEVERSION 2,17,2,0 
  PRODUCTVERSION 2,17,2,0 
- FILEFLAGSMASK 0x3fL          
-#ifdef _DEBUG          
- FILEFLAGS 0x1L          
-#else          
- FILEFLAGS 0x0L          
-#endif          
- FILEOS 0x4L          
- FILETYPE 0x1L          
- FILESUBTYPE 0x0L          
-BEGIN          
-    BLOCK "StringFileInfo"          
-    BEGIN          
-        BLOCK "040c04b0"          
-        BEGIN          
-            VALUE "FileDescription", "Application MFC GLBench"          
+ FILEFLAGSMASK 0x3fL           
+#ifdef _DEBUG           
+ FILEFLAGS 0x1L           
+#else           
+ FILEFLAGS 0x0L           
+#endif           
+ FILEOS 0x4L           
+ FILETYPE 0x1L           
+ FILESUBTYPE 0x0L           
+BEGIN           
+    BLOCK "StringFileInfo"           
+    BEGIN           
+        BLOCK "040c04b0"           
+        BEGIN           
+            VALUE "FileDescription", "Application MFC GLBench"           
             VALUE "FileVersion", "2.17.2.0" 
-            VALUE "InternalName", "GLBench"          
-            VALUE "LegalCopyright", "Copyright (C) 2003"          
-            VALUE "OriginalFilename", "GLBench.exe"          
-            VALUE "ProductName", "Application GLBench"          
+            VALUE "InternalName", "GLBench"           
+            VALUE "LegalCopyright", "Copyright (C) 2003"           
+            VALUE "OriginalFilename", "GLBench.exe"           
+            VALUE "ProductName", "Application GLBench"           
             VALUE "ProductVersion", "2.17.2.0" 
-        END          
-    END          
-    BLOCK "VarFileInfo"          
-    BEGIN          
-        VALUE "Translation", 0x40c, 1200          
-    END          
-END          
-/////////////////////////////////////////////////////////////////////////////          
-//          
-// DESIGNINFO          
-//          
-#ifdef APSTUDIO_INVOKED          
-GUIDELINES DESIGNINFO          
-BEGIN          
-    IDD_GLBENCH_DIALOG, DIALOG          
-    BEGIN          
-        LEFTMARGIN, 7          
-        RIGHTMARGIN, 311          
-        TOPMARGIN, 7          
-        BOTTOMMARGIN, 115          
-    END          
-    IDD_BENCH_RESULTS, DIALOG          
-    BEGIN          
-        LEFTMARGIN, 7          
-        RIGHTMARGIN, 241          
-        TOPMARGIN, 7          
-        BOTTOMMARGIN, 159          
-    END          
-END          
-#endif    // APSTUDIO_INVOKED          
-/////////////////////////////////////////////////////////////////////////////          
-//          
-// Bitmap          
-//          
-IDB_BITMAP2             BITMAP                  "res\\Raptor_logo_sml.bmp"          
-IDB_BITMAP1             BITMAP                  "res\\OGL_logo_sml.bmp"          
-#endif    // French (France) resources          
-/////////////////////////////////////////////////////////////////////////////          
-#ifndef APSTUDIO_INVOKED          
-/////////////////////////////////////////////////////////////////////////////          
-//          
-// Generated from the TEXTINCLUDE 3 resource.          
-//          
-#define _AFX_NO_SPLITTER_RESOURCES          
-#define _AFX_NO_OLE_RESOURCES          
-#define _AFX_NO_TRACKER_RESOURCES          
-#define _AFX_NO_PROPERTY_RESOURCES          
-#if defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_FRA)          
-#ifdef _WIN32          
-LANGUAGE 12, 1          
-#pragma code_page(1252)          
-#endif //_WIN32          
-#include "res\GLBench.rc2"  // non-Microsoft Visual C++ edited resources          
-#include "l.fra\afxres.rc"          // Standard components          
-#endif          
-/////////////////////////////////////////////////////////////////////////////          
-#endif    // not APSTUDIO_INVOKED          
+        END           
+    END           
+    BLOCK "VarFileInfo"           
+    BEGIN           
+        VALUE "Translation", 0x40c, 1200           
+    END           
+END           
+/////////////////////////////////////////////////////////////////////////////           
+//           
+// DESIGNINFO           
+//           
+#ifdef APSTUDIO_INVOKED           
+GUIDELINES DESIGNINFO           
+BEGIN           
+    IDD_GLBENCH_DIALOG, DIALOG           
+    BEGIN           
+        LEFTMARGIN, 7           
+        RIGHTMARGIN, 311           
+        TOPMARGIN, 7           
+        BOTTOMMARGIN, 115           
+    END           
+    IDD_BENCH_RESULTS, DIALOG           
+    BEGIN           
+        LEFTMARGIN, 7           
+        RIGHTMARGIN, 241           
+        TOPMARGIN, 7           
+        BOTTOMMARGIN, 159           
+    END           
+END           
+#endif    // APSTUDIO_INVOKED           
+/////////////////////////////////////////////////////////////////////////////           
+//           
+// Bitmap           
+//           
+IDB_BITMAP2             BITMAP                  "res\\Raptor_logo_sml.bmp"           
+IDB_BITMAP1             BITMAP                  "res\\OGL_logo_sml.bmp"           
+#endif    // French (France) resources           
+/////////////////////////////////////////////////////////////////////////////           
+#ifndef APSTUDIO_INVOKED           
+/////////////////////////////////////////////////////////////////////////////           
+//           
+// Generated from the TEXTINCLUDE 3 resource.           
+//           
+#define _AFX_NO_SPLITTER_RESOURCES           
+#define _AFX_NO_OLE_RESOURCES           
+#define _AFX_NO_TRACKER_RESOURCES           
+#define _AFX_NO_PROPERTY_RESOURCES           
+#if defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_FRA)           
+#ifdef _WIN32           
+LANGUAGE 12, 1           
+#pragma code_page(1252)           
+#endif //_WIN32           
+#include "res\GLBench.rc2"  // non-Microsoft Visual C++ edited resources           
+#include "l.fra\afxres.rc"          // Standard components           
+#endif           
+/////////////////////////////////////////////////////////////////////////////           
+#endif    // not APSTUDIO_INVOKED           
