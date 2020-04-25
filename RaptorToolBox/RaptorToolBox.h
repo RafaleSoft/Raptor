@@ -96,6 +96,9 @@ public:
 	//
 	//	Exports an object to a Wavefront .OBJ file
 	static bool saveWavefrontScene(const std::string &fname,C3DSet *scene);
+	//
+	//	Load an XML data set and import it in current display and current scene.
+	static bool loadRaptorData(const std::string &fname, C3DSet *scene);
 
 
 private:

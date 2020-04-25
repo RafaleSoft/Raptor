@@ -94,6 +94,39 @@ CRaptorDataManager  *CRaptorDataManager::GetInstance(void)
     return m_pInstance;
 }
 
+
+std::vector<std::string> CRaptorDataManager::getManagedPackages(void) const
+{
+	std::vector<std::string> result;
+
+	for (size_t i = 0; i < m_packages.size(); i++)
+	{
+		const Package& p = m_packages[i];
+		PackageHeader_t *pHeader = (PackageHeader_t*)p.header;
+		result.push_back(pHeader->pckName);
+	}
+
+	return result;
+}
+
+std::vector<std::string> CRaptorDataManager::getManagedFiles(const std::string &packName) const
+{
+	std::vector<std::string> result;
+
+	for (size_t i = 0; i < m_packages.size(); i++)
+	{
+		const Package& p = m_packages[i];
+		PackageHeader_t *pHeader = (PackageHeader_t*)p.header;
+		if ((packName == pHeader->pckName) || packName.empty())
+		{
+			for (unsigned int k = 0; k < pHeader->nbFHeaders; k++)
+				result.push_back(pHeader->fHeaders[k].fname);
+		}
+	}
+
+	return result;
+}
+
 bool CRaptorDataManager::managePackage(const std::string& packName)
 {
 	if (packName.length() < 4)
@@ -118,17 +151,29 @@ bool CRaptorDataManager::managePackage(const std::string& packName)
 	pack.header = NULL;
 	pack.headerSize = 0;
 
+	//! First try in a standard location: $RAPTOR_PATH
 	if (openPackage(pack))
 	{
 		m_packages.push_back(pack);
 		//	Erase previous files in case of updates
-		return ClearExports(packName);
+		return clearExports(packName);
 	}
+	//!	If not found, then try a local file
 	else
-		return false;
+	{
+		pack.packPath = packName;
+		if (openPackage(pack))
+		{
+			m_packages.push_back(pack);
+			//	Erase previous files in case of updates
+			return clearExports(packName);
+		}
+		else
+			return false;
+	}
 }
 
-bool CRaptorDataManager::ClearExports(const std::string& packName)
+bool CRaptorDataManager::clearExports(const std::string& packName)
 {
 	for (size_t i = 0; i < m_packages.size(); i++)
 	{
@@ -259,7 +304,7 @@ std::string CRaptorDataManager::getPackPath(const std::string& packName)
 	return pakpath;
 }
 
-std::string CRaptorDataManager::ExportFile(const std::string& fname,
+std::string CRaptorDataManager::exportFile(const std::string& fname,
 										   const std::string& path)
 {
     std::string filename = path;

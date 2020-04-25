@@ -21,5 +21,8 @@
     <None Include="..\..\Builder\Configure\Publish.bat">
       <Filter>Source Files</Filter>
     </None>
+    <None Include="..\..\Builder\Configure\CheckVersion.bat">
+      <Filter>Source Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

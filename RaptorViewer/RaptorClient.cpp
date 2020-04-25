@@ -84,17 +84,30 @@ CRaptorClient::~CRaptorClient(void)
 
 bool CRaptorClient::load(const std::string& fname)
 {
-	CRaptorIO *io = CRaptorIO::Create(fname.data(),CRaptorIO::DISK_READ,CRaptorIO::ASCII_TEXT);
+	CRaptorIO *io = CRaptorIO::Create(fname.data(),CRaptorIO::DISK_READ,CRaptorIO::BINARY);
 	
-	string text;
-	while (io->getStatus() == CRaptorIO::IO_OK)
+	std::streampos fsize = io->getSize();
+	if (io->getStatus() == CRaptorIO::IO_OK)
 	{
-		string line;
-		io->operator >>(line);
-		text += line;
-	}
+		std::cout << "Sending file " << fname << " to server." << std::endl;
+		
+		CRaptorNetwork::DATA_COMMAND cmd = CRaptorNetwork::getDataPackageCommand();
+		size_t datasize = (size_t)fsize + (size_t)cmd.command.requestLen;
+		cmd.size = fsize;
+		cmd.packnameLen = fname.size();
+		strcpy(cmd.packname, fname.c_str());
 
-	m_Client->write((void*)text.data(),text.length());
+		uint8_t *buffer = new uint8_t[datasize];
+		memcpy(buffer, &cmd, (size_t)cmd.command.requestLen);
+		io->read(&buffer[(size_t)cmd.command.requestLen], fsize);
+		
+		m_Client->write(buffer, datasize);
+		delete[] buffer;
+	}
+	else
+	{
+		std::cout << "Unable to send file " << fname << " to server." << std::endl;
+	}
 
 	delete io;
 	return true;

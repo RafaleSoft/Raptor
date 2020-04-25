@@ -396,32 +396,32 @@ extern "C" GLBENCH_API void Bench(CWnd *parent)
 		//	Change package and erase previous files in case of updates
 		dataManager->managePackage("GLBench.pck");
 
-		M1_1024_path = dataManager->ExportFile("M1_1024.jpg");
+		M1_1024_path = dataManager->exportFile("M1_1024.jpg");
 		if (M1_1024_path.empty()) return;
-		M1_512_path = dataManager->ExportFile("M1_512.jpg");
+		M1_512_path = dataManager->exportFile("M1_512.jpg");
 		if (M1_512_path.empty()) return;
-		M1_256_path = dataManager->ExportFile("M1_256.jpg");
+		M1_256_path = dataManager->exportFile("M1_256.jpg");
 		if (M1_256_path.empty()) return;
-		M1_128_path = dataManager->ExportFile("M1_128.jpg");
+		M1_128_path = dataManager->exportFile("M1_128.jpg");
 		if (M1_128_path.empty()) return;
-		M1_64_path = dataManager->ExportFile("M1_64.jpg");
+		M1_64_path = dataManager->exportFile("M1_64.jpg");
 		if (M1_64_path.empty()) return;
-		M1_32_path = dataManager->ExportFile("M1_32.jpg");
+		M1_32_path = dataManager->exportFile("M1_32.jpg");
 		if (M1_32_path.empty()) return;
-		M1_16_path = dataManager->ExportFile("M1_16.jpg");
+		M1_16_path = dataManager->exportFile("M1_16.jpg");
 		if (M1_16_path.empty()) return;
-		M1_8_path = dataManager->ExportFile("M1_8.jpg");
+		M1_8_path = dataManager->exportFile("M1_8.jpg");
 		if (M1_8_path.empty()) return;
-		M1_4_path = dataManager->ExportFile("M1_4.jpg");
+		M1_4_path = dataManager->exportFile("M1_4.jpg");
 		if (M1_4_path.empty()) return;
-		M1_2_path = dataManager->ExportFile("M1_2.jpg");
+		M1_2_path = dataManager->exportFile("M1_2.jpg");
 		if (M1_2_path.empty()) return;
-		M1_1_path = dataManager->ExportFile("M1_1.jpg");
+		M1_1_path = dataManager->exportFile("M1_1.jpg");
 		if (M1_1_path.empty()) return;
 
-		M74_1024_path = dataManager->ExportFile("M74_1024.jpg");
+		M74_1024_path = dataManager->exportFile("M74_1024.jpg");
 		if (M74_1024_path.empty()) return;
-		M74_256_path = dataManager->ExportFile("M74_256.jpg");
+		M74_256_path = dataManager->exportFile("M74_256.jpg");
 		if (M74_256_path.empty()) return;
 	}
 

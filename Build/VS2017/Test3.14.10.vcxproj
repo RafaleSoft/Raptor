@@ -182,7 +182,7 @@
       <StructMemberAlignment>16Bytes</StructMemberAlignment>
       <OpenMPSupport>true</OpenMPSupport>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
       <FloatingPointModel>Strict</FloatingPointModel>
     </ClCompile>
     <Link>
@@ -249,7 +249,7 @@
       <StructMemberAlignment>16Bytes</StructMemberAlignment>
       <OpenMPSupport>true</OpenMPSupport>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
       <FloatingPointModel>Strict</FloatingPointModel>
     </ClCompile>
     <Link>

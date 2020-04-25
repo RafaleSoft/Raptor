@@ -168,6 +168,7 @@ void CGLFont::glWrite(const std::string &text, int x, int y, const CColor::RGBA	
 
 	glPushMatrix();
 	glTranslatef(x, viewport[3] - y, 0.0);
+	glColor4fv(color);
 
 	for (unsigned int i=0;i<text.size();i++)
 	{
@@ -200,6 +201,7 @@ void CGLFont::glWrite(const std::vector<FONT_TEXT_ITEM> &lines)
 
 		//Viewport has origin at bottom-left corner in ortho.
 		glTranslatef(item.x_offset, viewport[3] - item.y_offset, 0.0);
+		glColor4fv(item.color);
 
 		for (unsigned int i = 0; i < item.text.size(); i++)
 		{

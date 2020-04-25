@@ -61,6 +61,10 @@
 	#include "GLHierarchy/IRenderingProperties.h"
 #endif
 
+#if !defined(AFX_RAPTORDATAMANAGER_H__114BFB19_FA00_4E3E_879E_C9130043668E__INCLUDED_)
+	#include "DataManager/RaptorDataManager.h"
+#endif
+
 #include "YUVCompressor.h"
 
 CRaptorServerInstance* CRaptorServerInstance::m_pInstance = NULL;
@@ -105,7 +109,7 @@ void CRaptorServerInstance::glRender()
 	if (m_pWindow.handle() != 0)
 	{
 		request r;
-		int nbr = 0;
+		size_t nbr = 0;
 		{
 			CRaptorLock lock(m_mutex);
 			nbr = m_requests.size();
@@ -204,13 +208,15 @@ bool CRaptorServerInstance::start(unsigned int width, unsigned int height)
     CRaptorConfig config;
 	config.m_logFile = "Raptor_Server.log";
 	if (Raptor::glInitRaptor(config))
-	{
 		CAnimator::SetAnimator(new CAnimator());
-	}
 	else
+	{
+		std::cout << "Failed to initialize Raptor layer." << std::endl;
 		return false;
+	}
 
 	CImaging::installImagers();
+	std::cout << "Raptor Toolbox initialized. " << std::endl;
 
 	CRaptorDisplayConfig glcs;
 	glcs.width = width;
@@ -229,30 +235,32 @@ bool CRaptorServerInstance::start(unsigned int width, unsigned int height)
 
 	if (!Raptor::glCheckDisplayConfig(glcs))
     {
-        Raptor::GetMessages()->displayMessage("Some hardware features are missing. Will use lower config, disabling some effects");
+		std::cout << "Some hardware features are missing. Will use lower config, disabling some effects" << std::endl;
 		glcs.antialias = CRaptorDisplayConfig::ANTIALIAS_NONE;
         if (!Raptor::glCheckDisplayConfig(glcs))
         {
-            Raptor::GetMessages()->displayMessage("Some hardware features are missing. Will use minimal config, disabling all advanced effects");
+			std::cout << "Some hardware features are missing. Will use minimal config, disabling all advanced effects" << std::endl;
 			glcs.renderer = CRaptorDisplayConfig::NATIVE_GL;
             if (!Raptor::glCheckDisplayConfig(glcs))
             {
-                Raptor::GetMessages()->displayMessage("Minimum required display config cannot be created. Sorry, demo will abort. Bye.");
+				std::cout << "Minimum required display config cannot be created. Sorry, demo will abort. Bye." << std::endl;
                 return false;
             }
         }
     }
 
+	std::cout << "Raptor Display configuration checked, creating rendering window. " << std::endl;
 	glcs.refresh_rate.fps = CGL_MAXREFRESHRATE;
 	m_pApplication->initApplication(glcs);
 	if (!m_pApplication->initApplication(glcs))
     {
-		RAPTOR_FATAL(	CPersistence::CPersistenceClassID::GetClassId(),
-						"Raptor Render Server has no resources: hardware OpenGL rendering not supported, exiting...");
+		std::cout << "Raptor Render Server has no resources: hardware OpenGL rendering not supported, exiting..." << std::endl;
         return false;
     }
 
 	m_pDisplay = m_pApplication->getRootDisplay();
+	
+	std::cout << "Creating Raptor Main Display. " << std::endl;
 	m_pDisplay->glvkBindDisplay(m_pApplication->getRootWindow());
 		CRaptorConsole *pConsole = Raptor::GetConsole();
 		pConsole->glInit();
@@ -274,21 +282,34 @@ bool CRaptorServerInstance::start(unsigned int width, unsigned int height)
 		props.clear(CGL_RGBA);
 	m_pDisplay->glvkUnBindDisplay();
 
+	std::cout << "Creating Raptor Application. " << std::endl;
 	m_pApplication = CRaptorApplication::CreateApplication();
 	m_pApplication->grabCursor(false);
 	
     if (m_pTranslator == NULL)
 	{
-        m_pTranslator = CRaptorIO::Create("XMLIO",CRaptorIO::MEMORY,CRaptorIO::ASCII_XML);
 		char shemaLocation[MAX_PATH];
-		strcpy(shemaLocation,getenv("RAPTOR_ROOT"));
-		strcat(shemaLocation,"/Redist/bin/Raptor.xsd");
-		m_pTranslator->parse(shemaLocation,0);
+		char* root = getenv("RAPTOR_ROOT");
+		if (NULL == root)
+		{
+			std::cout << "Raptor root data path is unknown. Is RAPTOR_ROOT defined ?" << std::endl;
+			std::cout << "Using current path. " << std::endl;
+			strcpy(shemaLocation, "./Raptor.xsd");
+		}
+		else
+		{
+			strcpy(shemaLocation, root);
+			strcat(shemaLocation, "/Redist/bin/Raptor.xsd");
+		}
+
+		m_pTranslator = CRaptorIO::Create("XMLIO", CRaptorIO::DISK_READ, CRaptorIO::ASCII_XML);
+		m_pTranslator->parse(shemaLocation, 0);
 	}
 
 	if (m_pCompressor == NULL)
 		m_pCompressor = new CYUVCompressor();
 
+	std::cout << "Raptor Server Ready. " << std::endl;
 	m_bStarted = true;
     return true;
 }
@@ -406,9 +427,6 @@ bool CRaptorServerInstance::handleReply(request_handler_t::request_id id, const 
 
 bool CRaptorServerInstance::executeRequest(request &r)
 {
-	if (m_pTranslator == NULL)
-		return false;
-
 	CRaptorNetwork::SERVER_COMMAND *command = (CRaptorNetwork::SERVER_COMMAND *)r.data;
 	// on the fly XML parsing is too low !!!
 	const CRaptorNetwork::SERVER_COMMAND& cmd = CRaptorNetwork::getRenderCommand();
@@ -427,8 +445,16 @@ bool CRaptorServerInstance::executeRequest(request &r)
 		return false;
 	}
 
-	const CRaptorNetwork::SESSION_COMMAND& cmd3 = CRaptorNetwork::getOpenSessionCommand();
-	if (!strncmp(command->command,cmd3.command.command,cmd3.command.commandLen))
+	const CRaptorNetwork::DATA_COMMAND& cmd3 = CRaptorNetwork::getDataPackageCommand();
+	if (!strncmp(command->command, cmd3.command.command, cmd3.command.commandLen))
+	{
+		r.reply = false;
+		CRaptorNetwork::DATA_COMMAND *data = (CRaptorNetwork::DATA_COMMAND*)r.data;
+		return loadPackage(*data, r.id);
+	}
+
+	const CRaptorNetwork::SESSION_COMMAND& cmd4 = CRaptorNetwork::getOpenSessionCommand();
+	if (!strncmp(command->command,cmd4.command.command,cmd4.command.commandLen))
 	{
 		r.reply = true;
 		session s;
@@ -468,54 +494,85 @@ bool CRaptorServerInstance::executeRequest(request &r)
 		return true;
 	}
 
+	return false;
+}
 
-	m_pTranslator->read((unsigned char*)r.data,r.size);
+bool CRaptorServerInstance::loadPackage(const CRaptorNetwork::DATA_COMMAND& data, request_handler_t::request_id id)
+{
+	if (NULL == m_pTranslator)
+		return false;
 
-	string name;
-	*m_pTranslator >> name;
-	string itemname = m_pTranslator->getValueName();
+	std::cout << "Storing data package file to server." << std::endl;
 
-	//  skip data intro
-	if (itemname == "Data")
+	std::streampos fsize = data.size;
+	const unsigned char *pData = (unsigned char*)&data;
+	std::string fname = data.packname;
+
+	CRaptorIO *io = CRaptorIO::Create(fname, CRaptorIO::DISK_WRITE, CRaptorIO::BINARY);
+
+	//!	Cannot open file
+	if (io->getStatus() != CRaptorIO::IO_OK)
 	{
-		*m_pTranslator  >> name; 
-		itemname = m_pTranslator->getValueName();
+		std::cout << "Unable to create server file " << fname << " !" << std::endl;
+		return false;
+	}
 
-		while (!itemname.empty())
+	io->write(&pData[data.command.requestLen], fsize);
+	delete io;
+
+	CRaptorDataManager *datamanager = CRaptorDataManager::GetInstance();
+	datamanager->managePackage(fname);
+
+	//!	Package is empty
+	std::vector<std::string> files = datamanager->getManagedFiles(fname);
+	if (0 == files.size())
+		return false;
+
+	fname = datamanager->exportFile("Demo.xml");
+	m_pTranslator->parse(fname.c_str(), 0);
+
+	std::string name;
+	//  skip data intro
+	*m_pTranslator >> name;
+	std::string name_data = m_pTranslator->getValueName();
+	while (!name_data.empty())
+	{
+		CPersistence* obj = NULL;
+
+		//  skip data intro
+		if (name_data == "Update")
 		{
-			CPersistence* obj = NULL;
-
-			if (itemname == "Update")
+			*m_pTranslator >> name;
+			name_data = m_pTranslator->getValueName();
+			if (name_data == "name")
 			{
 				*m_pTranslator >> name;
-				itemname = m_pTranslator->getValueName();
-				if (itemname == "name")
-				{
-					*m_pTranslator >> name;
-					obj = CPersistence::FindObject(name);
-				}
+				obj = CPersistence::FindObject(name);
 				if ((obj != NULL) && (obj == m_pDisplay))
 				{
 					// Map to display of current session
-					obj = r.display;
+					for (size_t i = 0; i < m_sessions.size(); i++)
+						if (m_sessions[i].id == id)
+						{
+							obj = m_sessions[i].display;
+							break;
+						}
 				}
 			}
-			else
-			{
-				const CPersistentObject & po = CObjectFactory::GetInstance()->createObject(itemname);
-				obj = po;
-			}
-			if (obj != NULL)
-				obj->importObject(*m_pTranslator);
-			else
-				*m_pTranslator >> name;
-
-			itemname = m_pTranslator->getValueName();
+		}
+		else
+		{
+			const CPersistentObject & po = CObjectFactory::GetInstance()->createObject(name_data);
+			obj = po;
 		}
 
-		return true;
+		if (obj != NULL)
+			obj->importObject(*m_pTranslator);
+		else
+			*m_pTranslator >> name;
+			
+		name_data = m_pTranslator->getValueName();
 	}
-	else
-		return false;
-}
 
+	return true;
+}

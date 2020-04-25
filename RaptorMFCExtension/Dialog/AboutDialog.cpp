@@ -177,7 +177,7 @@ void CGLDisplay::GLInitContext()
 
     CRaptorDataManager  *dataManager = CRaptorDataManager::GetInstance();
     if (dataManager != NULL)
-		dataManager->ExportFile("rapsplsh.AVI","");
+		dataManager->exportFile("rapsplsh.AVI","");
 
 	TCHAR Tbuffer[1024];
     DWORD res = GetEnvironmentVariable(TEXT("TMP"),Tbuffer,1024);

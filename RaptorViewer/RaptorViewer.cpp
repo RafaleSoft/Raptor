@@ -43,20 +43,20 @@ int main(int argc, char* argv[])
 			{
 				if (!client.stop())
 				{
-					cout << "Raptor client failed to stop." << endl;
+					std::cout << "Raptor client failed to stop." << std::endl;
 					return -3;
 				}
 			}
 			else
 			{
-				cout << "Raptor client failed to run." << endl;
+				std::cout << "Raptor client failed to run." << std::endl;
 				return -2;
 			}
 		}
 	}
 	else
 	{
-		cout << "No Raptor server available." << endl;
+		std::cout << "No Raptor server available." << std::endl;
 	}		
 
 	return 0;
