@@ -1194,9 +1194,6 @@
     <ClInclude Include="..\..\RaptorCore\Subsys\OpenGL\OpenGLPipeline.h">
       <Filter>Header Files\Subsys include\OpenGL</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\RaptorCore\GLHierarchy\RaptorPipeline.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\IRaptorPipeline.h">
       <Filter>Header Files\GLHierarchy include</Filter>
     </ClInclude>

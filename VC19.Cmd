@@ -1,4 +1,4 @@
-set RAPTOR_VERSION=2.17.1
+set RAPTOR_VERSION=2.17.2
 set RAPTOR_RELEASE=2.17
 
 set RAPTOR_ROOT=F:\VisualStudioProjects\Raptor

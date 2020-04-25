@@ -269,7 +269,7 @@ $(SolutionDir)\$(ProjectName)\Subsys\Redist.bat
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <StructMemberAlignment>16Bytes</StructMemberAlignment>
-      <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>Subsys\CodeGeneration.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
@@ -417,7 +417,7 @@ $(SolutionDir)\$(ProjectName)\Subsys\Redist.bat
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <StructMemberAlignment>16Bytes</StructMemberAlignment>
-      <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>Subsys\CodeGeneration.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
@@ -1298,7 +1298,6 @@ copy CodeGeneration.h "%RAPTOR_ROOT%\Redist\Include\Subsys"
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\ProgramParameters.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\Projector.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\IRenderingProperties.h" />
-    <ClInclude Include="..\..\RaptorCore\GLHierarchy\RaptorPipeline.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\ShadedGeometry.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\Shader.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\ShaderProgram.h" />
