@@ -115,8 +115,8 @@ END
 // Version           
 //           
 VS_VERSION_INFO VERSIONINFO           
- FILEVERSION 2,17,2,0 
- PRODUCTVERSION 2,17,2,0 
+ FILEVERSION 2, 17, 2, 0
+ PRODUCTVERSION 2, 17, 2, 0
  FILEFLAGSMASK 0x3fL           
 #ifdef _DEBUG           
  FILEFLAGS 0x1L           
@@ -132,12 +132,12 @@ BEGIN
         BLOCK "040904b0"           
         BEGIN           
             VALUE "FileDescription", "Test2 MFC Application"           
-            VALUE "FileVersion", "2.17.2.0" 
+            VALUE "FileVersion", "2.17.2.0"
             VALUE "InternalName", "Test2"           
             VALUE "LegalCopyright", "Copyright (C) 1999"           
             VALUE "OriginalFilename", "Test2.EXE"           
             VALUE "ProductName", "Test2 Application"           
-            VALUE "ProductVersion", "2.17.2.0" 
+            VALUE "ProductVersion", "2.17.2.0"
         END           
     END           
     BLOCK "VarFileInfo"           
@@ -458,8 +458,8 @@ END
 // Version           
 //           
 VS_VERSION_INFO VERSIONINFO           
- FILEVERSION 2,17,2,0 
- PRODUCTVERSION 2,17,2,0 
+ FILEVERSION 2, 17, 2, 0
+ PRODUCTVERSION 2, 17, 2, 0
  FILEFLAGSMASK 0x3fL           
 #ifdef _DEBUG           
  FILEFLAGS 0x1L           
@@ -475,12 +475,12 @@ BEGIN
         BLOCK "040904b0"           
         BEGIN           
             VALUE "FileDescription", "Test2 MFC Application"           
-            VALUE "FileVersion", "2.17.2.0" 
+            VALUE "FileVersion", "2.17.2.0"
             VALUE "InternalName", "Test2"           
             VALUE "LegalCopyright", "Copyright (C) 1999"           
             VALUE "OriginalFilename", "Test2.EXE"           
             VALUE "ProductName", "Test2 Application"           
-            VALUE "ProductVersion", "2.17.2.0" 
+            VALUE "ProductVersion", "2.17.2.0"
         END           
     END           
     BLOCK "VarFileInfo"           
@@ -801,8 +801,8 @@ END
 // Version           
 //           
 VS_VERSION_INFO VERSIONINFO           
- FILEVERSION 2,17,2,0 
- PRODUCTVERSION 2,17,2,0 
+ FILEVERSION 2, 17, 2, 0
+ PRODUCTVERSION 2, 17, 2, 0
  FILEFLAGSMASK 0x3fL           
 #ifdef _DEBUG           
  FILEFLAGS 0x1L           
@@ -818,12 +818,12 @@ BEGIN
         BLOCK "040904b0"           
         BEGIN           
             VALUE "FileDescription", "Test2 MFC Application"           
-            VALUE "FileVersion", "2.17.2.0" 
+            VALUE "FileVersion", "2.17.2.0"
             VALUE "InternalName", "Test2"           
             VALUE "LegalCopyright", "Copyright (C) 1999"           
             VALUE "OriginalFilename", "Test2.EXE"           
             VALUE "ProductName", "Test2 Application"           
-            VALUE "ProductVersion", "2.17.2.0" 
+            VALUE "ProductVersion", "2.17.2.0"
         END           
     END           
     BLOCK "VarFileInfo"           
@@ -1144,8 +1144,8 @@ END
 // Version           
 //           
 VS_VERSION_INFO VERSIONINFO           
- FILEVERSION 2,17,2,0 
- PRODUCTVERSION 2,17,2,0 
+ FILEVERSION 2, 17, 2, 0
+ PRODUCTVERSION 2, 17, 2, 0
  FILEFLAGSMASK 0x3fL           
 #ifdef _DEBUG           
  FILEFLAGS 0x1L           
@@ -1161,12 +1161,12 @@ BEGIN
         BLOCK "040904b0"           
         BEGIN           
             VALUE "FileDescription", "Test2 MFC Application"           
-            VALUE "FileVersion", "2.17.2.0" 
+            VALUE "FileVersion", "2.17.2.0"
             VALUE "InternalName", "Test2"           
             VALUE "LegalCopyright", "Copyright (C) 1999"           
             VALUE "OriginalFilename", "Test2.EXE"           
             VALUE "ProductName", "Test2 Application"           
-            VALUE "ProductVersion", "2.17.2.0" 
+            VALUE "ProductVersion", "2.17.2.0"
         END           
     END           
     BLOCK "VarFileInfo"           
@@ -1487,8 +1487,8 @@ END
 // Version           
 //           
 VS_VERSION_INFO VERSIONINFO           
- FILEVERSION 2,17,2,0 
- PRODUCTVERSION 2,17,2,0 
+ FILEVERSION 2, 17, 2, 0
+ PRODUCTVERSION 2, 17, 2, 0
  FILEFLAGSMASK 0x3fL           
 #ifdef _DEBUG           
  FILEFLAGS 0x1L           
@@ -1504,12 +1504,12 @@ BEGIN
         BLOCK "040904b0"           
         BEGIN           
             VALUE "FileDescription", "Test2 MFC Application"           
-            VALUE "FileVersion", "2.17.2.0" 
+            VALUE "FileVersion", "2.17.2.0"
             VALUE "InternalName", "Test2"           
             VALUE "LegalCopyright", "Copyright (C) 1999"           
             VALUE "OriginalFilename", "Test2.EXE"           
             VALUE "ProductName", "Test2 Application"           
-            VALUE "ProductVersion", "2.17.2.0" 
+            VALUE "ProductVersion", "2.17.2.0"
         END           
     END           
     BLOCK "VarFileInfo"           

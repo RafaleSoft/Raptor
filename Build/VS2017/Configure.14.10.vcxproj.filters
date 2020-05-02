@@ -15,13 +15,13 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\Builder\Configure\Redist.bat">
+    <None Include="..\..\Builder\Configure\CheckVersion.py">
       <Filter>Source Files</Filter>
     </None>
-    <None Include="..\..\Builder\Configure\Publish.bat">
+    <None Include="..\..\Builder\Configure\Publish.py">
       <Filter>Source Files</Filter>
     </None>
-    <None Include="..\..\Builder\Configure\CheckVersion.bat">
+    <None Include="..\..\Builder\Configure\Redist.py">
       <Filter>Source Files</Filter>
     </None>
   </ItemGroup>

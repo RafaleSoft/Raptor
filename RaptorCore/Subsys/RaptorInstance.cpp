@@ -425,7 +425,7 @@ bool CRaptorInstance::glvkInitSharedResources(void)
 	if (NULL == m_pIdentity)
 	{
 		m_pIdentity = new CShader("HDR_IDENTITY");
-		COpenGLShaderStage *stage = m_pIdentity->glGetOpenGLShader();
+		COpenGLShaderStage *stage = m_pIdentity->glGetOpenGLShader("HDR_IDENTITY_PROGRAM");
 
 		stage->glGetVertexShader("EMPTY_PROGRAM");
 		stage->glGetGeometryShader("FULL_SCREEN_GEO_PROGRAM");
@@ -459,7 +459,7 @@ bool CRaptorInstance::glvkInitSharedResources(void)
 	if (NULL == m_pQuadShader)
 	{
 		m_pQuadShader = new CShader("QUAD_SHADER");
-		COpenGLShaderStage *stage = m_pQuadShader->glGetOpenGLShader();
+		COpenGLShaderStage *stage = m_pQuadShader->glGetOpenGLShader("QUAD_SHADER_PROGRAM");
 
 		CVertexShader *vp = stage->glGetVertexShader("TEXTURE_QUAD_VTX_PROGRAM");
 		CGeometryShader *gp = stage->glGetGeometryShader("TEXTURE_QUAD_GEO_PROGRAM");
@@ -475,7 +475,7 @@ bool CRaptorInstance::glvkInitSharedResources(void)
 	if (NULL == m_pFontShader)
 	{
 		m_pFontShader = new CShader("PARTICLE_SHADER");
-		COpenGLShaderStage *stage = m_pFontShader->glGetOpenGLShader();
+		COpenGLShaderStage *stage = m_pFontShader->glGetOpenGLShader("PARTICLE_SHADER_PROGRAM");
 
 		CVertexShader *vp = stage->glGetVertexShader("FONT2D_VTX_PROGRAM");
 		CProgramParameters params;

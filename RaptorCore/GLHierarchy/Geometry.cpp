@@ -1037,6 +1037,7 @@ void CGeometry::glRenderGeometry()
 	IRenderingProperties *props = IRenderingProperties::GetCurrentProperties();
 	bool popNormalArray = false;
 	bool popTangentArray = false;
+	bool popBinormalArray = false;
 	bool popColorArray = false;
 	bool popTexCoordArray = false;
 	bool popWeightArray = false;
@@ -1069,6 +1070,12 @@ void CGeometry::glRenderGeometry()
 		popTangentArray = true;
 		pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::ADDITIONAL_PARAM1);
 		pExtensions->glVertexAttribPointerARB(CProgramParameters::ADDITIONAL_PARAM1, 4, GL_FLOAT, false, 0, tangents);
+	}
+	if (hasModel(CGeometry::CGL_BINORMALS) && proceedLighting && (NULL != binormals))
+	{
+		popBinormalArray = true;
+		pExtensions->glEnableVertexAttribArrayARB(CProgramParameters::ADDITIONAL_PARAM2);
+		pExtensions->glVertexAttribPointerARB(CProgramParameters::ADDITIONAL_PARAM2, 4, GL_FLOAT, false, 0, binormals);
 	}
 #endif
 
@@ -1176,6 +1183,8 @@ void CGeometry::glRenderGeometry()
 #if defined(GL_ARB_vertex_program)
 	if (popTangentArray)
 		pExtensions->glDisableVertexAttribArrayARB(CProgramParameters::ADDITIONAL_PARAM1);
+	if (popBinormalArray)
+		pExtensions->glDisableVertexAttribArrayARB(CProgramParameters::ADDITIONAL_PARAM2);
 #endif
 
 	CRaptorInstance::GetInstance().iRenderedObjects++;
@@ -1298,6 +1307,54 @@ void CGeometry::glSetNormals(size_t nbN, GL_COORD_VERTEX* norms)
 			memcpy(normals,norms,4*nbN*sizeof(float));
 		else
 			pAllocator->glvkCopyPointer(*normals,*norms,4*nbN);
+	}
+#endif
+}
+
+void CGeometry::glSetTangents(size_t nbT, GL_COORD_VERTEX* tans)
+{
+#if defined (DATA_PACKED)
+	if (tans == NULL)
+	{
+		if (tangents != NULL)
+			CGeometryAllocator::GetInstance()->releaseVertices((float*)tangents);
+
+		tangents = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->allocateVertices(nbT * 4));
+
+		CResourceAllocator::CResourceBinder *binder = (CResourceAllocator::CResourceBinder *)m_pBinder;
+		binder->setArray(CProgramParameters::ADDITIONAL_PARAM1, tangents);
+	}
+	else if ((nbT > 0) && (tangents != NULL))
+	{
+		CGeometryAllocator *pAllocator = CGeometryAllocator::GetInstance();
+		if (!pAllocator->isMemoryRelocated() || m_bDataLocked)
+			memcpy(tangents, tans, nbT * sizeof(GL_COORD_VERTEX));
+		else
+			pAllocator->glvkCopyPointer(*tangents, *tans, 4 * nbT);
+	}
+#endif
+}
+
+void CGeometry::glSetBinormals(size_t nbB, GL_COORD_VERTEX* binorms)
+{
+#if defined (DATA_PACKED)
+	if (binorms == NULL)
+	{
+		if (binormals != NULL)
+			CGeometryAllocator::GetInstance()->releaseVertices((float*)binormals);
+
+		binormals = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->allocateVertices(nbB * 4));
+
+		CResourceAllocator::CResourceBinder *binder = (CResourceAllocator::CResourceBinder *)m_pBinder;
+		binder->setArray(CProgramParameters::ADDITIONAL_PARAM2, binormals);
+	}
+	else if ((nbB > 0) && (binormals != NULL))
+	{
+		CGeometryAllocator *pAllocator = CGeometryAllocator::GetInstance();
+		if (!pAllocator->isMemoryRelocated() || m_bDataLocked)
+			memcpy(binormals, binorms, nbB * sizeof(GL_COORD_VERTEX));
+		else
+			pAllocator->glvkCopyPointer(*binormals, *binorms, 4 * nbB);
 	}
 #endif
 }
@@ -1578,6 +1635,49 @@ void CGeometry::setTexCoord(size_t numvtx, float u, float v)
 	{
 		TEXCOORD0(numvtx).u = u;
 		TEXCOORD0(numvtx).v = v;
+	}
+}
+
+void CGeometry::setTexCoord2(size_t numvtx, float u, float v)
+{
+#if defined (DATA_EXTENDED)
+	if ((numvtx < m_nbVertex) && (geometry != NULL))
+#elif defined (DATA_PACKED)
+	if ((numvtx < m_nbVertex) && (texcoords2 != NULL))
+#endif
+	{
+		TEXCOORD1(numvtx).u = u;
+		TEXCOORD1(numvtx).v = v;
+	}
+}
+
+void CGeometry::setTangent(size_t numvtx, float x, float y, float z, float h)
+{
+#if defined (DATA_EXTENDED)
+	if ((numvtx < m_nbVertex) && (geometry != NULL))
+#elif defined (DATA_PACKED)
+	if ((numvtx < m_nbVertex) && (tangents != NULL))
+#endif
+	{
+		TANGENT(numvtx).x = x;
+		TANGENT(numvtx).y = y;
+		TANGENT(numvtx).z = z;
+		TANGENT(numvtx).h = h;
+	}
+}
+
+void CGeometry::setBinormal(size_t numvtx, float x, float y, float z, float h)
+{
+#if defined (DATA_EXTENDED)
+	if ((numvtx < m_nbVertex) && (geometry != NULL))
+#elif defined (DATA_PACKED)
+	if ((numvtx < m_nbVertex) && (tangents != NULL))
+#endif
+	{
+		BINORMAL(numvtx).x = x;
+		BINORMAL(numvtx).y = y;
+		BINORMAL(numvtx).z = z;
+		BINORMAL(numvtx).h = h;
 	}
 }
 

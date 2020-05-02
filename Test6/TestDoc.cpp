@@ -32,85 +32,14 @@
 #include "ToolBox/BasicObjects.h"
 
 
-static const std::string vp_src =
-"#version 460 compatibility\n\
-\n\
-layout(location = 0) in vec4 i_Position; \n\
-layout(location = 1) in float i_Size; \n\
-layout(location = 3) in vec4 i_Color; \n\
-layout(location = 5) in float i_Angle; \n\
-\n\
-out float angle; \n\
-out float size; \n\
-out vec4 v_color; \n\
-\n\
-void main (void) \n\
-{\n\
-	vec4 pos = vec4(vec3(i_Position.xyz),1.0); \n\
-	gl_Position =  gl_ModelViewProjectionMatrix * pos; \n\
-	angle = i_Angle; \n\
-	size = i_Size; \n\
-	v_color = i_Color; \n\
-}\n\
-";
+extern const std::string vp_src;
+extern const std::string gp_src;
+extern const std::string fp_src;
 
-static const std::string gp_src =
-"#version 460\n\
-\n\
-//	Expect the geometry shader extension to be available, warn if not. \n\
-#extension GL_ARB_geometry_shader4 : enable \n\
-\n\
-in float angle[]; \n\
-in float size[]; \n\
-in vec4 v_color[]; \n\
-\n\
-layout(points) in; \n\
-layout(triangle_strip, max_vertices=4) out; \n\
-layout(location = 1) out vec4 g_TexCoord; \n\
-out vec4 g_color; \n\
-\n\
-void main() \n\
-{\n\
-	float cs = cos(angle[0]); \n\
-	float ss = sin(angle[0]);	\n\
-	float Hx = 0.5 * size[0] * (cs - ss);	\n\
-	float Hy = 0.5 * size[0] * (cs + ss);	\n\
-	g_color = v_color[0]; \n\
-	\n\
-	gl_Position = gl_in[0].gl_Position + vec4(-Hx, -Hy, 0.0, 0.0); \n\
-	g_TexCoord = vec4(0.0,0.0,0.0,0.0); \n\
-	EmitVertex(); \n\
-\n\
-	gl_Position = gl_in[0].gl_Position + vec4(Hy,-Hx,0.0,0.0); \n\
-	g_TexCoord = vec4(1.0,0.0,0.0,0.0); \n\
-	EmitVertex(); \n\
-\n\
-	gl_Position = gl_in[0].gl_Position + vec4(-Hy,Hx,0.0,0.0); \n\
-	g_TexCoord = vec4(0.0,1.0,0.0,0.0); \n\
-	EmitVertex(); \n\
-\n\
-	gl_Position = gl_in[0].gl_Position + vec4(Hx,Hy,0.0,0.0); \n\
-	g_TexCoord = vec4(1.0,1.0,0.0,0.0); \n\
-	EmitVertex(); \n\
-\n\
-	EndPrimitive(); \n\
-}\n\
-";
+extern const std::string vp2_src;
+extern const std::string gp2_src;
+extern const std::string fp2_src;
 
-static const std::string fp_src =
-"#version 460\n\
-\n\
-uniform	sampler2D diffuseMap; \n\
-\n\
-in vec4 g_color; \n\
-layout(location = 1) in vec4 g_TexCoord; \n\
-layout(location = 0) out vec4 o_Color;	\n\
-\n\
-void main (void) \n\
-{\n\
-	o_Color = g_color * texture2D(diffuseMap,vec2(g_TexCoord.st)); \n\
-}\n\
-";
 
 
 class CPoints : public CShadedGeometry
@@ -173,7 +102,83 @@ void CPoints::Init(size_t s)
 	CGeometryPrimitive *p = createPrimitive(CGeometryPrimitive::POINT);
 
 	unsigned short *points = new unsigned short[s];
+	for (uint16_t i = 0; i < s; i++)
+		points[i] = i;
+
+	p->setIndexes(s, points);
+
+	delete[] points;
+}
+
+class CCube : public CShadedGeometry
+{
+public:
+	CCube() {};
+	virtual ~CCube()
+	{
+	};
+
+	void Init(size_t s);
+
+	virtual void glRender()
+	{
+		glPushAttrib(GL_ENABLE_BIT);
+
+		GLint blendSrc;
+		GLint blendDst;
+		glGetIntegerv(GL_BLEND_SRC, &blendSrc);
+		glGetIntegerv(GL_BLEND_DST, &blendDst);
+
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+
+		CShadedGeometry::glRender();
+
+		glBlendFunc(blendSrc, blendDst);
+		glPopAttrib();
+	}
+};
+
+void CCube::Init(size_t s)
+{
+	addModel(CGeometry::CGL_FRONT_GEOMETRY);
+	addModel(CGeometry::CGL_COLORS);
+	addModel(CGeometry::CGL_TEXTURE);
+	addModel(CGeometry::CGL_TANGENTS);
+	addModel(CGeometry::CGL_BINORMALS);
+
+	glSetVertices(s);
+	glSetColors(s);
+	glSetTangents(s);
+	glSetBinormals(s);
+
+	glLockData();
+
 	for (size_t i = 0; i < s; i++)
+	{
+		float x = 3.0f * ((float)rand() - 0.5f*RAND_MAX) / RAND_MAX;
+		float y = 3.0f * ((float)rand() - 0.5f*RAND_MAX) / RAND_MAX;
+		float z = 3.0f * ((float)rand() - 0.5f*RAND_MAX) / RAND_MAX;
+		addVertex(x, y, z, 1.0f);
+		setColor(i, (float)(rand()) / RAND_MAX, (float)(rand()) / RAND_MAX, (float)(rand()) / RAND_MAX, (float)(rand()) / RAND_MAX);
+
+		GL_COORD_VERTEX Min;
+		GL_COORD_VERTEX Max;
+
+		float w = 0.5f * ((float)rand() - 0.5f*RAND_MAX) / RAND_MAX;
+		float h = 0.5f * ((float)rand() - 0.5f*RAND_MAX) / RAND_MAX;
+		float d = 0.5f * ((float)rand() - 0.5f*RAND_MAX) / RAND_MAX;
+
+		setTangent(i, x - w, y - h, z - d, 1.0f);
+		setBinormal(i, x + w, y + h, z + d, 1.0f);
+	}
+
+	glUnLockData();
+
+	CGeometryPrimitive *p = createPrimitive(CGeometryPrimitive::POINT);
+
+	unsigned short *points = new unsigned short[s];
+	for (uint16_t i = 0; i < s; i++)
 		points[i] = i;
 
 	p->setIndexes(s, points);
@@ -236,31 +241,56 @@ void CTestDoc::GLInitContext(void)
 	ty.a0 = 0;
 	vm->addAction(CViewModifier::ROTATE_VIEW,tx,ty,tz);
 	
-	CPoints *points = new CPoints();
-	points->Init(1024);
-	CShader *shader = points->getShader();
-	COpenGLShaderStage *stage = shader->glGetOpenGLShader();
-	CVertexShader *vs = stage->glGetVertexShader();
-	bool res = vs->glLoadProgram(vp_src);
-	CGeometryShader *gs = stage->glGetGeometryShader();
-	gs->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
-	res = res & gs->glLoadProgram(gp_src);
-	CFragmentShader *fs = stage->glGetFragmentShader();
-	res = res & fs->glLoadProgram(fp_src);
-	CProgramParameters params;
-	params.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);
-
-	res = res & stage->glCompileShader();
-
 	CTextureFactory &tf = CTextureFactory::getDefaultFactory();
-	ITextureObject *T = tf.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
-										   CTextureObject::CGL_OPAQUE,
-										   ITextureObject::CGL_BILINEAR);
-	tf.glLoadTexture(T,"Start.tga");
-	CTextureUnitSetup *ts = shader->glGetTextureUnitsSetup();
-	ts->setDiffuseMap(T);
+	ITextureObject *T = tf.glCreateTexture(	ITextureObject::CGL_COLOR24_ALPHA,
+											CTextureObject::CGL_OPAQUE,
+											ITextureObject::CGL_BILINEAR);
+	tf.glLoadTexture(T, "Start.tga");
 
-	vm->setObject(points);
+	CPoints *points = new CPoints();
+	{
+		points->Init(1024);
+		CShader *shader = points->getShader();
+		COpenGLShaderStage *stage = shader->glGetOpenGLShader();
+		CVertexShader *vs = stage->glGetVertexShader();
+		bool res = vs->glLoadProgram(vp_src);
+		CGeometryShader *gs = stage->glGetGeometryShader();
+		gs->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
+		res = res & gs->glLoadProgram(gp_src);
+		CFragmentShader *fs = stage->glGetFragmentShader();
+		res = res & fs->glLoadProgram(fp_src);
+		CProgramParameters params;
+		params.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);
+
+		res = res & stage->glCompileShader();
+
+		CTextureUnitSetup *ts = shader->glGetTextureUnitsSetup();
+		ts->setDiffuseMap(T);
+	}
+	
+	CCube *cube = new CCube();
+	{
+		cube->Init(20);
+		CShader *shader = cube->getShader();
+		COpenGLShaderStage *stage = shader->glGetOpenGLShader();
+		CVertexShader *vs = stage->glGetVertexShader();
+		bool res = vs->glLoadProgram(vp2_src);
+		CGeometryShader *gs = stage->glGetGeometryShader();
+		gs->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
+		res = res & gs->glLoadProgram(gp2_src);
+		CFragmentShader *fs = stage->glGetFragmentShader();
+		res = res & fs->glLoadProgram(fp2_src);
+		CProgramParameters params;
+		params.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);
+
+		res = res & stage->glCompileShader();
+
+		CTextureUnitSetup *ts = shader->glGetTextureUnitsSetup();
+		ts->setDiffuseMap(T);
+	}
+
+	//vm->setObject(points);
+	vm->setObject(cube);
 
 	C3DScene *pScene = dsp->getRootScene();
 	pScene->addObject(vm->getObject());

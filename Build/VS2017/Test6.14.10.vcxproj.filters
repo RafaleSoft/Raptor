@@ -20,6 +20,9 @@
     <ClCompile Include="..\..\Test6\Test6.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Test6\Shaders.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Test6\StdAfx.h">

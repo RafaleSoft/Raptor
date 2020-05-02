@@ -102,7 +102,7 @@ CEMBMShader::~CEMBMShader(void)
 void CEMBMShader::glInit()
 {
 	CShader *shaderLib = new CShader();
-	COpenGLShaderStage *stage = glGetOpenGLShader();
+	COpenGLShaderStage *stage = glGetOpenGLShader("EMBM_SHADER_PROGRAM");
 
 	if (!embm_shaders_initialized)
 	{

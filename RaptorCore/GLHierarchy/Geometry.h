@@ -47,14 +47,15 @@ public:
 	{
 		CGL_FRONT_GEOMETRY = 0x1,
 		CGL_BACK_GEOMETRY = 0x2,
-		CGL_NORMALS = 0x4,
-		CGL_TANGENTS = 0x8,
+		CGL_COLORS = 0x4,
+		CGL_NORMALS = 0x8,
 		CGL_TEXTURE = 0x10,
-		CGL_WEIGHT = 0x20,
-		CGL_COLORS = 0x40,
-		CGL_FOG = 0x80,
-		CGL_FULLRENDER = 0xFF,	// CGL_FRONT_GEOMETRY|CGL_BACK_GEOMETRY|CGL_MATERIAL|
-								// CGL_TEXTURE|CGL_WIREFRAME|CGL_COLORS|CGL_FOG
+		CGL_TANGENTS = 0x20,
+		CGL_BINORMALS = 0x40,
+		CGL_WEIGHT = 0x100,
+		CGL_FOG = 0x200,
+		CGL_FULLRENDER = 0xFFFF 	// CGL_FRONT_GEOMETRY|CGL_BACK_GEOMETRY|CGL_MATERIAL|
+									// CGL_TEXTURE|CGL_WIREFRAME|CGL_COLORS|CGL_FOG
 	} RENDERING_MODEL;
 
 	virtual void setRenderingModel(RENDERING_MODEL model);
@@ -94,6 +95,8 @@ public:
 	//!	In all methods, the number of items (nbV, nbN, nbT, ... ) is a multiple of the second parameter type.
 	void glSetVertices(size_t nbV, GL_COORD_VERTEX* vertices = NULL);
 	void glSetNormals(size_t nbN, GL_COORD_VERTEX* normals = NULL);
+	void glSetTangents(size_t nbN, GL_COORD_VERTEX* tangents = NULL);
+	void glSetBinormals(size_t nbN, GL_COORD_VERTEX* binormals = NULL);
 	void glSetTexCoords(size_t nbT, GL_TEX_VERTEX* texcoords = NULL);
 	void glSetTexCoords2(size_t nbT, GL_TEX_VERTEX* texcoords = NULL);
 	void glSetWeights(size_t nbW, float* weights = NULL);
@@ -121,6 +124,9 @@ public:
 	void addFace(int p1,int p2,int p3);
 	void setCoord(size_t numvtx,float x,float y,float z,float h);
 	void setTexCoord(size_t numvtx,float u,float v);
+	void setTexCoord2(size_t numvtx, float u, float v);
+	void setTangent(size_t numvtx, float x, float y, float z, float h);
+	void setBinormal(size_t numvtx, float x, float y, float z, float h);
 	void setWeight(size_t numvtx,float w);
 	void setColor(size_t numvtx,float r,float g,float b,float a);
 	void setFogCoord(size_t numvtx,float f);

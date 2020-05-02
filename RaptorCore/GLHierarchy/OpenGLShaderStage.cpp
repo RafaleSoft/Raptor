@@ -504,6 +504,17 @@ bool COpenGLShaderStage::glCompileShader()
 				CATCH_GL_ERROR
 				return false;
 			}
+			else
+			{
+				std::stringstream msg;
+				msg << "Creation of shader program [";
+				msg << m_handle.handle();
+				msg << "] is: ";
+				msg << getName();
+				msg << std::ends;
+				RAPTOR_NO_ERROR(COpenGLShaderStage::COpenGLShaderStageClassID::GetClassId(),
+								msg.str());
+			}
 		}
 
 		// Attach programs before linking.
@@ -734,9 +745,16 @@ void COpenGLShaderStage::glQueryAttributeLocations(void)
 						{
 							value.locationIndex = userLocation;
 
+							CRaptorMessages::MessageArgument arg;
+							arg.arg_sz = name;
+							vector<CRaptorMessages::MessageArgument> args;
+							args.push_back(arg);
+
 							//	Vertex attribute index inconsistency with user expectation after link
-							RAPTOR_WARNING(	CShaderProgram::CShaderProgramClassID::GetClassId(),
-											CRaptorMessages::ID_UPDATE_FAILED);
+							Raptor::GetErrorManager()->generateRaptorError(	COpenGLShaderStage::COpenGLShaderStageClassID::GetClassId(),
+																			CRaptorErrorManager::RAPTOR_WARNING,
+																			CRaptorMessages::ID_UPDATE_FAILED,
+																			__FILE__, __LINE__, args);
 						}
 						else
 							value.locationIndex = location; // No effect, but consistent.

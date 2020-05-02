@@ -207,9 +207,22 @@ uint64_t CShaderProgram::glGetBufferMemoryRequirements(void)
 
 				if ((binding >= max_bindings) || (block_size != value.size()))
 				{
+					vector<CRaptorMessages::MessageArgument> args;
+					CRaptorMessages::MessageArgument arg;
+					arg.arg_sz = name.c_str();
+					args.push_back(arg);
+					CRaptorMessages::MessageArgument arg2;
+					arg2.arg_int = block_size;
+					args.push_back(arg2);
+					CRaptorMessages::MessageArgument arg3;
+					arg3.arg_int = value.size();
+					args.push_back(arg3);
+
 					//	Vertex attribute index inconsistency with user expectation after link
-					RAPTOR_WARNING(	CShaderProgram::CShaderProgramClassID::GetClassId(),
-									CRaptorMessages::ID_UPDATE_FAILED);
+					Raptor::GetErrorManager()->generateRaptorError(	CShaderProgram::CShaderProgramClassID::GetClassId(),
+																	CRaptorErrorManager::RAPTOR_WARNING,
+																	CRaptorMessages::ID_UPDATE_FAILED,
+																	__FILE__, __LINE__, args);
 				}
 			}
 		}
