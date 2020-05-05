@@ -16,16 +16,15 @@ out vec4 v_Max; \n\
 \n\
 void main (void) \n\
 {\n\
-	vec4 pos = vec4(vec3(i_Position.xyz),1.0); \n\
-	gl_Position =  gl_ModelViewProjectionMatrix * pos; \n\
 	v_color = i_Color; \n\
-	v_Min = i_Min; \n\
-	v_Max = i_Max; \n\
+\n\
+	v_Min = i_Position + vec4(i_Min.x, i_Min.y, i_Min.z, 0.0); \n\
+	v_Max = i_Position + vec4(i_Max.x, i_Max.y, i_Max.z, 0.0); \n\
 }\n\
 ";
 
 extern const std::string gp2_src =
-"#version 460\n\
+"#version 460 compatibility\n\
 \n\
 //	Expect the geometry shader extension to be available, warn if not. \n\
 #extension GL_ARB_geometry_shader4 : enable \n\
@@ -35,7 +34,7 @@ in vec4 v_Min[]; \n\
 in vec4 v_Max[]; \n\
 \n\
 layout(points) in; \n\
-layout(triangle_strip, max_vertices=16) out; \n\
+layout(triangle_strip, max_vertices=18) out; \n\
 \n\
 layout(location = 1) out vec4 g_TexCoord; \n\
 out vec4 g_color; \n\
@@ -43,43 +42,107 @@ out vec4 g_color; \n\
 void main() \n\
 {\n\
 	g_color = v_color[0]; \n\
-	// front: \n\
-	gl_Position = gl_in[0].gl_Position + vec4(v_Min.x, v_Max.y, v_Max.z, 0.0); \n\
+\n\
+	// top: Back right \n\
+	vec4 pos = vec4(v_Max[0].x, v_Max[0].y, v_Min[0].z, 1.0); \n\
+	gl_Position = gl_ModelViewProjectionMatrix * pos; \n\
+	g_TexCoord = vec4(0.0,1.0,0.0,0.0); \n\
+	EmitVertex(); \n\
+	// top: Back Left \n\
+	pos = vec4(v_Min[0].x, v_Max[0].y, v_Min[0].z, 1.0); \n\
+	gl_Position = gl_ModelViewProjectionMatrix * pos; \n\
 	g_TexCoord = vec4(0.0,0.0,0.0,0.0); \n\
 	EmitVertex(); \n\
-\n\
-	gl_Position = gl_in[0].gl_Position + vec4(v_Min.x, v_Min.y, v_Max.z, 0.0); \n\
+	// top: Front Right \n\
+	pos = vec4(v_Max[0].x, v_Max[0].y, v_Max[0].z, 1.0); \n\
+	gl_Position = gl_ModelViewProjectionMatrix * pos; \n\
+	g_TexCoord = vec4(1.0,1.0,0.0,0.0); \n\
+	EmitVertex(); \n\
+	// top: Front Left \n\
+	pos = vec4(v_Min[0].x, v_Max[0].y, v_Max[0].z, 1.0); \n\
+	gl_Position = gl_ModelViewProjectionMatrix * pos; \n\
 	g_TexCoord = vec4(1.0,0.0,0.0,0.0); \n\
 	EmitVertex(); \n\
 \n\
-	gl_Position = gl_in[0].gl_Position + vec4(v_Max.x, v_Max.y, v_Max.z, 0.0); \n\
+	// front: Top Left \n\
+	pos = vec4(v_Min[0].x, v_Max[0].y, v_Max[0].z, 1.0); \n\
+	gl_Position = gl_ModelViewProjectionMatrix * pos; \n\
 	g_TexCoord = vec4(0.0,1.0,0.0,0.0); \n\
 	EmitVertex(); \n\
-\n\
-	gl_Position = gl_in[0].gl_Position + vec4(v_Max.x, v_Min.y, v_Max.z, 0.0); \n\
-	g_TexCoord = vec4(1.0,1.0,0.0,0.0); \n\
-	EmitVertex(); \n\
-\n\
-	// right: \n\
-	gl_Position = gl_in[0].gl_Position + vec4(v_Min.x, v_Max.y, v_Max.z, 0.0); \n\
+	// front: Bottom Left \n\
+	pos = vec4(v_Min[0].x, v_Min[0].y, v_Max[0].z, 1.0); \n\
+	gl_Position = gl_ModelViewProjectionMatrix * pos; \n\
 	g_TexCoord = vec4(0.0,0.0,0.0,0.0); \n\
 	EmitVertex(); \n\
-\n\
-	gl_Position = gl_in[0].gl_Position + vec4(v_Min.x, v_Min.y, v_Max.z, 0.0); \n\
+	// front: Top Right \n\
+	pos = vec4(v_Max[0].x, v_Max[0].y, v_Max[0].z, 1.0); \n\
+	gl_Position = gl_ModelViewProjectionMatrix * pos; \n\
+	g_TexCoord = vec4(1.0,1.0,0.0,0.0); \n\
+	EmitVertex(); \n\
+	// front: Bottom Right \n\
+	pos = vec4(v_Max[0].x, v_Min[0].y, v_Max[0].z, 1.0); \n\
+	gl_Position = gl_ModelViewProjectionMatrix * pos; \n\
 	g_TexCoord = vec4(1.0,0.0,0.0,0.0); \n\
 	EmitVertex(); \n\
 \n\
-	gl_Position = gl_in[0].gl_Position + vec4(v_Max.x, v_Max.y, v_Max.z, 0.0); \n\
+	// right: Top Right \n\
+	pos = vec4(v_Max[0].x, v_Max[0].y, v_Min[0].z, 1.0); \n\
+	gl_Position = gl_ModelViewProjectionMatrix * pos; \n\
 	g_TexCoord = vec4(0.0,1.0,0.0,0.0); \n\
 	EmitVertex(); \n\
+	// right: Bottom Right \n\
+	pos = vec4(v_Max[0].x, v_Min[0].y, v_Min[0].z, 1.0); \n\
+	gl_Position = gl_ModelViewProjectionMatrix * pos; \n\
+	g_TexCoord = vec4(0.0,0.0,0.0,0.0); \n\
+	EmitVertex(); \n\
 \n\
-	gl_Position = gl_in[0].gl_Position + vec4(v_Max.x, v_Min.y, v_Max.z, 0.0); \n\
+	// back: Top Left \n\
+	pos = vec4(v_Min[0].x, v_Max[0].y, v_Min[0].z, 1.0); \n\
+	gl_Position = gl_ModelViewProjectionMatrix * pos; \n\
 	g_TexCoord = vec4(1.0,1.0,0.0,0.0); \n\
+	EmitVertex(); \n\
+	// back: Bottom Left \n\
+	pos = vec4(v_Min[0].x, v_Min[0].y, v_Min[0].z, 1.0); \n\
+	gl_Position = gl_ModelViewProjectionMatrix * pos; \n\
+	g_TexCoord = vec4(1.0,0.0,0.0,0.0); \n\
+	EmitVertex(); \n\
+\n\
+	// left: Top Left \n\
+	pos = vec4(v_Min[0].x, v_Max[0].y, v_Max[0].z, 1.0); \n\
+	gl_Position = gl_ModelViewProjectionMatrix * pos; \n\
+	g_TexCoord = vec4(0.0,1.0,0.0,0.0); \n\
+	EmitVertex(); \n\
+	// left: Bottom Left \n\
+	pos = vec4(v_Min[0].x, v_Min[0].y, v_Max[0].z, 1.0); \n\
+	gl_Position = gl_ModelViewProjectionMatrix * pos; \n\
+	g_TexCoord = vec4(0.0,0.0,0.0,0.0); \n\
+	EmitVertex(); \n\
+\n\
+	// bottom: Front Left\n\
+	pos = vec4(v_Min[0].x, v_Min[0].y, v_Max[0].z, 1.0); \n\
+	gl_Position = gl_ModelViewProjectionMatrix * pos; \n\
+	g_TexCoord = vec4(0.0,1.0,0.0,0.0); \n\
+	EmitVertex(); \n\
+	// bottom: Back Left\n\
+	pos = vec4(v_Min[0].x, v_Min[0].y, v_Min[0].z, 1.0); \n\
+	gl_Position = gl_ModelViewProjectionMatrix * pos; \n\
+	g_TexCoord = vec4(0.0,0.0,0.0,0.0); \n\
+	EmitVertex(); \n\
+	// bottom: Front Right\n\
+	pos = vec4(v_Max[0].x, v_Min[0].y, v_Max[0].z, 1.0); \n\
+	gl_Position = gl_ModelViewProjectionMatrix * pos; \n\
+	g_TexCoord = vec4(1.0,1.0,0.0,0.0); \n\
+	EmitVertex(); \n\
+	// bottom: Back Right\n\
+	pos = vec4(v_Max[0].x, v_Min[0].y, v_Min[0].z, 1.0); \n\
+	gl_Position = gl_ModelViewProjectionMatrix * pos; \n\
+	g_TexCoord = vec4(1.0,0.0,0.0,0.0); \n\
 	EmitVertex(); \n\
 \n\
 	EndPrimitive(); \n\
 }\n\
 ";
+
 
 extern const std::string fp2_src =
 "#version 460\n\

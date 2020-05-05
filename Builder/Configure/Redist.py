@@ -96,6 +96,14 @@ else:
 s=os.path.sep
 
 print("Copying Raptor include files ...")
+
+print(" Configure:")
+src = 'Builder'+s+'Configure'+s
+dst = 'Redist'+s+'Include'+s
+shutil.copyfile(src+'Portability.h', dst+'Portability.h')
+shutil.copyfile(src+'Version.h', dst+'Version.h')
+
+
 print(" Engine:")
 
 src = 'RaptorCore'+s+'Engine'+s
@@ -210,7 +218,6 @@ shutil.copyfile(src+'RaptorVKExtensions.h', dst+'RaptorVKExtensions.h')
 shutil.copyfile(src+'RaptorIO.h', dst+'RaptorIO.h')
 shutil.copyfile(src+'RaptorMessages.h', dst+'RaptorMessages.h')
 shutil.copyfile(src+'RenderEntryPoint.h', dst+'RenderEntryPoint.h')
-shutil.copyfile(src+'Version.h', dst+'Version.h')
 shutil.copyfile(src+'vkext.h', dst+'vkext.h')
 
 print(" Win32:")

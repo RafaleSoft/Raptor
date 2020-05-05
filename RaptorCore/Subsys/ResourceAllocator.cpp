@@ -209,6 +209,11 @@ bool CResourceAllocator::CResourceBinder::setArray(CProgramParameters::GL_VERTEX
 			array->arraySize = size;
 			array->arrayName = 0;
 			break;
+		case CProgramParameters::ADDITIONAL_PARAM2:
+			array = &bindings.attributes.additionalArray2;
+			array->arraySize = size;
+			array->arrayName = 0;
+			break;
 		case CProgramParameters::FOG_COORDINATE:
 			array = &bindings.attributes.fogCoordArray;
 			array->arraySize = size;
@@ -417,6 +422,16 @@ bool CResourceAllocator::CResourceBinder::bindArray(CRaptorDisplayConfig::GL_ARR
 				pExtensions->glVertexWeightPointerEXT(state.arraySize, state.arrayType, state.arrayStride, state.arrayPointer);
 				break;
 #endif
+			default:
+			{
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+				std::string msg = "Resource Binder does not support array name: ";
+				msg << state.arrayName;
+				Raptor::GetErrorManager()->generateRaptorError(	COpenGL::COpenGLClassID::GetClassId(),
+																CRaptorErrorManager::RAPTOR_FATAL, msg);
+#endif
+				break;
+			}
 		}
 	}
 	else if (global_state.enable)

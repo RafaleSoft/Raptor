@@ -35,7 +35,7 @@
 #endif
 
 #ifndef __RAPTOR_VERSION_H__
-	#include "System/Version.h"
+	#include "Version.h"
 #endif
 
 RAPTOR_NAMESPACE_BEGIN

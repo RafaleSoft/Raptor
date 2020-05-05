@@ -44,24 +44,53 @@ if len(RAPTOR_VERSION) < 1:
 current_dir = os.path.curdir
 os.chdir(RAPTOR_ROOT)
 
-versions = ("GLBench" + os.path.sep + "GLBench.rc", 
-            "UnitTest" + os.path.sep + "UnitTest.rc",
-            "Rays2" + os.path.sep + "RaysServer" + os.path.sep + "RaysServer.rc",
-            "RaptorCore" + os.path.sep + "RaptorCore.rc",
-            "Demo" + os.path.sep + "Demo.rc",
-            "Test2" + os.path.sep + "Test2.rc",
-            "Test5" + os.path.sep + "Test5.rc",
-            "SIMD" + os.path.sep + "simd.rc",
-            "RaptorViewer" + os.path.sep + "RaptorViewer.rc",
-            "RaptorToolBox" + os.path.sep + "RaptorToolBox.rc",
-            "RaptorServer" + os.path.sep + "RaptorServer.rc",
-            "RaptorNetwork" + os.path.sep + "RaptorNetwork.rc",
-            "RaptorData" + os.path.sep + "RaptorDataPackager" + os.path.sep + "RaptorDataPackager.rc",
-            "RaptorData" + os.path.sep + "RaptorData.rc",
-            "RaptorCompute" + os.path.sep + "RaptorCompute.rc",
-            "MicroLex" + os.path.sep + "MicroLex.rc",
-            "GLObjectViewer" + os.path.sep + "GLObjectViewer.rc",
-            "Builder" + os.path.sep + "BuilderNative.rc")
+s = os.path.sep
+
+print("Updating version file ...")
+
+file = "Builder" + s + "Configure" + s + "Version.h"
+build = (int)(1)
+out = open(file+'.new','w')
+
+with open(file, 'r') as f:
+    for count, line in enumerate(f):
+        if line.find("RAPTOR_VERSION_MAJOR") == 8:
+            out.write("#define RAPTOR_VERSION_MAJOR	" + RAPTOR_VERSION.split('.')[0] + "\n")
+        elif line.find("RAPTOR_VERSION_MINOR") == 8:
+            out.write("#define RAPTOR_VERSION_MINOR	" + RAPTOR_VERSION.split('.')[1] + "\n")
+        elif line.find("RAPTOR_VERSION_PATCH") == 8:
+            out.write("#define RAPTOR_VERSION_PATCH	" + RAPTOR_VERSION.split('.')[2] + "\n")
+        elif line.find("RAPTOR_VERSION_BUILD") == 8:
+            build = 1 + (int)(line.split()[2])
+            out.write("#define RAPTOR_VERSION_BUILD	" + str(build) + "\n")
+        else:
+            out.write(line)
+
+out.close()
+os.remove(file)
+os.rename(file+".new",file)
+
+print("  Raptor build is now: " + str(build) + "\n")
+
+
+versions = ("GLBench" + s + "GLBench.rc", 
+            "UnitTest" + s + "UnitTest.rc",
+            "Rays2" + s + "RaysServer" + s + "RaysServer.rc",
+            "RaptorCore" + s + "RaptorCore.rc",
+            "Demo" + s + "Demo.rc",
+            "Test2" + s + "Test2.rc",
+            "Test5" + s + "Test5.rc",
+            "SIMD" + s + "simd.rc",
+            "RaptorViewer" + s + "RaptorViewer.rc",
+            "RaptorToolBox" + s + "RaptorToolBox.rc",
+            "RaptorServer" + s + "RaptorServer.rc",
+            "RaptorNetwork" + s + "RaptorNetwork.rc",
+            "RaptorData" + s + "RaptorDataPackager" + s + "RaptorDataPackager.rc",
+            "RaptorData" + s + "RaptorData.rc",
+            "RaptorCompute" + s + "RaptorCompute.rc",
+            "MicroLex" + s + "MicroLex.rc",
+            "GLObjectViewer" + s + "GLObjectViewer.rc",
+            "Builder" + s + "BuilderNative.rc")
 
 for file in versions:
     print("Checking file: [",file,"]")
@@ -88,17 +117,17 @@ for file in versions:
         with open(file, 'r') as f:
             for count, line in enumerate(f):
                 if line.find("FILEVERSION") >= 0:
-                    out.write(" FILEVERSION "+RAPTOR_VERSION.replace('.',', ')+", 0\n")
+                    out.write(" FILEVERSION "+RAPTOR_VERSION.replace('.',', ')+", " + str(build) + "\n")
                 elif line.find("PRODUCTVERSION") >= 0:
-                    out.write(" PRODUCTVERSION "+RAPTOR_VERSION.replace('.',', ')+", 0\n")
+                    out.write(" PRODUCTVERSION "+RAPTOR_VERSION.replace('.',', ')+", " + str(build) + "\n")
                 else:
                     pos = line.find("FileVersion")
                     if pos > 0:
-                        out.write(line[0:pos+14]+'"'+RAPTOR_VERSION+'.0"\n')
+                        out.write(line[0:pos+14]+'"'+RAPTOR_VERSION+"." + str(build) + '"\n')
                     else:
                         pos = line.find("ProductVersion")
                         if pos > 0:
-                            out.write(line[0:pos+17]+'"'+RAPTOR_VERSION+'.0"\n')
+                            out.write(line[0:pos+17]+'"'+RAPTOR_VERSION+"." + str(build) + '"\n')
                         else:
                             out.write(line)
 
@@ -108,7 +137,6 @@ for file in versions:
         os.rename(file+".new",file)
     else:
         print("  Product version up-to-date, skipping file ...")
-
 
 os.chdir(current_dir)
 

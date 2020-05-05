@@ -17,6 +17,7 @@
 
 
 #include "Subsys/CodeGeneration.h"
+#include "Portability.h"
 
 #ifndef __RAPTOR_GLEXT_H__
 	#include "System/Glext.h"
@@ -42,6 +43,7 @@
 
 #include <time.h>
 
+/*
 #if defined(WIN32)
 	#define LOCALTIME(_Tm,_Time) localtime_s(_Tm,_Time)
 	#define ASCTIME(_Buf, _SizeInBytes, _Tm) asctime_s(_Buf, _SizeInBytes, _Tm)
@@ -51,6 +53,7 @@
 	#define ASCTIME(_Buf, _SizeInBytes, _Tm) asctime_r(_Tm, _Buf)
 	#define __FILENAME__(file) (strrchr(file,'/') ? strrchr(file,'/') + 1 : file)
 #endif
+*/
 
 RAPTOR_NAMESPACE
 

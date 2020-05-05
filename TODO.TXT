@@ -9,12 +9,6 @@
 - CGLFont:
 	- corriger fonr color et back color pour rendre générique
 
-- Portabilité:
-	- déplacer dans un seul endroit les définitions spécifiques WIN32/LINUX (CodeGeneration.h ?)
-	p.ex.: RaptorErrorManager a 2 defines specifiques: LOCALTIME & ASCTIME
-	- parser les .rc et mettre à jour la version réelle selon RAPTOR_VERSION ou Version.h
-	(synchroniser Version.h à partir de la var env si elle est définie)
-
 - CShaderrogram:
 	- ajouter un preprocesseur.
 

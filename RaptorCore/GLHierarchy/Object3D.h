@@ -1,6 +1,21 @@
-// Object3D.h: interface for the CObject3D class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  Object3D.h                                                             */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
 #if !defined(AFX_OBJECT3D_H__DB24F017_80B9_11D3_97C1_FC2841000000__INCLUDED_)
 #define AFX_OBJECT3D_H__DB24F017_80B9_11D3_97C1_FC2841000000__INCLUDED_
 
@@ -21,8 +36,6 @@
     #include "GLHierarchy/ObjectProperties.h"
 #endif
 
-
-//#define RELOCATE_BBOX 1
 
 //////////////////////////////////////////////////////////////////////
 //!
@@ -293,16 +306,8 @@ private:
     //! These datas are identifiers to BBox values for GL server
 	double			boxValue;
 
-#ifdef	RELOCATE_BBOX
-    unsigned int			boxArrayOffset;
-    static unsigned int		boxIndex;
-    static float			*boxArrays;
-	static unsigned short	*boxIndexes;
-	static unsigned short	*boxIndexes2;
-#else
 	RAPTOR_HANDLE	filledBox;
 	RAPTOR_HANDLE	wireBox;
-#endif
 };
 
 RAPTOR_NAMESPACE_END

@@ -154,6 +154,7 @@ void CCube::Init(size_t s)
 
 	glLockData();
 
+	srand(GetTickCount());
 	for (size_t i = 0; i < s; i++)
 	{
 		float x = 3.0f * ((float)rand() - 0.5f*RAND_MAX) / RAND_MAX;
@@ -162,15 +163,12 @@ void CCube::Init(size_t s)
 		addVertex(x, y, z, 1.0f);
 		setColor(i, (float)(rand()) / RAND_MAX, (float)(rand()) / RAND_MAX, (float)(rand()) / RAND_MAX, (float)(rand()) / RAND_MAX);
 
-		GL_COORD_VERTEX Min;
-		GL_COORD_VERTEX Max;
+		float w = 0.1f * ((float)rand()) / RAND_MAX;
+		float h = 0.1f * ((float)rand()) / RAND_MAX;
+		float d = 0.1f * ((float)rand()) / RAND_MAX;
 
-		float w = 0.5f * ((float)rand() - 0.5f*RAND_MAX) / RAND_MAX;
-		float h = 0.5f * ((float)rand() - 0.5f*RAND_MAX) / RAND_MAX;
-		float d = 0.5f * ((float)rand() - 0.5f*RAND_MAX) / RAND_MAX;
-
-		setTangent(i, x - w, y - h, z - d, 1.0f);
-		setBinormal(i, x + w, y + h, z + d, 1.0f);
+		setTangent(i, -w, -h, -d, 0.0f);
+		setBinormal(i, +w, +h, +d, 0.0f);
 	}
 
 	glUnLockData();
@@ -230,7 +228,7 @@ void CTestDoc::GLInitContext(void)
 
 	CModifier::TIME_FUNCTION tz;
 	tz.timeFunction = CModifier::CGL_TIME_CONSTANT;
-	tz.a0 = 0.01f;
+	tz.a0 = 0.001f;
 	CModifier::TIME_FUNCTION tx;
 	tx.timeFunction = CModifier::CGL_TIME_CONSTANT;
 	tx.a0 = 0.015f;
@@ -270,13 +268,13 @@ void CTestDoc::GLInitContext(void)
 	
 	CCube *cube = new CCube();
 	{
-		cube->Init(20);
+		cube->Init(1024);
 		CShader *shader = cube->getShader();
 		COpenGLShaderStage *stage = shader->glGetOpenGLShader();
 		CVertexShader *vs = stage->glGetVertexShader();
 		bool res = vs->glLoadProgram(vp2_src);
 		CGeometryShader *gs = stage->glGetGeometryShader();
-		gs->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
+		gs->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 18);
 		res = res & gs->glLoadProgram(gp2_src);
 		CFragmentShader *fs = stage->glGetFragmentShader();
 		res = res & fs->glLoadProgram(fp2_src);
