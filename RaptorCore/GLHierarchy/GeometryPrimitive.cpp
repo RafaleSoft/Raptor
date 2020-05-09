@@ -186,7 +186,7 @@ void CGeometryPrimitive::setIndexes(unsigned short size,unsigned short* faces)
 			return;
 
 		if (CGeometryAllocator::GetInstance()->isMemoryRelocated())
-			CGeometryAllocator::GetInstance()->glvkCopyPointer(m_faces,faces,size);
+			CGeometryAllocator::GetInstance()->glvkSetPointerData(m_faces,faces,size);
 		else
 			memcpy(m_faces,faces,size*sizeof(unsigned short));
 	}

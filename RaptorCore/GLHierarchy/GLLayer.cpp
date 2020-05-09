@@ -255,9 +255,8 @@ void CGLLayer::glRender()
 			CTexelAllocator::GetInstance()->isMemoryLocked() &&
 			(NULL != m_pBufferPointer))
 		{
-			CTexelAllocator::GetInstance()->glvkCopyPointer(m_pBufferPointer,
-														  m_pBuffer,
-														  m_layerWidth*m_layerHeight*4);
+			CTexelAllocator::GetInstance()->glvkSetPointerData(	m_pBufferPointer, m_pBuffer,
+																m_layerWidth*m_layerHeight*4);
 			glTexSubImage2D(GL_TEXTURE_2D,
 							m_pPlane->getCurrentMipMapLevel(),
 							0, 0, m_layerWidth, m_layerHeight,

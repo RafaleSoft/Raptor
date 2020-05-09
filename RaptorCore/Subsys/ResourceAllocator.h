@@ -98,6 +98,8 @@ public:
 	bool    isMemoryLocked(void) const { return m_bLocked; };
 
 
+
+
 protected:
 	typedef struct data_bloc_t
 	{
@@ -109,6 +111,18 @@ protected:
 	//!	The constructor, for subclasses (Geometry, Texels, Uniforms).
 	CResourceAllocator();
 
+	//!	Copy data from src resource buffer object to dst. Buffers must be 
+	//!	allocated and have equivalent size and buffers must have the same storage kind.
+	//! @param dst: the destination buffer object .
+	//! @param dstOffset : the offset in the destination buffer.
+	//! @param src: the source buffer object.
+	//! @param srcOffset: the offset in the source buffer.
+	//!	@param size : the size to copy in machine units.
+	//! @return true if copy successful, false in case of error.
+	bool	glvkCopyPointer(IDeviceMemoryManager::IBufferObject *dst, size_t dstOffset,
+							IDeviceMemoryManager::IBufferObject *src, size_t srcOffset,
+							size_t size);
+
 	//!	The memory state
 	bool    m_bLocked;
 
@@ -118,6 +132,7 @@ protected:
 	//!	Memory manager for the device hosting the display holding this allocator.
 	//! (Vulkan host memory is per device)
 	IDeviceMemoryManager	*deviceMemoryManager;
+
 
 
 private:

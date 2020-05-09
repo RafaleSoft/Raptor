@@ -517,3 +517,46 @@ bool CResourceAllocator::CResourceBinder::glScanBindings(CRaptorDisplayConfig::G
 
 	return true;
 }
+
+bool CResourceAllocator::glvkCopyPointer(	IDeviceMemoryManager::IBufferObject *dst, size_t dstOffset,
+											IDeviceMemoryManager::IBufferObject *src, size_t srcOffset,
+											size_t size)
+{
+	if ((NULL == deviceMemoryManager) || (NULL == src) || (NULL == dst) || (0 == size))
+	{
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+		Raptor::GetErrorManager()->generateRaptorError(	IDeviceMemoryManager::IDeviceMemoryManagerClassID::GetClassId(),
+														CRaptorErrorManager::RAPTOR_ERROR,
+														CRaptorMessages::ID_NULL_OBJECT,
+														__FILE__, __LINE__);
+#endif
+		return false;
+	}
+
+	if (dst->getStorage() != src->getStorage())
+		return false;
+
+	if ((dst->getSize() < dstOffset + size) || (src->getSize() < srcOffset + size))
+	{
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+		Raptor::GetErrorManager()->generateRaptorError(	IDeviceMemoryManager::IDeviceMemoryManagerClassID::GetClassId(),
+														CRaptorErrorManager::RAPTOR_ERROR,
+														CRaptorMessages::ID_NO_RESOURCE,
+														__FILE__, __LINE__);
+#endif
+		return false;
+	}
+
+	if (!deviceMemoryManager->copyBufferObjectData(*dst, dstOffset, *src, srcOffset, size))
+	{
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+		Raptor::GetErrorManager()->generateRaptorError( IDeviceMemoryManager::IDeviceMemoryManagerClassID::GetClassId(),
+														CRaptorErrorManager::RAPTOR_ERROR,
+														CRaptorMessages::ID_UPDATE_FAILED,
+														__FILE__, __LINE__);
+#endif
+		return false;
+	}
+
+	return true;
+}

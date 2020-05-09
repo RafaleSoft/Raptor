@@ -73,17 +73,24 @@ public:
 	float *glvkMapPointer(float *pointer, bool syncData = true);
 	float *glvkUnMapPointer(float *pointer, bool syncData = true);
 	
-
 	//! These methods allow data transfer to a relocated block when mapping/unmapping 
 	//! is not necessary ( i.e. only data copy )
-	//!	@param dst : the pointer returned by a previous call to allocateIndexes
+	//!	@param dst : the pointer returned by a previous call to allocateIndexes or allocateVertices.
 	//!	@param src : the conventional (host) memory pointer to data to copy to GPU memory
 	//!	@param size : the size of data to be copied that should always be less than the allocated size.
 	//!	If size is 0, the dst memory size is recomputed, otherwise, size floats are copied.
 	//!	Rq: No other testing are performed ! ( no ckech is done to validate that dst is a bloc of size 'size' )
-	void glvkCopyPointer(float *dst, float *src, uint64_t size = 0);
-	void glvkCopyPointer(uint16_t *dst, uint16_t *src, uint64_t size = 0);
+	void glvkSetPointerData(float *dst, float *src, uint64_t size = 0);
+	void glvkSetPointerData(uint16_t *dst, uint16_t *src, uint64_t size = 0);
 	
+	//! These methods allow data copy between two blocks when mapping/unmapping 
+	//! is not necessary ( i.e. only data copy )
+	//!	@param dst : the target pointer returned by a previous call to allocateIndexes or allocateVertices.
+	//!	@param src : the source pointer returned by a previous call to allocateIndexes or allocateVertices.
+	//!	@param size : the size of data to be copied that should always be less than the allocated size.
+	//! @return trus if no error during copy, false otherwise.
+	bool glvkCopyPointer(float *dst, float *src, uint64_t size = 0);
+	bool glvkCopyPointer(uint16_t *dst, uint16_t *src, uint64_t size = 0);
 
 	//!	This method returns the address of a free block of the requested size, ( nb of indexes )
 	//!	or NULL if not enough space or other error.

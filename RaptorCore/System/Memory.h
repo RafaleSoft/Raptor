@@ -25,6 +25,10 @@
 
 #include "Subsys/CodeGeneration.h"
 
+#if !defined(AFX_PERSISTENCE_H__5561BA28_831B_11D3_9142_EEB51CEBBDB0__INCLUDED_)
+	#include "GLHierarchy/Persistence.h"
+#endif
+
 
 RAPTOR_NAMESPACE_BEGIN
 
@@ -114,6 +118,20 @@ public:
 										const void* src,
 										uint64_t sz) = 0;
 
+	//!	Memory data copy from src resource buffer object to dst. Buffers must be 
+	//!	allocated and have equivalent size and buffers must have the same storage kind.
+	//! @param dstbo: the destination buffer object .
+	//! @param dstOffset : the offset in the destination buffer.
+	//! @param srcbo: the source buffer object.
+	//! @param srcOffset: the offset in the source buffer.
+	//!	@param sz : the size to copy in machine units.
+	//! @return true if copy successful, false in case of error.
+	virtual bool copyBufferObjectData(	IDeviceMemoryManager::IBufferObject &dstbo,
+										uint64_t dstOffset,
+										IDeviceMemoryManager::IBufferObject &srcbo,
+										uint64_t srcOffset,
+										uint64_t sz) = 0;
+
 	//!	Memory transfer method that should be used when copying data to and from a buffer object.
 	//! This method might need a valid OpenGL context if VBO are supported.
 	//! @param bo		 : the vertex buffer from which data are read
@@ -144,6 +162,9 @@ public:
 	//!	@return false if buffer invalid or any error, true otherwise
 	virtual bool releaseBufferObject(	IDeviceMemoryManager::IBufferObject* &bo) = 0;
 
+
+	//!	Implements CPersistence
+	DECLARE_CLASS_ID(IDeviceMemoryManagerClassID, "DeviceMemoryManager", CPersistence)
 
 
 protected:

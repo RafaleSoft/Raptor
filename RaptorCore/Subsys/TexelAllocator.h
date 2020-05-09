@@ -77,7 +77,7 @@ public:
 	//!	@param size : the size of data to be copied that should always be less than the allocated size.
 	//!	If size is 0, the dst memory size is recomputed, otherwise, size floats are copied.
 	//!	Rq: No other testing are performed !
-    void glvkCopyPointer(unsigned char *dst, unsigned char *src, uint64_t size = 0);
+    void glvkSetPointerData(unsigned char *dst, unsigned char *src, uint64_t size = 0);
 
 	void *glvkMapPointer(void *pointer,bool syncData = true);
 	void *glvkUnMapPointer(void *pointer,bool syncData = true);

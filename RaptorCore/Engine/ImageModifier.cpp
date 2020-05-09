@@ -175,9 +175,9 @@ void CImageModifier::glGenerate(CTextureObject* t)
 		CTexelAllocator::GetInstance()->isMemoryLocked() &&
 		(NULL != m_pBufferPointer))
 	{
-		CTexelAllocator::GetInstance()->glvkCopyPointer(m_pBufferPointer,
-														m_pBufferImage,
-														t->getWidth() * t->getHeight() *4);
+		CTexelAllocator::GetInstance()->glvkSetPointerData(	m_pBufferPointer,
+															m_pBufferImage,
+															t->getWidth() * t->getHeight() *4);
 		glTexSubImage2D(GL_TEXTURE_2D,
 						t->getCurrentMipMapLevel(),
 						0, 0,

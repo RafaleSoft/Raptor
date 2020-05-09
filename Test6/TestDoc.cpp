@@ -145,12 +145,10 @@ void CCube::Init(size_t s)
 	addModel(CGeometry::CGL_COLORS);
 	addModel(CGeometry::CGL_TEXTURE);
 	addModel(CGeometry::CGL_TANGENTS);
-	addModel(CGeometry::CGL_BINORMALS);
 
 	glSetVertices(s);
 	glSetColors(s);
 	glSetTangents(s);
-	glSetBinormals(s);
 
 	glLockData();
 
@@ -160,15 +158,15 @@ void CCube::Init(size_t s)
 		float x = 3.0f * ((float)rand() - 0.5f*RAND_MAX) / RAND_MAX;
 		float y = 3.0f * ((float)rand() - 0.5f*RAND_MAX) / RAND_MAX;
 		float z = 3.0f * ((float)rand() - 0.5f*RAND_MAX) / RAND_MAX;
-		addVertex(x, y, z, 1.0f);
-		setColor(i, (float)(rand()) / RAND_MAX, (float)(rand()) / RAND_MAX, (float)(rand()) / RAND_MAX, (float)(rand()) / RAND_MAX);
 
 		float w = 0.1f * ((float)rand()) / RAND_MAX;
 		float h = 0.1f * ((float)rand()) / RAND_MAX;
 		float d = 0.1f * ((float)rand()) / RAND_MAX;
 
-		setTangent(i, -w, -h, -d, 0.0f);
-		setBinormal(i, +w, +h, +d, 0.0f);
+		addVertex(x - w, y - h, z - d, 1.0f);
+		setTangent(i, x + w, y + h, z + d, 1.0f);
+
+		setColor(i, (float)(rand()) / RAND_MAX, (float)(rand()) / RAND_MAX, (float)(rand()) / RAND_MAX, (float)(rand()) / RAND_MAX);
 	}
 
 	glUnLockData();

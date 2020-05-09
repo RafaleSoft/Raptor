@@ -187,7 +187,7 @@ void CParticle::glInitParticle(void)
 		if (pAllocator->isMemoryRelocated())
 		{
 			cachePointer = pAllocator->allocateVertices(CACHEPOINTER_SIZE);
-			pAllocator->glvkCopyPointer(cachePointer,(float*)&cache,CACHEPOINTER_SIZE);
+			pAllocator->glvkSetPointerData(cachePointer,(float*)&cache,CACHEPOINTER_SIZE);
 		}
 		else
 			cachePointer = &cache[0].coord.x;
@@ -311,7 +311,7 @@ void RAPTOR_FASTCALL CParticle::glRenderPoints(void)
 				memcpy(&cache[i].colors,&m_attributes[nbElt+i].color,sizeof(GL_COORD_VERTEX));
 			}
 
-			pAllocator->glvkCopyPointer(cachePointer,&cache[0].coord.x,CACHEPOINTER_SIZE);
+			pAllocator->glvkSetPointerData(cachePointer,&cache[0].coord.x,CACHEPOINTER_SIZE);
 			glDrawArrays(GL_POINTS, 0, CACHE_SIZE);
 
 			nbElt += CACHE_SIZE;
@@ -326,7 +326,7 @@ void RAPTOR_FASTCALL CParticle::glRenderPoints(void)
 				memcpy(&cache[i].colors,&m_attributes[nbElt+i].color,sizeof(GL_COORD_VERTEX));
 			}
 
-			pAllocator->glvkCopyPointer(cachePointer,&cache[0].coord.x,sizeof(CACHEELT)*sz/sizeof(float));
+			pAllocator->glvkSetPointerData(cachePointer,&cache[0].coord.x,sizeof(CACHEELT)*sz/sizeof(float));
 			glDrawArrays(GL_POINTS, 0, sz);
 		}
 	}
@@ -396,7 +396,7 @@ void RAPTOR_FASTCALL CParticle::glRenderLines(void)
 		{
 			CGeometryAllocator *pAllocator = CGeometryAllocator::GetInstance();
 			if (pAllocator->isMemoryRelocated())
-				pAllocator->glvkCopyPointer(cachePointer,&cache[0].coord.x,CACHEPOINTER_SIZE);
+				pAllocator->glvkSetPointerData(cachePointer,&cache[0].coord.x,CACHEPOINTER_SIZE);
 
 			glDrawArrays(GL_LINES, 0, CACHE_SIZE);
 			nbElt = 0;
@@ -407,7 +407,7 @@ void RAPTOR_FASTCALL CParticle::glRenderLines(void)
 	{
 		CGeometryAllocator *pAllocator = CGeometryAllocator::GetInstance();
 		if (pAllocator->isMemoryRelocated())
-			pAllocator->glvkCopyPointer(cachePointer,&cache[0].coord.x,sizeof(CACHEELT)*nbElt/sizeof(float));
+			pAllocator->glvkSetPointerData(cachePointer,&cache[0].coord.x,sizeof(CACHEELT)*nbElt/sizeof(float));
 
 		glDrawArrays(GL_LINES, 0, nbElt);
 		nbElt = 0;
@@ -447,7 +447,7 @@ void RAPTOR_FASTCALL CParticle::glRenderTextures(void)
 		if (nbElt == CACHE_SIZE)
 		{
 			if (pAllocator->isMemoryRelocated())
-				pAllocator->glvkCopyPointer(cachePointer, &cache[0].coord.x, CACHEPOINTER_SIZE);
+				pAllocator->glvkSetPointerData(cachePointer, &cache[0].coord.x, CACHEPOINTER_SIZE);
 			glDrawArrays(GL_POINTS, 0, CACHE_SIZE);
 			nbElt = 0;
 		}
@@ -455,7 +455,7 @@ void RAPTOR_FASTCALL CParticle::glRenderTextures(void)
 	if (nbElt > 0)
 	{
 		if (pAllocator->isMemoryRelocated())
-			pAllocator->glvkCopyPointer(cachePointer, &cache[0].coord.x, sizeof(CACHEELT)*nbElt / sizeof(float));
+			pAllocator->glvkSetPointerData(cachePointer, &cache[0].coord.x, sizeof(CACHEELT)*nbElt / sizeof(float));
 		glDrawArrays(GL_POINTS, 0, nbElt);
 		nbElt = 0;
 	}
@@ -498,7 +498,7 @@ void RAPTOR_FASTCALL CParticle::glRenderVolumes(void)
 		if (nbElt == CACHE_SIZE)
 		{
 			if (pAllocator->isMemoryRelocated())
-				pAllocator->glvkCopyPointer(cachePointer,&cache[0].coord.x,CACHEPOINTER_SIZE);
+				pAllocator->glvkSetPointerData(cachePointer,&cache[0].coord.x,CACHEPOINTER_SIZE);
 
 			glDrawArrays(GL_POINTS, 0, CACHE_SIZE);
 			nbElt = 0;
@@ -508,7 +508,7 @@ void RAPTOR_FASTCALL CParticle::glRenderVolumes(void)
 	if (nbElt > 0)
 	{
 		if (pAllocator->isMemoryRelocated())
-			pAllocator->glvkCopyPointer(cachePointer,&cache[0].coord.x,sizeof(CACHEELT)*nbElt/sizeof(float));
+			pAllocator->glvkSetPointerData(cachePointer,&cache[0].coord.x,sizeof(CACHEELT)*nbElt/sizeof(float));
 
 		glDrawArrays(GL_POINTS, 0, nbElt);
 		nbElt = 0;

@@ -39,14 +39,14 @@ print("\n")
 
 
 if len(RAPTOR_ROOT) < 1:
-	print("Raptor Root is not defined, job aborted !");
-	exit(-1);
+	print("Raptor Root is not defined, job aborted !")
+	exit(-1)
 if not os.path.exists(RAPTOR_ROOT):
-    print("Raptor Root is not accessible, job aborted !");
-    exit(-1);
+    print("Raptor Root is not accessible, job aborted !")
+    exit(-1)
 if len(RAPTOR_VERSION) < 1:
-	print("Raptor Version is not defined, job aborted !");
-	exit(-1);
+	print("Raptor Version is not defined, job aborted !")
+	exit(-1)
 
 
 current_dir = os.path.curdir

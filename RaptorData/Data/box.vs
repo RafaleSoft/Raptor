@@ -1,6 +1,6 @@
 /***************************************************************************/
 /*                                                                         */
-/*  Version.h                                                              */
+/*  box.vs                                                                 */
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
@@ -15,19 +15,21 @@
 /*                                                                         */
 /***************************************************************************/
 
+#version 440
 
 
-#ifndef __RAPTOR_VERSION_H__
-#define __RAPTOR_VERSION_H__
+layout(location = 0) in vec4 i_Min;
+layout(location = 3) in vec4 i_Color;
+layout(location = 6) in vec4 i_Max;
 
-#define RAPTOR_VERSION_MAJOR	2
-#define RAPTOR_VERSION_MINOR	17
-#define RAPTOR_VERSION_PATCH	2
-#define RAPTOR_VERSION_BUILD	6
+out vec4 v_color;
+out vec4 v_Min;
+out vec4 v_Max;
 
-#define RAPTOR_VERSION				(RAPTOR_VERSION_MAJOR << 24) + (RAPTOR_VERSION_MINOR << 16) + (RAPTOR_VERSION_PATCH << 8)
-#define	RAPTOR_VERSION_DOT(a,b,c)	#a"."#b"."#c
-#define	RAPTOR_VERSION_INVK(a,b,c)	RAPTOR_VERSION_DOT(a,b,c)
-#define	RAPTOR_VERSION_STR			RAPTOR_VERSION_INVK(RAPTOR_VERSION_MAJOR,RAPTOR_VERSION_MINOR,RAPTOR_VERSION_PATCH)
+void main (void)
+{
+	v_color = i_Color;
 
-#endif
+	v_Min = i_Min;
+	v_Max = i_Max;
+}

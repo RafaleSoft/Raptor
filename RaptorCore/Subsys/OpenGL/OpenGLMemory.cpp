@@ -242,6 +242,71 @@ bool COpenGLMemory::setBufferObjectData(IDeviceMemoryManager::IBufferObject &bo,
 }
 
 
+bool COpenGLMemory::copyBufferObjectData(	IDeviceMemoryManager::IBufferObject &dstbo,
+											uint64_t dstOffset,
+											IDeviceMemoryManager::IBufferObject &srcbo,
+											uint64_t srcOffset,
+											uint64_t sz)
+{
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+	if (sz == 0)
+		return false;
+	if (srcbo.getSize() < (srcOffset + sz))
+		return false;
+	if (dstbo.getSize() < (dstOffset + sz))
+		return false;
+#endif
+
+	//! This method could be called very often per  frame, lock/unlock 
+	//! could be very expensive, so I will try to lock at a higher level
+	//! CThreadLock lock(m_pHeap->memoryMutex);
+
+
+	// Is it a VBO ?
+	uint32_t dstbuffer = dstbo.getBufferId();
+	uint32_t srcbuffer = srcbo.getBufferId();
+
+	if (isBufferObjectValid(dstbuffer) && isBufferObjectValid(srcbuffer))
+	{
+		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+#if defined(GL_VERSION_3_1)
+		pExtensions->glBindBufferARB(GL_COPY_READ_BUFFER, srcbo.getBufferId());
+		pExtensions->glBindBufferARB(GL_COPY_WRITE_BUFFER, dstbo.getBufferId());
+		pExtensions->glCopyBufferSubData(	GL_COPY_READ_BUFFER,
+											GL_COPY_WRITE_BUFFER,
+											srcOffset, dstOffset, sz);
+		pExtensions->glBindBufferARB(GL_COPY_READ_BUFFER, 0);
+		pExtensions->glBindBufferARB(GL_COPY_WRITE_BUFFER, 0);
+#elif defined(GL_ARB_vertex_buffer_object)
+		GLenum glStorage = BufferKindToGL(srcbo.getStorage());
+		pExtensions->glBindBufferARB(glStorage, srcbo.getBufferId());
+
+		char *data = (char*)pExtensions->glMapBufferARB(glStorage, GL_READ_ONLY_ARB);
+		char *dst = new char[sz];
+		memcpy(dst, data + srcOffset, sz);
+
+		glStorage = BufferKindToGL(dstbo.getStorage());
+		pExtensions->glBindBufferARB(glStorage, dstbo.getBufferId());
+		pExtensions->glBufferSubDataARB(glStorage, dstOffset, sz, dst);
+
+		if (currentBuffers[dstbo.getStorage()] != 0)
+			pExtensions->glBindBufferARB(glStorage, dstbo.getBufferId());
+		else
+			pExtensions->glBindBufferARB(glStorage, 0);
+
+		delete[]dst;
+#else
+		return false;
+#endif
+
+	}
+	else
+		return false;
+
+	CATCH_GL_ERROR;
+	return true;
+}
+
 bool COpenGLMemory::getBufferObjectData(IDeviceMemoryManager::IBufferObject &vb,
 										uint64_t srcOffset,
 										void* dst,

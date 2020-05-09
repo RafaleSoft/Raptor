@@ -23,9 +23,6 @@
 - CTimeObject:
 	- déplacer les statiques dans CRaptorInstance.
 
-- GeometryAllocator:
-	- ajouter methode de copy entre arrays et appeler depuis CGeometry.
-
 - CGeometry:
 	- ajouter un cas aux méthodes SetVertices/SetColors/.... si nbV > nb_vertex
 

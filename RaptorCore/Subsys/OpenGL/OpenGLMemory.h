@@ -54,6 +54,11 @@ public:
 										uint64_t dstOffset,
 										const void* src,
 										uint64_t sz);
+	virtual bool copyBufferObjectData(	IDeviceMemoryManager::IBufferObject &dstbo,
+										uint64_t dstOffset,
+										IDeviceMemoryManager::IBufferObject &srcbo,
+										uint64_t srcOffset,
+										uint64_t sz);
 	virtual bool getBufferObjectData(	IDeviceMemoryManager::IBufferObject &vb,
 										uint64_t srcOffset,
 										void* dst,

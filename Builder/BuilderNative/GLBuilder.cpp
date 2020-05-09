@@ -646,6 +646,8 @@ bool CGLBuilder::writeHeader(const string& filename)
 	header << "\n#include ";
 	header << parallel_header;
 	header << "\n";
+
+	header << "\n#include \"Portability.h\"\n";
 	
 	header.write(END,strlen(END));
 	header.close();

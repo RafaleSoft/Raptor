@@ -173,7 +173,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <PreBuildEvent>
-      <Command>%RAPTOR_ROOT%\RaptorData\buildpak.bat</Command>
+      <Command>$(PYTHON_HOME)\python.exe $(SolutionDir)RaptorData\buildpak.py</Command>
     </PreBuildEvent>
     <Midl>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -240,7 +240,7 @@ copy $(SolutionDir)$(ProjectName)\RaptorData.pck "%RAPTOR_ROOT%\Redist\bin\"
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <PreBuildEvent>
-      <Command>%RAPTOR_ROOT%\RaptorData\buildpak.bat</Command>
+      <Command>$(PYTHON_HOME)\python.exe $(SolutionDir)RaptorData\buildpak.py</Command>
     </PreBuildEvent>
     <Midl>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -306,7 +306,7 @@ copy $(SolutionDir)$(ProjectName)\RaptorData.pck "%RAPTOR_ROOT%\Redist\bin\"
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">
     <PreBuildEvent>
-      <Command>%RAPTOR_ROOT%\RaptorData\buildpak.bat</Command>
+      <Command>$(PYTHON_HOME)\python.exe $(SolutionDir)RaptorData\buildpak.py</Command>
     </PreBuildEvent>
     <Midl>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -373,7 +373,7 @@ copy $(SolutionDir)$(ProjectName)\RaptorData.pck "%RAPTOR_ROOT%\Redist\bin\"
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|x64'">
     <PreBuildEvent>
-      <Command>%RAPTOR_ROOT%\RaptorData\buildpak.bat</Command>
+      <Command>$(PYTHON_HOME)\python.exe $(SolutionDir)RaptorData\buildpak.py</Command>
     </PreBuildEvent>
     <Midl>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -439,7 +439,7 @@ copy $(SolutionDir)$(ProjectName)\RaptorData.pck "%RAPTOR_ROOT%\Redist\bin\"
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <PreBuildEvent>
-      <Command>%RAPTOR_ROOT%\RaptorData\buildpak.bat</Command>
+      <Command>$(PYTHON_HOME)\python.exe $(SolutionDir)RaptorData\buildpak.py</Command>
     </PreBuildEvent>
     <Midl>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -507,7 +507,7 @@ copy $(SolutionDir)$(ProjectName)\RaptorData.pck "%RAPTOR_ROOT%\Redist\bin\"
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <PreBuildEvent>
-      <Command>%RAPTOR_ROOT%\RaptorData\buildpak.bat</Command>
+      <Command>$(PYTHON_HOME)\python.exe $(SolutionDir)RaptorData\buildpak.py</Command>
     </PreBuildEvent>
     <Midl>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -573,7 +573,7 @@ copy $(SolutionDir)$(ProjectName)\RaptorData.pck "%RAPTOR_ROOT%\Redist\bin\"
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Optimized|Win32'">
     <PreBuildEvent>
-      <Command>%RAPTOR_ROOT%\RaptorData\buildpak.bat</Command>
+      <Command>$(PYTHON_HOME)\python.exe $(SolutionDir)RaptorData\buildpak.py</Command>
     </PreBuildEvent>
     <Midl>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -651,7 +651,7 @@ copy $(SolutionDir)$(ProjectName)\RaptorData.pck "%RAPTOR_ROOT%\Redist\bin\"
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Optimized|x64'">
     <PreBuildEvent>
-      <Command>%RAPTOR_ROOT%\RaptorData\buildpak.bat</Command>
+      <Command>$(PYTHON_HOME)\python.exe $(SolutionDir)RaptorData\buildpak.py</Command>
     </PreBuildEvent>
     <Midl>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -744,13 +744,15 @@ copy $(SolutionDir)$(ProjectName)\RaptorData.pck "%RAPTOR_ROOT%\Redist\bin\"
     <ClInclude Include="..\..\RaptorData\StdAfx.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\RaptorData\buildpak.bat">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|x64'">true</ExcludedFromBuild>
+    <None Include="..\..\RaptorData\buildpak.py">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Optimized|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Optimized|x64'">true</ExcludedFromBuild>
     </None>
     <None Include="..\..\RaptorData\Data\AO.ps" />
     <None Include="..\..\RaptorData\Data\AO.vs" />
@@ -762,6 +764,9 @@ copy $(SolutionDir)$(ProjectName)\RaptorData.pck "%RAPTOR_ROOT%\Redist\bin\"
     <None Include="..\..\RaptorData\Data\blender_8x.gs" />
     <None Include="..\..\RaptorData\Data\blinn.ps" />
     <None Include="..\..\RaptorData\Data\blinn.vs" />
+    <None Include="..\..\RaptorData\Data\box.gs" />
+    <None Include="..\..\RaptorData\Data\box.ps" />
+    <None Include="..\..\RaptorData\Data\box.vs" />
     <None Include="..\..\RaptorData\Data\bump.fp" />
     <None Include="..\..\RaptorData\Data\bump.ps" />
     <None Include="..\..\RaptorData\Data\bump.vp" />

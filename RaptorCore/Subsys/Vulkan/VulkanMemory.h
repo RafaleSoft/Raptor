@@ -58,6 +58,13 @@ public:
 											uint64_t sz);
 
 		//!	Implements @see IDeviceMemoryManager
+		virtual bool copyBufferObjectData(	IDeviceMemoryManager::IBufferObject &dstbo,
+											uint64_t dstOffset,
+											IDeviceMemoryManager::IBufferObject &srcbo,
+											uint64_t srcOffset,
+											uint64_t sz);
+
+		//!	Implements @see IDeviceMemoryManager
 		virtual bool discardBufferObjectData(	IDeviceMemoryManager::IBufferObject &bo,
 												uint64_t dstOffset,
 												uint64_t sz);

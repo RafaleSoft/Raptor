@@ -158,7 +158,7 @@ void CVulkanShaderStage::setProgramParameters(const CProgramParameters &v)
 				uint64_t sz = param_value.size();
 				const void *addr = param_value.addr();
 
-				pUAllocator->glvkCopyPointer(m_uniforms + totalsize, (unsigned char*)addr, sz);
+				pUAllocator->glvkSetPointerData(m_uniforms + totalsize, (unsigned char*)addr, sz);
 				totalsize += sz;
 			}
 		}

@@ -90,7 +90,80 @@ CGeometryAllocator	*CGeometryAllocator::SetCurrentInstance(CGeometryAllocator* g
 	return pInstance;
 }
 
-void CGeometryAllocator::glvkCopyPointer(float *dst, float *src, uint64_t size)
+bool CGeometryAllocator::glvkCopyPointer(float *dst, float *src, uint64_t size)
+{
+	map<float*, uint64_t>::const_iterator dstbloc = vertexBlocs.find(dst);
+	if (dstbloc == vertexBlocs.end())
+		return false;
+	map<float*, uint64_t>::const_iterator srcbloc = vertexBlocs.find(src);
+	if (srcbloc == vertexBlocs.end())
+		return false;
+
+	//! Copy conventional memory.
+	if (NULL == relocatedVertices)
+	{
+		if ((NULL == src) || (NULL == dst))
+			return false;
+
+		memcpy(dst, src, size);
+		return true;
+	}
+	else
+	{
+		uint64_t dstOffset = (uint64_t)dst;
+		uint64_t srcOffset = (uint64_t)src;
+
+		uint64_t sz = (*dstbloc).second;
+		if (sz != size * sizeof(float))
+			return false;
+		sz = (*srcbloc).second;
+		if (sz != size * sizeof(float))
+			return false;
+
+		return CResourceAllocator::glvkCopyPointer(	relocatedVertices, dstOffset,
+													relocatedVertices, srcOffset,
+													sz);
+	}
+}
+
+
+bool CGeometryAllocator::glvkCopyPointer(uint16_t *dst, uint16_t *src, uint64_t size)
+{
+	map<uint16_t*, uint64_t>::const_iterator dstbloc = indexBlocs.find(dst);
+	if (dstbloc == indexBlocs.end())
+		return false;
+	map<uint16_t*, uint64_t>::const_iterator srcbloc = indexBlocs.find(src);
+	if (srcbloc == indexBlocs.end())
+		return false;
+
+	//! Copy conventional memory.
+	if (NULL == relocatedVertices)
+	{
+		if ((NULL == src) || (NULL == dst))
+			return false;
+
+		memcpy(dst, src, size);
+		return true;
+	}
+	else
+	{
+		uint64_t dstOffset = (uint64_t)dst;
+		uint64_t srcOffset = (uint64_t)src;
+
+		uint64_t sz = (*dstbloc).second;
+		if (sz != size * sizeof(uint16_t))
+			return false;
+		sz = (*srcbloc).second;
+		if (sz != size * sizeof(uint16_t))
+			return false;
+
+		return CResourceAllocator::glvkCopyPointer(	relocatedFaceIndexes, dstOffset,
+													relocatedFaceIndexes, srcOffset,
+													sz);
+	}
+}
+
+void CGeometryAllocator::glvkSetPointerData(float *dst, float *src, uint64_t size)
 {
     if ((NULL == deviceMemoryManager) || (NULL == relocatedVertices) || (NULL == src) || (NULL == dst))
         return;
@@ -123,7 +196,7 @@ void CGeometryAllocator::glvkCopyPointer(float *dst, float *src, uint64_t size)
 													sizeof(float)*size);
 }
 
-void CGeometryAllocator::glvkCopyPointer(uint16_t *dst, uint16_t *src, uint64_t size)
+void CGeometryAllocator::glvkSetPointerData(uint16_t *dst, uint16_t *src, uint64_t size)
 {
     if ((NULL == deviceMemoryManager) || (NULL == relocatedFaceIndexes) || (NULL == src) || (NULL == dst))
         return;
@@ -511,7 +584,7 @@ float * const CGeometryAllocator::allocateVertices(uint64_t size)
 
 bool CGeometryAllocator::releaseVertices(float *index)
 {
-    if (m_bLocked)
+    if ((m_bLocked) || (NULL == index))
         return false;
 
 	bool res = false;

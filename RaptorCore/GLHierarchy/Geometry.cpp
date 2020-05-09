@@ -240,17 +240,17 @@ CGeometry& CGeometry::operator=(const CGeometry &geo)
     //! Free previous geometry data. 
     //! Data cannot be pointed to, because it would be necessary to manage relative or actual data.
     //! If geometries are identical, one should better use instances of the same geometry.
-	if (NULL != vertex) pAllocator->releaseVertices((float*)vertex);
-	if (NULL != normals) pAllocator->releaseVertices((float*)normals);
-	if (NULL != texcoords) pAllocator->releaseVertices((float*)texcoords);
-	if (NULL != texcoords2) pAllocator->releaseVertices((float*)texcoords2);
-	if (NULL != colors) pAllocator->releaseVertices((float*)colors);
+	pAllocator->releaseVertices((float*)vertex);
+	pAllocator->releaseVertices((float*)normals);
+	pAllocator->releaseVertices((float*)texcoords);
+	pAllocator->releaseVertices((float*)texcoords2);
+	pAllocator->releaseVertices((float*)colors);
     if (NULL != polys) pAllocator->releaseIndexes(polys);
 
-	if (NULL != fogcoords) pAllocator->releaseVertices(fogcoords);
-	if (NULL != weightcoords) pAllocator->releaseVertices(weightcoords);
-	if (NULL != tangents) pAllocator->releaseVertices((float*)tangents);
-	if (NULL != binormals) pAllocator->releaseVertices((float*)binormals);
+	pAllocator->releaseVertices(fogcoords);
+	pAllocator->releaseVertices(weightcoords);
+	pAllocator->releaseVertices((float*)tangents);
+	pAllocator->releaseVertices((float*)binormals);
 
     //! Allocate new data.
 	vertex = (GL_COORD_VERTEX*)(pAllocator->allocateVertices(m_nbVertex*4));
@@ -267,25 +267,9 @@ CGeometry& CGeometry::operator=(const CGeometry &geo)
     //! Transfer normals and vertex data.
     GL_COORD_VERTEX* geo_vertex = geo.vertex;
     GL_COORD_VERTEX* geo_normals = geo.normals;
-    if (pAllocator->isMemoryRelocated())
-    {
-        vertex = (GL_COORD_VERTEX*)(pAllocator->glvkMapPointer((float*)vertex));
-        normals = (GL_COORD_VERTEX*)(pAllocator->glvkMapPointer((float*)normals));
-        geo_vertex = (GL_COORD_VERTEX*)(pAllocator->glvkMapPointer((float*)geo.vertex));
-        geo_normals = (GL_COORD_VERTEX*)(pAllocator->glvkMapPointer((float*)geo.normals));
-    }
-	for (unsigned int i = 0; i<geo.m_nbVertex; i++)
-	{
-		vertex[i] = geo_vertex[i];
-		normals[i] = geo_normals[i];
-	}
-    if (pAllocator->isMemoryRelocated())
-    {
-        vertex = (GL_COORD_VERTEX*)(pAllocator->glvkUnMapPointer((float*)vertex));
-        normals = (GL_COORD_VERTEX*)(pAllocator->glvkUnMapPointer((float*)normals));
-        pAllocator->glvkUnMapPointer((float*)geo_vertex);
-        pAllocator->glvkUnMapPointer((float*)geo_normals);
-    }
+
+	pAllocator->glvkCopyPointer((float*)vertex, (float*)geo.vertex, m_nbVertex*4);
+	pAllocator->glvkCopyPointer((float*)normals, (float*)geo.normals, m_nbVertex * 4);
 
     //! Transfer texture coordinates
     if (geo.texcoords != NULL)
@@ -294,20 +278,7 @@ CGeometry& CGeometry::operator=(const CGeometry &geo)
         GL_TEX_VERTEX* geo_texcoords = geo.texcoords;
 		binder->setArray(CProgramParameters::TEXCOORD0, texcoords);
 
-        if (pAllocator->isMemoryRelocated())
-        {
-            texcoords = (GL_TEX_VERTEX*)(pAllocator->glvkMapPointer((float*)texcoords));
-            geo_texcoords = (GL_TEX_VERTEX*)(pAllocator->glvkMapPointer((float*)geo.texcoords));
-        }
-
-		for (unsigned int i = 0; i<m_nbVertex; i++)
-			texcoords[i] = geo_texcoords[i];
-
-        if (pAllocator->isMemoryRelocated())
-        {
-            texcoords = (GL_TEX_VERTEX*)(pAllocator->glvkUnMapPointer((float*)texcoords));
-            pAllocator->glvkUnMapPointer((float*)geo_texcoords);
-        }
+		pAllocator->glvkCopyPointer((float*)texcoords, (float*)geo.texcoords, m_nbVertex * 2);
 	}
 
 	//! Transfer additional texture coordinates
@@ -317,20 +288,7 @@ CGeometry& CGeometry::operator=(const CGeometry &geo)
         GL_TEX_VERTEX* geo_texcoords = geo.texcoords2;
 		binder->setArray(CProgramParameters::TEXCOORD1, texcoords2);
 
-        if (pAllocator->isMemoryRelocated())
-        {
-            texcoords2 = (GL_TEX_VERTEX*)(pAllocator->glvkMapPointer((float*)texcoords2));
-            geo_texcoords = (GL_TEX_VERTEX*)(pAllocator->glvkMapPointer((float*)geo.texcoords2));
-        }
-
-		for (unsigned int i = 0; i<m_nbVertex; i++)
-			texcoords2[i] = geo_texcoords[i];
-
-        if (pAllocator->isMemoryRelocated())
-        {
-            texcoords2 = (GL_TEX_VERTEX*)(pAllocator->glvkUnMapPointer((float*)texcoords2));
-            pAllocator->glvkUnMapPointer((float*)geo_texcoords);
-        }
+		pAllocator->glvkCopyPointer((float*)texcoords2, (float*)geo.texcoords2, m_nbVertex * 2);
 	}
 
     //! Transfer colors.
@@ -340,44 +298,14 @@ CGeometry& CGeometry::operator=(const CGeometry &geo)
         CColor::RGBA* geo_colors = geo.colors;
 		binder->setArray(CProgramParameters::PRIMARY_COLOR, colors);
 
-        if (pAllocator->isMemoryRelocated())
-        {
-            colors = (CColor::RGBA*)(pAllocator->glvkMapPointer((float*)colors));
-            geo_colors = (CColor::RGBA*)(pAllocator->glvkMapPointer((float*)geo.colors));
-        }
-
-		for (unsigned int i = 0; i<m_nbVertex; i++)
-			colors[i] = geo_colors[i];
-
-        if (pAllocator->isMemoryRelocated())
-        {
-            colors = (CColor::RGBA*)(pAllocator->glvkUnMapPointer((float*)colors));
-            pAllocator->glvkUnMapPointer((float*)geo_colors);
-        }
+		pAllocator->glvkCopyPointer((float*)colors, (float*)geo.colors, m_nbVertex * 4);
 	}
 #endif
 
 
     //! Transfer polygon informations
 	polys = pAllocator->allocateIndexes(3 * m_nbPolys);
-    unsigned short *geo_polys = geo.polys;
-
-    if (pAllocator->isMemoryRelocated())
-    {
-        polys = (unsigned short*)(pAllocator->glvkMapPointer(polys));
-        geo_polys = (unsigned short*)(pAllocator->glvkMapPointer(geo.polys));
-    }
-
-	for (unsigned int i = 0; i<3 * m_nbPolys; i++)
-		polys[i] = geo_polys[i];
-
-    if (pAllocator->isMemoryRelocated())
-    {
-        polys = (unsigned short*)(pAllocator->glvkUnMapPointer(polys));
-        pAllocator->glvkUnMapPointer(geo_polys);
-    }
-
-
+	pAllocator->glvkCopyPointer(polys, geo.polys, m_nbPolys * 3);
 
 	if (geo.fogcoords != NULL)
 	{
@@ -385,20 +313,7 @@ CGeometry& CGeometry::operator=(const CGeometry &geo)
 		float *geo_fogcoords = geo.fogcoords;
 		binder->setArray(CProgramParameters::FOG_COORDINATE, fogcoords);
 
-		if (pAllocator->isMemoryRelocated())
-		{
-			fogcoords = pAllocator->glvkMapPointer(fogcoords);
-			geo_fogcoords = pAllocator->glvkMapPointer(geo.fogcoords);
-		}
-
-		for (unsigned int i = 0; i<m_nbVertex; i++)
-			fogcoords[i] = geo.fogcoords[i];
-
-		if (pAllocator->isMemoryRelocated())
-		{
-			fogcoords = pAllocator->glvkUnMapPointer(fogcoords);
-			pAllocator->glvkUnMapPointer(geo_fogcoords);
-		}
+		pAllocator->glvkCopyPointer((float*)fogcoords, (float*)geo.fogcoords, m_nbVertex);
 	}
 
 	if (geo.weightcoords != NULL)
@@ -407,20 +322,7 @@ CGeometry& CGeometry::operator=(const CGeometry &geo)
 		float *geo_weightcoords = geo.weightcoords;
 		binder->setArray(CProgramParameters::WEIGHTS, weightcoords);
 
-		if (pAllocator->isMemoryRelocated())
-		{
-			weightcoords = pAllocator->glvkMapPointer(weightcoords);
-			geo_weightcoords = pAllocator->glvkMapPointer(geo.weightcoords);
-		}
-
-		for (unsigned int i = 0; i<m_nbVertex; i++)
-			weightcoords[i] = geo.weightcoords[i];
-
-		if (pAllocator->isMemoryRelocated())
-		{
-			weightcoords = pAllocator->glvkUnMapPointer(weightcoords);
-			pAllocator->glvkUnMapPointer(geo_weightcoords);
-		}
+		pAllocator->glvkCopyPointer((float*)weightcoords, (float*)geo.weightcoords, m_nbVertex);
 	}
 
 	m_renderingModel = geo.m_renderingModel;
@@ -1255,7 +1157,7 @@ void CGeometry::glSetPolygons(size_t nbP, unsigned short* polygons)
 		if (!pAllocator->isMemoryRelocated() || m_bDataLocked)
 			memcpy(polys,polygons,3*nbP*sizeof(unsigned short));
 		else
-			pAllocator->glvkCopyPointer(polys,polygons,3*nbP);
+			pAllocator->glvkSetPointerData(polys,polygons,3*nbP);
 		m_nbPolys = nbP;
 	}
 }
@@ -1291,7 +1193,7 @@ void CGeometry::glSetVertices(size_t nbV, GL_COORD_VERTEX* vertices)
 		if (!pAllocator->isMemoryRelocated() || m_bDataLocked)
 			memcpy(vertex,vertices,4*nbV*sizeof(float));
 		else
-			pAllocator->glvkCopyPointer(*vertex,*vertices,4*nbV);
+			pAllocator->glvkSetPointerData(*vertex,*vertices,4*nbV);
 		m_nbVertex = nbV;
 	}
 #endif
@@ -1306,7 +1208,7 @@ void CGeometry::glSetNormals(size_t nbN, GL_COORD_VERTEX* norms)
 		if (!pAllocator->isMemoryRelocated() || m_bDataLocked)
 			memcpy(normals,norms,4*nbN*sizeof(float));
 		else
-			pAllocator->glvkCopyPointer(*normals,*norms,4*nbN);
+			pAllocator->glvkSetPointerData(*normals,*norms,4*nbN);
 	}
 #endif
 }
@@ -1330,7 +1232,7 @@ void CGeometry::glSetTangents(size_t nbT, GL_COORD_VERTEX* tans)
 		if (!pAllocator->isMemoryRelocated() || m_bDataLocked)
 			memcpy(tangents, tans, nbT * sizeof(GL_COORD_VERTEX));
 		else
-			pAllocator->glvkCopyPointer(*tangents, *tans, 4 * nbT);
+			pAllocator->glvkSetPointerData(*tangents, *tans, 4 * nbT);
 	}
 #endif
 }
@@ -1354,7 +1256,7 @@ void CGeometry::glSetBinormals(size_t nbB, GL_COORD_VERTEX* binorms)
 		if (!pAllocator->isMemoryRelocated() || m_bDataLocked)
 			memcpy(binormals, binorms, nbB * sizeof(GL_COORD_VERTEX));
 		else
-			pAllocator->glvkCopyPointer(*binormals, *binorms, 4 * nbB);
+			pAllocator->glvkSetPointerData(*binormals, *binorms, 4 * nbB);
 	}
 #endif
 }
@@ -1378,7 +1280,7 @@ void CGeometry::glSetTexCoords(size_t nbT, GL_TEX_VERTEX* texCoords)
 		if (!pAllocator->isMemoryRelocated() || m_bDataLocked)
 			memcpy(texcoords,texCoords,nbT*sizeof(GL_TEX_VERTEX));
 		else
-			pAllocator->glvkCopyPointer(*texcoords,*texCoords,2*nbT);
+			pAllocator->glvkSetPointerData(*texcoords,*texCoords,2*nbT);
 	}
 #endif
 }
@@ -1402,7 +1304,7 @@ void CGeometry::glSetTexCoords2(size_t nbT, GL_TEX_VERTEX* texCoords)
 		if (!pAllocator->isMemoryRelocated() || m_bDataLocked)
 			memcpy(texcoords2,texCoords,nbT*sizeof(GL_TEX_VERTEX));
 		else
-			pAllocator->glvkCopyPointer(*texcoords2,*texCoords,2*nbT);
+			pAllocator->glvkSetPointerData(*texcoords2,*texCoords,2*nbT);
 	}
 #endif
 }
@@ -1426,7 +1328,7 @@ void CGeometry::glSetWeights(size_t nbW, float* weights)
 		if (!pAllocator->isMemoryRelocated() || m_bDataLocked)
 			memcpy(weightcoords,weights,nbW*sizeof(float));
 		else
-			pAllocator->glvkCopyPointer(weightcoords,weights,nbW);
+			pAllocator->glvkSetPointerData(weightcoords,weights,nbW);
 	}
 #endif
 }
@@ -1450,7 +1352,7 @@ void CGeometry::glSetColors(size_t nbC, CColor::RGBA* rgbaColors)
 		if (!pAllocator->isMemoryRelocated() || m_bDataLocked)
 			memcpy(colors,rgbaColors,4*nbC*sizeof(float));
 		else
-			pAllocator->glvkCopyPointer(*colors,*rgbaColors,4*nbC);
+			pAllocator->glvkSetPointerData(*colors,*rgbaColors,4*nbC);
 	}
 #endif
 }
@@ -1474,7 +1376,7 @@ void CGeometry::glSetFogs(size_t nbF, float* fogs)
 		if (!pAllocator->isMemoryRelocated() || m_bDataLocked)
 			memcpy(fogcoords, fogs, nbF*sizeof(float));
 		else
-			pAllocator->glvkCopyPointer(fogcoords, fogs, nbF);
+			pAllocator->glvkSetPointerData(fogcoords, fogs, nbF);
 	}
 #endif
 }

@@ -126,6 +126,12 @@ RAPTOR_NAMESPACE_END
 
 RAPTOR_NAMESPACE
 
+static IDeviceMemoryManager::IDeviceMemoryManagerClassID memoryID;
+const CPersistence::CPersistenceClassID& IDeviceMemoryManager::IDeviceMemoryManagerClassID::GetClassId(void)
+{
+	return memoryID;
+}
+
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction

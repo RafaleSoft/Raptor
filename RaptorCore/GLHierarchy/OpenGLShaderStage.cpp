@@ -863,7 +863,7 @@ void COpenGLShaderStage::glSetProgramParameters()
 			else if (param_value.locationType == GL_UNIFORM_BLOCK_BINDING_ARB)
 			{
 				CUniformAllocator*	pUAllocator = CUniformAllocator::GetInstance();
-				pUAllocator->glvkCopyPointer(m_uniforms, (unsigned char*)param_value.addr(), param_value.size());
+				pUAllocator->glvkSetPointerData(m_uniforms, (unsigned char*)param_value.addr(), param_value.size());
 			}
 #endif
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
