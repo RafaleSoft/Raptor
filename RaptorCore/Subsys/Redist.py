@@ -1,7 +1,7 @@
 '''
 /***************************************************************************/
 /*                                                                         */
-/*  buildpack.py                                                           */
+/*  Redist.py                                                              */
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
@@ -26,7 +26,7 @@ RAPTOR_ROOT = os.environ.get("RAPTOR_ROOT")
 PLATFORM = os.environ.get("PLATFORM")
 RAPTOR_VERSION = os.environ.get("RAPTOR_VERSION")
 
-print("Making Raptor data package ...")
+print("Making redistribuable package documentation ...")
 print("Root of Raptor is set to: [", RAPTOR_ROOT, "]")
 print("Platform is defined as: [", PLATFORM, "]")
 print("Raptor Version is defined as: [", RAPTOR_VERSION, "]")
@@ -41,42 +41,51 @@ if not os.path.exists(RAPTOR_ROOT):
 
 
 current_dir = os.path.curdir
-os.chdir(RAPTOR_ROOT + os.path.sep + "RaptorData"  + os.path.sep + "Data")
+os.chdir(RAPTOR_ROOT + os.path.sep + "RaptorCore"  + os.path.sep + "Subsys")
 
-datapackager = RAPTOR_ROOT + os.path.sep + "Redist"  + os.path.sep + "Bin" + os.path.sep + "RaptorDataPackager.exe"
-if not os.path.exists(datapackager):
-    print("  DataPackager not found !")
+gendoc = False
+with open('CodeGeneration.h') as f:
+    for count, line in enumerate(f):
+        if line.find("BUILD_REDIST") >0:
+            gendoc = True
+
+if not gendoc:
+    print("  Keep previous documentation package, exiting !")
+    exit(0)
+else:
+    print("  Generating HTML documentation ...")
+
+
+doxygen = RAPTOR_ROOT + os.path.sep + "Build"  + os.path.sep + "doxygen.exe"
+doxyfile = RAPTOR_ROOT + os.path.sep + "Build"  + os.path.sep + "Doxyfile"
+if not os.path.exists(doxygen):
+    print("  Doxygen not found !")
     exit(-1)
 else:
-    print("  Using DataPackager from:")
-    print(datapackager)
+    print("  Using Doxygen from:")
+    print(doxygen)
 
-if (os.path.exists("RaptorData.pck")):
-    print("   Removing previous package...")
-    os.remove("RaptorData.pck")
+if not os.path.exists(doxyfile):
+    print("  Doxygen configuration file not found !")
+    exit(-1)
+else:
+    print("  Using Doxyfile from:")
+    print(doxyfile)
 
-print("  Building package ...")
-os.system(datapackager + " -C RaptorData.pck Raptor_logo_sml.txt rapsplsh.AVI lucon.ttf RaptorMessages.xml bump_0light.vp bump_0light.fp bump.vp bump.fp bump_att.vp bump_att.fp bump_att_2light.vp bump_att_2light.fp bump_att_3light.vp bump_att_3light.fp embm_0light.vp embm_0light.fp embm.vp embm.fp blinn.vs blinn.ps phong.vs phong.ps bump.vs bump.ps projection.fp shadowmap.fp shadowmap_pcf.fp shadowmap_pcf_4x.fp shadowmap_pcf_16x.fp blenderX_8x.vp blenderY_8x.vp blender_8x.fp AO.vs AO.ps blender_8x.gs blenderX_8x.ps blenderY_8x.ps tquad.vs tquad.ps tquad.gs empty.vs diffuse.ps particle.vs particle2D.gs particle3D.gs particle3D.ps font2D.vs font2D.gs font2D.ps box.vs box.gs box.ps")
-os.chmod('RaptorData.pck', 664)
+redist = RAPTOR_ROOT + os.path.sep + "Redist"  + os.path.sep + "Doc"
+if not os.path.exists(redist):
+    print("  Redistribuable directory for doucmentation not found !")
+    exit(-1)
+else:
+    print("  Buliding documentation at location:")
+    print(redist)
+
+os.chdir(RAPTOR_ROOT)
+print("  Building documentation package ...")
+os.system(doxygen + " " + doxyfile)
 print("  Done.")
-
-print("  Removing temporary files ...")
-dir = os.listdir()
-for f in dir:
-    if f.endswith('.zip'):
-        os.remove(f)
-
-print("  Delivering package ...")
-os.chdir("..")
-
-if os.path.exists("RaptorData.pck"):
-    print("  RaptorData package already exist, it will be replaced !")
-    os.remove("RaptorData.pck")
-        
-shutil.move("Data" + os.path.sep + "RaptorData.pck",".")
 
 os.chdir(current_dir)
 
 print("\nJob done !\n")
-
 

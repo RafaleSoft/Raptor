@@ -36,6 +36,7 @@
     #include "GLHierarchy/ObjectProperties.h"
 #endif
 
+//#define TEST_BOX_ARRAYS 1
 
 //////////////////////////////////////////////////////////////////////
 //!
@@ -287,13 +288,6 @@ private:
     CObject3D();
     CObject3D(const CObject3D&);
 
-	//!	This method is called only at construction to allocate
-	//!	data for BBox rendering.
-	void glAllocateBBox(void);
-
-    //! This method is called only during bbox rendering to update GL server with new bbox values.
-    void glUpdateBBox(void);
-
     //! A 3D object must always have a bounding box ( pointer cannot be NULL )
 	CBoundingBox	*BBox;
 
@@ -303,11 +297,17 @@ private:
     //! A global status to indicate that objects are early clip aware.
     static bool earlyClipEnabled;
 
+#if (defined(GL_FULL_profile) || defined(GL_COMPATIBILITY_profile)) && !defined(TEST_BOX_ARRAYS)
     //! These datas are identifiers to BBox values for GL server
 	double			boxValue;
 
 	RAPTOR_HANDLE	filledBox;
 	RAPTOR_HANDLE	wireBox;
+#else
+	// Temporary
+	static	GL_COORD_VERTEX	*boxes;
+	uint64_t bbox;
+#endif
 };
 
 RAPTOR_NAMESPACE_END

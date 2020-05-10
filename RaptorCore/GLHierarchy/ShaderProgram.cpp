@@ -141,7 +141,20 @@ bool CShaderProgram::glLoadProgramFromFile(const std::string &program)
 		return glLoadProgram(programstr);
 	}
 	else
+	{
+		vector<CRaptorMessages::MessageArgument> args;
+		CRaptorMessages::MessageArgument arg;
+		arg.arg_sz = program.c_str();
+		args.push_back(arg);
+
+		//!	Shader file could not be opened.
+		Raptor::GetErrorManager()->generateRaptorError(	CShaderProgram::CShaderProgramClassID::GetClassId(),
+														CRaptorErrorManager::RAPTOR_ERROR,
+														CRaptorMessages::ID_NO_RESOURCE,
+														__FILE__, __LINE__, args);
+
 		return false;
+	}
 }
 
 

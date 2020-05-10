@@ -55,6 +55,15 @@ static const unsigned int BBOX_VERTEX_SIZE = 8 * 3;
 static const unsigned int BBOX_INDEX_SIZE = 4 * 6;
 static const unsigned int BBOX_INDEX_SIZE2 = 4 * 4;
 
+#if (defined(GL_FULL_profile) || defined(GL_COMPATIBILITY_profile)) && !defined(TEST_BOX_ARRAYS)
+#else
+	// Statics
+	static unsigned int maxboxes = 1024;
+	static unsigned int numboxes = 0;
+	GL_COORD_VERTEX	*CObject3D::boxes = NULL;
+	static CShader *cube_shader = NULL;
+#endif
+
 bool CObject3D::earlyClipEnabled = true;
 
 static CObject3D::CObject3DClassID objectID;
@@ -89,9 +98,17 @@ CObject3D::CObject3D(const CPersistence::CPersistenceClassID & classID,
 #endif
 		BBox = new CBoundingBox();
 
-	glAllocateBBox();
-
     earlyClip = C3DEngine::CLIP_UNKNOWN;
+
+#if (defined(GL_FULL_profile) || defined(GL_COMPATIBILITY_profile)) && !defined(TEST_BOX_ARRAYS)
+	boxValue = DBL_MAX;
+	filledBox.hClass(classID.ID());
+	filledBox.glhandle(0);
+	wireBox.hClass(classID.ID());
+	wireBox.glhandle(0);
+#else
+	bbox = 0;
+#endif
 }
 
 CObject3D::~CObject3D()
@@ -101,16 +118,6 @@ CObject3D::~CObject3D()
         (*it++)->notify(CContainerNotifier<CObject3D*>::DESTRUCTION,this);
 
 	delete BBox;
-}
-
-void CObject3D::glAllocateBBox(void)
-{
-	boxValue = DBL_MAX;
-
-	filledBox.handle(0);
-	filledBox.hClass(0);
-	wireBox.handle(0);
-	wireBox.hClass(0);
 }
 
 CObject3D& CObject3D::operator=(const CObject3D& rsh)
@@ -202,6 +209,7 @@ void CObject3D::extendBoundingBox(const GL_COORD_VERTEX& min, const GL_COORD_VER
     notifyBoundingBox();
 }
 
+#if (defined(GL_FULL_profile) || defined(GL_COMPATIBILITY_profile)) && !defined(TEST_BOX_ARRAYS)
 
 void CObject3D::glRenderBBox(bool filled)
 {
@@ -295,6 +303,40 @@ void CObject3D::glRenderBBox(bool filled)
 
 	CATCH_GL_ERROR
 }
+
+#else
+
+void CObject3D::glRenderBBox(bool filled)
+{
+	if (0 == bbox)
+	{
+		CGeometryAllocator *pAllocator = CGeometryAllocator::GetInstance();
+		if (NULL == boxes)
+			// size is 2 coordinates * 4 floats per box, * maxboxes/
+			boxes = (GL_COORD_VERTEX*)(pAllocator->allocateVertices(maxboxes * 8));
+
+		// bbox offset.
+		bbox = numboxes;
+		numboxes += 2;
+
+		size_t sz = 2 * sizeof(GL_COORD_VERTEX);
+		float *dst = boxes[bbox];
+
+		float xmin, xmax, ymin, ymax, zmin, zmax;
+		BBox->get(xmin, ymin, zmin, xmax, ymax, zmax);
+		GL_COORD_VERTEX src[2] = { {xmin,ymin,zmin,1.0f}, {xmax,ymax,zmax,1.0f} };
+
+		pAllocator->glvkSetPointerData(dst, (float*)src, sz);
+	}
+
+	CRaptorInstance::GetInstance().iRenderedObjects++;
+	CRaptorInstance::GetInstance().iRenderedTriangles += 12;
+
+	CATCH_GL_ERROR
+}
+
+#endif
+
 
 void CObject3D::glClipRender(void)
 {

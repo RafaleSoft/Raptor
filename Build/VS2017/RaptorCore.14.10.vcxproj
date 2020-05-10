@@ -245,8 +245,8 @@
 copy $(OutDir)\Raptor.dll "%RAPTOR_ROOT%\Redist\bin\"
 copy $(SolutionDir)$(ProjectName)\Subsys\ObjectModels\Raptor.xsd %RAPTOR_ROOT%\Redist\bin\
 copy $(SolutionDir)$(ProjectName)\Subsys\ObjectModels\RaptorMessages.xsd %RAPTOR_ROOT%\Redist\bin\
-cd $(SolutionDir)\$(ProjectName)
-$(SolutionDir)\$(ProjectName)\Subsys\Redist.bat
+$(PYTHON_HOME)\python.exe $(SolutionDir)$(ProjectName)\Subsys\Redist.py 
+
 </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -318,8 +318,8 @@ $(SolutionDir)\$(ProjectName)\Subsys\Redist.bat
 copy $(OutDir)\Raptor.dll "%RAPTOR_ROOT%\Redist\bin\"
 copy $(SolutionDir)$(ProjectName)\Subsys\ObjectModels\Raptor.xsd %RAPTOR_ROOT%\Redist\bin\
 copy $(SolutionDir)$(ProjectName)\Subsys\ObjectModels\RaptorMessages.xsd %RAPTOR_ROOT%\Redist\bin\
-cd $(SolutionDir)\$(ProjectName)
-$(SolutionDir)\$(ProjectName)\Subsys\Redist.bat
+$(PYTHON_HOME)\python.exe $(SolutionDir)$(ProjectName)\Subsys\Redist.py 
+
 </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -393,8 +393,8 @@ $(SolutionDir)\$(ProjectName)\Subsys\Redist.bat
 copy $(OutDir)\Raptor.dll "%RAPTOR_ROOT%\Redist\bin\"
 copy $(SolutionDir)$(ProjectName)\Subsys\ObjectModels\Raptor.xsd %RAPTOR_ROOT%\Redist\bin\
 copy $(SolutionDir)$(ProjectName)\Subsys\ObjectModels\RaptorMessages.xsd %RAPTOR_ROOT%\Redist\bin\
-cd $(SolutionDir)\$(ProjectName)
-$(SolutionDir)\$(ProjectName)\Subsys\Redist.bat
+$(PYTHON_HOME)\python.exe $(SolutionDir)$(ProjectName)\Subsys\Redist.py 
+
 </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -466,8 +466,8 @@ $(SolutionDir)\$(ProjectName)\Subsys\Redist.bat
 copy $(OutDir)\Raptor.dll "%RAPTOR_ROOT%\Redist\bin\"
 copy $(SolutionDir)$(ProjectName)\Subsys\ObjectModels\Raptor.xsd %RAPTOR_ROOT%\Redist\bin\
 copy $(SolutionDir)$(ProjectName)\Subsys\ObjectModels\RaptorMessages.xsd %RAPTOR_ROOT%\Redist\bin\
-cd $(SolutionDir)\$(ProjectName)
-$(SolutionDir)\$(ProjectName)\Subsys\Redist.bat
+$(PYTHON_HOME)\python.exe $(SolutionDir)$(ProjectName)\Subsys\Redist.py 
+
 </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -541,8 +541,8 @@ $(SolutionDir)\$(ProjectName)\Subsys\Redist.bat
 copy $(OutDir)\Raptor.dll "%RAPTOR_ROOT%\Redist\bin\"
 copy $(SolutionDir)$(ProjectName)\Subsys\ObjectModels\Raptor.xsd %RAPTOR_ROOT%\Redist\bin\
 copy $(SolutionDir)$(ProjectName)\Subsys\ObjectModels\RaptorMessages.xsd %RAPTOR_ROOT%\Redist\bin\
-cd $(SolutionDir)\$(ProjectName)
-$(SolutionDir)\$(ProjectName)\Subsys\Redist.bat
+$(PYTHON_HOME)\python.exe $(SolutionDir)$(ProjectName)\Subsys\Redist.py 
+
 </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -614,8 +614,8 @@ $(SolutionDir)\$(ProjectName)\Subsys\Redist.bat
 copy $(OutDir)\Raptor.dll "%RAPTOR_ROOT%\Redist\bin\"
 copy $(SolutionDir)$(ProjectName)\Subsys\ObjectModels\Raptor.xsd %RAPTOR_ROOT%\Redist\bin\
 copy $(SolutionDir)$(ProjectName)\Subsys\ObjectModels\RaptorMessages.xsd %RAPTOR_ROOT%\Redist\bin\
-cd $(SolutionDir)\$(ProjectName)
-$(SolutionDir)\$(ProjectName)\Subsys\Redist.bat
+$(PYTHON_HOME)\python.exe $(SolutionDir)$(ProjectName)\Subsys\Redist.py 
+
 </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -694,8 +694,8 @@ $(SolutionDir)\$(ProjectName)\Subsys\Redist.bat
 copy $(OutDir)\Raptor.dll "%RAPTOR_ROOT%\Redist\bin\"
 copy $(SolutionDir)$(ProjectName)\Subsys\ObjectModels\Raptor.xsd %RAPTOR_ROOT%\Redist\bin\
 copy $(SolutionDir)$(ProjectName)\Subsys\ObjectModels\RaptorMessages.xsd %RAPTOR_ROOT%\Redist\bin\
-cd $(SolutionDir)\$(ProjectName)
-$(SolutionDir)\$(ProjectName)\Subsys\Redist.bat
+$(PYTHON_HOME)\python.exe $(SolutionDir)$(ProjectName)\Subsys\Redist.py 
+
 </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -772,8 +772,8 @@ $(SolutionDir)\$(ProjectName)\Subsys\Redist.bat
 copy $(OutDir)\Raptor.dll "%RAPTOR_ROOT%\Redist\bin\"
 copy $(SolutionDir)$(ProjectName)\Subsys\ObjectModels\Raptor.xsd %RAPTOR_ROOT%\Redist\bin\
 copy $(SolutionDir)$(ProjectName)\Subsys\ObjectModels\RaptorMessages.xsd %RAPTOR_ROOT%\Redist\bin\
-cd $(SolutionDir)\$(ProjectName)
-$(SolutionDir)\$(ProjectName)\Subsys\Redist.bat
+$(PYTHON_HOME)\python.exe $(SolutionDir)$(ProjectName)\Subsys\Redist.py 
+
 </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -843,14 +843,7 @@ $(SolutionDir)\$(ProjectName)\Subsys\Redist.bat
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </None>
-    <None Include="..\..\RaptorCore\Subsys\Redist.bat">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-    </None>
+    <None Include="..\..\RaptorCore\Subsys\Redist.py" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\RaptorCore\Engine\3DEngine.cpp" />

@@ -83,6 +83,7 @@ else:
     os.mkdir('Imaging')
     os.chdir('..')
     os.mkdir('DataManager')
+    os.mkdir('GLXExtension')
     os.mkdir('MFCExtension')
     os.chdir('MFCExtension')
     os.mkdir('CWnd')

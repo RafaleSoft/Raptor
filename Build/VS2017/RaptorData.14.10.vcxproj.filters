@@ -171,9 +171,7 @@
     <None Include="..\..\RaptorData\Data\box.ps">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="..\..\RaptorData\buildpak.py">
-      <Filter>Source Files</Filter>
-    </None>
+    <None Include="..\..\RaptorData\buildpak.py" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\RaptorData\RaptorDataManager.cpp">

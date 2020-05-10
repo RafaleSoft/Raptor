@@ -81,6 +81,7 @@
 	<Class name="ShaderProgram">
 		<Message id="ID_UPDATE_FAILED" str="Uniform block does not match parameter size: %s has size: %d, parameter size is: %d"/>
 		<Message id="ID_NO_GPU_PROGRAM" str="%s programs not supported"/>
+    <Message id="ID_NO_RESOURCE" str="ShaderProgram could not load file %s"/>
 	</Class>
 	<Class name="TextureFactory">
 		<Message id="ID_DESTROY_FAILED" str="Raptor Texture Factory cannot delete an invalid GL_TEXTURE_OBJECT"/>

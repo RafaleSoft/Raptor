@@ -43,7 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Demo\Demo.cmd" />
-    <None Include="..\..\Demo\buildpak.bat" />
+    <None Include="..\..\Demo\buildpak.py" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\..\Demo\Demo.rc">
