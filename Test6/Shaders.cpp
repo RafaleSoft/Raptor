@@ -2,6 +2,132 @@
 #include <sstream>
 
 
+
+extern const std::string vp3_src =
+"#version 460 \n\
+\n\
+layout(location = 0) in vec4 i_Min; \n\
+layout(location = 3) in vec4 i_Color; \n\
+layout(location = 6) in vec4 i_Max; \n\
+\n\
+out vec4 v_color; \n\
+out vec4 v_Min; \n\
+out vec4 v_Max; \n\
+\n\
+void main (void) \n\
+{\n\
+	v_color = i_Color; \n\
+\n\
+	v_Min = i_Min; \n\
+	v_Max = i_Max; \n\
+}\n\
+";
+
+extern const std::string gp3_src =
+"#version 460 compatibility\n\
+\n\
+//	Expect the geometry shader extension to be available, warn if not. \n\
+#extension GL_ARB_geometry_shader4 : enable \n\
+\n\
+in vec4 v_color[]; \n\
+in vec4 v_Min[]; \n\
+in vec4 v_Max[]; \n\
+\n\
+layout(points) in; \n\
+layout(line_strip, max_vertices=16) out; \n\
+\n\
+out vec4 g_color; \n\
+\n\
+void main() \n\
+{\n\
+	g_color = v_color[0]; \n\
+\n\
+	// top: Back right \n\
+	vec4 pos = vec4(v_Max[0].x, v_Max[0].y, v_Min[0].z, 1.0); \n\
+	vec4 tbr = gl_ModelViewProjectionMatrix * pos; \n\
+	gl_Position = tbr; \n\
+	EmitVertex(); \n\
+	// top: Back Left \n\
+	pos = vec4(v_Min[0].x, v_Max[0].y, v_Min[0].z, 1.0); \n\
+	vec4 tbl = gl_ModelViewProjectionMatrix * pos; \n\
+	gl_Position = tbl; \n\
+	EmitVertex(); \n\
+	// top: Front Left \n\
+	pos = vec4(v_Min[0].x, v_Max[0].y, v_Max[0].z, 1.0); \n\
+	vec4 tfl = gl_ModelViewProjectionMatrix * pos; \n\
+	gl_Position = tfl; \n\
+	EmitVertex(); \n\
+	// top: Front Right \n\
+	pos = vec4(v_Max[0].x, v_Max[0].y, v_Max[0].z, 1.0); \n\
+	vec4 tfr = gl_ModelViewProjectionMatrix * pos; \n\
+	gl_Position = tfr; \n\
+	EmitVertex(); \n\
+\n\
+	// right: Top back \n\
+	gl_Position = tbr; \n\
+	EmitVertex(); \n\
+	// right: Bottom back \n\
+	pos = vec4(v_Max[0].x, v_Min[0].y, v_Min[0].z, 1.0); \n\
+	vec4 bbr = gl_ModelViewProjectionMatrix * pos; \n\
+	gl_Position = bbr; \n\
+	EmitVertex(); \n\
+	// right: Bottom front \n\
+	pos = vec4(v_Max[0].x, v_Min[0].y, v_Max[0].z, 1.0); \n\
+	vec4 bfr = gl_ModelViewProjectionMatrix * pos; \n\
+	gl_Position = bfr; \n\
+	EmitVertex(); \n\
+	// front: Top Right \n\
+	gl_Position = tfr; \n\
+	EmitVertex(); \n\
+\n\
+	// front: Top Left \n\
+	gl_Position = tfl; \n\
+	EmitVertex(); \n\
+	// front: Bottom Left \n\
+	pos = vec4(v_Min[0].x, v_Min[0].y, v_Max[0].z, 1.0); \n\
+	vec4 bfl = gl_ModelViewProjectionMatrix * pos; \n\
+	gl_Position = bfl; \n\
+	EmitVertex(); \n\
+	// back: Bottom Left \n\
+	pos = vec4(v_Min[0].x, v_Min[0].y, v_Min[0].z, 1.0); \n\
+	vec4 bbl = gl_ModelViewProjectionMatrix * pos; \n\
+	gl_Position = bbl; \n\
+	EmitVertex(); \n\
+	// back: Top Left \n\
+	gl_Position = tbl; \n\
+	EmitVertex(); \n\
+\n\
+	// bottom: Back Left\n\
+	gl_Position = bbl; \n\
+	EmitVertex(); \n\
+	// bottom: Back Right\n\
+	gl_Position = bbr; \n\
+	EmitVertex(); \n\
+	// bottom: Front Right\n\
+	gl_Position = bfr; \n\
+	EmitVertex(); \n\
+	// bottom: Front Left\n\
+	gl_Position = bfl; \n\
+	EmitVertex(); \n\
+\n\
+	EndPrimitive(); \n\
+}\n\
+";
+
+
+extern const std::string fp3_src =
+"#version 460\n\
+\n\
+in vec4 g_color; \n\
+layout(location = 0) out vec4 o_Color;	\n\
+\n\
+void main (void) \n\
+{\n\
+	o_Color = g_color; \n\
+}\n\
+";
+
+
 extern const std::string vp2_src =
 "#version 460 \n\
 \n\

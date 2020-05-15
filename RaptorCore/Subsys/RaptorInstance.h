@@ -182,6 +182,7 @@ public:
 	//!	Identity shader for full screen quad texture mapping.
 	CShader	*m_pIdentity;
 #endif
+
 	CResourceAllocator::CResourceBinder *m_displayBinder;
 
 	//! Global ResourceAllocator arrays binding state.
@@ -192,6 +193,11 @@ public:
 	CShader	*m_pQuadShader;
 	//! 2D Texture Font global shaders
 	CShader	*m_pFontShader;
+
+	//! A filled bounding box shader
+	CShader *m_pFilledBboxShader = NULL;
+	//! A wired bounding box shader
+	CShader *m_pWiredBboxShader = NULL;
 
 	//! The shader library instance.
 	CShaderLibrary	*m_pShaderLibraryInstance;

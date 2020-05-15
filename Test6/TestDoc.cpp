@@ -40,6 +40,9 @@ extern const std::string vp2_src;
 extern const std::string gp2_src;
 extern const std::string fp2_src;
 
+extern const std::string vp3_src;
+extern const std::string gp3_src;
+extern const std::string fp3_src;
 
 
 class CPoints : public CShadedGeometry
@@ -136,6 +139,8 @@ public:
 
 		glBlendFunc(blendSrc, blendDst);
 		glPopAttrib();
+
+		glRenderBBox();
 	}
 };
 
@@ -143,7 +148,7 @@ void CCube::Init(size_t s)
 {
 	addModel(CGeometry::CGL_FRONT_GEOMETRY);
 	addModel(CGeometry::CGL_COLORS);
-	addModel(CGeometry::CGL_TEXTURE);
+	//addModel(CGeometry::CGL_TEXTURE);
 	addModel(CGeometry::CGL_TANGENTS);
 
 	glSetVertices(s);
@@ -270,14 +275,14 @@ void CTestDoc::GLInitContext(void)
 		CShader *shader = cube->getShader();
 		COpenGLShaderStage *stage = shader->glGetOpenGLShader();
 		CVertexShader *vs = stage->glGetVertexShader();
-		bool res = vs->glLoadProgram(vp2_src);
+		bool res = vs->glLoadProgram(vp3_src);
 		CGeometryShader *gs = stage->glGetGeometryShader();
-		gs->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 18);
-		res = res & gs->glLoadProgram(gp2_src);
+		gs->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 16);
+		res = res & gs->glLoadProgram(gp3_src);
 		CFragmentShader *fs = stage->glGetFragmentShader();
-		res = res & fs->glLoadProgram(fp2_src);
-		CProgramParameters params;
-		params.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);
+		res = res & fs->glLoadProgram(fp3_src);
+		//CProgramParameters params;
+		//params.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);
 
 		res = res & stage->glCompileShader();
 

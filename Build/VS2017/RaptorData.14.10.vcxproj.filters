@@ -172,6 +172,9 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="..\..\RaptorData\buildpak.py" />
+    <None Include="..\..\RaptorData\Data\box_line.gs">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\RaptorData\RaptorDataManager.cpp">

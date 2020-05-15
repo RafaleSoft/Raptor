@@ -121,6 +121,8 @@ CRaptorInstance::CRaptorInstance()
 	m_pQuadShader = NULL;
 	m_pFontShader = NULL;
 	m_displayBinder = NULL;
+	m_pFilledBboxShader = NULL;
+	m_pWiredBboxShader = NULL;
 
 	arrays_initialized = false;
 	m_pShaderLibraryInstance = NULL;
@@ -490,8 +492,35 @@ bool CRaptorInstance::glvkInitSharedResources(void)
 		params.addParameter("color", CColor::RGBA(1.0, 0.0, 0.0, 1.0));
 
 		stage->setProgramParameters(params);
-		bool res = stage->glCompileShader();
-		if (!res)
+		if (!stage->glCompileShader())
+			return false;
+	}
+
+	if (NULL == m_pFilledBboxShader)
+	{
+		m_pFilledBboxShader = new CShader("FILLED_BOX_SHADER");
+		COpenGLShaderStage *stage = m_pFilledBboxShader->glGetOpenGLShader("FILLED_BOX_SHADER_PROGRAM");
+
+		CVertexShader *vs = stage->glGetVertexShader("BOX_VTX_PROGRAM");
+		CGeometryShader *gs = stage->glGetGeometryShader("FILLEDBOX_GEO_PROGRAM");
+		gs->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 18);
+		CFragmentShader *fs = stage->glGetFragmentShader("BOX_TEX_PROGRAM");
+
+		if (!stage->glCompileShader())
+			return false;
+	}
+	
+	if (NULL == m_pWiredBboxShader)
+	{
+		m_pWiredBboxShader = new CShader("WIRED_BOX_SHADER");
+		COpenGLShaderStage *stage = m_pWiredBboxShader->glGetOpenGLShader("WIRED_BOX_SHADER_PROGRAM");
+
+		CVertexShader *vs = stage->glGetVertexShader("BOX_VTX_PROGRAM");
+		CGeometryShader *gs = stage->glGetGeometryShader("WIREDBOX_GEO_PROGRAM");
+		gs->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 16);
+		CFragmentShader *fs = stage->glGetFragmentShader("BOX_TEX_PROGRAM");
+
+		if (!stage->glCompileShader())
 			return false;
 	}
 
@@ -539,6 +568,18 @@ bool CRaptorInstance::glvkReleaseSharedRsources()
 	{
 		m_pFontShader->releaseReference();
 		m_pFontShader = NULL;
+	}
+
+	if (NULL != m_pFilledBboxShader)
+	{
+		m_pFilledBboxShader->releaseReference();
+		m_pFilledBboxShader = NULL;
+	}
+
+	if (NULL != m_pWiredBboxShader)
+	{
+		m_pWiredBboxShader->releaseReference();
+		m_pWiredBboxShader = NULL;
 	}
 
 	if (NULL != m_displayBinder)

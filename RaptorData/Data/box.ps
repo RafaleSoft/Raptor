@@ -21,11 +21,9 @@
 uniform	sampler2D diffuseMap;
 
 in vec4 g_color;
-layout(location = 1) in vec4 g_TexCoord;
-
 layout(location = 0) out vec4 o_Color;
 
 void main (void)
 {
-	o_Color = g_color * texture2D(diffuseMap,vec2(g_TexCoord.st));
+	o_Color = g_color;
 }

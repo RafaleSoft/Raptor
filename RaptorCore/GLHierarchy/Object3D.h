@@ -36,7 +36,7 @@
     #include "GLHierarchy/ObjectProperties.h"
 #endif
 
-//#define TEST_BOX_ARRAYS 1
+#define TEST_BOX_ARRAYS 1
 
 //////////////////////////////////////////////////////////////////////
 //!
@@ -305,6 +305,7 @@ private:
 	RAPTOR_HANDLE	wireBox;
 #else
 	// Temporary
+	static void *m_pBinder;
 	static	GL_COORD_VERTEX	*boxes;
 	uint64_t bbox;
 #endif

@@ -44,6 +44,9 @@
 #if !defined(AFX_RAPTORINSTANCE_H__90219068_202B_46C2_BFF0_73C24D048903__INCLUDED_)
 	#include "Subsys/RaptorInstance.h"
 #endif
+#if !defined(AFX_SHADER_H__4D405EC2_7151_465D_86B6_1CA99B906777__INCLUDED_)
+	#include "GLHierarchy/Shader.h"
+#endif
 
 
 //////////////////////////////////////////////////////////////////////
@@ -61,7 +64,7 @@ static const unsigned int BBOX_INDEX_SIZE2 = 4 * 4;
 	static unsigned int maxboxes = 1024;
 	static unsigned int numboxes = 0;
 	GL_COORD_VERTEX	*CObject3D::boxes = NULL;
-	static CShader *cube_shader = NULL;
+	void *CObject3D::m_pBinder = NULL;
 #endif
 
 bool CObject3D::earlyClipEnabled = true;
@@ -107,7 +110,7 @@ CObject3D::CObject3D(const CPersistence::CPersistenceClassID & classID,
 	wireBox.hClass(classID.ID());
 	wireBox.glhandle(0);
 #else
-	bbox = 0;
+	bbox = maxboxes;
 #endif
 }
 
@@ -116,6 +119,12 @@ CObject3D::~CObject3D()
     vector< CContainerNotifier<CObject3D*>* >::iterator it = m_pNotifiers.begin();
     while (it != m_pNotifiers.end())
         (*it++)->notify(CContainerNotifier<CObject3D*>::DESTRUCTION,this);
+
+	//if (NULL != m_pBinder)
+	//{
+	//	CResourceAllocator::CResourceBinder *binder = (CResourceAllocator::CResourceBinder*)m_pBinder;
+	//	delete binder;
+	//}
 
 	delete BBox;
 }
@@ -308,29 +317,60 @@ void CObject3D::glRenderBBox(bool filled)
 
 void CObject3D::glRenderBBox(bool filled)
 {
-	if (0 == bbox)
+	if (maxboxes <= bbox)
 	{
+		// size is 2 coordinates * 4 floats per box, * maxboxes
+		size_t sz = 2 * sizeof(GL_COORD_VERTEX) / sizeof(float);
+
 		CGeometryAllocator *pAllocator = CGeometryAllocator::GetInstance();
+		pAllocator->glvkLockMemory(false);
 		if (NULL == boxes)
-			// size is 2 coordinates * 4 floats per box, * maxboxes/
-			boxes = (GL_COORD_VERTEX*)(pAllocator->allocateVertices(maxboxes * 8));
+			boxes = (GL_COORD_VERTEX*)(pAllocator->allocateVertices(maxboxes * sz));
+		pAllocator->glvkLockMemory(true);
 
 		// bbox offset.
 		bbox = numboxes;
 		numboxes += 2;
 
-		size_t sz = 2 * sizeof(GL_COORD_VERTEX);
 		float *dst = boxes[bbox];
+		float *dst2 = boxes[bbox+1];
 
 		float xmin, xmax, ymin, ymax, zmin, zmax;
 		BBox->get(xmin, ymin, zmin, xmax, ymax, zmax);
 		GL_COORD_VERTEX src[2] = { {xmin,ymin,zmin,1.0f}, {xmax,ymax,zmax,1.0f} };
 
 		pAllocator->glvkSetPointerData(dst, (float*)src, sz);
-	}
 
-	CRaptorInstance::GetInstance().iRenderedObjects++;
-	CRaptorInstance::GetInstance().iRenderedTriangles += 12;
+		if (NULL == m_pBinder)
+		{
+			CResourceAllocator::CResourceBinder *binder = new CResourceAllocator::CResourceBinder();
+			binder->setArray(CProgramParameters::POSITION, dst);
+			binder->setArray(CProgramParameters::ADDITIONAL_PARAM1, dst2);
+			binder->useVertexArrayObjects();
+			m_pBinder = binder;
+		}
+	}
+		
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+	CShader *pShader = instance.m_pWiredBboxShader;
+	if (filled)
+		pShader = instance.m_pFilledBboxShader;
+
+	CResourceAllocator::CResourceBinder *binder = (CResourceAllocator::CResourceBinder*)m_pBinder;
+	float *dst = boxes[bbox];
+	float *dst2 = boxes[bbox + 1];
+	binder->setArray(CProgramParameters::POSITION, dst);
+	binder->setArray(CProgramParameters::ADDITIONAL_PARAM1, dst2);
+	binder->glvkBindArrays();
+
+	pShader->glRender();
+	glDrawArrays(GL_POINTS, 0, 1);
+	pShader->glStop();
+
+	binder->glvkUnbindArrays();
+
+	instance.iRenderedObjects++;
+	instance.iRenderedTriangles += 12;
 
 	CATCH_GL_ERROR
 }
