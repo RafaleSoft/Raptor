@@ -479,7 +479,7 @@ public:
 	//!	Explicit
 	size_t size() const { return vaArray.size(); };
 
-	T operator[](unsigned int pos) const
+	T operator[](size_t pos) const
 	{ return vaArray[pos]; }
 
 private:

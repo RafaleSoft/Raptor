@@ -22,35 +22,36 @@
 #extension GL_ARB_geometry_shader4 : enable
 
 in vec4 v_color[];
-in vec4 v_Min[];
-in vec4 v_Max[];
 
-layout(points) in;
+layout(lines) in;
 layout(triangle_strip, max_vertices=18) out;
 
 out vec4 g_color;
 
 void main()
 {
+	vec4 v_Min = gl_in[0].gl_Position;
+	vec4 v_Max = gl_in[1].gl_Position;
+
 	g_color = v_color[0];
 
 	// top: Back right
-	vec4 pos = vec4(v_Max[0].x, v_Max[0].y, v_Min[0].z, 1.0);
+	vec4 pos = vec4(v_Max.x, v_Max.y, v_Min.z, 1.0);
 	vec4 tbr = gl_ModelViewProjectionMatrix * pos;
 	gl_Position = tbr;
 	EmitVertex();
 	// top: Back Left
-	pos = vec4(v_Min[0].x, v_Max[0].y, v_Min[0].z, 1.0);
+	pos = vec4(v_Min.x, v_Max.y, v_Min.z, 1.0);
 	vec4 tbl = gl_ModelViewProjectionMatrix * pos;
 	gl_Position = tbl;
 	EmitVertex();
 	// top: Front Right
-	pos = vec4(v_Max[0].x, v_Max[0].y, v_Max[0].z, 1.0);
+	pos = vec4(v_Max.x, v_Max.y, v_Max.z, 1.0);
 	vec4 tfr = gl_ModelViewProjectionMatrix * pos;
 	gl_Position = tfr;
 	EmitVertex();
 	// top: Front Left
-	pos = vec4(v_Min[0].x, v_Max[0].y, v_Max[0].z, 1.0);
+	pos = vec4(v_Min.x, v_Max.y, v_Max.z, 1.0);
 	vec4 tfl = gl_ModelViewProjectionMatrix * pos;
 	gl_Position = tfl;
 	EmitVertex();
@@ -59,7 +60,7 @@ void main()
 	gl_Position = tfl;
 	EmitVertex();
 	// front: Bottom Left
-	pos = vec4(v_Min[0].x, v_Min[0].y, v_Max[0].z, 1.0);
+	pos = vec4(v_Min.x, v_Min.y, v_Max.z, 1.0);
 	vec4 bfl = gl_ModelViewProjectionMatrix * pos;
 	gl_Position = bfl;
 	EmitVertex();
@@ -67,7 +68,7 @@ void main()
 	gl_Position = tfr;
 	EmitVertex();
 	// front: Bottom Right
-	pos = vec4(v_Max[0].x, v_Min[0].y, v_Max[0].z, 1.0);
+	pos = vec4(v_Max.x, v_Min.y, v_Max.z, 1.0);
 	vec4 bfr = gl_ModelViewProjectionMatrix * pos;
 	gl_Position = bfr;
 	EmitVertex();
@@ -76,7 +77,7 @@ void main()
 	gl_Position = tbr;
 	EmitVertex();
 	// right: Bottom back
-	pos = vec4(v_Max[0].x, v_Min[0].y, v_Min[0].z, 1.0);
+	pos = vec4(v_Max.x, v_Min.y, v_Min.z, 1.0);
 	vec4 bbr = gl_ModelViewProjectionMatrix * pos;
 	gl_Position = bbr;
 	EmitVertex();
@@ -85,7 +86,7 @@ void main()
 	gl_Position = tbl;
 	EmitVertex();
 	// back: Bottom Left
-	pos = vec4(v_Min[0].x, v_Min[0].y, v_Min[0].z, 1.0);
+	pos = vec4(v_Min.x, v_Min.y, v_Min.z, 1.0);
 	vec4 bbl = gl_ModelViewProjectionMatrix * pos;
 	gl_Position = bbl;
 	EmitVertex();

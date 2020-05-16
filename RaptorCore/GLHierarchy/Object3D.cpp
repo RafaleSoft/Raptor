@@ -333,7 +333,6 @@ void CObject3D::glRenderBBox(bool filled)
 		numboxes += 2;
 
 		float *dst = boxes[bbox];
-		float *dst2 = boxes[bbox+1];
 
 		float xmin, xmax, ymin, ymax, zmin, zmax;
 		BBox->get(xmin, ymin, zmin, xmax, ymax, zmax);
@@ -345,7 +344,6 @@ void CObject3D::glRenderBBox(bool filled)
 		{
 			CResourceAllocator::CResourceBinder *binder = new CResourceAllocator::CResourceBinder();
 			binder->setArray(CProgramParameters::POSITION, dst);
-			binder->setArray(CProgramParameters::ADDITIONAL_PARAM1, dst2);
 			binder->useVertexArrayObjects();
 			m_pBinder = binder;
 		}
@@ -358,13 +356,11 @@ void CObject3D::glRenderBBox(bool filled)
 
 	CResourceAllocator::CResourceBinder *binder = (CResourceAllocator::CResourceBinder*)m_pBinder;
 	float *dst = boxes[bbox];
-	float *dst2 = boxes[bbox + 1];
 	binder->setArray(CProgramParameters::POSITION, dst);
-	binder->setArray(CProgramParameters::ADDITIONAL_PARAM1, dst2);
 	binder->glvkBindArrays();
 
 	pShader->glRender();
-	glDrawArrays(GL_POINTS, 0, 1);
+	glDrawArrays(GL_LINES, 0, 2);
 	pShader->glStop();
 
 	binder->glvkUnbindArrays();

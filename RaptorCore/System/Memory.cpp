@@ -97,8 +97,8 @@ public:
 	CMemoryHeap():garbageSize(0),garbageMaxSize(0),m_bDeferedPacking(false) {};
 	~CMemoryHeap() {};
 
-	unsigned int	garbageSize;
-	unsigned int	garbageMaxSize;
+	size_t	garbageSize;
+	size_t	garbageMaxSize;
 
 	bool			m_bDeferedPacking;
 
@@ -211,7 +211,7 @@ bool CHostMemoryManager::init(void)
 		return false;
 }
 
-void CHostMemoryManager::setGarbageMaxSize(unsigned int maxSize) const
+void CHostMemoryManager::setGarbageMaxSize(size_t maxSize) const
 {
 	m_pHeap->garbageMaxSize = maxSize;
 }

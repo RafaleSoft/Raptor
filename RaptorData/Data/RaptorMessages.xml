@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <RaptorMessages 	language="English"
 			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <class name="DeviceMemoryManager">
+  <Class name="DeviceMemoryManager">
     <Message id="ID_NULL_OBJECT" str="Invalid memory buffer object !"/>
     <Message id="ID_NO_RESOURCE" str="Exhausted of invalid size memory buffer object"/>
     <Message id="ID_UPDATE_FAILED" str="Failed to update buffer oject data"/>
-  </class>
+  </Class>
   <Class name="Object3D">
 		<Message id="ID_NO_RESOURCE" str="No memory allocated for object Bounding Boxes"/>
 	</Class>

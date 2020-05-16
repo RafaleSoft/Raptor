@@ -44,7 +44,6 @@ extern const std::string vp3_src;
 extern const std::string gp3_src;
 extern const std::string fp3_src;
 
-
 class CPoints : public CShadedGeometry
 {
 public:
@@ -149,16 +148,16 @@ void CCube::Init(size_t s)
 	addModel(CGeometry::CGL_FRONT_GEOMETRY);
 	addModel(CGeometry::CGL_COLORS);
 	//addModel(CGeometry::CGL_TEXTURE);
-	addModel(CGeometry::CGL_TANGENTS);
+	//addModel(CGeometry::CGL_TANGENTS);
 
-	glSetVertices(s);
-	glSetColors(s);
-	glSetTangents(s);
+	glSetVertices(s+s);
+	glSetColors(s+s);
+	//glSetTangents(s);
 
 	glLockData();
 
 	srand(GetTickCount());
-	for (size_t i = 0; i < s; i++)
+	for (size_t i = 0; i < s+s; i+=2)
 	{
 		float x = 3.0f * ((float)rand() - 0.5f*RAND_MAX) / RAND_MAX;
 		float y = 3.0f * ((float)rand() - 0.5f*RAND_MAX) / RAND_MAX;
@@ -169,20 +168,24 @@ void CCube::Init(size_t s)
 		float d = 0.1f * ((float)rand()) / RAND_MAX;
 
 		addVertex(x - w, y - h, z - d, 1.0f);
-		setTangent(i, x + w, y + h, z + d, 1.0f);
+		addVertex(x + w, y + h, z + d, 1.0f);
 
-		setColor(i, (float)(rand()) / RAND_MAX, (float)(rand()) / RAND_MAX, (float)(rand()) / RAND_MAX, (float)(rand()) / RAND_MAX);
+		float r = (float)(rand()) / RAND_MAX;
+		float g = (float)(rand()) / RAND_MAX;
+		float b = (float)(rand()) / RAND_MAX;
+		float a = (float)(rand()) / RAND_MAX;
+		setColor(i, r, g, b, a);
 	}
 
 	glUnLockData();
 
-	CGeometryPrimitive *p = createPrimitive(CGeometryPrimitive::POINT);
+	CGeometryPrimitive *p = createPrimitive(CGeometryPrimitive::LINE);
 
-	unsigned short *points = new unsigned short[s];
-	for (uint16_t i = 0; i < s; i++)
+	unsigned short *points = new unsigned short[s+s];
+	for (uint16_t i = 0; i < s+s; i++)
 		points[i] = i;
 
-	p->setIndexes(s, points);
+	p->setIndexes(s+s, points);
 
 	delete[] points;
 }
@@ -277,7 +280,7 @@ void CTestDoc::GLInitContext(void)
 		CVertexShader *vs = stage->glGetVertexShader();
 		bool res = vs->glLoadProgram(vp3_src);
 		CGeometryShader *gs = stage->glGetGeometryShader();
-		gs->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 16);
+		gs->setGeometry(GL_LINES, GL_TRIANGLE_STRIP, 16);
 		res = res & gs->glLoadProgram(gp3_src);
 		CFragmentShader *fs = stage->glGetFragmentShader();
 		res = res & fs->glLoadProgram(fp3_src);

@@ -241,7 +241,7 @@ public:
 
 	//!	Garbage maximum allowed size
 	//!	( @see CRaptorConfig for initial value )
-	void setGarbageMaxSize(unsigned int maxSize) const;
+	void setGarbageMaxSize(size_t maxSize) const;
 
 	//!	Configure fered memory packing (garbage + release)
 	void setDeferedPacking(bool defered) const;

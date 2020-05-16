@@ -447,11 +447,9 @@ bool CRaptorInstance::glvkInitSharedResources(void)
 			pAllocator->glvkLockMemory(false);
 
 		size_t s = sizeof(GL_COORD_VERTEX) / sizeof(float);
+		GL_COORD_VERTEX zero(0.0f, 0.0f, 0.0f, 0.0f);
 		m_pAttributes = (GL_COORD_VERTEX*)(pAllocator->allocateVertices(s));
-
-		m_pAttributes = (GL_COORD_VERTEX*)pAllocator->glvkMapPointer((float*)m_pAttributes);
-		*m_pAttributes = GL_COORD_VERTEX(0.0f, 0.0f, 0.0f, 0.0f);
-		m_pAttributes = (GL_COORD_VERTEX*)pAllocator->glvkUnMapPointer((float*)m_pAttributes);
+		pAllocator->glvkSetPointerData((float*)m_pAttributes, (float*)zero, s);
 
 		if (lock)
 			pAllocator->glvkLockMemory(true);
@@ -503,7 +501,7 @@ bool CRaptorInstance::glvkInitSharedResources(void)
 
 		CVertexShader *vs = stage->glGetVertexShader("BOX_VTX_PROGRAM");
 		CGeometryShader *gs = stage->glGetGeometryShader("FILLEDBOX_GEO_PROGRAM");
-		gs->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 18);
+		gs->setGeometry(GL_LINES, GL_TRIANGLE_STRIP, 18);
 		CFragmentShader *fs = stage->glGetFragmentShader("BOX_TEX_PROGRAM");
 
 		if (!stage->glCompileShader())
@@ -517,7 +515,7 @@ bool CRaptorInstance::glvkInitSharedResources(void)
 
 		CVertexShader *vs = stage->glGetVertexShader("BOX_VTX_PROGRAM");
 		CGeometryShader *gs = stage->glGetGeometryShader("WIREDBOX_GEO_PROGRAM");
-		gs->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 16);
+		gs->setGeometry(GL_LINES, GL_TRIANGLE_STRIP, 16);
 		CFragmentShader *fs = stage->glGetFragmentShader("BOX_TEX_PROGRAM");
 
 		if (!stage->glCompileShader())
