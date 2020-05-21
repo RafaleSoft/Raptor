@@ -267,17 +267,14 @@ CGeometry& CGeometry::operator=(const CGeometry &geo)
     //! Transfer normals and vertex data.
     GL_COORD_VERTEX* geo_vertex = geo.vertex;
     GL_COORD_VERTEX* geo_normals = geo.normals;
-
-	pAllocator->glvkCopyPointer((float*)vertex, (float*)geo.vertex, m_nbVertex*4);
+	pAllocator->glvkCopyPointer((float*)vertex, (float*)geo.vertex, m_nbVertex * 4);
 	pAllocator->glvkCopyPointer((float*)normals, (float*)geo.normals, m_nbVertex * 4);
 
     //! Transfer texture coordinates
     if (geo.texcoords != NULL)
 	{
 		texcoords = (GL_TEX_VERTEX*)(pAllocator->allocateVertices(m_nbVertex*2));
-        GL_TEX_VERTEX* geo_texcoords = geo.texcoords;
 		binder->setArray(CProgramParameters::TEXCOORD0, texcoords);
-
 		pAllocator->glvkCopyPointer((float*)texcoords, (float*)geo.texcoords, m_nbVertex * 2);
 	}
 
@@ -285,9 +282,7 @@ CGeometry& CGeometry::operator=(const CGeometry &geo)
     if (geo.texcoords2 != NULL)
 	{
 		texcoords2 = (GL_TEX_VERTEX*)(pAllocator->allocateVertices(m_nbVertex*2));
-        GL_TEX_VERTEX* geo_texcoords = geo.texcoords2;
-		binder->setArray(CProgramParameters::TEXCOORD1, texcoords2);
-
+        binder->setArray(CProgramParameters::TEXCOORD1, texcoords2);
 		pAllocator->glvkCopyPointer((float*)texcoords2, (float*)geo.texcoords2, m_nbVertex * 2);
 	}
 
@@ -295,9 +290,7 @@ CGeometry& CGeometry::operator=(const CGeometry &geo)
     if (geo.colors != NULL) 
 	{
 		colors = (CColor::RGBA*)(pAllocator->allocateVertices(m_nbVertex*4));
-        CColor::RGBA* geo_colors = geo.colors;
 		binder->setArray(CProgramParameters::PRIMARY_COLOR, colors);
-
 		pAllocator->glvkCopyPointer((float*)colors, (float*)geo.colors, m_nbVertex * 4);
 	}
 #endif
@@ -306,22 +299,19 @@ CGeometry& CGeometry::operator=(const CGeometry &geo)
     //! Transfer polygon informations
 	polys = pAllocator->allocateIndexes(3 * m_nbPolys);
 	pAllocator->glvkCopyPointer(polys, geo.polys, m_nbPolys * 3);
+	
 
 	if (geo.fogcoords != NULL)
 	{
 		fogcoords = pAllocator->allocateVertices(m_nbVertex);
-		float *geo_fogcoords = geo.fogcoords;
 		binder->setArray(CProgramParameters::FOG_COORDINATE, fogcoords);
-
 		pAllocator->glvkCopyPointer((float*)fogcoords, (float*)geo.fogcoords, m_nbVertex);
 	}
 
 	if (geo.weightcoords != NULL)
 	{
 		weightcoords = pAllocator->allocateVertices(m_nbVertex);
-		float *geo_weightcoords = geo.weightcoords;
 		binder->setArray(CProgramParameters::WEIGHTS, weightcoords);
-
 		pAllocator->glvkCopyPointer((float*)weightcoords, (float*)geo.weightcoords, m_nbVertex);
 	}
 

@@ -56,9 +56,6 @@
 
 RAPTOR_NAMESPACE
 
-//!    Default pass is the full pass because single pass rendering needs all functionnalities
-C3DSceneObject::PASS_KIND   C3DSceneObject::m_currentPass = FULL_PASS;
-
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -177,46 +174,6 @@ void C3DSceneObject::glRenderBBoxOcclusion(unsigned int passNumber)
     obj->glRenderBBox(true);
 
 	pExtensions->glEndQueryARB(GL_SAMPLES_PASSED_ARB);
-#endif
-}
-
-void C3DSceneObject::glComputeBBoxOcclusion(unsigned int passNumber,
-											const vector<C3DSceneObject*> &occluded)
-{
-#if defined(GL_ARB_occlusion_query)
-	//  actual values should be 'get' and then restored after bbox is rendered
-    GLboolean cMask[4];
-    glGetBooleanv(GL_COLOR_WRITEMASK ,cMask);
-    GLboolean dMask;
-    glGetBooleanv(GL_DEPTH_WRITEMASK ,&dMask);
-    GLboolean sMask;
-    glGetBooleanv(GL_STENCIL_TEST ,&sMask);
-    GLint dFunc;
-    glGetIntegerv(GL_DEPTH_FUNC,&dFunc);
-    GLboolean cFace;
-    glGetBooleanv(GL_CULL_FACE ,&cFace);
-    glColorMask(GL_FALSE,GL_FALSE,GL_FALSE,GL_FALSE);
-
-    glDepthMask(GL_FALSE);
-    glDisable(GL_STENCIL_TEST);
-    glDepthFunc(GL_LESS);
-	if (!cFace)
-		glEnable(GL_CULL_FACE);
-
-	vector<C3DSceneObject*>::const_iterator itr = occluded.begin();
-	while (itr != occluded.end())
-	{
-        C3DSceneObject* sc = *itr++;
-		sc->glRenderBBoxOcclusion(passNumber);
-	}
-
-    glDepthMask(dMask);
-    glColorMask(cMask[0],cMask[1],cMask[2],cMask[3]);
-    if (sMask)
-        glEnable(GL_STENCIL_TEST);
-    glDepthFunc(dFunc);
-	if (!cFace)
-        glDisable(GL_CULL_FACE);
 #endif
 }
 

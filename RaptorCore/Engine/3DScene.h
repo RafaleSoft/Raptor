@@ -28,9 +28,6 @@
 #if !defined(AFX_PERSISTENCE_H__5561BA28_831B_11D3_9142_EEB51CEBBDB0__INCLUDED_)
 	#include "GLHierarchy/Persistence.h"
 #endif
-#if !defined(AFX_ENVIRONMENT_H__9EA164E8_2589_4CC0_B0EA_6C95FED9F04A__INCLUDED_)
-    #include "Engine/Environment.h"
-#endif
 
 
 RAPTOR_NAMESPACE_BEGIN
@@ -41,6 +38,7 @@ class CObject3D;
 class C3DSceneObject;
 class CMirror;
 class CVulkanCommandBuffer;
+class CEnvironment;
 
 
 class RAPTOR_API C3DScene : public CPersistence
@@ -52,6 +50,15 @@ public:
 	//!
 	//!	Rendering
 	//!----------
+	//! An enum that defines a kind for a rendering pass
+	typedef enum
+	{
+		DEPTH_PASS,
+		AMBIENT_PASS,
+		LIGHT_PASS,
+		FULL_PASS,
+	} PASS_KIND;
+
 
 	//!	Renders the whole scene.
 	virtual void glRender(void);
@@ -93,14 +100,14 @@ public:
 
     //! Manage environments : initialise an environment of the requested kind and dimensions ( for texturebinding )
     //! Rq : only one environment of each kind can be manage in a scene.
-    bool glManageEnvironment(CEnvironment::ENVIRONMENT_KIND kind,unsigned int width,unsigned int height);
+    bool glManageEnvironment(CEnvironment *pEnv);
 
     //! This method retrieves an environment of the requested kind, if it exists.
     //! It returns NULL if none has been managed yet.
-    CEnvironment * const getEnvironment(CEnvironment::ENVIRONMENT_KIND kind);
+	CEnvironment * const getEnvironment() const { return m_pEnvironment; };
 
 	//!	Internal helper to draw objects using current settings.
-	void glRenderObjects(const vector<C3DSceneObject*>& objects);
+	void glRenderObjects(const vector<C3DSceneObject*>& objects, C3DScene::PASS_KIND passKind);
 
     //!
     //! Persistence
@@ -116,8 +123,16 @@ private:
 	//! Forbid assignment operator
 	C3DScene& operator=(const C3DScene&);
 
+	//! This method computes initial occlusion using bbox rendering
+	void glComputeBBoxOcclusion(unsigned int passNumber,
+								const vector<C3DSceneObject*> &occluded);
+
+	//!	Load a mirror object from xml RaptorData file.
     void importMirror(CRaptorIO& io);
 
+	PASS_KIND				m_currentPass;
+
+	CEnvironment			*m_pEnvironment;
 	C3DSceneAttributes		*m_pAttributes;
 };
 

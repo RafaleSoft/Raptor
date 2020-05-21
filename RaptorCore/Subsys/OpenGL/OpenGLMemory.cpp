@@ -284,6 +284,7 @@ bool COpenGLMemory::copyBufferObjectData(	IDeviceMemoryManager::IBufferObject &d
 		char *data = (char*)pExtensions->glMapBufferARB(glStorage, GL_READ_ONLY_ARB);
 		char *dst = new char[sz];
 		memcpy(dst, data + srcOffset, sz);
+		pExtensions->glUnmapBufferARB(glStorage);
 
 		glStorage = BufferKindToGL(dstbo.getStorage());
 		pExtensions->glBindBufferARB(glStorage, dstbo.getBufferId());

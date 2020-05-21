@@ -10,7 +10,7 @@
 #endif // _MSC_VER > 1000
 
 #if !defined(AFX_ENVIRONMENT_H__9EA164E8_2589_4CC0_B0EA_6C95FED9F04A__INCLUDED_)
-    #include "Environment.h"
+    #include "Engine/Environment.h"
 #endif
 #ifndef __SIMD_H__
 	#include "Subsys/SimdLib/simd.h"
@@ -44,13 +44,16 @@ public:
     virtual ENVIRONMENT_KIND    getKind(void) const { return SHADOW_MAP; };
 
 	//!	Implements base class @see CEnvironment
-    virtual bool glInitEnvironment(unsigned int width,unsigned int height);
+    virtual bool glInitEnvironment(const vector<C3DSceneObject*> &object);
 
 	//!	Implements base class @see CEnvironment
     virtual void glRender(const CLight* currentLight,const vector<C3DSceneObject*>& objects);
 
 	//!	Implements base class @see CEnvironment
     virtual void glRenderTexture(void);
+
+	//!	Create resources.
+	bool glInitialize(uint32_t width, uint32_t height);
 
 
 private:
@@ -60,17 +63,17 @@ private:
 	//! Implements CEnvironment
 	virtual void unLinkEnvironment(void);
 
+	//! Implements CEnvironment
+	virtual void addObject(C3DSceneObject* object);
+
 
     void glRenderMap(const CLight* currentLight,const vector<C3DSceneObject*>& objects);
 
     void glRenderShadow(const vector<C3DSceneObject*>& objects);
 
-	void glInitPixelBuffer(unsigned int width,unsigned int height);
+	void glInitPixelBuffer(uint32_t width, uint32_t height);
 
-	void glInitRenderBuffer(unsigned int width,unsigned int height);
-
-	//! Implements CEnvironment
-	virtual void addObject(C3DSceneObject* object);
+	void glInitRenderBuffer(uint32_t width, uint32_t height);
 
 
 	CGenericMatrix<float>		m_lightProjection;

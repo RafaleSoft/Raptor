@@ -6,7 +6,7 @@
 #include "Test2.h"
 #include "ShadowMapDisplay.h"
 
-#include "../RaptorToolBox/RaptorToolBox.h"
+#include "ToolBox/RaptorToolBox.h"
 
 #include "GLHierarchy/GeometryEditor.h"
 #include "GLHierarchy/GLFont.h"
@@ -28,6 +28,7 @@
 #include "GLHierarchy/Light.h"
 #include "System/Raptor.h"
 #include "Engine/3DPath.h"
+#include "Engine/Environment.h"
 #include "Engine/IViewPoint.h"
 
 static CShadowMapDisplay* display = NULL;
@@ -213,8 +214,9 @@ void ShowPBuffer::glRender()
 	glDisable(GL_LIGHTING);
 	glColor4f(1.0f,1.0f,1.0f,1.0f);
 
-    CEnvironment *pEnv = m_pScene->getEnvironment(CEnvironment::SHADOW_MAP);
-    pEnv->glRenderTexture();
+	CEnvironment *pEnv = m_pScene->getEnvironment(); // CEnvironment::SHADOW_MAP);
+	if (NULL != pEnv)
+		pEnv->glRenderTexture();
 
 	glBegin(GL_QUADS);
         glTexCoord2f(0.0f,0.0f);	glVertex3f(-1.33f,0.5f,0.0f);
@@ -444,8 +446,8 @@ void CShadowMapDisplay::Init()
 	for (i=0;i<NB_INSTANCES;i++)
 		m_pScene->addObject(m_pInstances[i]);
 
-    m_pScene->glManageEnvironment(CEnvironment::SHADOW_MAP,1024,1024);
-    //m_pScene->glManageEnvironment(CEnvironment::OMNI_SHADOW_MAP,1024,1024);
+	CEnvironment *shadow_map = CEnvironment::glCreateEnvironment(*m_pScene, CEnvironment::SHADOW_MAP, 1024, 1024);
+    m_pScene->glManageEnvironment(shadow_map);
 
 	C3DPath *eyePositionPath = new C3DPath();
 	C3DPath *targetPath = new C3DPath();

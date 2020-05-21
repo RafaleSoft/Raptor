@@ -76,9 +76,6 @@ C3DSceneAttributes::~C3DSceneAttributes()
 void C3DSceneAttributes::addObjet(C3DSceneObject *sceneObject)
 {
 	m_pObjects.push_back(sceneObject);
-
-	for (unsigned int i = 0; i<m_pEnvironments.size(); i++)
-		m_pEnvironments[i]->addObject(sceneObject);
 }
 
 void C3DSceneAttributes::glMakeQueries(void)

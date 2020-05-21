@@ -36,7 +36,7 @@ public:
     virtual ENVIRONMENT_KIND    getKind(void) const { return AMBIENT_OCCLUSION; };
 
 	//! Implements base class
-    virtual bool glInitEnvironment(unsigned int width,unsigned int height);
+    virtual bool glInitEnvironment(const vector<C3DSceneObject*> &object);
 
 	//! Implements base class
     virtual void glRender(const CLight* currentLight,const vector<C3DSceneObject*>& objects);
@@ -44,8 +44,8 @@ public:
 	//! Implements base class
     virtual void glRenderTexture(void);
 
-	//! Initialise all attibutes for real time ambient occlusion computations
-    void initOcclusions(const vector<C3DSceneObject*>& objects);
+	//!	Create resources.
+	bool glInitialize(uint32_t width, uint32_t height);
 
 	//!	Handle notifier callbacks.
 	void notifyFromChild(CShader* child);

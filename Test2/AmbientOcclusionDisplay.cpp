@@ -12,6 +12,7 @@
 #include "System/RaptorDisplay.h"
 #include "System/RaptorIO.h"
 #include "Engine/3DScene.h"
+#include "Engine/Environment.h"
 #include "Engine/ViewModifier.h"
 #include "Engine/3DEngineMatrix.h"
 #include "GLHierarchy/SimpleObject.h"
@@ -175,7 +176,8 @@ void CAmbientOcclusionDisplay::Init()
 
 		CRaptorDisplay* pDisplay = CRaptorDisplay::GetCurrentDisplay();
 		pDisplay->addScene(m_pScene);
-		m_pScene->glManageEnvironment(CEnvironment::AMBIENT_OCCLUSION,0,0);
+		CEnvironment *ambient_occlusion = CEnvironment::glCreateEnvironment(*m_pScene, CEnvironment::AMBIENT_OCCLUSION, 0, 0);
+		m_pScene->glManageEnvironment(ambient_occlusion);
 	}
 }
 

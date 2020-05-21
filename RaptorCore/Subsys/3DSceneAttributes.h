@@ -21,7 +21,6 @@
 RAPTOR_NAMESPACE_BEGIN
 
 class CLight;
-class CEnvironment;
 class C3DSceneObject;
 class CObject3D;
 template <class USER_DATA_t> class CBaseTree;
@@ -87,7 +86,6 @@ public:
     //! Internal use only : true if mirror pass has been issued.
     bool			m_bMirrorsRendered;
 	
-    vector<CEnvironment*>	m_pEnvironments;
 	vector<CLight*>			m_pLights;
     vector<CMirror*>		m_pMirrors;
 	CLight*					m_pCurrentLight;

@@ -7,6 +7,7 @@
 
 #include "GLHierarchy/Persistence.h"
 #include "Engine/3DScene.h"
+#include "Engine/Environment.h"
 #include "GLHierarchy/3DSet.h"
 #include "GLHierarchy/GeometryEditor.h"
 #include "GLHierarchy/ShadedGeometry.h"
@@ -167,7 +168,8 @@ void CShadowDisplay::Init()
     knotInstance8->translate(-10,10,10);
     m_pScene->addObject(knotInstance8);
 
-    m_pScene->glManageEnvironment(CEnvironment::SHADOW_VOLUME,0,0);
+	CEnvironment *shadow_volume = CEnvironment::glCreateEnvironment(*m_pScene, CEnvironment::SHADOW_VOLUME, 0, 0);
+    m_pScene->glManageEnvironment(shadow_volume);
     m_pScene->useZSort(); //Optimize surrounding bbox drawings to use it in this very special case.
 
 	CRaptorDisplay* pDisplay = CRaptorDisplay::GetCurrentDisplay();

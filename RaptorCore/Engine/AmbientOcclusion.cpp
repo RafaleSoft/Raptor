@@ -86,7 +86,7 @@ void CAmbientOcclusion::unLink(const CPersistence *object)
 }
 
 
-bool CAmbientOcclusion::glInitEnvironment(unsigned int width,unsigned int height)
+bool CAmbientOcclusion::glInitialize(uint32_t width, uint32_t height)
 {
 	return true;
 }
@@ -120,11 +120,13 @@ void CAmbientOcclusion::addObject(C3DSceneObject* object)
 	}
 }
 
-void CAmbientOcclusion::initOcclusions(const vector<C3DSceneObject*>& objects)
+bool CAmbientOcclusion::glInitEnvironment(const vector<C3DSceneObject*>& objects)
 {
 	vector<C3DSceneObject*>::const_iterator itr = objects.begin();
 	while (itr != objects.end())
 		addObject(*itr++);
+
+	return true;
 }
 
 bool CAmbientOcclusion::registerForAmbientOcclusion(CShadedGeometry* shaded,
@@ -157,8 +159,7 @@ void CAmbientOcclusion::glRender(const CLight* currentLight,const vector<C3DScen
 {
 	if (!isEnabled())
     {
-        C3DSceneObject::m_currentPass = C3DSceneObject::FULL_PASS;
-        glRenderObjects(objects);
+        glRenderObjects(objects, C3DScene::FULL_PASS);
         return;
     }
 
@@ -196,8 +197,7 @@ void CAmbientOcclusion::glRender(const CLight* currentLight,const vector<C3DScen
 	}
 
 	// Third step: render objects using the AO map
-	C3DSceneObject::m_currentPass = C3DSceneObject::FULL_PASS;
-	glRenderObjects(objects);
+	glRenderObjects(objects, C3DScene::FULL_PASS);
 }
 
 

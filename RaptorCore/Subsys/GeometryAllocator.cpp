@@ -113,11 +113,10 @@ bool CGeometryAllocator::glvkCopyPointer(float *dst, float *src, uint64_t size)
 		uint64_t dstOffset = (uint64_t)dst;
 		uint64_t srcOffset = (uint64_t)src;
 
-		uint64_t sz = (*dstbloc).second;
-		if (sz != size * sizeof(float))
+		uint64_t sz = size * sizeof(float);
+		if ((*dstbloc).second < sz)	// destination must fit copy size.
 			return false;
-		sz = (*srcbloc).second;
-		if (sz != size * sizeof(float))
+		if ((*srcbloc).second < sz) // source must provide copy size.
 			return false;
 
 		return CResourceAllocator::glvkCopyPointer(	relocatedVertices, dstOffset,
@@ -150,11 +149,10 @@ bool CGeometryAllocator::glvkCopyPointer(uint16_t *dst, uint16_t *src, uint64_t 
 		uint64_t dstOffset = (uint64_t)dst;
 		uint64_t srcOffset = (uint64_t)src;
 
-		uint64_t sz = (*dstbloc).second;
-		if (sz != size * sizeof(uint16_t))
+		uint64_t sz = size * sizeof(uint16_t);
+		if ((*dstbloc).second < sz) // destination must fit copy size.
 			return false;
-		sz = (*srcbloc).second;
-		if (sz != size * sizeof(uint16_t))
+		if ((*srcbloc).second < sz) // source must provide copy size.
 			return false;
 
 		return CResourceAllocator::glvkCopyPointer(	relocatedFaceIndexes, dstOffset,

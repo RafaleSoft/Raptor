@@ -40,7 +40,7 @@ public:
     virtual ENVIRONMENT_KIND    getKind(void) const { return SHADOW_VOLUME; };
 
 	//! Implements base class
-    virtual bool glInitEnvironment(unsigned int width,unsigned int height);
+    virtual bool glInitEnvironment(const vector<C3DSceneObject*> &object);
 
 	//! Implements base class
     virtual void glRender(const CLight* currentLight,const vector<C3DSceneObject*>& objects);
@@ -48,9 +48,9 @@ public:
 	//! Implements base class
     virtual void glRenderTexture(void);
 
-	//! Initialise all shadow volumes corresponding to the
-	//! contours of each object passed in the list.
-    void initVolumes(const vector<C3DSceneObject*>& objects);
+	//!	Create resources.
+	bool glInitialize(uint32_t width, uint32_t height);
+
 
 
 private:

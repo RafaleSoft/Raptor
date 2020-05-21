@@ -1,6 +1,21 @@
-// OmniShadowMap.cpp: implementation of the COmniShadowMap class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  OmniShadowMap.cpp                                                      */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
 #include "Subsys/CodeGeneration.h"
 
 #if !defined(AFX_OMNISHADOWMAP_H__FB391794_C7C1_404B_A146_061A62252C5D__INCLUDED_)
@@ -97,7 +112,13 @@ void COmniShadowMap::addObject(C3DSceneObject* object)
 {
 }
 
-bool COmniShadowMap::glInitEnvironment(unsigned int width,unsigned int height)
+bool COmniShadowMap::glInitEnvironment(const vector<C3DSceneObject*> &object)
+{
+	//!	Nothing to do for shadow map.
+	return true;
+}
+
+bool COmniShadowMap::glInitialize(uint32_t width, uint32_t height)
 {
 #ifdef GL_ARB_texture_cube_map
 	if (!Raptor::glIsExtensionSupported(GL_ARB_TEXTURE_CUBE_MAP_EXTENSION_NAME) ||
@@ -211,8 +232,7 @@ void COmniShadowMap::glRender(const CLight* currentLight,const vector<C3DSceneOb
 {
     if (!isEnabled())
     {
-        C3DSceneObject::m_currentPass = C3DSceneObject::FULL_PASS;
-        glRenderObjects(objects);
+        glRenderObjects(objects, C3DScene::FULL_PASS);
         return;
     }
 
@@ -248,10 +268,7 @@ void COmniShadowMap::glRender(const CLight* currentLight,const vector<C3DSceneOb
 
     // Render 'other' objects
     if (others.size() > 0)
-    {
-        C3DSceneObject::m_currentPass = C3DSceneObject::FULL_PASS;
-        glRenderObjects(others);
-    }
+        glRenderObjects(others, C3DScene::FULL_PASS);
 }
 
 
@@ -306,8 +323,7 @@ void COmniShadowMap::glRenderMap(const CLight* currentLight,const vector<C3DScen
         m_pVSShadowMap->glRender();
         m_pFSShadowMap->glRender();
 
-        C3DSceneObject::m_currentPass = C3DSceneObject::FULL_PASS;
-        glRenderObjects(objects);
+        glRenderObjects(objects, C3DScene::FULL_PASS);
 
 	    glPopMatrix();
     }
@@ -341,8 +357,7 @@ void COmniShadowMap::glRenderShadow(const vector<C3DSceneObject*>& objects)
 
     glActiveTextureARB(previousTMU);
 
-    C3DSceneObject::m_currentPass = C3DSceneObject::FULL_PASS;
-	glRenderObjects(objects);
+	glRenderObjects(objects, C3DScene::FULL_PASS);
     
 	glActiveTextureARB(GL_TEXTURE1_ARB);
 
