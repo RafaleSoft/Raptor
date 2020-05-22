@@ -118,6 +118,8 @@ bool CAmbientOcclusionShader::glInitAOCompute(void)
 	m_pAOBuffer->glvkBindDisplay(*pOutputTextures);
 
 	m_pAOcomputeRef = CShader::getShader("AOCOMPUTE_SHADER").glClone("AO_SHADER");
+	m_pAOcomputeRef->glGetOpenGLShader()->glCompileShader();
+
 	CTextureUnitSetup *AOdata = glGetTextureUnitsSetup();
 	AOdata->enableImageUnit(CTextureUnitSetup::IMAGE_UNIT_0,true);
 	AOdata->enableImageUnit(CTextureUnitSetup::IMAGE_UNIT_1,true);

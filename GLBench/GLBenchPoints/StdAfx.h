@@ -1,7 +1,21 @@
-// stdafx.h : include file for standard system include files,
-//  or project specific include files that are used frequently, but
-//      are changed infrequently
-//
+/***************************************************************************/
+/*                                                                         */
+/*  StdAfx.h                                                               */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
 
 #if !defined(AFX_STDAFX_H__E832C91B_A874_4102_A477_B6F063266E62__INCLUDED_)
 #define AFX_STDAFX_H__E832C91B_A874_4102_A477_B6F063266E62__INCLUDED_

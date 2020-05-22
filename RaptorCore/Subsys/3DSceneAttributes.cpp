@@ -46,6 +46,9 @@
 #if !defined(AFX_LIGHT_H__AA8BABD6_059A_4939_A4B6_A0A036E12E1E__INCLUDED_)
 	#include "GLHierarchy/Light.h"
 #endif
+#if !defined(AFX_GEOMETRYALLOCATOR_H__802B3C7A_43F7_46B2_A79E_DDDC9012D371__INCLUDED_)
+	#include "Subsys/GeometryAllocator.h"
+#endif
 
 
 RAPTOR_NAMESPACE
@@ -58,7 +61,8 @@ C3DSceneAttributes::C3DSceneAttributes(C3DScene *owner):
 	m_pOwner(owner),m_pCurrentLight(NULL),
     m_bUseZSort(false),m_iCurrentPass(0),m_bQueriesReady(false),
     m_bUseGlobalAmbient(false),m_bMirrorsRendered(false),
-	m_bDataPrepared(false),m_pSceneTree(NULL)
+	m_bDataPrepared(false),m_pSceneTree(NULL),
+	maxboxes(0), numboxes(0), boxes(NULL),m_pBinder(NULL)
 {
     m_ambient = CColor::RGBA(0.2f,0.2f,0.2f,1.0f);
 }
@@ -139,6 +143,32 @@ void C3DSceneAttributes::prepareData(void)
     {
         m_bDataPrepared = true;
 
+		if (maxboxes <= numboxes)
+		{
+			maxboxes += 1024;
+
+			// size is 2 coordinates * 4 floats per box, * maxboxes
+			size_t sz = 2 * sizeof(GL_COORD_VERTEX) / sizeof(float);
+
+			// TODO: allocate increqsed space and copy previous box buffers.
+			CGeometryAllocator *pAllocator = CGeometryAllocator::GetInstance();
+			bool bLocked = pAllocator->isMemoryLocked();
+			if (bLocked)
+				pAllocator->glvkLockMemory(false);
+			if (NULL == boxes)
+				boxes = (GL_COORD_VERTEX*)(pAllocator->allocateVertices(maxboxes * sz));
+			if (bLocked)
+				pAllocator->glvkLockMemory(true);
+
+			if (NULL == m_pBinder)
+			{
+				m_pBinder = new CResourceAllocator::CResourceBinder();
+				m_pBinder->setArray(CProgramParameters::POSITION, boxes);
+				m_pBinder->useVertexArrayObjects();
+			}
+		}
+
+
         if ((m_pSceneTree == NULL) && m_bUseZSort)
         {
 #if 0
@@ -149,9 +179,30 @@ void C3DSceneAttributes::prepareData(void)
             vector<C3DSceneObject*>::const_iterator it = m_pObjects.begin();
             while (it != m_pObjects.end())
             {
-                CObject3D* obj = (*it)->getObject();
-                pTree->addObject(obj,(*it++));
+				C3DSceneObject *sc = (*it++);
+                CObject3D* obj = sc->getObject();
+                pTree->addObject(obj,sc);
+
+				if (sc->bbox > numboxes)
+				{
+					// bbox offset.
+					sc->bbox = numboxes;
+					numboxes += 2;
+
+					float *dst = boxes[sc->bbox];
+
+					float xmin, xmax, ymin, ymax, zmin, zmax;
+					const CBoundingBox * const box = obj->boundingBox();
+
+					box->get(xmin, ymin, zmin, xmax, ymax, zmax);
+					GL_COORD_VERTEX src[2] = { {xmin,ymin,zmin,1.0f}, {xmax,ymax,zmax,1.0f} };
+
+					CGeometryAllocator *pAllocator = CGeometryAllocator::GetInstance();
+					size_t sz = 2 * sizeof(GL_COORD_VERTEX) / sizeof(float);
+					pAllocator->glvkSetPointerData(dst, (float*)src, sz);
+				}
             }
+
             pTree->compress();
 			m_pSceneTree = pTree;
         }

@@ -365,7 +365,7 @@ CGLBuilder::~CGLBuilder()
 
 void CGLBuilder::activateAll(void)
 {
-	for (unsigned int i=0;i<extensions.size();i++)
+	for (size_t i=0; i < extensions.size(); i++)
 	{
 		EXTENSION &extension = extensions[i];
 		extension.active = true;
@@ -378,7 +378,7 @@ void CGLBuilder::activateAll(void)
 
 void CGLBuilder::activateNone(void)
 {
-	for (unsigned int i=0;i<extensions.size();i++)
+	for (size_t i=0; i < extensions.size(); i++)
 	{
 		EXTENSION &extension = extensions[i];
 		extension.active = false;
@@ -393,7 +393,7 @@ bool CGLBuilder::activateExtension(const string &extension,bool activate)
 {
 	bool res = false;
 
-	for (unsigned int i=0;i<extensions.size();i++)
+	for (size_t i=0; i < extensions.size(); i++)
 	{
 		EXTENSION& ext = extensions[i];
 
@@ -412,7 +412,7 @@ bool CGLBuilder::isExtensionActive(const string &extension) const
 {
 	bool res = false;
 
-	for (unsigned int i=0;i<extensions.size();i++)
+	for (size_t i=0; i < extensions.size(); i++)
 	{
 		const EXTENSION& ext = extensions[i];
 
@@ -428,7 +428,7 @@ bool CGLBuilder::isExtensionActive(const string &extension) const
 
 void CGLBuilder::glQueryExtensions(const string &strExtensions)
 {
-	for (unsigned int i=0;i<extensions.size();i++)
+	for (size_t i=0; i < extensions.size(); i++)
 	{
 		const EXTENSION& extension = extensions[i];
 		activateExtension(extension.extensionName, (strExtensions.find(extension.extensionName) != string::npos));
@@ -506,12 +506,12 @@ bool CGLBuilder::checkConsistency(bool forceDependency)
 {
     bool res = true;
 
-    for (unsigned int i=0;i<extensions.size();i++)
+    for (size_t i=0; i < extensions.size(); i++)
 	{
 		const EXTENSION& extension = extensions[i];
 		if (extension.active)
         {
-			for (unsigned int j=0;j<extension.dependencies.size();j++)
+			for (size_t j=0; j < extension.dependencies.size(); j++)
 			{
 				if (forceDependency)
 					activateExtension(extension.dependencies[j],true);
@@ -558,9 +558,8 @@ bool CGLBuilder::writeHeader(const string& filename)
 
 	header.write(OGL,strlen(OGL));
 	
-    unsigned int i=0;
 	header << "// OpenGL versions\n";
-	for (i=0;i<extensions.size();i++)
+	for (size_t i=0; i < extensions.size(); i++)
 	{
 		const EXTENSION& extension = extensions[i];
 		if ((extension.active) && ((extension.kind == COREGL) || (extension.kind == COREVK)))
@@ -572,7 +571,7 @@ bool CGLBuilder::writeHeader(const string& filename)
 	}
 	header << "\n";
 
-	for (i=0;i<extensions.size();i++)
+	for (size_t i=0; i < extensions.size(); i++)
 	{
 		const EXTENSION& extension = extensions[i];
 
@@ -594,7 +593,7 @@ bool CGLBuilder::writeHeader(const string& filename)
 	
 	header.write(CODE,strlen(CODE));
 
-	for (i=0;i<extensions.size();i++)
+	for (size_t i=0; i < extensions.size(); i++)
 	{
 		const EXTENSION& extension = extensions[i];
 		if ((extension.active) && (extension.kind == CPU))

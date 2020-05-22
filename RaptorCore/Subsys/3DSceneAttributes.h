@@ -16,6 +16,9 @@
 #if !defined(AFX_3DSCENE_H__E597E752_BAD4_415D_9C00_8C59D139D32B__INCLUDED_)
 	#include "Engine/3DScene.h"
 #endif
+#if !defined(AFX_RESOURCEALLOCATOR_H__4BAB58CE_942B_450D_88C9_AF0DDDF03718__INCLUDED_)
+	#include "Subsys/ResourceAllocator.h"
+#endif
 
 
 RAPTOR_NAMESPACE_BEGIN
@@ -89,6 +92,13 @@ public:
 	vector<CLight*>			m_pLights;
     vector<CMirror*>		m_pMirrors;
 	CLight*					m_pCurrentLight;
+
+	// Statics
+	uint32_t maxboxes = 0;
+	uint32_t numboxes = 0;
+	GL_COORD_VERTEX	*boxes = NULL;
+
+	CResourceAllocator::CResourceBinder *m_pBinder = NULL;
 
 private:
 	vector<C3DSceneObject*>		m_pObjects;

@@ -44,19 +44,17 @@
 #if !defined(AFX_RAPTORINSTANCE_H__90219068_202B_46C2_BFF0_73C24D048903__INCLUDED_)
 	#include "Subsys/RaptorInstance.h"
 #endif
-#if !defined(AFX_SHADER_H__4D405EC2_7151_465D_86B6_1CA99B906777__INCLUDED_)
-	#include "GLHierarchy/Shader.h"
+
+#if defined(TEST_BOX_ARRAYS) || defined(GL_CORE_profile)
+	#if !defined(AFX_SHADER_H__4D405EC2_7151_465D_86B6_1CA99B906777__INCLUDED_)
+		#include "GLHierarchy/Shader.h"
+	#endif
 #endif
 
 
 //////////////////////////////////////////////////////////////////////
 // Static data for bbox vertices
 RAPTOR_NAMESPACE_BEGIN
-
-static unsigned int __maxboxes = 10;
-static const unsigned int BBOX_VERTEX_SIZE = 8 * 3;
-static const unsigned int BBOX_INDEX_SIZE = 4 * 6;
-static const unsigned int BBOX_INDEX_SIZE2 = 4 * 4;
 
 #if (defined(GL_FULL_profile) || defined(GL_COMPATIBILITY_profile)) && !defined(TEST_BOX_ARRAYS)
 #else

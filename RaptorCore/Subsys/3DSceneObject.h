@@ -81,6 +81,9 @@ public:
 	float			z_order;
 	float			z_span;
 
+	//!	The object bounding box buffer index.
+	uint64_t bbox;
+
 	//!	active lights for next rendering
 	CLight          *effectiveLights[CLightAttributes::MAX_LIGHTS];
 	
@@ -92,7 +95,6 @@ public:
 private:
 	//!	Default constructor.
 	C3DSceneObject();
-
 
 	//!	The 'real' embedded object
 	RAPTOR_HANDLE	object;

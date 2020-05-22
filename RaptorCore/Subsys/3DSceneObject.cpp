@@ -62,7 +62,7 @@ RAPTOR_NAMESPACE
 //////////////////////////////////////////////////////////////////////
 
 C3DSceneObject::C3DSceneObject(CObject3D* obj)
-	:m_pPipeline(NULL),z_span(-FLT_MAX), z_order(-FLT_MAX)
+	:m_pPipeline(NULL),z_span(-FLT_MAX), z_order(-FLT_MAX), bbox(UINT64_MAX)
 {
 	object = (RAPTOR_HANDLE)(*obj);
 

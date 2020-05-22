@@ -210,23 +210,11 @@ bool COpenGLMemory::setBufferObjectData(IDeviceMemoryManager::IBufferObject &bo,
         GLenum glStorage = BufferKindToGL(storage);
 
         if (currentBuffers[storage] != buffer)
-        {
 		    pExtensions->glBindBufferARB(glStorage,buffer);
-        }
 		
-		//	This call may be faster in the future.
 		pExtensions->glBufferSubDataARB(glStorage, dstOffset, sz, src);
-		/*
-		char *data = (char*)pExtensions->glMapBufferARB(glStorage,GL_WRITE_ONLY_ARB);
         
-        if (data != NULL)
-        {
-		    memcpy(data + dstOffset,src,sz);
-        }
-		
-		pExtensions->glUnmapBufferARB(glStorage);
-		*/
-        //	0 should by to the "GL default" array model.
+		//	0 should by to the "GL default" array model.
         if (currentBuffers[storage] != buffer)
         {
 	        pExtensions->glBindBufferARB(glStorage,0);
@@ -281,9 +269,16 @@ bool COpenGLMemory::copyBufferObjectData(	IDeviceMemoryManager::IBufferObject &d
 		GLenum glStorage = BufferKindToGL(srcbo.getStorage());
 		pExtensions->glBindBufferARB(glStorage, srcbo.getBufferId());
 
+#if defined(GL_VERSION_3_0)
+		char *data = (char*)pExtensions->glMapBufferRange(glStorage, srcOffset, sz, GL_MAP_READ_BIT);
+		char *dst = new char[sz];
+		if (data != NULL)
+			memcpy(dst, data, sz);
+#else
 		char *data = (char*)pExtensions->glMapBufferARB(glStorage, GL_READ_ONLY_ARB);
 		char *dst = new char[sz];
 		memcpy(dst, data + srcOffset, sz);
+#endif
 		pExtensions->glUnmapBufferARB(glStorage);
 
 		glStorage = BufferKindToGL(dstbo.getStorage());
@@ -344,22 +339,17 @@ bool COpenGLMemory::getBufferObjectData(IDeviceMemoryManager::IBufferObject &vb,
 		}
 
 		if (currentBuffers[storage] != buffer)
-        {
 		    pExtensions->glBindBufferARB(glStorage,buffer);
-        }
 
-
-		//	This call may be faster in the future.
-		//	I have no explanation on the fact that everything is
-		//	veeeery slow after a call to that function !!!
-		//pExtensions->glGetBufferSubDataARB(glStorage, srcOffset, sz, dst);
+#if defined(GL_VERSION_3_0)
+		char *data = (char*)pExtensions->glMapBufferRange(glStorage, srcOffset, sz, GL_MAP_READ_BIT);
+		if (data != NULL)
+			memcpy(dst, data, sz);
+#else
 		char *data = (char*)pExtensions->glMapBufferARB(glStorage,GL_READ_ONLY_ARB);
-        
-        if (data != NULL)
-        {
-		    memcpy(dst,data + srcOffset,sz);
-        }
-
+		if (data != NULL)
+			memcpy(dst, data + srcOffset, sz);
+#endif
 		pExtensions->glUnmapBufferARB(glStorage);
 
         //	0 should by to the "GL default" array model.

@@ -1,6 +1,21 @@
-// 3DScene.cpp: implementation of the C3DScene class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  C3DScene.cpp                                                           */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
 #include "Subsys/CodeGeneration.h"
 
 #if !defined(AFX_3DSCENE_H__E597E752_BAD4_415D_9C00_8C59D139D32B__INCLUDED_)
@@ -37,7 +52,7 @@
     #include "Subsys/3DSceneAttributes.h"
 #endif
 #if !defined(AFX_MIRROR_H__BA9C578A_40A8_451B_9EA3_C27CB04288FA__INCLUDED_)
-    #include "Mirror.h"
+    #include "Engine/Mirror.h"
 #endif
 #if !defined(AFX_RAPTORVULKANDEVICE_H__2FDEDD40_444E_4CC2_96AA_CBF9E79C3ABE__INCLUDED_)
 	#include "Subsys/Vulkan/VulkanDevice.h"
@@ -45,6 +60,10 @@
 #if !defined(AFX_ENVIRONMENT_H__9EA164E8_2589_4CC0_B0EA_6C95FED9F04A__INCLUDED_)
 	#include "Engine/Environment.h"
 #endif
+#if !defined(AFX_RAPTORINSTANCE_H__90219068_202B_46C2_BFF0_73C24D048903__INCLUDED_)
+	#include "Subsys/RaptorInstance.h"
+#endif
+
 
 
 #include <set>
@@ -133,7 +152,6 @@ bool C3DScene::addObject(CObject3D *object)
 
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 	const CBoundingBox * const box = object->boundingBox();
-
 	if ((box->xMin() == box->xMax()) ||
 		(box->yMin() == box->yMax()) ||
 		(box->zMin() == box->zMax()))
@@ -142,7 +160,7 @@ bool C3DScene::addObject(CObject3D *object)
 						CRaptorMessages::ID_NULL_OBJECT);
 	}
 #endif
-
+	
 	C3DSceneObject *sc = new C3DSceneObject(object);
 	m_pAttributes->addObjet(sc);
 
@@ -157,7 +175,7 @@ bool C3DScene::addObject(CObject3D *object)
 #endif
 		m_pEnvironment->addObject(sc);
 	}
-
+	
     return true;
 }
 
@@ -184,6 +202,31 @@ void C3DScene::glComputeBBoxOcclusion(	unsigned int passNumber,
 	if (!cFace)
 		glEnable(GL_CULL_FACE);
 
+
+	/*
+		CRaptorInstance &instance = CRaptorInstance::GetInstance();
+	CShader *pShader = instance.m_pWiredBboxShader;
+	if (filled)
+		pShader = instance.m_pFilledBboxShader;
+
+	CResourceAllocator::CResourceBinder *binder = (CResourceAllocator::CResourceBinder*)m_pBinder;
+	float *dst = boxes[bbox];
+	binder->setArray(CProgramParameters::POSITION, dst);
+	binder->glvkBindArrays();
+
+	pShader->glRender();
+	glDrawArrays(GL_LINES, 0, 2);
+	pShader->glStop();
+
+	binder->glvkUnbindArrays();
+
+	instance.iRenderedObjects++;
+	instance.iRenderedTriangles += 12;
+
+	CATCH_GL_ERROR
+	*/
+	
+	
 	vector<C3DSceneObject*>::const_iterator itr = occluded.begin();
 	while (itr != occluded.end())
 	{
@@ -198,6 +241,8 @@ void C3DScene::glComputeBBoxOcclusion(	unsigned int passNumber,
 	glDepthFunc(dFunc);
 	if (!cFace)
 		glDisable(GL_CULL_FACE);
+
+	CATCH_GL_ERROR
 #endif
 }
 
