@@ -68,36 +68,8 @@ static const char *CODE =
 
 static const char *STL =
 "\n\n\
-//	Default entry point\n\
-#if defined(_WIN32)\n\
-	#include \"stdafx.h\" \n\
-	#if !defined(WINAPI)\n\
-        #define WINAPI	__stdcall\n\
-	#endif\n\
-	#ifdef EXPORT_RAPTOR_CORE\n\
-		#define RAPTOR_API __declspec(dllexport)\n\
-	#else\n\
-		#define RAPTOR_API _declspec(dllimport)\n\
-	#endif\n\
-    #define RAPTOR_FASTCALL __fastcall\n\
-    #define RAPTOR_CCALL __cdecl\n\
-    #define RAPTOR_APICALL WINAPI\n\
-    #if _MSC_VER > 1200     // 1200 is Visual C++ 6.0\n\
-        #define RAPTOR_TYPENAME typename\n\
-    #else\n\
-        #define RAPTOR_TYPENAME\n\
-    #endif\n\
-	#define RAPTOR_INTERFACE __interface\n\
-#else // Linux environment \n\
-	#include <stdlib.h>\n\
-	#include <typeinfo>\n\
-	#define RAPTOR_API\n\
-    #define RAPTOR_FASTCALL\n\
-    #define RAPTOR_CCALL\n\
-    #define RAPTOR_APICALL\n\
-    #define RAPTOR_TYPENAME typename\n\
-	#define RAPTOR_INTERFACE class\n\
-#endif\n\n\
+#include \"stdafx.h\"\n\
+//	Base definitions\n\
 #if defined(_WIN32) \n\
     #pragma warning(disable: 4786)    //  dbug info too large \n\
     #pragma warning(disable: 4100)  \n\
@@ -109,45 +81,25 @@ static const char *STL =
 	#pragma warning(disable: 4275)    // deriving exported class from non-exported \n\
 #endif \n\
 \n\n\
-//	Standard sized int types \n\
-#if defined(_MSC_VER) && (_MSC_VER < 1600) \n\
-	typedef signed   __int8  int8_t;	\n\
-	typedef unsigned __int8  uint8_t;	\n\
-	typedef signed   __int16 int16_t;	\n\
-	typedef unsigned __int16 uint16_t;	\n\
-	typedef signed   __int32 int32_t;	\n\
-	typedef unsigned __int32 uint32_t;	\n\
-	typedef signed   __int64 int64_t;	\n\
-	typedef unsigned __int64 uint64_t;	\n\
-#else	\n\
-	#include <stdint.h>	\n\
-#endif\n\n\
-//	Standard Template Library Headers used for Raptor\n\
-#include <string> \n\
-#include <vector> \n\
-#include <map> \n\
-#include <sstream> \n\
-using namespace std;\n\
 \n\
+// define linkage specifier for OpenGL prototypes declarators \n\
+#define DEFAULT_LINKAGE \n\
+#define STATIC_LINKAGE	static \n\
+#define EXTERN_LINKAGE	extern \n\
+\n\n\
 RAPTOR_NAMESPACE_BEGIN\n\
 typedef struct lessString\n\
 {\n\
-	bool operator()(const string& x,const string &y) const\n\
-	{\n\
-		return (x.compare(y) < 0);\n\
-	}\n\
-} lessString;\n\
-typedef map<string,void*,lessString> MapStringToPtr;\n\
+bool operator()(const string& x, const string &y) const\n\
+{\n\
+return (x.compare(y) < 0); \n\
+}\n\
+} lessString; \n\
+typedef map<string, void*, lessString> MapStringToPtr; \n\
 RAPTOR_NAMESPACE_END\n\
-\n\
-// define linkage specifier for declarators \n\
-#define DEFAULT_LINKAGE \n\
-#define STATIC_LINKAGE        static \n\
-#define EXTERN_LINKAGE      extern \n\
-\n\n\
 // define types for compatibility with Android OpenGLES \n\
 #if defined(_ANDROID) \n\
-#define GLdouble double \n\
+	#define GLdouble double \n\
 #endif\n\n\
 \n";
 

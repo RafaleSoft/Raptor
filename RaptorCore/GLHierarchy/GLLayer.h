@@ -22,7 +22,7 @@ RAPTOR_NAMESPACE_BEGIN
 
 class CGL2DFont;
 class CImageModifier;
-class CTextureObject;
+class ITextureObject;
 
 
 class RAPTOR_API CGLLayer : public CPersistence  
@@ -41,7 +41,7 @@ public:
 	float getUTexCoord(void) const { return m_glTexCoordu;};
 	float getVTexCoord(void) const { return m_glTexCoordv;};
 
-	const CTextureObject* getLayerImage(void) const;
+	const ITextureObject* getLayerImage(void) const;
 
 
 	//!	Fast clear routines:
@@ -92,7 +92,7 @@ public:
 	//! @param posx : initial x position in layer
     //! @param posy : initial y position in layer
     //! @param angle : initial rotation angle of image
-	void manageSprite(CTextureObject *spr, float posx, float posy, float angle);
+	void manageSprite(ITextureObject *spr, float posx, float posy, float angle);
 
 	//!	Implements CPersistence
 	DECLARE_IO
@@ -127,14 +127,14 @@ private:
         float   posx;
         float   posy;
         float	angle;
-        CTextureObject	*image;
+        ITextureObject	*image;
     } SPRITE;
 
     vector<SPRITE>  sprites;
 
 	vector<const CGLLayer*>	links;
 
-	CTextureObject	*m_pPlane;
+	ITextureObject	*m_pPlane;
 	unsigned char	*m_pBuffer;
 	unsigned char	*m_pBufferPointer;
 };

@@ -141,7 +141,7 @@ CShader	* const CBumppedGeometry::getShader(void) const
 	return m_pBumpShader;
 }
 
-void CBumppedGeometry::setDiffuseMap(CTextureObject* diffuse)
+void CBumppedGeometry::setDiffuseMap(ITextureObject* diffuse)
 {
 	// Check for null ?
 	diffuseMap = diffuse;
@@ -149,14 +149,14 @@ void CBumppedGeometry::setDiffuseMap(CTextureObject* diffuse)
 	setup->setDiffuseMap(diffuseMap);
 }
 
-void CBumppedGeometry::setNormalMap(CTextureObject* normal)
+void CBumppedGeometry::setNormalMap(ITextureObject* normal)
 {
 	normalMap = normal;
 	CTextureUnitSetup *setup = m_pBumpShader->glGetTextureUnitsSetup();
 	setup->setNormalMap(normalMap);
 }
 
-void CBumppedGeometry::setEnvironmentMap(CTextureObject* environment)
+void CBumppedGeometry::setEnvironmentMap(ITextureObject* environment)
 {
 	envMap = environment;
 	CTextureUnitSetup *setup = m_pBumpShader->glGetTextureUnitsSetup();

@@ -170,8 +170,8 @@ void C3DSceneObject::glRenderBBoxOcclusion(unsigned int passNumber)
 
     passVisibility[passNumber] = 0;
 
-	CObject3D *obj = object.ptr<CObject3D>();
-    obj->glRenderBBox(true);
+	//	Render the filled bbox with shader and bindings done in 3DSceneAttributes.
+	glDrawArrays(GL_LINES, bbox, 2);
 
 	pExtensions->glEndQueryARB(GL_SAMPLES_PASSED_ARB);
 #endif

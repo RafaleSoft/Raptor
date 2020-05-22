@@ -62,8 +62,8 @@ CTextureSet::operator RAPTOR_HANDLE() const
 
 bool CTextureSet::addTexture(CTextureObject *t)
 {
-	unsigned int pos = m_pTextures.size();
-    for (unsigned int i=0;i<pos;i++)
+	size_t pos = m_pTextures.size();
+    for (size_t i=0; i<pos; i++)
     {
         if (m_pTextures[i] == t)
         {

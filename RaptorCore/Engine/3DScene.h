@@ -123,10 +123,6 @@ private:
 	//! Forbid assignment operator
 	C3DScene& operator=(const C3DScene&);
 
-	//! This method computes initial occlusion using bbox rendering
-	void glComputeBBoxOcclusion(unsigned int passNumber,
-								const vector<C3DSceneObject*> &occluded);
-
 	//!	Load a mirror object from xml RaptorData file.
     void importMirror(CRaptorIO& io);
 

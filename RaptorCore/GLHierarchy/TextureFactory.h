@@ -99,7 +99,7 @@ public:
 	//!	Creates a sprite object. A sprite is a small texture with
 	//!	pixel replacement mode ( CGL_OPAQUE ) and no filtering ( thus no anisotropy )
 	//!	See CreateTexture.
-	CTextureObject*		const glCreateSprite(ITextureObject::TEXEL_TYPE type);
+	ITextureObject*		const glCreateSprite(ITextureObject::TEXEL_TYPE type);
 
 
 	//!	Creates a Vulkan image texture object.

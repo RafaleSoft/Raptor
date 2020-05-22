@@ -746,7 +746,7 @@ bool CTextureFactory::glExportTexture(CTextureObject *T,const std::string &fname
     return res;
 }
 
-CTextureObject* const CTextureFactory::glCreateSprite(ITextureObject::TEXEL_TYPE type)
+ITextureObject* const CTextureFactory::glCreateSprite(ITextureObject::TEXEL_TYPE type)
 {
     //! type checking will be donne at loading
 	CTextureObject* T = new CTextureObject(type);

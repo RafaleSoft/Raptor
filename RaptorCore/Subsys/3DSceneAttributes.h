@@ -56,10 +56,7 @@ public:
 	void addObjet(C3DSceneObject *sceneObject);
 
 	//! Returns he appropriate list of objects extracted from octree )
-	const vector<C3DSceneObject*> &getAllObjects(void) const
-	{
-		return m_pObjects;
-	}
+	const vector<C3DSceneObject*> &getAllObjects(void) const { return m_pObjects; }
 
     //! Returns he appropriate list of objects extracted from octree )
     vector<C3DSceneObject*>	glGetObjects(void);
@@ -67,6 +64,11 @@ public:
     //! Returns the appropriate list of lights that should apply to the list of objects
     vector<CLight*>	glGetLights(const vector<C3DSceneObject*>& objects);
 
+	//! This method computes initial occlusion using bbox rendering
+	void glComputeBBoxOcclusion(const vector<C3DSceneObject*> &occluded);
+
+	//! This method is used for debugging purpose
+	void glRenderBBoxes(const vector<C3DSceneObject*> &objects);
 
 
 public:
@@ -76,8 +78,6 @@ public:
 	bool			m_bUseZSort;
     //! true if occlusion queries have been prepared
 	bool			m_bQueriesReady;
-    //! true if data structures are prepared ( octrees, observers )
-    bool			m_bDataPrepared;
     //! Current rendering pass. Up to 8 passes can be used in C3DSceneObject.
     //! There is no need to increase that figure or to make extensible in most cases.
     unsigned int	m_iCurrentPass;
@@ -93,12 +93,12 @@ public:
     vector<CMirror*>		m_pMirrors;
 	CLight*					m_pCurrentLight;
 
-	// Statics
-	uint32_t maxboxes = 0;
-	uint32_t numboxes = 0;
-	GL_COORD_VERTEX	*boxes = NULL;
+	//! Number of bounding boxes managed by occlusion queries.
+	size_t numboxes;
+	//! Bounding boxes to perform occlusion queries.
+	GL_COORD_VERTEX	*boxes;
 
-	CResourceAllocator::CResourceBinder *m_pBinder = NULL;
+	CResourceAllocator::CResourceBinder *m_pBinder;
 
 private:
 	vector<C3DSceneObject*>		m_pObjects;

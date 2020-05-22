@@ -296,8 +296,6 @@ void CKDTree<USER_DATA_t>::compress(void)
 	ConstructionKD();
 }
 
-static int maxboxes = 0;
-static int count = 0;
 template <class USER_DATA_t>
 void CKDTree<USER_DATA_t>::glRender(void)
 {

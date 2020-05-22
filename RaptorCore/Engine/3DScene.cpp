@@ -60,9 +60,6 @@
 #if !defined(AFX_ENVIRONMENT_H__9EA164E8_2589_4CC0_B0EA_6C95FED9F04A__INCLUDED_)
 	#include "Engine/Environment.h"
 #endif
-#if !defined(AFX_RAPTORINSTANCE_H__90219068_202B_46C2_BFF0_73C24D048903__INCLUDED_)
-	#include "Subsys/RaptorInstance.h"
-#endif
 
 
 
@@ -179,73 +176,6 @@ bool C3DScene::addObject(CObject3D *object)
     return true;
 }
 
-void C3DScene::glComputeBBoxOcclusion(	unsigned int passNumber,
-										const vector<C3DSceneObject*> &occluded)
-{
-#if defined(GL_ARB_occlusion_query)
-	//  actual values should be 'get' and then restored after bbox is rendered
-	GLboolean cMask[4];
-	glGetBooleanv(GL_COLOR_WRITEMASK, cMask);
-	GLboolean dMask;
-	glGetBooleanv(GL_DEPTH_WRITEMASK, &dMask);
-	GLboolean sMask;
-	glGetBooleanv(GL_STENCIL_TEST, &sMask);
-	GLint dFunc;
-	glGetIntegerv(GL_DEPTH_FUNC, &dFunc);
-	GLboolean cFace;
-	glGetBooleanv(GL_CULL_FACE, &cFace);
-	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
-
-	glDepthMask(GL_FALSE);
-	glDisable(GL_STENCIL_TEST);
-	glDepthFunc(GL_LESS);
-	if (!cFace)
-		glEnable(GL_CULL_FACE);
-
-
-	/*
-		CRaptorInstance &instance = CRaptorInstance::GetInstance();
-	CShader *pShader = instance.m_pWiredBboxShader;
-	if (filled)
-		pShader = instance.m_pFilledBboxShader;
-
-	CResourceAllocator::CResourceBinder *binder = (CResourceAllocator::CResourceBinder*)m_pBinder;
-	float *dst = boxes[bbox];
-	binder->setArray(CProgramParameters::POSITION, dst);
-	binder->glvkBindArrays();
-
-	pShader->glRender();
-	glDrawArrays(GL_LINES, 0, 2);
-	pShader->glStop();
-
-	binder->glvkUnbindArrays();
-
-	instance.iRenderedObjects++;
-	instance.iRenderedTriangles += 12;
-
-	CATCH_GL_ERROR
-	*/
-	
-	
-	vector<C3DSceneObject*>::const_iterator itr = occluded.begin();
-	while (itr != occluded.end())
-	{
-		C3DSceneObject* sc = *itr++;
-		sc->glRenderBBoxOcclusion(passNumber);
-	}
-
-	glDepthMask(dMask);
-	glColorMask(cMask[0], cMask[1], cMask[2], cMask[3]);
-	if (sMask)
-		glEnable(GL_STENCIL_TEST);
-	glDepthFunc(dFunc);
-	if (!cFace)
-		glDisable(GL_CULL_FACE);
-
-	CATCH_GL_ERROR
-#endif
-}
-
 void C3DScene::glRenderObjects(const vector<C3DSceneObject*>& objects, PASS_KIND passKind)
 {
 	m_currentPass = passKind;
@@ -323,8 +253,9 @@ void C3DScene::glRenderObjects(const vector<C3DSceneObject*>& objects, PASS_KIND
 	}
 
 	if (!occludedObjects.empty())
-		glComputeBBoxOcclusion(	m_pAttributes->m_iCurrentPass, occludedObjects);
+		m_pAttributes->glComputeBBoxOcclusion(occludedObjects);
 
+	m_pAttributes->glRenderBBoxes(unsortedObjects);
 
 	//
 	// Rendering 
@@ -361,7 +292,7 @@ void C3DScene::glRenderObjects(const vector<C3DSceneObject*>& objects, PASS_KIND
 					occludedObjects.push_back(sc);
             }
 			if (!occludedObjects.empty())
-				glComputeBBoxOcclusion(	m_pAttributes->m_iCurrentPass, occludedObjects);
+				m_pAttributes->glComputeBBoxOcclusion(occludedObjects);
 
             //  Transparent objects must also be rendered here if they are mirrored ?
             pMirror->glApplyMirror(false);

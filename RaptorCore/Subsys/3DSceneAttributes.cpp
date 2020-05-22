@@ -49,6 +49,10 @@
 #if !defined(AFX_GEOMETRYALLOCATOR_H__802B3C7A_43F7_46B2_A79E_DDDC9012D371__INCLUDED_)
 	#include "Subsys/GeometryAllocator.h"
 #endif
+#if !defined(AFX_RAPTORINSTANCE_H__90219068_202B_46C2_BFF0_73C24D048903__INCLUDED_)
+	#include "Subsys/RaptorInstance.h"
+#endif
+
 
 
 RAPTOR_NAMESPACE
@@ -61,8 +65,7 @@ C3DSceneAttributes::C3DSceneAttributes(C3DScene *owner):
 	m_pOwner(owner),m_pCurrentLight(NULL),
     m_bUseZSort(false),m_iCurrentPass(0),m_bQueriesReady(false),
     m_bUseGlobalAmbient(false),m_bMirrorsRendered(false),
-	m_bDataPrepared(false),m_pSceneTree(NULL),
-	maxboxes(0), numboxes(0), boxes(NULL),m_pBinder(NULL)
+	m_pSceneTree(NULL), numboxes(0), boxes(NULL), m_pBinder(NULL)
 {
     m_ambient = CColor::RGBA(0.2f,0.2f,0.2f,1.0f);
 }
@@ -139,74 +142,82 @@ void C3DSceneAttributes::glResetQueries(void)
 
 void C3DSceneAttributes::prepareData(void)
 {
-    if (!m_bDataPrepared)
-    {
-        m_bDataPrepared = true;
+	//!	To improve later : dynamic scenes may need to resize if number if objects is changed.
+	if (numboxes < m_pObjects.size())
+	{
+		numboxes = m_pObjects.size();
 
-		if (maxboxes <= numboxes)
+		// size is 2 coordinates * 4 floats per box, * maxboxes
+		size_t sz = 2 * sizeof(GL_COORD_VERTEX) / sizeof(float);
+
+		// release previous allocation since it will be rebuilt.
+		CGeometryAllocator *pAllocator = CGeometryAllocator::GetInstance();
+		if (NULL != boxes)
+			pAllocator->releaseVertices((float*)boxes);
+
+		// allocate new chunck.
+		bool bLocked = pAllocator->isMemoryLocked();
+		if (bLocked)
+			pAllocator->glvkLockMemory(false);
+		if (NULL == boxes)
+			boxes = (GL_COORD_VERTEX*)(pAllocator->allocateVertices(numboxes * sz));
+		if (bLocked)
+			pAllocator->glvkLockMemory(true);
+
+		if (NULL == m_pBinder)
 		{
-			maxboxes += 1024;
+			m_pBinder = new CResourceAllocator::CResourceBinder();
+			m_pBinder->setArray(CProgramParameters::POSITION, boxes);
+			m_pBinder->useVertexArrayObjects();
+		}
+		else
+			m_pBinder->setArray(CProgramParameters::POSITION, boxes);
 
-			// size is 2 coordinates * 4 floats per box, * maxboxes
-			size_t sz = 2 * sizeof(GL_COORD_VERTEX) / sizeof(float);
+		uint64_t bindex = 0;
+		GL_COORD_VERTEX *src = new GL_COORD_VERTEX[2 * numboxes];
 
-			// TODO: allocate increqsed space and copy previous box buffers.
-			CGeometryAllocator *pAllocator = CGeometryAllocator::GetInstance();
-			bool bLocked = pAllocator->isMemoryLocked();
-			if (bLocked)
-				pAllocator->glvkLockMemory(false);
-			if (NULL == boxes)
-				boxes = (GL_COORD_VERTEX*)(pAllocator->allocateVertices(maxboxes * sz));
-			if (bLocked)
-				pAllocator->glvkLockMemory(true);
+		vector<C3DSceneObject*>::const_iterator it = m_pObjects.begin();
+		while (it != m_pObjects.end())
+		{
+			C3DSceneObject *sc = (*it++);
+			CObject3D* obj = sc->getObject();
+			
+			// bbox offset.
+			sc->bbox = bindex;
 
-			if (NULL == m_pBinder)
-			{
-				m_pBinder = new CResourceAllocator::CResourceBinder();
-				m_pBinder->setArray(CProgramParameters::POSITION, boxes);
-				m_pBinder->useVertexArrayObjects();
-			}
+			const CBoundingBox * const box = obj->boundingBox();
+			GL_COORD_VERTEX min;
+			GL_COORD_VERTEX max;
+			box->get(min, max);
+			
+			src[bindex + 0] = min;
+			src[bindex + 1] = max;
+			bindex += 2;
 		}
 
+		float *dst = (float*)boxes;
+		pAllocator->glvkSetPointerData(dst, (float*)src, numboxes * sz);
+		delete[]src;
+	}
 
-        if ((m_pSceneTree == NULL) && m_bUseZSort)
-        {
+	if ((m_pSceneTree == NULL) && m_bUseZSort)
+    {
 #if 0
-			CKDTree<C3DSceneObject*> *pTree = new CKDTree<C3DSceneObject*>;
+		CKDTree<C3DSceneObject*> *pTree = new CKDTree<C3DSceneObject*>;
 #else
-            COctree<C3DSceneObject*> *pTree = new COctree<C3DSceneObject*>;
+		COctree<C3DSceneObject*> *pTree = new COctree<C3DSceneObject*>;
 #endif
-            vector<C3DSceneObject*>::const_iterator it = m_pObjects.begin();
-            while (it != m_pObjects.end())
-            {
-				C3DSceneObject *sc = (*it++);
-                CObject3D* obj = sc->getObject();
-                pTree->addObject(obj,sc);
+		vector<C3DSceneObject*>::const_iterator it = m_pObjects.begin();
+		while (it != m_pObjects.end())
+		{
+			C3DSceneObject *sc = (*it++);
+			CObject3D* obj = sc->getObject();
+			pTree->addObject(obj,sc);
+		}
 
-				if (sc->bbox > numboxes)
-				{
-					// bbox offset.
-					sc->bbox = numboxes;
-					numboxes += 2;
-
-					float *dst = boxes[sc->bbox];
-
-					float xmin, xmax, ymin, ymax, zmin, zmax;
-					const CBoundingBox * const box = obj->boundingBox();
-
-					box->get(xmin, ymin, zmin, xmax, ymax, zmax);
-					GL_COORD_VERTEX src[2] = { {xmin,ymin,zmin,1.0f}, {xmax,ymax,zmax,1.0f} };
-
-					CGeometryAllocator *pAllocator = CGeometryAllocator::GetInstance();
-					size_t sz = 2 * sizeof(GL_COORD_VERTEX) / sizeof(float);
-					pAllocator->glvkSetPointerData(dst, (float*)src, sz);
-				}
-            }
-
-            pTree->compress();
-			m_pSceneTree = pTree;
-        }
-    }
+		pTree->compress();
+		m_pSceneTree = pTree;
+	}
 
     m_iCurrentPass = 0;
     m_bMirrorsRendered = false;
@@ -286,4 +297,84 @@ vector<CLight*>	C3DSceneAttributes::glGetLights(const vector<C3DSceneObject*>& o
         result.push_back((*itm++).second);
 
     return result;
+}
+
+void C3DSceneAttributes::glComputeBBoxOcclusion(const vector<C3DSceneObject*> &occluded)
+{
+#if defined(GL_ARB_occlusion_query)
+	//  actual values should be 'get' and then restored after bbox is rendered
+	GLboolean cMask[4];
+	glGetBooleanv(GL_COLOR_WRITEMASK, cMask);
+	GLboolean dMask;
+	glGetBooleanv(GL_DEPTH_WRITEMASK, &dMask);
+	GLboolean sMask;
+	glGetBooleanv(GL_STENCIL_TEST, &sMask);
+	GLint dFunc;
+	glGetIntegerv(GL_DEPTH_FUNC, &dFunc);
+	GLboolean cFace;
+	glGetBooleanv(GL_CULL_FACE, &cFace);
+	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+
+	glDepthMask(GL_FALSE);
+	glDisable(GL_STENCIL_TEST);
+	glDepthFunc(GL_LESS);
+	if (!cFace)
+		glEnable(GL_CULL_FACE);
+
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+	CShader *pShader = instance.m_pFilledBboxShader;
+
+	CResourceAllocator::CResourceBinder *binder = (CResourceAllocator::CResourceBinder*)m_pBinder;
+	binder->glvkBindArrays();
+	pShader->glRender();
+	
+	vector<C3DSceneObject*>::const_iterator itr = occluded.begin();
+	while (itr != occluded.end())
+	{
+		C3DSceneObject* sc = *itr++;
+		sc->glRenderBBoxOcclusion(m_iCurrentPass);
+
+		instance.iRenderedObjects++;
+		instance.iRenderedTriangles += 12;
+	}
+
+	pShader->glStop();
+	binder->glvkUnbindArrays();
+
+	glDepthMask(dMask);
+	glColorMask(cMask[0], cMask[1], cMask[2], cMask[3]);
+	if (sMask)
+		glEnable(GL_STENCIL_TEST);
+	glDepthFunc(dFunc);
+	if (!cFace)
+		glDisable(GL_CULL_FACE);
+
+	CATCH_GL_ERROR
+#endif
+}
+
+void C3DSceneAttributes::glRenderBBoxes(const vector<C3DSceneObject*> &objects)
+{
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+	CShader *pShader = instance.m_pWiredBboxShader;
+
+	CResourceAllocator::CResourceBinder *binder = (CResourceAllocator::CResourceBinder*)m_pBinder;
+	binder->glvkBindArrays();
+	pShader->glRender();
+
+	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+	vector<C3DSceneObject*>::const_iterator itr = objects.begin();
+	while (itr != objects.end())
+	{
+		C3DSceneObject* sc = *itr++;
+		glDrawArrays(GL_LINES, sc->bbox, 2);
+
+		instance.iRenderedObjects++;
+		instance.iRenderedTriangles += 12;
+	}
+
+	pShader->glStop();
+	binder->glvkUnbindArrays();
+
+	CATCH_GL_ERROR
 }
