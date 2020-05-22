@@ -209,12 +209,12 @@ void CSkinningDisplay::Init()
     modifier = new MyModifier();
 	modifier->selectModifierFunction(CImageModifier::CGL_BLOWFADER_MODIFIER,0x05010101);
 
-    CTextureObject*	T = f.glCreateDynamicTexture(ITextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_OPAQUE,ITextureObject::CGL_BILINEAR,modifier);
+    CTextureObject*	T = f.glCreateDynamicTexture(ITextureObject::CGL_COLOR24_ALPHA,ITextureObject::CGL_OPAQUE,ITextureObject::CGL_BILINEAR,modifier);
     f.glResizeTexture(T,64,64);
     modifier->setImage(T);
 	layer->manageSprite(T,150,75,0);
 
-    t = f.glCreateDynamicTexture(ITextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_OPAQUE,ITextureObject::CGL_BILINEAR,CRaptorDisplay::GetCurrentDisplay());
+    t = f.glCreateDynamicTexture(ITextureObject::CGL_COLOR24_ALPHA,ITextureObject::CGL_OPAQUE,ITextureObject::CGL_BILINEAR,CRaptorDisplay::GetCurrentDisplay());
     f.glResizeTexture(t,512,256);
 	t->setGenerationSize(51,101,510,254);	// avoid artefacts on border due to bilinear filterings
 	t->glvkUpdateClamping(ITextureObject::CGL_EDGECLAMP);

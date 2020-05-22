@@ -75,7 +75,7 @@ public:
 	virtual bool glDestroyPBuffer(PIXEL_BUFFER_ID pbuffer);
 
 	//! @see base class
-	virtual void glBindPBuffer(PIXEL_BUFFER_ID pbuffer,CTextureObject::CUBE_FACE selectBuffer);
+	virtual void glBindPBuffer(PIXEL_BUFFER_ID pbuffer,ITextureObject::CUBE_FACE selectBuffer);
 
 	//! @see base class
 	virtual bool glIsPBuffer(PIXEL_BUFFER_ID pbuffer) const;

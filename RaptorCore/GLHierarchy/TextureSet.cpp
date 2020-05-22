@@ -156,7 +156,7 @@ bool CTextureSet::importTextureObject(CRaptorIO& io)
     io >> name;
 
     string filename = "<unknown>";
-    CTextureObject::TEXTURE_FUNCTION function = CTextureObject::CGL_OPAQUE;
+    ITextureObject::TEXTURE_FUNCTION function = ITextureObject::CGL_OPAQUE;
     ITextureObject::TEXTURE_FILTER filter = ITextureObject::CGL_UNFILTERED;
     ITextureObject::TEXEL_TYPE texelType = ITextureObject::CGL_COLOR24_ALPHA;
     float transparency = -1.0f;
@@ -171,13 +171,13 @@ bool CTextureSet::importTextureObject(CRaptorIO& io)
         {
             io >> name;
             if (name == "opaque")
-                function = CTextureObject::CGL_OPAQUE;
+                function = ITextureObject::CGL_OPAQUE;
             else if (name == "multiply")
-                function = CTextureObject::CGL_MULTIPLY;
+                function = ITextureObject::CGL_MULTIPLY;
             else if (name == "alpha_transparent")
-                function = CTextureObject::CGL_ALPHA_TRANSPARENT;
+                function = ITextureObject::CGL_ALPHA_TRANSPARENT;
             else if (name == "constant_blended")
-                function = CTextureObject::CGL_CONSTANT_BLENDED;
+                function = ITextureObject::CGL_CONSTANT_BLENDED;
         }
         else if (data == "filter")
         {

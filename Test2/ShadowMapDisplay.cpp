@@ -367,7 +367,7 @@ void CShadowMapDisplay::Init()
     config.setCurrentAnisotropy(16.0f);
 
 	CTextureObject *T = f.glCreateTexture(	ITextureObject::CGL_COLOR24_ALPHA,
-											CTextureObject::CGL_ALPHA_TRANSPARENT,
+											ITextureObject::CGL_ALPHA_TRANSPARENT,
 											ITextureObject::CGL_ANISOTROPIC);
 	T->glSetTransparency(255);
 	config.setGenerateMipmap(false);
@@ -402,7 +402,7 @@ void CShadowMapDisplay::Init()
    	fname = "Datas\\Start.tga";
 
 	T = f.glCreateTexture(	ITextureObject::CGL_COLOR24_ALPHA,
-							CTextureObject::CGL_ALPHA_TRANSPARENT,
+							ITextureObject::CGL_ALPHA_TRANSPARENT,
 							ITextureObject::CGL_BILINEAR);
 	T->glSetTransparency(255);
 	f.glLoadTexture(T,fname);

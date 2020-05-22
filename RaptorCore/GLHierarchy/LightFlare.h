@@ -35,7 +35,6 @@
 RAPTOR_NAMESPACE_BEGIN
 
 class CTextureQuad;
-class ITextureObject;
 
 
 class RAPTOR_API CLightFlare : public CPersistence

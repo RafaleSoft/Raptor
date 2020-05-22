@@ -94,7 +94,6 @@
 	- SMP : si défini, créer des Engine jobs ?
 	- OpenCL + GPU computing
 	- Positionner les setFactors sur le particle compute depuis l'import (c.f. demo.xml)
-	- ParticleManager : enlever le cast de ITextureObject en CTextureObject
 	
 - CLight
 	- glow : volume rendering  ?

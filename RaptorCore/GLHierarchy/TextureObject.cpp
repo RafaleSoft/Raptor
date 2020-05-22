@@ -1,6 +1,20 @@
-// TextureObject.cpp: implementation of the CTextureObject class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  TextureObject.cpp                                                      */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
 
 #include "Subsys/CodeGeneration.h"
 
@@ -85,11 +99,11 @@ void CTextureObject::glvkRender()
     CATCH_GL_ERROR
 }
 
-CTextureObject::CUBE_FACE CTextureObject::getCurrentCubeFace(void) const
+ITextureObject::CUBE_FACE CTextureObject::getCurrentCubeFace(void) const
 {
 #if defined(GL_ARB_texture_cube_map)
 	if ((target >= GL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB) && (target <= GL_TEXTURE_CUBE_MAP_NEGATIVE_Z_ARB))
-		return (CTextureObject::CUBE_FACE)(target-GL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB);
+		return (ITextureObject::CUBE_FACE)(target-GL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB);
 	else
 #endif
 		return CGL_CUBEMAP_NONE;
@@ -109,42 +123,42 @@ void CTextureObject::selectCubeFace(CUBE_FACE face)
 #endif
 }
 
-void CTextureObject::setFunction(CTextureObject::TEXTURE_FUNCTION F)
+void CTextureObject::setFunction(ITextureObject::TEXTURE_FUNCTION F)
 {
     switch(F)
 	{
-		case CTextureObject::CGL_OPAQUE:
+		case ITextureObject::CGL_OPAQUE:
 			env_mode = GL_REPLACE;
 			break;
-		case CTextureObject::CGL_MULTIPLY:
+		case ITextureObject::CGL_MULTIPLY:
 			env_mode = GL_MODULATE;
 			break;
-		case CTextureObject::CGL_ALPHA_TRANSPARENT:
+		case ITextureObject::CGL_ALPHA_TRANSPARENT:
 			env_mode = GL_DECAL;
 			break;
-		case CTextureObject::CGL_CONSTANT_BLENDED:
+		case ITextureObject::CGL_CONSTANT_BLENDED:
 			env_mode = GL_BLEND;
 			break;
 	}
 }
 
-CTextureObject::TEXTURE_FUNCTION CTextureObject::getFunction(void) const
+ITextureObject::TEXTURE_FUNCTION CTextureObject::getFunction(void) const
 {
-    TEXTURE_FUNCTION res = CTextureObject::CGL_OPAQUE;
+    TEXTURE_FUNCTION res = ITextureObject::CGL_OPAQUE;
 
     switch(env_mode)
 	{
 		case GL_REPLACE:
-			res = CTextureObject::CGL_OPAQUE;
+			res = ITextureObject::CGL_OPAQUE;
 			break;
 		case GL_MODULATE:
-			res = CTextureObject::CGL_MULTIPLY;
+			res = ITextureObject::CGL_MULTIPLY;
 			break;
 		case GL_DECAL:
-			res = CTextureObject::CGL_ALPHA_TRANSPARENT;
+			res = ITextureObject::CGL_ALPHA_TRANSPARENT;
 			break;
 		case GL_BLEND:
-			res = CTextureObject::CGL_CONSTANT_BLENDED;
+			res = ITextureObject::CGL_CONSTANT_BLENDED;
 			break;
 	}
 

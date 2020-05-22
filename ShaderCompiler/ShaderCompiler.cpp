@@ -40,7 +40,7 @@ public:
 
 		CTextureFactory &factory = CTextureFactory::getDefaultFactory();
         background = factory.glCreateTexture(	ITextureObject::CGL_COLOR24_ALPHA,
-												CTextureObject::CGL_OPAQUE,
+												ITextureObject::CGL_OPAQUE,
 												ITextureObject::CGL_BILINEAR);
         background->glSetTransparency(255);
         factory.glLoadTexture(background,"Raptor_splash.jpg");

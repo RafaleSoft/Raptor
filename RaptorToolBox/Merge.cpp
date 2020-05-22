@@ -140,7 +140,7 @@ CTextureObject* CRaptorToolBox::mergeTextures(	CTextureSet *t,
 		powy*=2;
 
 	CTextureFactory &factory = CTextureFactory::getDefaultFactory();
-	CTextureObject* T = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_OPAQUE);
+	CTextureObject* T = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,ITextureObject::CGL_OPAQUE);
     T->setSize(powx,powy);
 	T->glSetTransparency(255);
     

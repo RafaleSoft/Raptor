@@ -26,15 +26,19 @@
 #if !defined(AFX_OBJECT3D_H__DB24F017_80B9_11D3_97C1_FC2841000000__INCLUDED_)
 	#include "Object3D.h"
 #endif
-#if !defined(AFX_OBJECTREFERENCE_H__0D47C721_2B2D_4163_AB88_BE1B4E08A84D__INCLUDED_)
-	#include "ObjectReference.h"
+#if !defined(AFX_REFERENCE_H__D29BE5EA_DA55_4BCA_A700_73E007EFE5F9__INCLUDED_)
+	#include "GLHierarchy/Reference.cxx"
+#endif
+#if !defined(AFX_ITEXTUREOBJECT_H__3AA8C89E_BB23_483C_A547_C8A4CC53E551__INCLUDED_)
+	#include "GLHierarchy/ITextureObject.h"
 #endif
 
 
 RAPTOR_NAMESPACE_BEGIN
 
-class CTextureObject;
+class ITextureObject;
 class CShader;
+
 
 class RAPTOR_API CParticle : public CObject3D
 {
@@ -102,11 +106,11 @@ public:
 	{ return m_attributes[numAttribute]; };
 
 	//! Texture accessor
-	CTextureObject * const getTexture() const { return m_pTexture; };
+	ITextureObject * const getTexture() const { return m_pTexture; };
 
     //! Assigns a texture for rendering a textured particle set.
     //! Rq: The ref count is incremented.
-	void setTexture(CTextureObject* texture);
+	void setTexture(ITextureObject* texture);
 
 	//!	Implements CPersistence
 	DECLARE_CLASS_ID(CParticleClassID,"Particle",CObject3D)
@@ -148,7 +152,7 @@ private:
 	unsigned int	m_blendDst;
 
 	// Particle texture if any
-	CReference<CTextureObject>	m_pTexture;
+	CReference<ITextureObject>	m_pTexture;
 
 	//! Particle shaders
 	CShader			*m_pShader;

@@ -54,6 +54,10 @@
 #if !defined(AFX_FRAGMENTSHADER_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
 	#include "GLHierarchy/FragmentShader.h"
 #endif
+#if !defined(AFX_REFERENCE_H__D29BE5EA_DA55_4BCA_A700_73E007EFE5F9__INCLUDED_)
+	#include "GLHierarchy/Reference.cxx"
+#endif
+
 
 RAPTOR_NAMESPACE_BEGIN
 
@@ -235,7 +239,7 @@ CParticle::~CParticle()
 	}
 }
 
-void CParticle::setTexture(CTextureObject* texture) 
+void CParticle::setTexture(ITextureObject* texture) 
 {
     m_pTexture = texture;
 }
@@ -302,10 +306,10 @@ void RAPTOR_FASTCALL CParticle::glRenderPoints(void)
 	CGeometryAllocator *pAllocator = CGeometryAllocator::GetInstance();
 	if (pAllocator->isMemoryRelocated())
 	{
-		unsigned int nbElt = 0;
-		while ((nbElt+CACHE_SIZE) < m_uiQuantity)
+		size_t nbElt = 0;
+		while ((nbElt + CACHE_SIZE) < m_uiQuantity)
 		{
-			for (size_t i=0;i<CACHE_SIZE;i++)
+			for (size_t i=0;i < CACHE_SIZE; i++)
 			{
 				memcpy(&cache[i].coord,&m_attributes[nbElt+i].position,sizeof(GL_COORD_VERTEX));
 				memcpy(&cache[i].colors,&m_attributes[nbElt+i].color,sizeof(GL_COORD_VERTEX));
@@ -318,21 +322,20 @@ void RAPTOR_FASTCALL CParticle::glRenderPoints(void)
 		}
 		if (nbElt < m_uiQuantity)
 		{
-			unsigned int sz = m_uiQuantity - nbElt;
-
-			for (size_t i=0;i<sz;i++)
+			size_t sz = m_uiQuantity - nbElt;
+			for (size_t i=0; i<sz; i++)
 			{
 				memcpy(&cache[i].coord,&m_attributes[nbElt+i].position,sizeof(GL_COORD_VERTEX));
 				memcpy(&cache[i].colors,&m_attributes[nbElt+i].color,sizeof(GL_COORD_VERTEX));
 			}
 
 			pAllocator->glvkSetPointerData(cachePointer,&cache[0].coord.x,sizeof(CACHEELT)*sz/sizeof(float));
-			glDrawArrays(GL_POINTS, 0, sz);
+			glDrawArrays(GL_POINTS, 0, (GLsizei)sz);
 		}
 	}
 	else
 	{
-		glDrawArrays(GL_POINTS, 0, m_uiQuantity);
+		glDrawArrays(GL_POINTS, 0, (GLsizei)m_uiQuantity);
 	}
 
 	binder->glvkUnbindArrays();

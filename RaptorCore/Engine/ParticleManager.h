@@ -20,8 +20,6 @@
 
 RAPTOR_NAMESPACE_BEGIN
 
-class ITextureObject;
-
 
 //! This class handles particle objects and ther behaviour.
 //! Rendering is delegated to particle objects

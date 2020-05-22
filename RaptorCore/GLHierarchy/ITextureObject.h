@@ -1,6 +1,20 @@
-// ITextureObject.h: interface for the ITextureObject class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  ITextureObject.h                                                       */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
 
 #if !defined(AFX_ITEXTUREOBJECT_H__3AA8C89E_BB23_483C_A547_C8A4CC53E551__INCLUDED_)
 #define AFX_ITEXTUREOBJECT_H__3AA8C89E_BB23_483C_A547_C8A4CC53E551__INCLUDED_
@@ -52,6 +66,15 @@ public:
 		CGL_ANISOTROPIC
 	} TEXTURE_FILTER;
 
+	//! Texel transfer function ( combines input fragment with texel extracted from sampler )
+	typedef enum
+	{
+		CGL_OPAQUE,
+		CGL_MULTIPLY,
+		CGL_ALPHA_TRANSPARENT,
+		CGL_CONSTANT_BLENDED
+	} TEXTURE_FUNCTION;
+
 	//! Texture sampler clampping model
 	typedef enum
 	{
@@ -61,6 +84,18 @@ public:
 		CGL_EDGECLAMP,
 		CGL_MIRROR_EDGECLAMP
 	} CLAMP_MODE;
+
+	//! Texture cube face
+	typedef enum
+	{
+		CGL_CUBEMAP_PX,
+		CGL_CUBEMAP_NX,
+		CGL_CUBEMAP_PY,
+		CGL_CUBEMAP_NY,
+		CGL_CUBEMAP_PZ,
+		CGL_CUBEMAP_NZ,
+		CGL_CUBEMAP_NONE
+	} CUBE_FACE;
 
 
 public:

@@ -170,7 +170,7 @@ bool COmniShadowMap::glInitialize(uint32_t width, uint32_t height)
 
 	CTextureFactory &factory = CTextureFactory::getDefaultFactory();
     m_pShadowTexture = factory.glCreateCubemap(ITextureObject::CGL_COLOR24_ALPHA,
-                                               CTextureObject::CGL_MULTIPLY,
+                                               ITextureObject::CGL_MULTIPLY,
                                                ITextureObject::CGL_UNFILTERED);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB,GL_TEXTURE_WRAP_S,GL_CLAMP);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB,GL_TEXTURE_WRAP_T,GL_CLAMP);
@@ -281,12 +281,12 @@ void COmniShadowMap::glRenderMap(const CLight* currentLight,const vector<C3DScen
 	m_pShadowCubeMap->glvkBindDisplay(display);
     //glColorMask(GL_FALSE,GL_FALSE,GL_FALSE,GL_FALSE);
 
-	unsigned int cubefaces[6] = {	CTextureObject::CGL_CUBEMAP_NZ,
-									CTextureObject::CGL_CUBEMAP_PX,
-									CTextureObject::CGL_CUBEMAP_PZ,
-									CTextureObject::CGL_CUBEMAP_NX,
-									CTextureObject::CGL_CUBEMAP_PY,
-									CTextureObject::CGL_CUBEMAP_NY };
+	unsigned int cubefaces[6] = {	ITextureObject::CGL_CUBEMAP_NZ,
+									ITextureObject::CGL_CUBEMAP_PX,
+									ITextureObject::CGL_CUBEMAP_PZ,
+									ITextureObject::CGL_CUBEMAP_NX,
+									ITextureObject::CGL_CUBEMAP_PY,
+									ITextureObject::CGL_CUBEMAP_NY };
 
     float rotates[6][4] = { { 180.0f, 0.0f, 0.0f, 1.0f }, 
 							{ 180.0f, 0.0f, 0.0f, 1.0f },
