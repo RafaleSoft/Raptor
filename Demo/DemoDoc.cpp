@@ -213,7 +213,7 @@ bool HeatSpots::glInitFilter()
 		(m_fModel == CRaptorDisplayFilter::RENDER_TEXTURE))
 	{
 		colorInput = filterFactory.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
-															CTextureObject::CGL_OPAQUE,
+															ITextureObject::CGL_OPAQUE,
 															ITextureObject::CGL_BILINEAR,
 															colorExternalSource);
 	}
@@ -314,8 +314,9 @@ void CDemoDoc::GLInitContext(void)
     pConsole->activateConsole(true);
     pConsole->runBatch("Demo.cmd");
     pConsole->activateConsole(false);
-	 
-    m_pScene->glManageEnvironment(CEnvironment::SHADOW_VOLUME,0,0);
+	
+	CEnvironment *shadow_volume = CEnvironment::glCreateEnvironment(*m_pScene, CEnvironment::SHADOW_VOLUME, 0, 0);
+    m_pScene->glManageEnvironment(shadow_volume);
     //m_pScene->glManageEnvironment(CEnvironment::SHADOW_MAP,1024,1024);
     m_pScene->useSceneGlobalAmbient(CColor::RGBA(0.1f,0.1f,0.1f,1.0f));
 	m_pScene->useZSort();

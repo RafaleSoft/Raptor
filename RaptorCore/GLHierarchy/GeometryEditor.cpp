@@ -1,6 +1,21 @@
-// GeometryEditor.cpp: implementation of the CGeometryEditor class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  GeometryEditor.cpp                                                     */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
 #include "Subsys/CodeGeneration.h"
 
 #if !defined(AFX_GEOMETRYEDITOR_H__2D77E428_ED3D_416B_8DE9_DABFD45A38A7__INCLUDED_)
@@ -822,7 +837,6 @@ void CGeometryEditor::minimize(void) const
 	for (i=0;i<maxVertex;i++)
 		replacements[i] = -1;
 
-
 #if defined (DATA_PACKED)
     if (CGeometryAllocator::GetInstance()->isMemoryRelocated())
         m_pGeometry->vertex = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glvkMapPointer((float*)m_pGeometry->vertex));
@@ -983,7 +997,6 @@ void CGeometryEditor::minimize(void) const
 	delete [] replacements;
 
 
-
 	// Reallocate data
 #if defined (DATA_PACKED)
     if (CGeometryAllocator::GetInstance()->isMemoryRelocated())
@@ -998,9 +1011,9 @@ void CGeometryEditor::minimize(void) const
     delete [] vrtx;
 #elif defined (DATA_PACKED)
 	GL_COORD_VERTEX *vrtx = m_pGeometry->vertex;
-
 	m_pGeometry->vertex = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->allocateVertices(maxVertex*4));
-    if (CGeometryAllocator::GetInstance()->isMemoryRelocated())
+
+	if (CGeometryAllocator::GetInstance()->isMemoryRelocated())
         m_pGeometry->vertex = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glvkMapPointer((float*)m_pGeometry->vertex));
 	
 	for (i=0;i<maxVertex;i++)
@@ -1011,7 +1024,9 @@ void CGeometryEditor::minimize(void) const
         m_pGeometry->vertex = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glvkUnMapPointer((float*)m_pGeometry->vertex));
         vrtx = (GL_COORD_VERTEX*)(CGeometryAllocator::GetInstance()->glvkUnMapPointer((float*)vrtx,false));
     }
+
 	CGeometryAllocator::GetInstance()->releaseVertices((float*)vrtx);
+
 #endif
 
 	m_pGeometry->m_nbVertex = maxVertex;

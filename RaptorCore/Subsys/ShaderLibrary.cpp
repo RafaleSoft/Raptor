@@ -60,7 +60,7 @@
 
 RAPTOR_NAMESPACE_BEGIN
 
-static const size_t NB_FACTORY_SHADERS = 34;
+static const size_t NB_FACTORY_SHADERS = 38;
 static CShaderLibrary::factory_shader fsh[NB_FACTORY_SHADERS] = 
 	{ { "BUMP_TEX_SHADER", "bump.fp", "FragmentProgram" },
 	  { "EMBM_TEX_SHADER", "embm.fp", "FragmentProgram" },
@@ -95,7 +95,11 @@ static CShaderLibrary::factory_shader fsh[NB_FACTORY_SHADERS] =
 	  { "PARTICLE3D_TEX_PROGRAM", "particle3D.ps", "FragmentShader" },
 	  { "FONT2D_VTX_PROGRAM", "font2D.vs", "VertexShader" },
 	  { "FONT2D_GEO_PROGRAM", "font2D.gs", "GeometryShader" },
-	  { "FONT2D_TEX_PROGRAM", "font2D.ps", "FragmentShader" }};
+	  { "FONT2D_TEX_PROGRAM", "font2D.ps", "FragmentShader" },
+	  { "BOX_VTX_PROGRAM", "box.vs", "VertexShader" },
+	  { "FILLEDBOX_GEO_PROGRAM", "box.gs", "GeometryShader" },
+	  { "WIREDBOX_GEO_PROGRAM", "box_line.gs", "GeometryShader" },
+	  { "BOX_TEX_PROGRAM", "box.ps", "FragmentShader" }};
 
 RAPTOR_NAMESPACE_END
 

@@ -64,7 +64,7 @@ CShader* CPhongShader::glClone(const std::string& newShaderName) const
 
 void CPhongShader::glInit(void)
 {
-	COpenGLShaderStage *stage = glGetOpenGLShader();
+	COpenGLShaderStage *stage = glGetOpenGLShader("PHONG_SHADER_PROGRAM");
 
 	stage->glGetVertexShader("PPIXEL_PHONG_VTX_PROGRAM");
 	stage->glGetFragmentShader("PPIXEL_PHONG_TEX_PROGRAM");

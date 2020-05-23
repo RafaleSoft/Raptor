@@ -66,7 +66,7 @@ BOOL CRaptorErrors::OnInitDialog()
 
 	int nbErr = Raptor::GetErrorManager()->getLastRaptorError();
 
-	for (int i=0;i<=nbErr;i++)
+	for (int i=0; i<=nbErr; i++)
 	{
 		Raptor::GetErrorManager()->getRaptorError(i,err);
 

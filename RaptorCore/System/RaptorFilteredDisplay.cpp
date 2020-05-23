@@ -317,7 +317,7 @@ bool CRaptorFilteredDisplay::glCreateRenderDisplay(void)
 				texelType = ITextureObject::CGL_COLOR_FLOAT16_ALPHA;
 
 			CTextureObject *T = f.glCreateTexture(	texelType,
-													CTextureObject::CGL_OPAQUE,
+													ITextureObject::CGL_OPAQUE,
 													ITextureObject::CGL_BILINEAR);
 			f.glResizeTexture(T,rda.width,rda.height);
 			T->glvkUpdateClamping(ITextureObject::CGL_EDGECLAMP);
@@ -330,13 +330,13 @@ bool CRaptorFilteredDisplay::glCreateRenderDisplay(void)
 			if ((filter_cs.stencil_buffer) &&
 				((filter_cs.display_mode & CGL_DEPTH) == CGL_DEPTH))
 				T = f.glCreateTexture(	ITextureObject::CGL_DEPTH24_STENCIL8,
-										CTextureObject::CGL_OPAQUE,
+										ITextureObject::CGL_OPAQUE,
 										ITextureObject::CGL_UNFILTERED);
 			else
 #endif
 
 				T = f.glCreateTexture(	ITextureObject::CGL_DEPTH24,
-										CTextureObject::CGL_OPAQUE,
+										ITextureObject::CGL_OPAQUE,
 										ITextureObject::CGL_UNFILTERED);
 
 			f.glResizeTexture(T,rda.width,rda.height);
@@ -358,7 +358,7 @@ bool CRaptorFilteredDisplay::glCreateRenderDisplay(void)
 			//	Rq: for PBuffers, the final texture format is determined by the PBuffer pixelFormat,
 			//	so the texelType here is not necessary.
 			CTextureObject *T = f.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
-															CTextureObject::CGL_OPAQUE,
+															ITextureObject::CGL_OPAQUE,
 															ITextureObject::CGL_BILINEAR,
 															m_pDisplay);
 			m_pImageSet->addTexture(T);

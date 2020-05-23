@@ -32,10 +32,10 @@ public:
 		POINT,
 		LINE,
 		TRIANGLE,
-		QUAD,
+		QUAD,		//! Deprecated in core profile
 		LINE_STRIP,
 		TRIANGLE_STRIP,
-		QUAD_STRIP,
+		QUAD_STRIP,	//! Deprecated in core profile
 		LINE_LOOP,
 		TRIANGLE_FAN,
 		POLYGON,
@@ -52,7 +52,7 @@ public:
 	PRIMITIVE_KIND getKind(void) const { return m_kind; };
 
     //! Returns the size of the primitive, i.e. the number of indexes
-    unsigned short getSize(void) const { return m_size; };
+	uint32_t getSize(void) const { return m_size; };
 
     //! Returns the faces of the primitive.
     //! The user is responsible for allocating enough storage to receive data.
@@ -80,13 +80,13 @@ private:
 	virtual ~CGeometryPrimitive();
 
 	PRIMITIVE_KIND	m_kind;
-	unsigned short	m_size;
-	unsigned int	m_uorder;
-	unsigned int	m_vorder;
-	unsigned int	m_uprecision;
-	unsigned int	m_vprecision;
+	uint32_t		m_size;
+	uint32_t		m_uorder;
+	uint32_t		m_vorder;
+	uint32_t		m_uprecision;
+	uint32_t		m_vprecision;
 
-	unsigned int	m_polygonsSize;
+	uint32_t		m_polygonsSize;
     unsigned short	*m_faces;
 	unsigned short	*m_polygons;
 };

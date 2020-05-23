@@ -746,7 +746,7 @@ bool CTextureFactory::glExportTexture(CTextureObject *T,const std::string &fname
     return res;
 }
 
-CTextureObject* const CTextureFactory::glCreateSprite(ITextureObject::TEXEL_TYPE type)
+ITextureObject* const CTextureFactory::glCreateSprite(ITextureObject::TEXEL_TYPE type)
 {
     //! type checking will be donne at loading
 	CTextureObject* T = new CTextureObject(type);
@@ -754,7 +754,7 @@ CTextureObject* const CTextureFactory::glCreateSprite(ITextureObject::TEXEL_TYPE
 	T->target = GL_TEXTURE_2D;
 	glGenTextures(1,&(T->texname));
 
-    T->setFunction(CTextureObject::CGL_OPAQUE);
+    T->setFunction(ITextureObject::CGL_OPAQUE);
 
 	glBindTexture(GL_TEXTURE_2D,T->texname);
 
@@ -769,7 +769,7 @@ CTextureObject* const CTextureFactory::glCreateSprite(ITextureObject::TEXEL_TYPE
 }
 
 CTextureObject* const CTextureFactory::glCreateCubemap(  ITextureObject::TEXEL_TYPE type,
-                                                         CTextureObject::TEXTURE_FUNCTION env_mode,
+                                                         ITextureObject::TEXTURE_FUNCTION env_mode,
 														 ITextureObject::TEXTURE_FILTER filter)
 {
 #if defined(GL_ARB_texture_cube_map)
@@ -818,7 +818,7 @@ CTextureObject* const CTextureFactory::glCreateCubemap(  ITextureObject::TEXEL_T
 
 
 ITextureObject* const CTextureFactory::vkCreateTexture(ITextureObject::TEXEL_TYPE type,
-													   CTextureObject::TEXTURE_FUNCTION env_mode,
+													   ITextureObject::TEXTURE_FUNCTION env_mode,
 													   ITextureObject::TEXTURE_FILTER filter)
 {
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
@@ -851,7 +851,7 @@ ITextureObject* const CTextureFactory::vkCreateTexture(ITextureObject::TEXEL_TYP
 }
 
 CTextureObject* const CTextureFactory::glCreateTexture( ITextureObject::TEXEL_TYPE type,
-                                                        CTextureObject::TEXTURE_FUNCTION env_mode,
+                                                        ITextureObject::TEXTURE_FUNCTION env_mode,
 														ITextureObject::TEXTURE_FILTER filter)
 {
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
@@ -908,7 +908,7 @@ CTextureObject* const CTextureFactory::glCreateTexture( ITextureObject::TEXEL_TY
 }
 
 CTextureObject* const CTextureFactory::glCreateRectangleTexture( ITextureObject::TEXEL_TYPE type,
-                                                                 CTextureObject::TEXTURE_FUNCTION env_mode,
+                                                                 ITextureObject::TEXTURE_FUNCTION env_mode,
 														         ITextureObject::TEXTURE_FILTER filter)
 {
 #if defined(GL_ARB_texture_rectangle)
@@ -960,7 +960,7 @@ CTextureObject* const CTextureFactory::glCreateRectangleTexture( ITextureObject:
 
 
 CTextureObject* const CTextureFactory::glCreateDynamicTexture(ITextureObject::TEXEL_TYPE type,
-                                                              CTextureObject::TEXTURE_FUNCTION env_mode,
+                                                              ITextureObject::TEXTURE_FUNCTION env_mode,
                                                               ITextureObject::TEXTURE_FILTER filter,
 														      ITextureGenerator* pGenerator)
 {
@@ -1007,7 +1007,7 @@ CTextureObject* const CTextureFactory::glCreateDynamicTexture(ITextureObject::TE
 }
 
 CTextureObject* const CTextureFactory::glCreateVolumeTexture(ITextureObject::TEXEL_TYPE type,
-                                                             CTextureObject::TEXTURE_FUNCTION env_mode,
+                                                             ITextureObject::TEXTURE_FUNCTION env_mode,
 														     ITextureObject::TEXTURE_FILTER filter)
 {
 #if defined(GL_EXT_texture3D)

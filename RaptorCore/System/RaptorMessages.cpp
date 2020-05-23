@@ -142,7 +142,7 @@ const std::string& CRaptorMessages::getMessage(const std::string& className,
 									argVal << args[i].arg_sz;
                                     break;
 							}
-                            argVal << ends;
+
                             message_result = message_result.substr(0,argPos) + argVal.str() + message_result.substr(argPos+2);
                         }
                     }

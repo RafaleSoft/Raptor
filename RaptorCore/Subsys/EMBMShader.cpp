@@ -102,7 +102,7 @@ CEMBMShader::~CEMBMShader(void)
 void CEMBMShader::glInit()
 {
 	CShader *shaderLib = new CShader();
-	COpenGLShaderStage *stage = glGetOpenGLShader();
+	COpenGLShaderStage *stage = glGetOpenGLShader("EMBM_SHADER_PROGRAM");
 
 	if (!embm_shaders_initialized)
 	{
@@ -161,7 +161,7 @@ void CEMBMShader::glInit()
 	//! 256 interpolated values are enough for good results.
     //! For high quality filtering, future release may allow a user defined size.
     permutation = filterFactory.glCreateTexture(ITextureObject::CGL_LIGHTMAP,
-												CTextureObject::CGL_OPAQUE,
+												ITextureObject::CGL_OPAQUE,
 												ITextureObject::CGL_UNFILTERED);
     permutation->setSize(512,1);
 

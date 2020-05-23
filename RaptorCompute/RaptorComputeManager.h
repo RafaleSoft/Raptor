@@ -35,6 +35,8 @@
 #include "CL/cl_gl.h"
 
 
+RAPTOR_NAMESPACE
+
 class RAPTOR_API CRaptorComputeManager
 {
 public:

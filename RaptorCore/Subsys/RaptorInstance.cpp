@@ -122,6 +122,13 @@ CRaptorInstance::CRaptorInstance()
 	m_pFontShader = NULL;
 	m_displayBinder = NULL;
 
+	m_pFilledBboxShader = NULL;
+	m_pWiredBboxShader = NULL;
+	numboxes = 0;
+	maxboxes = 0;
+	boxes = NULL;
+	m_pBoxBinder = NULL;
+
 	arrays_initialized = false;
 	m_pShaderLibraryInstance = NULL;
 	m_pNullShader = NULL;
@@ -425,7 +432,7 @@ bool CRaptorInstance::glvkInitSharedResources(void)
 	if (NULL == m_pIdentity)
 	{
 		m_pIdentity = new CShader("HDR_IDENTITY");
-		COpenGLShaderStage *stage = m_pIdentity->glGetOpenGLShader();
+		COpenGLShaderStage *stage = m_pIdentity->glGetOpenGLShader("HDR_IDENTITY_PROGRAM");
 
 		stage->glGetVertexShader("EMPTY_PROGRAM");
 		stage->glGetGeometryShader("FULL_SCREEN_GEO_PROGRAM");
@@ -444,12 +451,10 @@ bool CRaptorInstance::glvkInitSharedResources(void)
 		if (lock)
 			pAllocator->glvkLockMemory(false);
 
-		size_t s = sizeof(GL_COORD_VERTEX) / sizeof(float);
+		size_t s = GL_COORD_VERTEX_STRIDE;
+		GL_COORD_VERTEX zero(0.0f, 0.0f, 0.0f, 0.0f);
 		m_pAttributes = (GL_COORD_VERTEX*)(pAllocator->allocateVertices(s));
-
-		m_pAttributes = (GL_COORD_VERTEX*)pAllocator->glvkMapPointer((float*)m_pAttributes);
-		*m_pAttributes = GL_COORD_VERTEX(0.0f, 0.0f, 0.0f, 0.0f);
-		m_pAttributes = (GL_COORD_VERTEX*)pAllocator->glvkUnMapPointer((float*)m_pAttributes);
+		pAllocator->glvkSetPointerData((float*)m_pAttributes, (float*)zero, s);
 
 		if (lock)
 			pAllocator->glvkLockMemory(true);
@@ -459,7 +464,7 @@ bool CRaptorInstance::glvkInitSharedResources(void)
 	if (NULL == m_pQuadShader)
 	{
 		m_pQuadShader = new CShader("QUAD_SHADER");
-		COpenGLShaderStage *stage = m_pQuadShader->glGetOpenGLShader();
+		COpenGLShaderStage *stage = m_pQuadShader->glGetOpenGLShader("QUAD_SHADER_PROGRAM");
 
 		CVertexShader *vp = stage->glGetVertexShader("TEXTURE_QUAD_VTX_PROGRAM");
 		CGeometryShader *gp = stage->glGetGeometryShader("TEXTURE_QUAD_GEO_PROGRAM");
@@ -475,7 +480,7 @@ bool CRaptorInstance::glvkInitSharedResources(void)
 	if (NULL == m_pFontShader)
 	{
 		m_pFontShader = new CShader("PARTICLE_SHADER");
-		COpenGLShaderStage *stage = m_pFontShader->glGetOpenGLShader();
+		COpenGLShaderStage *stage = m_pFontShader->glGetOpenGLShader("PARTICLE_SHADER_PROGRAM");
 
 		CVertexShader *vp = stage->glGetVertexShader("FONT2D_VTX_PROGRAM");
 		CProgramParameters params;
@@ -490,9 +495,43 @@ bool CRaptorInstance::glvkInitSharedResources(void)
 		params.addParameter("color", CColor::RGBA(1.0, 0.0, 0.0, 1.0));
 
 		stage->setProgramParameters(params);
-		bool res = stage->glCompileShader();
-		if (!res)
+		if (!stage->glCompileShader())
 			return false;
+	}
+
+	if (NULL == m_pFilledBboxShader)
+	{
+		m_pFilledBboxShader = new CShader("FILLED_BOX_SHADER");
+		COpenGLShaderStage *stage = m_pFilledBboxShader->glGetOpenGLShader("FILLED_BOX_SHADER_PROGRAM");
+
+		CVertexShader *vs = stage->glGetVertexShader("BOX_VTX_PROGRAM");
+		CGeometryShader *gs = stage->glGetGeometryShader("FILLEDBOX_GEO_PROGRAM");
+		gs->setGeometry(GL_LINES, GL_TRIANGLE_STRIP, 18);
+		CFragmentShader *fs = stage->glGetFragmentShader("BOX_TEX_PROGRAM");
+
+		if (!stage->glCompileShader())
+			return false;
+	}
+	
+	if (NULL == m_pWiredBboxShader)
+	{
+		m_pWiredBboxShader = new CShader("WIRED_BOX_SHADER");
+		COpenGLShaderStage *stage = m_pWiredBboxShader->glGetOpenGLShader("WIRED_BOX_SHADER_PROGRAM");
+
+		CVertexShader *vs = stage->glGetVertexShader("BOX_VTX_PROGRAM");
+		CGeometryShader *gs = stage->glGetGeometryShader("WIREDBOX_GEO_PROGRAM");
+		gs->setGeometry(GL_LINES, GL_TRIANGLE_STRIP, 16);
+		CFragmentShader *fs = stage->glGetFragmentShader("BOX_TEX_PROGRAM");
+
+		if (!stage->glCompileShader())
+			return false;
+	}
+
+	if (NULL == m_pBoxBinder)
+	{
+		m_pBoxBinder = new CResourceAllocator::CResourceBinder();
+		m_pBoxBinder->setArray(CProgramParameters::POSITION, boxes);
+		m_pBoxBinder->useVertexArrayObjects();
 	}
 
 	if (NULL == m_displayBinder)
@@ -541,10 +580,28 @@ bool CRaptorInstance::glvkReleaseSharedRsources()
 		m_pFontShader = NULL;
 	}
 
+	if (NULL != m_pFilledBboxShader)
+	{
+		m_pFilledBboxShader->releaseReference();
+		m_pFilledBboxShader = NULL;
+	}
+
+	if (NULL != m_pWiredBboxShader)
+	{
+		m_pWiredBboxShader->releaseReference();
+		m_pWiredBboxShader = NULL;
+	}
+
 	if (NULL != m_displayBinder)
 	{
 		delete m_displayBinder;
 		m_displayBinder = NULL;
+	}
+
+	if (NULL != m_pBoxBinder)
+	{
+		delete m_pBoxBinder;
+		m_pBoxBinder = NULL;
 	}
 
 	if (NULL != m_pNullShader)

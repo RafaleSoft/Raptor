@@ -307,7 +307,7 @@ bool CParticleManager::importParticle(CRaptorIO& io)
     if (particle == NULL)
         particle = glCreateParticle(size,revive,type,blend,computeModel,particleName);
 	particle->usePointSprite(sprite,pSize);
-	particle->setTexture((CTextureObject*)t);
+	particle->setTexture(t);
 
 	return true;
 }

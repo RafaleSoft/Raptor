@@ -3,6 +3,7 @@ set RAPTOR_RELEASE=2.17
 
 set RAPTOR_ROOT=F:\VisualStudioProjects\Raptor
 set PATH=%PATH%;%RAPTOR_ROOT%\Redist\bin
+set PYTHON_HOME=E:\Python\Python37
 
 set CPPUNIT_VERSION=1.12.1
 set CPPUNIT_INCLUDE_PATH=%RAPTOR_ROOT%\AddOns\cppunit-%CPPUNIT_VERSION%\include

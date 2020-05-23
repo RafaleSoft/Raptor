@@ -193,9 +193,9 @@ void CTest5Doc::GLInitContext(void)
 
 
 #ifdef VULKAN_TEST
-	m_pTexture = f.vkCreateTexture(ITextureObject::CGL_COLOR24_ALPHA, CTextureObject::CGL_ALPHA_TRANSPARENT, ITextureObject::CGL_BILINEAR);
+	m_pTexture = f.vkCreateTexture(ITextureObject::CGL_COLOR24_ALPHA, ITextureObject::CGL_ALPHA_TRANSPARENT, ITextureObject::CGL_BILINEAR);
 #else
-	m_pTexture = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA, CTextureObject::CGL_ALPHA_TRANSPARENT, ITextureObject::CGL_BILINEAR);
+	m_pTexture = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA, ITextureObject::CGL_ALPHA_TRANSPARENT, ITextureObject::CGL_BILINEAR);
 #endif
 
 
@@ -256,7 +256,7 @@ void CTest5Doc::GLInitContext(void)
 
 	pScene->addObject(obj);
 #else	
-	m_pTexture = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_MULTIPLY,ITextureObject::CGL_BILINEAR);
+	m_pTexture = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,ITextureObject::CGL_MULTIPLY,ITextureObject::CGL_BILINEAR);
 	CBumpmapLoader *loader = new CBumpmapLoader(f.getConfig().getBumpAmplitude());
     f.glLoadTexture(m_pTexture,"bump3.tga", loader);
 	//f.getConfig().setBumpAmplitude(4.0f);

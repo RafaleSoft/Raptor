@@ -1,6 +1,20 @@
-// TextureObject.h: interface for the CTextureObject class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  TextureObject.h                                                        */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
 
 #if !defined(AFX_TEXTUREOBJECT_H__D32B6294_B42B_4E6F_AB73_13B33C544AD0__INCLUDED_)
 #define AFX_TEXTUREOBJECT_H__D32B6294_B42B_4E6F_AB73_13B33C544AD0__INCLUDED_
@@ -29,28 +43,6 @@ class ITextureGenerator;
 //	and its degenerate form : a sprite
 class RAPTOR_API CTextureObject : public ITextureObject
 {
-public:
-	//! Texel transfer function ( combines input fragment with texel extracted from sampler )
-	typedef enum
-	{
-		CGL_OPAQUE,
-		CGL_MULTIPLY,
-		CGL_ALPHA_TRANSPARENT,
-		CGL_CONSTANT_BLENDED
-	} TEXTURE_FUNCTION;
-
-	typedef enum
-	{
-		CGL_CUBEMAP_PX,
-		CGL_CUBEMAP_NX,
-		CGL_CUBEMAP_PY,
-		CGL_CUBEMAP_NY,
-		CGL_CUBEMAP_PZ,
-		CGL_CUBEMAP_NZ,
-		CGL_CUBEMAP_NONE
-	} CUBE_FACE;
-
-
 public:
     //!	Renders the textures : it is bound to the current active Texture Unit.
 	virtual void glvkRender(void);
@@ -124,7 +116,7 @@ private:
 	const CTextureObject& operator=(const CTextureObject &rsh) { return *this; };
 
     //! This call is restricted to the factory or the TMUSetup
-    void setFunction(TEXTURE_FUNCTION F);
+    void setFunction(ITextureObject::TEXTURE_FUNCTION F);
 	
 
 	friend class CTextureFactory;

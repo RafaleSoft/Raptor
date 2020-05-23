@@ -89,7 +89,7 @@ bool CAmbientOcclusionShader::glInitAOCompute(void)
 	CTextureFactory &f = CTextureFactory::getDefaultFactory();
 	f.getConfig().useTextureResize(false);
 	CTextureObject *T = f.glCreateTexture(	ITextureObject::CGL_COLOR_FLOAT32_ALPHA,
-											CTextureObject::CGL_OPAQUE,
+											ITextureObject::CGL_OPAQUE,
 											ITextureObject::CGL_BILINEAR);
 	T->glvkUpdateClamping(ITextureObject::CGL_EDGECLAMP);
 	f.glResizeTexture(T,m_pVertexMap->getWidth(),m_pVertexMap->getHeight());
@@ -118,6 +118,8 @@ bool CAmbientOcclusionShader::glInitAOCompute(void)
 	m_pAOBuffer->glvkBindDisplay(*pOutputTextures);
 
 	m_pAOcomputeRef = CShader::getShader("AOCOMPUTE_SHADER").glClone("AO_SHADER");
+	m_pAOcomputeRef->glGetOpenGLShader()->glCompileShader();
+
 	CTextureUnitSetup *AOdata = glGetTextureUnitsSetup();
 	AOdata->enableImageUnit(CTextureUnitSetup::IMAGE_UNIT_0,true);
 	AOdata->enableImageUnit(CTextureUnitSetup::IMAGE_UNIT_1,true);
@@ -285,14 +287,14 @@ bool CAmbientOcclusionShader::glSetCoords(GL_COORD_VERTEX* refVertex, unsigned i
 		int height = width = pow(2.0,width);
 
 		CTextureObject *T = f.glCreateRectangleTexture(	ITextureObject::CGL_COLOR_FLOAT32_ALPHA,
-														CTextureObject::CGL_OPAQUE,
+														ITextureObject::CGL_OPAQUE,
 														ITextureObject::CGL_UNFILTERED);
 		// Should this case still be supported ?
 		// with no texture rectangle, it is rather laborious
 		if (T == NULL)
 		{
 			T = f.glCreateTexture(	ITextureObject::CGL_COLOR_FLOAT32_ALPHA,
-									CTextureObject::CGL_OPAQUE,
+									ITextureObject::CGL_OPAQUE,
 									ITextureObject::CGL_UNFILTERED);
 		}
 
@@ -325,7 +327,7 @@ bool CAmbientOcclusionShader::glSetNormals(GL_COORD_VERTEX* refNormal, unsigned 
 		int height = width = pow(2.0,width);
 
 		CTextureObject *T = f.glCreateRectangleTexture(	ITextureObject::CGL_COLOR_FLOAT32_ALPHA,
-														CTextureObject::CGL_OPAQUE,
+														ITextureObject::CGL_OPAQUE,
 														ITextureObject::CGL_UNFILTERED);
 
 		// Should this case still be supported ?
@@ -333,7 +335,7 @@ bool CAmbientOcclusionShader::glSetNormals(GL_COORD_VERTEX* refNormal, unsigned 
 		if (T == NULL)
 		{
 			T = f.glCreateTexture(	ITextureObject::CGL_COLOR_FLOAT32_ALPHA,
-									CTextureObject::CGL_OPAQUE,
+									ITextureObject::CGL_OPAQUE,
 									ITextureObject::CGL_UNFILTERED);
 		}
 

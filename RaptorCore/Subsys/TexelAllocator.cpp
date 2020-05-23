@@ -241,7 +241,7 @@ bool CTexelAllocator::releaseTexels(void *tex)
 }
 
 
-void CTexelAllocator::glvkCopyPointer(unsigned char *dst, unsigned char *src, uint64_t size)
+void CTexelAllocator::glvkSetPointerData(unsigned char *dst, unsigned char *src, uint64_t size)
 {
 	if ((NULL == deviceMemoryManager) || (NULL == relocatedTexels) || (NULL == src) || (NULL == dst))
         return;

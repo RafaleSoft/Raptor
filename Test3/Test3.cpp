@@ -13,6 +13,7 @@
 #include "GLHierarchy/ShadedGeometry.h"
 #include "GLHierarchy/GeometryEditor.h"
 #include "GLHierarchy/Object3DInstance.h"
+#include "GLHierarchy/ITextureObject.h"
 #include "Engine/ParticleManager.h"
 #include "Engine/3DScene.h"
 #include "Engine/IViewPoint.h"

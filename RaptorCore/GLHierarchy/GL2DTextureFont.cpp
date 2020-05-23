@@ -112,7 +112,7 @@ bool CGL2DTextureFont::glInit(const std::string &filename, unsigned int size, bo
 		if (m_texture == NULL)
 		{
 			m_texture = factory.glCreateTexture(ITextureObject::CGL_LIGHTMAP_ALPHA,
-												CTextureObject::CGL_MULTIPLY, // CGL_ALPHA_TRANSPARENT
+												ITextureObject::CGL_MULTIPLY, // CGL_ALPHA_TRANSPARENT
 												ITextureObject::CGL_BILINEAR);
 		}
 
@@ -348,7 +348,7 @@ void CGL2DTextureFont::glWrite(const std::string &text, int x, int y, const CCol
 
 	CGeometryAllocator *pAllocator = CGeometryAllocator::GetInstance();
 	if (pAllocator->isMemoryRelocated())
-		pAllocator->glvkCopyPointer(font_linePointer, (float*)&font_line[0], sizeof(FONT_CACHEELT) * sz / sizeof(float));
+		pAllocator->glvkSetPointerData(font_linePointer, (float*)&font_line[0], sizeof(FONT_CACHEELT) * sz / sizeof(float));
 
 	glEnable(GL_TEXTURE_2D);
 	glEnable(GL_BLEND);
@@ -421,7 +421,7 @@ void CGL2DTextureFont::glWrite(const std::vector<FONT_TEXT_ITEM> &lines)
 
 	CGeometryAllocator *pAllocator = CGeometryAllocator::GetInstance();
 	if (pAllocator->isMemoryRelocated())
-		pAllocator->glvkCopyPointer(font_linePointer, (float*)&font_line[0], sizeof(FONT_CACHEELT) * count / sizeof(float));
+		pAllocator->glvkSetPointerData(font_linePointer, (float*)&font_line[0], sizeof(FONT_CACHEELT) * count / sizeof(float));
 
 	glEnable(GL_TEXTURE_2D);
 	glEnable(GL_BLEND);

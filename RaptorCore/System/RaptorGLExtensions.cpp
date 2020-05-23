@@ -101,6 +101,9 @@ void CRaptorGLExtensions::glInitExtensions(void)
 	IMPLEMENT_GL_ARB_vertex_array_object(this)
 	IMPLEMENT_GL_ARB_debug_output(this)
 
+	IMPLEMENT_GL_VERSION_3_1(this)
+	IMPLEMENT_GL_VERSION_3_0(this)
+
     CATCH_GL_ERROR
 	
 	defaultInit();

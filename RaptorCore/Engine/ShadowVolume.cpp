@@ -24,6 +24,9 @@
 #if !defined(AFX_3DSCENEOBJECT_H__96A34268_AD58_4F73_B633_F6C3E92FE0A9__INCLUDED_)
 	#include "Subsys/3DSceneObject.h"
 #endif
+#if !defined(AFX_3DSCENE_H__E597E752_BAD4_415D_9C00_8C59D139D32B__INCLUDED_)
+	#include "Engine/3DScene.h"
+#endif
 #if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
 	#include "System/RaptorErrorManager.h"
 #endif
@@ -116,7 +119,7 @@ void CShadowVolume::clearShadowVolumes(void)
 
 
 
-bool CShadowVolume::glInitEnvironment(unsigned int width,unsigned int height)
+bool CShadowVolume::glInitialize(uint32_t width, uint32_t height)
 {
     return true;
 }
@@ -135,7 +138,7 @@ void CShadowVolume::addObject(C3DSceneObject* object)
     {
         float vv[6];
         IViewPoint::VIEW_POINT_MODEL model;
-        vp->getViewVolume(	vv[0],vv[1],vv[2],vv[3],vv[4],vv[5],model);
+        vp->getViewVolume(vv[0],vv[1],vv[2],vv[3],vv[4],vv[5],model);
         shadowExtrusion = vv[5];
     }
 
@@ -159,15 +162,14 @@ void CShadowVolume::addObject(C3DSceneObject* object)
     }
 }
 
-void CShadowVolume::initVolumes(const vector<C3DSceneObject*>& objects)
+bool CShadowVolume::glInitEnvironment(const vector<C3DSceneObject*>& objects)
 {
     clearShadowVolumes();
-
+	
 #if defined(RAPTOR_SMP_CODE_GENERATION)
 	CRaptorInstance &instance = CRaptorInstance::GetInstance();
     C3DEngineTaskManager *taskManager = instance.engineTaskMgr;
 #endif
-
 
     // Compute all possible shadow volumes
     IViewPoint *vp = CRaptorDisplay::GetCurrentDisplay()->getViewPoint();
@@ -176,7 +178,7 @@ void CShadowVolume::initVolumes(const vector<C3DSceneObject*>& objects)
     {
         float vv[6];
         IViewPoint::VIEW_POINT_MODEL model;
-        vp->getViewVolume(	vv[0],vv[1],vv[2],vv[3],vv[4],vv[5],model);
+        vp->getViewVolume(vv[0],vv[1],vv[2],vv[3],vv[4],vv[5],model);
         shadowExtrusion = vv[5];
     }
 
@@ -192,10 +194,10 @@ void CShadowVolume::initVolumes(const vector<C3DSceneObject*>& objects)
             if (obj->getProperties().isCastShadow())
             {
                 volume = new CObject3DShadow(obj,CObject3DShadow::SHADOW_VOLUME);
-                volume->setShadowExtrusion(shadowExtrusion);
+				volume->setShadowExtrusion(shadowExtrusion);
 				volume->addContainerNotifier(m_pObserver);
-                m_pVolumes.push_back(volume);
-
+				m_pVolumes.push_back(volume);
+				
 #if defined(RAPTOR_SMP_CODE_GENERATION)
                 CEngineJob *job = volume->createJob(jobId);
                 taskManager->registerJob(job);
@@ -203,6 +205,8 @@ void CShadowVolume::initVolumes(const vector<C3DSceneObject*>& objects)
             }
         }
     }
+
+	return true;
 }
 
 
@@ -210,8 +214,7 @@ void CShadowVolume::glRender(const CLight* currentLight,const vector<C3DSceneObj
 {
     if (!isEnabled())
     {
-        C3DSceneObject::m_currentPass = C3DSceneObject::FULL_PASS;
-        glRenderObjects(objects);
+        glRenderObjects(objects, C3DScene::FULL_PASS);
         return;
     }
 
@@ -268,8 +271,7 @@ void CShadowVolume::glRender(const CLight* currentLight,const vector<C3DSceneObj
 	glDepthMask(GL_TRUE);
 	glColorMask(GL_FALSE,GL_FALSE,GL_FALSE,GL_FALSE);
     // Draw scene
-    C3DSceneObject::m_currentPass = C3DSceneObject::DEPTH_PASS;
-    glRenderObjects(receivers);
+    glRenderObjects(receivers, C3DScene::DEPTH_PASS);
 
     //
     //	Second pass : fill stencil buffer
@@ -309,8 +311,7 @@ void CShadowVolume::glRender(const CLight* currentLight,const vector<C3DSceneObj
 	glStencilOp(GL_KEEP,GL_KEEP,GL_KEEP);
 	glDepthFunc(GL_EQUAL);
     //  Draw Scene
-    C3DSceneObject::m_currentPass = C3DSceneObject::AMBIENT_PASS;
-    glRenderObjects(receivers);
+    glRenderObjects(receivers, C3DScene::AMBIENT_PASS);
     m_lightProperties.glPopProperties();
 
     //
@@ -322,8 +323,7 @@ void CShadowVolume::glRender(const CLight* currentLight,const vector<C3DSceneObj
 	m_lightProperties.setLighting(IRenderingProperties::ENABLE);
     m_lightProperties.glPushProperties();
     // Draw Scene
-    C3DSceneObject::m_currentPass = C3DSceneObject::LIGHT_PASS;
-	glRenderObjects(receivers);
+	glRenderObjects(receivers, C3DScene::LIGHT_PASS);
 
     glDepthMask(GL_TRUE);
 	glDepthFunc(GL_LESS);
@@ -336,10 +336,7 @@ void CShadowVolume::glRender(const CLight* currentLight,const vector<C3DSceneObj
     //  Fifth pass : render other objects ( non shadowed & non caster )
     //
     if (others.size() > 0)
-    {
-        C3DSceneObject::m_currentPass = C3DSceneObject::FULL_PASS;
-        glRenderObjects(others);
-    }
+        glRenderObjects(others, C3DScene::FULL_PASS);
 
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
     glColor4f(1.0f,0.0f,0.0f,0.4f);

@@ -34,6 +34,7 @@
 #include "Subsys/FreeType/FTGlyphBitmap.h"
 #include "Subsys/FreeType/TTBitmapFont.h"
 
+
 RAPTOR_NAMESPACE
 
 static CGLLayer::CGLLayerClassID layerId;
@@ -59,10 +60,10 @@ CGLLayer::CGLLayer(int xpos,int ypos,unsigned int width,unsigned int height)
 
 	//	temporary buffer for texture loading
 	CTextureFactory &f = CTextureFactory::getDefaultFactory();
-	m_pPlane = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_OPAQUE);
+	m_pPlane = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,ITextureObject::CGL_OPAQUE);
 	CImage plane;
 	plane.allocatePixels(m_layerWidth, m_layerHeight);
-	f.glLoadTexture(m_pPlane, plane);
+	f.glLoadTexture(m_pPlane->getGLTextureObject(), plane);
 
 	//	Final buffer for layers
 	m_glTexCoordu = ((float)width)/m_pPlane->getWidth();
@@ -102,14 +103,14 @@ CGLLayer::~CGLLayer()
 }
 
 
-const CTextureObject* CGLLayer::getLayerImage(void) const
+const ITextureObject* CGLLayer::getLayerImage(void) const
 {
     return m_pPlane; 
 }
 
 void CGLLayer::glRenderSingleBuffer(const CGLLayer *layer) const
 {
-	CTextureObject* singleBuffer = const_cast<CTextureObject*>(m_pPlane);
+	ITextureObject* singleBuffer = const_cast<ITextureObject*>(m_pPlane);
 	singleBuffer->glvkRender();
 
 	glBegin(GL_QUADS);
@@ -175,7 +176,7 @@ void CGLLayer::linkRendering(const CGLLayer *layer)
 //////////////////////////////////////////////////////////////////////
 //	Sprites
 //////////////////////////////////////////////////////////////////////
-void CGLLayer::manageSprite(CTextureObject *spr, float posx, float posy, float angle)
+void CGLLayer::manageSprite(ITextureObject *spr, float posx, float posy, float angle)
 {
     for (unsigned int i=0;i<sprites.size();i++)
     {
@@ -255,17 +256,16 @@ void CGLLayer::glRender()
 			CTexelAllocator::GetInstance()->isMemoryLocked() &&
 			(NULL != m_pBufferPointer))
 		{
-			CTexelAllocator::GetInstance()->glvkCopyPointer(m_pBufferPointer,
-														  m_pBuffer,
-														  m_layerWidth*m_layerHeight*4);
+			CTexelAllocator::GetInstance()->glvkSetPointerData(	m_pBufferPointer, m_pBuffer,
+																m_layerWidth*m_layerHeight*4);
 			glTexSubImage2D(GL_TEXTURE_2D,
-							m_pPlane->getCurrentMipMapLevel(),
+							m_pPlane->getGLTextureObject()->getCurrentMipMapLevel(),
 							0, 0, m_layerWidth, m_layerHeight,
 							GL_RGBA, GL_UNSIGNED_BYTE, m_pBufferPointer);
 		}
 		else
 			glTexSubImage2D(GL_TEXTURE_2D,
-							m_pPlane->getCurrentMipMapLevel(),
+							m_pPlane->getGLTextureObject()->getCurrentMipMapLevel(),
 							0, 0, m_layerWidth, m_layerHeight,
 							GL_RGBA, GL_UNSIGNED_BYTE, m_pBuffer);
         m_bRedraw = false;
@@ -283,7 +283,7 @@ void CGLLayer::glRender()
 	for (unsigned int i=0;i<sprites.size();i++)
 	{
         SPRITE spr = sprites[i];
-		CTextureObject*	T = spr.image;
+		ITextureObject*	T = spr.image;
 		glPushMatrix();
 		glTranslatef((float)(m_xpos+spr.posx),(float)(m_ypos+spr.posy),0.0f);
 		glRotatef(spr.angle,0.0f,0.0f,1.0f);

@@ -1200,7 +1200,7 @@ CContextManager::RENDERING_CONTEXT_ID  CWin32ContextManager::glCreateExtendedCon
 		return true;
 	}
 
-	void CWin32ContextManager::glBindPBuffer(PIXEL_BUFFER_ID pbuffer,CTextureObject::CUBE_FACE selectBuffer)
+	void CWin32ContextManager::glBindPBuffer(PIXEL_BUFFER_ID pbuffer,ITextureObject::CUBE_FACE selectBuffer)
 	{
 		if (pBuffers[pbuffer].pbuffer == NULL)
 		{
@@ -1216,14 +1216,14 @@ CContextManager::RENDERING_CONTEXT_ID  CWin32ContextManager::glCreateExtendedCon
 		    wglMakeCurrent(pBuffers[pbuffer].pbufferDC,pBuffers[pbuffer].pbufferGLRC);
        
 #if defined(WGL_ARB_render_texture)
-		if ((selectBuffer >= CTextureObject::CGL_CUBEMAP_PX) && 
-			(selectBuffer <= CTextureObject::CGL_CUBEMAP_NZ))
+		if ((selectBuffer >= ITextureObject::CGL_CUBEMAP_PX) && 
+			(selectBuffer <= ITextureObject::CGL_CUBEMAP_NZ))
         {
             const CRaptorGLExtensions *const pExtensions = this->glGetExtensions();
         
             int piAttribList[3];
             piAttribList[0] = WGL_CUBE_MAP_FACE_ARB;
-			piAttribList[1] = (selectBuffer - CTextureObject::CGL_CUBEMAP_PX) + WGL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB;
+			piAttribList[1] = (selectBuffer - ITextureObject::CGL_CUBEMAP_PX) + WGL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB;
             piAttribList[2] = 0;
 
             pExtensions->wglSetPbufferAttribARB (pBuffers[pbuffer].pbuffer,piAttribList);

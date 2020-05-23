@@ -16,6 +16,7 @@
 	#include "LightAttributes.h"
 #endif
 
+
 RAPTOR_NAMESPACE_BEGIN
 
 class CLight;
@@ -30,14 +31,6 @@ public:
     //! Max number of supported rendering passes
 	enum { NB_PASSES = 8 };
 
-    //! An enum that defines a kind for a rendering pass
-    typedef enum
-    {
-        DEPTH_PASS,
-        AMBIENT_PASS,
-        LIGHT_PASS,
-        FULL_PASS,
-    } PASS_KIND;
 
 	C3DSceneObject(CObject3D* obj);
 
@@ -71,9 +64,6 @@ public:
 		//! This method renders initial occlusion bbox 
 	void glRenderBBoxOcclusion(unsigned int passNumber);
 
-	//! This method computes initial occlusion using bbox rendering
-	static void glComputeBBoxOcclusion(	unsigned int passNumber,
-										const vector<C3DSceneObject*> &occluded);
 
 	//!	Specific object ordering
 	struct zorder
@@ -91,8 +81,8 @@ public:
 	float			z_order;
 	float			z_span;
 
-	static PASS_KIND	m_currentPass;
-
+	//!	The object bounding box buffer index.
+	uint64_t bbox;
 
 	//!	active lights for next rendering
 	CLight          *effectiveLights[CLightAttributes::MAX_LIGHTS];
@@ -105,7 +95,6 @@ public:
 private:
 	//!	Default constructor.
 	C3DSceneObject();
-
 
 	//!	The 'real' embedded object
 	RAPTOR_HANDLE	object;

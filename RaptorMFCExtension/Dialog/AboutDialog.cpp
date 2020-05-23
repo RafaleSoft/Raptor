@@ -191,7 +191,7 @@ void CGLDisplay::GLInitContext()
 
 	CTextureFactory f;
     m_pTxt = f.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
-										CTextureObject::CGL_MULTIPLY,
+										ITextureObject::CGL_MULTIPLY,
 										ITextureObject::CGL_BILINEAR,
 										pGenerator);
 

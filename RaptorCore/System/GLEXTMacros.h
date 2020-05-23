@@ -1519,6 +1519,34 @@
 	#endif
 #endif
 
+#ifndef IMPLEMENT_GL_VERSION_3_1
+	#ifdef GL_VERSION_3_1
+		#define IMPLEMENT_GL_VERSION_3_1(target) \
+			target->glDrawArraysInstanced = (PFN_GL_DRAW_ARRAYS_INSTANCED_PROC)GET_PROC_ADDRESS("glDrawArraysInstanced"); \
+			target->glDrawElementsInstanced = (PFN_GL_DRAW_ELEMENTS_INSTANCED_PROC)GET_PROC_ADDRESS("glDrawElementsInstanced"); \
+			target->glTexBuffer = (PFN_GL_TEX_BUFFER_PROC)GET_PROC_ADDRESS("glTexBuffer"); \
+			target->glPrimitiveRestartIndex = (PFN_GL_PRIMITIVERE_START_INDEX_PROC)GET_PROC_ADDRESS(" glPrimitiveRestartIndex"); \
+			target->glCopyBufferSubData = (PFN_GL_COPY_BUFFER_SUB_DATA_PROC)GET_PROC_ADDRESS("glCopyBufferSubData");
+	#else
+		#define IMPLEMENT_GL_VERSION_3_1(target)\
+			target->glDrawArraysInstanced = NULL;\
+			target->glDrawElementsInstanced = NULL;\
+			target->glTexBuffer = NULL;\
+			target->glPrimitiveRestartIndex = NULL;\
+			target->glCopyBufferSubData = NULL;
+	#endif
+#endif
+
+#ifndef IMPLEMENT_GL_VERSION_3_0
+	#ifdef GL_VERSION_3_0
+		#define IMPLEMENT_GL_VERSION_3_0(target) \
+			target->glMapBufferRange = (PFN_GL_MAP_BUFFER_RANGE_PROC)GET_PROC_ADDRESS("glMapBufferRange");
+	#else
+		#define IMPLEMENT_GL_VERSION_3_0(target)\
+			target->glMapBufferRange = NULL;
+	#endif
+#endif
+
 
 #endif	// __glext_macros_h_
 

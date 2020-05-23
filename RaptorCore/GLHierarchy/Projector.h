@@ -24,7 +24,8 @@
 RAPTOR_NAMESPACE_BEGIN
 
 class CRaptorDisplay;
-class CTextureObject;
+class ITextureObject;
+
 
 class RAPTOR_API CProjector : public CPersistence
 {
@@ -52,7 +53,7 @@ public:
 						const CGenericVector<float>& direction);
 
     //!	Specifie the projection texture of the projector.
-	void glSetProjection(CTextureObject* T);
+	void glSetProjection(ITextureObject* T);
 
 	//!	Specifies the projector cutoff in degrees.
 	//! (from the cutoff of the holding light)
@@ -78,7 +79,7 @@ private:
 	GL_COORD_VERTEX	m_Tprojection;
 	GL_COORD_VERTEX	m_Qprojection;
 
-    CReference<CTextureObject> m_pProjection;
+    CReference<ITextureObject> m_pProjection;
 
     void solve();
 };

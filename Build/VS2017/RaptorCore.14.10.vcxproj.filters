@@ -102,7 +102,7 @@
     <None Include="..\..\RaptorCore\Subsys\ObjectModels\Shader.lex">
       <Filter>Source Files\Subsys src\ObjectModels</Filter>
     </None>
-    <None Include="..\..\RaptorCore\Subsys\Redist.bat">
+    <None Include="..\..\RaptorCore\Subsys\Redist.py">
       <Filter>Source Files\Subsys src</Filter>
     </None>
   </ItemGroup>

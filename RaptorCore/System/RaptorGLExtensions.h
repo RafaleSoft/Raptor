@@ -69,6 +69,9 @@ public:
 	DECLARE_GL_ARB_vertex_array_object(DEFAULT_LINKAGE)
 	DECLARE_GL_ARB_debug_output(DEFAULT_LINKAGE)
 
+	DECLARE_GL_VERSION_3_1(DEFAULT_LINKAGE)
+	DECLARE_GL_VERSION_3_0(DEFAULT_LINKAGE)
+
 
 	//!	Initialise all extensions on drivers/hardware.
 	void glInitExtensions(void);

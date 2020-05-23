@@ -141,11 +141,11 @@ void CObject3DContour::init(CGeometry *geo)
         m_pOrigin->removeContainerNotifier(m_pObserver);
         delete m_pOrigin;
     }
-
+	
     m_pOrigin = new CGeometry();
-    *m_pOrigin = *geo;
+	*m_pOrigin = *geo;
     m_pOrigin->addContainerNotifier(m_pObserver);
-    
+
     const CGeometryEditor &pEditor = m_pOrigin->getEditor();
 	if (!pEditor.isMinimized())
 		pEditor.minimize();

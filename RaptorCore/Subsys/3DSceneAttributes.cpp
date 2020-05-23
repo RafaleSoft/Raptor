@@ -46,6 +46,13 @@
 #if !defined(AFX_LIGHT_H__AA8BABD6_059A_4939_A4B6_A0A036E12E1E__INCLUDED_)
 	#include "GLHierarchy/Light.h"
 #endif
+#if !defined(AFX_GEOMETRYALLOCATOR_H__802B3C7A_43F7_46B2_A79E_DDDC9012D371__INCLUDED_)
+	#include "Subsys/GeometryAllocator.h"
+#endif
+#if !defined(AFX_RAPTORINSTANCE_H__90219068_202B_46C2_BFF0_73C24D048903__INCLUDED_)
+	#include "Subsys/RaptorInstance.h"
+#endif
+
 
 
 RAPTOR_NAMESPACE
@@ -58,7 +65,7 @@ C3DSceneAttributes::C3DSceneAttributes(C3DScene *owner):
 	m_pOwner(owner),m_pCurrentLight(NULL),
     m_bUseZSort(false),m_iCurrentPass(0),m_bQueriesReady(false),
     m_bUseGlobalAmbient(false),m_bMirrorsRendered(false),
-	m_bDataPrepared(false),m_pSceneTree(NULL)
+	m_pSceneTree(NULL)
 {
     m_ambient = CColor::RGBA(0.2f,0.2f,0.2f,1.0f);
 }
@@ -76,9 +83,6 @@ C3DSceneAttributes::~C3DSceneAttributes()
 void C3DSceneAttributes::addObjet(C3DSceneObject *sceneObject)
 {
 	m_pObjects.push_back(sceneObject);
-
-	for (unsigned int i = 0; i<m_pEnvironments.size(); i++)
-		m_pEnvironments[i]->addObject(sceneObject);
 }
 
 void C3DSceneAttributes::glMakeQueries(void)
@@ -138,27 +142,24 @@ void C3DSceneAttributes::glResetQueries(void)
 
 void C3DSceneAttributes::prepareData(void)
 {
-    if (!m_bDataPrepared)
+	if ((m_pSceneTree == NULL) && m_bUseZSort)
     {
-        m_bDataPrepared = true;
-
-        if ((m_pSceneTree == NULL) && m_bUseZSort)
-        {
 #if 0
-			CKDTree<C3DSceneObject*> *pTree = new CKDTree<C3DSceneObject*>;
+		CKDTree<C3DSceneObject*> *pTree = new CKDTree<C3DSceneObject*>;
 #else
-            COctree<C3DSceneObject*> *pTree = new COctree<C3DSceneObject*>;
+		COctree<C3DSceneObject*> *pTree = new COctree<C3DSceneObject*>;
 #endif
-            vector<C3DSceneObject*>::const_iterator it = m_pObjects.begin();
-            while (it != m_pObjects.end())
-            {
-                CObject3D* obj = (*it)->getObject();
-                pTree->addObject(obj,(*it++));
-            }
-            pTree->compress();
-			m_pSceneTree = pTree;
-        }
-    }
+		vector<C3DSceneObject*>::const_iterator it = m_pObjects.begin();
+		while (it != m_pObjects.end())
+		{
+			C3DSceneObject *sc = (*it++);
+			CObject3D* obj = sc->getObject();
+			pTree->addObject(obj,sc);
+		}
+
+		pTree->compress();
+		m_pSceneTree = pTree;
+	}
 
     m_iCurrentPass = 0;
     m_bMirrorsRendered = false;
@@ -238,4 +239,86 @@ vector<CLight*>	C3DSceneAttributes::glGetLights(const vector<C3DSceneObject*>& o
         result.push_back((*itm++).second);
 
     return result;
+}
+
+void C3DSceneAttributes::glComputeBBoxOcclusion(const vector<C3DSceneObject*> &occluded)
+{
+#if defined(GL_ARB_occlusion_query)
+	//  actual values should be 'get' and then restored after bbox is rendered
+	GLboolean cMask[4];
+	glGetBooleanv(GL_COLOR_WRITEMASK, cMask);
+	GLboolean dMask;
+	glGetBooleanv(GL_DEPTH_WRITEMASK, &dMask);
+	GLboolean sMask;
+	glGetBooleanv(GL_STENCIL_TEST, &sMask);
+	GLint dFunc;
+	glGetIntegerv(GL_DEPTH_FUNC, &dFunc);
+	GLboolean cFace;
+	glGetBooleanv(GL_CULL_FACE, &cFace);
+	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+
+	glDepthMask(GL_FALSE);
+	glDisable(GL_STENCIL_TEST);
+	glDepthFunc(GL_LESS);
+	if (!cFace)
+		glEnable(GL_CULL_FACE);
+
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+	CShader *pShader = instance.m_pFilledBboxShader;
+
+	CResourceAllocator::CResourceBinder *binder = instance.m_pBoxBinder;
+	binder->glvkBindArrays();
+	pShader->glRender();
+	
+	vector<C3DSceneObject*>::const_iterator itr = occluded.begin();
+	while (itr != occluded.end())
+	{
+		C3DSceneObject* sc = *itr++;
+		sc->glRenderBBoxOcclusion(m_iCurrentPass);
+
+		instance.iRenderedObjects++;
+		instance.iRenderedTriangles += 12;
+	}
+
+	pShader->glStop();
+	binder->glvkUnbindArrays();
+
+	glDepthMask(dMask);
+	glColorMask(cMask[0], cMask[1], cMask[2], cMask[3]);
+	if (sMask)
+		glEnable(GL_STENCIL_TEST);
+	glDepthFunc(dFunc);
+	if (!cFace)
+		glDisable(GL_CULL_FACE);
+
+	CATCH_GL_ERROR
+#endif
+}
+
+void C3DSceneAttributes::glRenderBBoxes(const vector<C3DSceneObject*> &objects)
+{
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+	CShader *pShader = instance.m_pWiredBboxShader;
+
+	CResourceAllocator::CResourceBinder *binder = instance.m_pBoxBinder;
+	binder->glvkBindArrays();
+	pShader->glRender();
+
+	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+	vector<C3DSceneObject*>::const_iterator itr = objects.begin();
+	while (itr != objects.end())
+	{
+		C3DSceneObject* sc = *itr++;
+		CObject3D* obj = sc->getObject();
+
+		obj->glRenderBBox(false);
+
+		instance.iRenderedObjects++;
+		instance.iRenderedTriangles += 12;
+	}
+
+	pShader->glStop();
+	binder->glvkUnbindArrays();
+
+	CATCH_GL_ERROR
 }

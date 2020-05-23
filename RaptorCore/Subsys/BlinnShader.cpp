@@ -71,7 +71,7 @@ CBlinnShader::~CBlinnShader(void)
 
 void CBlinnShader::glInit()
 {
-	COpenGLShaderStage *stage = glGetOpenGLShader();
+	COpenGLShaderStage *stage = glGetOpenGLShader("BLINN_SHADER_PROGRAM");
 
 	stage->glGetVertexShader("PPIXEL_BLINN_VTX_PROGRAM");
 	stage->glGetFragmentShader("PPIXEL_BLINN_TEX_PROGRAM");

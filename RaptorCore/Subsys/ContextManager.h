@@ -157,7 +157,7 @@ public:
     //! @return : true is destruction successfull, false in case of error (e.g. invalid buffer )
 	virtual bool glDestroyPBuffer(PIXEL_BUFFER_ID pbuffer) = 0;
 
-	virtual void glBindPBuffer(PIXEL_BUFFER_ID pbuffer,CTextureObject::CUBE_FACE selectBuffer = CTextureObject::CGL_CUBEMAP_NONE) = 0;
+	virtual void glBindPBuffer(PIXEL_BUFFER_ID pbuffer,ITextureObject::CUBE_FACE selectBuffer = ITextureObject::CGL_CUBEMAP_NONE) = 0;
 
 	virtual bool glIsPBuffer(PIXEL_BUFFER_ID pbuffer) const = 0;
 

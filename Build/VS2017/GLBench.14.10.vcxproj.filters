@@ -46,11 +46,11 @@
     <ClInclude Include="..\..\GLBench\Interface.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\GLBench\resource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\GLBench\StdAfx.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\GLBench\resource.h">
+      <Filter>Resource Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -68,8 +68,6 @@
     <None Include="..\..\GLBench\res\GLBench.rc2">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="..\..\GLBench\buildpak.bat">
-      <Filter>Source Files</Filter>
-    </None>
+    <None Include="..\..\GLBench\buildpak.py" />
   </ItemGroup>
 </Project>

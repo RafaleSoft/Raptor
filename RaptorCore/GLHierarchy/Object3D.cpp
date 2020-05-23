@@ -1,6 +1,21 @@
-// Object3D.cpp: implementation of the CObject3D class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  Object3D.cpp                                                           */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
 #include "Subsys/CodeGeneration.h"
 
 #ifndef __RAPTOR_GLEXT_H__
@@ -30,24 +45,19 @@
 	#include "Subsys/RaptorInstance.h"
 #endif
 
+#if defined(TEST_BOX_ARRAYS) || defined(GL_CORE_profile)
+	#if !defined(AFX_SHADER_H__4D405EC2_7151_465D_86B6_1CA99B906777__INCLUDED_)
+		#include "GLHierarchy/Shader.h"
+	#endif
+#endif
+
 
 //////////////////////////////////////////////////////////////////////
 // Static data for bbox vertices
 RAPTOR_NAMESPACE_BEGIN
 
-static unsigned int __maxboxes = 10;
-static const unsigned int BBOX_VERTEX_SIZE = 8 * 3;
-static const unsigned int BBOX_INDEX_SIZE = 4 * 6;
-static const unsigned int BBOX_INDEX_SIZE2 = 4 * 4;
 
 bool CObject3D::earlyClipEnabled = true;
-
-#ifdef	RELOCATE_BBOX
-	float			*CObject3D::boxArrays = NULL;
-	unsigned short	*CObject3D::boxIndexes = NULL;
-	unsigned short	*CObject3D::boxIndexes2 = NULL;
-	unsigned int	CObject3D::boxIndex = 0;
-#endif
 
 static CObject3D::CObject3DClassID objectID;
 const CPersistence::CPersistenceClassID& CObject3D::CObject3DClassID::GetClassId(void)
@@ -81,9 +91,17 @@ CObject3D::CObject3D(const CPersistence::CPersistenceClassID & classID,
 #endif
 		BBox = new CBoundingBox();
 
-	glAllocateBBox();
-
     earlyClip = C3DEngine::CLIP_UNKNOWN;
+
+	updateBBox = false;
+	bbox = UINT64_MAX;
+
+#if 0
+	filledBox.hClass(classID.ID());
+	filledBox.glhandle(0);
+	wireBox.hClass(classID.ID());
+	wireBox.glhandle(0);
+#endif
 }
 
 CObject3D::~CObject3D()
@@ -92,107 +110,13 @@ CObject3D::~CObject3D()
     while (it != m_pNotifiers.end())
         (*it++)->notify(CContainerNotifier<CObject3D*>::DESTRUCTION,this);
 
+	//if (NULL != m_pBinder)
+	//{
+	//	CResourceAllocator::CResourceBinder *binder = (CResourceAllocator::CResourceBinder*)m_pBinder;
+	//	delete binder;
+	//}
+
 	delete BBox;
-}
-
-void CObject3D::glAllocateBBox(void)
-{
-	boxValue = DBL_MAX;
-
-#ifdef	RELOCATE_BBOX
-	if (boxIndexes == NULL)
-	{
-		boxIndexes = (unsigned short*)(CGeometryAllocator::GetInstance()->allocateIndexes(BBOX_INDEX_SIZE));
-        if (boxIndexes == NULL)
-        {
-			Raptor::GetErrorManager()->generateRaptorError(	CObject3D::CObject3DClassID::GetClassId(),
-															CRaptorErrorManager::RAPTOR_FATAL,
-															CRaptorMessages::ID_NO_RESOURCE);
-        }
-		else
-		{
-			unsigned short indexes[BBOX_INDEX_SIZE] = 
-			{
-				1, 0, 3, 2,	// back
-				4, 5, 6, 7,	// front
-				0, 4, 7, 3,	// left
-				5, 1, 2, 6,	// right
-				7, 6, 2, 3,	// top
-				0, 1, 5, 4,	// bottom
-			};
-			if (CGeometryAllocator::GetInstance()->isMemoryRelocated())
-				CGeometryAllocator::GetInstance()->glvkCopyPointer(boxIndexes,indexes,BBOX_INDEX_SIZE);
-			else
-				memcpy(boxIndexes,indexes,BBOX_INDEX_SIZE*sizeof(unsigned short));
-		}
-	}
-
-	if (boxIndexes2 == NULL)
-	{
-		boxIndexes2 = (unsigned short*)(CGeometryAllocator::GetInstance()->allocateIndexes(BBOX_INDEX_SIZE2));
-        if (boxIndexes2 == NULL)
-        {
-		    Raptor::GetErrorManager()->generateRaptorError(	CObject3D::CObject3DClassID::GetClassId(),
-															CRaptorErrorManager::RAPTOR_FATAL,
-															CRaptorMessages::ID_NO_RESOURCE);
-        }
-		else
-		{
-			unsigned short indexes[BBOX_INDEX_SIZE2] = 
-			{
-				0, 1, 2, 3,	// back
-				0, 4, 7, 3,	// left
-				2, 6, 7, 4,	// top
-				5, 1, 5, 6	// bottom + right + front
-			};
-			if (CGeometryAllocator::GetInstance()->isMemoryRelocated())
-				CGeometryAllocator::GetInstance()->glvkCopyPointer(boxIndexes2,indexes,BBOX_INDEX_SIZE2);
-			else
-				memcpy(boxIndexes2,indexes,BBOX_INDEX_SIZE2*sizeof(unsigned short));
-		}
-	}
-
-    if (boxArrays == NULL)
-    {
-        boxArrays = (float*)(CGeometryAllocator::GetInstance()->allocateVertices(__maxboxes*BBOX_VERTEX_SIZE));
-        if (boxArrays == NULL)
-        {
-			Raptor::GetErrorManager()->generateRaptorError(	CObject3D::CObject3DClassID::GetClassId(),
-															CRaptorErrorManager::RAPTOR_FATAL,
-															CRaptorMessages::ID_NO_RESOURCE);
-        }
-    }
-    else if (__maxboxes*BBOX_VERTEX_SIZE <= boxIndex)
-    {
-        // extend memory bloc
-        __maxboxes += __maxboxes;
-        float *old__boxArrays = boxArrays;
-        boxArrays = (float*)(CGeometryAllocator::GetInstance()->allocateVertices(__maxboxes*BBOX_VERTEX_SIZE));
-        if (boxArrays == NULL)
-        {
-		    Raptor::GetErrorManager()->generateRaptorError(	CObject3D::CObject3DClassID::GetClassId(),
-															CRaptorErrorManager::RAPTOR_FATAL,
-															CRaptorMessages::ID_NO_RESOURCE);
-        }
-
-        old__boxArrays = (float*)(CGeometryAllocator::GetInstance()->glvkMapPointer(old__boxArrays));
-        boxArrays = (float*)(CGeometryAllocator::GetInstance()->glvkMapPointer(boxArrays));
-
-        memcpy(boxArrays,old__boxArrays,boxIndex * sizeof(float));
-
-        old__boxArrays = (float*)(CGeometryAllocator::GetInstance()->glvkUnMapPointer(old__boxArrays));
-        boxArrays = (float*)(CGeometryAllocator::GetInstance()->glvkUnMapPointer(boxArrays));
-
-		CGeometryAllocator::GetInstance()->releaseVertices(old__boxArrays);
-    }
-    boxArrayOffset = boxIndex;
-    boxIndex += BBOX_VERTEX_SIZE;
-#else
-	filledBox.handle(0);
-	filledBox.hClass(0);
-	wireBox.handle(0);
-	wireBox.hClass(0);
-#endif
 }
 
 CObject3D& CObject3D::operator=(const CObject3D& rsh)
@@ -254,6 +178,7 @@ vector<CObject3DContour*> CObject3D::createContours(void)
 
 void CObject3D::notifyBoundingBox(void)
 {
+	updateBBox = true;
     vector< CContainerNotifier<CObject3D*>* >::iterator it = m_pNotifiers.begin();
     while (it != m_pNotifiers.end())
         (*it++)->notify(CContainerNotifier<CObject3D*>::UPDATEBBOX,this);
@@ -284,152 +209,172 @@ void CObject3D::extendBoundingBox(const GL_COORD_VERTEX& min, const GL_COORD_VER
     notifyBoundingBox();
 }
 
-
-#ifdef	RELOCATE_BBOX
-	void CObject3D::glUpdateBBox(void)
+#if 0
+void CObject3D::glRenderBBox(bool filled)
+{
+	if (updateBBox)
 	{
-		float xmin,xmax,ymin,ymax,zmin,zmax;
-		BBox->get(xmin,ymin,zmin,xmax,ymax,zmax);
-		double value = xmin + xmax + ymin + ymax + zmax + zmin;
-
-		if (boxValue != value)
-		{
-			boxValue = value;
-			CGeometryAllocator::GetInstance()->glvkLockMemory(false);
-
-			boxArrays = (float*)(CGeometryAllocator::GetInstance()->glvkMapPointer(boxArrays));
-	        
-			float *boxArray = boxArrays + boxArrayOffset;
-
-			boxArray[0] = xmin; boxArray[1] =  ymin; boxArray[2] = zmin;
-			boxArray[3] = xmax; boxArray[4] = ymin; boxArray[5] = zmin;
-			boxArray[6] = xmax; boxArray[7] = ymax; boxArray[8] = zmin;
-			boxArray[9] = xmin; boxArray[10] = ymax; boxArray[11] = zmin;
-
-			boxArray[12] = xmin; boxArray[13] = ymin; boxArray[14] = zmax;
-			boxArray[15] = xmax; boxArray[16] = ymin; boxArray[17] = zmax;
-			boxArray[18] = xmax; boxArray[19] = ymax; boxArray[20] = zmax;  
-			boxArray[21] = xmin; boxArray[22] = ymax; boxArray[23] = zmax;
-
-			boxArrays = (float*)(CGeometryAllocator::GetInstance()->glvkUnMapPointer(boxArrays));
-			CGeometryAllocator::GetInstance()->glvkLockMemory(true);
-		}
-	}
-
-	void CObject3D::glRenderBBox(bool filled)
-	{
-		glUpdateBBox();
-		float *boxArray = boxArrays + boxArrayOffset;
-	   
-		glEnableClientState(GL_VERTEX_ARRAY);
-		glVertexPointer( 3,GL_FLOAT,0,boxArray);
-
-		if (filled)
-			glDrawElements( GL_QUADS, BBOX_INDEX_SIZE, GL_UNSIGNED_SHORT,boxIndexes);
-		else
-			glDrawElements( GL_LINE_STRIP, BBOX_INDEX_SIZE2, GL_UNSIGNED_SHORT,boxIndexes2);
-
-		glDisableClientState(GL_VERTEX_ARRAY);
-
-		Global::GetInstance().getCurrentStatus().iRenderedObjects++;
-		Global::GetInstance().getCurrentStatus().iRenderedTriangles += 12;
-
-		CATCH_GL_ERROR
-	}
-#else
-	void CObject3D::glRenderBBox(bool filled)
-	{
-		float xmin,xmax,ymin,ymax,zmin,zmax;
-		BBox->get(xmin,ymin,zmin,xmax,ymax,zmax);
-		double value = xmin + xmax + ymin + ymax + zmax + zmin;
-
-		if (boxValue != value)
-		{
-			boxValue = value;
-			if (filledBox.handle() != 0)
-				glDeleteLists(filledBox.glname(),1);
-			if (wireBox.handle() != 0)
-				glDeleteLists(wireBox.glname(),1);
+		updateBBox = false;
+		if (filledBox.handle() != 0)
+			glDeleteLists(filledBox.glname(),1);
+		if (wireBox.handle() != 0)
+			glDeleteLists(wireBox.glname(),1);
 			
-			filledBox.glname(glGenLists(1));
-			glNewList(filledBox.glname(), GL_COMPILE);
-				glBegin(GL_QUADS);
-					// front: 4, 5, 6, 7
-					glVertex3f(xmin,ymin,zmax);
-					glVertex3f(xmax,ymin,zmax);
-					glVertex3f(xmax,ymax,zmax);
-					glVertex3f(xmin,ymax,zmax);
+		filledBox.glname(glGenLists(1));
+		glNewList(filledBox.glname(), GL_COMPILE);
+			glBegin(GL_QUADS);
+				// front: 4, 5, 6, 7
+				glVertex3f(xmin,ymin,zmax);
+				glVertex3f(xmax,ymin,zmax);
+				glVertex3f(xmax,ymax,zmax);
+				glVertex3f(xmin,ymax,zmax);
 
-					// top: 7, 6, 2, 3
-					glVertex3f(xmin,ymax,zmax);
-					glVertex3f(xmax,ymax,zmax);
-					glVertex3f(xmax,ymax,zmin);
-					glVertex3f(xmin,ymax,zmin);
+				// top: 7, 6, 2, 3
+				glVertex3f(xmin,ymax,zmax);
+				glVertex3f(xmax,ymax,zmax);
+				glVertex3f(xmax,ymax,zmin);
+				glVertex3f(xmin,ymax,zmin);
 
-					// right: 5, 1, 2, 6
-					glVertex3f(xmax,ymin,zmax);
-					glVertex3f(xmax,ymin,zmin);
-					glVertex3f(xmax,ymax,zmin);
-					glVertex3f(xmax,ymax,zmax);
+				// right: 5, 1, 2, 6
+				glVertex3f(xmax,ymin,zmax);
+				glVertex3f(xmax,ymin,zmin);
+				glVertex3f(xmax,ymax,zmin);
+				glVertex3f(xmax,ymax,zmax);
 
-					// left: 0, 4, 7, 3
-					glVertex3f(xmin,ymin,zmin);
-					glVertex3f(xmin,ymin,zmax);
-					glVertex3f(xmin,ymax,zmax);
-					glVertex3f(xmin,ymax,zmin);
+				// left: 0, 4, 7, 3
+				glVertex3f(xmin,ymin,zmin);
+				glVertex3f(xmin,ymin,zmax);
+				glVertex3f(xmin,ymax,zmax);
+				glVertex3f(xmin,ymax,zmin);
 
-					// bottom: 0, 1, 5, 4
-					glVertex3f(xmin,ymin,zmin);
-					glVertex3f(xmax,ymin,zmin);
-					glVertex3f(xmax,ymin,zmax);
-					glVertex3f(xmin,ymin,zmax);
+				// bottom: 0, 1, 5, 4
+				glVertex3f(xmin,ymin,zmin);
+				glVertex3f(xmax,ymin,zmin);
+				glVertex3f(xmax,ymin,zmax);
+				glVertex3f(xmin,ymin,zmax);
 
-					// back: 1, 0, 3, 2,
-					glVertex3f(xmax,ymin,zmin);
-					glVertex3f(xmin,ymin,zmin);
-					glVertex3f(xmin,ymax,zmin);
-					glVertex3f(xmax,ymax,zmin);
-				glEnd();
-			glEndList();
+				// back: 1, 0, 3, 2,
+				glVertex3f(xmax,ymin,zmin);
+				glVertex3f(xmin,ymin,zmin);
+				glVertex3f(xmin,ymax,zmin);
+				glVertex3f(xmax,ymax,zmin);
+			glEnd();
+		glEndList();
 			
-			wireBox.handle(glGenLists(1));
-			glNewList(wireBox.glname(), GL_COMPILE);
-				glBegin(GL_LINE_STRIP);
-					// back: 0, 1, 2, 3
-					glVertex3f(xmin,ymin,zmin);
-					glVertex3f(xmax,ymin,zmin);
-					glVertex3f(xmax,ymax,zmin);
-					glVertex3f(xmin,ymax,zmin);
+		wireBox.handle(glGenLists(1));
+		glNewList(wireBox.glname(), GL_COMPILE);
+			glBegin(GL_LINE_STRIP);
+				// back: 0, 1, 2, 3
+				glVertex3f(xmin,ymin,zmin);
+				glVertex3f(xmax,ymin,zmin);
+				glVertex3f(xmax,ymax,zmin);
+				glVertex3f(xmin,ymax,zmin);
 					
-					// left: 0, 4, 7, 3
-					glVertex3f(xmin,ymin,zmin);
-					glVertex3f(xmin,ymin,zmax);
-					glVertex3f(xmin,ymax,zmax);
-					glVertex3f(xmin,ymax,zmin);
+				// left: 0, 4, 7, 3
+				glVertex3f(xmin,ymin,zmin);
+				glVertex3f(xmin,ymin,zmax);
+				glVertex3f(xmin,ymax,zmax);
+				glVertex3f(xmin,ymax,zmin);
 
-					// top: 2, 6, 7, 4
-					glVertex3f(xmax,ymax,zmin);
-					glVertex3f(xmax,ymax,zmax);
-					glVertex3f(xmin,ymax,zmax);
-					glVertex3f(xmin,ymin,zmax);
+				// top: 2, 6, 7, 4
+				glVertex3f(xmax,ymax,zmin);
+				glVertex3f(xmax,ymax,zmax);
+				glVertex3f(xmin,ymax,zmax);
+				glVertex3f(xmin,ymin,zmax);
 
-					// bottom + right + front: 5, 1, 5, 6
-					glVertex3f(xmax,ymin,zmax);
-					glVertex3f(xmax,ymin,zmin);
-					glVertex3f(xmax,ymin,zmax);
-					glVertex3f(xmax,ymax,zmax);
-				glEnd();
-			glEndList();
+				// bottom + right + front: 5, 1, 5, 6
+				glVertex3f(xmax,ymin,zmax);
+				glVertex3f(xmax,ymin,zmin);
+				glVertex3f(xmax,ymin,zmax);
+				glVertex3f(xmax,ymax,zmax);
+			glEnd();
+		glEndList();
+	}
+
+	glCallList(filled ? filledBox.glname() : wireBox.glname());
+
+	CRaptorInstance::GetInstance().iRenderedObjects++;
+	CRaptorInstance::GetInstance().iRenderedTriangles += 12;
+
+	CATCH_GL_ERROR
+}
+
+#else
+
+void CObject3D::glRenderBBox(bool )
+{
+	if (updateBBox)
+		glvkUpdateBBox();
+
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+	
+	glDrawArrays(GL_LINES, bbox, 2);
+
+	instance.iRenderedObjects++;
+	instance.iRenderedTriangles += 12;
+
+	CATCH_GL_ERROR
+}
+
+#endif
+
+void CObject3D::glvkUpdateBBox(void)
+{
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+	CGeometryAllocator *pAllocator = CGeometryAllocator::GetInstance();
+
+	// size is 2 coordinates * 4 floats per box, * maxboxes
+	size_t sz = 2 * GL_COORD_VERTEX_STRIDE;
+
+	if (instance.numboxes <= bbox)
+	{
+		// grow array if maxboxes reached.
+		if (instance.maxboxes <= instance.numboxes)
+		{
+			bool lock = pAllocator->isMemoryLocked();
+			if (lock)
+				pAllocator->glvkLockMemory(false);
+
+			if (0 == instance.maxboxes)
+				instance.maxboxes = 1024;
+			else
+				instance.maxboxes = instance.maxboxes * 2;
+
+			size_t s = instance.maxboxes * sz;
+			GL_COORD_VERTEX *boxes = (GL_COORD_VERTEX*)(pAllocator->allocateVertices(s));
+
+			if (NULL == instance.boxes)
+			{
+				instance.boxes = boxes;
+				instance.numboxes = 0;
+			}
+			else
+			{
+				// Copy existing data, on half buffer size.
+				pAllocator->glvkCopyPointer((float*)boxes, (float*)instance.boxes, s / 2);
+				pAllocator->releaseVertices((float*)instance.boxes);
+				instance.boxes = boxes;
+			}
+
+			if (lock)
+				pAllocator->glvkLockMemory(true);
+
+			instance.m_pBoxBinder->setArray(CProgramParameters::POSITION, boxes);
 		}
 
-		glCallList(filled ? filledBox.glname() : wireBox.glname());
-
-		CRaptorInstance::GetInstance().iRenderedObjects++;
-		CRaptorInstance::GetInstance().iRenderedTriangles += 12;
-
-		CATCH_GL_ERROR
+		// bbox offset.
+		bbox = instance.numboxes;
+		instance.numboxes += 2;
 	}
-#endif
+
+	GL_COORD_VERTEX src[2];
+	BBox->get(src[0], src[1]);
+
+	float *dst = instance.boxes[bbox];
+	pAllocator->glvkSetPointerData(dst, (float*)src, sz);
+
+	updateBBox = false;
+}
 
 void CObject3D::glClipRender(void)
 {

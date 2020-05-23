@@ -151,7 +151,7 @@ void CVulkanTextureObject::vkLoadTexture(VkComponentMapping swizzle,
 		device.vkUploadDataToDevice(true);
 
 		//!	Upload texels to device image
-		tAllocator->glvkCopyPointer(texpointer, pixels, size);
+		tAllocator->glvkSetPointerData(texpointer, pixels, size);
 
 		VkImageViewCreateInfo image_view_create_info = {VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
 														NULL, 0,

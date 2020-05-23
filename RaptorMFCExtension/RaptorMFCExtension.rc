@@ -1,1480 +1,333 @@
-// Microsoft Visual C++ generated resource script.          
-//          
-#include "resource.h"          
-#define APSTUDIO_READONLY_SYMBOLS          
-/////////////////////////////////////////////////////////////////////////////          
-//          
-// Generated from the TEXTINCLUDE 2 resource.          
-//          
-#include "afxres.h"          
-/////////////////////////////////////////////////////////////////////////////          
-#undef APSTUDIO_READONLY_SYMBOLS          
-/////////////////////////////////////////////////////////////////////////////          
-// French (France) resources          
-#if defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_FRA)          
-LANGUAGE LANG_FRENCH, SUBLANG_FRENCH          
-#pragma code_page(1252)          
-#ifdef APSTUDIO_INVOKED          
-/////////////////////////////////////////////////////////////////////////////          
-//          
-// TEXTINCLUDE          
-//          
-1 TEXTINCLUDE           
-BEGIN          
-    "resource.h\0"          
-END          
-2 TEXTINCLUDE           
-BEGIN          
-    "#include ""afxres.h""\r\n"          
-    "\0"          
-END          
-3 TEXTINCLUDE           
-BEGIN          
-    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"          
-    "#define _AFX_NO_OLE_RESOURCES\r\n"          
-    "#define _AFX_NO_TRACKER_RESOURCES\r\n"          
-    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"          
-    "\r\n"          
-    "#if defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_FRA)\r\n"          
-    "#ifdef _WIN32\r\n"          
-    "LANGUAGE 12, 1\r\n"          
-    "#pragma code_page(1252)\r\n"          
-    "#endif //_WIN32\r\n"          
-    "#include ""res\\RaptorMFCExtension.rc2""  // non-Microsoft Visual C++ edited resources\r\n"          
-    "#include ""l.fra\\afxres.rc""          // Standard components\r\n"          
-    "#endif\r\n"          
-    "\0"          
-END          
-#endif    // APSTUDIO_INVOKED          
-/////////////////////////////////////////////////////////////////////////////          
-//          
-// Version          
-//          
-VS_VERSION_INFO VERSIONINFO          
- FILEVERSION 2,17,2,0 
- PRODUCTVERSION 2,17,2,0 
- FILEFLAGSMASK 0x3fL          
-#ifdef _DEBUG          
- FILEFLAGS 0x1L          
-#else          
- FILEFLAGS 0x0L          
-#endif          
- FILEOS 0x4L          
- FILETYPE 0x2L          
- FILESUBTYPE 0x0L          
-BEGIN          
-    BLOCK "StringFileInfo"          
-    BEGIN          
-        BLOCK "040c04b0"          
-        BEGIN          
-            VALUE "CompanyName", "Rafale Soft Inc. ©"          
-            VALUE "FileDescription", "Raptor OpenGL & Vulkan SDK MFC Extension support library"          
-            VALUE "FileVersion", "2.17.2.0" 
-            VALUE "InternalName", "RaptorMFCExtension.dll"          
-            VALUE "LegalCopyright", "Copyright © 1998-2019 Fabrice Ferrand <fabfer@wanadoo.fr>"          
-            VALUE "OriginalFilename", "RaptorMFCExtension.dll"          
-            VALUE "ProductName", "Raptor"          
-            VALUE "ProductVersion", "2.17.2.0" 
-        END          
-    END          
-    BLOCK "VarFileInfo"          
-    BEGIN          
-        VALUE "Translation", 0x40c, 1200          
-    END          
-END          
-/////////////////////////////////////////////////////////////////////////////          
-//          
-// Dialog          
-//          
-IDD_DIALOG1 DIALOGEX 0, 0, 186, 222          
-STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU          
-CAPTION "Raptor Status"          
-FONT 8, "MS Sans Serif", 0, 0, 0x1          
-BEGIN          
-    DEFPUSHBUTTON   "OK",IDOK,129,7,50,14          
-    PUSHBUTTON      "Cancel",IDCANCEL,129,24,50,14          
-    LTEXT           "Vendor :",IDC_VENDOR,12,53,159,10,SS_CENTERIMAGE          
-    LTEXT           "Renderer :",IDC_RENDERER,12,64,160,10,SS_CENTERIMAGE          
-    LTEXT           "Version :",IDC_VERSION,12,75,82,10,SS_CENTERIMAGE          
-    LTEXT           "Extensions :",IDC_EXTENSIONS,12,98,43,9          
-    GROUPBOX        "OpenGL engine :",IDC_STATIC,7,43,172,127          
-    CONTROL         IDB_BITMAP1,IDC_STATIC,"Static",SS_BITMAP,7,7,118,31          
-    GROUPBOX        "Implementation-dependant GL Values",IDC_STATIC,7,172,172,46          
-    COMBOBOX        IDC_COMBO1,13,185,160,62,CBS_DROPDOWN | CBS_AUTOHSCROLL | WS_VSCROLL | WS_TABSTOP          
-    LTEXT           "N/A",IDC_VALUE,13,202,160,12,SS_CENTERIMAGE,WS_EX_STATICEDGE          
-    LISTBOX         IDC_LIST1,13,107,160,58,LBS_NOINTEGRALHEIGHT | LBS_NOSEL | WS_VSCROLL | WS_TABSTOP          
-    CTEXT           "TMUs :",IDC_MAXTMU,72,98,35,9,SS_CENTERIMAGE          
-    RTEXT           "Compressors :",IDC_COMPRESSORS,110,98,63,9          
-    RTEXT           "SMP is active :",IDC_SMP,107,75,66,9          
-    LTEXT           "GLSL: ",IDC_SL_VERSION,12,87,161,10,SS_CENTERIMAGE          
-END          
-IDD_DIALOG2 DIALOGEX 0, 0, 238, 180          
-STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU          
-CAPTION "Objects usage"          
-FONT 8, "MS Sans Serif", 0, 0, 0x1          
-BEGIN          
-    DEFPUSHBUTTON   "OK",IDOK,181,7,50,14          
-    PUSHBUTTON      "Cancel",IDCANCEL,181,24,50,14          
-    CONTROL         IDB_BITMAP1,IDC_STATIC,"Static",SS_BITMAP,7,7,85,28          
-    CONTROL         "Tree1",IDC_OBJECTTREE,"SysTreeView32",TVS_HASBUTTONS | TVS_HASLINES | TVS_LINESATROOT | WS_BORDER | WS_TABSTOP,7,42,224,131,WS_EX_STATICEDGE          
-END          
-IDD_DIALOG3 DIALOGEX 0, 0, 186, 118          
-STYLE DS_SETFONT | DS_MODALFRAME | DS_SETFOREGROUND | DS_3DLOOK | DS_NOFAILCREATE | DS_CENTER | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU          
-CAPTION "Video settings..."          
-FONT 8, "MS Sans Serif", 0, 0, 0x1          
-BEGIN          
-    DEFPUSHBUTTON   "OK",IDOK,129,7,50,14          
-    PUSHBUTTON      "Cancel",IDCANCEL,129,24,50,14          
-    CONTROL         IDB_BITMAP1,IDC_STATIC,"Static",SS_BITMAP,7,7,118,31          
-    GROUPBOX        "Full Screen configuration ...",IDC_STATIC,7,42,172,69          
-    COMBOBOX        IDC_CONFIG,13,52,159,76,CBS_DROPDOWN | CBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP          
-    PUSHBUTTON      "Test",IDC_TEST,13,89,66,18          
-    PUSHBUTTON      "Apply",IDC_APPLY,107,88,66,18          
-    CTEXT           "",IDC_STATUS,13,69,159,14,SS_CENTERIMAGE | SS_SUNKEN,WS_EX_STATICEDGE          
-END          
-IDD_DIALOG4 DIALOG 0, 0, 261, 114          
-STYLE DS_SETFONT | DS_MODALFRAME | DS_SETFOREGROUND | DS_3DLOOK | DS_NOFAILCREATE | DS_CENTER | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU          
-CAPTION "About Raptor OpenGL framework..."          
-FONT 8, "MS Sans Serif"          
-BEGIN          
-    CTEXT           "Version : ???",IDC_VERSION,143,7,58,14,SS_CENTERIMAGE          
-    DEFPUSHBUTTON   "OK",IDOK,204,7,50,14          
-END          
-IDD_DIALOG5 DIALOG 0, 0, 319, 113          
-STYLE DS_SETFONT | DS_MODALFRAME | DS_SETFOREGROUND | DS_3DLOOK | DS_NOFAILCREATE | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU          
-CAPTION "Raptor errors"          
-FONT 8, "MS Sans Serif"          
-BEGIN          
-    DEFPUSHBUTTON   "Close",IDOK,263,96,50,14          
-    LISTBOX         IDC_LIST3,7,18,305,76,LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_HSCROLL | WS_TABSTOP          
-    LTEXT           "Type:        Class:                   Message:",IDC_STATIC,7,7,305,9          
-END          
-/////////////////////////////////////////////////////////////////////////////          
-//          
-// Dialog Info          
-//          
-IDD_DIALOG1 DLGINIT          
-BEGIN          
-    IDC_COMBO1, 0x403, 14, 0          
-0x4c47, 0x4d5f, 0x5841, 0x4c5f, 0x4749, 0x5448, 0x0053,           
-    IDC_COMBO1, 0x403, 19, 0          
-0x4c47, 0x4d5f, 0x5841, 0x435f, 0x494c, 0x5f50, 0x4c50, 0x4e41, 0x5345,           
-"\000"           
-    IDC_COMBO1, 0x403, 29, 0          
-0x4c47, 0x4d5f, 0x5841, 0x4d5f, 0x444f, 0x4c45, 0x4956, 0x5745, 0x535f,           
-0x4154, 0x4b43, 0x445f, 0x5045, 0x4854, "\000"           
-    IDC_COMBO1, 0x403, 30, 0          
-0x4c47, 0x4d5f, 0x5841, 0x505f, 0x4f52, 0x454a, 0x5443, 0x4f49, 0x5f4e,           
-0x5453, 0x4341, 0x5f4b, 0x4544, 0x5450, 0x0048,           
-    IDC_COMBO1, 0x403, 27, 0          
-0x4c47, 0x4d5f, 0x5841, 0x545f, 0x5845, 0x5554, 0x4552, 0x535f, 0x4154,           
-0x4b43, 0x445f, 0x5045, 0x4854, "\000"           
-    IDC_COMBO1, 0x403, 17, 0          
-0x4c47, 0x535f, 0x4255, 0x4950, 0x4558, 0x5f4c, 0x4942, 0x5354, "\000"           
-    IDC_COMBO1, 0x403, 20, 0          
-0x4c47, 0x4d5f, 0x5841, 0x545f, 0x5845, 0x5554, 0x4552, 0x535f, 0x5a49,           
-0x0045,           
-    IDC_COMBO1, 0x403, 23, 0          
-0x4c47, 0x4d5f, 0x5841, 0x505f, 0x5849, 0x4c45, 0x4d5f, 0x5041, 0x545f,           
-0x4241, 0x454c, "\000"           
-    IDC_COMBO1, 0x403, 24, 0          
-0x4c47, 0x4d5f, 0x5841, 0x4e5f, 0x4d41, 0x5f45, 0x5453, 0x4341, 0x5f4b,           
-0x4544, 0x5450, 0x0048,           
-    IDC_COMBO1, 0x403, 20, 0          
-0x4c47, 0x4d5f, 0x5841, 0x4c5f, 0x5349, 0x5f54, 0x454e, 0x5453, 0x4e49,           
-0x0047,           
-    IDC_COMBO1, 0x403, 18, 0          
-0x4c47, 0x4d5f, 0x5841, 0x455f, 0x4156, 0x5f4c, 0x524f, 0x4544, 0x0052,           
-    IDC_COMBO1, 0x403, 21, 0          
-0x4c47, 0x4d5f, 0x5841, 0x565f, 0x4549, 0x5057, 0x524f, 0x5f54, 0x4944,           
-0x534d, "\000"           
-    IDC_COMBO1, 0x403, 26, 0          
-0x4c47, 0x4d5f, 0x5841, 0x415f, 0x5454, 0x4952, 0x5f42, 0x5453, 0x4341,           
-0x5f4b, 0x4544, 0x5450, 0x0048,           
-    IDC_COMBO1, 0x403, 33, 0          
-0x4c47, 0x4d5f, 0x5841, 0x435f, 0x494c, 0x4e45, 0x5f54, 0x5441, 0x5254,           
-0x4249, 0x535f, 0x4154, 0x4b43, 0x445f, 0x5045, 0x4854, "\000"           
-    IDC_COMBO1, 0x403, 15, 0          
-0x4c47, 0x415f, 0x5855, 0x425f, 0x4655, 0x4546, 0x5352, "\000"           
-    IDC_COMBO1, 0x403, 13, 0          
-0x4c47, 0x525f, 0x4247, 0x5f41, 0x4f4d, 0x4544, "\000"           
-    IDC_COMBO1, 0x403, 14, 0          
-0x4c47, 0x495f, 0x444e, 0x5845, 0x4d5f, 0x444f, 0x0045,           
-    IDC_COMBO1, 0x403, 16, 0          
-0x4c47, 0x445f, 0x554f, 0x4c42, 0x4245, 0x4655, 0x4546, 0x0052,           
-    IDC_COMBO1, 0x403, 10, 0          
-0x4c47, 0x535f, 0x4554, 0x4552, 0x004f,           
-    IDC_COMBO1, 0x403, 20, 0          
-0x4c47, 0x505f, 0x494f, 0x544e, 0x535f, 0x5a49, 0x5f45, 0x4152, 0x474e,           
-0x0045,           
-    IDC_COMBO1, 0x403, 26, 0          
-0x4c47, 0x505f, 0x494f, 0x544e, 0x535f, 0x5a49, 0x5f45, 0x5247, 0x4e41,           
-0x4c55, 0x5241, 0x5449, 0x0059,           
-    IDC_COMBO1, 0x403, 20, 0          
-0x4c47, 0x4c5f, 0x4e49, 0x5f45, 0x4957, 0x5444, 0x5f48, 0x4152, 0x474e,           
-0x0045,           
-    IDC_COMBO1, 0x403, 26, 0          
-0x4c47, 0x4c5f, 0x4e49, 0x5f45, 0x4957, 0x5444, 0x5f48, 0x5247, 0x4e41,           
-0x4c55, 0x5241, 0x5449, 0x0059,           
-    IDC_COMBO1, 0x403, 12, 0          
-0x4c47, 0x525f, 0x4445, 0x425f, 0x5449, 0x0053,           
-    IDC_COMBO1, 0x403, 14, 0          
-0x4c47, 0x475f, 0x4552, 0x4e45, 0x425f, 0x5449, 0x0053,           
-    IDC_COMBO1, 0x403, 13, 0          
-0x4c47, 0x425f, 0x554c, 0x5f45, 0x4942, 0x5354, "\000"           
-    IDC_COMBO1, 0x403, 14, 0          
-0x4c47, 0x415f, 0x504c, 0x4148, 0x425f, 0x5449, 0x0053,           
-    IDC_COMBO1, 0x403, 14, 0          
-0x4c47, 0x495f, 0x444e, 0x5845, 0x425f, 0x5449, 0x0053,           
-    IDC_COMBO1, 0x403, 14, 0          
-0x4c47, 0x445f, 0x5045, 0x4854, 0x425f, 0x5449, 0x0053,           
-    IDC_COMBO1, 0x403, 16, 0          
-0x4c47, 0x535f, 0x4554, 0x434e, 0x4c49, 0x425f, 0x5449, 0x0053,           
-    IDC_COMBO1, 0x403, 18, 0          
-0x4c47, 0x415f, 0x4343, 0x4d55, 0x525f, 0x4445, 0x425f, 0x5449, 0x0053,           
-    IDC_COMBO1, 0x403, 20, 0          
-0x4c47, 0x415f, 0x4343, 0x4d55, 0x475f, 0x4552, 0x4e45, 0x425f, 0x5449,           
-0x0053,           
-    IDC_COMBO1, 0x403, 19, 0          
-0x4c47, 0x415f, 0x4343, 0x4d55, 0x425f, 0x554c, 0x5f45, 0x4942, 0x5354,           
-"\000"           
-    IDC_COMBO1, 0x403, 20, 0          
-0x4c47, 0x415f, 0x4343, 0x4d55, 0x415f, 0x504c, 0x4148, 0x425f, 0x5449,           
-0x0053,           
-    IDC_COMBO1, 0x403, 28, 0          
-0x4c47, 0x4e5f, 0x4d55, 0x475f, 0x4e45, 0x5245, 0x4c41, 0x435f, 0x4d4f,           
-0x4942, 0x454e, 0x5352, 0x4e5f, 0x0056,           
-    IDC_COMBO1, 0x403, 28, 0          
-0x4c47, 0x4d5f, 0x5841, 0x475f, 0x4e45, 0x5245, 0x4c41, 0x435f, 0x4d4f,           
-0x4942, 0x454e, 0x5352, 0x4e5f, 0x0056,           
-    IDC_COMBO1, 0x403, 34, 0          
-0x4c47, 0x4d5f, 0x5841, 0x545f, 0x5845, 0x5554, 0x4552, 0x4d5f, 0x5841,           
-0x415f, 0x494e, 0x4f53, 0x5254, 0x504f, 0x5f59, 0x5845, 0x0054,           
-    IDC_COMBO1, 0x403, 27, 0          
-0x4c47, 0x4d5f, 0x5841, 0x335f, 0x5f44, 0x4554, 0x5458, 0x5255, 0x5f45,           
-0x4953, 0x455a, 0x455f, 0x5458, "\000"           
-    0          
-END          
-/////////////////////////////////////////////////////////////////////////////          
-//          
-// Bitmap          
-//          
-IDB_BITMAP1             BITMAP                  "res\\Raptor_logo_sml.bmp"          
-/////////////////////////////////////////////////////////////////////////////          
-//          
-// String Table          
-//          
-STRINGTABLE          
-BEGIN          
-    ID_INDICATOR_WIDTH      "w:         "          
-    ID_INDICATOR_HEIGHT     "h:         "          
-    ID_INDICATOR_FPS        "fps:        "          
-    ID_INDICATOR_NOBJECTS   "objs:       /        "          
-    ID_INDICATOR_COLLISION  "c:      "          
-    ID_STATUSTEXT           "Ready"          
-END          
-#endif    // French (France) resources          
-/////////////////////////////////////////////////////////////////////////////          
-#ifndef APSTUDIO_INVOKED          
-/////////////////////////////////////////////////////////////////////////////          
-//          
-// Generated from the TEXTINCLUDE 3 resource.          
-//          
-#define _AFX_NO_SPLITTER_RESOURCES          
-#define _AFX_NO_OLE_RESOURCES          
-#define _AFX_NO_TRACKER_RESOURCES          
-#define _AFX_NO_PROPERTY_RESOURCES          
-#if defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_FRA)          
-#ifdef _WIN32          
-LANGUAGE 12, 1          
-#pragma code_page(1252)          
-#endif //_WIN32          
-#include "res\RaptorMFCExtension.rc2"  // non-Microsoft Visual C++ edited resources          
-#include "l.fra\afxres.rc"          // Standard components          
-#endif          
-/////////////////////////////////////////////////////////////////////////////          
-#endif    // not APSTUDIO_INVOKED          
-// Microsoft Visual C++ generated resource script.          
-//          
-#include "resource.h"          
-#define APSTUDIO_READONLY_SYMBOLS          
-/////////////////////////////////////////////////////////////////////////////          
-//          
-// Generated from the TEXTINCLUDE 2 resource.          
-//          
-#include "afxres.h"          
-/////////////////////////////////////////////////////////////////////////////          
-#undef APSTUDIO_READONLY_SYMBOLS          
-/////////////////////////////////////////////////////////////////////////////          
-// French (France) resources          
-#if defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_FRA)          
-LANGUAGE LANG_FRENCH, SUBLANG_FRENCH          
-#pragma code_page(1252)          
-#ifdef APSTUDIO_INVOKED          
-/////////////////////////////////////////////////////////////////////////////          
-//          
-// TEXTINCLUDE          
-//          
-1 TEXTINCLUDE           
-BEGIN          
-    "resource.h\0"          
-END          
-2 TEXTINCLUDE           
-BEGIN          
-    "#include ""afxres.h""\r\n"          
-    "\0"          
-END          
-3 TEXTINCLUDE           
-BEGIN          
-    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"          
-    "#define _AFX_NO_OLE_RESOURCES\r\n"          
-    "#define _AFX_NO_TRACKER_RESOURCES\r\n"          
-    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"          
-    "\r\n"          
-    "#if defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_FRA)\r\n"          
-    "#ifdef _WIN32\r\n"          
-    "LANGUAGE 12, 1\r\n"          
-    "#pragma code_page(1252)\r\n"          
-    "#endif //_WIN32\r\n"          
-    "#include ""res\\RaptorMFCExtension.rc2""  // non-Microsoft Visual C++ edited resources\r\n"          
-    "#include ""l.fra\\afxres.rc""          // Standard components\r\n"          
-    "#endif\r\n"          
-    "\0"          
-END          
-#endif    // APSTUDIO_INVOKED          
-/////////////////////////////////////////////////////////////////////////////          
-//          
-// Version          
-//          
-VS_VERSION_INFO VERSIONINFO          
- FILEVERSION 2,17,2,0 
- PRODUCTVERSION 2,17,2,0 
- FILEFLAGSMASK 0x3fL          
-#ifdef _DEBUG          
- FILEFLAGS 0x1L          
-#else          
- FILEFLAGS 0x0L          
-#endif          
- FILEOS 0x4L          
- FILETYPE 0x2L          
- FILESUBTYPE 0x0L          
-BEGIN          
-    BLOCK "StringFileInfo"          
-    BEGIN          
-        BLOCK "040c04b0"          
-        BEGIN          
-            VALUE "CompanyName", "Rafale Soft Inc. ©"          
-            VALUE "FileDescription", "Raptor OpenGL & Vulkan SDK MFC Extension support library"          
-            VALUE "FileVersion", "2.17.2.0" 
-            VALUE "InternalName", "RaptorMFCExtension.dll"          
-            VALUE "LegalCopyright", "Copyright © 1998-2019 Fabrice Ferrand <fabfer@wanadoo.fr>"          
-            VALUE "OriginalFilename", "RaptorMFCExtension.dll"          
-            VALUE "ProductName", "Raptor"          
-            VALUE "ProductVersion", "2.17.2.0" 
-        END          
-    END          
-    BLOCK "VarFileInfo"          
-    BEGIN          
-        VALUE "Translation", 0x40c, 1200          
-    END          
-END          
-/////////////////////////////////////////////////////////////////////////////          
-//          
-// Dialog          
-//          
-IDD_DIALOG1 DIALOGEX 0, 0, 186, 222          
-STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU          
-CAPTION "Raptor Status"          
-FONT 8, "MS Sans Serif", 0, 0, 0x1          
-BEGIN          
-    DEFPUSHBUTTON   "OK",IDOK,129,7,50,14          
-    PUSHBUTTON      "Cancel",IDCANCEL,129,24,50,14          
-    LTEXT           "Vendor :",IDC_VENDOR,12,53,159,10,SS_CENTERIMAGE          
-    LTEXT           "Renderer :",IDC_RENDERER,12,64,160,10,SS_CENTERIMAGE          
-    LTEXT           "Version :",IDC_VERSION,12,75,82,10,SS_CENTERIMAGE          
-    LTEXT           "Extensions :",IDC_EXTENSIONS,12,98,43,9          
-    GROUPBOX        "OpenGL engine :",IDC_STATIC,7,43,172,127          
-    CONTROL         IDB_BITMAP1,IDC_STATIC,"Static",SS_BITMAP,7,7,118,31          
-    GROUPBOX        "Implementation-dependant GL Values",IDC_STATIC,7,172,172,46          
-    COMBOBOX        IDC_COMBO1,13,185,160,62,CBS_DROPDOWN | CBS_AUTOHSCROLL | WS_VSCROLL | WS_TABSTOP          
-    LTEXT           "N/A",IDC_VALUE,13,202,160,12,SS_CENTERIMAGE,WS_EX_STATICEDGE          
-    LISTBOX         IDC_LIST1,13,107,160,58,LBS_NOINTEGRALHEIGHT | LBS_NOSEL | WS_VSCROLL | WS_TABSTOP          
-    CTEXT           "TMUs :",IDC_MAXTMU,72,98,35,9,SS_CENTERIMAGE          
-    RTEXT           "Compressors :",IDC_COMPRESSORS,110,98,63,9          
-    RTEXT           "SMP is active :",IDC_SMP,107,75,66,9          
-    LTEXT           "GLSL: ",IDC_SL_VERSION,12,87,161,10,SS_CENTERIMAGE          
-END          
-IDD_DIALOG2 DIALOGEX 0, 0, 238, 180          
-STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU          
-CAPTION "Objects usage"          
-FONT 8, "MS Sans Serif", 0, 0, 0x1          
-BEGIN          
-    DEFPUSHBUTTON   "OK",IDOK,181,7,50,14          
-    PUSHBUTTON      "Cancel",IDCANCEL,181,24,50,14          
-    CONTROL         IDB_BITMAP1,IDC_STATIC,"Static",SS_BITMAP,7,7,85,28          
-    CONTROL         "Tree1",IDC_OBJECTTREE,"SysTreeView32",TVS_HASBUTTONS | TVS_HASLINES | TVS_LINESATROOT | WS_BORDER | WS_TABSTOP,7,42,224,131,WS_EX_STATICEDGE          
-END          
-IDD_DIALOG3 DIALOGEX 0, 0, 186, 118          
-STYLE DS_SETFONT | DS_MODALFRAME | DS_SETFOREGROUND | DS_3DLOOK | DS_NOFAILCREATE | DS_CENTER | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU          
-CAPTION "Video settings..."          
-FONT 8, "MS Sans Serif", 0, 0, 0x1          
-BEGIN          
-    DEFPUSHBUTTON   "OK",IDOK,129,7,50,14          
-    PUSHBUTTON      "Cancel",IDCANCEL,129,24,50,14          
-    CONTROL         IDB_BITMAP1,IDC_STATIC,"Static",SS_BITMAP,7,7,118,31          
-    GROUPBOX        "Full Screen configuration ...",IDC_STATIC,7,42,172,69          
-    COMBOBOX        IDC_CONFIG,13,52,159,76,CBS_DROPDOWN | CBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP          
-    PUSHBUTTON      "Test",IDC_TEST,13,89,66,18          
-    PUSHBUTTON      "Apply",IDC_APPLY,107,88,66,18          
-    CTEXT           "",IDC_STATUS,13,69,159,14,SS_CENTERIMAGE | SS_SUNKEN,WS_EX_STATICEDGE          
-END          
-IDD_DIALOG4 DIALOG 0, 0, 261, 114          
-STYLE DS_SETFONT | DS_MODALFRAME | DS_SETFOREGROUND | DS_3DLOOK | DS_NOFAILCREATE | DS_CENTER | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU          
-CAPTION "About Raptor OpenGL framework..."          
-FONT 8, "MS Sans Serif"          
-BEGIN          
-    CTEXT           "Version : ???",IDC_VERSION,143,7,58,14,SS_CENTERIMAGE          
-    DEFPUSHBUTTON   "OK",IDOK,204,7,50,14          
-END          
-IDD_DIALOG5 DIALOG 0, 0, 319, 113          
-STYLE DS_SETFONT | DS_MODALFRAME | DS_SETFOREGROUND | DS_3DLOOK | DS_NOFAILCREATE | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU          
-CAPTION "Raptor errors"          
-FONT 8, "MS Sans Serif"          
-BEGIN          
-    DEFPUSHBUTTON   "Close",IDOK,263,96,50,14          
-    LISTBOX         IDC_LIST3,7,18,305,76,LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_HSCROLL | WS_TABSTOP          
-    LTEXT           "Type:        Class:                   Message:",IDC_STATIC,7,7,305,9          
-END          
-/////////////////////////////////////////////////////////////////////////////          
-//          
-// Dialog Info          
-//          
-IDD_DIALOG1 DLGINIT          
-BEGIN          
-    IDC_COMBO1, 0x403, 14, 0          
-0x4c47, 0x4d5f, 0x5841, 0x4c5f, 0x4749, 0x5448, 0x0053,           
-    IDC_COMBO1, 0x403, 19, 0          
-0x4c47, 0x4d5f, 0x5841, 0x435f, 0x494c, 0x5f50, 0x4c50, 0x4e41, 0x5345,           
-"\000"           
-    IDC_COMBO1, 0x403, 29, 0          
-0x4c47, 0x4d5f, 0x5841, 0x4d5f, 0x444f, 0x4c45, 0x4956, 0x5745, 0x535f,           
-0x4154, 0x4b43, 0x445f, 0x5045, 0x4854, "\000"           
-    IDC_COMBO1, 0x403, 30, 0          
-0x4c47, 0x4d5f, 0x5841, 0x505f, 0x4f52, 0x454a, 0x5443, 0x4f49, 0x5f4e,           
-0x5453, 0x4341, 0x5f4b, 0x4544, 0x5450, 0x0048,           
-    IDC_COMBO1, 0x403, 27, 0          
-0x4c47, 0x4d5f, 0x5841, 0x545f, 0x5845, 0x5554, 0x4552, 0x535f, 0x4154,           
-0x4b43, 0x445f, 0x5045, 0x4854, "\000"           
-    IDC_COMBO1, 0x403, 17, 0          
-0x4c47, 0x535f, 0x4255, 0x4950, 0x4558, 0x5f4c, 0x4942, 0x5354, "\000"           
-    IDC_COMBO1, 0x403, 20, 0          
-0x4c47, 0x4d5f, 0x5841, 0x545f, 0x5845, 0x5554, 0x4552, 0x535f, 0x5a49,           
-0x0045,           
-    IDC_COMBO1, 0x403, 23, 0          
-0x4c47, 0x4d5f, 0x5841, 0x505f, 0x5849, 0x4c45, 0x4d5f, 0x5041, 0x545f,           
-0x4241, 0x454c, "\000"           
-    IDC_COMBO1, 0x403, 24, 0          
-0x4c47, 0x4d5f, 0x5841, 0x4e5f, 0x4d41, 0x5f45, 0x5453, 0x4341, 0x5f4b,           
-0x4544, 0x5450, 0x0048,           
-    IDC_COMBO1, 0x403, 20, 0          
-0x4c47, 0x4d5f, 0x5841, 0x4c5f, 0x5349, 0x5f54, 0x454e, 0x5453, 0x4e49,           
-0x0047,           
-    IDC_COMBO1, 0x403, 18, 0          
-0x4c47, 0x4d5f, 0x5841, 0x455f, 0x4156, 0x5f4c, 0x524f, 0x4544, 0x0052,           
-    IDC_COMBO1, 0x403, 21, 0          
-0x4c47, 0x4d5f, 0x5841, 0x565f, 0x4549, 0x5057, 0x524f, 0x5f54, 0x4944,           
-0x534d, "\000"           
-    IDC_COMBO1, 0x403, 26, 0          
-0x4c47, 0x4d5f, 0x5841, 0x415f, 0x5454, 0x4952, 0x5f42, 0x5453, 0x4341,           
-0x5f4b, 0x4544, 0x5450, 0x0048,           
-    IDC_COMBO1, 0x403, 33, 0          
-0x4c47, 0x4d5f, 0x5841, 0x435f, 0x494c, 0x4e45, 0x5f54, 0x5441, 0x5254,           
-0x4249, 0x535f, 0x4154, 0x4b43, 0x445f, 0x5045, 0x4854, "\000"           
-    IDC_COMBO1, 0x403, 15, 0          
-0x4c47, 0x415f, 0x5855, 0x425f, 0x4655, 0x4546, 0x5352, "\000"           
-    IDC_COMBO1, 0x403, 13, 0          
-0x4c47, 0x525f, 0x4247, 0x5f41, 0x4f4d, 0x4544, "\000"           
-    IDC_COMBO1, 0x403, 14, 0          
-0x4c47, 0x495f, 0x444e, 0x5845, 0x4d5f, 0x444f, 0x0045,           
-    IDC_COMBO1, 0x403, 16, 0          
-0x4c47, 0x445f, 0x554f, 0x4c42, 0x4245, 0x4655, 0x4546, 0x0052,           
-    IDC_COMBO1, 0x403, 10, 0          
-0x4c47, 0x535f, 0x4554, 0x4552, 0x004f,           
-    IDC_COMBO1, 0x403, 20, 0          
-0x4c47, 0x505f, 0x494f, 0x544e, 0x535f, 0x5a49, 0x5f45, 0x4152, 0x474e,           
-0x0045,           
-    IDC_COMBO1, 0x403, 26, 0          
-0x4c47, 0x505f, 0x494f, 0x544e, 0x535f, 0x5a49, 0x5f45, 0x5247, 0x4e41,           
-0x4c55, 0x5241, 0x5449, 0x0059,           
-    IDC_COMBO1, 0x403, 20, 0          
-0x4c47, 0x4c5f, 0x4e49, 0x5f45, 0x4957, 0x5444, 0x5f48, 0x4152, 0x474e,           
-0x0045,           
-    IDC_COMBO1, 0x403, 26, 0          
-0x4c47, 0x4c5f, 0x4e49, 0x5f45, 0x4957, 0x5444, 0x5f48, 0x5247, 0x4e41,           
-0x4c55, 0x5241, 0x5449, 0x0059,           
-    IDC_COMBO1, 0x403, 12, 0          
-0x4c47, 0x525f, 0x4445, 0x425f, 0x5449, 0x0053,           
-    IDC_COMBO1, 0x403, 14, 0          
-0x4c47, 0x475f, 0x4552, 0x4e45, 0x425f, 0x5449, 0x0053,           
-    IDC_COMBO1, 0x403, 13, 0          
-0x4c47, 0x425f, 0x554c, 0x5f45, 0x4942, 0x5354, "\000"           
-    IDC_COMBO1, 0x403, 14, 0          
-0x4c47, 0x415f, 0x504c, 0x4148, 0x425f, 0x5449, 0x0053,           
-    IDC_COMBO1, 0x403, 14, 0          
-0x4c47, 0x495f, 0x444e, 0x5845, 0x425f, 0x5449, 0x0053,           
-    IDC_COMBO1, 0x403, 14, 0          
-0x4c47, 0x445f, 0x5045, 0x4854, 0x425f, 0x5449, 0x0053,           
-    IDC_COMBO1, 0x403, 16, 0          
-0x4c47, 0x535f, 0x4554, 0x434e, 0x4c49, 0x425f, 0x5449, 0x0053,           
-    IDC_COMBO1, 0x403, 18, 0          
-0x4c47, 0x415f, 0x4343, 0x4d55, 0x525f, 0x4445, 0x425f, 0x5449, 0x0053,           
-    IDC_COMBO1, 0x403, 20, 0          
-0x4c47, 0x415f, 0x4343, 0x4d55, 0x475f, 0x4552, 0x4e45, 0x425f, 0x5449,           
-0x0053,           
-    IDC_COMBO1, 0x403, 19, 0          
-0x4c47, 0x415f, 0x4343, 0x4d55, 0x425f, 0x554c, 0x5f45, 0x4942, 0x5354,           
-"\000"           
-    IDC_COMBO1, 0x403, 20, 0          
-0x4c47, 0x415f, 0x4343, 0x4d55, 0x415f, 0x504c, 0x4148, 0x425f, 0x5449,           
-0x0053,           
-    IDC_COMBO1, 0x403, 28, 0          
-0x4c47, 0x4e5f, 0x4d55, 0x475f, 0x4e45, 0x5245, 0x4c41, 0x435f, 0x4d4f,           
-0x4942, 0x454e, 0x5352, 0x4e5f, 0x0056,           
-    IDC_COMBO1, 0x403, 28, 0          
-0x4c47, 0x4d5f, 0x5841, 0x475f, 0x4e45, 0x5245, 0x4c41, 0x435f, 0x4d4f,           
-0x4942, 0x454e, 0x5352, 0x4e5f, 0x0056,           
-    IDC_COMBO1, 0x403, 34, 0          
-0x4c47, 0x4d5f, 0x5841, 0x545f, 0x5845, 0x5554, 0x4552, 0x4d5f, 0x5841,           
-0x415f, 0x494e, 0x4f53, 0x5254, 0x504f, 0x5f59, 0x5845, 0x0054,           
-    IDC_COMBO1, 0x403, 27, 0          
-0x4c47, 0x4d5f, 0x5841, 0x335f, 0x5f44, 0x4554, 0x5458, 0x5255, 0x5f45,           
-0x4953, 0x455a, 0x455f, 0x5458, "\000"           
-    0          
-END          
-/////////////////////////////////////////////////////////////////////////////          
-//          
-// Bitmap          
-//          
-IDB_BITMAP1             BITMAP                  "res\\Raptor_logo_sml.bmp"          
-/////////////////////////////////////////////////////////////////////////////          
-//          
-// String Table          
-//          
-STRINGTABLE          
-BEGIN          
-    ID_INDICATOR_WIDTH      "w:         "          
-    ID_INDICATOR_HEIGHT     "h:         "          
-    ID_INDICATOR_FPS        "fps:        "          
-    ID_INDICATOR_NOBJECTS   "objs:       /        "          
-    ID_INDICATOR_COLLISION  "c:      "          
-    ID_STATUSTEXT           "Ready"          
-END          
-#endif    // French (France) resources          
-/////////////////////////////////////////////////////////////////////////////          
-#ifndef APSTUDIO_INVOKED          
-/////////////////////////////////////////////////////////////////////////////          
-//          
-// Generated from the TEXTINCLUDE 3 resource.          
-//          
-#define _AFX_NO_SPLITTER_RESOURCES          
-#define _AFX_NO_OLE_RESOURCES          
-#define _AFX_NO_TRACKER_RESOURCES          
-#define _AFX_NO_PROPERTY_RESOURCES          
-#if defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_FRA)          
-#ifdef _WIN32          
-LANGUAGE 12, 1          
-#pragma code_page(1252)          
-#endif //_WIN32          
-#include "res\RaptorMFCExtension.rc2"  // non-Microsoft Visual C++ edited resources          
-#include "l.fra\afxres.rc"          // Standard components          
-#endif          
-/////////////////////////////////////////////////////////////////////////////          
-#endif    // not APSTUDIO_INVOKED          
-// Microsoft Visual C++ generated resource script.          
-//          
-#include "resource.h"          
-#define APSTUDIO_READONLY_SYMBOLS          
-/////////////////////////////////////////////////////////////////////////////          
-//          
-// Generated from the TEXTINCLUDE 2 resource.          
-//          
-#include "afxres.h"          
-/////////////////////////////////////////////////////////////////////////////          
-#undef APSTUDIO_READONLY_SYMBOLS          
-/////////////////////////////////////////////////////////////////////////////          
-// French (France) resources          
-#if defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_FRA)          
-LANGUAGE LANG_FRENCH, SUBLANG_FRENCH          
-#pragma code_page(1252)          
-#ifdef APSTUDIO_INVOKED          
-/////////////////////////////////////////////////////////////////////////////          
-//          
-// TEXTINCLUDE          
-//          
-1 TEXTINCLUDE           
-BEGIN          
-    "resource.h\0"          
-END          
-2 TEXTINCLUDE           
-BEGIN          
-    "#include ""afxres.h""\r\n"          
-    "\0"          
-END          
-3 TEXTINCLUDE           
-BEGIN          
-    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"          
-    "#define _AFX_NO_OLE_RESOURCES\r\n"          
-    "#define _AFX_NO_TRACKER_RESOURCES\r\n"          
-    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"          
-    "\r\n"          
-    "#if defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_FRA)\r\n"          
-    "#ifdef _WIN32\r\n"          
-    "LANGUAGE 12, 1\r\n"          
-    "#pragma code_page(1252)\r\n"          
-    "#endif //_WIN32\r\n"          
-    "#include ""res\\RaptorMFCExtension.rc2""  // non-Microsoft Visual C++ edited resources\r\n"          
-    "#include ""l.fra\\afxres.rc""          // Standard components\r\n"          
-    "#endif\r\n"          
-    "\0"          
-END          
-#endif    // APSTUDIO_INVOKED          
-/////////////////////////////////////////////////////////////////////////////          
-//          
-// Version          
-//          
-VS_VERSION_INFO VERSIONINFO          
- FILEVERSION 2,17,2,0 
- PRODUCTVERSION 2,17,2,0 
- FILEFLAGSMASK 0x3fL          
-#ifdef _DEBUG          
- FILEFLAGS 0x1L          
-#else          
- FILEFLAGS 0x0L          
-#endif          
- FILEOS 0x4L          
- FILETYPE 0x2L          
- FILESUBTYPE 0x0L          
-BEGIN          
-    BLOCK "StringFileInfo"          
-    BEGIN          
-        BLOCK "040c04b0"          
-        BEGIN          
-            VALUE "CompanyName", "Rafale Soft Inc. ©"          
-            VALUE "FileDescription", "Raptor OpenGL & Vulkan SDK MFC Extension support library"          
-            VALUE "FileVersion", "2.17.2.0" 
-            VALUE "InternalName", "RaptorMFCExtension.dll"          
-            VALUE "LegalCopyright", "Copyright © 1998-2019 Fabrice Ferrand <fabfer@wanadoo.fr>"          
-            VALUE "OriginalFilename", "RaptorMFCExtension.dll"          
-            VALUE "ProductName", "Raptor"          
-            VALUE "ProductVersion", "2.17.2.0" 
-        END          
-    END          
-    BLOCK "VarFileInfo"          
-    BEGIN          
-        VALUE "Translation", 0x40c, 1200          
-    END          
-END          
-/////////////////////////////////////////////////////////////////////////////          
-//          
-// Dialog          
-//          
-IDD_DIALOG1 DIALOGEX 0, 0, 186, 222          
-STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU          
-CAPTION "Raptor Status"          
-FONT 8, "MS Sans Serif", 0, 0, 0x1          
-BEGIN          
-    DEFPUSHBUTTON   "OK",IDOK,129,7,50,14          
-    PUSHBUTTON      "Cancel",IDCANCEL,129,24,50,14          
-    LTEXT           "Vendor :",IDC_VENDOR,12,53,159,10,SS_CENTERIMAGE          
-    LTEXT           "Renderer :",IDC_RENDERER,12,64,160,10,SS_CENTERIMAGE          
-    LTEXT           "Version :",IDC_VERSION,12,75,82,10,SS_CENTERIMAGE          
-    LTEXT           "Extensions :",IDC_EXTENSIONS,12,98,43,9          
-    GROUPBOX        "OpenGL engine :",IDC_STATIC,7,43,172,127          
-    CONTROL         IDB_BITMAP1,IDC_STATIC,"Static",SS_BITMAP,7,7,118,31          
-    GROUPBOX        "Implementation-dependant GL Values",IDC_STATIC,7,172,172,46          
-    COMBOBOX        IDC_COMBO1,13,185,160,62,CBS_DROPDOWN | CBS_AUTOHSCROLL | WS_VSCROLL | WS_TABSTOP          
-    LTEXT           "N/A",IDC_VALUE,13,202,160,12,SS_CENTERIMAGE,WS_EX_STATICEDGE          
-    LISTBOX         IDC_LIST1,13,107,160,58,LBS_NOINTEGRALHEIGHT | LBS_NOSEL | WS_VSCROLL | WS_TABSTOP          
-    CTEXT           "TMUs :",IDC_MAXTMU,72,98,35,9,SS_CENTERIMAGE          
-    RTEXT           "Compressors :",IDC_COMPRESSORS,110,98,63,9          
-    RTEXT           "SMP is active :",IDC_SMP,107,75,66,9          
-    LTEXT           "GLSL: ",IDC_SL_VERSION,12,87,161,10,SS_CENTERIMAGE          
-END          
-IDD_DIALOG2 DIALOGEX 0, 0, 238, 180          
-STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU          
-CAPTION "Objects usage"          
-FONT 8, "MS Sans Serif", 0, 0, 0x1          
-BEGIN          
-    DEFPUSHBUTTON   "OK",IDOK,181,7,50,14          
-    PUSHBUTTON      "Cancel",IDCANCEL,181,24,50,14          
-    CONTROL         IDB_BITMAP1,IDC_STATIC,"Static",SS_BITMAP,7,7,85,28          
-    CONTROL         "Tree1",IDC_OBJECTTREE,"SysTreeView32",TVS_HASBUTTONS | TVS_HASLINES | TVS_LINESATROOT | WS_BORDER | WS_TABSTOP,7,42,224,131,WS_EX_STATICEDGE          
-END          
-IDD_DIALOG3 DIALOGEX 0, 0, 186, 118          
-STYLE DS_SETFONT | DS_MODALFRAME | DS_SETFOREGROUND | DS_3DLOOK | DS_NOFAILCREATE | DS_CENTER | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU          
-CAPTION "Video settings..."          
-FONT 8, "MS Sans Serif", 0, 0, 0x1          
-BEGIN          
-    DEFPUSHBUTTON   "OK",IDOK,129,7,50,14          
-    PUSHBUTTON      "Cancel",IDCANCEL,129,24,50,14          
-    CONTROL         IDB_BITMAP1,IDC_STATIC,"Static",SS_BITMAP,7,7,118,31          
-    GROUPBOX        "Full Screen configuration ...",IDC_STATIC,7,42,172,69          
-    COMBOBOX        IDC_CONFIG,13,52,159,76,CBS_DROPDOWN | CBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP          
-    PUSHBUTTON      "Test",IDC_TEST,13,89,66,18          
-    PUSHBUTTON      "Apply",IDC_APPLY,107,88,66,18          
-    CTEXT           "",IDC_STATUS,13,69,159,14,SS_CENTERIMAGE | SS_SUNKEN,WS_EX_STATICEDGE          
-END          
-IDD_DIALOG4 DIALOG 0, 0, 261, 114          
-STYLE DS_SETFONT | DS_MODALFRAME | DS_SETFOREGROUND | DS_3DLOOK | DS_NOFAILCREATE | DS_CENTER | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU          
-CAPTION "About Raptor OpenGL framework..."          
-FONT 8, "MS Sans Serif"          
-BEGIN          
-    CTEXT           "Version : ???",IDC_VERSION,143,7,58,14,SS_CENTERIMAGE          
-    DEFPUSHBUTTON   "OK",IDOK,204,7,50,14          
-END          
-IDD_DIALOG5 DIALOG 0, 0, 319, 113          
-STYLE DS_SETFONT | DS_MODALFRAME | DS_SETFOREGROUND | DS_3DLOOK | DS_NOFAILCREATE | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU          
-CAPTION "Raptor errors"          
-FONT 8, "MS Sans Serif"          
-BEGIN          
-    DEFPUSHBUTTON   "Close",IDOK,263,96,50,14          
-    LISTBOX         IDC_LIST3,7,18,305,76,LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_HSCROLL | WS_TABSTOP          
-    LTEXT           "Type:        Class:                   Message:",IDC_STATIC,7,7,305,9          
-END          
-/////////////////////////////////////////////////////////////////////////////          
-//          
-// Dialog Info          
-//          
-IDD_DIALOG1 DLGINIT          
-BEGIN          
-    IDC_COMBO1, 0x403, 14, 0          
-0x4c47, 0x4d5f, 0x5841, 0x4c5f, 0x4749, 0x5448, 0x0053,           
-    IDC_COMBO1, 0x403, 19, 0          
-0x4c47, 0x4d5f, 0x5841, 0x435f, 0x494c, 0x5f50, 0x4c50, 0x4e41, 0x5345,           
-"\000"           
-    IDC_COMBO1, 0x403, 29, 0          
-0x4c47, 0x4d5f, 0x5841, 0x4d5f, 0x444f, 0x4c45, 0x4956, 0x5745, 0x535f,           
-0x4154, 0x4b43, 0x445f, 0x5045, 0x4854, "\000"           
-    IDC_COMBO1, 0x403, 30, 0          
-0x4c47, 0x4d5f, 0x5841, 0x505f, 0x4f52, 0x454a, 0x5443, 0x4f49, 0x5f4e,           
-0x5453, 0x4341, 0x5f4b, 0x4544, 0x5450, 0x0048,           
-    IDC_COMBO1, 0x403, 27, 0          
-0x4c47, 0x4d5f, 0x5841, 0x545f, 0x5845, 0x5554, 0x4552, 0x535f, 0x4154,           
-0x4b43, 0x445f, 0x5045, 0x4854, "\000"           
-    IDC_COMBO1, 0x403, 17, 0          
-0x4c47, 0x535f, 0x4255, 0x4950, 0x4558, 0x5f4c, 0x4942, 0x5354, "\000"           
-    IDC_COMBO1, 0x403, 20, 0          
-0x4c47, 0x4d5f, 0x5841, 0x545f, 0x5845, 0x5554, 0x4552, 0x535f, 0x5a49,           
-0x0045,           
-    IDC_COMBO1, 0x403, 23, 0          
-0x4c47, 0x4d5f, 0x5841, 0x505f, 0x5849, 0x4c45, 0x4d5f, 0x5041, 0x545f,           
-0x4241, 0x454c, "\000"           
-    IDC_COMBO1, 0x403, 24, 0          
-0x4c47, 0x4d5f, 0x5841, 0x4e5f, 0x4d41, 0x5f45, 0x5453, 0x4341, 0x5f4b,           
-0x4544, 0x5450, 0x0048,           
-    IDC_COMBO1, 0x403, 20, 0          
-0x4c47, 0x4d5f, 0x5841, 0x4c5f, 0x5349, 0x5f54, 0x454e, 0x5453, 0x4e49,           
-0x0047,           
-    IDC_COMBO1, 0x403, 18, 0          
-0x4c47, 0x4d5f, 0x5841, 0x455f, 0x4156, 0x5f4c, 0x524f, 0x4544, 0x0052,           
-    IDC_COMBO1, 0x403, 21, 0          
-0x4c47, 0x4d5f, 0x5841, 0x565f, 0x4549, 0x5057, 0x524f, 0x5f54, 0x4944,           
-0x534d, "\000"           
-    IDC_COMBO1, 0x403, 26, 0          
-0x4c47, 0x4d5f, 0x5841, 0x415f, 0x5454, 0x4952, 0x5f42, 0x5453, 0x4341,           
-0x5f4b, 0x4544, 0x5450, 0x0048,           
-    IDC_COMBO1, 0x403, 33, 0          
-0x4c47, 0x4d5f, 0x5841, 0x435f, 0x494c, 0x4e45, 0x5f54, 0x5441, 0x5254,           
-0x4249, 0x535f, 0x4154, 0x4b43, 0x445f, 0x5045, 0x4854, "\000"           
-    IDC_COMBO1, 0x403, 15, 0          
-0x4c47, 0x415f, 0x5855, 0x425f, 0x4655, 0x4546, 0x5352, "\000"           
-    IDC_COMBO1, 0x403, 13, 0          
-0x4c47, 0x525f, 0x4247, 0x5f41, 0x4f4d, 0x4544, "\000"           
-    IDC_COMBO1, 0x403, 14, 0          
-0x4c47, 0x495f, 0x444e, 0x5845, 0x4d5f, 0x444f, 0x0045,           
-    IDC_COMBO1, 0x403, 16, 0          
-0x4c47, 0x445f, 0x554f, 0x4c42, 0x4245, 0x4655, 0x4546, 0x0052,           
-    IDC_COMBO1, 0x403, 10, 0          
-0x4c47, 0x535f, 0x4554, 0x4552, 0x004f,           
-    IDC_COMBO1, 0x403, 20, 0          
-0x4c47, 0x505f, 0x494f, 0x544e, 0x535f, 0x5a49, 0x5f45, 0x4152, 0x474e,           
-0x0045,           
-    IDC_COMBO1, 0x403, 26, 0          
-0x4c47, 0x505f, 0x494f, 0x544e, 0x535f, 0x5a49, 0x5f45, 0x5247, 0x4e41,           
-0x4c55, 0x5241, 0x5449, 0x0059,           
-    IDC_COMBO1, 0x403, 20, 0          
-0x4c47, 0x4c5f, 0x4e49, 0x5f45, 0x4957, 0x5444, 0x5f48, 0x4152, 0x474e,           
-0x0045,           
-    IDC_COMBO1, 0x403, 26, 0          
-0x4c47, 0x4c5f, 0x4e49, 0x5f45, 0x4957, 0x5444, 0x5f48, 0x5247, 0x4e41,           
-0x4c55, 0x5241, 0x5449, 0x0059,           
-    IDC_COMBO1, 0x403, 12, 0          
-0x4c47, 0x525f, 0x4445, 0x425f, 0x5449, 0x0053,           
-    IDC_COMBO1, 0x403, 14, 0          
-0x4c47, 0x475f, 0x4552, 0x4e45, 0x425f, 0x5449, 0x0053,           
-    IDC_COMBO1, 0x403, 13, 0          
-0x4c47, 0x425f, 0x554c, 0x5f45, 0x4942, 0x5354, "\000"           
-    IDC_COMBO1, 0x403, 14, 0          
-0x4c47, 0x415f, 0x504c, 0x4148, 0x425f, 0x5449, 0x0053,           
-    IDC_COMBO1, 0x403, 14, 0          
-0x4c47, 0x495f, 0x444e, 0x5845, 0x425f, 0x5449, 0x0053,           
-    IDC_COMBO1, 0x403, 14, 0          
-0x4c47, 0x445f, 0x5045, 0x4854, 0x425f, 0x5449, 0x0053,           
-    IDC_COMBO1, 0x403, 16, 0          
-0x4c47, 0x535f, 0x4554, 0x434e, 0x4c49, 0x425f, 0x5449, 0x0053,           
-    IDC_COMBO1, 0x403, 18, 0          
-0x4c47, 0x415f, 0x4343, 0x4d55, 0x525f, 0x4445, 0x425f, 0x5449, 0x0053,           
-    IDC_COMBO1, 0x403, 20, 0          
-0x4c47, 0x415f, 0x4343, 0x4d55, 0x475f, 0x4552, 0x4e45, 0x425f, 0x5449,           
-0x0053,           
-    IDC_COMBO1, 0x403, 19, 0          
-0x4c47, 0x415f, 0x4343, 0x4d55, 0x425f, 0x554c, 0x5f45, 0x4942, 0x5354,           
-"\000"           
-    IDC_COMBO1, 0x403, 20, 0          
-0x4c47, 0x415f, 0x4343, 0x4d55, 0x415f, 0x504c, 0x4148, 0x425f, 0x5449,           
-0x0053,           
-    IDC_COMBO1, 0x403, 28, 0          
-0x4c47, 0x4e5f, 0x4d55, 0x475f, 0x4e45, 0x5245, 0x4c41, 0x435f, 0x4d4f,           
-0x4942, 0x454e, 0x5352, 0x4e5f, 0x0056,           
-    IDC_COMBO1, 0x403, 28, 0          
-0x4c47, 0x4d5f, 0x5841, 0x475f, 0x4e45, 0x5245, 0x4c41, 0x435f, 0x4d4f,           
-0x4942, 0x454e, 0x5352, 0x4e5f, 0x0056,           
-    IDC_COMBO1, 0x403, 34, 0          
-0x4c47, 0x4d5f, 0x5841, 0x545f, 0x5845, 0x5554, 0x4552, 0x4d5f, 0x5841,           
-0x415f, 0x494e, 0x4f53, 0x5254, 0x504f, 0x5f59, 0x5845, 0x0054,           
-    IDC_COMBO1, 0x403, 27, 0          
-0x4c47, 0x4d5f, 0x5841, 0x335f, 0x5f44, 0x4554, 0x5458, 0x5255, 0x5f45,           
-0x4953, 0x455a, 0x455f, 0x5458, "\000"           
-    0          
-END          
-/////////////////////////////////////////////////////////////////////////////          
-//          
-// Bitmap          
-//          
-IDB_BITMAP1             BITMAP                  "res\\Raptor_logo_sml.bmp"          
-/////////////////////////////////////////////////////////////////////////////          
-//          
-// String Table          
-//          
-STRINGTABLE          
-BEGIN          
-    ID_INDICATOR_WIDTH      "w:         "          
-    ID_INDICATOR_HEIGHT     "h:         "          
-    ID_INDICATOR_FPS        "fps:        "          
-    ID_INDICATOR_NOBJECTS   "objs:       /        "          
-    ID_INDICATOR_COLLISION  "c:      "          
-    ID_STATUSTEXT           "Ready"          
-END          
-#endif    // French (France) resources          
-/////////////////////////////////////////////////////////////////////////////          
-#ifndef APSTUDIO_INVOKED          
-/////////////////////////////////////////////////////////////////////////////          
-//          
-// Generated from the TEXTINCLUDE 3 resource.          
-//          
-#define _AFX_NO_SPLITTER_RESOURCES          
-#define _AFX_NO_OLE_RESOURCES          
-#define _AFX_NO_TRACKER_RESOURCES          
-#define _AFX_NO_PROPERTY_RESOURCES          
-#if defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_FRA)          
-#ifdef _WIN32          
-LANGUAGE 12, 1          
-#pragma code_page(1252)          
-#endif //_WIN32          
-#include "res\RaptorMFCExtension.rc2"  // non-Microsoft Visual C++ edited resources          
-#include "l.fra\afxres.rc"          // Standard components          
-#endif          
-/////////////////////////////////////////////////////////////////////////////          
-#endif    // not APSTUDIO_INVOKED          
-// Microsoft Visual C++ generated resource script.          
-//          
-#include "resource.h"          
-#define APSTUDIO_READONLY_SYMBOLS          
-/////////////////////////////////////////////////////////////////////////////          
-//          
-// Generated from the TEXTINCLUDE 2 resource.          
-//          
-#include "afxres.h"          
-/////////////////////////////////////////////////////////////////////////////          
-#undef APSTUDIO_READONLY_SYMBOLS          
-/////////////////////////////////////////////////////////////////////////////          
-// French (France) resources          
-#if defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_FRA)          
-LANGUAGE LANG_FRENCH, SUBLANG_FRENCH          
-#pragma code_page(1252)          
-#ifdef APSTUDIO_INVOKED          
-/////////////////////////////////////////////////////////////////////////////          
-//          
-// TEXTINCLUDE          
-//          
-1 TEXTINCLUDE           
-BEGIN          
-    "resource.h\0"          
-END          
-2 TEXTINCLUDE           
-BEGIN          
-    "#include ""afxres.h""\r\n"          
-    "\0"          
-END          
-3 TEXTINCLUDE           
-BEGIN          
-    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"          
-    "#define _AFX_NO_OLE_RESOURCES\r\n"          
-    "#define _AFX_NO_TRACKER_RESOURCES\r\n"          
-    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"          
-    "\r\n"          
-    "#if defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_FRA)\r\n"          
-    "#ifdef _WIN32\r\n"          
-    "LANGUAGE 12, 1\r\n"          
-    "#pragma code_page(1252)\r\n"          
-    "#endif //_WIN32\r\n"          
-    "#include ""res\\RaptorMFCExtension.rc2""  // non-Microsoft Visual C++ edited resources\r\n"          
-    "#include ""l.fra\\afxres.rc""          // Standard components\r\n"          
-    "#endif\r\n"          
-    "\0"          
-END          
-#endif    // APSTUDIO_INVOKED          
-/////////////////////////////////////////////////////////////////////////////          
-//          
-// Version          
-//          
-VS_VERSION_INFO VERSIONINFO          
- FILEVERSION 2,17,2,0 
- PRODUCTVERSION 2,17,2,0 
- FILEFLAGSMASK 0x3fL          
-#ifdef _DEBUG          
- FILEFLAGS 0x1L          
-#else          
- FILEFLAGS 0x0L          
-#endif          
- FILEOS 0x4L          
- FILETYPE 0x2L          
- FILESUBTYPE 0x0L          
-BEGIN          
-    BLOCK "StringFileInfo"          
-    BEGIN          
-        BLOCK "040c04b0"          
-        BEGIN          
-            VALUE "CompanyName", "Rafale Soft Inc. ©"          
-            VALUE "FileDescription", "Raptor OpenGL & Vulkan SDK MFC Extension support library"          
-            VALUE "FileVersion", "2.17.2.0" 
-            VALUE "InternalName", "RaptorMFCExtension.dll"          
-            VALUE "LegalCopyright", "Copyright © 1998-2019 Fabrice Ferrand <fabfer@wanadoo.fr>"          
-            VALUE "OriginalFilename", "RaptorMFCExtension.dll"          
-            VALUE "ProductName", "Raptor"          
-            VALUE "ProductVersion", "2.17.2.0" 
-        END          
-    END          
-    BLOCK "VarFileInfo"          
-    BEGIN          
-        VALUE "Translation", 0x40c, 1200          
-    END          
-END          
-/////////////////////////////////////////////////////////////////////////////          
-//          
-// Dialog          
-//          
-IDD_DIALOG1 DIALOGEX 0, 0, 186, 222          
-STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU          
-CAPTION "Raptor Status"          
-FONT 8, "MS Sans Serif", 0, 0, 0x1          
-BEGIN          
-    DEFPUSHBUTTON   "OK",IDOK,129,7,50,14          
-    PUSHBUTTON      "Cancel",IDCANCEL,129,24,50,14          
-    LTEXT           "Vendor :",IDC_VENDOR,12,53,159,10,SS_CENTERIMAGE          
-    LTEXT           "Renderer :",IDC_RENDERER,12,64,160,10,SS_CENTERIMAGE          
-    LTEXT           "Version :",IDC_VERSION,12,75,82,10,SS_CENTERIMAGE          
-    LTEXT           "Extensions :",IDC_EXTENSIONS,12,98,43,9          
-    GROUPBOX        "OpenGL engine :",IDC_STATIC,7,43,172,127          
-    CONTROL         IDB_BITMAP1,IDC_STATIC,"Static",SS_BITMAP,7,7,118,31          
-    GROUPBOX        "Implementation-dependant GL Values",IDC_STATIC,7,172,172,46          
-    COMBOBOX        IDC_COMBO1,13,185,160,62,CBS_DROPDOWN | CBS_AUTOHSCROLL | WS_VSCROLL | WS_TABSTOP          
-    LTEXT           "N/A",IDC_VALUE,13,202,160,12,SS_CENTERIMAGE,WS_EX_STATICEDGE          
-    LISTBOX         IDC_LIST1,13,107,160,58,LBS_NOINTEGRALHEIGHT | LBS_NOSEL | WS_VSCROLL | WS_TABSTOP          
-    CTEXT           "TMUs :",IDC_MAXTMU,72,98,35,9,SS_CENTERIMAGE          
-    RTEXT           "Compressors :",IDC_COMPRESSORS,110,98,63,9          
-    RTEXT           "SMP is active :",IDC_SMP,107,75,66,9          
-    LTEXT           "GLSL: ",IDC_SL_VERSION,12,87,161,10,SS_CENTERIMAGE          
-END          
-IDD_DIALOG2 DIALOGEX 0, 0, 238, 180          
-STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU          
-CAPTION "Objects usage"          
-FONT 8, "MS Sans Serif", 0, 0, 0x1          
-BEGIN          
-    DEFPUSHBUTTON   "OK",IDOK,181,7,50,14          
-    PUSHBUTTON      "Cancel",IDCANCEL,181,24,50,14          
-    CONTROL         IDB_BITMAP1,IDC_STATIC,"Static",SS_BITMAP,7,7,85,28          
-    CONTROL         "Tree1",IDC_OBJECTTREE,"SysTreeView32",TVS_HASBUTTONS | TVS_HASLINES | TVS_LINESATROOT | WS_BORDER | WS_TABSTOP,7,42,224,131,WS_EX_STATICEDGE          
-END          
-IDD_DIALOG3 DIALOGEX 0, 0, 186, 118          
-STYLE DS_SETFONT | DS_MODALFRAME | DS_SETFOREGROUND | DS_3DLOOK | DS_NOFAILCREATE | DS_CENTER | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU          
-CAPTION "Video settings..."          
-FONT 8, "MS Sans Serif", 0, 0, 0x1          
-BEGIN          
-    DEFPUSHBUTTON   "OK",IDOK,129,7,50,14          
-    PUSHBUTTON      "Cancel",IDCANCEL,129,24,50,14          
-    CONTROL         IDB_BITMAP1,IDC_STATIC,"Static",SS_BITMAP,7,7,118,31          
-    GROUPBOX        "Full Screen configuration ...",IDC_STATIC,7,42,172,69          
-    COMBOBOX        IDC_CONFIG,13,52,159,76,CBS_DROPDOWN | CBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP          
-    PUSHBUTTON      "Test",IDC_TEST,13,89,66,18          
-    PUSHBUTTON      "Apply",IDC_APPLY,107,88,66,18          
-    CTEXT           "",IDC_STATUS,13,69,159,14,SS_CENTERIMAGE | SS_SUNKEN,WS_EX_STATICEDGE          
-END          
-IDD_DIALOG4 DIALOG 0, 0, 261, 114          
-STYLE DS_SETFONT | DS_MODALFRAME | DS_SETFOREGROUND | DS_3DLOOK | DS_NOFAILCREATE | DS_CENTER | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU          
-CAPTION "About Raptor OpenGL framework..."          
-FONT 8, "MS Sans Serif"          
-BEGIN          
-    CTEXT           "Version : ???",IDC_VERSION,143,7,58,14,SS_CENTERIMAGE          
-    DEFPUSHBUTTON   "OK",IDOK,204,7,50,14          
-END          
-IDD_DIALOG5 DIALOG 0, 0, 319, 113          
-STYLE DS_SETFONT | DS_MODALFRAME | DS_SETFOREGROUND | DS_3DLOOK | DS_NOFAILCREATE | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU          
-CAPTION "Raptor errors"          
-FONT 8, "MS Sans Serif"          
-BEGIN          
-    DEFPUSHBUTTON   "Close",IDOK,263,96,50,14          
-    LISTBOX         IDC_LIST3,7,18,305,76,LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_HSCROLL | WS_TABSTOP          
-    LTEXT           "Type:        Class:                   Message:",IDC_STATIC,7,7,305,9          
-END          
-/////////////////////////////////////////////////////////////////////////////          
-//          
-// Dialog Info          
-//          
-IDD_DIALOG1 DLGINIT          
-BEGIN          
-    IDC_COMBO1, 0x403, 14, 0          
-0x4c47, 0x4d5f, 0x5841, 0x4c5f, 0x4749, 0x5448, 0x0053,           
-    IDC_COMBO1, 0x403, 19, 0          
-0x4c47, 0x4d5f, 0x5841, 0x435f, 0x494c, 0x5f50, 0x4c50, 0x4e41, 0x5345,           
-"\000"           
-    IDC_COMBO1, 0x403, 29, 0          
-0x4c47, 0x4d5f, 0x5841, 0x4d5f, 0x444f, 0x4c45, 0x4956, 0x5745, 0x535f,           
-0x4154, 0x4b43, 0x445f, 0x5045, 0x4854, "\000"           
-    IDC_COMBO1, 0x403, 30, 0          
-0x4c47, 0x4d5f, 0x5841, 0x505f, 0x4f52, 0x454a, 0x5443, 0x4f49, 0x5f4e,           
-0x5453, 0x4341, 0x5f4b, 0x4544, 0x5450, 0x0048,           
-    IDC_COMBO1, 0x403, 27, 0          
-0x4c47, 0x4d5f, 0x5841, 0x545f, 0x5845, 0x5554, 0x4552, 0x535f, 0x4154,           
-0x4b43, 0x445f, 0x5045, 0x4854, "\000"           
-    IDC_COMBO1, 0x403, 17, 0          
-0x4c47, 0x535f, 0x4255, 0x4950, 0x4558, 0x5f4c, 0x4942, 0x5354, "\000"           
-    IDC_COMBO1, 0x403, 20, 0          
-0x4c47, 0x4d5f, 0x5841, 0x545f, 0x5845, 0x5554, 0x4552, 0x535f, 0x5a49,           
-0x0045,           
-    IDC_COMBO1, 0x403, 23, 0          
-0x4c47, 0x4d5f, 0x5841, 0x505f, 0x5849, 0x4c45, 0x4d5f, 0x5041, 0x545f,           
-0x4241, 0x454c, "\000"           
-    IDC_COMBO1, 0x403, 24, 0          
-0x4c47, 0x4d5f, 0x5841, 0x4e5f, 0x4d41, 0x5f45, 0x5453, 0x4341, 0x5f4b,           
-0x4544, 0x5450, 0x0048,           
-    IDC_COMBO1, 0x403, 20, 0          
-0x4c47, 0x4d5f, 0x5841, 0x4c5f, 0x5349, 0x5f54, 0x454e, 0x5453, 0x4e49,           
-0x0047,           
-    IDC_COMBO1, 0x403, 18, 0          
-0x4c47, 0x4d5f, 0x5841, 0x455f, 0x4156, 0x5f4c, 0x524f, 0x4544, 0x0052,           
-    IDC_COMBO1, 0x403, 21, 0          
-0x4c47, 0x4d5f, 0x5841, 0x565f, 0x4549, 0x5057, 0x524f, 0x5f54, 0x4944,           
-0x534d, "\000"           
-    IDC_COMBO1, 0x403, 26, 0          
-0x4c47, 0x4d5f, 0x5841, 0x415f, 0x5454, 0x4952, 0x5f42, 0x5453, 0x4341,           
-0x5f4b, 0x4544, 0x5450, 0x0048,           
-    IDC_COMBO1, 0x403, 33, 0          
-0x4c47, 0x4d5f, 0x5841, 0x435f, 0x494c, 0x4e45, 0x5f54, 0x5441, 0x5254,           
-0x4249, 0x535f, 0x4154, 0x4b43, 0x445f, 0x5045, 0x4854, "\000"           
-    IDC_COMBO1, 0x403, 15, 0          
-0x4c47, 0x415f, 0x5855, 0x425f, 0x4655, 0x4546, 0x5352, "\000"           
-    IDC_COMBO1, 0x403, 13, 0          
-0x4c47, 0x525f, 0x4247, 0x5f41, 0x4f4d, 0x4544, "\000"           
-    IDC_COMBO1, 0x403, 14, 0          
-0x4c47, 0x495f, 0x444e, 0x5845, 0x4d5f, 0x444f, 0x0045,           
-    IDC_COMBO1, 0x403, 16, 0          
-0x4c47, 0x445f, 0x554f, 0x4c42, 0x4245, 0x4655, 0x4546, 0x0052,           
-    IDC_COMBO1, 0x403, 10, 0          
-0x4c47, 0x535f, 0x4554, 0x4552, 0x004f,           
-    IDC_COMBO1, 0x403, 20, 0          
-0x4c47, 0x505f, 0x494f, 0x544e, 0x535f, 0x5a49, 0x5f45, 0x4152, 0x474e,           
-0x0045,           
-    IDC_COMBO1, 0x403, 26, 0          
-0x4c47, 0x505f, 0x494f, 0x544e, 0x535f, 0x5a49, 0x5f45, 0x5247, 0x4e41,           
-0x4c55, 0x5241, 0x5449, 0x0059,           
-    IDC_COMBO1, 0x403, 20, 0          
-0x4c47, 0x4c5f, 0x4e49, 0x5f45, 0x4957, 0x5444, 0x5f48, 0x4152, 0x474e,           
-0x0045,           
-    IDC_COMBO1, 0x403, 26, 0          
-0x4c47, 0x4c5f, 0x4e49, 0x5f45, 0x4957, 0x5444, 0x5f48, 0x5247, 0x4e41,           
-0x4c55, 0x5241, 0x5449, 0x0059,           
-    IDC_COMBO1, 0x403, 12, 0          
-0x4c47, 0x525f, 0x4445, 0x425f, 0x5449, 0x0053,           
-    IDC_COMBO1, 0x403, 14, 0          
-0x4c47, 0x475f, 0x4552, 0x4e45, 0x425f, 0x5449, 0x0053,           
-    IDC_COMBO1, 0x403, 13, 0          
-0x4c47, 0x425f, 0x554c, 0x5f45, 0x4942, 0x5354, "\000"           
-    IDC_COMBO1, 0x403, 14, 0          
-0x4c47, 0x415f, 0x504c, 0x4148, 0x425f, 0x5449, 0x0053,           
-    IDC_COMBO1, 0x403, 14, 0          
-0x4c47, 0x495f, 0x444e, 0x5845, 0x425f, 0x5449, 0x0053,           
-    IDC_COMBO1, 0x403, 14, 0          
-0x4c47, 0x445f, 0x5045, 0x4854, 0x425f, 0x5449, 0x0053,           
-    IDC_COMBO1, 0x403, 16, 0          
-0x4c47, 0x535f, 0x4554, 0x434e, 0x4c49, 0x425f, 0x5449, 0x0053,           
-    IDC_COMBO1, 0x403, 18, 0          
-0x4c47, 0x415f, 0x4343, 0x4d55, 0x525f, 0x4445, 0x425f, 0x5449, 0x0053,           
-    IDC_COMBO1, 0x403, 20, 0          
-0x4c47, 0x415f, 0x4343, 0x4d55, 0x475f, 0x4552, 0x4e45, 0x425f, 0x5449,           
-0x0053,           
-    IDC_COMBO1, 0x403, 19, 0          
-0x4c47, 0x415f, 0x4343, 0x4d55, 0x425f, 0x554c, 0x5f45, 0x4942, 0x5354,           
-"\000"           
-    IDC_COMBO1, 0x403, 20, 0          
-0x4c47, 0x415f, 0x4343, 0x4d55, 0x415f, 0x504c, 0x4148, 0x425f, 0x5449,           
-0x0053,           
-    IDC_COMBO1, 0x403, 28, 0          
-0x4c47, 0x4e5f, 0x4d55, 0x475f, 0x4e45, 0x5245, 0x4c41, 0x435f, 0x4d4f,           
-0x4942, 0x454e, 0x5352, 0x4e5f, 0x0056,           
-    IDC_COMBO1, 0x403, 28, 0          
-0x4c47, 0x4d5f, 0x5841, 0x475f, 0x4e45, 0x5245, 0x4c41, 0x435f, 0x4d4f,           
-0x4942, 0x454e, 0x5352, 0x4e5f, 0x0056,           
-    IDC_COMBO1, 0x403, 34, 0          
-0x4c47, 0x4d5f, 0x5841, 0x545f, 0x5845, 0x5554, 0x4552, 0x4d5f, 0x5841,           
-0x415f, 0x494e, 0x4f53, 0x5254, 0x504f, 0x5f59, 0x5845, 0x0054,           
-    IDC_COMBO1, 0x403, 27, 0          
-0x4c47, 0x4d5f, 0x5841, 0x335f, 0x5f44, 0x4554, 0x5458, 0x5255, 0x5f45,           
-0x4953, 0x455a, 0x455f, 0x5458, "\000"           
-    0          
-END          
-/////////////////////////////////////////////////////////////////////////////          
-//          
-// Bitmap          
-//          
-IDB_BITMAP1             BITMAP                  "res\\Raptor_logo_sml.bmp"          
-/////////////////////////////////////////////////////////////////////////////          
-//          
-// String Table          
-//          
-STRINGTABLE          
-BEGIN          
-    ID_INDICATOR_WIDTH      "w:         "          
-    ID_INDICATOR_HEIGHT     "h:         "          
-    ID_INDICATOR_FPS        "fps:        "          
-    ID_INDICATOR_NOBJECTS   "objs:       /        "          
-    ID_INDICATOR_COLLISION  "c:      "          
-    ID_STATUSTEXT           "Ready"          
-END          
-#endif    // French (France) resources          
-/////////////////////////////////////////////////////////////////////////////          
-#ifndef APSTUDIO_INVOKED          
-/////////////////////////////////////////////////////////////////////////////          
-//          
-// Generated from the TEXTINCLUDE 3 resource.          
-//          
-#define _AFX_NO_SPLITTER_RESOURCES          
-#define _AFX_NO_OLE_RESOURCES          
-#define _AFX_NO_TRACKER_RESOURCES          
-#define _AFX_NO_PROPERTY_RESOURCES          
-#if defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_FRA)          
-#ifdef _WIN32          
-LANGUAGE 12, 1          
-#pragma code_page(1252)          
-#endif //_WIN32          
-#include "res\RaptorMFCExtension.rc2"  // non-Microsoft Visual C++ edited resources          
-#include "l.fra\afxres.rc"          // Standard components          
-#endif          
-/////////////////////////////////////////////////////////////////////////////          
-#endif    // not APSTUDIO_INVOKED          
-// Microsoft Visual C++ generated resource script.          
-//          
-#include "resource.h"          
-#define APSTUDIO_READONLY_SYMBOLS          
-/////////////////////////////////////////////////////////////////////////////          
-//          
-// Generated from the TEXTINCLUDE 2 resource.          
-//          
-#include "afxres.h"          
-/////////////////////////////////////////////////////////////////////////////          
-#undef APSTUDIO_READONLY_SYMBOLS          
-/////////////////////////////////////////////////////////////////////////////          
-// French (France) resources          
-#if defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_FRA)          
-LANGUAGE LANG_FRENCH, SUBLANG_FRENCH          
-#pragma code_page(1252)          
-#ifdef APSTUDIO_INVOKED          
-/////////////////////////////////////////////////////////////////////////////          
-//          
-// TEXTINCLUDE          
-//          
-1 TEXTINCLUDE           
-BEGIN          
-    "resource.h\0"          
-END          
-2 TEXTINCLUDE           
-BEGIN          
-    "#include ""afxres.h""\r\n"          
-    "\0"          
-END          
-3 TEXTINCLUDE           
-BEGIN          
-    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"          
-    "#define _AFX_NO_OLE_RESOURCES\r\n"          
-    "#define _AFX_NO_TRACKER_RESOURCES\r\n"          
-    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"          
-    "\r\n"          
-    "#if defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_FRA)\r\n"          
-    "#ifdef _WIN32\r\n"          
-    "LANGUAGE 12, 1\r\n"          
-    "#pragma code_page(1252)\r\n"          
-    "#endif //_WIN32\r\n"          
-    "#include ""res\\RaptorMFCExtension.rc2""  // non-Microsoft Visual C++ edited resources\r\n"          
-    "#include ""l.fra\\afxres.rc""          // Standard components\r\n"          
-    "#endif\r\n"          
-    "\0"          
-END          
-#endif    // APSTUDIO_INVOKED          
-/////////////////////////////////////////////////////////////////////////////          
-//          
-// Version          
-//          
-VS_VERSION_INFO VERSIONINFO          
- FILEVERSION 2,17,2,0 
- PRODUCTVERSION 2,17,2,0 
- FILEFLAGSMASK 0x3fL          
-#ifdef _DEBUG          
- FILEFLAGS 0x1L          
-#else          
- FILEFLAGS 0x0L          
-#endif          
- FILEOS 0x4L          
- FILETYPE 0x2L          
- FILESUBTYPE 0x0L          
-BEGIN          
-    BLOCK "StringFileInfo"          
-    BEGIN          
-        BLOCK "040c04b0"          
-        BEGIN          
-            VALUE "CompanyName", "Rafale Soft Inc. ©"          
-            VALUE "FileDescription", "Raptor OpenGL & Vulkan SDK MFC Extension support library"          
-            VALUE "FileVersion", "2.17.2.0" 
-            VALUE "InternalName", "RaptorMFCExtension.dll"          
-            VALUE "LegalCopyright", "Copyright © 1998-2019 Fabrice Ferrand <fabfer@wanadoo.fr>"          
-            VALUE "OriginalFilename", "RaptorMFCExtension.dll"          
-            VALUE "ProductName", "Raptor"          
-            VALUE "ProductVersion", "2.17.2.0" 
-        END          
-    END          
-    BLOCK "VarFileInfo"          
-    BEGIN          
-        VALUE "Translation", 0x40c, 1200          
-    END          
-END          
-/////////////////////////////////////////////////////////////////////////////          
-//          
-// Dialog          
-//          
-IDD_DIALOG1 DIALOGEX 0, 0, 186, 222          
-STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU          
-CAPTION "Raptor Status"          
-FONT 8, "MS Sans Serif", 0, 0, 0x1          
-BEGIN          
-    DEFPUSHBUTTON   "OK",IDOK,129,7,50,14          
-    PUSHBUTTON      "Cancel",IDCANCEL,129,24,50,14          
-    LTEXT           "Vendor :",IDC_VENDOR,12,53,159,10,SS_CENTERIMAGE          
-    LTEXT           "Renderer :",IDC_RENDERER,12,64,160,10,SS_CENTERIMAGE          
-    LTEXT           "Version :",IDC_VERSION,12,75,82,10,SS_CENTERIMAGE          
-    LTEXT           "Extensions :",IDC_EXTENSIONS,12,98,43,9          
-    GROUPBOX        "OpenGL engine :",IDC_STATIC,7,43,172,127          
-    CONTROL         IDB_BITMAP1,IDC_STATIC,"Static",SS_BITMAP,7,7,118,31          
-    GROUPBOX        "Implementation-dependant GL Values",IDC_STATIC,7,172,172,46          
-    COMBOBOX        IDC_COMBO1,13,185,160,62,CBS_DROPDOWN | CBS_AUTOHSCROLL | WS_VSCROLL | WS_TABSTOP          
-    LTEXT           "N/A",IDC_VALUE,13,202,160,12,SS_CENTERIMAGE,WS_EX_STATICEDGE          
-    LISTBOX         IDC_LIST1,13,107,160,58,LBS_NOINTEGRALHEIGHT | LBS_NOSEL | WS_VSCROLL | WS_TABSTOP          
-    CTEXT           "TMUs :",IDC_MAXTMU,72,98,35,9,SS_CENTERIMAGE          
-    RTEXT           "Compressors :",IDC_COMPRESSORS,110,98,63,9          
-    RTEXT           "SMP is active :",IDC_SMP,107,75,66,9          
-    LTEXT           "GLSL: ",IDC_SL_VERSION,12,87,161,10,SS_CENTERIMAGE          
-END          
-IDD_DIALOG2 DIALOGEX 0, 0, 238, 180          
-STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU          
-CAPTION "Objects usage"          
-FONT 8, "MS Sans Serif", 0, 0, 0x1          
-BEGIN          
-    DEFPUSHBUTTON   "OK",IDOK,181,7,50,14          
-    PUSHBUTTON      "Cancel",IDCANCEL,181,24,50,14          
-    CONTROL         IDB_BITMAP1,IDC_STATIC,"Static",SS_BITMAP,7,7,85,28          
-    CONTROL         "Tree1",IDC_OBJECTTREE,"SysTreeView32",TVS_HASBUTTONS | TVS_HASLINES | TVS_LINESATROOT | WS_BORDER | WS_TABSTOP,7,42,224,131,WS_EX_STATICEDGE          
-END          
-IDD_DIALOG3 DIALOGEX 0, 0, 186, 118          
-STYLE DS_SETFONT | DS_MODALFRAME | DS_SETFOREGROUND | DS_3DLOOK | DS_NOFAILCREATE | DS_CENTER | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU          
-CAPTION "Video settings..."          
-FONT 8, "MS Sans Serif", 0, 0, 0x1          
-BEGIN          
-    DEFPUSHBUTTON   "OK",IDOK,129,7,50,14          
-    PUSHBUTTON      "Cancel",IDCANCEL,129,24,50,14          
-    CONTROL         IDB_BITMAP1,IDC_STATIC,"Static",SS_BITMAP,7,7,118,31          
-    GROUPBOX        "Full Screen configuration ...",IDC_STATIC,7,42,172,69          
-    COMBOBOX        IDC_CONFIG,13,52,159,76,CBS_DROPDOWN | CBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP          
-    PUSHBUTTON      "Test",IDC_TEST,13,89,66,18          
-    PUSHBUTTON      "Apply",IDC_APPLY,107,88,66,18          
-    CTEXT           "",IDC_STATUS,13,69,159,14,SS_CENTERIMAGE | SS_SUNKEN,WS_EX_STATICEDGE          
-END          
-IDD_DIALOG4 DIALOG 0, 0, 261, 114          
-STYLE DS_SETFONT | DS_MODALFRAME | DS_SETFOREGROUND | DS_3DLOOK | DS_NOFAILCREATE | DS_CENTER | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU          
-CAPTION "About Raptor OpenGL framework..."          
-FONT 8, "MS Sans Serif"          
-BEGIN          
-    CTEXT           "Version : ???",IDC_VERSION,143,7,58,14,SS_CENTERIMAGE          
-    DEFPUSHBUTTON   "OK",IDOK,204,7,50,14          
-END          
-IDD_DIALOG5 DIALOG 0, 0, 319, 113          
-STYLE DS_SETFONT | DS_MODALFRAME | DS_SETFOREGROUND | DS_3DLOOK | DS_NOFAILCREATE | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU          
-CAPTION "Raptor errors"          
-FONT 8, "MS Sans Serif"          
-BEGIN          
-    DEFPUSHBUTTON   "Close",IDOK,263,96,50,14          
-    LISTBOX         IDC_LIST3,7,18,305,76,LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_HSCROLL | WS_TABSTOP          
-    LTEXT           "Type:        Class:                   Message:",IDC_STATIC,7,7,305,9          
-END          
-/////////////////////////////////////////////////////////////////////////////          
-//          
-// Dialog Info          
-//          
-IDD_DIALOG1 DLGINIT          
-BEGIN          
-    IDC_COMBO1, 0x403, 14, 0          
-0x4c47, 0x4d5f, 0x5841, 0x4c5f, 0x4749, 0x5448, 0x0053,           
-    IDC_COMBO1, 0x403, 19, 0          
-0x4c47, 0x4d5f, 0x5841, 0x435f, 0x494c, 0x5f50, 0x4c50, 0x4e41, 0x5345,           
-"\000"           
-    IDC_COMBO1, 0x403, 29, 0          
-0x4c47, 0x4d5f, 0x5841, 0x4d5f, 0x444f, 0x4c45, 0x4956, 0x5745, 0x535f,           
-0x4154, 0x4b43, 0x445f, 0x5045, 0x4854, "\000"           
-    IDC_COMBO1, 0x403, 30, 0          
-0x4c47, 0x4d5f, 0x5841, 0x505f, 0x4f52, 0x454a, 0x5443, 0x4f49, 0x5f4e,           
-0x5453, 0x4341, 0x5f4b, 0x4544, 0x5450, 0x0048,           
-    IDC_COMBO1, 0x403, 27, 0          
-0x4c47, 0x4d5f, 0x5841, 0x545f, 0x5845, 0x5554, 0x4552, 0x535f, 0x4154,           
-0x4b43, 0x445f, 0x5045, 0x4854, "\000"           
-    IDC_COMBO1, 0x403, 17, 0          
-0x4c47, 0x535f, 0x4255, 0x4950, 0x4558, 0x5f4c, 0x4942, 0x5354, "\000"           
-    IDC_COMBO1, 0x403, 20, 0          
-0x4c47, 0x4d5f, 0x5841, 0x545f, 0x5845, 0x5554, 0x4552, 0x535f, 0x5a49,           
-0x0045,           
-    IDC_COMBO1, 0x403, 23, 0          
-0x4c47, 0x4d5f, 0x5841, 0x505f, 0x5849, 0x4c45, 0x4d5f, 0x5041, 0x545f,           
-0x4241, 0x454c, "\000"           
-    IDC_COMBO1, 0x403, 24, 0          
-0x4c47, 0x4d5f, 0x5841, 0x4e5f, 0x4d41, 0x5f45, 0x5453, 0x4341, 0x5f4b,           
-0x4544, 0x5450, 0x0048,           
-    IDC_COMBO1, 0x403, 20, 0          
-0x4c47, 0x4d5f, 0x5841, 0x4c5f, 0x5349, 0x5f54, 0x454e, 0x5453, 0x4e49,           
-0x0047,           
-    IDC_COMBO1, 0x403, 18, 0          
-0x4c47, 0x4d5f, 0x5841, 0x455f, 0x4156, 0x5f4c, 0x524f, 0x4544, 0x0052,           
-    IDC_COMBO1, 0x403, 21, 0          
-0x4c47, 0x4d5f, 0x5841, 0x565f, 0x4549, 0x5057, 0x524f, 0x5f54, 0x4944,           
-0x534d, "\000"           
-    IDC_COMBO1, 0x403, 26, 0          
-0x4c47, 0x4d5f, 0x5841, 0x415f, 0x5454, 0x4952, 0x5f42, 0x5453, 0x4341,           
-0x5f4b, 0x4544, 0x5450, 0x0048,           
-    IDC_COMBO1, 0x403, 33, 0          
-0x4c47, 0x4d5f, 0x5841, 0x435f, 0x494c, 0x4e45, 0x5f54, 0x5441, 0x5254,           
-0x4249, 0x535f, 0x4154, 0x4b43, 0x445f, 0x5045, 0x4854, "\000"           
-    IDC_COMBO1, 0x403, 15, 0          
-0x4c47, 0x415f, 0x5855, 0x425f, 0x4655, 0x4546, 0x5352, "\000"           
-    IDC_COMBO1, 0x403, 13, 0          
-0x4c47, 0x525f, 0x4247, 0x5f41, 0x4f4d, 0x4544, "\000"           
-    IDC_COMBO1, 0x403, 14, 0          
-0x4c47, 0x495f, 0x444e, 0x5845, 0x4d5f, 0x444f, 0x0045,           
-    IDC_COMBO1, 0x403, 16, 0          
-0x4c47, 0x445f, 0x554f, 0x4c42, 0x4245, 0x4655, 0x4546, 0x0052,           
-    IDC_COMBO1, 0x403, 10, 0          
-0x4c47, 0x535f, 0x4554, 0x4552, 0x004f,           
-    IDC_COMBO1, 0x403, 20, 0          
-0x4c47, 0x505f, 0x494f, 0x544e, 0x535f, 0x5a49, 0x5f45, 0x4152, 0x474e,           
-0x0045,           
-    IDC_COMBO1, 0x403, 26, 0          
-0x4c47, 0x505f, 0x494f, 0x544e, 0x535f, 0x5a49, 0x5f45, 0x5247, 0x4e41,           
-0x4c55, 0x5241, 0x5449, 0x0059,           
-    IDC_COMBO1, 0x403, 20, 0          
-0x4c47, 0x4c5f, 0x4e49, 0x5f45, 0x4957, 0x5444, 0x5f48, 0x4152, 0x474e,           
-0x0045,           
-    IDC_COMBO1, 0x403, 26, 0          
-0x4c47, 0x4c5f, 0x4e49, 0x5f45, 0x4957, 0x5444, 0x5f48, 0x5247, 0x4e41,           
-0x4c55, 0x5241, 0x5449, 0x0059,           
-    IDC_COMBO1, 0x403, 12, 0          
-0x4c47, 0x525f, 0x4445, 0x425f, 0x5449, 0x0053,           
-    IDC_COMBO1, 0x403, 14, 0          
-0x4c47, 0x475f, 0x4552, 0x4e45, 0x425f, 0x5449, 0x0053,           
-    IDC_COMBO1, 0x403, 13, 0          
-0x4c47, 0x425f, 0x554c, 0x5f45, 0x4942, 0x5354, "\000"           
-    IDC_COMBO1, 0x403, 14, 0          
-0x4c47, 0x415f, 0x504c, 0x4148, 0x425f, 0x5449, 0x0053,           
-    IDC_COMBO1, 0x403, 14, 0          
-0x4c47, 0x495f, 0x444e, 0x5845, 0x425f, 0x5449, 0x0053,           
-    IDC_COMBO1, 0x403, 14, 0          
-0x4c47, 0x445f, 0x5045, 0x4854, 0x425f, 0x5449, 0x0053,           
-    IDC_COMBO1, 0x403, 16, 0          
-0x4c47, 0x535f, 0x4554, 0x434e, 0x4c49, 0x425f, 0x5449, 0x0053,           
-    IDC_COMBO1, 0x403, 18, 0          
-0x4c47, 0x415f, 0x4343, 0x4d55, 0x525f, 0x4445, 0x425f, 0x5449, 0x0053,           
-    IDC_COMBO1, 0x403, 20, 0          
-0x4c47, 0x415f, 0x4343, 0x4d55, 0x475f, 0x4552, 0x4e45, 0x425f, 0x5449,           
-0x0053,           
-    IDC_COMBO1, 0x403, 19, 0          
-0x4c47, 0x415f, 0x4343, 0x4d55, 0x425f, 0x554c, 0x5f45, 0x4942, 0x5354,           
-"\000"           
-    IDC_COMBO1, 0x403, 20, 0          
-0x4c47, 0x415f, 0x4343, 0x4d55, 0x415f, 0x504c, 0x4148, 0x425f, 0x5449,           
-0x0053,           
-    IDC_COMBO1, 0x403, 28, 0          
-0x4c47, 0x4e5f, 0x4d55, 0x475f, 0x4e45, 0x5245, 0x4c41, 0x435f, 0x4d4f,           
-0x4942, 0x454e, 0x5352, 0x4e5f, 0x0056,           
-    IDC_COMBO1, 0x403, 28, 0          
-0x4c47, 0x4d5f, 0x5841, 0x475f, 0x4e45, 0x5245, 0x4c41, 0x435f, 0x4d4f,           
-0x4942, 0x454e, 0x5352, 0x4e5f, 0x0056,           
-    IDC_COMBO1, 0x403, 34, 0          
-0x4c47, 0x4d5f, 0x5841, 0x545f, 0x5845, 0x5554, 0x4552, 0x4d5f, 0x5841,           
-0x415f, 0x494e, 0x4f53, 0x5254, 0x504f, 0x5f59, 0x5845, 0x0054,           
-    IDC_COMBO1, 0x403, 27, 0          
-0x4c47, 0x4d5f, 0x5841, 0x335f, 0x5f44, 0x4554, 0x5458, 0x5255, 0x5f45,           
-0x4953, 0x455a, 0x455f, 0x5458, "\000"           
-    0          
-END          
-/////////////////////////////////////////////////////////////////////////////          
-//          
-// Bitmap          
-//          
-IDB_BITMAP1             BITMAP                  "res\\Raptor_logo_sml.bmp"          
-/////////////////////////////////////////////////////////////////////////////          
-//          
-// String Table          
-//          
-STRINGTABLE          
-BEGIN          
-    ID_INDICATOR_WIDTH      "w:         "          
-    ID_INDICATOR_HEIGHT     "h:         "          
-    ID_INDICATOR_FPS        "fps:        "          
-    ID_INDICATOR_NOBJECTS   "objs:       /        "          
-    ID_INDICATOR_COLLISION  "c:      "          
-    ID_STATUSTEXT           "Ready"          
-END          
-#endif    // French (France) resources          
-/////////////////////////////////////////////////////////////////////////////          
-#ifndef APSTUDIO_INVOKED          
-/////////////////////////////////////////////////////////////////////////////          
-//          
-// Generated from the TEXTINCLUDE 3 resource.          
-//          
-#define _AFX_NO_SPLITTER_RESOURCES          
-#define _AFX_NO_OLE_RESOURCES          
-#define _AFX_NO_TRACKER_RESOURCES          
-#define _AFX_NO_PROPERTY_RESOURCES          
-#if defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_FRA)          
-#ifdef _WIN32          
-LANGUAGE 12, 1          
-#pragma code_page(1252)          
-#endif //_WIN32          
-#include "res\RaptorMFCExtension.rc2"  // non-Microsoft Visual C++ edited resources          
-#include "l.fra\afxres.rc"          // Standard components          
-#endif          
-/////////////////////////////////////////////////////////////////////////////          
-#endif    // not APSTUDIO_INVOKED          
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Français (France) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_FRA)
+LANGUAGE LANG_FRENCH, SUBLANG_FRENCH
+#pragma code_page(1252)
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_FRA)\r\n"
+    "#ifdef _WIN32\r\n"
+    "LANGUAGE 12, 1\r\n"
+    "#pragma code_page(1252)\r\n"
+    "#endif //_WIN32\r\n"
+    "#include ""res\\RaptorMFCExtension.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""l.fra\\afxres.rc""          // Standard components\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 2,17,2,0
+ PRODUCTVERSION 2,17,2,0
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x2L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040c04b0"
+        BEGIN
+            VALUE "CompanyName", "Rafale Soft Inc. ©"
+            VALUE "FileDescription", "Raptor OpenGL & Vulkan SDK MFC Extension support library"
+            VALUE "FileVersion", "2.17.2.0"
+            VALUE "InternalName", "RaptorMFCExtension.dll"
+            VALUE "LegalCopyright", "Copyright © 1998-2019 Fabrice Ferrand <fabfer@wanadoo.fr>"
+            VALUE "OriginalFilename", "RaptorMFCExtension.dll"
+            VALUE "ProductName", "Raptor"
+            VALUE "ProductVersion", "2.17.2.0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x40c, 1200
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_DIALOG1 DIALOGEX 0, 0, 186, 222
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Raptor Status"
+FONT 8, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,129,7,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,129,24,50,14
+    LTEXT           "Vendor :",IDC_VENDOR,12,53,159,10,SS_CENTERIMAGE
+    LTEXT           "Renderer :",IDC_RENDERER,12,64,160,10,SS_CENTERIMAGE
+    LTEXT           "Version :",IDC_VERSION,12,75,82,10,SS_CENTERIMAGE
+    LTEXT           "Extensions :",IDC_EXTENSIONS,12,98,43,9
+    GROUPBOX        "OpenGL engine :",IDC_STATIC,7,43,172,127
+    CONTROL         IDB_BITMAP1,IDC_STATIC,"Static",SS_BITMAP,7,7,118,31
+    GROUPBOX        "Implementation-dependant GL Values",IDC_STATIC,7,172,172,46
+    COMBOBOX        IDC_COMBO1,13,185,160,62,CBS_DROPDOWN | CBS_AUTOHSCROLL | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "N/A",IDC_VALUE,13,202,160,12,SS_CENTERIMAGE,WS_EX_STATICEDGE
+    LISTBOX         IDC_LIST1,13,107,160,58,LBS_NOINTEGRALHEIGHT | LBS_NOSEL | WS_VSCROLL | WS_TABSTOP
+    CTEXT           "TMUs :",IDC_MAXTMU,72,98,35,9,SS_CENTERIMAGE
+    RTEXT           "Compressors :",IDC_COMPRESSORS,110,98,63,9
+    RTEXT           "SMP is active :",IDC_SMP,107,75,66,9
+    LTEXT           "GLSL: ",IDC_SL_VERSION,12,87,161,10,SS_CENTERIMAGE
+END
+
+IDD_DIALOG2 DIALOGEX 0, 0, 238, 180
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Objects usage"
+FONT 8, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,181,7,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,181,24,50,14
+    CONTROL         IDB_BITMAP1,IDC_STATIC,"Static",SS_BITMAP,7,7,85,28
+    CONTROL         "Tree1",IDC_OBJECTTREE,"SysTreeView32",TVS_HASBUTTONS | TVS_HASLINES | TVS_LINESATROOT | WS_BORDER | WS_TABSTOP,7,42,224,131,WS_EX_STATICEDGE
+END
+
+IDD_DIALOG3 DIALOGEX 0, 0, 186, 118
+STYLE DS_SETFONT | DS_MODALFRAME | DS_SETFOREGROUND | DS_3DLOOK | DS_NOFAILCREATE | DS_CENTER | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Video settings..."
+FONT 8, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,129,7,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,129,24,50,14
+    CONTROL         IDB_BITMAP1,IDC_STATIC,"Static",SS_BITMAP,7,7,118,31
+    GROUPBOX        "Full Screen configuration ...",IDC_STATIC,7,42,172,69
+    COMBOBOX        IDC_CONFIG,13,52,159,76,CBS_DROPDOWN | CBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Test",IDC_TEST,13,89,66,18
+    PUSHBUTTON      "Apply",IDC_APPLY,107,88,66,18
+    CTEXT           "",IDC_STATUS,13,69,159,14,SS_CENTERIMAGE | SS_SUNKEN,WS_EX_STATICEDGE
+END
+
+IDD_DIALOG4 DIALOG 0, 0, 261, 114
+STYLE DS_SETFONT | DS_MODALFRAME | DS_SETFOREGROUND | DS_3DLOOK | DS_NOFAILCREATE | DS_CENTER | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "About Raptor OpenGL framework..."
+FONT 8, "MS Sans Serif"
+BEGIN
+    CTEXT           "Version : ???",IDC_VERSION,143,7,58,14,SS_CENTERIMAGE
+    DEFPUSHBUTTON   "OK",IDOK,204,7,50,14
+END
+
+IDD_DIALOG5 DIALOG 0, 0, 319, 113
+STYLE DS_SETFONT | DS_MODALFRAME | DS_SETFOREGROUND | DS_3DLOOK | DS_NOFAILCREATE | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Raptor errors"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "Close",IDOK,263,96,50,14
+    LISTBOX         IDC_LIST3,7,18,305,76,LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_HSCROLL | WS_TABSTOP
+    LTEXT           "Type:        Class:                   Message:",IDC_STATIC,7,7,305,9
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog Info
+//
+
+IDD_DIALOG1 DLGINIT
+BEGIN
+    IDC_COMBO1, 0x403, 14, 0
+0x4c47, 0x4d5f, 0x5841, 0x4c5f, 0x4749, 0x5448, 0x0053, 
+    IDC_COMBO1, 0x403, 19, 0
+0x4c47, 0x4d5f, 0x5841, 0x435f, 0x494c, 0x5f50, 0x4c50, 0x4e41, 0x5345, 
+"\000" 
+    IDC_COMBO1, 0x403, 29, 0
+0x4c47, 0x4d5f, 0x5841, 0x4d5f, 0x444f, 0x4c45, 0x4956, 0x5745, 0x535f, 
+0x4154, 0x4b43, 0x445f, 0x5045, 0x4854, "\000" 
+    IDC_COMBO1, 0x403, 30, 0
+0x4c47, 0x4d5f, 0x5841, 0x505f, 0x4f52, 0x454a, 0x5443, 0x4f49, 0x5f4e, 
+0x5453, 0x4341, 0x5f4b, 0x4544, 0x5450, 0x0048, 
+    IDC_COMBO1, 0x403, 27, 0
+0x4c47, 0x4d5f, 0x5841, 0x545f, 0x5845, 0x5554, 0x4552, 0x535f, 0x4154, 
+0x4b43, 0x445f, 0x5045, 0x4854, "\000" 
+    IDC_COMBO1, 0x403, 17, 0
+0x4c47, 0x535f, 0x4255, 0x4950, 0x4558, 0x5f4c, 0x4942, 0x5354, "\000" 
+    IDC_COMBO1, 0x403, 20, 0
+0x4c47, 0x4d5f, 0x5841, 0x545f, 0x5845, 0x5554, 0x4552, 0x535f, 0x5a49, 
+0x0045, 
+    IDC_COMBO1, 0x403, 23, 0
+0x4c47, 0x4d5f, 0x5841, 0x505f, 0x5849, 0x4c45, 0x4d5f, 0x5041, 0x545f, 
+0x4241, 0x454c, "\000" 
+    IDC_COMBO1, 0x403, 24, 0
+0x4c47, 0x4d5f, 0x5841, 0x4e5f, 0x4d41, 0x5f45, 0x5453, 0x4341, 0x5f4b, 
+0x4544, 0x5450, 0x0048, 
+    IDC_COMBO1, 0x403, 20, 0
+0x4c47, 0x4d5f, 0x5841, 0x4c5f, 0x5349, 0x5f54, 0x454e, 0x5453, 0x4e49, 
+0x0047, 
+    IDC_COMBO1, 0x403, 18, 0
+0x4c47, 0x4d5f, 0x5841, 0x455f, 0x4156, 0x5f4c, 0x524f, 0x4544, 0x0052, 
+
+    IDC_COMBO1, 0x403, 21, 0
+0x4c47, 0x4d5f, 0x5841, 0x565f, 0x4549, 0x5057, 0x524f, 0x5f54, 0x4944, 
+0x534d, "\000" 
+    IDC_COMBO1, 0x403, 26, 0
+0x4c47, 0x4d5f, 0x5841, 0x415f, 0x5454, 0x4952, 0x5f42, 0x5453, 0x4341, 
+0x5f4b, 0x4544, 0x5450, 0x0048, 
+    IDC_COMBO1, 0x403, 33, 0
+0x4c47, 0x4d5f, 0x5841, 0x435f, 0x494c, 0x4e45, 0x5f54, 0x5441, 0x5254, 
+0x4249, 0x535f, 0x4154, 0x4b43, 0x445f, 0x5045, 0x4854, "\000" 
+    IDC_COMBO1, 0x403, 15, 0
+0x4c47, 0x415f, 0x5855, 0x425f, 0x4655, 0x4546, 0x5352, "\000" 
+    IDC_COMBO1, 0x403, 13, 0
+0x4c47, 0x525f, 0x4247, 0x5f41, 0x4f4d, 0x4544, "\000" 
+    IDC_COMBO1, 0x403, 14, 0
+0x4c47, 0x495f, 0x444e, 0x5845, 0x4d5f, 0x444f, 0x0045, 
+    IDC_COMBO1, 0x403, 16, 0
+0x4c47, 0x445f, 0x554f, 0x4c42, 0x4245, 0x4655, 0x4546, 0x0052, 
+    IDC_COMBO1, 0x403, 10, 0
+0x4c47, 0x535f, 0x4554, 0x4552, 0x004f, 
+    IDC_COMBO1, 0x403, 20, 0
+0x4c47, 0x505f, 0x494f, 0x544e, 0x535f, 0x5a49, 0x5f45, 0x4152, 0x474e, 
+0x0045, 
+    IDC_COMBO1, 0x403, 26, 0
+0x4c47, 0x505f, 0x494f, 0x544e, 0x535f, 0x5a49, 0x5f45, 0x5247, 0x4e41, 
+0x4c55, 0x5241, 0x5449, 0x0059, 
+    IDC_COMBO1, 0x403, 20, 0
+0x4c47, 0x4c5f, 0x4e49, 0x5f45, 0x4957, 0x5444, 0x5f48, 0x4152, 0x474e, 
+0x0045, 
+    IDC_COMBO1, 0x403, 26, 0
+0x4c47, 0x4c5f, 0x4e49, 0x5f45, 0x4957, 0x5444, 0x5f48, 0x5247, 0x4e41, 
+0x4c55, 0x5241, 0x5449, 0x0059, 
+    IDC_COMBO1, 0x403, 12, 0
+0x4c47, 0x525f, 0x4445, 0x425f, 0x5449, 0x0053, 
+    IDC_COMBO1, 0x403, 14, 0
+0x4c47, 0x475f, 0x4552, 0x4e45, 0x425f, 0x5449, 0x0053, 
+    IDC_COMBO1, 0x403, 13, 0
+0x4c47, 0x425f, 0x554c, 0x5f45, 0x4942, 0x5354, "\000" 
+    IDC_COMBO1, 0x403, 14, 0
+0x4c47, 0x415f, 0x504c, 0x4148, 0x425f, 0x5449, 0x0053, 
+    IDC_COMBO1, 0x403, 14, 0
+0x4c47, 0x495f, 0x444e, 0x5845, 0x425f, 0x5449, 0x0053, 
+    IDC_COMBO1, 0x403, 14, 0
+0x4c47, 0x445f, 0x5045, 0x4854, 0x425f, 0x5449, 0x0053, 
+    IDC_COMBO1, 0x403, 16, 0
+0x4c47, 0x535f, 0x4554, 0x434e, 0x4c49, 0x425f, 0x5449, 0x0053, 
+    IDC_COMBO1, 0x403, 18, 0
+0x4c47, 0x415f, 0x4343, 0x4d55, 0x525f, 0x4445, 0x425f, 0x5449, 0x0053, 
+
+    IDC_COMBO1, 0x403, 20, 0
+0x4c47, 0x415f, 0x4343, 0x4d55, 0x475f, 0x4552, 0x4e45, 0x425f, 0x5449, 
+0x0053, 
+    IDC_COMBO1, 0x403, 19, 0
+0x4c47, 0x415f, 0x4343, 0x4d55, 0x425f, 0x554c, 0x5f45, 0x4942, 0x5354, 
+"\000" 
+    IDC_COMBO1, 0x403, 20, 0
+0x4c47, 0x415f, 0x4343, 0x4d55, 0x415f, 0x504c, 0x4148, 0x425f, 0x5449, 
+0x0053, 
+    IDC_COMBO1, 0x403, 28, 0
+0x4c47, 0x4e5f, 0x4d55, 0x475f, 0x4e45, 0x5245, 0x4c41, 0x435f, 0x4d4f, 
+0x4942, 0x454e, 0x5352, 0x4e5f, 0x0056, 
+    IDC_COMBO1, 0x403, 28, 0
+0x4c47, 0x4d5f, 0x5841, 0x475f, 0x4e45, 0x5245, 0x4c41, 0x435f, 0x4d4f, 
+0x4942, 0x454e, 0x5352, 0x4e5f, 0x0056, 
+    IDC_COMBO1, 0x403, 34, 0
+0x4c47, 0x4d5f, 0x5841, 0x545f, 0x5845, 0x5554, 0x4552, 0x4d5f, 0x5841, 
+0x415f, 0x494e, 0x4f53, 0x5254, 0x504f, 0x5f59, 0x5845, 0x0054, 
+    IDC_COMBO1, 0x403, 27, 0
+0x4c47, 0x4d5f, 0x5841, 0x335f, 0x5f44, 0x4554, 0x5458, 0x5255, 0x5f45, 
+0x4953, 0x455a, 0x455f, 0x5458, "\000" 
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_BITMAP1             BITMAP                  "res\\Raptor_logo_sml.bmp"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    ID_INDICATOR_WIDTH      "w:         "
+    ID_INDICATOR_HEIGHT     "h:         "
+    ID_INDICATOR_FPS        "fps:        "
+    ID_INDICATOR_NOBJECTS   "objs:       /        "
+    ID_INDICATOR_COLLISION  "c:      "
+    ID_STATUSTEXT           "Ready"
+END
+
+#endif    // Français (France) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_FRA)
+#ifdef _WIN32
+LANGUAGE 12, 1
+#pragma code_page(1252)
+#endif //_WIN32
+#include "res\RaptorMFCExtension.rc2"  // non-Microsoft Visual C++ edited resources
+#include "l.fra\afxres.rc"          // Standard components
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

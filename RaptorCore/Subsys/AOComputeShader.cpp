@@ -49,7 +49,7 @@ CAOComputeShader::~CAOComputeShader(void)
 
 void CAOComputeShader::glInit(void)
 {
-	COpenGLShaderStage *stage = glGetOpenGLShader();
+	COpenGLShaderStage *stage = glGetOpenGLShader("AOCOMPUTE_SHADER_PROGRAM");
 
 	CVertexShader *vs = stage->glGetVertexShader("AMBIENT_OCCLUSION_VTX_PROGRAM");
 	CFragmentShader *fs = stage->glGetFragmentShader("AMBIENT_OCCLUSION_TEX_PROGRAM");

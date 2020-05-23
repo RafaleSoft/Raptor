@@ -12,6 +12,7 @@
 #include "System/RaptorDisplay.h"
 #include "System/RaptorIO.h"
 #include "Engine/3DScene.h"
+#include "Engine/Environment.h"
 #include "Engine/ViewModifier.h"
 #include "Engine/3DEngineMatrix.h"
 #include "GLHierarchy/SimpleObject.h"
@@ -140,12 +141,12 @@ void CAmbientOcclusionDisplay::Init()
 		m_pTeapot->setShader(CShader::getShader("BUMP_SHADER").glClone("AO_BUMP"));
 		
 		CTextureFactory &f = CTextureFactory::getDefaultFactory();
-		CTextureObject*	m_pTexture = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_ALPHA_TRANSPARENT,ITextureObject::CGL_BILINEAR);
+		CTextureObject*	m_pTexture = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,ITextureObject::CGL_ALPHA_TRANSPARENT,ITextureObject::CGL_BILINEAR);
 		f.glLoadTexture(m_pTexture,"Datas/MARBLE6.JPG");
 		
 		CTextureUnitSetup *tus = m_pTeapot->getShader()->glGetTextureUnitsSetup();
 		tus->setDiffuseMap(m_pTexture);
-		m_pTexture = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_MULTIPLY,ITextureObject::CGL_BILINEAR);
+		m_pTexture = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,ITextureObject::CGL_MULTIPLY,ITextureObject::CGL_BILINEAR);
 		f.glLoadTexture(m_pTexture,"Datas/BUMP4.TGA");
 		tus->setNormalMap(m_pTexture);
 		tus->useRegisterCombiners(false);
@@ -175,7 +176,8 @@ void CAmbientOcclusionDisplay::Init()
 
 		CRaptorDisplay* pDisplay = CRaptorDisplay::GetCurrentDisplay();
 		pDisplay->addScene(m_pScene);
-		m_pScene->glManageEnvironment(CEnvironment::AMBIENT_OCCLUSION,0,0);
+		CEnvironment *ambient_occlusion = CEnvironment::glCreateEnvironment(*m_pScene, CEnvironment::AMBIENT_OCCLUSION, 0, 0);
+		m_pScene->glManageEnvironment(ambient_occlusion);
 	}
 }
 

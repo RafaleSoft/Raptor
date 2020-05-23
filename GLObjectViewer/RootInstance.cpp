@@ -48,7 +48,7 @@ void CRootInstance::glClipRender()
 		const GL_MATRIX &M = getTransform();
 		glPushMatrix();
 		glMultMatrixf(M);
-		((C3DSet*)getObject())->glRenderAllBBox();
+		((C3DSet*)getObject())->glRenderBBox();
 		glPopMatrix();
 	}
 }

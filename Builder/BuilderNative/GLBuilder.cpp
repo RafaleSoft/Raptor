@@ -68,86 +68,14 @@ static const char *CODE =
 
 static const char *STL =
 "\n\n\
-//	Default entry point\n\
-#if defined(_WIN32)\n\
-	#include \"stdafx.h\" \n\
-	#if !defined(WINAPI)\n\
-        #define WINAPI	__stdcall\n\
-	#endif\n\
-	#ifdef EXPORT_RAPTOR_CORE\n\
-		#define RAPTOR_API __declspec(dllexport)\n\
-	#else\n\
-		#define RAPTOR_API _declspec(dllimport)\n\
-	#endif\n\
-    #define RAPTOR_FASTCALL __fastcall\n\
-    #define RAPTOR_CCALL __cdecl\n\
-    #define RAPTOR_APICALL WINAPI\n\
-    #if _MSC_VER > 1200     // 1200 is Visual C++ 6.0\n\
-        #define RAPTOR_TYPENAME typename\n\
-    #else\n\
-        #define RAPTOR_TYPENAME\n\
-    #endif\n\
-	#define RAPTOR_INTERFACE __interface\n\
-#else // Linux environment \n\
-	#include <stdlib.h>\n\
-	#include <typeinfo>\n\
-	#define RAPTOR_API\n\
-    #define RAPTOR_FASTCALL\n\
-    #define RAPTOR_CCALL\n\
-    #define RAPTOR_APICALL\n\
-    #define RAPTOR_TYPENAME typename\n\
-	#define RAPTOR_INTERFACE class\n\
-#endif\n\n\
-#if defined(_WIN32) \n\
-    #pragma warning(disable: 4786)    //  dbug info too large \n\
-    #pragma warning(disable: 4100)  \n\
-	#pragma warning(disable: 4244)	\n\
-    #pragma warning(disable: 4511)    // copy ctor not generated \n\
-    #pragma warning(disable: 4512)    // assign operator not generated \n\
-    #pragma warning(disable: 4663)    // C++ language changes \n\
-	#pragma warning(disable: 4251)    // DLL interface required for STL exports \n\
-	#pragma warning(disable: 4275)    // deriving exported class from non-exported \n\
-#endif \n\
-\n\n\
-//	Standard sized int types \n\
-#if defined(_MSC_VER) && (_MSC_VER < 1600) \n\
-	typedef signed   __int8  int8_t;	\n\
-	typedef unsigned __int8  uint8_t;	\n\
-	typedef signed   __int16 int16_t;	\n\
-	typedef unsigned __int16 uint16_t;	\n\
-	typedef signed   __int32 int32_t;	\n\
-	typedef unsigned __int32 uint32_t;	\n\
-	typedef signed   __int64 int64_t;	\n\
-	typedef unsigned __int64 uint64_t;	\n\
-#else	\n\
-	#include <stdint.h>	\n\
-#endif\n\n\
-//	Standard Template Library Headers used for Raptor\n\
-#include <string> \n\
-#include <vector> \n\
-#include <map> \n\
-#include <sstream> \n\
-using namespace std;\n\
-\n\
-RAPTOR_NAMESPACE_BEGIN\n\
-typedef struct lessString\n\
-{\n\
-	bool operator()(const string& x,const string &y) const\n\
-	{\n\
-		return (x.compare(y) < 0);\n\
-	}\n\
-} lessString;\n\
-typedef map<string,void*,lessString> MapStringToPtr;\n\
-RAPTOR_NAMESPACE_END\n\
-\n\
-// define linkage specifier for declarators \n\
+// define linkage specifier for OpenGL prototypes declarators \n\
 #define DEFAULT_LINKAGE \n\
-#define STATIC_LINKAGE        static \n\
-#define EXTERN_LINKAGE      extern \n\
+#define STATIC_LINKAGE	static \n\
+#define EXTERN_LINKAGE	extern \n\
 \n\n\
 // define types for compatibility with Android OpenGLES \n\
 #if defined(_ANDROID) \n\
-#define GLdouble double \n\
+	#define GLdouble double \n\
 #endif\n\n\
 \n";
 
@@ -157,6 +85,9 @@ static const char *NAMESPACE =
 #define RAPTOR_NAMESPACE_END	} \n\
 #define RAPTOR_NAMESPACE using namespace raptor; \n\
 #define RAPTOR(name) raptor::name \n\
+\n\
+RAPTOR_NAMESPACE_BEGIN\n\
+RAPTOR_NAMESPACE_END\n\
 \n";
 
 static const char *END =
@@ -365,7 +296,7 @@ CGLBuilder::~CGLBuilder()
 
 void CGLBuilder::activateAll(void)
 {
-	for (unsigned int i=0;i<extensions.size();i++)
+	for (size_t i=0; i < extensions.size(); i++)
 	{
 		EXTENSION &extension = extensions[i];
 		extension.active = true;
@@ -378,7 +309,7 @@ void CGLBuilder::activateAll(void)
 
 void CGLBuilder::activateNone(void)
 {
-	for (unsigned int i=0;i<extensions.size();i++)
+	for (size_t i=0; i < extensions.size(); i++)
 	{
 		EXTENSION &extension = extensions[i];
 		extension.active = false;
@@ -393,7 +324,7 @@ bool CGLBuilder::activateExtension(const string &extension,bool activate)
 {
 	bool res = false;
 
-	for (unsigned int i=0;i<extensions.size();i++)
+	for (size_t i=0; i < extensions.size(); i++)
 	{
 		EXTENSION& ext = extensions[i];
 
@@ -412,7 +343,7 @@ bool CGLBuilder::isExtensionActive(const string &extension) const
 {
 	bool res = false;
 
-	for (unsigned int i=0;i<extensions.size();i++)
+	for (size_t i=0; i < extensions.size(); i++)
 	{
 		const EXTENSION& ext = extensions[i];
 
@@ -428,7 +359,7 @@ bool CGLBuilder::isExtensionActive(const string &extension) const
 
 void CGLBuilder::glQueryExtensions(const string &strExtensions)
 {
-	for (unsigned int i=0;i<extensions.size();i++)
+	for (size_t i=0; i < extensions.size(); i++)
 	{
 		const EXTENSION& extension = extensions[i];
 		activateExtension(extension.extensionName, (strExtensions.find(extension.extensionName) != string::npos));
@@ -506,12 +437,12 @@ bool CGLBuilder::checkConsistency(bool forceDependency)
 {
     bool res = true;
 
-    for (unsigned int i=0;i<extensions.size();i++)
+    for (size_t i=0; i < extensions.size(); i++)
 	{
 		const EXTENSION& extension = extensions[i];
 		if (extension.active)
         {
-			for (unsigned int j=0;j<extension.dependencies.size();j++)
+			for (size_t j=0; j < extension.dependencies.size(); j++)
 			{
 				if (forceDependency)
 					activateExtension(extension.dependencies[j],true);
@@ -558,9 +489,8 @@ bool CGLBuilder::writeHeader(const string& filename)
 
 	header.write(OGL,strlen(OGL));
 	
-    unsigned int i=0;
 	header << "// OpenGL versions\n";
-	for (i=0;i<extensions.size();i++)
+	for (size_t i=0; i < extensions.size(); i++)
 	{
 		const EXTENSION& extension = extensions[i];
 		if ((extension.active) && ((extension.kind == COREGL) || (extension.kind == COREVK)))
@@ -572,7 +502,7 @@ bool CGLBuilder::writeHeader(const string& filename)
 	}
 	header << "\n";
 
-	for (i=0;i<extensions.size();i++)
+	for (size_t i=0; i < extensions.size(); i++)
 	{
 		const EXTENSION& extension = extensions[i];
 
@@ -594,7 +524,7 @@ bool CGLBuilder::writeHeader(const string& filename)
 	
 	header.write(CODE,strlen(CODE));
 
-	for (i=0;i<extensions.size();i++)
+	for (size_t i=0; i < extensions.size(); i++)
 	{
 		const EXTENSION& extension = extensions[i];
 		if ((extension.active) && (extension.kind == CPU))
@@ -646,6 +576,8 @@ bool CGLBuilder::writeHeader(const string& filename)
 	header << "\n#include ";
 	header << parallel_header;
 	header << "\n";
+
+	header << "\n#include \"Portability.h\"\n";
 	
 	header.write(END,strlen(END));
 	header.close();

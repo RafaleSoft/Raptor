@@ -356,7 +356,7 @@ bool CBlurFilter::glInitFilter(void)
 	{
 		//!    Source is unfiltered to avoid artifacts ( see comment below ).
 		colorInput = filterFactory.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
-															CTextureObject::CGL_OPAQUE,
+															ITextureObject::CGL_OPAQUE,
 															ITextureObject::CGL_UNFILTERED, //CGL_BILINEAR,
 															colorExternalSource);
 	}
@@ -385,7 +385,7 @@ bool CBlurFilter::glInitFilter(void)
 		state.renderer = CRaptorDisplayConfig::RENDER_BUFFER;
 
 		xKernelPass = filterFactory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
-			                                        CTextureObject::CGL_OPAQUE,
+			                                        ITextureObject::CGL_OPAQUE,
 				                                    ITextureObject::CGL_UNFILTERED);
 		filterFactory.glResizeTexture(xKernelPass,state.width,state.height);
 		xKernelPass->glvkUpdateClamping(ITextureObject::CGL_EDGECLAMP);
@@ -412,7 +412,7 @@ bool CBlurFilter::glInitFilter(void)
 		//! and also because it is shifted to work in texels' center and 
 		//! should be faster ).
 		xKernelPass = filterFactory.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
-															CTextureObject::CGL_OPAQUE,
+															ITextureObject::CGL_OPAQUE,
 															ITextureObject::CGL_UNFILTERED, //CGL_BILINEAR,
 															xBuffer);
 	}

@@ -159,7 +159,7 @@ const char* Raptor::GetVersionString(void)
 int Raptor::glPurgeRaptor(bool count)
 {
 	//	Clean user objects
-	int nb = CPersistence::NbInstance();
+	size_t nb = CPersistence::NbInstance();
 
 	if (!count)
 	{
@@ -198,7 +198,7 @@ int Raptor::glPurgeRaptor(bool count)
 
     CATCH_GL_ERROR
 
-	return nb;
+	return (int)nb;
 }
 
 bool Raptor::glCheckDisplayConfig(const CRaptorDisplayConfig &pcs)

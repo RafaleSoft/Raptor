@@ -83,7 +83,7 @@ CBumpShader::~CBumpShader(void)
 
 void CBumpShader::glInit(void)
 {
-	COpenGLShaderStage *stage = glGetOpenGLShader();
+	COpenGLShaderStage *stage = glGetOpenGLShader("BUMP_SHADER_PROGRAM");
 
 	stage->glGetVertexShader("PPIXEL_BUMP_VTX_PROGRAM");
 	stage->glGetFragmentShader("PPIXEL_BUMP_TEX_PROGRAM");

@@ -113,10 +113,11 @@ void CObject3DShadow::initContours()
     if ((m_type == SHADOW_VOLUME) || (m_type == SHADOW_BOUNDING_VOLUME))
     {
         bool invalidSource = false;
-        CObject3D *shadowSource = m_pAttributes->m_pObject;
+		CObject3D *shadowSource = m_pAttributes->m_pObject;
 
-        vector<CObject3DContour*> pContours = shadowSource->createContours();
-        if (!pContours.empty())
+		vector<CObject3DContour*> pContours = shadowSource->createContours();
+
+		if (!pContours.empty())
         {
             vector<CObject3DContour*>::const_iterator it = pContours.begin();
             while (it != pContours.end())

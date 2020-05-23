@@ -1,10 +1,25 @@
-// 3DScene.cpp: implementation of the C3DScene class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  C3DScene.cpp                                                           */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
 #include "Subsys/CodeGeneration.h"
 
 #if !defined(AFX_3DSCENE_H__E597E752_BAD4_415D_9C00_8C59D139D32B__INCLUDED_)
-	#include "3DScene.h"
+	#include "Engine/3DScene.h"
 #endif
 #if !defined(AFX_LIGHT_H__AA8BABD6_059A_4939_A4B6_A0A036E12E1E__INCLUDED_)
 	#include "GLHierarchy/Light.h"
@@ -36,24 +51,16 @@
 #if !defined(AFX_3DSCENEATTRIBUTES_H__8AA18F35_C0F4_40D6_A4EC_18DD32C20C87__INCLUDED_)
     #include "Subsys/3DSceneAttributes.h"
 #endif
-#if !defined(AFX_SHADOWMAP_H__996B1CFE_3445_4FB3_AE2B_D86E55BCE769__INCLUDED_)
-    #include "ShadowMap.h"
-#endif
-#if !defined(AFX_OMNISHADOWMAP_H__FB391794_C7C1_404B_A146_061A62252C5D__INCLUDED_)
-    #include "OmniShadowMap.h"
-#endif
-#if !defined(AFX_SHADOWVOLUME_H__D19B3347_87CF_48C0_87E5_3AF7925780C3__INCLUDED_)
-    #include "ShadowVolume.h"
-#endif
-#if !defined(AFX_AMBIENTOCCLUSION_H__6BE8DC67_E93D_4BBB_B72E_A1A5F0263E5E__INCLUDED_)
-    #include "AmbientOcclusion.h"
-#endif
 #if !defined(AFX_MIRROR_H__BA9C578A_40A8_451B_9EA3_C27CB04288FA__INCLUDED_)
-    #include "Mirror.h"
+    #include "Engine/Mirror.h"
 #endif
 #if !defined(AFX_RAPTORVULKANDEVICE_H__2FDEDD40_444E_4CC2_96AA_CBF9E79C3ABE__INCLUDED_)
 	#include "Subsys/Vulkan/VulkanDevice.h"
 #endif
+#if !defined(AFX_ENVIRONMENT_H__9EA164E8_2589_4CC0_B0EA_6C95FED9F04A__INCLUDED_)
+	#include "Engine/Environment.h"
+#endif
+
 
 
 #include <set>
@@ -79,16 +86,15 @@ RAPTOR_NAMESPACE
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 C3DScene::C3DScene(const std::string& sceneName)
-	:CPersistence(sceneId,sceneName)
+	:CPersistence(sceneId,sceneName), m_currentPass(FULL_PASS), m_pEnvironment(NULL)
 {
 	m_pAttributes = new C3DSceneAttributes(this);
 }
 
 C3DScene::~C3DScene()
 {
-    vector<CEnvironment*>::const_iterator it = m_pAttributes->m_pEnvironments.begin();
-    while (it != m_pAttributes->m_pEnvironments.end())
-        delete (*it++);
+	if (NULL != m_pEnvironment)
+        delete m_pEnvironment;
 
 	m_pAttributes->glResetQueries();
 
@@ -143,7 +149,6 @@ bool C3DScene::addObject(CObject3D *object)
 
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 	const CBoundingBox * const box = object->boundingBox();
-
 	if ((box->xMin() == box->xMax()) ||
 		(box->yMin() == box->yMax()) ||
 		(box->zMin() == box->zMax()))
@@ -151,34 +156,40 @@ bool C3DScene::addObject(CObject3D *object)
 		RAPTOR_WARNING(	C3DScene::C3DSceneClassID::GetClassId(),
 						CRaptorMessages::ID_NULL_OBJECT);
 	}
-
-    if (getEnvironment(CEnvironment::SHADOW_VOLUME) != NULL)
-    {
-        RAPTOR_WARNING(	C3DScene::C3DSceneClassID::GetClassId(),
-						CRaptorMessages::ID_UPDATE_FAILED);
-    }
 #endif
-
+	
 	C3DSceneObject *sc = new C3DSceneObject(object);
 	m_pAttributes->addObjet(sc);
 
+	if (NULL != m_pEnvironment)
+	{
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+		if (m_pEnvironement->getKind() == CEnvironment::SHADOW_VOLUME)
+		{
+			RAPTOR_WARNING(	C3DScene::C3DSceneClassID::GetClassId(),
+							CRaptorMessages::ID_UPDATE_FAILED);
+		}
+#endif
+		m_pEnvironment->addObject(sc);
+	}
+	
     return true;
 }
 
-void C3DScene::glRenderObjects(	const vector<C3DSceneObject*>& objects)
+void C3DScene::glRenderObjects(const vector<C3DSceneObject*>& objects, PASS_KIND passKind)
 {
+	m_currentPass = passKind;
+
     vector<CObject3D*>  transparents;
     vector<CObject3D*>  mirrors;
     vector<C3DSceneObject*>  unsortedObjects;
     set<C3DSceneObject*,C3DSceneObject::zorder>	sortedObjects;
 
-    C3DSceneObject::PASS_KIND passKind = C3DSceneObject::m_currentPass;
-
     //! View point must be recomputed because engine modelview will be
     //! recomputed only on next viewpoint rendering.
     GL_MATRIX m;
 	glGetFloatv(GL_MODELVIEW_MATRIX, m);
-        
+
     //
 	// Sort objects from viewPoint
 	//
@@ -228,7 +239,7 @@ void C3DScene::glRenderObjects(	const vector<C3DSceneObject*>& objects)
 	//
     GLboolean proceedLights = true;
     glGetBooleanv(GL_LIGHTING,&proceedLights);
-    proceedLights |= ((passKind == C3DSceneObject::LIGHT_PASS) || (passKind == C3DSceneObject::FULL_PASS));
+    proceedLights |= ((passKind == LIGHT_PASS) || (passKind == FULL_PASS));
 
 	vector<C3DSceneObject*> occludedObjects;
 	vector<C3DSceneObject*>::const_iterator itr = unsortedObjects.begin();
@@ -242,15 +253,17 @@ void C3DScene::glRenderObjects(	const vector<C3DSceneObject*>& objects)
 	}
 
 	if (!occludedObjects.empty())
-		C3DSceneObject::glComputeBBoxOcclusion(	m_pAttributes->m_iCurrentPass,
-												occludedObjects);
+		m_pAttributes->glComputeBBoxOcclusion(occludedObjects);
 
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+	m_pAttributes->glRenderBBoxes(unsortedObjects);
+#endif
 
 	//
 	// Rendering 
     //  Third step : render mirrors with real objects in the scene
 	//
-    bool proceedMirrors = ((passKind == C3DSceneObject::DEPTH_PASS) || (passKind == C3DSceneObject::FULL_PASS))
+    bool proceedMirrors = ((passKind == DEPTH_PASS) || (passKind == FULL_PASS))
                         && (!m_pAttributes->m_bMirrorsRendered);
     for (unsigned int i=0;i<m_pAttributes->m_pMirrors.size();i++)
     {
@@ -263,7 +276,7 @@ void C3DScene::glRenderObjects(	const vector<C3DSceneObject*>& objects)
 
             GLboolean cMask[4];
 
-            if (passKind != C3DSceneObject::FULL_PASS)
+            if (passKind != FULL_PASS)
             {
                 glGetBooleanv(GL_COLOR_WRITEMASK ,cMask);
                 glColorMask(GL_TRUE,GL_TRUE,GL_TRUE,GL_TRUE);
@@ -281,13 +294,12 @@ void C3DScene::glRenderObjects(	const vector<C3DSceneObject*>& objects)
 					occludedObjects.push_back(sc);
             }
 			if (!occludedObjects.empty())
-				C3DSceneObject::glComputeBBoxOcclusion(	m_pAttributes->m_iCurrentPass,
-														occludedObjects);
+				m_pAttributes->glComputeBBoxOcclusion(occludedObjects);
 
             //  Transparent objects must also be rendered here if they are mirrored ?
             pMirror->glApplyMirror(false);
 
-            if (passKind != C3DSceneObject::FULL_PASS)
+            if (passKind != FULL_PASS)
                 glColorMask(cMask[0],cMask[1],cMask[2],cMask[3]);
             
 			pMirror->glClipRender();
@@ -297,7 +309,7 @@ void C3DScene::glRenderObjects(	const vector<C3DSceneObject*>& objects)
 			for (unsigned int j = 0; j < m_pAttributes->m_pLights.size(); j++)
 				m_pAttributes->m_pLights[j]->glDeActivate();
         }
-        else if (((passKind == C3DSceneObject::AMBIENT_PASS) || (passKind == C3DSceneObject::LIGHT_PASS))
+        else if (((passKind == AMBIENT_PASS) || (passKind == LIGHT_PASS))
                     && (m_pAttributes->m_bMirrorsRendered))
         {
             pMirror->glClipRender();
@@ -339,19 +351,14 @@ void C3DScene::glRender(void)
     vector<C3DSceneObject*> viewableObjects = m_pAttributes->glGetObjects();
     vector<CLight*>	requiredLights = m_pAttributes->glGetLights(viewableObjects);
 
-    size_t nbEnvs = m_pAttributes->m_pEnvironments.size();
-    if (nbEnvs > 0)
+    if (NULL != m_pEnvironment)
     {
-        for (unsigned int i=0;i<nbEnvs;i++)
-        {
-            CEnvironment *pEnv = m_pAttributes->m_pEnvironments[i];
-            pEnv->glRender(m_pAttributes->m_pCurrentLight,viewableObjects);
-        }
+		m_pEnvironment->glRender(m_pAttributes->m_pCurrentLight,viewableObjects);
     }
     else
     {
-        C3DSceneObject::m_currentPass = C3DSceneObject::FULL_PASS;
-        glRenderObjects(viewableObjects);
+        m_currentPass = FULL_PASS;
+        glRenderObjects(viewableObjects, FULL_PASS);
     }
 
 	glPopMatrix();
@@ -394,77 +401,36 @@ void C3DScene::vkRender(CVulkanCommandBuffer& commandBuffer)
 }
 
 
-CEnvironment * const C3DScene::getEnvironment(CEnvironment::ENVIRONMENT_KIND kind)
+bool C3DScene::glManageEnvironment(CEnvironment *pEnv)
 {
-    CEnvironment * res = NULL;
+	if (NULL == pEnv)
+		return false;
 
-    size_t nbEnvs = m_pAttributes->m_pEnvironments.size();
-
-    if (nbEnvs > 0)
-    {
-        unsigned int pos = 0;
-        while ((res == NULL) && (pos < nbEnvs))
-        {
-            CEnvironment * const pEnv = m_pAttributes->m_pEnvironments[pos++];
-			if (NULL != pEnv)
-				if (pEnv->getKind() == kind)
-					res = pEnv;
-        }
-    }
-
-    return res;
-}
-
-bool C3DScene::glManageEnvironment(CEnvironment::ENVIRONMENT_KIND kind,unsigned int width,unsigned int height)
-{
-    if (getEnvironment(kind) != NULL)
-    {
+	if (NULL != m_pEnvironment)
+	{
+		if (pEnv->getKind() == m_pEnvironment->getKind())
+		{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
-        Raptor::GetErrorManager()->generateRaptorError(	C3DScene::C3DSceneClassID::GetClassId(),
-														CRaptorErrorManager::RAPTOR_WARNING,
-														CRaptorMessages::ID_OBJECT_DUPLICATE);
+			Raptor::GetErrorManager()->generateRaptorError(	C3DScene::C3DSceneClassID::GetClassId(),
+															CRaptorErrorManager::RAPTOR_WARNING,
+															CRaptorMessages::ID_OBJECT_DUPLICATE);
 #endif
-        return false;
-    }
-
-	CEnvironment* pEnv = NULL;
-
-    switch(kind)
-    {
-        case CEnvironment::SHADOW_MAP:
-        {
-            pEnv = new CShadowMap(*this);
-			pEnv->glInitEnvironment(width,height);
-            break;
-        }
-        case CEnvironment::OMNI_SHADOW_MAP:
-        {
-            pEnv = new COmniShadowMap(*this);
-			pEnv->glInitEnvironment(width,height);
-            break;
-        }
-        case CEnvironment::SHADOW_VOLUME:
-        {
-            CShadowVolume* pSV = new CShadowVolume(*this);
-			pSV->glInitEnvironment(width,height);
-			pSV->initVolumes(m_pAttributes->getAllObjects());
-            pEnv = pSV;
-            break;
-        }
-		case CEnvironment::AMBIENT_OCCLUSION:
-        {
-			CAmbientOcclusion *pAO = new CAmbientOcclusion(*this);
-			pAO->glInitEnvironment(width,height);
-			pAO->initOcclusions(m_pAttributes->getAllObjects());
-			pEnv = pAO;
-			break;
+			return false;
 		}
-        default:
-            return false;
-    }
+		else
+			delete m_pEnvironment;
+	}
 
-    m_pAttributes->m_pEnvironments.push_back(pEnv);
-    return true;
+	if (pEnv->glInitEnvironment(m_pAttributes->getAllObjects()))
+	{
+		m_pEnvironment = pEnv;
+		return true;
+	}
+	else
+	{
+		m_pEnvironment = NULL;
+		return false;
+	}
 }
 
 bool C3DScene::exportObject(CRaptorIO& o)

@@ -42,13 +42,6 @@
 
 #include <time.h>
 
-#if defined(WIN32)
-	#define LOCALTIME(_Tm,_Time) localtime_s(_Tm,_Time)
-	#define ASCTIME(_Buf, _SizeInBytes, _Tm) asctime_s(_Buf, _SizeInBytes, _Tm)
-#elif defined(LINUX)
-	#define LOCALTIME(_Tm,_Time) localtime_r(_Time,_Tm)
-	#define ASCTIME(_Buf, _SizeInBytes, _Tm) asctime_r(_Tm, _Buf)
-#endif
 
 RAPTOR_NAMESPACE
 
@@ -170,13 +163,13 @@ void APIENTRY OPENGL_DEBUG_CALLBACK(GLenum source,
 			break;
 #ifdef GL_VERSION_4_3
 		case GL_DEBUG_TYPE_MARKER:
-			err.error = "Performance Error: ";
+			err.error = "Marker: ";
 			break;
 		case GL_DEBUG_TYPE_PUSH_GROUP:
-			err.error = "Performance Error: ";
+			err.error = "Push group: ";
 			break;
 		case GL_DEBUG_TYPE_POP_GROUP:
-			err.error = "Performance Error: ";
+			err.error = "Pop Group: ";
 			break;
 #endif
 		case GL_DEBUG_TYPE_OTHER:
@@ -223,7 +216,7 @@ void CRaptorErrorManager::generateRaptorError(	const CPersistence::CPersistenceC
 	err.className = classID.ClassName();
 	err.type = type;
 	err.error = str;
-	err.filename = file;
+	err.filename = __FILENAME__(file);
 	err.line = line;
 	
 	addRaptorError(err);
@@ -240,7 +233,7 @@ void CRaptorErrorManager::generateRaptorError(	const CPersistence::CPersistenceC
 
 	err.className = classID.ClassName();
 	err.type = type;
-	err.filename = file;
+	err.filename = __FILENAME__(file);
 	err.line = line;
 
 	CRaptorInstance &instance = CRaptorInstance::GetInstance();

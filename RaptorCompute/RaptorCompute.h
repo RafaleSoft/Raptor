@@ -21,10 +21,7 @@
 
 
 #include "Subsys/CodeGeneration.h"
-#include <stdint.h>
 
-
-RAPTOR_NAMESPACE
 
 class CRaptorComputeManager;
 class CRaptorComputeJob;

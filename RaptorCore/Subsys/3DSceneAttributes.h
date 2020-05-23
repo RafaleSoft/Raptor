@@ -16,12 +16,14 @@
 #if !defined(AFX_3DSCENE_H__E597E752_BAD4_415D_9C00_8C59D139D32B__INCLUDED_)
 	#include "Engine/3DScene.h"
 #endif
+#if !defined(AFX_RESOURCEALLOCATOR_H__4BAB58CE_942B_450D_88C9_AF0DDDF03718__INCLUDED_)
+	#include "Subsys/ResourceAllocator.h"
+#endif
 
 
 RAPTOR_NAMESPACE_BEGIN
 
 class CLight;
-class CEnvironment;
 class C3DSceneObject;
 class CObject3D;
 template <class USER_DATA_t> class CBaseTree;
@@ -54,10 +56,7 @@ public:
 	void addObjet(C3DSceneObject *sceneObject);
 
 	//! Returns he appropriate list of objects extracted from octree )
-	const vector<C3DSceneObject*> &getAllObjects(void) const
-	{
-		return m_pObjects;
-	}
+	const vector<C3DSceneObject*> &getAllObjects(void) const { return m_pObjects; }
 
     //! Returns he appropriate list of objects extracted from octree )
     vector<C3DSceneObject*>	glGetObjects(void);
@@ -65,6 +64,11 @@ public:
     //! Returns the appropriate list of lights that should apply to the list of objects
     vector<CLight*>	glGetLights(const vector<C3DSceneObject*>& objects);
 
+	//! This method computes initial occlusion using bbox rendering
+	void glComputeBBoxOcclusion(const vector<C3DSceneObject*> &occluded);
+
+	//! This method is used for debugging purpose
+	void glRenderBBoxes(const vector<C3DSceneObject*> &objects);
 
 
 public:
@@ -74,8 +78,6 @@ public:
 	bool			m_bUseZSort;
     //! true if occlusion queries have been prepared
 	bool			m_bQueriesReady;
-    //! true if data structures are prepared ( octrees, observers )
-    bool			m_bDataPrepared;
     //! Current rendering pass. Up to 8 passes can be used in C3DSceneObject.
     //! There is no need to increase that figure or to make extensible in most cases.
     unsigned int	m_iCurrentPass;
@@ -87,10 +89,10 @@ public:
     //! Internal use only : true if mirror pass has been issued.
     bool			m_bMirrorsRendered;
 	
-    vector<CEnvironment*>	m_pEnvironments;
 	vector<CLight*>			m_pLights;
     vector<CMirror*>		m_pMirrors;
 	CLight*					m_pCurrentLight;
+
 
 private:
 	vector<C3DSceneObject*>		m_pObjects;

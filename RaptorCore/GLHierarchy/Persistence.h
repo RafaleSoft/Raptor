@@ -101,7 +101,7 @@ public:
 
 	//!	Returns the number of Raptor persistant objects 
 	//!	currently in memory.
-	static int NbInstance();
+	static size_t NbInstance();
 
 	//!	Returns a Raptor persistent object given it's position (map index).
 	//!	DONT DELETE any of these objects manually.
@@ -161,11 +161,11 @@ private:
 	CPersistence();
 
 	//! Persistence atributes.
-	string				m_name;
+	std::string				m_name;
 	const CPersistenceClassID	&m_ID;
 	
 	//!	The list of registered objects listening destruction of this persistence.
-	vector<CPersistence*>	m_pObservers;
+	std::vector<CPersistence*>	m_pObservers;
 
 	//!	This operator must not be available
 	//! because persistence data MUST be unique

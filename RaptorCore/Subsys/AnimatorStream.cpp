@@ -327,7 +327,7 @@ const unsigned char* const CAnimatorStream::glGetStreamBuffer(unsigned int nStre
         if (video->streamBuffer != NULL)
         {
             unsigned int size = 3 * video->streamer->getWidth() * video->streamer->getHeight();
-			CTexelAllocator::GetInstance()->glvkCopyPointer(video->bufferPointer,video->streamBuffer,size);
+			CTexelAllocator::GetInstance()->glvkSetPointerData(video->bufferPointer,video->streamBuffer,size);
         }
 
         //	This call is not necessary since the texel allocator is locked by the display,

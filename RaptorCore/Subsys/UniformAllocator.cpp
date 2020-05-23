@@ -107,7 +107,7 @@ bool CUniformAllocator::glvkInitMemory(	IDeviceMemoryManager* pDeviceMemory,
 }
 
 
-void CUniformAllocator::glvkCopyPointer(uint8_t *dst, uint8_t *src, uint64_t size)
+void CUniformAllocator::glvkSetPointerData(uint8_t *dst, uint8_t *src, uint64_t size)
 {
 	if ((NULL == deviceMemoryManager) || (NULL == relocatedUniforms) || (NULL == src) || (NULL == dst))
 		return;

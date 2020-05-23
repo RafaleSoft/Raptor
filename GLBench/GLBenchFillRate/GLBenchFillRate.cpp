@@ -131,7 +131,7 @@ void Display::GLInitContext()
 
 	glColor4f(1.0f,1.0f,1.0f,1.0f);
 	CTextureObject* T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
-										  CTextureObject::CGL_MULTIPLY,
+										  ITextureObject::CGL_MULTIPLY,
 										  ITextureObject::CGL_BILINEAR);
 	T->glSetTransparency(128);
 	f.glLoadTexture(T, M1_1024_path);
@@ -140,7 +140,7 @@ void Display::GLInitContext()
 	if (Raptor::glIsExtensionSupported(GL_ARB_TEXTURE_COMPRESSION_EXTENSION_NAME))
 	{
 		T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
-							  CTextureObject::CGL_MULTIPLY,
+							  ITextureObject::CGL_MULTIPLY,
 							  ITextureObject::CGL_BILINEAR);
 		T->glSetTransparency(128);
 		const CTextureFactoryConfig::ICompressor *compressor = config.getCurrentCompressor();
@@ -152,7 +152,7 @@ void Display::GLInitContext()
 	else
 	{
 		T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
-							  CTextureObject::CGL_MULTIPLY,
+							  ITextureObject::CGL_MULTIPLY,
 							  ITextureObject::CGL_BILINEAR);
 		T->glSetTransparency(128);
 		f.glLoadTexture(T, M1_1024_path);
@@ -160,14 +160,14 @@ void Display::GLInitContext()
 	txt->addTexture(T);
 
 	T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
-						  CTextureObject::CGL_MULTIPLY,
+						  ITextureObject::CGL_MULTIPLY,
 						  ITextureObject::CGL_BILINEAR);
 	T->glSetTransparency(128);
 	f.glLoadTexture(T, M74_1024_path);
 	txt->addTexture(T);
 
 	T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
-						  CTextureObject::CGL_MULTIPLY,
+						  ITextureObject::CGL_MULTIPLY,
 						  ITextureObject::CGL_TRILINEAR);
 	config.setGenerateMipmap(false);
 	T->glSetTransparency(128);	f.glLoadTexture(T, M1_1024_path);
@@ -186,7 +186,7 @@ void Display::GLInitContext()
 
 
 	T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
-						  CTextureObject::CGL_MULTIPLY,
+						  ITextureObject::CGL_MULTIPLY,
 						  ITextureObject::CGL_BILINEAR);
 	T->glSetTransparency(128);
 	f.glLoadTexture(T, M1_256_path);
@@ -200,7 +200,7 @@ void Display::GLInitContext()
 		config.setCurrentAnisotropy(anisotropy);
 
 		T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
-							  CTextureObject::CGL_MULTIPLY,
+							  ITextureObject::CGL_MULTIPLY,
 							  ITextureObject::CGL_ANISOTROPIC);
 		config.setGenerateMipmap(false);
 		T->glSetTransparency(255);	f.glLoadTexture(T, M1_1024_path);

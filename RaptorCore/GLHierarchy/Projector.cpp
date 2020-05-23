@@ -35,6 +35,7 @@
 	#include "Engine/3DEngineMatrix.h"
 #endif
 
+
 RAPTOR_NAMESPACE_BEGIN
 
 static CProjector::CProjectorClassID projectorId;
@@ -62,7 +63,7 @@ CProjector::~CProjector()
 {
 }
 
-void CProjector::glSetProjection(CTextureObject* T)
+void CProjector::glSetProjection(ITextureObject* T)
 {
 	m_pProjection = T;
 

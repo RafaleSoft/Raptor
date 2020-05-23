@@ -97,7 +97,7 @@ bool CVulkanViewPoint::vkRenderUniforms(void)
 
 	if (NULL != uniforms)
 	{
-		pUAllocator->glvkCopyPointer(uniforms, (unsigned char*)&transform, size);
+		pUAllocator->glvkSetPointerData(uniforms, (unsigned char*)&transform, size);
 		return true;
 	}
 	else

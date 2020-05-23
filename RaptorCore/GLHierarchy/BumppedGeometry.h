@@ -36,7 +36,7 @@ RAPTOR_NAMESPACE_BEGIN
 
 class CLight;
 class CEMBMShader;
-class CTextureObject;
+class ITextureObject;
 
 
 class RAPTOR_API CBumppedGeometry : public CGeometry  
@@ -60,13 +60,13 @@ public:
 	virtual CShader	* const getShader(void) const;
 
 	//!	Sets the texture map that will be used as the diffuse component of the bumpping.
-	void setDiffuseMap(CTextureObject* diffuse);
+	void setDiffuseMap(ITextureObject* diffuse);
 
     //! Same as above with normal
-	void setNormalMap(CTextureObject* normal);
+	void setNormalMap(ITextureObject* normal);
 
      //!	Sets the texture map that will be used as the environment component of the bumpping.
-    void setEnvironmentMap(CTextureObject* environment);
+    void setEnvironmentMap(ITextureObject* environment);
 
 	//!	A copy operator.
 	//!	The specific bump data is copied, the geometry
@@ -90,9 +90,9 @@ protected:
 	virtual void unLink(const CPersistence* p);
 
 	//!	Texture setups
-	CReference<CTextureObject>	diffuseMap;
-	CReference<CTextureObject>	normalMap;
-	CReference<CTextureObject>	envMap;
+	CReference<ITextureObject>	diffuseMap;
+	CReference<ITextureObject>	normalMap;
+	CReference<ITextureObject>	envMap;
 
 	//! Shaders for various light configurations.
 	CEMBMShader* m_pBumpShader;
