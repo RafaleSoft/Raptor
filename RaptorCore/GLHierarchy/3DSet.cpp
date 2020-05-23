@@ -565,10 +565,14 @@ void C3DSet::glClipRender()
 	CRaptorInstance::GetInstance().iRenderedObjects++;
 }
 
-void C3DSet::glRenderAllBBox(bool filled)
+void C3DSet::glRenderBBox(bool filled)
 {
 	if (!properties.isVisible())
 		return;
+
+	// TODO: make this configurable in case of excessive loss in performance.
+	//CObject3D::glRenderBBox(filled);
+	//return;
 
 	C3DSetItem  *it = m_pRoot->getFirstChild();
 
@@ -578,7 +582,7 @@ void C3DSet::glRenderAllBBox(bool filled)
         if (obj != NULL)
         {
 			if (obj->getId().isSubClassOf(C3DSet::C3DSetClassID::GetClassId()))
-			    ((C3DSet *)obj)->glRenderAllBBox(filled);
+			    ((C3DSet *)obj)->glRenderBBox(filled);
 		    else
 			    obj->glRenderBBox(filled);
         }

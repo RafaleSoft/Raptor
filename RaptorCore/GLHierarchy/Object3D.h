@@ -290,6 +290,9 @@ private:
     CObject3D();
     CObject3D(const CObject3D&);
 
+	//!	This method updates boudiong box data in instence's buffer object.
+	void CObject3D::glvkUpdateBBox(void);
+
     //! A 3D object must always have a bounding box ( pointer cannot be NULL )
 	CBoundingBox	*BBox;
 
@@ -300,13 +303,15 @@ private:
     static bool earlyClipEnabled;
 
     //! These datas are identifiers to BBox values for GL server
-	double			boxValue;
-
-	RAPTOR_HANDLE	filledBox;
-	RAPTOR_HANDLE	wireBox;
+	bool			updateBBox;
 	
 	//! BBox buffer object pointer.
 	uint64_t		bbox;
+
+#if 0
+	RAPTOR_HANDLE	filledBox;
+	RAPTOR_HANDLE	wireBox;
+#endif
 };
 
 RAPTOR_NAMESPACE_END

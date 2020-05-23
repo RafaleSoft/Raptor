@@ -255,7 +255,9 @@ void C3DScene::glRenderObjects(const vector<C3DSceneObject*>& objects, PASS_KIND
 	if (!occludedObjects.empty())
 		m_pAttributes->glComputeBBoxOcclusion(occludedObjects);
 
-	//m_pAttributes->glRenderBBoxes(unsortedObjects);
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+	m_pAttributes->glRenderBBoxes(unsortedObjects);
+#endif
 
 	//
 	// Rendering 

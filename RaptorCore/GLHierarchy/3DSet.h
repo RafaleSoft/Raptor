@@ -88,7 +88,7 @@ public:
     //!
 
 	//! Renders the bbox of each objet in the set.
-	virtual void glRenderAllBBox(bool filled = false);
+	virtual void glRenderBBox(bool filled = false);
 
     //! Clipping each object before it is rendered.
 	virtual void glClipRender();

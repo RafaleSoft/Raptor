@@ -93,12 +93,6 @@ public:
     vector<CMirror*>		m_pMirrors;
 	CLight*					m_pCurrentLight;
 
-	//! Number of bounding boxes managed by occlusion queries.
-	size_t numboxes;
-	//! Bounding boxes to perform occlusion queries.
-	GL_COORD_VERTEX	*boxes;
-
-	CResourceAllocator::CResourceBinder *m_pBinder;
 
 private:
 	vector<C3DSceneObject*>		m_pObjects;

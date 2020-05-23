@@ -1125,6 +1125,7 @@ copy "$(SolutionDir)AddOns\xercesc-3.2.2\%(Directory)%(Filename).msvc.hpp" "$(So
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\AddOns\xercesc-3.2.2\src\xercesc\util\Transcoders\Win32\Win32TransService.cpp" />
     <ClCompile Include="..\..\AddOns\xercesc-3.2.2\src\xercesc\util\TransService.cpp" />

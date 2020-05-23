@@ -93,12 +93,15 @@ CObject3D::CObject3D(const CPersistence::CPersistenceClassID & classID,
 
     earlyClip = C3DEngine::CLIP_UNKNOWN;
 
-	boxValue = DBL_MAX;
+	updateBBox = false;
+	bbox = UINT64_MAX;
+
+#if 0
 	filledBox.hClass(classID.ID());
 	filledBox.glhandle(0);
 	wireBox.hClass(classID.ID());
 	wireBox.glhandle(0);
-	bbox = UINT64_MAX;
+#endif
 }
 
 CObject3D::~CObject3D()
@@ -175,57 +178,7 @@ vector<CObject3DContour*> CObject3D::createContours(void)
 
 void CObject3D::notifyBoundingBox(void)
 {
-	CRaptorInstance &instance = CRaptorInstance::GetInstance();
-	CGeometryAllocator *pAllocator = CGeometryAllocator::GetInstance();
-
-	// size is 2 coordinates * 4 floats per box, * maxboxes
-	size_t sz = 2 * GL_COORD_VERTEX_STRIDE;
-
-	if (instance.numboxes <= bbox)
-	{
-		// grow array if maxboxes reached.
-		if (instance.maxboxes <= instance.numboxes)
-		{
-			bool lock = pAllocator->isMemoryLocked();
-			if (lock)
-				pAllocator->glvkLockMemory(false);
-
-			if (0 == instance.maxboxes)
-				instance.maxboxes = 1024;
-			else
-				instance.maxboxes = instance.maxboxes * 2;
-
-			size_t s = instance.maxboxes * sz;
-			GL_COORD_VERTEX *boxes = (GL_COORD_VERTEX*)(pAllocator->allocateVertices(s));
-
-			if (NULL == instance.boxes)
-			{
-				instance.boxes = boxes;
-				instance.numboxes = 0;
-			}
-			else
-			{
-				// Copy existing data, on half buffer size.
-				pAllocator->glvkCopyPointer((float*)boxes, (float*)instance.boxes, s / 2);
-				pAllocator->releaseVertices((float*)instance.boxes);
-				instance.boxes = boxes;
-			}
-
-			if (lock)
-				pAllocator->glvkLockMemory(true);
-		}
-
-		// bbox offset.
-		bbox = instance.numboxes;
-		instance.numboxes += 2;
-	}
-
-	GL_COORD_VERTEX src[2];
-	BBox->get(src[0], src[1]);
-
-	float *dst = instance.boxes[bbox];
-	pAllocator->glvkSetPointerData(dst, (float*)src, sz);
-
+	updateBBox = true;
     vector< CContainerNotifier<CObject3D*>* >::iterator it = m_pNotifiers.begin();
     while (it != m_pNotifiers.end())
         (*it++)->notify(CContainerNotifier<CObject3D*>::UPDATEBBOX,this);
@@ -256,17 +209,12 @@ void CObject3D::extendBoundingBox(const GL_COORD_VERTEX& min, const GL_COORD_VER
     notifyBoundingBox();
 }
 
-#if (defined(GL_FULL_profile) || defined(GL_COMPATIBILITY_profile))
-
+#if 0
 void CObject3D::glRenderBBox(bool filled)
 {
-	float xmin,xmax,ymin,ymax,zmin,zmax;
-	BBox->get(xmin,ymin,zmin,xmax,ymax,zmax);
-	double value = xmin + xmax + ymin + ymax + zmax + zmin;
-
-	if (boxValue != value)
+	if (updateBBox)
 	{
-		boxValue = value;
+		updateBBox = false;
 		if (filledBox.handle() != 0)
 			glDeleteLists(filledBox.glname(),1);
 		if (wireBox.handle() != 0)
@@ -353,55 +301,14 @@ void CObject3D::glRenderBBox(bool filled)
 
 #else
 
-void CObject3D::glRenderBBox(bool filled)
+void CObject3D::glRenderBBox(bool )
 {
-	if (maxboxes <= bbox)
-	{
-		// size is 2 coordinates * 4 floats per box, * maxboxes
-		size_t sz = 2 * sizeof(GL_COORD_VERTEX) / sizeof(float);
+	if (updateBBox)
+		glvkUpdateBBox();
 
-		CGeometryAllocator *pAllocator = CGeometryAllocator::GetInstance();
-		pAllocator->glvkLockMemory(false);
-		if (NULL == boxes)
-			boxes = (GL_COORD_VERTEX*)(pAllocator->allocateVertices(maxboxes * sz));
-		pAllocator->glvkLockMemory(true);
-
-		// bbox offset.
-		bbox = numboxes;
-		numboxes += 2;
-
-		float *dst = boxes[bbox];
-
-		float xmin, xmax, ymin, ymax, zmin, zmax;
-		BBox->get(xmin, ymin, zmin, xmax, ymax, zmax);
-		GL_COORD_VERTEX src[2] = { {xmin,ymin,zmin,1.0f}, {xmax,ymax,zmax,1.0f} };
-
-		pAllocator->glvkSetPointerData(dst, (float*)src, sz);
-
-		if (NULL == m_pBinder)
-		{
-			CResourceAllocator::CResourceBinder *binder = new CResourceAllocator::CResourceBinder();
-			binder->setArray(CProgramParameters::POSITION, dst);
-			binder->useVertexArrayObjects();
-			m_pBinder = binder;
-		}
-	}
-		
 	CRaptorInstance &instance = CRaptorInstance::GetInstance();
-	CShader *pShader = instance.m_pWiredBboxShader;
-	if (filled)
-		pShader = instance.m_pFilledBboxShader;
-
-	CResourceAllocator::CResourceBinder *binder = (CResourceAllocator::CResourceBinder*)m_pBinder;
-	float *dst = boxes[bbox];
-	binder->setArray(CProgramParameters::POSITION, dst);
-	binder->glvkBindArrays();
-
-	pShader->glRender();
-	glDrawArrays(GL_LINES, 0, 2);
-	pShader->glStop();
-
-	binder->glvkUnbindArrays();
+	
+	glDrawArrays(GL_LINES, bbox, 2);
 
 	instance.iRenderedObjects++;
 	instance.iRenderedTriangles += 12;
@@ -411,6 +318,63 @@ void CObject3D::glRenderBBox(bool filled)
 
 #endif
 
+void CObject3D::glvkUpdateBBox(void)
+{
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+	CGeometryAllocator *pAllocator = CGeometryAllocator::GetInstance();
+
+	// size is 2 coordinates * 4 floats per box, * maxboxes
+	size_t sz = 2 * GL_COORD_VERTEX_STRIDE;
+
+	if (instance.numboxes <= bbox)
+	{
+		// grow array if maxboxes reached.
+		if (instance.maxboxes <= instance.numboxes)
+		{
+			bool lock = pAllocator->isMemoryLocked();
+			if (lock)
+				pAllocator->glvkLockMemory(false);
+
+			if (0 == instance.maxboxes)
+				instance.maxboxes = 1024;
+			else
+				instance.maxboxes = instance.maxboxes * 2;
+
+			size_t s = instance.maxboxes * sz;
+			GL_COORD_VERTEX *boxes = (GL_COORD_VERTEX*)(pAllocator->allocateVertices(s));
+
+			if (NULL == instance.boxes)
+			{
+				instance.boxes = boxes;
+				instance.numboxes = 0;
+			}
+			else
+			{
+				// Copy existing data, on half buffer size.
+				pAllocator->glvkCopyPointer((float*)boxes, (float*)instance.boxes, s / 2);
+				pAllocator->releaseVertices((float*)instance.boxes);
+				instance.boxes = boxes;
+			}
+
+			if (lock)
+				pAllocator->glvkLockMemory(true);
+
+			instance.m_pBoxBinder->setArray(CProgramParameters::POSITION, boxes);
+		}
+
+		// bbox offset.
+		bbox = instance.numboxes;
+		instance.numboxes += 2;
+	}
+
+	GL_COORD_VERTEX src[2];
+	BBox->get(src[0], src[1]);
+
+	float *dst = instance.boxes[bbox];
+	pAllocator->glvkSetPointerData(dst, (float*)src, sz);
+
+	updateBBox = false;
+}
 
 void CObject3D::glClipRender(void)
 {
