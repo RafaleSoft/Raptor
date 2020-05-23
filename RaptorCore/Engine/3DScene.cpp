@@ -255,7 +255,7 @@ void C3DScene::glRenderObjects(const vector<C3DSceneObject*>& objects, PASS_KIND
 	if (!occludedObjects.empty())
 		m_pAttributes->glComputeBBoxOcclusion(occludedObjects);
 
-	m_pAttributes->glRenderBBoxes(unsortedObjects);
+	//m_pAttributes->glRenderBBoxes(unsortedObjects);
 
 	//
 	// Rendering 

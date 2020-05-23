@@ -200,10 +200,10 @@ void CSkinningDisplay::Init()
 
 	CTextureFactory &f = CTextureFactory::getDefaultFactory();
 	t2 = f.glCreateSprite(ITextureObject::CGL_COLOR24_ALPHA);
-	t2->glSetTransparency(128);
+	t2->getGLTextureObject()->glSetTransparency(128);
 	f.glLoadTexture(t2,"Datas\\sprite.tga");
 
-	t2->glSetTransparentColor(0,0,0);
+	t2->getGLTextureObject()->glSetTransparentColor(0,0,0);
 	layer->manageSprite(t2,75,75,45);
 
     modifier = new MyModifier();

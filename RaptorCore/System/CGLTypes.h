@@ -219,6 +219,8 @@ typedef struct GL_COORD_VERTEX_TAG
 } GL_COORD_VERTEX;
 typedef GL_COORD_VERTEX *LP_GL_COORD_VERTEX;
 
+#define GL_COORD_VERTEX_STRIDE sizeof(GL_COORD_VERTEX)/sizeof(float)
+
 typedef struct GL_HIRES_COORD_VERTEX_TAG
 {
 	double x;	//	3D coordinates
@@ -270,6 +272,8 @@ typedef struct GL_TEX_VERTEX_TAG
 	}
 } GL_TEX_VERTEX;
 typedef GL_TEX_VERTEX *LP_GL_TEX_VERTEX;
+
+#define GL_TEX_VERTEX_STRIDE sizeof(GL_TEX_VERTEX)/sizeof(float)
 
 //	t => translation vector
 //	R => orientation matrix

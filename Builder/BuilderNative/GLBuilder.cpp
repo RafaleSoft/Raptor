@@ -68,35 +68,11 @@ static const char *CODE =
 
 static const char *STL =
 "\n\n\
-#include \"stdafx.h\"\n\
-//	Base definitions\n\
-#if defined(_WIN32) \n\
-    #pragma warning(disable: 4786)    //  dbug info too large \n\
-    #pragma warning(disable: 4100)  \n\
-	#pragma warning(disable: 4244)	\n\
-    #pragma warning(disable: 4511)    // copy ctor not generated \n\
-    #pragma warning(disable: 4512)    // assign operator not generated \n\
-    #pragma warning(disable: 4663)    // C++ language changes \n\
-	#pragma warning(disable: 4251)    // DLL interface required for STL exports \n\
-	#pragma warning(disable: 4275)    // deriving exported class from non-exported \n\
-#endif \n\
-\n\n\
-\n\
 // define linkage specifier for OpenGL prototypes declarators \n\
 #define DEFAULT_LINKAGE \n\
 #define STATIC_LINKAGE	static \n\
 #define EXTERN_LINKAGE	extern \n\
 \n\n\
-RAPTOR_NAMESPACE_BEGIN\n\
-typedef struct lessString\n\
-{\n\
-bool operator()(const string& x, const string &y) const\n\
-{\n\
-return (x.compare(y) < 0); \n\
-}\n\
-} lessString; \n\
-typedef map<string, void*, lessString> MapStringToPtr; \n\
-RAPTOR_NAMESPACE_END\n\
 // define types for compatibility with Android OpenGLES \n\
 #if defined(_ANDROID) \n\
 	#define GLdouble double \n\
@@ -109,6 +85,9 @@ static const char *NAMESPACE =
 #define RAPTOR_NAMESPACE_END	} \n\
 #define RAPTOR_NAMESPACE using namespace raptor; \n\
 #define RAPTOR(name) raptor::name \n\
+\n\
+RAPTOR_NAMESPACE_BEGIN\n\
+RAPTOR_NAMESPACE_END\n\
 \n";
 
 static const char *END =

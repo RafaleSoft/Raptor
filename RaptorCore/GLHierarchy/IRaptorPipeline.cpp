@@ -15,11 +15,12 @@
 /*                                                                         */
 /***************************************************************************/
 
+#include "Subsys/CodeGeneration.h"
+
+
 #if !defined(AFX_RAPTORPIPELINE_972B6860_BDAE_4303_962E_3DAC4ECF7F7B__INCLUDED_)
 	#include "GLHierarchy/IRaptorPipeline.h"
 #endif
-
-#include "Subsys/CodeGeneration.h"
 
 
 RAPTOR_NAMESPACE

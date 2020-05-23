@@ -4,7 +4,7 @@
 #include "Subsys/CodeGeneration.h"
 
 #if !defined(AFX_PERSISTENCE_H__5561BA28_831B_11D3_9142_EEB51CEBBDB0__INCLUDED_)
-	#include "Persistence.h"
+	#include "GLHierarchy/Persistence.h"
 #endif
 #if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
 	#include "System/Raptor.h"
@@ -28,8 +28,6 @@ RAPTOR_NAMESPACE_BEGIN
 //////////////////////////////////////////////////////////////////////
 // Objects Roots
 //////////////////////////////////////////////////////////////////////
-#pragma warning (disable : 4711)	// automatic inline expansion warning
-
 static bool lockRegistration = false;
 static MapStringToPtr::iterator last_itr;
 static CRaptorMutex     persistenceMutex;
@@ -45,8 +43,6 @@ const CPersistence::CPersistenceClassID& CPersistence::CPersistenceClassID::GetC
 {
 	return persistenceID;
 }
-
-#pragma warning (default : 4711)	// automatic inline expansion warning
 
 RAPTOR_NAMESPACE_END
 
@@ -248,7 +244,7 @@ void CPersistence::setName(const std::string &name)
 	}
 }
 
-int CPersistence::NbInstance()
+size_t CPersistence::NbInstance()
 {
 	CRaptorInstance &instance = CRaptorInstance::GetInstance();
 	return instance.objects.size(); 

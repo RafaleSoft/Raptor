@@ -36,7 +36,6 @@
     #include "GLHierarchy/ObjectProperties.h"
 #endif
 
-//#define TEST_BOX_ARRAYS 1
 
 //////////////////////////////////////////////////////////////////////
 //!
@@ -115,6 +114,9 @@ public:
 	//!	This method returns the bounding box
     //! @see getCenter.
 	const CBoundingBox * const boundingBox(void) const { return BBox; };
+
+	//!	This method returns the bounding box index is current instance resources.
+	uint64_t getBoundingBoxIndex(void) const { return bbox; };
 
 	//! Clipping hints:
 	//!	This method returns true if the object intersects the viewing volume,
@@ -297,19 +299,14 @@ private:
     //! A global status to indicate that objects are early clip aware.
     static bool earlyClipEnabled;
 
-#if (defined(GL_FULL_profile) || defined(GL_COMPATIBILITY_profile)) && !defined(TEST_BOX_ARRAYS)
     //! These datas are identifiers to BBox values for GL server
 	double			boxValue;
 
 	RAPTOR_HANDLE	filledBox;
 	RAPTOR_HANDLE	wireBox;
-#else
-	public:
-	// Temporary
-	static void *m_pBinder;
-	static	GL_COORD_VERTEX	*boxes;
-	uint64_t bbox;
-#endif
+	
+	//! BBox buffer object pointer.
+	uint64_t		bbox;
 };
 
 RAPTOR_NAMESPACE_END

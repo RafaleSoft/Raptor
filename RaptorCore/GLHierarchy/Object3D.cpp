@@ -56,14 +56,6 @@
 // Static data for bbox vertices
 RAPTOR_NAMESPACE_BEGIN
 
-#if (defined(GL_FULL_profile) || defined(GL_COMPATIBILITY_profile)) && !defined(TEST_BOX_ARRAYS)
-#else
-	// Statics
-	static unsigned int maxboxes = 1024;
-	static unsigned int numboxes = 0;
-	GL_COORD_VERTEX	*CObject3D::boxes = NULL;
-	void *CObject3D::m_pBinder = NULL;
-#endif
 
 bool CObject3D::earlyClipEnabled = true;
 
@@ -101,15 +93,12 @@ CObject3D::CObject3D(const CPersistence::CPersistenceClassID & classID,
 
     earlyClip = C3DEngine::CLIP_UNKNOWN;
 
-#if (defined(GL_FULL_profile) || defined(GL_COMPATIBILITY_profile)) && !defined(TEST_BOX_ARRAYS)
 	boxValue = DBL_MAX;
 	filledBox.hClass(classID.ID());
 	filledBox.glhandle(0);
 	wireBox.hClass(classID.ID());
 	wireBox.glhandle(0);
-#else
-	bbox = maxboxes;
-#endif
+	bbox = UINT64_MAX;
 }
 
 CObject3D::~CObject3D()
@@ -186,6 +175,57 @@ vector<CObject3DContour*> CObject3D::createContours(void)
 
 void CObject3D::notifyBoundingBox(void)
 {
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+	CGeometryAllocator *pAllocator = CGeometryAllocator::GetInstance();
+
+	// size is 2 coordinates * 4 floats per box, * maxboxes
+	size_t sz = 2 * GL_COORD_VERTEX_STRIDE;
+
+	if (instance.numboxes <= bbox)
+	{
+		// grow array if maxboxes reached.
+		if (instance.maxboxes <= instance.numboxes)
+		{
+			bool lock = pAllocator->isMemoryLocked();
+			if (lock)
+				pAllocator->glvkLockMemory(false);
+
+			if (0 == instance.maxboxes)
+				instance.maxboxes = 1024;
+			else
+				instance.maxboxes = instance.maxboxes * 2;
+
+			size_t s = instance.maxboxes * sz;
+			GL_COORD_VERTEX *boxes = (GL_COORD_VERTEX*)(pAllocator->allocateVertices(s));
+
+			if (NULL == instance.boxes)
+			{
+				instance.boxes = boxes;
+				instance.numboxes = 0;
+			}
+			else
+			{
+				// Copy existing data, on half buffer size.
+				pAllocator->glvkCopyPointer((float*)boxes, (float*)instance.boxes, s / 2);
+				pAllocator->releaseVertices((float*)instance.boxes);
+				instance.boxes = boxes;
+			}
+
+			if (lock)
+				pAllocator->glvkLockMemory(true);
+		}
+
+		// bbox offset.
+		bbox = instance.numboxes;
+		instance.numboxes += 2;
+	}
+
+	GL_COORD_VERTEX src[2];
+	BBox->get(src[0], src[1]);
+
+	float *dst = instance.boxes[bbox];
+	pAllocator->glvkSetPointerData(dst, (float*)src, sz);
+
     vector< CContainerNotifier<CObject3D*>* >::iterator it = m_pNotifiers.begin();
     while (it != m_pNotifiers.end())
         (*it++)->notify(CContainerNotifier<CObject3D*>::UPDATEBBOX,this);
@@ -216,7 +256,7 @@ void CObject3D::extendBoundingBox(const GL_COORD_VERTEX& min, const GL_COORD_VER
     notifyBoundingBox();
 }
 
-#if (defined(GL_FULL_profile) || defined(GL_COMPATIBILITY_profile)) && !defined(TEST_BOX_ARRAYS)
+#if (defined(GL_FULL_profile) || defined(GL_COMPATIBILITY_profile))
 
 void CObject3D::glRenderBBox(bool filled)
 {

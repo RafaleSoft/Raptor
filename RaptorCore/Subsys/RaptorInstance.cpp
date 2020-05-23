@@ -121,8 +121,13 @@ CRaptorInstance::CRaptorInstance()
 	m_pQuadShader = NULL;
 	m_pFontShader = NULL;
 	m_displayBinder = NULL;
+
 	m_pFilledBboxShader = NULL;
 	m_pWiredBboxShader = NULL;
+	numboxes = 0;
+	maxboxes = 0;
+	boxes = NULL;
+	m_pBoxBinder = NULL;
 
 	arrays_initialized = false;
 	m_pShaderLibraryInstance = NULL;
@@ -446,7 +451,7 @@ bool CRaptorInstance::glvkInitSharedResources(void)
 		if (lock)
 			pAllocator->glvkLockMemory(false);
 
-		size_t s = sizeof(GL_COORD_VERTEX) / sizeof(float);
+		size_t s = GL_COORD_VERTEX_STRIDE;
 		GL_COORD_VERTEX zero(0.0f, 0.0f, 0.0f, 0.0f);
 		m_pAttributes = (GL_COORD_VERTEX*)(pAllocator->allocateVertices(s));
 		pAllocator->glvkSetPointerData((float*)m_pAttributes, (float*)zero, s);
@@ -522,6 +527,13 @@ bool CRaptorInstance::glvkInitSharedResources(void)
 			return false;
 	}
 
+	if (NULL == m_pBoxBinder)
+	{
+		m_pBoxBinder = new CResourceAllocator::CResourceBinder();
+		m_pBoxBinder->setArray(CProgramParameters::POSITION, boxes);
+		m_pBoxBinder->useVertexArrayObjects();
+	}
+
 	if (NULL == m_displayBinder)
 	{
 		m_displayBinder = new CResourceAllocator::CResourceBinder();
@@ -584,6 +596,12 @@ bool CRaptorInstance::glvkReleaseSharedRsources()
 	{
 		delete m_displayBinder;
 		m_displayBinder = NULL;
+	}
+
+	if (NULL != m_pBoxBinder)
+	{
+		delete m_pBoxBinder;
+		m_pBoxBinder = NULL;
 	}
 
 	if (NULL != m_pNullShader)

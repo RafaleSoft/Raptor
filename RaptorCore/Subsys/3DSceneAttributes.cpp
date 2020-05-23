@@ -148,7 +148,7 @@ void C3DSceneAttributes::prepareData(void)
 		numboxes = m_pObjects.size();
 
 		// size is 2 coordinates * 4 floats per box, * maxboxes
-		size_t sz = 2 * sizeof(GL_COORD_VERTEX) / sizeof(float);
+		size_t sz = 2 * GL_COORD_VERTEX_STRIDE;
 
 		// release previous allocation since it will be rebuilt.
 		CGeometryAllocator *pAllocator = CGeometryAllocator::GetInstance();

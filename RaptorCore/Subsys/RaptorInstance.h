@@ -183,6 +183,7 @@ public:
 	CShader	*m_pIdentity;
 #endif
 
+	//!	A global resource binder for the instance device display.
 	CResourceAllocator::CResourceBinder *m_displayBinder;
 
 	//! Global ResourceAllocator arrays binding state.
@@ -198,10 +199,18 @@ public:
 	CShader *m_pFilledBboxShader = NULL;
 	//! A wired bounding box shader
 	CShader *m_pWiredBboxShader = NULL;
+	//!	The number of allocated bounding boxes
+	uint32_t maxboxes;
+	//!	The number of bounding boxes
+	uint32_t numboxes;
+	//!	The bounding boxes buffer object pointer.
+	GL_COORD_VERTEX	*boxes;
+	//!	The bounding boxes redering resource binder
+	CResourceAllocator::CResourceBinder *m_pBoxBinder;
+
 
 	//! The shader library instance.
 	CShaderLibrary	*m_pShaderLibraryInstance;
-
 
 	//!	Time management
 	ITImeObjectImpl	*m_timeImplementation;
