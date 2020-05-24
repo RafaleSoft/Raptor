@@ -43,9 +43,10 @@
 	- appels récurrents à glvkRenderViewPointModel. Pourquoi ? c.f. CRaptorDisplay & m_bApplyViewPointModel.
 
 - CContextManager:
-	factoriser getPresentationSuppotQueueFamily et vk_ctx.pSurface->supportPresentation(physical, numQueue):
+	- factoriser getPresentationSuppotQueueFamily et vk_ctx.pSurface->supportPresentation(physical, numQueue):
 		passer le physical device à CVulkanSurface => renvoyer la queue qui supporte WSI et presentation sur la surface.
 		=> Passer pExtensions au constructeur.
+	- passer en Core profile
 
 - CVulkanMemory:
 	- initialiser une bloc mémoire pour l'application (vertex et index buffers bindés sur la même allocation)

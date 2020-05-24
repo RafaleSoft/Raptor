@@ -111,7 +111,7 @@ bool CGL2DTextureFont::glInit(const std::string &filename, unsigned int size, bo
 		CTextureFactory &factory = CTextureFactory::getDefaultFactory();
 		if (m_texture == NULL)
 		{
-			m_texture = factory.glCreateTexture(ITextureObject::CGL_LIGHTMAP_ALPHA,
+			m_texture = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA, //CGL_LIGHTMAP_ALPHA,
 												ITextureObject::CGL_MULTIPLY, // CGL_ALPHA_TRANSPARENT
 												ITextureObject::CGL_BILINEAR);
 		}
@@ -231,7 +231,7 @@ bool CGL2DTextureFont::glInit(const std::string &filename, unsigned int size, bo
 
 		// Final load
 		glTexImage2D(GL_TEXTURE_2D, 0,
-					 GL_LUMINANCE8_ALPHA8,
+					 GL_RGBA4,
 					 W, H, 0,
 					 GL_LUMINANCE_ALPHA, GL_UNSIGNED_BYTE,
 					 buffer);

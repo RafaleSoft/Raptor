@@ -59,8 +59,6 @@ CRaptorRenderBufferDisplay::CRaptorRenderBufferDisplay(const CRaptorDisplayConfi
 
 CRaptorRenderBufferDisplay::~CRaptorRenderBufferDisplay()
 {
-    //  Unbind, in case it is forgotten by the user.
-    //glvkUnBindDisplay();
 	RAPTOR_HANDLE noDisplay(0, (void*)0);
 	glvkBindDisplay(noDisplay);
 
@@ -513,9 +511,6 @@ bool CRaptorRenderBufferDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
 
 bool CRaptorRenderBufferDisplay::glvkUnBindDisplay(void)
 {
-	if (m_framebuffer == 0)
-		return false;
-
 #if defined(GL_EXT_framebuffer_object)
 	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 
