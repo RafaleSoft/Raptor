@@ -174,7 +174,7 @@ void CSplineDisplay::Display()
 	
 	glTranslatef(-40.0,20.0,-100.0);
 
-	CTextureObject* T = texture->getTexture(1);
+	ITextureObject* T = texture->getTexture(1);
 	T->glvkRender();
 	glCallList(text);
 	

@@ -86,7 +86,7 @@ private:
 	CProgramParameters::CParameter<GL_COORD_VERTEX> luminanceParams;
 	CProgramParameters maxLuminanceParams;
     CRaptorDisplay  **m_pDownSizedDisplay;
-    CTextureObject  **m_pDownSizedBuffer;
+    ITextureObject  **m_pDownSizedBuffer;
 	CTextureSet		**m_pDownSizedAttachments;
 	CShader			*m_maxLuminance;
     CShader			*m_lastMaxLuminance;
@@ -96,14 +96,14 @@ private:
 	CProgramParameters thresholdParams;
     CShader			*m_pTreshholdFreqs;
     CRaptorDisplay  *m_pDownHighFreqs;
-    CTextureObject  *m_pDownHFBuffer;
+    ITextureObject  *m_pDownHFBuffer;
 
 	//! Downsizing blur of high frequencies threshold
 	CProgramParameters blurOffsets;
 	CRaptorDisplay  *m_pDownBlurXDisplay;
     CRaptorDisplay  *m_pDownBlurYDisplay;
-    CTextureObject  *m_pDownBlurXBuffer;
-    CTextureObject  *m_pDownBlurYBuffer;
+    ITextureObject  *m_pDownBlurXBuffer;
+    ITextureObject  *m_pDownBlurYBuffer;
 	CShader			*m_pBlenderX;
 	CShader			*m_pBlenderY;
 	

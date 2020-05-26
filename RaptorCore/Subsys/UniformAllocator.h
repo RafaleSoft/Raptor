@@ -55,7 +55,7 @@ public:
 	bool    glvkLockMemory(bool lock);
 
 	//! Binds a uniform memory data block and relocation so that no change can be made.
-	//! @param uniform : the uniform buffer object pervously allocated with allocateUniforms.
+	//! @param uniform : the uniform buffer object previously allocated with allocateUniforms.
 	//! @index uniform : the uniform binding location to bind uniform buffer to.
 	//! @return true if binding is effective, false otherwise (ResourceAllocator must be locked)
 	bool    glvkBindUniform(uint8_t *uniform, int32_t index);

@@ -773,7 +773,7 @@ void CObjectStore::BuildObjects(void)
     m_pBumpKnot->getShader()->getMaterial()->setAmbient(1.0f,1.0f,1.0f,1.0f);
     const CGeometryEditor &pEditor = m_pBumpKnot->getEditor();
 	pEditor.scaleTexCoords(48.0f,2.0f);
-	CTextureObject* normalMap = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
+	ITextureObject* normalMap = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
 														ITextureObject::CGL_MULTIPLY,
 														ITextureObject::CGL_TRILINEAR);
 	factory.glLoadTexture(normalMap,BUMP_0);

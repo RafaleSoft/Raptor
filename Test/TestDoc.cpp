@@ -60,7 +60,7 @@ public:
 		fct.glLoadTexture(T,"lrock049.jpg");
 
 		fgMag->setColorInput(T);
-		CTextureObject *output = fgMag->glCreateColorOutput();
+		ITextureObject *output = fgMag->glCreateColorOutput();
 		fgMag->glInitFilter();
 
 		CShader *s = getShader();

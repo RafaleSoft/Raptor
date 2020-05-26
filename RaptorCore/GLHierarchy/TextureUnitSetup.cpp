@@ -307,6 +307,13 @@ CTextureUnitSetup::GL_TEXTURE_COMBINER& CTextureUnitSetup::getTMUCombiner(TEXTUR
     return tmuCombiner[numUnit];
 }
 
+
+//!
+//!	These features are deprecated since OpenGL 3.0 deprecation model.
+//!	Kept for compatibility purpose, subject to removal in future versions of Raptor.	
+//!
+#if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
+
 void RAPTOR_FASTCALL CTextureUnitSetup::glRender(GL_TEXTURE_COMBINER *C)
 {
 	if (C != NULL)
@@ -594,7 +601,6 @@ RAPTOR_HANDLE CTextureUnitSetup::glBuildSetup(void)
 }
 
 
-
 RAPTOR_HANDLE CTextureUnitSetup::glBuildUnSetup(void)
 {
 	RAPTOR_HANDLE handle(COpenGL::COpenGLClassID::GetClassId().ID(), glGenLists(1));
@@ -679,6 +685,63 @@ RAPTOR_HANDLE CTextureUnitSetup::glBuildUnSetup(void)
 
 	return handle;
 }
+
+#else
+
+void CTextureUnitSetup::glRender(void)
+{
+	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	
+	GLint previousTMU = GL_TEXTURE0_ARB;
+
+	PFN_GL_ACTIVE_TEXTURE_ARB_PROC glActiveTextureARB = pExtensions->glActiveTextureARB;
+	if (glActiveTextureARB == NULL)
+	{
+		RAPTOR_WARNING(CTextureUnitSetup::CTextureUnitSetupClassID::GetClassId(),
+			CRaptorMessages::ID_TEXTURE_MISS);
+
+		//! Disables all image unit above 1, there is always a texture unit available ( 0 )
+		for (unsigned int i = 1; i < nbUnits; i++)
+			useUnit[i] = false;
+	}
+	else
+		glGetIntegerv(GL_ACTIVE_TEXTURE_ARB, &previousTMU);
+
+	for (unsigned int i = 0; i < nbUnits; i++)
+	{
+		if (useUnit[i])
+		{
+			if (glActiveTextureARB != NULL)
+				glActiveTextureARB(GL_TEXTURE0_ARB + i);
+
+			if (imageUnit[i] != NULL)
+			{	// TODO: make this section generic
+				CTextureObject* txt = imageUnit[i]->getGLTextureObject();
+
+				// It is preferable not to render texture extensions in a display list.
+				glEnable(txt->target);
+				// generators cannot be used in display lists
+				ITextureGenerator *G = txt->getTexelGenerator();
+				if (G != NULL)
+					G->enableGenerator(false);
+
+				txt->glvkRender();
+
+				if (G != NULL)
+					G->enableGenerator(true);
+			}
+			else
+				glDisable(GL_TEXTURE_2D);
+		}
+	}
+
+	if (glActiveTextureARB != NULL)
+		glActiveTextureARB(previousTMU);
+
+	CATCH_GL_ERROR
+}
+
+#endif
 
 
 
@@ -948,7 +1011,7 @@ bool CTextureUnitSetup::importMap(TEXTURE_IMAGE_UNIT unit,CRaptorIO& io)
 		CTextureSet *pSet = (CTextureSet *)CPersistence::FindObject(setName);
 		if (pSet != NULL)
 		{
-			CTextureObject *pImage = pSet->getTexture(textureName);
+			ITextureObject *pImage = pSet->getTexture(textureName);
 			setMap(pImage,unit);
 			if (useUnit)
 				useUnit[unit] = enable;

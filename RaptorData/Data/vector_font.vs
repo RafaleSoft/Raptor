@@ -1,6 +1,6 @@
 /***************************************************************************/
 /*                                                                         */
-/*  Version.h                                                              */
+/*  vector_font.vs                                                         */
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
@@ -15,19 +15,66 @@
 /*                                                                         */
 /***************************************************************************/
 
+#version 440
+
+uniform vec4 viewport;
+
+struct glyph
+{
+	vec2 strip0[14];
+	vec2 strip1[14];
+	vec2 strip2[14];
+	vec2 strip3[14];
+	float advance;
+	uint strip_len;
+};
+
+struct strip
+{
+	vec2 point[14];
+	uint len;
+};
+
+layout(binding = 0) uniform font_buffer
+{
+	glyph chars[95];
+} font;
 
 
-#ifndef __RAPTOR_VERSION_H__
-#define __RAPTOR_VERSION_H__
+layout(location = 0) in vec4 i_char;
 
-#define RAPTOR_VERSION_MAJOR	2
-#define RAPTOR_VERSION_MINOR	17
-#define RAPTOR_VERSION_PATCH	2
-#define RAPTOR_VERSION_BUILD	40
+out strip g_strip;
+out vec2 offset;
 
-#define RAPTOR_VERSION				(RAPTOR_VERSION_MAJOR << 24) + (RAPTOR_VERSION_MINOR << 16) + (RAPTOR_VERSION_PATCH << 8)
-#define	RAPTOR_VERSION_DOT(a,b,c)	#a"."#b"."#c
-#define	RAPTOR_VERSION_INVK(a,b,c)	RAPTOR_VERSION_DOT(a,b,c)
-#define	RAPTOR_VERSION_STR			RAPTOR_VERSION_INVK(RAPTOR_VERSION_MAJOR,RAPTOR_VERSION_MINOR,RAPTOR_VERSION_PATCH)
+void main (void)
+{
+	offset = vec2(i_char.x, i_char.y);
 
-#endif
+	int num_strip = int(i_char.w);
+	int num_char = int(i_char.z);
+
+	glyph g = font.chars[num_char];
+	
+	if (num_strip == 0)
+	{
+		g_strip.point = g.strip0;
+		g_strip.len = g.strip_len & 0xff;
+	}
+	else if (num_strip == 1)
+	{
+		g_strip.point = g.strip1;
+		g_strip.len = (g.strip_len >> 8) & 0xff;
+	}
+	else if (num_strip == 2)
+	{
+		g_strip.point = g.strip2;
+		g_strip.len = (g.strip_len >> 16) & 0xff;
+	}
+	else if (num_strip == 3)
+	{
+		g_strip.point = g.strip3;
+		g_strip.len = (g.strip_len >> 24) & 0xff;
+	}
+}
+
+

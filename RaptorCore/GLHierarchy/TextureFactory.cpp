@@ -400,7 +400,7 @@ bool CTextureFactory::vkLoadTexture(CVulkanTextureObject* const T,
 	return result;
 }
 
-bool CTextureFactory::glLoadTexture(CTextureObject* const T,
+bool CTextureFactory::glLoadTexture(ITextureObject* const T,
 									const CImage &image)
 {
 	//	ensure we can do something ...
@@ -412,11 +412,20 @@ bool CTextureFactory::glLoadTexture(CTextureObject* const T,
 													   CRaptorMessages::ID_NULL_OBJECT);
 		return false;
 	}
+
+	if (NULL == T->getGLTextureObject())
+	{
+		Raptor::GetErrorManager()->generateRaptorError(CTextureFactory::CTextureFactoryClassID::GetClassId(),
+			CRaptorErrorManager::RAPTOR_WARNING,
+			CRaptorMessages::ID_NULL_OBJECT);
+		return false;
+	}
 #endif
 
+	CTextureObject *glT = T->getGLTextureObject();
 	ITextureGenerator::GENERATOR_KIND kind = ITextureGenerator::NONE;
-	if (NULL != T->getTexelGenerator())
-		kind = T->getTexelGenerator()->getKind();
+	if (NULL != glT->getTexelGenerator())
+		kind = glT->getTexelGenerator()->getKind();
 	if (kind == ITextureGenerator::BUFFERED)
 	{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
@@ -433,7 +442,7 @@ bool CTextureFactory::glLoadTexture(CTextureObject* const T,
 	T->setName(image.getName());
 
 	//	1)	Texture internal format
-	GLuint GL_INNER_FORMAT = T->getTexelFormat();
+	GLuint GL_INNER_FORMAT = glT->getTexelFormat();
 	GLuint GL_FORMAT = image.getBufferFormat();
 	GLuint GL_SRC_FORMAT = image.getBufferType();
 	void *pixels = image.getPixels();
@@ -477,7 +486,7 @@ bool CTextureFactory::glLoadTexture(CTextureObject* const T,
 	//	Handle cubemap textures
 	//
 	bool result = false;
-	GLuint target = T->target;
+	GLuint target = glT->target;
 
 	//
 	//	Final processing :
@@ -507,8 +516,8 @@ bool CTextureFactory::glLoadTexture(CTextureObject* const T,
 		if (generateMipmap)
 			glTexParameteri(target, GL_GENERATE_MIPMAP, GL_TRUE);
 #endif
-		glTexImage2D(target,
-						T->getCurrentMipMapLevel(),
+		glTexImage2D(	target,
+						glT->getCurrentMipMapLevel(),
 						GL_INNER_FORMAT,
 						T->getWidth(), 
 						T->getHeight(),
@@ -579,7 +588,7 @@ bool CTextureFactory::glLoadTexture(ITextureObject* const T,
 		return false;
 }
 
-bool CTextureFactory::glResizeTexture( CTextureObject *T, unsigned int width, unsigned int height, unsigned int depth) const
+bool CTextureFactory::glResizeTexture(CTextureObject *T, uint32_t width, uint32_t height, uint32_t depth) const
 {
     if ((T == NULL) || (width == 0) || (height == 0) || (depth == 0))
         return false;

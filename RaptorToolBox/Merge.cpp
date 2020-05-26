@@ -120,7 +120,7 @@ CGeometry *CRaptorToolBox::mergeGeometries(C3DSet *set)
 
 
 
-CTextureObject* CRaptorToolBox::mergeTextures(	CTextureSet *t,
+ITextureObject* CRaptorToolBox::mergeTextures(	CTextureSet *t,
 												unsigned int width, unsigned int height,
 												vector<GL_COORD_VERTEX> &placements)
 {
@@ -153,7 +153,7 @@ CTextureObject* CRaptorToolBox::mergeTextures(	CTextureSet *t,
 
 	for (size_t i=0;i<nb;i++)
 	{
-		CTextureObject* current = t->getTexture(i);
+		ITextureObject* current = t->getTexture(i);
 
 		current->glvkRender();
 

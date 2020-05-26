@@ -115,7 +115,7 @@ bool CLightFlare::importObject(CRaptorIO& io)
 			(p->getId().isSubClassOf(CTextureSet::CTextureSetClassID::GetClassId())))
 		{
 			CTextureSet *tset = (CTextureSet*)p;
-			CTextureObject *t = tset->getTexture(textureName);
+			ITextureObject *t = tset->getTexture(textureName);
 			if (t != NULL)
 			{
 				CTextureQuad *q = new CTextureQuad();

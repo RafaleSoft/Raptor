@@ -120,6 +120,7 @@ CRaptorInstance::CRaptorInstance()
 	m_pIdentity = NULL;
 	m_pQuadShader = NULL;
 	m_pFontShader = NULL;
+	m_pVectorFontShader = NULL;
 	m_displayBinder = NULL;
 
 	m_pFilledBboxShader = NULL;
@@ -479,8 +480,8 @@ bool CRaptorInstance::glvkInitSharedResources(void)
 	}
 	if (NULL == m_pFontShader)
 	{
-		m_pFontShader = new CShader("PARTICLE_SHADER");
-		COpenGLShaderStage *stage = m_pFontShader->glGetOpenGLShader("PARTICLE_SHADER_PROGRAM");
+		m_pFontShader = new CShader("FONT_SHADER");
+		COpenGLShaderStage *stage = m_pFontShader->glGetOpenGLShader("FONT_SHADER_PROGRAM");
 
 		CVertexShader *vp = stage->glGetVertexShader("FONT2D_VTX_PROGRAM");
 		CProgramParameters params;
@@ -493,6 +494,27 @@ bool CRaptorInstance::glvkInitSharedResources(void)
 		CFragmentShader *fs = stage->glGetFragmentShader("FONT2D_TEX_PROGRAM");
 		params.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);
 		params.addParameter("color", CColor::RGBA(1.0, 0.0, 0.0, 1.0));
+
+		stage->setProgramParameters(params);
+		if (!stage->glCompileShader())
+			return false;
+	}
+	if (NULL == m_pVectorFontShader)
+	{
+		m_pVectorFontShader = new CShader("VECTOR_FONT_SHADER");
+		COpenGLShaderStage *stage = m_pVectorFontShader->glGetOpenGLShader("VECTOR_FONT_SHADER_PROGRAM");
+
+		CVertexShader *vp = stage->glGetVertexShader("VECTORFONT_VTX_PROGRAM");
+		CProgramParameters params;
+		GL_COORD_VERTEX viewport(0, 0, 640, 480);
+		params.addParameter("viewport", viewport);
+		CColor::RGBA color(1.0f, 0.0f, 0.0f, 0.5f);
+		params.addParameter("color", color);
+
+		CGeometryShader *gp = stage->glGetGeometryShader("VECTORFONT_GEO_PROGRAM");
+		gp->setGeometry(GL_POINTS, GL_LINE_STRIP, 14);
+
+		CFragmentShader *fs = stage->glGetFragmentShader("VECTORFONT_TEX_PROGRAM");
 
 		stage->setProgramParameters(params);
 		if (!stage->glCompileShader())
@@ -520,7 +542,7 @@ bool CRaptorInstance::glvkInitSharedResources(void)
 
 		CVertexShader *vs = stage->glGetVertexShader("BOX_VTX_PROGRAM");
 		CGeometryShader *gs = stage->glGetGeometryShader("WIREDBOX_GEO_PROGRAM");
-		gs->setGeometry(GL_LINES, GL_TRIANGLE_STRIP, 16);
+		gs->setGeometry(GL_LINES, GL_LINE_STRIP, 16);
 		CFragmentShader *fs = stage->glGetFragmentShader("BOX_TEX_PROGRAM");
 
 		if (!stage->glCompileShader())
@@ -578,6 +600,12 @@ bool CRaptorInstance::glvkReleaseSharedRsources()
 	{
 		m_pFontShader->releaseReference();
 		m_pFontShader = NULL;
+	}
+
+	if (NULL != m_pVectorFontShader)
+	{
+		m_pVectorFontShader->releaseReference();
+		m_pVectorFontShader = NULL;
 	}
 
 	if (NULL != m_pFilledBboxShader)

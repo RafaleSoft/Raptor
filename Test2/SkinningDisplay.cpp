@@ -51,7 +51,7 @@ public:
 class SkinningBackGround : public CSimpleObject
 {
 public:
-	SkinningBackGround(CTextureObject *background, CGLLayer	*layer)
+	SkinningBackGround(ITextureObject *background, CGLLayer	*layer)
 		:m_background(background), m_layer(layer)
 	{
 		setBoundingBox(GL_COORD_VERTEX(-10.0f, -10.0f, -15.1f, 1.0f), GL_COORD_VERTEX(10.0f, 10.0f, -15.0f, 1.0f));
@@ -80,7 +80,7 @@ private:
 	SkinningBackGround();
 
 	CGLLayer		*m_layer;
-	CTextureObject *m_background;
+	ITextureObject *m_background;
 	RAPTOR_HANDLE	bg;
 };
 
@@ -215,8 +215,8 @@ void CSkinningDisplay::Init()
 	layer->manageSprite(T,150,75,0);
 
     t = f.glCreateDynamicTexture(ITextureObject::CGL_COLOR24_ALPHA,ITextureObject::CGL_OPAQUE,ITextureObject::CGL_BILINEAR,CRaptorDisplay::GetCurrentDisplay());
-    f.glResizeTexture(t,512,256);
-	t->setGenerationSize(51,101,510,254);	// avoid artefacts on border due to bilinear filterings
+    f.glResizeTexture(t->getGLTextureObject(),512,256);
+	t->getGLTextureObject()->setGenerationSize(51,101,510,254);	// avoid artefacts on border due to bilinear filterings
 	t->glvkUpdateClamping(ITextureObject::CGL_EDGECLAMP);
 
     string skinning_vp_src =

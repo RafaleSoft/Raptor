@@ -480,7 +480,7 @@ GLDisplay->glMakeCurrent(false);
 	//
 	//	Pixel transfer rate : Texture Loading
 	//
-	CTextureObject *T = NULL;
+	ITextureObject *T = NULL;
 	{
 		resultCount++;
 		unsigned int nb = 0;

@@ -58,7 +58,7 @@ private:
 	
 	CRaptorDisplay	*m_pBuffer;
 	IViewPoint		*m_pViewPoint;
-	CTextureObject	*m_pTexture;
+	ITextureObject	*m_pTexture;
 
 	C3DPath			*m_viewPathRoom;
 	C3DPath			*m_lookPathRoom;

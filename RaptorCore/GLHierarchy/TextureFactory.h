@@ -134,7 +134,7 @@ public:
 						const std::string &fname,
 						const CVaArray<CImage::IImageOP*>& ops = CVaArray<CImage::IImageOP*>());
 
-	bool glLoadTexture(CTextureObject* const T,
+	bool glLoadTexture(ITextureObject* const T,
 					   const CImage &image);
 	bool vkLoadTexture(CVulkanTextureObject* const T,
 					   const CImage &image);
@@ -159,7 +159,7 @@ public:
     //! - image is rescaled if actually loaded
     //! - allocated texels are discarded.
     //! @return false if resizing is not possible
-    bool glResizeTexture( CTextureObject *T, unsigned int width, unsigned int height, unsigned int depth=1) const;
+    bool glResizeTexture( CTextureObject *T, uint32_t width, uint32_t height, uint32_t depth=1) const;
 
     //! Exports a texture image to a file, type is selected from fname extension
 	bool glExportTexture(CTextureObject *T,const std::string &fname);

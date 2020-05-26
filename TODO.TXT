@@ -10,8 +10,7 @@
 
 - CGLFont:
 	- corriger font color et back color pour rendre générique
-	- Supprimer le mode de texture Luminance8 Alpha8 (RGBA4 ? RGBA2 ? RGB5A1 ?)
-
+	
 - CShaderrogram:
 	- ajouter un preprocesseur.
 

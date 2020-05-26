@@ -113,7 +113,7 @@ bool CLightGlow::importObject(CRaptorIO& io)
 			(p->getId().isSubClassOf(CTextureSet::CTextureSetClassID::GetClassId())))
         {
             CTextureSet *tset = (CTextureSet*)p;
-            CTextureObject *t = tset->getTexture(textureName);
+            ITextureObject *t = tset->getTexture(textureName);
 
 			m_pGlow = new CTextureQuad();
 			m_pGlow->setQuadTexture(t);

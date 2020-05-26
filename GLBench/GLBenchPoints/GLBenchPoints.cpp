@@ -57,7 +57,7 @@ static char RESULT_DESCRIPTION[NB_RESULTS][256] =
 
 
 
-CTextureObject *sprite = NULL;
+ITextureObject *sprite = NULL;
 //
 /////////////////////////////////////////////////////////////////////////////
 
@@ -225,7 +225,7 @@ void Display::GLInitContext()
 
 	sprite = txt.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA);
     sprite->setSize(32,32);
-	sprite->glSetTransparency(192);
+	sprite->getGLTextureObject()->glSetTransparency(192);
 
 	CImage spr;
 	spr.allocatePixels(32,32);

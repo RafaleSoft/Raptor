@@ -51,9 +51,9 @@ public:
 
 
 public:
-    //! Protected constructor
-    //!	An object contour should not be created directly,
-	//!	indeed, it should issued from a CObject3D derived class
+    //! Public constructor
+    //!	An object contour should not be created directly, 
+	//! indeed, it should be issued from a CObject3D derived class
 	CObject3DContour(const std::string& name = "OBJECT3D-CONTOUR");
 
 	virtual ~CObject3DContour();
@@ -75,9 +75,13 @@ public:
     //! ( at least a minimized form of the init geometry )
     const CGeometry* getGeometry(void) const { return m_pOrigin; }
 
-	
+	//!	Construct a volume from the contour extrusion.
+	//!	The volume is built by extruding the vertices from the original geometry.
+	//!	@param pos: the point of view (or light position), origin of extrusion.
+	//! @param extrusion: the distance to extrude, in total distance from pos.
+	void buildVolume(const GL_COORD_VERTEX &pos,float extrusion = 100.0f);
 
-    void buildVolume(const GL_COORD_VERTEX &pos,float extrusion = 100.0f);
+	//!	This method selects the volume parts to be clipped during rendering.
     void clipVolume(bool volumeClipped, bool lightCapClipped, bool darkCapClipped);
 
     //!    This method returns the coutour volume computed by buildVolume.
@@ -94,7 +98,8 @@ private:
     virtual void findBackFaces(	const GL_COORD_VERTEX &pos);
 
     //! Compute the internal contour, based on the current internal list of backfaces
-	virtual void findContour(void);
+	//!	Currently unimplemented.
+	//virtual void findContour(void);
 
     //! Find the list of edges of the initial geometry
 	void findEdges(void);

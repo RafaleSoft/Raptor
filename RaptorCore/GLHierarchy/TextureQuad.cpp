@@ -90,7 +90,7 @@ CTextureQuad::~CTextureQuad()
 	}
 }
 
-bool CTextureQuad::setQuadTexture(CTextureObject *pTexture)
+bool CTextureQuad::setQuadTexture(ITextureObject *pTexture)
 {
 	m_rTexture = pTexture;
 

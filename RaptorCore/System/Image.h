@@ -27,9 +27,9 @@
 	#include "System/Raptor.h"
 #endif
 
+
 RAPTOR_NAMESPACE_BEGIN
 
-class CTextureObject;
 class CTextureFactoryConfig;
 
 

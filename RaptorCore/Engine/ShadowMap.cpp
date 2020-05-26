@@ -212,7 +212,7 @@ void CShadowMap::glInitRenderBuffer(uint32_t width, uint32_t height)
 															ITextureObject::CGL_OPAQUE,
 															ITextureObject::CGL_BILINEAR);
 
-	factory.glResizeTexture(m_pShadowTexture,width,height);
+	factory.glResizeTexture(m_pShadowTexture->getGLTextureObject(),width,height);
 	m_pShadowTexture->glvkUpdateClamping(ITextureObject::CGL_EDGECLAMP);
 	factory.glResizeTexture(ShadowTexture,width,height);
 	ShadowTexture->glvkUpdateClamping(ITextureObject::CGL_EDGECLAMP);

@@ -144,12 +144,14 @@ bool CRaptorRenderBufferDisplay::glAttachBuffers()
 		glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS_EXT ,&maxAttachments);
 		 
 		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
-		unsigned int nbtextures = m_pAttachments->getNbTexture();
+		size_t nbtextures = m_pAttachments->getNbTexture();
 
+		//!	Number of attachments is limited by implementation : choose max size 
+		//! of Raptor capabilities and implementation limit.
 		GLuint colorAttachment = GL_COLOR_ATTACHMENT0_EXT;
-		for (unsigned int i=0;i<MIN(nbtextures,(unsigned int)abs(max(0,maxAttachments)));i++)
+		for (size_t i=0; i<MIN(nbtextures,(size_t)abs(max(0,maxAttachments))); i++)
 		{
-			CTextureObject *T = m_pAttachments->getTexture(i);
+			ITextureObject *T = m_pAttachments->getTexture(i);
 
 			ITextureObject::TEXEL_TYPE tt = T->getTexelType();
 			GLuint attachment = GL_COLOR_ATTACHMENT0_EXT;
@@ -162,18 +164,19 @@ bool CRaptorRenderBufferDisplay::glAttachBuffers()
 			else
 				attachment = colorAttachment++;
 
+			CTextureObject *glT = T->getGLTextureObject();
 			pExtensions->glFramebufferTexture2DEXT(	GL_FRAMEBUFFER_EXT, 
 													attachment,
-													T->target,
-													T->texname,
-													T->getCurrentMipMapLevel());
+													glT->target,
+													glT->texname,
+													glT->getCurrentMipMapLevel());
 
 			if (tt == ITextureObject::CGL_DEPTH24_STENCIL8)
 				pExtensions->glFramebufferTexture2DEXT(	GL_FRAMEBUFFER_EXT, 
 														GL_STENCIL_ATTACHMENT_EXT,
-														T->target,
-														T->texname,
-														T->getCurrentMipMapLevel());
+														glT->target,
+														glT->texname,
+														glT->getCurrentMipMapLevel());
 		}
 
 		return true;
@@ -193,12 +196,14 @@ bool CRaptorRenderBufferDisplay::glDetachBuffers()
 		GLint maxAttachments = 0;
 		glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS_EXT ,&maxAttachments);
 
+		//!	Number of attachments is limited by implementation : choose max size 
+		//! of Raptor capabilities and implementation limit.
 		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
-		unsigned int nbtextures = m_pAttachments->getNbTexture();
+		size_t nbtextures = m_pAttachments->getNbTexture();
 
-		for (unsigned int i=0;i<MIN(nbtextures,(unsigned int)abs(max(0,maxAttachments)));i++)
+		for (size_t i=0; i<MIN(nbtextures,(size_t)abs(max(0,maxAttachments)));i++)
 		{
-			CTextureObject *T = m_pAttachments->getTexture(i);
+			ITextureObject *T = m_pAttachments->getTexture(i);
 
 			if ((T->getWidth() != cs.width) ||
 				(T->getHeight() != cs.height))
@@ -216,16 +221,17 @@ bool CRaptorRenderBufferDisplay::glDetachBuffers()
 				(tt == ITextureObject::CGL_DEPTH24_STENCIL8))
 				attachment = GL_DEPTH_ATTACHMENT_EXT;
 
+			CTextureObject *glT = T->getGLTextureObject();
 			pExtensions->glFramebufferTexture2DEXT(	GL_FRAMEBUFFER_EXT, 
 													attachment,
-													T->target,
+													glT->target,
 													0,
 													0);
 
 			if (tt == ITextureObject::CGL_DEPTH24_STENCIL8)
 				pExtensions->glFramebufferTexture2DEXT(	GL_FRAMEBUFFER_EXT, 
 														GL_STENCIL_ATTACHMENT_EXT,
-														T->target,
+														glT->target,
 														0,
 														0);
 		}

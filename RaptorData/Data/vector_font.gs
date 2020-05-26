@@ -1,6 +1,6 @@
 /***************************************************************************/
 /*                                                                         */
-/*  Version.h                                                              */
+/*  vector_font.gs                                                         */
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
@@ -15,19 +15,34 @@
 /*                                                                         */
 /***************************************************************************/
 
+#version 440
 
+//	Expect the geometry shader extension to be available, warn if not.
+#extension GL_ARB_geometry_shader4 : enable
 
-#ifndef __RAPTOR_VERSION_H__
-#define __RAPTOR_VERSION_H__
+uniform vec4 viewport;
 
-#define RAPTOR_VERSION_MAJOR	2
-#define RAPTOR_VERSION_MINOR	17
-#define RAPTOR_VERSION_PATCH	2
-#define RAPTOR_VERSION_BUILD	40
+struct strip
+{
+	vec2 point[14];
+	uint len;
+};
 
-#define RAPTOR_VERSION				(RAPTOR_VERSION_MAJOR << 24) + (RAPTOR_VERSION_MINOR << 16) + (RAPTOR_VERSION_PATCH << 8)
-#define	RAPTOR_VERSION_DOT(a,b,c)	#a"."#b"."#c
-#define	RAPTOR_VERSION_INVK(a,b,c)	RAPTOR_VERSION_DOT(a,b,c)
-#define	RAPTOR_VERSION_STR			RAPTOR_VERSION_INVK(RAPTOR_VERSION_MAJOR,RAPTOR_VERSION_MINOR,RAPTOR_VERSION_PATCH)
+layout(points) in;
+layout(line_strip, max_vertices=14) out;
 
-#endif
+in strip g_strip[];
+in vec2 offset[];
+
+void main()
+{
+	for (int i=0; i<g_strip[0].len;i++)
+	{
+		vec2 pos = g_strip[0].point[i] + offset[0];
+		gl_Position = vec4(pos.x / viewport.z - 1.0, pos.y / viewport.w - 1.0, 0.0, 1.0);
+	
+		EmitVertex();
+	}
+
+	EndPrimitive();
+}

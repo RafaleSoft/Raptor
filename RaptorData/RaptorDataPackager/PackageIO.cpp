@@ -102,7 +102,7 @@ bool copyFile(int dstFile, int srcFile, size_t fSize)
 
 	//! TODO : check files are valid.
 
-	int tsize = fSize;
+	size_t tsize = fSize;
 	int rsize = (tsize > CHUNK) ? CHUNK : tsize;
 	while ((tsize > 0) && (rsize == READ(srcFile, in, rsize)))
 	{

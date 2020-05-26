@@ -582,7 +582,7 @@ void CRaptorFilteredDisplay::glRenderScene(void)
     }
 	else if (!filterRendered)
 	{
-		CTextureObject *T = m_pImageSet->getTexture(0);
+		ITextureObject *T = m_pImageSet->getTexture(0);
 		T->glvkRender();
 
 		CRaptorInstance &instance = CRaptorInstance::GetInstance();

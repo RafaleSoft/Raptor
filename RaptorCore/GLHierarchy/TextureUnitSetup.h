@@ -1,6 +1,20 @@
-// TexureUnitSetup.h: interface for the CTexureUnitSetup class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  TexureUnitSetup.h                                                      */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
 
 #if !defined(AFX_TEXTUREUNITSETUP_H__4A6ADC72_02E5_4F2A_931E_A736B6D6E0F0__INCLUDED_)
 #define AFX_TEXTUREUNITSETUP_H__4A6ADC72_02E5_4F2A_931E_A736B6D6E0F0__INCLUDED_
@@ -55,9 +69,14 @@ public:
         IMAGE_UNIT_15,
     } TEXTURE_IMAGE_UNIT;
 
-	
-	//	Definition of a texture unit combiner structure. This combiner is applied
-	//	to a texture unit to apply a function on data incoming from the previous texture unit
+
+	//!
+	//!	These features are deprecated since OpenGL 3.0 deprecation model.
+	//!	Kept for compatibility purpose, subject to removal in future versions of Raptor.	
+	//!
+#if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
+	//!	Definition of a texture unit combiner structure. This combiner is applied
+	//!	to a texture unit to apply a function on data incoming from the previous texture unit
 	typedef struct RAPTOR_API GL_TEXTURE_COMBINER_TAG
 	{
 		unsigned int	rgb_op;		// combiner operations
@@ -114,6 +133,7 @@ public:
 
 		GL_TEXTURE_SHADER_TAG();
 	} GL_TEXTURE_SHADER;
+#endif
 
 
 public:
@@ -140,12 +160,6 @@ public:
     //! @return : true is setting is valid, false otherwise ( e.g. invalid unit )
     bool enableImageUnit(TEXTURE_IMAGE_UNIT unit, bool enable);
 
-    //! Returns a fixed pipeline TMU shader for image unit 'unit' ( 0 based )
-    GL_TEXTURE_SHADER&   getTMUShader(TEXTURE_IMAGE_UNIT unit);
-
-    //! Returns a fixed pipeline TMU combiner for image unit 'unit' ( 0 based )
-    GL_TEXTURE_COMBINER& getTMUCombiner(TEXTURE_IMAGE_UNIT unit);
-
     //! Enable or disable register combiners usage ( fixed enhanced nVidia OpenGL texture shaders )
     void useRegisterCombiners(bool enable) { use_register_combiners = enable; }; 
 
@@ -163,6 +177,19 @@ public:
     void setEnvironmentMap(ITextureObject* to);
     ITextureObject* getEnvironmentMap(void) const;
 
+
+	//!
+	//!	These features are deprecated since OpenGL 3.0 deprecation model.
+	//!	Kept for compatibility purpose, subject to removal in future versions of Raptor.	
+	//!
+#if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
+
+	//! Returns a fixed pipeline TMU shader for image unit 'unit' ( 0 based )
+	GL_TEXTURE_SHADER&   getTMUShader(TEXTURE_IMAGE_UNIT unit);
+
+	//! Returns a fixed pipeline TMU combiner for image unit 'unit' ( 0 based )
+	GL_TEXTURE_COMBINER& getTMUCombiner(TEXTURE_IMAGE_UNIT unit);
+
 	//!	Generate a renderable which sets the desired TMU configuration
 	//!	If use_register_combiner is true, then nVidia register combiners are used
 	//!	Otherwise, Texture combiners are used
@@ -179,6 +206,12 @@ public:
 	//!	Renders a texture shader separately and returns the shader consistency
 	//!	( tmus are supposed to be set properly )
 	static bool RAPTOR_FASTCALL glRender(GL_TEXTURE_SHADER *S);
+#else
+	//!	Renders the texture unit setup, binding texture objects to units.
+	//!	( texture generator are called in the way as glBuildSetup display list)
+	void glRender();
+#endif
+
 
 	//! Inherited from CPersistence
     DECLARE_IO

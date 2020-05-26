@@ -42,7 +42,6 @@ public:
         background = factory.glCreateTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 												ITextureObject::CGL_OPAQUE,
 												ITextureObject::CGL_BILINEAR);
-        background->glSetTransparency(255);
         factory.glLoadTexture(background,"Raptor_splash.jpg");
         //sfactory.glLoadTexture(T,"Dune.tif");
     };
@@ -80,7 +79,7 @@ private:
     
     RAPTOR_HANDLE m_wnd;
     CRaptorDisplay *m_pDisplay;
-    CTextureObject *background;
+    ITextureObject *background;
 
     unsigned int nbShadersOK;
     unsigned int nbShadersKO;

@@ -27,9 +27,10 @@
 	#include "GLHierarchy/GL2DFont.h"
 #endif
 
+
 RAPTOR_NAMESPACE_BEGIN
 
-class CTextureObject;
+class ITextureObject;
 class CShader;
 
 class RAPTOR_API CGL2DTextureFont : public CGL2DFont
@@ -75,7 +76,7 @@ private:
 	bool			m_bAntialiased;
 	int				m_char_w;
 	int				m_char_h;
-	CTextureObject	*m_texture;
+	ITextureObject	*m_texture;
 
 	//!	Vertex Input State Resource binder
 	void	*m_pBinder;
