@@ -40,16 +40,20 @@ static const size_t LINE_SIZE = 256;
 static const size_t NUM_STRIPS = 4;
 
 
+//!	IMPORTANT : ensure alignment on a multiple number of vec4 size elements.
 typedef struct VECTOR_CACHEELT_t
 {
-	GL_TEX_VERTEX strip0[14];
-	GL_TEX_VERTEX strip1[14];
-	GL_TEX_VERTEX strip2[14];
-	GL_TEX_VERTEX strip3[14];
-	float	advance;
-	uint8_t	strip_len[4];
+	GL_TEX_VERTEX	strip[56];
+	float			advance;
+	float			reserved[7];
 } VECTOR_CACHEELT;
 static VECTOR_CACHEELT_t vector_cache[FONT_SIZE];
+
+typedef struct STRIPS_ELT_t
+{
+	uint32_t		strips[4];	// start and len combined.
+} STRIPS_ELT;
+static STRIPS_ELT_t strips[FONT_SIZE];
 
 static const size_t VECTOR_CACHEELT_SIZE = sizeof(VECTOR_CACHEELT);
 
@@ -123,10 +127,10 @@ bool CGLVectorFont::glGenGlyphs(float precision,
 	}
 
 	string c;
-	for (size_t i = 0; i < 256; i++)
+	for (size_t i = 0; i < FONT_SIZE; i++)
 	{
-		VECTOR_CACHEELT& rCache = vector_cache[i];
-		rCache.strip_len[3] = rCache.strip_len[2] = rCache.strip_len[1] = rCache.strip_len[0] = 0;
+		STRIPS_ELT_t& rStrip = strips[i];
+		rStrip.strips[3] = rStrip.strips[2] = rStrip.strips[1] = rStrip.strips[0] = 0;
 
 		c = (char)i;
 		RAPTOR_HANDLE h = glBuildVectors(c, scale, 
@@ -134,6 +138,8 @@ bool CGLVectorFont::glGenGlyphs(float precision,
 										 &(glyphs[i].height));
 		glyphs[i].advance = -2 * glyphs[i].halfWidth;
 		glyphs[i].glList = h.glname();
+
+		VECTOR_CACHEELT_t& rCache = vector_cache[i];
 		rCache.advance = -2 * glyphs[i].halfWidth;
 	}
 
@@ -142,7 +148,10 @@ bool CGLVectorFont::glGenGlyphs(float precision,
 	if (NULL != m_fontUniform)
 	{
 		CUniformAllocator*	pUAllocator = CUniformAllocator::GetInstance();
-		pUAllocator->glvkSetPointerData(m_fontUniform, (uint8_t*)&vector_cache[32], m_fontUniformSize);
+		//vector_cache[33].strip[0].u = 4;
+		//vector_cache[33].strip[0].v = 2;
+		VECTOR_CACHEELT_t *cache = &vector_cache[32];
+		pUAllocator->glvkSetPointerData(m_fontUniform, (uint8_t*)cache, m_fontUniformSize);
 	}
 
 	return CGLFont::glGenGlyphs(precision, extrusion, scale);
@@ -199,34 +208,36 @@ RAPTOR_HANDLE CGLVectorFont::glBuildVectors(const std::string &str,
 		if ((ch >= 32) && (ch <= 126))
 		{
 			VECTOR_CACHEELT& rCache = vector_cache[ch];
+			STRIPS_ELT_t& rStrip = strips[ch];
 			size_t num_strip = 0;
 
 			ch -= 32;
 			int nb = 2 * simplex[ch][0];
 
-			GL_TEX_VERTEX *strip = &rCache.strip0[0];
-			uint8_t *strip_len = &rCache.strip_len[num_strip++];
-			*strip_len = 0;
+			GL_TEX_VERTEX *strip = &rCache.strip[0];
+			uint32_t strip_start = 0;
+			uint32_t strip_size = 0;
+			uint32_t strip_pos = 0;
+
 			for (int j = 2; j <= nb; j += 2)
 			{
 				if (simplex[ch][j] == -1)
 				{
-					if (num_strip == 1)
-						strip = &rCache.strip1[0];
-					else if (num_strip == 2)
-						strip = &rCache.strip2[0];
-					else if (num_strip == 3)
-						strip = &rCache.strip3[0];
-					strip_len = &rCache.strip_len[num_strip++];
+					rStrip.strips[num_strip] = (strip_start << 16) + strip_size;
+
+					strip_size = 0;
+					strip_start = strip_pos;
+					num_strip++;
 				}
 				else
 				{
-					uint8_t s = *strip_len;
-					strip[s].u = scale * simplex[ch][j];
-					strip[s].v = scale * simplex[ch][j + 1];
-					*strip_len = ++s;
+					strip[strip_pos].u = scale * simplex[ch][j];
+					strip[strip_pos].v = scale * simplex[ch][j + 1];
+					strip_size++;
+					strip_pos++;
 				}
 			}
+			rStrip.strips[num_strip] = (strip_start << 16) + strip_size;
 		}
 	}
 
@@ -298,6 +309,7 @@ void CGLVectorFont::glWrite(const std::vector<CGLFont::FONT_TEXT_ITEM> &lines)
 	selectCurrentGlyphset(0);
 	glLineWidth(3.0f);
 	CGLFont::glWrite(dark_lines);
+
 	glLineWidth(1.1f);
 	CGLFont::glWrite(lines);
 
@@ -353,19 +365,21 @@ void CGLVectorFont::glWrite(const std::vector<CGLFont::FONT_TEXT_ITEM> &lines)
 		for (size_t i = 0; i < sz; i++)
 		{
 			uint8_t ch = item.text[i];
-			VECTOR_CACHEELT_t &elt = vector_cache[ch];
 
-			uint8_t nb_strips = (elt.strip_len[0] > 0 ? 1 : 0);
-			nb_strips = nb_strips + (elt.strip_len[1] > 0 ? 1 : 0);
-			nb_strips = nb_strips + (elt.strip_len[2] > 0 ? 1 : 0);
-			nb_strips = nb_strips + (elt.strip_len[3] > 0 ? 1 : 0);
+			VECTOR_CACHEELT_t &elt = vector_cache[ch];
+			STRIPS_ELT_t& rStrip = strips[ch];
+
+			uint8_t nb_strips = (rStrip.strips[0] > 0 ? 1 : 0);
+			nb_strips = nb_strips + (rStrip.strips[1] > 0 ? 1 : 0);
+			nb_strips = nb_strips + (rStrip.strips[2] > 0 ? 1 : 0);
+			nb_strips = nb_strips + (rStrip.strips[3] > 0 ? 1 : 0);
 
 			for (uint8_t strip = 0; strip < nb_strips; strip++)
 			{
 				font_line[count].advance = advance;
 				font_line[count].line = viewport[3] - item.y_offset - 1;
 				font_line[count].num_char = (ch - 32);
-				font_line[count].num_strip = strip;
+				font_line[count].num_strip = rStrip.strips[strip];
 				count++;
 			}
 
@@ -393,7 +407,7 @@ void CGLVectorFont::glWrite(const std::vector<CGLFont::FONT_TEXT_ITEM> &lines)
 	//!	First rendering : a dark surrounding with line width of 3
 	glLineWidth(3.0f);
 	instance.m_pVectorFontShader->glRender();
-	//glDrawArrays(GL_POINTS, 0, (GLsizei)count);
+	glDrawArrays(GL_POINTS, 0, (GLsizei)count);
 	
 	params.clear();
 	color = CColor::RGBA(1.0f, 0.0f, 0.0f, 1.0f);

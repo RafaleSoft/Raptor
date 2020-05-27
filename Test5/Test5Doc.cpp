@@ -350,8 +350,8 @@ void CTest5Doc::GLInitContext(void)
 
 
 	IViewPoint *vp = m_pDisplay->getViewPoint();
-    vp->setPosition(0,0,3.5,IViewPoint::EYE);
-    vp->setPosition(0,0,0,IViewPoint::TARGET);
+    vp->setPosition(0.0f,0.0f,3.5f,IViewPoint::EYE);
+    vp->setPosition(0.0f,0.0f,0.0f,IViewPoint::TARGET);
 
 	CTimeObject::setTimeFactor(1.0f);
 	CAnimator *pAnimator = new CAnimator();
