@@ -430,8 +430,6 @@ void CShadowMap::glRenderShadow(const vector<C3DSceneObject*>& objects)
 
 	if (m_pShadowTexture != NULL)
 	{
-		m_pShadowMap->glvkUnBindDisplay();
-
 		glDisable(GL_TEXTURE_GEN_S);
 		glDisable(GL_TEXTURE_GEN_T);
 		glDisable(GL_TEXTURE_GEN_R);

@@ -209,7 +209,7 @@ void CSkinningDisplay::Init()
     modifier = new MyModifier();
 	modifier->selectModifierFunction(CImageModifier::CGL_BLOWFADER_MODIFIER,0x05010101);
 
-    CTextureObject*	T = f.glCreateDynamicTexture(ITextureObject::CGL_COLOR24_ALPHA,ITextureObject::CGL_OPAQUE,ITextureObject::CGL_BILINEAR,modifier);
+    ITextureObject*	T = f.glCreateDynamicTexture(ITextureObject::CGL_COLOR24_ALPHA,ITextureObject::CGL_OPAQUE,ITextureObject::CGL_BILINEAR,modifier);
     f.glResizeTexture(T,64,64);
     modifier->setImage(T);
 	layer->manageSprite(T,150,75,0);

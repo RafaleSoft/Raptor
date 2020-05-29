@@ -954,6 +954,7 @@ CContextManager::RENDERING_CONTEXT_ID  CWin32ContextManager::glCreateExtendedCon
 		context.pExtensions->glInitExtensions();
 
 		//!	Try to create an extended context with attribs
+		/*
 #ifdef WGL_ARB_create_context
 		int attribs[] =
 		{
@@ -982,7 +983,7 @@ CContextManager::RENDERING_CONTEXT_ID  CWin32ContextManager::glCreateExtendedCon
 			glhrc = hrc;
 		}
 #endif
-
+*/
 #ifndef RAPTOR_DEBUG_MODE_GENERATION
 		if (std::string::npos != extensions.find("GL_ARB_debug_output"))
 		{

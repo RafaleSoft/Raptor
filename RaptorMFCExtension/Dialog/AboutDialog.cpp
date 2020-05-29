@@ -102,7 +102,7 @@ static char *text[NB_LINES] =
 class CAboutVideo : public CSimpleObject
 {
 public:
-	CAboutVideo(CTextureObject *tex,float width, float height)
+	CAboutVideo(ITextureObject *tex,float width, float height)
 		:m_pTxt(tex),tw(width),th(height)
 	{ setBoundingBox(GL_COORD_VERTEX(-1,-1,-3,1),GL_COORD_VERTEX(1,1,-1,1)); };
 	virtual ~CAboutVideo() {};
@@ -113,7 +113,7 @@ public:
 	virtual void glRender();
 
 private:
-	CTextureObject	*m_pTxt;
+	ITextureObject	*m_pTxt;
     float   tw;
     float   th;
 };
@@ -142,7 +142,7 @@ public:
 	virtual	void GLInitContext(void);
 
 	CAnimator	*m_pAnimator;
-	CTextureObject	*m_pTxt;
+	ITextureObject	*m_pTxt;
 };
 
 CGLDisplay::CGLDisplay():

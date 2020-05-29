@@ -8,8 +8,15 @@
 - RaptorDisplay:
 	- renommer glGrab en glBlit en utilisant un CImage.
 
+- Demo:
+	- Terminer le check display.
+
+- CTextureFactory:
+	- Fusionner vkLoadTexture & glLoadTexture
+
 - CGLFont:
 	- corriger font color et back color pour rendre générique
+	- sortir les statiques de GLVectorFont et GL2DTextureFont
 	
 - CShaderrogram:
 	- ajouter un preprocesseur.

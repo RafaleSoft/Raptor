@@ -616,7 +616,7 @@ public:
 
 		pCosTable = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,ITextureObject::CGL_OPAQUE,ITextureObject::CGL_BILINEAR);
         pCosTable->setSize(TABLE_SIZE,1);
-		pCosTable->glSetTransparency(255);
+		pCosTable->getGLTextureObject()->glSetTransparency(255);
         
 		CImage cosTable;
 		cosTable.allocatePixels(TABLE_SIZE, 1);
@@ -718,13 +718,13 @@ public:
 		}
 	}
 
-	CTextureObject* GetNormalMap(void) const
+	ITextureObject* GetNormalMap(void) const
 	{ return pMap; };
 
 private:
 	IRenderingProperties *props;
-	CTextureObject	*pMap;
-	CTextureObject	*pCosTable;
+	ITextureObject	*pMap;
+	ITextureObject	*pCosTable;
 	CRaptorDisplay	*pBuffer;
 	CShader			*pShader;
 	float			angles[8];

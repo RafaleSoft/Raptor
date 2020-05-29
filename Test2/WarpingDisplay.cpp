@@ -136,7 +136,7 @@ private:
 
 	GLfloat		*m_d_grid;
 
-	CTextureObject	*m_captureBuffer;
+	ITextureObject	*m_captureBuffer;
 };
 
 
@@ -237,7 +237,8 @@ void CWarpObject::glRender()
 	//	and take a margin for AA/BilinearFiltering cases
 	int w = x_sz * m_captureBuffer->getWidth();
 	int h = y_sz * m_captureBuffer->getHeight();
-    m_captureBuffer->setGenerationSize(floor(v1.x+0.5f),
+    m_captureBuffer->getGLTextureObject()->
+		setGenerationSize(floor(v1.x+0.5f),
 										floor(v1.y+0.5f),
 										w+2,
 										h+2);
@@ -274,8 +275,8 @@ private:
 	float		m_orgx;
 	float		m_orgy;
 
-	CTextureObject*	m_captureBuffer;
-	CShader	*m_pShader;
+	ITextureObject	*m_captureBuffer;
+	CShader			*m_pShader;
 };
 
 CGlassObject::CGlassObject(float width,float height,int hcels,int vcels)
@@ -341,7 +342,8 @@ void CGlassObject::glRender()
 	//	save GPU time, just copy pixels that will be shaded
 	int w = x_sz * m_captureBuffer->getWidth();
 	int h = y_sz * m_captureBuffer->getHeight();
-    m_captureBuffer->setGenerationSize(	floor(v1.x+0.5f),
+    m_captureBuffer->getGLTextureObject()->
+		setGenerationSize(	floor(v1.x+0.5f),
 										floor(v1.y+0.5f),
 										w+2,
 										h+2);

@@ -533,7 +533,6 @@ void CShader::glRenderTexture(void)
         }
 		else if (m_pTMUSetup != NULL)
 		{
-			m_textureUnitUnSetup = m_pTMUSetup->glBuildUnSetup();
 			m_textureUnitSetup = m_pTMUSetup->glBuildSetup();
 			glCallList(m_textureUnitSetup.glname());
 		}

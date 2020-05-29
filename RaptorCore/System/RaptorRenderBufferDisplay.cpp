@@ -521,11 +521,11 @@ bool CRaptorRenderBufferDisplay::glvkUnBindDisplay(void)
 	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 
 	bool res = CRaptorDisplay::glvkUnBindDisplay();
-	glPopAttrib();	// Viewport
+	glPopMatrix();
 	glMatrixMode(GL_PROJECTION);
 	glPopMatrix();
 	glMatrixMode(GL_MODELVIEW);
-	glPopMatrix();
+	glPopAttrib();	// Viewport
 	// Todo : 3DEngine configuration is lost here ?
 
 	if (m_bindingStack.size() > 0)

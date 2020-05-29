@@ -82,10 +82,10 @@ private:
 
 
 	bool			m_bRebuild;
-    CTextureObject	*kernelTexture;
+    ITextureObject	*kernelTexture;
 
     CRaptorDisplay	*xBuffer;
-    CTextureObject	*xKernelPass;
+    ITextureObject	*xKernelPass;
 
     CShader			*m_pXKernelShader;
     CShader			*m_pYKernelShader;

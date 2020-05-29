@@ -63,7 +63,7 @@ void CGenericDisplay::Init()
 	if (reinitTMU.handle() == 0)
 	{
 		CTextureUnitSetup initSetup;
-
+#if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
         initSetup.enableImageUnit(CTextureUnitSetup::IMAGE_UNIT_0,true);
 		initSetup.setDiffuseMap(NULL);
 		initSetup.getTMUShader(CTextureUnitSetup::IMAGE_UNIT_0).shaderOperation = CGL_TEXTURE_GEN_COORD;
@@ -84,7 +84,7 @@ void CGenericDisplay::Init()
 		initSetup.setLightMap(NULL);
 		initSetup.enableImageUnit(CTextureUnitSetup::IMAGE_UNIT_3,true);
 		initSetup.setEnvironmentMap(NULL);
-
+#endif
 		reinitTMU = initSetup.glBuildSetup();
 	}
 }

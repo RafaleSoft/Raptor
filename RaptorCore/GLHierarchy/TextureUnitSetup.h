@@ -195,10 +195,6 @@ public:
 	//!	Otherwise, Texture combiners are used
 	RAPTOR_HANDLE glBuildSetup(void);
 
-	//!	Generate a renderable object that does the opposite : it returns from
-	//! the TMU configuration set up using he previous method.
-	RAPTOR_HANDLE glBuildUnSetup(void);
-
 	//!	Renders a texture unit combiner separately
 	//!	( tmus are supposed to be set properly )
 	static void RAPTOR_FASTCALL glRender(GL_TEXTURE_COMBINER *C);
@@ -207,10 +203,11 @@ public:
 	//!	( tmus are supposed to be set properly )
 	static bool RAPTOR_FASTCALL glRender(GL_TEXTURE_SHADER *S);
 #else
+#endif
 	//!	Renders the texture unit setup, binding texture objects to units.
 	//!	( texture generator are called in the way as glBuildSetup display list)
 	void glRender();
-#endif
+
 
 
 	//! Inherited from CPersistence
@@ -229,8 +226,10 @@ private:
 
 	unsigned int		nbUnits;
     bool				*useUnit;
+#if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
     GL_TEXTURE_SHADER   *tmuShader;
     GL_TEXTURE_COMBINER *tmuCombiner;
+#endif
     ITextureObject	    **imageUnit;
 };
 

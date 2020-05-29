@@ -90,8 +90,8 @@ CGLLayer::~CGLLayer()
 	if (m_pPlane != NULL)
 		m_pPlane->releaseReference();
 
-    unsigned int size = sprites.size();
-    for (unsigned int i=0; i < size ; i++)
+    size_t size = sprites.size();
+    for (size_t i=0; i < size ; i++)
     {
         sprites[i].image->releaseReference();
     }

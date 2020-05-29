@@ -357,7 +357,7 @@ bool CRaptorFilteredDisplay::glCreateRenderDisplay(void)
 			//
 			//	Rq: for PBuffers, the final texture format is determined by the PBuffer pixelFormat,
 			//	so the texelType here is not necessary.
-			CTextureObject *T = f.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
+			ITextureObject *T = f.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 															ITextureObject::CGL_OPAQUE,
 															ITextureObject::CGL_BILINEAR,
 															m_pDisplay);

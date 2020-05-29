@@ -588,13 +588,17 @@ bool CTextureFactory::glLoadTexture(ITextureObject* const T,
 		return false;
 }
 
-bool CTextureFactory::glResizeTexture(CTextureObject *T, uint32_t width, uint32_t height, uint32_t depth) const
+bool CTextureFactory::glResizeTexture(ITextureObject *I, uint32_t width, uint32_t height, uint32_t depth) const
 {
-    if ((T == NULL) || (width == 0) || (height == 0) || (depth == 0))
+    if ((I == NULL) || (width == 0) || (height == 0) || (depth == 0))
         return false;
 
-    if ((T->getWidth() == width) && (T->getHeight() == height) && (T->getDepth() == depth))
+    if ((I->getWidth() == width) && (I->getHeight() == height) && (I->getDepth() == depth))
         return true;
+
+	CTextureObject *T = I->getGLTextureObject();
+	if (NULL == T)
+		return false;
 
     GLint currentWidth = 0;
     GLint currentHeight = 0;
@@ -777,7 +781,7 @@ ITextureObject* const CTextureFactory::glCreateSprite(ITextureObject::TEXEL_TYPE
 	return T;
 }
 
-CTextureObject* const CTextureFactory::glCreateCubemap(  ITextureObject::TEXEL_TYPE type,
+ITextureObject* const CTextureFactory::glCreateCubemap(  ITextureObject::TEXEL_TYPE type,
                                                          ITextureObject::TEXTURE_FUNCTION env_mode,
 														 ITextureObject::TEXTURE_FILTER filter)
 {
@@ -968,7 +972,7 @@ CTextureObject* const CTextureFactory::glCreateRectangleTexture( ITextureObject:
 }
 
 
-CTextureObject* const CTextureFactory::glCreateDynamicTexture(ITextureObject::TEXEL_TYPE type,
+ITextureObject* const CTextureFactory::glCreateDynamicTexture(ITextureObject::TEXEL_TYPE type,
                                                               ITextureObject::TEXTURE_FUNCTION env_mode,
                                                               ITextureObject::TEXTURE_FILTER filter,
 														      ITextureGenerator* pGenerator)
@@ -1015,7 +1019,7 @@ CTextureObject* const CTextureFactory::glCreateDynamicTexture(ITextureObject::TE
 	return T;
 }
 
-CTextureObject* const CTextureFactory::glCreateVolumeTexture(ITextureObject::TEXEL_TYPE type,
+ITextureObject* const CTextureFactory::glCreateVolumeTexture(ITextureObject::TEXEL_TYPE type,
                                                              ITextureObject::TEXTURE_FUNCTION env_mode,
 														     ITextureObject::TEXTURE_FILTER filter)
 {

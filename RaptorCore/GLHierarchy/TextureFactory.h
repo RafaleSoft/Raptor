@@ -73,7 +73,7 @@ public:
 	//! @param pGenerator : is a texture generator that produces texels to dynamically 'reload' the texture.
     //! @param filter : specifies the kind of texel sampler of the texture object
     //! @return : the texture created or NULL if there has been an error
-    CTextureObject*		const glCreateDynamicTexture(	ITextureObject::TEXEL_TYPE type,
+    ITextureObject*		const glCreateDynamicTexture(	ITextureObject::TEXEL_TYPE type,
 														ITextureObject::TEXTURE_FUNCTION env_mode = ITextureObject::CGL_ALPHA_TRANSPARENT,
 														ITextureObject::TEXTURE_FILTER filter = ITextureObject::CGL_UNFILTERED,
 														ITextureGenerator* pGenerator = NULL);
@@ -83,7 +83,7 @@ public:
 	//! @param env_mode : is one of the TEXTURE_FUNCTION enum
     //! @param filter : specifies the kind of texel sampler of the texture object
     //! @return : the texture created or NULL if there has been an error
-	CTextureObject*		const glCreateCubemap(	ITextureObject::TEXEL_TYPE type,
+	ITextureObject*		const glCreateCubemap(	ITextureObject::TEXEL_TYPE type,
 												ITextureObject::TEXTURE_FUNCTION env_mode = ITextureObject::CGL_ALPHA_TRANSPARENT,
 												ITextureObject::TEXTURE_FILTER filter = ITextureObject::CGL_UNFILTERED);
 
@@ -92,7 +92,7 @@ public:
 	//! @param env_mode : is one of the TEXTURE_FUNCTION enum
     //! @param filter : specifies the kind of texel sampler of the texture object
     //! @return : the texture created or NULL if there has been an error
-	CTextureObject*		const glCreateVolumeTexture(ITextureObject::TEXEL_TYPE type,
+	ITextureObject*		const glCreateVolumeTexture(ITextureObject::TEXEL_TYPE type,
 													ITextureObject::TEXTURE_FUNCTION env_mode = ITextureObject::CGL_ALPHA_TRANSPARENT,
 													ITextureObject::TEXTURE_FILTER filter = ITextureObject::CGL_UNFILTERED);
 
@@ -142,14 +142,14 @@ public:
 	//! Same as above excepts that the texteure texels are only loaded in client memory,
 	//!	and not yet transfered to GL server memory.
 	//! A subsequent call to glLoadTexture will finalize texture loading.
-	RAPTOR_HANDLE glvkPreloadTexture(	CTextureObject* const T,
+	RAPTOR_HANDLE glvkPreloadTexture(	ITextureObject* const T,
 										const std::string &fname,
 										const CVaArray<CImage::IImageOP*>& ops = CVaArray<CImage::IImageOP*>());
 
 	//!	@param preload : the result of a texture preload
 	//!	@param mode : @see glLoadTexture
 	//!	@return : @see glLoadTexture
-	bool glvkLoadTexture(	CTextureObject* const T,
+	bool glvkLoadTexture(	ITextureObject* const T,
 							RAPTOR_HANDLE preload);
 
 
@@ -159,14 +159,14 @@ public:
     //! - image is rescaled if actually loaded
     //! - allocated texels are discarded.
     //! @return false if resizing is not possible
-    bool glResizeTexture( CTextureObject *T, uint32_t width, uint32_t height, uint32_t depth=1) const;
+    bool glResizeTexture(ITextureObject *I, uint32_t width, uint32_t height, uint32_t depth=1) const;
 
     //! Exports a texture image to a file, type is selected from fname extension
 	bool glExportTexture(CTextureObject *T,const std::string &fname);
 
 	//! This methods loads a compressed texture that has been created 
 	//! using the export method here under.
-	bool glLoadCompressedTexture(	CTextureObject* const T, const std::string& fname );
+	bool glLoadCompressedTexture(CTextureObject* const T, const std::string& fname );
 
     //! This method exports a given texture 
 	bool glExportCompressedTexture(const std::string& fname, const CTextureObject *T);
@@ -198,7 +198,7 @@ private:
 		bool createNormalMap;
 		bool reScale;
 	} TexturePreload;
-	map<CTextureObject*, TexturePreload>	m_preloads;
+	map<ITextureObject*, TexturePreload>	m_preloads;
 };
 
 RAPTOR_NAMESPACE_END

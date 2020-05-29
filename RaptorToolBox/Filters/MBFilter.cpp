@@ -66,17 +66,17 @@ public:
         pPreviousDisplay = pCurrentDisplay;
         pCurrentDisplay = tmpDisplay;
 
-        CTextureObject  *tmpColorAccum = m_pPreviousColorAccum;
+        ITextureObject  *tmpColorAccum = m_pPreviousColorAccum;
         m_pPreviousColorAccum = m_pCurrentColorAccum;
         m_pCurrentColorAccum = tmpColorAccum;
     }
 
     //! Flip-flop color output
     CRaptorDisplay *pCurrentDisplay;
-    CTextureObject  *m_pCurrentColorAccum;
+    ITextureObject  *m_pCurrentColorAccum;
 
     CRaptorDisplay *pPreviousDisplay;
-    CTextureObject  *m_pPreviousColorAccum;
+    ITextureObject  *m_pPreviousColorAccum;
 };
 
 

@@ -52,7 +52,7 @@ public:
 	{
 	};
 
-	void Init(size_t s);
+	void Init(uint16_t s);
 
 	virtual void glRender()
 	{
@@ -73,7 +73,7 @@ public:
 	}
 };
 
-void CPoints::Init(size_t s)
+void CPoints::Init(uint16_t s)
 {
 	addModel(CGeometry::CGL_FRONT_GEOMETRY);
 	addModel(CGeometry::CGL_COLORS);
@@ -88,7 +88,7 @@ void CPoints::Init(size_t s)
 
 	glLockData();
 
-	for (size_t i = 0; i < s; i++)
+	for (uint16_t i = 0; i < s; i++)
 	{
 		float x = 3.0f * ((float)rand() - 0.5f*RAND_MAX) / RAND_MAX;
 		float y = 3.0f * ((float)rand() - 0.5f*RAND_MAX) / RAND_MAX;
@@ -103,7 +103,7 @@ void CPoints::Init(size_t s)
 
 	CGeometryPrimitive *p = createPrimitive(CGeometryPrimitive::POINT);
 
-	unsigned short *points = new unsigned short[s];
+	uint16_t *points = new uint16_t[s];
 	for (uint16_t i = 0; i < s; i++)
 		points[i] = i;
 
@@ -120,7 +120,7 @@ public:
 	{
 	};
 
-	void Init(size_t s);
+	void Init(uint16_t s);
 
 	virtual void glRender()
 	{
@@ -143,7 +143,7 @@ public:
 	}
 };
 
-void CCube::Init(size_t s)
+void CCube::Init(uint16_t s)
 {
 	addModel(CGeometry::CGL_FRONT_GEOMETRY);
 	addModel(CGeometry::CGL_COLORS);
@@ -157,7 +157,7 @@ void CCube::Init(size_t s)
 	glLockData();
 
 	srand(GetTickCount());
-	for (size_t i = 0; i < s+s; i+=2)
+	for (uint16_t i = 0; i < s+s; i+=2)
 	{
 		float x = 3.0f * ((float)rand() - 0.5f*RAND_MAX) / RAND_MAX;
 		float y = 3.0f * ((float)rand() - 0.5f*RAND_MAX) / RAND_MAX;
@@ -181,7 +181,7 @@ void CCube::Init(size_t s)
 
 	CGeometryPrimitive *p = createPrimitive(CGeometryPrimitive::LINE);
 
-	unsigned short *points = new unsigned short[s+s];
+	uint16_t *points = new uint16_t[s+s];
 	for (uint16_t i = 0; i < s+s; i++)
 		points[i] = i;
 
