@@ -141,7 +141,7 @@ void CBumpDisplay::Init()
 	if (p->getId().isSubClassOf(CTextureSet::CTextureSetClassID::GetClassId()))
 		 t = (CTextureSet *)p;
 
-    CTextureObject *tt = f.glCreateTexture( ITextureObject::CGL_COLOR24_ALPHA,
+    ITextureObject *tt = f.glCreateTexture( ITextureObject::CGL_COLOR24_ALPHA,
 											ITextureObject::CGL_ALPHA_TRANSPARENT,
 											ITextureObject::CGL_BILINEAR);
 	f.glResizeTexture(tt,512,512);
@@ -164,7 +164,7 @@ void CBumpDisplay::Init()
 
 	CTextureUnitSetup tmu;
 	CPerlinNoise noise2;
-	CTextureObject *tt2 = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
+	ITextureObject *tt2 = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
                                             ITextureObject::CGL_ALPHA_TRANSPARENT,
                                             ITextureObject::CGL_BILINEAR);
 	f.glResizeTexture(tt2,512,512);

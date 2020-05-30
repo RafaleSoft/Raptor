@@ -8,6 +8,9 @@
 - RaptorDisplay:
 	- renommer glGrab en glBlit en utilisant un CImage.
 
+- CObject3D:
+	- glRenderBBox avec effets de bord si utilisé en standalone hors de C3DSceneAttributes.
+
 - Demo:
 	- Terminer le check display.
 

@@ -72,6 +72,7 @@ CTeapot::CTeapot()
 	//numdemo(CTest2App::PARTICLEDEMO)
 	//numdemo(CTest2App::AMBIENTOCCLUSIONDEMO)
 	numdemo(CTest2App::BUMPDEMO)
+	//numdemo(CTest2App::SHADOWMAPDEMO)
 	//numdemo(CTest2App::VRTXSHADERSDEMO)
 	//numdemo(CTest2App::PROJECTIONDEMO)
 {
@@ -118,19 +119,19 @@ void CTeapot::GLInitContext()
 	t = new CTextureSet("main_textures");
 	CTextureFactoryConfig& config = f.getConfig();
 
-	CTextureObject*	T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,ITextureObject::CGL_ALPHA_TRANSPARENT,ITextureObject::CGL_BILINEAR);
-	T->glSetTransparency(128);
+	ITextureObject*	T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,ITextureObject::CGL_ALPHA_TRANSPARENT,ITextureObject::CGL_BILINEAR);
+	T->getGLTextureObject()->glSetTransparency(128);
 	f.glLoadTexture(T,"Datas\\raptor.tga");
 	f.glExportTexture(T, "raptor.jpg");
 	t->addTexture(T);
 
 	T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,ITextureObject::CGL_MULTIPLY,ITextureObject::CGL_BILINEAR);
-	T->glSetTransparency(255);
+	T->getGLTextureObject()->glSetTransparency(255);
 	f.glLoadTexture(T,"Datas\\marble.jpg");
 	t->addTexture(T);
 
 	T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,ITextureObject::CGL_ALPHA_TRANSPARENT,ITextureObject::CGL_BILINEAR);
-	T->glSetTransparency(128);
+	T->getGLTextureObject()->glSetTransparency(128);
 	t->addTexture(T);
 #if defined(GL_ARB_texture_compression)
 	#if(0)
@@ -147,7 +148,7 @@ void CTeapot::GLInitContext()
 #endif
 
 	T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,ITextureObject::CGL_ALPHA_TRANSPARENT,ITextureObject::CGL_BILINEAR);
-	T->glSetTransparency(128);
+	T->getGLTextureObject()->glSetTransparency(128);
 	f.glLoadTexture(T,"Datas\\bump.tga");
 	t->addTexture(T);
 
@@ -161,20 +162,20 @@ void CTeapot::GLInitContext()
 		ITextureObject* cubemap = 
 			f.glCreateCubemap(ITextureObject::CGL_COLOR24_ALPHA,ITextureObject::CGL_ALPHA_TRANSPARENT,ITextureObject::CGL_BILINEAR);
 		T = cubemap->getGLTextureObject();
-		T->glSetTransparency(255);
-		T->selectCubeFace(ITextureObject::CGL_CUBEMAP_PX);
+		T->getGLTextureObject()->glSetTransparency(255);
+		T->getGLTextureObject()->selectCubeFace(ITextureObject::CGL_CUBEMAP_PX);
 		f.glLoadTexture(T,"Datas\\ciel_07_small.jpg");
-		T->selectCubeFace(ITextureObject::CGL_CUBEMAP_PY);
+		T->getGLTextureObject()->selectCubeFace(ITextureObject::CGL_CUBEMAP_PY);
 		f.glLoadTexture(T,"Datas\\ciel_07_small.jpg");
-		T->selectCubeFace(ITextureObject::CGL_CUBEMAP_PZ);
+		T->getGLTextureObject()->selectCubeFace(ITextureObject::CGL_CUBEMAP_PZ);
 		f.glLoadTexture(T,"Datas\\ciel_07_small.jpg");
-		T->selectCubeFace(ITextureObject::CGL_CUBEMAP_NX);
+		T->getGLTextureObject()->selectCubeFace(ITextureObject::CGL_CUBEMAP_NX);
 		f.glLoadTexture(T,"Datas\\ciel_07_small.jpg");
-		T->selectCubeFace(ITextureObject::CGL_CUBEMAP_NY);
+		T->getGLTextureObject()->selectCubeFace(ITextureObject::CGL_CUBEMAP_NY);
 		f.glLoadTexture(T,"Datas\\ciel_07_small.jpg");
-		T->selectCubeFace(ITextureObject::CGL_CUBEMAP_NZ);
+		T->getGLTextureObject()->selectCubeFace(ITextureObject::CGL_CUBEMAP_NZ);
 		f.glLoadTexture(T,"Datas\\ciel_07_small.jpg");
-		T->selectCubeFace(ITextureObject::CGL_CUBEMAP_NONE);
+		T->getGLTextureObject()->selectCubeFace(ITextureObject::CGL_CUBEMAP_NONE);
 		t->addTexture(T);
 	}
 
@@ -203,7 +204,7 @@ void CTeapot::GLInitContext()
 	s->setColor(1.0f,1.0f,1.0f,1.0f);
     s->getMaterial()->setShininess(10.0f);
 	teapot->setDiffuseMap(t->getTexture(0));
-	CTextureObject* normalMap = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,ITextureObject::CGL_MULTIPLY,ITextureObject::CGL_BILINEAR);
+	ITextureObject* normalMap = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,ITextureObject::CGL_MULTIPLY,ITextureObject::CGL_BILINEAR);
 	CBumpmapLoader loader(f.getConfig().getBumpAmplitude());
     f.glLoadTexture(normalMap,"Datas\\bump3.tga",&loader);
 	teapot->setNormalMap(normalMap);

@@ -366,29 +366,29 @@ void CShadowMapDisplay::Init()
     CTextureFactoryConfig& config = f.getConfig();
     config.setCurrentAnisotropy(16.0f);
 
-	CTextureObject *T = f.glCreateTexture(	ITextureObject::CGL_COLOR24_ALPHA,
+	ITextureObject *T = f.glCreateTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 											ITextureObject::CGL_ALPHA_TRANSPARENT,
 											ITextureObject::CGL_ANISOTROPIC);
-	T->glSetTransparency(255);
+	T->getGLTextureObject()->glSetTransparency(255);
 	config.setGenerateMipmap(false);
 	f.glLoadTexture(T,"Datas\\oldwood.jpg");
-    T->selectMipMapLevel(1);
+    T->getGLTextureObject()->selectMipMapLevel(1);
     f.glLoadTexture(T,"Datas\\oldwood2.jpg");
-    T->selectMipMapLevel(2);
+    T->getGLTextureObject()->selectMipMapLevel(2);
     f.glLoadTexture(T,"Datas\\oldwood3.jpg");
-    T->selectMipMapLevel(3);
+    T->getGLTextureObject()->selectMipMapLevel(3);
     f.glLoadTexture(T,"Datas\\oldwood4.jpg");
-    T->selectMipMapLevel(4);
+    T->getGLTextureObject()->selectMipMapLevel(4);
     f.glLoadTexture(T,"Datas\\oldwood5.jpg");
-    T->selectMipMapLevel(5);
+    T->getGLTextureObject()->selectMipMapLevel(5);
     f.glLoadTexture(T,"Datas\\oldwood6.jpg");
-    T->selectMipMapLevel(6);
+    T->getGLTextureObject()->selectMipMapLevel(6);
     f.glLoadTexture(T,"Datas\\oldwood7.jpg");
-    T->selectMipMapLevel(7);
+    T->getGLTextureObject()->selectMipMapLevel(7);
     f.glLoadTexture(T,"Datas\\oldwood8.jpg");
-    T->selectMipMapLevel(8);
+    T->getGLTextureObject()->selectMipMapLevel(8);
     f.glLoadTexture(T,"Datas\\oldwood9.jpg");
-    T->selectMipMapLevel(9);
+    T->getGLTextureObject()->selectMipMapLevel(9);
     f.glLoadTexture(T,"Datas\\oldwood10.jpg");
 	config.setGenerateMipmap(true);
     config.setCurrentAnisotropy(1.0f);
@@ -404,7 +404,7 @@ void CShadowMapDisplay::Init()
 	T = f.glCreateTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 							ITextureObject::CGL_ALPHA_TRANSPARENT,
 							ITextureObject::CGL_BILINEAR);
-	T->glSetTransparency(255);
+	T->getGLTextureObject()->glSetTransparency(255);
 	f.glLoadTexture(T,fname);
 
 	tmu.getTMUCombiner(CTextureUnitSetup::IMAGE_UNIT_0).rgb_combiner = true;

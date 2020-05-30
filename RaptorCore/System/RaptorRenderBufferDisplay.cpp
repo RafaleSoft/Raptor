@@ -555,9 +555,9 @@ bool CRaptorRenderBufferDisplay::glvkUnBindDisplay(void)
 #endif
 }
 
-void CRaptorRenderBufferDisplay::glGenerate(CTextureObject* T)
+void CRaptorRenderBufferDisplay::glGenerate(ITextureObject* I)
 {
-    if ((T == NULL) || (!m_bEnabled) || (m_framebuffer == 0))
+    if ((I == NULL) || (!m_bEnabled) || (m_framebuffer == 0))
         return;
 
 	// Remove current texture 
@@ -565,6 +565,8 @@ void CRaptorRenderBufferDisplay::glGenerate(CTextureObject* T)
 	glBindTexture(GL_TEXTURE_2D,0);
 
 #if defined(GL_EXT_framebuffer_object)
+	CTextureObject *T = I->getGLTextureObject();
+
 	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();	
 	pExtensions->glBindFramebufferEXT(GL_FRAMEBUFFER_EXT,m_framebuffer);
 

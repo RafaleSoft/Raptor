@@ -145,7 +145,7 @@ bool CTextureQuad::glLoadTexture(const std::string &texname, bool compressed)
 	if (!texname.empty())
 	{
 		CTextureFactory &Txt = CTextureFactory::getDefaultFactory();
-		CTextureObject *T = Txt.glCreateTexture( ITextureObject::CGL_COLOR24_ALPHA,
+		ITextureObject *T = Txt.glCreateTexture( ITextureObject::CGL_COLOR24_ALPHA,
 												 ITextureObject::CGL_MULTIPLY,
 												 ITextureObject::CGL_BILINEAR);
 		
@@ -154,7 +154,7 @@ bool CTextureQuad::glLoadTexture(const std::string &texname, bool compressed)
 		if (lock)
 			pAllocator->glvkLockMemory(false);
 
-		T->glSetTransparency(256);
+		T->getGLTextureObject()->glSetTransparency(256);
 
 		if (compressed)
 			Txt.glLoadCompressedTexture(T, texname);

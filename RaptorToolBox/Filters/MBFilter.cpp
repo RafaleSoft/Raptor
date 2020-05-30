@@ -222,7 +222,7 @@ bool CMBFilter::glInitFilter(void)
 	{
 		state.renderer = CRaptorDisplayConfig::RENDER_BUFFER;
 
-		CTextureObject *T = NULL;
+		ITextureObject *T = NULL;
 		T = filterFactory.glCreateTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 											ITextureObject::CGL_OPAQUE,
 											ITextureObject::CGL_BILINEAR);

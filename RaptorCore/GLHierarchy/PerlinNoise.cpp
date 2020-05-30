@@ -19,7 +19,7 @@
 #include "Subsys/CodeGeneration.h"
 
 #if !defined(AFX_PERLINNOISE_H__AE39D006_3DDA_4924_B76D_A11A0F2BCFB9__INCLUDED_)
-    #include "PerlinNoise.h"
+    #include "GLHierarchy/PerlinNoise.h"
 #endif
 #if !defined(AFX_TEXTUREFACTORY_H__1B470EC4_4B68_11D3_9142_9A502CBADC6B__INCLUDED_)
 	#include "GLHierarchy/TextureFactory.h"
@@ -326,7 +326,7 @@ unsigned int CPerlinNoise::getGenerateHeight(void) const
     return 0;
 }
 
-void CPerlinNoise::glGenerate(CTextureObject* t)
+void CPerlinNoise::glGenerate(ITextureObject* t)
 {
     if ((t == NULL) || (!m_bEnabled))
         return;

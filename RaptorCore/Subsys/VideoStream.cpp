@@ -43,7 +43,7 @@ CVideoStream::~CVideoStream()
 
 }
 
-void CVideoStream::glGenerate(CTextureObject* T)
+void CVideoStream::glGenerate(ITextureObject* T)
 {
     if ((T == NULL) || (!m_bEnabled))
         return;

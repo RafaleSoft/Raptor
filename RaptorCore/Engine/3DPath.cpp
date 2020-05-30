@@ -141,27 +141,27 @@ CGenericVector<float> &C3DPath::eval(float u)
 {
 	result.Set(0.0f,0.0f,0.0f,1.0f);
 
-	int max = uknots.size();
+	size_t max = uknots.size();
 
 	if (evalType == CGL_INTERPOLATE)
 	{
-		for (int i=0;i<max;i++)
+		for (size_t i=0; i<max; i++)
 		{
 			float coeff = 1;
-			for (int j=0;j<max;j++)
+			for (size_t j=0; j<max; j++)
 			{
 				if (i != j)
-					coeff *= (u-uknots[j]);
+					coeff *= (u - uknots[j]);
 			}
 
-			coeff*=ucoeffs[i];
+			coeff *= ucoeffs[i];
 			result += ( knots[i] * coeff);
 		}
 	}
 	else if (evalType == CGL_CATMULLROM)
 	{
-		int pos = 0;
-		while ((pos < max-1)&&(u > uknots[pos]))
+		size_t pos = 0;
+		while ((pos < max-1) && (u > uknots[pos]))
 			pos++;
 
 		if (pos == 0)
@@ -174,7 +174,7 @@ CGenericVector<float> &C3DPath::eval(float u)
 			CGenericVector<float>	S;
 
 			//	calcul de s
-			float s = (u - uknots[pos-1])/(uknots[pos] - uknots[pos-1]);
+			float s = (u - uknots[pos-1]) / (uknots[pos] - uknots[pos-1]);
 			S.H(1.0f);
 			S.Z(s);
 			s *= s;
@@ -201,8 +201,8 @@ CGenericVector<float> &C3DPath::eval(float u)
 	}
 	else if (evalType == CGL_CATMULLROMEX)
 	{
-		int pos = 0;
-		while ((pos < max-1)&&(u > uknots[pos]))
+		size_t pos = 0;
+		while ((pos < max-1) && (u > uknots[pos]))
 			pos++;
 
 		if (pos == 0)
@@ -215,7 +215,7 @@ CGenericVector<float> &C3DPath::eval(float u)
 			CGenericVector<float>	S;
 
 			//	calcul de s
-			float s = (u - uknots[pos-1])/(uknots[pos] - uknots[pos-1]);
+			float s = (u - uknots[pos-1]) / (uknots[pos] - uknots[pos-1]);
 			S.H(1.0f);
 			S.Z(s);
 			s *= s;
@@ -230,13 +230,13 @@ CGenericVector<float> &C3DPath::eval(float u)
 			if ((pos > 1) && (pos < max))
             {
 				Dprev = (knots[pos-1] - knots[pos-2]) * (1-tknots[pos-1]) * (1+cknots[pos-1]) * 0.5f +
-						      (knots[pos] - knots[pos-1]) * (1-tknots[pos-1]) * (1-cknots[pos-1]) * 0.5f;
+						  (knots[pos] - knots[pos-1]) * (1-tknots[pos-1]) * (1-cknots[pos-1]) * 0.5f;
             }
 
 			if ((pos > 0) && (pos < max - 1))
             {
 				Dnext = (knots[pos] - knots[pos-1]) * (1-tknots[pos]) * (1-cknots[pos]) * 0.5f +
-						     (knots[pos+1] - knots[pos]) * (1-tknots[pos]) * (1+cknots[pos]) * 0.5f;
+						(knots[pos+1] - knots[pos]) * (1-tknots[pos]) * (1+cknots[pos]) * 0.5f;
             }
 			/*
 			if ((pos > 1) && (pos < max))
@@ -253,6 +253,7 @@ CGenericVector<float> &C3DPath::eval(float u)
 			result.H(1.0f);
 		}
 	}
+
 	return result;
 }
 

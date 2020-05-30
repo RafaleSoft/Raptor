@@ -88,7 +88,7 @@ bool CAmbientOcclusionShader::glInitAOCompute(void)
 
 	CTextureFactory &f = CTextureFactory::getDefaultFactory();
 	f.getConfig().useTextureResize(false);
-	CTextureObject *T = f.glCreateTexture(	ITextureObject::CGL_COLOR_FLOAT32_ALPHA,
+	ITextureObject *T = f.glCreateTexture(	ITextureObject::CGL_COLOR_FLOAT32_ALPHA,
 											ITextureObject::CGL_OPAQUE,
 											ITextureObject::CGL_BILINEAR);
 	T->glvkUpdateClamping(ITextureObject::CGL_EDGECLAMP);
@@ -286,7 +286,7 @@ bool CAmbientOcclusionShader::glSetCoords(GL_COORD_VERTEX* refVertex, unsigned i
 		int width = ceil(log(sqrt((float)nbVertex)) / log(2.0));
 		int height = width = pow(2.0,width);
 
-		CTextureObject *T = f.glCreateRectangleTexture(	ITextureObject::CGL_COLOR_FLOAT32_ALPHA,
+		ITextureObject *T = f.glCreateRectangleTexture(	ITextureObject::CGL_COLOR_FLOAT32_ALPHA,
 														ITextureObject::CGL_OPAQUE,
 														ITextureObject::CGL_UNFILTERED);
 		// Should this case still be supported ?
@@ -326,7 +326,7 @@ bool CAmbientOcclusionShader::glSetNormals(GL_COORD_VERTEX* refNormal, unsigned 
 		int width = ceil(log(sqrt((float)nbVertex)) / log(2.0));
 		int height = width = pow(2.0,width);
 
-		CTextureObject *T = f.glCreateRectangleTexture(	ITextureObject::CGL_COLOR_FLOAT32_ALPHA,
+		ITextureObject *T = f.glCreateRectangleTexture(	ITextureObject::CGL_COLOR_FLOAT32_ALPHA,
 														ITextureObject::CGL_OPAQUE,
 														ITextureObject::CGL_UNFILTERED);
 

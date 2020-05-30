@@ -1,5 +1,21 @@
-// TestDoc.cpp : implementation of the CTestDoc class
-//
+/***************************************************************************/
+/*                                                                         */
+/*  TestDoc.cpp                                                            */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
 
 #include "StdAfx.h"
 #include <sstream>
@@ -56,7 +72,7 @@ public:
 	Foreground(CMagnifierFilter *mf):fgMag(mf),status(mf->isEnabled())
 	{
 		CTextureFactory &fct = CTextureFactory::getDefaultFactory();
-		CTextureObject *T = fct.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA);
+		ITextureObject *T = fct.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA);
 		fct.glLoadTexture(T,"lrock049.jpg");
 
 		fgMag->setColorInput(T);
@@ -211,7 +227,7 @@ void CTestDoc::GLInitContext(void)
     background->glUnLockData();
 
 	CTextureFactory &fct = CTextureFactory::getDefaultFactory();
-	CTextureObject *T = fct.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA);
+	ITextureObject *T = fct.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA);
 	fct.glLoadTexture(T,"Gaussian_blur_test.jpg");
 	CShader *s = background->getShader();
 	CTextureUnitSetup *tmu = s->glGetTextureUnitsSetup();

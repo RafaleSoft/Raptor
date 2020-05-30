@@ -295,7 +295,7 @@ CGlassObject::CGlassObject(float width,float height,int hcels,int vcels)
 												CRaptorDisplay::GetCurrentDisplay());
     f.glResizeTexture(m_captureBuffer,BASE_WARP_WIDTH,BASE_WARP_HEIGHT);
 
-	CTextureObject* T = f.glCreateTexture( ITextureObject::CGL_COLOR24_ALPHA,
+	ITextureObject* T = f.glCreateTexture( ITextureObject::CGL_COLOR24_ALPHA,
                                            ITextureObject::CGL_ALPHA_TRANSPARENT,
                                            ITextureObject::CGL_BILINEAR);
 	f.glLoadTexture(T,"Datas\\Bump2.tga");

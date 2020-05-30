@@ -92,7 +92,7 @@ public:
 						CRaptorDisplay *pDst) const;
 
     //! Implement base class CTextureGenerator of CRaptorDisplay
-    virtual void glGenerate(CTextureObject* );
+    virtual void glGenerate(ITextureObject* );
 
 	//!	Implements CPersistence
 	DECLARE_CLASS_ID(CRaptorScreenDisplayClassID,"RaptorScreenDisplay",CRaptorDisplay)

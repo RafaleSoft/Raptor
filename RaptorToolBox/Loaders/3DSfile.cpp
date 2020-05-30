@@ -992,9 +992,9 @@ bool RAPTOR_FASTCALL ProcessChunkAxxxH(long length)
 			l+=ReadSubChunk();		// texture name, percentage...
 
 		CTextureFactory &f = CTextureFactory::getDefaultFactory();
-		CTextureObject* T;
+		ITextureObject* T = NULL;
 		T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,ITextureObject::CGL_MULTIPLY,ITextureObject::CGL_BILINEAR);
-		T->glSetTransparency((unsigned char)((float)CurrentState.spercentage*255.0/100.0));
+		T->getGLTextureObject()->glSetTransparency((unsigned char)((float)CurrentState.spercentage*255.0/100.0));
 
 		string fname = CurrentState.name;
 		if (!maxOptions.texturePath.empty())

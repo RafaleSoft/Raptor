@@ -37,7 +37,7 @@ private:
 	CRaptorMutex	tMutex;
 
 	RAPTOR_HANDLE	drawBuffer;
-	CTextureObject	*m_pImage;
+	ITextureObject	*m_pImage;
 	unsigned int	m_serverWidth;
 	unsigned int	m_serverHeight;
 

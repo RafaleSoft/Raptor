@@ -205,7 +205,9 @@ public:
 #else
 #endif
 	//!	Renders the texture unit setup, binding texture objects to units.
-	//!	( texture generator are called in the way as glBuildSetup display list)
+	//!	( Texture generator are NOT called as in glBuildSetup display list: same behavior.
+	//!		In order to render the generator bound to the texture, texture object glRender
+	//!		must be called explicitely. )
 	void glRender();
 
 
@@ -231,6 +233,7 @@ private:
     GL_TEXTURE_COMBINER *tmuCombiner;
 #endif
     ITextureObject	    **imageUnit;
+	PFN_GL_ACTIVE_TEXTURE_ARB_PROC pfn_glActiveTexture;
 };
 
 RAPTOR_NAMESPACE_END

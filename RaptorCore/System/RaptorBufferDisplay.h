@@ -54,7 +54,7 @@ public:
     virtual ITextureGenerator::GENERATOR_KIND getKind(void) const { return ITextureGenerator::BUFFERED; };
 
     //! Implements CTextureGenerator
-    virtual void glGenerate(CTextureObject* );
+    virtual void glGenerate(ITextureObject* );
 
 	//!	Implements CPersistence
 	DECLARE_CLASS_ID(CRaptorBufferDisplayClassID,"RaptorBufferDisplay",CRaptorDisplay)

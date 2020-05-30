@@ -54,7 +54,7 @@ public:
 	//! @param env_mode : is one of the TEXTURE_FUNCTION enum
     //! @param filter : specifies the kind of texel sampler of the texture object
     //! @return : the texture created or NULL if there has been an error
-    CTextureObject*		const glCreateTexture(  ITextureObject::TEXEL_TYPE type,
+    ITextureObject*		const glCreateTexture(  ITextureObject::TEXEL_TYPE type,
 												ITextureObject::TEXTURE_FUNCTION env_mode = ITextureObject::CGL_ALPHA_TRANSPARENT,
 												ITextureObject::TEXTURE_FILTER filter = ITextureObject::CGL_UNFILTERED);
 
@@ -63,7 +63,7 @@ public:
 	//! @param env_mode : is one of the TEXTURE_FUNCTION enum
     //! @param filter : specifies the kind of texel sampler of the texture object
     //! @return : the texture created or NULL if there has been an error
-    CTextureObject*		const glCreateRectangleTexture(	ITextureObject::TEXEL_TYPE type,
+    ITextureObject*		const glCreateRectangleTexture(	ITextureObject::TEXEL_TYPE type,
 														ITextureObject::TEXTURE_FUNCTION env_mode = ITextureObject::CGL_ALPHA_TRANSPARENT,
 														ITextureObject::TEXTURE_FILTER filter = ITextureObject::CGL_UNFILTERED);
 	
@@ -162,14 +162,14 @@ public:
     bool glResizeTexture(ITextureObject *I, uint32_t width, uint32_t height, uint32_t depth=1) const;
 
     //! Exports a texture image to a file, type is selected from fname extension
-	bool glExportTexture(CTextureObject *T,const std::string &fname);
+	bool glExportTexture(ITextureObject *T,const std::string &fname);
 
 	//! This methods loads a compressed texture that has been created 
 	//! using the export method here under.
-	bool glLoadCompressedTexture(CTextureObject* const T, const std::string& fname );
+	bool glLoadCompressedTexture(ITextureObject* const T, const std::string& fname );
 
     //! This method exports a given texture 
-	bool glExportCompressedTexture(const std::string& fname, const CTextureObject *T);
+	bool glExportCompressedTexture(const std::string& fname, const ITextureObject *T);
 
 	//! Inherited from CPersistence
 	DECLARE_CLASS_ID(CTextureFactoryClassID,"TextureFactory",CPersistence)

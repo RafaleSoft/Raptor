@@ -208,11 +208,11 @@ void CShadowMap::glInitRenderBuffer(uint32_t width, uint32_t height)
 #endif
 
 	CTextureSet *pImageSet = new CTextureSet();
-	CTextureObject *ShadowTexture = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
+	ITextureObject *ShadowTexture = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
 															ITextureObject::CGL_OPAQUE,
 															ITextureObject::CGL_BILINEAR);
 
-	factory.glResizeTexture(m_pShadowTexture->getGLTextureObject(),width,height);
+	factory.glResizeTexture(m_pShadowTexture,width,height);
 	m_pShadowTexture->glvkUpdateClamping(ITextureObject::CGL_EDGECLAMP);
 	factory.glResizeTexture(ShadowTexture,width,height);
 	ShadowTexture->glvkUpdateClamping(ITextureObject::CGL_EDGECLAMP);

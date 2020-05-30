@@ -111,8 +111,8 @@ void CProjectionDisplay::Init()
 		char fname[32];
 		sprintf(fname,"Datas\\caust%02d.tga",i);
 
-		CTextureObject *T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,ITextureObject::CGL_ALPHA_TRANSPARENT,ITextureObject::CGL_BILINEAR);
-		T->glSetTransparency(128);
+		ITextureObject *T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,ITextureObject::CGL_ALPHA_TRANSPARENT,ITextureObject::CGL_BILINEAR);
+		T->getGLTextureObject()->glSetTransparency(128);
 		f.glLoadTexture(T,fname);
 		m_caustics->addTexture(T);
 	}

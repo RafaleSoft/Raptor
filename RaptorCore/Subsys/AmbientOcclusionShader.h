@@ -34,6 +34,7 @@
 
 RAPTOR_NAMESPACE_BEGIN
 
+class ITextureObject;
 class CTextureObject;
 class CRaptorDisplay;
 class CObject3DInstance;
@@ -86,9 +87,9 @@ private:
 	GL_COORD_VERTEX*	m_refNormal;
 	GL_TEX_VERTEX*		m_refTexCoords;
 
-	CTextureObject*		m_pVertexMap;
-	CTextureObject*		m_pNormalMap;
-	CTextureObject*		m_pAOMap;
+	ITextureObject*		m_pVertexMap;
+	ITextureObject*		m_pNormalMap;
+	ITextureObject*		m_pAOMap;
 	CRaptorDisplay*		m_pAOBuffer;
 
 	RAPTOR_HANDLE		m_AOMapSetup;

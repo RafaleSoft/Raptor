@@ -212,13 +212,13 @@ bool CTextureSet::importTextureObject(CRaptorIO& io)
 	if ((compressed) && (0 < f.getConfig().getNumCompressors()))
 		f.getConfig().setCurrentCompressor(f.getConfig().getCompressor("OpenGL"));
 
-    CTextureObject *T = f.glCreateTexture(texelType,function,filter);
+    ITextureObject *T = f.glCreateTexture(texelType,function,filter);
 	bool res = false;
     if (T != NULL)
     {
 		addTexture(T);
         if (transparency > 0)
-            T->glSetTransparency(255 * transparency);
+            T->getGLTextureObject()->glSetTransparency(255 * transparency);
         res = f.glLoadTexture(T,filename);
     }
     

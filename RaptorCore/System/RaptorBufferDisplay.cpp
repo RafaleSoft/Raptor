@@ -142,7 +142,7 @@ void CRaptorBufferDisplay::glResize(unsigned int sx,unsigned int sy,unsigned int
 }
 
 
-void CRaptorBufferDisplay::glGenerate(CTextureObject* T)
+void CRaptorBufferDisplay::glGenerate(ITextureObject* T)
 {
     if ((T == NULL) || (!m_bEnabled))
         return;

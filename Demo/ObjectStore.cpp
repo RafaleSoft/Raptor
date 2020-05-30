@@ -192,7 +192,7 @@ bool CObjectStore::IsAColumn(CGeometry *&g)
 		bump->setDiffuseMap(m_textures->getTexture(ROCKSCULPT));
 
 		CTextureFactory &factory = CTextureFactory::getDefaultFactory();
-		CTextureObject *normalMap = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
+		ITextureObject *normalMap = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
                                                             ITextureObject::CGL_MULTIPLY,
                                                             ITextureObject::CGL_TRILINEAR);
 		factory.glLoadTexture(normalMap,BUMP_0);
@@ -511,32 +511,32 @@ void CObjectStore::LoadModels(void)
 
 		config.setCurrentCompressor(compressor);
 	}
-	CTextureObject* T = NULL;
+	ITextureObject* T = NULL;
 	T = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
 								ITextureObject::CGL_MULTIPLY,
 								ITextureObject::CGL_BILINEAR);
-	T->glSetTransparency(192);
+	T->getGLTextureObject()->glSetTransparency(192);
     factory.glLoadTexture(T,MARBLE_0);
 	m_textures->addTexture(T);
 
 	T = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
 								ITextureObject::CGL_MULTIPLY,
 								ITextureObject::CGL_BILINEAR);
-	T->glSetTransparency(255);
+	T->getGLTextureObject()->glSetTransparency(255);
 	factory.glLoadTexture(T,MARBLE_1);
 	m_textures->addTexture(T);
 
 	T = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
 								ITextureObject::CGL_MULTIPLY,
 								ITextureObject::CGL_BILINEAR);
-	T->glSetTransparency(192);
+	T->getGLTextureObject()->glSetTransparency(192);
 	factory.glLoadTexture(T,MARBLE_2);
 	m_textures->addTexture(T);
 
 	T = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
 								ITextureObject::CGL_MULTIPLY,
 								ITextureObject::CGL_BILINEAR);
-	T->glSetTransparency(255);
+	T->getGLTextureObject()->glSetTransparency(255);
 	factory.glLoadTexture(T,MARBLE_3);
 	m_textures->addTexture(T);
 
@@ -558,25 +558,25 @@ void CObjectStore::LoadModels(void)
 								ITextureObject::CGL_MULTIPLY,
 								ITextureObject::CGL_ANISOTROPIC);
 	config.setGenerateMipmap(false);
-	T->glSetTransparency(255);
+	T->getGLTextureObject()->glSetTransparency(255);
 	factory.glLoadTexture(T,BRICKS_0);
-	T->selectMipMapLevel(1);
+	T->getGLTextureObject()->selectMipMapLevel(1);
 	factory.glLoadTexture(T,BRICKS_1);
-	T->selectMipMapLevel(2);
+	T->getGLTextureObject()->selectMipMapLevel(2);
 	factory.glLoadTexture(T,BRICKS_2);
-	T->selectMipMapLevel(3);
+	T->getGLTextureObject()->selectMipMapLevel(3);
 	factory.glLoadTexture(T,BRICKS_3);
-	T->selectMipMapLevel(4);
+	T->getGLTextureObject()->selectMipMapLevel(4);
 	factory.glLoadTexture(T,BRICKS_4);
-	T->selectMipMapLevel(5);
+	T->getGLTextureObject()->selectMipMapLevel(5);
 	factory.glLoadTexture(T,BRICKS_5);
-	T->selectMipMapLevel(6);
+	T->getGLTextureObject()->selectMipMapLevel(6);
 	factory.glLoadTexture(T,BRICKS_6);
-	T->selectMipMapLevel(7);
+	T->getGLTextureObject()->selectMipMapLevel(7);
 	factory.glLoadTexture(T,BRICKS_7);
-	T->selectMipMapLevel(8);
+	T->getGLTextureObject()->selectMipMapLevel(8);
 	factory.glLoadTexture(T,BRICKS_8);
-	T->selectMipMapLevel(9);
+	T->getGLTextureObject()->selectMipMapLevel(9);
 	factory.glLoadTexture(T,BRICKS_9);
 	m_textures->addTexture(T);
 	config.setGenerateMipmap(true);
@@ -596,7 +596,7 @@ void CObjectStore::LoadModels(void)
 	T = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
 								ITextureObject::CGL_MULTIPLY, 
 								ITextureObject::CGL_BILINEAR);
-	T->glSetTransparency(255);
+	T->getGLTextureObject()->glSetTransparency(255);
 	factory.glLoadTexture(T,OLDWOOD_1);
 	m_textures->addTexture(T);
 

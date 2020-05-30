@@ -90,8 +90,7 @@ void CTextureObject::glvkRender()
 	ITextureGenerator::GENERATOR_KIND kind = ITextureGenerator::NONE;
 	if (NULL != m_pTexelGenerator)
 		kind = m_pTexelGenerator->getKind();
-	if ((kind == ITextureGenerator::BUFFERED) ||
-		(kind == ITextureGenerator::ANIMATED))
+	if ((kind == ITextureGenerator::BUFFERED) || (kind == ITextureGenerator::ANIMATED))
 	{
         m_pTexelGenerator->glGenerate(this);
     }

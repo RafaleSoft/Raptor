@@ -16,7 +16,6 @@
 /***************************************************************************/
 
 
-
 #include "Subsys/CodeGeneration.h"
 
 
@@ -54,9 +53,6 @@
 	#include "Subsys/Vulkan/VulkanDevice.h"
 #endif
 
-//#ifdef WIN32
-//#pragma warning(disable:4786)
-//#endif
 
 
 RAPTOR_NAMESPACE
@@ -422,7 +418,7 @@ bool CTextureFactory::glLoadTexture(ITextureObject* const T,
 	}
 #endif
 
-	CTextureObject *glT = T->getGLTextureObject();
+	const CTextureObject *glT = T->getGLTextureObject();
 	ITextureGenerator::GENERATOR_KIND kind = ITextureGenerator::NONE;
 	if (NULL != glT->getTexelGenerator())
 		kind = glT->getTexelGenerator()->getKind();
@@ -730,16 +726,17 @@ bool CTextureFactory::glResizeTexture(ITextureObject *I, uint32_t width, uint32_
     return true;
 }
 
-bool CTextureFactory::glExportTexture(CTextureObject *T,const std::string &fname)
+bool CTextureFactory::glExportTexture(ITextureObject *I,const std::string &fname)
 {
-	if ((T == NULL) || (fname.empty()))
+	if ((I == NULL) || (fname.empty()))
         return false;
 
-    if (T->texname == 0)
+    if ((I->getWidth() == 0) || (I->getHeight() == 0))
         return false;
 
-    if ((T->getWidth() == 0) || (T->getHeight() == 0))
-        return false;
+	CTextureObject *T = I->getGLTextureObject();
+	if (T->texname == 0)
+		return false;
 
 	CImage::IImageIO *imager = CImage::getImageKindIO(fname);
     bool res = true;
@@ -863,7 +860,7 @@ ITextureObject* const CTextureFactory::vkCreateTexture(ITextureObject::TEXEL_TYP
 	return T;
 }
 
-CTextureObject* const CTextureFactory::glCreateTexture( ITextureObject::TEXEL_TYPE type,
+ITextureObject* const CTextureFactory::glCreateTexture( ITextureObject::TEXEL_TYPE type,
                                                         ITextureObject::TEXTURE_FUNCTION env_mode,
 														ITextureObject::TEXTURE_FILTER filter)
 {
@@ -920,7 +917,7 @@ CTextureObject* const CTextureFactory::glCreateTexture( ITextureObject::TEXEL_TY
 	return T;
 }
 
-CTextureObject* const CTextureFactory::glCreateRectangleTexture( ITextureObject::TEXEL_TYPE type,
+ITextureObject* const CTextureFactory::glCreateRectangleTexture( ITextureObject::TEXEL_TYPE type,
                                                                  ITextureObject::TEXTURE_FUNCTION env_mode,
 														         ITextureObject::TEXTURE_FILTER filter)
 {
@@ -1064,7 +1061,7 @@ ITextureObject* const CTextureFactory::glCreateVolumeTexture(ITextureObject::TEX
 }
 
 
-bool CTextureFactory::glLoadCompressedTexture(CTextureObject* const T,const std::string& fname)
+bool CTextureFactory::glLoadCompressedTexture(ITextureObject* const T,const std::string& fname)
 {
 	bool ret = false;
 
@@ -1132,7 +1129,7 @@ bool CTextureFactory::glLoadCompressedTexture(CTextureObject* const T,const std:
 		pos++;
 	if (ret && (pos < mConfig.getNumCompressors()))
 	{
-		glBindTexture(GL_TEXTURE_2D,T->texname);
+		glBindTexture(GL_TEXTURE_2D,T->getGLTextureObject()->texname);
 		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_REPEAT);
 		glTexParameterf(GL_TEXTURE_2D,GL_TEXTURE_PRIORITY,mConfig.getCurrentPriority());
@@ -1161,12 +1158,13 @@ bool CTextureFactory::glLoadCompressedTexture(CTextureObject* const T,const std:
 	return ret;
 }
 
-bool CTextureFactory::glExportCompressedTexture(const std::string& fname,const CTextureObject *T)
+bool CTextureFactory::glExportCompressedTexture(const std::string& fname,const ITextureObject *I)
 {
 	bool ret = false;
 #ifdef GL_ARB_texture_compression
-	if (T != NULL)
+	if (I != NULL)
 	{
+		CTextureObject *T = const_cast<ITextureObject*>(I)->getGLTextureObject();
 		glBindTexture(GL_TEXTURE_2D,T->texname);
 
 		GLint params = 0;

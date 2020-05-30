@@ -164,7 +164,7 @@ void RAPTOR_FASTCALL CImageModifier::deltaTime(float dt)
 }
 
 
-void CImageModifier::glGenerate(CTextureObject* t)
+void CImageModifier::glGenerate(ITextureObject* t)
 {
     if ((m_pImage == NULL) || (!m_bEnabled) || (m_pDstBuffer == NULL) || (m_pSrcBuffer == NULL))
         return;
@@ -179,7 +179,7 @@ void CImageModifier::glGenerate(CTextureObject* t)
 															m_pBufferImage,
 															t->getWidth() * t->getHeight() *4);
 		glTexSubImage2D(GL_TEXTURE_2D,
-						t->getCurrentMipMapLevel(),
+						t->getGLTextureObject()->getCurrentMipMapLevel(),
 						0, 0,
 						t->getWidth(), t->getHeight(),
 						GL_RGBA, GL_UNSIGNED_BYTE,
@@ -187,7 +187,7 @@ void CImageModifier::glGenerate(CTextureObject* t)
 	}
 	else
 		glTexSubImage2D(GL_TEXTURE_2D,
-						t->getCurrentMipMapLevel(),
+						t->getGLTextureObject()->getCurrentMipMapLevel(),
 						0,	0,
 						t->getWidth(), t->getHeight(),
 						GL_RGBA, GL_UNSIGNED_BYTE,

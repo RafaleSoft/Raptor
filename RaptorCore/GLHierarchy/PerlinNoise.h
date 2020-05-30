@@ -36,6 +36,9 @@
 
 RAPTOR_NAMESPACE_BEGIN
 
+class ITextureObject;
+
+
 
 class RAPTOR_API CPerlinNoise : public ITextureGenerator  
 {
@@ -59,7 +62,7 @@ public:
 
     //! This method 'loads' the texture with the generated noise
     //! @see base class CTextureGenerator
-    virtual void glGenerate(CTextureObject* );
+    virtual void glGenerate(ITextureObject* );
 
     //! This method returns the width of the generator
     virtual unsigned int getGenerateWidth(void) const;

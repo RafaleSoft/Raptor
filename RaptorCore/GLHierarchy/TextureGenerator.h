@@ -13,7 +13,7 @@
 RAPTOR_NAMESPACE_BEGIN
 
 
-class CTextureObject;
+class ITextureObject;
 
 //! This class defines the base class for all classes of texture generators:
 //! buffered, animated, static ... texture generators
@@ -41,7 +41,7 @@ public:
     //! This method must be implemented in subclasses to produce 
     //! an array of texels and load the currently bound texture object.
     //! To get texture parameters, the currently bound texture object is passed in
-    virtual void glGenerate(CTextureObject* ) = 0;
+    virtual void glGenerate(ITextureObject* ) = 0;
 
     //! This method returns the width of the generator
     virtual unsigned int getGenerateWidth(void) const = 0;

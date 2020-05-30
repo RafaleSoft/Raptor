@@ -110,7 +110,7 @@ bool CRaptorScreenDisplay::glQueryStatus(CRaptorDisplayConfig &state,unsigned lo
     return CRaptorDisplay::glQueryStatus(state,query);
 }
 
-void CRaptorScreenDisplay::glGenerate(CTextureObject* t)
+void CRaptorScreenDisplay::glGenerate(ITextureObject* t)
 {
     if ((t == NULL) || (!m_bEnabled))
         return;
@@ -120,13 +120,13 @@ void CRaptorScreenDisplay::glGenerate(CTextureObject* t)
     int width;
     int height;
 
-    t->getGenerationSize(   posx, posy, width, height);
+    t->getGLTextureObject()->getGenerationSize(   posx, posy, width, height);
 
     //! Target for generated texture can only be a 2D texture.
     //! Extended features such as generating cube map faces might be supported in future versions.
     //! Nevertheless, cube textures are handled by CRaptorBufferedDisplay, which is more efficient is most cases
     glCopyTexSubImage2D(GL_TEXTURE_2D,
-						t->getCurrentMipMapLevel(),
+						t->getGLTextureObject()->getCurrentMipMapLevel(),
                         0,0,
 						posx,	posy,
 						width, height);

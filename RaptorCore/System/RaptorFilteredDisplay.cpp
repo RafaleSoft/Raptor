@@ -316,7 +316,7 @@ bool CRaptorFilteredDisplay::glCreateRenderDisplay(void)
 			if ((filter_cs.display_mode & CGL_FLOAT) == CGL_FLOAT)
 				texelType = ITextureObject::CGL_COLOR_FLOAT16_ALPHA;
 
-			CTextureObject *T = f.glCreateTexture(	texelType,
+			ITextureObject *T = f.glCreateTexture(	texelType,
 													ITextureObject::CGL_OPAQUE,
 													ITextureObject::CGL_BILINEAR);
 			f.glResizeTexture(T,rda.width,rda.height);

@@ -40,7 +40,7 @@ public:
 	virtual OP_KIND getKind(void) const { return CImage::IImageOP::MIPMAP_BUILDER; };
 
     //! Implaments CImageOP
-    virtual bool apply(	CTextureObject* const src,
+    virtual bool apply(	ITextureObject* const src,
 						unsigned int innerFormat,
 						unsigned int texelFormat,
 						unsigned int texelType,
