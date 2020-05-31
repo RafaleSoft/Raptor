@@ -19,19 +19,19 @@
 #include "Subsys/CodeGeneration.h"
 
 #if !defined(AFX_LIGHTGLOW_H__577C39B3_EE0B_4A07_8974_BC250BA2960A__INCLUDED_)
-    #include "LightGlow.h"
+    #include "GLHierarchy/LightGlow.h"
 #endif
 #if !defined(AFX_RAPTORIO_H__87D52C27_9117_4675_95DC_6AD2CCD2E78D__INCLUDED_)
 	#include "System/RaptorIO.h"
 #endif
 #if !defined(AFX_TEXTUREFACTORY_H__1B470EC4_4B68_11D3_9142_9A502CBADC6B__INCLUDED_)
-	#include "TextureSet.h"
+	#include "GLHierarchy/TextureSet.h"
 #endif
-#if !defined(AFX_TEXTUREOBJECT_H__D32B6294_B42B_4E6F_AB73_13B33C544AD0__INCLUDED_)
-	#include "TextureObject.h"
+#if !defined(AFX_ITEXTUREOBJECT_H__3AA8C89E_BB23_483C_A547_C8A4CC53E551__INCLUDED_)
+	#include "GLHierarchy/ITextureObject.h"
 #endif
 #if !defined(AFX_TEXTUREQUAD_H__1712AF34_6723_4E39_BC72_05ED6FA28418__INCLUDED_)
-	#include "TextureQuad.h"
+	#include "GLHierarchy/TextureQuad.h"
 #endif
 
 RAPTOR_NAMESPACE_BEGIN

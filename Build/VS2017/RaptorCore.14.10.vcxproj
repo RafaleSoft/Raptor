@@ -923,7 +923,6 @@ $(PYTHON_HOME)\python.exe $(SolutionDir)$(ProjectName)\Subsys\Redist.py
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\SimpleObject.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\TextureFactory.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\TextureFactoryConfig.cpp" />
-    <ClCompile Include="..\..\RaptorCore\GLHierarchy\TextureObject.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\TextureQuad.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\TextureSet.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\TextureUnitSetup.cpp" />
@@ -1103,6 +1102,7 @@ $(PYTHON_HOME)\python.exe $(SolutionDir)$(ProjectName)\Subsys\Redist.py
     <ClCompile Include="..\..\RaptorCore\Subsys\OpenGL\OpenGLMemory.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\OpenGL\OpenGLPipeline.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\OpenGL\OpenGLRenderingProperties.cpp" />
+    <ClCompile Include="..\..\RaptorCore\Subsys\OpenGL\OpenGLTextureObject.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\OpenGL\OpenGLViewPoint.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\OpenGL\RaptorOpenGL.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\PhongShader.cpp" />
@@ -1298,7 +1298,6 @@ copy CodeGeneration.h "%RAPTOR_ROOT%\Redist\Include\Subsys"
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\TextureFactory.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\TextureFactoryConfig.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\TextureGenerator.h" />
-    <ClInclude Include="..\..\RaptorCore\GLHierarchy\TextureObject.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\TextureQuad.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\TextureSet.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\TextureUnitSetup.h" />
@@ -1353,6 +1352,7 @@ copy CodeGeneration.h "%RAPTOR_ROOT%\Redist\Include\Subsys"
     <ClInclude Include="..\..\RaptorCore\Subsys\ObjectModels\RaptorScript_yacc.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\Octree.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\OpenGL\OpenGLPipeline.h" />
+    <ClInclude Include="..\..\RaptorCore\Subsys\OpenGL\OpenGLTextureObject.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\OpenGL\RaptorOpenGL.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\OpenGL\OpenGLMemory.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\OpenGL\OpenGLRenderingProperties.h" />

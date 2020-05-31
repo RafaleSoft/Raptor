@@ -19,9 +19,6 @@
 #if !defined(AFX_TEXTURESET_H__26F3022D_70FE_414D_9479_F9CCD3DCD445__INCLUDED_)
 	#include "GLHierarchy/TextureSet.h"
 #endif
-#if !defined(AFX_TEXTUREOBJECT_H__D32B6294_B42B_4E6F_AB73_13B33C544AD0__INCLUDED_)
-	#include "GLHierarchy/TextureObject.h"
-#endif
 
 
 RAPTOR_NAMESPACE_BEGIN

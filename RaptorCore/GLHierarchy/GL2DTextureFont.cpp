@@ -130,7 +130,7 @@ bool CGL2DTextureFont::glInit(const std::string &filename, unsigned int size, bo
 		int nb = TEXTURE_WIDTH / w;
 		uint32_t W = TEXTURE_WIDTH;
 		uint32_t H = h * w; //h * 256 / nb;
-		factory.glResizeTexture(m_texture->getGLTextureObject(), W, H);
+		factory.glResizeTexture(m_texture, W, H);
 		m_texture->glvkRender();
 
 		unsigned char *buffer = new unsigned char[2 * W*H];	// lightmap alpha

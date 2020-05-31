@@ -33,6 +33,9 @@
 #if !defined(AFX_TEXTUREFACTORYCONFIG_H__7A20D208_423F_4E02_AA4D_D736E0A7959F__INCLUDED_)
 	#include "TextureFactoryConfig.h"
 #endif
+#if !defined(AFX_OPENGLTEXTUREOBJECT_H__D32B6294_B42B_4E6F_AB73_13B33C544AD0__INCLUDED_)
+	#include "Subsys/OpenGL/OpenGLTextureObject.h"
+#endif
 
 
 RAPTOR_NAMESPACE
@@ -218,7 +221,7 @@ bool CTextureSet::importTextureObject(CRaptorIO& io)
     {
 		addTexture(T);
         if (transparency > 0)
-            T->getGLTextureObject()->glSetTransparency(255 * transparency);
+            f.glSetTransparency(T, 255 * transparency);
         res = f.glLoadTexture(T,filename);
     }
     

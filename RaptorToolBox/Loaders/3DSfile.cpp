@@ -994,7 +994,7 @@ bool RAPTOR_FASTCALL ProcessChunkAxxxH(long length)
 		CTextureFactory &f = CTextureFactory::getDefaultFactory();
 		ITextureObject* T = NULL;
 		T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,ITextureObject::CGL_MULTIPLY,ITextureObject::CGL_BILINEAR);
-		T->getGLTextureObject()->glSetTransparency((unsigned char)((float)CurrentState.spercentage*255.0/100.0));
+		f.glSetTransparency(T, (uint32_t)((float)CurrentState.spercentage*255.0/100.0));
 
 		string fname = CurrentState.name;
 		if (!maxOptions.texturePath.empty())

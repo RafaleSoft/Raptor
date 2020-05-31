@@ -10,10 +10,10 @@
 	#include "GLHierarchy/GL2DFont.h"
 #endif
 #if !defined(AFX_GLLAYER_H__12EA9DBD_DCDE_4C66_B607_DD32C023C8EF__INCLUDED_)
-	#include "GLLayer.h"
+	#include "GLHierarchy/GLLayer.h"
 #endif
 #if !defined(AFX_TEXTUREFACTORY_H__1B470EC4_4B68_11D3_9142_9A502CBADC6B__INCLUDED_)
-	#include "TextureFactory.h"
+	#include "GLHierarchy/TextureFactory.h"
 #endif
 #if !defined(AFX_RAPTORIO_H__87D52C27_9117_4675_95DC_6AD2CCD2E78D__INCLUDED_)
 	#include "System/RaptorIO.h"
@@ -26,6 +26,9 @@
 #endif
 #if !defined(AFX_OPENGL_H__6C8840CA_BEFA_41DE_9879_5777FBBA7147__INCLUDED_)
 	#include "Subsys/OpenGL/RaptorOpenGL.h"
+#endif
+#if !defined(AFX_OPENGLTEXTUREOBJECT_H__D32B6294_B42B_4E6F_AB73_13B33C544AD0__INCLUDED_)
+	#include "Subsys/OpenGL/OpenGLTextureObject.h"
 #endif
 #if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
 	#include "System/RaptorErrorManager.h"

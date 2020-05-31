@@ -62,7 +62,7 @@ public:
 
     //! This method 'loads' the texture with the generated noise
     //! @see base class CTextureGenerator
-    virtual void glGenerate(ITextureObject* );
+    virtual void glGenerate(ITextureObject* I, uint32_t x, uint32_t y, uint32_t w, uint32_t h);
 
     //! This method returns the width of the generator
     virtual unsigned int getGenerateWidth(void) const;

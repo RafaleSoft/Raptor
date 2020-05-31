@@ -28,7 +28,7 @@
 #include "GLHierarchy/Object3DInstance.h"
 #include "GLHierarchy/TextureFactory.h"
 #include "GLHierarchy/TextureFactoryConfig.h"
-#include "GLHierarchy/TextureObject.h"
+#include "GLHierarchy/ITextureObject.h"
 #include "GLHierarchy/Shader.h"
 #include "Engine/ViewModifier.h"
 #include "Engine/3DScene.h"

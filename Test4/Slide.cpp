@@ -4,7 +4,7 @@
 #include "GLHierarchy/Geometry.h"
 #include "GLHierarchy/ShadedGeometry.h"
 #include "GLHierarchy/Material.h"
-#include "GLHierarchy/TextureObject.h"
+#include "GLHierarchy/ITextureObject.h"
 #include "GLHierarchy/TextureFactory.h"
 #include "System/Raptor.h"
 #include "Engine/Animator.h"

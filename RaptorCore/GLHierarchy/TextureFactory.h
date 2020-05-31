@@ -20,8 +20,8 @@
 #if !defined(AFX_PERSISTENCE_H__5561BA28_831B_11D3_9142_EEB51CEBBDB0__INCLUDED_)
 	#include "GLHierarchy/Persistence.h"
 #endif
-#if !defined(AFX_TEXTUREOBJECT_H__D32B6294_B42B_4E6F_AB73_13B33C544AD0__INCLUDED_)
-	#include "GLHierarchy/TextureObject.h"
+#if !defined(AFX_ITEXTUREOBJECT_H__3AA8C89E_BB23_483C_A547_C8A4CC53E551__INCLUDED_)
+#include "GLHierarchy/ITextureObject.h"
 #endif
 #if !defined(AFX_TEXTUREFACTORYCONFIG_H__7A20D208_423F_4E02_AA4D_D736E0A7959F__INCLUDED_)
 	#include "GLHierarchy/TextureFactoryConfig.h"
@@ -155,12 +155,23 @@ public:
 
 
     //! Resize a texture object if it possible :
-    //! - width & height & depth must be a power of two if not supported otherwise
-    //! - image is rescaled if actually loaded
-    //! - allocated texels are discarded.
-    //! @return false if resizing is not possible
+    //! @param width: desired width, must be a power of two if not supported otherwise.
+	//! @param height: desired height, must be a power of two if not supported otherwise.
+	//! @param depth: desired depth, must be a power of two if not supported otherwise.
+    //! @param I: texture is rescaled if actually loaded, allocated texels are discarded.
+    //! @return false if resizing is not possible.
     bool glResizeTexture(ITextureObject *I, uint32_t width, uint32_t height, uint32_t depth=1) const;
 
+	//! This method set texture alpha for transparency management.
+	//! @param alpha: if 0, use color average, if > 255, saturate to 0 and 255, else use alpha
+	//! @return false if color quantizing is not possible.
+	bool glSetTransparency(ITextureObject *I, uint32_t	alpha);
+
+	//!	Set a specific color as transparent. Any number of colors can be transparent,
+	//!	they are changed through their alpha component
+	//! This method only applyes to 2D textures ; future versions will handle more cases if needed.
+	bool glSetTransparentColor(ITextureObject *I, uint8_t r, uint8_t g, uint8_t b);
+		
     //! Exports a texture image to a file, type is selected from fname extension
 	bool glExportTexture(ITextureObject *T,const std::string &fname);
 

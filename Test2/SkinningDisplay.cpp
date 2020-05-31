@@ -16,7 +16,7 @@
 #include "GLHierarchy/TextureSet.h"
 #include "GLHierarchy/TextureFactory.h"
 #include "GLHierarchy/ShadedGeometry.h"
-#include "GLHierarchy/TextureObject.h"
+#include "GLHierarchy/ITextureObject.h"
 #include "GLHierarchy/TextureUnitSetup.h"
 #include "GLHierarchy/Shader.h"
 #include "GLHierarchy/SimpleObject.h"
@@ -200,10 +200,10 @@ void CSkinningDisplay::Init()
 
 	CTextureFactory &f = CTextureFactory::getDefaultFactory();
 	t2 = f.glCreateSprite(ITextureObject::CGL_COLOR24_ALPHA);
-	t2->getGLTextureObject()->glSetTransparency(128);
+	f.glSetTransparency(t2, 128);
 	f.glLoadTexture(t2,"Datas\\sprite.tga");
 
-	t2->getGLTextureObject()->glSetTransparentColor(0,0,0);
+	f.glSetTransparentColor(t2, 0, 0, 0);
 	layer->manageSprite(t2,75,75,45);
 
     modifier = new MyModifier();
@@ -215,8 +215,8 @@ void CSkinningDisplay::Init()
 	layer->manageSprite(T,150,75,0);
 
     t = f.glCreateDynamicTexture(ITextureObject::CGL_COLOR24_ALPHA,ITextureObject::CGL_OPAQUE,ITextureObject::CGL_BILINEAR,CRaptorDisplay::GetCurrentDisplay());
-    f.glResizeTexture(t->getGLTextureObject(),512,256);
-	t->getGLTextureObject()->setGenerationSize(51,101,510,254);	// avoid artefacts on border due to bilinear filterings
+    f.glResizeTexture(t, 512, 256);
+	t->setGenerationSize(51,101,510,254);	// avoid artefacts on border due to bilinear filterings
 	t->glvkUpdateClamping(ITextureObject::CGL_EDGECLAMP);
 
     string skinning_vp_src =

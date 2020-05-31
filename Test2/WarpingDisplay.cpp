@@ -11,7 +11,7 @@
 #include "GLHierarchy/TextureSet.h"
 #include "GLHierarchy/TextureFactory.h"
 #include "GLHierarchy/TextureUnitSetup.h"
-#include "GLHierarchy/TextureObject.h"
+#include "GLHierarchy/ITextureObject.h"
 #include "Engine/3DEngine.h"
 #include "GLHierarchy/ShadedGeometry.h"
 #include "GLHierarchy/VertexProgram.h"
@@ -237,11 +237,7 @@ void CWarpObject::glRender()
 	//	and take a margin for AA/BilinearFiltering cases
 	int w = x_sz * m_captureBuffer->getWidth();
 	int h = y_sz * m_captureBuffer->getHeight();
-    m_captureBuffer->getGLTextureObject()->
-		setGenerationSize(floor(v1.x+0.5f),
-										floor(v1.y+0.5f),
-										w+2,
-										h+2);
+    m_captureBuffer->setGenerationSize(floor(v1.x+0.5f), floor(v1.y+0.5f), w+2, h+2);
 	m_captureBuffer->glvkRender();
 
 	glMatrixMode(GL_TEXTURE);
@@ -342,11 +338,7 @@ void CGlassObject::glRender()
 	//	save GPU time, just copy pixels that will be shaded
 	int w = x_sz * m_captureBuffer->getWidth();
 	int h = y_sz * m_captureBuffer->getHeight();
-    m_captureBuffer->getGLTextureObject()->
-		setGenerationSize(	floor(v1.x+0.5f),
-										floor(v1.y+0.5f),
-										w+2,
-										h+2);
+    m_captureBuffer->setGenerationSize(floor(v1.x+0.5f), floor(v1.y+0.5f), w+2, h+2);
 	m_captureBuffer->glvkRender();
 	m_pShader->glRenderTexture();
 	m_pShader->glRender();

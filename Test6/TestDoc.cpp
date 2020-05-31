@@ -12,7 +12,7 @@
 #include "GLHierarchy/OpenGLShaderStage.h"
 #include "GLHierarchy/TextureFactory.h"
 #include "GLHierarchy/TextureFactoryConfig.h"
-#include "GLHierarchy/TextureObject.h"
+#include "GLHierarchy/ITextureObject.h"
 #include "GLHierarchy/FragmentShader.h"
 #include "GLHierarchy/GeometryShader.h"
 #include "GLHierarchy/VertexShader.h"

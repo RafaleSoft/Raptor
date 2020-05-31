@@ -11,6 +11,9 @@
 - CObject3D:
 	- glRenderBBox avec effets de bord si utilisé en standalone hors de C3DSceneAttributes.
 
+- CMipmapBuilder:
+	- Reintégrer, notamment pour Démo.
+
 - Demo:
 	- Terminer le check display.
 

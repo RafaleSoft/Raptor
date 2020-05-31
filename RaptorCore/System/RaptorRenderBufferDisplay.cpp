@@ -12,8 +12,8 @@
 #if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
 	#include "RaptorGLExtensions.h"
 #endif
-#if !defined(AFX_TEXTUREOBJECT_H__D32B6294_B42B_4E6F_AB73_13B33C544AD0__INCLUDED_)
-	#include "GLHierarchy/TextureObject.h"
+#if !defined(AFX_OPENGLTEXTUREOBJECT_H__D32B6294_B42B_4E6F_AB73_13B33C544AD0__INCLUDED_)
+	#include "Subsys/OpenGL/OpenGLTextureObject.h"
 #endif
 #if !defined(AFX_TEXTURESET_H__26F3022D_70FE_414D_9479_F9CCD3DCD445__INCLUDED_)
 	#include "GLHierarchy/TextureSet.h"
@@ -164,7 +164,7 @@ bool CRaptorRenderBufferDisplay::glAttachBuffers()
 			else
 				attachment = colorAttachment++;
 
-			CTextureObject *glT = T->getGLTextureObject();
+			COpenGLTextureObject *glT = T->getGLTextureObject();
 			pExtensions->glFramebufferTexture2DEXT(	GL_FRAMEBUFFER_EXT, 
 													attachment,
 													glT->target,
@@ -221,7 +221,7 @@ bool CRaptorRenderBufferDisplay::glDetachBuffers()
 				(tt == ITextureObject::CGL_DEPTH24_STENCIL8))
 				attachment = GL_DEPTH_ATTACHMENT_EXT;
 
-			CTextureObject *glT = T->getGLTextureObject();
+			COpenGLTextureObject *glT = T->getGLTextureObject();
 			pExtensions->glFramebufferTexture2DEXT(	GL_FRAMEBUFFER_EXT, 
 													attachment,
 													glT->target,
@@ -555,7 +555,7 @@ bool CRaptorRenderBufferDisplay::glvkUnBindDisplay(void)
 #endif
 }
 
-void CRaptorRenderBufferDisplay::glGenerate(ITextureObject* I)
+void CRaptorRenderBufferDisplay::glGenerate(ITextureObject* I, uint32_t x, uint32_t y, uint32_t w, uint32_t h)
 {
     if ((I == NULL) || (!m_bEnabled) || (m_framebuffer == 0))
         return;
@@ -565,7 +565,7 @@ void CRaptorRenderBufferDisplay::glGenerate(ITextureObject* I)
 	glBindTexture(GL_TEXTURE_2D,0);
 
 #if defined(GL_EXT_framebuffer_object)
-	CTextureObject *T = I->getGLTextureObject();
+	COpenGLTextureObject *T = I->getGLTextureObject();
 
 	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();	
 	pExtensions->glBindFramebufferEXT(GL_FRAMEBUFFER_EXT,m_framebuffer);

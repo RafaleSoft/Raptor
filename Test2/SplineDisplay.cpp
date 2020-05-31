@@ -21,7 +21,7 @@
 #include "GLHierarchy/TextureUnitSetup.h"
 #include "GLHierarchy/Material.h"
 #include "System/RaptorDisplay.h"
-#include "GLHierarchy/TextureObject.h"
+#include "GLHierarchy/ITextureObject.h"
 #include "GLHierarchy/ShadedGeometry.h"
 #include "GLHierarchy/IRenderingProperties.h"
 

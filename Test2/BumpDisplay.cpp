@@ -10,7 +10,7 @@
 #include "GLHierarchy/Light.h"
 #include "GLHierarchy/TextureFactory.h"
 #include "GLHierarchy/TextureFactoryConfig.h"
-#include "GLHierarchy/TextureObject.h"
+#include "GLHierarchy/ITextureObject.h"
 #include "GLHierarchy/TextureUnitSetup.h"
 #include "GLHierarchy/TextureSet.h"
 #include "GLHierarchy/BumppedGeometry.h"
@@ -150,12 +150,12 @@ void CBumpDisplay::Init()
 	noise.setNoiseModel(CPerlinNoise::NOISE2);
 	noise.generateMirrorTexture(true);
 /*
-	CTextureObject *tt = f.glCreateVolumeTexture(ITextureObject::CGL_COLOR24_ALPHA,
+	ITextureObject *tt = f.glCreateVolumeTexture(ITextureObject::CGL_COLOR24_ALPHA,
 												 ITextureObject::CGL_ALPHA_TRANSPARENT,
 												 ITextureObject::CGL_BILINEAR);
 	f.glResizeTexture(tt,256,256,256);
 */
-    noise.glGenerate(tt);
+    noise.glGenerate(tt,0,0,512,512);
 
 	p = CPersistence::FindObject("Bump teapot");
 	if (p->getId().isSubClassOf(CBumppedGeometry::CBumppedGeometryClassID::GetClassId()))
@@ -168,7 +168,7 @@ void CBumpDisplay::Init()
                                             ITextureObject::CGL_ALPHA_TRANSPARENT,
                                             ITextureObject::CGL_BILINEAR);
 	f.glResizeTexture(tt2,512,512);
-    noise2.glGenerate(tt2);
+    noise2.glGenerate(tt2,0,0,512,512);
     tmu.setDiffuseMap(tt2);
 	BackGround *pbg = new BackGround();
 	pbg->bg = tmu.glBuildSetup();

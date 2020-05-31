@@ -54,6 +54,21 @@ public:
 	//! @param C : the clamp mode
 	virtual void glvkUpdateClamping(ITextureObject::CLAMP_MODE C);
 
+	//! Returns the actual selected mipmap.
+	//! ( not the number of mipmaps )
+	virtual uint32_t getCurrentMipMapLevel(void) const { return 0; }
+
+	//! Selects the current mipmap level for image access ( loading, reading, ... )
+	virtual void selectMipMapLevel(unsigned int l) { };
+
+	//! Returns the actual selected cubemap face.
+	//! ( not the number of faces already loaded )
+	virtual CUBE_FACE getCurrentCubeFace(void) const { return CGL_CUBEMAP_NONE; };
+
+	//! Selects the current cubemap face for image access ( loading, reading, ... )
+	virtual void selectCubeFace(CUBE_FACE face) {};
+
+	virtual bool setGenerationSize(uint32_t posx, uint32_t posy, uint32_t width, uint32_t height);
 
 	VkDescriptorImageInfo getCombinedImageSampler(void) const
 	{

@@ -19,13 +19,13 @@
 #include "Subsys/CodeGeneration.h"
 
 #if !defined(AFX_TEXTUREFACTORY_H__1B470EC4_4B68_11D3_9142_9A502CBADC6B__INCLUDED_)
-	#include "TextureFactory.h"
+	#include "GLHierarchy/TextureFactory.h"
 #endif
 #if !defined(AFX_TEXUREUNITSETUP_H__4A6ADC72_02E5_4F2A_931E_A736B6D6E0F0__INCLUDED_)
-	#include "TextureUnitSetup.h"
+	#include "GLHierarchy/TextureUnitSetup.h"
 #endif
 #if !defined(AFX_TEXTURESET_H__26F3022D_70FE_414D_9479_F9CCD3DCD445__INCLUDED_)
-	#include "TextureSet.h"
+	#include "GLHierarchy/TextureSet.h"
 #endif
 #if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
 	#include "System/RaptorGLExtensions.h"
@@ -38,6 +38,9 @@
 #endif
 #if !defined(AFX_OPENGL_H__6C8840CA_BEFA_41DE_9879_5777FBBA7147__INCLUDED_)
 	#include "Subsys/OpenGL/RaptorOpenGL.h"
+#endif
+#if !defined(AFX_OPENGLTEXTUREOBJECT_H__D32B6294_B42B_4E6F_AB73_13B33C544AD0__INCLUDED_)
+	#include "Subsys/OpenGL/OpenGLTextureObject.h"
 #endif
 #if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
 	#include "System/RaptorErrorManager.h"
@@ -573,7 +576,7 @@ RAPTOR_HANDLE CTextureUnitSetup::glBuildSetup(void)
 
 		    if (imageUnit[i] != NULL)
 		    {	// TODO: make this section generic
-				CTextureObject* txt = imageUnit[i]->getGLTextureObject();
+				COpenGLTextureObject* txt = imageUnit[i]->getGLTextureObject();
 
 			    // It is preferable not to render texture extensions in a display list.
 			    glEnable(txt->target);
@@ -627,7 +630,7 @@ void CTextureUnitSetup::glRender(void)
 
 			if (imageUnit[i] != NULL)
 			{
-				CTextureObject* txt = imageUnit[i]->getGLTextureObject();
+				COpenGLTextureObject* txt = imageUnit[i]->getGLTextureObject();
 
 				// It is preferable not to render texture extensions in a display list.
 				// generators cannot be used in display lists

@@ -19,7 +19,7 @@
 #include "GLHierarchy/VulkanShaderStage.h"
 #include "GLHierarchy/TextureFactory.h"
 #include "GLHierarchy/TextureFactoryConfig.h"
-#include "GLHierarchy/TextureObject.h"
+#include "GLHierarchy/ITextureObject.h"
 #include "GLHierarchy/TextureUnitSetup.h"
 #include "System/RaptorConsole.h"
 #include "System/RaptorErrorManager.h"

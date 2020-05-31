@@ -287,9 +287,6 @@
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\TextureFactoryConfig.cpp">
       <Filter>Source Files\GLHierarchy src</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\RaptorCore\GLHierarchy\TextureObject.cpp">
-      <Filter>Source Files\GLHierarchy src</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\TextureSet.cpp">
       <Filter>Source Files\GLHierarchy src</Filter>
     </ClCompile>
@@ -623,6 +620,9 @@
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\IRaptorPipeline.cpp">
       <Filter>Source Files\GLHierarchy src</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\OpenGL\OpenGLTextureObject.cpp">
+      <Filter>Source Files\Subsys src\OpenGL</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Xsd Include="Subsys\ObjectModels\Raptor.xsd">
@@ -784,9 +784,6 @@
       <Filter>Header Files\GLHierarchy include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\TextureGenerator.h">
-      <Filter>Header Files\GLHierarchy include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\RaptorCore\GLHierarchy\TextureObject.h">
       <Filter>Header Files\GLHierarchy include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\TextureSet.h">
@@ -1196,6 +1193,9 @@
     </ClInclude>
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\IRaptorPipeline.h">
       <Filter>Header Files\GLHierarchy include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\OpenGL\OpenGLTextureObject.h">
+      <Filter>Header Files\Subsys include\OpenGL</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

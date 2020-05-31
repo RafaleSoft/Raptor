@@ -35,7 +35,6 @@
 RAPTOR_NAMESPACE_BEGIN
 
 class ITextureObject;
-class CTextureObject;
 class CRaptorDisplay;
 class CObject3DInstance;
 

@@ -17,7 +17,7 @@
 #include "GLHierarchy/Shader.h"
 #include "GLHierarchy/TextureFactory.h"
 #include "GLHierarchy/TextureFactoryConfig.h"
-#include "GLHierarchy/TextureObject.h"
+#include "GLHierarchy/ITextureObject.h"
 #include "GLHierarchy/TextureSet.h"
 #include "Engine/GeometricModifier.h"
 #include "GLHierarchy/3DSet.h"
@@ -616,7 +616,7 @@ public:
 
 		pCosTable = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,ITextureObject::CGL_OPAQUE,ITextureObject::CGL_BILINEAR);
         pCosTable->setSize(TABLE_SIZE,1);
-		pCosTable->getGLTextureObject()->glSetTransparency(255);
+		factory.glSetTransparency(pCosTable, 255);
         
 		CImage cosTable;
 		cosTable.allocatePixels(TABLE_SIZE, 1);
@@ -775,7 +775,7 @@ void CVertexShadersDisplay::Init()
 	ITextureObject* T = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
 												ITextureObject::CGL_ALPHA_TRANSPARENT,
 												ITextureObject::CGL_BILINEAR);
-	T->getGLTextureObject()->glSetTransparency(128);
+	factory.glSetTransparency(T, 128);
 	factory.glLoadTexture(T,"Datas\\water006.jpg");
 	ts->setDiffuseMap(T);
 
@@ -805,7 +805,7 @@ void CVertexShadersDisplay::Init()
 	
 	//	Create see underwater object
 	T = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,ITextureObject::CGL_OPAQUE, ITextureObject::CGL_BILINEAR);
-	T->getGLTextureObject()->glSetTransparency(255);
+	factory.glSetTransparency(T, 255);
 	factory.glLoadTexture(T,"Datas\\oldwood.jpg");
 	CBasicObjects::CRectangle *ground = new CBasicObjects::CRectangle();
 	ground->setDimensions(4000.0f,4000.0f);

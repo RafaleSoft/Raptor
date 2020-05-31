@@ -20,7 +20,7 @@
 #include "GLHierarchy/TextureSet.h"
 #include "GLHierarchy/TextureFactory.h"
 #include "GLHierarchy/TextureFactoryConfig.h"
-#include "GLHierarchy/TextureObject.h"
+#include "GLHierarchy/ITextureObject.h"
 #include "GLHierarchy/GLFont.h"
 #include "GLHierarchy/GL3DFont.h"
 #include "GLHierarchy/GLFontFactory.h"
@@ -87,7 +87,7 @@ void CShadowDisplay::Init()
 
 	CTextureFactory &f = CTextureFactory::getDefaultFactory();
 	ITextureObject *T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,ITextureObject::CGL_MULTIPLY,ITextureObject::CGL_BILINEAR);
-	T->getGLTextureObject()->glSetTransparency(255);
+	f.glSetTransparency(T, 255);
 	CTextureFactoryConfig& config = f.getConfig();
 	const CTextureFactoryConfig::ICompressor *compressor = config.getCurrentCompressor();
 	if (0 < config.getNumCompressors())

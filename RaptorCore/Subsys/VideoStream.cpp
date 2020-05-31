@@ -10,14 +10,11 @@
 #if !defined(AFX_ANIMATORSTREAM_H__3D03D0B9_A350_4226_8AB4_BABDD53D68B6__INCLUDED_)
     #include "AnimatorStream.h"
 #endif
-#if !defined(AFX_TEXTUREOBJECT_H__D32B6294_B42B_4E6F_AB73_13B33C544AD0__INCLUDED_)
-	#include "GLHierarchy/TextureObject.h"
+#if !defined(AFX_ITEXTUREOBJECT_H__3AA8C89E_BB23_483C_A547_C8A4CC53E551__INCLUDED_)
+	#include "GLHierarchy/ITextureObject.h"
 #endif
 #if !defined(AFX_TEXTUREFACTORY_H__1B470EC4_4B68_11D3_9142_9A502CBADC6B__INCLUDED_)
 	#include "GLHierarchy/TextureFactory.h"
-#endif
-#if !defined(AFX_TEXTUREFACTORYCONFIG_H__7A20D208_423F_4E02_AA4D_D736E0A7959F__INCLUDED_)
-	#include "GLHierarchy/TextureFactoryConfig.h"
 #endif
 #if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
 	#include "System/Raptor.h"
@@ -43,7 +40,7 @@ CVideoStream::~CVideoStream()
 
 }
 
-void CVideoStream::glGenerate(ITextureObject* T)
+void CVideoStream::glGenerate(ITextureObject* T, uint32_t x, uint32_t y, uint32_t w, uint32_t h)
 {
     if ((T == NULL) || (!m_bEnabled))
         return;

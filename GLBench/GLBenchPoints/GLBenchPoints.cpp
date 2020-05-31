@@ -23,7 +23,7 @@
 #include "System/Raptor.h"
 #include "MFCExtension/CWnd/GLWnd.h"
 #include "GLHierarchy/TextureFactory.h"
-#include "GLHierarchy/TextureObject.h"
+#include "GLHierarchy/ITextureObject.h"
 #include "GLHierarchy/VertexProgram.h"
 #include "GLHierarchy/Geometry.h"
 
@@ -225,7 +225,7 @@ void Display::GLInitContext()
 
 	sprite = txt.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA);
     sprite->setSize(32,32);
-	sprite->getGLTextureObject()->glSetTransparency(192);
+	txt.glSetTransparency(sprite, 192);
 
 	CImage spr;
 	spr.allocatePixels(32,32);
