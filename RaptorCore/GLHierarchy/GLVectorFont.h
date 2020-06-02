@@ -23,7 +23,8 @@ public:
 
 
 protected:
-	//! Generates the display lists for vector glyphs for a whole charset
+	//! Generates the display lists for vector glyphs for a whole charset.
+	//!	Vector fonts genetares glyphs only for caracters in the range [32 .. 126]
 	//! @see CGLFont
 	virtual bool glGenGlyphs(float precision = 1.0f,
 							 float extrusion = 0.0f,
@@ -50,6 +51,14 @@ private:
 								 float *width = NULL,
 								 float *height = NULL);
 
+	//!	Vertex Input State Resource binder.
+	void	*m_pBinder;
+
+	//!	Uniform buffer data for font rendering:
+	//!	- Uniform Buffer pointer.
+	uint8_t	*m_fontUniform;
+	//!	- Size of this uniform.
+	size_t m_fontUniformSize;
 };
 
 RAPTOR_NAMESPACE_END

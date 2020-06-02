@@ -4,7 +4,7 @@
 
 RAPTOR_NAMESPACE_BEGIN
 class CMaterial;
-class CTextureObject;
+class ITextureObject;
 class CShadedGeometry;
 RAPTOR_NAMESPACE_END
 
@@ -40,7 +40,7 @@ private:
 	float				tw;
 	float				th;
     CPathObject			&mPath;
-    CTextureObject		*mVideo;
+    ITextureObject		*mVideo;
     unsigned int        mStream;
 
     static bool			m_bHighLight;

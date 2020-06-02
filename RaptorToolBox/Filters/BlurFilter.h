@@ -92,7 +92,7 @@ private:
 	//!	new size
 	bool glBuildFilter(int width,int height);
 
-    CTextureObject	*xKernelPass;
+    ITextureObject	*xKernelPass;
     CShader			*hBlur;			// horizontal blur shader
 	CShader			*vBlur;			// vertical blur shader
     CRaptorDisplay	*xBuffer;

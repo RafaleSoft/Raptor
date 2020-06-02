@@ -194,6 +194,8 @@ public:
 	CShader	*m_pQuadShader;
 	//! 2D Texture Font global shaders
 	CShader	*m_pFontShader;
+	//! Vector Font global shaders
+	CShader	*m_pVectorFontShader;
 
 	//! A filled bounding box shader
 	CShader *m_pFilledBboxShader = NULL;

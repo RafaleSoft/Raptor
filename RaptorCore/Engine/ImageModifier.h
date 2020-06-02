@@ -104,7 +104,7 @@ protected:
 
 private:    
     //! Implements base class
-    virtual void glGenerate(CTextureObject* );
+    virtual void glGenerate(ITextureObject* t, uint32_t x, uint32_t y, uint32_t w, uint32_t h);
 
 
 	MODIFIER_STOCK_FNC	m_pfnModifier;

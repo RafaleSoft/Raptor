@@ -382,7 +382,7 @@ public:
 
 private:
 	CRaptorMutex(const CRaptorMutex& M);
-	void operator=(const CRaptorMutex& M) {};
+	CRaptorMutex& operator=(const CRaptorMutex&) { return *this;  };
 
 #if defined(_WIN32) || defined(_WIN64)
 	mutable CRITICAL_SECTION _mutex;
@@ -429,7 +429,7 @@ public:
 
 private:
 	CRaptorSemaphore (const CRaptorSemaphore& M);
-	void operator = (const CRaptorSemaphore& M);
+	CRaptorSemaphore& operator=(const CRaptorSemaphore&) { return *this; };
 
 #if defined(_WIN32) || defined(_WIN64)
 	mutable HANDLE _sem;

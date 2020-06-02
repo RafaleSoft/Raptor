@@ -19,7 +19,7 @@
 
 RAPTOR_NAMESPACE_BEGIN
 
-class CTextureObject;
+class ITextureObject;
 
 
 class RAPTOR_API CTextureSet : public CPersistence
@@ -34,13 +34,13 @@ public:
 	//! Adds a texture object to this vector. 
 	//!	TextureObject ref count is incremented.
     //! Returns false if object is already in this vector
-    bool addTexture(CTextureObject *t);
+    bool addTexture(ITextureObject *t);
 
 	//! Remove a texture object from this vector. 
 	//! TextureObject ref count is decremented, 
 	//! and can be destroyed if it is the last reference.
     //! Returns false if object is not found in this vector
-    bool removeTexture(CTextureObject *t);
+    bool removeTexture(ITextureObject *t);
 
     //! Removes all texture objects from this vector. Reference count of
     //! texture objects are decremented.
@@ -51,12 +51,12 @@ public:
     //! Returns the first texture of this factory whose
     //! name is matched by the name parameter.
     //! NULL is returned if no texture is found
-    CTextureObject*     const getTexture(const std::string& name) const;
+    ITextureObject*     const getTexture(const std::string& name) const;
 
     //! Returns the first texture of this factory whose
     //! zero-based index in this vector matches the index parameter.
     //! NULL is returned if no texture is found
-    CTextureObject*     const getTexture(unsigned int index) const;
+    ITextureObject*     const getTexture(size_t index) const;
 
 	//! Returns a generic pointer on the objet.
 	//! This is handle can be used for binding to a display.
@@ -71,7 +71,7 @@ private:
     //! A helper to import texture objects
     bool importTextureObject(CRaptorIO& io);
 
-	vector<CTextureObject*>	m_pTextures;
+	std::vector<ITextureObject*>	m_pTextures;
 };
 
 RAPTOR_NAMESPACE_END

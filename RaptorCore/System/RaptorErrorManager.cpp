@@ -73,6 +73,8 @@ bool CRaptorErrorManager::logToFile(const std::string &filename)
     bool opened = (m_pLogger != NULL) && (m_pLogger->getStatus() == CRaptorIO::IO_OK);
     if (opened)
     {
+		m_pLogger->setAutoFlush(false);
+
         time_t timer;
         time(&timer);
 

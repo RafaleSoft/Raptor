@@ -1,6 +1,6 @@
 /***************************************************************************/
 /*                                                                         */
-/*  StdAfx.cpp                                                             */
+/*  font2D.ps                                                              */
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
@@ -15,9 +15,13 @@
 /*                                                                         */
 /***************************************************************************/
 
+#version 440
 
-#pragma warning(disable:4244)
-#include "StdAfx.h"
+uniform vec4 color;
 
+layout(location = 0) out vec4 o_Color;
 
-
+void main (void)
+{
+	o_Color = color;
+}

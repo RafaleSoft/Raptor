@@ -1,5 +1,21 @@
-// TestDoc.cpp : implementation of the CTestDoc class
-//
+/***************************************************************************/
+/*                                                                         */
+/*  TestDoc.cpp                                                            */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
 
 #include "StdAfx.h"
 #include <sstream>
@@ -12,7 +28,7 @@
 #include "GLHierarchy/Object3DInstance.h"
 #include "GLHierarchy/TextureFactory.h"
 #include "GLHierarchy/TextureFactoryConfig.h"
-#include "GLHierarchy/TextureObject.h"
+#include "GLHierarchy/ITextureObject.h"
 #include "GLHierarchy/Shader.h"
 #include "Engine/ViewModifier.h"
 #include "Engine/3DScene.h"
@@ -53,23 +69,19 @@ CTestDoc::~CTestDoc()
 class Foreground : public CBasicObjects::CRectangle
 {
 public:
-	Foreground(CMagnifierFilter *mf):fgMag(mf),status(mf->isEnabled())
+	Foreground(CMagnifierFilter *mf):fgMag(mf),status(!mf->isEnabled())
 	{
 		CTextureFactory &fct = CTextureFactory::getDefaultFactory();
-		CTextureObject *T = fct.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA);
+		ITextureObject *T = fct.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA);
 		fct.glLoadTexture(T,"lrock049.jpg");
 
 		fgMag->setColorInput(T);
-		CTextureObject *output = fgMag->glCreateColorOutput();
+		ITextureObject *output = fgMag->glCreateColorOutput();
 		fgMag->glInitFilter();
 
 		CShader *s = getShader();
 		CTextureUnitSetup *tmu = s->glGetTextureUnitsSetup();
 		tmu->setDiffuseMap(output);
-		tmu->glBuildSetup();
-
-		//Geometry Allocator is not locked.
-		//glRenderFilter();
 	};
 
 	virtual ~Foreground() {};
@@ -211,12 +223,11 @@ void CTestDoc::GLInitContext(void)
     background->glUnLockData();
 
 	CTextureFactory &fct = CTextureFactory::getDefaultFactory();
-	CTextureObject *T = fct.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA);
+	ITextureObject *T = fct.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA);
 	fct.glLoadTexture(T,"Gaussian_blur_test.jpg");
 	CShader *s = background->getShader();
 	CTextureUnitSetup *tmu = s->glGetTextureUnitsSetup();
 	tmu->setDiffuseMap(T);
-	tmu->glBuildSetup();
 	
 
 #if defined(GL_ARB_color_buffer_float)

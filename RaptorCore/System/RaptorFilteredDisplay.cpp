@@ -316,7 +316,7 @@ bool CRaptorFilteredDisplay::glCreateRenderDisplay(void)
 			if ((filter_cs.display_mode & CGL_FLOAT) == CGL_FLOAT)
 				texelType = ITextureObject::CGL_COLOR_FLOAT16_ALPHA;
 
-			CTextureObject *T = f.glCreateTexture(	texelType,
+			ITextureObject *T = f.glCreateTexture(	texelType,
 													ITextureObject::CGL_OPAQUE,
 													ITextureObject::CGL_BILINEAR);
 			f.glResizeTexture(T,rda.width,rda.height);
@@ -357,7 +357,7 @@ bool CRaptorFilteredDisplay::glCreateRenderDisplay(void)
 			//
 			//	Rq: for PBuffers, the final texture format is determined by the PBuffer pixelFormat,
 			//	so the texelType here is not necessary.
-			CTextureObject *T = f.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
+			ITextureObject *T = f.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 															ITextureObject::CGL_OPAQUE,
 															ITextureObject::CGL_BILINEAR,
 															m_pDisplay);
@@ -582,7 +582,7 @@ void CRaptorFilteredDisplay::glRenderScene(void)
     }
 	else if (!filterRendered)
 	{
-		CTextureObject *T = m_pImageSet->getTexture(0);
+		ITextureObject *T = m_pImageSet->getTexture(0);
 		T->glvkRender();
 
 		CRaptorInstance &instance = CRaptorInstance::GetInstance();

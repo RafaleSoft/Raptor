@@ -12,8 +12,8 @@
 #if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
 	#include "RaptorGLExtensions.h"
 #endif
-#if !defined(AFX_TEXTUREOBJECT_H__D32B6294_B42B_4E6F_AB73_13B33C544AD0__INCLUDED_)
-	#include "GLHierarchy/TextureObject.h"
+#if !defined(AFX_OPENGLTEXTUREOBJECT_H__D32B6294_B42B_4E6F_AB73_13B33C544AD0__INCLUDED_)
+	#include "Subsys/OpenGL/OpenGLTextureObject.h"
 #endif
 #if !defined(AFX_TEXTURESET_H__26F3022D_70FE_414D_9479_F9CCD3DCD445__INCLUDED_)
 	#include "GLHierarchy/TextureSet.h"
@@ -59,8 +59,6 @@ CRaptorRenderBufferDisplay::CRaptorRenderBufferDisplay(const CRaptorDisplayConfi
 
 CRaptorRenderBufferDisplay::~CRaptorRenderBufferDisplay()
 {
-    //  Unbind, in case it is forgotten by the user.
-    //glvkUnBindDisplay();
 	RAPTOR_HANDLE noDisplay(0, (void*)0);
 	glvkBindDisplay(noDisplay);
 
@@ -146,12 +144,14 @@ bool CRaptorRenderBufferDisplay::glAttachBuffers()
 		glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS_EXT ,&maxAttachments);
 		 
 		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
-		unsigned int nbtextures = m_pAttachments->getNbTexture();
+		size_t nbtextures = m_pAttachments->getNbTexture();
 
+		//!	Number of attachments is limited by implementation : choose max size 
+		//! of Raptor capabilities and implementation limit.
 		GLuint colorAttachment = GL_COLOR_ATTACHMENT0_EXT;
-		for (unsigned int i=0;i<MIN(nbtextures,(unsigned int)abs(max(0,maxAttachments)));i++)
+		for (size_t i=0; i<MIN(nbtextures,(size_t)abs(max(0,maxAttachments))); i++)
 		{
-			CTextureObject *T = m_pAttachments->getTexture(i);
+			ITextureObject *T = m_pAttachments->getTexture(i);
 
 			ITextureObject::TEXEL_TYPE tt = T->getTexelType();
 			GLuint attachment = GL_COLOR_ATTACHMENT0_EXT;
@@ -164,18 +164,19 @@ bool CRaptorRenderBufferDisplay::glAttachBuffers()
 			else
 				attachment = colorAttachment++;
 
+			COpenGLTextureObject *glT = T->getGLTextureObject();
 			pExtensions->glFramebufferTexture2DEXT(	GL_FRAMEBUFFER_EXT, 
 													attachment,
-													T->target,
-													T->texname,
-													T->getCurrentMipMapLevel());
+													glT->target,
+													glT->texname,
+													glT->getCurrentMipMapLevel());
 
 			if (tt == ITextureObject::CGL_DEPTH24_STENCIL8)
 				pExtensions->glFramebufferTexture2DEXT(	GL_FRAMEBUFFER_EXT, 
 														GL_STENCIL_ATTACHMENT_EXT,
-														T->target,
-														T->texname,
-														T->getCurrentMipMapLevel());
+														glT->target,
+														glT->texname,
+														glT->getCurrentMipMapLevel());
 		}
 
 		return true;
@@ -195,12 +196,14 @@ bool CRaptorRenderBufferDisplay::glDetachBuffers()
 		GLint maxAttachments = 0;
 		glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS_EXT ,&maxAttachments);
 
+		//!	Number of attachments is limited by implementation : choose max size 
+		//! of Raptor capabilities and implementation limit.
 		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
-		unsigned int nbtextures = m_pAttachments->getNbTexture();
+		size_t nbtextures = m_pAttachments->getNbTexture();
 
-		for (unsigned int i=0;i<MIN(nbtextures,(unsigned int)abs(max(0,maxAttachments)));i++)
+		for (size_t i=0; i<MIN(nbtextures,(size_t)abs(max(0,maxAttachments)));i++)
 		{
-			CTextureObject *T = m_pAttachments->getTexture(i);
+			ITextureObject *T = m_pAttachments->getTexture(i);
 
 			if ((T->getWidth() != cs.width) ||
 				(T->getHeight() != cs.height))
@@ -218,16 +221,17 @@ bool CRaptorRenderBufferDisplay::glDetachBuffers()
 				(tt == ITextureObject::CGL_DEPTH24_STENCIL8))
 				attachment = GL_DEPTH_ATTACHMENT_EXT;
 
+			COpenGLTextureObject *glT = T->getGLTextureObject();
 			pExtensions->glFramebufferTexture2DEXT(	GL_FRAMEBUFFER_EXT, 
 													attachment,
-													T->target,
+													glT->target,
 													0,
 													0);
 
 			if (tt == ITextureObject::CGL_DEPTH24_STENCIL8)
 				pExtensions->glFramebufferTexture2DEXT(	GL_FRAMEBUFFER_EXT, 
 														GL_STENCIL_ATTACHMENT_EXT,
-														T->target,
+														glT->target,
 														0,
 														0);
 		}
@@ -513,18 +517,15 @@ bool CRaptorRenderBufferDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
 
 bool CRaptorRenderBufferDisplay::glvkUnBindDisplay(void)
 {
-	if (m_framebuffer == 0)
-		return false;
-
 #if defined(GL_EXT_framebuffer_object)
 	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 
 	bool res = CRaptorDisplay::glvkUnBindDisplay();
-	glPopAttrib();	// Viewport
+	glPopMatrix();
 	glMatrixMode(GL_PROJECTION);
 	glPopMatrix();
 	glMatrixMode(GL_MODELVIEW);
-	glPopMatrix();
+	glPopAttrib();	// Viewport
 	// Todo : 3DEngine configuration is lost here ?
 
 	if (m_bindingStack.size() > 0)
@@ -554,9 +555,9 @@ bool CRaptorRenderBufferDisplay::glvkUnBindDisplay(void)
 #endif
 }
 
-void CRaptorRenderBufferDisplay::glGenerate(CTextureObject* T)
+void CRaptorRenderBufferDisplay::glGenerate(ITextureObject* I, uint32_t x, uint32_t y, uint32_t w, uint32_t h)
 {
-    if ((T == NULL) || (!m_bEnabled) || (m_framebuffer == 0))
+    if ((I == NULL) || (!m_bEnabled) || (m_framebuffer == 0))
         return;
 
 	// Remove current texture 
@@ -564,6 +565,8 @@ void CRaptorRenderBufferDisplay::glGenerate(CTextureObject* T)
 	glBindTexture(GL_TEXTURE_2D,0);
 
 #if defined(GL_EXT_framebuffer_object)
+	COpenGLTextureObject *T = I->getGLTextureObject();
+
 	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();	
 	pExtensions->glBindFramebufferEXT(GL_FRAMEBUFFER_EXT,m_framebuffer);
 

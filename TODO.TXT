@@ -8,10 +8,22 @@
 - RaptorDisplay:
 	- renommer glGrab en glBlit en utilisant un CImage.
 
+- CObject3D:
+	- glRenderBBox avec effets de bord si utilisé en standalone hors de C3DSceneAttributes.
+
+- CMipmapBuilder:
+	- Reintégrer, notamment pour Démo.
+
+- Demo:
+	- Terminer le check display.
+
+- CTextureFactory:
+	- Fusionner vkLoadTexture & glLoadTexture
+
 - CGLFont:
 	- corriger font color et back color pour rendre générique
-	- Supprimer le mode de texture Luminance8 Alpha8 (RGBA4 ? RGBA2 ? RGB5A1 ?)
-
+	- sortir les statiques de GLVectorFont et GL2DTextureFont
+	
 - CShaderrogram:
 	- ajouter un preprocesseur.
 
@@ -43,9 +55,10 @@
 	- appels récurrents à glvkRenderViewPointModel. Pourquoi ? c.f. CRaptorDisplay & m_bApplyViewPointModel.
 
 - CContextManager:
-	factoriser getPresentationSuppotQueueFamily et vk_ctx.pSurface->supportPresentation(physical, numQueue):
+	- factoriser getPresentationSuppotQueueFamily et vk_ctx.pSurface->supportPresentation(physical, numQueue):
 		passer le physical device à CVulkanSurface => renvoyer la queue qui supporte WSI et presentation sur la surface.
 		=> Passer pExtensions au constructeur.
+	- passer en Core profile
 
 - CVulkanMemory:
 	- initialiser une bloc mémoire pour l'application (vertex et index buffers bindés sur la même allocation)

@@ -1,6 +1,21 @@
-// Win32ContextManager.cpp: implementation of the CWin32ContextManager class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  Win32ContextManager.cpp                                                */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
 #include "Subsys/CodeGeneration.h"
 
 #if !defined(AFX_WIN32CONTEXTMANAGER_H__A1D82397_7E92_4D01_A04D_782BCFD17689__INCLUDED_)
@@ -939,6 +954,7 @@ CContextManager::RENDERING_CONTEXT_ID  CWin32ContextManager::glCreateExtendedCon
 		context.pExtensions->glInitExtensions();
 
 		//!	Try to create an extended context with attribs
+		/*
 #ifdef WGL_ARB_create_context
 		int attribs[] =
 		{
@@ -967,7 +983,7 @@ CContextManager::RENDERING_CONTEXT_ID  CWin32ContextManager::glCreateExtendedCon
 			glhrc = hrc;
 		}
 #endif
-
+*/
 #ifndef RAPTOR_DEBUG_MODE_GENERATION
 		if (std::string::npos != extensions.find("GL_ARB_debug_output"))
 		{

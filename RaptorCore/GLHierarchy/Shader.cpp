@@ -527,16 +527,20 @@ void CShader::glRenderTexture(void)
 {
 	if (IRenderingProperties::GetCurrentProperties()->getCurrentTexturing() == IRenderingProperties::ENABLE)
 	{
+#if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
+#else
 		if (m_textureUnitSetup.handle() > 0)
         {
 			glCallList(m_textureUnitSetup.glname());
         }
 		else if (m_pTMUSetup != NULL)
 		{
-			m_textureUnitUnSetup = m_pTMUSetup->glBuildUnSetup();
 			m_textureUnitSetup = m_pTMUSetup->glBuildSetup();
 			glCallList(m_textureUnitSetup.glname());
 		}
+#endif
+		if (m_pTMUSetup != NULL)
+			m_pTMUSetup->glRender();
 	}
 
 	CATCH_GL_ERROR

@@ -29,7 +29,7 @@
 #include "GLHierarchy/ShadedGeometry.h"
 #include "GLHierarchy/Shader.h"
 #include "GLHierarchy/SimpleObject.h"
-#include "GLHierarchy/TextureObject.h"
+#include "GLHierarchy/ITextureObject.h"
 #include "GLHierarchy/TextureFactory.h"
 #include "GLHierarchy/TextureFactoryConfig.h"
 #include "GLHierarchy/TextureUnitSetup.h"

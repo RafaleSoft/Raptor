@@ -41,7 +41,7 @@ private:
     CProgramParameters	params;
     CProgramParameters	params2;
 
-	CTextureObject		*t;
+	ITextureObject		*t;
 	ITextureObject		*t2;
 
 	virtual void ReInit();

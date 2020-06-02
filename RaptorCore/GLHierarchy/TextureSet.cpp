@@ -33,6 +33,9 @@
 #if !defined(AFX_TEXTUREFACTORYCONFIG_H__7A20D208_423F_4E02_AA4D_D736E0A7959F__INCLUDED_)
 	#include "TextureFactoryConfig.h"
 #endif
+#if !defined(AFX_OPENGLTEXTUREOBJECT_H__D32B6294_B42B_4E6F_AB73_13B33C544AD0__INCLUDED_)
+	#include "Subsys/OpenGL/OpenGLTextureObject.h"
+#endif
 
 
 RAPTOR_NAMESPACE
@@ -60,7 +63,7 @@ CTextureSet::operator RAPTOR_HANDLE() const
     return SetHandle;
 }
 
-bool CTextureSet::addTexture(CTextureObject *t)
+bool CTextureSet::addTexture(ITextureObject *t)
 {
 	size_t pos = m_pTextures.size();
     for (size_t i=0; i<pos; i++)
@@ -82,14 +85,14 @@ bool CTextureSet::addTexture(CTextureObject *t)
     }
 }
 
-bool CTextureSet::removeTexture(CTextureObject *t)
+bool CTextureSet::removeTexture(ITextureObject *t)
 {
-	vector<CTextureObject*>::iterator itr = m_pTextures.begin();
+	std::vector<ITextureObject*>::iterator itr = m_pTextures.begin();
 	bool found = false;
 
     while (itr != m_pTextures.end())
     {
-        CTextureObject *T = *itr;
+        ITextureObject *T = *itr;
 		if (T == t)
 		{
 			T->releaseReference();
@@ -106,17 +109,17 @@ bool CTextureSet::removeTexture(CTextureObject *t)
 
 void CTextureSet::removeAllTextures(void)
 {
-	vector<CTextureObject*>::iterator itr = m_pTextures.begin();
+	std::vector<ITextureObject*>::iterator itr = m_pTextures.begin();
 	while (itr != m_pTextures.end())
 	{
-		CTextureObject *T = *itr++;
+		ITextureObject *T = *itr++;
 		T->releaseReference();
 	}
 
 	m_pTextures.clear();
 }
 
-CTextureObject* const CTextureSet::getTexture(unsigned int index) const
+ITextureObject* const CTextureSet::getTexture(size_t index) const
 {
     if (index >= m_pTextures.size())
         return NULL;
@@ -125,11 +128,11 @@ CTextureObject* const CTextureSet::getTexture(unsigned int index) const
 }
 
 
-CTextureObject* const CTextureSet::getTexture(const std::string& name) const
+ITextureObject* const CTextureSet::getTexture(const std::string& name) const
 {
     bool found = false;
-    vector<CTextureObject*>::const_iterator itr = m_pTextures.begin();
-    CTextureObject *res = NULL;
+    std::vector<ITextureObject*>::const_iterator itr = m_pTextures.begin();
+    ITextureObject *res = NULL;
 
     while ((itr != m_pTextures.end()) && !found)
     {
@@ -212,13 +215,13 @@ bool CTextureSet::importTextureObject(CRaptorIO& io)
 	if ((compressed) && (0 < f.getConfig().getNumCompressors()))
 		f.getConfig().setCurrentCompressor(f.getConfig().getCompressor("OpenGL"));
 
-    CTextureObject *T = f.glCreateTexture(texelType,function,filter);
+    ITextureObject *T = f.glCreateTexture(texelType,function,filter);
 	bool res = false;
     if (T != NULL)
     {
 		addTexture(T);
         if (transparency > 0)
-            T->glSetTransparency(255 * transparency);
+            f.glSetTransparency(T, 255 * transparency);
         res = f.glLoadTexture(T,filename);
     }
     

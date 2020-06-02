@@ -80,6 +80,11 @@ void CVulkanTextureObject::glvkRender(void)
 
 }
 
+bool CVulkanTextureObject::setGenerationSize(uint32_t posx, uint32_t posy, uint32_t width, uint32_t height)
+{
+	return false;
+}
+
 void CVulkanTextureObject::vkLoadTexture(VkComponentMapping swizzle,
 										 uint32_t pixels_type,
 										 unsigned char* pixels)

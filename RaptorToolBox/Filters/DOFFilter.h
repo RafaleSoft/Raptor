@@ -80,9 +80,9 @@ private:
 	CProgramParameters::CParameter<GL_COORD_VERTEX> dofParams;
 
     CRaptorDisplay		*tmpDisplay;
-    CTextureObject      *tmpTexture;
+    ITextureObject      *tmpTexture;
 	CRaptorDisplay		*tmpDisplay2;
-    CTextureObject      *tmpTexture2;
+    ITextureObject      *tmpTexture2;
 	CTextureSet			*m_pRenderTextures2;
     CShader             *DOFShader;
 

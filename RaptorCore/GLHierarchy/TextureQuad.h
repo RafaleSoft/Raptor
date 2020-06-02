@@ -33,7 +33,7 @@
 
 RAPTOR_NAMESPACE_BEGIN
 
-class CTextureObject;
+class ITextureObject;
 
 
 //!
@@ -69,7 +69,7 @@ public:
 	//!	Update the texture object rendered by this quad.
 	//! @param pTexture : a non NULL texture object pointer.
 	//!	@return true if texture quad updated without errors or texture not null.
-	bool setQuadTexture(CTextureObject *pTexture);
+	bool setQuadTexture(ITextureObject *pTexture);
 
 	//!	Set quad attributes.
 	//!	@param center : defines the center of the quad for drawing (model view reference)
@@ -87,7 +87,7 @@ private:
 	CTextureQuad& operator=(const CTextureQuad&);
 
 	//!	Quad texture.
-	CReference<CTextureObject>	m_rTexture;
+	CReference<ITextureObject>	m_rTexture;
 
 	//!	Vertex Input State Resource binder
 	void	*m_pBinder;

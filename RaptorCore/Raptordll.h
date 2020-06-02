@@ -88,7 +88,6 @@ class CShaderProgram;
 class CSimpleObject;
 class CTextureFactory;
 class CTextureFactoryConfig;
-class CTextureObject;
 class CTextureSet;
 class CTextureUnitSetup;
 class CVertexShader;

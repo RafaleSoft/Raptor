@@ -25,14 +25,14 @@
 #if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
 	#include "System/Raptor.h"
 #endif
-#if !defined(AFX_TEXTUREOBJECT_H__D32B6294_B42B_4E6F_AB73_13B33C544AD0__INCLUDED_)
-	#include "GLHierarchy/TextureObject.h"
+#if !defined(AFX_ITEXTUREOBJECT_H__3AA8C89E_BB23_483C_A547_C8A4CC53E551__INCLUDED_)
+	#include "GLHierarchy/ITextureObject.h"
 #endif
 #if !defined(AFX_TEXTURESET_H__26F3022D_70FE_414D_9479_F9CCD3DCD445__INCLUDED_)
 	#include "GLHierarchy/TextureSet.h"
 #endif
 #if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
-  #include "System/RaptorGLExtensions.h"
+	#include "System/RaptorGLExtensions.h"
 #endif
 #if !defined(AFX_TEXTUREFACTORY_H__1B470EC4_4B68_11D3_9142_9A502CBADC6B__INCLUDED_)
 	#include "GLHierarchy/TextureFactory.h"
@@ -123,7 +123,7 @@ void CHDRFilter::glRenderFilter()
 
     //  Downsize buffers to compute global intensity
     RAPTOR_HANDLE nodevice;
-    CTextureObject  *currentBuffer = getColorInput();
+    ITextureObject  *currentBuffer = getColorInput();
     for (unsigned int i=0;i<nLevels;i++)
     {
 		m_pDownSizedDisplay[i]->glvkBindDisplay(nodevice);
@@ -297,7 +297,7 @@ bool CHDRFilter::glInitFilter(void)
     //! the computation of the luminance max computes the max of 4 texels into one,
     //! reducing the buffer by 2 in both dimensions at each iteration.
     width = height = 1 << nLevels ;
-    m_pDownSizedBuffer = new CTextureObject*[nLevels];
+    m_pDownSizedBuffer = new ITextureObject*[nLevels];
     m_pDownSizedDisplay = new CRaptorDisplay*[nLevels];
 
 	if ((colorExternalSource != NULL) && (m_fModel == RENDER_TEXTURE))

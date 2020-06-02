@@ -272,7 +272,7 @@ bool CRaptorDisplayFilter::glInitFilter(void)
     return true;
 }
 
-CTextureObject* CRaptorDisplayFilter::getColorInput(void)
+ITextureObject* CRaptorDisplayFilter::getColorInput(void)
 {
 	if ((m_pPreviousFilter != NULL) && (m_fModel == RENDER_BUFFER))
 		return m_pPreviousFilter->getColorOutput();
@@ -280,7 +280,7 @@ CTextureObject* CRaptorDisplayFilter::getColorInput(void)
 		return colorInput;
 }
 
-CTextureObject* CRaptorDisplayFilter::getColorOutput(void)
+ITextureObject* CRaptorDisplayFilter::getColorOutput(void)
 {
 	if (m_bEnabled)
 		return colorOutput;
@@ -290,7 +290,7 @@ CTextureObject* CRaptorDisplayFilter::getColorOutput(void)
 		return colorInput;
 }
 
-void CRaptorDisplayFilter::setColorInput(CTextureObject* pInput)
+void CRaptorDisplayFilter::setColorInput(ITextureObject* pInput)
 {
 	if (colorInput != NULL)
 		colorInput->releaseReference();
@@ -299,7 +299,7 @@ void CRaptorDisplayFilter::setColorInput(CTextureObject* pInput)
 		colorInput->addReference();
 }
 
-void CRaptorDisplayFilter::setDepthInput(CTextureObject* pInput)
+void CRaptorDisplayFilter::setDepthInput(ITextureObject* pInput)
 {
 	if (depthInput != NULL)
 		depthInput->releaseReference();
@@ -358,7 +358,7 @@ ITextureGenerator*  CRaptorDisplayFilter::glCreateDepthSource(void)
     CATCH_GL_ERROR
 }
 
-CTextureObject*  CRaptorDisplayFilter::glCreateColorOutput(void)
+ITextureObject*  CRaptorDisplayFilter::glCreateColorOutput(void)
 {
 	if (colorOutput != NULL)
 		return colorOutput;
@@ -380,7 +380,8 @@ CTextureObject*  CRaptorDisplayFilter::glCreateColorOutput(void)
 	colorOutput = filterFactory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
 		                                        ITextureObject::CGL_OPAQUE,
 			                                    ITextureObject::CGL_UNFILTERED);
-	filterFactory.glResizeTexture(colorOutput,state.width,state.height);
+	filterFactory.glResizeTexture(	colorOutput,
+									state.width,state.height);
 	colorOutput->glvkUpdateClamping(ITextureObject::CGL_EDGECLAMP);
 
 	if (m_pOutputTextures != NULL)
@@ -412,7 +413,7 @@ CTextureObject*  CRaptorDisplayFilter::glCreateColorOutput(void)
 	return colorOutput;
 }
 
-CTextureObject*  CRaptorDisplayFilter::glCreateDepthOutput(void)
+ITextureObject*  CRaptorDisplayFilter::glCreateDepthOutput(void)
 {
 	CATCH_GL_ERROR
 

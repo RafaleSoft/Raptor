@@ -1,6 +1,6 @@
 /***************************************************************************/
 /*                                                                         */
-/*  TextureObject.h                                                        */
+/*  OpenGLTextureObject.h                                                  */
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
@@ -16,8 +16,8 @@
 /***************************************************************************/
 
 
-#if !defined(AFX_TEXTUREOBJECT_H__D32B6294_B42B_4E6F_AB73_13B33C544AD0__INCLUDED_)
-#define AFX_TEXTUREOBJECT_H__D32B6294_B42B_4E6F_AB73_13B33C544AD0__INCLUDED_
+#if !defined(AFX_OPENGLTEXTUREOBJECT_H__D32B6294_B42B_4E6F_AB73_13B33C544AD0__INCLUDED_)
+#define AFX_OPENGLTEXTUREOBJECT_H__D32B6294_B42B_4E6F_AB73_13B33C544AD0__INCLUDED_
 
 #if _MSC_VER > 1000
 #pragma once
@@ -27,7 +27,7 @@
 	#include "System/CGLTypes.h"
 #endif
 #if !defined(AFX_ITEXTUREOBJECT_H__3AA8C89E_BB23_483C_A547_C8A4CC53E551__INCLUDED_)
-	#include "ITextureObject.h"
+	#include "GLHierarchy/ITextureObject.h"
 #endif
 
 
@@ -38,17 +38,17 @@ class CTextureUnitSetup;
 class ITextureGenerator;
 
 
-//	Base structure for CTexture class
+//	Base structure for OpenGL texture class
 //	this structure defines a texture object
 //	and its degenerate form : a sprite
-class RAPTOR_API CTextureObject : public ITextureObject
+class RAPTOR_API COpenGLTextureObject : public ITextureObject
 {
 public:
     //!	Renders the textures : it is bound to the current active Texture Unit.
 	virtual void glvkRender(void);
 
 	//!	Returns the proper implementation
-	virtual CTextureObject* getGLTextureObject(void) { return this; };
+	virtual COpenGLTextureObject* getGLTextureObject(void) { return this; };
 
     //! Returns the selected environment function
     TEXTURE_FUNCTION getFunction(void) const;
@@ -66,40 +66,27 @@ public:
 
     //! Returns the actual selected mipmap.
     //! ( not the number of mipmaps )
-    unsigned int    getCurrentMipMapLevel(void) const { return level; }
+    virtual uint32_t getCurrentMipMapLevel(void) const { return level; }
 
     //! Selects the current mipmap level for image access ( loading, reading, ... )
-    void selectMipMapLevel(unsigned int l) { level = l; };
+    virtual void selectMipMapLevel(unsigned int l) { level = l; };
     
 	//! Returns the actual selected cubemap face.
     //! ( not the number of faces already loaded )
-    CUBE_FACE    getCurrentCubeFace(void) const;
+    virtual CUBE_FACE getCurrentCubeFace(void) const;
 
     //! Selects the current cubemap face for image access ( loading, reading, ... )
-    void selectCubeFace(CUBE_FACE face);
+    virtual void selectCubeFace(CUBE_FACE face);
 
     //! Define the dimensions ( of the generator ) for texture generation.
     //! Actual parameters are modified if requested generation size is too large for the texture
     //! or if position is not valid within the generator. Texture must have a valid size.
     //! @return : false is this texture is not generated.
-    bool setGenerationSize(   int posx, int posy, unsigned int width, unsigned int height);
-
-    //! Returns the generation dimensions set here above ( or default )
-    void getGenerationSize(   int &posx, int &posy, int &width, int &height) const;
+    virtual bool setGenerationSize(uint32_t posx, uint32_t posy, uint32_t width, uint32_t height);
 
 	//!	Returns the sized format of the texels stored in device memory (texture)
 	unsigned int getTexelFormat(void) const;
-
-    
-    //! This method set texture alpha for transparency management.
-    //! if 0, use color average, if > 255, saturate to 0 and 255, else use alpha
-    void glSetTransparency(unsigned int	alpha);
-
-    //!	Set a specific color as transparent. Any number of colors can be transparent,
-	//!	they are changed through their alpha component
-    //! This method only applyes to 2D textures ; future versions will handle more cases if needed.
-	void glSetTransparentColor(  unsigned char r, unsigned char g, unsigned char b);
-
+	
 	//!	Returns the texture generator, if any. NULL otherwise.
 	ITextureGenerator * getTexelGenerator(void) const { return m_pTexelGenerator; };
 
@@ -108,12 +95,12 @@ private:
 	//!
 	//!	Forbidden methods
 	//!
-	CTextureObject(ITextureObject::TEXEL_TYPE type);
-	CTextureObject(const CTextureObject& rsh);
-	virtual ~CTextureObject();
+	COpenGLTextureObject(ITextureObject::TEXEL_TYPE type);
+	COpenGLTextureObject(const COpenGLTextureObject& rsh);
+	virtual ~COpenGLTextureObject();
 
 	//! texture objects cannot be assigned.
-	const CTextureObject& operator=(const CTextureObject &rsh) { return *this; };
+	const COpenGLTextureObject& operator=(const COpenGLTextureObject &rsh) { return *this; };
 
     //! This call is restricted to the factory or the TMUSetup
     void setFunction(ITextureObject::TEXTURE_FUNCTION F);
@@ -126,25 +113,24 @@ private:
 	//!
 	//!	Attributes
 	//!
-
     
     //!	OpenGL context based texture name
-	unsigned int	texname;
+	uint32_t	texname;
     //!  Target : 1D,2D,3D,CUBE, 
-	unsigned int	target;
+	uint32_t	target;
     //!	rendering environment model
-	unsigned int    env_mode;
+	uint32_t    env_mode;
     //	texture level ( mipmapping and anisotropy)
-	unsigned int	level;
+	uint32_t	level;
 
     //!	Render target used to provide texImage
 	ITextureGenerator  *m_pTexelGenerator;
 
     //! generation source dimensions
-    int source[4];
+    uint32_t source[4];
 };
 
 RAPTOR_NAMESPACE_END
 
-#endif // !defined(AFX_TEXTUREOBJECT_H__D32B6294_B42B_4E6F_AB73_13B33C544AD0__INCLUDED_)
+#endif // !defined(AFX_OPENGLTEXTUREOBJECT_H__D32B6294_B42B_4E6F_AB73_13B33C544AD0__INCLUDED_)
 

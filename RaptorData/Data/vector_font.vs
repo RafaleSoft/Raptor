@@ -1,6 +1,6 @@
 /***************************************************************************/
 /*                                                                         */
-/*  StdAfx.cpp                                                             */
+/*  vector_font.vs                                                         */
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
@@ -15,9 +15,27 @@
 /*                                                                         */
 /***************************************************************************/
 
+#version 440
 
-#pragma warning(disable:4244)
-#include "StdAfx.h"
+layout(location = 0) in vec4 i_char;
 
+out int car;
+out int strip_start;
+out int strip_end;
+out vec2 offset;
+
+void main (void)
+{
+	offset = vec2(i_char.x, i_char.y);
+
+	int strip = int(i_char.w);
+	
+	strip_start = (strip >> 16);
+
+	int size = strip & 0xff;
+	strip_end = strip_start + size;
+
+	car = int(i_char.z);
+}
 
 

@@ -45,6 +45,10 @@
 #if !defined(AFX_REFERENCE_H__D29BE5EA_DA55_4BCA_A700_73E007EFE5F9__INCLUDED_)
 	#include "GLHierarchy/Reference.cxx"
 #endif
+#if !defined(AFX_OPENGLTEXTUREOBJECT_H__D32B6294_B42B_4E6F_AB73_13B33C544AD0__INCLUDED_)
+	#include "Subsys/OpenGL/OpenGLTextureObject.h"
+#endif
+
 
 RAPTOR_NAMESPACE
 
@@ -90,7 +94,7 @@ CTextureQuad::~CTextureQuad()
 	}
 }
 
-bool CTextureQuad::setQuadTexture(CTextureObject *pTexture)
+bool CTextureQuad::setQuadTexture(ITextureObject *pTexture)
 {
 	m_rTexture = pTexture;
 
@@ -145,7 +149,7 @@ bool CTextureQuad::glLoadTexture(const std::string &texname, bool compressed)
 	if (!texname.empty())
 	{
 		CTextureFactory &Txt = CTextureFactory::getDefaultFactory();
-		CTextureObject *T = Txt.glCreateTexture( ITextureObject::CGL_COLOR24_ALPHA,
+		ITextureObject *T = Txt.glCreateTexture( ITextureObject::CGL_COLOR24_ALPHA,
 												 ITextureObject::CGL_MULTIPLY,
 												 ITextureObject::CGL_BILINEAR);
 		
@@ -154,7 +158,7 @@ bool CTextureQuad::glLoadTexture(const std::string &texname, bool compressed)
 		if (lock)
 			pAllocator->glvkLockMemory(false);
 
-		T->glSetTransparency(256);
+		Txt.glSetTransparency(T, 256);
 
 		if (compressed)
 			Txt.glLoadCompressedTexture(T, texname);

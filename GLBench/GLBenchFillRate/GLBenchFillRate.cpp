@@ -24,7 +24,7 @@
 #include "GLHierarchy/TextureSet.h"
 #include "GLHierarchy/TextureFactoryConfig.h"
 #include "GLHierarchy/TextureUnitSetup.h"
-#include "GLHierarchy/TextureObject.h"
+#include "GLHierarchy/ITextureObject.h"
 #include "GLHierarchy/VertexProgram.h"
 #include "System/Raptor.h"
 #include "System/Memory.h"
@@ -130,10 +130,10 @@ void Display::GLInitContext()
 	txt = new CTextureSet();
 
 	glColor4f(1.0f,1.0f,1.0f,1.0f);
-	CTextureObject* T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
+	ITextureObject* T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
 										  ITextureObject::CGL_MULTIPLY,
 										  ITextureObject::CGL_BILINEAR);
-	T->glSetTransparency(128);
+	f.glSetTransparency(T, 128);
 	f.glLoadTexture(T, M1_1024_path);
 	txt->addTexture(T);
 
@@ -142,7 +142,7 @@ void Display::GLInitContext()
 		T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
 							  ITextureObject::CGL_MULTIPLY,
 							  ITextureObject::CGL_BILINEAR);
-		T->glSetTransparency(128);
+		f.glSetTransparency(T, 128);
 		const CTextureFactoryConfig::ICompressor *compressor = config.getCurrentCompressor();
 		if (0 < config.getNumCompressors())
 			config.setCurrentCompressor(config.getCompressor("OpenGL"));
@@ -154,7 +154,7 @@ void Display::GLInitContext()
 		T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
 							  ITextureObject::CGL_MULTIPLY,
 							  ITextureObject::CGL_BILINEAR);
-		T->glSetTransparency(128);
+		f.glSetTransparency(T, 128);
 		f.glLoadTexture(T, M1_1024_path);
 	}
 	txt->addTexture(T);
@@ -162,7 +162,7 @@ void Display::GLInitContext()
 	T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
 						  ITextureObject::CGL_MULTIPLY,
 						  ITextureObject::CGL_BILINEAR);
-	T->glSetTransparency(128);
+	f.glSetTransparency(T, 128);
 	f.glLoadTexture(T, M74_1024_path);
 	txt->addTexture(T);
 
@@ -170,7 +170,7 @@ void Display::GLInitContext()
 						  ITextureObject::CGL_MULTIPLY,
 						  ITextureObject::CGL_TRILINEAR);
 	config.setGenerateMipmap(false);
-	T->glSetTransparency(128);	f.glLoadTexture(T, M1_1024_path);
+	f.glSetTransparency(T, 128);	f.glLoadTexture(T, M1_1024_path);
 	T->selectMipMapLevel(1);	f.glLoadTexture(T, M1_512_path);
 	T->selectMipMapLevel(2);	f.glLoadTexture(T, M1_256_path);
 	T->selectMipMapLevel(3);	f.glLoadTexture(T, M1_128_path);
@@ -188,7 +188,7 @@ void Display::GLInitContext()
 	T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
 						  ITextureObject::CGL_MULTIPLY,
 						  ITextureObject::CGL_BILINEAR);
-	T->glSetTransparency(128);
+	f.glSetTransparency(T, 128);
 	f.glLoadTexture(T, M1_256_path);
 	txt->addTexture(T);
 
@@ -203,7 +203,7 @@ void Display::GLInitContext()
 							  ITextureObject::CGL_MULTIPLY,
 							  ITextureObject::CGL_ANISOTROPIC);
 		config.setGenerateMipmap(false);
-		T->glSetTransparency(255);	f.glLoadTexture(T, M1_1024_path);
+		f.glSetTransparency(T, 255);	f.glLoadTexture(T, M1_1024_path);
 		T->selectMipMapLevel(1);	f.glLoadTexture(T, M1_512_path);
 		T->selectMipMapLevel(2);	f.glLoadTexture(T, M1_256_path);
 		T->selectMipMapLevel(3);	f.glLoadTexture(T, M1_128_path);
@@ -480,7 +480,7 @@ GLDisplay->glMakeCurrent(false);
 	//
 	//	Pixel transfer rate : Texture Loading
 	//
-	CTextureObject *T = NULL;
+	ITextureObject *T = NULL;
 	{
 		resultCount++;
 		unsigned int nb = 0;

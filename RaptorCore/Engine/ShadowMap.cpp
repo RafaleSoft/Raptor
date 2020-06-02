@@ -208,7 +208,7 @@ void CShadowMap::glInitRenderBuffer(uint32_t width, uint32_t height)
 #endif
 
 	CTextureSet *pImageSet = new CTextureSet();
-	CTextureObject *ShadowTexture = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
+	ITextureObject *ShadowTexture = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
 															ITextureObject::CGL_OPAQUE,
 															ITextureObject::CGL_BILINEAR);
 
@@ -430,8 +430,6 @@ void CShadowMap::glRenderShadow(const vector<C3DSceneObject*>& objects)
 
 	if (m_pShadowTexture != NULL)
 	{
-		m_pShadowMap->glvkUnBindDisplay();
-
 		glDisable(GL_TEXTURE_GEN_S);
 		glDisable(GL_TEXTURE_GEN_T);
 		glDisable(GL_TEXTURE_GEN_R);

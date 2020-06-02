@@ -35,6 +35,7 @@ CRaptorIO::CRaptorIO(const std::string& streamName, CRaptorIO::IO_KIND kind)
 	m_status = IO_FAILED;
 	m_kind = kind;
 	m_size = 0;
+	m_bAutoflush = true;
 
 	if (!streamName.empty())
 	{
@@ -108,7 +109,7 @@ CRaptorIO* CRaptorIO::Create(const std::string& streamName, IO_KIND kind, CRapto
     return res;
 }
 
-unsigned int CRaptorIO::getSize(void) const
+size_t CRaptorIO::getSize(void) const
 {
 	if (getKind() == DISK_READ)
 		return m_size; 
@@ -144,7 +145,11 @@ CRaptorIO& CRaptorIO::operator<<(const CColor::RGBA & c)
 
     if (getKind() == DISK_WRITE)
     {
-	    m_outFile << c.r << " " << c.g << " " << c.b << " " << c.a << endl; 
+	    m_outFile << c.r << " " << c.g << " " << c.b << " " << c.a << endl;
+
+		if (!m_bAutoflush)
+			m_outFile.flush();
+
         if (m_outFile.good())
             m_status = IO_OK;
     }
@@ -174,6 +179,10 @@ CRaptorIO& CRaptorIO::operator<<(const GL_MATRIX_TAG & m)
     if (getKind() == DISK_WRITE)
     {
 	    m_outFile << m.rowx << m.rowy << m.rowz << m.rowh;
+
+		if (!m_bAutoflush)
+			m_outFile.flush();
+
         if (m_outFile.good())
             m_status = IO_OK;
     }
@@ -203,6 +212,10 @@ CRaptorIO& CRaptorIO::operator<<(const GL_TEX_VERTEX_TAG & v)
     if (getKind() == DISK_WRITE)
     {
 	    m_outFile << v.u << " " << v.v << endl;
+
+		if (!m_bAutoflush)
+			m_outFile.flush();
+
         if (m_outFile.good())
             m_status = IO_OK;
     }
@@ -231,6 +244,10 @@ CRaptorIO& CRaptorIO::operator<<(const GL_COORD_VERTEX_TAG & v)
     if (getKind() == DISK_WRITE)
     {
 	    m_outFile << v.x << " " << v.y << " " << v.z << " " << v.h << endl;
+
+		if (!m_bAutoflush)
+			m_outFile.flush();
+
         if (m_outFile.good())
 			m_status = IO_OK;
     }
@@ -261,6 +278,10 @@ CRaptorIO& CRaptorIO::write(const void *data,size_t size)
     if (getKind() == DISK_WRITE)
     {
 	    m_outFile.write((const char*)data,size);
+
+		if (!m_bAutoflush)
+			m_outFile.flush();
+
         if (m_outFile.good())
             m_status = IO_OK;
     }
@@ -304,6 +325,10 @@ CRaptorIO& CRaptorIO::operator<<(bool i)
     if (getKind() == DISK_WRITE)
     {
         m_outFile << i;
+
+		if (!m_bAutoflush)
+			m_outFile.flush();
+
         if (m_outFile.good())
             m_status = IO_OK;
     }
@@ -332,6 +357,11 @@ CRaptorIO& CRaptorIO::operator<<(char i)
     if (getKind() == DISK_WRITE)
     {
         m_outFile << i;
+
+		if (!m_bAutoflush)
+			m_outFile.flush();
+
+
         if (m_outFile.good())
             m_status = IO_OK;
     }
@@ -360,7 +390,11 @@ CRaptorIO& CRaptorIO::operator<<(int i)
     if (getKind() == DISK_WRITE)
     {
 	    m_outFile << i ;
-        if (m_outFile.good())
+
+		if (!m_bAutoflush)
+			m_outFile.flush();
+
+		if (m_outFile.good())
             m_status = IO_OK;
     }
     
@@ -388,6 +422,11 @@ CRaptorIO& CRaptorIO::operator<<(unsigned short s)
     if (getKind() == DISK_WRITE)
     {
 	    m_outFile << s;
+
+		if (!m_bAutoflush)
+			m_outFile.flush();
+
+
         if (m_outFile.good())
             m_status = IO_OK;
     }
@@ -416,6 +455,10 @@ CRaptorIO& CRaptorIO::operator<<(unsigned int i)
     if (getKind() == DISK_WRITE)
     {
 	    m_outFile << i ;
+
+		if (!m_bAutoflush)
+			m_outFile.flush();
+
         if (m_outFile.good())
             m_status = IO_OK;
     }
@@ -444,6 +487,10 @@ CRaptorIO& CRaptorIO::operator<<(float f)
     if (getKind() == DISK_WRITE)
     {
 	    m_outFile << f;
+
+		if (!m_bAutoflush)
+			m_outFile.flush();
+
         if (m_outFile.good())
             m_status = IO_OK;
     }
@@ -472,6 +519,10 @@ CRaptorIO& CRaptorIO::operator<<(const std::string& s)
     if (getKind() == DISK_WRITE)
     {
 	    m_outFile << s;
+
+		if (!m_bAutoflush)
+			m_outFile.flush();
+
         if (m_outFile.good())
             m_status = IO_OK;
     }

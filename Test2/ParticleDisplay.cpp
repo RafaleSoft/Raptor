@@ -200,7 +200,7 @@ void CParticleDisplay::Init()
 	// Load texture
 	CTextureFactory &f = CTextureFactory::getDefaultFactory();
 	CTextureSet* pTextures = (CTextureSet*)CPersistence::FindObject("main_textures");
-	CTextureObject* T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,ITextureObject::CGL_MULTIPLY, ITextureObject::CGL_BILINEAR);
+	ITextureObject* T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,ITextureObject::CGL_MULTIPLY, ITextureObject::CGL_BILINEAR);
 	f.glLoadTexture(T, "Datas\\particle.jpg");
 	pTextures->addTexture(T);
 
@@ -210,7 +210,7 @@ void CParticleDisplay::Init()
 	pFire->setTexture(T);
 
 	T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,ITextureObject::CGL_MULTIPLY, ITextureObject::CGL_BILINEAR);
-	T->glSetTransparency(0);
+	f.glSetTransparency(T, 0);
 	f.glLoadTexture(T, "Datas\\particle.tga");
 	pTextures->addTexture(T);
 	pSmoke->setTexture(T);
@@ -219,7 +219,7 @@ void CParticleDisplay::Init()
 
     T = f.glCreateVolumeTexture(ITextureObject::CGL_COLOR24_ALPHA,ITextureObject::CGL_OPAQUE, ITextureObject::CGL_BILINEAR);
     T->setSize(128,128,128);
-	T->glSetTransparency(255);
+	f.glSetTransparency(T, 255);
 	
 	smoke.allocatePixels(128, 128, 128);
 	pTextures->addTexture(T);
@@ -317,7 +317,7 @@ void CParticleDisplay::Display()
 		{
 			pSmoke2->getTexture()->glvkRender();
 			CTextureFactory &f = CTextureFactory::getDefaultFactory();
-			f.glLoadTexture((CTextureObject*)pSmoke2->getTexture(), smoke);
+			f.glLoadTexture(pSmoke2->getTexture(), smoke);
 			smoke.releasePixels();
 			pSmoke2->getProperties().setVisible(true);
 		}

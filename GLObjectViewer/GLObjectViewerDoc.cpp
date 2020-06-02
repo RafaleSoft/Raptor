@@ -11,7 +11,6 @@
 #include "GLHierarchy/Light.h"
 #include "GLHierarchy/Shader.h"
 #include "GLHierarchy/TextureFactory.h"
-#include "GLHierarchy/TextureObject.h"
 #include "GLHierarchy/TextureUnitSetup.h"
 #include "Engine/IViewPoint.h"
 

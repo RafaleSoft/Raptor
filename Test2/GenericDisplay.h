@@ -37,7 +37,7 @@ protected:
 	bool	reinit;
 
 private:
-	static RAPTOR_HANDLE reinitTMU;
+	static CTextureUnitSetup *initSetup;
 };
 
 #endif // !defined(AFX_GENERICDISPLAY_H__7589102B_1C0E_4CFD_978D_0F0D6B3E7683__INCLUDED_)
