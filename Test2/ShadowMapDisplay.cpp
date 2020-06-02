@@ -223,34 +223,6 @@ void ShowPBuffer::glRender()
 		glTexCoord2f(1.0f,0.0f);	glVertex3f(-0.83f,0.5f,0.0f);
 		glTexCoord2f(1.0f,1.0f);	glVertex3f(-0.83f,1.0f,0.0f);
 		glTexCoord2f(0.0f,1.0f);	glVertex3f(-1.33f,1.0f,0.0f);
-
-/*
-        // ma = rz = -1
-        //  back faces
-        glTexCoord4f(-1.0f,-1.0f,-0.7f,1.0f);	glVertex3f(-1.33f,0.5f,0.0f);   //  sc = -rx = -1; tc = -ry = -1;  s = 0 ; t = 0
-		glTexCoord4f(1.0f,-1.0f,-0.7f,1.0f);	glVertex3f(-0.83f,0.5f,0.0f);   //  sc = 1 ; tc = 1 ;  s = 1 ; t = 1
-		glTexCoord4f(1.0f,1.0f,-0.7f,1.0f);	    glVertex3f(-0.83f,1.0f,0.0f);
-		glTexCoord4f(-1.0f,1.0f,-0.7f,1.0f);	glVertex3f(-1.33f,1.0f,0.0f);
-
-        // front faces
-		glTexCoord4f(-1.0f,-1.0f,0.7f,1.0f);	glVertex3f(-0.83f,0.5f,0.0f);
-		glTexCoord4f(1.0f,-1.0f,0.7f,1.0f);	    glVertex3f(-0.33f,0.5f,0.0f);
-		glTexCoord4f(1.0f,1.0f,0.7f,1.0f);	    glVertex3f(-0.33f,1.0f,0.0f);
-		glTexCoord4f(-1.0f,1.0f,0.7f,1.0f);	    glVertex3f(-0.83f,1.0f,0.0f);
-
-
-        // down faces
-        glTexCoord4f(-1.0f,-0.7f,-1.0f,1.0f);	glVertex3f(0.33f,0.5f,0.0f);
-		glTexCoord4f(-1.0f,-0.7f,1.0f,1.0f);	glVertex3f(0.83f,0.5f,0.0f);
-		glTexCoord4f(1.0f,-0.7f,1.0f,1.0f);	    glVertex3f(0.83f,1.0f,0.0f);
-		glTexCoord4f(1.0f,-0.7f,-1.0f,1.0f);	glVertex3f(0.33f,1.0f,0.0f);
-
-        // up faces
-        glTexCoord4f(-1.0f,0.7f,-1.0f,1.0f);	glVertex3f(0.83f,0.5f,0.0f);    // sc = rz = -1 ; tc = -ry = 1 ; s = 0 ; t = 1
-		glTexCoord4f(-1.0f,0.7f,1.0f,1.0f);	    glVertex3f(1.33f,0.5f,0.0f);    // sc = 1 ; tc = 1 ; s = 1 ; t = 1
-		glTexCoord4f(1.0f,0.7f,1.0f,1.0f);	    glVertex3f(1.33f,1.0f,0.0f);
-		glTexCoord4f(1.0f,0.7f,-1.0f,1.0f);	    glVertex3f(0.83f,1.0f,0.0f);
-*/
 	glEnd();
 	
 	glPopMatrix();
@@ -345,7 +317,22 @@ void CShadowMapDisplay::Init()
 		greenBall->scale(0.5f,0.5f,0.5f);
 		greenBall->setShader(greenShader);
 	}
-
+	int nbI = 0;
+	int i = 0;
+	for (i = 0; i < 3; i++)
+	{
+		for (int j = 0; j < 3; j++)
+		{
+			for (int k = 0; k < 3; k++)
+			{
+				if (((i + j + k) % 2) == 0)
+					m_pInstances[nbI] = new CObject3DInstance(redBall);
+				else
+					m_pInstances[nbI] = new CObject3DInstance(greenBall);
+				m_pInstances[nbI++]->translate(i*3.0f - 3.0f, j*3.0f, k*3.0f - 3.0f);
+			}
+		}
+	}
 
 	CGenericVector<float> LL(-1.0f,-1.0f,0.0f,1.0f);
 	GL_COORD_VERTEX SS(8.0f,8.0f,0.0f,1.0f);
@@ -417,23 +404,6 @@ void CShadowMapDisplay::Init()
 	tmu.setDiffuseMap(T);
 	tmu.enableImageUnit(CTextureUnitSetup::IMAGE_UNIT_2,false);
 	c2 = tmu.glBuildSetup();
-
-	int nbI = 0;
-    int i=0;	
-	for (i=0;i<3;i++)
-	{
-		for (int j=0;j<3;j++)
-		{
-			for (int k=0;k<3;k++)
-			{
-				if (((i+j+k) % 2) == 0)
-					m_pInstances[nbI] = new CObject3DInstance(redBall);
-				else
-					m_pInstances[nbI] = new CObject3DInstance(greenBall);
-				m_pInstances[nbI++]->translate(i*3.0f - 3.0f,j*3.0f,k*3.0f - 3.0f);
-			}
-		}
-	}
 
 	pSimpleObject = new Ground(c1,c2);
 	m_pScene = new C3DScene("SHADOW_MAP_SCENE");

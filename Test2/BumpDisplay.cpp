@@ -27,38 +27,17 @@
 #include "ToolBox/Imaging/BumpmapLoader.h"
 
 
-class BackGround : public CSimpleObject
+class BackGround : public CBasicObjects::CRectangle
 {
 public:
 	BackGround()
-	{ 
-        setBoundingBox(GL_COORD_VERTEX(-70.0f,-50.0f,-50.1f,1.0f),GL_COORD_VERTEX(70.0f,50.0f,-50.0f,1.0f)); 
+	{
+		setDimensions(140.0f, 100.0f);
+		translate(0.0f, 0.0f, -50.0f);
 
-		//	Use a default shader to create a simple geometry
-		GL_COORD_VERTEX texCoord1(0,0,0,1);
-
-		list = glGenLists(1);
-		glNewList(list,GL_COMPILE);
-			glBegin(GL_QUADS);
-				glTexCoord2f(0.0f,0.0f);
-				glVertex3f(-70.0f,-50.0f,-50.0f);
-
-				glTexCoord2f(1.0f,0.0f);
-				glVertex3f(70.0f,-50.0f,-50.0f);
-
-				glTexCoord2f(1.0f,1.0f);
-				glVertex3f(70.0f,50.0f,-50.0f);
-
-				glTexCoord2f(0.0f,1.0f);
-				glVertex3f(-70.0f,50.0f,-50.0f);
-			glEnd();
-		glEndList();
-
-		m = new CMaterial(CMaterial::CGL_BLACK_MATERIAL,
-				CMaterial::CGL_BLACK_MATERIAL,
-				CMaterial::CGL_BLACK_MATERIAL,
-				50.0);
-
+		CShader *pShader = getShader();
+		CMaterial *m = pShader->getMaterial();
+		m->setShininess(50.0f);
 		m->setAmbient(0.1f,0.1f,0.1f,1.0f);
 		m->setDiffuse(0.5f,0.5f,0.5f,1.0f);
 		m->setSpecular(0.5f,0.5f,0.5f,1.0f);
@@ -69,9 +48,6 @@ public:
 	virtual void glRender();
 	virtual void glClipRender() { glRender();};
 
-	unsigned int list;
-	RAPTOR_HANDLE	bg;
-	CMaterial	*m;
 	CLight	*light;
     CLight	*light2;
 };
@@ -79,10 +55,7 @@ public:
 void BackGround::glRender()
 {
     glColor4f(1.0f,1.0f,1.0f,1.0f);
-	glCallList(bg.handle());
-	
-	m->glRender();
-	glCallList(list);
+	CShadedGeometry::glRender();
 
     GL_COORD_VERTEX lpos;
     
@@ -94,7 +67,7 @@ void BackGround::glRender()
 		glVertex3f(0.0f,0.0f,-20.0f);
         lpos = light->getLightPosition();
 		glVertex3f(lpos.x,lpos.y,lpos.z);
-        //glColor4f(0.0f,1.0f,0.0f,1.0f);
+
 		glColor4fv(light2->getSpecular());
         glVertex3f(0.0f,0.0f,-20.0f);
         lpos = light2->getLightPosition();
@@ -162,16 +135,15 @@ void CBumpDisplay::Init()
 		 teapot = (CBumppedGeometry *)p;
 	teapot->setNormalMap(tt);
 
-	CTextureUnitSetup tmu;
 	CPerlinNoise noise2;
 	ITextureObject *tt2 = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
                                             ITextureObject::CGL_ALPHA_TRANSPARENT,
                                             ITextureObject::CGL_BILINEAR);
 	f.glResizeTexture(tt2,512,512);
     noise2.glGenerate(tt2,0,0,512,512);
-    tmu.setDiffuseMap(tt2);
 	BackGround *pbg = new BackGround();
-	pbg->bg = tmu.glBuildSetup();
+	CTextureUnitSetup *ptmu = pbg->getShader()->glGetTextureUnitsSetup();
+	ptmu->setDiffuseMap(tt2);
 
     //
     //  Light and its modifier

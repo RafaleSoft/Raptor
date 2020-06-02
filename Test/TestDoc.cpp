@@ -69,7 +69,7 @@ CTestDoc::~CTestDoc()
 class Foreground : public CBasicObjects::CRectangle
 {
 public:
-	Foreground(CMagnifierFilter *mf):fgMag(mf),status(mf->isEnabled())
+	Foreground(CMagnifierFilter *mf):fgMag(mf),status(!mf->isEnabled())
 	{
 		CTextureFactory &fct = CTextureFactory::getDefaultFactory();
 		ITextureObject *T = fct.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA);
@@ -82,10 +82,6 @@ public:
 		CShader *s = getShader();
 		CTextureUnitSetup *tmu = s->glGetTextureUnitsSetup();
 		tmu->setDiffuseMap(output);
-		tmu->glBuildSetup();
-
-		//Geometry Allocator is not locked.
-		//glRenderFilter();
 	};
 
 	virtual ~Foreground() {};
@@ -232,7 +228,6 @@ void CTestDoc::GLInitContext(void)
 	CShader *s = background->getShader();
 	CTextureUnitSetup *tmu = s->glGetTextureUnitsSetup();
 	tmu->setDiffuseMap(T);
-	tmu->glBuildSetup();
 	
 
 #if defined(GL_ARB_color_buffer_float)

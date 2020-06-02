@@ -91,7 +91,6 @@ private:
 	ITextureObject*		m_pAOMap;
 	CRaptorDisplay*		m_pAOBuffer;
 
-	RAPTOR_HANDLE		m_AOMapSetup;
 	CShader*			m_pAOcomputeRef;
 	CObject3DInstance*	m_tranformRef;
 
