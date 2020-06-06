@@ -268,11 +268,9 @@ bool CDOFFilter::glInitFilter(void)
 		(m_fModel == RENDER_TEXTURE))
 	{
 		depthInput = filterFactory.glCreateDynamicTexture(	ITextureObject::CGL_DEPTH24,
-															ITextureObject::CGL_OPAQUE,
 															ITextureObject::CGL_UNFILTERED,
 															depthExternalSource);
 		colorInput = filterFactory.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
-															ITextureObject::CGL_OPAQUE,
 															ITextureObject::CGL_UNFILTERED,
 															colorExternalSource);
 	}
@@ -338,11 +336,9 @@ bool CDOFFilter::glInitFilter(void)
 	if (m_fModel == RENDER_TEXTURE)
 	{
 		tmpTexture = filterFactory.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
-															ITextureObject::CGL_OPAQUE,
 															ITextureObject::CGL_UNFILTERED,
 															tmpDisplay);
 		tmpTexture2 = filterFactory.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
-															ITextureObject::CGL_OPAQUE,
 															ITextureObject::CGL_UNFILTERED,
 															tmpDisplay2);
 	}

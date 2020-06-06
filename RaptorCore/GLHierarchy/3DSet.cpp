@@ -565,7 +565,7 @@ void C3DSet::glClipRender()
 	CRaptorInstance::GetInstance().iRenderedObjects++;
 }
 
-void C3DSet::glRenderBBox(bool filled)
+void C3DSet::glRenderBBox(RENDER_BOX_MODEL filled)
 {
 	if (!properties.isVisible())
 		return;

@@ -303,7 +303,6 @@ bool CHDRFilter::glInitFilter(void)
 	if ((colorExternalSource != NULL) && (m_fModel == RENDER_TEXTURE))
 	{
 		colorInput = filterFactory.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
-															ITextureObject::CGL_OPAQUE,
 															ITextureObject::CGL_BILINEAR,
 															colorExternalSource);
 	}
@@ -348,8 +347,7 @@ bool CHDRFilter::glInitFilter(void)
 		else if (m_fModel == RENDER_TEXTURE)
 		{
 			m_pDownSizedBuffer[i] = filterFactory.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
-																			ITextureObject::CGL_OPAQUE,
-																			filter, 
+																			filter,
 																			m_pDownSizedDisplay[i]);
 		}
     }
@@ -374,7 +372,6 @@ bool CHDRFilter::glInitFilter(void)
 	else if (m_fModel == RENDER_TEXTURE)
 	{
 		m_pDownBlurXBuffer = filterFactory.glCreateDynamicTexture(ITextureObject::CGL_COLOR24_ALPHA,	
-																  ITextureObject::CGL_OPAQUE,
 																  ITextureObject::CGL_BILINEAR,
 																  m_pDownBlurXDisplay);
 	}
@@ -397,7 +394,6 @@ bool CHDRFilter::glInitFilter(void)
 	else if (m_fModel == RENDER_TEXTURE)
 	{
 		m_pDownBlurYBuffer = filterFactory.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
-																	ITextureObject::CGL_OPAQUE,
 																	ITextureObject::CGL_BILINEAR,
 																	m_pDownBlurYDisplay);
 	}
@@ -420,7 +416,6 @@ bool CHDRFilter::glInitFilter(void)
 	else if (m_fModel == RENDER_TEXTURE)
 	{
 		m_pDownHFBuffer = filterFactory.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
-																ITextureObject::CGL_OPAQUE,
 																ITextureObject::CGL_BILINEAR,
 																m_pDownHighFreqs);
 	}

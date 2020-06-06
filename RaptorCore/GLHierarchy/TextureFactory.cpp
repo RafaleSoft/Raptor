@@ -414,9 +414,9 @@ bool CTextureFactory::glLoadTexture(ITextureObject* const T,
 
 	if (NULL == T->getGLTextureObject())
 	{
-		Raptor::GetErrorManager()->generateRaptorError(CTextureFactory::CTextureFactoryClassID::GetClassId(),
-			CRaptorErrorManager::RAPTOR_WARNING,
-			CRaptorMessages::ID_NULL_OBJECT);
+		Raptor::GetErrorManager()->generateRaptorError(	CTextureFactory::CTextureFactoryClassID::GetClassId(),
+														CRaptorErrorManager::RAPTOR_WARNING,
+														CRaptorMessages::ID_NULL_OBJECT);
 		return false;
 	}
 #endif
@@ -869,7 +869,6 @@ ITextureObject* const CTextureFactory::glCreateSprite(ITextureObject::TEXEL_TYPE
 }
 
 ITextureObject* const CTextureFactory::glCreateCubemap(  ITextureObject::TEXEL_TYPE type,
-                                                         ITextureObject::TEXTURE_FUNCTION env_mode,
 														 ITextureObject::TEXTURE_FILTER filter)
 {
 #if defined(GL_ARB_texture_cube_map)
@@ -892,7 +891,7 @@ ITextureObject* const CTextureFactory::glCreateCubemap(  ITextureObject::TEXEL_T
 
 	glGenTextures(1,&(T->texname));
 
-    T->setFunction(env_mode);
+    T->setFunction(ITextureObject::CGL_OPAQUE);
 	T->target = GL_TEXTURE_CUBE_MAP_ARB;
 
 	glBindTexture(GL_TEXTURE_CUBE_MAP_ARB, T->texname);
@@ -918,7 +917,6 @@ ITextureObject* const CTextureFactory::glCreateCubemap(  ITextureObject::TEXEL_T
 
 
 ITextureObject* const CTextureFactory::vkCreateTexture(ITextureObject::TEXEL_TYPE type,
-													   ITextureObject::TEXTURE_FUNCTION env_mode,
 													   ITextureObject::TEXTURE_FILTER filter)
 {
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
@@ -940,7 +938,6 @@ ITextureObject* const CTextureFactory::vkCreateTexture(ITextureObject::TEXEL_TYP
 	{
 		T->glvkUpdateFilter(filter);
 		T->glvkUpdateClamping(ITextureObject::CGL_REPEAT);
-		//T->setFunction(env_mode);
 
 		if ((mConfig.getCurrentAnisotropy() > 1.0f) && (filter == ITextureObject::CGL_ANISOTROPIC))
 		{
@@ -1060,7 +1057,6 @@ ITextureObject* const CTextureFactory::glCreateRectangleTexture( ITextureObject:
 
 
 ITextureObject* const CTextureFactory::glCreateDynamicTexture(ITextureObject::TEXEL_TYPE type,
-                                                              ITextureObject::TEXTURE_FUNCTION env_mode,
                                                               ITextureObject::TEXTURE_FILTER filter,
 														      ITextureGenerator* pGenerator)
 {
@@ -1083,7 +1079,8 @@ ITextureObject* const CTextureFactory::glCreateDynamicTexture(ITextureObject::TE
 
 	glGenTextures(1,&(T->texname));
 
-    T->setFunction(env_mode);
+    //T->setFunction(ITextureObject::CGL_MULTIPLY);
+	T->setFunction(ITextureObject::CGL_OPAQUE);
 	T->target = GL_TEXTURE_2D;
 	T->m_pTexelGenerator = pGenerator;
 
@@ -1107,7 +1104,6 @@ ITextureObject* const CTextureFactory::glCreateDynamicTexture(ITextureObject::TE
 }
 
 ITextureObject* const CTextureFactory::glCreateVolumeTexture(ITextureObject::TEXEL_TYPE type,
-                                                             ITextureObject::TEXTURE_FUNCTION env_mode,
 														     ITextureObject::TEXTURE_FILTER filter)
 {
 #if defined(GL_EXT_texture3D)
@@ -1130,7 +1126,7 @@ ITextureObject* const CTextureFactory::glCreateVolumeTexture(ITextureObject::TEX
 
 	glGenTextures(1,&(T->texname));
 
-    T->setFunction(env_mode);	
+    T->setFunction(ITextureObject::CGL_OPAQUE);
 	T->target = GL_TEXTURE_3D_EXT;
 
 	glBindTexture(GL_TEXTURE_3D_EXT,T->texname);

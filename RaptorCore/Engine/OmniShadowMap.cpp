@@ -170,7 +170,6 @@ bool COmniShadowMap::glInitialize(uint32_t width, uint32_t height)
 
 	CTextureFactory &factory = CTextureFactory::getDefaultFactory();
     m_pShadowTexture = factory.glCreateCubemap(ITextureObject::CGL_COLOR24_ALPHA,
-                                               ITextureObject::CGL_MULTIPLY,
                                                ITextureObject::CGL_UNFILTERED);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB,GL_TEXTURE_WRAP_S,GL_CLAMP);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB,GL_TEXTURE_WRAP_T,GL_CLAMP);

@@ -39,7 +39,11 @@ RAPTOR_NAMESPACE_BEGIN
 class ITextureObject;
 class CRegisterCombiner;
 
-
+//! This class handles the configuration of all available texture units
+//!	used for direct rendering or for GL pipeline design.
+//! Texture combiners and texture shaders are pre-OpenGL 3 are deprecated.
+//!	Future versions of Raptor will not maintain compatibility because these features
+//!	were based on discontinued proprietary extensions.
 class RAPTOR_API CTextureUnitSetup : public CPersistence
 {
 public:
@@ -68,6 +72,19 @@ public:
         IMAGE_UNIT_14,
         IMAGE_UNIT_15,
     } TEXTURE_IMAGE_UNIT;
+
+	//! Texel transfer function for each unit 
+	//!	( combines input fragment with texel extracted from sampler ).
+	//!	Temporary presence in this class to remove it from texture object
+	//!	for refactoring (convergence OpenGL & Vulkan)
+	typedef enum
+	{
+		CGL_NONE,
+		CGL_OPAQUE,
+		CGL_MULTIPLY,
+		CGL_ALPHA_TRANSPARENT,
+		CGL_CONSTANT_BLENDED,
+	} TEXTURE_UNIT_FUNCTION;
 
 
 	//!
@@ -165,16 +182,16 @@ public:
 
     //! Texture objects configuration.
     //! For compatibility with old OpenGL specs, 4 TMU images are associated to 4 TMU units ( & 4 TMU coords )
-    void setDiffuseMap(ITextureObject* to);
+    void setDiffuseMap(ITextureObject* to, TEXTURE_UNIT_FUNCTION env_mode = CGL_NONE);
     ITextureObject* const getDiffuseMap(void) const;
 
-    void setNormalMap(ITextureObject* to);
+    void setNormalMap(ITextureObject* to, TEXTURE_UNIT_FUNCTION env_mode = CGL_NONE);
     ITextureObject* const getNormalMap(void) const;
 
-    void setLightMap(ITextureObject* to);
+    void setLightMap(ITextureObject* to, TEXTURE_UNIT_FUNCTION env_mode = CGL_NONE);
     ITextureObject* const getLightMap(void) const;
 
-    void setEnvironmentMap(ITextureObject* to);
+    void setEnvironmentMap(ITextureObject* to, TEXTURE_UNIT_FUNCTION env_mode = CGL_NONE);
     ITextureObject* getEnvironmentMap(void) const;
 
 
@@ -218,7 +235,8 @@ public:
 
 
 private:
-	void setMap(ITextureObject *to,TEXTURE_IMAGE_UNIT unit);
+	//!	Internal helper to set named units.
+	void setMap(ITextureObject *to,TEXTURE_IMAGE_UNIT unit, TEXTURE_UNIT_FUNCTION env_mode);
 
     bool importMap(TEXTURE_IMAGE_UNIT unit,CRaptorIO& io);
 
@@ -226,13 +244,16 @@ private:
 	bool				use_register_combiners;
     CRegisterCombiner   *register_combiners;
 
-	unsigned int		nbUnits;
-    bool				*useUnit;
+	uint32_t		nbUnits;
+    bool			*useUnit;
+
 #if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
     GL_TEXTURE_SHADER   *tmuShader;
     GL_TEXTURE_COMBINER *tmuCombiner;
 #endif
-    ITextureObject	    **imageUnit;
+	
+	GLenum			*unitFunctions;
+    ITextureObject	**imageUnit;
 	PFN_GL_ACTIVE_TEXTURE_ARB_PROC pfn_glActiveTexture;
 };
 

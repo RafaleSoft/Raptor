@@ -31,7 +31,7 @@
 
 RAPTOR_NAMESPACE
 
-//#define VULKAN_TEST 1
+// #define VULKAN_TEST 1
 
 
 class MySphere : public CBasicObjects::CGeoSphere
@@ -199,7 +199,7 @@ void CTest5Doc::GLInitContext(void)
 
 
 #ifdef VULKAN_TEST
-	m_pTexture = f.vkCreateTexture(ITextureObject::CGL_COLOR24_ALPHA, ITextureObject::CGL_ALPHA_TRANSPARENT, ITextureObject::CGL_BILINEAR);
+	m_pTexture = f.vkCreateTexture(ITextureObject::CGL_COLOR24_ALPHA, ITextureObject::CGL_BILINEAR);
 #else
 	m_pTexture = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA, ITextureObject::CGL_ALPHA_TRANSPARENT, ITextureObject::CGL_BILINEAR);
 #endif

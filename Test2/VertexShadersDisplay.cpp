@@ -608,7 +608,6 @@ public:
 
 		CTextureFactory &factory = CTextureFactory::getDefaultFactory();
 		pMap = factory.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
-												ITextureObject::CGL_OPAQUE,
 												ITextureObject::CGL_BILINEAR,
 												pBuffer);
 		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_REPEAT);

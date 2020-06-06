@@ -164,7 +164,6 @@ CWarpObject::CWarpObject(float width,float height,int hcels,int vcels)
 
 	CTextureFactory &f = CTextureFactory::getDefaultFactory();
     m_captureBuffer = f.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
-												ITextureObject::CGL_ALPHA_TRANSPARENT,
 												ITextureObject::CGL_BILINEAR,
 												CRaptorDisplay::GetCurrentDisplay());
     f.glResizeTexture(m_captureBuffer,BASE_WARP_WIDTH,BASE_WARP_HEIGHT);
@@ -286,7 +285,6 @@ CGlassObject::CGlassObject(float width,float height,int hcels,int vcels)
 
 	CTextureFactory &f = CTextureFactory::getDefaultFactory();
     m_captureBuffer = f.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
-												ITextureObject::CGL_ALPHA_TRANSPARENT,
 												ITextureObject::CGL_BILINEAR,
 												CRaptorDisplay::GetCurrentDisplay());
     f.glResizeTexture(m_captureBuffer,BASE_WARP_WIDTH,BASE_WARP_HEIGHT);

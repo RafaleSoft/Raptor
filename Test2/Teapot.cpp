@@ -159,9 +159,7 @@ void CTeapot::GLInitContext()
 		if (0 < config.getNumCompressors())
 			config.setCurrentCompressor(config.getCompressor("OpenGL"));
 #endif
-		ITextureObject* cubemap = 
-			f.glCreateCubemap(ITextureObject::CGL_COLOR24_ALPHA,ITextureObject::CGL_ALPHA_TRANSPARENT,ITextureObject::CGL_BILINEAR);
-		T = cubemap;
+		T = f.glCreateCubemap(ITextureObject::CGL_COLOR24_ALPHA, ITextureObject::CGL_BILINEAR);
 		f.glSetTransparency(T, 255);
 		T->selectCubeFace(ITextureObject::CGL_CUBEMAP_PX);
 		f.glLoadTexture(T,"Datas\\ciel_07_small.jpg");

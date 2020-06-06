@@ -76,7 +76,16 @@ private:
 	//!	Load RaptorCore Shaders from currently loaded Raptor Data Packages.
 	bool glLoadShadersFromDataPackage();
 
+	//!	Library is initialised, enable harmless successive calls to glInitFactory.
 	bool s_initialized;
+
+	//!	Specific shaders created by the library.
+	//!	These shaders are the more commonly used, so precreate them.
+	CShader *m_pBlinnShader;
+	CShader *m_pPhongShader;
+	CShader *m_pBumpShader;
+	CShader *m_pEMBMShader;
+	CShader *m_pAOComputeShader;
 
 	std::map<std::string, CShaderLibrary::factory_shader>	s_factoryShaders;
 };

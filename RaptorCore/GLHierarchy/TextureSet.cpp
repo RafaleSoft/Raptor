@@ -179,8 +179,6 @@ bool CTextureSet::importTextureObject(CRaptorIO& io)
                 function = ITextureObject::CGL_MULTIPLY;
             else if (name == "alpha_transparent")
                 function = ITextureObject::CGL_ALPHA_TRANSPARENT;
-            else if (name == "constant_blended")
-                function = ITextureObject::CGL_CONSTANT_BLENDED;
         }
         else if (data == "filter")
         {

@@ -1,6 +1,20 @@
-// TexelAllocator.cpp: implementation of the CTexelAllocator class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  TexelAllocator.cpp                                                     */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
 
 #include "Subsys/CodeGeneration.h"
 
@@ -148,7 +162,7 @@ unsigned char*	const CTexelAllocator::allocateTexels(uint64_t size)
 		return NULL;
 
 	// be it relocated or not, texels can be the beginning or the memory block
-	unsigned char *currentAddress = texels.address;
+	uint8_t *currentAddress = texels.address;
 
 	if (!texelBlocs.empty())
 	{
@@ -194,11 +208,11 @@ unsigned char*	const CTexelAllocator::allocateTexels(uint64_t size)
 
     //  No NULL offset to distinguish nil pointers
     if ((NULL != relocatedTexels) && (NULL == currentAddress))
-		currentAddress = (unsigned char*)relocatedTexels->getRelocationOffset();
+		currentAddress = (uint8_t*)relocatedTexels->getRelocationOffset();
 
 	//	Address should be aligned on a 16byte boundary
 	data_bloc db;
-	db.address = (unsigned char*)(((uint64_t)(currentAddress)+0x0f) & ~0x0f);
+	db.address = (uint8_t*)(((uint64_t)(currentAddress)+0x0f) & ~0x0f);
 	db.size = size;
 	texelBlocs[db.address] = db;
 

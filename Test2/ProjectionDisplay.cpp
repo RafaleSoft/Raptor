@@ -117,28 +117,6 @@ void CProjectionDisplay::Init()
 		m_caustics->addTexture(T);
 	}
 
-    // Volume texture
-	/*
-    cube = f.glCreateVolumeTexture(ITextureObject::CGL_COLOR24_ALPHA,ITextureObject::CGL_ALPHA_TRANSPARENT,ITextureObject::CGL_BILINEAR);
-    cube->glSetTransparency(255);
-    cube->setSize(64,64,32);
-
-	CImage cubeImage;
-	cubeImage.allocatePixels(64, 64, 32);
-	CImage::IImageIO *loader = CImage::getImageKindIO("TGA");
-    for (i=0;i<32;i++)
-    {
-        char fname[32];
-		sprintf(fname,"Datas\\caust%02d.tga",i);
-
-		CImage tmp;
-        loader->loadImageFile(fname,&tmp);
-		unsigned char *buffer = cubeImage.getPixels(i);
-		unsigned char *data = tmp.getPixels();
-        memcpy(buffer,data,64*64*4);
-    }
-	f.glLoadTexture(cube, cubeImage);
-	*/
 	m_light = new CLight("PROJECTOR");
 	m_light->setProjector(m_projector);
 	m_light->setLightPosition(GL_COORD_VERTEX(0.0f,10.0f,10.0f));

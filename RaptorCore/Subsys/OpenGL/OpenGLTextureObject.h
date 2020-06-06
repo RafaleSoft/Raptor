@@ -50,9 +50,6 @@ public:
 	//!	Returns the proper implementation
 	virtual COpenGLTextureObject* getGLTextureObject(void) { return this; };
 
-    //! Returns the selected environment function
-    TEXTURE_FUNCTION getFunction(void) const;
-
 	//! Updates texture filtering function
 	//! @param F : the filter function
 	virtual void glvkUpdateFilter(ITextureObject::TEXTURE_FILTER F);

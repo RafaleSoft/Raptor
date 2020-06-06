@@ -70,7 +70,7 @@ public:
 	virtual bool RAPTOR_FASTCALL fullClip(const CGenericMatrix<float> &transform);
 
     //! This methods renders the BBox of the object.
-	virtual void glRenderBBox(bool filled = false);
+	virtual void glRenderBBox(RENDER_BOX_MODEL filled = WIREFRAME);
 
     //! This method renders the object clipped to viewport.
     //! @see CObject3D.

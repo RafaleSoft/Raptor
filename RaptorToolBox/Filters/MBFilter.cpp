@@ -200,7 +200,6 @@ bool CMBFilter::glInitFilter(void)
 	if ((colorExternalSource != NULL) && (m_fModel == RENDER_TEXTURE))
 	{
 		colorInput = filterFactory.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
-															ITextureObject::CGL_OPAQUE,
 															ITextureObject::CGL_BILINEAR,
 															colorExternalSource);
 	}
@@ -269,11 +268,9 @@ bool CMBFilter::glInitFilter(void)
 	if (m_fModel == RENDER_TEXTURE)
 	{
 		accumulator->m_pCurrentColorAccum = filterFactory.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
-																					ITextureObject::CGL_OPAQUE,
 																					ITextureObject::CGL_BILINEAR,
 																					accumulator->pCurrentDisplay);
 		accumulator->m_pPreviousColorAccum = filterFactory.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
-																					ITextureObject::CGL_OPAQUE,
 																					ITextureObject::CGL_BILINEAR,
 																					accumulator->pPreviousDisplay);
 	}

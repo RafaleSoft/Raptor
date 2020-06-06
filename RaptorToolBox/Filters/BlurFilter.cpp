@@ -356,7 +356,6 @@ bool CBlurFilter::glInitFilter(void)
 	{
 		//!    Source is unfiltered to avoid artifacts ( see comment below ).
 		colorInput = filterFactory.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
-															ITextureObject::CGL_OPAQUE,
 															ITextureObject::CGL_UNFILTERED, //CGL_BILINEAR,
 															colorExternalSource);
 	}
@@ -412,7 +411,6 @@ bool CBlurFilter::glInitFilter(void)
 		//! and also because it is shifted to work in texels' center and 
 		//! should be faster ).
 		xKernelPass = filterFactory.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
-															ITextureObject::CGL_OPAQUE,
 															ITextureObject::CGL_UNFILTERED, //CGL_BILINEAR,
 															xBuffer);
 	}

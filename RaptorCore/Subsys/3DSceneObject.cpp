@@ -172,7 +172,7 @@ void C3DSceneObject::glRenderBBoxOcclusion(unsigned int passNumber)
 
 	//	Render the filled bbox with shader and bindings done in 3DSceneAttributes.
 	CObject3D *obj = object.ptr<CObject3D>();
-	obj->glRenderBBox(true);
+	obj->glRenderBBox(CObject3D::RAW);
 
 	pExtensions->glEndQueryARB(GL_SAMPLES_PASSED_ARB);
 #endif
@@ -211,7 +211,7 @@ bool C3DSceneObject::glRenderPass(	unsigned int passNumber,
 
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
         glColor4f(1.0f,1.0f,1.0f,1.0f);
-        obj->glRenderBBox(false);
+        obj->glRenderBBox(CObject3D::WIREFRAME);
 #endif
     }
 	else

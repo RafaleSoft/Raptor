@@ -72,8 +72,7 @@ public:
 	{
 		CGL_OPAQUE,
 		CGL_MULTIPLY,
-		CGL_ALPHA_TRANSPARENT,
-		CGL_CONSTANT_BLENDED
+		CGL_ALPHA_TRANSPARENT
 	} TEXTURE_FUNCTION;
 
 	//! Texture sampler clampping model

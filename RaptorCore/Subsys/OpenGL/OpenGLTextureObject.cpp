@@ -85,7 +85,6 @@ void COpenGLTextureObject::glvkRender()
 
 	glBindTexture(target,texname);
 	glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,env_mode);
-
 	
 	ITextureGenerator::GENERATOR_KIND kind = ITextureGenerator::NONE;
 	if (NULL != m_pTexelGenerator)
@@ -102,7 +101,7 @@ ITextureObject::CUBE_FACE COpenGLTextureObject::getCurrentCubeFace(void) const
 {
 #if defined(GL_ARB_texture_cube_map)
 	if ((target >= GL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB) && (target <= GL_TEXTURE_CUBE_MAP_NEGATIVE_Z_ARB))
-		return (ITextureObject::CUBE_FACE)(target-GL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB);
+		return (ITextureObject::CUBE_FACE)(target - GL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB);
 	else
 #endif
 		return CGL_CUBEMAP_NONE;
@@ -135,33 +134,7 @@ void COpenGLTextureObject::setFunction(ITextureObject::TEXTURE_FUNCTION F)
 		case ITextureObject::CGL_ALPHA_TRANSPARENT:
 			env_mode = GL_DECAL;
 			break;
-		case ITextureObject::CGL_CONSTANT_BLENDED:
-			env_mode = GL_BLEND;
-			break;
 	}
-}
-
-ITextureObject::TEXTURE_FUNCTION COpenGLTextureObject::getFunction(void) const
-{
-    TEXTURE_FUNCTION res = ITextureObject::CGL_OPAQUE;
-
-    switch(env_mode)
-	{
-		case GL_REPLACE:
-			res = ITextureObject::CGL_OPAQUE;
-			break;
-		case GL_MODULATE:
-			res = ITextureObject::CGL_MULTIPLY;
-			break;
-		case GL_DECAL:
-			res = ITextureObject::CGL_ALPHA_TRANSPARENT;
-			break;
-		case GL_BLEND:
-			res = ITextureObject::CGL_CONSTANT_BLENDED;
-			break;
-	}
-
-    return res;
 }
 
 void COpenGLTextureObject::glvkUpdateFilter(ITextureObject::TEXTURE_FILTER F)

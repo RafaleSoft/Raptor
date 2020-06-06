@@ -182,8 +182,8 @@ void CShadowMap::glInitRenderBuffer(uint32_t width, uint32_t height)
 		m_pShadowTexture = factory.glCreateTexture( ITextureObject::CGL_DEPTH24,
 													ITextureObject::CGL_OPAQUE,
 													ITextureObject::CGL_BILINEAR);
-		m_pFSShadowMap = (CFragmentProgram*)CPersistence::FindObject("SHADOWMAP_TEX_SHADER_PCF_16X");
-		//m_pFSShadowMap = (CFragmentProgram*)CPersistence::FindObject("SHADOWMAP_TEX_SHADER_PCF_4X");
+		//m_pFSShadowMap = (CFragmentProgram*)CPersistence::FindObject("SHADOWMAP_TEX_SHADER_PCF_16X");
+		m_pFSShadowMap = (CFragmentProgram*)CPersistence::FindObject("SHADOWMAP_TEX_SHADER_PCF_4X");
         //m_pFSShadowMap = (CFragmentProgram*)CPersistence::FindObject("SHADOWMAP_TEX_SHADER_PCF");
         if (((m_pFSShadowMap != NULL) && (!m_pFSShadowMap->isValid())) ||
             (m_pFSShadowMap == NULL))
@@ -246,7 +246,6 @@ void CShadowMap::glInitPixelBuffer(uint32_t width, uint32_t height)
 	if (Raptor::glIsExtensionSupported(GL_ARB_SHADOW_EXTENSION_NAME))
     {
 		m_pShadowTexture = factory.glCreateDynamicTexture( ITextureObject::CGL_DEPTH24,
-                                                           ITextureObject::CGL_MULTIPLY,
                                                            ITextureObject::CGL_BILINEAR,
                                                            m_pShadowMap);
 		m_pFSShadowMap = (CFragmentProgram*)CPersistence::FindObject("SHADOWMAP_TEX_SHADER_PCF_16X");
@@ -257,7 +256,6 @@ void CShadowMap::glInitPixelBuffer(uint32_t width, uint32_t height)
         {
 			m_pShadowTexture->releaseReference();
             m_pShadowTexture = factory.glCreateDynamicTexture( ITextureObject::CGL_DEPTH24,
-                                                               ITextureObject::CGL_MULTIPLY,
                                                                ITextureObject::CGL_UNFILTERED,
                                                                m_pShadowMap);
 			m_pFSShadowMap = (CFragmentProgram*)CPersistence::FindObject("SHADOWMAP_TEX_SHADER");
@@ -270,7 +268,7 @@ void CShadowMap::glInitPixelBuffer(uint32_t width, uint32_t height)
     }
 #else
     m_pShadowTexture = factory.glCreateDynamicTexture(	ITextureObject::CGL_DEPTH24,
-														ITextureObject::CGL_MULTIPLY,
+														ITextureObject::CGL_OPAQUE,
 														ITextureObject::CGL_UNFILTERED,
 														m_pShadowMap);
 	m_pFSShadowMap = (CFragmentProgram*)CPersistence::FindObject("SHADOWMAP_TEX_SHADER");
@@ -282,7 +280,6 @@ void CShadowMap::glInitPixelBuffer(uint32_t width, uint32_t height)
     {
         m_pFSShadowMap = NULL;
         m_pShadowTexture = factory.glCreateDynamicTexture( ITextureObject::CGL_DEPTH24,
-                                                           ITextureObject::CGL_MULTIPLY,
                                                            ITextureObject::CGL_UNFILTERED,
                                                            m_pShadowMap);
         RAPTOR_WARNING(	COpenGL::COpenGLClassID::GetClassId(),

@@ -116,7 +116,7 @@ public:
 	virtual void RAPTOR_FASTCALL glRender(CObject3D *source);
 
 	//!	Renders the BBox of the shadow
-	virtual void glRenderBBox(bool filled = false);
+	virtual void glRenderBBox(RENDER_BOX_MODEL filled = WIREFRAME);
 
 
     //!

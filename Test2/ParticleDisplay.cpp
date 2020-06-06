@@ -217,7 +217,7 @@ void CParticleDisplay::Init()
 
 	pParticle->setTexture(T);
 
-    T = f.glCreateVolumeTexture(ITextureObject::CGL_COLOR24_ALPHA,ITextureObject::CGL_OPAQUE, ITextureObject::CGL_BILINEAR);
+    T = f.glCreateVolumeTexture(ITextureObject::CGL_COLOR24_ALPHA, ITextureObject::CGL_BILINEAR);
     T->setSize(128,128,128);
 	f.glSetTransparency(T, 255);
 	

@@ -122,12 +122,6 @@ void CBumpDisplay::Init()
 	CPerlinNoise noise(&loader);
 	noise.setNoiseModel(CPerlinNoise::NOISE2);
 	noise.generateMirrorTexture(true);
-/*
-	ITextureObject *tt = f.glCreateVolumeTexture(ITextureObject::CGL_COLOR24_ALPHA,
-												 ITextureObject::CGL_ALPHA_TRANSPARENT,
-												 ITextureObject::CGL_BILINEAR);
-	f.glResizeTexture(tt,256,256,256);
-*/
     noise.glGenerate(tt,0,0,512,512);
 
 	p = CPersistence::FindObject("Bump teapot");

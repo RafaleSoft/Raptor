@@ -42,7 +42,7 @@ public:
 
 	virtual void glClipRender();
 	virtual bool RAPTOR_FASTCALL fullClip(const CGenericMatrix<float> &transform);
-	virtual void glRenderBBox(bool filled = false);
+	virtual void glRenderBBox(RENDER_BOX_MODEL filled = WIREFRAME);
 
 	//! Inherited from CPersistence
 	DECLARE_CLASS_ID(CObject3DInstanceSetClassID,"Object3DInstanceSet",CObject3DInstance)

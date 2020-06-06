@@ -8,22 +8,24 @@
 - RaptorDisplay:
 	- renommer glGrab en glBlit en utilisant un CImage.
 
-- CObject3D:
-	- glRenderBBox avec effets de bord si utilisé en standalone hors de C3DSceneAttributes.
-
 - CMipmapBuilder:
 	- Reintégrer, notamment pour Démo.
-
-- Demo:
-	- Terminer le check display.
 
 - CTextureFactory:
 	- Fusionner vkLoadTexture & glLoadTexture
 
+- CTexture Unit setup:
+	- importer les unit fonction depuis l'XML.
+
 - CGLFont:
 	- corriger font color et back color pour rendre générique
 	- sortir les statiques de GLVectorFont et GL2DTextureFont
-	
+
+- Test4:
+	- corriger ne marche pas sans relocation
+	- pas de decodeur video en 64 bits => ffmpeg ?
+	- Slide: utiliser un CTextureQuad
+
 - CShaderrogram:
 	- ajouter un preprocesseur.
 
