@@ -11,6 +11,8 @@
 #include "Engine/LightModifier.h"
 #include "GLHierarchy/ShadedGeometry.h"
 #include "GLHierarchy/Object3DInstance.h"
+#include "GLHierarchy/OpenGLShaderStage.h"
+#include "GLHierarchy/FragmentShader.h"
 #include "GLHierarchy/TextureSet.h"
 #include "GLHierarchy/TextureFactory.h"
 #include "GLHierarchy/TextureFactoryConfig.h"
@@ -28,8 +30,8 @@
 class CPlane : public CSimpleObject
 {
 public:
-	CPlane(CLight *l,CProjector* p)
-		:m_pLight(l),m_pProjector(p)
+	CPlane(COpenGLShaderStage* s, CTextureUnitSetup *tmu)
+		:m_pStage(s), m_pTmu(tmu)
 	{
 		setBoundingBox(	GL_COORD_VERTEX(-20.0f,0.0f,-20.1f,1.0f),
 						GL_COORD_VERTEX(20.0f,0.1f,20.0f,1.0f));
@@ -41,6 +43,11 @@ public:
 	{ glRender(); };
 	virtual void glRender(void)
 	{
+		if (NULL != m_pTmu)
+			m_pTmu->glRender();
+		if (NULL != m_pStage)
+			m_pStage->glRender();
+
 		glNormal3f(0.0f,1.0f,0.0f);
 		glBegin(GL_QUADS);	
 			glTexCoord4f(0.0f,0.0f,0.0f,1.0f);
@@ -55,8 +62,8 @@ public:
 	}
 
 private:
-	CLight		*m_pLight;
-	CProjector	*m_pProjector;
+	COpenGLShaderStage	*m_pStage;
+	CTextureUnitSetup *m_pTmu;
 };
 
 //////////////////////////////////////////////////////////////////////
@@ -111,7 +118,9 @@ void CProjectionDisplay::Init()
 		char fname[32];
 		sprintf(fname,"Datas\\caust%02d.tga",i);
 
-		ITextureObject *T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,ITextureObject::CGL_ALPHA_TRANSPARENT,ITextureObject::CGL_BILINEAR);
+		ITextureObject *T = f.glCreateTexture(	ITextureObject::CGL_COLOR24_ALPHA,
+												ITextureObject::CGL_OPAQUE,
+												ITextureObject::CGL_BILINEAR);
 		f.glSetTransparency(T, 128);
 		f.glLoadTexture(T,fname);
 		m_caustics->addTexture(T);
@@ -126,7 +135,7 @@ void CProjectionDisplay::Init()
 	m_light->setSpecular(1.0f,1.0f,1.0f,1.0f);
 	m_light->setShininess(20.0f);
 	//m_light->setCutOff(10.0f);
-	m_projector->setUnitDistance(5.0f);
+	m_projector->setUnitDistance(10.0f);
 
 	CLightModifier *lm = new CLightModifier("PROJECTOR_ANIMATOR");
     lm->setLight(m_light);
@@ -143,14 +152,36 @@ void CProjectionDisplay::Init()
 	lz.a2 = 10.0f;
     lm->addAction(CLightModifier::SET_POSITION,lx,ly,lz);
 
-	CTextureUnitSetup *pSetup = ball->getShader()->glGetTextureUnitsSetup();
+	std::string program =
+"#version 120							\n\
+uniform	sampler2D diffuseMap;			\n\
+uniform	sampler2D projectionMap;		\n\
+\n\
+void main(void)							\n\
+{										\n\
+	vec4 diffuse = texture2D(diffuseMap, gl_TexCoord[0].st); \n\
+	vec4 projection = texture2D(projectionMap, 0.1*gl_TexCoord[3].st); \n\
+	gl_FragColor = mix(diffuse, projection, 0.5); \n\
+}";
+		
+	CShader *pShader = ball->getShader();
+	CTextureUnitSetup *pSetup = pShader->glGetTextureUnitsSetup();
 	pSetup->setDiffuseMap(texture->getTexture(1));
 	pSetup->enableImageUnit(CTextureUnitSetup::IMAGE_UNIT_1,false);
 	pSetup->enableImageUnit(CTextureUnitSetup::IMAGE_UNIT_2,false);
 	pSetup->enableImageUnit(CTextureUnitSetup::IMAGE_UNIT_3,false);
 	pSetup->getTMUShader(CTextureUnitSetup::IMAGE_UNIT_3).shaderOperation = CGL_TEXTURE_GEN_PROJECTION;
+	COpenGLShaderStage *stage = pShader->glGetOpenGLShader("PROJECTION_SHADER");
+	CFragmentShader *fs = stage->glGetFragmentShader("PROJECTION_FS_SHADER");
+	fs->glLoadProgram(program);
+	CProgramParameters params;
+	params.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);
+	params.addParameter("projectionMap", CTextureUnitSetup::IMAGE_UNIT_3);
+	stage->setProgramParameters(params);
+	stage->glCompileShader();
 
-	m_pPlane = new CObject3DInstance(new CPlane(m_light,m_projector));
+
+	m_pPlane = new CObject3DInstance(new CPlane(stage, pSetup));
 	m_pPlane->translate(0.0f,-6.0f,-18.0f);
 	m_pBall = new CObject3DInstance(ball);
 	m_pBall->translate(0.0f,-1.0f,-18.0f);
@@ -197,8 +228,8 @@ void CProjectionDisplay::Display()
 	if (reinit)
 		ReInit();
 
-	m_pBall->rotationY(0.05f);
-	m_pPlane->rotationY(0.05f);
+	m_pBall->rotationY(0.02f);
+	m_pPlane->rotationY(0.02f);
 
 	if (caustics)
         m_projector->glSetProjection(m_caustics->getTexture(tindex));

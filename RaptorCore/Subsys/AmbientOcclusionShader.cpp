@@ -286,16 +286,10 @@ bool CAmbientOcclusionShader::glSetCoords(GL_COORD_VERTEX* refVertex, unsigned i
 		int height = width = pow(2.0,width);
 
 		ITextureObject *T = f.glCreateRectangleTexture(	ITextureObject::CGL_COLOR_FLOAT32_ALPHA,
-														ITextureObject::CGL_OPAQUE,
 														ITextureObject::CGL_UNFILTERED);
-		// Should this case still be supported ?
-		// with no texture rectangle, it is rather laborious
-		if (T == NULL)
-		{
-			T = f.glCreateTexture(	ITextureObject::CGL_COLOR_FLOAT32_ALPHA,
-									ITextureObject::CGL_OPAQUE,
-									ITextureObject::CGL_UNFILTERED);
-		}
+		
+		if (NULL == T)
+			return false;
 
 		CImage coords;
 		coords.allocatePixels(width, height, CImage::CGL_COLOR_FLOAT32_ALPHA);
@@ -326,17 +320,10 @@ bool CAmbientOcclusionShader::glSetNormals(GL_COORD_VERTEX* refNormal, unsigned 
 		int height = width = pow(2.0,width);
 
 		ITextureObject *T = f.glCreateRectangleTexture(	ITextureObject::CGL_COLOR_FLOAT32_ALPHA,
-														ITextureObject::CGL_OPAQUE,
 														ITextureObject::CGL_UNFILTERED);
 
-		// Should this case still be supported ?
-		// with no texture rectangle, it is rather laborious
-		if (T == NULL)
-		{
-			T = f.glCreateTexture(	ITextureObject::CGL_COLOR_FLOAT32_ALPHA,
-									ITextureObject::CGL_OPAQUE,
-									ITextureObject::CGL_UNFILTERED);
-		}
+		if (NULL == T)
+			return false;
 
 		CImage normals;
 		normals.allocatePixels(width, height, CImage::CGL_COLOR_FLOAT32_ALPHA);

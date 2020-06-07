@@ -1005,7 +1005,6 @@ ITextureObject* const CTextureFactory::glCreateTexture( ITextureObject::TEXEL_TY
 }
 
 ITextureObject* const CTextureFactory::glCreateRectangleTexture( ITextureObject::TEXEL_TYPE type,
-                                                                 ITextureObject::TEXTURE_FUNCTION env_mode,
 														         ITextureObject::TEXTURE_FILTER filter)
 {
 #if defined(GL_ARB_texture_rectangle)
@@ -1028,7 +1027,7 @@ ITextureObject* const CTextureFactory::glCreateRectangleTexture( ITextureObject:
 
 	glGenTextures(1,&(T->texname));
 
-    T->setFunction(env_mode);
+    T->setFunction(ITextureObject::CGL_OPAQUE);
 	T->target = GL_TEXTURE_RECTANGLE_ARB;
 
 	glBindTexture(GL_TEXTURE_RECTANGLE_ARB, T->texname);

@@ -115,7 +115,7 @@ void CBumpDisplay::Init()
 		 t = (CTextureSet *)p;
 
     ITextureObject *tt = f.glCreateTexture( ITextureObject::CGL_COLOR24_ALPHA,
-											ITextureObject::CGL_ALPHA_TRANSPARENT,
+											ITextureObject::CGL_OPAQUE,
 											ITextureObject::CGL_BILINEAR);
 	f.glResizeTexture(tt,512,512);
 	CBumpmapLoader loader(f.getConfig().getBumpAmplitude());
@@ -131,13 +131,13 @@ void CBumpDisplay::Init()
 
 	CPerlinNoise noise2;
 	ITextureObject *tt2 = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
-                                            ITextureObject::CGL_ALPHA_TRANSPARENT,
+                                            ITextureObject::CGL_OPAQUE,
                                             ITextureObject::CGL_BILINEAR);
 	f.glResizeTexture(tt2,512,512);
     noise2.glGenerate(tt2,0,0,512,512);
 	BackGround *pbg = new BackGround();
 	CTextureUnitSetup *ptmu = pbg->getShader()->glGetTextureUnitsSetup();
-	ptmu->setDiffuseMap(tt2);
+	ptmu->setDiffuseMap(tt2, CTextureUnitSetup::CGL_OPAQUE);
 
     //
     //  Light and its modifier

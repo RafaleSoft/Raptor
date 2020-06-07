@@ -74,9 +74,8 @@ public:
 
 		if (NULL != t)
 		{
-			CTextureUnitSetup tmu;
-			tmu.setDiffuseMap(t->getTexture(2));
-			tmu.setNormalMap(t->getTexture(0));
+			tmu.setDiffuseMap(t->getTexture(2), CTextureUnitSetup::CGL_ALPHA_TRANSPARENT);
+			tmu.setNormalMap(t->getTexture(0), CTextureUnitSetup::CGL_ALPHA_TRANSPARENT);
 			bg = tmu.glBuildSetup();
 		}
 	};
@@ -87,7 +86,8 @@ public:
 	{ glRender(); };
 	virtual void glRender(void)
 	{
-		glCallList(bg.handle());
+		tmu.glRender();
+		//glCallList(bg.handle());
 		glCallList(list.handle());
 
 		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
@@ -99,6 +99,7 @@ public:
 private:
 	RAPTOR_HANDLE list;
 	RAPTOR_HANDLE bg;
+	CTextureUnitSetup tmu;
 };
 
 
@@ -290,14 +291,14 @@ CGlassObject::CGlassObject(float width,float height,int hcels,int vcels)
     f.glResizeTexture(m_captureBuffer,BASE_WARP_WIDTH,BASE_WARP_HEIGHT);
 
 	ITextureObject* T = f.glCreateTexture( ITextureObject::CGL_COLOR24_ALPHA,
-                                           ITextureObject::CGL_ALPHA_TRANSPARENT,
+                                           ITextureObject::CGL_OPAQUE,
                                            ITextureObject::CGL_BILINEAR);
 	f.glLoadTexture(T,"Datas\\Bump2.tga");
 
 	m_pShader = new CShader("GLASS_SHADER");
 	CTextureUnitSetup *pSetup = m_pShader->glGetTextureUnitsSetup();
-	pSetup->setDiffuseMap(m_captureBuffer);
-	pSetup->setNormalMap(T);
+	pSetup->setDiffuseMap(m_captureBuffer, CTextureUnitSetup::CGL_OPAQUE);
+	pSetup->setNormalMap(T, CTextureUnitSetup::CGL_OPAQUE);
 
 #if defined(GL_ARB_fragment_shader)
 	string program = 

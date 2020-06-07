@@ -71,8 +71,7 @@ public:
 	typedef enum
 	{
 		CGL_OPAQUE,
-		CGL_MULTIPLY,
-		CGL_ALPHA_TRANSPARENT
+		CGL_MULTIPLY
 	} TEXTURE_FUNCTION;
 
 	//! Texture sampler clampping model

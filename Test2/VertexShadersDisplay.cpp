@@ -772,11 +772,11 @@ void CVertexShadersDisplay::Init()
 	shaderModifier = new ShaderModifier(pShader);
 	CTextureUnitSetup *ts = pShader->glGetTextureUnitsSetup();
 	ITextureObject* T = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
-												ITextureObject::CGL_ALPHA_TRANSPARENT,
+												ITextureObject::CGL_OPAQUE,
 												ITextureObject::CGL_BILINEAR);
 	factory.glSetTransparency(T, 128);
 	factory.glLoadTexture(T,"Datas\\water006.jpg");
-	ts->setDiffuseMap(T);
+	ts->setDiffuseMap(T, CTextureUnitSetup::CGL_ALPHA_TRANSPARENT);
 
 	CPersistence *p = CPersistence::FindObject("main_textures");
 	CTextureSet	*tf = (CTextureSet*)p;

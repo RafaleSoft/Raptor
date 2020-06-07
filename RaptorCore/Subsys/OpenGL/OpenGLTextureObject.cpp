@@ -131,9 +131,6 @@ void COpenGLTextureObject::setFunction(ITextureObject::TEXTURE_FUNCTION F)
 		case ITextureObject::CGL_MULTIPLY:
 			env_mode = GL_MODULATE;
 			break;
-		case ITextureObject::CGL_ALPHA_TRANSPARENT:
-			env_mode = GL_DECAL;
-			break;
 	}
 }
 

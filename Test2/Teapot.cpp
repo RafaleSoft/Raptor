@@ -119,18 +119,24 @@ void CTeapot::GLInitContext()
 	t = new CTextureSet("main_textures");
 	CTextureFactoryConfig& config = f.getConfig();
 
-	ITextureObject*	T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,ITextureObject::CGL_ALPHA_TRANSPARENT,ITextureObject::CGL_BILINEAR);
+	ITextureObject*	T = f.glCreateTexture(	ITextureObject::CGL_COLOR24_ALPHA,
+											ITextureObject::CGL_OPAQUE,
+											ITextureObject::CGL_BILINEAR);
 	f.glSetTransparency(T, 128);
 	f.glLoadTexture(T,"Datas\\raptor.tga");
 	f.glExportTexture(T, "raptor.jpg");
 	t->addTexture(T);
 
-	T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,ITextureObject::CGL_MULTIPLY,ITextureObject::CGL_BILINEAR);
+	T = f.glCreateTexture(	ITextureObject::CGL_COLOR24_ALPHA,
+							ITextureObject::CGL_MULTIPLY,
+							ITextureObject::CGL_BILINEAR);
 	f.glSetTransparency(T, 255);
 	f.glLoadTexture(T,"Datas\\marble.jpg");
 	t->addTexture(T);
 
-	T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,ITextureObject::CGL_ALPHA_TRANSPARENT,ITextureObject::CGL_BILINEAR);
+	T = f.glCreateTexture(	ITextureObject::CGL_COLOR24_ALPHA,
+							ITextureObject::CGL_OPAQUE,
+							ITextureObject::CGL_BILINEAR);
 	f.glSetTransparency(T, 128);
 	t->addTexture(T);
 #if defined(GL_ARB_texture_compression)
@@ -147,7 +153,9 @@ void CTeapot::GLInitContext()
 	f.glLoadTexture(T,"Datas\\start.tga");
 #endif
 
-	T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,ITextureObject::CGL_ALPHA_TRANSPARENT,ITextureObject::CGL_BILINEAR);
+	T = f.glCreateTexture(	ITextureObject::CGL_COLOR24_ALPHA,
+							ITextureObject::CGL_OPAQUE,
+							ITextureObject::CGL_BILINEAR);
 	f.glSetTransparency(T, 128);
 	f.glLoadTexture(T,"Datas\\bump.tga");
 	t->addTexture(T);
