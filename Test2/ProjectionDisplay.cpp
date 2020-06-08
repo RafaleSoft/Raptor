@@ -166,7 +166,7 @@ void main(void)							\n\
 		
 	CShader *pShader = ball->getShader();
 	CTextureUnitSetup *pSetup = pShader->glGetTextureUnitsSetup();
-	pSetup->setDiffuseMap(texture->getTexture(1));
+	pSetup->setDiffuseMap(texture->getTexture(1), CTextureUnitSetup::CGL_MULTIPLY);
 	pSetup->enableImageUnit(CTextureUnitSetup::IMAGE_UNIT_1,false);
 	pSetup->enableImageUnit(CTextureUnitSetup::IMAGE_UNIT_2,false);
 	pSetup->enableImageUnit(CTextureUnitSetup::IMAGE_UNIT_3,false);

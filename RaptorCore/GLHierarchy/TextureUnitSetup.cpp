@@ -224,6 +224,8 @@ const CTextureUnitSetup& CTextureUnitSetup::operator=(const CTextureUnitSetup& r
     {
         useUnit[i] = rsh.useUnit[i];
         imageUnit[i] = rsh.imageUnit[i];
+		if (NULL != imageUnit[i])
+			imageUnit[i]->addReference();
 		unitFunctions[i] = rsh.unitFunctions[i];
 
 #if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)

@@ -1078,7 +1078,6 @@ ITextureObject* const CTextureFactory::glCreateDynamicTexture(ITextureObject::TE
 
 	glGenTextures(1,&(T->texname));
 
-    //T->setFunction(ITextureObject::CGL_MULTIPLY);
 	T->setFunction(ITextureObject::CGL_OPAQUE);
 	T->target = GL_TEXTURE_2D;
 	T->m_pTexelGenerator = pGenerator;

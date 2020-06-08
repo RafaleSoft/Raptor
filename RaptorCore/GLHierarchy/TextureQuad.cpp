@@ -150,7 +150,7 @@ bool CTextureQuad::glLoadTexture(const std::string &texname, bool compressed)
 	{
 		CTextureFactory &Txt = CTextureFactory::getDefaultFactory();
 		ITextureObject *T = Txt.glCreateTexture( ITextureObject::CGL_COLOR24_ALPHA,
-												 ITextureObject::CGL_MULTIPLY,
+												 ITextureObject::CGL_OPAQUE,
 												 ITextureObject::CGL_BILINEAR);
 		
 		CTexelAllocator *pAllocator = CTexelAllocator::GetInstance();

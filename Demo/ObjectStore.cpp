@@ -193,7 +193,7 @@ bool CObjectStore::IsAColumn(CGeometry *&g)
 
 		CTextureFactory &factory = CTextureFactory::getDefaultFactory();
 		ITextureObject *normalMap = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
-                                                            ITextureObject::CGL_MULTIPLY,
+                                                            ITextureObject::CGL_OPAQUE,
                                                             ITextureObject::CGL_TRILINEAR);
 		factory.glLoadTexture(normalMap,BUMP_0);
 		bump->setNormalMap(normalMap);
@@ -773,7 +773,7 @@ void CObjectStore::BuildObjects(void)
     const CGeometryEditor &pEditor = m_pBumpKnot->getEditor();
 	pEditor.scaleTexCoords(48.0f,2.0f);
 	ITextureObject* normalMap = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
-														ITextureObject::CGL_MULTIPLY,
+														ITextureObject::CGL_OPAQUE,
 														ITextureObject::CGL_TRILINEAR);
 	factory.glLoadTexture(normalMap,BUMP_0);
     m_pBumpKnot->setDiffuseMap(m_textures->getTexture(MARBLE5));

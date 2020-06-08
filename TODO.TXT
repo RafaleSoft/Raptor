@@ -47,6 +47,9 @@
 - CGeometry:
 	- ajouter un cas aux méthodes SetVertices/SetColors/.... si nbV > nb_vertex
 
+- CGeometryPrimitive:
+	- Evaluators deprecated => remplacer par geometry shaders.
+
 - CTextureQuad:
 	- ajouter une méthode pour faire le render sur une liste de Quads.
 

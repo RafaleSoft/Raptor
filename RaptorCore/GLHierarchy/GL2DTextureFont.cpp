@@ -113,7 +113,7 @@ bool CGL2DTextureFont::glInit(const std::string &filename, unsigned int size, bo
 		if (m_texture == NULL)
 		{
 			m_texture = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
-												ITextureObject::CGL_MULTIPLY,
+												ITextureObject::CGL_OPAQUE,
 												ITextureObject::CGL_BILINEAR);
 		}
 

@@ -3,7 +3,7 @@
   	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<TextureSet name="MAIN_TEXTURES">
       <Texture name="Datas\\LensFlare2.tga" function="multiply" filter="bilinear" mode="compressed"/>
-	  <Texture name="Datas\\flare0.jpg" function="multiply" filter="bilinear" mode="compressed"/>
+	    <Texture name="Datas\\flare0.jpg" function="multiply" filter="bilinear" mode="compressed"/>
       <Texture name="Datas\\flare1.jpg" function="multiply" filter="bilinear" mode="compressed"/>
       <Texture name="Datas\\flare3.jpg" function="multiply" filter="bilinear" mode="compressed"/>
       <Texture name="Datas\\flare4.jpg" function="multiply" filter="bilinear" mode="compressed"/>

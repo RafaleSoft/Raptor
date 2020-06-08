@@ -75,6 +75,7 @@ CTeapot::CTeapot()
 	//numdemo(CTest2App::SHADOWMAPDEMO)
 	//numdemo(CTest2App::VRTXSHADERSDEMO)
 	//numdemo(CTest2App::PROJECTIONDEMO)
+	//numdemo(CTest2App::SPLINEDEMO)
 {
 }
 
@@ -128,7 +129,7 @@ void CTeapot::GLInitContext()
 	t->addTexture(T);
 
 	T = f.glCreateTexture(	ITextureObject::CGL_COLOR24_ALPHA,
-							ITextureObject::CGL_MULTIPLY,
+							ITextureObject::CGL_OPAQUE,
 							ITextureObject::CGL_BILINEAR);
 	f.glSetTransparency(T, 255);
 	f.glLoadTexture(T,"Datas\\marble.jpg");
@@ -210,7 +211,9 @@ void CTeapot::GLInitContext()
 	s->setColor(1.0f,1.0f,1.0f,1.0f);
     s->getMaterial()->setShininess(10.0f);
 	teapot->setDiffuseMap(t->getTexture(0));
-	ITextureObject* normalMap = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,ITextureObject::CGL_MULTIPLY,ITextureObject::CGL_BILINEAR);
+	ITextureObject* normalMap = f.glCreateTexture(	ITextureObject::CGL_COLOR24_ALPHA,
+													ITextureObject::CGL_OPAQUE,
+													ITextureObject::CGL_BILINEAR);
 	CBumpmapLoader loader(f.getConfig().getBumpAmplitude());
     f.glLoadTexture(normalMap,"Datas\\bump3.tga",&loader);
 	teapot->setNormalMap(normalMap);

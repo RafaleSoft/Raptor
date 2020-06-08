@@ -24,6 +24,7 @@
 #include "GLHierarchy/ITextureObject.h"
 #include "GLHierarchy/ShadedGeometry.h"
 #include "GLHierarchy/IRenderingProperties.h"
+#include "GLHierarchy/Object3DInstance.h"
 
 
 //////////////////////////////////////////////////////////////////////
@@ -58,10 +59,10 @@ void CSplineDisplay::Init()
 	path->addKnot(2.0f,1.0f,-2.0f,0.75f,-1.0f);
 	path->addKnot(0.0f,2.0f,0.0f,1.0f,-1.0f);
 
-	bspline = new CShadedGeometry();
+	bspline = new CShadedGeometry("B_SPLINE");
 	CShader *s = bspline->getShader();
 	CTextureUnitSetup *ts = s->glGetTextureUnitsSetup();
-	ts->setDiffuseMap(texture->getTexture(1));
+	ts->setDiffuseMap(texture->getTexture(1), CTextureUnitSetup::CGL_MULTIPLY);
 	CMaterial *m = s->getMaterial();
 	m->setAmbient(0.1f,0.1f,0.1f,1.0f);
 	m->setDiffuse(0.5f,0.5f,0.5f,1.0f);
@@ -92,8 +93,20 @@ void CSplineDisplay::Init()
 
 	CGL3DFont *font3d = CGLFontFactory::create3DFont("Datas\\kld.ttf", 20, true, true, "main_font_3d");
 	font = font3d;
-	font->glGenGlyphs(1, 5, 2.0f);
-	text = (font3d->glWriteList("Raptor",0)).handle();
+	fulltext = new CShadedGeometry("FONT_Geometry");
+	*fulltext = *font3d->glBuildGeometry("Raptor", 1, 5, 2.0f);
+	fulltext->scale(0.25f, 0.25f, 0.25f);
+	fulltext->translateAbsolute(0.0f, 0.0f, 0.0f);
+	fulltext->setRenderingModel(CGeometry::CGL_FRONT_GEOMETRY);
+	fulltext->addModel(CGeometry::CGL_NORMALS);
+	fulltext->addModel(CGeometry::CGL_TEXTURE);
+	s = fulltext->getShader();
+	CTextureUnitSetup *ts2 = s->glGetTextureUnitsSetup();
+	*ts2 = *ts;
+	CMaterial *m2 = s->getMaterial();
+	*m2 = *m;
+	CObject3DInstance *text_inst = new CObject3DInstance(fulltext);
+	text_inst->translate(0.0f, 5.0, -15.0f);
 
 	CRaptorDisplay* pDisplay = CRaptorDisplay::GetCurrentDisplay();
 	vp = pDisplay->createViewPoint();
@@ -110,6 +123,7 @@ void CSplineDisplay::Init()
 
 	C3DScene *pScene = new C3DScene("SPLINE_SCENE");
 	pScene->addObject(bspline);
+	pScene->addObject(text_inst);
 	pScene->addLight(m_pLight);
 
 	pDisplay->addScene(pScene);
@@ -140,7 +154,7 @@ void CSplineDisplay::Display()
 		ReInit();
 	
 	float dt = CTimeObject::GetGlobalTime();
-    vp->setPosition((float)(5.0*cos(dt*2*PI)),0.0f,5.0f,IViewPoint::EYE);
+    vp->setPosition((float)(5.0*cos(0.5f*dt*2*PI)),0.0f,5.0f,IViewPoint::EYE);
 	
 	glPushMatrix();
 	glPushAttrib(GL_ALL_ATTRIB_BITS);
@@ -174,10 +188,6 @@ void CSplineDisplay::Display()
 	
 	glTranslatef(-40.0,20.0,-100.0);
 
-	ITextureObject* T = texture->getTexture(1);
-	T->glvkRender();
-	glCallList(text);
-	
 	glPopMatrix();
 	glPopAttrib();
 }

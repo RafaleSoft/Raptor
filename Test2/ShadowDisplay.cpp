@@ -86,14 +86,16 @@ void CShadowDisplay::Init()
 	}
 
 	CTextureFactory &f = CTextureFactory::getDefaultFactory();
-	ITextureObject *T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,ITextureObject::CGL_MULTIPLY,ITextureObject::CGL_BILINEAR);
+	ITextureObject *T = f.glCreateTexture(	ITextureObject::CGL_COLOR24_ALPHA,
+											ITextureObject::CGL_OPAQUE,
+											ITextureObject::CGL_BILINEAR);
 	f.glSetTransparency(T, 255);
 	CTextureFactoryConfig& config = f.getConfig();
 	const CTextureFactoryConfig::ICompressor *compressor = config.getCurrentCompressor();
 	if (0 < config.getNumCompressors())
 		config.setCurrentCompressor(config.getCompressor("OpenGL"));
 	f.glLoadTexture(T,"Datas\\start.tga");
-    knotShader->glGetTextureUnitsSetup()->setDiffuseMap(T);
+    knotShader->glGetTextureUnitsSetup()->setDiffuseMap(T, CTextureUnitSetup::CGL_MULTIPLY);
 
 	LL.Normalize();
 	m_light = new CLight();
@@ -113,7 +115,7 @@ void CShadowDisplay::Init()
 	delete font;
 
     CShader *textShader = fulltext->getShader();
-    textShader->glGetTextureUnitsSetup()->setDiffuseMap(texture->getTexture(1));
+    textShader->glGetTextureUnitsSetup()->setDiffuseMap(texture->getTexture(1), CTextureUnitSetup::CGL_MULTIPLY);
     textShader->getMaterial()->setAmbient(0.5f,0.5f,0.5f,1.0f);
     textShader->getMaterial()->setDiffuse(0.6f,0.6f,0.6f,1.0f);
     textShader->getMaterial()->setSpecular(0.9f,0.9f,0.9f,1.0f);
