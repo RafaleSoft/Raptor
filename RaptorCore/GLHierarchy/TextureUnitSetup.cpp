@@ -273,6 +273,43 @@ void CTextureUnitSetup::setMap(ITextureObject *to, TEXTURE_IMAGE_UNIT unit, TEXT
 	}
 }
 
+bool CTextureUnitSetup::setUnitFunction(TEXTURE_IMAGE_UNIT unit, TEXTURE_UNIT_FUNCTION env_mode)
+{
+	bool res = false;
+
+	if ((uint32_t)unit < nbUnits)
+	{
+		if (NULL != pfn_glActiveTexture)
+		{
+			GLenum mode = GL_NONE;
+			res = true;
+
+			switch (env_mode)
+			{
+				case CGL_OPAQUE:
+					mode = GL_REPLACE;
+					break;
+				case CGL_MULTIPLY:
+					mode = GL_MODULATE;
+					break;
+				case CGL_ALPHA_TRANSPARENT:
+					mode = GL_DECAL;
+					break;
+				case CGL_CONSTANT_BLENDED:
+					mode = GL_BLEND;
+					break;
+				default:
+					res = false;
+					break;
+			}
+			
+			unitFunctions[unit] = mode;
+		}
+	}
+
+	return res;
+}
+
 ITextureObject* const CTextureUnitSetup::getDiffuseMap(void) const 
 {
     ITextureObject *tmu = NULL;

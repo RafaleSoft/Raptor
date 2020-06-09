@@ -164,10 +164,6 @@ public:
 	CTextureUnitSetup();
 	virtual ~CTextureUnitSetup();
 
-    //! Returns true is this->class ID is a subclass of id
-    //virtual bool isSubClassOf(PERSISTENCE_CLASS_ID id) const;
-
-
     //! assignment operator
 	const CTextureUnitSetup& operator=(const CTextureUnitSetup& rsh);
 
@@ -177,8 +173,12 @@ public:
     //! @return : true is setting is valid, false otherwise ( e.g. invalid unit )
     bool enableImageUnit(TEXTURE_IMAGE_UNIT unit, bool enable);
 
-    //! Enable or disable register combiners usage ( fixed enhanced nVidia OpenGL texture shaders )
-    void useRegisterCombiners(bool enable) { use_register_combiners = enable; }; 
+	//! This method specifies the function to be applied when producing a textured fragment.
+	//! @param unit : specifies the image unit to modify ( 0 based )
+	//! @param env_mode : the function requested.
+	//! @return : true is setting is valid, false otherwise ( e.g. invalid unit )
+	bool setUnitFunction(TEXTURE_IMAGE_UNIT unit, TEXTURE_UNIT_FUNCTION env_mode = CGL_NONE);
+
 
     //! Texture objects configuration.
     //! For compatibility with old OpenGL specs, 4 TMU images are associated to 4 TMU units ( & 4 TMU coords )
@@ -200,6 +200,9 @@ public:
 	//!	Kept for compatibility purpose, subject to removal in future versions of Raptor.	
 	//!
 #if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
+
+	//! Enable or disable register combiners usage ( fixed enhanced nVidia OpenGL texture shaders )
+	void useRegisterCombiners(bool enable) { use_register_combiners = enable; };
 
 	//! Returns a fixed pipeline TMU shader for image unit 'unit' ( 0 based )
 	GL_TEXTURE_SHADER&   getTMUShader(TEXTURE_IMAGE_UNIT unit);

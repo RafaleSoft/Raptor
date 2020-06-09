@@ -192,10 +192,12 @@ void CTestDoc::GLInitContext(void)
     CShadedGeometry *g = (CShadedGeometry *)(sponge->getChild(it++));
 	while (g != NULL)
 	{
-        g->getShader()->getMaterial()->setAmbient(0.1f,0.1f,0.1f,1.0f);
-        g->getShader()->getMaterial()->setDiffuse(0.4f,0.4f,0.9f,1.0f);
-        g->getShader()->getMaterial()->setSpecular(1.4f,1.4f,1.6f,1.0f);
-        g->getShader()->getMaterial()->setShininess(20.0f);
+		CShader *s = g->getShader();
+        s->getMaterial()->setAmbient(0.1f,0.1f,0.1f,1.0f);
+        s->getMaterial()->setDiffuse(0.4f,0.4f,0.9f,1.0f);
+        s->getMaterial()->setSpecular(1.4f,1.4f,1.6f,1.0f);
+        s->getMaterial()->setShininess(20.0f);
+		s->glGetTextureUnitsSetup()->setUnitFunction(CTextureUnitSetup::IMAGE_UNIT_0, CTextureUnitSetup::CGL_MULTIPLY);
 		g->setRenderingModel(CGeometry::CGL_FRONT_GEOMETRY);
 		g->addModel(CGeometry::CGL_NORMALS);
 		g->addModel(CGeometry::CGL_TEXTURE);

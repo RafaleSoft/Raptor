@@ -135,8 +135,10 @@ void CShadowDisplay::Init()
 	CShadedGeometry *g = (CShadedGeometry*)(sponge->getChild(it++));
 	while (g != NULL)
 	{
-		g->getShader()->setColor(0.2f,0.2f,0.2f,1.0f);
-        g->getShader()->getMaterial()->setAmbient(0.5f,0.5f,0.5f,1.0f);
+		CShader *s = g->getShader();
+		s->setColor(0.2f,0.2f,0.2f,1.0f);
+        s->getMaterial()->setAmbient(0.5f,0.5f,0.5f,1.0f);
+		s->glGetTextureUnitsSetup()->setUnitFunction(CTextureUnitSetup::IMAGE_UNIT_0, CTextureUnitSetup::CGL_MULTIPLY);
 		g->setRenderingModel(CGeometry::CGL_FRONT_GEOMETRY);
 		g->addModel(CGeometry::CGL_NORMALS);
 		g->addModel(CGeometry::CGL_TEXTURE);
@@ -228,9 +230,9 @@ void CShadowDisplay::Display()
     GL_COORD_VERTEX L(LL.X(),LL.Y(),LL.Z(),LL.H());
 	m_light->setLightDirection(L);
 
-	float x = 25 * cos(10*PI*dt) * cos(10*PI*dt);
-	float z = 25 * sin(10*PI*dt) * cos(10*PI*dt);
-	float y = 25 * sin(10*PI*dt);
+	float x = 25 * cos(5*PI*dt) * cos(5*PI*dt);
+	float z = 25 * sin(5*PI*dt) * cos(5*PI*dt);
+	float y = 25 * sin(5*PI*dt);
 	m_pVP->setPosition(x,y,z,IViewPoint::EYE);
 
 	glDisable(GL_TEXTURE_2D);
