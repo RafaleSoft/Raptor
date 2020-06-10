@@ -17,6 +17,9 @@
 - CTexture Unit setup:
 	- importer les unit fonction depuis l'XML.
 
+- CTextureSet:
+	- modifier Raptor.xsd pour ne plus importer les fonctions sur les textures
+
 - CGLFont:
 	- corriger font color et back color pour rendre générique
 	- sortir les statiques de GLVectorFont et GL2DTextureFont

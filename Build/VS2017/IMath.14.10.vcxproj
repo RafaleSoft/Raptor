@@ -51,26 +51,28 @@
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -129,7 +131,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;IMATH_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;OPENEXR_DLL;IMATH_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(OPENEXRLIB_INCLUDE_PATH);</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -142,13 +144,17 @@
       <AdditionalDependencies>Iex.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <Version>2.3</Version>
     </Link>
+    <PostBuildEvent>
+      <Command>copy $(OutDir)$(TargetName).lib "%RAPTOR_ROOT%\Redist\lib\"
+copy $(OutDir)$(TargetName).dll "%RAPTOR_ROOT%\Redist\bin\"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;IMATH_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;OPENEXR_DLL;IMATH_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(OPENEXRLIB_INCLUDE_PATH);</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -161,6 +167,10 @@
       <AdditionalDependencies>Iex.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <Version>2.3</Version>
     </Link>
+    <PostBuildEvent>
+      <Command>copy $(OutDir)$(TargetName).lib "%RAPTOR_ROOT%\Redist\lib\"
+copy $(OutDir)$(TargetName).dll "%RAPTOR_ROOT%\Redist\bin\"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">
     <ClCompile>
@@ -183,14 +193,13 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>false</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(Configuration)\$(Platform)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(Configuration)\$(Platform)\</AdditionalLibraryDirectories>
       <AdditionalDependencies>Iex.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <Version>2.3</Version>
     </Link>
     <PostBuildEvent>
       <Command>copy $(OutDir)$(TargetName).lib "%RAPTOR_ROOT%\Redist\lib\"
-copy $(OutDir)$(TargetName).dll "%RAPTOR_ROOT%\Redist\bin\"
-</Command>
+copy $(OutDir)$(TargetName).dll "%RAPTOR_ROOT%\Redist\bin\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|x64'">
@@ -220,8 +229,7 @@ copy $(OutDir)$(TargetName).dll "%RAPTOR_ROOT%\Redist\bin\"
     </Link>
     <PostBuildEvent>
       <Command>copy $(OutDir)$(TargetName).lib "%RAPTOR_ROOT%\Redist\lib\"
-copy $(OutDir)$(TargetName).dll "%RAPTOR_ROOT%\Redist\bin\"
-</Command>
+copy $(OutDir)$(TargetName).dll "%RAPTOR_ROOT%\Redist\bin\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -231,7 +239,7 @@ copy $(OutDir)$(TargetName).dll "%RAPTOR_ROOT%\Redist\bin\"
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;IMATH_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;OPENEXR_DLL;IMATH_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(OPENEXRLIB_INCLUDE_PATH);</AdditionalIncludeDirectories>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
@@ -244,6 +252,10 @@ copy $(OutDir)$(TargetName).dll "%RAPTOR_ROOT%\Redist\bin\"
       <AdditionalLibraryDirectories>$(Configuration)\$(Platform)\</AdditionalLibraryDirectories>
       <Version>2.3</Version>
     </Link>
+    <PostBuildEvent>
+      <Command>copy $(OutDir)$(TargetName).lib "%RAPTOR_ROOT%\Redist\lib\"
+copy $(OutDir)$(TargetName).dll "%RAPTOR_ROOT%\Redist\bin\"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -252,7 +264,7 @@ copy $(OutDir)$(TargetName).dll "%RAPTOR_ROOT%\Redist\bin\"
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;IMATH_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;OPENEXR_DLL;IMATH_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(OPENEXRLIB_INCLUDE_PATH);</AdditionalIncludeDirectories>
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
@@ -265,6 +277,10 @@ copy $(OutDir)$(TargetName).dll "%RAPTOR_ROOT%\Redist\bin\"
       <AdditionalLibraryDirectories>$(Configuration)\$(Platform)\</AdditionalLibraryDirectories>
       <Version>2.3</Version>
     </Link>
+    <PostBuildEvent>
+      <Command>copy $(OutDir)$(TargetName).lib "%RAPTOR_ROOT%\Redist\lib\"
+copy $(OutDir)$(TargetName).dll "%RAPTOR_ROOT%\Redist\bin\"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\AddOns\OpenEXR-2.3.0\source\Imath\ImathColorAlgo.cpp" />

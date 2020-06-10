@@ -128,9 +128,9 @@ void COpenGLTextureObject::setFunction(ITextureObject::TEXTURE_FUNCTION F)
 		case ITextureObject::CGL_OPAQUE:
 			env_mode = GL_REPLACE;
 			break;
-		case ITextureObject::CGL_MULTIPLY:
-			env_mode = GL_MODULATE;
-			break;
+//		case ITextureObject::CGL_MULTIPLY:
+//			env_mode = GL_MODULATE;
+//			break;
 	}
 }
 

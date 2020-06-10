@@ -175,8 +175,6 @@ bool CTextureSet::importTextureObject(CRaptorIO& io)
             io >> name;
             if (name == "opaque")
                 function = ITextureObject::CGL_OPAQUE;
-            else if (name == "multiply")
-                function = ITextureObject::CGL_MULTIPLY;
         }
         else if (data == "filter")
         {

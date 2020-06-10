@@ -70,8 +70,8 @@ public:
 	//! Texel transfer function ( combines input fragment with texel extracted from sampler )
 	typedef enum
 	{
-		CGL_OPAQUE,
-		CGL_MULTIPLY
+		CGL_OPAQUE
+		//CGL_MULTIPLY
 	} TEXTURE_FUNCTION;
 
 	//! Texture sampler clampping model

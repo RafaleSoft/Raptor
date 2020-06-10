@@ -264,6 +264,10 @@ copy $(OutDir)$(TargetName).dll "%RAPTOR_ROOT%\Redist\bin\"</Command>
       <Command>$(Configuration)\$(Platform)\eLut.exe &gt; $(Configuration)\$(Platform)\eLut.h
 $(Configuration)\$(Platform)\toFloat.exe &gt; $(Configuration)\$(Platform)\toFloat.h</Command>
     </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>copy $(OutDir)$(TargetName).lib "%RAPTOR_ROOT%\Redist\lib\"
+copy $(OutDir)$(TargetName).dll "%RAPTOR_ROOT%\Redist\bin\"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -289,6 +293,10 @@ $(Configuration)\$(Platform)\toFloat.exe &gt; $(Configuration)\$(Platform)\toFlo
       <Command>$(Configuration)\$(Platform)\eLut.exe &gt; $(Configuration)\$(Platform)\eLut.h
 $(Configuration)\$(Platform)\toFloat.exe &gt; $(Configuration)\$(Platform)\toFloat.h</Command>
     </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>copy $(OutDir)$(TargetName).lib "%RAPTOR_ROOT%\Redist\lib\"
+copy $(OutDir)$(TargetName).dll "%RAPTOR_ROOT%\Redist\bin\"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\AddOns\OpenEXR-2.3.0\include\half.h" />

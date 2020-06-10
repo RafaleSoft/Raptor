@@ -64,6 +64,7 @@ BEGIN_MESSAGE_MAP(CGLBenchDlg, CDialog)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
+
 /////////////////////////////////////////////////////////////////////////////
 // CGLBenchDlg message handlers
 

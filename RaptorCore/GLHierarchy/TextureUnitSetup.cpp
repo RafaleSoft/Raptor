@@ -247,29 +247,14 @@ void CTextureUnitSetup::setMap(ITextureObject *to, TEXTURE_IMAGE_UNIT unit, TEXT
 {
 	if (imageUnit != NULL)
 	{
-		if (imageUnit[unit] != NULL)
-			imageUnit[unit]->releaseReference();
-        imageUnit[unit] = to;
-		if (to != NULL)
-			to->addReference();
-		
-		GLenum mode = GL_NONE;
-		switch (env_mode)
+		if (setUnitFunction(unit, env_mode))
 		{
-		case CGL_OPAQUE:
-			mode = GL_REPLACE;
-			break;
-		case CGL_MULTIPLY:
-			mode = GL_MODULATE;
-			break;
-		case CGL_ALPHA_TRANSPARENT:
-			mode = GL_DECAL;
-			break;
-		case CGL_CONSTANT_BLENDED:
-			mode = GL_BLEND;
-			break;
+			if (imageUnit[unit] != NULL)
+				imageUnit[unit]->releaseReference();
+			imageUnit[unit] = to;
+			if (to != NULL)
+				to->addReference();
 		}
-		unitFunctions[unit] = mode;
 	}
 }
 
@@ -298,12 +283,16 @@ bool CTextureUnitSetup::setUnitFunction(TEXTURE_IMAGE_UNIT unit, TEXTURE_UNIT_FU
 				case CGL_CONSTANT_BLENDED:
 					mode = GL_BLEND;
 					break;
+				case CGL_NONE:
+					mode = CGL_NONE;
+					break;
 				default:
 					res = false;
 					break;
 			}
 			
-			unitFunctions[unit] = mode;
+			if (res)
+				unitFunctions[unit] = mode;
 		}
 	}
 

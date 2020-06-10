@@ -198,6 +198,9 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <PostBuildEvent>
+      <Command>copy $(OutDir)$(TargetName).lib "%RAPTOR_ROOT%\Redist\lib\"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -216,6 +219,9 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <PostBuildEvent>
+      <Command>copy $(OutDir)$(TargetName).lib "%RAPTOR_ROOT%\Redist\lib\"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -243,6 +249,9 @@
       <AdditionalDependencies>zlib.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(ZLIB_LIB_PATH);</AdditionalLibraryDirectories>
     </Lib>
+    <PostBuildEvent>
+      <Command>copy $(OutDir)$(TargetName).lib "%RAPTOR_ROOT%\Redist\lib\"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -270,6 +279,9 @@
       <AdditionalDependencies>zlib.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(RAPTOR_ROOT)\Redist\lib;</AdditionalLibraryDirectories>
     </Lib>
+    <PostBuildEvent>
+      <Command>copy $(OutDir)$(TargetName).lib "%RAPTOR_ROOT%\Redist\lib\"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">
     <ClCompile>

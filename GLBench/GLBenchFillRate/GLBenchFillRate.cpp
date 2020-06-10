@@ -95,8 +95,6 @@ public:
 	float viewScale;
 	CTextureSet *txt;
 
-	RAPTOR_HANDLE setupHANDLE;
-
 private:
 	virtual	void GLInitContext(void);
 	virtual void glDraw(void);
@@ -131,7 +129,7 @@ void Display::GLInitContext()
 
 	glColor4f(1.0f,1.0f,1.0f,1.0f);
 	ITextureObject* T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
-										  ITextureObject::CGL_MULTIPLY,
+										  ITextureObject::CGL_OPAQUE,
 										  ITextureObject::CGL_BILINEAR);
 	f.glSetTransparency(T, 128);
 	f.glLoadTexture(T, M1_1024_path);
@@ -140,7 +138,7 @@ void Display::GLInitContext()
 	if (Raptor::glIsExtensionSupported(GL_ARB_TEXTURE_COMPRESSION_EXTENSION_NAME))
 	{
 		T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
-							  ITextureObject::CGL_MULTIPLY,
+							  ITextureObject::CGL_OPAQUE,
 							  ITextureObject::CGL_BILINEAR);
 		f.glSetTransparency(T, 128);
 		const CTextureFactoryConfig::ICompressor *compressor = config.getCurrentCompressor();
@@ -152,7 +150,7 @@ void Display::GLInitContext()
 	else
 	{
 		T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
-							  ITextureObject::CGL_MULTIPLY,
+							  ITextureObject::CGL_OPAQUE,
 							  ITextureObject::CGL_BILINEAR);
 		f.glSetTransparency(T, 128);
 		f.glLoadTexture(T, M1_1024_path);
@@ -160,14 +158,14 @@ void Display::GLInitContext()
 	txt->addTexture(T);
 
 	T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
-						  ITextureObject::CGL_MULTIPLY,
+						  ITextureObject::CGL_OPAQUE,
 						  ITextureObject::CGL_BILINEAR);
 	f.glSetTransparency(T, 128);
 	f.glLoadTexture(T, M74_1024_path);
 	txt->addTexture(T);
 
 	T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
-						  ITextureObject::CGL_MULTIPLY,
+						  ITextureObject::CGL_OPAQUE,
 						  ITextureObject::CGL_TRILINEAR);
 	config.setGenerateMipmap(false);
 	f.glSetTransparency(T, 128);	f.glLoadTexture(T, M1_1024_path);
@@ -186,7 +184,7 @@ void Display::GLInitContext()
 
 
 	T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
-						  ITextureObject::CGL_MULTIPLY,
+						  ITextureObject::CGL_OPAQUE,
 						  ITextureObject::CGL_BILINEAR);
 	f.glSetTransparency(T, 128);
 	f.glLoadTexture(T, M1_256_path);
@@ -200,7 +198,7 @@ void Display::GLInitContext()
 		config.setCurrentAnisotropy(anisotropy);
 
 		T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
-							  ITextureObject::CGL_MULTIPLY,
+							  ITextureObject::CGL_OPAQUE,
 							  ITextureObject::CGL_ANISOTROPIC);
 		config.setGenerateMipmap(false);
 		f.glSetTransparency(T, 255);	f.glLoadTexture(T, M1_1024_path);
@@ -365,7 +363,7 @@ void Display::glDraw(void)
 	}
 	else if (draw == 2)
 	{
-		CRaptorDisplay::glRender(setupHANDLE);
+		//CRaptorDisplay::glRender(setupHANDLE);
 		glCallList(square2);
 	}
 	else
@@ -582,6 +580,7 @@ GLDisplay->glMakeCurrent(false);
 GLDisplay->glMakeCurrent(true);
 	T = GLDisplay->txt->getTexture(0);
 	T->glvkRender();
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 GLDisplay->glMakeCurrent(false);
 
 	BenchStep(resultCount,LOOP_SIZE,GLDisplay);
@@ -597,6 +596,7 @@ GLDisplay->glMakeCurrent(false);
 GLDisplay->glMakeCurrent(true);
 		T = GLDisplay->txt->getTexture(1);
 		T->glvkRender();
+		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 GLDisplay->glMakeCurrent(false);
 		BenchStep(resultCount,LOOP_SIZE,GLDisplay);
 	}
@@ -617,6 +617,7 @@ GLDisplay->glMakeCurrent(true);
 	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 	T = GLDisplay->txt->getTexture(0);
 	T->glvkRender();
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 GLDisplay->glMakeCurrent(false);
 
 	BenchStep(resultCount,LOOP_SIZE,GLDisplay);
@@ -633,10 +634,9 @@ GLDisplay->glMakeCurrent(false);
 	GLDisplay->draw = 2;
 GLDisplay->glMakeCurrent(true);
 	CTextureUnitSetup setup;
-	setup.setDiffuseMap(GLDisplay->txt->getTexture(0));
-	setup.setNormalMap(GLDisplay->txt->getTexture(2));
-	/*RAPTOR_HANDLE*/ GLDisplay->setupHANDLE = setup.glBuildSetup();
-	CRaptorDisplay::glRender(GLDisplay->setupHANDLE);
+	setup.setDiffuseMap(GLDisplay->txt->getTexture(0), CTextureUnitSetup::CGL_MULTIPLY);
+	setup.setNormalMap(GLDisplay->txt->getTexture(2), CTextureUnitSetup::CGL_MULTIPLY);
+	setup.glRender();
 GLDisplay->glMakeCurrent(false);
 
 	BenchStep(resultCount,LOOP_SIZE,GLDisplay);
@@ -648,10 +648,9 @@ GLDisplay->glMakeCurrent(false);
 	resultCount++;
 	GLDisplay->draw = 3;
 GLDisplay->glMakeCurrent(true);
-	setup.setDiffuseMap(GLDisplay->txt->getTexture(3));
+	setup.setDiffuseMap(GLDisplay->txt->getTexture(3), CTextureUnitSetup::CGL_MULTIPLY);
 	setup.setNormalMap(NULL);
-	RAPTOR_HANDLE setupHANDLE2 = setup.glBuildSetup();
-	CRaptorDisplay::glRender(setupHANDLE2);
+	setup.glRender();
 GLDisplay->glMakeCurrent(false);
 
 	BenchStep(resultCount,LOOP_SIZE,GLDisplay);
@@ -668,6 +667,7 @@ GLDisplay->glMakeCurrent(false);
 GLDisplay->glMakeCurrent(true);
 		T = GLDisplay->txt->getTexture(5);
 		T->glvkRender();
+		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 GLDisplay->glMakeCurrent(false);
 
 		CTextureFactoryConfig &tfConfig = CTextureFactory::getDefaultFactory().getConfig();
