@@ -41,7 +41,6 @@ CReflection::CReflection(float width,float height,int hcels,int vcels)
 	CBumpmapLoader loader(f.getConfig().getBumpAmplitude());
 	CPerlinNoise pNoise(&loader);
     ITextureObject *T = f.glCreateTexture(	ITextureObject::CGL_COLOR24_ALPHA,
-											ITextureObject::CGL_OPAQUE,
 											ITextureObject::CGL_TRILINEAR);
 	T->glvkUpdateClamping(ITextureObject::CGL_REPEAT);
 
@@ -53,7 +52,6 @@ CReflection::CReflection(float width,float height,int hcels,int vcels)
 
 
     T = f.glCreateTexture(	ITextureObject::CGL_COLOR24_ALPHA,
-							ITextureObject::CGL_OPAQUE,
 							ITextureObject::CGL_BILINEAR);
     f.glSetTransparency(T, 230);
 

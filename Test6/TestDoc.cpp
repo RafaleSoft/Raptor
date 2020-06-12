@@ -244,7 +244,6 @@ void CTestDoc::GLInitContext(void)
 	
 	CTextureFactory &tf = CTextureFactory::getDefaultFactory();
 	ITextureObject *T = tf.glCreateTexture(	ITextureObject::CGL_COLOR24_ALPHA,
-											ITextureObject::CGL_OPAQUE,
 											ITextureObject::CGL_BILINEAR);
 	tf.glLoadTexture(T, "Start.tga");
 

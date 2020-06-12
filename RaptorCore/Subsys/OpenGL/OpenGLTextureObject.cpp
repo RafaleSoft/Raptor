@@ -121,19 +121,6 @@ void COpenGLTextureObject::selectCubeFace(CUBE_FACE face)
 #endif
 }
 
-void COpenGLTextureObject::setFunction(ITextureObject::TEXTURE_FUNCTION F)
-{
-    switch(F)
-	{
-		case ITextureObject::CGL_OPAQUE:
-			env_mode = GL_REPLACE;
-			break;
-//		case ITextureObject::CGL_MULTIPLY:
-//			env_mode = GL_MODULATE;
-//			break;
-	}
-}
-
 void COpenGLTextureObject::glvkUpdateFilter(ITextureObject::TEXTURE_FILTER F)
 {
 	GLint	mag_filter = GL_NEAREST;
@@ -248,13 +235,6 @@ bool COpenGLTextureObject::setGenerationSize(uint32_t posx, uint32_t posy, uint3
     return true;
 }
 
-//void COpenGLTextureObject::getGenerationSize(   int &posx, int &posy, int &width, int &height) const
-//{
-//    posx = source[0];
-//    posy = source[1];
-//    width = source[2];
-//    height = source[3];
-//}
 
 unsigned int COpenGLTextureObject::getTexelFormat(void) const
 {

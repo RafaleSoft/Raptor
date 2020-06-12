@@ -69,7 +69,6 @@ public:
     //! @param filter : specifies the kind of texel sampler of the texture object
     //! @return : the texture created or NULL if there has been an error
     ITextureObject*		const glCreateTexture(  ITextureObject::TEXEL_TYPE type,
-												ITextureObject::TEXTURE_FUNCTION env_mode = ITextureObject::CGL_OPAQUE,
 												ITextureObject::TEXTURE_FILTER filter = ITextureObject::CGL_UNFILTERED);
 
     //!	Creates a 2D rectangular texture object

@@ -119,7 +119,6 @@ void CProjectionDisplay::Init()
 		sprintf(fname,"Datas\\caust%02d.tga",i);
 
 		ITextureObject *T = f.glCreateTexture(	ITextureObject::CGL_COLOR24_ALPHA,
-												ITextureObject::CGL_OPAQUE,
 												ITextureObject::CGL_BILINEAR);
 		f.glSetTransparency(T, 128);
 		f.glLoadTexture(T,fname);

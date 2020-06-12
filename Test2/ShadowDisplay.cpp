@@ -87,7 +87,6 @@ void CShadowDisplay::Init()
 
 	CTextureFactory &f = CTextureFactory::getDefaultFactory();
 	ITextureObject *T = f.glCreateTexture(	ITextureObject::CGL_COLOR24_ALPHA,
-											ITextureObject::CGL_OPAQUE,
 											ITextureObject::CGL_BILINEAR);
 	f.glSetTransparency(T, 255);
 	CTextureFactoryConfig& config = f.getConfig();

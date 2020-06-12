@@ -236,7 +236,6 @@ bool CMagnifierFilter::glInitFilter(void)
     //! 256 interpolated values are enough for good results.
     //! For high quality filtering, future release may allow a user defined size.
     kernelTexture = filterFactory.glCreateTexture( ITextureObject::CGL_COLOR_FLOAT16_ALPHA,
-                                                   ITextureObject::CGL_OPAQUE,
                                                    ITextureObject::CGL_UNFILTERED);
     kernelTexture->setSize(KERNEL_SIZE,1);
     computeKernel();
@@ -259,7 +258,6 @@ bool CMagnifierFilter::glInitFilter(void)
 		state.renderer = CRaptorDisplayConfig::RENDER_BUFFER;
 
 		xKernelPass = filterFactory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
-			                                        ITextureObject::CGL_OPAQUE,
 				                                    ITextureObject::CGL_UNFILTERED);
 		filterFactory.glResizeTexture(xKernelPass,state.width,state.height);
 		xKernelPass->glvkUpdateClamping(ITextureObject::CGL_EDGECLAMP);

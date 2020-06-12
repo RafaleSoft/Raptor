@@ -13,6 +13,7 @@
 
 - CTextureFactory:
 	- Fusionner vkLoadTexture & glLoadTexture
+	- supprimer la statique vers RaptorInstance
 
 - CTexture Unit setup:
 	- importer les unit fonction depuis l'XML.

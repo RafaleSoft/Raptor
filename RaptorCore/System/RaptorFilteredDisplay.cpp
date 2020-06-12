@@ -317,7 +317,6 @@ bool CRaptorFilteredDisplay::glCreateRenderDisplay(void)
 				texelType = ITextureObject::CGL_COLOR_FLOAT16_ALPHA;
 
 			ITextureObject *T = f.glCreateTexture(	texelType,
-													ITextureObject::CGL_OPAQUE,
 													ITextureObject::CGL_BILINEAR);
 			f.glResizeTexture(T,rda.width,rda.height);
 			T->glvkUpdateClamping(ITextureObject::CGL_EDGECLAMP);
@@ -330,13 +329,11 @@ bool CRaptorFilteredDisplay::glCreateRenderDisplay(void)
 			if ((filter_cs.stencil_buffer) &&
 				((filter_cs.display_mode & CGL_DEPTH) == CGL_DEPTH))
 				T = f.glCreateTexture(	ITextureObject::CGL_DEPTH24_STENCIL8,
-										ITextureObject::CGL_OPAQUE,
 										ITextureObject::CGL_UNFILTERED);
 			else
 #endif
 
 				T = f.glCreateTexture(	ITextureObject::CGL_DEPTH24,
-										ITextureObject::CGL_OPAQUE,
 										ITextureObject::CGL_UNFILTERED);
 
 			f.glResizeTexture(T,rda.width,rda.height);

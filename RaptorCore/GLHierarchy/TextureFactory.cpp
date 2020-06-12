@@ -854,8 +854,6 @@ ITextureObject* const CTextureFactory::glCreateSprite(ITextureObject::TEXEL_TYPE
 	T->target = GL_TEXTURE_2D;
 	glGenTextures(1,&(T->texname));
 
-    T->setFunction(ITextureObject::CGL_OPAQUE);
-
 	glBindTexture(GL_TEXTURE_2D,T->texname);
 
 	T->glvkUpdateFilter(ITextureObject::CGL_UNFILTERED);
@@ -891,7 +889,6 @@ ITextureObject* const CTextureFactory::glCreateCubemap(  ITextureObject::TEXEL_T
 
 	glGenTextures(1,&(T->texname));
 
-    T->setFunction(ITextureObject::CGL_OPAQUE);
 	T->target = GL_TEXTURE_CUBE_MAP_ARB;
 
 	glBindTexture(GL_TEXTURE_CUBE_MAP_ARB, T->texname);
@@ -948,7 +945,6 @@ ITextureObject* const CTextureFactory::vkCreateTexture(ITextureObject::TEXEL_TYP
 }
 
 ITextureObject* const CTextureFactory::glCreateTexture( ITextureObject::TEXEL_TYPE type,
-                                                        ITextureObject::TEXTURE_FUNCTION env_mode,
 														ITextureObject::TEXTURE_FILTER filter)
 {
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
@@ -984,7 +980,6 @@ ITextureObject* const CTextureFactory::glCreateTexture( ITextureObject::TEXEL_TY
 
 	glGenTextures(1,&(T->texname));
 
-    T->setFunction(env_mode);
 	T->target = GL_TEXTURE_2D;
 
 	glBindTexture(GL_TEXTURE_2D, T->texname);
@@ -1027,7 +1022,6 @@ ITextureObject* const CTextureFactory::glCreateRectangleTexture( ITextureObject:
 
 	glGenTextures(1,&(T->texname));
 
-    T->setFunction(ITextureObject::CGL_OPAQUE);
 	T->target = GL_TEXTURE_RECTANGLE_ARB;
 
 	glBindTexture(GL_TEXTURE_RECTANGLE_ARB, T->texname);
@@ -1078,8 +1072,8 @@ ITextureObject* const CTextureFactory::glCreateDynamicTexture(ITextureObject::TE
 
 	glGenTextures(1,&(T->texname));
 
-	T->setFunction(ITextureObject::CGL_OPAQUE);
 	T->target = GL_TEXTURE_2D;
+
 	T->m_pTexelGenerator = pGenerator;
 
 	glBindTexture(GL_TEXTURE_2D,T->texname);
@@ -1124,7 +1118,6 @@ ITextureObject* const CTextureFactory::glCreateVolumeTexture(ITextureObject::TEX
 
 	glGenTextures(1,&(T->texname));
 
-    T->setFunction(ITextureObject::CGL_OPAQUE);
 	T->target = GL_TEXTURE_3D_EXT;
 
 	glBindTexture(GL_TEXTURE_3D_EXT,T->texname);

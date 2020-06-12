@@ -159,7 +159,6 @@ bool CTextureSet::importTextureObject(CRaptorIO& io)
     io >> name;
 
     string filename = "<unknown>";
-    ITextureObject::TEXTURE_FUNCTION function = ITextureObject::CGL_OPAQUE;
     ITextureObject::TEXTURE_FILTER filter = ITextureObject::CGL_UNFILTERED;
     ITextureObject::TEXEL_TYPE texelType = ITextureObject::CGL_COLOR24_ALPHA;
     float transparency = -1.0f;
@@ -173,8 +172,6 @@ bool CTextureSet::importTextureObject(CRaptorIO& io)
         else if (data =="function")
         {
             io >> name;
-            if (name == "opaque")
-                function = ITextureObject::CGL_OPAQUE;
         }
         else if (data == "filter")
         {
@@ -209,7 +206,7 @@ bool CTextureSet::importTextureObject(CRaptorIO& io)
 	if ((compressed) && (0 < f.getConfig().getNumCompressors()))
 		f.getConfig().setCurrentCompressor(f.getConfig().getCompressor("OpenGL"));
 
-    ITextureObject *T = f.glCreateTexture(texelType,function,filter);
+    ITextureObject *T = f.glCreateTexture(texelType, filter);
 	bool res = false;
     if (T != NULL)
     {

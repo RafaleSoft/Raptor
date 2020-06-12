@@ -223,7 +223,6 @@ bool CMBFilter::glInitFilter(void)
 
 		ITextureObject *T = NULL;
 		T = filterFactory.glCreateTexture(	ITextureObject::CGL_COLOR24_ALPHA,
-											ITextureObject::CGL_OPAQUE,
 											ITextureObject::CGL_BILINEAR);
 		filterFactory.glResizeTexture(T,state.width,state.height);
 		T->glvkUpdateClamping(ITextureObject::CGL_EDGECLAMP);
@@ -232,7 +231,6 @@ bool CMBFilter::glInitFilter(void)
 
 		m_pRenderTextures2 = new CTextureSet();
 		T = filterFactory.glCreateTexture(	ITextureObject::CGL_COLOR24_ALPHA,
-											ITextureObject::CGL_OPAQUE,
 											ITextureObject::CGL_BILINEAR);
 		filterFactory.glResizeTexture(T,state.width,state.height);	
 		T->glvkUpdateClamping(ITextureObject::CGL_EDGECLAMP);

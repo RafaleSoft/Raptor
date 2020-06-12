@@ -89,7 +89,6 @@ bool CAmbientOcclusionShader::glInitAOCompute(void)
 	CTextureFactory &f = CTextureFactory::getDefaultFactory();
 	f.getConfig().useTextureResize(false);
 	ITextureObject *T = f.glCreateTexture(	ITextureObject::CGL_COLOR_FLOAT32_ALPHA,
-											ITextureObject::CGL_OPAQUE,
 											ITextureObject::CGL_BILINEAR);
 	T->glvkUpdateClamping(ITextureObject::CGL_EDGECLAMP);
 	f.glResizeTexture(T,m_pVertexMap->getWidth(),m_pVertexMap->getHeight());

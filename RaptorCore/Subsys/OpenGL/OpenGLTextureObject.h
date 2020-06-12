@@ -99,9 +99,6 @@ private:
 	//! texture objects cannot be assigned.
 	const COpenGLTextureObject& operator=(const COpenGLTextureObject &rsh) { return *this; };
 
-    //! This call is restricted to the factory or the TMUSetup
-    void setFunction(ITextureObject::TEXTURE_FUNCTION F);
-	
 
 	friend class CTextureFactory;
 	friend class CTextureUnitSetup;

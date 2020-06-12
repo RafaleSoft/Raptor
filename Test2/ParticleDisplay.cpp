@@ -201,20 +201,17 @@ void CParticleDisplay::Init()
 	CTextureFactory &f = CTextureFactory::getDefaultFactory();
 	CTextureSet* pTextures = (CTextureSet*)CPersistence::FindObject("main_textures");
 	ITextureObject* T = f.glCreateTexture(	ITextureObject::CGL_COLOR24_ALPHA,
-											ITextureObject::CGL_OPAQUE,
 											ITextureObject::CGL_BILINEAR);
 	f.glLoadTexture(T, "Datas\\particle.jpg");
 	pTextures->addTexture(T);
 
 	T = f.glCreateTexture(	ITextureObject::CGL_COLOR24_ALPHA,
-							ITextureObject::CGL_OPAQUE,
 							ITextureObject::CGL_BILINEAR);
 	f.glLoadTexture(T, "Datas\\Fire.tga");
 	pTextures->addTexture(T);
 	pFire->setTexture(T);
 
 	T = f.glCreateTexture(	ITextureObject::CGL_COLOR24_ALPHA,
-							ITextureObject::CGL_OPAQUE,
 							ITextureObject::CGL_BILINEAR);
 	f.glSetTransparency(T, 0);
 	f.glLoadTexture(T, "Datas\\particle.tga");

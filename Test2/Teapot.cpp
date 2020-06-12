@@ -121,7 +121,6 @@ void CTeapot::GLInitContext()
 	CTextureFactoryConfig& config = f.getConfig();
 
 	ITextureObject*	T = f.glCreateTexture(	ITextureObject::CGL_COLOR24_ALPHA,
-											ITextureObject::CGL_OPAQUE,
 											ITextureObject::CGL_BILINEAR);
 	f.glSetTransparency(T, 128);
 	f.glLoadTexture(T,"Datas\\raptor.tga");
@@ -129,14 +128,12 @@ void CTeapot::GLInitContext()
 	t->addTexture(T);
 
 	T = f.glCreateTexture(	ITextureObject::CGL_COLOR24_ALPHA,
-							ITextureObject::CGL_OPAQUE,
 							ITextureObject::CGL_BILINEAR);
 	f.glSetTransparency(T, 255);
 	f.glLoadTexture(T,"Datas\\marble.jpg");
 	t->addTexture(T);
 
 	T = f.glCreateTexture(	ITextureObject::CGL_COLOR24_ALPHA,
-							ITextureObject::CGL_OPAQUE,
 							ITextureObject::CGL_BILINEAR);
 	f.glSetTransparency(T, 128);
 	t->addTexture(T);
@@ -155,7 +152,6 @@ void CTeapot::GLInitContext()
 #endif
 
 	T = f.glCreateTexture(	ITextureObject::CGL_COLOR24_ALPHA,
-							ITextureObject::CGL_OPAQUE,
 							ITextureObject::CGL_BILINEAR);
 	f.glSetTransparency(T, 128);
 	f.glLoadTexture(T,"Datas\\bump.tga");
@@ -212,7 +208,6 @@ void CTeapot::GLInitContext()
     s->getMaterial()->setShininess(10.0f);
 	teapot->setDiffuseMap(t->getTexture(0));
 	ITextureObject* normalMap = f.glCreateTexture(	ITextureObject::CGL_COLOR24_ALPHA,
-													ITextureObject::CGL_OPAQUE,
 													ITextureObject::CGL_BILINEAR);
 	CBumpmapLoader loader(f.getConfig().getBumpAmplitude());
     f.glLoadTexture(normalMap,"Datas\\bump3.tga",&loader);

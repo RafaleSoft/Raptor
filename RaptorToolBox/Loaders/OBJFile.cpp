@@ -274,7 +274,7 @@ void OBJYacc::Onmaterial(unsigned int)
 			if (matname == "Fuselage")
 			{
 				CTextureFactory &factory = CTextureFactory::getDefaultFactory();
-				ITextureObject *diffuse = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,ITextureObject::CGL_OPAQUE,ITextureObject::CGL_BILINEAR);
+				ITextureObject *diffuse = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA, ITextureObject::CGL_BILINEAR);
 				factory.glLoadTexture(diffuse,"RafaleM2.jpg");
 
 				CTextureUnitSetup *const pSetup = pShader->glGetTextureUnitsSetup();
