@@ -918,13 +918,15 @@ bool CTextureUnitSetup::exportObject(CRaptorIO& o)
 
 bool CTextureUnitSetup::importMap(TEXTURE_IMAGE_UNIT unit,CRaptorIO& io)
 {
-	string textureName;
-	string setName;
-	string name;
-    io >> name;
+	CTextureUnitSetup::TEXTURE_UNIT_FUNCTION unitFunction = CTextureUnitSetup::CGL_NONE;
+	std::string textureName;
+	std::string setName;
+	std::string name;
+    
 	bool useunit = false;
 	bool enable = useUnit[unit];
 
+	io >> name;
 	string data = io.getValueName();
     while (!data.empty())
     {
@@ -932,6 +934,22 @@ bool CTextureUnitSetup::importMap(TEXTURE_IMAGE_UNIT unit,CRaptorIO& io)
             io >> setName;
 		else if (data == "texname")
             io >> textureName;
+		else if (data == "function")
+		{
+			string function;
+			io >> function;
+
+			if (function == "Opaque")
+				unitFunction = CTextureUnitSetup::CGL_OPAQUE;
+			else if (function == "Multiply")
+				unitFunction = CTextureUnitSetup::CGL_MULTIPLY;
+			else if (function == "AlphaTransparent")
+				unitFunction = CTextureUnitSetup::CGL_ALPHA_TRANSPARENT;
+			else if (function == "ConstantBlended")
+				unitFunction = CTextureUnitSetup::CGL_CONSTANT_BLENDED;
+			else
+				unitFunction = CTextureUnitSetup::CGL_NONE;
+		}
 		else if (data == "enable")
 		{
 			io >> enable;
@@ -949,7 +967,7 @@ bool CTextureUnitSetup::importMap(TEXTURE_IMAGE_UNIT unit,CRaptorIO& io)
 		if (pSet != NULL)
 		{
 			ITextureObject *pImage = pSet->getTexture(textureName);
-			setMap(pImage, unit, CTextureUnitSetup::CGL_NONE);
+			setMap(pImage, unit, unitFunction);
 			if (useUnit)
 				useUnit[unit] = enable;
 		}

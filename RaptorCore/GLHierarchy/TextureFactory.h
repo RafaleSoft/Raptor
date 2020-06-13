@@ -23,9 +23,6 @@
 #pragma once
 #endif // _MSC_VER >= 1000
 
-#if defined(_WIN32)
-	#pragma warning(disable:4786)
-#endif
 
 
 #ifndef __CGLTYPES_HPP__

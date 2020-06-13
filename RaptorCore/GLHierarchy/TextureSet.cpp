@@ -169,10 +169,6 @@ bool CTextureSet::importTextureObject(CRaptorIO& io)
     {
 		if (data == "name")
 			io >> filename;
-        else if (data =="function")
-        {
-            io >> name;
-        }
         else if (data == "filter")
         {
             io >> name;
@@ -230,7 +226,7 @@ bool CTextureSet::importObject(CRaptorIO& io)
     {
 		if (data == "name")
 			CPersistence::importObject(io);
-		else if (data == "Texture")
+		else if (data == "TextureObject")
             importTextureObject(io);
         else if (data == "Cubemap")
 		{
