@@ -352,5 +352,4 @@ void CTest5Doc::GLInitContext(void)
 	CTimeObject::setTimeFactor(1.0f);
 	CAnimator *pAnimator = new CAnimator();
 	CAnimator::SetAnimator(pAnimator);
-
 }

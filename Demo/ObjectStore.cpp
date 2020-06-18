@@ -352,7 +352,6 @@ bool CObjectStore::IsAGroundLow(CGeometry *g)
         tmuSetup->enableImageUnit(CTextureUnitSetup::IMAGE_UNIT_1,false);
 		tmuSetup->enableImageUnit(CTextureUnitSetup::IMAGE_UNIT_2,false);
 		tmuSetup->enableImageUnit(CTextureUnitSetup::IMAGE_UNIT_3,false);
-//        tmuSetup->getTMUShader(CTextureUnitSetup::IMAGE_UNIT_3).shaderOperation = CGL_TEXTURE_GEN_PROJECTION;
 
         const CGeometryEditor &pEditor = g->getEditor();
         pEditor.scaleTexCoords(4.0f,4.0f);
@@ -602,7 +601,6 @@ void CObjectStore::LoadModels(void)
 	tmuSetup->enableImageUnit(CTextureUnitSetup::IMAGE_UNIT_1,false);
 	tmuSetup->enableImageUnit(CTextureUnitSetup::IMAGE_UNIT_2,false);
 	tmuSetup->enableImageUnit(CTextureUnitSetup::IMAGE_UNIT_3,false);
-//    tmuSetup->getTMUShader(CTextureUnitSetup::IMAGE_UNIT_3).shaderOperation = CGL_TEXTURE_GEN_PROJECTION;
 
     const char *discard[13] = {	"Autel2",
 								"Autel21",

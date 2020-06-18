@@ -168,14 +168,14 @@ public:
 	const CTextureUnitSetup& operator=(const CTextureUnitSetup& rsh);
 
     //! Enable or disable the usage of a specific TMU image unit
-    //! @param unit : specifies the image unit to modify ( 0 based )
+    //! @param unit : specifies the image unit to modify ( 0 based ).
     //! @param enable : if true, enables the unit, disables otherwise.
     //! @return : true is setting is valid, false otherwise ( e.g. invalid unit )
     bool enableImageUnit(TEXTURE_IMAGE_UNIT unit, bool enable);
 
 	//! This method specifies the function to be applied when producing a textured fragment.
-	//! @param unit : specifies the image unit to modify ( 0 based )
-	//! @param env_mode : the function requested.
+	//! @param unit : specifies the image unit to modify ( 0 based ).
+	//! @param env_mode : the function requested among TEXTURE_UNIT_FUNCTION enum values.
 	//! @return : true is setting is valid, false otherwise ( e.g. invalid unit )
 	bool setUnitFunction(TEXTURE_IMAGE_UNIT unit, TEXTURE_UNIT_FUNCTION env_mode = CGL_NONE);
 

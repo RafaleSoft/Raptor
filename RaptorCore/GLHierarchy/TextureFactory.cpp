@@ -404,19 +404,18 @@ bool CTextureFactory::glLoadTexture(ITextureObject* const T,
 {
 	//	ensure we can do something ...
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
-	if (!glIsTexture(T->texname))
-	{
-		Raptor::GetErrorManager()->generateRaptorError(CTextureFactory::CTextureFactoryClassID::GetClassId(),
-													   CRaptorErrorManager::RAPTOR_WARNING,
-													   CRaptorMessages::ID_NULL_OBJECT);
-		return false;
-	}
-
 	if (NULL == T->getGLTextureObject())
 	{
 		Raptor::GetErrorManager()->generateRaptorError(	CTextureFactory::CTextureFactoryClassID::GetClassId(),
 														CRaptorErrorManager::RAPTOR_WARNING,
 														CRaptorMessages::ID_NULL_OBJECT);
+		return false;
+	}
+	if (!glIsTexture(T->texname))
+	{
+		Raptor::GetErrorManager()->generateRaptorError(CTextureFactory::CTextureFactoryClassID::GetClassId(),
+			CRaptorErrorManager::RAPTOR_WARNING,
+			CRaptorMessages::ID_NULL_OBJECT);
 		return false;
 	}
 #endif

@@ -112,8 +112,6 @@ private:
 	uint32_t	texname;
     //!  Target : 1D,2D,3D,CUBE, 
 	uint32_t	target;
-    //!	rendering environment model
-	uint32_t    env_mode;
     //	texture level ( mipmapping and anisotropy)
 	uint32_t	level;
 

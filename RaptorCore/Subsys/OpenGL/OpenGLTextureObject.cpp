@@ -53,7 +53,6 @@ COpenGLTextureObject::COpenGLTextureObject(ITextureObject::TEXEL_TYPE type)
 	texname = 0;
 	target = 0;
 	level = 0;
-	env_mode = GL_REPLACE;
 	m_filter = ITextureObject::CGL_UNFILTERED;
 	m_pTexelGenerator = NULL;
     source[0] = source[1] = source[2] = source[3] = 0;
@@ -65,7 +64,6 @@ COpenGLTextureObject::COpenGLTextureObject(const COpenGLTextureObject& rsh)
 	texname = 0;
 	target = rsh.target;
 	level = rsh.level;
-	env_mode = rsh.env_mode;
 	m_filter = rsh.m_filter;
 	m_pTexelGenerator = rsh.m_pTexelGenerator;
     source[0] = source[1] = source[2] = source[3] = 0;
@@ -84,7 +82,6 @@ void COpenGLTextureObject::glvkRender()
 		return;
 
 	glBindTexture(target,texname);
-	glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,env_mode);
 	
 	ITextureGenerator::GENERATOR_KIND kind = ITextureGenerator::NONE;
 	if (NULL != m_pTexelGenerator)

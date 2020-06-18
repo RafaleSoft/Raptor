@@ -272,19 +272,19 @@ bool CTextureUnitSetup::setUnitFunction(TEXTURE_IMAGE_UNIT unit, TEXTURE_UNIT_FU
 			switch (env_mode)
 			{
 				case CGL_OPAQUE:
-					mode = GL_REPLACE;
+					mode = GL_REPLACE;		// 0x1E01
 					break;
 				case CGL_MULTIPLY:
-					mode = GL_MODULATE;
+					mode = GL_MODULATE;		// 0x2100
 					break;
 				case CGL_ALPHA_TRANSPARENT:
-					mode = GL_DECAL;
+					mode = GL_DECAL;		// 0x2101
 					break;
 				case CGL_CONSTANT_BLENDED:
-					mode = GL_BLEND;
+					mode = GL_BLEND;		// 0x0BE2
 					break;
 				case CGL_NONE:
-					mode = CGL_NONE;
+					mode = CGL_NONE;		// 0
 					break;
 				default:
 					res = false;
@@ -690,10 +690,10 @@ void CTextureUnitSetup::glRender(void)
 				glEnable(txt->target);
 				glBindTexture(txt->target, txt->texname);
 
+#if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
 				if (unitFunctions[i] != CGL_NONE)
 					glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, unitFunctions[i]);
-				else
-					glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, txt->env_mode);
+#endif
 			}
 			else
 				glDisable(GL_TEXTURE_2D);

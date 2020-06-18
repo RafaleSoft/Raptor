@@ -217,6 +217,8 @@ void CShadowDisplay::Display()
 	if (reinit)
 		ReInit();
 
+	float dt = 0.01f * CTimeObject::GetGlobalTime();
+
 	S.x = 50.0f * cos(8*PI*dt);
 	S.y = 50.0f * sin(10*PI*dt);
 	S.z = 50.0f * cos(12*PI*dt);
@@ -243,7 +245,4 @@ void CShadowDisplay::Display()
     glEnd();
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_LIGHTING);
-
-	dt+=0.0001f;
-	if (dt>1.0) dt=0.0;
 }

@@ -145,14 +145,14 @@ void CBumppedGeometry::setDiffuseMap(ITextureObject* diffuse)
 {
 	diffuseMap = diffuse;
 	CTextureUnitSetup *setup = m_pBumpShader->glGetTextureUnitsSetup();
-	setup->setDiffuseMap(diffuseMap, CTextureUnitSetup::CGL_MULTIPLY);
+	setup->setDiffuseMap(diffuseMap, CTextureUnitSetup::CGL_NONE);	// tex function superseded by shader.
 }
 
 void CBumppedGeometry::setNormalMap(ITextureObject* normal)
 {
 	normalMap = normal;
 	CTextureUnitSetup *setup = m_pBumpShader->glGetTextureUnitsSetup();
-	setup->setNormalMap(normalMap, CTextureUnitSetup::CGL_OPAQUE);
+	setup->setNormalMap(normalMap, CTextureUnitSetup::CGL_NONE);	// tex function superseded by shader.
 }
 
 void CBumppedGeometry::setEnvironmentMap(ITextureObject* environment)
