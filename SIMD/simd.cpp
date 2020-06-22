@@ -407,7 +407,7 @@ const CPU_INFO& SIMD_API getCPUINFO()
 #if defined(WIN32)
 		int cpuidRegs[4];
 #elif defined(LINUX)
-		unsigned int cpuidRegs[4];
+		uint32_t cpuidRegs[4];
 #endif
 
 		CPUID(0,cpuidRegs);
@@ -418,9 +418,9 @@ const CPU_INFO& SIMD_API getCPUINFO()
 
 		if (nbId >= 1)
 		{
-			*((int*)&cpuInfo.features[0]) = cpuidRegs[1];
-			*((int*)&cpuInfo.features[4]) = cpuidRegs[3];
-			*((int*)&cpuInfo.features[8]) = cpuidRegs[2];
+			*((int*)&cpuInfo.features[0]) = cpuidRegs[1];	// EBX
+			*((int*)&cpuInfo.features[4]) = cpuidRegs[3];	// EDX
+			*((int*)&cpuInfo.features[8]) = cpuidRegs[2];	// ECX
 
 			CPUID(1,cpuidRegs);
 
@@ -520,16 +520,47 @@ const CPU_INFO& SIMD_API getCPUINFO()
 			}
 		}
 		if (nbId >= 5)
-		{ /* monitor / mwait functions */	}
+		{	/* MONITOR / MWAIT management functions*/
+			CPUID(5, cpuidRegs);
+			cpuInfo.monitors.minMonitorSize = (cpuidRegs[0] & 0x0ffff);
+			cpuInfo.monitors.minMonitorSize = (cpuidRegs[1] & 0x0ffff);
+			cpuInfo.monitors.monitorExtensions = (1 == (cpuidRegs[2] & 0x01));
+			cpuInfo.monitors.monitorInterrupts = (2 == (cpuidRegs[2] & 0x02));
+			cpuInfo.monitors.monitorC0States = (cpuidRegs[3] >> 0) & 0x03;
+			cpuInfo.monitors.monitorC1States = (cpuidRegs[3] >> 4) & 0x03;
+			cpuInfo.monitors.monitorC2States = (cpuidRegs[3] >> 8) & 0x03;
+			cpuInfo.monitors.monitorC3States = (cpuidRegs[3] >> 12) & 0x03;
+			cpuInfo.monitors.monitorC4States = (cpuidRegs[3] >> 16) & 0x03;
+			cpuInfo.monitors.monitorC5States = (cpuidRegs[3] >> 20) & 0x03;
+			cpuInfo.monitors.monitorC6States = (cpuidRegs[3] >> 24) & 0x03;
+			cpuInfo.monitors.monitorC7States = (cpuidRegs[3] >> 28) & 0x03;
+		}
 		if (nbId >= 6)
-		{ /* digital thermal sensor and power management functions */ }
+		{ /* digital thermal sensor and power management functions */ 
+			cpuInfo.thermal.digitalTemperatureSensor = (0x01 == (cpuidRegs[0] & 0x01));
+			cpuInfo.thermal.turboBoost = (0x02 == (cpuidRegs[0] & 0x02));
+			cpuInfo.thermal.APICTimer = (0x04 == (cpuidRegs[0] & 0x04));
+			cpuInfo.thermal.PLN = (0x010 == (cpuidRegs[0] & 0x010));
+			cpuInfo.thermal.ECMD = (0x020 == (cpuidRegs[0] & 0x020));
+			cpuInfo.thermal.PTM = (0x040 == (cpuidRegs[0] & 0x040));
+			cpuInfo.thermal.HWP = (0x080 == (cpuidRegs[0] & 0x080));
+			cpuInfo.thermal.HWPNotification = (0x0100 == (cpuidRegs[0] & 0x0100));
+			cpuInfo.thermal.HWPActivityWindow = (0x0200 == (cpuidRegs[0] & 0x0200));
+			cpuInfo.thermal.HWPEnergyPreference = (0x0400 == (cpuidRegs[0] & 0x0400));
+			cpuInfo.thermal.HWPPackageLevel = (0x0800 == (cpuidRegs[0] & 0x0800));
+			cpuInfo.thermal.HDC = (0x02000 == (cpuidRegs[0] & 0x02000));
+			cpuInfo.thermal.numInterrupts = (cpuidRegs[1] & 0x0f);
+			cpuInfo.thermal.HWCoordination = (1 == (cpuidRegs[2] & 0x01));
+			cpuInfo.thermal.energyBias = (8 == (cpuidRegs[2] & 0x08));
+		}
 		//
 		// Processor clock frequency can only be determined in superuser mode.
 		//	Using this lib in user space will fail, freq can be queried from
 		//	win32 performance counters or roughly extracted from processor brand string
-		// 
 		if (nbId >= 7)
-		{ /* reserved */ }
+		{ /* Structured Extended Features */ 
+
+		}
 		if (nbId >= 8)
 		{ /* reserved */ }
 		if (nbId >= 9)

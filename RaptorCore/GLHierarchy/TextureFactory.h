@@ -23,9 +23,6 @@
 #pragma once
 #endif // _MSC_VER >= 1000
 
-#if defined(_WIN32)
-	#pragma warning(disable:4786)
-#endif
 
 
 #ifndef __CGLTYPES_HPP__
@@ -65,49 +62,39 @@ public:
 
 	//!	Creates a 2D texture object with power of two dimensions ( much faster ! )
     //! @param type : the type of texels of the texture ( server memory model )
-	//! @param env_mode : is one of the TEXTURE_FUNCTION enum
     //! @param filter : specifies the kind of texel sampler of the texture object
     //! @return : the texture created or NULL if there has been an error
     ITextureObject*		const glCreateTexture(  ITextureObject::TEXEL_TYPE type,
-												ITextureObject::TEXTURE_FUNCTION env_mode = ITextureObject::CGL_ALPHA_TRANSPARENT,
 												ITextureObject::TEXTURE_FILTER filter = ITextureObject::CGL_UNFILTERED);
 
     //!	Creates a 2D rectangular texture object
 	//! @param type : the type of texels of the texture ( server memory model )
-	//! @param env_mode : is one of the TEXTURE_FUNCTION enum
     //! @param filter : specifies the kind of texel sampler of the texture object
     //! @return : the texture created or NULL if there has been an error
     ITextureObject*		const glCreateRectangleTexture(	ITextureObject::TEXEL_TYPE type,
-														ITextureObject::TEXTURE_FUNCTION env_mode = ITextureObject::CGL_ALPHA_TRANSPARENT,
 														ITextureObject::TEXTURE_FILTER filter = ITextureObject::CGL_UNFILTERED);
 	
 	//!	Creates a texture object
     //! @param type : the type of texels of the texture ( server memory model )
-	//! @param env_mode : is one of the TEXTURE_FUNCTION enum
 	//! @param pGenerator : is a texture generator that produces texels to dynamically 'reload' the texture.
     //! @param filter : specifies the kind of texel sampler of the texture object
     //! @return : the texture created or NULL if there has been an error
     ITextureObject*		const glCreateDynamicTexture(	ITextureObject::TEXEL_TYPE type,
-														ITextureObject::TEXTURE_FUNCTION env_mode = ITextureObject::CGL_ALPHA_TRANSPARENT,
 														ITextureObject::TEXTURE_FILTER filter = ITextureObject::CGL_UNFILTERED,
 														ITextureGenerator* pGenerator = NULL);
 
 	//!	Creates a cubemap object
 	//! @param type : the type of texels of the texture ( server memory model )
-	//! @param env_mode : is one of the TEXTURE_FUNCTION enum
     //! @param filter : specifies the kind of texel sampler of the texture object
     //! @return : the texture created or NULL if there has been an error
 	ITextureObject*		const glCreateCubemap(	ITextureObject::TEXEL_TYPE type,
-												ITextureObject::TEXTURE_FUNCTION env_mode = ITextureObject::CGL_ALPHA_TRANSPARENT,
 												ITextureObject::TEXTURE_FILTER filter = ITextureObject::CGL_UNFILTERED);
 
     //!	Creates a 3D texture object. Might return NULL if volumic textures are not supported.
 	//! @param type : the type of texels of the texture ( server memory model )
-	//! @param env_mode : is one of the TEXTURE_FUNCTION enum
     //! @param filter : specifies the kind of texel sampler of the texture object
     //! @return : the texture created or NULL if there has been an error
 	ITextureObject*		const glCreateVolumeTexture(ITextureObject::TEXEL_TYPE type,
-													ITextureObject::TEXTURE_FUNCTION env_mode = ITextureObject::CGL_ALPHA_TRANSPARENT,
 													ITextureObject::TEXTURE_FILTER filter = ITextureObject::CGL_UNFILTERED);
 
 	//!	Creates a sprite object. A sprite is a small texture with
@@ -118,11 +105,9 @@ public:
 
 	//!	Creates a Vulkan image texture object.
 	//! @param type : the type of texels of the texture ( server memory model )
-	//! @param env_mode : is one of the TEXTURE_FUNCTION enum
 	//! @param filter : specifies the kind of texel sampler of the texture object
 	//! @return : the texture created or NULL if there has been an error
 	ITextureObject*	const vkCreateTexture(	ITextureObject::TEXEL_TYPE type,
-											ITextureObject::TEXTURE_FUNCTION env_mode = ITextureObject::CGL_ALPHA_TRANSPARENT,
 											ITextureObject::TEXTURE_FILTER filter = ITextureObject::CGL_UNFILTERED);
 
 	//!	If .buffer extension is used,

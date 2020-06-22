@@ -163,6 +163,7 @@ void HeatSpots::glRenderFilterOutput()
     glPushAttrib(GL_ENABLE_BIT);
     glDisable(GL_LIGHTING);
 	glEnable(GL_TEXTURE_2D);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 	
     for (unsigned int i=0;i<m_spots.size();i++)
     {
@@ -213,7 +214,6 @@ bool HeatSpots::glInitFilter()
 		(m_fModel == CRaptorDisplayFilter::RENDER_TEXTURE))
 	{
 		colorInput = filterFactory.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
-															ITextureObject::CGL_OPAQUE,
 															ITextureObject::CGL_BILINEAR,
 															colorExternalSource);
 	}

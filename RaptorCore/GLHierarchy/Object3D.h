@@ -193,13 +193,22 @@ public:
 	virtual void transform(GL_MATRIX &m)=0;
 
 	//! Rendering:
-	//!	This method renders the BBox of 'this' using GL_LINE primitives
-	//!	or GL_FILL primitives ( in this case, the BBox looks a flat shaded
-	//!	parallelepipedic box )
-	virtual void glRenderBBox(bool filled = false);
+	//!	This method renders the BBox of 'this' using a line geometry shader
+	//!	or a triangle strip geometry shader ( in this case, the BBox looks a 
+	//!	flat shaded parallelepipedic box )
+	//!	A rendering model for boxes is used to render wire, filled or 
+	//!	raw drawcall when pipeline is set for box rendering pass and render
+	//!	all at once.
+	typedef enum
+	{
+		WIREFRAME,
+		FILLED,
+		RAW
+	} RENDER_BOX_MODEL;
+	virtual void glRenderBBox(RENDER_BOX_MODEL filled = WIREFRAME);
 
 	//! Rendering:
-	//! This methods performs clippng before rendering. Easy to use for
+	//! This methods performs clipping before rendering. Easy to use for
 	//!	a single object an it can avoid the rendering of a large hierarchy
 	//!	but it is not suitable for a very efficient clipping technique.
 	//!	Expect a 'scene' object to appear in C3DEngine object in future releases.
@@ -307,11 +316,6 @@ private:
 	
 	//! BBox buffer object pointer.
 	uint64_t		bbox;
-
-#if 0
-	RAPTOR_HANDLE	filledBox;
-	RAPTOR_HANDLE	wireBox;
-#endif
 };
 
 RAPTOR_NAMESPACE_END

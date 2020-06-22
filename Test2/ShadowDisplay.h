@@ -37,8 +37,6 @@ private:
     C3DScene		*m_pScene;
 	IViewPoint		*m_pVP;
 
-	float			dt;
-
 	virtual void ReInit();
 
     virtual void UnInit();

@@ -382,11 +382,11 @@ void CLight::glRenderEffects(void)
 	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
 	glDisable(GL_TEXTURE_2D);
 	pExtensions->glBeginQueryARB(GL_SAMPLES_PASSED_ARB, query);
-	glBegin(GL_QUADS);
+	glBegin(GL_TRIANGLE_STRIP);
 		glVertex3f(-V, -V, 0.0f);
 		glVertex3f(+V, -V, 0.0f);
-		glVertex3f(+V, +V, 0.0f);
 		glVertex3f(-V, +V, 0.0f);
+		glVertex3f(+V, +V, 0.0f);
 	glEnd();
 	pExtensions->glEndQueryARB(GL_SAMPLES_PASSED_ARB);
 	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);

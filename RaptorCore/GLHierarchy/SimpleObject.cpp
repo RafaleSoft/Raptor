@@ -32,7 +32,11 @@ RAPTOR_NAMESPACE
 CSimpleObject::CSimpleObject()
 	:CObject3D(CObject3D::CObject3DClassID::GetClassId(),"SIMPLE_OBJECT")
 {
-
+	//! Initialise a dummy bounding box to have a chance 
+	//!	to make the object visible in most cases
+	GL_COORD_VERTEX vmin(-1.0f, -1.0f, 0.0f, 1.0f);
+	GL_COORD_VERTEX vmax(1.0f, 1.0f, 0.0f, 1.0f);
+	setBoundingBox(vmin, vmax);
 }
 
 CSimpleObject::CSimpleObject(const std::string& name)

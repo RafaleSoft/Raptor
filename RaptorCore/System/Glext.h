@@ -958,6 +958,10 @@ extern "C" {
 	#define GL_DEBUG_SEVERITY_NOTIFICATION    0x826B
 	#define GL_MAX_DEBUG_GROUP_STACK_DEPTH    0x826C
 	#define GL_DEBUG_GROUP_STACK_DEPTH        0x826D
+	#define GL_MAX_FRAMEBUFFER_WIDTH          0x9315
+	#define GL_MAX_FRAMEBUFFER_HEIGHT         0x9316
+	#define GL_MAX_FRAMEBUFFER_LAYERS         0x9317
+	#define GL_MAX_FRAMEBUFFER_SAMPLES        0x9318
 
 	typedef void (APIENTRY  *GLDEBUGPROC)(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *userParam);
 #endif

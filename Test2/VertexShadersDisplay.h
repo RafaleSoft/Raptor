@@ -14,6 +14,7 @@
 class ShaderModifier;
 class CTextureWaves;
 
+
 class CVertexShadersDisplay : public CGenericDisplay
 {
 public:

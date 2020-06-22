@@ -40,7 +40,6 @@ public:
 
 		CTextureFactory &factory = CTextureFactory::getDefaultFactory();
         background = factory.glCreateTexture(	ITextureObject::CGL_COLOR24_ALPHA,
-												ITextureObject::CGL_OPAQUE,
 												ITextureObject::CGL_BILINEAR);
         factory.glLoadTexture(background,"Raptor_splash.jpg");
         //sfactory.glLoadTexture(T,"Dune.tif");

@@ -56,7 +56,7 @@ typedef enum
 	_3DFX
 } EXTENSION_KIND;
 
-typedef struct
+typedef struct BUILD_SUPPLEMENT_t
 {
 	bool DEBUG;
 	bool REDIST;

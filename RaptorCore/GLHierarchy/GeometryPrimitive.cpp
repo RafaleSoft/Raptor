@@ -7,9 +7,6 @@
 #ifndef __CGLTYPES_HPP__
     #include "System/CGLTypes.h"
 #endif
-#ifndef __RAPTOR_GLEXT_H__
-	#include "System/Glext.h"
-#endif
 #if !defined(AFX_GEOMETRYPRIMITIVE_H__890D2E18_2DAC_4094_AE20_BDF7D6FA5DBF__INCLUDED_)
 	#include "GeometryPrimitive.h"
 #endif
@@ -27,6 +24,9 @@
 #endif
 #if !defined(AFX_RAPTORINSTANCE_H__90219068_202B_46C2_BFF0_73C24D048903__INCLUDED_)
 	#include "Subsys/RaptorInstance.h"
+#endif
+#if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
+	#include "System/RaptorGLExtensions.h"
 #endif
 
 RAPTOR_NAMESPACE
@@ -115,7 +115,9 @@ void CGeometryPrimitive::glRender(void)
 			float	*vp = NULL;
             glGetPointerv(GL_VERTEX_ARRAY_POINTER,(void**)&vp);
 			float	*tp = NULL;
-            glGetPointerv(GL_TEXTURE_COORD_ARRAY_POINTER,(void**)&tp);
+            //glGetPointerv(GL_TEXTURE_COORD_ARRAY_POINTER,(void**)&tp);
+			const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+			pExtensions->glGetVertexAttribPointervARB(CProgramParameters::TEXCOORD0, GL_VERTEX_ATTRIB_ARRAY_POINTER_ARB, (void**)&tp);
 
 			if (pAllocator->isMemoryLocked())
 			{

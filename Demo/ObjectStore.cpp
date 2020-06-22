@@ -170,7 +170,7 @@ bool CObjectStore::IsAColumn(CGeometry *&g)
 
 		*geo->getShader()->getMaterial() = *m_material;
 		CTextureUnitSetup *tmuSetup = geo->getShader()->glGetTextureUnitsSetup();
-		tmuSetup->setDiffuseMap(m_textures->getTexture(MARBLE4));
+		tmuSetup->setDiffuseMap(m_textures->getTexture(MARBLE4), CTextureUnitSetup::CGL_MULTIPLY);
         tmuSetup->enableImageUnit(CTextureUnitSetup::IMAGE_UNIT_1,false);
 		tmuSetup->enableImageUnit(CTextureUnitSetup::IMAGE_UNIT_2,false);
 		tmuSetup->enableImageUnit(CTextureUnitSetup::IMAGE_UNIT_3,false);
@@ -190,10 +190,10 @@ bool CObjectStore::IsAColumn(CGeometry *&g)
         *bump->getShader()->getMaterial() = *m_material;
 		bump->getShader()->getMaterial()->setShininess(4.0f);
 		bump->setDiffuseMap(m_textures->getTexture(ROCKSCULPT));
+		bump->getShader()->glGetTextureUnitsSetup()->setUnitFunction(CTextureUnitSetup::IMAGE_UNIT_0, CTextureUnitSetup::CGL_MULTIPLY);
 
 		CTextureFactory &factory = CTextureFactory::getDefaultFactory();
 		ITextureObject *normalMap = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
-                                                            ITextureObject::CGL_MULTIPLY,
                                                             ITextureObject::CGL_TRILINEAR);
 		factory.glLoadTexture(normalMap,BUMP_0);
 		bump->setNormalMap(normalMap);
@@ -208,7 +208,7 @@ bool CObjectStore::IsAColumn(CGeometry *&g)
 	{
 		*geo->getShader()->getMaterial() = *m_material;
 		CTextureUnitSetup *tmuSetup = geo->getShader()->glGetTextureUnitsSetup();
-		tmuSetup->setDiffuseMap(m_textures->getTexture(MARBLE5));
+		tmuSetup->setDiffuseMap(m_textures->getTexture(MARBLE5), CTextureUnitSetup::CGL_MULTIPLY);
 		tmuSetup->enableImageUnit(CTextureUnitSetup::IMAGE_UNIT_2,false);
 		res = true;
 	}
@@ -216,7 +216,7 @@ bool CObjectStore::IsAColumn(CGeometry *&g)
 	{
 		*geo->getShader()->getMaterial() = *m_material;
 		CTextureUnitSetup *tmuSetup = geo->getShader()->glGetTextureUnitsSetup();
-		tmuSetup->setDiffuseMap(m_textures->getTexture(MARBLE5));
+		tmuSetup->setDiffuseMap(m_textures->getTexture(MARBLE5), CTextureUnitSetup::CGL_MULTIPLY);
 		tmuSetup->enableImageUnit(CTextureUnitSetup::IMAGE_UNIT_2,false);
 		res = true;
 	}
@@ -250,7 +250,7 @@ bool CObjectStore::loadColumn(void)
 		    pEditor.scaleTexCoords(4.0f,4.0f);
 		    *g->getShader()->getMaterial() = *m_material;
 		    CTextureUnitSetup *tmuSetup = g->getShader()->glGetTextureUnitsSetup();
-		    tmuSetup->setDiffuseMap(m_textures->getTexture(MARBLE4));
+		    tmuSetup->setDiffuseMap(m_textures->getTexture(MARBLE4), CTextureUnitSetup::CGL_MULTIPLY);
 	    }
 	    else if (name == "ColumnBase")
 	    {
@@ -261,19 +261,19 @@ bool CObjectStore::loadColumn(void)
 			g->getShader()->getMaterial()->setDiffuse(0.6f,0.6f,0.6f,1.0f);
 			g->getShader()->getMaterial()->setSpecular(0.4f,0.4f,0.4f,1.0f);
 		    CTextureUnitSetup *tmuSetup = g->getShader()->glGetTextureUnitsSetup();
-		    tmuSetup->setDiffuseMap(m_textures->getTexture(ROCKSCULPT));
+		    tmuSetup->setDiffuseMap(m_textures->getTexture(ROCKSCULPT), CTextureUnitSetup::CGL_MULTIPLY);
 	    }
 	    else if (name == "ColumnTop2#2")
 	    {
 		    *g->getShader()->getMaterial() = *m_material;
 		    CTextureUnitSetup *tmuSetup = g->getShader()->glGetTextureUnitsSetup();
-		    tmuSetup->setDiffuseMap(m_textures->getTexture(MARBLE5));
+		    tmuSetup->setDiffuseMap(m_textures->getTexture(MARBLE5), CTextureUnitSetup::CGL_MULTIPLY);
 	    }
 	    else if (name == "ColumnDow0#2")	// 3DSMax Sucks !!!
 	    {
 		    *g->getShader()->getMaterial() = *m_material;
 		    CTextureUnitSetup *tmuSetup = g->getShader()->glGetTextureUnitsSetup();
-		    tmuSetup->setDiffuseMap(m_textures->getTexture(MARBLE5));
+		    tmuSetup->setDiffuseMap(m_textures->getTexture(MARBLE5), CTextureUnitSetup::CGL_MULTIPLY);
 	    }
 
         g = next;
@@ -316,21 +316,20 @@ bool CObjectStore::IsAGround(CGeometry *g)
         tmuSetup->enableImageUnit(CTextureUnitSetup::IMAGE_UNIT_1,false);
 		tmuSetup->enableImageUnit(CTextureUnitSetup::IMAGE_UNIT_2,false);
 		tmuSetup->enableImageUnit(CTextureUnitSetup::IMAGE_UNIT_3,false);
-//        tmuSetup->getTMUShader(CTextureUnitSetup::IMAGE_UNIT_3).shaderOperation = CGL_TEXTURE_GEN_PROJECTION;
 
         const CGeometryEditor &pEditor = g->getEditor();
         pEditor.scaleTexCoords(4.0f,4.0f);
 
 		if (name == "GStar")
-		    tmuSetup->setDiffuseMap(m_textures->getTexture(MARBLE2));
+		    tmuSetup->setDiffuseMap(m_textures->getTexture(MARBLE2), CTextureUnitSetup::CGL_MULTIPLY);
 		else if (name == "GQuad")
-		    tmuSetup->setDiffuseMap(m_textures->getTexture(MARBLE0));
+		    tmuSetup->setDiffuseMap(m_textures->getTexture(MARBLE0), CTextureUnitSetup::CGL_MULTIPLY);
 		else if (name == "GBorder")	// 3DSMax Sucks !!!
-		    tmuSetup->setDiffuseMap(m_textures->getTexture(MARBLE1));
+		    tmuSetup->setDiffuseMap(m_textures->getTexture(MARBLE1), CTextureUnitSetup::CGL_MULTIPLY);
 		else if (name == "GBorder2")	// 3DSMax Sucks !!!
-		    tmuSetup->setDiffuseMap(m_textures->getTexture(MARBLE1));
+		    tmuSetup->setDiffuseMap(m_textures->getTexture(MARBLE1), CTextureUnitSetup::CGL_MULTIPLY);
 		else if (name == "GCorner")	// 3DSMax Sucks !!!
-		    tmuSetup->setDiffuseMap(m_textures->getTexture(MARBLE3));
+		    tmuSetup->setDiffuseMap(m_textures->getTexture(MARBLE3), CTextureUnitSetup::CGL_MULTIPLY);
 
         return true;
     }
@@ -353,21 +352,20 @@ bool CObjectStore::IsAGroundLow(CGeometry *g)
         tmuSetup->enableImageUnit(CTextureUnitSetup::IMAGE_UNIT_1,false);
 		tmuSetup->enableImageUnit(CTextureUnitSetup::IMAGE_UNIT_2,false);
 		tmuSetup->enableImageUnit(CTextureUnitSetup::IMAGE_UNIT_3,false);
-//        tmuSetup->getTMUShader(CTextureUnitSetup::IMAGE_UNIT_3).shaderOperation = CGL_TEXTURE_GEN_PROJECTION;
 
         const CGeometryEditor &pEditor = g->getEditor();
         pEditor.scaleTexCoords(4.0f,4.0f);
 
 	    if (name == "GroundStar")
-		    tmuSetup->setDiffuseMap(m_textures->getTexture(MARBLE2));
+		    tmuSetup->setDiffuseMap(m_textures->getTexture(MARBLE2), CTextureUnitSetup::CGL_MULTIPLY);
 	    else if (name == "GroundQuad")
-		    tmuSetup->setDiffuseMap(m_textures->getTexture(MARBLE0));
+		    tmuSetup->setDiffuseMap(m_textures->getTexture(MARBLE0), CTextureUnitSetup::CGL_MULTIPLY);
 	    else if (name == "GroundBord")	// 3DSMax Sucks !!!
-		    tmuSetup->setDiffuseMap(m_textures->getTexture(MARBLE1));
+		    tmuSetup->setDiffuseMap(m_textures->getTexture(MARBLE1), CTextureUnitSetup::CGL_MULTIPLY);
 	    else if (name == "GroundBor0")	// 3DSMax Sucks !!!
-		    tmuSetup->setDiffuseMap(m_textures->getTexture(MARBLE1));
+		    tmuSetup->setDiffuseMap(m_textures->getTexture(MARBLE1), CTextureUnitSetup::CGL_MULTIPLY);
 	    else if (name == "GroundCorn")	// 3DSMax Sucks !!!
-		    tmuSetup->setDiffuseMap(m_textures->getTexture(MARBLE3));
+		    tmuSetup->setDiffuseMap(m_textures->getTexture(MARBLE3), CTextureUnitSetup::CGL_MULTIPLY);
 
         return true;
     }
@@ -384,7 +382,7 @@ bool CObjectStore::IsAStair(CGeometry *g)
 	{
 		*geo->getShader()->getMaterial() = *m_material;
 		CTextureUnitSetup *tmuSetup = geo->getShader()->glGetTextureUnitsSetup();
-		tmuSetup->setDiffuseMap(m_textures->getTexture(BRICKS));
+		tmuSetup->setDiffuseMap(m_textures->getTexture(BRICKS), CTextureUnitSetup::CGL_MULTIPLY);
 		return true;
 	}
 	else if (name.substr(0,9) == "StairStep")
@@ -394,7 +392,7 @@ bool CObjectStore::IsAStair(CGeometry *g)
 		pEditor.scaleTexCoords(4.0f,4.0f);
 		*geo->getShader()->getMaterial() = *m_material;
 		CTextureUnitSetup *tmuSetup = geo->getShader()->glGetTextureUnitsSetup();
-		tmuSetup->setDiffuseMap(m_textures->getTexture(BRICKS));
+		tmuSetup->setDiffuseMap(m_textures->getTexture(BRICKS), CTextureUnitSetup::CGL_MULTIPLY);
 		return true;
 	}
 	else if (name == "StairWall")
@@ -404,7 +402,7 @@ bool CObjectStore::IsAStair(CGeometry *g)
 		pEditor.flipNormals();
 		*geo->getShader()->getMaterial() = *m_material;
 		CTextureUnitSetup *tmuSetup = geo->getShader()->glGetTextureUnitsSetup();
-		tmuSetup->setDiffuseMap(m_textures->getTexture(BRICKS));
+		tmuSetup->setDiffuseMap(m_textures->getTexture(BRICKS), CTextureUnitSetup::CGL_MULTIPLY);
 		return true;
 	}
 	else
@@ -513,41 +511,35 @@ void CObjectStore::LoadModels(void)
 	}
 	ITextureObject* T = NULL;
 	T = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
-								ITextureObject::CGL_MULTIPLY,
 								ITextureObject::CGL_BILINEAR);
 	factory.glSetTransparency(T, 192);
     factory.glLoadTexture(T,MARBLE_0);
 	m_textures->addTexture(T);
 
 	T = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
-								ITextureObject::CGL_MULTIPLY,
 								ITextureObject::CGL_BILINEAR);
 	factory.glSetTransparency(T, 255);
 	factory.glLoadTexture(T,MARBLE_1);
 	m_textures->addTexture(T);
 
 	T = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
-								ITextureObject::CGL_MULTIPLY,
 								ITextureObject::CGL_BILINEAR);
 	factory.glSetTransparency(T, 192);
 	factory.glLoadTexture(T,MARBLE_2);
 	m_textures->addTexture(T);
 
 	T = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
-								ITextureObject::CGL_MULTIPLY,
 								ITextureObject::CGL_BILINEAR);
 	factory.glSetTransparency(T, 255);
 	factory.glLoadTexture(T,MARBLE_3);
 	m_textures->addTexture(T);
 
 	T = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
-								ITextureObject::CGL_MULTIPLY,
 								ITextureObject::CGL_BILINEAR);
 	factory.glLoadTexture(T,MARBLE_4);
 	m_textures->addTexture(T);
 
 	T = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
-								ITextureObject::CGL_MULTIPLY,
 								ITextureObject::CGL_BILINEAR);
 	factory.glLoadTexture(T,MARBLE_5);
 	m_textures->addTexture(T);
@@ -555,7 +547,6 @@ void CObjectStore::LoadModels(void)
     config.setCurrentAnisotropy(16.0f);
 
 	T = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
-								ITextureObject::CGL_MULTIPLY,
 								ITextureObject::CGL_ANISOTROPIC);
 	config.setGenerateMipmap(false);
 	factory.glSetTransparency(T, 255);
@@ -582,26 +573,22 @@ void CObjectStore::LoadModels(void)
 	config.setGenerateMipmap(true);
 
 	T = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
-								ITextureObject::CGL_MULTIPLY,
 								ITextureObject::CGL_BILINEAR);
 	factory.glLoadTexture(T,MARBLE_2);
 	m_textures->addTexture(T);
 
 	T = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
-								ITextureObject::CGL_MULTIPLY,
 								ITextureObject::CGL_BILINEAR);
 	factory.glLoadTexture(T,FLARE_BASE);
 	m_textures->addTexture(T);
 
 	T = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
-								ITextureObject::CGL_MULTIPLY, 
 								ITextureObject::CGL_BILINEAR);
 	factory.glSetTransparency(T, 255);
 	factory.glLoadTexture(T,OLDWOOD_1);
 	m_textures->addTexture(T);
 
     T = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
-								ITextureObject::CGL_MULTIPLY,
 								ITextureObject::CGL_BILINEAR);
 	factory.glLoadTexture(T,ROCKSCULPT);
 	m_textures->addTexture(T);
@@ -610,11 +597,10 @@ void CObjectStore::LoadModels(void)
     m_pRoofShader->setColor(0.2f,0.2f,0.2f,1.0f);
 	*m_pRoofShader->getMaterial() = *m_material;
 	CTextureUnitSetup *tmuSetup = m_pRoofShader->glGetTextureUnitsSetup();
-	tmuSetup->setDiffuseMap(m_textures->getTexture(WOOD));
+	tmuSetup->setDiffuseMap(m_textures->getTexture(WOOD), CTextureUnitSetup::CGL_MULTIPLY);
 	tmuSetup->enableImageUnit(CTextureUnitSetup::IMAGE_UNIT_1,false);
 	tmuSetup->enableImageUnit(CTextureUnitSetup::IMAGE_UNIT_2,false);
 	tmuSetup->enableImageUnit(CTextureUnitSetup::IMAGE_UNIT_3,false);
-//    tmuSetup->getTMUShader(CTextureUnitSetup::IMAGE_UNIT_3).shaderOperation = CGL_TEXTURE_GEN_PROJECTION;
 
     const char *discard[13] = {	"Autel2",
 								"Autel21",
@@ -687,7 +673,7 @@ void CObjectStore::LoadModels(void)
             CShader * const s = geo->getShader();
             *s->getMaterial() = *m_material;
             CTextureUnitSetup *wallTmuSetup = s->glGetTextureUnitsSetup();
-			wallTmuSetup->setDiffuseMap(m_textures->getTexture(BRICKS));
+			wallTmuSetup->setDiffuseMap(m_textures->getTexture(BRICKS), CTextureUnitSetup::CGL_MULTIPLY);
             const CGeometryEditor &pEditor = g->getEditor();
 		    pEditor.scaleTexCoords(2.0f,2.0f);
         }
@@ -697,7 +683,7 @@ void CObjectStore::LoadModels(void)
             CShader * const s = geo->getShader();
             *s->getMaterial() = *m_material;
             CTextureUnitSetup *wallTmuSetup = s->glGetTextureUnitsSetup();
-			wallTmuSetup->setDiffuseMap(m_textures->getTexture(BRICKS));
+			wallTmuSetup->setDiffuseMap(m_textures->getTexture(BRICKS), CTextureUnitSetup::CGL_MULTIPLY);
             const CGeometryEditor &pEditor = g->getEditor();
 		    pEditor.scaleTexCoords(2.0f,2.0f);
         }
@@ -774,7 +760,6 @@ void CObjectStore::BuildObjects(void)
     const CGeometryEditor &pEditor = m_pBumpKnot->getEditor();
 	pEditor.scaleTexCoords(48.0f,2.0f);
 	ITextureObject* normalMap = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
-														ITextureObject::CGL_MULTIPLY,
 														ITextureObject::CGL_TRILINEAR);
 	factory.glLoadTexture(normalMap,BUMP_0);
     m_pBumpKnot->setDiffuseMap(m_textures->getTexture(MARBLE5));

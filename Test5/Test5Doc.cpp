@@ -31,7 +31,7 @@
 
 RAPTOR_NAMESPACE
 
-//#define VULKAN_TEST 1
+// #define VULKAN_TEST 1
 
 
 class MySphere : public CBasicObjects::CGeoSphere
@@ -189,25 +189,20 @@ void CTest5Doc::GLInitContext(void)
 
 
 	C3DScene *pScene = m_pDisplay->getRootScene();
-	//CShader *shader = new CShader("uniforms-shader");
-	//CVertexShader *p = shader->glGetVertexProgram("uniforms");
-	//p->glLoadProgramFromStream(*shdr);
-	//bool res = shader->glCompileShader();
-
 	CTextureFactory &f = CTextureFactory::getDefaultFactory();
 	CShader* s = obj->getShader();
 
 
 #ifdef VULKAN_TEST
-	m_pTexture = f.vkCreateTexture(ITextureObject::CGL_COLOR24_ALPHA, ITextureObject::CGL_ALPHA_TRANSPARENT, ITextureObject::CGL_BILINEAR);
+	m_pTexture = f.vkCreateTexture(ITextureObject::CGL_COLOR24_ALPHA, ITextureObject::CGL_BILINEAR);
 #else
-	m_pTexture = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA, ITextureObject::CGL_ALPHA_TRANSPARENT, ITextureObject::CGL_BILINEAR);
+	m_pTexture = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA, ITextureObject::CGL_BILINEAR);
 #endif
 
 
 	f.glLoadTexture(m_pTexture, "earth.TGA");
 	CTextureUnitSetup *tus = s->glGetTextureUnitsSetup();
-	tus->setDiffuseMap(m_pTexture);
+	tus->setDiffuseMap(m_pTexture, CTextureUnitSetup::CGL_OPAQUE);
 
 	CMaterial *pMat = s->getMaterial();
 	pMat->setAmbient(0.02f, 0.02f, 0.02f, 1.0f);
@@ -262,7 +257,8 @@ void CTest5Doc::GLInitContext(void)
 
 	pScene->addObject(obj);
 #else	
-	m_pTexture = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,ITextureObject::CGL_MULTIPLY,ITextureObject::CGL_BILINEAR);
+	m_pTexture = f.glCreateTexture(	ITextureObject::CGL_COLOR24_ALPHA,
+									ITextureObject::CGL_BILINEAR);
 	CBumpmapLoader *loader = new CBumpmapLoader(f.getConfig().getBumpAmplitude());
     f.glLoadTexture(m_pTexture,"bump3.tga", loader);
 	//f.getConfig().setBumpAmplitude(4.0f);
@@ -356,5 +352,4 @@ void CTest5Doc::GLInitContext(void)
 	CTimeObject::setTimeFactor(1.0f);
 	CAnimator *pAnimator = new CAnimator();
 	CAnimator::SetAnimator(pAnimator);
-
 }

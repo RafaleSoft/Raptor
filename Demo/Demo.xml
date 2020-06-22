@@ -2,18 +2,18 @@
 <Data name="Demo"
   	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<TextureSet name="MAIN_TEXTURES">
-      <Texture name="Datas\\LensFlare2.tga" function="multiply" filter="bilinear" mode="compressed"/>
-	  <Texture name="Datas\\flare0.jpg" function="multiply" filter="bilinear" mode="compressed"/>
-      <Texture name="Datas\\flare1.jpg" function="multiply" filter="bilinear" mode="compressed"/>
-      <Texture name="Datas\\flare3.jpg" function="multiply" filter="bilinear" mode="compressed"/>
-      <Texture name="Datas\\flare4.jpg" function="multiply" filter="bilinear" mode="compressed"/>
-      <Texture name="Datas\\flare5.jpg" function="multiply" filter="bilinear" mode="compressed"/>
-      <Texture name="Datas\\flare6.jpg" function="multiply" filter="bilinear" mode="compressed"/>
-      <Texture name="Datas\\flare7.jpg" function="multiply" filter="bilinear" mode="compressed"/>
-      <Texture name="Datas\\flare8.jpg" function="multiply" filter="bilinear" mode="compressed" transparency="0.5"/>
-      <Texture name="Datas\\flare10.jpg" function="multiply" filter="bilinear" mode="compressed"/>
-      <Texture name="Datas\\Fire.tga" function="multiply" filter="bilinear" mode="compressed"/>
-      <Texture name="Datas\\Smoke.tga" function="multiply" filter="bilinear" mode="compressed" transparency="0.5"/>
+    <TextureObject name="Datas\\LensFlare2.tga" filter="bilinear" mode="compressed"/>
+	  <TextureObject name="Datas\\flare0.jpg" filter="bilinear" mode="compressed"/>
+    <TextureObject name="Datas\\flare1.jpg" filter="bilinear" mode="compressed"/>
+    <TextureObject name="Datas\\flare3.jpg" filter="bilinear" mode="compressed"/>
+    <TextureObject name="Datas\\flare4.jpg" filter="bilinear" mode="compressed"/>
+    <TextureObject name="Datas\\flare5.jpg" filter="bilinear" mode="compressed"/>
+    <TextureObject name="Datas\\flare6.jpg" filter="bilinear" mode="compressed"/>
+    <TextureObject name="Datas\\flare7.jpg" filter="bilinear" mode="compressed"/>
+    <TextureObject name="Datas\\flare8.jpg" filter="bilinear" mode="compressed" transparency="0.5"/>
+    <TextureObject name="Datas\\flare10.jpg" filter="bilinear" mode="compressed"/>
+    <TextureObject name="Datas\\Fire.tga" filter="bilinear" mode="compressed"/>
+    <TextureObject name="Datas\\Smoke.tga" filter="bilinear" mode="compressed" transparency="0.5"/>
   </TextureSet>
   <ParticleManager name="PARTICLE_SYSTEMS">
       <Particle name="fire" systemSize="100" revive="1" pointSize="0.2" sprite="0" type="texture" model="fire">

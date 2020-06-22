@@ -76,7 +76,6 @@ void CLightFlare::glRender(float dx, float dy)
 	for (unsigned int i = 0; i < mFlares.size(); i++)
 	{
 		CTextureQuad* flare = mFlares[i];
-		
 		flare->glRender();
 
 		glTranslatef(dx, dy, 0);

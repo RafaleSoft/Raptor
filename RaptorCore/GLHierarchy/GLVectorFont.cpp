@@ -1,6 +1,21 @@
-// GLVectorFont.cpp: implementation of the CGLVectorFont class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  GLVectorFont.cpp                                                       */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
 #include "Subsys/CodeGeneration.h"
 
 #if !defined(AFX_GLVECTORFONT_H__C21ADBEA_705D_43EA_A45F_F016233F7507__INCLUDED_)
@@ -346,19 +361,10 @@ void CGLVectorFont::glWrite(const std::vector<CGLFont::FONT_TEXT_ITEM> &lines)
 	CResourceAllocator::CResourceBinder *binder = (CResourceAllocator::CResourceBinder*)m_pBinder;
 	binder->glvkBindArrays();
 	
-	std::vector<CGLFont::FONT_TEXT_ITEM> test_lines = lines;
-	FONT_TEXT_ITEM alphabet;
-	alphabet.text = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-	alphabet.x_offset = 0;
-	alphabet.y_offset = 40;
-	test_lines.push_back(alphabet);
-	alphabet.text = "abcdefghijklmnopqrstuvwxyz";
-	alphabet.y_offset = 50;
-	test_lines.push_back(alphabet);
 	size_t count = 0;
-	for (size_t j = 0; j < test_lines.size(); j++)
+	for (size_t j = 0; j < lines.size(); j++)
 	{
-		const FONT_TEXT_ITEM &item = test_lines[j];
+		const FONT_TEXT_ITEM &item = lines[j];
 
 		float advance = item.x_offset;
 		size_t sz = item.text.size();
@@ -414,7 +420,7 @@ void CGLVectorFont::glWrite(const std::vector<CGLFont::FONT_TEXT_ITEM> &lines)
 	params.addParameter("color", color);
 	stage->updateProgramParameters(params);
 	
-	//!	Second rendering : a dark surrounding with line width of 1.1
+	//!	Second rendering : the colored text with line width of 1.1
 	glLineWidth(1.1f);
 	instance.m_pVectorFontShader->glRender();
 	glDrawArrays(GL_POINTS, 0, (GLsizei)count);

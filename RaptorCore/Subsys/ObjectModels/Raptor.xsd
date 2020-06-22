@@ -1,5 +1,71 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xs:schema id="RaptorDataSet" xmlns="" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+  <!--  
+      Global types and attributes definitions:
+      - color: to match a CColor
+      - coord: to match GL_COORD_VERTEX
+      - TextureFunction: to define sampler function for legacy OpenGL
+      - TextureUnit: to identify a specific image Unit
+  -->
+  <xs:complexType name="color">
+    <xs:attribute name="r" type="xs:float" />
+    <xs:attribute name="g" type="xs:float" />
+    <xs:attribute name="b" type="xs:float" />
+    <xs:attribute name="a" type="xs:float" />
+  </xs:complexType>
+  <xs:complexType name="coord">
+    <xs:attribute name="x" type="xs:float" />
+    <xs:attribute name="y" type="xs:float" />
+    <xs:attribute name="z" type="xs:float" />
+    <xs:attribute name="h" type="xs:float" />
+  </xs:complexType>
+  <xs:attribute name="TextureFunction">
+    <xs:simpleType>
+      <xs:restriction base="xs:string">
+        <xs:enumeration value="None"/>
+        <xs:enumeration value="Opaque"/>
+        <xs:enumeration value="Multiply"/>
+        <xs:enumeration value="AlphaTransparent"/>
+        <xs:enumeration value="ConstantBlended"/>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:attribute>
+  <xs:attribute name="TextureUnit">
+    <xs:simpleType>
+      <xs:restriction base="xs:string">
+        <xs:enumeration value="Unit0"/>
+        <xs:enumeration value="Unit1"/>
+        <xs:enumeration value="Unit2"/>
+        <xs:enumeration value="Unit3"/>
+        <xs:enumeration value="Unit4"/>
+        <xs:enumeration value="Unit5"/>
+        <xs:enumeration value="Unit6"/>
+        <xs:enumeration value="Unit7"/>
+        <xs:enumeration value="Unit8"/>
+        <xs:enumeration value="Unit9"/>
+        <xs:enumeration value="Unit10"/>
+        <xs:enumeration value="Unit11"/>
+        <xs:enumeration value="Unit12"/>
+        <xs:enumeration value="Unit13"/>
+        <xs:enumeration value="Unit14"/>
+        <xs:enumeration value="Unit15"/>
+        <xs:enumeration value="diffuse"/>
+        <xs:enumeration value="normal"/>
+        <xs:enumeration value="light"/>
+        <xs:enumeration value="environment"/>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:attribute>
+  
+  <!-- 
+    Raptor objects definitions:
+    - Rendering: to reference object handles.
+    - Object3D: the base renderable object
+    - TextureObject: an OpenGL or Vulkan texture object
+    - TextureSet: a collection of texture object
+    - TextureUnitSetup: a TMU configuration for pipeline texturing
+    - Set: a collection of renderable objects (any type in renderable hierarchy)
+  -->
   <xs:element name="Render">
     <xs:complexType>
       <xs:attribute name="name" type="xs:string" />
@@ -19,21 +85,36 @@
       </xs:sequence>
     </xs:complexType>
   </xs:element>
+  <xs:element name="TextureObject">
+    <xs:complexType>
+      <xs:attribute name="name" type="xs:string" />
+      <xs:attribute name="filter" type="xs:string" />
+      <xs:attribute name="mode" type="xs:string" />
+      <xs:attribute name="transparency" type="xs:float" />
+    </xs:complexType>
+  </xs:element>
   <xs:element name="TextureSet">
       <xs:complexType>
           <xs:sequence>
-              <xs:element name="Texture" minOccurs="0" maxOccurs="unbounded">
-                  <xs:complexType>
-                      <xs:attribute name="name" type="xs:string" />
-                      <xs:attribute name="function" type="xs:string" />
-                      <xs:attribute name="filter" type="xs:string" />
-                      <xs:attribute name="mode" type="xs:string" />
-                      <xs:attribute name="transparency" type="xs:float" />
-                  </xs:complexType>
-              </xs:element>
+            <xs:element ref="TextureObject" minOccurs="0" maxOccurs="unbounded" />
           </xs:sequence>
           <xs:attribute name="name" type="xs:string" />
       </xs:complexType>
+  </xs:element>
+  <xs:element name="TextureUnitSetup">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Map" minOccurs="0" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:attribute ref="TextureUnit"/>
+            <xs:attribute name="texname" type="xs:string" />
+            <xs:attribute name="enable" type="xs:boolean" />
+            <xs:attribute ref="TextureFunction"/>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+      <xs:attribute name="name" type="xs:string" />
+    </xs:complexType>
   </xs:element>
   <xs:element name="Set">
       <xs:complexType>
@@ -86,53 +167,26 @@
   </xs:element>
   <xs:element name="Shader">
     <xs:complexType>
-      <xs:sequence>
-        <xs:element name="Color" minOccurs="0" maxOccurs="1">
-          <xs:complexType>
-            <xs:attribute name="r" type="xs:float" />
-            <xs:attribute name="g" type="xs:float" />
-            <xs:attribute name="b" type="xs:float" />
-            <xs:attribute name="a" type="xs:float" />
-          </xs:complexType>
-        </xs:element>
-        <xs:element ref="Material" minOccurs="0" maxOccurs="1" />
-      </xs:sequence>
+      <xs:all>
+        <xs:element name="Color" minOccurs="0" type="color"/>
+        <xs:element ref="Material" minOccurs="0" />
+        <xs:element ref="TextureUnitSetup" minOccurs="0" />
+      </xs:all>
       <xs:attribute name="name" type="xs:string" />
     </xs:complexType>
   </xs:element>
   <xs:element name="Material">
     <xs:complexType>
-      <xs:sequence>
-        <xs:element name="Ambient" minOccurs="0" maxOccurs="1">
-          <xs:complexType>
-            <xs:attribute name="r" type="xs:float" />
-            <xs:attribute name="g" type="xs:float" />
-            <xs:attribute name="b" type="xs:float" />
-            <xs:attribute name="a" type="xs:float" />
-          </xs:complexType>
-        </xs:element>
-        <xs:element name="Diffuse" minOccurs="0" maxOccurs="1">
-          <xs:complexType>
-            <xs:attribute name="r" type="xs:float" />
-            <xs:attribute name="g" type="xs:float" />
-            <xs:attribute name="b" type="xs:float" />
-            <xs:attribute name="a" type="xs:float" />
-          </xs:complexType>
-        </xs:element>
-        <xs:element name="Specular" minOccurs="0" maxOccurs="1">
-          <xs:complexType>
-            <xs:attribute name="r" type="xs:float" />
-            <xs:attribute name="g" type="xs:float" />
-            <xs:attribute name="b" type="xs:float" />
-            <xs:attribute name="a" type="xs:float" />
-          </xs:complexType>
-        </xs:element>
-        <xs:element name="Shininess" minOccurs="0" maxOccurs="1">
+      <xs:all>
+        <xs:element name="Ambient" minOccurs="0" type="color" />
+        <xs:element name="Diffuse" minOccurs="0" type="color" />
+        <xs:element name="Specular" minOccurs="0" type="color" />
+        <xs:element name="Shininess" minOccurs="0">
           <xs:complexType>
             <xs:attribute name="exp" type="xs:float" />
           </xs:complexType>
         </xs:element>
-      </xs:sequence>
+      </xs:all>
     </xs:complexType>
   </xs:element>
   <xs:element name="Action">
@@ -154,32 +208,13 @@
   <xs:element name="Light">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="Position" minOccurs="0" maxOccurs="1">
-          <xs:complexType>
-            <xs:attribute name="x" type="xs:float" />
-            <xs:attribute name="y" type="xs:float" />
-            <xs:attribute name="z" type="xs:float" />
-          </xs:complexType>
-        </xs:element>
-        <xs:element name="Direction" minOccurs="0" maxOccurs="1">
-          <xs:complexType>
-            <xs:attribute name="x" type="xs:float" />
-            <xs:attribute name="y" type="xs:float" />
-            <xs:attribute name="z" type="xs:float" />
-          </xs:complexType>
-        </xs:element>
+        <xs:element name="Position" minOccurs="0" maxOccurs="1" type="coord" />
+        <xs:element name="Direction" minOccurs="0" maxOccurs="1" type="coord" />
         <xs:element ref="Material" minOccurs="0" maxOccurs="1" />
         <xs:element name="Spot" minOccurs="0" maxOccurs="1">
           <xs:complexType>
             <xs:sequence>
-              <xs:element name="Attenuation" minOccurs="0" maxOccurs="1">
-                <xs:complexType>
-                  <xs:attribute name="x" type="xs:float" />
-                  <xs:attribute name="y" type="xs:float" />
-                  <xs:attribute name="z" type="xs:float" />
-                  <xs:attribute name="h" type="xs:float" />
-                </xs:complexType>
-              </xs:element>
+              <xs:element name="Attenuation" minOccurs="0" maxOccurs="1" type="coord" />
             </xs:sequence>
             <xs:attribute name="treshold" type="xs:float" />
           </xs:complexType>
@@ -307,20 +342,8 @@
               <xs:element name="ViewPoint" minOccurs="0" maxOccurs="unbounded">
                 <xs:complexType>
                   <xs:sequence>
-                    <xs:element name="EyePosition" minOccurs="0" maxOccurs="1">
-                      <xs:complexType>
-                        <xs:attribute name="x" type="xs:float" />
-                        <xs:attribute name="y" type="xs:float" />
-                        <xs:attribute name="z" type="xs:float" />
-                      </xs:complexType>
-                    </xs:element>
-                    <xs:element name="TargetPosition" minOccurs="0" maxOccurs="1">
-                      <xs:complexType>
-                        <xs:attribute name="x" type="xs:float" />
-                        <xs:attribute name="y" type="xs:float" />
-                        <xs:attribute name="z" type="xs:float" />
-                      </xs:complexType>
-                    </xs:element>
+                    <xs:element name="EyePosition" minOccurs="0" maxOccurs="1" type="coord" />
+                    <xs:element name="TargetPosition" minOccurs="0" maxOccurs="1" type="coord" />
                     <xs:element name="ViewPath" minOccurs="0" maxOccurs="unbounded">
                       <xs:complexType>
                         <xs:sequence>
@@ -368,22 +391,8 @@
                     <xs:element name="Mirror" minOccurs="0" maxOccurs="unbounded">
                       <xs:complexType>
                         <xs:sequence>
-                          <xs:element name="Normal" minOccurs="0" maxOccurs="1">
-                            <xs:complexType>
-                              <xs:attribute name="x" type="xs:float" />
-                              <xs:attribute name="y" type="xs:float" />
-                              <xs:attribute name="z" type="xs:float" />
-                              <xs:attribute name="h" type="xs:float" />
-                            </xs:complexType>
-                          </xs:element>
-                          <xs:element name="Point" minOccurs="0" maxOccurs="1">
-                            <xs:complexType>
-                              <xs:attribute name="x" type="xs:float" />
-                              <xs:attribute name="y" type="xs:float" />
-                              <xs:attribute name="z" type="xs:float" />
-                              <xs:attribute name="h" type="xs:float" />
-                            </xs:complexType>
-                          </xs:element>
+                          <xs:element name="Normal" minOccurs="0" maxOccurs="1" type="coord" />
+                          <xs:element name="Point" minOccurs="0" maxOccurs="1" type="coord" />
                           <xs:element ref="Object" minOccurs="0" maxOccurs="unbounded" />
                         </xs:sequence>
                       </xs:complexType>

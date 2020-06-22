@@ -29,7 +29,7 @@ private:
 	C3DPath			*path;
 	CShadedGeometry	*bspline;
 
-	unsigned int	text;
+	CShadedGeometry	*fulltext;
 	CGLFont			*font;
 	CTextureSet		*texture;
 

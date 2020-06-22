@@ -44,11 +44,8 @@
 #if !defined(AFX_RAPTORINSTANCE_H__90219068_202B_46C2_BFF0_73C24D048903__INCLUDED_)
 	#include "Subsys/RaptorInstance.h"
 #endif
-
-#if defined(TEST_BOX_ARRAYS) || defined(GL_CORE_profile)
-	#if !defined(AFX_SHADER_H__4D405EC2_7151_465D_86B6_1CA99B906777__INCLUDED_)
-		#include "GLHierarchy/Shader.h"
-	#endif
+#if !defined(AFX_SHADER_H__4D405EC2_7151_465D_86B6_1CA99B906777__INCLUDED_)
+	#include "GLHierarchy/Shader.h"
 #endif
 
 
@@ -95,13 +92,6 @@ CObject3D::CObject3D(const CPersistence::CPersistenceClassID & classID,
 
 	updateBBox = false;
 	bbox = UINT64_MAX;
-
-#if 0
-	filledBox.hClass(classID.ID());
-	filledBox.glhandle(0);
-	wireBox.hClass(classID.ID());
-	wireBox.glhandle(0);
-#endif
 }
 
 CObject3D::~CObject3D()
@@ -209,114 +199,38 @@ void CObject3D::extendBoundingBox(const GL_COORD_VERTEX& min, const GL_COORD_VER
     notifyBoundingBox();
 }
 
-#if 0
-void CObject3D::glRenderBBox(bool filled)
-{
-	if (updateBBox)
-	{
-		updateBBox = false;
-		if (filledBox.handle() != 0)
-			glDeleteLists(filledBox.glname(),1);
-		if (wireBox.handle() != 0)
-			glDeleteLists(wireBox.glname(),1);
-			
-		filledBox.glname(glGenLists(1));
-		glNewList(filledBox.glname(), GL_COMPILE);
-			glBegin(GL_QUADS);
-				// front: 4, 5, 6, 7
-				glVertex3f(xmin,ymin,zmax);
-				glVertex3f(xmax,ymin,zmax);
-				glVertex3f(xmax,ymax,zmax);
-				glVertex3f(xmin,ymax,zmax);
-
-				// top: 7, 6, 2, 3
-				glVertex3f(xmin,ymax,zmax);
-				glVertex3f(xmax,ymax,zmax);
-				glVertex3f(xmax,ymax,zmin);
-				glVertex3f(xmin,ymax,zmin);
-
-				// right: 5, 1, 2, 6
-				glVertex3f(xmax,ymin,zmax);
-				glVertex3f(xmax,ymin,zmin);
-				glVertex3f(xmax,ymax,zmin);
-				glVertex3f(xmax,ymax,zmax);
-
-				// left: 0, 4, 7, 3
-				glVertex3f(xmin,ymin,zmin);
-				glVertex3f(xmin,ymin,zmax);
-				glVertex3f(xmin,ymax,zmax);
-				glVertex3f(xmin,ymax,zmin);
-
-				// bottom: 0, 1, 5, 4
-				glVertex3f(xmin,ymin,zmin);
-				glVertex3f(xmax,ymin,zmin);
-				glVertex3f(xmax,ymin,zmax);
-				glVertex3f(xmin,ymin,zmax);
-
-				// back: 1, 0, 3, 2,
-				glVertex3f(xmax,ymin,zmin);
-				glVertex3f(xmin,ymin,zmin);
-				glVertex3f(xmin,ymax,zmin);
-				glVertex3f(xmax,ymax,zmin);
-			glEnd();
-		glEndList();
-			
-		wireBox.handle(glGenLists(1));
-		glNewList(wireBox.glname(), GL_COMPILE);
-			glBegin(GL_LINE_STRIP);
-				// back: 0, 1, 2, 3
-				glVertex3f(xmin,ymin,zmin);
-				glVertex3f(xmax,ymin,zmin);
-				glVertex3f(xmax,ymax,zmin);
-				glVertex3f(xmin,ymax,zmin);
-					
-				// left: 0, 4, 7, 3
-				glVertex3f(xmin,ymin,zmin);
-				glVertex3f(xmin,ymin,zmax);
-				glVertex3f(xmin,ymax,zmax);
-				glVertex3f(xmin,ymax,zmin);
-
-				// top: 2, 6, 7, 4
-				glVertex3f(xmax,ymax,zmin);
-				glVertex3f(xmax,ymax,zmax);
-				glVertex3f(xmin,ymax,zmax);
-				glVertex3f(xmin,ymin,zmax);
-
-				// bottom + right + front: 5, 1, 5, 6
-				glVertex3f(xmax,ymin,zmax);
-				glVertex3f(xmax,ymin,zmin);
-				glVertex3f(xmax,ymin,zmax);
-				glVertex3f(xmax,ymax,zmax);
-			glEnd();
-		glEndList();
-	}
-
-	glCallList(filled ? filledBox.glname() : wireBox.glname());
-
-	CRaptorInstance::GetInstance().iRenderedObjects++;
-	CRaptorInstance::GetInstance().iRenderedTriangles += 12;
-
-	CATCH_GL_ERROR
-}
-
-#else
-
-void CObject3D::glRenderBBox(bool )
+void CObject3D::glRenderBBox(RENDER_BOX_MODEL filled)
 {
 	if (updateBBox)
 		glvkUpdateBBox();
 
 	CRaptorInstance &instance = CRaptorInstance::GetInstance();
 	
-	glDrawArrays(GL_LINES, bbox, 2);
+	if (RAW == filled)
+	{
+		glDrawArrays(GL_LINES, bbox, 2);
+	}
+	else
+	{
+		CShader *pShader = instance.m_pWiredBboxShader;
+		if (FILLED == filled)
+			pShader = instance.m_pFilledBboxShader;
+
+		CResourceAllocator::CResourceBinder *binder = instance.m_pBoxBinder;
+		binder->glvkBindArrays();
+		pShader->glRender();
+
+		glDrawArrays(GL_LINES, bbox, 2);
+
+		pShader->glStop();
+		binder->glvkUnbindArrays();
+	}
 
 	instance.iRenderedObjects++;
 	instance.iRenderedTriangles += 12;
 
 	CATCH_GL_ERROR
 }
-
-#endif
 
 void CObject3D::glvkUpdateBBox(void)
 {

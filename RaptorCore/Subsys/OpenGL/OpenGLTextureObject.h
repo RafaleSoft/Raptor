@@ -50,9 +50,6 @@ public:
 	//!	Returns the proper implementation
 	virtual COpenGLTextureObject* getGLTextureObject(void) { return this; };
 
-    //! Returns the selected environment function
-    TEXTURE_FUNCTION getFunction(void) const;
-
 	//! Updates texture filtering function
 	//! @param F : the filter function
 	virtual void glvkUpdateFilter(ITextureObject::TEXTURE_FILTER F);
@@ -102,9 +99,6 @@ private:
 	//! texture objects cannot be assigned.
 	const COpenGLTextureObject& operator=(const COpenGLTextureObject &rsh) { return *this; };
 
-    //! This call is restricted to the factory or the TMUSetup
-    void setFunction(ITextureObject::TEXTURE_FUNCTION F);
-	
 
 	friend class CTextureFactory;
 	friend class CTextureUnitSetup;
@@ -118,8 +112,6 @@ private:
 	uint32_t	texname;
     //!  Target : 1D,2D,3D,CUBE, 
 	uint32_t	target;
-    //!	rendering environment model
-	uint32_t    env_mode;
     //	texture level ( mipmapping and anisotropy)
 	uint32_t	level;
 

@@ -354,7 +354,6 @@ void CShadowMapDisplay::Init()
     config.setCurrentAnisotropy(16.0f);
 
 	ITextureObject *T = f.glCreateTexture(	ITextureObject::CGL_COLOR24_ALPHA,
-											ITextureObject::CGL_ALPHA_TRANSPARENT,
 											ITextureObject::CGL_ANISOTROPIC);
 	f.glSetTransparency(T, 255);
 	config.setGenerateMipmap(false);
@@ -382,16 +381,14 @@ void CShadowMapDisplay::Init()
     
 
 	CTextureUnitSetup tmu;
-	tmu.setDiffuseMap(T); 
+	tmu.setDiffuseMap(T, CTextureUnitSetup::CGL_OPAQUE);
 	tmu.enableImageUnit(CTextureUnitSetup::IMAGE_UNIT_2,false);
 	c1 = tmu.glBuildSetup();
 
    	fname = "Datas\\Start.tga";
 
 	T = f.glCreateTexture(	ITextureObject::CGL_COLOR24_ALPHA,
-							ITextureObject::CGL_ALPHA_TRANSPARENT,
 							ITextureObject::CGL_BILINEAR);
-	f.glSetTransparency(T, 255);
 	f.glLoadTexture(T,fname);
 
 	tmu.getTMUCombiner(CTextureUnitSetup::IMAGE_UNIT_0).rgb_combiner = true;

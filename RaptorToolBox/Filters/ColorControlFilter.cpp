@@ -148,7 +148,6 @@ bool CColorControlFilter::glInitFilter(void)
 	if ((colorExternalSource != NULL) && (m_fModel == RENDER_TEXTURE))
 	{
 		colorInput = filterFactory.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
-															ITextureObject::CGL_OPAQUE,
 															ITextureObject::CGL_BILINEAR,
 															colorExternalSource);
 	}

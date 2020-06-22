@@ -159,7 +159,6 @@ bool CTextureSet::importTextureObject(CRaptorIO& io)
     io >> name;
 
     string filename = "<unknown>";
-    ITextureObject::TEXTURE_FUNCTION function = ITextureObject::CGL_OPAQUE;
     ITextureObject::TEXTURE_FILTER filter = ITextureObject::CGL_UNFILTERED;
     ITextureObject::TEXEL_TYPE texelType = ITextureObject::CGL_COLOR24_ALPHA;
     float transparency = -1.0f;
@@ -170,18 +169,6 @@ bool CTextureSet::importTextureObject(CRaptorIO& io)
     {
 		if (data == "name")
 			io >> filename;
-        else if (data =="function")
-        {
-            io >> name;
-            if (name == "opaque")
-                function = ITextureObject::CGL_OPAQUE;
-            else if (name == "multiply")
-                function = ITextureObject::CGL_MULTIPLY;
-            else if (name == "alpha_transparent")
-                function = ITextureObject::CGL_ALPHA_TRANSPARENT;
-            else if (name == "constant_blended")
-                function = ITextureObject::CGL_CONSTANT_BLENDED;
-        }
         else if (data == "filter")
         {
             io >> name;
@@ -215,7 +202,7 @@ bool CTextureSet::importTextureObject(CRaptorIO& io)
 	if ((compressed) && (0 < f.getConfig().getNumCompressors()))
 		f.getConfig().setCurrentCompressor(f.getConfig().getCompressor("OpenGL"));
 
-    ITextureObject *T = f.glCreateTexture(texelType,function,filter);
+    ITextureObject *T = f.glCreateTexture(texelType, filter);
 	bool res = false;
     if (T != NULL)
     {
@@ -239,7 +226,7 @@ bool CTextureSet::importObject(CRaptorIO& io)
     {
 		if (data == "name")
 			CPersistence::importObject(io);
-		else if (data == "Texture")
+		else if (data == "TextureObject")
             importTextureObject(io);
         else if (data == "Cubemap")
 		{

@@ -41,7 +41,6 @@ CReflection::CReflection(float width,float height,int hcels,int vcels)
 	CBumpmapLoader loader(f.getConfig().getBumpAmplitude());
 	CPerlinNoise pNoise(&loader);
     ITextureObject *T = f.glCreateTexture(	ITextureObject::CGL_COLOR24_ALPHA,
-											ITextureObject::CGL_MULTIPLY,
 											ITextureObject::CGL_TRILINEAR);
 	T->glvkUpdateClamping(ITextureObject::CGL_REPEAT);
 
@@ -49,13 +48,15 @@ CReflection::CReflection(float width,float height,int hcels,int vcels)
 
     T->setSize(512,512);
     pNoise.glGenerate(T,0,0,512,512);
-    tus->setNormalMap(T);
+    tus->setNormalMap(T, CTextureUnitSetup::CGL_OPAQUE);
 
-    T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,ITextureObject::CGL_MULTIPLY,ITextureObject::CGL_BILINEAR);
+
+    T = f.glCreateTexture(	ITextureObject::CGL_COLOR24_ALPHA,
+							ITextureObject::CGL_BILINEAR);
     f.glSetTransparency(T, 230);
 
     f.glLoadTexture(T,"Datas\\marble5.jpg");
-    tus->setDiffuseMap(T);
+    tus->setDiffuseMap(T, CTextureUnitSetup::CGL_MULTIPLY);
 
 	setRenderingModel(CGeometry::CGL_FRONT_GEOMETRY);
 	addModel(CGeometry::CGL_NORMALS);

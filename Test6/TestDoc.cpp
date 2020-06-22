@@ -147,12 +147,9 @@ void CCube::Init(uint16_t s)
 {
 	addModel(CGeometry::CGL_FRONT_GEOMETRY);
 	addModel(CGeometry::CGL_COLORS);
-	//addModel(CGeometry::CGL_TEXTURE);
-	//addModel(CGeometry::CGL_TANGENTS);
 
 	glSetVertices(s+s);
 	glSetColors(s+s);
-	//glSetTangents(s);
 
 	glLockData();
 
@@ -247,7 +244,6 @@ void CTestDoc::GLInitContext(void)
 	
 	CTextureFactory &tf = CTextureFactory::getDefaultFactory();
 	ITextureObject *T = tf.glCreateTexture(	ITextureObject::CGL_COLOR24_ALPHA,
-											ITextureObject::CGL_OPAQUE,
 											ITextureObject::CGL_BILINEAR);
 	tf.glLoadTexture(T, "Start.tga");
 
@@ -284,8 +280,6 @@ void CTestDoc::GLInitContext(void)
 		res = res & gs->glLoadProgram(gp3_src);
 		CFragmentShader *fs = stage->glGetFragmentShader();
 		res = res & fs->glLoadProgram(fp3_src);
-		//CProgramParameters params;
-		//params.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);
 
 		res = res & stage->glCompileShader();
 

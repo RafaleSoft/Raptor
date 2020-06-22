@@ -244,7 +244,7 @@ MAD_SAT finalColor, specular, shading.z, diffuse; \
 MOV finalColor.w, shading.w; \
 END" ;
 
-
+/*
 string waterShader4 = 
 "!!ARBvp1.0 \
 ATTRIB iPos = vertex.position; \
@@ -301,7 +301,8 @@ MOV tmp, dir7.zwxy; \
 DP3 tmp.x, iTexCoord0, dir7.xyxx; \
 MAD oTex7, tmp, freq789.yyww, time.yyww; \
 END";
-
+*/
+/*
 string waterFragments2 =
 "!!ARBfp1.0 \
 ATTRIB iTex0 = fragment.texcoord[0]; \
@@ -349,7 +350,7 @@ RSQ color.w, color.w; \
 MUL color, color, color.w; \
 MAD finalColor, color, half.xxxz, half.xxxw; \
 END" ;
-
+*/
 string waterVertexProgram =
 " \n\
 #version 120 \n\
@@ -439,6 +440,39 @@ void main (void) \n\
 	vec3 lpos = vec3(0.0,1.0,0.0); \n\
 	float diffuse = dot(normal,lpos); \n\
 	gl_FragColor = vec4(diffuse,0.0,0.0,1.0); \n\
+} \n\
+";
+
+std::string waterShader4 =
+"\n\
+#version 440 \n\
+\n\
+layout(location = 0) in vec4 i_Position; \n\
+layout(location = 8) in vec2 i_TexCoord; \n\
+\n\
+uniform vec4 times; \n\
+uniform vec4 dir0; \n\
+\n\
+out vec2 o_TexCoord; \n\
+\n\
+void main (void) \n\
+{ \n\
+	gl_Position = vec4(vec3(i_Position.xyz),1.0); \n\
+	o_TexCoord = i_TexCoord; \n\
+} \n\
+";
+std::string waterFragments2 =
+"\n\
+#version 440 \n\
+\n\
+uniform	sampler2D cosTable; \n\
+\n\
+in vec2 o_TexCoord; \n\
+out vec4 o_Color; \n\
+\n\
+void main (void) \n\
+{ \n\
+	o_Color = texture(cosTable,o_TexCoord); \n\
 } \n\
 ";
 
@@ -569,22 +603,69 @@ private:
 class CTextureWaves : public CSimpleObject
 {
 public:
-	CTextureWaves()
+	CTextureWaves(): bShow(false)
 	{
 		props = CRaptorDisplay::GetCurrentDisplay()->createRenderingProperties();
+		props->clear(0);
+		props->setTexturing(IRenderingProperties::ENABLE);
+		props->setLighting(IRenderingProperties::DISABLE);
+
+		//!	A rect to display texture waves for debug, 
+		//!	define this rect a the actual rendered object (bounding box).
+		pRect = new CBasicObjects::CRectangle();
+		pRect->setDimensions(4.0f, 4.0f);
+		pRect->removeModel(CGeometry::CGL_NORMALS);
+		GL_COORD_VERTEX min;
+		GL_COORD_VERTEX max;
+		pRect->getBoundingBox(min, max);
+		setBoundingBox(min, max);
+
+		//!	A rect to render texture wave
+		pRect2 = new CBasicObjects::CRectangle();
+		pRect2->setDimensions(2.0f, 2.0f);
+		pRect2->removeModel(CGeometry::CGL_NORMALS);
+
+		//!	Create a lookup texture for cosinus
+		CTextureFactory &factory = CTextureFactory::getDefaultFactory();
+		pCosTable = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA, ITextureObject::CGL_UNFILTERED);
+		pCosTable->setSize(TABLE_SIZE, 1);
+		factory.glSetTransparency(pCosTable, 255);
+
+		CImage cosTable;
+		cosTable.allocatePixels(TABLE_SIZE, 1);
+		unsigned char *cost = cosTable.getPixels();
+		for (int i = 0; i < 4 * TABLE_SIZE; i += 4)
+		{
+			float u = (float)i / (4.0f * TABLE_SIZE);
+			cost[i] = 0;
+			cost[i + 1] = (unsigned char)(127.0 + 128.0 * cos(2.0*PI*u) * pow((0.5 * sin(2.0*PI*u) + 0.5), 2.0));
+			cost[i + 2] = 0;
+			cost[i + 3] = 255;
+		}
+		factory.glLoadTexture(pCosTable, cosTable);
+
+
 		CRaptorDisplayConfig attrs;
 		attrs.x = 0;
 		attrs.y = 0;
 		attrs.width = TABLE_SIZE;
 		attrs.height = TABLE_SIZE;
 		attrs.caption = "texture waves";
-		attrs.refresh_rate;
 		attrs.acceleration = CRaptorDisplayConfig::HARDWARE;
-		attrs.renderer = CRaptorDisplayConfig::PIXEL_BUFFER;
+		attrs.renderer = CRaptorDisplayConfig::RENDER_BUFFER;
 		attrs.display_mode = CGL_RGBA;
 
 		pBuffer = Raptor::glCreateDisplay(attrs);
 		RAPTOR_HANDLE handle;
+
+		//!	Create the render target texture.
+		pMap = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA, ITextureObject::CGL_UNFILTERED);
+		factory.glResizeTexture(pMap, TABLE_SIZE, TABLE_SIZE);
+		pMap->glvkUpdateClamping(ITextureObject::CGL_REPEAT);
+		tset.addTexture(pMap);
+		pBuffer->glvkBindDisplay(tset);
+
+		//!	Create the render buffer
 		pBuffer->glvkBindDisplay(handle);
 			
 			IRenderingProperties &rp = pBuffer->getRenderingProperties();
@@ -592,50 +673,32 @@ public:
 			rp.setDepthTest(IRenderingProperties::DISABLE);
 			rp.setCullFace(IRenderingProperties::DISABLE);
 			rp.setLighting(IRenderingProperties::DISABLE);
-			rp.clear(CGL_RGBA|CGL_DEPTH);
+			rp.clear(CGL_RGBA);
 			IViewPoint *vpoint = pBuffer->getViewPoint();
-			vpoint->setViewVolume(-1.0,1.0,-1.0,1.0,-1.0,1.0,IViewPoint::ORTHOGRAPHIC);
+			vpoint->setViewVolume(-1.0,1.0,-1.0,1.0,1.0,100.0,IViewPoint::ORTHOGRAPHIC);
+			vpoint->setPosition(0.0f, 0.0f, 5.0f, IViewPoint::EYE);
+			vpoint->setPosition(0.0f, 0.0f, 0.0f, IViewPoint::TARGET);
 			vpoint->glvkRenderViewPointModel();
 			
-			pShader = new CShader("WATER_SHADER2");
-			CVertexProgram *vp = pShader->glGetOpenGLProgram()->glGetVertexProgram();
+			CShader *pShader = pRect2->getShader();
+			pShader->setName("WATER_SHADER2");
+			CVertexShader *vp = pShader->glGetOpenGLShader()->glGetVertexShader();
 			vp->glLoadProgram(waterShader4.data());
-			vp->glStop();
-			CFragmentProgram *fp = pShader->glGetOpenGLProgram()->glGetFragmentProgram();
+			CFragmentShader *fp = pShader->glGetOpenGLShader()->glGetFragmentShader();
 			fp->glLoadProgram(waterFragments2.data());
-			fp->glStop();
+			pShader->glGetOpenGLShader()->glCompileShader();
+			pShader->glGetOpenGLShader()->glStop();
+			CTextureUnitSetup *tus = pShader->glGetTextureUnitsSetup();
+			tus->setDiffuseMap(pCosTable);
+			params.addParameter<CTextureUnitSetup::TEXTURE_IMAGE_UNIT>("cosTable", CTextureUnitSetup::IMAGE_UNIT_0);
+			params.addParameter<GL_COORD_VERTEX>("times", GL_COORD_VERTEX(0, 0, 0, 0));
+	
 		pBuffer->glvkUnBindDisplay();
-
-		CTextureFactory &factory = CTextureFactory::getDefaultFactory();
-		pMap = factory.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
-												ITextureObject::CGL_OPAQUE,
-												ITextureObject::CGL_BILINEAR,
-												pBuffer);
-		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_REPEAT);
-
-		pCosTable = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,ITextureObject::CGL_OPAQUE,ITextureObject::CGL_BILINEAR);
-        pCosTable->setSize(TABLE_SIZE,1);
-		factory.glSetTransparency(pCosTable, 255);
-        
-		CImage cosTable;
-		cosTable.allocatePixels(TABLE_SIZE, 1);
-		unsigned char *cost = cosTable.getPixels();
-        int i=0;
-		for (i=0;i<4*TABLE_SIZE;i+=4)
-		{
-			cost[i] = 0;
-			cost[i + 1] = 255.999 * (0.5f * cos(2.0*PI*i / (4.0f * TABLE_SIZE)) + 0.5f)
-							  * pow((0.5f * sin(2.0*PI*i / (4.0f * TABLE_SIZE)) + 0.5f),1);
-			cost[i + 2] = 0;
-			cost[i + 3] = 255;
-		}
-		factory.glLoadTexture(pCosTable,cosTable);
 
 		srand((unsigned)time( NULL ));
 		float baseAngle = (float)(PI / 2.0f);
 
-		for (i=0;i<8;i++)
+		for (int i=0; i<8; i++)
 		{
 			speeds[i] = 0.5f + ((float)(rand() % 128)) / 256.0f;
 
@@ -649,10 +712,6 @@ public:
 			freqs[i] = fabs((float)n) / cos(angle);
 			angles[i] = angle + baseAngle;
 		}
-
-        props->clear(0);
-		props->setTexturing(IRenderingProperties::ENABLE);
-		props->setLighting(IRenderingProperties::DISABLE);
 	};
 
 	virtual ~CTextureWaves() 
@@ -660,18 +719,22 @@ public:
         Raptor::glDestroyDisplay(pBuffer);
     };
 
-	virtual void glRender(bool bShow)
+	virtual void glClipRender()
 	{
 		RAPTOR_HANDLE handle;
 		pBuffer->glvkBindDisplay(handle);
-			CVertexProgram *vp = pShader->glGetOpenGLProgram()->glGetVertexProgram();
+			pRect2->getShader()->glGetOpenGLShader()->setProgramParameters(params);
+		
 			float t = CTimeObject::GetGlobalTime();
-			GL_COORD_VERTEX v(	0.2 * t,
-								0.1 * t,
-								0.5 * t,
-								0);
-			vp->glRender();
-			vp->glProgramParameter(0,v);
+
+			params.clear();
+			params.addParameter<CTextureUnitSetup::TEXTURE_IMAGE_UNIT>("cosTable", CTextureUnitSetup::IMAGE_UNIT_0);
+			params.addParameter<GL_COORD_VERTEX>("times", GL_COORD_VERTEX(0.2 * t, 0.1 * t, 0.5 * t, 0));
+			params.addParameter<GL_COORD_VERTEX>("dir0", GL_COORD_VERTEX(cos(angles[0]), sin(angles[0]), sin(angles[0]), -cos(angles[0])));
+			
+			pRect2->getShader()->glGetOpenGLShader()->updateProgramParameters(params);
+
+			/*
 			for (int i=0;i<8;i++)
 			{
 				float angle = angles[i];
@@ -684,34 +747,20 @@ public:
 			vp->glProgramParameter(10,w456);
 			GL_COORD_VERTEX w789(freqs[6],freqs[7],freqs[0],1.0f);
 			vp->glProgramParameter(11,w789);
-
-			CFragmentProgram *fp = pShader->glGetOpenGLProgram()->glGetFragmentProgram();
-			fp->glRender();
-			pCosTable->glvkRender();
-			glBegin(GL_QUADS);
-				glTexCoord4f(0.0f,0.0f,0.0f,0.0f);glVertex3f(-1.0f,-1.0f,0.0f);
-				glTexCoord4f(2.0f,0.0f,0.0f,0.0f);glVertex3f(1.0f,-1.0f,0.0f);
-				glTexCoord4f(2.0f,1.0f,0.0f,0.0f);glVertex3f(1.0f,1.0f,0.0f);
-				glTexCoord4f(0.0f,1.0f,0.0f,0.0f);glVertex3f(-1.0f,1.0f,0.0f);
-			glEnd();
-			vp->glStop();
-			fp->glStop();
+			*/
+			pRect2->glRender();
 		pBuffer->glvkUnBindDisplay();
 
 		pMap->glvkRender();
-
+		
 		if (bShow)
 		{
             props->glPushProperties();
 
 			glPushMatrix();
+				glLoadIdentity();
 				glTranslatef(0.0f,0.0f,-5.0f);
-				glBegin(GL_QUADS);
-					glTexCoord2f(0.0f,0.0f);glVertex3f(-2.0f,-2.0f,0.0f);
-					glTexCoord2f(1.0f,0.0f);glVertex3f(2.0f,-2.0f,0.0f);
-					glTexCoord2f(1.0f,1.0f);glVertex3f(2.0f,2.0f,0.0f);
-					glTexCoord2f(0.0f,1.0f);glVertex3f(-2.0f,2.0f,0.0f);
-				glEnd();
+				pRect->glRender();
 			glPopMatrix();
 
             props->glPopProperties();
@@ -721,12 +770,19 @@ public:
 	ITextureObject* GetNormalMap(void) const
 	{ return pMap; };
 
+	void showMap(bool b) { bShow = b; };
+
+
 private:
+	bool bShow;
+	CProgramParameters params;
+	CBasicObjects::CRectangle *pRect;
+	CBasicObjects::CRectangle *pRect2;
 	IRenderingProperties *props;
 	ITextureObject	*pMap;
 	ITextureObject	*pCosTable;
 	CRaptorDisplay	*pBuffer;
-	CShader			*pShader;
+	CTextureSet		tset;
 	float			angles[8];
 	float			freqs[8];
 	float			speeds[8];
@@ -760,7 +816,7 @@ void CVertexShadersDisplay::Init()
 	CTextureFactoryConfig& config = factory.getConfig();
 	const CTextureFactoryConfig::ICompressor *compressor = config.getCurrentCompressor();
 	if (0 < config.getNumCompressors())
-			config.setCurrentCompressor(config.getCompressor("OpenGL"));
+		config.setCurrentCompressor(config.getCompressor("OpenGL"));
 
 	//	Create water object
 	CBasicObjects::CRectMesh *water = new CBasicObjects::CRectMesh();
@@ -772,12 +828,11 @@ void CVertexShadersDisplay::Init()
 	CShader *pShader = water->getShader();
 	shaderModifier = new ShaderModifier(pShader);
 	CTextureUnitSetup *ts = pShader->glGetTextureUnitsSetup();
-	ITextureObject* T = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
-												ITextureObject::CGL_ALPHA_TRANSPARENT,
-												ITextureObject::CGL_BILINEAR);
+	ITextureObject* T = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA, ITextureObject::CGL_BILINEAR);
 	factory.glSetTransparency(T, 128);
 	factory.glLoadTexture(T,"Datas\\water006.jpg");
-	ts->setDiffuseMap(T);
+	ts->setDiffuseMap(T, CTextureUnitSetup::CGL_ALPHA_TRANSPARENT);
+
 
 	CPersistence *p = CPersistence::FindObject("main_textures");
 	CTextureSet	*tf = (CTextureSet*)p;
@@ -788,23 +843,15 @@ void CVertexShadersDisplay::Init()
 	ts->setNormalMap(tw->GetNormalMap());
 
     string fullWaterShader = waterShader+waterShader2+waterShader3;
-#ifdef VERTEX_SHADER
-	CVertexProgram *vs = pShader->glGetOpenGLProgram()->glGetVertexProgram();
-	vs->glLoadProgram(fullWaterShader);
-	CFragmentShader *fs = pShader->glGetOpenGLProgram()->glGetFragmentProgram();
-	fs->glLoadProgram(waterFragments);
-	pShader->glGetOpenGLProgram()->glStop();
-#else
 	CVertexShader *vp = pShader->glGetOpenGLShader()->glGetVertexShader();
 	vp->glLoadProgram(waterVertexProgram);
 	CFragmentShader *fp = pShader->glGetOpenGLShader()->glGetFragmentShader();
 	fp->glLoadProgram(waterFragmentProgram);
 	pShader->glGetOpenGLShader()->glCompileShader();
 	pShader->glStop();
-#endif
 	
 	//	Create see underwater object
-	T = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,ITextureObject::CGL_OPAQUE, ITextureObject::CGL_BILINEAR);
+	T = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA, ITextureObject::CGL_BILINEAR);
 	factory.glSetTransparency(T, 255);
 	factory.glLoadTexture(T,"Datas\\oldwood.jpg");
 	CBasicObjects::CRectangle *ground = new CBasicObjects::CRectangle();
@@ -812,7 +859,7 @@ void CVertexShadersDisplay::Init()
 	ground->rotationX(-90.0f);
 	ground->translate(0.0f,-200.0f,0.0f);
 	CTextureUnitSetup *setup = ground->getShader()->glGetTextureUnitsSetup();
-	setup->setDiffuseMap(T);
+	setup->setDiffuseMap(T, CTextureUnitSetup::CGL_OPAQUE);
 
 	//	Create sky dome object
 	CShadedGeometry *sky = new CShadedGeometry();
@@ -822,9 +869,9 @@ void CVertexShadersDisplay::Init()
 	sky->addModel(CGeometry::CGL_TEXTURE);
 	CShader *sh = sky->getShader();
 	CTextureUnitSetup* tus = sh->glGetTextureUnitsSetup();
-	T = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,ITextureObject::CGL_OPAQUE,ITextureObject::CGL_BILINEAR);
+	T = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA, ITextureObject::CGL_BILINEAR);
 	factory.glLoadTexture(T,"Datas\\ciel_07.jpg");
-	tus->setDiffuseMap(T);
+	tus->setDiffuseMap(T, CTextureUnitSetup::CGL_OPAQUE);
 
 	//	Build scene
 	CRaptorDisplay* pDisplay = CRaptorDisplay::GetCurrentDisplay();
@@ -836,7 +883,8 @@ void CVertexShadersDisplay::Init()
 	C3DScene *pScene = new C3DScene("SHADER SCENE");
 	pScene->addObject(sky);
 	pScene->addObject(ground);
-	pScene->addObject(water);
+	//pScene->addObject(water);
+	pScene->addObject(tw);
 
 	pDisplay->addScene(pScene);
 }
@@ -864,9 +912,8 @@ void CVertexShadersDisplay::Display()
 	if (reinit)
 		ReInit();
 
-/*
-	tw->glRender(showBump);
+	tw->showMap(showBump);
 
+	float dt = 0.1f * CTimeObject::GetGlobalTime();
 	glRotatef(dt*360.0,0.0f,1.0f,0.0f);
-*/
 }

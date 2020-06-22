@@ -222,7 +222,6 @@ bool CMagnifierFilter::glInitFilter(void)
 	{
 		//! See remark below regarding texture filtering.
 		colorInput = filterFactory.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
-															ITextureObject::CGL_OPAQUE,
 															ITextureObject::CGL_UNFILTERED, //CGL_BILINEAR,
 															colorExternalSource);
 	}
@@ -237,7 +236,6 @@ bool CMagnifierFilter::glInitFilter(void)
     //! 256 interpolated values are enough for good results.
     //! For high quality filtering, future release may allow a user defined size.
     kernelTexture = filterFactory.glCreateTexture( ITextureObject::CGL_COLOR_FLOAT16_ALPHA,
-                                                   ITextureObject::CGL_OPAQUE,
                                                    ITextureObject::CGL_UNFILTERED);
     kernelTexture->setSize(KERNEL_SIZE,1);
     computeKernel();
@@ -260,7 +258,6 @@ bool CMagnifierFilter::glInitFilter(void)
 		state.renderer = CRaptorDisplayConfig::RENDER_BUFFER;
 
 		xKernelPass = filterFactory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
-			                                        ITextureObject::CGL_OPAQUE,
 				                                    ITextureObject::CGL_UNFILTERED);
 		filterFactory.glResizeTexture(xKernelPass,state.width,state.height);
 		xKernelPass->glvkUpdateClamping(ITextureObject::CGL_EDGECLAMP);
@@ -285,7 +282,6 @@ bool CMagnifierFilter::glInitFilter(void)
 		//! Do not use bilinear filtering because the colors fetched may not correspond to the kernel factors with some texture sizes non power of 2.
 		//! ( Specifically where tex coord is near a texel edge, and also because it is shifted to work in texels' center and should be faster ).
 		xKernelPass = filterFactory.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
-															ITextureObject::CGL_OPAQUE,
 															ITextureObject::CGL_UNFILTERED,//CGL_BILINEAR,
 															xBuffer);
 	}

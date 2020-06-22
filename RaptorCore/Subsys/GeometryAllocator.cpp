@@ -436,8 +436,8 @@ unsigned short	* const	CGeometryAllocator::allocateIndexes(uint64_t size)
 		return NULL;
 
 	// be it relocated or not, faceIndexes can be the beginning of the memory block
-	unsigned short *currentAddress = faceIndexes.address.us_address;
-	uint64_t sz = size * sizeof(unsigned short);
+	uint16_t *currentAddress = faceIndexes.address.us_address;
+	uint64_t sz = size * sizeof(uint16_t);
     
 	if (!indexBlocs.empty())
 	{
@@ -464,9 +464,9 @@ unsigned short	* const	CGeometryAllocator::allocateIndexes(uint64_t size)
 			}
 		}
 
-		map<unsigned short*,uint64_t>::iterator it = indexBlocs.end();
+		map<uint16_t*,uint64_t>::iterator it = indexBlocs.end();
 		it--;
-		currentAddress = (*it).first + (*it).second/sizeof(unsigned short);
+		currentAddress = (*it).first + (*it).second/sizeof(uint16_t);
 	}
 
 	if ( ((uint64_t)currentAddress - (uint64_t)faceIndexes.address.us_address) + sz > faceIndexes.size)
@@ -478,17 +478,17 @@ unsigned short	* const	CGeometryAllocator::allocateIndexes(uint64_t size)
 
     //  No NULL offset to distinguish nil pointers
     if ((NULL != relocatedFaceIndexes) && (NULL == currentAddress))
-		currentAddress = (unsigned short*)relocatedFaceIndexes->getRelocationOffset();
+		currentAddress = (uint16_t*)relocatedFaceIndexes->getRelocationOffset();
 
 	//	Address should be aligned on a 16byte boundary
-	unsigned short* address = (unsigned short*)(((uint64_t)(currentAddress)+0x0f) & ~0x0f);
+	uint16_t* address = (uint16_t*)(((uint64_t)(currentAddress)+0x0f) & ~0x0f);
 	indexBlocs[address] = sz;
 
 	return address;
 }
 
 
-bool	CGeometryAllocator::releaseIndexes(unsigned short *index)
+bool	CGeometryAllocator::releaseIndexes(uint16_t *index)
 {
     if (m_bLocked)
         return false;

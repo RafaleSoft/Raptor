@@ -243,7 +243,7 @@ bool RAPTOR_FASTCALL CObject3DInstance::fullClip(const CGenericMatrix<float> &tr
     return (earlyClip != C3DEngine::CLIP_UNKNOWN);
 }
 
-void CObject3DInstance::glRenderBBox(bool filled)
+void CObject3DInstance::glRenderBBox(RENDER_BOX_MODEL filled)
 {
 	if (!properties.isVisible())
 		return;

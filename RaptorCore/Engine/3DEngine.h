@@ -1,6 +1,21 @@
-// 3DEngine.h: interface for the C3DEngine class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  3DEngine.h                                                             */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
 #if !defined(AFX_3DENGINE_H__DB24F018_80B9_11D3_97C1_FC2841000000__INCLUDED_)
 #define AFX_3DENGINE_H__DB24F018_80B9_11D3_97C1_FC2841000000__INCLUDED_
 
@@ -97,6 +112,8 @@ public:
     //! If you do not use all RaptorClasses, you can call it directly
     virtual void setProjection(const CGenericMatrix<float> &projection);
     virtual CGenericMatrix<float> &getProjection(void) const;
+	void pushProjectionMatrix(void) const;
+	void popProjectionMatrix(void) const;
     //!
 	//! Defines the far plane for early clipping computations. This value will
 	//!	be set by the viewpoint when needed, but another value can be set.
@@ -122,6 +139,8 @@ public:
     //! If you do not use all RaptorClasses, you can call it directly
     virtual void setModelview(const CGenericMatrix<float> &modelview);
     virtual CGenericMatrix<float> &getModelview(void) const;
+	void pushModelviewMatrix(void) const;
+	void popModelviewMatrix(void) const;
     //!
     //!	Computes the projection of the given vertex, according current OpenGL status
 	virtual void glProject(GL_COORD_VERTEX &v) const;

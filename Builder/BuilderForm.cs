@@ -197,7 +197,7 @@ namespace Builder
             NativeWrapper.activateExtension("RAPTOR_SSE_CODE_GENERATION", SSE.Checked);
             NativeWrapper.activateExtension("RAPTOR_SSE2_CODE_GENERATION", SSE2.Checked);
 
-            BUILD_SUPPLEMENT bld;
+            BUILD_SUPPLEMENT bld = new BUILD_SUPPLEMENT();
             bld.DEBUG = BUILD_DEBUG.Checked;
             bld.REDIST = BUILD_REDIST.Checked;
             bld.COMPUTE = BUILD_COMPUTE.Checked;

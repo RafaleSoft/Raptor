@@ -303,7 +303,6 @@ bool CHDRFilter::glInitFilter(void)
 	if ((colorExternalSource != NULL) && (m_fModel == RENDER_TEXTURE))
 	{
 		colorInput = filterFactory.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
-															ITextureObject::CGL_OPAQUE,
 															ITextureObject::CGL_BILINEAR,
 															colorExternalSource);
 	}
@@ -337,7 +336,6 @@ bool CHDRFilter::glInitFilter(void)
 		if (m_fModel == RENDER_BUFFER)
 		{
 			m_pDownSizedBuffer[i] = filterFactory.glCreateTexture(	ITextureObject::CGL_COLOR_FLOAT16_ALPHA,
-																	ITextureObject::CGL_OPAQUE,
 																	filter);
 			filterFactory.glResizeTexture(m_pDownSizedBuffer[i],width,height);
 			CTextureSet *tset = new CTextureSet("HDR_TSet");
@@ -348,8 +346,7 @@ bool CHDRFilter::glInitFilter(void)
 		else if (m_fModel == RENDER_TEXTURE)
 		{
 			m_pDownSizedBuffer[i] = filterFactory.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
-																			ITextureObject::CGL_OPAQUE,
-																			filter, 
+																			filter,
 																			m_pDownSizedDisplay[i]);
 		}
     }
@@ -363,7 +360,6 @@ bool CHDRFilter::glInitFilter(void)
 	if (m_fModel == RENDER_BUFFER)
 	{
 		m_pDownBlurXBuffer = filterFactory.glCreateTexture(	ITextureObject::CGL_COLOR_FLOAT16_ALPHA,
-															ITextureObject::CGL_OPAQUE,
 															ITextureObject::CGL_BILINEAR);
 		filterFactory.glResizeTexture(m_pDownBlurXBuffer,rda.width,rda.height);
 		m_pDownBlurXBuffer->glvkUpdateClamping(ITextureObject::CGL_EDGECLAMP);
@@ -374,7 +370,6 @@ bool CHDRFilter::glInitFilter(void)
 	else if (m_fModel == RENDER_TEXTURE)
 	{
 		m_pDownBlurXBuffer = filterFactory.glCreateDynamicTexture(ITextureObject::CGL_COLOR24_ALPHA,	
-																  ITextureObject::CGL_OPAQUE,
 																  ITextureObject::CGL_BILINEAR,
 																  m_pDownBlurXDisplay);
 	}
@@ -386,7 +381,6 @@ bool CHDRFilter::glInitFilter(void)
 	if (m_fModel == RENDER_BUFFER)
 	{
 		m_pDownBlurYBuffer = filterFactory.glCreateTexture(	ITextureObject::CGL_COLOR_FLOAT16_ALPHA,
-															ITextureObject::CGL_OPAQUE,
 															ITextureObject::CGL_BILINEAR);
 		filterFactory.glResizeTexture(m_pDownBlurYBuffer,rda.width,rda.height);
 		m_pDownBlurYBuffer->glvkUpdateClamping(ITextureObject::CGL_EDGECLAMP);
@@ -397,7 +391,6 @@ bool CHDRFilter::glInitFilter(void)
 	else if (m_fModel == RENDER_TEXTURE)
 	{
 		m_pDownBlurYBuffer = filterFactory.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
-																	ITextureObject::CGL_OPAQUE,
 																	ITextureObject::CGL_BILINEAR,
 																	m_pDownBlurYDisplay);
 	}
@@ -409,7 +402,6 @@ bool CHDRFilter::glInitFilter(void)
 	if (m_fModel == RENDER_BUFFER)
 	{
 		m_pDownHFBuffer = filterFactory.glCreateTexture(ITextureObject::CGL_COLOR_FLOAT16_ALPHA,
-														ITextureObject::CGL_OPAQUE,
 														ITextureObject::CGL_BILINEAR);
 		filterFactory.glResizeTexture(m_pDownHFBuffer,rda.width,rda.height);
 		m_pDownHFBuffer->glvkUpdateClamping(ITextureObject::CGL_EDGECLAMP);
@@ -420,7 +412,6 @@ bool CHDRFilter::glInitFilter(void)
 	else if (m_fModel == RENDER_TEXTURE)
 	{
 		m_pDownHFBuffer = filterFactory.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
-																ITextureObject::CGL_OPAQUE,
 																ITextureObject::CGL_BILINEAR,
 																m_pDownHighFreqs);
 	}

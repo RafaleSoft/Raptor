@@ -311,7 +311,7 @@ void C3DSceneAttributes::glRenderBBoxes(const vector<C3DSceneObject*> &objects)
 		C3DSceneObject* sc = *itr++;
 		CObject3D* obj = sc->getObject();
 
-		obj->glRenderBBox(false);
+		obj->glRenderBBox(CObject3D::RAW);
 
 		instance.iRenderedObjects++;
 		instance.iRenderedTriangles += 12;
