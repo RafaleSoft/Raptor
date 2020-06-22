@@ -52,6 +52,11 @@ set OPENCL_BIN_PATH=E:\Intel\OpenCL\sdk\bin\x86
 set VULKAN_INCLUDE_PATH=%RAPTOR_ROOT%\AddOns\vulkan\include
 set VULKAN_BIN_PATH=c:\windows\system32
 
+set PHYSX_VERSION=4.1
+set PHYSX_INCLUDE_PATH=%RAPTOR_ROOT%\AddOns\PhysX-%PHYSX_VERSION%\include
+set PHYSX_LIB_PATH=%RAPTOR_ROOT%\AddOns\PhysX-%PHYSX_VERSION%\lib\VC15
+set PHYSX_BIN_PATH=%RAPTOR_ROOT%\AddOns\PhysX-%PHYSX_VERSION%\bin\VC15
+
 cd %RAPTOR_ROOT%
 
 "E:\Microsoft Visual Studio 2017\Common7\IDE\devenv.exe"

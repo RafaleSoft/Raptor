@@ -153,6 +153,26 @@ bool CRaptorRenderBufferDisplay::glAttachBuffers()
 		{
 			ITextureObject *T = m_pAttachments->getTexture(i);
 
+			// Check texture level has a valid size.
+			uint32_t w = T->getWidth();
+			uint32_t h = T->getHeight();
+			if ((w != cs.width) || (h != cs.height))
+			{
+				RAPTOR_ERROR(COpenGL::COpenGLClassID::GetClassId(),
+					"Raptor Render Buffer Display is attached to a texture with invalid sizes");
+			}
+#if defined(GL_VERSION_4_3)
+			GLint maxw = 0;
+			GLint maxh = 0;
+			glGetIntegerv(GL_MAX_FRAMEBUFFER_WIDTH, &maxw);
+			glGetIntegerv(GL_MAX_FRAMEBUFFER_HEIGHT, &maxh);
+			if ((w > maxw) || (h > maxh))
+			{
+				RAPTOR_ERROR(COpenGL::COpenGLClassID::GetClassId(),
+					"Raptor Render Buffer Display is attached to a texture with sizes exceeding implementation limit");
+			}
+#endif
+
 			ITextureObject::TEXEL_TYPE tt = T->getTexelType();
 			GLuint attachment = GL_COLOR_ATTACHMENT0_EXT;
 			if ((tt == ITextureObject::CGL_DEPTH8) ||
@@ -462,6 +482,8 @@ bool CRaptorRenderBufferDisplay::createFrameBuffer(void)
 
 bool CRaptorRenderBufferDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
 {
+	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+
 	if (device.hClass() == CTextureSet::CTextureSetClassID::GetClassId().ID())
 	{
 		if (m_pAttachments != NULL)
@@ -474,6 +496,16 @@ bool CRaptorRenderBufferDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
 		{
 			m_pAttachments = device.ptr<CTextureSet>();
 			m_pAttachments->registerDestruction(this);
+
+			//!	Check if framebuffer already has render buffers.
+			if (pExtensions->glIsFramebufferEXT(m_framebuffer) &&
+				(pExtensions->glIsRenderbufferEXT(m_colorbuffer) || 
+				 pExtensions->glIsRenderbufferEXT(m_depthbuffer) ||
+				 pExtensions->glIsRenderbufferEXT(m_stencilbuffer)))
+			{
+				//!	Next binding will recreate the frame buffer and attachment bindeings.
+				glDestroyBuffer();
+			}
 			cs.bind_to_texture = true;
 			return (m_pAttachments->getNbTexture() > 0);
 		}
@@ -485,8 +517,6 @@ bool CRaptorRenderBufferDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
 	}
 
 #if defined(GL_EXT_framebuffer_object)
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
-
 	if (m_framebuffer == 0)
 	{
 		if (!createFrameBuffer())

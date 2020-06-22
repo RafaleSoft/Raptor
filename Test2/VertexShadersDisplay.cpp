@@ -443,12 +443,15 @@ void main (void) \n\
 } \n\
 ";
 
-string waterShader4 =
+std::string waterShader4 =
 "\n\
-#version 440 compatibility \n\
+#version 440 \n\
 \n\
 layout(location = 0) in vec4 i_Position; \n\
 layout(location = 8) in vec2 i_TexCoord; \n\
+\n\
+uniform vec4 times; \n\
+uniform vec4 dir0; \n\
 \n\
 out vec2 o_TexCoord; \n\
 \n\
@@ -458,7 +461,7 @@ void main (void) \n\
 	o_TexCoord = i_TexCoord; \n\
 } \n\
 ";
-string waterFragments2 =
+std::string waterFragments2 =
 "\n\
 #version 440 \n\
 \n\
@@ -607,16 +610,24 @@ public:
 		props->setTexturing(IRenderingProperties::ENABLE);
 		props->setLighting(IRenderingProperties::DISABLE);
 
+		//!	A rect to display texture waves for debug, 
+		//!	define this rect a the actual rendered object (bounding box).
 		pRect = new CBasicObjects::CRectangle();
 		pRect->setDimensions(4.0f, 4.0f);
+		pRect->removeModel(CGeometry::CGL_NORMALS);
 		GL_COORD_VERTEX min;
 		GL_COORD_VERTEX max;
 		pRect->getBoundingBox(min, max);
 		setBoundingBox(min, max);
 
+		//!	A rect to render texture wave
+		pRect2 = new CBasicObjects::CRectangle();
+		pRect2->setDimensions(2.0f, 2.0f);
+		pRect2->removeModel(CGeometry::CGL_NORMALS);
+
 		//!	Create a lookup texture for cosinus
 		CTextureFactory &factory = CTextureFactory::getDefaultFactory();
-		pCosTable = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA, ITextureObject::CGL_BILINEAR);
+		pCosTable = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA, ITextureObject::CGL_UNFILTERED);
 		pCosTable->setSize(TABLE_SIZE, 1);
 		factory.glSetTransparency(pCosTable, 255);
 
@@ -625,9 +636,9 @@ public:
 		unsigned char *cost = cosTable.getPixels();
 		for (int i = 0; i < 4 * TABLE_SIZE; i += 4)
 		{
+			float u = (float)i / (4.0f * TABLE_SIZE);
 			cost[i] = 0;
-			cost[i + 1] = 255.999 * (0.5f * cos(2.0*PI*i / (4.0f * TABLE_SIZE)) + 0.5f)
-				* pow((0.5f * sin(2.0*PI*i / (4.0f * TABLE_SIZE)) + 0.5f), 1);
+			cost[i + 1] = (unsigned char)(127.0 + 128.0 * cos(2.0*PI*u) * pow((0.5 * sin(2.0*PI*u) + 0.5), 2.0));
 			cost[i + 2] = 0;
 			cost[i + 3] = 255;
 		}
@@ -646,6 +657,15 @@ public:
 
 		pBuffer = Raptor::glCreateDisplay(attrs);
 		RAPTOR_HANDLE handle;
+
+		//!	Create the render target texture.
+		pMap = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA, ITextureObject::CGL_UNFILTERED);
+		factory.glResizeTexture(pMap, TABLE_SIZE, TABLE_SIZE);
+		pMap->glvkUpdateClamping(ITextureObject::CGL_REPEAT);
+		tset.addTexture(pMap);
+		pBuffer->glvkBindDisplay(tset);
+
+		//!	Create the render buffer
 		pBuffer->glvkBindDisplay(handle);
 			
 			IRenderingProperties &rp = pBuffer->getRenderingProperties();
@@ -653,12 +673,15 @@ public:
 			rp.setDepthTest(IRenderingProperties::DISABLE);
 			rp.setCullFace(IRenderingProperties::DISABLE);
 			rp.setLighting(IRenderingProperties::DISABLE);
-			rp.clear(CGL_RGBA|CGL_DEPTH);
+			rp.clear(CGL_RGBA);
 			IViewPoint *vpoint = pBuffer->getViewPoint();
-			vpoint->setViewVolume(-1.0,1.0,-1.0,1.0,-1.0,1.0,IViewPoint::ORTHOGRAPHIC);
+			vpoint->setViewVolume(-1.0,1.0,-1.0,1.0,1.0,100.0,IViewPoint::ORTHOGRAPHIC);
+			vpoint->setPosition(0.0f, 0.0f, 5.0f, IViewPoint::EYE);
+			vpoint->setPosition(0.0f, 0.0f, 0.0f, IViewPoint::TARGET);
 			vpoint->glvkRenderViewPointModel();
 			
-			pShader = new CShader("WATER_SHADER2");
+			CShader *pShader = pRect2->getShader();
+			pShader->setName("WATER_SHADER2");
 			CVertexShader *vp = pShader->glGetOpenGLShader()->glGetVertexShader();
 			vp->glLoadProgram(waterShader4.data());
 			CFragmentShader *fp = pShader->glGetOpenGLShader()->glGetFragmentShader();
@@ -668,15 +691,9 @@ public:
 			CTextureUnitSetup *tus = pShader->glGetTextureUnitsSetup();
 			tus->setDiffuseMap(pCosTable);
 			params.addParameter<CTextureUnitSetup::TEXTURE_IMAGE_UNIT>("cosTable", CTextureUnitSetup::IMAGE_UNIT_0);
+			params.addParameter<GL_COORD_VERTEX>("times", GL_COORD_VERTEX(0, 0, 0, 0));
 	
 		pBuffer->glvkUnBindDisplay();
-
-		//!	Create the render target texture.
-		pMap = factory.glCreateTexture(	ITextureObject::CGL_COLOR24_ALPHA,ITextureObject::CGL_UNFILTERED);
-		pMap->glvkUpdateClamping(ITextureObject::CGL_REPEAT);
-		tset.addTexture(pMap);
-		pBuffer->glvkBindDisplay(tset);
-
 
 		srand((unsigned)time( NULL ));
 		float baseAngle = (float)(PI / 2.0f);
@@ -706,14 +723,18 @@ public:
 	{
 		RAPTOR_HANDLE handle;
 		pBuffer->glvkBindDisplay(handle);
-			pShader->glGetOpenGLShader()->setProgramParameters(params);
-			pShader->glRender();
-		/*
-			CVertexShader *vp = pShader->glGetOpenGLShader()->glGetVertexShader();
+			pRect2->getShader()->glGetOpenGLShader()->setProgramParameters(params);
+		
 			float t = CTimeObject::GetGlobalTime();
-			GL_COORD_VERTEX v(	0.2 * t, 0.1 * t, 0.5 * t, 0);
+
+			params.clear();
+			params.addParameter<CTextureUnitSetup::TEXTURE_IMAGE_UNIT>("cosTable", CTextureUnitSetup::IMAGE_UNIT_0);
+			params.addParameter<GL_COORD_VERTEX>("times", GL_COORD_VERTEX(0.2 * t, 0.1 * t, 0.5 * t, 0));
+			params.addParameter<GL_COORD_VERTEX>("dir0", GL_COORD_VERTEX(cos(angles[0]), sin(angles[0]), sin(angles[0]), -cos(angles[0])));
 			
-			vp->glProgramParameter(0,v);
+			pRect2->getShader()->glGetOpenGLShader()->updateProgramParameters(params);
+
+			/*
 			for (int i=0;i<8;i++)
 			{
 				float angle = angles[i];
@@ -726,17 +747,8 @@ public:
 			vp->glProgramParameter(10,w456);
 			GL_COORD_VERTEX w789(freqs[6],freqs[7],freqs[0],1.0f);
 			vp->glProgramParameter(11,w789);
-
-			pShader->glRender();
-			pCosTable->glvkRender();
-			glBegin(GL_QUADS);
-				glTexCoord4f(0.0f,0.0f,0.0f,0.0f);glVertex3f(-1.0f,-1.0f,0.0f);
-				glTexCoord4f(2.0f,0.0f,0.0f,0.0f);glVertex3f(1.0f,-1.0f,0.0f);
-				glTexCoord4f(2.0f,1.0f,0.0f,0.0f);glVertex3f(1.0f,1.0f,0.0f);
-				glTexCoord4f(0.0f,1.0f,0.0f,0.0f);glVertex3f(-1.0f,1.0f,0.0f);
-			glEnd();
 			*/
-			pShader->glStop();
+			pRect2->glRender();
 		pBuffer->glvkUnBindDisplay();
 
 		pMap->glvkRender();
@@ -765,11 +777,11 @@ private:
 	bool bShow;
 	CProgramParameters params;
 	CBasicObjects::CRectangle *pRect;
+	CBasicObjects::CRectangle *pRect2;
 	IRenderingProperties *props;
 	ITextureObject	*pMap;
 	ITextureObject	*pCosTable;
 	CRaptorDisplay	*pBuffer;
-	CShader			*pShader;
 	CTextureSet		tset;
 	float			angles[8];
 	float			freqs[8];
