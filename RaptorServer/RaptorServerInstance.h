@@ -98,7 +98,6 @@ private:
 	CRaptorApplication  *m_pApplication;
     CRaptorDisplay		*m_pDisplay;
     RAPTOR_HANDLE		m_pWindow;
-	CRaptorIO			*m_pTranslator;
 	CRaptorServerCompressor	*m_pCompressor;
 
 	//!	Semaphore to monitor a producer/consumer model

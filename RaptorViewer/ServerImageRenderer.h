@@ -8,12 +8,16 @@
 #if !defined(AFX_OBJECT3D_H__DB24F017_80B9_11D3_97C1_FC2841000000__INCLUDED_)
 	#include "GLHierarchy/Object3D.h"
 #endif
-#if !defined(AFX_TEXTUREOBJECT_H__D32B6294_B42B_4E6F_AB73_13B33C544AD0__INCLUDED_)
-	#include "GLHierarchy/TextureObject.h"
+#if !defined(AFX_RAPTORINSTANCE_H__D5297BB6_098A_4082_96AA_36A78E76F18C__INCLUDED_)
+	#include "RaptorNetwork/RaptorNetwork.h"
 #endif
 
+RAPTOR_NAMESPACE_BEGIN
+class CTextureObject;
+RAPTOR_NAMESPACE_END
 
 RAPTOR_NAMESPACE
+
 
 
 class CServerImageRenderer : public CObject3D
@@ -26,7 +30,7 @@ public:
 
 	void glInitImage();
 
-	void setImageData(unsigned char*);
+	void setImageData(CRaptorNetwork::IMAGE_COMMAND *);
 
 	DECLARE_OBJECT3D_NOMANIPULATORS
 
@@ -38,10 +42,10 @@ private:
 
 	RAPTOR_HANDLE	drawBuffer;
 	CTextureObject	*m_pImage;
-	unsigned int	m_serverWidth;
-	unsigned int	m_serverHeight;
+	size_t	m_serverWidth;
+	size_t	m_serverHeight;
 
-	vector<unsigned char*> m_pImageDatas;
+	std::vector<CRaptorNetwork::IMAGE_COMMAND *> m_pImageDatas;
 	
 };
 

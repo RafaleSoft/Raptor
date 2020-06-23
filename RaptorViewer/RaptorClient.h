@@ -56,6 +56,7 @@ private:
 	virtual void glRender(void);
 
 	bool					m_bIsRunning;
+	void					*client_id;
 	CClient<CClientSocket>	*m_Client;
 	CRaptorDisplay			*m_pDisplay;
 	RAPTOR_HANDLE			m_window;

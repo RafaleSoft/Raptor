@@ -3,14 +3,13 @@
 #if !defined(AFX_SERVERIMAGERENDERER_H__C9720F3B_1B29_482C_84C8_1A990CEC0EBD__INCLUDED_)
 	#include "ServerImageRenderer.h"
 #endif
-
+#if !defined(AFX_TEXTUREOBJECT_H__D32B6294_B42B_4E6F_AB73_13B33C544AD0__INCLUDED_)
+	#include "GLHierarchy/TextureObject.h"
+#endif
 #if !defined(AFX_TEXTUREFACTORY_H__1B470EC4_4B68_11D3_9142_9A502CBADC6B__INCLUDED_)
 	#include "GLHierarchy/TextureFactory.h"
 #endif
 
-#if !defined(AFX_RAPTORINSTANCE_H__D5297BB6_098A_4082_96AA_36A78E76F18C__INCLUDED_)
-	#include "RaptorNetwork/RaptorNetwork.h"
-#endif
 
 
 CServerImageRenderer::CServerImageRenderer(size_t width,size_t height)
@@ -46,13 +45,13 @@ void CServerImageRenderer::glRender(void)
 	{
 		m_pImage->glvkRender();
 
-		unsigned char* src = NULL;
+		CRaptorNetwork::IMAGE_COMMAND *image = NULL;
 
 		{
 			CRaptorLock lock(tMutex);
 			if (m_pImageDatas.size())
 			{
-				src = m_pImageDatas[0];
+				image = m_pImageDatas[0];
 				m_pImageDatas.erase(m_pImageDatas.begin());
 				/*
 #ifdef GL_EXT_bgra
@@ -64,20 +63,22 @@ void CServerImageRenderer::glRender(void)
 			}
 		}
 
-		if (src != NULL)
+		if (image != NULL)
 		{
 			GLuint mode = GL_RGB;
 			glTexSubImage2D(GL_TEXTURE_2D,
 				    0,  // level
 				    0,  // xoffset
 				    0,  // yoffset
-				    m_serverWidth,
-				    m_serverHeight,
+				    (GLsizei)m_serverWidth,
+					(GLsizei)m_serverHeight,
 				    mode,
 				    GL_UNSIGNED_BYTE,
-				    src+sizeof(CRaptorNetwork::BLOC_HEADER));
+				    &image->pData);
 
-			delete [] src;
+			//!	This bloc has been initially allocated as a byte array
+			//!	by the network client. Deletion must match.
+			delete [] image;
 		}
 	}
 
@@ -87,7 +88,7 @@ void CServerImageRenderer::glRender(void)
 	glCallList(drawBuffer.handle());
 }
 
-void CServerImageRenderer::setImageData(unsigned char *in)
+void CServerImageRenderer::setImageData(CRaptorNetwork::IMAGE_COMMAND *in)
 {
 	CRaptorLock lock(tMutex);
 	

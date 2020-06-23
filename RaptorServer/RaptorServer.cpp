@@ -104,6 +104,9 @@ bool CRaptorServer::Start(const CCmdLineParser& cmdline)
 
 bool CRaptorServer::Stop(void)
 {
+	if (NULL == m_pTransport)
+		return false;
+
 	if (m_pTransport->stopServer())
 	{
 		delete m_pTransport;
