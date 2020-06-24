@@ -24,11 +24,17 @@
 #if !defined(AFX_3DENGINE_H__DB24F018_80B9_11D3_97C1_FC2841000000__INCLUDED_)
 	#include "Engine/3DEngine.h"
 #endif
+#if !defined(AFX_3DSCENE_H__E597E752_BAD4_415D_9C00_8C59D139D32B__INCLUDED_)
+	#include "Engine/3DScene.h"
+#endif
 #if !defined(AFX_ANIMATOR_H__077150E3_D826_11D3_9142_9866F8B4457F__INCLUDED_)
 	#include "Engine/Animator.h"
 #endif
 #if !defined(AFX_OBJECTFACTORY_H__7F891C52_9E32_489C_B09C_5E5803522D91__INCLUDED_)
 	#include "GLHierarchy/ObjectFactory.h"
+#endif
+#if !defined(AFX_3DSET_H__DB24F01B_80B9_11D3_97C1_FC2841000000__INCLUDED_)
+	#include "GLHierarchy/3DSet.h"
 #endif
 #if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
     #include "System/Raptor.h"
@@ -66,6 +72,8 @@
 #endif
 
 #include "YUVCompressor.h"
+#include "ToolBox/RaptorToolBox.h"
+
 
 CRaptorServerInstance* CRaptorServerInstance::m_pInstance = NULL;
 
@@ -86,7 +94,6 @@ CRaptorServerInstance::CRaptorServerInstance()
 {
     m_pDisplay = NULL;
 	m_pApplication = NULL;
-	m_pTranslator = NULL;
 	m_pCompressor = NULL;
 	m_bStarted = false;
 }
@@ -120,7 +127,7 @@ void CRaptorServerInstance::glRender()
 			}
 		}
 
-		if ( nbr > 0)
+		if (nbr > 0)
 		{
 			CRaptorConsole *pConsole = Raptor::GetConsole();
 			CGLFont::FONT_TEXT_ITEM item;
@@ -158,13 +165,19 @@ void CRaptorServerInstance::glRender()
 				}
 
 				pDisplay->glRender();
-				
+								
 				CRaptorDisplayConfig state;
 				pDisplay->glQueryStatus(state,GL_CONFIG_STATE_QUERY);
 
-				size_t size = state.width*state.height*4 + sizeof(CRaptorNetwork::BLOC_HEADER);
+				size_t size = state.width*state.height*4 + sizeof(CRaptorNetwork::IMAGE_COMMAND);
 				r.data = new unsigned char[size];
-				unsigned char* image = (unsigned char*)r.data + sizeof(CRaptorNetwork::BLOC_HEADER);
+				CRaptorNetwork::IMAGE_COMMAND *image_command = (CRaptorNetwork::IMAGE_COMMAND*)r.data;
+				image_command->command = CRaptorNetwork::getImageCommand().command;
+				image_command->header.blocHeight = state.height;
+				image_command->header.blocWidth = state.width;
+				image_command->header.xOffset = 0;
+				image_command->header.yOffset = 0;
+				unsigned char* image = (unsigned char*)r.data + sizeof(CRaptorNetwork::IMAGE_COMMAND);
 
 				pDisplay->glGrab(0,0,state.width,state.height,image,r.size);
 
@@ -195,151 +208,32 @@ void CRaptorServerInstance::glRender()
 
 void CRaptorServerInstance::processOutputFrame(request &r)
 {
-	unsigned char* image = (unsigned char*)r.data + sizeof(CRaptorNetwork::BLOC_HEADER);	
-//m_pCompressor->differentialCompress(image,r.size);
-//m_pCompressor->compress(image,r.size);
-	m_pCompressor->removeAlpha(image,r.size);
-	r.size = (r.size / 4) * CRaptorNetwork::PIXEL_SIZE;
-	r.size += sizeof(CRaptorNetwork::BLOC_HEADER);
-}
-
-bool CRaptorServerInstance::start(unsigned int width, unsigned int height)
-{
-    CRaptorConfig config;
-	config.m_logFile = "Raptor_Server.log";
-	if (Raptor::glInitRaptor(config))
-		CAnimator::SetAnimator(new CAnimator());
-	else
-	{
-		std::cout << "Failed to initialize Raptor layer." << std::endl;
-		return false;
-	}
-
-	CImaging::installImagers();
-	std::cout << "Raptor Toolbox initialized. " << std::endl;
-
-	CRaptorDisplayConfig glcs;
-	glcs.width = width;
-	glcs.height = height;
-	glcs.x = 750;
-	glcs.y = 10;
-	glcs.caption = "RaptorRenderServer";
-	glcs.acceleration = CRaptorDisplayConfig::HARDWARE;
-	glcs.antialias = CRaptorDisplayConfig::ANTIALIAS_4X;
-	glcs.swap_buffer = CRaptorDisplayConfig::SWAP_EXCHANGE;
-	glcs.renderer = CRaptorDisplayConfig::RENDER_BUFFER_FILTER_CHAIN;
-	glcs.double_buffer = true;
-	glcs.depth_buffer = true;
-	glcs.stencil_buffer = true;
-	glcs.display_mode = CGL_RGBA | CGL_DEPTH;
-
-	if (!Raptor::glCheckDisplayConfig(glcs))
-    {
-		std::cout << "Some hardware features are missing. Will use lower config, disabling some effects" << std::endl;
-		glcs.antialias = CRaptorDisplayConfig::ANTIALIAS_NONE;
-        if (!Raptor::glCheckDisplayConfig(glcs))
-        {
-			std::cout << "Some hardware features are missing. Will use minimal config, disabling all advanced effects" << std::endl;
-			glcs.renderer = CRaptorDisplayConfig::NATIVE_GL;
-            if (!Raptor::glCheckDisplayConfig(glcs))
-            {
-				std::cout << "Minimum required display config cannot be created. Sorry, demo will abort. Bye." << std::endl;
-                return false;
-            }
-        }
-    }
-
-	std::cout << "Raptor Display configuration checked, creating rendering window. " << std::endl;
-	glcs.refresh_rate.fps = CGL_MAXREFRESHRATE;
-	m_pApplication->initApplication(glcs);
-	if (!m_pApplication->initApplication(glcs))
-    {
-		std::cout << "Raptor Render Server has no resources: hardware OpenGL rendering not supported, exiting..." << std::endl;
-        return false;
-    }
-
-	m_pDisplay = m_pApplication->getRootDisplay();
+	CRaptorNetwork::SERVER_COMMAND *command = (CRaptorNetwork::SERVER_COMMAND *)r.data;
 	
-	std::cout << "Creating Raptor Main Display. " << std::endl;
-	m_pDisplay->glvkBindDisplay(m_pApplication->getRootWindow());
-		CRaptorConsole *pConsole = Raptor::GetConsole();
-		pConsole->glInit();
-		pConsole->showStatus(true);
-		pConsole->showFPS(true);
-		pConsole->showFrameTime(true);
-		pConsole->activateConsole(true);
-		CGLFont::FONT_TEXT_ITEM item;
-		item.text = "Pending requests: 0";
-		pConsole->addItem(item);
-		item.text = "Pending replies: 0";
-		pConsole->addItem(item);
-
-		IRenderingProperties &props = m_pDisplay->getRenderingProperties();
-		props.setTexturing(IRenderingProperties::ENABLE);
-		props.setLighting(IRenderingProperties::DISABLE);
-		props.setDepthTest(IRenderingProperties::DISABLE);
-		props.setCullFace(IRenderingProperties::DISABLE);
-		props.clear(CGL_RGBA);
-	m_pDisplay->glvkUnBindDisplay();
-
-	std::cout << "Creating Raptor Application. " << std::endl;
-	m_pApplication = CRaptorApplication::CreateApplication();
-	m_pApplication->grabCursor(false);
-	
-    if (m_pTranslator == NULL)
+	const CRaptorNetwork::SESSION_COMMAND &cmd = CRaptorNetwork::getOpenSessionCommand();
+	if (!strncmp(command->command, cmd.command.command, cmd.command.commandLen))
 	{
-		char shemaLocation[MAX_PATH];
-		char* root = getenv("RAPTOR_ROOT");
-		if (NULL == root)
-		{
-			std::cout << "Raptor root data path is unknown. Is RAPTOR_ROOT defined ?" << std::endl;
-			std::cout << "Using current path. " << std::endl;
-			strcpy(shemaLocation, "./Raptor.xsd");
-		}
-		else
-		{
-			strcpy(shemaLocation, root);
-			strcat(shemaLocation, "/Redist/bin/Raptor.xsd");
-		}
+		CRaptorNetwork::SESSION_COMMAND *session = (CRaptorNetwork::SESSION_COMMAND*)command;
+		session->id = r.id;
 
-		m_pTranslator = CRaptorIO::Create("XMLIO", CRaptorIO::DISK_READ, CRaptorIO::ASCII_XML);
-		m_pTranslator->parse(shemaLocation, 0);
+		return;
 	}
 
-	if (m_pCompressor == NULL)
-		m_pCompressor = new CYUVCompressor();
-
-	std::cout << "Raptor Server Ready. " << std::endl;
-	m_bStarted = true;
-    return true;
-}
-
-
-bool CRaptorServerInstance::run(void)
-{
-	if (m_pApplication != NULL)
+	const CRaptorNetwork::IMAGE_COMMAND& cmd2 = CRaptorNetwork::getImageCommand();
+	if (!strncmp(command->command, cmd2.command.command, cmd2.command.commandLen))
 	{
-		return m_pApplication->run();
+		CRaptorNetwork::IMAGE_COMMAND *image_command = (CRaptorNetwork::IMAGE_COMMAND*)r.data;
+		image_command->header.compressionType = 0;
+
+		unsigned char* image = (unsigned char*)r.data + sizeof(CRaptorNetwork::IMAGE_COMMAND);
+		//m_pCompressor->differentialCompress(image,r.size);
+		//m_pCompressor->compress(image,r.size);
+		m_pCompressor->removeAlpha(image, r.size);
+		r.size = (r.size / 4) * CRaptorNetwork::PIXEL_SIZE;
+		r.size += sizeof(CRaptorNetwork::IMAGE_COMMAND);
+
+		return;
 	}
-	else
-		return true;
-}
-
-bool CRaptorServerInstance::stop(void)
-{
-	m_bStarted = false;
-
-	//! Raptor will destroy displays with appropriate context
-	m_sessions.clear();
-
-	//! should we wait until all pending requests are satisfied ?
-	CRaptorLock lock(m_mutex);
-	m_requests.clear();
-
-	CRaptorLock lock2(m_rmutex);
-	m_prodCons.P();
-
-	return true;
 }
 
 bool CRaptorServerInstance::closeSession(request_handler_t::request_id id)
@@ -355,74 +249,6 @@ bool CRaptorServerInstance::closeSession(request_handler_t::request_id id)
 	}
 
 	return false;
-}
-
-bool CRaptorServerInstance::handleRequest(request_handler_t::request_id id, const void *data, size_t size)
-{
-	if (m_bStarted)
-	{
-		request r;
-		r.id = id;
-		r.reply = false;
-		r.render = false;
-		r.data = new uint8_t[size];
-		r.size = size;
-		r.display = NULL;
-		memcpy(r.data,data,size);
-
-		CRaptorLock lock(m_mutex);
-		m_requests.push_back(r);
-	}
-
-	return m_bStarted;
-}
-
-bool CRaptorServerInstance::handleReply(request_handler_t::request_id id, const void *&data, size_t &size)
-{
-	request r;
-	r.id = 0;
-
-	if (m_bStarted)
-	{
-		m_prodCons.V();
-		CRaptorLock lock(m_rmutex);
-		if (m_replies.size() > 0)
-		{
-#ifdef WIN32
-			std::vector<request>::const_iterator it = m_replies.begin();
-#else
-			std::vector<request>::iterator it = m_replies.begin();
-#endif
-			do
-			{
-				r = *it++;
-			} while ((it != m_replies.end()) && (r.id != id));
-
-			if (r.id == id)
-			{
-				it--;
-				m_replies.erase(it);
-			}
-			else
-				return false;
-		}
-		else
-			return false;
-	}
-	else
-	{
-		//	Server is stopping...
-		//	... log warning/error message ?
-		SLEEP(1);
-		return false;
-	}
-
-	processOutputFrame(r);
-
-	data = r.data;
-	size = r.size;
-
-	return true;
 }
 
 bool CRaptorServerInstance::executeRequest(request &r)
@@ -457,6 +283,8 @@ bool CRaptorServerInstance::executeRequest(request &r)
 	if (!strncmp(command->command,cmd4.command.command,cmd4.command.commandLen))
 	{
 		r.reply = true;
+		r.render = false;
+		r.display = NULL;
 		session s;
 		s.id = r.id;
 		s.display = NULL;
@@ -467,10 +295,14 @@ bool CRaptorServerInstance::executeRequest(request &r)
 		glcs.height = session_command->height;
 		glcs.x = 0;
 		glcs.y = 0;
-		glcs.caption = "RaptorRenderServer_Session";
+		std::stringstream dname;
+		dname << "Session";
+		dname << s.id;
+		dname << "_display";
+		dname << std::ends;
+		glcs.caption = dname.str();
 		glcs.acceleration = CRaptorDisplayConfig::HARDWARE;
-		glcs.display_mode = CGL_RGBA | 
-							CGL_DEPTH;
+		glcs.display_mode = CGL_RGBA | CGL_DEPTH;
 		glcs.renderer = CRaptorDisplayConfig::RENDER_BUFFER;
 		glcs.refresh_rate.fps = CGL_MAXREFRESHRATE;
 		s.display = Raptor::glCreateDisplay(glcs);
@@ -491,6 +323,24 @@ bool CRaptorServerInstance::executeRequest(request &r)
 		s.display->glvkUnBindDisplay();
 
 		m_sessions.push_back(s);
+		CRaptorLock lock(m_rmutex);
+
+		request reply;
+		reply.display = NULL;
+		reply.id = s.id;
+		reply.render = false;
+
+		session_command = new CRaptorNetwork::SESSION_COMMAND;
+		session_command->id = s.id;
+		session_command->width = glcs.width;
+		session_command->height = glcs.height;
+		session_command->command = cmd4.command;
+		reply.data = session_command;
+		reply.size = sizeof(CRaptorNetwork::SESSION_COMMAND);
+
+		m_replies.push_back(reply);
+		m_prodCons.P();
+
 		return true;
 	}
 
@@ -499,9 +349,6 @@ bool CRaptorServerInstance::executeRequest(request &r)
 
 bool CRaptorServerInstance::loadPackage(const CRaptorNetwork::DATA_COMMAND& data, request_handler_t::request_id id)
 {
-	if (NULL == m_pTranslator)
-		return false;
-
 	std::cout << "Storing data package file to server." << std::endl;
 
 	std::streampos fsize = data.size;
@@ -529,50 +376,220 @@ bool CRaptorServerInstance::loadPackage(const CRaptorNetwork::DATA_COMMAND& data
 		return false;
 
 	fname = datamanager->exportFile("Demo.xml");
-	m_pTranslator->parse(fname.c_str(), 0);
 
-	std::string name;
-	//  skip data intro
-	*m_pTranslator >> name;
-	std::string name_data = m_pTranslator->getValueName();
-	while (!name_data.empty())
+	CRaptorDisplay *pDisplay = NULL;
+	for (size_t i = 0; i < m_sessions.size(); i++)
 	{
-		CPersistence* obj = NULL;
+		if (m_sessions[i].id == id)
+			pDisplay = m_sessions[i].display;
+	}
 
-		//  skip data intro
-		if (name_data == "Update")
+	if (NULL != pDisplay)
+	{
+		// Set a temporary name for display update
+		pDisplay->setName("RaptorRenderSession");
+		if (CRaptorToolBox::loadRaptorData(fname))
 		{
-			*m_pTranslator >> name;
-			name_data = m_pTranslator->getValueName();
-			if (name_data == "name")
+			std::stringstream dname;
+			dname << "Session";
+			dname << id;
+			dname << "_display";
+			dname << std::ends;
+			pDisplay->setName(dname.str());
+			std::cout << "Session rendering scene updated." << std::endl;
+			return true;
+		}
+		else
+			return false;
+	}
+	else
+	{
+		std::cout << "Invalid session identifier " << id << std::endl;
+		return false;
+	}
+
+	return true;
+}
+
+
+bool CRaptorServerInstance::handleRequest(request_handler_t::request_id id, const void *data, size_t size)
+{
+	if (m_bStarted)
+	{
+		request r;
+		r.id = id;
+		r.reply = false;
+		r.render = false;
+		r.data = new uint8_t[size];
+		r.size = size;
+		r.display = NULL;
+		memcpy(r.data, data, size);
+
+		CRaptorLock lock(m_mutex);
+		m_requests.push_back(r);
+	}
+
+	return m_bStarted;
+}
+
+bool CRaptorServerInstance::handleReply(request_handler_t::request_id id, const void *&data, size_t &size)
+{
+	request r;
+	r.id = 0;
+
+	if (!m_bStarted)
+	{
+		//	Server is stopping...
+		//	... log warning/error message ?
+		SLEEP(1);
+		return false;
+	}
+
+	m_prodCons.V();
+	CRaptorLock lock(m_rmutex);
+
+	if (m_replies.size() < 1)
+		return false;
+
+#ifdef WIN32
+	std::vector<request>::const_iterator it = m_replies.begin();
+#else
+	std::vector<request>::iterator it = m_replies.begin();
+#endif
+	do
+	{
+		r = *it++;
+	} while ((it != m_replies.end()) && (r.id != id));
+
+	if (r.id == id)
+	{
+		it--;
+		m_replies.erase(it);
+	}
+	else
+		return false;
+
+	processOutputFrame(r);
+
+	data = r.data;
+	size = r.size;
+
+	return true;
+}
+
+bool CRaptorServerInstance::run(void)
+{
+	if (m_pApplication != NULL)
+	{
+		return m_pApplication->run();
+	}
+	else
+		return true;
+}
+
+bool CRaptorServerInstance::start(unsigned int width, unsigned int height)
+{
+	CRaptorConfig config;
+	config.m_logFile = "Raptor_Server.log";
+	if (Raptor::glInitRaptor(config))
+		CAnimator::SetAnimator(new CAnimator());
+	else
+	{
+		std::cout << "Failed to initialize Raptor layer." << std::endl;
+		return false;
+	}
+
+	CImaging::installImagers();
+	std::cout << "Raptor Toolbox initialized. " << std::endl;
+
+	CRaptorDisplayConfig glcs;
+	glcs.width = width;
+	glcs.height = height;
+	glcs.x = 750;
+	glcs.y = 10;
+	glcs.caption = "RaptorRenderServer";
+	glcs.acceleration = CRaptorDisplayConfig::HARDWARE;
+	glcs.antialias = CRaptorDisplayConfig::ANTIALIAS_4X;
+	glcs.swap_buffer = CRaptorDisplayConfig::SWAP_EXCHANGE;
+	glcs.renderer = CRaptorDisplayConfig::RENDER_BUFFER_FILTER_CHAIN;
+	glcs.double_buffer = true;
+	glcs.depth_buffer = true;
+	glcs.stencil_buffer = true;
+	glcs.display_mode = CGL_RGBA | CGL_DEPTH;
+	/*
+	if (!Raptor::glCheckDisplayConfig(glcs))
+	{
+		std::cout << "Some hardware features are missing. Will use lower config, disabling some effects" << std::endl;
+		glcs.antialias = CRaptorDisplayConfig::ANTIALIAS_NONE;
+		if (!Raptor::glCheckDisplayConfig(glcs))
+		{
+			std::cout << "Some hardware features are missing. Will use minimal config, disabling all advanced effects" << std::endl;
+			glcs.renderer = CRaptorDisplayConfig::NATIVE_GL;
+			if (!Raptor::glCheckDisplayConfig(glcs))
 			{
-				*m_pTranslator >> name;
-				obj = CPersistence::FindObject(name);
-				if ((obj != NULL) && (obj == m_pDisplay))
-				{
-					// Map to display of current session
-					for (size_t i = 0; i < m_sessions.size(); i++)
-						if (m_sessions[i].id == id)
-						{
-							obj = m_sessions[i].display;
-							break;
-						}
-				}
+				std::cout << "Minimum required display config cannot be created. Sorry, demo will abort. Bye." << std::endl;
+				return false;
 			}
 		}
-		else
-		{
-			const CPersistentObject & po = CObjectFactory::GetInstance()->createObject(name_data);
-			obj = po;
-		}
-
-		if (obj != NULL)
-			obj->importObject(*m_pTranslator);
-		else
-			*m_pTranslator >> name;
-			
-		name_data = m_pTranslator->getValueName();
 	}
+	*/
+	std::cout << "Raptor Display configuration checked, creating raptor application. " << std::endl;
+	m_pApplication = CRaptorApplication::CreateApplication();
+	m_pApplication->grabCursor(false);
+	
+	glcs.refresh_rate.fps = CGL_MAXREFRESHRATE;
+	if (!m_pApplication->initApplication(glcs))
+	{
+		std::cout << "Raptor Render Server has no resources: hardware OpenGL rendering not supported, exiting..." << std::endl;
+		return false;
+	}
+
+	m_pDisplay = m_pApplication->getRootDisplay();
+	m_pWindow = m_pApplication->getRootWindow();
+
+	std::cout << "Creating Raptor Main Display. " << std::endl;
+	m_pDisplay->glvkBindDisplay(m_pWindow);
+	CRaptorConsole *pConsole = Raptor::GetConsole();
+	pConsole->glInit();
+	pConsole->showStatus(true);
+	pConsole->showFPS(true);
+	pConsole->showFrameTime(true);
+	pConsole->activateConsole(true);
+	CGLFont::FONT_TEXT_ITEM item;
+	item.text = "Pending requests: 0";
+	pConsole->addItem(item);
+	item.text = "Pending replies: 0";
+	pConsole->addItem(item);
+
+	IRenderingProperties &props = m_pDisplay->getRenderingProperties();
+	props.setTexturing(IRenderingProperties::ENABLE);
+	props.setLighting(IRenderingProperties::DISABLE);
+	props.setDepthTest(IRenderingProperties::DISABLE);
+	props.setCullFace(IRenderingProperties::DISABLE);
+	props.clear(CGL_RGBA);
+	m_pDisplay->glvkUnBindDisplay();
+
+	if (m_pCompressor == NULL)
+		m_pCompressor = new CYUVCompressor();
+
+	std::cout << "Raptor Server Ready. " << std::endl;
+	m_bStarted = true;
+	return true;
+}
+
+bool CRaptorServerInstance::stop(void)
+{
+	m_bStarted = false;
+
+	//! Raptor will destroy displays with appropriate context
+	m_sessions.clear();
+
+	//! should we wait until all pending requests are satisfied ?
+	CRaptorLock lock(m_mutex);
+	m_requests.clear();
+
+	CRaptorLock lock2(m_rmutex);
+	m_prodCons.P();
 
 	return true;
 }

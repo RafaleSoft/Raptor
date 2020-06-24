@@ -99,7 +99,7 @@ private:
 	static	size_t	readBufferSize;
 	static	size_t	writeBufferSize;
 
-	bool		m_bConnected;
+	bool				m_bConnected;
 	unsigned long int	m_threadID;
 #ifdef WIN32
 	HANDLE		m_thread;

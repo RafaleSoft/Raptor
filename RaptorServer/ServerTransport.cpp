@@ -59,7 +59,7 @@ bool CServerTransport::stopServer(void)
 
 bool CServerTransport::onClientClose(const CClientSocket &client)
 {
-	std::cout << "New client connected" << std::endl;
+	std::cout << "Client disconnected" << std::endl;
 
 	CRaptorServerInstance *pHandler = CRaptorServerInstance::GetInstance();
 	return pHandler->closeSession((request_handler_t::request_id)&client);

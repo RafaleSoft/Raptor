@@ -86,7 +86,7 @@
 		</Action>
 	</ViewModifier>
 
-	<Update name="RaptorRenderServer">
+	<Update name="RaptorRenderSession">
 		<RenderingProperties texturing="1" lighting="1"/>
 		<ViewPoint left="-1.33" right="1.33" bottom="-1.0" top="1.0" near="1.5" far="200.0" model="perspective"  tmin="0.0" tmax="200.0" path="0" continus="0" loop="1">
 			<EyePosition x="0.0" y="0.0" z="3.2"/>

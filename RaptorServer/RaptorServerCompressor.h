@@ -62,7 +62,7 @@ protected:
 
 	unsigned char *getData(void) const { return m_pData; };
 
-	std::vector<CRaptorNetwork::BLOC_DATA> m_blocs;
+	std::vector<CRaptorNetwork::IMAGE_COMMAND> m_blocs;
 
 
 private:

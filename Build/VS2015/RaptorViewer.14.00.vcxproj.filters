@@ -14,9 +14,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Demo.xml" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="..\..\RaptorViewer\RaptorClient.h">
       <Filter>Header Files</Filter>
     </ClInclude>

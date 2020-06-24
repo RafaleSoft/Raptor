@@ -74,7 +74,8 @@ CServerImageRenderer& CRaptorClient::getImage(void) const
 }
 
 CRaptorClient::CRaptorClient(void)
-	:m_Client(NULL),m_pDisplay(NULL),m_pImage(NULL),m_bIsRunning(true)
+	:m_Client(NULL), client_id(NULL),
+	m_pDisplay(NULL),m_pImage(NULL), m_bIsRunning(false)
 {
 }
 
@@ -118,15 +119,37 @@ static int pending_queries = 0;
 
 void CRaptorClient::queryServerImage(void)
 {
-	if (m_pImage == NULL)
+	size_t size = 0;
+	void *out = NULL;
+	m_Client->read(out, size);
+
+	CRaptorNetwork::SERVER_COMMAND *command = (CRaptorNetwork::SERVER_COMMAND*)out;
+
+	const CRaptorNetwork::SESSION_COMMAND &cmd = CRaptorNetwork::getOpenSessionCommand();
+	if (!strncmp(command->command, cmd.command.command, cmd.command.commandLen))
+	{
+		CRaptorNetwork::SESSION_COMMAND *session = (CRaptorNetwork::SESSION_COMMAND*)command;
+		client_id = session->id;
+
+		std::cout << "Received session_id: " << client_id << std::endl;
 		return;
+	}
 
-	size_t size = CRaptorNetwork::PIXEL_SIZE * 256 * 256;
-	unsigned char *out = NULL;
-	m_Client->read((void*&)out,size);
-	pending_queries--;
+	const CRaptorNetwork::IMAGE_COMMAND& cmd2 = CRaptorNetwork::getImageCommand();
+	if (!strncmp(command->command, cmd2.command.command, cmd2.command.commandLen))
+	{
+		if (m_pImage == NULL)
+			return;
 
-	m_pImage->setImageData(out);
+		//std::cout << "Received image_data: " << client_id << std::endl;
+
+		size = CRaptorNetwork::PIXEL_SIZE * 256 * 256;
+		
+		pending_queries--;
+
+		m_pImage->setImageData((CRaptorNetwork::IMAGE_COMMAND*)out);
+		return;
+	}
 }
 
 void CRaptorClient::glRender()
@@ -196,7 +219,6 @@ bool CRaptorClient::run(unsigned int width, unsigned int height)
 		pScene->addObject(m_pImage);
 
 		res = m_pDisplay->glvkUnBindDisplay();
-
 		if (res)
 		{
 			CRaptorApplication *pApplication = CRaptorApplication::CreateApplication();
@@ -268,6 +290,7 @@ bool CRaptorClient::start(const CCmdLineParser &cmdLine)
 	m_pImage = new CServerImageRenderer(cmd.width,cmd.height);
 
 	unsigned long int ui_threadID = 0;
+	m_bIsRunning = true;
 #ifdef WIN32
 	m_hThread = CreateThread(NULL,
 							 0,
