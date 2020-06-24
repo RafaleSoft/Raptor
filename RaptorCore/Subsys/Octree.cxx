@@ -363,7 +363,7 @@ void COctree<USER_DATA_t>::glRender(void)
 
         const BASETREE_ITEM &item = (*it++);
         const CBoundingBox * const bbox = item.pObject->boundingBox();
-        item.pObject->glRenderBBox(false);
+        item.pObject->glRenderBBox(CObject3D::WIREFRAME);
         glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
 
         glColor4f(1.0f,0.5f,0.0f,1.0f);

@@ -1,6 +1,20 @@
-// VulkanTextureObject.h: interface for the CVulkanTextureObject class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  VulkanTextureObject.h                                                  */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
 
 #if !defined(AFX_VULKANTEXTUREOBJECT_H__5E3E26C2_441F_4051_986F_2207AF0B3F6D__INCLUDED_)
 #define AFX_VULKANTEXTUREOBJECT_H__5E3E26C2_441F_4051_986F_2207AF0B3F6D__INCLUDED_
@@ -40,6 +54,21 @@ public:
 	//! @param C : the clamp mode
 	virtual void glvkUpdateClamping(ITextureObject::CLAMP_MODE C);
 
+	//! Returns the actual selected mipmap.
+	//! ( not the number of mipmaps )
+	virtual uint32_t getCurrentMipMapLevel(void) const { return 0; }
+
+	//! Selects the current mipmap level for image access ( loading, reading, ... )
+	virtual void selectMipMapLevel(unsigned int l) { };
+
+	//! Returns the actual selected cubemap face.
+	//! ( not the number of faces already loaded )
+	virtual CUBE_FACE getCurrentCubeFace(void) const { return CGL_CUBEMAP_NONE; };
+
+	//! Selects the current cubemap face for image access ( loading, reading, ... )
+	virtual void selectCubeFace(CUBE_FACE face) {};
+
+	virtual bool setGenerationSize(uint32_t posx, uint32_t posy, uint32_t width, uint32_t height);
 
 	VkDescriptorImageInfo getCombinedImageSampler(void) const
 	{

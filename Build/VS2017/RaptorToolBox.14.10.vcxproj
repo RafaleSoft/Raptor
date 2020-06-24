@@ -229,7 +229,7 @@ copy $(SolutionDir)$(ProjectName)\Toolbox.pck "%RAPTOR_ROOT%\Redist\bin\"
 </Command>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>%RAPTOR_ROOT%\RaptorToolBox\buildpak.bat</Command>
+      <Command>$(PYTHON_HOME)\python.exe $(SolutionDir)RaptorToolBox\buildpak.py</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -256,7 +256,7 @@ copy $(SolutionDir)$(ProjectName)\Toolbox.pck "%RAPTOR_ROOT%\Redist\bin\"
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -289,7 +289,7 @@ copy $(SolutionDir)$(ProjectName)\Toolbox.pck "%RAPTOR_ROOT%\Redist\bin\"
 </Command>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>%RAPTOR_ROOT%\RaptorToolBox\buildpak.bat</Command>
+      <Command>$(PYTHON_HOME)\python.exe $(SolutionDir)RaptorToolBox\buildpak.py</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">
@@ -350,7 +350,7 @@ copy $(SolutionDir)$(ProjectName)\Toolbox.pck "%RAPTOR_ROOT%\Redist\bin\"
 </Command>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>%RAPTOR_ROOT%\RaptorToolBox\buildpak.bat</Command>
+      <Command>$(PYTHON_HOME)\python.exe $(SolutionDir)RaptorToolBox\buildpak.py</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|x64'">
@@ -377,7 +377,7 @@ copy $(SolutionDir)$(ProjectName)\Toolbox.pck "%RAPTOR_ROOT%\Redist\bin\"
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
       <IntrinsicFunctions>false</IntrinsicFunctions>
       <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
-      <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -410,7 +410,7 @@ copy $(SolutionDir)$(ProjectName)\Toolbox.pck "%RAPTOR_ROOT%\Redist\bin\"
 </Command>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>%RAPTOR_ROOT%\RaptorToolBox\buildpak.bat</Command>
+      <Command>$(PYTHON_HOME)\python.exe $(SolutionDir)RaptorToolBox\buildpak.py</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -472,7 +472,7 @@ copy $(SolutionDir)$(ProjectName)\Toolbox.pck "%RAPTOR_ROOT%\Redist\bin\"
 </Command>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>%RAPTOR_ROOT%\RaptorToolBox\buildpak.bat</Command>
+      <Command>$(PYTHON_HOME)\python.exe $(SolutionDir)RaptorToolBox\buildpak.py</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -532,7 +532,7 @@ copy $(SolutionDir)$(ProjectName)\Toolbox.pck "%RAPTOR_ROOT%\Redist\bin\"
 </Command>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>%RAPTOR_ROOT%\RaptorToolBox\buildpak.bat</Command>
+      <Command>$(PYTHON_HOME)\python.exe $(SolutionDir)RaptorToolBox\buildpak.py</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Optimized|Win32'">
@@ -606,7 +606,7 @@ copy $(SolutionDir)$(ProjectName)\Toolbox.pck "%RAPTOR_ROOT%\Redist\bin\"
 </Command>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>%RAPTOR_ROOT%\RaptorToolBox\buildpak.bat</Command>
+      <Command>$(PYTHON_HOME)\python.exe $(SolutionDir)RaptorToolBox\buildpak.py</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Optimized|x64'">
@@ -678,7 +678,7 @@ copy $(SolutionDir)$(ProjectName)\Toolbox.pck "%RAPTOR_ROOT%\Redist\bin\"
 </Command>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>%RAPTOR_ROOT%\RaptorToolBox\buildpak.bat</Command>
+      <Command>$(PYTHON_HOME)\python.exe $(SolutionDir)RaptorToolBox\buildpak.py</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -832,7 +832,7 @@ copy $(SolutionDir)$(ProjectName)\Toolbox.pck "%RAPTOR_ROOT%\Redist\bin\"
     <ResourceCompile Include="..\..\RaptorToolBox\RaptorToolBox.rc" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\RaptorToolBox\buildpak.bat" />
+    <None Include="..\..\RaptorToolBox\buildpak.py" />
     <None Include="..\..\RaptorToolBox\Filters\Color.fp" />
     <None Include="..\..\RaptorToolBox\Filters\Color.ps" />
     <None Include="..\..\RaptorToolBox\Filters\Color_old.ps" />

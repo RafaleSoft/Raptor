@@ -16,6 +16,9 @@
 #if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
 	#include "System/RaptorErrorManager.h"
 #endif
+#if !defined(AFX_OPENGLTEXTUREOBJECT_H__D32B6294_B42B_4E6F_AB73_13B33C544AD0__INCLUDED_)
+	#include "Subsys/OpenGL/OpenGLTextureObject.h"
+#endif
 
 
 RAPTOR_NAMESPACE
@@ -164,7 +167,7 @@ void RAPTOR_FASTCALL CImageModifier::deltaTime(float dt)
 }
 
 
-void CImageModifier::glGenerate(CTextureObject* t)
+void CImageModifier::glGenerate(ITextureObject* t, uint32_t x, uint32_t y, uint32_t w, uint32_t h)
 {
     if ((m_pImage == NULL) || (!m_bEnabled) || (m_pDstBuffer == NULL) || (m_pSrcBuffer == NULL))
         return;
@@ -175,11 +178,11 @@ void CImageModifier::glGenerate(CTextureObject* t)
 		CTexelAllocator::GetInstance()->isMemoryLocked() &&
 		(NULL != m_pBufferPointer))
 	{
-		CTexelAllocator::GetInstance()->glvkCopyPointer(m_pBufferPointer,
-														m_pBufferImage,
-														t->getWidth() * t->getHeight() *4);
+		CTexelAllocator::GetInstance()->glvkSetPointerData(	m_pBufferPointer,
+															m_pBufferImage,
+															t->getWidth() * t->getHeight() *4);
 		glTexSubImage2D(GL_TEXTURE_2D,
-						t->getCurrentMipMapLevel(),
+						t->getGLTextureObject()->getCurrentMipMapLevel(),
 						0, 0,
 						t->getWidth(), t->getHeight(),
 						GL_RGBA, GL_UNSIGNED_BYTE,
@@ -187,7 +190,7 @@ void CImageModifier::glGenerate(CTextureObject* t)
 	}
 	else
 		glTexSubImage2D(GL_TEXTURE_2D,
-						t->getCurrentMipMapLevel(),
+						t->getGLTextureObject()->getCurrentMipMapLevel(),
 						0,	0,
 						t->getWidth(), t->getHeight(),
 						GL_RGBA, GL_UNSIGNED_BYTE,

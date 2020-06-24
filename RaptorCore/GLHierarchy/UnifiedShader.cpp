@@ -200,63 +200,6 @@ void CUnifiedShader::glProgramParameter(unsigned int numParam,GL_HIRES_COORD_VER
 }
 */
 
-
-uint64_t CUnifiedShader::glGetBufferMemoryRequirements(RAPTOR_HANDLE program)
-{
-	if (program.glhandle() == 0)
-		return 0;
-
-	uint64_t uniform_size = 0;
-
-#if defined(GL_ARB_uniform_buffer_object)
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
-
-	GLint active_blocks_count = 0;
-
-	//! Despite the fact that the GL_VERSION text is greater than 3.1, it seems there is a bug in the call
-	//! below : the actual value should be returned by glGetProgramiv and not by glGetObjectParameteriv.
-	//pExtensions->glGetProgramivARB(program.handle, GL_ACTIVE_UNIFORM_BLOCKS_ARB, &active_blocks_count);
-	pExtensions->glGetObjectParameterivARB(program.glhandle(), GL_ACTIVE_UNIFORM_BLOCKS_ARB, &active_blocks_count);
-
-	for (GLint i = 0; i < active_blocks_count; i++)
-	{
-		GLint block_size = 0;
-		pExtensions->glGetActiveUniformBlockivARB(program.glhandle(), i, GL_UNIFORM_BLOCK_DATA_SIZE_ARB, &block_size);
-
-		uniform_size += block_size;
-
-		GLint active_uniforms = 0;
-		pExtensions->glGetActiveUniformBlockivARB(program.glhandle(), i, GL_UNIFORM_BLOCK_ACTIVE_UNIFORMS_ARB, &active_uniforms);
-		GLint indices[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
-		pExtensions->glGetActiveUniformBlockivARB(program.glhandle(), i, GL_UNIFORM_BLOCK_ACTIVE_UNIFORM_INDICES_ARB, &indices[0]);
-
-		GLint active_uniform_max_length = 0;
-		//pExtensions->glGetProgramivARB(program.handle, GL_ACTIVE_UNIFORM_BLOCK_MAX_NAME_LENGTH_ARB, &active_uniform_max_length);
-		pExtensions->glGetObjectParameterivARB(program.glhandle(), GL_ACTIVE_UNIFORM_BLOCK_MAX_NAME_LENGTH_ARB, &active_uniform_max_length);
-
-		GLint active_uniform_length = 0;
-		pExtensions->glGetActiveUniformBlockivARB(program.glhandle(), i, GL_UNIFORM_BLOCK_NAME_LENGTH_ARB, &active_uniform_length);
-
-		GLsizei length = 0;
-		char uniformBlockName[256];
-		pExtensions->glGetActiveUniformBlockNameARB(program.glhandle(), i, 256, &length, uniformBlockName);
-
-		GLuint uniformBlockIndex = pExtensions->glGetUniformBlockIndexARB(program.glhandle(), uniformBlockName);
-
-		GLint binding = 0;
-		pExtensions->glGetActiveUniformBlockivARB(program.glhandle(), i, GL_UNIFORM_BLOCK_BINDING_ARB, &binding);
-
-		GLint max_bindings = 0;
-		glGetIntegerv(GL_MAX_UNIFORM_BUFFER_BINDINGS_ARB, &max_bindings);
-
-		pExtensions->glGetActiveUniformBlockivARB(program.glhandle(), i, GL_UNIFORM_BLOCK_BINDING_ARB, &binding);
-	}
-#endif
-
-	return uniform_size;
-}
-
-
 static bool isTypeVector(unsigned int shaderKind)
 {
 #if defined(GL_ARB_shader_objects)

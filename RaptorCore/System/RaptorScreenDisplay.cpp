@@ -54,6 +54,9 @@
 #if !defined(AFX_OPENGLMEMORY_H__C344567B_877F_4F43_8961_C4E59E3BBF7E__INCLUDED_)
 	#include "Subsys/OpenGL/OpenGLMemory.h"
 #endif
+#if !defined(AFX_OPENGLTEXTUREOBJECT_H__D32B6294_B42B_4E6F_AB73_13B33C544AD0__INCLUDED_)
+	#include "Subsys/OpenGL/OpenGLTextureObject.h"
+#endif
 #if !defined(AFX_TEXTUREQUAD_H__1712AF34_6723_4E39_BC72_05ED6FA28418__INCLUDED_)
 	#include "GLHierarchy/TextureQuad.h"
 #endif
@@ -110,26 +113,18 @@ bool CRaptorScreenDisplay::glQueryStatus(CRaptorDisplayConfig &state,unsigned lo
     return CRaptorDisplay::glQueryStatus(state,query);
 }
 
-void CRaptorScreenDisplay::glGenerate(CTextureObject* t)
+void CRaptorScreenDisplay::glGenerate(ITextureObject* t, uint32_t x, uint32_t y, uint32_t w, uint32_t h)
 {
     if ((t == NULL) || (!m_bEnabled))
         return;
-
-    int posx;
-    int posy;
-    int width;
-    int height;
-
-    t->getGenerationSize(   posx, posy, width, height);
 
     //! Target for generated texture can only be a 2D texture.
     //! Extended features such as generating cube map faces might be supported in future versions.
     //! Nevertheless, cube textures are handled by CRaptorBufferedDisplay, which is more efficient is most cases
     glCopyTexSubImage2D(GL_TEXTURE_2D,
-						t->getCurrentMipMapLevel(),
-                        0,0,
-						posx,	posy,
-						width, height);
+						t->getGLTextureObject()->getCurrentMipMapLevel(),
+                        0, 0,
+						x,	y, w, h);
     CATCH_GL_ERROR
 }
 

@@ -35,7 +35,7 @@
 #endif
 
 #ifndef __RAPTOR_VERSION_H__
-	#include "System/Version.h"
+	#include "Version.h"
 #endif
 
 RAPTOR_NAMESPACE_BEGIN
@@ -219,6 +219,8 @@ typedef struct GL_COORD_VERTEX_TAG
 } GL_COORD_VERTEX;
 typedef GL_COORD_VERTEX *LP_GL_COORD_VERTEX;
 
+#define GL_COORD_VERTEX_STRIDE sizeof(GL_COORD_VERTEX)/sizeof(float)
+
 typedef struct GL_HIRES_COORD_VERTEX_TAG
 {
 	double x;	//	3D coordinates
@@ -270,6 +272,8 @@ typedef struct GL_TEX_VERTEX_TAG
 	}
 } GL_TEX_VERTEX;
 typedef GL_TEX_VERTEX *LP_GL_TEX_VERTEX;
+
+#define GL_TEX_VERTEX_STRIDE sizeof(GL_TEX_VERTEX)/sizeof(float)
 
 //	t => translation vector
 //	R => orientation matrix
@@ -378,7 +382,7 @@ public:
 
 private:
 	CRaptorMutex(const CRaptorMutex& M);
-	void operator=(const CRaptorMutex& M) {};
+	CRaptorMutex& operator=(const CRaptorMutex&) { return *this;  };
 
 #if defined(_WIN32) || defined(_WIN64)
 	mutable CRITICAL_SECTION _mutex;
@@ -425,7 +429,7 @@ public:
 
 private:
 	CRaptorSemaphore (const CRaptorSemaphore& M);
-	void operator = (const CRaptorSemaphore& M);
+	CRaptorSemaphore& operator=(const CRaptorSemaphore&) { return *this; };
 
 #if defined(_WIN32) || defined(_WIN64)
 	mutable HANDLE _sem;
@@ -479,7 +483,7 @@ public:
 	//!	Explicit
 	size_t size() const { return vaArray.size(); };
 
-	T operator[](unsigned int pos) const
+	T operator[](size_t pos) const
 	{ return vaArray[pos]; }
 
 private:

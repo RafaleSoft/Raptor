@@ -36,22 +36,26 @@ static unsigned char in[CHUNK];
 static unsigned char out[CHUNK];
 
 
+void print_usage(void)
+{
+	printf("Usage:\n");
+	printf("RaptorDataPackager [-C] <package_name> <filename_1> [filename_2] ... [filename_n]\n");
+	printf("    if -C flag is provided, data will be compressed before added to the package\n");
+}
 
 int main(int argc, char* argv[])
 {
 	printf("Welcome to the simple Raptor Zip Data Packager...\n\n");
 
-	if (argc < 3)
+	if (argc < 2)
 	{
-		printf("Usage:\n");
-		printf("RaptorDataPackager [-C] <package_name> <filename_1> [filename_2] ... [filename_n]\n");
-		printf("    if -C flag is provided, data will be compressed before added to the package\n");
+		print_usage();
 		return -1;
 	}
 
 	PackageHeader_t header = PackageHeader_t();
-	header.nbFHeaders = argc - 2;
-
+	header.nbFHeaders = argc;
+	
 	struct STAT packagestatus;
 	int argpos = 1;
 
@@ -62,7 +66,16 @@ int main(int argc, char* argv[])
 		argpos++;
 		header.nbFHeaders--;
 	}
+	
+	if (header.nbFHeaders < 2)
+	{
+		print_usage();
+		return -1;
+	}
+	else
+		header.nbFHeaders -= 2;
 
+	printf("Number of files to package: [%d]\n", header.nbFHeaders);
 	header.fHeaders = new PackageFileHeader_t[header.nbFHeaders];
 	for (unsigned int j=0;j<header.nbFHeaders;j++)
 		header.fHeaders[j].fname = NULL;
@@ -84,10 +97,9 @@ int main(int argc, char* argv[])
     
 	unsigned int offset = 0;
 	unsigned int nbFHeaders = 0;
-	printf("Scanning file...\n");
 	while ((argpos < argc) && (nbFHeaders < header.nbFHeaders))
 	{
-		printf("file: %s...\n",argv[argpos]);
+		printf("file [%d/%d]: %s...\n", nbFHeaders+1, header.nbFHeaders, argv[argpos]);
 
 		struct STAT filestatus;
 		res = STAT(argv[argpos],&filestatus);

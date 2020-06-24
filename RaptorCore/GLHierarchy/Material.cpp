@@ -22,7 +22,6 @@
 
 RAPTOR_NAMESPACE
 
-CMaterial	*CMaterial::pCurrentMaterial = NULL;
 
 static float COLOR_MATERIAL[11][4] =
 	{
@@ -271,27 +270,27 @@ CMaterial::CMaterial(REAL_MATERIAL material,
 	handle.hClass(CMaterial::CMaterialClassID::GetClassId().ID());
 
 	emission_enabled = false;
-	SET_MATERIAL(emission,CGL_BLACK_MATERIAL)
+	SET_MATERIAL(M.emission,CGL_BLACK_MATERIAL)
 
 	if (material >= CGL_NO_REAL_MATERIAL)
 	{
 		ambient_enabled = false;
 		diffuse_enabled = false;
 		specular_enabled = false;
-		SET_MATERIAL(ambient,CGL_BLACK_MATERIAL)
-		SET_MATERIAL(diffuse,CGL_BLACK_MATERIAL)
-		SET_MATERIAL(specular,CGL_BLACK_MATERIAL)
-		shininess[0] = 0;
+		SET_MATERIAL(M.ambient,CGL_BLACK_MATERIAL)
+		SET_MATERIAL(M.diffuse,CGL_BLACK_MATERIAL)
+		SET_MATERIAL(M.specular,CGL_BLACK_MATERIAL)
+		M.shininess = 0;
 	}
 	else
 	{
 		ambient_enabled = true;
 		diffuse_enabled = true;
 		specular_enabled = true;
-		ambient = REAL_MATERIALS[material].ambient;
-		diffuse = REAL_MATERIALS[material].diffuse;
-		specular = REAL_MATERIALS[material].specular;
-		shininess[0] = REAL_MATERIALS[material].shininess;
+		M.ambient = REAL_MATERIALS[material].ambient;
+		M.diffuse = REAL_MATERIALS[material].diffuse;
+		M.specular = REAL_MATERIALS[material].specular;
+		M.shininess = REAL_MATERIALS[material].shininess;
 	}
 }
 
@@ -301,7 +300,7 @@ CMaterial::CMaterial(BASE_MATERIAL amb,
 					 float shi,
 					 BASE_MATERIAL em,
 					 const CPersistence::CPersistenceClassID &ID,
-					 const std::string& name):
+					 const std::string& name): 
 	CPersistence(ID,name)
 {
     m_bRebuild = true;
@@ -312,44 +311,44 @@ CMaterial::CMaterial(BASE_MATERIAL amb,
 	if (amb>=CGL_NO_MATERIAL)
 	{
 		ambient_enabled = false;
-		SET_MATERIAL(ambient,CGL_BLACK_MATERIAL)
+		SET_MATERIAL(M.ambient,CGL_BLACK_MATERIAL)
 	}
 	else
 	{
 		ambient_enabled = true;
-		SET_MATERIAL(ambient,amb)
+		SET_MATERIAL(M.ambient,amb)
 	}
 	if (diff>=CGL_NO_MATERIAL)
 	{
 		diffuse_enabled = false;
-		SET_MATERIAL(diffuse,CGL_BLACK_MATERIAL)
+		SET_MATERIAL(M.diffuse,CGL_BLACK_MATERIAL)
 	}
 	else
 	{
 		diffuse_enabled = true;
-		SET_MATERIAL(diffuse,diff)
+		SET_MATERIAL(M.diffuse,diff)
 	}
 	if (spec>=CGL_NO_MATERIAL)
 	{
 		specular_enabled = false;
-		SET_MATERIAL(specular,CGL_BLACK_MATERIAL)
+		SET_MATERIAL(M.specular,CGL_BLACK_MATERIAL)
 	}
 	else
 	{
 		specular_enabled = true;
-		SET_MATERIAL(specular,spec)
+		SET_MATERIAL(M.specular,spec)
 	}
 	if (em>=CGL_NO_MATERIAL)
 	{
 		emission_enabled = false;
-		SET_MATERIAL(emission,CGL_BLACK_MATERIAL)
+		SET_MATERIAL(M.emission,CGL_BLACK_MATERIAL)
 	}
 	else
 	{
 		emission_enabled = true;
-		SET_MATERIAL(emission,em)
+		SET_MATERIAL(M.emission,em)
 	}
-	shininess[0] = shi;
+	M.shininess = shi;
 }
 
 CMaterial::CMaterial(BASE_MATERIAL amb,
@@ -358,54 +357,8 @@ CMaterial::CMaterial(BASE_MATERIAL amb,
 					 float shi,
 					 BASE_MATERIAL em,
 					 const std::string& name):
-	CPersistence(materialID,name)
+	CMaterial(amb, diff, spec, shi, em, materialID, name)
 {
-    m_bRebuild = true;
-
-	handle.handle(0);
-	handle.hClass(CMaterial::CMaterialClassID::GetClassId().ID());
-
-	if (amb>=CGL_NO_MATERIAL)
-	{
-		ambient_enabled = false;
-		SET_MATERIAL(ambient,CGL_BLACK_MATERIAL)
-	}
-	else
-	{
-		ambient_enabled = true;
-		SET_MATERIAL(ambient,amb)
-	}
-	if (diff>=CGL_NO_MATERIAL)
-	{
-		diffuse_enabled = false;
-		SET_MATERIAL(diffuse,CGL_BLACK_MATERIAL)
-	}
-	else
-	{
-		diffuse_enabled = true;
-		SET_MATERIAL(diffuse,diff)
-	}
-	if (spec>=CGL_NO_MATERIAL)
-	{
-		specular_enabled = false;
-		SET_MATERIAL(specular,CGL_BLACK_MATERIAL)
-	}
-	else
-	{
-		specular_enabled = true;
-		SET_MATERIAL(specular,spec)
-	}
-	if (em>=CGL_NO_MATERIAL)
-	{
-		emission_enabled = false;
-		SET_MATERIAL(emission,CGL_BLACK_MATERIAL)
-	}
-	else
-	{
-		emission_enabled = true;
-		SET_MATERIAL(emission,em)
-	}
-	shininess[0] = shi;
 }
 
 CMaterial::~CMaterial()
@@ -418,11 +371,11 @@ const CMaterial& CMaterial::operator=(const CMaterial& rsh)
 {
     m_bRebuild = true;
 
-	ambient = rsh.ambient;
-	diffuse = rsh.diffuse;
-	specular = rsh.specular;
-	shininess = rsh.shininess;
-	emission = rsh.emission;
+	M.ambient = rsh.M.ambient;
+	M.diffuse = rsh.M.diffuse;
+	M.specular = rsh.M.specular;
+	M.shininess = rsh.M.shininess;
+	M.emission = rsh.M.emission;
 
 	ambient_enabled = rsh.ambient_enabled;
 	diffuse_enabled = rsh.diffuse_enabled;
@@ -443,7 +396,7 @@ void CMaterial::setAmbient(float r,float g,float b,float a)
 		ambient_enabled = false;
 	else
 	{
-		SET_COLOR(ambient)
+		SET_COLOR(M.ambient)
 		ambient_enabled = true;
 	}
 
@@ -459,7 +412,7 @@ void CMaterial::setDiffuse(float r,float g,float b,float a)
 	else
 	{
 		diffuse_enabled = true;
-		SET_COLOR(diffuse)
+		SET_COLOR(M.diffuse)
 	}
 
 	CATCH_GL_ERROR
@@ -474,7 +427,7 @@ void CMaterial::setSpecular(float r,float g,float b,float a)
 	else
 	{
 		specular_enabled = true;
-		SET_COLOR(specular)
+		SET_COLOR(M.specular)
 	}
 
 	CATCH_GL_ERROR
@@ -489,7 +442,7 @@ void CMaterial::setEmission(float r,float g,float b,float a)
 	else
 	{
 		emission_enabled = true;
-		SET_COLOR(emission)
+		SET_COLOR(M.emission)
 	}
 
 	CATCH_GL_ERROR
@@ -499,7 +452,7 @@ void CMaterial::setShininess(float exp)
 {
     m_bRebuild = true;
 
-	shininess.r = exp;
+	M.shininess = exp;
 
 	CATCH_GL_ERROR
 }
@@ -510,10 +463,10 @@ void CMaterial::darken(float d)
 
     m_bRebuild = true;
 
-	DARKEN(ambient)
-	DARKEN(diffuse)
-	DARKEN(specular)
-	DARKEN(emission)
+	DARKEN(M.ambient)
+	DARKEN(M.diffuse)
+	DARKEN(M.specular)
+	DARKEN(M.emission)
 
 	CATCH_GL_ERROR
 }
@@ -524,10 +477,10 @@ void CMaterial::lighten(float l)
 
     m_bRebuild = true;
 
-	LIGHTEN(ambient)
-	LIGHTEN(diffuse)
-	LIGHTEN(specular)
-	LIGHTEN(emission)
+	LIGHTEN(M.ambient)
+	LIGHTEN(M.diffuse)
+	LIGHTEN(M.specular)
+	LIGHTEN(M.emission)
 
 	CATCH_GL_ERROR
 }
@@ -540,10 +493,6 @@ void CMaterial::glRender()
         handle.handle(0);
         m_bRebuild = false;
     }
-	else if (pCurrentMaterial == this)
-		return;
-
-	pCurrentMaterial = this;
 
 	//if (glIsList(handle.handle))
     //  This is much faster ...
@@ -554,16 +503,16 @@ void CMaterial::glRender()
 		handle.glname(glGenLists(1));
 		glNewList(handle.glname(), GL_COMPILE_AND_EXECUTE);
 			if (ambient_enabled)
-				glMaterialfv(GL_FRONT,GL_AMBIENT,ambient);
+				glMaterialfv(GL_FRONT,GL_AMBIENT, M.ambient);
 			if (diffuse_enabled)
-				glMaterialfv(GL_FRONT,GL_DIFFUSE,diffuse);
+				glMaterialfv(GL_FRONT,GL_DIFFUSE, M.diffuse);
 			if (specular_enabled)
 			{
-				glMaterialfv(GL_FRONT,GL_SPECULAR,specular);
-				glMaterialfv(GL_FRONT,GL_SHININESS,shininess);
+				glMaterialfv(GL_FRONT,GL_SPECULAR, M.specular);
+				glMaterialfv(GL_FRONT,GL_SHININESS, &M.shininess);
 			}
 			if (emission_enabled)
-				glMaterialfv(GL_FRONT,GL_EMISSION,emission);
+				glMaterialfv(GL_FRONT,GL_EMISSION, M.emission);
 		glEndList();
 	}
 
@@ -582,11 +531,11 @@ bool CMaterial::exportObject(CRaptorIO& o)
 {
 	CPersistence::exportObject(o);
 
-	o << ambient;
-	o << diffuse;
-	o << specular;
-	o << emission;
-	o << shininess;
+	o << M.ambient;
+	o << M.diffuse;
+	o << M.specular;
+	o << M.emission;
+	o << M.shininess;
 
 	if (ambient_enabled)
 		o<<'y';
@@ -622,15 +571,23 @@ bool CMaterial::importObject(CRaptorIO& io)
 		if (data == "name")
 			CPersistence::importObject(io);
 		else if (data == "Ambient")
-			io >> ambient;
+			io >> M.ambient;
 		else if (data == "Diffuse")
-			io >> diffuse;
+			io >> M.diffuse;
 		else if (data == "Specular")
-			io >> specular;
+			io >> M.specular;
 		else if (data == "Emission")
-			io >> emission;
+			io >> M.emission;
 		else if (data == "Shininess")
-			io >> shininess;
+		{
+			io >> name;
+			data = io.getValueName();
+			if (data == "exp")
+			{
+				io >> M.shininess;
+				io >> name;
+			}
+		}
 		else
 			io >> name;
 		

@@ -27,9 +27,9 @@
 	#include "System/Raptor.h"
 #endif
 
+
 RAPTOR_NAMESPACE_BEGIN
 
-class CTextureObject;
 class CTextureFactoryConfig;
 
 
@@ -130,7 +130,7 @@ public:
 	//!	@param w: width of subimage in this.
 	//!	@param h: height of subimage in this.
 	//!	@return the subimage or NULL if incorrect parameters of uninitialised this.
-	CImage* createSubImage(size_t x, size_t y, size_t w, size_t h);
+	CImage* createSubImage(uint32_t x, uint32_t y, uint32_t w, uint32_t h);
 
 	//!	Loads an image file named filename. The file type is used to
 	//!	Determine the appropriate image loader, if any.

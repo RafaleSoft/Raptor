@@ -19,7 +19,8 @@
 #include "GLHierarchy/VulkanShaderStage.h"
 #include "GLHierarchy/TextureFactory.h"
 #include "GLHierarchy/TextureFactoryConfig.h"
-#include "GLHierarchy/TextureObject.h"
+#include "GLHierarchy/ITextureObject.h"
+#include "GLHierarchy/TextureUnitSetup.h"
 #include "System/RaptorConsole.h"
 #include "System/RaptorErrorManager.h"
 #include "System/RaptorIO.h"
@@ -30,7 +31,7 @@
 
 RAPTOR_NAMESPACE
 
-#define VULKAN_TEST 1
+// #define VULKAN_TEST 1
 
 
 class MySphere : public CBasicObjects::CGeoSphere
@@ -39,6 +40,7 @@ public:
 	MySphere();
 	~MySphere() {};
 
+	virtual void glClipRender();
 private:
 };
 
@@ -52,6 +54,10 @@ MySphere::MySphere()
 #endif
 }
 
+void MySphere::glClipRender()
+{
+	CBasicObjects::CGeoSphere::glClipRender();
+}
 
 float lposx(float dt)
 {
@@ -82,7 +88,7 @@ CTest5Doc::CTest5Doc(const RAPTOR_HANDLE& device,const char* title)
 	config.m_uiTexels = 2048*1024;
     config.m_uiPolygons = 20000;
     config.m_uiVertices = 50000;
-	config.m_uiUniforms = 2048;
+	config.m_uiUniforms = 100000;
     Raptor::glInitRaptor(config);
 
 	CImaging::installImagers();
@@ -178,30 +184,25 @@ void CTest5Doc::GLInitContext(void)
 	obj->getEditor().genBinormals();
 	obj->getEditor().scaleTexCoords(4.0f,4.0f);
 
-	obj->getRenderingModel().addModel(CGeometry::CRenderingModel::CGL_TANGENTS);
+	obj->addModel(CGeometry::CGL_TANGENTS);
 #endif
 
 
 	C3DScene *pScene = m_pDisplay->getRootScene();
-	//CShader *shader = new CShader("uniforms-shader");
-	//CVertexShader *p = shader->glGetVertexProgram("uniforms");
-	//p->glLoadProgramFromStream(*shdr);
-	//bool res = shader->glCompileShader();
-
 	CTextureFactory &f = CTextureFactory::getDefaultFactory();
 	CShader* s = obj->getShader();
 
 
 #ifdef VULKAN_TEST
-	m_pTexture = f.vkCreateTexture(ITextureObject::CGL_COLOR24_ALPHA, CTextureObject::CGL_ALPHA_TRANSPARENT, ITextureObject::CGL_BILINEAR);
+	m_pTexture = f.vkCreateTexture(ITextureObject::CGL_COLOR24_ALPHA, ITextureObject::CGL_BILINEAR);
 #else
-	m_pTexture = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA, CTextureObject::CGL_ALPHA_TRANSPARENT, ITextureObject::CGL_BILINEAR);
+	m_pTexture = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA, ITextureObject::CGL_BILINEAR);
 #endif
 
 
 	f.glLoadTexture(m_pTexture, "earth.TGA");
 	CTextureUnitSetup *tus = s->glGetTextureUnitsSetup();
-	tus->setDiffuseMap(m_pTexture);
+	tus->setDiffuseMap(m_pTexture, CTextureUnitSetup::CGL_OPAQUE);
 
 	CMaterial *pMat = s->getMaterial();
 	pMat->setAmbient(0.02f, 0.02f, 0.02f, 1.0f);
@@ -256,7 +257,8 @@ void CTest5Doc::GLInitContext(void)
 
 	pScene->addObject(obj);
 #else	
-	m_pTexture = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_MULTIPLY,ITextureObject::CGL_BILINEAR);
+	m_pTexture = f.glCreateTexture(	ITextureObject::CGL_COLOR24_ALPHA,
+									ITextureObject::CGL_BILINEAR);
 	CBumpmapLoader *loader = new CBumpmapLoader(f.getConfig().getBumpAmplitude());
     f.glLoadTexture(m_pTexture,"bump3.tga", loader);
 	//f.getConfig().setBumpAmplitude(4.0f);
@@ -344,11 +346,10 @@ void CTest5Doc::GLInitContext(void)
 
 
 	IViewPoint *vp = m_pDisplay->getViewPoint();
-    vp->setPosition(0,0,3.5,IViewPoint::EYE);
-    vp->setPosition(0,0,0,IViewPoint::TARGET);
+    vp->setPosition(0.0f,0.0f,3.5f,IViewPoint::EYE);
+    vp->setPosition(0.0f,0.0f,0.0f,IViewPoint::TARGET);
 
 	CTimeObject::setTimeFactor(1.0f);
 	CAnimator *pAnimator = new CAnimator();
 	CAnimator::SetAnimator(pAnimator);
-
 }

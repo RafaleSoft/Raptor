@@ -95,11 +95,11 @@ typedef struct CPUINFO
 
 	typedef struct CACHEDESCRIPTOR
 	{
-		CACHE_TYPE type;	// data, instruction, cache
-		int level;	// none, L1, L2, L3
-		int size;	// size or page size in KBytes or uops
-		int ways;	// associative set, 0 means fully
-		int entries;// TLB entries or line size in bytes
+		CACHE_TYPE		type;	// data, instruction, cache
+		unsigned int	level;	// none, L1, L2, L3
+		unsigned int	size;	// size or page size in KBytes or uops
+		unsigned int	ways;	// associative set, 0 means fully
+		unsigned int	entries;// TLB entries or line size in bytes
 	} CACHE_DESCRIPTOR;
 
 	struct
@@ -111,19 +111,19 @@ typedef struct CPUINFO
 
 	typedef struct CACHEPARAMETER
 	{
-		int		numAPICIds;
-		int		maxThreads;
-		bool	fullAssociative;
-		bool	selfInitialized;
-		int		level;
-		CACHE_TYPE type;
-		int		ways;
-		int		partitions;
-		int		lineSize;
-		int		sets;
-		bool	inclusiveLowerLevels;
-		bool	invdBehavior;
-		int		cacheSize;
+		unsigned int	numAPICIds;
+		unsigned int	maxThreads;
+		bool			fullAssociative;
+		bool			selfInitialized;
+		unsigned int	level;
+		CACHE_TYPE		type;
+		unsigned int	ways;
+		unsigned int	partitions;
+		unsigned int	lineSize;
+		unsigned int	sets;
+		bool			inclusiveLowerLevels;
+		bool			invdBehavior;
+		unsigned int	cacheSize;
 	} CACHE_PARAMETER;
 
 	struct
@@ -132,8 +132,44 @@ typedef struct CPUINFO
 		CACHE_PARAMETER* parameters;
 	} cacheParameters;
 
+	struct
+	{
+		unsigned short	minMonitorSize;
+		unsigned short	maxMonitorSize;
+		bool			monitorExtensions;
+		bool			monitorInterrupts;
+		unsigned char	monitorC0States;
+		unsigned char	monitorC1States;
+		unsigned char	monitorC2States;
+		unsigned char	monitorC3States;
+		unsigned char	monitorC4States;
+		unsigned char	monitorC5States;
+		unsigned char	monitorC6States;
+		unsigned char	monitorC7States;
+	} monitors;
+
+	struct
+	{
+		bool			digitalTemperatureSensor;
+		bool			turboBoost;
+		bool			APICTimer;	// Timer always run
+		bool			PLN;		// powerLimitNotification
+		bool			ECMD;		// clock modulation duty cycle
+		bool			PTM;		// package thermal modulation
+		bool			HWP;		// hardware HWP base registers
+		bool			HWPNotification;
+		bool			HWPActivityWindow;
+		bool			HWPEnergyPreference;
+		bool			HWPPackageLevel;
+		bool			HDC;		// hardware HDC base registers
+		unsigned char	numInterrupts;
+		bool			HWCoordination;
+		bool			energyBias;
+	} thermal;
+
 	// CPU capabilities
-	bool	CPUID;	// has cpuid instruction
+	bool			CPUID;	// has cpuid instruction
+	unsigned int	featureFlagEBX;
 	unsigned int	featureFlagECX;
 	unsigned int	featureFlagEDX;
 
@@ -209,6 +245,42 @@ typedef struct CPUINFO
 		RESERVED12
 	} FEATURE_ECX;
 
+	typedef enum FEATURE_EBX_t
+	{
+		FSGSBASE,
+		IA32_TSC_ADJUST_MSR,
+		SGX,
+		BMI1,
+		HLE,
+		AVX2,
+		FDP_EXCPTN_ONLY,
+		SMEP,
+		BMI2,
+		REP_MOVSB_STOSB,
+		INVPCID,
+		RTM,
+		RDT_M,
+		FPU_CS_DS,
+		MPX,
+		RDT_A,
+		RESERVED13,
+		RESERVED14,
+		RDSEED,
+		ADX,
+		SMAP,
+		RESERVED15,
+		RESERVED16,
+		CLFLUSHOPT,
+		CLWB,
+		IntelProcessorTrace,
+		RESERVED17,
+		RESERVED18,
+		RESERVED19,
+		SHA,
+		RESERVED20,
+		RESERVED21,
+	} FEATURE_EBX;
+
 	bool hasFeature(FEATURE_EDX_t f) const NOEXCEPT
 	{
 		return ((featureFlagEDX >> f) & 1);
@@ -217,6 +289,11 @@ typedef struct CPUINFO
 	bool hasFeature(FEATURE_ECX_t f) const NOEXCEPT
 	{
 		return ((featureFlagECX >> f) & 1);
+	};
+
+	bool hasFeature(FEATURE_EBX_t f) const NOEXCEPT
+	{
+		return ((featureFlagEBX >> f) & 1);
 	};
 
 } CPU_INFO;

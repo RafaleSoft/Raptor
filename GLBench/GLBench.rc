@@ -13,7 +13,7 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// French (France) resources
+// Français (France) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_FRA)
 LANGUAGE LANG_FRENCH, SUBLANG_FRENCH
@@ -66,6 +66,7 @@ END
 // remains consistent on all systems.
 IDR_MAINFRAME           ICON                    "res\\GLBench.ico"
 
+
 /////////////////////////////////////////////////////////////////////////////
 //
 // Dialog
@@ -89,7 +90,7 @@ BEGIN
     PUSHBUTTON      "Bench",IDC_BENCH,261,25,50,14
     CONTROL         IDB_BITMAP1,IDC_STATIC,"Static",SS_BITMAP,7,87,101,34
     CONTROL         IDB_BITMAP2,IDC_STATIC,"Static",SS_BITMAP,169,87,85,28
-    LTEXT           "           Featuring: .........OpenGL 4.5........ ........Raptor 2.16.6.......",IDC_STATIC,94,87,73,28
+    LTEXT           "           Featuring: .........OpenGL 4.6........ ........Raptor 2.17.2.......",IDC_STATIC,94,87,73,28
     CONTROL         "640x480",IDC_RADIO1,"Button",BS_AUTORADIOBUTTON,260,60,39,10
     CONTROL         "800x600",IDC_RADIO2,"Button",BS_AUTORADIOBUTTON,260,70,43,10
     CONTROL         "1024x768",IDC_RADIO3,"Button",BS_AUTORADIOBUTTON,260,80,47,10
@@ -114,8 +115,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 2,17,1,0
- PRODUCTVERSION 2,17,1,0
+ FILEVERSION 2, 17, 2, 102
+ PRODUCTVERSION 2, 17, 2, 102
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -130,13 +131,14 @@ BEGIN
     BEGIN
         BLOCK "040c04b0"
         BEGIN
-            VALUE "FileDescription", "Application MFC GLBench"
-            VALUE "FileVersion", "2.17.1.0"
+            VALUE "CompanyName", "Rafale Soft Inc. ©"
+            VALUE "FileDescription", "Raptor OpenGL & Vulkan SDK GLBench"
+            VALUE "FileVersion", "2.17.2.102"
             VALUE "InternalName", "GLBench"
-            VALUE "LegalCopyright", "Copyright (C) 2003"
-            VALUE "OriginalFilename", "GLBench.EXE"
-            VALUE "ProductName", "Application GLBench"
-            VALUE "ProductVersion", "2.17.1.0"
+            VALUE "LegalCopyright", "Copyright © 1998-2019 Fabrice Ferrand <fabfer@wanadoo.fr>"
+            VALUE "OriginalFilename", "GLBench.exe"
+            VALUE "ProductName", "GLBench"
+            VALUE "ProductVersion", "2.17.2.102"
         END
     END
     BLOCK "VarFileInfo"
@@ -179,8 +181,21 @@ END
 //
 
 IDB_BITMAP2             BITMAP                  "res\\Raptor_logo_sml.bmp"
+
 IDB_BITMAP1             BITMAP                  "res\\OGL_logo_sml.bmp"
-#endif    // French (France) resources
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_GLBENCH_DIALOG AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+#endif    // Français (France) resources
 /////////////////////////////////////////////////////////////////////////////
 
 

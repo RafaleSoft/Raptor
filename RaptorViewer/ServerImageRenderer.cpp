@@ -3,9 +3,6 @@
 #if !defined(AFX_SERVERIMAGERENDERER_H__C9720F3B_1B29_482C_84C8_1A990CEC0EBD__INCLUDED_)
 	#include "ServerImageRenderer.h"
 #endif
-#if !defined(AFX_TEXTUREOBJECT_H__D32B6294_B42B_4E6F_AB73_13B33C544AD0__INCLUDED_)
-	#include "GLHierarchy/TextureObject.h"
-#endif
 #if !defined(AFX_TEXTUREFACTORY_H__1B470EC4_4B68_11D3_9142_9A502CBADC6B__INCLUDED_)
 	#include "GLHierarchy/TextureFactory.h"
 #endif
@@ -109,7 +106,6 @@ void CServerImageRenderer::glInitImage()
 
 	CTextureFactory &factory = CTextureFactory::getDefaultFactory();
 	m_pImage = factory.glCreateTexture(	ITextureObject::CGL_COLOR24, //_ALPHA,
-										CTextureObject::CGL_OPAQUE,
 										ITextureObject::CGL_BILINEAR);
 
 	factory.glResizeTexture(m_pImage,m_serverWidth,m_serverHeight);

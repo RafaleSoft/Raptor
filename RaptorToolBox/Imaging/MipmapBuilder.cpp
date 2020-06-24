@@ -27,8 +27,8 @@
 #if !defined(AFX_MIPMAPBUILDER_H__9C508D96_B614_4920_8816_B670295B6CE2__INCLUDED_)
     #include "MipmapBuilder.h"
 #endif
-#if !defined(AFX_TEXTUREOBJECT_H__D32B6294_B42B_4E6F_AB73_13B33C544AD0__INCLUDED_)
-	#include "GLHierarchy/TextureObject.h"
+#if !defined(AFX_ITEXTUREOBJECT_H__3AA8C89E_BB23_483C_A547_C8A4CC53E551__INCLUDED_)
+	#include "GLHierarchy/ITextureObject.h"
 #endif
 #if !defined(AFX_TEXTUREFACTORYCONFIG_H__7A20D208_423F_4E02_AA4D_D736E0A7959F__INCLUDED_)
 	#include "GLHierarchy/TextureFactoryConfig.h"
@@ -57,11 +57,11 @@ CMipmapBuilder::~CMipmapBuilder()
 
 }
 
-bool CMipmapBuilder::apply(CTextureObject* const src,
-								  unsigned int innerFormat,
-								  unsigned int texelFormat,
-								  unsigned int texelType,
-								  const CTextureFactoryConfig& ) const
+bool CMipmapBuilder::apply(	ITextureObject* const src,
+							unsigned int innerFormat,
+							unsigned int texelFormat,
+							unsigned int texelType,
+							const CTextureFactoryConfig& ) const
 {
 	GLuint target = GL_TEXTURE_2D;
 	void* pTexels = NULL;	// src->getTexels();
@@ -74,8 +74,10 @@ bool CMipmapBuilder::apply(CTextureObject* const src,
 
 #if (defined(GL_VERSION_3_0) || defined(GL_EXT_framebuffer_object))
 	glTexImage2D(	target,
-					src->getCurrentMipMapLevel(),innerFormat,
-					src->getWidth(),src->getHeight(),
+					src->getCurrentMipMapLevel(),
+					innerFormat,
+					src->getWidth(),
+					src->getHeight(),
 					0,texelFormat,
 					texelType,
 					pTexels);
@@ -90,8 +92,10 @@ bool CMipmapBuilder::apply(CTextureObject* const src,
 #elif defined(GL_VERSION_1_4)
 	glTexParameteri(target,GL_GENERATE_MIPMAP,GL_TRUE);
 	glTexImage2D(	target,
-					src->getCurrentMipMapLevel(),innerFormat,
-					src->getWidth(),src->getHeight(),
+					src->getCurrentMipMapLevel(),
+					innerFormat,
+					src->getWidth(),
+					src->getHeight(),
 					0,texelFormat,
 					texelType,
 					pTexels);

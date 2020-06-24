@@ -44,7 +44,7 @@ private:
 	CTextureSet		*m_caustics;
     CProjector		*m_projector;
 	CShader			*m_shader;
-    CTextureObject	*cube;
+    ITextureObject	*cube;
 
 	// Projection scene
 	C3DScene *m_pScene;

@@ -25,6 +25,10 @@
 
 #include "Subsys/CodeGeneration.h"
 
+#if !defined(AFX_PERSISTENCE_H__5561BA28_831B_11D3_9142_EEB51CEBBDB0__INCLUDED_)
+	#include "GLHierarchy/Persistence.h"
+#endif
+
 
 RAPTOR_NAMESPACE_BEGIN
 
@@ -96,7 +100,7 @@ public:
 
 	//! Activates the buffer object : bo is now the currently selected buffer for
     //! all subsequent calls related to the kind of buffer
-	virtual bool lockBufferObject(IBufferObject &bo) = 0;
+	virtual bool lockBufferObject(IDeviceMemoryManager::IBufferObject &bo) = 0;
 
 	//! Deactivates the buffer object selected above.
 	virtual bool unlockBufferObject(IDeviceMemoryManager::IBufferObject &bo) = 0;
@@ -112,6 +116,20 @@ public:
 	virtual bool setBufferObjectData(	IDeviceMemoryManager::IBufferObject &bo,
 										uint64_t dstOffset,
 										const void* src,
+										uint64_t sz) = 0;
+
+	//!	Memory data copy from src resource buffer object to dst. Buffers must be 
+	//!	allocated and have equivalent size and buffers must have the same storage kind.
+	//! @param dstbo: the destination buffer object .
+	//! @param dstOffset : the offset in the destination buffer.
+	//! @param srcbo: the source buffer object.
+	//! @param srcOffset: the offset in the source buffer.
+	//!	@param sz : the size to copy in machine units.
+	//! @return true if copy successful, false in case of error.
+	virtual bool copyBufferObjectData(	IDeviceMemoryManager::IBufferObject &dstbo,
+										uint64_t dstOffset,
+										IDeviceMemoryManager::IBufferObject &srcbo,
+										uint64_t srcOffset,
 										uint64_t sz) = 0;
 
 	//!	Memory transfer method that should be used when copying data to and from a buffer object.
@@ -144,6 +162,9 @@ public:
 	//!	@return false if buffer invalid or any error, true otherwise
 	virtual bool releaseBufferObject(	IDeviceMemoryManager::IBufferObject* &bo) = 0;
 
+
+	//!	Implements CPersistence
+	DECLARE_CLASS_ID(IDeviceMemoryManagerClassID, "DeviceMemoryManager", CPersistence)
 
 
 protected:
@@ -220,7 +241,7 @@ public:
 
 	//!	Garbage maximum allowed size
 	//!	( @see CRaptorConfig for initial value )
-	void setGarbageMaxSize(unsigned int maxSize) const;
+	void setGarbageMaxSize(size_t maxSize) const;
 
 	//!	Configure fered memory packing (garbage + release)
 	void setDeferedPacking(bool defered) const;

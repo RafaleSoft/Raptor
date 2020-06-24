@@ -13,7 +13,7 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// French (France) resources
+// Français (France) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_FRA)
 LANGUAGE LANG_FRENCH, SUBLANG_FRENCH
@@ -63,8 +63,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 2,17,1,0
- PRODUCTVERSION 2,17,1,0
+ FILEVERSION 2,17,2,0
+ PRODUCTVERSION 2,17,2,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -81,12 +81,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Rafale Soft Inc. ©"
             VALUE "FileDescription", "Raptor OpenGL & Vulkan SDK MFC Extension support library"
-            VALUE "FileVersion", "2.17.1.0"
+            VALUE "FileVersion", "2.17.2.0"
             VALUE "InternalName", "RaptorMFCExtension.dll"
             VALUE "LegalCopyright", "Copyright © 1998-2019 Fabrice Ferrand <fabfer@wanadoo.fr>"
             VALUE "OriginalFilename", "RaptorMFCExtension.dll"
             VALUE "ProductName", "Raptor"
-            VALUE "ProductVersion", "2.17.1.0"
+            VALUE "ProductVersion", "2.17.2.0"
         END
     END
     BLOCK "VarFileInfo"
@@ -288,6 +288,7 @@ END
 
 IDB_BITMAP1             BITMAP                  "res\\Raptor_logo_sml.bmp"
 
+
 /////////////////////////////////////////////////////////////////////////////
 //
 // String Table
@@ -303,7 +304,7 @@ BEGIN
     ID_STATUSTEXT           "Ready"
 END
 
-#endif    // French (France) resources
+#endif    // Français (France) resources
 /////////////////////////////////////////////////////////////////////////////
 
 

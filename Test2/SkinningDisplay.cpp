@@ -16,7 +16,7 @@
 #include "GLHierarchy/TextureSet.h"
 #include "GLHierarchy/TextureFactory.h"
 #include "GLHierarchy/ShadedGeometry.h"
-#include "GLHierarchy/TextureObject.h"
+#include "GLHierarchy/ITextureObject.h"
 #include "GLHierarchy/TextureUnitSetup.h"
 #include "GLHierarchy/Shader.h"
 #include "GLHierarchy/SimpleObject.h"
@@ -51,7 +51,7 @@ public:
 class SkinningBackGround : public CSimpleObject
 {
 public:
-	SkinningBackGround(CTextureObject *background, CGLLayer	*layer)
+	SkinningBackGround(ITextureObject *background, CGLLayer	*layer)
 		:m_background(background), m_layer(layer)
 	{
 		setBoundingBox(GL_COORD_VERTEX(-10.0f, -10.0f, -15.1f, 1.0f), GL_COORD_VERTEX(10.0f, 10.0f, -15.0f, 1.0f));
@@ -80,7 +80,7 @@ private:
 	SkinningBackGround();
 
 	CGLLayer		*m_layer;
-	CTextureObject *m_background;
+	ITextureObject *m_background;
 	RAPTOR_HANDLE	bg;
 };
 
@@ -200,22 +200,26 @@ void CSkinningDisplay::Init()
 
 	CTextureFactory &f = CTextureFactory::getDefaultFactory();
 	t2 = f.glCreateSprite(ITextureObject::CGL_COLOR24_ALPHA);
-	t2->glSetTransparency(128);
+	f.glSetTransparency(t2, 128);
 	f.glLoadTexture(t2,"Datas\\sprite.tga");
 
-	t2->glSetTransparentColor(0,0,0);
+	f.glSetTransparentColor(t2, 0, 0, 0);
 	layer->manageSprite(t2,75,75,45);
 
     modifier = new MyModifier();
 	modifier->selectModifierFunction(CImageModifier::CGL_BLOWFADER_MODIFIER,0x05010101);
 
-    CTextureObject*	T = f.glCreateDynamicTexture(ITextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_OPAQUE,ITextureObject::CGL_BILINEAR,modifier);
+    ITextureObject*	T = f.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
+													ITextureObject::CGL_BILINEAR,
+													modifier);
     f.glResizeTexture(T,64,64);
     modifier->setImage(T);
 	layer->manageSprite(T,150,75,0);
 
-    t = f.glCreateDynamicTexture(ITextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_OPAQUE,ITextureObject::CGL_BILINEAR,CRaptorDisplay::GetCurrentDisplay());
-    f.glResizeTexture(t,512,256);
+    t = f.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
+									ITextureObject::CGL_BILINEAR,
+									CRaptorDisplay::GetCurrentDisplay());
+    f.glResizeTexture(t, 512, 256);
 	t->setGenerationSize(51,101,510,254);	// avoid artefacts on border due to bilinear filterings
 	t->glvkUpdateClamping(ITextureObject::CGL_EDGECLAMP);
 

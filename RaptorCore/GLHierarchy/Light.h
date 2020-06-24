@@ -31,7 +31,6 @@
 RAPTOR_NAMESPACE_BEGIN
 
 class CLightAttributes;
-class ITextureObject;
 class CObject3D;
 class CProjector;
 class CLightGlow;

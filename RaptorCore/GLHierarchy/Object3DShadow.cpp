@@ -1,6 +1,21 @@
-// Object3DShadow.cpp: implementation of the CObject3DShadow class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  Object3DShadow.cpp                                                     */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
 #include "Subsys/CodeGeneration.h"
 
 
@@ -113,10 +128,11 @@ void CObject3DShadow::initContours()
     if ((m_type == SHADOW_VOLUME) || (m_type == SHADOW_BOUNDING_VOLUME))
     {
         bool invalidSource = false;
-        CObject3D *shadowSource = m_pAttributes->m_pObject;
+		CObject3D *shadowSource = m_pAttributes->m_pObject;
 
-        vector<CObject3DContour*> pContours = shadowSource->createContours();
-        if (!pContours.empty())
+		vector<CObject3DContour*> pContours = shadowSource->createContours();
+
+		if (!pContours.empty())
         {
             vector<CObject3DContour*>::const_iterator it = pContours.begin();
             while (it != pContours.end())
@@ -569,7 +585,7 @@ void CObject3DShadow::glRenderShadowVolume()
 	CATCH_GL_ERROR
 }
 
-void CObject3DShadow::glRenderBBox(bool filled)
+void CObject3DShadow::glRenderBBox(RENDER_BOX_MODEL filled)
 {
     if (m_type == SHADOW_PLANAR)
         return;
@@ -700,7 +716,7 @@ void CObject3DShadow::glClipRender(void)
     glEnable(GL_BLEND);
     glDisable(GL_CULL_FACE);
     glColor4f(0.0f,1.0f,0.0f,0.4f);
-    glRenderBBox(true);
+    glRenderBBox(CObject3D::FILLED);
     glColorMask(GL_FALSE,GL_FALSE,GL_FALSE,GL_FALSE);
     glEnable(GL_STENCIL_TEST);
     glDisable(GL_BLEND);
@@ -728,7 +744,7 @@ void CObject3DShadow::glClipRender(void)
         glDepthFunc(GL_LESS);
         glDisable(GL_CULL_FACE);
 
-        glRenderBBox(true);
+        glRenderBBox(CObject3D::FILLED);
 
         glDepthMask(dMask);
         glColorMask(cMask[0],cMask[1],cMask[2],cMask[3]);
@@ -744,7 +760,7 @@ void CObject3DShadow::glClipRender(void)
     glEnable(GL_BLEND);
     glDisable(GL_CULL_FACE);
     glColor4f(1.0f,0.0f,0.0f,0.4f);
-    glRenderBBox(true);
+    glRenderBBox(CObject3D::FILLED);
     glColorMask(GL_FALSE,GL_FALSE,GL_FALSE,GL_FALSE);
     glEnable(GL_STENCIL_TEST);
     glDisable(GL_BLEND);

@@ -1,6 +1,21 @@
-// Object3D.h: interface for the CObject3D class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  Object3D.h                                                             */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
 #if !defined(AFX_OBJECT3D_H__DB24F017_80B9_11D3_97C1_FC2841000000__INCLUDED_)
 #define AFX_OBJECT3D_H__DB24F017_80B9_11D3_97C1_FC2841000000__INCLUDED_
 
@@ -21,8 +36,6 @@
     #include "GLHierarchy/ObjectProperties.h"
 #endif
 
-
-//#define RELOCATE_BBOX 1
 
 //////////////////////////////////////////////////////////////////////
 //!
@@ -102,6 +115,9 @@ public:
     //! @see getCenter.
 	const CBoundingBox * const boundingBox(void) const { return BBox; };
 
+	//!	This method returns the bounding box index is current instance resources.
+	uint64_t getBoundingBoxIndex(void) const { return bbox; };
+
 	//! Clipping hints:
 	//!	This method returns true if the object intersects the viewing volume,
 	//!	i.e. the object has to be rendered. ( a clip hint can be sent to
@@ -177,13 +193,22 @@ public:
 	virtual void transform(GL_MATRIX &m)=0;
 
 	//! Rendering:
-	//!	This method renders the BBox of 'this' using GL_LINE primitives
-	//!	or GL_FILL primitives ( in this case, the BBox looks a flat shaded
-	//!	parallelepipedic box )
-	virtual void glRenderBBox(bool filled = false);
+	//!	This method renders the BBox of 'this' using a line geometry shader
+	//!	or a triangle strip geometry shader ( in this case, the BBox looks a 
+	//!	flat shaded parallelepipedic box )
+	//!	A rendering model for boxes is used to render wire, filled or 
+	//!	raw drawcall when pipeline is set for box rendering pass and render
+	//!	all at once.
+	typedef enum
+	{
+		WIREFRAME,
+		FILLED,
+		RAW
+	} RENDER_BOX_MODEL;
+	virtual void glRenderBBox(RENDER_BOX_MODEL filled = WIREFRAME);
 
 	//! Rendering:
-	//! This methods performs clippng before rendering. Easy to use for
+	//! This methods performs clipping before rendering. Easy to use for
 	//!	a single object an it can avoid the rendering of a large hierarchy
 	//!	but it is not suitable for a very efficient clipping technique.
 	//!	Expect a 'scene' object to appear in C3DEngine object in future releases.
@@ -274,12 +299,8 @@ private:
     CObject3D();
     CObject3D(const CObject3D&);
 
-	//!	This method is called only at construction to allocate
-	//!	data for BBox rendering.
-	void glAllocateBBox(void);
-
-    //! This method is called only during bbox rendering to update GL server with new bbox values.
-    void glUpdateBBox(void);
+	//!	This method updates boudiong box data in instence's buffer object.
+	void CObject3D::glvkUpdateBBox(void);
 
     //! A 3D object must always have a bounding box ( pointer cannot be NULL )
 	CBoundingBox	*BBox;
@@ -291,18 +312,10 @@ private:
     static bool earlyClipEnabled;
 
     //! These datas are identifiers to BBox values for GL server
-	double			boxValue;
-
-#ifdef	RELOCATE_BBOX
-    unsigned int			boxArrayOffset;
-    static unsigned int		boxIndex;
-    static float			*boxArrays;
-	static unsigned short	*boxIndexes;
-	static unsigned short	*boxIndexes2;
-#else
-	RAPTOR_HANDLE	filledBox;
-	RAPTOR_HANDLE	wireBox;
-#endif
+	bool			updateBBox;
+	
+	//! BBox buffer object pointer.
+	uint64_t		bbox;
 };
 
 RAPTOR_NAMESPACE_END

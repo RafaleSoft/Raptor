@@ -2,7 +2,7 @@
 
 [Setup]
 AppName=Raptor SDK
-AppVerName=Raptor SDK 2.17.1
+AppVerName=Raptor SDK 2.17.2 Build 35
 DefaultDirName={pf}\Raptor
 DefaultGroupName=Raptor
 UninstallDisplayIcon={app}\MyProg.exe
@@ -11,8 +11,8 @@ OutputBaseFilename=RaptorSDK
 SolidCompression=yes
 VersionInfoCompany=Rafale Soft Inc.(c)
 VersionInfoProductName=Raptor SDK
-VersionInfoProductVersion=2.17.1.0
-VersionInfoVersion=2.17.1.0
+VersionInfoProductVersion=2.17.2.35
+VersionInfoVersion=2.17.2.35
 
 [Files]
 Source: "..\*.sln";               DestDir: "{app}"
@@ -53,7 +53,7 @@ Source: "../Build/Doxyfile";          DestDir: "{app}/Build"
 
 Source: "../Builder/BuilderNative/*.cpp";           DestDir: "{app}/Builder/BuilderNative"
 Source: "../Builder/BuilderNative/*.h";             DestDir: "{app}/Builder/BuilderNative"
-Source: "../Builder/Configure/*.bat";               DestDir: "{app}/Builder/Configure"
+Source: "../Builder/Configure/*.py";               DestDir: "{app}/Builder/Configure"
 Source: "../Builder/Configure/*.sh";                DestDir: "{app}/Builder/Configure"
 Source: "../Builder/Properties/*.*";                DestDir: "{app}/Builder/Properties"
 Source: "../Builder/Resource Files/*.*";            DestDir: "{app}/Builder/Resource Files"
@@ -222,7 +222,7 @@ Source: "../Test5/*.frag";                          DestDir: "{app}/Test5"
 
 Source: "../Test6/*.*";                             DestDir: "{app}/Test6"
 
-Source: "../UnitTest/*.*";                          DestDir: "{app}/Test6"
+Source: "../UnitTest/*.*";                          DestDir: "{app}/UnitTest"
 
 [Icons]
 Name: "{group}\Raptor SDK"; Filename: "{app}\RaptorSDK.exe"

@@ -1,6 +1,21 @@
-// Win32ContextManager.cpp: implementation of the CWin32ContextManager class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  Win32ContextManager.cpp                                                */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
 #include "Subsys/CodeGeneration.h"
 
 #if !defined(AFX_WIN32CONTEXTMANAGER_H__A1D82397_7E92_4D01_A04D_782BCFD17689__INCLUDED_)
@@ -928,10 +943,9 @@ CContextManager::RENDERING_CONTEXT_ID  CWin32ContextManager::glCreateExtendedCon
 		context.pExtensions = NULL; 
 		nbContext++;
 
-		wglMakeCurrent(hDC, glhrc);
 		RENDERING_CONTEXT_ID	oldContext = m_currentGLContext;
 		m_currentGLContext = pos;
-        context.OGLContext = glhrc; 
+		wglMakeCurrent(hDC, glhrc);
 
 		PFN_WGL_GET_EXTENSIONS_STRING_ARB_PROC wglGetExtensionsStringARB = (PFN_WGL_GET_EXTENSIONS_STRING_ARB_PROC)wglGetProcAddress("wglGetExtensionsStringARB");
 		std::string extensions = (const char*)glGetString(GL_EXTENSIONS);
@@ -939,13 +953,51 @@ CContextManager::RENDERING_CONTEXT_ID  CWin32ContextManager::glCreateExtendedCon
 		context.pExtensions = new CRaptorGLExtensions(extensions);
 		context.pExtensions->glInitExtensions();
 
+		//!	Try to create an extended context with attribs
+		/*
+#ifdef WGL_ARB_create_context
+		int attribs[] =
+		{
+			WGL_CONTEXT_MAJOR_VERSION_ARB, 4,
+			WGL_CONTEXT_MINOR_VERSION_ARB, 6,
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+			WGL_CONTEXT_FLAGS_ARB, WGL_CONTEXT_DEBUG_BIT_ARB,
+#else
+			WGL_CONTEXT_FLAGS_ARB, WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB,
+#endif
+#if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
+			WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB,
+#elif defined(GL_CORE_profile)
+			WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
+#endif
+			0
+		};
+
+		if ((std::string::npos != extensions.find("WGL_ARB_create_context")) &&
+			(NULL != context.pExtensions->wglCreateContextAttribsARB))
+		{
+			HGLRC hrc = context.pExtensions->wglCreateContextAttribsARB(hDC, 0, attribs);
+			wglMakeCurrent(NULL, NULL);
+			wglDeleteContext(glhrc);
+			wglMakeCurrent(hDC, hrc);
+			glhrc = hrc;
+		}
+#endif
+*/
+#ifndef RAPTOR_DEBUG_MODE_GENERATION
+		if (std::string::npos != extensions.find("GL_ARB_debug_output"))
+		{
+			CRaptorInstance &instance = CRaptorInstance::GetInstance();
+			instance.pErrorMgr->glGetDebugErrors();
+		}
+#endif
+
+		context.OGLContext = glhrc;
 		m_currentGLContext = oldContext;
 		wglMakeCurrent(hDC, NULL);
 
 		if (device.hClass() == WINDOW_CLASS)
-		{
 			ReleaseDC(device.ptr<HWND__>(),hDC);
-		}
 
         CATCH_WIN32_ERROR
 
@@ -1164,7 +1216,7 @@ CContextManager::RENDERING_CONTEXT_ID  CWin32ContextManager::glCreateExtendedCon
 		return true;
 	}
 
-	void CWin32ContextManager::glBindPBuffer(PIXEL_BUFFER_ID pbuffer,CTextureObject::CUBE_FACE selectBuffer)
+	void CWin32ContextManager::glBindPBuffer(PIXEL_BUFFER_ID pbuffer,ITextureObject::CUBE_FACE selectBuffer)
 	{
 		if (pBuffers[pbuffer].pbuffer == NULL)
 		{
@@ -1180,14 +1232,14 @@ CContextManager::RENDERING_CONTEXT_ID  CWin32ContextManager::glCreateExtendedCon
 		    wglMakeCurrent(pBuffers[pbuffer].pbufferDC,pBuffers[pbuffer].pbufferGLRC);
        
 #if defined(WGL_ARB_render_texture)
-		if ((selectBuffer >= CTextureObject::CGL_CUBEMAP_PX) && 
-			(selectBuffer <= CTextureObject::CGL_CUBEMAP_NZ))
+		if ((selectBuffer >= ITextureObject::CGL_CUBEMAP_PX) && 
+			(selectBuffer <= ITextureObject::CGL_CUBEMAP_NZ))
         {
             const CRaptorGLExtensions *const pExtensions = this->glGetExtensions();
         
             int piAttribList[3];
             piAttribList[0] = WGL_CUBE_MAP_FACE_ARB;
-			piAttribList[1] = (selectBuffer - CTextureObject::CGL_CUBEMAP_PX) + WGL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB;
+			piAttribList[1] = (selectBuffer - ITextureObject::CGL_CUBEMAP_PX) + WGL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB;
             piAttribList[2] = 0;
 
             pExtensions->wglSetPbufferAttribARB (pBuffers[pbuffer].pbuffer,piAttribList);

@@ -4,7 +4,7 @@
 #include "GLHierarchy/Geometry.h"
 #include "GLHierarchy/ShadedGeometry.h"
 #include "GLHierarchy/Material.h"
-#include "GLHierarchy/TextureObject.h"
+#include "GLHierarchy/ITextureObject.h"
 #include "GLHierarchy/TextureFactory.h"
 #include "System/Raptor.h"
 #include "Engine/Animator.h"
@@ -100,7 +100,6 @@ void CSlide::setVideo(const string& vName)
 
     CTextureFactory f;
     mVideo = f.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
-										CTextureObject::CGL_ALPHA_TRANSPARENT,
 										ITextureObject::CGL_BILINEAR,
 										pGenerator);
 

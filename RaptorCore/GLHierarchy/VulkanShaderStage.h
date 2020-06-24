@@ -43,10 +43,7 @@ public:
 	virtual ~CVulkanShaderStage(void);
 
 	//! Implements base class
-	virtual bool glLoadProgram(const std::string &program)
-	{
-		return NULL;
-	};
+	virtual bool glLoadProgram(const std::string &program);
 
 	//! Implements base class
 	virtual void glRender(void)
@@ -114,8 +111,6 @@ private:
 
 	//!	Uniform buffer
 	VkDescriptorBufferInfo m_bufferInfo;
-	unsigned char*	uniforms;
-	uint64_t		uniforms_size;
 };
 
 

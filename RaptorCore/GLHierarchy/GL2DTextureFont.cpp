@@ -49,7 +49,7 @@ static const size_t TEXTURE_WIDTH = 256;
 static const size_t FONT_SIZE = 256;
 static const size_t LINE_SIZE = 256;
 
-struct FONT_CACHEELT_t
+typedef struct FONT_CACHEELT_t
 {
 	GL_COORD_VERTEX coord;
 	GL_COORD_VERTEX	texcoord;
@@ -58,6 +58,7 @@ struct FONT_CACHEELT_t
 static FONT_CACHEELT_t font_cache[FONT_SIZE];
 static size_t FONT_CACHEPOINTER_SIZE = sizeof(FONT_CACHEELT)*FONT_SIZE / sizeof(float);
 static size_t LINE_CACHEPOINTER_SIZE = sizeof(FONT_CACHEELT)*LINE_SIZE / sizeof(float);
+static size_t FONT_CACHEELT_SIZE = sizeof(FONT_CACHEELT) / sizeof(float);
 
 static FONT_CACHEELT_t font_line[LINE_SIZE];
 static float *font_linePointer = NULL;
@@ -94,7 +95,7 @@ bool CGL2DTextureFont::glInit(const std::string &filename, unsigned int size, bo
 		unsigned int w = 0;
 
 		// find size of biggest char
-		for (unsigned int i = 0; i<FONT_SIZE; i++)
+		for (size_t i = 0; i < FONT_SIZE; i++)
 		{
 			char c = (char)i;
 			FTGlyphBitmap* gbitmap = m_bmfont->getBitmap(c);
@@ -111,8 +112,7 @@ bool CGL2DTextureFont::glInit(const std::string &filename, unsigned int size, bo
 		CTextureFactory &factory = CTextureFactory::getDefaultFactory();
 		if (m_texture == NULL)
 		{
-			m_texture = factory.glCreateTexture(ITextureObject::CGL_LIGHTMAP_ALPHA,
-												CTextureObject::CGL_MULTIPLY, // CGL_ALPHA_TRANSPARENT
+			m_texture = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
 												ITextureObject::CGL_BILINEAR);
 		}
 
@@ -127,8 +127,8 @@ bool CGL2DTextureFont::glInit(const std::string &filename, unsigned int size, bo
 		m_char_h = h;
 
 		int nb = TEXTURE_WIDTH / w;
-		size_t W = TEXTURE_WIDTH;
-		size_t H = h * w; //h * 256 / nb;
+		uint32_t W = TEXTURE_WIDTH;
+		uint32_t H = h * w; //h * 256 / nb;
 		factory.glResizeTexture(m_texture, W, H);
 		m_texture->glvkRender();
 
@@ -231,7 +231,7 @@ bool CGL2DTextureFont::glInit(const std::string &filename, unsigned int size, bo
 
 		// Final load
 		glTexImage2D(GL_TEXTURE_2D, 0,
-					 GL_LUMINANCE8_ALPHA8,
+					 GL_RGBA4,
 					 W, H, 0,
 					 GL_LUMINANCE_ALPHA, GL_UNSIGNED_BYTE,
 					 buffer);
@@ -348,7 +348,7 @@ void CGL2DTextureFont::glWrite(const std::string &text, int x, int y, const CCol
 
 	CGeometryAllocator *pAllocator = CGeometryAllocator::GetInstance();
 	if (pAllocator->isMemoryRelocated())
-		pAllocator->glvkCopyPointer(font_linePointer, (float*)&font_line[0], sizeof(FONT_CACHEELT) * sz / sizeof(float));
+		pAllocator->glvkSetPointerData(font_linePointer, (float*)&font_line[0], FONT_CACHEELT_SIZE * sz);
 
 	glEnable(GL_TEXTURE_2D);
 	glEnable(GL_BLEND);
@@ -357,7 +357,7 @@ void CGL2DTextureFont::glWrite(const std::string &text, int x, int y, const CCol
 	instance.m_pFontShader->glRender();
 	m_texture->glvkRender();
 
-	glDrawArrays(GL_POINTS, 0, sz);
+	glDrawArrays(GL_POINTS, 0, (GLsizei)sz);
 
 	instance.m_pFontShader->glStop();
 
@@ -397,7 +397,7 @@ void CGL2DTextureFont::glWrite(const std::vector<FONT_TEXT_ITEM> &lines)
 	COpenGLShaderStage *stage = instance.m_pFontShader->glGetOpenGLShader();
 	stage->updateProgramParameters(params);
 
-	GLsizei count = 0;
+	size_t count = 0;
 	for (size_t l = 0; l < lines.size(); l++)
 	{
 		const FONT_TEXT_ITEM& item = lines[l];
@@ -421,7 +421,7 @@ void CGL2DTextureFont::glWrite(const std::vector<FONT_TEXT_ITEM> &lines)
 
 	CGeometryAllocator *pAllocator = CGeometryAllocator::GetInstance();
 	if (pAllocator->isMemoryRelocated())
-		pAllocator->glvkCopyPointer(font_linePointer, (float*)&font_line[0], sizeof(FONT_CACHEELT) * count / sizeof(float));
+		pAllocator->glvkSetPointerData(font_linePointer, (float*)&font_line[0], (GLsizei)(FONT_CACHEELT_SIZE * count));
 
 	glEnable(GL_TEXTURE_2D);
 	glEnable(GL_BLEND);
@@ -430,7 +430,7 @@ void CGL2DTextureFont::glWrite(const std::vector<FONT_TEXT_ITEM> &lines)
 	instance.m_pFontShader->glRender();
 	m_texture->glvkRender();
 
-	glDrawArrays(GL_POINTS, 0, count);
+	glDrawArrays(GL_POINTS, 0, (GLsizei)count);
 
 	instance.m_pFontShader->glStop();
 

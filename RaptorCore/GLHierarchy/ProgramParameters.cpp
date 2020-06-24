@@ -19,7 +19,7 @@ RAPTOR_NAMESPACE
 
 static CProgramParameters::CParameter<void*> noValue(0);
 
-CProgramParameters::CParameterBase& CProgramParameters::operator[](unsigned int v)
+CProgramParameters::CParameterBase& CProgramParameters::operator[](size_t v)
 {
 	if (m_parameters.size() > v)
 		return *(m_parameters[v]);
@@ -27,7 +27,7 @@ CProgramParameters::CParameterBase& CProgramParameters::operator[](unsigned int 
 		return noValue;
 }
 
-const CProgramParameters::CParameterBase& CProgramParameters::operator[](unsigned int v) const
+const CProgramParameters::CParameterBase& CProgramParameters::operator[](size_t v) const
 {
 	if (m_parameters.size() > v)
 		return *(m_parameters[v]);

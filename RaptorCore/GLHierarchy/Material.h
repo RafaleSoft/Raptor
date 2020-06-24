@@ -80,6 +80,19 @@ public:
 		CGL_NB_REAL_MATERIALS
 	} REAL_MATERIAL;
 
+	//!
+	//!	Shader parameter type.
+	//!
+	typedef struct
+	{
+		CColor::RGBA ambient;
+		CColor::RGBA diffuse;
+		CColor::RGBA specular;
+		CColor::RGBA emission;
+		float		 shininess;
+	} Material_t;
+
+
 public:
 	CMaterial(	BASE_MATERIAL amb = CGL_NO_MATERIAL,
 			    BASE_MATERIAL diff = CGL_NO_MATERIAL,
@@ -95,6 +108,8 @@ public:
 
     //! Operator to convert this object into a RAPTOR_HANDLE
 	virtual operator RAPTOR_HANDLE() const;
+
+	bool doRebuild(void) const { return m_bRebuild; };
 
     //! Setters
 	void setAmbient(float r,float g,float b,float a);
@@ -115,11 +130,12 @@ public:
 	void setShininess(float exp);
 
     //! Getters
-	CColor::RGBA getAmbient(void) const { return ambient; };
-	CColor::RGBA getDiffuse(void) const { return diffuse; };
-	CColor::RGBA getSpecular(void) const { return specular; };
-	CColor::RGBA getShininess(void) const { return shininess; };
-	CColor::RGBA getEmission(void) const { return emission; };
+	CColor::RGBA getAmbient(void) const { return M.ambient; };
+	CColor::RGBA getDiffuse(void) const { return M.diffuse; };
+	CColor::RGBA getSpecular(void) const { return M.specular; };
+	CColor::RGBA getShininess(void) const { return M.shininess; };
+	CColor::RGBA getEmission(void) const { return M.emission; };
+	const Material_t& getMaterial(void) const { return M; };
 
     //! This method makes the material darker, multiplying the values by 'd'
 	void darken(float d);
@@ -147,12 +163,9 @@ protected:
 				const CPersistence::CPersistenceClassID &ID,
 				const std::string& name = "GL_MATERIAL");
 
-	CColor::RGBA	ambient;
-	CColor::RGBA	diffuse;
-	CColor::RGBA	specular;
-	CColor::RGBA	shininess;
-	CColor::RGBA	emission;
+	Material_t	M;
 
+private:
 	bool	ambient_enabled;
 	bool	diffuse_enabled;
 	bool	specular_enabled;
@@ -161,9 +174,6 @@ protected:
     bool	m_bRebuild;
 
 	RAPTOR_HANDLE	handle;
-
-private:
-	static CMaterial	*pCurrentMaterial;
 };
 
 RAPTOR_NAMESPACE_END

@@ -60,7 +60,7 @@
 
 RAPTOR_NAMESPACE_BEGIN
 
-static const size_t NB_FACTORY_SHADERS = 34;
+static const size_t NB_FACTORY_SHADERS = 41;
 static CShaderLibrary::factory_shader fsh[NB_FACTORY_SHADERS] = 
 	{ { "BUMP_TEX_SHADER", "bump.fp", "FragmentProgram" },
 	  { "EMBM_TEX_SHADER", "embm.fp", "FragmentProgram" },
@@ -95,7 +95,14 @@ static CShaderLibrary::factory_shader fsh[NB_FACTORY_SHADERS] =
 	  { "PARTICLE3D_TEX_PROGRAM", "particle3D.ps", "FragmentShader" },
 	  { "FONT2D_VTX_PROGRAM", "font2D.vs", "VertexShader" },
 	  { "FONT2D_GEO_PROGRAM", "font2D.gs", "GeometryShader" },
-	  { "FONT2D_TEX_PROGRAM", "font2D.ps", "FragmentShader" }};
+	  { "FONT2D_TEX_PROGRAM", "font2D.ps", "FragmentShader" },
+	  { "VECTORFONT_VTX_PROGRAM", "vector_font.vs", "VertexShader" },
+	  { "VECTORFONT_GEO_PROGRAM", "vector_font.gs", "GeometryShader" },
+	  { "VECTORFONT_TEX_PROGRAM", "vector_font.ps", "FragmentShader" },
+	  { "BOX_VTX_PROGRAM", "box.vs", "VertexShader" },
+	  { "FILLEDBOX_GEO_PROGRAM", "box.gs", "GeometryShader" },
+	  { "WIREDBOX_GEO_PROGRAM", "box_line.gs", "GeometryShader" },
+	  { "BOX_TEX_PROGRAM", "box.ps", "FragmentShader" }};
 
 RAPTOR_NAMESPACE_END
 
@@ -112,7 +119,12 @@ RAPTOR_NAMESPACE
 //////////////////////////////////////////////////////////////////////
 
 CShaderLibrary::CShaderLibrary()
-	:s_initialized(false)
+	:s_initialized(false),
+	m_pBlinnShader(NULL), 
+	m_pPhongShader(NULL),
+	m_pBumpShader(NULL),
+	m_pEMBMShader(NULL),
+	m_pAOComputeShader(NULL)
 {
 
 }
@@ -134,6 +146,18 @@ CShaderLibrary::~CShaderLibrary()
 
 	//	TODO: delete shaders allocated from glAddToLibrary.
 	s_factoryShaders.clear();
+
+	//	Delete global shaders allocated from init.
+	if (NULL != m_pBlinnShader)
+		m_pBlinnShader->releaseReference();
+	if (NULL != m_pPhongShader)
+		m_pPhongShader->releaseReference();
+	if (NULL != m_pBumpShader)
+		m_pBumpShader->releaseReference();
+	if (NULL != m_pEMBMShader)
+		m_pEMBMShader->releaseReference();
+	if (NULL != m_pAOComputeShader)
+		m_pAOComputeShader->releaseReference();
 }
 
 void CShaderLibrary::getFactoryShaders(vector<std::string> & res)
@@ -259,18 +283,23 @@ bool CShaderLibrary::glInitFactory(void)
 	{
 		CBlinnShader *pBlinnShader = new CBlinnShader();
 		pBlinnShader->glInit();
+		m_pBlinnShader = pBlinnShader;
 
 		CPhongShader *pPhongShader = new CPhongShader();
 		pPhongShader->glInit();
-
+		m_pPhongShader = pPhongShader;
+		
 		CBumpShader *pBumpShader = new CBumpShader();
 		pBumpShader->glInit();
+		m_pBumpShader = pBumpShader;
 
 		CEMBMShader *pEMBMShader = new CEMBMShader();
 		pEMBMShader->glInit();
+		m_pEMBMShader = pEMBMShader;
 
 		CAOComputeShader *pAOComputeShader = new CAOComputeShader();
 		pAOComputeShader->glInit();
+		m_pAOComputeShader = pAOComputeShader;
 
 		CATCH_GL_ERROR
 	}

@@ -37,7 +37,8 @@ public:
 	static CUniformAllocator*	GetInstance(void);
 
 	//! Set the current instance.
-	//! @return : the previous value.
+	//!	@param uniformAllocator : the instance that becomes current.
+	//! @return : the previous current instance, or NULL if none.
 	static CUniformAllocator *SetCurrentInstance(CUniformAllocator* uniformAllocator);
 
 	//! Destructor destroy all memory blocs created by this instance.
@@ -47,19 +48,25 @@ public:
 	bool	glvkInitMemory(	IDeviceMemoryManager* pDeviceMemory,
 							uint64_t uniformSize);
 	
-	void glvkCopyPointer(unsigned char *dst, unsigned char *src, uint64_t size);
+	void glvkSetPointerData(uint8_t *dst, uint8_t *src, uint64_t size);
 
 	//! Lock memory data and relocation so that no change can be made.
 	//! If data is relocated, High Performance blocks are activated on server
 	bool    glvkLockMemory(bool lock);
 
+	//! Binds a uniform memory data block and relocation so that no change can be made.
+	//! @param uniform : the uniform buffer object previously allocated with allocateUniforms.
+	//! @index uniform : the uniform binding location to bind uniform buffer to.
+	//! @return true if binding is effective, false otherwise (ResourceAllocator must be locked)
+	bool    glvkBindUniform(uint8_t *uniform, int32_t index);
+
 	//!	This method returns the address of a free block of the requested size, ( nb of indexes )
 	//!	or NULL if not enough space or other error.
-	unsigned char * const allocateUniforms(uint64_t size);
+	uint8_t * const allocateUniforms(uint64_t size);
 	
 	//!	Release the block allocated here above.
 	//! Returns false if block not found or if error.
-	bool releaseUniforms(unsigned char *uniform);
+	bool releaseUniforms(uint8_t *uniform);
 
 
 private:
@@ -71,7 +78,7 @@ private:
 	//!	The unique allocator instance
 	static CUniformAllocator	*m_pInstance;
 	
-	//!	Global array for texel allocation when GPU relocation is not available
+	//!	Global array for uniforms allocation when GPU relocation is not available
 	data_bloc	uniforms;
 
 	//!	If relocated, High Performance buffer object
@@ -79,13 +86,13 @@ private:
 
 	//! Actual memory structure : bloc fragments of global allocated space
 	//!	IMPORTANT: The structure implementation requires a binary tree for template class map<>
-	map<unsigned char*, uint64_t>	uniformBlocs;
+	map<uint8_t*, uint64_t>	uniformBlocs;
 
 	//! Free blocs for faster reallocation ( blocs are contained in actual memory structure )
 	vector<data_bloc>	freeUniformBlocs;
 
 	//!	A helper to find mapped memory blocs
-	map<unsigned char*, unsigned char*>  uniformReMap;
+	map<uint8_t*, uint8_t*>  uniformReMap;
 };
 
 

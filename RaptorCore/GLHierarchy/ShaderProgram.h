@@ -84,6 +84,11 @@ public:
 	//! the source, then an empty string is returned.
 	virtual std::string glGetProgramString(void) const = 0;
 
+	//! Computes and returns and size required to allocate a uniform
+	//! buffer object backing uniform blocks
+	//! @return the required size in bytes.
+	uint64_t glGetBufferMemoryRequirements(void);
+
 
 	//! Inherited from CPersistence
 	DECLARE_CLASS_ID(CShaderProgramClassID,"ShaderProgram",CPersistence)
@@ -108,9 +113,16 @@ protected:
 	//! Valid status
 	bool					m_bValid;
 
+	//!	Shader program handle.
 	RAPTOR_HANDLE			m_handle;
+
+	//!	Shader parameters.
 	bool					m_bApplyParameters;
 	CProgramParameters	    m_parameters;
+
+	//!	Shader uniform blocks.
+	unsigned char*	m_uniforms;
+	uint64_t		m_uniforms_size;
 
 
 private:

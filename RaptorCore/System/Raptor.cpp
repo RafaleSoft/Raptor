@@ -159,7 +159,7 @@ const char* Raptor::GetVersionString(void)
 int Raptor::glPurgeRaptor(bool count)
 {
 	//	Clean user objects
-	int nb = CPersistence::NbInstance();
+	size_t nb = CPersistence::NbInstance();
 
 	if (!count)
 	{
@@ -198,7 +198,7 @@ int Raptor::glPurgeRaptor(bool count)
 
     CATCH_GL_ERROR
 
-	return nb;
+	return (int)nb;
 }
 
 bool Raptor::glCheckDisplayConfig(const CRaptorDisplayConfig &pcs)
@@ -242,13 +242,18 @@ bool Raptor::glCheckDisplayConfig(const CRaptorDisplayConfig &pcs)
 
 			CRaptorDisplay *pDisplay = NULL;
 			CContextManager::RENDERING_CONTEXT_ID ctx = CContextManager::INVALID_CONTEXT;
-			//RAPTOR_HANDLE wnd = ctxMgr->glCreateWindow(pcs2, pDisplay, ctx);
-			//if (wnd.handle() != 0)
+			RAPTOR_HANDLE wnd = ctxMgr->glCreateWindow(pcs2, pDisplay, ctx);
+			if (wnd.handle() != 0)
 			{
 				valid = true;
-				//glDestroyDisplay(pDisplay);
-				//ctxMgr->glDestroyWindow(wnd);
+				pDisplay->glvkBindDisplay(wnd);
+				pDisplay->glvkReleaseResources();
+				pDisplay->glvkUnBindDisplay();
+				glDestroyDisplay(pDisplay);
+				ctxMgr->glDestroyWindow(wnd);
 			}
+			else
+				return false;
 		}
     }
 

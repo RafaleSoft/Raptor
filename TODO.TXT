@@ -1,35 +1,51 @@
 - Ajouter un dialog pour Vulkan Status comme OpenGL.
 
-- OpenGLMemory:
-	- utiliser *MapBufferRange plutot que de mapper la totalite du buffer pour acceder à uniquement un bloc.
+- Supprimer GL_QUADS
+	- glDrawElements (Object3DShadow)
+	- CGLLayer::glRenderSingleBuffer
 
 - RaptorDisplay:
 	- renommer glGrab en glBlit en utilisant un CImage.
 
-- CGLFont:
-	- corriger fonr color et back color pour rendre générique
+- CMipmapBuilder:
+	- Reintégrer, notamment pour Démo.
 
-- Portabilité:
-	- déplacer dans un seul endroit les définitions spécifiques WIN32/LINUX (CodeGeneration.h ?)
-	p.ex.: RaptorErrorManager a 2 defines specifiques: LOCALTIME & ASCTIME
-	- parser les .rc et mettre à jour la version réelle selon RAPTOR_VERSION ou Version.h
-	(synchroniser Version.h à partir de la var env si elle est définie)
+- CTextureFactory:
+	- Fusionner vkLoadTexture & glLoadTexture
+	- supprimer la statique vers RaptorInstance
+
+- CGLFont:
+	- corriger font color et back color pour rendre générique
+	- sortir les statiques de GLVectorFont et GL2DTextureFont
+
+- Test4:
+	- corriger ne marche pas sans relocation
+	- pas de decodeur video en 64 bits => ffmpeg ?
+	- Slide: utiliser un CTextureQuad
+
+- CShaderrogram:
+	- ajouter un preprocesseur.
+
+- COpenGLShaderStage:
+	- fusionner vkLoadShader & glLoadProgram (methode virtuelle de CShaderProgram)
+	- fusionner vkRender & glRender (methode virtuelle de CShaderProgram)
 
 - CRaptorScreenDisplay:
 	- déplacer les resource allocator, ou faire un CRaptorInstance::switchDisplay : 
 	sous MFC, le changement de display ne suit pas les ressources ==> plantage de la video dans Test2/About
 
+- CResourceAllocator & co:
+	- lock/unlock toujours utile ?
+	- à priori non sur les allocate/release car allocation uniquement sur CPU.
+
 - CTimeObject:
 	- déplacer les statiques dans CRaptorInstance.
-
-- GeometryAllocator:
-	- ajouter methode de copy entre arrays et appeler depuis CGeometry.
 
 - CGeometry:
 	- ajouter un cas aux méthodes SetVertices/SetColors/.... si nbV > nb_vertex
 
-- CObject3DInstance:
-	- supprimer le shader ou bien le rendre générique (c.f. ShadedGeometry)
+- CGeometryPrimitive:
+	- Evaluators deprecated => remplacer par geometry shaders.
 
 - CTextureQuad:
 	- ajouter une méthode pour faire le render sur une liste de Quads.
@@ -37,19 +53,14 @@
 - CRaptorDisplay:
 	- déplacer les fps et timings dans CRaptorDisplayConfig ( ==> glQueryStatus )
 
-- glEnableVertexAttribArrayARB / glVertexPointer
-	- faire une helper class qui gère les différentes extensions / profils pour setter les vertex data.
-		==> ArrayState / BindArray ?
-	- constructeur/enable ; destructeur/disable ?
-		==> comment gérer la réentrance et la réutilisaiton ? (offsets)
-
 - CRaptorRenderBufferDisplay:
 	- appels récurrents à glvkRenderViewPointModel. Pourquoi ? c.f. CRaptorDisplay & m_bApplyViewPointModel.
 
 - CContextManager:
-	factoriser getPresentationSuppotQueueFamily et vk_ctx.pSurface->supportPresentation(physical, numQueue):
+	- factoriser getPresentationSuppotQueueFamily et vk_ctx.pSurface->supportPresentation(physical, numQueue):
 		passer le physical device à CVulkanSurface => renvoyer la queue qui supporte WSI et presentation sur la surface.
 		=> Passer pExtensions au constructeur.
+	- passer en Core profile
 
 - CVulkanMemory:
 	- initialiser une bloc mémoire pour l'application (vertex et index buffers bindés sur la même allocation)
@@ -104,7 +115,6 @@
 	- SMP : si défini, créer des Engine jobs ?
 	- OpenCL + GPU computing
 	- Positionner les setFactors sur le particle compute depuis l'import (c.f. demo.xml)
-	- ParticleManager : enlever le cast de ITextureObject en CTextureObject
 	
 - CLight
 	- glow : volume rendering  ?

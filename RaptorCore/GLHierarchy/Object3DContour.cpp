@@ -123,6 +123,29 @@ void CObject3DContour::notifyFromOrigin(CObject3D* child)
     } 
 }  
         
+CObject3DContour &CObject3DContour::operator=(const CObject3DContour &r_contour)
+{
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+	Raptor::GetErrorManager()->generateRaptorError(CObject3DContour::CObject3DContourClassID::GetClassId(),
+		CRaptorErrorManager::RAPTOR_WARNING,
+		"CObject3DContour::operator= must not be called");
+#endif
+	return *this;
+}
+
+void CObject3DContour::boundingBox(GL_COORD_VERTEX &Min, GL_COORD_VERTEX &Max)
+{
+	if (m_pOrigin != NULL)
+		m_pOrigin->boundingBox()->get(Min, Max);
+}
+
+const CBoundingBox * const CObject3DContour::getBoundingBox() const
+{
+	if (m_pOrigin != NULL)
+		return m_pOrigin->boundingBox();
+	else
+		return NULL;
+}
 
 void CObject3DContour::init(CGeometry *geo)
 {
@@ -141,11 +164,11 @@ void CObject3DContour::init(CGeometry *geo)
         m_pOrigin->removeContainerNotifier(m_pObserver);
         delete m_pOrigin;
     }
-
+	
     m_pOrigin = new CGeometry();
-    *m_pOrigin = *geo;
+	*m_pOrigin = *geo;
     m_pOrigin->addContainerNotifier(m_pObserver);
-    
+
     const CGeometryEditor &pEditor = m_pOrigin->getEditor();
 	if (!pEditor.isMinimized())
 		pEditor.minimize();
@@ -304,81 +327,6 @@ void CObject3DContour::prepareContour(void)
     m_pOrigin->glUnLockData();
 }
 
-
-CObject3DContour &CObject3DContour::operator=(const CObject3DContour &r_contour)
-{
-#ifdef RAPTOR_DEBUG_MODE_GENERATION
-	Raptor::GetErrorManager()->generateRaptorError(	CObject3DContour::CObject3DContourClassID::GetClassId(),
-                                                    CRaptorErrorManager::RAPTOR_WARNING,
-											        "CObject3DContour::operator= must not be called");
-#endif
-	return *this;
-}
-
-void CObject3DContour::boundingBox(GL_COORD_VERTEX &Min,GL_COORD_VERTEX &Max)
-{
-    if (m_pOrigin != NULL)
-	    m_pOrigin->boundingBox()->get(Min,Max);
-}
-
-const CBoundingBox * const CObject3DContour::getBoundingBox() const 
-{
-    if (m_pOrigin != NULL)
-        return m_pOrigin->boundingBox();
-    else
-        return NULL;
-}
-
-void CObject3DContour::findBackFaces(const GL_COORD_VERTEX &pos)
-{
-	unsigned int nbFace = m_pOrigin->nbFace();
-
-	unsigned int index = 0;
-
-	unsigned int csize = m_pContour->contourVolumeSize;
-
-	m_pContour->lightCapSize = 0;
-	m_pContour->darkCapSize = 0;
-
-    unsigned int *pLightCap = &m_pContour->lightcap[0];
-    unsigned int *pDarkCap = &m_pContour->darkcap[0];
-
-	for (unsigned int i=0;i<nbFace;i++)
-	{
-		unsigned int p1,p2,p3;
-
-        p1 = m_pContour->pContourFaces[index];
-		p2 = m_pContour->pContourFaces[index+1];
-		p3 = m_pContour->pContourFaces[index+2];
-
-		//	lightVect % nomal should be tested using the mean point 
-		//	of the triangle ( p1 + p2 + p3 ) / 3 ...
-        float angle = (m_pContour->pContourVolume[p3].x - pos.x) * m_pContour->pContourNormals[i].x + 
-					        (m_pContour->pContourVolume[p3].y - pos.y) * m_pContour->pContourNormals[i].y +  	
-					        (m_pContour->pContourVolume[p3].z - pos.z) * m_pContour->pContourNormals[i].z; 
-
-		if (angle < 0)
-		{
-			m_pContour->backfaces[i] = false;
-            *pLightCap++ = p1;
-            *pLightCap++ = p2;
-            *pLightCap++ = p3;
-		}
-		else
-		{
-			m_pContour->backfaces[i] = true;
-            *pDarkCap++ = p1+csize;
-            *pDarkCap++ = p2+csize;
-            *pDarkCap++ = p3+csize;
-		}
-
-		index += 3;
-	}
-
-    m_pContour->lightCapSize = (pLightCap - m_pContour->lightcap);
-    m_pContour->darkCapSize = (pDarkCap - m_pContour->darkcap);
-}
-
 void CObject3DContour::findEdges()
 {
 	m_pContour->edges.clear();
@@ -496,6 +444,8 @@ void CObject3DContour::findEdges()
 #endif
 }
 
+//!	Currently unused
+/*
 void CObject3DContour::findContour()
 {
 	unsigned int size = 0;
@@ -517,20 +467,67 @@ void CObject3DContour::findContour()
 		if ( bf != bb)
 		{
 			if (bf)
-			{
 				m_pContour->pContourEdges[size] = CContourAttributes::line(e.point[0],e.point[1]);
-			}
 			else
-			{
 				m_pContour->pContourEdges[size] = CContourAttributes::line(e.point[1],e.point[0]);
-			}
+			
 			size++;
 		}
 	}
 
 	m_pContour->contourSize = size;
 }
+*/
 
+void CObject3DContour::findBackFaces(const GL_COORD_VERTEX &pos)
+{
+	unsigned int nbFace = m_pOrigin->nbFace();
+
+	unsigned int index = 0;
+
+	unsigned int csize = m_pContour->contourVolumeSize;
+
+	m_pContour->lightCapSize = 0;
+	m_pContour->darkCapSize = 0;
+
+	unsigned int *pLightCap = &m_pContour->lightcap[0];
+	unsigned int *pDarkCap = &m_pContour->darkcap[0];
+
+	for (unsigned int i = 0; i < nbFace; i++)
+	{
+		unsigned int p1, p2, p3;
+
+		p1 = m_pContour->pContourFaces[index];
+		p2 = m_pContour->pContourFaces[index + 1];
+		p3 = m_pContour->pContourFaces[index + 2];
+
+		//	lightVect % nomal should be tested using the mean point 
+		//	of the triangle ( p1 + p2 + p3 ) / 3 ...
+		float angle = (m_pContour->pContourVolume[p3].x - pos.x) * m_pContour->pContourNormals[i].x +
+			(m_pContour->pContourVolume[p3].y - pos.y) * m_pContour->pContourNormals[i].y +
+			(m_pContour->pContourVolume[p3].z - pos.z) * m_pContour->pContourNormals[i].z;
+
+		if (angle < 0)
+		{
+			m_pContour->backfaces[i] = false;
+			*pLightCap++ = p1;
+			*pLightCap++ = p2;
+			*pLightCap++ = p3;
+		}
+		else
+		{
+			m_pContour->backfaces[i] = true;
+			*pDarkCap++ = p1 + csize;
+			*pDarkCap++ = p2 + csize;
+			*pDarkCap++ = p3 + csize;
+		}
+
+		index += 3;
+	}
+
+	m_pContour->lightCapSize = (pLightCap - m_pContour->lightcap);
+	m_pContour->darkCapSize = (pDarkCap - m_pContour->darkcap);
+}
 
 void CObject3DContour::buildVolume(const GL_COORD_VERTEX &pos,float extrusion)
 {

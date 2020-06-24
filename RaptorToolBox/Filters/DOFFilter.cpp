@@ -268,11 +268,9 @@ bool CDOFFilter::glInitFilter(void)
 		(m_fModel == RENDER_TEXTURE))
 	{
 		depthInput = filterFactory.glCreateDynamicTexture(	ITextureObject::CGL_DEPTH24,
-															CTextureObject::CGL_OPAQUE,
 															ITextureObject::CGL_UNFILTERED,
 															depthExternalSource);
 		colorInput = filterFactory.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
-															CTextureObject::CGL_OPAQUE,
 															ITextureObject::CGL_UNFILTERED,
 															colorExternalSource);
 	}
@@ -297,14 +295,12 @@ bool CDOFFilter::glInitFilter(void)
 		state.renderer = CRaptorDisplayConfig::RENDER_BUFFER;
 
 		tmpTexture = filterFactory.glCreateTexture(	ITextureObject::CGL_COLOR24_ALPHA,
-			                                        CTextureObject::CGL_OPAQUE,
 				                                    ITextureObject::CGL_UNFILTERED);
 		filterFactory.glResizeTexture(tmpTexture,state.width,state.height);
 		tmpTexture->glvkUpdateClamping(ITextureObject::CGL_EDGECLAMP);
 		m_pRenderTextures->addTexture(tmpTexture);
 
 		tmpTexture2 = filterFactory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
-			                                        CTextureObject::CGL_OPAQUE,
 				                                    ITextureObject::CGL_UNFILTERED);
 		filterFactory.glResizeTexture(tmpTexture2,state.width,state.height);
 		tmpTexture2->glvkUpdateClamping(ITextureObject::CGL_EDGECLAMP);
@@ -338,11 +334,9 @@ bool CDOFFilter::glInitFilter(void)
 	if (m_fModel == RENDER_TEXTURE)
 	{
 		tmpTexture = filterFactory.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
-															CTextureObject::CGL_OPAQUE,
 															ITextureObject::CGL_UNFILTERED,
 															tmpDisplay);
 		tmpTexture2 = filterFactory.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
-															CTextureObject::CGL_OPAQUE,
 															ITextureObject::CGL_UNFILTERED,
 															tmpDisplay2);
 	}

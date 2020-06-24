@@ -38,13 +38,13 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -202,7 +202,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;CPPUNIT_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(CPPUNIT_INCLUDE_PATH);$(RAPTOR_ROOT)\Redist\Include;$(VULKAN_INCLUDE_PATH);</AdditionalIncludeDirectories>
-      <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -251,7 +251,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;CPPUNIT_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(CPPUNIT_INCLUDE_PATH);$(RAPTOR_ROOT)\Redist\Include;$(VULKAN_INCLUDE_PATH);</AdditionalIncludeDirectories>
-      <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -269,6 +269,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\UnitTest\RaptorHandleTest.cpp" />
     <ClCompile Include="..\..\UnitTest\RaptorImageTest.cpp" />
+    <ClCompile Include="..\..\UnitTest\RaptorSynchroTest.cpp" />
     <ClCompile Include="..\..\UnitTest\stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|x64'">Create</PrecompiledHeader>
@@ -282,9 +283,9 @@
   <ItemGroup>
     <ClInclude Include="..\..\UnitTest\RaptorHandleTest.h" />
     <ClInclude Include="..\..\UnitTest\RaptorImageTest.h" />
+    <ClInclude Include="..\..\UnitTest\RaptorSynchroTest.h" />
     <ClInclude Include="..\..\UnitTest\resource.h" />
     <ClInclude Include="..\..\UnitTest\stdafx.h" />
-    <ClInclude Include="..\..\UnitTest\targetver.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\..\UnitTest\UnitTest.rc" />

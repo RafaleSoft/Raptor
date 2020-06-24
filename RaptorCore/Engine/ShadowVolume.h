@@ -1,6 +1,20 @@
-// ShadowVolume.h: interface for the CShadowVolume class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  ShadowVolume.h                                                         */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
 
 #if !defined(AFX_SHADOWVOLUME_H__D19B3347_87CF_48C0_87E5_3AF7925780C3__INCLUDED_)
 #define AFX_SHADOWVOLUME_H__D19B3347_87CF_48C0_87E5_3AF7925780C3__INCLUDED_
@@ -40,7 +54,7 @@ public:
     virtual ENVIRONMENT_KIND    getKind(void) const { return SHADOW_VOLUME; };
 
 	//! Implements base class
-    virtual bool glInitEnvironment(unsigned int width,unsigned int height);
+    virtual bool glInitEnvironment(const vector<C3DSceneObject*> &object);
 
 	//! Implements base class
     virtual void glRender(const CLight* currentLight,const vector<C3DSceneObject*>& objects);
@@ -48,9 +62,9 @@ public:
 	//! Implements base class
     virtual void glRenderTexture(void);
 
-	//! Initialise all shadow volumes corresponding to the
-	//! contours of each object passed in the list.
-    void initVolumes(const vector<C3DSceneObject*>& objects);
+	//!	Create resources.
+	bool glInitialize(uint32_t width, uint32_t height);
+
 
 
 private:

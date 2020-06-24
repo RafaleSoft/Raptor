@@ -37,6 +37,12 @@
 #if !defined(AFX_RAPTORINSTANCE_H__90219068_202B_46C2_BFF0_73C24D048903__INCLUDED_)
 	#include "Subsys/RaptorInstance.h"
 #endif
+#if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
+	#include "System/RaptorGLExtensions.h"
+#endif
+#if !defined(AFX_UNIFORMALLOCATOR_H__4DD62C99_E476_4FE5_AEE4_EEC71F7B0F38__INCLUDED_)
+	#include "Subsys/UniformAllocator.h"
+#endif
 
 
 RAPTOR_NAMESPACE_BEGIN
@@ -61,7 +67,9 @@ CShaderProgram::CShaderProgram(const CPersistence::CPersistenceClassID& id,const
 	m_bValid(false),
 	m_handle(),
 	m_bApplyParameters(false),
-	m_parameters()
+	m_parameters(),
+	m_uniforms(NULL),
+	m_uniforms_size(0)
 {
 }
 
@@ -72,11 +80,20 @@ CShaderProgram::CShaderProgram(const CShaderProgram& shader)
 	m_handle = shader.m_handle;
 	m_bApplyParameters = shader.m_bApplyParameters;
 	m_parameters = shader.m_parameters;
+	m_uniforms = shader.m_uniforms;
+	m_uniforms_size = shader.m_uniforms_size;
 }
 
 CShaderProgram::~CShaderProgram()
 {
 	// TODO : Recycle handle
+#if defined(GL_ARB_uniform_buffer_object)
+	if (NULL != m_uniforms)
+	{
+		CUniformAllocator*	pUAllocator = CUniformAllocator::GetInstance();
+		pUAllocator->releaseUniforms(m_uniforms);
+	}
+#endif
 }
 
 bool CShaderProgram::glAddToLibrary(const std::string& shader_name,
@@ -124,5 +141,107 @@ bool CShaderProgram::glLoadProgramFromFile(const std::string &program)
 		return glLoadProgram(programstr);
 	}
 	else
+	{
+		vector<CRaptorMessages::MessageArgument> args;
+		CRaptorMessages::MessageArgument arg;
+		arg.arg_sz = program.c_str();
+		args.push_back(arg);
+
+		//!	Shader file could not be opened.
+		Raptor::GetErrorManager()->generateRaptorError(	CShaderProgram::CShaderProgramClassID::GetClassId(),
+														CRaptorErrorManager::RAPTOR_ERROR,
+														CRaptorMessages::ID_NO_RESOURCE,
+														__FILE__, __LINE__, args);
+
 		return false;
+	}
+}
+
+
+
+uint64_t CShaderProgram::glGetBufferMemoryRequirements(void)
+{
+	if (m_handle.glhandle() == 0)
+		return 0;
+
+	uint64_t uniform_size = 0;
+
+#if defined(GL_ARB_uniform_buffer_object)
+	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+
+	GLint max_bindings = 0;
+	glGetIntegerv(GL_MAX_UNIFORM_BUFFER_BINDINGS_ARB, &max_bindings);
+	
+	GLint active_uniform_max_length = 0;
+	pExtensions->glGetObjectParameterivARB(m_handle.glhandle(), GL_ACTIVE_UNIFORM_BLOCK_MAX_NAME_LENGTH_ARB, &active_uniform_max_length);
+	char *uniformBlockName = new char[active_uniform_max_length];
+
+	//! Despite the fact that the GL_VERSION text is greater than 3.1, it seems there is a bug in the call
+	//! below : the actual value should be returned by glGetProgramiv and not by glGetObjectParameteriv.
+	GLint active_blocks_count = 0;
+	//pExtensions->glGetProgramivARB(m_handle.glhandle(), GL_ACTIVE_UNIFORM_BLOCKS_ARB, &active_blocks_count2);
+	pExtensions->glGetObjectParameterivARB(m_handle.glhandle(), GL_ACTIVE_UNIFORM_BLOCKS_ARB, &active_blocks_count);
+
+	for (GLint i = 0; i < active_blocks_count; i++)
+	{
+		GLint block_size = 0;
+		pExtensions->glGetActiveUniformBlockivARB(m_handle.glhandle(), i, GL_UNIFORM_BLOCK_DATA_SIZE_ARB, &block_size);
+		uniform_size += block_size;
+
+		/**
+		 *	Currently not used. Kept for mapping on native attributes with user attributes.
+		GLint active_uniforms = 0;
+		pExtensions->glGetActiveUniformBlockivARB(m_handle.glhandle(), i, GL_UNIFORM_BLOCK_ACTIVE_UNIFORMS_ARB, &active_uniforms);
+		GLint indices[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
+		pExtensions->glGetActiveUniformBlockivARB(m_handle.glhandle(), i, GL_UNIFORM_BLOCK_ACTIVE_UNIFORM_INDICES_ARB, &indices[0]);
+		GLint active_uniform_length = 0;
+		pExtensions->glGetActiveUniformBlockivARB(m_handle.glhandle(), i, GL_UNIFORM_BLOCK_NAME_LENGTH_ARB, &active_uniform_length);
+		 */
+
+		GLsizei length = 0;
+		pExtensions->glGetActiveUniformBlockNameARB(m_handle.glhandle(), i, 256, &length, uniformBlockName);
+		uniformBlockName[length] = 0;
+
+		/**
+		 *	Currently not used. Kept for mapping on native attributes with user attributes.
+		GLuint uniformBlockIndex = pExtensions->glGetUniformBlockIndexARB(m_handle.glhandle(), uniformBlockName);
+		 */
+
+		GLint binding = 0;
+		pExtensions->glGetActiveUniformBlockivARB(m_handle.glhandle(), i, GL_UNIFORM_BLOCK_BINDING_ARB, &binding);
+
+		for (unsigned int idx = 0; idx < m_parameters.getNbParameters(); idx++)
+		{
+			CProgramParameters::CParameterBase& value = m_parameters[idx];
+			std::string name(uniformBlockName);
+			if ((value.name() == name) && (value.locationType == GL_UNIFORM_BLOCK_BINDING_ARB))
+			{
+				value.locationIndex = binding;
+
+				if ((binding >= max_bindings) || (block_size != value.size()))
+				{
+					vector<CRaptorMessages::MessageArgument> args;
+					CRaptorMessages::MessageArgument arg;
+					arg.arg_sz = name.c_str();
+					args.push_back(arg);
+					CRaptorMessages::MessageArgument arg2;
+					arg2.arg_int = block_size;
+					args.push_back(arg2);
+					CRaptorMessages::MessageArgument arg3;
+					arg3.arg_int = value.size();
+					args.push_back(arg3);
+
+					//	Vertex attribute index inconsistency with user expectation after link
+					Raptor::GetErrorManager()->generateRaptorError(	CShaderProgram::CShaderProgramClassID::GetClassId(),
+																	CRaptorErrorManager::RAPTOR_WARNING,
+																	CRaptorMessages::ID_UPDATE_FAILED,
+																	__FILE__, __LINE__, args);
+				}
+			}
+		}
+	}
+#endif
+
+	delete[] uniformBlockName;
+	return uniform_size;
 }

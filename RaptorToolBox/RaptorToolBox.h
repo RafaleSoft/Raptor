@@ -57,7 +57,7 @@ public:
 	//
 	// The final <result> object is raw : it is ready to be bound in
 	// a CTexture object using LoadTexture(<result>,".buffer")
-    static CTextureObject *mergeTextures(	CTextureSet *t,
+    static ITextureObject *mergeTextures(	CTextureSet *t,
 											unsigned int width, unsigned int height,
 											vector<GL_COORD_VERTEX> &placements);
 

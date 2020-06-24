@@ -10,10 +10,10 @@
 	#include "GLHierarchy/GL2DFont.h"
 #endif
 #if !defined(AFX_GLLAYER_H__12EA9DBD_DCDE_4C66_B607_DD32C023C8EF__INCLUDED_)
-	#include "GLLayer.h"
+	#include "GLHierarchy/GLLayer.h"
 #endif
 #if !defined(AFX_TEXTUREFACTORY_H__1B470EC4_4B68_11D3_9142_9A502CBADC6B__INCLUDED_)
-	#include "TextureFactory.h"
+	#include "GLHierarchy/TextureFactory.h"
 #endif
 #if !defined(AFX_RAPTORIO_H__87D52C27_9117_4675_95DC_6AD2CCD2E78D__INCLUDED_)
 	#include "System/RaptorIO.h"
@@ -27,12 +27,16 @@
 #if !defined(AFX_OPENGL_H__6C8840CA_BEFA_41DE_9879_5777FBBA7147__INCLUDED_)
 	#include "Subsys/OpenGL/RaptorOpenGL.h"
 #endif
+#if !defined(AFX_OPENGLTEXTUREOBJECT_H__D32B6294_B42B_4E6F_AB73_13B33C544AD0__INCLUDED_)
+	#include "Subsys/OpenGL/OpenGLTextureObject.h"
+#endif
 #if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
 	#include "System/RaptorErrorManager.h"
 #endif
 
 #include "Subsys/FreeType/FTGlyphBitmap.h"
 #include "Subsys/FreeType/TTBitmapFont.h"
+
 
 RAPTOR_NAMESPACE
 
@@ -59,10 +63,10 @@ CGLLayer::CGLLayer(int xpos,int ypos,unsigned int width,unsigned int height)
 
 	//	temporary buffer for texture loading
 	CTextureFactory &f = CTextureFactory::getDefaultFactory();
-	m_pPlane = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_OPAQUE);
+	m_pPlane = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA);
 	CImage plane;
 	plane.allocatePixels(m_layerWidth, m_layerHeight);
-	f.glLoadTexture(m_pPlane, plane);
+	f.glLoadTexture(m_pPlane->getGLTextureObject(), plane);
 
 	//	Final buffer for layers
 	m_glTexCoordu = ((float)width)/m_pPlane->getWidth();
@@ -89,8 +93,8 @@ CGLLayer::~CGLLayer()
 	if (m_pPlane != NULL)
 		m_pPlane->releaseReference();
 
-    unsigned int size = sprites.size();
-    for (unsigned int i=0; i < size ; i++)
+    size_t size = sprites.size();
+    for (size_t i=0; i < size ; i++)
     {
         sprites[i].image->releaseReference();
     }
@@ -102,14 +106,14 @@ CGLLayer::~CGLLayer()
 }
 
 
-const CTextureObject* CGLLayer::getLayerImage(void) const
+const ITextureObject* CGLLayer::getLayerImage(void) const
 {
     return m_pPlane; 
 }
 
 void CGLLayer::glRenderSingleBuffer(const CGLLayer *layer) const
 {
-	CTextureObject* singleBuffer = const_cast<CTextureObject*>(m_pPlane);
+	ITextureObject* singleBuffer = const_cast<ITextureObject*>(m_pPlane);
 	singleBuffer->glvkRender();
 
 	glBegin(GL_QUADS);
@@ -175,7 +179,7 @@ void CGLLayer::linkRendering(const CGLLayer *layer)
 //////////////////////////////////////////////////////////////////////
 //	Sprites
 //////////////////////////////////////////////////////////////////////
-void CGLLayer::manageSprite(CTextureObject *spr, float posx, float posy, float angle)
+void CGLLayer::manageSprite(ITextureObject *spr, float posx, float posy, float angle)
 {
     for (unsigned int i=0;i<sprites.size();i++)
     {
@@ -255,17 +259,16 @@ void CGLLayer::glRender()
 			CTexelAllocator::GetInstance()->isMemoryLocked() &&
 			(NULL != m_pBufferPointer))
 		{
-			CTexelAllocator::GetInstance()->glvkCopyPointer(m_pBufferPointer,
-														  m_pBuffer,
-														  m_layerWidth*m_layerHeight*4);
+			CTexelAllocator::GetInstance()->glvkSetPointerData(	m_pBufferPointer, m_pBuffer,
+																m_layerWidth*m_layerHeight*4);
 			glTexSubImage2D(GL_TEXTURE_2D,
-							m_pPlane->getCurrentMipMapLevel(),
+							m_pPlane->getGLTextureObject()->getCurrentMipMapLevel(),
 							0, 0, m_layerWidth, m_layerHeight,
 							GL_RGBA, GL_UNSIGNED_BYTE, m_pBufferPointer);
 		}
 		else
 			glTexSubImage2D(GL_TEXTURE_2D,
-							m_pPlane->getCurrentMipMapLevel(),
+							m_pPlane->getGLTextureObject()->getCurrentMipMapLevel(),
 							0, 0, m_layerWidth, m_layerHeight,
 							GL_RGBA, GL_UNSIGNED_BYTE, m_pBuffer);
         m_bRedraw = false;
@@ -283,7 +286,7 @@ void CGLLayer::glRender()
 	for (unsigned int i=0;i<sprites.size();i++)
 	{
         SPRITE spr = sprites[i];
-		CTextureObject*	T = spr.image;
+		ITextureObject*	T = spr.image;
 		glPushMatrix();
 		glTranslatef((float)(m_xpos+spr.posx),(float)(m_ypos+spr.posy),0.0f);
 		glRotatef(spr.angle,0.0f,0.0f,1.0f);

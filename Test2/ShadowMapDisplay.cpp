@@ -6,7 +6,7 @@
 #include "Test2.h"
 #include "ShadowMapDisplay.h"
 
-#include "../RaptorToolBox/RaptorToolBox.h"
+#include "ToolBox/RaptorToolBox.h"
 
 #include "GLHierarchy/GeometryEditor.h"
 #include "GLHierarchy/GLFont.h"
@@ -16,7 +16,7 @@
 #include "Engine/3DScene.h"
 #include "GLHierarchy/TextureFactory.h"
 #include "GLHierarchy/TextureFactoryConfig.h"
-#include "GLHierarchy/TextureObject.h"
+#include "GLHierarchy/ITextureObject.h"
 #include "GLHierarchy/TextureSet.h"
 #include "GLHierarchy/TextureUnitSetup.h"
 #include "GLHierarchy/Shader.h"
@@ -28,6 +28,7 @@
 #include "GLHierarchy/Light.h"
 #include "System/Raptor.h"
 #include "Engine/3DPath.h"
+#include "Engine/Environment.h"
 #include "Engine/IViewPoint.h"
 
 static CShadowMapDisplay* display = NULL;
@@ -213,42 +214,15 @@ void ShowPBuffer::glRender()
 	glDisable(GL_LIGHTING);
 	glColor4f(1.0f,1.0f,1.0f,1.0f);
 
-    CEnvironment *pEnv = m_pScene->getEnvironment(CEnvironment::SHADOW_MAP);
-    pEnv->glRenderTexture();
+	CEnvironment *pEnv = m_pScene->getEnvironment(); // CEnvironment::SHADOW_MAP);
+	if (NULL != pEnv)
+		pEnv->glRenderTexture();
 
 	glBegin(GL_QUADS);
         glTexCoord2f(0.0f,0.0f);	glVertex3f(-1.33f,0.5f,0.0f);
 		glTexCoord2f(1.0f,0.0f);	glVertex3f(-0.83f,0.5f,0.0f);
 		glTexCoord2f(1.0f,1.0f);	glVertex3f(-0.83f,1.0f,0.0f);
 		glTexCoord2f(0.0f,1.0f);	glVertex3f(-1.33f,1.0f,0.0f);
-
-/*
-        // ma = rz = -1
-        //  back faces
-        glTexCoord4f(-1.0f,-1.0f,-0.7f,1.0f);	glVertex3f(-1.33f,0.5f,0.0f);   //  sc = -rx = -1; tc = -ry = -1;  s = 0 ; t = 0
-		glTexCoord4f(1.0f,-1.0f,-0.7f,1.0f);	glVertex3f(-0.83f,0.5f,0.0f);   //  sc = 1 ; tc = 1 ;  s = 1 ; t = 1
-		glTexCoord4f(1.0f,1.0f,-0.7f,1.0f);	    glVertex3f(-0.83f,1.0f,0.0f);
-		glTexCoord4f(-1.0f,1.0f,-0.7f,1.0f);	glVertex3f(-1.33f,1.0f,0.0f);
-
-        // front faces
-		glTexCoord4f(-1.0f,-1.0f,0.7f,1.0f);	glVertex3f(-0.83f,0.5f,0.0f);
-		glTexCoord4f(1.0f,-1.0f,0.7f,1.0f);	    glVertex3f(-0.33f,0.5f,0.0f);
-		glTexCoord4f(1.0f,1.0f,0.7f,1.0f);	    glVertex3f(-0.33f,1.0f,0.0f);
-		glTexCoord4f(-1.0f,1.0f,0.7f,1.0f);	    glVertex3f(-0.83f,1.0f,0.0f);
-
-
-        // down faces
-        glTexCoord4f(-1.0f,-0.7f,-1.0f,1.0f);	glVertex3f(0.33f,0.5f,0.0f);
-		glTexCoord4f(-1.0f,-0.7f,1.0f,1.0f);	glVertex3f(0.83f,0.5f,0.0f);
-		glTexCoord4f(1.0f,-0.7f,1.0f,1.0f);	    glVertex3f(0.83f,1.0f,0.0f);
-		glTexCoord4f(1.0f,-0.7f,-1.0f,1.0f);	glVertex3f(0.33f,1.0f,0.0f);
-
-        // up faces
-        glTexCoord4f(-1.0f,0.7f,-1.0f,1.0f);	glVertex3f(0.83f,0.5f,0.0f);    // sc = rz = -1 ; tc = -ry = 1 ; s = 0 ; t = 1
-		glTexCoord4f(-1.0f,0.7f,1.0f,1.0f);	    glVertex3f(1.33f,0.5f,0.0f);    // sc = 1 ; tc = 1 ; s = 1 ; t = 1
-		glTexCoord4f(1.0f,0.7f,1.0f,1.0f);	    glVertex3f(1.33f,1.0f,0.0f);
-		glTexCoord4f(1.0f,0.7f,-1.0f,1.0f);	    glVertex3f(0.83f,1.0f,0.0f);
-*/
 	glEnd();
 	
 	glPopMatrix();
@@ -343,7 +317,22 @@ void CShadowMapDisplay::Init()
 		greenBall->scale(0.5f,0.5f,0.5f);
 		greenBall->setShader(greenShader);
 	}
-
+	int nbI = 0;
+	int i = 0;
+	for (i = 0; i < 3; i++)
+	{
+		for (int j = 0; j < 3; j++)
+		{
+			for (int k = 0; k < 3; k++)
+			{
+				if (((i + j + k) % 2) == 0)
+					m_pInstances[nbI] = new CObject3DInstance(redBall);
+				else
+					m_pInstances[nbI] = new CObject3DInstance(greenBall);
+				m_pInstances[nbI++]->translate(i*3.0f - 3.0f, j*3.0f, k*3.0f - 3.0f);
+			}
+		}
+	}
 
 	CGenericVector<float> LL(-1.0f,-1.0f,0.0f,1.0f);
 	GL_COORD_VERTEX SS(8.0f,8.0f,0.0f,1.0f);
@@ -364,10 +353,9 @@ void CShadowMapDisplay::Init()
     CTextureFactoryConfig& config = f.getConfig();
     config.setCurrentAnisotropy(16.0f);
 
-	CTextureObject *T = f.glCreateTexture(	ITextureObject::CGL_COLOR24_ALPHA,
-											CTextureObject::CGL_ALPHA_TRANSPARENT,
+	ITextureObject *T = f.glCreateTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 											ITextureObject::CGL_ANISOTROPIC);
-	T->glSetTransparency(255);
+	f.glSetTransparency(T, 255);
 	config.setGenerateMipmap(false);
 	f.glLoadTexture(T,"Datas\\oldwood.jpg");
     T->selectMipMapLevel(1);
@@ -393,16 +381,14 @@ void CShadowMapDisplay::Init()
     
 
 	CTextureUnitSetup tmu;
-	tmu.setDiffuseMap(T); 
+	tmu.setDiffuseMap(T, CTextureUnitSetup::CGL_OPAQUE);
 	tmu.enableImageUnit(CTextureUnitSetup::IMAGE_UNIT_2,false);
 	c1 = tmu.glBuildSetup();
 
    	fname = "Datas\\Start.tga";
 
 	T = f.glCreateTexture(	ITextureObject::CGL_COLOR24_ALPHA,
-							CTextureObject::CGL_ALPHA_TRANSPARENT,
 							ITextureObject::CGL_BILINEAR);
-	T->glSetTransparency(255);
 	f.glLoadTexture(T,fname);
 
 	tmu.getTMUCombiner(CTextureUnitSetup::IMAGE_UNIT_0).rgb_combiner = true;
@@ -416,23 +402,6 @@ void CShadowMapDisplay::Init()
 	tmu.enableImageUnit(CTextureUnitSetup::IMAGE_UNIT_2,false);
 	c2 = tmu.glBuildSetup();
 
-	int nbI = 0;
-    int i=0;	
-	for (i=0;i<3;i++)
-	{
-		for (int j=0;j<3;j++)
-		{
-			for (int k=0;k<3;k++)
-			{
-				if (((i+j+k) % 2) == 0)
-					m_pInstances[nbI] = new CObject3DInstance(redBall);
-				else
-					m_pInstances[nbI] = new CObject3DInstance(greenBall);
-				m_pInstances[nbI++]->translate(i*3.0f - 3.0f,j*3.0f,k*3.0f - 3.0f);
-			}
-		}
-	}
-
 	pSimpleObject = new Ground(c1,c2);
 	m_pScene = new C3DScene("SHADOW_MAP_SCENE");
 	pSimpleObject2 = new ShowPBuffer(m_pScene);
@@ -444,8 +413,8 @@ void CShadowMapDisplay::Init()
 	for (i=0;i<NB_INSTANCES;i++)
 		m_pScene->addObject(m_pInstances[i]);
 
-    m_pScene->glManageEnvironment(CEnvironment::SHADOW_MAP,1024,1024);
-    //m_pScene->glManageEnvironment(CEnvironment::OMNI_SHADOW_MAP,1024,1024);
+	CEnvironment *shadow_map = CEnvironment::glCreateEnvironment(*m_pScene, CEnvironment::SHADOW_MAP, 1024, 1024);
+    m_pScene->glManageEnvironment(shadow_map);
 
 	C3DPath *eyePositionPath = new C3DPath();
 	C3DPath *targetPath = new C3DPath();

@@ -13,7 +13,7 @@
 #endif
 
 RAPTOR_NAMESPACE_BEGIN
-class CTextureObject;
+class ITextureObject;
 RAPTOR_NAMESPACE_END
 
 RAPTOR_NAMESPACE
@@ -41,7 +41,7 @@ private:
 	CRaptorMutex	tMutex;
 
 	RAPTOR_HANDLE	drawBuffer;
-	CTextureObject	*m_pImage;
+	ITextureObject	*m_pImage;
 	size_t	m_serverWidth;
 	size_t	m_serverHeight;
 

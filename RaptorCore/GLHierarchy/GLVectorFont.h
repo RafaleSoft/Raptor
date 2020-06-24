@@ -1,6 +1,21 @@
-// GLVectorFont.h: interface for the CGLVectorFont class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  GLVectorFont.h                                                         */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
 #if !defined(AFX_GLVECTORFONT_H__C21ADBEA_705D_43EA_A45F_F016233F7507__INCLUDED_)
 #define AFX_GLVECTORFONT_H__C21ADBEA_705D_43EA_A45F_F016233F7507__INCLUDED_
 
@@ -10,10 +25,12 @@
 
 
 #if !defined(AFX_GLFONT_H__D451FE62_5FE1_11D3_9142_BA23BC92E77C__INCLUDED_)
-#include "GLHierarchy/GLFont.h"
+	#include "GLHierarchy/GLFont.h"
 #endif
 
+
 RAPTOR_NAMESPACE_BEGIN
+
 
 class RAPTOR_API CGLVectorFont : public CGLFont
 {
@@ -23,7 +40,8 @@ public:
 
 
 protected:
-	//! Generates the display lists for vector glyphs for a whole charset
+	//! Generates the display lists for vector glyphs for a whole charset.
+	//!	Vector fonts genetares glyphs only for caracters in the range [32 .. 126]
 	//! @see CGLFont
 	virtual bool glGenGlyphs(float precision = 1.0f,
 							 float extrusion = 0.0f,
@@ -50,6 +68,14 @@ private:
 								 float *width = NULL,
 								 float *height = NULL);
 
+	//!	Vertex Input State Resource binder.
+	void	*m_pBinder;
+
+	//!	Uniform buffer data for font rendering:
+	//!	- Uniform Buffer pointer.
+	uint8_t	*m_fontUniform;
+	//!	- Size of this uniform.
+	size_t m_fontUniformSize;
 };
 
 RAPTOR_NAMESPACE_END

@@ -7,6 +7,7 @@
 
 #include "GLHierarchy/Persistence.h"
 #include "Engine/3DScene.h"
+#include "Engine/Environment.h"
 #include "GLHierarchy/3DSet.h"
 #include "GLHierarchy/GeometryEditor.h"
 #include "GLHierarchy/ShadedGeometry.h"
@@ -19,7 +20,7 @@
 #include "GLHierarchy/TextureSet.h"
 #include "GLHierarchy/TextureFactory.h"
 #include "GLHierarchy/TextureFactoryConfig.h"
-#include "GLHierarchy/TextureObject.h"
+#include "GLHierarchy/ITextureObject.h"
 #include "GLHierarchy/GLFont.h"
 #include "GLHierarchy/GL3DFont.h"
 #include "GLHierarchy/GLFontFactory.h"
@@ -85,14 +86,15 @@ void CShadowDisplay::Init()
 	}
 
 	CTextureFactory &f = CTextureFactory::getDefaultFactory();
-	CTextureObject *T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_MULTIPLY,ITextureObject::CGL_BILINEAR);
-	T->glSetTransparency(255);
+	ITextureObject *T = f.glCreateTexture(	ITextureObject::CGL_COLOR24_ALPHA,
+											ITextureObject::CGL_BILINEAR);
+	f.glSetTransparency(T, 255);
 	CTextureFactoryConfig& config = f.getConfig();
 	const CTextureFactoryConfig::ICompressor *compressor = config.getCurrentCompressor();
 	if (0 < config.getNumCompressors())
 		config.setCurrentCompressor(config.getCompressor("OpenGL"));
 	f.glLoadTexture(T,"Datas\\start.tga");
-    knotShader->glGetTextureUnitsSetup()->setDiffuseMap(T);
+    knotShader->glGetTextureUnitsSetup()->setDiffuseMap(T, CTextureUnitSetup::CGL_MULTIPLY);
 
 	LL.Normalize();
 	m_light = new CLight();
@@ -112,7 +114,7 @@ void CShadowDisplay::Init()
 	delete font;
 
     CShader *textShader = fulltext->getShader();
-    textShader->glGetTextureUnitsSetup()->setDiffuseMap(texture->getTexture(1));
+    textShader->glGetTextureUnitsSetup()->setDiffuseMap(texture->getTexture(1), CTextureUnitSetup::CGL_MULTIPLY);
     textShader->getMaterial()->setAmbient(0.5f,0.5f,0.5f,1.0f);
     textShader->getMaterial()->setDiffuse(0.6f,0.6f,0.6f,1.0f);
     textShader->getMaterial()->setSpecular(0.9f,0.9f,0.9f,1.0f);
@@ -132,8 +134,10 @@ void CShadowDisplay::Init()
 	CShadedGeometry *g = (CShadedGeometry*)(sponge->getChild(it++));
 	while (g != NULL)
 	{
-		g->getShader()->setColor(0.2f,0.2f,0.2f,1.0f);
-        g->getShader()->getMaterial()->setAmbient(0.5f,0.5f,0.5f,1.0f);
+		CShader *s = g->getShader();
+		s->setColor(0.2f,0.2f,0.2f,1.0f);
+        s->getMaterial()->setAmbient(0.5f,0.5f,0.5f,1.0f);
+		s->glGetTextureUnitsSetup()->setUnitFunction(CTextureUnitSetup::IMAGE_UNIT_0, CTextureUnitSetup::CGL_MULTIPLY);
 		g->setRenderingModel(CGeometry::CGL_FRONT_GEOMETRY);
 		g->addModel(CGeometry::CGL_NORMALS);
 		g->addModel(CGeometry::CGL_TEXTURE);
@@ -167,7 +171,8 @@ void CShadowDisplay::Init()
     knotInstance8->translate(-10,10,10);
     m_pScene->addObject(knotInstance8);
 
-    m_pScene->glManageEnvironment(CEnvironment::SHADOW_VOLUME,0,0);
+	CEnvironment *shadow_volume = CEnvironment::glCreateEnvironment(*m_pScene, CEnvironment::SHADOW_VOLUME, 0, 0);
+    m_pScene->glManageEnvironment(shadow_volume);
     m_pScene->useZSort(); //Optimize surrounding bbox drawings to use it in this very special case.
 
 	CRaptorDisplay* pDisplay = CRaptorDisplay::GetCurrentDisplay();
@@ -212,6 +217,8 @@ void CShadowDisplay::Display()
 	if (reinit)
 		ReInit();
 
+	float dt = 0.01f * CTimeObject::GetGlobalTime();
+
 	S.x = 50.0f * cos(8*PI*dt);
 	S.y = 50.0f * sin(10*PI*dt);
 	S.z = 50.0f * cos(12*PI*dt);
@@ -224,9 +231,9 @@ void CShadowDisplay::Display()
     GL_COORD_VERTEX L(LL.X(),LL.Y(),LL.Z(),LL.H());
 	m_light->setLightDirection(L);
 
-	float x = 25 * cos(10*PI*dt) * cos(10*PI*dt);
-	float z = 25 * sin(10*PI*dt) * cos(10*PI*dt);
-	float y = 25 * sin(10*PI*dt);
+	float x = 25 * cos(5*PI*dt) * cos(5*PI*dt);
+	float z = 25 * sin(5*PI*dt) * cos(5*PI*dt);
+	float y = 25 * sin(5*PI*dt);
 	m_pVP->setPosition(x,y,z,IViewPoint::EYE);
 
 	glDisable(GL_TEXTURE_2D);
@@ -238,7 +245,4 @@ void CShadowDisplay::Display()
     glEnd();
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_LIGHTING);
-
-	dt+=0.0001f;
-	if (dt>1.0) dt=0.0;
 }

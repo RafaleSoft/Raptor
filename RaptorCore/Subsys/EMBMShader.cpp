@@ -42,8 +42,8 @@
 #if !defined(AFX_3DENGINEMATRIX_H__6CD1110E_1174_4f38_A452_30FB312022D0__INCLUDED_)
 	#include "Engine/3DEngineMatrix.h"
 #endif
-#if !defined(AFX_TEXTUREOBJECT_H__D32B6294_B42B_4E6F_AB73_13B33C544AD0__INCLUDED_)
-	#include "GLHierarchy/TextureObject.h"
+#if !defined(AFX_ITEXTUREOBJECT_H__3AA8C89E_BB23_483C_A547_C8A4CC53E551__INCLUDED_)
+	#include "GLHierarchy/ITextureObject.h"
 #endif
 #if !defined(AFX_TEXTUREFACTORY_H__1B470EC4_4B68_11D3_9142_9A502CBADC6B__INCLUDED_)
 	#include "GLHierarchy/TextureFactory.h"
@@ -51,16 +51,20 @@
 #if !defined(AFX_OPENGLSHADERSTAGE_H__56B00FE3_E508_4FD6_9363_90E6E67446D9__INCLUDED_)
 	#include "GLHierarchy/OpenGLShaderStage.h"
 #endif
+#if !defined(AFX_MATERIAL_H__B42ABB88_80E8_11D3_97C2_DE5C28000000__INCLUDED_)
+	#include "GLHierarchy/Material.h"
+#endif
 
 
 RAPTOR_NAMESPACE
+
 
 int CEMBMShader::environmentMap = -1;
 static bool embm_shaders_initialized = false;
 
 //#define PROCEDURAL_PERLIN
 #ifdef PROCEDURAL_PERLIN
-	static CTextureObject *permutation = NULL;
+	static ITextureObject *permutation = NULL;
 	static int permSampler = -1;
 #endif
 
@@ -98,7 +102,7 @@ CEMBMShader::~CEMBMShader(void)
 void CEMBMShader::glInit()
 {
 	CShader *shaderLib = new CShader();
-	COpenGLShaderStage *stage = glGetOpenGLShader();
+	COpenGLShaderStage *stage = glGetOpenGLShader("EMBM_SHADER_PROGRAM");
 
 	if (!embm_shaders_initialized)
 	{
@@ -138,6 +142,15 @@ void CEMBMShader::glInit()
 
 	CProgramParameters params;
 	params.addParameter("tangent", CProgramParameters::ADDITIONAL_PARAM1);
+
+#if defined(GL_ARB_uniform_buffer_object)
+	CMaterial::Material_t M;
+	CProgramParameters::CParameter<CMaterial::Material_t> material(M);
+	material.name("Material");
+	material.locationType = GL_UNIFORM_BLOCK_BINDING_ARB;
+	params.addParameter(material);
+#endif
+
 	stage->setProgramParameters(params);
 
 	stage->glCompileShader();
@@ -148,7 +161,7 @@ void CEMBMShader::glInit()
 	//! 256 interpolated values are enough for good results.
     //! For high quality filtering, future release may allow a user defined size.
     permutation = filterFactory.glCreateTexture(ITextureObject::CGL_LIGHTMAP,
-												CTextureObject::CGL_OPAQUE,
+												ITextureObject::CGL_OPAQUE,
 												ITextureObject::CGL_UNFILTERED);
     permutation->setSize(512,1);
 

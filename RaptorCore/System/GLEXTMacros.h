@@ -490,6 +490,18 @@
 #endif
 
 
+#if defined(WGL_ARB_create_context)
+	#ifndef IMPLEMENT_RAPTOR_WGL_ARB_create_context
+	#define IMPLEMENT_RAPTOR_WGL_ARB_create_context(target) \
+			PFN_WGL_CREATE_CONTEXT_ATTRIBS_PROC	target::wglCreateContextAttribsARB = NULL;
+	#endif
+#else
+	#define IMPLEMENT_RAPTOR_WGL_ARB_create_context(target)
+#endif
+
+
+
+
 //!
 //!
 //!     Macro definition for extensions initialisation
@@ -1461,6 +1473,77 @@
 		}
 	#else
 		#define IMPLEMENT_GL_ARB_vertex_array_object(target)
+	#endif
+#endif
+
+
+#ifndef IMPLEMENT_GL_ARB_debug_output
+	#ifdef GL_ARB_debug_output
+	#define IMPLEMENT_GL_ARB_debug_output(target) \
+		if (Raptor::glIsExtensionSupported(GL_ARB_VERTEX_ARRAY_OBJECT_EXTENSION_NAME))\
+		{\
+			target->glDebugMessageControlARB = (PFN_GL_DEBUG_MESSAGE_CONTROL_ARB)GET_PROC_ADDRESS("glDebugMessageControlARB");\
+			target->glDebugMessageInsertARB = (PFN_GL_DEBUG_MESSAGE_INSERT_ARB)GET_PROC_ADDRESS("glDebugMessageInsertARB");\
+			target->glDebugMessageCallbackARB = (PFN_GL_DEBUG_MESSAGE_CALLBACK_ARB)GET_PROC_ADDRESS("glDebugMessageCallbackARB");\
+			target->glGetDebugMessageLogARB = (PFN_GL_GET_DEBUG_MESSAGE_LOG_ARB)GET_PROC_ADDRESS("glGetDebugMessageLogARB");\
+			target->glGetPointerv = (PFN_GL_GET_POINTERV)GET_PROC_ADDRESS("glGetPointerv");\
+		}\
+		else\
+		{\
+			target->glDebugMessageControlARB = NULL;\
+			target->glDebugMessageInsertARB = NULL;\
+			target->glDebugMessageCallbackARB = NULL;\
+			target->glGetDebugMessageLogARB = NULL;\
+			target->glGetPointerv = NULL;\
+		}
+	#else
+		#define IMPLEMENT_GL_ARB_debug_output(target)
+	#endif
+#endif
+
+
+
+#ifndef IMPLEMENT_WGL_ARB_create_context
+	#ifdef WGL_ARB_create_context
+	#define IMPLEMENT_WGL_ARB_create_context(target)\
+			if (Raptor::glIsExtensionSupported(WGL_ARB_CREATE_CONTEXT_EXTENSION_NAME))\
+			{\
+				target->wglCreateContextAttribsARB = (PFN_WGL_CREATE_CONTEXT_ATTRIBS_PROC)GET_PROC_ADDRESS("wglCreateContextAttribsARB");\
+			}\
+			else\
+			{\
+				target->glTexImage3DEXT = NULL;\
+			}
+	#else
+		#define IMPLEMENT_WGL_ARB_create_context(target)
+	#endif
+#endif
+
+#ifndef IMPLEMENT_GL_VERSION_3_1
+	#ifdef GL_VERSION_3_1
+		#define IMPLEMENT_GL_VERSION_3_1(target) \
+			target->glDrawArraysInstanced = (PFN_GL_DRAW_ARRAYS_INSTANCED_PROC)GET_PROC_ADDRESS("glDrawArraysInstanced"); \
+			target->glDrawElementsInstanced = (PFN_GL_DRAW_ELEMENTS_INSTANCED_PROC)GET_PROC_ADDRESS("glDrawElementsInstanced"); \
+			target->glTexBuffer = (PFN_GL_TEX_BUFFER_PROC)GET_PROC_ADDRESS("glTexBuffer"); \
+			target->glPrimitiveRestartIndex = (PFN_GL_PRIMITIVERE_START_INDEX_PROC)GET_PROC_ADDRESS(" glPrimitiveRestartIndex"); \
+			target->glCopyBufferSubData = (PFN_GL_COPY_BUFFER_SUB_DATA_PROC)GET_PROC_ADDRESS("glCopyBufferSubData");
+	#else
+		#define IMPLEMENT_GL_VERSION_3_1(target)\
+			target->glDrawArraysInstanced = NULL;\
+			target->glDrawElementsInstanced = NULL;\
+			target->glTexBuffer = NULL;\
+			target->glPrimitiveRestartIndex = NULL;\
+			target->glCopyBufferSubData = NULL;
+	#endif
+#endif
+
+#ifndef IMPLEMENT_GL_VERSION_3_0
+	#ifdef GL_VERSION_3_0
+		#define IMPLEMENT_GL_VERSION_3_0(target) \
+			target->glMapBufferRange = (PFN_GL_MAP_BUFFER_RANGE_PROC)GET_PROC_ADDRESS("glMapBufferRange");
+	#else
+		#define IMPLEMENT_GL_VERSION_3_0(target)\
+			target->glMapBufferRange = NULL;
 	#endif
 #endif
 

@@ -36,7 +36,7 @@ RAPTOR_NAMESPACE_BEGIN
 
 class CShader;
 class ITextureGenerator;
-class CTextureObject;
+class ITextureObject;
 class CTextureSet;
 class CTextureQuad;
 
@@ -106,23 +106,23 @@ public:
 	//!
 
 	//! Assign the color input on which the filter has to proceed
-    void setColorInput(CTextureObject* pInput);
+    void setColorInput(ITextureObject* pInput);
 
 	//! @Return : the input colortexture, can be from previous filter. 
-    CTextureObject*  getColorInput(void);
+    ITextureObject*  getColorInput(void);
 
 	//! Assign the depth input on which the filter has to proceed
-    void setDepthInput(CTextureObject* pInput);
+    void setDepthInput(ITextureObject* pInput);
 
 	//! @Return : the output colortexture from the source generator. 
-    virtual CTextureObject*  glCreateColorOutput(void);
+    virtual ITextureObject*  glCreateColorOutput(void);
 
 	//! @Return : the output colortexture from the source generator.
 	//!	(output can be a previous filter output if filter is disabled)
-    CTextureObject*  getColorOutput(void);
+    ITextureObject*  getColorOutput(void);
 
 	//! @Return : the input colortexture from the source generator. 
-    virtual CTextureObject*  glCreateDepthOutput(void);
+    virtual ITextureObject*  glCreateDepthOutput(void);
 
 
 
@@ -192,10 +192,10 @@ protected:
     ITextureGenerator	*colorInternalSource;
     ITextureGenerator	*depthInternalSource;
 
-	CTextureObject		*colorInput;
-	CTextureObject		*depthInput;
-	CTextureObject		*colorOutput;
-	CTextureObject		*depthOutput;
+	ITextureObject		*colorInput;
+	ITextureObject		*depthInput;
+	ITextureObject		*colorOutput;
+	ITextureObject		*depthOutput;
 
 	CTextureSet			*m_pRenderTextures;
 	CTextureSet			*m_pOutputTextures;

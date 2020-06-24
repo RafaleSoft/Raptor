@@ -59,7 +59,12 @@ public:
     IO_STATUS	getStatus(void) const { return m_status; };
 
 	//! Returns the size of this IO if available (not a stream)
-	unsigned int	getSize(void) const;
+	size_t	getSize(void) const;
+
+	//!	Defines the flush logic: autoflushed when internal buffers are
+	//! full, or systematic flush at each file write.
+	//! @param flush: if true, flush is automatic, else it is at each write.
+	void setAutoFlush(bool flush) { m_bAutoflush = flush; }
 
     //!  Extensible io management
 	virtual std::string getValueName(void) const;
@@ -120,6 +125,7 @@ protected:
 
 private:
 	IO_KIND		m_kind;
+	bool		m_bAutoflush;
 };
 
 RAPTOR_NAMESPACE_END

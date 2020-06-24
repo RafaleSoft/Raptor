@@ -120,7 +120,7 @@ CGeometry *CRaptorToolBox::mergeGeometries(C3DSet *set)
 
 
 
-CTextureObject* CRaptorToolBox::mergeTextures(	CTextureSet *t,
+ITextureObject* CRaptorToolBox::mergeTextures(	CTextureSet *t,
 												unsigned int width, unsigned int height,
 												vector<GL_COORD_VERTEX> &placements)
 {
@@ -140,9 +140,9 @@ CTextureObject* CRaptorToolBox::mergeTextures(	CTextureSet *t,
 		powy*=2;
 
 	CTextureFactory &factory = CTextureFactory::getDefaultFactory();
-	CTextureObject* T = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_OPAQUE);
+	ITextureObject* T = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA);
     T->setSize(powx,powy);
-	T->glSetTransparency(255);
+	factory.glSetTransparency(T, 255);
     
 	CImage merge;
 	merge.allocatePixels(powx, powy);
@@ -153,7 +153,7 @@ CTextureObject* CRaptorToolBox::mergeTextures(	CTextureSet *t,
 
 	for (size_t i=0;i<nb;i++)
 	{
-		CTextureObject* current = t->getTexture(i);
+		ITextureObject* current = t->getTexture(i);
 
 		current->glvkRender();
 

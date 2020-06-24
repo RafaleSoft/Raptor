@@ -240,7 +240,7 @@ bool CRaptorVulkanDisplay::glBlit(uint32_t xSrc, uint32_t ySrc, uint32_t widthSr
 	return false;
 }
 
-void CRaptorVulkanDisplay::glGenerate(CTextureObject* )
+void CRaptorVulkanDisplay::glGenerate(ITextureObject* I, uint32_t x, uint32_t y, uint32_t w, uint32_t h)
 {
 }
 

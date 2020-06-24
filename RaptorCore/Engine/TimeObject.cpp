@@ -31,8 +31,6 @@ float CTimeObject::m_time = 0.0f;
 float CTimeObject::m_globalTime = 0.0f;
 float CTimeObject::m_deltat = 0.05f;	// Should this value be changed ?
 
-std::vector<CTimeObject*>	CTimeObject::m_rootTimeObjects;
-
 RAPTOR_NAMESPACE_END
 
 
@@ -55,7 +53,8 @@ CRaptorMutex& CTimeObject::getLock(void)
 CTimeObject::CTimeObject()
 	:m_animate(true), m_synchronized(false)
 {
-	m_rootTimeObjects.push_back(this);
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+	instance.m_rootTimeObjects.push_back(this);
 	m_time = 0;
 
 	getLock();
@@ -65,19 +64,21 @@ CTimeObject::~CTimeObject()
 {
 	CRaptorLock lock(*tmMutex);
 
-	vector<CTimeObject*>::iterator itr = m_rootTimeObjects.begin();
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+	vector<CTimeObject*>::iterator itr = instance.m_rootTimeObjects.begin();
 
 	while ((*itr) != this)
 		itr++;
 
-	if (itr != m_rootTimeObjects.end())
-		m_rootTimeObjects.erase(itr);
+	if (itr != instance.m_rootTimeObjects.end())
+		instance.m_rootTimeObjects.erase(itr);
 }
 
 const std::vector<CTimeObject*>& CTimeObject::getTimeObjects(void)
 {
 	CRaptorLock lock(*tmMutex);
-	return m_rootTimeObjects;
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+	return instance.m_rootTimeObjects;
 }
 
 void CTimeObject::setTimeFactor(float factor)
@@ -133,15 +134,16 @@ bool CTimeObject::prioritize(void)
 {
 	CRaptorLock lock(*tmMutex);
 
-	std::vector<CTimeObject*>::iterator itr = m_rootTimeObjects.begin();
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+	std::vector<CTimeObject*>::iterator itr = instance.m_rootTimeObjects.begin();
 
 	while ((*itr) != this)
 		itr++;
 
-	if (itr != m_rootTimeObjects.end())
+	if (itr != instance.m_rootTimeObjects.end())
 	{
-		m_rootTimeObjects.erase(itr);
-		m_rootTimeObjects.insert(m_rootTimeObjects.begin(),this);
+		instance.m_rootTimeObjects.erase(itr);
+		instance.m_rootTimeObjects.insert(instance.m_rootTimeObjects.begin(), this);
 		return true;
 	}
 	else

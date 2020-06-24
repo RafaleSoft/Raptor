@@ -11,7 +11,7 @@
 #include "GLHierarchy/TextureSet.h"
 #include "GLHierarchy/TextureFactory.h"
 #include "GLHierarchy/TextureUnitSetup.h"
-#include "GLHierarchy/TextureObject.h"
+#include "GLHierarchy/ITextureObject.h"
 #include "Engine/3DEngine.h"
 #include "GLHierarchy/ShadedGeometry.h"
 #include "GLHierarchy/VertexProgram.h"
@@ -74,9 +74,8 @@ public:
 
 		if (NULL != t)
 		{
-			CTextureUnitSetup tmu;
-			tmu.setDiffuseMap(t->getTexture(2));
-			tmu.setNormalMap(t->getTexture(0));
+			tmu.setDiffuseMap(t->getTexture(2), CTextureUnitSetup::CGL_ALPHA_TRANSPARENT);
+			tmu.setNormalMap(t->getTexture(0), CTextureUnitSetup::CGL_ALPHA_TRANSPARENT);
 			bg = tmu.glBuildSetup();
 		}
 	};
@@ -87,7 +86,8 @@ public:
 	{ glRender(); };
 	virtual void glRender(void)
 	{
-		glCallList(bg.handle());
+		tmu.glRender();
+		//glCallList(bg.handle());
 		glCallList(list.handle());
 
 		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
@@ -99,6 +99,7 @@ public:
 private:
 	RAPTOR_HANDLE list;
 	RAPTOR_HANDLE bg;
+	CTextureUnitSetup tmu;
 };
 
 
@@ -136,7 +137,7 @@ private:
 
 	GLfloat		*m_d_grid;
 
-	CTextureObject	*m_captureBuffer;
+	ITextureObject	*m_captureBuffer;
 };
 
 
@@ -164,7 +165,6 @@ CWarpObject::CWarpObject(float width,float height,int hcels,int vcels)
 
 	CTextureFactory &f = CTextureFactory::getDefaultFactory();
     m_captureBuffer = f.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
-												CTextureObject::CGL_ALPHA_TRANSPARENT,
 												ITextureObject::CGL_BILINEAR,
 												CRaptorDisplay::GetCurrentDisplay());
     f.glResizeTexture(m_captureBuffer,BASE_WARP_WIDTH,BASE_WARP_HEIGHT);
@@ -237,10 +237,7 @@ void CWarpObject::glRender()
 	//	and take a margin for AA/BilinearFiltering cases
 	int w = x_sz * m_captureBuffer->getWidth();
 	int h = y_sz * m_captureBuffer->getHeight();
-    m_captureBuffer->setGenerationSize(floor(v1.x+0.5f),
-										floor(v1.y+0.5f),
-										w+2,
-										h+2);
+    m_captureBuffer->setGenerationSize(floor(v1.x+0.5f), floor(v1.y+0.5f), w+2, h+2);
 	m_captureBuffer->glvkRender();
 
 	glMatrixMode(GL_TEXTURE);
@@ -274,8 +271,8 @@ private:
 	float		m_orgx;
 	float		m_orgy;
 
-	CTextureObject*	m_captureBuffer;
-	CShader	*m_pShader;
+	ITextureObject	*m_captureBuffer;
+	CShader			*m_pShader;
 };
 
 CGlassObject::CGlassObject(float width,float height,int hcels,int vcels)
@@ -289,20 +286,18 @@ CGlassObject::CGlassObject(float width,float height,int hcels,int vcels)
 
 	CTextureFactory &f = CTextureFactory::getDefaultFactory();
     m_captureBuffer = f.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
-												CTextureObject::CGL_ALPHA_TRANSPARENT,
 												ITextureObject::CGL_BILINEAR,
 												CRaptorDisplay::GetCurrentDisplay());
     f.glResizeTexture(m_captureBuffer,BASE_WARP_WIDTH,BASE_WARP_HEIGHT);
 
-	CTextureObject* T = f.glCreateTexture( ITextureObject::CGL_COLOR24_ALPHA,
-                                           CTextureObject::CGL_ALPHA_TRANSPARENT,
+	ITextureObject* T = f.glCreateTexture( ITextureObject::CGL_COLOR24_ALPHA,
                                            ITextureObject::CGL_BILINEAR);
 	f.glLoadTexture(T,"Datas\\Bump2.tga");
 
 	m_pShader = new CShader("GLASS_SHADER");
 	CTextureUnitSetup *pSetup = m_pShader->glGetTextureUnitsSetup();
-	pSetup->setDiffuseMap(m_captureBuffer);
-	pSetup->setNormalMap(T);
+	pSetup->setDiffuseMap(m_captureBuffer, CTextureUnitSetup::CGL_OPAQUE);
+	pSetup->setNormalMap(T, CTextureUnitSetup::CGL_OPAQUE);
 
 #if defined(GL_ARB_fragment_shader)
 	string program = 
@@ -341,10 +336,7 @@ void CGlassObject::glRender()
 	//	save GPU time, just copy pixels that will be shaded
 	int w = x_sz * m_captureBuffer->getWidth();
 	int h = y_sz * m_captureBuffer->getHeight();
-    m_captureBuffer->setGenerationSize(	floor(v1.x+0.5f),
-										floor(v1.y+0.5f),
-										w+2,
-										h+2);
+    m_captureBuffer->setGenerationSize(floor(v1.x+0.5f), floor(v1.y+0.5f), w+2, h+2);
 	m_captureBuffer->glvkRender();
 	m_pShader->glRenderTexture();
 	m_pShader->glRender();

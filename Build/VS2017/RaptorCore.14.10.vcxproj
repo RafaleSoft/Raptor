@@ -245,8 +245,8 @@
 copy $(OutDir)\Raptor.dll "%RAPTOR_ROOT%\Redist\bin\"
 copy $(SolutionDir)$(ProjectName)\Subsys\ObjectModels\Raptor.xsd %RAPTOR_ROOT%\Redist\bin\
 copy $(SolutionDir)$(ProjectName)\Subsys\ObjectModels\RaptorMessages.xsd %RAPTOR_ROOT%\Redist\bin\
-cd $(SolutionDir)\$(ProjectName)
-$(SolutionDir)\$(ProjectName)\Subsys\Redist.bat
+$(PYTHON_HOME)\python.exe $(SolutionDir)$(ProjectName)\Subsys\Redist.py 
+
 </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -269,7 +269,7 @@ $(SolutionDir)\$(ProjectName)\Subsys\Redist.bat
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <StructMemberAlignment>16Bytes</StructMemberAlignment>
-      <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>Subsys\CodeGeneration.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
@@ -318,8 +318,8 @@ $(SolutionDir)\$(ProjectName)\Subsys\Redist.bat
 copy $(OutDir)\Raptor.dll "%RAPTOR_ROOT%\Redist\bin\"
 copy $(SolutionDir)$(ProjectName)\Subsys\ObjectModels\Raptor.xsd %RAPTOR_ROOT%\Redist\bin\
 copy $(SolutionDir)$(ProjectName)\Subsys\ObjectModels\RaptorMessages.xsd %RAPTOR_ROOT%\Redist\bin\
-cd $(SolutionDir)\$(ProjectName)
-$(SolutionDir)\$(ProjectName)\Subsys\Redist.bat
+$(PYTHON_HOME)\python.exe $(SolutionDir)$(ProjectName)\Subsys\Redist.py 
+
 </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -393,8 +393,8 @@ $(SolutionDir)\$(ProjectName)\Subsys\Redist.bat
 copy $(OutDir)\Raptor.dll "%RAPTOR_ROOT%\Redist\bin\"
 copy $(SolutionDir)$(ProjectName)\Subsys\ObjectModels\Raptor.xsd %RAPTOR_ROOT%\Redist\bin\
 copy $(SolutionDir)$(ProjectName)\Subsys\ObjectModels\RaptorMessages.xsd %RAPTOR_ROOT%\Redist\bin\
-cd $(SolutionDir)\$(ProjectName)
-$(SolutionDir)\$(ProjectName)\Subsys\Redist.bat
+$(PYTHON_HOME)\python.exe $(SolutionDir)$(ProjectName)\Subsys\Redist.py 
+
 </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -417,7 +417,7 @@ $(SolutionDir)\$(ProjectName)\Subsys\Redist.bat
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <StructMemberAlignment>16Bytes</StructMemberAlignment>
-      <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>Subsys\CodeGeneration.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
@@ -466,8 +466,8 @@ $(SolutionDir)\$(ProjectName)\Subsys\Redist.bat
 copy $(OutDir)\Raptor.dll "%RAPTOR_ROOT%\Redist\bin\"
 copy $(SolutionDir)$(ProjectName)\Subsys\ObjectModels\Raptor.xsd %RAPTOR_ROOT%\Redist\bin\
 copy $(SolutionDir)$(ProjectName)\Subsys\ObjectModels\RaptorMessages.xsd %RAPTOR_ROOT%\Redist\bin\
-cd $(SolutionDir)\$(ProjectName)
-$(SolutionDir)\$(ProjectName)\Subsys\Redist.bat
+$(PYTHON_HOME)\python.exe $(SolutionDir)$(ProjectName)\Subsys\Redist.py 
+
 </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -541,8 +541,8 @@ $(SolutionDir)\$(ProjectName)\Subsys\Redist.bat
 copy $(OutDir)\Raptor.dll "%RAPTOR_ROOT%\Redist\bin\"
 copy $(SolutionDir)$(ProjectName)\Subsys\ObjectModels\Raptor.xsd %RAPTOR_ROOT%\Redist\bin\
 copy $(SolutionDir)$(ProjectName)\Subsys\ObjectModels\RaptorMessages.xsd %RAPTOR_ROOT%\Redist\bin\
-cd $(SolutionDir)\$(ProjectName)
-$(SolutionDir)\$(ProjectName)\Subsys\Redist.bat
+$(PYTHON_HOME)\python.exe $(SolutionDir)$(ProjectName)\Subsys\Redist.py 
+
 </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -614,8 +614,8 @@ $(SolutionDir)\$(ProjectName)\Subsys\Redist.bat
 copy $(OutDir)\Raptor.dll "%RAPTOR_ROOT%\Redist\bin\"
 copy $(SolutionDir)$(ProjectName)\Subsys\ObjectModels\Raptor.xsd %RAPTOR_ROOT%\Redist\bin\
 copy $(SolutionDir)$(ProjectName)\Subsys\ObjectModels\RaptorMessages.xsd %RAPTOR_ROOT%\Redist\bin\
-cd $(SolutionDir)\$(ProjectName)
-$(SolutionDir)\$(ProjectName)\Subsys\Redist.bat
+$(PYTHON_HOME)\python.exe $(SolutionDir)$(ProjectName)\Subsys\Redist.py 
+
 </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -694,8 +694,8 @@ $(SolutionDir)\$(ProjectName)\Subsys\Redist.bat
 copy $(OutDir)\Raptor.dll "%RAPTOR_ROOT%\Redist\bin\"
 copy $(SolutionDir)$(ProjectName)\Subsys\ObjectModels\Raptor.xsd %RAPTOR_ROOT%\Redist\bin\
 copy $(SolutionDir)$(ProjectName)\Subsys\ObjectModels\RaptorMessages.xsd %RAPTOR_ROOT%\Redist\bin\
-cd $(SolutionDir)\$(ProjectName)
-$(SolutionDir)\$(ProjectName)\Subsys\Redist.bat
+$(PYTHON_HOME)\python.exe $(SolutionDir)$(ProjectName)\Subsys\Redist.py 
+
 </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -772,8 +772,8 @@ $(SolutionDir)\$(ProjectName)\Subsys\Redist.bat
 copy $(OutDir)\Raptor.dll "%RAPTOR_ROOT%\Redist\bin\"
 copy $(SolutionDir)$(ProjectName)\Subsys\ObjectModels\Raptor.xsd %RAPTOR_ROOT%\Redist\bin\
 copy $(SolutionDir)$(ProjectName)\Subsys\ObjectModels\RaptorMessages.xsd %RAPTOR_ROOT%\Redist\bin\
-cd $(SolutionDir)\$(ProjectName)
-$(SolutionDir)\$(ProjectName)\Subsys\Redist.bat
+$(PYTHON_HOME)\python.exe $(SolutionDir)$(ProjectName)\Subsys\Redist.py 
+
 </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -843,14 +843,7 @@ $(SolutionDir)\$(ProjectName)\Subsys\Redist.bat
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </None>
-    <None Include="..\..\RaptorCore\Subsys\Redist.bat">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-    </None>
+    <None Include="..\..\RaptorCore\Subsys\Redist.py" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\RaptorCore\Engine\3DEngine.cpp" />
@@ -894,6 +887,7 @@ $(SolutionDir)\$(ProjectName)\Subsys\Redist.bat
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\GLLayer.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\GLLod.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\GLVectorFont.cpp" />
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\IRaptorPipeline.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\ITextureObject.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\Light.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\LightFlare.cpp" />
@@ -929,7 +923,6 @@ $(SolutionDir)\$(ProjectName)\Subsys\Redist.bat
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\SimpleObject.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\TextureFactory.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\TextureFactoryConfig.cpp" />
-    <ClCompile Include="..\..\RaptorCore\GLHierarchy\TextureObject.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\TextureQuad.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\TextureSet.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\TextureUnitSetup.cpp" />
@@ -1109,6 +1102,7 @@ $(SolutionDir)\$(ProjectName)\Subsys\Redist.bat
     <ClCompile Include="..\..\RaptorCore\Subsys\OpenGL\OpenGLMemory.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\OpenGL\OpenGLPipeline.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\OpenGL\OpenGLRenderingProperties.cpp" />
+    <ClCompile Include="..\..\RaptorCore\Subsys\OpenGL\OpenGLTextureObject.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\OpenGL\OpenGLViewPoint.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\OpenGL\RaptorOpenGL.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\PhongShader.cpp" />
@@ -1165,18 +1159,9 @@ $(SolutionDir)\$(ProjectName)\Subsys\Redist.bat
     <ClCompile Include="..\..\RaptorCore\Win32Specific\Win32TimeObject.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Xsd Include="Subsys\ObjectModels\Raptor.xsd">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Optimized|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Optimized|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-    </Xsd>
-  </ItemGroup>
-  <ItemGroup>
+    <ClInclude Include="Raptor.h">
+      <DependentUpon>..\..\RaptorCore\Subsys\ObjectModels\Raptor.xsd</DependentUpon>
+    </ClInclude>
     <CustomBuild Include="..\..\RaptorCore\System\Glext.h">
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">cd $(TargetDir)
 Builder.exe %(FullPath)
@@ -1274,6 +1259,7 @@ copy CodeGeneration.h "%RAPTOR_ROOT%\Redist\Include\Subsys"
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\GLLayer.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\GLLod.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\GLVectorFont.h" />
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\IRaptorPipeline.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\ITextureObject.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\Light.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\LightFlare.h" />
@@ -1303,7 +1289,6 @@ copy CodeGeneration.h "%RAPTOR_ROOT%\Redist\Include\Subsys"
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\TextureFactory.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\TextureFactoryConfig.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\TextureGenerator.h" />
-    <ClInclude Include="..\..\RaptorCore\GLHierarchy\TextureObject.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\TextureQuad.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\TextureSet.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\TextureUnitSetup.h" />
@@ -1358,6 +1343,7 @@ copy CodeGeneration.h "%RAPTOR_ROOT%\Redist\Include\Subsys"
     <ClInclude Include="..\..\RaptorCore\Subsys\ObjectModels\RaptorScript_yacc.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\Octree.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\OpenGL\OpenGLPipeline.h" />
+    <ClInclude Include="..\..\RaptorCore\Subsys\OpenGL\OpenGLTextureObject.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\OpenGL\RaptorOpenGL.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\OpenGL\OpenGLMemory.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\OpenGL\OpenGLRenderingProperties.h" />
@@ -1424,6 +1410,18 @@ copy CodeGeneration.h "%RAPTOR_ROOT%\Redist\Include\Subsys"
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\..\RaptorCore\RaptorCore.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Xsd Include="..\..\RaptorCore\Subsys\ObjectModels\Raptor.xsd">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Optimized|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Optimized|x64'">true</ExcludedFromBuild>
+    </Xsd>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -48,22 +48,13 @@
 #if !defined(AFX_CONTEXTMANAGER_H__F992F5F0_D8A5_475F_9777_B0EB30E7648E__INCLUDED_)
 	#include "Subsys/ContextManager.h"
 #endif
-#if !defined(AFX_VULKANSHADERSTAGE_H__EF5769B8_470D_467F_9FDE_553142C81698__INCLUDED_)
-	#include "GLHierarchy/VulkanShaderStage.h"
-#endif
 #if !defined(AFX_SHADEDGEOMETRY_H__E56C66F7_2DF6_497B_AA0F_19DDC11390F9__INCLUDED_)
 	#include "GLHierarchy/ShadedGeometry.h"
-#endif
-#if !defined(AFX_SHADER_H__4D405EC2_7151_465D_86B6_1CA99B906777__INCLUDED_)
-	#include "GLHierarchy/Shader.h"
 #endif
 
 #include <set>      // to sort the lights
 
 RAPTOR_NAMESPACE
-
-//!    Default pass is the full pass because single pass rendering needs all functionnalities
-C3DSceneObject::PASS_KIND   C3DSceneObject::m_currentPass = FULL_PASS;
 
 
 //////////////////////////////////////////////////////////////////////
@@ -71,7 +62,7 @@ C3DSceneObject::PASS_KIND   C3DSceneObject::m_currentPass = FULL_PASS;
 //////////////////////////////////////////////////////////////////////
 
 C3DSceneObject::C3DSceneObject(CObject3D* obj)
-	:m_pPipeline(NULL),z_span(-FLT_MAX), z_order(-FLT_MAX)
+	:m_pPipeline(NULL),z_span(-FLT_MAX), z_order(-FLT_MAX), bbox(UINT64_MAX)
 {
 	object = (RAPTOR_HANDLE)(*obj);
 
@@ -88,18 +79,8 @@ C3DSceneObject::C3DSceneObject(CObject3D* obj)
 	{
 		if (obj->getId().isSubClassOf(CShadedGeometry::CShadedGeometryClassID::GetClassId()))
 		{
-			const CVulkanDevice& rDevice = CVulkanDevice::getCurrentDevice();
-			m_pPipeline = rDevice.createPipeline();
 			CShadedGeometry *sg = (CShadedGeometry *)obj;
-			CShader* s = sg->getShader();
-			CVulkanShaderStage *ss = s->vkGetVulkanShader();
-
-			if (!m_pPipeline->initPipeline(ss,sg))
-			{
-				Raptor::GetErrorManager()->generateRaptorError(CShadedGeometry::CShadedGeometryClassID::GetClassId(),
-															   CRaptorErrorManager::RAPTOR_FATAL,
-															   "Failed to create vulkan pipeline object");
-			}
+			m_pPipeline = sg->glvkCreatePipeline();
 		}
 	}
 }
@@ -116,7 +97,8 @@ void C3DSceneObject::vkRender(	CVulkanCommandBuffer& commandBuffer,
 {
 	if (NULL != m_pPipeline)
 	{
-		VkPipeline pipe = m_pPipeline->getPipeline();
+		CVulkanPipeline *pPipeline = (CVulkanPipeline*)m_pPipeline;
+		VkPipeline pipe = pPipeline->getPipeline();
 		commandBuffer.vkCmdBindPipeline(commandBuffer.commandBuffer,
 										VK_PIPELINE_BIND_POINT_GRAPHICS,
 										pipe);
@@ -188,50 +170,11 @@ void C3DSceneObject::glRenderBBoxOcclusion(unsigned int passNumber)
 
     passVisibility[passNumber] = 0;
 
+	//	Render the filled bbox with shader and bindings done in 3DSceneAttributes.
 	CObject3D *obj = object.ptr<CObject3D>();
-    obj->glRenderBBox(true);
+	obj->glRenderBBox(CObject3D::RAW);
 
 	pExtensions->glEndQueryARB(GL_SAMPLES_PASSED_ARB);
-#endif
-}
-
-void C3DSceneObject::glComputeBBoxOcclusion(unsigned int passNumber,
-											const vector<C3DSceneObject*> &occluded)
-{
-#if defined(GL_ARB_occlusion_query)
-	//  actual values should be 'get' and then restored after bbox is rendered
-    GLboolean cMask[4];
-    glGetBooleanv(GL_COLOR_WRITEMASK ,cMask);
-    GLboolean dMask;
-    glGetBooleanv(GL_DEPTH_WRITEMASK ,&dMask);
-    GLboolean sMask;
-    glGetBooleanv(GL_STENCIL_TEST ,&sMask);
-    GLint dFunc;
-    glGetIntegerv(GL_DEPTH_FUNC,&dFunc);
-    GLboolean cFace;
-    glGetBooleanv(GL_CULL_FACE ,&cFace);
-    glColorMask(GL_FALSE,GL_FALSE,GL_FALSE,GL_FALSE);
-
-    glDepthMask(GL_FALSE);
-    glDisable(GL_STENCIL_TEST);
-    glDepthFunc(GL_LESS);
-	if (!cFace)
-		glEnable(GL_CULL_FACE);
-
-	vector<C3DSceneObject*>::const_iterator itr = occluded.begin();
-	while (itr != occluded.end())
-	{
-        C3DSceneObject* sc = *itr++;
-		sc->glRenderBBoxOcclusion(passNumber);
-	}
-
-    glDepthMask(dMask);
-    glColorMask(cMask[0],cMask[1],cMask[2],cMask[3]);
-    if (sMask)
-        glEnable(GL_STENCIL_TEST);
-    glDepthFunc(dFunc);
-	if (!cFace)
-        glDisable(GL_CULL_FACE);
 #endif
 }
 
@@ -268,7 +211,7 @@ bool C3DSceneObject::glRenderPass(	unsigned int passNumber,
 
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
         glColor4f(1.0f,1.0f,1.0f,1.0f);
-        obj->glRenderBBox(false);
+        obj->glRenderBBox(CObject3D::WIREFRAME);
 #endif
     }
 	else

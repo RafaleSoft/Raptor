@@ -296,6 +296,34 @@ void C3DEngine::solve(const CGenericVector<float> &b,const CGenericMatrix<float>
 // Engine visibility processing
 //////////////////////////////////////////////////////////////////////
 
+void C3DEngine::pushProjectionMatrix(void) const
+{
+	m_pAttributes->projection_stack.push_back(m_pAttributes->projection);
+}
+
+void C3DEngine::popProjectionMatrix(void) const
+{
+	if (m_pAttributes->projection_stack.size() > 0)
+	{
+		m_pAttributes->projection = m_pAttributes->projection_stack.back();
+		m_pAttributes->projection_stack.pop_back();
+	}
+}
+
+void C3DEngine::pushModelviewMatrix(void) const
+{
+	m_pAttributes->modelview_stack.push_back(m_pAttributes->modelview);
+}
+
+void C3DEngine::popModelviewMatrix(void) const
+{
+	if (m_pAttributes->modelview_stack.size() > 0)
+	{
+		m_pAttributes->modelview = m_pAttributes->modelview_stack.back();
+		m_pAttributes->modelview_stack.pop_back();
+	}
+}
+
 void C3DEngine::setClip(int xmin, int ymin, int xmax, int ymax)
 {
 	m_pAttributes->viewport[0] = xmin;

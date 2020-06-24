@@ -66,17 +66,17 @@ public:
         pPreviousDisplay = pCurrentDisplay;
         pCurrentDisplay = tmpDisplay;
 
-        CTextureObject  *tmpColorAccum = m_pPreviousColorAccum;
+        ITextureObject  *tmpColorAccum = m_pPreviousColorAccum;
         m_pPreviousColorAccum = m_pCurrentColorAccum;
         m_pCurrentColorAccum = tmpColorAccum;
     }
 
     //! Flip-flop color output
     CRaptorDisplay *pCurrentDisplay;
-    CTextureObject  *m_pCurrentColorAccum;
+    ITextureObject  *m_pCurrentColorAccum;
 
     CRaptorDisplay *pPreviousDisplay;
-    CTextureObject  *m_pPreviousColorAccum;
+    ITextureObject  *m_pPreviousColorAccum;
 };
 
 
@@ -200,7 +200,6 @@ bool CMBFilter::glInitFilter(void)
 	if ((colorExternalSource != NULL) && (m_fModel == RENDER_TEXTURE))
 	{
 		colorInput = filterFactory.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
-															CTextureObject::CGL_OPAQUE,
 															ITextureObject::CGL_BILINEAR,
 															colorExternalSource);
 	}
@@ -222,9 +221,8 @@ bool CMBFilter::glInitFilter(void)
 	{
 		state.renderer = CRaptorDisplayConfig::RENDER_BUFFER;
 
-		CTextureObject *T = NULL;
+		ITextureObject *T = NULL;
 		T = filterFactory.glCreateTexture(	ITextureObject::CGL_COLOR24_ALPHA,
-											CTextureObject::CGL_OPAQUE,
 											ITextureObject::CGL_BILINEAR);
 		filterFactory.glResizeTexture(T,state.width,state.height);
 		T->glvkUpdateClamping(ITextureObject::CGL_EDGECLAMP);
@@ -233,7 +231,6 @@ bool CMBFilter::glInitFilter(void)
 
 		m_pRenderTextures2 = new CTextureSet();
 		T = filterFactory.glCreateTexture(	ITextureObject::CGL_COLOR24_ALPHA,
-											CTextureObject::CGL_OPAQUE,
 											ITextureObject::CGL_BILINEAR);
 		filterFactory.glResizeTexture(T,state.width,state.height);	
 		T->glvkUpdateClamping(ITextureObject::CGL_EDGECLAMP);
@@ -269,11 +266,9 @@ bool CMBFilter::glInitFilter(void)
 	if (m_fModel == RENDER_TEXTURE)
 	{
 		accumulator->m_pCurrentColorAccum = filterFactory.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
-																					CTextureObject::CGL_OPAQUE,
 																					ITextureObject::CGL_BILINEAR,
 																					accumulator->pCurrentDisplay);
 		accumulator->m_pPreviousColorAccum = filterFactory.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
-																					CTextureObject::CGL_OPAQUE,
 																					ITextureObject::CGL_BILINEAR,
 																					accumulator->pPreviousDisplay);
 	}

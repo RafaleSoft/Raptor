@@ -7,9 +7,6 @@
 #ifndef __CGLTYPES_HPP__
     #include "System/CGLTypes.h"
 #endif
-#ifndef __RAPTOR_GLEXT_H__
-	#include "System/Glext.h"
-#endif
 #if !defined(AFX_GEOMETRYPRIMITIVE_H__890D2E18_2DAC_4094_AE20_BDF7D6FA5DBF__INCLUDED_)
 	#include "GeometryPrimitive.h"
 #endif
@@ -28,12 +25,12 @@
 #if !defined(AFX_RAPTORINSTANCE_H__90219068_202B_46C2_BFF0_73C24D048903__INCLUDED_)
 	#include "Subsys/RaptorInstance.h"
 #endif
+#if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
+	#include "System/RaptorGLExtensions.h"
+#endif
 
 RAPTOR_NAMESPACE
 
-
-#define GL_COORD_VERTEX_STRIDE sizeof(GL_COORD_VERTEX)/sizeof(float)
-#define GL_TEX_VERTEX_STRIDE sizeof(GL_TEX_VERTEX)/sizeof(float)
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -72,7 +69,13 @@ void CGeometryPrimitive::glRender(void)
 			glDrawElements( GL_TRIANGLES, m_size, GL_UNSIGNED_SHORT,m_faces);
 			break;
 		case QUAD:
+#if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
 			glDrawElements( GL_QUADS, m_size, GL_UNSIGNED_SHORT,m_faces);
+#else
+			Raptor::GetErrorManager()->generateRaptorError( CGeometry::CGeometryClassID::GetClassId(),
+															CRaptorErrorManager::RAPTOR_ERROR,
+															"GL_QUADS Rendering is deprecated and not available in core profile");
+#endif
 			break;
 		case LINE_STRIP:
 			glDrawElements( GL_LINE_STRIP, m_size, GL_UNSIGNED_SHORT,m_faces);
@@ -112,7 +115,9 @@ void CGeometryPrimitive::glRender(void)
 			float	*vp = NULL;
             glGetPointerv(GL_VERTEX_ARRAY_POINTER,(void**)&vp);
 			float	*tp = NULL;
-            glGetPointerv(GL_TEXTURE_COORD_ARRAY_POINTER,(void**)&tp);
+            //glGetPointerv(GL_TEXTURE_COORD_ARRAY_POINTER,(void**)&tp);
+			const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+			pExtensions->glGetVertexAttribPointervARB(CProgramParameters::TEXCOORD0, GL_VERTEX_ATTRIB_ARRAY_POINTER_ARB, (void**)&tp);
 
 			if (pAllocator->isMemoryLocked())
 			{
@@ -186,7 +191,7 @@ void CGeometryPrimitive::setIndexes(unsigned short size,unsigned short* faces)
 			return;
 
 		if (CGeometryAllocator::GetInstance()->isMemoryRelocated())
-			CGeometryAllocator::GetInstance()->glvkCopyPointer(m_faces,faces,size);
+			CGeometryAllocator::GetInstance()->glvkSetPointerData(m_faces,faces,size);
 		else
 			memcpy(m_faces,faces,size*sizeof(unsigned short));
 	}
@@ -207,7 +212,7 @@ void CGeometryPrimitive::setIndexes(const vector<unsigned short> &faces)
 		if (m_faces != NULL)
 			CGeometryAllocator::GetInstance()->releaseIndexes(m_faces);
 
-		m_size = faces.size();
+		m_size = (uint32_t)faces.size();
 		m_faces = CGeometryAllocator::GetInstance()->allocateIndexes(m_size);
 		if (m_faces == NULL)
 			return;
@@ -215,7 +220,7 @@ void CGeometryPrimitive::setIndexes(const vector<unsigned short> &faces)
         if (CGeometryAllocator::GetInstance()->isMemoryRelocated())
             m_faces = CGeometryAllocator::GetInstance()->glvkMapPointer(m_faces);
 
-		for (unsigned short i=0;i<m_size;i++)
+		for (uint32_t i=0; i<m_size; i++)
 			m_faces[i] = faces[i];
 
         if (CGeometryAllocator::GetInstance()->isMemoryRelocated())
@@ -242,10 +247,10 @@ void CGeometryPrimitive::setIndexes(const vector<unsigned short> &polygonSizes,c
 		if (m_polygons != NULL)
 			delete [] m_polygons;
 
-		m_polygonsSize = polygonSizes.size();
+		m_polygonsSize = (uint32_t)polygonSizes.size();
 		m_polygons = new unsigned short[m_polygonsSize];
 
-		m_size = polygonIndexes.size();
+		m_size = (uint32_t)polygonIndexes.size();
 		m_faces = CGeometryAllocator::GetInstance()->allocateIndexes(m_size);
 		if (m_faces == NULL)
 			return;
@@ -253,8 +258,8 @@ void CGeometryPrimitive::setIndexes(const vector<unsigned short> &polygonSizes,c
 		if (CGeometryAllocator::GetInstance()->isMemoryRelocated())
             m_faces = CGeometryAllocator::GetInstance()->glvkMapPointer(m_faces);
 
-		unsigned short i=0;
-		for (i=0;i<m_size;i++)
+		uint32_t i=0;
+		for (i=0; i<m_size; i++)
 			m_faces[i] = polygonIndexes[i];
 
 		for (i=0;i<m_polygonsSize;i++)

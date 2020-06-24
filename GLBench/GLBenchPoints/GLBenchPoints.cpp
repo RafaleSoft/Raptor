@@ -1,5 +1,20 @@
-// GLBenchPoints.cpp : Defines the initialization routines for the DLL.
-//
+/***************************************************************************/
+/*                                                                         */
+/*  StdAfx.h                                                               */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
 
 #include "StdAfx.h"
 
@@ -8,7 +23,7 @@
 #include "System/Raptor.h"
 #include "MFCExtension/CWnd/GLWnd.h"
 #include "GLHierarchy/TextureFactory.h"
-#include "GLHierarchy/TextureObject.h"
+#include "GLHierarchy/ITextureObject.h"
 #include "GLHierarchy/VertexProgram.h"
 #include "GLHierarchy/Geometry.h"
 
@@ -42,7 +57,7 @@ static char RESULT_DESCRIPTION[NB_RESULTS][256] =
 
 
 
-CTextureObject *sprite = NULL;
+ITextureObject *sprite = NULL;
 //
 /////////////////////////////////////////////////////////////////////////////
 
@@ -210,7 +225,7 @@ void Display::GLInitContext()
 
 	sprite = txt.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA);
     sprite->setSize(32,32);
-	sprite->glSetTransparency(192);
+	txt.glSetTransparency(sprite, 192);
 
 	CImage spr;
 	spr.allocatePixels(32,32);

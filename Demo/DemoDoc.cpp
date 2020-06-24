@@ -29,7 +29,7 @@
 #include "GLHierarchy/ShadedGeometry.h"
 #include "GLHierarchy/Shader.h"
 #include "GLHierarchy/SimpleObject.h"
-#include "GLHierarchy/TextureObject.h"
+#include "GLHierarchy/ITextureObject.h"
 #include "GLHierarchy/TextureFactory.h"
 #include "GLHierarchy/TextureFactoryConfig.h"
 #include "GLHierarchy/TextureUnitSetup.h"
@@ -163,6 +163,7 @@ void HeatSpots::glRenderFilterOutput()
     glPushAttrib(GL_ENABLE_BIT);
     glDisable(GL_LIGHTING);
 	glEnable(GL_TEXTURE_2D);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 	
     for (unsigned int i=0;i<m_spots.size();i++)
     {
@@ -213,7 +214,6 @@ bool HeatSpots::glInitFilter()
 		(m_fModel == CRaptorDisplayFilter::RENDER_TEXTURE))
 	{
 		colorInput = filterFactory.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
-															CTextureObject::CGL_OPAQUE,
 															ITextureObject::CGL_BILINEAR,
 															colorExternalSource);
 	}
@@ -314,8 +314,9 @@ void CDemoDoc::GLInitContext(void)
     pConsole->activateConsole(true);
     pConsole->runBatch("Demo.cmd");
     pConsole->activateConsole(false);
-	 
-    m_pScene->glManageEnvironment(CEnvironment::SHADOW_VOLUME,0,0);
+	
+	CEnvironment *shadow_volume = CEnvironment::glCreateEnvironment(*m_pScene, CEnvironment::SHADOW_VOLUME, 0, 0);
+    m_pScene->glManageEnvironment(shadow_volume);
     //m_pScene->glManageEnvironment(CEnvironment::SHADOW_MAP,1024,1024);
     m_pScene->useSceneGlobalAmbient(CColor::RGBA(0.1f,0.1f,0.1f,1.0f));
 	m_pScene->useZSort();

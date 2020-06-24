@@ -1,19 +1,9 @@
 // Microsoft Visual C++ generated resource script.
 //
+#include <windows.h>
 #include "resource.h"
-
-#define APSTUDIO_READONLY_SYMBOLS
 /////////////////////////////////////////////////////////////////////////////
-//
-// Generated from the TEXTINCLUDE 2 resource.
-//
-#include "winres.h"
-
-/////////////////////////////////////////////////////////////////////////////
-#undef APSTUDIO_READONLY_SYMBOLS
-
-/////////////////////////////////////////////////////////////////////////////
-// French (France) resources
+// Français (France) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_FRA)
 LANGUAGE LANG_FRENCH, SUBLANG_FRENCH
@@ -32,7 +22,6 @@ END
 
 2 TEXTINCLUDE 
 BEGIN
-    "#include ""winres.h""\r\n"
     "\0"
 END
 
@@ -44,14 +33,12 @@ END
 
 #endif    // APSTUDIO_INVOKED
 
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Icon
-//
-
-// Icon with lowest ID value placed first to ensure application icon
-// remains consistent on all systems.
+/////////////////////////////////////////////////////////////////////////////            
+//            
+// Icon            
+//            
+// Icon with lowest ID value placed first to ensure application icon            
+// remains consistent on all systems.            
 IDI_ICON1               ICON                    "icon1.ico"
 
 /////////////////////////////////////////////////////////////////////////////
@@ -60,8 +47,8 @@ IDI_ICON1               ICON                    "icon1.ico"
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 2,17,1,0
- PRODUCTVERSION 2,17,1,0
+ FILEVERSION 2, 17, 2, 0
+ PRODUCTVERSION 2, 17, 2, 0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -72,28 +59,28 @@ VS_VERSION_INFO VERSIONINFO
  FILETYPE 0x1L
  FILESUBTYPE 0x0L
 BEGIN
-    BLOCK "StringFileInfo"
-    BEGIN
-        BLOCK "040c04b0"
-        BEGIN
-            VALUE "Comments", "A small language parser and analyser generator"
-            VALUE "CompanyName", "Rafale Soft Inc. ©"
-            VALUE "FileDescription", "Raptor OpenGL & Vulkan SDK Language Parser generator"
-            VALUE "FileVersion", "2.17.1.0"
-            VALUE "InternalName", "MicroLex.exe"
-            VALUE "LegalCopyright", "Copyright © 1998-2019 Fabrice Ferrand <fabfer@wanadoo.fr>"
-            VALUE "OriginalFilename", "MicroLex.exe"
-            VALUE "ProductName", "Raptor"
-            VALUE "ProductVersion", "2.17.1.0"
-        END
-    END
-    BLOCK "VarFileInfo"
-    BEGIN
-        VALUE "Translation", 0x40c, 1200
-    END
+	BLOCK "StringFileInfo"
+	BEGIN
+		BLOCK "040c04b0"
+		BEGIN
+			VALUE "Comments", "A small language parser and analyser generator"
+			VALUE "CompanyName", "Rafale Soft Inc. ©"
+			VALUE "FileDescription", "Raptor OpenGL & Vulkan SDK Language Parser generator"
+			VALUE "FileVersion", "2.17.2.0"
+			VALUE "InternalName", "MicroLex.exe"
+			VALUE "LegalCopyright", "Copyright © 1998-2019 Fabrice Ferrand <fabfer@wanadoo.fr>"
+			VALUE "OriginalFilename", "MicroLex.exe"
+			VALUE "ProductName", "Raptor"
+			VALUE "ProductVersion", "2.17.2.0"
+		END
+	END
+	BLOCK "VarFileInfo"
+	BEGIN
+		VALUE "Translation", 0x40c, 1200
+	END
 END
 
-#endif    // French (France) resources
+#endif    // Français (France) resources
 /////////////////////////////////////////////////////////////////////////////
 
 

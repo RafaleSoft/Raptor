@@ -30,7 +30,7 @@ public:
     //! This method must be implemented in subclasses to produce 
     //! an array of texels and load the currently bound texture object.
     //! To get texture parameters, the currently bound texture object is passed in
-    virtual void glGenerate(CTextureObject* );
+    virtual void glGenerate(ITextureObject* I, uint32_t x, uint32_t y, uint32_t w, uint32_t h);
 
     //! This method returns the width of the generator
     virtual unsigned int getGenerateWidth(void) const;

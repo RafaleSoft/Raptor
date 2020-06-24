@@ -7,7 +7,7 @@
 #include "GLHierarchy/GeometryEditor.h"
 #include "GLHierarchy/PerlinNoise.h"
 #include "GLHierarchy/TextureFactory.h"
-#include "GLHierarchy/TextureObject.h"
+#include "GLHierarchy/ITextureObject.h"
 #include "GLHierarchy/TextureUnitSetup.h"
 #include "GLHierarchy/TextureFactoryConfig.h"
 
@@ -40,22 +40,23 @@ CReflection::CReflection(float width,float height,int hcels,int vcels)
 
 	CBumpmapLoader loader(f.getConfig().getBumpAmplitude());
 	CPerlinNoise pNoise(&loader);
-    CTextureObject *T = f.glCreateTexture(	ITextureObject::CGL_COLOR24_ALPHA,
-											CTextureObject::CGL_MULTIPLY,
+    ITextureObject *T = f.glCreateTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 											ITextureObject::CGL_TRILINEAR);
 	T->glvkUpdateClamping(ITextureObject::CGL_REPEAT);
 
 	CTextureUnitSetup *tus = pShader->glGetTextureUnitsSetup();
 
     T->setSize(512,512);
-    pNoise.glGenerate(T);
-    tus->setNormalMap(T);
+    pNoise.glGenerate(T,0,0,512,512);
+    tus->setNormalMap(T, CTextureUnitSetup::CGL_OPAQUE);
 
-    T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_MULTIPLY,ITextureObject::CGL_BILINEAR);
-    T->glSetTransparency(230);
+
+    T = f.glCreateTexture(	ITextureObject::CGL_COLOR24_ALPHA,
+							ITextureObject::CGL_BILINEAR);
+    f.glSetTransparency(T, 230);
 
     f.glLoadTexture(T,"Datas\\marble5.jpg");
-    tus->setDiffuseMap(T);
+    tus->setDiffuseMap(T, CTextureUnitSetup::CGL_MULTIPLY);
 
 	setRenderingModel(CGeometry::CGL_FRONT_GEOMETRY);
 	addModel(CGeometry::CGL_NORMALS);

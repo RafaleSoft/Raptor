@@ -64,9 +64,28 @@ void CSSE_GLLayer::drawAPoint(unsigned int x,unsigned int y,unsigned long color)
 	newcolor = _mm_add_pi16(newcolor,oldcolor);
 	buffer[y*m_layerWidth+x] = _mm_cvtsi64_si32(_mm_packs_pu16(newcolor,newcolor));
 	 _mm_empty();
+#else
+	unsigned __int32 *buffer = (unsigned __int32*)getBuffer();
 
-	 m_bRedraw = true;
+	// expand colors
+	__m128i oldcolor = _mm_unpacklo_epi8(_mm_cvtsi32_si128(buffer[y*m_layerWidth + x]), _mm_setzero_si128());
+	__m128i newcolor = _mm_unpacklo_epi8(_mm_cvtsi32_si128(color), _mm_setzero_si128());
+
+	// alpha * color
+	unsigned int a = ((color >> 16) & 0xff00) / 255;
+	__m128i alpha = _mm_shufflelo_epi16(_mm_cvtsi32_si128(a), 0x40);
+	newcolor = _mm_srli_epi16(_mm_mullo_epi16(newcolor, alpha), 8);
+
+	// (1 - alpha) * buffer
+	alpha = _mm_shufflelo_epi16(_mm_cvtsi32_si128((256 - a) + 0x1000000), 0x40);
+	oldcolor = _mm_srli_epi16(_mm_mullo_epi16(oldcolor, alpha), 8);
+
+	// finalcolor = alpha * newcolor + (1-alpha) * oldcolor
+	newcolor = _mm_add_epi16(newcolor, oldcolor);
+	buffer[y*m_layerWidth + x] = _mm_cvtsi128_si32(_mm_packus_epi16(newcolor, newcolor));
 #endif
+
+	m_bRedraw = true;
 }
 
 
@@ -221,7 +240,6 @@ positif:
 //	Bresenham algorithm for line drawing
 void CSSE_GLLayer::drawALine(int x1,int y1,int x2,int y2,unsigned long color)
 {
-#if !defined(_WIN64)
 	m_bRedraw = true;
 	
 	int xinc1 = 0;
@@ -260,7 +278,7 @@ void CSSE_GLLayer::drawALine(int x1,int y1,int x2,int y2,unsigned long color)
 	int screeninc2 = yinc2 * m_layerWidth + xinc2;
 	unsigned int offset = y1 * m_layerWidth + x1;
 	unsigned __int32 *buffer = (unsigned __int32*)getBuffer();
-
+#if !defined(_WIN64)
 	__m64 newcolor = _mm_unpacklo_pi8(_mm_cvtsi32_si64(color),_mm_setzero_si64());
 	unsigned int a = ((color>>16)&0xff00)/255;
 	__m64 alpha = _mm_shuffle_pi16(_mm_cvtsi32_si64(a),0x40);
@@ -291,13 +309,43 @@ void CSSE_GLLayer::drawALine(int x1,int y1,int x2,int y2,unsigned long color)
 	}
 
 	_mm_empty();
+#else
+	__m128i newcolor = _mm_unpacklo_epi8(_mm_cvtsi32_si128(color), _mm_setzero_si128());
+	unsigned int a = ((color >> 16) & 0xff00) / 255;
+	__m128i alpha = _mm_shufflelo_epi16(_mm_cvtsi32_si128(a), 0x40);
+	newcolor = _mm_srli_epi16(_mm_mullo_epi16(newcolor, alpha), 8);
+	__m128i one_minus_alpha = _mm_shufflelo_epi16(_mm_cvtsi32_si128((256 - a) + 0x1000000), 0x40);
+
+	while (numpixels > 0)
+	{
+		__m128i oldcolor = _mm_cvtsi32_si128(buffer[offset]);
+		oldcolor = _mm_unpacklo_epi8(oldcolor, _mm_setzero_si128());
+
+		// finalcolor = alpha * newcolor + (1-alpha) * oldcolor
+		oldcolor = _mm_mullo_epi16(oldcolor, one_minus_alpha);
+		oldcolor = _mm_add_epi16(newcolor, _mm_srli_epi16(oldcolor, 8));
+		buffer[offset] = _mm_cvtsi128_si32(_mm_packus_epi16(oldcolor, oldcolor));
+
+		if (d > 0)
+		{
+			d += dinc2;
+			offset += screeninc2;
+		}
+		else
+		{
+			d += dinc1;
+			offset += screeninc1;
+		}
+		numpixels--;
+	}
 #endif
 }
 
 void CSSE_GLLayer::drawARectangle(unsigned int x0,unsigned int y0,unsigned int x1,unsigned int y1,unsigned long color)
 {
-#if !defined(_WIN64)
+
 	unsigned __int32 *buffer = (unsigned __int32*)getBuffer();
+#if !defined(_WIN64)
 	__m64 newcolor = _mm_unpacklo_pi8(_mm_cvtsi32_si64(color),_mm_setzero_si64());
 	unsigned int a = ((color>>16)&0xff00)/255;
 	__m64 alpha = _mm_shuffle_pi16(_mm_cvtsi32_si64(a),0x40);
@@ -323,9 +371,35 @@ void CSSE_GLLayer::drawARectangle(unsigned int x0,unsigned int y0,unsigned int x
 		offset += m_layerWidth;
 	}
 	 _mm_empty();
+#else
+	__m128i newcolor = _mm_unpacklo_epi8(_mm_cvtsi32_si128(color), _mm_setzero_si128());
+	unsigned int a = ((color >> 16) & 0xff00) / 255;
+	__m128i alpha = _mm_shufflelo_epi16(_mm_cvtsi32_si128(a), 0x40);
+	newcolor = _mm_srli_epi16(_mm_mullo_epi16(newcolor, alpha), 8);
+	__m128i one_minus_alpha = _mm_shufflelo_epi16(_mm_cvtsi32_si128((256 - a) + 0x1000000), 0x40);
+
+	unsigned int offset = y0 * m_layerWidth;
+	for (unsigned int j = y0; j < y1; j++)
+	{
+		//	further optimisation could be to process the first
+		//	odd column and then process pixels by groups of 2
+		for (unsigned int i = x0; i < x1; i++)
+		{
+			// expand colors
+			__m128i oldcolor = _mm_cvtsi32_si128(buffer[offset + i]);
+			oldcolor = _mm_unpacklo_epi8(oldcolor, _mm_setzero_si128());
+
+			// finalcolor = alpha * newcolor + (1-alpha) * oldcolor
+			oldcolor = _mm_mullo_epi16(oldcolor, one_minus_alpha);
+			oldcolor = _mm_add_epi16(newcolor, _mm_srli_epi16(oldcolor, 8));
+			buffer[offset + i] = _mm_cvtsi128_si32(_mm_packus_epi16(oldcolor, oldcolor));
+		}
+		offset += m_layerWidth;
+	}
+#endif
 
 	 m_bRedraw = true;
-#endif
+
 
 // This code can be faster if loop is reduced but not portable
 #if 0
@@ -469,7 +543,6 @@ void CSSE_GLLayer::drawRectangle(unsigned int x0,unsigned int y0,unsigned int x1
 
 void CSSE_GLLayer::drawAPixels(unsigned int x0,unsigned int y0,unsigned int width,unsigned int height,const unsigned char *pixels)
 {
-#if !defined(_WIN64)
 	unsigned int offset = x0 + y0 * m_layerWidth;
 	unsigned int o = 0;
 
@@ -480,6 +553,7 @@ void CSSE_GLLayer::drawAPixels(unsigned int x0,unsigned int y0,unsigned int widt
 		for (unsigned int i=0;i<width;i++)
 		{
 			unsigned int color = colors[o++];
+#if !defined(_WIN64)
 			__m64 oldcolor = _mm_cvtsi32_si64(buffer[offset]);
 			unsigned int a = ((color>>16)&0xff00)/255;
 			__m64 newcolor = _mm_cvtsi32_si64(color);
@@ -498,20 +572,41 @@ void CSSE_GLLayer::drawAPixels(unsigned int x0,unsigned int y0,unsigned int widt
 
 			// finalcolor = alpha * newcolor + (1-alpha) * oldcolor
 			buffer[offset++] = _mm_cvtsi64_si32(_mm_packs_pu16(newcolor,newcolor));
+#else
+			__m128i oldcolor = _mm_cvtsi32_si128(buffer[offset]);
+			unsigned int a = ((color >> 16) & 0xff00) / 255;
+			__m128i newcolor = _mm_cvtsi32_si128(color);
+			// erase alpha for new color (pixels)
+			__m128i alpha = _mm_shufflelo_epi16(_mm_cvtsi32_si128(a), 0x40);
+
+			// expand colors
+			oldcolor = _mm_unpacklo_epi8(oldcolor, _mm_setzero_si128());
+			newcolor = _mm_unpacklo_epi8(newcolor, _mm_setzero_si128());
+			newcolor = _mm_srli_epi16(_mm_mullo_epi16(newcolor, alpha), 8);
+
+			// keep alpha for new color (put a '1' for mullo_pi16)
+			alpha = _mm_shufflelo_epi16(_mm_cvtsi32_si128((256 - a) + 0x1000000), 0x40);
+			oldcolor = _mm_srli_epi16(_mm_mullo_epi16(oldcolor, alpha), 8);
+			newcolor = _mm_add_epi16(newcolor, oldcolor);
+
+			// finalcolor = alpha * newcolor + (1-alpha) * oldcolor
+			buffer[offset++] = _mm_cvtsi128_si32(_mm_packus_epi16(newcolor, newcolor));
+#endif
 		}
 		offset += (m_layerWidth-width);
 	}
 
+#if !defined(_WIN64)
 	_mm_empty();
-    m_bRedraw = true;
 #endif
+
+    m_bRedraw = true;
 }
 
 
 void CSSE_GLLayer::drawAText(int x0,int y0,const std::string& text,
 							 CGL2DFont *font,unsigned long color)
 {
-#if !defined(_WIN64)
 	const TTBitmapFont *fnt = font->getBitmapFont();
 	FTGlyphBitmap* gbitmap;
 	
@@ -520,11 +615,19 @@ void CSSE_GLLayer::drawAText(int x0,int y0,const std::string& text,
 	unsigned int height;
 
 	unsigned __int32 *buffer = (unsigned __int32*)getBuffer();
+#if !defined(_WIN64)
 	__m64 newcolor = _mm_unpacklo_pi8(_mm_cvtsi32_si64(color),_mm_setzero_si64());
 	unsigned int a = ((color>>16)&0xff00)/255;
 	__m64 alpha = _mm_shuffle_pi16(_mm_cvtsi32_si64(a),0x40);
 	newcolor = _mm_srli_pi16(_mm_mullo_pi16(newcolor, alpha),8);
 	__m64 one_minus_alpha = _mm_shuffle_pi16(_mm_cvtsi32_si64((256 - a) + 0x1000000),0x40);
+#else
+	__m128i newcolor = _mm_unpacklo_epi8(_mm_cvtsi32_si128(color), _mm_setzero_si128());
+	unsigned int a = ((color >> 16) & 0xff00) / 255;
+	__m128i alpha = _mm_shufflelo_epi16(_mm_cvtsi32_si128(a), 0x40);
+	newcolor = _mm_srli_epi16(_mm_mullo_epi16(newcolor, alpha), 8);
+	__m128i one_minus_alpha = _mm_shufflelo_epi16(_mm_cvtsi32_si128((256 - a) + 0x1000000), 0x40);
+#endif
 
 	for (unsigned int i=0;i<text.size();i++)
 	{
@@ -560,6 +663,7 @@ void CSSE_GLLayer::drawAText(int x0,int y0,const std::string& text,
 				}
 				if (0 != (bmp[bpos] & bitmask))
 				{
+#if !defined(_WIN64)
 					// expand colors
 					__m64 oldcolor = _mm_cvtsi32_si64(buffer[offset]);
 					oldcolor = _mm_unpacklo_pi8(oldcolor,_mm_setzero_si64());
@@ -568,6 +672,16 @@ void CSSE_GLLayer::drawAText(int x0,int y0,const std::string& text,
 					oldcolor = _mm_mullo_pi16(oldcolor, one_minus_alpha);
 					oldcolor = _mm_add_pi16(newcolor,_mm_srli_pi16(oldcolor,8));
 					buffer[offset] = _mm_cvtsi64_si32(_mm_packs_pu16(oldcolor,oldcolor));
+#else
+					// expand colors
+					__m128i oldcolor = _mm_cvtsi32_si128(buffer[offset]);
+					oldcolor = _mm_unpacklo_epi8(oldcolor, _mm_setzero_si128());
+
+					// finalcolor = alpha * newcolor + (1-alpha) * oldcolor
+					oldcolor = _mm_mullo_epi16(oldcolor, one_minus_alpha);
+					oldcolor = _mm_add_epi16(newcolor, _mm_srli_epi16(oldcolor, 8));
+					buffer[offset] = _mm_cvtsi128_si32(_mm_packus_epi16(oldcolor, oldcolor));
+#endif
 				}
 				offset++;
 				bitmask /= 2;
@@ -579,10 +693,12 @@ void CSSE_GLLayer::drawAText(int x0,int y0,const std::string& text,
 		px += gbitmap->getAdvance();
 	}
 
+#if !defined(_WIN64)
 	_mm_empty();
-    m_bRedraw = true;
 #endif
+ 
+	m_bRedraw = true;
 }
 
-#endif
+#endif	// RAPTOR_SSE2_CODE_GENERATION
 

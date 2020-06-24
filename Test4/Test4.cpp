@@ -204,7 +204,7 @@ int WINAPI WinMain(  HINSTANCE hinstance,
     CRaptorConfig config;
     config.m_bRelocation = true;
     config.m_uiPolygons = 10000;
-    config.m_uiVertices = 40000;
+    config.m_uiVertices = 64000;
     config.m_uiTexels = 3000000;
 	config.m_logFile = "Test4_Raptor.log";
     Raptor::glInitRaptor(config);

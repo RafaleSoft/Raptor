@@ -80,6 +80,11 @@ void CVulkanTextureObject::glvkRender(void)
 
 }
 
+bool CVulkanTextureObject::setGenerationSize(uint32_t posx, uint32_t posy, uint32_t width, uint32_t height)
+{
+	return false;
+}
+
 void CVulkanTextureObject::vkLoadTexture(VkComponentMapping swizzle,
 										 uint32_t pixels_type,
 										 unsigned char* pixels)
@@ -151,7 +156,7 @@ void CVulkanTextureObject::vkLoadTexture(VkComponentMapping swizzle,
 		device.vkUploadDataToDevice(true);
 
 		//!	Upload texels to device image
-		tAllocator->glvkCopyPointer(texpointer, pixels, size);
+		tAllocator->glvkSetPointerData(texpointer, pixels, size);
 
 		VkImageViewCreateInfo image_view_create_info = {VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
 														NULL, 0,

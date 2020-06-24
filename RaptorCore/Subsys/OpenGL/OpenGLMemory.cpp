@@ -59,7 +59,7 @@ COpenGLMemory::~COpenGLMemory(void)
 
 bool COpenGLMemory::relocationAvailable(void) const
 {
-#if (defined(GL_ARB_vertex_buffer_object) || defined(GL_NV_vertex_array_range))
+#if (defined(GL_ARB_vertex_buffer_object) || defined(GL_ARB_pixel_buffer_object) || defined(GL_NV_vertex_array_range) || defined(GL_ARB_uniform_buffer_object))
 	if (Raptor::glIsExtensionSupported(GL_ARB_VERTEX_BUFFER_OBJECT_EXTENSION_NAME) ||
 		Raptor::glIsExtensionSupported(GL_NV_VERTEX_ARRAY_RANGE_EXTENSION_NAME) ||
 		Raptor::glIsExtensionSupported(GL_ARB_PIXEL_BUFFER_OBJECT_EXTENSION_NAME) ||
@@ -132,18 +132,25 @@ COpenGLMemory::createBufferObject(	IDeviceMemoryManager::IBufferObject::BUFFER_K
 
 		if (isBufferObjectValid(buffer))
 		{
+			GLint relocate_offset = RELOCATE_OFFSET;
+#if defined(GL_ARB_uniform_buffer_object)
+			if (IBufferObject::UNIFORM_BUFFER == kind)
+			{
+				glGetIntegerv(GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT_ARB, &relocate_offset);
+			}
+#endif
         	//	Store the buffer in the high part
 			//	and store the memory type in the low part.
 			//	This format is odd enough to be sure it cannot
 			//	be an address.
 			CBufferObject* pbuffer = new CBufferObject;
 			pbuffer->m_buffer = ((buffer & 0xffff) << 16) + 1;
-			pbuffer->m_size = size + RELOCATE_OFFSET;
+			pbuffer->m_size = size + relocate_offset;
             pbuffer->m_storage = kind;
-			pbuffer->m_granularity = RELOCATE_OFFSET;
+			pbuffer->m_granularity = relocate_offset;
 
 			//	Allocate uninitialised data space
-			pExtensions->glBufferDataARB(glStorage, size + RELOCATE_OFFSET, NULL, glMode);
+			pExtensions->glBufferDataARB(glStorage, size + relocate_offset, NULL, glMode);
 
             //	0 should by to the "GL default" array model.
 		    pExtensions->glBindBufferARB(glStorage,0);
@@ -203,23 +210,11 @@ bool COpenGLMemory::setBufferObjectData(IDeviceMemoryManager::IBufferObject &bo,
         GLenum glStorage = BufferKindToGL(storage);
 
         if (currentBuffers[storage] != buffer)
-        {
 		    pExtensions->glBindBufferARB(glStorage,buffer);
-        }
 		
-		//	This call may be faster in the future.
 		pExtensions->glBufferSubDataARB(glStorage, dstOffset, sz, src);
-		/*
-		char *data = (char*)pExtensions->glMapBufferARB(glStorage,GL_WRITE_ONLY_ARB);
         
-        if (data != NULL)
-        {
-		    memcpy(data + dstOffset,src,sz);
-        }
-		
-		pExtensions->glUnmapBufferARB(glStorage);
-		*/
-        //	0 should by to the "GL default" array model.
+		//	0 should by to the "GL default" array model.
         if (currentBuffers[storage] != buffer)
         {
 	        pExtensions->glBindBufferARB(glStorage,0);
@@ -234,6 +229,79 @@ bool COpenGLMemory::setBufferObjectData(IDeviceMemoryManager::IBufferObject &bo,
 	return true;
 }
 
+
+bool COpenGLMemory::copyBufferObjectData(	IDeviceMemoryManager::IBufferObject &dstbo,
+											uint64_t dstOffset,
+											IDeviceMemoryManager::IBufferObject &srcbo,
+											uint64_t srcOffset,
+											uint64_t sz)
+{
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+	if (sz == 0)
+		return false;
+	if (srcbo.getSize() < (srcOffset + sz))
+		return false;
+	if (dstbo.getSize() < (dstOffset + sz))
+		return false;
+#endif
+
+	//! This method could be called very often per  frame, lock/unlock 
+	//! could be very expensive, so I will try to lock at a higher level
+	//! CThreadLock lock(m_pHeap->memoryMutex);
+
+
+	// Is it a VBO ?
+	uint32_t dstbuffer = dstbo.getBufferId();
+	uint32_t srcbuffer = srcbo.getBufferId();
+
+	if (isBufferObjectValid(dstbuffer) && isBufferObjectValid(srcbuffer))
+	{
+		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+#if defined(GL_VERSION_3_1)
+		pExtensions->glBindBufferARB(GL_COPY_READ_BUFFER, srcbo.getBufferId());
+		pExtensions->glBindBufferARB(GL_COPY_WRITE_BUFFER, dstbo.getBufferId());
+		pExtensions->glCopyBufferSubData(	GL_COPY_READ_BUFFER,
+											GL_COPY_WRITE_BUFFER,
+											srcOffset, dstOffset, sz);
+		pExtensions->glBindBufferARB(GL_COPY_READ_BUFFER, 0);
+		pExtensions->glBindBufferARB(GL_COPY_WRITE_BUFFER, 0);
+#elif defined(GL_ARB_vertex_buffer_object)
+		GLenum glStorage = BufferKindToGL(srcbo.getStorage());
+		pExtensions->glBindBufferARB(glStorage, srcbo.getBufferId());
+
+#if defined(GL_VERSION_3_0)
+		char *data = (char*)pExtensions->glMapBufferRange(glStorage, srcOffset, sz, GL_MAP_READ_BIT);
+		char *dst = new char[sz];
+		if (data != NULL)
+			memcpy(dst, data, sz);
+#else
+		char *data = (char*)pExtensions->glMapBufferARB(glStorage, GL_READ_ONLY_ARB);
+		char *dst = new char[sz];
+		memcpy(dst, data + srcOffset, sz);
+#endif
+		pExtensions->glUnmapBufferARB(glStorage);
+
+		glStorage = BufferKindToGL(dstbo.getStorage());
+		pExtensions->glBindBufferARB(glStorage, dstbo.getBufferId());
+		pExtensions->glBufferSubDataARB(glStorage, dstOffset, sz, dst);
+
+		if (currentBuffers[dstbo.getStorage()] != 0)
+			pExtensions->glBindBufferARB(glStorage, dstbo.getBufferId());
+		else
+			pExtensions->glBindBufferARB(glStorage, 0);
+
+		delete[]dst;
+#else
+		return false;
+#endif
+
+	}
+	else
+		return false;
+
+	CATCH_GL_ERROR;
+	return true;
+}
 
 bool COpenGLMemory::getBufferObjectData(IDeviceMemoryManager::IBufferObject &vb,
 										uint64_t srcOffset,
@@ -271,22 +339,17 @@ bool COpenGLMemory::getBufferObjectData(IDeviceMemoryManager::IBufferObject &vb,
 		}
 
 		if (currentBuffers[storage] != buffer)
-        {
 		    pExtensions->glBindBufferARB(glStorage,buffer);
-        }
 
-
-		//	This call may be faster in the future.
-		//	I have no explanation on the fact that everything is
-		//	veeeery slow after a call to that function !!!
-		//pExtensions->glGetBufferSubDataARB(glStorage, srcOffset, sz, dst);
+#if defined(GL_VERSION_3_0)
+		char *data = (char*)pExtensions->glMapBufferRange(glStorage, srcOffset, sz, GL_MAP_READ_BIT);
+		if (data != NULL)
+			memcpy(dst, data, sz);
+#else
 		char *data = (char*)pExtensions->glMapBufferARB(glStorage,GL_READ_ONLY_ARB);
-        
-        if (data != NULL)
-        {
-		    memcpy(dst,data + srcOffset,sz);
-        }
-
+		if (data != NULL)
+			memcpy(dst, data + srcOffset, sz);
+#endif
 		pExtensions->glUnmapBufferARB(glStorage);
 
         //	0 should by to the "GL default" array model.
@@ -480,7 +543,7 @@ bool COpenGLMemory::unlockBufferObject(IDeviceMemoryManager::IBufferObject &bo)
 GLenum  COpenGLMemory::BufferKindToGL(IDeviceMemoryManager::IBufferObject::BUFFER_KIND kind) const
 {
 #if defined(GL_ARB_vertex_buffer_object)
-    GLenum res = GL_ARRAY_BUFFER_ARB;
+    GLenum res = CGL_NULL;
 
     switch(kind)
     {
@@ -504,8 +567,14 @@ GLenum  COpenGLMemory::BufferKindToGL(IDeviceMemoryManager::IBufferObject::BUFFE
 			break;
 #endif
         default:
-            res = GL_ARRAY_BUFFER_ARB;
-            break;
+		{
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+			RAPTOR_WARNING(	COpenGL::COpenGLClassID::GetClassId(),
+							"The requested Buffer kind is not supported");
+#endif
+			res = CGL_NULL;
+			break;
+		}
     }
 
     return res;

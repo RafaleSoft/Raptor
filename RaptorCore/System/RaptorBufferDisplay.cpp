@@ -142,7 +142,7 @@ void CRaptorBufferDisplay::glResize(unsigned int sx,unsigned int sy,unsigned int
 }
 
 
-void CRaptorBufferDisplay::glGenerate(CTextureObject* T)
+void CRaptorBufferDisplay::glGenerate(ITextureObject* T, uint32_t x, uint32_t y, uint32_t w, uint32_t h)
 {
     if ((T == NULL) || (!m_bEnabled))
         return;
@@ -256,11 +256,11 @@ bool CRaptorBufferDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
         //  mipmapping level ).
         //  This else case lacks some tests : already bound ? / buffer valid ? / render target compatible ? ...
         //  ... so it might disappear or remain stricly internal.
-		else if ((device.hClass() >= CTextureObject::CGL_CUBEMAP_PX) &&
-				 (device.hClass() <= CTextureObject::CGL_CUBEMAP_NZ))
+		else if ((device.hClass() >= ITextureObject::CGL_CUBEMAP_PX) &&
+				 (device.hClass() <= ITextureObject::CGL_CUBEMAP_NZ))
         {
             CContextManager *manager = CContextManager::GetInstance();
-            manager->glBindPBuffer(m_pBuffer - 1,(CTextureObject::CUBE_FACE)(device.hClass()));
+            manager->glBindPBuffer(m_pBuffer - 1,(ITextureObject::CUBE_FACE)(device.hClass()));
             res = true;
         }
         // Context already bound !!! Raise warning ?

@@ -19,13 +19,13 @@
 #include "Subsys/CodeGeneration.h"
 
 #if !defined(AFX_TEXTUREFACTORY_H__1B470EC4_4B68_11D3_9142_9A502CBADC6B__INCLUDED_)
-	#include "TextureFactory.h"
+	#include "GLHierarchy/TextureFactory.h"
 #endif
 #if !defined(AFX_TEXUREUNITSETUP_H__4A6ADC72_02E5_4F2A_931E_A736B6D6E0F0__INCLUDED_)
-	#include "TextureUnitSetup.h"
+	#include "GLHierarchy/TextureUnitSetup.h"
 #endif
 #if !defined(AFX_TEXTURESET_H__26F3022D_70FE_414D_9479_F9CCD3DCD445__INCLUDED_)
-	#include "TextureSet.h"
+	#include "GLHierarchy/TextureSet.h"
 #endif
 #if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
 	#include "System/RaptorGLExtensions.h"
@@ -38,6 +38,9 @@
 #endif
 #if !defined(AFX_OPENGL_H__6C8840CA_BEFA_41DE_9879_5777FBBA7147__INCLUDED_)
 	#include "Subsys/OpenGL/RaptorOpenGL.h"
+#endif
+#if !defined(AFX_OPENGLTEXTUREOBJECT_H__D32B6294_B42B_4E6F_AB73_13B33C544AD0__INCLUDED_)
+	#include "Subsys/OpenGL/OpenGLTextureObject.h"
 #endif
 #if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
 	#include "System/RaptorErrorManager.h"
@@ -52,10 +55,11 @@ const CPersistence::CPersistenceClassID& CTextureUnitSetup::CTextureUnitSetupCla
 	return textureId;
 }
 
+#if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
+
 #define DEL_LIST \
 	if (handle.handle > 0) \
 		glDeleteLists(handle.handle,1);
-
 
 raptor::CTextureUnitSetup::GL_TEXTURE_COMBINER_TAG::GL_TEXTURE_COMBINER_TAG()
 {
@@ -122,6 +126,7 @@ raptor::CTextureUnitSetup::GL_TEXTURE_SHADER_TAG::GL_TEXTURE_SHADER_TAG()
 	constEye[2] = 1.0f;
 	constEye[3] = 1.0f;
 }
+#endif
 
 
 //////////////////////////////////////////////////////////////////////
@@ -129,21 +134,38 @@ raptor::CTextureUnitSetup::GL_TEXTURE_SHADER_TAG::GL_TEXTURE_SHADER_TAG()
 //////////////////////////////////////////////////////////////////////
 
 CTextureUnitSetup::CTextureUnitSetup() :
-	CPersistence(textureId, "TMU_Setup")
+	CPersistence(textureId, "TMU_Setup"), pfn_glActiveTexture(NULL)
 {
+	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	pfn_glActiveTexture = pExtensions->glActiveTextureARB;
+	if (NULL == pfn_glActiveTexture)
+	{
+		RAPTOR_FATAL(	CTextureUnitSetup::CTextureUnitSetupClassID::GetClassId(),
+						CRaptorMessages::ID_TEXTURE_MISS);
+	}
+
 	//! For optimisation and compatibility purposes, only enable the first 4 TMU image units as a default state.
 	nbUnits = CTextureFactory::getDefaultFactory().getConfig().getNumTextureImages();
 
 	useUnit = new bool[nbUnits];
 	imageUnit = new ITextureObject*[nbUnits];
+	unitFunctions = new GLenum[nbUnits];
+
+#if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
 	tmuShader = new GL_TEXTURE_SHADER[nbUnits];
 	tmuCombiner = new GL_TEXTURE_COMBINER[nbUnits];
+#endif
 
+	useUnit[0] = true;				// Texture unit 0 will always be defined.
 	for (unsigned int i = 0; i < nbUnits; i++)
 	{
-		useUnit[i] = (i < 4);
+		if (NULL != pfn_glActiveTexture)
+			useUnit[i] = (i < 4);	// Default will use 4 texture units.
 		imageUnit[i] = NULL;
+		unitFunctions[i] = CTextureUnitSetup::CGL_NONE;
+#if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
 		tmuCombiner[i].rgb_combiner = false;
+#endif
 	}
 
 	use_register_combiners = false;
@@ -169,24 +191,29 @@ CTextureUnitSetup::CTextureUnitSetup() :
 
 CTextureUnitSetup::~CTextureUnitSetup()
 {
-    if (register_combiners != NULL)
+    if (NULL != register_combiners)
         delete register_combiners;
-    if (useUnit != NULL)
+    if (NULL != useUnit)
         delete [] useUnit;
-    if (imageUnit != NULL)
+    if (NULL != imageUnit)
 	{
 		for (unsigned int i=0;i<nbUnits;i++)
 		{
-			if (imageUnit[i] != NULL)
+			if (NULL != imageUnit[i])
 				imageUnit[i]->releaseReference();
 		}
 
         delete [] imageUnit;
 	}
-    if (tmuCombiner != NULL)
+	if (NULL != unitFunctions)
+		delete [] unitFunctions;
+
+#if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
+    if (NULL != tmuCombiner)
         delete [] tmuCombiner;
-    if (tmuShader != NULL)
+    if (NULL != tmuShader)
         delete [] tmuShader;
+#endif
 }
 
 
@@ -197,8 +224,14 @@ const CTextureUnitSetup& CTextureUnitSetup::operator=(const CTextureUnitSetup& r
     {
         useUnit[i] = rsh.useUnit[i];
         imageUnit[i] = rsh.imageUnit[i];
+		if (NULL != imageUnit[i])
+			imageUnit[i]->addReference();
+		unitFunctions[i] = rsh.unitFunctions[i];
+
+#if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
         tmuShader[i] = rsh.tmuShader[i];
         tmuCombiner[i] = rsh.tmuCombiner[i];
+#endif
     }
 
 	use_register_combiners = rsh.use_register_combiners;
@@ -210,16 +243,60 @@ const CTextureUnitSetup& CTextureUnitSetup::operator=(const CTextureUnitSetup& r
 //////////////////////////////////////////////////////////////////////
 // Implementation
 //////////////////////////////////////////////////////////////////////
-void CTextureUnitSetup::setMap(ITextureObject *to, TEXTURE_IMAGE_UNIT unit)
+void CTextureUnitSetup::setMap(ITextureObject *to, TEXTURE_IMAGE_UNIT unit, TEXTURE_UNIT_FUNCTION env_mode)
 {
 	if (imageUnit != NULL)
 	{
-		if (imageUnit[unit] != NULL)
-			imageUnit[unit]->releaseReference();
-        imageUnit[unit] = to;
-		if (to != NULL)
-			to->addReference();
+		if (setUnitFunction(unit, env_mode))
+		{
+			if (imageUnit[unit] != NULL)
+				imageUnit[unit]->releaseReference();
+			imageUnit[unit] = to;
+			if (to != NULL)
+				to->addReference();
+		}
 	}
+}
+
+bool CTextureUnitSetup::setUnitFunction(TEXTURE_IMAGE_UNIT unit, TEXTURE_UNIT_FUNCTION env_mode)
+{
+	bool res = false;
+
+	if ((uint32_t)unit < nbUnits)
+	{
+		if (NULL != pfn_glActiveTexture)
+		{
+			GLenum mode = GL_NONE;
+			res = true;
+
+			switch (env_mode)
+			{
+				case CGL_OPAQUE:
+					mode = GL_REPLACE;		// 0x1E01
+					break;
+				case CGL_MULTIPLY:
+					mode = GL_MODULATE;		// 0x2100
+					break;
+				case CGL_ALPHA_TRANSPARENT:
+					mode = GL_DECAL;		// 0x2101
+					break;
+				case CGL_CONSTANT_BLENDED:
+					mode = GL_BLEND;		// 0x0BE2
+					break;
+				case CGL_NONE:
+					mode = CGL_NONE;		// 0
+					break;
+				default:
+					res = false;
+					break;
+			}
+			
+			if (res)
+				unitFunctions[unit] = mode;
+		}
+	}
+
+	return res;
 }
 
 ITextureObject* const CTextureUnitSetup::getDiffuseMap(void) const 
@@ -262,37 +339,43 @@ ITextureObject* CTextureUnitSetup::getEnvironmentMap(void) const
     return tmu; 
 }
 
-void CTextureUnitSetup::setDiffuseMap(ITextureObject* to) 
+void CTextureUnitSetup::setDiffuseMap(ITextureObject* to, TEXTURE_UNIT_FUNCTION env_mode)
 {
-	setMap(to,IMAGE_UNIT_0);
+	setMap(to,IMAGE_UNIT_0, env_mode);
 }
 
-void CTextureUnitSetup::setNormalMap(ITextureObject* to) 
+void CTextureUnitSetup::setNormalMap(ITextureObject* to, TEXTURE_UNIT_FUNCTION env_mode)
 { 
-	setMap(to,IMAGE_UNIT_1);
+	setMap(to,IMAGE_UNIT_1, env_mode);
 }
 
-void CTextureUnitSetup::setLightMap(ITextureObject* to)
+void CTextureUnitSetup::setLightMap(ITextureObject* to, TEXTURE_UNIT_FUNCTION env_mode)
 { 
-    setMap(to,IMAGE_UNIT_2);
+    setMap(to,IMAGE_UNIT_2, env_mode);
 }
 
-void CTextureUnitSetup::setEnvironmentMap(ITextureObject* to) 
+void CTextureUnitSetup::setEnvironmentMap(ITextureObject* to, TEXTURE_UNIT_FUNCTION env_mode)
 { 
-    setMap(to,IMAGE_UNIT_3);
+    setMap(to,IMAGE_UNIT_3, env_mode);
 }
 
 bool CTextureUnitSetup::enableImageUnit(CTextureUnitSetup::TEXTURE_IMAGE_UNIT unit, bool enable)
 {
+	bool res = false;
+
     if ((unsigned int)unit < nbUnits)
     {
-        useUnit[unit] = enable;
-        return true;
+		if (NULL != pfn_glActiveTexture)
+		{
+			useUnit[unit] = enable;
+			res = true;
+		}
     }
-    else
-        return false;
+    
+	return res;
 }
 
+#if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
 CTextureUnitSetup::GL_TEXTURE_SHADER& CTextureUnitSetup::getTMUShader(CTextureUnitSetup::TEXTURE_IMAGE_UNIT unit)
 {
     unsigned int numUnit = MIN((unsigned int)unit,nbUnits);
@@ -306,6 +389,13 @@ CTextureUnitSetup::GL_TEXTURE_COMBINER& CTextureUnitSetup::getTMUCombiner(TEXTUR
 
     return tmuCombiner[numUnit];
 }
+#endif
+
+//!
+//!	These features are deprecated since OpenGL 3.0 deprecation model.
+//!	Kept for compatibility purpose, subject to removal in future versions of Raptor.	
+//!
+#if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
 
 void RAPTOR_FASTCALL CTextureUnitSetup::glRender(GL_TEXTURE_COMBINER *C)
 {
@@ -515,11 +605,6 @@ RAPTOR_HANDLE CTextureUnitSetup::glBuildSetup(void)
 {
 	RAPTOR_HANDLE handle(COpenGL::COpenGLClassID::GetClassId().ID(),glGenLists(1));
 	
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
-	PFN_GL_ACTIVE_TEXTURE_ARB_PROC glActiveTextureARB = pExtensions->glActiveTextureARB;
-
-	GLint previousTMU = GL_TEXTURE0_ARB;
-
    	//	make sure we disable combiners if registers are used
 	if (use_register_combiners)
 	{
@@ -530,17 +615,8 @@ RAPTOR_HANDLE CTextureUnitSetup::glBuildSetup(void)
         }
 	}
 
-	if (glActiveTextureARB == NULL)
-	{
-        RAPTOR_WARNING(	CTextureUnitSetup::CTextureUnitSetupClassID::GetClassId(),
-						CRaptorMessages::ID_TEXTURE_MISS);
-
-        //! Disables all image unit above 1, there is always a texture unit available ( 0 )
-        for (unsigned int i=1;i<nbUnits;i++)
-            useUnit[i] = false;
-	}
-	else
-		glGetIntegerv(GL_ACTIVE_TEXTURE_ARB,&previousTMU);
+	GLint previousTMU = GL_TEXTURE0_ARB;
+	glGetIntegerv(GL_ACTIVE_TEXTURE_ARB,&previousTMU);
 
 	glNewList(handle.glname(),GL_COMPILE);
 
@@ -548,12 +624,12 @@ RAPTOR_HANDLE CTextureUnitSetup::glBuildSetup(void)
     {
 	    if (useUnit[i])
 	    {
-		    if (glActiveTextureARB != NULL)
-			    glActiveTextureARB(GL_TEXTURE0_ARB+i);
+		    if (pfn_glActiveTexture != NULL)
+				pfn_glActiveTexture(GL_TEXTURE0_ARB+i);
 
 		    if (imageUnit[i] != NULL)
 		    {	// TODO: make this section generic
-				CTextureObject* txt = imageUnit[i]->getGLTextureObject();
+				COpenGLTextureObject* txt = imageUnit[i]->getGLTextureObject();
 
 			    // It is preferable not to render texture extensions in a display list.
 			    glEnable(txt->target);
@@ -576,8 +652,8 @@ RAPTOR_HANDLE CTextureUnitSetup::glBuildSetup(void)
 	    }
     }
 
-	if (glActiveTextureARB != NULL)
-		glActiveTextureARB(previousTMU);
+	if (pfn_glActiveTexture != NULL)
+		pfn_glActiveTexture(previousTMU);
 
 #if defined(GL_NV_register_combiners)
 	if ((use_register_combiners) && (register_combiners != NULL))
@@ -593,95 +669,47 @@ RAPTOR_HANDLE CTextureUnitSetup::glBuildSetup(void)
 	return handle;
 }
 
+#else
+#endif
 
-
-RAPTOR_HANDLE CTextureUnitSetup::glBuildUnSetup(void)
+void CTextureUnitSetup::glRender(void)
 {
-	RAPTOR_HANDLE handle(COpenGL::COpenGLClassID::GetClassId().ID(), glGenLists(1));
-
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
-	PFN_GL_ACTIVE_TEXTURE_ARB_PROC glActiveTextureARB = pExtensions->glActiveTextureARB;
-
-	GLint previousTMU = GL_TEXTURE0_ARB;
-
-    //	make sure we disable combiners if registers are used
-	if (use_register_combiners)
+	for (unsigned int i = 0; i < nbUnits; i++)
 	{
-        for (unsigned int i=0;i<nbUnits;i++)
-        {
-		    tmuCombiner[i].rgb_combiner = false;
-		    tmuCombiner[i].alpha_combiner	= false;
-        }
-	}
-
-	if (glActiveTextureARB == NULL)
-	{
-        Raptor::GetErrorManager()->generateRaptorError(	CTextureUnitSetup::CTextureUnitSetupClassID::GetClassId(),
-														CRaptorErrorManager::RAPTOR_WARNING,
-														CRaptorMessages::ID_TEXTURE_MISS);
-		
-        //! Disables all image unit above 1, there is always a texture unit available ( 0 )
-        for (unsigned int i=1;i<nbUnits;i++)
-            useUnit[i] = false;
-	}
-	else
-		glGetIntegerv(GL_ACTIVE_TEXTURE_ARB,&previousTMU);
-
-	glNewList(handle.glname(),GL_COMPILE);
-
-	for (unsigned int i=0;i<nbUnits;i++)
-    {
-	    if (useUnit[i])
-	    {
-		    if (glActiveTextureARB != NULL)
-			    glActiveTextureARB(GL_TEXTURE0_ARB+i);
+		if (useUnit[i])
+		{
+			if (pfn_glActiveTexture != NULL)
+				pfn_glActiveTexture(GL_TEXTURE0_ARB + i);
 
 			if (imageUnit[i] != NULL)
 			{
-				CTextureObject* txt = imageUnit[i]->getGLTextureObject();
-				GLenum target = txt->target;
-				glBindTexture(target, 0);
-				glDisable(target);
+				COpenGLTextureObject* txt = imageUnit[i]->getGLTextureObject();
+
+				// It is preferable not to render texture extensions in a display list.
+				// generators cannot be used in display lists
+				glEnable(txt->target);
+				glBindTexture(txt->target, txt->texname);
+
+#if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
+				if (unitFunctions[i] != CGL_NONE)
+					glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, unitFunctions[i]);
+#endif
 			}
-
-		    // Unsetup of combiners
-			glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_REPLACE);
-
-			// Unsetup of shaders
-		    glDisable(GL_TEXTURE_GEN_S);
-		    glDisable(GL_TEXTURE_GEN_T);
-		    glDisable(GL_TEXTURE_GEN_R);
-		    glDisable(GL_TEXTURE_GEN_Q);
-		    glMatrixMode(GL_TEXTURE);
-		    glLoadIdentity();
-		    glMatrixMode(GL_MODELVIEW);
-    #if defined(GL_NV_texture_shader)
-			if (Raptor::glIsExtensionSupported(GL_NV_TEXTURE_SHADER_EXTENSION_NAME))
-			    glDisable(GL_TEXTURE_SHADER_NV);
-    #endif
-	    }		
-    }
-
-	if (glActiveTextureARB != NULL)
-		glActiveTextureARB(previousTMU);
-
-	#if defined(GL_NV_register_combiners)
-		// Unsetup of registers
-		if (use_register_combiners)
-		{
-			glDisable(GL_REGISTER_COMBINERS_NV);
+			else
+				glDisable(GL_TEXTURE_2D);
 		}
-	#endif
-					
-	glEndList();
+	}
+
+	if (pfn_glActiveTexture != NULL)
+		pfn_glActiveTexture(GL_TEXTURE0_ARB);
 
 	CATCH_GL_ERROR
-
-	return handle;
 }
 
 
 
+
+#if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
 bool ExportCombiner(CRaptorIO& o,CTextureUnitSetup::GL_TEXTURE_COMBINER& cb)
 {
 	if (cb.rgb_combiner)
@@ -747,7 +775,7 @@ bool ImportCombiner(CRaptorIO& i,CTextureUnitSetup::GL_TEXTURE_COMBINER& cb)
 
 	return true;
 }
-
+#endif
 
 #if defined(GL_NV_register_combiners)
 bool ExportCombinerInput(CRaptorIO& o,CRegisterCombiner::GL_COMBINER_INPUT& cbi)
@@ -823,7 +851,7 @@ bool ImportRegisterCombiner(CRaptorIO& i,CRegisterCombiner::GL_COMBINER& cbr)
 }
 #endif
 
-
+#if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
 bool ImportTextureShader(CRaptorIO& i,CTextureUnitSetup::GL_TEXTURE_SHADER &tsh)
 {
 	return true;
@@ -833,41 +861,13 @@ bool ExportTextureShader(CRaptorIO& o,CTextureUnitSetup::GL_TEXTURE_SHADER &tsh)
 {
 	return true;
 }
+#endif
 
 bool CTextureUnitSetup::exportObject(CRaptorIO& o)
 {
 		CPersistence::exportObject(o);
 
-		//	TMU objects
-		//CTextureFactory	exportFactory;
-        /*
-		if (use_tmu0)
-			o<<'y';
-		else
-			o<<'n';
-		if (use_tmu1)
-			o<<'y';
-		else
-			o<<'n';
-		if (use_tmu2)
-			o<<'y';
-		else
-			o<<'n';
-		if (use_tmu3)
-			o<<'y';
-		else
-			o<<'n';
-            */
-/*
-		unsigned int tmuObjects = 0;
-		if (tmu0 != NULL) { tmuObjects += 1; exportFactory.push_back(tmu0); }
-		if (tmu1 != NULL) { tmuObjects += 2; exportFactory.push_back(tmu1); }
-		if (tmu2 != NULL) { tmuObjects += 4; exportFactory.push_back(tmu2); }
-		if (tmu3 != NULL) { tmuObjects += 8; exportFactory.push_back(tmu3); }
-		o << tmuObjects;
-		exportFactory.Export(o);
-		exportFactory.clear();
-*/
+#if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
 		o<<'y';
 		ExportCombiner(o,tmuCombiner[0]);
 		o<<'y';
@@ -881,7 +881,7 @@ bool CTextureUnitSetup::exportObject(CRaptorIO& o)
 		ExportTextureShader(o,tmuShader[1]);
 		ExportTextureShader(o,tmuShader[2]);
 		ExportTextureShader(o,tmuShader[3]);
-
+#endif
 		if (use_register_combiners)
 		{
 			o<<'y';
@@ -918,13 +918,15 @@ bool CTextureUnitSetup::exportObject(CRaptorIO& o)
 
 bool CTextureUnitSetup::importMap(TEXTURE_IMAGE_UNIT unit,CRaptorIO& io)
 {
-	string textureName;
-	string setName;
-	string name;
-    io >> name;
+	CTextureUnitSetup::TEXTURE_UNIT_FUNCTION unitFunction = CTextureUnitSetup::CGL_NONE;
+	std::string textureName;
+	std::string setName;
+	std::string name;
+    
 	bool useunit = false;
 	bool enable = useUnit[unit];
 
+	io >> name;
 	string data = io.getValueName();
     while (!data.empty())
     {
@@ -932,6 +934,22 @@ bool CTextureUnitSetup::importMap(TEXTURE_IMAGE_UNIT unit,CRaptorIO& io)
             io >> setName;
 		else if (data == "texname")
             io >> textureName;
+		else if (data == "function")
+		{
+			string function;
+			io >> function;
+
+			if (function == "Opaque")
+				unitFunction = CTextureUnitSetup::CGL_OPAQUE;
+			else if (function == "Multiply")
+				unitFunction = CTextureUnitSetup::CGL_MULTIPLY;
+			else if (function == "AlphaTransparent")
+				unitFunction = CTextureUnitSetup::CGL_ALPHA_TRANSPARENT;
+			else if (function == "ConstantBlended")
+				unitFunction = CTextureUnitSetup::CGL_CONSTANT_BLENDED;
+			else
+				unitFunction = CTextureUnitSetup::CGL_NONE;
+		}
 		else if (data == "enable")
 		{
 			io >> enable;
@@ -948,8 +966,8 @@ bool CTextureUnitSetup::importMap(TEXTURE_IMAGE_UNIT unit,CRaptorIO& io)
 		CTextureSet *pSet = (CTextureSet *)CPersistence::FindObject(setName);
 		if (pSet != NULL)
 		{
-			CTextureObject *pImage = pSet->getTexture(textureName);
-			setMap(pImage,unit);
+			ITextureObject *pImage = pSet->getTexture(textureName);
+			setMap(pImage, unit, unitFunction);
 			if (useUnit)
 				useUnit[unit] = enable;
 		}
@@ -971,21 +989,13 @@ bool CTextureUnitSetup::importObject(CRaptorIO& io)
 		if (data == "name")
 			CPersistence::importObject(io);
 		else if (data == "DiffuseMap")
-		{
 			importMap(IMAGE_UNIT_0,io);
-		}
 		else if (data == "NormalMap")
-		{
 			importMap(IMAGE_UNIT_1,io);
-		}
 		else if (data == "LightMap")
-		{
 			importMap(IMAGE_UNIT_2,io);
-		}
 		else if (data == "EnvironmentMap")
-		{
 			importMap(IMAGE_UNIT_3,io);
-		}
 		else
 			io >> name;
 		
@@ -994,88 +1004,6 @@ bool CTextureUnitSetup::importObject(CRaptorIO& io)
 	io >> name;
 
 	return true;
-/*
-		char val;
-
-		//	TMU objects
-		CTextureFactory	importFactory;
-		i>>val;
-		use_tmu0 = val == 'y';
-		i>>val;
-		use_tmu1 = val == 'y';
-		i>>val;
-		use_tmu2 = val == 'y';
-		i>>val;
-		use_tmu3 = val == 'y';
-
-		unsigned int pos = 0;
-		unsigned int tmuObjects = 0;
-		i >> tmuObjects;
-		importFactory.Import(i);
-		if (tmuObjects & 1) { tmu0 = importFactory.at(pos++); }
-		if (tmuObjects & 2) { tmu1 = importFactory.at(pos++); }
-		if (tmuObjects & 4) { tmu2 = importFactory.at(pos++); }
-		if (tmuObjects & 8) { tmu3 = importFactory.at(pos++); }
-		importFactory.clear();
-
-		//	initial combiner
-		i>>val;
-		ImportCombiner(i,void_to_tmu0);
-
-		//	combiner 0
-		i>>val;
-		ImportCombiner(i,tmu0_to_tmu1);
-
-		// combiner 1
-		i>>val;
-		ImportCombiner(i,tmu1_to_tmu2);
-
-		// combiner 2
-		i>>val;
-		ImportCombiner(i,tmu2_to_tmu3);
-
-		ImportTextureShader(i,tmu0_shader);
-		ImportTextureShader(i,tmu1_shader);
-		ImportTextureShader(i,tmu2_shader);
-		ImportTextureShader(i,tmu3_shader);
-
-
-		i>>val;
-		use_register_combiners = val == 'y';
-
-#if defined(GL_NV_register_combiners)
-		if (use_register_combiners)
-		{
-			ImportRegisterCombiner(i,register_combiners.r0);
-			ImportRegisterCombiner(i,register_combiners.r1);
-			ImportRegisterCombiner(i,register_combiners.r2);
-			ImportRegisterCombiner(i,register_combiners.r3);
-			ImportRegisterCombiner(i,register_combiners.r4);
-			ImportRegisterCombiner(i,register_combiners.r5);
-			ImportRegisterCombiner(i,register_combiners.r6);
-			ImportRegisterCombiner(i,register_combiners.r7);
-
-			ImportCombinerInput(i,register_combiners.a);
-			ImportCombinerInput(i,register_combiners.b);
-			ImportCombinerInput(i,register_combiners.c);
-			ImportCombinerInput(i,register_combiners.d);
-			ImportCombinerInput(i,register_combiners.e);
-			ImportCombinerInput(i,register_combiners.f);
-			ImportCombinerInput(i,register_combiners.g);
-
-			i >> register_combiners.inputAlpha;
-			i >> register_combiners.mappingAlpha;
-			i >> register_combiners.usageAlpha;
-			i >> register_combiners.color_sum;
-			i >> register_combiners.multiplier;
-			i >> register_combiners.function;
-		}
-#endif
-		return true;
-	}
-	else
-		return false;
-		*/
 }
 
 

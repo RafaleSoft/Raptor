@@ -188,21 +188,20 @@ bool CGeometryShader::glBindProgram(RAPTOR_HANDLE program)
 	if (CUnifiedShader::glBindProgram(program))
 	{
 #if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
-	// Since OpenGL 3.2, geometry parameters shall be defined with a layout in shader source.
-#if defined(GL_VERSION_3_2)
-		Raptor::GetErrorManager()->generateRaptorError(CGeometryShader::CGeometryShaderClassID::GetClassId(),
-													   CRaptorErrorManager::RAPTOR_WARNING,
-													   "Geometry Program types shall be defined in a geometry shader");
-
 #else
 	#if defined(GL_ARB_geometry_shader4)
+		// Since OpenGL 3.2, geometry parameters shall be defined with a layout in shader source.
+		#if defined(GL_VERSION_3_2)
+			Raptor::GetErrorManager()->generateRaptorError(	CGeometryShader::CGeometryShaderClassID::GetClassId(),
+															CRaptorErrorManager::RAPTOR_WARNING,
+															"Geometry Program types shall be defined in a geometry shader");
+		#endif
 		pExtensions->glProgramParameteriARB(program.handle(), GL_GEOMETRY_INPUT_TYPE_ARB, m_inputType);
 		pExtensions->glProgramParameteriARB(program.handle(), GL_GEOMETRY_OUTPUT_TYPE_ARB, m_outputType);
 		pExtensions->glProgramParameteriARB(program.handle(), GL_GEOMETRY_VERTICES_OUT_ARB, m_verticesOut);
 	#endif
-#endif
-#endif
 
+#endif
 		CATCH_GL_ERROR
 		return true;
 	}

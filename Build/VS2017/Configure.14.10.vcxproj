@@ -129,7 +129,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PreBuildEvent>
-      <Command>set PUBLISH=$(TargetDir) &amp;&amp; $(SolutionDir)\Builder\$(ProjectName)\Publish.bat &amp;&amp; $(SolutionDir)\Builder\$(ProjectName)\Redist.bat $(Platform)</Command>
+      <Command>set PUBLISH=$(TargetDir) &amp;&amp; $(PYTHON_HOME)\python.exe $(SolutionDir)Builder\$(ProjectName)\Publish.py &amp;&amp; $(PYTHON_HOME)\python.exe $(SolutionDir)\Builder\$(ProjectName)\CheckVersion.py &amp;&amp; $(PYTHON_HOME)\python.exe $(SolutionDir)Builder\$(ProjectName)\Redist.py $(Platform)</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -142,7 +142,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PreBuildEvent>
-      <Command>set PUBLISH=$(TargetDir) &amp;&amp; $(SolutionDir)\Builder\$(ProjectName)\Publish.bat &amp;&amp; $(SolutionDir)\Builder\$(ProjectName)\Redist.bat $(Platform)</Command>
+      <Command>set PUBLISH=$(TargetDir) &amp;&amp; $(PYTHON_HOME)\python.exe $(SolutionDir)Builder\$(ProjectName)\Publish.py &amp;&amp; $(PYTHON_HOME)\python.exe $(SolutionDir)\Builder\$(ProjectName)\CheckVersion.py &amp;&amp; $(PYTHON_HOME)\python.exe $(SolutionDir)Builder\$(ProjectName)\Redist.py $(Platform)</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -159,7 +159,7 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <PreBuildEvent>
-      <Command>set PUBLISH=$(TargetDir) &amp;&amp; $(SolutionDir)\Builder\$(ProjectName)\Publish.bat &amp;&amp; $(SolutionDir)\Builder\$(ProjectName)\Redist.bat $(Platform)</Command>
+      <Command>set PUBLISH=$(TargetDir) &amp;&amp; $(PYTHON_HOME)\python.exe $(SolutionDir)Builder\$(ProjectName)\Publish.py &amp;&amp; $(PYTHON_HOME)\python.exe $(SolutionDir)\Builder\$(ProjectName)\CheckVersion.py &amp;&amp; $(PYTHON_HOME)\python.exe $(SolutionDir)Builder\$(ProjectName)\Redist.py $(Platform)</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -176,7 +176,7 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <PreBuildEvent>
-      <Command>set PUBLISH=$(TargetDir) &amp;&amp; $(SolutionDir)\Builder\$(ProjectName)\Publish.bat &amp;&amp; $(SolutionDir)\Builder\$(ProjectName)\Redist.bat $(Platform)</Command>
+      <Command>set PUBLISH=$(TargetDir) &amp;&amp; $(PYTHON_HOME)\python.exe $(SolutionDir)Builder\$(ProjectName)\Publish.py &amp;&amp; $(PYTHON_HOME)\python.exe $(SolutionDir)\Builder\$(ProjectName)\CheckVersion.py &amp;&amp; $(PYTHON_HOME)\python.exe $(SolutionDir)Builder\$(ProjectName)\Redist.py $(Platform)</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">
@@ -193,7 +193,7 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <PreBuildEvent>
-      <Command>set PUBLISH=$(TargetDir) &amp;&amp; $(SolutionDir)\Builder\$(ProjectName)\Publish.bat &amp;&amp; $(SolutionDir)\Builder\$(ProjectName)\Redist.bat $(Platform)</Command>
+      <Command>set PUBLISH=$(TargetDir) &amp;&amp; $(PYTHON_HOME)\python.exe $(SolutionDir)Builder\$(ProjectName)\Publish.py &amp;&amp; $(PYTHON_HOME)\python.exe $(SolutionDir)\Builder\$(ProjectName)\CheckVersion.py &amp;&amp; $(PYTHON_HOME)\python.exe $(SolutionDir)Builder\$(ProjectName)\Redist.py $(Platform)</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|x64'">
@@ -210,12 +210,17 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <PreBuildEvent>
-      <Command>set PUBLISH=$(TargetDir) &amp;&amp; $(SolutionDir)\Builder\$(ProjectName)\Publish.bat &amp;&amp; $(SolutionDir)\Builder\$(ProjectName)\Redist.bat $(Platform)</Command>
+      <Command>set PUBLISH=$(TargetDir) &amp;&amp; $(PYTHON_HOME)\python.exe $(SolutionDir)Builder\$(ProjectName)\Publish.py &amp;&amp; $(PYTHON_HOME)\python.exe $(SolutionDir)\Builder\$(ProjectName)\CheckVersion.py &amp;&amp; $(PYTHON_HOME)\python.exe $(SolutionDir)Builder\$(ProjectName)\Redist.py $(Platform)</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <None Include="..\..\Builder\Configure\Publish.bat" />
-    <None Include="..\..\Builder\Configure\Redist.bat" />
+    <None Include="..\..\Builder\Configure\CheckVersion.py" />
+    <None Include="..\..\Builder\Configure\Publish.py" />
+    <None Include="..\..\Builder\Configure\Redist.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\Builder\Configure\Portability.h" />
+    <ClInclude Include="..\..\Builder\Configure\Version.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

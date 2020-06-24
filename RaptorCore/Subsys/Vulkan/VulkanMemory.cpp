@@ -248,6 +248,15 @@ bool CVulkanMemory::CVulkanMemoryWrapper::getBufferObjectData(	IDeviceMemoryMana
 	return memory.vkGetBufferObjectData(m_device,*((*it).second),srcOffset,dst,sz);
 }
 
+bool CVulkanMemory::CVulkanMemoryWrapper::copyBufferObjectData(	IDeviceMemoryManager::IBufferObject &dstbo,
+																uint64_t dstOffset,
+																IDeviceMemoryManager::IBufferObject &srcbo,
+																uint64_t srcOffset,
+																uint64_t sz)
+{
+	return false;
+}
+
 bool CVulkanMemory::CVulkanMemoryWrapper::discardBufferObjectData(	IDeviceMemoryManager::IBufferObject &bo,
 																	uint64_t dstOffset,
 																	uint64_t sz)

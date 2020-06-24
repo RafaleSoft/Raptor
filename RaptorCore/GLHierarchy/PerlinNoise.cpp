@@ -19,16 +19,10 @@
 #include "Subsys/CodeGeneration.h"
 
 #if !defined(AFX_PERLINNOISE_H__AE39D006_3DDA_4924_B76D_A11A0F2BCFB9__INCLUDED_)
-    #include "PerlinNoise.h"
+    #include "GLHierarchy/PerlinNoise.h"
 #endif
 #if !defined(AFX_TEXTUREFACTORY_H__1B470EC4_4B68_11D3_9142_9A502CBADC6B__INCLUDED_)
 	#include "GLHierarchy/TextureFactory.h"
-#endif
-#if !defined(AFX_TEXTUREOBJECT_H__D32B6294_B42B_4E6F_AB73_13B33C544AD0__INCLUDED_)
-	#include "GLHierarchy/TextureObject.h"
-#endif
-#if !defined(AFX_IMAGE_H__F545D0D5_5F10_4EFA_BE3B_3F3D34D4DBF3__INCLUDED_)
-	#include "System/Image.h"
 #endif
 #if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
     #include "System/RaptorErrorManager.h"
@@ -326,7 +320,7 @@ unsigned int CPerlinNoise::getGenerateHeight(void) const
     return 0;
 }
 
-void CPerlinNoise::glGenerate(CTextureObject* t)
+void CPerlinNoise::glGenerate(ITextureObject* t, uint32_t x, uint32_t y, uint32_t w, uint32_t h)
 {
     if ((t == NULL) || (!m_bEnabled))
         return;

@@ -27,6 +27,9 @@
     <ClCompile Include="..\..\UnitTest\RaptorImageTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\UnitTest\RaptorSynchroTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\UnitTest\RaptorHandleTest.h">
@@ -35,13 +38,13 @@
     <ClInclude Include="..\..\UnitTest\stdafx.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\UnitTest\targetver.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\UnitTest\resource.h">
       <Filter>Resource Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\UnitTest\RaptorImageTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\UnitTest\RaptorSynchroTest.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

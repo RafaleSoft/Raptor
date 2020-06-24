@@ -16,8 +16,6 @@
 RAPTOR_NAMESPACE
 
 
-#pragma once
-
 class RAPTOR_API CParticleCompute
 {
 public:

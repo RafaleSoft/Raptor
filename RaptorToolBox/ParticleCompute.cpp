@@ -7,6 +7,9 @@
 #if !defined(AFX_PARTICLECOMPUTE_H__395259D4_3C60_4233_8D81_1F7B58BED8A5__INCLUDED_)
 	#include "ParticleCompute.h"
 #endif
+#if !defined(AFX_ITEXTUREOBJECT_H__3AA8C89E_BB23_483C_A547_C8A4CC53E551__INCLUDED_)
+	#include "GLHierarchy/ITextureObject.h"
+#endif
 
 
 #include <stdlib.h>	// rand

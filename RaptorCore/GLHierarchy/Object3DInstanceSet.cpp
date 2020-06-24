@@ -154,7 +154,7 @@ void CObject3DInstanceSet::glClipRender(void)
 	CATCH_GL_ERROR
 }
 
-void CObject3DInstanceSet::glRenderBBox(bool filled)
+void CObject3DInstanceSet::glRenderBBox(RENDER_BOX_MODEL filled)
 {
 	if (!properties.isVisible())
 		return;

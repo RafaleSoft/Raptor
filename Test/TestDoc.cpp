@@ -1,5 +1,21 @@
-// TestDoc.cpp : implementation of the CTestDoc class
-//
+/***************************************************************************/
+/*                                                                         */
+/*  TestDoc.cpp                                                            */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
 
 #include "StdAfx.h"
 #include <sstream>
@@ -12,7 +28,7 @@
 #include "GLHierarchy/Object3DInstance.h"
 #include "GLHierarchy/TextureFactory.h"
 #include "GLHierarchy/TextureFactoryConfig.h"
-#include "GLHierarchy/TextureObject.h"
+#include "GLHierarchy/ITextureObject.h"
 #include "GLHierarchy/Shader.h"
 #include "Engine/ViewModifier.h"
 #include "Engine/3DScene.h"
@@ -53,23 +69,19 @@ CTestDoc::~CTestDoc()
 class Foreground : public CBasicObjects::CRectangle
 {
 public:
-	Foreground(CMagnifierFilter *mf):fgMag(mf),status(mf->isEnabled())
+	Foreground(CMagnifierFilter *mf):fgMag(mf),status(!mf->isEnabled())
 	{
 		CTextureFactory &fct = CTextureFactory::getDefaultFactory();
-		CTextureObject *T = fct.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA);
+		ITextureObject *T = fct.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA);
 		fct.glLoadTexture(T,"lrock049.jpg");
 
 		fgMag->setColorInput(T);
-		CTextureObject *output = fgMag->glCreateColorOutput();
+		ITextureObject *output = fgMag->glCreateColorOutput();
 		fgMag->glInitFilter();
 
 		CShader *s = getShader();
 		CTextureUnitSetup *tmu = s->glGetTextureUnitsSetup();
 		tmu->setDiffuseMap(output);
-		tmu->glBuildSetup();
-
-		//Geometry Allocator is not locked.
-		//glRenderFilter();
 	};
 
 	virtual ~Foreground() {};
@@ -180,10 +192,12 @@ void CTestDoc::GLInitContext(void)
     CShadedGeometry *g = (CShadedGeometry *)(sponge->getChild(it++));
 	while (g != NULL)
 	{
-        g->getShader()->getMaterial()->setAmbient(0.1f,0.1f,0.1f,1.0f);
-        g->getShader()->getMaterial()->setDiffuse(0.4f,0.4f,0.9f,1.0f);
-        g->getShader()->getMaterial()->setSpecular(1.4f,1.4f,1.6f,1.0f);
-        g->getShader()->getMaterial()->setShininess(20.0f);
+		CShader *s = g->getShader();
+        s->getMaterial()->setAmbient(0.1f,0.1f,0.1f,1.0f);
+        s->getMaterial()->setDiffuse(0.4f,0.4f,0.9f,1.0f);
+        s->getMaterial()->setSpecular(1.4f,1.4f,1.6f,1.0f);
+        s->getMaterial()->setShininess(20.0f);
+		s->glGetTextureUnitsSetup()->setUnitFunction(CTextureUnitSetup::IMAGE_UNIT_0, CTextureUnitSetup::CGL_MULTIPLY);
 		g->setRenderingModel(CGeometry::CGL_FRONT_GEOMETRY);
 		g->addModel(CGeometry::CGL_NORMALS);
 		g->addModel(CGeometry::CGL_TEXTURE);
@@ -211,12 +225,11 @@ void CTestDoc::GLInitContext(void)
     background->glUnLockData();
 
 	CTextureFactory &fct = CTextureFactory::getDefaultFactory();
-	CTextureObject *T = fct.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA);
+	ITextureObject *T = fct.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA);
 	fct.glLoadTexture(T,"Gaussian_blur_test.jpg");
 	CShader *s = background->getShader();
 	CTextureUnitSetup *tmu = s->glGetTextureUnitsSetup();
 	tmu->setDiffuseMap(T);
-	tmu->glBuildSetup();
 	
 
 #if defined(GL_ARB_color_buffer_float)

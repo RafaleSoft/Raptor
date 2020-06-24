@@ -12,7 +12,7 @@
 #include "GLHierarchy/TextureSet.h"
 #include "GLHierarchy/TextureFactory.h"
 #include "GLHierarchy/TextureUnitSetup.h"
-#include "GLHierarchy/TextureObject.h"
+#include "GLHierarchy/ITextureObject.h"
 #include "Engine/3DScene.h"
 #include "Engine/ParticleManager.h"
 #include "Engine/ImageModifier.h"
@@ -200,26 +200,29 @@ void CParticleDisplay::Init()
 	// Load texture
 	CTextureFactory &f = CTextureFactory::getDefaultFactory();
 	CTextureSet* pTextures = (CTextureSet*)CPersistence::FindObject("main_textures");
-	CTextureObject* T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_MULTIPLY, ITextureObject::CGL_BILINEAR);
+	ITextureObject* T = f.glCreateTexture(	ITextureObject::CGL_COLOR24_ALPHA,
+											ITextureObject::CGL_BILINEAR);
 	f.glLoadTexture(T, "Datas\\particle.jpg");
 	pTextures->addTexture(T);
 
-	T = f.glCreateTexture(CTextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_MULTIPLY, ITextureObject::CGL_BILINEAR);
+	T = f.glCreateTexture(	ITextureObject::CGL_COLOR24_ALPHA,
+							ITextureObject::CGL_BILINEAR);
 	f.glLoadTexture(T, "Datas\\Fire.tga");
 	pTextures->addTexture(T);
 	pFire->setTexture(T);
 
-	T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_MULTIPLY, ITextureObject::CGL_BILINEAR);
-	T->glSetTransparency(0);
+	T = f.glCreateTexture(	ITextureObject::CGL_COLOR24_ALPHA,
+							ITextureObject::CGL_BILINEAR);
+	f.glSetTransparency(T, 0);
 	f.glLoadTexture(T, "Datas\\particle.tga");
 	pTextures->addTexture(T);
 	pSmoke->setTexture(T);
 
 	pParticle->setTexture(T);
 
-    T = f.glCreateVolumeTexture(ITextureObject::CGL_COLOR24_ALPHA,CTextureObject::CGL_OPAQUE, ITextureObject::CGL_BILINEAR);
+    T = f.glCreateVolumeTexture(ITextureObject::CGL_COLOR24_ALPHA, ITextureObject::CGL_BILINEAR);
     T->setSize(128,128,128);
-	T->glSetTransparency(255);
+	f.glSetTransparency(T, 255);
 	
 	smoke.allocatePixels(128, 128, 128);
 	pTextures->addTexture(T);

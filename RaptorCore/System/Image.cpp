@@ -59,7 +59,7 @@ CImage::~CImage()
 	releasePixels();
 }
 
-CImage* CImage::createSubImage(size_t x, size_t y, size_t w, size_t h)
+CImage* CImage::createSubImage(uint32_t x, uint32_t y, uint32_t w, uint32_t h)
 {
 	if ((x > getWidth()) || (y > getHeight()))
 		return NULL;
@@ -205,7 +205,7 @@ bool CImage::allocatePixels(uint32_t width, uint32_t height, uint32_t layers, PI
 bool CImage::allocatePixels(uint32_t width, uint32_t height, PIXEL_TYPE type)
 {
 	//   reserve default space for at least rgba type, even if it larger than necessary.
-	uint32_t size = 4 * width * height * m_layers;
+	size_t size = 4 * width * height * m_layers;
 
 	if (size > 0)
 	{

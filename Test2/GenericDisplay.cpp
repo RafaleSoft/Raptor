@@ -11,7 +11,7 @@
 #include "System/RaptorDisplay.h"
 
 
-RAPTOR_HANDLE CGenericDisplay::reinitTMU;
+CTextureUnitSetup  *CGenericDisplay::initSetup = NULL;
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -37,8 +37,8 @@ void CGenericDisplay::ReInit()
 		IRenderingProperties &rp = pDisplay->getRenderingProperties();
 		rp.setTexturing(IRenderingProperties::DISABLE);
 
-		if (reinitTMU.handle() != 0)
-			glCallList(reinitTMU.handle());
+		if (NULL != initSetup)
+			initSetup->glRender();
 
 		//	When there is no view point,
 		// we must reinitialize the modelview matrix.
@@ -60,31 +60,31 @@ void CGenericDisplay::ReInit()
 
 void CGenericDisplay::Init()
 {
-	if (reinitTMU.handle() == 0)
+	if (NULL == initSetup)
 	{
-		CTextureUnitSetup initSetup;
+		initSetup = new CTextureUnitSetup();
 
-        initSetup.enableImageUnit(CTextureUnitSetup::IMAGE_UNIT_0,true);
-		initSetup.setDiffuseMap(NULL);
-		initSetup.getTMUShader(CTextureUnitSetup::IMAGE_UNIT_0).shaderOperation = CGL_TEXTURE_GEN_COORD;
-		initSetup.getTMUShader(CTextureUnitSetup::IMAGE_UNIT_0).genMode[0] = GL_NONE;
-		initSetup.getTMUShader(CTextureUnitSetup::IMAGE_UNIT_0).genMode[1] = GL_NONE;
-		initSetup.getTMUShader(CTextureUnitSetup::IMAGE_UNIT_0).genMode[2] = GL_NONE;
-		initSetup.getTMUShader(CTextureUnitSetup::IMAGE_UNIT_0).genMode[3] = GL_NONE;
+		initSetup->enableImageUnit(CTextureUnitSetup::IMAGE_UNIT_0, true);
+		initSetup->setDiffuseMap(NULL);
+		initSetup->enableImageUnit(CTextureUnitSetup::IMAGE_UNIT_1, true);
+		initSetup->setNormalMap(NULL);
+		initSetup->enableImageUnit(CTextureUnitSetup::IMAGE_UNIT_2, true);
+		initSetup->setLightMap(NULL);
+		initSetup->enableImageUnit(CTextureUnitSetup::IMAGE_UNIT_3, true);
+		initSetup->setEnvironmentMap(NULL);
 
-		initSetup.enableImageUnit(CTextureUnitSetup::IMAGE_UNIT_1,true);
-		initSetup.setNormalMap(NULL);
-		initSetup.getTMUShader(CTextureUnitSetup::IMAGE_UNIT_1).shaderOperation = CGL_TEXTURE_GEN_COORD;
-		initSetup.getTMUShader(CTextureUnitSetup::IMAGE_UNIT_1).genMode[0] = GL_NONE;
-		initSetup.getTMUShader(CTextureUnitSetup::IMAGE_UNIT_1).genMode[1] = GL_NONE;
-		initSetup.getTMUShader(CTextureUnitSetup::IMAGE_UNIT_1).genMode[2] = GL_NONE;
-		initSetup.getTMUShader(CTextureUnitSetup::IMAGE_UNIT_1).genMode[3] = GL_NONE;
+#if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
+		initSetup->getTMUShader(CTextureUnitSetup::IMAGE_UNIT_0).shaderOperation = CGL_TEXTURE_GEN_COORD;
+		initSetup->getTMUShader(CTextureUnitSetup::IMAGE_UNIT_0).genMode[0] = GL_NONE;
+		initSetup->getTMUShader(CTextureUnitSetup::IMAGE_UNIT_0).genMode[1] = GL_NONE;
+		initSetup->getTMUShader(CTextureUnitSetup::IMAGE_UNIT_0).genMode[2] = GL_NONE;
+		initSetup->getTMUShader(CTextureUnitSetup::IMAGE_UNIT_0).genMode[3] = GL_NONE;
 
-		initSetup.enableImageUnit(CTextureUnitSetup::IMAGE_UNIT_2,true);
-		initSetup.setLightMap(NULL);
-		initSetup.enableImageUnit(CTextureUnitSetup::IMAGE_UNIT_3,true);
-		initSetup.setEnvironmentMap(NULL);
-
-		reinitTMU = initSetup.glBuildSetup();
+		initSetup->getTMUShader(CTextureUnitSetup::IMAGE_UNIT_1).shaderOperation = CGL_TEXTURE_GEN_COORD;
+		initSetup->getTMUShader(CTextureUnitSetup::IMAGE_UNIT_1).genMode[0] = GL_NONE;
+		initSetup->getTMUShader(CTextureUnitSetup::IMAGE_UNIT_1).genMode[1] = GL_NONE;
+		initSetup->getTMUShader(CTextureUnitSetup::IMAGE_UNIT_1).genMode[2] = GL_NONE;
+		initSetup->getTMUShader(CTextureUnitSetup::IMAGE_UNIT_1).genMode[3] = GL_NONE;
+#endif
 	}
 }

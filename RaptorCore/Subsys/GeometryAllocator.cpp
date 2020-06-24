@@ -90,7 +90,78 @@ CGeometryAllocator	*CGeometryAllocator::SetCurrentInstance(CGeometryAllocator* g
 	return pInstance;
 }
 
-void CGeometryAllocator::glvkCopyPointer(float *dst, float *src, uint64_t size)
+bool CGeometryAllocator::glvkCopyPointer(float *dst, float *src, uint64_t size)
+{
+	map<float*, uint64_t>::const_iterator dstbloc = vertexBlocs.find(dst);
+	if (dstbloc == vertexBlocs.end())
+		return false;
+	map<float*, uint64_t>::const_iterator srcbloc = vertexBlocs.find(src);
+	if (srcbloc == vertexBlocs.end())
+		return false;
+
+	//! Copy conventional memory.
+	if (NULL == relocatedVertices)
+	{
+		if ((NULL == src) || (NULL == dst))
+			return false;
+
+		memcpy(dst, src, size);
+		return true;
+	}
+	else
+	{
+		uint64_t dstOffset = (uint64_t)dst;
+		uint64_t srcOffset = (uint64_t)src;
+
+		uint64_t sz = size * sizeof(float);
+		if ((*dstbloc).second < sz)	// destination must fit copy size.
+			return false;
+		if ((*srcbloc).second < sz) // source must provide copy size.
+			return false;
+
+		return CResourceAllocator::glvkCopyPointer(	relocatedVertices, dstOffset,
+													relocatedVertices, srcOffset,
+													sz);
+	}
+}
+
+
+bool CGeometryAllocator::glvkCopyPointer(uint16_t *dst, uint16_t *src, uint64_t size)
+{
+	map<uint16_t*, uint64_t>::const_iterator dstbloc = indexBlocs.find(dst);
+	if (dstbloc == indexBlocs.end())
+		return false;
+	map<uint16_t*, uint64_t>::const_iterator srcbloc = indexBlocs.find(src);
+	if (srcbloc == indexBlocs.end())
+		return false;
+
+	//! Copy conventional memory.
+	if (NULL == relocatedVertices)
+	{
+		if ((NULL == src) || (NULL == dst))
+			return false;
+
+		memcpy(dst, src, size);
+		return true;
+	}
+	else
+	{
+		uint64_t dstOffset = (uint64_t)dst;
+		uint64_t srcOffset = (uint64_t)src;
+
+		uint64_t sz = size * sizeof(uint16_t);
+		if ((*dstbloc).second < sz) // destination must fit copy size.
+			return false;
+		if ((*srcbloc).second < sz) // source must provide copy size.
+			return false;
+
+		return CResourceAllocator::glvkCopyPointer(	relocatedFaceIndexes, dstOffset,
+													relocatedFaceIndexes, srcOffset,
+													sz);
+	}
+}
+
+void CGeometryAllocator::glvkSetPointerData(float *dst, float *src, uint64_t size)
 {
     if ((NULL == deviceMemoryManager) || (NULL == relocatedVertices) || (NULL == src) || (NULL == dst))
         return;
@@ -123,7 +194,7 @@ void CGeometryAllocator::glvkCopyPointer(float *dst, float *src, uint64_t size)
 													sizeof(float)*size);
 }
 
-void CGeometryAllocator::glvkCopyPointer(uint16_t *dst, uint16_t *src, uint64_t size)
+void CGeometryAllocator::glvkSetPointerData(uint16_t *dst, uint16_t *src, uint64_t size)
 {
     if ((NULL == deviceMemoryManager) || (NULL == relocatedFaceIndexes) || (NULL == src) || (NULL == dst))
         return;
@@ -365,8 +436,8 @@ unsigned short	* const	CGeometryAllocator::allocateIndexes(uint64_t size)
 		return NULL;
 
 	// be it relocated or not, faceIndexes can be the beginning of the memory block
-	unsigned short *currentAddress = faceIndexes.address.us_address;
-	uint64_t sz = size * sizeof(unsigned short);
+	uint16_t *currentAddress = faceIndexes.address.us_address;
+	uint64_t sz = size * sizeof(uint16_t);
     
 	if (!indexBlocs.empty())
 	{
@@ -393,9 +464,9 @@ unsigned short	* const	CGeometryAllocator::allocateIndexes(uint64_t size)
 			}
 		}
 
-		map<unsigned short*,uint64_t>::iterator it = indexBlocs.end();
+		map<uint16_t*,uint64_t>::iterator it = indexBlocs.end();
 		it--;
-		currentAddress = (*it).first + (*it).second/sizeof(unsigned short);
+		currentAddress = (*it).first + (*it).second/sizeof(uint16_t);
 	}
 
 	if ( ((uint64_t)currentAddress - (uint64_t)faceIndexes.address.us_address) + sz > faceIndexes.size)
@@ -407,17 +478,17 @@ unsigned short	* const	CGeometryAllocator::allocateIndexes(uint64_t size)
 
     //  No NULL offset to distinguish nil pointers
     if ((NULL != relocatedFaceIndexes) && (NULL == currentAddress))
-		currentAddress = (unsigned short*)relocatedFaceIndexes->getRelocationOffset();
+		currentAddress = (uint16_t*)relocatedFaceIndexes->getRelocationOffset();
 
 	//	Address should be aligned on a 16byte boundary
-	unsigned short* address = (unsigned short*)(((uint64_t)(currentAddress)+0x0f) & ~0x0f);
+	uint16_t* address = (uint16_t*)(((uint64_t)(currentAddress)+0x0f) & ~0x0f);
 	indexBlocs[address] = sz;
 
 	return address;
 }
 
 
-bool	CGeometryAllocator::releaseIndexes(unsigned short *index)
+bool	CGeometryAllocator::releaseIndexes(uint16_t *index)
 {
     if (m_bLocked)
         return false;
@@ -511,7 +582,7 @@ float * const CGeometryAllocator::allocateVertices(uint64_t size)
 
 bool CGeometryAllocator::releaseVertices(float *index)
 {
-    if (m_bLocked)
+    if ((m_bLocked) || (NULL == index))
         return false;
 
 	bool res = false;

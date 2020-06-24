@@ -10,7 +10,7 @@
 #include "GLHierarchy/Light.h"
 #include "GLHierarchy/TextureFactory.h"
 #include "GLHierarchy/TextureFactoryConfig.h"
-#include "GLHierarchy/TextureObject.h"
+#include "GLHierarchy/ITextureObject.h"
 #include "GLHierarchy/TextureUnitSetup.h"
 #include "GLHierarchy/TextureSet.h"
 #include "GLHierarchy/BumppedGeometry.h"
@@ -27,38 +27,17 @@
 #include "ToolBox/Imaging/BumpmapLoader.h"
 
 
-class BackGround : public CSimpleObject
+class BackGround : public CBasicObjects::CRectangle
 {
 public:
 	BackGround()
-	{ 
-        setBoundingBox(GL_COORD_VERTEX(-70.0f,-50.0f,-50.1f,1.0f),GL_COORD_VERTEX(70.0f,50.0f,-50.0f,1.0f)); 
+	{
+		setDimensions(140.0f, 100.0f);
+		translate(0.0f, 0.0f, -50.0f);
 
-		//	Use a default shader to create a simple geometry
-		GL_COORD_VERTEX texCoord1(0,0,0,1);
-
-		list = glGenLists(1);
-		glNewList(list,GL_COMPILE);
-			glBegin(GL_QUADS);
-				glTexCoord2f(0.0f,0.0f);
-				glVertex3f(-70.0f,-50.0f,-50.0f);
-
-				glTexCoord2f(1.0f,0.0f);
-				glVertex3f(70.0f,-50.0f,-50.0f);
-
-				glTexCoord2f(1.0f,1.0f);
-				glVertex3f(70.0f,50.0f,-50.0f);
-
-				glTexCoord2f(0.0f,1.0f);
-				glVertex3f(-70.0f,50.0f,-50.0f);
-			glEnd();
-		glEndList();
-
-		m = new CMaterial(CMaterial::CGL_BLACK_MATERIAL,
-				CMaterial::CGL_BLACK_MATERIAL,
-				CMaterial::CGL_BLACK_MATERIAL,
-				50.0);
-
+		CShader *pShader = getShader();
+		CMaterial *m = pShader->getMaterial();
+		m->setShininess(50.0f);
 		m->setAmbient(0.1f,0.1f,0.1f,1.0f);
 		m->setDiffuse(0.5f,0.5f,0.5f,1.0f);
 		m->setSpecular(0.5f,0.5f,0.5f,1.0f);
@@ -69,9 +48,6 @@ public:
 	virtual void glRender();
 	virtual void glClipRender() { glRender();};
 
-	unsigned int list;
-	RAPTOR_HANDLE	bg;
-	CMaterial	*m;
 	CLight	*light;
     CLight	*light2;
 };
@@ -79,10 +55,7 @@ public:
 void BackGround::glRender()
 {
     glColor4f(1.0f,1.0f,1.0f,1.0f);
-	glCallList(bg.handle());
-	
-	m->glRender();
-	glCallList(list);
+	CShadedGeometry::glRender();
 
     GL_COORD_VERTEX lpos;
     
@@ -94,7 +67,7 @@ void BackGround::glRender()
 		glVertex3f(0.0f,0.0f,-20.0f);
         lpos = light->getLightPosition();
 		glVertex3f(lpos.x,lpos.y,lpos.z);
-        //glColor4f(0.0f,1.0f,0.0f,1.0f);
+
 		glColor4fv(light2->getSpecular());
         glVertex3f(0.0f,0.0f,-20.0f);
         lpos = light2->getLightPosition();
@@ -141,37 +114,28 @@ void CBumpDisplay::Init()
 	if (p->getId().isSubClassOf(CTextureSet::CTextureSetClassID::GetClassId()))
 		 t = (CTextureSet *)p;
 
-    CTextureObject *tt = f.glCreateTexture( ITextureObject::CGL_COLOR24_ALPHA,
-											CTextureObject::CGL_ALPHA_TRANSPARENT,
+    ITextureObject *tt = f.glCreateTexture( ITextureObject::CGL_COLOR24_ALPHA,
 											ITextureObject::CGL_BILINEAR);
 	f.glResizeTexture(tt,512,512);
 	CBumpmapLoader loader(f.getConfig().getBumpAmplitude());
 	CPerlinNoise noise(&loader);
 	noise.setNoiseModel(CPerlinNoise::NOISE2);
 	noise.generateMirrorTexture(true);
-/*
-	CTextureObject *tt = f.glCreateVolumeTexture(ITextureObject::CGL_COLOR24_ALPHA,
-												 CTextureObject::CGL_ALPHA_TRANSPARENT,
-												 ITextureObject::CGL_BILINEAR);
-	f.glResizeTexture(tt,256,256,256);
-*/
-    noise.glGenerate(tt);
+    noise.glGenerate(tt,0,0,512,512);
 
 	p = CPersistence::FindObject("Bump teapot");
 	if (p->getId().isSubClassOf(CBumppedGeometry::CBumppedGeometryClassID::GetClassId()))
 		 teapot = (CBumppedGeometry *)p;
 	teapot->setNormalMap(tt);
 
-	CTextureUnitSetup tmu;
 	CPerlinNoise noise2;
-	CTextureObject *tt2 = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
-                                            CTextureObject::CGL_ALPHA_TRANSPARENT,
+	ITextureObject *tt2 = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
                                             ITextureObject::CGL_BILINEAR);
 	f.glResizeTexture(tt2,512,512);
-    noise2.glGenerate(tt2);
-    tmu.setDiffuseMap(tt2);
+    noise2.glGenerate(tt2,0,0,512,512);
 	BackGround *pbg = new BackGround();
-	pbg->bg = tmu.glBuildSetup();
+	CTextureUnitSetup *ptmu = pbg->getShader()->glGetTextureUnitsSetup();
+	ptmu->setDiffuseMap(tt2, CTextureUnitSetup::CGL_OPAQUE);
 
     //
     //  Light and its modifier

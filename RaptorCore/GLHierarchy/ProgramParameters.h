@@ -199,8 +199,8 @@ public:
 	bool addParameter(const CParameterBase& param);
 
 	//! Access to vector parameters.
-	CParameterBase& operator[](unsigned int v);
-	const CParameterBase& operator[](unsigned int v) const;
+	CParameterBase& operator[](size_t v);
+	const CParameterBase& operator[](size_t v) const;
 
 	//! Parameters assignment: only typed value is assigned, type and index are left unchanged
 	//!	Source and destination parameter set must have the same dimension, otherwise

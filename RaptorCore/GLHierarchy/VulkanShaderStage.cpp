@@ -28,6 +28,9 @@
 #if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
     #include "System/RaptorErrorManager.h"
 #endif
+#if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
+	#include "System/Raptor.h"
+#endif
 #if !defined(AFX_RAPTORVULKANSHADER_H__C188550F_1D1C_4531_B0A0_727CE9FF9450__INCLUDED_)
 	#include "Subsys/Vulkan/VulkanShader.h"
 #endif
@@ -60,7 +63,7 @@ RAPTOR_NAMESPACE
 
 CVulkanShaderStage::CVulkanShaderStage(const std::string& name)
 	:CShaderProgram(stageId, name), m_param(NULL),
-	m_pShaderStages(NULL), uniforms(NULL), uniforms_size(0)
+	m_pShaderStages(NULL)
 {
 }
 
@@ -70,11 +73,6 @@ CVulkanShaderStage::~CVulkanShaderStage(void)
 		delete m_param;
 	if (NULL != m_pShaderStages)
 		delete m_pShaderStages;
-	if (NULL != uniforms)
-	{
-		CUniformAllocator*	pUAllocator = CUniformAllocator::GetInstance();
-		pUAllocator->releaseUniforms(uniforms);
-	}
 }
 
 CVulkanShaderStage* CVulkanShaderStage::vkClone(void) const
@@ -90,6 +88,15 @@ bool CVulkanShaderStage::exportObject(CRaptorIO& o)
 bool CVulkanShaderStage::importObject(CRaptorIO& i)
 {
 	return true;
+}
+
+bool CVulkanShaderStage::glLoadProgram(const std::string &program)
+{
+	Raptor::GetErrorManager()->generateRaptorError(	CVulkanShaderStage::CVulkanShaderStageClassID::GetClassId(),
+													CRaptorErrorManager::RAPTOR_ERROR,
+													"CVulkanShaderStage cannot load programs directly. Use Vertex, Fragment or Geometry shaders instead.");
+
+	return NULL;
 }
 
 bool CVulkanShaderStage::vkLoadShader(const std::string& filename)
@@ -122,7 +129,7 @@ void CVulkanShaderStage::setProgramParameters(const CProgramParameters &v)
 	{
 		CUniformAllocator*	pUAllocator = CUniformAllocator::GetInstance();
 
-		if (NULL == uniforms)
+		if (NULL == m_uniforms)
 		{
 			uint64_t size = 0;
 			for (unsigned int idx = 0; idx < m_parameters.getNbParameters(); idx++)
@@ -137,7 +144,7 @@ void CVulkanShaderStage::setProgramParameters(const CProgramParameters &v)
 					size += param_value.size();
 				}
 			}
-			uniforms = pUAllocator->allocateUniforms(size);
+			m_uniforms = pUAllocator->allocateUniforms(size);
 		}
 
 		// TODO : handle the case where parameter sets have different size: release parameters + reallocate.
@@ -151,11 +158,11 @@ void CVulkanShaderStage::setProgramParameters(const CProgramParameters &v)
 				uint64_t sz = param_value.size();
 				const void *addr = param_value.addr();
 
-				pUAllocator->glvkCopyPointer(uniforms + totalsize, (unsigned char*)addr, sz);
+				pUAllocator->glvkSetPointerData(m_uniforms + totalsize, (unsigned char*)addr, sz);
 				totalsize += sz;
 			}
 		}
-		uniforms_size = totalsize;
+		m_uniforms_size = totalsize;
 	}
 }
 
@@ -197,7 +204,7 @@ void CVulkanShaderStage::vkRender(CVulkanCommandBuffer &commandBuffer,
 		VkBuffer uniformBuffer = rDevice.getMemory()->getLockedBuffer(IDeviceMemoryManager::IBufferObject::UNIFORM_BUFFER);
 		
 		//! TODO : Set this only once ? i.e only if m_bApplyParameters ?
-		VkDescriptorBufferInfo bufferInfo = { uniformBuffer, (VkDeviceSize)uniforms, uniforms_size };
+		VkDescriptorBufferInfo bufferInfo = { uniformBuffer, (VkDeviceSize)m_uniforms, m_uniforms_size };
 		CVulkanTextureObject* t = tmu_setup->getDiffuseMap()->getVulkanTextureObject();
 		VkDescriptorImageInfo imageInfo = t->getCombinedImageSampler();
 

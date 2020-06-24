@@ -25,8 +25,8 @@
 #if !defined(AFX_3DENGINE_H__DB24F018_80B9_11D3_97C1_FC2841000000__INCLUDED_)
 	#include "Engine/3DEngine.h"
 #endif
-#if !defined(AFX_TEXTUREOBJECT_H__D32B6294_B42B_4E6F_AB73_13B33C544AD0__INCLUDED_)
-	#include "TextureObject.h"
+#if !defined(AFX_ITEXTUREOBJECT_H__3AA8C89E_BB23_483C_A547_C8A4CC53E551__INCLUDED_)
+	#include "GLHierarchy/ITextureObject.h"
 #endif
 #if !defined(AFX_TEXTUREFACTORY_H__1B470EC4_4B68_11D3_9142_9A502CBADC6B__INCLUDED_)
 	#include "TextureSet.h"
@@ -322,14 +322,14 @@ void CLight::glRender(void)
 	if (0 != hwMapping)
 	{
 		glLightfv(hwMapping,GL_POSITION,m_pAttributes->m_position.vector());
-		glLightfv(hwMapping,GL_AMBIENT,ambient);
-		glLightfv(hwMapping,GL_DIFFUSE,diffuse);
-		glLightfv(hwMapping,GL_SPECULAR,specular);
+		glLightfv(hwMapping,GL_AMBIENT, M.ambient);
+		glLightfv(hwMapping,GL_DIFFUSE, M.diffuse);
+		glLightfv(hwMapping,GL_SPECULAR, M.specular);
 
 		if (m_pAttributes->m_spot)
 		{
 			glLightfv(hwMapping,GL_SPOT_DIRECTION,m_pAttributes->m_direction.vector());
-			glLightfv(hwMapping,GL_SPOT_EXPONENT,&shininess[0]);
+			glLightfv(hwMapping,GL_SPOT_EXPONENT,&M.shininess);
 			glLightfv(hwMapping,GL_SPOT_CUTOFF,&m_pAttributes->m_spotParams[3]);
 			glLightfv(hwMapping,GL_CONSTANT_ATTENUATION,&m_pAttributes->m_spotParams[2]);
 			glLightfv(hwMapping,GL_LINEAR_ATTENUATION,&m_pAttributes->m_spotParams[1]);
@@ -382,11 +382,11 @@ void CLight::glRenderEffects(void)
 	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
 	glDisable(GL_TEXTURE_2D);
 	pExtensions->glBeginQueryARB(GL_SAMPLES_PASSED_ARB, query);
-	glBegin(GL_QUADS);
+	glBegin(GL_TRIANGLE_STRIP);
 		glVertex3f(-V, -V, 0.0f);
 		glVertex3f(+V, -V, 0.0f);
-		glVertex3f(+V, +V, 0.0f);
 		glVertex3f(-V, +V, 0.0f);
+		glVertex3f(+V, +V, 0.0f);
 	glEnd();
 	pExtensions->glEndQueryARB(GL_SAMPLES_PASSED_ARB);
 	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);

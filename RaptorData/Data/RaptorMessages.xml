@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <RaptorMessages 	language="English"
 			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<Class name="Object3D">
+  <Class name="DeviceMemoryManager">
+    <Message id="ID_NULL_OBJECT" str="Invalid memory buffer object !"/>
+    <Message id="ID_NO_RESOURCE" str="Exhausted of invalid size memory buffer object"/>
+    <Message id="ID_UPDATE_FAILED" str="Failed to update buffer oject data"/>
+  </Class>
+  <Class name="Object3D">
 		<Message id="ID_NO_RESOURCE" str="No memory allocated for object Bounding Boxes"/>
 	</Class>
 	<Class name="Squeleton">
@@ -50,7 +55,7 @@
 		<Message id="ID_NO_RESOURCE" str="GLSL attribute location does not exist"/>
 		<Message id="ID_WRONG_RENDERING" str="GLSL no active program"/>
 	</Class>
-	<Class name="CVertexProgram">
+	<Class name="VertexProgram">
 		<Message id="ID_NO_GPU_PROGRAM" str="Vertex ASM program not supported or cannot be run 100% hardware"/>
 		<Message id="ID_PROGRAM_ERROR" str="Error in vertex ASM program at pos %d : %s"/>
 	</Class>
@@ -60,6 +65,10 @@
 		<Message id="ID_NO_RESOURCE" str="GLSL attribute location does not exist"/>
 		<Message id="ID_WRONG_RENDERING" str="GLSL no active program"/>
 	</Class>
+  <Class name="OpenGLShaderStage">
+    <Message id="ID_PROGRAM_ERROR" str="Error in vertex GLSL shader code : %s"/>
+    <Message id="ID_UPDATE_FAILED" str="Unexpected attribute location after shader program linking : %s"/>
+  </Class>
   <Class name="GeometryShader">
     <Message id="ID_NO_GPU_PROGRAM" str="Geometry GLSL shader not supported or cannot be run 100% hardware"/>
     <Message id="ID_PROGRAM_ERROR" str="Error in geometry GLSL shader code : %s"/>
@@ -70,8 +79,9 @@
 		<Message id="ID_PROGRAM_ERROR" str="Unable to create a program object, out of resources of unsupported feature: %s"/>
 	</Class>
 	<Class name="ShaderProgram">
-		<Message id="ID_UPDATE_FAILED" str="Incompatible parameters with shader program type"/>
+		<Message id="ID_UPDATE_FAILED" str="Uniform block does not match parameter size: %s has size: %d, parameter size is: %d"/>
 		<Message id="ID_NO_GPU_PROGRAM" str="%s programs not supported"/>
+    <Message id="ID_NO_RESOURCE" str="ShaderProgram could not load file %s"/>
 	</Class>
 	<Class name="TextureFactory">
 		<Message id="ID_DESTROY_FAILED" str="Raptor Texture Factory cannot delete an invalid GL_TEXTURE_OBJECT"/>

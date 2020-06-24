@@ -209,6 +209,11 @@ bool CResourceAllocator::CResourceBinder::setArray(CProgramParameters::GL_VERTEX
 			array->arraySize = size;
 			array->arrayName = 0;
 			break;
+		case CProgramParameters::ADDITIONAL_PARAM2:
+			array = &bindings.attributes.additionalArray2;
+			array->arraySize = size;
+			array->arrayName = 0;
+			break;
 		case CProgramParameters::FOG_COORDINATE:
 			array = &bindings.attributes.fogCoordArray;
 			array->arraySize = size;
@@ -417,6 +422,16 @@ bool CResourceAllocator::CResourceBinder::bindArray(CRaptorDisplayConfig::GL_ARR
 				pExtensions->glVertexWeightPointerEXT(state.arraySize, state.arrayType, state.arrayStride, state.arrayPointer);
 				break;
 #endif
+			default:
+			{
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+				std::string msg = "Resource Binder does not support array name: ";
+				msg << state.arrayName;
+				Raptor::GetErrorManager()->generateRaptorError(	COpenGL::COpenGLClassID::GetClassId(),
+																CRaptorErrorManager::RAPTOR_FATAL, msg);
+#endif
+				break;
+			}
 		}
 	}
 	else if (global_state.enable)
@@ -499,6 +514,49 @@ bool CResourceAllocator::CResourceBinder::glScanBindings(CRaptorDisplayConfig::G
 #endif
 
 	arrays = bindings;
+
+	return true;
+}
+
+bool CResourceAllocator::glvkCopyPointer(	IDeviceMemoryManager::IBufferObject *dst, size_t dstOffset,
+											IDeviceMemoryManager::IBufferObject *src, size_t srcOffset,
+											size_t size)
+{
+	if ((NULL == deviceMemoryManager) || (NULL == src) || (NULL == dst) || (0 == size))
+	{
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+		Raptor::GetErrorManager()->generateRaptorError(	IDeviceMemoryManager::IDeviceMemoryManagerClassID::GetClassId(),
+														CRaptorErrorManager::RAPTOR_ERROR,
+														CRaptorMessages::ID_NULL_OBJECT,
+														__FILE__, __LINE__);
+#endif
+		return false;
+	}
+
+	if (dst->getStorage() != src->getStorage())
+		return false;
+
+	if ((dst->getSize() < dstOffset + size) || (src->getSize() < srcOffset + size))
+	{
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+		Raptor::GetErrorManager()->generateRaptorError(	IDeviceMemoryManager::IDeviceMemoryManagerClassID::GetClassId(),
+														CRaptorErrorManager::RAPTOR_ERROR,
+														CRaptorMessages::ID_NO_RESOURCE,
+														__FILE__, __LINE__);
+#endif
+		return false;
+	}
+
+	if (!deviceMemoryManager->copyBufferObjectData(*dst, dstOffset, *src, srcOffset, size))
+	{
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+		Raptor::GetErrorManager()->generateRaptorError( IDeviceMemoryManager::IDeviceMemoryManagerClassID::GetClassId(),
+														CRaptorErrorManager::RAPTOR_ERROR,
+														CRaptorMessages::ID_UPDATE_FAILED,
+														__FILE__, __LINE__);
+#endif
+		return false;
+	}
 
 	return true;
 }

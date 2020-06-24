@@ -53,7 +53,7 @@ namespace Builder
     public struct EXTENSION
 	{
 		public EXTENSION_KIND	kind;
-        public bool             active;
+        public bool             active;         // beware : bool size is 4 here, C size is 1. works because of alignment.
         public string           extensionName;
         public string[]         dependencies;
 	}
@@ -61,9 +61,9 @@ namespace Builder
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
     public struct BUILD_SUPPLEMENT
     {
-	    public bool DEBUG;
-	    public bool REDIST;
-	    public bool COMPUTE;
+        public bool DEBUG;
+        public bool REDIST;
+        public bool COMPUTE;
     }
 
     class NativeWrapper
@@ -108,6 +108,15 @@ namespace Builder
                 return null;
         }
 
+        public static bool setBuildSupplement(ref BUILD_SUPPLEMENT bld)
+        {
+            NATIVE_SUPPLEMENT native = new NATIVE_SUPPLEMENT();
+            native.COMPUTE = (bld.COMPUTE ? (byte)1 : (byte)0);
+            native.DEBUG = (bld.DEBUG ? (byte)1 : (byte)0);
+            native.REDIST = (bld.REDIST ? (byte)1 : (byte)0);
+            return setBuildSupplement(ref native);
+        }
+
         [DllImport("BuilderNative.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool checkConsistency(bool force);
@@ -119,10 +128,6 @@ namespace Builder
         [DllImport("BuilderNative.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool activateExtension(string extension, bool activate);
-
-        [DllImport("BuilderNative.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool setBuildSupplement([In] ref BUILD_SUPPLEMENT bld);
 
         [DllImport("BuilderNative.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.Bool)]
@@ -143,6 +148,14 @@ namespace Builder
             public IntPtr dependencies;
         }
 
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+        public struct NATIVE_SUPPLEMENT
+        {
+            public byte DEBUG;
+            public byte REDIST;
+            public byte COMPUTE;
+        }
+
         private static List<string> GetAllStrings(IntPtr ptr, int size)
         {
             var list = new List<string>();
@@ -158,5 +171,9 @@ namespace Builder
         [DllImport("BuilderNative.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool getExtensions([In, Out] NativeWrapper.NATIVE_EXTENSION[] ext, ref uint s);
+
+        [DllImport("BuilderNative.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool setBuildSupplement(ref NATIVE_SUPPLEMENT bld);
     }
 }

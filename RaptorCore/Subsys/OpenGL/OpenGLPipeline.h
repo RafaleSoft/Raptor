@@ -26,19 +26,25 @@
 #if !defined(AFX_PERSISTENCE_H__5561BA28_831B_11D3_9142_EEB51CEBBDB0__INCLUDED_)
 	#include "GLHierarchy/Persistence.h"
 #endif
+#if !defined(AFX_RAPTORPIPELINE_972B6860_BDAE_4303_962E_3DAC4ECF7F7B__INCLUDED_)
+	#include "GLHierarchy/IRaptorPipeline.h"
+#endif
+
 
 
 RAPTOR_NAMESPACE_BEGIN
 
 
-class COpenGLPipeline
+class COpenGLPipeline : public IRaptorPipeline
 {
 public:
 	COpenGLPipeline(void);
 	virtual ~COpenGLPipeline(void);
 
-	bool initPipeline();
+	//! Implement base class. @see IRaptorPipeline.
+	bool initPipeline(const CShaderProgram* shaderStages, const CGeometry* geometry);
 
+	//! Implement base class. @see IRaptorPipeline.
 	bool destroyPipeline(void);
 
 
