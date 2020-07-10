@@ -22,13 +22,16 @@
 const int MAX_LIGHTS = 5;
 const int GL_MAX_LIGHTS = 8;
 
+//
+//	Raptor Uniform blocs
+//
 layout (binding = 1) uniform Material {
 	vec4 ambient;
 	vec4 diffuse;
 	vec4 specular;
 	vec4 emission;
 	float shininess;
-} gl_Material;
+} R_Material;
 
 uniform int lightEnable[GL_MAX_LIGHTS];
 uniform	sampler2D diffuseMap;

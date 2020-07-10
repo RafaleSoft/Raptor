@@ -45,6 +45,8 @@ public:
         int		max_texture_coords;
 		int		max_texture_image_units;
 		int		max_fragment_uniform_blocks;
+		int		max_uniform_block_size;
+		int		max_combined_fragment_uniform_components;
 	} GL_FRAGMENT_SHADER_CAPS;
 
 public:
@@ -58,7 +60,7 @@ public:
 	virtual CFragmentShader* glClone();
 
     //! Loads an OpenGL 2.0 vertex shader program.
-	bool glLoadProgram(const std::string &program);
+	virtual bool glLoadProgram(const std::string &program);
 
     //! Returns current status of this fragment program
     //!	@see CShaderProgram.

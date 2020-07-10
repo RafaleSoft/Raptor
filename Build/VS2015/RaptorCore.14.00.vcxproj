@@ -1397,7 +1397,6 @@ copy CodeGeneration.h "%RAPTOR_ROOT%\Redist\Include\Subsys"
     <ClInclude Include="..\..\RaptorCore\System\RaptorVKExtensions.h" />
     <ClInclude Include="..\..\RaptorCore\System\RaptorVulkanDisplay.h" />
     <ClInclude Include="..\..\RaptorCore\System\RenderEntryPoint.h" />
-    <ClInclude Include="..\..\RaptorCore\System\Version.h" />
     <ClInclude Include="..\..\RaptorCore\System\vkext.h" />
     <ClInclude Include="..\..\RaptorCore\System\VKEXTMacros.h" />
     <ClInclude Include="..\..\RaptorCore\Win32Specific\Win32Application.h" />

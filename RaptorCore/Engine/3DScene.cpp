@@ -164,7 +164,7 @@ bool C3DScene::addObject(CObject3D *object)
 	if (NULL != m_pEnvironment)
 	{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
-		if (m_pEnvironement->getKind() == CEnvironment::SHADOW_VOLUME)
+		if (m_pEnvironment->getKind() == CEnvironment::SHADOW_VOLUME)
 		{
 			RAPTOR_WARNING(	C3DScene::C3DSceneClassID::GetClassId(),
 							CRaptorMessages::ID_UPDATE_FAILED);

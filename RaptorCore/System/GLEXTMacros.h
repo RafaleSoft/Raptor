@@ -1547,6 +1547,55 @@
 	#endif
 #endif
 
+#ifndef IMPLEMENT_GL_VERSION_2_0
+	#ifdef GL_VERSION_2_0
+		#define IMPLEMENT_GL_VERSION_2_0(target) \
+			target->glCreateProgram = (PFN_GL_CREATE_PROGRAM_PROC)GET_PROC_ADDRESS("glCreateProgram"); \
+			target->glDeleteProgram = (PFN_GL_DELETE_PROGRAM_PROC)GET_PROC_ADDRESS("glDeleteProgram"); \
+			target->glIsProgram = (PFN_GL_IS_PROGRAM_PROC)GET_PROC_ADDRESS("glIsProgram"); \
+			target->glCreateShader = (PFN_GL_CREATE_SHADER_PROC)GET_PROC_ADDRESS("glCreateShader"); \
+			target->glDeleteShader = (PFN_GL_DELETE_SHADER_PROC)GET_PROC_ADDRESS("glDeleteShader"); \
+			target->glIsShader = (PFN_GL_IS_SHADER_PROC)GET_PROC_ADDRESS("glIsShader"); \
+			target->glAttachShader = (PFN_GL_ATTACH_SHADER_PROC)GET_PROC_ADDRESS("glAttachShader"); \
+			target->glDetachShader = (PFN_GL_DETACH_SHADER_PROC)GET_PROC_ADDRESS("glDetachShader"); \
+			target->glGetAttachedShaders = (PFN_GL_GET_ATTACHED_SHADERS_PROC)GET_PROC_ADDRESS("glGetAttachedShaders"); \
+			target->glBindAttribLocation = (PFN_GL_BIND_ATTRIB_LOCATION_PROC)GET_PROC_ADDRESS("glBindAttribLocation"); \
+			target->glLinkProgram = (PFN_GL_LINK_PROGRAM_PROC)GET_PROC_ADDRESS("glLinkProgram"); \
+			target->glValidateProgram = (PFN_GL_VALIDATE_PROGRAM_PROC)GET_PROC_ADDRESS("glValidateProgram"); \
+			target->glGetProgramiv = (PFN_GL_GET_PROGRAM_IV_PROC)GET_PROC_ADDRESS("glGetProgramiv"); \
+			target->glGetProgramInfoLog = (PFN_GL_GET_PROGRAM_INFO_LOG_PROC)GET_PROC_ADDRESS("glGetProgramInfoLog"); \
+			target->glUseProgram = (PFN_GL_USE_PROGRAM_PROC)GET_PROC_ADDRESS("glUseProgram"); \
+			target->glCompileShader = (PFN_GL_COMPILE_SHADER_PROC)GET_PROC_ADDRESS("glCompileShader"); \
+			target->glShaderSource = (PFN_GL_SHADER_SOURCE_PROC)GET_PROC_ADDRESS("glShaderSource"); \
+			target->glGetShaderiv = (PFN_GL_GET_SHADER_IV_PROC)GET_PROC_ADDRESS("glGetShaderiv"); \
+			target->glGetShaderInfoLog = (PFN_GL_GET_SHADER_INFO_LOG_PROC)GET_PROC_ADDRESS("glGetShaderInfoLog"); \
+			target->glGetShaderSource = (PFN_GL_GET_SHADER_SOURCE_PROC)GET_PROC_ADDRESS("glGetShaderSource"); \
+			target->glUniform4fv = (PFN_GL_UNIFORM_4FV_PROC)GET_PROC_ADDRESS("glUniform4fv");
+	#else
+		#define IMPLEMENT_GL_VERSION_2_0(target)\
+			target->glCreateProgram = NULL; \
+			target->glDeleteProgram = NULL; \
+			target->glIsProgram = NULL; \
+			target->glCreateShader = NULL; \
+			target->glDeleteShader = NULL; \
+			target->glIsShader = NULL; \
+			target->glAttachShader = NULL; \
+			target->glDetachShader = NULL; \
+			target->glGetAttachedShaders = NULL; \
+			target->glBindAttribLocation = NULL; \
+			target->glLinkProgram = NULL; \
+			target->glValidateProgram = NULL; \
+			target->glGetProgramiv = NULL; \
+			target->glGetProgramInfoLog = NULL; \
+			target->glUseProgram = NULL; \
+			target->glCompileShader = NULL; \
+			target->glShaderSource = NULL; \
+			target->glGetShaderiv = NULL; \
+			target->glGetShaderInfoLog = NULL; \
+			target->glGetShaderSource = NULL; \
+			target->glUniform4fv = NULL;
+	#endif
+#endif
 
 #endif	// __glext_macros_h_
 

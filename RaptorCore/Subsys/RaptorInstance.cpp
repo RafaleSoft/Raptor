@@ -404,6 +404,24 @@ bool CRaptorInstance::glvkInitSharedResources(void)
 #endif
 	}
 
+	if (Raptor::glIsExtensionSupported(GL_VERSION_2_0_EXTENSION_NAME))
+#if defined(GL_VERSION_2_0)
+	{
+		m_bVertexShaderReady = m_bGeometryShaderReady = m_bFragmentShaderReady = (NULL != pExtensions->glCreateShader);
+	}
+#endif
+	else
+	{
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+		arg.arg_sz = "GLSL shader";
+		args.clear(); args.push_back(arg);
+		Raptor::GetErrorManager()->generateRaptorError(	CShaderProgram::CShaderProgramClassID::GetClassId(),
+														CRaptorErrorManager::RAPTOR_WARNING,
+														CRaptorMessages::ID_NO_GPU_PROGRAM,
+														__FILE__, __LINE__, args);
+#endif
+	}
+
 	//!	Initialise the shader library
 	if (NULL == m_pShaderLibraryInstance)
 	{
@@ -501,24 +519,35 @@ bool CRaptorInstance::glvkInitSharedResources(void)
 	}
 	if (NULL == m_pVectorFontShader)
 	{
+		int S = 0;
+		glGetIntegerv(GL_MAX_UNIFORM_BLOCK_SIZE, &S);
+
 		m_pVectorFontShader = new CShader("VECTOR_FONT_SHADER");
 		COpenGLShaderStage *stage = m_pVectorFontShader->glGetOpenGLShader("VECTOR_FONT_SHADER_PROGRAM");
 
-		CVertexShader *vp = stage->glGetVertexShader("VECTORFONT_VTX_PROGRAM");
+		CVertexShader *vs = stage->glGetVertexShader("VECTORFONT_VTX_PROGRAM");
 		CProgramParameters params;
 		GL_COORD_VERTEX viewport(0, 0, 640, 480);
 		params.addParameter("viewport", viewport);
 		CColor::RGBA color(1.0f, 0.0f, 0.0f, 0.5f);
 		params.addParameter("color", color);
 
-		CGeometryShader *gp = stage->glGetGeometryShader("VECTORFONT_GEO_PROGRAM");
-		gp->setGeometry(GL_POINTS, GL_LINE_STRIP, 14);
+		CGeometryShader *gs = stage->glGetGeometryShader("VECTORFONT_GEO_PROGRAM");
+		gs->setGeometry(GL_POINTS, GL_LINE_STRIP, 14);
 
 		CFragmentShader *fs = stage->glGetFragmentShader("VECTORFONT_TEX_PROGRAM");
 
 		stage->setProgramParameters(params);
 		if (!stage->glCompileShader())
-			return false;
+		{
+			m_pVectorFontShader->releaseReference();
+			m_pVectorFontShader = NULL;
+
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+			RAPTOR_WARNING(	COpenGLShaderStage::COpenGLShaderStageClassID::GetClassId(),
+							CRaptorMessages::ID_NO_RESOURCE);
+#endif
+		}
 	}
 
 	if (NULL == m_pFilledBboxShader)

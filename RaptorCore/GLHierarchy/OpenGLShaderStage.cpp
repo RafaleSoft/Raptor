@@ -122,9 +122,14 @@ COpenGLShaderStage::~COpenGLShaderStage(void)
 	if (m_handle.glhandle() != 0)
 	{
 		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+
+#if defined(GL_VERSION_2_0)
+		if (!pExtensions->glIsProgram(m_handle.glhandle()))
+#elif defined(GL_ARB_shader_objects)
 		GLint value = 0;
 		pExtensions->glGetObjectParameterivARB(m_handle.glhandle(), GL_OBJECT_TYPE_ARB, &value);
 		if (value != GL_PROGRAM_OBJECT_ARB)
+#endif
 		{
 			Raptor::GetErrorManager()->generateRaptorError(COpenGLShaderStage::COpenGLShaderStageClassID::GetClassId(),
 														   CRaptorErrorManager::RAPTOR_WARNING,
@@ -136,25 +141,30 @@ COpenGLShaderStage::~COpenGLShaderStage(void)
 	}
 
 	// TODO : delete program only if not shared !!!
-#if defined(GL_ARB_shader_objects)
+
 	if ((m_handle.glhandle() != 0) &&
 		(m_bDeleteVShader || m_bDeleteFShader || m_bDeleteGShader))
 	{
 		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
-
 		GLsizei maxCount = 0;
-		pExtensions->glGetObjectParameterivARB(m_handle.glhandle(), GL_OBJECT_ATTACHED_OBJECTS_ARB, &maxCount);
-
 		GLsizei count = 0;
+
+#if defined(GL_VERSION_2_0)
+		pExtensions->glGetProgramiv(m_handle.glhandle(), GL_ATTACHED_SHADERS, &maxCount);
+		GLuint *pHandles = new GLuint[maxCount];
+		pExtensions->glGetAttachedShaders(m_handle.glhandle(), maxCount, &count, pHandles);
+		for (GLsizei i = 0; ((i<count) && (i<maxCount)); i++)
+			pExtensions->glDetachShader(m_handle.glhandle(), pHandles[i]);
+#elif defined(GL_ARB_shader_objects)
+		pExtensions->glGetObjectParameterivARB(m_handle.glhandle(), GL_OBJECT_ATTACHED_OBJECTS_ARB, &maxCount);
 		GLhandleARB *pHandles = new GLhandleARB[maxCount];
 		pExtensions->glGetAttachedObjectsARB(m_handle.glhandle(), maxCount, &count, pHandles);
-
 		for (GLsizei i = 0; ((i<count) && (i<maxCount)); i++)
 			pExtensions->glDetachObjectARB(m_handle.glhandle(), pHandles[i]);
+#endif
 
 		delete[] pHandles;
 	}
-#endif
 
 	glRemoveVertexShader();
 	glRemoveFragmentShader();
@@ -163,7 +173,12 @@ COpenGLShaderStage::~COpenGLShaderStage(void)
 	if (m_handle.glhandle() != 0)
 	{
 		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+
+#if defined(GL_VERSION_2_0)
+		pExtensions->glDeleteProgram(m_handle.glhandle());
+#elif defined(GL_ARB_shader_objects)
 		pExtensions->glDeleteObjectARB(m_handle.glhandle());
+#endif
 	}
 }
 
@@ -208,13 +223,38 @@ void COpenGLShaderStage::unLink(const CPersistence* p)
 
 bool COpenGLShaderStage::glGetProgramStatus(void) const
 {
+	CVertexShader::GL_VERTEX_SHADER_CAPS vcaps;
+	CGeometryShader::GL_GEOMETRY_SHADER_CAPS gcaps;
+	CFragmentShader::GL_FRAGMENT_SHADER_CAPS fcaps;
 	bool valid = m_bValid;
+
 	if (valid && (NULL != m_pVShader))
+	{
 		valid = m_pVShader->glGetProgramStatus();
+		m_pVShader->glGetShaderCaps(vcaps);
+	}
 	if (valid && (NULL != m_pFShader))
+	{
 		valid = m_pFShader->glGetProgramStatus();
+		m_pFShader->glGetShaderCaps(fcaps);
+	}
 	if (valid && (NULL != m_pGShader))
+	{
 		valid = m_pGShader->glGetProgramStatus();
+		m_pGShader->glGetShaderCaps(gcaps);
+	}
+	
+	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+#if defined(GL_VERSION_2_0)
+	GLint nbShaders = 0;
+	pExtensions->glGetProgramiv(m_handle.glhandle(), GL_ATTACHED_SHADERS, &nbShaders);
+	GLint nbAttributes = 0;
+	pExtensions->glGetProgramiv(m_handle.glhandle(), GL_ACTIVE_ATTRIBUTES, &nbAttributes);
+	GLint nbUniforms = 0;
+	pExtensions->glGetProgramiv(m_handle.glhandle(), GL_ACTIVE_UNIFORMS, &nbUniforms);
+	GLint nbUniformsBlocks = 0;
+	pExtensions->glGetProgramiv(m_handle.glhandle(), GL_ACTIVE_UNIFORM_BLOCKS, &nbUniformsBlocks);
+#endif
 
 	return valid;
 }
@@ -267,9 +307,12 @@ void COpenGLShaderStage::glRender(void)
 {
 	if (m_handle.glhandle() != 0)
 	{
-#if defined(GL_ARB_shader_objects)
 		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+#if defined(GL_VERSION_2_0)
+		pExtensions->glUseProgram(m_handle.glhandle());
+#elif defined(GL_ARB_shader_objects)
 		pExtensions->glUseProgramObjectARB(m_handle.glhandle());
+#endif
 
 		if (m_bUpdateLocations || m_bReLinked)
 		{
@@ -303,7 +346,6 @@ void COpenGLShaderStage::glRender(void)
 
 		if (m_pFShader != NULL)
 			m_pFShader->glRender();
-#endif
 	}
 }
 
@@ -311,8 +353,10 @@ void COpenGLShaderStage::glStop(void)
 {
 	if (m_handle.glhandle() != 0)
 	{
-#if defined(GL_ARB_shader_objects)
 		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+#if defined(GL_VERSION_2_0)
+		pExtensions->glUseProgram(0);
+#elif defined(GL_ARB_shader_objects)
 		pExtensions->glUseProgramObjectARB(0);
 #endif
 	}
@@ -479,17 +523,21 @@ bool COpenGLShaderStage::glCompileShader()
 	m_bValid = false;
 	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 
+#if defined(GL_VERSION_2_0) || defined(GL_ARB_shader_objects)
 	// First try to generate programs.
 	// This step is mandatory and must succeed if there are programs.
 	if ((m_pFShader != NULL) || (m_pVShader != NULL) || (m_pGShader != NULL))
 	{
-#if defined(GL_ARB_shader_objects)
 		bool abort = false;
 
 		// create a program object
 		if (m_handle.glhandle() == 0)
 		{
+#if defined(GL_VERSION_2_0)
+			m_handle.handle(pExtensions->glCreateProgram());
+#elif defined(GL_ARB_shader_objects)
 			m_handle.handle(pExtensions->glCreateProgramObjectARB());
+#endif
 			if (m_handle.glhandle() == 0)
 			{
 				abort = true;
@@ -497,9 +545,13 @@ bool COpenGLShaderStage::glCompileShader()
 							 CRaptorMessages::ID_CREATE_FAILED)
 			}
 
+#if defined(GL_VERSION_2_0)
+			if (!pExtensions->glIsProgram(m_handle.glhandle()))
+#elif defined(GL_ARB_shader_objects)
 			GLint value = 0;
 			pExtensions->glGetObjectParameterivARB(m_handle.glhandle(), GL_OBJECT_TYPE_ARB, &value);
 			if (value != GL_PROGRAM_OBJECT_ARB)
+#endif
 			{
 				CATCH_GL_ERROR
 				return false;
@@ -548,7 +600,11 @@ bool COpenGLShaderStage::glCompileShader()
 				if (value.isA(p))
 				{
 					p = ((const CProgramParameters::CParameter<CProgramParameters::GL_VERTEX_ATTRIB>&)value).p;
+#if defined(GL_VERSION_2_0)
+					pExtensions->glBindAttribLocation(m_handle.glhandle(), p, value.name().data());
+#elif defined(GL_ARB_shader_objects)
 					pExtensions->glBindAttribLocationARB(m_handle.glhandle(), p, value.name().data());
+#endif
 				}
 			}
 		}
@@ -556,10 +612,15 @@ bool COpenGLShaderStage::glCompileShader()
 		// link the program with bound shaders
 		if (!abort)
 		{
-			pExtensions->glLinkProgramARB(m_handle.glhandle());
+			
 			GLint linkStatus = GL_FALSE;
-
+#if defined(GL_VERSION_2_0)
+			pExtensions->glLinkProgram(m_handle.glhandle());
+			pExtensions->glGetProgramiv(m_handle.glhandle(), GL_LINK_STATUS, &linkStatus);
+#elif defined(GL_ARB_shader_objects)
+			pExtensions->glLinkProgramARB(m_handle.glhandle());
 			pExtensions->glGetObjectParameterivARB(m_handle.glhandle(), GL_OBJECT_LINK_STATUS_ARB, &linkStatus);
+#endif
 			if (linkStatus == GL_FALSE)
 			{
 				CATCH_GL_ERROR
@@ -567,16 +628,19 @@ bool COpenGLShaderStage::glCompileShader()
 			}
 		}
 
-#ifdef RAPTOR_DEBUG_MODE_GENERATION
 		if (!abort)
 		{
-			pExtensions->glValidateProgramARB(m_shaderProgram.handle());
 			GLint validateStatus = GL_FALSE;
-			pExtensions->glGetObjectParameterivARB(m_shaderProgram.handle(), GL_OBJECT_VALIDATE_STATUS_ARB, &validateStatus);
+#if defined(GL_VERSION_2_0)
+			pExtensions->glValidateProgram(m_handle.handle());
+			pExtensions->glGetProgramiv(m_handle.handle(), GL_VALIDATE_STATUS, &validateStatus);
+#elif defined(GL_ARB_shader_objects)
+			pExtensions->glValidateProgramARB(m_handle.handle());
+			pExtensions->glGetObjectParameterivARB(m_handle.handle(), GL_OBJECT_VALIDATE_STATUS_ARB, &validateStatus);
+#endif
 			if (validateStatus == GL_FALSE)
 				abort = true;
 		}
-#endif
 
 		if ((abort) && (m_handle.glhandle() != 0))
 		{
@@ -584,11 +648,20 @@ bool COpenGLShaderStage::glCompileShader()
 			GLint length = 0;
 			CRaptorMessages::MessageArgument arg;
 			char *pInfoLog = NULL;
+
+#if defined(GL_VERSION_2_0)
+			pExtensions->glGetProgramiv(m_handle.handle(), GL_INFO_LOG_LENGTH, &maxLength);
+#elif defined(GL_ARB_shader_objects)
 			pExtensions->glGetObjectParameterivARB(m_handle.glhandle(), GL_OBJECT_INFO_LOG_LENGTH_ARB, &maxLength);
+#endif
 			if (maxLength > 0)
 			{
 				pInfoLog = (char*)malloc(maxLength * sizeof(char));
+#if defined(GL_VERSION_2_0)
+				pExtensions->glGetProgramInfoLog(m_handle.glhandle(), maxLength, &length, pInfoLog);
+#elif defined(GL_ARB_shader_objects)
 				pExtensions->glGetInfoLogARB(m_handle.glhandle(), maxLength, &length, pInfoLog);
+#endif
 				arg.arg_sz = pInfoLog;
 			}
 			else
@@ -607,12 +680,13 @@ bool COpenGLShaderStage::glCompileShader()
 		{
 			m_bReLinked = true;
 			m_bValid = true;
+			m_bValid = glGetProgramStatus();
 		}
 
 		CATCH_GL_ERROR
 		return !abort;
-#endif
 	}
+#endif
 
 	return false;
 }

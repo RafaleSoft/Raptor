@@ -235,6 +235,10 @@ bool CRaptorClient::start(const CCmdLineParser &cmdLine)
 {
 	//	initialize Raptor classes and settings
     CRaptorConfig config;
+	config.m_bRelocation = true;
+	config.m_uiPolygons = 4096;
+	config.m_uiVertices = 4096;
+	config.m_uiUniforms = 65536;
 	config.m_logFile = "Raptor_Viewer.log";
 	config.m_bAutoDestroy = false;
 	bool res = Raptor::glInitRaptor(config);

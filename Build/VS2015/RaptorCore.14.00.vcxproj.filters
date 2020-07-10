@@ -1050,9 +1050,6 @@
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\LightGlow.h">
       <Filter>Header Files\GLHierarchy include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\RaptorCore\System\Version.h">
-      <Filter>Header Files\System include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\RaptorCore\Engine\ShaderModifier.h">
       <Filter>Header Files\Engine include</Filter>
     </ClInclude>

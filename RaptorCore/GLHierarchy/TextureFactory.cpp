@@ -411,7 +411,7 @@ bool CTextureFactory::glLoadTexture(ITextureObject* const T,
 														CRaptorMessages::ID_NULL_OBJECT);
 		return false;
 	}
-	if (!glIsTexture(T->texname))
+	if (!glIsTexture(T->getGLTextureObject()->texname))
 	{
 		Raptor::GetErrorManager()->generateRaptorError(CTextureFactory::CTextureFactoryClassID::GetClassId(),
 			CRaptorErrorManager::RAPTOR_WARNING,
@@ -1144,7 +1144,7 @@ bool CTextureFactory::glLoadCompressedTexture(ITextureObject* const T,const std:
 #ifdef GL_ARB_texture_compression
 
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
-    if ((T == NULL) || (!glIsTexture(T->texname)))
+    if ((T == NULL) || (!glIsTexture(T->getGLTextureObject()->texname)))
 	{
         Raptor::GetErrorManager()->generateRaptorError(	CTextureFactory::CTextureFactoryClassID::GetClassId(),
 														CRaptorErrorManager::RAPTOR_WARNING,
