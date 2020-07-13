@@ -20,9 +20,46 @@
 #ifndef __CGLTYPES_HPP__
     #include "CGLTypes.h"
 #endif
+#if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
+	#include "System/Raptor.h"
+#endif
+#if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
+	#include "System/RaptorErrorManager.h"
+#endif
+#if !defined(AFX_OPENGL_H__6C8840CA_BEFA_41DE_9879_5777FBBA7147__INCLUDED_)
+	#include "Subsys/OpenGL/RaptorOpenGL.h"
+#endif
 
+#include <strstream>
 
 RAPTOR_NAMESPACE_BEGIN
+
+#if defined(WIN32)
+	extern "C" PROC glGetProcAddress(const char *name, const std::string& file, int line)
+	{
+		PROC ptr = NULL;
+		ptr = wglGetProcAddress(name);
+		DWORD err = ::GetLastError();
+		if (err == ERROR_PROC_NOT_FOUND)
+		{
+			std::ostrstream r_line;
+			r_line << "WGL Function not found: ";
+			r_line << name;
+			r_line << " [line:" << line << "] " << ends;
+			string::size_type pos1 = file.rfind('\\');
+			string::size_type pos2 = file.rfind('.');
+			string r_file = file.substr(pos1 + 1, pos2 - pos1 - 1);
+
+			r_line << "(class " + r_file + ")";
+
+			RAPTOR_WARNING(COpenGL::COpenGLClassID::GetClassId(), r_line.str());
+			SetLastError(0);
+		}
+
+		return ptr;
+	}
+#endif
+
 
 #ifndef _ANDROID
 	#if defined(GL_ARB_transpose_matrix)

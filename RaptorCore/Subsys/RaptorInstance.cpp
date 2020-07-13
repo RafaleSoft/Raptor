@@ -404,12 +404,11 @@ bool CRaptorInstance::glvkInitSharedResources(void)
 #endif
 	}
 
-	if (Raptor::glIsExtensionSupported(GL_VERSION_2_0_EXTENSION_NAME))
 #if defined(GL_VERSION_2_0)
+	if (NULL != pExtensions->glCreateShader)
 	{
-		m_bVertexShaderReady = m_bGeometryShaderReady = m_bFragmentShaderReady = (NULL != pExtensions->glCreateShader);
+		m_bVertexShaderReady = m_bGeometryShaderReady = m_bFragmentShaderReady = true;
 	}
-#endif
 	else
 	{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
@@ -421,6 +420,7 @@ bool CRaptorInstance::glvkInitSharedResources(void)
 														__FILE__, __LINE__, args);
 #endif
 	}
+#endif
 
 	//!	Initialise the shader library
 	if (NULL == m_pShaderLibraryInstance)

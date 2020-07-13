@@ -27,7 +27,12 @@
 //! Platform specific extension loader
 //!
 #if defined(WIN32)
-	#define GET_PROC_ADDRESS(name) wglGetProcAddress(name)
+	#if defined RAPTOR_DEBUG_MODE_GENERATION
+		extern "C" PROC glGetProcAddress(const char *name, const std::string& file, int line);
+		#define GET_PROC_ADDRESS(name) glGetProcAddress(name, __FILE__, __LINE__)
+	#else
+		#define GET_PROC_ADDRESS(name) wglGetProcAddress(name)
+	#endif
 #elif defined(LINUX)
 	extern "C" void (*glXGetProcAddress(const GLubyte *name))(void);
 	#define GET_PROC_ADDRESS(name) glXGetProcAddress((GLubyte*)name)
