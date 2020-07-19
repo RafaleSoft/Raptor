@@ -637,6 +637,9 @@
   <ItemGroup>
     <Xml Include="..\..\RaptorViewer\Demo.xml" />
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\..\RaptorViewer\Start.tga" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

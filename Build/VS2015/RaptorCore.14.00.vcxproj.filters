@@ -622,11 +622,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Xsd Include="Subsys\ObjectModels\Raptor.xsd">
-      <Filter>Source Files\Subsys src\ObjectModels</Filter>
-    </Xsd>
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="..\..\RaptorCore\Engine\3DEngine.h">
       <Filter>Header Files\Engine include</Filter>
     </ClInclude>
@@ -1201,5 +1196,10 @@
     <ResourceCompile Include="..\..\RaptorCore\RaptorCore.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Xsd Include="..\..\RaptorCore\Subsys\ObjectModels\Raptor.xsd">
+      <Filter>Source Files\Subsys src\ObjectModels</Filter>
+    </Xsd>
   </ItemGroup>
 </Project>

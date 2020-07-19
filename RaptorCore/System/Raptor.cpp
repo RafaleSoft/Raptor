@@ -174,12 +174,12 @@ int Raptor::glPurgeRaptor(bool count)
 				if (obj!=NULL)
 				{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
-		stringstream str;
-		str << "Deleting: ";
-		str << obj << " - ";
-		str << obj->getName();
-		str << ends;
-		RAPTOR_NO_ERROR(COpenGL::COpenGLClassID::GetClassId(),str.str().c_str());
+					stringstream str;
+					str << "Deleting: ";
+					str << obj << " - ";
+					str << obj->getName();
+					str << ends;
+					RAPTOR_NO_ERROR(COpenGL::COpenGLClassID::GetClassId(),str.str().c_str());
 #endif
 					pos = NULL;
 					delete obj;
@@ -196,7 +196,10 @@ int Raptor::glPurgeRaptor(bool count)
 		nb = 0;
 	}
 
-    CATCH_GL_ERROR
+	if (NULL != GetErrorManager())
+	{
+		CATCH_GL_ERROR
+	}
 
 	return (int)nb;
 }

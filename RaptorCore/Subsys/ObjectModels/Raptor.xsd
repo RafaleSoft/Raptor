@@ -4,6 +4,9 @@
       Global types and attributes definitions:
       - color: to match a CColor
       - coord: to match GL_COORD_VERTEX
+      - texcoord to match GL_TEX_COORD
+      - vertex to match CGeometry VERTEX structures
+      - face to match CGeometry triangle face item
       - TextureFunction: to define sampler function for legacy OpenGL
       - TextureUnit: to identify a specific image Unit
   -->
@@ -13,12 +16,33 @@
     <xs:attribute name="b" type="xs:float" />
     <xs:attribute name="a" type="xs:float" />
   </xs:complexType>
+  
   <xs:complexType name="coord">
     <xs:attribute name="x" type="xs:float" />
     <xs:attribute name="y" type="xs:float" />
     <xs:attribute name="z" type="xs:float" />
     <xs:attribute name="h" type="xs:float" />
   </xs:complexType>
+  
+  <xs:complexType name="texcoord">
+    <xs:attribute name="u" type="xs:float" />
+    <xs:attribute name="v" type="xs:float" />
+  </xs:complexType>
+  
+  <xs:complexType name="vertex">
+    <xs:all>
+      <xs:element name="Coord" minOccurs="0" type="coord"/>
+      <xs:element name="TexCoord" minOccurs="0" type="texcoord"/>
+      <xs:element name="Color" minOccurs="0" type="color"/>
+    </xs:all>
+  </xs:complexType>
+  
+  <xs:complexType name ="face">
+    <xs:attribute name="vertex1" type="xs:integer" />
+    <xs:attribute name="vertex2" type="xs:integer" />
+    <xs:attribute name="vertex3" type="xs:integer" />
+  </xs:complexType>
+  
   <xs:attribute name="TextureFunction">
     <xs:simpleType>
       <xs:restriction base="xs:string">
@@ -30,6 +54,7 @@
       </xs:restriction>
     </xs:simpleType>
   </xs:attribute>
+  
   <xs:attribute name="TextureUnit">
     <xs:simpleType>
       <xs:restriction base="xs:string">
@@ -87,6 +112,7 @@
   </xs:element>
   <xs:element name="TextureObject">
     <xs:complexType>
+      <xs:attribute name="TextureSet" type="xs:string" />
       <xs:attribute name="name" type="xs:string" />
       <xs:attribute name="filter" type="xs:string" />
       <xs:attribute name="mode" type="xs:string" />
@@ -107,6 +133,7 @@
         <xs:element name="Map" minOccurs="0" maxOccurs="unbounded">
           <xs:complexType>
             <xs:attribute ref="TextureUnit"/>
+            <xs:attribute name="TextureSet" type="xs:string" />
             <xs:attribute name="texname" type="xs:string" />
             <xs:attribute name="enable" type="xs:boolean" />
             <xs:attribute ref="TextureFunction"/>
@@ -302,27 +329,41 @@
         <xs:attribute name="name" type="xs:string" />
     </xs:complexType>
   </xs:element>
+
+  <xs:complexType name="renderingModel">
+    <xs:attribute name="front_geometry" type="xs:boolean" />
+    <xs:attribute name="back_geometry" type="xs:boolean" />
+    <xs:attribute name="normals" type="xs:boolean" />
+    <xs:attribute name="tangents" type="xs:boolean" />
+    <xs:attribute name="texture" type="xs:boolean" />
+    <xs:attribute name="weights" type="xs:boolean" />
+    <xs:attribute name="colors" type="xs:boolean" />
+    <xs:attribute name="fog" type="xs:boolean" />
+  </xs:complexType>
+  
   <xs:element name="Geometry">
     <xs:complexType>
-        <xs:sequence>
-            <xs:element name="RenderingModel" minOccurs="0" maxOccurs="unbounded">
-                <xs:complexType>
-                    <xs:attribute name="front_geometry" type="xs:boolean" />
-                    <xs:attribute name="back_geometry" type="xs:boolean" />
-                    <xs:attribute name="normals" type="xs:boolean" />
-                    <xs:attribute name="tangents" type="xs:boolean" />
-                    <xs:attribute name="texture" type="xs:boolean" />
-                    <xs:attribute name="weights" type="xs:boolean" />
-                    <xs:attribute name="colors" type="xs:boolean" />
-                    <xs:attribute name="fog" type="xs:boolean" />
-                </xs:complexType>
-            </xs:element>
-        </xs:sequence>
+        <xs:choice>
+          <xs:element name="RenderingModel" type="renderingModel" minOccurs="0" maxOccurs="1"/>
+          <xs:element name="Vertex" type="vertex" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element name="Face" type="face" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:choice>
     </xs:complexType>
   </xs:element>
+  
+  <xs:element name="ShadedGeometry">
+    <xs:complexType>
+      <xs:choice>
+        <xs:element ref="Shader" minOccurs="0" maxOccurs="1" />
+        <xs:element ref="Geometry" minOccurs="0" maxOccurs="1" />
+      </xs:choice>
+      <xs:attribute name="name" type="xs:string" />
+    </xs:complexType>
+  </xs:element>
+
   <xs:element name="Data">
     <xs:complexType>
-      <xs:sequence>
+      <xs:choice>
         <xs:element ref="TextureSet" minOccurs="0" maxOccurs="unbounded"/>
         <xs:element ref="ParticleManager" minOccurs="0" maxOccurs="unbounded"/> 
         <xs:element ref="Set" minOccurs="0" maxOccurs="unbounded"/>
@@ -332,6 +373,8 @@
         <xs:element ref="LightModifier" minOccurs="0" maxOccurs="unbounded"/>
         <xs:element ref="Object3DInstance" minOccurs="0" maxOccurs="unbounded"/>
         <xs:element ref="Lod" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element ref="ShadedGeometry" minOccurs="0" maxOccurs="unbounded"/>
+        
         <xs:element name="Update" minOccurs="0" maxOccurs="unbounded">
           <xs:complexType>
             <xs:sequence>
@@ -405,7 +448,7 @@
             <xs:attribute name="name" type="xs:string" />
           </xs:complexType>
         </xs:element>
-      </xs:sequence>
+      </xs:choice>
       <xs:attribute name="name" type="xs:string" />
     </xs:complexType>
   </xs:element>

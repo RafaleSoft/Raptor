@@ -1531,14 +1531,28 @@
 			target->glDrawElementsInstanced = (PFN_GL_DRAW_ELEMENTS_INSTANCED_PROC)GET_PROC_ADDRESS("glDrawElementsInstanced"); \
 			target->glTexBuffer = (PFN_GL_TEX_BUFFER_PROC)GET_PROC_ADDRESS("glTexBuffer"); \
 			target->glPrimitiveRestartIndex = (PFN_GL_PRIMITIVERE_START_INDEX_PROC)GET_PROC_ADDRESS(" glPrimitiveRestartIndex"); \
-			target->glCopyBufferSubData = (PFN_GL_COPY_BUFFER_SUB_DATA_PROC)GET_PROC_ADDRESS("glCopyBufferSubData");
+			target->glCopyBufferSubData = (PFN_GL_COPY_BUFFER_SUB_DATA_PROC)GET_PROC_ADDRESS("glCopyBufferSubData"); \
+			target->glGetUniformIndices = (PFN_GL_GET_UNIFORM_INDICES_PROC)GET_PROC_ADDRESS("glGetUniformIndices"); \
+			target->glGetActiveUniformsiv = (PFN_GL_GET_ACTIVE_UNIFORMS_IV_PROC)GET_PROC_ADDRESS("glGetActiveUniformsiv"); \
+			target->glGetActiveUniformName = (PFN_GL_GET_ACTIVE_UNIFORM_NAME_PROC)GET_PROC_ADDRESS("glGetActiveUniformName"); \
+			target->glGetUniformBlockIndex = (PFN_GL_GET_UNIFORM_BLOCK_INDEX_PROC)GET_PROC_ADDRESS("glGetUniformBlockIndex"); \
+			target->glGetActiveUniformBlockiv = (PFN_GL_GET_ACTIVE_UNIFORM_BLOCK_IV_PROC)GET_PROC_ADDRESS("glGetActiveUniformBlockiv"); \
+			target->glGetActiveUniformBlockName = (PFN_GL_GET_ACTIVE_UNIFORM_BLOCK_NAME_PROC)GET_PROC_ADDRESS("glGetActiveUniformBlockName"); \
+			target->glUniformBlockBinding = (PFN_GL_UNIFORM_BLOCK_BINDING_PROC)GET_PROC_ADDRESS("glUniformBlockBinding");
 	#else
 		#define IMPLEMENT_GL_VERSION_3_1(target)\
 			target->glDrawArraysInstanced = NULL;\
 			target->glDrawElementsInstanced = NULL;\
 			target->glTexBuffer = NULL;\
 			target->glPrimitiveRestartIndex = NULL;\
-			target->glCopyBufferSubData = NULL;
+			target->glCopyBufferSubData = NULL; \
+			target->glGetUniformIndices = NULL; \
+			target->glGetActiveUniformsiv = NULL; \
+			target->glGetActiveUniformName = NULL; \
+			target->glGetUniformBlockIndex = NULL; \
+			target->glGetActiveUniformBlockiv = NULL; \
+			target->glGetActiveUniformBlockName = NULL; \
+			target->glUniformBlockBinding = NULL;
 	#endif
 #endif
 
@@ -1575,7 +1589,18 @@
 			target->glGetShaderiv = (PFN_GL_GET_SHADER_IV_PROC)GET_PROC_ADDRESS("glGetShaderiv"); \
 			target->glGetShaderInfoLog = (PFN_GL_GET_SHADER_INFO_LOG_PROC)GET_PROC_ADDRESS("glGetShaderInfoLog"); \
 			target->glGetShaderSource = (PFN_GL_GET_SHADER_SOURCE_PROC)GET_PROC_ADDRESS("glGetShaderSource"); \
-			target->glUniform4fv = (PFN_GL_UNIFORM_4FV_PROC)GET_PROC_ADDRESS("glUniform4fv");
+			target->glUniform1iv = (PFN_GL_UNIFORM_1IV_PROC)GET_PROC_ADDRESS("glUniform1iv"); \
+			target->glUniform2iv = (PFN_GL_UNIFORM_1IV_PROC)GET_PROC_ADDRESS("glUniform2iv"); \
+			target->glUniform3iv = (PFN_GL_UNIFORM_1IV_PROC)GET_PROC_ADDRESS("glUniform3iv"); \
+			target->glUniform4iv = (PFN_GL_UNIFORM_1IV_PROC)GET_PROC_ADDRESS("glUniform4iv"); \
+			target->glUniform1fv = (PFN_GL_UNIFORM_1FV_PROC)GET_PROC_ADDRESS("glUniform1fv"); \
+			target->glUniform2fv = (PFN_GL_UNIFORM_2FV_PROC)GET_PROC_ADDRESS("glUniform2fv"); \
+			target->glUniform3fv = (PFN_GL_UNIFORM_3FV_PROC)GET_PROC_ADDRESS("glUniform3fv"); \
+			target->glUniform4fv = (PFN_GL_UNIFORM_4FV_PROC)GET_PROC_ADDRESS("glUniform4fv"); \
+			target->glGetActiveAttrib = (PFN_GL_GET_ACTIVE_ATTRIB_PROC)GET_PROC_ADDRESS("glGetActiveAttrib"); \
+			target->glGetActiveUniform = (PFN_GL_GET_ACTIVE_UNIFORM_PROC)GET_PROC_ADDRESS("glGetActiveUniform"); \
+			target->glGetAttribLocation = (PFN_GL_GET_ATTRIB_LOCATION_PROC)GET_PROC_ADDRESS("glGetAttribLocation"); \
+			target->glGetUniformLocation = (PFN_GL_GET_UNIFORM_LOCATION_PROC)GET_PROC_ADDRESS("glGetUniformLocation");
 	#else
 		#define IMPLEMENT_GL_VERSION_2_0(target)\
 			target->glCreateProgram = NULL; \
@@ -1598,7 +1623,18 @@
 			target->glGetShaderiv = NULL; \
 			target->glGetShaderInfoLog = NULL; \
 			target->glGetShaderSource = NULL; \
-			target->glUniform4fv = NULL;
+			target->glUniform1iv = NULL; \
+			target->glUniform2iv = NULL; \
+			target->glUniform3iv = NULL; \
+			target->glUniform4iv = NULL; \			
+			target->glUniform1fv = NULL; \
+			target->glUniform2fv = NULL; \
+			target->glUniform3fv = NULL; \
+			target->glUniform4fv = NULL; \
+			target->glGetActiveAttrib = NULL; \
+			target->glGetActiveUniform = NULL; \
+			target->glGetAttribLocation = NULL; \
+			target->glGetUniformLocation = NULL;
 	#endif
 #endif
 

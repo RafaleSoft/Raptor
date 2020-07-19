@@ -262,30 +262,35 @@ void CWin32ContextManager::getLastError(const std::string& file,int line) const
         switch(err)
         {
             case ERROR_INVALID_HANDLE:
-                msgStr = "Invalid Handle ( class " + r_file + r_line.str() + ")";
+				msgStr = "Invalid Handle ( class ";
                 break;
             case ERROR_INVALID_DATA:
-                msgStr = "Invalid Data ( class " + r_file + r_line.str() + ")";
+				msgStr = "Invalid Data ( class ";
                 break;
             case ERROR_DC_NOT_FOUND:
-                msgStr = "DC not found ( class " + r_file + r_line.str() + ")";
+				msgStr = "DC not found ( class ";
                 break;
             case ERROR_INVALID_PIXEL_FORMAT:
-                msgStr = "Invalid Pixel Format ( class " + r_file + r_line.str() + ")";
+				msgStr = "Invalid Pixel Format ( class ";
                 break;
             case ERROR_NO_SYSTEM_RESOURCES:
-                msgStr = "No System Resources ( class " + r_file + r_line.str() + ")";
+				msgStr = "No System Resources ( class ";
                 break;
             case ERROR_NOT_ENOUGH_MEMORY:
-				msgStr = "Not enough memory ( class " + r_file + r_line.str() + ")";
+				msgStr = "Not enough memory ( class ";
                 break;
 			case ERROR_CLASS_DOES_NOT_EXIST:
-				msgStr = "Window class non existent ( class " + r_file + r_line.str() + ")";
+				msgStr = "Window class non existent ( class ";
+				break;
+			case ERROR_INVALID_PARAMETER:
+				msgStr = "Win32 invalid parameter ( class ";
 				break;
             default:
-                msgStr = "Unknown error ( class " + r_file + r_line.str() + ")";
+				msgStr = "Unknown error ( class ";
                 break;
         }
+
+		msgStr = msgStr + r_file + r_line.str() + ")";
 
 		r_line.rdbuf()->freeze(0);
 		RAPTOR_WARNING(COpenGL::COpenGLClassID::GetClassId(),msgStr);

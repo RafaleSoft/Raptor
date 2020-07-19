@@ -524,7 +524,18 @@ extern "C" {
 		LINKAGE PFN_GL_GET_SHADER_IV_PROC glGetShaderiv; \
 		LINKAGE PFN_GL_GET_SHADER_INFO_LOG_PROC glGetShaderInfoLog; \
 		LINKAGE PFN_GL_GET_SHADER_SOURCE_PROC glGetShaderSource; \
-		LINKAGE PFN_GL_UNIFORM_4FV_PROC glUniform4fv;
+		LINKAGE PFN_GL_UNIFORM_1IV_PROC glUniform1iv; \
+		LINKAGE PFN_GL_UNIFORM_1IV_PROC glUniform2iv; \
+		LINKAGE PFN_GL_UNIFORM_1IV_PROC glUniform3iv; \
+		LINKAGE PFN_GL_UNIFORM_1IV_PROC glUniform4iv; \
+		LINKAGE PFN_GL_UNIFORM_1FV_PROC glUniform1fv; \
+		LINKAGE PFN_GL_UNIFORM_2FV_PROC glUniform2fv; \
+		LINKAGE PFN_GL_UNIFORM_3FV_PROC glUniform3fv; \
+		LINKAGE PFN_GL_UNIFORM_4FV_PROC glUniform4fv; \
+		LINKAGE PFN_GL_GET_ACTIVE_ATTRIB_PROC glGetActiveAttrib; \
+		LINKAGE PFN_GL_GET_ATTRIB_LOCATION_PROC glGetAttribLocation; \
+		LINKAGE PFN_GL_GET_ACTIVE_UNIFORM_PROC glGetActiveUniform; \
+		LINKAGE PFN_GL_GET_UNIFORM_LOCATION_PROC glGetUniformLocation;
 	#endif
 #endif
 
@@ -1036,14 +1047,28 @@ extern "C" {
 	typedef void (RAPTOR_APICALL * PFN_GL_TEX_BUFFER_PROC)(GLenum target, GLenum internalformat, GLuint buffer);
 	typedef void (RAPTOR_APICALL * PFN_GL_PRIMITIVERE_START_INDEX_PROC)(GLuint index);
 	typedef void (RAPTOR_APICALL * PFN_GL_COPY_BUFFER_SUB_DATA_PROC)(GLenum readTarget, GLenum writeTarget, GLintptr readOffset, GLintptr writeOffset, GLsizeiptr size);
-	
-	#ifndef DECLARE_GL_VERSION_3_1
-	#define DECLARE_GL_VERSION_3_1(LINKAGE) \
+	typedef void (RAPTOR_APICALL * PFN_GL_GET_UNIFORM_INDICES_PROC) (GLuint program, GLsizei uniformCount, const GLchar *const*uniformNames, GLuint *uniformIndices);
+	typedef void (RAPTOR_APICALL * PFN_GL_GET_ACTIVE_UNIFORMS_IV_PROC) (GLuint program, GLsizei uniformCount, const GLuint *uniformIndices, GLenum pname, GLint *params);
+	typedef void (RAPTOR_APICALL * PFN_GL_GET_ACTIVE_UNIFORM_NAME_PROC) (GLuint program, GLuint uniformIndex, GLsizei bufSize, GLsizei *length, GLchar *uniformName);
+	typedef GLuint(RAPTOR_APICALL * PFN_GL_GET_UNIFORM_BLOCK_INDEX_PROC) (GLuint program, const GLchar *uniformBlockName);
+	typedef void (RAPTOR_APICALL * PFN_GL_GET_ACTIVE_UNIFORM_BLOCK_IV_PROC) (GLuint program, GLuint uniformBlockIndex, GLenum pname, GLint *params);
+	typedef void (RAPTOR_APICALL * PFN_GL_GET_ACTIVE_UNIFORM_BLOCK_NAME_PROC) (GLuint program, GLuint uniformBlockIndex, GLsizei bufSize, GLsizei *length, GLchar *uniformBlockName);
+	typedef void (RAPTOR_APICALL * PFN_GL_UNIFORM_BLOCK_BINDING_PROC) (GLuint program, GLuint uniformBlockIndex, GLuint uniformBlockBinding);
+
+#ifndef DECLARE_GL_VERSION_3_1
+#define DECLARE_GL_VERSION_3_1(LINKAGE) \
 		LINKAGE PFN_GL_DRAW_ARRAYS_INSTANCED_PROC glDrawArraysInstanced; \
 		LINKAGE PFN_GL_DRAW_ELEMENTS_INSTANCED_PROC glDrawElementsInstanced; \
 		LINKAGE PFN_GL_TEX_BUFFER_PROC glTexBuffer; \
 		LINKAGE PFN_GL_PRIMITIVERE_START_INDEX_PROC glPrimitiveRestartIndex; \
-		LINKAGE PFN_GL_COPY_BUFFER_SUB_DATA_PROC glCopyBufferSubData;
+		LINKAGE PFN_GL_COPY_BUFFER_SUB_DATA_PROC glCopyBufferSubData; \
+		LINKAGE PFN_GL_GET_UNIFORM_INDICES_PROC glGetUniformIndices; \
+		LINKAGE PFN_GL_GET_ACTIVE_UNIFORMS_IV_PROC glGetActiveUniformsiv; \
+		LINKAGE PFN_GL_GET_ACTIVE_UNIFORM_NAME_PROC glGetActiveUniformName; \
+		LINKAGE PFN_GL_GET_UNIFORM_BLOCK_INDEX_PROC glGetUniformBlockIndex; \
+		LINKAGE PFN_GL_GET_ACTIVE_UNIFORM_BLOCK_IV_PROC glGetActiveUniformBlockiv; \
+		LINKAGE PFN_GL_GET_ACTIVE_UNIFORM_BLOCK_NAME_PROC glGetActiveUniformBlockName; \
+		LINKAGE PFN_GL_UNIFORM_BLOCK_BINDING_PROC glUniformBlockBinding;
 	#endif
 #endif /* GL_VERSION_3_1 */
 

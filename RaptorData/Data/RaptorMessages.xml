@@ -66,7 +66,7 @@
 		<Message id="ID_WRONG_RENDERING" str="GLSL no active program"/>
 	</Class>
   <Class name="OpenGLShaderStage">
-    <Message id="ID_PROGRAM_ERROR" str="Error in vertex GLSL shader code : %s"/>
+    <Message id="ID_PROGRAM_ERROR" str="Error in GLSL shader code : %s"/>
     <Message id="ID_UPDATE_FAILED" str="Unexpected attribute location after shader program linking : %s"/>
     <Message id="ID_NO_RESOURCE" str="Platform has not enough resources to compile GLSL shader"/>
   </Class>
