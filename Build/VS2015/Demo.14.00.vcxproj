@@ -230,7 +230,7 @@ copy $(SolutionDir)$(ProjectName)\Demo.pck "%RAPTOR_ROOT%\Redist\bin\"
 </Command>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>%RAPTOR_ROOT%\Demo\buildpak.bat</Command>
+      <Command>$(PYTHON_HOME)\python.exe $(SolutionDir)Demo\buildpak.py</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -291,7 +291,7 @@ copy $(SolutionDir)$(ProjectName)\Demo.pck "%RAPTOR_ROOT%\Redist\bin\"
 </Command>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>%RAPTOR_ROOT%\Demo\buildpak.bat</Command>
+      <Command>$(PYTHON_HOME)\python.exe $(SolutionDir)Demo\buildpak.py</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">
@@ -353,7 +353,7 @@ copy $(SolutionDir)$(ProjectName)\Demo.pck "%RAPTOR_ROOT%\Redist\bin\"
 </Command>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>%RAPTOR_ROOT%\Demo\buildpak.bat</Command>
+      <Command>$(PYTHON_HOME)\python.exe $(SolutionDir)Demo\buildpak.py</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|x64'">
@@ -414,7 +414,7 @@ copy $(SolutionDir)$(ProjectName)\Demo.pck "%RAPTOR_ROOT%\Redist\bin\"
 </Command>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>%RAPTOR_ROOT%\Demo\buildpak.bat</Command>
+      <Command>$(PYTHON_HOME)\python.exe $(SolutionDir)Demo\buildpak.py</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -477,7 +477,7 @@ copy $(SolutionDir)$(ProjectName)\Demo.pck "%RAPTOR_ROOT%\Redist\bin\"
 </Command>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>%RAPTOR_ROOT%\Demo\buildpak.bat</Command>
+      <Command>$(PYTHON_HOME)\python.exe $(SolutionDir)Demo\buildpak.py</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -538,7 +538,7 @@ copy $(SolutionDir)$(ProjectName)\Demo.pck "%RAPTOR_ROOT%\Redist\bin\"
 </Command>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>%RAPTOR_ROOT%\Demo\buildpak.bat</Command>
+      <Command>$(PYTHON_HOME)\python.exe $(SolutionDir)Demo\buildpak.py</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Optimized|Win32'">
@@ -607,7 +607,7 @@ copy $(SolutionDir)$(ProjectName)\Demo.pck "%RAPTOR_ROOT%\Redist\bin\"
       <OutputFile>.\Release/Demo.bsc</OutputFile>
     </Bscmake>
     <PreBuildEvent>
-      <Command>%RAPTOR_ROOT%\Demo\buildpak.bat</Command>
+      <Command>$(PYTHON_HOME)\python.exe $(SolutionDir)Demo\buildpak.py</Command>
     </PreBuildEvent>
     <PostBuildEvent>
       <Command>copy $(OutDir)$(TargetFileName) "%RAPTOR_ROOT%\Redist\bin\"
@@ -679,7 +679,7 @@ copy $(SolutionDir)$(ProjectName)\Demo.pck "%RAPTOR_ROOT%\Redist\bin\"
       <OutputFile>.\Release/Demo.bsc</OutputFile>
     </Bscmake>
     <PreBuildEvent>
-      <Command>%RAPTOR_ROOT%\Demo\buildpak.bat</Command>
+      <Command>$(PYTHON_HOME)\python.exe $(SolutionDir)Demo\buildpak.py</Command>
     </PreBuildEvent>
     <PostBuildEvent>
       <Command>copy $(OutDir)$(TargetFileName) "%RAPTOR_ROOT%\Redist\bin\"
@@ -711,7 +711,7 @@ copy $(SolutionDir)$(ProjectName)\Demo.pck "%RAPTOR_ROOT%\Redist\bin\"
     </Xml>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\Demo\buildpak.bat" />
+    <None Include="..\..\Demo\buildpak.py" />
     <None Include="..\..\Demo\Demo.cmd" />
   </ItemGroup>
   <ItemGroup>

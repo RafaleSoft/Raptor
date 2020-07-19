@@ -38,6 +38,11 @@ RAPTOR_NAMESPACE
 
 CRaptorMutex& CTimeObject::getLock(void)
 {
+	if (NULL == tmMutex)
+	{
+		tmMutex = new CRaptorMutex();
+	}
+
 	return *tmMutex;
 }
 
@@ -52,10 +57,7 @@ CTimeObject::CTimeObject()
 	instance.m_rootTimeObjects.push_back(this);
 	m_time = 0;
 
-	if (NULL == tmMutex)
-	{
-		tmMutex = new CRaptorMutex();
-	}
+	getLock();
 }
 
 CTimeObject::~CTimeObject()

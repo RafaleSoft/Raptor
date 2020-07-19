@@ -262,27 +262,35 @@ void CWin32ContextManager::getLastError(const std::string& file,int line) const
         switch(err)
         {
             case ERROR_INVALID_HANDLE:
-                msgStr = "Invalid Handle ( class " + r_file + r_line.str() + ")";
+				msgStr = "Invalid Handle ( class ";
                 break;
             case ERROR_INVALID_DATA:
-                msgStr = "Invalid Data ( class " + r_file + r_line.str() + ")";
+				msgStr = "Invalid Data ( class ";
                 break;
             case ERROR_DC_NOT_FOUND:
-                msgStr = "DC not found ( class " + r_file + r_line.str() + ")";
+				msgStr = "DC not found ( class ";
                 break;
             case ERROR_INVALID_PIXEL_FORMAT:
-                msgStr = "Invalid Pixel Format ( class " + r_file + r_line.str() + ")";
+				msgStr = "Invalid Pixel Format ( class ";
                 break;
             case ERROR_NO_SYSTEM_RESOURCES:
-                msgStr = "No System Resources ( class " + r_file + r_line.str() + ")";
+				msgStr = "No System Resources ( class ";
                 break;
             case ERROR_NOT_ENOUGH_MEMORY:
-				msgStr = "Not enough memory ( class " + r_file + r_line.str() + ")";
+				msgStr = "Not enough memory ( class ";
                 break;
+			case ERROR_CLASS_DOES_NOT_EXIST:
+				msgStr = "Window class non existent ( class ";
+				break;
+			case ERROR_INVALID_PARAMETER:
+				msgStr = "Win32 invalid parameter ( class ";
+				break;
             default:
-                msgStr = "Unknown error ( class " + r_file + r_line.str() + ")";
+				msgStr = "Unknown error ( class ";
                 break;
         }
+
+		msgStr = msgStr + r_file + r_line.str() + ")";
 
 		r_line.rdbuf()->freeze(0);
 		RAPTOR_WARNING(COpenGL::COpenGLClassID::GetClassId(),msgStr);
@@ -541,7 +549,7 @@ bool CWin32ContextManager::glSwapVSync(unsigned int nbVSync) const
 RAPTOR_HANDLE CWin32ContextManager::glCreateWindow(const CRaptorDisplayConfig& c_pda,CRaptorDisplay *&pDisplay,RENDERING_CONTEXT_ID &ctx)
 {
 	RAPTOR_HANDLE wnd;
-	
+
     //  Invalid values are checked here, RaptorDisplay creation will succeed 
     // with invalid rect dimensions because they are set to minimum rect (0,0,1,1)
     // The trick for invisible windows can be used but is subject to change in future versions.
@@ -554,6 +562,8 @@ RAPTOR_HANDLE CWin32ContextManager::glCreateWindow(const CRaptorDisplayConfig& c
 	winclass.cbSize = sizeof(WNDCLASSEX);
     if (FALSE == GetClassInfoEx(GetModuleHandle(NULL),"RaptorWindow",&winclass))
     {
+		CATCH_WIN32_ERROR
+
         // first fill in the window class stucture
         winclass.cbSize = sizeof(WNDCLASSEX);
         winclass.style	= CS_OWNDC | CS_HREDRAW | CS_VREDRAW;
@@ -572,7 +582,6 @@ RAPTOR_HANDLE CWin32ContextManager::glCreateWindow(const CRaptorDisplayConfig& c
         if (!RegisterClassEx(&winclass))
 	        return wnd;
     }
-
 
 	int width = pda.width;
 	int height = pda.height;
@@ -627,6 +636,7 @@ RAPTOR_HANDLE CWin32ContextManager::glCreateWindow(const CRaptorDisplayConfig& c
 	if (CRaptorDisplayConfig::GENERIC == pda.acceleration)
     {
 	    id = glCreateContext(device,pda);
+
         pDisplay = NULL;
 		if (CContextManager::INVALID_CONTEXT != id)
 	    {
@@ -819,6 +829,7 @@ CContextManager::RENDERING_CONTEXT_ID CWin32ContextManager::glCreateContext(cons
 
 	PFN_WGL_GET_EXTENSIONS_STRING_ARB_PROC wglGetExtensionsStringARB = (PFN_WGL_GET_EXTENSIONS_STRING_ARB_PROC)wglGetProcAddress("wglGetExtensionsStringARB");
 	std::string extensions = (const char*)glGetString(GL_EXTENSIONS);
+	
 	extensions += wglGetExtensionsStringARB(hDC);
 	context.pExtensions = new CRaptorGLExtensions(extensions);
 	context.pExtensions->glInitExtensions();

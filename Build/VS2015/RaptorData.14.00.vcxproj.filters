@@ -21,9 +21,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\RaptorData\buildpak.bat">
-      <Filter>Source Files</Filter>
-    </None>
     <None Include="..\..\RaptorData\Data\rapsplsh.AVI">
       <Filter>Data</Filter>
     </None>
@@ -163,6 +160,18 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="..\..\RaptorData\Data\font2D.ps">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\RaptorData\buildpak.py">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="..\..\RaptorData\Data\vector_font.gs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\RaptorData\Data\vector_font.ps">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\RaptorData\Data\vector_font.vs">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

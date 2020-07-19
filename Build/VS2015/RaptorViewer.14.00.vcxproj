@@ -543,6 +543,9 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <OutputFile>.\Release/RaptorViewer.bsc</OutputFile>
     </Bscmake>
+    <PostBuildEvent>
+      <Command>copy $(OutDir)$(TargetFileName) "%RAPTOR_ROOT%\Redist\bin\"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Optimized|x64'">
     <Midl>
@@ -604,12 +607,10 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <OutputFile>.\Release/RaptorViewer.bsc</OutputFile>
     </Bscmake>
+    <PostBuildEvent>
+      <Command>copy $(OutDir)$(TargetFileName) "%RAPTOR_ROOT%\Redist\bin\"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <None Include="Demo.xml">
-      <SubType>Designer</SubType>
-    </None>
-  </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\RaptorViewer\RaptorClient.h" />
     <ClInclude Include="..\..\RaptorViewer\RaptorViewer.h" />
@@ -632,6 +633,12 @@
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\..\RaptorViewer\RaptorViewer.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="..\..\RaptorViewer\Demo.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\..\RaptorViewer\Start.tga" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

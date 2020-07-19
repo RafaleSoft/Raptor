@@ -169,7 +169,7 @@ bool iosock_collection_t::areWritable(void)
 }
 
 CServerSocket::CServerSocket()
-	:m_threadID(0)
+	:m_threadID(0), m_bConnected(false)
 #ifdef WIN32
 	,m_thread(NULL)
 #endif
@@ -191,6 +191,8 @@ void CServerSocket::shutdown()
 		pthread_join(m_threadID, &ret);
 #endif
 	}
+
+	m_bConnected = false;
 
 	m_threadID = 0;
 }
@@ -330,7 +332,9 @@ bool CServerSocket::connect(const std::string& address,unsigned short port)
 							"Failed to start listening thread");
 	}
 
-	return (0 != m_threadID);
+	m_bConnected = (0 != m_threadID);
+
+	return m_bConnected;
 }
 
 

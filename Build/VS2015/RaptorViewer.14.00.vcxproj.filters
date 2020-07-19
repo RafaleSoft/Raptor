@@ -14,9 +14,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Demo.xml" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="..\..\RaptorViewer\RaptorClient.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -51,5 +48,15 @@
     <ResourceCompile Include="..\..\RaptorViewer\RaptorViewer.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="..\..\RaptorViewer\Demo.xml">
+      <Filter>Resource Files</Filter>
+    </Xml>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\..\RaptorViewer\Start.tga">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

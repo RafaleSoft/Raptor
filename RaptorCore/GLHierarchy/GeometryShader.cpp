@@ -67,26 +67,22 @@ CGeometryShader* CGeometryShader::glClone()
 
 CGeometryShader::~CGeometryShader()
 {
-#if defined(GL_ARB_geometry_shader4)
 	if (!CRaptorInstance::GetInstance().isGeometryShaderReady())
 	{
-#ifdef RAPTOR_DEBUG_MODE_GENERATION
         Raptor::GetErrorManager()->generateRaptorError(	CGeometryShader::CGeometryShaderClassID::GetClassId(),
 														CRaptorErrorManager::RAPTOR_ERROR,
 														CRaptorMessages::ID_NO_GPU_PROGRAM);
-#endif
 	}
-	else
-	{
-		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
-		if (m_handle.glhandle() > 0)
-			pExtensions->glDeleteObjectARB(m_handle.glhandle());
-	}
-#endif
 }
 
 bool CGeometryShader::setGeometry(uint32_t inputType, uint32_t outputType, uint32_t verticesOut)
 {
+#if defined(GL_VERSION_3_2)
+	Raptor::GetErrorManager()->generateRaptorError(	CGeometryShader::CGeometryShaderClassID::GetClassId(),
+													CRaptorErrorManager::RAPTOR_WARNING,
+													"Geometry Program types shall be defined in a geometry shader");
+#endif
+
 	if ((inputType == GL_POINTS) ||
 		(inputType == GL_LINES) ||
 #if defined(GL_ARB_geometry_shader4)
@@ -115,107 +111,72 @@ bool CGeometryShader::setGeometry(uint32_t inputType, uint32_t outputType, uint3
 
 bool CGeometryShader::glLoadProgram(const std::string &program)
 {
-    m_bValid = false;
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	bool load = false;
 
-#if defined(GL_ARB_geometry_shader4)
-	if (CRaptorInstance::GetInstance().isGeometryShaderReady())
-	{
-		if (m_handle.glhandle() > 0)
-			pExtensions->glDeleteObjectARB(m_handle.glhandle());
-
-        m_handle.handle(pExtensions->glCreateShaderObjectARB(GL_GEOMETRY_SHADER_ARB));
-		if (m_handle.glhandle() == 0)
-        {
-			RAPTOR_WARNING(CGeometryShader::CGeometryShaderClassID::GetClassId(),
-						   CRaptorMessages::ID_NO_GPU_PROGRAM)
-            return false;
-        }
-
-        int length = program.size();
-        const char* source = program.data();
-		pExtensions->glShaderSourceARB(m_handle.glhandle(), 1, &source, &length);
-
-		pExtensions->glCompileShaderARB(m_handle.glhandle());
-
-        m_bValid = glGetProgramStatus();
-
-	    if (!m_bValid) 
-        {
-            GLint maxLength = 0;
-			pExtensions->glGetObjectParameterivARB(m_handle.glhandle(), GL_OBJECT_INFO_LOG_LENGTH_ARB, &maxLength);
-	        char *pInfoLog = (char*) malloc(maxLength * sizeof(char));
-			pExtensions->glGetInfoLogARB(m_handle.glhandle(), maxLength, &length, pInfoLog);
-
-            CRaptorMessages::MessageArgument arg;
-            arg.arg_sz = pInfoLog;
-            vector<CRaptorMessages::MessageArgument> args;
-            args.push_back(arg);
-			Raptor::GetErrorManager()->generateRaptorError(	CGeometryShader::CGeometryShaderClassID::GetClassId(),
-															CRaptorErrorManager::RAPTOR_ERROR,
-															CRaptorMessages::ID_PROGRAM_ERROR,
-															__FILE__, __LINE__, args);
-            free(pInfoLog);
-	        return false;
-	    }
-	}
+#if defined(GL_VERSION_3_2)
+	load = CUnifiedShader::glLoadProgram(	program,
+											GL_GEOMETRY_SHADER,
+											CGeometryShader::CGeometryShaderClassID::GetClassId());
+#elif defined(GL_ARB_geometry_shader4)
+	load = CUnifiedShader::glLoadProgram(	program,
+											GL_GEOMETRY_SHADER_ARB,
+											CGeometryShader::CGeometryShaderClassID::GetClassId());
 #endif
 
-    CATCH_GL_ERROR
-
-    return m_bValid;
+	return load;
 }
 
 bool CGeometryShader::glBindProgram(RAPTOR_HANDLE program)
 {
 	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
-
-#if defined(GL_ARB_geometry_shader4)
 	GLint value = 0;
+
+#if defined(GL_VERSION_3_2)
+	pExtensions->glGetShaderiv(m_handle.glhandle(), GL_SHADER_TYPE, &value);
+	if ((!m_bValid) || (value != GL_GEOMETRY_SHADER))
+#elif defined(GL_ARB_geometry_shader4)
 	pExtensions->glGetObjectParameterivARB(m_handle.glhandle(), GL_OBJECT_SUBTYPE_ARB, &value);
 	if (value != GL_GEOMETRY_SHADER_ARB)
+#endif
 	{
 		Raptor::GetErrorManager()->generateRaptorError(CGeometryShader::CGeometryShaderClassID::GetClassId(),
 													   CRaptorErrorManager::RAPTOR_WARNING,
 													   "Geometry Program is invalid in this context");
-
 		CATCH_GL_ERROR
 		return false;
 	}
-#endif
 
-#if defined(GL_ARB_shader_objects)
 	if (CUnifiedShader::glBindProgram(program))
 	{
-#if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
-#else
-	#if defined(GL_ARB_geometry_shader4)
-		// Since OpenGL 3.2, geometry parameters shall be defined with a layout in shader source.
-		#if defined(GL_VERSION_3_2)
-			Raptor::GetErrorManager()->generateRaptorError(	CGeometryShader::CGeometryShaderClassID::GetClassId(),
-															CRaptorErrorManager::RAPTOR_WARNING,
-															"Geometry Program types shall be defined in a geometry shader");
-		#endif
+#if defined(GL_ARB_geometry_shader4)
+	// Since OpenGL 3.2, geometry parameters shall be defined with a layout in shader source.
+	#if !defined(GL_VERSION_3_2) && !defined(GL_VERSION_3_3) && !defined(GL_VERSION_4_0) && !defined(GL_VERSION_4_1) && !defined(GL_VERSION_4_2) && !defined(GL_VERSION_4_3) && !defined(GL_VERSION_4_4) && !defined(GL_VERSION_4_5) && !defined(GL_VERSION_4_6)
 		pExtensions->glProgramParameteriARB(program.handle(), GL_GEOMETRY_INPUT_TYPE_ARB, m_inputType);
 		pExtensions->glProgramParameteriARB(program.handle(), GL_GEOMETRY_OUTPUT_TYPE_ARB, m_outputType);
 		pExtensions->glProgramParameteriARB(program.handle(), GL_GEOMETRY_VERTICES_OUT_ARB, m_verticesOut);
 	#endif
-
 #endif
+
 		CATCH_GL_ERROR
 		return true;
 	}
 	else
-#endif
 	   return false;
 }
-
 
 bool CGeometryShader::glGetShaderCaps(GL_GEOMETRY_SHADER_CAPS& caps)
 {
 	if (CRaptorInstance::GetInstance().isGeometryShaderReady())
 	{
-#if defined(GL_ARB_geometry_shader4)
+#if defined(GL_VERSION_3_2)
+		glGetIntegerv(GL_MAX_GEOMETRY_TEXTURE_IMAGE_UNITS, &caps.max_geometry_texture_image_units);
+		glGetIntegerv(GL_MAX_GEOMETRY_VARYING_COMPONENTS_ARB, &caps.max_geometry_varying_components);
+		glGetIntegerv(GL_MAX_VERTEX_VARYING_COMPONENTS_ARB, &caps.max_vertex_varying_components);
+		glGetIntegerv(GL_MAX_VARYING_COMPONENTS, &caps.max_varying_components);
+		glGetIntegerv(GL_MAX_GEOMETRY_UNIFORM_COMPONENTS, &caps.max_geometry_uniform_components);
+		glGetIntegerv(GL_MAX_GEOMETRY_OUTPUT_VERTICES, &caps.max_geometry_output_vertices);
+		glGetIntegerv(GL_MAX_GEOMETRY_TOTAL_OUTPUT_COMPONENTS, &caps.max_geometry_total_output_components);
+#elif defined(GL_ARB_geometry_shader4)
 		glGetIntegerv(GL_MAX_GEOMETRY_TEXTURE_IMAGE_UNITS_ARB,&caps.max_geometry_texture_image_units);
 		glGetIntegerv(GL_MAX_GEOMETRY_VARYING_COMPONENTS_ARB,&caps.max_geometry_varying_components);
 		glGetIntegerv(GL_MAX_VERTEX_VARYING_COMPONENTS_ARB,&caps.max_vertex_varying_components);
@@ -224,7 +185,14 @@ bool CGeometryShader::glGetShaderCaps(GL_GEOMETRY_SHADER_CAPS& caps)
 		glGetIntegerv(GL_MAX_GEOMETRY_OUTPUT_VERTICES_ARB,&caps.max_geometry_output_vertices);
 		glGetIntegerv(GL_MAX_GEOMETRY_TOTAL_OUTPUT_COMPONENTS_ARB,&caps.max_geometry_total_output_components);
 #endif
-#if defined(GL_ARB_uniform_buffer_object)
+
+#if defined(GL_VERSION_3_2)
+		glGetIntegerv(GL_MAX_COMBINED_GEOMETRY_UNIFORM_COMPONENTS, &caps.max_combined_geometry_uniform_components);
+		glGetIntegerv(GL_MAX_UNIFORM_BLOCK_SIZE, &caps.max_uniform_block_size);
+		glGetIntegerv(GL_MAX_GEOMETRY_UNIFORM_BLOCKS, &caps.max_geometry_uniform_blocks);
+#elif defined(GL_ARB_uniform_buffer_object)
+		glGetIntegerv(GL_MAX_COMBINED_GEOMETRY_UNIFORM_COMPONENTS_ARB, &caps.max_combined_geometry_uniform_components);
+		glGetIntegerv(GL_MAX_UNIFORM_BLOCK_SIZE_ARB, &caps.max_uniform_block_size);
 		glGetIntegerv(GL_MAX_GEOMETRY_UNIFORM_BLOCKS_ARB, &caps.max_geometry_uniform_blocks);
 #endif
 		return true;
@@ -241,14 +209,30 @@ bool CGeometryShader::glGetProgramStatus(void) const
 	if (!CRaptorInstance::GetInstance().isGeometryShaderReady())
 		return false;
 
-#if defined(GL_ARB_geometry_shader4)
 	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 
 	GL_GEOMETRY_SHADER_CAPS caps;
 	if (glGetShaderCaps(caps))
 	{
-        //  Check program status and compare to shader caps to return global status
-        GLint value = 0;
+		//  Check program status and compare to shader caps to return global status
+		GLint value = 0;
+
+#if defined(GL_VERSION_3_2)
+		if (!pExtensions->glIsShader(m_handle.glhandle()))
+			return false;
+
+		pExtensions->glGetShaderiv(m_handle.glhandle(), GL_SHADER_TYPE, &value);
+		if (value != GL_GEOMETRY_SHADER)
+			return false;
+
+		pExtensions->glGetShaderiv(m_handle.glhandle(), GL_COMPILE_STATUS, &value);
+		if (value == 0)
+			return false;
+
+		pExtensions->glGetShaderiv(m_handle.glhandle(), GL_DELETE_STATUS, &value);
+		if (value == 1)
+			return false;
+#elif defined(GL_ARB_uniform_buffer_object)
 		pExtensions->glGetObjectParameterivARB(m_handle.glhandle(), GL_OBJECT_TYPE_ARB, &value);
         if (value != GL_SHADER_OBJECT_ARB)
             return false;
@@ -264,11 +248,10 @@ bool CGeometryShader::glGetProgramStatus(void) const
 		pExtensions->glGetObjectParameterivARB(m_handle.glhandle(), GL_OBJECT_DELETE_STATUS_ARB, &value);
         if (value == 1)
             return false;
-
+#endif
 		return true;
 	}
 	else
-#endif
 		return false;
 }
 

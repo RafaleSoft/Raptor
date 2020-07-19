@@ -71,6 +71,7 @@ public:
 
 	DECLARE_GL_VERSION_3_1(DEFAULT_LINKAGE)
 	DECLARE_GL_VERSION_3_0(DEFAULT_LINKAGE)
+	DECLARE_GL_VERSION_2_0(DEFAULT_LINKAGE)
 
 
 	//!	Initialise all extensions on drivers/hardware.
