@@ -654,11 +654,12 @@ void COpenGLShaderStage::glQueryUniformLocations(void)
 				{
 					CProgramParameters::CParameterBase& value = m_parameters[idx];
 
-					//! TODO : add type checking here
 					if (value.name() == name)
 					{
 						value.locationIndex = location;
 						value.locationType = type;
+						value.locationSize = size;
+						break;
 					}
 				}
 			}
@@ -777,6 +778,7 @@ void COpenGLShaderStage::glSetProgramParameters()
 	GL_COORD_VERTEX vector(0.0f, 0.0f, 0.0f, 0.0f);
 	CColor::RGBA color(0.0f, 0.0f, 0.0f, 0.0f);
 	GL_MATRIX matrix;
+	std::vector<float> float_vector;
 
 	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 	for (unsigned int idx = 0; idx < m_parameters.getNbParameters(); idx++)
@@ -844,6 +846,7 @@ void COpenGLShaderStage::glSetProgramParameters()
 					}
 				}
 			}
+			//	TODO: add type checking here: locationType should be GL_SAMPLER_xxx_ARB
 			else if (param_value.isA(sampler))
 			{
 				sampler = ((const CProgramParameters::CParameter<CTextureUnitSetup::TEXTURE_IMAGE_UNIT>&)param_value).p;
@@ -866,6 +869,12 @@ void COpenGLShaderStage::glSetProgramParameters()
 				pUAllocator->glvkSetPointerData(m_uniforms, (unsigned char*)param_value.addr(), param_value.size());
 			}
 #endif
+			else if (param_value.isA(float_vector) && (param_value.locationType == GL_FLOAT))
+			{
+				const std::vector<float> &fvector = ((const CProgramParameters::CParameter<std::vector<float>>&)param_value).p;
+				size_t fsize = min(param_value.locationSize, fvector.size());
+				pExtensions->glUniform1fvARB(param_value.locationIndex, (GLsizei)fsize, &fvector[0]);
+			}
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 			else
 			{

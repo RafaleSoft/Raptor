@@ -244,113 +244,6 @@ MAD_SAT finalColor, specular, shading.z, diffuse; \
 MOV finalColor.w, shading.w; \
 END" ;
 
-/*
-string waterShader4 = 
-"!!ARBvp1.0 \
-ATTRIB iPos = vertex.position; \
-ATTRIB iTexCoord0 = vertex.texcoord; \
-PARAM time = program.local[0]; \
-PARAM mvp[4] = { state.matrix.mvp }; \
-PARAM dir0 = program.local[1]; \
-PARAM dir1 = program.local[2]; \
-PARAM dir2 = program.local[3]; \
-PARAM dir3 = program.local[4]; \
-PARAM dir4 = program.local[5]; \
-PARAM dir5 = program.local[6]; \
-PARAM dir6 = program.local[7]; \
-PARAM dir7 = program.local[8]; \
-PARAM freq123 = program.local[9]; \
-PARAM freq456 = program.local[10]; \
-PARAM freq789 = program.local[11]; \
-TEMP tmp; \
-OUTPUT oPos = result.position; \
-OUTPUT oTex0 = result.texcoord[0]; \
-OUTPUT oTex1 = result.texcoord[1]; \
-OUTPUT oTex2 = result.texcoord[2]; \
-OUTPUT oTex3 = result.texcoord[3]; \
-OUTPUT oTex4 = result.texcoord[4]; \
-OUTPUT oTex5 = result.texcoord[5]; \
-OUTPUT oTex6 = result.texcoord[6]; \
-OUTPUT oTex7 = result.texcoord[7]; \
-DP4 oPos.x , mvp[0] , iPos; \
-DP4 oPos.y , mvp[1] , iPos; \
-DP4 oPos.z , mvp[2] , iPos; \
-DP4 oPos.w , mvp[3], iPos; \
-MOV tmp, dir0.zwxy; \
-DP3 tmp.x, iTexCoord0, dir0.xyxx; \
-MAD oTex0, tmp, freq123.xxww, time.xxww; \
-MOV tmp, dir1.zwxy; \
-DP3 tmp.x, iTexCoord0, dir1.xyxx; \
-MAD oTex1, tmp, freq123.yyww, time.yyww; \
-MOV tmp, dir2.zwxy; \
-DP3 tmp.x, iTexCoord0, dir2.xyxx; \
-MAD oTex2, tmp, freq123.zzww, time.zzww; \
-MOV tmp, dir3.zwxy; \
-DP3 tmp.x, iTexCoord0, dir3.xyxx; \
-MAD oTex3, tmp, freq456.xxww, time.xxww; \
-MOV tmp, dir4.zwxy; \
-DP3 tmp.x, iTexCoord0, dir4.xyxx; \
-MAD oTex4, tmp, freq456.yyww, time.yyww; \
-MOV tmp, dir5.zwxy; \
-DP3 tmp.x, iTexCoord0, dir5.xyxx; \
-MAD oTex5, tmp, freq456.zzww, time.zzww; \
-MOV tmp, dir6.zwxy; \
-DP3 tmp.x, iTexCoord0, dir6.xyxx; \
-MAD oTex6, tmp, freq789.xxww, time.xxww; \
-MOV tmp, dir7.zwxy; \
-DP3 tmp.x, iTexCoord0, dir7.xyxx; \
-MAD oTex7, tmp, freq789.yyww, time.yyww; \
-END";
-*/
-/*
-string waterFragments2 =
-"!!ARBfp1.0 \
-ATTRIB iTex0 = fragment.texcoord[0]; \
-ATTRIB iTex1 = fragment.texcoord[1]; \
-ATTRIB iTex2 = fragment.texcoord[2]; \
-ATTRIB iTex3 = fragment.texcoord[3]; \
-ATTRIB iTex4 = fragment.texcoord[4]; \
-ATTRIB iTex5 = fragment.texcoord[5]; \
-ATTRIB iTex6 = fragment.texcoord[6]; \
-ATTRIB iTex7 = fragment.texcoord[7]; \
-OUTPUT finalColor = result.color; \
-PARAM half = { 0.5, 1.0, 0.0, 1.0 }; \
-PARAM waves = { -0.125, -0.125, 1.0, 0.0 }; \
-TEMP dx; \
-TEMP color; \
-MOV color, half.zzzz; \
-TEX dx, iTex0.xxxx , texture[0], 2D ; \
-ADD dx, dx, -half.xxzz; \
-MAD color, iTex0.zwww, dx.yyww, color; \
-TEX dx, iTex1.xxxx , texture[0], 2D ; \
-ADD dx, dx, -half.xxzz; \
-MAD color, iTex1.zwww, dx.yyww, color; \
-TEX dx, iTex2.xxxx , texture[0], 2D ; \
-ADD dx, dx, -half.xxzz; \
-MAD color, iTex2.zwww, dx.yyww, color; \
-TEX dx, iTex3.xxxx , texture[0], 2D ; \
-ADD dx, dx, -half.xxzz; \
-MAD color, iTex3.zwww, dx.yyww, color; \
-TEX dx, iTex4.xxxx , texture[0], 2D ; \
-ADD dx, dx, -half.xxzz; \
-MAD color, iTex4.zwww, dx.yyww, color; \
-TEX dx, iTex5.xxxx , texture[0], 2D ; \
-ADD dx, dx, -half.xxzz; \
-MAD color, iTex5.zwww, dx.yyww, color; \
-TEX dx, iTex6.xxxx , texture[0], 2D ; \
-ADD dx, dx, -half.xxzz; \
-MAD color, iTex6.zwww, dx.yyww, color; \
-TEX dx, iTex7.xxxx , texture[0], 2D ; \
-ADD dx, dx, -half.xxzz; \
-MAD color, iTex7.zwww, dx.yyww, color; \
-MUL color, color, waves; \
-MOV color.zw, half.y; \
-DP3 color.w, color, color; \
-RSQ color.w, color.w; \
-MUL color, color, color.w; \
-MAD finalColor, color, half.xxxz, half.xxxw; \
-END" ;
-*/
 string waterVertexProgram =
 " \n\
 #version 120 \n\
@@ -452,13 +345,19 @@ layout(location = 8) in vec2 i_TexCoord; \n\
 \n\
 uniform vec4 times; \n\
 uniform vec4 dir0; \n\
+uniform vec4 dir1; \n\
+uniform float frequencies[8]; \n\
 \n\
-out vec2 o_TexCoord; \n\
+out vec2 o_TexCoord0; \n\
+out vec2 o_TexCoord1; \n\
 \n\
 void main (void) \n\
 { \n\
 	gl_Position = vec4(vec3(i_Position.xyz),1.0); \n\
-	o_TexCoord = i_TexCoord; \n\
+	float u0 = dot(i_TexCoord, dir0.xy) + frequencies[0] * times.x; \n\
+	o_TexCoord0 = vec2(u0, 1.0); \n\
+	float u1 = dot(i_TexCoord, dir1.xy) + frequencies[1] * times.x; \n\
+	o_TexCoord1 = vec2(u1, 1.0); \n\
 } \n\
 ";
 std::string waterFragments2 =
@@ -467,12 +366,14 @@ std::string waterFragments2 =
 \n\
 uniform	sampler2D cosTable; \n\
 \n\
-in vec2 o_TexCoord; \n\
+in vec2 o_TexCoord0; \n\
+in vec2 o_TexCoord1; \n\
 out vec4 o_Color; \n\
 \n\
 void main (void) \n\
 { \n\
-	o_Color = texture(cosTable,o_TexCoord); \n\
+	o_Color = texture(cosTable,o_TexCoord0); \n\
+	o_Color = o_Color + texture(cosTable,o_TexCoord1); \n\
 } \n\
 ";
 
@@ -659,7 +560,7 @@ public:
 		RAPTOR_HANDLE handle;
 
 		//!	Create the render target texture.
-		pMap = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA, ITextureObject::CGL_UNFILTERED);
+		pMap = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA, ITextureObject::CGL_BILINEAR);
 		factory.glResizeTexture(pMap, TABLE_SIZE, TABLE_SIZE);
 		pMap->glvkUpdateClamping(ITextureObject::CGL_REPEAT);
 		tset.addTexture(pMap);
@@ -690,8 +591,6 @@ public:
 			pShader->glGetOpenGLShader()->glStop();
 			CTextureUnitSetup *tus = pShader->glGetTextureUnitsSetup();
 			tus->setDiffuseMap(pCosTable);
-			params.addParameter<CTextureUnitSetup::TEXTURE_IMAGE_UNIT>("cosTable", CTextureUnitSetup::IMAGE_UNIT_0);
-			params.addParameter<GL_COORD_VERTEX>("times", GL_COORD_VERTEX(0, 0, 0, 0));
 	
 		pBuffer->glvkUnBindDisplay();
 
@@ -731,8 +630,10 @@ public:
 			params.addParameter<CTextureUnitSetup::TEXTURE_IMAGE_UNIT>("cosTable", CTextureUnitSetup::IMAGE_UNIT_0);
 			params.addParameter<GL_COORD_VERTEX>("times", GL_COORD_VERTEX(0.2 * t, 0.1 * t, 0.5 * t, 0));
 			params.addParameter<GL_COORD_VERTEX>("dir0", GL_COORD_VERTEX(cos(angles[0]), sin(angles[0]), sin(angles[0]), -cos(angles[0])));
+			params.addParameter<GL_COORD_VERTEX>("dir1", GL_COORD_VERTEX(cos(angles[1]), sin(angles[1]), sin(angles[1]), -cos(angles[1])));
+			params.addParameter<std::vector<float>>("frequencies[0]", { freqs[0], freqs[1], freqs[2], freqs[3], freqs[4], freqs[5], freqs[6], freqs[7] });
 			
-			pRect2->getShader()->glGetOpenGLShader()->updateProgramParameters(params);
+			pRect2->getShader()->glGetOpenGLShader()->setProgramParameters(params);
 
 			/*
 			for (int i=0;i<8;i++)

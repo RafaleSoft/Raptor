@@ -1,6 +1,20 @@
-// ProgramParameters.h: interface for the CShaderProgram class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  ProgramParameters.h                                                    */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
 
 #if !defined(AFX_PROGRAMPARAMETERS_H__E28A74BB_DE78_470A_A8A2_5A3EBB3F4F90__INCLUDED_)
 #define AFX_PROGRAMPARAMETERS_H__E28A74BB_DE78_470A_A8A2_5A3EBB3F4F90__INCLUDED_
@@ -50,90 +64,87 @@ public:
 		MAX_VERTEX_ATTRIB
 	} GL_VERTEX_ATTRIB;
 
-	class CParameterBase
+
+	//!	This class is a base for shader program parameters, it cannot be constructed
+	//!	directly, only subclasses are usable.
+	class RAPTOR_API CParameterBase
 	{
 	public:
+		//!	Public destructor. 
 		virtual ~CParameterBase() {};
 
+		//!	Parameter name property.
+		//! @return the parameter name.
+		const std::string& name() const { return m_name; };
+
+		//!	Parameter name property.
+		//! @param n: the name to set for the parameter.
+		void name(const std::string& n) { m_name = n; };
+
+		//!	Assignment operator.
+		virtual CParameterBase& operator=(const CParameterBase& p);
+		
+		//!	Parameter type identifier for comparison
+		virtual size_t getTypeId(void) const;
+		
+		//!	Definition of parameter services:
+		//!	- the size of the parameter
+		//!	- the address of the parameter (caution: for subclasses, 
+		//!	  the addr method must be implemented otherwise the framework
+		//!	  will not work with class based parameters.
+		//!	- a clone for parameters (deep copy)
+		//!	- a copy of the parameter value only.
 		virtual uint64_t size(void) const { return 0; };
 		virtual const void* addr(void) const { return NULL; };
 		virtual CParameterBase* clone(void) const { return NULL; };
 		virtual bool copy(const CParameterBase&) { return false; };
 
-
-		const std::string& name() const { return m_name; };
-		void name(const std::string& n) { m_name = n; };
-
-		virtual CParameterBase& operator=(const CParameterBase& p)
-		{
-			m_name = p.m_name;
-			locationIndex = p.locationIndex;
-			locationType = p.locationType;
-			return *this;
-		}
-
-#if (_MSC_VER <= 1500) || defined(LINUX)
-		static size_t hash_value(const std::string& s)
-		{	
-			const char *ptr = s.c_str();
-			const char *end = ptr + s.size();
-			size_t hash = 2166136261U;
-			while(ptr != end)
-				hash = 16777619U * hash ^ (size_t)*ptr++;
-			return (hash);
-		}
-#endif
-		virtual size_t getTypeId(void) const
-		{
-#if (_MSC_VER <= 1500) || defined(LINUX)
-			const std::string nm = std::string(typeid(void*).name());
-			static size_t ti = hash_value(nm);
-#else
-			static size_t ti = typeid(void*).hash_code();
-#endif		
-			return ti;
-		}
-
+		//!	This method defines a comparator for parameter subclasses
+		//!	@param t: the parameter type to compare to.
+		//! @return true if the parameter is of the tested type.
 		template <class T> bool isA(const T &t) const
 		{
 			return getTypeId() == CParameter<T>::TypeId();
 		}
 
-		//! Parameter locations can be retrieved once per link and reused.
-		int				locationIndex;
-		unsigned int	locationType;
+		//! Parameter locations can be retrieved once per shader link and reused.
+		int			locationIndex;	// -1 if no location has been found
+		uint32_t	locationType;
+		int			locationSize;
 
 	protected:
-		CParameterBase() :m_name(""), locationIndex(-1), locationType(0) {};
-		CParameterBase(const CParameterBase& p)
-			:m_name(p.m_name),
-			locationIndex(p.locationIndex),
-			locationType(p.locationType) {};
+		CParameterBase();
+		CParameterBase(const CParameterBase& p);
 
+#if (_MSC_VER <= 1500) || defined(LINUX)
+		size_t hash_value(const std::string& s);
+#endif
 		//! The name of the value: it is matched to variables of the program ( @see GLSL )
-		string				m_name;
+		std::string	m_name;
 	};
 
+	//!	This class is the main class for shader program parameters.
 	template <class P>
 	class CParameter : public CParameterBase
 	{
 	public:
 		CParameter(const P &param) :p(param) {};
+		CParameter(const std::string& n, const P &param) :m_name(n), p(param) {};
 		virtual ~CParameter() {};
 
 		static size_t TypeId(void)
 		{
-#if _MSC_VER > 1500
-			static size_t ti = typeid(P).hash_code();
-#else
+#if (_MSC_VER <= 1500) || defined(LINUX)
 			const std::string nm = std::string(typeid(P).name());
 			static size_t ti = hash_value(nm);
+#else
+			static size_t ti = typeid(P).hash_code();
 #endif
 			return ti;
 		};
 		virtual size_t getTypeId(void) const { return CParameter<P>::TypeId(); };
 
-		virtual uint64_t size(void) const { return sizeof(p); };
+		virtual uint64_t size(void) const { return sizeof(P); };
 		virtual const void* addr(void) const { return &p; };
 		virtual CParameterBase* clone(void) const
 		{
@@ -144,13 +155,13 @@ public:
 		virtual bool copy(const CParameterBase& param)
 		{
 			// Should a safe 'isA' be used ? only if fast enough.
-			if (param.size() == sizeof(p))
+			//if (param.size() == sizeof(p))
+			if (param.isA(p))
 			{
 				p = ((const CParameter<P>&)param).p;
 				return true;
 			}
-			else
-				return false;
+			return false;
 		};
 
 		CParameter<P>& operator=(const P &_p)
@@ -170,12 +181,102 @@ public:
 		{
 			//	Safe assignment
 			if (param.isA(p))
-				this->operator=((const CParameter<P>&)param);
+			{
+				CParameterBase::operator=(param);
+				p = ((const CParameter<P>&)param).p;
+			}
 			return *this;
 		}
 
 	public:
 		P	p;
+	};
+
+	//!	This class is a helper class for shader program array parameters.
+	//!	This is because arrays cannot be assigned directly, then they 
+	//! need to have a dedicated management.
+	template <class P,size_t N>
+	class CParameterArray : public CParameterBase
+	{
+	public:
+		typedef P inner_type[N];
+
+	public:
+		CParameterArray(const inner_type& param)
+		{
+			memcpy(&p[0], &param[0], N * sizeof(P));
+		};
+
+		CParameterArray(const std::string& n, const inner_type& param)
+		{
+			m_name = n;
+			memcpy(&p[0], &param[0], N * sizeof(P));
+		};
+
+		virtual ~CParameterArray() {};
+
+		static size_t TypeId(void)
+		{
+#if (_MSC_VER <= 1500) || defined(LINUX)
+			const std::string nm = std::string(typeid(inner_type).name());
+			static size_t ti = hash_value(nm);
+#else
+			static size_t ti = typeid(inner_type).hash_code();
+#endif
+			return ti;
+		};
+		virtual size_t getTypeId(void) const { return CParameterArray<P,N>::TypeId(); };
+
+		virtual uint64_t size(void) const { return N*sizeof(P); };
+		virtual const void* addr(void) const { return &p; };
+		virtual CParameterBase* clone(void) const
+		{
+			CParameterArray<P,N> *param = new CParameterArray<P,N>(p);
+			*param = *this;
+			return param;
+		};
+		virtual bool copy(const CParameterBase& param)
+		{
+			// Should a safe 'isA' be used ? only if fast enough.
+			//if (param.size() == sizeof(p))
+			if (param.getTypeId() == CParameterArray<P, N>::TypeId())
+			{
+				const CParameterArray<P, N> &src = (const CParameterArray<P, N>&)param;
+				memcpy(&p[0], &(src.p[0]), N * sizeof(P));
+				return true;
+			}
+			return false;
+		};
+
+		CParameterArray<P,N>& operator=(const inner_type &_p)
+		{
+			memcpy(&p[0], &_p[0], N * sizeof(P));
+			return *this;
+		};
+
+		CParameterArray<P,N>& operator=(const CParameterArray<P,N> &_p)
+		{
+			CParameterBase::operator=(_p);
+			memcpy(&p[0], &(_p.p[0]), N * sizeof(P));
+			return *this;
+		};
+
+		virtual CParameterBase& operator=(const CParameterBase& param)
+		{
+			//	Safe assignment
+			//if (param.isA(p))
+			if (param.getTypeId() == CParameterArray<P, N>::TypeId())
+			{
+				CParameterBase::operator=(param);
+				const CParameterArray<P, N> &src = (const CParameterArray<P, N>&)param;
+				memcpy(&p[0], &(src.p[0]), N * sizeof(P));
+				
+			}
+			return *this;
+		}
+
+	public:
+		inner_type	p;
 	};
 
 
