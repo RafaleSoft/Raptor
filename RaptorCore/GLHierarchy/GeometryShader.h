@@ -46,6 +46,8 @@ public:
 		int		max_geometry_output_vertices;
 		int		max_geometry_total_output_components;
 		int		max_geometry_uniform_blocks;
+		int		max_uniform_block_size;
+		int		max_combined_geometry_uniform_components;
 	} GL_GEOMETRY_SHADER_CAPS;
 
 

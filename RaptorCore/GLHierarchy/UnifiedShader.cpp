@@ -30,6 +30,9 @@
 #if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
     #include "System/RaptorErrorManager.h"
 #endif
+#if !defined(AFX_RAPTORINSTANCE_H__90219068_202B_46C2_BFF0_73C24D048903__INCLUDED_)
+	#include "Subsys/RaptorInstance.h"
+#endif
 
 
 RAPTOR_NAMESPACE
@@ -50,10 +53,21 @@ CUnifiedShader::CUnifiedShader(const CUnifiedShader& shader)
 
 CUnifiedShader::~CUnifiedShader()
 {
+	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 
+	if (m_handle.glhandle() > 0)
+	{
+#if defined(GL_VERSION_2_0)
+		pExtensions->glDeleteShader(m_handle.glhandle());
+#elif defined(GL_ARB_vertex_shader)
+		pExtensions->glDeleteObjectARB(m_handle.glhandle());
+#endif
+	
+		m_handle.glhandle(0);
+	}
 }
 
-void CUnifiedShader::glProgramParameter(unsigned int numParam, const GL_COORD_VERTEX &v) const
+void CUnifiedShader::glProgramParameter(size_t numParam, const GL_COORD_VERTEX &v) const
 {
 	if (m_handle.glhandle() == 0)
         return;
@@ -61,7 +75,7 @@ void CUnifiedShader::glProgramParameter(unsigned int numParam, const GL_COORD_VE
     glParameter(numParam,v);
 }
 
-void CUnifiedShader::glProgramParameter(unsigned int numParam, const CColor::RGBA &v) const
+void CUnifiedShader::glProgramParameter(size_t numParam, const CColor::RGBA &v) const
 {
 	if (m_handle.glhandle() == 0)
         return;
@@ -69,11 +83,10 @@ void CUnifiedShader::glProgramParameter(unsigned int numParam, const CColor::RGB
     glParameter(numParam,v);
 }
 
-void CUnifiedShader::glParameter(unsigned int numParam, const float *v) const
+void CUnifiedShader::glParameter(size_t numParam, const float *v) const
 {
-#if defined(GL_ARB_shader_objects)
 	if (numParam < m_parameters.getNbParameters())
-    {
+	{
 		const CProgramParameters::CParameterBase& param_value = m_parameters[numParam];
 		GLint location = param_value.locationIndex;
 		if (location == -1)
@@ -84,14 +97,89 @@ void CUnifiedShader::glParameter(unsigned int numParam, const float *v) const
 #endif
 		}
 		else
-        {
-            const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
-            pExtensions->glUniform4fvARB(location,1,v);
-        }
-    }
+		{
+			const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+
+#if defined(GL_VERSION_2_0)
+			pExtensions->glUniform4fv(location, 1, v);
+#elif defined(GL_ARB_shader_objects)
+			pExtensions->glUniform4fvARB(location, 1, v);
+#endif
+		}
+	}
+
+	CATCH_GL_ERROR
+}
+
+bool CUnifiedShader::glLoadProgram(	const std::string &program, 
+									GLenum shaderType,
+									const CPersistence::CPersistenceClassID& shaderClass)
+{
+	m_bValid = false;
+	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+
+	if (CRaptorInstance::GetInstance().isVertexShaderReady())
+	{
+		if (m_handle.glhandle() > 0)
+#if defined(GL_VERSION_2_0)
+			pExtensions->glDeleteShader(m_handle.glhandle());
+		m_handle.handle(pExtensions->glCreateShader(shaderType));
+#elif defined(GL_ARB_vertex_shader)
+			pExtensions->glDeleteObjectARB(m_handle.glhandle());
+		m_handle.handle(pExtensions->glCreateShaderObjectARB(shaderType));
 #endif
 
-    CATCH_GL_ERROR
+		if (m_handle.glhandle() == 0)
+		{
+			RAPTOR_WARNING(shaderClass, CRaptorMessages::ID_NO_GPU_PROGRAM)
+			return false;
+		}
+
+		GLint length = (GLint)program.size();
+		const char* source = program.data();
+
+#if defined(GL_VERSION_2_0)
+		pExtensions->glShaderSource(m_handle.glhandle(), 1, &source, &length);
+		pExtensions->glCompileShader(m_handle.glhandle());
+#elif defined(GL_ARB_vertex_shader)
+		pExtensions->glShaderSourceARB(m_handle.glhandle(), 1, &source, &length);
+		pExtensions->glCompileShaderARB(m_handle.glhandle());
+#endif
+
+		m_bValid = glGetProgramStatus();
+
+		if (!m_bValid)
+		{
+			GLint maxLength = 0;
+
+#if defined(GL_VERSION_2_0)
+			pExtensions->glGetProgramiv(m_handle.handle(), GL_INFO_LOG_LENGTH, &maxLength);
+#elif defined(GL_ARB_shader_objects)
+			pExtensions->glGetObjectParameterivARB(m_handle.glhandle(), GL_OBJECT_INFO_LOG_LENGTH_ARB, &maxLength);
+#endif
+			char *pInfoLog = (char*)malloc(maxLength * sizeof(char));
+
+#if defined(GL_VERSION_2_0)
+			pExtensions->glGetShaderInfoLog(m_handle.glhandle(), maxLength, &length, pInfoLog);
+#elif defined(GL_ARB_shader_objects)
+			pExtensions->glGetInfoLogARB(m_handle.glhandle(), maxLength, &length, pInfoLog);
+#endif
+			CRaptorMessages::MessageArgument arg;
+			arg.arg_sz = pInfoLog;
+			vector<CRaptorMessages::MessageArgument> args;
+			args.push_back(arg);
+			Raptor::GetErrorManager()->generateRaptorError(	shaderClass,
+															CRaptorErrorManager::RAPTOR_ERROR,
+															CRaptorMessages::ID_PROGRAM_ERROR,
+															__FILE__, __LINE__, args);
+			free(pInfoLog);
+			return false;
+		}
+	}
+
+	CATCH_GL_ERROR
+
+	return m_bValid;
 }
 
 std::string CUnifiedShader::glGetProgramString(void) const
@@ -99,30 +187,44 @@ std::string CUnifiedShader::glGetProgramString(void) const
 	if (m_handle.glhandle() == 0)
 		return "";
 
-#if defined(GL_ARB_shader_objects)
 	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
-
 	int value = 0;
+	char *source = NULL;
+
+#if defined(GL_VERSION_2_0)
+	pExtensions->glGetShaderiv(m_handle.glhandle(), GL_SHADER_SOURCE_LENGTH, &value);
+	source = new char[value];
+	GLsizei length = 0;
+	pExtensions->glGetShaderSource(m_handle.glhandle(), value, &length, source);
+#elif defined(GL_ARB_shader_objects)
 	pExtensions->glGetObjectParameterivARB(m_handle.glhandle(), GL_OBJECT_SHADER_SOURCE_LENGTH_ARB, &value);
-	char *source = new char[value];
+	source = new char[value];
 	GLsizei length = 0;
 	pExtensions->glGetShaderSourceARB(m_handle.glhandle(), value, &length, source);
+#else
+	return "";
+#endif
 
 	std::string program_source = source;
 	delete[] source;
 	return program_source;
-#else
-	return "";
-#endif
 }
 
 bool CUnifiedShader::glBindProgram(RAPTOR_HANDLE program)
 {
-#if defined(GL_ARB_shader_objects)
 	if (program.glhandle() == 0)
 		return false;
 
 	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	
+
+#if defined(GL_VERSION_2_0)
+	if (!pExtensions->glIsProgram(program.glhandle()))
+		return false;
+
+	pExtensions->glAttachShader(program.glhandle(), m_handle.glhandle());
+
+#elif defined(GL_ARB_shader_objects)
 	GLint value = 0;
 	pExtensions->glGetObjectParameterivARB(program.glhandle(), GL_OBJECT_TYPE_ARB, &value);
 	if (value != GL_PROGRAM_OBJECT_ARB)
@@ -130,20 +232,29 @@ bool CUnifiedShader::glBindProgram(RAPTOR_HANDLE program)
 
 	pExtensions->glAttachObjectARB(program.glhandle(), m_handle.glhandle());
 
-	CATCH_GL_ERROR
-
-	return true;
 #else
 	return false;
 #endif
+
+	CATCH_GL_ERROR
+
+	return true;
 }
 
 bool CUnifiedShader::glUnbindProgram(RAPTOR_HANDLE program)
 {
-#if defined(GL_ARB_shader_objects)
 	if ((program.glhandle() == 0) || (m_handle.glhandle() == 0))
 		return false;
 
+	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+
+#if defined(GL_VERSION_2_0)
+	if (!pExtensions->glIsProgram(program.glhandle()))
+		return false;
+
+	pExtensions->glDetachShader(program.glhandle(), m_handle.glhandle());
+
+#elif defined(GL_ARB_shader_objects)
 	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 	GLint value = 0;
 	pExtensions->glGetObjectParameterivARB(program.glhandle(), GL_OBJECT_TYPE_ARB, &value);
@@ -152,12 +263,14 @@ bool CUnifiedShader::glUnbindProgram(RAPTOR_HANDLE program)
 
 	pExtensions->glDetachObjectARB(program.glhandle(), m_handle.glhandle());
 
-	CATCH_GL_ERROR
-
-	return true;
 #else
 	return false;
 #endif
+
+	CATCH_GL_ERROR
+
+	return true;
+
 }
 
 void CUnifiedShader::glRender(void)

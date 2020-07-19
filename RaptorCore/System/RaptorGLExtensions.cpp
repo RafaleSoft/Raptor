@@ -103,6 +103,7 @@ void CRaptorGLExtensions::glInitExtensions(void)
 
 	IMPLEMENT_GL_VERSION_3_1(this)
 	IMPLEMENT_GL_VERSION_3_0(this)
+	IMPLEMENT_GL_VERSION_2_0(this)
 
     CATCH_GL_ERROR
 	

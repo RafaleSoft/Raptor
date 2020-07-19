@@ -257,9 +257,17 @@ bool CShaderLibrary::glLoadShadersFromDataPackage()
 				msg += fs.shader_name;
 				Raptor::GetErrorManager()->generateRaptorError(CShader::CShaderClassID::GetClassId(),
 															   CRaptorErrorManager::RAPTOR_NO_ERROR,
-															   msg);
+															   msg, __FILE__, __LINE__);
 #endif
 			}
+		}
+		else
+		{
+			std::string msg = "ShaderLibrary cannot find mandatory shader: ";
+			msg += fs.shader_fname;
+			Raptor::GetErrorManager()->generateRaptorError(	CShader::CShaderClassID::GetClassId(),
+															CRaptorErrorManager::RAPTOR_FATAL,
+															msg, __FILE__, __LINE__);
 		}
 	}
 

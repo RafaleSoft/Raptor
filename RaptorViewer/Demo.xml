@@ -2,8 +2,8 @@
 <Data name="RaptorServerDemo"
 		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<TextureSet name="MAIN_TEXTURES">
-      	<Texture name="Start.tga" function="multiply" filter="bilinear" mode="compressed" transparency="0.5"/>
-  	</TextureSet>
+    <TextureObject name="Start.tga" filter="bilinear" mode="compressed" transparency="0.5"/>
+  </TextureSet>
 
 	<Shader name="GRAY_SHADER">
 		<Color r="1.0" g="1.0" b="1.0" a="1.0"/>
@@ -11,12 +11,13 @@
 			<Ambient r="1.0" g="0.6" b="0.6" a="1.0"/>
 			<Diffuse r="1.0" g="0.6" b="0.6" a="1.0"/>
 			<Specular r="0.9" g="0.9" b="0.9" a="1.0"/>
-			<Shininess r="20.0" g="1.0" b="1.0" a="1.0"/>
+			<Shininess exp="20.0"/>
 		</Material>
-		<TMUSetup name="GRAY_SHADER_TMU">
-			<DiffuseMap set="MAIN_TEXTURES" texname="Start.tga" enable="true"/>
-		</TMUSetup>
+		<TextureUnitSetup name="GRAY_SHADER_TMU">
+			<Map TextureSet="MAIN_TEXTURES" TextureUnit="Unit0" texname="Start.tga" enable="true" TextureFunction="Multiply"/>
+		</TextureUnitSetup>
 	</Shader>
+  
 	<Light name="MAINLIGHT" active="1">
 		<Position x="0.0" y="2.0" z="20.0"/>
 		<Direction x="0.0" y="0.0" z="-1.0"/>
@@ -28,53 +29,52 @@
 	</Light>
 
 	<ShadedGeometry name="CUBE">
-	<Shader name="GRAY_SHADER"/>
-	<Geometry>
-		<RenderingModel front_geometry="true" normals="true" texture="true"/>
-		<Vertex>
-			<Coord x="-1.0" y="-1.0" z="1.0" h="1.0"/> <TexCoord u="0.0" v="0.0"/>
-			<Coord x="1.0"  y="-1.0" z="1.0" h="1.0"/> <TexCoord u="1.0" v="0.0"/>
-			<Coord x="1.0"  y="1.0"  z="1.0" h="1.0"/> <TexCoord u="1.0" v="1.0"/>
-			<Coord x="-1.0" y="1.0"  z="1.0" h="1.0"/> <TexCoord u="0.0" v="1.0"/>
+	  <Shader name="GRAY_SHADER"/>
+	  <Geometry>
+		  <RenderingModel front_geometry="true" normals="true" texture="true"/>
+		  <Vertex><Coord x="-1.0" y="-1.0" z="1.0" h="1.0"/> <TexCoord u="0.0" v="0.0"/></Vertex>
+      <Vertex><Coord x="1.0"  y="-1.0" z="1.0" h="1.0"/> <TexCoord u="1.0" v="0.0"/></Vertex>
+      <Vertex><Coord x="1.0"  y="1.0"  z="1.0" h="1.0"/> <TexCoord u="1.0" v="1.0"/></Vertex>
+      <Vertex><Coord x="-1.0" y="1.0"  z="1.0" h="1.0"/> <TexCoord u="0.0" v="1.0"/></Vertex>
 
-			<Coord x="-1.0" y="1.0" z="1.0"  h="1.0"/> <TexCoord u="0.0" v="0.0"/>
-			<Coord x="1.0"  y="1.0" z="1.0"  h="1.0"/> <TexCoord u="1.0" v="0.0"/>
-			<Coord x="1.0"  y="1.0" z="-1.0" h="1.0"/> <TexCoord u="1.0" v="1.0"/>
-			<Coord x="-1.0" y="1.0" z="-1.0" h="1.0"/> <TexCoord u="0.0" v="1.0"/>
+      <Vertex><Coord x="-1.0" y="1.0" z="1.0"  h="1.0"/> <TexCoord u="0.0" v="0.0"/></Vertex>
+      <Vertex><Coord x="1.0"  y="1.0" z="1.0"  h="1.0"/> <TexCoord u="1.0" v="0.0"/></Vertex>
+      <Vertex><Coord x="1.0"  y="1.0" z="-1.0" h="1.0"/> <TexCoord u="1.0" v="1.0"/></Vertex>
+      <Vertex><Coord x="-1.0" y="1.0" z="-1.0" h="1.0"/> <TexCoord u="0.0" v="1.0"/></Vertex>
 
-			<Coord x="1.0"  y="-1.0" z="1.0"  h="1.0"/> <TexCoord u="0.0" v="0.0"/>
-			<Coord x="1.0"  y="-1.0" z="-1.0" h="1.0"/> <TexCoord u="1.0" v="0.0"/>
-			<Coord x="1.0"  y="1.0"  z="-1.0" h="1.0"/> <TexCoord u="1.0" v="1.0"/>
-			<Coord x="1.0"  y="1.0"  z="1.0"  h="1.0"/> <TexCoord u="0.0" v="1.0"/>
+      <Vertex><Coord x="1.0"  y="-1.0" z="1.0"  h="1.0"/> <TexCoord u="0.0" v="0.0"/></Vertex>
+      <Vertex><Coord x="1.0"  y="-1.0" z="-1.0" h="1.0"/> <TexCoord u="1.0" v="0.0"/></Vertex>
+      <Vertex><Coord x="1.0"  y="1.0"  z="-1.0" h="1.0"/> <TexCoord u="1.0" v="1.0"/></Vertex>
+      <Vertex><Coord x="1.0"  y="1.0"  z="1.0"  h="1.0"/> <TexCoord u="0.0" v="1.0"/></Vertex>
 
-			<Coord x="-1.0" y="-1.0" z="-1.0" h="1.0"/> <TexCoord u="0.0" v="0.0"/>
-			<Coord x="-1.0" y="-1.0" z="1.0"  h="1.0"/> <TexCoord u="1.0" v="0.0"/>
-			<Coord x="-1.0" y="1.0"  z="1.0"  h="1.0"/> <TexCoord u="1.0" v="1.0"/>
-			<Coord x="-1.0" y="1.0"  z="-1.0" h="1.0"/> <TexCoord u="0.0" v="1.0"/>
+      <Vertex><Coord x="-1.0" y="-1.0" z="-1.0" h="1.0"/> <TexCoord u="0.0" v="0.0"/></Vertex>
+      <Vertex><Coord x="-1.0" y="-1.0" z="1.0"  h="1.0"/> <TexCoord u="1.0" v="0.0"/></Vertex>
+      <Vertex><Coord x="-1.0" y="1.0"  z="1.0"  h="1.0"/> <TexCoord u="1.0" v="1.0"/></Vertex>
+      <Vertex><Coord x="-1.0" y="1.0"  z="-1.0" h="1.0"/> <TexCoord u="0.0" v="1.0"/></Vertex>
 
-			<Coord x="-1.0" y="-1.0" z="-1.0" h="1.0"/> <TexCoord u="0.0" v="0.0"/>
-			<Coord x="1.0"  y="-1.0" z="-1.0" h="1.0"/> <TexCoord u="1.0" v="0.0"/>
-			<Coord x="1.0"  y="-1.0" z="1.0"  h="1.0"/> <TexCoord u="1.0" v="1.0"/>
-			<Coord x="-1.0" y="-1.0" z="1.0"  h="1.0"/> <TexCoord u="0.0" v="1.0"/>
-
-			<Coord x="1.0"  y="-1.0" z="-1.0" h="1.0"/> <TexCoord u="0.0" v="0.0"/>
-			<Coord x="-1.0" y="-1.0" z="-1.0" h="1.0"/> <TexCoord u="1.0" v="0.0"/>
-			<Coord x="-1.0" y="1.0"  z="-1.0" h="1.0"/> <TexCoord u="1.0" v="1.0"/>
-			<Coord x="1.0"  y="1.0"  z="-1.0" h="1.0"/> <TexCoord u="0.0" v="1.0"/>
-		</Vertex>
-		<Face vertex1="0" vertex2="1" vertex3="2"/>
-		<Face vertex1="2" vertex2="3" vertex3="0"/>
-		<Face vertex1="4" vertex2="5" vertex3="6"/>
-		<Face vertex1="6" vertex2="7" vertex3="4"/>
-		<Face vertex1="8" vertex2="9" vertex3="10"/>
-		<Face vertex1="10" vertex2="11" vertex3="8"/>
-		<Face vertex1="12" vertex2="13" vertex3="14"/>
-		<Face vertex1="14" vertex2="15" vertex3="12"/>
-		<Face vertex1="16" vertex2="17" vertex3="18"/>
-		<Face vertex1="18" vertex2="19" vertex3="16"/>
-		<Face vertex1="20" vertex2="21" vertex3="22"/>
-		<Face vertex1="22" vertex2="23" vertex3="20"/>
-	</Geometry>
+      <Vertex><Coord x="-1.0" y="-1.0" z="-1.0" h="1.0"/> <TexCoord u="0.0" v="0.0"/></Vertex>
+      <Vertex><Coord x="1.0"  y="-1.0" z="-1.0" h="1.0"/> <TexCoord u="1.0" v="0.0"/></Vertex>
+      <Vertex><Coord x="1.0"  y="-1.0" z="1.0"  h="1.0"/> <TexCoord u="1.0" v="1.0"/></Vertex>
+      <Vertex><Coord x="-1.0" y="-1.0" z="1.0"  h="1.0"/> <TexCoord u="0.0" v="1.0"/></Vertex>
+    
+      <Vertex><Coord x="1.0"  y="-1.0" z="-1.0" h="1.0"/> <TexCoord u="0.0" v="0.0"/></Vertex>
+	    <Vertex><Coord x="-1.0" y="-1.0" z="-1.0" h="1.0"/> <TexCoord u="1.0" v="0.0"/></Vertex>
+      <Vertex><Coord x="-1.0" y="1.0"  z="-1.0" h="1.0"/> <TexCoord u="1.0" v="1.0"/></Vertex>
+      <Vertex><Coord x="1.0"  y="1.0"  z="-1.0" h="1.0"/> <TexCoord u="0.0" v="1.0"/></Vertex>
+    
+		  <Face vertex1="0" vertex2="1" vertex3="2"/>
+		  <Face vertex1="2" vertex2="3" vertex3="0"/>
+		  <Face vertex1="4" vertex2="5" vertex3="6"/>
+		  <Face vertex1="6" vertex2="7" vertex3="4"/>
+		  <Face vertex1="8" vertex2="9" vertex3="10"/>
+		  <Face vertex1="10" vertex2="11" vertex3="8"/>
+		  <Face vertex1="12" vertex2="13" vertex3="14"/>
+		  <Face vertex1="14" vertex2="15" vertex3="12"/>
+		  <Face vertex1="16" vertex2="17" vertex3="18"/>
+		  <Face vertex1="18" vertex2="19" vertex3="16"/>
+		  <Face vertex1="20" vertex2="21" vertex3="22"/>
+		  <Face vertex1="22" vertex2="23" vertex3="20"/>
+    </Geometry>
 	</ShadedGeometry>
 
 	<ViewModifier name="CUBE_MODIFIER" object="CUBE">
@@ -86,7 +86,7 @@
 		</Action>
 	</ViewModifier>
 
-	<Update name="RaptorRenderServer">
+	<Update name="RaptorRenderSession">
 		<RenderingProperties texturing="1" lighting="1"/>
 		<ViewPoint left="-1.33" right="1.33" bottom="-1.0" top="1.0" near="1.5" far="200.0" model="perspective"  tmin="0.0" tmax="200.0" path="0" continus="0" loop="1">
 			<EyePosition x="0.0" y="0.0" z="3.2"/>

@@ -94,7 +94,7 @@ public:
 			return ti;
 		}
 
-		template <class T> bool isA(const T &t) const
+		template <class T> bool isA(const T &) const
 		{
 			return getTypeId() == CParameter<T>::TypeId();
 		}

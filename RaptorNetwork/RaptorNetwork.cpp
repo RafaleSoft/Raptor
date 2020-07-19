@@ -24,19 +24,20 @@ static CRaptorNetwork::SERVER_COMMAND STATUS_COMMAND =
 
 static CRaptorNetwork::SESSION_COMMAND OPEN_SESSION_COMMAND =
 {
-	{
+	{	// Server command
 		(uint8_t)strlen("OpenSession"),
 		0,
 		sizeof(CRaptorNetwork::SESSION_COMMAND),
 		"OpenSession"
 	},
 	0,
-	0
+	0,
+	NULL
 };
 
 static CRaptorNetwork::DATA_COMMAND DATA_PACKAGE_COMMAND =
 {
-	{
+	{	// Server command
 		(uint8_t)strlen("DataPackage"),
 		0,
 		sizeof(CRaptorNetwork::DATA_COMMAND),
@@ -45,6 +46,20 @@ static CRaptorNetwork::DATA_COMMAND DATA_PACKAGE_COMMAND =
 	0,
 	0,
 	""
+};
+
+static CRaptorNetwork::IMAGE_COMMAND IMAGE_DATA_COMMAND =
+{
+	{	// Server command
+		(uint8_t)strlen("ImageData"),
+		0,
+		sizeof(CRaptorNetwork::IMAGE_COMMAND),
+		"ImageData"
+	},
+	{	// Bloc header
+		0, 0, 0, 0, 0
+	},
+	0
 };
 
 
@@ -76,4 +91,9 @@ const CRaptorNetwork::SESSION_COMMAND& CRaptorNetwork::getOpenSessionCommand(voi
 const CRaptorNetwork::DATA_COMMAND& CRaptorNetwork::getDataPackageCommand(void)
 {
 	return DATA_PACKAGE_COMMAND;
+}
+
+const CRaptorNetwork::IMAGE_COMMAND& CRaptorNetwork::getImageCommand(void)
+{
+	return IMAGE_DATA_COMMAND;
 }

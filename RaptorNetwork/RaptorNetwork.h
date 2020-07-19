@@ -56,12 +56,6 @@ public:
 		uint16_t compressionType;
 	} BLOC_HEADER;
 
-	typedef struct BLOC_DATA_t
-	{
-		BLOC_HEADER	header;
-		uint8_t		*pData;
-	} BLOC_DATA;
-
 	typedef struct SERVER_COMMAND_t
 	{
 		uint8_t	commandLen;
@@ -71,11 +65,19 @@ public:
 		char	command[17];
 	} SERVER_COMMAND;
 
+	typedef struct IMAGE_COMMAND_t
+	{
+		SERVER_COMMAND	command;
+		BLOC_HEADER		header;
+		uint8_t			*pData;
+	} IMAGE_COMMAND;
+
 	typedef struct SESSION_COMMAND_t
 	{
 		SERVER_COMMAND	command;
 		uint16_t		width;
 		uint16_t		height;
+		void			*id;
 	} SESSION_COMMAND;
 
 	typedef struct DATA_COMMAND_t
@@ -91,6 +93,7 @@ public:
 	static const CRaptorNetwork::SERVER_COMMAND& getStatusCommand(void);
 	static const CRaptorNetwork::SESSION_COMMAND& getOpenSessionCommand(void);
 	static const CRaptorNetwork::DATA_COMMAND& getDataPackageCommand(void);
+	static const CRaptorNetwork::IMAGE_COMMAND& getImageCommand(void);
 
 private:
 	CRaptorNetwork(void);

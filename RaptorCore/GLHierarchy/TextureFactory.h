@@ -191,7 +191,7 @@ private:
 	CTextureFactory(const CTextureFactory& rsh);
 
 	//! Forbidden assignment operator
-	CTextureFactory& operator=(const CTextureFactory& rsh) { return *this; };
+	CTextureFactory& operator=(const CTextureFactory& ) { return *this; };
 
 	//!	This factory configuration
 	CTextureFactoryConfig	mConfig;

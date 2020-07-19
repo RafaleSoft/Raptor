@@ -164,28 +164,47 @@ uint64_t CShaderProgram::glGetBufferMemoryRequirements(void)
 	if (m_handle.glhandle() == 0)
 		return 0;
 
-	uint64_t uniform_size = 0;
-
-#if defined(GL_ARB_uniform_buffer_object)
 	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 
+	uint64_t uniform_size = 0;
 	GLint max_bindings = 0;
+
+#if defined(GL_VERSION_3_1)
+	glGetIntegerv(GL_MAX_UNIFORM_BUFFER_BINDINGS, &max_bindings);
+#elif defined(GL_ARB_uniform_buffer_object)
 	glGetIntegerv(GL_MAX_UNIFORM_BUFFER_BINDINGS_ARB, &max_bindings);
-	
+#endif
+
 	GLint active_uniform_max_length = 0;
+
+#if defined(GL_VERSION_3_1)
+	pExtensions->glGetProgramiv(m_handle.glhandle(), GL_ACTIVE_UNIFORM_BLOCK_MAX_NAME_LENGTH, &active_uniform_max_length);
+#elif defined(GL_ARB_uniform_buffer_object)
 	pExtensions->glGetObjectParameterivARB(m_handle.glhandle(), GL_ACTIVE_UNIFORM_BLOCK_MAX_NAME_LENGTH_ARB, &active_uniform_max_length);
+#endif
+
 	char *uniformBlockName = new char[active_uniform_max_length];
 
 	//! Despite the fact that the GL_VERSION text is greater than 3.1, it seems there is a bug in the call
 	//! below : the actual value should be returned by glGetProgramiv and not by glGetObjectParameteriv.
 	GLint active_blocks_count = 0;
-	//pExtensions->glGetProgramivARB(m_handle.glhandle(), GL_ACTIVE_UNIFORM_BLOCKS_ARB, &active_blocks_count2);
+	
+#if defined(GL_VERSION_3_1)
+	pExtensions->glGetProgramiv(m_handle.glhandle(), GL_ACTIVE_UNIFORM_BLOCKS, &active_blocks_count);
+#elif defined(GL_ARB_uniform_buffer_object)
 	pExtensions->glGetObjectParameterivARB(m_handle.glhandle(), GL_ACTIVE_UNIFORM_BLOCKS_ARB, &active_blocks_count);
+#endif
 
 	for (GLint i = 0; i < active_blocks_count; i++)
 	{
 		GLint block_size = 0;
+
+#if defined(GL_VERSION_3_1)
+		pExtensions->glGetActiveUniformBlockiv(m_handle.glhandle(), i, GL_UNIFORM_BLOCK_DATA_SIZE, &block_size);
+#elif defined(GL_ARB_uniform_buffer_object)
 		pExtensions->glGetActiveUniformBlockivARB(m_handle.glhandle(), i, GL_UNIFORM_BLOCK_DATA_SIZE_ARB, &block_size);
+#endif
+
 		uniform_size += block_size;
 
 		/**
@@ -199,7 +218,13 @@ uint64_t CShaderProgram::glGetBufferMemoryRequirements(void)
 		 */
 
 		GLsizei length = 0;
+
+#if defined(GL_VERSION_3_1)
+		pExtensions->glGetActiveUniformBlockName(m_handle.glhandle(), i, 256, &length, &uniformBlockName[0]);
+#elif defined(GL_ARB_uniform_buffer_object)
 		pExtensions->glGetActiveUniformBlockNameARB(m_handle.glhandle(), i, 256, &length, uniformBlockName);
+#endif
+
 		uniformBlockName[length] = 0;
 
 		/**
@@ -208,13 +233,19 @@ uint64_t CShaderProgram::glGetBufferMemoryRequirements(void)
 		 */
 
 		GLint binding = 0;
+
+#if defined(GL_VERSION_3_1)
+		pExtensions->glGetActiveUniformBlockiv(m_handle.glhandle(), i, GL_UNIFORM_BLOCK_BINDING, &binding);
+#elif defined(GL_ARB_uniform_buffer_object)
 		pExtensions->glGetActiveUniformBlockivARB(m_handle.glhandle(), i, GL_UNIFORM_BLOCK_BINDING_ARB, &binding);
+#endif
 
 		for (unsigned int idx = 0; idx < m_parameters.getNbParameters(); idx++)
 		{
 			CProgramParameters::CParameterBase& value = m_parameters[idx];
 			std::string name(uniformBlockName);
-			if ((value.name() == name) && (value.locationType == GL_UNIFORM_BLOCK_BINDING_ARB))
+			if ((value.name() == name) && 
+				((value.locationType == GL_UNIFORM_BLOCK_BINDING_ARB) || (value.locationType == GL_UNIFORM_BLOCK_BINDING)))
 			{
 				value.locationIndex = binding;
 
@@ -240,8 +271,10 @@ uint64_t CShaderProgram::glGetBufferMemoryRequirements(void)
 			}
 		}
 	}
-#endif
 
 	delete[] uniformBlockName;
+
+	CATCH_GL_ERROR
+
 	return uniform_size;
 }

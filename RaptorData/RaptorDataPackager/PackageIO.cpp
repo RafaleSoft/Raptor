@@ -61,7 +61,7 @@ static unsigned char out[CHUNK];
 	int msdn_open(const char *filename, int oflag, int pmode)
 	{
 		int pfh = -1;
-		errno_t err = _sopen_s(&pfh, filename, oflag, _SH_DENYRW, pmode);
+		errno_t err = _sopen_s(&pfh, filename, oflag, _SH_DENYWR, pmode);
 		if (0 == err)
 			return pfh;
 		else
