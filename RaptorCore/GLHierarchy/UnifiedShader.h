@@ -41,11 +41,11 @@ public:
 	virtual void glRender(void);
 
     //! Loads a unique parameter immediately
-    virtual void glProgramParameter(unsigned int numParam,
+    virtual void glProgramParameter(size_t numParam,
 									const GL_COORD_VERTEX &v) const;
 
 	//! Same as above but passes a color instead of a geo vector
-	virtual void glProgramParameter(unsigned int numParam,
+	virtual void glProgramParameter(size_t numParam,
 									const CColor::RGBA &v) const;
 
 	//! Implements CShaderProgram.
@@ -70,10 +70,15 @@ protected:
 	//! Copy constructor.
 	CUnifiedShader(const CUnifiedShader& shader);
 
-    //! Updates locations of uniform variables
+	//! Generic shader source loading.
+	bool CUnifiedShader::glLoadProgram(	const std::string &program,
+										GLenum shaderType,
+										const CPersistence::CPersistenceClassID& shaderClass);
+
+    //! Updates locations of uniform variables.
     void glQueryUniformLocations(RAPTOR_HANDLE program);
 
-    //! Updates locations of attributes variables
+    //! Updates locations of attributes variables.
     void glQueryAttributeLocations(RAPTOR_HANDLE program);
 
 
@@ -82,7 +87,7 @@ private:
 	CUnifiedShader& operator=(const CUnifiedShader&);
 
     //! factorize uniform settings
-    void glParameter(unsigned int numParam,const float *v) const;
+    void glParameter(size_t numParam,const float *v) const;
 };
 
 

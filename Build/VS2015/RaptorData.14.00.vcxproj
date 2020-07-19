@@ -792,6 +792,9 @@ copy $(SolutionDir)$(ProjectName)\RaptorData.pck "%RAPTOR_ROOT%\Redist\bin\"
     <None Include="..\..\RaptorData\Data\tquad.gs" />
     <None Include="..\..\RaptorData\Data\tquad.ps" />
     <None Include="..\..\RaptorData\Data\tquad.vs" />
+    <None Include="..\..\RaptorData\Data\vector_font.gs" />
+    <None Include="..\..\RaptorData\Data\vector_font.ps" />
+    <None Include="..\..\RaptorData\Data\vector_font.vs" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\..\RaptorData\Data\Raptor_logo_sml.txt" />

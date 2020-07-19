@@ -47,8 +47,8 @@ IMPLEMENT_CLASS_ID(CVertexShader, vertexId)
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CVertexShader::CVertexShader(const std::string& name) :
-    CUnifiedShader(vertexId,name)
+CVertexShader::CVertexShader(const std::string& name)
+    :CUnifiedShader(vertexId,name)
 {
     m_handle.handle(0);	// default openGL vertex processing pipeline
 	m_handle.hClass(CVertexShader::CVertexShaderClassID::GetClassId().ID());
@@ -66,103 +66,57 @@ CVertexShader* CVertexShader::glClone(void)
 
 CVertexShader::~CVertexShader()
 {
-#if defined(GL_ARB_vertex_shader)
 	if (!CRaptorInstance::GetInstance().isVertexShaderReady())
 	{
-#ifdef RAPTOR_DEBUG_MODE_GENERATION
         Raptor::GetErrorManager()->generateRaptorError(	CVertexShader::CVertexShaderClassID::GetClassId(),
 														CRaptorErrorManager::RAPTOR_ERROR,
 														CRaptorMessages::ID_NO_GPU_PROGRAM);
-#endif
 	}
-	else
-	{
-		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
-		if (m_handle.glhandle() > 0)
-			pExtensions->glDeleteObjectARB(m_handle.glhandle());
-	}
-#endif
 }
 
 bool CVertexShader::glLoadProgram(const std::string &program)
 {
-    m_bValid = false;
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	bool load = false;
 
-#if defined(GL_ARB_vertex_shader)
-	if (CRaptorInstance::GetInstance().isVertexShaderReady())
-	{
-		if (m_handle.glhandle() > 0)
-			pExtensions->glDeleteObjectARB(m_handle.glhandle());
-
-        m_handle.handle(pExtensions->glCreateShaderObjectARB(GL_VERTEX_SHADER_ARB));
-		if (m_handle.glhandle() == 0)
-        {
-			RAPTOR_WARNING(	CVertexShader::CVertexShaderClassID::GetClassId(),
-							CRaptorMessages::ID_NO_GPU_PROGRAM)
-            return false;
-        }
-
-        int length = program.size();
-        const char* source = program.data();
-		pExtensions->glShaderSourceARB(m_handle.glhandle(), 1, &source, &length);
-
-		pExtensions->glCompileShaderARB(m_handle.glhandle());
-
-        m_bValid = glGetProgramStatus();
-
-	    if (!m_bValid) 
-        {
-            GLint maxLength = 0;
-			pExtensions->glGetObjectParameterivARB(m_handle.glhandle(), GL_OBJECT_INFO_LOG_LENGTH_ARB, &maxLength);
-	        char *pInfoLog = (char*) malloc(maxLength * sizeof(char));
-			pExtensions->glGetInfoLogARB(m_handle.glhandle(), maxLength, &length, pInfoLog);
-
-            CRaptorMessages::MessageArgument arg;
-            arg.arg_sz = pInfoLog;
-            vector<CRaptorMessages::MessageArgument> args;
-            args.push_back(arg);
-			Raptor::GetErrorManager()->generateRaptorError(	CVertexShader::CVertexShaderClassID::GetClassId(),
-															CRaptorErrorManager::RAPTOR_ERROR,
-															CRaptorMessages::ID_PROGRAM_ERROR,
-															__FILE__, __LINE__, args);
-            free(pInfoLog);
-	        return false;
-	    }
-	}
+#if defined(GL_VERSION_2_0)
+	load = CUnifiedShader::glLoadProgram(	program,
+											GL_VERTEX_SHADER,
+											CVertexShader::CVertexShaderClassID::GetClassId());
+#elif defined(GL_ARB_fragment_shader)
+	load = CUnifiedShader::glLoadProgram(	program,
+											GL_VERTEX_SHADER_ARB,
+											CVertexShader::CVertexShaderClassID::GetClassId());
 #endif
 
-    CATCH_GL_ERROR
-
-    return m_bValid;
+	return load;
 }
 
 bool CVertexShader::glBindProgram(RAPTOR_HANDLE program)
 {
 	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
-
-#if defined(GL_ARB_vertex_shader)
 	GLint value = 0;
+
+#if defined(GL_VERSION_2_0)
+	pExtensions->glGetShaderiv(m_handle.glhandle(), GL_SHADER_TYPE, &value);
+	if ((!m_bValid) || (value != GL_VERTEX_SHADER))
+#elif defined(GL_ARB_vertex_shader)
 	pExtensions->glGetObjectParameterivARB(m_handle.glhandle(), GL_OBJECT_SUBTYPE_ARB, &value);
-	if (value != GL_VERTEX_SHADER_ARB)
+	if ((!m_bValid) || (value != GL_VERTEX_SHADER_ARB))
+#endif
 	{
 		Raptor::GetErrorManager()->generateRaptorError(CVertexShader::CVertexShaderClassID::GetClassId(),
 													   CRaptorErrorManager::RAPTOR_WARNING,
-													   "Vertex Program is invalid in this context");
-		
+													   "Vertex Shader is invalid in this context");
 		CATCH_GL_ERROR
 		return false;
 	}
-#endif
 
-#if defined(GL_ARB_shader_objects)
 	if (CUnifiedShader::glBindProgram(program))
 	{
 		CATCH_GL_ERROR
 		return true;
 	}
 	else
-#endif
 		return false;
 }
 
@@ -171,7 +125,20 @@ bool CVertexShader::glGetShaderCaps(GL_VERTEX_SHADER_CAPS& caps)
 {
 	if (CRaptorInstance::GetInstance().isVertexShaderReady())
 	{
-#if defined(GL_ARB_vertex_shader)
+#if defined(GL_VERSION_2_0)
+		glGetIntegerv(GL_MAX_VERTEX_UNIFORM_COMPONENTS, &caps.max_vertex_uniform_components);
+		glGetIntegerv(GL_MAX_VARYING_FLOATS, &caps.max_varying_floats);
+		glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &caps.max_vertex_attribs);
+		glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &caps.max_texture_image_units);
+		glGetIntegerv(GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS, &caps.max_vertex_texture_image_units);
+		glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &caps.max_combined_texture_image_units);
+		glGetIntegerv(GL_MAX_TEXTURE_COORDS, &caps.max_texture_coords);
+		GLboolean bVal = GL_FALSE;
+		glGetBooleanv(GL_VERTEX_PROGRAM_POINT_SIZE, &bVal);
+		caps.vertex_program_point_size = (bVal == GL_TRUE);
+		glGetBooleanv(GL_VERTEX_PROGRAM_TWO_SIDE, &bVal);
+		caps.vertex_program_two_side = (bVal == GL_TRUE);
+#elif defined(GL_ARB_vertex_shader)
 		glGetIntegerv(GL_MAX_VERTEX_UNIFORM_COMPONENTS_ARB,&caps.max_vertex_uniform_components);
 		glGetIntegerv(GL_MAX_VARYING_FLOATS_ARB,&caps.max_varying_floats);
 		glGetIntegerv(GL_MAX_VERTEX_ATTRIBS_ARB,&caps.max_vertex_attribs);
@@ -185,7 +152,12 @@ bool CVertexShader::glGetShaderCaps(GL_VERTEX_SHADER_CAPS& caps)
         glGetBooleanv(GL_VERTEX_PROGRAM_TWO_SIDE_ARB,&bVal);
         caps.vertex_program_two_side = (bVal == GL_TRUE);
 #endif
-#if defined(GL_ARB_uniform_buffer_object)
+
+#if defined(GL_VERSION_3_1)
+		glGetIntegerv(GL_MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS, &caps.max_combined_vertex_uniform_components);
+		glGetIntegerv(GL_MAX_UNIFORM_BLOCK_SIZE, &caps.max_uniform_block_size);
+		glGetIntegerv(GL_MAX_VERTEX_UNIFORM_BLOCKS, &caps.max_vertex_uniform_blocks);
+#elif defined(GL_ARB_uniform_buffer_object)
 		glGetIntegerv(GL_MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS_ARB, &caps.max_combined_vertex_uniform_components);
 		glGetIntegerv(GL_MAX_UNIFORM_BLOCK_SIZE_ARB, &caps.max_uniform_block_size);
 		glGetIntegerv(GL_MAX_VERTEX_UNIFORM_BLOCKS_ARB, &caps.max_vertex_uniform_blocks);
@@ -204,7 +176,7 @@ bool CVertexShader::glGetProgramStatus(void) const
 	if (!CRaptorInstance::GetInstance().isVertexShaderReady())
 		return false;
 
-#if defined(GL_ARB_vertex_shader)
+
 	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 
 	GL_VERTEX_SHADER_CAPS caps;
@@ -212,6 +184,23 @@ bool CVertexShader::glGetProgramStatus(void) const
 	{
         //  Check program status and compare to shader caps to return global status
         GLint value = 0;
+
+#if defined(GL_VERSION_2_0)
+		if (!pExtensions->glIsShader(m_handle.glhandle()))
+			return false;
+
+		pExtensions->glGetShaderiv(m_handle.glhandle(), GL_SHADER_TYPE, &value);
+		if (value != GL_VERTEX_SHADER)
+			return false;
+
+		pExtensions->glGetShaderiv(m_handle.glhandle(), GL_COMPILE_STATUS, &value);
+		if (value == 0)
+			return false;
+
+		pExtensions->glGetShaderiv(m_handle.glhandle(), GL_DELETE_STATUS, &value);
+		if (value == 1)
+			return false;
+#elif defined(GL_ARB_vertex_shader)
 		pExtensions->glGetObjectParameterivARB(m_handle.glhandle(), GL_OBJECT_TYPE_ARB, &value);
         if (value != GL_SHADER_OBJECT_ARB)
             return false;
@@ -227,11 +216,10 @@ bool CVertexShader::glGetProgramStatus(void) const
 		pExtensions->glGetObjectParameterivARB(m_handle.glhandle(), GL_OBJECT_DELETE_STATUS_ARB, &value);
         if (value == 1)
             return false;
-
+#endif
 		return true;
 	}
 	else
-#endif
 		return false;
 }
 

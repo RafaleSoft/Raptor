@@ -1150,18 +1150,6 @@ $(PYTHON_HOME)\python.exe $(SolutionDir)$(ProjectName)\Subsys\Redist.py
     <ClCompile Include="..\..\RaptorCore\Win32Specific\Win32TimeObject.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Xsd Include="Subsys\ObjectModels\Raptor.xsd">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Optimized|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Optimized|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-    </Xsd>
-  </ItemGroup>
-  <ItemGroup>
     <CustomBuild Include="..\..\RaptorCore\System\Glext.h">
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">cd $(TargetDir)
 Builder.exe %(FullPath)
@@ -1397,7 +1385,6 @@ copy CodeGeneration.h "%RAPTOR_ROOT%\Redist\Include\Subsys"
     <ClInclude Include="..\..\RaptorCore\System\RaptorVKExtensions.h" />
     <ClInclude Include="..\..\RaptorCore\System\RaptorVulkanDisplay.h" />
     <ClInclude Include="..\..\RaptorCore\System\RenderEntryPoint.h" />
-    <ClInclude Include="..\..\RaptorCore\System\Version.h" />
     <ClInclude Include="..\..\RaptorCore\System\vkext.h" />
     <ClInclude Include="..\..\RaptorCore\System\VKEXTMacros.h" />
     <ClInclude Include="..\..\RaptorCore\Win32Specific\Win32Application.h" />
@@ -1409,6 +1396,18 @@ copy CodeGeneration.h "%RAPTOR_ROOT%\Redist\Include\Subsys"
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\..\RaptorCore\RaptorCore.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Xsd Include="..\..\RaptorCore\Subsys\ObjectModels\Raptor.xsd">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Optimized|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Optimized|x64'">true</ExcludedFromBuild>
+    </Xsd>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

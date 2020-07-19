@@ -165,6 +165,15 @@
     <None Include="..\..\RaptorData\buildpak.py">
       <Filter>Source Files</Filter>
     </None>
+    <None Include="..\..\RaptorData\Data\vector_font.gs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\RaptorData\Data\vector_font.ps">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\RaptorData\Data\vector_font.vs">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\RaptorData\RaptorDataManager.cpp">
