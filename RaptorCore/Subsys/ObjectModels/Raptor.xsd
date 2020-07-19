@@ -343,27 +343,27 @@
   
   <xs:element name="Geometry">
     <xs:complexType>
-        <xs:choice>
+        <xs:sequence>
           <xs:element name="RenderingModel" type="renderingModel" minOccurs="0" maxOccurs="1"/>
           <xs:element name="Vertex" type="vertex" minOccurs="0" maxOccurs="unbounded"/>
           <xs:element name="Face" type="face" minOccurs="0" maxOccurs="unbounded"/>
-        </xs:choice>
+        </xs:sequence>
     </xs:complexType>
   </xs:element>
   
   <xs:element name="ShadedGeometry">
     <xs:complexType>
-      <xs:choice>
+      <xs:all>
         <xs:element ref="Shader" minOccurs="0" maxOccurs="1" />
         <xs:element ref="Geometry" minOccurs="0" maxOccurs="1" />
-      </xs:choice>
+      </xs:all>
       <xs:attribute name="name" type="xs:string" />
     </xs:complexType>
   </xs:element>
 
   <xs:element name="Data">
     <xs:complexType>
-      <xs:choice>
+      <xs:sequence>
         <xs:element ref="TextureSet" minOccurs="0" maxOccurs="unbounded"/>
         <xs:element ref="ParticleManager" minOccurs="0" maxOccurs="unbounded"/> 
         <xs:element ref="Set" minOccurs="0" maxOccurs="unbounded"/>
@@ -448,7 +448,7 @@
             <xs:attribute name="name" type="xs:string" />
           </xs:complexType>
         </xs:element>
-      </xs:choice>
+      </xs:sequence>
       <xs:attribute name="name" type="xs:string" />
     </xs:complexType>
   </xs:element>
