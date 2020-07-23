@@ -196,9 +196,6 @@ private:
 	//!	This factory configuration
 	CTextureFactoryConfig	mConfig;
 
-	//!	A pointer to the default factory, initialized only if required.
-	static CTextureFactory *m_pDefault;
-
 	typedef struct TexturePreload_t
 	{
 		unsigned int target;

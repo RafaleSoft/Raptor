@@ -305,6 +305,7 @@ void CGLBuilder::activateAll(void)
     m_buildDebug = true;
 	m_buildRedist = true;
     m_buildCompute = true;
+	m_buildPhysX = true;
 }
 
 void CGLBuilder::activateNone(void)
@@ -318,6 +319,7 @@ void CGLBuilder::activateNone(void)
     m_buildDebug = false;
 	m_buildRedist = false;
     m_buildCompute = false;
+	m_buildPhysX = false;
 }
 
 bool CGLBuilder::activateExtension(const string &extension,bool activate)
@@ -473,7 +475,8 @@ bool CGLBuilder::writeHeader(const string& filename)
 	//	Then write back code generation
 	if (m_buildRedist)
 	{
-		header << "// Redistribuable package build\n#define BUILD_REDIST\n\n";
+		header << "// Redistribuable package build\n#define BUILD_REDIST			";
+		header << m_buildRedist << "\n\n";
 	}
 
 	if (m_buildDebug)
@@ -484,7 +487,14 @@ bool CGLBuilder::writeHeader(const string& filename)
 
     if (m_buildCompute)
 	{
-		header << "// Activate event framework\n#define BUILD_COMPUTE\n\n";
+		header << "// Activate Compute framework\n#define BUILD_COMPUTE				";
+		header << m_buildCompute << "\n\n";
+	}
+
+	if (m_buildPhysX)
+	{
+		header << "// Activate CUDA PhysX framework\n#define BUILD_PHYSX			";
+		header << m_buildPhysX << "\n\n";
 	}
 
 	header.write(OGL,strlen(OGL));

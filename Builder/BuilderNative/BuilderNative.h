@@ -61,6 +61,7 @@ typedef struct BUILD_SUPPLEMENT_t
 	bool DEBUG;
 	bool REDIST;
 	bool COMPUTE;
+	bool PHYSX;
 } BUILD_SUPPLEMENT;
 
 typedef struct NATIVE_EXTENSION_t

@@ -38,6 +38,9 @@
 #if !defined(AFX_OPENGLSHADERSTAGE_H__56B00FE3_E508_4FD6_9363_90E6E67446D9__INCLUDED_)
 	#include "GLHierarchy/OpenGLShaderStage.h"
 #endif
+#if !defined(AFX_TEXTUREFACTORY_H__1B470EC4_4B68_11D3_9142_9A502CBADC6B__INCLUDED_)
+	#include "GLHierarchy/TextureFactory.h"
+#endif
 
 //! Default Imaging functionnalities
 #if !defined(AFX_BUFFERIMAGE_H__B28C75CD_81D5_473F_A247_608FB6E02949__INCLUDED_)
@@ -133,6 +136,7 @@ CRaptorInstance::CRaptorInstance()
 	arrays_initialized = false;
 	m_pShaderLibraryInstance = NULL;
 	m_pNullShader = NULL;
+	m_pDefaultTextureFactory = NULL;
 
 	m_timeImplementation = NULL;
 }
@@ -208,6 +212,12 @@ CRaptorInstance::~CRaptorInstance()
 
 	CContextManager::GetInstance()->glDestroyContext(defaultContext);
 	defaultContext = 0;
+
+	if (NULL != m_pDefaultTextureFactory)
+	{
+		delete m_pDefaultTextureFactory;
+		m_pDefaultTextureFactory = NULL;
+	}
 
 	//  Default display is NULL, because it was created with GENERIC attribute.
 	//    glDestroyDisplay(status.defaultDisplay);
@@ -592,6 +602,10 @@ bool CRaptorInstance::glvkInitSharedResources(void)
 		m_displayBinder->useVertexArrayObjects();
 	}
 
+	// Initialise texture factory
+	m_pDefaultTextureFactory = new CTextureFactory("DEFAULT_TEXTURE_FACTORY");
+
+
 	CATCH_GL_ERROR
 
 	return true;
@@ -671,6 +685,12 @@ bool CRaptorInstance::glvkReleaseSharedRsources()
 	{
 		delete m_pShaderLibraryInstance;
 		m_pShaderLibraryInstance = NULL;
+	}
+
+	if (NULL != m_pDefaultTextureFactory)
+	{
+		delete m_pDefaultTextureFactory;
+		m_pDefaultTextureFactory = NULL;
 	}
 
 	CATCH_GL_ERROR

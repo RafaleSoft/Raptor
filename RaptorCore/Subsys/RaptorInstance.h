@@ -58,7 +58,7 @@ class CShader;
 class CShaderLibrary;
 RAPTOR_INTERFACE ITImeObjectImpl;
 class CTimeObject;
-
+class CTextureFactory;
 
 class CRaptorInstance
 {
@@ -213,6 +213,9 @@ public:
 
 	//! The shader library instance.
 	CShaderLibrary	*m_pShaderLibraryInstance;
+
+	//!	A pointer to the default factory, initialized only if required.
+	CTextureFactory *m_pDefaultTextureFactory;
 
 	//!	Time management
 	ITImeObjectImpl	*m_timeImplementation;

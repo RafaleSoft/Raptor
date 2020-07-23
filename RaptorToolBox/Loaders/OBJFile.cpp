@@ -49,7 +49,7 @@ public:
 	OBJLex() {};
 	virtual ~OBJLex() {};
 
-	virtual void OnError(CLex::LexError err)
+	virtual void OnError(CLex::LexError )
 	{	};
 };
 

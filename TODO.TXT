@@ -12,7 +12,6 @@
 
 - CTextureFactory:
 	- Fusionner vkLoadTexture & glLoadTexture
-	- supprimer la statique vers RaptorInstance
 
 - CGLFont:
 	- corriger font color et back color pour rendre générique

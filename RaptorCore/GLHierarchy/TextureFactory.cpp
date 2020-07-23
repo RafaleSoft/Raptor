@@ -55,15 +55,15 @@
 #if !defined(AFX_RAPTORVULKANDEVICE_H__2FDEDD40_444E_4CC2_96AA_CBF9E79C3ABE__INCLUDED_)
 	#include "Subsys/Vulkan/VulkanDevice.h"
 #endif
-
+#if !defined(AFX_RAPTORINSTANCE_H__90219068_202B_46C2_BFF0_73C24D048903__INCLUDED_)
+	#include "Subsys/RaptorInstance.h"
+#endif
 
 
 RAPTOR_NAMESPACE
 
 IMPLEMENT_CLASS_ID(CTextureFactory, factoryId)
 
-
-CTextureFactory *CTextureFactory::m_pDefault = NULL;
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -76,18 +76,12 @@ CTextureFactory::CTextureFactory(const std::string& name)
 
 CTextureFactory::~CTextureFactory(void)
 {
-	if (m_pDefault == this)
-		m_pDefault = NULL;
 }
 
 CTextureFactory& CTextureFactory::getDefaultFactory()
 {
-	if (m_pDefault == NULL)
-	{
-		m_pDefault = new CTextureFactory("DEFAULT_TEXTURE_FACTORY");
-	}
-
-	return *m_pDefault;
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+	return *(instance.m_pDefaultTextureFactory);
 }
 
 
