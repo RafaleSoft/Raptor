@@ -399,7 +399,7 @@ void OBJYacc::buildGeometry()
 // 
 //	Main function for reading a OBJ file
 //
-bool _glLoadWavefront(const string &fname,C3DSet *&set,CRaptorToolBox::SCENE_LOADER_OPTIONS *options)
+bool _glLoadWavefront(const string &fname,C3DSet *&set,CRaptorToolBox::SCENE_LOADER_OPTIONS *)
 {
 	OBJLex objlex;
 	if (objlex.InitLex(fname))

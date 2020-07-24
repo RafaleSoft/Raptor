@@ -71,16 +71,16 @@ CGeometryShader::~CGeometryShader()
 	{
         Raptor::GetErrorManager()->generateRaptorError(	CGeometryShader::CGeometryShaderClassID::GetClassId(),
 														CRaptorErrorManager::RAPTOR_ERROR,
-														CRaptorMessages::ID_NO_GPU_PROGRAM);
+														CRaptorMessages::ID_NO_GPU_PROGRAM,
+														__FILE__, __LINE__);
 	}
 }
 
 bool CGeometryShader::setGeometry(uint32_t inputType, uint32_t outputType, uint32_t verticesOut)
 {
 #if defined(GL_VERSION_3_2)
-	Raptor::GetErrorManager()->generateRaptorError(	CGeometryShader::CGeometryShaderClassID::GetClassId(),
-													CRaptorErrorManager::RAPTOR_WARNING,
-													"Geometry Program types shall be defined in a geometry shader");
+	RAPTOR_WARNING(	CGeometryShader::CGeometryShaderClassID::GetClassId(),
+					"Geometry Program types shall be defined in a geometry shader");
 #endif
 
 	if ((inputType == GL_POINTS) ||

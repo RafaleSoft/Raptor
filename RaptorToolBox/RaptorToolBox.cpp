@@ -28,32 +28,24 @@ DllMain(HINSTANCE , DWORD dwReason)
 
 bool CRaptorToolBox::loadRaptorData(const std::string &fname, LP_SCENE_LOADER_OPTIONS options)
 {
-	CRaptorErrorManager *err = Raptor::GetErrorManager();
-
-	char shemaLocation[MAX_PATH];
+	std::string shemaLocation = "";
 	char* root = getenv("RAPTOR_ROOT");
+
 	if (NULL == root)
 	{
 		std::string msg = "Raptor root data path is unknown. Is RAPTOR_ROOT defined ? \nUsing current path. ";
-		strcpy(shemaLocation, "./Raptor.xsd");
+		shemaLocation = "./Raptor.xsd";
 
-		if (NULL == err)
-			std::cout << msg << std::endl;
-		else
-		{
-			err->generateRaptorError(	CPersistence::CPersistenceClassID::GetClassId(),
-										CRaptorErrorManager::RAPTOR_GL_ERROR,
-										msg);
-		}
+		RAPTOR_ERROR(CPersistence::CPersistenceClassID::GetClassId(), msg);
 	}
 	else
 	{
-		strcpy(shemaLocation, root);
-		strcat(shemaLocation, "/Redist/bin/Raptor.xsd");
+		shemaLocation = root;
+		shemaLocation += "/Redist/bin/Raptor.xsd";
 	}
 
 	CRaptorIO *pLoader = CRaptorIO::Create("XMLIO", CRaptorIO::DISK_READ, CRaptorIO::ASCII_XML);
-	pLoader->parse(shemaLocation, 0);
+	pLoader->parse(shemaLocation.c_str(), 0);
 	pLoader->parse(fname.c_str(), 0);
 
 	CRaptorDisplay *pDisplay = CRaptorDisplay::GetCurrentDisplay();
@@ -90,6 +82,9 @@ bool CRaptorToolBox::loadRaptorData(const std::string &fname, LP_SCENE_LOADER_OP
 
 		name_data = pLoader->getValueName();
 	}
+
+	if (NULL != pLoader)
+		delete pLoader;
 
 	return true;
 }
