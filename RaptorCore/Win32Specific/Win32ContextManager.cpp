@@ -413,6 +413,8 @@ CContextManager::RENDERING_CONTEXT_ID CWin32ContextManager::getContext(RAPTOR_HA
 
 void CWin32ContextManager::glMakeCurrentContext(const RAPTOR_HANDLE& device,RENDERING_CONTEXT_ID ctx)
 {
+	BOOL res = FALSE;
+
 	if ((ctx >= 0) && (ctx < MAX_CONTEXT))
 	{
 		context_t& context = pContext[ctx];
@@ -437,14 +439,14 @@ void CWin32ContextManager::glMakeCurrentContext(const RAPTOR_HANDLE& device,REND
                 context.WIN32Context = hDevice;
 			}
             if (context.WIN32Context != NULL)
-                wglMakeCurrent(context.WIN32Context, context.OGLContext);
+                res = wglMakeCurrent(context.WIN32Context, context.OGLContext);
 			m_currentGLContext = ctx;
 		}
 		else
 		{
             if (context.WIN32Context != NULL)
 			{
-                wglMakeCurrent(context.WIN32Context, NULL);
+                res = wglMakeCurrent(context.WIN32Context, NULL);
 				if (context.WIN32Window != NULL)
 				// Is this better ? yes in case the context does not exist (e.g. windows 7 or iGPU)
 					ReleaseDC(context.WIN32Window,context.WIN32Context);
@@ -457,10 +459,17 @@ void CWin32ContextManager::glMakeCurrentContext(const RAPTOR_HANDLE& device,REND
 	}
 	else
 	{
-		wglMakeCurrent(NULL,NULL);
+		res = wglMakeCurrent(NULL,NULL);
 		m_currentGLContext = CContextManager::INVALID_CONTEXT;
 	}
-    CATCH_WIN32_ERROR
+    
+	if (FALSE == res)
+	{
+		RAPTOR_FATAL(	COpenGL::COpenGLClassID::GetClassId(), 
+						"Win32 wglMakeCurrent failed to set current context.");
+	}
+
+	CATCH_WIN32_ERROR
 }
 
 void CWin32ContextManager::glDestroyContext(RENDERING_CONTEXT_ID ctx)

@@ -67,6 +67,9 @@ private:
     //! Implements base class
     virtual void unLink(const CPersistence* obj);
 
+	//! Inherited from CRaptorScreenDisplay
+	virtual void glvkReleaseResources(void);
+
 	//!	A helper to release & delete all used resources.
 	void glDestroyBuffer(void);
 

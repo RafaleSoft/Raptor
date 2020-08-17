@@ -94,15 +94,12 @@ CRaptorIO* CRaptorIO::Create(const std::string& streamName, IO_KIND kind, CRapto
 
     CRaptorIO *res = NULL;
 
+	if (format == ASCII_XML)
+		res = new CXMLRaptorIO(streamName, kind);
+	else
 #if defined(_WIN32)
-    if (format == ASCII_XML)
-        res = new CXMLRaptorIO(streamName,kind);
-    else
-	    res = new CWin32RaptorIO(streamName,kind);
+		res = new CWin32RaptorIO(streamName,kind);
 #else
-    if (format == ASCII_XML)
-        res = new CXMLRaptorIO(streamName,kind);
-    else
 	    res = new CRaptorIO(streamName,kind);
 #endif
 

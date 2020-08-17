@@ -77,6 +77,8 @@
 
 CRaptorServerInstance* CRaptorServerInstance::m_pInstance = NULL;
 
+#include <direct.h>
+
 #if defined(WIN32)
 	#define SLEEP(s)		Sleep(s)
 #else	// Linux environment
@@ -244,6 +246,17 @@ bool CRaptorServerInstance::closeSession(request_handler_t::request_id id)
 		{
 			m_sessionsToDestroy.push_back(m_sessions[i]);
 			m_sessions.erase(m_sessions.begin() + i);
+
+			char buffer[MAX_PATH];
+			_getcwd(buffer, MAX_PATH);
+			std::stringstream session_path;
+			session_path << "session_" << id << std::ends;
+			int dir_exist = _rmdir(session_path.str().c_str());
+			if ((ENOENT == errno) && (-1 == dir_exist))
+			{
+				std::cout << "Invalid session directory " << session_path.str() << " unable to remove ! " << std::endl;
+			}
+
 			return true;
 		}
 	}
@@ -308,8 +321,7 @@ bool CRaptorServerInstance::executeRequest(request &r)
 		s.display = Raptor::glCreateDisplay(glcs);
 		if (s.display == 0)
 		{
-			RAPTOR_FATAL(	CPersistence::CPersistenceClassID::GetClassId(),
-							"Raptor Render Server has no resources: hardware OpenGL rendering not supported, exiting...");
+			std::cout << "Raptor Render Server has no resources: hardware OpenGL rendering not supported, exiting..." << std::endl;
 			return false;
 		}
 
@@ -370,13 +382,35 @@ bool CRaptorServerInstance::loadPackage(const CRaptorNetwork::DATA_COMMAND& data
 	CRaptorDataManager *datamanager = CRaptorDataManager::GetInstance();
 	datamanager->managePackage(fname);
 
+	char buffer[MAX_PATH];
+	_getcwd(buffer, MAX_PATH);
+	std::stringstream session_path;
+	session_path << "session_" << id << std::ends;
+	int dir_exist = _chdir(session_path.str().c_str());
+	if ((ENOENT == errno) && (-1 == dir_exist))
+	{
+		_mkdir(session_path.str().c_str());
+		_chdir(session_path.str().c_str());
+	}
+
 	//!	Package is empty
 	std::vector<std::string> files = datamanager->getManagedFiles(fname);
 	if (0 == files.size())
+	{
+		_chdir(buffer);
 		return false;
+	}
 
-	fname = datamanager->exportFile("Demo.xml");
-
+	//!	Export all fils in package and find scene descriptor file.
+	std::string scene_file = "";
+	for (size_t i = 0; i < files.size(); i++)
+	{
+		fname = datamanager->exportFile(files[i], ".");
+		size_t ext_pos = files[i].find(".xml", 0);
+		if (ext_pos != std::string::npos)
+			scene_file = fname;
+	}
+	
 	CRaptorDisplay *pDisplay = NULL;
 	for (size_t i = 0; i < m_sessions.size(); i++)
 	{
@@ -384,11 +418,13 @@ bool CRaptorServerInstance::loadPackage(const CRaptorNetwork::DATA_COMMAND& data
 			pDisplay = m_sessions[i].display;
 	}
 
-	if (NULL != pDisplay)
+	//!	If no scene descriptor file found, nothing can be done, return an error.
+	bool res = false;
+	if ((NULL != pDisplay) && (!scene_file.empty()))
 	{
 		// Set a temporary name for display update
 		pDisplay->setName("RaptorRenderSession");
-		if (CRaptorToolBox::loadRaptorData(fname))
+		if (CRaptorToolBox::loadRaptorData(scene_file))
 		{
 			std::stringstream dname;
 			dname << "Session";
@@ -397,18 +433,16 @@ bool CRaptorServerInstance::loadPackage(const CRaptorNetwork::DATA_COMMAND& data
 			dname << std::ends;
 			pDisplay->setName(dname.str());
 			std::cout << "Session rendering scene updated." << std::endl;
-			return true;
+			res = true;
 		}
-		else
-			return false;
 	}
 	else
 	{
 		std::cout << "Invalid session identifier " << id << std::endl;
-		return false;
 	}
 
-	return true;
+	_chdir(buffer);
+	return res;
 }
 
 

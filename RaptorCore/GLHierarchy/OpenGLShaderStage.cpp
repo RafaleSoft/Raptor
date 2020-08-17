@@ -131,9 +131,8 @@ COpenGLShaderStage::~COpenGLShaderStage(void)
 		if (value != GL_PROGRAM_OBJECT_ARB)
 #endif
 		{
-			Raptor::GetErrorManager()->generateRaptorError(COpenGLShaderStage::COpenGLShaderStageClassID::GetClassId(),
-														   CRaptorErrorManager::RAPTOR_WARNING,
-														   "Shader Program is invalid in this context");
+			RAPTOR_WARNING(	COpenGLShaderStage::COpenGLShaderStageClassID::GetClassId(),
+							"Shader Program is invalid in this context");
 
 			CATCH_GL_ERROR
 			return;
