@@ -88,7 +88,7 @@ CGL2DTextureFont::~CGL2DTextureFont()
 bool CGL2DTextureFont::glInit(const std::string &filename, unsigned int size, bool antialiased)
 {
 	m_bAntialiased = antialiased;
-
+	
 	if (CGL2DFont::init(filename, size))
 	{
 		unsigned int h = 0;
@@ -239,7 +239,7 @@ bool CGL2DTextureFont::glInit(const std::string &filename, unsigned int size, bo
 		delete[] buffer;
 		CATCH_GL_ERROR
 		//		factory.glExportTexture(m_texture,"FontTexture.tga");
-
+		
 		return true;
 	}
 	else

@@ -88,6 +88,29 @@ void CServerImageRenderer::glRender(void)
 void CServerImageRenderer::setImageData(CRaptorNetwork::IMAGE_COMMAND *in)
 {
 	CRaptorLock lock(tMutex);
+
+	std::cout << "Set image data ..." << std::endl;
+
+	size_t size = 4 /*CRaptorNetwork::PIXEL_SIZE*/ * in->header.blocWidth * in->header.blocHeight;
+
+	CImage img;
+	img.allocatePixels(in->header.blocWidth, in->header.blocHeight);
+	unsigned char* px = img.getPixels();
+	unsigned char *src = (unsigned char*)&in->pData;
+
+	int pos = 0;
+	for (size_t i = 0; i<size; i += 4, pos += 3)
+	{
+		px[i] = src[pos];
+		px[i+1] = src[pos+1];
+		px[i+2] = src[pos+2];
+		px[i + 3] = 255;
+	}
+
+	//memcpy(px, &in->pData, size);
+
+	CImage::IImageIO *io = img.getImageKindIO("jpg");
+	io->storeImageFile("grab.jpg", &img);
 	
 	m_pImageDatas.push_back(in);
 }

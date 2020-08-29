@@ -794,7 +794,7 @@ bool CRaptorRenderBufferDisplay::checkBufferStatus(void) const
 	const CRaptorGLExtensions * const pExtensions = Raptor::glGetExtensions(); 
 	GLenum status = pExtensions->glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
 
-#ifndef RAPTOR_DEBUG_MODE_GENERATION
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
 	string msg = "";   
 	switch(status)
 	{

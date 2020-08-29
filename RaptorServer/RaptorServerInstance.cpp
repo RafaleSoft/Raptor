@@ -73,7 +73,7 @@
 
 #include "YUVCompressor.h"
 #include "ToolBox/RaptorToolBox.h"
-
+#include "System/Image.h"
 
 CRaptorServerInstance* CRaptorServerInstance::m_pInstance = NULL;
 
@@ -165,7 +165,19 @@ void CRaptorServerInstance::glRender()
 					RAPTOR_HANDLE handle;
 					pDisplay->glvkBindDisplay(handle);
 				}
-
+				/*
+				glTranslatef(0.0f, 0.0f, -2.0f);
+				glDisable(GL_LIGHTING);
+				glDisable(GL_TEXTURE_2D);
+				glBegin(GL_TRIANGLES);
+					glColor4f(1.0f, 0.0f, 0.0f, 1.0f);
+					glVertex3f(-0.5f, -0.5f, 0.0f);
+					glColor4f(0.0f, 1.0f, 0.0f, 1.0f);
+					glVertex3f(0.5f, -0.5f, 0.0f);
+					glColor4f(0.0f, 0.0f, 1.0f, 1.0f);
+					glVertex3f(0.0f, 0.5f, 0.0f);
+				glEnd();
+				*/
 				pDisplay->glRender();
 								
 				CRaptorDisplayConfig state;
@@ -249,12 +261,62 @@ bool CRaptorServerInstance::closeSession(request_handler_t::request_id id)
 
 			char buffer[MAX_PATH];
 			_getcwd(buffer, MAX_PATH);
+
+			//! Check if directory is valid.
 			std::stringstream session_path;
 			session_path << "session_" << id << std::ends;
-			int dir_exist = _rmdir(session_path.str().c_str());
+			int dir_exist = _chdir(session_path.str().c_str());
 			if ((ENOENT == errno) && (-1 == dir_exist))
 			{
 				std::cout << "Invalid session directory " << session_path.str() << " unable to remove ! " << std::endl;
+				return false;
+			}
+
+			//! Find the first file in the directory.
+			std::stringstream session_dir;
+			session_dir << buffer << "\\";
+			session_dir << "session_" << id;
+			session_dir << "\\*" << std::ends;
+			WIN32_FIND_DATA ffd;
+			HANDLE hFind = FindFirstFile(session_dir.str().c_str(), &ffd);
+			if (INVALID_HANDLE_VALUE == hFind)
+			{
+				std::cout << "Unable to list session directory " << session_path.str() << std::endl;
+				return false;
+			}
+
+			// List all the files in the directory with some info about them.
+			std::vector<std::string> files;
+			do
+			{
+				if (ffd.dwFileAttributes & FILE_ATTRIBUTE_ARCHIVE)
+					files.push_back(ffd.cFileName);
+			} while (FindNextFile(hFind, &ffd) != 0);
+
+			if (GetLastError() != ERROR_NO_MORE_FILES)
+				std::cout << "Some session files could not be accessed in path: " << session_path.str() << std::endl;
+
+			FindClose(hFind);
+
+			for (size_t i = 0; i < files.size(); i++)
+			{
+				if (-1 == _unlink(files[i].c_str()))
+				{
+					std::cout << "Unable to remove session file: " << files[i] << std::endl;
+					if (ENOENT == errno)
+						std::cout << "File not found" << std::endl;
+					else if (EACCES == errno)
+						std::cout << "Permission denied" << std::endl;
+				}
+			}
+
+			// Once dir empty, remove dir.
+			_chdir(buffer);
+			dir_exist = _rmdir(session_path.str().c_str());
+			if (-1 == dir_exist)
+			{
+				std::cout << "Unable to remove session directory " << session_path.str() << std::endl;
+				return false;
 			}
 
 			return true;
@@ -363,10 +425,24 @@ bool CRaptorServerInstance::loadPackage(const CRaptorNetwork::DATA_COMMAND& data
 {
 	std::cout << "Storing data package file to server." << std::endl;
 
+	//!	Create session private directory to store data.
+	char buffer[MAX_PATH];
+	_getcwd(buffer, MAX_PATH);
+	std::stringstream session_path;
+	session_path << "session_" << id << std::ends;
+	int dir_exist = _chdir(session_path.str().c_str());
+	if ((ENOENT == errno) && (-1 == dir_exist))
+	{
+		_mkdir(session_path.str().c_str());
+		_chdir(session_path.str().c_str());
+	}
+
+	//!	Grab package file name.
 	std::streampos fsize = data.size;
 	const unsigned char *pData = (unsigned char*)&data;
 	std::string fname = data.packname;
 
+	//!	Create package file.
 	CRaptorIO *io = CRaptorIO::Create(fname, CRaptorIO::DISK_WRITE, CRaptorIO::BINARY);
 
 	//!	Cannot open file
@@ -379,22 +455,11 @@ bool CRaptorServerInstance::loadPackage(const CRaptorNetwork::DATA_COMMAND& data
 	io->write(&pData[data.command.requestLen], fsize);
 	delete io;
 
+	//!	Export package data.
 	CRaptorDataManager *datamanager = CRaptorDataManager::GetInstance();
 	datamanager->managePackage(fname);
-
-	char buffer[MAX_PATH];
-	_getcwd(buffer, MAX_PATH);
-	std::stringstream session_path;
-	session_path << "session_" << id << std::ends;
-	int dir_exist = _chdir(session_path.str().c_str());
-	if ((ENOENT == errno) && (-1 == dir_exist))
-	{
-		_mkdir(session_path.str().c_str());
-		_chdir(session_path.str().c_str());
-	}
-
-	//!	Package is empty
 	std::vector<std::string> files = datamanager->getManagedFiles(fname);
+	//!	Package is empty
 	if (0 == files.size())
 	{
 		_chdir(buffer);
@@ -440,6 +505,10 @@ bool CRaptorServerInstance::loadPackage(const CRaptorNetwork::DATA_COMMAND& data
 	{
 		std::cout << "Invalid session identifier " << id << std::endl;
 	}
+
+	//!	Release package once files are obtained.
+	fname = data.packname;
+	datamanager->unManagePackage(fname);
 
 	_chdir(buffer);
 	return res;
@@ -525,6 +594,12 @@ bool CRaptorServerInstance::start(unsigned int width, unsigned int height)
 {
 	CRaptorConfig config;
 	config.m_logFile = "Raptor_Server.log";
+	config.m_bRelocation = true;
+	config.m_uiVertices = 1000000;
+	config.m_uiPolygons = 1000000;
+	config.m_uiTexels = 1000000;
+	config.m_uiUniforms = 100000;
+	
 	if (Raptor::glInitRaptor(config))
 		CAnimator::SetAnimator(new CAnimator());
 	else
@@ -545,7 +620,7 @@ bool CRaptorServerInstance::start(unsigned int width, unsigned int height)
 	glcs.acceleration = CRaptorDisplayConfig::HARDWARE;
 	glcs.antialias = CRaptorDisplayConfig::ANTIALIAS_4X;
 	glcs.swap_buffer = CRaptorDisplayConfig::SWAP_EXCHANGE;
-	glcs.renderer = CRaptorDisplayConfig::RENDER_BUFFER_FILTER_CHAIN;
+	glcs.renderer = CRaptorDisplayConfig::NATIVE_GL;
 	glcs.double_buffer = true;
 	glcs.depth_buffer = true;
 	glcs.stencil_buffer = true;
@@ -583,30 +658,32 @@ bool CRaptorServerInstance::start(unsigned int width, unsigned int height)
 
 	std::cout << "Creating Raptor Main Display. " << std::endl;
 	m_pDisplay->glvkBindDisplay(m_pWindow);
-	CRaptorConsole *pConsole = Raptor::GetConsole();
-	pConsole->glInit();
-	pConsole->showStatus(true);
-	pConsole->showFPS(true);
-	pConsole->showFrameTime(true);
-	pConsole->activateConsole(true);
-	CGLFont::FONT_TEXT_ITEM item;
-	item.text = "Pending requests: 0";
-	pConsole->addItem(item);
-	item.text = "Pending replies: 0";
-	pConsole->addItem(item);
 
-	IRenderingProperties &props = m_pDisplay->getRenderingProperties();
-	props.setTexturing(IRenderingProperties::ENABLE);
-	props.setLighting(IRenderingProperties::DISABLE);
-	props.setDepthTest(IRenderingProperties::DISABLE);
-	props.setCullFace(IRenderingProperties::DISABLE);
-	props.clear(CGL_RGBA);
+		CRaptorConsole *pConsole = Raptor::GetConsole();
+		pConsole->glInit();
+
+		pConsole->showStatus(true);
+		pConsole->showFPS(true);
+		pConsole->showFrameTime(true);
+		pConsole->activateConsole(true);
+		CGLFont::FONT_TEXT_ITEM item;
+		item.text = "Pending requests: 0";
+		pConsole->addItem(item);
+		item.text = "Pending replies: 0";
+		pConsole->addItem(item);
+
+		IRenderingProperties &props = m_pDisplay->getRenderingProperties();
+		props.setTexturing(IRenderingProperties::ENABLE);
+		props.setLighting(IRenderingProperties::DISABLE);
+		props.setDepthTest(IRenderingProperties::DISABLE);
+		props.setCullFace(IRenderingProperties::DISABLE);
+		props.clear(CGL_RGBA);
 	m_pDisplay->glvkUnBindDisplay();
 
 	if (m_pCompressor == NULL)
 		m_pCompressor = new CYUVCompressor();
 
-	std::cout << "Raptor Server Ready. " << std::endl;
+	std::cout << "Raptor Instance Ready. " << std::endl;
 	m_bStarted = true;
 	return true;
 }

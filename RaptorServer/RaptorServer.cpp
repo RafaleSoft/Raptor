@@ -88,6 +88,7 @@ bool CRaptorServer::Start(const CCmdLineParser& cmdline)
 		str << " at host ";
 		str << addrStr;
 		RAPTOR_NO_ERROR(CPersistence::CPersistenceClassID::GetClassId(),str.str());
+		std::cout << str.str() << std::endl;
     }
     else
     {
@@ -97,6 +98,7 @@ bool CRaptorServer::Start(const CCmdLineParser& cmdline)
 		str << " at host ";
 		str << addrStr;
 		RAPTOR_FATAL(CPersistence::CPersistenceClassID::GetClassId(),str.str());
+		std::cout << str.str() << std::endl;
     }
 
     return m_pInstance->run();

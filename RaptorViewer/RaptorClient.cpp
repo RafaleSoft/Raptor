@@ -41,6 +41,10 @@
 #if !defined(AFX_SERVERIMAGERENDERER_H__C9720F3B_1B29_482C_84C8_1A990CEC0EBD__INCLUDED_)
 	#include "ServerImageRenderer.h"
 #endif
+#if !defined(AFX_IMAGING_H__BD40E48F_EE12_49CF_BFBD_93658FCD0529__INCLUDED_)
+	#include "ToolBox/Imaging.h"
+#endif
+
 
 RAPTOR_NAMESPACE
 
@@ -85,6 +89,7 @@ CRaptorClient::~CRaptorClient(void)
 
 bool CRaptorClient::load(const std::string& fname)
 {
+	bool loadResult = true;
 	CRaptorIO *io = CRaptorIO::Create(fname.data(),CRaptorIO::DISK_READ,CRaptorIO::BINARY);
 	
 	std::streampos fsize = io->getSize();
@@ -107,11 +112,12 @@ bool CRaptorClient::load(const std::string& fname)
 	}
 	else
 	{
-		std::cout << "Unable to send file " << fname << " to server." << std::endl;
+		std::cout << "Unable to send file " << fname << " to server: file does not exist or is unreadable" << std::endl;
+		loadResult = false;
 	}
 
 	delete io;
-	return true;
+	return loadResult;
 }
 
 static const int MAX_QUERIES = 5;
@@ -141,9 +147,7 @@ void CRaptorClient::queryServerImage(void)
 		if (m_pImage == NULL)
 			return;
 
-		//std::cout << "Received image_data: " << client_id << std::endl;
-
-		size = CRaptorNetwork::PIXEL_SIZE * 256 * 256;
+		std::cout << "Received image_data: " << client_id << std::endl;
 		
 		pending_queries--;
 
@@ -187,6 +191,7 @@ bool CRaptorClient::run(unsigned int width, unsigned int height)
 	glcs.depth_buffer = true;
 	glcs.display_mode = CGL_RGBA | CGL_DEPTH;
 
+	
 	m_window = Raptor::glCreateWindow(glcs,m_pDisplay);
 	if (m_window.handle() == 0)
 	{
@@ -219,6 +224,7 @@ bool CRaptorClient::run(unsigned int width, unsigned int height)
 		pScene->addObject(m_pImage);
 
 		res = m_pDisplay->glvkUnBindDisplay();
+
 		if (res)
 		{
 			CRaptorApplication *pApplication = CRaptorApplication::CreateApplication();
@@ -236,26 +242,33 @@ bool CRaptorClient::start(const CCmdLineParser &cmdLine)
 	//	initialize Raptor classes and settings
     CRaptorConfig config;
 	config.m_bRelocation = true;
-	config.m_uiPolygons = 4096;
-	config.m_uiVertices = 4096;
+	config.m_uiPolygons = 65536;
+	config.m_uiVertices = 65536;
 	config.m_uiUniforms = 65536;
 	config.m_logFile = "Raptor_Viewer.log";
 	config.m_bAutoDestroy = false;
+
 	bool res = Raptor::glInitRaptor(config);
-	if (res)
+	if (!res)
 	{
-		CAnimator::SetAnimator(new CAnimator());
+		std::cout << "Failed to initialize Raptor layer." << std::endl;
+		return false;
 	}
+
+	CAnimator::SetAnimator(new CAnimator());
+	CImaging::installImagers();
 
 	if (res)
     {
 		RAPTOR_NO_ERROR(CPersistence::CPersistenceClassID::GetClassId(),
-						"Raptor Renderer initialized. ");
+						"Raptor Toolbox initialized. ");
+		std::cout << "Raptor Toolbox initialized. " << std::endl;
     }
     else
     {
 		RAPTOR_FATAL(	CPersistence::CPersistenceClassID::GetClassId(),
 						"Failed to initialize Raptor. ");
+		std::cout << "Failed to initialize Raptor. " << std::endl;
     }
 
 	if (m_Client == NULL)
