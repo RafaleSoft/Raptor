@@ -48,7 +48,7 @@ public:
 			return m_short;
 		};
 
-		virtual bool parse(const char* argv)
+		virtual bool parse(const char*)
 		{
 			return false;
 		};

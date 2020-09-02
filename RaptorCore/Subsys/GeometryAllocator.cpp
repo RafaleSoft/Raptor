@@ -163,8 +163,14 @@ bool CGeometryAllocator::glvkCopyPointer(uint16_t *dst, uint16_t *src, uint64_t 
 
 void CGeometryAllocator::glvkSetPointerData(float *dst, float *src, uint64_t size)
 {
-    if ((NULL == deviceMemoryManager) || (NULL == relocatedVertices) || (NULL == src) || (NULL == dst))
-        return;
+	if ((NULL == src) || (NULL == dst))
+		return;
+
+	if ((NULL == deviceMemoryManager) || (NULL == relocatedVertices))
+	{
+		memcpy(dst, src, size);
+		return;
+	}
 
 	if (0 == size)
 	{
@@ -196,8 +202,14 @@ void CGeometryAllocator::glvkSetPointerData(float *dst, float *src, uint64_t siz
 
 void CGeometryAllocator::glvkSetPointerData(uint16_t *dst, uint16_t *src, uint64_t size)
 {
-    if ((NULL == deviceMemoryManager) || (NULL == relocatedFaceIndexes) || (NULL == src) || (NULL == dst))
-        return;
+	if ((NULL == src) || (NULL == dst))
+		return;
+
+	if ((NULL == deviceMemoryManager) || (NULL == relocatedVertices))
+	{
+		memcpy(dst, src, size);
+		return;
+	}
 
 	if (0 == size)
 	{

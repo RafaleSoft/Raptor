@@ -30,6 +30,8 @@ public:
 
 	void glInitImage();
 
+	void glUpdateImage();
+
 	void setImageData(CRaptorNetwork::IMAGE_COMMAND *);
 
 	DECLARE_OBJECT3D_NOMANIPULATORS
@@ -42,8 +44,8 @@ private:
 
 	RAPTOR_HANDLE	drawBuffer;
 	ITextureObject	*m_pImage;
-	size_t	m_serverWidth;
-	size_t	m_serverHeight;
+	size_t			m_serverWidth;
+	size_t			m_serverHeight;
 
 	std::vector<CRaptorNetwork::IMAGE_COMMAND *> m_pImageDatas;
 	

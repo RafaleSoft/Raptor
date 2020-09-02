@@ -1004,7 +1004,7 @@ CContextManager::RENDERING_CONTEXT_ID  CWin32ContextManager::glCreateExtendedCon
 		}
 #endif
 */
-#ifndef RAPTOR_DEBUG_MODE_GENERATION
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
 		if (std::string::npos != extensions.find("GL_ARB_debug_output"))
 		{
 			CRaptorInstance &instance = CRaptorInstance::GetInstance();

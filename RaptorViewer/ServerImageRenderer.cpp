@@ -39,60 +39,54 @@ void CServerImageRenderer::glRender(void)
 	if (m_pImage == NULL)
 		return;
 		
+	m_pImage->glvkRender();
+
+	glCallList(drawBuffer.handle());
+}
+
+void CServerImageRenderer::glUpdateImage(void)
+{
+	CRaptorNetwork::IMAGE_COMMAND *image = NULL;
+
+	CRaptorLock lock(tMutex);
+	if (m_pImageDatas.size())
 	{
-		m_pImage->glvkRender();
-
-		CRaptorNetwork::IMAGE_COMMAND *image = NULL;
-
-		{
-			CRaptorLock lock(tMutex);
-			if (m_pImageDatas.size())
-			{
-				image = m_pImageDatas[0];
-				m_pImageDatas.erase(m_pImageDatas.begin());
-				/*
-#ifdef GL_EXT_bgra
-        GLuint mode = GL_BGR_EXT;
-#else
-        GLuint mode = GL_RGBA;
-#endif
-		*/
-			}
-		}
-
-		if (image != NULL)
-		{
-			GLuint mode = GL_RGB;
-			glTexSubImage2D(GL_TEXTURE_2D,
-				    0,  // level
-				    0,  // xoffset
-				    0,  // yoffset
-				    (GLsizei)m_serverWidth,
-					(GLsizei)m_serverHeight,
-				    mode,
-				    GL_UNSIGNED_BYTE,
-				    &image->pData);
-
-			//!	This bloc has been initially allocated as a byte array
-			//!	by the network client. Deletion must match.
-			delete [] image;
-		}
+		image = m_pImageDatas[0];
+		m_pImageDatas.erase(m_pImageDatas.begin());
 	}
 
-	glEnable(GL_TEXTURE_2D);
-	glDisable(GL_LIGHTING);
+	if (image != NULL)
+	{
+		m_pImage->glvkRender();
+		GLuint mode = GL_RGB;
+		glTexSubImage2D(	GL_TEXTURE_2D,
+							0,  // level
+							image->header.xOffset,
+							image->header.yOffset,
+							image->header.blocWidth,
+							image->header.blocHeight,
+							mode,
+							GL_UNSIGNED_BYTE,
+							&image->pData);
 		
-	glCallList(drawBuffer.handle());
+		//!	This bloc has been initially allocated as a byte array
+		//!	by the network client. Deletion must match.
+		delete[] image;
+	}
 }
 
 void CServerImageRenderer::setImageData(CRaptorNetwork::IMAGE_COMMAND *in)
 {
+	if (NULL == in)
+		return;
+
 	CRaptorLock lock(tMutex);
 
 	std::cout << "Set image data ..." << std::endl;
 
 	size_t size = 4 /*CRaptorNetwork::PIXEL_SIZE*/ * in->header.blocWidth * in->header.blocHeight;
 
+	/*
 	CImage img;
 	img.allocatePixels(in->header.blocWidth, in->header.blocHeight);
 	unsigned char* px = img.getPixels();
@@ -107,10 +101,9 @@ void CServerImageRenderer::setImageData(CRaptorNetwork::IMAGE_COMMAND *in)
 		px[i + 3] = 255;
 	}
 
-	//memcpy(px, &in->pData, size);
-
 	CImage::IImageIO *io = img.getImageKindIO("jpg");
 	io->storeImageFile("grab.jpg", &img);
+	*/
 	
 	m_pImageDatas.push_back(in);
 }
@@ -120,10 +113,10 @@ void CServerImageRenderer::glInitImage()
 	drawBuffer.handle(glGenLists(1));
     glNewList(drawBuffer.handle(),GL_COMPILE);
         glBegin(GL_QUADS);
-            glTexCoord2f(0.0f,0.0f);glVertex4f(-1.0,-1.0,-1.0f,1.0f);
-            glTexCoord2f(1.0f,0.0f);glVertex4f(1.0,-1.0,-1.0f,1.0f);
-            glTexCoord2f(1.0f,1.0f);glVertex4f(1.0,1.0,-1.0f,1.0f);
-            glTexCoord2f(0.0f,1.0f);glVertex4f(-1.0,1.0,-1.0f,1.0f);
+            glTexCoord2f(0.0f,0.0f);glVertex4f(-1.0,-1.0,-10.0f,1.0f);
+            glTexCoord2f(1.0f,0.0f);glVertex4f(1.0,-1.0,-10.0f,1.0f);
+            glTexCoord2f(1.0f,1.0f);glVertex4f(1.0,1.0,-10.0f,1.0f);
+            glTexCoord2f(0.0f,1.0f);glVertex4f(-1.0,1.0,-10.0f,1.0f);
         glEnd();
     glEndList();
 

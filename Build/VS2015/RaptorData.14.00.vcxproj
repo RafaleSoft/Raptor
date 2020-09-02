@@ -755,6 +755,10 @@ copy $(SolutionDir)$(ProjectName)\RaptorData.pck "%RAPTOR_ROOT%\Redist\bin\"
     <None Include="..\..\RaptorData\Data\blender_8x.gs" />
     <None Include="..\..\RaptorData\Data\blinn.ps" />
     <None Include="..\..\RaptorData\Data\blinn.vs" />
+    <None Include="..\..\RaptorData\Data\box.gs" />
+    <None Include="..\..\RaptorData\Data\box.ps" />
+    <None Include="..\..\RaptorData\Data\box.vs" />
+    <None Include="..\..\RaptorData\Data\box_line.gs" />
     <None Include="..\..\RaptorData\Data\bump.fp" />
     <None Include="..\..\RaptorData\Data\bump.ps" />
     <None Include="..\..\RaptorData\Data\bump.vp" />

@@ -160,6 +160,8 @@ void CRaptorClient::glRender()
 {
 	m_pDisplay->glvkBindDisplay(m_window);
 
+	m_pImage->glUpdateImage();
+
 	m_pDisplay->glRender();
 
 	m_pDisplay->glvkUnBindDisplay();
@@ -191,7 +193,6 @@ bool CRaptorClient::run(unsigned int width, unsigned int height)
 	glcs.depth_buffer = true;
 	glcs.display_mode = CGL_RGBA | CGL_DEPTH;
 
-	
 	m_window = Raptor::glCreateWindow(glcs,m_pDisplay);
 	if (m_window.handle() == 0)
 	{
@@ -213,18 +214,20 @@ bool CRaptorClient::run(unsigned int width, unsigned int height)
 	if (res)
 	{
 		vp->glvkRenderViewPointModel();
+
 		CRaptorConsole *pConsole = Raptor::GetConsole();
 		pConsole->glInit();
 		pConsole->showStatus(true);
 		pConsole->showFPS(true);
 		pConsole->activateConsole(true);
+		
 		glClearColor(0.2f,0.8f,0.9f,1.0f);
 		m_pImage->glInitImage();
+		
 		C3DScene *pScene = m_pDisplay->getRootScene();
 		pScene->addObject(m_pImage);
 
 		res = m_pDisplay->glvkUnBindDisplay();
-
 		if (res)
 		{
 			CRaptorApplication *pApplication = CRaptorApplication::CreateApplication();
