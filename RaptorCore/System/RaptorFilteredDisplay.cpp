@@ -153,42 +153,6 @@ CRaptorFilteredDisplay::CRaptorFilteredDisplay(const CRaptorDisplayConfig& pcs)
 
 CRaptorFilteredDisplay::~CRaptorFilteredDisplay()
 {
-	if (NULL != m_pImageSet)
-	{
-		m_pImageSet->unregisterDestruction(this);
-		delete m_pImageSet;
-		m_pImageSet = NULL;
-	}
-
-	if (NULL != m_pFSAADisplay)
-	{
-		m_pFSAADisplay->unregisterDestruction(this);
-		if (m_bBufferBound)
-			m_pFSAADisplay->glvkUnBindDisplay();
-		Raptor::glDestroyDisplay(m_pFSAADisplay);
-		m_pFSAADisplay = NULL;
-	}
-
-	if (NULL != m_pDisplay)
-	{
-		m_pDisplay->unregisterDestruction(this);
-		if (m_bBufferBound)
-			m_pDisplay->glvkUnBindDisplay();
-		Raptor::glDestroyDisplay(m_pDisplay);
-		m_pDisplay = NULL;
-	}
-
-    if (m_pFilters.size() > 0)
-    {
-        vector<CRaptorDisplayFilter*>::const_iterator itr = m_pFilters.begin();
-        while (itr != m_pFilters.end())
-        {
-            CRaptorDisplayFilter *filter = (*itr++);
-			filter->releaseReference();
-        }
-    }
-
-	glvkUnBindDisplay();
 }
 
 void CRaptorFilteredDisplay::glvkAllocateResources(void)
@@ -216,9 +180,52 @@ void CRaptorFilteredDisplay::glvkReleaseResources(void)
 	{
 		if (m_bBufferBound)
 			m_pDisplay->glvkUnBindDisplay();
+		//{
+		//	if (CRaptorDisplayConfig::ANTIALIAS_NONE != filter_cs.antialias)
+		//		m_pFSAADisplay->glvkUnBindDisplay();
+		//	else
+		//		m_pDisplay->glvkUnBindDisplay();
+		//}
+	}
+
+	if (NULL != m_pImageSet)
+	{
+		m_pImageSet->unregisterDestruction(this);
+		delete m_pImageSet;
+		m_pImageSet = NULL;
+	}
+
+	if (NULL != m_pFSAADisplay)
+	{
+		m_pFSAADisplay->unregisterDestruction(this);
+		m_pFSAADisplay->glvkReleaseResources();
+	}
+	
+	if (NULL != m_pDisplay)
+	{
+		m_pDisplay->unregisterDestruction(this);
+		m_pDisplay->glvkReleaseResources();
 	}
 
 	CRaptorScreenDisplay::glvkReleaseResources();
+
+	if (m_bBufferBound)
+	{
+		if (m_pFSAADisplay != NULL)
+			m_pFSAADisplay->glvkUnBindDisplay();
+		else
+			m_pDisplay->glvkUnBindDisplay();
+	}
+	m_bBufferBound = false;
+
+	if (m_pFSAADisplay != NULL)
+		Raptor::glDestroyDisplay(m_pFSAADisplay);
+	Raptor::glDestroyDisplay(m_pDisplay);
+
+	CRaptorScreenDisplay::glvkUnBindDisplay();
+	
+	m_pFSAADisplay = NULL;
+	m_pDisplay = NULL;
 }
 
 void CRaptorFilteredDisplay::unLink(const CPersistence* obj)

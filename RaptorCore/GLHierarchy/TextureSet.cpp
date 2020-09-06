@@ -165,7 +165,7 @@ bool CTextureSet::importTextureObject(CRaptorIO& io)
 	bool compressed = false;
 
 	string data = io.getValueName();
-    while (!data.empty())
+	while (io.hasMoreValues())
     {
 		if (data == "name")
 			io >> filename;
@@ -222,7 +222,7 @@ bool CTextureSet::importObject(CRaptorIO& io)
     io >> name;
 
 	string data = io.getValueName();
-    while (!data.empty())
+	while (io.hasMoreValues())
     {
 		if (data == "name")
 			CPersistence::importObject(io);

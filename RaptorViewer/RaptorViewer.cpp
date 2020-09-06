@@ -37,9 +37,14 @@ int main(int argc, char* argv[])
 		parser.getValue("file",file);
 		if (client.load(file))
 		{
+			unsigned short r_width = 256;
+			unsigned short r_height = 256;
+
 			parser.getValue("width",width);
 			parser.getValue("height",height);
-			if (client.run(width,height))
+			parser.getValue("r_width", r_width);
+			parser.getValue("r_height", r_height);
+			if (client.run(width, height, r_width, r_height))
 			{
 				if (!client.stop())
 				{

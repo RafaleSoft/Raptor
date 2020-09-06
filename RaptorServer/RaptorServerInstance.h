@@ -35,7 +35,7 @@
 #include "Raptordll.h"
 RAPTOR_NAMESPACE
 
-
+class CServerSession;
 class CRaptorServerCompressor;
 
 class CRaptorServerInstance :	public server_base_t::request_handler_t,
@@ -50,6 +50,9 @@ public:
 
 	//!	Run the instance, handling rendering events
 	bool run(void);
+
+	//!	To quit application from outside main thread, call CloseWindow 
+	bool closeWindow(void);
 
 	//!	Stop server server requests
     bool stop(void);
@@ -99,6 +102,7 @@ private:
     CRaptorDisplay		*m_pDisplay;
     RAPTOR_HANDLE		m_pWindow;
 	CRaptorServerCompressor	*m_pCompressor;
+	CServerSession		*m_pSessionManager;
 
 	//!	Semaphore to monitor a producer/consumer model
 	//!	to render (procuder) an send back results (consumer).
@@ -112,16 +116,8 @@ private:
 	vector<request>		m_requests;
 	//!	Replies queue
 	vector<request>		m_replies;
-
-	typedef struct session_t
-	{
-		request_handler_t::request_id id;
-		CRaptorDisplay* display;
-	} session;
-
-	//!	Sessions list
-	vector<session>		m_sessions;
-	vector<session>		m_sessionsToDestroy;
+	//! Displays to recycle
+	vector<CRaptorDisplay*> m_recycledDisplays;
 };
 
 #endif // !defined(AFX_RAPTORINSTANCE_H__602E9801_E82B_41B1_9B90_DD498DDF468F__INCLUDED_)

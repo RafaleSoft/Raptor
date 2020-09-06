@@ -120,6 +120,22 @@ void CRaptorDisplay::glvkAllocateResources(void)
 
 void CRaptorDisplay::glvkReleaseResources(void)
 {
+	if (m_pProperties != NULL)
+	{
+		m_pProperties->glPopProperties();
+		delete m_pProperties;
+		m_pProperties = NULL;
+	}
+	if (m_pRootScene != NULL)
+	{
+		delete m_pRootScene;
+		m_pRootScene = NULL;
+	}
+	if ((m_bDeleteViewPoint) && (m_pViewPoint != NULL))
+	{
+		delete m_pViewPoint;
+		m_pViewPoint = NULL;
+	}
 }
 
 IRenderingProperties *const CRaptorDisplay::createRenderingProperties(void) const
@@ -382,7 +398,7 @@ bool CRaptorDisplay::importObject(CRaptorIO& io)
 	io >> name; 
 	string data = io.getValueName();
 
-	while (!data.empty())
+	while (io.hasMoreValues())
 	{
 		if (data == "height")
 			io >> da.height;
@@ -407,7 +423,7 @@ bool CRaptorDisplay::importObject(CRaptorIO& io)
 			getViewPoint()->importObject(io);
             setViewPoint(getViewPoint());
         }
-	   else
+		else
 			io >> name;
 
 		data = io.getValueName();

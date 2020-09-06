@@ -50,8 +50,16 @@ CRaptorServer::CRaptorServer()
 
 CRaptorServer::~CRaptorServer()
 {
-    if (m_pInstance != NULL)
-        delete m_pInstance;
+	//! Server should have been stopped at earlier stage.
+	Stop();
+
+	if (m_pInstance != NULL)
+	{
+		m_pInstance->stop();
+		delete m_pInstance;
+	}
+
+	std::cout << "Raptor Server exit. " << std::endl;
 }
 
 
@@ -88,6 +96,7 @@ bool CRaptorServer::Start(const CCmdLineParser& cmdline)
 		str << " at host ";
 		str << addrStr;
 		RAPTOR_NO_ERROR(CPersistence::CPersistenceClassID::GetClassId(),str.str());
+		std::cout << str.str() << std::endl;
     }
     else
     {
@@ -97,6 +106,7 @@ bool CRaptorServer::Start(const CCmdLineParser& cmdline)
 		str << " at host ";
 		str << addrStr;
 		RAPTOR_FATAL(CPersistence::CPersistenceClassID::GetClassId(),str.str());
+		std::cout << str.str() << std::endl;
     }
 
     return m_pInstance->run();
@@ -105,16 +115,30 @@ bool CRaptorServer::Start(const CCmdLineParser& cmdline)
 bool CRaptorServer::Stop(void)
 {
 	if (NULL == m_pTransport)
-		return false;
+		return true;	// already stopped
 
+	bool stopped = true;
 	if (m_pTransport->stopServer())
 	{
 		delete m_pTransport;
 		m_pTransport = NULL;
-		return  true;
 	}
 	else
-		return false;
+		stopped = false;
+
+	if (stopped)
+		std::cout << "Raptor Renderer stopped. " << std::endl;
+	else
+		std::cout << "Raptor Renderer failed to stop. " << std::endl;
+
+	return stopped;
 }
 
+bool CRaptorServer::CloseWindow()
+{
+	if (NULL != m_pInstance)
+		return m_pInstance->closeWindow();
+	else
+		return true;
+}
 

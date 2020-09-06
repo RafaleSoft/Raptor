@@ -59,9 +59,10 @@ CRaptorRenderBufferDisplay::CRaptorRenderBufferDisplay(const CRaptorDisplayConfi
 
 CRaptorRenderBufferDisplay::~CRaptorRenderBufferDisplay()
 {
-	RAPTOR_HANDLE noDisplay(0, (void*)0);
-	glvkBindDisplay(noDisplay);
+}
 
+void CRaptorRenderBufferDisplay::glvkReleaseResources(void)
+{
 	if (m_pAttachments != NULL)
 	{
 		glDetachBuffers();
@@ -71,8 +72,6 @@ CRaptorRenderBufferDisplay::~CRaptorRenderBufferDisplay()
 	}
 
 	glDestroyBuffer();
-
-	glvkUnBindDisplay();
 }
 
 void CRaptorRenderBufferDisplay::unLink(const CPersistence* obj)
@@ -522,7 +521,7 @@ bool CRaptorRenderBufferDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
 		if (!createFrameBuffer())
 			return false;
 	}
-	else
+	else  // else is valid because createFrameBuffer binds the framebuffer to FRAMEBUFFER target.
 		pExtensions->glBindFramebufferEXT(GL_FRAMEBUFFER_EXT,m_framebuffer);
 
 	m_bindingStack.push_back(m_framebuffer);
@@ -795,7 +794,7 @@ bool CRaptorRenderBufferDisplay::checkBufferStatus(void) const
 	const CRaptorGLExtensions * const pExtensions = Raptor::glGetExtensions(); 
 	GLenum status = pExtensions->glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
 
-#ifndef RAPTOR_DEBUG_MODE_GENERATION
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
 	string msg = "";   
 	switch(status)
 	{

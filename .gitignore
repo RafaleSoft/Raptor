@@ -17,10 +17,12 @@ RaptorData.pck
 GLBench.pck
 Demo.pck
 Toolbox.pck
+viewer.pck
 start.s3tc
 Installer/Output
 MicroLex/MicroLex.exe
 SIMD/simd.lib
+RaptorServer/session_*/
 CodeGeneration.h
 Test2/raptor.jpg
 

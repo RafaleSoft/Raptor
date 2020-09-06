@@ -333,8 +333,14 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Generators", "Generators", "{6F7FBB8D-616B-4435-A48B-7AF34A4CDA29}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "eLut", "Build\VS2015\eLut.14.00.vcxproj", "{F8031BBA-6814-4DBD-BA34-4E725348F57D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C9E4DB51-7755-42F0-A3BD-7981799AC84E} = {C9E4DB51-7755-42F0-A3BD-7981799AC84E}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "toFloat", "Build\VS2015\toFloat.14.00.vcxproj", "{12E095D5-FD60-4A4C-939E-086F912A3196}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C9E4DB51-7755-42F0-A3BD-7981799AC84E} = {C9E4DB51-7755-42F0-A3BD-7981799AC84E}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Iex", "Build\VS2015\Iex.14.00.vcxproj", "{C4B3F82F-17E5-49C6-80FC-6162770B5AD9}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -415,6 +421,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UnitTest", "Build\VS2015\Un
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cppunit_dll", "Build\VS2015\cppunit_dll.14.00.vcxproj", "{4C19A00A-2470-4684-BE8D-7349A0393DBE}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C9E4DB51-7755-42F0-A3BD-7981799AC84E} = {C9E4DB51-7755-42F0-A3BD-7981799AC84E}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RaysClient.VS2015", "Rays2\RaysClient\RaysClient.VS2015.csproj", "{905605C7-4625-46C2-943A-60BE1BAE221B}"
 	ProjectSection(ProjectDependencies) = postProject

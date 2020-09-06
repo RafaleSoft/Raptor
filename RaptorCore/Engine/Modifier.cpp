@@ -106,7 +106,7 @@ void CModifier::importTimeFunction(CModifier::TIME_FUNCTION& tf, CRaptorIO& io)
     io >> name;
 
 	string data = io.getValueName();
-	while (!data.empty())
+	while (io.hasMoreValues())
 	{
         if (data == "type")
 		{

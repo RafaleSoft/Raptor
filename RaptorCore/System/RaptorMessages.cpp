@@ -175,7 +175,7 @@ bool CRaptorMessages::importMessage(CRaptorIO& io,void *pmessages)
 	string	str = "";
 
 	string data = io.getValueName();
-    while (!data.empty())
+    while (io.hasMoreValues())
     {
         if (data == "id")
 		{
@@ -246,7 +246,7 @@ bool CRaptorMessages::importClass(CRaptorIO& io,void *planguage)
 	string		className = "";
 
 	string data = io.getValueName();
-    while (!data.empty())
+    while (io.hasMoreValues())
     {
         if (data == "name")
         {
@@ -306,7 +306,7 @@ bool CRaptorMessages::LoadMessages(const std::string& fname)
     *m_pTranslator  >> name; 
     data = m_pTranslator->getValueName();
 
-    while (!data.empty())
+    while (m_pTranslator->hasMoreValues())
     {
         if (data == "Class")
         {
