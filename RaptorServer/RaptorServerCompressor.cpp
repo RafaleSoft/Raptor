@@ -23,6 +23,9 @@
 	#include <string.h>	// for memset
 #endif
 
+#include "System/Image.h"
+RAPTOR_NAMESPACE
+
 
 CRaptorServerCompressor::~CRaptorServerCompressor() 
 {
@@ -84,13 +87,14 @@ void CRaptorServerCompressor::makeBlocs(unsigned char* data,size_t &size)
 	size = sizeof(CRaptorNetwork::BLOC_HEADER) * (size / 4) * CRaptorNetwork::PIXEL_SIZE;
 }
 
+
 void CRaptorServerCompressor::removeAlpha(unsigned char* data,size_t size)
 {
 	int pos = 0;
-	for (size_t i=0;i<size;i+=4,pos+=3)
+	for (size_t i=0; i<size; i+=4,pos+=3)
 	{
-		data[pos] = data[i];
-		data[pos+1] = data[i+1];
-		data[pos+2] = data[i+2];
+		data[pos + 0] = data[i + 0];
+		data[pos + 1] = data[i + 1];
+		data[pos + 2] = data[i + 2];
 	}
 }

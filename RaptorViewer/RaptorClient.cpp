@@ -62,7 +62,9 @@ RAPTOR_NAMESPACE
 		pRaptorClient->queryServerImage();
 	}
 
-	pRaptorClient->getImage().setImageData(NULL);
+	CServerImageRenderer* pImage = pRaptorClient->getImage();
+	if (NULL != pImage)
+		pImage->setImageData(NULL);
 
 #ifdef WIN32
 	ExitThread(0);
@@ -71,10 +73,10 @@ RAPTOR_NAMESPACE
 #endif
 }
 
-CServerImageRenderer& CRaptorClient::getImage(void) const
+CServerImageRenderer* CRaptorClient::getImage(void) const
 {
-	// Can never bu NULL after a call to start.
-	return *m_pImage;
+	// Can never bu NULL after a call to run.
+	return m_pImage;
 }
 
 CRaptorClient::CRaptorClient(void)
@@ -129,6 +131,9 @@ void CRaptorClient::queryServerImage(void)
 	void *out = NULL;
 	m_Client->read(out, size);
 
+	if ((NULL == out) || (0 == size))
+		return;
+
 	CRaptorNetwork::SERVER_COMMAND *command = (CRaptorNetwork::SERVER_COMMAND*)out;
 
 	const CRaptorNetwork::SESSION_COMMAND &cmd = CRaptorNetwork::getOpenSessionCommand();
@@ -152,6 +157,7 @@ void CRaptorClient::queryServerImage(void)
 		pending_queries--;
 
 		m_pImage->setImageData((CRaptorNetwork::IMAGE_COMMAND*)out);
+
 		return;
 	}
 }
@@ -174,9 +180,10 @@ void CRaptorClient::glRender()
 	}
 }
 
-bool CRaptorClient::run(unsigned int width, unsigned int height)
+bool CRaptorClient::run(uint32_t width, uint32_t height,
+						uint32_t r_width, uint32_t r_height)
 {
-	if ((NULL == m_Client) || (NULL == m_pImage))
+	if (NULL == m_Client)
 		return false;
 
 	bool res = false;
@@ -222,6 +229,7 @@ bool CRaptorClient::run(unsigned int width, unsigned int height)
 		pConsole->activateConsole(true);
 		
 		glClearColor(0.2f,0.8f,0.9f,1.0f);
+		m_pImage = new CServerImageRenderer(r_width, r_height);
 		m_pImage->glInitImage();
 		
 		C3DScene *pScene = m_pDisplay->getRootScene();
@@ -306,8 +314,6 @@ bool CRaptorClient::start(const CCmdLineParser &cmdLine)
 	cmdLine.getValue("r_width",cmd.width);
 	cmdLine.getValue("r_height",cmd.height);
 	m_Client->write((void*)&cmd,cmd.command.requestLen);
-
-	m_pImage = new CServerImageRenderer(cmd.width,cmd.height);
 
 	unsigned long int ui_threadID = 0;
 	m_bIsRunning = true;

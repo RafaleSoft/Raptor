@@ -76,7 +76,7 @@
 
 #include "YUVCompressor.h"
 #include "ToolBox/RaptorToolBox.h"
-#include "System/Image.h"
+
 
 CRaptorServerInstance* CRaptorServerInstance::m_pInstance = NULL;
 
@@ -179,7 +179,7 @@ void CRaptorServerInstance::glRender()
 				image_command->header.blocWidth = state.width;
 				image_command->header.xOffset = 0;
 				image_command->header.yOffset = 0;
-				unsigned char* image = (unsigned char*)r.data + sizeof(CRaptorNetwork::IMAGE_COMMAND);
+				uint8_t* image = (uint8_t*)&(image_command->pData);
 
 				pDisplay->glGrab(0,0,state.width,state.height,image,r.size);
 
@@ -231,7 +231,7 @@ void CRaptorServerInstance::processOutputFrame(request &r)
 		CRaptorNetwork::IMAGE_COMMAND *image_command = (CRaptorNetwork::IMAGE_COMMAND*)r.data;
 		image_command->header.compressionType = 0;
 
-		unsigned char* image = (unsigned char*)r.data + sizeof(CRaptorNetwork::IMAGE_COMMAND);
+		uint8_t* image = (uint8_t*)&(image_command->pData);
 		//m_pCompressor->differentialCompress(image,r.size);
 		//m_pCompressor->compress(image,r.size);
 		m_pCompressor->removeAlpha(image, r.size);
@@ -313,7 +313,7 @@ bool CRaptorServerInstance::executeRequest(request &r)
 		RAPTOR_HANDLE handle;
 		pDisplay->glvkBindDisplay(handle);
 			IRenderingProperties &props = pDisplay->getRenderingProperties();
-			//props->setMultisampling(IRenderingProperties::ENABLE);
+			props.setMultisampling(IRenderingProperties::ENABLE);
 			props.setTexturing(IRenderingProperties::ENABLE);
 			props.setLighting(IRenderingProperties::ENABLE);
 			props.clear(CGL_RGBA|CGL_DEPTH);

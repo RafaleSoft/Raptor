@@ -2064,7 +2064,7 @@ bool CGeometry::importObject(CRaptorIO& io)
 		setColor(i,rgbacolors[i].r,rgbacolors[i].g,rgbacolors[i].b,rgbacolors[i].a);
 
 	const CGeometryEditor& editor = getEditor();
-	editor.genNormals(false);
+	editor.genNormals(true);
 
     glUnLockData();
 

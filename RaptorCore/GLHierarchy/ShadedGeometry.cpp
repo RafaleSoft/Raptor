@@ -231,7 +231,7 @@ void CShadedGeometry::overrideShading(const IRenderingProperties& override)
         *m_pOverride = override;
 
     //  prevent buffer clear
-    m_pOverride ->clear(0);
+    m_pOverride->clear(0);
 }
 
 void CShadedGeometry::vkRender(	CVulkanCommandBuffer& commandBuffer,
