@@ -139,6 +139,9 @@ CRaptorInstance::CRaptorInstance()
 	m_pDefaultTextureFactory = NULL;
 
 	m_timeImplementation = NULL;
+	m_time = 0.0f;
+	m_globalTime = 0.0f;
+	m_deltat = 0.05f;
 }
 
 CRaptorInstance &CRaptorInstance::GetInstance(void)

@@ -27,10 +27,6 @@ RAPTOR_NAMESPACE_BEGIN
 
 static CRaptorMutex     *tmMutex = NULL;
 
-float CTimeObject::m_time = 0.0f;
-float CTimeObject::m_globalTime = 0.0f;
-float CTimeObject::m_deltat = 0.05f;	// Should this value be changed ?
-
 RAPTOR_NAMESPACE_END
 
 
@@ -55,7 +51,6 @@ CTimeObject::CTimeObject()
 {
 	CRaptorInstance &instance = CRaptorInstance::GetInstance();
 	instance.m_rootTimeObjects.push_back(this);
-	m_time = 0;
 
 	getLock();
 }
@@ -81,9 +76,10 @@ const std::vector<CTimeObject*>& CTimeObject::getTimeObjects(void)
 	return instance.m_rootTimeObjects;
 }
 
-void CTimeObject::setTimeFactor(float factor)
+void RAPTOR_FASTCALL CTimeObject::setTimeFactor(float factor)
 {
-	m_deltat = factor;
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+	instance.m_deltat = factor;
 }
 
 float CTimeObject::deltaTime(void)
@@ -91,8 +87,8 @@ float CTimeObject::deltaTime(void)
 	CRaptorInstance &instance = CRaptorInstance::GetInstance();
 	float delta = instance.m_timeImplementation->deltaTime();
 
-	m_time += (m_deltat * delta);
-	m_globalTime += delta;
+	instance.m_time += (instance.m_deltat * delta);
+	instance.m_globalTime += delta;
 
 	return delta;
 }
@@ -110,13 +106,15 @@ float CTimeObject::deltaMarkTime(void *mark)
 }
 
 float RAPTOR_FASTCALL CTimeObject::GetGlobalTime(void) 
-{ 
-	return m_globalTime; 
+{
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+	return instance.m_globalTime; 
 }
 
 float RAPTOR_FASTCALL CTimeObject::GetTime(void) 
-{ 
-	return m_time; 
+{
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+	return instance.m_time; 
 }
 
 void CTimeObject::synchronize(float dt, bool synchro)

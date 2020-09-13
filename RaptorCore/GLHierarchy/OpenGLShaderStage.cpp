@@ -298,10 +298,6 @@ void COpenGLShaderStage::setProgramParameters(const CProgramParameters &v)
 #endif
 }
 
-void COpenGLShaderStage::updateProgramParameters(const CProgramParameters &v)
-{
-	CShaderProgram::updateProgramParameters(v);
-}
 
 void COpenGLShaderStage::glRender(void)
 {
@@ -937,7 +933,7 @@ void COpenGLShaderStage::glSetProgramParameters()
 					{
 						int val = vector.x;
 #if defined(GL_VERSION_2_0)
-						pExtensions->glUniform1iv(param_value.locationIndex, 1, &val);
+						pExtensions->glUniform1i(param_value.locationIndex, val);
 #elif defined(GL_ARB_vertex_shader)
 						pExtensions->glUniform1iARB(param_value.locationIndex, val);
 #endif
@@ -949,7 +945,7 @@ void COpenGLShaderStage::glSetProgramParameters()
 						val[0] = vector.x;
 						val[1] = vector.y;
 #if defined(GL_VERSION_2_0)
-						pExtensions->glUniform2iv(param_value.locationIndex, 1, &val[0]);
+						pExtensions->glUniform2i(param_value.locationIndex, val[0], val[1]);
 #elif defined(GL_ARB_vertex_shader)
 						pExtensions->glUniform2iARB(param_value.locationIndex, val[0], val[1]);
 #endif
@@ -990,7 +986,7 @@ void COpenGLShaderStage::glSetProgramParameters()
 				sampler = ((const CProgramParameters::CParameter<CTextureUnitSetup::TEXTURE_IMAGE_UNIT>&)param_value).p;
 				GLint s = sampler;
 #if defined(GL_VERSION_2_0)
-				pExtensions->glUniform1iv(param_value.locationIndex, 1, &s);
+				pExtensions->glUniform1i(param_value.locationIndex, s);
 #elif defined(GL_ARB_vertex_shader)
 				pExtensions->glUniform1iARB(param_value.locationIndex, s);
 #endif

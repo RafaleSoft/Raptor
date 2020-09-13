@@ -50,8 +50,6 @@
 RAPTOR_NAMESPACE
 
 int CBumpShader::lightEnable = -1;
-int CBumpShader::diffuseMap = -1;
-int CBumpShader::normalMap = -1;
 int CBumpShader::eyePos = -1;
 
 
@@ -89,7 +87,8 @@ void CBumpShader::glInit(void)
 	stage->glGetFragmentShader("PPIXEL_BUMP_TEX_PROGRAM");
 	
 	CProgramParameters params;
-	params.addParameter("tangent", CProgramParameters::ADDITIONAL_PARAM1);
+	params.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);
+	params.addParameter("normalMap", CTextureUnitSetup::IMAGE_UNIT_1);
 
 #if defined(GL_ARB_uniform_buffer_object)
 	CMaterial::Material_t M;
@@ -111,12 +110,10 @@ void CBumpShader::glRender(void)
 #if defined(GL_ARB_shader_objects)
 	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 
-	if ((lightEnable < 0) || (diffuseMap < 0) || (normalMap < 0) || (eyePos < 0))
+	if ((lightEnable < 0) || (eyePos < 0))
 	{
 		GLhandleARB program = pExtensions->glGetHandleARB(GL_PROGRAM_OBJECT_ARB);
 		lightEnable = pExtensions->glGetUniformLocationARB(program, "lightEnable");
-		diffuseMap = pExtensions->glGetUniformLocationARB(program, "diffuseMap");
-		normalMap = pExtensions->glGetUniformLocationARB(program, "normalMap");
 		eyePos = pExtensions->glGetUniformLocationARB(program, "eyePos");
 	}
 
@@ -124,12 +121,6 @@ void CBumpShader::glRender(void)
 	if ((lightEnable >= 0) && (NULL != bLights))
 		pExtensions->glUniform1ivARB(lightEnable,CLightAttributes::MAX_LIGHTS,bLights);
 		
-	if (diffuseMap >= 0)
-		pExtensions->glUniform1iARB(diffuseMap,CTextureUnitSetup::IMAGE_UNIT_0);
-		
-	if (normalMap >= 0)
-		pExtensions->glUniform1iARB(normalMap,CTextureUnitSetup::IMAGE_UNIT_1);
-
 	if (eyePos >= 0)
 	{
 		C3DEngineMatrix T;

@@ -59,7 +59,6 @@
 RAPTOR_NAMESPACE
 
 
-int CEMBMShader::environmentMap = -1;
 static bool embm_shaders_initialized = false;
 
 //#define PROCEDURAL_PERLIN
@@ -141,7 +140,9 @@ void CEMBMShader::glInit()
 	CFragmentShader *fp = stage->glGetFragmentShader("PPIXEL_BUMP_TEX_PROGRAM");
 
 	CProgramParameters params;
-	params.addParameter("tangent", CProgramParameters::ADDITIONAL_PARAM1);
+	params.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);
+	params.addParameter("normalMap", CTextureUnitSetup::IMAGE_UNIT_1);
+	params.addParameter("environmentMap", CTextureUnitSetup::IMAGE_UNIT_3);
 
 #if defined(GL_ARB_uniform_buffer_object)
 	CMaterial::Material_t M;
@@ -188,15 +189,15 @@ void CEMBMShader::glRender(void)
 #if defined(GL_ARB_shader_objects)
 	if (m_bEnabled)
 	{
-		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+		//const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 
-		if (environmentMap < 0)
-		{
-			GLhandleARB program = pExtensions->glGetHandleARB(GL_PROGRAM_OBJECT_ARB);
-			environmentMap = pExtensions->glGetUniformLocationARB(program, "environmentMap");
-		}
-		if (environmentMap >= 0)
-			pExtensions->glUniform1iARB(environmentMap,CTextureUnitSetup::IMAGE_UNIT_3);
+		//if (environmentMap < 0)
+		//{
+		//	GLhandleARB program = pExtensions->glGetHandleARB(GL_PROGRAM_OBJECT_ARB);
+		//	environmentMap = pExtensions->glGetUniformLocationARB(program, "environmentMap");
+		//}
+		//if (environmentMap >= 0)
+		//	pExtensions->glUniform1iARB(environmentMap,CTextureUnitSetup::IMAGE_UNIT_3);
 
 #ifdef PROCEDURAL_PERLIN
 		if (permSampler < 0)
@@ -228,7 +229,9 @@ void CEMBMShader::enableEmbm(bool enable)
 		stage->glRemoveFragmentShader();
 
 		CProgramParameters params;
-		params.addParameter("tangent", CProgramParameters::ADDITIONAL_PARAM1);
+		params.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);
+		params.addParameter("normalMap", CTextureUnitSetup::IMAGE_UNIT_1);
+		params.addParameter("environmentMap", CTextureUnitSetup::IMAGE_UNIT_3);
 		stage->setProgramParameters(params);
 
 		if (enable)

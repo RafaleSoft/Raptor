@@ -221,6 +221,10 @@ public:
 	ITImeObjectImpl	*m_timeImplementation;
 	//!	Time objects of this instance.
 	std::vector<CTimeObject*>	m_rootTimeObjects;
+	//!	Current time status
+	float	m_time;
+	float	m_globalTime;
+	float	m_deltat;
 
 
 

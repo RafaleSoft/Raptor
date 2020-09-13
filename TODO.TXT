@@ -2,13 +2,17 @@
 
 - Supprimer GL_QUADS
 	- glDrawElements (Object3DShadow)
-	- CGLLayer::glRenderSingleBuffer
+	- CGLLayer::glRenderSingleBuffer + glRender
+	- GL3DFont::glTTBuildGeometry
+	- CAboutVideo::glRender
+	- CServerImageRenderer::glInitImage
+
 
 - RaptorDisplay:
 	- renommer glGrab en glBlit en utilisant un CImage.
 
 - CMipmapBuilder:
-	- Reintégrer, notamment pour Démo.
+	- Reintégrer, pour générer les mipmaps pour Vulkan (vkLoadTexture) ==> source de gluBuild2DMipmaps.
 
 - CTextureFactory:
 	- Fusionner vkLoadTexture & glLoadTexture
@@ -22,7 +26,7 @@
 	- pas de decodeur video en 64 bits => ffmpeg ?
 	- Slide: utiliser un CTextureQuad
 
-- CShaderrogram:
+- CShaderProgram:
 	- ajouter un preprocesseur.
 
 - COpenGLShaderStage:
@@ -36,9 +40,6 @@
 - CResourceAllocator & co:
 	- lock/unlock toujours utile ?
 	- à priori non sur les allocate/release car allocation uniquement sur CPU.
-
-- CTimeObject:
-	- déplacer les statiques dans CRaptorInstance.
 
 - CGeometry:
 	- ajouter un cas aux méthodes SetVertices/SetColors/.... si nbV > nb_vertex
