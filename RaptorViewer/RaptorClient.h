@@ -39,13 +39,14 @@ public:
 	bool load(const std::string& fname);
 
 	//!	Rendering
-	bool run(unsigned int width, unsigned int height);
+	bool run(	uint32_t width, uint32_t height,
+				uint32_t r_width, uint32_t r_height);
 
 	//! Status
 	bool isRunning(void) const { return m_bIsRunning; };
 
 	//!	Returns the current working image (intialised at start)
-	CServerImageRenderer& getImage(void) const;
+	CServerImageRenderer* getImage(void) const;
 
 	//!	Perform a query to the server and refresh the current image
 	void queryServerImage(void);

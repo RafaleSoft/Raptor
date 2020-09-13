@@ -608,11 +608,9 @@ bool CTextureFactory::glResizeTexture(ITextureObject *I, uint32_t width, uint32_
 #endif
     
     glBindTexture(target,T->texname);
-
 	glGetTexLevelParameteriv(target, T->getCurrentMipMapLevel(), GL_TEXTURE_WIDTH, &currentWidth);
 	glGetTexLevelParameteriv(target, T->getCurrentMipMapLevel(), GL_TEXTURE_HEIGHT, &currentHeight);
 	glGetTexLevelParameteriv(target, T->getCurrentMipMapLevel(), GL_TEXTURE_DEPTH, &currentDepth);
-
 
 	//!	Handle the case with unsupported rectangle texture
 	if (!mConfig.supportTextureResize())
@@ -649,15 +647,15 @@ bool CTextureFactory::glResizeTexture(ITextureObject *I, uint32_t width, uint32_
 			}
 		}
 	}
-
-    {
+    
+	{
 		T->setSize(width, height, depth);
 		uint32_t posx = T->source[0];
 		uint32_t posy = T->source[1];
 		uint32_t W = T->source[2];
 		uint32_t H = T->source[3];
 		T->setGenerationSize(posx, posy, W, H);
-		
+	
 		GLuint GL_FORMAT = GL_RGBA;
 		GLuint GL_TYPE = GL_UNSIGNED_BYTE;
 		if ((T->getTexelFormat() == GL_DEPTH_COMPONENT) ||

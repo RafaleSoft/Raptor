@@ -231,7 +231,7 @@ void CShadedGeometry::overrideShading(const IRenderingProperties& override)
         *m_pOverride = override;
 
     //  prevent buffer clear
-    m_pOverride ->clear(0);
+    m_pOverride->clear(0);
 }
 
 void CShadedGeometry::vkRender(	CVulkanCommandBuffer& commandBuffer,
@@ -328,7 +328,7 @@ bool CShadedGeometry::importObject(CRaptorIO& io)
     io >> name;
 
 	string data = io.getValueName();
-    while (!data.empty())
+    while (io.hasMoreValues())
     {
 		if (data == "name")
 			CPersistence::importObject(io);

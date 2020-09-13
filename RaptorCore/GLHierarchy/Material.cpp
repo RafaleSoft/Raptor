@@ -566,7 +566,7 @@ bool CMaterial::importObject(CRaptorIO& io)
     io >> name;
 
 	string data = io.getValueName();
-    while (!data.empty())
+    while (io.hasMoreValues())
     {
 		if (data == "name")
 			CPersistence::importObject(io);

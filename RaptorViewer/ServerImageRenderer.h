@@ -11,6 +11,9 @@
 #if !defined(AFX_RAPTORINSTANCE_H__D5297BB6_098A_4082_96AA_36A78E76F18C__INCLUDED_)
 	#include "RaptorNetwork/RaptorNetwork.h"
 #endif
+#if !defined(AFX_BASICOBJECTS_H__2E0B717D_862A_4096_9D99_8EE0654F4678__INCLUDED_)
+	#include "ToolBox/BasicObjects.h"
+#endif
 
 RAPTOR_NAMESPACE_BEGIN
 class ITextureObject;
@@ -20,7 +23,7 @@ RAPTOR_NAMESPACE
 
 
 
-class CServerImageRenderer : public CObject3D
+class CServerImageRenderer : public CBasicObjects::CRectangle
 {
 public:
 	CServerImageRenderer(size_t width,size_t height);
@@ -30,9 +33,10 @@ public:
 
 	void glInitImage();
 
+	void glUpdateImage();
+
 	void setImageData(CRaptorNetwork::IMAGE_COMMAND *);
 
-	DECLARE_OBJECT3D_NOMANIPULATORS
 
 private:
 	CServerImageRenderer();
@@ -40,10 +44,9 @@ private:
 	
 	CRaptorMutex	tMutex;
 
-	RAPTOR_HANDLE	drawBuffer;
 	ITextureObject	*m_pImage;
-	size_t	m_serverWidth;
-	size_t	m_serverHeight;
+	size_t			m_serverWidth;
+	size_t			m_serverHeight;
 
 	std::vector<CRaptorNetwork::IMAGE_COMMAND *> m_pImageDatas;
 	

@@ -688,6 +688,8 @@ bool CRaptorDisplayConfig::glApplyConfig(unsigned long query)
 		glHint(GL_FOG_HINT,hintState.fog);
 	}
 
+	CATCH_GL_ERROR
+
 	return true;
 }
 

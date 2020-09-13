@@ -244,7 +244,7 @@ bool CRaptorScreenDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
 				}
 			}
 
-			CContextManager::GetInstance()->glMakeCurrentContext(device,m_context);
+			CContextManager::GetInstance()->glMakeCurrentContext(device, m_context);
 
 			
 			//  Display shading configuration
@@ -263,7 +263,7 @@ bool CRaptorScreenDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
 		}
         else
         {
-		    CContextManager::GetInstance()->glMakeCurrentContext(device,m_context);
+		    CContextManager::GetInstance()->glMakeCurrentContext(device, m_context);
 
             m_pGOldAllocator = CGeometryAllocator::SetCurrentInstance(m_pGAllocator);
             if ((m_pGOldAllocator != m_pGAllocator) && (m_pGOldAllocator != NULL))

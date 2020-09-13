@@ -562,7 +562,7 @@ bool IViewPoint::importObject(CRaptorIO& io)
     bool continus = true;
     bool loop = true;
 
-	while (!data.empty())
+	while (io.hasMoreValues())
 	{
 		if (data == "left")
 			io >> viewVolume[0];

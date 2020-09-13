@@ -63,23 +63,15 @@ CRaptorDataManager::CRaptorDataManager()
 CRaptorDataManager::~CRaptorDataManager()
 {
     m_pInstance = NULL;
-
-	for (size_t i = 0; i < m_packages.size(); i++)
+	
+	while (!m_packages.empty())
 	{
-		Package& p = m_packages[i];
-		if (p.package > 0)
-			CLOSE(p.package);
-		p.package = 0;
-		p.headerSize = 0;
-		if (NULL != p.header)
-		{
-			PackageHeader_t *h = (PackageHeader_t*)p.header;
-			clean(*h);
-			delete h;
-		}
-		p.header = NULL;
-	}
+		const Package& p = m_packages[0];
+		PackageHeader_t *pHeader = (PackageHeader_t*)p.header;
 
+		unManagePackage(pHeader->pckName);
+	}
+	
 	m_packages.clear();
 }
 
@@ -127,6 +119,38 @@ std::vector<std::string> CRaptorDataManager::getManagedFiles(const std::string &
 	return result;
 }
 
+bool CRaptorDataManager::unManagePackage(const std::string& packName)
+{
+	if (packName.empty())
+		return false;
+
+	bool unmanaged = false;
+
+	for (size_t i = 0; i < m_packages.size(); i++)
+	{
+		const Package& p = m_packages[i];
+		PackageHeader_t *pHeader = (PackageHeader_t*)p.header;
+		
+		if (0 == packName.compare(pHeader->pckName))
+		{
+			if (p.package > 0)
+			{
+				CLOSE(p.package);
+			}
+
+			m_packages.erase(m_packages.begin() + i);
+
+			clean(*pHeader);
+			delete pHeader;
+
+			unmanaged = true;
+			break;
+		}
+	}
+
+	return unmanaged;
+}
+
 bool CRaptorDataManager::managePackage(const std::string& packName)
 {
 	if (packName.length() < 4)
@@ -140,8 +164,7 @@ bool CRaptorDataManager::managePackage(const std::string& packName)
 		if (NULL == pHeader)
 			return false;
 
-		std::string pckName = pHeader->pckName;
-		if (packName == pckName)
+		if (0 == packName.compare(pHeader->pckName))
 			return false;
 	}
 
@@ -398,21 +421,4 @@ std::string CRaptorDataManager::readFile(const std::string &fname)
 	else
 		return"";
 }
-/*
-bool CRaptorDataManager::loadShader(const char *file, const char *shader_name, const char *shaders[], int &ns)
-{
-	std::string fname = ExportFile(file);
-	if (!fname.empty())
-	{
-		std::string shader = readFile(fname);
-		if (shaders[ns] == NULL)
-			shaders[ns++] = STRDUP(shader.c_str());
-		shaders[ns++] = shader_name;
-
-		return true;
-	}
-	else
-		return false;
-}
-*/
 

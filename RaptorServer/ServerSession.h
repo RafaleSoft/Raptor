@@ -1,6 +1,6 @@
 /***************************************************************************/
 /*                                                                         */
-/*  RaptorServer.h                                                         */
+/*  ServerSession.h                                                        */
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
@@ -16,34 +16,51 @@
 /***************************************************************************/
 
 
-#if !defined(AFX_RAPTORSERVER_H__713A4063_7F42_4900_B42D_6574E4FA796C__INCLUDED_)
-#define AFX_RAPTORSERVER_H__713A4063_7F42_4900_B42D_6574E4FA796C__INCLUDED_
+#if !defined(AFX_SERVERSESSION_H__CF5E6774_178C_4DF6_BB48_44B6AF2AB163__INCLUDED_)
+#define AFX_SERVERSESSION_H__CF5E6774_178C_4DF6_BB48_44B6AF2AB163__INCLUDED_
+
 
 #if _MSC_VER > 1000
 #pragma once
 #endif // _MSC_VER > 1000
 
-class CRaptorServerInstance;
-class CServerTransport;
-class CCmdLineParser;
+#if !defined(AFX_SERVER_H__A2920B8C_12E4_11D3_9142_D3B83905F198__INCLUDED_)
+	#include "RaptorNetwork/Server.h"
+#endif
+
+#include "Raptordll.h"
+RAPTOR_NAMESPACE
 
 
-class CRaptorServer
+class CServerSession
 {
-public:
-	CRaptorServer();
-	virtual ~CRaptorServer();
+public :
+	CServerSession();
+	virtual ~CServerSession();
 
-    bool Start(const CCmdLineParser& cmdline);
-	
-    bool Stop(void);
 
-	//!	To quit application from outside main thread, call CloseWindow 
-	bool CloseWindow();
+	typedef struct session_t
+	{
+		server_base_t::request_handler_t::request_id id;
+		CRaptorDisplay* display;
+	} session;
+
+	//! Create a new session
+	bool createSession(server_base_t::request_handler_t::request_id id, CRaptorDisplay* display);
+
+	//! Delete a session and remove all associated files
+	bool closeSession(server_base_t::request_handler_t::request_id id);
+
+	//! Return an existing session
+	session getSession(server_base_t::request_handler_t::request_id id);
+
 
 private:
-	CRaptorServerInstance *m_pInstance;
-    CServerTransport *m_pTransport;
+	//!	Mutex to protect session accesses
+	CRaptorMutex		m_mutex;
+
+	//!	Sessions list
+	vector<session>		m_sessions;
 };
 
-#endif // !defined(AFX_RAPTORSERVER_H__713A4063_7F42_4900_B42D_6574E4FA796C__INCLUDED_)
+#endif // !defined(AFX_SERVERSESSION_H__CF5E6774_178C_4DF6_BB48_44B6AF2AB163__INCLUDED_)

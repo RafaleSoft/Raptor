@@ -558,7 +558,7 @@ bool CShader::importObject(CRaptorIO& io)
     io >> name;
 
 	string data = io.getValueName();
-    while (!data.empty())
+    while (io.hasMoreValues())
     {
 		if (data == "name")
 			CPersistence::importObject(io);
@@ -569,7 +569,7 @@ bool CShader::importObject(CRaptorIO& io)
 			getMaterial();
 			m_pMaterial->importObject(io);
 		}
-		else if (data == "TMUSetup")
+		else if (data == "TextureUnitSetup")
 		{
 			glGetTextureUnitsSetup();
 			m_pTMUSetup->importObject(io);

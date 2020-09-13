@@ -8,6 +8,10 @@
 	- CServerImageRenderer::glInitImage
 
 
+- CShadedGeometry::removeModel
+	- modèle inaccessible en dehors, génère une configuration incorrecte
+	(p.ex.: desactive le texturing sur remove Normals)
+
 - RaptorDisplay:
 	- renommer glGrab en glBlit en utilisant un CImage.
 

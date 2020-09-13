@@ -486,7 +486,7 @@ bool Raptor::glQuitRaptor(void)
 {
 	CRaptorInstance &instance = CRaptorInstance::GetInstance();
 	if ((!instance.isInitialised()) || (instance.terminate()))
-        return false;
+        return true;
 
     bool res = instance.destroy();
 

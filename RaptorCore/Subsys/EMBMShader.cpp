@@ -186,20 +186,10 @@ void CEMBMShader::glRender(void)
 {
 	CBumpShader::glRender();
 
+#ifdef PROCEDURAL_PERLIN
 #if defined(GL_ARB_shader_objects)
 	if (m_bEnabled)
 	{
-		//const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
-
-		//if (environmentMap < 0)
-		//{
-		//	GLhandleARB program = pExtensions->glGetHandleARB(GL_PROGRAM_OBJECT_ARB);
-		//	environmentMap = pExtensions->glGetUniformLocationARB(program, "environmentMap");
-		//}
-		//if (environmentMap >= 0)
-		//	pExtensions->glUniform1iARB(environmentMap,CTextureUnitSetup::IMAGE_UNIT_3);
-
-#ifdef PROCEDURAL_PERLIN
 		if (permSampler < 0)
 		{
 			GLhandleARB program = pExtensions->glGetHandleARB(GL_PROGRAM_OBJECT_ARB);
@@ -214,8 +204,8 @@ void CEMBMShader::glRender(void)
 			pExtensions->glUniform1iARB(environmentMap,CTextureUnitSetup::IMAGE_UNIT_4);
 			pExtensions->glActiveTextureARB(previousTMU);
 		}
-#endif
 	}
+#endif
 #endif
 }
 

@@ -1870,7 +1870,7 @@ bool CGeometry::importRenderingModel(CRaptorIO& io)
     io >> name;
 
     string data = io.getValueName();
-    while (!data.empty())
+    while (io.hasMoreValues())
     {
 		bool bool_value = false;
         if (data == "front_geometry")
@@ -1960,7 +1960,7 @@ bool CGeometry::importObject(CRaptorIO& io)
 	bool modelImported = false;
 
     string data = io.getValueName();
-    while (!data.empty())
+    while (io.hasMoreValues())
     {
 		if (data == "name")
 			CPersistence::importObject(io);
@@ -1972,7 +1972,7 @@ bool CGeometry::importObject(CRaptorIO& io)
 		{
     		io >> name;
 			data = io.getValueName();
-			while (!data.empty())
+			while (io.hasMoreValues())
 			{
 				if (data == "Coord")
 				{
@@ -2004,7 +2004,7 @@ bool CGeometry::importObject(CRaptorIO& io)
 			unsigned int p1=0,p2=0,p3=0;
 			io >> name;
 			data = io.getValueName();
-			while (!data.empty())
+			while (io.hasMoreValues())
 			{
 				if (data == "vertex1")
 					io >> p1;
@@ -2064,7 +2064,7 @@ bool CGeometry::importObject(CRaptorIO& io)
 		setColor(i,rgbacolors[i].r,rgbacolors[i].g,rgbacolors[i].b,rgbacolors[i].a);
 
 	const CGeometryEditor& editor = getEditor();
-	editor.genNormals(false);
+	editor.genNormals(true);
 
     glUnLockData();
 

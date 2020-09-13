@@ -210,10 +210,10 @@ LRESULT CALLBACK WindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			return 0;
 			break;
 		}
+		case WM_CLOSE:
 	    case WM_DESTROY:
 		{
 		    // kill the application, this sends a WM_QUIT message 
-			
             if (pApp == NULL)
                 return (DefWindowProc(hwnd, msg, wparam, lparam));
 

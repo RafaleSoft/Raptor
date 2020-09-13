@@ -139,9 +139,8 @@ bool CGeometryShader::glBindProgram(RAPTOR_HANDLE program)
 	if (value != GL_GEOMETRY_SHADER_ARB)
 #endif
 	{
-		Raptor::GetErrorManager()->generateRaptorError(CGeometryShader::CGeometryShaderClassID::GetClassId(),
-													   CRaptorErrorManager::RAPTOR_WARNING,
-													   "Geometry Program is invalid in this context");
+		RAPTOR_WARNING(	CGeometryShader::CGeometryShaderClassID::GetClassId(),
+						"Geometry Program is invalid in this context");
 		CATCH_GL_ERROR
 		return false;
 	}

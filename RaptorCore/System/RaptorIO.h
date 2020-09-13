@@ -102,7 +102,7 @@ public:
 	virtual CRaptorIO& write(const void *data,size_t size);
 	virtual CRaptorIO& read(void *data,size_t size);
 	virtual CRaptorIO& seek(size_t size);
-	virtual CRaptorIO& parse(const char *data,size_t size) { return *this; };
+	virtual CRaptorIO& parse(const char *,size_t ) { return *this; };
 
 
 	//!	structures I/O

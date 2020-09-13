@@ -165,9 +165,7 @@ CRaptorIO& CXMLRaptorIO::operator>>(bool& i)
 					!strcmp(str,"NO"))
 				i = false;
 			else
-			{
 				i = (atoi(str) != 0);
-			}
 
 			XMLString::release(&str);
 		}
@@ -248,9 +246,13 @@ CRaptorIO& CXMLRaptorIO::operator>>(std::string &s)
 		}
     }
 
-    getNextValue();
+	// strip separators
+	while ((s.length() > 0) && ((s[0] == ' ') || (s[0] == '\t') || (s[0] == '\n')))
+		s.erase(0, 1);
 
-    return *this; 
+	getNextValue();
+
+    return *this;
 }
 
 //	Methods
@@ -326,13 +328,10 @@ CRaptorIO& CXMLRaptorIO::seek(size_t size)
 
 string CXMLRaptorIO::getValueName(void) const
 {
-    string str = "";
+    std::string str = "";
 
-	if (currentNode == NULL)
-		return str;
-	else
+	if (NULL != currentNode)
 	{
-        
         short type = currentNode->getNodeType();
         if ((type == DOMNode::ELEMENT_NODE) || (type == DOMNode::ATTRIBUTE_NODE))
 		    str = XMLString::transcode(currentNode->getNodeName());
@@ -340,19 +339,24 @@ string CXMLRaptorIO::getValueName(void) const
             str = XMLString::transcode(currentNode->getNodeValue());
         else
             str = XMLString::transcode(currentNode->getTextContent());
-		return str;
 	}
+
+	// strip separators
+	while ((str.length() > 0) && ((str[0] == ' ') || (str[0] == '\t') || (str[0] == '\n')))
+		str.erase(0, 1);
+
+	return str;
 }
 
 //	structures I/O
 CRaptorIO& CXMLRaptorIO::operator<<(const GL_COORD_VERTEX_TAG & v)  { return *this; }
 CRaptorIO& CXMLRaptorIO::operator>>(GL_COORD_VERTEX_TAG & v)  
-{ 
-    string name;
+{
+    std::string name;
 	*this >> name;
     
-    string data = getValueName();
-    while (!data.empty())
+    std::string data = getValueName();
+    while (hasMoreValues())
     {
 		if (data == "x")
     		*this >> v.x;
@@ -381,7 +385,7 @@ CRaptorIO& CXMLRaptorIO::operator>>(GL_TEX_VERTEX_TAG & v)
 	*this >> name;
     
     string data = getValueName();
-    while (!data.empty())
+    while (hasMoreValues())
     {
 		if (data == "u")
 			*this >> v.u;
@@ -406,7 +410,7 @@ CRaptorIO& CXMLRaptorIO::operator>>(GL_MATRIX_TAG & m)
 	*this >> name;
     
     string data = getValueName();
-    while (!data.empty())
+    while (hasMoreValues())
     {
 		if (data == "m11")
     		*this >> m.rowx.x;
@@ -459,7 +463,7 @@ CRaptorIO& CXMLRaptorIO::operator>>(CColor::RGBA & c)
 	*this >> name;
     
     string data = getValueName();
-    while (!data.empty())
+    while (hasMoreValues())
     {
 		if (data == "r")
     		*this >> c.r;
@@ -483,7 +487,7 @@ CRaptorIO& CXMLRaptorIO::operator>>(CColor::RGBA & c)
 
 void CXMLRaptorIO::getNextValue(void)
 {
-    if (nodePos >= 0 )
+    if (nodePos >= 0)
 	{
 		NODE& node = nodes[nodePos];
 
@@ -495,6 +499,8 @@ void CXMLRaptorIO::getNextValue(void)
 		else if ((node.childPos >= 0) && (node.childPos < node.nodeList->getLength()))
 		{
 			currentNode = node.nodeList->item(node.childPos++);
+			// Do not return yet to grab node attributes in first place
+			// before descending to childs (see next 'if' below)
 		}
 		else
 		{
