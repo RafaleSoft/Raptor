@@ -105,6 +105,7 @@ void CDOFFilter::glDestroyFilter(void)
 	}
     if (tmpDisplay != NULL)
 	{
+		tmpDisplay->glvkReleaseResources();
         Raptor::glDestroyDisplay(tmpDisplay);
 		tmpDisplay = NULL;
 	}
@@ -115,6 +116,7 @@ void CDOFFilter::glDestroyFilter(void)
 	}
     if (tmpDisplay2 != NULL)
 	{
+		tmpDisplay2->glvkReleaseResources();
         Raptor::glDestroyDisplay(tmpDisplay2);
 		tmpDisplay2 = NULL;
 	}

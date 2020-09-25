@@ -315,7 +315,10 @@ bool CMagnifierFilter::glInitFilter(void)
 #if defined(GL_ARB_geometry_shader4)
 	m_pXKernelShader->glGetOpenGLShader()->glGetVertexShader("EMPTY_PROGRAM");
 	CGeometryShader *gp = m_pXKernelShader->glGetOpenGLShader()->glGetGeometryShader("MAGNIFIER_GEO_SHADER");
-	bool res = gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
+	bool res = true;
+#if !defined(GL_VERSION_3_2)
+	res = gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
+#endif
 	m_pXKernelShader->glGetOpenGLShader()->glGetFragmentShader("MAGNIFIER_X_TEX_SHADER");
 	res = res && m_pXKernelShader->glGetOpenGLShader()->glCompileShader();
 

@@ -202,13 +202,17 @@ void CRaptorDisplayFilter::glDestroyFilter(void)
 {
     if (colorInternalSource != NULL)
     {
-        Raptor::glDestroyDisplay((CRaptorDisplay*)colorInternalSource);
+		CRaptorDisplay *pDisplay = (CRaptorDisplay*)colorInternalSource;
+		pDisplay->glvkReleaseResources();
+        Raptor::glDestroyDisplay(pDisplay);
         colorInternalSource = NULL;
     }
 
 	if (depthInternalSource != NULL)
 	{
-		Raptor::glDestroyDisplay((CRaptorDisplay*)depthInternalSource);
+		CRaptorDisplay *pDisplay = (CRaptorDisplay*)depthInternalSource;
+		pDisplay->glvkReleaseResources();
+		Raptor::glDestroyDisplay(pDisplay);
 		depthInternalSource = NULL;
 	}
 

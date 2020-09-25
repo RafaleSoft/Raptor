@@ -330,10 +330,10 @@ void Raptor::glDestroyDisplay(CRaptorDisplay* pDisplay)
 
 	if (pDisplay != NULL)
 	{
-		pDisplay->glvkReleaseResources();
-
 		if (pDisplay == CRaptorDisplay::GetCurrentDisplay())
 		{
+			pDisplay->glvkReleaseResources();
+
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 			RAPTOR_WARNING(CRaptorDisplay::CRaptorDisplayClassID::GetClassId(), "Cannot destroy a Display currently bound !");
 #endif
