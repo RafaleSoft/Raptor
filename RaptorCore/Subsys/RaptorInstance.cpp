@@ -500,7 +500,9 @@ bool CRaptorInstance::glvkInitSharedResources(void)
 
 		CVertexShader *vp = stage->glGetVertexShader("TEXTURE_QUAD_VTX_PROGRAM");
 		CGeometryShader *gp = stage->glGetGeometryShader("TEXTURE_QUAD_GEO_PROGRAM");
+#if !defined(GL_VERSION_3_2)
 		gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
+#endif
 		CFragmentShader *fs = stage->glGetFragmentShader("TEXTURE_QUAD_TEX_PROGRAM");
 		CProgramParameters params;
 		params.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);
@@ -520,7 +522,9 @@ bool CRaptorInstance::glvkInitSharedResources(void)
 		params.addParameter("viewport", viewport);
 
 		CGeometryShader *gp = stage->glGetGeometryShader("FONT2D_GEO_PROGRAM");
+#if !defined(GL_VERSION_3_2)
 		gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
+#endif
 
 		CFragmentShader *fs = stage->glGetFragmentShader("FONT2D_TEX_PROGRAM");
 		params.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);
@@ -546,7 +550,9 @@ bool CRaptorInstance::glvkInitSharedResources(void)
 		params.addParameter("color", color);
 
 		CGeometryShader *gs = stage->glGetGeometryShader("VECTORFONT_GEO_PROGRAM");
+#if !defined(GL_VERSION_3_2)
 		gs->setGeometry(GL_POINTS, GL_LINE_STRIP, 14);
+#endif
 
 		CFragmentShader *fs = stage->glGetFragmentShader("VECTORFONT_TEX_PROGRAM");
 
@@ -570,7 +576,9 @@ bool CRaptorInstance::glvkInitSharedResources(void)
 
 		CVertexShader *vs = stage->glGetVertexShader("BOX_VTX_PROGRAM");
 		CGeometryShader *gs = stage->glGetGeometryShader("FILLEDBOX_GEO_PROGRAM");
+#if !defined(GL_VERSION_3_2)
 		gs->setGeometry(GL_LINES, GL_TRIANGLE_STRIP, 18);
+#endif
 		CFragmentShader *fs = stage->glGetFragmentShader("BOX_TEX_PROGRAM");
 
 		if (!stage->glCompileShader())
@@ -584,7 +592,9 @@ bool CRaptorInstance::glvkInitSharedResources(void)
 
 		CVertexShader *vs = stage->glGetVertexShader("BOX_VTX_PROGRAM");
 		CGeometryShader *gs = stage->glGetGeometryShader("WIREDBOX_GEO_PROGRAM");
+#if !defined(GL_VERSION_3_2)
 		gs->setGeometry(GL_LINES, GL_LINE_STRIP, 16);
+#endif
 		CFragmentShader *fs = stage->glGetFragmentShader("BOX_TEX_PROGRAM");
 
 		if (!stage->glCompileShader())
@@ -606,8 +616,8 @@ bool CRaptorInstance::glvkInitSharedResources(void)
 	}
 
 	// Initialise texture factory
-	m_pDefaultTextureFactory = new CTextureFactory("DEFAULT_TEXTURE_FACTORY");
-
+	if (NULL == m_pDefaultTextureFactory)
+		m_pDefaultTextureFactory = new CTextureFactory("DEFAULT_TEXTURE_FACTORY");
 
 	CATCH_GL_ERROR
 

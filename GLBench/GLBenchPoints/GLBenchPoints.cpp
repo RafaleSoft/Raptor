@@ -221,7 +221,7 @@ void Display::GLInitContext()
 	CHostMemoryManager::GetInstance()->release(indexes);
 
 
-	CTextureFactory &txt = CTextureFactory::getDefaultFactory();
+	CTextureFactory &txt = CTextureFactory::glGetDefaultFactory();
 
 	sprite = txt.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA);
     sprite->setSize(32,32);

@@ -374,24 +374,29 @@ void CRaptorScreenDisplay::glvkReleaseResources(void)
 		CGeometryAllocator::SetCurrentInstance(m_pGOldAllocator);
 	if (NULL != m_pGAllocator)
 		delete m_pGAllocator;
+	m_pGAllocator = NULL;
 
 	if (NULL != m_pTOldAllocator)
 		CTexelAllocator::SetCurrentInstance(m_pTOldAllocator);
 	if (NULL != m_pTAllocator)
 		delete m_pTAllocator;
+	m_pTAllocator = NULL;
 
 	if (NULL != m_pUOldAllocator)
 		CUniformAllocator::SetCurrentInstance(m_pUOldAllocator);
 	if (NULL != m_pUAllocator)
 		delete m_pUAllocator;
+	m_pUAllocator = NULL;
 
 	if (NULL != m_pDeviceMemory)
 		delete m_pDeviceMemory;
+	m_pDeviceMemory = NULL;
 
 	if (NULL != pLogo)
 	{
 		pLogo->unregisterDestruction(this);
 		delete pLogo;
+		pLogo = NULL;
 	}
 
 	CRaptorDisplay::glvkReleaseResources();

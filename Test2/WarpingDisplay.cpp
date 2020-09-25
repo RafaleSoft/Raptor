@@ -163,7 +163,7 @@ CWarpObject::CWarpObject(float width,float height,int hcels,int vcels)
 	int pos = 0;
 	memset(m_d_grid,0,3*m_hcels*m_vcels*sizeof(float));
 
-	CTextureFactory &f = CTextureFactory::getDefaultFactory();
+	CTextureFactory &f = CTextureFactory::glGetDefaultFactory();
     m_captureBuffer = f.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 												ITextureObject::CGL_BILINEAR,
 												CRaptorDisplay::GetCurrentDisplay());
@@ -284,7 +284,7 @@ CGlassObject::CGlassObject(float width,float height,int hcels,int vcels)
 	setBoundingBox(	GL_COORD_VERTEX(m_orgx,m_orgy,-0.1f,1.0f),
 					GL_COORD_VERTEX(-m_orgx,-m_orgy,0.1f,1.0f));
 
-	CTextureFactory &f = CTextureFactory::getDefaultFactory();
+	CTextureFactory &f = CTextureFactory::glGetDefaultFactory();
     m_captureBuffer = f.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 												ITextureObject::CGL_BILINEAR,
 												CRaptorDisplay::GetCurrentDisplay());

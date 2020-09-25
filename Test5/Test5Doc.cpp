@@ -31,7 +31,7 @@
 
 RAPTOR_NAMESPACE
 
-// #define VULKAN_TEST 1
+//#define VULKAN_TEST 1
 
 
 class MySphere : public CBasicObjects::CGeoSphere
@@ -189,7 +189,7 @@ void CTest5Doc::GLInitContext(void)
 
 
 	C3DScene *pScene = m_pDisplay->getRootScene();
-	CTextureFactory &f = CTextureFactory::getDefaultFactory();
+	CTextureFactory &f = CTextureFactory::glGetDefaultFactory();
 	CShader* s = obj->getShader();
 
 

@@ -527,7 +527,7 @@ public:
 		pRect2->removeModel(CGeometry::CGL_NORMALS);
 
 		//!	Create a lookup texture for cosinus
-		CTextureFactory &factory = CTextureFactory::getDefaultFactory();
+		CTextureFactory &factory = CTextureFactory::glGetDefaultFactory();
 		pCosTable = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA, ITextureObject::CGL_UNFILTERED);
 		pCosTable->setSize(TABLE_SIZE, 1);
 		factory.glSetTransparency(pCosTable, 255);
@@ -713,7 +713,7 @@ void CVertexShadersDisplay::Init()
 {
 	CGenericDisplay::Init();
 
-	CTextureFactory &factory = CTextureFactory::getDefaultFactory();
+	CTextureFactory &factory = CTextureFactory::glGetDefaultFactory();
 	CTextureFactoryConfig& config = factory.getConfig();
 	const CTextureFactoryConfig::ICompressor *compressor = config.getCurrentCompressor();
 	if (0 < config.getNumCompressors())

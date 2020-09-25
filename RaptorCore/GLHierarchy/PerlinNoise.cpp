@@ -331,7 +331,7 @@ void CPerlinNoise::glGenerate(ITextureObject* t, uint32_t x, uint32_t y, uint32_
 	unsigned char *data = noise.getPixels();
 	generateNoise(data,t->getWidth(),t->getHeight(),t->getDepth(),t->getTransparency());
 
-	CTextureFactory &f = CTextureFactory::getDefaultFactory();
+	CTextureFactory &f = CTextureFactory::glGetDefaultFactory();
 
 	noise.loadImage(".buffer", m_ImageOps);
 	f.glLoadTexture(t, noise);

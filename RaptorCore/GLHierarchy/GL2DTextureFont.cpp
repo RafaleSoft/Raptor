@@ -109,7 +109,7 @@ bool CGL2DTextureFont::glInit(const std::string &filename, unsigned int size, bo
 		}
 
 		// Create a texture of appropriate size
-		CTextureFactory &factory = CTextureFactory::getDefaultFactory();
+		CTextureFactory &factory = CTextureFactory::glGetDefaultFactory();
 		if (m_texture == NULL)
 		{
 			m_texture = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,

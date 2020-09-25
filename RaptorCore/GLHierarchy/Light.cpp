@@ -490,7 +490,7 @@ bool CLight::importSpotParams(CRaptorIO& io)
     io >> name;
 
 	string data = io.getValueName();
-    while (!data.empty())
+    while (io.hasMoreValues())
     {
         if (data == "treshold")
         {

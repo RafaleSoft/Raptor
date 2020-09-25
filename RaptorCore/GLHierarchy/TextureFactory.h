@@ -54,7 +54,7 @@ public:
 	virtual ~CTextureFactory(void);
 
 	//!	Returns a default factory, suited far most cases.
-	static CTextureFactory& getDefaultFactory();
+	static CTextureFactory& glGetDefaultFactory();
 
 	//! Returns the common factory configuration
 	CTextureFactoryConfig& getConfig(void) { return mConfig; };

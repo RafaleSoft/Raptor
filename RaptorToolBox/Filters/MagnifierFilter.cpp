@@ -128,7 +128,7 @@ float CMagnifierFilter::mitchellNetravaliKernel(float x,float B,float C) const
 
 void CMagnifierFilter::computeKernel(void)
 {
-	CTextureFactory &filterFactory = CTextureFactory::getDefaultFactory();
+	CTextureFactory &filterFactory = CTextureFactory::glGetDefaultFactory();
 
 	CImage kernelImage;
 	kernelImage.allocatePixels(KERNEL_SIZE, 1, CImage::CGL_COLOR_FLOAT32_ALPHA);
@@ -214,7 +214,7 @@ bool CMagnifierFilter::glInitFilter(void)
     if (kernelTexture != NULL)
         kernelTexture->releaseReference();
 
-	CTextureFactory &filterFactory = CTextureFactory::getDefaultFactory();
+	CTextureFactory &filterFactory = CTextureFactory::glGetDefaultFactory();
 	bool previousResize = filterFactory.getConfig().useTextureResize();
 	filterFactory.getConfig().useTextureResize(false);
 

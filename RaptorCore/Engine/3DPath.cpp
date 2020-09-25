@@ -298,7 +298,7 @@ bool C3DPath::importObject(CRaptorIO& io)
 	io >> name; 
 	string data = io.getValueName();
 
-	while (!data.empty())
+	while (io.hasMoreValues())
 	{
 		if (data == "model")
 		{
@@ -340,7 +340,7 @@ bool C3DPath::importKnot(CRaptorIO& io,GL_COORD_VERTEX_TAG &v,float &t, float &c
 	io >> name;
     
     string data = io.getValueName();
-    while (!data.empty())
+	while (io.hasMoreValues())
     {
 		if (data == "x")
     		io >> v.x;

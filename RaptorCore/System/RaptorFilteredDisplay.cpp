@@ -310,7 +310,7 @@ bool CRaptorFilteredDisplay::glCreateRenderDisplay(void)
 			return false;
         m_pDisplay->registerDestruction(this);
 
-		CTextureFactory &f = CTextureFactory::getDefaultFactory();
+		CTextureFactory &f = CTextureFactory::glGetDefaultFactory();
 		m_pImageSet = new CTextureSet();
 		m_pImageSet->registerDestruction(this);
 

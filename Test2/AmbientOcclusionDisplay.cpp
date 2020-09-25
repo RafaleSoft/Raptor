@@ -140,7 +140,7 @@ void CAmbientOcclusionDisplay::Init()
 		m_pTeapot->addModel(CGeometry::CGL_TANGENTS);
 		m_pTeapot->setShader(CShader::getShader("BUMP_SHADER").glClone("AO_BUMP"));
 		
-		CTextureFactory &f = CTextureFactory::getDefaultFactory();
+		CTextureFactory &f = CTextureFactory::glGetDefaultFactory();
 		ITextureObject*	m_pTexture = f.glCreateTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 														ITextureObject::CGL_BILINEAR);
 		f.glLoadTexture(m_pTexture,"Datas/MARBLE6.JPG");

@@ -102,7 +102,7 @@ public:
 		//!	This method defines a comparator for parameter subclasses
 		//!	@param t: the parameter type to compare to.
 		//! @return true if the parameter is of the tested type.
-		template <class T> bool isA(const T &t) const
+		template <class T> bool isA(const T &) const
 		{
 			return getTypeId() == CParameter<T>::TypeId();
 		}

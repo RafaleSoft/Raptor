@@ -242,7 +242,7 @@ void CTestDoc::GLInitContext(void)
 	ty.a0 = 0;
 	vm->addAction(CViewModifier::ROTATE_VIEW,tx,ty,tz);
 	
-	CTextureFactory &tf = CTextureFactory::getDefaultFactory();
+	CTextureFactory &tf = CTextureFactory::glGetDefaultFactory();
 	ITextureObject *T = tf.glCreateTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 											ITextureObject::CGL_BILINEAR);
 	tf.glLoadTexture(T, "Start.tga");

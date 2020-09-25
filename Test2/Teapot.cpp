@@ -116,7 +116,7 @@ void CTeapot::GLInitContext()
 		s.glPointParameter(0.0f,20.0,quadric);
 	}
 
-	CTextureFactory &f = CTextureFactory::getDefaultFactory();
+	CTextureFactory &f = CTextureFactory::glGetDefaultFactory();
 	t = new CTextureSet("main_textures");
 	CTextureFactoryConfig& config = f.getConfig();
 

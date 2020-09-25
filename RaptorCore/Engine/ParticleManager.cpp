@@ -199,7 +199,7 @@ ITextureObject* CParticleManager::importTexture(CRaptorIO &io)
     string textureName = "";
 
 	string data = io.getValueName();
-    while (!data.empty())
+    while (io.hasMoreValues())
     {
         if (data == "set")
             io >> setName;
@@ -245,7 +245,7 @@ bool CParticleManager::importParticle(CRaptorIO& io)
 	ITextureObject *t = NULL;
 
 	string data = io.getValueName();
-    while (!data.empty())
+    while (io.hasMoreValues())
     {
 		if (data == "name")
 			io >> particleName;
@@ -315,7 +315,7 @@ bool CParticleManager::importObject(CRaptorIO& io)
     io >> name;
 
 	string data = io.getValueName();
-    while (!data.empty())
+    while (io.hasMoreValues())
     {
 		if (data == "name")
 			CPersistence::importObject(io);

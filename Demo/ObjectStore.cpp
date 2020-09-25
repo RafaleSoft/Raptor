@@ -186,7 +186,7 @@ bool CObjectStore::IsAColumn(CGeometry *&g)
 		bump->setDiffuseMap(m_textures->getTexture(ROCKSCULPT));
 		bump->getShader()->glGetTextureUnitsSetup()->setUnitFunction(CTextureUnitSetup::IMAGE_UNIT_0, CTextureUnitSetup::CGL_MULTIPLY);
 
-		CTextureFactory &factory = CTextureFactory::getDefaultFactory();
+		CTextureFactory &factory = CTextureFactory::glGetDefaultFactory();
 		ITextureObject *normalMap = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
                                                             ITextureObject::CGL_TRILINEAR);
 		factory.glLoadTexture(normalMap,BUMP_0);
@@ -493,7 +493,7 @@ void CObjectStore::LoadModels(void)
 	m_material->setSpecular(0.9f,0.9f,0.9f,1.0f);
 	m_material->setShininess(20.0f);
 
-	CTextureFactory &factory = CTextureFactory::getDefaultFactory();
+	CTextureFactory &factory = CTextureFactory::glGetDefaultFactory();
 	CTextureFactoryConfig& config = factory.getConfig();
 	if (0 < config.getNumCompressors())
 	{
@@ -745,7 +745,7 @@ void CObjectStore::BuildObjects(void)
 	//
 	//	The bumpped knot
 	//
-	CTextureFactory &factory = CTextureFactory::getDefaultFactory();
+	CTextureFactory &factory = CTextureFactory::glGetDefaultFactory();
 	m_pBumpKnot = new CBumppedGeometry("BUMP_KNOT");
 	*m_pBumpKnot = *m_knot;
 	m_pBumpKnot->getProperties().setClippingMethod(CObjectProperties::CLIP_BSPHERE);

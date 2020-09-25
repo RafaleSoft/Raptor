@@ -92,7 +92,7 @@ bool CLightFlare::importObject(CRaptorIO& io)
 	float gSize = 1.0f;
 
 	string data = io.getValueName();
-	while (!data.empty())
+	while (io.hasMoreValues())
 	{
 		if (data == "set")
 			io >> setName;

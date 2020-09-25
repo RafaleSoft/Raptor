@@ -330,10 +330,10 @@ void Raptor::glDestroyDisplay(CRaptorDisplay* pDisplay)
 
 	if (pDisplay != NULL)
 	{
+		pDisplay->glvkReleaseResources();
+
 		if (pDisplay == CRaptorDisplay::GetCurrentDisplay())
 		{
-			pDisplay->glvkReleaseResources();
-
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 			RAPTOR_WARNING(CRaptorDisplay::CRaptorDisplayClassID::GetClassId(), "Cannot destroy a Display currently bound !");
 #endif
@@ -383,7 +383,7 @@ CRaptorInstance* Raptor::glvkCreateInstance(const CRaptorConfig& config)
 	//	Initialize platform dependant datas.
 	CContextManager::GetInstance()->glMakeCurrentContext(new_instance.defaultWindow, 
 														 new_instance.defaultContext);
-	CTextureFactory::getDefaultFactory().getConfig();
+	CTextureFactory::glGetDefaultFactory();
 	CATCH_GL_ERROR
 
 	//! Release context and return init state.
@@ -440,7 +440,7 @@ bool Raptor::glInitRaptor(const CRaptorConfig& config)
 
 	//	Initialize platform dependant datas.
 	CContextManager::GetInstance()->glMakeCurrentContext(instance.defaultWindow, instance.defaultContext);
-	CTextureFactory::getDefaultFactory().getConfig();
+	CTextureFactory::glGetDefaultFactory();
 	CATCH_GL_ERROR
 
 	//! Release context and return init state.
