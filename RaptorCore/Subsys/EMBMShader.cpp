@@ -143,6 +143,11 @@ void CEMBMShader::glInit()
 	params.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);
 	params.addParameter("normalMap", CTextureUnitSetup::IMAGE_UNIT_1);
 	params.addParameter("environmentMap", CTextureUnitSetup::IMAGE_UNIT_3);
+	GL_COORD_VERTEX V;
+	params.addParameter("eyePos", V);
+	CLightAttributes::light_order L;
+	CProgramParameters::CParameterArray<int, CLightAttributes::MAX_LIGHTS> lights("lightEnable", L);
+	params.addParameter(lights);
 
 #if defined(GL_ARB_uniform_buffer_object)
 	CMaterial::Material_t M;
@@ -222,6 +227,12 @@ void CEMBMShader::enableEmbm(bool enable)
 		params.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);
 		params.addParameter("normalMap", CTextureUnitSetup::IMAGE_UNIT_1);
 		params.addParameter("environmentMap", CTextureUnitSetup::IMAGE_UNIT_3);
+		GL_COORD_VERTEX V;
+		params.addParameter("eyePos", V);
+		CLightAttributes::light_order L;
+		CProgramParameters::CParameterArray<int, CLightAttributes::MAX_LIGHTS> lights("lightEnable", L);
+		params.addParameter(lights);
+
 		stage->setProgramParameters(params);
 
 		if (enable)

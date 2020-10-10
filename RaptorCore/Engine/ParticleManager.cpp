@@ -16,6 +16,9 @@
 #if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
 	#include "System/RaptorErrorManager.h"
 #endif
+#if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
+	#include "System/Raptor.h"
+#endif
 #if !defined(AFX_TEXTURESET_H__26F3022D_70FE_414D_9479_F9CCD3DCD445__INCLUDED_)
 	#include "GLHierarchy/TextureSet.h"
 #endif
@@ -114,9 +117,7 @@ CParticle *CParticleManager::glCreateParticle(unsigned int number,
 	else
 	{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
-		Raptor::GetErrorManager()->generateRaptorError(	CParticleManager::CParticleManagerClassID::GetClassId(),
-														CRaptorErrorManager::RAPTOR_ERROR,
-														CRaptorMessages::ID_PROCEDURE_FAILED);
+		RAPTOR_ERROR(particleId, CRaptorMessages::ID_PROCEDURE_FAILED);
 #endif
 		return NULL;
 	}
@@ -149,9 +150,7 @@ CParticle *CParticleManager::glCreateParticle(unsigned int number,
 	else
 	{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
-		Raptor::GetErrorManager()->generateRaptorError(	CParticleManager::CParticleManagerClassID::GetClassId(),
-														CRaptorErrorManager::RAPTOR_ERROR,
-														CRaptorMessages::ID_PROCEDURE_FAILED);
+		RAPTOR_ERROR(particleId, CRaptorMessages::ID_PROCEDURE_FAILED);
 #endif
 		return NULL;
 	}

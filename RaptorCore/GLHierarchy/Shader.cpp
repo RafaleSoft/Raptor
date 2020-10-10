@@ -456,22 +456,6 @@ bool CShader::vkRemoveVulkanShader(void)
 
 void CShader::glRenderMaterial(void)
 {
-	/*
-	if ((NULL != m_pMaterial) && (NULL != m_pOpenGLShader))
-	{
-		if (m_pMaterial->doRebuild())
-		{
-			CProgramParameters::CParameter<CMaterial::Material_t> material(m_pMaterial->getMaterial());
-			material.name("Material");
-			material.locationType = GL_UNIFORM_BLOCK_BINDING_ARB;
-			CProgramParameters params;
-			params.addParameter(material);
-
-			m_pOpenGLShader->updateProgramParameters(params);
-		}
-	}
-	*/
-
 	if (IRenderingProperties::GetCurrentProperties()->getCurrentLighting() == IRenderingProperties::ENABLE)
 	{
 		if (m_pMaterial != NULL)

@@ -170,9 +170,7 @@ bool CFragmentProgram::glLoadProgram(const std::string &program)
         GLenum err = glGetError();
         if (err != GL_NO_ERROR)
         {
-			Raptor::GetErrorManager()->generateRaptorError(	CFragmentProgram::CFragmentProgramClassID::GetClassId(),
-															CRaptorErrorManager::RAPTOR_WARNING,
-															"Raptor encountered errors before loading vertex shader, check with debug infos.");
+			RAPTOR_WARNING(	fragmentId, "Raptor encountered errors before loading vertex shader, check with debug infos.");
             while (err != GL_NO_ERROR)
                 err = ::glGetError();
         }
@@ -205,7 +203,7 @@ bool CFragmentProgram::glLoadProgram(const std::string &program)
             arg2.arg_sz = (const char*)str;
             args.push_back(arg2);
 
-			Raptor::GetErrorManager()->generateRaptorError(CFragmentProgram::CFragmentProgramClassID::GetClassId(),
+			Raptor::GetErrorManager()->generateRaptorError(fragmentId,
                                                            CRaptorErrorManager::RAPTOR_ERROR,
 											               CRaptorMessages::ID_PROGRAM_ERROR,
 														   __FILE__, __LINE__, args); 
@@ -214,10 +212,8 @@ bool CFragmentProgram::glLoadProgram(const std::string &program)
         m_bValid = ((err == GL_NO_ERROR) && glGetProgramStatus());
         if (!m_bValid)
 		{
-			RAPTOR_WARNING(	CFragmentProgram::CFragmentProgramClassID::GetClassId(),
-							CRaptorMessages::ID_NO_GPU_PROGRAM)
-			RAPTOR_WARNING(	CFragmentProgram::CFragmentProgramClassID::GetClassId(),
-							getName().data())
+			RAPTOR_WARNING(fragmentId, CRaptorMessages::ID_NO_GPU_PROGRAM)
+			RAPTOR_WARNING(fragmentId, getName().data())
 		}
 
 		// Unbind program to avoid side effects

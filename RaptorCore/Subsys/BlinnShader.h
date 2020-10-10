@@ -52,9 +52,6 @@ public:
 private:
 	//!	Copy constructor for cloning.
 	CBlinnShader(const CBlinnShader& shader);
-
-	static int lightEnable;
-	static int diffuseMap;
 };
 
 

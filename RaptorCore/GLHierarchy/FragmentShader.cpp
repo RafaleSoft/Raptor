@@ -70,7 +70,7 @@ CFragmentShader::~CFragmentShader()
 
 	if (!CRaptorInstance::GetInstance().isFragmentShaderReady())
 	{
-		Raptor::GetErrorManager()->generateRaptorError(	CFragmentShader::CFragmentShaderClassID::GetClassId(),
+		Raptor::GetErrorManager()->generateRaptorError(	fragmentId,
 														CRaptorErrorManager::RAPTOR_ERROR,
 														CRaptorMessages::ID_NO_GPU_PROGRAM);
 	}
@@ -83,11 +83,11 @@ bool CFragmentShader::glLoadProgram(const std::string &program)
 #if defined(GL_VERSION_2_0)
 	load = CUnifiedShader::glLoadProgram(	program, 
 											GL_FRAGMENT_SHADER, 
-											CFragmentShader::CFragmentShaderClassID::GetClassId());
+											fragmentId);
 #elif defined(GL_ARB_fragment_shader)
 	load = CUnifiedShader::glLoadProgram(	program, 
 											GL_FRAGMENT_SHADER_ARB, 
-											CFragmentShader::CFragmentShaderClassID::GetClassId());
+											fragmentId);
 #endif
 
     return load;
@@ -106,7 +106,7 @@ bool CFragmentShader::glBindProgram(RAPTOR_HANDLE program)
 	if (value != GL_FRAGMENT_SHADER_ARB)
 #endif
 	{
-		Raptor::GetErrorManager()->generateRaptorError(CFragmentShader::CFragmentShaderClassID::GetClassId(),
+		Raptor::GetErrorManager()->generateRaptorError(fragmentId,
 													   CRaptorErrorManager::RAPTOR_WARNING,
 													   "Fragment Shader is invalid in this context",
 													   __FILE__, __LINE__);

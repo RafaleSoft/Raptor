@@ -107,11 +107,6 @@ public:
 	//! Select the scene as the current root scene.
 	bool selectScene( const std::string& sname);
 
-    //! Adds a sub display : these display displays are rendered before any  rendering
-    //! commands are issued for this display and immediatly after binding 
-    //! ( ViewPoint, RenderingProperties and Engine are properly set-up / rendered )
-    void addSubDisplay(CRaptorDisplay *pDisplay);
-
 	//!	Renders the display, if it has been bound.
 	//! Returns true if rendered without errors, false otherwise.
 	virtual bool glRender(void) = 0;
@@ -145,15 +140,15 @@ public:
     //! Grabs a bloc of pixels from the display.
     //! The returned array must be deleted by the user. It contains the pixels data
     //! corresponding to the required display atributes :
+    //! - upper left corner
     //! - dimensions
-    //! - format    ( if supported )
-    //! - returns false if format is not supported or if an error occured.
+    //! - returns false if an error occured.
     //! Actual data is returned in data parameter, and data size is returned in size
 	virtual bool glGrab(uint32_t x, uint32_t y, uint32_t width, uint32_t height,
 						uint8_t* &data,size_t& size) const = 0;
 
 	//!	Blits a bloc of pixels from this display.
-	//!	Pixels are transferred to pDst.
+	//!	Pixels are transferred to pDst target display.
 	virtual bool glBlit(uint32_t xSrc, uint32_t ySrc, uint32_t widthSrc, uint32_t heightSrc,
 						uint32_t xDst, uint32_t yDst, uint32_t widthDst, uint32_t heightDst,
 						CRaptorDisplay *pDst) const = 0;
@@ -206,8 +201,7 @@ private:
 	IRenderingProperties    *m_pProperties;
 
     C3DScene				*m_pRootScene;
-	vector<C3DScene*>       m_pScenes;
-    vector<CRaptorDisplay*> m_pSubDisplays;
+	std::vector<C3DScene*>	m_pScenes;
 };
 
 RAPTOR_NAMESPACE_END

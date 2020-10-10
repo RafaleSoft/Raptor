@@ -221,12 +221,6 @@ bool CRaptorDisplay::selectScene( const std::string& sname)
 	return selected;
 }
 
-void CRaptorDisplay::addSubDisplay(CRaptorDisplay *pDisplay)
-{
-    if (NULL != pDisplay)
-        m_pSubDisplays.push_back(pDisplay);
-}
-
 void CRaptorDisplay::setRenderingProperties(IRenderingProperties *properties)
 {
 	if (NULL != m_pProperties)
@@ -300,19 +294,6 @@ bool CRaptorDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
 
 	if (m_pProperties != NULL)
         m_pProperties->glPushProperties();
-
-    if (m_pSubDisplays.size() > 0)
-    {
-        RAPTOR_HANDLE _device;
-        vector<CRaptorDisplay*>::const_iterator it = m_pSubDisplays.begin();
-        while (it != m_pSubDisplays.end())
-        {
-            CRaptorDisplay* display = (*it++);
-			display->glvkBindDisplay(_device);
-            display->glRender();
-		    display->glvkUnBindDisplay();
-        }
-    }
 
 	return true;
 }

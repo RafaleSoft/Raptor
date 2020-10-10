@@ -53,9 +53,6 @@ public:
 
 
 protected:
-	static int lightEnable;
-	static int eyePos;
-
 	//!	Copy constructor for cloning.
 	CBumpShader(const CBumpShader& shader);
 };

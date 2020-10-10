@@ -40,8 +40,6 @@
 
 RAPTOR_NAMESPACE
 
-int CPhongShader::lightEnable = -1;
-int CPhongShader::diffuseMap = -1;
 
 CPhongShader::CPhongShader(void)
 	:CShader("PHONG_SHADER")
@@ -68,29 +66,30 @@ void CPhongShader::glInit(void)
 
 	stage->glGetVertexShader("PPIXEL_PHONG_VTX_PROGRAM");
 	stage->glGetFragmentShader("PPIXEL_PHONG_TEX_PROGRAM");
+
+	CProgramParameters params;
+	params.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);
+
+	CLightAttributes::light_order L;
+	CProgramParameters::CParameterArray<int, CLightAttributes::MAX_LIGHTS> lights("lightEnable", L);
+	params.addParameter(lights);
+
+	stage->setProgramParameters(params);
+
 	stage->glCompileShader();
 }
 
 void CPhongShader::glRender(void)
 {
+	COpenGLShaderStage *stage = glGetOpenGLShader();
+	CProgramParameters params;
+
+	CLightAttributes::light_order const &L = CLightAttributes::getLightOrder();
+	CProgramParameters::CParameterArray<int, CLightAttributes::MAX_LIGHTS> lights("lightEnable", L);
+	params.addParameter(lights);
+
+	stage->updateProgramParameters(params);
+
 	CShader::glRender();
-
-#if defined(GL_ARB_shader_objects)
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
-
-	if ((lightEnable < 0) || (diffuseMap < 0))
-	{
-		GLhandleARB program = pExtensions->glGetHandleARB(GL_PROGRAM_OBJECT_ARB);
-		lightEnable = pExtensions->glGetUniformLocationARB(program, "lightEnable");
-		diffuseMap = pExtensions->glGetUniformLocationARB(program, "diffuseMap");
-	}
-
-	int *bLights = CLightAttributes::getLightOrder();
-	if ((lightEnable >= 0) && (NULL != bLights))
-		pExtensions->glUniform1ivARB(lightEnable,CLightAttributes::MAX_LIGHTS,bLights);
-
-	if (diffuseMap >= 0)
-		pExtensions->glUniform1iARB(diffuseMap,CTextureUnitSetup::IMAGE_UNIT_0);
-#endif
 }
 

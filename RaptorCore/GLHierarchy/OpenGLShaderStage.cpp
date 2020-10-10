@@ -48,6 +48,9 @@
 #if !defined(AFX_UNIFORMALLOCATOR_H__4DD62C99_E476_4FE5_AEE4_EEC71F7B0F38__INCLUDED_)
 	#include "Subsys/UniformAllocator.h"
 #endif
+#if !defined(AFX_LIGHTATTRIBUTES_H__B0A3AF95_90DC_4185_9747_B7F631DDB2BF__INCLUDED_)
+	#include "Subsys/LightAttributes.h"
+#endif
 
 
 
@@ -188,9 +191,8 @@ COpenGLShaderStage* COpenGLShaderStage::glClone() const
 
 bool COpenGLShaderStage::glLoadProgram(const std::string &program)
 {
-	Raptor::GetErrorManager()->generateRaptorError( COpenGLShaderStage::COpenGLShaderStageClassID::GetClassId(),
-													CRaptorErrorManager::RAPTOR_ERROR,
-													"OpenGLShaderStage cannot load programs directly. Use Vertex, Fragment or Geometry shaders instead.");
+	RAPTOR_ERROR(	stageId,
+					"OpenGLShaderStage cannot load programs directly. Use Vertex, Fragment or Geometry shaders instead.");
 
 	return NULL;
 }
@@ -324,14 +326,12 @@ void COpenGLShaderStage::glRender(void)
 			m_bApplyParameters = false;
 		}
 
-		/*
 		if (NULL != m_uniforms)
 		{
 			// TODO : provide uniform index binding point
 			CUniformAllocator*	pUAllocator = CUniformAllocator::GetInstance();
 			pUAllocator->glvkBindUniform(m_uniforms, 0);
 		}
-		*/
 
 		if (m_pVShader != NULL)
 			m_pVShader->glRender();
@@ -1015,7 +1015,22 @@ void COpenGLShaderStage::glSetProgramParameters()
 			{
 				const std::vector<float> &fvector = ((const CProgramParameters::CParameter<std::vector<float>>&)param_value).p;
 				size_t fsize = min(param_value.locationSize, fvector.size());
+#if defined(GL_VERSION_2_0)
+				pExtensions->glUniform1fv(param_value.locationIndex, (GLsizei)fsize, &fvector[0]);
+#else
 				pExtensions->glUniform1fvARB(param_value.locationIndex, (GLsizei)fsize, &fvector[0]);
+#endif
+			}
+			//else if (param_value.isA(lorder)) : add a tempalte isA without const &T ?
+			else if (param_value.getTypeId() == CProgramParameters::CParameterArray<int, CLightAttributes::MAX_LIGHTS>::TypeId())
+			{
+				const CLightAttributes::light_order &lvector = ((const CProgramParameters::CParameterArray<int, CLightAttributes::MAX_LIGHTS>&)param_value).p;
+				size_t lsize = min(param_value.locationSize, CLightAttributes::MAX_LIGHTS);
+#if defined(GL_VERSION_2_0)
+				pExtensions->glUniform1iv(param_value.locationIndex, (GLsizei)lsize, &lvector[0]);
+#else
+				pExtensions->glUniform1ivARB(param_value.locationIndex, (GLsizei)fsize, &lvector[0]);
+#endif
 			}
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 			else

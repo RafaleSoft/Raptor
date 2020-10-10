@@ -242,7 +242,7 @@ GL_COORD_VERTEX RAPTOR_FASTCALL CLight::getLightPosition(void) const
 	return lpos; 
 }
 
-const CGenericVector<float>& RAPTOR_FASTCALL CLight::getLightEyePosition(void) const
+const CGenericVector<float>& RAPTOR_FASTCALL CLight::getLightViewPosition(void) const
 {
     return m_pAttributes->m_viewPosition;
 }

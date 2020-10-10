@@ -129,7 +129,7 @@ public:
 	{
 	public:
 		CParameter(const P &param) :p(param) {};
-		CParameter(const std::string& n, const P &param) :m_name(n), p(param) {};
+		CParameter(const std::string& n, const P &param) : p(param) { m_name = n; };
 		virtual ~CParameter() {};
 
 		static size_t TypeId(void)
@@ -209,7 +209,10 @@ public:
 
 		CParameterArray(const std::string& n, const inner_type& param)
 		{
-			m_name = n;
+			if (n[n.length() - 1] != ']')
+				m_name = n + "[0]";	// glGetActiveUniform will return a name with array subscript.
+			else
+				m_name = n;
 			memcpy(&p[0], &param[0], N * sizeof(P));
 		};
 
