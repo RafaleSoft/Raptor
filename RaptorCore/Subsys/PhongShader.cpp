@@ -36,6 +36,9 @@
 #if !defined(AFX_OPENGLSHADERSTAGE_H__56B00FE3_E508_4FD6_9363_90E6E67446D9__INCLUDED_)
 	#include "GLHierarchy/OpenGLShaderStage.h"
 #endif
+#if !defined(AFX_LIGHT_H__AA8BABD6_059A_4939_A4B6_A0A036E12E1E__INCLUDED_)
+	#include "GLHierarchy/Light.h"
+#endif
 
 
 RAPTOR_NAMESPACE
@@ -57,8 +60,35 @@ CPhongShader::~CPhongShader(void)
 
 CShader* CPhongShader::glClone(const std::string& newShaderName) const
 {
-	return new CPhongShader(*this);
+	CPhongShader* phong = new CPhongShader(*this);
+	if (!newShaderName.empty())
+		phong->setName(newShaderName);
+
+	if (hasOpenGLShader())
+		phong->glInit();
+
+	return phong;
 }
+
+typedef struct LightProduct_t
+{
+	GL_COORD_VERTEX position;
+	GL_COORD_VERTEX attenuation;
+	CColor::RGBA	ambient;
+	CColor::RGBA	diffuse;
+	CColor::RGBA	specular;
+	float			shininess;
+	float			reserved[3];
+	bool			enable;
+	float			reserved2[3];
+} R_LightProduct;
+
+typedef struct LightProducts_t
+{
+	R_LightProduct lights[5];
+} R_LightProducts;
+
+static R_LightProducts products;
 
 void CPhongShader::glInit(void)
 {
@@ -70,23 +100,59 @@ void CPhongShader::glInit(void)
 	CProgramParameters params;
 	params.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);
 
-	CLightAttributes::light_order L;
-	CProgramParameters::CParameterArray<int, CLightAttributes::MAX_LIGHTS> lights("lightEnable", L);
-	params.addParameter(lights);
+#if defined(GL_ARB_uniform_buffer_object)
+	CProgramParameters::CParameter<R_LightProducts> material("LightProducts", products);
+	material.locationType = GL_UNIFORM_BLOCK_BINDING_ARB;
+	params.addParameter(material);
+#endif
 
 	stage->setProgramParameters(params);
 
 	stage->glCompileShader();
 }
 
+__inline CColor::RGBA operator*(const CColor::RGBA& l_color, const CColor::RGBA& r_color)
+{
+	CColor::RGBA c(l_color.r * r_color.r,
+		l_color.g * r_color.g,
+		l_color.b * r_color.b,
+		l_color.a * r_color.a);
+	return c;
+}
+
+
 void CPhongShader::glRender(void)
 {
 	COpenGLShaderStage *stage = glGetOpenGLShader();
 	CProgramParameters params;
 
-	CLightAttributes::light_order const &L = CLightAttributes::getLightOrder();
-	CProgramParameters::CParameterArray<int, CLightAttributes::MAX_LIGHTS> lights("lightEnable", L);
-	params.addParameter(lights);
+	int numl = 0;
+	CMaterial *M = getMaterial();
+	CLight **olights = CLightAttributes::getOrderedLights();
+	for (int i = 0; i < CLightAttributes::MAX_LIGHTS; i++)
+	{
+		CLight *pLight = olights[i];
+		products.lights[i].enable = false;
+
+		if (NULL != pLight)
+		{
+			R_LightProduct& lp = products.lights[numl++];
+			lp.ambient = M->getAmbient() * pLight->getAmbient();
+			lp.diffuse = M->getDiffuse() * pLight->getDiffuse();
+			lp.specular = M->getSpecular() * pLight->getSpecular();
+			lp.shininess = M->getShininess();
+			lp.enable = true;
+			const CGenericVector<float, 4> &p = pLight->getLightViewPosition();
+			lp.position = GL_COORD_VERTEX(p.X(), p.Y(), p.Z(), p.H());
+			lp.attenuation = pLight->getSpotParams();
+		}
+	}
+
+#if defined(GL_ARB_uniform_buffer_object)
+	CProgramParameters::CParameter<R_LightProducts> material("LightProducts", products);
+	material.locationType = GL_UNIFORM_BLOCK_BINDING_ARB;
+	params.addParameter(material);
+#endif
 
 	stage->updateProgramParameters(params);
 

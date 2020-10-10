@@ -177,8 +177,10 @@ private:
 	CColor::RGBA		m_color;
     static CColor::RGBA	m_ambient;
 
+#if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
 	RAPTOR_HANDLE		m_textureUnitSetup;
 	RAPTOR_HANDLE		m_textureUnitUnSetup;
+#endif
 
 	CMaterial			*m_pMaterial;
 	CTextureUnitSetup	*m_pTMUSetup;

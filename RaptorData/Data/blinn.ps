@@ -44,7 +44,6 @@ layout (binding = 0) uniform LightProducts
 
 
 uniform	sampler2D diffuseMap;
-uniform int lightEnable[gl_MaxLights];
 
 in vec3 normal;
 in vec4 lightDirs[MAX_LIGHTS];
@@ -62,14 +61,12 @@ void main (void)
 
 	for (int i=0 ; i<MAX_LIGHTS ; i++)
 	{
-		int numl = i;
 		if (R_LightProducts.lights[i].enable)
 		{
 			float att = lightDirs[i].w;
 			diffuse += att * R_LightProducts.lights[i].ambient;
 
 			float NdotL = max(dot(n,normalize(lightDirs[i].xyz)),0.0);
-			
 			if (NdotL > 0.0)
 			{
 				diffuse += att * R_LightProducts.lights[i].diffuse * NdotL;

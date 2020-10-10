@@ -36,9 +36,6 @@
 #if !defined(AFX_OPENGLSHADERSTAGE_H__56B00FE3_E508_4FD6_9363_90E6E67446D9__INCLUDED_)
 	#include "GLHierarchy/OpenGLShaderStage.h"
 #endif
-#if !defined(AFX_MATERIAL_H__B42ABB88_80E8_11D3_97C2_DE5C28000000__INCLUDED_)
-	//#include "GLHierarchy/Material.h"
-#endif
 #if !defined(AFX_LIGHT_H__AA8BABD6_059A_4939_A4B6_A0A036E12E1E__INCLUDED_)
 	#include "GLHierarchy/Light.h"
 #endif
@@ -102,10 +99,6 @@ void CBlinnShader::glInit()
 	CProgramParameters params;
 	params.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);
 
-	CLightAttributes::light_order L;
-	CProgramParameters::CParameterArray<int, CLightAttributes::MAX_LIGHTS> lights("lightEnable", L);
-	params.addParameter(lights);
-
 #if defined(GL_ARB_uniform_buffer_object)
 	CProgramParameters::CParameter<R_LightProducts> material("LightProducts", products);
 	material.locationType = GL_UNIFORM_BLOCK_BINDING_ARB;
@@ -135,7 +128,7 @@ void CBlinnShader::glRender(void)
 	int numl = 0;
 	CMaterial *M = getMaterial();
 	CLight **olights = CLightAttributes::getOrderedLights();
-	for (int i = 0; i < 5 /*CLightAttributes::MAX_LIGHTS*/; i++)
+	for (int i = 0; i < CLightAttributes::MAX_LIGHTS; i++)
 	{
 		CLight *pLight = olights[i];
 		products.lights[i].enable = false;
@@ -153,10 +146,6 @@ void CBlinnShader::glRender(void)
 			lp.attenuation = pLight->getSpotParams();
 		}
 	}
-
-	CLightAttributes::light_order const &L = CLightAttributes::getLightOrder();
-	CProgramParameters::CParameterArray<int, CLightAttributes::MAX_LIGHTS> lights("lightEnable", L);
-	params.addParameter(lights);
 
 #if defined(GL_ARB_uniform_buffer_object)
 	CProgramParameters::CParameter<R_LightProducts> material("LightProducts", products);

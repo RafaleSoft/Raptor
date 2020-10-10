@@ -22,8 +22,6 @@
 const int MAX_LIGHTS = 5;
 const int GL_MAX_LIGHTS = 8;
 
-uniform int lightEnable[gl_MaxLights];
-
 //
 //	Raptor Uniform blocs
 //

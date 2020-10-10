@@ -157,6 +157,8 @@ void CTest5Doc::resize(unsigned int width, unsigned int height)
     }
 }
 
+static CLight *main_light = NULL;
+
 void CTest5Doc::glRender(void)
 {
 	if (NULL == m_pDisplay)
@@ -165,6 +167,24 @@ void CTest5Doc::glRender(void)
 	bool res = m_pDisplay->glvkBindDisplay(m_device);
     if (res)
 	{
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+		GL_COORD_VERTEX lpos;
+
+		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+		glDisable(GL_LIGHTING);
+		glDisable(GL_TEXTURE_2D);
+
+		glBegin(GL_LINES);
+			glColor4fv(main_light->getSpecular());
+			glVertex3f(0.0f, 0.0f, -3.5f);
+			lpos = main_light->getLightPosition();
+			glVertex3f(lpos.x, lpos.y, lpos.z);
+		glEnd();
+
+		glEnable(GL_LIGHTING);
+		glEnable(GL_TEXTURE_2D);
+#endif
+
 		m_pDisplay->glRender();
 
 		m_pDisplay->glvkUnBindDisplay();
@@ -192,6 +212,28 @@ void CTest5Doc::GLInitContext(void)
 	CTextureFactory &f = CTextureFactory::glGetDefaultFactory();
 	CShader* s = obj->getShader();
 
+	CLight *pLight = new CLight("MAIN_LIGHT");
+	pLight->setAmbient(1.0f, 1.0f, 1.0f, 1.0f);
+	pLight->setDiffuse(1.0f, 1.0f, 1.0f, 1.0f);
+	pLight->setSpecular(1.0f, 0.0f, 1.0f, 1.0f);
+	pLight->setLightPosition(GL_COORD_VERTEX(10.0f, 10.0f, 10.0f, 1.0f));
+	pLight->setLightDirection(GL_COORD_VERTEX(0.0f, 0.0f, 0.0f, 1.0f));
+	main_light = pLight;
+
+	CLight *pLight2 = new CLight("SECOND_LIGHT");
+	pLight2->setAmbient(1.0f, 1.0f, 1.0f, 1.0f);
+	pLight2->setDiffuse(1.0f, 1.0f, 1.0f, 1.0f);
+	pLight2->setSpecular(0.0f, 1.0f, 1.0f, 1.0f);
+	pLight2->setLightPosition(GL_COORD_VERTEX(-10.0f, 10.0f, 10.0f, 1.0f));
+	pLight2->setLightDirection(GL_COORD_VERTEX(0.0f, 0.0f, 0.0f, 1.0f));
+
+	CLight *pLight3 = new CLight("THIRD_LIGHT");
+	pLight3->setAmbient(1.0f, 1.0f, 1.0f, 1.0f);
+	pLight3->setDiffuse(1.0f, 1.0f, 1.0f, 1.0f);
+	pLight3->setSpecular(1.0f, 1.0f, 0.0f, 1.0f);
+	pLight3->setLightPosition(GL_COORD_VERTEX(10.0f, -10.0f, 10.0f, 1.0f));
+	pLight3->setLightDirection(GL_COORD_VERTEX(0.0f, 0.0f, 0.0f, 1.0f));
+
 
 #ifdef VULKAN_TEST
 	m_pTexture = f.vkCreateTexture(ITextureObject::CGL_COLOR24_ALPHA, ITextureObject::CGL_BILINEAR);
@@ -210,6 +252,53 @@ void CTest5Doc::GLInitContext(void)
 	pMat->setSpecular(0.7f, 0.7f, 0.7f, 1.0f);
 	pMat->setEmission(0.0f, 0.0f, 0.0f, 1.0f);
 	pMat->setShininess(128.0f);
+
+	CLightModifier *lm = new CLightModifier("LIGHT_ANIMATOR");
+	lm->setLight(pLight);
+	CModifier::TIME_FUNCTION lx;
+	CModifier::TIME_FUNCTION ly;
+	CModifier::TIME_FUNCTION lz;
+	lx.pUserFunction = lposx;
+	lx.timeFunction = CModifier::CGL_TIME_USER;
+	ly.pUserFunction = lposy;
+	ly.timeFunction = CModifier::CGL_TIME_USER;
+	lz.pUserFunction = lposz;
+	lz.timeFunction = CModifier::CGL_TIME_USER;
+	lm->addAction(CLightModifier::SET_POSITION, lx, ly, lz);
+
+	CLightModifier *lm2 = new CLightModifier("LIGHT_ANIMATOR2");
+	lm2->setLight(pLight2);
+	lx.pUserFunction = lposy;
+	lx.timeFunction = CModifier::CGL_TIME_USER;
+	ly.pUserFunction = lposx;
+	ly.timeFunction = CModifier::CGL_TIME_USER;
+	lz.pUserFunction = lposz;
+	lz.timeFunction = CModifier::CGL_TIME_USER;
+	lm2->addAction(CLightModifier::SET_POSITION, lx, ly, lz);
+
+	CLightModifier *lm3 = new CLightModifier("LIGHT_ANIMATOR3");
+	lm3->setLight(pLight3);
+	lx.pUserFunction = lposy;
+	lx.timeFunction = CModifier::CGL_TIME_USER;
+	ly.pUserFunction = lposz;
+	ly.timeFunction = CModifier::CGL_TIME_USER;
+	lz.pUserFunction = lposx;
+	lz.timeFunction = CModifier::CGL_TIME_USER;
+	lm3->addAction(CLightModifier::SET_POSITION, lx, ly, lz);
+
+	CViewModifier *vm = new CViewModifier("MySphere");
+	CModifier::TIME_FUNCTION tz;
+	tz.timeFunction = CModifier::CGL_TIME_CONSTANT;
+	tz.a0 = 0.0f; //0.2f;
+	CModifier::TIME_FUNCTION tx;
+	tx.timeFunction = CModifier::CGL_TIME_CONSTANT;
+	tx.a0 = 0.0f; //0.3f;
+	CModifier::TIME_FUNCTION ty;
+	ty.timeFunction = CModifier::CGL_TIME_CONSTANT; //CModifier::CGL_TIME_COSINE;
+	ty.a2 = 0.0f; //0.3f;
+	ty.a1 = 0.0f; //0.2f;
+	ty.a0 = 0.005f; //0;
+	vm->addAction(CViewModifier::ROTATE_VIEW, tx, ty, tz);
 
 
 #ifdef VULKAN_TEST
@@ -265,83 +354,12 @@ void CTest5Doc::GLInitContext(void)
 	//f.glLoadTexture(m_pTexture,"BlurCircle.TGA",CGL_CREATE_NORMAL_MAP);
 	tus->setNormalMap(m_pTexture);
 
-
-	CViewModifier *vm = new CViewModifier("MySphere");
 	vm->setObject(obj);
-
-	CModifier::TIME_FUNCTION tz;
-	tz.timeFunction = CModifier::CGL_TIME_CONSTANT;
-	tz.a0 = 0.0f; //0.2f;
-	CModifier::TIME_FUNCTION tx;
-	tx.timeFunction = CModifier::CGL_TIME_CONSTANT;
-	tx.a0 = 0.0f ; //0.3f;
-	CModifier::TIME_FUNCTION ty;
-	ty.timeFunction = CModifier::CGL_TIME_CONSTANT; //CModifier::CGL_TIME_COSINE;
-	ty.a2 = 0.0f; //0.3f;
-	ty.a1 = 0.0f; //0.2f;
-	ty.a0 = 0.005f; //0;
-	vm->addAction(CViewModifier::ROTATE_VIEW,tx,ty,tz);
-
-	CLight *pLight = new CLight("MAIN_LIGHT");
-	pLight->setAmbient(1.0f,1.0f,1.0f,1.0f);
-	pLight->setDiffuse(1.0f,1.0f,1.0f,1.0f);
-	pLight->setSpecular(1.0f,0.0f,1.0f,1.0f);
-	pLight->setLightPosition(GL_COORD_VERTEX(10.0f,10.0f,10.0f,1.0f));
-	pLight->setLightDirection(GL_COORD_VERTEX(0.0f,0.0f,0.0f,1.0f));
-
-	CLight *pLight2 = new CLight("SECOND_LIGHT");
-	pLight2->setAmbient(1.0f,1.0f,1.0f,1.0f);
-	pLight2->setDiffuse(1.0f,1.0f,1.0f,1.0f);
-	pLight2->setSpecular(0.0f,1.0f,1.0f,1.0f);
-	pLight2->setLightPosition(GL_COORD_VERTEX(-10.0f,10.0f,10.0f,1.0f));
-	pLight2->setLightDirection(GL_COORD_VERTEX(0.0f,0.0f,0.0f,1.0f));
-
-	CLight *pLight3 = new CLight("THIRD_LIGHT");
-	pLight3->setAmbient(1.0f,1.0f,1.0f,1.0f);
-	pLight3->setDiffuse(1.0f,1.0f,1.0f,1.0f);
-	pLight3->setSpecular(1.0f,1.0f,0.0f,1.0f);
-	pLight3->setLightPosition(GL_COORD_VERTEX(10.0f,-10.0f,10.0f,1.0f));
-	pLight3->setLightDirection(GL_COORD_VERTEX(0.0f,0.0f,0.0f,1.0f));
-	
 	
 	pScene->addObject(vm->getObject());
 	pScene->addLight(pLight);
 	pScene->addLight(pLight2);
 	pScene->addLight(pLight3);
-
-	
-	CLightModifier *lm = new CLightModifier("LIGHT_ANIMATOR");
-    lm->setLight(pLight);
-    CModifier::TIME_FUNCTION lx;
-    CModifier::TIME_FUNCTION ly;
-    CModifier::TIME_FUNCTION lz;
-    lx.pUserFunction = lposx;
-    lx.timeFunction = CModifier::CGL_TIME_USER;
-    ly.pUserFunction = lposy;
-    ly.timeFunction = CModifier::CGL_TIME_USER;
-	lz.pUserFunction = lposz;
-    lz.timeFunction = CModifier::CGL_TIME_USER;
-    lm->addAction(CLightModifier::SET_POSITION,lx,ly,lz);
-
-	CLightModifier *lm2 = new CLightModifier("LIGHT_ANIMATOR2");
-    lm2->setLight(pLight2);
-    lx.pUserFunction = lposy;
-    lx.timeFunction = CModifier::CGL_TIME_USER;
-    ly.pUserFunction = lposx;
-    ly.timeFunction = CModifier::CGL_TIME_USER;
-    lz.pUserFunction = lposz;
-    lz.timeFunction = CModifier::CGL_TIME_USER;
-    lm2->addAction(CLightModifier::SET_POSITION,lx,ly,lz);
-
-	CLightModifier *lm3 = new CLightModifier("LIGHT_ANIMATOR3");
-    lm3->setLight(pLight3);
-    lx.pUserFunction = lposy;
-    lx.timeFunction = CModifier::CGL_TIME_USER;
-    ly.pUserFunction = lposz;
-    ly.timeFunction = CModifier::CGL_TIME_USER;
-    lz.pUserFunction = lposx;
-    lz.timeFunction = CModifier::CGL_TIME_USER;
-    lm3->addAction(CLightModifier::SET_POSITION,lx,ly,lz);
 #endif
 
 
