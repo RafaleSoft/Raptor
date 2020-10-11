@@ -51,8 +51,8 @@
 #if !defined(AFX_OPENGLSHADERSTAGE_H__56B00FE3_E508_4FD6_9363_90E6E67446D9__INCLUDED_)
 	#include "GLHierarchy/OpenGLShaderStage.h"
 #endif
-#if !defined(AFX_MATERIAL_H__B42ABB88_80E8_11D3_97C2_DE5C28000000__INCLUDED_)
-	#include "GLHierarchy/Material.h"
+#if !defined(AFX_LIGHT_H__AA8BABD6_059A_4939_A4B6_A0A036E12E1E__INCLUDED_)
+	#include "GLHierarchy/Light.h"
 #endif
 
 
@@ -96,6 +96,27 @@ CShader* CEMBMShader::glClone(const std::string& newShaderName) const
 CEMBMShader::~CEMBMShader(void)
 {
 }
+
+typedef struct LightProduct_t
+{
+	GL_COORD_VERTEX position;
+	GL_COORD_VERTEX attenuation;
+	CColor::RGBA	ambient;
+	CColor::RGBA	diffuse;
+	CColor::RGBA	specular;
+	float			shininess;
+	float			reserved[3];
+	bool			enable;
+	float			reserved2[3];
+} R_LightProduct;
+
+typedef struct LightProducts_t
+{
+	R_LightProduct	lights[5];
+	CColor::RGBA	scene_ambient;
+} R_LightProducts;
+
+static R_LightProducts products;
 
 
 void CEMBMShader::glInit()
@@ -145,14 +166,9 @@ void CEMBMShader::glInit()
 	params.addParameter("environmentMap", CTextureUnitSetup::IMAGE_UNIT_3);
 	GL_COORD_VERTEX V;
 	params.addParameter("eyePos", V);
-	CLightAttributes::light_order L;
-	CProgramParameters::CParameterArray<int, CLightAttributes::MAX_LIGHTS> lights("lightEnable", L);
-	params.addParameter(lights);
 
 #if defined(GL_ARB_uniform_buffer_object)
-	CMaterial::Material_t M;
-	CProgramParameters::CParameter<CMaterial::Material_t> material(M);
-	material.name("Material");
+	CProgramParameters::CParameter<R_LightProducts> material("LightProducts", products);
 	material.locationType = GL_UNIFORM_BLOCK_BINDING_ARB;
 	params.addParameter(material);
 #endif
@@ -229,9 +245,12 @@ void CEMBMShader::enableEmbm(bool enable)
 		params.addParameter("environmentMap", CTextureUnitSetup::IMAGE_UNIT_3);
 		GL_COORD_VERTEX V;
 		params.addParameter("eyePos", V);
-		CLightAttributes::light_order L;
-		CProgramParameters::CParameterArray<int, CLightAttributes::MAX_LIGHTS> lights("lightEnable", L);
-		params.addParameter(lights);
+
+#if defined(GL_ARB_uniform_buffer_object)
+		CProgramParameters::CParameter<R_LightProducts> material("LightProducts", products);
+		material.locationType = GL_UNIFORM_BLOCK_BINDING_ARB;
+		params.addParameter(material);
+#endif
 
 		stage->setProgramParameters(params);
 

@@ -42,8 +42,8 @@
 #if !defined(AFX_OPENGLSHADERSTAGE_H__56B00FE3_E508_4FD6_9363_90E6E67446D9__INCLUDED_)
 	#include "GLHierarchy/OpenGLShaderStage.h"
 #endif
-#if !defined(AFX_MATERIAL_H__B42ABB88_80E8_11D3_97C2_DE5C28000000__INCLUDED_)
-	#include "GLHierarchy/Material.h"
+#if !defined(AFX_LIGHT_H__AA8BABD6_059A_4939_A4B6_A0A036E12E1E__INCLUDED_)
+	#include "GLHierarchy/Light.h"
 #endif
 
 
@@ -111,13 +111,9 @@ void CBumpShader::glInit(void)
 	params.addParameter("normalMap", CTextureUnitSetup::IMAGE_UNIT_1);
 	GL_COORD_VERTEX V;
 	params.addParameter("eyePos", V);
-	CLightAttributes::light_order L;
-	CProgramParameters::CParameterArray<int, CLightAttributes::MAX_LIGHTS> lights("lightEnable", L);
-	params.addParameter(lights);
 
 #if defined(GL_ARB_uniform_buffer_object)
-	CMaterial::Material_t M;
-	CProgramParameters::CParameter<CMaterial::Material_t> material("Material", M);
+	CProgramParameters::CParameter<R_LightProducts> material("LightProducts", products);
 	material.locationType = GL_UNIFORM_BLOCK_BINDING_ARB;
 	params.addParameter(material);
 #endif
@@ -141,9 +137,35 @@ void CBumpShader::glRender(void)
 	CProgramParameters params;
 	params.addParameter("eyePos", V);
 
-	CLightAttributes::light_order const &L = CLightAttributes::getLightOrder();
-	CProgramParameters::CParameterArray<int, CLightAttributes::MAX_LIGHTS> lights("lightEnable", L);
-	params.addParameter(lights);
+	int numl = 0;
+	CMaterial *M = getMaterial();
+	CLight **olights = CLightAttributes::getOrderedLights();
+	for (int i = 0; i < CLightAttributes::MAX_LIGHTS; i++)
+	{
+		CLight *pLight = olights[i];
+		products.lights[i].enable = false;
+
+		if (NULL != pLight)
+		{
+			R_LightProduct& lp = products.lights[numl++];
+			lp.ambient = M->getAmbient() * pLight->getAmbient();
+			lp.diffuse = M->getDiffuse() * pLight->getDiffuse();
+			lp.specular = M->getSpecular() * pLight->getSpecular();
+			lp.shininess = M->getShininess();
+			lp.enable = true;
+			const CGenericVector<float, 4> &p = pLight->getLightViewPosition();
+			lp.position = GL_COORD_VERTEX(p.X(), p.Y(), p.Z(), p.H());
+			lp.attenuation = pLight->getSpotParams();
+		}
+	}
+	products.scene_ambient = CShader::getAmbient();
+
+#if defined(GL_ARB_uniform_buffer_object)
+	CProgramParameters::CParameter<R_LightProducts> material("LightProducts", products);
+	material.locationType = GL_UNIFORM_BLOCK_BINDING_ARB;
+	params.addParameter(material);
+#endif
+
 
 	stage->updateProgramParameters(params);
 
