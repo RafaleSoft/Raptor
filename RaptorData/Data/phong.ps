@@ -41,6 +41,7 @@ struct LightProduct
 layout (binding = 0) uniform LightProducts
 {
 	LightProduct lights[MAX_LIGHTS];
+	vec4		 scene_ambient;
 } R_LightProducts;
 
 
@@ -57,7 +58,7 @@ layout(location = 0) out vec4 o_Color;
 void main (void)
 {
 	vec3 n = normalize(normal);
-	vec4 diffuse = gl_FrontLightModelProduct.sceneColor;
+	vec4 diffuse = R_LightProducts.scene_ambient;
 	vec4 specular = vec4(0.0,0.0,0.0,0.0);
 
 	for (int i=0 ; i<MAX_LIGHTS ; i++)

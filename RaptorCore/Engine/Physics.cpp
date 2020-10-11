@@ -60,7 +60,7 @@ void defaultPfd(CPhysics *physics,
 				CGenericVector<float> &accel,
 				CGenericVector<float> &raccel)
 {
-	int nb = physics->getNbForces();
+	size_t nb = physics->getNbForces();
 
 	if (nb>0)
 	{
@@ -80,7 +80,7 @@ void defaultPfd(CPhysics *physics,
 		raccel = (CPhysics::dV ^ accel);
 
 		if (nb>1)
-			for (int i = 1; i<nb; i++)
+			for (size_t i = 1; i<nb; i++)
 			{
 				f = physics->getForce(i);
 
@@ -290,9 +290,9 @@ void RAPTOR_FASTCALL CPhysics::deltaTime(float dt)
 }
 
 
-CPhysics::CForce* RAPTOR_FASTCALL CPhysics::getForce(unsigned int index) const
+CPhysics::CForce* RAPTOR_FASTCALL CPhysics::getForce(size_t index) const
 {
-	if (index < (unsigned int)forces.size())
+	if (index < forces.size())
 		return forces[index];
 	else
 		return NULL;

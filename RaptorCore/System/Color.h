@@ -64,6 +64,15 @@ public:
 		operator HSLA() const;
 		operator HCYA() const;
 
+		//!	Valid RGBA operators: returns a new color adding to this RGBA channels
+		CColor::RGBA operator+(const CColor::RGBA& r_color) const;
+
+		//!	Valid RGBA operators: returns a new color multiplying (filter) to this RGBA channels
+		CColor::RGBA operator*(const CColor::RGBA& r_color) const;
+
+		//!	Valid RGBA operators: returns a new color fading this RGBA channels
+		CColor::RGBA operator*(float f) const;
+
 		RGBA(float _r = 0.0f,float _g = 0.0f,float _b = 0.0f,float _a = 0.0f)
 			: r(_r),g(_g),b(_b),a(_a)
 		{ };

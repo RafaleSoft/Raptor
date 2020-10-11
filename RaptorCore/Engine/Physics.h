@@ -135,7 +135,7 @@ public:
 
 	size_t getNbForces(void) const { return forces.size(); };
 
-	CForce* RAPTOR_FASTCALL getForce(unsigned int index) const;
+	CForce* RAPTOR_FASTCALL getForce(size_t index) const;
 	//	Adds the gravity force to the object.
 	//	this method should be called only once per 
 	//	physics, otherwise the linked object

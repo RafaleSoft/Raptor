@@ -85,7 +85,8 @@ typedef struct LightProduct_t
 
 typedef struct LightProducts_t
 {
-	R_LightProduct lights[5];
+	R_LightProduct	lights[5];
+	CColor::RGBA	scene_ambient;
 } R_LightProducts;
 
 static R_LightProducts products;
@@ -109,15 +110,6 @@ void CPhongShader::glInit(void)
 	stage->setProgramParameters(params);
 
 	stage->glCompileShader();
-}
-
-__inline CColor::RGBA operator*(const CColor::RGBA& l_color, const CColor::RGBA& r_color)
-{
-	CColor::RGBA c(l_color.r * r_color.r,
-		l_color.g * r_color.g,
-		l_color.b * r_color.b,
-		l_color.a * r_color.a);
-	return c;
 }
 
 
@@ -147,6 +139,7 @@ void CPhongShader::glRender(void)
 			lp.attenuation = pLight->getSpotParams();
 		}
 	}
+	products.scene_ambient = CShader::getAmbient();
 
 #if defined(GL_ARB_uniform_buffer_object)
 	CProgramParameters::CParameter<R_LightProducts> material("LightProducts", products);

@@ -69,7 +69,7 @@ RAPTOR_NAMESPACE_BEGIN
 
 //	Static datas
 //  By default, shader applyies default global ambient.
-CColor::RGBA	CShader::m_ambient = CColor::RGBA(0.2f,0.2f,0.2f,1.0f);
+CColor::RGBA	CShader::m_ambient = CColor::RGBA(0.1f,0.1f,0.1f,1.0f);
 
 RAPTOR_NAMESPACE_END
 

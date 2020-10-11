@@ -265,7 +265,7 @@ bool C3DPath::exportObject(CRaptorIO& o)
 { 
 	CPersistence::exportObject(o);
 	
-	int max = evalType;
+	size_t max = evalType;
 	o << max;
 
 	max = uknots.size();

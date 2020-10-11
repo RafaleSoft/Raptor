@@ -185,7 +185,7 @@ bool CFragmentProgram::glLoadProgram(const std::string &program)
 
 	 	pExtensions->glProgramStringARB(GL_FRAGMENT_PROGRAM_ARB,
 										GL_PROGRAM_FORMAT_ASCII_ARB,
-										program.size(),
+										(GLsizei)program.size(),
 										(void*)(program.data()));
 		err = glGetError();
 		

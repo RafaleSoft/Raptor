@@ -48,6 +48,7 @@ struct LightProduct
 layout (binding = 0) uniform LightProducts
 {
 	LightProduct lights[MAX_LIGHTS];
+	vec4		 scene_ambient;
 } R_LightProducts;
 
 
