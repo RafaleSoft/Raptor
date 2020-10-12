@@ -196,7 +196,7 @@ uint8_t * const CUniformAllocator::allocateUniforms(uint64_t size)
 	if (((uint64_t)currentAddress - (uint64_t)uniforms.address) + size > uniforms.size)
 	{
 		RAPTOR_FATAL(	COpenGL::COpenGLClassID::GetClassId(),
-						"Geometry Allocator could not get enough memory");
+						"Uniform Allocator could not get enough memory");
 		return NULL;
 	}
 
