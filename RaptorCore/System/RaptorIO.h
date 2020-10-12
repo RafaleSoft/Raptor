@@ -79,17 +79,23 @@ public:
 	virtual CRaptorIO& operator<<(char i);
 	virtual CRaptorIO& operator>>(char& i);
 
-	virtual CRaptorIO& operator<<(unsigned short i);
-	virtual CRaptorIO& operator>>(unsigned short& i);
+	virtual CRaptorIO& operator<<(uint8_t i);
+	virtual CRaptorIO& operator>>(uint8_t& i);
 
-	virtual CRaptorIO& operator<<(int i);
-	virtual CRaptorIO& operator>>(int& i);
+	virtual CRaptorIO& operator<<(uint16_t i);
+	virtual CRaptorIO& operator>>(uint16_t& i);
+
+	virtual CRaptorIO& operator<<(int32_t i);
+	virtual CRaptorIO& operator>>(int32_t& i);
 
 	virtual CRaptorIO& operator<<(float i);
 	virtual CRaptorIO& operator>>(float& i);
 
-	virtual CRaptorIO& operator<<(unsigned int i);
-	virtual CRaptorIO& operator>>(unsigned int& i);
+	virtual CRaptorIO& operator<<(uint32_t i);
+	virtual CRaptorIO& operator>>(uint32_t& i);
+
+	virtual CRaptorIO& operator<<(size_t i);
+	virtual CRaptorIO& operator>>(size_t& i);
 
 	virtual CRaptorIO& operator<<(const std::string& s);
 	virtual CRaptorIO& operator>>(string &s);
@@ -102,7 +108,7 @@ public:
 	virtual CRaptorIO& write(const void *data,size_t size);
 	virtual CRaptorIO& read(void *data,size_t size);
 	virtual CRaptorIO& seek(size_t size);
-	virtual CRaptorIO& parse(const char *data,size_t size) { return *this; };
+	virtual CRaptorIO& parse(const char *,size_t ) { return *this; };
 
 
 	//!	structures I/O

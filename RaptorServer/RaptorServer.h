@@ -38,6 +38,9 @@ public:
 	
     bool Stop(void);
 
+	//!	To quit application from outside main thread, call CloseWindow 
+	bool CloseWindow();
+
 private:
 	CRaptorServerInstance *m_pInstance;
     CServerTransport *m_pTransport;

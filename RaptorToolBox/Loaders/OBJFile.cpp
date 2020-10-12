@@ -49,7 +49,7 @@ public:
 	OBJLex() {};
 	virtual ~OBJLex() {};
 
-	virtual void OnError(CLex::LexError err)
+	virtual void OnError(CLex::LexError )
 	{	};
 };
 
@@ -273,7 +273,7 @@ void OBJYacc::Onmaterial(unsigned int)
 
 			if (matname == "Fuselage")
 			{
-				CTextureFactory &factory = CTextureFactory::getDefaultFactory();
+				CTextureFactory &factory = CTextureFactory::glGetDefaultFactory();
 				ITextureObject *diffuse = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA, ITextureObject::CGL_BILINEAR);
 				factory.glLoadTexture(diffuse,"RafaleM2.jpg");
 
@@ -399,7 +399,7 @@ void OBJYacc::buildGeometry()
 // 
 //	Main function for reading a OBJ file
 //
-bool _glLoadWavefront(const string &fname,C3DSet *&set,CRaptorToolBox::SCENE_LOADER_OPTIONS *options)
+bool _glLoadWavefront(const string &fname,C3DSet *&set,CRaptorToolBox::SCENE_LOADER_OPTIONS *)
 {
 	OBJLex objlex;
 	if (objlex.InitLex(fname))

@@ -263,7 +263,7 @@ void CShadowMapDisplay::Init()
 
 	CPersistence *p = CPersistence::FindObject("main_textures");
 
-	CTextureFactory &f = CTextureFactory::getDefaultFactory();
+	CTextureFactory &f = CTextureFactory::glGetDefaultFactory();
 	if (p->getId().isSubClassOf(CTextureSet::CTextureSetClassID::GetClassId()))
 		 texture = (CTextureSet *)p;
 

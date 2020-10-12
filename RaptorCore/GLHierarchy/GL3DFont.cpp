@@ -199,12 +199,12 @@ CGeometry* CGL3DFont::glBuildGeometry(const std::string &str,
 	float v3[3];
 
 	const char* text = str.data();
-	const unsigned int text_length = str.size();
+	const size_t text_length = str.size();
 
 	FTGlyphVectorizer* vec = new FTGlyphVectorizer[text_length];
 	TTGlyphTriangulator** tri = new TTGlyphTriangulator*[text_length];
 
-	for (unsigned int i = 0; i < text_length; ++i)
+	for (size_t i = 0; i < text_length; ++i)
 	{
 		tri[i] = new TTGlyphTriangulator();
 		int ch = (unsigned char)text[i];
@@ -436,12 +436,12 @@ RAPTOR_HANDLE CGL3DFont::glTTBuildGeometry(const std::string &str,
 	float	v3[3];
 
 	const char* text = str.data();
-	const unsigned int text_length = str.size();
+	const size_t text_length = str.size();
 
 	FTGlyphVectorizer* vec = new FTGlyphVectorizer[text_length];
 	TTGlyphTriangulator** tri = new TTGlyphTriangulator*[text_length];
 
-	for (unsigned int i = 0; i < text_length; ++i)
+	for (size_t i = 0; i < text_length; ++i)
 	{
 		tri[i] = new TTGlyphTriangulator();
 		int ch = (unsigned char)text[i];

@@ -411,9 +411,10 @@ void CHostMemoryManager::garbage(void *data) const
 	if (m_pHeap->garbageSize > m_pHeap->garbageMaxSize)
 	{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
-		Raptor::GetErrorManager()->generateRaptorError(CPersistence::CPersistenceClassID::GetClassId(),
-                                                       CRaptorErrorManager::RAPTOR_NO_ERROR,
-                                                       "Garbage reached the limit, releasing memory");
+		Raptor::GetErrorManager()->generateRaptorError(	CPersistence::CPersistenceClassID::GetClassId(),
+														CRaptorErrorManager::RAPTOR_NO_ERROR,
+														"Garbage reached the limit, releasing memory",
+														__FILE__, __LINE__);
 #endif
 
 		set<CMemoryHeap::DATA_BLOC,CMemoryHeap::DATA_BLOC>::iterator it = m_pHeap->garbage.begin();
@@ -435,9 +436,8 @@ void CHostMemoryManager::garbage(void *data) const
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 	if (!found)
 	{
-		Raptor::GetErrorManager()->generateRaptorError(CPersistence::CPersistenceClassID::GetClassId(),
-                                                       CRaptorErrorManager::RAPTOR_WARNING,
-                                                       "You are trying to garbage a block that was not properly allocated");
+		RAPTOR_WARNING(	CPersistence::CPersistenceClassID::GetClassId(),
+						"You are trying to garbage a block that was not properly allocated");
 	}
 #endif
 }

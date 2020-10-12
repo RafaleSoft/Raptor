@@ -78,9 +78,7 @@ CGL2DTextureFont* CGLFontFactory::glCreateTextureFont(const std::string &filenam
 	CGL2DTextureFont *font = new CGL2DTextureFont(name);
 	if (NULL != font)
 	{
-		if (font->glInit(filename, size, antialiased))
-			return font;
-		else
+		if (!font->glInit(filename, size, antialiased))
 		{
 			delete font;
 			font = NULL;

@@ -27,6 +27,31 @@
 
 RAPTOR_NAMESPACE
 
+
+CColor::RGBA CColor::RGBA::operator+(const CColor::RGBA& r_color) const
+{
+	CColor::RGBA c(	r + r_color.r,
+					g + r_color.g,
+					b + r_color.b,
+					a + r_color.a);
+	return c;
+}
+
+CColor::RGBA CColor::RGBA::operator*(const CColor::RGBA& r_color) const
+{
+	CColor::RGBA c(	r * r_color.r,
+					g * r_color.g,
+					b * r_color.b,
+					a * r_color.a);
+	return c;
+}
+
+CColor::RGBA CColor::RGBA::operator*(float f) const
+{
+	CColor::RGBA c(r * f, g * f, b * f, a * f);
+	return c;
+}
+
 CColor::RGBA::operator CColor::CYMK() const
 {
     CColor::CYMK res;

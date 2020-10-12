@@ -145,7 +145,7 @@ CTextureUnitSetup::CTextureUnitSetup() :
 	}
 
 	//! For optimisation and compatibility purposes, only enable the first 4 TMU image units as a default state.
-	nbUnits = CTextureFactory::getDefaultFactory().getConfig().getNumTextureImages();
+	nbUnits = CTextureFactory::glGetDefaultFactory().getConfig().getNumTextureImages();
 
 	useUnit = new bool[nbUnits];
 	imageUnit = new ITextureObject*[nbUnits];
@@ -916,9 +916,10 @@ bool CTextureUnitSetup::exportObject(CRaptorIO& o)
 		return true;
 }
 
-bool CTextureUnitSetup::importMap(TEXTURE_IMAGE_UNIT unit,CRaptorIO& io)
+bool CTextureUnitSetup::importMap(CRaptorIO& io)
 {
 	CTextureUnitSetup::TEXTURE_UNIT_FUNCTION unitFunction = CTextureUnitSetup::CGL_NONE;
+	CTextureUnitSetup::TEXTURE_IMAGE_UNIT unit = CTextureUnitSetup::IMAGE_UNIT_0;
 	std::string textureName;
 	std::string setName;
 	std::string name;
@@ -928,15 +929,53 @@ bool CTextureUnitSetup::importMap(TEXTURE_IMAGE_UNIT unit,CRaptorIO& io)
 
 	io >> name;
 	string data = io.getValueName();
-    while (!data.empty())
+	while (io.hasMoreValues())
     {
-		if (data == "set")
+		if (data == "TextureSet")
             io >> setName;
+		else if (data == "TextureUnit")
+		{
+			std::string tunit;
+			io >> tunit;
+
+			if (tunit == "Unit0")
+				unit = CTextureUnitSetup::IMAGE_UNIT_0;
+			else if (tunit == "Unit1")
+				unit = CTextureUnitSetup::IMAGE_UNIT_1;
+			else if (tunit == "Unit2")
+				unit = CTextureUnitSetup::IMAGE_UNIT_2;
+			else if (tunit == "Unit3")
+				unit = CTextureUnitSetup::IMAGE_UNIT_3;
+			else if (tunit == "Unit4")
+				unit = CTextureUnitSetup::IMAGE_UNIT_4;
+			else if (tunit == "Unit5")
+				unit = CTextureUnitSetup::IMAGE_UNIT_5;
+			else if (tunit == "Unit6")
+				unit = CTextureUnitSetup::IMAGE_UNIT_6;
+			else if (tunit == "Unit7")
+				unit = CTextureUnitSetup::IMAGE_UNIT_7;
+			else if (tunit == "Unit8")
+				unit = CTextureUnitSetup::IMAGE_UNIT_8;
+			else if (tunit == "Unit9")
+				unit = CTextureUnitSetup::IMAGE_UNIT_9;
+			else if (tunit == "Unit10")
+				unit = CTextureUnitSetup::IMAGE_UNIT_10;
+			else if (tunit == "Unit11")
+				unit = CTextureUnitSetup::IMAGE_UNIT_11;
+			else if (tunit == "Unit12")
+				unit = CTextureUnitSetup::IMAGE_UNIT_12;
+			else if (tunit == "Unit13")
+				unit = CTextureUnitSetup::IMAGE_UNIT_13;
+			else if (tunit == "Unit14")
+				unit = CTextureUnitSetup::IMAGE_UNIT_14;
+			else if (tunit == "Unit15")
+				unit = CTextureUnitSetup::IMAGE_UNIT_15;
+		}
 		else if (data == "texname")
             io >> textureName;
-		else if (data == "function")
+		else if (data == "TextureFunction")
 		{
-			string function;
+			std::string function;
 			io >> function;
 
 			if (function == "Opaque")
@@ -984,23 +1023,18 @@ bool CTextureUnitSetup::importObject(CRaptorIO& io)
     io >> name;
 
 	string data = io.getValueName();
-    while (!data.empty())
+    while (io.hasMoreValues())
     {
 		if (data == "name")
 			CPersistence::importObject(io);
-		else if (data == "DiffuseMap")
-			importMap(IMAGE_UNIT_0,io);
-		else if (data == "NormalMap")
-			importMap(IMAGE_UNIT_1,io);
-		else if (data == "LightMap")
-			importMap(IMAGE_UNIT_2,io);
-		else if (data == "EnvironmentMap")
-			importMap(IMAGE_UNIT_3,io);
+		else if (data == "Map")
+			importMap(io);
 		else
 			io >> name;
 		
 		data = io.getValueName();
 	}
+
 	io >> name;
 
 	return true;

@@ -52,18 +52,9 @@ public:
     //! be handled properly by GL and by the engine )
     virtual void glRender(void);
 
-
-    //! Renders the 'lens flare' of the light. 
-    //! If no flares are defined, this method can be used to compute light's volume visibility.
-	//virtual void glRenderFlare(void);
-
-    //! Renders the 'lens glow' of the light. 
-	//virtual void glRenderGlow(void);
-
 	//!	Renders the light glow and lens flare of this light.
 	void glRenderEffects(void);
-
-
+	
     //! Renders the BBox of the light's lighted zone ( if not infinite )
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
     void glRenderLightBBox(void);
@@ -93,8 +84,8 @@ public:
 	//! Returns 'absolute' light position set here above
 	GL_COORD_VERTEX RAPTOR_FASTCALL getLightPosition(void) const;
 
-	//! Returns the light's position in eye space : before clip projection.
-	const CGenericVector<float>& RAPTOR_FASTCALL getLightEyePosition(void) const;
+	//! Returns the light's position in modelview space : before eye projection.
+	const CGenericVector<float>& RAPTOR_FASTCALL getLightViewPosition(void) const;
 
 	//! Returns the light's position in eye clip space : projected in unit cube.
 	GL_COORD_VERTEX RAPTOR_FASTCALL getLightClipPosition(void) const;

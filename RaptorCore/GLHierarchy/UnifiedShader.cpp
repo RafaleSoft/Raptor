@@ -153,7 +153,7 @@ bool CUnifiedShader::glLoadProgram(	const std::string &program,
 			GLint maxLength = 0;
 
 #if defined(GL_VERSION_2_0)
-			pExtensions->glGetProgramiv(m_handle.handle(), GL_INFO_LOG_LENGTH, &maxLength);
+			pExtensions->glGetShaderiv(m_handle.handle(), GL_INFO_LOG_LENGTH, &maxLength);
 #elif defined(GL_ARB_shader_objects)
 			pExtensions->glGetObjectParameterivARB(m_handle.glhandle(), GL_OBJECT_INFO_LOG_LENGTH_ARB, &maxLength);
 #endif

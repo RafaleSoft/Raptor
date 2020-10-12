@@ -242,7 +242,7 @@ void CTestDoc::GLInitContext(void)
 	ty.a0 = 0;
 	vm->addAction(CViewModifier::ROTATE_VIEW,tx,ty,tz);
 	
-	CTextureFactory &tf = CTextureFactory::getDefaultFactory();
+	CTextureFactory &tf = CTextureFactory::glGetDefaultFactory();
 	ITextureObject *T = tf.glCreateTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 											ITextureObject::CGL_BILINEAR);
 	tf.glLoadTexture(T, "Start.tga");
@@ -255,7 +255,9 @@ void CTestDoc::GLInitContext(void)
 		CVertexShader *vs = stage->glGetVertexShader();
 		bool res = vs->glLoadProgram(vp_src);
 		CGeometryShader *gs = stage->glGetGeometryShader();
+#if !defined(GL_VERSION_3_2)
 		gs->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
+#endif
 		res = res & gs->glLoadProgram(gp_src);
 		CFragmentShader *fs = stage->glGetFragmentShader();
 		res = res & fs->glLoadProgram(fp_src);
@@ -276,7 +278,9 @@ void CTestDoc::GLInitContext(void)
 		CVertexShader *vs = stage->glGetVertexShader();
 		bool res = vs->glLoadProgram(vp3_src);
 		CGeometryShader *gs = stage->glGetGeometryShader();
+#if !defined(GL_VERSION_3_2)
 		gs->setGeometry(GL_LINES, GL_LINE_STRIP, 16);
+#endif
 		res = res & gs->glLoadProgram(gp3_src);
 		CFragmentShader *fs = stage->glGetFragmentShader();
 		res = res & fs->glLoadProgram(fp3_src);

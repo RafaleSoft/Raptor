@@ -148,7 +148,7 @@ bool CShaderProgram::glLoadProgramFromFile(const std::string &program)
 		args.push_back(arg);
 
 		//!	Shader file could not be opened.
-		Raptor::GetErrorManager()->generateRaptorError(	CShaderProgram::CShaderProgramClassID::GetClassId(),
+		Raptor::GetErrorManager()->generateRaptorError( shaderId,
 														CRaptorErrorManager::RAPTOR_ERROR,
 														CRaptorMessages::ID_NO_RESOURCE,
 														__FILE__, __LINE__, args);
@@ -263,7 +263,7 @@ uint64_t CShaderProgram::glGetBufferMemoryRequirements(void)
 					args.push_back(arg3);
 
 					//	Vertex attribute index inconsistency with user expectation after link
-					Raptor::GetErrorManager()->generateRaptorError(	CShaderProgram::CShaderProgramClassID::GetClassId(),
+					Raptor::GetErrorManager()->generateRaptorError( shaderId,
 																	CRaptorErrorManager::RAPTOR_WARNING,
 																	CRaptorMessages::ID_UPDATE_FAILED,
 																	__FILE__, __LINE__, args);

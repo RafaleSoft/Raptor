@@ -36,12 +36,12 @@
 #if !defined(AFX_OPENGLSHADERSTAGE_H__56B00FE3_E508_4FD6_9363_90E6E67446D9__INCLUDED_)
 	#include "GLHierarchy/OpenGLShaderStage.h"
 #endif
-
+#if !defined(AFX_LIGHT_H__AA8BABD6_059A_4939_A4B6_A0A036E12E1E__INCLUDED_)
+	#include "GLHierarchy/Light.h"
+#endif
 
 RAPTOR_NAMESPACE
 
-int CBlinnShader::lightEnable = -1;
-int CBlinnShader::diffuseMap = -1;
 
 CBlinnShader::CBlinnShader(void)
 	:CShader("BLINN_SHADER")
@@ -69,36 +69,85 @@ CBlinnShader::~CBlinnShader(void)
 {
 }
 
+typedef struct LightProduct_t
+{
+	GL_COORD_VERTEX position;
+	GL_COORD_VERTEX attenuation;
+	CColor::RGBA	ambient;
+	CColor::RGBA	diffuse;
+	CColor::RGBA	specular;
+	float			shininess;
+	float			reserved[3];
+	bool			enable;
+	float			reserved2[3];
+} R_LightProduct;
+
+typedef struct LightProducts_t
+{
+	R_LightProduct	lights[5];
+	CColor::RGBA	scene_ambient;
+} R_LightProducts;
+
+static R_LightProducts products;
+
 void CBlinnShader::glInit()
 {
 	COpenGLShaderStage *stage = glGetOpenGLShader("BLINN_SHADER_PROGRAM");
 
 	stage->glGetVertexShader("PPIXEL_BLINN_VTX_PROGRAM");
 	stage->glGetFragmentShader("PPIXEL_BLINN_TEX_PROGRAM");
+
+	CProgramParameters params;
+	params.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);
+
+#if defined(GL_ARB_uniform_buffer_object)
+	CProgramParameters::CParameter<R_LightProducts> material("LightProducts", products);
+	material.locationType = GL_UNIFORM_BLOCK_BINDING_ARB;
+	params.addParameter(material);
+#endif
+
+	stage->setProgramParameters(params);
+
 	stage->glCompileShader();
 }
 
 void CBlinnShader::glRender(void)
 {
-	CShader::glRender();
+	COpenGLShaderStage *stage = glGetOpenGLShader();
+	CProgramParameters params;
 
-#if defined(GL_ARB_shader_objects)
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
-
-	if ((lightEnable < 0) || (diffuseMap < 0))
+	int numl = 0;
+	CMaterial *M = getMaterial();
+	CLight **olights = CLightAttributes::getOrderedLights();
+	for (int i = 0; i < CLightAttributes::MAX_LIGHTS; i++)
 	{
-		GLhandleARB program = pExtensions->glGetHandleARB(GL_PROGRAM_OBJECT_ARB);
-		lightEnable = pExtensions->glGetUniformLocationARB(program,"lightEnable");
-		diffuseMap = pExtensions->glGetUniformLocationARB(program,"diffuseMap");
+		CLight *pLight = olights[i];
+		products.lights[i].enable = false;
+
+		if (NULL != pLight)
+		{
+			R_LightProduct& lp = products.lights[numl++];
+			lp.ambient = M->getAmbient() * pLight->getAmbient();
+			lp.diffuse = M->getDiffuse() * pLight->getDiffuse();
+			lp.specular = M->getSpecular() * pLight->getSpecular();
+			lp.shininess = M->getShininess();
+			lp.enable = true;
+			const CGenericVector<float,4> &p = pLight->getLightViewPosition();
+			lp.position = GL_COORD_VERTEX(p.X(), p.Y(), p.Z(), p.H());
+			lp.attenuation = pLight->getSpotParams();
+		}
 	}
+	products.scene_ambient = CShader::getAmbient();
 
-	if (diffuseMap >= 0)
-		pExtensions->glUniform1iARB(diffuseMap,CTextureUnitSetup::IMAGE_UNIT_0);
-
-	int *bLights = CLightAttributes::getLightOrder();
-	if ((lightEnable >= 0) && (NULL != bLights))
-		pExtensions->glUniform1ivARB(lightEnable,CLightAttributes::MAX_LIGHTS,bLights);
+#if defined(GL_ARB_uniform_buffer_object)
+	CProgramParameters::CParameter<R_LightProducts> material("LightProducts", products);
+	material.locationType = GL_UNIFORM_BLOCK_BINDING_ARB;
+	params.addParameter(material);
 #endif
+
+	stage->updateProgramParameters(params);
+
+	CShader::glRender();
 }
 
 

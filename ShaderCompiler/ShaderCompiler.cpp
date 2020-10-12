@@ -38,7 +38,7 @@ public:
         m_wnd = wnd;
         m_pDisplay = pDisplay;
 
-		CTextureFactory &factory = CTextureFactory::getDefaultFactory();
+		CTextureFactory &factory = CTextureFactory::glGetDefaultFactory();
         background = factory.glCreateTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 												ITextureObject::CGL_BILINEAR);
         factory.glLoadTexture(background,"Raptor_splash.jpg");

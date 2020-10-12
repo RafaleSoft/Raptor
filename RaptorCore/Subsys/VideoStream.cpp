@@ -63,7 +63,7 @@ void CVideoStream::glGenerate(ITextureObject* T, uint32_t x, uint32_t y, uint32_
         {
             m_pStream->glReleaseStreamBuffer(m_nStream);
 
-			CTextureFactory &factory = CTextureFactory::getDefaultFactory();
+			CTextureFactory &factory = CTextureFactory::glGetDefaultFactory();
             CTextureFactoryConfig& rConfig = factory.getConfig();
 
             bool previousResize = rConfig.useTextureResize();

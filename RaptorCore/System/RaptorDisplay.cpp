@@ -120,6 +120,22 @@ void CRaptorDisplay::glvkAllocateResources(void)
 
 void CRaptorDisplay::glvkReleaseResources(void)
 {
+	if (m_pProperties != NULL)
+	{
+		m_pProperties->glPopProperties();
+		delete m_pProperties;
+		m_pProperties = NULL;
+	}
+	if (m_pRootScene != NULL)
+	{
+		delete m_pRootScene;
+		m_pRootScene = NULL;
+	}
+	if ((m_bDeleteViewPoint) && (m_pViewPoint != NULL))
+	{
+		delete m_pViewPoint;
+		m_pViewPoint = NULL;
+	}
 }
 
 IRenderingProperties *const CRaptorDisplay::createRenderingProperties(void) const
@@ -205,12 +221,6 @@ bool CRaptorDisplay::selectScene( const std::string& sname)
 	return selected;
 }
 
-void CRaptorDisplay::addSubDisplay(CRaptorDisplay *pDisplay)
-{
-    if (NULL != pDisplay)
-        m_pSubDisplays.push_back(pDisplay);
-}
-
 void CRaptorDisplay::setRenderingProperties(IRenderingProperties *properties)
 {
 	if (NULL != m_pProperties)
@@ -284,19 +294,6 @@ bool CRaptorDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
 
 	if (m_pProperties != NULL)
         m_pProperties->glPushProperties();
-
-    if (m_pSubDisplays.size() > 0)
-    {
-        RAPTOR_HANDLE _device;
-        vector<CRaptorDisplay*>::const_iterator it = m_pSubDisplays.begin();
-        while (it != m_pSubDisplays.end())
-        {
-            CRaptorDisplay* display = (*it++);
-			display->glvkBindDisplay(_device);
-            display->glRender();
-		    display->glvkUnBindDisplay();
-        }
-    }
 
 	return true;
 }
@@ -382,7 +379,7 @@ bool CRaptorDisplay::importObject(CRaptorIO& io)
 	io >> name; 
 	string data = io.getValueName();
 
-	while (!data.empty())
+	while (io.hasMoreValues())
 	{
 		if (data == "height")
 			io >> da.height;
@@ -407,7 +404,7 @@ bool CRaptorDisplay::importObject(CRaptorIO& io)
 			getViewPoint()->importObject(io);
             setViewPoint(getViewPoint());
         }
-	   else
+		else
 			io >> name;
 
 		data = io.getValueName();

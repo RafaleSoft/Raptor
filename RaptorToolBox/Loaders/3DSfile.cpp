@@ -805,7 +805,7 @@ bool RAPTOR_FASTCALL ProcessChunkAxxxH(long length)
 				
 				str += rename.str();
 				Raptor::GetErrorManager()->generateRaptorError(CPersistence::CPersistenceClassID::GetClassId(),
-                                                               CRaptorErrorManager::RAPTOR_WARNING,str);
+                                                               CRaptorErrorManager::RAPTOR_WARNING,str, __FILE__, __LINE__);
 				materialRenamed = true;
 				newAlias = true;
 				alias.newName = rename.str();
@@ -991,7 +991,7 @@ bool RAPTOR_FASTCALL ProcessChunkAxxxH(long length)
 		while (l<length)
 			l+=ReadSubChunk();		// texture name, percentage...
 
-		CTextureFactory &f = CTextureFactory::getDefaultFactory();
+		CTextureFactory &f = CTextureFactory::glGetDefaultFactory();
 		ITextureObject* T = NULL;
 		T = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA, ITextureObject::CGL_BILINEAR);
 		f.glSetTransparency(T, (uint32_t)((float)CurrentState.spercentage*255.0/100.0));

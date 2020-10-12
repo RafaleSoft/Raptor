@@ -448,7 +448,7 @@ void C3DScene::importMirror(CRaptorIO& io)
     GL_COORD_VERTEX planePoint = GL_COORD_VERTEX(0.0f, 0.0f, 0.0f, 1.0f);
 
     string data = io.getValueName();
-    while (!data.empty())
+    while (io.hasMoreValues())
     {
         if (data == "Normal")
 			io >> planeNormal ;
@@ -487,7 +487,7 @@ bool C3DScene::importObject(CRaptorIO& io)
     io >> name;
     
     string data = io.getValueName();
-    while (!data.empty())
+    while (io.hasMoreValues())
     {
         if (data == "Object")
 		{

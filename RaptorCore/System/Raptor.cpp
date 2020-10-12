@@ -383,7 +383,7 @@ CRaptorInstance* Raptor::glvkCreateInstance(const CRaptorConfig& config)
 	//	Initialize platform dependant datas.
 	CContextManager::GetInstance()->glMakeCurrentContext(new_instance.defaultWindow, 
 														 new_instance.defaultContext);
-	CTextureFactory::getDefaultFactory().getConfig();
+	CTextureFactory::glGetDefaultFactory();
 	CATCH_GL_ERROR
 
 	//! Release context and return init state.
@@ -440,7 +440,7 @@ bool Raptor::glInitRaptor(const CRaptorConfig& config)
 
 	//	Initialize platform dependant datas.
 	CContextManager::GetInstance()->glMakeCurrentContext(instance.defaultWindow, instance.defaultContext);
-	CTextureFactory::getDefaultFactory().getConfig();
+	CTextureFactory::glGetDefaultFactory();
 	CATCH_GL_ERROR
 
 	//! Release context and return init state.
@@ -486,7 +486,7 @@ bool Raptor::glQuitRaptor(void)
 {
 	CRaptorInstance &instance = CRaptorInstance::GetInstance();
 	if ((!instance.isInitialised()) || (instance.terminate()))
-        return false;
+        return true;
 
     bool res = instance.destroy();
 

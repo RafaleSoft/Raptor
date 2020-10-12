@@ -286,6 +286,8 @@ bool CResourceAllocator::CResourceBinder::glvkBindArrays(void)
 				res = res && bindAttribArray(	bindings.arrays[i],
 												instance.bindingState.arrays[i]);
 		}
+
+		CATCH_GL_ERROR
 		return res;
 	}
 	else
@@ -295,10 +297,9 @@ bool CResourceAllocator::CResourceBinder::glvkBindArrays(void)
 			res = res && bindArray(	bindings.arrays[i], 
 									instance.bindingState.arrays[i]);
 
+		CATCH_GL_ERROR
 		return res;
 	}
-
-	CATCH_GL_ERROR
 }
 
 
@@ -312,6 +313,8 @@ bool CResourceAllocator::CResourceBinder::glvkUnbindArrays(void)
 		{
 			const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 			pExtensions->glBindVertexArrayARB(0);
+			
+			CATCH_GL_ERROR
 			return true;
 		}
 		else
@@ -320,6 +323,7 @@ bool CResourceAllocator::CResourceBinder::glvkUnbindArrays(void)
 			for (size_t i = 0; i < CProgramParameters::GL_VERTEX_ATTRIB_t::MAX_VERTEX_ATTRIB; i++)
 				res = res && unbindAttribArray(	bindings.arrays[i],
 												instance.bindingState.arrays[i]);
+			CATCH_GL_ERROR
 			return res;
 		}
 	}
@@ -329,10 +333,9 @@ bool CResourceAllocator::CResourceBinder::glvkUnbindArrays(void)
 		for (size_t i = 0; i < CProgramParameters::GL_VERTEX_ATTRIB_t::MAX_VERTEX_ATTRIB; i++)
 			res = res && unbindArray(	bindings.arrays[i],
 										instance.bindingState.arrays[i]);
+		CATCH_GL_ERROR
 		return res;
 	}
-
-	CATCH_GL_ERROR
 }
 
 bool CResourceAllocator::CResourceBinder::bindAttribArray(CRaptorDisplayConfig::GL_ARRAY_STATE &state,

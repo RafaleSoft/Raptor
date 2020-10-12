@@ -148,7 +148,7 @@ bool CTextureQuad::glLoadTexture(const std::string &texname, bool compressed)
 {
 	if (!texname.empty())
 	{
-		CTextureFactory &Txt = CTextureFactory::getDefaultFactory();
+		CTextureFactory &Txt = CTextureFactory::glGetDefaultFactory();
 		ITextureObject *T = Txt.glCreateTexture( ITextureObject::CGL_COLOR24_ALPHA,
 												 ITextureObject::CGL_BILINEAR);
 		

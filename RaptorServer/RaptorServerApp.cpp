@@ -46,14 +46,14 @@ BOOL CtrlHandler(DWORD fdwCtrlType)
 	case CTRL_C_EVENT:
 	{
 		std::cout << "Deamon user exit requested by Ctrl-C. Exiting, bye!" << std::endl;
-		return (p_Server->Stop() ? TRUE : FALSE);
+		return (p_Server->CloseWindow() ? TRUE : FALSE);
 		break;
 	}
 	// CTRL-CLOSE: confirm that the user wants to exit.
 	case CTRL_CLOSE_EVENT:
 	{
 		std::cout << "Deamon user exit requested by Ctrl-close. Exiting, bye!" << std::endl;
-		return (p_Server->Stop() ? TRUE : FALSE);
+		return (p_Server->CloseWindow() ? TRUE : FALSE);
 		return(TRUE);
 		break;
 	}
@@ -108,8 +108,13 @@ int main(int argc, char* argv[])
 
 	std::cout << "Starting server." << std::endl;
 	p_Server = new CRaptorServer;
-    if (p_Server->Start(parser))
-		return (p_Server->Stop() ? 1 : 0);
+	if (p_Server->Start(parser))
+	{
+		int status = (p_Server->Stop() ? 1 : 0);
+		delete p_Server;
+
+		return status;
+	}
 	else
 		return -1;
 }

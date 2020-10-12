@@ -35,6 +35,9 @@
     <ClCompile Include="..\..\RaptorServer\RaptorServerInstance.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\RaptorServer\ServerSession.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\RaptorServer\RaptorServer.h">
@@ -56,6 +59,9 @@
       <Filter>Resource Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\RaptorServer\RaptorServerInstance.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorServer\ServerSession.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -45,7 +45,6 @@
 #include "Engine/ParticleManager.h"
 #include "GLHierarchy/IRenderingProperties.h"
 #include "System/RaptorMessages.h"
-#include "System/RaptorIO.h"
 #include "GLHierarchy/LightObserver.h"
 #include "GLHierarchy/GeometryEditor.h"
 #include "GLHierarchy/ObjectFactory.h"
@@ -54,8 +53,6 @@
 #include "DataManager/RaptorDataManager.h"
 
 #include "ObjectStore.h"
-
-#include "strstream"
 
 
 static std::string MODELSHIGH = "Datas\\Columns.3DS";
@@ -118,8 +115,7 @@ CObjectStore::CObjectStore():
 	m_pBumpKnot(NULL),
 	m_knotShadow(NULL),
     m_groundInstance(NULL),
-    m_pRoofShader(NULL),
-    m_pTranslator(NULL)
+    m_pRoofShader(NULL)
 {
 	m_textures = new CTextureSet("DEMO_TEXTURE_SET");
 	m_material = new CMaterial;
@@ -141,8 +137,6 @@ CObjectStore::~CObjectStore()
         delete m_groundInstance;
     if (m_pRoofShader != NULL)
         m_pRoofShader->releaseReference();
-    if (m_pTranslator != NULL)
-        delete m_pTranslator;
 }
 
 void CObjectStore::SetPerf(bool lowdef)
@@ -192,7 +186,7 @@ bool CObjectStore::IsAColumn(CGeometry *&g)
 		bump->setDiffuseMap(m_textures->getTexture(ROCKSCULPT));
 		bump->getShader()->glGetTextureUnitsSetup()->setUnitFunction(CTextureUnitSetup::IMAGE_UNIT_0, CTextureUnitSetup::CGL_MULTIPLY);
 
-		CTextureFactory &factory = CTextureFactory::getDefaultFactory();
+		CTextureFactory &factory = CTextureFactory::glGetDefaultFactory();
 		ITextureObject *normalMap = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
                                                             ITextureObject::CGL_TRILINEAR);
 		factory.glLoadTexture(normalMap,BUMP_0);
@@ -499,7 +493,7 @@ void CObjectStore::LoadModels(void)
 	m_material->setSpecular(0.9f,0.9f,0.9f,1.0f);
 	m_material->setShininess(20.0f);
 
-	CTextureFactory &factory = CTextureFactory::getDefaultFactory();
+	CTextureFactory &factory = CTextureFactory::glGetDefaultFactory();
 	CTextureFactoryConfig& config = factory.getConfig();
 	if (0 < config.getNumCompressors())
 	{
@@ -751,7 +745,7 @@ void CObjectStore::BuildObjects(void)
 	//
 	//	The bumpped knot
 	//
-	CTextureFactory &factory = CTextureFactory::getDefaultFactory();
+	CTextureFactory &factory = CTextureFactory::glGetDefaultFactory();
 	m_pBumpKnot = new CBumppedGeometry("BUMP_KNOT");
 	*m_pBumpKnot = *m_knot;
 	m_pBumpKnot->getProperties().setClippingMethod(CObjectProperties::CLIP_BSPHERE);
@@ -783,61 +777,15 @@ void CObjectStore::BuildObjects(void)
 
 void CObjectStore::BuildScene(void)
 {
-    if (m_pTranslator == NULL)
-        m_pTranslator = CRaptorIO::Create("XMLIO",CRaptorIO::DISK_READ,CRaptorIO::ASCII_XML);
-    CRaptorDisplay * const pCurrentDisplay = CRaptorDisplay::GetCurrentDisplay();
-
-	//char shemaLocation[MAX_PATH];
-	stringstream schemaLocation;
-	schemaLocation << getenv("RAPTOR_ROOT");
-	schemaLocation << "/Redist/bin/Raptor.xsd";
-	m_pTranslator->parse(schemaLocation.str().c_str(), 0);
-    m_pTranslator->parse("Demo.xml",0);
-
-    string name;
-	*m_pTranslator >> name;
-    string data = m_pTranslator->getValueName();
-
-    //  skip data intro
-    *m_pTranslator  >> name; 
-    data = m_pTranslator->getValueName();
-
-    while (!data.empty())
-    {
-        CPersistence* obj = NULL;
-
-        if (data == "Update")
-        {
-            *m_pTranslator >> name;
-            data = m_pTranslator->getValueName();
-            if (data == "name")
-            {
-                *m_pTranslator >> name;
-                obj = CPersistence::FindObject(name);
-            }
-        }
-        else
-        {
-            const CPersistentObject & po = CObjectFactory::GetInstance()->createObject(data);
-            obj = po;
-        }
-        if (obj != NULL)
-            obj->importObject(*m_pTranslator);
-        else
-            *m_pTranslator >> name;
-
-        data = m_pTranslator->getValueName();
-	}
+	CRaptorToolBox::loadRaptorData("Demo.xml");
 
     m_pLights[0] = (CLight*)(CPersistence::FindObject("mainlight"));
     for (unsigned int i=0;i<8;i++)
     {
-        ostrstream lname;
-        lname << "light" << i << ends;
+        std::stringstream lname;
+        lname << "light" << i;
         CLight *pLight = (CLight*)(CPersistence::FindObject(lname.str()));
         m_pLights[i+1] = pLight;
     }
-
-    delete m_pTranslator;
 }
 

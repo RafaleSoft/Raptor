@@ -526,7 +526,7 @@ void IViewPoint::ImportPaths(CRaptorIO& io)
     C3DPath *tPath = NULL;
     C3DPath *ePath = NULL;
 
-    while (!data.empty())
+    while (io.hasMoreValues())
 	{
 	    if (data == "EyePath")
 		{
@@ -562,7 +562,7 @@ bool IViewPoint::importObject(CRaptorIO& io)
     bool continus = true;
     bool loop = true;
 
-	while (!data.empty())
+	while (io.hasMoreValues())
 	{
 		if (data == "left")
 			io >> viewVolume[0];

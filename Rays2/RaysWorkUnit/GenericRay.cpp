@@ -102,8 +102,8 @@ void CGenericRay::Hit(CRaytracerData& world, CColor::RGBA &c)
 	CColor::RGBA	local_color;
 	CColor::RGBA	photon_color;
 	
-	float			new_t, Gouraud, Phong ;
-	unsigned int	numSurfaces,numLight;
+	float	new_t, Gouraud, Phong ;
+	size_t	numSurfaces,numLight;
 	
 	// --- no surf. in list ? ---
 	if ( (numSurfaces = world.getNbObjects()) > 0 )
@@ -113,11 +113,11 @@ void CGenericRay::Hit(CRaytracerData& world, CColor::RGBA &c)
 		CGenericRenderObject	*tmpSurface = NULL;
 
 		// --- loop: Intersection with all surfaces ---
-		for ( unsigned int i=0;i<numSurfaces; i++ ) 
+		for (size_t i=0;i<numSurfaces; i++) 
 		{
 			tmpSurface = world.getObject(i);
 
-			if ( HUGE_REAL > tmpSurface->FastIntersect( *this ) )
+			if (HUGE_REAL > tmpSurface->FastIntersect( *this ))
 			{
 				new_t = tmpSurface->Intersect( *this ) ;
 			}
@@ -132,7 +132,7 @@ void CGenericRay::Hit(CRaytracerData& world, CColor::RGBA &c)
 		}
 
 		// --- hit an object before back-ground ---
-		if ( t < HUGE_REAL )
+		if (t < HUGE_REAL)
 		{
 			// --- compute the intersection point ---
 			hit = origin + (direction * t) ;
@@ -319,15 +319,15 @@ void CGenericRay::Hit(CRaytracerData& world, CColor::RGBA &c)
 
 float CGenericRay::Light_Hit(CRaytracerData& world, CColor::RGBA &c, CGenericLight *light)
 {
-	float			fact = this->fact ;
-	float			t,k,d;
-	unsigned int	size = world.getNbObjects();
+	float	light_fact = this->fact ;
+	float	intersect = -1.0;
+	size_t	size = world.getNbObjects();
 	
-	CGenericRenderObject	*surface;
+	CGenericRenderObject	*current_surface = NULL;
 
 	float spot = light->GetSpotCoefficient(this->direction);
 	if (spot > 0)
-		fact *= spot;
+		light_fact *= spot;
 	else
 		return 0;
 
@@ -337,34 +337,34 @@ float CGenericRay::Light_Hit(CRaytracerData& world, CColor::RGBA &c, CGenericLig
 	this->direction.Normalize();
 
 	// --- loop once per surface --- 
-	for ( unsigned int i=0; i<size; i++ ) 
+	for (size_t i=0; i<size; i++) 
 	{
-		surface = world.getObject(i);
+		current_surface = world.getObject(i);
 
 	    // --- no self shadowing --- 
 	  //  if ( this->surface == surface )
 		//	continue ;
 
-		t = surface->FastIntersect( *this );
-	    if (( t <= 0.0f) || (t >= N))
+		intersect = current_surface->FastIntersect( *this );
+	    if ((intersect <= 0.0f) || (intersect >= N))
 			continue ;
 		
-		t = surface->Intersect( *this ) ;
+		intersect = current_surface->Intersect( *this ) ;
 
 	    // --- if this is the closest value of dist so far, --- 
 	    // --- then record the identity of the surface -- 
 	    //if ( t < 1.0f && t > 0.0f )
-		if ( t < N && t > 0.0f ) 
+		if (intersect < N && intersect > 0.0f )
 		{
-			k = surface->shading.refraction;
+			float k = current_surface->shading.refraction;
 			// --- if alpha-texture map ---
 			// --- if translucent material
 			
-			if ( k > 0.0f ) 
+			if (k > 0.0f) 
 			{
-				CColor::RGBA &lc = surface->GetLocalColor(*this);
-				fact *= k;
-				d = surface->shading.diffuse * k;
+				CColor::RGBA &lc = current_surface->GetLocalColor(*this);
+				light_fact *= k;
+				float d = current_surface->shading.diffuse * k;
 				
 				c.r = (1 - d) * c.r + d * lc.r;
 				c.g = (1 - d) * c.g + d * lc.g;
@@ -372,10 +372,10 @@ float CGenericRay::Light_Hit(CRaytracerData& world, CColor::RGBA &c, CGenericLig
 				c.a = (1 - d) * c.a + d * lc.a; // ???
 			}
 			else
-				return( 0 ) ;
+				return 0;
 		} // if		( object found )
 	} // for	( all surfaces )
 
-	return( fact );
+	return light_fact;
 }
 

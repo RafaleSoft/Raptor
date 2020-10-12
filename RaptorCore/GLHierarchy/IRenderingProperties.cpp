@@ -121,7 +121,7 @@ bool IRenderingProperties::importObject(CRaptorIO& io)
     io >> name;
 
     string data = io.getValueName();
-    while (!data.empty())
+    while (io.hasMoreValues())
     {
         //  TODO : converting an enum to int& is dangerous.
         //  Keep this only while testing IO

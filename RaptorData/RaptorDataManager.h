@@ -74,7 +74,14 @@ public:
 	bool clearExports(const std::string& packName);
 
 	//!	Defines a package name, different from the default 'RaptorData.pck'
+	//! @param packName : the file name of the package.
+	//! @return true if successfully loaded, false in case of any error.
 	bool managePackage(const std::string& packName);
+
+	//!	Release the resources of a managed package
+	//! @param packName : the file name of a previously loaded package.
+	//! @return true if successfully loaded, false in case of any error, e.g. not managed.
+	bool unManagePackage(const std::string& packName);
 
 	//!	Returns the names of the packages managed
 	std::vector<std::string> getManagedPackages(void) const;

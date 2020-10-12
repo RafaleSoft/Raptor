@@ -168,7 +168,7 @@ bool COmniShadowMap::glInitialize(uint32_t width, uint32_t height)
 	m_pViewPoint->glvkRender();
 	m_pShadowCubeMap->glvkUnBindDisplay();
 
-	CTextureFactory &factory = CTextureFactory::getDefaultFactory();
+	CTextureFactory &factory = CTextureFactory::glGetDefaultFactory();
     m_pShadowTexture = factory.glCreateCubemap(ITextureObject::CGL_COLOR24_ALPHA,
                                                ITextureObject::CGL_UNFILTERED);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB,GL_TEXTURE_WRAP_S,GL_CLAMP);

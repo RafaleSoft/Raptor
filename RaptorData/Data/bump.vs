@@ -30,15 +30,33 @@ const int GL_MAX_LIGHTS = 8;
 //
 //	Raptor Uniform blocs
 //
-layout (binding = 0) uniform Transform {
-	mat4 ModelViewMatrix;
-	mat4 ModelViewMatrixInverse;
-	mat4 ModelViewProjectionMatrix;
-	mat4 NormalMatrix;
-} R_Transform;
+//layout (binding = 0) uniform Transform {
+//	mat4 ModelViewMatrix;
+//	mat4 ModelViewMatrixInverse;
+//	mat4 ModelViewProjectionMatrix;
+//	mat4 NormalMatrix;
+//} R_Transform;
+
+struct LightProduct
+{
+	vec4 position;
+	vec4 attenuation;
+	vec4 ambient;
+	vec4 diffuse;
+	vec4 specular;
+	float shininess;
+	float reserved[3];
+	bool enable;
+	bool reserved2[3];
+};
+
+layout (binding = 0) uniform LightProducts
+{
+	LightProduct lights[MAX_LIGHTS];
+	vec4		 scene_ambient;
+} R_LightProducts;
 
 
-uniform int lightEnable[GL_MAX_LIGHTS];
 uniform vec4 eyePos;
 
 
@@ -83,31 +101,32 @@ void main (void)
 
 	for (int i=0 ; i<MAX_LIGHTS ; i++)
 	{
-		int numl = lightEnable[i];
-		if (numl >= 0)
+		if (R_LightProducts.lights[i].enable)
 		{
 #ifdef EYE_SPACE
 			// Compute lighting in eye space
-			vec3 ldir = vec3(gl_LightSource[numl].position) + ecPos;
+			vec3 ldir = vec3(R_LightProducts.lights[i].position) + ecPos;
 #else
 			// Compute lighting in object space
-			vec4 lpos = gl_ModelViewMatrixInverse * gl_LightSource[numl].position - i_Position;
+			vec4 lpos = gl_ModelViewMatrixInverse * R_LightProducts.lights[i].position - i_Position;
 			vec3 ldir = vec3(lpos.xyz);
 #endif
 			float dist = length(ldir);
 			ldir = normalize(ldir);
 		
-			lightDirs[numl].x = dot(ldir,T);
-			lightDirs[numl].y = dot(ldir,binormal);
-			lightDirs[numl].z = dot(ldir,normal);
+			lightDirs[i].x = dot(ldir,T);
+			lightDirs[i].y = dot(ldir,binormal);
+			lightDirs[i].z = dot(ldir,normal);
 			
-			lightDirs[numl].w = 1.0 / (	gl_LightSource[numl].constantAttenuation +
-										gl_LightSource[numl].linearAttenuation * dist +
-										gl_LightSource[numl].quadraticAttenuation * dist * dist);
+			vec4 attenuation = R_LightProducts.lights[i].attenuation;
+			lightDirs[i].w = 1.0 / (	attenuation.z +
+										attenuation.y * dist +
+										attenuation.x * dist * dist);
+
 #ifdef AMBIENT_OCCLUSION
 			// Compute ambient occlusion attenuation
 			// gl_Color is provided from computeElements on self geometry
-			lightDirs[numl].w = lightDirs[numl].w * gl_Color.r;
+			lightDirs[i].w = lightDirs[i].w * gl_Color.r;
 #endif
 		}
 	}

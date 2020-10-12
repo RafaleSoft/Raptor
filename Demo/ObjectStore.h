@@ -70,8 +70,6 @@ private:
 
 	CBumppedGeometry	*m_pBumpKnot;
 
-    CRaptorIO			*m_pTranslator;
-
 	void MergeObjects(void);
 	bool IsAStair(CGeometry *g);
 	bool IsAColumn(CGeometry *&g);

@@ -165,7 +165,7 @@ bool CTextureSet::importTextureObject(CRaptorIO& io)
 	bool compressed = false;
 
 	string data = io.getValueName();
-    while (!data.empty())
+	while (io.hasMoreValues())
     {
 		if (data == "name")
 			io >> filename;
@@ -197,7 +197,7 @@ bool CTextureSet::importTextureObject(CRaptorIO& io)
 	}
 	io >> name;
 
-	CTextureFactory &f = CTextureFactory::getDefaultFactory();
+	CTextureFactory &f = CTextureFactory::glGetDefaultFactory();
 	const CTextureFactoryConfig::ICompressor *oldCompressor  = f.getConfig().getCurrentCompressor();
 	if ((compressed) && (0 < f.getConfig().getNumCompressors()))
 		f.getConfig().setCurrentCompressor(f.getConfig().getCompressor("OpenGL"));
@@ -222,7 +222,7 @@ bool CTextureSet::importObject(CRaptorIO& io)
     io >> name;
 
 	string data = io.getValueName();
-    while (!data.empty())
+	while (io.hasMoreValues())
     {
 		if (data == "name")
 			CPersistence::importObject(io);

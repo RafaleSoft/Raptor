@@ -242,7 +242,7 @@ GL_COORD_VERTEX RAPTOR_FASTCALL CLight::getLightPosition(void) const
 	return lpos; 
 }
 
-const CGenericVector<float>& RAPTOR_FASTCALL CLight::getLightEyePosition(void) const
+const CGenericVector<float>& RAPTOR_FASTCALL CLight::getLightViewPosition(void) const
 {
     return m_pAttributes->m_viewPosition;
 }
@@ -490,7 +490,7 @@ bool CLight::importSpotParams(CRaptorIO& io)
     io >> name;
 
 	string data = io.getValueName();
-    while (!data.empty())
+    while (io.hasMoreValues())
     {
         if (data == "treshold")
         {
@@ -523,7 +523,7 @@ bool CLight::importObject(CRaptorIO& io)
     io >> name;
 
 	string data = io.getValueName();
-    while (!data.empty())
+    while (io.hasMoreValues())
     {
 		if (data == "name")
 			CPersistence::importObject(io);

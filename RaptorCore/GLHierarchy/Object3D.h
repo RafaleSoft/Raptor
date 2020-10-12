@@ -65,17 +65,17 @@ virtual void transform(GL_MATRIX &m);\
 virtual void glRender(void);
 
 #define DECLARE_OBJECT3D_NOMANIPULATORS \
-virtual void rotationX(float rx) {};\
-virtual void rotationY(float ry) {};\
-virtual void rotationZ(float rz) {};\
-virtual void rotationX(float rx,float cy,float cz) {};\
-virtual void rotationY(float ry,float cx,float cz) {};\
-virtual void rotationZ(float rz,float cx,float cy) {};\
-virtual void rotation(double angle,float ax,float ay,float az) {};\
-virtual void scale(float sx,float sy,float sz) {};\
-virtual void translateAbsolute(float tx,float ty,float tz) {};\
-virtual void translate(float tx,float ty,float tz) {};\
-virtual void transform(GL_MATRIX &m) {};\
+virtual void rotationX(float) {};\
+virtual void rotationY(float) {};\
+virtual void rotationZ(float) {};\
+virtual void rotationX(float,float,float) {};\
+virtual void rotationY(float,float,float) {};\
+virtual void rotationZ(float,float,float) {};\
+virtual void rotation(double,float,float,float) {};\
+virtual void scale(float,float,float) {};\
+virtual void translateAbsolute(float,float,float) {};\
+virtual void translate(float,float,float) {};\
+virtual void transform(GL_MATRIX &) {};\
 virtual void glRender(void);
 //
 //////////////////////////////////////////////////////////////////////
@@ -219,12 +219,8 @@ public:
 	//!	Better late than never !.
 	//!	Derived classes should check the visibility flag
 	//! to eventually skip rendering
-	virtual void glRender(void)=0;
-	virtual void vkRender(CVulkanCommandBuffer& commandBuffer,
-						  VkBuffer vertexBinding,
-						  VkBuffer indexBinding)
-	{
-	};
+	virtual void glRender(void) = 0;
+	virtual void vkRender(CVulkanCommandBuffer& , VkBuffer ,VkBuffer ) {};
 
 	//! Returns a generic pointer on the objet.
 	//! Use the global CRaptorDisplay::Render(RAPTOR_HANDLE) to

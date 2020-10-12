@@ -48,6 +48,9 @@
 #if !defined(AFX_UNIFORMALLOCATOR_H__4DD62C99_E476_4FE5_AEE4_EEC71F7B0F38__INCLUDED_)
 	#include "Subsys/UniformAllocator.h"
 #endif
+#if !defined(AFX_LIGHTATTRIBUTES_H__B0A3AF95_90DC_4185_9747_B7F631DDB2BF__INCLUDED_)
+	#include "Subsys/LightAttributes.h"
+#endif
 
 
 
@@ -131,9 +134,8 @@ COpenGLShaderStage::~COpenGLShaderStage(void)
 		if (value != GL_PROGRAM_OBJECT_ARB)
 #endif
 		{
-			Raptor::GetErrorManager()->generateRaptorError(COpenGLShaderStage::COpenGLShaderStageClassID::GetClassId(),
-														   CRaptorErrorManager::RAPTOR_WARNING,
-														   "Shader Program is invalid in this context");
+			RAPTOR_WARNING(	COpenGLShaderStage::COpenGLShaderStageClassID::GetClassId(),
+							"Shader Program is invalid in this context");
 
 			CATCH_GL_ERROR
 			return;
@@ -189,9 +191,8 @@ COpenGLShaderStage* COpenGLShaderStage::glClone() const
 
 bool COpenGLShaderStage::glLoadProgram(const std::string &program)
 {
-	Raptor::GetErrorManager()->generateRaptorError( COpenGLShaderStage::COpenGLShaderStageClassID::GetClassId(),
-													CRaptorErrorManager::RAPTOR_ERROR,
-													"OpenGLShaderStage cannot load programs directly. Use Vertex, Fragment or Geometry shaders instead.");
+	RAPTOR_ERROR(	stageId,
+					"OpenGLShaderStage cannot load programs directly. Use Vertex, Fragment or Geometry shaders instead.");
 
 	return NULL;
 }
@@ -298,10 +299,6 @@ void COpenGLShaderStage::setProgramParameters(const CProgramParameters &v)
 #endif
 }
 
-void COpenGLShaderStage::updateProgramParameters(const CProgramParameters &v)
-{
-	CShaderProgram::updateProgramParameters(v);
-}
 
 void COpenGLShaderStage::glRender(void)
 {
@@ -329,14 +326,12 @@ void COpenGLShaderStage::glRender(void)
 			m_bApplyParameters = false;
 		}
 
-		/*
 		if (NULL != m_uniforms)
 		{
 			// TODO : provide uniform index binding point
 			CUniformAllocator*	pUAllocator = CUniformAllocator::GetInstance();
 			pUAllocator->glvkBindUniform(m_uniforms, 0);
 		}
-		*/
 
 		if (m_pVShader != NULL)
 			m_pVShader->glRender();
@@ -745,11 +740,12 @@ void COpenGLShaderStage::glQueryUniformLocations(void)
 				{
 					CProgramParameters::CParameterBase& value = m_parameters[idx];
 
-					//! TODO : add type checking here
 					if (value.name() == name)
 					{
 						value.locationIndex = location;
 						value.locationType = type;
+						value.locationSize = size;
+						break;
 					}
 				}
 			}
@@ -883,6 +879,7 @@ void COpenGLShaderStage::glSetProgramParameters()
 	GL_COORD_VERTEX vector(0.0f, 0.0f, 0.0f, 0.0f);
 	CColor::RGBA color(0.0f, 0.0f, 0.0f, 0.0f);
 	GL_MATRIX matrix;
+	std::vector<float> float_vector;
 
 	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 	for (unsigned int idx = 0; idx < m_parameters.getNbParameters(); idx++)
@@ -935,7 +932,7 @@ void COpenGLShaderStage::glSetProgramParameters()
 					{
 						int val = vector.x;
 #if defined(GL_VERSION_2_0)
-						pExtensions->glUniform1iv(param_value.locationIndex, 1, &val);
+						pExtensions->glUniform1i(param_value.locationIndex, val);
 #elif defined(GL_ARB_vertex_shader)
 						pExtensions->glUniform1iARB(param_value.locationIndex, val);
 #endif
@@ -947,7 +944,7 @@ void COpenGLShaderStage::glSetProgramParameters()
 						val[0] = vector.x;
 						val[1] = vector.y;
 #if defined(GL_VERSION_2_0)
-						pExtensions->glUniform2iv(param_value.locationIndex, 1, &val[0]);
+						pExtensions->glUniform2i(param_value.locationIndex, val[0], val[1]);
 #elif defined(GL_ARB_vertex_shader)
 						pExtensions->glUniform2iARB(param_value.locationIndex, val[0], val[1]);
 #endif
@@ -982,12 +979,13 @@ void COpenGLShaderStage::glSetProgramParameters()
 					}
 				}
 			}
+			//	TODO: add type checking here: locationType should be GL_SAMPLER_xxx_ARB
 			else if (param_value.isA(sampler))
 			{
 				sampler = ((const CProgramParameters::CParameter<CTextureUnitSetup::TEXTURE_IMAGE_UNIT>&)param_value).p;
 				GLint s = sampler;
 #if defined(GL_VERSION_2_0)
-				pExtensions->glUniform1iv(param_value.locationIndex, 1, &s);
+				pExtensions->glUniform1i(param_value.locationIndex, s);
 #elif defined(GL_ARB_vertex_shader)
 				pExtensions->glUniform1iARB(param_value.locationIndex, s);
 #endif
@@ -1013,6 +1011,27 @@ void COpenGLShaderStage::glSetProgramParameters()
 				pUAllocator->glvkSetPointerData(m_uniforms, (unsigned char*)param_value.addr(), param_value.size());
 			}
 #endif
+			else if (param_value.isA(float_vector) && (param_value.locationType == GL_FLOAT))
+			{
+				const std::vector<float> &fvector = ((const CProgramParameters::CParameter<std::vector<float>>&)param_value).p;
+				size_t fsize = min(param_value.locationSize, fvector.size());
+#if defined(GL_VERSION_2_0)
+				pExtensions->glUniform1fv(param_value.locationIndex, (GLsizei)fsize, &fvector[0]);
+#else
+				pExtensions->glUniform1fvARB(param_value.locationIndex, (GLsizei)fsize, &fvector[0]);
+#endif
+			}
+			//else if (param_value.isA(lorder)) : add a tempalte isA without const &T ?
+			else if (param_value.getTypeId() == CProgramParameters::CParameterArray<int, CLightAttributes::MAX_LIGHTS>::TypeId())
+			{
+				const CLightAttributes::light_order &lvector = ((const CProgramParameters::CParameterArray<int, CLightAttributes::MAX_LIGHTS>&)param_value).p;
+				size_t lsize = min(param_value.locationSize, CLightAttributes::MAX_LIGHTS);
+#if defined(GL_VERSION_2_0)
+				pExtensions->glUniform1iv(param_value.locationIndex, (GLsizei)lsize, &lvector[0]);
+#else
+				pExtensions->glUniform1ivARB(param_value.locationIndex, (GLsizei)fsize, &lvector[0]);
+#endif
+			}
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 			else
 			{
@@ -1036,7 +1055,7 @@ bool COpenGLShaderStage::importObject(CRaptorIO& io)
 	io >> name;
 
 	string data = io.getValueName();
-	while (!data.empty())
+	while (io.hasMoreValues())
 	{
 		if (data == "name")
 			CPersistence::importObject(io);

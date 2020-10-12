@@ -171,9 +171,8 @@ void CRaptorBufferDisplay::glGenerate(ITextureObject* T, uint32_t x, uint32_t y,
 		else
 		{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
-			Raptor::GetErrorManager()->generateRaptorError(	Global::COpenGLClassID::GetClassId(),
-                                                            CRaptorErrorManager::RAPTOR_WARNING,
-											                "Raptor Display cannot bind a texture while buffer is still bound");
+			RAPTOR_WARNING(	COpenGL::COpenGLClassID::GetClassId(),
+							"Raptor Display cannot bind a texture while buffer is still bound");
 #endif
 		}
 	}

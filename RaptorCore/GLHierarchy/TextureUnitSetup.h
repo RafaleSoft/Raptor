@@ -241,7 +241,7 @@ private:
 	//!	Internal helper to set named units.
 	void setMap(ITextureObject *to,TEXTURE_IMAGE_UNIT unit, TEXTURE_UNIT_FUNCTION env_mode);
 
-    bool importMap(TEXTURE_IMAGE_UNIT unit,CRaptorIO& io);
+    bool importMap(CRaptorIO& io);
 
     //	Register combiners and generic texture combiners are exclusive
 	bool				use_register_combiners;
