@@ -1,5 +1,9 @@
 - Ajouter un dialog pour Vulkan Status comme OpenGL.
 
+- RaptorFilteredDisplay:
+	- voir si normal dans demo que le buffer FSAA ait la même taille que la destination
+		(m_fFilterSize = 1 dans RaptorDisplayconfig)
+
 - Supprimer GL_QUADS
 	- glDrawElements (Object3DShadow)
 	- CGLLayer::glRenderSingleBuffer

@@ -42,6 +42,9 @@ RAPTOR_NAMESPACE
 using namespace RaysServer;
 using namespace Rays;
 
+static RaysServer::CRaysServerApp *pApp = NULL;
+
+
 class CRaysLogger : public Rays::RaysUtils::ILogger
 {
 public:
@@ -126,7 +129,7 @@ bool RaysServer::CRaysServerApp::Start(const std::string &addrStr, uint16_t port
 	return res;
 }
 
-static RaysServer::CRaysServerApp *pApp = NULL;
+
 BOOL CtrlHandler(DWORD fdwCtrlType)
 {
 	switch (fdwCtrlType)
@@ -159,6 +162,22 @@ BOOL CtrlHandler(DWORD fdwCtrlType)
 	}
 }
 
+void print_help(void)
+{
+	std::cout << "Rays Server command line help:" << std::endl;
+
+	std::cout << "  --port|-p : defines the deamon listening port, by default 2049" << std::endl;
+	std::cout << "  --host_addr|-a : defines the deamon listening IP address, by default 127.0.0.1" << std::endl;
+	std::cout << "  --config_file|-f : the path to the deamon configuration file, by default RaysDeamon.config in the current execution folder" << std::endl;
+	std::cout << "  --wu_priority|-u : the work unit execution priority when multiple jobs are in progress" << std::endl;
+	std::cout << "  --deamon_delay|-t : the polling delay to the deamon" << std::endl;
+	std::cout << "  --nb_wu_per_job|-j : the number of work units allocated for each job" << std::endl;
+	std::cout << "  --deamon|-d : the host address of a workunit deamon manager" << std::endl;
+	std::cout << "  --help|-h : print this help and quit" << std::endl;
+	std::cout << std::endl;
+}
+
+
 /////////////////////////////////////////////////////////////////////////////
 //	Entry point
 int main(int argc, char* argv[])
@@ -169,17 +188,34 @@ int main(int argc, char* argv[])
 	std::cout << "-----------------------------------" << std::endl;
 	std::cout << std::endl;
 
+	//!	 Initialise the one and only application.
+	pApp = new RaysServer::CRaysServerApp();
 
 	CCmdLineParser parser;
-	parser.addOption("port", "p", (uint16_t)2048);
-	parser.addOption("host_addr", "h", std::string("127.0.0.1"));
+	parser.addOption("port", "p", (unsigned short)2048);
+	parser.addOption("host_addr", "a", std::string("127.0.0.1"));
 	parser.addOption("config_file", "f", std::string("RaysServer.config"));
+	parser.addOption("help", "h", CCmdLineParser::NO_VALUE_OPTION);
 	if (!parser.parse(argc, argv))
 	{
 		RaysUtils::getLog().Log("Server failed to parse command line. Exiting, bye!");
 		return -1;
 	}
 
+	CCmdLineParser::NO_VALUE_OPTION_t help = CCmdLineParser::NO_VALUE_UNDEFINED;
+	parser.getValue<CCmdLineParser::NO_VALUE_OPTION_t>("h", help);
+	if (CCmdLineParser::NO_VALUE_VALUE == help)
+	{
+		print_help();
+		return 0;
+	}
+
+	//!	Initialise settings from command line.
+	CRaysSettings &settings = RaysUtils::getSettings();
+	settings.setSettings(parser);
+
+
+	//!	Initalise network layer.
 	Network::setNbConnectAttempts(1);
 	if (!Network::initSocketLayer())
 	{
@@ -187,15 +223,17 @@ int main(int argc, char* argv[])
 		return -1;
 	}
 
-	pApp = new RaysServer::CRaysServerApp();
+	//!	Initialise settings from config file if provided or exist.
 	std::string config_file = "";
 	parser.getValue("config_file", config_file);
+	if (!config_file.empty())
+	{
+		RaysUtils::getLog().Log("Rays Server will read and replace values from config_file: " + config_file);
+		if (!RaysUtils::loadConfig(config_file))
+			RaysUtils::getLog().Log("Rays Server configuration file failed to load.");
+	}
 
-	CRaysSettings &settings = RaysUtils::getSettings();
-	settings.setSettings(parser);
-	if (!RaysUtils::loadConfig(config_file))
-		RaysUtils::getLog().Log("Rays Server configuration file failed to load.");
-
+	//! Minimal settings to start Rays Server : port and IP address.
 	std::string addrStr = "127.0.0.1";
 	uint16_t port = 2048;
 	if (!settings.getValue("port", port) || !settings.getValue("host_addr", addrStr))
@@ -204,6 +242,7 @@ int main(int argc, char* argv[])
 		return -1;
 	}
 
+	//! Run Rays server.
 	bool res = pApp->Start(addrStr, port);
 	if (res)
 	{

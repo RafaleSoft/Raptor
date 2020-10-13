@@ -70,6 +70,19 @@ BOOL CtrlHandler(DWORD fdwCtrlType)
 	} 
 } 
 
+void print_help(void)
+{
+	std::cout << "Rays Deamon command line help:" << std::endl;
+
+	std::cout << "  --port|-p : defines the deamon listening port, by default 2049" << std::endl;
+	std::cout << "  --host_addr|-a : defines the deamon listening IP address, by default 127.0.0.1" << std::endl;
+	std::cout << "  --config_file|-f : the path to the deamon configuration file, by default RaysDeamon.config in the current execution folder" << std::endl;
+	std::cout << "  --work_unit|-w : the path to a rays workunit executable. Any number of workunits can be provided, but at least one workunit is mandatory." << std::endl;
+	std::cout << "  --cpu|-c : the number of CPU cores allocated to each workunit" << std::endl;
+	std::cout << "  --help|-h : print this help and quit" << std::endl;
+	std::cout << std::endl;
+}
+
 /////////////////////////////////////////////////////////////////////////////
 //	Entry point
 int main(int argc, char* argv[])
@@ -82,17 +95,26 @@ int main(int argc, char* argv[])
 
 	
 	CCmdLineParser parser;
-	vector<string> wus;
-	vector<unsigned int> cpus;
+	std::vector<string> wus;
+	std::vector<unsigned int> cpus;
 	parser.addOption("port", "p", (uint16_t)2049);
 	parser.addOption("host_addr", "a", std::string("127.0.0.1"));
 	parser.addOption("config_file", "f", std::string("RaysDeamon.config"));
 	parser.addOption("work_unit","w",wus);
 	parser.addOption("cpu","c",cpus);
+	parser.addOption("help", "h", CCmdLineParser::NO_VALUE_OPTION);
 	if (!parser.parse(argc,argv))
 	{
 		std::cout << "Deamon failed to parse command line. Exiting, bye!" << std::endl;
 		return -1;
+	}
+
+	CCmdLineParser::NO_VALUE_OPTION_t help = CCmdLineParser::NO_VALUE_UNDEFINED;
+	parser.getValue<CCmdLineParser::NO_VALUE_OPTION_t>("h", help);
+	if (CCmdLineParser::NO_VALUE_VALUE == help)
+	{
+		print_help();
+		return 0;
 	}
 
 	if (!Network::initSocketLayer())
@@ -131,7 +153,7 @@ CRaysDeamon::~CRaysDeamon()
 {
 }
 
-server_base_t::request_handler_t& CRaysDeamon::getRequestHandler(const iosock_base_t& client) const
+server_base_t::request_handler_t& CRaysDeamon::getRequestHandler(const iosock_base_t& ) const
 {
 	const server_base_t::request_handler_t* rq = this;
 	server_base_t::request_handler_t& handler = const_cast<server_base_t::request_handler_t&>(*rq);
@@ -296,7 +318,7 @@ void CRaysDeamon::dispatchJob(request &rq)
 	rq.msg->msg_tail = MSG_END;
 	rq.msg->msg_size = 0;
 	rq.msg->msg_data[0] = workUnitID;
-	rq.msg->msg_data[1] = (DWORD)(pi.hProcess);
+	rq.msg->msg_data[1] = (DWORD)(pi.hProcess);	// TODO: will not work in 64 bits
 	rq.msg->msg_data[2] = (DWORD)(pi.hThread);
 	rq.msg->msg_data[3] = pi.dwProcessId;
 	rq.msg->msg_data[4] = pi.dwThreadId;
@@ -364,6 +386,7 @@ void CRaysDeamon::objPlugin(request &rq)
 
 bool CRaysDeamon::onClientClose(const CClientSocket &client)
 {
+	std::cout << "Rays Server " << &client << " closed connection to RaysDeamon" << std::endl;
 	return false;
 }
 
@@ -433,6 +456,13 @@ bool CRaysDeamon::start(const CCmdLineParser& cmdline )
 	
 bool CRaysDeamon::stopServer(void)
 {
-	return CServer<CServerSocket,CClientSocket>::stopServer();
+	bool res = CServer<CServerSocket, CClientSocket>::stopServer();
+
+	if (res)
+		std::cout << "Deamon Server stopped successfully" << std::endl;
+	else
+		std::cout << "Deamon Server failed to stop without errors" << std::endl;
+
+	return res;
 }
 

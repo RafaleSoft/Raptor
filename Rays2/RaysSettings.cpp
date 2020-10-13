@@ -39,39 +39,72 @@ CRaysSettings::~CRaysSettings(void)
 bool CRaysSettings::importSettings(raptor::CRaptorIO *conf)
 {
 	size_t nb_deamon = 0;
-	string value;
-	string name;
+	std::string value;
+	std::string v_data;
 
-	*conf >> name;
-	string data = conf->getValueName();
+	*conf >> v_data;
+	std::string v_name = conf->getValueName();
 
-	while (!data.empty())
+	while (conf->hasMoreValues())
 	{
-		if (data == "add")
+		if (v_name == "add")
 		{
 			value = "";
-			name = "";
-			*conf >> data;
+			v_data = "";
+			*conf >> v_name;
 		}
-		else if ("key" == data)
-			*conf >> name;
-		else if ("value" == data)
+		else if ("key" == v_name)
+			*conf >> v_data;
+		else if ("value" == v_name)
 			*conf >> value;
 		else
-			*conf >> data;
+			*conf >> v_name;
 
-		if (!value.empty() && !name.empty())
+		if (!value.empty() && !v_data.empty())
 		{
-			m_settings.setValue(name, value.c_str());
+			std::cout << "read settings value: " << v_data << " = " << value << std::endl;
+			m_settings.setValue(v_data, value.c_str());
 			value = "";
-			name = "";
+			v_data = "";
 
-			data = conf->getValueName();
-			*conf >> data;
+			v_name = conf->getValueName();
+			*conf >> v_name;
 		}
 
-		data = conf->getValueName();
+		v_name = conf->getValueName();
 	}
+
+	return true;
+}
+
+bool CRaysSettings::importStartup(raptor::CRaptorIO *conf)
+{
+	size_t nb_deamon = 0;
+	std::string value;
+	std::string v_data;
+
+	*conf >> v_data;
+	std::string v_name = conf->getValueName();
+
+	while (conf->hasMoreValues())
+	{
+		if (v_name == "supportedRuntime")
+		{
+			while (conf->hasMoreValues())
+			{
+				*conf >> v_data;
+				v_name = conf->getValueName();
+			}
+			*conf >> v_data;
+		}
+		else
+			*conf >> v_data;
+
+		v_name = conf->getValueName();
+	}
+
+	*conf >> v_data;
+	v_name = conf->getValueName();
 
 	return true;
 }
@@ -84,15 +117,21 @@ bool CRaysSettings::exportSettings(raptor::CRaptorIO *conf)
 
 bool CRaysSettings::setSettings(const CCmdLineParser& parser)
 {
-	uint16_t port;
+	uint16_t port = 0;
 	if (parser.getValue<uint16_t>("port", port))
+	{
+		//std::cout << "set port settings from command line:" << port << std::endl;
 		if (!setValue<uint16_t>("port", port))
 			addSetting<uint16_t>("port", port);
+	}
 
-	std::string host_addr;
+	std::string host_addr = "";
 	if (parser.getValue<std::string>("host_addr", host_addr))
+	{
+		//std::cout << "set host settings from command line:" << host_addr << std::endl;
 		if (!setValue<std::string>("host_addr", host_addr))
 			addSetting<std::string>("host_addr", host_addr);
+	}
 	
 	/*
 	uint32_t deamon_delay;
@@ -111,5 +150,11 @@ bool CRaysSettings::setSettings(const CCmdLineParser& parser)
 	addSetting<vector<string>>("deamon", vector<string>());
 	*/
 	return true;
+}
+
+
+bool CRaysSettings::setValue(const std::string& settingsName, const std::string& str_value)
+{
+	return m_settings.setValue(settingsName, str_value.c_str());
 }
 

@@ -69,7 +69,7 @@ namespace RaysClient
             this.Opacity = 0.5;
 
             FileDialog open = new OpenFileDialog();
-            open.Filter = "(Description de scène)|*.xml";
+            open.Filter = "Description de scène (*.xml)|*.xml|Images (*.tga;*.jpg;*.png;*.bmp;*.tif;*.exr)|*.tga;*.jpg;*.png;*.bmp;*.tif;*.exr";
             DialogResult res = open.ShowDialog();
 
             if (DialogResult.OK == res)
@@ -193,6 +193,6 @@ namespace RaysClient
         private RaysClientNetwork network = new RaysClientNetwork();
         private String scene_filepath = new String("".ToCharArray());
         private StringCollection assets = new StringCollection();
-        StringCollection supported_exts = new StringCollection { "jpg", "png", "bmp", "exr", "tiff" };
+        StringCollection supported_exts = new StringCollection { ".tga", ".jpg", ".png", ".bmp", ".exr", ".tif" };
     }
 }

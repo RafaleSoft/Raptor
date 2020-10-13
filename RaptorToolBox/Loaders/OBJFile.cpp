@@ -49,7 +49,7 @@ public:
 	OBJLex() {};
 	virtual ~OBJLex() {};
 
-	virtual void OnError(CLex::LexError err)
+	virtual void OnError(CLex::LexError )
 	{	};
 };
 
@@ -64,7 +64,7 @@ public:
 
 	virtual ~OBJYacc() {};
 
-	virtual void OnError(CYacc::YaccError err) { };
+	virtual void OnError(CYacc::YaccError ) { };
 
 	void buildGeometry();
 	const vector<CGeometry*>& getGeometries(void) const { return geometries; };
@@ -399,7 +399,7 @@ void OBJYacc::buildGeometry()
 // 
 //	Main function for reading a OBJ file
 //
-bool _glLoadWavefront(const string &fname,C3DSet *&set,CRaptorToolBox::SCENE_LOADER_OPTIONS *options)
+bool _glLoadWavefront(const string &fname,C3DSet *&set,CRaptorToolBox::SCENE_LOADER_OPTIONS *)
 {
 	OBJLex objlex;
 	if (objlex.InitLex(fname))

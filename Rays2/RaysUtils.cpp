@@ -126,27 +126,29 @@ bool RaysUtils::loadConfig(const std::string &config_file)
 	{
 		conf->parse(config_file.c_str(), 0);
 
-		string name;
-		*conf >> name;
-		string data = conf->getValueName();
-		if ("configuration" != data)
+		string v_data;
+		*conf >> v_data;
+		string v_name = conf->getValueName();
+		if ("configuration" != v_name)
 		{
 			getLog().Log("Invalid Rays Server configuration file.");
 			return false;
 		}
 
 		//  skip data intro
-		*conf >> name;
-		data = conf->getValueName();
+		*conf >> v_data;
+		v_name = conf->getValueName();
 
-		while (!data.empty())
+		while (conf->hasMoreValues())
 		{
-			if ("appSettings" == data)
+			if ("appSettings" == v_name)
 				getUtils().getSettings().importSettings(conf);
+			else if ("startup" == v_name)
+				getUtils().getSettings().importStartup(conf);
 			else
-				*conf >> name;
+				*conf >> v_data;
 
-			data = conf->getValueName();
+			v_name = conf->getValueName();
 		}
 
 		bool res = (CRaptorIO::IO_OK == conf->getStatus());

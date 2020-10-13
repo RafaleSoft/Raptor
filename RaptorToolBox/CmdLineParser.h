@@ -38,12 +38,12 @@ public:
 		};
 		virtual ~CCommandLineOption() {};
 
-		virtual const std::string& getName(void) const
+		const std::string& getName(void) const
 		{
 			return m_name;
 		};
 
-		virtual const std::string& getShort(void) const
+		const std::string& getShort(void) const
 		{
 			return m_short;
 		};
@@ -53,10 +53,25 @@ public:
 			return false;
 		};
 
+		virtual bool hasValue(void) = 0;
+
+
 	private:
 		std::string	m_name;
 		std::string	m_short;
 	};
+
+	//!	An identifier to define command line options that will have
+	//! no values, e.g. for a help command. Pass this value
+	//! to the defaultValue in CCommandLineOptionValue constructor.
+	//! Enum meaning is:
+	//! - the value NO_VALUE_UNDEFINED is for uninitialization errors detection (should never be encountered),
+	//! - the value NO_VALUE_VALUE means the command line option has been parsed,
+	//! - the value NO_VALUE_OPTION means the command line option has not been parsed.
+	typedef enum 
+	{ NO_VALUE_UNDEFINED = 0,
+	  NO_VALUE_VALUE = 1,
+	  NO_VALUE_OPTION = ~0 } NO_VALUE_OPTION_t;
 
 	//!	Extend the CommandLine option to handle a typed value
 	template <class T>
@@ -73,7 +88,7 @@ public:
 
 		virtual ~CCommandLineOptionValue() {};
 
-		T getValue(T* t) const
+		T getValue(T* ) const
 		{
 			return m_value;
 		};
@@ -83,9 +98,14 @@ public:
 			m_value = t;
 		};
 
-		virtual bool parse(const char* argv)
+		virtual bool parse(const char* )
 		{
 			return false;
+		};
+
+		virtual bool hasValue(void)
+		{
+			return true;
 		};
 
 	private:
@@ -102,7 +122,7 @@ public:
 	//!	Add an option to request parsing.
 	//! @param name : the option name
 	//! @param shortname : the option shortname (can be empty)
-	//!	@param defaultValue : initial or default option value.
+	//!	@param defaultValue : initial or default option value, or NO_VALUE_OPTION. 
 	//!	@return true if option successfully added, false if error (e.g. option already exists).
 	template <class T>
 	bool addOption(const std::string &name, const std::string &shortname, T defaultValue);
@@ -120,7 +140,10 @@ public:
 	template <class T>
 	bool getValue(const std::string& optionName, T &t) const;
 
-	//!	Set a settings value by name.
+	//!	Set a settings value by name, and value in a string that will be parsed.
+	bool setValue(const std::string& settingsName, const char *str_value);
+
+	//!	Set a settings value by name, and value in target type.
 	template <class T>
 	bool setValue(const std::string& settingsName, T value);
 
@@ -147,7 +170,7 @@ bool CCmdLineParser::addOption(const std::string &name,
 		return false;
 	else
 	{
-		CCommandLineOptionValue<T> *option = new CCommandLineOptionValue<T>(name, shortname, defaultValue);
+		CCommandLineOption *option = new CCommandLineOptionValue<T>(name, shortname, defaultValue);
 		m_options.push_back(option);
 		return true;
 	}
@@ -229,5 +252,13 @@ bool CCmdLineParser::CCommandLineOptionValue<std::vector<unsigned int>>::parse(c
 template <> RAPTOR_API
 bool CCmdLineParser::CCommandLineOptionValue<std::vector<std::string>>::parse(const char* argv);
 
+template <> RAPTOR_API
+bool CCmdLineParser::CCommandLineOptionValue<CCmdLineParser::NO_VALUE_OPTION_t>::parse(const char* argv);
+
+template <> RAPTOR_API
+bool CCmdLineParser::CCommandLineOptionValue<CCmdLineParser::NO_VALUE_OPTION_t>::hasValue(void)
+{
+	return false;
+};
 
 #endif // !defined(AFX_CMDLINEPARSER_H__D7D8768A_3D97_491F_8493_588972A3CF62__INCLUDED_)

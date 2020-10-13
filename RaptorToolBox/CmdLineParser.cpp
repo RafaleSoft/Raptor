@@ -81,6 +81,24 @@ bool CCmdLineParser::parse(int argc, char *argv[])
 	return true;
 }
 
+bool CCmdLineParser::setValue(const std::string& optionName, const char* str_value)
+{
+	for (unsigned int o = 0; o<m_options.size(); o++)
+	{
+		CCommandLineOption* cmdline = m_options[o];
+		if ((cmdline->getName() == optionName) ||
+			(cmdline->getShort() == optionName))
+		{
+			//!	Need to avoid cast to check improper type.
+			cmdline->parse(str_value);
+
+			return true;
+		}
+	}
+
+	return false;
+}
+
 
 template <>
 CCmdLineParser::CCommandLineOptionValue<const char*>::CCommandLineOptionValue(const std::string &name,
@@ -186,5 +204,16 @@ bool CCmdLineParser::CCommandLineOptionValue<std::vector<std::string>>::parse(co
 		return false;
 
 	m_value.push_back(std::string(argv));
+	return true;
+}
+
+template <>
+bool CCmdLineParser::CCommandLineOptionValue<CCmdLineParser::NO_VALUE_OPTION_t>::parse(const char* argv)
+{
+	if (NULL == argv)
+		return false;
+
+	m_value = CCmdLineParser::NO_VALUE_VALUE;
+
 	return true;
 }

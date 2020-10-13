@@ -59,4 +59,9 @@
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\RaptorViewer\buildpak.py">
+      <Filter>Source Files</Filter>
+    </None>
+  </ItemGroup>
 </Project>
