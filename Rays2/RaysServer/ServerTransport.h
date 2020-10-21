@@ -34,8 +34,13 @@
 	#include "RaptorNetwork/ClientSocket.h"
 #endif
 
+#include "Raptordll.h"
+RAPTOR_NAMESPACE
+
 
 namespace RaysServer {
+
+	class CServerSession;
 
 	class CServerTransport : public CServer<CServerSocket,CClientSocket>,
 							 public server_base_t::request_handler_t
@@ -72,11 +77,21 @@ namespace RaysServer {
 		//! Implements Server reply request
 		virtual bool handleReply(request_handler_t::request_id id, const void *&data,size_t &size);
 
+		//!	Message processing
+		bool Process_SES_OPEN(request &rq);
+		bool Process_SES_CLOSE(request &rq);
+
+		//!	
+		CServerSession *m_sessionManager;
+
 		//!	A separate request handler for asynchronous processing.
 		server_base_t::request_handler_t *m_pHandler;
 
 		//!	Replies queue
-		vector<request> m_replies;
+		std::vector<request> m_replies;
+
+		//!	Mutex to protect replies accesses
+		CRaptorMutex		m_mutex;
 	};
 }
 

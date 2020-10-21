@@ -156,10 +156,10 @@ bool CDeamonManager::DeamonStatus(unsigned int numDeamon) const
 		return false;
 
 	MSGSTRUCT msg;
-	msg.msg_header = MSG_START;
+	//msg.msg_header = MSG_START;
 	msg.msg_id = DMN_STATUS;
-	msg.msg_size = 0;
-	msg.msg_tail = MSG_END;
+	//msg.msg_size = 0;
+	//msg.msg_tail = MSG_END;
 	WU->connection->write(&msg, MSGSIZE);
 
 	void * new_msg = NULL;

@@ -1,6 +1,9 @@
 #ifndef _MESSAGES_H_
 #define _MESSAGES_H_
 
+#if !defined(AFX_RAYSUTILS_H__1CC878E3_B301_4A19_8211_F3B5977D3781__INCLUDED_)
+	#include "RaysUtils.h"
+#endif
 
 /////////////////////////////////////////////////////////////////////////
 //	Constants
@@ -14,6 +17,7 @@
 #define IMGBASE 0x00001000
 #define	ACKBASE 0x00010000
 #define DMNBASE 0x00100000
+#define SESBASE 0x01000000
 #define MSGBASE	0x10000000
 
 /////////////////////////////////////////////////////////////////////////
@@ -23,7 +27,7 @@
 
 //	JOB_START
 //		in						out
-//	data 0 = clientID		jobID
+//	data 0 = sessionID		  jobID
 //	data 1 = width				*
 //	data 2 = height				*
 //	data 3 = port				*
@@ -53,7 +57,7 @@
 
 //	JOB_PERCENT
 //		in						out
-//	data 0 = clientID			*
+//	data 0 = sessionID			*
 //	data 1 =	*				*
 //	data 2 =	*				*
 //	data 3 =	*				*
@@ -65,7 +69,7 @@
 // work unit job io
 //	JOB_WUNIT
 //		in						out
-//	data 0 = clientID			*
+//	data 0 = sessionID			*
 //	data 1 =	*				*
 //	data 2 =	*				*
 //	data 3 = port				*
@@ -86,12 +90,21 @@
 
 //	JOB_STOP
 //		in						out
-//	data 0 = clientID			*
+//	data 0 = sessionID			*
 //	data 1 = startScanLine		*
 //	data 2 = endScanLine		*
 //	data 3 =	*				*
 //	data 4 =	*				*
 #define JOB_STOP		(JOBBASE	+	0xe)
+
+//	JOB_DATA
+//		in						out
+//	data 0 = sessionID			*
+//	data 1 = dataSize			*
+//	data 2 =    *				*
+//	data 3 =	*				*
+//	data 4 =	*				*
+#define JOB_DATA		(JOBBASE	+	0xf)
 
 // image io
 //	IMG_REQUEST
@@ -189,10 +202,38 @@
 //	data 4 =  priority		ThreadId
 #define DMN_DISPATCHJOB	(DMNBASE	+	0x3)
 
+
+//	SES_OPEN
+//		in						out
+//	data 0 =    *				*
+//	data 1 =    *    			*
+//	data 2 =	*				*
+//	data 3 =    *				*
+//	data 4 =    *   			*
+#define SES_OPEN		(SESBASE	+	0x1)
+
+//	SES_CLOSE
+//		in						out
+//	data 0 =    *				*
+//	data 1 =    *    			*
+//	data 2 =	*				*
+//	data 3 =    *				*
+//	data 4 =    *   			*
+#define SES_CLOSE		(SESBASE	+	0x2)
+
+//	SES_ID
+//		in						out
+//	data 0 =    *				sessionID
+//	data 1 =    *    			*
+//	data 2 =	*				*
+//	data 3 =    *				*
+//	data 4 =    *   			*
+#define SES_ID			(SESBASE	+	0x3)
+
 // messages io
-#define MSG_START		(MSGBASE	+	0x1)
-#define MSG_END			(MSGBASE	+	0x2)
-#define MSG_DATA		(MSGBASE	+	0x3)
+//#define MSG_START		(MSGBASE	+	0x1)
+//#define MSG_END			(MSGBASE	+	0x2)
+//#define MSG_DATA		(MSGBASE	+	0x3)
 
 
 #ifndef MSG_STR
@@ -278,16 +319,16 @@
 
 /////////////////////////////////////////////////////////////////////////
 //	Public structures for Client/Server/WorkUnit communication
-
-typedef unsigned int RAYS_MSG_ID;
+typedef uint32_t RAYS_MSG_ID;
 
 typedef struct MSGSTRUCT
 {
-	RAYS_MSG_ID		msg_header;		
+	//! These fields are already part of RaptorNetwork protocol.
+	//RAYS_MSG_ID		msg_crc;		// 32 bits CRC of the message payload
+	//RAYS_MSG_ID		msg_size;		// size of following chunck of data
+	//!	Rays base messages id.
 	RAYS_MSG_ID		msg_id;			// semantic
-	RAYS_MSG_ID		msg_size;		// size of following chunck of data
 	RAYS_MSG_ID		msg_data[5];	// sub semantic ID
-	RAYS_MSG_ID		msg_tail;
 } msg_struct_t;
 
 typedef MSGSTRUCT* LPMSGSTRUCT;
@@ -296,16 +337,16 @@ const unsigned int MSGSIZE = sizeof(MSGSTRUCT);
 
 typedef struct _rays_config_tag
 {
-	unsigned int	width;
-	unsigned int	height;
-	unsigned int	variance;
-	unsigned int	deflection;
-	unsigned int	defraction; 
-	unsigned int	crease;
-	float			focale;
-	float			object_plane;
-	unsigned int	photon_map;
-	char			envtexname[MAX_STR_LEN];
+	uint32_t	width;
+	uint32_t	height;
+	uint32_t	variance;
+	uint32_t	deflection;
+	uint32_t	defraction;
+	uint32_t	crease;
+	float		focale;
+	float		object_plane;
+	uint32_t	photon_map;
+	char		envtexname[MAX_STR_LEN];
 } rays_config_t;
 
 typedef struct _rays_plugin_tag

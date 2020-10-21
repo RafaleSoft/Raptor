@@ -17,6 +17,7 @@
 
 
 using System;
+using System.Diagnostics;
 using System.Windows.Forms;
 using System.IO;
 using System.Collections.Specialized;
@@ -35,6 +36,8 @@ namespace RaysClient
             port.Text = settings.port.ToString();
             Render.Enabled = false;
             scene_filepath = "";
+
+            network.SetLog(ref Log);
         }
 
         private void RaysClientForm_Load(object sender, EventArgs e)
@@ -44,23 +47,30 @@ namespace RaysClient
 
         private void onClose(object sender, FormClosingEventArgs e)
         {
-            network.Disconnect();
+            if (network.IsConnected())
+            {
+                network.CloseSession();
+                network.Disconnect();
+            }
         }
 
         private void OnQuit(object sender, EventArgs e)
         {
             if (network.IsConnected())
             {
-                MessageBox.Show("A connection to the render server is still active", "Information", MessageBoxButtons.OK);
+                DialogResult res = MessageBox.Show("A connection to the render server is still active. \nClosing will lose rendered data. \nAre you sure you want to quit ?", "Information", MessageBoxButtons.YesNo);
+                if (DialogResult.No != res)
+                {
+                    network.CloseSession();
+                    network.Disconnect();
+                    Close();
+                }
             }
             else
             {
                 DialogResult res = MessageBox.Show("Are you sure you want to quit ?", "Information", MessageBoxButtons.YesNo);
                 if (DialogResult.No != res)
-                {
-                    network.Disconnect();
                     Close();
-                }
             }
         }
 
@@ -78,8 +88,8 @@ namespace RaysClient
                 string ext = Path.GetExtension(open.FileName);
                 if ( ext == ".xml")
                 {
-                    Scene.Text = "Scene: " + Path.GetFileName(open.FileName);
                     scene_filepath = open.FileName;
+                    Scene.Text = "Scene: " + Path.GetFileName(open.FileName);
 
                     Log.Items.Add("Loading scene: " + Path.GetFileName(open.FileName));
                 }
@@ -174,7 +184,12 @@ namespace RaysClient
 
                         if (scene_filepath.Length > 0)
                             Render.Enabled = true;
+
+                        if (!network.OpenSession())
+                            MessageBox.Show("Unable to open render server session", "Error", MessageBoxButtons.OK);
                     }
+                    else
+                        MessageBox.Show("Connection to Rays render server failed", "Error", MessageBoxButtons.OK);
                 }
                 else
                     MessageBox.Show("Unable to connect to the render server", "Error", MessageBoxButtons.OK);
@@ -183,7 +198,40 @@ namespace RaysClient
 
         private void onRender(object sender, EventArgs e)
         {
+            // Part 1: use ProcessStartInfo class.
+            ProcessStartInfo startInfo = new ProcessStartInfo();
+            startInfo.CreateNoWindow = false;
+            startInfo.UseShellExecute = false;
+            startInfo.FileName = Environment.ExpandEnvironmentVariables("%RAPTOR_ROOT%\\Redist\\Bin\\RaptorDataPackager.exe");
+            startInfo.WindowStyle = ProcessWindowStyle.Hidden;
 
+            // Part 2: set arguments.
+            startInfo.Arguments = "-c RaysData.pck " + scene_filepath;
+            StringEnumerator it = assets.GetEnumerator();
+            while (it.MoveNext())
+                startInfo.Arguments += " " + it.Current;
+
+            try
+            {
+                // Part 3: start with the info we specified.
+                // ... Call WaitForExit.
+                Process exeProcess = Process.Start(startInfo);
+                exeProcess.WaitForExit();
+            }
+            catch
+            {
+                // Log error.
+                Log.Items.Add("Failed to run RaptorDataPackager, rendering aborted !");
+            }
+
+            if (File.Exists("RaysData.pck"))
+            {
+                network.SendJobData("RaysData.pck");
+            }
+            else
+            {
+                Log.Items.Add("RaysData.pck corrupted or not found, rendering aborted !");
+            }
         }
 
 

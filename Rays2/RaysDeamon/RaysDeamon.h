@@ -85,6 +85,9 @@ private:
 	virtual bool handleReply(request_handler_t::request_id id, const void *&data,size_t &size);
 
 	//!	Implements Client close callback
+	virtual size_t onNewClient(const CClientSocket &client);
+
+	//!	Implements Client close callback
 	virtual bool onClientClose(const CClientSocket &client);
 
 	//!	Process DMN_DISPATCHJOB

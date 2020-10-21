@@ -137,7 +137,7 @@ BOOL CtrlHandler(DWORD fdwCtrlType)
 		// Handle the CTRL-C signal.
 		case CTRL_C_EVENT:
 		{
-			RaysUtils::getLog().Log("Deamon user exit requested by Ctrl-C. Exiting, bye!");
+			RaysUtils::getLog().Log("Rays Server user exit requested by Ctrl-C. Exiting, bye!");
 			pApp->requestExit();
 			return(TRUE);
 			break;
@@ -145,7 +145,7 @@ BOOL CtrlHandler(DWORD fdwCtrlType)
 		// CTRL-CLOSE: confirm that the user wants to exit.
 		case CTRL_CLOSE_EVENT:
 		{
-			RaysUtils::getLog().Log("Deamon user exit requested by Ctrl-close. Exiting, bye!");
+			RaysUtils::getLog().Log("Rays Server user exit requested by Ctrl-close. Exiting, bye!");
 			pApp->requestExit();
 			return(TRUE);
 			break;
@@ -271,6 +271,8 @@ int main(int argc, char* argv[])
 	}
 	
 	delete pApp;
-	return (res ? 1: 0);
+
+	std::cout << "Rays Server exiting with code " << res << ". Bye!" << std::endl;
+	return (res ? 0 : 1);
 }
 

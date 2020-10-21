@@ -25,6 +25,8 @@
 //! Win32 directories system calls.
 #include <direct.h>
 
+using namespace RaysServer;
+
 
 CServerSession::CServerSession()
 {
@@ -41,7 +43,7 @@ CServerSession::session CServerSession::getSession(server_base_t::request_handle
 {
 	CRaptorLock lock(m_mutex);
 
-	session return_session = { NULL, 0 };
+	session return_session = {NULL};
 
 	for (size_t i = 0; i<m_sessions.size(); i++)
 		if (m_sessions[i].id == id)
@@ -53,20 +55,37 @@ CServerSession::session CServerSession::getSession(server_base_t::request_handle
 	return return_session;
 }
 
-bool CServerSession::createSession(server_base_t::request_handler_t::request_id id, CRaptorDisplay* display)
+bool CServerSession::createSession(server_base_t::request_handler_t::request_id id)
 {
-	if ((0 == id) || (NULL == display))
+	if (0 == id)
 		return false;
 
 	CRaptorLock lock(m_mutex);
 
 	session s;
 	s.id = id;
-	s.display = display;
 
 	m_sessions.push_back(s);
 
-	return true;
+	//!	Create session private directory to store data.
+	char buffer[MAX_PATH];
+	if (NULL == _getcwd(buffer, MAX_PATH))
+		return false;
+
+	std::stringstream session_path;
+	session_path << "session_" << id << std::ends;
+	int dir_exist = _chdir(session_path.str().c_str());
+	if ((ENOENT == errno) && (-1 == dir_exist))
+	{
+		dir_exist = _mkdir(session_path.str().c_str());
+		if (dir_exist)
+			dir_exist = _chdir(session_path.str().c_str());
+	}
+
+	if (dir_exist)
+		dir_exist = _chdir(buffer);
+
+	return (0 == dir_exist);
 }
 
 
@@ -74,14 +93,15 @@ bool CServerSession::closeSession(server_base_t::request_handler_t::request_id i
 {
 	CRaptorLock lock(m_mutex);
 
+	char buffer[MAX_PATH];
+	if (NULL == _getcwd(buffer, MAX_PATH))
+		return false;
+
 	for (size_t i = 0; i<m_sessions.size(); i++)
 	{
 		if (m_sessions[i].id == id)
 		{
 			m_sessions.erase(m_sessions.begin() + i);
-
-			char buffer[MAX_PATH];
-			_getcwd(buffer, MAX_PATH);
 
 			//! Check if directory is valid.
 			std::stringstream session_path;

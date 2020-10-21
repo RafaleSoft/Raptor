@@ -31,36 +31,37 @@
 #include "Raptordll.h"
 RAPTOR_NAMESPACE
 
+namespace RaysServer {
 
-class CServerSession
-{
-public :
-	CServerSession();
-	virtual ~CServerSession();
-
-
-	typedef struct session_t
+	class CServerSession
 	{
-		server_base_t::request_handler_t::request_id id;
-		CRaptorDisplay* display;
-	} session;
-
-	//! Create a new session
-	bool createSession(server_base_t::request_handler_t::request_id id, CRaptorDisplay* display);
-
-	//! Delete a session and remove all associated files
-	bool closeSession(server_base_t::request_handler_t::request_id id);
-
-	//! Return an existing session
-	session getSession(server_base_t::request_handler_t::request_id id);
+	public:
+		CServerSession();
+		virtual ~CServerSession();
 
 
-private:
-	//!	Mutex to protect session accesses
-	CRaptorMutex			m_mutex;
+		typedef struct session_t
+		{
+			server_base_t::request_handler_t::request_id id;
+		} session;
 
-	//!	Sessions list
-	std::vector<session>	m_sessions;
-};
+		//! Create a new session
+		bool createSession(server_base_t::request_handler_t::request_id id);
+
+		//! Delete a session and remove all associated files
+		bool closeSession(server_base_t::request_handler_t::request_id id);
+
+		//! Return an existing session
+		session getSession(server_base_t::request_handler_t::request_id id);
+
+
+	private:
+		//!	Mutex to protect session accesses
+		CRaptorMutex		m_mutex;
+
+		//!	Sessions list
+		std::vector<session> m_sessions;
+	};
+}
 
 #endif // !defined(AFX_SERVERSESSION_H__CF5E6774_178C_4DF6_BB48_44B6AF2AB163__INCLUDED_)

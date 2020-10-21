@@ -136,7 +136,7 @@ int main(int argc, char* argv[])
 
 		while (!p_Server->doExit())
 			Sleep(500);
-		int res = (p_Server->stopServer() ? 1 : 0);
+		int res = (p_Server->stopServer() ? 0 : 1);
 		delete p_Server;
 
 		std::cout << "Rays Deamon exiting with code " << res << ". Bye!" << std::endl;
@@ -222,10 +222,10 @@ bool CRaysDeamon::handleRequest(request_handler_t::request_id id,const void *dat
 				nbProcsAvailable += w.nbProcsAvailable;
 				jobDone += w.jobDone;
 			}
-			rq.msg->msg_header = MSG_START;
+			//rq.msg->msg_header = MSG_START;
 			rq.msg->msg_id = DMN_STATUS;
-			rq.msg->msg_size = 0;
-			rq.msg->msg_tail = MSG_END;
+			//rq.msg->msg_size = 0;
+			//rq.msg->msg_tail = MSG_END;
 			rq.msg->msg_data[0] = nbProcs;
 			rq.msg->msg_data[1] = nbProcsAvailable;
 			rq.msg->msg_data[2] = (RAYS_MSG_ID)(floor(jobDone));
@@ -285,7 +285,7 @@ void CRaysDeamon::dispatchJob(request &rq)
 	WUID << "-a " << serverIP << " ";
 
 	// creating work unit
-	unsigned char* raw_data = (unsigned char*)(rq.msg) + rq.msg->msg_size;
+	unsigned char* raw_data = (unsigned char*)(rq.msg) + sizeof(MSGSTRUCT);
 	if (0 == CreateProcess((const char*)raw_data,	// pointer to name of executable module
 							const_cast<char*>(WUID.str().c_str()),		// pointer to command line string
 							NULL,		// process security attributes
@@ -313,10 +313,10 @@ void CRaysDeamon::dispatchJob(request &rq)
 	//	}
 	//}
 
-	rq.msg->msg_header = MSG_START;
+	//rq.msg->msg_header = MSG_START;
 	rq.msg->msg_id = DMN_DISPATCHJOB;
-	rq.msg->msg_tail = MSG_END;
-	rq.msg->msg_size = 0;
+	//rq.msg->msg_tail = MSG_END;
+	//rq.msg->msg_size = 0;
 	rq.msg->msg_data[0] = workUnitID;
 	rq.msg->msg_data[1] = (DWORD)(pi.hProcess);	// TODO: will not work in 64 bits
 	rq.msg->msg_data[2] = (DWORD)(pi.hThread);
@@ -338,7 +338,7 @@ void CRaysDeamon::dispatchJob(request &rq)
 
 void CRaysDeamon::objPlugin(request &rq)
 {
-	unsigned char* raw_data = (unsigned char*)(rq.msg) + rq.msg->msg_size;
+	unsigned char* raw_data = (unsigned char*)(rq.msg) + sizeof(MSGSTRUCT);
 
 	//	Install plugin only if not present.
 	//	future version will hanle plugin version
@@ -374,10 +374,10 @@ void CRaysDeamon::objPlugin(request &rq)
 		{
 			size_t len = pname.length() + 1;
 			DWORD written = 0;
-			BOOL b = WriteFile(f, raw_data + len, rq.msg->msg_size - len, &written, NULL);
+			//BOOL b = WriteFile(f, raw_data + len, rq.msg->msg_size - len, &written, NULL);
 
-			if (!b || (written != rq.msg->msg_size))
-				std::cout << "Error installing plugin !" << std::endl;
+			//if (!b || (written != rq.msg->msg_size))
+			//	std::cout << "Error installing plugin !" << std::endl;
 			//	Delete file ?
 			CloseHandle(f);
 		}
@@ -388,6 +388,12 @@ bool CRaysDeamon::onClientClose(const CClientSocket &client)
 {
 	std::cout << "Rays Server " << &client << " closed connection to RaysDeamon" << std::endl;
 	return false;
+}
+
+size_t CRaysDeamon::onNewClient(const CClientSocket &client)
+{
+	std::cout << "Rays Server " << &client << " connected to RaysDeamon" << std::endl;
+	return getNumClients();
 }
 
 bool CRaysDeamon::start(const CCmdLineParser& cmdline )

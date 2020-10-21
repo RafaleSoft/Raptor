@@ -378,6 +378,7 @@ copy $(OutDir)$(TargetFileName).config "%RAPTOR_ROOT%\Redist\bin"
   <ItemGroup>
     <ClCompile Include="..\..\Rays2\RaysServer\DeamonManager.cpp" />
     <ClCompile Include="..\..\Rays2\RaysServer\RaysServer.cpp" />
+    <ClCompile Include="..\..\Rays2\RaysServer\ServerSession.cpp" />
     <ClCompile Include="..\..\Rays2\RaysServer\ServerTransport.cpp" />
     <ClCompile Include="..\..\Rays2\RaysSettings.cpp" />
     <ClCompile Include="..\..\Rays2\RaysUtils.cpp" />
@@ -387,6 +388,7 @@ copy $(OutDir)$(TargetFileName).config "%RAPTOR_ROOT%\Redist\bin"
     <ClInclude Include="..\..\Rays2\RaysServer\DeamonManager.h" />
     <ClInclude Include="..\..\Rays2\RaysServer\RaysServer.h" />
     <ClInclude Include="..\..\Rays2\RaysServer\resource.h" />
+    <ClInclude Include="..\..\Rays2\RaysServer\ServerSession.h" />
     <ClInclude Include="..\..\Rays2\RaysServer\ServerTransport.h" />
     <ClInclude Include="..\..\Rays2\RaysSettings.h" />
     <ClInclude Include="..\..\Rays2\RaysUtils.h" />

@@ -98,18 +98,18 @@ int main(int argc, char* argv[])
 		
 		// job complete, send back results
 		MSGSTRUCT msg;
-		msg.msg_header = MSG_START;
+		//msg.msg_header = MSG_START;
 		msg.msg_id = JOB_STOP;
-		msg.msg_size = (raytracer_data->getEnd()-raytracer_data->getStart())*raytracer_data->getCamera().width*4;
-		msg.msg_size *= 2;	// add z-buffer
+		//msg.msg_size = (raytracer_data->getEnd()-raytracer_data->getStart())*raytracer_data->getCamera().width*4;
+		//msg.msg_size *= 2;	// add z-buffer
 		msg.msg_data[1] = raytracer_data->getStart();
 		msg.msg_data[2] = raytracer_data->getEnd();
-		msg.msg_tail = MSG_DATA;
+		//msg.msg_tail = MSG_DATA;
 		p_WU->write(&msg,MSGSIZE);
 
 		//	send job result
-		p_WU->write(raytracer_data->getImage(),msg.msg_size/2);
-		p_WU->write(raytracer_data->getZBuffer(),msg.msg_size/2);
+		//p_WU->write(raytracer_data->getImage(),msg.msg_size/2);
+		//p_WU->write(raytracer_data->getZBuffer(),msg.msg_size/2);
 	}
 
 	std::cout << "Exiting work unit ... bye!" << std::endl;
@@ -134,15 +134,15 @@ bool CRaysWorkUnit::start(const CCmdLineParser &cmdline)
 	{
 		//	write back ID to acknowledge Workunit availability
 		MSGSTRUCT msg;
-		msg.msg_header = MSG_START;
+		//msg.msg_header = MSG_START;
 		msg.msg_id = JOB_WUNIT;
-		msg.msg_size = 0;
+		//msg.msg_size = 0;
 		msg.msg_data[0] = id;
 		msg.msg_data[1] = 0;
 		msg.msg_data[2] = 0;
 		msg.msg_data[3] = getPort();
 		msg.msg_data[4] = getAddr();
-		msg.msg_tail = MSG_END;
+		//msg.msg_tail = MSG_END;
 		write(&msg,MSGSIZE);
 	}
 	else

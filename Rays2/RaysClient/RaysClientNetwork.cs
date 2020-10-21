@@ -1,10 +1,93 @@
-﻿using System.Net;
+﻿using System.IO;
+using System.Net;
 using System.Net.Sockets;
+using System.Runtime.InteropServices;
+using System.Windows.Forms;
 
 namespace RaysClient
 {
     class RaysClientNetwork
     {
+        struct MSGSTRUCT
+        {
+            // Message header
+            public uint msg_crc;
+            public uint msg_size;       // size of following chunck of data
+
+            // Message body
+            public uint msg_id;         // semantic
+            public uint msg_data0;      // sub semantic ID
+            public uint msg_data1;
+            public uint msg_data2;
+            public uint msg_data3;
+            public uint msg_data4;
+        }
+
+        // Message semantic
+        public const uint SES_OPEN = 0x01000000 + 0x01;
+        public const uint SES_CLOSE = 0x01000000 + 0x02;
+        public const uint SES_ID = 0x01000000 + 0x03;
+        public const uint JOB_DATA = 0x00000000 + 0x0f;
+
+
+        public bool OpenSession()
+        {
+            byte[] nodata = new byte[0];
+            if (SendMessage(SES_OPEN, 0, 0, 0, 0, 0, ref nodata))
+            {
+                MSGSTRUCT msg = new MSGSTRUCT();
+                byte[] messageData = null;
+                if (ReceiveMessage(ref msg, ref messageData))
+                {
+                    if (SES_ID == msg.msg_id)
+                    {
+                        session_id = (msg.msg_data1 << 32) + msg.msg_data0;
+                        log.Items.Add("Ouverture de session Rays Server:" + session_id.ToString());
+                        return true;
+                    }
+                    else
+                    {
+                        log.Items.Add("Erreur de protocole de session Rays Server");
+                        return false;
+                    }
+                }
+                else
+                {
+                    log.Items.Add("Echec d'allocation d'identifiant de session Rays Server");
+                    return false;
+                }
+            }
+            else
+            {
+                log.Items.Add("Echec d'ouverture de session Rays Server");
+                return false;
+            }
+        }
+
+        public bool CloseSession()
+        {
+            byte[] nodata = new byte[0];
+            return SendMessage(SES_CLOSE, 0, 0, 0, 0, 0, ref nodata);
+        }
+
+        public bool SendJobData(string package)
+        {
+            if (File.Exists(package))
+            {
+                FileStream fs = File.Open(package, FileMode.Open, FileAccess.Read);
+
+                BinaryReader SourceStream = new BinaryReader(fs);
+                byte[] data = SourceStream.ReadBytes((int)fs.Length);
+
+                fs.Close();
+                SourceStream.Dispose();
+
+                return SendMessage(JOB_DATA, 0, 0, 0, 0, 0, ref data);
+            }
+            else
+                return false;
+        }
+
         public bool Connect(string address, short port)
         {
             if (server == null)
@@ -19,6 +102,7 @@ namespace RaysClient
             if (addr.AddressFamily != AddressFamily.InterNetwork)
             {
                 // TODO: log not supported address family (v6)
+                log.Items.Add("Addressage IPv6 non supporté: " + address);
                 return false;
             }
 
@@ -30,7 +114,7 @@ namespace RaysClient
             }
             catch(SocketException e)
             {
-                // TODO: log not supported address family (v6)
+                log.Items.Add("Echec de connection à Rays Server: " + e.Message);
             }
 
             return connect;
@@ -64,6 +148,84 @@ namespace RaysClient
                 server.Dispose();
         }
 
+        public RaysClientNetwork()
+        {
+        }
+
+        public void SetLog(ref ListBox lb)
+        {
+            log = lb;
+        }
+
+        private bool SendMessage(uint messageId, uint data0, uint data1, uint data2, uint data3, uint data4, ref byte[] messageData)
+        {
+            MSGSTRUCT msg = new MSGSTRUCT();
+            msg.msg_crc = 0;        // not yet active
+            msg.msg_size = (uint)Marshal.SizeOf(msg) - 2 * sizeof(uint); // crc & size are not part of the message, but only protocol.
+            msg.msg_data0 = data0;
+            msg.msg_data1 = data1;
+            msg.msg_data2 = data2;
+            msg.msg_data3 = data3;
+            msg.msg_data4 = data4;
+            msg.msg_id = messageId;
+
+            int len = Marshal.SizeOf(msg);
+            byte[] sendBuffer = new byte[len + messageData.GetLength(0)];
+
+            int result = 0;
+            try
+            {
+                System.IntPtr ptr = Marshal.AllocHGlobal(len);
+                Marshal.StructureToPtr(msg, ptr, true);
+                Marshal.Copy(ptr, sendBuffer, 0, len);
+                Marshal.FreeHGlobal(ptr);
+
+                if (messageData.GetLength(0) > 0)
+                    messageData.CopyTo(sendBuffer, len);
+
+                result = server.Send(sendBuffer);
+            }
+            catch (SocketException e)
+            {
+                log.Items.Add("Erreur d'envoi de message à Rays Server: " + e.Message);
+            }
+
+            return (result == len);
+        }
+
+        private bool ReceiveMessage(ref MSGSTRUCT msg, ref byte[] messageData)
+        {
+            int len = Marshal.SizeOf(msg);
+
+            byte[] receiveBuffer = new byte[len];
+            int result = 0;
+            try
+            {
+                result = server.Receive(receiveBuffer);
+                System.IntPtr ptr = Marshal.AllocHGlobal(len);
+                Marshal.Copy(receiveBuffer, 0, ptr, len);
+                msg = Marshal.PtrToStructure<MSGSTRUCT>(ptr);
+                Marshal.FreeHGlobal(ptr);
+
+                int result2 = 0;
+                if (msg.msg_size + 2 * sizeof(uint) > len) // crc & size are not part of the message, but only protocol.
+                {
+                    messageData = new byte[msg.msg_size + 2 * sizeof(uint) - len];
+                    result2 = server.Receive(messageData);
+                    if (result2 != (msg.msg_size + 2 * sizeof(uint) - len))
+                        log.Items.Add("Réception incomplète de données de Rays Server");
+                }
+            }
+            catch (SocketException e)
+            {
+                log.Items.Add("Erreur de reception de message de Rays Server: " + e.Message);
+            }
+
+            return (result == len);
+        }
+
         private Socket server = null;
+        private ListBox log = null;
+        private ulong session_id = 0;
     }
 }

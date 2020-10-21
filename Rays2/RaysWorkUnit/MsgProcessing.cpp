@@ -132,14 +132,14 @@ void CRaysWorkUnit::ProcessMsg(MSGSTRUCT& msg, unsigned char raw_data[])
 		if (!acknowledge)
 			msg.msg_id = ACK_NONE;
 
-		msg.msg_size = 0;
+		//msg.msg_size = 0;
 		// msg.msg_data[0] should contain jobID
 		msg.msg_data[2] = 0;
 		msg.msg_data[3] = getPort();
 		msg.msg_data[4] = getAddr();
-		msg.msg_tail = MSG_END;
+		//msg.msg_tail = MSG_END;
 
-		std::cout << "Acknowledge datas: " << msg.msg_header << " " << msg.msg_id << " " << msg.msg_size << " " << msg.msg_tail << endl;
+		std::cout << "Acknowledge datas: " << msg.msg_id << std::endl;
 		write(&msg,MSGSIZE);
 
 		std::cout << "Acknowledge sent !" << std::endl;
@@ -174,15 +174,15 @@ bool CRaysWorkUnit::GetRaytraceData()
 			size_t len = tname.length();
 			unsigned char *buffer = new unsigned char[len + MSGSIZE];
 			MSGSTRUCT msg;
-			msg.msg_header = MSG_START;
+			//msg.msg_header = MSG_START;
 			msg.msg_id = IMG_REQUEST;
-			msg.msg_size = len;
+			//msg.msg_size = len;
 			msg.msg_data[0] = OBJ_TEXTURE;
 			msg.msg_data[1] = 0;
 			msg.msg_data[2] = 0;
 			msg.msg_data[3] = getPort();
 			msg.msg_data[4] = getAddr();
-			msg.msg_tail = MSG_DATA;
+			//msg.msg_tail = MSG_DATA;
 
 			std::cout << "Querying texture: " << tname << endl;
 
@@ -233,7 +233,7 @@ bool CRaysWorkUnit::BuildTextures(MSGSTRUCT& msg, unsigned char raw_data[])
 
 		std::cout << "Downloading texture: " << tname << std::endl;
 		std::cout << "Texture name: " << tname << std::endl;
-		std::cout << "Texture size: " << msg.msg_size - len << std::endl;
+		//std::cout << "Texture size: " << msg.msg_size - len << std::endl;
 
 		CTexture *txt = raytracer_data->getTexture(tname);
 		if (NULL != txt)
@@ -291,7 +291,7 @@ bool CRaysWorkUnit::RunRaytrace(MSGSTRUCT& msg, unsigned char raw_data[])
 bool CRaysWorkUnit::BuildCamera(MSGSTRUCT& msg, unsigned char raw_data[])
 {
 	rays_config_t config;
-	memcpy(&config,raw_data,msg.msg_size);
+	//memcpy(&config,raw_data,msg.msg_size);
 
 	raytracer_data->updateCamera(config);
 
@@ -528,16 +528,16 @@ bool CRaysWorkUnit::BuildPlugins(MSGSTRUCT& msg, unsigned char raw_data[])
 				//	Query module to server
 				int len = strlen(plugin.name);
 				unsigned char *buffer = new unsigned char[len + MSGSIZE];
-				msg.msg_header = MSG_START;
+				//msg.msg_header = MSG_START;
 				msg.msg_id = IMG_REQUEST;
-				msg.msg_size = len;
+				//msg.msg_size = len;
 				unsigned int jobID = msg.msg_data[0];
 				msg.msg_data[0] = OBJ_PLUGIN;
 				msg.msg_data[1] = 0;
 				msg.msg_data[2] = 0;
 				msg.msg_data[3] = getPort();
 				msg.msg_data[4] = getAddr();
-				msg.msg_tail = MSG_DATA;
+				//msg.msg_tail = MSG_DATA;
 
 				std::cout << "Querying plugin: " << plugin.name << endl;
 
