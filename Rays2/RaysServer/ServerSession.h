@@ -54,6 +54,9 @@ namespace RaysServer {
 		//! Return an existing session
 		session getSession(server_base_t::request_handler_t::request_id id);
 
+		//!	Save a data file into session space
+		bool saveSessionFile(server_base_t::request_handler_t::request_id id, const std::string& filename, uint8_t* data, size_t size);
+
 
 	private:
 		//!	Mutex to protect session accesses

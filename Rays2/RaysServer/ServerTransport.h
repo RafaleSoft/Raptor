@@ -78,14 +78,20 @@ namespace RaysServer {
 		virtual bool handleReply(request_handler_t::request_id id, const void *&data,size_t &size);
 
 		//!	Message processing
+		typedef bool (RaysServer::CServerTransport::* request_processor_t)(request &rq);
+
 		bool Process_SES_OPEN(request &rq);
 		bool Process_SES_CLOSE(request &rq);
+		bool Process_JOB_DATA(request &rq);
 
 		//!	
 		CServerSession *m_sessionManager;
 
 		//!	A separate request handler for asynchronous processing.
 		server_base_t::request_handler_t *m_pHandler;
+
+		//!	Message processors
+		std::map<RAYS_MSG_ID, request_processor_t> m_processors;
 
 		//!	Replies queue
 		std::vector<request> m_replies;

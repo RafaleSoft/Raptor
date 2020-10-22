@@ -98,9 +98,9 @@
 #define JOB_STOP		(JOBBASE	+	0xe)
 
 //	JOB_DATA
-//		in						out
-//	data 0 = sessionID			*
-//	data 1 = dataSize			*
+//		in					out (NONE)
+//	data 0 =    *				*
+//	data 1 =    *				*
 //	data 2 =    *				*
 //	data 3 =	*				*
 //	data 4 =	*				*
@@ -181,7 +181,9 @@
 #define ACK_DAT			(ACKBASE	+	0x4)
 #define ACK_IMG			(ACKBASE	+	0x5)
 
-//	deamon communication
+//
+//	Deamon communication
+//
 
 //	DMN_STATUS
 //		in						out
@@ -202,18 +204,21 @@
 //	data 4 =  priority		ThreadId
 #define DMN_DISPATCHJOB	(DMNBASE	+	0x3)
 
+//
+//	Sessions management
+//
 
 //	SES_OPEN
-//		in						out
-//	data 0 =    *				*
-//	data 1 =    *    			*
+//		in				   out (SES_ID)
+//	data 0 =    *			sessionID - High dword
+//	data 1 =    *    		sessionID - Low dword
 //	data 2 =	*				*
 //	data 3 =    *				*
 //	data 4 =    *   			*
 #define SES_OPEN		(SESBASE	+	0x1)
 
 //	SES_CLOSE
-//		in						out
+//		in					out (NONE)
 //	data 0 =    *				*
 //	data 1 =    *    			*
 //	data 2 =	*				*
@@ -222,100 +227,14 @@
 #define SES_CLOSE		(SESBASE	+	0x2)
 
 //	SES_ID
-//		in						out
-//	data 0 =    *				sessionID
+//		in					out (NONE)
+//	data 0 = sessionID - High   *
+//	data 1 = sessionID - Low    *
 //	data 1 =    *    			*
 //	data 2 =	*				*
 //	data 3 =    *				*
 //	data 4 =    *   			*
 #define SES_ID			(SESBASE	+	0x3)
-
-// messages io
-//#define MSG_START		(MSGBASE	+	0x1)
-//#define MSG_END			(MSGBASE	+	0x2)
-//#define MSG_DATA		(MSGBASE	+	0x3)
-
-
-#ifndef MSG_STR
-#define MSG_STR
-	static const char * JOB_STR[] =
-	{
-		"JOBBASE",
-		"JOB_ID",
-		"JOB_START",
-		"JOB_REQUEST",
-		"JOB_STATUS",
-		"JOB_BREAK",
-		"JOB_RESUME",
-		"JOB_BATCH",
-		"JOB_PERCENT",
-		"JOB_DELETE",
-		"JOB_WUNIT",
-		"JOB_BACKUP",
-		"JOB_UNBACKUP",
-		"JOB_RUN",
-		"JOB_STOP"
-	};
-	static const char * OBJ_STR[] =
-	{
-		"OBJBASE",
-		"OBJ_DATA",
-		"OBJ_SIZE",
-		"OBJ_TYPE",
-		"OBJ_NOBJECTS",
-		"OBJ_CAMERA",
-		"OBJ_LIGHT",
-		"OBJ_SPHERE",
-		"OBJ_GEOMETRY",
-		"OBJ_TEXTURE",
-		"OBJ_PLUGIN",
-		"OBJ_FRAME"
-	};
-	static const char * IMG_STR[] =
-	{
-		"IMGBASE",
-		"IMG_REQUEST",
-		"IMG_DATA",
-		"IMG_INFO"
-	};
-	static const char * ACK_STR[] =
-	{
-		"ACKBASE",
-		"ACK_NONE",
-		"ACK_JOB",
-		"ACK_OBJ",
-		"ACK_DAT",
-		"ACK_IMG"
-	};
-	static const char * DMN_STR[] =
-	{
-		"DMNBASE",
-		"DMN_STATUS",
-		//"DMN_INACTIVE",
-		"DMN_DISPATCHJOB"
-	};
-#else
-	extern const char * JOB_STR[];
-	extern const char * OBJ_STR[];
-	extern const char * IMG_STR[];
-	extern const char * ACK_STR[];
-	extern const char * DMN_STR[];
-#endif
-
-#define ADD_MSG_STRING(msg,msgid) \
-	{\
-	if(msgid < OBJBASE)\
-		msg += JOB_STR[msgid-JOBBASE];\
-	else if(msgid < IMGBASE)\
-		msg += OBJ_STR[msgid-OBJBASE];\
-	else if(msgid < ACKBASE)\
-		msg += IMG_STR[msgid-IMGBASE];\
-	else if(msgid < DMNBASE)\
-		msg += ACK_STR[msgid-ACKBASE];\
-	else if(msgid < MSGBASE)\
-		msg += DMN_STR[msgid-DMNBASE];\
-	}
-
 
 /////////////////////////////////////////////////////////////////////////
 //	Public structures for Client/Server/WorkUnit communication

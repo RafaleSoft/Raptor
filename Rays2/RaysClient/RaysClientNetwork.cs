@@ -23,10 +23,12 @@ namespace RaysClient
             public uint msg_data4;
         }
 
-        // Message semantic
+        // Session Messages semantic
         public const uint SES_OPEN = 0x01000000 + 0x01;
         public const uint SES_CLOSE = 0x01000000 + 0x02;
         public const uint SES_ID = 0x01000000 + 0x03;
+
+        // Job Messages semantic
         public const uint JOB_DATA = 0x00000000 + 0x0f;
 
 
@@ -58,10 +60,7 @@ namespace RaysClient
                 }
             }
             else
-            {
-                log.Items.Add("Echec d'ouverture de session Rays Server");
                 return false;
-            }
         }
 
         public bool CloseSession()
@@ -162,6 +161,7 @@ namespace RaysClient
             MSGSTRUCT msg = new MSGSTRUCT();
             msg.msg_crc = 0;        // not yet active
             msg.msg_size = (uint)Marshal.SizeOf(msg) - 2 * sizeof(uint); // crc & size are not part of the message, but only protocol.
+            msg.msg_size += (uint)messageData.GetLength(0);
             msg.msg_data0 = data0;
             msg.msg_data1 = data1;
             msg.msg_data2 = data2;
@@ -170,7 +170,8 @@ namespace RaysClient
             msg.msg_id = messageId;
 
             int len = Marshal.SizeOf(msg);
-            byte[] sendBuffer = new byte[len + messageData.GetLength(0)];
+            int datalen = len + messageData.GetLength(0);
+            byte[] sendBuffer = new byte[datalen];
 
             int result = 0;
             try
@@ -183,14 +184,15 @@ namespace RaysClient
                 if (messageData.GetLength(0) > 0)
                     messageData.CopyTo(sendBuffer, len);
 
-                result = server.Send(sendBuffer);
+                while (result < datalen)
+                    result += server.Send(sendBuffer, result, datalen - result, SocketFlags.None);
             }
             catch (SocketException e)
             {
                 log.Items.Add("Erreur d'envoi de message à Rays Server: " + e.Message);
             }
 
-            return (result == len);
+            return (result == datalen);
         }
 
         private bool ReceiveMessage(ref MSGSTRUCT msg, ref byte[] messageData)
@@ -201,18 +203,24 @@ namespace RaysClient
             int result = 0;
             try
             {
-                result = server.Receive(receiveBuffer);
+                while (result < len)
+                    result += server.Receive(receiveBuffer, result, len - result, SocketFlags.None);
+
                 System.IntPtr ptr = Marshal.AllocHGlobal(len);
                 Marshal.Copy(receiveBuffer, 0, ptr, len);
                 msg = Marshal.PtrToStructure<MSGSTRUCT>(ptr);
                 Marshal.FreeHGlobal(ptr);
 
-                int result2 = 0;
-                if (msg.msg_size + 2 * sizeof(uint) > len) // crc & size are not part of the message, but only protocol.
+                int datalen = (int)(msg.msg_size + 2 * sizeof(uint) - len);
+                if (datalen > 0) // crc & size are not part of the message, but only protocol.
                 {
-                    messageData = new byte[msg.msg_size + 2 * sizeof(uint) - len];
-                    result2 = server.Receive(messageData);
-                    if (result2 != (msg.msg_size + 2 * sizeof(uint) - len))
+                    messageData = new byte[datalen];
+
+                    int result2 = 0;
+                    while (result2 < datalen)
+                        result2 += server.Receive(messageData, result2, datalen - result2, SocketFlags.None);
+
+                    if (result2 != datalen)
                         log.Items.Add("Réception incomplète de données de Rays Server");
                 }
             }

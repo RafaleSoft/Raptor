@@ -164,6 +164,7 @@ namespace RaysClient
 
             if (network.IsConnected())
             {
+                network.CloseSession();
                 if (!network.Disconnect())
                     MessageBox.Show("Unable to disconnect from the render server", "Error", MessageBoxButtons.OK);
                 else
@@ -186,7 +187,10 @@ namespace RaysClient
                             Render.Enabled = true;
 
                         if (!network.OpenSession())
+                        {
+                            Log.Items.Add("Echec d'ouverture de session Rays Server");
                             MessageBox.Show("Unable to open render server session", "Error", MessageBoxButtons.OK);
+                        }
                     }
                     else
                         MessageBox.Show("Connection to Rays render server failed", "Error", MessageBoxButtons.OK);
@@ -226,7 +230,12 @@ namespace RaysClient
 
             if (File.Exists("RaysData.pck"))
             {
-                network.SendJobData("RaysData.pck");
+                if (!network.SendJobData("RaysData.pck"))
+                    Log.Items.Add("Echec d'envoi du package RaysData.pck à Rays Server");
+                else
+                    Log.Items.Add("RaysData.pck envoyé à Rays Server");
+
+                Log.Items.Add("Rays Server starting rendering ...");
             }
             else
             {

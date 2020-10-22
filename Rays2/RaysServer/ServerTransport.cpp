@@ -40,6 +40,10 @@ CServerTransport::CServerTransport()
 	:m_pHandler(NULL), m_sessionManager(NULL)
 {
 	m_sessionManager = new CServerSession();
+
+	m_processors[SES_OPEN] = &CServerTransport::Process_SES_OPEN;
+	m_processors[SES_CLOSE] = &CServerTransport::Process_SES_CLOSE;
+	m_processors[JOB_DATA] = &CServerTransport::Process_JOB_DATA;
 }
 
 CServerTransport::~CServerTransport()
@@ -47,6 +51,27 @@ CServerTransport::~CServerTransport()
 	if (NULL != m_sessionManager)
 		delete m_sessionManager;
 	m_sessionManager = NULL;
+}
+
+
+bool CServerTransport::stopServer(void)
+{
+	return CServer<CServerSocket, CClientSocket>::stopServer();
+}
+
+size_t CServerTransport::onNewClient(const CClientSocket &client)
+{
+	Network::userOutput(INetworkLogger::NETWORK_INFO, "New client connected");
+	return getNumClients();
+}
+
+bool CServerTransport::onClientClose(const CClientSocket &client)
+{
+	Network::userOutput(INetworkLogger::NETWORK_INFO, "Client disconnected");
+
+	std::cout << "Rays Server closing session for client: " << (request_id)&client << std::endl;
+
+	return m_sessionManager->closeSession((request_id)&client);
 }
 
 server_base_t::request_handler_t& CServerTransport::getRequestHandler(const iosock_base_t& client) const
@@ -65,24 +90,17 @@ bool CServerTransport::handleRequest(request_handler_t::request_id id,const void
 	rq.msg = (MSGSTRUCT*)new unsigned char[size];
 	memcpy(rq.msg,data,size);
 
-	unsigned char* raw_data = (unsigned char*)(rq.msg)+sizeof(MSGSTRUCT);
-
-	//if (size > MSGSIZE)
-	//	Network::userOutput(INetworkLogger::NETWORK_WARNING,"Extra data on message ignored !");
-
 	bool messageProcessed = true;
-	switch(rq.msg->msg_id)
+	std::map<RAYS_MSG_ID, request_processor_t>::const_iterator processor = m_processors.find(rq.msg->msg_id);
+	if (m_processors.end() != processor)
 	{
-		case SES_OPEN:
-			Process_SES_OPEN(rq);
-			break;
-		case SES_CLOSE:
-			Process_SES_CLOSE(rq);
-			break;
-		default:
-			std::cout << "Rays Server unknown message id: " << rq.msg->msg_id << " from client: " << id << std::endl;
-			messageProcessed = false;
-			break;
+		request_processor_t p = (*processor).second;
+		messageProcessed = (this->*p)(rq);
+	}
+	else
+	{
+		std::cout << "Rays Server unknown message id: " << rq.msg->msg_id << " from client: " << id << std::endl;
+		messageProcessed = false;
 	}
 
 	return messageProcessed;
@@ -154,23 +172,21 @@ bool CServerTransport::Process_SES_CLOSE(request &rq)
 	return m_sessionManager->closeSession(rq.id);
 }
 
-bool CServerTransport::stopServer(void)
+bool CServerTransport::Process_JOB_DATA(request &rq)
 {
-	return CServer<CServerSocket,CClientSocket>::stopServer();
+	std::cout << "Rays Server receiving job data for client: " << rq.id << std::endl;
+	
+	CServerSession::session_t session = m_sessionManager->getSession(rq.id);
+
+	bool bdata = false;
+	if (session.id == rq.id)
+	{
+		uint8_t* raw_data = (uint8_t*)(rq.msg) + sizeof(MSGSTRUCT);
+		bdata = m_sessionManager->saveSessionFile(rq.id, "RaysData.pck", raw_data, rq.size - sizeof(MSGSTRUCT));
+	}
+
+	//! No reply, delete allocated bloc because processing ends here.
+	delete[] rq.msg;
+
+	return bdata;
 }
-
-size_t CServerTransport::onNewClient(const CClientSocket &client)
-{
-	Network::userOutput(INetworkLogger::NETWORK_INFO, "New client connected");
-	return getNumClients();
-}
-
-bool CServerTransport::onClientClose(const CClientSocket &client)
-{
-	Network::userOutput(INetworkLogger::NETWORK_INFO, "Client disconnected");
-
-	std::cout << "Rays Server closing session for client: " << (request_id)&client << std::endl;
-
-	return m_sessionManager->closeSession((request_id)&client);
-}
-
