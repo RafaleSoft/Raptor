@@ -7,10 +7,7 @@
 
 /////////////////////////////////////////////////////////////////////////
 //	Constants
-#define PORTBASE	2048
-#define PACKET_SIZE	2000
 #define MAX_STR_LEN	64
-#define MAX_PARAMS	16
 
 #define JOBBASE 0x00000000
 #define OBJBASE 0x00000100

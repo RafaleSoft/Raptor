@@ -98,7 +98,7 @@ bool CDeamonManager::destroyDeamon(unsigned int numWU)
 	return bDisconnect;
 }
 
-bool CDeamonManager::registerDeamon(const std::string& deamonIP)
+bool CDeamonManager::registerDeamon(const std::string& deamonIP, uint16_t port)
 {
 	CDeamonManager::DEAMONSTRUCT *WU;
 
@@ -112,7 +112,7 @@ bool CDeamonManager::registerDeamon(const std::string& deamonIP)
 	}
 
 	CDeamonClient *connection = new CDeamonClient(m_pServer);
-	if (connection->connectToServer(deamonIP,PORTBASE+1))
+	if (connection->connectToServer(deamonIP, port))
 	{
 		WU = new CDeamonManager::DEAMONSTRUCT;
 		WU->deamonID = m_counter++;

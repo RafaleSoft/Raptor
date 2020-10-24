@@ -62,6 +62,23 @@ CRaysWorkUnit::~CRaysWorkUnit()
 	delete raytracer_data;
 }
 
+
+void print_help(void)
+{
+	std::cout << "Rays Workunit command line help:" << std::endl;
+
+	std::cout << "  --id|-i : defines the workunit id, each active workunit must have a unique id" << std::endl;
+	std::cout << "  --port|-p : defines the workunit listening port, by default 2048" << std::endl;
+	std::cout << "  --host_addr|-a : defines the workunit listening IP address, by default 127.0.0.1" << std::endl;
+	std::cout << "  --config_file|-f : the path to the deamon configuration file, by default RaysDeamon.config in the current execution folder" << std::endl;
+	std::cout << "  --width|-w : defines the workunit rendering surface width, by default 256" << std::endl;
+	std::cout << "  --height|-h : defines the workunit rendering surface height, by default 256" << std::endl;
+	std::cout << "  --help|-h : print this help and quit" << std::endl;
+	std::cout << std::endl;
+}
+
+
+
 /////////////////////////////////////////////////////////////////////////////
 //	Entry point
 int main(int argc, char* argv[])
@@ -82,11 +99,21 @@ int main(int argc, char* argv[])
 	parser.addOption("width","w",(unsigned short)256);
 	parser.addOption("height","h",(unsigned short)256);
 	parser.addOption("host_addr","a",std::string("127.0.0.1"));
+	parser.addOption("config_file", "f", std::string("RaysServer.config"));
+	parser.addOption("help", "h", CCmdLineParser::NO_VALUE_OPTION);
 
 	if (!parser.parse(argc,argv))
 	{
 		std::cout << "Rays Workunit failed to parse command line. Exiting, bye!" << std::endl;
 		return -1;
+	}
+
+	CCmdLineParser::NO_VALUE_OPTION_t help = CCmdLineParser::NO_VALUE_UNDEFINED;
+	parser.getValue<CCmdLineParser::NO_VALUE_OPTION_t>("h", help);
+	if (CCmdLineParser::NO_VALUE_VALUE == help)
+	{
+		print_help();
+		return 0;
 	}
 
 	p_WU = new CRaysWorkUnit();

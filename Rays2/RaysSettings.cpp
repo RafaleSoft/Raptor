@@ -29,6 +29,7 @@ using namespace Rays;
 CRaysSettings::CRaysSettings(void)
 {
 	addSetting<uint16_t>("port", (uint16_t)2048);
+	addSetting<uint16_t>("deamon_port", (uint16_t)2049);
 	addSetting<string>("host_addr", std::string("127.0.0.1"));
 }
 
@@ -123,6 +124,14 @@ bool CRaysSettings::setSettings(const CCmdLineParser& parser)
 		//std::cout << "set port settings from command line:" << port << std::endl;
 		if (!setValue<uint16_t>("port", port))
 			addSetting<uint16_t>("port", port);
+	}
+
+	uint16_t deamon_port = 0;
+	if (parser.getValue<uint16_t>("deamon_port", deamon_port))
+	{
+		//std::cout << "set port settings from command line:" << port << std::endl;
+		if (!setValue<uint16_t>("deamon_port", deamon_port))
+			addSetting<uint16_t>("deamon_port", deamon_port);
 	}
 
 	std::string host_addr = "";

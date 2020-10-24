@@ -4,6 +4,7 @@ using System.Net.Sockets;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
+
 namespace RaysClient
 {
     class RaysClientNetwork
@@ -24,12 +25,15 @@ namespace RaysClient
         }
 
         // Session Messages semantic
-        public const uint SES_OPEN = 0x01000000 + 0x01;
-        public const uint SES_CLOSE = 0x01000000 + 0x02;
-        public const uint SES_ID = 0x01000000 + 0x03;
+        public const uint SESBASE = 0x01000000;
+        public const uint SES_OPEN = SESBASE + 0x01;
+        public const uint SES_CLOSE = SESBASE + 0x02;
+        public const uint SES_ID = SESBASE + 0x03;
 
         // Job Messages semantic
-        public const uint JOB_DATA = 0x00000000 + 0x0f;
+        public const uint JOB_BASE = 0x00000000;
+        public const uint JOB_START = JOB_BASE + 0x01;
+        public const uint JOB_DATA = JOB_BASE + 0x0f;
 
 
         public bool OpenSession()
@@ -44,18 +48,18 @@ namespace RaysClient
                     if (SES_ID == msg.msg_id)
                     {
                         session_id = (msg.msg_data1 << 32) + msg.msg_data0;
-                        log.Items.Add("Ouverture de session Rays Server:" + session_id.ToString());
+                        log.Info("Ouverture de session Rays Server:" + session_id.ToString());
                         return true;
                     }
                     else
                     {
-                        log.Items.Add("Erreur de protocole de session Rays Server");
+                        log.Error("Erreur de protocole de session Rays Server");
                         return false;
                     }
                 }
                 else
                 {
-                    log.Items.Add("Echec d'allocation d'identifiant de session Rays Server");
+                    log.Error("Echec d'allocation d'identifiant de session Rays Server");
                     return false;
                 }
             }
@@ -101,7 +105,7 @@ namespace RaysClient
             if (addr.AddressFamily != AddressFamily.InterNetwork)
             {
                 // TODO: log not supported address family (v6)
-                log.Items.Add("Addressage IPv6 non supporté: " + address);
+                log.Warning("Addressage IPv6 non supporté: " + address);
                 return false;
             }
 
@@ -113,7 +117,7 @@ namespace RaysClient
             }
             catch(SocketException e)
             {
-                log.Items.Add("Echec de connection à Rays Server: " + e.Message);
+                log.Warning("Echec de connection à Rays Server: " + e.Message);
             }
 
             return connect;
@@ -151,9 +155,9 @@ namespace RaysClient
         {
         }
 
-        public void SetLog(ref ListBox lb)
+        public void SetLog(ref RaysLogger l)
         {
-            log = lb;
+            log = l;
         }
 
         private bool SendMessage(uint messageId, uint data0, uint data1, uint data2, uint data3, uint data4, ref byte[] messageData)
@@ -189,7 +193,7 @@ namespace RaysClient
             }
             catch (SocketException e)
             {
-                log.Items.Add("Erreur d'envoi de message à Rays Server: " + e.Message);
+                log.Error("Erreur d'envoi de message à Rays Server: " + e.Message);
             }
 
             return (result == datalen);
@@ -221,19 +225,19 @@ namespace RaysClient
                         result2 += server.Receive(messageData, result2, datalen - result2, SocketFlags.None);
 
                     if (result2 != datalen)
-                        log.Items.Add("Réception incomplète de données de Rays Server");
+                        log.Error("Réception incomplète de données de Rays Server");
                 }
             }
             catch (SocketException e)
             {
-                log.Items.Add("Erreur de reception de message de Rays Server: " + e.Message);
+                log.Error("Erreur de reception de message de Rays Server: " + e.Message);
             }
 
             return (result == len);
         }
 
         private Socket server = null;
-        private ListBox log = null;
+        private RaysLogger log = null;
         private ulong session_id = 0;
     }
 }

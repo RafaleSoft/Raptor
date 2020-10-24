@@ -46,5 +46,17 @@ namespace RaysClient.Properties {
                 this["host"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("RaysClient.log")]
+        public string logfile {
+            get {
+                return ((string)(this["logfile"]));
+            }
+            set {
+                this["logfile"] = value;
+            }
+        }
     }
 }

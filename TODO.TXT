@@ -1,5 +1,8 @@
 - Ajouter un dialog pour Vulkan Status comme OpenGL.
 
+- Rays2:
+	- DeamonManager : port de connectino en dur ==> utiliser un param en LC ou config.
+
 - RaptorFilteredDisplay:
 	- voir si normal dans demo que le buffer FSAA ait la même taille que la destination
 		(m_fFilterSize = 1 dans RaptorDisplayconfig)

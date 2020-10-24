@@ -91,7 +91,7 @@ namespace RaysServer
 		}
 
 		//!	Create a new deamon
-		bool registerDeamon(const std::string& deamonIP);
+		bool registerDeamon(const std::string& deamonIP, uint16_t port);
 
 		size_t getNbDeamons(void) const { return m_Deamons.size(); };
 		

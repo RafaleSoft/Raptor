@@ -113,11 +113,12 @@ bool RaysServer::CRaysServerApp::Start(const std::string &addrStr, uint16_t port
 	if (settings.getValue("deamon_delay", delay))
 		m_pDeamonManager->setPollingDelay(delay);
 	
+	uint16_t deamon_port = port + 1;
 	std::vector<std::string> ips;
-	if (settings.getValue("deamon", ips))
+	if (settings.getValue("deamon", ips) && settings.getValue("deamon_port", port))
 	{
 		for (size_t i = 0; i < ips.size(); i++)
-			res = res && m_pDeamonManager->registerDeamon(ips[i]);
+			res = res && m_pDeamonManager->registerDeamon(ips[i], deamon_port);
 	}
 
 	if (m_pDeamonManager->getNbDeamons() == ips.size())
@@ -166,13 +167,14 @@ void print_help(void)
 {
 	std::cout << "Rays Server command line help:" << std::endl;
 
-	std::cout << "  --port|-p : defines the deamon listening port, by default 2049" << std::endl;
-	std::cout << "  --host_addr|-a : defines the deamon listening IP address, by default 127.0.0.1" << std::endl;
+	std::cout << "  --port|-p : defines the server listening port, by default 2048" << std::endl;
+	std::cout << "  --host_addr|-a : defines the server listening IP address, by default 127.0.0.1" << std::endl;
 	std::cout << "  --config_file|-f : the path to the deamon configuration file, by default RaysDeamon.config in the current execution folder" << std::endl;
 	std::cout << "  --wu_priority|-u : the work unit execution priority when multiple jobs are in progress" << std::endl;
 	std::cout << "  --deamon_delay|-t : the polling delay to the deamon" << std::endl;
 	std::cout << "  --nb_wu_per_job|-j : the number of work units allocated for each job" << std::endl;
-	std::cout << "  --deamon|-d : the host address of a workunit deamon manager" << std::endl;
+	std::cout << "  --deamon|-d : the host address of a workunit deamon manager. Any number of deamons can be provided" << std::endl;
+	std::cout << "  --deamon_port|-P : the deamons (same for all deamons) listening port, by default 2049" << std::endl;
 	std::cout << "  --help|-h : print this help and quit" << std::endl;
 	std::cout << std::endl;
 }
@@ -193,6 +195,7 @@ int main(int argc, char* argv[])
 
 	CCmdLineParser parser;
 	parser.addOption("port", "p", (unsigned short)2048);
+	parser.addOption("deamon_port", "P", (unsigned short)2049);
 	parser.addOption("host_addr", "a", std::string("127.0.0.1"));
 	parser.addOption("config_file", "f", std::string("RaysServer.config"));
 	parser.addOption("help", "h", CCmdLineParser::NO_VALUE_OPTION);
