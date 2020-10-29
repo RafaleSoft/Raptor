@@ -195,7 +195,7 @@
       <Command>copy $(OutDir)$(TargetFileName) "%RAPTOR_ROOT%\Redist\bin\"</Command>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>%RAPTOR_ROOT%\GLBench\buildpak.bat</Command>
+      <Command>$(PYTHON_HOME)\python.exe $(SolutionDir)Demo\buildpak.py</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -253,7 +253,7 @@
       <Command>copy $(OutDir)$(TargetFileName) "%RAPTOR_ROOT%\Redist\bin\"</Command>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>%RAPTOR_ROOT%\GLBench\buildpak.bat</Command>
+      <Command>$(PYTHON_HOME)\python.exe $(SolutionDir)Demo\buildpak.py</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">
@@ -315,7 +315,7 @@ copy $(SolutionDir)$(ProjectName)\GLBench.pck "%RAPTOR_ROOT%\Redist\bin\"
 </Command>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>%RAPTOR_ROOT%\GLBench\buildpak.bat</Command>
+      <Command>$(PYTHON_HOME)\python.exe $(SolutionDir)Demo\buildpak.py</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|x64'">
@@ -375,7 +375,7 @@ copy $(SolutionDir)$(ProjectName)\GLBench.pck "%RAPTOR_ROOT%\Redist\bin\"
 </Command>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>%RAPTOR_ROOT%\GLBench\buildpak.bat</Command>
+      <Command>$(PYTHON_HOME)\python.exe $(SolutionDir)Demo\buildpak.py</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -435,7 +435,7 @@ copy $(SolutionDir)$(ProjectName)\GLBench.pck "%RAPTOR_ROOT%\Redist\bin\"
       <Command>copy $(OutDir)$(TargetFileName) "%RAPTOR_ROOT%\Redist\bin\"</Command>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>%RAPTOR_ROOT%\GLBench\buildpak.bat</Command>
+      <Command>$(PYTHON_HOME)\python.exe $(SolutionDir)Demo\buildpak.py</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -493,7 +493,7 @@ copy $(SolutionDir)$(ProjectName)\GLBench.pck "%RAPTOR_ROOT%\Redist\bin\"
       <Command>copy $(OutDir)$(TargetFileName) "%RAPTOR_ROOT%\Redist\bin\"</Command>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>%RAPTOR_ROOT%\GLBench\buildpak.bat</Command>
+      <Command>$(PYTHON_HOME)\python.exe $(SolutionDir)Demo\buildpak.py</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -526,7 +526,7 @@ copy $(SolutionDir)$(ProjectName)\GLBench.pck "%RAPTOR_ROOT%\Redist\bin\"
     <Image Include="..\..\GLBench\res\Raptor_logo_sml.bmp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\GLBench\buildpak.bat" />
+    <None Include="..\..\GLBench\buildpak.py" />
     <None Include="..\..\GLBench\res\GLBench.rc2" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
