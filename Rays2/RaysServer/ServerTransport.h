@@ -83,6 +83,7 @@ namespace RaysServer {
 		bool Process_SES_OPEN(request &rq);
 		bool Process_SES_CLOSE(request &rq);
 		bool Process_JOB_DATA(request &rq);
+		bool Process_JOB_START(request &rq);
 
 		//!	
 		CServerSession *m_sessionManager;

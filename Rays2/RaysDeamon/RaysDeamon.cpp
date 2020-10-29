@@ -166,6 +166,8 @@ bool CRaysDeamon::handleReply(request_handler_t::request_id id, const void *&dat
 	request r;
 	r.id = 0;
 
+	CRaptorLock lock(m_mutex);
+
 	if (m_replies.size() > 0)
 	{
 		vector<request>::const_iterator it = m_replies.begin();
@@ -211,28 +213,7 @@ bool CRaysDeamon::handleRequest(request_handler_t::request_id id,const void *dat
 	{
 		case DMN_STATUS:
 		{
-			std::cout << "Rays2 Deamon status returned" << std::endl;
-			unsigned int nbProcs = 0;
-			unsigned int nbProcsAvailable = 0;
-			float jobDone = 0;
-			for (unsigned int i = 0; i < m_WorkUnits.size(); i++)
-			{
-				const CRaysDeamon::WORKUNITSTRUCT &w = m_WorkUnits[i];
-				nbProcs += w.nbProcs;
-				nbProcsAvailable += w.nbProcsAvailable;
-				jobDone += w.jobDone;
-			}
-			//rq.msg->msg_header = MSG_START;
-			rq.msg->msg_id = DMN_STATUS;
-			//rq.msg->msg_size = 0;
-			//rq.msg->msg_tail = MSG_END;
-			rq.msg->msg_data[0] = nbProcs;
-			rq.msg->msg_data[1] = nbProcsAvailable;
-			rq.msg->msg_data[2] = (RAYS_MSG_ID)(floor(jobDone));
-			rq.msg->msg_data[3] = 0;
-			rq.msg->msg_data[4] = this->getAddr();
-			rq.reply = true;
-			m_replies.push_back(rq);
+			dmnStatus(rq);
 			break;
 		}
 		case DMN_DISPATCHJOB:
@@ -260,6 +241,31 @@ bool CRaysDeamon::handleRequest(request_handler_t::request_id id,const void *dat
 	return true;
 }
 
+
+void CRaysDeamon::dmnStatus(request &rq)
+{
+	std::cout << "Rays2 Deamon status returned" << std::endl;
+	unsigned int nbProcs = 0;
+	unsigned int nbProcsAvailable = 0;
+	float jobDone = 0;
+	for (unsigned int i = 0; i < m_WorkUnits.size(); i++)
+	{
+		const CRaysDeamon::WORKUNITSTRUCT &w = m_WorkUnits[i];
+		nbProcs += w.nbProcs;
+		nbProcsAvailable += w.nbProcsAvailable;
+		jobDone += w.jobDone;
+	}
+	rq.msg->msg_id = DMN_STATUS;
+	rq.msg->msg_data[0] = nbProcs;
+	rq.msg->msg_data[1] = nbProcsAvailable;
+	rq.msg->msg_data[2] = (RAYS_MSG_ID)(floor(jobDone));
+	rq.msg->msg_data[3] = 0;
+	rq.msg->msg_data[4] = this->getAddr();
+	rq.reply = true;
+
+	CRaptorLock lock(m_mutex);
+	m_replies.push_back(rq);
+}
 
 void CRaysDeamon::dispatchJob(request &rq)
 {
@@ -323,6 +329,8 @@ void CRaysDeamon::dispatchJob(request &rq)
 	rq.msg->msg_data[3] = pi.dwProcessId;
 	rq.msg->msg_data[4] = pi.dwThreadId;
 	rq.reply = true;
+
+	CRaptorLock lock(m_mutex);
 	m_replies.push_back(rq);
 
 	// now the job starts

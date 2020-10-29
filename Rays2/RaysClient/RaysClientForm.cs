@@ -17,7 +17,6 @@
 
 
 using System;
-using System.Diagnostics;
 using System.Windows.Forms;
 using System.IO;
 using System.Collections.Specialized;
@@ -40,7 +39,7 @@ namespace RaysClient
             logger.SetLevel(RaysLogger.LEVEL.INFO);
             logger.SetLogName(settings.logfile);
             logger.SetDisplay(ref Log);
-            network.SetLog(ref logger);
+            client.SetLog(ref logger);
         }
 
         private void RaysClientForm_Load(object sender, EventArgs e)
@@ -50,22 +49,18 @@ namespace RaysClient
 
         private void onClose(object sender, FormClosingEventArgs e)
         {
-            if (network.IsConnected())
-            {
-                network.CloseSession();
-                network.Disconnect();
-            }
+            if (!client.Close())
+                MessageBox.Show("Closing Rays Session of Rays Server disconnect failed", "Error", MessageBoxButtons.OK);
         }
 
         private void OnQuit(object sender, EventArgs e)
         {
-            if (network.IsConnected())
+            if (client.IsConnected())
             {
                 DialogResult res = MessageBox.Show("A connection to the render server is still active. \nClosing will lose rendered data. \nAre you sure you want to quit ?", "Information", MessageBoxButtons.YesNo);
                 if (DialogResult.No != res)
                 {
-                    network.CloseSession();
-                    network.Disconnect();
+                    client.Close();
                     Close();
                 }
             }
@@ -155,7 +150,7 @@ namespace RaysClient
                     Assets.Items.Clear();
             }
 
-            if (network.IsConnected() && (scene_filepath.Length > 0))
+            if (client.IsConnected() && (scene_filepath.Length > 0))
                 Render.Enabled = true;
             else
                 Render.Enabled = false;
@@ -165,10 +160,9 @@ namespace RaysClient
         {
             Render.Enabled = false;
 
-            if (network.IsConnected())
+            if (client.IsConnected())
             {
-                network.CloseSession();
-                if (!network.Disconnect())
+                if (!client.Disconnect())
                     MessageBox.Show("Unable to disconnect from the render server", "Error", MessageBoxButtons.OK);
                 else
                     logger.Info("Disconnect from the render server");
@@ -179,24 +173,12 @@ namespace RaysClient
                 short p = 0;
                 bool b = short.TryParse(port.Text, out p);
 
-                if (b && network.Connect(host.Text, p))
+                if (b && client.Connect(host.Text, p))
                 {
-                    if (network.IsConnected())
-                    {
-                        logger.Info("Connected to server: " + host.Text + " on port " + port.Text);
-                        Connect.Text = "Disconnect";
-
-                        if (scene_filepath.Length > 0)
-                            Render.Enabled = true;
-
-                        if (!network.OpenSession())
-                        {
-                            logger.Error("Echec d'ouverture de session Rays Server");
-                            MessageBox.Show("Unable to open render server session", "Error", MessageBoxButtons.OK);
-                        }
-                    }
-                    else
-                        MessageBox.Show("Connection to Rays render server failed", "Error", MessageBoxButtons.OK);
+                     logger.Info("Connected to server: " + host.Text + " on port " + port.Text);
+                     Connect.Text = "Disconnect";
+                     if (scene_filepath.Length > 0)
+                        Render.Enabled = true;
                 }
                 else
                     MessageBox.Show("Unable to connect to the render server", "Error", MessageBoxButtons.OK);
@@ -205,45 +187,15 @@ namespace RaysClient
 
         private void onRender(object sender, EventArgs e)
         {
-            // Part 1: use ProcessStartInfo class.
-            ProcessStartInfo startInfo = new ProcessStartInfo();
-            startInfo.CreateNoWindow = false;
-            startInfo.UseShellExecute = false;
-            startInfo.FileName = Environment.ExpandEnvironmentVariables("%RAPTOR_ROOT%\\Redist\\Bin\\RaptorDataPackager.exe");
-            startInfo.WindowStyle = ProcessWindowStyle.Hidden;
-
-            // Part 2: set arguments.
-            startInfo.Arguments = "-c RaysData.pck " + scene_filepath;
+            string render_assets = scene_filepath;
             StringEnumerator it = assets.GetEnumerator();
             while (it.MoveNext())
-                startInfo.Arguments += " " + it.Current;
+                render_assets += " " + it.Current;
 
-            try
-            {
-                // Part 3: start with the info we specified.
-                // ... Call WaitForExit.
-                Process exeProcess = Process.Start(startInfo);
-                exeProcess.WaitForExit();
-            }
-            catch
-            {
-                // Log error.
-                logger.Error("Failed to run RaptorDataPackager, rendering aborted !");
-            }
-
-            if (File.Exists("RaysData.pck"))
-            {
-                if (!network.SendJobData("RaysData.pck"))
-                    logger.Error("Echec d'envoi du package RaysData.pck à Rays Server");
-                else
-                    logger.Error("RaysData.pck envoyé à Rays Server");
-
+            if (client.Render(render_assets))
                 logger.Info("Rays Server starting rendering ...");
-            }
             else
-            {
-                Log.Items.Add("RaysData.pck corrupted or not found, rendering aborted !");
-            }
+                logger.Error("Errors found in rendering process, rendering aborted !");
         }
 
         private void onConfig(object sender, EventArgs e)
@@ -264,8 +216,8 @@ namespace RaysClient
         /**
          * Client Main data
          */
+        private RaysClient client = new RaysClient();
         private RaysConfig config = new RaysConfig();
-        private RaysClientNetwork network = new RaysClientNetwork();
         private string scene_filepath = new string("".ToCharArray());
         private StringCollection assets = new StringCollection();
         private RaysLogger logger = new RaysLogger();

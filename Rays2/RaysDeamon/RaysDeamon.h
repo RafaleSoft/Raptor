@@ -23,6 +23,7 @@
 	#include "RaptorNetwork/Client.h"
 #endif
 
+#include "Raptordll.h"
 RAPTOR_NAMESPACE
 
 
@@ -96,14 +97,20 @@ private:
 	//!	Process DMN_DISPATCHJOB
 	void objPlugin(request &rq);
 
+	//!	Process DMN_STATUS
+	void dmnStatus(request &rq);
+
 	//!	Exit deamon request
 	bool	m_bExit;
 
 	//! Array of registered work units
-	vector<WORKUNITSTRUCT> m_WorkUnits;
+	std::vector<WORKUNITSTRUCT> m_WorkUnits;
 
 	//!	Replies queue
-	vector<request> m_replies;
+	std::vector<request> m_replies;
+
+	//!	Mutex to protect replies accesses
+	CRaptorMutex		m_mutex;
 };
 
 #endif // !defined(AFX_RAYSDEAMON_H__1FD417A3_0293_47C1_B3C3_DD773362F2E1__INCLUDED_)

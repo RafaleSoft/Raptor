@@ -74,6 +74,15 @@ RaysServer::CRaysServerApp::CRaysServerApp()
 
 bool RaysServer::CRaysServerApp::Quit(void)
 {
+	if (NULL != m_pDeamonManager)
+	{
+		m_pDeamonManager->requestExit();
+		for (size_t i = 0; i < m_pDeamonManager->getNbDeamons(); i++)
+			m_pDeamonManager->unregisterDeamon(i);
+
+		delete m_pDeamonManager;
+	}
+
 	if (m_pTransport->stopServer())
 		m_started = !m_started;
 	if (!m_started)
@@ -81,8 +90,6 @@ bool RaysServer::CRaysServerApp::Quit(void)
 		RaysUtils::getLog().Log("Server stopped.");
 		if (NULL != m_pTransport)
 			delete m_pTransport;
-		if (NULL != m_pDeamonManager)
-			delete m_pDeamonManager;
 	}
 	else
 		RaysUtils::getLog().Log("Server unable to stop !");
@@ -109,9 +116,6 @@ bool RaysServer::CRaysServerApp::Start(const std::string &addrStr, uint16_t port
 	}
 	
 	const CRaysSettings &settings = RaysUtils::getSettings();
-	uint32_t delay = 0;
-	if (settings.getValue("deamon_delay", delay))
-		m_pDeamonManager->setPollingDelay(delay);
 	
 	uint16_t deamon_port = port + 1;
 	std::vector<std::string> ips;
@@ -125,6 +129,10 @@ bool RaysServer::CRaysServerApp::Start(const std::string &addrStr, uint16_t port
 		RaysUtils::getLog().Log("Server initialized.");
 	else
 		RaysUtils::getLog().Log("Server not ready, some Work Units are not registered !");
+
+	uint32_t delay = 0;
+	if (settings.getValue("deamon_delay", delay))
+		m_pDeamonManager->Start(delay);
 
 	m_started = true;
 	return res;

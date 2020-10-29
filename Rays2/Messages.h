@@ -20,15 +20,22 @@
 /////////////////////////////////////////////////////////////////////////
 // client job io
 
+//	JOB_ID
+//		in					   out
+//	data 0 =  jobID				*
+//	data 1 =	*				*
+//	data 2 =	*				*
+//	data 3 =	*				*
+//	data 4 =	*				*
 #define JOB_ID			(JOBBASE	+	0x1)
 
 //	JOB_START
 //		in						out
-//	data 0 = sessionID		  jobID
-//	data 1 = width				*
-//	data 2 = height				*
-//	data 3 = port				*
-//	data 4 = IP addr			*
+//	data 0 =	*			  jobID
+//	data 1 =	*				*
+//	data 2 =	*				*
+//	data 3 =	*				*
+//	data 4 =	*				*
 #define JOB_START		(JOBBASE	+	0x2)
 
 //	JOB_REQUEST	( job result is sent through msg.size and data )

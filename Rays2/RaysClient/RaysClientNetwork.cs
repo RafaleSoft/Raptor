@@ -9,7 +9,7 @@ namespace RaysClient
 {
     class RaysClientNetwork
     {
-        struct MSGSTRUCT
+        public struct MSGSTRUCT
         {
             // Message header
             public uint msg_crc;
@@ -32,64 +32,10 @@ namespace RaysClient
 
         // Job Messages semantic
         public const uint JOB_BASE = 0x00000000;
-        public const uint JOB_START = JOB_BASE + 0x01;
+        public const uint JOB_ID = JOB_BASE + 0x01;
+        public const uint JOB_START = JOB_BASE + 0x02;
         public const uint JOB_DATA = JOB_BASE + 0x0f;
 
-
-        public bool OpenSession()
-        {
-            byte[] nodata = new byte[0];
-            if (SendMessage(SES_OPEN, 0, 0, 0, 0, 0, ref nodata))
-            {
-                MSGSTRUCT msg = new MSGSTRUCT();
-                byte[] messageData = null;
-                if (ReceiveMessage(ref msg, ref messageData))
-                {
-                    if (SES_ID == msg.msg_id)
-                    {
-                        session_id = (msg.msg_data1 << 32) + msg.msg_data0;
-                        log.Info("Ouverture de session Rays Server:" + session_id.ToString());
-                        return true;
-                    }
-                    else
-                    {
-                        log.Error("Erreur de protocole de session Rays Server");
-                        return false;
-                    }
-                }
-                else
-                {
-                    log.Error("Echec d'allocation d'identifiant de session Rays Server");
-                    return false;
-                }
-            }
-            else
-                return false;
-        }
-
-        public bool CloseSession()
-        {
-            byte[] nodata = new byte[0];
-            return SendMessage(SES_CLOSE, 0, 0, 0, 0, 0, ref nodata);
-        }
-
-        public bool SendJobData(string package)
-        {
-            if (File.Exists(package))
-            {
-                FileStream fs = File.Open(package, FileMode.Open, FileAccess.Read);
-
-                BinaryReader SourceStream = new BinaryReader(fs);
-                byte[] data = SourceStream.ReadBytes((int)fs.Length);
-
-                fs.Close();
-                SourceStream.Dispose();
-
-                return SendMessage(JOB_DATA, 0, 0, 0, 0, 0, ref data);
-            }
-            else
-                return false;
-        }
 
         public bool Connect(string address, short port)
         {
@@ -160,7 +106,7 @@ namespace RaysClient
             log = l;
         }
 
-        private bool SendMessage(uint messageId, uint data0, uint data1, uint data2, uint data3, uint data4, ref byte[] messageData)
+        public bool SendMessage(uint messageId, uint data0, uint data1, uint data2, uint data3, uint data4, ref byte[] messageData)
         {
             MSGSTRUCT msg = new MSGSTRUCT();
             msg.msg_crc = 0;        // not yet active
@@ -199,7 +145,7 @@ namespace RaysClient
             return (result == datalen);
         }
 
-        private bool ReceiveMessage(ref MSGSTRUCT msg, ref byte[] messageData)
+        public bool ReceiveMessage(ref MSGSTRUCT msg, ref byte[] messageData)
         {
             int len = Marshal.SizeOf(msg);
 
@@ -238,6 +184,5 @@ namespace RaysClient
 
         private Socket server = null;
         private RaysLogger log = null;
-        private ulong session_id = 0;
     }
 }

@@ -152,9 +152,6 @@ namespace RaysServer
 		CMsgManager		*m_msgManager;
 		CFileManager	*m_fileManager;
 
-		//CEvent			*m_msgEvent;
-		//CPtrArray		m_incomingClients;
-
 		iosock_base_t *UseNewConnection(unsigned int addr, unsigned int port, bool capture = false);
 		bool	InstallPlugin(const std::string &pname, iosock_base_t *connection);
 
@@ -183,7 +180,6 @@ namespace RaysServer
 		void Process_JOB_REQUEST(MSGSTRUCT& msg, unsigned char raw_data[]);
 		void Process_JOB_PERCENT(MSGSTRUCT& msg, unsigned char raw_data[]);
 		void Process_JOB_RUN(MSGSTRUCT& msg, unsigned char raw_data[]);
-		void Process_JOB_START(MSGSTRUCT& msg, unsigned char raw_data[]);
 		void Process_JOB_STOP(MSGSTRUCT& msg, unsigned char raw_data[]);
 		void Process_JOB_WUNIT(MSGSTRUCT& msg, unsigned char raw_data[]);
 		void Process_JOB_STATUS(MSGSTRUCT& msg, unsigned char raw_data[]);

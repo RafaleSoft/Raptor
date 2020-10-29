@@ -44,6 +44,7 @@ CServerTransport::CServerTransport()
 	m_processors[SES_OPEN] = &CServerTransport::Process_SES_OPEN;
 	m_processors[SES_CLOSE] = &CServerTransport::Process_SES_CLOSE;
 	m_processors[JOB_DATA] = &CServerTransport::Process_JOB_DATA;
+	m_processors[JOB_START] = &CServerTransport::Process_JOB_START;
 }
 
 CServerTransport::~CServerTransport()
@@ -190,3 +191,23 @@ bool CServerTransport::Process_JOB_DATA(request &rq)
 
 	return bdata;
 }
+
+bool CServerTransport::Process_JOB_START(request &rq)
+{
+	std::cout << "Rays Server starting job rendering for client: " << rq.id << std::endl;
+
+	CServerSession::session_t session = m_sessionManager->getSession(rq.id);
+
+	bool bdata = false;
+	if (session.id == rq.id)
+	{
+		uint8_t* raw_data = (uint8_t*)(rq.msg) + sizeof(MSGSTRUCT);
+		bdata = m_sessionManager->saveSessionFile(rq.id, "RaysData.pck", raw_data, rq.size - sizeof(MSGSTRUCT));
+	}
+
+	//! No reply, delete allocated bloc because processing ends here.
+	delete[] rq.msg;
+
+	return bdata;
+}
+
