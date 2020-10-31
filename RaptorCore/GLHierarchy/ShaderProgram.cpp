@@ -67,9 +67,7 @@ CShaderProgram::CShaderProgram(const CPersistence::CPersistenceClassID& id,const
 	m_bValid(false),
 	m_handle(),
 	m_bApplyParameters(false),
-	m_parameters(),
-	m_uniforms(NULL),
-	m_uniforms_size(0)
+	m_parameters()
 {
 }
 
@@ -81,17 +79,18 @@ CShaderProgram::CShaderProgram(const CShaderProgram& shader)
 	m_bApplyParameters = shader.m_bApplyParameters;
 	m_parameters = shader.m_parameters;
 	m_uniforms = shader.m_uniforms;
-	m_uniforms_size = shader.m_uniforms_size;
+	m_storages = shader.m_storages;
 }
 
 CShaderProgram::~CShaderProgram()
 {
 	// TODO : Recycle handle
 #if defined(GL_ARB_uniform_buffer_object)
-	if (NULL != m_uniforms)
+	if (!m_uniforms.empty())
 	{
 		CUniformAllocator*	pUAllocator = CUniformAllocator::GetInstance();
-		pUAllocator->releaseUniforms(m_uniforms);
+		for (size_t i=0;i<m_uniforms.size();i++)
+			pUAllocator->releaseUniforms(m_uniforms[i].buffer);
 	}
 #endif
 }
@@ -295,6 +294,7 @@ uint64_t CShaderProgram::glGetBufferMemoryRequirements(void)
 				((value.locationType == GL_UNIFORM_BLOCK_BINDING_ARB) || (value.locationType == GL_UNIFORM_BLOCK_BINDING)))
 			{
 				value.locationIndex = binding;
+				value.locationSize = block_size;
 
 				if ((binding >= max_bindings) || (block_size != value.size()))
 				{
