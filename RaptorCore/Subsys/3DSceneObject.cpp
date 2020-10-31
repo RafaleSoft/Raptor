@@ -45,9 +45,6 @@
 #if !defined(AFX_RAPTORVULKANCOMMANDBUFFER_H__0398BABD_747B_4DFE_94AA_B026BDBD03B1__INCLUDED_)
 	#include "Subsys/Vulkan/VulkanCommandBuffer.h"
 #endif
-#if !defined(AFX_CONTEXTMANAGER_H__F992F5F0_D8A5_475F_9777_B0EB30E7648E__INCLUDED_)
-	#include "Subsys/ContextManager.h"
-#endif
 #if !defined(AFX_SHADEDGEOMETRY_H__E56C66F7_2DF6_497B_AA0F_19DDC11390F9__INCLUDED_)
 	#include "GLHierarchy/ShadedGeometry.h"
 #endif
@@ -75,13 +72,10 @@ C3DSceneObject::C3DSceneObject(CObject3D* obj)
 	for (unsigned int i=0;i<CLightAttributes::MAX_LIGHTS;i++)
          effectiveLights[i] = NULL;
 
-	if (CContextManager::INVALID_CONTEXT != CContextManager::GetInstance()->vkGetCurrentContext())
+	if (obj->getId().isSubClassOf(CShadedGeometry::CShadedGeometryClassID::GetClassId()))
 	{
-		if (obj->getId().isSubClassOf(CShadedGeometry::CShadedGeometryClassID::GetClassId()))
-		{
-			CShadedGeometry *sg = (CShadedGeometry *)obj;
-			m_pPipeline = sg->glvkCreatePipeline();
-		}
+		CShadedGeometry *sg = (CShadedGeometry *)obj;
+		m_pPipeline = sg->glvkCreatePipeline();
 	}
 }
 

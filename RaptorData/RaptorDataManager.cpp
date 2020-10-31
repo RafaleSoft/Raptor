@@ -383,7 +383,7 @@ std::string CRaptorDataManager::exportFile(const std::string& fname,
 	if (dst < 0)
 		return "";
 
-    long pos = LSEEK(pack.package,fHeader->offset + pack.headerSize, SEEK_SET);
+    long pos = LSEEK(pack.package,(long)(fHeader->offset + pack.headerSize), SEEK_SET);
     if (pos == -1L)
         return "";
 	else

@@ -1,6 +1,6 @@
 /***************************************************************************/
 /*                                                                         */
-/*  phong.vs                                                               */
+/*  Raptor.glsl                                                            */
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
@@ -15,47 +15,58 @@
 /*                                                                         */
 /***************************************************************************/
 
+// Version shall be specified in including file.
+//#version 440 compatibility
 
-#version 440 compatibility
+//	Maximum number of lights due to number of interpolators available
+const int MAX_LIGHTS = 5;
 
-#include "Raptor.glsl"
-
-
-LIGHT_PRODUCTS(0) R_LightProducts;
-
-layout(location = 0) in vec4 i_Position;
-layout(location = 2) in vec4 i_Normal;
-layout(location = 8) in vec4 i_TexCoord;
+// Maximum number of lights in OpenGL fixed pipeline.
+const int GL_MAX_LIGHTS = 8;
 
 
-out vec3 normal;
-out	vec4 lightDirs[MAX_LIGHTS];
-out	vec3 eyeDir;
-out vec4 o_texCoord;
+//
+//	Raptor Shader interfaces
+//
 
-void main (void)
+//
+//	Raptor Uniform Transform blocs
+//
+//layout (binding = 0) uniform Transform {
+//	mat4 ModelViewMatrix;
+//	mat4 ModelViewMatrixInverse;
+//	mat4 ModelViewProjectionMatrix;
+//	mat4 NormalMatrix;
+//} R_Transform;
+
+//
+//	Raptor Uniform Light products
+//
+struct LightProduct
 {
-	normal = normalize(gl_NormalMatrix * vec3(i_Normal.xyz));
+	vec4 position;
+	vec4 attenuation;
+	vec4 ambient;
+	vec4 diffuse;
+	vec4 specular;
+	float shininess;
+	float reserved[3];
+	bool enable;
+	bool reserved2[3];
+};
 
-	eyeDir = -vec3(gl_ModelViewMatrix * i_Position);
+//
+//	Helper macro to instantiate lights products
+//	Usage: to declara a uniform buffer bound to binding location e.g. 3,
+//		LIGHT_PRODUCTS(3) MyLightProducts;
+#ifndef LIGHT_PRODUCTS
+#define LIGHT_PRODUCTS(bind_point) \
+	layout (binding = 0) uniform LightProducts \
+	{ \
+		LightProduct lights[MAX_LIGHTS]; \
+		vec4		 scene_ambient; \
+	}
+#endif
 
-	for (int i=0 ; i<MAX_LIGHTS ; i++)
-	{
-		if (R_LightProducts.lights[i].enable)
-		{
-			vec3 ldir = vec3(R_LightProducts.lights[i].position) + eyeDir;
-			lightDirs[i].xyz = ldir;
-			float dist = length(ldir);
-			
-			/*	In most situations, attenuation could be computed per vertex	*/
-			vec4 attenuation = R_LightProducts.lights[i].attenuation;
-			lightDirs[i].w = 1.0 / (	attenuation.z +
-										attenuation.y * dist +
-										attenuation.x * dist * dist);
-		}
-	} 
 
-	gl_Position = gl_ModelViewProjectionMatrix * i_Position;
-	o_texCoord = i_TexCoord;
-}
 

@@ -793,6 +793,7 @@ copy $(SolutionDir)$(ProjectName)\RaptorData.pck "%RAPTOR_ROOT%\Redist\bin\"
     <None Include="..\..\RaptorData\Data\phong.vs" />
     <None Include="..\..\RaptorData\Data\projection.fp" />
     <None Include="..\..\RaptorData\Data\rapsplsh.AVI" />
+    <None Include="..\..\RaptorData\Data\Raptor.glsl" />
     <None Include="..\..\RaptorData\Data\shadowmap.fp" />
     <None Include="..\..\RaptorData\Data\shadowmap_pcf.fp" />
     <None Include="..\..\RaptorData\Data\shadowmap_pcf_16x.fp" />

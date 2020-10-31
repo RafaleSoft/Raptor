@@ -25,7 +25,7 @@
 #include "PackageIO.h"
 
 
-static const unsigned int CHUNK = 16384;
+static const size_t CHUNK = 16384;
 static unsigned char in[CHUNK];
 static unsigned char out[CHUNK];
 
@@ -101,14 +101,13 @@ bool copyFile(int dstFile, int srcFile, size_t fSize)
 		return false;
 
 	//! TODO : check files are valid.
-
-	size_t tsize = fSize;
-	int rsize = (tsize > CHUNK) ? CHUNK : tsize;
+	unsigned int tsize = (unsigned int)fSize;
+	unsigned int rsize = (tsize > CHUNK) ? (unsigned int)CHUNK : tsize;
 	while ((tsize > 0) && (rsize == READ(srcFile, in, rsize)))
 	{
 		WRITE(dstFile, in, rsize);
 		tsize -= rsize;
-		rsize = (tsize > CHUNK) ? CHUNK : tsize;
+		rsize = (tsize > CHUNK) ? (unsigned int)CHUNK : tsize;
 	}
 
 	return true;
@@ -137,7 +136,7 @@ bool zipfile(const char* fname, const char* outfile, int level)
 	/* compress until end of file */
 	do
 	{
-		strm.avail_in = fread(in, 1, CHUNK, source);
+		strm.avail_in = (uInt)fread(in, 1, CHUNK, source);
 		if (ferror(source))
 		{
 			(void)deflateEnd(&strm);
@@ -218,7 +217,7 @@ bool unzipfile(const char* fname, const char* outfile)
 	/* decompress until deflate stream ends or end of file */
 	do
 	{
-		strm.avail_in = fread(in, 1, CHUNK, source);
+		strm.avail_in = (uInt)fread(in, 1, CHUNK, source);
 		if (ferror(source))
 		{
 			(void)inflateEnd(&strm);

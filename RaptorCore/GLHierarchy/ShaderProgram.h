@@ -129,6 +129,9 @@ private:
     //! Denied operators
 	CShaderProgram();
     CShaderProgram& operator=(const CShaderProgram& ) { return *this;};
+
+	//!	A helper to recursively read included files
+	std::string readFile(const std::string filename);
 };
 
 RAPTOR_NAMESPACE_END
