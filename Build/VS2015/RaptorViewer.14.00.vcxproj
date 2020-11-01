@@ -220,6 +220,9 @@
     <PostBuildEvent>
       <Command>copy $(OutDir)$(TargetFileName) "%RAPTOR_ROOT%\Redist\bin\"</Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>$(PYTHON_HOME)\python.exe $(SolutionDir)$(ProjectName)\buildpak.py</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Midl>
@@ -271,6 +274,9 @@
     <PostBuildEvent>
       <Command>copy $(OutDir)$(TargetFileName) "%RAPTOR_ROOT%\Redist\bin\"</Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>$(PYTHON_HOME)\python.exe $(SolutionDir)$(ProjectName)\buildpak.py</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|Win32'">
     <Midl>
@@ -323,6 +329,9 @@
     <PostBuildEvent>
       <Command>copy $(OutDir)$(TargetFileName) "%RAPTOR_ROOT%\Redist\bin\"</Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>$(PYTHON_HOME)\python.exe $(SolutionDir)$(ProjectName)\buildpak.py</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_with_AddOns|x64'">
     <Midl>
@@ -374,6 +383,9 @@
     <PostBuildEvent>
       <Command>copy $(OutDir)$(TargetFileName) "%RAPTOR_ROOT%\Redist\bin\"</Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>$(PYTHON_HOME)\python.exe $(SolutionDir)$(ProjectName)\buildpak.py</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Midl>
@@ -428,6 +440,9 @@
     <PostBuildEvent>
       <Command>copy $(OutDir)$(TargetFileName) "%RAPTOR_ROOT%\Redist\bin\"</Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>$(PYTHON_HOME)\python.exe $(SolutionDir)$(ProjectName)\buildpak.py</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Midl>
@@ -480,6 +495,9 @@
     <PostBuildEvent>
       <Command>copy $(OutDir)$(TargetFileName) "%RAPTOR_ROOT%\Redist\bin\"</Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>$(PYTHON_HOME)\python.exe $(SolutionDir)$(ProjectName)\buildpak.py</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Optimized|Win32'">
     <Midl>
@@ -546,6 +564,9 @@
     <PostBuildEvent>
       <Command>copy $(OutDir)$(TargetFileName) "%RAPTOR_ROOT%\Redist\bin\"</Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>$(PYTHON_HOME)\python.exe $(SolutionDir)$(ProjectName)\buildpak.py</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Optimized|x64'">
     <Midl>
@@ -610,6 +631,9 @@
     <PostBuildEvent>
       <Command>copy $(OutDir)$(TargetFileName) "%RAPTOR_ROOT%\Redist\bin\"</Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>$(PYTHON_HOME)\python.exe $(SolutionDir)$(ProjectName)\buildpak.py</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\RaptorViewer\RaptorClient.h" />
@@ -635,10 +659,15 @@
     <ResourceCompile Include="..\..\RaptorViewer\RaptorViewer.rc" />
   </ItemGroup>
   <ItemGroup>
-    <Xml Include="..\..\RaptorViewer\Demo.xml" />
+    <Xml Include="..\..\RaptorViewer\Demo.xml">
+      <SubType>Designer</SubType>
+    </Xml>
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\..\RaptorViewer\Start.tga" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\RaptorViewer\buildpak.py" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

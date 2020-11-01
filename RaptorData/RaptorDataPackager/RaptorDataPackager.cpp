@@ -173,7 +173,7 @@ int main(int argc, char* argv[])
 	}
 
 	printf("\nWriting package header... ");
-	unsigned int intBuffer = strlen(header.pckName);
+	unsigned int intBuffer = (unsigned int)strlen(header.pckName);
 	WRITE(package,&intBuffer,sizeof(unsigned int));
 	WRITE(package,header.pckName,intBuffer);
 	intBuffer = header.compression;
@@ -182,7 +182,7 @@ int main(int argc, char* argv[])
 	WRITE(package,&intBuffer,sizeof(unsigned int));
 	for (unsigned int k=0;k<header.nbFHeaders;k++)
 	{
-		intBuffer = strlen(header.fHeaders[k].fname);
+		intBuffer = (unsigned int)strlen(header.fHeaders[k].fname);
 		WRITE(package,&intBuffer,sizeof(unsigned int));
 		WRITE(package,header.fHeaders[k].fname,intBuffer);
 		intBuffer = header.fHeaders[k].fsize;

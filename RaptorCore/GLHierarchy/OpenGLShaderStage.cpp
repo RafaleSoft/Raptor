@@ -270,7 +270,6 @@ void COpenGLShaderStage::setProgramParameters(const CProgramParameters &v)
 {
 	CShaderProgram::setProgramParameters(v);
 
-	uint64_t sz = 0;
 	size_t nbParams = m_parameters.getNbParameters();
 	for (size_t i = 0; i<nbParams; i++)
 	{
@@ -279,24 +278,22 @@ void COpenGLShaderStage::setProgramParameters(const CProgramParameters &v)
 			m_bUpdateLocations = true;
 
 #if defined(GL_ARB_uniform_buffer_object)
-		if (value.locationType == GL_UNIFORM_BLOCK_BINDING_ARB)
-			sz += value.size();
-#endif
-	}
-
-#if defined(GL_ARB_uniform_buffer_object)
-	if (0 < sz)
-	{
-		CUniformAllocator*	pUAllocator = CUniformAllocator::GetInstance();
-		if ((sz != m_uniforms_size) && (NULL != m_uniforms))
-			pUAllocator->releaseUniforms(m_uniforms);
-		else if (NULL == m_uniforms)
+		if ((value.locationType == GL_UNIFORM_BLOCK_BINDING_ARB) || (value.locationType == GL_UNIFORM_BLOCK_BINDING))
 		{
-			m_uniforms_size = sz;
-			m_uniforms = pUAllocator->allocateUniforms(sz);
+			uint64_t sz = value.size();
+			CUniformAllocator*	pUAllocator = CUniformAllocator::GetInstance();
+			
+			// TODO: check previous allocation
+			//if ((sz != m_uniforms_size) && (NULL != m_uniforms))
+			//	pUAllocator->releaseUniforms(m_uniforms);
+			
+			uniform_bloc bloc;
+			bloc.buffer = pUAllocator->allocateUniforms(sz);
+			bloc.size = value.size();
+			m_uniforms.push_back(bloc);
 		}
-	}
 #endif
+	}
 }
 
 
@@ -326,11 +323,11 @@ void COpenGLShaderStage::glRender(void)
 			m_bApplyParameters = false;
 		}
 
-		if (NULL != m_uniforms)
+		if (!m_uniforms.empty())
 		{
 			// TODO : provide uniform index binding point
 			CUniformAllocator*	pUAllocator = CUniformAllocator::GetInstance();
-			pUAllocator->glvkBindUniform(m_uniforms, 0);
+			pUAllocator->glvkBindUniform(m_uniforms[0].buffer, 0);
 		}
 
 		if (m_pVShader != NULL)
@@ -1008,7 +1005,7 @@ void COpenGLShaderStage::glSetProgramParameters()
 			else if (param_value.locationType == GL_UNIFORM_BLOCK_BINDING_ARB)
 			{
 				CUniformAllocator*	pUAllocator = CUniformAllocator::GetInstance();
-				pUAllocator->glvkSetPointerData(m_uniforms, (unsigned char*)param_value.addr(), param_value.size());
+				pUAllocator->glvkSetPointerData(m_uniforms[0].buffer, (unsigned char*)param_value.addr(), param_value.size());
 			}
 #endif
 			else if (param_value.isA(float_vector) && (param_value.locationType == GL_FLOAT))

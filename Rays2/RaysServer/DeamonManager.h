@@ -67,39 +67,30 @@ namespace RaysServer
 
 
 	public:
-		//bool InstallPlugin(	unsigned int IP,unsigned int port,unsigned int validDate,
-		//					CString name,unsigned int size,unsigned char* plugin) const;
-
 		CDeamonManager(server_base_t *server);
 		virtual ~CDeamonManager();
 
 		//!	Request Deamon stop.
-		void requestExit() { m_bExit = true; };
+		void requestExit(void);
 
 		//!	Return exit status.
 		bool doExit(void) const { return m_bExit; };
 
 		//!	Updates the delay for periodic deamon activation.
-		void setPollingDelay(unsigned int delay_in_seconds)
-		{
-			if (delay_in_seconds > 0)
-				m_pollingDelay = delay_in_seconds;
-		}
-		unsigned int getPollingDelay(void) const
-		{
-			return m_pollingDelay; 
-		}
+		void Start(unsigned int delay_in_seconds);
+		
+		unsigned int getPollingDelay(void) const { return m_pollingDelay;  }
 
 		//!	Create a new deamon
-		bool registerDeamon(const std::string& deamonIP);
+		bool registerDeamon(const std::string& deamonIP, uint16_t port);
 
 		size_t getNbDeamons(void) const { return m_Deamons.size(); };
 		
 		//!	Returns the deamon descritor structure.
-		const DEAMONSTRUCT* getDeamon(unsigned int WUID) const;
+		const DEAMONSTRUCT* getDeamon(size_t numDeamon) const;
 
 		//!	Update deamon status.
-		bool DeamonStatus(unsigned int numDeamon) const;
+		bool DeamonStatus(size_t numDeamon) const;
 
 		//!	Activate all deamons
 		bool UpdateDeamons(void) const;
@@ -115,15 +106,17 @@ namespace RaysServer
 		//bool ReleaseWorkUnit(unsigned short WUID);
 
 		//	Return true if registered workunit successfuly created
-		bool destroyDeamon(unsigned int numRegWU);
+		bool unregisterDeamon(size_t numRegWU);
+
+		//bool InstallPlugin(	unsigned int IP,unsigned int port,unsigned int validDate,
+		//					CString name,unsigned int size,unsigned char* plugin) const;
 
 	private:
 		server_base_t			*m_pServer;
-		vector<DEAMONSTRUCT*>	m_Deamons;	// array of registered work units
+		vector<DEAMONSTRUCT*>	m_Deamons;	// array of registered deamons
 		uint32_t				m_counter;		// unique work Unit ID counter
 		uint32_t				m_pollingDelay;
-		//HANDLE					m_deamonPoller;
-		//HANDLE					m_pollerEvent;
+		HANDLE					m_deamonPoller;
 		bool					m_bExit;
 
 		//int* SelectWorkUnits(unsigned int requestedWU);

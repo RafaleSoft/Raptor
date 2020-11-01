@@ -176,7 +176,7 @@ public:
 
 	//	Callbacks
 	virtual size_t onNewClient(const ClientSocket_T &client);
-	virtual bool onClientClose(const ClientSocket_T &client) { return true; };
+	virtual bool onClientClose(const ClientSocket_T &) { return true; };
 
 
 protected:
@@ -282,7 +282,7 @@ bool CServer<ServerSocket_T,ClientSocket_T>::newClient(void)
 }
 
 template <class ServerSocket_T,class ClientSocket_T> 
-size_t CServer<ServerSocket_T,ClientSocket_T>::onNewClient(const ClientSocket_T &client)
+size_t CServer<ServerSocket_T,ClientSocket_T>::onNewClient(const ClientSocket_T &)
 {
 	return m_clients.size();
 }

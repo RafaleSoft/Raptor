@@ -24,6 +24,10 @@
 
 //! Win32 directories system calls.
 #include <direct.h>
+#include <io.h>
+#include <fcntl.h>
+
+using namespace RaysServer;
 
 
 CServerSession::CServerSession()
@@ -41,7 +45,7 @@ CServerSession::session CServerSession::getSession(server_base_t::request_handle
 {
 	CRaptorLock lock(m_mutex);
 
-	session return_session = { NULL, 0 };
+	session return_session = {NULL};
 
 	for (size_t i = 0; i<m_sessions.size(); i++)
 		if (m_sessions[i].id == id)
@@ -53,20 +57,83 @@ CServerSession::session CServerSession::getSession(server_base_t::request_handle
 	return return_session;
 }
 
-bool CServerSession::createSession(server_base_t::request_handler_t::request_id id, CRaptorDisplay* display)
+bool CServerSession::saveSessionFile(server_base_t::request_handler_t::request_id id, const std::string& filename, uint8_t* data, size_t size)
 {
-	if ((0 == id) || (NULL == display))
+	//!	Create session private directory to store data.
+	char buffer[MAX_PATH];
+	if (NULL == _getcwd(buffer, MAX_PATH))
+		return false;
+
+	int mode = 0;
+	errno_t err = _get_fmode(&mode);
+	if (err == EINVAL)
+	{
+		std::cout << "Invalid parameter: mode" << std::endl;
+		return false;
+	}
+	err = _set_fmode(_O_BINARY);
+	if (err == EINVAL)
+	{
+		std::cout << "Warning : failed to update write mode to binary" << std::endl;
+		return 1;
+	}
+
+	std::stringstream session_path;
+	session_path << "session_" << id << std::ends;
+
+	bool file_written = false;
+	int dir_exist = _chdir(session_path.str().c_str());
+	if (0 == dir_exist)
+	{
+		FILE *f = fopen(filename.c_str(), "w");
+		if (NULL != f)
+		{
+			if (size != fwrite(data, 1, size, f))
+				std::cout << "Warning : failed to write data file " << filename << " to session " << id << std::endl;
+			else
+				file_written = true;
+
+			file_written = file_written && (0 == fclose(f));
+		}
+	}
+
+	if (0 == dir_exist)
+		dir_exist = _chdir(buffer);
+
+	return (file_written && (0 == dir_exist));
+}
+
+bool CServerSession::createSession(server_base_t::request_handler_t::request_id id)
+{
+	if (0 == id)
 		return false;
 
 	CRaptorLock lock(m_mutex);
 
 	session s;
 	s.id = id;
-	s.display = display;
 
 	m_sessions.push_back(s);
 
-	return true;
+	//!	Create session private directory to store data.
+	char buffer[MAX_PATH];
+	if (NULL == _getcwd(buffer, MAX_PATH))
+		return false;
+
+	std::stringstream session_path;
+	session_path << "session_" << id << std::ends;
+	int dir_exist = _chdir(session_path.str().c_str());
+	if ((ENOENT == errno) && (-1 == dir_exist))
+	{
+		dir_exist = _mkdir(session_path.str().c_str());
+		if (0 == dir_exist)
+			dir_exist = _chdir(session_path.str().c_str());
+	}
+
+	if (0 == dir_exist)
+		dir_exist = _chdir(buffer);
+
+	return (0 == dir_exist);
 }
 
 
@@ -74,14 +141,15 @@ bool CServerSession::closeSession(server_base_t::request_handler_t::request_id i
 {
 	CRaptorLock lock(m_mutex);
 
+	char buffer[MAX_PATH];
+	if (NULL == _getcwd(buffer, MAX_PATH))
+		return false;
+
 	for (size_t i = 0; i<m_sessions.size(); i++)
 	{
 		if (m_sessions[i].id == id)
 		{
 			m_sessions.erase(m_sessions.begin() + i);
-
-			char buffer[MAX_PATH];
-			_getcwd(buffer, MAX_PATH);
 
 			//! Check if directory is valid.
 			std::stringstream session_path;

@@ -121,14 +121,29 @@ protected:
 	CProgramParameters	    m_parameters;
 
 	//!	Shader uniform blocks.
-	unsigned char*	m_uniforms;
-	uint64_t		m_uniforms_size;
+	typedef struct uniform_bloc_t
+	{
+		uint8_t*	buffer;
+		uint64_t	size;
+	} uniform_bloc;
+	std::vector<uniform_bloc> m_uniforms;
+
+	//!	Shader storage blocks.
+	typedef struct storage_bloc_t
+	{
+		uint8_t*	buffer;
+		uint64_t	size;
+	} storage_bloc;
+	std::vector<storage_bloc> m_storages;
 
 
 private:
     //! Denied operators
 	CShaderProgram();
     CShaderProgram& operator=(const CShaderProgram& ) { return *this;};
+
+	//!	A helper to recursively read included files
+	std::string readFile(const std::string filename);
 };
 
 RAPTOR_NAMESPACE_END

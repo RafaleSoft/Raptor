@@ -18,38 +18,10 @@
 
 #version 440 compatibility
 
-//	Maximum number of lights due to number of interpolators available
-const int MAX_LIGHTS = 5;
-const int GL_MAX_LIGHTS = 8;
+#include "Raptor.glsl"
 
-//
-//	Raptor Uniform blocs
-//
-//layout (binding = 0) uniform Transform {
-//	mat4 ModelViewMatrix;
-//	mat4 ModelViewMatrixInverse;
-//	mat4 ModelViewProjectionMatrix;
-//	mat4 NormalMatrix;
-//} R_Transform;
 
-struct LightProduct
-{
-	vec4 position;
-	vec4 attenuation;
-	vec4 ambient;
-	vec4 diffuse;
-	vec4 specular;
-	float shininess;
-	float reserved[3];
-	bool enable;
-	bool reserved2[3];
-};
-
-layout (binding = 0) uniform LightProducts
-{
-	LightProduct lights[MAX_LIGHTS];
-	vec4		 scene_ambient;
-} R_LightProducts;
+LIGHT_PRODUCTS(0) R_LightProducts;
 
 
 layout(location = 0) in vec4 i_Position;

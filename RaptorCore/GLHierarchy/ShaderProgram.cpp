@@ -67,9 +67,7 @@ CShaderProgram::CShaderProgram(const CPersistence::CPersistenceClassID& id,const
 	m_bValid(false),
 	m_handle(),
 	m_bApplyParameters(false),
-	m_parameters(),
-	m_uniforms(NULL),
-	m_uniforms_size(0)
+	m_parameters()
 {
 }
 
@@ -81,17 +79,18 @@ CShaderProgram::CShaderProgram(const CShaderProgram& shader)
 	m_bApplyParameters = shader.m_bApplyParameters;
 	m_parameters = shader.m_parameters;
 	m_uniforms = shader.m_uniforms;
-	m_uniforms_size = shader.m_uniforms_size;
+	m_storages = shader.m_storages;
 }
 
 CShaderProgram::~CShaderProgram()
 {
 	// TODO : Recycle handle
 #if defined(GL_ARB_uniform_buffer_object)
-	if (NULL != m_uniforms)
+	if (!m_uniforms.empty())
 	{
 		CUniformAllocator*	pUAllocator = CUniformAllocator::GetInstance();
-		pUAllocator->releaseUniforms(m_uniforms);
+		for (size_t i=0;i<m_uniforms.size();i++)
+			pUAllocator->releaseUniforms(m_uniforms[i].buffer);
 	}
 #endif
 }
@@ -121,25 +120,72 @@ void CShaderProgram::updateProgramParameters(const CProgramParameters &v)
 	m_bApplyParameters = apply;
 }
 
-bool CShaderProgram::glLoadProgramFromFile(const std::string &program)
+std::string CShaderProgram::readFile(const std::string filename)
 {
-	CRaptorIO *shdr = CRaptorIO::Create(program, CRaptorIO::DISK_READ);
+	CRaptorIO *shdr = CRaptorIO::Create(filename, CRaptorIO::DISK_READ);
 	if (NULL == shdr)
 		return false;
 
 	if (shdr->getStatus() == CRaptorIO::IO_OK)
 	{
-		string programstr;
+		std::string programstr = "";
 		while (shdr->getStatus() == CRaptorIO::IO_OK)
 		{
-			string line;
+			std::string line;
 			*shdr >> line;
-			if (shdr->getStatus() == CRaptorIO::IO_OK)
-				programstr = programstr + line + "\n";
+			
+			size_t include_pos = line.find("#include", 0);
+			size_t comment_pos = line.find("//", 0);
+			if ((std::string::npos != include_pos) && (include_pos < comment_pos))
+			{
+				size_t file_begin = line.find("\"", include_pos + 8);
+				size_t file_end = line.find("\"", file_begin + 1);
+				if ((std::string::npos != file_begin) && (std::string::npos != file_end))
+				{
+					size_t path_end = filename.find_last_of('\\');
+					std::string path = filename.substr(0, path_end) + "\\" + line.substr(file_begin+1,file_end-file_begin-1);
+					line = readFile(path);
+					programstr = programstr + line + "\n";
+				}
+				else
+				{
+					RAPTOR_ERROR(shaderId, "Syntax error near include directire: " + line);
+				}
+			}
+			else
+			{
+				if (shdr->getStatus() == CRaptorIO::IO_OK)
+					programstr = programstr + line + "\n";
+			}
 		}
 
-		return glLoadProgram(programstr);
+		return programstr;
 	}
+	else
+	{
+		vector<CRaptorMessages::MessageArgument> args;
+		CRaptorMessages::MessageArgument arg;
+		arg.arg_sz = filename.c_str();
+		args.push_back(arg);
+
+		//!	Shader file could not be opened.
+		Raptor::GetErrorManager()->generateRaptorError(	shaderId,
+														CRaptorErrorManager::RAPTOR_ERROR,
+														CRaptorMessages::ID_NO_RESOURCE,
+														__FILE__, __LINE__, args);
+
+		return false;
+	}
+}
+
+bool CShaderProgram::glLoadProgramFromFile(const std::string &program)
+{
+	if (program.empty())
+		return false;
+
+	std::string programstr = readFile(program);
+	if (!programstr.empty())
+		return glLoadProgram(programstr);
 	else
 	{
 		vector<CRaptorMessages::MessageArgument> args;
@@ -248,6 +294,7 @@ uint64_t CShaderProgram::glGetBufferMemoryRequirements(void)
 				((value.locationType == GL_UNIFORM_BLOCK_BINDING_ARB) || (value.locationType == GL_UNIFORM_BLOCK_BINDING)))
 			{
 				value.locationIndex = binding;
+				value.locationSize = block_size;
 
 				if ((binding >= max_bindings) || (block_size != value.size()))
 				{

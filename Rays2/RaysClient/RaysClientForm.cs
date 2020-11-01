@@ -35,6 +35,13 @@ namespace RaysClient
             port.Text = settings.port.ToString();
             Render.Enabled = false;
             scene_filepath = "";
+
+            logger.SetLevel(RaysLogger.LEVEL.INFO);
+            logger.SetLogName(settings.logfile);
+            logger.SetDisplay(ref Log);
+            client.SetLog(ref logger);
+
+            config.SetClient(ref client);
         }
 
         private void RaysClientForm_Load(object sender, EventArgs e)
@@ -44,23 +51,26 @@ namespace RaysClient
 
         private void onClose(object sender, FormClosingEventArgs e)
         {
-            network.Disconnect();
+            if (!client.Close())
+                MessageBox.Show("Closing Rays Session of Rays Server disconnect failed", "Error", MessageBoxButtons.OK);
         }
 
         private void OnQuit(object sender, EventArgs e)
         {
-            if (network.IsConnected())
+            if (client.IsConnected())
             {
-                MessageBox.Show("A connection to the render server is still active", "Information", MessageBoxButtons.OK);
+                DialogResult res = MessageBox.Show("A connection to the render server is still active. \nClosing will lose rendered data. \nAre you sure you want to quit ?", "Information", MessageBoxButtons.YesNo);
+                if (DialogResult.No != res)
+                {
+                    client.Close();
+                    Close();
+                }
             }
             else
             {
                 DialogResult res = MessageBox.Show("Are you sure you want to quit ?", "Information", MessageBoxButtons.YesNo);
                 if (DialogResult.No != res)
-                {
-                    network.Disconnect();
                     Close();
-                }
             }
         }
 
@@ -69,19 +79,19 @@ namespace RaysClient
             this.Opacity = 0.5;
 
             FileDialog open = new OpenFileDialog();
-            open.Filter = "(Description de scène)|*.xml";
+            open.Filter = "Description de scène (*.xml)|*.xml|Images (*.tga;*.jpg;*.png;*.bmp;*.tif;*.exr)|*.tga;*.jpg;*.png;*.bmp;*.tif;*.exr";
             DialogResult res = open.ShowDialog();
 
             if (DialogResult.OK == res)
             {
-                Log.Items.Add("Opening file: " + open.FileName);
+                logger.Info("Opening file: " + open.FileName);
                 string ext = Path.GetExtension(open.FileName);
                 if ( ext == ".xml")
                 {
-                    Scene.Text = "Scene: " + Path.GetFileName(open.FileName);
                     scene_filepath = open.FileName;
+                    Scene.Text = "Scene: " + Path.GetFileName(open.FileName);
 
-                    Log.Items.Add("Loading scene: " + Path.GetFileName(open.FileName));
+                    logger.Info("Loading scene: " + Path.GetFileName(open.FileName));
                 }
                 else
                 {
@@ -89,7 +99,7 @@ namespace RaysClient
                     {
                         Assets.Items.Add(Path.GetFileName(open.FileName));
                         assets.Add(open.FileName);
-                        Log.Items.Add("Loading asset: " + Path.GetFileName(open.FileName));
+                        logger.Info("Loading asset: " + Path.GetFileName(open.FileName));
                     }
                 }
             }
@@ -142,7 +152,7 @@ namespace RaysClient
                     Assets.Items.Clear();
             }
 
-            if (network.IsConnected() && (scene_filepath.Length > 0))
+            if (client.IsConnected() && (scene_filepath.Length > 0))
                 Render.Enabled = true;
             else
                 Render.Enabled = false;
@@ -152,12 +162,12 @@ namespace RaysClient
         {
             Render.Enabled = false;
 
-            if (network.IsConnected())
+            if (client.IsConnected())
             {
-                if (!network.Disconnect())
+                if (!client.Disconnect())
                     MessageBox.Show("Unable to disconnect from the render server", "Error", MessageBoxButtons.OK);
                 else
-                    Log.Items.Add("Disconnect from the render server");
+                    logger.Info("Disconnect from the render server");
                 Connect.Text = "Connect";
             }
             else
@@ -165,16 +175,12 @@ namespace RaysClient
                 short p = 0;
                 bool b = short.TryParse(port.Text, out p);
 
-                if (b && network.Connect(host.Text, p))
+                if (b && client.Connect(host.Text, p))
                 {
-                    if (network.IsConnected())
-                    {
-                        Log.Items.Add("Connected to server: " + host.Text + " on port " + port.Text);
-                        Connect.Text = "Disconnect";
-
-                        if (scene_filepath.Length > 0)
-                            Render.Enabled = true;
-                    }
+                     logger.Info("Connected to server: " + host.Text + " on port " + port.Text);
+                     Connect.Text = "Disconnect";
+                     if (scene_filepath.Length > 0)
+                        Render.Enabled = true;
                 }
                 else
                     MessageBox.Show("Unable to connect to the render server", "Error", MessageBoxButtons.OK);
@@ -183,16 +189,50 @@ namespace RaysClient
 
         private void onRender(object sender, EventArgs e)
         {
+            string render_assets = scene_filepath;
+            StringEnumerator it = assets.GetEnumerator();
+            while (it.MoveNext())
+                render_assets += " " + it.Current;
+
+            if (client.Render(render_assets))
+                logger.Info("Rays Server starting rendering ...");
+            else
+                logger.Error("Errors found in rendering process, rendering aborted !");
+        }
+
+        private void onConfig(object sender, EventArgs e)
+        {
+            this.Opacity = 0.5;
+
+            DialogResult res = config.ShowDialog(this);
+            if (DialogResult.OK == res)
+            {
+                logger.Info("Rays configuration updated.");
+            }
+            else
+                logger.Info("Rays configuration not updated.");
+
+            this.Opacity = 1.0;
+        }
+
+        private void onSaveAs(object sender, EventArgs e)
+        {
 
         }
 
+        private void onResume(object sender, EventArgs e)
+        {
+
+        }
 
         /**
          * Client Main data
          */
-        private RaysClientNetwork network = new RaysClientNetwork();
-        private String scene_filepath = new String("".ToCharArray());
+        private RaysClient client = new RaysClient();
+        private RaysConfig config = new RaysConfig();
+        private string scene_filepath = new string("".ToCharArray());
         private StringCollection assets = new StringCollection();
-        StringCollection supported_exts = new StringCollection { "jpg", "png", "bmp", "exr", "tiff" };
+        private RaysLogger logger = new RaysLogger();
+        StringCollection supported_exts = new StringCollection { ".tga", ".jpg", ".png", ".bmp", ".exr", ".tif" };
     }
 }

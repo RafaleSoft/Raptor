@@ -182,9 +182,8 @@ bool CShaderLibrary::glAddToLibrary(const std::string& shader_name,
 	if (s_factoryShaders.find(shader_name) != s_factoryShaders.end())
 	{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
-		Raptor::GetErrorManager()->generateRaptorError(CShader::CShaderClassID::GetClassId(),
-													   CRaptorErrorManager::RAPTOR_WARNING,
-													   "Raptor ShaderLibrary cannot import already existing shader type");
+		RAPTOR_WARNING(	CShader::CShaderClassID::GetClassId(),
+						"Raptor ShaderLibrary cannot import already existing shader type");
 #endif
 		return false;
 	}
@@ -210,9 +209,7 @@ bool CShaderLibrary::glAddToLibrary(const std::string& shader_name,
 	else
 	{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
-				Raptor::GetErrorManager()->generateRaptorError(CShader::CShaderClassID::GetClassId(),
-															   CRaptorErrorManager::RAPTOR_WARNING,
-															   "Raptor ShaderLibrary cannot import unknown shader type");
+				RAPTOR_WARNING(CShader::CShaderClassID::GetClassId(), "Raptor ShaderLibrary cannot import unknown shader type");
 #endif
 		return false;
 	}
@@ -226,10 +223,20 @@ bool CShaderLibrary::glLoadShadersFromDataPackage()
 
 	CObjectFactory *pFactory = CObjectFactory::GetInstance();
 
+	//! First export Raptor shaders interfaces
+	std::string shader_path = dataManager->exportFile("Raptor.glsl");
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+	if (shader_path.empty())
+	{
+		std::string msg = "ShaderLibrary cannot find mandatory shader interface: Raptor.glsl";
+		RAPTOR_FATAL(CShader::CShaderClassID::GetClassId(), msg);
+	}
+#endif
+
 	for (size_t nb_shaders = 0; nb_shaders < NB_FACTORY_SHADERS; nb_shaders++)
 	{
 		factory_shader &fs = fsh[nb_shaders];
-		string shader_path = dataManager->exportFile(fs.shader_fname);
+		shader_path = dataManager->exportFile(fs.shader_fname);
 		if (!shader_path.empty())
 		{
 			const CPersistentObject & po = pFactory->createObject(fs.class_name);
@@ -238,9 +245,7 @@ bool CShaderLibrary::glLoadShadersFromDataPackage()
 			{
 				std::string msg = "ShaderLibrary unsupported shader class type: ";
 				msg += fs.class_name;
-				Raptor::GetErrorManager()->generateRaptorError(CShader::CShaderClassID::GetClassId(),
-															   CRaptorErrorManager::RAPTOR_ERROR,
-															   msg);
+				RAPTOR_ERROR(CShader::CShaderClassID::GetClassId(), msg);
 			}
 			else if (persistence->getId().ClassName() == fs.class_name)
 			{
@@ -255,9 +260,7 @@ bool CShaderLibrary::glLoadShadersFromDataPackage()
 				msg += shader_path;
 				msg += " named ";
 				msg += fs.shader_name;
-				Raptor::GetErrorManager()->generateRaptorError(CShader::CShaderClassID::GetClassId(),
-															   CRaptorErrorManager::RAPTOR_NO_ERROR,
-															   msg, __FILE__, __LINE__);
+				RAPTOR_NO_ERROR(CShader::CShaderClassID::GetClassId(),msg);
 #endif
 			}
 		}
@@ -265,9 +268,7 @@ bool CShaderLibrary::glLoadShadersFromDataPackage()
 		{
 			std::string msg = "ShaderLibrary cannot find mandatory shader: ";
 			msg += fs.shader_fname;
-			Raptor::GetErrorManager()->generateRaptorError(	CShader::CShaderClassID::GetClassId(),
-															CRaptorErrorManager::RAPTOR_FATAL,
-															msg, __FILE__, __LINE__);
+			RAPTOR_FATAL(CShader::CShaderClassID::GetClassId(), msg);
 		}
 	}
 

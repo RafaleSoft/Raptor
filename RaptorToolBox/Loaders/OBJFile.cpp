@@ -64,7 +64,7 @@ public:
 
 	virtual ~OBJYacc() {};
 
-	virtual void OnError(CYacc::YaccError err) { };
+	virtual void OnError(CYacc::YaccError ) { };
 
 	void buildGeometry();
 	const vector<CGeometry*>& getGeometries(void) const { return geometries; };

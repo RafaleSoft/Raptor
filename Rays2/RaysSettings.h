@@ -56,8 +56,11 @@ namespace Rays
 		bool addSetting(const std::string &name, T defaultValue);
 
 		//!	Set a settings value by name.
+		bool setValue(const std::string& settingsName, const std::string& str_value);
+
+		//!	Retrive a settings value by name.
 		template <class T>
-		bool setValue(const std::string& settingsName, T value);
+		bool setValue(const std::string& settingsName, T &t);
 
 		//!	Retrive a settings value by name.
 		template <class T>
@@ -65,6 +68,9 @@ namespace Rays
 
 		//!	Load Rays settings.
 		bool importSettings(raptor::CRaptorIO *conf);
+
+		//!	Load Rays startup configuration.
+		bool importStartup(raptor::CRaptorIO *conf);
 
 		//!	Save Rays settings.
 		bool exportSettings(raptor::CRaptorIO *conf);
@@ -95,9 +101,9 @@ bool Rays::CRaysSettings::getValue(const std::string& settingsName, T& t) const
 }
 
 template <class T>
-bool Rays::CRaysSettings::setValue(const std::string& settingsName, T value)
+bool Rays::CRaysSettings::setValue(const std::string& settingsName, T& t)
 {
-	return m_settings.setValue<T>(settingsName, value);
+	return m_settings.setValue(settingsName, t);
 }
 
 #endif // !defined(AFX_RAYSSETTINGS_H__40662BB9_6FC8_40CA_A8A0_F2A701AD70BD__INCLUDED_)

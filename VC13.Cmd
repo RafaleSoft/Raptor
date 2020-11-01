@@ -3,6 +3,7 @@ set RAPTOR_RELEASE=2.17
 
 set RAPTOR_ROOT=F:\VisualStudioProjects\Raptor
 set PATH=%RAPTOR_ROOT%\Redist\bin;%PATH%
+set PYTHON_HOME=E:\Python\Python37
 
 set CPPUNIT_VERSION=1.12.1
 set CPPUNIT_INCLUDE_PATH=%RAPTOR_ROOT%\AddOns\cppunit-%CPPUNIT_VERSION%\include
@@ -50,6 +51,11 @@ set OPENCL_BIN_PATH=E:\Intel\OpenCL\sdk\bin\x86
 
 set VULKAN_INCLUDE_PATH=%RAPTOR_ROOT%\AddOns\vulkan\include
 set VULKAN_BIN_PATH=c:\windows\system32
+
+set PHYSX_VERSION=4.1
+set PHYSX_INCLUDE_PATH=%RAPTOR_ROOT%\AddOns\PhysX-%PHYSX_VERSION%\include
+set PHYSX_LIB_PATH=%RAPTOR_ROOT%\AddOns\PhysX-%PHYSX_VERSION%\lib\VC12
+set PHYSX_BIN_PATH=%RAPTOR_ROOT%\AddOns\PhysX-%PHYSX_VERSION%\bin\VC12
 
 cd %RAPTOR_ROOT%
 
