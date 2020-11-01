@@ -38,13 +38,13 @@ public:
 	//!	Performs a select for reading on the collection
 	bool areWritable(void);
 
-	const iosock_base_t* getCollectionItem(unsigned int itemPos)
+	const iosock_base_t* getCollectionItem(size_t itemPos)
 	{ if (itemPos < m_collection.size()) return m_collection[itemPos].iosock; else return NULL;}
 
-	bool isReadable(unsigned int itemPos) const
+	bool isReadable(size_t itemPos) const
 	{ if (itemPos < m_collection.size()) return m_collection[itemPos].readable; else return false;}
 	
-	bool isWritable(unsigned int itemPos) const
+	bool isWritable(size_t itemPos) const
 	{ if (itemPos < m_collection.size()) return m_collection[itemPos].writable; else return false;}
 	
 

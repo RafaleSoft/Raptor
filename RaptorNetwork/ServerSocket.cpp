@@ -109,12 +109,12 @@ bool iosock_collection_t::areReadable(void)
 	for (size_t i=0;i<m_collection.size();i++)
 #ifdef WIN32
 		readfds.fd_array[i] = m_collection[i].iosock->m_socket;
-	readfds.fd_count = m_collection.size();
+	readfds.fd_count = (u_int)m_collection.size();
 #else // Linux environment
 		FD_SET(m_collection[i].iosock->m_socket, &readfds);
 #endif
 
-	int res = select(m_collection.size(),&readfds,NULL,NULL,&timeout);
+	int res = select((int)m_collection.size(),&readfds,NULL,NULL,&timeout);
 
 	if (res > 0)
 		for (size_t i=0;i<m_collection.size();i++)
@@ -131,12 +131,12 @@ bool iosock_collection_t::areWritable(void)
 	for (size_t i=0;i<m_collection.size();i++)
 #ifdef WIN32
 		writefds.fd_array[i] = m_collection[i].iosock->m_socket;
-	writefds.fd_count = m_collection.size();
+	writefds.fd_count = (u_int)m_collection.size();
 #else // Linux environment
 		FD_SET(m_collection[i].iosock->m_socket, &writefds);
 #endif
 
-	int res = select(m_collection.size(),NULL,&writefds,NULL,&timeout);
+	int res = select((int)m_collection.size(),NULL,&writefds,NULL,&timeout);
 
 	if (res > 0)
 		for (size_t i=0;i<m_collection.size();i++)

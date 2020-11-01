@@ -134,7 +134,7 @@ unsigned int CDOT3BumppedGeometry::glUpdateLightPosition(void)
 	T.Inverse();
 
 	numLights++;
-	X = T * pMainLight->getLightEyePosition();
+	X = T * pMainLight->getLightViewPosition();
 
 
 	GL_COORD_VERTEX att = pMainLight->getSpotParams();

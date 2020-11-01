@@ -40,8 +40,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 2, 17, 2, 0
- PRODUCTVERSION 2, 17, 2, 0
+ FILEVERSION 2, 17, 3, 2
+ PRODUCTVERSION 2, 17, 3, 2
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG      
  FILEFLAGS 0x1L
@@ -58,12 +58,12 @@ BEGIN
 		BEGIN
 			VALUE "CompanyName", "Rafale Soft Inc. ©"
 			VALUE "FileDescription", "Raptor OpenGL & Vulkan SDK Demo"
-			VALUE "FileVersion", "2.17.2.0"
+			VALUE "FileVersion", "2.17.3.2"
 			VALUE "InternalName", "Demo.exe"
 			VALUE "LegalCopyright", "Copyright © 1998-2019 Fabrice Ferrand <fabfer@wanadoo.fr>"
 			VALUE "OriginalFilename", "Demo.exe"
 			VALUE "ProductName", "Raptor Demo Application"
-			VALUE "ProductVersion", "2.17.2.0"
+			VALUE "ProductVersion", "2.17.3.2"
 		END
 	END
 	BLOCK "VarFileInfo"
