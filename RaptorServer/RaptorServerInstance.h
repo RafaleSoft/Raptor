@@ -113,11 +113,11 @@ private:
 	//!	Mutex to protect replies queue
 	CRaptorMutex		m_rmutex;
 	//!	Requests queue
-	vector<request>		m_requests;
+	std::vector<request>		m_requests;
 	//!	Replies queue
-	vector<request>		m_replies;
+	std::vector<request>		m_replies;
 	//! Displays to recycle
-	vector<CRaptorDisplay*> m_recycledDisplays;
+	std::vector<CRaptorDisplay*> m_recycledDisplays;
 };
 
 #endif // !defined(AFX_RAPTORINSTANCE_H__602E9801_E82B_41B1_9B90_DD498DDF468F__INCLUDED_)

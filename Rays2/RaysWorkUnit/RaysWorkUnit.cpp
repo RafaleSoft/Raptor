@@ -62,6 +62,23 @@ CRaysWorkUnit::~CRaysWorkUnit()
 	delete raytracer_data;
 }
 
+
+void print_help(void)
+{
+	std::cout << "Rays Workunit command line help:" << std::endl;
+
+	std::cout << "  --id|-i : defines the workunit id, each active workunit must have a unique id" << std::endl;
+	std::cout << "  --port|-p : defines the workunit listening port, by default 2048" << std::endl;
+	std::cout << "  --host_addr|-a : defines the workunit listening IP address, by default 127.0.0.1" << std::endl;
+	std::cout << "  --config_file|-f : the path to the deamon configuration file, by default RaysDeamon.config in the current execution folder" << std::endl;
+	std::cout << "  --width|-w : defines the workunit rendering surface width, by default 256" << std::endl;
+	std::cout << "  --height|-h : defines the workunit rendering surface height, by default 256" << std::endl;
+	std::cout << "  --help|-h : print this help and quit" << std::endl;
+	std::cout << std::endl;
+}
+
+
+
 /////////////////////////////////////////////////////////////////////////////
 //	Entry point
 int main(int argc, char* argv[])
@@ -82,11 +99,21 @@ int main(int argc, char* argv[])
 	parser.addOption("width","w",(unsigned short)256);
 	parser.addOption("height","h",(unsigned short)256);
 	parser.addOption("host_addr","a",std::string("127.0.0.1"));
+	parser.addOption("config_file", "f", std::string("RaysServer.config"));
+	parser.addOption("help", "h", CCmdLineParser::NO_VALUE_OPTION);
 
 	if (!parser.parse(argc,argv))
 	{
 		std::cout << "Rays Workunit failed to parse command line. Exiting, bye!" << std::endl;
 		return -1;
+	}
+
+	CCmdLineParser::NO_VALUE_OPTION_t help = CCmdLineParser::NO_VALUE_UNDEFINED;
+	parser.getValue<CCmdLineParser::NO_VALUE_OPTION_t>("h", help);
+	if (CCmdLineParser::NO_VALUE_VALUE == help)
+	{
+		print_help();
+		return 0;
 	}
 
 	p_WU = new CRaysWorkUnit();
@@ -98,18 +125,18 @@ int main(int argc, char* argv[])
 		
 		// job complete, send back results
 		MSGSTRUCT msg;
-		msg.msg_header = MSG_START;
+		//msg.msg_header = MSG_START;
 		msg.msg_id = JOB_STOP;
-		msg.msg_size = (raytracer_data->getEnd()-raytracer_data->getStart())*raytracer_data->getCamera().width*4;
-		msg.msg_size *= 2;	// add z-buffer
+		//msg.msg_size = (raytracer_data->getEnd()-raytracer_data->getStart())*raytracer_data->getCamera().width*4;
+		//msg.msg_size *= 2;	// add z-buffer
 		msg.msg_data[1] = raytracer_data->getStart();
 		msg.msg_data[2] = raytracer_data->getEnd();
-		msg.msg_tail = MSG_DATA;
+		//msg.msg_tail = MSG_DATA;
 		p_WU->write(&msg,MSGSIZE);
 
 		//	send job result
-		p_WU->write(raytracer_data->getImage(),msg.msg_size/2);
-		p_WU->write(raytracer_data->getZBuffer(),msg.msg_size/2);
+		//p_WU->write(raytracer_data->getImage(),msg.msg_size/2);
+		//p_WU->write(raytracer_data->getZBuffer(),msg.msg_size/2);
 	}
 
 	std::cout << "Exiting work unit ... bye!" << std::endl;
@@ -134,15 +161,15 @@ bool CRaysWorkUnit::start(const CCmdLineParser &cmdline)
 	{
 		//	write back ID to acknowledge Workunit availability
 		MSGSTRUCT msg;
-		msg.msg_header = MSG_START;
+		//msg.msg_header = MSG_START;
 		msg.msg_id = JOB_WUNIT;
-		msg.msg_size = 0;
+		//msg.msg_size = 0;
 		msg.msg_data[0] = id;
 		msg.msg_data[1] = 0;
 		msg.msg_data[2] = 0;
 		msg.msg_data[3] = getPort();
 		msg.msg_data[4] = getAddr();
-		msg.msg_tail = MSG_END;
+		//msg.msg_tail = MSG_END;
 		write(&msg,MSGSIZE);
 	}
 	else
