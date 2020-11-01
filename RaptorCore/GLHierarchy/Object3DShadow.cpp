@@ -327,7 +327,7 @@ void CObject3DShadow::buildShadow(CGenericMatrix<float> &modelview)
 				else
 					m_pAttributes->extrusion = z_max;
 
-				CGenericVector<float> lp = M.Inverse() * m_pAttributes->m_pLight->getLightEyePosition();
+				CGenericVector<float> lp = M.Inverse() * m_pAttributes->m_pLight->getLightViewPosition();
 				GL_COORD_VERTEX L(lp.X(),lp.Y(),lp.Z(),lp.H());
 				pContour->buildVolume(L,z_max);
 				m_pAttributes->reBuild = false;

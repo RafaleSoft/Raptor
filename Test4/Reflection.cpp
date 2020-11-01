@@ -33,7 +33,7 @@ CReflection::CReflection(float width,float height,int hcels,int vcels)
     pMaterial->setSpecular(1.0f , 1.0f , 1.0f , 0.7f);
     pMaterial->setShininess(10.0f);
 
-	CTextureFactory &f = CTextureFactory::getDefaultFactory();
+	CTextureFactory &f = CTextureFactory::glGetDefaultFactory();
     CTextureFactoryConfig &config = f.getConfig();
     config.setBumpAmplitude(3.0f);
     config.setCurrentAnisotropy(16.0f);

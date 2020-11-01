@@ -38,6 +38,9 @@
 #if !defined(AFX_OPENGLSHADERSTAGE_H__56B00FE3_E508_4FD6_9363_90E6E67446D9__INCLUDED_)
 	#include "GLHierarchy/OpenGLShaderStage.h"
 #endif
+#if !defined(AFX_TEXTUREFACTORY_H__1B470EC4_4B68_11D3_9142_9A502CBADC6B__INCLUDED_)
+	#include "GLHierarchy/TextureFactory.h"
+#endif
 
 //! Default Imaging functionnalities
 #if !defined(AFX_BUFFERIMAGE_H__B28C75CD_81D5_473F_A247_608FB6E02949__INCLUDED_)
@@ -133,8 +136,12 @@ CRaptorInstance::CRaptorInstance()
 	arrays_initialized = false;
 	m_pShaderLibraryInstance = NULL;
 	m_pNullShader = NULL;
+	m_pDefaultTextureFactory = NULL;
 
 	m_timeImplementation = NULL;
+	m_time = 0.0f;
+	m_globalTime = 0.0f;
+	m_deltat = 0.05f;
 }
 
 CRaptorInstance &CRaptorInstance::GetInstance(void)
@@ -208,6 +215,12 @@ CRaptorInstance::~CRaptorInstance()
 
 	CContextManager::GetInstance()->glDestroyContext(defaultContext);
 	defaultContext = 0;
+
+	if (NULL != m_pDefaultTextureFactory)
+	{
+		delete m_pDefaultTextureFactory;
+		m_pDefaultTextureFactory = NULL;
+	}
 
 	//  Default display is NULL, because it was created with GENERIC attribute.
 	//    glDestroyDisplay(status.defaultDisplay);
@@ -487,7 +500,9 @@ bool CRaptorInstance::glvkInitSharedResources(void)
 
 		CVertexShader *vp = stage->glGetVertexShader("TEXTURE_QUAD_VTX_PROGRAM");
 		CGeometryShader *gp = stage->glGetGeometryShader("TEXTURE_QUAD_GEO_PROGRAM");
+#if !defined(GL_VERSION_3_2)
 		gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
+#endif
 		CFragmentShader *fs = stage->glGetFragmentShader("TEXTURE_QUAD_TEX_PROGRAM");
 		CProgramParameters params;
 		params.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);
@@ -507,7 +522,9 @@ bool CRaptorInstance::glvkInitSharedResources(void)
 		params.addParameter("viewport", viewport);
 
 		CGeometryShader *gp = stage->glGetGeometryShader("FONT2D_GEO_PROGRAM");
+#if !defined(GL_VERSION_3_2)
 		gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
+#endif
 
 		CFragmentShader *fs = stage->glGetFragmentShader("FONT2D_TEX_PROGRAM");
 		params.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);
@@ -533,7 +550,9 @@ bool CRaptorInstance::glvkInitSharedResources(void)
 		params.addParameter("color", color);
 
 		CGeometryShader *gs = stage->glGetGeometryShader("VECTORFONT_GEO_PROGRAM");
+#if !defined(GL_VERSION_3_2)
 		gs->setGeometry(GL_POINTS, GL_LINE_STRIP, 14);
+#endif
 
 		CFragmentShader *fs = stage->glGetFragmentShader("VECTORFONT_TEX_PROGRAM");
 
@@ -557,7 +576,9 @@ bool CRaptorInstance::glvkInitSharedResources(void)
 
 		CVertexShader *vs = stage->glGetVertexShader("BOX_VTX_PROGRAM");
 		CGeometryShader *gs = stage->glGetGeometryShader("FILLEDBOX_GEO_PROGRAM");
+#if !defined(GL_VERSION_3_2)
 		gs->setGeometry(GL_LINES, GL_TRIANGLE_STRIP, 18);
+#endif
 		CFragmentShader *fs = stage->glGetFragmentShader("BOX_TEX_PROGRAM");
 
 		if (!stage->glCompileShader())
@@ -571,7 +592,9 @@ bool CRaptorInstance::glvkInitSharedResources(void)
 
 		CVertexShader *vs = stage->glGetVertexShader("BOX_VTX_PROGRAM");
 		CGeometryShader *gs = stage->glGetGeometryShader("WIREDBOX_GEO_PROGRAM");
+#if !defined(GL_VERSION_3_2)
 		gs->setGeometry(GL_LINES, GL_LINE_STRIP, 16);
+#endif
 		CFragmentShader *fs = stage->glGetFragmentShader("BOX_TEX_PROGRAM");
 
 		if (!stage->glCompileShader())
@@ -591,6 +614,10 @@ bool CRaptorInstance::glvkInitSharedResources(void)
 		m_displayBinder->setArray(CProgramParameters::POSITION, m_pAttributes);
 		m_displayBinder->useVertexArrayObjects();
 	}
+
+	// Initialise texture factory
+	if (NULL == m_pDefaultTextureFactory)
+		m_pDefaultTextureFactory = new CTextureFactory("DEFAULT_TEXTURE_FACTORY");
 
 	CATCH_GL_ERROR
 
@@ -671,6 +698,12 @@ bool CRaptorInstance::glvkReleaseSharedRsources()
 	{
 		delete m_pShaderLibraryInstance;
 		m_pShaderLibraryInstance = NULL;
+	}
+
+	if (NULL != m_pDefaultTextureFactory)
+	{
+		delete m_pDefaultTextureFactory;
+		m_pDefaultTextureFactory = NULL;
 	}
 
 	CATCH_GL_ERROR

@@ -174,7 +174,7 @@ void CShadowMap::glInitRenderBuffer(uint32_t width, uint32_t height)
 
 	m_pShadowMap = Raptor::glCreateDisplay(cs);
 	
-	CTextureFactory &factory = CTextureFactory::getDefaultFactory();
+	CTextureFactory &factory = CTextureFactory::glGetDefaultFactory();
 
 #ifdef GL_ARB_shadow
 	if (Raptor::glIsExtensionSupported(GL_ARB_SHADOW_EXTENSION_NAME))
@@ -237,7 +237,7 @@ void CShadowMap::glInitPixelBuffer(uint32_t width, uint32_t height)
 	
 	CATCH_GL_ERROR
 
-	CTextureFactory &factory = CTextureFactory::getDefaultFactory();
+	CTextureFactory &factory = CTextureFactory::glGetDefaultFactory();
 
 #ifdef GL_ARB_shadow
 	if (Raptor::glIsExtensionSupported(GL_ARB_SHADOW_EXTENSION_NAME))

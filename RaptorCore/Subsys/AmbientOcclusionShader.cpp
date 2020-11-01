@@ -86,7 +86,7 @@ bool CAmbientOcclusionShader::glInitAOCompute(void)
 		(m_pNormalMap == NULL))
 		return false;
 
-	CTextureFactory &f = CTextureFactory::getDefaultFactory();
+	CTextureFactory &f = CTextureFactory::glGetDefaultFactory();
 	f.getConfig().useTextureResize(false);
 	ITextureObject *T = f.glCreateTexture(	ITextureObject::CGL_COLOR_FLOAT32_ALPHA,
 											ITextureObject::CGL_BILINEAR);
@@ -278,7 +278,7 @@ bool CAmbientOcclusionShader::glSetCoords(GL_COORD_VERTEX* refVertex, unsigned i
 
 	if (refVertex != NULL)
 	{
-		CTextureFactory &f = CTextureFactory::getDefaultFactory();
+		CTextureFactory &f = CTextureFactory::glGetDefaultFactory();
 		f.getConfig().useTextureResize(false);
 
 		int width = ceil(log(sqrt((float)nbVertex)) / log(2.0));
@@ -312,7 +312,7 @@ bool CAmbientOcclusionShader::glSetNormals(GL_COORD_VERTEX* refNormal, unsigned 
 
 	if (refNormal != NULL)
 	{
-		CTextureFactory &f = CTextureFactory::getDefaultFactory();
+		CTextureFactory &f = CTextureFactory::glGetDefaultFactory();
 		f.getConfig().useTextureResize(false);
 
 		int width = ceil(log(sqrt((float)nbVertex)) / log(2.0));

@@ -143,7 +143,7 @@ bool CColorControlFilter::glInitFilter(void)
     if (!CRaptorDisplayFilter::glInitFilter())
         return false;
 
-	CTextureFactory &filterFactory = CTextureFactory::getDefaultFactory();
+	CTextureFactory &filterFactory = CTextureFactory::glGetDefaultFactory();
 
 	if ((colorExternalSource != NULL) && (m_fModel == RENDER_TEXTURE))
 	{

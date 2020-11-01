@@ -133,8 +133,8 @@ public:
 	CColor::RGBA getAmbient(void) const { return M.ambient; };
 	CColor::RGBA getDiffuse(void) const { return M.diffuse; };
 	CColor::RGBA getSpecular(void) const { return M.specular; };
-	CColor::RGBA getShininess(void) const { return M.shininess; };
 	CColor::RGBA getEmission(void) const { return M.emission; };
+	float getShininess(void) const { return M.shininess; };
 	const Material_t& getMaterial(void) const { return M; };
 
     //! This method makes the material darker, multiplying the values by 'd'

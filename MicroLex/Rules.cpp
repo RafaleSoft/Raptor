@@ -432,7 +432,8 @@ int ParseAtom(StreamManager& stream,char &car)
 
 	// read definition
 	c = stream.GetChar();
-	int l=0,l2;
+	size_t l = 0;
+	size_t l2 = 0;
 	while ((!IS_SEPARATOR(c))&&(c != EOF))
 	{
 		switch (c)
@@ -455,7 +456,7 @@ int ParseAtom(StreamManager& stream,char &car)
 				break;
 			case '+':
 				l2 = a->NbValidChars();
-				if (l2>l+1)
+				if (l2 > l + 1)
 				{
 					cout << "Syntax error: cannot apply dup on a sequence of rules" << endl;
 					return 100;
@@ -469,7 +470,7 @@ int ParseAtom(StreamManager& stream,char &car)
 				break;
 			case '*':
 				l2 = a->NbValidChars();
-				if (l2>l+1)
+				if (l2 > l + 1)
 				{
 					cout << "Syntax error: cannot apply dup on a sequence of rules" << endl;
 					return 100;
@@ -482,7 +483,7 @@ int ParseAtom(StreamManager& stream,char &car)
 				break;
 			case '?':
 				l2 = a->NbValidChars();
-				if (l2>l+1)
+				if (l2 > l + 1)
 				{
 					cout << "Syntax error: cannot apply optional on a sequence of rules" << endl;
 					return 100;
@@ -513,7 +514,7 @@ int ParseAtom(StreamManager& stream,char &car)
 
 	//	current caracter must be returned
 	//	to continue parent line processing
-	car=c;
+	car = c;
 
 	if (!atom::AddAtom(a))
 	{

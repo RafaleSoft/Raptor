@@ -55,15 +55,15 @@
 #if !defined(AFX_RAPTORVULKANDEVICE_H__2FDEDD40_444E_4CC2_96AA_CBF9E79C3ABE__INCLUDED_)
 	#include "Subsys/Vulkan/VulkanDevice.h"
 #endif
-
+#if !defined(AFX_RAPTORINSTANCE_H__90219068_202B_46C2_BFF0_73C24D048903__INCLUDED_)
+	#include "Subsys/RaptorInstance.h"
+#endif
 
 
 RAPTOR_NAMESPACE
 
 IMPLEMENT_CLASS_ID(CTextureFactory, factoryId)
 
-
-CTextureFactory *CTextureFactory::m_pDefault = NULL;
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -76,18 +76,23 @@ CTextureFactory::CTextureFactory(const std::string& name)
 
 CTextureFactory::~CTextureFactory(void)
 {
-	if (m_pDefault == this)
-		m_pDefault = NULL;
 }
 
-CTextureFactory& CTextureFactory::getDefaultFactory()
+CTextureFactory& CTextureFactory::glGetDefaultFactory()
 {
-	if (m_pDefault == NULL)
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+
+	if (NULL == instance.m_pDefaultTextureFactory)
 	{
-		m_pDefault = new CTextureFactory("DEFAULT_TEXTURE_FACTORY");
+		if (!instance.isInitialised())
+		{
+			RAPTOR_ERROR(factoryId, "No RaptorInstance is initialised !")
+		}
+
+		instance.m_pDefaultTextureFactory = new CTextureFactory("DEFAULT_TEXTURE_FACTORY");
 	}
 
-	return *m_pDefault;
+	return *(instance.m_pDefaultTextureFactory);
 }
 
 
@@ -102,7 +107,7 @@ RAPTOR_HANDLE CTextureFactory::glvkPreloadTexture(CTextureObject* const T,
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 	if ((T == NULL) || (!glIsTexture(T->texname) && (T->target != VK_IMAGE_TYPE_2D))
 	{
-        Raptor::GetErrorManager()->generateRaptorError(	CTextureFactory::CTextureFactoryClassID::GetClassId(),
+        Raptor::GetErrorManager()->generateRaptorError(	factoryId,
 														CRaptorErrorManager::RAPTOR_WARNING,
 														CRaptorMessages::ID_NULL_OBJECT);
 		return preload;
@@ -112,7 +117,7 @@ RAPTOR_HANDLE CTextureFactory::glvkPreloadTexture(CTextureObject* const T,
 	if ((T->target >> 16) == ITextureGenerator::BUFFERED)
 	{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
-        Raptor::GetErrorManager()->generateRaptorError(	CTextureFactory::CTextureFactoryClassID::GetClassId(),
+        Raptor::GetErrorManager()->generateRaptorError(	factoryId,
 														CRaptorErrorManager::RAPTOR_WARNING,
 														CRaptorMessages::ID_UPDATE_FAILED);
 #endif
@@ -242,7 +247,7 @@ RAPTOR_HANDLE CTextureFactory::glvkPreloadTexture(CTextureObject* const T,
             arg.arg_sz = fname.data();
             vector<CRaptorMessages::MessageArgument> args;
             args.push_back(arg);
-            Raptor::GetErrorManager()->generateRaptorError(	CTextureFactory::CTextureFactoryClassID::GetClassId(),
+            Raptor::GetErrorManager()->generateRaptorError(	factoryId,
 			    											CRaptorErrorManager::RAPTOR_WARNING,
 				    										CRaptorMessages::ID_TEXTURE_MISS,args);
         }
@@ -406,16 +411,16 @@ bool CTextureFactory::glLoadTexture(ITextureObject* const T,
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 	if (NULL == T->getGLTextureObject())
 	{
-		Raptor::GetErrorManager()->generateRaptorError(	CTextureFactory::CTextureFactoryClassID::GetClassId(),
+		Raptor::GetErrorManager()->generateRaptorError( factoryId,
 														CRaptorErrorManager::RAPTOR_WARNING,
 														CRaptorMessages::ID_NULL_OBJECT);
 		return false;
 	}
 	if (!glIsTexture(T->getGLTextureObject()->texname))
 	{
-		Raptor::GetErrorManager()->generateRaptorError(CTextureFactory::CTextureFactoryClassID::GetClassId(),
-			CRaptorErrorManager::RAPTOR_WARNING,
-			CRaptorMessages::ID_NULL_OBJECT);
+		Raptor::GetErrorManager()->generateRaptorError(	factoryId,
+														CRaptorErrorManager::RAPTOR_WARNING,
+														CRaptorMessages::ID_NULL_OBJECT);
 		return false;
 	}
 #endif
@@ -427,7 +432,7 @@ bool CTextureFactory::glLoadTexture(ITextureObject* const T,
 	if (kind == ITextureGenerator::BUFFERED)
 	{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
-		Raptor::GetErrorManager()->generateRaptorError(CTextureFactory::CTextureFactoryClassID::GetClassId(),
+		Raptor::GetErrorManager()->generateRaptorError(factoryId,
 													   CRaptorErrorManager::RAPTOR_WARNING,
 													   CRaptorMessages::ID_UPDATE_FAILED);
 #endif
@@ -543,7 +548,7 @@ bool CTextureFactory::glLoadTexture(ITextureObject* const T,
 #ifndef RAPTOR_DEBUG_MODE_GENERATION
 	if ((T == NULL) || fname.empty())
 	{
-		Raptor::GetErrorManager()->generateRaptorError(CTextureFactory::CTextureFactoryClassID::GetClassId(),
+		Raptor::GetErrorManager()->generateRaptorError(factoryId,
 													   CRaptorErrorManager::RAPTOR_WARNING,
 													   CRaptorMessages::ID_NULL_OBJECT);
 		return false;
@@ -874,7 +879,7 @@ ITextureObject* const CTextureFactory::glCreateCubemap(  ITextureObject::TEXEL_T
 		CRaptorMessages::MessageArgument arg;
 		arg.arg_sz = "Cube Texture";
 		args.push_back(arg);
-        Raptor::GetErrorManager()->generateRaptorError(	CTextureFactory::CTextureFactoryClassID::GetClassId(),
+        Raptor::GetErrorManager()->generateRaptorError( factoryId,
 														CRaptorErrorManager::RAPTOR_ERROR,
 														CRaptorMessages::ID_FORMAT_NOT_SUPPORTED,
 														__FILE__, __LINE__, args);
@@ -920,7 +925,7 @@ ITextureObject* const CTextureFactory::vkCreateTexture(ITextureObject::TEXEL_TYP
 		CRaptorMessages::MessageArgument arg;
 		arg.arg_sz = "2D Float32 Texture, use a Texture Rectangle instead.";
 		args.push_back(arg);
-		Raptor::GetErrorManager()->generateRaptorError(CTextureFactory::CTextureFactoryClassID::GetClassId(),
+		Raptor::GetErrorManager()->generateRaptorError(factoryId,
 													   CRaptorErrorManager::RAPTOR_WARNING,
 													   CRaptorMessages::ID_FORMAT_NOT_SUPPORTED, 
 													   __FILE__, __LINE__, args);
@@ -951,7 +956,7 @@ ITextureObject* const CTextureFactory::glCreateTexture( ITextureObject::TEXEL_TY
 		CRaptorMessages::MessageArgument arg;
 		arg.arg_sz = "2D Float32 Texture, use a Texture Rectangle instead.";
 		args.push_back(arg);
-        Raptor::GetErrorManager()->generateRaptorError(	CTextureFactory::CTextureFactoryClassID::GetClassId(),
+        Raptor::GetErrorManager()->generateRaptorError( factoryId,
 														CRaptorErrorManager::RAPTOR_WARNING,
 														CRaptorMessages::ID_FORMAT_NOT_SUPPORTED,
 														__FILE__, __LINE__, args);
@@ -965,7 +970,7 @@ ITextureObject* const CTextureFactory::glCreateTexture( ITextureObject::TEXEL_TY
 		CRaptorMessages::MessageArgument arg;
 		arg.arg_sz = "Packed Depth Stencil Texture Format";
 		args.push_back(arg);
-        Raptor::GetErrorManager()->generateRaptorError(	CTextureFactory::CTextureFactoryClassID::GetClassId(),
+        Raptor::GetErrorManager()->generateRaptorError( factoryId,
 														CRaptorErrorManager::RAPTOR_ERROR,
 														CRaptorMessages::ID_FORMAT_NOT_SUPPORTED,
 														__FILE__, __LINE__, args);
@@ -1007,7 +1012,7 @@ ITextureObject* const CTextureFactory::glCreateRectangleTexture( ITextureObject:
 		CRaptorMessages::MessageArgument arg;
 		arg.arg_sz = "Texture Rectangle";
 		args.push_back(arg);
-        Raptor::GetErrorManager()->generateRaptorError(	CTextureFactory::CTextureFactoryClassID::GetClassId(),
+        Raptor::GetErrorManager()->generateRaptorError( factoryId,
 														CRaptorErrorManager::RAPTOR_ERROR,
 														CRaptorMessages::ID_FORMAT_NOT_SUPPORTED,
 														__FILE__, __LINE__, args);
@@ -1053,7 +1058,7 @@ ITextureObject* const CTextureFactory::glCreateDynamicTexture(ITextureObject::TE
 	if (pGenerator == NULL)
 	{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
-        Raptor::GetErrorManager()->generateRaptorError(	CTextureFactory::CTextureFactoryClassID::GetClassId(),
+        Raptor::GetErrorManager()->generateRaptorError( factoryId,
 														CRaptorErrorManager::RAPTOR_ERROR,
 														CRaptorMessages::ID_NULL_OBJECT);
 #endif
@@ -1103,7 +1108,7 @@ ITextureObject* const CTextureFactory::glCreateVolumeTexture(ITextureObject::TEX
 		CRaptorMessages::MessageArgument arg;
 		arg.arg_sz = "Texture 3D";
 		args.push_back(arg);
-		Raptor::GetErrorManager()->generateRaptorError(	CTextureFactory::CTextureFactoryClassID::GetClassId(),
+		Raptor::GetErrorManager()->generateRaptorError( factoryId,
 														CRaptorErrorManager::RAPTOR_ERROR,
 														CRaptorMessages::ID_FORMAT_NOT_SUPPORTED,
 														__FILE__, __LINE__, args);
@@ -1144,7 +1149,7 @@ bool CTextureFactory::glLoadCompressedTexture(ITextureObject* const T,const std:
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
     if ((T == NULL) || (!glIsTexture(T->getGLTextureObject()->texname)))
 	{
-        Raptor::GetErrorManager()->generateRaptorError(	CTextureFactory::CTextureFactoryClassID::GetClassId(),
+        Raptor::GetErrorManager()->generateRaptorError( factoryId,
 														CRaptorErrorManager::RAPTOR_WARNING,
 														CRaptorMessages::ID_NULL_OBJECT);
 		return false;
@@ -1218,7 +1223,7 @@ bool CTextureFactory::glLoadCompressedTexture(ITextureObject* const T,const std:
     {
 		ret = false;
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
-        Raptor::GetErrorManager()->generateRaptorError(CTextureFactory::CTextureFactoryClassID::GetClassId(),
+        Raptor::GetErrorManager()->generateRaptorError(factoryId,
                                                        CRaptorErrorManager::RAPTOR_WARNING,
                                                        CRaptorMessages::ID_NO_RESOURCE);
 #endif

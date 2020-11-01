@@ -41,7 +41,7 @@ CServerSession::session CServerSession::getSession(server_base_t::request_handle
 {
 	CRaptorLock lock(m_mutex);
 
-	session return_session = {NULL, 0};
+	session return_session = { NULL, 0 };
 
 	for (size_t i = 0; i<m_sessions.size(); i++)
 		if (m_sessions[i].id == id)

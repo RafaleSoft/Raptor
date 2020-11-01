@@ -21,6 +21,7 @@
 
 import os
 import sys
+import shutil
 
 RAPTOR_ROOT = os.environ.get("RAPTOR_ROOT")
 PLATFORM = os.environ.get("PLATFORM")
@@ -55,7 +56,7 @@ os.chdir(PUBLISH)
 
 if os.path.exists("app.publish"):
     print("  Publish folder exist, it will be recreated ...")
-    os.rmdir("app.publish")
+    shutil.rmtree("app.publish", ignore_errors=True)
 else:
     print("  Publish folder missing, it will be created ...")
 

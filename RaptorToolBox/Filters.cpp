@@ -98,7 +98,7 @@ bool CFilters::glInstallFilters(void)
     return res;
 }
 
-bool CFilters::glInstallFilter(const std::string& filterType)
+bool CFilters::glInstallFilter(const std::string& )
 {
     bool res = true;
 

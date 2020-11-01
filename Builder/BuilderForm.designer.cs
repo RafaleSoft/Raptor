@@ -66,6 +66,7 @@ namespace Builder
             this.SMP = new System.Windows.Forms.CheckBox();
             this.TREE_EXTENSIONS = new System.Windows.Forms.TreeView();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.BUILD_PHYSX = new System.Windows.Forms.CheckBox();
             this.Build.SuspendLayout();
             this.CPU.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -113,12 +114,13 @@ namespace Builder
             // 
             // Build
             // 
+            this.Build.Controls.Add(this.BUILD_PHYSX);
             this.Build.Controls.Add(this.BUILD_DEBUG);
             this.Build.Controls.Add(this.BUILD_COMPUTE);
             this.Build.Controls.Add(this.BUILD_REDIST);
             this.Build.Location = new System.Drawing.Point(349, 72);
             this.Build.Name = "Build";
-            this.Build.Size = new System.Drawing.Size(156, 91);
+            this.Build.Size = new System.Drawing.Size(156, 116);
             this.Build.TabIndex = 5;
             this.Build.TabStop = false;
             this.Build.Text = "Build";
@@ -128,9 +130,9 @@ namespace Builder
             this.BUILD_DEBUG.AutoSize = true;
             this.BUILD_DEBUG.Location = new System.Drawing.Point(7, 68);
             this.BUILD_DEBUG.Name = "BUILD_DEBUG";
-            this.BUILD_DEBUG.Size = new System.Drawing.Size(111, 17);
+            this.BUILD_DEBUG.Size = new System.Drawing.Size(85, 17);
             this.BUILD_DEBUG.TabIndex = 2;
-            this.BUILD_DEBUG.Text = "Build DEBUG Info";
+            this.BUILD_DEBUG.Text = "DEBUG Info";
             this.BUILD_DEBUG.UseVisualStyleBackColor = true;
             // 
             // BUILD_COMPUTE
@@ -138,9 +140,9 @@ namespace Builder
             this.BUILD_COMPUTE.AutoSize = true;
             this.BUILD_COMPUTE.Location = new System.Drawing.Point(7, 44);
             this.BUILD_COMPUTE.Name = "BUILD_COMPUTE";
-            this.BUILD_COMPUTE.Size = new System.Drawing.Size(128, 17);
+            this.BUILD_COMPUTE.Size = new System.Drawing.Size(102, 17);
             this.BUILD_COMPUTE.TabIndex = 1;
-            this.BUILD_COMPUTE.Text = "Build GPU Computing";
+            this.BUILD_COMPUTE.Text = "GPU Computing";
             this.BUILD_COMPUTE.UseVisualStyleBackColor = true;
             // 
             // BUILD_REDIST
@@ -148,9 +150,9 @@ namespace Builder
             this.BUILD_REDIST.AutoSize = true;
             this.BUILD_REDIST.Location = new System.Drawing.Point(7, 20);
             this.BUILD_REDIST.Name = "BUILD_REDIST";
-            this.BUILD_REDIST.Size = new System.Drawing.Size(124, 17);
+            this.BUILD_REDIST.Size = new System.Drawing.Size(98, 17);
             this.BUILD_REDIST.TabIndex = 0;
-            this.BUILD_REDIST.Text = "Build Documentation";
+            this.BUILD_REDIST.Text = "Documentation";
             this.BUILD_REDIST.UseVisualStyleBackColor = true;
             // 
             // CPU
@@ -158,7 +160,7 @@ namespace Builder
             this.CPU.Controls.Add(this.SSE2);
             this.CPU.Controls.Add(this.SSE);
             this.CPU.Controls.Add(this.SMP);
-            this.CPU.Location = new System.Drawing.Point(349, 169);
+            this.CPU.Location = new System.Drawing.Point(349, 208);
             this.CPU.Name = "CPU";
             this.CPU.Size = new System.Drawing.Size(156, 40);
             this.CPU.TabIndex = 6;
@@ -200,25 +202,35 @@ namespace Builder
             this.TREE_EXTENSIONS.CheckBoxes = true;
             this.TREE_EXTENSIONS.Location = new System.Drawing.Point(13, 13);
             this.TREE_EXTENSIONS.Name = "TREE_EXTENSIONS";
-            this.TREE_EXTENSIONS.Size = new System.Drawing.Size(330, 267);
+            this.TREE_EXTENSIONS.Size = new System.Drawing.Size(330, 306);
             this.TREE_EXTENSIONS.TabIndex = 0;
             // 
             // pictureBox1
             // 
             this.pictureBox1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.pictureBox1.Image = global::Builder.Properties.Resources.Raptor_logo_sml;
-            this.pictureBox1.Location = new System.Drawing.Point(349, 215);
+            this.pictureBox1.Location = new System.Drawing.Point(349, 254);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(154, 65);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox1.TabIndex = 8;
             this.pictureBox1.TabStop = false;
             // 
-            // Form1
+            // BUILD_PHYSX
+            // 
+            this.BUILD_PHYSX.AutoSize = true;
+            this.BUILD_PHYSX.Location = new System.Drawing.Point(7, 91);
+            this.BUILD_PHYSX.Name = "BUILD_PHYSX";
+            this.BUILD_PHYSX.Size = new System.Drawing.Size(84, 17);
+            this.BUILD_PHYSX.TabIndex = 3;
+            this.BUILD_PHYSX.Text = "Cuda PhysX";
+            this.BUILD_PHYSX.UseVisualStyleBackColor = true;
+            // 
+            // BuilderForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(519, 292);
+            this.ClientSize = new System.Drawing.Size(519, 331);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.TREE_EXTENSIONS);
             this.Controls.Add(this.CPU);
@@ -230,7 +242,7 @@ namespace Builder
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "Biulder";
+            this.Name = "BuilderForm";
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.Text = "Raptor Builder.Net  [Prepare Raptor Code to use the following options] ";
             this.Build.ResumeLayout(false);
@@ -258,6 +270,7 @@ namespace Builder
         private System.Windows.Forms.CheckBox SMP;
         private System.Windows.Forms.TreeView TREE_EXTENSIONS;
         private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.CheckBox BUILD_PHYSX;
     }
 }
 

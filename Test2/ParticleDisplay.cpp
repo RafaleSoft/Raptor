@@ -198,7 +198,7 @@ void CParticleDisplay::Init()
     CParticle *pSmoke2 = m_pParticleManager->glCreateParticle(75,true,CParticle::CGL_PARTICLE_VOLUMETRIC,CParticle::CGL_COLOR_BLEND,computeSmoke2,"SMOKE2");
 	
 	// Load texture
-	CTextureFactory &f = CTextureFactory::getDefaultFactory();
+	CTextureFactory &f = CTextureFactory::glGetDefaultFactory();
 	CTextureSet* pTextures = (CTextureSet*)CPersistence::FindObject("main_textures");
 	ITextureObject* T = f.glCreateTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 											ITextureObject::CGL_BILINEAR);
@@ -319,7 +319,7 @@ void CParticleDisplay::Display()
 		if (numframe == 127)
 		{
 			pSmoke2->getTexture()->glvkRender();
-			CTextureFactory &f = CTextureFactory::getDefaultFactory();
+			CTextureFactory &f = CTextureFactory::glGetDefaultFactory();
 			f.glLoadTexture(pSmoke2->getTexture(), smoke);
 			smoke.releasePixels();
 			pSmoke2->getProperties().setVisible(true);

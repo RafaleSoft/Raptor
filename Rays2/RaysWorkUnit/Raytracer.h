@@ -111,15 +111,15 @@ public:
 
 	size_t getNbObjects(void) const { return objects.size(); }
 	void addObject(CGenericRenderObject *pObject) { objects.push_back(pObject); }
-	CGenericRenderObject * const getObject(unsigned int numObject) const
+	CGenericRenderObject * const getObject(size_t numObject) const
 	{ if (numObject < objects.size()) return objects[numObject]; else return NULL; }
 
-	unsigned int getNbLights(void) const { return lights.size(); }
+	size_t getNbLights(void) const { return lights.size(); }
 	void addLight(CGenericLight* pLight) { lights.push_back(pLight); }
-	CGenericLight * const getLight(unsigned int numLight) const
+	CGenericLight * const getLight(size_t numLight) const
 	{ if (numLight < lights.size()) return lights[numLight]; else return NULL; }
 
-	unsigned int getNbTextures(void) const
+	size_t getNbTextures(void) const
 	{ return textures.size(); }
 
 	map<std::string, CTexture*>::const_iterator getFirstTexture() const
@@ -157,7 +157,7 @@ public:
 		}
 	}
 
-	unsigned int getNbPlugins(void) const
+	size_t getNbPlugins(void) const
 	{ return plugins.size(); }
 
 	map<std::string, CPlugin*>::const_iterator getFirstPlugin() const
@@ -195,7 +195,7 @@ public:
 		}
 	}
 
-	unsigned int getNbFrames(void) const
+	size_t getNbFrames(void) const
 	{ return frames.size(); }
 	void addFrame(rays_frame_t* f) { frames.push_back(f); }
 	rays_frame_t* getFrame(unsigned int f)

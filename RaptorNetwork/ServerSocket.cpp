@@ -16,28 +16,6 @@ size_t	CServerSocket::readBufferSize = 2048;
 size_t	CServerSocket::writeBufferSize = 65536;
 struct timeval iosock_collection_t::timeout;
 
-/*
-unsigned long waitConnectionEvent(void* pParam)
-{
-	CServerSocket *pIOSock = (CServerSocket*)pParam;
-	CServer<CServerSocket,CClientSocket> *pServer = (CServer<CServerSocket,CClientSocket>*)pIOSock->getServer();
-
-	while (pIOSock->getPort() != 0)
-	{
-		// is there a client requesting a connection ?
-		if (pIOSock->iosock_base_t::isReadable())
-		{
-			CClientSocket client;
-			if (client.connect(*pIOSock))
-				pServer->onNewClient(client);
-		}
-		for (int i=0;i<16;i++)
-			pServer->readClients();
-	}
-
-	ExitThread(0);
-}
-*/
 
 #ifdef WIN32
 	DWORD

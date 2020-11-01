@@ -190,7 +190,7 @@
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <AdditionalIncludeDirectories>$(SolutionDir)\$(ProjectName);$(RAPTOR_ROOT)\Redist\Include;$(XERCES_INCLUDE_PATH);$(FREETYPE_INCLUDE_PATH);$(VULKAN_INCLUDE_PATH);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\$(ProjectName);$(RAPTOR_ROOT)\Redist\Include;$(PHYSX_INCLUDE_PATH);$(XERCES_INCLUDE_PATH);$(FREETYPE_INCLUDE_PATH);$(VULKAN_INCLUDE_PATH);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;EXPORT_RAPTOR_CORE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -264,7 +264,7 @@ $(PYTHON_HOME)\python.exe $(SolutionDir)$(ProjectName)\Subsys\Redist.py
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <AdditionalIncludeDirectories>$(SolutionDir)\$(ProjectName);$(RAPTOR_ROOT)\Redist\Include;$(XERCES_INCLUDE_PATH);$(FREETYPE_INCLUDE_PATH);$(VULKAN_INCLUDE_PATH);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\$(ProjectName);$(RAPTOR_ROOT)\Redist\Include;$(PHYSX_INCLUDE_PATH);$(XERCES_INCLUDE_PATH);$(FREETYPE_INCLUDE_PATH);$(VULKAN_INCLUDE_PATH);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;EXPORT_RAPTOR_CORE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -338,7 +338,7 @@ $(PYTHON_HOME)\python.exe $(SolutionDir)$(ProjectName)\Subsys\Redist.py
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <AdditionalIncludeDirectories>$(SolutionDir)\$(ProjectName);$(RAPTOR_ROOT)\Redist\Include;$(XERCES_INCLUDE_PATH);$(FREETYPE_INCLUDE_PATH);$(VULKAN_INCLUDE_PATH);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\$(ProjectName);$(RAPTOR_ROOT)\Redist\Include;$(PHYSX_INCLUDE_PATH);$(XERCES_INCLUDE_PATH);$(FREETYPE_INCLUDE_PATH);$(VULKAN_INCLUDE_PATH);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;EXPORT_RAPTOR_CORE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -412,7 +412,7 @@ $(PYTHON_HOME)\python.exe $(SolutionDir)$(ProjectName)\Subsys\Redist.py
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <AdditionalIncludeDirectories>$(SolutionDir)\$(ProjectName);$(RAPTOR_ROOT)\Redist\Include;$(XERCES_INCLUDE_PATH);$(FREETYPE_INCLUDE_PATH);$(VULKAN_INCLUDE_PATH);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\$(ProjectName);$(RAPTOR_ROOT)\Redist\Include;$(PHYSX_INCLUDE_PATH);$(XERCES_INCLUDE_PATH);$(FREETYPE_INCLUDE_PATH);$(VULKAN_INCLUDE_PATH);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;EXPORT_RAPTOR_CORE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -486,7 +486,7 @@ $(PYTHON_HOME)\python.exe $(SolutionDir)$(ProjectName)\Subsys\Redist.py
       <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
       <IntrinsicFunctions>false</IntrinsicFunctions>
       <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
-      <AdditionalIncludeDirectories>$(SolutionDir)\$(ProjectName);$(RAPTOR_ROOT)\Redist\Include;$(XERCES_INCLUDE_PATH);$(FREETYPE_INCLUDE_PATH);$(VULKAN_INCLUDE_PATH);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\$(ProjectName);$(RAPTOR_ROOT)\Redist\Include;$(PHYSX_INCLUDE_PATH);$(XERCES_INCLUDE_PATH);$(FREETYPE_INCLUDE_PATH);$(VULKAN_INCLUDE_PATH);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;EXPORT_RAPTOR_CORE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -560,7 +560,7 @@ $(PYTHON_HOME)\python.exe $(SolutionDir)$(ProjectName)\Subsys\Redist.py
       <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
       <IntrinsicFunctions>false</IntrinsicFunctions>
       <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
-      <AdditionalIncludeDirectories>$(SolutionDir)\$(ProjectName);$(RAPTOR_ROOT)\Redist\Include;$(XERCES_INCLUDE_PATH);$(FREETYPE_INCLUDE_PATH);$(VULKAN_INCLUDE_PATH);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\$(ProjectName);$(RAPTOR_ROOT)\Redist\Include;$(PHYSX_INCLUDE_PATH);$(XERCES_INCLUDE_PATH);$(FREETYPE_INCLUDE_PATH);$(VULKAN_INCLUDE_PATH);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;EXPORT_RAPTOR_CORE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -636,7 +636,7 @@ $(PYTHON_HOME)\python.exe $(SolutionDir)$(ProjectName)\Subsys\Redist.py
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <WholeProgramOptimization>true</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>./;$(PLATFORM_SDK)\Include;$(RAPTOR_ROOT)\Redist\Include;.\Subsys\xercesc_2_7;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\$(ProjectName);$(RAPTOR_ROOT)\Redist\Include;$(PHYSX_INCLUDE_PATH);$(XERCES_INCLUDE_PATH);$(FREETYPE_INCLUDE_PATH);$(VULKAN_INCLUDE_PATH);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;EXPORT_RAPTOR_CORE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -715,7 +715,7 @@ $(PYTHON_HOME)\python.exe $(SolutionDir)$(ProjectName)\Subsys\Redist.py
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <WholeProgramOptimization>true</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>./;$(PLATFORM_SDK)\Include;$(RAPTOR_ROOT)\Redist\Include;.\Subsys\xercesc_2_7;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\$(ProjectName);$(RAPTOR_ROOT)\Redist\Include;$(PHYSX_INCLUDE_PATH);$(XERCES_INCLUDE_PATH);$(FREETYPE_INCLUDE_PATH);$(VULKAN_INCLUDE_PATH);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;EXPORT_RAPTOR_CORE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -1159,9 +1159,6 @@ $(PYTHON_HOME)\python.exe $(SolutionDir)$(ProjectName)\Subsys\Redist.py
     <ClCompile Include="..\..\RaptorCore\Win32Specific\Win32TimeObject.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Raptor.h">
-      <DependentUpon>..\..\RaptorCore\Subsys\ObjectModels\Raptor.xsd</DependentUpon>
-    </ClInclude>
     <CustomBuild Include="..\..\RaptorCore\System\Glext.h">
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">cd $(TargetDir)
 Builder.exe %(FullPath)

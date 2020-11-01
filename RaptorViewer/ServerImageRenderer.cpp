@@ -109,7 +109,7 @@ void CServerImageRenderer::setImageData(CRaptorNetwork::IMAGE_COMMAND *in)
 
 void CServerImageRenderer::glInitImage()
 {
-	CTextureFactory &factory = CTextureFactory::getDefaultFactory();
+	CTextureFactory &factory = CTextureFactory::glGetDefaultFactory();
 	m_pImage = factory.glCreateTexture(	ITextureObject::CGL_COLOR24, //_ALPHA,
 										ITextureObject::CGL_BILINEAR);
 

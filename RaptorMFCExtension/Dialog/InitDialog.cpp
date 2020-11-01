@@ -147,7 +147,7 @@ BOOL CInitDialog::OnInitDialog()
 	w->SetWindowText(TEXT("Extensions: "));
 	CListBox *l = (CListBox*)this->GetDlgItem(IDC_LIST1);
 
-	CTextureFactory &factory = CTextureFactory::getDefaultFactory();
+	CTextureFactory &factory = CTextureFactory::glGetDefaultFactory();
 	CTextureFactoryConfig &config = factory.getConfig();
 	w=this->GetDlgItem(IDC_COMPRESSORS);
 	iparam = config.getNumCompressors();
@@ -260,7 +260,7 @@ void CInitDialog::OnSelchangeCombo1()
 #endif
 		default:
 		{
-			CTextureFactory &factory = CTextureFactory::getDefaultFactory();
+			CTextureFactory &factory = CTextureFactory::glGetDefaultFactory();
 			CTextureFactoryConfig &config = factory.getConfig();
 			int nbCompressors = config.getNumCompressors();
 			if (pos < nbCompressors + 38)

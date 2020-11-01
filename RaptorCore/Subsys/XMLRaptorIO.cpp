@@ -58,11 +58,8 @@ public:
         s << XMLString::transcode(exc.getMessage());
         s << " line: " << exc.getLineNumber();
         s << " pos: " << exc.getColumnNumber();
-		CRaptorErrorManager *pErrMgr = Raptor::GetErrorManager();
-		if (NULL != pErrMgr)
-			pErrMgr->generateRaptorError(	CPersistence::CPersistenceClassID::GetClassId(),
-											CRaptorErrorManager::RAPTOR_WARNING,
-											s.str());
+		s << std::ends;
+		RAPTOR_WARNING(CPersistence::CPersistenceClassID::GetClassId(),s.str());
     }
     virtual void error(const SAXParseException& exc)
     {
@@ -70,11 +67,8 @@ public:
         s << XMLString::transcode(exc.getMessage());
         s << " line: " << exc.getLineNumber();
         s << " pos: " << exc.getColumnNumber();
-		CRaptorErrorManager *pErrMgr = Raptor::GetErrorManager();
-		if (NULL != pErrMgr)
-			pErrMgr->generateRaptorError(	CPersistence::CPersistenceClassID::GetClassId(),
-											CRaptorErrorManager::RAPTOR_ERROR,
-											s.str());
+		s << std::ends;
+		RAPTOR_ERROR(CPersistence::CPersistenceClassID::GetClassId(),s.str());
     }
     virtual void fatalError(const SAXParseException& exc)
     {
@@ -82,11 +76,8 @@ public:
         s << XMLString::transcode(exc.getMessage());
         s << " line: " << exc.getLineNumber();
         s << " pos: " << exc.getColumnNumber();
-		CRaptorErrorManager *pErrMgr = Raptor::GetErrorManager();
-		if (NULL != pErrMgr)
-			pErrMgr->generateRaptorError(	CPersistence::CPersistenceClassID::GetClassId(),
-											CRaptorErrorManager::RAPTOR_FATAL,
-											s.str());
+		s << std::ends;
+		RAPTOR_FATAL(CPersistence::CPersistenceClassID::GetClassId(),s.str());
     }
     virtual void resetErrors() {};
 };
@@ -129,11 +120,10 @@ CXMLRaptorIO::CXMLRaptorIO(const std::string& streamName, CRaptorIO::IO_KIND kin
     catch(const XMLException &toCatch)
     {
         stringstream s;
-        s << "Error during Xerces-c Initialization. Exception message:"
-             << XMLString::transcode(toCatch.getMessage());
-        Raptor::GetErrorManager()->generateRaptorError(	CPersistence::CPersistenceClassID::GetClassId(),
-														CRaptorErrorManager::RAPTOR_ERROR,
-														s.str());
+		s << "Error during Xerces-c Initialization. Exception message:";
+        s << XMLString::transcode(toCatch.getMessage());
+		s << std::ends;
+        RAPTOR_ERROR(CPersistence::CPersistenceClassID::GetClassId(), s.str());
     }
 }
 
@@ -299,8 +289,9 @@ CRaptorIO& CXMLRaptorIO::parse(const char *data, size_t size)
     catch (const XMLException& e)
     {
         stringstream s;
-        s << "An error occurred during parsing\n   Message: "
-         << XMLString::transcode(e.getMessage());
+		s << "An error occurred during parsing\n   Message: ";
+        s << XMLString::transcode(e.getMessage());
+		s << std::ends;
         RAPTOR_ERROR(CPersistence::CPersistenceClassID::GetClassId(),s.str());
     }
     catch (const DOMException& e)

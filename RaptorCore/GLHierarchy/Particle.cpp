@@ -153,7 +153,9 @@ void CParticle::glInitParticle(void)
 			params.addParameter("fPointSize", GL_COORD_VERTEX(m_fPointSize, 0.0f, 0.0f, 0.0f));
 
 			CGeometryShader *gp = stage->glGetGeometryShader("PARTICLE2D_GEO_PROGRAM");
+#if !defined(GL_VERSION_3_2)
 			gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
+#endif
 
 			CFragmentShader *fs = stage->glGetFragmentShader("TEXTURE_QUAD_TEX_PROGRAM");
 			params.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);
@@ -171,7 +173,9 @@ void CParticle::glInitParticle(void)
 			params.addParameter("fPointSize", GL_COORD_VERTEX(m_fPointSize, 0.0f, 0.0f, 0.0f));
 
 			CGeometryShader *gp = stage->glGetGeometryShader("PARTICLE3D_GEO_PROGRAM");
+#if !defined(GL_VERSION_3_2)
 			gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
+#endif
 
 			CFragmentShader *fs = stage->glGetFragmentShader("PARTICLE3D_TEX_PROGRAM");
 			params.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);

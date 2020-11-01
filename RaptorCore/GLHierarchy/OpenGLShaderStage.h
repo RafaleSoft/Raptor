@@ -108,13 +108,10 @@ public:
 	//!	Attention : parameter shall be copied before next call because return value is reused.
 	CProgramParameters::CParameterBase& getDefaultParameter(const std::string& parameter_name, int locationIndex);
 
-
-	//!	@see CShaderProgram
+		//!	@see CShaderProgram
 	virtual void setProgramParameters(const CProgramParameters &v);
 
-	//!	@see CShaderProgram
-	virtual void updateProgramParameters(const CProgramParameters &v);
-
+	
 	//! Inherited from CPersistence
 	DECLARE_IO
 	DECLARE_CLASS_ID(COpenGLShaderStageClassID, "OpenGLShaderStage", CShaderProgram)

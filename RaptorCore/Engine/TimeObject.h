@@ -42,7 +42,7 @@ public:
 	bool isSynchronized(void) const { return m_synchronized; };
 	//!	Return false if another object had priority.
 	bool prioritize(void);
-	//!	Returns the global time mutex for locking objects in another thread.
+	//!	Returns the global time mutex for locking time objects in another thread.
 	static CRaptorMutex& getLock(void);
 
 	
@@ -56,7 +56,7 @@ public:
 	//!	Use this method to scale 'real time' time increments
 	//!	received by every CtimeObject derived class.
 	//!	This scaled Global Time is returned by GetTime below.
-	static void setTimeFactor(float factor);
+	static void RAPTOR_FASTCALL setTimeFactor(float factor);
 
 	//!	Returns time increment since previous call in seconds,
 	//!	Global time values are incremented.
@@ -88,10 +88,6 @@ protected:
 private:
 	bool			m_animate;
 	bool			m_synchronized;
-
-	static float	m_time;
-	static float	m_globalTime;
-	static float	m_deltat;
 };
 
 RAPTOR_NAMESPACE_END

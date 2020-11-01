@@ -111,7 +111,7 @@ void CProjectionDisplay::Init()
 	ball->translate(0,-5,0);
 	ball->scale(5,5,5);
 
-	CTextureFactory &f = CTextureFactory::getDefaultFactory();
+	CTextureFactory &f = CTextureFactory::glGetDefaultFactory();
     int i=0;
 	for (i=0;i<32;i++)
 	{

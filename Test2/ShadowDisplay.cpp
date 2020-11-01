@@ -85,7 +85,7 @@ void CShadowDisplay::Init()
 		knotShader = knot->getShader();
 	}
 
-	CTextureFactory &f = CTextureFactory::getDefaultFactory();
+	CTextureFactory &f = CTextureFactory::glGetDefaultFactory();
 	ITextureObject *T = f.glCreateTexture(	ITextureObject::CGL_COLOR24_ALPHA,
 											ITextureObject::CGL_BILINEAR);
 	f.glSetTransparency(T, 255);

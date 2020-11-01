@@ -349,6 +349,38 @@ CRaptorIO& CRaptorIO::operator>>(bool& i)
 
 CRaptorIO& CRaptorIO::operator<<(char i)
 {
+	m_status = IO_FAILED;
+
+	if (getKind() == DISK_WRITE)
+	{
+		m_outFile << i;
+
+		if (!m_bAutoflush)
+			m_outFile.flush();
+
+		if (m_outFile.good())
+			m_status = IO_OK;
+	}
+
+	return *this;
+}
+
+CRaptorIO& CRaptorIO::operator>>(char& i)
+{
+	m_status = IO_FAILED;
+
+	if (getKind() == DISK_READ)
+	{
+		m_inFile >> i;
+		if (m_inFile.good())
+			m_status = IO_OK;
+	}
+
+	return *this;
+}
+
+CRaptorIO& CRaptorIO::operator<<(uint8_t i)
+{
     m_status = IO_FAILED;
 
     if (getKind() == DISK_WRITE)
@@ -366,7 +398,7 @@ CRaptorIO& CRaptorIO::operator<<(char i)
 	return *this;
 }
 
-CRaptorIO& CRaptorIO::operator>>(char& i)
+CRaptorIO& CRaptorIO::operator>>(uint8_t& i)
 {
     m_status = IO_FAILED;
 
@@ -380,7 +412,7 @@ CRaptorIO& CRaptorIO::operator>>(char& i)
 	return *this;
 }
 
-CRaptorIO& CRaptorIO::operator<<(int i)
+CRaptorIO& CRaptorIO::operator<<(int32_t i)
 {
     m_status = IO_FAILED;
 
@@ -398,7 +430,7 @@ CRaptorIO& CRaptorIO::operator<<(int i)
 	return *this;
 }
 
-CRaptorIO& CRaptorIO::operator>>(int& i)
+CRaptorIO& CRaptorIO::operator>>(int32_t& i)
 {
     m_status = IO_FAILED;
 
@@ -412,7 +444,7 @@ CRaptorIO& CRaptorIO::operator>>(int& i)
 	return *this;
 }
 
-CRaptorIO& CRaptorIO::operator<<(unsigned short s)
+CRaptorIO& CRaptorIO::operator<<(uint16_t s)
 {
     m_status = IO_FAILED;
 
@@ -431,7 +463,7 @@ CRaptorIO& CRaptorIO::operator<<(unsigned short s)
 	return *this;
 }
 
-CRaptorIO& CRaptorIO::operator>>(unsigned short& s)
+CRaptorIO& CRaptorIO::operator>>(uint16_t& s)
 {
     m_status = IO_FAILED;
 
@@ -445,7 +477,7 @@ CRaptorIO& CRaptorIO::operator>>(unsigned short& s)
 	return *this;
 }
 
-CRaptorIO& CRaptorIO::operator<<(unsigned int i)
+CRaptorIO& CRaptorIO::operator<<(uint32_t i)
 {
     m_status = IO_FAILED;
 
@@ -463,7 +495,7 @@ CRaptorIO& CRaptorIO::operator<<(unsigned int i)
 	return *this;
 }
 
-CRaptorIO& CRaptorIO::operator>>(unsigned int& i)
+CRaptorIO& CRaptorIO::operator>>(uint32_t& i)
 {
     m_status = IO_FAILED;
 
@@ -474,6 +506,38 @@ CRaptorIO& CRaptorIO::operator>>(unsigned int& i)
             m_status = IO_OK;
     }
     
+	return *this;
+}
+
+CRaptorIO& CRaptorIO::operator<<(size_t i)
+{
+	m_status = IO_FAILED;
+
+	if (getKind() == DISK_WRITE)
+	{
+		m_outFile << i;
+
+		if (!m_bAutoflush)
+			m_outFile.flush();
+
+		if (m_outFile.good())
+			m_status = IO_OK;
+	}
+
+	return *this;
+}
+
+CRaptorIO& CRaptorIO::operator>>(size_t& i)
+{
+	m_status = IO_FAILED;
+
+	if (getKind() == DISK_READ)
+	{
+		m_inFile >> i;
+		if (m_inFile.good())
+			m_status = IO_OK;
+	}
+
 	return *this;
 }
 

@@ -63,6 +63,7 @@ public:
 	void activateDebug(bool activate) { m_buildDebug = activate; };
 	void activateRedist(bool activate) { m_buildRedist = activate; };
     void activateCompute(bool activate) { m_buildCompute = activate; };
+	void activatePhysX(bool activate) { m_buildPhysX = activate; };
 
 	//!	Returns false if extension not found or if error.
 	bool activateExtension(const string &extension,bool activate);
@@ -106,6 +107,7 @@ private:
     bool	m_buildDebug;
     bool	m_buildRedist;
     bool	m_buildCompute;
+	bool	m_buildPhysX;
 
 	int		majorVersion;
 	int		minorVersion;

@@ -197,7 +197,7 @@ bool CTextureSet::importTextureObject(CRaptorIO& io)
 	}
 	io >> name;
 
-	CTextureFactory &f = CTextureFactory::getDefaultFactory();
+	CTextureFactory &f = CTextureFactory::glGetDefaultFactory();
 	const CTextureFactoryConfig::ICompressor *oldCompressor  = f.getConfig().getCurrentCompressor();
 	if ((compressed) && (0 < f.getConfig().getNumCompressors()))
 		f.getConfig().setCurrentCompressor(f.getConfig().getCompressor("OpenGL"));

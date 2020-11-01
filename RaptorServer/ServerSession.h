@@ -57,10 +57,10 @@ public :
 
 private:
 	//!	Mutex to protect session accesses
-	CRaptorMutex		m_mutex;
+	CRaptorMutex			m_mutex;
 
 	//!	Sessions list
-	vector<session>		m_sessions;
+	std::vector<session>	m_sessions;
 };
 
 #endif // !defined(AFX_SERVERSESSION_H__CF5E6774_178C_4DF6_BB48_44B6AF2AB163__INCLUDED_)

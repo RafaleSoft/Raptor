@@ -25,15 +25,26 @@ const int GL_MAX_LIGHTS = 8;
 //
 //	Raptor Uniform blocs
 //
-layout (binding = 1) uniform Material {
+struct LightProduct
+{
+	vec4 position;
+	vec4 attenuation;
 	vec4 ambient;
 	vec4 diffuse;
 	vec4 specular;
-	vec4 emission;
 	float shininess;
-} R_Material;
+	float reserved[3];
+	bool enable;
+	bool reserved2[3];
+};
 
-uniform int lightEnable[GL_MAX_LIGHTS];
+layout (binding = 0) uniform LightProducts
+{
+	LightProduct lights[MAX_LIGHTS];
+	vec4		 scene_ambient;
+} R_LightProducts;
+
+
 uniform	sampler2D diffuseMap;
 
 //#define TEXTURE_PERLIN
@@ -147,24 +158,25 @@ void main (void)
 	}
 #endif
 
-	vec4 diffuse = gl_FrontLightModelProduct.sceneColor;
+	vec4 diffuse = R_LightProducts.scene_ambient;
 	vec4 specular = vec4(0.0,0.0,0.0,0.0);
 
 	for (int i=0 ; i<MAX_LIGHTS ; i++)
 	{
-		int numl = lightEnable[i];
-		if (numl >= 0)
+		if (R_LightProducts.lights[i].enable)
 		{
-			float att = lightDirs[numl].w;
-			diffuse += att * gl_FrontLightProduct[numl].ambient;
-			float NdotL = max(0.0,dot(N,normalize(lightDirs[numl].xyz)));
+			float att = lightDirs[i].w;
+			diffuse += att * R_LightProducts.lights[i].ambient;
+
+			float NdotL = max(0.0,dot(N,normalize(lightDirs[i].xyz)));
 			if (NdotL > 0.0)
 			{
-				diffuse += att * NdotL * gl_FrontLightProduct[numl].diffuse;
+				diffuse += att * NdotL * R_LightProducts.lights[i].diffuse;
 				
-				vec3 r = reflect(-lightDirs[numl].xyz,N);
+				vec3 r = reflect(-lightDirs[i].xyz,N);
 				float NdotHV = max(dot(normalize(r),normalize(eyedir)),0.0);
-				specular += att * pow(NdotHV,gl_FrontMaterial.shininess) * gl_FrontLightProduct[numl].specular;
+
+				specular += att * pow(NdotHV,R_LightProducts.lights[i].shininess) * R_LightProducts.lights[i].specular;
 			}
 		}
 	}

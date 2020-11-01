@@ -299,7 +299,7 @@ void GLinterop(CRaptorDisplay *pDisplay,RAPTOR_HANDLE wnd)
 {
 	pDisplay->glvkBindDisplay(wnd);
 
-	CRaptorComputeJob *pJob = CRaptorComputeJob::clCreateJob(0,1,pDisplay);
+	CRaptorComputeJob *pJob = CRaptorComputeJob::clCreateJob(0,0,pDisplay);
 	
 	CParticleManager *pManager = new CParticleManager();
 	GalaxyModel *pModel = new GalaxyModel();

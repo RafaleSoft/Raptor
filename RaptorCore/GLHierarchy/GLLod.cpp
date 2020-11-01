@@ -114,9 +114,9 @@ vector<CObject3DContour*> CGLLod::createContours(void)
 }
 
 
-CObject3D* const CGLLod::getLod(unsigned int numLod) const
+CObject3D* const CGLLod::getLod(size_t numLod) const
 { 
-	if ((unsigned int)(lods.size()) > numLod) 
+	if (lods.size() > numLod) 
 		return lods[numLod].obj; 
 	else 
 		return NULL; 
@@ -252,7 +252,7 @@ bool CGLLod::importLevel(CRaptorIO& io)
 	LOD lod = { 0.0f, NULL };
 
 	string data = io.getValueName();
-    while (!data.empty())
+    while (io.hasMoreValues())
     {
 		if (data == "depth")
 			io >> lod.fromDepth;
@@ -283,7 +283,7 @@ bool CGLLod::importObject(CRaptorIO& io)
 	io >> name;
 
 	string data = io.getValueName();
-	while (!data.empty())
+	while (io.hasMoreValues())
 	{
 		if (data == "name")
 			CPersistence::importObject(io);

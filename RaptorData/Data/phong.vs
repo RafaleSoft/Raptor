@@ -16,35 +16,74 @@
 /***************************************************************************/
 
 
-#version 120
+#version 440 compatibility
 
-const int MAX_LIGHTS = 3;
-uniform int lightEnable[gl_MaxLights];
+//	Maximum number of lights due to number of interpolators available
+const int MAX_LIGHTS = 5;
+const int GL_MAX_LIGHTS = 8;
 
-varying vec3 normal;
-varying	vec4 lightDirs[MAX_LIGHTS];
-varying	vec3 eyeDir;
+//
+//	Raptor Uniform blocs
+//
+//layout (binding = 0) uniform Transform {
+//	mat4 ModelViewMatrix;
+//	mat4 ModelViewMatrixInverse;
+//	mat4 ModelViewProjectionMatrix;
+//	mat4 NormalMatrix;
+//} R_Transform;
+
+struct LightProduct
+{
+	vec4 position;
+	vec4 attenuation;
+	vec4 ambient;
+	vec4 diffuse;
+	vec4 specular;
+	float shininess;
+	float reserved[3];
+	bool enable;
+	bool reserved2[3];
+};
+
+layout (binding = 0) uniform LightProducts
+{
+	LightProduct lights[MAX_LIGHTS];
+	vec4		 scene_ambient;
+} R_LightProducts;
+
+layout(location = 0) in vec4 i_Position;
+layout(location = 2) in vec4 i_Normal;
+layout(location = 8) in vec4 i_TexCoord;
+
+
+out vec3 normal;
+out	vec4 lightDirs[MAX_LIGHTS];
+out	vec3 eyeDir;
+out vec4 o_texCoord;
 
 void main (void)
 {
-	normal = gl_NormalMatrix * gl_Normal;
+	normal = normalize(gl_NormalMatrix * vec3(i_Normal.xyz));
 
-	eyeDir = -vec3(gl_ModelViewMatrix * gl_Vertex);
+	eyeDir = -vec3(gl_ModelViewMatrix * i_Position);
+
 	for (int i=0 ; i<MAX_LIGHTS ; i++)
 	{
-		int numl = lightEnable[i];
-		if (numl >= 0)
+		if (R_LightProducts.lights[i].enable)
 		{
-			vec3 ldir = vec3(gl_LightSource[numl].position) + eyeDir;
-			lightDirs[numl].xyz = ldir;
+			vec3 ldir = vec3(R_LightProducts.lights[i].position) + eyeDir;
+			lightDirs[i].xyz = ldir;
 			float dist = length(ldir);
-			lightDirs[numl].w = 1.0 / (	gl_LightSource[numl].constantAttenuation +
-										gl_LightSource[numl].linearAttenuation * dist +
-										gl_LightSource[numl].quadraticAttenuation * dist * dist);
+			
+			/*	In most situations, attenuation could be computed per vertex	*/
+			vec4 attenuation = R_LightProducts.lights[i].attenuation;
+			lightDirs[i].w = 1.0 / (	attenuation.z +
+										attenuation.y * dist +
+										attenuation.x * dist * dist);
 		}
 	} 
 
-	gl_TexCoord[0] = gl_MultiTexCoord0;
-	gl_Position = ftransform();
+	gl_Position = gl_ModelViewProjectionMatrix * i_Position;
+	o_texCoord = i_TexCoord;
 }
 

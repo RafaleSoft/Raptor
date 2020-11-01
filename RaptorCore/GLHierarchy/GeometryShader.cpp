@@ -71,7 +71,8 @@ CGeometryShader::~CGeometryShader()
 	{
         Raptor::GetErrorManager()->generateRaptorError(	CGeometryShader::CGeometryShaderClassID::GetClassId(),
 														CRaptorErrorManager::RAPTOR_ERROR,
-														CRaptorMessages::ID_NO_GPU_PROGRAM);
+														CRaptorMessages::ID_NO_GPU_PROGRAM,
+														__FILE__, __LINE__);
 	}
 }
 

@@ -57,8 +57,6 @@ public:
 	//!	Return current status.
 	bool isEnabled(void) const { return m_bEnabled; };
 
-protected:
-	static int environmentMap;
 
 private:
 	//!	Copy constructor for cloning.

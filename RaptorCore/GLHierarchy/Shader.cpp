@@ -69,7 +69,7 @@ RAPTOR_NAMESPACE_BEGIN
 
 //	Static datas
 //  By default, shader applyies default global ambient.
-CColor::RGBA	CShader::m_ambient = CColor::RGBA(0.2f,0.2f,0.2f,1.0f);
+CColor::RGBA	CShader::m_ambient = CColor::RGBA(0.1f,0.1f,0.1f,1.0f);
 
 RAPTOR_NAMESPACE_END
 
@@ -93,10 +93,12 @@ CShader::CShader(const std::string& name)
 	m_pTMUSetup(NULL),m_pMaterial(NULL),
 	m_pOpenGLProgram(NULL), m_pOpenGLShader(NULL), m_pVulkanShader(NULL)
 {
+#if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
 	m_textureUnitSetup.handle(0);
 	m_textureUnitSetup.hClass(CTextureUnitSetup::CTextureUnitSetupClassID::GetClassId().ID());
 	m_textureUnitUnSetup.handle(0);
 	m_textureUnitUnSetup.hClass(CTextureUnitSetup::CTextureUnitSetupClassID::GetClassId().ID());
+#endif
 
 	m_color.r = 0.0f;
 	m_color.g = 0.0f;
@@ -117,10 +119,12 @@ CShader::CShader(const CShader& shader)
 	m_color = shader.m_color;
 	m_ambient = shader.m_ambient;
 	
+#if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
 	m_textureUnitSetup.handle(0); // glBuildSetup done at first call to glRender
 	m_textureUnitSetup.hClass(CTextureUnitSetup::CTextureUnitSetupClassID::GetClassId().ID());
 	m_textureUnitUnSetup.handle(0);
 	m_textureUnitUnSetup.hClass(CTextureUnitSetup::CTextureUnitSetupClassID::GetClassId().ID());
+#endif
 
 	if (NULL != shader.m_pMaterial)
 	{
@@ -456,22 +460,6 @@ bool CShader::vkRemoveVulkanShader(void)
 
 void CShader::glRenderMaterial(void)
 {
-	/*
-	if ((NULL != m_pMaterial) && (NULL != m_pOpenGLShader))
-	{
-		if (m_pMaterial->doRebuild())
-		{
-			CProgramParameters::CParameter<CMaterial::Material_t> material(m_pMaterial->getMaterial());
-			material.name("Material");
-			material.locationType = GL_UNIFORM_BLOCK_BINDING_ARB;
-			CProgramParameters params;
-			params.addParameter(material);
-
-			m_pOpenGLShader->updateProgramParameters(params);
-		}
-	}
-	*/
-
 	if (IRenderingProperties::GetCurrentProperties()->getCurrentLighting() == IRenderingProperties::ENABLE)
 	{
 		if (m_pMaterial != NULL)
@@ -499,6 +487,8 @@ void CShader::glRenderTexture(void)
 {
 	if (IRenderingProperties::GetCurrentProperties()->getCurrentTexturing() == IRenderingProperties::ENABLE)
 	{
+
+// TODO: when finished, the code below is the compatibility profile.
 #if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
 #else
 		if (m_textureUnitSetup.handle() > 0)

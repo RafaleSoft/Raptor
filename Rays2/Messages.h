@@ -1,33 +1,41 @@
 #ifndef _MESSAGES_H_
 #define _MESSAGES_H_
 
+#if !defined(AFX_RAYSUTILS_H__1CC878E3_B301_4A19_8211_F3B5977D3781__INCLUDED_)
+	#include "RaysUtils.h"
+#endif
 
 /////////////////////////////////////////////////////////////////////////
 //	Constants
-#define PORTBASE	2048
-#define PACKET_SIZE	2000
 #define MAX_STR_LEN	64
-#define MAX_PARAMS	16
 
 #define JOBBASE 0x00000000
 #define OBJBASE 0x00000100
 #define IMGBASE 0x00001000
 #define	ACKBASE 0x00010000
 #define DMNBASE 0x00100000
+#define SESBASE 0x01000000
 #define MSGBASE	0x10000000
 
 /////////////////////////////////////////////////////////////////////////
 // client job io
 
+//	JOB_ID
+//		in					   out
+//	data 0 =  jobID				*
+//	data 1 =	*				*
+//	data 2 =	*				*
+//	data 3 =	*				*
+//	data 4 =	*				*
 #define JOB_ID			(JOBBASE	+	0x1)
 
 //	JOB_START
 //		in						out
-//	data 0 = clientID		jobID
-//	data 1 = width				*
-//	data 2 = height				*
-//	data 3 = port				*
-//	data 4 = IP addr			*
+//	data 0 =	*			  jobID
+//	data 1 =	*				*
+//	data 2 =	*				*
+//	data 3 =	*				*
+//	data 4 =	*				*
 #define JOB_START		(JOBBASE	+	0x2)
 
 //	JOB_REQUEST	( job result is sent through msg.size and data )
@@ -53,7 +61,7 @@
 
 //	JOB_PERCENT
 //		in						out
-//	data 0 = clientID			*
+//	data 0 = sessionID			*
 //	data 1 =	*				*
 //	data 2 =	*				*
 //	data 3 =	*				*
@@ -65,7 +73,7 @@
 // work unit job io
 //	JOB_WUNIT
 //		in						out
-//	data 0 = clientID			*
+//	data 0 = sessionID			*
 //	data 1 =	*				*
 //	data 2 =	*				*
 //	data 3 = port				*
@@ -86,12 +94,21 @@
 
 //	JOB_STOP
 //		in						out
-//	data 0 = clientID			*
+//	data 0 = sessionID			*
 //	data 1 = startScanLine		*
 //	data 2 = endScanLine		*
 //	data 3 =	*				*
 //	data 4 =	*				*
 #define JOB_STOP		(JOBBASE	+	0xe)
+
+//	JOB_DATA
+//		in					out (NONE)
+//	data 0 =    *				*
+//	data 1 =    *				*
+//	data 2 =    *				*
+//	data 3 =	*				*
+//	data 4 =	*				*
+#define JOB_DATA		(JOBBASE	+	0xf)
 
 // image io
 //	IMG_REQUEST
@@ -168,7 +185,9 @@
 #define ACK_DAT			(ACKBASE	+	0x4)
 #define ACK_IMG			(ACKBASE	+	0x5)
 
-//	deamon communication
+//
+//	Deamon communication
+//
 
 //	DMN_STATUS
 //		in						out
@@ -189,105 +208,50 @@
 //	data 4 =  priority		ThreadId
 #define DMN_DISPATCHJOB	(DMNBASE	+	0x3)
 
-// messages io
-#define MSG_START		(MSGBASE	+	0x1)
-#define MSG_END			(MSGBASE	+	0x2)
-#define MSG_DATA		(MSGBASE	+	0x3)
+//
+//	Sessions management
+//
 
+//	SES_OPEN
+//		in				   out (SES_ID)
+//	data 0 =    *			sessionID - High dword
+//	data 1 =    *    		sessionID - Low dword
+//	data 2 =	*				*
+//	data 3 =    *				*
+//	data 4 =    *   			*
+#define SES_OPEN		(SESBASE	+	0x1)
 
-#ifndef MSG_STR
-#define MSG_STR
-	static const char * JOB_STR[] =
-	{
-		"JOBBASE",
-		"JOB_ID",
-		"JOB_START",
-		"JOB_REQUEST",
-		"JOB_STATUS",
-		"JOB_BREAK",
-		"JOB_RESUME",
-		"JOB_BATCH",
-		"JOB_PERCENT",
-		"JOB_DELETE",
-		"JOB_WUNIT",
-		"JOB_BACKUP",
-		"JOB_UNBACKUP",
-		"JOB_RUN",
-		"JOB_STOP"
-	};
-	static const char * OBJ_STR[] =
-	{
-		"OBJBASE",
-		"OBJ_DATA",
-		"OBJ_SIZE",
-		"OBJ_TYPE",
-		"OBJ_NOBJECTS",
-		"OBJ_CAMERA",
-		"OBJ_LIGHT",
-		"OBJ_SPHERE",
-		"OBJ_GEOMETRY",
-		"OBJ_TEXTURE",
-		"OBJ_PLUGIN",
-		"OBJ_FRAME"
-	};
-	static const char * IMG_STR[] =
-	{
-		"IMGBASE",
-		"IMG_REQUEST",
-		"IMG_DATA",
-		"IMG_INFO"
-	};
-	static const char * ACK_STR[] =
-	{
-		"ACKBASE",
-		"ACK_NONE",
-		"ACK_JOB",
-		"ACK_OBJ",
-		"ACK_DAT",
-		"ACK_IMG"
-	};
-	static const char * DMN_STR[] =
-	{
-		"DMNBASE",
-		"DMN_STATUS",
-		//"DMN_INACTIVE",
-		"DMN_DISPATCHJOB"
-	};
-#else
-	extern const char * JOB_STR[];
-	extern const char * OBJ_STR[];
-	extern const char * IMG_STR[];
-	extern const char * ACK_STR[];
-	extern const char * DMN_STR[];
-#endif
+//	SES_CLOSE
+//		in					out (NONE)
+//	data 0 =    *				*
+//	data 1 =    *    			*
+//	data 2 =	*				*
+//	data 3 =    *				*
+//	data 4 =    *   			*
+#define SES_CLOSE		(SESBASE	+	0x2)
 
-#define ADD_MSG_STRING(msg,msgid) \
-	{\
-	if(msgid < OBJBASE)\
-		msg += JOB_STR[msgid-JOBBASE];\
-	else if(msgid < IMGBASE)\
-		msg += OBJ_STR[msgid-OBJBASE];\
-	else if(msgid < ACKBASE)\
-		msg += IMG_STR[msgid-IMGBASE];\
-	else if(msgid < DMNBASE)\
-		msg += ACK_STR[msgid-ACKBASE];\
-	else if(msgid < MSGBASE)\
-		msg += DMN_STR[msgid-DMNBASE];\
-	}
-
+//	SES_ID
+//		in					out (NONE)
+//	data 0 = sessionID - High   *
+//	data 1 = sessionID - Low    *
+//	data 1 =    *    			*
+//	data 2 =	*				*
+//	data 3 =    *				*
+//	data 4 =    *   			*
+#define SES_ID			(SESBASE	+	0x3)
 
 /////////////////////////////////////////////////////////////////////////
 //	Public structures for Client/Server/WorkUnit communication
-
-typedef unsigned int RAYS_MSG_ID;
+typedef uint32_t RAYS_MSG_ID;
 
 typedef struct MSGSTRUCT
 {
-	RAYS_MSG_ID		msg_header;		
+	//! These fields are already part of RaptorNetwork protocol.
+	//RAYS_MSG_ID		msg_crc;		// 32 bits CRC of the message payload
+	//RAYS_MSG_ID		msg_size;		// size of following chunck of data
+	//!	Rays base messages id.
 	RAYS_MSG_ID		msg_id;			// semantic
-	RAYS_MSG_ID		msg_size;		// size of following chunck of data
 	RAYS_MSG_ID		msg_data[5];	// sub semantic ID
-	RAYS_MSG_ID		msg_tail;
 } msg_struct_t;
 
 typedef MSGSTRUCT* LPMSGSTRUCT;
@@ -296,16 +260,16 @@ const unsigned int MSGSIZE = sizeof(MSGSTRUCT);
 
 typedef struct _rays_config_tag
 {
-	unsigned int	width;
-	unsigned int	height;
-	unsigned int	variance;
-	unsigned int	deflection;
-	unsigned int	defraction; 
-	unsigned int	crease;
-	float			focale;
-	float			object_plane;
-	unsigned int	photon_map;
-	char			envtexname[MAX_STR_LEN];
+	uint32_t	width;
+	uint32_t	height;
+	uint32_t	variance;
+	uint32_t	reflection;
+	uint32_t	refraction;
+	uint32_t	crease;
+	float		focale;
+	float		object_plane;
+	uint32_t	photon_map;
+	char		envtexname[MAX_STR_LEN];
 } rays_config_t;
 
 typedef struct _rays_plugin_tag

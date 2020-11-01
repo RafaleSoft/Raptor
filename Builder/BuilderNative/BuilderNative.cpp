@@ -665,6 +665,7 @@ bool setBuildSupplement(BUILD_SUPPLEMENT *bld)
 	builder->activateDebug(bld->DEBUG);
 	builder->activateRedist(bld->REDIST);
 	builder->activateCompute(bld->COMPUTE);
+	builder->activatePhysX(bld->PHYSX);
 
 	return true;
 }

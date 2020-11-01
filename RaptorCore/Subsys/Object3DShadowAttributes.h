@@ -73,7 +73,7 @@ public:
 	    if (m_pLight != NULL)
 	    {
 			glGetTransposeFloatv(GL_MODELVIEW_MATRIX,m_projection);
-			lpos = m_inverseProjection.setInverseOf(m_projection) * m_pLight->getLightEyePosition();
+			lpos = m_inverseProjection.setInverseOf(m_projection) * m_pLight->getLightViewPosition();
 	    }
 	    else
 		    lpos = m_light;
