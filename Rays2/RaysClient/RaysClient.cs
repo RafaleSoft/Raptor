@@ -23,8 +23,44 @@ using System.IO;
 
 namespace RaysClient
 {
-    class RaysClient
+    public class RaysClient
     {
+        public struct CFGSTRUCT
+        {
+            public Int32   width;
+            public Int32   height;
+            public Double  variance;
+            public Int32   reflection_depth;
+            public Int32   refraction_depth;
+            public Double  crease;
+            public Double  focale;
+            public Double  object_plane;
+            public Double  aperture;
+        }
+
+        public RaysClient()
+        {
+            config.width = 320;
+            config.height = 240;
+            config.variance = 0.01;
+            config.reflection_depth = 5;
+            config.refraction_depth = 5;
+            config.crease = 0;
+            config.focale = 50.0;
+            config.object_plane = 10.0;
+            config.aperture = 2.8;
+        }
+
+        public CFGSTRUCT GetConfig()
+        {
+            return config;
+        }
+
+        public void SetConfig(ref CFGSTRUCT cfg)
+        {
+            config = cfg;
+        }
+
         public bool Render(string assets)
         {
             // Part 1: use ProcessStartInfo class.
@@ -172,5 +208,6 @@ namespace RaysClient
         private RaysClientNetwork network = new RaysClientNetwork();
         private RaysLogger log = null;
         private ulong session_id = 0;
+        private CFGSTRUCT config = new CFGSTRUCT();
     }
 }

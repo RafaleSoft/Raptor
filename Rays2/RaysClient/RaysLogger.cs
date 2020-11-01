@@ -23,7 +23,7 @@ using System.Windows.Forms;
 
 namespace RaysClient
 {
-    class RaysLogger
+    public class RaysLogger
     {
         public enum LEVEL
         {

@@ -40,6 +40,8 @@ namespace RaysClient
             logger.SetLogName(settings.logfile);
             logger.SetDisplay(ref Log);
             client.SetLog(ref logger);
+
+            config.SetClient(ref client);
         }
 
         private void RaysClientForm_Load(object sender, EventArgs e)
@@ -200,7 +202,17 @@ namespace RaysClient
 
         private void onConfig(object sender, EventArgs e)
         {
+            this.Opacity = 0.5;
 
+            DialogResult res = config.ShowDialog(this);
+            if (DialogResult.OK == res)
+            {
+                logger.Info("Rays configuration updated.");
+            }
+            else
+                logger.Info("Rays configuration not updated.");
+
+            this.Opacity = 1.0;
         }
 
         private void onSaveAs(object sender, EventArgs e)

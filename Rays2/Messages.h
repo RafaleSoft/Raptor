@@ -263,8 +263,8 @@ typedef struct _rays_config_tag
 	uint32_t	width;
 	uint32_t	height;
 	uint32_t	variance;
-	uint32_t	deflection;
-	uint32_t	defraction;
+	uint32_t	reflection;
+	uint32_t	refraction;
 	uint32_t	crease;
 	float		focale;
 	float		object_plane;

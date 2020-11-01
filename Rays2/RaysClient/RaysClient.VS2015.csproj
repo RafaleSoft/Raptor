@@ -150,6 +150,9 @@
     <EmbeddedResource Include="RaysClientForm.resx">
       <DependentUpon>RaysClientForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="RaysConfig.resx">
+      <DependentUpon>RaysConfig.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="app.config" />
     <None Include="Properties\RaysClient.manifest" />
     <None Include="RaysClient.config" />

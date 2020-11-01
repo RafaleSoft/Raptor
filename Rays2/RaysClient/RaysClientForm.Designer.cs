@@ -28,44 +28,50 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.Windows.Forms.GroupBox groupBox1;
+            System.Windows.Forms.Label label2;
+            System.Windows.Forms.Label label1;
+            System.Windows.Forms.GroupBox groupBox2;
+            System.Windows.Forms.Label label3;
+            System.Windows.Forms.GroupBox groupBox3;
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(RaysClientForm));
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.port = new System.Windows.Forms.TextBox();
-            this.label2 = new System.Windows.Forms.Label();
             this.host = new System.Windows.Forms.TextBox();
-            this.label1 = new System.Windows.Forms.Label();
             this.Connect = new System.Windows.Forms.Button();
-            this.Open = new System.Windows.Forms.Button();
-            this.Log = new System.Windows.Forms.ListBox();
-            this.Quit = new System.Windows.Forms.Button();
             this.Scene = new System.Windows.Forms.Label();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.Assets = new System.Windows.Forms.ListBox();
             this.Render = new System.Windows.Forms.Button();
+            this.Open = new System.Windows.Forms.Button();
             this.Configuration = new System.Windows.Forms.Button();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
-            this.label3 = new System.Windows.Forms.Label();
             this.SaveAs = new System.Windows.Forms.Button();
-            this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.Resume = new System.Windows.Forms.Button();
-            this.groupBox1.SuspendLayout();
-            this.groupBox2.SuspendLayout();
-            this.groupBox3.SuspendLayout();
+            this.Quit = new System.Windows.Forms.Button();
+            this.Log = new System.Windows.Forms.ListBox();
+            groupBox1 = new System.Windows.Forms.GroupBox();
+            label2 = new System.Windows.Forms.Label();
+            label1 = new System.Windows.Forms.Label();
+            groupBox2 = new System.Windows.Forms.GroupBox();
+            label3 = new System.Windows.Forms.Label();
+            groupBox3 = new System.Windows.Forms.GroupBox();
+            groupBox1.SuspendLayout();
+            groupBox2.SuspendLayout();
+            groupBox3.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.port);
-            this.groupBox1.Controls.Add(this.label2);
-            this.groupBox1.Controls.Add(this.host);
-            this.groupBox1.Controls.Add(this.label1);
-            this.groupBox1.Controls.Add(this.Connect);
-            this.groupBox1.Location = new System.Drawing.Point(12, 12);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(311, 46);
-            this.groupBox1.TabIndex = 1;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Server connection";
+            groupBox1.Controls.Add(this.port);
+            groupBox1.Controls.Add(label2);
+            groupBox1.Controls.Add(this.host);
+            groupBox1.Controls.Add(label1);
+            groupBox1.Controls.Add(this.Connect);
+            groupBox1.Location = new System.Drawing.Point(12, 12);
+            groupBox1.Name = "groupBox1";
+            groupBox1.Size = new System.Drawing.Size(311, 46);
+            groupBox1.TabIndex = 1;
+            groupBox1.TabStop = false;
+            groupBox1.Text = "Server connection";
             // 
             // port
             // 
@@ -78,12 +84,12 @@
             // 
             // label2
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(133, 20);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(29, 13);
-            this.label2.TabIndex = 3;
-            this.label2.Text = "Port:";
+            label2.AutoSize = true;
+            label2.Location = new System.Drawing.Point(133, 20);
+            label2.Name = "label2";
+            label2.Size = new System.Drawing.Size(29, 13);
+            label2.TabIndex = 3;
+            label2.Text = "Port:";
             // 
             // host
             // 
@@ -96,12 +102,12 @@
             // 
             // label1
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(7, 20);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(20, 13);
-            this.label1.TabIndex = 1;
-            this.label1.Text = "IP:";
+            label1.AutoSize = true;
+            label1.Location = new System.Drawing.Point(7, 20);
+            label1.Name = "label1";
+            label1.Size = new System.Drawing.Size(20, 13);
+            label1.TabIndex = 1;
+            label1.Text = "IP:";
             // 
             // Connect
             // 
@@ -113,35 +119,6 @@
             this.Connect.Text = "Connect";
             this.Connect.UseVisualStyleBackColor = true;
             this.Connect.Click += new System.EventHandler(this.onConnect);
-            // 
-            // Open
-            // 
-            this.Open.Location = new System.Drawing.Point(229, 13);
-            this.Open.Name = "Open";
-            this.Open.Size = new System.Drawing.Size(75, 23);
-            this.Open.TabIndex = 6;
-            this.Open.Text = "Open...";
-            this.Open.UseVisualStyleBackColor = true;
-            this.Open.Click += new System.EventHandler(this.onOpen);
-            // 
-            // Log
-            // 
-            this.Log.FormattingEnabled = true;
-            this.Log.HorizontalScrollbar = true;
-            this.Log.Location = new System.Drawing.Point(22, 239);
-            this.Log.Name = "Log";
-            this.Log.Size = new System.Drawing.Size(294, 95);
-            this.Log.TabIndex = 5;
-            // 
-            // Quit
-            // 
-            this.Quit.Location = new System.Drawing.Point(229, 23);
-            this.Quit.Name = "Quit";
-            this.Quit.Size = new System.Drawing.Size(75, 23);
-            this.Quit.TabIndex = 4;
-            this.Quit.Text = "Quit";
-            this.Quit.UseVisualStyleBackColor = true;
-            this.Quit.Click += new System.EventHandler(this.OnQuit);
             // 
             // Scene
             // 
@@ -155,17 +132,17 @@
             // 
             // groupBox2
             // 
-            this.groupBox2.Controls.Add(this.Assets);
-            this.groupBox2.Controls.Add(this.Scene);
-            this.groupBox2.Controls.Add(this.Render);
-            this.groupBox2.Controls.Add(this.Open);
-            this.groupBox2.Controls.Add(this.Configuration);
-            this.groupBox2.Location = new System.Drawing.Point(12, 63);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(311, 100);
-            this.groupBox2.TabIndex = 8;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Assets";
+            groupBox2.Controls.Add(this.Assets);
+            groupBox2.Controls.Add(this.Scene);
+            groupBox2.Controls.Add(this.Render);
+            groupBox2.Controls.Add(this.Open);
+            groupBox2.Controls.Add(this.Configuration);
+            groupBox2.Location = new System.Drawing.Point(12, 63);
+            groupBox2.Name = "groupBox2";
+            groupBox2.Size = new System.Drawing.Size(311, 100);
+            groupBox2.TabIndex = 8;
+            groupBox2.TabStop = false;
+            groupBox2.Text = "Assets";
             // 
             // Assets
             // 
@@ -185,6 +162,16 @@
             this.Render.UseVisualStyleBackColor = true;
             this.Render.Click += new System.EventHandler(this.onRender);
             // 
+            // Open
+            // 
+            this.Open.Location = new System.Drawing.Point(229, 13);
+            this.Open.Name = "Open";
+            this.Open.Size = new System.Drawing.Size(75, 23);
+            this.Open.TabIndex = 6;
+            this.Open.Text = "Open...";
+            this.Open.UseVisualStyleBackColor = true;
+            this.Open.Click += new System.EventHandler(this.onOpen);
+            // 
             // Configuration
             // 
             this.Configuration.Location = new System.Drawing.Point(229, 42);
@@ -195,21 +182,35 @@
             this.Configuration.UseVisualStyleBackColor = true;
             this.Configuration.Click += new System.EventHandler(this.onConfig);
             // 
+            // label3
+            // 
+            label3.AutoSize = true;
+            label3.Location = new System.Drawing.Point(7, 36);
+            label3.Name = "label3";
+            label3.Size = new System.Drawing.Size(51, 13);
+            label3.TabIndex = 12;
+            label3.Text = "Progress:";
+            // 
+            // groupBox3
+            // 
+            groupBox3.Controls.Add(this.progressBar1);
+            groupBox3.Controls.Add(label3);
+            groupBox3.Controls.Add(this.SaveAs);
+            groupBox3.Controls.Add(this.Resume);
+            groupBox3.Controls.Add(this.Quit);
+            groupBox3.Location = new System.Drawing.Point(12, 170);
+            groupBox3.Name = "groupBox3";
+            groupBox3.Size = new System.Drawing.Size(311, 169);
+            groupBox3.TabIndex = 14;
+            groupBox3.TabStop = false;
+            groupBox3.Text = "Rendering status";
+            // 
             // progressBar1
             // 
             this.progressBar1.Location = new System.Drawing.Point(10, 52);
             this.progressBar1.Name = "progressBar1";
             this.progressBar1.Size = new System.Drawing.Size(294, 11);
             this.progressBar1.TabIndex = 11;
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(7, 36);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(51, 13);
-            this.label3.TabIndex = 12;
-            this.label3.Text = "Progress:";
             // 
             // SaveAs
             // 
@@ -221,20 +222,6 @@
             this.SaveAs.UseVisualStyleBackColor = true;
             this.SaveAs.Click += new System.EventHandler(this.onSaveAs);
             // 
-            // groupBox3
-            // 
-            this.groupBox3.Controls.Add(this.progressBar1);
-            this.groupBox3.Controls.Add(this.label3);
-            this.groupBox3.Controls.Add(this.SaveAs);
-            this.groupBox3.Controls.Add(this.Resume);
-            this.groupBox3.Controls.Add(this.Quit);
-            this.groupBox3.Location = new System.Drawing.Point(12, 170);
-            this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(311, 169);
-            this.groupBox3.TabIndex = 14;
-            this.groupBox3.TabStop = false;
-            this.groupBox3.Text = "Rendering status";
-            // 
             // Resume
             // 
             this.Resume.Location = new System.Drawing.Point(67, 23);
@@ -245,6 +232,25 @@
             this.Resume.UseVisualStyleBackColor = true;
             this.Resume.Click += new System.EventHandler(this.onResume);
             // 
+            // Quit
+            // 
+            this.Quit.Location = new System.Drawing.Point(229, 23);
+            this.Quit.Name = "Quit";
+            this.Quit.Size = new System.Drawing.Size(75, 23);
+            this.Quit.TabIndex = 4;
+            this.Quit.Text = "Quit";
+            this.Quit.UseVisualStyleBackColor = true;
+            this.Quit.Click += new System.EventHandler(this.OnQuit);
+            // 
+            // Log
+            // 
+            this.Log.FormattingEnabled = true;
+            this.Log.HorizontalScrollbar = true;
+            this.Log.Location = new System.Drawing.Point(22, 239);
+            this.Log.Name = "Log";
+            this.Log.Size = new System.Drawing.Size(294, 95);
+            this.Log.TabIndex = 5;
+            // 
             // RaysClientForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -252,45 +258,38 @@
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.ClientSize = new System.Drawing.Size(335, 341);
             this.Controls.Add(this.Log);
-            this.Controls.Add(this.groupBox1);
-            this.Controls.Add(this.groupBox2);
-            this.Controls.Add(this.groupBox3);
+            this.Controls.Add(groupBox1);
+            this.Controls.Add(groupBox2);
+            this.Controls.Add(groupBox3);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "RaysClientForm";
             this.Text = "Rays Client";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.onClose);
             this.Load += new System.EventHandler(this.RaysClientForm_Load);
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
-            this.groupBox2.ResumeLayout(false);
-            this.groupBox2.PerformLayout();
-            this.groupBox3.ResumeLayout(false);
-            this.groupBox3.PerformLayout();
+            groupBox1.ResumeLayout(false);
+            groupBox1.PerformLayout();
+            groupBox2.ResumeLayout(false);
+            groupBox2.PerformLayout();
+            groupBox3.ResumeLayout(false);
+            groupBox3.PerformLayout();
             this.ResumeLayout(false);
 
         }
 
         #endregion
-
-        private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.TextBox port;
-        private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox host;
-        private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button Connect;
         private System.Windows.Forms.Button Open;
         private System.Windows.Forms.ListBox Log;
         private System.Windows.Forms.Button Quit;
-        private System.Windows.Forms.Label Scene;
-        private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.ListBox Assets;
         private System.Windows.Forms.Button Render;
         private System.Windows.Forms.Button Configuration;
         private System.Windows.Forms.ProgressBar progressBar1;
-        private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Button SaveAs;
-        private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.Button Resume;
+        private System.Windows.Forms.Label Scene;
     }
 }
 
