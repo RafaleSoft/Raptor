@@ -370,8 +370,8 @@
         <xs:element ref="Light" minOccurs="0" maxOccurs="unbounded" /> 
         <xs:element ref="LightModifier" minOccurs="0" maxOccurs="unbounded"/>
         <xs:element ref="ShadedGeometry" minOccurs="0" maxOccurs="unbounded"/>
-        <xs:element ref="Object3DInstance" minOccurs="0" maxOccurs="unbounded"/>
         <xs:element ref="Set" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element ref="Object3DInstance" minOccurs="0" maxOccurs="unbounded"/>
         <xs:element ref="Lod" minOccurs="0" maxOccurs="unbounded"/>
         <xs:element ref="ViewModifier" minOccurs="0" maxOccurs="unbounded"/>
         

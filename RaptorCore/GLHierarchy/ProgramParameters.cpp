@@ -1,6 +1,21 @@
-// ProgramParameters.cpp: implementation of the CShaderProgram class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  ProgramParameters.cpp                                                  */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
 #include "Subsys/CodeGeneration.h"
 
 
@@ -17,7 +32,56 @@
 //////////////////////////////////////////////////////////////////////
 RAPTOR_NAMESPACE
 
+#if (_MSC_VER <= 1500) || defined(LINUX)
+size_t CProgramParameters::CParameterBase::hash_value(const std::string& s)
+{
+	const char *ptr = s.c_str();
+	const char *end = ptr + s.size();
+	size_t hash = 2166136261U;
+	while (ptr != end)
+		hash = 16777619U * hash ^ (size_t)*ptr++;
+	return (hash);
+}
+#endif
+
+CProgramParameters::CParameterBase::CParameterBase()
+	:m_name(""), locationIndex(-1), locationType(0), locationSize(0)
+{
+}
+
+CProgramParameters::CParameterBase::CParameterBase(const CProgramParameters::CParameterBase& p)
+	:m_name(p.m_name),
+	locationIndex(p.locationIndex),
+	locationType(p.locationType),
+	locationSize(p.locationSize)
+{
+}
+
+size_t CProgramParameters::CParameterBase::getTypeId(void) const
+{
+#if (_MSC_VER <= 1500) || defined(LINUX)
+	const std::string nm = std::string(typeid(void*).name());
+	static size_t ti = hash_value(nm);
+#else
+	static size_t ti = typeid(void*).hash_code();
+#endif		
+	return ti;
+}
+
+CProgramParameters::CParameterBase& CProgramParameters::CParameterBase::operator=(const CProgramParameters::CParameterBase& p)
+{
+	m_name = p.m_name;
+	locationIndex = p.locationIndex;
+	locationType = p.locationType;
+	locationSize = p.locationSize;
+	return *this;
+}
+
 static CProgramParameters::CParameter<void*> noValue(0);
+
+//////////////////////////////////////////////////////////////////////
+// ProgramParameters implementation.
+//////////////////////////////////////////////////////////////////////
 
 CProgramParameters::CParameterBase& CProgramParameters::operator[](size_t v)
 {

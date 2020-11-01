@@ -81,7 +81,12 @@ public:
 
 
 private:
-	void allocateResources(void);
+	//!	Allocates Geometry, Textures and Uniforms resources for this display.
+	virtual void glvkAllocateResources(void);
+
+	//!	Release allocated Geometry, Textures and Uniforms resources for this display.
+	virtual void glvkReleaseResources(void);
+
 
 	CContextManager::RENDERING_CONTEXT_ID	m_context;
 

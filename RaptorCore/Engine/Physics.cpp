@@ -1,6 +1,21 @@
-// Physics.cpp: implementation of the CPhysics class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  Physics.cpp                                                            */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
 #include "Subsys/CodeGeneration.h"
 
 #if !defined(AFX_PHYSICS_H__B42ABB89_80E8_11D3_97C2_DE5C28000000__INCLUDED_)
@@ -13,6 +28,10 @@
 
 
 #include <math.h>
+
+#ifdef BUILD_PHYSX
+	#include <PxFoundation.h>
+#endif
 
 
 //////////////////////////////////////////////////////////////////////
@@ -41,7 +60,7 @@ void defaultPfd(CPhysics *physics,
 				CGenericVector<float> &accel,
 				CGenericVector<float> &raccel)
 {
-	int nb = physics->getNbForces();
+	size_t nb = physics->getNbForces();
 
 	if (nb>0)
 	{
@@ -61,7 +80,7 @@ void defaultPfd(CPhysics *physics,
 		raccel = (CPhysics::dV ^ accel);
 
 		if (nb>1)
-			for (int i = 1; i<nb; i++)
+			for (size_t i = 1; i<nb; i++)
 			{
 				f = physics->getForce(i);
 
@@ -271,9 +290,9 @@ void RAPTOR_FASTCALL CPhysics::deltaTime(float dt)
 }
 
 
-CPhysics::CForce* RAPTOR_FASTCALL CPhysics::getForce(unsigned int index) const
+CPhysics::CForce* RAPTOR_FASTCALL CPhysics::getForce(size_t index) const
 {
-	if (index < (unsigned int)forces.size())
+	if (index < forces.size())
 		return forces[index];
 	else
 		return NULL;

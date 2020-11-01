@@ -71,7 +71,7 @@ class Foreground : public CBasicObjects::CRectangle
 public:
 	Foreground(CMagnifierFilter *mf):fgMag(mf),status(!mf->isEnabled())
 	{
-		CTextureFactory &fct = CTextureFactory::getDefaultFactory();
+		CTextureFactory &fct = CTextureFactory::glGetDefaultFactory();
 		ITextureObject *T = fct.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA);
 		fct.glLoadTexture(T,"lrock049.jpg");
 
@@ -81,7 +81,7 @@ public:
 
 		CShader *s = getShader();
 		CTextureUnitSetup *tmu = s->glGetTextureUnitsSetup();
-		tmu->setDiffuseMap(output);
+		tmu->setDiffuseMap(output, CTextureUnitSetup::CGL_OPAQUE);
 	};
 
 	virtual ~Foreground() {};
@@ -224,12 +224,12 @@ void CTestDoc::GLInitContext(void)
 		background->setTexCoord(3,0.0f,2.0f);
     background->glUnLockData();
 
-	CTextureFactory &fct = CTextureFactory::getDefaultFactory();
+	CTextureFactory &fct = CTextureFactory::glGetDefaultFactory();
 	ITextureObject *T = fct.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA);
 	fct.glLoadTexture(T,"Gaussian_blur_test.jpg");
 	CShader *s = background->getShader();
 	CTextureUnitSetup *tmu = s->glGetTextureUnitsSetup();
-	tmu->setDiffuseMap(T);
+	tmu->setDiffuseMap(T, CTextureUnitSetup::CGL_OPAQUE);
 	
 
 #if defined(GL_ARB_color_buffer_float)
@@ -273,17 +273,18 @@ void CTestDoc::GLInitContext(void)
 
 	ColorController *pCtrl = new ColorController(bwf,hdr,mbf,pBlur,pMag);
 
+	CBasicObjects::CRectangle *pForeground = new Foreground(pMag);
+	pForeground->setDimensions(10.0f, 10.0f);
+	pForeground->translate(10.0f, -5.0f, -6.0f);
+	pForeground->setRenderingModel(CGeometry::CGL_FRONT_GEOMETRY);
+	pForeground->addModel(CGeometry::CGL_NORMALS);
+	pForeground->addModel(CGeometry::CGL_TEXTURE);
+
 	C3DScene *pScene = dsp->getRootScene();
 	pScene->addObject(vm->getObject());
     pScene->addLight(pLight);
     pScene->addObject(vm2->getObject());
 	pScene->addObject(background);
-	CBasicObjects::CRectangle *pForeground = new Foreground(pMag);
-	pForeground->setDimensions(10.0f,10.0f);
-	pForeground->translate(10.0f,-5.0f,-6.0f);
-	pForeground->setRenderingModel(CGeometry::CGL_FRONT_GEOMETRY);
-	pForeground->addModel(CGeometry::CGL_NORMALS);
-	pForeground->addModel(CGeometry::CGL_TEXTURE);
 	pScene->addObject(pForeground);
 }
 

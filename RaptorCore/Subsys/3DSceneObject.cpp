@@ -120,11 +120,11 @@ CObject3D* C3DSceneObject::getObject(void) const
 	return obj;
 }
 
-void C3DSceneObject::glRenderLights(GLboolean proceedLights,const vector<CLight*> &lights)
+void C3DSceneObject::glRenderLights(GLboolean proceedLights,const std::vector<CLight*> &lights)
 {
 	if (proceedLights)
 	{
-		vector<CLight*>::const_iterator it = lights.begin();
+		std::vector<CLight*>::const_iterator it = lights.begin();
 		while (it != lights.end())
 		{
 			CLight *pLight = (*it++);
@@ -258,8 +258,8 @@ void C3DSceneObject::selectLights(const vector<CLight*> &lights,const CGenericMa
 		CLightObserver::lightCompare lc;
         lc.light = (*itl++);
 
-        // light position in eye space
-        const CGenericVector<float>& xx = lc.light->getLightEyePosition();
+        // light position in modelview space
+        const CGenericVector<float>& xx = lc.light->getLightViewPosition();
         
         //  Compare square distances instead of square roots : faster
         float dmax = lc.light->getLightDMax();

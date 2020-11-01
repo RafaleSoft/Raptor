@@ -526,7 +526,7 @@ void IViewPoint::ImportPaths(CRaptorIO& io)
     C3DPath *tPath = NULL;
     C3DPath *ePath = NULL;
 
-    while (!data.empty())
+    while (io.hasMoreValues())
 	{
 	    if (data == "EyePath")
 		{

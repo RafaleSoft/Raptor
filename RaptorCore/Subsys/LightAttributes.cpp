@@ -166,7 +166,7 @@ void CLightAttributes::notify(CLight* owner,CLightObserver::UPDATE_KIND kind)
     }
 }
 
-int* const CLightAttributes::getLightOrder(void)
+CLightAttributes::light_order const & CLightAttributes::getLightOrder(void)
 {
 	unsigned int lpos = 0;
 	for (unsigned int i = 0; i < CLightAttributes::MAX_LIGHTS; i++)
@@ -180,7 +180,10 @@ int* const CLightAttributes::getLightOrder(void)
 		for (unsigned int j = 0; j < CLightAttributes::MAX_LIGHTS; j++)
 		{
 			if (s_activeLights[j] == s_orderedLights[i])
+			{
 				s_lightOrder[lpos++] = j;
+				break;
+			}
 		}
 	}
 

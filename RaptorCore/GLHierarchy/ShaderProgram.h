@@ -89,6 +89,10 @@ public:
 	//! @return the required size in bytes.
 	uint64_t glGetBufferMemoryRequirements(void);
 
+	//! This method can be used to update only a subset of the actual parameter set.
+	//! They will be actually applied after a successfull link is issued.
+	void updateProgramParameters(const CProgramParameters &v);
+
 
 	//! Inherited from CPersistence
 	DECLARE_CLASS_ID(CShaderProgramClassID,"ShaderProgram",CPersistence)
@@ -104,10 +108,6 @@ protected:
 	//! This method can be used to pass in the whole parameter set.
 	//! They will be actually applied after a successfull link is issued.
 	virtual void setProgramParameters(const CProgramParameters &v);
-
-	//! This method can be used to update only a subset of the actual parameter set.
-	//! They will be actually applied after a successfull link is issued.
-	virtual void updateProgramParameters(const CProgramParameters &v);
 
 
 	//! Valid status

@@ -41,6 +41,9 @@ public:
 	//!	Deactivates the light, releasing the HW id.
 	void glDeActivate(void);
 
+	//!	ACtive and ordered light arrays
+	typedef CLight* light_array[MAX_LIGHTS];
+	typedef int light_order[MAX_LIGHTS];
 
 
 	//!
@@ -64,7 +67,7 @@ public:
 	static CLight** const getOrderedLights(void) { return s_orderedLights; };
 
 	//! Returns the packed list of active lights order
-	static int* const getLightOrder(void);
+	static light_order const & getLightOrder(void);
 
 
 

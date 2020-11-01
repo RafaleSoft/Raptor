@@ -202,13 +202,17 @@ void CRaptorDisplayFilter::glDestroyFilter(void)
 {
     if (colorInternalSource != NULL)
     {
-        Raptor::glDestroyDisplay((CRaptorDisplay*)colorInternalSource);
+		CRaptorDisplay *pDisplay = (CRaptorDisplay*)colorInternalSource;
+		pDisplay->glvkReleaseResources();
+        Raptor::glDestroyDisplay(pDisplay);
         colorInternalSource = NULL;
     }
 
 	if (depthInternalSource != NULL)
 	{
-		Raptor::glDestroyDisplay((CRaptorDisplay*)depthInternalSource);
+		CRaptorDisplay *pDisplay = (CRaptorDisplay*)depthInternalSource;
+		pDisplay->glvkReleaseResources();
+		Raptor::glDestroyDisplay(pDisplay);
 		depthInternalSource = NULL;
 	}
 
@@ -376,7 +380,7 @@ ITextureObject*  CRaptorDisplayFilter::glCreateColorOutput(void)
 	else if (m_fModel == CRaptorDisplayFilter::RENDER_TEXTURE)
 		state.renderer = CRaptorDisplayConfig::PIXEL_BUFFER;
 
-	CTextureFactory &filterFactory = CTextureFactory::getDefaultFactory();
+	CTextureFactory &filterFactory = CTextureFactory::glGetDefaultFactory();
 	colorOutput = filterFactory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
 			                                    ITextureObject::CGL_UNFILTERED);
 	filterFactory.glResizeTexture(	colorOutput,

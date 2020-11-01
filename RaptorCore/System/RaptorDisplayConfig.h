@@ -321,7 +321,7 @@ public:
 	//!	A whole copy is simply by using default copy operator.
 	void copyBaseConfig(const CRaptorDisplayConfig& config);
 
-	//!	A helper to query the bumbe of samples for current config
+	//!	A helper to query the number of samples for current config
 	unsigned int getNbSamples(void) const;
 
 

@@ -53,9 +53,6 @@ public:
 private:
 	//!	Copy constructor for cloning.
 	CPhongShader(const CPhongShader& shader);
-
-	static int diffuseMap;
-	static int lightEnable;
 };
 
 

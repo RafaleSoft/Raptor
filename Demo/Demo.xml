@@ -24,22 +24,6 @@
           <Sprite set="MAIN_TEXTURES" texname="Datas\\Smoke.tga"/> 
       </Particle>
   </ParticleManager>
-	<Set name="Torch_Set">
-		<Child name="Torch0"/>
-		<Child name="Torch1"/>
-		<Child name="Torch2"/>
-	</Set>
-	<Set name="WallSet">
-		<Child name="WallBloc"/>
-		<Child name="WallBack"/>
-	</Set>
-  <Set name="FireSet">
-    <Object3D>
-      <Properties transparent="1"  cast_shadow="0" receive_shadow="0"/>
-    </Object3D>
-    <Child name="smoke"/>
-    <Child name="fire"/>
-  </Set>
   <Shader name="HEDRA_SHADER">
     <Color r="0.2" g="1.0" b="1.0" a="0.2"/>
   </Shader>
@@ -177,37 +161,6 @@
       </Spot>
       <Glow set="MAIN_TEXTURES" size="5.0" texname="Datas\\flare0.jpg"/>
   </Light> 
-  <ViewModifier name="KNOT_MODIFIER" object="BUMP_KNOT">
-      <Action action="Reset"/>
-      <Action action="AbsoluteTranslation">
-          <TimeFunction type="time_constant" a0="0.0"/>
-          <TimeFunction type="time_constant" a0="5.0"/>
-          <TimeFunction type="time_constant" a0="0.0"/>
-      </Action>
-      <Action action="Rotation">
-        <TimeFunction type="time_linear" a0="0.0" a1="72.0"/>
-        <TimeFunction type="time_linear" a0="5.0" a1="144.0"/>
-			  <TimeFunction type="time_linear" a0="0.0" a1="216.0"/>
-		  </Action>
-	</ViewModifier>
-	<ViewModifier name="HEDRA_MODIFIER" object="Hedra">
-		<Action action="Reset"/>
-		<Action action="AbsoluteTranslation">
-			<TimeFunction type="time_constant" a0="-2.5"/>
-			<TimeFunction type="time_constant" a0="2.0"/>
-			<TimeFunction type="time_constant" a0="-2.5"/>
-		</Action>
-		<Action action="Translation">
-			<TimeFunction type="time_cosine" a0="0.0" a1="1.256" a2="20.0"/>
-			<TimeFunction type="time_constant" a0="0.0"/>
-			<TimeFunction type="time_sine" a0="0.0" a1="1.256" a2="20.0"/>
-		</Action>
-		<Action action="Rotation">
-			<TimeFunction type="time_linear" a0="0.0" a1="72.0"/>
-			<TimeFunction type="time_linear" a0="5.0" a1="144.0"/>
-			<TimeFunction type="time_linear" a0="0.0" a1="216.0"/>
-		</Action>
-	</ViewModifier>
   <LightModifier name="LIGHT_MODIFIER" light="mainlight">
 		<Action action="Position">
 			<TimeFunction type="time_cosine" a0="0.0" a1="1.256" a2="20.0" a3="-2.5"/>
@@ -220,6 +173,22 @@
 			<TimeFunction type="time_sine" a0="0.0" a1="1.256" a2="-20.0" a3="2.5"/>
 		</Action>
 	</LightModifier>
+  <Set name="Torch_Set">
+    <Child name="Torch0"/>
+    <Child name="Torch1"/>
+    <Child name="Torch2"/>
+  </Set>
+  <Set name="WallSet">
+    <Child name="WallBloc"/>
+    <Child name="WallBack"/>
+  </Set>
+  <Set name="FireSet">
+    <Object3D>
+      <Properties transparent="1"  cast_shadow="0" receive_shadow="0"/>
+    </Object3D>
+    <Child name="smoke"/>
+    <Child name="fire"/>
+  </Set>
 	<Object3DInstance name="TopRoof_00" reference="Roof_Set"/>
 	<Object3DInstance name="TopRoof_01" reference="Roof_Set"/>
 	<Object3DInstance name="TopRoof_02" reference="Roof_Set"/>
@@ -382,70 +351,101 @@
       <Properties cast_shadow="0"/>
     </Object3D>
 	</Object3DInstance>
-    <Lod name="column0">
-        <Level depth="0.0" reference="Column_Set"/>
-        <Level depth="40.0" reference="ColumnLow_Set"/>
-    </Lod>
-    <Lod name="column1">
-        <Level depth="0.0" reference="Column_Set"/>
-        <Level depth="40.0" reference="ColumnLow_Set"/>
-    </Lod>
-    <Lod name="column2">
-        <Level depth="0.0" reference="Column_Set"/>
-        <Level depth="40.0" reference="ColumnLow_Set"/>
-    </Lod>
-    <Lod name="column3">
-        <Level depth="0.0" reference="Column_Set"/>
-        <Level depth="40.0" reference="ColumnLow_Set"/>
-    </Lod>
-    <Lod name="column4">
-        <Level depth="0.0" reference="Column_Set"/>
-        <Level depth="40.0" reference="ColumnLow_Set"/>
-    </Lod>
-    <Lod name="column5">
-        <Level depth="0.0" reference="Column_Set"/>
-        <Level depth="40.0" reference="ColumnLow_Set"/>
-    </Lod>
-    <Lod name="column6">
-        <Level depth="0.0" reference="Column_Set"/>
-        <Level depth="40.0" reference="ColumnLow_Set"/>
-    </Lod>
-    <Lod name="column7">
-        <Level depth="0.0" reference="Column_Set"/>
-        <Level depth="40.0" reference="ColumnLow_Set"/>
-    </Lod>
-    <Lod name="column8">
-        <Level depth="0.0" reference="Column_Set"/>
-        <Level depth="40.0" reference="ColumnLow_Set"/>
-    </Lod>
-    <Lod name="column9">
-        <Level depth="0.0" reference="Column_Set"/>
-        <Level depth="40.0" reference="ColumnLow_Set"/>
-    </Lod>
-    <Lod name="column10">
-        <Level depth="0.0" reference="Column_Set"/>
-        <Level depth="40.0" reference="ColumnLow_Set"/>
-    </Lod>
-    <Lod name="column11">
-        <Level depth="0.0" reference="Column_Set"/>
-        <Level depth="40.0" reference="ColumnLow_Set"/>
-    </Lod>
-    <Lod name="column12">
-        <Level depth="0.0" reference="Column_Set"/>
-        <Level depth="40.0" reference="ColumnLow_Set"/>
-    </Lod>
-    <Lod name="column13">
-        <Level depth="0.0" reference="Column_Set"/>
-        <Level depth="40.0" reference="ColumnLow_Set"/>
-    </Lod>
-    <Lod name="column14">
-        <Level depth="0.0" reference="Column_Set"/>
-        <Level depth="40.0" reference="ColumnLow_Set"/>
-    </Lod>
-    <Lod name="column15">
-        <Level depth="0.0" reference="Column_Set"/>
-        <Level depth="40.0" reference="ColumnLow_Set"/>
-    </Lod>
+  <Lod name="column0">
+      <Level depth="0.0" reference="Column_Set"/>
+      <Level depth="40.0" reference="ColumnLow_Set"/>
+  </Lod>
+  <Lod name="column1">
+      <Level depth="0.0" reference="Column_Set"/>
+      <Level depth="40.0" reference="ColumnLow_Set"/>
+  </Lod>
+  <Lod name="column2">
+      <Level depth="0.0" reference="Column_Set"/>
+      <Level depth="40.0" reference="ColumnLow_Set"/>
+  </Lod>
+  <Lod name="column3">
+      <Level depth="0.0" reference="Column_Set"/>
+      <Level depth="40.0" reference="ColumnLow_Set"/>
+  </Lod>
+  <Lod name="column4">
+      <Level depth="0.0" reference="Column_Set"/>
+      <Level depth="40.0" reference="ColumnLow_Set"/>
+  </Lod>
+  <Lod name="column5">
+      <Level depth="0.0" reference="Column_Set"/>
+      <Level depth="40.0" reference="ColumnLow_Set"/>
+  </Lod>
+  <Lod name="column6">
+      <Level depth="0.0" reference="Column_Set"/>
+      <Level depth="40.0" reference="ColumnLow_Set"/>
+  </Lod>
+  <Lod name="column7">
+      <Level depth="0.0" reference="Column_Set"/>
+      <Level depth="40.0" reference="ColumnLow_Set"/>
+  </Lod>
+  <Lod name="column8">
+      <Level depth="0.0" reference="Column_Set"/>
+      <Level depth="40.0" reference="ColumnLow_Set"/>
+  </Lod>
+  <Lod name="column9">
+      <Level depth="0.0" reference="Column_Set"/>
+      <Level depth="40.0" reference="ColumnLow_Set"/>
+  </Lod>
+  <Lod name="column10">
+      <Level depth="0.0" reference="Column_Set"/>
+      <Level depth="40.0" reference="ColumnLow_Set"/>
+  </Lod>
+  <Lod name="column11">
+      <Level depth="0.0" reference="Column_Set"/>
+      <Level depth="40.0" reference="ColumnLow_Set"/>
+  </Lod>
+  <Lod name="column12">
+      <Level depth="0.0" reference="Column_Set"/>
+      <Level depth="40.0" reference="ColumnLow_Set"/>
+  </Lod>
+  <Lod name="column13">
+      <Level depth="0.0" reference="Column_Set"/>
+      <Level depth="40.0" reference="ColumnLow_Set"/>
+  </Lod>
+  <Lod name="column14">
+      <Level depth="0.0" reference="Column_Set"/>
+      <Level depth="40.0" reference="ColumnLow_Set"/>
+  </Lod>
+  <Lod name="column15">
+      <Level depth="0.0" reference="Column_Set"/>
+      <Level depth="40.0" reference="ColumnLow_Set"/>
+  </Lod>
+  <ViewModifier name="KNOT_MODIFIER" object="BUMP_KNOT">
+    <Action action="Reset"/>
+    <Action action="AbsoluteTranslation">
+      <TimeFunction type="time_constant" a0="0.0"/>
+      <TimeFunction type="time_constant" a0="5.0"/>
+      <TimeFunction type="time_constant" a0="0.0"/>
+    </Action>
+    <Action action="Rotation">
+      <TimeFunction type="time_linear" a0="0.0" a1="72.0"/>
+      <TimeFunction type="time_linear" a0="5.0" a1="144.0"/>
+      <TimeFunction type="time_linear" a0="0.0" a1="216.0"/>
+    </Action>
+  </ViewModifier>
+  <ViewModifier name="HEDRA_MODIFIER" object="Hedra">
+    <Action action="Reset"/>
+    <Action action="AbsoluteTranslation">
+      <TimeFunction type="time_constant" a0="-2.5"/>
+      <TimeFunction type="time_constant" a0="2.0"/>
+      <TimeFunction type="time_constant" a0="-2.5"/>
+    </Action>
+    <Action action="Translation">
+      <TimeFunction type="time_cosine" a0="0.0" a1="1.256" a2="20.0"/>
+      <TimeFunction type="time_constant" a0="0.0"/>
+      <TimeFunction type="time_sine" a0="0.0" a1="1.256" a2="20.0"/>
+    </Action>
+    <Action action="Rotation">
+      <TimeFunction type="time_linear" a0="0.0" a1="72.0"/>
+      <TimeFunction type="time_linear" a0="5.0" a1="144.0"/>
+      <TimeFunction type="time_linear" a0="0.0" a1="216.0"/>
+    </Action>
+  </ViewModifier>
 	<Update name="Raptor Demo">
 		<RenderingProperties texturing="1" lighting="1"/>
         <ViewPoint left="-1.33" right="1.33" bottom="-1.0" top="1.0" near="1.5" far="200.0" model="perspective"  tmin="0.0" tmax="200.0" path="0" continus="0" loop="1">

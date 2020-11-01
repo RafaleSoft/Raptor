@@ -123,7 +123,7 @@ void Display::GLInitContext()
 	glDisable(GL_CULL_FACE);
 	glClearColor(0.0f,0.0f,0.0f,0.5f);
 
-	CTextureFactory &f = CTextureFactory::getDefaultFactory();
+	CTextureFactory &f = CTextureFactory::glGetDefaultFactory();
 	CTextureFactoryConfig& config = f.getConfig();
 	txt = new CTextureSet();
 
@@ -475,7 +475,7 @@ GLDisplay->glMakeCurrent(false);
 	{
 		resultCount++;
 		unsigned int nb = 0;
-		CTextureFactory &factory = CTextureFactory::getDefaultFactory();
+		CTextureFactory &factory = CTextureFactory::glGetDefaultFactory();
 		CTextureFactoryConfig &tfConfig = factory.getConfig();
 		tfConfig.setTexelFormat(CTextureFactoryConfig::BYTEORDER_RGBA);
 		tfConfig.useTextureResize(false);
@@ -663,7 +663,7 @@ GLDisplay->glMakeCurrent(true);
 		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 GLDisplay->glMakeCurrent(false);
 
-		CTextureFactoryConfig &tfConfig = CTextureFactory::getDefaultFactory().getConfig();
+		CTextureFactoryConfig &tfConfig = CTextureFactory::glGetDefaultFactory().getConfig();
 		BenchStep(resultCount,LOOP_SIZE,GLDisplay);
 	}
 #endif

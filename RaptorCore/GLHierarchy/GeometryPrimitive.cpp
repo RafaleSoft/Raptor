@@ -72,9 +72,8 @@ void CGeometryPrimitive::glRender(void)
 #if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
 			glDrawElements( GL_QUADS, m_size, GL_UNSIGNED_SHORT,m_faces);
 #else
-			Raptor::GetErrorManager()->generateRaptorError( CGeometry::CGeometryClassID::GetClassId(),
-															CRaptorErrorManager::RAPTOR_ERROR,
-															"GL_QUADS Rendering is deprecated and not available in core profile");
+			RAPTOR_ERROR(	CGeometry::CGeometryClassID::GetClassId(),
+							"GL_QUADS Rendering is deprecated and not available in core profile");
 #endif
 			break;
 		case LINE_STRIP:

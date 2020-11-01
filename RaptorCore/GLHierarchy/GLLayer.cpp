@@ -62,7 +62,7 @@ CGLLayer::CGLLayer(int xpos,int ypos,unsigned int width,unsigned int height)
 	m_glTexCoordv = 0.0f;
 
 	//	temporary buffer for texture loading
-	CTextureFactory &f = CTextureFactory::getDefaultFactory();
+	CTextureFactory &f = CTextureFactory::glGetDefaultFactory();
 	m_pPlane = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA);
 	CImage plane;
 	plane.allocatePixels(m_layerWidth, m_layerHeight);

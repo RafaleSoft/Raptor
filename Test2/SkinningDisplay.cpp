@@ -198,7 +198,7 @@ void CSkinningDisplay::Init()
 	vrs << Raptor::GetVersionString();
 	layer->drawAText(20,30,vrs.str(),font,0x80C0E000);
 
-	CTextureFactory &f = CTextureFactory::getDefaultFactory();
+	CTextureFactory &f = CTextureFactory::glGetDefaultFactory();
 	t2 = f.glCreateSprite(ITextureObject::CGL_COLOR24_ALPHA);
 	f.glSetTransparency(t2, 128);
 	f.glLoadTexture(t2,"Datas\\sprite.tga");

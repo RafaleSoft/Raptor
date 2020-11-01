@@ -116,7 +116,7 @@ void CTeapot::GLInitContext()
 		s.glPointParameter(0.0f,20.0,quadric);
 	}
 
-	CTextureFactory &f = CTextureFactory::getDefaultFactory();
+	CTextureFactory &f = CTextureFactory::glGetDefaultFactory();
 	t = new CTextureSet("main_textures");
 	CTextureFactoryConfig& config = f.getConfig();
 
@@ -271,7 +271,6 @@ void CTeapot::GLInitContext()
 	displays[CTest2App::COLLISIONDEMO] = &collisionDisplay;
 	ambientOcclusionDisplay.Init();
 	displays[CTest2App::AMBIENTOCCLUSIONDEMO] = &ambientOcclusionDisplay;
-
 	vertexShadersDisplay.Init();
 	displays[CTest2App::VRTXSHADERSDEMO] = &vertexShadersDisplay;
 

@@ -9,7 +9,9 @@
 
 - Supprimer GL_QUADS
 	- glDrawElements (Object3DShadow)
-	- CGLLayer::glRenderSingleBuffer
+	- CGLLayer::glRenderSingleBuffer + glRender
+	- GL3DFont::glTTBuildGeometry
+	- CAboutVideo::glRender
 
 - CShadedGeometry::removeModel
 	- modèle inaccessible en dehors, génère une configuration incorrecte
@@ -19,11 +21,10 @@
 	- renommer glGrab en glBlit en utilisant un CImage.
 
 - CMipmapBuilder:
-	- Reintégrer, notamment pour Démo.
+	- Reintégrer, pour générer les mipmaps pour Vulkan (vkLoadTexture) ==> source de gluBuild2DMipmaps.
 
 - CTextureFactory:
 	- Fusionner vkLoadTexture & glLoadTexture
-	- supprimer la statique vers RaptorInstance
 
 - CGLFont:
 	- corriger font color et back color pour rendre générique
@@ -34,7 +35,7 @@
 	- pas de decodeur video en 64 bits => ffmpeg ?
 	- Slide: utiliser un CTextureQuad
 
-- CShaderrogram:
+- CShaderProgram:
 	- ajouter un preprocesseur.
 
 - COpenGLShaderStage:
@@ -48,9 +49,6 @@
 - CResourceAllocator & co:
 	- lock/unlock toujours utile ?
 	- à priori non sur les allocate/release car allocation uniquement sur CPU.
-
-- CTimeObject:
-	- déplacer les statiques dans CRaptorInstance.
 
 - CGeometry:
 	- ajouter un cas aux méthodes SetVertices/SetColors/.... si nbV > nb_vertex
@@ -103,10 +101,6 @@
 	
 - CRaptorDisplayConfig:
 	- faire un sync avec timer (VSync prend 50% CPU!)
-
-- CShader:
-	- faire le glenderTexture (attention a prendre en charge l'utilisation automatique des
-	TMUs. N'activer et désactiver que le minimum, car coûteux')
 
 - RaptorServer:
 	- Rendre thread safe la gestion des clients

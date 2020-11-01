@@ -125,25 +125,12 @@ CRaptorVulkanDisplay::CRaptorVulkanDisplay(const CRaptorDisplayConfig& pcs)
 
 CRaptorVulkanDisplay::~CRaptorVulkanDisplay(void)
 {
-	if (m_pGOldAllocator != NULL)
-		CGeometryAllocator::SetCurrentInstance(m_pGOldAllocator);
-	if (m_pGAllocator != NULL)
-		delete m_pGAllocator;
+	IViewPoint *vp = getViewPoint();
+	setViewPoint(NULL);
+	delete vp;
 
-	if (NULL != m_pTOldAllocator)
-		CTexelAllocator::SetCurrentInstance(m_pTOldAllocator);
-	if (NULL != m_pTAllocator)
-		delete m_pTAllocator;
-
-	if (NULL != m_pUOldAllocator)
-		CUniformAllocator::SetCurrentInstance(m_pUOldAllocator);
-	if (NULL != m_pUAllocator)
-		delete m_pUAllocator;
-
-
-	glvkUnBindDisplay();
-
-	CContextManager::GetInstance()->vkDestroyContext(m_context);
+	if (CContextManager::INVALID_CONTEXT != m_context)
+		CContextManager::GetInstance()->vkDestroyContext(m_context);
 }
 
 IViewPoint *const CRaptorVulkanDisplay::createViewPoint(void) const
@@ -267,7 +254,7 @@ bool CRaptorVulkanDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
 			}
 
 			//	Manage vertex/pixel buffer objects.
-			allocateResources();
+			glvkAllocateResources();
 
 			//!	We need a first make current context to set the active device
 			manager->vkMakeCurrentContext(device, m_context);
@@ -311,7 +298,7 @@ bool CRaptorVulkanDisplay::glvkUnBindDisplay(void)
 }
 
 
-void CRaptorVulkanDisplay::allocateResources(void)
+void CRaptorVulkanDisplay::glvkAllocateResources(void)
 {
     //  Ensure no current allocator.
     m_pGOldAllocator = CGeometryAllocator::SetCurrentInstance(NULL);
@@ -389,4 +376,34 @@ void CRaptorVulkanDisplay::allocateResources(void)
 		m_pTOldAllocator->glvkLockMemory(false);
 	if ((m_pUOldAllocator != m_pUAllocator) && (m_pUOldAllocator != NULL))
 		m_pUOldAllocator->glvkLockMemory(false);
+}
+
+void CRaptorVulkanDisplay::glvkReleaseResources(void)
+{
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+
+	//TODO: Implement generic gl/vk display resources.
+	//if (instance.isInitialised())
+	//	instance.glvkReleaseSharedRsources();
+
+
+	if (m_pGOldAllocator != NULL)
+		CGeometryAllocator::SetCurrentInstance(m_pGOldAllocator);
+	if (m_pGAllocator != NULL)
+		delete m_pGAllocator;
+	m_pGAllocator = NULL;
+
+	if (NULL != m_pTOldAllocator)
+		CTexelAllocator::SetCurrentInstance(m_pTOldAllocator);
+	if (NULL != m_pTAllocator)
+		delete m_pTAllocator;
+	m_pTAllocator = NULL;
+
+	if (NULL != m_pUOldAllocator)
+		CUniformAllocator::SetCurrentInstance(m_pUOldAllocator);
+	if (NULL != m_pUAllocator)
+		delete m_pUAllocator;
+	m_pUAllocator = NULL;
+
+	CRaptorDisplay::glvkReleaseResources();
 }

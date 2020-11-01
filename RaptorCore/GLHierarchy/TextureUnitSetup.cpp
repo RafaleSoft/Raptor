@@ -145,7 +145,7 @@ CTextureUnitSetup::CTextureUnitSetup() :
 	}
 
 	//! For optimisation and compatibility purposes, only enable the first 4 TMU image units as a default state.
-	nbUnits = CTextureFactory::getDefaultFactory().getConfig().getNumTextureImages();
+	nbUnits = CTextureFactory::glGetDefaultFactory().getConfig().getNumTextureImages();
 
 	useUnit = new bool[nbUnits];
 	imageUnit = new ITextureObject*[nbUnits];

@@ -278,7 +278,7 @@ bool CHDRFilter::glInitFilter(void)
     if (!CRaptorDisplayFilter::glInitFilter())
         return false;
 
-	CTextureFactory &filterFactory = CTextureFactory::getDefaultFactory();
+	CTextureFactory &filterFactory = CTextureFactory::glGetDefaultFactory();
 
 	bool previousResize = filterFactory.getConfig().useTextureResize();
 	filterFactory.getConfig().useTextureResize(false);

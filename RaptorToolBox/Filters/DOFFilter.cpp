@@ -105,6 +105,7 @@ void CDOFFilter::glDestroyFilter(void)
 	}
     if (tmpDisplay != NULL)
 	{
+		tmpDisplay->glvkReleaseResources();
         Raptor::glDestroyDisplay(tmpDisplay);
 		tmpDisplay = NULL;
 	}
@@ -115,6 +116,7 @@ void CDOFFilter::glDestroyFilter(void)
 	}
     if (tmpDisplay2 != NULL)
 	{
+		tmpDisplay2->glvkReleaseResources();
         Raptor::glDestroyDisplay(tmpDisplay2);
 		tmpDisplay2 = NULL;
 	}
@@ -258,7 +260,7 @@ bool CDOFFilter::glInitFilter(void)
 			return false;
 	}
 
-	CTextureFactory &filterFactory = CTextureFactory::getDefaultFactory();
+	CTextureFactory &filterFactory = CTextureFactory::glGetDefaultFactory();
 
 	bool previousResize = filterFactory.getConfig().useTextureResize();
 	filterFactory.getConfig().useTextureResize(false);
@@ -369,7 +371,9 @@ void CDOFFilter::glInitShaders(void)
 #if defined(GL_ARB_geometry_shader4)
 	DOFShader->glGetOpenGLShader()->glGetVertexShader("EMPTY_PROGRAM");
 	CGeometryShader *gp = DOFShader->glGetOpenGLShader()->glGetGeometryShader("DOF_GEO_SHADER");
+#if !defined(GL_VERSION_3_2)
 	gp->setGeometry(GL_POINTS, GL_TRIANGLE_STRIP, 4);
+#endif
 	DOFShader->glGetOpenGLShader()->glGetFragmentShader("DOF_TEX_SHADER");
 	DOFShader->glGetOpenGLShader()->glCompileShader();
 #elif defined(GL_ARB_vertex_shader)

@@ -642,6 +642,7 @@
     <ClCompile Include="..\..\RaptorServer\RaptorServer.cpp" />
     <ClCompile Include="..\..\RaptorServer\RaptorServerApp.cpp" />
     <ClCompile Include="..\..\RaptorServer\RaptorServerCompressor.cpp" />
+    <ClCompile Include="..\..\RaptorServer\ServerSession.cpp" />
     <ClCompile Include="..\..\RaptorServer\ServerTransport.cpp" />
     <ClCompile Include="..\..\RaptorServer\StdAfx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>

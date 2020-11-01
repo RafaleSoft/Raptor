@@ -64,6 +64,7 @@ namespace Builder
         public bool DEBUG;
         public bool REDIST;
         public bool COMPUTE;
+        public bool PHYSX;
     }
 
     class NativeWrapper
@@ -114,6 +115,7 @@ namespace Builder
             native.COMPUTE = (bld.COMPUTE ? (byte)1 : (byte)0);
             native.DEBUG = (bld.DEBUG ? (byte)1 : (byte)0);
             native.REDIST = (bld.REDIST ? (byte)1 : (byte)0);
+            native.PHYSX = (bld.PHYSX ? (byte)1 : (byte)0);
             return setBuildSupplement(ref native);
         }
 
@@ -154,6 +156,7 @@ namespace Builder
             public byte DEBUG;
             public byte REDIST;
             public byte COMPUTE;
+            public byte PHYSX;
         }
 
         private static List<string> GetAllStrings(IntPtr ptr, int size)

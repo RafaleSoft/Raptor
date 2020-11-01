@@ -90,7 +90,7 @@ bool CLightGlow::importObject(CRaptorIO& io)
     string textureName = "";
     
 	string data = io.getValueName();
-    while (!data.empty())
+    while (io.hasMoreValues())
     {
 		if (data == "name")
 			CPersistence::importObject(io);

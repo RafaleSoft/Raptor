@@ -40,7 +40,7 @@ public:
 	virtual size_t getNbLod(void) const { return lods.size(); };
 
     //! Returns the 'numLod' level;
-	virtual CObject3D* const getLod(unsigned int numLod) const;
+	virtual CObject3D* const getLod(size_t numLod) const;
 
     //! The method that returns the appropriate level
     CObject3D* const glGetLod(void) const;

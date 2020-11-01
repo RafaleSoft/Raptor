@@ -222,8 +222,6 @@ void CRaptorFilteredDisplay::glvkReleaseResources(void)
 		Raptor::glDestroyDisplay(m_pFSAADisplay);
 	Raptor::glDestroyDisplay(m_pDisplay);
 
-	CRaptorScreenDisplay::glvkUnBindDisplay();
-	
 	m_pFSAADisplay = NULL;
 	m_pDisplay = NULL;
 }
@@ -310,7 +308,7 @@ bool CRaptorFilteredDisplay::glCreateRenderDisplay(void)
 			return false;
         m_pDisplay->registerDestruction(this);
 
-		CTextureFactory &f = CTextureFactory::getDefaultFactory();
+		CTextureFactory &f = CTextureFactory::glGetDefaultFactory();
 		m_pImageSet = new CTextureSet();
 		m_pImageSet->registerDestruction(this);
 
@@ -468,9 +466,7 @@ bool CRaptorFilteredDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
 
 bool CRaptorFilteredDisplay::glvkUnBindDisplay(void)
 {
-	if (m_pDisplay == NULL)
-		return false;
-	else
+	if (m_pDisplay != NULL)
 	{
 		if (m_bBufferBound)
 		{
@@ -485,8 +481,9 @@ bool CRaptorFilteredDisplay::glvkUnBindDisplay(void)
 				m_pDisplay->glvkUnBindDisplay();
 		}
 		m_bBufferBound = false;
-		return CRaptorScreenDisplay::glvkUnBindDisplay();
 	}
+
+	return CRaptorScreenDisplay::glvkUnBindDisplay();
 }
 
 void CRaptorFilteredDisplay::glResize(unsigned int sx,unsigned int sy,unsigned int ox, unsigned int oy)

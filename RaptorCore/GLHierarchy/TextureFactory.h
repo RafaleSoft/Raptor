@@ -54,7 +54,7 @@ public:
 	virtual ~CTextureFactory(void);
 
 	//!	Returns a default factory, suited far most cases.
-	static CTextureFactory& getDefaultFactory();
+	static CTextureFactory& glGetDefaultFactory();
 
 	//! Returns the common factory configuration
 	CTextureFactoryConfig& getConfig(void) { return mConfig; };
@@ -195,9 +195,6 @@ private:
 
 	//!	This factory configuration
 	CTextureFactoryConfig	mConfig;
-
-	//!	A pointer to the default factory, initialized only if required.
-	static CTextureFactory *m_pDefault;
 
 	typedef struct TexturePreload_t
 	{

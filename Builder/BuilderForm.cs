@@ -201,6 +201,7 @@ namespace Builder
             bld.DEBUG = BUILD_DEBUG.Checked;
             bld.REDIST = BUILD_REDIST.Checked;
             bld.COMPUTE = BUILD_COMPUTE.Checked;
+            bld.PHYSX = BUILD_PHYSX.Checked;
             NativeWrapper.setBuildSupplement(ref bld);
         }
 

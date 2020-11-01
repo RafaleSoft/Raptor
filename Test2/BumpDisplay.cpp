@@ -106,7 +106,7 @@ void CBumpDisplay::Init()
 
 	CPersistence *p = CPersistence::FindObject("main_textures");
 
-	CTextureFactory &f = CTextureFactory::getDefaultFactory();
+	CTextureFactory &f = CTextureFactory::glGetDefaultFactory();
 	CTextureFactoryConfig& config = f.getConfig();
 	config.setBumpAmplitude(3.5f);
 
