@@ -63,7 +63,6 @@ private:
 	C3DSet				*m_roof;
 	CGeometry			*m_topRoof;
 	CShadedGeometry		*m_knot;
-	CBumppedGeometry	*m_columnBump;
 
 	CObject3DShadow		*m_knotShadow;
     CObject3DShadow		*m_torchShadow;

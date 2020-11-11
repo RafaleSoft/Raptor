@@ -88,7 +88,7 @@ CEnvironment *CEnvironment::glCreateEnvironment(C3DScene&	rScene,
 			break;
 		}
 		default:
-			return false;
+			break;
 	}
 
 	return pEnv;

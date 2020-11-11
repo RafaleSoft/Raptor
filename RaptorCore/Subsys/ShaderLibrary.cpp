@@ -106,11 +106,7 @@ static CShaderLibrary::factory_shader fsh[NB_FACTORY_SHADERS] =
 
 RAPTOR_NAMESPACE_END
 
-#ifdef WIN32
-	#define STRDUP(s) _strdup(s)
-#elif defined(LINUX)
-	#define STRDUP(s) strdup(s)
-#endif
+
 
 RAPTOR_NAMESPACE
 

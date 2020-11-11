@@ -66,7 +66,6 @@
 #endif
 
 
-
 RAPTOR_NAMESPACE
 
 static CObject3DShadow::CObject3DShadowClassID shadowId;
@@ -276,7 +275,11 @@ void CObject3DShadow::glRender(void)
             glRenderShadowContour();
             break;
         case SHADOW_VOLUME:
+#if 0
             glRenderShadowVolume();
+#else
+			glRenderShaderShadowVolume();
+#endif
             break;
         default:
             if (m_pAttributes->m_pObject != NULL)
@@ -467,6 +470,93 @@ void CObject3DShadow::glRenderShadowContour()
     CATCH_GL_ERROR
 }
 
+#if !defined(AFX_OPENGLSHADERSTAGE_H__56B00FE3_E508_4FD6_9363_90E6E67446D9__INCLUDED_)
+#include "OpenGLShaderStage.h"
+#endif
+#if !defined(AFX_VERTEXSHADER_H__204F7213_B40B_4B6A_9BCA_828409871B68__INCLUDED_)
+#include "GLHierarchy/VertexShader.h"
+#endif
+#if !defined(AFX_FRAGMENTSHADER_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
+#include "GLHierarchy/FragmentShader.h"
+#endif
+
+static COpenGLShaderStage *pStage = NULL;
+void CObject3DShadow::glRenderShaderShadowVolume()
+{
+	if (NULL == pStage)
+	{
+		const std::string shadow_vshader =
+"#version 440 compatibility \n\
+\n\
+layout(location = 0) in vec4 i_Position; \n\
+\n\
+void main(void) \n\
+{\n\
+	gl_Position = gl_ModelViewProjectionMatrix * i_Position; \n\
+}";
+		const std::string shadow_fshader =
+			"#version 440 \n\
+\n\
+layout(location = 0) out vec4 o_Color; \n\
+\n\
+void main(void) \n\
+{ \n\
+	o_Color = vec4(1.0,1.0,1.0,1.0); \n\
+}";
+
+		pStage = new COpenGLShaderStage("SHADOW_SHADER");
+		CVertexShader* vs = pStage->glGetVertexShader("SHADOW_VERTEX_SHADER");
+		vs->glLoadProgram(shadow_vshader);
+		CFragmentShader* fs = pStage->glGetFragmentShader("SHADOW_FRAGMANT_SHADER");
+		fs->glLoadProgram(shadow_fshader);
+		pStage->glCompileShader();
+	}
+
+	if (CGeometryAllocator::GetInstance()->isMemoryRelocated())
+		CGeometryAllocator::GetInstance()->glvkLockMemory(false);
+
+	CObject3DContour *pContour = m_pVisibleContours[0];
+	const CObject3DContour::CONTOUR_VOLUME& scv = pContour->getContourVolume();
+
+	glDisable(GL_CULL_FACE);
+	glEnable(GL_STENCIL_TEST_TWO_SIDE_EXT);
+
+	m_pAttributes->glActiveStencilFaceEXT(GL_BACK);
+	glStencilOp(GL_KEEP, GL_INCR_WRAP_EXT, GL_KEEP);
+	glStencilMask(~0);
+	glStencilFunc(GL_ALWAYS, 0, ~0);
+
+	m_pAttributes->glActiveStencilFaceEXT(GL_FRONT);
+	glStencilOp(GL_KEEP, GL_DECR_WRAP_EXT, GL_KEEP);
+	glStencilMask(~0);
+	glStencilFunc(GL_ALWAYS, 0, ~0);
+
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glVertexPointer(4, GL_FLOAT, 0, scv.volume);
+
+	pStage->glRender();
+
+	glDrawElements(GL_QUADS, scv.volumeSize, GL_UNSIGNED_INT, scv.volumeIndexes);
+	if (!scv.darkCapClipped)
+		glDrawElements(GL_TRIANGLES, scv.darkCapSize, GL_UNSIGNED_INT, scv.darkCapIndexes);
+	if (!scv.lightCapClipped)
+		glDrawElements(GL_TRIANGLES, scv.lightCapSize, GL_UNSIGNED_INT, scv.lightCapIndexes);
+
+	pStage->glStop();
+
+	glEnable(GL_CULL_FACE);
+	glDisableClientState(GL_VERTEX_ARRAY);
+	glDisable(GL_STENCIL_TEST_TWO_SIDE_EXT);
+
+	if (CGeometryAllocator::GetInstance()->isMemoryRelocated())
+		CGeometryAllocator::GetInstance()->glvkLockMemory(true);
+
+	m_pAttributes->reBuild = true;
+
+	CATCH_GL_ERROR
+}
+
+
 void CObject3DShadow::glRenderShadowVolume()
 {
     if (CGeometryAllocator::GetInstance()->isMemoryRelocated())
@@ -474,31 +564,10 @@ void CObject3DShadow::glRenderShadowVolume()
 
     CObject3DContour *pContour = m_pVisibleContours[0];
 	const CObject3DContour::CONTOUR_VOLUME& scv = pContour->getContourVolume();
-/*
-	if (extrusion < 0)
-	{
-		glMatrixMode(GL_PROJECTION);
-		glPushMatrix();
-	
-		double a,b,c,d,x,y;
-		x = (2.0 * 1.0) / (1.33 - -1.33);
-		y = (2.0 * 1.0) / (1.0 - -1.0);
-		a = (1.33 + -1.33) / (1.33 - -1.33);
-		b = (1.0 + -1.0) / (1.0 - -1.0);
-	
-		c = -1.0;
-		d = -2.0 * 1.0;
 
-		double m[] = { x, 0, 0, 0,
-									0, y, 0, 0,
-									a, b, c, -1,
-									0, 0, d, 0 };
-		glLoadMatrixd(m);
-	}
-*/
+
 #if (defined(GL_EXT_stencil_two_side) && defined(GL_EXT_stencil_wrap))
 	if (m_pAttributes->glActiveStencilFaceEXT == NULL)
-	//if (m_pAttributes->glActiveStencilFaceEXT != NULL)
 #endif
 	{
 		glStencilMask(~0);
@@ -570,14 +639,8 @@ void CObject3DShadow::glRenderShadowVolume()
 		glDisable(GL_STENCIL_TEST_TWO_SIDE_EXT);
 	}
 #endif
-/*
-	if (extrusion < 0)
-	{
-		glPopMatrix();
-		glMatrixMode(GL_MODELVIEW);
-	}
-*/
-    if (CGeometryAllocator::GetInstance()->isMemoryRelocated())
+  
+	if (CGeometryAllocator::GetInstance()->isMemoryRelocated())
         CGeometryAllocator::GetInstance()->glvkLockMemory(true);
 
     m_pAttributes->reBuild = true;

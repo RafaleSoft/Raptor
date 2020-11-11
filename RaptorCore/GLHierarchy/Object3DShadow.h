@@ -174,6 +174,7 @@ private:
 	//!	Render method for shadow volume ( issued from the parent contour )
 	//! ( extrusion < 0 means infinite shadow volume )
 	void glRenderShadowVolume();
+	void glRenderShaderShadowVolume();
 
     //!	Renders the contour of the shadow volume. It must be initialised using 
 	//!	BuildShadowVolume first. Extrusion specifies the extrusion

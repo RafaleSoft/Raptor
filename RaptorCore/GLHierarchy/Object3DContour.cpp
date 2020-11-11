@@ -444,40 +444,6 @@ void CObject3DContour::findEdges()
 #endif
 }
 
-//!	Currently unused
-/*
-void CObject3DContour::findContour()
-{
-	unsigned int size = 0;
-    size_t nbEdges = m_pContour->edges.size();
-	for (unsigned int i=0;i<nbEdges;i++)
-	{
-		const CContourAttributes::edge &e = m_pContour->edgeList[i];
-
-		bool bf = m_pContour->backfaces[e.front];
-		bool bb = bf;
-		if (e.back < 0)
-		{
-			bb = !bf;
-		}
-		else
-		{
-			bb = m_pContour->backfaces[e.back];
-		}
-		if ( bf != bb)
-		{
-			if (bf)
-				m_pContour->pContourEdges[size] = CContourAttributes::line(e.point[0],e.point[1]);
-			else
-				m_pContour->pContourEdges[size] = CContourAttributes::line(e.point[1],e.point[0]);
-			
-			size++;
-		}
-	}
-
-	m_pContour->contourSize = size;
-}
-*/
 
 void CObject3DContour::findBackFaces(const GL_COORD_VERTEX &pos)
 {
@@ -504,8 +470,8 @@ void CObject3DContour::findBackFaces(const GL_COORD_VERTEX &pos)
 		//	lightVect % nomal should be tested using the mean point 
 		//	of the triangle ( p1 + p2 + p3 ) / 3 ...
 		float angle = (m_pContour->pContourVolume[p3].x - pos.x) * m_pContour->pContourNormals[i].x +
-			(m_pContour->pContourVolume[p3].y - pos.y) * m_pContour->pContourNormals[i].y +
-			(m_pContour->pContourVolume[p3].z - pos.z) * m_pContour->pContourNormals[i].z;
+					  (m_pContour->pContourVolume[p3].y - pos.y) * m_pContour->pContourNormals[i].y +
+					  (m_pContour->pContourVolume[p3].z - pos.z) * m_pContour->pContourNormals[i].z;
 
 		if (angle < 0)
 		{
@@ -575,21 +541,8 @@ void CObject3DContour::buildVolume(const GL_COORD_VERTEX &pos,float extrusion)
     }
 
     m_pContour->extrude(pos,extrusion);
-    /*
-	unsigned int csize = m_pContour->contourVolumeSize;
-	for (unsigned int i=0;i<m_pContour->contourSize;i++)
-	{
-		unsigned int from = m_pContour->pContourEdges[i].from;
-		unsigned int to = m_pContour->pContourEdges[i].to;
-
-		m_pContour->volume[4*i] = from;
-		m_pContour->volume[4*i+1] = to;
-
-		m_pContour->volume[4*i+2] = to+csize;
-		m_pContour->volume[4*i+3] = from+csize;
-	}
-     */
-    m_contourVolume.volume = m_pContour->pContourVolume;
+    
+	m_contourVolume.volume = m_pContour->pContourVolume;
 	m_contourVolume.volumeIndexes = m_pContour->volume;
 	m_contourVolume.volumeSize = 4*m_pContour->contourSize;
 	m_contourVolume.darkCapIndexes = m_pContour->darkcap;
