@@ -262,14 +262,15 @@ typedef struct _rays_config_tag
 {
 	uint32_t	width;
 	uint32_t	height;
-	uint32_t	variance;
+	double		variance;
 	uint32_t	reflection;
 	uint32_t	refraction;
-	uint32_t	crease;
-	float		focale;
-	float		object_plane;
-	uint32_t	photon_map;
-	char		envtexname[MAX_STR_LEN];
+	double		crease;
+	double		focale;
+	double		object_plane;
+	double		aperture;
+	//uint32_t	photon_map;
+	//char		envtexname[MAX_STR_LEN];
 } rays_config_t;
 
 typedef struct _rays_plugin_tag

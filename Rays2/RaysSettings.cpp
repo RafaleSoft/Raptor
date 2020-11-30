@@ -31,6 +31,7 @@ CRaysSettings::CRaysSettings(void)
 	addSetting<uint16_t>("port", (uint16_t)2048);
 	addSetting<uint16_t>("deamon_port", (uint16_t)2049);
 	addSetting<string>("host_addr", std::string("127.0.0.1"));
+	addSetting<uint32_t>("nb_wu_per_job", (uint32_t)1);
 }
 
 CRaysSettings::~CRaysSettings(void)
@@ -155,7 +156,7 @@ bool CRaysSettings::setSettings(const CCmdLineParser& parser)
 			addSetting<uint32_t>("wu_priority", wu_priority);
 
 	addSetting<uint32_t>("deamon_delay", (uint32_t)10);
-	addSetting<uint32_t>("nb_wu_per_job", (uint32_t)1);
+	
 	addSetting<vector<string>>("deamon", vector<string>());
 	*/
 	return true;

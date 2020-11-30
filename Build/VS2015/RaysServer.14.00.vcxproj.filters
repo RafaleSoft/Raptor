@@ -33,6 +33,9 @@
     <ClCompile Include="..\..\Rays2\RaysServer\ServerSession.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Rays2\RaysServer\JobManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Rays2\RaysServer\DeamonManager.h">
@@ -60,6 +63,9 @@
       <Filter>Resource Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Rays2\RaysServer\ServerSession.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Rays2\RaysServer\JobManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -88,12 +88,20 @@ namespace RaysClient
             }
         }
 
-        ~RaysLogger()
+        private void Finalize()
         {
             if (null != writer)
             {
-                writer.Close();
-                writer.Dispose();
+                try
+                {
+                    writer.Close();
+                    writer.Dispose();
+                    writer = null;
+                }
+                catch (System.Text.EncoderFallbackException e)
+                {
+                    // Anything to do here ?
+                }
             }
         }
 

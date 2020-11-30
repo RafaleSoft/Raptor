@@ -1,6 +1,6 @@
 /***************************************************************************/
 /*                                                                         */
-/*  Version.h                                                              */
+/*  JobManager.cpp                                                         */
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
@@ -16,18 +16,49 @@
 /***************************************************************************/
 
 
+#include "stdafx.h"
 
-#ifndef __RAPTOR_VERSION_H__
-#define __RAPTOR_VERSION_H__
+#include "../Messages.h"			// io messages IDs and structs
 
-#define RAPTOR_VERSION_MAJOR	2
-#define RAPTOR_VERSION_MINOR	17
-#define RAPTOR_VERSION_PATCH	2
-#define RAPTOR_VERSION_BUILD	144
-
-#define RAPTOR_VERSION				(RAPTOR_VERSION_MAJOR << 24) + (RAPTOR_VERSION_MINOR << 16) + (RAPTOR_VERSION_PATCH << 8)
-#define	RAPTOR_VERSION_DOT(a,b,c)	#a"."#b"."#c
-#define	RAPTOR_VERSION_INVK(a,b,c)	RAPTOR_VERSION_DOT(a,b,c)
-#define	RAPTOR_VERSION_STR			RAPTOR_VERSION_INVK(RAPTOR_VERSION_MAJOR,RAPTOR_VERSION_MINOR,RAPTOR_VERSION_PATCH)
-
+#if !defined(AFX_JOBMANAGER_H__4E78312A_6362_46AF_A327_07208468529A__INCLUDED_)
+	#include "JobManager.h"
 #endif
+
+using namespace RaysServer;
+
+CJobManager::CJobManager()
+	:m_counter(0)
+{
+
+}
+
+CJobManager::~CJobManager()
+{
+
+}
+
+uint32_t CJobManager::createJob(server_base_t::request_handler_t::request_id id, 
+								uint32_t width, uint32_t height)
+{
+	m_counter++;
+
+	job_struct *job = new job_struct;
+	job->jobID = m_counter;
+	
+	job->clientID = id;
+	job->jobWidth = width;
+	job->jobHeight = height;
+
+	//	create job data storage: image is a 32 bits RGBA buffer
+	// TODO : use 64bits for EXR images
+	unsigned char *imageBuffer = new unsigned char[width * height * 4];
+	float *zBuffer = new float[width * height];
+	job->globalImageBuffer = imageBuffer;
+	job->ZBuffer = zBuffer;
+	// TODO.
+	job->processor = NULL; // new CPostProcessor(lpJob);
+
+	m_pJobs.push_back(job);
+
+	return m_counter;
+}
