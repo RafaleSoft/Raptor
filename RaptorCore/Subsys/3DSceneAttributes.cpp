@@ -31,9 +31,6 @@
 #if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
 	#include "System/RaptorGLExtensions.h"
 #endif
-#if !defined(AFX_3DSCENEOBJECT_H__96A34268_AD58_4F73_B633_F6C3E92FE0A9__INCLUDED_)
-	#include "Subsys/3DSceneObject.h"
-#endif
 #if !defined(AFX_OCTREE_H__FC2A5101_AB9A_11D1_B467_444553540000__INCLUDED_)
     #include "Subsys/Octree.cxx"
 #endif
@@ -164,6 +161,10 @@ void C3DSceneAttributes::prepareData(void)
     m_iCurrentPass = 0;
     m_bMirrorsRendered = false;
 
+	transparents.clear();
+	mirrors.clear();
+	unsortedObjects.clear();
+
     //  Apply ambient lighting
     if (m_bUseGlobalAmbient)
     {
@@ -179,7 +180,63 @@ void C3DSceneAttributes::prepareData(void)
     }
 	else
 		m_pCurrentLight = NULL;
+}
 
+void C3DSceneAttributes::sortObjects(const std::vector<C3DSceneObject*>& objects)
+{
+	transparents.clear();
+	mirrors.clear();
+	unsortedObjects.clear();
+	
+	//! View point must be recomputed because engine modelview will be
+	//! recomputed only on next viewpoint rendering.
+	GL_MATRIX m;
+	glGetFloatv(GL_MODELVIEW_MATRIX, m);
+
+	set<C3DSceneObject*, C3DSceneObject::zorder>	sortedObjects;
+
+	//
+	// Sort objects from viewPoint
+	//
+	for (unsigned int i = 0; i < objects.size(); i++)
+	{
+		C3DSceneObject* const h = objects[i];
+		CObject3D* obj = h->getObject();
+
+		if (obj->getProperties().isTransparent())
+			transparents.push_back(obj);
+		//!    store mirrors apart to avoid a double render :
+		//!    mirrors should only be added with a C3DScene::CMirror object.
+		else if (obj->getProperties().isMirror())
+			mirrors.push_back(obj);
+		else
+		{
+			if (m_bUseZSort)
+			{
+				const CBoundingBox * const bbox = obj->boundingBox();
+
+				GL_COORD_VERTEX r_min;
+				GL_COORD_VERTEX r_max;
+				bbox->get(r_min, r_max, m);
+
+				h->z_order = r_max.z;
+				h->z_span = r_min.z;
+				sortedObjects.insert(h);
+			}
+			else
+				unsortedObjects.push_back(h);
+		}
+	}
+
+	if (m_bUseZSort)
+	{
+		set<C3DSceneObject*, C3DSceneObject::zorder>::reverse_iterator ritr = sortedObjects.rbegin();
+		while (ritr != sortedObjects.rend())
+		{
+			C3DSceneObject* sc = *ritr++;
+			unsortedObjects.push_back(sc);
+		}
+	}
 }
 
 vector<C3DSceneObject*>	C3DSceneAttributes::glGetObjects(void)

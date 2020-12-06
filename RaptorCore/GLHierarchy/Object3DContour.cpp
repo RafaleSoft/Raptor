@@ -523,15 +523,19 @@ void CObject3DContour::buildVolume(const GL_COORD_VERTEX &pos,float extrusion)
 			    {
                     *pVolume++ = e.point[0];
 		            *pVolume++ = e.point[1];
+#ifndef SHADOW_SHADERS
 		            *pVolume++ = e.point[1]+csize;
 		            *pVolume++ = e.point[0]+csize;
+#endif
 			    }
 			    else
 			    {
                     *pVolume++ = e.point[1];
 		            *pVolume++ = e.point[0];
+#ifndef SHADOW_SHADERS
 		            *pVolume++ = e.point[0]+csize;
 		            *pVolume++ = e.point[1]+csize;
+#endif
 			    }
 			    size++;
 		    }
@@ -544,7 +548,11 @@ void CObject3DContour::buildVolume(const GL_COORD_VERTEX &pos,float extrusion)
     
 	m_contourVolume.volume = m_pContour->pContourVolume;
 	m_contourVolume.volumeIndexes = m_pContour->volume;
-	m_contourVolume.volumeSize = 4*m_pContour->contourSize;
+#ifndef SHADOW_SHADERS
+	m_contourVolume.volumeSize = 4 * m_pContour->contourSize;
+#else
+	m_contourVolume.volumeSize = 2 * m_pContour->contourSize;
+#endif
 	m_contourVolume.darkCapIndexes = m_pContour->darkcap;
 	m_contourVolume.lightCapIndexes = m_pContour->lightcap;
 	m_contourVolume.darkCapSize = m_pContour->darkCapSize;

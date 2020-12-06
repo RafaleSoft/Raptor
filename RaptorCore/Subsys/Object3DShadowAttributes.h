@@ -25,6 +25,18 @@
 #if !defined(AFX_3DENGINEMATRIX_H__6CD1110E_1174_4f38_A452_30FB312022D0__INCLUDED_)
 	#include "Engine/3DEngineMatrix.h"
 #endif
+#if !defined(AFX_OPENGLSHADERSTAGE_H__56B00FE3_E508_4FD6_9363_90E6E67446D9__INCLUDED_)
+	#include "GLHierarchy/OpenGLShaderStage.h"
+#endif
+#if !defined(AFX_VERTEXSHADER_H__204F7213_B40B_4B6A_9BCA_828409871B68__INCLUDED_)
+	#include "GLHierarchy/VertexShader.h"
+#endif
+#if !defined(AFX_FRAGMENTSHADER_H__CC35D088_ADDF_4414_8CB6_C9D321F9D184__INCLUDED_)
+	#include "GLHierarchy/FragmentShader.h"
+#endif
+#if !defined(AFX_GEOMETRYSHADER_H__1981EA98_8F3C_4881_9429_A9ACA5B285D3__INCLUDED_)
+	#include "GLHierarchy/GeometryShader.h"
+#endif
 
 
 RAPTOR_NAMESPACE_BEGIN
@@ -45,9 +57,13 @@ public:
 
     //  rebuild shadow object when light change
 	bool					reBuild;
+	bool					renderOcclusion;
     CGenericVector<float>	plane;
     CGenericVector<float>	normal;
     float                   extrusion;
+
+	GL_COORD_VERTEX			L;
+	float					z_max;
 
     //  shadow color for contours or planars
 	float					m_color_red;
@@ -61,12 +77,17 @@ public:
     //  shdowColors are neede per contour.
 	vector<unsigned int	*> m_shadowColors;
 
+	COpenGLShaderStage *pStage;
+	COpenGLShaderStage *pStage2;
+
 #if defined(GL_ARB_imaging)
 	PFN_GL_BLEND_COLOR_ARB_PROC				glBlendColorARB;
 #endif
 #if defined(GL_EXT_stencil_two_side)
 	PFN_GL_ACTIVE_STENCIL_FACE_EXT_PROC		glActiveStencilFaceEXT;
 #endif
+
+	bool CObject3DShadowAttributes::glBuildShaders();
 
     __inline void RAPTOR_FASTCALL glQueryLightPosition(CGenericVector<float> &lpos)
     {

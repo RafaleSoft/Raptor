@@ -118,6 +118,9 @@ public:
 	//!	Renders the BBox of the shadow
 	virtual void glRenderBBox(RENDER_BOX_MODEL filled = WIREFRAME);
 
+	//!	Renders the BBox with occlusion query to clip the shadow
+	void glRenderBoxOcclusion(void);
+
 
     //!
 	//!	Implements CObject3D, @see base class

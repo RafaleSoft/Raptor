@@ -19,6 +19,9 @@
 #if !defined(AFX_RESOURCEALLOCATOR_H__4BAB58CE_942B_450D_88C9_AF0DDDF03718__INCLUDED_)
 	#include "Subsys/ResourceAllocator.h"
 #endif
+#if !defined(AFX_3DSCENEOBJECT_H__96A34268_AD58_4F73_B633_F6C3E92FE0A9__INCLUDED_)
+	#include "Subsys/3DSceneObject.h"
+#endif
 
 
 RAPTOR_NAMESPACE_BEGIN
@@ -56,19 +59,23 @@ public:
 	void addObjet(C3DSceneObject *sceneObject);
 
 	//! Returns he appropriate list of objects extracted from octree )
-	const vector<C3DSceneObject*> &getAllObjects(void) const { return m_pObjects; }
+	const std::vector<C3DSceneObject*> &getAllObjects(void) const { return m_pObjects; }
 
     //! Returns he appropriate list of objects extracted from octree )
-    vector<C3DSceneObject*>	glGetObjects(void);
+    std::vector<C3DSceneObject*>	glGetObjects(void);
 
     //! Returns the appropriate list of lights that should apply to the list of objects
-    vector<CLight*>	glGetLights(const vector<C3DSceneObject*>& objects);
+    std::vector<CLight*>	glGetLights(const std::vector<C3DSceneObject*>& objects);
 
 	//! This method computes initial occlusion using bbox rendering
-	void glComputeBBoxOcclusion(const vector<C3DSceneObject*> &occluded);
+	void glComputeBBoxOcclusion(const std::vector<C3DSceneObject*> &occluded);
 
 	//! This method is used for debugging purpose
-	void glRenderBBoxes(const vector<C3DSceneObject*> &objects);
+	void glRenderBBoxes(const std::vector<C3DSceneObject*> &objects);
+
+	//!	This method sorts input objets into mirrors, 
+	//! transparent and z_ordered objects ready for rendering.
+	void C3DSceneAttributes::sortObjects(const std::vector<C3DSceneObject*>& objects);
 
 
 public:
@@ -92,10 +99,13 @@ public:
 	vector<CLight*>			m_pLights;
     vector<CMirror*>		m_pMirrors;
 	CLight*					m_pCurrentLight;
-
-
+	
+	std::vector<CObject3D*>			transparents;
+	std::vector<CObject3D*>			mirrors;
+	std::vector<C3DSceneObject*>	unsortedObjects;
+	
 private:
-	vector<C3DSceneObject*>		m_pObjects;
+	std::vector<C3DSceneObject*>		m_pObjects;
     CBaseTree<C3DSceneObject*>  *m_pSceneTree;
 };
 

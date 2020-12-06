@@ -81,6 +81,9 @@ private:
 	//! Implements CEnvironment
 	virtual void addObject(C3DSceneObject* object);
 
+	//! Render shadows bboxes occlusion
+	void glRenderBoxOcclusion(void);
+
 	//! The job identifier wher using SMP
 	unsigned int	jobId;
 

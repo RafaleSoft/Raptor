@@ -1,7 +1,10 @@
 - Ajouter un dialog pour Vulkan Status comme OpenGL.
 
+- ShaderLibrary:
+	- Charger Shadow Map PCF 16x
+
 - Rays2:
-	- DeamonManager : port de connectino en dur ==> utiliser un param en LC ou config.
+	- DeamonManager : port de connection en dur ==> utiliser un param en LC ou config.
 
 - RaptorFilteredDisplay:
 	- voir si normal dans demo que le buffer FSAA ait la même taille que la destination

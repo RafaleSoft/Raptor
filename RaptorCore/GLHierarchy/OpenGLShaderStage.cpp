@@ -870,6 +870,135 @@ void COpenGLShaderStage::glQueryAttributeLocations(void)
 	CATCH_GL_ERROR
 }
 
+#if defined(GL_VERSION_2_0)
+void COpenGLShaderStage::glSetProgramParameters()
+{
+	CTextureUnitSetup::TEXTURE_IMAGE_UNIT sampler = CTextureUnitSetup::IMAGE_UNIT_0;
+	GL_COORD_VERTEX vector(0.0f, 0.0f, 0.0f, 0.0f);
+	CColor::RGBA color(0.0f, 0.0f, 0.0f, 0.0f);
+	GL_MATRIX matrix;
+	std::vector<float> float_vector;
+	float f;
+
+	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	for (unsigned int idx = 0; idx < m_parameters.getNbParameters(); idx++)
+	{
+		const CProgramParameters::CParameterBase& param_value = m_parameters[idx];
+		if (param_value.locationIndex >= 0)
+		{
+			if ((param_value.isA(f)) && (GL_FLOAT == param_value.locationType))
+			{
+				f = ((const CProgramParameters::CParameter<float>&)param_value).p;
+				pExtensions->glUniform1f(param_value.locationIndex, f);
+			}
+			else if (param_value.isA(vector))
+			{
+				vector = ((const CProgramParameters::CParameter<GL_COORD_VERTEX>&)param_value).p;
+				switch (param_value.locationType)
+				{
+					case GL_FLOAT:
+					{
+						pExtensions->glUniform1fv(param_value.locationIndex, 1, vector);
+						break;
+					}
+					case GL_FLOAT_VEC2_ARB:
+					{
+						pExtensions->glUniform2fv(param_value.locationIndex, 1, vector);
+						break;
+					}
+					case GL_FLOAT_VEC3_ARB:
+					{
+						pExtensions->glUniform3fv(param_value.locationIndex, 1, vector);
+						break;
+					}
+					case GL_FLOAT_VEC4_ARB:
+					{
+						pExtensions->glUniform4fv(param_value.locationIndex, 1, vector);
+						break;
+					}
+					case GL_INT:
+					{
+						int val = vector.x;
+						pExtensions->glUniform1i(param_value.locationIndex, val);
+						break;
+					}
+					case GL_INT_VEC2_ARB:
+					{
+						int val[2];
+						val[0] = vector.x;
+						val[1] = vector.y;
+						pExtensions->glUniform2i(param_value.locationIndex, val[0], val[1]);
+						break;
+					}
+					case GL_INT_VEC3_ARB:
+					{
+						int val[3];
+						val[0] = vector.x;
+						val[1] = vector.y;
+						val[2] = vector.z;
+						pExtensions->glUniform3iv(param_value.locationIndex, 1, &val[0]);
+						break;
+					}
+					case GL_INT_VEC4_ARB:
+					{
+						int val[4];
+						val[0] = vector.x;
+						val[1] = vector.y;
+						val[2] = vector.z;
+						val[3] = vector.h;
+						pExtensions->glUniform4iv(param_value.locationIndex, 1, &val[0]);
+						break;
+					}
+				}
+			}
+			//	TODO: add type checking here: locationType should be GL_SAMPLER_xxx_ARB
+			else if (param_value.isA(sampler))
+			{
+				sampler = ((const CProgramParameters::CParameter<CTextureUnitSetup::TEXTURE_IMAGE_UNIT>&)param_value).p;
+				GLint s = sampler;
+				pExtensions->glUniform1i(param_value.locationIndex, s);
+			}
+			else if (param_value.isA(matrix))
+			{
+				matrix = ((const CProgramParameters::CParameter<GL_MATRIX>&)param_value).p;
+				pExtensions->glUniformMatrix4fvARB(param_value.locationIndex, 1, GL_TRUE, matrix);
+			}
+			else if (param_value.isA(color))
+			{
+				color = ((const CProgramParameters::CParameter<CColor::RGBA>&)param_value).p;
+				pExtensions->glUniform4fv(param_value.locationIndex, 1, color);
+			}
+#if defined(GL_ARB_uniform_buffer_object)
+			else if (param_value.locationType == GL_UNIFORM_BLOCK_BINDING_ARB)
+			{
+				CUniformAllocator*	pUAllocator = CUniformAllocator::GetInstance();
+				pUAllocator->glvkSetPointerData(m_uniforms[0].buffer, (unsigned char*)param_value.addr(), param_value.size());
+			}
+#endif
+			else if (param_value.isA(float_vector) && (param_value.locationType == GL_FLOAT))
+			{
+				const std::vector<float> &fvector = ((const CProgramParameters::CParameter<std::vector<float>>&)param_value).p;
+				size_t fsize = min(param_value.locationSize, fvector.size());
+				pExtensions->glUniform1fv(param_value.locationIndex, (GLsizei)fsize, &fvector[0]);
+			}
+			//else if (param_value.isA(lorder)) : add a tempalte isA without const &T ?
+			else if (param_value.getTypeId() == CProgramParameters::CParameterArray<int, CLightAttributes::MAX_LIGHTS>::TypeId())
+			{
+				const CLightAttributes::light_order &lvector = ((const CProgramParameters::CParameterArray<int, CLightAttributes::MAX_LIGHTS>&)param_value).p;
+				size_t lsize = min(param_value.locationSize, CLightAttributes::MAX_LIGHTS);
+				pExtensions->glUniform1iv(param_value.locationIndex, (GLsizei)lsize, &lvector[0]);
+			}
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+			else
+			{
+				RAPTOR_ERROR(CShaderProgram::CShaderProgramClassID::GetClassId(),
+							 CRaptorMessages::ID_UPDATE_FAILED);
+			}
+#endif
+		}
+	}
+}
+#elif defined(GL_ARB_vertex_shader)
 void COpenGLShaderStage::glSetProgramParameters()
 {
 	CTextureUnitSetup::TEXTURE_IMAGE_UNIT sampler = CTextureUnitSetup::IMAGE_UNIT_0;
@@ -889,91 +1018,59 @@ void COpenGLShaderStage::glSetProgramParameters()
 				vector = ((const CProgramParameters::CParameter<GL_COORD_VERTEX>&)param_value).p;
 				switch (param_value.locationType)
 				{
-					case GL_FLOAT:
-					{
-#if defined(GL_VERSION_2_0)
-						pExtensions->glUniform1fv(param_value.locationIndex, 1, vector);
-#elif defined(GL_ARB_vertex_shader)
-						pExtensions->glUniform1fvARB(param_value.locationIndex, 1, vector);
-#endif
-						break;
-					}
-					case GL_FLOAT_VEC2_ARB:
-					{
-#if defined(GL_VERSION_2_0)
-						pExtensions->glUniform2fv(param_value.locationIndex, 1, vector);
-#elif defined(GL_ARB_vertex_shader)
-						pExtensions->glUniform2fvARB(param_value.locationIndex, 1, vector);
-#endif
-						break;
-					}
-					case GL_FLOAT_VEC3_ARB:
-					{
-#if defined(GL_VERSION_2_0)
-						pExtensions->glUniform3fv(param_value.locationIndex, 1, vector);
-#elif defined(GL_ARB_vertex_shader)
-						pExtensions->glUniform3fvARB(param_value.locationIndex, 1, vector);
-#endif
-						break;
-					}
-					case GL_FLOAT_VEC4_ARB:
-					{
-#if defined(GL_VERSION_2_0)
-						pExtensions->glUniform4fv(param_value.locationIndex, 1, vector);
-#elif defined(GL_ARB_vertex_shader)
-						pExtensions->glUniform4fvARB(param_value.locationIndex, 1, vector);
-#endif
-						break;
-					}
-					case GL_INT:
-					{
-						int val = vector.x;
-#if defined(GL_VERSION_2_0)
-						pExtensions->glUniform1i(param_value.locationIndex, val);
-#elif defined(GL_ARB_vertex_shader)
-						pExtensions->glUniform1iARB(param_value.locationIndex, val);
-#endif
-						break;
-					}
-					case GL_INT_VEC2_ARB:
-					{
-						int val[2];
-						val[0] = vector.x;
-						val[1] = vector.y;
-#if defined(GL_VERSION_2_0)
-						pExtensions->glUniform2i(param_value.locationIndex, val[0], val[1]);
-#elif defined(GL_ARB_vertex_shader)
-						pExtensions->glUniform2iARB(param_value.locationIndex, val[0], val[1]);
-#endif
-						break;
-					}
-					case GL_INT_VEC3_ARB:
-					{
-						int val[3];
-						val[0] = vector.x;
-						val[1] = vector.y;
-						val[2] = vector.z;
-#if defined(GL_VERSION_2_0)
-						pExtensions->glUniform3iv(param_value.locationIndex, 1, &val[0]);
-#elif defined(GL_ARB_vertex_shader)
-						pExtensions->glUniform3ivARB(param_value.locationIndex, 1, &val[0]);
-#endif
-						break;
-					}
-					case GL_INT_VEC4_ARB:
-					{
-						int val[4];
-						val[0] = vector.x;
-						val[1] = vector.y;
-						val[2] = vector.z;
-						val[3] = vector.h;
-#if defined(GL_VERSION_2_0)
-						pExtensions->glUniform4iv(param_value.locationIndex, 1, &val[0]);
-#elif defined(GL_ARB_vertex_shader)
-						pExtensions->glUniform4ivARB(param_value.locationIndex, 1, &val[0]);
-#endif
-						break;
-					}
+				case GL_FLOAT:
+				{
+					pExtensions->glUniform1fvARB(param_value.locationIndex, 1, vector);
+					break;
+				}
+				case GL_FLOAT_VEC2_ARB:
+				{
+					pExtensions->glUniform2fvARB(param_value.locationIndex, 1, vector);
+					break;
+				}
+				case GL_FLOAT_VEC3_ARB:
+				{
+					pExtensions->glUniform3fvARB(param_value.locationIndex, 1, vector);
+					break;
+				}
+				case GL_FLOAT_VEC4_ARB:
+				{
+					pExtensions->glUniform4fvARB(param_value.locationIndex, 1, vector);
+					break;
+				}
+				case GL_INT:
+				{
+					int val = vector.x;
+					pExtensions->glUniform1iARB(param_value.locationIndex, val);
+					break;
+				}
+				case GL_INT_VEC2_ARB:
+				{
+					int val[2];
+					val[0] = vector.x;
+					val[1] = vector.y;
+					pExtensions->glUniform2iARB(param_value.locationIndex, val[0], val[1]);
+					break;
+				}
+				case GL_INT_VEC3_ARB:
+				{
+					int val[3];
+					val[0] = vector.x;
+					val[1] = vector.y;
+					val[2] = vector.z;
+					pExtensions->glUniform3ivARB(param_value.locationIndex, 1, &val[0]);
+					break;
+				}
+				case GL_INT_VEC4_ARB:
+				{
+					int val[4];
+					val[0] = vector.x;
+					val[1] = vector.y;
+					val[2] = vector.z;
+					val[3] = vector.h;
+					pExtensions->glUniform4ivARB(param_value.locationIndex, 1, &val[0]);
+					break;
+				}
 				}
 			}
 			//	TODO: add type checking here: locationType should be GL_SAMPLER_xxx_ARB
@@ -981,11 +1078,7 @@ void COpenGLShaderStage::glSetProgramParameters()
 			{
 				sampler = ((const CProgramParameters::CParameter<CTextureUnitSetup::TEXTURE_IMAGE_UNIT>&)param_value).p;
 				GLint s = sampler;
-#if defined(GL_VERSION_2_0)
-				pExtensions->glUniform1i(param_value.locationIndex, s);
-#elif defined(GL_ARB_vertex_shader)
 				pExtensions->glUniform1iARB(param_value.locationIndex, s);
-#endif
 			}
 			else if (param_value.isA(matrix))
 			{
@@ -995,11 +1088,7 @@ void COpenGLShaderStage::glSetProgramParameters()
 			else if (param_value.isA(color))
 			{
 				color = ((const CProgramParameters::CParameter<CColor::RGBA>&)param_value).p;
-#if defined(GL_VERSION_2_0)
-				pExtensions->glUniform4fv(param_value.locationIndex, 1, color);
-#elif defined(GL_ARB_vertex_shader)
 				pExtensions->glUniform4fvARB(param_value.locationIndex, 1, color);
-#endif
 			}
 #if defined(GL_ARB_uniform_buffer_object)
 			else if (param_value.locationType == GL_UNIFORM_BLOCK_BINDING_ARB)
@@ -1012,33 +1101,30 @@ void COpenGLShaderStage::glSetProgramParameters()
 			{
 				const std::vector<float> &fvector = ((const CProgramParameters::CParameter<std::vector<float>>&)param_value).p;
 				size_t fsize = min(param_value.locationSize, fvector.size());
-#if defined(GL_VERSION_2_0)
-				pExtensions->glUniform1fv(param_value.locationIndex, (GLsizei)fsize, &fvector[0]);
-#else
 				pExtensions->glUniform1fvARB(param_value.locationIndex, (GLsizei)fsize, &fvector[0]);
-#endif
 			}
 			//else if (param_value.isA(lorder)) : add a tempalte isA without const &T ?
 			else if (param_value.getTypeId() == CProgramParameters::CParameterArray<int, CLightAttributes::MAX_LIGHTS>::TypeId())
 			{
 				const CLightAttributes::light_order &lvector = ((const CProgramParameters::CParameterArray<int, CLightAttributes::MAX_LIGHTS>&)param_value).p;
 				size_t lsize = min(param_value.locationSize, CLightAttributes::MAX_LIGHTS);
-#if defined(GL_VERSION_2_0)
-				pExtensions->glUniform1iv(param_value.locationIndex, (GLsizei)lsize, &lvector[0]);
-#else
 				pExtensions->glUniform1ivARB(param_value.locationIndex, (GLsizei)fsize, &lvector[0]);
-#endif
 			}
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 			else
 			{
 				RAPTOR_ERROR(CShaderProgram::CShaderProgramClassID::GetClassId(),
-							 CRaptorMessages::ID_UPDATE_FAILED);
+					CRaptorMessages::ID_UPDATE_FAILED);
 			}
 #endif
 		}
 	}
 }
+#else
+void COpenGLShaderStage::glSetProgramParameters()
+{
+}
+#endif
 
 bool COpenGLShaderStage::exportObject(CRaptorIO& o)
 {
