@@ -57,6 +57,9 @@
 #if !defined(AFX_OBJECT3DCONTAINERNOTIFIER_H__BF1EABCD_500E_4D7C_8561_2C535DF0640A__INCLUDED_)
     #include "Subsys/Object3DContainerNotifier.h"
 #endif
+#if !defined(AFX_SHADER_H__4D405EC2_7151_465D_86B6_1CA99B906777__INCLUDED_)
+	#include "GLHierarchy/Shader.h"
+#endif
 
 
 RAPTOR_NAMESPACE
@@ -189,13 +192,6 @@ bool CShadowVolume::glInitEnvironment(const vector<C3DSceneObject*>& objects)
     // Compute all possible shadow volumes
     IViewPoint *vp = CRaptorDisplay::GetCurrentDisplay()->getViewPoint();
     float shadowExtrusion = C3DEngine::Get3DEngine()->getFarPlane();
-    if (vp != NULL)
-    {
-        float vv[6];
-        IViewPoint::VIEW_POINT_MODEL model;
-        vp->getViewVolume(vv[0],vv[1],vv[2],vv[3],vv[4],vv[5],model);
-        shadowExtrusion = vv[5];
-    }
 
     vector<C3DSceneObject*>::const_iterator itr = objects.begin();
     CObject3DShadow *volume = NULL;
@@ -384,12 +380,27 @@ void CShadowVolume::glRenderBoxOcclusion(void)
 	glDepthFunc(GL_LESS);
 	glDisable(GL_CULL_FACE);
 
+#if 1 // SHADOW_SHADERS
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+	CShader *pShader = instance.m_pFilledBboxShader;
+
+	CResourceAllocator::CResourceBinder *binder = instance.m_pBoxBinder;
+	binder->glvkBindArrays();
+#endif
+
+	int nbocc = 0;
 	vector<CObject3DShadow*>::iterator it = m_pVolumes.begin();
 	while (it != m_pVolumes.end())
 	{
 		CObject3DShadow* shadow = (*it++);
-		shadow->glRenderBoxOcclusion();
+		if (shadow->glRenderBoxOcclusion())
+			nbocc++;
 	}
+
+#if 1 // SHADOW_SHADERS
+	pShader->glStop();
+	binder->glvkUnbindArrays();
+#endif
 
 	glEnable(GL_STENCIL_TEST);
 	glDepthFunc(dFunc);

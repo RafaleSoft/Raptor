@@ -66,6 +66,7 @@
 #endif
 
 
+
 RAPTOR_NAMESPACE
 
 static CObject3DShadow::CObject3DShadowClassID shadowId;
@@ -316,32 +317,39 @@ void CObject3DShadow::buildShadow(CGenericMatrix<float> &modelview)
 		case SHADOW_BOUNDING_VOLUME:
 		case SHADOW_VOLUME:
 		{
-			CObject3DContour *pContour = m_pVisibleContours[0];
-
-			CGenericMatrix<float> T;
-			T.Ident();
-			if ( m_pAttributes->m_pObject->getId().isSubClassOf(CObject3DInstance::CObject3DInstanceClassID::GetClassId()) )
-				T = ((CObject3DInstance*)m_pAttributes->m_pObject)->getTransform();
-
-			C3DEngineMatrix M = modelview * T.Transpose();
-
-			//  update extrusion properly
-			const CBoundingBox *const bbox = pContour->getBoundingBox();
-			m_pAttributes->z_max = C3DEngine::Get3DEngine()->getFarPlane() + M[11] - bbox->getDiameter();
-			if (m_pAttributes->m_pLight->getLightDMax() < m_pAttributes->z_max)
-				m_pAttributes->extrusion = m_pAttributes->m_pLight->getLightDMax();
-			else
-				m_pAttributes->extrusion = m_pAttributes->z_max;
-
-			CGenericVector<float> lp = M.Inverse() * m_pAttributes->m_pLight->getLightViewPosition();
-			m_pAttributes->L.x = lp.X();
-			m_pAttributes->L.y = lp.Y();
-			m_pAttributes->L.z = lp.Z();
-			m_pAttributes->L.h = lp.H();
-			
 			if (m_pAttributes->reBuild)
 			{
-				pContour->buildVolume(m_pAttributes->L, m_pAttributes->z_max);
+				CObject3DContour *pContour = m_pVisibleContours[0];
+
+				CGenericMatrix<float> T;
+				T.Ident();
+				if ( m_pAttributes->m_pObject->getId().isSubClassOf(CObject3DInstance::CObject3DInstanceClassID::GetClassId()) )
+					T = ((CObject3DInstance*)m_pAttributes->m_pObject)->getTransform();
+
+				C3DEngineMatrix M = modelview * T.Transpose();
+
+				//  update extrusion properly
+				const CBoundingBox *const bbox = pContour->getBoundingBox();
+				float z_max = C3DEngine::Get3DEngine()->getFarPlane() + M[11] - bbox->getDiameter();
+				if (m_pAttributes->m_pLight->getLightDMax() < z_max)
+					m_pAttributes->extrusion = m_pAttributes->m_pLight->getLightDMax();
+				else
+					m_pAttributes->extrusion = z_max;
+
+				CGenericVector<float> lp = M.Inverse() * m_pAttributes->m_pLight->getLightViewPosition();
+				GL_COORD_VERTEX L(lp.X(), lp.Y(), lp.Z(), lp.H());
+
+				CProgramParameters params;
+				params.addParameter<GL_COORD_VERTEX>("lpos", L);
+				params.addParameter<float>("extrusion", z_max);
+#ifdef SHADOW_SHADERS
+				if (NULL != m_pAttributes->pStage2)
+					m_pAttributes->pStage2->updateProgramParameters(params);
+#endif
+				if (NULL != m_pAttributes->pStageBox)
+					m_pAttributes->pStageBox->updateProgramParameters(params);
+			
+				pContour->buildVolume(L, z_max);
 				m_pAttributes->reBuild = false;
 			}
 			break;
@@ -479,6 +487,12 @@ void CObject3DShadow::glRenderShadowContour()
     CATCH_GL_ERROR
 }
 
+#if !defined(AFX_TIMEOBJECT_H__C06AC4B9_4DD7_49E2_9C5C_050EF5C39780__INCLUDED_)
+#include "Engine/TimeObject.h"
+#endif
+static bool useShaders = false;
+static float totalt = 0;
+static int nb = 0;
 
 void CObject3DShadow::glRenderShaderShadowVolume()
 {
@@ -506,19 +520,28 @@ void CObject3DShadow::glRenderShaderShadowVolume()
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glVertexPointer(4, GL_FLOAT, 0, scv.volume);
 
-#ifdef SHADOW_SHADERS
-	CProgramParameters params;
-	params.addParameter<GL_COORD_VERTEX>("lpos", m_pAttributes->L);
-	params.addParameter<float>("extrusion", m_pAttributes->z_max);
-	pStage2->setProgramParameters(params);
+	CTimeObject::markTime(this);
 
+#ifdef SHADOW_SHADERS
 	m_pAttributes->pStage2->glRender();
 	glDrawElements(GL_LINES, scv.volumeSize, GL_UNSIGNED_INT, scv.volumeIndexes);
-	pStage->glRender();
+	m_pAttributes->pStage->glRender();
 #else
 	m_pAttributes->pStage->glRender();
 	glDrawElements(GL_QUADS, scv.volumeSize, GL_UNSIGNED_INT, scv.volumeIndexes);
 #endif
+
+	if (nb > 1000)
+	{
+		float dt = CTimeObject::deltaMarkTime(this);
+		totalt += dt;
+	}
+	nb++;
+	if (nb > 10000)
+	{
+		nb = 0;
+		totalt = 0;
+	}
 	
 	if (!scv.darkCapClipped)
 		glDrawElements(GL_TRIANGLES, scv.darkCapSize, GL_UNSIGNED_INT, scv.darkCapIndexes);
@@ -589,7 +612,7 @@ void CObject3DShadow::glRenderShadowVolume()
 	CATCH_GL_ERROR
 }
 
-void CObject3DShadow::glRenderBBox(RENDER_BOX_MODEL filled)
+void CObject3DShadow::glRenderBBox(CObject3D::RENDER_BOX_MODEL filled)
 {
     if (m_type == SHADOW_PLANAR)
         return;
@@ -602,95 +625,91 @@ void CObject3DShadow::glRenderBBox(RENDER_BOX_MODEL filled)
         glMultMatrixf(T);
     }
 
-	GLenum mode = GL_LINE;
-	if (filled)
-		mode = GL_FILL;
-    glPolygonMode(GL_FRONT_AND_BACK,mode);
+	if (CObject3D::WIREFRAME == filled)
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     CObject3DContour *pContour = m_pVisibleContours[0];
-    const CBoundingBox    *const bbox = pContour->getBoundingBox();
-    CGenericVector<float> lp;
-	m_pAttributes->glQueryLightPosition(lp);
-    float ext = m_pAttributes->extrusion;
 
+	if (!useShaders)
+	{
+		const CBoundingBox    *const bbox = pContour->getBoundingBox();
+		CGenericVector<float> lp;
+		m_pAttributes->glQueryLightPosition(lp);
+		float ext = m_pAttributes->extrusion;
 
-    //  step1 : render origin bbox
-    float xmin,xmax,ymin,ymax,zmin,zmax;
-	bbox->get(xmin,ymin,zmin,xmax,ymax,zmax);
+		//  step1 : render origin bbox
+		float xmin, xmax, ymin, ymax, zmin, zmax;
+		bbox->get(xmin, ymin, zmin, xmax, ymax, zmax);
 
-#ifndef RAPTOR_DEBUG_MODE_GENERATION
-    glBegin(GL_QUADS);
-		glVertex3f(xmin,ymin,zmin);	glVertex3f(xmax,ymin,zmin);glVertex3f(xmax,ymax,zmin);glVertex3f(xmin,ymax,zmin);
-		glVertex3f(xmin,ymin,zmax);	glVertex3f(xmax,ymin,zmax);glVertex3f(xmax,ymax,zmax);glVertex3f(xmin,ymax,zmax);
-		glVertex3f(xmin,ymax,zmin);	glVertex3f(xmin,ymax,zmax);glVertex3f(xmax,ymax,zmax);glVertex3f(xmax,ymax,zmin);
-		glVertex3f(xmin,ymin,zmin);	glVertex3f(xmin,ymin,zmax);glVertex3f(xmax,ymin,zmax);glVertex3f(xmax,ymin,zmin);
-		glVertex3f(xmin,ymin,zmin);	glVertex3f(xmin,ymin,zmax);glVertex3f(xmin,ymax,zmax);glVertex3f(xmin,ymax,zmin);
-		glVertex3f(xmax,ymax,zmin);	glVertex3f(xmax,ymax,zmax);glVertex3f(xmax,ymin,zmax);glVertex3f(xmax,ymin,zmin);
-	glEnd();
-#else
-	//glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
-	//glDepthMask(GL_TRUE);
-	//glDisable(GL_BLEND);
-	//glColor4f(0.0f, 1.0f, 0.0f, 1.0f);
-	CGeometry* object = const_cast<CGeometry*>(pContour->getGeometry());
-	object->glRenderBBox();
-	//glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
-	//glDepthMask(GL_FALSE);
-#endif
+		glBegin(GL_QUADS);
+		glVertex3f(xmin, ymin, zmin);	glVertex3f(xmax, ymin, zmin); glVertex3f(xmax, ymax, zmin); glVertex3f(xmin, ymax, zmin);
+		glVertex3f(xmin, ymin, zmax);	glVertex3f(xmax, ymin, zmax); glVertex3f(xmax, ymax, zmax); glVertex3f(xmin, ymax, zmax);
+		glVertex3f(xmin, ymax, zmin);	glVertex3f(xmin, ymax, zmax); glVertex3f(xmax, ymax, zmax); glVertex3f(xmax, ymax, zmin);
+		glVertex3f(xmin, ymin, zmin);	glVertex3f(xmin, ymin, zmax); glVertex3f(xmax, ymin, zmax); glVertex3f(xmax, ymin, zmin);
+		glVertex3f(xmin, ymin, zmin);	glVertex3f(xmin, ymin, zmax); glVertex3f(xmin, ymax, zmax); glVertex3f(xmin, ymax, zmin);
+		glVertex3f(xmax, ymax, zmin);	glVertex3f(xmax, ymax, zmax); glVertex3f(xmax, ymin, zmax); glVertex3f(xmax, ymin, zmin);
+		glEnd();
 
-    GL_COORD_VERTEX baseBBox[8] = 
-    {   GL_COORD_VERTEX(xmin, ymin, zmin, 1.0f), 
-        GL_COORD_VERTEX(xmax, ymin, zmin, 1.0f),
-        GL_COORD_VERTEX(xmin, ymax, zmin, 1.0f), 
-        GL_COORD_VERTEX(xmax, ymax, zmin, 1.0f),
-        GL_COORD_VERTEX(xmin, ymin, zmax, 1.0f), 
-        GL_COORD_VERTEX(xmax, ymin, zmax, 1.0f),
-        GL_COORD_VERTEX(xmin, ymax, zmax, 1.0f), 
-        GL_COORD_VERTEX(xmax, ymax, zmax, 1.0f)
-    };
-    GL_COORD_VERTEX extBBox[8];
-    CGenericVector<float> lightVect;
+		GL_COORD_VERTEX baseBBox[8] =
+		{ GL_COORD_VERTEX(xmin, ymin, zmin, 1.0f),
+			GL_COORD_VERTEX(xmax, ymin, zmin, 1.0f),
+			GL_COORD_VERTEX(xmin, ymax, zmin, 1.0f),
+			GL_COORD_VERTEX(xmax, ymax, zmin, 1.0f),
+			GL_COORD_VERTEX(xmin, ymin, zmax, 1.0f),
+			GL_COORD_VERTEX(xmax, ymin, zmax, 1.0f),
+			GL_COORD_VERTEX(xmin, ymax, zmax, 1.0f),
+			GL_COORD_VERTEX(xmax, ymax, zmax, 1.0f)
+		};
+		GL_COORD_VERTEX extBBox[8];
+		CGenericVector<float> lightVect;
 
-    //  Step 2 : render extruded origin bbox
-    for (unsigned int i=0;i<8;i++)
-    {
-        const GL_COORD_VERTEX& box = baseBBox[i];
+		//  Step 2 : render extruded origin bbox
+		for (unsigned int i = 0; i < 8; i++)
+		{
+			const GL_COORD_VERTEX& box = baseBBox[i];
 
-        lightVect.Set(	box.x - lp.X(), box.y - lp.Y(), box.z - lp.Z(), 	1.0f);
-        float norm = ext / sqrt(lightVect.X()*lightVect.X() + lightVect.Y()*lightVect.Y() + lightVect.Z()*lightVect.Z());
-	    extBBox[i].x = lightVect.X()*norm + box.x;
-	    extBBox[i].y = lightVect.Y()*norm + box.y;
-	    extBBox[i].z = lightVect.Z()*norm + box.z;
-	    extBBox[i].h = 1.0f;
-    }
+			lightVect.Set(box.x - lp.X(), box.y - lp.Y(), box.z - lp.Z(), 1.0f);
+			float norm = ext / sqrt(lightVect.X()*lightVect.X() + lightVect.Y()*lightVect.Y() + lightVect.Z()*lightVect.Z());
+			extBBox[i].x = lightVect.X()*norm + box.x;
+			extBBox[i].y = lightVect.Y()*norm + box.y;
+			extBBox[i].z = lightVect.Z()*norm + box.z;
+			extBBox[i].h = 1.0f;
+		}
 
-    CBoundingBox ebbox;
-    ebbox.set(extBBox[0].x,extBBox[0].y,extBBox[0].z,extBBox[1].x,extBBox[1].y,extBBox[1].z);
-    ebbox.extendTo(extBBox[2].x,extBBox[2].y,extBBox[2].z);
-    ebbox.extendTo(extBBox[3].x,extBBox[3].y,extBBox[3].z);
-    ebbox.extendTo(extBBox[4].x,extBBox[4].y,extBBox[4].z);
-    ebbox.extendTo(extBBox[5].x,extBBox[5].y,extBBox[5].z);
-    ebbox.extendTo(extBBox[6].x,extBBox[6].y,extBBox[6].z);
-    ebbox.extendTo(extBBox[7].x,extBBox[7].y,extBBox[7].z);
-    ebbox.get(xmin,ymin,zmin,xmax,ymax,zmax);
-	
-	glBegin(GL_QUADS);
-		glVertex3f(xmin,ymin,zmin);	glVertex3f(xmax,ymin,zmin);glVertex3f(xmax,ymax,zmin);glVertex3f(xmin,ymax,zmin);
-		glVertex3f(xmin,ymin,zmax);	glVertex3f(xmax,ymin,zmax);glVertex3f(xmax,ymax,zmax);glVertex3f(xmin,ymax,zmax);
-		glVertex3f(xmin,ymax,zmin);	glVertex3f(xmin,ymax,zmax);glVertex3f(xmax,ymax,zmax);glVertex3f(xmax,ymax,zmin);
-		glVertex3f(xmin,ymin,zmin);	glVertex3f(xmin,ymin,zmax);glVertex3f(xmax,ymin,zmax);glVertex3f(xmax,ymin,zmin);
-		glVertex3f(xmin,ymin,zmin);	glVertex3f(xmin,ymin,zmax);glVertex3f(xmin,ymax,zmax);glVertex3f(xmin,ymax,zmin);
-		glVertex3f(xmax,ymax,zmin);	glVertex3f(xmax,ymax,zmax);glVertex3f(xmax,ymin,zmax);glVertex3f(xmax,ymin,zmin);
-	glEnd();
+		glBegin(GL_QUADS);
+		glVertex3fv(extBBox[0]);	glVertex3fv(extBBox[1]); glVertex3fv(extBBox[3]); glVertex3fv(extBBox[2]);
+		glVertex3fv(extBBox[4]);	glVertex3fv(extBBox[5]); glVertex3fv(extBBox[7]); glVertex3fv(extBBox[6]);
+		glVertex3fv(extBBox[2]);	glVertex3fv(extBBox[3]); glVertex3fv(extBBox[7]); glVertex3fv(extBBox[6]);
+		glVertex3fv(extBBox[0]);	glVertex3fv(extBBox[4]); glVertex3fv(extBBox[5]); glVertex3fv(extBBox[1]);
+		glVertex3fv(extBBox[0]);	glVertex3fv(extBBox[2]); glVertex3fv(extBBox[6]); glVertex3fv(extBBox[4]);
+		glVertex3fv(extBBox[3]);	glVertex3fv(extBBox[1]); glVertex3fv(extBBox[5]); glVertex3fv(extBBox[7]);
+		glEnd();
+	}
+	else
+	{
+		//glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+		//glDepthMask(GL_TRUE);
+		//glDisable(GL_BLEND);
+		//glColor4f(0.0f, 1.0f, 0.0f, 1.0f);
+		m_pAttributes->pShaderBox->glRender();
+		CGeometry* object = const_cast<CGeometry*>(pContour->getGeometry());
+		object->glRenderBBox(CObject3D::RAW);
+
+		m_pAttributes->pStageBox->glRender();
+		object->glRenderBBox(CObject3D::RAW);
+
+		//glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+		//glDepthMask(GL_FALSE);
+	}
 
     //  Step 3 : render sides
 	//	TODO
 
-    glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
-    if ( transform )
-    {
+	if (CObject3D::WIREFRAME == filled)
+		glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
+
+    if (transform)
         glPopMatrix();
-    }
 
 	CATCH_GL_ERROR
 }
@@ -728,21 +747,25 @@ void CObject3DShadow::glClipRender(void)
 #endif
 }
 
-void CObject3DShadow::glRenderBoxOcclusion(void)
+bool CObject3DShadow::glRenderBoxOcclusion(void)
 {
 	if (m_pAttributes->renderOcclusion)
 	{
 		m_pAttributes->renderOcclusion = false;
 
 		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
-		unsigned int available = 0;
 
 		m_pAttributes->queryIssued = true;
 
+		useShaders = true;
 		pExtensions->glBeginQueryARB(GL_SAMPLES_PASSED_ARB, m_pAttributes->visibilityQuery);
 		glRenderBBox(CObject3D::FILLED);
 		pExtensions->glEndQueryARB(GL_SAMPLES_PASSED_ARB);
+
+		return true;
 	}
+	else
+		return false;
 }
 
 void CObject3DShadow::glSelectContours(void)
@@ -934,5 +957,102 @@ void CObject3DShadow::glClipRender(void)
 	if (glClip() != C3DEngine::CLIP_FULL)
 		glRender();
 #endif
+}
+*/
+
+/*
+void CObject3DShadow::glRenderBBox(RENDER_BOX_MODEL filled)
+{
+	if (m_type == SHADOW_PLANAR)
+		return;
+
+	bool transform = m_pAttributes->m_pObject->getId().isSubClassOf(CObject3DInstance::CObject3DInstanceClassID::GetClassId());
+	if (transform)
+	{
+		glPushMatrix();
+		GL_MATRIX T = ((CObject3DInstance*)m_pAttributes->m_pObject)->getTransform();
+		glMultMatrixf(T);
+	}
+
+	GLenum mode = GL_LINE;
+	if (filled)
+		mode = GL_FILL;
+	glPolygonMode(GL_FRONT_AND_BACK, mode);
+
+	CObject3DContour *pContour = m_pVisibleContours[0];
+	const CBoundingBox    *const bbox = pContour->getBoundingBox();
+	CGenericVector<float> lp;
+	m_pAttributes->glQueryLightPosition(lp);
+	float ext = m_pAttributes->extrusion;
+
+
+	//  step1 : render origin bbox
+	float xmin, xmax, ymin, ymax, zmin, zmax;
+	bbox->get(xmin, ymin, zmin, xmax, ymax, zmax);
+
+	glBegin(GL_QUADS);
+		glVertex3f(xmin, ymin, zmin);	glVertex3f(xmax, ymin, zmin); glVertex3f(xmax, ymax, zmin); glVertex3f(xmin, ymax, zmin);
+		glVertex3f(xmin, ymin, zmax);	glVertex3f(xmax, ymin, zmax); glVertex3f(xmax, ymax, zmax); glVertex3f(xmin, ymax, zmax);
+		glVertex3f(xmin, ymax, zmin);	glVertex3f(xmin, ymax, zmax); glVertex3f(xmax, ymax, zmax); glVertex3f(xmax, ymax, zmin);
+		glVertex3f(xmin, ymin, zmin);	glVertex3f(xmin, ymin, zmax); glVertex3f(xmax, ymin, zmax); glVertex3f(xmax, ymin, zmin);
+		glVertex3f(xmin, ymin, zmin);	glVertex3f(xmin, ymin, zmax); glVertex3f(xmin, ymax, zmax); glVertex3f(xmin, ymax, zmin);
+		glVertex3f(xmax, ymax, zmin);	glVertex3f(xmax, ymax, zmax); glVertex3f(xmax, ymin, zmax); glVertex3f(xmax, ymin, zmin);
+	glEnd();
+
+	GL_COORD_VERTEX baseBBox[8] =
+	{ GL_COORD_VERTEX(xmin, ymin, zmin, 1.0f),
+		GL_COORD_VERTEX(xmax, ymin, zmin, 1.0f),
+		GL_COORD_VERTEX(xmin, ymax, zmin, 1.0f),
+		GL_COORD_VERTEX(xmax, ymax, zmin, 1.0f),
+		GL_COORD_VERTEX(xmin, ymin, zmax, 1.0f),
+		GL_COORD_VERTEX(xmax, ymin, zmax, 1.0f),
+		GL_COORD_VERTEX(xmin, ymax, zmax, 1.0f),
+		GL_COORD_VERTEX(xmax, ymax, zmax, 1.0f)
+	};
+	GL_COORD_VERTEX extBBox[8];
+	CGenericVector<float> lightVect;
+
+	//  Step 2 : render extruded origin bbox
+	for (unsigned int i = 0; i < 8; i++)
+	{
+		const GL_COORD_VERTEX& box = baseBBox[i];
+
+		lightVect.Set(box.x - lp.X(), box.y - lp.Y(), box.z - lp.Z(), 1.0f);
+		float norm = ext / sqrt(lightVect.X()*lightVect.X() + lightVect.Y()*lightVect.Y() + lightVect.Z()*lightVect.Z());
+		extBBox[i].x = lightVect.X()*norm + box.x;
+		extBBox[i].y = lightVect.Y()*norm + box.y;
+		extBBox[i].z = lightVect.Z()*norm + box.z;
+		extBBox[i].h = 1.0f;
+	}
+
+	CBoundingBox ebbox;
+	ebbox.set(extBBox[0].x,extBBox[0].y,extBBox[0].z,extBBox[1].x,extBBox[1].y,extBBox[1].z);
+	ebbox.extendTo(extBBox[2].x,extBBox[2].y,extBBox[2].z);
+	ebbox.extendTo(extBBox[3].x,extBBox[3].y,extBBox[3].z);
+	ebbox.extendTo(extBBox[4].x,extBBox[4].y,extBBox[4].z);
+	ebbox.extendTo(extBBox[5].x,extBBox[5].y,extBBox[5].z);
+	ebbox.extendTo(extBBox[6].x,extBBox[6].y,extBBox[6].z);
+	ebbox.extendTo(extBBox[7].x,extBBox[7].y,extBBox[7].z);
+	ebbox.get(xmin,ymin,zmin,xmax,ymax,zmax);
+
+	glBegin(GL_QUADS);
+		glVertex3f(xmin,ymin,zmin);	glVertex3f(xmax,ymin,zmin);glVertex3f(xmax,ymax,zmin);glVertex3f(xmin,ymax,zmin);
+		glVertex3f(xmin,ymin,zmax);	glVertex3f(xmax,ymin,zmax);glVertex3f(xmax,ymax,zmax);glVertex3f(xmin,ymax,zmax);
+		glVertex3f(xmin,ymax,zmin);	glVertex3f(xmin,ymax,zmax);glVertex3f(xmax,ymax,zmax);glVertex3f(xmax,ymax,zmin);
+		glVertex3f(xmin,ymin,zmin);	glVertex3f(xmin,ymin,zmax);glVertex3f(xmax,ymin,zmax);glVertex3f(xmax,ymin,zmin);
+		glVertex3f(xmin,ymin,zmin);	glVertex3f(xmin,ymin,zmax);glVertex3f(xmin,ymax,zmax);glVertex3f(xmin,ymax,zmin);
+		glVertex3f(xmax,ymax,zmin);	glVertex3f(xmax,ymax,zmax);glVertex3f(xmax,ymin,zmax);glVertex3f(xmax,ymin,zmin);
+	glEnd();
+
+	//  Step 3 : render sides
+	//	TODO
+
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	if (transform)
+	{
+		glPopMatrix();
+	}
+
+	CATCH_GL_ERROR
 }
 */

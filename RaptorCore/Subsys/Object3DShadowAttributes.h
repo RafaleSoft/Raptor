@@ -37,6 +37,9 @@
 #if !defined(AFX_GEOMETRYSHADER_H__1981EA98_8F3C_4881_9429_A9ACA5B285D3__INCLUDED_)
 	#include "GLHierarchy/GeometryShader.h"
 #endif
+#if !defined(AFX_SHADER_H__4D405EC2_7151_465D_86B6_1CA99B906777__INCLUDED_)
+	#include "GLHierarchy/Shader.h"
+#endif
 
 
 RAPTOR_NAMESPACE_BEGIN
@@ -62,9 +65,6 @@ public:
     CGenericVector<float>	normal;
     float                   extrusion;
 
-	GL_COORD_VERTEX			L;
-	float					z_max;
-
     //  shadow color for contours or planars
 	float					m_color_red;
 	float					m_color_green;
@@ -79,6 +79,8 @@ public:
 
 	COpenGLShaderStage *pStage;
 	COpenGLShaderStage *pStage2;
+	COpenGLShaderStage *pStageBox;
+	CShader *pShaderBox;
 
 #if defined(GL_ARB_imaging)
 	PFN_GL_BLEND_COLOR_ARB_PROC				glBlendColorARB;

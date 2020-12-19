@@ -16,6 +16,9 @@
 #if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
 	#include "System/Raptor.h"
 #endif
+#if !defined(AFX_RAPTORINSTANCE_H__90219068_202B_46C2_BFF0_73C24D048903__INCLUDED_)
+	#include "Subsys/RaptorInstance.h"
+#endif
 
 
 const std::string shadow_vshader =
@@ -46,6 +49,7 @@ void main(void) \n\
 {\n\
 	gl_Position = i_Position; \n\
 }";
+
 const std::string shadow_gshader =
 "#version 440 compatibility\n\
 #extension GL_ARB_geometry_shader4 : enable \n\
@@ -55,28 +59,137 @@ layout(triangle_strip, max_vertices = 4) out; \n\
 uniform vec4 lpos; \n\
 uniform float extrusion; \n\
 \n\
+vec4 extrude(vec4 p1)\n\
+{\n\
+	vec4 lvect = p1 - lpos; \n\
+	vec4 pos = extrusion * normalize(lvect) + p1; \n\
+	return pos; \n\
+}\n\
+\n\
 void main(void) \n\
 { \n\
 	vec4 p1 = gl_in[0].gl_Position; \n\
 	vec4 p2 = gl_in[1].gl_Position; \n\
 \n\
-	vec4 lvect = vec4(p1.x - lpos.x, p1.y - lpos.y, p1.z - lpos.z, 1.0); \n\
-	vec4 pos = extrusion * normalize(lvect) + p1; \n\
-\n\
+	gl_Position = gl_ModelViewProjectionMatrix * extrude(p1); \n\
+	EmitVertex();\n\
 	gl_Position = gl_ModelViewProjectionMatrix * p1; \n\
 	EmitVertex();\n\
-	gl_Position = gl_ModelViewProjectionMatrix * pos; \n\
+\n\
+	gl_Position = gl_ModelViewProjectionMatrix * extrude(p2); \n\
 	EmitVertex();\n\
-\n\
-	lvect = vec4(p2.x - lpos.x, p2.y - lpos.y, p2.z - lpos.z, 1.0); \n\
-	pos = extrusion * normalize(lvect) + p2; \n\
-\n\
 	gl_Position = gl_ModelViewProjectionMatrix * p2; \n\
-	EmitVertex();\n\
-	gl_Position = gl_ModelViewProjectionMatrix * pos; \n\
 	EmitVertex();\n\
 \n\
 	EndPrimitive(); \n\
+}";
+
+extern const std::string shadowbox_gshader =
+"#version 440 compatibility \n\
+\n\
+//	Expect the geometry shader extension to be available, warn if not. \n\
+#extension GL_ARB_geometry_shader4 : enable \n\
+\n\
+in vec4 v_color[]; \n\
+uniform float extrusion; \n\
+uniform vec4 lpos; \n\
+\n\
+layout(lines) in; \n\
+layout(triangle_strip, max_vertices = 18) out; \n\
+\n\
+out vec4 g_color; \n\
+\n\
+vec4 extrude(vec4 p1)\n\
+{\n\
+	vec4 lvect = p1 - lpos; \n\
+	vec4 pos = extrusion * normalize(lvect) + p1; \n\
+	return pos; \n\
+}\n\
+\n\
+void main()\n\
+{\n\
+	vec4 v_Min = gl_in[0].gl_Position;\n\
+	vec4 v_Max = gl_in[1].gl_Position;\n\
+\n\
+	g_color = v_color[0];\n\
+\n\
+	// top: Back right\n\
+	vec4 pos = vec4(v_Max.x, v_Max.y, v_Min.z, 1.0);\n\
+	vec4 tbr = gl_ModelViewProjectionMatrix * extrude(pos);\n\
+	gl_Position = tbr;\n\
+	EmitVertex();\n\
+	// top: Back Left\n\
+	pos = vec4(v_Min.x, v_Max.y, v_Min.z, 1.0);\n\
+	vec4 tbl = gl_ModelViewProjectionMatrix * extrude(pos);\n\
+	gl_Position = tbl;\n\
+	EmitVertex();\n\
+	// top: Front Right\n\
+	pos = vec4(v_Max.x, v_Max.y, v_Max.z, 1.0);\n\
+	vec4 tfr = gl_ModelViewProjectionMatrix * extrude(pos);\n\
+	gl_Position = tfr;\n\
+	EmitVertex();\n\
+	// top: Front Left \n\
+	pos = vec4(v_Min.x, v_Max.y, v_Max.z, 1.0);\n\
+	vec4 tfl = gl_ModelViewProjectionMatrix * extrude(pos);\n\
+	gl_Position = tfl;\n\
+	EmitVertex();\n\
+\n\
+	// front: Top Left\n\
+	gl_Position = tfl;\n\
+	EmitVertex();\n\
+	// front: Bottom Left\n\
+	pos = vec4(v_Min.x, v_Min.y, v_Max.z, 1.0);\n\
+	vec4 bfl = gl_ModelViewProjectionMatrix * extrude(pos);\n\
+	gl_Position = bfl;\n\
+	EmitVertex();\n\
+	// front: Top Right\n\
+	gl_Position = tfr;\n\
+	EmitVertex();\n\
+	// front: Bottom Right\n\
+	pos = vec4(v_Max.x, v_Min.y, v_Max.z, 1.0);\n\
+	vec4 bfr = gl_ModelViewProjectionMatrix * extrude(pos);\n\
+	gl_Position = bfr;\n\
+	EmitVertex();\n\
+\n\
+	// right: Top back\n\
+	gl_Position = tbr;\n\
+	EmitVertex();\n\
+	// right: Bottom back\n\
+	pos = vec4(v_Max.x, v_Min.y, v_Min.z, 1.0);\n\
+	vec4 bbr = gl_ModelViewProjectionMatrix * extrude(pos);\n\
+	gl_Position = bbr;\n\
+	EmitVertex();\n\
+\n\
+	// back: Top Left\n\
+	gl_Position = tbl;\n\
+	EmitVertex();\n\
+	// back: Bottom Left\n\
+	pos = vec4(v_Min.x, v_Min.y, v_Min.z, 1.0);\n\
+	vec4 bbl = gl_ModelViewProjectionMatrix * extrude(pos);\n\
+	gl_Position = bbl;\n\
+	EmitVertex();\n\
+\n\
+	// left: Top front\n\
+	gl_Position = tfl;\n\
+	EmitVertex();\n\
+	// left: Bottom front\n\
+	gl_Position = bfl;\n\
+	EmitVertex();\n\
+\n\
+	// bottom: Front Left\n\
+	gl_Position = bfl;\n\
+	EmitVertex();\n\
+	// bottom: Back Left\n\
+	gl_Position = bbl;\n\
+	EmitVertex();\n\
+	// bottom: Front Right\n\
+	gl_Position = bfr;\n\
+	EmitVertex();\n\
+	// bottom: Back Right\n\
+	gl_Position = bbr;\n\
+	EmitVertex();\n\
+\n\
+	EndPrimitive();\n\
 }";
 
 
@@ -100,6 +213,7 @@ CObject3DShadowAttributes::CObject3DShadowAttributes()
 
 	pStage = NULL;
 	pStage2 = NULL;
+	pStageBox = NULL;
 
     const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 
@@ -125,7 +239,7 @@ CObject3DShadowAttributes::~CObject3DShadowAttributes()
 
 bool CObject3DShadowAttributes::glBuildShaders()
 {
-	if ((NULL != pStage) && (NULL != pStage2))
+	if ((NULL != pStage) && (NULL != pStage2) && (NULL != pStageBox))
 		return false;
 
 	pStage = new COpenGLShaderStage("SHADOW_SHADER");
@@ -144,11 +258,24 @@ bool CObject3DShadowAttributes::glBuildShaders()
 	gs->glLoadProgram(shadow_gshader);
 
 	CProgramParameters params;
-	params.addParameter<GL_COORD_VERTEX>("lpos", L);
-	params.addParameter<float>("extrusion", z_max);
+	params.addParameter<GL_COORD_VERTEX>("lpos", GL_COORD_VERTEX(0.0f,0.0f,0.0f,0.0f));
+	params.addParameter<float>("extrusion", extrusion);
 	pStage2->setProgramParameters(params);
-
 	pStage2->glCompileShader();
+
+	pStageBox = new COpenGLShaderStage("SHADOW_SHADER_BOX");
+	vs = pStageBox->glGetVertexShader("SHADOW_VERTEX_SHADER_BOX");
+	vs->glLoadProgram(shadow_vshader2);
+	fs = pStageBox->glGetFragmentShader("SHADOW_FRAGMANT_SHADER_BOX");
+	fs->glLoadProgram(shadow_fshader);
+	gs = pStageBox->glGetGeometryShader("SHADOW_GEOMETRY_SHADER_BOX");
+	gs->glLoadProgram(shadowbox_gshader);
+
+	pStageBox->setProgramParameters(params);
+	pStageBox->glCompileShader();
+
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+	pShaderBox = instance.m_pFilledBboxShader;
 
 	return true;
 }

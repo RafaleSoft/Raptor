@@ -23,7 +23,7 @@ class CObject3D;
 class CContourAttributes;
 template <class T> class CContainerNotifier;
 
-//#define SHADOW_SHADERS 1
+#define SHADOW_SHADERS 1
 
 class RAPTOR_API CObject3DContour
 {

@@ -517,15 +517,15 @@ void CObject3DContour::buildVolume(const GL_COORD_VERTEX &pos,float extrusion)
 		    else
 			    bb = m_pContour->backfaces[e.back];
 
-		    if ( bf != bb)
+		    if (bf != bb)
 		    {
 			    if (bf)
 			    {
                     *pVolume++ = e.point[0];
 		            *pVolume++ = e.point[1];
 #ifndef SHADOW_SHADERS
-		            *pVolume++ = e.point[1]+csize;
-		            *pVolume++ = e.point[0]+csize;
+		            *pVolume++ = e.point[1] + csize;
+		            *pVolume++ = e.point[0] + csize;
 #endif
 			    }
 			    else
@@ -533,8 +533,8 @@ void CObject3DContour::buildVolume(const GL_COORD_VERTEX &pos,float extrusion)
                     *pVolume++ = e.point[1];
 		            *pVolume++ = e.point[0];
 #ifndef SHADOW_SHADERS
-		            *pVolume++ = e.point[0]+csize;
-		            *pVolume++ = e.point[1]+csize;
+		            *pVolume++ = e.point[0] + csize;
+		            *pVolume++ = e.point[1] + csize;
 #endif
 			    }
 			    size++;
@@ -545,13 +545,13 @@ void CObject3DContour::buildVolume(const GL_COORD_VERTEX &pos,float extrusion)
     }
 
     m_pContour->extrude(pos,extrusion);
-    
+
 	m_contourVolume.volume = m_pContour->pContourVolume;
 	m_contourVolume.volumeIndexes = m_pContour->volume;
 #ifndef SHADOW_SHADERS
-	m_contourVolume.volumeSize = 4 * m_pContour->contourSize;
+	m_contourVolume.volumeSize = 4 * m_pContour->contourSize;	// QUADS
 #else
-	m_contourVolume.volumeSize = 2 * m_pContour->contourSize;
+	m_contourVolume.volumeSize = 2 * m_pContour->contourSize;	// LINES
 #endif
 	m_contourVolume.darkCapIndexes = m_pContour->darkcap;
 	m_contourVolume.lightCapIndexes = m_pContour->lightcap;
