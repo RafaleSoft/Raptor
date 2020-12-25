@@ -11,7 +11,6 @@
 		(m_fFilterSize = 1 dans RaptorDisplayconfig)
 
 - Supprimer GL_QUADS
-	- glDrawElements (Object3DShadow)
 	- CGLLayer::glRenderSingleBuffer + glRender
 	- GL3DFont::glTTBuildGeometry
 	- CAboutVideo::glRender
@@ -22,6 +21,9 @@
 
 - RaptorDisplay:
 	- renommer glGrab en glBlit en utilisant un CImage.
+
+- ShadowVolume:
+	- addObject: recalcul des bbox ? redimensionner un static array pour glvkBindArray
 
 - CMipmapBuilder:
 	- Reintégrer, pour générer les mipmaps pour Vulkan (vkLoadTexture) ==> source de gluBuild2DMipmaps.
@@ -37,9 +39,6 @@
 	- corriger ne marche pas sans relocation
 	- pas de decodeur video en 64 bits => ffmpeg ?
 	- Slide: utiliser un CTextureQuad
-
-- CShaderProgram:
-	- ajouter un preprocesseur.
 
 - COpenGLShaderStage:
 	- fusionner vkLoadShader & glLoadProgram (methode virtuelle de CShaderProgram)

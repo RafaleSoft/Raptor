@@ -725,3 +725,51 @@ void CRaptorInstance::setDefaultConfig(const CRaptorDisplayConfig& pcs)
 	//	if window not fully visible, hardware very slow...
 	CContextManager::GetInstance()->validateConfig(defaultConfig);
 }
+
+uint64_t CRaptorInstance::glvkReserveBoxIndex()
+{
+	uint64_t bbox = UINT64_MAX;
+	CGeometryAllocator *pAllocator = CGeometryAllocator::GetInstance();
+
+	// grow array if maxboxes reached.
+	if (maxboxes <= numboxes)
+	{
+		bool lock = pAllocator->isMemoryLocked();
+		if (lock)
+			pAllocator->glvkLockMemory(false);
+
+		if (0 == maxboxes)
+			maxboxes = 1024;
+		else
+			maxboxes = maxboxes * 2;
+
+		// size is 2 coordinates * 4 floats per box, * maxboxes
+		size_t sz = 2 * GL_COORD_VERTEX_STRIDE;
+		size_t s = maxboxes * sz;
+		GL_COORD_VERTEX *new_boxes = (GL_COORD_VERTEX*)(pAllocator->allocateVertices(s));
+
+		if (NULL == boxes)
+		{
+			boxes = new_boxes;
+			numboxes = 0;
+		}
+		else
+		{
+			// Copy existing data, on half buffer size.
+			pAllocator->glvkCopyPointer((float*)new_boxes, (float*)boxes, s / 2);
+			pAllocator->releaseVertices((float*)boxes);
+			boxes = new_boxes;
+		}
+
+		if (lock)
+			pAllocator->glvkLockMemory(true);
+
+		m_pBoxBinder->setArray(CProgramParameters::POSITION, boxes);
+	}
+
+	// bbox offset.
+	bbox = numboxes;
+	numboxes += 2;
+
+	return bbox;
+}

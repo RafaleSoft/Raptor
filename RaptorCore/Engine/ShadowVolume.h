@@ -96,6 +96,12 @@ private:
 	//! Rendering propoerties for shadowed and lighted passes
 	COpenGLRenderingProperties	m_shadowProperties;
 	COpenGLRenderingProperties	m_lightProperties;
+
+	//!	Array of occlusion bboxes for shadows.
+	GL_COORD_VERTEX	*m_boxes;
+	//! Bounds of array
+	uint64_t min_bound;
+	uint64_t max_bound;
 };
 
 RAPTOR_NAMESPACE_END

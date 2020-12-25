@@ -125,6 +125,8 @@ public:
 	//!	Returns the default null shader.
 	const CShader& getNullShader(void) const { return *m_pNullShader; };
 
+	//!	Allocate a box buffer index.
+	uint64_t glvkReserveBoxIndex();
 
 
 	//!

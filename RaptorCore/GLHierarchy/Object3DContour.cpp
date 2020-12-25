@@ -69,6 +69,8 @@ CObject3DContour::CObject3DContour(const std::string& name)
     m_contourVolume.darkCapClipped = false;
     m_contourVolume.lightCapClipped = false;
     m_contourVolume.volumeClipped = false;
+	m_contourVolume.boxMin = GL_COORD_VERTEX(FLT_MAX, FLT_MAX, FLT_MAX, 1.0f);
+	m_contourVolume.boxMax = GL_COORD_VERTEX(FLT_MIN, FLT_MIN, FLT_MIN, 1.0f);
 
     m_pObserver = new CObject3DContainerNotifier<CObject3DContour,CObject3D*>(*this,&CObject3DContour::notifyFromOrigin);
 }
@@ -444,7 +446,7 @@ void CObject3DContour::findEdges()
 #endif
 }
 
-
+/*
 void CObject3DContour::findBackFaces(const GL_COORD_VERTEX &pos)
 {
 	unsigned int nbFace = m_pOrigin->nbFace();
@@ -494,10 +496,11 @@ void CObject3DContour::findBackFaces(const GL_COORD_VERTEX &pos)
 	m_pContour->lightCapSize = (pLightCap - m_pContour->lightcap);
 	m_pContour->darkCapSize = (pDarkCap - m_pContour->darkcap);
 }
+*/
 
 void CObject3DContour::buildVolume(const GL_COORD_VERTEX &pos,float extrusion)
 {
-    findBackFaces(pos);
+	m_pContour->findBackFaces(pos, m_pOrigin->nbFace());
 
     {
 	    unsigned int size = 0;
@@ -544,7 +547,7 @@ void CObject3DContour::buildVolume(const GL_COORD_VERTEX &pos,float extrusion)
 	    m_pContour->contourSize = size;
     }
 
-    m_pContour->extrude(pos,extrusion);
+    m_pContour->extrude(pos,extrusion, m_contourVolume.boxMin, m_contourVolume.boxMax);
 
 	m_contourVolume.volume = m_pContour->pContourVolume;
 	m_contourVolume.volumeIndexes = m_pContour->volume;

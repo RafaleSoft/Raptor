@@ -116,9 +116,11 @@ public:
 	virtual void RAPTOR_FASTCALL glRender(CObject3D *source);
 
 	//!	Renders the BBox of the shadow
+	//!		BBox must be pre-computed with buildShadow if using shaders.
 	virtual void glRenderBBox(RENDER_BOX_MODEL filled = WIREFRAME);
 
 	//!	Renders the BBox with occlusion query to clip the shadow
+	//!		Uses glRenderBBox with occlusion queries, bbox must have been pre-computed.
 	bool glRenderBoxOcclusion(void);
 
 
@@ -143,6 +145,12 @@ public:
     //! taking into account the current viewpoint with respect to object's position & orientation
     void glSelectContours(void);
 
+	//!	Return the list of contours selected by glSelectContours.
+	const std::vector<CObject3DContour*>&   getSelectedContours() { return m_pVisibleContours; };
+
+	//!	This method returns the extruded shadow bounding box index in current instance resources.
+	uint64_t getBoundingBoxIndex(void) const { return bbox; };
+
 
 	//! Implements CPersistence
 	DECLARE_CLASS_ID(CObject3DShadowClassID,"Object3DShadow",CObject3D)
@@ -150,11 +158,6 @@ public:
 
 
 private:
-	SHADOW_TYPE					m_type;
-	CObject3DShadowAttributes	*m_pAttributes;
-    vector<CObject3DContour*>   m_pVisibleContours;
-    vector<CObject3DContour*>   m_pContours;
-
     //! Internal helper : initializes all contours and associated date, called from constructor.
     void initContours();
 
@@ -169,14 +172,12 @@ private:
     void buildShadow(CGenericMatrix<float> &transform);
 
 
-    //!	Renders the shadow volume. It must be initialised using 
-	//!	BuildShadowVolume first. Extrusion specifies the extrusion
-	//!	distance in the opposite direction of the light source
+    //!	Renders the shadow volume: It must be initialised using BuildShadowVolume first. 
+	//! Extrusion specifies the extrusion distance in the opposite direction of the light source
 	//!	from each point of the inner contour.
-	//!	The whole volume will be rendered
-	//!	Render method for shadow volume ( issued from the parent contour )
+	//!	The whole volume will be rendered Render method for shadow volume ( issued from the parent contour )
 	//! ( extrusion < 0 means infinite shadow volume )
-	void glRenderShadowVolume();
+	void glRenderShadowVolume();	// Deprecated
 	void glRenderShaderShadowVolume();
 
     //!	Renders the contour of the shadow volume. It must be initialised using 
@@ -188,6 +189,15 @@ private:
 	void glRenderShadowContour();
 
     friend class CShadowVolumeJob;
+
+	SHADOW_TYPE					m_type;
+	CObject3DShadowAttributes	*m_pAttributes;
+	vector<CObject3DContour*>   m_pVisibleContours;
+	vector<CObject3DContour*>   m_pContours;
+
+	//! Extruded BBox buffer object pointer.
+	//!	base BBox is the box of the source object.
+	uint64_t		bbox;
 };
 
 RAPTOR_NAMESPACE_END
