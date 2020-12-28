@@ -460,7 +460,10 @@ bool CShader::vkRemoveVulkanShader(void)
 
 void CShader::glRenderMaterial(void)
 {
-	if (IRenderingProperties::GetCurrentProperties()->getCurrentLighting() == IRenderingProperties::ENABLE)
+	CRaptorInstance& instance = CRaptorInstance::GetInstance();
+	IRenderingProperties *props = instance.getGlobalRenderingProperties();
+
+	if (props->getLighting() == IRenderingProperties::ENABLE)
 	{
 		if (m_pMaterial != NULL)
 		    m_pMaterial->glRender();
@@ -485,7 +488,10 @@ void CShader::glRenderMaterial(void)
 
 void CShader::glRenderTexture(void)
 {
-	if (IRenderingProperties::GetCurrentProperties()->getCurrentTexturing() == IRenderingProperties::ENABLE)
+	CRaptorInstance& instance = CRaptorInstance::GetInstance();
+	IRenderingProperties *props = instance.getGlobalRenderingProperties();
+
+	if (props->getTexturing() == IRenderingProperties::ENABLE)
 	{
 
 // TODO: when finished, the code below is the compatibility profile.

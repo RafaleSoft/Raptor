@@ -86,6 +86,9 @@
 		#include "GLXSpecific/GLXTimeObject.h"
 	#endif
 #endif
+#if !defined(AFX_OPENGLRENDERINGPROPERTIES_H__1F0F1E67_FC84_4772_A6EE_923BD81F91D3__INCLUDED_)
+	#include "Subsys/OpenGL/OpenGLRenderingProperties.h"
+#endif
 
 
 RAPTOR_NAMESPACE
@@ -142,6 +145,9 @@ CRaptorInstance::CRaptorInstance()
 	m_time = 0.0f;
 	m_globalTime = 0.0f;
 	m_deltat = 0.05f;
+
+	m_pGlobalProperties = new COpenGLRenderingProperties();
+	m_pCurrentProperties = NULL;
 }
 
 CRaptorInstance &CRaptorInstance::GetInstance(void)
@@ -192,6 +198,12 @@ CRaptorInstance::~CRaptorInstance()
 	{
 		delete pConsole;
 		pConsole = NULL;
+	}
+
+	if (NULL != m_pGlobalProperties)
+	{
+		delete m_pGlobalProperties;
+		m_pGlobalProperties = NULL;
 	}
 
 	//! Destroy glObjects : we need a context.

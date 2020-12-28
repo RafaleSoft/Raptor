@@ -61,6 +61,9 @@
 #if !defined(AFX_RESOURCEALLOCATOR_H__4BAB58CE_942B_450D_88C9_AF0DDDF03718__INCLUDED_)
 	#include "Subsys/ResourceAllocator.h"
 #endif
+#if !defined(AFX_RAPTORINSTANCE_H__90219068_202B_46C2_BFF0_73C24D048903__INCLUDED_)
+	#include "Subsys/RaptorInstance.h"
+#endif
 
 
 RAPTOR_NAMESPACE
@@ -252,8 +255,10 @@ void CBumppedGeometry::glRender()
 	if (m_pBumpShader != NULL)
 		m_pBumpShader->glStop();
 
-	IRenderingProperties *props = IRenderingProperties::GetCurrentProperties();
-	if (props->getCurrentTexturing() == IRenderingProperties::ENABLE)
+	CRaptorInstance& instance = CRaptorInstance::GetInstance();
+	IRenderingProperties *props = instance.getGlobalRenderingProperties();
+
+	if (props->getTexturing() == IRenderingProperties::ENABLE)
 	{
 		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 		pExtensions->glActiveTextureARB(GL_TEXTURE1_ARB);

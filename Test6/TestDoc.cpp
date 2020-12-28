@@ -653,7 +653,7 @@ void CTestDoc::GLInitContext(void)
 
 	C3DScene *pScene = dsp->getRootScene();
 	pScene->addObject(vm->getObject());
-	pScene->addObject(cube2);
+	//pScene->addObject(cube2);
     pScene->addLight(pLight);
 }
 

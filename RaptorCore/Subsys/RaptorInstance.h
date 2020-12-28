@@ -59,6 +59,7 @@ class CShaderLibrary;
 RAPTOR_INTERFACE ITImeObjectImpl;
 class CTimeObject;
 class CTextureFactory;
+class IRenderingProperties;
 
 class CRaptorInstance
 {
@@ -127,6 +128,12 @@ public:
 
 	//!	Allocate a box buffer index.
 	uint64_t glvkReserveBoxIndex();
+
+	//!	The global GL rendering properties
+	IRenderingProperties* getGlobalRenderingProperties() const { return m_pGlobalProperties; };
+	//!	The current GL rendering properties
+	IRenderingProperties* getCurrentRenderingProperties() const { return m_pCurrentProperties; };
+	void setCurrentRenderingProperties(IRenderingProperties* pCurrent) { m_pCurrentProperties = pCurrent; };
 
 
 	//!
@@ -258,6 +265,10 @@ private:
 	bool			m_bFragmentProgramReady;
 	//!	A default shader.
 	CShader			*m_pNullShader;
+	//!	Global rendering properties
+	IRenderingProperties	*m_pGlobalProperties;
+	//!	Current rendering properties
+	IRenderingProperties	*m_pCurrentProperties;
 };
 
 RAPTOR_NAMESPACE_END

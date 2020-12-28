@@ -321,6 +321,7 @@ void C3DScene::glRender(void)
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 
 	glPushMatrix();
+	glPushAttrib(GL_ENABLE_BIT | GL_MULTISAMPLE_BIT_ARB);
 	glDepthMask(GL_FALSE);
 	glDisable(GL_LIGHTING);
     for (unsigned int i=0;i<requiredLights.size();i++)
@@ -329,6 +330,7 @@ void C3DScene::glRender(void)
     }
 	glDepthMask(GL_TRUE);
 	glPopMatrix();
+	glPopAttrib();
 	glBlendFunc(blendSrc, blendDst);
 
 	for (unsigned int i = 0; i<requiredLights.size(); i++)

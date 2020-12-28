@@ -67,6 +67,9 @@
 #if !defined(AFX_RAPTORINSTANCE_H__90219068_202B_46C2_BFF0_73C24D048903__INCLUDED_)
 	#include "Subsys/RaptorInstance.h"
 #endif
+#if !defined(AFX_3DENGINEMATRIX_H__6CD1110E_1174_4f38_A452_30FB312022D0__INCLUDED_)
+	#include "Engine/3DEngineMatrix.h"
+#endif
 
 
 RAPTOR_NAMESPACE
@@ -618,15 +621,9 @@ void CObject3DShadow::glRenderBBox(CObject3D::RENDER_BOX_MODEL filled)
     CObject3DContour *pContour = m_pVisibleContours[0];
 
 #ifdef SHADOW_SHADERS
-	//glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
-	//glDepthMask(GL_TRUE);
-	//glDisable(GL_BLEND);
-	//glColor4f(0.0f, 1.0f, 0.0f, 1.0f);
 	CGeometry* object = const_cast<CGeometry*>(pContour->getGeometry());
 	object->glRenderBBox(CObject3D::RAW);
 	glDrawArrays(GL_LINES, bbox, 2);
-	//glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
-	//glDepthMask(GL_FALSE);
 #else
 	const CBoundingBox    *const bbox = pContour->getBoundingBox();
 	CGenericVector<float> lp;
@@ -751,11 +748,13 @@ void CObject3DShadow::glSelectContours(void)
 C3DEngine::CLIP_RESULT RAPTOR_FASTCALL CObject3DShadow::glClip(void) const
 {
 	bool transform = m_pAttributes->m_pObject->getId().isSubClassOf(CObject3DInstance::CObject3DInstanceClassID::GetClassId());
+	
+	C3DEngineMatrix transformTranspose;
     if ( transform )
     {
-        glPushMatrix();
         GL_MATRIX T = ((CObject3DInstance*)m_pAttributes->m_pObject)->getTransform();
-        glMultMatrixf(T);
+		transformTranspose = T;
+		transformTranspose.Transpose();
     }
 
     C3DEngine::CLIP_RESULT  res = C3DEngine::CLIP_NONE;
@@ -768,14 +767,15 @@ C3DEngine::CLIP_RESULT RAPTOR_FASTCALL CObject3DShadow::glClip(void) const
         case SHADOW_BOUNDING_VOLUME:
         case SHADOW_VOLUME:
         {
-            CGenericVector<float> lp;
-	        m_pAttributes->glQueryLightPosition(lp);
+			C3DEngineMatrix M = C3DEngine::Get3DEngine()->getModelview() * transformTranspose;
+			CGenericVector<float> lp = M.Inverse() * m_pAttributes->m_pLight->getLightViewPosition();
+
             CObject3DContour *pContour = m_pVisibleContours[0];
             const CBoundingBox    *const bbox = pContour->getBoundingBox();
 
             //  Step 1 : intersect volume and frustum
             //  - clip light cap ( i.e. base bbox )
-            C3DEngine::CLIP_RESULT clip_light_cap = C3DEngine::Get3DEngine()->glClip(bbox,true,NULL);
+            C3DEngine::CLIP_RESULT clip_light_cap = C3DEngine::Get3DEngine()->glClip(bbox,false, &transformTranspose);
             CObject3DContour::CONTOUR_VOLUME &cv = (CObject3DContour::CONTOUR_VOLUME &)pContour->getContourVolume();
             cv.lightCapClipped = (clip_light_cap == C3DEngine::CLIP_FULL);
 
@@ -819,45 +819,15 @@ C3DEngine::CLIP_RESULT RAPTOR_FASTCALL CObject3DShadow::glClip(void) const
             ebbox.extendTo(extBBox[5].x,extBBox[5].y,extBBox[5].z);
             ebbox.extendTo(extBBox[6].x,extBBox[6].y,extBBox[6].z);
             ebbox.extendTo(extBBox[7].x,extBBox[7].y,extBBox[7].z);
-            C3DEngine::CLIP_RESULT clip_dark_cap = C3DEngine::Get3DEngine()->glClip(&ebbox,true,NULL);
+			C3DEngine::CLIP_RESULT clip_dark_cap = C3DEngine::Get3DEngine()->glClip(&ebbox, false, &transformTranspose);
             cv.darkCapClipped = (clip_dark_cap == C3DEngine::CLIP_FULL);
-/*
-#ifdef RAPTOR_DEBUG_MODE_GENERATION
-	ebbox.Get(xmin,ymin,zmin,xmax,ymax,zmax);
-	
-    glPushAttrib(GL_ALL_ATTRIB_BITS);
-    glDisable(GL_CULL_FACE);
-    glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
-    glColorMask(GL_TRUE,GL_TRUE,GL_TRUE,GL_TRUE);
-    glDisable(GL_LIGHTING);
-    glDisable(GL_TEXTURE_2D);
-    glDisable(GL_DEPTH_TEST);
-    glDisable(GL_STENCIL_TEST);
-    glColor4f(0.5f,0.8f,0.8f,1.0f);
-    if (m_pAttributes->shadowVolume.darkCapClipped)
-        glColor4f(1.0f,0.5f,0.5f,1.0f);
-	glBegin(GL_QUADS);
-		glVertex3f(xmin,ymin,zmin);	glVertex3f(xmax,ymin,zmin);glVertex3f(xmax,ymax,zmin);glVertex3f(xmin,ymax,zmin);
-		glVertex3f(xmin,ymin,zmax);	glVertex3f(xmax,ymin,zmax);glVertex3f(xmax,ymax,zmax);glVertex3f(xmin,ymax,zmax);
-		glVertex3f(xmin,ymax,zmin);	glVertex3f(xmin,ymax,zmax);glVertex3f(xmax,ymax,zmax);glVertex3f(xmax,ymax,zmin);
-		glVertex3f(xmin,ymin,zmin);	glVertex3f(xmin,ymin,zmax);glVertex3f(xmax,ymin,zmax);glVertex3f(xmax,ymin,zmin);
-		glVertex3f(xmin,ymin,zmin);	glVertex3f(xmin,ymin,zmax);glVertex3f(xmin,ymax,zmax);glVertex3f(xmin,ymax,zmin);
-		glVertex3f(xmax,ymax,zmin);	glVertex3f(xmax,ymax,zmax);glVertex3f(xmax,ymin,zmax);glVertex3f(xmax,ymin,zmin);
-	glEnd();
-    glPopAttrib();
-#endif
-*/
-            res = C3DEngine::CLIP_NONE;
+  
+			res = C3DEngine::CLIP_NONE;
             break;
         }
         default:
             res = C3DEngine::CLIP_NONE;
             break;
-    }
-
-    if ( transform )
-    {
-        glPopMatrix();
     }
 
     CATCH_GL_ERROR
