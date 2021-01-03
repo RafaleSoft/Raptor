@@ -74,10 +74,13 @@ public:
 	//!	This helper avoids the creation of unnecessary shaders
 	bool hasShader(void) const { return (m_pShader != NULL); };
 
-	//!	Returns the shader of this object.
+	//!	Returns the base shader of this object.
     //! The shader can be initialized by the shadedgeometry automatically
     //! or it can be a shader given with SetShader. 
 	virtual CShader * const getShader(void);
+
+	//!	Returns the list of shaders in this object hierachy.
+	virtual std::vector<CShader*> getShaders(void);
 
 	//!	Returns an ambient occlusion shader for this object.
     //! The shader is configured and properly rendered by the 

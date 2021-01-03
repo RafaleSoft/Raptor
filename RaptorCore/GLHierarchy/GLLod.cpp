@@ -67,7 +67,7 @@ CGLLod::~CGLLod()
 	// referenced in the instance.
 	m_pReference = getLod(0);
 
-	vector<LOD>::iterator pos = lods.begin();
+	std::vector<LOD>::iterator pos = lods.begin();
     while (pos != lods.end())
     {
 		const LOD& lod = *pos++;
@@ -79,7 +79,7 @@ CGLLod::~CGLLod()
 
 void CGLLod::unLink(const CPersistence* obj)
 {
-    vector<LOD>::iterator pos = lods.begin();
+	std::vector<LOD>::iterator pos = lods.begin();
     while (pos != lods.end())
     {
         if (obj == static_cast<CPersistence*>((*pos).obj))
@@ -96,21 +96,36 @@ void CGLLod::unLink(const CPersistence* obj)
 
 vector<CObject3DContour*> CGLLod::createContours(void)
 {
-    vector<CObject3DContour*>  res;
+	std::vector<CObject3DContour*>  res;
 
-    vector<LOD>::iterator pos = lods.begin();
+	std::vector<LOD>::iterator pos = lods.begin();
     while (pos != lods.end())
     {
-        vector<CObject3DContour*> pContours = (*pos++).obj->createContours();
+		std::vector<CObject3DContour*> pContours = (*pos++).obj->createContours();
         if (!pContours.empty())
         {
-            vector<CObject3DContour*>::const_iterator it = pContours.begin();
+			std::vector<CObject3DContour*>::const_iterator it = pContours.begin();
             while (it != pContours.end())
                 res.push_back(*it++);
         }
     }
 
     return res;
+}
+
+std::vector<CShader*> CGLLod::getShaders(void)
+{
+	std::vector<CShader*> list;
+
+	std::vector<LOD>::iterator pos = lods.begin();
+	while (pos != lods.end())
+	{
+		std::vector<CShader*> child = (*pos++).obj->getShaders();
+		for (size_t i = 0; i < child.size(); i++)
+			list.push_back(child[i]);
+	}
+
+	return list;
 }
 
 
@@ -140,7 +155,7 @@ bool CGLLod::addLevel(float fromDepth, CObject3D *obj)
 	}
 	else
 	{
-		vector<LOD>::iterator pos = lods.begin();
+		std::vector<LOD>::iterator pos = lods.begin();
 		while ((pos != lods.end())&&((*pos).fromDepth<fromDepth))
 			pos++;
 

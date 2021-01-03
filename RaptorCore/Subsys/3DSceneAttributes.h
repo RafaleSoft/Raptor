@@ -29,6 +29,7 @@ RAPTOR_NAMESPACE_BEGIN
 class CLight;
 class C3DSceneObject;
 class CObject3D;
+class CShader;
 template <class USER_DATA_t> class CBaseTree;
 
 class C3DSceneAttributes
@@ -67,15 +68,22 @@ public:
     //! Returns the appropriate list of lights that should apply to the list of objects
     std::vector<CLight*>	glGetLights(const std::vector<C3DSceneObject*>& objects);
 
+	//! Renders light products with shader materials from the list of objects into shader buffers.
+	void glRenderLights(const std::vector<C3DSceneObject*>& objects);
+
 	//! This method computes initial occlusion using bbox rendering
 	void glComputeBBoxOcclusion(const std::vector<C3DSceneObject*> &occluded);
-
-	//! This method is used for debugging purpose
-	void glRenderBBoxes(const std::vector<C3DSceneObject*> &objects);
 
 	//!	This method sorts input objets into mirrors, 
 	//! transparent and z_ordered objects ready for rendering.
 	void C3DSceneAttributes::sortObjects(const std::vector<C3DSceneObject*>& objects);
+
+	//! Renders scene mirrors.
+	void glRenderMirrors(C3DScene::PASS_KIND passKind);
+
+
+	//! This method is used for debugging purpose
+	void glRenderBBoxes(const std::vector<C3DSceneObject*> &objects);
 
 
 public:
@@ -103,10 +111,16 @@ public:
 	std::vector<CObject3D*>			transparents;
 	std::vector<CObject3D*>			mirrors;
 	std::vector<C3DSceneObject*>	unsortedObjects;
+
+	CResourceAllocator::data_bloc	m_lightProductsShaderBuffer;
+	CResourceAllocator::data_bloc	m_transformsShaderBuffer;
 	
 private:
 	std::vector<C3DSceneObject*>		m_pObjects;
-    CBaseTree<C3DSceneObject*>  *m_pSceneTree;
+	std::vector<CShader*>				m_pShaders;
+	CLight::R_LightProducts				*lightProducts;
+
+    CBaseTree<C3DSceneObject*>			*m_pSceneTree;
 };
 
 RAPTOR_NAMESPACE_END

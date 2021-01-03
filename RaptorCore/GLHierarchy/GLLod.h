@@ -57,6 +57,10 @@ public:
     //! Implements CObject3D: creates the list of contours for this objet.
     virtual vector<CObject3DContour*> createContours(void);
 
+	//!	Returns the list of shaders in this object hierachy.
+	virtual std::vector<CShader*> getShaders(void);
+
+
     //! Implements CPersistence: serialization
 	DECLARE_IO
 	DECLARE_CLASS_ID(CGLLodClassID,"Lod",CObject3DInstance)

@@ -77,26 +77,8 @@ CBumpShader::~CBumpShader(void)
 {
 }
 
-typedef struct LightProduct_t
-{
-	GL_COORD_VERTEX position;
-	GL_COORD_VERTEX attenuation;
-	CColor::RGBA	ambient;
-	CColor::RGBA	diffuse;
-	CColor::RGBA	specular;
-	float			shininess;
-	float			reserved[3];
-	bool			enable;
-	float			reserved2[3];
-} R_LightProduct;
 
-typedef struct LightProducts_t
-{
-	R_LightProduct	lights[5];
-	CColor::RGBA	scene_ambient;
-} R_LightProducts;
-
-static R_LightProducts products;
+static CLight::R_LightProducts products;
 
 
 void CBumpShader::glInit(void)
@@ -113,7 +95,7 @@ void CBumpShader::glInit(void)
 	params.addParameter("eyePos", V);
 
 #if defined(GL_ARB_uniform_buffer_object)
-	CProgramParameters::CParameter<R_LightProducts> material("LightProducts", products);
+	CProgramParameters::CParameter<CLight::R_LightProducts> material("LightProducts", products);
 	material.locationType = GL_UNIFORM_BLOCK_BINDING_ARB;
 	params.addParameter(material);
 #endif
@@ -140,14 +122,14 @@ void CBumpShader::glRender(void)
 	int numl = 0;
 	CMaterial *M = getMaterial();
 	CLight **olights = CLightAttributes::getOrderedLights();
-	for (int i = 0; i < CLightAttributes::MAX_LIGHTS; i++)
+	for (int i = 0; (i < CLightAttributes::MAX_LIGHTS) && (numl < 5); i++)
 	{
 		CLight *pLight = olights[i];
-		products.lights[i].enable = false;
+		products.lights[min(i,4)].enable = false;
 
 		if (NULL != pLight)
 		{
-			R_LightProduct& lp = products.lights[numl++];
+			CLight::R_LightProduct& lp = products.lights[numl++];
 			lp.ambient = M->getAmbient() * pLight->getAmbient();
 			lp.diffuse = M->getDiffuse() * pLight->getDiffuse();
 			lp.specular = M->getSpecular() * pLight->getSpecular();
@@ -161,7 +143,7 @@ void CBumpShader::glRender(void)
 	products.scene_ambient = CShader::getAmbient();
 
 #if defined(GL_ARB_uniform_buffer_object)
-	CProgramParameters::CParameter<R_LightProducts> material("LightProducts", products);
+	CProgramParameters::CParameter<CLight::R_LightProducts> material("LightProducts", products);
 	material.locationType = GL_UNIFORM_BLOCK_BINDING_ARB;
 	params.addParameter(material);
 #endif

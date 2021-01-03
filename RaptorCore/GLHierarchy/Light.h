@@ -43,6 +43,25 @@ public:
 	CLight(const std::string& name = "GL_LIGHT");
 	virtual ~CLight();
 
+	typedef struct LightProduct_t
+	{
+		GL_COORD_VERTEX position;
+		GL_COORD_VERTEX attenuation;
+		CColor::RGBA	ambient;
+		CColor::RGBA	diffuse;
+		CColor::RGBA	specular;
+		float			shininess;
+		float			reserved[3];
+		bool			enable;
+		float			reserved2[3];
+	} R_LightProduct;
+
+	typedef struct LightProducts_t
+	{
+		R_LightProduct	lights[5];
+		CColor::RGBA	scene_ambient;
+	} R_LightProducts;
+
 
     //!
 	//!	Rendering

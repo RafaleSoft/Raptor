@@ -170,11 +170,12 @@ bool CObjectStore::IsAColumn(CGeometry *&g)
 
         const CGeometryEditor &pEditor = g->getEditor();
 		pEditor.scaleTexCoords(2.0f, 2.0f);
-		*bump->getShader()->getMaterial() = *m_material;
-		bump->getShader()->setColor(1.0f, 1.0f, 1.0f, 1.0f);	// for ambient in shadows
-		bump->getShader()->getMaterial()->setShininess(4.0f);
+		CShader *pShader = bump->getShaders()[0];
+		*pShader->getMaterial() = *m_material;
+		pShader->setColor(1.0f, 1.0f, 1.0f, 1.0f);	// for ambient in shadows
+		pShader->getMaterial()->setShininess(4.0f);
 		bump->setDiffuseMap(m_textures->getTexture(MARBLE4));
-		bump->getShader()->glGetTextureUnitsSetup()->setUnitFunction(CTextureUnitSetup::IMAGE_UNIT_0, CTextureUnitSetup::CGL_MULTIPLY);
+		pShader->glGetTextureUnitsSetup()->setUnitFunction(CTextureUnitSetup::IMAGE_UNIT_0, CTextureUnitSetup::CGL_MULTIPLY);
 
 		CTextureFactory &factory = CTextureFactory::glGetDefaultFactory();
 		ITextureObject *normalMap = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA, ITextureObject::CGL_BILINEAR);
@@ -202,11 +203,12 @@ bool CObjectStore::IsAColumn(CGeometry *&g)
 
         const CGeometryEditor &pEditor = g->getEditor();
 		pEditor.scaleTexCoords(4.0f,1.0f);
-		bump->getShader()->setColor(1.0f,1.0f,1.0f,1.0f);	// for ambient in shadows
-        *bump->getShader()->getMaterial() = *m_material;
-		bump->getShader()->getMaterial()->setShininess(4.0f);
+		CShader *pShader = bump->getShaders()[0];
+		pShader->setColor(1.0f,1.0f,1.0f,1.0f);	// for ambient in shadows
+        *pShader->getMaterial() = *m_material;
+		pShader->getMaterial()->setShininess(4.0f);
 		bump->setDiffuseMap(m_textures->getTexture(ROCKSCULPT));
-		bump->getShader()->glGetTextureUnitsSetup()->setUnitFunction(CTextureUnitSetup::IMAGE_UNIT_0, CTextureUnitSetup::CGL_MULTIPLY);
+		pShader->glGetTextureUnitsSetup()->setUnitFunction(CTextureUnitSetup::IMAGE_UNIT_0, CTextureUnitSetup::CGL_MULTIPLY);
 
 		CTextureFactory &factory = CTextureFactory::glGetDefaultFactory();
 		ITextureObject *normalMap = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,

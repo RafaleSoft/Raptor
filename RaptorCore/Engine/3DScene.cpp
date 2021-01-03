@@ -180,6 +180,10 @@ void C3DScene::glRenderObjects(const vector<C3DSceneObject*>& objects, PASS_KIND
 {
 	m_currentPass = passKind;
 
+	//
+	// Rendering 
+	//  First step : prepare objects rendering sets.
+	//
 	if (!objects.empty())
 		m_pAttributes->sortObjects(objects);
 
@@ -213,58 +217,7 @@ void C3DScene::glRenderObjects(const vector<C3DSceneObject*>& objects, PASS_KIND
 	// Rendering 
     //  Third step : render mirrors with real objects in the scene
 	//
-    bool proceedMirrors = ((passKind == DEPTH_PASS) || (passKind == FULL_PASS))
-                        && (!m_pAttributes->m_bMirrorsRendered);
-    for (unsigned int i=0;i<m_pAttributes->m_pMirrors.size();i++)
-    {
-        CMirror *pMirror = m_pAttributes->m_pMirrors[i];
-
-        if (proceedMirrors)
-        {
-            m_pAttributes->m_iCurrentPass++;
-            pMirror->glApplyMirror(true);
-
-            GLboolean cMask[4];
-
-            if (passKind != FULL_PASS)
-            {
-                glGetBooleanv(GL_COLOR_WRITEMASK ,cMask);
-                glColorMask(GL_TRUE,GL_TRUE,GL_TRUE,GL_TRUE);
-            }
-
-			occludedObjects.clear();
-            itr = m_pAttributes->unsortedObjects.begin();
-		    while (itr != m_pAttributes->unsortedObjects.end())
-		    {
-                C3DSceneObject* sc = *itr++;
-		      
-                if (!sc->glRenderPass(	m_pAttributes->m_iCurrentPass,
-										m_pAttributes->m_pLights,
-										true))
-					occludedObjects.push_back(sc);
-            }
-			if (!occludedObjects.empty())
-				m_pAttributes->glComputeBBoxOcclusion(occludedObjects);
-
-            //  Transparent objects must also be rendered here if they are mirrored ?
-            pMirror->glApplyMirror(false);
-
-            if (passKind != FULL_PASS)
-                glColorMask(cMask[0],cMask[1],cMask[2],cMask[3]);
-            
-			pMirror->glClipRender();
-            m_pAttributes->m_bMirrorsRendered = true;
-
-			//	Need to deactivate lights because Objects above activated them
-			for (unsigned int j = 0; j < m_pAttributes->m_pLights.size(); j++)
-				m_pAttributes->m_pLights[j]->glDeActivate();
-        }
-        else if (((passKind == AMBIENT_PASS) || (passKind == LIGHT_PASS))
-                    && (m_pAttributes->m_bMirrorsRendered))
-        {
-            pMirror->glClipRender();
-        }
-    }
+	m_pAttributes->glRenderMirrors(passKind);
 
     //
 	// Rendering 
@@ -288,7 +241,9 @@ void C3DScene::glRenderObjects(const vector<C3DSceneObject*>& objects, PASS_KIND
 	CATCH_GL_ERROR
 }
 
-
+//!
+//!	Main rendering
+//!
 void C3DScene::glRender(void)
 {
     glPushMatrix();
@@ -296,12 +251,20 @@ void C3DScene::glRender(void)
 #if defined(GL_ARB_occlusion_query)
     m_pAttributes->glMakeQueries();
 #endif
-    
+   
+	//!	Initialize rendering structures if not already available,
+	//!	- clear intermdiate results, 
+	//!	- reset all lights and lighting model.
 	m_pAttributes->prepareData();
 
+	//!	Extract the minimal set of objects to render.
     vector<C3DSceneObject*> viewableObjects = m_pAttributes->glGetObjects();
+	//!	Determine required lights per object
     vector<CLight*>	requiredLights = m_pAttributes->glGetLights(viewableObjects);
+	//!	Prepare light & material shading products
+	m_pAttributes->glRenderLights(viewableObjects);
 
+	//!	Render objects.
     if (NULL != m_pEnvironment)
     {
 		m_pEnvironment->glRender(m_pAttributes->m_pCurrentLight,viewableObjects);
@@ -314,6 +277,10 @@ void C3DScene::glRender(void)
 
 	glPopMatrix();
 	
+	//!
+	//!	After effects:
+	//!	- render lights glows & flares
+	//!	- deactivate used lights
 	int	blendSrc;
 	int	blendDst;
 	glGetIntegerv(GL_BLEND_SRC, &blendSrc);

@@ -97,26 +97,8 @@ CEMBMShader::~CEMBMShader(void)
 {
 }
 
-typedef struct LightProduct_t
-{
-	GL_COORD_VERTEX position;
-	GL_COORD_VERTEX attenuation;
-	CColor::RGBA	ambient;
-	CColor::RGBA	diffuse;
-	CColor::RGBA	specular;
-	float			shininess;
-	float			reserved[3];
-	bool			enable;
-	float			reserved2[3];
-} R_LightProduct;
 
-typedef struct LightProducts_t
-{
-	R_LightProduct	lights[5];
-	CColor::RGBA	scene_ambient;
-} R_LightProducts;
-
-static R_LightProducts products;
+static CLight::R_LightProducts products;
 
 
 void CEMBMShader::glInit()
@@ -168,7 +150,7 @@ void CEMBMShader::glInit()
 	params.addParameter("eyePos", V);
 
 #if defined(GL_ARB_uniform_buffer_object)
-	CProgramParameters::CParameter<R_LightProducts> material("LightProducts", products);
+	CProgramParameters::CParameter<CLight::R_LightProducts> material("LightProducts", products);
 	material.locationType = GL_UNIFORM_BLOCK_BINDING_ARB;
 	params.addParameter(material);
 #endif
@@ -247,7 +229,7 @@ void CEMBMShader::enableEmbm(bool enable)
 		params.addParameter("eyePos", V);
 
 #if defined(GL_ARB_uniform_buffer_object)
-		CProgramParameters::CParameter<R_LightProducts> material("LightProducts", products);
+		CProgramParameters::CParameter<CLight::R_LightProducts> material("LightProducts", products);
 		material.locationType = GL_UNIFORM_BLOCK_BINDING_ARB;
 		params.addParameter(material);
 #endif

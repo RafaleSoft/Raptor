@@ -37,10 +37,10 @@ int main(int argc, char* argv[])
     CRaptorConfig config;
 	config.m_logFile = "Demo_Raptor.log";
     config.m_bRelocation = true;
-    config.m_uiPolygons = 1000000;
-    config.m_uiVertices = 2000000;
-	config.m_uiTexels = 2000000;
-	config.m_uiUniforms = 16384;
+    config.m_uiPolygons = 1024*1024;
+    config.m_uiVertices = 2 * 1024 * 1024;
+	config.m_uiTexels = 2 * 1024 * 1024;
+	config.m_uiUniforms = 256 * 1024;
 
 	//	initialize Raptor classes and settings
 	Raptor::glInitRaptor(config);

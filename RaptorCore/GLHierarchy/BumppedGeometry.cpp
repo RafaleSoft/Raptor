@@ -64,6 +64,9 @@
 #if !defined(AFX_RAPTORINSTANCE_H__90219068_202B_46C2_BFF0_73C24D048903__INCLUDED_)
 	#include "Subsys/RaptorInstance.h"
 #endif
+#if !defined(AFX_OPENGLSHADERSTAGE_H__56B00FE3_E508_4FD6_9363_90E6E67446D9__INCLUDED_)
+	#include "OpenGLShaderStage.h"
+#endif
 
 
 RAPTOR_NAMESPACE
@@ -142,6 +145,17 @@ void CBumppedGeometry::unLink(const CPersistence* p)
 CShader	* const CBumppedGeometry::getShader(void) const
 {
 	return m_pBumpShader;
+}
+
+std::vector<CShader*> CBumppedGeometry::getShaders(void)
+{
+	std::vector<CShader*> list;
+
+	if (NULL != m_pBumpShader)
+		if (m_pBumpShader->hasOpenGLShader())
+			list.push_back(m_pBumpShader);
+
+	return list;
 }
 
 void CBumppedGeometry::setDiffuseMap(ITextureObject* diffuse)

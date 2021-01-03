@@ -154,6 +154,17 @@ CShader * const CShadedGeometry::getShader(void)
 	return m_pShader;
 }
 
+std::vector<CShader*> CShadedGeometry::getShaders(void)
+{
+	std::vector<CShader*> list;
+
+	if (NULL != m_pShader)
+		if (m_pShader->hasOpenGLShader())
+			list.push_back(m_pShader);
+
+	return list;
+}
+
 CShader * const CShadedGeometry::getAmbientOcclusionShader(void)
 {
 	if (m_pAOShader == NULL)
