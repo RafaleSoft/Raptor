@@ -80,6 +80,7 @@ public:
 	virtual CShader * const getShader(void);
 
 	//!	Returns the list of shaders in this object hierachy.
+	//!	Shader is not created if not existant (this method is not equivalent to getShader above)
 	virtual std::vector<CShader*> getShaders(void);
 
 	//!	Returns an ambient occlusion shader for this object.

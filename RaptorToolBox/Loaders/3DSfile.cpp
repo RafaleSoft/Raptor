@@ -648,10 +648,10 @@ bool RAPTOR_FASTCALL ProcessChunk4xxxH(long length)
 		}
 		case SMOOTH_GROUP:
 		{
-			vector<FACE>::iterator it = currentFace.begin();
-			while (it != currentFace.end())
+			vector<FACE>::iterator it_face = currentFace.begin();
+			while (it_face != currentFace.end())
 			{
-				FACE &f = *it++;
+				FACE &f = *it_face++;
 				unsigned int smoothGroup = 0;
 				C3DSFile->read(&smoothGroup,4);
 
@@ -666,10 +666,10 @@ bool RAPTOR_FASTCALL ProcessChunk4xxxH(long length)
 					else
 					{
 						bool found = false;
-						vector<DATA>::iterator it = duplicateData.begin();
-						while (!found && (it != duplicateData.end()))
+						vector<DATA>::iterator it_data = duplicateData.begin();
+						while (!found && (it_data != duplicateData.end()))
 						{
-							DATA &dup = *it++;
+							DATA &dup = *it_data++;
 							found = ((dup.x == d.x) &&
 									 (dup.y == d.y) &&
 									 (dup.z == d.z) &&

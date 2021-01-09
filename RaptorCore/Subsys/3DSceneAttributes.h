@@ -117,7 +117,6 @@ public:
 	
 private:
 	std::vector<C3DSceneObject*>		m_pObjects;
-	std::vector<CShader*>				m_pShaders;
 	CLight::R_LightProducts				*lightProducts;
 
     CBaseTree<C3DSceneObject*>			*m_pSceneTree;

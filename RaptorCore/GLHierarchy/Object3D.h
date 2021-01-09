@@ -299,7 +299,7 @@ private:
     CObject3D(const CObject3D&);
 
 	//!	This method updates boudiong box data in instence's buffer object.
-	void CObject3D::glvkUpdateBBox(void);
+	void glvkUpdateBBox(void);
 
     //! A 3D object must always have a bounding box ( pointer cannot be NULL )
 	CBoundingBox	*BBox;

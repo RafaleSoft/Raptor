@@ -187,8 +187,11 @@ void C3DSceneAttributes::prepareData(void)
 	}
 
 	//!	Determine the number of shaders for curent rendering
+	size_t nb_shaders = 0;
 	if ((NULL == m_lightProductsShaderBuffer.address) || (NULL == m_transformsShaderBuffer.address))
 	{
+		std::vector<CShader*>	pShaders;
+
 		std::vector<C3DSceneObject*>::const_iterator it = m_pObjects.begin();
 		while (it != m_pObjects.end())
 		{
@@ -197,16 +200,14 @@ void C3DSceneAttributes::prepareData(void)
 
 			std::vector<CShader*> list = obj->getShaders();
 			for (size_t i = 0; i < list.size(); i++)
-				m_pShaders.push_back(list[i]);
+				pShaders.push_back(list[i]);
 		}
+		nb_shaders = pShaders.size();
 	}
-
-	if (NULL == lightProducts)
-		lightProducts = new CLight::R_LightProducts[m_pShaders.size()];
 
 	if (NULL == m_lightProductsShaderBuffer.address)
 	{
-		uint64_t sz = m_pShaders.size() * sizeof(CLight::R_LightProducts);
+		uint64_t sz = nb_shaders * sizeof(CLight::R_LightProducts);
 		CUniformAllocator*	pUAllocator = CUniformAllocator::GetInstance();
 		bool relocated = pUAllocator->isMemoryLocked();
 		if (relocated)
@@ -221,7 +222,7 @@ void C3DSceneAttributes::prepareData(void)
 
 	if (NULL == m_transformsShaderBuffer.address)
 	{
-		uint64_t sz = m_pShaders.size() * 4 * sizeof(GL_MATRIX);
+		uint64_t sz = nb_shaders * 4 * sizeof(GL_MATRIX);
 		CUniformAllocator*	pUAllocator = CUniformAllocator::GetInstance();
 		bool relocated = pUAllocator->isMemoryLocked();
 		if (relocated)

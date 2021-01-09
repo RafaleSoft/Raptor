@@ -54,9 +54,9 @@ public:
 	{ M_VECTOR = _mm_load_ps(v); };
 	CVector4f(float v0,float v1,float v2,float v3) NOEXCEPT
 	{ M_VECTOR = _mm_set_ps(v0,v1,v2,v3); };
-	CVector4f &CVector4f::operator=(const CVector4f &v) NOEXCEPT
+	CVector4f &operator=(const CVector4f &v) NOEXCEPT
 	{ M_VECTOR = VECTOR(v); return *this; };
-	CVector4f &CVector4f::operator=(const CGenericVector<float,4> &v)
+	CVector4f &operator=(const CGenericVector<float,4> &v)
 	{ M_VECTOR = _mm_load_ps(v.vector()); return *this; };
 	virtual ~CVector4f(void) {};
 

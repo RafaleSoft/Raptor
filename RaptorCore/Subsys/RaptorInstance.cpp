@@ -702,7 +702,7 @@ bool CRaptorInstance::glvkReleaseSharedRsources()
 
 	if (NULL != m_pNullShader)
 	{
-		m_pNullShader = new CShader("NULL_SHADER");
+		m_pNullShader->releaseReference();
 		m_pNullShader = NULL;
 	}
 
