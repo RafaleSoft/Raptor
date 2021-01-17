@@ -208,7 +208,11 @@ void C3DSceneAttributes::prepareData(void)
 
 			std::vector<CShader*> list = obj->getShaders();
 			for (size_t i = 0; i < list.size(); i++)
-				pShaders.push_back(list[i]);
+			{
+				CShader *pShader = list[i];
+				if (pShader->hasShaderBloc())
+					pShaders.push_back(list[i]);
+			}
 		}
 		nb_shaders = pShaders.size();
 	}

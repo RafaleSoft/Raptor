@@ -54,6 +54,10 @@
 #if !defined(AFX_SHADER_H__4D405EC2_7151_465D_86B6_1CA99B906777__INCLUDED_)
 	#include "GLHierarchy/Shader.h"
 #endif
+#if !defined(AFX_SHADERBLOC_H__56C73DCA_292E_4722_8881_82DC1BF53EA5__INCLUDED_)
+	#include "GLHierarchy/ShaderBloc.h"
+#endif
+
 
 #include <set>      // to sort the lights
 
@@ -138,9 +142,12 @@ size_t C3DSceneObject::glRenderLights(CLight::R_LightProducts *buffer, uint64_t 
 				continue;
 			if (!shader->hasMaterial())
 				continue;
+			if (!shader->hasShaderBloc())
+				continue;
 
 			COpenGLShaderStage *stage = shader->glGetOpenGLShader();
 			CMaterial *M = shader->getMaterial();
+			CShaderBloc *B = shader->glGetShaderBloc();
 			
 			int numl = 0;
 
@@ -167,7 +174,7 @@ size_t C3DSceneObject::glRenderLights(CLight::R_LightProducts *buffer, uint64_t 
 			products.scene_ambient = shader->getAmbient();
 
 			size_t size = sizeof(CLight::R_LightProducts);
-			//stage->setBufferBloc(uniform, size, bufferOffset * size);
+			B->glvkSetUniformBuffer(uniform, size, bufferOffset * size);
 
 			nb_shaders++;
 		}

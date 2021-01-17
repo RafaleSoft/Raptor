@@ -403,6 +403,8 @@ CRaptorInstance* Raptor::switchInstance(CRaptorInstance* pInstance)
 	CRaptorInstance &instance = CRaptorInstance::GetInstance();
 	if (!instance.isInitialised())
 		return NULL;
+
+	return &instance;
 }
 
 bool Raptor::glInitRaptor(const CRaptorConfig& config)

@@ -80,9 +80,6 @@ CBumpShader::~CBumpShader(void)
 {
 }
 
-
-static CLight::R_LightProducts products;
-
 void CBumpShader::glInit(void)
 {
 	COpenGLShaderStage *stage = glGetOpenGLShader("BUMP_SHADER_PROGRAM");
@@ -121,35 +118,37 @@ void CBumpShader::glRender(void)
 	COpenGLShaderStage *stage = glGetOpenGLShader();
 	CProgramParameters params;
 	params.addParameter("eyePos", V);
-
-	int numl = 0;
-	CMaterial *M = getMaterial();
-	CLight **olights = CLightAttributes::getOrderedLights();
-	for (int i = 0; (i < CLightAttributes::MAX_LIGHTS) && (numl < 5); i++)
-	{
-		CLight *pLight = olights[i];
-		products.lights[min(i,4)].enable = false;
-
-		if (NULL != pLight)
-		{
-			CLight::R_LightProduct& lp = products.lights[numl++];
-			lp.ambient = M->getAmbient() * pLight->getAmbient();
-			lp.diffuse = M->getDiffuse() * pLight->getDiffuse();
-			lp.specular = M->getSpecular() * pLight->getSpecular();
-			lp.shininess = M->getShininess();
-			lp.enable = true;
-			const CGenericVector<float, 4> &p = pLight->getLightViewPosition();
-			lp.position = GL_COORD_VERTEX(p.X(), p.Y(), p.Z(), p.H());
-			lp.attenuation = pLight->getSpotParams();
-		}
-	}
-	products.scene_ambient = CShader::getAmbient();
-
-
 	stage->updateProgramParameters(params);
 
 	CShaderBloc *pBloc = glGetShaderBloc();
-	pBloc->glvkUpdateBloc((uint8_t*)&products);
+	if (!pBloc->isExternal())
+	{
+		CLight::R_LightProducts products;
+		CMaterial *M = getMaterial();
+		CLight **olights = CLightAttributes::getOrderedLights();
+
+		for (int i = 0, numl = 0; (i < CLightAttributes::MAX_LIGHTS) && (numl < 5); i++)
+		{
+			CLight *pLight = olights[i];
+			products.lights[min(i, 4)].enable = false;
+
+			if (NULL != pLight)
+			{
+				CLight::R_LightProduct& lp = products.lights[numl++];
+				lp.ambient = M->getAmbient() * pLight->getAmbient();
+				lp.diffuse = M->getDiffuse() * pLight->getDiffuse();
+				lp.specular = M->getSpecular() * pLight->getSpecular();
+				lp.shininess = M->getShininess();
+				lp.enable = true;
+				const CGenericVector<float, 4> &p = pLight->getLightViewPosition();
+				lp.position = GL_COORD_VERTEX(p.X(), p.Y(), p.Z(), p.H());
+				lp.attenuation = pLight->getSpotParams();
+			}
+		}
+		products.scene_ambient = CShader::getAmbient();
+
+		pBloc->glvkUpdateBloc((uint8_t*)&products);
+	}
 
 	CShader::glRender();
 }

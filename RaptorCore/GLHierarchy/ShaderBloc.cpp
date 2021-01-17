@@ -65,6 +65,24 @@ void CShaderBloc::glvkUpdateBloc(uint8_t *src)
 		pUAllocator->glvkSetPointerData(m_buffer, src, m_size);
 }
 
+void CShaderBloc::glvkSetUniformBuffer(uint8_t *uniform, uint64_t size, uint64_t offset)
+{
+	if (NULL != uniform)
+	{
+		if ((NULL != m_buffer) && !m_bExternal)
+		{
+			CUniformAllocator*	pUAllocator = CUniformAllocator::GetInstance();
+			pUAllocator->releaseUniforms(m_buffer);
+			m_buffer = NULL;
+		}
+
+		m_buffer = uniform;
+		m_bExternal = true;
+		m_size = size;
+		m_offset = offset;
+	}
+}
+
 void CShaderBloc::glRender()
 {
 	CUniformAllocator*	pUAllocator = CUniformAllocator::GetInstance();

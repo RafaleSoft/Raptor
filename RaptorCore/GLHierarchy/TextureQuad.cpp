@@ -54,44 +54,34 @@ RAPTOR_NAMESPACE
 
 
 //!	The shader is common to all texture quads by definition.
-const uint32_t CTextureQuad::max_texture_quad = 256;
-uint32_t CTextureQuad::max_index = 0;
-uint32_t CTextureQuad::nb_quads = 0;
-CTextureQuad::Attributes*	CTextureQuad::s_attributes = NULL;
+static const uint32_t max_texture_quad = 256;
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
 CTextureQuad::CTextureQuad()
-	:CSimpleObject("TEXTURE_QUAD"), m_index(max_index++), m_pBinder(NULL)
+	:CSimpleObject("TEXTURE_QUAD"), m_index(0)
 {
-	nb_quads++;
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+	instance.nb_quads++;
+	m_index = instance.max_quad_index++;
+
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+	if (nb_quads == max_texture_quad)
+		RAPTOR_FATAL(	COpenGL::COpenGLClassID::GetClassId(),
+						"Raptor Texture Quad reached max number of texture Quads !");
+#endif
 }
 
 CTextureQuad::~CTextureQuad()
 {
 	m_rTexture = NULL;
-	nb_quads--;
 
-	if (NULL != m_pBinder)
-	{
-		CResourceAllocator::CResourceBinder *binder = (CResourceAllocator::CResourceBinder*)m_pBinder;
-		delete binder;
-	}
-
-	if (0 == nb_quads)
-	{
-		CGeometryAllocator *pAllocator = CGeometryAllocator::GetInstance();
-		bool res = pAllocator->releaseVertices((float*)s_attributes);
-#ifdef RAPTOR_DEBUG_MODE_GENERATION
-		if (!res)
-			RAPTOR_WARNING(	COpenGL::COpenGLClassID::GetClassId(),
-							"Raptor Texture Quad Allocator released out of owning display !");
-#endif
-		s_attributes = NULL;
-		max_index = 0;
-	}
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+	if (instance.max_quad_index == (m_index + 1))
+		instance.max_quad_index--;
+	instance.nb_quads--;
 }
 
 bool CTextureQuad::setQuadTexture(ITextureObject *pTexture)
@@ -105,7 +95,9 @@ bool CTextureQuad::glSetQuadAttributes(	const GL_COORD_VERTEX &center,
 										const CColor::RGBA& color,
 										const GL_COORD_VERTEX &sizes)
 {
-	if ((max_index >= max_texture_quad) || (m_index > max_index))
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+
+	if ((instance.max_quad_index >= max_texture_quad) || (m_index > instance.max_quad_index))
 		return false;
 
 	CGeometryAllocator *pAllocator = CGeometryAllocator::GetInstance();
@@ -113,30 +105,13 @@ bool CTextureQuad::glSetQuadAttributes(	const GL_COORD_VERTEX &center,
 	if (lock)
 		pAllocator->glvkLockMemory(false);
 
-	if (NULL == s_attributes)
-	{
-		size_t s = sizeof(Attributes) / sizeof(float);
-		s_attributes = (Attributes*)(pAllocator->allocateVertices(max_texture_quad * s));
-	}
-
-	if (NULL == m_pBinder)
-	{
-		CResourceAllocator::CResourceBinder *binder = new CResourceAllocator::CResourceBinder();
-		binder->setArray(CProgramParameters::POSITION, &s_attributes[m_index].m_center, 4, sizeof(Attributes));
-		binder->setArray(CProgramParameters::PRIMARY_COLOR, &s_attributes[m_index].m_color, 4, sizeof(Attributes));
-		binder->setArray(CProgramParameters::ADDITIONAL_PARAM1, &s_attributes[m_index].m_sizes, 4, sizeof(Attributes));
-		binder->useVertexArrayObjects();
-		m_pBinder = binder;
-	}
-
-
 	//! Update vertex buffer
-	s_attributes = (Attributes*)pAllocator->glvkMapPointer((float*)s_attributes);
-	CTextureQuad::Attributes& attrs = s_attributes[m_index];
+	CTextureQuad::Attributes *quad_attributes = (CTextureQuad::Attributes*)pAllocator->glvkMapPointer((float*)instance.m_pQuadAttributes);
+	CTextureQuad::Attributes& attrs = quad_attributes[m_index];
 	attrs.m_center = center;
 	attrs.m_color = color;
 	attrs.m_sizes = sizes;
-	s_attributes = (Attributes*)pAllocator->glvkUnMapPointer((float*)s_attributes);
+	(Attributes*)pAllocator->glvkUnMapPointer((float*)quad_attributes);
 	
 	if (lock)
 		pAllocator->glvkLockMemory(true);
@@ -197,12 +172,11 @@ void CTextureQuad::glRender(void)
 	instance.m_pQuadShader->glRender();
 	m_rTexture->glvkRender();
 
-	CResourceAllocator::CResourceBinder *binder = (CResourceAllocator::CResourceBinder*)m_pBinder;
-	binder->glvkBindArrays();
+	instance.m_pQuadBinder->glvkBindArrays();
 
-	glDrawArrays(GL_POINTS, 0, 1);
+	glDrawArrays(GL_POINTS, m_index, 1);
 
-	binder->glvkUnbindArrays();
+	instance.m_pQuadBinder->glvkUnbindArrays();
 
 	instance.m_pQuadShader->glStop();
 }

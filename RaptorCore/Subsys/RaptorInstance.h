@@ -40,6 +40,9 @@
 #if !defined(AFX_IMAGE_H__F545D0D5_5F10_4EFA_BE3B_3F3D34D4DBF3__INCLUDED_)
 	#include "System/Image.h"
 #endif
+#if !defined(AFX_TEXTUREQUAD_H__1712AF34_6723_4E39_BC72_05ED6FA28418__INCLUDED_)
+	#include "GLHierarchy/TextureQuad.h"
+#endif
 
 
 RAPTOR_NAMESPACE_BEGIN
@@ -201,6 +204,14 @@ public:
 	bool arrays_initialized;
 	//!	Texture Quad global shader.
 	CShader	*m_pQuadShader;
+	//!	The texture quad redering resource binder
+	CResourceAllocator::CResourceBinder *m_pQuadBinder;
+	//!	Texture Quad rendering attributes
+	CTextureQuad::Attributes*	m_pQuadAttributes;
+	//!	The number of allocated texture quads
+	uint32_t max_quad_index = 0;
+	//!	The number of texture quads
+	uint32_t nb_quads = 0;
 	//! 2D Texture Font global shaders
 	CShader	*m_pFontShader;
 	//! Vector Font global shaders

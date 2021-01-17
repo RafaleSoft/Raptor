@@ -50,6 +50,10 @@ public:
 	//!	Destructor.
 	virtual ~CShaderBloc();
 
+	//!	Return the external state of this bloc.
+	//! @return the external state, true if external.
+	bool isExternal(void) const { return m_bExternal; };
+
 	//!	Update bloc name: can be different from the shader source uniform name.
 	//! @param name: the new bloc name.
 	void setName(const std::string& name) { m_name = name; };
@@ -60,6 +64,9 @@ public:
 
 	//!	Update bloc data in uniform buffer, only if not externally managed.
 	void glvkUpdateBloc(uint8_t *src);
+
+	//!	Update bloc uniform buffer to make it externally managed.
+	void glvkSetUniformBuffer(uint8_t *uniform, uint64_t size, uint64_t offset);
 
 	//!	Update bloc name: can be different from the shader source uniform name.
 	//! @param name: the new bloc name.
