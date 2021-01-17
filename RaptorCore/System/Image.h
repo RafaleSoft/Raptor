@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
-/*  Copyright 1998-2019 by                                                 */
+/*  Copyright 1998-2021 by                                                 */
 /*  Fabrice FERRAND.                                                       */
 /*                                                                         */
 /*  This file is part of the Raptor project, and may only be used,         */
@@ -83,7 +83,7 @@ public:
     //! This class defines an Image Operation service. The user can extend Raptor texture loading capabilities
     //! by implementing and registering a custom Operator class into the TextureFactoryConfig. 
     //! Such an operator will be used during texture loading or/and generation phases.
-    class IImageOP
+    class RAPTOR_API IImageOP
     {
     public:
         //! This enum defines the standard operations available

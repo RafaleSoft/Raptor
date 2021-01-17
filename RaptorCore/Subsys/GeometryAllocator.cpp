@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
-/*  Copyright 1998-2019 by                                                 */
+/*  Copyright 1998-2021 by                                                 */
 /*  Fabrice FERRAND.                                                       */
 /*                                                                         */
 /*  This file is part of the Raptor project, and may only be used,         */
@@ -457,7 +457,7 @@ unsigned short	* const	CGeometryAllocator::allocateIndexes(uint64_t size)
 		if (!freeIndexBlocs.empty())
 		{
 			bool reuse = false;
-			unsigned int blocPos = 0;
+			size_t blocPos = 0;
 			for (size_t i=0;i<freeIndexBlocs.size();i++)
 			{
 				data_bloc2 &db = freeIndexBlocs[i];
@@ -549,7 +549,7 @@ float * const CGeometryAllocator::allocateVertices(uint64_t size)
 		if (!freeVertexBlocs.empty())
 		{
 			bool reuse = false;
-			unsigned int blocPos = 0;
+			size_t blocPos = 0;
 			for (size_t i=0;i<freeVertexBlocs.size();i++)
 			{
 				data_bloc2 &db = freeVertexBlocs[i];

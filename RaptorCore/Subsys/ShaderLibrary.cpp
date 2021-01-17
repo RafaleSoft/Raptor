@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
-/*  Copyright 1998-2019 by                                                 */
+/*  Copyright 1998-2021 by                                                 */
 /*  Fabrice FERRAND.                                                       */
 /*                                                                         */
 /*  This file is part of the Raptor project, and may only be used,         */
@@ -60,7 +60,7 @@
 
 RAPTOR_NAMESPACE_BEGIN
 
-static const size_t NB_FACTORY_SHADERS = 41;
+static const size_t NB_FACTORY_SHADERS = 42;
 static CShaderLibrary::factory_shader fsh[NB_FACTORY_SHADERS] = 
 	{ { "BUMP_TEX_SHADER", "bump.fp", "FragmentProgram" },
 	  { "EMBM_TEX_SHADER", "embm.fp", "FragmentProgram" },
@@ -70,6 +70,7 @@ static CShaderLibrary::factory_shader fsh[NB_FACTORY_SHADERS] =
 	  { "SHADOWMAP_TEX_SHADER", "shadowmap.fp", "FragmentProgram" },
 	  { "SHADOWMAP_TEX_SHADER_PCF", "shadowmap_pcf.fp", "FragmentProgram" },
 	  { "SHADOWMAP_TEX_SHADER_PCF_4X", "shadowmap_pcf_4x.fp", "FragmentProgram" },
+	  { "SHADOWMAP_TEX_SHADER_PCF_16X", "shadowmap_pcf_16x.fp", "FragmentProgram" },
 	  { "PPIXEL_BLINN_VTX_PROGRAM", "blinn.vs", "VertexShader" },
 	  { "PPIXEL_BLINN_TEX_PROGRAM", "blinn.ps", "FragmentShader" },
 	  { "PPIXEL_PHONG_VTX_PROGRAM", "phong.vs", "VertexShader" },

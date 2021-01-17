@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
-/*  Copyright 1998-2019 by                                                 */
+/*  Copyright 1998-2021 by                                                 */
 /*  Fabrice FERRAND.                                                       */
 /*                                                                         */
 /*  This file is part of the Raptor project, and may only be used,         */
@@ -44,7 +44,7 @@ static const char *HEADER =
 /*   This file defines how Raptor code is optimized according to the       */\n\
 /*	 extensions selected in Raptor Builder.                                */\n\
 /*                                                                         */\n\
-/*  Copyright 1998-2019 by                                                 */\n\
+/*  Copyright 1998-2021 by                                                 */\n\
 /*  Fabrice FERRAND.                                                       */\n\
 /*                                                                         */\n\
 /*  This file is part of the Raptor project, and may only be used,         */\n\

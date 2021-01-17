@@ -1,8 +1,5 @@
 - Ajouter un dialog pour Vulkan Status comme OpenGL.
 
-- ShaderLibrary:
-	- Charger Shadow Map PCF 16x
-
 - Test2:
 	- mettre au point et utiliser le switch d'instances.
 

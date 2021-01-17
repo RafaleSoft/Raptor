@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
-/*  Copyright 1998-2019 by                                                 */
+/*  Copyright 1998-2021 by                                                 */
 /*  Fabrice FERRAND.                                                       */
 /*                                                                         */
 /*  This file is part of the Raptor project, and may only be used,         */
@@ -293,7 +293,6 @@ void COpenGLShaderStage::glRender(void)
 
 		if (m_bUpdateLocations || m_bReLinked)
 		{
-			glGetBufferMemoryRequirements();
 			glQueryUniformLocations();
 			glQueryAttributeLocations();
 			m_bUpdateLocations = false;

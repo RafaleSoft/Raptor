@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
-/*  Copyright 1998-2019 by                                                 */
+/*  Copyright 1998-2021 by                                                 */
 /*  Fabrice FERRAND.                                                       */
 /*                                                                         */
 /*  This file is part of the Raptor project, and may only be used,         */
@@ -176,47 +176,47 @@ bool CResourceAllocator::CResourceBinder::setArray(CProgramParameters::GL_VERTEX
 	{
 		case CProgramParameters::POSITION:
 			array = &bindings.attributes.vertexArray;
-			array->arraySize = size;
+			array->arraySize = (int)size;
 			array->arrayName = GL_VERTEX_ARRAY;
 			break;
 		case CProgramParameters::PRIMARY_COLOR:
 			array = &bindings.attributes.colorArray;
-			array->arraySize = size;
+			array->arraySize = (int)size;
 			array->arrayName = GL_COLOR_ARRAY;
 			break;
 		case CProgramParameters::SECONDARY_COLOR:
 			array = &bindings.attributes.sColorArray;
-			array->arraySize = size;
+			array->arraySize = (int)size;
 			array->arrayName = GL_SECONDARY_COLOR_ARRAY;
 			break;
 		case CProgramParameters::NORMAL:
 			array = &bindings.attributes.normalArray;
-			array->arraySize = size;
+			array->arraySize = (int)size;
 			array->arrayName = GL_NORMAL_ARRAY;
 			break;
 		case CProgramParameters::TEXCOORD0:
 			array = &bindings.attributes.texture0Array;
-			array->arraySize = size;
+			array->arraySize = (int)size;
 			array->arrayName = GL_TEXTURE_COORD_ARRAY;
 			break;
 		case CProgramParameters::TEXCOORD1:
 			array = &bindings.attributes.texture1Array;
-			array->arraySize = size;
+			array->arraySize = (int)size;
 			array->arrayName = 0;
 			break;
 		case CProgramParameters::ADDITIONAL_PARAM1:
 			array = &bindings.attributes.additionalArray;
-			array->arraySize = size;
+			array->arraySize = (int)size;
 			array->arrayName = 0;
 			break;
 		case CProgramParameters::ADDITIONAL_PARAM2:
 			array = &bindings.attributes.additionalArray2;
-			array->arraySize = size;
+			array->arraySize = (int)size;
 			array->arrayName = 0;
 			break;
 		case CProgramParameters::FOG_COORDINATE:
 			array = &bindings.attributes.fogCoordArray;
-			array->arraySize = size;
+			array->arraySize = (int)size;
 			array->arrayName = 0;
 #ifdef GL_EXT_fog_coord
 			array->arrayName = GL_FOG_COORDINATE_ARRAY_EXT;
@@ -226,7 +226,7 @@ bool CResourceAllocator::CResourceBinder::setArray(CProgramParameters::GL_VERTEX
 			break;
 		case CProgramParameters::WEIGHTS:
 			array = &bindings.attributes.weightArray;
-			array->arraySize = size;
+			array->arraySize = (int)size;
 #ifdef GL_EXT_vertex_weighting
 			array->arrayName = GL_VERTEX_WEIGHT_ARRAY_EXT;
 #else
