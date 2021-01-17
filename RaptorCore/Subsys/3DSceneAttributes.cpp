@@ -186,6 +186,14 @@ void C3DSceneAttributes::prepareData(void)
 		m_pSceneTree = pTree;
 	}
 
+	//! Allocate light products buffer for uniform loading:
+	//!	- enough storage to handle full object list rendering
+	//!	- TODO: this allocation is not dynamic
+	if (NULL == lightProducts)
+	{
+		lightProducts = new CLight::R_LightProducts[m_pObjects.size()];
+	}
+
 	//!	Determine the number of shaders for curent rendering
 	size_t nb_shaders = 0;
 	if ((NULL == m_lightProductsShaderBuffer.address) || (NULL == m_transformsShaderBuffer.address))
@@ -205,6 +213,7 @@ void C3DSceneAttributes::prepareData(void)
 		nb_shaders = pShaders.size();
 	}
 
+	//!	Allocate Uniform bloc for Shader Uniform blocs used for lighting
 	if (NULL == m_lightProductsShaderBuffer.address)
 	{
 		uint64_t sz = nb_shaders * sizeof(CLight::R_LightProducts);
@@ -220,6 +229,7 @@ void C3DSceneAttributes::prepareData(void)
 			pUAllocator->glvkLockMemory(true);
 	}
 
+	//!	Allocate Uniform bloc for Shader Uniform blocs used for transformation
 	if (NULL == m_transformsShaderBuffer.address)
 	{
 		uint64_t sz = nb_shaders * 4 * sizeof(GL_MATRIX);
@@ -242,7 +252,7 @@ void C3DSceneAttributes::prepareData(void)
 	mirrors.clear();
 	unsortedObjects.clear();
 
-    //  Apply ambient lighting
+    //!  Apply ambient lighting
     if (m_bUseGlobalAmbient)
     {
         glLightModelfv(GL_LIGHT_MODEL_AMBIENT, m_ambient);
@@ -375,7 +385,7 @@ vector<CLight*>	C3DSceneAttributes::glGetLights(const vector<C3DSceneObject*>& o
     return result;
 }
 
-void C3DSceneAttributes::glRenderLights(const std::vector<C3DSceneObject*>& objects)
+void C3DSceneAttributes::glRenderLights(const std::vector<C3DSceneObject*>& objects, bool proceedLights)
 {
 	uint64_t offset = 0;
 
@@ -385,7 +395,7 @@ void C3DSceneAttributes::glRenderLights(const std::vector<C3DSceneObject*>& obje
 	while (it != objects.end())
 	{
 		C3DSceneObject* const h = (*it++);
-		size_t nb_shaders = h->glRenderLights(lightProducts, offset);
+		size_t nb_shaders = h->glRenderLights(lightProducts, offset, m_lightProductsShaderBuffer.address, proceedLights);
 		if (nb_shaders > 0)
 			offset += nb_shaders;
 	}

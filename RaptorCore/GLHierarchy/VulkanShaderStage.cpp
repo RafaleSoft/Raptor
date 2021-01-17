@@ -69,6 +69,15 @@ CVulkanShaderStage::CVulkanShaderStage(const std::string& name)
 
 CVulkanShaderStage::~CVulkanShaderStage(void)
 {
+#if defined(GL_ARB_uniform_buffer_object)
+	if (!m_uniforms.empty())
+	{
+		CUniformAllocator*	pUAllocator = CUniformAllocator::GetInstance();
+		for (size_t i = 0; i < m_uniforms.size(); i++)
+			pUAllocator->releaseUniforms(m_uniforms[i].buffer);
+	}
+#endif
+
 	if (NULL != m_param)
 		delete m_param;
 	if (NULL != m_pShaderStages)
@@ -144,6 +153,7 @@ void CVulkanShaderStage::setProgramParameters(const CProgramParameters &v)
 					uniform_bloc bloc;
 					bloc.size = param_value.size();
 					bloc.buffer = pUAllocator->allocateUniforms(bloc.size);
+					bloc.external = false;
 					m_uniforms.push_back(bloc);
 
 					pUAllocator->glvkSetPointerData(bloc.buffer, (uint8_t*)param_value.addr(), bloc.size);

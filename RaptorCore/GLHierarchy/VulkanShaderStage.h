@@ -102,6 +102,16 @@ private:
 	//!	Identify predefined OpenGL shader names variables
 	bool IsPredefinedGLVariable(const std::string& name);
 
+	//!	Shader uniform blocks.
+	typedef struct uniform_bloc_t
+	{
+		uint8_t * buffer;
+		uint64_t	size;
+		uint64_t	offset;
+		size_t		parameter;
+		bool		external;
+	} uniform_bloc;
+	std::vector<uniform_bloc> m_uniforms;
 
 	//!	Vulkan shader modules
 	CVulkanShader*	m_pShaderStages;

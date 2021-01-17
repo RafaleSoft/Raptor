@@ -10,10 +10,15 @@
 #include "GLHierarchy/IRenderingProperties.h"
 #include "GLHierarchy/Object3DInstance.h"
 #include "GLHierarchy/Light.h"
+#include "GLHierarchy/3DSet.h"
+#include "GLHierarchy/ShadedGeometry.h"
 #include "GLHierarchy/Shader.h"
 #include "System/RaptorConsole.h"
 
 #include "ToolBox/BasicObjects.h"
+#include "ToolBox/RaptorToolBox.h"
+#include "ToolBox/Imaging.h"
+#include "DataManager/RaptorDataManager.h"
 
 
 RAPTOR_NAMESPACE
@@ -34,7 +39,10 @@ bool RAPTOR_WRAPPER_API glInitRaptor(CRaptorConfig_t &config)
 	cfg.m_uiVertices = config.m_uiVertices;
 	cfg.setFilterSizeFactor(config.m_fSizeFactor);
 
-	return Raptor::glInitRaptor(cfg);
+	bool res = Raptor::glInitRaptor(cfg);
+	res = res && CImaging::installImagers();
+
+	return res;
 }
 
 bool RAPTOR_WRAPPER_API glQuitRaptor(void)
@@ -50,7 +58,7 @@ bool RAPTOR_WRAPPER_API glCreateDisplay(CRaptorDisplayConfig_t &config, CRaptorD
 	glcs.y = config.y;
 	glcs.width = config.width;
 	glcs.height = config.height;
-	glcs.draw_logo = config.draw_logo;
+	glcs.draw_logo = true; // config.draw_logo;
 	glcs.status_bar = false;	// No status bar when embedded in external API.
 	glcs.display_mode = config.display_mode;
 
@@ -139,22 +147,50 @@ private:
 
 void CRenderer::glInitRenderer()
 {
+	CShadedGeometry *object = NULL;
+
+	CRaptorDataManager  *dataManager = CRaptorDataManager::GetInstance();
+	if (dataManager != NULL)
+	{
+		//	Change package and erase previous files in case of updates
+		dataManager->managePackage("ShaderCompiler.pck");
+		std::string teapot = dataManager->exportFile("TEAPOT.3DS");
+
+		C3DSet *set = NULL;
+		CRaptorToolBox::load3DStudioScene(teapot, set);
+		set->scale(0.06f, 0.06f, 0.06f);
+		C3DSet::C3DSetIterator it = set->getIterator();
+		object = (CShadedGeometry*)(set->getChild(it++));
+		GL_COORD_VERTEX c;
+		object->getCenter(c);
+		object->translate(-c.x, -c.y, -c.z);
+		object->rotationX(-90.0f);
+		object->addModel(CGeometry::RENDERING_MODEL::CGL_NORMALS);
+	}
+	else
+	{
+		CBasicObjects::CCube *obj = new CBasicObjects::CCube();
+		CShader* s = obj->getShader();
+		CMaterial *pMat = s->getMaterial();
+		pMat->setAmbient(0.1f, 0.1f, 0.1f, 1.0f);
+		pMat->setDiffuse(0.3f, 0.4f, 0.8f, 1.0f);
+		pMat->setSpecular(0.7f, 0.7f, 0.7f, 1.0f);
+		pMat->setEmission(0.0f, 0.0f, 0.0f, 1.0f);
+		pMat->setShininess(128.0f);
+		object = obj;
+	}
+
 	IRenderingProperties &props = m_pDisplay->getRenderingProperties();
-	props.enableLighting.enableTexturing;
+	props.enableLighting.disableTexturing;
 
 	CRaptorConsole *pConsole = Raptor::GetConsole();
 	pConsole->glInit("", true);
 	pConsole->showStatus(true);
+	pConsole->showFPS(true);
+	pConsole->showFrameTime(true);
+	pConsole->showObjectCount(true);
+	pConsole->showTriangleCount(true);
 	pConsole->activateConsole(true);
-
-	CBasicObjects::CCube *obj = new CBasicObjects::CCube();
-	CShader* s = obj->getShader();
-	CMaterial *pMat = s->getMaterial();
-	pMat->setAmbient(0.1f, 0.1f, 0.1f, 1.0f);
-	pMat->setDiffuse(0.3f, 0.4f, 0.8f, 1.0f);
-	pMat->setSpecular(0.7f, 0.7f, 0.7f, 1.0f);
-	pMat->setEmission(0.0f, 0.0f, 0.0f, 1.0f);
-	pMat->setShininess(128.0f);
 
 	CLight *pLight = new CLight("MAIN_LIGHT");
 	pLight->setAmbient(1.0f, 1.0f, 1.0f, 1.0f);
@@ -176,7 +212,7 @@ void CRenderer::glInitRenderer()
 	ty.a1 = 0.2f;
 	ty.a0 = 0.005f; //0;
 	vm->addAction(CViewModifier::ROTATE_VIEW, tx, ty, tz);
-	vm->setObject(obj);
+	vm->setObject(object);
 
 	C3DScene *pScene = m_pDisplay->getRootScene();
 	pScene->addObject(vm->getObject());

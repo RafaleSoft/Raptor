@@ -54,6 +54,10 @@
 #if !defined(AFX_LIGHT_H__AA8BABD6_059A_4939_A4B6_A0A036E12E1E__INCLUDED_)
 	#include "GLHierarchy/Light.h"
 #endif
+#if !defined(AFX_SHADERBLOC_H__56C73DCA_292E_4722_8881_82DC1BF53EA5__INCLUDED_)
+	#include "GLHierarchy/ShaderBloc.h"
+#endif
+
 
 
 RAPTOR_NAMESPACE
@@ -99,7 +103,7 @@ CEMBMShader::~CEMBMShader(void)
 
 
 static CLight::R_LightProducts products;
-
+static CShaderBloc *bloc = NULL;
 
 void CEMBMShader::glInit()
 {
@@ -149,15 +153,17 @@ void CEMBMShader::glInit()
 	GL_COORD_VERTEX V;
 	params.addParameter("eyePos", V);
 
-#if defined(GL_ARB_uniform_buffer_object)
-	CProgramParameters::CParameter<CLight::R_LightProducts> material("LightProducts", products);
-	material.locationType = GL_UNIFORM_BLOCK_BINDING_ARB;
-	params.addParameter(material);
-#endif
 
 	stage->setProgramParameters(params);
 
 	stage->glCompileShader();
+
+	CShaderBloc *bloc = glGetShaderBloc("LightProducts");
+	if (NULL == bloc)
+	{
+		RAPTOR_ERROR(CShader::CShaderClassID::GetClassId(),
+					"EMBM Shader Object cannot find uniform bloc \"LightProducts\", compiled shader source is incorrect.");
+	}
 
 #ifdef PROCEDURAL_PERLIN
 	CTextureFactory &filterFactory = CTextureFactory::getDefaultFactory();
@@ -227,12 +233,6 @@ void CEMBMShader::enableEmbm(bool enable)
 		params.addParameter("environmentMap", CTextureUnitSetup::IMAGE_UNIT_3);
 		GL_COORD_VERTEX V;
 		params.addParameter("eyePos", V);
-
-#if defined(GL_ARB_uniform_buffer_object)
-		CProgramParameters::CParameter<CLight::R_LightProducts> material("LightProducts", products);
-		material.locationType = GL_UNIFORM_BLOCK_BINDING_ARB;
-		params.addParameter(material);
-#endif
 
 		stage->setProgramParameters(params);
 

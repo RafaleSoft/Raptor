@@ -224,7 +224,7 @@ bool CObjectStore::IsAColumn(CGeometry *&g)
 	{
 		//CShader *pShader = CShader::getShader("PHONG_SHADER").glClone("PHONG");
 		//geo->setShader(pShader);
-		CShader *pShader = geo->getShaders()[0];
+		CShader *pShader = geo->getShader();
 		*pShader->getMaterial() = *m_material;
 		CTextureUnitSetup *tmuSetup = pShader->glGetTextureUnitsSetup();
 		tmuSetup->setDiffuseMap(m_textures->getTexture(MARBLE5), CTextureUnitSetup::CGL_MULTIPLY);
@@ -235,7 +235,7 @@ bool CObjectStore::IsAColumn(CGeometry *&g)
 	{
 		//CShader *pShader = CShader::getShader("PHONG_SHADER").glClone("PHONG");
 		//geo->setShader(pShader);
-		CShader *pShader = geo->getShaders()[0];
+		CShader *pShader = geo->getShader();
 		*pShader->getMaterial() = *m_material;
 		CTextureUnitSetup *tmuSetup = pShader->glGetTextureUnitsSetup();
 		tmuSetup->setDiffuseMap(m_textures->getTexture(MARBLE5), CTextureUnitSetup::CGL_MULTIPLY);

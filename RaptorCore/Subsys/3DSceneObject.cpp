@@ -120,7 +120,7 @@ CObject3D* C3DSceneObject::getObject(void) const
 	return obj;
 }
 
-size_t C3DSceneObject::glRenderLights(CLight::R_LightProducts *buffer, uint64_t bufferOffset)
+size_t C3DSceneObject::glRenderLights(CLight::R_LightProducts *buffer, uint64_t bufferOffset, uint8_t* uniform, bool proceedLights)
 {
 	size_t nb_shaders = 0;
 
@@ -144,7 +144,9 @@ size_t C3DSceneObject::glRenderLights(CLight::R_LightProducts *buffer, uint64_t 
 			
 			int numl = 0;
 
-			for (int i = 0; (i < CLightAttributes::MAX_LIGHTS) && (numl < 5); i++)
+			if (!proceedLights)
+				memset(&products, 0, sizeof(CLight::R_LightProducts));
+			else for (int i = 0; (i < CLightAttributes::MAX_LIGHTS) && (numl < 5); i++)
 			{
 				CLight *pLight = effectiveLights[i];
 				products.lights[min(i, 4)].enable = false;
@@ -163,6 +165,9 @@ size_t C3DSceneObject::glRenderLights(CLight::R_LightProducts *buffer, uint64_t 
 				}
 			}
 			products.scene_ambient = shader->getAmbient();
+
+			size_t size = sizeof(CLight::R_LightProducts);
+			//stage->setBufferBloc(uniform, size, bufferOffset * size);
 
 			nb_shaders++;
 		}

@@ -276,23 +276,6 @@ void COpenGLShaderStage::setProgramParameters(const CProgramParameters &v)
 		CProgramParameters::CParameterBase& value = m_parameters[i];
 		if (value.locationIndex < 0)
 			m_bUpdateLocations = true;
-
-#if defined(GL_ARB_uniform_buffer_object)
-		if ((value.locationType == GL_UNIFORM_BLOCK_BINDING_ARB) || (value.locationType == GL_UNIFORM_BLOCK_BINDING))
-		{
-			uint64_t sz = value.size();
-			CUniformAllocator*	pUAllocator = CUniformAllocator::GetInstance();
-			
-			// TODO: check previous allocation
-			//if ((sz != m_uniforms_size) && (NULL != m_uniforms))
-			//	pUAllocator->releaseUniforms(m_uniforms);
-			
-			uniform_bloc bloc;
-			bloc.buffer = pUAllocator->allocateUniforms(sz);
-			bloc.size = value.size();
-			m_uniforms.push_back(bloc);
-		}
-#endif
 	}
 }
 
@@ -322,14 +305,7 @@ void COpenGLShaderStage::glRender(void)
 			glSetProgramParameters();
 			m_bApplyParameters = false;
 		}
-
-		if (!m_uniforms.empty())
-		{
-			// TODO : provide uniform index binding point
-			CUniformAllocator*	pUAllocator = CUniformAllocator::GetInstance();
-			pUAllocator->glvkBindUniform(m_uniforms[0].buffer, 0);
-		}
-
+	
 		if (m_pVShader != NULL)
 			m_pVShader->glRender();
 
@@ -968,13 +944,6 @@ void COpenGLShaderStage::glSetProgramParameters()
 				color = ((const CProgramParameters::CParameter<CColor::RGBA>&)param_value).p;
 				pExtensions->glUniform4fv(param_value.locationIndex, 1, color);
 			}
-#if defined(GL_ARB_uniform_buffer_object)
-			else if (param_value.locationType == GL_UNIFORM_BLOCK_BINDING_ARB)
-			{
-				CUniformAllocator*	pUAllocator = CUniformAllocator::GetInstance();
-				pUAllocator->glvkSetPointerData(m_uniforms[0].buffer, (unsigned char*)param_value.addr(), param_value.size());
-			}
-#endif
 			else if (param_value.isA(float_vector) && (param_value.locationType == GL_FLOAT))
 			{
 				const std::vector<float> &fvector = ((const CProgramParameters::CParameter<std::vector<float>>&)param_value).p;
@@ -1090,13 +1059,6 @@ void COpenGLShaderStage::glSetProgramParameters()
 				color = ((const CProgramParameters::CParameter<CColor::RGBA>&)param_value).p;
 				pExtensions->glUniform4fvARB(param_value.locationIndex, 1, color);
 			}
-#if defined(GL_ARB_uniform_buffer_object)
-			else if (param_value.locationType == GL_UNIFORM_BLOCK_BINDING_ARB)
-			{
-				CUniformAllocator*	pUAllocator = CUniformAllocator::GetInstance();
-				pUAllocator->glvkSetPointerData(m_uniforms[0].buffer, (unsigned char*)param_value.addr(), param_value.size());
-			}
-#endif
 			else if (param_value.isA(float_vector) && (param_value.locationType == GL_FLOAT))
 			{
 				const std::vector<float> &fvector = ((const CProgramParameters::CParameter<std::vector<float>>&)param_value).p;

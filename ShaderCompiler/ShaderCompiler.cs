@@ -139,7 +139,9 @@ namespace ShaderCompiler
         {
             RAPTOR_CONFIG cfg = new RAPTOR_CONFIG("ShaderCompiler.log")
             {
-                Relocation = 1
+                Relocation = 1,
+                Vertices = 128 * 1024,
+                Polygons = 8 * 1024
             };
 
             bool res = glInitRaptor(ref cfg);
@@ -220,6 +222,8 @@ namespace ShaderCompiler
         private String geometry_shader_file = "";
         private String tesselate_shader_file = "";
         private String fragment_shader_file = "";
+        private String diffuse_map_file = "";
+        private String normal_map_file = "";
 
 
         private void onPaint(object sender, PaintEventArgs e)
@@ -248,6 +252,70 @@ namespace ShaderCompiler
                 glRender();
                 glUnBindDisplay(display);
             }
+        }
+
+        private void onGLDiag(object sender, EventArgs e)
+        {
+
+        }
+
+        private void onVulkanDiag(object sender, EventArgs e)
+        {
+
+        }
+
+        private void onDiffuse(object sender, EventArgs e)
+        {
+            this.Opacity = 0.5;
+
+            FileDialog open = new OpenFileDialog();
+            open.Filter = "Image File|*.jpg;*.jpeg;*.tga;*.png;*.exr;*.tiff;*.tif";
+            DialogResult res = open.ShowDialog();
+
+            if (DialogResult.OK == res)
+            {
+                string ext = Path.GetExtension(open.FileName);
+                if ((ext == ".jpg") || (ext == ".jpeg") || (ext == ".tga") || (ext == ".png") || (ext == ".exr") || (ext == ".tiff") || (ext == ".tif"))
+                {
+                    diffuse_map_file = open.FileName;
+                    DMapName.Text = Path.GetFileName(open.FileName);
+                }
+                else
+                {
+                    MessageBox.Show("Invalid Image file format for diffuse texture map: " + ext + " is not supported.", "Erreur", MessageBoxButtons.OK);
+                }
+            }
+
+            open.Dispose();
+
+            this.Opacity = 1.0;
+        }
+
+        private void onNormal(object sender, EventArgs e)
+        {
+            this.Opacity = 0.5;
+
+            FileDialog open = new OpenFileDialog();
+            open.Filter = "Image File|*.jpg;*.jpeg;*.tga;*.png;*.exr;*.tiff;*.tif";
+            DialogResult res = open.ShowDialog();
+
+            if (DialogResult.OK == res)
+            {
+                string ext = Path.GetExtension(open.FileName);
+                if ((ext == ".jpg") || (ext == ".jpeg") || (ext == ".tga") || (ext == ".png") || (ext == ".exr") || (ext == ".tiff") || (ext == ".tif"))
+                {
+                    normal_map_file = open.FileName;
+                    NMapName.Text = Path.GetFileName(open.FileName);
+                }
+                else
+                {
+                    MessageBox.Show("Invalid Image file format for nomal texture map: " + ext + " is not supported.", "Erreur", MessageBoxButtons.OK);
+                }
+            }
+
+            open.Dispose();
+
+            this.Opacity = 1.0;
         }
     }
 }

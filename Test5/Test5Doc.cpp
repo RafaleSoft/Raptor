@@ -31,7 +31,7 @@
 
 RAPTOR_NAMESPACE
 
-//#define VULKAN_TEST 1
+#define VULKAN_TEST 1
 
 
 class MySphere : public CBasicObjects::CGeoSphere

@@ -195,6 +195,8 @@ void C3DScene::glRenderObjects(const vector<C3DSceneObject*>& objects, PASS_KIND
     glGetBooleanv(GL_LIGHTING,&proceedLights);
     proceedLights |= ((passKind == LIGHT_PASS) || (passKind == FULL_PASS));
 
+	//m_pAttributes->glRenderLights(m_pAttributes->unsortedObjects, proceedLights);
+
 	vector<C3DSceneObject*> occludedObjects;
 	vector<C3DSceneObject*>::const_iterator itr = m_pAttributes->unsortedObjects.begin();
 	while (itr != m_pAttributes->unsortedObjects.end())
@@ -262,7 +264,6 @@ void C3DScene::glRender(void)
 	//!	Determine required lights per object
     vector<CLight*>	requiredLights = m_pAttributes->glGetLights(viewableObjects);
 	//!	Prepare light & material shading products
-	m_pAttributes->glRenderLights(viewableObjects);
 
 	//!	Render objects.
     if (NULL != m_pEnvironment)

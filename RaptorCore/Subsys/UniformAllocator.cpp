@@ -263,7 +263,7 @@ bool CUniformAllocator::glvkLockMemory(bool lock)
 	return res;
 }
 
-bool CUniformAllocator::glvkBindUniform(uint8_t *uniform, int32_t index)
+bool CUniformAllocator::glvkBindUniform(uint8_t *uniform, int32_t index, uint64_t offset, uint64_t size)
 {
 	//! In locked state, the buffer is bound, we are in rendering.
 	if (!m_bLocked)
@@ -272,17 +272,21 @@ bool CUniformAllocator::glvkBindUniform(uint8_t *uniform, int32_t index)
 	map<uint8_t*, uint64_t>::iterator blocPos = uniformBlocs.find(uniform);
 	if (blocPos != uniformBlocs.end())
 	{
-		uint64_t size = (*blocPos).second;
-		if (0 == size)
+		uint64_t sz = size;
+		if (0 == sz)
+			sz = (*blocPos).second;
+		if (0 == sz)
 			return false;
 
 		uint8_t *base = (*blocPos).first;
+		if (offset + sz < (*blocPos).second)	// do not bind more that existing data.
+			base = base + offset;
 		uint32_t buffer = relocatedUniforms->getBufferId();
 
 		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 		if (pExtensions->glBindBufferRangeARB != NULL)
 		{
-			pExtensions->glBindBufferRangeARB(GL_UNIFORM_BUFFER_ARB, index, buffer, (GLintptrARB)base, size);
+			pExtensions->glBindBufferRangeARB(GL_UNIFORM_BUFFER_ARB, index, buffer, (GLintptrARB)base, sz);
 			CATCH_GL_ERROR
 		}
 

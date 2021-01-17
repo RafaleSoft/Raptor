@@ -3,6 +3,12 @@
 - ShaderLibrary:
 	- Charger Shadow Map PCF 16x
 
+- Test2:
+	- mettre au point et utiliser le switch d'instances.
+
+- CTextureQuad:
+	- déplacer les statiques dans CRaptorInstance.
+
 - Rays2:
 	- DeamonManager : port de connection en dur ==> utiliser un param en LC ou config.
 

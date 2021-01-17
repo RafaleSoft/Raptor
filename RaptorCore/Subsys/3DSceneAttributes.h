@@ -69,7 +69,7 @@ public:
     std::vector<CLight*>	glGetLights(const std::vector<C3DSceneObject*>& objects);
 
 	//! Renders light products with shader materials from the list of objects into shader buffers.
-	void glRenderLights(const std::vector<C3DSceneObject*>& objects);
+	void glRenderLights(const std::vector<C3DSceneObject*>& objects, bool proceedLights);
 
 	//! This method computes initial occlusion using bbox rendering
 	void glComputeBBoxOcclusion(const std::vector<C3DSceneObject*> &occluded);

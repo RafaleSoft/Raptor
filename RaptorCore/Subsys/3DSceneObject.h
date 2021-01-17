@@ -67,7 +67,7 @@ public:
 
 	//! This method renders the selected lights into a shader buffer at provided offset.
 	//!	- selectLights must have been called for current rendering.
-	size_t glRenderLights(CLight::R_LightProducts *buffer, uint64_t bufferOffset);
+	size_t glRenderLights(CLight::R_LightProducts *buffer, uint64_t bufferOffset, uint8_t* uniform, bool proceedLights);
 
 	//! This method renders initial occlusion bbox 
 	void glRenderBBoxOcclusion(unsigned int passNumber);
