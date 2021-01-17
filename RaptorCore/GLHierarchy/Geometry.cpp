@@ -875,8 +875,10 @@ bool CGeometry::getVertexInputState( std::vector<VkVertexInputBindingDescription
 	vertexInput.push_back({ 0, 0, VK_FORMAT_R32G32B32A32_SFLOAT, 0 });
 	nb_bindings++; 	// always extract geometry
 
+	CRaptorInstance& instance = CRaptorInstance::GetInstance();
+	IRenderingProperties *props = instance.getGlobalRenderingProperties();
+
 	//!	TexCoords
-	IRenderingProperties *props = IRenderingProperties::GetCurrentProperties();
 	if ((hasModel(CGeometry::CGL_TEXTURE)))
 //		(props->getCurrentTexturing() == IRenderingProperties::ENABLE))
 	{
@@ -926,7 +928,9 @@ void CGeometry::glRenderGeometry()
 
 
 	//	Store arrays state + texture state
-	IRenderingProperties *props = IRenderingProperties::GetCurrentProperties();
+	CRaptorInstance& instance = CRaptorInstance::GetInstance();
+	IRenderingProperties *props = instance.getGlobalRenderingProperties();
+
 	bool popNormalArray = false;
 	bool popTangentArray = false;
 	bool popBinormalArray = false;
@@ -934,9 +938,8 @@ void CGeometry::glRenderGeometry()
 	bool popTexCoordArray = false;
 	bool popWeightArray = false;
 	bool popFogArray = false;
-	bool proceedLighting = (props->getCurrentLighting() == IRenderingProperties::ENABLE);
-	bool proceedTexturing = (props->getCurrentTexturing() == IRenderingProperties::ENABLE);
-
+	bool proceedLighting = (props->getLighting() == IRenderingProperties::ENABLE);
+	bool proceedTexturing = (props->getTexturing() == IRenderingProperties::ENABLE);
 
 	if (hasModel(CGeometry::CGL_BACK_GEOMETRY))
 		glCullFace(GL_FRONT);

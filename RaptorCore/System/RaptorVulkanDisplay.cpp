@@ -82,22 +82,28 @@ public:
 	VulkanRP() {};
 	virtual void glPushProperties(void)
 	{
-		if ((m_pCurrent != this) && (m_pPrevious == NULL))
+		CRaptorInstance& instance = CRaptorInstance::GetInstance();
+
+		if ((instance.getCurrentRenderingProperties() != this) && (m_pPrevious == NULL))
 		{
-			m_pPrevious = m_pCurrent;
-			m_pCurrent = this;
+			m_pPrevious = instance.getCurrentRenderingProperties();
+			instance.setCurrentRenderingProperties(this);
 		}
 	};
 	virtual void glPopProperties(void)
 	{
-		if (m_pCurrent == this)
+		CRaptorInstance& instance = CRaptorInstance::GetInstance();
+
+		if (instance.getCurrentRenderingProperties() == this)
 		{
-			m_pCurrent = m_pPrevious;
+			instance.setCurrentRenderingProperties(m_pPrevious);
 			m_pPrevious = NULL;
 		}
 	};
-	virtual PROPERTY_SETTING getCurrentTexturing(void) const { return IGNORE_PROPERTY; };
-	virtual PROPERTY_SETTING getCurrentLighting(void) const { return IGNORE_PROPERTY; };
+	virtual void glGrabProperties(void)
+	{
+
+	}
 };
 
 RAPTOR_NAMESPACE_END

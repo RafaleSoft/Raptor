@@ -115,8 +115,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 2, 17, 2, 102
- PRODUCTVERSION 2, 17, 2, 102
+ FILEVERSION 2, 17, 3, 2
+ PRODUCTVERSION 2, 17, 3, 2
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -133,12 +133,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Rafale Soft Inc. ©"
             VALUE "FileDescription", "Raptor OpenGL & Vulkan SDK GLBench"
-            VALUE "FileVersion", "2.17.2.102"
+            VALUE "FileVersion", "2.17.3.2"
             VALUE "InternalName", "GLBench"
             VALUE "LegalCopyright", "Copyright © 1998-2019 Fabrice Ferrand <fabfer@wanadoo.fr>"
             VALUE "OriginalFilename", "GLBench.exe"
             VALUE "ProductName", "GLBench"
-            VALUE "ProductVersion", "2.17.2.102"
+            VALUE "ProductVersion", "2.17.3.2"
         END
     END
     BLOCK "VarFileInfo"

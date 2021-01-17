@@ -400,7 +400,7 @@ void CGLVectorFont::glWrite(const std::vector<CGLFont::FONT_TEXT_ITEM> &lines)
 		pAllocator->glvkSetPointerData((float*)font_linePointer, (float*)&font_line[0], (GLsizei)(LINE_ELT_SIZE / sizeof(float) * count));
 	
 	CUniformAllocator*	pUAllocator = CUniformAllocator::GetInstance();
-	pUAllocator->glvkBindUniform(m_fontUniform, 0);
+	pUAllocator->glvkBindUniform(m_fontUniform, 0, 0, 0);
 
 	CProgramParameters params;
 	GL_COORD_VERTEX vp(viewport[0], viewport[1], 0.5f * viewport[2], 0.5f * viewport[3]);

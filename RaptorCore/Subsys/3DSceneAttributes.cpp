@@ -31,9 +31,6 @@
 #if !defined(AFX_RAPTORGLEXTENSIONS_H__E5B5A1D9_60F8_4E20_B4E1_8E5A9CB7E0EB__INCLUDED_)
 	#include "System/RaptorGLExtensions.h"
 #endif
-#if !defined(AFX_3DSCENEOBJECT_H__96A34268_AD58_4F73_B633_F6C3E92FE0A9__INCLUDED_)
-	#include "Subsys/3DSceneObject.h"
-#endif
 #if !defined(AFX_OCTREE_H__FC2A5101_AB9A_11D1_B467_444553540000__INCLUDED_)
     #include "Subsys/Octree.cxx"
 #endif
@@ -52,7 +49,12 @@
 #if !defined(AFX_RAPTORINSTANCE_H__90219068_202B_46C2_BFF0_73C24D048903__INCLUDED_)
 	#include "Subsys/RaptorInstance.h"
 #endif
-
+#if !defined(AFX_MIRROR_H__BA9C578A_40A8_451B_9EA3_C27CB04288FA__INCLUDED_)
+	#include "Engine/Mirror.h"
+#endif
+#if !defined(AFX_UNIFORMALLOCATOR_H__4DD62C99_E476_4FE5_AEE4_EEC71F7B0F38__INCLUDED_)
+	#include "Subsys/UniformAllocator.h"
+#endif
 
 
 RAPTOR_NAMESPACE
@@ -65,9 +67,13 @@ C3DSceneAttributes::C3DSceneAttributes(C3DScene *owner):
 	m_pOwner(owner),m_pCurrentLight(NULL),
     m_bUseZSort(false),m_iCurrentPass(0),m_bQueriesReady(false),
     m_bUseGlobalAmbient(false),m_bMirrorsRendered(false),
-	m_pSceneTree(NULL)
+	m_pSceneTree(NULL), lightProducts(NULL)
 {
     m_ambient = CColor::RGBA(0.2f,0.2f,0.2f,1.0f);
+	m_lightProductsShaderBuffer.address = NULL;
+	m_lightProductsShaderBuffer.size = 0;
+	m_transformsShaderBuffer.address = NULL;
+	m_transformsShaderBuffer.size = 0;
 }
 
 C3DSceneAttributes::~C3DSceneAttributes()
@@ -78,6 +84,25 @@ C3DSceneAttributes::~C3DSceneAttributes()
 
     if (m_pSceneTree != NULL)
         delete m_pSceneTree;
+
+	if (NULL != lightProducts)
+		delete[] lightProducts;
+
+	if (m_lightProductsShaderBuffer.address != NULL)
+	{
+		CUniformAllocator*	pUAllocator = CUniformAllocator::GetInstance();
+		pUAllocator->releaseUniforms(m_lightProductsShaderBuffer.address);
+		m_lightProductsShaderBuffer.address = NULL;
+		m_lightProductsShaderBuffer.size = 0;
+	}
+	if (m_transformsShaderBuffer.address != NULL)
+	{
+		CUniformAllocator*	pUAllocator = CUniformAllocator::GetInstance();
+		pUAllocator->releaseUniforms(m_transformsShaderBuffer.address);
+		m_transformsShaderBuffer.address = NULL;
+		m_transformsShaderBuffer.size = 0;
+	}
+	
 }
 
 void C3DSceneAttributes::addObjet(C3DSceneObject *sceneObject)
@@ -149,7 +174,7 @@ void C3DSceneAttributes::prepareData(void)
 #else
 		COctree<C3DSceneObject*> *pTree = new COctree<C3DSceneObject*>;
 #endif
-		vector<C3DSceneObject*>::const_iterator it = m_pObjects.begin();
+		std::vector<C3DSceneObject*>::const_iterator it = m_pObjects.begin();
 		while (it != m_pObjects.end())
 		{
 			C3DSceneObject *sc = (*it++);
@@ -161,10 +186,73 @@ void C3DSceneAttributes::prepareData(void)
 		m_pSceneTree = pTree;
 	}
 
+	//! Allocate light products buffer for uniform loading:
+	//!	- enough storage to handle full object list rendering
+	//!	- TODO: this allocation is not dynamic
+	if (NULL == lightProducts)
+	{
+		lightProducts = new CLight::R_LightProducts[m_pObjects.size()];
+	}
+
+	//!	Determine the number of shaders for curent rendering
+	size_t nb_shaders = 0;
+	if ((NULL == m_lightProductsShaderBuffer.address) || (NULL == m_transformsShaderBuffer.address))
+	{
+		std::vector<CShader*>	pShaders;
+
+		std::vector<C3DSceneObject*>::const_iterator it = m_pObjects.begin();
+		while (it != m_pObjects.end())
+		{
+			C3DSceneObject *sc = (*it++);
+			CObject3D* obj = sc->getObject();
+
+			std::vector<CShader*> list = obj->getShaders();
+			for (size_t i = 0; i < list.size(); i++)
+				pShaders.push_back(list[i]);
+		}
+		nb_shaders = pShaders.size();
+	}
+
+	//!	Allocate Uniform bloc for Shader Uniform blocs used for lighting
+	if (NULL == m_lightProductsShaderBuffer.address)
+	{
+		uint64_t sz = nb_shaders * sizeof(CLight::R_LightProducts);
+		CUniformAllocator*	pUAllocator = CUniformAllocator::GetInstance();
+		bool relocated = pUAllocator->isMemoryLocked();
+		if (relocated)
+			pUAllocator->glvkLockMemory(false);
+
+		m_lightProductsShaderBuffer.address = pUAllocator->allocateUniforms(sz);
+		m_lightProductsShaderBuffer.size = sz;
+		
+		if (relocated)
+			pUAllocator->glvkLockMemory(true);
+	}
+
+	//!	Allocate Uniform bloc for Shader Uniform blocs used for transformation
+	if (NULL == m_transformsShaderBuffer.address)
+	{
+		uint64_t sz = nb_shaders * 4 * sizeof(GL_MATRIX);
+		CUniformAllocator*	pUAllocator = CUniformAllocator::GetInstance();
+		bool relocated = pUAllocator->isMemoryLocked();
+		if (relocated)
+			pUAllocator->glvkLockMemory(false);
+
+		m_transformsShaderBuffer.address = pUAllocator->allocateUniforms(sz);
+		m_transformsShaderBuffer.size = sz;
+
+		if (relocated)
+			pUAllocator->glvkLockMemory(true);
+	}
+
     m_iCurrentPass = 0;
     m_bMirrorsRendered = false;
 
-    //  Apply ambient lighting
+	transparents.clear();
+	mirrors.clear();
+	unsortedObjects.clear();
+
+    //!  Apply ambient lighting
     if (m_bUseGlobalAmbient)
     {
         glLightModelfv(GL_LIGHT_MODEL_AMBIENT, m_ambient);
@@ -179,7 +267,63 @@ void C3DSceneAttributes::prepareData(void)
     }
 	else
 		m_pCurrentLight = NULL;
+}
 
+void C3DSceneAttributes::sortObjects(const std::vector<C3DSceneObject*>& objects)
+{
+	transparents.clear();
+	mirrors.clear();
+	unsortedObjects.clear();
+	
+	//! View point must be recomputed because engine modelview will be
+	//! recomputed only on next viewpoint rendering.
+	GL_MATRIX m;
+	glGetFloatv(GL_MODELVIEW_MATRIX, m);
+
+	set<C3DSceneObject*, C3DSceneObject::zorder>	sortedObjects;
+
+	//
+	// Sort objects from viewPoint
+	//
+	for (unsigned int i = 0; i < objects.size(); i++)
+	{
+		C3DSceneObject* const h = objects[i];
+		CObject3D* obj = h->getObject();
+
+		if (obj->getProperties().isTransparent())
+			transparents.push_back(obj);
+		//!    store mirrors apart to avoid a double render :
+		//!    mirrors should only be added with a C3DScene::CMirror object.
+		else if (obj->getProperties().isMirror())
+			mirrors.push_back(obj);
+		else
+		{
+			if (m_bUseZSort)
+			{
+				const CBoundingBox * const bbox = obj->boundingBox();
+
+				GL_COORD_VERTEX r_min;
+				GL_COORD_VERTEX r_max;
+				bbox->get(r_min, r_max, m);
+
+				h->z_order = r_max.z;
+				h->z_span = r_min.z;
+				sortedObjects.insert(h);
+			}
+			else
+				unsortedObjects.push_back(h);
+		}
+	}
+
+	if (m_bUseZSort)
+	{
+		set<C3DSceneObject*, C3DSceneObject::zorder>::reverse_iterator ritr = sortedObjects.rbegin();
+		while (ritr != sortedObjects.rend())
+		{
+			C3DSceneObject* sc = *ritr++;
+			unsortedObjects.push_back(sc);
+		}
+	}
 }
 
 vector<C3DSceneObject*>	C3DSceneAttributes::glGetObjects(void)
@@ -239,6 +383,26 @@ vector<CLight*>	C3DSceneAttributes::glGetLights(const vector<C3DSceneObject*>& o
         result.push_back((*itm++).second);
 
     return result;
+}
+
+void C3DSceneAttributes::glRenderLights(const std::vector<C3DSceneObject*>& objects, bool proceedLights)
+{
+	uint64_t offset = 0;
+
+	CUniformAllocator*	pUAllocator = CUniformAllocator::GetInstance();
+
+	vector<C3DSceneObject*>::const_iterator it = objects.begin();
+	while (it != objects.end())
+	{
+		C3DSceneObject* const h = (*it++);
+		size_t nb_shaders = h->glRenderLights(lightProducts, offset, m_lightProductsShaderBuffer.address, proceedLights);
+		if (nb_shaders > 0)
+			offset += nb_shaders;
+	}
+
+	pUAllocator->glvkSetPointerData(m_lightProductsShaderBuffer.address, 
+									(uint8_t*)lightProducts,
+									offset * sizeof(CLight::R_LightProducts));
 }
 
 void C3DSceneAttributes::glComputeBBoxOcclusion(const vector<C3DSceneObject*> &occluded)
@@ -321,4 +485,57 @@ void C3DSceneAttributes::glRenderBBoxes(const vector<C3DSceneObject*> &objects)
 	binder->glvkUnbindArrays();
 
 	CATCH_GL_ERROR
+}
+
+void C3DSceneAttributes::glRenderMirrors(C3DScene::PASS_KIND passKind)
+{
+	bool proceedMirrors = ((passKind == C3DScene::DEPTH_PASS) || (passKind == C3DScene::FULL_PASS)) && !m_bMirrorsRendered;
+	
+	for (unsigned int i = 0; i < m_pMirrors.size(); i++)
+	{
+		CMirror *pMirror = m_pMirrors[i];
+
+		if (proceedMirrors)
+		{
+			m_iCurrentPass++;
+			pMirror->glApplyMirror(true);
+
+			GLboolean cMask[4];
+
+			if (passKind != C3DScene::FULL_PASS)
+			{
+				glGetBooleanv(GL_COLOR_WRITEMASK, cMask);
+				glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+			}
+
+			vector<C3DSceneObject*> occludedObjects;
+			vector<C3DSceneObject*>::const_iterator itr = unsortedObjects.begin();
+			while (itr != unsortedObjects.end())
+			{
+				C3DSceneObject* sc = *itr++;
+
+				if (!sc->glRenderPass(m_iCurrentPass, m_pLights, true))
+					occludedObjects.push_back(sc);
+			}
+			if (!occludedObjects.empty())
+				glComputeBBoxOcclusion(occludedObjects);
+
+			//  Transparent objects must also be rendered here if they are mirrored ?
+			pMirror->glApplyMirror(false);
+
+			if (passKind != C3DScene::FULL_PASS)
+				glColorMask(cMask[0], cMask[1], cMask[2], cMask[3]);
+
+			pMirror->glClipRender();
+			m_bMirrorsRendered = true;
+
+			//	Need to deactivate lights because Objects above activated them
+			for (unsigned int j = 0; j < m_pLights.size(); j++)
+				m_pLights[j]->glDeActivate();
+		}
+		else if (((passKind == C3DScene::AMBIENT_PASS) || (passKind == C3DScene::LIGHT_PASS)) && m_bMirrorsRendered)
+		{
+			pMirror->glClipRender();
+		}
+	}
 }

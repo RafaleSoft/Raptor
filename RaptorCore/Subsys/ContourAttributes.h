@@ -21,8 +21,15 @@ public:
 	CContourAttributes();
 	virtual ~CContourAttributes();
 
+	//!
+	//!	Splits the geometry in two sets: front and back faces from pos point of view.
+	//!
+	void findBackFaces(const GL_COORD_VERTEX &pos, size_t nbFace);
 
-    virtual void extrude(const GL_COORD_VERTEX &pos,float extrusion = 100.0f);
+	//!
+	//!	Compute the extruded geometry
+	//!
+    void extrude(const GL_COORD_VERTEX &pos,float extrusion, GL_COORD_VERTEX &min, GL_COORD_VERTEX &max);
 
 	//
 	//	Attributes specific to backface/edge algorithm

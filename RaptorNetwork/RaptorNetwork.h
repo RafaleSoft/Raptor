@@ -15,7 +15,9 @@
 /*                                                                         */
 /***************************************************************************/
 
-
+#ifndef __RAPTOR_PORTABILITY_H__
+	#include "Portability.h"
+#endif
 
 #if !defined(AFX_RAPTORNETWORK_H__D5297BB6_098A_4082_96AA_36A78E76F18C__INCLUDED_)
 #define AFX_RAPTORNETWORK_H__D5297BB6_098A_4082_96AA_36A78E76F18C__INCLUDED_

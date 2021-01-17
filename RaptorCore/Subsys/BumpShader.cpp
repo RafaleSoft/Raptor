@@ -45,6 +45,9 @@
 #if !defined(AFX_LIGHT_H__AA8BABD6_059A_4939_A4B6_A0A036E12E1E__INCLUDED_)
 	#include "GLHierarchy/Light.h"
 #endif
+#if !defined(AFX_SHADERBLOC_H__56C73DCA_292E_4722_8881_82DC1BF53EA5__INCLUDED_)
+	#include "GLHierarchy/ShaderBloc.h"
+#endif
 
 
 RAPTOR_NAMESPACE
@@ -77,27 +80,8 @@ CBumpShader::~CBumpShader(void)
 {
 }
 
-typedef struct LightProduct_t
-{
-	GL_COORD_VERTEX position;
-	GL_COORD_VERTEX attenuation;
-	CColor::RGBA	ambient;
-	CColor::RGBA	diffuse;
-	CColor::RGBA	specular;
-	float			shininess;
-	float			reserved[3];
-	bool			enable;
-	float			reserved2[3];
-} R_LightProduct;
 
-typedef struct LightProducts_t
-{
-	R_LightProduct	lights[5];
-	CColor::RGBA	scene_ambient;
-} R_LightProducts;
-
-static R_LightProducts products;
-
+static CLight::R_LightProducts products;
 
 void CBumpShader::glInit(void)
 {
@@ -112,15 +96,16 @@ void CBumpShader::glInit(void)
 	GL_COORD_VERTEX V;
 	params.addParameter("eyePos", V);
 
-#if defined(GL_ARB_uniform_buffer_object)
-	CProgramParameters::CParameter<R_LightProducts> material("LightProducts", products);
-	material.locationType = GL_UNIFORM_BLOCK_BINDING_ARB;
-	params.addParameter(material);
-#endif
-
 	stage->setProgramParameters(params);
 
 	stage->glCompileShader();
+
+	CShaderBloc *bloc = glGetShaderBloc("LightProducts");
+	if (NULL == bloc)
+	{
+		RAPTOR_ERROR(CShader::CShaderClassID::GetClassId(),
+					"Bump Shader Object cannot find uniform bloc \"LightProducts\", compiled shader source is incorrect.");
+	}
 }
 
 void CBumpShader::glRender(void)
@@ -140,14 +125,14 @@ void CBumpShader::glRender(void)
 	int numl = 0;
 	CMaterial *M = getMaterial();
 	CLight **olights = CLightAttributes::getOrderedLights();
-	for (int i = 0; i < CLightAttributes::MAX_LIGHTS; i++)
+	for (int i = 0; (i < CLightAttributes::MAX_LIGHTS) && (numl < 5); i++)
 	{
 		CLight *pLight = olights[i];
-		products.lights[i].enable = false;
+		products.lights[min(i,4)].enable = false;
 
 		if (NULL != pLight)
 		{
-			R_LightProduct& lp = products.lights[numl++];
+			CLight::R_LightProduct& lp = products.lights[numl++];
 			lp.ambient = M->getAmbient() * pLight->getAmbient();
 			lp.diffuse = M->getDiffuse() * pLight->getDiffuse();
 			lp.specular = M->getSpecular() * pLight->getSpecular();
@@ -160,14 +145,11 @@ void CBumpShader::glRender(void)
 	}
 	products.scene_ambient = CShader::getAmbient();
 
-#if defined(GL_ARB_uniform_buffer_object)
-	CProgramParameters::CParameter<R_LightProducts> material("LightProducts", products);
-	material.locationType = GL_UNIFORM_BLOCK_BINDING_ARB;
-	params.addParameter(material);
-#endif
-
 
 	stage->updateProgramParameters(params);
+
+	CShaderBloc *pBloc = glGetShaderBloc();
+	pBloc->glvkUpdateBloc((uint8_t*)&products);
 
 	CShader::glRender();
 }

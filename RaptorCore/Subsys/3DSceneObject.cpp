@@ -48,6 +48,12 @@
 #if !defined(AFX_SHADEDGEOMETRY_H__E56C66F7_2DF6_497B_AA0F_19DDC11390F9__INCLUDED_)
 	#include "GLHierarchy/ShadedGeometry.h"
 #endif
+#if !defined(AFX_OPENGLSHADERSTAGE_H__56B00FE3_E508_4FD6_9363_90E6E67446D9__INCLUDED_)
+	#include "GLHierarchy/OpenGLShaderStage.h"
+#endif
+#if !defined(AFX_SHADER_H__4D405EC2_7151_465D_86B6_1CA99B906777__INCLUDED_)
+	#include "GLHierarchy/Shader.h"
+#endif
 
 #include <set>      // to sort the lights
 
@@ -112,6 +118,62 @@ CObject3D* C3DSceneObject::getObject(void) const
 #endif
 
 	return obj;
+}
+
+size_t C3DSceneObject::glRenderLights(CLight::R_LightProducts *buffer, uint64_t bufferOffset, uint8_t* uniform, bool proceedLights)
+{
+	size_t nb_shaders = 0;
+
+	if (NULL != buffer)
+	{
+		CLight::R_LightProducts &products = buffer[bufferOffset];
+
+		CObject3D *obj = object.ptr<CObject3D>();
+		std::vector<CShader*> shaders = obj->getShaders();
+
+		for (size_t i = 0; i < shaders.size(); i++)
+		{
+			CShader *shader = shaders[i];
+			if (!shader->hasOpenGLShader())
+				continue;
+			if (!shader->hasMaterial())
+				continue;
+
+			COpenGLShaderStage *stage = shader->glGetOpenGLShader();
+			CMaterial *M = shader->getMaterial();
+			
+			int numl = 0;
+
+			if (!proceedLights)
+				memset(&products, 0, sizeof(CLight::R_LightProducts));
+			else for (int i = 0; (i < CLightAttributes::MAX_LIGHTS) && (numl < 5); i++)
+			{
+				CLight *pLight = effectiveLights[i];
+				products.lights[min(i, 4)].enable = false;
+
+				if (NULL != pLight)
+				{
+					CLight::R_LightProduct& lp = products.lights[numl++];
+					lp.ambient = M->getAmbient() * pLight->getAmbient();
+					lp.diffuse = M->getDiffuse() * pLight->getDiffuse();
+					lp.specular = M->getSpecular() * pLight->getSpecular();
+					lp.shininess = M->getShininess();
+					lp.enable = true;
+					const CGenericVector<float, 4> &p = pLight->getLightViewPosition();
+					lp.position = GL_COORD_VERTEX(p.X(), p.Y(), p.Z(), p.H());
+					lp.attenuation = pLight->getSpotParams();
+				}
+			}
+			products.scene_ambient = shader->getAmbient();
+
+			size_t size = sizeof(CLight::R_LightProducts);
+			//stage->setBufferBloc(uniform, size, bufferOffset * size);
+
+			nb_shaders++;
+		}
+	}
+
+	return nb_shaders;
 }
 
 void C3DSceneObject::glRenderLights(GLboolean proceedLights,const std::vector<CLight*> &lights)

@@ -445,7 +445,7 @@ bool CRaptorScreenDisplay::glRender(void)
 			instance.pConsole->glRender();
 		
 #ifdef SHAREWARE_RELEASE
-		if (CRaptorInstance::GetInstance().runAsShareware)
+		if (instance.runAsShareware)
 			glDrawLogo();
 #endif
 

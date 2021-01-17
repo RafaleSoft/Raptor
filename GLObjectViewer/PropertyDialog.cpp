@@ -69,7 +69,7 @@ void CPropertyDialog::setObject(CObject3D *obj)
 			CShadedGeometry *g = (CShadedGeometry*)obj;
 			if (g->hasShader())
 			{
-				CShader *shader = g->getShader();
+				CShader *shader = g->getShaders()[0];
 				int idx = shaders->FindString(-1,CA2T(shader->getName().c_str()));
 				shaders->SetCurSel(idx);
 			}

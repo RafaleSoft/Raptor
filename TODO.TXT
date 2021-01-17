@@ -1,14 +1,22 @@
 - Ajouter un dialog pour Vulkan Status comme OpenGL.
 
+- ShaderLibrary:
+	- Charger Shadow Map PCF 16x
+
+- Test2:
+	- mettre au point et utiliser le switch d'instances.
+
+- CTextureQuad:
+	- déplacer les statiques dans CRaptorInstance.
+
 - Rays2:
-	- DeamonManager : port de connectino en dur ==> utiliser un param en LC ou config.
+	- DeamonManager : port de connection en dur ==> utiliser un param en LC ou config.
 
 - RaptorFilteredDisplay:
 	- voir si normal dans demo que le buffer FSAA ait la même taille que la destination
 		(m_fFilterSize = 1 dans RaptorDisplayconfig)
 
 - Supprimer GL_QUADS
-	- glDrawElements (Object3DShadow)
 	- CGLLayer::glRenderSingleBuffer + glRender
 	- GL3DFont::glTTBuildGeometry
 	- CAboutVideo::glRender
@@ -19,6 +27,9 @@
 
 - RaptorDisplay:
 	- renommer glGrab en glBlit en utilisant un CImage.
+
+- ShadowVolume:
+	- addObject: recalcul des bbox ? redimensionner un static array pour glvkBindArray
 
 - CMipmapBuilder:
 	- Reintégrer, pour générer les mipmaps pour Vulkan (vkLoadTexture) ==> source de gluBuild2DMipmaps.
@@ -34,9 +45,6 @@
 	- corriger ne marche pas sans relocation
 	- pas de decodeur video en 64 bits => ffmpeg ?
 	- Slide: utiliser un CTextureQuad
-
-- CShaderProgram:
-	- ajouter un preprocesseur.
 
 - COpenGLShaderStage:
 	- fusionner vkLoadShader & glLoadProgram (methode virtuelle de CShaderProgram)

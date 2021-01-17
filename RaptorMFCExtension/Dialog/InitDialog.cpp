@@ -94,10 +94,11 @@ BOOL CInitDialog::OnInitDialog()
 	else
 	{
 		CRaptorDisplayConfig glCS;
-		glCS.width = 0;
-		glCS.height = 0;
+		glCS.width = 1;
+		glCS.height = 1;
 		glCS.x = 0;
 		glCS.y = 0;
+		glCS.acceleration = CRaptorDisplayConfig::HARDWARE;
 		glCS.caption = "Raptor Release test";
 		glCS.stencil_buffer = true;
 		glCS.double_buffer = true;

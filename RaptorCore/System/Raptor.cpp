@@ -409,6 +409,9 @@ bool Raptor::glInitRaptor(const CRaptorConfig& config)
 { 
     bool res = false;
 
+	CRaptorConfig checkedConfig = config;
+	checkedConfig.checkConfig();
+
 	//	Initialise global Raptor data
 	CRaptorInstance &instance = CRaptorInstance::GetInstance();
 	if (instance.isInitialised())
@@ -417,7 +420,7 @@ bool Raptor::glInitRaptor(const CRaptorConfig& config)
 	//  store configuration and initialize platform dependant datas. 
 	//	Some configurations can only be applyied per screen display : 
     //  e.g.: memory allocation is dependant of a real context.
-	instance.config = config;
+	instance.config = checkedConfig;
 	instance.initInstance();
 	
 	//	Create a dummy window to initialize GL

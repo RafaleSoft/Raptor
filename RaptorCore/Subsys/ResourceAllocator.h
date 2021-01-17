@@ -97,10 +97,6 @@ public:
 	//! Returns the lock state ( set with the method below ).
 	bool    isMemoryLocked(void) const { return m_bLocked; };
 
-
-
-
-protected:
 	typedef struct data_bloc_t
 	{
 		uint8_t		*address;
@@ -108,6 +104,7 @@ protected:
 	} data_bloc;
 
 
+protected:
 	//!	The constructor, for subclasses (Geometry, Texels, Uniforms).
 	CResourceAllocator();
 

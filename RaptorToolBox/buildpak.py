@@ -26,7 +26,7 @@ RAPTOR_ROOT = os.environ.get("RAPTOR_ROOT")
 PLATFORM = os.environ.get("PLATFORM")
 RAPTOR_VERSION = os.environ.get("RAPTOR_VERSION")
 
-print("Making Raptor data package ...")
+print("Making Raptor Toolbox data package ...")
 print("Root of Raptor is set to: [", RAPTOR_ROOT, "]")
 print("Platform is defined as: [", PLATFORM, "]")
 print("Raptor Version is defined as: [", RAPTOR_VERSION, "]")
@@ -70,7 +70,7 @@ print("  Delivering package ...")
 os.chdir("..")
 
 if os.path.exists("Toolbox.pck"):
-    print("  RaptorData package already exist, it will be replaced !")
+    print("  Raptor Toolbox data package already exist, it will be replaced !")
     os.remove("Toolbox.pck")
         
 shutil.move("Filters" + os.path.sep + "Toolbox.pck",".")

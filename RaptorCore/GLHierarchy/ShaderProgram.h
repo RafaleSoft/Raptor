@@ -89,6 +89,14 @@ public:
 	//! @return the required size in bytes.
 	uint64_t glGetBufferMemoryRequirements(void);
 
+	//!	Shader uniform blocks.
+	typedef struct shader_bloc_t
+	{
+		uint64_t	size;
+		uint32_t	binding;
+	} shader_bloc;
+	CShaderProgram::shader_bloc glGetShaderBloc(const std::string& bloc_name) const;
+
 	//! This method can be used to update only a subset of the actual parameter set.
 	//! They will be actually applied after a successfull link is issued.
 	void updateProgramParameters(const CProgramParameters &v);
@@ -119,22 +127,6 @@ protected:
 	//!	Shader parameters.
 	bool					m_bApplyParameters;
 	CProgramParameters	    m_parameters;
-
-	//!	Shader uniform blocks.
-	typedef struct uniform_bloc_t
-	{
-		uint8_t*	buffer;
-		uint64_t	size;
-	} uniform_bloc;
-	std::vector<uniform_bloc> m_uniforms;
-
-	//!	Shader storage blocks.
-	typedef struct storage_bloc_t
-	{
-		uint8_t*	buffer;
-		uint64_t	size;
-	} storage_bloc;
-	std::vector<storage_bloc> m_storages;
 
 
 private:

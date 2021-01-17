@@ -86,6 +86,7 @@ RAPTOR_NAMESPACE_BEGIN
 class CVulkanCommandBuffer;
 
 class CObject3DContour;
+class CShader;
 template <class T> class CContainerNotifier;
 
 
@@ -197,8 +198,7 @@ public:
 	//!	or a triangle strip geometry shader ( in this case, the BBox looks a 
 	//!	flat shaded parallelepipedic box )
 	//!	A rendering model for boxes is used to render wire, filled or 
-	//!	raw drawcall when pipeline is set for box rendering pass and render
-	//!	all at once.
+	//!	raw drawcall when pipeline is set for box rendering pass and render all at once.
 	typedef enum
 	{
 		WIREFRAME,
@@ -232,7 +232,10 @@ public:
 
     //! Creates the list of contours for this objet.
     //! Default implementation returns an empty list, derived classes must implement this method
-    virtual vector<CObject3DContour*> createContours(void);
+    virtual std::vector<CObject3DContour*> createContours(void);
+
+	//!	Returns the list of shaders in this object hierachy.
+	virtual std::vector<CShader*> getShaders(void);
 
 
     //!
@@ -296,7 +299,7 @@ private:
     CObject3D(const CObject3D&);
 
 	//!	This method updates boudiong box data in instence's buffer object.
-	void CObject3D::glvkUpdateBBox(void);
+	void glvkUpdateBBox(void);
 
     //! A 3D object must always have a bounding box ( pointer cannot be NULL )
 	CBoundingBox	*BBox;

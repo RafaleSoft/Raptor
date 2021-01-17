@@ -78,21 +78,12 @@ CShaderProgram::CShaderProgram(const CShaderProgram& shader)
 	m_handle = shader.m_handle;
 	m_bApplyParameters = shader.m_bApplyParameters;
 	m_parameters = shader.m_parameters;
-	m_uniforms = shader.m_uniforms;
-	m_storages = shader.m_storages;
 }
 
 CShaderProgram::~CShaderProgram()
 {
 	// TODO : Recycle handle
-#if defined(GL_ARB_uniform_buffer_object)
-	if (!m_uniforms.empty())
-	{
-		CUniformAllocator*	pUAllocator = CUniformAllocator::GetInstance();
-		for (size_t i=0;i<m_uniforms.size();i++)
-			pUAllocator->releaseUniforms(m_uniforms[i].buffer);
-	}
-#endif
+
 }
 
 bool CShaderProgram::glAddToLibrary(const std::string& shader_name,
@@ -203,7 +194,74 @@ bool CShaderProgram::glLoadProgramFromFile(const std::string &program)
 	}
 }
 
+CShaderProgram::shader_bloc CShaderProgram::glGetShaderBloc(const std::string& bloc_name) const
+{
+	shader_bloc bloc{ 0, INT32_MAX };
 
+#if defined(GL_VERSION_3_1)
+	if (m_handle.glhandle() == 0)
+		return bloc;
+
+	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+
+	uint64_t uniform_size = 0;
+	GLint max_bindings = 0;
+
+
+	glGetIntegerv(GL_MAX_UNIFORM_BUFFER_BINDINGS, &max_bindings);
+
+	GLint active_uniform_max_length = 0;
+	pExtensions->glGetProgramiv(m_handle.glhandle(), GL_ACTIVE_UNIFORM_BLOCK_MAX_NAME_LENGTH, &active_uniform_max_length);
+
+	//! Despite the fact that the GL_VERSION text is greater than 3.1, it seems there is a bug in the call
+	//! below : the actual value should be returned by glGetProgramiv and not by glGetObjectParameteriv.
+	GLint active_blocks_count = 0;
+	char *uniformBlockName = new char[active_uniform_max_length];
+
+	pExtensions->glGetProgramiv(m_handle.glhandle(), GL_ACTIVE_UNIFORM_BLOCKS, &active_blocks_count);
+
+	for (GLint i = 0; i < active_blocks_count; i++)
+	{
+		GLint block_size = 0;
+		pExtensions->glGetActiveUniformBlockiv(m_handle.glhandle(), i, GL_UNIFORM_BLOCK_DATA_SIZE, &block_size);
+
+		/**
+		 *	Currently not used. Kept for mapping on native attributes with user attributes.
+		GLint active_uniforms = 0;
+		pExtensions->glGetActiveUniformBlockivARB(m_handle.glhandle(), i, GL_UNIFORM_BLOCK_ACTIVE_UNIFORMS_ARB, &active_uniforms);
+		GLint indices[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
+		pExtensions->glGetActiveUniformBlockivARB(m_handle.glhandle(), i, GL_UNIFORM_BLOCK_ACTIVE_UNIFORM_INDICES_ARB, &indices[0]);
+		GLint active_uniform_length = 0;
+		pExtensions->glGetActiveUniformBlockivARB(m_handle.glhandle(), i, GL_UNIFORM_BLOCK_NAME_LENGTH_ARB, &active_uniform_length);
+		 */
+
+		GLsizei length = 0;
+		pExtensions->glGetActiveUniformBlockName(m_handle.glhandle(), i, 256, &length, &uniformBlockName[0]);
+		uniformBlockName[length] = 0;
+
+		/**
+		 *	Currently not used. Kept for mapping on native attributes with user attributes.
+		GLuint uniformBlockIndex = pExtensions->glGetUniformBlockIndexARB(m_handle.glhandle(), uniformBlockName);
+		 */
+
+		GLint binding = 0;
+		pExtensions->glGetActiveUniformBlockiv(m_handle.glhandle(), i, GL_UNIFORM_BLOCK_BINDING, &binding);
+
+		std::string name(uniformBlockName);
+		if (!bloc_name.compare(name))
+		{
+			bloc.binding = binding;
+			bloc.size = block_size;
+		}
+	}
+
+	delete[] uniformBlockName;
+
+	CATCH_GL_ERROR
+#endif
+
+	return bloc;
+}
 
 uint64_t CShaderProgram::glGetBufferMemoryRequirements(void)
 {

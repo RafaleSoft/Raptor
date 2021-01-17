@@ -42,11 +42,6 @@
 	#include "System/RaptorGLExtensions.h"
 #endif
 
-RAPTOR_NAMESPACE_BEGIN
-
-IRenderingProperties*   IRenderingProperties::m_pCurrent = NULL;
-
-RAPTOR_NAMESPACE_END
 
 RAPTOR_NAMESPACE
 
@@ -103,11 +98,6 @@ IRenderingProperties& IRenderingProperties::operator=(const IRenderingProperties
 
 IRenderingProperties::~IRenderingProperties()
 {
-}
-
-IRenderingProperties *IRenderingProperties::GetCurrentProperties(void)
-{ 
-    return m_pCurrent; 
 }
 
 bool IRenderingProperties::exportObject(CRaptorIO& o)

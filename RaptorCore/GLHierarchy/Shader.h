@@ -41,6 +41,7 @@ class CTextureUnitSetup;
 class CVulkanShaderStage;
 class COpenGLProgramStage;
 class COpenGLShaderStage;
+class CShaderBloc;
 
 
 class RAPTOR_API CShader : public CPersistence, public CObjectReference
@@ -154,6 +155,21 @@ public:
 	bool vkRemoveVulkanShader(void);
 
 
+	//!
+	//! Shader blocs configuration
+	//!
+	//!	Returns the Shader Uniform or Storage Bloc.
+	//!	Allocate a new one if necessary
+	CShaderBloc * const glGetShaderBloc(const std::string& name = "");
+
+	//!	Returns true if Program has a Shader bloc already
+	bool hasShaderBloc(void) const { return NULL != m_pMainBloc; };
+
+	//! Removes the Shader bloc.
+	//! @return true if the shader bloc has been deleted
+	bool glRemoveShaderBloc(void);
+
+
 	//!	Streams : implement CPersistence
 	DECLARE_IO
 	DECLARE_CLASS_ID(CShaderClassID,"Shader",CPersistence)
@@ -188,6 +204,8 @@ private:
 	CVulkanShaderStage	*m_pVulkanShader;
 	COpenGLShaderStage	*m_pOpenGLShader;
 	COpenGLProgramStage	*m_pOpenGLProgram;
+
+	CShaderBloc			*m_pMainBloc;
 
 	bool				m_bDeleteVulkanShader;
 	bool				m_bDeleteOpenGLProgram;

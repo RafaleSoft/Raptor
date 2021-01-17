@@ -98,10 +98,10 @@ bool CGLWnd::GLCreateWindow (CString name,CWnd *parent, const CRaptorDisplayConf
 {
 	RECT GLRect;
 	
-	GLRect.top=glCreateStruct.y;
-	GLRect.left=glCreateStruct.x;
-	GLRect.right=glCreateStruct.x+glCreateStruct.width;
-	GLRect.bottom=glCreateStruct.y+glCreateStruct.height;
+	GLRect.top = glCreateStruct.y;
+	GLRect.left = glCreateStruct.x;
+	GLRect.right = glCreateStruct.x + glCreateStruct.width;
+	GLRect.bottom = glCreateStruct.y + glCreateStruct.height;
 
 	SetDefaultDisplayConfig(glCreateStruct);
 	
