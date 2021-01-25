@@ -62,6 +62,9 @@ CTexelAllocator::~CTexelAllocator()
 		CHostMemoryManager::GetInstance()->release(texels.address);
 	if (relocatedTexels != NULL)
 		deviceMemoryManager->releaseBufferObject(relocatedTexels);
+
+	if (this == m_pInstance)
+		m_pInstance = NULL;
 }
 
 CTexelAllocator* CTexelAllocator::GetInstance(void)

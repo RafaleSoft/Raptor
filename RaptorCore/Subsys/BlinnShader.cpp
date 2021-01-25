@@ -104,11 +104,12 @@ void CBlinnShader::glRender(void)
 		CLight::R_LightProducts products;
 		CLight **olights = CLightAttributes::getOrderedLights();
 		
+		for (int i = 0; i < 5; i++)
+			products.lights[i].enable = 0;
+
 		for (int i = 0, numl = 0; (i < CLightAttributes::MAX_LIGHTS) && (numl < 5); i++)
 		{
 			CLight *pLight = olights[i];
-			products.lights[min(i, 4)].enable = false;
-
 			if (NULL != pLight)
 			{
 				CLight::R_LightProduct& lp = products.lights[numl++];
@@ -116,7 +117,7 @@ void CBlinnShader::glRender(void)
 				lp.diffuse = M->getDiffuse() * pLight->getDiffuse();
 				lp.specular = M->getSpecular() * pLight->getSpecular();
 				lp.shininess = M->getShininess();
-				lp.enable = true;
+				lp.enable = 1;
 				const CGenericVector<float, 4> &p = pLight->getLightViewPosition();
 				lp.position = GL_COORD_VERTEX(p.X(), p.Y(), p.Z(), p.H());
 				lp.attenuation = pLight->getSpotParams();

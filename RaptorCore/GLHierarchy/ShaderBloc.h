@@ -23,7 +23,6 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-
 RAPTOR_NAMESPACE_BEGIN
 
 

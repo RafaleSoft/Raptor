@@ -186,6 +186,8 @@ namespace ShaderCompiler
             if (!res)
                 MessageBox.Show("Unable to create Raptor Renderer", "Error", MessageBoxButtons.OK);
 
+            diagGL();
+
             res = res && glUnBindDisplay(display);
             if (!res)
                 MessageBox.Show("Unable to unbind Raptor Display from canvas", "Error", MessageBoxButtons.OK);
@@ -212,19 +214,6 @@ namespace ShaderCompiler
 
             return res;
         }
-
-        private Graphics canvas = null;
-        private IntPtr display;
-        private IntPtr renderer;
-        private IntPtr hDC;
-
-        private String vertex_shader_file = "";
-        private String geometry_shader_file = "";
-        private String tesselate_shader_file = "";
-        private String fragment_shader_file = "";
-        private String diffuse_map_file = "";
-        private String normal_map_file = "";
-
 
         private void onPaint(object sender, PaintEventArgs e)
         {
@@ -256,12 +245,20 @@ namespace ShaderCompiler
 
         private void onGLDiag(object sender, EventArgs e)
         {
+            this.Opacity = 0.5;
 
+            GLDiag.ShowDialog();
+
+            this.Opacity = 1.0;
         }
 
         private void onVulkanDiag(object sender, EventArgs e)
         {
+            this.Opacity = 0.5;
 
+            VKDiag.ShowDialog();
+
+            this.Opacity = 1.0;
         }
 
         private void onDiffuse(object sender, EventArgs e)
@@ -317,5 +314,74 @@ namespace ShaderCompiler
 
             this.Opacity = 1.0;
         }
+
+        private void diagGL()
+        {
+            bool res = glDiag();
+            if (!res)
+                MessageBox.Show("Unable to query OpenGL Diagnostics", "Error", MessageBoxButtons.OK);
+
+            string diag_file = System.IO.Path.GetTempPath() + "\\gldiag.txt";
+            StreamReader ReaderObject = new StreamReader(diag_file);
+
+            GLDiag.Vendor.Text = ReaderObject.ReadLine();
+            GLDiag.Renderer.Text = ReaderObject.ReadLine();
+            GLDiag.Version.Text = ReaderObject.ReadLine();
+            GLDiag.GLSL.Text = ReaderObject.ReadLine();
+
+            GLDiag.GLLimits.SuspendLayout();
+            Control.ControlCollection collection = GLDiag.GLLimits.Controls;
+
+            int nb_limits = Int32.Parse(ReaderObject.ReadLine());
+            for (int i = 0; i < nb_limits; i++)
+            {
+                string param = ReaderObject.ReadLine();
+                string[] values = param.Split(' ');
+
+                Label lbl = new Label();
+                lbl.AutoSize = true;
+                lbl.Location = new System.Drawing.Point(16, 5 + i * 16);
+                lbl.Name = "label" + (2*i).ToString();
+                lbl.Size = new System.Drawing.Size(35, 13);
+                lbl.TabIndex = 0;
+                lbl.Text = values[0];
+                collection.Add(lbl);
+
+                lbl = new Label();
+                lbl.AutoSize = true;
+                lbl.Location = new System.Drawing.Point(255, 5 + i * 16);
+                lbl.Name = "label" + (2*i+1).ToString();
+                lbl.Size = new System.Drawing.Size(13, 13);
+                lbl.TabIndex = 7;
+                lbl.Text = values[1];
+                collection.Add(lbl);
+            }
+
+            GLDiag.GLLimits.ResumeLayout(false);
+            GLDiag.GLLimits.PerformLayout();
+
+            GLDiag.GLExtensions.SuspendLayout();
+            while (!ReaderObject.EndOfStream)
+                GLDiag.GLExtensions.Items.Add(ReaderObject.ReadLine());
+            GLDiag.GLExtensions.ResumeLayout(true);
+
+            ReaderObject.Close();
+        }
+
+        private OpenGLDiag GLDiag = new OpenGLDiag();
+        private VulkanDiag VKDiag = new VulkanDiag();
+
+        private Graphics canvas = null;
+        private IntPtr display;
+        private IntPtr renderer;
+        private IntPtr hDC;
+
+        private String vertex_shader_file = "";
+        private String geometry_shader_file = "";
+        private String tesselate_shader_file = "";
+        private String fragment_shader_file = "";
+        private String diffuse_map_file = "";
+        private String normal_map_file = "";
+
     }
 }

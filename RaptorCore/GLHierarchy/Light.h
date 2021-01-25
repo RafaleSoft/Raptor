@@ -52,7 +52,7 @@ public:
 		CColor::RGBA	specular;
 		float			shininess;
 		float			reserved[3];
-		bool			enable;
+		uint32_t		enable;
 		float			reserved2[3];
 	} R_LightProduct;
 

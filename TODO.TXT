@@ -1,4 +1,7 @@
-- Ajouter un dialog pour Vulkan Status comme OpenGL.
+- ResourceAllocator:
+	- supprimer les statiques et mettre dans CRaptorInstance ? Les device buffers sont dépendants du contexte ?
+	(ctx créé par CRaptorScreenDisplay)
+	- supprimer les fonctions SetcurrentInstance: soit allocateurs par contexte, soit par RaptorInstance.
 
 - Test2:
 	- mettre au point et utiliser le switch d'instances.

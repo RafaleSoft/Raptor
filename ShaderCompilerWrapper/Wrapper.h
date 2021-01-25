@@ -114,3 +114,6 @@ bool RAPTOR_WRAPPER_API glRender(void);
 
 extern "C"
 bool RAPTOR_WRAPPER_API glCreateRaptorRenderer(CRaptorDisplay* display, CRenderEntryPoint* &renderer);
+
+extern "C"
+bool RAPTOR_WRAPPER_API glDiag(void);

@@ -63,6 +63,16 @@ namespace ShaderCompiler.Properties {
         /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap OpenGL {
+            get {
+                object obj = ResourceManager.GetObject("OpenGL", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Raptor_logo_sml {
             get {
                 object obj = ResourceManager.GetObject("Raptor_logo_sml", resourceCulture);

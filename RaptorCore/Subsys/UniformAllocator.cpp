@@ -58,6 +58,13 @@ CUniformAllocator::CUniformAllocator()
 
 CUniformAllocator::~CUniformAllocator()
 {
+	if (uniforms.address != NULL)
+		CHostMemoryManager::GetInstance()->release(uniforms.address);
+	if (relocatedUniforms != NULL)
+		deviceMemoryManager->releaseBufferObject(relocatedUniforms);
+
+	if (this == m_pInstance)
+		m_pInstance = NULL;
 }
 
 CUniformAllocator* CUniformAllocator::GetInstance(void)
@@ -294,5 +301,89 @@ bool CUniformAllocator::glvkBindUniform(uint8_t *uniform, int32_t index, uint64_
 	}
 	else
 		return false;
+}
+
+
+void *CUniformAllocator::glvkMapPointer(uint8_t *pointer, bool syncData)
+{
+	if ((NULL == relocatedUniforms) || (m_bLocked) || (NULL == pointer))
+		return pointer;
+
+	// already mapped ?
+	if (uniformReMap.find(pointer) != uniformReMap.end())
+		return pointer;
+
+	// find memory bloc and map a copy to local memory.
+	map<uint8_t*, uint64_t>::const_iterator blocPos = uniformBlocs.find(pointer);
+	if (blocPos != uniformBlocs.end())
+	{
+		uint64_t sz = (*blocPos).second;
+		unsigned char* localData = charAlloc.allocate(sz);
+
+		uniformReMap[pointer] = localData;
+		uniformReMap[localData] = pointer;
+
+		if (syncData)
+		{
+			deviceMemoryManager->getBufferObjectData(	*relocatedUniforms,
+														(uint64_t)pointer,
+														localData,
+														sz);
+		}
+
+		CATCH_GL_ERROR
+
+		return localData;
+	}
+	else
+		return NULL;
+}
+
+void *CUniformAllocator::glvkUnMapPointer(uint8_t *pointer, bool syncData)
+{
+	if ((NULL == relocatedUniforms) || (m_bLocked) || (NULL == pointer))
+		return pointer;
+
+	// pointer has been mapped ?
+	map<uint8_t*, uint8_t*>::iterator it = uniformReMap.find(pointer);
+	if (it == uniformReMap.end())
+		// I shouldn't return NULL as it can be buffer index 0.
+		//  To keep a meaning to buffer offset 0, I could keep the fist data in buffer
+		//  ( offset 0 ) to be invalid, and reserved at allocation, garantying thus that any
+		//  other data bloc will have an offset > 0
+		return pointer;
+
+
+	// find memory bloc and copy local memory to server address space.
+	uint8_t *serverData = (*it).second;
+
+	map<uint8_t*, uint64_t>::const_iterator blocPos = uniformBlocs.find(serverData);
+	if (blocPos != uniformBlocs.end())
+	{
+		uniformReMap.erase(it);
+		map<uint8_t*, uint8_t*>::iterator it2 = uniformReMap.find(serverData);
+		//  Should check for errors.
+		uniformReMap.erase(it2);
+
+		if (syncData)
+		{
+			// Here, serverData could be relocated to compress the data
+			// and limit the number of holes or fragmentation.
+			// As we have an array of free blocs, relocation could easily be done.
+			deviceMemoryManager->setBufferObjectData(	*relocatedUniforms,
+														(uint64_t)serverData,
+														pointer,
+														(*blocPos).second);
+
+		}
+
+		CHostMemoryManager::GetInstance()->garbage(pointer);
+
+		CATCH_GL_ERROR
+
+		return serverData;
+	}
+	else
+		return NULL;
 }
 

@@ -271,6 +271,7 @@ bool CObjectStore::loadColumn(void)
             const CGeometryEditor &pEditor = g->getEditor();
 		    pEditor.scaleTexCoords(4.0f,4.0f);
 		    *g->getShader()->getMaterial() = *m_material;
+			g->getShader()->getMaterial()->setShininess(4.0f);
 		    CTextureUnitSetup *tmuSetup = g->getShader()->glGetTextureUnitsSetup();
 		    tmuSetup->setDiffuseMap(m_textures->getTexture(MARBLE4), CTextureUnitSetup::CGL_MULTIPLY);
 	    }

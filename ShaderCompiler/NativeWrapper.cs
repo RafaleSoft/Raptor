@@ -130,5 +130,9 @@ namespace ShaderCompiler
         [DllImport("ShaderCompilerWrapper.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool glCreateRaptorRenderer(IntPtr display, out IntPtr renderer);
+
+        [DllImport("ShaderCompilerWrapper.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool glDiag();
     }
 }

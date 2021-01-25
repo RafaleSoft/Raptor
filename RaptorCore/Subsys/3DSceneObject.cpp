@@ -128,10 +128,19 @@ size_t C3DSceneObject::glRenderLights(CLight::R_LightProducts *buffer, uint64_t 
 {
 	size_t nb_shaders = 0;
 
+	lightShaders.clear();
+	if (!proceedLights)
+	{
+		lightShaderbloc bloc;
+		bloc.uniform = uniform;
+		bloc.bufferOffset = 0;
+		lightShaders.push_back(bloc);
+
+		return nb_shaders;
+	}
+
 	if (NULL != buffer)
 	{
-		CLight::R_LightProducts &products = buffer[bufferOffset];
-
 		CObject3D *obj = object.ptr<CObject3D>();
 		std::vector<CShader*> shaders = obj->getShaders();
 
@@ -145,36 +154,41 @@ size_t C3DSceneObject::glRenderLights(CLight::R_LightProducts *buffer, uint64_t 
 			if (!shader->hasShaderBloc())
 				continue;
 
+			CLight::R_LightProducts &products = buffer[bufferOffset + nb_shaders];
+
 			COpenGLShaderStage *stage = shader->glGetOpenGLShader();
 			CMaterial *M = shader->getMaterial();
 			CShaderBloc *B = shader->glGetShaderBloc();
 			
 			int numl = 0;
 
-			if (!proceedLights)
-				memset(&products, 0, sizeof(CLight::R_LightProducts));
-			else for (int i = 0; (i < CLightAttributes::MAX_LIGHTS) && (numl < 5); i++)
-			{
-				CLight *pLight = effectiveLights[i];
-				products.lights[min(i, 4)].enable = false;
+			for (int j = 0; j < 5; j++)
+				products.lights[j].enable = 0;
 
-				if (NULL != pLight)
+			if (proceedLights)
+				for (int j = 0; (j < CLightAttributes::MAX_LIGHTS) && (numl < 5); j++)
 				{
-					CLight::R_LightProduct& lp = products.lights[numl++];
-					lp.ambient = M->getAmbient() * pLight->getAmbient();
-					lp.diffuse = M->getDiffuse() * pLight->getDiffuse();
-					lp.specular = M->getSpecular() * pLight->getSpecular();
-					lp.shininess = M->getShininess();
-					lp.enable = true;
-					const CGenericVector<float, 4> &p = pLight->getLightViewPosition();
-					lp.position = GL_COORD_VERTEX(p.X(), p.Y(), p.Z(), p.H());
-					lp.attenuation = pLight->getSpotParams();
+					CLight *pLight = effectiveLights[j];
+					if (NULL != pLight)
+					{
+						CLight::R_LightProduct& lp = products.lights[numl++];
+						lp.ambient = M->getAmbient() * pLight->getAmbient();
+						lp.diffuse = M->getDiffuse() * pLight->getDiffuse();
+						lp.specular = M->getSpecular() * pLight->getSpecular();
+						lp.shininess = M->getShininess();
+						lp.enable = 1;
+						const CGenericVector<float, 4> &p = pLight->getLightViewPosition();
+						lp.position = GL_COORD_VERTEX(p.X(), p.Y(), p.Z(), p.H());
+						lp.attenuation = pLight->getSpotParams();
+					}
 				}
-			}
 			products.scene_ambient = shader->getAmbient();
 
 			size_t size = sizeof(CLight::R_LightProducts);
-			B->glvkSetUniformBuffer(uniform, size, bufferOffset * size);
+			lightShaderbloc bloc;
+			bloc.uniform = uniform;
+			bloc.bufferOffset = (bufferOffset + nb_shaders) * size;
+			lightShaders.push_back(bloc);
 
 			nb_shaders++;
 		}
@@ -245,10 +259,33 @@ bool C3DSceneObject::glRenderPass(	unsigned int passNumber,
 									const vector<CLight*> &lights,
 									GLboolean proceedLights)
 {
-	glRenderLights(proceedLights,lights);
-
 	bool ret = true;
+	bool use_gl_lights = true;
 	CObject3D *obj = object.ptr<CObject3D>();
+	
+	std::vector<CShader*> shaders = obj->getShaders();
+	for (size_t i = 0; i < shaders.size(); i++)
+	{
+		CShader *shader = shaders[i];
+		if (shader->hasShaderBloc())
+		{
+			use_gl_lights = false;
+			CShaderBloc *B = shader->glGetShaderBloc();
+			if (proceedLights)
+			{
+				lightShaderbloc& bloc = lightShaders[i];
+				B->glvkSetUniformBuffer(bloc.uniform, sizeof(CLight::R_LightProducts), bloc.bufferOffset);
+			}
+			else
+			{
+				lightShaderbloc& bloc = lightShaders[0];
+				B->glvkSetUniformBuffer(bloc.uniform, sizeof(CLight::R_LightProducts), 0);
+			}
+		}
+	}
+	
+	if (use_gl_lights)
+		glRenderLights(proceedLights, lights);
 
 #if defined(GL_ARB_occlusion_query)
     GLuint query = visibilityQuery[passNumber];

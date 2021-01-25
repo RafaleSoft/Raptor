@@ -99,6 +99,12 @@ public:
 	unsigned int	visibilityQuery[NB_PASSES];
 	int				passVisibility[NB_PASSES];
 
+	typedef struct
+	{
+		uint8_t		*uniform;
+		uint64_t	bufferOffset;
+	} lightShaderbloc;
+	std::vector<lightShaderbloc> lightShaders;
 
 private:
 	//!	Default constructor.

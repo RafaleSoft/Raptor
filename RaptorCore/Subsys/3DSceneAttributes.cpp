@@ -393,8 +393,6 @@ void C3DSceneAttributes::glRenderLights(const std::vector<C3DSceneObject*>& obje
 {
 	uint64_t offset = 0;
 
-	CUniformAllocator*	pUAllocator = CUniformAllocator::GetInstance();
-
 	vector<C3DSceneObject*>::const_iterator it = objects.begin();
 	while (it != objects.end())
 	{
@@ -404,9 +402,20 @@ void C3DSceneAttributes::glRenderLights(const std::vector<C3DSceneObject*>& obje
 			offset += nb_shaders;
 	}
 
-	pUAllocator->glvkSetPointerData(m_lightProductsShaderBuffer.address, 
-									(uint8_t*)lightProducts,
-									offset * sizeof(CLight::R_LightProducts));
+	CUniformAllocator*	pUAllocator = CUniformAllocator::GetInstance();
+	if (proceedLights)
+		pUAllocator->glvkSetPointerData(m_lightProductsShaderBuffer.address, 
+										(uint8_t*)lightProducts,
+										offset * sizeof(CLight::R_LightProducts));
+	else	// Store only one empty bloc if no lighting.
+	{
+		for (int j = 0; j < 5; j++)
+			lightProducts[0].lights[j].enable = 0;
+		lightProducts[0].scene_ambient = CShader::getAmbient();
+		pUAllocator->glvkSetPointerData(m_lightProductsShaderBuffer.address,
+										(uint8_t*)lightProducts,
+										sizeof(CLight::R_LightProducts));
+	}
 }
 
 void C3DSceneAttributes::glComputeBBoxOcclusion(const vector<C3DSceneObject*> &occluded)
@@ -511,6 +520,8 @@ void C3DSceneAttributes::glRenderMirrors(C3DScene::PASS_KIND passKind)
 				glGetBooleanv(GL_COLOR_WRITEMASK, cMask);
 				glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 			}
+
+			glRenderLights(unsortedObjects, true);
 
 			vector<C3DSceneObject*> occludedObjects;
 			vector<C3DSceneObject*>::const_iterator itr = unsortedObjects.begin();

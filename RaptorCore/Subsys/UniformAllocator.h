@@ -50,6 +50,9 @@ public:
 	
 	void glvkSetPointerData(uint8_t *dst, uint8_t *src, uint64_t size);
 
+	void *glvkMapPointer(uint8_t *pointer, bool syncData = true);
+	void *glvkUnMapPointer(uint8_t *pointer, bool syncData = true);
+
 	//! Lock memory data and relocation so that no change can be made.
 	//! If data is relocated, High Performance blocks are activated on server
 	bool    glvkLockMemory(bool lock);
