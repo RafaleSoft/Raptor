@@ -170,7 +170,7 @@ bool CObjectStore::IsAColumn(CGeometry *&g)
 
         const CGeometryEditor &pEditor = g->getEditor();
 		pEditor.scaleTexCoords(2.0f, 2.0f);
-		CShader *pShader = bump->getShaders()[0];
+		CShader *pShader = bump->getShader();
 		*pShader->getMaterial() = *m_material;
 		pShader->setColor(1.0f, 1.0f, 1.0f, 1.0f);	// for ambient in shadows
 		pShader->getMaterial()->setShininess(4.0f);
@@ -203,7 +203,7 @@ bool CObjectStore::IsAColumn(CGeometry *&g)
 
         const CGeometryEditor &pEditor = g->getEditor();
 		pEditor.scaleTexCoords(4.0f,1.0f);
-		CShader *pShader = bump->getShaders()[0];
+		CShader *pShader = bump->getShader();
 		pShader->setColor(1.0f,1.0f,1.0f,1.0f);	// for ambient in shadows
         *pShader->getMaterial() = *m_material;
 		pShader->getMaterial()->setShininess(4.0f);

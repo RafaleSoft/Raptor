@@ -206,7 +206,8 @@ void C3DSceneAttributes::prepareData(void)
 			C3DSceneObject *sc = (*it++);
 			CObject3D* obj = sc->getObject();
 
-			std::vector<CShader*> list = obj->getShaders();
+			std::vector<CShader*> list;
+			obj->getShaders(list);
 			for (size_t i = 0; i < list.size(); i++)
 			{
 				CShader *pShader = list[i];

@@ -13,6 +13,10 @@
 #include "GLHierarchy/3DSet.h"
 #include "GLHierarchy/ShadedGeometry.h"
 #include "GLHierarchy/Shader.h"
+#include "GLHierarchy/GeometryEditor.h"
+#include "GLHierarchy/TextureFactory.h"
+#include "GLHierarchy/TextureUnitSetup.h"
+#include "System/Image.h"
 #include "System/RaptorConsole.h"
 #include "System/RaptorGLExtensions.h"
 
@@ -148,10 +152,10 @@ private:
 	CRaptorDisplay* m_pDisplay;
 };
 
+CShadedGeometry *object = NULL;
+
 void CRenderer::glInitRenderer()
 {
-	CShadedGeometry *object = NULL;
-
 	CRaptorDataManager  *dataManager = CRaptorDataManager::GetInstance();
 	if (dataManager != NULL)
 	{
@@ -165,6 +169,7 @@ void CRenderer::glInitRenderer()
 		C3DSet::C3DSetIterator it = set->getIterator();
 		object = (CShadedGeometry*)(set->getChild(it++));
 		GL_COORD_VERTEX c;
+		object->getEditor().minimize();
 		object->getCenter(c);
 		object->translate(-c.x, -c.y, -c.z);
 		object->rotationX(-90.0f);
@@ -242,6 +247,57 @@ bool RAPTOR_WRAPPER_API glCreateRaptorRenderer(CRaptorDisplay* display, CRenderE
 	return true;
 }
 
+bool RAPTOR_WRAPPER_API glSetMaps(const char* diffuse, const char* normal)
+{
+	bool upadateMap = false;
+
+	if ((NULL != diffuse) && (NULL != object) && (strlen(diffuse) > 0))
+	{
+		CImage i;
+		CVaArray<CImage::IImageOP*> ops;
+		if (i.loadImage(diffuse, ops))
+		{
+			CShader *shader = object->getShader();
+			CTextureUnitSetup *tmu = shader->glGetTextureUnitsSetup();
+
+			CTextureFactory &factory = CTextureFactory::glGetDefaultFactory();
+			ITextureObject *t = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA, ITextureObject::CGL_BILINEAR);
+			factory.glLoadTexture(t, i);
+			tmu->setDiffuseMap(t);
+
+			object->addModel(CGeometry::RENDERING_MODEL::CGL_TEXTURE);
+
+			upadateMap = true;
+			IRenderingProperties &props = CRaptorDisplay::GetCurrentDisplay()->getRenderingProperties();
+			props.enableLighting.enableTexturing;
+		}
+	}
+		
+	if ((NULL != normal) && (NULL != object) && (strlen(normal) > 0))
+	{
+		CImage i;
+		CVaArray<CImage::IImageOP*> ops;
+		if (i.loadImage(diffuse, ops))
+		{
+			CShader *shader = object->getShader();
+			CTextureUnitSetup *tmu = shader->glGetTextureUnitsSetup();
+
+			CTextureFactory &factory = CTextureFactory::glGetDefaultFactory();
+			ITextureObject *t = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA, ITextureObject::CGL_BILINEAR);
+			factory.glLoadTexture(t, i);
+			tmu->setNormalMap(t);
+
+			object->addModel(CGeometry::RENDERING_MODEL::CGL_TEXTURE);
+
+			upadateMap = true;
+			IRenderingProperties &props = CRaptorDisplay::GetCurrentDisplay()->getRenderingProperties();
+			props.enableLighting.enableTexturing;
+		}
+	}
+
+	return upadateMap;
+}
+
 void write_int(GLenum pval, const char* pname, ofstream& out)
 {
 	GLint iparam = 0;
@@ -279,7 +335,7 @@ bool RAPTOR_WRAPPER_API glDiag(void)
 		const char *glsl = (char*)glGetString(GL_SHADING_LANGUAGE_VERSION_ARB);
 		gldiag.write(glsl, strlen(glsl)); gldiag.write("\n", nl);
 
-		gldiag.write("14\n", 2 + nl);
+		gldiag.write("18\n", 2 + nl);
 
 		write_int(GL_MAX_LIGHTS, "MAX_LIGHTS ", gldiag);
 		write_int(GL_MAX_TEXTURE_SIZE, "MAX_TEXTURE_SIZE ", gldiag);
@@ -295,19 +351,17 @@ bool RAPTOR_WRAPPER_API glDiag(void)
 		write_int(GL_MAX_PROJECTION_STACK_DEPTH, "MAX_PROJECTION_STACK_DEPTH ", gldiag);
 		write_int(GL_MAX_TEXTURE_STACK_DEPTH, "MAX_TEXTURE_STACK_DEPTH ", gldiag);
 		write_int(GL_MAX_CLIENT_ATTRIB_STACK_DEPTH, "MAX_CLIENT_ATTRIB_STACK_DEPTH ", gldiag);
-		
+		write_int(GL_MAX_ELEMENTS_VERTICES, "MAX_ELEMENTS_VERTICES ", gldiag);
+		write_int(GL_MAX_ELEMENTS_INDICES, "MAX_ELEMENTS_VERTICES ", gldiag);
+		write_int(GL_MAX_CUBE_MAP_TEXTURE_SIZE, "MAX_CUBE_MAP_TEXTURE_SIZE ", gldiag);
+		write_int(GL_MAX_TEXTURE_LOD_BIAS, "MAX_TEXTURE_LOD_BIAS ", gldiag);
+
 		//GL_MAX_LIST_NESTING               0x0B31
 		// GL_MAX_EVAL_ORDER                 0x0D30
 		// GL_MAX_CLIP_PLANES                0x0D32
 		// GL_MAX_PIXEL_MAP_TABLE            0x0D34
 		// GL_MAX_VIEWPORT_DIMS              0x0D3A
-		// GL_MAX_ELEMENTS_VERTICES_WIN      0x80E8
-		// GL_MAX_ELEMENTS_INDICES_WIN
-		// GL_MAX_ELEMENTS_VERTICES
-		// GL_MAX_ELEMENTS_INDICES
-		// GL_MAX_CUBE_MAP_TEXTURE_SIZE
-		// GL_MAX_TEXTURE_LOD_BIAS
-		
+				
 		// GL_MAX_FRAGMENT_UNIFORM_COMPONENTS
 		// GL_MAX_VERTEX_UNIFORM_COMPONENTS
 		// GL_MAX_VARYING_FLOATS

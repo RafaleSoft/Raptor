@@ -154,15 +154,11 @@ CShader * const CShadedGeometry::getShader(void)
 	return m_pShader;
 }
 
-std::vector<CShader*> CShadedGeometry::getShaders(void)
+void CShadedGeometry::getShaders(std::vector<CShader*> &shaders)
 {
-	std::vector<CShader*> list;
-
 	if (NULL != m_pShader)
 		if (m_pShader->hasOpenGLShader())
-			list.push_back(m_pShader);
-
-	return list;
+			shaders.push_back(m_pShader);
 }
 
 CShader * const CShadedGeometry::getAmbientOcclusionShader(void)
@@ -302,7 +298,8 @@ void CShadedGeometry::glRender()
 	{
 		// apply material
 		if (hasModel(CGeometry::CGL_NORMALS))
-			if (m_pShader->hasMaterial())
+			//if (m_pShader->hasMaterial()) // No more need GL material rendering with material shader bloc.
+			if (!m_pShader->hasShaderBloc() && m_pShader->hasMaterial())
 				m_pShader->glRenderMaterial();
 
 		// apply texture

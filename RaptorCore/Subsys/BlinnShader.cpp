@@ -104,12 +104,11 @@ void CBlinnShader::glRender(void)
 		CLight::R_LightProducts products;
 		CLight **olights = CLightAttributes::getOrderedLights();
 		
-		for (int i = 0; i < 5; i++)
-			products.lights[i].enable = 0;
-
 		for (int i = 0, numl = 0; (i < CLightAttributes::MAX_LIGHTS) && (numl < 5); i++)
 		{
+			products.lights[i].enable = 0;
 			CLight *pLight = olights[i];
+
 			if (NULL != pLight)
 			{
 				CLight::R_LightProduct& lp = products.lights[numl++];

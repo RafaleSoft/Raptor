@@ -37,7 +37,7 @@ namespace ShaderCompiler
 
             if (DialogResult.OK == res)
             {
-                string ext = Path.GetExtension(open.FileName);
+                string ext = Path.GetExtension(open.FileName).ToLower();
                 if ((ext == ".vs") ||(ext == ".vert"))
                 {
                     vertex_shader_file = open.FileName;
@@ -64,7 +64,7 @@ namespace ShaderCompiler
 
             if (DialogResult.OK == res)
             {
-                string ext = Path.GetExtension(open.FileName);
+                string ext = Path.GetExtension(open.FileName).ToLower();
                 if ((ext == ".gs") || (ext == ".geom"))
                 {
                     geometry_shader_file = open.FileName;
@@ -91,7 +91,7 @@ namespace ShaderCompiler
 
             if (DialogResult.OK == res)
             {
-                string ext = Path.GetExtension(open.FileName);
+                string ext = Path.GetExtension(open.FileName).ToLower();
                 if ((ext == ".ts") || (ext == ".tess"))
                 {
                     tesselate_shader_file = open.FileName;
@@ -118,7 +118,7 @@ namespace ShaderCompiler
 
             if (DialogResult.OK == res)
             {
-                string ext = Path.GetExtension(open.FileName);
+                string ext = Path.GetExtension(open.FileName).ToLower();
                 if ((ext == ".fs") || (ext == ".frag"))
                 {
                     fragment_shader_file = open.FileName;
@@ -133,6 +133,11 @@ namespace ShaderCompiler
             open.Dispose();
 
             this.Opacity = 1.0;
+        }
+
+        private void onCompile(object sender, EventArgs e)
+        {
+
         }
 
         private bool initialiseGL()
@@ -271,7 +276,7 @@ namespace ShaderCompiler
 
             if (DialogResult.OK == res)
             {
-                string ext = Path.GetExtension(open.FileName);
+                string ext = Path.GetExtension(open.FileName).ToLower();
                 if ((ext == ".jpg") || (ext == ".jpeg") || (ext == ".tga") || (ext == ".png") || (ext == ".exr") || (ext == ".tiff") || (ext == ".tif"))
                 {
                     diffuse_map_file = open.FileName;
@@ -284,6 +289,14 @@ namespace ShaderCompiler
             }
 
             open.Dispose();
+
+            IntPtr d = Marshal.StringToHGlobalAnsi(diffuse_map_file);
+            IntPtr n = Marshal.StringToHGlobalAnsi(normal_map_file);
+            if (glBindDisplay(display, hDC))
+            {
+                glSetMaps(d, n);
+                glUnBindDisplay(display);
+            }
 
             this.Opacity = 1.0;
         }
@@ -298,7 +311,7 @@ namespace ShaderCompiler
 
             if (DialogResult.OK == res)
             {
-                string ext = Path.GetExtension(open.FileName);
+                string ext = Path.GetExtension(open.FileName).ToLower();
                 if ((ext == ".jpg") || (ext == ".jpeg") || (ext == ".tga") || (ext == ".png") || (ext == ".exr") || (ext == ".tiff") || (ext == ".tif"))
                 {
                     normal_map_file = open.FileName;
@@ -308,6 +321,14 @@ namespace ShaderCompiler
                 {
                     MessageBox.Show("Invalid Image file format for nomal texture map: " + ext + " is not supported.", "Erreur", MessageBoxButtons.OK);
                 }
+            }
+
+            IntPtr d = Marshal.StringToHGlobalAnsi(diffuse_map_file);
+            IntPtr n = Marshal.StringToHGlobalAnsi(normal_map_file);
+            if (glBindDisplay(display, hDC))
+            {
+                glSetMaps(d, n);
+                glUnBindDisplay(display);
             }
 
             open.Dispose();
@@ -382,6 +403,5 @@ namespace ShaderCompiler
         private String fragment_shader_file = "";
         private String diffuse_map_file = "";
         private String normal_map_file = "";
-
     }
 }

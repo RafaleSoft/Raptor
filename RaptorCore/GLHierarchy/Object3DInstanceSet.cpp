@@ -87,19 +87,11 @@ void CObject3DInstanceSet::Instantiate(CObject3D * const instance,const GL_MATRI
 */
 
 
-std::vector<CShader*> CObject3DInstanceSet::getShaders(void)
+void CObject3DInstanceSet::getShaders(std::vector<CShader*> &shaders)
 {
-	std::vector<CShader*> list;
-
 	vector<ObjectInstance>::iterator pos = m_pObjects.begin();
 	while (pos != m_pObjects.end())
-	{
-		std::vector<CShader*> child = (*pos++).pObject->getShaders();
-		for (size_t i = 0; i < child.size(); i++)
-			list.push_back(child[i]);
-	}
-
-	return list;
+		(*pos++).pObject->getShaders(shaders);
 }
 
 void CObject3DInstanceSet::glRender(void)

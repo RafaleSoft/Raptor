@@ -142,7 +142,8 @@ size_t C3DSceneObject::glRenderLights(CLight::R_LightProducts *buffer, uint64_t 
 	if (NULL != buffer)
 	{
 		CObject3D *obj = object.ptr<CObject3D>();
-		std::vector<CShader*> shaders = obj->getShaders();
+		std::vector<CShader*> shaders;
+		obj->getShaders(shaders);
 
 		for (size_t i = 0; i < shaders.size(); i++)
 		{
@@ -161,27 +162,24 @@ size_t C3DSceneObject::glRenderLights(CLight::R_LightProducts *buffer, uint64_t 
 			CShaderBloc *B = shader->glGetShaderBloc();
 			
 			int numl = 0;
-
-			for (int j = 0; j < 5; j++)
+			for (int j = 0; (j < CLightAttributes::MAX_LIGHTS) && (numl < 5); j++)
+			{
 				products.lights[j].enable = 0;
+				CLight *pLight = effectiveLights[j];
 
-			if (proceedLights)
-				for (int j = 0; (j < CLightAttributes::MAX_LIGHTS) && (numl < 5); j++)
+				if (NULL != pLight)
 				{
-					CLight *pLight = effectiveLights[j];
-					if (NULL != pLight)
-					{
-						CLight::R_LightProduct& lp = products.lights[numl++];
-						lp.ambient = M->getAmbient() * pLight->getAmbient();
-						lp.diffuse = M->getDiffuse() * pLight->getDiffuse();
-						lp.specular = M->getSpecular() * pLight->getSpecular();
-						lp.shininess = M->getShininess();
-						lp.enable = 1;
-						const CGenericVector<float, 4> &p = pLight->getLightViewPosition();
-						lp.position = GL_COORD_VERTEX(p.X(), p.Y(), p.Z(), p.H());
-						lp.attenuation = pLight->getSpotParams();
-					}
+					CLight::R_LightProduct& lp = products.lights[numl++];
+					lp.ambient = M->getAmbient() * pLight->getAmbient();
+					lp.diffuse = M->getDiffuse() * pLight->getDiffuse();
+					lp.specular = M->getSpecular() * pLight->getSpecular();
+					lp.shininess = M->getShininess();
+					lp.enable = 1;
+					const CGenericVector<float, 4> &p = pLight->getLightViewPosition();
+					lp.position = GL_COORD_VERTEX(p.X(), p.Y(), p.Z(), p.H());
+					lp.attenuation = pLight->getSpotParams();
 				}
+			}
 			products.scene_ambient = shader->getAmbient();
 
 			size_t size = sizeof(CLight::R_LightProducts);
@@ -263,7 +261,8 @@ bool C3DSceneObject::glRenderPass(	unsigned int passNumber,
 	bool use_gl_lights = true;
 	CObject3D *obj = object.ptr<CObject3D>();
 	
-	std::vector<CShader*> shaders = obj->getShaders();
+	std::vector<CShader*> shaders;
+	obj->getShaders(shaders);
 	for (size_t i = 0; i < shaders.size(); i++)
 	{
 		CShader *shader = shaders[i];

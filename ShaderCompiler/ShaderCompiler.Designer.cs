@@ -33,6 +33,8 @@
             System.Windows.Forms.GroupBox groupBox2;
             System.Windows.Forms.Button button1;
             System.Windows.Forms.Button button2;
+            System.Windows.Forms.Button button3;
+            this.Log = new System.Windows.Forms.RichTextBox();
             this.FShaderName = new System.Windows.Forms.Label();
             this.TShaderName = new System.Windows.Forms.Label();
             this.GShaderName = new System.Windows.Forms.Label();
@@ -41,18 +43,18 @@
             this.Tesselate = new System.Windows.Forms.Button();
             this.Geometry = new System.Windows.Forms.Button();
             this.Vertex = new System.Windows.Forms.Button();
+            this.NMapName = new System.Windows.Forms.Label();
+            this.Normal = new System.Windows.Forms.Button();
+            this.DMapName = new System.Windows.Forms.Label();
+            this.Diffuse = new System.Windows.Forms.Button();
             this.Quit = new System.Windows.Forms.Button();
             this.Canvas = new System.Windows.Forms.PictureBox();
             this.renderTimer = new System.Windows.Forms.Timer(this.components);
-            this.Log = new System.Windows.Forms.RichTextBox();
-            this.DMapName = new System.Windows.Forms.Label();
-            this.Diffuse = new System.Windows.Forms.Button();
-            this.NMapName = new System.Windows.Forms.Label();
-            this.Normal = new System.Windows.Forms.Button();
             groupBox1 = new System.Windows.Forms.GroupBox();
             groupBox2 = new System.Windows.Forms.GroupBox();
             button1 = new System.Windows.Forms.Button();
             button2 = new System.Windows.Forms.Button();
+            button3 = new System.Windows.Forms.Button();
             groupBox1.SuspendLayout();
             groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Canvas)).BeginInit();
@@ -60,6 +62,7 @@
             // 
             // groupBox1
             // 
+            groupBox1.Controls.Add(button3);
             groupBox1.Controls.Add(this.Log);
             groupBox1.Controls.Add(this.FShaderName);
             groupBox1.Controls.Add(this.TShaderName);
@@ -71,10 +74,20 @@
             groupBox1.Controls.Add(this.Vertex);
             groupBox1.Location = new System.Drawing.Point(660, 42);
             groupBox1.Name = "groupBox1";
-            groupBox1.Size = new System.Drawing.Size(217, 232);
+            groupBox1.Size = new System.Drawing.Size(217, 274);
             groupBox1.TabIndex = 3;
             groupBox1.TabStop = false;
             groupBox1.Text = "Shaders";
+            // 
+            // Log
+            // 
+            this.Log.CausesValidation = false;
+            this.Log.Location = new System.Drawing.Point(6, 178);
+            this.Log.Name = "Log";
+            this.Log.ReadOnly = true;
+            this.Log.Size = new System.Drawing.Size(205, 90);
+            this.Log.TabIndex = 9;
+            this.Log.Text = "Log";
             // 
             // FShaderName
             // 
@@ -159,47 +172,31 @@
             groupBox2.Controls.Add(this.Normal);
             groupBox2.Controls.Add(this.DMapName);
             groupBox2.Controls.Add(this.Diffuse);
-            groupBox2.Location = new System.Drawing.Point(660, 280);
+            groupBox2.Location = new System.Drawing.Point(660, 322);
             groupBox2.Name = "groupBox2";
-            groupBox2.Size = new System.Drawing.Size(217, 176);
+            groupBox2.Size = new System.Drawing.Size(217, 134);
             groupBox2.TabIndex = 4;
             groupBox2.TabStop = false;
             groupBox2.Text = "Assets";
             // 
-            // Quit
+            // NMapName
             // 
-            this.Quit.Location = new System.Drawing.Point(802, 12);
-            this.Quit.Name = "Quit";
-            this.Quit.Size = new System.Drawing.Size(75, 23);
-            this.Quit.TabIndex = 0;
-            this.Quit.Text = "Quit";
-            this.Quit.UseVisualStyleBackColor = true;
-            this.Quit.Click += new System.EventHandler(this.onQuit);
+            this.NMapName.AutoSize = true;
+            this.NMapName.Location = new System.Drawing.Point(103, 53);
+            this.NMapName.Name = "NMapName";
+            this.NMapName.Size = new System.Drawing.Size(33, 13);
+            this.NMapName.TabIndex = 13;
+            this.NMapName.Text = "None";
             // 
-            // Canvas
+            // Normal
             // 
-            this.Canvas.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.Canvas.Location = new System.Drawing.Point(13, 13);
-            this.Canvas.Name = "Canvas";
-            this.Canvas.Size = new System.Drawing.Size(640, 480);
-            this.Canvas.TabIndex = 2;
-            this.Canvas.TabStop = false;
-            this.Canvas.Paint += new System.Windows.Forms.PaintEventHandler(this.onPaint);
-            // 
-            // renderTimer
-            // 
-            this.renderTimer.Interval = 10;
-            this.renderTimer.Tick += new System.EventHandler(this.onTick);
-            // 
-            // Log
-            // 
-            this.Log.CausesValidation = false;
-            this.Log.Location = new System.Drawing.Point(6, 136);
-            this.Log.Name = "Log";
-            this.Log.ReadOnly = true;
-            this.Log.Size = new System.Drawing.Size(205, 90);
-            this.Log.TabIndex = 9;
-            this.Log.Text = "Log";
+            this.Normal.Location = new System.Drawing.Point(6, 48);
+            this.Normal.Name = "Normal";
+            this.Normal.Size = new System.Drawing.Size(91, 23);
+            this.Normal.TabIndex = 12;
+            this.Normal.Text = "Normal Map ...";
+            this.Normal.UseVisualStyleBackColor = true;
+            this.Normal.Click += new System.EventHandler(this.onNormal);
             // 
             // DMapName
             // 
@@ -240,24 +237,40 @@
             button2.UseVisualStyleBackColor = true;
             button2.Click += new System.EventHandler(this.onVulkanDiag);
             // 
-            // NMapName
+            // Quit
             // 
-            this.NMapName.AutoSize = true;
-            this.NMapName.Location = new System.Drawing.Point(103, 53);
-            this.NMapName.Name = "NMapName";
-            this.NMapName.Size = new System.Drawing.Size(33, 13);
-            this.NMapName.TabIndex = 13;
-            this.NMapName.Text = "None";
+            this.Quit.Location = new System.Drawing.Point(802, 12);
+            this.Quit.Name = "Quit";
+            this.Quit.Size = new System.Drawing.Size(75, 23);
+            this.Quit.TabIndex = 0;
+            this.Quit.Text = "Quit";
+            this.Quit.UseVisualStyleBackColor = true;
+            this.Quit.Click += new System.EventHandler(this.onQuit);
             // 
-            // Normal
+            // Canvas
             // 
-            this.Normal.Location = new System.Drawing.Point(6, 48);
-            this.Normal.Name = "Normal";
-            this.Normal.Size = new System.Drawing.Size(91, 23);
-            this.Normal.TabIndex = 12;
-            this.Normal.Text = "Normal Map ...";
-            this.Normal.UseVisualStyleBackColor = true;
-            this.Normal.Click += new System.EventHandler(this.onNormal);
+            this.Canvas.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.Canvas.Location = new System.Drawing.Point(13, 13);
+            this.Canvas.Name = "Canvas";
+            this.Canvas.Size = new System.Drawing.Size(640, 480);
+            this.Canvas.TabIndex = 2;
+            this.Canvas.TabStop = false;
+            this.Canvas.Paint += new System.Windows.Forms.PaintEventHandler(this.onPaint);
+            // 
+            // renderTimer
+            // 
+            this.renderTimer.Interval = 10;
+            this.renderTimer.Tick += new System.EventHandler(this.onTick);
+            // 
+            // button3
+            // 
+            button3.Location = new System.Drawing.Point(71, 149);
+            button3.Name = "button3";
+            button3.Size = new System.Drawing.Size(75, 23);
+            button3.TabIndex = 10;
+            button3.Text = "Compile ...";
+            button3.UseVisualStyleBackColor = true;
+            button3.Click += new System.EventHandler(this.onCompile);
             // 
             // ShaderCompiler
             // 

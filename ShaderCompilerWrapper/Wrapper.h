@@ -117,3 +117,6 @@ bool RAPTOR_WRAPPER_API glCreateRaptorRenderer(CRaptorDisplay* display, CRenderE
 
 extern "C"
 bool RAPTOR_WRAPPER_API glDiag(void);
+
+extern "C"
+bool RAPTOR_WRAPPER_API glSetMaps(const char* diffuse, const char* normal);

@@ -73,7 +73,7 @@ public:
     virtual vector<CObject3DContour*> createContours(void);
 
 	//!	Returns the list of shaders in this object hierachy.
-	virtual std::vector<CShader*> getShaders(void);
+	virtual void getShaders(std::vector<CShader*> &shaders);
 
 
     //! Implements CPersistence: serialization

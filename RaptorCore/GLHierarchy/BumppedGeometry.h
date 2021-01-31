@@ -60,7 +60,7 @@ public:
 	virtual CShader	* const getShader(void) const;
 
 	//!	Returns the list of shaders in this object hierachy.
-	virtual std::vector<CShader*> getShaders(void);
+	virtual void getShaders(std::vector<CShader*> &shaders);
 
 	//!	Sets the texture map that will be used as the diffuse component of the bumpping.
 	void setDiffuseMap(ITextureObject* diffuse);

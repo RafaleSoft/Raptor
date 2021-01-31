@@ -81,7 +81,7 @@ public:
 
 	//!	Returns the list of shaders in this object hierachy.
 	//!	Shader is not created if not existant (this method is not equivalent to getShader above)
-	virtual std::vector<CShader*> getShaders(void);
+	virtual void getShaders(std::vector<CShader*> &shaders);
 
 	//!	Returns an ambient occlusion shader for this object.
     //! The shader is configured and properly rendered by the 

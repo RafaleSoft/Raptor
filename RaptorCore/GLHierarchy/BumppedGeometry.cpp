@@ -147,15 +147,11 @@ CShader	* const CBumppedGeometry::getShader(void) const
 	return m_pBumpShader;
 }
 
-std::vector<CShader*> CBumppedGeometry::getShaders(void)
+void CBumppedGeometry::getShaders(std::vector<CShader*> &shaders)
 {
-	std::vector<CShader*> list;
-
 	if (NULL != m_pBumpShader)
 		if (m_pBumpShader->hasOpenGLShader())
-			list.push_back(m_pBumpShader);
-
-	return list;
+			shaders.push_back(m_pBumpShader);
 }
 
 void CBumppedGeometry::setDiffuseMap(ITextureObject* diffuse)

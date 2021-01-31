@@ -53,7 +53,7 @@ public:
 	//void Instantiate(CObject3D * const instance,const GL_MATRIX &transform);
 
 	//!	Returns the list of shaders in this object hierachy.
-	virtual std::vector<CShader*> getShaders(void);
+	virtual void getShaders(std::vector<CShader*> &shaders);
 
 	virtual void glRender();
 

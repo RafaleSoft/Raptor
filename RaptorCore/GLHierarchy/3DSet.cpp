@@ -155,24 +155,17 @@ vector<CObject3DContour*> C3DSet::createContours(void)
     return res;
 }
 
-std::vector<CShader*> C3DSet::getShaders(void)
+void C3DSet::getShaders(std::vector<CShader*> &shaders)
 {
-	std::vector<CShader*> list;
-
 	if (m_pRoot != NULL)
 	{
 		C3DSetItem  *it = m_pRoot->getFirstChild();
 		while (it != NULL)
 		{
-			std::vector<CShader*> child = it->getObject()->getShaders();
-			for (size_t i = 0; i < child.size(); i++)
-				list.push_back(child[i]);
-
+			it->getObject()->getShaders(shaders);
 			it = it->getNextChild();
 		}
 	}
-
-	return list;
 }
 
 

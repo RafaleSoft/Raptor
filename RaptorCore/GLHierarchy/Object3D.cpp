@@ -166,10 +166,8 @@ vector<CObject3DContour*> CObject3D::createContours(void)
     return res;
 }
 
-std::vector<CShader*> CObject3D::getShaders(void)
+void CObject3D::getShaders(std::vector<CShader*> &shaders)
 {
-	std::vector<CShader*> list;
-	return list;
 }
 
 void CObject3D::notifyBoundingBox(void)

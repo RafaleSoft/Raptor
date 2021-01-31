@@ -113,21 +113,12 @@ vector<CObject3DContour*> CGLLod::createContours(void)
     return res;
 }
 
-std::vector<CShader*> CGLLod::getShaders(void)
+void CGLLod::getShaders(std::vector<CShader*> &shaders)
 {
-	std::vector<CShader*> list;
-
 	std::vector<LOD>::iterator pos = lods.begin();
 	while (pos != lods.end())
-	{
-		std::vector<CShader*> child = (*pos++).obj->getShaders();
-		for (size_t i = 0; i < child.size(); i++)
-			list.push_back(child[i]);
-	}
-
-	return list;
+		(*pos++).obj->getShaders(shaders);
 }
-
 
 CObject3D* const CGLLod::getLod(size_t numLod) const
 { 
