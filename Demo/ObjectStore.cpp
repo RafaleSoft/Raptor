@@ -442,14 +442,36 @@ bool CObjectStore::IsARoof(CGeometry *g)
 
 	if (name.substr(0,4) == "Roof")
 	{
-        geo->setShader(m_pRoofShader);
+		
+		CShader *pShader = CShader::getShader("PHONG_SHADER").glClone("ROOF_SHADER");
+		pShader->setColor(0.2f, 0.2f, 0.2f, 1.0f);
+		*pShader->getMaterial() = *m_material;
+		CTextureUnitSetup *tmuSetup = pShader->glGetTextureUnitsSetup();
+		tmuSetup->setDiffuseMap(m_textures->getTexture(WOOD), CTextureUnitSetup::CGL_MULTIPLY);
+		tmuSetup->enableImageUnit(CTextureUnitSetup::IMAGE_UNIT_1, false);
+		tmuSetup->enableImageUnit(CTextureUnitSetup::IMAGE_UNIT_2, false);
+		tmuSetup->enableImageUnit(CTextureUnitSetup::IMAGE_UNIT_3, false);
+		geo->setShader(pShader);
+		
+		//geo->setShader(m_pRoofShader);
 		return true;
 	}
 	else if (name == "TopRoof")
 	{
+		
+		CShader *pShader = CShader::getShader("PHONG_SHADER").glClone("ROOF_SHADER");
+		pShader->setColor(0.2f, 0.2f, 0.2f, 1.0f);
+		*pShader->getMaterial() = *m_material;
+		CTextureUnitSetup *tmuSetup = pShader->glGetTextureUnitsSetup();
+		tmuSetup->setDiffuseMap(m_textures->getTexture(WOOD), CTextureUnitSetup::CGL_MULTIPLY);
+		tmuSetup->enableImageUnit(CTextureUnitSetup::IMAGE_UNIT_1, false);
+		tmuSetup->enableImageUnit(CTextureUnitSetup::IMAGE_UNIT_2, false);
+		tmuSetup->enableImageUnit(CTextureUnitSetup::IMAGE_UNIT_3, false);
+		geo->setShader(pShader);
+		
         const CGeometryEditor &pEditor = g->getEditor();
 		pEditor.scaleTexCoords(1.0f,4.0f);
-        geo->setShader(m_pRoofShader);
+        //geo->setShader(m_pRoofShader);
 	}
 	
 	return false;
@@ -620,6 +642,7 @@ void CObjectStore::LoadModels(void)
 	m_textures->addTexture(T);
 
     m_pRoofShader = new CShader("ROOF_SHADER");
+	//m_pRoofShader = CShader::getShader("PHONG_SHADER").glClone("ROOF_SHADER");
     m_pRoofShader->setColor(0.2f,0.2f,0.2f,1.0f);
 	*m_pRoofShader->getMaterial() = *m_material;
 	CTextureUnitSetup *tmuSetup = m_pRoofShader->glGetTextureUnitsSetup();

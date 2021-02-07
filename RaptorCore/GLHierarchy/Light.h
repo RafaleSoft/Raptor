@@ -51,15 +51,16 @@ public:
 		CColor::RGBA	diffuse;
 		CColor::RGBA	specular;
 		float			shininess;
-		float			reserved[3];
+		float			reserved[3];	// align shininess on a vec4
 		uint32_t		enable;
-		float			reserved2[3];
+		float			reserved2[3];	// align enable on a vec4
 	} R_LightProduct;
 
 	typedef struct LightProducts_t
 	{
 		R_LightProduct	lights[5];
 		CColor::RGBA	scene_ambient;
+		float			reserved3[48];	// align structure on a multiple of granularity.
 	} R_LightProducts;
 
 

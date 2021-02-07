@@ -27,6 +27,8 @@
 
 - ShadowVolume:
 	- addObject: recalcul des bbox ? redimensionner un static array pour glvkBindArray
+	- Object3DShadow: utiliser un seul shader au lieu de 1 shader par shado wobject ? 
+	(==> updateParameters au rendu et non pas offline au calcul des shadows)
 
 - CMipmapBuilder:
 	- Reintégrer, pour générer les mipmaps pour Vulkan (vkLoadTexture) ==> source de gluBuild2DMipmaps.

@@ -26,6 +26,7 @@ class CLight;
 RAPTOR_INTERFACE IRaptorPipeline;
 class CObject3D;
 class CVulkanCommandBuffer;
+class CShader;
 
 
 class C3DSceneObject  
@@ -67,7 +68,7 @@ public:
 
 	//! This method renders the selected lights into a shader buffer at provided offset.
 	//!	- selectLights must have been called for current rendering.
-	size_t glRenderLights(CLight::R_LightProducts *buffer, uint64_t bufferOffset, uint8_t* uniform, bool proceedLights);
+	size_t glRenderLights(CLight::R_LightProducts *buffer, uint8_t* uniform, bool proceedLights);
 
 	//! This method renders initial occlusion bbox 
 	void glRenderBBoxOcclusion(unsigned int passNumber);
@@ -103,8 +104,13 @@ public:
 	{
 		uint8_t		*uniform;
 		uint64_t	bufferOffset;
+		CShader		*shader;
+		size_t		index;
 	} lightShaderbloc;
 	std::vector<lightShaderbloc> lightShaders;
+
+	size_t initShaders(size_t base);
+
 
 private:
 	//!	Default constructor.

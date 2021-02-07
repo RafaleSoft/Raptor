@@ -124,38 +124,56 @@ CObject3D* C3DSceneObject::getObject(void) const
 	return obj;
 }
 
-size_t C3DSceneObject::glRenderLights(CLight::R_LightProducts *buffer, uint64_t bufferOffset, uint8_t* uniform, bool proceedLights)
+size_t C3DSceneObject::initShaders(size_t base)
+{
+	CObject3D* obj = object.ptr<CObject3D>();
+
+	std::vector<CShader*> list;
+	obj->getShaders(list);
+
+	size_t nb = 0;
+
+	for (size_t i = 0; i < list.size(); i++)
+	{
+		CShader *pShader = list[i];
+		if (pShader->hasShaderBloc())
+		{
+			lightShaderbloc bloc;
+			bloc.uniform = 0;
+			bloc.bufferOffset = 0;
+			bloc.shader = pShader;
+			bloc.index = base + i;
+			lightShaders.push_back(bloc);
+			nb++;
+		}
+	}
+
+	return nb;
+}
+
+size_t C3DSceneObject::glRenderLights(CLight::R_LightProducts *buffer, uint8_t* uniform, bool proceedLights)
 {
 	size_t nb_shaders = 0;
 
-	lightShaders.clear();
 	if (!proceedLights)
 	{
-		lightShaderbloc bloc;
-		bloc.uniform = uniform;
-		bloc.bufferOffset = 0;
-		lightShaders.push_back(bloc);
-
+		for (size_t i = 0; i < lightShaders.size(); i++)
+		{
+			lightShaderbloc &bloc = lightShaders[i];
+			bloc.uniform = uniform;
+			bloc.bufferOffset = 0;
+		}
 		return nb_shaders;
 	}
 
 	if (NULL != buffer)
 	{
-		CObject3D *obj = object.ptr<CObject3D>();
-		std::vector<CShader*> shaders;
-		obj->getShaders(shaders);
-
-		for (size_t i = 0; i < shaders.size(); i++)
+		for (size_t i = 0; i < lightShaders.size(); i++)
 		{
-			CShader *shader = shaders[i];
-			if (!shader->hasOpenGLShader())
-				continue;
-			if (!shader->hasMaterial())
-				continue;
-			if (!shader->hasShaderBloc())
-				continue;
+			lightShaderbloc &bloc = lightShaders[i];
+			CShader *shader = bloc.shader;
 
-			CLight::R_LightProducts &products = buffer[bufferOffset + nb_shaders];
+			CLight::R_LightProducts &products = buffer[bloc.index];
 
 			COpenGLShaderStage *stage = shader->glGetOpenGLShader();
 			CMaterial *M = shader->getMaterial();
@@ -183,10 +201,8 @@ size_t C3DSceneObject::glRenderLights(CLight::R_LightProducts *buffer, uint64_t 
 			products.scene_ambient = shader->getAmbient();
 
 			size_t size = sizeof(CLight::R_LightProducts);
-			lightShaderbloc bloc;
 			bloc.uniform = uniform;
-			bloc.bufferOffset = (bufferOffset + nb_shaders) * size;
-			lightShaders.push_back(bloc);
+			bloc.bufferOffset = bloc.index * size;
 
 			nb_shaders++;
 		}
@@ -261,28 +277,17 @@ bool C3DSceneObject::glRenderPass(	unsigned int passNumber,
 	bool use_gl_lights = true;
 	CObject3D *obj = object.ptr<CObject3D>();
 	
-	std::vector<CShader*> shaders;
-	obj->getShaders(shaders);
-	for (size_t i = 0; i < shaders.size(); i++)
+	for (size_t i = 0; i < lightShaders.size(); i++)
 	{
-		CShader *shader = shaders[i];
-		if (shader->hasShaderBloc())
-		{
-			use_gl_lights = false;
-			CShaderBloc *B = shader->glGetShaderBloc();
-			if (proceedLights)
-			{
-				lightShaderbloc& bloc = lightShaders[i];
-				B->glvkSetUniformBuffer(bloc.uniform, sizeof(CLight::R_LightProducts), bloc.bufferOffset);
-			}
-			else
-			{
-				lightShaderbloc& bloc = lightShaders[0];
-				B->glvkSetUniformBuffer(bloc.uniform, sizeof(CLight::R_LightProducts), 0);
-			}
-		}
+		use_gl_lights = false;
+
+		lightShaderbloc &bloc = lightShaders[i];
+		CShader *shader = bloc.shader;
+		CShaderBloc *B = shader->glGetShaderBloc();
+
+		B->glvkSetUniformBuffer(bloc.uniform, sizeof(CLight::R_LightProducts), bloc.bufferOffset);
 	}
-	
+
 	if (use_gl_lights)
 		glRenderLights(proceedLights, lights);
 

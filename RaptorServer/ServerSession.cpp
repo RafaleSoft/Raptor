@@ -85,7 +85,7 @@ bool CServerSession::closeSession(server_base_t::request_handler_t::request_id i
 
 			//! Check if directory is valid.
 			std::stringstream session_path;
-			session_path << "session_" << id << std::ends;
+			session_path << "session_" << id;
 			int dir_exist = _chdir(session_path.str().c_str());
 			if ((ENOENT == errno) && (-1 == dir_exist))
 			{
@@ -97,7 +97,7 @@ bool CServerSession::closeSession(server_base_t::request_handler_t::request_id i
 			std::stringstream session_dir;
 			session_dir << buffer << "\\";
 			session_dir << "session_" << id;
-			session_dir << "\\*" << std::ends;
+			session_dir << "\\*";
 			WIN32_FIND_DATA ffd;
 			HANDLE hFind = FindFirstFile(session_dir.str().c_str(), &ffd);
 			if (INVALID_HANDLE_VALUE == hFind)

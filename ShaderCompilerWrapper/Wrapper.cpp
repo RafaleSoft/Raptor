@@ -14,6 +14,7 @@
 #include "GLHierarchy/ShadedGeometry.h"
 #include "GLHierarchy/Shader.h"
 #include "GLHierarchy/GeometryEditor.h"
+#include "GLHierarchy/OpenGLShaderStage.h"
 #include "GLHierarchy/TextureFactory.h"
 #include "GLHierarchy/TextureUnitSetup.h"
 #include "System/Image.h"
@@ -249,9 +250,12 @@ bool RAPTOR_WRAPPER_API glCreateRaptorRenderer(CRaptorDisplay* display, CRenderE
 
 bool RAPTOR_WRAPPER_API glSetMaps(const char* diffuse, const char* normal)
 {
+	if (NULL == object)
+		return false;
+
 	bool upadateMap = false;
 
-	if ((NULL != diffuse) && (NULL != object) && (strlen(diffuse) > 0))
+	if ((NULL != diffuse) && (strlen(diffuse) > 0))
 	{
 		CImage i;
 		CVaArray<CImage::IImageOP*> ops;
@@ -273,11 +277,11 @@ bool RAPTOR_WRAPPER_API glSetMaps(const char* diffuse, const char* normal)
 		}
 	}
 		
-	if ((NULL != normal) && (NULL != object) && (strlen(normal) > 0))
+	if ((NULL != normal) && (strlen(normal) > 0))
 	{
 		CImage i;
 		CVaArray<CImage::IImageOP*> ops;
-		if (i.loadImage(diffuse, ops))
+		if (i.loadImage(normal, ops))
 		{
 			CShader *shader = object->getShader();
 			CTextureUnitSetup *tmu = shader->glGetTextureUnitsSetup();
@@ -296,6 +300,49 @@ bool RAPTOR_WRAPPER_API glSetMaps(const char* diffuse, const char* normal)
 	}
 
 	return upadateMap;
+}
+
+bool RAPTOR_WRAPPER_API glSetShaders(const char* vertex, const char* geometry, const char* fragment, const char **log)
+{
+	if (NULL == object)
+		return false;
+
+	bool compileShader = false;
+
+	CShader *shader = object->getShader();
+	COpenGLShaderStage *stage = shader->glGetOpenGLShader("GL_SHADER_STAGE");
+
+	if ((NULL != vertex) && (strlen(vertex) > 0))
+	{
+		CVertexShader *vs = stage->glGetVertexShader("VERTEX_SHADER");
+		compileShader = true;
+	}
+
+	if ((NULL != geometry) && (strlen(geometry) > 0))
+	{
+		CGeometryShader *gs = stage->glGetGeometryShader("GEOMETRY_SHADER");
+		compileShader = true;
+	}
+
+	if ((NULL != fragment) && (strlen(fragment) > 0))
+	{
+		CFragmentShader *fs = stage->glGetFragmentShader("FRAGMENT_SHADER");
+		compileShader = true;
+	}
+
+	if (compileShader)
+	{
+		if (stage->glCompileShader())
+		{
+		}
+	}
+
+	if (NULL != log)
+	{
+
+	}
+
+	return compileShader;
 }
 
 void write_int(GLenum pval, const char* pname, ofstream& out)
@@ -335,30 +382,31 @@ bool RAPTOR_WRAPPER_API glDiag(void)
 		const char *glsl = (char*)glGetString(GL_SHADING_LANGUAGE_VERSION_ARB);
 		gldiag.write(glsl, strlen(glsl)); gldiag.write("\n", nl);
 
-		gldiag.write("18\n", 2 + nl);
+		gldiag.write("21\n", 2 + nl);
 
-		write_int(GL_MAX_LIGHTS, "MAX_LIGHTS ", gldiag);
-		write_int(GL_MAX_TEXTURE_SIZE, "MAX_TEXTURE_SIZE ", gldiag);
-		write_int(GL_MAX_TEXTURE_UNITS_ARB, "MAX_TEXTURE_UNITS ", gldiag);
 		write_int(GL_MAX_3D_TEXTURE_SIZE, "MAX_3D_TEXTURE_SIZE ", gldiag);
-		write_int(GL_MAX_DRAW_BUFFERS, "MAX_DRAW_BUFFERS ", gldiag);
-		write_int(GL_MAX_VERTEX_ATTRIBS, "MAX_VERTEX_ATTRIBS ", gldiag);
-		write_int(GL_MAX_TEXTURE_COORDS, "MAX_TEXTURE_COORDS ", gldiag);
-		write_int(GL_MAX_TEXTURE_IMAGE_UNITS, "MAX_TEXTURE_IMAGE_UNITS ", gldiag);
 		write_int(GL_MAX_ATTRIB_STACK_DEPTH, "MAX_ATTRIB_STACK_DEPTH ", gldiag);
+		write_int(GL_MAX_CLIENT_ATTRIB_STACK_DEPTH, "MAX_CLIENT_ATTRIB_STACK_DEPTH ", gldiag);
+		write_int(GL_MAX_CLIP_PLANES, "MAX_CLIP_PLANES ", gldiag);
+		write_int(GL_MAX_CUBE_MAP_TEXTURE_SIZE, "MAX_CUBE_MAP_TEXTURE_SIZE ", gldiag);
+		write_int(GL_MAX_DRAW_BUFFERS, "MAX_DRAW_BUFFERS ", gldiag);
+		write_int(GL_MAX_ELEMENTS_VERTICES, "MAX_ELEMENTS_VERTICES ", gldiag);
+		write_int(GL_MAX_ELEMENTS_INDICES, "MAX_ELEMENTS_INDICES ", gldiag);
+		write_int(GL_MAX_EVAL_ORDER, "MAX_EVAL_ORDER ", gldiag);
+		write_int(GL_MAX_LIGHTS, "MAX_LIGHTS ", gldiag);
+		write_int(GL_MAX_LIST_NESTING, "MAX_LIST_NESTING ", gldiag);
 		write_int(GL_MAX_MODELVIEW_STACK_DEPTH, "MAX_MODELVIEW_STACK_DEPTH ", gldiag);
 		write_int(GL_MAX_NAME_STACK_DEPTH, "MAX_NAME_STACK_DEPTH ", gldiag);
 		write_int(GL_MAX_PROJECTION_STACK_DEPTH, "MAX_PROJECTION_STACK_DEPTH ", gldiag);
-		write_int(GL_MAX_TEXTURE_STACK_DEPTH, "MAX_TEXTURE_STACK_DEPTH ", gldiag);
-		write_int(GL_MAX_CLIENT_ATTRIB_STACK_DEPTH, "MAX_CLIENT_ATTRIB_STACK_DEPTH ", gldiag);
-		write_int(GL_MAX_ELEMENTS_VERTICES, "MAX_ELEMENTS_VERTICES ", gldiag);
-		write_int(GL_MAX_ELEMENTS_INDICES, "MAX_ELEMENTS_VERTICES ", gldiag);
-		write_int(GL_MAX_CUBE_MAP_TEXTURE_SIZE, "MAX_CUBE_MAP_TEXTURE_SIZE ", gldiag);
+		write_int(GL_MAX_TEXTURE_COORDS, "MAX_TEXTURE_COORDS ", gldiag);
+		write_int(GL_MAX_TEXTURE_IMAGE_UNITS, "MAX_TEXTURE_IMAGE_UNITS ", gldiag);
 		write_int(GL_MAX_TEXTURE_LOD_BIAS, "MAX_TEXTURE_LOD_BIAS ", gldiag);
+		write_int(GL_MAX_TEXTURE_SIZE, "MAX_TEXTURE_SIZE ", gldiag);
+		write_int(GL_MAX_TEXTURE_STACK_DEPTH, "MAX_TEXTURE_STACK_DEPTH ", gldiag);
+		write_int(GL_MAX_TEXTURE_UNITS_ARB, "MAX_TEXTURE_UNITS ", gldiag);
+		write_int(GL_MAX_VERTEX_ATTRIBS, "MAX_VERTEX_ATTRIBS ", gldiag);
 
-		//GL_MAX_LIST_NESTING               0x0B31
-		// GL_MAX_EVAL_ORDER                 0x0D30
-		// GL_MAX_CLIP_PLANES                0x0D32
+		
 		// GL_MAX_PIXEL_MAP_TABLE            0x0D34
 		// GL_MAX_VIEWPORT_DIMS              0x0D3A
 				

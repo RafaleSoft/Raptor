@@ -120,3 +120,6 @@ bool RAPTOR_WRAPPER_API glDiag(void);
 
 extern "C"
 bool RAPTOR_WRAPPER_API glSetMaps(const char* diffuse, const char* normal);
+
+extern "C"
+bool RAPTOR_WRAPPER_API glSetShaders(const char* vertex, const char* geometry, const char* fragment, const char **log);

@@ -165,6 +165,7 @@ void C3DSceneAttributes::glResetQueries(void)
 #endif
 }
 
+static size_t NB_SHADERS = 0;
 void C3DSceneAttributes::prepareData(void)
 {
 	if ((m_pSceneTree == NULL) && m_bUseZSort)
@@ -186,42 +187,31 @@ void C3DSceneAttributes::prepareData(void)
 		m_pSceneTree = pTree;
 	}
 
+	//!	Determine the number of shaders for curent rendering
+	if ((NULL == m_lightProductsShaderBuffer.address) || (NULL == m_transformsShaderBuffer.address))
+	{
+		size_t nb_shaders = 0;
+		std::vector<C3DSceneObject*>::const_iterator it = m_pObjects.begin();
+		while (it != m_pObjects.end())
+		{
+			C3DSceneObject *sc = (*it++);
+			nb_shaders += sc->initShaders(nb_shaders);
+		}
+		NB_SHADERS = nb_shaders;
+	}
+
 	//! Allocate light products buffer for uniform loading:
 	//!	- enough storage to handle full object list rendering
 	//!	- TODO: this allocation is not dynamic
 	if (NULL == lightProducts)
 	{
-		lightProducts = new CLight::R_LightProducts[m_pObjects.size()];
-	}
-
-	//!	Determine the number of shaders for curent rendering
-	size_t nb_shaders = 0;
-	if ((NULL == m_lightProductsShaderBuffer.address) || (NULL == m_transformsShaderBuffer.address))
-	{
-		std::vector<CShader*>	pShaders;
-
-		std::vector<C3DSceneObject*>::const_iterator it = m_pObjects.begin();
-		while (it != m_pObjects.end())
-		{
-			C3DSceneObject *sc = (*it++);
-			CObject3D* obj = sc->getObject();
-
-			std::vector<CShader*> list;
-			obj->getShaders(list);
-			for (size_t i = 0; i < list.size(); i++)
-			{
-				CShader *pShader = list[i];
-				if (pShader->hasShaderBloc())
-					pShaders.push_back(list[i]);
-			}
-		}
-		nb_shaders = pShaders.size();
+		lightProducts = new CLight::R_LightProducts[NB_SHADERS];
 	}
 
 	//!	Allocate Uniform bloc for Shader Uniform blocs used for lighting
 	if (NULL == m_lightProductsShaderBuffer.address)
 	{
-		uint64_t sz = nb_shaders * sizeof(CLight::R_LightProducts);
+		uint64_t sz = NB_SHADERS * sizeof(CLight::R_LightProducts);
 		CUniformAllocator*	pUAllocator = CUniformAllocator::GetInstance();
 		bool relocated = pUAllocator->isMemoryLocked();
 		if (relocated)
@@ -237,7 +227,7 @@ void C3DSceneAttributes::prepareData(void)
 	//!	Allocate Uniform bloc for Shader Uniform blocs used for transformation
 	if (NULL == m_transformsShaderBuffer.address)
 	{
-		uint64_t sz = nb_shaders * 4 * sizeof(GL_MATRIX);
+		uint64_t sz = NB_SHADERS * 4 * sizeof(GL_MATRIX);
 		CUniformAllocator*	pUAllocator = CUniformAllocator::GetInstance();
 		bool relocated = pUAllocator->isMemoryLocked();
 		if (relocated)
@@ -398,16 +388,17 @@ void C3DSceneAttributes::glRenderLights(const std::vector<C3DSceneObject*>& obje
 	while (it != objects.end())
 	{
 		C3DSceneObject* const h = (*it++);
-		size_t nb_shaders = h->glRenderLights(lightProducts, offset, m_lightProductsShaderBuffer.address, proceedLights);
+		size_t nb_shaders = h->glRenderLights(lightProducts, m_lightProductsShaderBuffer.address, proceedLights);
 		if (nb_shaders > 0)
 			offset += nb_shaders;
 	}
 
 	CUniformAllocator*	pUAllocator = CUniformAllocator::GetInstance();
-	if (proceedLights)
+	if (proceedLights && (offset > 0))
 		pUAllocator->glvkSetPointerData(m_lightProductsShaderBuffer.address, 
 										(uint8_t*)lightProducts,
-										offset * sizeof(CLight::R_LightProducts));
+										NB_SHADERS * sizeof(CLight::R_LightProducts));
+										//offset * sizeof(CLight::R_LightProducts));
 	else	// Store only one empty bloc if no lighting.
 	{
 		for (int j = 0; j < 5; j++)

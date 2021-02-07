@@ -431,7 +431,6 @@ bool CResourceAllocator::CResourceBinder::bindArray(CRaptorDisplayConfig::GL_ARR
 				std::stringstream msg;
 				msg << "Resource Binder does not support array name: ";
 				msg << state.arrayName;
-				msg << std::ends;
 				Raptor::GetErrorManager()->generateRaptorError(	COpenGL::COpenGLClassID::GetClassId(),
 																CRaptorErrorManager::RAPTOR_FATAL, msg.str());
 #endif

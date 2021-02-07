@@ -138,5 +138,10 @@ namespace ShaderCompiler
         [DllImport("ShaderCompilerWrapper.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool glSetMaps(IntPtr diffuse, IntPtr normal);
+
+
+        [DllImport("ShaderCompilerWrapper.dll", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool glSetShaders(IntPtr vertex, IntPtr geometry, IntPtr fragment, out IntPtr log);
     }
 }

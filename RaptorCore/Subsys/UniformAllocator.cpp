@@ -290,6 +290,17 @@ bool CUniformAllocator::glvkBindUniform(uint8_t *uniform, int32_t index, uint64_
 			base = base + offset;
 		uint32_t buffer = relocatedUniforms->getBufferId();
 
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+		uint64_t granularity = 16;
+		if (NULL != relocatedUniforms)
+			granularity = relocatedUniforms->getRelocationOffset();
+		if (((uint64_t)base % granularity) > 0)
+		{
+			RAPTOR_ERROR(	COpenGL::COpenGLClassID::GetClassId(),
+							"Uniform allocator buffer base is not aligned on granularity" );
+		}
+#endif
+
 		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 		if (pExtensions->glBindBufferRangeARB != NULL)
 		{

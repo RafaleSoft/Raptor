@@ -530,7 +530,6 @@ bool COpenGLShaderStage::glCompileShader()
 				msg << m_handle.handle();
 				msg << "] is: ";
 				msg << getName();
-				msg << std::ends;
 				RAPTOR_NO_ERROR(COpenGLShaderStage::COpenGLShaderStageClassID::GetClassId(),
 								msg.str());
 			}
