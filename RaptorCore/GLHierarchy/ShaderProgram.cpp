@@ -150,6 +150,7 @@ std::string CShaderProgram::readFile(const std::string filename)
 			}
 		}
 
+		delete shdr;
 		return programstr;
 	}
 	else
@@ -165,6 +166,7 @@ std::string CShaderProgram::readFile(const std::string filename)
 														CRaptorMessages::ID_NO_RESOURCE,
 														__FILE__, __LINE__, args);
 
+		delete shdr;
 		return false;
 	}
 }

@@ -201,17 +201,17 @@ void C3DSceneAttributes::prepareData(void)
 	}
 
 	//! Allocate light products buffer for uniform loading:
-	//!	- enough storage to handle full object list rendering
+	//!	- enough storage to handle full object list rendering + 1 location for no lighting
 	//!	- TODO: this allocation is not dynamic
 	if (NULL == lightProducts)
 	{
-		lightProducts = new CLight::R_LightProducts[NB_SHADERS];
+		lightProducts = new CLight::R_LightProducts[1 + NB_SHADERS];
 	}
 
 	//!	Allocate Uniform bloc for Shader Uniform blocs used for lighting
 	if (NULL == m_lightProductsShaderBuffer.address)
 	{
-		uint64_t sz = NB_SHADERS * sizeof(CLight::R_LightProducts);
+		uint64_t sz = (1 + NB_SHADERS) * sizeof(CLight::R_LightProducts);
 		CUniformAllocator*	pUAllocator = CUniformAllocator::GetInstance();
 		bool relocated = pUAllocator->isMemoryLocked();
 		if (relocated)
@@ -227,7 +227,7 @@ void C3DSceneAttributes::prepareData(void)
 	//!	Allocate Uniform bloc for Shader Uniform blocs used for transformation
 	if (NULL == m_transformsShaderBuffer.address)
 	{
-		uint64_t sz = NB_SHADERS * 4 * sizeof(GL_MATRIX);
+		uint64_t sz = (1 + NB_SHADERS) * 4 * sizeof(GL_MATRIX);
 		CUniformAllocator*	pUAllocator = CUniformAllocator::GetInstance();
 		bool relocated = pUAllocator->isMemoryLocked();
 		if (relocated)
@@ -402,7 +402,7 @@ void C3DSceneAttributes::glRenderLights(const std::vector<C3DSceneObject*>& obje
 	else	// Store only one empty bloc if no lighting.
 	{
 		for (int j = 0; j < 5; j++)
-			lightProducts[0].lights[j].enable = 0;
+			lightProducts[0].lights[j].enable = shader_false;
 		lightProducts[0].scene_ambient = CShader::getAmbient();
 		pUAllocator->glvkSetPointerData(m_lightProductsShaderBuffer.address,
 										(uint8_t*)lightProducts,

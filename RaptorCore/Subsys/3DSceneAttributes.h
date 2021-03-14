@@ -104,8 +104,8 @@ public:
     //! Internal use only : true if mirror pass has been issued.
     bool			m_bMirrorsRendered;
 	
-	vector<CLight*>			m_pLights;
-    vector<CMirror*>		m_pMirrors;
+	std::vector<CLight*>			m_pLights;
+    std::vector<CMirror*>		m_pMirrors;
 	CLight*					m_pCurrentLight;
 	
 	std::vector<CObject3D*>			transparents;

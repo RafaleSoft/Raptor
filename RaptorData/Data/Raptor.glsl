@@ -49,8 +49,6 @@ struct LightProduct
 	vec4 ambient;
 	vec4 diffuse;
 	vec4 specular;
-	float shininess;
-	float reserved[3];
 	bool enable;
 	bool reserved2[3];
 };
@@ -65,6 +63,8 @@ struct LightProduct
 	{ \
 		LightProduct lights[MAX_LIGHTS]; \
 		vec4		 scene_ambient; \
+		float		 shininess; \
+		float		 reserved[3]; \
 	}
 #endif
 

@@ -113,13 +113,13 @@ namespace ShaderCompiler
             this.Opacity = 0.5;
 
             FileDialog open = new OpenFileDialog();
-            open.Filter = "Fragment Shader|*.fs;*.frag";
+            open.Filter = "Fragment Shader|*.ps;*.frag";
             DialogResult res = open.ShowDialog();
 
             if (DialogResult.OK == res)
             {
                 string ext = Path.GetExtension(open.FileName).ToLower();
-                if ((ext == ".fs") || (ext == ".frag"))
+                if ((ext == ".ps") || (ext == ".frag"))
                 {
                     fragment_shader_file = open.FileName;
                     FShaderName.Text = Path.GetFileName(open.FileName);
@@ -137,7 +137,26 @@ namespace ShaderCompiler
 
         private void onCompile(object sender, EventArgs e)
         {
+            if (glBindDisplay(display, hDC))
+            {
+                IntPtr vrtx = Marshal.StringToHGlobalAnsi(vertex_shader_file);
+                IntPtr frag = Marshal.StringToHGlobalAnsi(fragment_shader_file);
+                IntPtr geom = Marshal.StringToHGlobalAnsi(geometry_shader_file);
 
+                IntPtr log;
+                glSetShaders(vrtx, geom, frag, out log);
+                string log_msg = Marshal.PtrToStringAnsi(log);
+                if (Log.Text.Length > 0)
+                    Log.AppendText("\r\n");
+                Log.AppendText(log_msg);
+
+
+                Marshal.FreeHGlobal(vrtx);
+                Marshal.FreeHGlobal(frag);
+                Marshal.FreeHGlobal(geom);
+
+                glUnBindDisplay(display);
+            }
         }
 
         private bool initialiseGL()
@@ -297,6 +316,8 @@ namespace ShaderCompiler
                 glSetMaps(d, n);
                 glUnBindDisplay(display);
             }
+            Marshal.FreeHGlobal(d);
+            Marshal.FreeHGlobal(n);
 
             this.Opacity = 1.0;
         }
@@ -330,6 +351,8 @@ namespace ShaderCompiler
                 glSetMaps(d, n);
                 glUnBindDisplay(display);
             }
+            Marshal.FreeHGlobal(d);
+            Marshal.FreeHGlobal(n);
 
             open.Dispose();
 

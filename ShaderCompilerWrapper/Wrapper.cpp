@@ -17,6 +17,9 @@
 #include "GLHierarchy/OpenGLShaderStage.h"
 #include "GLHierarchy/TextureFactory.h"
 #include "GLHierarchy/TextureUnitSetup.h"
+#include "GLHierarchy/VertexShader.h"
+#include "GLHierarchy/FragmentShader.h"
+#include "GLHierarchy/GeometryShader.h"
 #include "System/Image.h"
 #include "System/RaptorConsole.h"
 #include "System/RaptorGLExtensions.h"
@@ -175,19 +178,24 @@ void CRenderer::glInitRenderer()
 		object->translate(-c.x, -c.y, -c.z);
 		object->rotationX(-90.0f);
 		object->addModel(CGeometry::RENDERING_MODEL::CGL_NORMALS);
+		object->addModel(CGeometry::RENDERING_MODEL::CGL_TANGENTS);
+
+		const CGeometryEditor &pEditor = object->getEditor();
+		pEditor.genBinormals();
 	}
 	else
 	{
 		CBasicObjects::CCube *obj = new CBasicObjects::CCube();
-		CShader* s = obj->getShader();
-		CMaterial *pMat = s->getMaterial();
-		pMat->setAmbient(0.1f, 0.1f, 0.1f, 1.0f);
-		pMat->setDiffuse(0.3f, 0.4f, 0.8f, 1.0f);
-		pMat->setSpecular(0.7f, 0.7f, 0.7f, 1.0f);
-		pMat->setEmission(0.0f, 0.0f, 0.0f, 1.0f);
-		pMat->setShininess(128.0f);
 		object = obj;
 	}
+
+	CShader* s = object->getShader();
+	CMaterial *pMat = s->getMaterial();
+	pMat->setAmbient(0.1f, 0.1f, 0.1f, 1.0f);
+	pMat->setDiffuse(0.3f, 0.4f, 0.8f, 1.0f);
+	pMat->setSpecular(0.7f, 0.7f, 0.7f, 1.0f);
+	pMat->setEmission(0.0f, 0.0f, 0.0f, 1.0f);
+	pMat->setShininess(128.0f);
 
 	IRenderingProperties &props = m_pDisplay->getRenderingProperties();
 	props.enableLighting.disableTexturing;
@@ -315,31 +323,52 @@ bool RAPTOR_WRAPPER_API glSetShaders(const char* vertex, const char* geometry, c
 	if ((NULL != vertex) && (strlen(vertex) > 0))
 	{
 		CVertexShader *vs = stage->glGetVertexShader("VERTEX_SHADER");
+		vs->glLoadProgramFromFile(vertex);
 		compileShader = true;
 	}
 
 	if ((NULL != geometry) && (strlen(geometry) > 0))
 	{
 		CGeometryShader *gs = stage->glGetGeometryShader("GEOMETRY_SHADER");
+		gs->glLoadProgramFromFile(geometry);
 		compileShader = true;
 	}
 
 	if ((NULL != fragment) && (strlen(fragment) > 0))
 	{
 		CFragmentShader *fs = stage->glGetFragmentShader("FRAGMENT_SHADER");
+		fs->glLoadProgramFromFile(fragment);
 		compileShader = true;
 	}
 
+	std::string log_msg = "";
 	if (compileShader)
 	{
 		if (stage->glCompileShader())
 		{
+			log_msg = "Shader stage compiled successfully";
+			compileShader = true;
+		}
+		else
+		{
+			log_msg = "Failed to compile shader stage";
+			compileShader = false;
 		}
 	}
 
 	if (NULL != log)
 	{
+		char *msg = (char*)calloc(log_msg.length() + 1, 1);
+		memcpy(msg, log_msg.c_str(), log_msg.length());
+		log[0] = msg;
 
+		if (!compileShader)
+		{
+			CRaptorErrorManager *pErr = Raptor::GetErrorManager();
+			int nerr = pErr->getLastRaptorError();
+			CRaptorErrorManager::GL_RAPTOR_ERROR err;
+			pErr->getRaptorError(nerr, err);
+		}
 	}
 
 	return compileShader;
@@ -382,22 +411,32 @@ bool RAPTOR_WRAPPER_API glDiag(void)
 		const char *glsl = (char*)glGetString(GL_SHADING_LANGUAGE_VERSION_ARB);
 		gldiag.write(glsl, strlen(glsl)); gldiag.write("\n", nl);
 
-		gldiag.write("21\n", 2 + nl);
+		gldiag.write("31\n", 2 + nl);
 
 		write_int(GL_MAX_3D_TEXTURE_SIZE, "MAX_3D_TEXTURE_SIZE ", gldiag);
 		write_int(GL_MAX_ATTRIB_STACK_DEPTH, "MAX_ATTRIB_STACK_DEPTH ", gldiag);
 		write_int(GL_MAX_CLIENT_ATTRIB_STACK_DEPTH, "MAX_CLIENT_ATTRIB_STACK_DEPTH ", gldiag);
 		write_int(GL_MAX_CLIP_PLANES, "MAX_CLIP_PLANES ", gldiag);
 		write_int(GL_MAX_CUBE_MAP_TEXTURE_SIZE, "MAX_CUBE_MAP_TEXTURE_SIZE ", gldiag);
+		write_int(GL_MAX_DEBUG_MESSAGE_LENGTH, "MAX_DEBUG_MESSAGE_LENGTH ", gldiag);
+		write_int(GL_MAX_DEBUG_LOGGED_MESSAGES, "MAX_DEBUG_LOGGED_MESSAGES ", gldiag);
+		write_int(GL_MAX_DEBUG_GROUP_STACK_DEPTH, "MAX_DEBUG_GROUP_STACK_DEPTH ", gldiag);
 		write_int(GL_MAX_DRAW_BUFFERS, "MAX_DRAW_BUFFERS ", gldiag);
 		write_int(GL_MAX_ELEMENTS_VERTICES, "MAX_ELEMENTS_VERTICES ", gldiag);
 		write_int(GL_MAX_ELEMENTS_INDICES, "MAX_ELEMENTS_INDICES ", gldiag);
 		write_int(GL_MAX_EVAL_ORDER, "MAX_EVAL_ORDER ", gldiag);
+		write_int(GL_MAX_FRAMEBUFFER_WIDTH, "MAX_FRAMEBUFFER_WIDTH ", gldiag);
+		write_int(GL_MAX_FRAMEBUFFER_HEIGHT, "MAX_FRAMEBUFFER_HEIGHT ", gldiag);
+		write_int(GL_MAX_FRAMEBUFFER_LAYERS, "MAX_FRAMEBUFFER_LAYERS ", gldiag);
+		write_int(GL_MAX_FRAMEBUFFER_SAMPLES, "MAX_FRAMEBUFFER_SAMPLES ", gldiag);
 		write_int(GL_MAX_LIGHTS, "MAX_LIGHTS ", gldiag);
 		write_int(GL_MAX_LIST_NESTING, "MAX_LIST_NESTING ", gldiag);
 		write_int(GL_MAX_MODELVIEW_STACK_DEPTH, "MAX_MODELVIEW_STACK_DEPTH ", gldiag);
 		write_int(GL_MAX_NAME_STACK_DEPTH, "MAX_NAME_STACK_DEPTH ", gldiag);
 		write_int(GL_MAX_PROJECTION_STACK_DEPTH, "MAX_PROJECTION_STACK_DEPTH ", gldiag);
+		write_int(GL_MAX_RECTANGLE_TEXTURE_SIZE, "MAX_RECTANGLE_TEXTURE_SIZE ", gldiag);
+		write_int(GL_MAX_RENDERBUFFER_SIZE, "MAX_RENDERBUFFER_SIZE ", gldiag);
+		write_int(GL_MAX_TEXTURE_BUFFER_SIZE, "MAX_TEXTURE_BUFFER_SIZE ", gldiag);
 		write_int(GL_MAX_TEXTURE_COORDS, "MAX_TEXTURE_COORDS ", gldiag);
 		write_int(GL_MAX_TEXTURE_IMAGE_UNITS, "MAX_TEXTURE_IMAGE_UNITS ", gldiag);
 		write_int(GL_MAX_TEXTURE_LOD_BIAS, "MAX_TEXTURE_LOD_BIAS ", gldiag);
@@ -405,11 +444,9 @@ bool RAPTOR_WRAPPER_API glDiag(void)
 		write_int(GL_MAX_TEXTURE_STACK_DEPTH, "MAX_TEXTURE_STACK_DEPTH ", gldiag);
 		write_int(GL_MAX_TEXTURE_UNITS_ARB, "MAX_TEXTURE_UNITS ", gldiag);
 		write_int(GL_MAX_VERTEX_ATTRIBS, "MAX_VERTEX_ATTRIBS ", gldiag);
-
 		
 		// GL_MAX_PIXEL_MAP_TABLE            0x0D34
 		// GL_MAX_VIEWPORT_DIMS              0x0D3A
-				
 		// GL_MAX_FRAGMENT_UNIFORM_COMPONENTS
 		// GL_MAX_VERTEX_UNIFORM_COMPONENTS
 		// GL_MAX_VARYING_FLOATS
@@ -422,11 +459,8 @@ bool RAPTOR_WRAPPER_API glDiag(void)
 		// GL_MAX_TRANSFORM_FEEDBACK_SEPARATE_COMPONENTS
 		// GL_MAX_TRANSFORM_FEEDBACK_INTERLEAVED_COMPONENTS 0x8C8A
 		// GL_MAX_TRANSFORM_FEEDBACK_SEPARATE_ATTRIBS 0x8C8B
-		// GL_MAX_RENDERBUFFER_SIZE          0x84E8
 		// GL_MAX_COLOR_ATTACHMENTS          0x8CDF
 		// GL_MAX_SAMPLES                    0x8D57
-		// GL_MAX_TEXTURE_BUFFER_SIZE        0x8C2B
-		// GL_MAX_RECTANGLE_TEXTURE_SIZE     0x84F8
 		// GL_MAX_VERTEX_UNIFORM_BLOCKS      0x8A2B
 		// GL_MAX_GEOMETRY_UNIFORM_BLOCKS    0x8A2C
 		// GL_MAX_FRAGMENT_UNIFORM_BLOCKS    0x8A2D
@@ -449,13 +483,6 @@ bool RAPTOR_WRAPPER_API glDiag(void)
 		// GL_MAX_COLOR_TEXTURE_SAMPLES      0x910E
 		// GL_MAX_DEPTH_TEXTURE_SAMPLES      0x910F
 		// GL_MAX_INTEGER_SAMPLES            0x9110
-		// GL_MAX_DEBUG_MESSAGE_LENGTH       0x9143
-		// GL_MAX_DEBUG_LOGGED_MESSAGES      0x9144
-		// GL_MAX_DEBUG_GROUP_STACK_DEPTH    0x826C
-		// GL_MAX_FRAMEBUFFER_WIDTH          0x9315
-		// GL_MAX_FRAMEBUFFER_HEIGHT         0x9316
-		// GL_MAX_FRAMEBUFFER_LAYERS         0x9317
-		// GL_MAX_FRAMEBUFFER_SAMPLES        0x9318
 		// GL_MAX_MATRIX_PALETTE_STACK_DEPTH_ARB 0x8841
 		// GL_MAX_PALETTE_MATRICES_ARB       0x8842
 		// GL_MAX_TEXTURE_UNITS_ARB            0x84E2
@@ -501,19 +528,13 @@ bool RAPTOR_WRAPPER_API glDiag(void)
 		// GL_MAX_PROGRAM_NATIVE_TEX_INDIRECTIONS_ARB 0x8810
 		// GL_MAX_PROGRAM_MATRICES_ARB 0x862F
 		// GL_MAX_PROGRAM_MATRIX_STACK_DEPTH_ARB 0x862E
-		// GL_MAX_TEXTURE_COORDS_ARB			0x8871
-		// GL_MAX_TEXTURE_IMAGE_UNITS_ARB		0x8872
 		// GL_MAX_RECTANGLE_TEXTURE_SIZE_ARB   0x84F8
 		// GL_MAX_VERTEX_UNIFORM_COMPONENTS_ARB	0x8B4A
 		// GL_MAX_VARYING_FLOATS_ARB				0x8B4B
 		// GL_MAX_VERTEX_ATTRIBS_ARB				0x8869
-		// GL_MAX_TEXTURE_IMAGE_UNITS_ARB			0x8872
 		// GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS_ARB	0x8B4C
 		// GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS_ARB	0x8B4D
-		// GL_MAX_TEXTURE_COORDS_ARB				0x8871
 		// GL_MAX_FRAGMENT_UNIFORM_COMPONENTS_ARB	0x8B49
-		// GL_MAX_TEXTURE_COORDS_ARB				0x8871
-		// GL_MAX_TEXTURE_IMAGE_UNITS_ARB			0x8872
 		// GL_MAX_GEOMETRY_TEXTURE_IMAGE_UNITS_ARB		0x8C29
 		// GL_MAX_GEOMETRY_VARYING_COMPONENTS_ARB		0x8DDD
 		// GL_MAX_VERTEX_VARYING_COMPONENTS_ARB		0x8DDE
@@ -523,7 +544,6 @@ bool RAPTOR_WRAPPER_API glDiag(void)
 		// GL_MAX_GEOMETRY_TOTAL_OUTPUT_COMPONENTS_ARB	0x8DE1
 		// GL_MAX_DRAW_BUFFERS_ARB	0x8824
 		// GL_MAX_COLOR_ATTACHMENTS_EXT						0x8CDF
-		// GL_MAX_RENDERBUFFER_SIZE_EXT						0x84E8
 		// GL_MAX_SAMPLES_EXT							0x8D57
 		// GL_MAX_CONVOLUTION_WIDTH_EXT      0x801A
 		// GL_MAX_CONVOLUTION_HEIGHT_EXT     0x801B
@@ -537,8 +557,7 @@ bool RAPTOR_WRAPPER_API glDiag(void)
 		// GL_MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS_ARB		0x8A31
 		// GL_MAX_COMBINED_GEOMETRY_UNIFORM_COMPONENTS_ARB		0x8A32
 		// GL_MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS_ARB		0x8A33
-		// GL_MAX_DEBUG_MESSAGE_LENGTH_ARB                      0x9143
-		// GL_MAX_DEBUG_LOGGED_MESSAGES_ARB
+		
 
 		const CRaptorGLExtensions *ext = Raptor::glGetExtensions();
 		const std::string &exts = ext->glExtensions();

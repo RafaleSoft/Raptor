@@ -71,9 +71,9 @@ protected:
 	CUnifiedShader(const CUnifiedShader& shader);
 
 	//! Generic shader source loading.
-	bool CUnifiedShader::glLoadProgram(	const std::string &program,
-										GLenum shaderType,
-										const CPersistence::CPersistenceClassID& shaderClass);
+	bool glLoadProgram(	const std::string &program,
+						GLenum shaderType,
+						const CPersistence::CPersistenceClassID& shaderClass);
 
     //! Updates locations of uniform variables.
     void glQueryUniformLocations(RAPTOR_HANDLE program);

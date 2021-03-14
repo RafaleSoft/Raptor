@@ -98,6 +98,9 @@ private:
 
 typedef RAPTOR_HANDLE*	LP_RAPTOR_HANDLE;
 
+typedef uint32_t shader_bool;
+#define shader_false 0;
+#define shader_true 1;
 
 //! Classes of handles are in 2 categories : Raptor handles and client handles.
 #define	RAPTOR_HANDLE_CLASS		0x00000000

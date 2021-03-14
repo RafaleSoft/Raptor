@@ -84,22 +84,22 @@ void CShaderBloc::glvkSetUniformBuffer(uint8_t *uniform, uint64_t size, uint64_t
 	}
 }
 
-static uint8_t *prev_buffer = 0;
-static uint64_t prev_offset = 0;
-static uint64_t prev_size = 0;
+//static uint8_t *prev_buffer = 0;
+//static uint64_t prev_offset = 0;
+//static uint64_t prev_size = 0;
 
 
 void CShaderBloc::glRender()
 {
-	if ((NULL != m_buffer) &&
-		((prev_buffer != m_buffer) || (prev_offset != m_offset) || (prev_size != m_size)))
+	if (NULL != m_buffer) // &&
+		//((prev_buffer != m_buffer) || (prev_offset != m_offset) || (prev_size != m_size)))
 	{
 		CUniformAllocator*	pUAllocator = CUniformAllocator::GetInstance();
 		pUAllocator->glvkBindUniform(m_buffer, m_index, m_offset, m_size);
 
-		prev_buffer = m_buffer;
-		prev_offset = m_offset;
-		prev_size = m_size;
+		// prev_buffer = m_buffer;
+		// prev_offset = m_offset;
+		// prev_size = m_size;
 	}
 }
 

@@ -106,23 +106,17 @@ void CBlinnShader::glRender(void)
 		
 		for (int i = 0, numl = 0; (i < CLightAttributes::MAX_LIGHTS) && (numl < 5); i++)
 		{
-			products.lights[i].enable = 0;
+			products.lights[i].enable = shader_false;
 			CLight *pLight = olights[i];
 
 			if (NULL != pLight)
 			{
 				CLight::R_LightProduct& lp = products.lights[numl++];
-				lp.ambient = M->getAmbient() * pLight->getAmbient();
-				lp.diffuse = M->getDiffuse() * pLight->getDiffuse();
-				lp.specular = M->getSpecular() * pLight->getSpecular();
-				lp.shininess = M->getShininess();
-				lp.enable = 1;
-				const CGenericVector<float, 4> &p = pLight->getLightViewPosition();
-				lp.position = GL_COORD_VERTEX(p.X(), p.Y(), p.Z(), p.H());
-				lp.attenuation = pLight->getSpotParams();
+				lp = pLight->computeLightProduct(*M);
 			}
 		}
 		products.scene_ambient = CShader::getAmbient();
+		products.shininess = M->getShininess();
 
 		pBloc->glvkUpdateBloc((uint8_t*)&products);
 	}

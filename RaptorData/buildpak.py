@@ -56,7 +56,7 @@ if (os.path.exists("RaptorData.pck")):
     os.remove("RaptorData.pck")
 
 print("  Building package ...")
-os.system(datapackager + " -C RaptorData.pck Raptor_logo_sml.txt rapsplsh.AVI lucon.ttf RaptorMessages.xml Raptor.glsl bump_0light.vp bump_0light.fp bump.vp bump.fp bump_att.vp bump_att.fp bump_att_2light.vp bump_att_2light.fp bump_att_3light.vp bump_att_3light.fp embm_0light.vp embm_0light.fp embm.vp embm.fp blinn.vs blinn.ps phong.vs phong.ps bump.vs bump.ps projection.fp shadowmap.fp shadowmap_pcf.fp shadowmap_pcf_4x.fp shadowmap_pcf_16x.fp blenderX_8x.vp blenderY_8x.vp blender_8x.fp AO.vs AO.ps blender_8x.gs blenderX_8x.ps blenderY_8x.ps tquad.vs tquad.ps tquad.gs empty.vs diffuse.ps particle.vs particle2D.gs particle3D.gs particle3D.ps font2D.vs font2D.gs font2D.ps box.vs box.gs box_line.gs box.ps vector_font.vs vector_font.gs vector_font.ps")
+os.system(datapackager + " -C RaptorData.pck Raptor_logo_sml.txt rapsplsh.AVI lucon.ttf RaptorMessages.xml Raptor.glsl bump_0light.vp bump_0light.fp bump.vp bump.fp bump_att.vp bump_att.fp bump_att_2light.vp bump_att_2light.fp bump_att_3light.vp bump_att_3light.fp embm_0light.vp embm_0light.fp embm.vp embm.fp blinn.vs blinn.ps phong.vs phong.ps bump.vs bump.ps projection.fp shadowmap.fp shadowmap_pcf.fp shadowmap_pcf_4x.fp shadowmap_pcf_16x.fp blenderX_8x.vp blenderY_8x.vp blender_8x.fp AO.vs AO.ps blender_8x.gs blenderX_8x.ps blenderY_8x.ps tquad.vs tquad.ps tquad.gs empty.vs diffuse.ps particle.vs particle2D.gs particle3D.gs particle3D.ps font2D.vs font2D.gs font2D.ps box.vs box.gs box_line.gs box.ps vector_font.vs vector_font.gs vector_font.ps flat_shading.vs flat_shading.ps")
 os.chmod('RaptorData.pck', 664)
 print("  Done.")
 

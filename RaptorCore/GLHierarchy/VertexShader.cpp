@@ -82,7 +82,7 @@ bool CVertexShader::glLoadProgram(const std::string &program)
 	load = CUnifiedShader::glLoadProgram(	program,
 											GL_VERTEX_SHADER,
 											CVertexShader::CVertexShaderClassID::GetClassId());
-#elif defined(GL_ARB_fragment_shader)
+#elif defined(GL_ARB_vertex_shader)
 	load = CUnifiedShader::glLoadProgram(	program,
 											GL_VERTEX_SHADER_ARB,
 											CVertexShader::CVertexShaderClassID::GetClassId());

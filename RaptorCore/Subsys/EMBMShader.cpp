@@ -102,9 +102,6 @@ CEMBMShader::~CEMBMShader(void)
 }
 
 
-static CLight::R_LightProducts products;
-static CShaderBloc *bloc = NULL;
-
 void CEMBMShader::glInit()
 {
 	CShader *shaderLib = new CShader();

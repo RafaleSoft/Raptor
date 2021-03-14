@@ -54,7 +54,7 @@ void main (void)
 
 				vec3 r = reflect(-lightDirs[i].xyz,n);
 				float NdotHV = max(dot(normalize(r),normalize(eyeDir)),0.0);
-				specular += att * pow(NdotHV,R_LightProducts.lights[i].shininess) * R_LightProducts.lights[i].specular;
+				specular += att * pow(NdotHV,R_LightProducts.shininess) * R_LightProducts.lights[i].specular;
 			}	
 		}
 	}

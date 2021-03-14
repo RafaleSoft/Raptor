@@ -334,7 +334,7 @@ void CDemoDoc::GLInitContext(void)
 
     dof = new CDOFFilter;
     dof->setDOFParams(0.85f, 10.0f);
-	dof->setBlurNbPass(4);
+	dof->setBlurNbPass(3);
 	pCurrentDisplay->glvkBindDisplay(*dof);
 	dof->releaseReference();
 
