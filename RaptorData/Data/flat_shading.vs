@@ -18,17 +18,10 @@
 #version 440 compatibility
 
 
-#ifdef EMBM_RENDERING
-	#define EYE_SPACE 1
-//#define AMBIENT_OCCLUSION 1
-#endif
-
 #include "Raptor.glsl"
 
 
 LIGHT_PRODUCTS(0) R_LightProducts;
-
-uniform vec4 eyePos;
 
 layout(location = 0) in vec4 i_Position;
 layout(location = 2) in vec4 i_Normal;
@@ -40,35 +33,19 @@ out vec4 s_Color;
 out vec4 o_texCoord;
 
 
-#ifdef EMBM_RENDERING
-	varying vec3 rr;
-#endif
-
-
 
 void main (void)
 {
-#ifdef EYE_SPACE
 	// Compute lighting in eye space
 	vec3 normal = normalize(gl_NormalMatrix * vec3(i_Normal.xyz));
 	vec3 T = normalize(gl_NormalMatrix * vec3(i_Tangent.xyz));
 	vec3 ecPos = -vec3(gl_ModelViewMatrix * i_Position);
-#else
-	// Compute lighting in object space
-	vec3 normal = vec3(i_Normal.xyz);
-	vec3 T = vec3(i_Tangent.xyz);
-	vec3 ecPos = vec3(eyePos.xyz) - vec3(i_Position.xyz);
-#endif
 
 	vec3 binormal = cross(normal,T);
 	vec3 eyedir;
 	eyedir.x = dot(ecPos,T);
 	eyedir.y = dot(ecPos,binormal);
 	eyedir.z = dot(ecPos,normal);
-
-#ifdef EMBM_RENDERING
-	rr = reflect(-ecPos,normal);
-#endif
 
 	vec4 diffuse = R_LightProducts.scene_ambient;
 	vec4 specular = vec4(0.0,0.0,0.0,0.0);
@@ -77,14 +54,9 @@ void main (void)
 	{
 		if (R_LightProducts.lights[i].enable)
 		{
-#ifdef EYE_SPACE
 			// Compute lighting in eye space
 			vec3 ldir = vec3(R_LightProducts.lights[i].position) + ecPos;
-#else
-			// Compute lighting in object space
-			vec4 lpos = gl_ModelViewMatrixInverse * R_LightProducts.lights[i].position - i_Position;
-			vec3 ldir = vec3(lpos.xyz);
-#endif
+
 			float dist = length(ldir);
 			ldir = normalize(ldir);
 		

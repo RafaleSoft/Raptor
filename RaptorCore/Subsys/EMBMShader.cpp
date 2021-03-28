@@ -122,7 +122,7 @@ void CEMBMShader::glInit()
 		if (pos < embm_vertexshader.length())
 		{
 			size_t pos2 = embm_vertexshader.find("\n", pos);
-			embm_vertexshader.insert(pos2 + 1, string("#define EMBM_RENDERING 1\n\n"));
+			embm_vertexshader.insert(pos2 + 1, std::string("#define EMBM_RENDERING 1\n\n"));
 		}
 		vp->glLoadProgram(embm_vertexshader);
 
@@ -133,7 +133,7 @@ void CEMBMShader::glInit()
 		if (pos < embm_pixelshader.length())
 		{
 			size_t pos2 = embm_pixelshader.find("\n", pos);
-			embm_pixelshader.insert(pos2 + 1, string("#define EMBM_RENDERING 1\n\n"));
+			embm_pixelshader.insert(pos2 + 1, std::string("#define EMBM_RENDERING 1\n\n"));
 		}
 		fp->glLoadProgram(embm_pixelshader);
 
@@ -147,8 +147,12 @@ void CEMBMShader::glInit()
 	params.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);
 	params.addParameter("normalMap", CTextureUnitSetup::IMAGE_UNIT_1);
 	params.addParameter("environmentMap", CTextureUnitSetup::IMAGE_UNIT_3);
-	GL_COORD_VERTEX V;
-	params.addParameter("eyePos", V);
+	//!
+	//! For more efficient computation with multiple lights,
+	//!	bump shader is computed in eye space, then no need to pass the eyePos here (in object space).
+	//!
+	//GL_COORD_VERTEX V;
+	//params.addParameter("eyePos", V);
 
 
 	stage->setProgramParameters(params);
@@ -228,8 +232,12 @@ void CEMBMShader::enableEmbm(bool enable)
 		params.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);
 		params.addParameter("normalMap", CTextureUnitSetup::IMAGE_UNIT_1);
 		params.addParameter("environmentMap", CTextureUnitSetup::IMAGE_UNIT_3);
-		GL_COORD_VERTEX V;
-		params.addParameter("eyePos", V);
+		//!
+		//! For more efficient computation with multiple lights,
+		//!	bump shader is computed in eye space, then no need to pass the eyePos here (in object space).
+		//!
+		//GL_COORD_VERTEX V;
+		//params.addParameter("eyePos", V);
 
 		stage->setProgramParameters(params);
 

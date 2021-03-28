@@ -304,7 +304,8 @@ bool CUniformAllocator::glvkBindUniform(uint8_t *uniform, int32_t index, uint64_
 		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 		if (pExtensions->glBindBufferRangeARB != NULL)
 		{
-			pExtensions->glBindBufferRangeARB(GL_UNIFORM_BUFFER_ARB, index, buffer, (GLintptrARB)base, sz);
+			pExtensions->glBindBufferRangeARB(GL_UNIFORM_BUFFER_ARB, index, buffer, base, sz);
+			
 			CATCH_GL_ERROR
 		}
 

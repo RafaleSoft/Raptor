@@ -570,7 +570,9 @@ void CShader::glRender()
 	{
 		if (NULL != m_pMainBloc)
 			m_pMainBloc->glRender();
+
 		m_pOpenGLShader->glRender();
+
 	}
 	else if (NULL != m_pOpenGLProgram)
 	{

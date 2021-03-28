@@ -401,7 +401,7 @@ void CGLVectorFont::glWrite(const std::vector<CGLFont::FONT_TEXT_ITEM> &lines)
 	
 	CUniformAllocator*	pUAllocator = CUniformAllocator::GetInstance();
 	pUAllocator->glvkBindUniform(m_fontUniform, 0, 0, 0);
-
+	
 	CProgramParameters params;
 	GL_COORD_VERTEX vp(viewport[0], viewport[1], 0.5f * viewport[2], 0.5f * viewport[3]);
 	CColor::RGBA color(0.0f, 0.0f, 0.0f, 0.5f);
@@ -427,8 +427,7 @@ void CGLVectorFont::glWrite(const std::vector<CGLFont::FONT_TEXT_ITEM> &lines)
 
 	instance.m_pVectorFontShader->glStop();
 	binder->glvkUnbindArrays();
-
-
+	
 	glPopMatrix();
 	glMatrixMode(GL_PROJECTION);
 	glPopMatrix();

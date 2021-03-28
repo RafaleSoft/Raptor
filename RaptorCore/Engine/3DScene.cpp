@@ -248,12 +248,12 @@ void C3DScene::glRenderObjects(const vector<C3DSceneObject*>& objects, PASS_KIND
 //!
 void C3DScene::glRender(void)
 {
-    glPushMatrix();
+	glPushMatrix();
 
 #if defined(GL_ARB_occlusion_query)
     m_pAttributes->glMakeQueries();
 #endif
-   
+
 	//!	Initialize rendering structures if not already available,
 	//!	- clear intermdiate results, 
 	//!	- reset all lights and lighting model.

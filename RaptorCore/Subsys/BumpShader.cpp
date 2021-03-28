@@ -90,11 +90,15 @@ void CBumpShader::glInit(void)
 	CProgramParameters params;
 	params.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);
 	params.addParameter("normalMap", CTextureUnitSetup::IMAGE_UNIT_1);
-	GL_COORD_VERTEX V;
-	params.addParameter("eyePos", V);
+
+	//!
+	//! For more efficient computation with multiple lights,
+	//!	bump shader is computed in eye space, then no need to pass the eyePos here (in object space).
+	//!
+	//GL_COORD_VERTEX V;
+	//params.addParameter("eyePos", V);
 
 	stage->setProgramParameters(params);
-
 	stage->glCompileShader();
 
 	CShaderBloc *bloc = glGetShaderBloc("LightProducts");
@@ -107,6 +111,11 @@ void CBumpShader::glInit(void)
 
 void CBumpShader::glRender(void)
 {
+	//!
+	//! For more efficient computation with multiple lights,
+	//!	bump shader is computed in eye space, then no need to pass the eyePos here (in object space).
+	//!
+	/*
 	C3DEngineMatrix T;
 	glGetTransposeFloatv(GL_MODELVIEW_MATRIX, T);
 	GL_COORD_VERTEX V;
@@ -119,7 +128,8 @@ void CBumpShader::glRender(void)
 	CProgramParameters params;
 	params.addParameter("eyePos", V);
 	stage->updateProgramParameters(params);
-
+	*/
+	
 	CShaderBloc *pBloc = glGetShaderBloc();
 	if (!pBloc->isExternal())
 	{
@@ -145,4 +155,6 @@ void CBumpShader::glRender(void)
 	}
 
 	CShader::glRender();
+
+	CATCH_GL_ERROR
 }

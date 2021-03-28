@@ -122,6 +122,8 @@ void CBlinnShader::glRender(void)
 	}
 
 	CShader::glRender();
+
+	CATCH_GL_ERROR
 }
 
 

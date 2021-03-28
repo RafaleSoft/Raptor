@@ -136,7 +136,9 @@ size_t C3DSceneObject::initShaders(size_t base)
 	for (size_t i = 0; i < list.size(); i++)
 	{
 		CShader *pShader = list[i];
-		if (pShader->hasShaderBloc())
+		CShaderBloc *pBloc = pShader->glGetShaderBloc("LightProducts");
+		//if (pShader->hasShaderBloc())	// For 'user' shaders including Raptor.glsl, check appropriate bloc !
+		if (NULL != pBloc)
 		{
 			lightShaderbloc bloc;
 			bloc.uniform = 0;
@@ -178,8 +180,7 @@ size_t C3DSceneObject::glRenderLights(CLight::R_LightProducts *buffer, uint8_t* 
 			COpenGLShaderStage *stage = shader->glGetOpenGLShader();
 			CMaterial *M = shader->getMaterial();
 			
-			int numl = 0;
-			for (int j = 0; (j < CLightAttributes::MAX_LIGHTS) && (numl < 5); j++)
+			for (int j = 0, numl = 0; (j < CLightAttributes::MAX_LIGHTS) && (numl < 5); j++)
 			{
 				products.lights[j].enable = shader_false;
 				

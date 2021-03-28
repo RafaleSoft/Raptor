@@ -293,7 +293,7 @@ void CShadedGeometry::glRender()
 
 	if (m_pOverride != NULL)
 		m_pOverride->glPushProperties();
-	
+
 	if (m_pShader != NULL)
 	{
 		// apply material
@@ -323,6 +323,8 @@ void CShadedGeometry::glRender()
 
     if (m_pOverride != NULL)
         m_pOverride->glPopProperties();
+
+	CATCH_GL_ERROR
 }
 
 CShadedGeometry& CShadedGeometry::operator=(const CGeometry& geometry)

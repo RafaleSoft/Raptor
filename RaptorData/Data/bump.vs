@@ -17,10 +17,10 @@
 
 #version 440 compatibility
 
+#define EYE_SPACE 1
 
 #ifdef EMBM_RENDERING
-	#define EYE_SPACE 1
-//#define AMBIENT_OCCLUSION 1
+	//#define AMBIENT_OCCLUSION 1
 #endif
 
 #include "Raptor.glsl"
