@@ -49,6 +49,9 @@
 #if !defined(AFX_EMBMSHADER_H__99A5AF45_D5C7_4F43_851C_A31FC52DB237__INCLUDED_)
 	#include "EMBMShader.h"
 #endif
+#if !defined(AFX_FLATSHADER_H__E2077AC4_6F9F_45F3_85DD_E493AEF57959__INCLUDED_)
+	#include "FlatShader.h"
+#endif
 #if !defined(AFX_AOCOMPUTESHADER_H__7CD66380_1000_47A3_AA98_47E0EDBD728E__INCLUDED_)
 	#include "AOComputeShader.h"
 #endif
@@ -122,6 +125,7 @@ CShaderLibrary::CShaderLibrary()
 	m_pBlinnShader(NULL), 
 	m_pPhongShader(NULL),
 	m_pBumpShader(NULL),
+	m_pFlatShader(NULL),
 	m_pEMBMShader(NULL),
 	m_pAOComputeShader(NULL)
 {
@@ -153,6 +157,8 @@ CShaderLibrary::~CShaderLibrary()
 		m_pPhongShader->releaseReference();
 	if (NULL != m_pBumpShader)
 		m_pBumpShader->releaseReference();
+	if (NULL != m_pFlatShader)
+		m_pFlatShader->releaseReference();
 	if (NULL != m_pEMBMShader)
 		m_pEMBMShader->releaseReference();
 	if (NULL != m_pAOComputeShader)
@@ -300,6 +306,10 @@ bool CShaderLibrary::glInitFactory(void)
 		CBumpShader *pBumpShader = new CBumpShader();
 		pBumpShader->glInit();
 		m_pBumpShader = pBumpShader;
+
+		CFlatShader *pFlatShader = new CFlatShader();
+		pFlatShader->glInit();
+		m_pFlatShader = pFlatShader;
 
 		CEMBMShader *pEMBMShader = new CEMBMShader();
 		pEMBMShader->glInit();

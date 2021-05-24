@@ -94,17 +94,19 @@ void CSlide::setVideo(const string& vName)
     CAnimator *pAnimator = CAnimator::GetAnimator();
 
     ITextureGenerator *pGenerator = pAnimator->glStartPlayBack(vName,true);
+	if (NULL != pGenerator)
+	{
+		if (mVideo != NULL)
+			mVideo->releaseReference();
 
-    if (mVideo != NULL)
-        mVideo->releaseReference();
+		CTextureFactory f;
+		mVideo = f.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
+											ITextureObject::CGL_BILINEAR,
+											pGenerator);
 
-    CTextureFactory f;
-    mVideo = f.glCreateDynamicTexture(	ITextureObject::CGL_COLOR24_ALPHA,
-										ITextureObject::CGL_BILINEAR,
-										pGenerator);
-
-	tw = (float)(pGenerator->getGenerateWidth()) / (float)(mVideo->getWidth());
-	th = (float)(pGenerator->getGenerateHeight()) / (float)(mVideo->getHeight());
+		tw = (float)(pGenerator->getGenerateWidth()) / (float)(mVideo->getWidth());
+		th = (float)(pGenerator->getGenerateHeight()) / (float)(mVideo->getHeight());
+	}
 }
 
 void CSlide::translate(float dt)
@@ -147,6 +149,7 @@ void CSlide::glRender(void)
     {
         glEnable(GL_TEXTURE_2D);
 		mVideo->glvkRender();
+		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
         glBegin(GL_QUADS);
             glTexCoord2f(0.0f,0.0f);   glVertex3f(-2.0f,-2.0f,0.1f);
             glTexCoord2f(tw,0.0f);   glVertex3f(2.0f,-2.0f,0.1f);

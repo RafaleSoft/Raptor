@@ -40,8 +40,12 @@ CTGAImaging::~CTGAImaging(void)
 {
 }
 
+bool CTGAImaging::isOfKind(const std::string &kind) const
+{
+	return _isOfKind(kind);
+}
 
-bool CTGAImaging::isOfKind(const std::string &kind) const 
+bool CTGAImaging::_isOfKind(const std::string &kind)
 {
 	std::string ext = kind;
 	std::transform(ext.begin(), ext.end(), ext.begin(), ::toupper);

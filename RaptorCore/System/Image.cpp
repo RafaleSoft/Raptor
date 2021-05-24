@@ -258,9 +258,8 @@ void CImage::setImageKindIO(IImageIO *imager)
 	std::vector<std::string> extensionKind = imager->getImageKind();
 	for (size_t j=0;j<extensionKind.size();j++)
 	{
-		std::string ext;
-		for (unsigned int i=0;i<extensionKind[j].size();i++)
-			ext += toupper(extensionKind[j][i]);
+		std::string ext = extensionKind[j];
+		std::transform(ext.begin(), ext.end(), ext.begin(), ::toupper);
 
 		CRaptorInstance &instance = CRaptorInstance::GetInstance();
 		instance.imageKindIO.insert(std::map<std::string, IImageIO*>::value_type(ext, imager));
@@ -275,9 +274,7 @@ CImage::IImageIO* const CImage::getImageKindIO(const std::string &extension)
     if (pos < ext.size())
         ext = ext.substr(pos+1);
 
-    pos = 0;
-	for (pos=0;pos<ext.size();pos++)
-        ext[pos] = toupper(ext[pos]);
+	std::transform(ext.begin(), ext.end(), ext.begin(), ::toupper);
 
 	CRaptorInstance &instance = CRaptorInstance::GetInstance();
 	std::map<std::string,IImageIO*>::const_iterator itr = instance.imageKindIO.find(ext);

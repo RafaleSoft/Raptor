@@ -976,6 +976,7 @@ $(PYTHON_HOME)\python.exe $(SolutionDir)$(ProjectName)\Subsys\Redist.py
     <ClCompile Include="..\..\RaptorCore\Subsys\ContextManager.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\ContourAttributes.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\EMBMShader.cpp" />
+    <ClCompile Include="..\..\RaptorCore\Subsys\FlatShader.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\FreeType\FTEngine.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
@@ -1075,6 +1076,7 @@ $(PYTHON_HOME)\python.exe $(SolutionDir)$(ProjectName)\Subsys\Redist.py
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\RaptorCore\Subsys\LightAttributes.cpp" />
+    <ClCompile Include="..\..\RaptorCore\Subsys\LightShader.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\Object3DShadowAttributes.cpp" />
     <ClCompile Include="..\..\RaptorCore\Subsys\ObjectModels\RaptorScript_lex.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
@@ -1326,6 +1328,7 @@ copy CodeGeneration.h "%RAPTOR_ROOT%\Redist\Include\Subsys"
     <ClInclude Include="..\..\RaptorCore\Subsys\ContextManager.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\ContourAttributes.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\EMBMShader.h" />
+    <ClInclude Include="..\..\RaptorCore\Subsys\FlatShader.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\FreeType\FTEngine.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\FreeType\FTFace.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\FreeType\FTGlyph.h" />
@@ -1343,6 +1346,7 @@ copy CodeGeneration.h "%RAPTOR_ROOT%\Redist\Include\Subsys"
     <ClInclude Include="..\..\RaptorCore\Subsys\Interpreters.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\KDTree.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\LightAttributes.h" />
+    <ClInclude Include="..\..\RaptorCore\Subsys\LightShader.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\Object3DContainerNotifier.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\Object3DShadowAttributes.h" />
     <ClInclude Include="..\..\RaptorCore\Subsys\ObjectModels\RaptorScript_lex.h" />

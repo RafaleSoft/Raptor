@@ -59,22 +59,30 @@ void CAnimatorStream::setVideoKindIO(CAnimator::IVideoIO *streamer)
 	}
 #endif
 
-    string extensionKind = streamer->getKind();
-    string ext;
-    for (unsigned int i=0;i<extensionKind.size();i++)
-        ext += toupper(extensionKind[i]);
+	std::vector<std::string> extensionKind = streamer->getKind();
+	for (size_t j = 0; j < extensionKind.size(); j++)
+	{
+		string ext = extensionKind[j];
+		std::transform(ext.begin(), ext.end(), ext.begin(), ::toupper);
 
-	VIDEO_KIND_IO.insert(map<std::string,CAnimator::IVideoIO*>::value_type(ext,streamer));
+		CRaptorInstance &instance = CRaptorInstance::GetInstance();
+		instance.videoKindIO.insert(map<std::string, CAnimator::IVideoIO*>::value_type(ext, streamer));
+	}
 }
 
 CAnimator::IVideoIO* const CAnimatorStream::getVideoKindIO(const std::string& extension) const
 {
-    string ext;
-    for (unsigned int i=0;i<extension.size();i++)
-        ext += toupper(extension[i]);
+	//	extract the right image loader
+	std::string ext = extension;
+	std::string::size_type pos = ext.rfind('.');
+	if (pos < ext.size())
+		ext = ext.substr(pos + 1);
 
-	map<std::string,CAnimator::IVideoIO*>::const_iterator itr = VIDEO_KIND_IO.find(ext);
-	if (VIDEO_KIND_IO.end() != itr)
+	std::transform(ext.begin(), ext.end(), ext.begin(), ::toupper);
+
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+	map<std::string,CAnimator::IVideoIO*>::const_iterator itr = instance.videoKindIO.find(ext);
+	if (instance.videoKindIO.end() != itr)
 		return (*itr).second;
 	else 
 		return NULL;
@@ -116,10 +124,6 @@ long CAnimatorStream::glStartPlayBack(const std::string& fname,bool loop)
         ext = "";
     else
         ext = ext.substr(pos+1);
-
-    pos = 0;
-	for (pos=0;pos<ext.size();pos++)
-        ext[pos] = toupper(ext[pos]);
 
     CAnimator::IVideoIO* streamer = getVideoKindIO(ext);
     if (streamer == NULL)
@@ -254,7 +258,7 @@ bool CAnimatorStream::playFrame(float dt,unsigned int nStream,int framePos)
 	CRaptorLock lock(video->streamMutex);
 
     unsigned char *readBuffer = NULL;
-    if (video->streamer->readFrame(readBuffer))
+    if (video->streamer->readFrame(readBuffer, video->framePosition))
 	{
         // filtering: if a filter is defined, it could be applyied here,
         // this needing to copy pixels and process them here directly

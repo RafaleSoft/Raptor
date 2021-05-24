@@ -26,6 +26,9 @@
 #if !defined(AFX_SHADER_H__4D405EC2_7151_465D_86B6_1CA99B906777__INCLUDED_)
 	#include "GLHierarchy/Shader.h"
 #endif
+#if !defined(AFX_LIGHTSHADER_H__0DD43C10_10BE_4516_80CF_83D1DC8B6312__INCLUDED_)
+	#include "LightShader.h"
+#endif
 
 
 RAPTOR_NAMESPACE_BEGIN
@@ -33,7 +36,7 @@ RAPTOR_NAMESPACE_BEGIN
 class CBumpLightObserver;
 
 
-class CBumpShader : public CShader
+class CBumpShader : public CShader, public CLightShader
 {
 public:
 	//!	Default constructor.

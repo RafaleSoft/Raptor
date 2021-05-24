@@ -22,6 +22,13 @@
 #if !defined(AFX_WMVSTREAMING_H__14310AA1_ECB0_48C7_B69F_C0816C83B1CC__INCLUDED_)
 	#include "Streaming/WMVStreaming.h"
 #endif
+#if !defined(AFX_MFSTREAMING_H__25A33139_3FCF_477D_9509_1BA9A2F0F6B9__INCLUDED_)
+	#include "Streaming/MFStreaming.h"
+#endif
+#if !defined(AFX_DSHOWSTREAMING_H__039A618A_339A_4BE8_B61F_E7DA513185AA__INCLUDED_)
+	#include "Streaming/DShowStreaming.h"
+#endif
+
 
 
 //////////////////////////////////////////////////////////////////////
@@ -46,7 +53,9 @@ bool CStreaming::installStreamers(void)
         return false;
 
 #if defined(_WIN32)
-    pAnimator->setVideoKindIO(new CAVIStreaming());
+	pAnimator->setVideoKindIO(new CDShowStreaming());
+	pAnimator->setVideoKindIO(new CMFStreaming());
+	pAnimator->setVideoKindIO(new CAVIStreaming());
 	pAnimator->setVideoKindIO(new CWMVStreaming());
 #endif
 
@@ -57,19 +66,24 @@ bool CStreaming::installStreamer(const std::string& streamType)
 {
     bool res = true;
 
-    string ext;
-	for (size_t pos=0;pos<streamType.size();pos++)
-        ext[pos] = toupper(streamType[pos]);
+    string ext = streamType;
+	std::transform(ext.begin(), ext.end(), ext.begin(), ::toupper);
 
     CAnimator *pAnimator = CAnimator::GetAnimator();
     if (pAnimator == NULL)
         return false;
 
 #if defined(_WIN32)
-    if (ext == "AVI")
+	if (CDShowStreaming::_isOfKind(ext))
+		pAnimator->setVideoKindIO(new CDShowStreaming());
+	else if (CMFStreaming::_isOfKind(ext))
+		pAnimator->setVideoKindIO(new CMFStreaming());
+	else if (CAVIStreaming::_isOfKind(ext))
         pAnimator->setVideoKindIO(new CAVIStreaming());
-	if (ext == "WMV")
+	else if (CWMVStreaming::_isOfKind(ext))
         pAnimator->setVideoKindIO(new CWMVStreaming());
+	else
+		res = false;
 #endif
     
     return res;

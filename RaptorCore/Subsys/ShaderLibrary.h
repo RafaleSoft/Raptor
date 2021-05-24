@@ -84,6 +84,7 @@ private:
 	CShader *m_pBlinnShader;
 	CShader *m_pPhongShader;
 	CShader *m_pBumpShader;
+	CShader *m_pFlatShader;
 	CShader *m_pEMBMShader;
 	CShader *m_pAOComputeShader;
 

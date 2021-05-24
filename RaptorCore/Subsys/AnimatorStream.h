@@ -75,9 +75,6 @@ private:
     //! Default copy constructor forbidden
     CAnimatorStream(const CAnimatorStream& rsh) {};
 
-    //! Registered video streamers.
-	map<std::string,CAnimator::IVideoIO*>		VIDEO_KIND_IO;
-
     //! Currently playing streams
     typedef struct
     {

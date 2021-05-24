@@ -89,6 +89,7 @@
 #include <map>
 #include <set>
 #include <sstream>
+#include <algorithm>
 using namespace std;
 
 //	Base definitions

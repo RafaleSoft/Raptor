@@ -103,7 +103,8 @@ void CTestDoc::GLInitContext(HDC hdc)
     pSlide->translate(0.0f);
     pScene->addObject(pSlide);
     m_slides.push_back(pSlide);
-    pSlide->setVideo("Datas\\rapsplsh.avi");
+    //pSlide->setVideo("Datas\\rapsplsh.avi");
+	pSlide->setVideo("Datas\\cube.mp4");
 
     pSlide = new CSlide("slide2",*pPath);
     pSlide->translate(0.1f);

@@ -55,6 +55,7 @@ MySphere::MySphere()
 	//CShader *pShader = CShader::getShader("BLINN_SHADER").glClone("BLINN");
 	//CShader *pShader = CShader::getShader("PHONG_SHADER").glClone("PHONG");
 	CShader *pShader = CShader::getShader("BUMP_SHADER").glClone("BUMP");
+	//CShader *pShader = CShader::getShader("FLAT_SHADER").glClone("FLAT");
 	/*
 	CShader *pShader = new CShader("FLAT_SHADING");
 	COpenGLShaderStage *stage = pShader->glGetOpenGLShader("FLAT_SHADER");

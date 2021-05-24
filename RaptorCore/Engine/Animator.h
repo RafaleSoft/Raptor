@@ -65,8 +65,15 @@ public:
     class RAPTOR_API IVideoIO
     {
     public:
-        //!	Returns the kind of image managed ( common extension used for image type: e.g. AVI)
-        virtual string getKind(void) const = 0;
+		//!	Virtual destructor
+		virtual ~IVideoIO() {};
+
+		//!	Returns true if the kind of stream is managed 
+		//! ( common extension used for image type: e.g. jpg)
+		virtual bool isOfKind(const std::string &kind) const = 0;
+
+        //!	Returns the kind of stream managed ( common extension used for image type: e.g. AVI)
+        virtual std::vector<std::string> getKind(void) const = 0;
 
         //! Returns a new instance for a video stream
         virtual IVideoIO*   newInstance(void) const = 0;
@@ -84,11 +91,13 @@ public:
         //! Starts a video player
 		virtual bool openReader(const std::string &fname) = 0;
 
-        //! Reads the next video frame.
-        //! @Param readBuffer : a reference to a pointer that will receive the frame pixels,
-        //! the user must not modify the readBuffer in any circumstancies.
-        //! @Return true if next frame read successfully, false otherwise ( end of stream ? )
-        virtual bool readFrame(unsigned char *& readBuffer) = 0;
+		//! Reads the next video frame.
+		//! @Param readBuffer : a reference to a pointer that will receive the frame pixels,
+		//! the user must not modify the readBuffer in any circumstancies.
+		//! @param timestamp : the time position (in seconds) from which the frame shall be read,
+		//! 0 means current position any other value is applied ifthe media can ne seked.
+		//! @Return true if next frame read successfully, false otherwise ( end of stream ? )
+		virtual bool readFrame(unsigned char *& readBuffer, float timestamp = 0.0f) = 0;
 
         //! Sets the read head to the frame passed in parameter if it exists.
         //! Rq: the frame index is zero based, and if a position is requested beyond the
@@ -119,12 +128,9 @@ public:
 
 
     protected:
-		//!	Destructor is not accessible
-        IVideoIO() {};
-
-		//!	Desctructor needs to be accessible to clean memory.
-		//!	Animator will manage proper destruction
-		virtual ~IVideoIO() {};
+		IVideoIO() {};
+		IVideoIO(const IVideoIO&) {};
+		IVideoIO& operator=(const IVideoIO&) { return *this; };
     };
 
 

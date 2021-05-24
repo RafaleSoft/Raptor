@@ -19,7 +19,7 @@ CICOImaging::~CICOImaging(void)
 {
 }
 
-bool CICOImaging::isOfKind(const std::string &kind) const 
+bool CICOImaging::_isOfKind(const std::string &kind)
 {
 	std::string ext = kind;
 	std::transform(ext.begin(), ext.end(), ext.begin(), ::toupper);
@@ -27,6 +27,11 @@ bool CICOImaging::isOfKind(const std::string &kind) const
 	return (("ICO" == ext) ||
 			("DLL" == ext) ||
 			("EXE" == ext));
+}
+
+bool CICOImaging::isOfKind(const std::string &kind) const
+{
+	return _isOfKind(kind);
 }
 
 std::vector<std::string> CICOImaging::getImageKind(void) const

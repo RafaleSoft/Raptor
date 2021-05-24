@@ -626,6 +626,12 @@
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\ShaderBloc.cpp">
       <Filter>Source Files\GLHierarchy src</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\LightShader.cpp">
+      <Filter>Source Files\Subsys src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\Subsys\FlatShader.cpp">
+      <Filter>Source Files\Subsys src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\RaptorCore\Engine\3DEngine.h">
@@ -1197,6 +1203,12 @@
     </ClInclude>
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\ShaderBloc.h">
       <Filter>Header Files\GLHierarchy include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\LightShader.h">
+      <Filter>Header Files\Subsys include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\Subsys\FlatShader.h">
+      <Filter>Header Files\Subsys include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

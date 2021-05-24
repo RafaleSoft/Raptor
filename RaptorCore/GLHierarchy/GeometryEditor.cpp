@@ -1158,7 +1158,7 @@ void CGeometryEditor::strip(void) const
 			found = false;
 		}
 
-		unsigned int size = currentStrip.size();
+		size_t size = currentStrip.size();
 		strips.push_back(currentStrip);
 	}
 
@@ -1171,7 +1171,7 @@ void CGeometryEditor::strip(void) const
 	int strip_pos = 0;
 	while (strips.size() > 0)
 	{
-		unsigned int max = 0;
+		size_t max = 0;
 		vector<vector<unsigned int> >::iterator max_index = strips.begin();
 		vector<vector<unsigned int> >::iterator itr = strips.begin();
 
@@ -1198,18 +1198,18 @@ void CGeometryEditor::strip(void) const
 
 	strip_pos=0;
 
-    unsigned int nb_indexes = 0;
+    size_t nb_indexes = 0;
 	for (unsigned int j=0;j<ordered_strips.size();j++)
 	{
         vector<unsigned int>& strip = ordered_strips[j];
-		int nb = strip.size();
+		size_t nb = strip.size();
 
 		if (nb > 3)
 		{
             CGeometryPrimitive *p = m_pGeometry->createPrimitive(CGeometryPrimitive::TRIANGLE_STRIP);
             unsigned short *indexes = new unsigned short[nb];
 
-			for (int i=0;i<nb;i++)
+			for (size_t i=0; i<nb; i++)
                 indexes[i] = strip[i];
 
             p->setIndexes(nb,indexes);

@@ -119,7 +119,7 @@ public:
 	bool			AllowEmpty(void) const { return m_allowEmpty; };
 	void			AllowEmpty(bool allowempty) { m_allowEmpty = allowempty; };
 	size_t			GetNbAtoms(void) const { return m_atomList.size(); };
-	atom*			GetAtom(unsigned int pos);
+	atom*			GetAtom(size_t pos);
 	void			AddAtom(atom* a);
 	bool			RemoveAtom(unsigned int pos);
     void    		SetAtomOccurences(unsigned int pos,int occurences);

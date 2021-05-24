@@ -1,6 +1,20 @@
-// AVIStreaming.cpp: implementation of the CAVIStreaming class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  AVIStreaming.cpp                                                       */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2021 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
 
 #include "Subsys/CodeGeneration.h"
 
@@ -15,6 +29,28 @@
 #endif
 
 #if defined(_WIN32)
+
+std::vector<std::string> CAVIStreaming::getKind(void) const
+{
+	std::vector<std::string> result;
+
+	result.push_back("AVI");
+
+	return result;
+}
+
+bool CAVIStreaming::isOfKind(const std::string &kind) const
+{
+	return _isOfKind(kind);
+}
+
+bool CAVIStreaming::_isOfKind(const std::string &kind)
+{
+	std::string ext = kind;
+	std::transform(ext.begin(), ext.end(), ext.begin(), ::toupper);
+
+	return ("AVI" == ext);
+}
 
 bool CAVIStreaming::openReader(const std::string &fname)
 {
@@ -85,12 +121,12 @@ bool CAVIStreaming::openReader(const std::string &fname)
 }
 
 
-bool CAVIStreaming::readFrame(unsigned char *& readBuffer)
+bool CAVIStreaming::readFrame(unsigned char *& readBuffer, float timestamp)
 {
 	if (AVIFile == NULL)
 		return false;
 
-	LPVOID pDIB =  AVIStreamGetFrame( AVIFrame,streamPos++) ;
+	LPVOID pDIB =  AVIStreamGetFrame(AVIFrame, streamPos++) ;
 	if (pDIB != NULL)
 	{
         //  Need to solve : is this pointer still available if playing 2 or more streams at the same time ?

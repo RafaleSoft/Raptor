@@ -8,9 +8,6 @@
 	#include "Imaging/BMPImaging.h"
 #endif
 
-#include <algorithm>
-
-
 CBMPImaging::CBMPImaging(void)
 {
 }
@@ -19,12 +16,17 @@ CBMPImaging::~CBMPImaging(void)
 {
 }
 
-bool CBMPImaging::isOfKind(const std::string &kind) const 
+bool CBMPImaging::_isOfKind(const std::string &kind)
 {
 	std::string ext = kind;
 	std::transform(ext.begin(), ext.end(), ext.begin(), ::toupper);
 
-	return ("BMP" == ext); 
+	return ("BMP" == ext);
+}
+
+bool CBMPImaging::isOfKind(const std::string &kind) const 
+{
+	return _isOfKind(kind); 
 }
 
 std::vector<std::string> CBMPImaging::getImageKind(void) const

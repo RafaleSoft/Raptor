@@ -175,7 +175,7 @@ uint8_t * const CUniformAllocator::allocateUniforms(uint64_t size)
 		if (!freeUniformBlocs.empty())
 		{
 			bool reuse = false;
-			unsigned int blocPos = 0;
+			size_t blocPos = 0;
 			for (size_t i = 0; i<freeUniformBlocs.size(); i++)
 			{
 				data_bloc &db = freeUniformBlocs[i];

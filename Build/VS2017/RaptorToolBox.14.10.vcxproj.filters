@@ -158,6 +158,12 @@
     <ClCompile Include="..\..\RaptorToolBox\Imaging\MipmapBuilder.cpp">
       <Filter>Source Files\Imaging</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\RaptorToolBox\Streaming\MFStreaming.cpp">
+      <Filter>Source Files\Streaming</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorToolBox\Streaming\DShowStreaming.cpp">
+      <Filter>Source Files\Streaming</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\RaptorToolBox\Loaders\OBJScript_lex.h">
@@ -261,6 +267,12 @@
     </ClInclude>
     <ClInclude Include="..\..\RaptorToolBox\Imaging\MipmapBuilder.h">
       <Filter>Source Files\Imaging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorToolBox\Streaming\MFStreaming.h">
+      <Filter>Header Files\Streaming</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorToolBox\Streaming\DShowStreaming.h">
+      <Filter>Header Files\Streaming</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -374,5 +386,8 @@
       <Filter>Source Files\Filters</Filter>
     </None>
     <None Include="..\..\RaptorToolBox\buildpak.py" />
+    <None Include="..\..\RaptorToolBox\Streaming\MediaTypes.htm">
+      <Filter>Header Files\Streaming</Filter>
+    </None>
   </ItemGroup>
 </Project>

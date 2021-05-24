@@ -45,7 +45,12 @@ CJPGImaging::~CJPGImaging(void)
 {
 }
 
-bool CJPGImaging::isOfKind(const std::string &kind) const 
+bool CJPGImaging::isOfKind(const std::string &kind) const
+{
+	return _isOfKind(kind);
+}
+
+bool CJPGImaging::_isOfKind(const std::string &kind)
 {
 	std::string ext = kind;
 	std::transform(ext.begin(), ext.end(), ext.begin(), ::toupper);

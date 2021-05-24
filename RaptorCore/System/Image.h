@@ -56,7 +56,8 @@ public:
 		//!	Virtual destructor
 		virtual ~IImageIO() {};
 
-		//!	Returns the kind of image managed ( common extension used for image type: e.g. jpg)
+		//!	Returns true if the kind of image if managed 
+		//! ( common extension used for image type: e.g. jpg)
 		virtual bool isOfKind(const std::string &kind) const = 0;
 
 		//! Returns the list of extension kind handled by this imageIO.

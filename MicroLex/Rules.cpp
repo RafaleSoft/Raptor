@@ -47,7 +47,7 @@ rule::~rule()
 {
 }
 
-atom* rule::GetAtom(unsigned int pos)
+atom* rule::GetAtom(size_t pos)
 {
 	if (pos >= m_atomList.size())
 		return NULL;
@@ -833,10 +833,10 @@ rule *DeepAtomSearch(atom *macroAtom)
 	rule *atomList = NULL;
 
 	rule *r = macroAtom->GetRule();
-	int nb = r->GetNbAtoms();
+	size_t nb = r->GetNbAtoms();
 	atom *aa = NULL;
 
-	for (int i=0;i<nb;i++)
+	for (size_t i=0; i < nb; i++)
 	{
 		aa = r->GetAtom(i);
 

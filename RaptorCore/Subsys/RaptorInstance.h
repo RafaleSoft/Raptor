@@ -40,6 +40,9 @@
 #if !defined(AFX_IMAGE_H__F545D0D5_5F10_4EFA_BE3B_3F3D34D4DBF3__INCLUDED_)
 	#include "System/Image.h"
 #endif
+#if !defined(AFX_ANIMATOR_H__077150E3_D826_11D3_9142_9866F8B4457F__INCLUDED_)
+	#include "Engine/Animator.h"
+#endif
 #if !defined(AFX_TEXTUREQUAD_H__1712AF34_6723_4E39_BC72_05ED6FA28418__INCLUDED_)
 	#include "GLHierarchy/TextureQuad.h"
 #endif
@@ -176,6 +179,8 @@ public:
 	
 	//!	Imaging input/output interfaces.
 	std::map<std::string, CImage::IImageIO*>	imageKindIO;
+	//!	Streaming input/output interfaces.
+	std::map<std::string, CAnimator::IVideoIO*>	videoKindIO;
 
 	//! The set of all Raptor displays for this instance.
 	std::vector<CRaptorDisplay*>	displays;

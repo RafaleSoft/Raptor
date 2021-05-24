@@ -35,8 +35,12 @@ COpenEXRImaging::~COpenEXRImaging(void)
 {
 }
 
+bool COpenEXRImaging::isOfKind(const std::string &kind) const
+{
+	return _isOfKind(kind);
+}
 
-bool COpenEXRImaging::isOfKind(const std::string &kind) const 
+bool COpenEXRImaging::_isOfKind(const std::string &kind)
 {
 	std::string ext = kind;
 	std::transform(ext.begin(), ext.end(), ext.begin(), ::toupper);

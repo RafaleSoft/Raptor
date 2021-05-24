@@ -33,6 +33,10 @@ public:
 	//! @param I : a valid image object.
 	//! @eturn true if loading is successfull.
 	virtual bool loadImageFile(const std::string& fname, CImage* const I) const;
+
+	//!	Static method to implement base class virtual method isOfKind
+public:
+	static bool _isOfKind(const std::string &kind);
 };
 
 #endif	// !defined(AFX_TIFFIMAGING_H__3AD77410_776F_446A_860E_496C8D13CB0F__INCLUDED_)

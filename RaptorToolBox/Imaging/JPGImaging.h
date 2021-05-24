@@ -33,6 +33,10 @@ public:
 	virtual bool loadImageFile(const std::string& fname, CImage* const I) const;
 
 	virtual bool storeImageFile(const std::string& fname, CImage* const I) const;
+
+	//!	Static method to implement base class virtual method isOfKind
+public:
+	static bool _isOfKind(const std::string &kind);
 };
 
 #endif	// !defined(AFX_JPGIMAGING_H__E268D39E_46E2_4CE0_B8C7_D5C3DE2B5F91__INCLUDED_)

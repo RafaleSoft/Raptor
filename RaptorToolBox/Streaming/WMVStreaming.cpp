@@ -1,6 +1,20 @@
-// AVIStreaming.cpp: implementation of the CAVIStreaming class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  WMVStreaming.cpp                                                       */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2021 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
 
 #include "Subsys/CodeGeneration.h"
 
@@ -21,6 +35,29 @@
 
 #if defined(_WIN32)
 
+std::vector<std::string> CWMVStreaming::getKind(void) const
+{
+	std::vector<std::string> result;
+
+	result.push_back("WMV");
+	result.push_back("WMA");
+
+	return result;
+}
+
+bool CWMVStreaming::isOfKind(const std::string &kind) const
+{
+	return _isOfKind(kind);
+}
+
+bool CWMVStreaming::_isOfKind(const std::string &kind)
+{
+	std::string ext = kind;
+	std::transform(ext.begin(), ext.end(), ext.begin(), ::toupper);
+
+	return (("WMV" == ext) || ("WMA" == ext));
+}
+
 void CWMVStreaming::seekFrame(unsigned int framePos)
 { 
 	streamPos = framePos; 
@@ -33,7 +70,7 @@ void CWMVStreaming::seekFrame(unsigned int framePos)
     }
 }
 
-bool CWMVStreaming::readFrame(unsigned char *& readBuffer)
+bool CWMVStreaming::readFrame(unsigned char *& readBuffer, float timestamp)
 {
 	if ((!locked) || (m_pReader == NULL))
 		return false;
@@ -105,12 +142,7 @@ bool CWMVStreaming::openReader(const std::string &fname)
 	if (locked)
         return false;
 
-	HRESULT hr = CoInitialize( NULL );
-    if( FAILED( hr ) )
-	{
-		RAPTOR_ERROR(CAnimator::CAnimatorClassID::GetClassId(),"Failed to initialize COM layer");
-		return false;
-	}
+	HRESULT hr = S_OK;
 
 	if ( NULL == m_pReader )
         hr = WMCreateSyncReader(  NULL, 0, &m_pReader );
@@ -339,8 +371,6 @@ bool CWMVStreaming::closeReader(void)
 		m_pReader->Release();
 		m_pReader = NULL;
 	}
-
-	CoUninitialize( );
 
 	locked = false;
     return true;

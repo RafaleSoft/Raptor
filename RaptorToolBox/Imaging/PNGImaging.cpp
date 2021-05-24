@@ -168,7 +168,12 @@ CPNGImaging::~CPNGImaging(void)
 }
 
 
-bool CPNGImaging::isOfKind(const std::string &kind) const 
+bool CPNGImaging::isOfKind(const std::string &kind) const
+{
+	return _isOfKind(kind);
+}
+
+bool CPNGImaging::_isOfKind(const std::string &kind)
 {
 	std::string ext = kind;
 	std::transform(ext.begin(), ext.end(), ext.begin(), ::toupper);
@@ -248,7 +253,36 @@ bool CPNGImaging::loadImageFile(const std::string& fname, CImage* const I) const
 
 	png_set_sig_bytes(png_ptr, sig_read);
 
-	png_read_png(png_ptr, info_ptr, PNG_TRANSFORM_IDENTITY, /*png_voidp_*/NULL);
+	png_read_png(png_ptr, info_ptr, PNG_TRANSFORM_STRIP_16|PNG_TRANSFORM_PACKING|PNG_TRANSFORM_EXPAND, /*png_voidp_*/NULL);
+
+	uint32_t width = png_get_image_width(png_ptr, info_ptr);
+	uint32_t height = png_get_image_height(png_ptr, info_ptr);
+	uint32_t depth = png_get_color_type(png_ptr, info_ptr);
+	if (PNG_COLOR_TYPE_RGB == depth)
+	{
+		I->allocatePixels(width, height, CImage::CGL_COLOR24);
+		depth = 3;
+	}
+	else if (PNG_COLOR_TYPE_RGBA)
+	{
+		I->allocatePixels(width, height, CImage::CGL_COLOR24_ALPHA);
+		depth = 4;
+	}
+	else
+	{
+		png_destroy_read_struct(&png_ptr, &info_ptr, /*png_infopp_*/NULL);
+		fclose(fp);
+		return false;
+	}
+
+	uint8_t *imagedata = I->getPixels();
+
+	png_bytep  *row_pointers = png_get_rows(png_ptr, info_ptr);
+	for (uint32_t j = 0; j < height; j++)
+	{
+		png_bytep row = row_pointers[j];
+		memcpy(&imagedata[width*j], row, width * depth);
+	}
 
 	png_destroy_read_struct(&png_ptr, &info_ptr, /*png_infopp_*/NULL);
 

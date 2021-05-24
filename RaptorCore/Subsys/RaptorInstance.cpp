@@ -273,6 +273,23 @@ CRaptorInstance::~CRaptorInstance()
 		it = imageKindIO.begin();
 	}
 	imageKindIO.clear();
+
+	//	Release streamers
+	map<std::string, CAnimator::IVideoIO*>::iterator it2 = videoKindIO.begin();
+	while (it2 != videoKindIO.end())
+	{
+		CAnimator::IVideoIO *op = it2->second;
+		if (NULL != op)
+		{
+			std::vector<std::string> exts = op->getKind();
+			for (size_t i = 0; i < exts.size(); i++)
+				videoKindIO.erase(exts[i]);
+
+			delete op;
+		}
+		it2 = videoKindIO.begin();
+	}
+	videoKindIO.clear();
 }
 
 void CRaptorInstance::initInstance()

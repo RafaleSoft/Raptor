@@ -188,7 +188,7 @@
     <ClCompile>
       <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Full</Optimization>
-      <AdditionalIncludeDirectories>$(SolutionDir)\$(ProjectName);$(ZLIB_INCLUDE_PATH);$(PNGLIB_INCLUDE_PATH);$(OPENEXRLIB_INCLUDE_PATH);$(TIFFLIB_INCLUDE_PATH);$(JPEGLIB_INCLUDE_PATH);$(RAPTOR_ROOT)\Redist\Include;$(VULKAN_INCLUDE_PATH);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\$(ProjectName);$(ZLIB_INCLUDE_PATH);$(PNGLIB_INCLUDE_PATH);$(OPENEXRLIB_INCLUDE_PATH);$(TIFFLIB_INCLUDE_PATH);$(JPEGLIB_INCLUDE_PATH);$(RAPTOR_ROOT)\Redist\Include;$(VULKAN_INCLUDE_PATH);$(DSHOW_INCLUDE_PATH);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;EXPORT_RAPTOR_CORE;ZLIB_DLL;PNG_USE_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <PrecompiledHeader>Use</PrecompiledHeader>
@@ -207,7 +207,7 @@
       <AdditionalIncludeDirectories>$(MSSdk)\Include\mfc;$(MSSdk)\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>opengl32.lib;RaptorData.lib;Raptor.lib;wmvcore.lib;vfw32.lib;libjpeg.lib;zlib.lib;libtiff.lib;ilmimf.lib;half.lib;iex.lib;libpng.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;RaptorData.lib;Raptor.lib;Winmm.lib;strmiids.lib;Propsys.lib;mfuuid.lib;Mfreadwrite.lib;Mfplat.lib;wmvcore.lib;vfw32.lib;libjpeg.lib;zlib.lib;libtiff.lib;ilmimf.lib;half.lib;iex.lib;libpng.lib;dshow.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>$(OPENEXRLIB_LIB_PATH);$(PNGLIB_LIB_PATH);$(TIFFLIB_LIB_PATH);$(JPEGLIB_LIB_PATH);$(ZLIB_LIB_PATH);$(RAPTOR_ROOT)\Redist\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>libc;libcmt;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
@@ -248,7 +248,7 @@ copy $(SolutionDir)$(ProjectName)\Toolbox.pck "%RAPTOR_ROOT%\Redist\bin\"
     <ClCompile>
       <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Full</Optimization>
-      <AdditionalIncludeDirectories>$(SolutionDir)\$(ProjectName);$(ZLIB_INCLUDE_PATH);$(PNGLIB_INCLUDE_PATH);$(OPENEXRLIB_INCLUDE_PATH);$(TIFFLIB_INCLUDE_PATH);$(JPEGLIB_INCLUDE_PATH);$(RAPTOR_ROOT)\Redist\Include;$(VULKAN_INCLUDE_PATH);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\$(ProjectName);$(ZLIB_INCLUDE_PATH);$(PNGLIB_INCLUDE_PATH);$(OPENEXRLIB_INCLUDE_PATH);$(TIFFLIB_INCLUDE_PATH);$(JPEGLIB_INCLUDE_PATH);$(RAPTOR_ROOT)\Redist\Include;$(VULKAN_INCLUDE_PATH);$(DSHOW_INCLUDE_PATH);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;EXPORT_RAPTOR_CORE;ZLIB_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <PrecompiledHeader>Use</PrecompiledHeader>
@@ -268,7 +268,7 @@ copy $(SolutionDir)$(ProjectName)\Toolbox.pck "%RAPTOR_ROOT%\Redist\bin\"
       <AdditionalIncludeDirectories>$(MSSdk)\Include\mfc;$(MSSdk)\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>opengl32.lib;RaptorData.lib;Raptor.lib;wmvcore.lib;vfw32.lib;libjpeg.lib;zlib.lib;libtiff.lib;ilmimf.lib;half.lib;iex.lib;libpng.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;RaptorData.lib;Raptor.lib;Winmm.lib;strmiids.lib;Propsys.lib;mfuuid.lib;Mfreadwrite.lib;Mfplat.lib;wmvcore.lib;vfw32.lib;libjpeg.lib;zlib.lib;libtiff.lib;ilmimf.lib;half.lib;iex.lib;libpng.lib;dshow.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>$(OPENEXRLIB_LIB_PATH);$(PNGLIB_LIB_PATH);$(TIFFLIB_LIB_PATH);$(JPEGLIB_LIB_PATH);$(ZLIB_LIB_PATH);$(RAPTOR_ROOT)\Redist\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>libc;libcmt;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
@@ -309,7 +309,7 @@ copy $(SolutionDir)$(ProjectName)\Toolbox.pck "%RAPTOR_ROOT%\Redist\bin\"
     <ClCompile>
       <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(SolutionDir)\$(ProjectName);$(ZLIB_INCLUDE_PATH);$(PNGLIB_INCLUDE_PATH);$(OPENEXRLIB_INCLUDE_PATH);$(TIFFLIB_INCLUDE_PATH);$(JPEGLIB_INCLUDE_PATH);$(RAPTOR_ROOT)\Redist\Include;$(VULKAN_INCLUDE_PATH);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\$(ProjectName);$(ZLIB_INCLUDE_PATH);$(PNGLIB_INCLUDE_PATH);$(OPENEXRLIB_INCLUDE_PATH);$(TIFFLIB_INCLUDE_PATH);$(JPEGLIB_INCLUDE_PATH);$(RAPTOR_ROOT)\Redist\Include;$(VULKAN_INCLUDE_PATH);$(DSHOW_INCLUDE_PATH);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;EXPORT_RAPTOR_CORE;ZLIB_DLL;PNG_USE_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <PrecompiledHeader>Use</PrecompiledHeader>
@@ -328,7 +328,7 @@ copy $(SolutionDir)$(ProjectName)\Toolbox.pck "%RAPTOR_ROOT%\Redist\bin\"
       <AdditionalIncludeDirectories>$(MSSdk)\Include\mfc;$(MSSdk)\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>opengl32.lib;RaptorData.lib;Raptor.lib;wmvcore.lib;vfw32.lib;libjpeg.lib;zlib.lib;libtiff.lib;ilmimf.lib;half.lib;iex.lib;libpng.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;RaptorData.lib;Raptor.lib;Winmm.lib;strmiids.lib;Propsys.lib;mfuuid.lib;Mfreadwrite.lib;Mfplat.lib;wmvcore.lib;vfw32.lib;libjpeg.lib;zlib.lib;libtiff.lib;ilmimf.lib;half.lib;iex.lib;libpng.lib;dshow.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>$(RAPTOR_ROOT)\Redist\lib;</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>libc;libcmt;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
@@ -369,7 +369,7 @@ copy $(SolutionDir)$(ProjectName)\Toolbox.pck "%RAPTOR_ROOT%\Redist\bin\"
     <ClCompile>
       <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(SolutionDir)\$(ProjectName);$(ZLIB_INCLUDE_PATH);$(PNGLIB_INCLUDE_PATH);$(OPENEXRLIB_INCLUDE_PATH);$(TIFFLIB_INCLUDE_PATH);$(JPEGLIB_INCLUDE_PATH);$(RAPTOR_ROOT)\Redist\Include;$(VULKAN_INCLUDE_PATH);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\$(ProjectName);$(ZLIB_INCLUDE_PATH);$(PNGLIB_INCLUDE_PATH);$(OPENEXRLIB_INCLUDE_PATH);$(TIFFLIB_INCLUDE_PATH);$(JPEGLIB_INCLUDE_PATH);$(RAPTOR_ROOT)\Redist\Include;$(VULKAN_INCLUDE_PATH);$(DSHOW_INCLUDE_PATH);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;EXPORT_RAPTOR_CORE;ZLIB_DLL;PNG_USE_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <PrecompiledHeader>Use</PrecompiledHeader>
@@ -389,7 +389,7 @@ copy $(SolutionDir)$(ProjectName)\Toolbox.pck "%RAPTOR_ROOT%\Redist\bin\"
       <AdditionalIncludeDirectories>$(MSSdk)\Include\mfc;$(MSSdk)\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>opengl32.lib;RaptorData.lib;Raptor.lib;wmvcore.lib;vfw32.lib;libjpeg.lib;zlib.lib;libtiff.lib;ilmimf.lib;half.lib;iex.lib;libpng.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;RaptorData.lib;Raptor.lib;Winmm.lib;strmiids.lib;Propsys.lib;mfuuid.lib;Mfreadwrite.lib;Mfplat.lib;wmvcore.lib;vfw32.lib;libjpeg.lib;zlib.lib;libtiff.lib;ilmimf.lib;half.lib;iex.lib;libpng.lib;dshow.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>$(RAPTOR_ROOT)\Redist\lib;</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>libc;libcmt;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
@@ -430,7 +430,7 @@ copy $(SolutionDir)$(ProjectName)\Toolbox.pck "%RAPTOR_ROOT%\Redist\bin\"
     <ClCompile>
       <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(SolutionDir)\$(ProjectName);$(ZLIB_INCLUDE_PATH);$(PNGLIB_INCLUDE_PATH);$(OPENEXRLIB_INCLUDE_PATH);$(TIFFLIB_INCLUDE_PATH);$(JPEGLIB_INCLUDE_PATH);$(RAPTOR_ROOT)\Redist\Include;$(VULKAN_INCLUDE_PATH);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\$(ProjectName);$(ZLIB_INCLUDE_PATH);$(PNGLIB_INCLUDE_PATH);$(OPENEXRLIB_INCLUDE_PATH);$(TIFFLIB_INCLUDE_PATH);$(JPEGLIB_INCLUDE_PATH);$(RAPTOR_ROOT)\Redist\Include;$(VULKAN_INCLUDE_PATH);$(DSHOW_INCLUDE_PATH);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;EXPORT_RAPTOR_CORE;ZLIB_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <PrecompiledHeader>Use</PrecompiledHeader>
@@ -450,7 +450,7 @@ copy $(SolutionDir)$(ProjectName)\Toolbox.pck "%RAPTOR_ROOT%\Redist\bin\"
       <AdditionalIncludeDirectories>$(MSSdk)\Include\mfc;$(MSSdk)\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>opengl32.lib;RaptorData.lib;Raptor.lib;wmvcore.lib;vfw32.lib;libjpeg.lib;zlib.lib;libtiff.lib;ilmimf.lib;half.lib;iex.lib;libpng.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;RaptorData.lib;Raptor.lib;Winmm.lib;strmiids.lib;Propsys.lib;mfuuid.lib;Mfreadwrite.lib;Mfplat.lib;wmvcore.lib;vfw32.lib;libjpeg.lib;zlib.lib;libtiff.lib;ilmimf.lib;half.lib;iex.lib;libpng.lib;dshow.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>$(RAPTOR_ROOT)\Redist\lib;</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>libc;libcmt;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
@@ -491,7 +491,7 @@ copy $(SolutionDir)$(ProjectName)\Toolbox.pck "%RAPTOR_ROOT%\Redist\bin\"
     <ClCompile>
       <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(SolutionDir)\$(ProjectName);$(ZLIB_INCLUDE_PATH);$(PNGLIB_INCLUDE_PATH);$(OPENEXRLIB_INCLUDE_PATH);$(TIFFLIB_INCLUDE_PATH);$(JPEGLIB_INCLUDE_PATH);$(RAPTOR_ROOT)\Redist\Include;$(VULKAN_INCLUDE_PATH);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\$(ProjectName);$(ZLIB_INCLUDE_PATH);$(PNGLIB_INCLUDE_PATH);$(OPENEXRLIB_INCLUDE_PATH);$(TIFFLIB_INCLUDE_PATH);$(JPEGLIB_INCLUDE_PATH);$(RAPTOR_ROOT)\Redist\Include;$(VULKAN_INCLUDE_PATH);$(DSHOW_INCLUDE_PATH);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;EXPORT_RAPTOR_CORE;ZLIB_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <PrecompiledHeader>Use</PrecompiledHeader>
@@ -511,7 +511,7 @@ copy $(SolutionDir)$(ProjectName)\Toolbox.pck "%RAPTOR_ROOT%\Redist\bin\"
       <AdditionalIncludeDirectories>$(MSSdk)\Include\mfc;$(MSSdk)\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>opengl32.lib;RaptorData.lib;Raptor.lib;wmvcore.lib;vfw32.lib;libjpeg.lib;zlib.lib;libtiff.lib;ilmimf.lib;half.lib;iex.lib;libpng.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;RaptorData.lib;Raptor.lib;Winmm.lib;strmiids.lib;Propsys.lib;mfuuid.lib;Mfreadwrite.lib;Mfplat.lib;wmvcore.lib;vfw32.lib;libjpeg.lib;zlib.lib;libtiff.lib;ilmimf.lib;half.lib;iex.lib;libpng.lib;dshow.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>$(RAPTOR_ROOT)\Redist\lib;</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>libc;libcmt;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
@@ -578,7 +578,7 @@ copy $(SolutionDir)$(ProjectName)\Toolbox.pck "%RAPTOR_ROOT%\Redist\bin\"
       <AdditionalIncludeDirectories>$(MSSdk)\Include\mfc;$(MSSdk)\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>opengl32.lib;RaptorData.lib;Raptor.lib;wmvcore.lib;vfw32.lib;libjpeg.lib;zlib.lib;libtiff.lib;ilmimf.lib;half.lib;iex.lib;libpng.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;RaptorData.lib;Raptor.lib;strmiids.lib;Propsys.lib;mfuuid.lib;Mfreadwrite.lib;Mfplat.lib;wmvcore.lib;vfw32.lib;libjpeg.lib;zlib.lib;libtiff.lib;ilmimf.lib;half.lib;iex.lib;libpng.lib;dshow.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>Release\RaptorToolBox.dll</OutputFile>
       <Version>$(RAPTOR_RELEASE)</Version>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -651,7 +651,7 @@ copy $(SolutionDir)$(ProjectName)\Toolbox.pck "%RAPTOR_ROOT%\Redist\bin\"
       <AdditionalIncludeDirectories>$(MSSdk)\Include\mfc;$(MSSdk)\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>opengl32.lib;RaptorData.lib;Raptor.lib;wmvcore.lib;vfw32.lib;libjpeg.lib;zlib.lib;libtiff.lib;ilmimf.lib;half.lib;iex.lib;libpng.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;RaptorData.lib;Raptor.lib;strmiids.lib;Propsys.lib;mfuuid.lib;Mfreadwrite.lib;Mfplat.lib;wmvcore.lib;vfw32.lib;libjpeg.lib;zlib.lib;libtiff.lib;ilmimf.lib;half.lib;iex.lib;libpng.lib;dshow.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>Release\RaptorToolBox.dll</OutputFile>
       <Version>$(RAPTOR_RELEASE)</Version>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -765,6 +765,8 @@ copy $(SolutionDir)$(ProjectName)\Toolbox.pck "%RAPTOR_ROOT%\Redist\bin\"
     <ClCompile Include="..\..\RaptorToolBox\Renders.cpp" />
     <ClCompile Include="..\..\RaptorToolBox\Streaming.cpp" />
     <ClCompile Include="..\..\RaptorToolBox\Streaming\AVIStreaming.cpp" />
+    <ClCompile Include="..\..\RaptorToolBox\Streaming\DShowStreaming.cpp" />
+    <ClCompile Include="..\..\RaptorToolBox\Streaming\MFStreaming.cpp" />
     <ClCompile Include="..\..\RaptorToolBox\Streaming\WMVStreaming.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -830,6 +832,8 @@ copy $(SolutionDir)$(ProjectName)\Toolbox.pck "%RAPTOR_ROOT%\Redist\bin\"
     <ClInclude Include="..\..\RaptorToolBox\resource.h" />
     <ClInclude Include="..\..\RaptorToolBox\Streaming.h" />
     <ClInclude Include="..\..\RaptorToolBox\Streaming\AVIStreaming.h" />
+    <ClInclude Include="..\..\RaptorToolBox\Streaming\DShowStreaming.h" />
+    <ClInclude Include="..\..\RaptorToolBox\Streaming\MFStreaming.h" />
     <ClInclude Include="..\..\RaptorToolBox\Streaming\WMVStreaming.h" />
   </ItemGroup>
   <ItemGroup>
@@ -870,6 +874,9 @@ copy $(SolutionDir)$(ProjectName)\Toolbox.pck "%RAPTOR_ROOT%\Redist\bin\"
     <None Include="..\..\RaptorToolBox\Filters\MB_accum.ps" />
     <None Include="..\..\RaptorToolBox\Filters\MB_accum2.ps" />
     <None Include="..\..\RaptorToolBox\Filters\MB_accum_old.ps" />
+    <None Include="..\..\RaptorToolBox\Streaming\MediaTypes.htm">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

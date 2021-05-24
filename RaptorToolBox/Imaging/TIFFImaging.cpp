@@ -70,7 +70,12 @@ CTIFFImaging::~CTIFFImaging(void)
 {
 }
 
-bool CTIFFImaging::isOfKind(const std::string &kind) const 
+bool CTIFFImaging::isOfKind(const std::string &kind) const
+{
+	return _isOfKind(kind);
+}
+
+bool CTIFFImaging::_isOfKind(const std::string &kind)
 {
 	std::string ext = kind;
 	std::transform(ext.begin(), ext.end(), ext.begin(), ::toupper);

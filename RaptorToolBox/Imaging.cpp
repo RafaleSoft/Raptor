@@ -82,24 +82,23 @@ bool CImaging::installImager(const std::string& imageType)
     bool res = true;
 
     string ext = imageType;
-	for (size_t pos=0;pos<imageType.size();pos++)
-        ext[pos] = toupper(imageType[pos]);
+	std::transform(ext.begin(), ext.end(), ext.begin(), ::toupper);
 
-    if (ext == "BMP")
+    if (CBMPImaging::_isOfKind(ext))
 		CImage::setImageKindIO(new CBMPImaging());
-    else if (ext == "ICO")
+    else if (CICOImaging::_isOfKind(ext))
 		CImage::setImageKindIO(new CICOImaging());
-    else if (ext == "TGA")
+    else if (CTGAImaging::_isOfKind(ext))
 		CImage::setImageKindIO(new CTGAImaging());
-    else if (ext == "JPG")
+    else if (CJPGImaging::_isOfKind(ext))
 		CImage::setImageKindIO(new CJPGImaging());
-    else if (ext == "TIF")
+    else if (CTIFFImaging::_isOfKind(ext))
 		CImage::setImageKindIO(new CTIFFImaging());
 #if _MSC_VER > 1200 
-	else if (ext == "EXR")
+	else if (COpenEXRImaging::_isOfKind(ext))
 		CImage::setImageKindIO(new COpenEXRImaging());
 #endif
-    else if (ext == "PNG")
+    else if (CPNGImaging::_isOfKind(ext))
 		CImage::setImageKindIO(new CPNGImaging());
 	else
 		res = false;
