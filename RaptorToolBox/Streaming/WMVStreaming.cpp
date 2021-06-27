@@ -322,7 +322,7 @@ bool CWMVStreaming::openReader(const std::string &fname)
 	//! I only need to receive samples from the beginning of the file.
 	//! If I do not call this, I receive a 'codec not installed' error 
 	//! in GetNextSample
-	hr = m_pReader->SetRange( 0, 0);
+	hr = m_pReader->SetRange(0, 0);
     if ( FAILED( hr ) )
 		return false;
 

@@ -127,14 +127,11 @@ bool CMFStreaming::_isOfKind(const std::string &kind)
 	std::string ext = kind;
 	std::transform(ext.begin(), ext.end(), ext.begin(), ::toupper);
 
-	return (/*("AVI" == ext) ||*/
-			("3G2" == ext) ||
+	return (("3G2" == ext) ||
 			("3GP" == ext) ||
 			("3GP2" == ext) ||
 			("3GPP" == ext) ||
 			("ASF" == ext) ||
-			/*("WMA" == ext) ||
-			("WMV" == ext) ||*/
 			("AAC" == ext) ||
 			("ADTS" == ext) ||
 			("MP3" == ext) ||
@@ -151,14 +148,11 @@ std::vector<std::string> CMFStreaming::getKind(void) const
 { 
 	std::vector<std::string> result;
 
-	//result.push_back("AVI");
 	result.push_back("3G2");
 	result.push_back("3GP");
 	result.push_back("3GP2");
 	result.push_back("3GPP");
 	result.push_back("ASF");
-	//result.push_back("WMA");
-	//result.push_back("WMV");
 	result.push_back("AAC");
 	result.push_back("ADTS");
 	result.push_back("MP3");
@@ -313,17 +307,7 @@ bool CMFStreaming::openReader(const std::string &fname)
 	if (locked)
 		return false;
 
-	// Initialize COM
-	//HRESULT hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
-
-	// Initialize Media Foundation.
-	//if (SUCCEEDED(hr))
-		HRESULT hr = MFStartup(MF_VERSION);
-	//else
-	//{
-	//	MFError(hr);
-	//	return false;	// Not being able to start MF means nothing can be done further.
-	//}
+	HRESULT hr = MFStartup(MF_VERSION);
 
 	IMFAttributes *pAttributes = NULL;
 	SafeRelease(&m_pReader);

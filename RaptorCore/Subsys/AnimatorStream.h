@@ -63,7 +63,19 @@ public:
 
 	virtual long glStartPlayBack(const std::string& fname,bool loop = false);
 	virtual void endPlayBack(unsigned int nStream);
+
+	//!
+	//! Renders all animator stream current frame.
+	//! @param dt: time increment from previous frame, in seconds.
+	//!
     virtual void playFrames(float dt);
+	
+	//!
+	//! Renders a single animator stream current frame.
+	//! @param dt: time increment from previous frame, in seconds.
+	//! @param nStream: stream number to render from
+	//! @param framePos: frameNumber to render
+	//!
 	virtual bool playFrame(float dt,unsigned int nStream,int framePos);
 
 	virtual bool startRecord(const std::string& fname,unsigned int width,unsigned int height);

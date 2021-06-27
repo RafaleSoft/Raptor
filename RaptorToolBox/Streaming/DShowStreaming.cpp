@@ -51,15 +51,12 @@ bool CDShowStreaming::_isOfKind(const std::string &kind)
 		("3GP2" == ext) ||
 		("3GPP" == ext) ||
 		("ASF" == ext) ||
-		//("WMA" == ext) ||
-		//("WMV" == ext) ||
 		("AAC" == ext) ||
 		("ADTS" == ext) ||
 		("MP3" == ext) ||
 		("M4A" == ext) ||
 		("M4V" == ext) ||
 		("MOV" == ext) ||
-		//("MP4" == ext) ||
 		("SAMI" == ext) ||
 		("SMI" == ext) ||
 		("WAV" == ext));
@@ -75,15 +72,12 @@ std::vector<std::string> CDShowStreaming::getKind(void) const
 	result.push_back("3GP2");
 	result.push_back("3GPP");
 	result.push_back("ASF");
-	//result.push_back("WMA");
-	//result.push_back("WMV");
 	result.push_back("AAC");
 	result.push_back("ADTS");
 	result.push_back("MP3");
 	result.push_back("M4A");
 	result.push_back("M4V");
 	result.push_back("MOV");
-	//result.push_back("MP4");
 	result.push_back("SAMI");
 	result.push_back("SMI");
 	result.push_back("WAV");
@@ -92,17 +86,19 @@ std::vector<std::string> CDShowStreaming::getKind(void) const
 }
 
 void CDShowStreaming::seekFrame(unsigned int framePos)
-{ 
-	streamPos = framePos; 
-    lastFrameTime = 0;
-	/*
-    HRESULT hr = m_pReader->SetRangeByFrame( m_wNumStream, streamPos, 0);
-    if ( FAILED( hr ) )
-    {
-        // what should I do here ?
-		return ;
-    }
-	*/
+{
+	if ((NULL != m_pSeeking) && (NULL != m_pControl))
+	{
+		HRESULT hr = m_pControl->Stop();
+
+		LONGLONG current = framePos * frameLength;
+		LONGLONG stop = m_Duration;
+		hr = m_pSeeking->SetPositions(	&current,
+										AM_SEEKING_AbsolutePositioning,
+										&stop,
+										AM_SEEKING_AbsolutePositioning);
+		hr = m_pControl->Run();
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -120,9 +116,14 @@ public:
 	HRESULT SetMediaType(const CMediaType *pmt);       // Video format notification
 	HRESULT DoRenderSample(IMediaSample *pMediaSample); // New video sample
 
-	LONG m_lVidWidth;   // Video width
-	LONG m_lVidHeight;  // Video Height
-	LONG m_lVidPitch;   // Video Pitch
+	LONG	m_lVidWidth;   // Video width
+	LONG	m_lVidHeight;  // Video Height
+	LONG	m_lVidPitch;   // Video Pitch
+	
+	float	frameLength;
+
+	LONGLONG sampleStart;
+	LONGLONG sampleEnd;
 
 	uint8_t	*m_pFrameBuffer;
 };
@@ -152,51 +153,17 @@ bool CDShowStreaming::readFrame(unsigned char *& readBuffer, float timestamp)
 
 	CTextureRenderer *txt = (CTextureRenderer*)m_pFilter;
 	readBuffer = txt->m_pFrameBuffer;
+	streamPos++;
 
-		/*
-		if (SUCCEEDED(hr))
-		{
-			BYTE*  pdwBuffer = NULL;
-			DWORD  dwLength = 0;
+	if ((m_pRenderer->sampleEnd >= m_Duration) && (NULL != m_pSeeking))
+	{
+		seekFrame(0);
+		streamPos = 0;
+		m_pRenderer->sampleStart = 0;
+		m_pRenderer->sampleEnd = 0;
+	}
 
-			hr = m_pBuffer->GetBufferAndLength(&pdwBuffer,&dwLength);
-			if (FAILED(hr))
-				return false;
-
-			readBuffer = pdwBuffer;
-			// What is duration ?
-			//frameLength = ((float)cnsDuration) / 1000000;
-			frameLength = ((float)(__int64)cnsSampleTime - lastFrameTime) / 10000000;
-			lastFrameTime = (float)(__int64)cnsSampleTime;
-			streamPos++;
-		}
-		else
-		{
-			//!	Here we could manage looping
-			if (hr == NS_E_NO_MORE_SAMPLES)
-				return false;
-			else if (hr == E_UNEXPECTED)
-			{
-				RAPTOR_ERROR(CAnimator::CAnimatorClassID::GetClassId(),"Unexpected error while GetNextSample");
-				return false;
-			}
-			else if (hr == E_INVALIDARG)
-				return false;
-			else if (hr == NS_E_INVALID_REQUEST)
-				return false;
-			else if (hr == NS_E_VIDEO_CODEC_NOT_INSTALLED)
-			{
-				RAPTOR_ERROR(CAnimator::CAnimatorClassID::GetClassId(),"Video codec not installed while GetNextSample");
-				return false;
-			}
-			else if (hr == NS_E_AUDIO_CODEC_NOT_INSTALLED)
-			{
-				RAPTOR_ERROR(CAnimator::CAnimatorClassID::GetClassId(),"Audio codec not installed while GetNextSample");
-				return false;
-			}
-		}
-		*/
-		return true;
+	return true;
 }
 
 //-----------------------------------------------------------------------------
@@ -204,10 +171,9 @@ bool CDShowStreaming::readFrame(unsigned char *& readBuffer, float timestamp)
 //-----------------------------------------------------------------------------
 CTextureRenderer::CTextureRenderer(LPUNKNOWN pUnk, HRESULT *phr)
 	: CBaseVideoRenderer(__uuidof(CLSID_TextureRenderer), NAME("Texture Renderer"), pUnk, phr),
-	m_lVidWidth(0), m_lVidHeight(0), m_lVidPitch(0), m_pFrameBuffer(NULL)
+	m_lVidWidth(0), m_lVidHeight(0), m_lVidPitch(0), frameLength(0.0f), m_pFrameBuffer(NULL),
+	sampleStart(0), sampleEnd(0)
 {
-	// Store and AddRef the texture for our use.
-	ASSERT(phr);
 	if (phr)
 		*phr = S_OK;
 }
@@ -250,15 +216,26 @@ HRESULT CTextureRenderer::CheckMediaType(const CMediaType *pmt)
 		}
 		else if (*type == MEDIATYPE_Video)
 		{
-			// Only accept RGB24 video
-			if (*subtype == MEDIASUBTYPE_RGB24)
+			//if (*subtype == MEDIASUBTYPE_RGB32)
+			//	hr = S_OK;
+			//else
+			if (*subtype == MEDIASUBTYPE_RGB24) // Only accept RGB24 video
 				hr = S_OK;
 		}
 		else
 			hr = E_INVALIDARG;
 	}
 	else
-		hr = S_OK;
+	{
+		if (*type == MEDIATYPE_Video)
+		{
+			//if (*subtype == MEDIASUBTYPE_RGB32)
+			//	hr = S_OK;
+			//else
+			if (*subtype == MEDIASUBTYPE_RGB24) // Only accept RGB24 video
+				hr = S_OK;
+		}
+	}
 
 	return hr;
 }
@@ -269,14 +246,35 @@ HRESULT CTextureRenderer::CheckMediaType(const CMediaType *pmt)
 HRESULT CTextureRenderer::SetMediaType(const CMediaType *pmt)
 {
 	// Retrive the Bitmap info header
-	VIDEOINFO *pviBmp = (VIDEOINFO *)pmt->Format();
-	if (NULL == pviBmp)
+	const GUID *formatType = pmt->FormatType();
+	BITMAPINFOHEADER *pBIH = NULL;
+
+	if (*formatType == FORMAT_VideoInfo)
+	{
+		VIDEOINFOHEADER *pviBmp = (VIDEOINFOHEADER *)pmt->Format();
+		if (NULL == pviBmp)
+			return E_FAIL;
+		else
+			pBIH = &pviBmp->bmiHeader;
+		frameLength = pviBmp->AvgTimePerFrame / 10000000.0f; // in ms.
+	}
+	else if (*formatType == FORMAT_VideoInfo2)
+	{
+		VIDEOINFOHEADER2 *pviBmp = (VIDEOINFOHEADER2 *)pmt->Format();
+		if (NULL == pviBmp)
+			return E_FAIL;
+		else
+			pBIH = &pviBmp->bmiHeader;
+		frameLength = pviBmp->AvgTimePerFrame / 10000000.0f; // in ms.
+	}
+	else	// unsupported mledia format type.
 		return E_FAIL;
 
-	m_lVidWidth = pviBmp->bmiHeader.biWidth;
-	m_lVidHeight = abs(pviBmp->bmiHeader.biHeight);
+	m_lVidWidth = pBIH->biWidth;
+	m_lVidHeight = abs(pBIH->biHeight);
 	m_lVidPitch = (m_lVidWidth * 3 + 3) & ~(3); // We are forcing RGB24
 
+	
 	if (NULL != m_pFrameBuffer)
 		delete[] m_pFrameBuffer;
 	m_pFrameBuffer = new uint8_t[m_lVidPitch * m_lVidHeight];
@@ -296,12 +294,14 @@ HRESULT CTextureRenderer::DoRenderSample(IMediaSample * pSample)
 
 	// Get the video bitmap buffer
 	BYTE  *pBmpBuffer;	// Bitmap buffer
-	pSample->GetPointer(&pBmpBuffer);
+	HRESULT hr = pSample->GetPointer(&pBmpBuffer);
 
-	if (NULL != m_pFrameBuffer)
-		memcpy(m_pFrameBuffer, pBmpBuffer, min(size,m_lVidPitch*m_lVidHeight));
+	if (SUCCEEDED(hr) && (NULL != m_pFrameBuffer))
+		memcpy(m_pFrameBuffer, pBmpBuffer, min(size, m_lVidPitch*m_lVidHeight));
 
-	return S_OK;
+	hr = pSample->GetTime(&sampleStart, &sampleEnd);
+
+	return hr;
 }
 
 HRESULT GetPin(IBaseFilter *pFilter, PIN_DIRECTION PinDir, IPin **ppPin)
@@ -361,18 +361,18 @@ bool CDShowStreaming::openReader(const std::string &fname)
     }
 
 	// Create the Texture Renderer object
-	CTextureRenderer *pCTR = new CTextureRenderer(NULL, &hr);
+	m_pRenderer = new CTextureRenderer(NULL, &hr);
 	if (FAILED(hr))
 	{
-		if (NULL != pCTR)
-			delete pCTR;
+		if (NULL != m_pRenderer)
+			delete m_pRenderer;
 		RAPTOR_ERROR(	CAnimator::CAnimatorClassID::GetClassId(), 
 						"Could not create texture renderer object");
 		return false;
 	}
 
 	// Get a pointer to the IBaseFilter on the TextureRenderer, add it to graph
-	m_pFilter = pCTR;
+	m_pFilter = m_pRenderer;
 	hr = m_pGraph->AddFilter(m_pFilter, L"TEXTURERENDERER");
 	if (FAILED(hr))
 	{
@@ -405,6 +405,7 @@ bool CDShowStreaming::openReader(const std::string &fname)
 	PIN_INFO pinfo;
 	pFSrcPinOut->QueryPinInfo(&pinfo);
 	
+	// Connect pins: find renderer input Pin
 	IPin *pFTRPinIn = NULL;
 	hr = GetPin(m_pFilter, PINDIR_INPUT, &pFTRPinIn);
 	if (FAILED(hr))
@@ -423,7 +424,7 @@ bool CDShowStreaming::openReader(const std::string &fname)
 						"Could not connect pins");
 		return false;
 	}
-
+	frameLength = m_pRenderer->frameLength;
 
 
 	hr = m_pGraph->QueryInterface(IID_IMediaControl, (void **)&m_pControl);
@@ -432,19 +433,22 @@ bool CDShowStreaming::openReader(const std::string &fname)
 		RAPTOR_ERROR(CAnimator::CAnimatorClassID::GetClassId(), "Could not create the Media Control.");
 		return false;
 	}
-
-	hr = m_pGraph->QueryInterface(IID_IMediaEvent, (void **)&m_pEvent);
+	
+	hr = m_pGraph->QueryInterface(IID_IMediaSeeking, (void **)&m_pSeeking);
 	if (FAILED(hr))
 	{
-		RAPTOR_ERROR(CAnimator::CAnimatorClassID::GetClassId(), "Could not create the Media Event.");
+		RAPTOR_ERROR(CAnimator::CAnimatorClassID::GetClassId(), "Could not create the Media Seeking.");
 		return false;
 	}
-
-	hr = m_pGraph->QueryInterface(IID_IMediaPosition, (void **)&m_pPosition);
-	if (FAILED(hr))
+	else
 	{
-		RAPTOR_ERROR(CAnimator::CAnimatorClassID::GetClassId(), "Could not create the Media Position.");
-		return false;
+		hr = m_pSeeking->GetDuration(&m_Duration);
+		if (FAILED(hr))
+		{
+			RAPTOR_ERROR(	CAnimator::CAnimatorClassID::GetClassId(), 
+							"Could not get the Media Duration.");
+			return false;
+		}
 	}
 
 	hr = m_pControl->Run();
@@ -454,16 +458,6 @@ bool CDShowStreaming::openReader(const std::string &fname)
 						"Could not run the DirectShow graph!");
 		return hr;
 	}
-	/*
-	WCHAR wFname[MAX_PATH];
-	MultiByteToWideChar(CP_ACP, 0L, fname.c_str(), fname.length() + 1, wFname, MAX_PATH);
-	hr = m_pControl->RenderFile(wFname);
-	if (FAILED(hr))
-	{
-		RAPTOR_ERROR(CAnimator::CAnimatorClassID::GetClassId(), "Could not open media file " + fname);
-		return false;
-	}
-	*/
 
 	locked = true;
 	return true;
@@ -475,24 +469,8 @@ bool CDShowStreaming::closeReader(void)
 	
 	if (NULL != m_pControl)
 	{
-		m_pControl->Stop();
+		hr = m_pControl->Stop();
 	}
-
-	if (NULL != m_pPosition)
-		hr = m_pPosition->Release();
-	m_pPosition = NULL;
-
-	if (FAILED(hr))
-		return false;
-
-
-	if (NULL != m_pEvent)
-		hr = m_pEvent->Release();
-	m_pEvent = NULL;
-
-	if (FAILED(hr))
-		return false;
-
 
 	if( NULL != m_pControl )
         hr = m_pControl->Release();
@@ -510,6 +488,12 @@ bool CDShowStreaming::closeReader(void)
 		return false;
 
 	// TODO: delete Texture Renderer
+	if (NULL != m_pRenderer)
+		hr = m_pRenderer->Release();
+	m_pRenderer = NULL;
+
+	if (FAILED(hr))
+		return false;
 
 	locked = false;
     return true;

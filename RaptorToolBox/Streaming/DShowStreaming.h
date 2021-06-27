@@ -35,14 +35,15 @@ RAPTOR_NAMESPACE
 
 #include <dshow.h>
 
+class CTextureRenderer;
 
 class CDShowStreaming : public CAnimator::IVideoIO
 {
 public:
 	CDShowStreaming()
-		:frameLength(0), streamPos(0), locked(false),
-		m_pGraph(NULL), m_pControl(NULL), m_pPosition(NULL), m_pEvent(NULL), m_pFilter(NULL),
-		lastFrameTime(0) {};
+		:frameLength(0.0f), streamPos(0), locked(false),
+		m_pGraph(NULL), m_pControl(NULL), m_pRenderer(NULL), m_Duration(0),
+		m_pFilter(NULL), m_pSeeking(NULL) {};
     virtual ~CDShowStreaming() {};
 
 	virtual bool isOfKind(const std::string &kind) const;
@@ -71,13 +72,15 @@ public:
 
 private:
     float			frameLength;
-	float			lastFrameTime;
     LONG			streamPos;
     bool			locked;
+	LONGLONG		m_Duration;
+
+	CTextureRenderer	*m_pRenderer;
+
 	IGraphBuilder	*m_pGraph;
 	IMediaControl	*m_pControl;
-	IMediaPosition	*m_pPosition;
-	IMediaEvent		*m_pEvent;
+	IMediaSeeking	*m_pSeeking;
 	IBaseFilter		*m_pFilter;
 };
 #endif

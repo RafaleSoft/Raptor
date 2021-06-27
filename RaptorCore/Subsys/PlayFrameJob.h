@@ -28,7 +28,7 @@ public:
     //! The handler derived from CEngineJob
     virtual bool computeJob(CGenericMatrix<float> &transform);
 
-    //! Sets the current frame delta time issued from animator
+    //! Sets the current frame delta time (in seconds) issued from animator
     //! This delta time will be used to play the next frame.
     static void SetJobTime(float dt) { jobTime = dt; };
 

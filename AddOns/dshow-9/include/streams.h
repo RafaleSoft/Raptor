@@ -183,6 +183,8 @@ typedef struct {
    #define NUMELMS(aa) (sizeof(aa)/sizeof((aa)[0]))
 #endif
 
+#include <dvdmedia.h>	// DVD helper classes
+
 #else
     #ifdef DEBUG
     #pragma message("STREAMS.H included TWICE")
