@@ -59,7 +59,7 @@ public:
 
 	virtual bool openReader(const std::string &fname);
 	virtual bool readFrame(uint8_t *& readBuffer, float timestamp = 0.0f);
-	virtual void seekFrame(unsigned int framePos) { streamPos = framePos; };
+	virtual void seekFrame(unsigned int framePos);
 	virtual unsigned int getFramePosition(void) const { return streamPos; };
 	virtual bool closeReader(void);
 

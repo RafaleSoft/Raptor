@@ -182,6 +182,23 @@ bool CMFStreaming::closeRecorder(void)
 	return false;
 }
 
+void CMFStreaming::seekFrame(unsigned int framePos)
+{
+	streamPos = framePos;
+
+	if (m_bCanSeek)
+	{
+		PROPVARIANT var;
+		PropVariantInit(&var);
+
+		var.vt = VT_I8;
+		var.hVal.QuadPart = framePos * frameLength * 100000000.0f;
+
+		HRESULT hr = m_pReader->SetCurrentPosition(GUID_NULL, var);
+		if (FAILED(hr))
+			MFError(hr);
+	}
+}
 
 bool CMFStreaming::readFrame(uint8_t *& readBuffer, float timestamp)
 {
@@ -190,24 +207,7 @@ bool CMFStreaming::readFrame(uint8_t *& readBuffer, float timestamp)
 
 	readBuffer = m_pFrameBuffer;
 	SafeRelease(&m_pSample);
-
-	if (m_bCanSeek && (timestamp > 0))
-	{
-		PROPVARIANT var;
-		PropVariantInit(&var);
-
-		var.vt = VT_I8;
-		var.hVal.QuadPart = timestamp * 100000000;
-
-		HRESULT hr = m_pReader->SetCurrentPosition(GUID_NULL, var);
-		if (FAILED(hr))
-		{
-			MFError(hr);
-			return false;
-		}
-
-	}
-
+	
 	DWORD		dwFlags = 0;
 	LONGLONG    hnsTimeStamp = 0;
 	HRESULT hr = m_pReader->ReadSample((DWORD)MF_SOURCE_READER_FIRST_VIDEO_STREAM, 0, NULL,
@@ -220,7 +220,10 @@ bool CMFStreaming::readFrame(uint8_t *& readBuffer, float timestamp)
 	}
 
 	if ((dwFlags & MF_SOURCE_READERF_ENDOFSTREAM) || (m_pSample == NULL))
+	{
+		seekFrame(0);
 		return false;
+	}
 
 	if (dwFlags & MF_SOURCE_READERF_CURRENTMEDIATYPECHANGED)
 	{
