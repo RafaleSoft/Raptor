@@ -68,8 +68,9 @@ void print_help(void)
 	std::cout << "Rays Workunit command line help:" << std::endl;
 
 	std::cout << "  --id|-i : defines the workunit id, each active workunit must have a unique id" << std::endl;
-	std::cout << "  --port|-p : defines the workunit listening port, by default 2048" << std::endl;
-	std::cout << "  --host_addr|-a : defines the workunit listening IP address, by default 127.0.0.1" << std::endl;
+	std::cout << "  --job_id|-j : defines the job id that this workunit will process" << std::endl;
+	std::cout << "  --port|-p : defines the Rays Server listening port, by default 2048" << std::endl;
+	std::cout << "  --host_addr|-a : defines the Rays Server listening IP address, by default 127.0.0.1" << std::endl;
 	std::cout << "  --config_file|-f : the path to the deamon configuration file, by default RaysDeamon.config in the current execution folder" << std::endl;
 	std::cout << "  --width|-w : defines the workunit rendering surface width, by default 256" << std::endl;
 	std::cout << "  --height|-h : defines the workunit rendering surface height, by default 256" << std::endl;
@@ -94,10 +95,11 @@ int main(int argc, char* argv[])
 #endif
 
 	CCmdLineParser parser;
-	parser.addOption("id","i",(unsigned short)0);
-	parser.addOption("port","p",(unsigned short)2048);
-	parser.addOption("width","w",(unsigned short)256);
-	parser.addOption("height","h",(unsigned short)256);
+	parser.addOption("id","i",(uint16_t)0);
+	parser.addOption("job_id", "j", (uint16_t)0);
+	parser.addOption("port","p",(uint16_t)2048);
+	parser.addOption("width","w",(uint16_t)256);
+	parser.addOption("height","h",(uint16_t)256);
 	parser.addOption("host_addr","a",std::string("127.0.0.1"));
 	parser.addOption("config_file", "f", std::string("RaysServer.config"));
 	parser.addOption("help", "h", CCmdLineParser::NO_VALUE_OPTION);
@@ -109,7 +111,7 @@ int main(int argc, char* argv[])
 	}
 
 	CCmdLineParser::NO_VALUE_OPTION_t help = CCmdLineParser::NO_VALUE_UNDEFINED;
-	parser.getValue<CCmdLineParser::NO_VALUE_OPTION_t>("h", help);
+	parser.getValue("h", help);
 	if (CCmdLineParser::NO_VALUE_VALUE == help)
 	{
 		print_help();
@@ -119,27 +121,33 @@ int main(int argc, char* argv[])
 	p_WU = new CRaysWorkUnit();
 	if (p_WU->start(parser))
 	{
+		std::cout << "Running work unit raytracing..." << std::endl;
+
 		// TODO: Run Raytracer !
 
 		const CRaytracerData* raytracer_data = p_WU->getRaytracerData();
 		
 		// job complete, send back results
 		MSGSTRUCT msg;
-		//msg.msg_header = MSG_START;
 		msg.msg_id = JOB_STOP;
 		//msg.msg_size = (raytracer_data->getEnd()-raytracer_data->getStart())*raytracer_data->getCamera().width*4;
 		//msg.msg_size *= 2;	// add z-buffer
 		msg.msg_data[1] = raytracer_data->getStart();
 		msg.msg_data[2] = raytracer_data->getEnd();
-		//msg.msg_tail = MSG_DATA;
-		p_WU->write(&msg,MSGSIZE);
+		
+		//p_WU->write(&msg,MSGSIZE);
 
 		//	send job result
 		//p_WU->write(raytracer_data->getImage(),msg.msg_size/2);
 		//p_WU->write(raytracer_data->getZBuffer(),msg.msg_size/2);
 	}
+	else
+	{
+		std::cout << "Work unit cannot reach Rays Server ..." << std::endl;
+	}
 
 	std::cout << "Exiting work unit ... bye!" << std::endl;
+
 	p_WU->disconnectServer();
 	delete p_WU;
 
@@ -150,30 +158,31 @@ int main(int argc, char* argv[])
 
 bool CRaysWorkUnit::start(const CCmdLineParser &cmdline)
 {
-	unsigned short id = 0;
-	unsigned short port = 2049;
+	uint16_t id = 0;
+	uint16_t jid = 0;
+	uint16_t port = 2048;
 	std::string addrStr = "127.0.0.1";
+
 	cmdline.getValue("host_addr", addrStr);
 	cmdline.getValue("port",port);
 	cmdline.getValue("id",id);
+	cmdline.getValue("job_id", jid);
 
 	if (connectToServer(addrStr, port))
 	{
 		//	write back ID to acknowledge Workunit availability
 		MSGSTRUCT msg;
-		//msg.msg_header = MSG_START;
 		msg.msg_id = JOB_WUNIT;
-		//msg.msg_size = 0;
 		msg.msg_data[0] = id;
-		msg.msg_data[1] = 0;
+		msg.msg_data[1] = jid;
 		msg.msg_data[2] = 0;
-		msg.msg_data[3] = getPort();
-		msg.msg_data[4] = getAddr();
-		//msg.msg_tail = MSG_END;
+		msg.msg_data[3] = 0;
+		msg.msg_data[4] = 0;
+		
 		write(&msg,MSGSIZE);
 	}
 	else
-		std::cout << "Unable to connect to server request !" << std::endl;
+		std::cout << "Unable to connect to Rays Server !" << std::endl;
 
 	return false;
 }

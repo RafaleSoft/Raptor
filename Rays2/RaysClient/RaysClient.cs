@@ -172,10 +172,10 @@ namespace RaysClient
 
         public bool Disconnect()
         {
-            if (CloseSession())
-                return network.Disconnect();
-            else
-                return false;
+            if (!CloseSession())
+                log.Error("Echec de fermeture de session Rays Server. Connection perdue ?");
+
+            return network.Disconnect();
         }
 
         public bool IsConnected()
@@ -216,6 +216,9 @@ namespace RaysClient
 
         public bool CloseSession()
         {
+            log.Info("Fermeture de session Rays Server:" + session_id.ToString());
+            session_id = 0;
+
             byte[] nodata = new byte[0];
             return network.SendMessage(RaysClientNetwork.SES_CLOSE, 0, 0, 0, 0, 0, ref nodata);
         }

@@ -53,7 +53,7 @@ namespace RaysServer
 			unsigned int	deamonID; // outer identifier ( server counter )
 			float			jobDone;	// percentage of job actually done
 			unsigned int	nbProcs;
-			unsigned int	nbProcsAvailable;
+			unsigned int	nbWUAvailable;
 			bool			active;
 			std::string		deamonIP;
 			CDeamonClient	*connection;
@@ -109,7 +109,9 @@ namespace RaysServer
 
 		//!	Registered deamons will launch workunits to work on job jobID.
 		//! @return false if any error from registered deamons.
-		bool DispatchJobToWorkunits(uint32_t jobID, int nbWU, CDeamonManager::deamon_struct *pWU);
+		bool DispatchJobToWorkunits(uint32_t jobID, 
+									uint16_t server_port, uint32_t server_host, 
+									int nbWU, CDeamonManager::deamon_struct *pWU);
 
 		
 

@@ -17,6 +17,7 @@
 
 
 #include "stdafx.h"
+#include <iostream>
 
 #if !defined(AFX_DEAMONMANAGER_H__F7EF715A_5E86_4C65_B6E7_2751FAE87A91__INCLUDED_)
 	#include "DeamonManager.h"
@@ -90,7 +91,7 @@ bool CDeamonManager::unregisterDeamon(size_t numWU)
 
 	deamon_struct *lpWU = m_Deamons[numWU];
 	//!	Chage this condition: check owned jobs instead of available procs.
-	if (lpWU->nbProcsAvailable != lpWU->nbProcs)
+	if (lpWU->jobDone < 100.0f)
 		return false;
 
 	m_Deamons.erase(m_Deamons.begin() + numWU);
@@ -128,7 +129,6 @@ bool CDeamonManager::registerDeamon(const std::string& deamonIP, uint16_t port)
 		WU->deamonID = m_counter;
 		WU->jobDone = 0;
 		WU->nbProcs = 0;
-		WU->nbProcsAvailable = 0;
 		WU->active = false;
 		WU->deamonIP = deamonIP;
 		WU->connection = connection;
@@ -147,11 +147,11 @@ bool CDeamonManager::DeamonStatus(size_t numDeamon) const
 	if (numDeamon >= m_Deamons.size())
 		return false;
 
-	CDeamonManager::deamon_struct * WU = m_Deamons[numDeamon];
-	if (NULL == WU)
+	CDeamonManager::deamon_struct * pDeamon = m_Deamons[numDeamon];
+	if (NULL == pDeamon)
 		return false;
 
-	if (NULL == WU->connection)
+	if (NULL == pDeamon->connection)
 		return false;
 
 	MSGSTRUCT msg;
@@ -161,23 +161,23 @@ bool CDeamonManager::DeamonStatus(size_t numDeamon) const
 	msg.msg_data[2] = 0;
 	msg.msg_data[3] = 0;
 	msg.msg_data[4] = 0;
-	WU->connection->write(&msg, MSGSIZE);
+	pDeamon->connection->write(&msg, MSGSIZE);
 
 	void * new_msg = NULL;
 	size_t size = 0;
-	WU->connection->read(new_msg, size);
+	pDeamon->connection->read(new_msg, size);
 	// check returned IP in msg.msg_data[4] for full safe query
 	if ((size != MSGSIZE) || (NULL == new_msg))
 	{
-		WU->active = false;
+		pDeamon->active = false;
 		return false;
 	}
 	
 	msg = *(LPMSGSTRUCT)new_msg;
-	WU->nbProcs = msg.msg_data[0];
-	WU->nbProcsAvailable = msg.msg_data[1];
-	WU->jobDone = msg.msg_data[2];
-	WU->active = true;
+	pDeamon->nbProcs = msg.msg_data[0];
+	pDeamon->nbWUAvailable = msg.msg_data[1];
+	pDeamon->jobDone = msg.msg_data[2];
+	pDeamon->active = true;
 	return true;
 }
 
@@ -253,31 +253,49 @@ bool CDeamonManager::ReleaseWorkUnit(unsigned short WUID)
 }
 */
 
-bool CDeamonManager::DispatchJobToWorkunits(uint32_t jobID, int nbWU, CDeamonManager::deamon_struct *pWU)
+bool CDeamonManager::DispatchJobToWorkunits(uint32_t jobID, 
+											uint16_t server_port, uint32_t server_host,
+											int nbWU, CDeamonManager::deamon_struct *pWU)
 {
+	bool dispatch = true;
+
 	for (unsigned int i = 0; i<nbWU; i++)
 	{
-		CDeamonManager::deamon_struct *lpWUReg = m_Deamons[i];
-		/*
-		unsigned char *buffer = new unsigned char[size + MSGSIZE];
 		MSGSTRUCT msg;
+		m_counter++;
+
+		std::cout << "Requesting Deamon to run workunit id " << m_counter << std::endl;
 
 		msg.msg_id = DMN_DISPATCHJOB;
-		msg.msg_data[0] = lpJob->workUnits[i]->workUnitID;
-		msg.msg_data[1] = lpWUReg->nbProcs;
-		msg.msg_data[2] = m_Server->GetAddr();
-		msg.msg_data[3] = m_Server->GetPort();
-		msg.msg_data[4] = m_wUnitPriority;
+		msg.msg_data[0] = m_counter;	// WUID
+		msg.msg_data[1] = jobID;
+		msg.msg_data[2] = server_host;
+		msg.msg_data[3] = server_port;
+		msg.msg_data[4] = 1; //priority;
 
-		memcpy(buffer, &msg, MSGSIZE);
-		memcpy(buffer + MSGSIZE, LPCTSTR(lpWUReg->source), size);
+		pWU[i].connection->write(&msg, MSGSIZE);
 
-		CClient<CDeamonSocket>* deamon = (CClient<CDeamonSocket>*)(lpWUReg->connection);
-		deamon->Write(buffer, size + MSGSIZE);
-		*/
+		void * new_msg = NULL;
+		size_t size = 0;
+		pWU[i].connection->read(new_msg, size);
+		// check returned IP in msg.msg_data[4] for full safe query
+		if ((size != MSGSIZE) || (NULL == new_msg))
+		{
+			std::cout << "Deamon failed to dispatch job ID " << jobID << std::endl;
+			dispatch = false;
+		}
+		else
+		{
+			msg = *(LPMSGSTRUCT)new_msg;
+			if ((DMN_DISPATCHJOB != msg.msg_id) || (0 == msg.msg_data[3]) || (0 == msg.msg_data[4]))
+			{
+				std::cout << "Deamon failed to run workunit id " << m_counter << std::endl;
+				dispatch = false;
+			}
+		}
 	}
 
-	return false;
+	return dispatch;
 }
 
 int CDeamonManager::AllocateWorkUnits(unsigned int requestedWU, deamon_struct* &pListWU)
@@ -297,14 +315,7 @@ int CDeamonManager::AllocateWorkUnits(unsigned int requestedWU, deamon_struct* &
 		deamon_struct* pDeamon = m_Deamons[sWU[i + 1]];
 
 		// creating Work Unit job structure
-		pWUs[i].nbProcs = pDeamon->nbProcs;
-		pWUs[i].deamonID = pDeamon->deamonID;
-		pWUs[i].active = true;
-		pWUs[i].nbProcsAvailable = 1; //? pDeamon->nbProcsAvailable;
-		pWUs[i].connection = NULL;
-		pWUs[i].deamonIP = "127.0.0.1";
-
-		// setting extra parameters
+		pWUs[i] = *pDeamon;
 		pWUs[i].jobDone = 0.0f;
 	}
 
@@ -329,7 +340,7 @@ int* CDeamonManager::SelectWorkUnits(unsigned int requestedWU)
 		unsigned int nb=0;
 
 		deamon_struct* pDeamon = m_Deamons[pos];
-		int available = pDeamon->nbProcsAvailable;
+		int available = pDeamon->nbWUAvailable;
 		bool active = pDeamon->active;
 		
 		while ((pos < m_Deamons.size()) && (nb < requestedWU))
@@ -343,7 +354,7 @@ int* CDeamonManager::SelectWorkUnits(unsigned int requestedWU)
 			{
 				pos++;
 				pDeamon = m_Deamons[pos];
-				available = pDeamon->nbProcsAvailable;
+				available = pDeamon->nbWUAvailable;
 				active = pDeamon->active;
 			}
 		}

@@ -52,6 +52,7 @@ CServerTransport::CServerTransport(CDeamonManager *pDeamon, CJobManager *pJob)
 	m_processors[SES_CLOSE] = &CServerTransport::Process_SES_CLOSE;
 	m_processors[JOB_DATA] = &CServerTransport::Process_JOB_DATA;
 	m_processors[JOB_START] = &CServerTransport::Process_JOB_START;
+	m_processors[JOB_WUNIT] = &CServerTransport::Process_JOB_WUNIT;
 }
 
 CServerTransport::~CServerTransport()
@@ -230,7 +231,9 @@ bool CServerTransport::Process_JOB_START(request &rq)
 
 			jobID = m_pJob->createJob(rq.id, config->width, config->height);
 
-			if (false == m_pDeamon->DispatchJobToWorkunits(jobID, nbWU, pWU))
+			uint16_t port = getPort();
+			uint32_t addr = getHostAddr(0);
+			if (false == m_pDeamon->DispatchJobToWorkunits(jobID, port, addr, nbWU, pWU))
 			{
 				std::cout << "Server failed to dispatch job to available work units" << std::endl;
 			}
@@ -254,3 +257,21 @@ bool CServerTransport::Process_JOB_START(request &rq)
 	return true;
 }
 
+bool CServerTransport::Process_JOB_WUNIT(request &rq)
+{
+	std::cout << "Rays Server receiving Work Unit client connection: " << rq.id << std::endl;
+
+	//CServerSession::session_t session = m_sessionManager->getSession(rq.id);
+
+	//bool bdata = false;
+	//if (session.id == rq.id)
+	//{
+	//	uint8_t* raw_data = (uint8_t*)(rq.msg) + sizeof(MSGSTRUCT);
+	//	bdata = m_sessionManager->saveSessionFile(rq.id, "RaysData.pck", raw_data, rq.size - sizeof(MSGSTRUCT));
+	//}
+
+	//! No reply, delete allocated bloc because processing ends here.
+	delete[] rq.msg;
+
+	return false;
+}

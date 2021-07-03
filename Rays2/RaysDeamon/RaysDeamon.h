@@ -69,18 +69,10 @@ public:
 	{
 		std::string		path;
 		unsigned int	nbProcs;
-		unsigned int	nbProcsAvailable;
 		bool			active;
 		float			jobDone;	// percentage of job actually done
 		CClient<CClientSocket> *connection;// connection to the work unit
 	} work_unit_struct_t;
-
-	typedef struct Message_reg_t
-	{
-		MSGSTRUCT		msg;
-		unsigned char	*raw_data;
-	} MSGREGSTRUCT;
-	typedef MSGREGSTRUCT* LPMSGREGSTRUCT;
 
 
 private:

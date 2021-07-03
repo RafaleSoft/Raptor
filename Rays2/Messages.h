@@ -61,8 +61,8 @@
 
 //	JOB_PERCENT
 //		in						out
-//	data 0 = sessionID			*
-//	data 1 =	*				*
+//	data 0 = WU_ID				*
+//	data 1 = jobID				*
 //	data 2 =	*				*
 //	data 3 =	*				*
 //	data 4 = job %				*
@@ -73,11 +73,11 @@
 // work unit job io
 //	JOB_WUNIT
 //		in						out
-//	data 0 = sessionID			*
-//	data 1 =	*				*
+//	data 0 = WU_ID				*
+//	data 1 = jobID				*
 //	data 2 =	*				*
-//	data 3 = port				*
-//	data 4 = IP addr			*
+//	data 3 =    *				*
+//	data 4 =    *				*
 #define JOB_WUNIT		(JOBBASE	+	0xa)
 
 #define JOB_BACKUP		(JOBBASE	+	0xb)
@@ -192,7 +192,7 @@
 //	DMN_STATUS
 //		in						out
 //	data 0 =	*			nbProcs
-//	data 1 =	*			nbProcsAvailable
+//	data 1 =	*			nbWUAvailable
 //	data 2 =	*			jobDone
 //	data 3 =	*			Nb running jobs
 //	data 4 =	*			IP addr
@@ -201,8 +201,8 @@
 
 //	DMN_ACTIVE
 //		in						out
-//	data 0 =  WUID				WUID
-//	data 1 =  nbProcs		hProcess
+//	data 0 =  WUID			WUID
+//	data 1 =  jobID			hProcess
 //	data 2 =  srvIP			hThread
 //	data 3 =  srvPort		ProcessId
 //	data 4 =  priority		ThreadId

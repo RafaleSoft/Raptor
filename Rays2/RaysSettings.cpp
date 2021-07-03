@@ -31,7 +31,6 @@ CRaysSettings::CRaysSettings(void)
 	addSetting<uint16_t>("port", (uint16_t)2048);
 	addSetting<uint16_t>("deamon_port", (uint16_t)2049);
 	addSetting<string>("host_addr", std::string("127.0.0.1"));
-	addSetting<uint32_t>("nb_wu_per_job", (uint32_t)1);
 }
 
 CRaysSettings::~CRaysSettings(void)
@@ -122,7 +121,7 @@ bool CRaysSettings::setSettings(const CCmdLineParser& parser)
 	uint16_t port = 0;
 	if (parser.getValue<uint16_t>("port", port))
 	{
-		//std::cout << "set port settings from command line:" << port << std::endl;
+		std::cout << "set port settings from command line:" << port << std::endl;
 		if (!setValue<uint16_t>("port", port))
 			addSetting<uint16_t>("port", port);
 	}
@@ -130,7 +129,7 @@ bool CRaysSettings::setSettings(const CCmdLineParser& parser)
 	uint16_t deamon_port = 0;
 	if (parser.getValue<uint16_t>("deamon_port", deamon_port))
 	{
-		//std::cout << "set port settings from command line:" << port << std::endl;
+		std::cout << "set daemon port settings from command line:" << deamon_port << std::endl;
 		if (!setValue<uint16_t>("deamon_port", deamon_port))
 			addSetting<uint16_t>("deamon_port", deamon_port);
 	}
@@ -138,26 +137,31 @@ bool CRaysSettings::setSettings(const CCmdLineParser& parser)
 	std::string host_addr = "";
 	if (parser.getValue<std::string>("host_addr", host_addr))
 	{
-		//std::cout << "set host settings from command line:" << host_addr << std::endl;
+		std::cout << "set host settings from command line:" << host_addr << std::endl;
 		if (!setValue<std::string>("host_addr", host_addr))
 			addSetting<std::string>("host_addr", host_addr);
 	}
 	
-	/*
 	uint32_t deamon_delay;
 	if (parser.getValue<uint32_t>("deamon_delay", deamon_delay))
+	{
+		std::cout << "set daemon delay settings from command line:" << deamon_delay << std::endl;
 		if (!setValue<uint32_t>("deamon_delay", deamon_delay))
 			addSetting<uint32_t>("deamon_delay", deamon_delay);
+	}
 
-	
+	uint32_t nb_wu_per_job;
+	if (parser.getValue<uint32_t>("nb_wu_per_job", nb_wu_per_job))
+	{
+		std::cout << "set work unit per job settings from command line:" << deamon_delay << std::endl;
+		if (!setValue<uint32_t>("nb_wu_per_job", nb_wu_per_job))
+			addSetting<uint32_t>("nb_wu_per_job", nb_wu_per_job);
+	}
+	/*
 	uint32_t wu_priority;
 	if (parser.getValue<uint32_t>("wu_priority", wu_priority))
 		if (!setValue<uint32_t>("wu_priority", wu_priority))
 			addSetting<uint32_t>("wu_priority", wu_priority);
-
-	addSetting<uint32_t>("deamon_delay", (uint32_t)10);
-	
-	addSetting<vector<string>>("deamon", vector<string>());
 	*/
 	return true;
 }

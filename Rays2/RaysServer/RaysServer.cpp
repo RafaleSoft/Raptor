@@ -223,6 +223,8 @@ int main(int argc, char* argv[])
 	CCmdLineParser parser;
 	parser.addOption("port", "p", (unsigned short)2048);
 	parser.addOption("deamon_port", "P", (unsigned short)2049);
+	parser.addOption("deamon_delay", "t", (uint32_t)10);
+	parser.addOption("nb_wu_per_job", "j", (uint32_t)1);
 	parser.addOption("host_addr", "a", std::string("127.0.0.1"));
 	parser.addOption("config_file", "f", std::string("RaysServer.config"));
 	parser.addOption("help", "h", CCmdLineParser::NO_VALUE_OPTION);
@@ -233,7 +235,7 @@ int main(int argc, char* argv[])
 	}
 
 	CCmdLineParser::NO_VALUE_OPTION_t help = CCmdLineParser::NO_VALUE_UNDEFINED;
-	parser.getValue<CCmdLineParser::NO_VALUE_OPTION_t>("h", help);
+	parser.getValue("h", help);
 	if (CCmdLineParser::NO_VALUE_VALUE == help)
 	{
 		print_help();
