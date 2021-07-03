@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
-/*  Copyright 1998-2019 by                                                 */
+/*  Copyright 1998-2021 by                                                 */
 /*  Fabrice FERRAND.                                                       */
 /*                                                                         */
 /*  This file is part of the Raptor project, and may only be used,         */
@@ -67,7 +67,7 @@ CGLLod::~CGLLod()
 	// referenced in the instance.
 	m_pReference = getLod(0);
 
-	vector<LOD>::iterator pos = lods.begin();
+	std::vector<LOD>::iterator pos = lods.begin();
     while (pos != lods.end())
     {
 		const LOD& lod = *pos++;
@@ -79,7 +79,7 @@ CGLLod::~CGLLod()
 
 void CGLLod::unLink(const CPersistence* obj)
 {
-    vector<LOD>::iterator pos = lods.begin();
+	std::vector<LOD>::iterator pos = lods.begin();
     while (pos != lods.end())
     {
         if (obj == static_cast<CPersistence*>((*pos).obj))
@@ -96,15 +96,15 @@ void CGLLod::unLink(const CPersistence* obj)
 
 vector<CObject3DContour*> CGLLod::createContours(void)
 {
-    vector<CObject3DContour*>  res;
+	std::vector<CObject3DContour*>  res;
 
-    vector<LOD>::iterator pos = lods.begin();
+	std::vector<LOD>::iterator pos = lods.begin();
     while (pos != lods.end())
     {
-        vector<CObject3DContour*> pContours = (*pos++).obj->createContours();
+		std::vector<CObject3DContour*> pContours = (*pos++).obj->createContours();
         if (!pContours.empty())
         {
-            vector<CObject3DContour*>::const_iterator it = pContours.begin();
+			std::vector<CObject3DContour*>::const_iterator it = pContours.begin();
             while (it != pContours.end())
                 res.push_back(*it++);
         }
@@ -113,6 +113,12 @@ vector<CObject3DContour*> CGLLod::createContours(void)
     return res;
 }
 
+void CGLLod::getShaders(std::vector<CShader*> &shaders)
+{
+	std::vector<LOD>::iterator pos = lods.begin();
+	while (pos != lods.end())
+		(*pos++).obj->getShaders(shaders);
+}
 
 CObject3D* const CGLLod::getLod(size_t numLod) const
 { 
@@ -140,7 +146,7 @@ bool CGLLod::addLevel(float fromDepth, CObject3D *obj)
 	}
 	else
 	{
-		vector<LOD>::iterator pos = lods.begin();
+		std::vector<LOD>::iterator pos = lods.begin();
 		while ((pos != lods.end())&&((*pos).fromDepth<fromDepth))
 			pos++;
 

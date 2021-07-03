@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
-/*  Copyright 1998-2019 by                                                 */
+/*  Copyright 1998-2021 by                                                 */
 /*  Fabrice FERRAND.                                                       */
 /*                                                                         */
 /*  This file is part of the Raptor project, and may only be used,         */
@@ -18,9 +18,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Runtime.InteropServices;
 
 

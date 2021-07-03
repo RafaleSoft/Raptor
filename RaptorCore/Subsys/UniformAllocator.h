@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
-/*  Copyright 1998-2019 by                                                 */
+/*  Copyright 1998-2021 by                                                 */
 /*  Fabrice FERRAND.                                                       */
 /*                                                                         */
 /*  This file is part of the Raptor project, and may only be used,         */
@@ -50,15 +50,20 @@ public:
 	
 	void glvkSetPointerData(uint8_t *dst, uint8_t *src, uint64_t size);
 
+	void *glvkMapPointer(uint8_t *pointer, bool syncData = true);
+	void *glvkUnMapPointer(uint8_t *pointer, bool syncData = true);
+
 	//! Lock memory data and relocation so that no change can be made.
 	//! If data is relocated, High Performance blocks are activated on server
 	bool    glvkLockMemory(bool lock);
 
 	//! Binds a uniform memory data block and relocation so that no change can be made.
 	//! @param uniform : the uniform buffer object previously allocated with allocateUniforms.
-	//! @index uniform : the uniform binding location to bind uniform buffer to.
+	//! @param index : the uniform binding location to bind uniform buffer to.
+	//!	@param offset : the offset in uniform buffer that the binding will point to.
+	//! @param size : the size of data in uniform buffer to bind, if 0, the whole buffer data is bound.
 	//! @return true if binding is effective, false otherwise (ResourceAllocator must be locked)
-	bool    glvkBindUniform(uint8_t *uniform, int32_t index);
+	bool    glvkBindUniform(uint8_t *uniform, int32_t index, uint64_t offset, uint64_t size);
 
 	//!	This method returns the address of a free block of the requested size, ( nb of indexes )
 	//!	or NULL if not enough space or other error.

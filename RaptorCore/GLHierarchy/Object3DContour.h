@@ -23,21 +23,25 @@ class CObject3D;
 class CContourAttributes;
 template <class T> class CContainerNotifier;
 
+#define SHADOW_SHADERS 1
+
 class RAPTOR_API CObject3DContour
 {
 public:
     typedef struct CONTOUR_VOLUME_t
     {
         const GL_COORD_VERTEX * volume;
-        unsigned int volumeSize;
-	    unsigned int darkCapSize;
-	    unsigned int lightCapSize;
-	    unsigned int *volumeIndexes;
-	    unsigned int *darkCapIndexes;
-	    unsigned int *lightCapIndexes;
-        bool    darkCapClipped;
-        bool    lightCapClipped;
-        bool    volumeClipped;
+        unsigned int	volumeSize;
+	    unsigned int	darkCapSize;
+	    unsigned int	lightCapSize;
+	    unsigned int	*volumeIndexes;
+	    unsigned int	*darkCapIndexes;
+	    unsigned int	*lightCapIndexes;
+		GL_COORD_VERTEX boxMin;
+		GL_COORD_VERTEX boxMax;
+		bool			darkCapClipped;
+		bool			lightCapClipped;
+		bool			volumeClipped;
     } CONTOUR_VOLUME;
 
 
@@ -95,7 +99,7 @@ public:
 
 private:
     //! Retrive the internal list of faces that are back faces given the light position 'pos'
-    virtual void findBackFaces(	const GL_COORD_VERTEX &pos);
+    //virtual void findBackFaces(	const GL_COORD_VERTEX &pos);
 
     //! Compute the internal contour, based on the current internal list of backfaces
 	//!	Currently unimplemented.

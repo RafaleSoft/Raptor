@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
-/*  Copyright 1998-2019 by                                                 */
+/*  Copyright 1998-2021 by                                                 */
 /*  Fabrice FERRAND.                                                       */
 /*                                                                         */
 /*  This file is part of the Raptor project, and may only be used,         */
@@ -403,11 +403,16 @@ CRaptorInstance* Raptor::switchInstance(CRaptorInstance* pInstance)
 	CRaptorInstance &instance = CRaptorInstance::GetInstance();
 	if (!instance.isInitialised())
 		return NULL;
+
+	return &instance;
 }
 
 bool Raptor::glInitRaptor(const CRaptorConfig& config)
 { 
     bool res = false;
+
+	CRaptorConfig checkedConfig = config;
+	checkedConfig.checkConfig();
 
 	//	Initialise global Raptor data
 	CRaptorInstance &instance = CRaptorInstance::GetInstance();
@@ -417,7 +422,7 @@ bool Raptor::glInitRaptor(const CRaptorConfig& config)
 	//  store configuration and initialize platform dependant datas. 
 	//	Some configurations can only be applyied per screen display : 
     //  e.g.: memory allocation is dependant of a real context.
-	instance.config = config;
+	instance.config = checkedConfig;
 	instance.initInstance();
 	
 	//	Create a dummy window to initialize GL

@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
-/*  Copyright 1998-2019 by                                                 */
+/*  Copyright 1998-2021 by                                                 */
 /*  Fabrice FERRAND.                                                       */
 /*                                                                         */
 /*  This file is part of the Raptor project, and may only be used,         */
@@ -42,11 +42,6 @@
 	#include "System/RaptorGLExtensions.h"
 #endif
 
-RAPTOR_NAMESPACE_BEGIN
-
-IRenderingProperties*   IRenderingProperties::m_pCurrent = NULL;
-
-RAPTOR_NAMESPACE_END
 
 RAPTOR_NAMESPACE
 
@@ -103,11 +98,6 @@ IRenderingProperties& IRenderingProperties::operator=(const IRenderingProperties
 
 IRenderingProperties::~IRenderingProperties()
 {
-}
-
-IRenderingProperties *IRenderingProperties::GetCurrentProperties(void)
-{ 
-    return m_pCurrent; 
 }
 
 bool IRenderingProperties::exportObject(CRaptorIO& o)

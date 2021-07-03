@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
-/*  Copyright 1998-2019 by                                                 */
+/*  Copyright 1998-2021 by                                                 */
 /*  Fabrice FERRAND.                                                       */
 /*                                                                         */
 /*  This file is part of the Raptor project, and may only be used,         */
@@ -17,48 +17,18 @@
 
 #version 440 compatibility
 
+#define EYE_SPACE 1
 
 #ifdef EMBM_RENDERING
-	#define EYE_SPACE 1
-//#define AMBIENT_OCCLUSION 1
+	//#define AMBIENT_OCCLUSION 1
 #endif
 
-//	Maximum number of lights due to number of interpolators available
-const int MAX_LIGHTS = 5;
-const int GL_MAX_LIGHTS = 8;
+#include "Raptor.glsl"
 
-//
-//	Raptor Uniform blocs
-//
-//layout (binding = 0) uniform Transform {
-//	mat4 ModelViewMatrix;
-//	mat4 ModelViewMatrixInverse;
-//	mat4 ModelViewProjectionMatrix;
-//	mat4 NormalMatrix;
-//} R_Transform;
 
-struct LightProduct
-{
-	vec4 position;
-	vec4 attenuation;
-	vec4 ambient;
-	vec4 diffuse;
-	vec4 specular;
-	float shininess;
-	float reserved[3];
-	bool enable;
-	bool reserved2[3];
-};
-
-layout (binding = 0) uniform LightProducts
-{
-	LightProduct lights[MAX_LIGHTS];
-	vec4		 scene_ambient;
-} R_LightProducts;
-
+LIGHT_PRODUCTS(0) R_LightProducts;
 
 uniform vec4 eyePos;
-
 
 layout(location = 0) in vec4 i_Position;
 layout(location = 2) in vec4 i_Normal;

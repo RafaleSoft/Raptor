@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
-/*  Copyright 1998-2019 by                                                 */
+/*  Copyright 1998-2021 by                                                 */
 /*  Fabrice FERRAND.                                                       */
 /*                                                                         */
 /*  This file is part of the Raptor project, and may only be used,         */
@@ -351,7 +351,6 @@ void CRaptorScreenDisplay::glvkAllocateResources(void)
     //! As the newly created context is made current, we must keep the
     //! associated allocator as current, otherwise it will not be used until
     //! a UnBind/Bind sequence is performed, which is unnecessary.
-    //CGeometryAllocator::SetCurrentInstance(oldAllocator);
     if ((m_pGOldAllocator != m_pGAllocator) && (m_pGOldAllocator != NULL))
         m_pGOldAllocator->glvkLockMemory(false);
 	if ((m_pTOldAllocator != m_pTAllocator) && (m_pTOldAllocator != NULL))
@@ -445,7 +444,7 @@ bool CRaptorScreenDisplay::glRender(void)
 			instance.pConsole->glRender();
 		
 #ifdef SHAREWARE_RELEASE
-		if (CRaptorInstance::GetInstance().runAsShareware)
+		if (instance.runAsShareware)
 			glDrawLogo();
 #endif
 

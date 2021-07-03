@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
-/*  Copyright 1998-2019 by                                                 */
+/*  Copyright 1998-2021 by                                                 */
 /*  Fabrice FERRAND.                                                       */
 /*                                                                         */
 /*  This file is part of the Raptor project, and may only be used,         */
@@ -50,8 +50,6 @@ public:
 		GL_COORD_VERTEX		m_sizes;
 	} Attributes;
 
-	static const uint32_t max_texture_quad;
-
 
 public:
 	CTextureQuad();
@@ -89,14 +87,8 @@ private:
 	//!	Quad texture.
 	CReference<ITextureObject>	m_rTexture;
 
-	//!	Vertex Input State Resource binder
-	void	*m_pBinder;
-
-	//!	Attributes.
-	static uint32_t		nb_quads;
-	static uint32_t		max_index;
-	static Attributes*	s_attributes;
-	uint32_t			m_index;
+	//!	Texture Quad Attributes index (in RaptorInstance).
+	uint32_t					m_index;
 };
 
 RAPTOR_NAMESPACE_END

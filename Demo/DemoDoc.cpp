@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
-/*  Copyright 1998-2019 by                                                 */
+/*  Copyright 1998-2021 by                                                 */
 /*  Fabrice FERRAND.                                                       */
 /*                                                                         */
 /*  This file is part of the Raptor project, and may only be used,         */
@@ -334,7 +334,7 @@ void CDemoDoc::GLInitContext(void)
 
     dof = new CDOFFilter;
     dof->setDOFParams(0.85f, 10.0f);
-	dof->setBlurNbPass(4);
+	dof->setBlurNbPass(3);
 	pCurrentDisplay->glvkBindDisplay(*dof);
 	dof->releaseReference();
 

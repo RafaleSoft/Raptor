@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
-/*  Copyright 1998-2019 by                                                 */
+/*  Copyright 1998-2021 by                                                 */
 /*  Fabrice FERRAND.                                                       */
 /*                                                                         */
 /*  This file is part of the Raptor project, and may only be used,         */
@@ -57,6 +57,15 @@
 #if !defined(AFX_OBJECT3DCONTAINERNOTIFIER_H__BF1EABCD_500E_4D7C_8561_2C535DF0640A__INCLUDED_)
     #include "Subsys/Object3DContainerNotifier.h"
 #endif
+#if !defined(AFX_SHADER_H__4D405EC2_7151_465D_86B6_1CA99B906777__INCLUDED_)
+	#include "GLHierarchy/Shader.h"
+#endif
+#if !defined(AFX_OBJECT3DCONTOUR_H__C0C2B562_ABBC_4B04_A1E7_E0727FAC66AB__INCLUDED_)
+	#include "GLHierarchy/Object3DContour.h"
+#endif
+#if !defined(AFX_GEOMETRYALLOCATOR_H__802B3C7A_43F7_46B2_A79E_DDDC9012D371__INCLUDED_)
+	#include "Subsys/GeometryAllocator.h"
+#endif
 
 
 RAPTOR_NAMESPACE
@@ -66,7 +75,7 @@ RAPTOR_NAMESPACE
 //////////////////////////////////////////////////////////////////////
 
 CShadowVolume::CShadowVolume(C3DScene& rScene)
-	:CEnvironment(rScene),jobId(0)
+	:CEnvironment(rScene),jobId(0), m_boxes(NULL), min_bound(SIZE_MAX), max_bound(0)
 {
 	CRaptorInstance &instance = CRaptorInstance::GetInstance();
     C3DEngineTaskManager *taskManager = instance.engineTaskMgr;
@@ -89,6 +98,8 @@ CShadowVolume::~CShadowVolume()
 {
 	if (m_pObserver != NULL)
 		delete m_pObserver;
+	if (NULL != m_boxes)
+		delete[] m_boxes;
 }
 
 void CShadowVolume::notifyFromChild(CObject3D* child)
@@ -189,13 +200,10 @@ bool CShadowVolume::glInitEnvironment(const vector<C3DSceneObject*>& objects)
     // Compute all possible shadow volumes
     IViewPoint *vp = CRaptorDisplay::GetCurrentDisplay()->getViewPoint();
     float shadowExtrusion = C3DEngine::Get3DEngine()->getFarPlane();
-    if (vp != NULL)
-    {
-        float vv[6];
-        IViewPoint::VIEW_POINT_MODEL model;
-        vp->getViewVolume(vv[0],vv[1],vv[2],vv[3],vv[4],vv[5],model);
-        shadowExtrusion = vv[5];
-    }
+
+	if (NULL != m_boxes)
+		delete[] m_boxes;
+	m_boxes = new GL_COORD_VERTEX[2 * objects.size()];
 
     vector<C3DSceneObject*>::const_iterator itr = objects.begin();
     CObject3DShadow *volume = NULL;
@@ -212,6 +220,10 @@ bool CShadowVolume::glInitEnvironment(const vector<C3DSceneObject*>& objects)
 				volume->setShadowExtrusion(shadowExtrusion);
 				volume->addContainerNotifier(m_pObserver);
 				m_pVolumes.push_back(volume);
+
+				uint64_t bbox = volume->getBoundingBoxIndex();
+				min_bound = min(bbox, min_bound);
+				max_bound = max(bbox, max_bound);
 				
 #if defined(RAPTOR_SMP_CODE_GENERATION)
                 CEngineJob *job = volume->createJob(jobId);
@@ -286,10 +298,10 @@ void CShadowVolume::glRender(const CLight* currentLight,const vector<C3DSceneObj
 	glDepthMask(GL_TRUE);
 	glColorMask(GL_FALSE,GL_FALSE,GL_FALSE,GL_FALSE);
     // Draw scene
-    glRenderObjects(receivers, C3DScene::DEPTH_PASS);
+    glRenderObjects(receivers, C3DScene::DEPTH_PASS);	// first render of set 'shadow receivers'
 
     //
-    //	Second pass : fill stencil buffer
+    //	Second pass : fill stencil buffer with shadow volumes
     //
 	glEnable(GL_STENCIL_TEST);
 	glDepthMask(GL_FALSE);
@@ -305,13 +317,17 @@ void CShadowVolume::glRender(const CLight* currentLight,const vector<C3DSceneObj
     }
 #endif
 
-	//  Render volumes
+	//!  Render volumes:
+	//!  - first step = try a full render of the shadow
     vector<CObject3DShadow*>::iterator it = m_pVolumes.begin();
     while (it != m_pVolumes.end())
     {
         CObject3DShadow* shadow = (*it++);
         shadow->glClipRender();
     }
+	//!  - second step = render the shadow bboxes in occlusion queries.
+	glRenderBoxOcclusion();
+
     m_shadowProperties.glPopProperties();
 
     //
@@ -325,8 +341,8 @@ void CShadowVolume::glRender(const CLight* currentLight,const vector<C3DSceneObj
 	glStencilFunc(GL_NOTEQUAL,128,~0);
 	glStencilOp(GL_KEEP,GL_KEEP,GL_KEEP);
 	glDepthFunc(GL_EQUAL);
-    //  Draw Scene
-    glRenderObjects(receivers, C3DScene::AMBIENT_PASS);
+    //  Draw Scene : second render of set 'receivers', pass a empty list to reuse previous draw
+	glRenderObjects(vector<C3DSceneObject*>(), C3DScene::AMBIENT_PASS);
     m_lightProperties.glPopProperties();
 
     //
@@ -337,8 +353,8 @@ void CShadowVolume::glRender(const CLight* currentLight,const vector<C3DSceneObj
 	glStencilFunc(GL_EQUAL,128,~0);
 	m_lightProperties.setLighting(IRenderingProperties::ENABLE);
     m_lightProperties.glPushProperties();
-    // Draw Scene
-	glRenderObjects(receivers, C3DScene::LIGHT_PASS);
+    // Draw Scene : third render of set 'receivers', pass a empty list to reuse previous draw
+	glRenderObjects(vector<C3DSceneObject*>(), C3DScene::LIGHT_PASS);
 
     glDepthMask(GL_TRUE);
 	glDepthFunc(GL_LESS);
@@ -368,6 +384,64 @@ void CShadowVolume::glRender(const CLight* currentLight,const vector<C3DSceneObj
     glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
 #endif
 
+}
+
+void CShadowVolume::glRenderBoxOcclusion(void)
+{
+	GLint dFunc;
+	glGetIntegerv(GL_DEPTH_FUNC, &dFunc);
+	GLboolean cFace;
+	glGetBooleanv(GL_CULL_FACE, &cFace);
+	glDisable(GL_STENCIL_TEST);
+	glDepthFunc(GL_LESS);
+	glDisable(GL_CULL_FACE);
+
+	vector<CObject3DShadow*>::iterator it = m_pVolumes.begin();
+
+#ifdef SHADOW_SHADERS
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+	CShader *pShader = instance.m_pFilledBboxShader;
+	
+	while (it != m_pVolumes.end())
+	{
+		CObject3DShadow* shadow = (*it++);
+		const std::vector<CObject3DContour*> &contours = shadow->getSelectedContours();
+		const GL_COORD_VERTEX &min = contours[0]->getContourVolume().boxMin;
+		const GL_COORD_VERTEX &max = contours[0]->getContourVolume().boxMax;
+
+		//!	This method returns the bounding box index is current instance resources.
+		uint64_t bbox = shadow->getBoundingBoxIndex();
+		m_boxes[bbox] = min;
+		m_boxes[bbox + 1] = max;
+	}
+
+	CGeometryAllocator *pAllocator = CGeometryAllocator::GetInstance();
+	float *dst = instance.boxes[min_bound];
+	size_t sz = 2 * GL_COORD_VERTEX_STRIDE * m_pVolumes.size();
+	pAllocator->glvkSetPointerData(dst, (float*)m_boxes, sz);
+
+	CResourceAllocator::CResourceBinder *binder = instance.m_pBoxBinder;
+	binder->glvkBindArrays();
+	pShader->glRender();
+
+	it = m_pVolumes.begin();
+#endif
+	 
+	while (it != m_pVolumes.end())
+	{
+		CObject3DShadow* shadow = (*it++);
+		shadow->glRenderBoxOcclusion();
+	}
+
+#ifdef SHADOW_SHADERS
+	pShader->glStop();
+	binder->glvkUnbindArrays();
+#endif
+
+	glEnable(GL_STENCIL_TEST);
+	glDepthFunc(dFunc);
+	if (cFace)
+		glEnable(GL_CULL_FACE);
 }
 
 void CShadowVolume::glRenderTexture(void)

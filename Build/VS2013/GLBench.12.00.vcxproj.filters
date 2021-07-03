@@ -68,8 +68,6 @@
     <None Include="..\..\GLBench\res\GLBench.rc2">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="..\..\GLBench\buildpak.bat">
-      <Filter>Source Files</Filter>
-    </None>
+    <None Include="..\..\GLBench\buildpak.py" />
   </ItemGroup>
 </Project>

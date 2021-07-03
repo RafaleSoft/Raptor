@@ -1,12 +1,19 @@
 #include "StdAfx.h"
 #include "Test5Doc.h"
+
 #include "System/Raptor.h"
 #include "System/RaptorConfig.h"
-#include "Engine/Animator.h"
+#include "System/RaptorConsole.h"
+#include "System/RaptorErrorManager.h"
+#include "System/RaptorIO.h"
+
+#include "Engine/3DEngineMatrix.h"
 #include "Engine/3DScene.h"
+#include "Engine/Animator.h"
 #include "Engine/IViewPoint.h"
 #include "Engine/ViewModifier.h"
 #include "Engine/LightModifier.h"
+
 #include "GLHierarchy/FragmentShader.h"
 #include "GLHierarchy/GeometryEditor.h"
 #include "GLHierarchy/Object3DInstance.h"
@@ -14,6 +21,7 @@
 #include "GLHierarchy/Light.h"
 #include "GLHierarchy/Shader.h"
 #include "GLHierarchy/ShaderProgram.h"
+#include "GLHierarchy/OpenGLShaderStage.h"
 #include "GLHierarchy/VertexShader.h"
 #include "GLHierarchy/VertexProgram.h"
 #include "GLHierarchy/VulkanShaderStage.h"
@@ -21,9 +29,6 @@
 #include "GLHierarchy/TextureFactoryConfig.h"
 #include "GLHierarchy/ITextureObject.h"
 #include "GLHierarchy/TextureUnitSetup.h"
-#include "System/RaptorConsole.h"
-#include "System/RaptorErrorManager.h"
-#include "System/RaptorIO.h"
 
 #include "ToolBox/BasicObjects.h"
 #include "ToolBox/Imaging.h"
@@ -50,6 +55,18 @@ MySphere::MySphere()
 	//CShader *pShader = CShader::getShader("BLINN_SHADER").glClone("BLINN");
 	//CShader *pShader = CShader::getShader("PHONG_SHADER").glClone("PHONG");
 	CShader *pShader = CShader::getShader("BUMP_SHADER").glClone("BUMP");
+	/*
+	CShader *pShader = new CShader("FLAT_SHADING");
+	COpenGLShaderStage *stage = pShader->glGetOpenGLShader("FLAT_SHADER");
+	CVertexShader *vs = stage->glGetVertexShader("FLAT_VTX_SDHADER");
+	CFragmentShader *fs = stage->glGetFragmentShader("FLAT_TEX_SDHADER");
+
+	CProgramParameters params;
+	params.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);
+	stage->setProgramParameters(params);
+	stage->glCompileShader();
+	*/
+	
 	setShader(pShader);
 #endif
 }
@@ -88,7 +105,7 @@ CTest5Doc::CTest5Doc(const RAPTOR_HANDLE& device,const char* title)
 	config.m_uiTexels = 2048*1024;
     config.m_uiPolygons = 20000;
     config.m_uiVertices = 50000;
-	config.m_uiUniforms = 100000;
+	config.m_uiUniforms = 256 * 1024;
     Raptor::glInitRaptor(config);
 
 	CImaging::installImagers();
@@ -184,7 +201,7 @@ void CTest5Doc::glRender(void)
 		glEnable(GL_LIGHTING);
 		glEnable(GL_TEXTURE_2D);
 #endif
-
+		
 		m_pDisplay->glRender();
 
 		m_pDisplay->glvkUnBindDisplay();

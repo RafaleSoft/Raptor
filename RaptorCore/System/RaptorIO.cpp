@@ -509,37 +509,39 @@ CRaptorIO& CRaptorIO::operator>>(uint32_t& i)
 	return *this;
 }
 
-CRaptorIO& CRaptorIO::operator<<(size_t i)
-{
-	m_status = IO_FAILED;
-
-	if (getKind() == DISK_WRITE)
+#if defined(_WIN64)
+	CRaptorIO& CRaptorIO::operator<<(size_t i)
 	{
-		m_outFile << i;
+		m_status = IO_FAILED;
 
-		if (!m_bAutoflush)
-			m_outFile.flush();
+		if (getKind() == DISK_WRITE)
+		{
+			m_outFile << i;
 
-		if (m_outFile.good())
-			m_status = IO_OK;
+			if (!m_bAutoflush)
+				m_outFile.flush();
+
+			if (m_outFile.good())
+				m_status = IO_OK;
+		}
+
+		return *this;
 	}
 
-	return *this;
-}
-
-CRaptorIO& CRaptorIO::operator>>(size_t& i)
-{
-	m_status = IO_FAILED;
-
-	if (getKind() == DISK_READ)
+	CRaptorIO& CRaptorIO::operator>>(size_t& i)
 	{
-		m_inFile >> i;
-		if (m_inFile.good())
-			m_status = IO_OK;
-	}
+		m_status = IO_FAILED;
 
-	return *this;
-}
+		if (getKind() == DISK_READ)
+		{
+			m_inFile >> i;
+			if (m_inFile.good())
+				m_status = IO_OK;
+		}
+
+		return *this;
+	}
+#endif
 
 CRaptorIO& CRaptorIO::operator<<(float f)
 {

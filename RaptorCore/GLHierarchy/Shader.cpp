@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
-/*  Copyright 1998-2019 by                                                 */
+/*  Copyright 1998-2021 by                                                 */
 /*  Fabrice FERRAND.                                                       */
 /*                                                                         */
 /*  This file is part of the Raptor project, and may only be used,         */
@@ -58,6 +58,9 @@
 #if !defined(AFX_RAPTORINSTANCE_H__90219068_202B_46C2_BFF0_73C24D048903__INCLUDED_)
 	#include "Subsys/RaptorInstance.h"
 #endif
+#if !defined(AFX_SHADERBLOC_H__56C73DCA_292E_4722_8881_82DC1BF53EA5__INCLUDED_)
+	#include "GLHierarchy/ShaderBloc.h"
+#endif
 
 
 //////////////////////////////////////////////////////////////////////
@@ -90,7 +93,7 @@ CColor::RGBA CShader::getAmbient(void)
 //////////////////////////////////////////////////////////////////////
 CShader::CShader(const std::string& name)
 	:CPersistence(shaderID, name), CObjectReference(),
-	m_pTMUSetup(NULL),m_pMaterial(NULL),
+	m_pTMUSetup(NULL),m_pMaterial(NULL),m_pMainBloc(NULL),
 	m_pOpenGLProgram(NULL), m_pOpenGLShader(NULL), m_pVulkanShader(NULL)
 {
 #if defined(GL_COMPATIBILITY_profile) || defined (GL_FULL_profile)
@@ -113,7 +116,7 @@ CShader::CShader(const std::string& name)
 
 CShader::CShader(const CShader& shader)
 	:CPersistence(shaderID, shader.getName()), CObjectReference(),
-	m_pTMUSetup(NULL), m_pMaterial(NULL),
+	m_pTMUSetup(NULL), m_pMaterial(NULL), m_pMainBloc(NULL),
 	m_pOpenGLProgram(NULL), m_pOpenGLShader(NULL), m_pVulkanShader(NULL)
 {
 	m_color = shader.m_color;
@@ -168,6 +171,8 @@ CShader::CShader(const CShader& shader)
 			m_pOpenGLShader = shader.m_pOpenGLShader;
 		m_pOpenGLShader->registerDestruction(this);
 	}
+	
+	//! Shader Bloc is not copied because a valid GL context needs to be active.
 
 	m_bDeleteVulkanShader = shader.m_bDeleteVulkanShader;
 	m_bDeleteOpenGLProgram = shader.m_bDeleteOpenGLProgram;
@@ -218,6 +223,7 @@ CShader::~CShader()
 	glRemoveOpenGLProgram();
 	glRemoveOpenGLShader();
 	vkRemoveVulkanShader();
+	glRemoveShaderBloc();
 }
 
 void CShader::setAmbient(GLfloat r,GLfloat g,GLfloat b,GLfloat a) 
@@ -458,9 +464,56 @@ bool CShader::vkRemoveVulkanShader(void)
 	}
 }
 
+CShaderBloc * const CShader::glGetShaderBloc(const std::string& name)
+{
+	if (NULL != m_pMainBloc)
+	{
+		if (!name.empty())
+		{
+			if (m_pMainBloc->getName() == name)
+				return m_pMainBloc;
+			else
+				return NULL;
+		}
+		else
+			return m_pMainBloc;
+	}
+
+
+	if (NULL != m_pOpenGLShader)
+	{
+		CShaderProgram::shader_bloc bloc = m_pOpenGLShader->glGetShaderBloc(name);
+		if (bloc.binding < INT32_MAX)
+		{
+			uint8_t* uniform = NULL;
+			m_pMainBloc = new CShaderBloc(CShaderBloc::UNIFORM, NULL, bloc.size, 0);
+			m_pMainBloc->setName(name);
+			m_pMainBloc->bindBloc(bloc.binding);
+		}
+	}
+
+	return m_pMainBloc;
+}
+
+bool CShader::glRemoveShaderBloc(void)
+{
+	if (NULL != m_pMainBloc)
+	{
+		delete m_pMainBloc;
+		m_pMainBloc = NULL;
+		return true;
+	}
+	else
+		return false;
+}
+
+
 void CShader::glRenderMaterial(void)
 {
-	if (IRenderingProperties::GetCurrentProperties()->getCurrentLighting() == IRenderingProperties::ENABLE)
+	CRaptorInstance& instance = CRaptorInstance::GetInstance();
+	IRenderingProperties *props = instance.getGlobalRenderingProperties();
+
+	if (props->getLighting() == IRenderingProperties::ENABLE)
 	{
 		if (m_pMaterial != NULL)
 		    m_pMaterial->glRender();
@@ -485,7 +538,10 @@ void CShader::glRenderMaterial(void)
 
 void CShader::glRenderTexture(void)
 {
-	if (IRenderingProperties::GetCurrentProperties()->getCurrentTexturing() == IRenderingProperties::ENABLE)
+	CRaptorInstance& instance = CRaptorInstance::GetInstance();
+	IRenderingProperties *props = instance.getGlobalRenderingProperties();
+
+	if (props->getTexturing() == IRenderingProperties::ENABLE)
 	{
 
 // TODO: when finished, the code below is the compatibility profile.
@@ -511,9 +567,17 @@ void CShader::glRenderTexture(void)
 void CShader::glRender()
 {
 	if (NULL != m_pOpenGLShader)
+	{
+		if (NULL != m_pMainBloc)
+			m_pMainBloc->glRender();
+
 		m_pOpenGLShader->glRender();
+
+	}
 	else if (NULL != m_pOpenGLProgram)
+	{
 		m_pOpenGLProgram->glRender();
+	}
 
 	CATCH_GL_ERROR
 }

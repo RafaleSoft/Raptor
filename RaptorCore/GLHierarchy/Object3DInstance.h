@@ -62,6 +62,9 @@ public:
 
      //! Creates the list of contours for this objet.
     virtual vector<CObject3DContour*> createContours(void);
+
+	//!	Returns the list of shaders in this object hierachy.
+	virtual void getShaders(std::vector<CShader*> &shaders);
 		
 	//! Rendering
     //!

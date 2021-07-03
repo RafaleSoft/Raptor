@@ -83,14 +83,14 @@ public:
 	//!
 	//!	Shader parameter type.
 	//!
-	typedef struct
+	typedef struct Material_t
 	{
 		CColor::RGBA ambient;
 		CColor::RGBA diffuse;
 		CColor::RGBA specular;
 		CColor::RGBA emission;
 		float		 shininess;
-	} Material_t;
+	} R_Material;
 
 
 public:

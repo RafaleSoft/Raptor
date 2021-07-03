@@ -21,8 +21,9 @@ int main(int argc, char* argv[])
 {
     CRaptorConfig config;
     config.m_bRelocation = true;
-    config.m_uiPolygons = 10000;
-    config.m_uiVertices = 100000;
+    config.m_uiPolygons = 16 * 1024;
+    config.m_uiVertices = 128 * 1024;
+	config.m_uiUniforms = 128 * 1024;
 	config.m_logFile = "Test6_Raptor.log";
 
     Raptor::glInitRaptor(config);

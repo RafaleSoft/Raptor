@@ -22,12 +22,6 @@ public:
 
 
 protected:
-	CShadedGeometry	*m_pSG;
-	CShadedGeometry	*m_pSG2;
-    CFragmentShader	*m_pFS;
-    CVertexShader	*m_pVS;
-    CGeometryShader *m_pGS;
-
     CRaptorDisplay	*m_pDisplay;
     RAPTOR_HANDLE	m_wnd;
 };

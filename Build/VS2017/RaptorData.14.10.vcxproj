@@ -171,6 +171,10 @@
     <OutDir>$(Configuration)\$(Platform)\</OutDir>
     <IntDir>$(Configuration)\$(Platform)\$(ProjectName)\</IntDir>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized|x64'">
+    <OutDir>$(Configuration)\$(Platform)\</OutDir>
+    <IntDir>$(Configuration)\$(Platform)\$(ProjectName)\</IntDir>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <PreBuildEvent>
       <Command>$(PYTHON_HOME)\python.exe $(SolutionDir)RaptorData\buildpak.py</Command>
@@ -778,6 +782,8 @@ copy $(SolutionDir)$(ProjectName)\RaptorData.pck "%RAPTOR_ROOT%\Redist\bin\"
     <None Include="..\..\RaptorData\Data\embm_0light.vp" />
     <None Include="..\..\RaptorData\Data\embm_std.vp" />
     <None Include="..\..\RaptorData\Data\empty.vs" />
+    <None Include="..\..\RaptorData\Data\flat_shading.ps" />
+    <None Include="..\..\RaptorData\Data\flat_shading.vs" />
     <None Include="..\..\RaptorData\Data\font2D.gs" />
     <None Include="..\..\RaptorData\Data\font2D.ps" />
     <None Include="..\..\RaptorData\Data\font2D.vs" />
@@ -789,6 +795,7 @@ copy $(SolutionDir)$(ProjectName)\RaptorData.pck "%RAPTOR_ROOT%\Redist\bin\"
     <None Include="..\..\RaptorData\Data\phong.vs" />
     <None Include="..\..\RaptorData\Data\projection.fp" />
     <None Include="..\..\RaptorData\Data\rapsplsh.AVI" />
+    <None Include="..\..\RaptorData\Data\Raptor.glsl" />
     <None Include="..\..\RaptorData\Data\shadowmap.fp" />
     <None Include="..\..\RaptorData\Data\shadowmap_pcf.fp" />
     <None Include="..\..\RaptorData\Data\shadowmap_pcf_16x.fp" />

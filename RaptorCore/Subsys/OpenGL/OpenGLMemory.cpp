@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
-/*  Copyright 1998-2019 by                                                 */
+/*  Copyright 1998-2021 by                                                 */
 /*  Fabrice FERRAND.                                                       */
 /*                                                                         */
 /*  This file is part of the Raptor project, and may only be used,         */
@@ -212,7 +212,7 @@ bool COpenGLMemory::setBufferObjectData(IDeviceMemoryManager::IBufferObject &bo,
         if (currentBuffers[storage] != buffer)
 		    pExtensions->glBindBufferARB(glStorage,buffer);
 		
-		pExtensions->glBufferSubDataARB(glStorage, dstOffset, sz, src);
+		pExtensions->glBufferSubDataARB(glStorage, (GLintptrARB)dstOffset, sz, src);
         
 		//	0 should by to the "GL default" array model.
         if (currentBuffers[storage] != buffer)
@@ -262,7 +262,7 @@ bool COpenGLMemory::copyBufferObjectData(	IDeviceMemoryManager::IBufferObject &d
 		pExtensions->glBindBufferARB(GL_COPY_WRITE_BUFFER, dstbo.getBufferId());
 		pExtensions->glCopyBufferSubData(	GL_COPY_READ_BUFFER,
 											GL_COPY_WRITE_BUFFER,
-											srcOffset, dstOffset, sz);
+											(GLintptr)srcOffset, (GLintptr)dstOffset, sz);
 		pExtensions->glBindBufferARB(GL_COPY_READ_BUFFER, 0);
 		pExtensions->glBindBufferARB(GL_COPY_WRITE_BUFFER, 0);
 #elif defined(GL_ARB_vertex_buffer_object)
@@ -342,7 +342,7 @@ bool COpenGLMemory::getBufferObjectData(IDeviceMemoryManager::IBufferObject &vb,
 		    pExtensions->glBindBufferARB(glStorage,buffer);
 
 #if defined(GL_VERSION_3_0)
-		char *data = (char*)pExtensions->glMapBufferRange(glStorage, srcOffset, sz, GL_MAP_READ_BIT);
+		char *data = (char*)pExtensions->glMapBufferRange(glStorage, (GLintptr)srcOffset, sz, GL_MAP_READ_BIT);
 		if (data != NULL)
 			memcpy(dst, data, sz);
 #else

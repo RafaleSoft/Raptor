@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
-/*  Copyright 1998-2019 by                                                 */
+/*  Copyright 1998-2021 by                                                 */
 /*  Fabrice FERRAND.                                                       */
 /*                                                                         */
 /*  This file is part of the Raptor project, and may only be used,         */
@@ -36,6 +36,9 @@
 #if !defined(AFX_VULKANSHADERSTAGE_H__EF5769B8_470D_467F_9FDE_553142C81698__INCLUDED_)
 	#include "VulkanShaderStage.h"
 #endif
+#if !defined(AFX_OPENGLSHADERSTAGE_H__56B00FE3_E508_4FD6_9363_90E6E67446D9__INCLUDED_)
+	#include "OpenGLShaderStage.h"
+#endif
 #if !defined(AFX_RAPTORVULKANSHADER_H__C188550F_1D1C_4531_B0A0_727CE9FF9450__INCLUDED_)
 	#include "Subsys/Vulkan/VulkanShader.h"
 #endif
@@ -56,6 +59,12 @@
 #endif
 #if !defined(AFX_RAPTORVULKANPIPELINE_H__C2997B30_C6E2_4EF2_AFE3_FCD27AB5CBB7__INCLUDED_)
 	#include "Subsys/Vulkan/VulkanPipeline.h"
+#endif
+#if !defined(AFX_RAPTOROPENGLPIPELINE_H__E386000E_D01F_4FD9_B15B_ED5E14685241__INCLUDED_)
+	#include "Subsys/OpenGL/OpenGLPipeline.h"
+#endif
+#if !defined(AFX_CONTEXTMANAGER_H__F992F5F0_D8A5_475F_9777_B0EB30E7648E__INCLUDED_)
+	#include "Subsys/ContextManager.h"
 #endif
 
 
@@ -96,16 +105,33 @@ CShadedGeometry::~CShadedGeometry()
 
 IRaptorPipeline* CShadedGeometry::glvkCreatePipeline(void)
 {
-	const CVulkanDevice& rDevice = CVulkanDevice::getCurrentDevice();
-	CVulkanPipeline *pPipeline = rDevice.createPipeline();
-	CShader* s = getShader();
-	CVulkanShaderStage *ss = s->vkGetVulkanShader();
-
-	if (!pPipeline->initPipeline(ss, this))
+	IRaptorPipeline* pPipeline = NULL;
+	if (CContextManager::INVALID_CONTEXT != CContextManager::GetInstance()->vkGetCurrentContext())
 	{
-		Raptor::GetErrorManager()->generateRaptorError(CShadedGeometry::CShadedGeometryClassID::GetClassId(),
-			CRaptorErrorManager::RAPTOR_FATAL,
-			"Failed to create vulkan pipeline object");
+		const CVulkanDevice& rDevice = CVulkanDevice::getCurrentDevice();
+		CVulkanPipeline *vkPipeline = rDevice.createPipeline();
+		CShader* s = getShader();
+		CVulkanShaderStage *ss = s->vkGetVulkanShader();
+
+		if (!vkPipeline->initPipeline(ss, this))
+		{
+			RAPTOR_FATAL(shadedId, "Failed to create vulkan pipeline object");
+		}
+		else
+			pPipeline = vkPipeline;
+	}
+	else if (CContextManager::INVALID_CONTEXT != CContextManager::GetInstance()->vkGetCurrentContext())
+	{
+		COpenGLPipeline *glPipeline = new COpenGLPipeline();
+		CShader* s = getShader();
+		CShaderProgram *ss = s->glGetOpenGLShader();
+
+		if (!glPipeline->initPipeline(ss, this))
+		{
+			RAPTOR_FATAL(shadedId, "Failed to create vulkan pipeline object");
+		}
+		else
+			pPipeline = glPipeline;
 	}
 
 	return pPipeline;
@@ -126,6 +152,13 @@ CShader * const CShadedGeometry::getShader(void)
 		//}
 	}
 	return m_pShader;
+}
+
+void CShadedGeometry::getShaders(std::vector<CShader*> &shaders)
+{
+	if (NULL != m_pShader)
+		if (m_pShader->hasOpenGLShader())
+			shaders.push_back(m_pShader);
 }
 
 CShader * const CShadedGeometry::getAmbientOcclusionShader(void)
@@ -260,12 +293,13 @@ void CShadedGeometry::glRender()
 
 	if (m_pOverride != NULL)
 		m_pOverride->glPushProperties();
-	
+
 	if (m_pShader != NULL)
 	{
 		// apply material
 		if (hasModel(CGeometry::CGL_NORMALS))
-			if (m_pShader->hasMaterial())
+			//if (m_pShader->hasMaterial()) // No more need GL material rendering with material shader bloc.
+			if (!m_pShader->hasShaderBloc() && m_pShader->hasMaterial())
 				m_pShader->glRenderMaterial();
 
 		// apply texture
@@ -289,6 +323,8 @@ void CShadedGeometry::glRender()
 
     if (m_pOverride != NULL)
         m_pOverride->glPopProperties();
+
+	CATCH_GL_ERROR
 }
 
 CShadedGeometry& CShadedGeometry::operator=(const CGeometry& geometry)

@@ -202,7 +202,7 @@ copy $(SolutionDir)$(ProjectName)\Toolbox.pck "%RAPTOR_ROOT%\Redist\bin\"
 </Command>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>%RAPTOR_ROOT%\RaptorToolBox\buildpak.bat</Command>
+      <Command>$(PYTHON_HOME)\python.exe $(SolutionDir)RaptorToolBox\buildpak.py</Command>
     </PreBuildEvent>
     <ProjectReference>
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
@@ -264,7 +264,7 @@ copy $(SolutionDir)$(ProjectName)\Toolbox.pck "%RAPTOR_ROOT%\Redist\bin\"
 </Command>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>%RAPTOR_ROOT%\RaptorToolBox\buildpak.bat</Command>
+      <Command>$(PYTHON_HOME)\python.exe $(SolutionDir)RaptorToolBox\buildpak.py</Command>
     </PreBuildEvent>
     <ProjectReference>
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
@@ -328,7 +328,7 @@ copy $(SolutionDir)$(ProjectName)\Toolbox.pck "%RAPTOR_ROOT%\Redist\bin\"
 </Command>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>%RAPTOR_ROOT%\RaptorToolBox\buildpak.bat</Command>
+      <Command>$(PYTHON_HOME)\python.exe $(SolutionDir)RaptorToolBox\buildpak.py</Command>
     </PreBuildEvent>
     <ProjectReference>
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
@@ -390,7 +390,7 @@ copy $(SolutionDir)$(ProjectName)\Toolbox.pck "%RAPTOR_ROOT%\Redist\bin\"
 </Command>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>%RAPTOR_ROOT%\RaptorToolBox\buildpak.bat</Command>
+      <Command>$(PYTHON_HOME)\python.exe $(SolutionDir)RaptorToolBox\buildpak.py</Command>
     </PreBuildEvent>
     <ProjectReference>
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
@@ -454,7 +454,7 @@ copy $(SolutionDir)$(ProjectName)\Toolbox.pck "%RAPTOR_ROOT%\Redist\bin\"
 </Command>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>%RAPTOR_ROOT%\RaptorToolBox\buildpak.bat</Command>
+      <Command>$(PYTHON_HOME)\python.exe $(SolutionDir)RaptorToolBox\buildpak.py</Command>
     </PreBuildEvent>
     <ProjectReference>
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
@@ -516,7 +516,7 @@ copy $(SolutionDir)$(ProjectName)\Toolbox.pck "%RAPTOR_ROOT%\Redist\bin\"
 </Command>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>%RAPTOR_ROOT%\RaptorToolBox\buildpak.bat</Command>
+      <Command>$(PYTHON_HOME)\python.exe $(SolutionDir)RaptorToolBox\buildpak.py</Command>
     </PreBuildEvent>
     <ProjectReference>
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
@@ -673,7 +673,7 @@ copy $(SolutionDir)$(ProjectName)\Toolbox.pck "%RAPTOR_ROOT%\Redist\bin\"
     <ResourceCompile Include="..\..\RaptorToolBox\RaptorToolBox.rc" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\RaptorToolBox\buildpak.bat" />
+    <None Include="..\..\RaptorToolBox\buildpak.py" />
     <None Include="..\..\RaptorToolBox\Filters\Color.fp" />
     <None Include="..\..\RaptorToolBox\Filters\Color.ps" />
     <None Include="..\..\RaptorToolBox\Filters\Color_old.ps" />

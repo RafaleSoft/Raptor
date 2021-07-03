@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
-/*  Copyright 1998-2019 by                                                 */
+/*  Copyright 1998-2021 by                                                 */
 /*  Fabrice FERRAND.                                                       */
 /*                                                                         */
 /*  This file is part of the Raptor project, and may only be used,         */
@@ -64,7 +64,12 @@
 #if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
 	#include "System/Raptor.h"
 #endif
-
+#if !defined(AFX_RAPTORINSTANCE_H__90219068_202B_46C2_BFF0_73C24D048903__INCLUDED_)
+	#include "Subsys/RaptorInstance.h"
+#endif
+#if !defined(AFX_3DENGINEMATRIX_H__6CD1110E_1174_4f38_A452_30FB312022D0__INCLUDED_)
+	#include "Engine/3DEngineMatrix.h"
+#endif
 
 
 RAPTOR_NAMESPACE
@@ -86,7 +91,7 @@ CEngineJob* CObject3DShadow::createJob(unsigned int batchId)
 
 CObject3DShadow::CObject3DShadow(CObject3D *source,SHADOW_TYPE shadowType):
 	CObject3D(shadowId,"OBJECT3D-SHADOW"),
-	m_type(shadowType)
+	m_type(shadowType), bbox(UINT64_MAX)
 {
 	m_pAttributes = new CObject3DShadowAttributes();
 	m_pAttributes->m_color_red = 0;
@@ -104,6 +109,9 @@ CObject3DShadow::CObject3DShadow(CObject3D *source,SHADOW_TYPE shadowType):
     {
         initContours();
     }
+
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+	bbox = instance.glvkReserveBoxIndex();
 }
 
 
@@ -276,11 +284,20 @@ void CObject3DShadow::glRender(void)
             glRenderShadowContour();
             break;
         case SHADOW_VOLUME:
-            glRenderShadowVolume();
-            break;
+		{
+#if (!defined(GL_EXT_stencil_two_side) || !defined(GL_EXT_stencil_wrap))
+			glRenderShadowVolume();
+#else
+			glRenderShaderShadowVolume();
+#endif
+			break;
+		}
         default:
-            if (m_pAttributes->m_pObject != NULL)
-	            glRender(m_pAttributes->m_pObject);
+		{
+			if (m_pAttributes->m_pObject != NULL)
+				glRender(m_pAttributes->m_pObject);
+			break;
+		}
     }
 
     if ( transform )
@@ -328,11 +345,22 @@ void CObject3DShadow::buildShadow(CGenericMatrix<float> &modelview)
 					m_pAttributes->extrusion = z_max;
 
 				CGenericVector<float> lp = M.Inverse() * m_pAttributes->m_pLight->getLightViewPosition();
-				GL_COORD_VERTEX L(lp.X(),lp.Y(),lp.Z(),lp.H());
-				pContour->buildVolume(L,z_max);
+				GL_COORD_VERTEX L(lp.X(), lp.Y(), lp.Z(), lp.H());
+
+				CProgramParameters params;
+				params.addParameter<GL_COORD_VERTEX>("lpos", L);
+				params.addParameter<float>("extrusion", z_max);
+#ifdef SHADOW_SHADERS
+				if (NULL != m_pAttributes->pStage2)
+					m_pAttributes->pStage2->updateProgramParameters(params);
+#endif
+				if (NULL != m_pAttributes->pStageBox)
+					m_pAttributes->pStageBox->updateProgramParameters(params);
+			
+				pContour->buildVolume(L, z_max);
 				m_pAttributes->reBuild = false;
-				break;
 			}
+			break;
 		}
 		default:
 			break;
@@ -467,6 +495,65 @@ void CObject3DShadow::glRenderShadowContour()
     CATCH_GL_ERROR
 }
 
+//!
+//! Rendering with Shaders shall replace obsolete glRenderShadowVolume
+//!
+void CObject3DShadow::glRenderShaderShadowVolume()
+{
+	m_pAttributes->glBuildShaders();
+
+	if (CGeometryAllocator::GetInstance()->isMemoryRelocated())
+		CGeometryAllocator::GetInstance()->glvkLockMemory(false);
+
+	CObject3DContour *pContour = m_pVisibleContours[0];
+	const CObject3DContour::CONTOUR_VOLUME& scv = pContour->getContourVolume();
+
+	glDisable(GL_CULL_FACE);
+	glEnable(GL_STENCIL_TEST_TWO_SIDE_EXT);
+
+	m_pAttributes->glActiveStencilFaceEXT(GL_BACK);
+	glStencilOp(GL_KEEP, GL_INCR_WRAP_EXT, GL_KEEP);
+	glStencilMask(~0);
+	glStencilFunc(GL_ALWAYS, 0, ~0);
+
+	m_pAttributes->glActiveStencilFaceEXT(GL_FRONT);
+	glStencilOp(GL_KEEP, GL_DECR_WRAP_EXT, GL_KEEP);
+	glStencilMask(~0);
+	glStencilFunc(GL_ALWAYS, 0, ~0);
+
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glVertexPointer(4, GL_FLOAT, 0, scv.volume);
+
+#ifdef SHADOW_SHADERS
+	m_pAttributes->pStage2->glRender();
+	glDrawElements(GL_LINES, scv.volumeSize, GL_UNSIGNED_INT, scv.volumeIndexes);
+	m_pAttributes->pStage->glRender();
+#else
+	m_pAttributes->pStage->glRender();
+	glDrawElements(GL_QUADS, scv.volumeSize, GL_UNSIGNED_INT, scv.volumeIndexes);
+#endif
+
+	if (!scv.darkCapClipped)
+		glDrawElements(GL_TRIANGLES, scv.darkCapSize, GL_UNSIGNED_INT, scv.darkCapIndexes);
+	if (!scv.lightCapClipped)
+		glDrawElements(GL_TRIANGLES, scv.lightCapSize, GL_UNSIGNED_INT, scv.lightCapIndexes);
+	m_pAttributes->pStage->glStop();
+
+	glEnable(GL_CULL_FACE);
+	glDisableClientState(GL_VERTEX_ARRAY);
+	glDisable(GL_STENCIL_TEST_TWO_SIDE_EXT);
+
+	if (CGeometryAllocator::GetInstance()->isMemoryRelocated())
+		CGeometryAllocator::GetInstance()->glvkLockMemory(true);
+
+	m_pAttributes->reBuild = true;
+
+	CATCH_GL_ERROR
+}
+
+//!
+//! Rendering with GL_QUADS is obsolete
+//!
 void CObject3DShadow::glRenderShadowVolume()
 {
     if (CGeometryAllocator::GetInstance()->isMemoryRelocated())
@@ -474,32 +561,8 @@ void CObject3DShadow::glRenderShadowVolume()
 
     CObject3DContour *pContour = m_pVisibleContours[0];
 	const CObject3DContour::CONTOUR_VOLUME& scv = pContour->getContourVolume();
-/*
-	if (extrusion < 0)
-	{
-		glMatrixMode(GL_PROJECTION);
-		glPushMatrix();
-	
-		double a,b,c,d,x,y;
-		x = (2.0 * 1.0) / (1.33 - -1.33);
-		y = (2.0 * 1.0) / (1.0 - -1.0);
-		a = (1.33 + -1.33) / (1.33 - -1.33);
-		b = (1.0 + -1.0) / (1.0 - -1.0);
-	
-		c = -1.0;
-		d = -2.0 * 1.0;
 
-		double m[] = { x, 0, 0, 0,
-									0, y, 0, 0,
-									a, b, c, -1,
-									0, 0, d, 0 };
-		glLoadMatrixd(m);
-	}
-*/
-#if (defined(GL_EXT_stencil_two_side) && defined(GL_EXT_stencil_wrap))
 	if (m_pAttributes->glActiveStencilFaceEXT == NULL)
-	//if (m_pAttributes->glActiveStencilFaceEXT != NULL)
-#endif
 	{
 		glStencilMask(~0);
 		glStencilFunc(GL_ALWAYS,1,1);
@@ -509,11 +572,6 @@ void CObject3DShadow::glRenderShadowVolume()
 
 		// draw front faces
         //  function lifted up to 128 to be able to render in OGL 1.0 ( see C3DScene )
-        /*
-#if defined(GL_EXT_stencil_wrap)
-		glStencilOp(GL_KEEP,GL_INCR_WRAP_EXT,GL_KEEP);
-#endif
-        */
         glStencilOp(GL_KEEP,GL_INCR,GL_KEEP);
 		glCullFace(GL_BACK);
 		glDrawElements(GL_QUADS,scv.volumeSize,GL_UNSIGNED_INT,scv.volumeIndexes);
@@ -524,11 +582,6 @@ void CObject3DShadow::glRenderShadowVolume()
 
 		// draw back faces
         //  function lifted up to 128 to be able to render in OGL 1.0 ( see C3DScene )
-        /*
-#if defined(GL_EXT_stencil_wrap)
-		glStencilOp(GL_KEEP,GL_DECR_WRAP_EXT,GL_KEEP);
-#endif
-        */
         glStencilOp(GL_KEEP,GL_DECR,GL_KEEP);
 		glCullFace(GL_FRONT);
 		glDrawElements(GL_QUADS,scv.volumeSize,GL_UNSIGNED_INT,scv.volumeIndexes);
@@ -540,44 +593,8 @@ void CObject3DShadow::glRenderShadowVolume()
 		glCullFace(GL_BACK);
 		glDisableClientState(GL_VERTEX_ARRAY);
 	}
-#if (defined(GL_EXT_stencil_two_side) && defined(GL_EXT_stencil_wrap))
-	else
-	{
-		glDisable(GL_CULL_FACE);
-		glEnable(GL_STENCIL_TEST_TWO_SIDE_EXT);
-
-		m_pAttributes->glActiveStencilFaceEXT(GL_BACK);
-		glStencilOp(GL_KEEP,GL_INCR_WRAP_EXT,GL_KEEP);
-		glStencilMask(~0);
-		glStencilFunc(GL_ALWAYS,0,~0);
-
-		m_pAttributes->glActiveStencilFaceEXT(GL_FRONT);
-		glStencilOp(GL_KEEP,GL_DECR_WRAP_EXT,GL_KEEP);
-		glStencilMask(~0);
-		glStencilFunc(GL_ALWAYS,0,~0);
-
-		glEnableClientState(GL_VERTEX_ARRAY);
-		glVertexPointer(4,GL_FLOAT,0,scv.volume);
-
-		glDrawElements(GL_QUADS,scv.volumeSize,GL_UNSIGNED_INT,scv.volumeIndexes);
-        if (!scv.darkCapClipped)
-		    glDrawElements(GL_TRIANGLES,scv.darkCapSize,GL_UNSIGNED_INT,scv.darkCapIndexes);
-        if (!scv.lightCapClipped)
-		    glDrawElements(GL_TRIANGLES,scv.lightCapSize,GL_UNSIGNED_INT,scv.lightCapIndexes);
-
-		glEnable(GL_CULL_FACE);
-		glDisableClientState(GL_VERTEX_ARRAY);
-		glDisable(GL_STENCIL_TEST_TWO_SIDE_EXT);
-	}
-#endif
-/*
-	if (extrusion < 0)
-	{
-		glPopMatrix();
-		glMatrixMode(GL_MODELVIEW);
-	}
-*/
-    if (CGeometryAllocator::GetInstance()->isMemoryRelocated())
+  
+	if (CGeometryAllocator::GetInstance()->isMemoryRelocated())
         CGeometryAllocator::GetInstance()->glvkLockMemory(true);
 
     m_pAttributes->reBuild = true;
@@ -585,7 +602,7 @@ void CObject3DShadow::glRenderShadowVolume()
 	CATCH_GL_ERROR
 }
 
-void CObject3DShadow::glRenderBBox(RENDER_BOX_MODEL filled)
+void CObject3DShadow::glRenderBBox(CObject3D::RENDER_BOX_MODEL filled)
 {
     if (m_type == SHADOW_PLANAR)
         return;
@@ -598,182 +615,109 @@ void CObject3DShadow::glRenderBBox(RENDER_BOX_MODEL filled)
         glMultMatrixf(T);
     }
 
-	GLenum mode = GL_LINE;
-	if (filled)
-		mode = GL_FILL;
-    glPolygonMode(GL_FRONT_AND_BACK,mode);
+	if (CObject3D::WIREFRAME == filled)
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     CObject3DContour *pContour = m_pVisibleContours[0];
-    const CBoundingBox    *const bbox = pContour->getBoundingBox();
-    CGenericVector<float> lp;
+
+#ifdef SHADOW_SHADERS
+	CGeometry* object = const_cast<CGeometry*>(pContour->getGeometry());
+	object->glRenderBBox(CObject3D::RAW);
+	glDrawArrays(GL_LINES, bbox, 2);
+#else
+	const CBoundingBox    *const bbox = pContour->getBoundingBox();
+	CGenericVector<float> lp;
 	m_pAttributes->glQueryLightPosition(lp);
-    float ext = m_pAttributes->extrusion;
+	float ext = m_pAttributes->extrusion;
 
-    //  step1 : render origin bbox
-    float xmin,xmax,ymin,ymax,zmin,zmax;
-	bbox->get(xmin,ymin,zmin,xmax,ymax,zmax);
-    glBegin(GL_QUADS);
-		glVertex3f(xmin,ymin,zmin);	glVertex3f(xmax,ymin,zmin);glVertex3f(xmax,ymax,zmin);glVertex3f(xmin,ymax,zmin);
-		glVertex3f(xmin,ymin,zmax);	glVertex3f(xmax,ymin,zmax);glVertex3f(xmax,ymax,zmax);glVertex3f(xmin,ymax,zmax);
-		glVertex3f(xmin,ymax,zmin);	glVertex3f(xmin,ymax,zmax);glVertex3f(xmax,ymax,zmax);glVertex3f(xmax,ymax,zmin);
-		glVertex3f(xmin,ymin,zmin);	glVertex3f(xmin,ymin,zmax);glVertex3f(xmax,ymin,zmax);glVertex3f(xmax,ymin,zmin);
-		glVertex3f(xmin,ymin,zmin);	glVertex3f(xmin,ymin,zmax);glVertex3f(xmin,ymax,zmax);glVertex3f(xmin,ymax,zmin);
-		glVertex3f(xmax,ymax,zmin);	glVertex3f(xmax,ymax,zmax);glVertex3f(xmax,ymin,zmax);glVertex3f(xmax,ymin,zmin);
-	glEnd();
+	//  step1 : render origin bbox
+	float xmin, xmax, ymin, ymax, zmin, zmax;
+	bbox->get(xmin, ymin, zmin, xmax, ymax, zmax);
 
-    GL_COORD_VERTEX baseBBox[8] = 
-    {   GL_COORD_VERTEX(xmin, ymin, zmin, 1.0f), 
-        GL_COORD_VERTEX(xmax, ymin, zmin, 1.0f),
-        GL_COORD_VERTEX(xmin, ymax, zmin, 1.0f), 
-        GL_COORD_VERTEX(xmax, ymax, zmin, 1.0f),
-        GL_COORD_VERTEX(xmin, ymin, zmax, 1.0f), 
-        GL_COORD_VERTEX(xmax, ymin, zmax, 1.0f),
-        GL_COORD_VERTEX(xmin, ymax, zmax, 1.0f), 
-        GL_COORD_VERTEX(xmax, ymax, zmax, 1.0f)
-    };
-    GL_COORD_VERTEX extBBox[8];
-    CGenericVector<float> lightVect;
-
-    //  Step 2 : render extruded origin bbox
-    for (unsigned int i=0;i<8;i++)
-    {
-        const GL_COORD_VERTEX& box = baseBBox[i];
-
-        lightVect.Set(	box.x - lp.X(), box.y - lp.Y(), box.z - lp.Z(), 	1.0f);
-        float norm = ext / sqrt(lightVect.X()*lightVect.X() + lightVect.Y()*lightVect.Y() + lightVect.Z()*lightVect.Z());
-	    extBBox[i].x = lightVect.X()*norm + box.x;
-	    extBBox[i].y = lightVect.Y()*norm + box.y;
-	    extBBox[i].z = lightVect.Z()*norm + box.z;
-	    extBBox[i].h = 1.0f;
-    }
-
-    CBoundingBox ebbox;
-    ebbox.set(extBBox[0].x,extBBox[0].y,extBBox[0].z,extBBox[1].x,extBBox[1].y,extBBox[1].z);
-    ebbox.extendTo(extBBox[2].x,extBBox[2].y,extBBox[2].z);
-    ebbox.extendTo(extBBox[3].x,extBBox[3].y,extBBox[3].z);
-    ebbox.extendTo(extBBox[4].x,extBBox[4].y,extBBox[4].z);
-    ebbox.extendTo(extBBox[5].x,extBBox[5].y,extBBox[5].z);
-    ebbox.extendTo(extBBox[6].x,extBBox[6].y,extBBox[6].z);
-    ebbox.extendTo(extBBox[7].x,extBBox[7].y,extBBox[7].z);
-    ebbox.get(xmin,ymin,zmin,xmax,ymax,zmax);
-	
 	glBegin(GL_QUADS);
-		glVertex3f(xmin,ymin,zmin);	glVertex3f(xmax,ymin,zmin);glVertex3f(xmax,ymax,zmin);glVertex3f(xmin,ymax,zmin);
-		glVertex3f(xmin,ymin,zmax);	glVertex3f(xmax,ymin,zmax);glVertex3f(xmax,ymax,zmax);glVertex3f(xmin,ymax,zmax);
-		glVertex3f(xmin,ymax,zmin);	glVertex3f(xmin,ymax,zmax);glVertex3f(xmax,ymax,zmax);glVertex3f(xmax,ymax,zmin);
-		glVertex3f(xmin,ymin,zmin);	glVertex3f(xmin,ymin,zmax);glVertex3f(xmax,ymin,zmax);glVertex3f(xmax,ymin,zmin);
-		glVertex3f(xmin,ymin,zmin);	glVertex3f(xmin,ymin,zmax);glVertex3f(xmin,ymax,zmax);glVertex3f(xmin,ymax,zmin);
-		glVertex3f(xmax,ymax,zmin);	glVertex3f(xmax,ymax,zmax);glVertex3f(xmax,ymin,zmax);glVertex3f(xmax,ymin,zmin);
+		glVertex3f(xmin, ymin, zmin);	glVertex3f(xmax, ymin, zmin); glVertex3f(xmax, ymax, zmin); glVertex3f(xmin, ymax, zmin);
+		glVertex3f(xmin, ymin, zmax);	glVertex3f(xmax, ymin, zmax); glVertex3f(xmax, ymax, zmax); glVertex3f(xmin, ymax, zmax);
+		glVertex3f(xmin, ymax, zmin);	glVertex3f(xmin, ymax, zmax); glVertex3f(xmax, ymax, zmax); glVertex3f(xmax, ymax, zmin);
+		glVertex3f(xmin, ymin, zmin);	glVertex3f(xmin, ymin, zmax); glVertex3f(xmax, ymin, zmax); glVertex3f(xmax, ymin, zmin);
+		glVertex3f(xmin, ymin, zmin);	glVertex3f(xmin, ymin, zmax); glVertex3f(xmin, ymax, zmax); glVertex3f(xmin, ymax, zmin);
+		glVertex3f(xmax, ymax, zmin);	glVertex3f(xmax, ymax, zmax); glVertex3f(xmax, ymin, zmax); glVertex3f(xmax, ymin, zmin);
 	glEnd();
+		
+	const GL_COORD_VERTEX &min = pContour->getContourVolume().boxMin;
+	const GL_COORD_VERTEX &Max = pContour->getContourVolume().boxMax;
+	glBegin(GL_QUADS);
+		glVertex3f(min.x, min.y, min.z);	glVertex3f(Max.x, min.y, min.z);		glVertex3f(Max.x, Max.y, min.z);		glVertex3f(min.x, Max.y, min.z);
+		glVertex3f(min.x, min.y, Max.z);	glVertex3f(Max.x, min.y, Max.z);		glVertex3f(Max.x, Max.y, Max.z);		glVertex3f(min.x, Max.y, Max.z);
+		glVertex3f(min.x, Max.y, min.z);	glVertex3f(min.x, Max.y, Max.z);		glVertex3f(Max.x, Max.y, Max.z);		glVertex3f(Max.x, Max.y, min.z);
+		glVertex3f(min.x, min.y, min.z);	glVertex3f(min.x, min.y, Max.z);		glVertex3f(Max.x, min.y, Max.z);		glVertex3f(Max.x, min.y, min.z);
+		glVertex3f(min.x, min.y, min.z);	glVertex3f(min.x, min.y, Max.z);		glVertex3f(min.x, Max.y, Max.z);		glVertex3f(min.x, Max.y, min.z);
+		glVertex3f(Max.x, Max.y, min.z);	glVertex3f(Max.x, Max.y, Max.z);		glVertex3f(Max.x, min.y, Max.z);		glVertex3f(Max.x, min.y, min.z);
+	glEnd();
+#endif
 
     //  Step 3 : render sides
+	//	TODO
 
-/*
-	float xmin,xmax,ymin,ymax,zmin,zmax;
-	GetBoundingBox()->Get(xmin,ymin,zmin,xmax,ymax,zmax);
-	
-	glBegin(GL_QUADS);
-		glVertex3f(xmin,ymin,zmin);	glVertex3f(xmax,ymin,zmin);glVertex3f(xmax,ymax,zmin);glVertex3f(xmin,ymax,zmin);
-		glVertex3f(xmin,ymin,zmax);	glVertex3f(xmax,ymin,zmax);glVertex3f(xmax,ymax,zmax);glVertex3f(xmin,ymax,zmax);
-		glVertex3f(xmin,ymax,zmin);	glVertex3f(xmin,ymax,zmax);glVertex3f(xmax,ymax,zmax);glVertex3f(xmax,ymax,zmin);
-		glVertex3f(xmin,ymin,zmin);	glVertex3f(xmin,ymin,zmax);glVertex3f(xmax,ymin,zmax);glVertex3f(xmax,ymin,zmin);
-		glVertex3f(xmin,ymin,zmin);	glVertex3f(xmin,ymin,zmax);glVertex3f(xmin,ymax,zmax);glVertex3f(xmin,ymax,zmin);
-		glVertex3f(xmax,ymax,zmin);	glVertex3f(xmax,ymax,zmax);glVertex3f(xmax,ymin,zmax);glVertex3f(xmax,ymin,zmin);
-	glEnd();
-*/
-    glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
-    if ( transform )
-    {
+	if (CObject3D::WIREFRAME == filled)
+		glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
+
+    if (transform)
         glPopMatrix();
-    }
 
 	CATCH_GL_ERROR
 }
 
 
+
 void CObject3DShadow::glClipRender(void)
 {
 #if defined(GL_ARB_occlusion_query)
-    const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
-    unsigned int available = 0;
+	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	unsigned int available = 0;
 
-    if (m_pAttributes->queryIssued )
-    {
-        pExtensions->glGetQueryObjectuivARB(m_pAttributes->visibilityQuery,GL_QUERY_RESULT_AVAILABLE_ARB,&available);
- 	    pExtensions->glGetQueryObjectuivARB(m_pAttributes->visibilityQuery,GL_QUERY_RESULT_ARB,&m_pAttributes->visibilityCount);
-    }
+	if (m_pAttributes->queryIssued)
+	{
+		pExtensions->glGetQueryObjectuivARB(m_pAttributes->visibilityQuery, GL_QUERY_RESULT_AVAILABLE_ARB, &available);
+		pExtensions->glGetQueryObjectuivARB(m_pAttributes->visibilityQuery, GL_QUERY_RESULT_ARB, &m_pAttributes->visibilityCount);
+	}
 
-    pExtensions->glBeginQueryARB(GL_SAMPLES_PASSED_ARB,m_pAttributes->visibilityQuery);
-    m_pAttributes->queryIssued = true;
+	if ((m_pAttributes->visibilityCount > 0) || (!available))
+	{
+		m_pAttributes->queryIssued = true;
 
-    if ((m_pAttributes->visibilityCount > 0) || (!available))
-    {
-    	glRender();
-/*
-#ifdef RAPTOR_DEBUG_MODE_GENERATION
-    glColorMask(GL_TRUE,GL_TRUE,GL_TRUE,GL_TRUE);
-    glDisable(GL_STENCIL_TEST);
-    glEnable(GL_BLEND);
-    glDisable(GL_CULL_FACE);
-    glColor4f(0.0f,1.0f,0.0f,0.4f);
-    glRenderBBox(CObject3D::FILLED);
-    glColorMask(GL_FALSE,GL_FALSE,GL_FALSE,GL_FALSE);
-    glEnable(GL_STENCIL_TEST);
-    glDisable(GL_BLEND);
-    glEnable(GL_CULL_FACE);
-#endif
-*/
-    }
-    else
-    {
-        //  actual values should be 'get' and then restored after bbox is rendered
-        GLboolean cMask[4];
-        glGetBooleanv(GL_COLOR_WRITEMASK ,cMask);
-        GLboolean dMask;
-        glGetBooleanv(GL_DEPTH_WRITEMASK ,&dMask);
-        GLboolean sMask;
-        glGetBooleanv(GL_STENCIL_TEST ,&sMask);
-        GLint dFunc;
-        glGetIntegerv(GL_DEPTH_FUNC,&dFunc);
-        GLboolean cFace;
-        glGetBooleanv(GL_CULL_FACE ,&cFace);
-
-        glColorMask(GL_FALSE,GL_FALSE,GL_FALSE,GL_FALSE);
-        glDepthMask(GL_FALSE);
-        glDisable(GL_STENCIL_TEST);
-        glDepthFunc(GL_LESS);
-        glDisable(GL_CULL_FACE);
-
-        glRenderBBox(CObject3D::FILLED);
-
-        glDepthMask(dMask);
-        glColorMask(cMask[0],cMask[1],cMask[2],cMask[3]);
-        if (sMask)
-            glEnable(GL_STENCIL_TEST);
-        glDepthFunc(dFunc);
-        if (cFace)
-            glEnable(GL_CULL_FACE);
-/*
-#ifdef RAPTOR_DEBUG_MODE_GENERATION
-    glColorMask(GL_TRUE,GL_TRUE,GL_TRUE,GL_TRUE);
-    glDisable(GL_STENCIL_TEST);
-    glEnable(GL_BLEND);
-    glDisable(GL_CULL_FACE);
-    glColor4f(1.0f,0.0f,0.0f,0.4f);
-    glRenderBBox(CObject3D::FILLED);
-    glColorMask(GL_FALSE,GL_FALSE,GL_FALSE,GL_FALSE);
-    glEnable(GL_STENCIL_TEST);
-    glDisable(GL_BLEND);
-    glEnable(GL_CULL_FACE);
-#endif
-*/
-    }
-
-    pExtensions->glEndQueryARB(GL_SAMPLES_PASSED_ARB);
+		pExtensions->glBeginQueryARB(GL_SAMPLES_PASSED_ARB, m_pAttributes->visibilityQuery);
+		glRender();
+		pExtensions->glEndQueryARB(GL_SAMPLES_PASSED_ARB);
+	}
+	else
+	{
+		//!	Request for bbox occlusion rendering.
+		m_pAttributes->renderOcclusion = true;
+	}
 #else
-    if (glClip() != C3DEngine::CLIP_FULL)
-        glRender();
+	if (glClip() != C3DEngine::CLIP_FULL)
+		glRender();
 #endif
+}
+
+bool CObject3DShadow::glRenderBoxOcclusion(void)
+{
+	if (m_pAttributes->renderOcclusion)
+	{
+		m_pAttributes->renderOcclusion = false;
+
+		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+
+		m_pAttributes->queryIssued = true;
+
+		pExtensions->glBeginQueryARB(GL_SAMPLES_PASSED_ARB, m_pAttributes->visibilityQuery);
+		glRenderBBox(CObject3D::FILLED);
+		pExtensions->glEndQueryARB(GL_SAMPLES_PASSED_ARB);
+
+		return true;
+	}
+	else
+		return false;
 }
 
 void CObject3DShadow::glSelectContours(void)
@@ -804,11 +748,13 @@ void CObject3DShadow::glSelectContours(void)
 C3DEngine::CLIP_RESULT RAPTOR_FASTCALL CObject3DShadow::glClip(void) const
 {
 	bool transform = m_pAttributes->m_pObject->getId().isSubClassOf(CObject3DInstance::CObject3DInstanceClassID::GetClassId());
+	
+	C3DEngineMatrix transformTranspose;
     if ( transform )
     {
-        glPushMatrix();
         GL_MATRIX T = ((CObject3DInstance*)m_pAttributes->m_pObject)->getTransform();
-        glMultMatrixf(T);
+		transformTranspose = T;
+		transformTranspose.Transpose();
     }
 
     C3DEngine::CLIP_RESULT  res = C3DEngine::CLIP_NONE;
@@ -821,14 +767,15 @@ C3DEngine::CLIP_RESULT RAPTOR_FASTCALL CObject3DShadow::glClip(void) const
         case SHADOW_BOUNDING_VOLUME:
         case SHADOW_VOLUME:
         {
-            CGenericVector<float> lp;
-	        m_pAttributes->glQueryLightPosition(lp);
+			C3DEngineMatrix M = C3DEngine::Get3DEngine()->getModelview() * transformTranspose;
+			CGenericVector<float> lp = M.Inverse() * m_pAttributes->m_pLight->getLightViewPosition();
+
             CObject3DContour *pContour = m_pVisibleContours[0];
             const CBoundingBox    *const bbox = pContour->getBoundingBox();
 
             //  Step 1 : intersect volume and frustum
             //  - clip light cap ( i.e. base bbox )
-            C3DEngine::CLIP_RESULT clip_light_cap = C3DEngine::Get3DEngine()->glClip(bbox,true,NULL);
+            C3DEngine::CLIP_RESULT clip_light_cap = C3DEngine::Get3DEngine()->glClip(bbox,false, &transformTranspose);
             CObject3DContour::CONTOUR_VOLUME &cv = (CObject3DContour::CONTOUR_VOLUME &)pContour->getContourVolume();
             cv.lightCapClipped = (clip_light_cap == C3DEngine::CLIP_FULL);
 
@@ -872,23 +819,147 @@ C3DEngine::CLIP_RESULT RAPTOR_FASTCALL CObject3DShadow::glClip(void) const
             ebbox.extendTo(extBBox[5].x,extBBox[5].y,extBBox[5].z);
             ebbox.extendTo(extBBox[6].x,extBBox[6].y,extBBox[6].z);
             ebbox.extendTo(extBBox[7].x,extBBox[7].y,extBBox[7].z);
-            C3DEngine::CLIP_RESULT clip_dark_cap = C3DEngine::Get3DEngine()->glClip(&ebbox,true,NULL);
+			C3DEngine::CLIP_RESULT clip_dark_cap = C3DEngine::Get3DEngine()->glClip(&ebbox, false, &transformTranspose);
             cv.darkCapClipped = (clip_dark_cap == C3DEngine::CLIP_FULL);
+  
+			res = C3DEngine::CLIP_NONE;
+            break;
+        }
+        default:
+            res = C3DEngine::CLIP_NONE;
+            break;
+    }
+
+    CATCH_GL_ERROR
+
+    return res;
+}
+
 /*
-#ifdef RAPTOR_DEBUG_MODE_GENERATION
-	ebbox.Get(xmin,ymin,zmin,xmax,ymax,zmax);
-	
-    glPushAttrib(GL_ALL_ATTRIB_BITS);
-    glDisable(GL_CULL_FACE);
-    glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
-    glColorMask(GL_TRUE,GL_TRUE,GL_TRUE,GL_TRUE);
-    glDisable(GL_LIGHTING);
-    glDisable(GL_TEXTURE_2D);
-    glDisable(GL_DEPTH_TEST);
-    glDisable(GL_STENCIL_TEST);
-    glColor4f(0.5f,0.8f,0.8f,1.0f);
-    if (m_pAttributes->shadowVolume.darkCapClipped)
-        glColor4f(1.0f,0.5f,0.5f,1.0f);
+void CObject3DShadow::glClipRender(void)
+{
+#if defined(GL_ARB_occlusion_query)
+	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	unsigned int available = 0;
+
+	if (m_pAttributes->queryIssued )
+	{
+		pExtensions->glGetQueryObjectuivARB(m_pAttributes->visibilityQuery,GL_QUERY_RESULT_AVAILABLE_ARB,&available);
+		pExtensions->glGetQueryObjectuivARB(m_pAttributes->visibilityQuery,GL_QUERY_RESULT_ARB,&m_pAttributes->visibilityCount);
+	}
+
+	pExtensions->glBeginQueryARB(GL_SAMPLES_PASSED_ARB,m_pAttributes->visibilityQuery);
+	m_pAttributes->queryIssued = true;
+
+	if ((m_pAttributes->visibilityCount > 0) || (!available))
+		glRender();
+	else
+	{
+		m_pAttributes->renderOcclusion = true;
+
+		//  actual values should be 'get' and then restored after bbox is rendered
+		GLint dFunc;
+		glGetIntegerv(GL_DEPTH_FUNC,&dFunc);
+		GLboolean cFace;
+		glGetBooleanv(GL_CULL_FACE ,&cFace);
+
+		glColorMask(GL_FALSE,GL_FALSE,GL_FALSE,GL_FALSE);
+		glDepthMask(GL_FALSE);
+		glDisable(GL_STENCIL_TEST);
+		glDepthFunc(GL_LESS);
+		glDisable(GL_CULL_FACE);
+
+		glRenderBBox(CObject3D::FILLED);
+
+		glEnable(GL_STENCIL_TEST);
+		glDepthFunc(dFunc);
+		if (cFace)
+			glEnable(GL_CULL_FACE);
+	}
+
+	pExtensions->glEndQueryARB(GL_SAMPLES_PASSED_ARB);
+#else
+	if (glClip() != C3DEngine::CLIP_FULL)
+		glRender();
+#endif
+}
+*/
+
+/*
+void CObject3DShadow::glRenderBBox(RENDER_BOX_MODEL filled)
+{
+	if (m_type == SHADOW_PLANAR)
+		return;
+
+	bool transform = m_pAttributes->m_pObject->getId().isSubClassOf(CObject3DInstance::CObject3DInstanceClassID::GetClassId());
+	if (transform)
+	{
+		glPushMatrix();
+		GL_MATRIX T = ((CObject3DInstance*)m_pAttributes->m_pObject)->getTransform();
+		glMultMatrixf(T);
+	}
+
+	GLenum mode = GL_LINE;
+	if (filled)
+		mode = GL_FILL;
+	glPolygonMode(GL_FRONT_AND_BACK, mode);
+
+	CObject3DContour *pContour = m_pVisibleContours[0];
+	const CBoundingBox    *const bbox = pContour->getBoundingBox();
+	CGenericVector<float> lp;
+	m_pAttributes->glQueryLightPosition(lp);
+	float ext = m_pAttributes->extrusion;
+
+
+	//  step1 : render origin bbox
+	float xmin, xmax, ymin, ymax, zmin, zmax;
+	bbox->get(xmin, ymin, zmin, xmax, ymax, zmax);
+
+	glBegin(GL_QUADS);
+		glVertex3f(xmin, ymin, zmin);	glVertex3f(xmax, ymin, zmin); glVertex3f(xmax, ymax, zmin); glVertex3f(xmin, ymax, zmin);
+		glVertex3f(xmin, ymin, zmax);	glVertex3f(xmax, ymin, zmax); glVertex3f(xmax, ymax, zmax); glVertex3f(xmin, ymax, zmax);
+		glVertex3f(xmin, ymax, zmin);	glVertex3f(xmin, ymax, zmax); glVertex3f(xmax, ymax, zmax); glVertex3f(xmax, ymax, zmin);
+		glVertex3f(xmin, ymin, zmin);	glVertex3f(xmin, ymin, zmax); glVertex3f(xmax, ymin, zmax); glVertex3f(xmax, ymin, zmin);
+		glVertex3f(xmin, ymin, zmin);	glVertex3f(xmin, ymin, zmax); glVertex3f(xmin, ymax, zmax); glVertex3f(xmin, ymax, zmin);
+		glVertex3f(xmax, ymax, zmin);	glVertex3f(xmax, ymax, zmax); glVertex3f(xmax, ymin, zmax); glVertex3f(xmax, ymin, zmin);
+	glEnd();
+
+	GL_COORD_VERTEX baseBBox[8] =
+	{ GL_COORD_VERTEX(xmin, ymin, zmin, 1.0f),
+		GL_COORD_VERTEX(xmax, ymin, zmin, 1.0f),
+		GL_COORD_VERTEX(xmin, ymax, zmin, 1.0f),
+		GL_COORD_VERTEX(xmax, ymax, zmin, 1.0f),
+		GL_COORD_VERTEX(xmin, ymin, zmax, 1.0f),
+		GL_COORD_VERTEX(xmax, ymin, zmax, 1.0f),
+		GL_COORD_VERTEX(xmin, ymax, zmax, 1.0f),
+		GL_COORD_VERTEX(xmax, ymax, zmax, 1.0f)
+	};
+	GL_COORD_VERTEX extBBox[8];
+	CGenericVector<float> lightVect;
+
+	//  Step 2 : render extruded origin bbox
+	for (unsigned int i = 0; i < 8; i++)
+	{
+		const GL_COORD_VERTEX& box = baseBBox[i];
+
+		lightVect.Set(box.x - lp.X(), box.y - lp.Y(), box.z - lp.Z(), 1.0f);
+		float norm = ext / sqrt(lightVect.X()*lightVect.X() + lightVect.Y()*lightVect.Y() + lightVect.Z()*lightVect.Z());
+		extBBox[i].x = lightVect.X()*norm + box.x;
+		extBBox[i].y = lightVect.Y()*norm + box.y;
+		extBBox[i].z = lightVect.Z()*norm + box.z;
+		extBBox[i].h = 1.0f;
+	}
+
+	CBoundingBox ebbox;
+	ebbox.set(extBBox[0].x,extBBox[0].y,extBBox[0].z,extBBox[1].x,extBBox[1].y,extBBox[1].z);
+	ebbox.extendTo(extBBox[2].x,extBBox[2].y,extBBox[2].z);
+	ebbox.extendTo(extBBox[3].x,extBBox[3].y,extBBox[3].z);
+	ebbox.extendTo(extBBox[4].x,extBBox[4].y,extBBox[4].z);
+	ebbox.extendTo(extBBox[5].x,extBBox[5].y,extBBox[5].z);
+	ebbox.extendTo(extBBox[6].x,extBBox[6].y,extBBox[6].z);
+	ebbox.extendTo(extBBox[7].x,extBBox[7].y,extBBox[7].z);
+	ebbox.get(xmin,ymin,zmin,xmax,ymax,zmax);
+
 	glBegin(GL_QUADS);
 		glVertex3f(xmin,ymin,zmin);	glVertex3f(xmax,ymin,zmin);glVertex3f(xmax,ymax,zmin);glVertex3f(xmin,ymax,zmin);
 		glVertex3f(xmin,ymin,zmax);	glVertex3f(xmax,ymin,zmax);glVertex3f(xmax,ymax,zmax);glVertex3f(xmin,ymax,zmax);
@@ -897,23 +968,16 @@ C3DEngine::CLIP_RESULT RAPTOR_FASTCALL CObject3DShadow::glClip(void) const
 		glVertex3f(xmin,ymin,zmin);	glVertex3f(xmin,ymin,zmax);glVertex3f(xmin,ymax,zmax);glVertex3f(xmin,ymax,zmin);
 		glVertex3f(xmax,ymax,zmin);	glVertex3f(xmax,ymax,zmax);glVertex3f(xmax,ymin,zmax);glVertex3f(xmax,ymin,zmin);
 	glEnd();
-    glPopAttrib();
-#endif
-*/
-            res = C3DEngine::CLIP_NONE;
-            break;
-        }
-        default:
-            res = C3DEngine::CLIP_NONE;
-            break;
-    }
 
-    if ( transform )
-    {
-        glPopMatrix();
-    }
+	//  Step 3 : render sides
+	//	TODO
 
-    CATCH_GL_ERROR
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	if (transform)
+	{
+		glPopMatrix();
+	}
 
-    return res;
+	CATCH_GL_ERROR
 }
+*/

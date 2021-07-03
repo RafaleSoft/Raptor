@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
-/*  Copyright 1998-2019 by                                                 */
+/*  Copyright 1998-2021 by                                                 */
 /*  Fabrice FERRAND.                                                       */
 /*                                                                         */
 /*  This file is part of the Raptor project, and may only be used,         */
@@ -97,10 +97,6 @@ public:
 	//! Returns the lock state ( set with the method below ).
 	bool    isMemoryLocked(void) const { return m_bLocked; };
 
-
-
-
-protected:
 	typedef struct data_bloc_t
 	{
 		uint8_t		*address;
@@ -108,6 +104,7 @@ protected:
 	} data_bloc;
 
 
+protected:
 	//!	The constructor, for subclasses (Geometry, Texels, Uniforms).
 	CResourceAllocator();
 

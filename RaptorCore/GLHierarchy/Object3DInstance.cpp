@@ -140,6 +140,12 @@ vector<CObject3DContour*> CObject3DInstance::createContours(void)
     }
 }
 
+void CObject3DInstance::getShaders(std::vector<CShader*> &shaders)
+{
+	if (m_pReference != NULL)
+		m_pReference->getShaders(shaders);
+}
+
 void CObject3DInstance::overrideShading(const IRenderingProperties& override)
 {
     if (m_pOverride ==  NULL)

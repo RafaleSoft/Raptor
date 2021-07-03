@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
-/*  Copyright 1998-2019 by                                                 */
+/*  Copyright 1998-2021 by                                                 */
 /*  Fabrice FERRAND.                                                       */
 /*                                                                         */
 /*  This file is part of the Raptor project, and may only be used,         */
@@ -69,6 +69,15 @@ CVulkanShaderStage::CVulkanShaderStage(const std::string& name)
 
 CVulkanShaderStage::~CVulkanShaderStage(void)
 {
+#if defined(GL_ARB_uniform_buffer_object)
+	if (!m_uniforms.empty())
+	{
+		CUniformAllocator*	pUAllocator = CUniformAllocator::GetInstance();
+		for (size_t i = 0; i < m_uniforms.size(); i++)
+			pUAllocator->releaseUniforms(m_uniforms[i].buffer);
+	}
+#endif
+
 	if (NULL != m_param)
 		delete m_param;
 	if (NULL != m_pShaderStages)
@@ -129,9 +138,8 @@ void CVulkanShaderStage::setProgramParameters(const CProgramParameters &v)
 	{
 		CUniformAllocator*	pUAllocator = CUniformAllocator::GetInstance();
 
-		if (NULL == m_uniforms)
+		if (m_uniforms.empty())
 		{
-			uint64_t size = 0;
 			for (unsigned int idx = 0; idx < m_parameters.getNbParameters(); idx++)
 			{
 				CProgramParameters::CParameterBase& param_value = m_parameters[idx];
@@ -141,28 +149,21 @@ void CVulkanShaderStage::setProgramParameters(const CProgramParameters &v)
 				else if (!IsPredefinedGLVariable(param_value.name()))
 				{
 					param_value.locationType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-					size += param_value.size();
+
+					uniform_bloc bloc;
+					bloc.size = param_value.size();
+					bloc.buffer = pUAllocator->allocateUniforms(bloc.size);
+					bloc.external = false;
+					m_uniforms.push_back(bloc);
+
+					pUAllocator->glvkSetPointerData(bloc.buffer, (uint8_t*)param_value.addr(), bloc.size);
 				}
 			}
-			m_uniforms = pUAllocator->allocateUniforms(size);
+			
 		}
 
 		// TODO : handle the case where parameter sets have different size: release parameters + reallocate.
 		// TODO : optimize : use a temp buffer and make a single CopyPointer call.
-		uint64_t totalsize = 0;
-		for (unsigned int idx = 0; idx < m_parameters.getNbParameters(); idx++)
-		{
-			const CProgramParameters::CParameterBase& param_value = m_parameters[idx];
-			if (VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER == (VkDescriptorType)param_value.locationType)
-			{
-				uint64_t sz = param_value.size();
-				const void *addr = param_value.addr();
-
-				pUAllocator->glvkSetPointerData(m_uniforms + totalsize, (unsigned char*)addr, sz);
-				totalsize += sz;
-			}
-		}
-		m_uniforms_size = totalsize;
 	}
 }
 
@@ -204,7 +205,7 @@ void CVulkanShaderStage::vkRender(CVulkanCommandBuffer &commandBuffer,
 		VkBuffer uniformBuffer = rDevice.getMemory()->getLockedBuffer(IDeviceMemoryManager::IBufferObject::UNIFORM_BUFFER);
 		
 		//! TODO : Set this only once ? i.e only if m_bApplyParameters ?
-		VkDescriptorBufferInfo bufferInfo = { uniformBuffer, (VkDeviceSize)m_uniforms, m_uniforms_size };
+		VkDescriptorBufferInfo bufferInfo = { uniformBuffer, (VkDeviceSize)m_uniforms[0].buffer, m_uniforms[0].size };
 		CVulkanTextureObject* t = tmu_setup->getDiffuseMap()->getVulkanTextureObject();
 		VkDescriptorImageInfo imageInfo = t->getCombinedImageSampler();
 

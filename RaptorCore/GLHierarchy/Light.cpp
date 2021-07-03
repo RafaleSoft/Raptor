@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
-/*  Copyright 1998-2019 by                                                 */
+/*  Copyright 1998-2021 by                                                 */
 /*  Fabrice FERRAND.                                                       */
 /*                                                                         */
 /*  This file is part of the Raptor project, and may only be used,         */
@@ -476,6 +476,21 @@ float CLight::getLightVisibility(void) const
 		glPopAttrib();
 	}
 #endif
+
+CLight::R_LightProduct CLight::computeLightProduct(const CMaterial &material)
+{
+	CLight::R_LightProduct lp;
+
+	lp.ambient = material.getAmbient() * M.ambient;
+	lp.diffuse = material.getDiffuse() * M.diffuse;
+	lp.specular = material.getSpecular() * M.specular;
+	lp.enable = shader_true;
+	const CGenericVector<float, 4> &p = m_pAttributes->m_viewPosition;
+	lp.position = GL_COORD_VERTEX(p.X(), p.Y(), p.Z(), p.H());
+	lp.attenuation = m_pAttributes->m_spotParams;
+
+	return lp;
+}
 
 bool CLight::exportObject(CRaptorIO& o)
 {

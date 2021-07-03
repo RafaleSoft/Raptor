@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
-/*  Copyright 1998-2019 by                                                 */
+/*  Copyright 1998-2021 by                                                 */
 /*  Fabrice FERRAND.                                                       */
 /*                                                                         */
 /*  This file is part of the Raptor project, and may only be used,         */
@@ -63,7 +63,6 @@ private:
 	C3DSet				*m_roof;
 	CGeometry			*m_topRoof;
 	CShadedGeometry		*m_knot;
-	CBumppedGeometry	*m_columnBump;
 
 	CObject3DShadow		*m_knotShadow;
     CObject3DShadow		*m_torchShadow;

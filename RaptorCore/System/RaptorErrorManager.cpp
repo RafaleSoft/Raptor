@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
-/*  Copyright 1998-2019 by                                                 */
+/*  Copyright 1998-2021 by                                                 */
 /*  Fabrice FERRAND.                                                       */
 /*                                                                         */
 /*  This file is part of the Raptor project, and may only be used,         */
@@ -266,7 +266,7 @@ void CRaptorErrorManager::addRaptorError(GL_RAPTOR_ERROR& err)
     bool opened = (m_pLogger != NULL) && (m_pLogger->getStatus() == CRaptorIO::IO_OK);
     if (opened)
     {
-		*m_pLogger << err.className.data();
+		*m_pLogger << err.className;
 
 		time_t timer;
 		time(&timer);
@@ -301,7 +301,7 @@ void CRaptorErrorManager::addRaptorError(GL_RAPTOR_ERROR& err)
 
 		*m_pLogger << buffer << "): ";
 		*m_pLogger << err.filename << ":" << err.line << " ";
-		*m_pLogger << err.error.data() << '\n';
+		*m_pLogger << err.error << '\n';
     }
 }
 

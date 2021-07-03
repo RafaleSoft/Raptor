@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
-/*  Copyright 1998-2019 by                                                 */
+/*  Copyright 1998-2021 by                                                 */
 /*  Fabrice FERRAND.                                                       */
 /*                                                                         */
 /*  This file is part of the Raptor project, and may only be used,         */
@@ -74,10 +74,14 @@ public:
 	//!	This helper avoids the creation of unnecessary shaders
 	bool hasShader(void) const { return (m_pShader != NULL); };
 
-	//!	Returns the shader of this object.
+	//!	Returns the base shader of this object.
     //! The shader can be initialized by the shadedgeometry automatically
     //! or it can be a shader given with SetShader. 
 	virtual CShader * const getShader(void);
+
+	//!	Returns the list of shaders in this object hierachy.
+	//!	Shader is not created if not existant (this method is not equivalent to getShader above)
+	virtual void getShaders(std::vector<CShader*> &shaders);
 
 	//!	Returns an ambient occlusion shader for this object.
     //! The shader is configured and properly rendered by the 

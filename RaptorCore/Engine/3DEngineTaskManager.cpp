@@ -160,7 +160,7 @@ void C3DEngineTaskManager::addJobBatch(unsigned int batchId)
 		(*it++).jobBatches.push(batchId);
 }
 
-void C3DEngineTaskManager::computeJobs(unsigned int stack)
+void C3DEngineTaskManager::computeJobs(size_t stack)
 {
     C3DEngine *engine = C3DEngine::Get3DEngine();
     if (engine == NULL)

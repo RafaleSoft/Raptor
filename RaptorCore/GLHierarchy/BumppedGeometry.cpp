@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
-/*  Copyright 1998-2019 by                                                 */
+/*  Copyright 1998-2021 by                                                 */
 /*  Fabrice FERRAND.                                                       */
 /*                                                                         */
 /*  This file is part of the Raptor project, and may only be used,         */
@@ -60,6 +60,12 @@
 #endif
 #if !defined(AFX_RESOURCEALLOCATOR_H__4BAB58CE_942B_450D_88C9_AF0DDDF03718__INCLUDED_)
 	#include "Subsys/ResourceAllocator.h"
+#endif
+#if !defined(AFX_RAPTORINSTANCE_H__90219068_202B_46C2_BFF0_73C24D048903__INCLUDED_)
+	#include "Subsys/RaptorInstance.h"
+#endif
+#if !defined(AFX_OPENGLSHADERSTAGE_H__56B00FE3_E508_4FD6_9363_90E6E67446D9__INCLUDED_)
+	#include "OpenGLShaderStage.h"
 #endif
 
 
@@ -139,6 +145,13 @@ void CBumppedGeometry::unLink(const CPersistence* p)
 CShader	* const CBumppedGeometry::getShader(void) const
 {
 	return m_pBumpShader;
+}
+
+void CBumppedGeometry::getShaders(std::vector<CShader*> &shaders)
+{
+	if (NULL != m_pBumpShader)
+		if (m_pBumpShader->hasOpenGLShader())
+			shaders.push_back(m_pBumpShader);
 }
 
 void CBumppedGeometry::setDiffuseMap(ITextureObject* diffuse)
@@ -252,8 +265,10 @@ void CBumppedGeometry::glRender()
 	if (m_pBumpShader != NULL)
 		m_pBumpShader->glStop();
 
-	IRenderingProperties *props = IRenderingProperties::GetCurrentProperties();
-	if (props->getCurrentTexturing() == IRenderingProperties::ENABLE)
+	CRaptorInstance& instance = CRaptorInstance::GetInstance();
+	IRenderingProperties *props = instance.getGlobalRenderingProperties();
+
+	if (props->getTexturing() == IRenderingProperties::ENABLE)
 	{
 		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
 		pExtensions->glActiveTextureARB(GL_TEXTURE1_ARB);

@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
-/*  Copyright 1998-2019 by                                                 */
+/*  Copyright 1998-2021 by                                                 */
 /*  Fabrice FERRAND.                                                       */
 /*                                                                         */
 /*  This file is part of the Raptor project, and may only be used,         */
@@ -297,7 +297,6 @@ bool CRaptorServerInstance::executeRequest(request &r)
 		dname << "Session";
 		dname << r.id;
 		dname << "_display";
-		dname << std::ends;
 		glcs.caption = dname.str();
 		glcs.acceleration = CRaptorDisplayConfig::HARDWARE;
 		glcs.display_mode = CGL_RGBA | CGL_DEPTH;
@@ -356,7 +355,7 @@ bool CRaptorServerInstance::loadPackage(const CRaptorNetwork::DATA_COMMAND& data
 	char buffer[MAX_PATH];
 	_getcwd(buffer, MAX_PATH);
 	std::stringstream session_path;
-	session_path << "session_" << id << std::ends;
+	session_path << "session_" << id;
 	int dir_exist = _chdir(session_path.str().c_str());
 	if ((ENOENT == errno) && (-1 == dir_exist))
 	{
@@ -419,7 +418,6 @@ bool CRaptorServerInstance::loadPackage(const CRaptorNetwork::DATA_COMMAND& data
 			dname << "Session";
 			dname << id;
 			dname << "_display";
-			dname << std::ends;
 			pDisplay->setName(dname.str());
 			std::cout << "Session rendering scene updated." << std::endl;
 			res = true;

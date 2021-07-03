@@ -268,7 +268,7 @@ public:
 	{
 		SOFTWARE,
 		GENERIC,
-		HARDWARE,
+		HARDWARE
 	} GL_ACCELERATION;
 
 	typedef enum

@@ -92,7 +92,7 @@ protected:
     //! Async job processing. All jobs in the stack are processed if
 	//! batchId is -1. Otherwise, only jobs which have the requested
 	//!	batchId are processed
-    void computeJobs(unsigned int stack = 0);
+    void computeJobs(size_t stack = 0);
 
 	//!	Safely adds a batch to all job stacks batches.
 	void addJobBatch(unsigned int batchId);
