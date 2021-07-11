@@ -175,6 +175,14 @@
     <OutDir>$(Configuration)\$(Platform)\</OutDir>
     <IntDir>$(Configuration)\$(Platform)\$(ProjectName)\</IntDir>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized|x64'">
+    <OutDir>$(Configuration)\$(Platform)\</OutDir>
+    <IntDir>$(Configuration)\$(Platform)\$(ProjectName)\</IntDir>
+    <TargetName>Raptor</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Optimized|Win32'">
+    <TargetName>Raptor</TargetName>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Midl>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -919,6 +927,7 @@ $(PYTHON_HOME)\python.exe $(SolutionDir)$(ProjectName)\Subsys\Redist.py
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\IRenderingProperties.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\ShadedGeometry.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\Shader.cpp" />
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\ShaderBloc.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\ShaderProgram.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\SimpleObject.cpp" />
     <ClCompile Include="..\..\RaptorCore\GLHierarchy\TextureFactory.cpp" />
@@ -1281,6 +1290,7 @@ copy CodeGeneration.h "%RAPTOR_ROOT%\Redist\Include\Subsys"
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\IRenderingProperties.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\ShadedGeometry.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\Shader.h" />
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\ShaderBloc.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\ShaderProgram.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\SimpleObject.h" />
     <ClInclude Include="..\..\RaptorCore\GLHierarchy\TextureFactory.h" />

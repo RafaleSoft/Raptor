@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
-/*  Copyright 1998-2019 by                                                 */
+/*  Copyright 1998-2021 by                                                 */
 /*  Fabrice FERRAND.                                                       */
 /*                                                                         */
 /*  This file is part of the Raptor project, and may only be used,         */
@@ -31,15 +31,6 @@
 #endif
 
 
-#ifdef WIN32
-    #include <new.h>    // to support old platform prototypes, but not for a long time.
-#else
-    #include <new>
-#endif
-
-#include <set>
-
-
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //  Statics and constants
 //
@@ -50,25 +41,15 @@ static const float WASTE_SPACE_TRESHOLD = 0.1f;	//	Allow 10% of wasted space in 
 
 CHostMemoryManager	*CHostMemoryManager::s_pMemory = NULL;
 
-#ifndef WIN32
-    typedef new_handler _PNH;
-#endif
-static _PNH __oldNewHandler = NULL;
+static new_handler __oldNewHandler = NULL;
 
 
 //	A specific handler to detect large memory allocations that failed
-#ifdef WIN32
-    int RAPTOR_NEW_HANDLER(size_t)
-#else
-    void RAPTOR_NEW_HANDLER(void)
-#endif
+void RAPTOR_NEW_HANDLER(void)
 {
 	RAPTOR_FATAL(CPersistence::CPersistenceClassID::GetClassId(), CRaptorMessages::ID_NO_RESOURCE);
 
     Raptor::GetMessages()->displayMessage("Failed to allocate more memory");
-#ifdef WIN32
-	return 0;
-#endif
 }
 
 
@@ -150,7 +131,7 @@ CHostMemoryManager::CHostMemoryManager(void)
 CHostMemoryManager::~CHostMemoryManager()
 {
     //! Gather garbage blocs:
-    set<CMemoryHeap::DATA_BLOC,CMemoryHeap::DATA_BLOC>::const_iterator itr = m_pHeap->garbage.begin();
+    std::set<CMemoryHeap::DATA_BLOC,CMemoryHeap::DATA_BLOC>::const_iterator itr = m_pHeap->garbage.begin();
     while (m_pHeap->garbage.end() != itr)
 	{
 		const CMemoryHeap::DATA_BLOC& db = (*itr++);
@@ -179,7 +160,7 @@ CHostMemoryManager::~CHostMemoryManager()
 
 	if (__oldNewHandler != NULL)
 #ifdef WIN32
-		_set_new_handler(__oldNewHandler);
+		set_new_handler(__oldNewHandler);
 #else
         set_new_handler(__oldNewHandler);
 #endif
@@ -200,7 +181,7 @@ bool CHostMemoryManager::init(void)
 	if (__oldNewHandler == NULL)
 	{
 #ifdef WIN32
-		__oldNewHandler = _set_new_handler(RAPTOR_NEW_HANDLER);
+		__oldNewHandler = set_new_handler(RAPTOR_NEW_HANDLER);
 #else
         set_new_handler(__oldNewHandler);
 #endif

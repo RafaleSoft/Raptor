@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
-/*  Copyright 1998-2019 by                                                 */
+/*  Copyright 1998-2021 by                                                 */
 /*  Fabrice FERRAND.                                                       */
 /*                                                                         */
 /*  This file is part of the Raptor project, and may only be used,         */
@@ -22,8 +22,8 @@
 
 #define RAPTOR_VERSION_MAJOR	2
 #define RAPTOR_VERSION_MINOR	17
-#define RAPTOR_VERSION_PATCH	2
-#define RAPTOR_VERSION_BUILD	143
+#define RAPTOR_VERSION_PATCH	3
+#define RAPTOR_VERSION_BUILD	36
 
 #define RAPTOR_VERSION				(RAPTOR_VERSION_MAJOR << 24) + (RAPTOR_VERSION_MINOR << 16) + (RAPTOR_VERSION_PATCH << 8)
 #define	RAPTOR_VERSION_DOT(a,b,c)	#a"."#b"."#c

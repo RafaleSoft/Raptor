@@ -94,8 +94,10 @@ public:
 	virtual CRaptorIO& operator<<(uint32_t i);
 	virtual CRaptorIO& operator>>(uint32_t& i);
 
+#if defined(_WIN64)
 	virtual CRaptorIO& operator<<(size_t i);
 	virtual CRaptorIO& operator>>(size_t& i);
+#endif
 
 	virtual CRaptorIO& operator<<(const std::string& s);
 	virtual CRaptorIO& operator>>(string &s);

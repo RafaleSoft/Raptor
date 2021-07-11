@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
-/*  Copyright 1998-2019 by                                                 */
+/*  Copyright 1998-2021 by                                                 */
 /*  Fabrice FERRAND.                                                       */
 /*                                                                         */
 /*  This file is part of the Raptor project, and may only be used,         */
@@ -39,6 +39,11 @@
 #if !defined(AFX_LIGHT_H__AA8BABD6_059A_4939_A4B6_A0A036E12E1E__INCLUDED_)
 	#include "GLHierarchy/Light.h"
 #endif
+#if !defined(AFX_SHADERBLOC_H__56C73DCA_292E_4722_8881_82DC1BF53EA5__INCLUDED_)
+	#include "GLHierarchy/ShaderBloc.h"
+#endif
+
+
 
 RAPTOR_NAMESPACE
 
@@ -69,27 +74,6 @@ CBlinnShader::~CBlinnShader(void)
 {
 }
 
-typedef struct LightProduct_t
-{
-	GL_COORD_VERTEX position;
-	GL_COORD_VERTEX attenuation;
-	CColor::RGBA	ambient;
-	CColor::RGBA	diffuse;
-	CColor::RGBA	specular;
-	float			shininess;
-	float			reserved[3];
-	bool			enable;
-	float			reserved2[3];
-} R_LightProduct;
-
-typedef struct LightProducts_t
-{
-	R_LightProduct	lights[5];
-	CColor::RGBA	scene_ambient;
-} R_LightProducts;
-
-static R_LightProducts products;
-
 void CBlinnShader::glInit()
 {
 	COpenGLShaderStage *stage = glGetOpenGLShader("BLINN_SHADER_PROGRAM");
@@ -99,55 +83,47 @@ void CBlinnShader::glInit()
 
 	CProgramParameters params;
 	params.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);
-
-#if defined(GL_ARB_uniform_buffer_object)
-	CProgramParameters::CParameter<R_LightProducts> material("LightProducts", products);
-	material.locationType = GL_UNIFORM_BLOCK_BINDING_ARB;
-	params.addParameter(material);
-#endif
-
 	stage->setProgramParameters(params);
 
 	stage->glCompileShader();
+
+	CShaderBloc *bloc = glGetShaderBloc("LightProducts");
+	if (NULL == bloc)
+	{
+		RAPTOR_ERROR(CShader::CShaderClassID::GetClassId(),
+					"Blinn Shader Object cannot find uniform bloc \"LightProducts\", compiled shader source is incorrect.");
+	}
 }
 
 void CBlinnShader::glRender(void)
 {
-	COpenGLShaderStage *stage = glGetOpenGLShader();
-	CProgramParameters params;
-
-	int numl = 0;
-	CMaterial *M = getMaterial();
-	CLight **olights = CLightAttributes::getOrderedLights();
-	for (int i = 0; i < CLightAttributes::MAX_LIGHTS; i++)
+	CShaderBloc *pBloc = glGetShaderBloc();
+	if (!pBloc->isExternal())
 	{
-		CLight *pLight = olights[i];
-		products.lights[i].enable = false;
-
-		if (NULL != pLight)
+		CMaterial *M = getMaterial();
+		CLight::R_LightProducts products;
+		CLight **olights = CLightAttributes::getOrderedLights();
+		
+		for (int i = 0, numl = 0; (i < CLightAttributes::MAX_LIGHTS) && (numl < 5); i++)
 		{
-			R_LightProduct& lp = products.lights[numl++];
-			lp.ambient = M->getAmbient() * pLight->getAmbient();
-			lp.diffuse = M->getDiffuse() * pLight->getDiffuse();
-			lp.specular = M->getSpecular() * pLight->getSpecular();
-			lp.shininess = M->getShininess();
-			lp.enable = true;
-			const CGenericVector<float,4> &p = pLight->getLightViewPosition();
-			lp.position = GL_COORD_VERTEX(p.X(), p.Y(), p.Z(), p.H());
-			lp.attenuation = pLight->getSpotParams();
+			products.lights[i].enable = shader_false;
+			CLight *pLight = olights[i];
+
+			if (NULL != pLight)
+			{
+				CLight::R_LightProduct& lp = products.lights[numl++];
+				lp = pLight->computeLightProduct(*M);
+			}
 		}
+		products.scene_ambient = CShader::getAmbient();
+		products.shininess = M->getShininess();
+
+		pBloc->glvkUpdateBloc((uint8_t*)&products);
 	}
-	products.scene_ambient = CShader::getAmbient();
-
-#if defined(GL_ARB_uniform_buffer_object)
-	CProgramParameters::CParameter<R_LightProducts> material("LightProducts", products);
-	material.locationType = GL_UNIFORM_BLOCK_BINDING_ARB;
-	params.addParameter(material);
-#endif
-
-	stage->updateProgramParameters(params);
 
 	CShader::glRender();
+
+	CATCH_GL_ERROR
 }
 
 

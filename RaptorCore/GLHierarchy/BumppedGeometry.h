@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
-/*  Copyright 1998-2019 by                                                 */
+/*  Copyright 1998-2021 by                                                 */
 /*  Fabrice FERRAND.                                                       */
 /*                                                                         */
 /*  This file is part of the Raptor project, and may only be used,         */
@@ -58,6 +58,9 @@ public:
 	virtual void setRenderingModel(CGeometry::RENDERING_MODEL model);
 
 	virtual CShader	* const getShader(void) const;
+
+	//!	Returns the list of shaders in this object hierachy.
+	virtual void getShaders(std::vector<CShader*> &shaders);
 
 	//!	Sets the texture map that will be used as the diffuse component of the bumpping.
 	void setDiffuseMap(ITextureObject* diffuse);

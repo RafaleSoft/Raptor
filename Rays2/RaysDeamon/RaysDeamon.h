@@ -1,5 +1,19 @@
-// RaysDeamon.h : main header file for the RAYSDEAMON application
-//
+/***************************************************************************/
+/*                                                                         */
+/*  RaysDeamon.h                                                           */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
 
 #if !defined(AFX_RAYSDEAMON_H__1FD417A3_0293_47C1_B3C3_DD773362F2E1__INCLUDED_)
 #define AFX_RAYSDEAMON_H__1FD417A3_0293_47C1_B3C3_DD773362F2E1__INCLUDED_
@@ -55,18 +69,10 @@ public:
 	{
 		std::string		path;
 		unsigned int	nbProcs;
-		unsigned int	nbProcsAvailable;
 		bool			active;
 		float			jobDone;	// percentage of job actually done
 		CClient<CClientSocket> *connection;// connection to the work unit
 	} work_unit_struct_t;
-
-	typedef struct Message_reg_t
-	{
-		MSGSTRUCT		msg;
-		unsigned char	*raw_data;
-	} MSGREGSTRUCT;
-	typedef MSGREGSTRUCT* LPMSGREGSTRUCT;
 
 
 private:

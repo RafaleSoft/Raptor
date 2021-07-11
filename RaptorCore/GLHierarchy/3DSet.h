@@ -109,6 +109,10 @@ public:
     //!    Correct implementation will return a variable list of contours. ( depend on optimisation )
     virtual vector<CObject3DContour*> createContours(void);
 
+	//!	Returns the list of shaders in this object hierachy.
+	virtual void getShaders(std::vector<CShader*> &shaders);
+
+
     //! Implements CPersistence
 	DECLARE_IO
 	DECLARE_CLASS_ID(C3DSetClassID,"Set",CObject3D)

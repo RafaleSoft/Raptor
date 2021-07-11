@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
-/*  Copyright 1998-2019 by                                                 */
+/*  Copyright 1998-2021 by                                                 */
 /*  Fabrice FERRAND.                                                       */
 /*                                                                         */
 /*  This file is part of the Raptor project, and may only be used,         */
@@ -40,6 +40,9 @@
 #if !defined(AFX_IMAGE_H__F545D0D5_5F10_4EFA_BE3B_3F3D34D4DBF3__INCLUDED_)
 	#include "System/Image.h"
 #endif
+#if !defined(AFX_TEXTUREQUAD_H__1712AF34_6723_4E39_BC72_05ED6FA28418__INCLUDED_)
+	#include "GLHierarchy/TextureQuad.h"
+#endif
 
 
 RAPTOR_NAMESPACE_BEGIN
@@ -59,6 +62,7 @@ class CShaderLibrary;
 RAPTOR_INTERFACE ITImeObjectImpl;
 class CTimeObject;
 class CTextureFactory;
+class IRenderingProperties;
 
 class CRaptorInstance
 {
@@ -125,6 +129,14 @@ public:
 	//!	Returns the default null shader.
 	const CShader& getNullShader(void) const { return *m_pNullShader; };
 
+	//!	Allocate a box buffer index.
+	uint64_t glvkReserveBoxIndex();
+
+	//!	The global GL rendering properties
+	IRenderingProperties* getGlobalRenderingProperties() const { return m_pGlobalProperties; };
+	//!	The current GL rendering properties
+	IRenderingProperties* getCurrentRenderingProperties() const { return m_pCurrentProperties; };
+	void setCurrentRenderingProperties(IRenderingProperties* pCurrent) { m_pCurrentProperties = pCurrent; };
 
 
 	//!
@@ -192,6 +204,14 @@ public:
 	bool arrays_initialized;
 	//!	Texture Quad global shader.
 	CShader	*m_pQuadShader;
+	//!	The texture quad redering resource binder
+	CResourceAllocator::CResourceBinder *m_pQuadBinder;
+	//!	Texture Quad rendering attributes
+	CTextureQuad::Attributes*	m_pQuadAttributes;
+	//!	The number of allocated texture quads
+	uint32_t max_quad_index = 0;
+	//!	The number of texture quads
+	uint32_t nb_quads = 0;
 	//! 2D Texture Font global shaders
 	CShader	*m_pFontShader;
 	//! Vector Font global shaders
@@ -256,6 +276,10 @@ private:
 	bool			m_bFragmentProgramReady;
 	//!	A default shader.
 	CShader			*m_pNullShader;
+	//!	Global rendering properties
+	IRenderingProperties	*m_pGlobalProperties;
+	//!	Current rendering properties
+	IRenderingProperties	*m_pCurrentProperties;
 };
 
 RAPTOR_NAMESPACE_END

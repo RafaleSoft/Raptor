@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
-/*  Copyright 1998-2019 by                                                 */
+/*  Copyright 1998-2021 by                                                 */
 /*  Fabrice FERRAND.                                                       */
 /*                                                                         */
 /*  This file is part of the Raptor project, and may only be used,         */
@@ -86,11 +86,14 @@
 		#include "GLXSpecific/GLXTimeObject.h"
 	#endif
 #endif
+#if !defined(AFX_OPENGLRENDERINGPROPERTIES_H__1F0F1E67_FC84_4772_A6EE_923BD81F91D3__INCLUDED_)
+	#include "Subsys/OpenGL/OpenGLRenderingProperties.h"
+#endif
 
 
 RAPTOR_NAMESPACE
 
-
+static const uint32_t max_texture_quad = 256;
 CRaptorInstance *CRaptorInstance::m_pInstance = NULL;
 
 CRaptorInstance::CRaptorInstance()
@@ -122,6 +125,10 @@ CRaptorInstance::CRaptorInstance()
 	m_pAttributes = NULL;
 	m_pIdentity = NULL;
 	m_pQuadShader = NULL;
+	m_pQuadBinder = NULL;
+	m_pQuadAttributes = NULL;
+	max_quad_index = 0;
+	nb_quads = 0;
 	m_pFontShader = NULL;
 	m_pVectorFontShader = NULL;
 	m_displayBinder = NULL;
@@ -142,6 +149,9 @@ CRaptorInstance::CRaptorInstance()
 	m_time = 0.0f;
 	m_globalTime = 0.0f;
 	m_deltat = 0.05f;
+
+	m_pGlobalProperties = new COpenGLRenderingProperties();
+	m_pCurrentProperties = NULL;
 }
 
 CRaptorInstance &CRaptorInstance::GetInstance(void)
@@ -192,6 +202,12 @@ CRaptorInstance::~CRaptorInstance()
 	{
 		delete pConsole;
 		pConsole = NULL;
+	}
+
+	if (NULL != m_pGlobalProperties)
+	{
+		delete m_pGlobalProperties;
+		m_pGlobalProperties = NULL;
 	}
 
 	//! Destroy glObjects : we need a context.
@@ -341,10 +357,9 @@ bool CRaptorInstance::glvkInitSharedResources(void)
 #endif
 
 	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
-	if (Raptor::glIsExtensionSupported(GL_ARB_VERTEX_PROGRAM_EXTENSION_NAME))
 #if defined(GL_ARB_vertex_program)
+	if (Raptor::glIsExtensionSupported(GL_ARB_VERTEX_PROGRAM_EXTENSION_NAME))
 		m_bVertexProgramReady = (NULL != pExtensions->glGenProgramsARB);
-#endif
 	else
 	{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
@@ -356,10 +371,10 @@ bool CRaptorInstance::glvkInitSharedResources(void)
 													   __FILE__, __LINE__, args);
 #endif
 	}
-	if (Raptor::glIsExtensionSupported(GL_ARB_FRAGMENT_PROGRAM_EXTENSION_NAME))
-#if defined(GL_ARB_fragment_program)
-		m_bFragmentProgramReady = (NULL != pExtensions->glGenProgramsARB);
 #endif
+#if defined(GL_ARB_fragment_program)
+	if (Raptor::glIsExtensionSupported(GL_ARB_FRAGMENT_PROGRAM_EXTENSION_NAME))
+		m_bFragmentProgramReady = (NULL != pExtensions->glGenProgramsARB);
 	else
 	{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
@@ -370,11 +385,11 @@ bool CRaptorInstance::glvkInitSharedResources(void)
 													   CRaptorMessages::ID_NO_GPU_PROGRAM, 
 													   __FILE__, __LINE__, args);
 #endif
-	}
-	if (Raptor::glIsExtensionSupported(GL_ARB_VERTEX_SHADER_EXTENSION_NAME))
-#if defined(GL_ARB_vertex_shader)
-		m_bVertexShaderReady = (NULL != pExtensions->glCreateShaderObjectARB);
 #endif
+	}
+#if defined(GL_ARB_vertex_shader)
+	if (Raptor::glIsExtensionSupported(GL_ARB_VERTEX_SHADER_EXTENSION_NAME))
+		m_bVertexShaderReady = (NULL != pExtensions->glCreateShaderObjectARB);
 	else
 	{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
@@ -385,11 +400,11 @@ bool CRaptorInstance::glvkInitSharedResources(void)
 													   CRaptorMessages::ID_NO_GPU_PROGRAM, 
 													   __FILE__, __LINE__, args);
 #endif
-	}
-	if (Raptor::glIsExtensionSupported(GL_ARB_GEOMETRY_SHADER4_EXTENSION_NAME))
-#if defined(GL_ARB_geometry_shader4)
-		m_bGeometryShaderReady = (NULL != pExtensions->glCreateShaderObjectARB);
 #endif
+	}
+#if defined(GL_ARB_geometry_shader4)
+	if (Raptor::glIsExtensionSupported(GL_ARB_GEOMETRY_SHADER4_EXTENSION_NAME))
+		m_bGeometryShaderReady = (NULL != pExtensions->glCreateShaderObjectARB);
 	else
 	{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
@@ -401,10 +416,10 @@ bool CRaptorInstance::glvkInitSharedResources(void)
 													   __FILE__, __LINE__, args);
 #endif
 	}
-	if (Raptor::glIsExtensionSupported(GL_ARB_FRAGMENT_SHADER_EXTENSION_NAME))
-#if defined(GL_ARB_fragment_shader)
-		m_bFragmentShaderReady = (NULL != pExtensions->glCreateShaderObjectARB);
 #endif
+#if defined(GL_ARB_fragment_shader)
+	if (Raptor::glIsExtensionSupported(GL_ARB_FRAGMENT_SHADER_EXTENSION_NAME))
+		m_bFragmentShaderReady = (NULL != pExtensions->glCreateShaderObjectARB);
 	else
 	{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
@@ -416,12 +431,11 @@ bool CRaptorInstance::glvkInitSharedResources(void)
 													   __FILE__, __LINE__, args);
 #endif
 	}
+#endif
 
 #if defined(GL_VERSION_2_0)
 	if (NULL != pExtensions->glCreateShader)
-	{
 		m_bVertexShaderReady = m_bGeometryShaderReady = m_bFragmentShaderReady = true;
-	}
 	else
 	{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
@@ -608,6 +622,29 @@ bool CRaptorInstance::glvkInitSharedResources(void)
 		m_pBoxBinder->useVertexArrayObjects();
 	}
 
+	if (NULL == m_pQuadAttributes)
+	{
+		CGeometryAllocator *pAllocator = CGeometryAllocator::GetInstance();
+		bool lock = pAllocator->isMemoryLocked();
+		if (lock)
+			pAllocator->glvkLockMemory(false);
+
+		size_t s = sizeof(CTextureQuad::Attributes) / sizeof(float);
+		m_pQuadAttributes = (CTextureQuad::Attributes*)(pAllocator->allocateVertices(max_texture_quad * s));
+
+		if (lock)
+			pAllocator->glvkLockMemory(true);
+	}
+
+	if (NULL == m_pQuadBinder)
+	{
+		m_pQuadBinder = new CResourceAllocator::CResourceBinder();
+		m_pQuadBinder->setArray(CProgramParameters::POSITION, &m_pQuadAttributes[0].m_center, 4, sizeof(CTextureQuad::Attributes));
+		m_pQuadBinder->setArray(CProgramParameters::PRIMARY_COLOR, &m_pQuadAttributes[0].m_color, 4, sizeof(CTextureQuad::Attributes));
+		m_pQuadBinder->setArray(CProgramParameters::ADDITIONAL_PARAM1, &m_pQuadAttributes[0].m_sizes, 4, sizeof(CTextureQuad::Attributes));
+		m_pQuadBinder->useVertexArrayObjects();
+	}
+
 	if (NULL == m_displayBinder)
 	{
 		m_displayBinder = new CResourceAllocator::CResourceBinder();
@@ -688,9 +725,22 @@ bool CRaptorInstance::glvkReleaseSharedRsources()
 		m_pBoxBinder = NULL;
 	}
 
+	if (NULL != m_pQuadBinder)
+	{
+		delete m_pQuadBinder;
+		m_pQuadBinder = NULL;
+	}
+
+	if (NULL != m_pQuadAttributes)
+	{
+		CGeometryAllocator *pAllocator = CGeometryAllocator::GetInstance();
+		pAllocator->releaseVertices((float*)m_pQuadAttributes);
+		m_pQuadAttributes = NULL;
+	}
+
 	if (NULL != m_pNullShader)
 	{
-		m_pNullShader = new CShader("NULL_SHADER");
+		m_pNullShader->releaseReference();
 		m_pNullShader = NULL;
 	}
 
@@ -724,4 +774,52 @@ void CRaptorInstance::setDefaultConfig(const CRaptorDisplayConfig& pcs)
 	//	validates window position to be fully visible
 	//	if window not fully visible, hardware very slow...
 	CContextManager::GetInstance()->validateConfig(defaultConfig);
+}
+
+uint64_t CRaptorInstance::glvkReserveBoxIndex()
+{
+	uint64_t bbox = UINT64_MAX;
+	CGeometryAllocator *pAllocator = CGeometryAllocator::GetInstance();
+
+	// grow array if maxboxes reached.
+	if (maxboxes <= numboxes)
+	{
+		bool lock = pAllocator->isMemoryLocked();
+		if (lock)
+			pAllocator->glvkLockMemory(false);
+
+		if (0 == maxboxes)
+			maxboxes = 1024;
+		else
+			maxboxes = maxboxes * 2;
+
+		// size is 2 coordinates * 4 floats per box, * maxboxes
+		size_t sz = 2 * GL_COORD_VERTEX_STRIDE;
+		size_t s = maxboxes * sz;
+		GL_COORD_VERTEX *new_boxes = (GL_COORD_VERTEX*)(pAllocator->allocateVertices(s));
+
+		if (NULL == boxes)
+		{
+			boxes = new_boxes;
+			numboxes = 0;
+		}
+		else
+		{
+			// Copy existing data, on half buffer size.
+			pAllocator->glvkCopyPointer((float*)new_boxes, (float*)boxes, s / 2);
+			pAllocator->releaseVertices((float*)boxes);
+			boxes = new_boxes;
+		}
+
+		if (lock)
+			pAllocator->glvkLockMemory(true);
+
+		m_pBoxBinder->setArray(CProgramParameters::POSITION, boxes);
+	}
+
+	// bbox offset.
+	bbox = numboxes;
+	numboxes += 2;
+
+	return bbox;
 }

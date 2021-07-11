@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
-/*  Copyright 1998-2019 by                                                 */
+/*  Copyright 1998-2021 by                                                 */
 /*  Fabrice FERRAND.                                                       */
 /*                                                                         */
 /*  This file is part of the Raptor project, and may only be used,         */
@@ -57,9 +57,8 @@ public:
 	//! Destructor.
 	virtual ~IRenderingProperties();
 
-    //! Returns the current rendering properties ( or at least the last rendered )
-	static IRenderingProperties *GetCurrentProperties(void);
-
+	//!	Read all properties from the GL
+	virtual void glGrabProperties(void) = 0;
 
 	//! Applies all the properties.
     //! The current property is made current ( provided it is not already current )
@@ -78,10 +77,6 @@ public:
 #define disableTexturing setTexturing(IRenderingProperties::DISABLE)
 #define ignoreTexturing setTexturing(IRenderingProperties::IGNORE_PROPERTY)
 
-    //! Returns the current global texturing state which should have been set by a previous rendering property.
-    virtual PROPERTY_SETTING getCurrentTexturing(void) const = 0;
-
-
 	//! Enables / Disables rendering with lights.
     //! Default setting for lighting is IGNORE_PROPERTY.
 	IRenderingProperties& setLighting(PROPERTY_SETTING lighting) { m_bLighting = lighting; return *this;  };
@@ -89,9 +84,6 @@ public:
 #define enableLighting setLighting(IRenderingProperties::ENABLE)
 #define disableLighting setLighting(IRenderingProperties::DISABLE)
 #define ignoreLighting setLighting(IRenderingProperties::IGNORE_PROPERTY)
-    //! Returns the current global lighting state which should have been set by a previous rendering property.
-    virtual PROPERTY_SETTING getCurrentLighting(void) const = 0;
-
 
 	//! Enables / Disables wire frame rendering.
     //! Default setting for wireframe is IGNORE_PROPERTY.
@@ -139,16 +131,16 @@ public:
 	IRenderingProperties& setMultisampling(PROPERTY_SETTING multisample) { m_bMultisample = multisample; return *this; };
     PROPERTY_SETTING getMultisampling(void) const { return m_bMultisample; };
 #define enableMultisampling setMultisampling(IRenderingProperties::ENABLE)
-#define disableSMultisampling setMultisampling(IRenderingProperties::DISABLE)
-#define ignoreSMultisampling setMultisampling(IRenderingProperties::IGNORE_PROPERTY)
+#define disableMultisampling setMultisampling(IRenderingProperties::DISABLE)
+#define ignoreMultisampling setMultisampling(IRenderingProperties::IGNORE_PROPERTY)
 
 	//! Enables / Disables color clamping.
     //! Default setting for color clamping is IGNORE_PROPERTY.
 	IRenderingProperties& setFloatClamping(PROPERTY_SETTING clamping) { m_bClampFloats = clamping; return *this; };
     PROPERTY_SETTING getFloatClamping(void) const { return m_bClampFloats; };
 #define enableFloatClamping setFloatClamping(IRenderingProperties::ENABLE)
-#define disableSFloatClamping setFloatClamping(IRenderingProperties::DISABLE)
-#define ignoreSFloatClamping setFloatClamping(IRenderingProperties::IGNORE_PROPERTY)
+#define disableFloatClamping setFloatClamping(IRenderingProperties::DISABLE)
+#define ignoreFloatClamping setFloatClamping(IRenderingProperties::IGNORE_PROPERTY)
 
     //! Defines the buffers to clear for rendering
     //! ( the value is a combination window buffer configuration: @see CGLTypes.h )
@@ -177,12 +169,9 @@ protected:
     PROPERTY_SETTING	m_bStencilTest;
 	PROPERTY_SETTING	m_bMultisample;
 	PROPERTY_SETTING	m_bClampFloats;
-	unsigned int		m_clear;
+	uint32_t			m_clear;
 
-
-	IRenderingProperties			*m_pPrevious;
-    
-	static IRenderingProperties		*m_pCurrent;
+	IRenderingProperties	*m_pPrevious;
 };
 
 RAPTOR_NAMESPACE_END

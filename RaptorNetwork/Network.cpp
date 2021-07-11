@@ -219,6 +219,9 @@ std::string Network::networkErrors(const std::string& extmsg)
 
 unsigned int Network::sockNameToAddr(const std::string& address)
 {
+	/*
+	// Old code for VC6 without inet functions.
+
     std::string::size_type pos = 0;
     std::string::size_type pos2 = 0;
 
@@ -237,6 +240,21 @@ unsigned int Network::sockNameToAddr(const std::string& address)
 	//unsigned int ip = (ip0 << 24) + (ip1 << 16) + (ip2 << 8) + ip3;
 	unsigned int ip = (ip3 << 24) + (ip2 << 16) + (ip1 << 8) + ip0;
 	return ip;
+	*/
+	if (0 == address.length())
+		return 0;
+
+	unsigned int ip = inet_addr(address.c_str());
+	return ip;
+}
+
+std::string Network::AddrTosockName(unsigned int address)
+{
+	in_addr in;
+	in.S_un.S_addr = address;
+
+	std::string addr = inet_ntoa(in);
+	return addr;
 }
 
 unsigned long Network::reflect(unsigned long ref, unsigned char ch) 

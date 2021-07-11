@@ -1,6 +1,20 @@
-// RaptorConfig.h: interface for the CRaptorConfig class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  RaptorConfig.h                                                         */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2021 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
 
 #if !defined(AFX_RAPTORCONFIG_H__29B753B8_17DE_44DF_A4D2_9D19C5AC53D5__INCLUDED_)
 #define AFX_RAPTORCONFIG_H__29B753B8_17DE_44DF_A4D2_9D19C5AC53D5__INCLUDED_
@@ -44,20 +58,20 @@ public:
 
     //!
 	//!	Reserve memory space at global level for geometries.
-	//!	( by default, only 1000 polygons and 4000 vertices are reserved when Raptor is initialized )
+	//!	( by default, only 1000 polygons and 16000 vertices are reserved when Raptor is initialized )
 	//!
     size_t	m_uiPolygons;
     size_t	m_uiVertices;
 
     //!
     //!	Reserve memory space at global level for pixel transfer
-    //!	( texture loads, buffer reads, ... by default initialized to 16384 texels)
+    //!	( texture loads, buffer reads, ... by default initialized to 1 Mega texels)
     //!
     size_t	m_uiTexels;
 
 	//!
 	//!	Reserve memory space at global level for uniform buffers
-	//!	( by default initialized to 1024 bytes)
+	//!	( by default initialized to 128 Kbytes)
 	//!
 	size_t	m_uiUniforms;
 
@@ -68,10 +82,25 @@ public:
 	size_t	m_uiGarbageSize;
 
     //!
-    //! This factor multiplies the size of the filtered displays to obtain more quality, allowing FSAA and other features.
+    //! This factor multiplies the size of the filtered displays to obtain more quality, 
+	//!	allowing FSAA and other features.
+	//!	@param factor: the filter size factor.
     //!
-    bool setFilterSizeFactor(float factor);
+    void setFilterSizeFactor(float factor);
+
+	//!
+	//!	Return the filter size factor.
+	//!	@return the silter size factor.
     float getFilterSizeFactor(void) const { return m_fSizeFactor; };
+
+	//!
+	//!	This method verifies that all values enable Raptor to 
+	//!	initialize without errors. Default values are applied 
+	//!	when incorrect fields are encountered.
+	//!	@return true is all values are valid.
+	//!
+	bool checkConfig(void);
+
 
 private:
     float   m_fSizeFactor;

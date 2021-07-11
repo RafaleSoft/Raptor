@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
-/*  Copyright 1998-2019 by                                                 */
+/*  Copyright 1998-2021 by                                                 */
 /*  Fabrice FERRAND.                                                       */
 /*                                                                         */
 /*  This file is part of the Raptor project, and may only be used,         */
@@ -100,11 +100,12 @@ public:
 	//!	@param fontPath : the full path to the font file to use
 	//! @param useVectors : if true, the vectorized form of the font is used.
 	//!	Otherwise, the 2D bitmap font is used.
-	void glInit(const std::string &fontPath = "",bool useVectors = false);
+	//! @return false if error creating console fonts.
+	bool glInit(const std::string &fontPath = "",bool useVectors = false);
 
     //! This methods activates the console ( ready for input processing
     //!  and rendering ) if parameter is 'true', or deactivate it if parameter is false.
-    //! It then returns the previous state of the console.
+    //! @return the previous state of the console.
     bool activateConsole(bool activate);
 
     //! Returns activate state of the console

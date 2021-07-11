@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
-/*  Copyright 1998-2019 by                                                 */
+/*  Copyright 1998-2021 by                                                 */
 /*  Fabrice FERRAND.                                                       */
 /*                                                                         */
 /*  This file is part of the Raptor project, and may only be used,         */
@@ -98,6 +98,9 @@ private:
 
 typedef RAPTOR_HANDLE*	LP_RAPTOR_HANDLE;
 
+typedef uint32_t shader_bool;
+#define shader_false 0;
+#define shader_true 1;
 
 //! Classes of handles are in 2 categories : Raptor handles and client handles.
 #define	RAPTOR_HANDLE_CLASS		0x00000000

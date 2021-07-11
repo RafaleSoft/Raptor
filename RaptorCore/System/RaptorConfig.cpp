@@ -1,6 +1,19 @@
-// RaptorConfig.cpp: implementation of the CRaptorConfig class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  RaptorConfig.cpp                                                       */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2021 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
 
 #include "Subsys/CodeGeneration.h"
 
@@ -13,6 +26,11 @@
 
 RAPTOR_NAMESPACE
 
+static const size_t DEFAULT_POLYGONS = 1024;
+static const size_t DEFAULT_VERTICES = 16 * 1024;
+static const size_t DEFAULT_TEXELS = 1024 * 1024;
+static const size_t DEFAULT_UNIFORMS = 128 * 1024;
+static const size_t DEFAULT_GARBAGE = 1024 * 1024;
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -20,13 +38,13 @@ RAPTOR_NAMESPACE
 
 CRaptorConfig::CRaptorConfig():
     m_bRelocation(false),
-    m_uiPolygons(1000),
-    m_uiVertices(4000),
+    m_uiPolygons(DEFAULT_POLYGONS),
+    m_uiVertices(DEFAULT_VERTICES),
     m_fSizeFactor(1.0f),
     m_bAutoDestroy(true),
-    m_uiTexels(65536),
-	m_uiUniforms(1024),
-	m_uiGarbageSize(1024*1024),
+    m_uiTexels(DEFAULT_TEXELS),
+	m_uiUniforms(DEFAULT_UNIFORMS),
+	m_uiGarbageSize(DEFAULT_GARBAGE),
 	m_logFile("Raptor.log"),
 	m_bCompute(false),
 	m_bVulkan(false)
@@ -39,7 +57,7 @@ CRaptorConfig::~CRaptorConfig()
 
 }
 
-bool CRaptorConfig::setFilterSizeFactor(float factor)
+void CRaptorConfig::setFilterSizeFactor(float factor)
 {
 #ifdef GL_ARB_texture_non_power_of_two
     m_fSizeFactor = factor;
@@ -48,7 +66,37 @@ bool CRaptorConfig::setFilterSizeFactor(float factor)
     if (size >= 1)
         m_fSizeFactor = pow(2,size);
 #endif
-
-    return true;
 }
 
+bool CRaptorConfig::checkConfig(void)
+{
+	bool check = true;
+
+	if (m_uiPolygons < DEFAULT_POLYGONS)
+	{
+		m_uiPolygons = DEFAULT_POLYGONS;
+		check = false;
+	}
+	if (m_uiVertices < DEFAULT_VERTICES)
+	{
+		m_uiVertices = DEFAULT_VERTICES;
+		check = false;
+	}
+	if (m_uiTexels < DEFAULT_TEXELS)
+	{
+		m_uiTexels = DEFAULT_TEXELS;
+		check = false;
+	}
+	if (m_uiUniforms < DEFAULT_UNIFORMS)
+	{
+		m_uiUniforms = DEFAULT_UNIFORMS;
+		check = false;
+	}
+	if (m_uiGarbageSize < DEFAULT_GARBAGE)
+	{
+		m_uiGarbageSize = DEFAULT_GARBAGE;
+		check = false;
+	}
+
+	return check;
+}

@@ -1,6 +1,20 @@
-// Object3DInstanceSet.cpp: implementation of the CObject3DInstanceSet class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  Object3DInstanceSet.cpp                                                */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2021 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
 #include "Subsys/CodeGeneration.h"
 
 #if !defined(AFX_OBJECT3DINSTANCESET_H__4552BADA_3CE7_40A5_9FE3_C10D58360193__INCLUDED_)
@@ -71,6 +85,14 @@ void CObject3DInstanceSet::Instantiate(CObject3D * const instance,const GL_MATRI
 	}
 }
 */
+
+
+void CObject3DInstanceSet::getShaders(std::vector<CShader*> &shaders)
+{
+	vector<ObjectInstance>::iterator pos = m_pObjects.begin();
+	while (pos != m_pObjects.end())
+		(*pos++).pObject->getShaders(shaders);
+}
 
 void CObject3DInstanceSet::glRender(void)
 {

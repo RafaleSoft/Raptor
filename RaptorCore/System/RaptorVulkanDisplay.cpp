@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
-/*  Copyright 1998-2019 by                                                 */
+/*  Copyright 1998-2021 by                                                 */
 /*  Fabrice FERRAND.                                                       */
 /*                                                                         */
 /*  This file is part of the Raptor project, and may only be used,         */
@@ -82,22 +82,28 @@ public:
 	VulkanRP() {};
 	virtual void glPushProperties(void)
 	{
-		if ((m_pCurrent != this) && (m_pPrevious == NULL))
+		CRaptorInstance& instance = CRaptorInstance::GetInstance();
+
+		if ((instance.getCurrentRenderingProperties() != this) && (m_pPrevious == NULL))
 		{
-			m_pPrevious = m_pCurrent;
-			m_pCurrent = this;
+			m_pPrevious = instance.getCurrentRenderingProperties();
+			instance.setCurrentRenderingProperties(this);
 		}
 	};
 	virtual void glPopProperties(void)
 	{
-		if (m_pCurrent == this)
+		CRaptorInstance& instance = CRaptorInstance::GetInstance();
+
+		if (instance.getCurrentRenderingProperties() == this)
 		{
-			m_pCurrent = m_pPrevious;
+			instance.setCurrentRenderingProperties(m_pPrevious);
 			m_pPrevious = NULL;
 		}
 	};
-	virtual PROPERTY_SETTING getCurrentTexturing(void) const { return IGNORE_PROPERTY; };
-	virtual PROPERTY_SETTING getCurrentLighting(void) const { return IGNORE_PROPERTY; };
+	virtual void glGrabProperties(void)
+	{
+
+	}
 };
 
 RAPTOR_NAMESPACE_END
@@ -369,7 +375,6 @@ void CRaptorVulkanDisplay::glvkAllocateResources(void)
     //! As the newly created context is made current, we must keep the
     //! associated allocator as current, otherwise it will not be used until
     //! a UnBind/Bind sequence is performed, which is unnecessary.
-    //CGeometryAllocator::SetCurrentInstance(oldAllocator);
     if ((m_pGOldAllocator != m_pGAllocator) && (m_pGOldAllocator != NULL))
         m_pGOldAllocator->glvkLockMemory(false);
 	if ((m_pTOldAllocator != m_pTAllocator) && (m_pTOldAllocator != NULL))

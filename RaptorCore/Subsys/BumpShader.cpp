@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
-/*  Copyright 1998-2019 by                                                 */
+/*  Copyright 1998-2021 by                                                 */
 /*  Fabrice FERRAND.                                                       */
 /*                                                                         */
 /*  This file is part of the Raptor project, and may only be used,         */
@@ -45,6 +45,9 @@
 #if !defined(AFX_LIGHT_H__AA8BABD6_059A_4939_A4B6_A0A036E12E1E__INCLUDED_)
 	#include "GLHierarchy/Light.h"
 #endif
+#if !defined(AFX_SHADERBLOC_H__56C73DCA_292E_4722_8881_82DC1BF53EA5__INCLUDED_)
+	#include "GLHierarchy/ShaderBloc.h"
+#endif
 
 
 RAPTOR_NAMESPACE
@@ -77,28 +80,6 @@ CBumpShader::~CBumpShader(void)
 {
 }
 
-typedef struct LightProduct_t
-{
-	GL_COORD_VERTEX position;
-	GL_COORD_VERTEX attenuation;
-	CColor::RGBA	ambient;
-	CColor::RGBA	diffuse;
-	CColor::RGBA	specular;
-	float			shininess;
-	float			reserved[3];
-	bool			enable;
-	float			reserved2[3];
-} R_LightProduct;
-
-typedef struct LightProducts_t
-{
-	R_LightProduct	lights[5];
-	CColor::RGBA	scene_ambient;
-} R_LightProducts;
-
-static R_LightProducts products;
-
-
 void CBumpShader::glInit(void)
 {
 	COpenGLShaderStage *stage = glGetOpenGLShader("BUMP_SHADER_PROGRAM");
@@ -109,22 +90,32 @@ void CBumpShader::glInit(void)
 	CProgramParameters params;
 	params.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);
 	params.addParameter("normalMap", CTextureUnitSetup::IMAGE_UNIT_1);
-	GL_COORD_VERTEX V;
-	params.addParameter("eyePos", V);
 
-#if defined(GL_ARB_uniform_buffer_object)
-	CProgramParameters::CParameter<R_LightProducts> material("LightProducts", products);
-	material.locationType = GL_UNIFORM_BLOCK_BINDING_ARB;
-	params.addParameter(material);
-#endif
+	//!
+	//! For more efficient computation with multiple lights,
+	//!	bump shader is computed in eye space, then no need to pass the eyePos here (in object space).
+	//!
+	//GL_COORD_VERTEX V;
+	//params.addParameter("eyePos", V);
 
 	stage->setProgramParameters(params);
-
 	stage->glCompileShader();
+
+	CShaderBloc *bloc = glGetShaderBloc("LightProducts");
+	if (NULL == bloc)
+	{
+		RAPTOR_ERROR(CShader::CShaderClassID::GetClassId(),
+					"Bump Shader Object cannot find uniform bloc \"LightProducts\", compiled shader source is incorrect.");
+	}
 }
 
 void CBumpShader::glRender(void)
 {
+	//!
+	//! For more efficient computation with multiple lights,
+	//!	bump shader is computed in eye space, then no need to pass the eyePos here (in object space).
+	//!
+	/*
 	C3DEngineMatrix T;
 	glGetTransposeFloatv(GL_MODELVIEW_MATRIX, T);
 	GL_COORD_VERTEX V;
@@ -136,38 +127,34 @@ void CBumpShader::glRender(void)
 	COpenGLShaderStage *stage = glGetOpenGLShader();
 	CProgramParameters params;
 	params.addParameter("eyePos", V);
-
-	int numl = 0;
-	CMaterial *M = getMaterial();
-	CLight **olights = CLightAttributes::getOrderedLights();
-	for (int i = 0; i < CLightAttributes::MAX_LIGHTS; i++)
-	{
-		CLight *pLight = olights[i];
-		products.lights[i].enable = false;
-
-		if (NULL != pLight)
-		{
-			R_LightProduct& lp = products.lights[numl++];
-			lp.ambient = M->getAmbient() * pLight->getAmbient();
-			lp.diffuse = M->getDiffuse() * pLight->getDiffuse();
-			lp.specular = M->getSpecular() * pLight->getSpecular();
-			lp.shininess = M->getShininess();
-			lp.enable = true;
-			const CGenericVector<float, 4> &p = pLight->getLightViewPosition();
-			lp.position = GL_COORD_VERTEX(p.X(), p.Y(), p.Z(), p.H());
-			lp.attenuation = pLight->getSpotParams();
-		}
-	}
-	products.scene_ambient = CShader::getAmbient();
-
-#if defined(GL_ARB_uniform_buffer_object)
-	CProgramParameters::CParameter<R_LightProducts> material("LightProducts", products);
-	material.locationType = GL_UNIFORM_BLOCK_BINDING_ARB;
-	params.addParameter(material);
-#endif
-
-
 	stage->updateProgramParameters(params);
+	*/
+	
+	CShaderBloc *pBloc = glGetShaderBloc();
+	if (!pBloc->isExternal())
+	{
+		CLight::R_LightProducts products;
+		CMaterial *M = getMaterial();
+		CLight **olights = CLightAttributes::getOrderedLights();
+
+		for (int i = 0, numl = 0; (i < CLightAttributes::MAX_LIGHTS) && (numl < 5); i++)
+		{
+			products.lights[i].enable = shader_false;
+			CLight *pLight = olights[i];
+
+			if (NULL != pLight)
+			{
+				CLight::R_LightProduct& lp = products.lights[numl++];
+				lp = pLight->computeLightProduct(*M);
+			}
+		}
+		products.scene_ambient = CShader::getAmbient();
+		products.shininess = M->getShininess();
+
+		pBloc->glvkUpdateBloc((uint8_t*)&products);
+	}
 
 	CShader::glRender();
+
+	CATCH_GL_ERROR
 }

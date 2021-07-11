@@ -28,6 +28,12 @@ public:
 	C3DEngineMatrix(const GL_MATRIX& M);
 	virtual ~C3DEngineMatrix(void);
 
+	C3DEngineMatrix& operator=(const GL_MATRIX& M)
+	{
+		CGenericMatrix<float>::operator=(M); 
+		return *this;
+	};
+
     //! This method computes the inverse of a matrix that is built in the same way 
     //! as OpenGL transforms : a 4x4 matrix holding a 3x3 rotation, a translation vector
     //! and an homogenous vector. This method cannot be used to inverse any kind of matrix !

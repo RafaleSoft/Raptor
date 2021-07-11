@@ -296,8 +296,8 @@ bool CRaysWorkUnit::BuildCamera(MSGSTRUCT& msg, unsigned char raw_data[])
 	raytracer_data->updateCamera(config);
 
 	CTexture *txt = NULL;
-	std::string tname = config.envtexname;
-	std::cout << "Env texture: " << config.envtexname << std::endl;
+	std::string tname = ""; // config.envtexname;
+	std::cout << "Env texture: " << tname << std::endl;
 	if (!tname.empty())
 		txt = raytracer_data->getTexture(tname);
 	CEnvironment::GetInstance()->SetTexture(txt);

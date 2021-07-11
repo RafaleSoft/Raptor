@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
-/*  Copyright 1998-2019 by                                                 */
+/*  Copyright 1998-2021 by                                                 */
 /*  Fabrice FERRAND.                                                       */
 /*                                                                         */
 /*  This file is part of the Raptor project, and may only be used,         */
@@ -246,18 +246,21 @@ void CRaysDeamon::dmnStatus(request &rq)
 {
 	std::cout << "Rays2 Deamon status returned" << std::endl;
 	unsigned int nbProcs = 0;
-	unsigned int nbProcsAvailable = 0;
+	unsigned int nbWUAvailable = 0;
 	float jobDone = 0;
+
 	for (unsigned int i = 0; i < m_WorkUnits.size(); i++)
 	{
 		const CRaysDeamon::WORKUNITSTRUCT &w = m_WorkUnits[i];
 		nbProcs += w.nbProcs;
-		nbProcsAvailable += w.nbProcsAvailable;
+		if (!w.active)
+			nbWUAvailable += 1;
 		jobDone += w.jobDone;
 	}
+
 	rq.msg->msg_id = DMN_STATUS;
 	rq.msg->msg_data[0] = nbProcs;
-	rq.msg->msg_data[1] = nbProcsAvailable;
+	rq.msg->msg_data[1] = nbWUAvailable;
 	rq.msg->msg_data[2] = (RAYS_MSG_ID)(floor(jobDone));
 	rq.msg->msg_data[3] = 0;
 	rq.msg->msg_data[4] = this->getAddr();
@@ -267,81 +270,112 @@ void CRaysDeamon::dmnStatus(request &rq)
 	m_replies.push_back(rq);
 }
 
+
 void CRaysDeamon::dispatchJob(request &rq)
 {
 	STARTUPINFO			si;
 	PROCESS_INFORMATION	pi;
 	stringstream		WUID;
-	char				workUnit[MAX_PATH];
 
 	memset(&si, 0, sizeof(STARTUPINFO));
 	memset(&pi, 0, sizeof(PROCESS_INFORMATION));
 	si.cb = sizeof(STARTUPINFO);
 	si.lpTitle = "Rays 2 Workunit";
 
-	int		workUnitID = rq.msg->msg_data[0];
-	int		serverPort = rq.msg->msg_data[3];
-	DWORD	nbProcs = rq.msg->msg_data[1];
-	DWORD	serverIP = rq.msg->msg_data[2];
-	DWORD	priority = rq.msg->msg_data[4];
-	DWORD	creationFlag = CREATE_SUSPENDED | CREATE_NEW_PROCESS_GROUP | CREATE_NEW_CONSOLE;
+	size_t wu = m_WorkUnits.size();
+	for (size_t i = 0; i < m_WorkUnits.size(); i++)
+	{
+		if (!m_WorkUnits[i].active)
+		{
+			wu = i;
+			break;
+		}
+	}
 
-	WUID << "-i " << workUnitID << " ";
-	WUID << "-p " << serverPort << " ";
-	WUID << "-a " << serverIP << " ";
+	if (m_WorkUnits.size() == wu)
+	{
+		rq.msg->msg_id = DMN_DISPATCHJOB;
+		rq.msg->msg_data[1] = 0;
+		rq.msg->msg_data[2] = 0;
+		rq.msg->msg_data[3] = 0;
+		rq.msg->msg_data[4] = 0;
+		rq.reply = true;
+	}
+	else
+	{
+		CRaysDeamon::WORKUNITSTRUCT &w = m_WorkUnits[wu];
 
-	// creating work unit
-	unsigned char* raw_data = (unsigned char*)(rq.msg) + sizeof(MSGSTRUCT);
-	if (0 == CreateProcess((const char*)raw_data,	// pointer to name of executable module
-							const_cast<char*>(WUID.str().c_str()),		// pointer to command line string
-							NULL,		// process security attributes
-							NULL,		// thread security attributes
-							TRUE,		// handle inheritance flag
-							creationFlag | priority,// creation flags
-							NULL,		// pointer to new environment block
-							NULL,		// pointer to current directory name
-							&si,		// pointer to STARTUPINFO
-							&pi))		// pointer to PROCESS_INFORMATION
-							cout << "Work Unit creation (CreateProcess) Failed !!!\nCheck Work Units registration" << endl;
+		int		workUnitID = rq.msg->msg_data[0];
+		int		serverPort = rq.msg->msg_data[3];
+		int		jobID = rq.msg->msg_data[1];
+		DWORD	serverIP = rq.msg->msg_data[2];
+		DWORD	priority = rq.msg->msg_data[4];
+		DWORD	creationFlag = CREATE_SUSPENDED | CREATE_NEW_PROCESS_GROUP | CREATE_NEW_CONSOLE;
 
+		WUID << "-i " << workUnitID << " ";
+		WUID << "-j " << jobID << " ";
+		WUID << "-p " << serverPort << " ";
+		WUID << "-a " << Network::AddrTosockName(serverIP) << " ";
 
-	//	Will be used when high performance responsiveness will be required
+		// creating work unit
+		if (0 == CreateProcess(	w.path.c_str(),	// pointer to name of executable module
+								const_cast<char*>(WUID.str().c_str()),		// pointer to command line string
+								NULL,		// process security attributes
+								NULL,		// thread security attributes
+								TRUE,		// handle inheritance flag
+								creationFlag | priority,// creation flags
+								NULL,		// pointer to new environment block
+								NULL,		// pointer to current directory name
+								&si,		// pointer to STARTUPINFO
+								&pi))		// pointer to PROCESS_INFORMATION
+		{
+			cout << "Work Unit creation (CreateProcess) Failed !!!\nCheck Work Units registration" << endl;
 
-	// dispatching work units on available processors
-	//if (lpWUReg->nbProcs>1)
-	//{
-	//	CString tmpStr;
-	//	if (FALSE == SetProcessAffinityMask(pi.hProcess,	// handle to process
-	//									(DWORD)(1<<(i%nbProcs)))))			// process affinity mask
-	//	{
-	//		tmpStr = "Failed to set process affinity";
-	//		WriteMessage(IDS_SERVER_STRING,tmpStr);
-	//	}
-	//}
+			rq.msg->msg_id = DMN_DISPATCHJOB;
+			rq.msg->msg_data[1] = 0;
+			rq.msg->msg_data[2] = 0;
+			rq.msg->msg_data[3] = 0;
+			rq.msg->msg_data[4] = 0;
+			rq.reply = true;
+		}
+		else
+		{
+			//	Will be used when high performance responsiveness will be required
 
-	//rq.msg->msg_header = MSG_START;
-	rq.msg->msg_id = DMN_DISPATCHJOB;
-	//rq.msg->msg_tail = MSG_END;
-	//rq.msg->msg_size = 0;
-	rq.msg->msg_data[0] = workUnitID;
-	rq.msg->msg_data[1] = (DWORD)(pi.hProcess);	// TODO: will not work in 64 bits
-	rq.msg->msg_data[2] = (DWORD)(pi.hThread);
-	rq.msg->msg_data[3] = pi.dwProcessId;
-	rq.msg->msg_data[4] = pi.dwThreadId;
-	rq.reply = true;
+			// dispatching work units on available processors
+			//if (lpWUReg->nbProcs>1)
+			//{
+			//	CString tmpStr;
+			//	if (FALSE == SetProcessAffinityMask(pi.hProcess,	// handle to process
+			//									(DWORD)(1<<(i%nbProcs)))))			// process affinity mask
+			//	{
+			//		tmpStr = "Failed to set process affinity";
+			//		WriteMessage(IDS_SERVER_STRING,tmpStr);
+			//	}
+			//}
+
+			w.active = true;
+
+			rq.msg->msg_id = DMN_DISPATCHJOB;
+			rq.msg->msg_data[0] = workUnitID;
+			rq.msg->msg_data[1] = (DWORD)(pi.hProcess);	// TODO: will not work in 64 bits
+			rq.msg->msg_data[2] = (DWORD)(pi.hThread);
+			rq.msg->msg_data[3] = pi.dwProcessId;
+			rq.msg->msg_data[4] = pi.dwThreadId;
+			rq.reply = true;
+
+			// now the job starts
+			::ResumeThread(pi.hThread);
+
+			stringstream pid;
+			pid << "Creating new WorkUnit: pid: " << pi.dwProcessId;
+			pid << ", tid: " << pi.dwThreadId;
+			std::cout << pid.str() << std::endl;
+		}
+	}
 
 	CRaptorLock lock(m_mutex);
 	m_replies.push_back(rq);
-
-	// now the job starts
-	::ResumeThread(pi.hThread);
-
-	stringstream pid;
-	pid << "Creating new WorkUnit: pid: ";
-	pid << pi.dwProcessId;
-	pid << ", tid: ";
-	pid << pi.dwThreadId;
-	std::cout << pid.str() << std::endl;
 }
 
 void CRaysDeamon::objPlugin(request &rq)
@@ -422,7 +456,6 @@ bool CRaysDeamon::start(const CCmdLineParser& cmdline )
 
 			wu.path = wus[i];
 			wu.nbProcs = cpu;
-			wu.nbProcsAvailable = cpu;
 			wu.connection = NULL;
 			wu.jobDone = 0;
 			wu.active = false;

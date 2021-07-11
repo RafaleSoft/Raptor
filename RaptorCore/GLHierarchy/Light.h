@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
-/*  Copyright 1998-2019 by                                                 */
+/*  Copyright 1998-2021 by                                                 */
 /*  Fabrice FERRAND.                                                       */
 /*                                                                         */
 /*  This file is part of the Raptor project, and may only be used,         */
@@ -42,6 +42,26 @@ class RAPTOR_API CLight : public CMaterial
 public:
 	CLight(const std::string& name = "GL_LIGHT");
 	virtual ~CLight();
+
+	typedef struct LightProduct_t
+	{
+		GL_COORD_VERTEX position;
+		GL_COORD_VERTEX attenuation;
+		CColor::RGBA	ambient;
+		CColor::RGBA	diffuse;
+		CColor::RGBA	specular;
+		shader_bool		enable;
+		shader_bool		reserved2[3];	// align enable on a vec4
+	} R_LightProduct;
+
+	typedef struct LightProducts_t
+	{
+		R_LightProduct	lights[5];
+		CColor::RGBA	scene_ambient;
+		float			shininess;
+		float			reserved[3];	// align shininess on a vec4
+		float			reserved3[64];	// align structure on a multiple of granularity.
+	} R_LightProducts;
 
 
     //!
@@ -150,6 +170,11 @@ public:
     //! ( it is called by C3DScene ). 
     //! The returned value is the visibility percentage in O.O .. 1.0
     float getLightVisibility(void) const;
+
+	//!	Returns the lighting material attributes.
+	//! @param material: the material to which this light is applied.
+	//! @return the light products attributes.
+	CLight::R_LightProduct computeLightProduct(const CMaterial &material);
 
 	//!	Implements CPersistence
 	DECLARE_IO

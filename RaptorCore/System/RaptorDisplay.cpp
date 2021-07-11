@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
-/*  Copyright 1998-2019 by                                                 */
+/*  Copyright 1998-2021 by                                                 */
 /*  Fabrice FERRAND.                                                       */
 /*                                                                         */
 /*  This file is part of the Raptor project, and may only be used,         */
@@ -102,6 +102,10 @@ CRaptorDisplay::CRaptorDisplay(const CPersistence::CPersistenceClassID& id,const
 	m_pProperties = new COpenGLRenderingProperties();
     m_pProperties->clear(CGL_RGBA|CGL_DEPTH);
 	m_pProperties->setMultisampling(IRenderingProperties::DISABLE);
+	m_pProperties->setCullFace(IRenderingProperties::ENABLE);
+	m_pProperties->setDepthTest(IRenderingProperties::ENABLE);
+	m_pProperties->setTexturing(IRenderingProperties::DISABLE);
+	m_pProperties->setLighting(IRenderingProperties::DISABLE);
 }
 
 CRaptorDisplay::~CRaptorDisplay()
@@ -263,6 +267,8 @@ void CRaptorDisplay::setViewPoint(IViewPoint *viewPoint)
 
 bool CRaptorDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
 {
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+
 	if (device.handle() != 0)
 	{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
@@ -274,8 +280,7 @@ bool CRaptorDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
 		}
 #endif
 		m_pCurrentDisplay = this;
-
-		CRaptorInstance &instance = CRaptorInstance::GetInstance();
+		
         instance.iRenderedObjects = 0;
 		instance.iRenderedTriangles = 0;
 	}
@@ -292,8 +297,11 @@ bool CRaptorDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
     else
 		C3DEngine::Get3DEngine()->glConfigureEngine(NULL);
 
+	//!	Reset global properties with actuel GL configuration.
+	instance.getGlobalRenderingProperties()->glGrabProperties();
+	//!	Then safely apply display properties.
 	if (m_pProperties != NULL)
-        m_pProperties->glPushProperties();
+		m_pProperties->glPushProperties();
 
 	return true;
 }

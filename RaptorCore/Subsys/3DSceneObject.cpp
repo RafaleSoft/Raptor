@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
-/*  Copyright 1998-2019 by                                                 */
+/*  Copyright 1998-2021 by                                                 */
 /*  Fabrice FERRAND.                                                       */
 /*                                                                         */
 /*  This file is part of the Raptor project, and may only be used,         */
@@ -45,12 +45,19 @@
 #if !defined(AFX_RAPTORVULKANCOMMANDBUFFER_H__0398BABD_747B_4DFE_94AA_B026BDBD03B1__INCLUDED_)
 	#include "Subsys/Vulkan/VulkanCommandBuffer.h"
 #endif
-#if !defined(AFX_CONTEXTMANAGER_H__F992F5F0_D8A5_475F_9777_B0EB30E7648E__INCLUDED_)
-	#include "Subsys/ContextManager.h"
-#endif
 #if !defined(AFX_SHADEDGEOMETRY_H__E56C66F7_2DF6_497B_AA0F_19DDC11390F9__INCLUDED_)
 	#include "GLHierarchy/ShadedGeometry.h"
 #endif
+#if !defined(AFX_OPENGLSHADERSTAGE_H__56B00FE3_E508_4FD6_9363_90E6E67446D9__INCLUDED_)
+	#include "GLHierarchy/OpenGLShaderStage.h"
+#endif
+#if !defined(AFX_SHADER_H__4D405EC2_7151_465D_86B6_1CA99B906777__INCLUDED_)
+	#include "GLHierarchy/Shader.h"
+#endif
+#if !defined(AFX_SHADERBLOC_H__56C73DCA_292E_4722_8881_82DC1BF53EA5__INCLUDED_)
+	#include "GLHierarchy/ShaderBloc.h"
+#endif
+
 
 #include <set>      // to sort the lights
 
@@ -75,13 +82,10 @@ C3DSceneObject::C3DSceneObject(CObject3D* obj)
 	for (unsigned int i=0;i<CLightAttributes::MAX_LIGHTS;i++)
          effectiveLights[i] = NULL;
 
-	if (CContextManager::INVALID_CONTEXT != CContextManager::GetInstance()->vkGetCurrentContext())
+	if (obj->getId().isSubClassOf(CShadedGeometry::CShadedGeometryClassID::GetClassId()))
 	{
-		if (obj->getId().isSubClassOf(CShadedGeometry::CShadedGeometryClassID::GetClassId()))
-		{
-			CShadedGeometry *sg = (CShadedGeometry *)obj;
-			m_pPipeline = sg->glvkCreatePipeline();
-		}
+		CShadedGeometry *sg = (CShadedGeometry *)obj;
+		m_pPipeline = sg->glvkCreatePipeline();
 	}
 }
 
@@ -118,6 +122,87 @@ CObject3D* C3DSceneObject::getObject(void) const
 #endif
 
 	return obj;
+}
+
+size_t C3DSceneObject::initShaders(size_t base)
+{
+	CObject3D* obj = object.ptr<CObject3D>();
+
+	std::vector<CShader*> list;
+	obj->getShaders(list);
+
+	size_t nb = 0;
+
+	for (size_t i = 0; i < list.size(); i++)
+	{
+		CShader *pShader = list[i];
+		CShaderBloc *pBloc = pShader->glGetShaderBloc("LightProducts");
+		//if (pShader->hasShaderBloc())	// For 'user' shaders including Raptor.glsl, check appropriate bloc !
+		if (NULL != pBloc)
+		{
+			lightShaderbloc bloc;
+			bloc.uniform = 0;
+			bloc.bufferOffset = 0;
+			bloc.shader = pShader;
+			bloc.index = base + i;
+			lightShaders.push_back(bloc);
+			nb++;
+		}
+	}
+
+	return nb;
+}
+
+size_t C3DSceneObject::glRenderLights(CLight::R_LightProducts *buffer, uint8_t* uniform, bool proceedLights)
+{
+	size_t nb_shaders = 0;
+
+	if (!proceedLights)
+	{
+		for (size_t i = 0; i < lightShaders.size(); i++)
+		{
+			lightShaderbloc &bloc = lightShaders[i];
+			bloc.uniform = uniform;
+			bloc.bufferOffset = 0;
+		}
+		return nb_shaders;
+	}
+
+	if (NULL != buffer)
+	{
+		for (size_t i = 0; i < lightShaders.size(); i++)
+		{
+			lightShaderbloc &bloc = lightShaders[i];
+			CShader *shader = bloc.shader;
+
+			CLight::R_LightProducts &products = buffer[bloc.index];
+
+			COpenGLShaderStage *stage = shader->glGetOpenGLShader();
+			CMaterial *M = shader->getMaterial();
+			
+			for (int j = 0, numl = 0; (j < CLightAttributes::MAX_LIGHTS) && (numl < 5); j++)
+			{
+				products.lights[j].enable = shader_false;
+				
+				CLight *pLight = effectiveLights[j];
+				if (NULL != pLight)
+				{
+					CLight::R_LightProduct& lp = products.lights[numl++];
+					lp = pLight->computeLightProduct(*M);
+				}
+			}
+			products.scene_ambient = shader->getAmbient();
+			products.shininess = M->getShininess();
+
+			size_t size = sizeof(CLight::R_LightProducts);
+			bloc.uniform = uniform;
+			bloc.bufferOffset = bloc.index * size;
+
+			nb_shaders++;
+		}
+	}
+
+	return nb_shaders;
 }
 
 void C3DSceneObject::glRenderLights(GLboolean proceedLights,const std::vector<CLight*> &lights)
@@ -182,10 +267,23 @@ bool C3DSceneObject::glRenderPass(	unsigned int passNumber,
 									const vector<CLight*> &lights,
 									GLboolean proceedLights)
 {
-	glRenderLights(proceedLights,lights);
-
 	bool ret = true;
+	bool use_gl_lights = true;
 	CObject3D *obj = object.ptr<CObject3D>();
+	
+	for (size_t i = 0; i < lightShaders.size(); i++)
+	{
+		use_gl_lights = false;
+
+		lightShaderbloc &bloc = lightShaders[i];
+		CShader *shader = bloc.shader;
+		CShaderBloc *B = shader->glGetShaderBloc();
+
+		B->glvkSetUniformBuffer(bloc.uniform, sizeof(CLight::R_LightProducts), bloc.bufferOffset);
+	}
+
+	if (use_gl_lights)
+		glRenderLights(proceedLights, lights);
 
 #if defined(GL_ARB_occlusion_query)
     GLuint query = visibilityQuery[passNumber];

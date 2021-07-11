@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
-/*  Copyright 1998-2019 by                                                 */
+/*  Copyright 1998-2021 by                                                 */
 /*  Fabrice FERRAND.                                                       */
 /*                                                                         */
 /*  This file is part of the Raptor project, and may only be used,         */
@@ -26,20 +26,15 @@
 #if !defined(AFX_RAPTOR_H__C59035E1_1560_40EC_A0B1_4867C505D93A__INCLUDED_)
 	#include "System/Raptor.h"
 #endif
-#if !defined(AFX_DEAMONMANAGER_H__F7EF715A_5E86_4C65_B6E7_2751FAE87A91__INCLUDED_)
-	#include "DeamonManager.h"
-#endif
+
+
+
 #if !defined(AFX_SERVERSOCKET_H__A2920B8D_12E4_11D3_9142_D3B83905F198__INCLUDED_)
 	#include "RaptorNetwork/ServerSocket.h"
 #endif
 
 #include "../Messages.h"			// io messages IDs and structs
 
-
-extern UINT				MsgProcessor( void *pParam );
-extern const char *		MSG_LOCK;
-extern UINT				regMsgID;
-extern UINT				regDmnMsgID;
 
 /////////////////////////////////////////////////////////////////////////////
 // CRaysServerApp:
@@ -51,37 +46,9 @@ namespace RaysServer
 
 	class CMsgManager;
 	class CFileManager;
-	class CPostProcessor;
 	class CServerTransport;
-
-
-	typedef struct job_struct_t
-	{
-		//	Identification
-		unsigned int		jobID;				// ID of the current job
-		unsigned int		clientPort;			// port of job ID ( client port )
-		unsigned int		clientID;			// client external ID ( for resume identification)
-
-		//	Work units management
-		unsigned int		nbWorkUnits;		// nb of WU per job
-		unsigned int		nbWorkUnitsReady;	// nb of identified work units
-		//const CDeamonManager::WORKUNITSTRUCT ** workUnits;		// array of pointers to work units
-
-		//	Job stats
-		time_t				jobStart;			// duration of job
-		time_t				jobEnd;				// duration of job
-		unsigned int		processedAcks;		// nb ackowledgements from WU
-
-		//	Job data
-		unsigned int		jobWidth;			// width of job ( image )
-		unsigned int		jobHeight;			// height of job ( image )
-		void				*connection;		// connection to the client ( CServer::iosock_t )
-		unsigned char		*globalImageBuffer;	// buffer for computed image
-		float				*ZBuffer;
-
-		CPostProcessor		*processor;
-	} job_struct;
-
+	class CDeamonManager;
+	class CJobManager;
 
 	class CRaysServerApp
 	{
@@ -113,7 +80,7 @@ namespace RaysServer
 		void UnregisterWorkUnit(int nbWU);
 
 
-		void SaveFinishedJob(job_struct* lpJob);
+		void SaveFinishedJob(uint32_t jobID);
 
 		//	Adds a new incoming connection from underlying
 		//	server to a pool of available connections 
@@ -132,7 +99,6 @@ namespace RaysServer
 
 
 	private:
-		std::vector<job_struct*>	m_pJobs;			// array of all current jobs
 		unsigned char				m_nbWUperJOB;
 		int32_t						m_wUnitPriority;
 		uint32_t					m_deamonDelay;
@@ -141,9 +107,6 @@ namespace RaysServer
 		bool						m_bExit;			//!	Flag for server start & stop requests.
 		CRaptorMutex				processLock;
 
-
-		int32_t		m_counter;			//! counter for unique job IDs
-		std::vector<job_struct*>	m_pFinishedJobs;	//! array of all finished jobs for further query	
 		float		m_globalJobDone;	//!	Percentage of overall work performed.
 
 		//	Client/Server IO variables
@@ -151,6 +114,7 @@ namespace RaysServer
 		CDeamonManager	*m_pDeamonManager;
 		CMsgManager		*m_msgManager;
 		CFileManager	*m_fileManager;
+		CJobManager		*m_pJobManager;
 
 		iosock_base_t *UseNewConnection(unsigned int addr, unsigned int port, bool capture = false);
 		bool	InstallPlugin(const std::string &pname, iosock_base_t *connection);

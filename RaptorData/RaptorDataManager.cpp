@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
-/*  Copyright 1998-2019 by                                                 */
+/*  Copyright 1998-2021 by                                                 */
 /*  Fabrice FERRAND.                                                       */
 /*                                                                         */
 /*  This file is part of the Raptor project, and may only be used,         */
@@ -383,7 +383,7 @@ std::string CRaptorDataManager::exportFile(const std::string& fname,
 	if (dst < 0)
 		return "";
 
-    long pos = LSEEK(pack.package,fHeader->offset + pack.headerSize, SEEK_SET);
+    long pos = LSEEK(pack.package,(long)(fHeader->offset + pack.headerSize), SEEK_SET);
     if (pos == -1L)
         return "";
 	else

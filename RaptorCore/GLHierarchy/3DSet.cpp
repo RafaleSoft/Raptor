@@ -155,6 +155,20 @@ vector<CObject3DContour*> C3DSet::createContours(void)
     return res;
 }
 
+void C3DSet::getShaders(std::vector<CShader*> &shaders)
+{
+	if (m_pRoot != NULL)
+	{
+		C3DSetItem  *it = m_pRoot->getFirstChild();
+		while (it != NULL)
+		{
+			it->getObject()->getShaders(shaders);
+			it = it->getNextChild();
+		}
+	}
+}
+
+
 void C3DSet::unLink(const CPersistence* p)
 {
     removeChild((CObject3D*)p);

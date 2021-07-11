@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
-/*  Copyright 1998-2019 by                                                 */
+/*  Copyright 1998-2021 by                                                 */
 /*  Fabrice FERRAND.                                                       */
 /*                                                                         */
 /*  This file is part of the Raptor project, and may only be used,         */
@@ -62,6 +62,9 @@ CTexelAllocator::~CTexelAllocator()
 		CHostMemoryManager::GetInstance()->release(texels.address);
 	if (relocatedTexels != NULL)
 		deviceMemoryManager->releaseBufferObject(relocatedTexels);
+
+	if (this == m_pInstance)
+		m_pInstance = NULL;
 }
 
 CTexelAllocator* CTexelAllocator::GetInstance(void)

@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
-/*  Copyright 1998-2019 by                                                 */
+/*  Copyright 1998-2021 by                                                 */
 /*  Fabrice FERRAND.                                                       */
 /*                                                                         */
 /*  This file is part of the Raptor project, and may only be used,         */
@@ -82,7 +82,7 @@ bool CVertexShader::glLoadProgram(const std::string &program)
 	load = CUnifiedShader::glLoadProgram(	program,
 											GL_VERTEX_SHADER,
 											CVertexShader::CVertexShaderClassID::GetClassId());
-#elif defined(GL_ARB_fragment_shader)
+#elif defined(GL_ARB_vertex_shader)
 	load = CUnifiedShader::glLoadProgram(	program,
 											GL_VERTEX_SHADER_ARB,
 											CVertexShader::CVertexShaderClassID::GetClassId());

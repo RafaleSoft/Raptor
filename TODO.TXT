@@ -1,14 +1,19 @@
-- Ajouter un dialog pour Vulkan Status comme OpenGL.
+- ResourceAllocator:
+	- supprimer les statiques et mettre dans CRaptorInstance ? Les device buffers sont dépendants du contexte ?
+	(ctx créé par CRaptorScreenDisplay)
+	- supprimer les fonctions SetcurrentInstance: soit allocateurs par contexte, soit par RaptorInstance.
+
+- Test2:
+	- mettre au point et utiliser le switch d'instances.
 
 - Rays2:
-	- DeamonManager : port de connectino en dur ==> utiliser un param en LC ou config.
+	- DeamonManager : port de connection en dur ==> utiliser un param en LC ou config.
 
 - RaptorFilteredDisplay:
 	- voir si normal dans demo que le buffer FSAA ait la même taille que la destination
 		(m_fFilterSize = 1 dans RaptorDisplayconfig)
 
 - Supprimer GL_QUADS
-	- glDrawElements (Object3DShadow)
 	- CGLLayer::glRenderSingleBuffer + glRender
 	- GL3DFont::glTTBuildGeometry
 	- CAboutVideo::glRender
@@ -19,6 +24,11 @@
 
 - RaptorDisplay:
 	- renommer glGrab en glBlit en utilisant un CImage.
+
+- ShadowVolume:
+	- addObject: recalcul des bbox ? redimensionner un static array pour glvkBindArray
+	- Object3DShadow: utiliser un seul shader au lieu de 1 shader par shado wobject ? 
+	(==> updateParameters au rendu et non pas offline au calcul des shadows)
 
 - CMipmapBuilder:
 	- Reintégrer, pour générer les mipmaps pour Vulkan (vkLoadTexture) ==> source de gluBuild2DMipmaps.
@@ -34,9 +44,6 @@
 	- corriger ne marche pas sans relocation
 	- pas de decodeur video en 64 bits => ffmpeg ?
 	- Slide: utiliser un CTextureQuad
-
-- CShaderProgram:
-	- ajouter un preprocesseur.
 
 - COpenGLShaderStage:
 	- fusionner vkLoadShader & glLoadProgram (methode virtuelle de CShaderProgram)

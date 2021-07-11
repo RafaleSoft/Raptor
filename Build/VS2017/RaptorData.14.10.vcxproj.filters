@@ -184,6 +184,15 @@
     <None Include="..\..\RaptorData\Data\vector_font.vs">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="..\..\RaptorData\Data\Raptor.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\RaptorData\Data\flat_shading.vs">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\..\RaptorData\Data\flat_shading.ps">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\RaptorData\RaptorDataManager.cpp">

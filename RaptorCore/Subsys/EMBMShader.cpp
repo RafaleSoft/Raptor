@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
-/*  Copyright 1998-2019 by                                                 */
+/*  Copyright 1998-2021 by                                                 */
 /*  Fabrice FERRAND.                                                       */
 /*                                                                         */
 /*  This file is part of the Raptor project, and may only be used,         */
@@ -54,6 +54,10 @@
 #if !defined(AFX_LIGHT_H__AA8BABD6_059A_4939_A4B6_A0A036E12E1E__INCLUDED_)
 	#include "GLHierarchy/Light.h"
 #endif
+#if !defined(AFX_SHADERBLOC_H__56C73DCA_292E_4722_8881_82DC1BF53EA5__INCLUDED_)
+	#include "GLHierarchy/ShaderBloc.h"
+#endif
+
 
 
 RAPTOR_NAMESPACE
@@ -97,27 +101,6 @@ CEMBMShader::~CEMBMShader(void)
 {
 }
 
-typedef struct LightProduct_t
-{
-	GL_COORD_VERTEX position;
-	GL_COORD_VERTEX attenuation;
-	CColor::RGBA	ambient;
-	CColor::RGBA	diffuse;
-	CColor::RGBA	specular;
-	float			shininess;
-	float			reserved[3];
-	bool			enable;
-	float			reserved2[3];
-} R_LightProduct;
-
-typedef struct LightProducts_t
-{
-	R_LightProduct	lights[5];
-	CColor::RGBA	scene_ambient;
-} R_LightProducts;
-
-static R_LightProducts products;
-
 
 void CEMBMShader::glInit()
 {
@@ -139,7 +122,7 @@ void CEMBMShader::glInit()
 		if (pos < embm_vertexshader.length())
 		{
 			size_t pos2 = embm_vertexshader.find("\n", pos);
-			embm_vertexshader.insert(pos2 + 1, string("#define EMBM_RENDERING 1\n\n"));
+			embm_vertexshader.insert(pos2 + 1, std::string("#define EMBM_RENDERING 1\n\n"));
 		}
 		vp->glLoadProgram(embm_vertexshader);
 
@@ -150,7 +133,7 @@ void CEMBMShader::glInit()
 		if (pos < embm_pixelshader.length())
 		{
 			size_t pos2 = embm_pixelshader.find("\n", pos);
-			embm_pixelshader.insert(pos2 + 1, string("#define EMBM_RENDERING 1\n\n"));
+			embm_pixelshader.insert(pos2 + 1, std::string("#define EMBM_RENDERING 1\n\n"));
 		}
 		fp->glLoadProgram(embm_pixelshader);
 
@@ -164,18 +147,24 @@ void CEMBMShader::glInit()
 	params.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);
 	params.addParameter("normalMap", CTextureUnitSetup::IMAGE_UNIT_1);
 	params.addParameter("environmentMap", CTextureUnitSetup::IMAGE_UNIT_3);
-	GL_COORD_VERTEX V;
-	params.addParameter("eyePos", V);
+	//!
+	//! For more efficient computation with multiple lights,
+	//!	bump shader is computed in eye space, then no need to pass the eyePos here (in object space).
+	//!
+	//GL_COORD_VERTEX V;
+	//params.addParameter("eyePos", V);
 
-#if defined(GL_ARB_uniform_buffer_object)
-	CProgramParameters::CParameter<R_LightProducts> material("LightProducts", products);
-	material.locationType = GL_UNIFORM_BLOCK_BINDING_ARB;
-	params.addParameter(material);
-#endif
 
 	stage->setProgramParameters(params);
 
 	stage->glCompileShader();
+
+	CShaderBloc *bloc = glGetShaderBloc("LightProducts");
+	if (NULL == bloc)
+	{
+		RAPTOR_ERROR(CShader::CShaderClassID::GetClassId(),
+					"EMBM Shader Object cannot find uniform bloc \"LightProducts\", compiled shader source is incorrect.");
+	}
 
 #ifdef PROCEDURAL_PERLIN
 	CTextureFactory &filterFactory = CTextureFactory::getDefaultFactory();
@@ -243,14 +232,12 @@ void CEMBMShader::enableEmbm(bool enable)
 		params.addParameter("diffuseMap", CTextureUnitSetup::IMAGE_UNIT_0);
 		params.addParameter("normalMap", CTextureUnitSetup::IMAGE_UNIT_1);
 		params.addParameter("environmentMap", CTextureUnitSetup::IMAGE_UNIT_3);
-		GL_COORD_VERTEX V;
-		params.addParameter("eyePos", V);
-
-#if defined(GL_ARB_uniform_buffer_object)
-		CProgramParameters::CParameter<R_LightProducts> material("LightProducts", products);
-		material.locationType = GL_UNIFORM_BLOCK_BINDING_ARB;
-		params.addParameter(material);
-#endif
+		//!
+		//! For more efficient computation with multiple lights,
+		//!	bump shader is computed in eye space, then no need to pass the eyePos here (in object space).
+		//!
+		//GL_COORD_VERTEX V;
+		//params.addParameter("eyePos", V);
 
 		stage->setProgramParameters(params);
 

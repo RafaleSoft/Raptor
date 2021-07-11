@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
-/*  Copyright 1998-2019 by                                                 */
+/*  Copyright 1998-2021 by                                                 */
 /*  Fabrice FERRAND.                                                       */
 /*                                                                         */
 /*  This file is part of the Raptor project, and may only be used,         */
@@ -88,12 +88,20 @@ namespace RaysClient
             }
         }
 
-        ~RaysLogger()
+        private void Finalize()
         {
             if (null != writer)
             {
-                writer.Close();
-                writer.Dispose();
+                try
+                {
+                    writer.Close();
+                    writer.Dispose();
+                    writer = null;
+                }
+                catch (System.Text.EncoderFallbackException e)
+                {
+                    // Anything to do here ?
+                }
             }
         }
 

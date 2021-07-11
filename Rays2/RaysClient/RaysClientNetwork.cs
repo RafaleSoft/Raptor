@@ -76,10 +76,11 @@ namespace RaysClient
 
             if (server.Connected)
             {
+                server.Shutdown(SocketShutdown.Both);
                 server.Close();
-                server = null;
             }
 
+            server = null;
             return true;
         }
 

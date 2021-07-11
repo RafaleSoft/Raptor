@@ -41,16 +41,24 @@ public:
     //! otherwise this method has no effects.
     virtual void glPopProperties(void);
 
-	virtual PROPERTY_SETTING getCurrentTexturing(void) const;
-
-	virtual PROPERTY_SETTING getCurrentLighting(void) const;
+	//!	Read all current OpenGL rendering properties from the active display
+	virtual void glGrabProperties(void);
 
 
 private:
 	//!	Internal rendering of gl properties
     void glRender(void);
 
-	static COpenGLRenderingProperties m_globalProperties;
+	//!	Save global properties berore rendering and restore them after pop properties.
+	PROPERTY_SETTING	globalTexturing;
+	PROPERTY_SETTING	globalLighting;
+	PROPERTY_SETTING	globalDepth;
+	PROPERTY_SETTING	globalCull;
+	PROPERTY_SETTING	globalBlend;
+	PROPERTY_SETTING	globalStencil;
+	PROPERTY_SETTING	globalMultisample;
+	PROPERTY_SETTING	globalClampFloat;
+	PROPERTY_SETTING	globalWireframe;
 };
 
 RAPTOR_NAMESPACE_END

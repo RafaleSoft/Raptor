@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
-/*  Copyright 1998-2019 by                                                 */
+/*  Copyright 1998-2021 by                                                 */
 /*  Fabrice FERRAND.                                                       */
 /*                                                                         */
 /*  This file is part of the Raptor project, and may only be used,         */
@@ -21,7 +21,9 @@
 #ifndef __RAPTOR_PORTABILITY_H__
 #define __RAPTOR_PORTABILITY_H__
 
-
+//!
+//!	Headers & types.
+//!
 #if defined(_WIN32)
 	#if _MSC_VER > 1000
 		#pragma once
@@ -29,6 +31,7 @@
 
 	#define VC_EXTRALEAN		// Exclude rarely-used stuff from Windows headers
 	#include <windows.h>
+	#include <new>
 
 	#if !defined(WINAPI)
         #define WINAPI	__stdcall
@@ -55,6 +58,8 @@
 #else // Linux environment
 	#include <stdlib.h>
 	#include <typeinfo>
+	#include <new>
+
 	#define RAPTOR_API
     #define RAPTOR_FASTCALL
     #define RAPTOR_CCALL
@@ -82,6 +87,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <set>
 #include <sstream>
 using namespace std;
 
@@ -115,8 +121,9 @@ using namespace std;
 	//	EXPIMP_TEMPLATE template class RAPTOR_API std::vector<raptor::class *,std::allocator<raptor::class>>;
 #endif
 	   
-
-//	Time and files
+//!
+//!	Time and files
+//!
 #if defined(WIN32)
 	#define LOCALTIME(_Tm,_Time) localtime_s(_Tm,_Time)
 	#define ASCTIME(_Buf, _SizeInBytes, _Tm) asctime_s(_Buf, _SizeInBytes, _Tm)
@@ -125,6 +132,15 @@ using namespace std;
 	#define LOCALTIME(_Tm,_Time) localtime_r(_Time,_Tm)
 	#define ASCTIME(_Buf, _SizeInBytes, _Tm) asctime_r(_Tm, _Buf)
 	#define __FILENAME__(file) (strrchr(file,'/') ? strrchr(file,'/') + 1 : file)
+#endif
+
+//!
+//!	Strings
+//!
+#ifdef WIN32
+	#define STRDUP(s) _strdup(s)
+#elif defined(LINUX)
+	#define STRDUP(s) strdup(s)
 #endif
 
 typedef struct lessString

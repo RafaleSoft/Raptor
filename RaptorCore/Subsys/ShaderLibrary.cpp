@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
-/*  Copyright 1998-2019 by                                                 */
+/*  Copyright 1998-2021 by                                                 */
 /*  Fabrice FERRAND.                                                       */
 /*                                                                         */
 /*  This file is part of the Raptor project, and may only be used,         */
@@ -60,7 +60,7 @@
 
 RAPTOR_NAMESPACE_BEGIN
 
-static const size_t NB_FACTORY_SHADERS = 41;
+static const size_t NB_FACTORY_SHADERS = 44;
 static CShaderLibrary::factory_shader fsh[NB_FACTORY_SHADERS] = 
 	{ { "BUMP_TEX_SHADER", "bump.fp", "FragmentProgram" },
 	  { "EMBM_TEX_SHADER", "embm.fp", "FragmentProgram" },
@@ -70,6 +70,7 @@ static CShaderLibrary::factory_shader fsh[NB_FACTORY_SHADERS] =
 	  { "SHADOWMAP_TEX_SHADER", "shadowmap.fp", "FragmentProgram" },
 	  { "SHADOWMAP_TEX_SHADER_PCF", "shadowmap_pcf.fp", "FragmentProgram" },
 	  { "SHADOWMAP_TEX_SHADER_PCF_4X", "shadowmap_pcf_4x.fp", "FragmentProgram" },
+	  { "SHADOWMAP_TEX_SHADER_PCF_16X", "shadowmap_pcf_16x.fp", "FragmentProgram" },
 	  { "PPIXEL_BLINN_VTX_PROGRAM", "blinn.vs", "VertexShader" },
 	  { "PPIXEL_BLINN_TEX_PROGRAM", "blinn.ps", "FragmentShader" },
 	  { "PPIXEL_PHONG_VTX_PROGRAM", "phong.vs", "VertexShader" },
@@ -102,15 +103,13 @@ static CShaderLibrary::factory_shader fsh[NB_FACTORY_SHADERS] =
 	  { "BOX_VTX_PROGRAM", "box.vs", "VertexShader" },
 	  { "FILLEDBOX_GEO_PROGRAM", "box.gs", "GeometryShader" },
 	  { "WIREDBOX_GEO_PROGRAM", "box_line.gs", "GeometryShader" },
-	  { "BOX_TEX_PROGRAM", "box.ps", "FragmentShader" }};
+	  { "BOX_TEX_PROGRAM", "box.ps", "FragmentShader" },
+	  { "FLAT_VTX_SDHADER", "flat_shading.vs", "VertexShader" },
+	  { "FLAT_TEX_SDHADER", "flat_shading.ps", "FragmentShader" } };
 
 RAPTOR_NAMESPACE_END
 
-#ifdef WIN32
-	#define STRDUP(s) _strdup(s)
-#elif defined(LINUX)
-	#define STRDUP(s) strdup(s)
-#endif
+
 
 RAPTOR_NAMESPACE
 
@@ -182,9 +181,8 @@ bool CShaderLibrary::glAddToLibrary(const std::string& shader_name,
 	if (s_factoryShaders.find(shader_name) != s_factoryShaders.end())
 	{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
-		Raptor::GetErrorManager()->generateRaptorError(CShader::CShaderClassID::GetClassId(),
-													   CRaptorErrorManager::RAPTOR_WARNING,
-													   "Raptor ShaderLibrary cannot import already existing shader type");
+		RAPTOR_WARNING(	CShader::CShaderClassID::GetClassId(),
+						"Raptor ShaderLibrary cannot import already existing shader type");
 #endif
 		return false;
 	}
@@ -210,9 +208,7 @@ bool CShaderLibrary::glAddToLibrary(const std::string& shader_name,
 	else
 	{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
-				Raptor::GetErrorManager()->generateRaptorError(CShader::CShaderClassID::GetClassId(),
-															   CRaptorErrorManager::RAPTOR_WARNING,
-															   "Raptor ShaderLibrary cannot import unknown shader type");
+				RAPTOR_WARNING(CShader::CShaderClassID::GetClassId(), "Raptor ShaderLibrary cannot import unknown shader type");
 #endif
 		return false;
 	}
@@ -226,10 +222,20 @@ bool CShaderLibrary::glLoadShadersFromDataPackage()
 
 	CObjectFactory *pFactory = CObjectFactory::GetInstance();
 
+	//! First export Raptor shaders interfaces
+	std::string shader_path = dataManager->exportFile("Raptor.glsl");
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+	if (shader_path.empty())
+	{
+		std::string msg = "ShaderLibrary cannot find mandatory shader interface: Raptor.glsl";
+		RAPTOR_FATAL(CShader::CShaderClassID::GetClassId(), msg);
+	}
+#endif
+
 	for (size_t nb_shaders = 0; nb_shaders < NB_FACTORY_SHADERS; nb_shaders++)
 	{
 		factory_shader &fs = fsh[nb_shaders];
-		string shader_path = dataManager->exportFile(fs.shader_fname);
+		shader_path = dataManager->exportFile(fs.shader_fname);
 		if (!shader_path.empty())
 		{
 			const CPersistentObject & po = pFactory->createObject(fs.class_name);
@@ -238,9 +244,7 @@ bool CShaderLibrary::glLoadShadersFromDataPackage()
 			{
 				std::string msg = "ShaderLibrary unsupported shader class type: ";
 				msg += fs.class_name;
-				Raptor::GetErrorManager()->generateRaptorError(CShader::CShaderClassID::GetClassId(),
-															   CRaptorErrorManager::RAPTOR_ERROR,
-															   msg);
+				RAPTOR_ERROR(CShader::CShaderClassID::GetClassId(), msg);
 			}
 			else if (persistence->getId().ClassName() == fs.class_name)
 			{
@@ -255,9 +259,7 @@ bool CShaderLibrary::glLoadShadersFromDataPackage()
 				msg += shader_path;
 				msg += " named ";
 				msg += fs.shader_name;
-				Raptor::GetErrorManager()->generateRaptorError(CShader::CShaderClassID::GetClassId(),
-															   CRaptorErrorManager::RAPTOR_NO_ERROR,
-															   msg, __FILE__, __LINE__);
+				RAPTOR_NO_ERROR(CShader::CShaderClassID::GetClassId(),msg);
 #endif
 			}
 		}
@@ -265,9 +267,7 @@ bool CShaderLibrary::glLoadShadersFromDataPackage()
 		{
 			std::string msg = "ShaderLibrary cannot find mandatory shader: ";
 			msg += fs.shader_fname;
-			Raptor::GetErrorManager()->generateRaptorError(	CShader::CShaderClassID::GetClassId(),
-															CRaptorErrorManager::RAPTOR_FATAL,
-															msg, __FILE__, __LINE__);
+			RAPTOR_FATAL(CShader::CShaderClassID::GetClassId(), msg);
 		}
 	}
 

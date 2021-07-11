@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
-/*  Copyright 1998-2019 by                                                 */
+/*  Copyright 1998-2021 by                                                 */
 /*  Fabrice FERRAND.                                                       */
 /*                                                                         */
 /*  This file is part of the Raptor project, and may only be used,         */
@@ -67,9 +67,7 @@ CShaderProgram::CShaderProgram(const CPersistence::CPersistenceClassID& id,const
 	m_bValid(false),
 	m_handle(),
 	m_bApplyParameters(false),
-	m_parameters(),
-	m_uniforms(NULL),
-	m_uniforms_size(0)
+	m_parameters()
 {
 }
 
@@ -80,20 +78,12 @@ CShaderProgram::CShaderProgram(const CShaderProgram& shader)
 	m_handle = shader.m_handle;
 	m_bApplyParameters = shader.m_bApplyParameters;
 	m_parameters = shader.m_parameters;
-	m_uniforms = shader.m_uniforms;
-	m_uniforms_size = shader.m_uniforms_size;
 }
 
 CShaderProgram::~CShaderProgram()
 {
 	// TODO : Recycle handle
-#if defined(GL_ARB_uniform_buffer_object)
-	if (NULL != m_uniforms)
-	{
-		CUniformAllocator*	pUAllocator = CUniformAllocator::GetInstance();
-		pUAllocator->releaseUniforms(m_uniforms);
-	}
-#endif
+
 }
 
 bool CShaderProgram::glAddToLibrary(const std::string& shader_name,
@@ -121,25 +111,74 @@ void CShaderProgram::updateProgramParameters(const CProgramParameters &v)
 	m_bApplyParameters = apply;
 }
 
-bool CShaderProgram::glLoadProgramFromFile(const std::string &program)
+std::string CShaderProgram::readFile(const std::string filename)
 {
-	CRaptorIO *shdr = CRaptorIO::Create(program, CRaptorIO::DISK_READ);
+	CRaptorIO *shdr = CRaptorIO::Create(filename, CRaptorIO::DISK_READ);
 	if (NULL == shdr)
 		return false;
 
 	if (shdr->getStatus() == CRaptorIO::IO_OK)
 	{
-		string programstr;
+		std::string programstr = "";
 		while (shdr->getStatus() == CRaptorIO::IO_OK)
 		{
-			string line;
+			std::string line;
 			*shdr >> line;
-			if (shdr->getStatus() == CRaptorIO::IO_OK)
-				programstr = programstr + line + "\n";
+			
+			size_t include_pos = line.find("#include", 0);
+			size_t comment_pos = line.find("//", 0);
+			if ((std::string::npos != include_pos) && (include_pos < comment_pos))
+			{
+				size_t file_begin = line.find("\"", include_pos + 8);
+				size_t file_end = line.find("\"", file_begin + 1);
+				if ((std::string::npos != file_begin) && (std::string::npos != file_end))
+				{
+					size_t path_end = filename.find_last_of('\\');
+					std::string path = filename.substr(0, path_end) + "\\" + line.substr(file_begin+1,file_end-file_begin-1);
+					line = readFile(path);
+					programstr = programstr + line + "\n";
+				}
+				else
+				{
+					RAPTOR_ERROR(shaderId, "Syntax error near include directire: " + line);
+				}
+			}
+			else
+			{
+				if (shdr->getStatus() == CRaptorIO::IO_OK)
+					programstr = programstr + line + "\n";
+			}
 		}
 
-		return glLoadProgram(programstr);
+		delete shdr;
+		return programstr;
 	}
+	else
+	{
+		vector<CRaptorMessages::MessageArgument> args;
+		CRaptorMessages::MessageArgument arg;
+		arg.arg_sz = filename.c_str();
+		args.push_back(arg);
+
+		//!	Shader file could not be opened.
+		Raptor::GetErrorManager()->generateRaptorError(	shaderId,
+														CRaptorErrorManager::RAPTOR_ERROR,
+														CRaptorMessages::ID_NO_RESOURCE,
+														__FILE__, __LINE__, args);
+
+		delete shdr;
+		return false;
+	}
+}
+
+bool CShaderProgram::glLoadProgramFromFile(const std::string &program)
+{
+	if (program.empty())
+		return false;
+
+	std::string programstr = readFile(program);
+	if (!programstr.empty())
+		return glLoadProgram(programstr);
 	else
 	{
 		vector<CRaptorMessages::MessageArgument> args;
@@ -157,7 +196,74 @@ bool CShaderProgram::glLoadProgramFromFile(const std::string &program)
 	}
 }
 
+CShaderProgram::shader_bloc CShaderProgram::glGetShaderBloc(const std::string& bloc_name) const
+{
+	shader_bloc bloc{ 0, INT32_MAX };
 
+#if defined(GL_VERSION_3_1)
+	if (m_handle.glhandle() == 0)
+		return bloc;
+
+	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+
+	uint64_t uniform_size = 0;
+	GLint max_bindings = 0;
+
+
+	glGetIntegerv(GL_MAX_UNIFORM_BUFFER_BINDINGS, &max_bindings);
+
+	GLint active_uniform_max_length = 0;
+	pExtensions->glGetProgramiv(m_handle.glhandle(), GL_ACTIVE_UNIFORM_BLOCK_MAX_NAME_LENGTH, &active_uniform_max_length);
+
+	//! Despite the fact that the GL_VERSION text is greater than 3.1, it seems there is a bug in the call
+	//! below : the actual value should be returned by glGetProgramiv and not by glGetObjectParameteriv.
+	GLint active_blocks_count = 0;
+	char *uniformBlockName = new char[active_uniform_max_length];
+
+	pExtensions->glGetProgramiv(m_handle.glhandle(), GL_ACTIVE_UNIFORM_BLOCKS, &active_blocks_count);
+
+	for (GLint i = 0; i < active_blocks_count; i++)
+	{
+		GLint block_size = 0;
+		pExtensions->glGetActiveUniformBlockiv(m_handle.glhandle(), i, GL_UNIFORM_BLOCK_DATA_SIZE, &block_size);
+
+		/**
+		 *	Currently not used. Kept for mapping on native attributes with user attributes.
+		GLint active_uniforms = 0;
+		pExtensions->glGetActiveUniformBlockivARB(m_handle.glhandle(), i, GL_UNIFORM_BLOCK_ACTIVE_UNIFORMS_ARB, &active_uniforms);
+		GLint indices[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
+		pExtensions->glGetActiveUniformBlockivARB(m_handle.glhandle(), i, GL_UNIFORM_BLOCK_ACTIVE_UNIFORM_INDICES_ARB, &indices[0]);
+		GLint active_uniform_length = 0;
+		pExtensions->glGetActiveUniformBlockivARB(m_handle.glhandle(), i, GL_UNIFORM_BLOCK_NAME_LENGTH_ARB, &active_uniform_length);
+		 */
+
+		GLsizei length = 0;
+		pExtensions->glGetActiveUniformBlockName(m_handle.glhandle(), i, 256, &length, &uniformBlockName[0]);
+		uniformBlockName[length] = 0;
+
+		/**
+		 *	Currently not used. Kept for mapping on native attributes with user attributes.
+		GLuint uniformBlockIndex = pExtensions->glGetUniformBlockIndexARB(m_handle.glhandle(), uniformBlockName);
+		 */
+
+		GLint binding = 0;
+		pExtensions->glGetActiveUniformBlockiv(m_handle.glhandle(), i, GL_UNIFORM_BLOCK_BINDING, &binding);
+
+		std::string name(uniformBlockName);
+		if (!bloc_name.compare(name))
+		{
+			bloc.binding = binding;
+			bloc.size = block_size;
+		}
+	}
+
+	delete[] uniformBlockName;
+
+	CATCH_GL_ERROR
+#endif
+
+	return bloc;
+}
 
 uint64_t CShaderProgram::glGetBufferMemoryRequirements(void)
 {
@@ -248,6 +354,7 @@ uint64_t CShaderProgram::glGetBufferMemoryRequirements(void)
 				((value.locationType == GL_UNIFORM_BLOCK_BINDING_ARB) || (value.locationType == GL_UNIFORM_BLOCK_BINDING)))
 			{
 				value.locationIndex = binding;
+				value.locationSize = block_size;
 
 				if ((binding >= max_bindings) || (block_size != value.size()))
 				{

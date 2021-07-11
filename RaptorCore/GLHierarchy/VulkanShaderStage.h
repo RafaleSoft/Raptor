@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
-/*  Copyright 1998-2019 by                                                 */
+/*  Copyright 1998-2021 by                                                 */
 /*  Fabrice FERRAND.                                                       */
 /*                                                                         */
 /*  This file is part of the Raptor project, and may only be used,         */
@@ -102,6 +102,16 @@ private:
 	//!	Identify predefined OpenGL shader names variables
 	bool IsPredefinedGLVariable(const std::string& name);
 
+	//!	Shader uniform blocks.
+	typedef struct uniform_bloc_t
+	{
+		uint8_t * buffer;
+		uint64_t	size;
+		uint64_t	offset;
+		size_t		parameter;
+		bool		external;
+	} uniform_bloc;
+	std::vector<uniform_bloc> m_uniforms;
 
 	//!	Vulkan shader modules
 	CVulkanShader*	m_pShaderStages;

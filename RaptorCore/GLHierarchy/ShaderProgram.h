@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
-/*  Copyright 1998-2019 by                                                 */
+/*  Copyright 1998-2021 by                                                 */
 /*  Fabrice FERRAND.                                                       */
 /*                                                                         */
 /*  This file is part of the Raptor project, and may only be used,         */
@@ -89,6 +89,14 @@ public:
 	//! @return the required size in bytes.
 	uint64_t glGetBufferMemoryRequirements(void);
 
+	//!	Shader uniform blocks.
+	typedef struct shader_bloc_t
+	{
+		uint64_t	size;
+		uint32_t	binding;
+	} shader_bloc;
+	CShaderProgram::shader_bloc glGetShaderBloc(const std::string& bloc_name) const;
+
 	//! This method can be used to update only a subset of the actual parameter set.
 	//! They will be actually applied after a successfull link is issued.
 	void updateProgramParameters(const CProgramParameters &v);
@@ -120,15 +128,14 @@ protected:
 	bool					m_bApplyParameters;
 	CProgramParameters	    m_parameters;
 
-	//!	Shader uniform blocks.
-	unsigned char*	m_uniforms;
-	uint64_t		m_uniforms_size;
-
 
 private:
     //! Denied operators
 	CShaderProgram();
     CShaderProgram& operator=(const CShaderProgram& ) { return *this;};
+
+	//!	A helper to recursively read included files
+	std::string readFile(const std::string filename);
 };
 
 RAPTOR_NAMESPACE_END

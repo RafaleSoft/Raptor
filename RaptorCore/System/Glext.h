@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
-/*  Copyright 1998-2019 by                                                 */
+/*  Copyright 1998-2021 by                                                 */
 /*  Fabrice FERRAND.                                                       */
 /*                                                                         */
 /*  This file is part of the Raptor project, and may only be used,         */
@@ -49,8 +49,8 @@ extern "C" {
 #endif
 
 #if defined (GL_ARB_vertex_buffer_object)
-	typedef long			GLintptrARB;		//	might be defined to __int64 if necessary
-	typedef unsigned long	GLsizeiptrARB;
+	typedef void*			GLintptrARB;		//	might be defined to __int64 if necessary
+	typedef size_t			GLsizeiptrARB;
 #if defined(GL_VERSION_3_1)
 		typedef GLintptrARB		GLintptr;		//	might be defined to __int64 if necessary
 		typedef GLsizeiptrARB	GLsizeiptr;

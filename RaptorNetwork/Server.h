@@ -79,7 +79,7 @@ protected:
 
 	friend class iosock_collection_t;
 	bool			m_useCRC;
-	unsigned int	m_socket;
+	SOCKET			m_socket;
 	unsigned int	m_ip;
 	unsigned short	m_port;
 	server_base_t*	m_pServer;

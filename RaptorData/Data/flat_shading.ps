@@ -1,0 +1,31 @@
+/***************************************************************************/
+/*                                                                         */
+/*  flat_shading.ps                                                        */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2021 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+#version 440
+
+uniform	sampler2D diffuseMap;
+
+in vec4 d_Color;
+in vec4 s_Color;
+in vec4 o_texCoord;
+
+layout(location = 0) out vec4 o_Color;
+
+void main (void)
+{
+	o_Color = s_Color + d_Color * texture(diffuseMap,vec2(o_texCoord.st));
+}

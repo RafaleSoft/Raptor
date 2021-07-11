@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
-/*  Copyright 1998-2019 by                                                 */
+/*  Copyright 1998-2021 by                                                 */
 /*  Fabrice FERRAND.                                                       */
 /*                                                                         */
 /*  This file is part of the Raptor project, and may only be used,         */
@@ -101,6 +101,10 @@ bool CGLVectorFont::glGenGlyphs(float precision,
 								float extrusion,
 								float scale)
 {
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+	if (NULL == instance.m_pVectorFontShader)
+		return false;
+
 	glyph *glyphs = new glyph[FONT_SIZE];
 
 	if (NULL == font_linePointer)
@@ -400,8 +404,8 @@ void CGLVectorFont::glWrite(const std::vector<CGLFont::FONT_TEXT_ITEM> &lines)
 		pAllocator->glvkSetPointerData((float*)font_linePointer, (float*)&font_line[0], (GLsizei)(LINE_ELT_SIZE / sizeof(float) * count));
 	
 	CUniformAllocator*	pUAllocator = CUniformAllocator::GetInstance();
-	pUAllocator->glvkBindUniform(m_fontUniform, 0);
-
+	pUAllocator->glvkBindUniform(m_fontUniform, 0, 0, 0);
+	
 	CProgramParameters params;
 	GL_COORD_VERTEX vp(viewport[0], viewport[1], 0.5f * viewport[2], 0.5f * viewport[3]);
 	CColor::RGBA color(0.0f, 0.0f, 0.0f, 0.5f);
@@ -427,8 +431,7 @@ void CGLVectorFont::glWrite(const std::vector<CGLFont::FONT_TEXT_ITEM> &lines)
 
 	instance.m_pVectorFontShader->glStop();
 	binder->glvkUnbindArrays();
-
-
+	
 	glPopMatrix();
 	glMatrixMode(GL_PROJECTION);
 	glPopMatrix();

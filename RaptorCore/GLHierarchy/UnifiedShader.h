@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
-/*  Copyright 1998-2019 by                                                 */
+/*  Copyright 1998-2021 by                                                 */
 /*  Fabrice FERRAND.                                                       */
 /*                                                                         */
 /*  This file is part of the Raptor project, and may only be used,         */
@@ -71,9 +71,9 @@ protected:
 	CUnifiedShader(const CUnifiedShader& shader);
 
 	//! Generic shader source loading.
-	bool CUnifiedShader::glLoadProgram(	const std::string &program,
-										GLenum shaderType,
-										const CPersistence::CPersistenceClassID& shaderClass);
+	bool glLoadProgram(	const std::string &program,
+						GLenum shaderType,
+						const CPersistence::CPersistenceClassID& shaderClass);
 
     //! Updates locations of uniform variables.
     void glQueryUniformLocations(RAPTOR_HANDLE program);

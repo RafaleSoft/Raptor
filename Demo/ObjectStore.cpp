@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
-/*  Copyright 1998-2019 by                                                 */
+/*  Copyright 1998-2021 by                                                 */
 /*  Fabrice FERRAND.                                                       */
 /*                                                                         */
 /*  This file is part of the Raptor project, and may only be used,         */
@@ -48,8 +48,11 @@
 #include "GLHierarchy/LightObserver.h"
 #include "GLHierarchy/GeometryEditor.h"
 #include "GLHierarchy/ObjectFactory.h"
+#include "GLHierarchy/PerlinNoise.h"
 
 #include "ToolBox/RaptorToolBox.h"
+#include "ToolBox/Imaging/BumpmapLoader.h"
+
 #include "DataManager/RaptorDataManager.h"
 
 #include "ObjectStore.h"
@@ -159,19 +162,6 @@ bool CObjectStore::IsAColumn(CGeometry *&g)
     CShadedGeometry *geo = static_cast<CShadedGeometry*>(g);
 	if (name == "Column")
 	{
-        const CGeometryEditor &pEditor = g->getEditor();
-		pEditor.scaleTexCoords(4.0f,4.0f);
-
-		*geo->getShader()->getMaterial() = *m_material;
-		CTextureUnitSetup *tmuSetup = geo->getShader()->glGetTextureUnitsSetup();
-		tmuSetup->setDiffuseMap(m_textures->getTexture(MARBLE4), CTextureUnitSetup::CGL_MULTIPLY);
-        tmuSetup->enableImageUnit(CTextureUnitSetup::IMAGE_UNIT_1,false);
-		tmuSetup->enableImageUnit(CTextureUnitSetup::IMAGE_UNIT_2,false);
-		tmuSetup->enableImageUnit(CTextureUnitSetup::IMAGE_UNIT_3,false);
-		res = true;
-	}
-	else if (name == "ColumnBase")
-	{
 		CBumppedGeometry* bump = new CBumppedGeometry("BUMP_COLUMN");
 
 		*bump = *g;
@@ -179,37 +169,75 @@ bool CObjectStore::IsAColumn(CGeometry *&g)
 		g = bump;
 
         const CGeometryEditor &pEditor = g->getEditor();
+		pEditor.scaleTexCoords(2.0f, 2.0f);
+		CShader *pShader = bump->getShader();
+		*pShader->getMaterial() = *m_material;
+		pShader->setColor(1.0f, 1.0f, 1.0f, 1.0f);	// for ambient in shadows
+		pShader->getMaterial()->setShininess(4.0f);
+		bump->setDiffuseMap(m_textures->getTexture(MARBLE4));
+		pShader->glGetTextureUnitsSetup()->setUnitFunction(CTextureUnitSetup::IMAGE_UNIT_0, CTextureUnitSetup::CGL_MULTIPLY);
+
+		CTextureFactory &factory = CTextureFactory::glGetDefaultFactory();
+		ITextureObject *normalMap = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA, ITextureObject::CGL_BILINEAR);
+						
+		factory.glResizeTexture(normalMap, 512, 512);
+		CBumpmapLoader loader(2.5f);
+		CPerlinNoise noise(&loader);
+		noise.setNoiseModel(CPerlinNoise::NOISE2);
+		noise.generateMirrorTexture(true);
+		noise.glGenerate(normalMap, 0, 0, 512, 512);
+
+		bump->setNormalMap(normalMap);
+		bump->setRenderingModel(CGeometry::CGL_FRONT_GEOMETRY);
+		bump->addModel(CGeometry::CGL_TEXTURE);
+
+		res = true;
+	}
+	else if (name == "ColumnBase")
+	{
+		CBumppedGeometry* bump = new CBumppedGeometry("BUMP_COLUMN_BASE");
+
+		*bump = *g;
+		delete g;
+		g = bump;
+
+        const CGeometryEditor &pEditor = g->getEditor();
 		pEditor.scaleTexCoords(4.0f,1.0f);
-		bump->getShader()->setColor(1.0f,1.0f,1.0f,1.0f);	// for ambient in shadows
-        *bump->getShader()->getMaterial() = *m_material;
-		bump->getShader()->getMaterial()->setShininess(4.0f);
+		CShader *pShader = bump->getShader();
+		pShader->setColor(1.0f,1.0f,1.0f,1.0f);	// for ambient in shadows
+        *pShader->getMaterial() = *m_material;
+		pShader->getMaterial()->setShininess(4.0f);
 		bump->setDiffuseMap(m_textures->getTexture(ROCKSCULPT));
-		bump->getShader()->glGetTextureUnitsSetup()->setUnitFunction(CTextureUnitSetup::IMAGE_UNIT_0, CTextureUnitSetup::CGL_MULTIPLY);
+		pShader->glGetTextureUnitsSetup()->setUnitFunction(CTextureUnitSetup::IMAGE_UNIT_0, CTextureUnitSetup::CGL_MULTIPLY);
 
 		CTextureFactory &factory = CTextureFactory::glGetDefaultFactory();
 		ITextureObject *normalMap = factory.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA,
                                                             ITextureObject::CGL_TRILINEAR);
 		factory.glLoadTexture(normalMap,BUMP_0);
 		bump->setNormalMap(normalMap);
-
 		bump->setRenderingModel(CGeometry::CGL_FRONT_GEOMETRY);
 		bump->addModel(CGeometry::CGL_TEXTURE);
 
-		m_columnBump = bump;
 		res = true;
 	}
 	else if (name == "ColumnTop2")
 	{
-		*geo->getShader()->getMaterial() = *m_material;
-		CTextureUnitSetup *tmuSetup = geo->getShader()->glGetTextureUnitsSetup();
+		//CShader *pShader = CShader::getShader("PHONG_SHADER").glClone("PHONG");
+		//geo->setShader(pShader);
+		CShader *pShader = geo->getShader();
+		*pShader->getMaterial() = *m_material;
+		CTextureUnitSetup *tmuSetup = pShader->glGetTextureUnitsSetup();
 		tmuSetup->setDiffuseMap(m_textures->getTexture(MARBLE5), CTextureUnitSetup::CGL_MULTIPLY);
 		tmuSetup->enableImageUnit(CTextureUnitSetup::IMAGE_UNIT_2,false);
 		res = true;
 	}
 	else if (name == "ColumnDow0")	// 3DSMax Sucks !!!
 	{
-		*geo->getShader()->getMaterial() = *m_material;
-		CTextureUnitSetup *tmuSetup = geo->getShader()->glGetTextureUnitsSetup();
+		//CShader *pShader = CShader::getShader("PHONG_SHADER").glClone("PHONG");
+		//geo->setShader(pShader);
+		CShader *pShader = geo->getShader();
+		*pShader->getMaterial() = *m_material;
+		CTextureUnitSetup *tmuSetup = pShader->glGetTextureUnitsSetup();
 		tmuSetup->setDiffuseMap(m_textures->getTexture(MARBLE5), CTextureUnitSetup::CGL_MULTIPLY);
 		tmuSetup->enableImageUnit(CTextureUnitSetup::IMAGE_UNIT_2,false);
 		res = true;
@@ -243,6 +271,7 @@ bool CObjectStore::loadColumn(void)
             const CGeometryEditor &pEditor = g->getEditor();
 		    pEditor.scaleTexCoords(4.0f,4.0f);
 		    *g->getShader()->getMaterial() = *m_material;
+			g->getShader()->getMaterial()->setShininess(4.0f);
 		    CTextureUnitSetup *tmuSetup = g->getShader()->glGetTextureUnitsSetup();
 		    tmuSetup->setDiffuseMap(m_textures->getTexture(MARBLE4), CTextureUnitSetup::CGL_MULTIPLY);
 	    }
@@ -304,6 +333,9 @@ bool CObjectStore::IsAGround(CGeometry *g)
 		(name == "GBorder2") || (name == "GCorner"))
     {
         GenTexCoords(g);
+
+		//CShader *pShader = CShader::getShader("PHONG_SHADER").glClone("PHONG");
+		//geo->setShader(pShader);
         *geo->getShader()->getMaterial() = *m_material;
 
         CTextureUnitSetup *tmuSetup = geo->getShader()->glGetTextureUnitsSetup();
@@ -410,7 +442,7 @@ bool CObjectStore::IsARoof(CGeometry *g)
 
 	if (name.substr(0,4) == "Roof")
 	{
-        geo->setShader(m_pRoofShader);
+		geo->setShader(m_pRoofShader);
 		return true;
 	}
 	else if (name == "TopRoof")
@@ -587,7 +619,8 @@ void CObjectStore::LoadModels(void)
 	factory.glLoadTexture(T,ROCKSCULPT);
 	m_textures->addTexture(T);
 
-    m_pRoofShader = new CShader("ROOF_SHADER");
+    //m_pRoofShader = new CShader("ROOF_SHADER");
+	m_pRoofShader = CShader::getShader("PHONG_SHADER").glClone("ROOF_SHADER");
     m_pRoofShader->setColor(0.2f,0.2f,0.2f,1.0f);
 	*m_pRoofShader->getMaterial() = *m_material;
 	CTextureUnitSetup *tmuSetup = m_pRoofShader->glGetTextureUnitsSetup();

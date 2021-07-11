@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
-/*  Copyright 1998-2019 by                                                 */
+/*  Copyright 1998-2021 by                                                 */
 /*  Fabrice FERRAND.                                                       */
 /*                                                                         */
 /*  This file is part of the Raptor project, and may only be used,         */
@@ -98,10 +98,10 @@ bool CGLWnd::GLCreateWindow (CString name,CWnd *parent, const CRaptorDisplayConf
 {
 	RECT GLRect;
 	
-	GLRect.top=glCreateStruct.y;
-	GLRect.left=glCreateStruct.x;
-	GLRect.right=glCreateStruct.x+glCreateStruct.width;
-	GLRect.bottom=glCreateStruct.y+glCreateStruct.height;
+	GLRect.top = glCreateStruct.y;
+	GLRect.left = glCreateStruct.x;
+	GLRect.right = glCreateStruct.x + glCreateStruct.width;
+	GLRect.bottom = glCreateStruct.y + glCreateStruct.height;
 
 	SetDefaultDisplayConfig(glCreateStruct);
 	

@@ -4,7 +4,7 @@
 /*                                                                         */
 /*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
 /*                                                                         */
-/*  Copyright 1998-2019 by                                                 */
+/*  Copyright 1998-2021 by                                                 */
 /*  Fabrice FERRAND.                                                       */
 /*                                                                         */
 /*  This file is part of the Raptor project, and may only be used,         */
@@ -293,8 +293,8 @@ bool CWin32EngineTaskManager::batchJobs(unsigned int batchId)
 
 void CWin32EngineTaskManager::computeAsyncJobs(DWORD id)
 {
-	unsigned int stack = 0;
-    for (unsigned int pos = 0; pos < asyncEngines.size(); pos++)
+	size_t stack = 0;
+    for (size_t pos = 0; pos < asyncEngines.size(); pos++)
     {
 		if (asyncEngines[pos].id == id)
             stack = pos;
@@ -321,7 +321,7 @@ void CWin32EngineTaskManager::computeAsyncJobs(DWORD id)
 		}
 		else
 		{
-			unsigned int sz = jobStackPool.size();
+			size_t sz = jobStackPool.size();
 			if (stack < sz)
 				computeJobs(stack);
 		}

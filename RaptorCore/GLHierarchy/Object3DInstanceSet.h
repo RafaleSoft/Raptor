@@ -1,6 +1,20 @@
-// Object3DInstanceSet.h: interface for the CObject3DInstanceSet class.
-//
-//////////////////////////////////////////////////////////////////////
+/***************************************************************************/
+/*                                                                         */
+/*  Object3DInstanceSet.h                                                  */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2021 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
 
 #if !defined(AFX_OBJECT3DINSTANCESET_H__4552BADA_3CE7_40A5_9FE3_C10D58360193__INCLUDED_)
 #define AFX_OBJECT3DINSTANCESET_H__4552BADA_3CE7_40A5_9FE3_C10D58360193__INCLUDED_
@@ -38,6 +52,9 @@ public:
 	//! The transform supplied is relative to the previous object
 	//void Instantiate(CObject3D * const instance,const GL_MATRIX &transform);
 
+	//!	Returns the list of shaders in this object hierachy.
+	virtual void getShaders(std::vector<CShader*> &shaders);
+
 	virtual void glRender();
 
 	virtual void glClipRender();
@@ -53,7 +70,7 @@ private:
 		GL_MATRIX	transform;
 		CObject3D	*pObject;
 	} ObjectInstance;
-	vector<ObjectInstance>	m_pObjects;
+	std::vector<ObjectInstance>	m_pObjects;
 
     CGenericMatrix<float>   m_finalTransform;
 };
