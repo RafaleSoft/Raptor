@@ -376,8 +376,10 @@ void CRaptorConsole::displayHelp(void)
 	m_items.push_back(t);
 }
 
-void CRaptorConsole::glInit(const std::string &fontPath,bool useVectors)
+bool CRaptorConsole::glInit(const std::string &fontPath,bool useVectors)
 {
+	if (NULL != m_pInput)
+		delete m_pInput;
 	m_pInput = new CInputCollector<CRaptorConsole>(*this);
     m_bIsActive = false;
 	m_bUseVectors = useVectors;
@@ -396,6 +398,7 @@ void CRaptorConsole::glInit(const std::string &fontPath,bool useVectors)
 		{
 			delete m_pFont;
 			m_pFont = NULL;
+			return false;
 		}
 	}
 	else
@@ -405,6 +408,7 @@ void CRaptorConsole::glInit(const std::string &fontPath,bool useVectors)
 		{
 			delete m_pFont;
 			m_pFont = NULL;
+			return false;
 		}
         else
             m_bUseVectors = true;
@@ -422,6 +426,8 @@ void CRaptorConsole::glInit(const std::string &fontPath,bool useVectors)
 		yacc->DisplayError(false);
 		yacc->InitAnalyse();
 	}
+
+	return true;
 }
 
 void CRaptorConsole::glRender(void)

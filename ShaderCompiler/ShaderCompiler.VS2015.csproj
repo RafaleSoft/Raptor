@@ -78,7 +78,7 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release_with_AddOns|x64'">
-    <OutputPath>..\Build\VS2017\Release_with_AddOns\x64\</OutputPath>
+    <OutputPath>..\Build\VS2015\Release_with_AddOns\x64\</OutputPath>
     <DefineConstants>TRACE;DEBUG</DefineConstants>
     <Optimize>false</Optimize>
     <DebugType>pdbonly</DebugType>
