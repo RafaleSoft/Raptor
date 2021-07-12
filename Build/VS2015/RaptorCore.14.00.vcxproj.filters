@@ -620,6 +620,9 @@
     <ClCompile Include="..\..\RaptorCore\Subsys\OpenGL\OpenGLTextureObject.cpp">
       <Filter>Source Files\Subsys src\OpenGL</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\RaptorCore\GLHierarchy\ShaderBloc.cpp">
+      <Filter>Source Files\GLHierarchy src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\RaptorCore\Engine\3DEngine.h">
@@ -1182,6 +1185,9 @@
     </ClInclude>
     <ClInclude Include="..\..\RaptorCore\Subsys\OpenGL\OpenGLTextureObject.h">
       <Filter>Header Files\Subsys include\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorCore\GLHierarchy\ShaderBloc.h">
+      <Filter>Header Files\GLHierarchy include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

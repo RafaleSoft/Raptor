@@ -38,8 +38,8 @@
             this.port = new System.Windows.Forms.TextBox();
             this.host = new System.Windows.Forms.TextBox();
             this.Connect = new System.Windows.Forms.Button();
-            this.Scene = new System.Windows.Forms.Label();
             this.Assets = new System.Windows.Forms.ListBox();
+            this.Scene = new System.Windows.Forms.Label();
             this.Render = new System.Windows.Forms.Button();
             this.Open = new System.Windows.Forms.Button();
             this.Configuration = new System.Windows.Forms.Button();
@@ -120,16 +120,6 @@
             this.Connect.UseVisualStyleBackColor = true;
             this.Connect.Click += new System.EventHandler(this.onConnect);
             // 
-            // Scene
-            // 
-            this.Scene.AutoSize = true;
-            this.Scene.Location = new System.Drawing.Point(7, 16);
-            this.Scene.Name = "Scene";
-            this.Scene.Size = new System.Drawing.Size(41, 13);
-            this.Scene.TabIndex = 7;
-            this.Scene.Text = "Scene:";
-            this.Scene.TextChanged += new System.EventHandler(this.onSceneChanged);
-            // 
             // groupBox2
             // 
             groupBox2.Controls.Add(this.Assets);
@@ -151,6 +141,16 @@
             this.Assets.Name = "Assets";
             this.Assets.Size = new System.Drawing.Size(205, 56);
             this.Assets.TabIndex = 8;
+            // 
+            // Scene
+            // 
+            this.Scene.AutoSize = true;
+            this.Scene.Location = new System.Drawing.Point(7, 16);
+            this.Scene.Name = "Scene";
+            this.Scene.Size = new System.Drawing.Size(41, 13);
+            this.Scene.TabIndex = 7;
+            this.Scene.Text = "Scene:";
+            this.Scene.TextChanged += new System.EventHandler(this.onSceneChanged);
             // 
             // Render
             // 
@@ -261,7 +261,9 @@
             this.Controls.Add(groupBox1);
             this.Controls.Add(groupBox2);
             this.Controls.Add(groupBox3);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MaximizeBox = false;
             this.Name = "RaysClientForm";
             this.Text = "Rays Client";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.onClose);

@@ -48,6 +48,7 @@ public:
 	//!	Utilities
 	//!
     static unsigned int sockNameToAddr(const std::string& address);
+	static std::string AddrTosockName(unsigned int address);
 	//!	Retrieve the WinSock2 sublayer error.
 	static std::string networkErrors(const std::string& extmsg);
 	//!	Computes a CRC on input buffer.

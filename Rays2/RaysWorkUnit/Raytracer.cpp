@@ -99,7 +99,7 @@ void CRaytracerData::updateCamera(const rays_config_t &config)
 	camera.focale = config.focale;
 	camera.object_plane = config.object_plane;
 	camera.crease = (float)(PI_SUR_180 * config.crease);
-	camera.photon_map = config.photon_map;
+	camera.photon_map = 0; // config.photon_map;
 }
 
 //

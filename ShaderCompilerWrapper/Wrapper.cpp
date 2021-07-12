@@ -201,7 +201,8 @@ void CRenderer::glInitRenderer()
 	props.enableLighting.disableTexturing;
 
 	CRaptorConsole *pConsole = Raptor::GetConsole();
-	pConsole->glInit("", true);
+	if (!pConsole->glInit("", true))
+		pConsole->glInit("", false);
 	pConsole->showStatus(true);
 	pConsole->showFPS(true);
 	pConsole->showFrameTime(true);

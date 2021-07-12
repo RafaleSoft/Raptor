@@ -101,6 +101,10 @@ bool CGLVectorFont::glGenGlyphs(float precision,
 								float extrusion,
 								float scale)
 {
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+	if (NULL == instance.m_pVectorFontShader)
+		return false;
+
 	glyph *glyphs = new glyph[FONT_SIZE];
 
 	if (NULL == font_linePointer)

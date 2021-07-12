@@ -41,12 +41,14 @@ RAPTOR_NAMESPACE
 namespace RaysServer {
 
 	class CServerSession;
+	class CDeamonManager;
+	class CJobManager;
 
 	class CServerTransport : public CServer<CServerSocket,CClientSocket>,
 							 public server_base_t::request_handler_t
 	{
 	public:
-		CServerTransport();
+		CServerTransport(CDeamonManager *pDeamon, CJobManager *pJob);
 		virtual ~CServerTransport();
 
 		//!	Returns this
@@ -84,9 +86,16 @@ namespace RaysServer {
 		bool Process_SES_CLOSE(request &rq);
 		bool Process_JOB_DATA(request &rq);
 		bool Process_JOB_START(request &rq);
+		bool Process_JOB_WUNIT(request &rq);
 
 		//!	
 		CServerSession *m_sessionManager;
+
+		//!
+		CDeamonManager *m_pDeamon;
+
+		//!
+		CJobManager *m_pJob;
 
 		//!	A separate request handler for asynchronous processing.
 		server_base_t::request_handler_t *m_pHandler;

@@ -353,8 +353,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 2, 17, 3, 2
- PRODUCTVERSION 2, 17, 3, 2
+ FILEVERSION 2, 17, 3, 35
+ PRODUCTVERSION 2, 17, 3, 35
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG           
  FILEFLAGS 0x1L
@@ -370,12 +370,12 @@ BEGIN
 		BLOCK "040c04b0"
 		BEGIN
 			VALUE "FileDescription", "Application MFC GLObjectViewer"
-			VALUE "FileVersion", "2.17.3.2"
+			VALUE "FileVersion", "2.17.3.35"
 			VALUE "InternalName", "GLObjectViewer"
 			VALUE "LegalCopyright", "Copyright (C) 2009"
 			VALUE "OriginalFilename", "GLObjectViewer.EXE"
 			VALUE "ProductName", "Application GLObjectViewer"
-			VALUE "ProductVersion", "2.17.3.2"
+			VALUE "ProductVersion", "2.17.3.35"
 		END
 	END
 	BLOCK "VarFileInfo"

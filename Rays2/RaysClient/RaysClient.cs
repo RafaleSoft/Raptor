@@ -19,7 +19,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
-
+using System.Runtime.InteropServices;
 
 namespace RaysClient
 {
@@ -110,11 +110,45 @@ namespace RaysClient
                 return false;
             }
 
-            byte[] nodata = new byte[6];
-            if (!network.SendMessage(RaysClientNetwork.JOB_START, 0, 0, 0, 0, 0, ref nodata))
+            // Part 4: start job with current client rendering configuration.
+            int len = Marshal.SizeOf(config);
+            byte[] cfg = new byte[len];
+
+            System.IntPtr ptr = Marshal.AllocHGlobal(len);
+            Marshal.StructureToPtr(config, ptr, true);
+            Marshal.Copy(ptr, cfg, 0, len);
+            Marshal.FreeHGlobal(ptr);
+                        
+            if (!network.SendMessage(RaysClientNetwork.JOB_START, 0, 0, 0, 0, 0, ref cfg))
             {
                 log.Error("Echec d'envoi du package RaysData.pck à Rays Server");
                 return false;
+            }
+            else
+            {
+                RaysClientNetwork.MSGSTRUCT msg = new RaysClientNetwork.MSGSTRUCT();
+                byte[] messageData = null;
+                if (network.ReceiveMessage(ref msg, ref messageData))
+                {
+                    if (RaysClientNetwork.JOB_ID == msg.msg_id)
+                    {
+                        job_id = (msg.msg_data1 << 32) + msg.msg_data0;
+                        if (job_id > 0)
+                            log.Info("Lancement du rendu par Rays Server du job: " + job_id.ToString());
+                        else
+                            log.Info("Avortement du rendu par Rays Server: par de workunit libre");
+                    }
+                    else
+                    {
+                        log.Error("Erreur de protocole de job Rays Server");
+                        return false;
+                    }
+                }
+                else
+                {
+                    log.Error("Echec de lancement du rendu par Rays Server");
+                    return false;
+                }
             }
 
             return true;
@@ -138,10 +172,10 @@ namespace RaysClient
 
         public bool Disconnect()
         {
-            if (CloseSession())
-                return network.Disconnect();
-            else
-                return false;
+            if (!CloseSession())
+                log.Error("Echec de fermeture de session Rays Server. Connection perdue ?");
+
+            return network.Disconnect();
         }
 
         public bool IsConnected()
@@ -182,6 +216,9 @@ namespace RaysClient
 
         public bool CloseSession()
         {
+            log.Info("Fermeture de session Rays Server:" + session_id.ToString());
+            session_id = 0;
+
             byte[] nodata = new byte[0];
             return network.SendMessage(RaysClientNetwork.SES_CLOSE, 0, 0, 0, 0, 0, ref nodata);
         }
@@ -208,6 +245,7 @@ namespace RaysClient
         private RaysClientNetwork network = new RaysClientNetwork();
         private RaysLogger log = null;
         private ulong session_id = 0;
+        private uint job_id = 0;
         private CFGSTRUCT config = new CFGSTRUCT();
     }
 }

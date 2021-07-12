@@ -27,17 +27,24 @@
 #if !defined(AFX_SERVERSESSION_H__CF5E6774_178C_4DF6_BB48_44B6AF2AB163__INCLUDED_)
 	#include "ServerSession.h"
 #endif
+#if !defined(AFX_DEAMONMANAGER_H__F7EF715A_5E86_4C65_B6E7_2751FAE87A91__INCLUDED_)
+	#include "DeamonManager.h"
+#endif
+#if !defined(AFX_JOBMANAGER_H__4E78312A_6362_46AF_A327_07208468529A__INCLUDED_)
+	#include "JobManager.h"
+#endif
+
 
 #include <iostream>
 
 using namespace RaysServer;
-
+using namespace Rays;
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
-CServerTransport::CServerTransport()
-	:m_pHandler(NULL), m_sessionManager(NULL)
+CServerTransport::CServerTransport(CDeamonManager *pDeamon, CJobManager *pJob)
+	:m_pHandler(NULL), m_sessionManager(NULL), m_pDeamon(pDeamon), m_pJob(pJob)
 {
 	m_sessionManager = new CServerSession();
 
@@ -45,6 +52,7 @@ CServerTransport::CServerTransport()
 	m_processors[SES_CLOSE] = &CServerTransport::Process_SES_CLOSE;
 	m_processors[JOB_DATA] = &CServerTransport::Process_JOB_DATA;
 	m_processors[JOB_START] = &CServerTransport::Process_JOB_START;
+	m_processors[JOB_WUNIT] = &CServerTransport::Process_JOB_WUNIT;
 }
 
 CServerTransport::~CServerTransport()
@@ -197,17 +205,73 @@ bool CServerTransport::Process_JOB_START(request &rq)
 	std::cout << "Rays Server starting job rendering for client: " << rq.id << std::endl;
 
 	CServerSession::session_t session = m_sessionManager->getSession(rq.id);
-
-	bool bdata = false;
 	if (session.id == rq.id)
 	{
-		uint8_t* raw_data = (uint8_t*)(rq.msg) + sizeof(MSGSTRUCT);
-		bdata = m_sessionManager->saveSessionFile(rq.id, "RaysData.pck", raw_data, rq.size - sizeof(MSGSTRUCT));
+		rays_config_t* config = (rays_config_t*)((uint8_t*)(rq.msg) + sizeof(MSGSTRUCT));
+
+		const CRaysSettings &settings = RaysUtils::getSettings();
+		uint32_t wuPerJob = 1;
+		settings.getValue<uint32_t>("nb_wu_per_job", wuPerJob);
+
+		uint32_t jobID = 0;
+		CDeamonManager::deamon_struct *pWU = NULL;
+		int nbWU = m_pDeamon->AllocateWorkUnits(wuPerJob, pWU);
+		if ((NULL == pWU) || (0 == nbWU))
+		{
+			std::cout << "No more registered work units available" << std::endl;
+			std::cout << "Rendering job cancelled !" << std::endl;
+		}
+		else
+		{
+			if (nbWU != wuPerJob)
+			{
+				std::cout << "Not enough work units available" << std::endl;
+				std::cout << "Rendering with lower capabilities !" << std::endl;
+			}
+
+			jobID = m_pJob->createJob(rq.id, config->width, config->height);
+
+			uint16_t port = getPort();
+			uint32_t addr = getHostAddr(0);
+			if (false == m_pDeamon->DispatchJobToWorkunits(jobID, port, addr, nbWU, pWU))
+			{
+				std::cout << "Server failed to dispatch job to available work units" << std::endl;
+			}
+		}
+
+		rq.reply = true;
+		rq.size = sizeof(MSGSTRUCT);	// this is the minimum size, so no need for reallocation.
+		rq.msg->msg_data[0] = jobID;
+		rq.msg->msg_data[1] = 0;
+		rq.msg->msg_data[2] = 0;
+		rq.msg->msg_data[3] = 0;
+		rq.msg->msg_data[4] = 0;
+		rq.msg->msg_id = JOB_ID;
+
+		CRaptorLock lock(m_mutex);
+		m_replies.push_back(rq);
+
+		delete[] pWU;
 	}
+
+	return true;
+}
+
+bool CServerTransport::Process_JOB_WUNIT(request &rq)
+{
+	std::cout << "Rays Server receiving Work Unit client connection: " << rq.id << std::endl;
+
+	//CServerSession::session_t session = m_sessionManager->getSession(rq.id);
+
+	//bool bdata = false;
+	//if (session.id == rq.id)
+	//{
+	//	uint8_t* raw_data = (uint8_t*)(rq.msg) + sizeof(MSGSTRUCT);
+	//	bdata = m_sessionManager->saveSessionFile(rq.id, "RaysData.pck", raw_data, rq.size - sizeof(MSGSTRUCT));
+	//}
 
 	//! No reply, delete allocated bloc because processing ends here.
 	delete[] rq.msg;
 
-	return bdata;
+	return false;
 }
-

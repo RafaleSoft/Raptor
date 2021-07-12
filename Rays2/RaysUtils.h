@@ -33,8 +33,6 @@
 
 namespace Rays
 {
-	class CDeamonManager;
-
 	class RaysUtils
 	{
 	public:

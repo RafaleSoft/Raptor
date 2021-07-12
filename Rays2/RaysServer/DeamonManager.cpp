@@ -1,6 +1,27 @@
+/***************************************************************************/
+/*                                                                         */
+/*  DeamonManager.cpp                                                      */
+/*                                                                         */
+/*    Raptor OpenGL & Vulkan realtime 3D Engine SDK.                       */
+/*                                                                         */
+/*  Copyright 1998-2019 by                                                 */
+/*  Fabrice FERRAND.                                                       */
+/*                                                                         */
+/*  This file is part of the Raptor project, and may only be used,         */
+/*  modified, and distributed under the terms of the Raptor project        */
+/*  license, LICENSE.  By continuing to use, modify, or distribute         */
+/*  this file you indicate that you have read the license and              */
+/*  understand and accept it fully.                                        */
+/*                                                                         */
+/***************************************************************************/
+
+
 #include "stdafx.h"
-#include "DeamonManager.h"
-#include "Subsys/CodeGeneration.h"
+#include <iostream>
+
+#if !defined(AFX_DEAMONMANAGER_H__F7EF715A_5E86_4C65_B6E7_2751FAE87A91__INCLUDED_)
+	#include "DeamonManager.h"
+#endif
 
 using namespace RaysServer;
 
@@ -20,9 +41,8 @@ bool CDeamonManager::UpdateDeamons(void) const
 {
 	bool res = true;
 	for (unsigned int i = 0; i < m_Deamons.size(); i++)
-	{
 		res = res && DeamonStatus(i);
-	}
+
 	return res;
 }
 
@@ -30,8 +50,8 @@ bool CDeamonManager::UpdateDeamons(void) const
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CDeamonManager::CDeamonManager(server_base_t *server)
-	:m_pServer(server), m_counter(0), m_deamonPoller(0),
+CDeamonManager::CDeamonManager()
+	:m_counter(0), m_deamonPoller(0),
 	m_pollingDelay(10), m_bExit(false)
 {
 }
@@ -69,9 +89,9 @@ bool CDeamonManager::unregisterDeamon(size_t numWU)
 	if (numWU >= m_Deamons.size())
 		return false;
 
-	DEAMONSTRUCT *lpWU = m_Deamons[numWU];
+	deamon_struct *lpWU = m_Deamons[numWU];
 	//!	Chage this condition: check owned jobs instead of available procs.
-	if (lpWU->nbProcsAvailable != lpWU->nbProcs)
+	if (lpWU->jobDone < 100.0f)
 		return false;
 
 	m_Deamons.erase(m_Deamons.begin() + numWU);
@@ -89,7 +109,7 @@ bool CDeamonManager::unregisterDeamon(size_t numWU)
 
 bool CDeamonManager::registerDeamon(const std::string& deamonIP, uint16_t port)
 {
-	CDeamonManager::DEAMONSTRUCT *WU;
+	CDeamonManager::deamon_struct *WU;
 
 	unsigned int pos = 0;
 	while (pos<m_Deamons.size())
@@ -100,14 +120,15 @@ bool CDeamonManager::registerDeamon(const std::string& deamonIP, uint16_t port)
 			return false;
 	}
 
-	CDeamonClient *connection = new CDeamonClient(m_pServer);
+	CDeamonClient *connection = new CDeamonClient();
 	if (connection->connectToServer(deamonIP, port))
 	{
-		WU = new CDeamonManager::DEAMONSTRUCT;
-		WU->deamonID = m_counter++;
+		m_counter++;
+
+		WU = new CDeamonManager::deamon_struct;
+		WU->deamonID = m_counter;
 		WU->jobDone = 0;
 		WU->nbProcs = 0;
-		WU->nbProcsAvailable = 0;
 		WU->active = false;
 		WU->deamonIP = deamonIP;
 		WU->connection = connection;
@@ -126,12 +147,11 @@ bool CDeamonManager::DeamonStatus(size_t numDeamon) const
 	if (numDeamon >= m_Deamons.size())
 		return false;
 
-	CDeamonManager::DEAMONSTRUCT * WU = m_Deamons[numDeamon];
-	if (NULL == WU)
+	CDeamonManager::deamon_struct * pDeamon = m_Deamons[numDeamon];
+	if (NULL == pDeamon)
 		return false;
 
-	WU->active = false;
-	if (NULL == WU->connection)
+	if (NULL == pDeamon->connection)
 		return false;
 
 	MSGSTRUCT msg;
@@ -141,20 +161,23 @@ bool CDeamonManager::DeamonStatus(size_t numDeamon) const
 	msg.msg_data[2] = 0;
 	msg.msg_data[3] = 0;
 	msg.msg_data[4] = 0;
-	WU->connection->write(&msg, MSGSIZE);
+	pDeamon->connection->write(&msg, MSGSIZE);
 
 	void * new_msg = NULL;
 	size_t size = 0;
-	WU->connection->read(new_msg, size);
+	pDeamon->connection->read(new_msg, size);
 	// check returned IP in msg.msg_data[4] for full safe query
 	if ((size != MSGSIZE) || (NULL == new_msg))
+	{
+		pDeamon->active = false;
 		return false;
+	}
 	
 	msg = *(LPMSGSTRUCT)new_msg;
-	WU->nbProcs = msg.msg_data[0];
-	WU->nbProcsAvailable = msg.msg_data[1];
-	WU->jobDone = msg.msg_data[2];
-	WU->active = true;
+	pDeamon->nbProcs = msg.msg_data[0];
+	pDeamon->nbWUAvailable = msg.msg_data[1];
+	pDeamon->jobDone = msg.msg_data[2];
+	pDeamon->active = true;
 	return true;
 }
 
@@ -204,7 +227,7 @@ bool CDeamonManager::InstallPlugin(unsigned int IP,unsigned int port,unsigned in
 }
 */
 
-const CDeamonManager::DEAMONSTRUCT * CDeamonManager::getDeamon(size_t numDeamon) const
+const CDeamonManager::deamon_struct * CDeamonManager::getDeamon(size_t numDeamon) const
 {
 	if (numDeamon < m_Deamons.size())
 		return m_Deamons[numDeamon];
@@ -229,8 +252,53 @@ bool CDeamonManager::ReleaseWorkUnit(unsigned short WUID)
 		return false;
 }
 */
-/*
-int CDeamonManager::AllocateWorkUnits(unsigned int requestedWU,const CDeamonManager::WORKUNITSTRUCT **&pListWU)
+
+bool CDeamonManager::DispatchJobToWorkunits(uint32_t jobID, 
+											uint16_t server_port, uint32_t server_host,
+											int nbWU, CDeamonManager::deamon_struct *pWU)
+{
+	bool dispatch = true;
+
+	for (unsigned int i = 0; i<nbWU; i++)
+	{
+		MSGSTRUCT msg;
+		m_counter++;
+
+		std::cout << "Requesting Deamon to run workunit id " << m_counter << std::endl;
+
+		msg.msg_id = DMN_DISPATCHJOB;
+		msg.msg_data[0] = m_counter;	// WUID
+		msg.msg_data[1] = jobID;
+		msg.msg_data[2] = server_host;
+		msg.msg_data[3] = server_port;
+		msg.msg_data[4] = 1; //priority;
+
+		pWU[i].connection->write(&msg, MSGSIZE);
+
+		void * new_msg = NULL;
+		size_t size = 0;
+		pWU[i].connection->read(new_msg, size);
+		// check returned IP in msg.msg_data[4] for full safe query
+		if ((size != MSGSIZE) || (NULL == new_msg))
+		{
+			std::cout << "Deamon failed to dispatch job ID " << jobID << std::endl;
+			dispatch = false;
+		}
+		else
+		{
+			msg = *(LPMSGSTRUCT)new_msg;
+			if ((DMN_DISPATCHJOB != msg.msg_id) || (0 == msg.msg_data[3]) || (0 == msg.msg_data[4]))
+			{
+				std::cout << "Deamon failed to run workunit id " << m_counter << std::endl;
+				dispatch = false;
+			}
+		}
+	}
+
+	return dispatch;
+}
+
+int CDeamonManager::AllocateWorkUnits(unsigned int requestedWU, deamon_struct* &pListWU)
 {
 	int *sWU = SelectWorkUnits(requestedWU);
 	if (sWU == NULL)
@@ -239,29 +307,22 @@ int CDeamonManager::AllocateWorkUnits(unsigned int requestedWU,const CDeamonMana
 		return 0;
 	}
 
-	CDeamonManager::WORKUNITSTRUCT **pWUs = new CDeamonManager::LPWORKUNITSTRUCT[sWU[0]];
-
 	int max = sWU[0];
-
+	deamon_struct* pWUs = new deamon_struct[max];
+	
 	for (int i=0;i<max;i++)
 	{
-		// getting an available work unit
-		CDeamonManager::LPWUREGSTRUCT lpWUReg = (CDeamonManager::LPWUREGSTRUCT)m_RegWorkUnits.GetAt(sWU[i+1]);
+		deamon_struct* pDeamon = m_Deamons[sWU[i + 1]];
 
 		// creating Work Unit job structure
-		pWUs[i] = new CDeamonManager::WORKUNITSTRUCT;
-		pWUs[i]->regID = sWU[i+1];
-		pWUs[i]->workUnitID = m_counter++;
-		m_WorkUnits.SetAt(pWUs[i]->workUnitID,pWUs[i]);
-
-		// setting extra parameters
-		pWUs[i]->jobDone = 0.0f;
+		pWUs[i] = *pDeamon;
+		pWUs[i].jobDone = 0.0f;
 	}
 
 	//	The deamon manager is the only one allowed
 	//	to modify a work unit, so even if not advised,
 	//	this cast is safe here
-	pListWU = (const CDeamonManager::WORKUNITSTRUCT **)pWUs;
+	pListWU = pWUs;
 
 	delete [] sWU;
 
@@ -270,30 +331,37 @@ int CDeamonManager::AllocateWorkUnits(unsigned int requestedWU,const CDeamonMana
 
 int* CDeamonManager::SelectWorkUnits(unsigned int requestedWU)
 {
-	if (m_RegWorkUnits.GetSize()==0)
+	if (m_Deamons.size()==0)
 		return NULL;
 	else
 	{
 		int *sWU = new int[requestedWU+1];
 		int pos=0;
 		unsigned int nb=0;
-		CDeamonManager::LPWUREGSTRUCT lpRegWU;
 
-		while ((pos<m_RegWorkUnits.GetSize())&&(nb<requestedWU))
+		deamon_struct* pDeamon = m_Deamons[pos];
+		int available = pDeamon->nbWUAvailable;
+		bool active = pDeamon->active;
+		
+		while ((pos < m_Deamons.size()) && (nb < requestedWU))
 		{
-			lpRegWU=((CDeamonManager::LPWUREGSTRUCT)m_RegWorkUnits.GetAt(pos));
-
-			if ((lpRegWU->available>0) && (lpRegWU->active))
+			if ((available > 0) && active)
 			{
-				lpRegWU->available--;
-				sWU[++nb]=pos;
+				available--;
+				sWU[++nb] = pos;
 			}
 			else
+			{
 				pos++;
+				pDeamon = m_Deamons[pos];
+				available = pDeamon->nbWUAvailable;
+				active = pDeamon->active;
+			}
 		}
-		sWU[0]=nb;
+
+		sWU[0] = nb;
 		return sWU;
 	}
 }
-*/
+
 
