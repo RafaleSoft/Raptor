@@ -46,20 +46,20 @@ bool CDShowStreaming::_isOfKind(const std::string &kind)
 	std::transform(ext.begin(), ext.end(), ext.begin(), ::toupper);
 
 	return (("AVI" == ext) ||
-		("3G2" == ext) ||
-		("3GP" == ext) ||
-		("3GP2" == ext) ||
-		("3GPP" == ext) ||
-		("ASF" == ext) ||
-		("AAC" == ext) ||
-		("ADTS" == ext) ||
-		("MP3" == ext) ||
-		("M4A" == ext) ||
-		("M4V" == ext) ||
-		("MOV" == ext) ||
-		("SAMI" == ext) ||
-		("SMI" == ext) ||
-		("WAV" == ext));
+			("3G2" == ext) ||
+			("3GP" == ext) ||
+			("3GP2" == ext) ||
+			("3GPP" == ext) ||
+			("ASF" == ext) ||
+			("AAC" == ext) ||
+			("ADTS" == ext) ||
+			("MP3" == ext) ||
+			("M4A" == ext) ||
+			("M4V" == ext) ||
+			("MOV" == ext) ||
+			("SAMI" == ext) ||
+			("SMI" == ext) ||
+			("WAV" == ext));
 }
 
 std::vector<std::string> CDShowStreaming::getKind(void) const

@@ -28,7 +28,9 @@
 #if !defined(AFX_DSHOWSTREAMING_H__039A618A_339A_4BE8_B61F_E7DA513185AA__INCLUDED_)
 	#include "Streaming/DShowStreaming.h"
 #endif
-
+#if !defined(AFX_NVSTREAMING_H__AC9C0954_0871_48E0_B487_07FC76C2CF47__INCLUDED_)
+	#include "Streaming/NVStreaming.h"
+#endif
 
 
 //////////////////////////////////////////////////////////////////////
@@ -55,8 +57,9 @@ bool CStreaming::installStreamers(void)
 #if defined(_WIN32)
 	pAnimator->setVideoKindIO(new CDShowStreaming());
 	pAnimator->setVideoKindIO(new CMFStreaming());
-	pAnimator->setVideoKindIO(new CAVIStreaming());
 	pAnimator->setVideoKindIO(new CWMVStreaming());
+	pAnimator->setVideoKindIO(new CNVStreaming());
+	pAnimator->setVideoKindIO(new CAVIStreaming());
 #endif
 
     return true;
@@ -78,10 +81,12 @@ bool CStreaming::installStreamer(const std::string& streamType)
 		pAnimator->setVideoKindIO(new CDShowStreaming());
 	else if (CMFStreaming::_isOfKind(ext))
 		pAnimator->setVideoKindIO(new CMFStreaming());
-	else if (CAVIStreaming::_isOfKind(ext))
-        pAnimator->setVideoKindIO(new CAVIStreaming());
 	else if (CWMVStreaming::_isOfKind(ext))
         pAnimator->setVideoKindIO(new CWMVStreaming());
+	else if (CNVStreaming::_isOfKind(ext))
+		pAnimator->setVideoKindIO(new CNVStreaming());
+	else if (CAVIStreaming::_isOfKind(ext))
+		pAnimator->setVideoKindIO(new CAVIStreaming());
 	else
 		res = false;
 #endif

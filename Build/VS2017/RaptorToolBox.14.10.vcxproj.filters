@@ -164,6 +164,9 @@
     <ClCompile Include="..\..\RaptorToolBox\Streaming\DShowStreaming.cpp">
       <Filter>Source Files\Streaming</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\RaptorToolBox\Streaming\NVStreaming.cpp">
+      <Filter>Source Files\Streaming</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\RaptorToolBox\Loaders\OBJScript_lex.h">
@@ -272,6 +275,9 @@
       <Filter>Header Files\Streaming</Filter>
     </ClInclude>
     <ClInclude Include="..\..\RaptorToolBox\Streaming\DShowStreaming.h">
+      <Filter>Header Files\Streaming</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorToolBox\Streaming\NVStreaming.h">
       <Filter>Header Files\Streaming</Filter>
     </ClInclude>
   </ItemGroup>

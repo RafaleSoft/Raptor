@@ -767,6 +767,7 @@ copy $(SolutionDir)$(ProjectName)\Toolbox.pck "%RAPTOR_ROOT%\Redist\bin\"
     <ClCompile Include="..\..\RaptorToolBox\Streaming\AVIStreaming.cpp" />
     <ClCompile Include="..\..\RaptorToolBox\Streaming\DShowStreaming.cpp" />
     <ClCompile Include="..\..\RaptorToolBox\Streaming\MFStreaming.cpp" />
+    <ClCompile Include="..\..\RaptorToolBox\Streaming\NVStreaming.cpp" />
     <ClCompile Include="..\..\RaptorToolBox\Streaming\WMVStreaming.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -834,6 +835,7 @@ copy $(SolutionDir)$(ProjectName)\Toolbox.pck "%RAPTOR_ROOT%\Redist\bin\"
     <ClInclude Include="..\..\RaptorToolBox\Streaming\AVIStreaming.h" />
     <ClInclude Include="..\..\RaptorToolBox\Streaming\DShowStreaming.h" />
     <ClInclude Include="..\..\RaptorToolBox\Streaming\MFStreaming.h" />
+    <ClInclude Include="..\..\RaptorToolBox\Streaming\NVStreaming.h" />
     <ClInclude Include="..\..\RaptorToolBox\Streaming\WMVStreaming.h" />
   </ItemGroup>
   <ItemGroup>
