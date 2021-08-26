@@ -31,6 +31,7 @@
 
 RAPTOR_NAMESPACE
 
+class CRenderer;
 
 class CNVStreaming : public CAnimator::IVideoIO
 {
@@ -67,6 +68,8 @@ private:
     LONG			streamPos;
     bool			locked;
 	LONGLONG		m_Duration;
+
+	CRenderer*		m_pRenderer;
 };
 
 #endif	// !defined(AFX_NVSTREAMING_H__AC9C0954_0871_48E0_B487_07FC76C2CF47__INCLUDED_)

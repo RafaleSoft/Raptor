@@ -15,12 +15,12 @@
 #include "dynlink_cuda.h" // <cuda.h>
 #include "dynlink_cudaGL.h" //<cudaGL.h>
 
-#include <GL/glew.h>
+#include <GL/gl.h>
 
 #if defined(__APPLE__) || defined(__MACOSX)
 #include <GLUT/glut.h>
 #else
-#include <GL/freeglut.h>
+//#include <GL/freeglut.h>
 #endif
 
 #define PAD_ALIGN(x,mask) ( (x + mask) & ~mask )

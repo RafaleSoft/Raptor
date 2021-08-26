@@ -167,6 +167,33 @@
     <ClCompile Include="..\..\RaptorToolBox\Streaming\NVStreaming.cpp">
       <Filter>Source Files\Streaming</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\RaptorToolBox\Streaming\NVCuVid\FrameQueue.cpp">
+      <Filter>Source Files\Streaming</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorToolBox\Streaming\NVCuVid\VideoSource.cpp">
+      <Filter>Source Files\Streaming</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorToolBox\Streaming\NVCuVid\ImageGL.cpp">
+      <Filter>Source Files\Streaming</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorToolBox\Streaming\NVCuVid\cudaProcessFrame.cpp">
+      <Filter>Source Files\Streaming</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorToolBox\Streaming\NVCuVid\VideoDecoder.cpp">
+      <Filter>Source Files\Streaming</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorToolBox\Streaming\NVCuVid\VideoParser.cpp">
+      <Filter>Source Files\Streaming</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorToolBox\Streaming\NVCuVid\cudaModuleMgr.cpp">
+      <Filter>Source Files\Streaming</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorToolBox\Streaming\NVCuVid\dynlink_cuda.cpp">
+      <Filter>Source Files\Streaming</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\RaptorToolBox\Streaming\NVCuVid\dynlink_nvcuvid.cpp">
+      <Filter>Source Files\Streaming</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\RaptorToolBox\Loaders\OBJScript_lex.h">
@@ -278,6 +305,27 @@
       <Filter>Header Files\Streaming</Filter>
     </ClInclude>
     <ClInclude Include="..\..\RaptorToolBox\Streaming\NVStreaming.h">
+      <Filter>Header Files\Streaming</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorToolBox\Streaming\NVCuVid\FrameQueue.h">
+      <Filter>Header Files\Streaming</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorToolBox\Streaming\NVCuVid\ImageGL.h">
+      <Filter>Header Files\Streaming</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorToolBox\Streaming\NVCuVid\VideoSource.h">
+      <Filter>Header Files\Streaming</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorToolBox\Streaming\NVCuVid\cudaProcessFrame.h">
+      <Filter>Header Files\Streaming</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorToolBox\Streaming\NVCuVid\VideoDecoder.h">
+      <Filter>Header Files\Streaming</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorToolBox\Streaming\NVCuVid\VideoParser.h">
+      <Filter>Header Files\Streaming</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\RaptorToolBox\Streaming\NVCuVid\cudaModuleMgr.h">
       <Filter>Header Files\Streaming</Filter>
     </ClInclude>
   </ItemGroup>

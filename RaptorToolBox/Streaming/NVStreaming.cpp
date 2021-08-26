@@ -28,18 +28,61 @@
 	#include "Streaming/NVStreaming.h"
 #endif
 
+#include "DataManager/RaptorDataManager.h"
+
+
 // CUDA Header includes
 #include "NVCuVid/dynlink_nvcuvid.h" // <nvcuvid.h>
 #include "NVCuVid/dynlink_cuda.h"    // <cuda.h>
 #include "NVCuVid/dynlink_cudaGL.h"  // <cudaGL.h>
 #include "NVCuVid/dynlink_builtin_types.h"
+#include "NVCuVid/helper_cuda_drvapi.h"
 
 #include "NVCuVid/ImageGL.h"
+#include "NVCuVid/FrameQueue.h"
+#include "NVCuVid/VideoSource.h"
+#include "NVCuVid/VideoDecoder.h"
+#include "NVCuVid/VideoParser.h"
+#include "NVCuVid/cudaModuleMgr.h"
+#include "NVCuVid/cudaProcessFrame.h"
 
-CUcontext	g_oContext = 0;
+CUcontext          g_oContext = 0;
+CUdevice           g_oDevice = 0;
+cudaVideoCreateFlags g_eVideoCreateFlags = cudaVideoCreate_PreferCUVID;
+CUmoduleManager   *g_pCudaModule = 0;
+CUstream           g_KernelSID = 0;
+//CUmodule           cuModNV12toARGB = 0;
+CUfunction         g_kernelNV12toARGB = 0;
+CUfunction         g_kernelPassThru = 0;
+
+FrameQueue    *g_pFrameQueue = 0;
+VideoSource   *g_pVideoSource = 0;
+VideoParser   *g_pVideoParser = 0;
+VideoDecoder  *g_pVideoDecoder = 0;
+
+bool			g_bUpdateCSC = true;
+eColorSpace        g_eColorSpace = ITU601;
+float              g_nHue = 0.0f;
+
 ImageGL		*g_pImageGL = 0; // if we're using OpenGL
-CUdeviceptr	g_pInteropFrame[2] = { 0, 0 }; // if we're using CUDA malloc
+int			g_DeviceID = 0;
 
+bool         g_bIsProgressive = true; // assume it is progressive, unless otherwise noted
+unsigned int g_DecodeFrameCount = 0;
+
+unsigned int g_nWindowWidth = 0;
+unsigned int g_nWindowHeight = 0;
+
+unsigned int g_nClientAreaWidth = 0;
+unsigned int g_nClientAreaHeight = 0;
+
+unsigned int g_nVideoWidth = 0;
+unsigned int g_nVideoHeight = 0;
+
+CUvideoctxlock       g_CtxLock = NULL;
+
+CUdeviceptr	g_pInteropFrame[2] = { 0, 0 }; // if we're using CUDA malloc
+/*
 #define checkCudaErrors(err)  __checkCudaErrors (err, __FILE__, __LINE__)
 
 // These are the inline versions for all of the SDK helper functions
@@ -58,7 +101,7 @@ inline void __checkCudaErrors(CUresult err, const char *file, const int line)
 		RAPTOR_ERROR(CAnimator::CAnimatorClassID::GetClassId(), msg.str());
 	}
 }
-
+*/
 bool CNVStreaming::isOfKind(const std::string &kind) const
 {
 	return _isOfKind(kind);
@@ -95,8 +138,17 @@ std::vector<std::string> CNVStreaming::getKind(void) const
 	return result;
 }
 
+class CRenderer
+{
+public:
+	CRenderer() {};
+
+	unsigned int m_lVidWidth;
+	unsigned int m_lVidHeight;
+};
+
 CNVStreaming::CNVStreaming()
-	:frameLength(0.0f), streamPos(0), locked(false), m_Duration(0) 
+	:frameLength(0.0f), streamPos(0), locked(false), m_Duration(0), m_pRenderer(NULL)
 {
 	// Initialize the CUDA and NVCUVID
 #if defined(WIN32) || defined(_WIN32) || defined(WIN64) || defined(_WIN64)
@@ -116,6 +168,8 @@ bool initGL(void)
 	int dev, device_count = 0;
 	bool bSpecifyDevice = false;
 	char device_name[256];
+
+	int bTCC = 0;
 
 	// Check for a min spec of Compute 1.1 capability before running
 	checkCudaErrors(cuDeviceGetCount(&device_count));
@@ -137,11 +191,10 @@ bool initGL(void)
 				return false;
 			}
 
-#if CUDA_VERSION >= 3020
-			checkCudaErrors(cuDeviceGetAttribute(pbTCC, CU_DEVICE_ATTRIBUTE_TCC_DRIVER, dev));
-			printf("  -> GPU %d: < %s > driver mode is: %s\n", dev, device_name, *pbTCC ? "TCC" : "WDDM");
+			checkCudaErrors(cuDeviceGetAttribute(&bTCC, CU_DEVICE_ATTRIBUTE_TCC_DRIVER, dev));
+			printf("  -> GPU %d: < %s > driver mode is: %s\n", dev, device_name, bTCC ? "TCC" : "WDDM");
 
-			if (*pbTCC)
+			if (bTCC)
 			{
 				continue;
 			}
@@ -149,23 +202,6 @@ bool initGL(void)
 			{
 				g_DeviceID = i; // we choose an available WDDM display device
 			}
-
-#else
-
-			// We don't know for sure if this is a TCC device or not, if it is Tesla we will not run
-			if (!STRNCASECMP(device_name, "Tesla", 5))
-			{
-				printf("  \"%s\" does not support %s\n", device_name, sSDKname);
-				*pbTCC = 1;
-				return false;
-			}
-			else
-			{
-				*pbTCC = 0;
-			}
-
-#endif
-			printf("\n");
 		}
 	}
 	else
@@ -181,62 +217,76 @@ bool initGL(void)
 		checkCudaErrors(cuDeviceGet(&dev, g_DeviceID));
 		checkCudaErrors(cuDeviceGetName(device_name, 256, dev));
 
-#if CUDA_VERSION >= 3020
-		checkCudaErrors(cuDeviceGetAttribute(pbTCC, CU_DEVICE_ATTRIBUTE_TCC_DRIVER, dev));
-		printf("  -> GPU %d: < %s > driver mode is: %s\n", dev, device_name, *pbTCC ? "TCC" : "WDDM");
-#else
-
-		// We don't know for sure if this is a TCC device or not, if it is Tesla we will not run
-		if (!STRNCASECMP(device_name, "Tesla", 5))
-		{
-			printf("  \"%s\" does not support %s\n", device_name, sSDKname);
-			*pbTCC = 1;
-			return false;
-		}
-		else
-		{
-			*pbTCC = 0;
-		}
-
-#endif
+		checkCudaErrors(cuDeviceGetAttribute(&bTCC, CU_DEVICE_ATTRIBUTE_TCC_DRIVER, dev));
+		printf("  -> GPU %d: < %s > driver mode is: %s\n", dev, device_name, bTCC ? "TCC" : "WDDM");
 	}
 
-	if (!(*pbTCC))
+	// initialize GLUT
+	/*
+	glutInit(&argc, argv);
+	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE);
+	glutInitWindowSize(g_nWindowWidth, g_nWindowHeight);
+	glutCreateWindow(sAppName);
+	reshape(g_nWindowWidth, g_nWindowHeight);
+
+	printf(">> initGL() creating window [%d x %d]\n", g_nWindowWidth, g_nWindowHeight);
+
+	glutDisplayFunc(display);
+	glutReshapeFunc(reshape);
+	glutKeyboardFunc(keyboard);
+	glutIdleFunc(idle);
+
+	glewInit();
+
+	if (!glewIsSupported("GL_VERSION_1_5 GL_ARB_vertex_buffer_object GL_ARB_pixel_buffer_object"))
 	{
-		// initialize GLUT
-		glutInit(&argc, argv);
-		glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE);
-		glutInitWindowSize(g_nWindowWidth, g_nWindowHeight);
-		glutCreateWindow(sAppName);
-		reshape(g_nWindowWidth, g_nWindowHeight);
-
-		printf(">> initGL() creating window [%d x %d]\n", g_nWindowWidth, g_nWindowHeight);
-
-		glutDisplayFunc(display);
-		glutReshapeFunc(reshape);
-		glutKeyboardFunc(keyboard);
-		glutIdleFunc(idle);
-
-		glewInit();
-
-		if (!glewIsSupported("GL_VERSION_1_5 GL_ARB_vertex_buffer_object GL_ARB_pixel_buffer_object"))
-		{
-			fprintf(stderr, "Error: failed to get minimal extensions for demo\n");
-			fprintf(stderr, "This sample requires:\n");
-			fprintf(stderr, "  OpenGL version 1.5\n");
-			fprintf(stderr, "  GL_ARB_vertex_buffer_object\n");
-			fprintf(stderr, "  GL_ARB_pixel_buffer_object\n");
-			return true;
-		}
-
-		setVSync(g_bUseVsync ? 1 : 0);
+		fprintf(stderr, "Error: failed to get minimal extensions for demo\n");
+		fprintf(stderr, "This sample requires:\n");
+		fprintf(stderr, "  OpenGL version 1.5\n");
+		fprintf(stderr, "  GL_ARB_vertex_buffer_object\n");
+		fprintf(stderr, "  GL_ARB_pixel_buffer_object\n");
+		return true;
 	}
-	else
-	{
-		fprintf(stderr, "> %s is decoding w/o visualization\n", sSDKname);
-	}
+
+	setVSync(g_bUseVsync ? 1 : 0);
+	*/
 
 	return true;
+}
+
+
+// Initializes OpenGL Textures (allocation and initialization)
+bool
+initGLTexture(unsigned int nWidth, unsigned int nHeight)
+{
+	g_pImageGL = new ImageGL(	nWidth, nHeight,
+								nWidth, nHeight,
+								g_bIsProgressive,
+								ImageGL::BGRA_PIXEL_FORMAT);
+	g_pImageGL->clear(0x80);
+
+	g_pImageGL->setCUDAcontext(g_oContext);
+	g_pImageGL->setCUDAdevice(g_oDevice);
+
+	return true;
+}
+
+
+void
+initCudaVideo()
+{
+	// bind the context lock to the CUDA context
+	CUresult result = cuvidCtxLockCreate(&g_CtxLock, g_oContext);
+
+	if (result != CUDA_SUCCESS)
+	{
+		printf("cuvidCtxLockCreate failed: %d\n", result);
+		assert(0);
+	}
+
+	g_pVideoDecoder = new VideoDecoder(g_pVideoSource->format(), g_oContext, g_eVideoCreateFlags, g_CtxLock);
+	g_pVideoParser = new VideoParser(g_pVideoDecoder, g_pFrameQueue, &g_oContext);
+	g_pVideoSource->setParser(*g_pVideoParser);
 }
 
 bool initCudaResources()
@@ -245,18 +295,10 @@ bool initCudaResources()
 
 	// If we want to use Graphics Interop, then choose the GPU that is capable
 	initGL();
-	g_bUseInterop = true;
 
-	if (g_bUseInterop && !(*bTCC))
-	{
-		cuda_device = findCudaGLDeviceDRV(argc, (const char **)argv);
-		checkCudaErrors(cuDeviceGet(&g_oDevice, cuda_device));
-	}
-	else
-	{
-		cuda_device = findCudaDeviceDRV(argc, (const char **)argv);
-		checkCudaErrors(cuDeviceGet(&g_oDevice, cuda_device));
-	}
+	const char *argv[1] = { "" };
+	cuda_device = findCudaGLDeviceDRV(0, (const char**)argv);
+	checkCudaErrors(cuDeviceGet(&g_oDevice, cuda_device));
 
 	// get compute capabilities and the devicename
 	int major, minor;
@@ -264,39 +306,33 @@ bool initCudaResources()
 	char deviceName[256];
 	checkCudaErrors(cuDeviceComputeCapability(&major, &minor, g_oDevice));
 	checkCudaErrors(cuDeviceGetName(deviceName, 256, g_oDevice));
-	printf("> Using GPU Device %d: %s has SM %d.%d compute capability\n", cuda_device, deviceName, major, minor);
-
 	checkCudaErrors(cuDeviceTotalMem(&totalGlobalMem, g_oDevice));
-	printf("  Total amount of global memory:     %4.4f MB\n", (float)totalGlobalMem / (1024 * 1024));
 
 	// Create CUDA Device w/ GL interop (if WDDM), otherwise CUDA w/o interop (if TCC)
 	// (use CU_CTX_BLOCKING_SYNC for better CPU synchronization)
-	if (g_bUseInterop && !(*bTCC))
+	checkCudaErrors(cuGLCtxCreate(&g_oContext, CU_CTX_BLOCKING_SYNC, g_oDevice));
+
+	CRaptorDataManager  *dataManager = CRaptorDataManager::GetInstance();
+	if (dataManager == NULL)
 	{
-		checkCudaErrors(cuGLCtxCreate(&g_oContext, CU_CTX_BLOCKING_SYNC, g_oDevice));
-	}
-	else
-	{
-		checkCudaErrors(cuCtxCreate(&g_oContext, CU_CTX_BLOCKING_SYNC, g_oDevice));
+		return false;
 	}
 
 	try
 	{
+		std::string module_path;
 		// Initialize CUDA releated Driver API (32-bit or 64-bit), depending the platform running
 		if (sizeof(void *) == 4)
-		{
-			g_pCudaModule = new CUmoduleManager("NV12ToARGB_drvapi_Win32.ptx", exec_path, 2, 2, 2);
-		}
+			module_path = dataManager->exportFile("NV12ToARGB_drvapi_Win32.ptx");
 		else
-		{
-			g_pCudaModule = new CUmoduleManager("NV12ToARGB_drvapi_x64.ptx", exec_path, 2, 2, 2);
-		}
+			module_path = dataManager->exportFile("NV12ToARGB_drvapi_x64.ptx");
+		g_pCudaModule = new CUmoduleManager(module_path.c_str(), 2, 2, 2);
 	}
 	catch (char const *p_file)
 	{
 		// If the CUmoduleManager constructor fails to load the PTX file, it will throw an exception
-		printf("\n>> CUmoduleManager::Exception!  %s not found!\n", p_file);
-		printf(">> Please rebuild NV12ToARGB_drvapi.cu or re-install this sample.\n");
+		//printf("\n>> CUmoduleManager::Exception!  %s not found!\n", p_file);
+		//printf(">> Please rebuild NV12ToARGB_drvapi.cu or re-install this sample.\n");
 		return false;
 	}
 
@@ -307,26 +343,13 @@ bool initCudaResources()
 	/////////////////Change///////////////////////////
 	// Now we create the CUDA resources and the CUDA decoder context
 	initCudaVideo();
-
-	if (g_bUseInterop)
-	{
-		initGLTexture(g_pVideoDecoder->targetWidth(),
-			g_pVideoDecoder->targetHeight());
-	}
-	else
-	{
-		checkCudaErrors(cuMemAlloc(&g_pInteropFrame[0], g_pVideoDecoder->targetWidth() * g_pVideoDecoder->targetHeight() * 2));
-		checkCudaErrors(cuMemAlloc(&g_pInteropFrame[1], g_pVideoDecoder->targetWidth() * g_pVideoDecoder->targetHeight() * 2));
-	}
+	initGLTexture(g_pVideoDecoder->targetWidth(), g_pVideoDecoder->targetHeight());
 
 	CUcontext cuCurrent = NULL;
 	CUresult result = cuCtxPopCurrent(&cuCurrent);
 
 	if (result != CUDA_SUCCESS)
-	{
-		printf("cuCtxPopCurrent: %d\n", result);
-		assert(0);
-	}
+		return false;
 
 	/////////////////////////////////////////
 	return ((g_pCudaModule && g_pVideoDecoder) ? true : false);
@@ -352,11 +375,6 @@ void freeCudaResources(bool bDestroyContext)
 	if (g_pFrameQueue)
 	{
 		delete g_pFrameQueue;
-	}
-
-	if (g_ReadbackSID)
-	{
-		checkCudaErrors(cuStreamDestroy(g_ReadbackSID));
 	}
 
 	if (g_KernelSID)
@@ -410,137 +428,179 @@ void CNVStreaming::seekFrame(unsigned int framePos)
 {
 }
 
-//-----------------------------------------------------------------------------
-// CTextureRenderer Class Declarations
-//-----------------------------------------------------------------------------
-struct __declspec(uuid("{71771540-2017-11cf-ae26-0020afd79767}")) CLSID_TextureRenderer;
-class CTextureRenderer : public CBaseVideoRenderer
-{
-public:
-	CTextureRenderer(LPUNKNOWN pUnk, HRESULT *phr);
-	~CTextureRenderer();
-
-public:
-	HRESULT DoRenderSample(IMediaSample *pMediaSample); // New video sample
-
-	LONG	m_lVidWidth;   // Video width
-	LONG	m_lVidHeight;  // Video Height
-	LONG	m_lVidPitch;   // Video Pitch
-	
-	float	frameLength;
-
-	LONGLONG sampleStart;
-	LONGLONG sampleEnd;
-
-	uint8_t	*m_pFrameBuffer;
-};
-
 unsigned int CNVStreaming::getWidth() const
 {
-	CTextureRenderer *txt = (CTextureRenderer *)m_pFilter;
-	
-	return txt->m_lVidWidth;
+	return g_pVideoDecoder->targetWidth();
 };
 
 unsigned int CNVStreaming::getHeight() const
 {
-	CTextureRenderer *txt = (CTextureRenderer *)m_pFilter;
-
-	return txt->m_lVidHeight;
+	return g_pVideoDecoder->targetHeight();
 };
 
 
-bool CNVStreaming::readFrame(unsigned char *& readBuffer, float timestamp)
+
+// This is the CUDA stage for Video Post Processing.  Last stage takes care of the NV12 to ARGB
+void cudaPostProcessFrame(	CUdeviceptr *ppDecodedFrame, size_t nDecodedPitch,
+							CUdeviceptr *ppTextureData, size_t nTexturePitch,
+							CUmodule cuModNV12toARGB,
+							CUfunction fpCudaKernel, CUstream streamID)
 {
-	if ((!locked) || (m_pControl == NULL))
-		return false;
+	uint32_t nWidth = g_pVideoDecoder->targetWidth();
+	uint32_t nHeight = g_pVideoDecoder->targetHeight();
 
-	renderVideoFrame(g_bUseInterop);
-
-	CTextureRenderer *txt = (CTextureRenderer*)m_pFilter;
-	readBuffer = txt->m_pFrameBuffer;
-	streamPos++;
-
-	if ((m_pRenderer->sampleEnd >= m_Duration) && (NULL != m_pSeeking))
+	// Upload the Color Space Conversion Matrices
+	if (g_bUpdateCSC)
 	{
-		seekFrame(0);
-		streamPos = 0;
-		m_pRenderer->sampleStart = 0;
-		m_pRenderer->sampleEnd = 0;
+		// CCIR 601/709
+		float hueColorSpaceMat[9];
+		setColorSpaceMatrix(g_eColorSpace, hueColorSpaceMat, g_nHue);
+		updateConstantMemory_drvapi(cuModNV12toARGB, hueColorSpaceMat);
+
+		g_bUpdateCSC = false;
+	}
+
+	// TODO: Stage for handling video post processing
+
+	// Final Stage: NV12toARGB color space conversion
+	cudaLaunchNV12toARGBDrv(*ppDecodedFrame, nDecodedPitch,
+							*ppTextureData, nTexturePitch,
+							nWidth, nHeight, fpCudaKernel, streamID);
+}
+
+// Run the Cuda part of the computation (if g_pFrameQueue is empty, then return false)
+bool copyDecodedFrameToTexture(unsigned int &nRepeats, int bUseInterop, int *pbIsProgressive)
+{
+	CUVIDPARSERDISPINFO oDisplayInfo;
+
+	if (g_pFrameQueue->dequeue(&oDisplayInfo))
+	{
+		CCtxAutoLock lck(g_CtxLock);
+		// Push the current CUDA context (only if we are using CUDA decoding path)
+		cuCtxPushCurrent(g_oContext);
+
+		CUdeviceptr  pDecodedFrame[2] = { 0, 0 };
+		CUdeviceptr  pInteropFrame[2] = { 0, 0 };
+
+		*pbIsProgressive = oDisplayInfo.progressive_frame;
+		g_bIsProgressive = oDisplayInfo.progressive_frame ? true : false;
+
+		int distinct_fields = 1;
+		if (!oDisplayInfo.progressive_frame && oDisplayInfo.repeat_first_field <= 1) {
+			distinct_fields = 2;
+		}
+		nRepeats = oDisplayInfo.repeat_first_field;
+
+		for (int active_field = 0; active_field < distinct_fields; active_field++)
+		{
+			CUVIDPROCPARAMS oVideoProcessingParameters;
+			memset(&oVideoProcessingParameters, 0, sizeof(CUVIDPROCPARAMS));
+
+			oVideoProcessingParameters.progressive_frame = oDisplayInfo.progressive_frame;
+			oVideoProcessingParameters.second_field = active_field;
+			oVideoProcessingParameters.top_field_first = oDisplayInfo.top_field_first;
+			oVideoProcessingParameters.unpaired_field = (distinct_fields == 1);
+
+			unsigned int nDecodedPitch = 0;
+			unsigned int nWidth = 0;
+			unsigned int nHeight = 0;
+
+			// map decoded video frame to CUDA surfae
+			g_pVideoDecoder->mapFrame(oDisplayInfo.picture_index, &pDecodedFrame[active_field], &nDecodedPitch, &oVideoProcessingParameters);
+			nWidth = g_pVideoDecoder->targetWidth(); // PAD_ALIGN(g_pVideoDecoder->targetWidth(), 0x3F);
+			nHeight = g_pVideoDecoder->targetHeight(); // PAD_ALIGN(g_pVideoDecoder->targetHeight(), 0x0F);
+			// map OpenGL PBO or CUDA memory
+			size_t nTexturePitch = 0;
+
+			if (g_pImageGL)
+			{
+				// map the texture surface
+				g_pImageGL->map(&pInteropFrame[active_field], &nTexturePitch, active_field);
+				nTexturePitch = g_nWindowWidth * 4;
+			}
+			else
+			{
+				pInteropFrame[active_field] = g_pInteropFrame[active_field];
+				nTexturePitch = g_pVideoDecoder->targetWidth() * 2;
+			}
+
+			// perform post processing on the CUDA surface (performs colors space conversion and post processing)
+			// comment this out if we inclue the line of code seen above
+
+			cudaPostProcessFrame(	&pDecodedFrame[active_field], nDecodedPitch, &pInteropFrame[active_field],
+									nTexturePitch, g_pCudaModule->getModule(), g_kernelNV12toARGB, g_KernelSID);
+
+			if (g_pImageGL)
+			{
+				// unmap the texture surface
+				g_pImageGL->unmap(active_field);
+			}
+
+			// unmap video frame
+			// unmapFrame() synchronizes with the VideoDecode API (ensures the frame has finished decoding)
+			g_pVideoDecoder->unmapFrame(pDecodedFrame[active_field]);
+			// release the frame, so it can be re-used in decoder
+			g_pFrameQueue->releaseFrame(&oDisplayInfo);
+			g_DecodeFrameCount++;
+		}
+
+		// Detach from the Current thread
+		checkCudaErrors(cuCtxPopCurrent(NULL));
+	}
+	else
+	{
+		// Frame Queue has no frames, we don't compute FPS until we start
+		return false;
+	}
+
+	// check if decoding has come to an end.
+	// if yes, signal the app to shut down.
+	if (!g_pVideoSource->isStarted() && g_pFrameQueue->isEndOfDecode() && g_pFrameQueue->isEmpty())
+	{
+		// Let's just stop, and allow the user to quit, so they can at least see the results
+		g_pVideoSource->stop();
 	}
 
 	return true;
 }
 
-//-----------------------------------------------------------------------------
-// CTextureRenderer constructor
-//-----------------------------------------------------------------------------
-CTextureRenderer::CTextureRenderer(LPUNKNOWN pUnk, HRESULT *phr)
-	: CBaseVideoRenderer(__uuidof(CLSID_TextureRenderer), NAME("Texture Renderer"), pUnk, phr),
-	m_lVidWidth(0), m_lVidHeight(0), m_lVidPitch(0), frameLength(0.0f), m_pFrameBuffer(NULL),
-	sampleStart(0), sampleEnd(0)
+bool CNVStreaming::readFrame(unsigned char *& readBuffer, float timestamp)
 {
-	if (phr)
-		*phr = S_OK;
-}
+	if (!locked)
+		return false;
 
+	static unsigned int nRepeatFrame = 0;
+	bool bFramesDecoded = true;
+	int bIsProgressive = 1;
 
-//-----------------------------------------------------------------------------
-// CTextureRenderer destructor
-//-----------------------------------------------------------------------------
-CTextureRenderer::~CTextureRenderer()
-{
-	if (NULL != m_pFrameBuffer)
-		delete[] m_pFrameBuffer;
-}
-
-//-----------------------------------------------------------------------------
-// DoRenderSample: A sample has been delivered. Copy it to the texture.
-//-----------------------------------------------------------------------------
-HRESULT CTextureRenderer::DoRenderSample(IMediaSample * pSample)
-{
-	CheckPointer(pSample, E_POINTER);
-
-	long size = pSample->GetActualDataLength();
-
-	// Get the video bitmap buffer
-	BYTE  *pBmpBuffer;	// Bitmap buffer
-	HRESULT hr = pSample->GetPointer(&pBmpBuffer);
-
-	if (SUCCEEDED(hr) && (NULL != m_pFrameBuffer))
-		memcpy(m_pFrameBuffer, pBmpBuffer, min(size, m_lVidPitch*m_lVidHeight));
-
-	hr = pSample->GetTime(&sampleStart, &sampleEnd);
-
-	return hr;
-}
-
-bool
-loadVideoSource(const char *video_file,
-	unsigned int &width, unsigned int &height,
-	unsigned int &dispWidth, unsigned int &dispHeight)
-{
-	std::auto_ptr<FrameQueue> apFrameQueue(new FrameQueue);
-	std::auto_ptr<VideoSource> apVideoSource(new VideoSource(video_file, apFrameQueue.get()));
-
-	// retrieve the video source (width,height)
-	apVideoSource->getSourceDimensions(width, height);
-	apVideoSource->getSourceDimensions(dispWidth, dispHeight);
-
-	std::cout << apVideoSource->format() << std::endl;
-
-	if (g_bFrameRepeat)
+	if (0 != g_pFrameQueue)
 	{
-		if (apVideoSource->format().frame_rate.denominator > 0)
-		{
-			g_iRepeatFactor = (int)(60.0f / ceil((float)apVideoSource->format().frame_rate.numerator / (float)apVideoSource->format().frame_rate.denominator));
-		}
+		// if not running, we simply don't copy new frames from the decoder
+		bFramesDecoded = copyDecodedFrameToTexture(nRepeatFrame, true, &bIsProgressive);
 	}
 
-	printf("Frame Rate Playback Speed = %d fps\n", 60 / g_iRepeatFactor);
+	readBuffer = NULL;
+	streamPos++;
 
-	g_pFrameQueue = apFrameQueue.release();
-	g_pVideoSource = apVideoSource.release();
+	/*if (m_pRenderer->sampleEnd >= m_Duration)
+	{
+		seekFrame(0);
+		streamPos = 0;
+	}*/
+
+	return true;
+}
+
+bool loadVideoSource(	const char *video_file,
+						unsigned int &width, unsigned int &height,
+						unsigned int &dispWidth, unsigned int &dispHeight)
+{
+	g_pFrameQueue = new FrameQueue;
+	g_pVideoSource = new VideoSource(video_file, g_pFrameQueue);
+
+	// retrieve the video source (width,height)
+	g_pVideoSource->getSourceDimensions(width, height);
+	g_pVideoSource->getSourceDimensions(dispWidth, dispHeight);
 
 	if (g_pVideoSource->format().codec == cudaVideoCodec_JPEG)
 	{
@@ -549,6 +609,7 @@ loadVideoSource(const char *video_file,
 
 	bool IsProgressive = 0;
 	g_pVideoSource->getProgressive(IsProgressive);
+
 	return IsProgressive;
 }
 
@@ -562,33 +623,19 @@ bool CNVStreaming::openReader(const std::string &fname)
 										g_nVideoWidth, g_nVideoHeight,
 										g_nWindowWidth, g_nWindowHeight);
 
-	// Determine the proper window size needed to create the correct *client* area
-	// that is of the size requested by m_dimensions.
-#if defined(WIN32) || defined(_WIN32) || defined(WIN64) || defined(_WIN64)
-	RECT adjustedWindowSize;
-	DWORD dwWindowStyle = WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN | WS_CLIPSIBLINGS;
-	SetRect(&adjustedWindowSize, 0, 0, g_nVideoWidth, g_nVideoHeight);
-	AdjustWindowRect(&adjustedWindowSize, dwWindowStyle, false);
-#endif
-
 	g_nVideoWidth = PAD_ALIGN(g_nVideoWidth, 0x3F);
 	g_nVideoHeight = PAD_ALIGN(g_nVideoHeight, 0x0F);
 
 	// Initialize CUDA and try to connect with an OpenGL context
 	// Other video memory resources will be available
-	if (initCudaResources() == false)
+	if (initCudaResources())
 	{
-		g_bAutoQuit = true;
-		g_bException = true;
-		g_bWaived = true;
-		goto ExitApp;
+		g_pVideoSource->start();
+		locked = true;
+		return true;
 	}
-
-	g_pVideoSource->start();
-	g_bRunning = true;
-
-	locked = true;
-	return true;
+	else
+		return false;
 }
 
 bool CNVStreaming::closeReader(void)

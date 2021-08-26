@@ -127,7 +127,7 @@ void CTestDoc::GLInitContext(HDC hdc)
     pSlide->translate(0.4f);
     pScene->addObject(pSlide);
     m_slides.push_back(pSlide);
-	pSlide->setVideo("Datas\\plush1_720p_10s.m2v");
+	//pSlide->setVideo("Datas\\plush1_720p_10s.m2v");
 
     pSlide = new CSlide("slide6",*pPath);
     pSlide->translate(-0.1f);

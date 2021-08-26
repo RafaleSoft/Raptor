@@ -18,7 +18,7 @@
 #define __CUDA_API_VERSION 4000
 #endif
 
-#include <GL/glew.h>
+#include <GL/gl.h>
 
 #ifdef __cplusplus
 extern "C" {
