@@ -591,7 +591,7 @@ bool CVulkanDevice::vkCreateRenderPassResources(VkSurfaceFormatKHR format,
 													1, &pSubpasses,
 													2, &dependencies[0]};
 
-	CRaptorErrorManager *pErrMgr = Raptor::GetErrorManager();
+	CRaptorErrorManager *pErrMgr = IRaptor::GetErrorManager();
 	VkResult res = vkCreateRenderPass(	device,
 										&pRenderPassCreateInfo,
 										CVulkanMemory::GetAllocator(),
@@ -663,7 +663,7 @@ bool CVulkanDevice::vkCreateSwapChain(CVulkanSurface *pSurface,
 									  const CRaptorDisplayConfig& config)
 {
 	VkResult res = VK_NOT_READY;
-	CRaptorErrorManager *pErrMgr = Raptor::GetErrorManager();
+	CRaptorErrorManager *pErrMgr = IRaptor::GetErrorManager();
 
 	VkSwapchainCreateInfoKHR pCreateInfo = pSurface->getSwapChainRequirements(config.display_mode,
 																			  config.width,
@@ -744,7 +744,7 @@ bool CVulkanDevice::vkCreateLogicalDevice(	const VkPhysicalDevice &physicalDevic
 	present_queueFamilyIndex = presentQueueFamilyIndex;
 	transfer_queueFamilyIndex = transferQueueFamilyIndex;
 
-	CRaptorErrorManager *pErrMgr = Raptor::GetErrorManager();
+	CRaptorErrorManager *pErrMgr = IRaptor::GetErrorManager();
 	VkResult res = VK_NOT_READY;
 
 	float *queuePriorities = new float[graphicsQueueCount];

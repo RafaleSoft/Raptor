@@ -50,7 +50,7 @@ bool RAPTOR_WRAPPER_API glInitRaptor(CRaptorConfig_t &config)
 	cfg.m_uiVertices = config.m_uiVertices;
 	cfg.setFilterSizeFactor(config.m_fSizeFactor);
 
-	bool res = Raptor::glInitRaptor(cfg);
+	bool res = IRaptor::glInitRaptor(cfg);
 	res = res && CImaging::installImagers();
 
 	return res;
@@ -58,7 +58,7 @@ bool RAPTOR_WRAPPER_API glInitRaptor(CRaptorConfig_t &config)
 
 bool RAPTOR_WRAPPER_API glQuitRaptor(void)
 {
-	return Raptor::glQuitRaptor();
+	return IRaptor::glQuitRaptor();
 }
 
 bool RAPTOR_WRAPPER_API glCreateDisplay(CRaptorDisplayConfig_t &config, CRaptorDisplay* &display)
@@ -89,7 +89,7 @@ bool RAPTOR_WRAPPER_API glCreateDisplay(CRaptorDisplayConfig_t &config, CRaptorD
 	glcs.caption = config.caption;
 
 	display = NULL;
-	CRaptorDisplay *pDisplay = Raptor::glCreateDisplay(glcs);
+	CRaptorDisplay *pDisplay = IRaptor::glCreateDisplay(glcs);
 
 	if (NULL == pDisplay)
 		return false;
@@ -108,7 +108,7 @@ bool RAPTOR_WRAPPER_API glDestroyDisplay(CRaptorDisplay* display, HDC dc)
 	display->glvkReleaseResources();
 	display->glvkUnBindDisplay();
 
-	Raptor::glDestroyDisplay(display);
+	IRaptor::glDestroyDisplay(display);
 
 	return true;
 }
@@ -134,7 +134,7 @@ bool RAPTOR_WRAPPER_API glUnBindDisplay(CRaptorDisplay* display)
 
 bool RAPTOR_WRAPPER_API glRender(void)
 {
-	Raptor::glRender();
+	IRaptor::glRender();
 
 	return true;
 }
@@ -200,7 +200,7 @@ void CRenderer::glInitRenderer()
 	IRenderingProperties &props = m_pDisplay->getRenderingProperties();
 	props.enableLighting.disableTexturing;
 
-	CRaptorConsole *pConsole = Raptor::GetConsole();
+	CRaptorConsole *pConsole = IRaptor::GetConsole();
 	if (!pConsole->glInit("", true))
 		pConsole->glInit("", false);
 	pConsole->showStatus(true);
@@ -365,7 +365,7 @@ bool RAPTOR_WRAPPER_API glSetShaders(const char* vertex, const char* geometry, c
 
 		if (!compileShader)
 		{
-			CRaptorErrorManager *pErr = Raptor::GetErrorManager();
+			CRaptorErrorManager *pErr = IRaptor::GetErrorManager();
 			int nerr = pErr->getLastRaptorError();
 			CRaptorErrorManager::GL_RAPTOR_ERROR err;
 			pErr->getRaptorError(nerr, err);
@@ -560,7 +560,7 @@ bool RAPTOR_WRAPPER_API glDiag(void)
 		// GL_MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS_ARB		0x8A33
 		
 
-		const CRaptorGLExtensions *ext = Raptor::glGetExtensions();
+		const CRaptorGLExtensions *ext = IRaptor::glGetExtensions();
 		const std::string &exts = ext->glExtensions();
 		
 		size_t p1 = 0;

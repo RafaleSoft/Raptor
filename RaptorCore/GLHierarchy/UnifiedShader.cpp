@@ -53,7 +53,7 @@ CUnifiedShader::CUnifiedShader(const CUnifiedShader& shader)
 
 CUnifiedShader::~CUnifiedShader()
 {
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 
 	if (m_handle.glhandle() > 0)
 	{
@@ -98,7 +98,7 @@ void CUnifiedShader::glParameter(size_t numParam, const float *v) const
 		}
 		else
 		{
-			const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+			const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 
 #if defined(GL_VERSION_2_0)
 			pExtensions->glUniform4fv(location, 1, v);
@@ -116,7 +116,7 @@ bool CUnifiedShader::glLoadProgram(	const std::string &program,
 									const CPersistence::CPersistenceClassID& shaderClass)
 {
 	m_bValid = false;
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 
 	if (CRaptorInstance::GetInstance().isVertexShaderReady())
 	{
@@ -168,7 +168,7 @@ bool CUnifiedShader::glLoadProgram(	const std::string &program,
 			arg.arg_sz = pInfoLog;
 			vector<CRaptorMessages::MessageArgument> args;
 			args.push_back(arg);
-			Raptor::GetErrorManager()->generateRaptorError(	shaderClass,
+			IRaptor::GetErrorManager()->generateRaptorError(shaderClass,
 															CRaptorErrorManager::RAPTOR_ERROR,
 															CRaptorMessages::ID_PROGRAM_ERROR,
 															__FILE__, __LINE__, args);
@@ -187,7 +187,7 @@ std::string CUnifiedShader::glGetProgramString(void) const
 	if (m_handle.glhandle() == 0)
 		return "";
 
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 	int value = 0;
 	char *source = NULL;
 
@@ -215,7 +215,7 @@ bool CUnifiedShader::glBindProgram(RAPTOR_HANDLE program)
 	if (program.glhandle() == 0)
 		return false;
 
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 	
 
 #if defined(GL_VERSION_2_0)
@@ -246,7 +246,7 @@ bool CUnifiedShader::glUnbindProgram(RAPTOR_HANDLE program)
 	if ((program.glhandle() == 0) || (m_handle.glhandle() == 0))
 		return false;
 
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 
 #if defined(GL_VERSION_2_0)
 	if (!pExtensions->glIsProgram(program.glhandle()))

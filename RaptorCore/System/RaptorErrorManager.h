@@ -128,7 +128,7 @@ public:
 	//!	Simple Marcros to raise errors.
 #define RAPTOR_GEN_ERROR(cid, str, err)\
 	{\
-		CRaptorErrorManager* mgr = Raptor::GetErrorManager();\
+		CRaptorErrorManager* mgr = IRaptor::GetErrorManager();\
 		if (NULL != mgr)\
 			mgr->generateRaptorError(cid, err, str, __FILE__, __LINE__);\
 	}

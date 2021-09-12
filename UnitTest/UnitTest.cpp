@@ -41,7 +41,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	config.m_uiVertices = 40000;
 	config.m_uiTexels = 1000000;
 	config.m_logFile = "UnitTest_Raptor.log";
-	Raptor::glInitRaptor(config);
+	IRaptor::glInitRaptor(config);
 	printf("Done.\n\n");
 
 	//	Create the test suite for Raptor Handles
@@ -59,7 +59,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	bool res = runner.run();
 
 	printf("Releasing Raptor ... ");
-	Raptor::glQuitRaptor();
+	IRaptor::glQuitRaptor();
 	printf("Done.\n\n");
 
 	return (res ? 0 : 1);

@@ -59,13 +59,12 @@ void CAnimatorStream::setVideoKindIO(CAnimator::IVideoIO *streamer)
 	}
 #endif
 
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
 	std::vector<std::string> extensionKind = streamer->getKind();
 	for (size_t j = 0; j < extensionKind.size(); j++)
 	{
 		string ext = extensionKind[j];
 		std::transform(ext.begin(), ext.end(), ext.begin(), ::toupper);
-
-		CRaptorInstance &instance = CRaptorInstance::GetInstance();
 		instance.videoKindIO.insert(map<std::string, CAnimator::IVideoIO*>::value_type(ext, streamer));
 	}
 }

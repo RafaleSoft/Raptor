@@ -304,7 +304,7 @@ void COpenGLRenderingProperties::glRender(void)
 #if defined(GL_ARB_color_buffer_float) || defined(WGL_ATI_pixel_format_float)
 	if (m_bClampFloats == ENABLE)
 	{
-		const CRaptorGLExtensions * const pExtensions = Raptor::glGetExtensions();
+		const CRaptorGLExtensions * const pExtensions = IRaptor::glGetExtensions();
 		if ((pExtensions != NULL) && (pExtensions->glClampColorARB != NULL))
 		{
 			pExtensions->glClampColorARB(GL_CLAMP_VERTEX_COLOR_ARB,GL_TRUE);
@@ -315,7 +315,7 @@ void COpenGLRenderingProperties::glRender(void)
 	}
 	else if (m_bClampFloats == DISABLE)
 	{
-		const CRaptorGLExtensions * const pExtensions = Raptor::glGetExtensions();
+		const CRaptorGLExtensions * const pExtensions = IRaptor::glGetExtensions();
 		if ((pExtensions != NULL) && (pExtensions->glClampColorARB != NULL))
 		{
 			pExtensions->glClampColorARB(GL_CLAMP_VERTEX_COLOR_ARB,GL_FALSE);

@@ -308,7 +308,7 @@ void CVulkanTextureObject::glvkUpdateClamping(ITextureObject::CLAMP_MODE C)
 		case ITextureObject::CGL_MIRROR_EDGECLAMP:
 		{
 #if defined(VK_KHR_sampler_mirror_clamp_to_edge)
-			if (Raptor::vkIsExtensionSupported(VK_KHR_SAMPLER_MIRROR_CLAMP_TO_EDGE_EXTENSION_NAME))
+			if (IRaptor::vkIsExtensionSupported(VK_KHR_SAMPLER_MIRROR_CLAMP_TO_EDGE_EXTENSION_NAME))
 				clamp_mode = VK_SAMPLER_ADDRESS_MODE_MIRROR_CLAMP_TO_EDGE;
 #endif
 			break;

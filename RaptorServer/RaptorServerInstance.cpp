@@ -135,7 +135,7 @@ void CRaptorServerInstance::glRender()
 
 		if (nbr > 0)
 		{
-			CRaptorConsole *pConsole = Raptor::GetConsole();
+			CRaptorConsole *pConsole = IRaptor::GetConsole();
 			CGLFont::FONT_TEXT_ITEM item;
 			stringstream str;
 			str << "Pending requests: ";
@@ -201,7 +201,7 @@ void CRaptorServerInstance::glRender()
 				m_pDisplay->glvkBindDisplay(m_pWindow);
 				// need a mutex here.
 				for (size_t i=0;i<m_recycledDisplays.size();i++)
-					Raptor::glDestroyDisplay(m_recycledDisplays[i]);
+					IRaptor::glDestroyDisplay(m_recycledDisplays[i]);
 				
 				m_pDisplay->glvkUnBindDisplay();
 
@@ -302,7 +302,7 @@ bool CRaptorServerInstance::executeRequest(request &r)
 		glcs.display_mode = CGL_RGBA | CGL_DEPTH;
 		glcs.renderer = CRaptorDisplayConfig::RENDER_BUFFER;
 		glcs.refresh_rate.fps = CGL_MAXREFRESHRATE;
-		CRaptorDisplay *pDisplay = Raptor::glCreateDisplay(glcs);
+		CRaptorDisplay *pDisplay = IRaptor::glCreateDisplay(glcs);
 		if (pDisplay == 0)
 		{
 			std::cout << "Raptor Render Server has no resources: hardware OpenGL rendering not supported, exiting..." << std::endl;
@@ -522,7 +522,7 @@ bool CRaptorServerInstance::start(unsigned int width, unsigned int height)
 	config.m_uiTexels = 1000000;
 	config.m_uiUniforms = 100000;
 	
-	if (Raptor::glInitRaptor(config))
+	if (IRaptor::glInitRaptor(config))
 		CAnimator::SetAnimator(new CAnimator());
 	else
 	{
@@ -581,7 +581,7 @@ bool CRaptorServerInstance::start(unsigned int width, unsigned int height)
 	std::cout << "Creating Raptor Main Display. " << std::endl;
 	m_pDisplay->glvkBindDisplay(m_pWindow);
 
-		CRaptorConsole *pConsole = Raptor::GetConsole();
+		CRaptorConsole *pConsole = IRaptor::GetConsole();
 		pConsole->glInit();
 
 		pConsole->showStatus(true);

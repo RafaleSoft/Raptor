@@ -120,7 +120,7 @@ bool CGLVectorFont::glGenGlyphs(float precision,
 			glGetIntegerv(GL_MAX_UNIFORM_BLOCK_SIZE, &S);
 			if (m_fontUniformSize > S)
 			{
-				Raptor::GetErrorManager()->generateRaptorError( CGLFont::CGLFontClassID::GetClassId(),
+				IRaptor::GetErrorManager()->generateRaptorError( CGLFont::CGLFontClassID::GetClassId(),
 																CRaptorErrorManager::RAPTOR_ERROR,
 																CRaptorMessages::ID_INIT_FAILED);
 				return false;

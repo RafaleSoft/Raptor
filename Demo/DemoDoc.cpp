@@ -151,7 +151,7 @@ void RAPTOR_FASTCALL HeatSpots::updateVertices(float dt,GL_COORD_VERTEX *vertice
 
 void HeatSpots::glRenderFilterOutput()
 {
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 	PFN_GL_ACTIVE_TEXTURE_ARB_PROC glActiveTextureARB = pExtensions->glActiveTextureARB;
 
 	glActiveTextureARB(GL_TEXTURE0_ARB);
@@ -273,17 +273,17 @@ CDemoDoc::~CDemoDoc()
 //	Default virtual implementation
 void CDemoDoc::GLInitContext(void)
 {
-	if ((!Raptor::glIsExtensionSupported(GL_ARB_VERTEX_PROGRAM_EXTENSION_NAME)) ||
-		(!Raptor::glIsExtensionSupported(GL_ARB_FRAGMENT_PROGRAM_EXTENSION_NAME)) ||
-		(!Raptor::glIsExtensionSupported(WGL_ARB_PBUFFER_EXTENSION_NAME)) ||
-		(!Raptor::glIsExtensionSupported(WGL_ARB_RENDER_TEXTURE_EXTENSION_NAME) && 
-		!Raptor::glIsExtensionSupported(GL_EXT_FRAMEBUFFER_OBJECT_EXTENSION_NAME)))
+	if ((!IRaptor::glIsExtensionSupported(GL_ARB_VERTEX_PROGRAM_EXTENSION_NAME)) ||
+		(!IRaptor::glIsExtensionSupported(GL_ARB_FRAGMENT_PROGRAM_EXTENSION_NAME)) ||
+		(!IRaptor::glIsExtensionSupported(WGL_ARB_PBUFFER_EXTENSION_NAME)) ||
+		(!IRaptor::glIsExtensionSupported(WGL_ARB_RENDER_TEXTURE_EXTENSION_NAME) && 
+		!IRaptor::glIsExtensionSupported(GL_EXT_FRAMEBUFFER_OBJECT_EXTENSION_NAME)))
 	{
-        CRaptorMessages * const msg = Raptor::GetMessages();
+        CRaptorMessages * const msg = IRaptor::GetMessages();
         msg->displayMessage("It seems your CPU/GPU does not support necessary extensions to run this demo in full hardware. Rendering might be wrong");
 	}
 
-    CRaptorConsole *pConsole = Raptor::GetConsole();
+    CRaptorConsole *pConsole = IRaptor::GetConsole();
     pConsole->glInit();
     pConsole->showStatus(true);
     pConsole->showObjectCount(true);

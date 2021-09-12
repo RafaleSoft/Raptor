@@ -122,7 +122,7 @@ CResourceAllocator::CResourceBinder::CResourceBinder(void)
 
 bool CResourceAllocator::CResourceBinder::useVertexArrayObjects(void)
 {
-	if (!Raptor::glIsExtensionSupported(GL_ARB_VERTEX_ARRAY_OBJECT_EXTENSION_NAME))
+	if (!IRaptor::glIsExtensionSupported(GL_ARB_VERTEX_ARRAY_OBJECT_EXTENSION_NAME))
 	{
 		vao = false;
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
@@ -140,7 +140,7 @@ bool CResourceAllocator::CResourceBinder::useVertexArrayObjects(void)
 
 #if defined(GL_ARB_vertex_program) || defined(GL_CORE_profile)
 	//! If VAO are not available, at least use Vertey Attrib Arrays.
-	if (!Raptor::glIsExtensionSupported(GL_ARB_VERTEX_PROGRAM_EXTENSION_NAME))
+	if (!IRaptor::glIsExtensionSupported(GL_ARB_VERTEX_PROGRAM_EXTENSION_NAME))
 	{
 	#ifdef RAPTOR_DEBUG_MODE_GENERATION
 			Raptor::GetErrorManager()->generateRaptorError(COpenGL::COpenGLClassID::GetClassId(),
@@ -262,7 +262,7 @@ bool CResourceAllocator::CResourceBinder::glvkBindArrays(void)
 		bool res = true;
 		if (vao)
 		{
-			const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+			const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 
 			if (array == 0)
 				pExtensions->glGenVertexArraysARB(1, &array);
@@ -311,7 +311,7 @@ bool CResourceAllocator::CResourceBinder::glvkUnbindArrays(void)
 	{
 		if (vao)
 		{
-			const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+			const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 			pExtensions->glBindVertexArrayARB(0);
 			
 			CATCH_GL_ERROR
@@ -342,7 +342,7 @@ bool CResourceAllocator::CResourceBinder::bindAttribArray(CRaptorDisplayConfig::
 														  CRaptorDisplayConfig::GL_ARRAY_STATE &global_state)
 {
 #if defined(GL_ARB_vertex_program)
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 	if (state.enable)
 	{
 		if (!global_state.enable)
@@ -378,7 +378,7 @@ bool CResourceAllocator::CResourceBinder::unbindAttribArray(CRaptorDisplayConfig
 	if (global_state.enable)
 	{
 		global_state.enable = false;
-		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+		const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 		pExtensions->glDisableVertexAttribArrayARB(state.arrayIndex);
 	}
 
@@ -391,7 +391,7 @@ bool CResourceAllocator::CResourceBinder::unbindAttribArray(CRaptorDisplayConfig
 bool CResourceAllocator::CResourceBinder::bindArray(CRaptorDisplayConfig::GL_ARRAY_STATE &state,
 													CRaptorDisplayConfig::GL_ARRAY_STATE &global_state)
 {
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 
 	if (state.enable)
 	{
@@ -451,7 +451,7 @@ bool CResourceAllocator::CResourceBinder::bindArray(CRaptorDisplayConfig::GL_ARR
 bool CResourceAllocator::CResourceBinder::unbindArray(CRaptorDisplayConfig::GL_ARRAY_STATE &state,
 													  CRaptorDisplayConfig::GL_ARRAY_STATE &global_state)
 {
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 
 	if (global_state.enable)
 	{

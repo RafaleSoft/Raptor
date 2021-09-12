@@ -366,7 +366,7 @@ void CRaptorScreenDisplay::glvkReleaseResources(void)
 {
 	CRaptorInstance &instance = CRaptorInstance::GetInstance();
 	if (instance.isInitialised())
-		instance.glvkReleaseSharedRsources();
+		instance.glvkReleaseSharedResources();
 
 
 	if (NULL != m_pGOldAllocator)

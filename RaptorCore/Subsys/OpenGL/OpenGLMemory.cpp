@@ -60,10 +60,10 @@ COpenGLMemory::~COpenGLMemory(void)
 bool COpenGLMemory::relocationAvailable(void) const
 {
 #if (defined(GL_ARB_vertex_buffer_object) || defined(GL_ARB_pixel_buffer_object) || defined(GL_NV_vertex_array_range) || defined(GL_ARB_uniform_buffer_object))
-	if (Raptor::glIsExtensionSupported(GL_ARB_VERTEX_BUFFER_OBJECT_EXTENSION_NAME) ||
-		Raptor::glIsExtensionSupported(GL_NV_VERTEX_ARRAY_RANGE_EXTENSION_NAME) ||
-		Raptor::glIsExtensionSupported(GL_ARB_PIXEL_BUFFER_OBJECT_EXTENSION_NAME) ||
-		Raptor::glIsExtensionSupported(GL_ARB_UNIFORM_BUFFER_OBJECT_EXTENSION_NAME))
+	if (IRaptor::glIsExtensionSupported(GL_ARB_VERTEX_BUFFER_OBJECT_EXTENSION_NAME) ||
+		IRaptor::glIsExtensionSupported(GL_NV_VERTEX_ARRAY_RANGE_EXTENSION_NAME) ||
+		IRaptor::glIsExtensionSupported(GL_ARB_PIXEL_BUFFER_OBJECT_EXTENSION_NAME) ||
+		IRaptor::glIsExtensionSupported(GL_ARB_UNIFORM_BUFFER_OBJECT_EXTENSION_NAME))
 	{
 		// TODO: scan device memory and check available space
 		return true;
@@ -114,7 +114,7 @@ COpenGLMemory::createBufferObject(	IDeviceMemoryManager::IBufferObject::BUFFER_K
 		return NULL;
 
     IDeviceMemoryManager::IBufferObject * res = NULL;
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 
 #ifdef GL_ARB_vertex_buffer_object
 	//	This should be the fastest memory bloc for
@@ -196,7 +196,7 @@ bool COpenGLMemory::setBufferObjectData(IDeviceMemoryManager::IBufferObject &bo,
 	
 	if (isBufferObjectValid(buffer))
 	{
-		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+		const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 		IDeviceMemoryManager::IBufferObject::BUFFER_KIND storage = bo.getStorage();
 		if (storage > IDeviceMemoryManager::IBufferObject::UNIFORM_BUFFER)
 		{
@@ -256,7 +256,7 @@ bool COpenGLMemory::copyBufferObjectData(	IDeviceMemoryManager::IBufferObject &d
 
 	if (isBufferObjectValid(dstbuffer) && isBufferObjectValid(srcbuffer))
 	{
-		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+		const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 #if defined(GL_VERSION_3_1)
 		pExtensions->glBindBufferARB(GL_COPY_READ_BUFFER, srcbo.getBufferId());
 		pExtensions->glBindBufferARB(GL_COPY_WRITE_BUFFER, dstbo.getBufferId());
@@ -325,7 +325,7 @@ bool COpenGLMemory::getBufferObjectData(IDeviceMemoryManager::IBufferObject &vb,
 	
 	if (isBufferObjectValid(buffer))
 	{
-		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+		const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 		
 		IDeviceMemoryManager::IBufferObject::BUFFER_KIND storage = vb.getStorage();
         GLenum glStorage = BufferKindToGL(storage);
@@ -396,7 +396,7 @@ bool COpenGLMemory::releaseBufferObject(IDeviceMemoryManager::IBufferObject* &vb
 		m_deviceHeap.erase(itr);
 	}
 
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
     if (pExtensions == NULL)
         return false;
 
@@ -440,7 +440,7 @@ bool COpenGLMemory::lockBufferObject(IDeviceMemoryManager::IBufferObject &bo)
 		return false;
 	uint32_t buffer = bo.getBufferId();
 
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 
     //! This method could be called very often, lock/unlock 
     //! could be very expensive, so I will try to lock at a higher level
@@ -505,7 +505,7 @@ bool COpenGLMemory::unlockBufferObject(IDeviceMemoryManager::IBufferObject &bo)
 		return false;
 
 	uint32_t buffer = bo.getBufferId();
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 
     //! This method could be called very often, lock/unlock 
     //! could be very expensive, so I will try to lock at a higher level

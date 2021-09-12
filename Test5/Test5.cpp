@@ -67,7 +67,7 @@ int WINAPI wWinMain(HINSTANCE hInstance,
             DispatchMessage(&msg);
         } // end if
 
-        Raptor::glRender();
+        IRaptor::glRender();
 
 		//	Rendering is too fast for GPU
 		//Sleep(1);
@@ -76,7 +76,7 @@ int WINAPI wWinMain(HINSTANCE hInstance,
 
 	delete pDoc;
 
-	Raptor::glQuitRaptor();
+	IRaptor::glQuitRaptor();
 
 	return (int) msg.wParam;
 }

@@ -64,11 +64,11 @@ BOOL CRaptorErrors::OnInitDialog()
 
     CRaptorErrorManager::GL_RAPTOR_ERROR err;
 
-	int nbErr = Raptor::GetErrorManager()->getLastRaptorError();
+	int nbErr = IRaptor::GetErrorManager()->getLastRaptorError();
 
 	for (int i=0; i<=nbErr; i++)
 	{
-		Raptor::GetErrorManager()->getRaptorError(i,err);
+		IRaptor::GetErrorManager()->getRaptorError(i,err);
 
 		switch(err.type)
 		{

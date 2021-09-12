@@ -244,7 +244,7 @@ bool CRaptorConsole::runBatch(const std::string& filename)
     CRaptorIO* IO = CRaptorIO::Create(filename.data(),CRaptorIO::DISK_READ);
     bool ret = ((IO != NULL) && (IO->getStatus() == CRaptorIO::IO_OK));
 
-    CRaptorErrorManager *const errMgr = Raptor::GetErrorManager();
+    CRaptorErrorManager *const errMgr = IRaptor::GetErrorManager();
     string msg;
     if (ret)
     {

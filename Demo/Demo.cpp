@@ -43,7 +43,7 @@ int main(int argc, char* argv[])
 	config.m_uiUniforms = 256 * 1024;
 
 	//	initialize Raptor classes and settings
-	Raptor::glInitRaptor(config);
+	IRaptor::glInitRaptor(config);
 	CImaging::installImagers();
 	CParticleCompute::installComputers();
 
@@ -66,19 +66,19 @@ int main(int argc, char* argv[])
 	glcs.draw_logo = true;
 	glcs.lightingState.lightModelSeparateSpecular = true;
     
-	if (!Raptor::glCheckDisplayConfig(glcs))
+	if (!IRaptor::glCheckDisplayConfig(glcs))
     {
-        Raptor::GetMessages()->displayMessage("Some hardware features are missing. Will use lower config, disabling some effects");
+        IRaptor::GetMessages()->displayMessage("Some hardware features are missing. Will use lower config, disabling some effects");
         glcs.display_mode = CGL_RGBA | CGL_DEPTH;
 		glcs.antialias = CRaptorDisplayConfig::ANTIALIAS_NONE;
-        if (!Raptor::glCheckDisplayConfig(glcs))
+        if (!IRaptor::glCheckDisplayConfig(glcs))
         {
-            Raptor::GetMessages()->displayMessage("Some hardware features are missing. Will use minimal config, disabling all advanced effects");
+            IRaptor::GetMessages()->displayMessage("Some hardware features are missing. Will use minimal config, disabling all advanced effects");
             glcs.display_mode = CGL_RGBA | CGL_DEPTH;
 			glcs.renderer = CRaptorDisplayConfig::NATIVE_GL;
-            if (!Raptor::glCheckDisplayConfig(glcs))
+            if (!IRaptor::glCheckDisplayConfig(glcs))
             {
-                Raptor::GetMessages()->displayMessage("Minimum required display config cannot be created. Sorry, demo will abort. Bye.");
+                IRaptor::GetMessages()->displayMessage("Minimum required display config cannot be created. Sorry, demo will abort. Bye.");
                 return FALSE;
             }
         }
@@ -107,7 +107,7 @@ int main(int argc, char* argv[])
 	char msg[1024];
 	float avgfps = ((float)(1000 * (pDoc->nbFrames-10))) / (pDoc->finishTime - pDoc->startTime);
 	sprintf(msg,"Bench results :\nMin fps : %f\nMax fps : %f\nAvg fps : %f",pDoc->minfps,pDoc->maxfps,avgfps);
-	Raptor::GetMessages()->displayMessage(msg);
+	IRaptor::GetMessages()->displayMessage(msg);
 
 	app->quitApplication();
 

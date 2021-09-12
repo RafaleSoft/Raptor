@@ -68,9 +68,8 @@ CVertexShader::~CVertexShader()
 {
 	if (!CRaptorInstance::GetInstance().isVertexShaderReady())
 	{
-        Raptor::GetErrorManager()->generateRaptorError(	CVertexShader::CVertexShaderClassID::GetClassId(),
-														CRaptorErrorManager::RAPTOR_ERROR,
-														CRaptorMessages::ID_NO_GPU_PROGRAM);
+        RAPTOR_ERROR(CVertexShader::CVertexShaderClassID::GetClassId(),
+					 CRaptorMessages::ID_NO_GPU_PROGRAM);
 	}
 }
 
@@ -93,7 +92,7 @@ bool CVertexShader::glLoadProgram(const std::string &program)
 
 bool CVertexShader::glBindProgram(RAPTOR_HANDLE program)
 {
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 	GLint value = 0;
 
 #if defined(GL_VERSION_2_0)
@@ -104,9 +103,8 @@ bool CVertexShader::glBindProgram(RAPTOR_HANDLE program)
 	if ((!m_bValid) || (value != GL_VERTEX_SHADER_ARB))
 #endif
 	{
-		Raptor::GetErrorManager()->generateRaptorError(CVertexShader::CVertexShaderClassID::GetClassId(),
-													   CRaptorErrorManager::RAPTOR_WARNING,
-													   "Vertex Shader is invalid in this context");
+		RAPTOR_WARNING(CVertexShader::CVertexShaderClassID::GetClassId(),
+					   "Vertex Shader is invalid in this context");
 		CATCH_GL_ERROR
 		return false;
 	}
@@ -177,7 +175,7 @@ bool CVertexShader::glGetProgramStatus(void) const
 		return false;
 
 
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 
 	GL_VERTEX_SHADER_CAPS caps;
 	if (glGetShaderCaps(caps))

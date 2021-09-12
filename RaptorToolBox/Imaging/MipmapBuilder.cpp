@@ -81,7 +81,7 @@ bool CMipmapBuilder::apply(	ITextureObject* const src,
 					0,texelFormat,
 					texelType,
 					pTexels);
-	const CRaptorGLExtensions * const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions * const pExtensions = IRaptor::glGetExtensions();
 	if (pExtensions->glGenerateMipmapEXT != NULL)
 	{
 		pExtensions->glGenerateMipmapEXT(GL_TEXTURE_2D);

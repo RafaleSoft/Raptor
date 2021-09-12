@@ -332,7 +332,7 @@ extern "C" void GLBENCH_API Bench(CWnd *parent)
 	CTimeObject::markTime(parent);
 	glPointSize(20.0);
 #if defined(GL_EXT_point_parameters)
-	if (Raptor::glIsExtensionSupported(GL_EXT_POINT_PARAMETERS_EXTENSION_NAME))
+	if (IRaptor::glIsExtensionSupported(GL_EXT_POINT_PARAMETERS_EXTENSION_NAME))
 	{
 		CVertexProgram s;
 		GL_COORD_VERTEX quadric(1.0f, 1.0f, 10.0f, 1.0f);
@@ -366,7 +366,7 @@ extern "C" void GLBENCH_API Bench(CWnd *parent)
 	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 	glPointSize(32.0);
 #if defined(GL_EXT_point_parameters)
-	if (Raptor::glIsExtensionSupported(GL_EXT_POINT_PARAMETERS_EXTENSION_NAME))
+	if (IRaptor::glIsExtensionSupported(GL_EXT_POINT_PARAMETERS_EXTENSION_NAME))
 	{
 		CVertexProgram s;
 		GL_COORD_VERTEX quadric(1.0f, 1.0f, 10.0f, 1.0f);
@@ -396,11 +396,10 @@ extern "C" void GLBENCH_API Bench(CWnd *parent)
 #if defined(GL_NV_point_sprite)
 	GLDisplay->glMakeCurrent();
 	glPointSize(16.0);
-	if (Raptor::glIsExtensionSupported(GL_NV_POINT_SPRITE_EXTENSION_NAME))
+	if (IRaptor::glIsExtensionSupported(GL_NV_POINT_SPRITE_EXTENSION_NAME))
 	{
-		//AfxMessageBox("Code need to be adapted !");
 	#if defined(GL_EXT_point_parameters)
-		if (Raptor::glIsExtensionSupported(GL_EXT_POINT_PARAMETERS_EXTENSION_NAME))
+		if (IRaptor::glIsExtensionSupported(GL_EXT_POINT_PARAMETERS_EXTENSION_NAME))
 		{
 			CVertexProgram s;
 			GL_COORD_VERTEX quadric(1.0f, 0.2f, 0.0f, 1.0f);

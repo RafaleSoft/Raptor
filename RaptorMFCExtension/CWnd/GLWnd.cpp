@@ -189,7 +189,7 @@ int CGLWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	CClientDC	dc(this);
 
 	const CRaptorDisplayConfig& pcs = GetDefaultDisplayConfig();
-	m_pDisplay = Raptor::glCreateDisplay(pcs);
+	m_pDisplay = IRaptor::glCreateDisplay(pcs);
 
 	if (m_pDisplay == NULL)
 		return -1;
@@ -203,12 +203,12 @@ int CGLWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	else
 	{
 		// Try at least a software display
-		Raptor::glDestroyDisplay(m_pDisplay);
+		IRaptor::glDestroyDisplay(m_pDisplay);
 
 		CRaptorDisplayConfig cs = pcs;
 		cs.acceleration = CRaptorDisplayConfig::SOFTWARE;
 
-		m_pDisplay = Raptor::glCreateDisplay(cs);
+		m_pDisplay = IRaptor::glCreateDisplay(cs);
 
 		if (m_pDisplay == NULL)
 			return -1;
@@ -238,7 +238,7 @@ void CGLWnd::OnDestroy()
 	CWnd::OnDestroy();
 
 	if (m_pDisplay != NULL)
-		Raptor::glDestroyDisplay(m_pDisplay);
+		IRaptor::glDestroyDisplay(m_pDisplay);
 }
 
 

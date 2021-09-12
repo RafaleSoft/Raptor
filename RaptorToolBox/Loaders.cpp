@@ -68,7 +68,7 @@ bool CRaptorToolBox::saveWavefrontScene(const std::string &fname,C3DSet *scene)
 //
 bool CRaptorToolBox::loadRaptorData(const std::string &fname, LP_SCENE_LOADER_OPTIONS )
 {
-	CRaptorErrorManager *err = Raptor::GetErrorManager();
+	CRaptorErrorManager *err = IRaptor::GetErrorManager();
 
 	char shemaLocation[MAX_PATH];
 	char* root = getenv("RAPTOR_ROOT");

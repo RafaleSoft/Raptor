@@ -49,7 +49,7 @@ void RAPTOR_NEW_HANDLER(void)
 {
 	RAPTOR_FATAL(CPersistence::CPersistenceClassID::GetClassId(), CRaptorMessages::ID_NO_RESOURCE);
 
-    Raptor::GetMessages()->displayMessage("Failed to allocate more memory");
+    IRaptor::GetMessages()->displayMessage("Failed to allocate more memory");
 }
 
 

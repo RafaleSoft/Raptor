@@ -81,23 +81,23 @@ static const char* RAPTOR_VERSION_STRING = RAPTOR_VERSION_STR;
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-Raptor::Raptor()
+IRaptor::IRaptor()
 {
 
 }
 
-Raptor::~Raptor()
+IRaptor::~IRaptor()
 {
     glQuitRaptor();
 }
 
-const CRaptorConfig& Raptor::GetConfig(void)
+const CRaptorConfig& IRaptor::GetConfig(void)
 {
 	CRaptorInstance &instance = CRaptorInstance::GetInstance();
 	return instance.config;
 };
 
-CRaptorConsole *const Raptor::GetConsole(void)
+CRaptorConsole *const IRaptor::GetConsole(void)
 {
 	CRaptorInstance &instance = CRaptorInstance::GetInstance();
 	if (instance.pConsole == NULL)
@@ -106,7 +106,7 @@ CRaptorConsole *const Raptor::GetConsole(void)
 	return instance.pConsole;
 }
 
-bool Raptor::glIsExtensionSupported(const std::string &ext)
+bool IRaptor::glIsExtensionSupported(const std::string &ext)
 {
 	const CRaptorGLExtensions *const extensions = CContextManager::GetInstance()->glGetExtensions();
 	if (extensions != NULL)
@@ -115,12 +115,12 @@ bool Raptor::glIsExtensionSupported(const std::string &ext)
 		return false;
 }
 
-const CRaptorGLExtensions *const Raptor::glGetExtensions(void)
+const CRaptorGLExtensions *const IRaptor::glGetExtensions(void)
 {
 	return CContextManager::GetInstance()->glGetExtensions();
 }
 
-bool Raptor::vkIsExtensionSupported(const std::string &ext)
+bool IRaptor::vkIsExtensionSupported(const std::string &ext)
 {
 	const CRaptorVKExtensions *const extensions = CContextManager::GetInstance()->vkGetExtensions();
 	if (extensions != NULL)
@@ -129,34 +129,34 @@ bool Raptor::vkIsExtensionSupported(const std::string &ext)
 		return false;
 }
 
-const CRaptorVKExtensions *const Raptor::vkGetExtensions(void)
+const CRaptorVKExtensions *const IRaptor::vkGetExtensions(void)
 {
 	return CContextManager::GetInstance()->vkGetExtensions();
 }
 
-CRaptorMessages * const Raptor::GetMessages(void)
+CRaptorMessages * const IRaptor::GetMessages(void)
 {
 	CRaptorInstance &instance = CRaptorInstance::GetInstance();
     return instance.pMessages;
 }
 
-CRaptorErrorManager * const Raptor::GetErrorManager(void)
+CRaptorErrorManager * const IRaptor::GetErrorManager(void)
 {
 	CRaptorInstance &instance = CRaptorInstance::GetInstance();
     return instance.pErrorMgr;
 }
 
-unsigned long Raptor::GetVersion(void)
+unsigned long IRaptor::GetVersion(void)
 {
 	return RAPTOR_VERSION;
 }
 
-const char* Raptor::GetVersionString(void)
+const char* IRaptor::GetVersionString(void)
 {
 	return RAPTOR_VERSION_STRING;
 }
 
-int Raptor::glPurgeRaptor(bool count)
+int IRaptor::glPurgeRaptor(bool count)
 {
 	//	Clean user objects
 	size_t nb = CPersistence::NbInstance();
@@ -204,7 +204,7 @@ int Raptor::glPurgeRaptor(bool count)
 	return (int)nb;
 }
 
-bool Raptor::glCheckDisplayConfig(const CRaptorDisplayConfig &pcs)
+bool IRaptor::glCheckDisplayConfig(const CRaptorDisplayConfig &pcs)
 {
 	CRaptorInstance &instance = CRaptorInstance::GetInstance();
 	if ((!instance.isInitialised()) || (instance.terminate()))
@@ -223,7 +223,7 @@ bool Raptor::glCheckDisplayConfig(const CRaptorDisplayConfig &pcs)
 		(pcs.renderer == CRaptorDisplayConfig::PIXEL_BUFFER_FILTER_CHAIN))
     {
 		//	Also check texture binding
-		if (!Raptor::glIsExtensionSupported(GL_ARB_PIXEL_BUFFER_OBJECT_EXTENSION_NAME))
+		if (!IRaptor::glIsExtensionSupported(GL_ARB_PIXEL_BUFFER_OBJECT_EXTENSION_NAME))
 			valid = false;
     }
     else
@@ -231,8 +231,8 @@ bool Raptor::glCheckDisplayConfig(const CRaptorDisplayConfig &pcs)
 		if ((pcs.renderer == CRaptorDisplayConfig::RENDER_BUFFER) ||
 			(pcs.renderer == CRaptorDisplayConfig::RENDER_BUFFER_FILTER_CHAIN))
 		{
-			if ((!Raptor::glIsExtensionSupported(GL_EXT_FRAMEBUFFER_OBJECT_EXTENSION_NAME)) ||
-				(!Raptor::glIsExtensionSupported(GL_EXT_FRAMEBUFFER_BLIT_EXTENSION_NAME)))
+			if ((!IRaptor::glIsExtensionSupported(GL_EXT_FRAMEBUFFER_OBJECT_EXTENSION_NAME)) ||
+				(!IRaptor::glIsExtensionSupported(GL_EXT_FRAMEBUFFER_BLIT_EXTENSION_NAME)))
 				valid = false;
 		}
 
@@ -263,7 +263,7 @@ bool Raptor::glCheckDisplayConfig(const CRaptorDisplayConfig &pcs)
     return valid;
 }
 
-RAPTOR_HANDLE Raptor::glCreateWindow(const CRaptorDisplayConfig& pcs,CRaptorDisplay *&pDisplay)
+RAPTOR_HANDLE IRaptor::glCreateWindow(const CRaptorDisplayConfig& pcs,CRaptorDisplay *&pDisplay)
 {
 	RAPTOR_HANDLE result;
 
@@ -285,7 +285,7 @@ RAPTOR_HANDLE Raptor::glCreateWindow(const CRaptorDisplayConfig& pcs,CRaptorDisp
     return result;
 }
 
-CRaptorDisplay* Raptor::glCreateDisplay(const CRaptorDisplayConfig& pcs)
+CRaptorDisplay* IRaptor::glCreateDisplay(const CRaptorDisplayConfig& pcs)
 {
 	CRaptorInstance &instance = CRaptorInstance::GetInstance();
 	if ((!instance.isInitialised()) || (instance.terminate()))
@@ -317,7 +317,7 @@ CRaptorDisplay* Raptor::glCreateDisplay(const CRaptorDisplayConfig& pcs)
 	return pDisplay;
 }
 
-void Raptor::glDestroyDisplay(CRaptorDisplay* pDisplay)
+void IRaptor::glDestroyDisplay(CRaptorDisplay* pDisplay)
 {
 	CRaptorInstance &instance = CRaptorInstance::GetInstance();
 	if (!instance.isInitialised())
@@ -354,13 +354,32 @@ void Raptor::glDestroyDisplay(CRaptorDisplay* pDisplay)
 	}
 }
 
-CRaptorInstance* Raptor::glvkCreateInstance(const CRaptorConfig& config)
+
+CRaptorInstance* IRaptor::switchInstance(CRaptorInstance* pInstance)
+{
+	if (NULL == pInstance)
+		return NULL;
+
+	//	A first instance needs to be initialised.
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+	if (!instance.isInitialised())
+		return NULL;
+
+	return &instance;
+}
+
+bool IRaptor::glvkCreateInstance(const CRaptorConfig& config, CRaptorInstance* &new_instance)
 {
 	CRaptorInstance* previous = CRaptorInstance::createNewInstance();
-	
-	CRaptorInstance &new_instance = CRaptorInstance::GetInstance();
-	new_instance.config = config;
-	new_instance.initInstance();
+
+	CRaptorConfig checkedConfig = config;
+	checkedConfig.checkConfig();
+
+	CRaptorInstance& instance = CRaptorInstance::GetInstance();
+	new_instance = &instance;
+
+	new_instance->config = checkedConfig;
+	new_instance->initInstance();
 
 	//	Create a dummy window to initialize GL
 	CRaptorDisplayConfig glCS;
@@ -376,86 +395,38 @@ CRaptorInstance* Raptor::glvkCreateInstance(const CRaptorConfig& config)
 	CContextManager::RENDERING_CONTEXT_ID ctx = CContextManager::INVALID_CONTEXT;
 	RAPTOR_HANDLE wnd = ctxMgr->glCreateWindow(glCS, pDisplay, ctx);
 
-	new_instance.defaultWindow = wnd;
-	new_instance.defaultContext = ctx;
-	new_instance.defaultDisplay = pDisplay;
+	new_instance->defaultWindow = wnd;
+	new_instance->defaultContext = ctx;
+	new_instance->defaultDisplay = pDisplay;
 
 	//	Initialize platform dependant datas.
-	CContextManager::GetInstance()->glMakeCurrentContext(new_instance.defaultWindow, 
-														 new_instance.defaultContext);
+	CContextManager::GetInstance()->glMakeCurrentContext(new_instance->defaultWindow, 
+														 new_instance->defaultContext);
 	CTextureFactory::glGetDefaultFactory();
 	CATCH_GL_ERROR
 
 	//! Release context and return init state.
 	RAPTOR_HANDLE noDevice(0, (void*)0);
 	CContextManager::GetInstance()->glMakeCurrentContext(noDevice, 
-														 new_instance.defaultContext);
-
-	return previous;
-}
-
-CRaptorInstance* Raptor::switchInstance(CRaptorInstance* pInstance)
-{
-	if (NULL == pInstance)
-		return NULL;
-
-	//	A first instance needs to be initialised.
-	CRaptorInstance &instance = CRaptorInstance::GetInstance();
-	if (!instance.isInitialised())
-		return NULL;
-
-	return &instance;
-}
-
-bool Raptor::glInitRaptor(const CRaptorConfig& config)
-{ 
-    bool res = false;
-
-	CRaptorConfig checkedConfig = config;
-	checkedConfig.checkConfig();
-
-	//	Initialise global Raptor data
-	CRaptorInstance &instance = CRaptorInstance::GetInstance();
-	if (instance.isInitialised())
-        return true;
-	
-	//  store configuration and initialize platform dependant datas. 
-	//	Some configurations can only be applyied per screen display : 
-    //  e.g.: memory allocation is dependant of a real context.
-	instance.config = checkedConfig;
-	instance.initInstance();
-	
-	//	Create a dummy window to initialize GL
-	CRaptorDisplayConfig glCS;
-	glCS.width = -1;
-	glCS.height = -1;
-	glCS.caption = "Raptor Default Display";
-	glCS.display_mode = CGL_RGBA;
-	glCS.acceleration = CRaptorDisplayConfig::GENERIC;
-	glCS.refresh_rate.fps = CGL_MAXREFRESHRATE;
-
-    CRaptorDisplay *pDisplay = NULL;
-    CContextManager *ctxMgr = CContextManager::GetInstance();
-	CContextManager::RENDERING_CONTEXT_ID ctx = CContextManager::INVALID_CONTEXT;
-	RAPTOR_HANDLE wnd = ctxMgr->glCreateWindow(glCS,pDisplay,ctx);
-
-	instance.defaultWindow = wnd;
-	instance.defaultContext = ctx;
-    instance.defaultDisplay = pDisplay;
-
-	//	Initialize platform dependant datas.
-	CContextManager::GetInstance()->glMakeCurrentContext(instance.defaultWindow, instance.defaultContext);
-	CTextureFactory::glGetDefaultFactory();
-	CATCH_GL_ERROR
-
-	//! Release context and return init state.
-	RAPTOR_HANDLE noDevice;
-	CContextManager::GetInstance()->glMakeCurrentContext(noDevice, instance.defaultContext);
+														 new_instance->defaultContext);
 
 	return (wnd.handle() != 0);
 }
 
-void Raptor::glRender(void)
+bool IRaptor::glInitRaptor(const CRaptorConfig& config)
+{ 
+    bool res = false;
+	CRaptorInstance& instance = CRaptorInstance::GetInstance();
+	if (instance.isInitialised())
+		return true;
+
+	CRaptorInstance* pInstance = NULL;
+	res = IRaptor::glvkCreateInstance(config, pInstance);
+
+	return (res && (NULL != pInstance));
+}
+
+void IRaptor::glRender(void)
 {
 	//! Do not display debug information,
 	//!	because this method is likely to be called in a loop!
@@ -487,7 +458,7 @@ void Raptor::glRender(void)
 	memory->pack();
 }
 
-bool Raptor::glQuitRaptor(void)
+bool IRaptor::glQuitRaptor(void)
 {
 	CRaptorInstance &instance = CRaptorInstance::GetInstance();
 	if ((!instance.isInitialised()) || (instance.terminate()))

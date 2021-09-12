@@ -165,7 +165,7 @@ void CTestDoc::GLInitContext(HDC hdc)
     pScene->addLight(pLight);
 
 #if defined(GL_ARB_color_buffer_float)
-	if (Raptor::glIsExtensionSupported(GL_ARB_COLOR_BUFFER_FLOAT_EXTENSION_NAME))
+	if (IRaptor::glIsExtensionSupported(GL_ARB_COLOR_BUFFER_FLOAT_EXTENSION_NAME))
     {
         CRaptorDisplayConfig rda;
         CRaptorDisplay::GetCurrentDisplay()->glQueryStatus(rda,GL_CONFIG_STATE_QUERY);

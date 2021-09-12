@@ -804,7 +804,7 @@ bool RAPTOR_FASTCALL ProcessChunkAxxxH(long length)
 				rename << "2";
 				
 				str += rename.str();
-				Raptor::GetErrorManager()->generateRaptorError(CPersistence::CPersistenceClassID::GetClassId(),
+				IRaptor::GetErrorManager()->generateRaptorError(CPersistence::CPersistenceClassID::GetClassId(),
                                                                CRaptorErrorManager::RAPTOR_WARNING,str, __FILE__, __LINE__);
 				materialRenamed = true;
 				newAlias = true;

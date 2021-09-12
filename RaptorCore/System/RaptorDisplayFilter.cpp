@@ -151,7 +151,7 @@ void CRaptorDisplayFilter::glRender(void)
 		glRenderFilterOutput();
 	else
     {
-		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+		const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 
 		pExtensions->glActiveTextureARB(GL_TEXTURE1_ARB);
         glDisable(GL_TEXTURE_2D);
@@ -204,7 +204,7 @@ void CRaptorDisplayFilter::glDestroyFilter(void)
     {
 		CRaptorDisplay *pDisplay = (CRaptorDisplay*)colorInternalSource;
 		pDisplay->glvkReleaseResources();
-        Raptor::glDestroyDisplay(pDisplay);
+        IRaptor::glDestroyDisplay(pDisplay);
         colorInternalSource = NULL;
     }
 
@@ -212,7 +212,7 @@ void CRaptorDisplayFilter::glDestroyFilter(void)
 	{
 		CRaptorDisplay *pDisplay = (CRaptorDisplay*)depthInternalSource;
 		pDisplay->glvkReleaseResources();
-		Raptor::glDestroyDisplay(pDisplay);
+		IRaptor::glDestroyDisplay(pDisplay);
 		depthInternalSource = NULL;
 	}
 
@@ -342,7 +342,7 @@ ITextureGenerator*  CRaptorDisplayFilter::glCreateColorSource(void)
 	else if (m_fModel == CRaptorDisplayFilter::RENDER_TEXTURE)
 		state.renderer = CRaptorDisplayConfig::PIXEL_BUFFER;
 
-    CRaptorDisplay* pDisplay = Raptor::glCreateDisplay(state);
+    CRaptorDisplay* pDisplay = IRaptor::glCreateDisplay(state);
 	IRenderingProperties &rp = pDisplay->getRenderingProperties();
 	rp.setTexturing(IRenderingProperties::ENABLE);
 	rp.setCullFace(IRenderingProperties::DISABLE);
@@ -394,7 +394,7 @@ ITextureObject*  CRaptorDisplayFilter::glCreateColorOutput(void)
 	colorOutput->releaseReference();
 
 	CRaptorDisplay *renderBuffer = NULL;
-    renderBuffer = Raptor::glCreateDisplay(state);
+    renderBuffer = IRaptor::glCreateDisplay(state);
 	IRenderingProperties &rp = renderBuffer->getRenderingProperties();
 	rp.setTexturing(IRenderingProperties::ENABLE);
 	rp.setCullFace(IRenderingProperties::DISABLE);

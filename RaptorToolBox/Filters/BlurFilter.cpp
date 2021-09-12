@@ -200,7 +200,7 @@ void CBlurFilter::glRenderFilter()
 		glBuildFilter(config.width,config.height);
 	}
 
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 	PFN_GL_ACTIVE_TEXTURE_ARB_PROC glActiveTextureARB = pExtensions->glActiveTextureARB;
 
     //! First pass : xPass of the kernel assuming it is separable
@@ -219,7 +219,7 @@ void CBlurFilter::glRenderFilter()
 
 void CBlurFilter::glRenderFilterOutput()
 {
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 	PFN_GL_ACTIVE_TEXTURE_ARB_PROC glActiveTextureARB = pExtensions->glActiveTextureARB;
 
     //! Second (last) pass : yPass of the kernel, assuming it is separable
@@ -390,7 +390,7 @@ bool CBlurFilter::glInitFilter(void)
 		m_pRenderTextures->addTexture(xKernelPass);
 	}
 
-    xBuffer = Raptor::glCreateDisplay(state);
+    xBuffer = IRaptor::glCreateDisplay(state);
 	IRenderingProperties &rp = xBuffer->getRenderingProperties();
 	rp.setTexturing(IRenderingProperties::ENABLE);
 	rp.setCullFace(IRenderingProperties::DISABLE);
@@ -449,7 +449,7 @@ bool CBlurFilter::glInitFilter(void)
 	}
     if (xBuffer != NULL)
 	{
-        Raptor::glDestroyDisplay(xBuffer);
+        IRaptor::glDestroyDisplay(xBuffer);
 		xBuffer = NULL;
 	}
  }

@@ -120,7 +120,7 @@ void C3DSceneAttributes::glMakeQueries(void)
 		if (m_pObjects.size() < 1)
 			return;
 
-		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+		const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
         if (pExtensions->glGenQueriesARB != NULL)
         {
 		    vector<C3DSceneObject*>::iterator itr = m_pObjects.begin();
@@ -146,7 +146,7 @@ void C3DSceneAttributes::glResetQueries(void)
 	{
         m_bQueriesReady = false;
 
-        const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+        const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
         if (pExtensions->glDeleteQueriesARB != NULL)
         {
 		    vector<C3DSceneObject*>::iterator itr = m_pObjects.begin();

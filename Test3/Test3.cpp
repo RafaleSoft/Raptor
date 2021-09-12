@@ -384,7 +384,7 @@ int _tmain(int argc, _TCHAR* argv[])
     config.m_uiPolygons = 30000;
     config.m_uiVertices = 1000000;
 	config.m_bCompute = true;
-	Raptor::glInitRaptor(config);
+	IRaptor::glInitRaptor(config);
 
 	CRaptorDisplayConfig glcs;
 	glcs.width = 640;
@@ -436,7 +436,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	CAnimator *animator = new CAnimator();
 	CAnimator::SetAnimator(animator);
 
-	CRaptorConsole *pConsole = Raptor::GetConsole();
+	CRaptorConsole *pConsole = IRaptor::GetConsole();
     pConsole->glInit();
     pConsole->showStatus(true);
 	pConsole->showFPS(true);

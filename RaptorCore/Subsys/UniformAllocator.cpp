@@ -301,7 +301,7 @@ bool CUniformAllocator::glvkBindUniform(uint8_t *uniform, int32_t index, uint64_
 		}
 #endif
 
-		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+		const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 		if (pExtensions->glBindBufferRangeARB != NULL)
 		{
 			pExtensions->glBindBufferRangeARB(GL_UNIFORM_BUFFER_ARB, index, buffer, base, sz);

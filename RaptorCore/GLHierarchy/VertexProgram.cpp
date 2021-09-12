@@ -78,7 +78,7 @@ CVertexProgram::~CVertexProgram()
 	{
         glStop();
 
-		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+		const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 		GLuint program = m_handle.glhandle();
 		if (pExtensions->glIsProgramARB(program))
 			pExtensions->glDeleteProgramsARB(1,&program);
@@ -92,7 +92,7 @@ CVertexProgram::~CVertexProgram()
 
 void RAPTOR_FASTCALL CVertexProgram::glVertex(const GL_COORD_VERTEX &v)
 {
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 
 	if (m_handle.glhandle() == 0)
 		glVertex4fv(v);
@@ -110,7 +110,7 @@ void RAPTOR_FASTCALL CVertexProgram::glVertexWeightEXT(float w)
 #if defined(GL_ARB_vertex_program)
 	if (CRaptorInstance::GetInstance().isVertexProgramReady())
 	{
-		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+		const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 		pExtensions->glVertexAttrib1fARB(CProgramParameters::WEIGHTS, w);
 	}
 #endif
@@ -119,7 +119,7 @@ void RAPTOR_FASTCALL CVertexProgram::glVertexWeightEXT(float w)
 
 void RAPTOR_FASTCALL CVertexProgram::glNormal(const GL_COORD_VERTEX &n)
 {
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 
 	if (m_handle.glhandle() == 0)
 		glNormal3fv(n);
@@ -134,7 +134,7 @@ void RAPTOR_FASTCALL CVertexProgram::glNormal(const GL_COORD_VERTEX &n)
 
 void RAPTOR_FASTCALL CVertexProgram::glColor(const CColor::RGBA &c)
 {
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 
 	if (m_handle.glhandle() == 0)
 		glColor4fv(c);
@@ -152,7 +152,7 @@ void RAPTOR_FASTCALL CVertexProgram::glSecondaryColorEXT(const CColor::RGBA &c)
 #if defined(GL_ARB_vertex_program)
 	if (CRaptorInstance::GetInstance().isVertexProgramReady())
 	{
-		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+		const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 		pExtensions->glVertexAttrib4fvARB(CProgramParameters::SECONDARY_COLOR, c);
 	}
 #endif
@@ -165,7 +165,7 @@ void RAPTOR_FASTCALL CVertexProgram::glFogCoordEXT(float f)
 #if defined(GL_ARB_vertex_program)
 	if (CRaptorInstance::GetInstance().isVertexProgramReady())
 	{
-		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+		const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 		pExtensions->glVertexAttrib1fARB(CProgramParameters::FOG_COORDINATE, f);
 	}
 #endif
@@ -179,7 +179,7 @@ void RAPTOR_FASTCALL CVertexProgram::glMultiTexCoord(CProgramParameters::GL_VERT
 	if (tmu < CProgramParameters::TEXCOORD0)
 		return;
 
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 	if (m_handle.glhandle() == 0)
 	{
 #if defined(GL_ARB_multitexture)
@@ -202,7 +202,7 @@ void RAPTOR_FASTCALL CVertexProgram::glAdditionalVertexParam(const GL_COORD_VERT
 #if defined(GL_ARB_vertex_program)
 	if (CRaptorInstance::GetInstance().isVertexProgramReady())
 	{
-		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+		const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 		pExtensions->glVertexAttrib4fvARB(CProgramParameters::ADDITIONAL_PARAM1, v);
 	}
 #endif
@@ -215,7 +215,7 @@ void RAPTOR_FASTCALL CVertexProgram::glAdditionalVertexParam2(const GL_COORD_VER
 #if defined(GL_ARB_vertex_program)
 	if (CRaptorInstance::GetInstance().isVertexProgramReady())
 	{
-		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+		const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 		pExtensions->glVertexAttrib4fvARB(CProgramParameters::ADDITIONAL_PARAM2, v);
 	}
 #endif
@@ -226,7 +226,7 @@ void RAPTOR_FASTCALL CVertexProgram::glAdditionalVertexParam2(const GL_COORD_VER
 void RAPTOR_FASTCALL CVertexProgram::glPointParameter(float minSize, float maxSize, const GL_COORD_VERTEX& attenuation)
 {
 #if defined(GL_EXT_point_parameters)
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 
 	if (minSize >= 0.0)
 		pExtensions->glPointParameterfEXT(GL_POINT_SIZE_MIN_EXT,minSize);
@@ -246,7 +246,7 @@ void CVertexProgram::glProgramParameter(unsigned int numParam, const GL_COORD_VE
 #if defined(GL_ARB_vertex_program)
 	if (CRaptorInstance::GetInstance().isVertexProgramReady())
 	{
-		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+		const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 		pExtensions->glProgramLocalParameter4fvARB(GL_VERTEX_PROGRAM_ARB, numParam, v);
 	}
 #endif
@@ -259,7 +259,7 @@ void CVertexProgram::glProgramParameter(unsigned int numParam, const CColor::RGB
 #if defined(GL_ARB_vertex_program)
 	if (CRaptorInstance::GetInstance().isVertexProgramReady())
 	{
-		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+		const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 		pExtensions->glProgramLocalParameter4fvARB(GL_VERTEX_PROGRAM_ARB, numParam, v);
 	}
 #endif
@@ -272,7 +272,7 @@ void CVertexProgram::glProgramParameter(unsigned int numParam, const CGenericVec
 #if defined(GL_ARB_vertex_program)
 	if (CRaptorInstance::GetInstance().isVertexProgramReady())
 	{
-		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+		const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 		pExtensions->glProgramLocalParameter4fvARB(GL_VERTEX_PROGRAM_ARB, numParam, v.vector());
 	}
 #endif
@@ -294,7 +294,7 @@ void CVertexProgram::glRender(void)
 #if defined(GL_ARB_vertex_program)
 	if (CRaptorInstance::GetInstance().isVertexProgramReady())
 	{
-		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+		const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 		if (pExtensions->glIsProgramARB(m_handle.glhandle()))
 		{
 			glEnable(GL_VERTEX_PROGRAM_ARB);
@@ -321,7 +321,7 @@ void CVertexProgram::glRender(void)
 void CVertexProgram::glStop(void)
 {
 #if defined(GL_ARB_vertex_program)
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 	pExtensions->glBindProgramARB(GL_VERTEX_PROGRAM_ARB,0);
 	glDisable(GL_VERTEX_PROGRAM_ARB);
 #endif
@@ -332,7 +332,7 @@ void CVertexProgram::glStop(void)
 bool CVertexProgram::glLoadProgram(const std::string &program)
 {
 	m_bValid = false;
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 
 #if defined(GL_ARB_vertex_program)
 	if (CRaptorInstance::GetInstance().isVertexProgramReady())
@@ -361,9 +361,8 @@ bool CVertexProgram::glLoadProgram(const std::string &program)
         GLenum err = glGetError();
         if (err != GL_NO_ERROR)
         {
-			Raptor::GetErrorManager()->generateRaptorError(CVertexProgram::CVertexProgramClassID::GetClassId(),
-															CRaptorErrorManager::RAPTOR_WARNING,
-															"Raptor encountered errors before loading vertex shader, check with debug infos.");
+			RAPTOR_WARNING(CVertexProgram::CVertexProgramClassID::GetClassId(),
+						   "Raptor encountered errors before loading vertex shader, check with debug infos.");
             while (err != GL_NO_ERROR)
                 err = ::glGetError();
         }
@@ -393,7 +392,7 @@ bool CVertexProgram::glLoadProgram(const std::string &program)
             arg2.arg_sz = (const char*)str;
             args.push_back(arg2);
 
-			Raptor::GetErrorManager()->generateRaptorError(CVertexProgram::CVertexProgramClassID::GetClassId(),
+			IRaptor::GetErrorManager()->generateRaptorError(CVertexProgram::CVertexProgramClassID::GetClassId(),
                                                             CRaptorErrorManager::RAPTOR_ERROR,
 											                CRaptorMessages::ID_PROGRAM_ERROR,
 															__FILE__, __LINE__, args); 
@@ -427,7 +426,7 @@ std::string CVertexProgram::glGetProgramString(void) const
 		return "";
 
 #if defined(GL_ARB_vertex_program)
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 
 	if (pExtensions->glIsProgramARB(m_handle.glhandle()))
 		pExtensions->glBindProgramARB(GL_VERTEX_PROGRAM_ARB, m_handle.glhandle());
@@ -456,7 +455,7 @@ bool CVertexProgram::glGetProgramStatus(void) const
 		return false;
 
 #if defined(GL_ARB_vertex_program)
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 
 	if (pExtensions->glIsProgramARB(m_handle.glhandle()))
 		pExtensions->glBindProgramARB(GL_VERTEX_PROGRAM_ARB, m_handle.glhandle());
@@ -528,7 +527,7 @@ bool CVertexProgram::glGetProgramCaps(GL_VERTEX_PROGRAM_CAPS& caps)
 	if (CRaptorInstance::GetInstance().isVertexProgramReady())
 	{
 #if defined(GL_ARB_vertex_program)
-		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+		const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 
 		pExtensions->glGetProgramivARB(GL_VERTEX_PROGRAM_ARB,GL_MAX_PROGRAM_INSTRUCTIONS_ARB,&caps.max_instructions);
 		pExtensions->glGetProgramivARB(GL_VERTEX_PROGRAM_ARB,GL_MAX_PROGRAM_NATIVE_INSTRUCTIONS_ARB,&caps.max_native_instructions);

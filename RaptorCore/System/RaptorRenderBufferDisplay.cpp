@@ -85,7 +85,7 @@ void CRaptorRenderBufferDisplay::unLink(const CPersistence* obj)
 void CRaptorRenderBufferDisplay::glDestroyBuffer(void)
 {
 #if defined(GL_EXT_framebuffer_object)
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 
 	if (m_framebuffer != 0)
 	{
@@ -142,7 +142,7 @@ bool CRaptorRenderBufferDisplay::glAttachBuffers()
 		GLint maxAttachments = 0;
 		glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS_EXT ,&maxAttachments);
 		 
-		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+		const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 		size_t nbtextures = m_pAttachments->getNbTexture();
 
 		//!	Number of attachments is limited by implementation : choose max size 
@@ -217,7 +217,7 @@ bool CRaptorRenderBufferDisplay::glDetachBuffers()
 
 		//!	Number of attachments is limited by implementation : choose max size 
 		//! of Raptor capabilities and implementation limit.
-		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+		const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 		size_t nbtextures = m_pAttachments->getNbTexture();
 
 		for (size_t i=0; i<MIN(nbtextures,(size_t)abs(max(0,maxAttachments)));i++)
@@ -285,7 +285,7 @@ bool CRaptorRenderBufferDisplay::createFrameBuffer(void)
 		nbSamples = cs.getNbSamples();
 #endif
 
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 	pExtensions->glGenFramebuffersEXT(1,&m_framebuffer);
 	pExtensions->glBindFramebufferEXT(GL_FRAMEBUFFER_EXT,m_framebuffer);
 	if (pExtensions->glIsFramebufferEXT(m_framebuffer))
@@ -481,7 +481,7 @@ bool CRaptorRenderBufferDisplay::createFrameBuffer(void)
 
 bool CRaptorRenderBufferDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
 {
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 
 	if (device.hClass() == CTextureSet::CTextureSetClassID::GetClassId().ID())
 	{
@@ -547,7 +547,7 @@ bool CRaptorRenderBufferDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
 bool CRaptorRenderBufferDisplay::glvkUnBindDisplay(void)
 {
 #if defined(GL_EXT_framebuffer_object)
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 
 	bool res = CRaptorDisplay::glvkUnBindDisplay();
 	glPopMatrix();
@@ -596,7 +596,7 @@ void CRaptorRenderBufferDisplay::glGenerate(ITextureObject* I, uint32_t x, uint3
 #if defined(GL_EXT_framebuffer_object)
 	COpenGLTextureObject *T = I->getGLTextureObject();
 
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();	
+	const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();	
 	pExtensions->glBindFramebufferEXT(GL_FRAMEBUFFER_EXT,m_framebuffer);
 
 	pExtensions->glFramebufferTexture2DEXT(	GL_FRAMEBUFFER_EXT, 
@@ -645,7 +645,7 @@ void CRaptorRenderBufferDisplay::glResize(unsigned int sx,unsigned int sy,unsign
 	glGetIntegerv(GL_FRAMEBUFFER_BINDING_EXT,&binding);
 	if (binding != 0)
 	{
-		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+		const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 		pExtensions->glBindFramebufferEXT(GL_FRAMEBUFFER_EXT,0);
 	}
 
@@ -666,7 +666,7 @@ void CRaptorRenderBufferDisplay::glResize(unsigned int sx,unsigned int sy,unsign
 		glvkUnBindDisplay();
 	else if (!bindSelf)
 	{
-		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+		const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 		pExtensions->glBindFramebufferEXT(GL_FRAMEBUFFER_EXT,binding);
 	}
 #endif
@@ -721,7 +721,7 @@ bool CRaptorRenderBufferDisplay::glBlit(uint32_t xSrc, uint32_t ySrc, uint32_t w
 		(pDst->getId().isSubClassOf(CRaptorRenderBufferDisplay::CRaptorRenderBufferDisplayClassID::GetClassId())))
 	{
 		CRaptorRenderBufferDisplay *pDstBuffer = (CRaptorRenderBufferDisplay *)pDst;
-		const CRaptorGLExtensions * const pExtensions = Raptor::glGetExtensions(); 
+		const CRaptorGLExtensions * const pExtensions = IRaptor::glGetExtensions(); 
 
 		GLint readBinding = 0;
 		GLint drawBinding = 0;
@@ -791,7 +791,7 @@ bool CRaptorRenderBufferDisplay::checkBufferStatus(void) const
 	if ((buffer != m_framebuffer) || (buffer == 0))
 		return false;
 
-	const CRaptorGLExtensions * const pExtensions = Raptor::glGetExtensions(); 
+	const CRaptorGLExtensions * const pExtensions = IRaptor::glGetExtensions(); 
 	GLenum status = pExtensions->glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
 
 #ifdef RAPTOR_DEBUG_MODE_GENERATION

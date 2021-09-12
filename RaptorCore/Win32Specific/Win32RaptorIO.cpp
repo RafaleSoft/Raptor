@@ -41,8 +41,7 @@ CWin32RaptorIO::CWin32RaptorIO(const std::string& streamName, CRaptorIO::IO_KIND
 						  (LPTSTR)&lpMsgBuf, 0, NULL);
 
 			const char *msg = (NULL != lpMsgBuf) ? (const char*)lpMsgBuf : "Unknown Win32 error.";
-			Raptor::GetErrorManager()->generateRaptorError(CPersistence::CPersistenceClassID::GetClassId(),
-														   CRaptorErrorManager::RAPTOR_WARNING, msg);
+			RAPTOR_WARNING(CPersistence::CPersistenceClassID::GetClassId(), msg);
 
 			if (NULL != lpMsgBuf)
 				LocalFree(lpMsgBuf);

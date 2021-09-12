@@ -109,7 +109,7 @@ bool CAmbientOcclusionShader::glInitAOCompute(void)
 	cfg.bind_to_texture = true;
 	cfg.renderer = CRaptorDisplayConfig::RENDER_BUFFER;
 
-    m_pAOBuffer = Raptor::glCreateDisplay(cfg);
+    m_pAOBuffer = IRaptor::glCreateDisplay(cfg);
 	IRenderingProperties &rp = m_pAOBuffer->getRenderingProperties();
 	rp.setTexturing(IRenderingProperties::ENABLE);
 	rp.setCullFace(IRenderingProperties::DISABLE);
@@ -130,12 +130,11 @@ bool CAmbientOcclusionShader::glInitAOCompute(void)
 
 	CATCH_GL_ERROR;
 
-	if (!Raptor::glIsExtensionSupported(GL_ARB_TEXTURE_RECTANGLE_EXTENSION_NAME))
+	if (!IRaptor::glIsExtensionSupported(GL_ARB_TEXTURE_RECTANGLE_EXTENSION_NAME))
 	{
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
-		Raptor::GetErrorManager()->generateRaptorError(	CShader::CShaderClassID::GetClassId(),
-														CRaptorErrorManager::RAPTOR_WARNING,
-														"Raptor cannot render AmbientOcclusion: GPU is missing texture rectangle extension");
+		RAPTOR_WARNING(	CShader::CShaderClassID::GetClassId(),
+						"Raptor cannot render AmbientOcclusion: GPU is missing texture rectangle extension");
 #endif
 		return false;
 	}
@@ -153,7 +152,7 @@ void CAmbientOcclusionShader::glRenderResult()
 
 	if (props->getTexturing() == IRenderingProperties::ENABLE)
 	{
-		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+		const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 		pExtensions->glClientActiveTextureARB(GL_TEXTURE2_ARB);
 
 		// This is responsibility of a geometry
@@ -238,7 +237,7 @@ void CAmbientOcclusionShader::glRender()
 	glVertexPointer(3,GL_FLOAT,sizeof(GL_COORD_VERTEX),m_refVertex);
 	glNormalPointer(GL_FLOAT,sizeof(GL_COORD_VERTEX),m_refNormal);
 
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 	pExtensions->glClientActiveTextureARB(GL_TEXTURE2_ARB);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	glTexCoordPointer(2,GL_FLOAT,0,m_refTexCoords);

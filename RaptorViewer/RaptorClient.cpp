@@ -218,7 +218,7 @@ bool CRaptorClient::run(uint32_t width, uint32_t height,
 	glcs.depth_buffer = true;
 	glcs.display_mode = CGL_RGBA | CGL_DEPTH;
 
-	m_window = Raptor::glCreateWindow(glcs,m_pDisplay);
+	m_window = IRaptor::glCreateWindow(glcs,m_pDisplay);
 	if (m_window.handle() == 0)
 	{
 		RAPTOR_FATAL(	CPersistence::CPersistenceClassID::GetClassId(),
@@ -240,7 +240,7 @@ bool CRaptorClient::run(uint32_t width, uint32_t height,
 	{
 		vp->glvkRenderViewPointModel();
 
-		CRaptorConsole *pConsole = Raptor::GetConsole();
+		CRaptorConsole *pConsole = IRaptor::GetConsole();
 		pConsole->glInit();
 		pConsole->showStatus(true);
 		pConsole->showFPS(true);
@@ -277,7 +277,7 @@ bool CRaptorClient::start(const CCmdLineParser &cmdLine)
 	config.m_logFile = "Raptor_Viewer.log";
 	config.m_bAutoDestroy = false;
 
-	bool res = Raptor::glInitRaptor(config);
+	bool res = IRaptor::glInitRaptor(config);
 	if (!res)
 	{
 		std::cout << "Failed to initialize Raptor layer." << std::endl;
@@ -370,7 +370,7 @@ bool CRaptorClient::stop(void)
 		}
 		
 		m_Client->disconnectServer();
-		return Raptor::glQuitRaptor();
+		return IRaptor::glQuitRaptor();
 	}
 }
 

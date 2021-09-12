@@ -78,6 +78,6 @@ void CAOComputeShader::glRender(void)
 	CShader::glRender();
 
 #if defined(GL_ARB_shader_objects)
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 #endif
 }

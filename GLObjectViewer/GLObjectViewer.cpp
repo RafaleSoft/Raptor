@@ -62,11 +62,11 @@ BOOL CGLObjectViewerApp::InitInstance()
     cfg.m_bRelocation = true;
     cfg.m_uiPolygons = 1000000;
     cfg.m_uiVertices = 4000000;
-    Raptor::glInitRaptor(cfg);
+    IRaptor::glInitRaptor(cfg);
 
-    Raptor::GetErrorManager()->logToFile("GLObjectViewer.log");
+    IRaptor::GetErrorManager()->logToFile("GLObjectViewer.log");
 
-    unsigned long v = Raptor::GetVersion();
+    unsigned long v = IRaptor::GetVersion();
 	ostrstream title;
     title << "Your empty starting Raptor ";
     title << ((v>>24)&0xFF) << "." << ((v>>16)&0xFF) << "." << ((v>>8)&0xFF);
@@ -180,7 +180,7 @@ void CGLObjectViewerApp::OnFileOpen()
 {
 	CWinApp::OnFileOpen();
 	
-	Raptor::glRender();
+	IRaptor::glRender();
 }
 
 void CGLObjectViewerApp::OnFileSave() 

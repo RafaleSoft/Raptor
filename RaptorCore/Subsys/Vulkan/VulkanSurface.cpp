@@ -129,7 +129,7 @@ VkSwapchainCreateInfoKHR CVulkanSurface::getSwapChainRequirements(	uint32_t disp
 	VkPresentModeKHR presentMode = getPresentMode(VK_PRESENT_MODE_MAILBOX_KHR);
 
 	VkResult res = VK_NOT_READY;
-	CRaptorErrorManager *pErrMgr = Raptor::GetErrorManager();
+	CRaptorErrorManager *pErrMgr = IRaptor::GetErrorManager();
 	
 	VkExtent2D extent = getExtend();
 

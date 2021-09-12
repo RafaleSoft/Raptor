@@ -37,9 +37,7 @@ void RaptorTIFFErrorHandler(const char* module , const char* fmt, va_list ap)
 	vsprintf(szTmp, fmt, ap);
 	szTitle += szTmp;
 
-    Raptor::GetErrorManager()->generateRaptorError(	CPersistence::CPersistenceClassID::GetClassId(),
-													CRaptorErrorManager::RAPTOR_ERROR,
-													szTitle);
+	RAPTOR_ERROR(CPersistence::CPersistenceClassID::GetClassId(), szTitle);
 }
 
 void RaptorTIFFWarningHandler(const char* module , const char* fmt, va_list ap)
@@ -56,9 +54,7 @@ void RaptorTIFFWarningHandler(const char* module , const char* fmt, va_list ap)
 	vsprintf(szTmp, fmt, ap);
 	szTitle += szTmp;
 
-    Raptor::GetErrorManager()->generateRaptorError(	CPersistence::CPersistenceClassID::GetClassId(),
-													CRaptorErrorManager::RAPTOR_WARNING,
-													szTitle);
+	RAPTOR_WARNING(CPersistence::CPersistenceClassID::GetClassId(), szTitle);
 }
 
 

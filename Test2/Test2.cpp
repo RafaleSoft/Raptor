@@ -67,7 +67,7 @@ BOOL CTest2App::InitInstance()
 	config.m_uiTexels = 400000;
 	config.m_uiUniforms = 16384;
 	config.m_logFile = "Test2_Raptor.log";
-	bool init = Raptor::glInitRaptor(config);
+	bool init = IRaptor::glInitRaptor(config);
 
 	CTimeObject::setTimeFactor(1.0f);
     Animator = new CAnimator();
@@ -77,7 +77,7 @@ BOOL CTest2App::InitInstance()
     CStreaming::installStreamers();
 
 	char title[256];
-	unsigned int v = Raptor::GetVersion();
+	unsigned int v = IRaptor::GetVersion();
 	sprintf(title,"Your empty starting Raptor %d.%d.%d Release test",(v>>24)&0xFF,(v>>16)&0xFF,(v>>8)&0xFF);
 
 	CRaptorDisplayConfig glcs;
@@ -186,7 +186,7 @@ void CTest2App::OnAppAbout()
 
 int CTest2App::ExitInstance() 
 {
-	Raptor::glQuitRaptor();
+	IRaptor::glQuitRaptor();
 	return CWinApp::ExitInstance();
 }
 
@@ -226,7 +226,7 @@ void CTest2App::OnVideoSettings()
 
 BOOL CTest2App::OnIdle(LONG lCount) 
 {
-	Raptor::glRender();
+	IRaptor::glRender();
 //	CWinApp::OnIdle(lCount);
 	CWinThread::OnIdle(lCount);
 	return TRUE;	// we want animation, so need more idle time

@@ -163,7 +163,7 @@ void CTextureQuad::glRender(void)
 	bool res = true;
 
 	//!	Render (activate) shader and texture.
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 	if (pExtensions->glActiveTextureARB != NULL)
 		pExtensions->glActiveTextureARB(GL_TEXTURE0_ARB);
 	glEnable(GL_TEXTURE_2D);

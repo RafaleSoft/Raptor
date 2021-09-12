@@ -109,11 +109,11 @@ bool CRaptorApplication::initApplication(CRaptorDisplayConfig &config)
 {
 	//! A defaut config if Raptor has not been initialised.
     CRaptorConfig cfg;
-    bool res = Raptor::glInitRaptor(cfg);
+    bool res = IRaptor::glInitRaptor(cfg);
 
 	if (res)
 	{
-		RAPTOR_HANDLE wnd = Raptor::glCreateWindow(config, m_pDisplay);
+		RAPTOR_HANDLE wnd = IRaptor::glCreateWindow(config, m_pDisplay);
 		m_root = wnd;
 
 		res = (NULL != m_root.ptr<HWND__>());
@@ -137,7 +137,7 @@ bool CRaptorApplication::quitApplication(void)
 			res = res && m_pDisplay->glvkBindDisplay(m_root);
 			m_pDisplay->glvkReleaseResources();
 			res = res && m_pDisplay->glvkUnBindDisplay();
-			Raptor::glDestroyDisplay(m_pDisplay);
+			IRaptor::glDestroyDisplay(m_pDisplay);
 			m_pDisplay = NULL;
 		}
 
@@ -148,8 +148,8 @@ bool CRaptorApplication::quitApplication(void)
 		m_root = noHandle;
 	}
 
-	if (Raptor::GetConfig().m_bAutoDestroy)
-		res = Raptor::glQuitRaptor();
+	if (IRaptor::GetConfig().m_bAutoDestroy)
+		res = IRaptor::glQuitRaptor();
 
 	return res;
 }

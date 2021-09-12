@@ -41,12 +41,12 @@ int main(int argc, char* argv[])
     config.m_uiVertices = 40000;
 	config.m_logFile = "Test_Raptor.log";
 
-    Raptor::glInitRaptor(config);
+    IRaptor::glInitRaptor(config);
 
     CImaging::installImagers();
 
 
-    unsigned long v = Raptor::GetVersion();
+    unsigned long v = IRaptor::GetVersion();
 	stringstream title;
     title << "Your empty starting Raptor ";
     title << ((v>>24)&0xFF) << "." << ((v>>16)&0xFF) << "." << ((v>>8)&0xFF);
@@ -70,11 +70,11 @@ int main(int argc, char* argv[])
     CRaptorApplication  *app = CRaptorApplication::CreateApplication();
 	if (!app->initApplication(glcs))
     {
-        Raptor::GetMessages()->displayMessage("Sorry: Test cannot run : full display config is not supported, trying basic window...");
+        IRaptor::GetMessages()->displayMessage("Sorry: Test cannot run : full display config is not supported, trying basic window...");
         glcs.display_mode = CGL_RGBA| CGL_DEPTH;
 		if (!app->initApplication(glcs))
         {
-            Raptor::GetMessages()->displayMessage("Sorry: Test cannot run : hardware OpenGL rendering not supported, exiting...");
+            IRaptor::GetMessages()->displayMessage("Sorry: Test cannot run : hardware OpenGL rendering not supported, exiting...");
             return -1;
         }
     }
@@ -89,7 +89,7 @@ int main(int argc, char* argv[])
 
         pDoc->GLInitContext();
 
-        CRaptorConsole *pConsole = Raptor::GetConsole();
+        CRaptorConsole *pConsole = IRaptor::GetConsole();
         pConsole->glInit();
         pConsole->showStatus(true);
         pConsole->activateConsole(true);

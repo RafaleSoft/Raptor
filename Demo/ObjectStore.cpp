@@ -796,9 +796,9 @@ void CObjectStore::BuildObjects(void)
 	m_pBumpKnot->addModel(CGeometry::CGL_NORMALS);
 	m_pBumpKnot->addModel(CGeometry::CGL_TEXTURE);
 
-	if (!Raptor::glIsExtensionSupported(GL_ARB_VERTEX_PROGRAM_EXTENSION_NAME))
+	if (!IRaptor::glIsExtensionSupported(GL_ARB_VERTEX_PROGRAM_EXTENSION_NAME))
     {
-        CRaptorMessages * const msg = Raptor::GetMessages();
+        CRaptorMessages * const msg = IRaptor::GetMessages();
         msg->displayMessage("Hardware unable to render bump mapping");
     }
 

@@ -96,6 +96,15 @@ RAPTOR_NAMESPACE
 static const uint32_t max_texture_quad = 256;
 CRaptorInstance *CRaptorInstance::m_pInstance = NULL;
 
+class CVoidInstance : public CRaptorInstance
+{
+	public:
+		CVoidInstance() {};
+		virtual ~CVoidInstance() {};
+		virtual void initInstance() {};
+};
+static CVoidInstance voidInstance;
+
 CRaptorInstance::CRaptorInstance()
 {
 	p3DEngine = NULL;
@@ -112,6 +121,7 @@ CRaptorInstance::CRaptorInstance()
 	iRenderedObjects = 0;
 	iRenderedTriangles = 0;
 	
+	defaultContext = 0;
 	defaultDisplay = NULL;
 	defaultWindow.handle(0);
 	defaultWindow.hClass(0);
@@ -157,9 +167,9 @@ CRaptorInstance::CRaptorInstance()
 CRaptorInstance &CRaptorInstance::GetInstance(void)
 {
 	if (m_pInstance == NULL)
-		m_pInstance = new CRaptorInstance();
-
-	return *m_pInstance;
+		return voidInstance;
+	else
+		return *m_pInstance;
 }
 
 CRaptorInstance* CRaptorInstance::createNewInstance(void)
@@ -213,7 +223,7 @@ CRaptorInstance::~CRaptorInstance()
 	//! Destroy glObjects : we need a context.
 	CContextManager::GetInstance()->glMakeCurrentContext(defaultWindow, defaultContext);
 
-	glvkReleaseSharedRsources();
+	glvkReleaseSharedResources();
 
 
 #if defined (VK_VERSION_1_0)
@@ -373,9 +383,9 @@ bool CRaptorInstance::glvkInitSharedResources(void)
 	vector<CRaptorMessages::MessageArgument> args;
 #endif
 
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 #if defined(GL_ARB_vertex_program)
-	if (Raptor::glIsExtensionSupported(GL_ARB_VERTEX_PROGRAM_EXTENSION_NAME))
+	if (IRaptor::glIsExtensionSupported(GL_ARB_VERTEX_PROGRAM_EXTENSION_NAME))
 		m_bVertexProgramReady = (NULL != pExtensions->glGenProgramsARB);
 	else
 	{
@@ -390,7 +400,7 @@ bool CRaptorInstance::glvkInitSharedResources(void)
 	}
 #endif
 #if defined(GL_ARB_fragment_program)
-	if (Raptor::glIsExtensionSupported(GL_ARB_FRAGMENT_PROGRAM_EXTENSION_NAME))
+	if (IRaptor::glIsExtensionSupported(GL_ARB_FRAGMENT_PROGRAM_EXTENSION_NAME))
 		m_bFragmentProgramReady = (NULL != pExtensions->glGenProgramsARB);
 	else
 	{
@@ -405,7 +415,7 @@ bool CRaptorInstance::glvkInitSharedResources(void)
 #endif
 	}
 #if defined(GL_ARB_vertex_shader)
-	if (Raptor::glIsExtensionSupported(GL_ARB_VERTEX_SHADER_EXTENSION_NAME))
+	if (IRaptor::glIsExtensionSupported(GL_ARB_VERTEX_SHADER_EXTENSION_NAME))
 		m_bVertexShaderReady = (NULL != pExtensions->glCreateShaderObjectARB);
 	else
 	{
@@ -420,7 +430,7 @@ bool CRaptorInstance::glvkInitSharedResources(void)
 #endif
 	}
 #if defined(GL_ARB_geometry_shader4)
-	if (Raptor::glIsExtensionSupported(GL_ARB_GEOMETRY_SHADER4_EXTENSION_NAME))
+	if (IRaptor::glIsExtensionSupported(GL_ARB_GEOMETRY_SHADER4_EXTENSION_NAME))
 		m_bGeometryShaderReady = (NULL != pExtensions->glCreateShaderObjectARB);
 	else
 	{
@@ -435,7 +445,7 @@ bool CRaptorInstance::glvkInitSharedResources(void)
 	}
 #endif
 #if defined(GL_ARB_fragment_shader)
-	if (Raptor::glIsExtensionSupported(GL_ARB_FRAGMENT_SHADER_EXTENSION_NAME))
+	if (IRaptor::glIsExtensionSupported(GL_ARB_FRAGMENT_SHADER_EXTENSION_NAME))
 		m_bFragmentShaderReady = (NULL != pExtensions->glCreateShaderObjectARB);
 	else
 	{
@@ -678,7 +688,7 @@ bool CRaptorInstance::glvkInitSharedResources(void)
 	return true;
 }
 
-bool CRaptorInstance::glvkReleaseSharedRsources()
+bool CRaptorInstance::glvkReleaseSharedResources()
 {
 #if defined(GL_COMPATIBILITY_profile)
 	if (m_drawBuffer.handle() > 0)

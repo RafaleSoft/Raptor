@@ -161,7 +161,7 @@ std::string CShaderProgram::readFile(const std::string filename)
 		args.push_back(arg);
 
 		//!	Shader file could not be opened.
-		Raptor::GetErrorManager()->generateRaptorError(	shaderId,
+		IRaptor::GetErrorManager()->generateRaptorError(shaderId,
 														CRaptorErrorManager::RAPTOR_ERROR,
 														CRaptorMessages::ID_NO_RESOURCE,
 														__FILE__, __LINE__, args);
@@ -187,7 +187,7 @@ bool CShaderProgram::glLoadProgramFromFile(const std::string &program)
 		args.push_back(arg);
 
 		//!	Shader file could not be opened.
-		Raptor::GetErrorManager()->generateRaptorError( shaderId,
+		IRaptor::GetErrorManager()->generateRaptorError(shaderId,
 														CRaptorErrorManager::RAPTOR_ERROR,
 														CRaptorMessages::ID_NO_RESOURCE,
 														__FILE__, __LINE__, args);
@@ -204,7 +204,7 @@ CShaderProgram::shader_bloc CShaderProgram::glGetShaderBloc(const std::string& b
 	if (m_handle.glhandle() == 0)
 		return bloc;
 
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 
 	uint64_t uniform_size = 0;
 	GLint max_bindings = 0;
@@ -270,7 +270,7 @@ uint64_t CShaderProgram::glGetBufferMemoryRequirements(void)
 	if (m_handle.glhandle() == 0)
 		return 0;
 
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 
 	uint64_t uniform_size = 0;
 	GLint max_bindings = 0;
@@ -370,7 +370,7 @@ uint64_t CShaderProgram::glGetBufferMemoryRequirements(void)
 					args.push_back(arg3);
 
 					//	Vertex attribute index inconsistency with user expectation after link
-					Raptor::GetErrorManager()->generateRaptorError( shaderId,
+					IRaptor::GetErrorManager()->generateRaptorError(shaderId,
 																	CRaptorErrorManager::RAPTOR_WARNING,
 																	CRaptorMessages::ID_UPDATE_FAILED,
 																	__FILE__, __LINE__, args);

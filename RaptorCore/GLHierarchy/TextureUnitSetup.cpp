@@ -136,7 +136,7 @@ raptor::CTextureUnitSetup::GL_TEXTURE_SHADER_TAG::GL_TEXTURE_SHADER_TAG()
 CTextureUnitSetup::CTextureUnitSetup() :
 	CPersistence(textureId, "TMU_Setup"), pfn_glActiveTexture(NULL)
 {
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 	pfn_glActiveTexture = pExtensions->glActiveTextureARB;
 	if (NULL == pfn_glActiveTexture)
 	{
@@ -172,7 +172,7 @@ CTextureUnitSetup::CTextureUnitSetup() :
 	register_combiners = new CRegisterCombiner;
 
 #ifdef GL_ARB_texture_env_combine
-	if (!Raptor::glIsExtensionSupported(GL_ARB_TEXTURE_ENV_COMBINE_EXTENSION_NAME))
+	if (!IRaptor::glIsExtensionSupported(GL_ARB_TEXTURE_ENV_COMBINE_EXTENSION_NAME))
 	{
 		RAPTOR_WARNING(CTextureUnitSetup::CTextureUnitSetupClassID::GetClassId(),
 					   "No texture combiners available for TextureUnitSetup instances");
@@ -180,7 +180,7 @@ CTextureUnitSetup::CTextureUnitSetup() :
 #endif
 
 #ifdef GL_NV_texture_shader
-	if (!Raptor::glIsExtensionSupported(GL_NV_TEXTURE_SHADER_EXTENSION_NAME))
+	if (!IRaptor::glIsExtensionSupported(GL_NV_TEXTURE_SHADER_EXTENSION_NAME))
 	{
 		RAPTOR_WARNING(	CTextureUnitSetup::CTextureUnitSetupClassID::GetClassId(),
 						"No texture shaders available for TextureUnitSetup instances");
@@ -530,7 +530,7 @@ bool RAPTOR_FASTCALL CTextureUnitSetup::glRender(CTextureUnitSetup::GL_TEXTURE_S
 		else 
 		{
 #if defined(GL_NV_texture_shader)
-			if (!Raptor::glIsExtensionSupported(GL_NV_TEXTURE_SHADER_EXTENSION_NAME))
+			if (!IRaptor::glIsExtensionSupported(GL_NV_TEXTURE_SHADER_EXTENSION_NAME))
 				return false;
 			glEnable(GL_TEXTURE_SHADER_NV);
 			glTexEnvi(GL_TEXTURE_SHADER_NV,GL_SHADER_OPERATION_NV,S->shaderOperation);

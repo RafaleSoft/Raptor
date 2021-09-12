@@ -116,7 +116,7 @@ void CColorControlFilter::glRenderFilter()
 
 void CColorControlFilter::glRenderFilterOutput()
 {
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 	PFN_GL_ACTIVE_TEXTURE_ARB_PROC glActiveTextureARB = pExtensions->glActiveTextureARB;
 
     //! Filter shaders Rendering

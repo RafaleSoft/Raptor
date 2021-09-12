@@ -556,7 +556,7 @@ public:
 		attrs.renderer = CRaptorDisplayConfig::RENDER_BUFFER;
 		attrs.display_mode = CGL_RGBA;
 
-		pBuffer = Raptor::glCreateDisplay(attrs);
+		pBuffer = IRaptor::glCreateDisplay(attrs);
 		RAPTOR_HANDLE handle;
 
 		//!	Create the render target texture.
@@ -615,7 +615,7 @@ public:
 
 	virtual ~CTextureWaves() 
     {
-        Raptor::glDestroyDisplay(pBuffer);
+        IRaptor::glDestroyDisplay(pBuffer);
     };
 
 	virtual void glClipRender()

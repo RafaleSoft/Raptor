@@ -356,7 +356,7 @@ bool CVulkanShader::loadShader(const std::string &filename)
 		args.push_back(arg);
 
 		//!	Shader file could not be opened.
-		Raptor::GetErrorManager()->generateRaptorError(	CVulkan::CVulkanClassID::GetClassId(),
+		IRaptor::GetErrorManager()->generateRaptorError(CVulkan::CVulkanClassID::GetClassId(),
 														CRaptorErrorManager::RAPTOR_ERROR,
 														CRaptorMessages::ID_NO_RESOURCE,
 														__FILE__, __LINE__, args);

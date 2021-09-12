@@ -76,7 +76,7 @@ void CShadowMap::unLinkEnvironment(void)
 {
     if (m_pShadowMap != NULL)
     {
-		Raptor::glDestroyDisplay(m_pShadowMap);
+		IRaptor::glDestroyDisplay(m_pShadowMap);
         m_pShadowMap = NULL; //redundant: done at unlink
     }
 
@@ -112,13 +112,13 @@ bool CShadowMap::glInitialize(uint32_t width, uint32_t height)
     }
 
 #if defined(GL_EXT_framebuffer_object)
-	if (Raptor::glIsExtensionSupported(GL_EXT_FRAMEBUFFER_OBJECT_EXTENSION_NAME))
+	if (IRaptor::glIsExtensionSupported(GL_EXT_FRAMEBUFFER_OBJECT_EXTENSION_NAME))
 		glInitRenderBuffer(width,height);
 	else
 #endif
 #if defined(WGL_ARB_pbuffer) && defined(WGL_ARB_render_texture)
-		if (Raptor::glIsExtensionSupported(WGL_ARB_PBUFFER_EXTENSION_NAME) &&
-			Raptor::glIsExtensionSupported(WGL_ARB_RENDER_TEXTURE_EXTENSION_NAME))
+		if (IRaptor::glIsExtensionSupported(WGL_ARB_PBUFFER_EXTENSION_NAME) &&
+			IRaptor::glIsExtensionSupported(WGL_ARB_RENDER_TEXTURE_EXTENSION_NAME))
 			glInitPixelBuffer(width,height);
 	else
 #endif
@@ -172,12 +172,12 @@ void CShadowMap::glInitRenderBuffer(uint32_t width, uint32_t height)
     cs.caption = "SHADOW_MAP_DISPLAY";
 	cs.renderer = CRaptorDisplayConfig::RENDER_BUFFER;
 
-	m_pShadowMap = Raptor::glCreateDisplay(cs);
+	m_pShadowMap = IRaptor::glCreateDisplay(cs);
 	
 	CTextureFactory &factory = CTextureFactory::glGetDefaultFactory();
 
 #ifdef GL_ARB_shadow
-	if (Raptor::glIsExtensionSupported(GL_ARB_SHADOW_EXTENSION_NAME))
+	if (IRaptor::glIsExtensionSupported(GL_ARB_SHADOW_EXTENSION_NAME))
     {
 		m_pShadowTexture = factory.glCreateTexture( ITextureObject::CGL_DEPTH24,
 													ITextureObject::CGL_BILINEAR);
@@ -233,14 +233,14 @@ void CShadowMap::glInitPixelBuffer(uint32_t width, uint32_t height)
     cs.caption = "SHADOW_MAP_DISPLAY";
 	cs.renderer = CRaptorDisplayConfig::PIXEL_BUFFER;
 
-	m_pShadowMap = Raptor::glCreateDisplay(cs);
+	m_pShadowMap = IRaptor::glCreateDisplay(cs);
 	
 	CATCH_GL_ERROR
 
 	CTextureFactory &factory = CTextureFactory::glGetDefaultFactory();
 
 #ifdef GL_ARB_shadow
-	if (Raptor::glIsExtensionSupported(GL_ARB_SHADOW_EXTENSION_NAME))
+	if (IRaptor::glIsExtensionSupported(GL_ARB_SHADOW_EXTENSION_NAME))
     {
 		m_pShadowTexture = factory.glCreateDynamicTexture( ITextureObject::CGL_DEPTH24,
                                                            ITextureObject::CGL_BILINEAR,
@@ -384,7 +384,7 @@ void CShadowMap::glRenderMap(const CLight* currentLight,const vector<C3DSceneObj
 
 void CShadowMap::glRenderShadow(const vector<C3DSceneObject*>& objects)
 {
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 	PFN_GL_ACTIVE_TEXTURE_ARB_PROC glActiveTextureARB = pExtensions->glActiveTextureARB;
 
 	glActiveTextureARB(GL_TEXTURE2_ARB);

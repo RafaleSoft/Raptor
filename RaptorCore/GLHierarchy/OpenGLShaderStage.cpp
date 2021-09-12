@@ -124,7 +124,7 @@ COpenGLShaderStage::~COpenGLShaderStage(void)
 {
 	if (m_handle.glhandle() != 0)
 	{
-		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+		const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 
 #if defined(GL_VERSION_2_0)
 		if (!pExtensions->glIsProgram(m_handle.glhandle()))
@@ -147,7 +147,7 @@ COpenGLShaderStage::~COpenGLShaderStage(void)
 	if ((m_handle.glhandle() != 0) &&
 		(m_bDeleteVShader || m_bDeleteFShader || m_bDeleteGShader))
 	{
-		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+		const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 		GLsizei maxCount = 0;
 		GLsizei count = 0;
 
@@ -174,7 +174,7 @@ COpenGLShaderStage::~COpenGLShaderStage(void)
 
 	if (m_handle.glhandle() != 0)
 	{
-		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+		const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 
 #if defined(GL_VERSION_2_0)
 		pExtensions->glDeleteProgram(m_handle.glhandle());
@@ -245,7 +245,7 @@ bool COpenGLShaderStage::glGetProgramStatus(void) const
 		m_pGShader->glGetShaderCaps(gcaps);
 	}
 	
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 #if defined(GL_VERSION_2_0)
 	GLint nbShaders = 0;
 	pExtensions->glGetProgramiv(m_handle.glhandle(), GL_ATTACHED_SHADERS, &nbShaders);
@@ -284,7 +284,7 @@ void COpenGLShaderStage::glRender(void)
 {
 	if (m_handle.glhandle() != 0)
 	{
-		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+		const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 #if defined(GL_VERSION_2_0)
 		pExtensions->glUseProgram(m_handle.glhandle());
 #elif defined(GL_ARB_shader_objects)
@@ -320,7 +320,7 @@ void COpenGLShaderStage::glStop(void)
 {
 	if (m_handle.glhandle() != 0)
 	{
-		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+		const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 #if defined(GL_VERSION_2_0)
 		pExtensions->glUseProgram(0);
 #elif defined(GL_ARB_shader_objects)
@@ -488,7 +488,7 @@ bool COpenGLShaderStage::glRemoveGeometryShader(void)
 bool COpenGLShaderStage::glCompileShader()
 {
 	m_bValid = false;
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 
 #if defined(GL_VERSION_2_0) || defined(GL_ARB_shader_objects)
 	// First try to generate programs.
@@ -635,7 +635,7 @@ bool COpenGLShaderStage::glCompileShader()
 
 			vector<CRaptorMessages::MessageArgument> args;
 			args.push_back(arg);
-			Raptor::GetErrorManager()->generateRaptorError(COpenGLShaderStage::COpenGLShaderStageClassID::GetClassId(),
+			IRaptor::GetErrorManager()->generateRaptorError(COpenGLShaderStage::COpenGLShaderStageClassID::GetClassId(),
 														   CRaptorErrorManager::RAPTOR_ERROR,
 														   CRaptorMessages::ID_PROGRAM_ERROR,
 														   __FILE__, __LINE__, args);
@@ -664,7 +664,7 @@ void COpenGLShaderStage::glQueryUniformLocations(void)
 
 	// Query the size of uniforms
 	GLint attrMaxLength = 0;
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 
 #if defined(GL_VERSION_2_0)
 	pExtensions->glGetProgramiv(m_handle.glhandle(), GL_ACTIVE_UNIFORM_MAX_LENGTH, &attrMaxLength);
@@ -763,7 +763,7 @@ void COpenGLShaderStage::glQueryAttributeLocations(void)
 
 	// Query the size of attributes
 	GLint attrMaxLength = 0;
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 
 #if defined(GL_VERSION_2_0)
 	pExtensions->glGetProgramiv(m_handle.glhandle(), GL_ACTIVE_ATTRIBUTE_MAX_LENGTH, &attrMaxLength);
@@ -826,7 +826,7 @@ void COpenGLShaderStage::glQueryAttributeLocations(void)
 							args.push_back(arg);
 
 							//	Vertex attribute index inconsistency with user expectation after link
-							Raptor::GetErrorManager()->generateRaptorError(	COpenGLShaderStage::COpenGLShaderStageClassID::GetClassId(),
+							IRaptor::GetErrorManager()->generateRaptorError(	COpenGLShaderStage::COpenGLShaderStageClassID::GetClassId(),
 																			CRaptorErrorManager::RAPTOR_WARNING,
 																			CRaptorMessages::ID_UPDATE_FAILED,
 																			__FILE__, __LINE__, args);
@@ -854,7 +854,7 @@ void COpenGLShaderStage::glSetProgramParameters()
 	std::vector<float> float_vector;
 	float f;
 
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 	for (unsigned int idx = 0; idx < m_parameters.getNbParameters(); idx++)
 	{
 		const CProgramParameters::CParameterBase& param_value = m_parameters[idx];
@@ -974,7 +974,7 @@ void COpenGLShaderStage::glSetProgramParameters()
 	GL_MATRIX matrix;
 	std::vector<float> float_vector;
 
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 	for (unsigned int idx = 0; idx < m_parameters.getNbParameters(); idx++)
 	{
 		const CProgramParameters::CParameterBase& param_value = m_parameters[idx];

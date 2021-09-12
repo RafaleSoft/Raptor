@@ -174,7 +174,7 @@ bool CImage::loadImage(const std::string &filename,
 			arg.arg_sz = filename.data();
 			vector<CRaptorMessages::MessageArgument> args;
 			args.push_back(arg);
-			Raptor::GetErrorManager()->generateRaptorError(CTextureFactory::CTextureFactoryClassID::GetClassId(),
+			IRaptor::GetErrorManager()->generateRaptorError(CTextureFactory::CTextureFactoryClassID::GetClassId(),
 														   CRaptorErrorManager::RAPTOR_WARNING,
 														   CRaptorMessages::ID_TEXTURE_MISS, 
 														   __FILE__, __LINE__, args);
@@ -255,13 +255,12 @@ void CImage::setImageKindIO(IImageIO *imager)
 	}
 #endif
 
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
 	std::vector<std::string> extensionKind = imager->getImageKind();
 	for (size_t j=0;j<extensionKind.size();j++)
 	{
 		std::string ext = extensionKind[j];
 		std::transform(ext.begin(), ext.end(), ext.begin(), ::toupper);
-
-		CRaptorInstance &instance = CRaptorInstance::GetInstance();
 		instance.imageKindIO.insert(std::map<std::string, IImageIO*>::value_type(ext, imager));
 	}
 }

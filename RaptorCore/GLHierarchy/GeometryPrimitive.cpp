@@ -115,7 +115,7 @@ void CGeometryPrimitive::glRender(void)
             glGetPointerv(GL_VERTEX_ARRAY_POINTER,(void**)&vp);
 			float	*tp = NULL;
             //glGetPointerv(GL_TEXTURE_COORD_ARRAY_POINTER,(void**)&tp);
-			const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+			const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 			pExtensions->glGetVertexAttribPointervARB(CProgramParameters::TEXCOORD0, GL_VERTEX_ATTRIB_ARRAY_POINTER_ARB, (void**)&tp);
 
 			if (pAllocator->isMemoryLocked())
@@ -197,7 +197,7 @@ void CGeometryPrimitive::setIndexes(unsigned short size,unsigned short* faces)
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 	else
 	{
-        Raptor::GetErrorManager()->generateRaptorError(	CGeometry::CGeometryClassID::GetClassId(),
+        IRaptor::GetErrorManager()->generateRaptorError(	CGeometry::CGeometryClassID::GetClassId(),
 														CRaptorErrorManager::RAPTOR_WARNING,
 														CRaptorMessages::ID_NULL_OBJECT);
 	}
@@ -228,7 +228,7 @@ void CGeometryPrimitive::setIndexes(const vector<unsigned short> &faces)
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 	else
 	{
-        Raptor::GetErrorManager()->generateRaptorError(	CGeometry::CGeometryClassID::GetClassId(),
+        IRaptor::GetErrorManager()->generateRaptorError(	CGeometry::CGeometryClassID::GetClassId(),
 														CRaptorErrorManager::RAPTOR_WARNING,
 														CRaptorMessages::ID_NULL_OBJECT);
 	}
@@ -270,7 +270,7 @@ void CGeometryPrimitive::setIndexes(const vector<unsigned short> &polygonSizes,c
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 	else
 	{
-        Raptor::GetErrorManager()->generateRaptorError(	CGeometry::CGeometryClassID::GetClassId(),
+        IRaptor::GetErrorManager()->generateRaptorError(	CGeometry::CGeometryClassID::GetClassId(),
 														CRaptorErrorManager::RAPTOR_WARNING,
 														CRaptorMessages::ID_NULL_OBJECT);
 	}
@@ -297,7 +297,7 @@ void CGeometryPrimitive::getIndexes(unsigned short *faces)
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 	else
 	{
-        Raptor::GetErrorManager()->generateRaptorError(	CGeometry::CGeometryClassID::GetClassId(),
+        IRaptor::GetErrorManager()->generateRaptorError(	CGeometry::CGeometryClassID::GetClassId(),
 														CRaptorErrorManager::RAPTOR_WARNING,
 														CRaptorMessages::ID_NULL_OBJECT);
 	}
@@ -335,7 +335,7 @@ void CGeometryPrimitive::getIndexes(vector<unsigned short> &polygonSizes,vector<
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 	else
 	{
-		Raptor::GetErrorManager()->generateRaptorError(	CGeometry::CGeometryClassID::GetClassId(),
+		IRaptor::GetErrorManager()->generateRaptorError(	CGeometry::CGeometryClassID::GetClassId(),
 														CRaptorErrorManager::RAPTOR_WARNING,
 														CRaptorMessages::ID_NULL_OBJECT);
 	}

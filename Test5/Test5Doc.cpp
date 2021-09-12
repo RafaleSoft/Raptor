@@ -107,7 +107,7 @@ CTest5Doc::CTest5Doc(const RAPTOR_HANDLE& device,const char* title)
     config.m_uiPolygons = 20000;
     config.m_uiVertices = 50000;
 	config.m_uiUniforms = 256 * 1024;
-    Raptor::glInitRaptor(config);
+    IRaptor::glInitRaptor(config);
 
 	CImaging::installImagers();
 
@@ -131,7 +131,7 @@ CTest5Doc::CTest5Doc(const RAPTOR_HANDLE& device,const char* title)
 	glcs.display_mode = CGL_RGBA | CGL_DEPTH;
 	glcs.draw_logo = true;
 
-	m_pDisplay = Raptor::glCreateDisplay(glcs);
+	m_pDisplay = IRaptor::glCreateDisplay(glcs);
 	bool res = m_pDisplay->glvkBindDisplay(device);
 	if (res)
 	{
@@ -139,7 +139,7 @@ CTest5Doc::CTest5Doc(const RAPTOR_HANDLE& device,const char* title)
 		props.enableLighting.enableTexturing;
 #ifdef VULKAN_TEST
 #else
-		CRaptorConsole *pConsole = Raptor::GetConsole();
+		CRaptorConsole *pConsole = IRaptor::GetConsole();
         pConsole->glInit("",true);
         pConsole->showStatus(true);
         pConsole->activateConsole(true);
@@ -162,7 +162,7 @@ void CTest5Doc::glDestroy()
 		m_pDisplay->glvkUnBindDisplay();
 	}
 
-	Raptor::glDestroyDisplay(m_pDisplay);
+	IRaptor::glDestroyDisplay(m_pDisplay);
 	m_pDisplay = NULL;
 }
 

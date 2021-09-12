@@ -127,8 +127,8 @@ void CMBFilter::glDestroyFilter(void)
         if (pAccum->m_pPreviousColorAccum != NULL)
             pAccum->m_pPreviousColorAccum->releaseReference();
 
-        Raptor::glDestroyDisplay(pAccum->pCurrentDisplay);
-        Raptor::glDestroyDisplay(pAccum->pPreviousDisplay);
+        IRaptor::glDestroyDisplay(pAccum->pCurrentDisplay);
+        IRaptor::glDestroyDisplay(pAccum->pPreviousDisplay);
 
         delete pAccum;
 		m_pAccumulator = NULL;
@@ -148,7 +148,7 @@ void CMBFilter::glRenderFilter()
     //  Rendering accumulators
     CAccumulator *pAccum = (CAccumulator*)m_pAccumulator;
 
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 	PFN_GL_ACTIVE_TEXTURE_ARB_PROC glActiveTextureARB = pExtensions->glActiveTextureARB;
 
     // Accumulate previous render with colorSource
@@ -238,7 +238,7 @@ bool CMBFilter::glInitFilter(void)
 		m_pRenderTextures2->addTexture(T);
 	}
 
-    CRaptorDisplay* pDisplay1 = Raptor::glCreateDisplay(state);
+    CRaptorDisplay* pDisplay1 = IRaptor::glCreateDisplay(state);
 	IRenderingProperties &rp1 = pDisplay1->getRenderingProperties();
 	rp1.setTexturing(IRenderingProperties::ENABLE);
 	rp1.setLighting(IRenderingProperties::DISABLE);
@@ -250,7 +250,7 @@ bool CMBFilter::glInitFilter(void)
 	if (m_fModel == RENDER_BUFFER)
 		pDisplay1->glvkBindDisplay(*m_pRenderTextures);
 
-    CRaptorDisplay* pDisplay2 = Raptor::glCreateDisplay(state);
+    CRaptorDisplay* pDisplay2 = IRaptor::glCreateDisplay(state);
 	IRenderingProperties &rp2 = pDisplay2->getRenderingProperties();
     rp2 = rp1;
     pDisplay2->setViewPoint(NULL);

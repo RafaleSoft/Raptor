@@ -39,7 +39,7 @@ ColorController::ColorController(CColorControlFilter* ccf,
 								 CMagnifierFilter *mf)
 	:pCCF(ccf),pHDR(hdr),pMB(mb),pBF(bf),pMag(mf),lastInput(0.0f)
 {
-	CRaptorConsole *pConsole = Raptor::GetConsole();
+	CRaptorConsole *pConsole = IRaptor::GetConsole();
 	
 	CGLFont::FONT_TEXT_ITEM item;
 	{
@@ -192,7 +192,7 @@ void ColorController::handleCharacterInput(char c)
 	pMB->setPercentage(r,g,b,a);
 	pBF->setBlurModel(m);
 
-	CRaptorConsole *pConsole = Raptor::GetConsole();
+	CRaptorConsole *pConsole = IRaptor::GetConsole();
 	CGLFont::FONT_TEXT_ITEM item;
 	{
 		stringstream str;

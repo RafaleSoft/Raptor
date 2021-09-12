@@ -91,11 +91,11 @@ LRESULT CALLBACK WindowProc(  HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			glcs.depth_buffer = true;
 	        glcs.display_mode = CGL_FLOAT_32 /*CGL_RGBA*/ | CGL_DEPTH;
 			glcs.draw_logo = true;
-            pDisplay = Raptor::glCreateDisplay(glcs);
+            pDisplay = IRaptor::glCreateDisplay(glcs);
 
             if (pDisplay == 0)
             {
-                Raptor::GetMessages()->displayMessage("Sorry: Test cannot run : a display for this window cannot be created...");
+                IRaptor::GetMessages()->displayMessage("Sorry: Test cannot run : a display for this window cannot be created...");
                 return -1;
             }
             else
@@ -108,7 +108,7 @@ LRESULT CALLBACK WindowProc(  HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	            display.hClass(CLIENT_HANDLE_CLASS);
 				if (pDisplay->glvkBindDisplay(display))
 	            {
-                    CRaptorConsole *pConsole = Raptor::GetConsole();
+                    CRaptorConsole *pConsole = IRaptor::GetConsole();
                     pConsole->glInit();
                     pConsole->showStatus(true);
 					pConsole->showFrameTime(true);
@@ -124,7 +124,7 @@ LRESULT CALLBACK WindowProc(  HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	            }
                 else
                 {
-                    Raptor::GetMessages()->displayMessage("Sorry: Test cannot run : full hardware OpenGL rendering not supported, exiting...");
+                    IRaptor::GetMessages()->displayMessage("Sorry: Test cannot run : full hardware OpenGL rendering not supported, exiting...");
                     return -1;
                 }
             }
@@ -177,7 +177,7 @@ LRESULT CALLBACK WindowProc(  HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 				pDisplay->glvkUnBindDisplay();
 			}
 
-			Raptor::glDestroyDisplay(pDisplay);
+			IRaptor::glDestroyDisplay(pDisplay);
 			pDisplay = NULL;
 
 		    // kill the application, this sends a WM_QUIT message 
@@ -207,7 +207,7 @@ int WINAPI WinMain(  HINSTANCE hinstance,
     config.m_uiVertices = 64000;
     config.m_uiTexels = 3000000;
 	config.m_logFile = "Test4_Raptor.log";
-    Raptor::glInitRaptor(config);
+    IRaptor::glInitRaptor(config);
 
 	CTimeObject::setTimeFactor(1.0f);
     CAnimator *pAnimator = new CAnimator();
@@ -216,7 +216,7 @@ int WINAPI WinMain(  HINSTANCE hinstance,
     CStreaming::installStreamers();
 
 
-    unsigned long v = Raptor::GetVersion();
+    unsigned long v = IRaptor::GetVersion();
 	stringstream title;
     title << "Raptor ";
     title << ((v>>24)&0xFF) << "." << ((v>>16)&0xFF) << "." << ((v>>8)&0xFF);
@@ -276,15 +276,15 @@ int WINAPI WinMain(  HINSTANCE hinstance,
             DispatchMessage(&msg);
         } // end if
 
-        Raptor::glRender();
+        IRaptor::glRender();
     } // end while
 
     delete pDoc;
     
 	DestroyWindow(hwnd);
 
-	if (Raptor::GetConfig().m_bAutoDestroy)
-		Raptor::glQuitRaptor();
+	if (IRaptor::GetConfig().m_bAutoDestroy)
+		IRaptor::glQuitRaptor();
 
     // return to Windows like this
     return(msg.wParam);

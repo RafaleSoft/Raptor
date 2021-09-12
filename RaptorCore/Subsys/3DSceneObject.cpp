@@ -248,7 +248,7 @@ void C3DSceneObject::glRenderLights(GLboolean proceedLights,const std::vector<CL
 void C3DSceneObject::glRenderBBoxOcclusion(unsigned int passNumber)
 {
 #if defined(GL_ARB_occlusion_query)
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 	GLuint query = visibilityQuery[passNumber];
 
 	pExtensions->glBeginQueryARB(GL_SAMPLES_PASSED_ARB,query);
@@ -294,7 +294,7 @@ bool C3DSceneObject::glRenderPass(	unsigned int passNumber,
         return ret;
     }
 	
-    const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+    const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 
     if (passVisibility[passNumber] >= 0)
 	{

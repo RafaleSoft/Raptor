@@ -90,7 +90,7 @@ public:
 		//glCallList(bg.handle());
 		glCallList(list.handle());
 
-		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+		const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 		pExtensions->glActiveTextureARB(GL_TEXTURE1_ARB);
 		glDisable(GL_TEXTURE_2D);
 		pExtensions->glActiveTextureARB(GL_TEXTURE0_ARB);
@@ -364,7 +364,7 @@ void CGlassObject::glRender()
 
 	m_pShader->glStop();
 
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 	pExtensions->glActiveTextureARB(GL_TEXTURE1_ARB);
 	glDisable(GL_TEXTURE_2D);
 	pExtensions->glActiveTextureARB(GL_TEXTURE0_ARB);

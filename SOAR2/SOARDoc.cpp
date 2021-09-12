@@ -197,7 +197,7 @@ void CSOARDoc::GLInitContext(int argc, char* argv[])
 
 void CSOARDoc::glRender()
 {
-	CRaptorConsole *pConsole = Raptor::GetConsole();
+	CRaptorConsole *pConsole = IRaptor::GetConsole();
 	pConsole->clear();
 	
 	CGLFont::FONT_TEXT_ITEM item;

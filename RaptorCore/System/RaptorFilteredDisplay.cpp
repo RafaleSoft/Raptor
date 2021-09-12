@@ -219,8 +219,8 @@ void CRaptorFilteredDisplay::glvkReleaseResources(void)
 	m_bBufferBound = false;
 
 	if (m_pFSAADisplay != NULL)
-		Raptor::glDestroyDisplay(m_pFSAADisplay);
-	Raptor::glDestroyDisplay(m_pDisplay);
+		IRaptor::glDestroyDisplay(m_pFSAADisplay);
+	IRaptor::glDestroyDisplay(m_pDisplay);
 
 	m_pFSAADisplay = NULL;
 	m_pDisplay = NULL;
@@ -274,9 +274,9 @@ bool CRaptorFilteredDisplay::glCreateRenderDisplay(void)
         //  prepare createStruct for buffers :
         //  render to texture for window system buffers may not be supported,
 		//	try to use textures attached to application buffers instead
-		if (!Raptor::glIsExtensionSupported(WGL_ARB_RENDER_TEXTURE_EXTENSION_NAME))
+		if (!IRaptor::glIsExtensionSupported(WGL_ARB_RENDER_TEXTURE_EXTENSION_NAME))
 		{
-			if (Raptor::glIsExtensionSupported(GL_EXT_FRAMEBUFFER_OBJECT_EXTENSION_NAME))
+			if (IRaptor::glIsExtensionSupported(GL_EXT_FRAMEBUFFER_OBJECT_EXTENSION_NAME))
 				filter_cs.renderer = CRaptorDisplayConfig::RENDER_BUFFER;
 			else
 				return false;
@@ -294,7 +294,7 @@ bool CRaptorFilteredDisplay::glCreateRenderDisplay(void)
 			CRaptorDisplayConfig FSAArda = rda;
 			FSAArda.bind_to_texture = false;
 
-			m_pFSAADisplay = Raptor::glCreateDisplay(FSAArda);
+			m_pFSAADisplay = IRaptor::glCreateDisplay(FSAArda);
 			if (m_pFSAADisplay == NULL)
 				return false;
 			m_pFSAADisplay->registerDestruction(this);
@@ -303,7 +303,7 @@ bool CRaptorFilteredDisplay::glCreateRenderDisplay(void)
 			rda.antialias = CRaptorDisplayConfig::ANTIALIAS_NONE;
 		}
 
-		m_pDisplay = Raptor::glCreateDisplay(rda);
+		m_pDisplay = IRaptor::glCreateDisplay(rda);
 		if (m_pDisplay == NULL)
 			return false;
         m_pDisplay->registerDestruction(this);
@@ -368,8 +368,8 @@ bool CRaptorFilteredDisplay::glCreateRenderDisplay(void)
         if ((filter_cs.display_mode & CGL_FLOAT) == CGL_FLOAT)
         {
 #if defined(GL_ARB_color_buffer_float) || defined(WGL_ATI_pixel_format_float)
-			if (Raptor::glIsExtensionSupported(GL_ARB_COLOR_BUFFER_FLOAT_EXTENSION_NAME) ||
-				Raptor::glIsExtensionSupported(WGL_ATI_PIXEL_FORMAT_FLOAT_EXTENSION_NAME))
+			if (IRaptor::glIsExtensionSupported(GL_ARB_COLOR_BUFFER_FLOAT_EXTENSION_NAME) ||
+				IRaptor::glIsExtensionSupported(WGL_ATI_PIXEL_FORMAT_FLOAT_EXTENSION_NAME))
             {
 				IRenderingProperties& props = m_pDisplay->getRenderingProperties();
 				props.setFloatClamping(IRenderingProperties::DISABLE);

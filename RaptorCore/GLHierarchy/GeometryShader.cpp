@@ -69,7 +69,7 @@ CGeometryShader::~CGeometryShader()
 {
 	if (!CRaptorInstance::GetInstance().isGeometryShaderReady())
 	{
-        Raptor::GetErrorManager()->generateRaptorError(	CGeometryShader::CGeometryShaderClassID::GetClassId(),
+        IRaptor::GetErrorManager()->generateRaptorError(	CGeometryShader::CGeometryShaderClassID::GetClassId(),
 														CRaptorErrorManager::RAPTOR_ERROR,
 														CRaptorMessages::ID_NO_GPU_PROGRAM,
 														__FILE__, __LINE__);
@@ -128,7 +128,7 @@ bool CGeometryShader::glLoadProgram(const std::string &program)
 
 bool CGeometryShader::glBindProgram(RAPTOR_HANDLE program)
 {
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 	GLint value = 0;
 
 #if defined(GL_VERSION_3_2)
@@ -208,7 +208,7 @@ bool CGeometryShader::glGetProgramStatus(void) const
 	if (!CRaptorInstance::GetInstance().isGeometryShaderReady())
 		return false;
 
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 
 	GL_GEOMETRY_SHADER_CAPS caps;
 	if (glGetShaderCaps(caps))

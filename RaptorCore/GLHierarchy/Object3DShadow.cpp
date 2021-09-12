@@ -149,7 +149,7 @@ void CObject3DShadow::initContours()
         else
         {
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
-            Raptor::GetErrorManager()->generateRaptorError(	CObject3DShadow::CObject3DShadowClassID::GetClassId(),
+            IRaptor::GetErrorManager()->generateRaptorError(	CObject3DShadow::CObject3DShadowClassID::GetClassId(),
 														 	CRaptorErrorManager::RAPTOR_WARNING,
 															CRaptorMessages::ID_INIT_FAILED);
 #endif
@@ -672,7 +672,7 @@ void CObject3DShadow::glRenderBBox(CObject3D::RENDER_BOX_MODEL filled)
 void CObject3DShadow::glClipRender(void)
 {
 #if defined(GL_ARB_occlusion_query)
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 	unsigned int available = 0;
 
 	if (m_pAttributes->queryIssued)
@@ -706,7 +706,7 @@ bool CObject3DShadow::glRenderBoxOcclusion(void)
 	{
 		m_pAttributes->renderOcclusion = false;
 
-		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+		const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 
 		m_pAttributes->queryIssued = true;
 
@@ -839,7 +839,7 @@ C3DEngine::CLIP_RESULT RAPTOR_FASTCALL CObject3DShadow::glClip(void) const
 void CObject3DShadow::glClipRender(void)
 {
 #if defined(GL_ARB_occlusion_query)
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 	unsigned int available = 0;
 
 	if (m_pAttributes->queryIssued )

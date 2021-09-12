@@ -451,7 +451,7 @@ bool CTextureFactoryConfig::glInit()
 		delete [] m_pCompressors;
 
 #if defined(GL_ARB_texture_compression)
-	if (Raptor::glIsExtensionSupported(GL_ARB_TEXTURE_COMPRESSION_EXTENSION_NAME))
+	if (IRaptor::glIsExtensionSupported(GL_ARB_TEXTURE_COMPRESSION_EXTENSION_NAME))
 	{
 		m_nbCompressors = 0;
 		glHint(GL_TEXTURE_COMPRESSION_HINT_ARB,GL_NICEST);
@@ -499,7 +499,7 @@ bool CTextureFactoryConfig::glInit()
 #endif
 
 #ifdef GL_EXT_texture_filter_anisotropic
-	if (Raptor::glIsExtensionSupported(GL_EXT_TEXTURE_FILTER_ANISOTROPIC_EXTENSION_NAME))
+	if (IRaptor::glIsExtensionSupported(GL_EXT_TEXTURE_FILTER_ANISOTROPIC_EXTENSION_NAME))
 		glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT,&m_fMaxAnisotropy);
 	else
 		m_fMaxAnisotropy = 1.0f;
@@ -512,7 +512,7 @@ bool CTextureFactoryConfig::glInit()
 #endif
 
 #ifdef GL_ARB_texture_non_power_of_two
-	m_bSupportResize = Raptor::glIsExtensionSupported(GL_ARB_TEXTURE_NON_POWER_OF_TWO_EXTENSION_NAME);
+	m_bSupportResize = IRaptor::glIsExtensionSupported(GL_ARB_TEXTURE_NON_POWER_OF_TWO_EXTENSION_NAME);
 #endif
 
 	setGenerateMipmap(true);
@@ -533,7 +533,7 @@ void CTextureFactoryConfig::setGenerateMipmap(bool generate)
 
 	//!	Complex case, check if auto generation can be activated.
 #if (defined(GL_VERSION_3_0) || defined(GL_EXT_framebuffer_object))
-	const CRaptorGLExtensions * const extensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions * const extensions = IRaptor::glGetExtensions();
 	if (extensions->glGenerateMipmapEXT != NULL)
 		m_bGenerateMipmap = true;
 #elif defined(GL_VERSION_1_4)

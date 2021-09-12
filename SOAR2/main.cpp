@@ -19,15 +19,15 @@ int main(int argc, char* argv[])
     config.m_bRelocation = false;
     config.m_uiPolygons = 100000;
     config.m_uiVertices = 800000;
-    Raptor::glInitRaptor(config);
+    IRaptor::glInitRaptor(config);
 
 	string logname = "SOAR2.log";
-    Raptor::GetErrorManager()->logToFile(logname);
+    IRaptor::GetErrorManager()->logToFile(logname);
 
-    unsigned long v = Raptor::GetVersion();
+    unsigned long v = IRaptor::GetVersion();
 	ostrstream title;
     title << "SOAR 2 Raptor integration";
-	title << Raptor::GetVersionString();
+	title << IRaptor::GetVersionString();
     title << " Release test";
     title << ends;
 
@@ -46,7 +46,7 @@ int main(int argc, char* argv[])
 	CRaptorApplication  *app = CRaptorApplication::CreateApplication();
 	if (!app->initApplication(glcs))
     {
-		Raptor::GetMessages()->displayMessage("Sorry: Test cannot run : hardware OpenGL rendering not supported, exiting...");
+		IRaptor::GetMessages()->displayMessage("Sorry: Test cannot run : hardware OpenGL rendering not supported, exiting...");
         return -1;
     }
 
@@ -58,7 +58,7 @@ int main(int argc, char* argv[])
 	{
         pDoc->GLInitContext(argc,argv);
 
-        CRaptorConsole *pConsole = Raptor::GetConsole();
+        CRaptorConsole *pConsole = IRaptor::GetConsole();
         pConsole->glInit();
         pConsole->showStatus(true);
         pConsole->activateConsole(true);

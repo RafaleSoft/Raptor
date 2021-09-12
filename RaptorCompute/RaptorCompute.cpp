@@ -58,7 +58,7 @@ bool CRaptorCompute::clInitRaptorCompute()
 	//! Nevertheless, if not initialised, this default config
 	//! may not be compatible with further OpenGL initialisation
 	CRaptorConfig config;
-	Raptor::glInitRaptor(config);
+	IRaptor::glInitRaptor(config);
 
 	//! Initialize OpenCL implementation
 	res = manager.clInitPlatforms();

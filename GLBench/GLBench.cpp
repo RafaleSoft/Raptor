@@ -59,7 +59,7 @@ BOOL CGLBenchApp::InitInstance()
 {
 	//	initialize Raptor classes and settings
     CRaptorConfig config;
-	Raptor::glInitRaptor(config);
+	IRaptor::glInitRaptor(config);
 
     CImaging::installImagers();
 

@@ -101,9 +101,8 @@ bool CVulkanShaderStage::importObject(CRaptorIO& i)
 
 bool CVulkanShaderStage::glLoadProgram(const std::string &program)
 {
-	Raptor::GetErrorManager()->generateRaptorError(	CVulkanShaderStage::CVulkanShaderStageClassID::GetClassId(),
-													CRaptorErrorManager::RAPTOR_ERROR,
-													"CVulkanShaderStage cannot load programs directly. Use Vertex, Fragment or Geometry shaders instead.");
+	RAPTOR_ERROR(CVulkanShaderStage::CVulkanShaderStageClassID::GetClassId(),
+				"CVulkanShaderStage cannot load programs directly. Use Vertex, Fragment or Geometry shaders instead.");
 
 	return NULL;
 }

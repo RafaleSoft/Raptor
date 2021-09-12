@@ -916,7 +916,7 @@ void CGeometry::glRenderGeometry()
 #ifdef RAPTOR_DEBUG_MODE_GENERATION
 	if (m_bUpdateBBox)
 	{
-		Raptor::GetErrorManager()->generateRaptorError(CGeometry::CGeometryClassID::GetClassId(),
+		IRaptor::GetErrorManager()->generateRaptorError(CGeometry::CGeometryClassID::GetClassId(),
 													   CRaptorErrorManager::RAPTOR_WARNING,
 													   "A geometry is requested for rendering with an unfinished bounding box!");
 		glLockData();
@@ -924,7 +924,7 @@ void CGeometry::glRenderGeometry()
 	}
 #endif
 
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 
 
 	//	Store arrays state + texture state
@@ -1132,7 +1132,7 @@ void CGeometry::glSetPolygons(size_t nbP, unsigned short* polygons)
 	{
 		if (nbP * 3 > 65535)
 		{
-			Raptor::GetErrorManager()->generateRaptorError(CGeometry::CGeometryClassID::GetClassId(),
+			IRaptor::GetErrorManager()->generateRaptorError(CGeometry::CGeometryClassID::GetClassId(),
 														   CRaptorErrorManager::RAPTOR_ERROR,
 														   CRaptorMessages::ID_NO_RESOURCE);
 		}

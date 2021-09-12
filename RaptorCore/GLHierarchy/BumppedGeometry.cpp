@@ -210,10 +210,10 @@ void CBumppedGeometry::setRenderingModel(CGeometry::RENDERING_MODEL model)
 		setup->setNormalMap(normalMap);
 	setup->useRegisterCombiners(false);
 	
-	if (!Raptor::glIsExtensionSupported(GL_EXT_SECONDARY_COLOR_EXTENSION_NAME) ||
-		!Raptor::glIsExtensionSupported(GL_ARB_FRAGMENT_PROGRAM_EXTENSION_NAME))
+	if (!IRaptor::glIsExtensionSupported(GL_EXT_SECONDARY_COLOR_EXTENSION_NAME) ||
+		!IRaptor::glIsExtensionSupported(GL_ARB_FRAGMENT_PROGRAM_EXTENSION_NAME))
 	{
-		Raptor::GetErrorManager()->generateRaptorError(	CBumppedGeometry::CBumppedGeometryClassID::GetClassId(),
+		IRaptor::GetErrorManager()->generateRaptorError(CBumppedGeometry::CBumppedGeometryClassID::GetClassId(),
 														CRaptorErrorManager::RAPTOR_WARNING,
 														CRaptorMessages::ID_NO_GPU_PROGRAM);
 	}
@@ -270,7 +270,7 @@ void CBumppedGeometry::glRender()
 
 	if (props->getTexturing() == IRenderingProperties::ENABLE)
 	{
-		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+		const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 		pExtensions->glActiveTextureARB(GL_TEXTURE1_ARB);
 		glDisable(GL_TEXTURE_2D);
 

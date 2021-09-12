@@ -66,7 +66,7 @@ CRaptorVKExtensions::~CRaptorVKExtensions()
 
 bool CRaptorVKExtensions::vkInitExtensions(void)
 {
-	CRaptorErrorManager *pErrMgr = Raptor::GetErrorManager();
+	CRaptorErrorManager *pErrMgr = IRaptor::GetErrorManager();
 	if (NULL == vkGetInstanceProcAddr)
 	{
 		RAPTOR_ERROR(	CVulkan::CVulkanClassID::GetClassId(),
@@ -147,7 +147,7 @@ bool CRaptorVKExtensions::vkInitInstanceExtensions(void)
 	if (!CRaptorVKExtensions::vkInitExtensions())
 		return false;
 
-	CRaptorErrorManager *pErrMgr = Raptor::GetErrorManager();
+	CRaptorErrorManager *pErrMgr = IRaptor::GetErrorManager();
 	if (NULL == vkCreateInstance)
 	{
 		RAPTOR_ERROR(	CVulkan::CVulkanClassID::GetClassId(),

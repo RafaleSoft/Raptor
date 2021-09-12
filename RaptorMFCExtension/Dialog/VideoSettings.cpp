@@ -245,9 +245,8 @@ bool CVideoSettings::InitVideoData()
 	DEFAULT_WINSTA = GetProcessWindowStation(); 
 	if (DEFAULT_WINSTA==NULL)
 	{
-		Raptor::GetErrorManager()->generateRaptorError(	CPersistence::CPersistenceClassID::GetClassId(),
-														CRaptorErrorManager::RAPTOR_WARNING,
-														"Unable to open process window station");
+		RAPTOR_WARNING(CPersistence::CPersistenceClassID::GetClassId(),
+					   "Unable to open process window station");
 	}
 
 	EnumDesktops( DEFAULT_WINSTA, EnumDesktopProc, 0 );
@@ -255,9 +254,8 @@ bool CVideoSettings::InitVideoData()
 	DEFAULT_DESKTOP = GetThreadDesktop(GetCurrentThreadId());
 	if (DEFAULT_DESKTOP==NULL)
 	{
-		Raptor::GetErrorManager()->generateRaptorError(	CPersistence::CPersistenceClassID::GetClassId(),
-														CRaptorErrorManager::RAPTOR_WARNING,
-														"Unable to open process desktop");
+		RAPTOR_WARNING(CPersistence::CPersistenceClassID::GetClassId(),
+					   "Unable to open process desktop");
 	}
 
 	DWORD access =	DESKTOP_CREATEMENU | DESKTOP_CREATEWINDOW |
@@ -269,9 +267,8 @@ bool CVideoSettings::InitVideoData()
 
 	if (FULL_SCRREN_DESKTOP==NULL)
 	{
-		Raptor::GetErrorManager()->generateRaptorError(	CPersistence::CPersistenceClassID::GetClassId(),
-														CRaptorErrorManager::RAPTOR_ERROR,
-														"Unable to create full screen Raptor desktop");
+		RAPTOR_ERROR(CPersistence::CPersistenceClassID::GetClassId(),
+					 "Unable to create full screen Raptor desktop");
 	}
   
 	return (videoModes.size() > 0 );
@@ -368,17 +365,15 @@ bool CVideoSettings::PrepareFullScreen(void)
 {
 	if (FULL_SCRREN_DESKTOP==NULL)
 	{
-		Raptor::GetErrorManager()->generateRaptorError(	CPersistence::CPersistenceClassID::GetClassId(),
-														CRaptorErrorManager::RAPTOR_ERROR,
-														"Unable to create full screen Raptor desktop");
+		RAPTOR_ERROR(CPersistence::CPersistenceClassID::GetClassId(),
+					 "Unable to create full screen Raptor desktop");
 		return false;
 	}
 
 	if (DEFAULT_DESKTOP==NULL)
 	{
-		Raptor::GetErrorManager()->generateRaptorError(	CPersistence::CPersistenceClassID::GetClassId(),
-														CRaptorErrorManager::RAPTOR_ERROR,
-														"Unable to open process desktop");
+		RAPTOR_ERROR(CPersistence::CPersistenceClassID::GetClassId(),
+					 "Unable to open process desktop");
 		return false;
 	}
 
@@ -392,8 +387,7 @@ bool CVideoSettings::PrepareFullScreen(void)
 		stringstream msg;
 		msg << "Unable to switch to Raptor desktop: ";
 		msg << setThread;
-		Raptor::GetErrorManager()->generateRaptorError(	CPersistence::CPersistenceClassID::GetClassId(),
-														CRaptorErrorManager::RAPTOR_ERROR,msg.str());
+		RAPTOR_ERROR(CPersistence::CPersistenceClassID::GetClassId(), msg.str());
 		return false;
 	}
 

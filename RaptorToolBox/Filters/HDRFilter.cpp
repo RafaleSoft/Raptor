@@ -75,7 +75,7 @@ CHDRFilter::CHDRFilter(const CRaptorDisplayConfig &da)
 	rda.renderer = CRaptorDisplayConfig::PIXEL_BUFFER;
 
 #if defined(GL_EXT_framebuffer_object)
-	if ((Raptor::glIsExtensionSupported(GL_EXT_FRAMEBUFFER_OBJECT_EXTENSION_NAME)) &&
+	if ((IRaptor::glIsExtensionSupported(GL_EXT_FRAMEBUFFER_OBJECT_EXTENSION_NAME)) &&
 		(da.renderer == CRaptorDisplayConfig::RENDER_BUFFER))
 		rda.renderer = CRaptorDisplayConfig::RENDER_BUFFER;
 #endif
@@ -245,7 +245,7 @@ void CHDRFilter::glRenderFilterOutput()
 	//
     // Final rendering : composite global illumination with gloom and original HDR scene.
     //
-	const CRaptorGLExtensions*   const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions*   const pExtensions = IRaptor::glGetExtensions();
 	PFN_GL_ACTIVE_TEXTURE_ARB_PROC glActiveTextureARB = pExtensions->glActiveTextureARB;
 
     glActiveTextureARB(GL_TEXTURE2_ARB);
@@ -327,7 +327,7 @@ bool CHDRFilter::glInitFilter(void)
         rda.width = width;
         rda.height = height;
 
-        m_pDownSizedDisplay[i] = Raptor::glCreateDisplay(rda);
+        m_pDownSizedDisplay[i] = IRaptor::glCreateDisplay(rda);
 		IRenderingProperties &rp = m_pDownSizedDisplay[i]->getRenderingProperties();
         rp = *commonRP;
         m_pDownSizedDisplay[i]->setViewPoint(NULL);
@@ -353,7 +353,7 @@ bool CHDRFilter::glInitFilter(void)
 
     rda.width = MAX(1,filter_cs_width * BLUR_BUFFER_SIZE_FACTOR);
     rda.height = MAX(1,filter_cs_height * BLUR_BUFFER_SIZE_FACTOR);
-    m_pDownBlurXDisplay = Raptor::glCreateDisplay(rda);
+    m_pDownBlurXDisplay = IRaptor::glCreateDisplay(rda);
 	IRenderingProperties &rp = m_pDownBlurXDisplay->getRenderingProperties();
     rp = *commonRP;
     m_pDownBlurXDisplay->setViewPoint(NULL);
@@ -374,7 +374,7 @@ bool CHDRFilter::glInitFilter(void)
 																  m_pDownBlurXDisplay);
 	}
 
-    m_pDownBlurYDisplay = Raptor::glCreateDisplay(rda);
+    m_pDownBlurYDisplay = IRaptor::glCreateDisplay(rda);
 	IRenderingProperties &rp2 = m_pDownBlurYDisplay->getRenderingProperties();
     rp2 = *commonRP;
     m_pDownBlurYDisplay->setViewPoint(NULL);
@@ -395,7 +395,7 @@ bool CHDRFilter::glInitFilter(void)
 																	m_pDownBlurYDisplay);
 	}
 
-    m_pDownHighFreqs  = Raptor::glCreateDisplay(rda);
+    m_pDownHighFreqs  = IRaptor::glCreateDisplay(rda);
 	IRenderingProperties &rp3 = m_pDownHighFreqs->getRenderingProperties();
     rp3 = *commonRP;
     m_pDownHighFreqs->setViewPoint(NULL);
@@ -602,7 +602,7 @@ void CHDRFilter::glDestroyFilter(void)
     if (m_pDownSizedDisplay != NULL)
     {
         for (unsigned int i=0;i<nLevels;i++)
-            Raptor::glDestroyDisplay(m_pDownSizedDisplay[i]);
+            IRaptor::glDestroyDisplay(m_pDownSizedDisplay[i]);
 
         delete [] m_pDownSizedDisplay;
 		m_pDownSizedDisplay = NULL;
@@ -618,11 +618,11 @@ void CHDRFilter::glDestroyFilter(void)
     }
 
 	if (NULL != m_pDownBlurXDisplay)
-        Raptor::glDestroyDisplay(m_pDownBlurXDisplay);
+        IRaptor::glDestroyDisplay(m_pDownBlurXDisplay);
 	if (NULL != m_pDownBlurYDisplay)
-        Raptor::glDestroyDisplay(m_pDownBlurYDisplay);
+        IRaptor::glDestroyDisplay(m_pDownBlurYDisplay);
 	if (NULL != m_pDownHighFreqs)
-		Raptor::glDestroyDisplay(m_pDownHighFreqs);
+		IRaptor::glDestroyDisplay(m_pDownHighFreqs);
 	if (NULL != m_pDownBlurXBuffer)
 		m_pDownBlurXBuffer->releaseReference();
 	if (NULL != m_pDownBlurYBuffer)

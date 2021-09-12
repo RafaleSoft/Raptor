@@ -369,7 +369,7 @@ void CLight::glRenderEffects(void)
 	C3DEngine::Get3DEngine()->glProject(up_right);
 
 #if defined(GL_ARB_occlusion_query)
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 	GLuint query = m_pAttributes->m_visibilityQuery;
 	if (query == 0)
 	{

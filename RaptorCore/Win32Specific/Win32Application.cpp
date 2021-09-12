@@ -107,7 +107,7 @@ bool CWin32Application::run(void)
 		if (!exitMainloop)
 		{
 			asyncWindowProc(xCenter, yCenter);
-			Raptor::glRender();
+			IRaptor::glRender();
 		}
     } // end while
 
@@ -194,19 +194,19 @@ LRESULT CALLBACK WindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	{
 		case WM_PAINT:
 		{
-			Raptor::glRender();
+			IRaptor::glRender();
 			return 0;
 			break;
 		}
         case WM_ERASEBKGND:
         {
-			Raptor::glRender();
+			IRaptor::glRender();
             return 0;
             break;
         }
 		case WM_CHAR:
 		{
-			Raptor::GetConsole()->handleInput(wparam);
+			IRaptor::GetConsole()->handleInput(wparam);
 			return 0;
 			break;
 		}

@@ -113,7 +113,7 @@ void CProjector::glRender(void)
 		Q *= 2 * m_unitDistance;
     
 #if defined(GL_ARB_multitexture)
-    const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+    const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
     pExtensions->glActiveTextureARB(GL_TEXTURE3_ARB);
 #endif
 
@@ -135,7 +135,7 @@ void CProjector::glRender(void)
 void CProjector::glActivate(bool activate)
 {
 #if defined(GL_ARB_multitexture)
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 	pExtensions->glActiveTextureARB(GL_TEXTURE3_ARB);
 #endif
 
@@ -229,7 +229,7 @@ void CProjector::glRenderCone(float d)
 	CGenericVector<float>	p;
 
 #if defined(GL_ARB_multitexture)
-    const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+    const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
     pExtensions->glActiveTextureARB(GL_TEXTURE3_ARB);
 	glDisable(GL_TEXTURE_2D);
 #endif

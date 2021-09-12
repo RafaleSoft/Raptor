@@ -89,7 +89,7 @@ void COmniShadowMap::unLinkEnvironment(void)
 {
     if (m_pShadowCubeMap != NULL)
     {
-		Raptor::glDestroyDisplay(m_pShadowCubeMap);
+		IRaptor::glDestroyDisplay(m_pShadowCubeMap);
         m_pShadowCubeMap = NULL; //redundant: done at unlink
     }
 
@@ -121,12 +121,12 @@ bool COmniShadowMap::glInitEnvironment(const vector<C3DSceneObject*> &object)
 bool COmniShadowMap::glInitialize(uint32_t width, uint32_t height)
 {
 #ifdef GL_ARB_texture_cube_map
-	if (!Raptor::glIsExtensionSupported(GL_ARB_TEXTURE_CUBE_MAP_EXTENSION_NAME) ||
-		!Raptor::glIsExtensionSupported(WGL_NV_RENDER_DEPTH_TEXTURE_EXTENSION_NAME) ||
-		!(Raptor::glIsExtensionSupported(GL_ARB_COLOR_BUFFER_FLOAT_EXTENSION_NAME) || 
-		Raptor::glIsExtensionSupported(WGL_ATI_PIXEL_FORMAT_FLOAT_EXTENSION_NAME)))
+	if (!IRaptor::glIsExtensionSupported(GL_ARB_TEXTURE_CUBE_MAP_EXTENSION_NAME) ||
+		!IRaptor::glIsExtensionSupported(WGL_NV_RENDER_DEPTH_TEXTURE_EXTENSION_NAME) ||
+		!(IRaptor::glIsExtensionSupported(GL_ARB_COLOR_BUFFER_FLOAT_EXTENSION_NAME) || 
+		IRaptor::glIsExtensionSupported(WGL_ATI_PIXEL_FORMAT_FLOAT_EXTENSION_NAME)))
     {
-		Raptor::GetErrorManager()->generateRaptorError(	COpenGL::COpenGLClassID::GetClassId(),
+		IRaptor::GetErrorManager()->generateRaptorError(COpenGL::COpenGLClassID::GetClassId(),
 														CRaptorErrorManager::RAPTOR_ERROR,
 														"Missing hardware texture capabilities to render omni-directional Shadow Maps");
         return false;
@@ -148,7 +148,7 @@ bool COmniShadowMap::glInitialize(uint32_t width, uint32_t height)
     cs.display_mode = CGL_RGBA |  CGL_DEPTH | CGL_RENDER_CUBETEXTURE;
 	cs.acceleration = CRaptorDisplayConfig::HARDWARE;
 
-	m_pShadowCubeMap = Raptor::glCreateDisplay(cs);
+	m_pShadowCubeMap = IRaptor::glCreateDisplay(cs);
     if (NULL == m_pShadowCubeMap)
 		return false;
 	m_pShadowCubeMap->registerDestruction(m_pObserver);
@@ -338,7 +338,7 @@ void COmniShadowMap::glRenderMap(const CLight* currentLight,const vector<C3DScen
 void COmniShadowMap::glRenderShadow(const vector<C3DSceneObject*>& objects)
 {
 #ifdef GL_ARB_texture_cube_map
-    const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+    const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 	PFN_GL_ACTIVE_TEXTURE_ARB_PROC glActiveTextureARB = pExtensions->glActiveTextureARB;
 
 	GLint previousTMU = GL_TEXTURE0_ARB;

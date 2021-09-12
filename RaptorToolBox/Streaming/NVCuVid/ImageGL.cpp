@@ -29,7 +29,7 @@ RAPTOR_NAMESPACE
 
 GLuint compile_glsl_shader(GLenum program_type, const char *code)
 {
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 
     GLuint program_id;
     pExtensions->glGenProgramsARB(1, &program_id);
@@ -66,7 +66,7 @@ ImageGL::ImageGL(unsigned int nDispWidth,
 {
     int nFrames = bIsProgressive_ ? 1 : 2;
 
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 	pExtensions->glGenBuffersARB(nFrames, gl_pbo_);
 
     for (int n=0; n < nFrames; n++)
@@ -96,7 +96,7 @@ ImageGL::~ImageGL()
         unregisterAsCudaResource(n);
     }
 
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 	pExtensions->glDeleteBuffersARB(nFrames, gl_pbo_);
 	glDeleteTextures(nFrames, gl_texid_);
 	pExtensions->glDeleteProgramsARB(1, &gl_shader_);
@@ -200,7 +200,7 @@ const
     {
         glClear(GL_COLOR_BUFFER_BIT);
 
-		const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+		const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 
         // load texture from pbo
 		pExtensions->glBindBufferARB(GL_PIXEL_UNPACK_BUFFER_ARB, gl_pbo_[field_num]);

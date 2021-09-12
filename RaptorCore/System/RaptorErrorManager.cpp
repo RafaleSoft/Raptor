@@ -192,7 +192,7 @@ void APIENTRY OPENGL_DEBUG_CALLBACK(GLenum source,
 
 void CRaptorErrorManager::glGetDebugErrors(void)
 {
-	const CRaptorGLExtensions *pextensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *pextensions = IRaptor::glGetExtensions();
 
 #if defined(GL_ARB_debug_output)
 	if (NULL != pextensions->glDebugMessageCallbackARB)

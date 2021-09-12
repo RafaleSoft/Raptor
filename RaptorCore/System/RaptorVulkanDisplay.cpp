@@ -253,9 +253,7 @@ bool CRaptorVulkanDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
 			m_context = manager->vkCreateContext(device,cs);
 			if (CContextManager::INVALID_CONTEXT == m_context)
 			{
-				Raptor::GetErrorManager()->generateRaptorError(	bufferID,
-																CRaptorErrorManager::RAPTOR_FATAL,
-																CRaptorMessages::ID_CREATE_FAILED);
+				RAPTOR_FATAL(bufferID, CRaptorMessages::ID_CREATE_FAILED);
 				return false;
 			}
 
@@ -323,52 +321,46 @@ void CRaptorVulkanDisplay::glvkAllocateResources(void)
 	const CRaptorConfig& config = CRaptorInstance::GetInstance().config;
 	if ((!config.m_bRelocation) || (0 == config.m_uiVertices) || (0 == config.m_uiPolygons))
     {
-		Raptor::GetErrorManager()->generateRaptorError(	CGeometry::CGeometryClassID::GetClassId(),
-														CRaptorErrorManager::RAPTOR_FATAL,
-	    		        								CRaptorMessages::ID_NO_RESOURCE);
+		RAPTOR_FATAL(CGeometry::CGeometryClassID::GetClassId(),
+					 CRaptorMessages::ID_NO_RESOURCE);
 	}
 	else
     {
 		bool initAllocator = m_pGAllocator->glvkInitMemory(pDeviceMemory,config.m_uiPolygons,config.m_uiVertices);
 		if (!initAllocator)
 		{
-			Raptor::GetErrorManager()->generateRaptorError(	CGeometry::CGeometryClassID::GetClassId(),
-															CRaptorErrorManager::RAPTOR_FATAL,
-    		        										CRaptorMessages::ID_NO_RESOURCE);
+			RAPTOR_FATAL(CGeometry::CGeometryClassID::GetClassId(),
+    		        	 CRaptorMessages::ID_NO_RESOURCE);
 		}
     }
 
 	if ((!config.m_bRelocation) || (0 == config.m_uiUniforms))
 	{
-		Raptor::GetErrorManager()->generateRaptorError(	CGeometry::CGeometryClassID::GetClassId(),
-														CRaptorErrorManager::RAPTOR_FATAL,
-														CRaptorMessages::ID_NO_RESOURCE);
+		RAPTOR_FATAL(CGeometry::CGeometryClassID::GetClassId(),
+					 CRaptorMessages::ID_NO_RESOURCE);
 	}
 	else
 	{
 		bool initAllocator = m_pUAllocator->glvkInitMemory(pDeviceMemory, config.m_uiUniforms);
 		if (!initAllocator)
 		{
-			Raptor::GetErrorManager()->generateRaptorError(	CGeometry::CGeometryClassID::GetClassId(),
-															CRaptorErrorManager::RAPTOR_FATAL,
-															CRaptorMessages::ID_NO_RESOURCE);
+			RAPTOR_FATAL(CGeometry::CGeometryClassID::GetClassId(),
+						 CRaptorMessages::ID_NO_RESOURCE);
 		}
 	}
 
 	if ((!config.m_bRelocation) || (0 == config.m_uiTexels))
 	{
-		Raptor::GetErrorManager()->generateRaptorError(CGeometry::CGeometryClassID::GetClassId(),
-													   CRaptorErrorManager::RAPTOR_FATAL,
-													   CRaptorMessages::ID_NO_RESOURCE);
+		RAPTOR_FATAL(CGeometry::CGeometryClassID::GetClassId(),
+					 CRaptorMessages::ID_NO_RESOURCE);
 	}
 	else
 	{
 		bool initAllocator = m_pTAllocator->glvkInitMemory(pDeviceMemory, config.m_uiTexels);
 		if (!initAllocator)
 		{
-			Raptor::GetErrorManager()->generateRaptorError(CGeometry::CGeometryClassID::GetClassId(),
-														   CRaptorErrorManager::RAPTOR_FATAL,
-														   CRaptorMessages::ID_NO_RESOURCE);
+			RAPTOR_FATAL(CGeometry::CGeometryClassID::GetClassId(),
+						 CRaptorMessages::ID_NO_RESOURCE);
 		}
 	}
 

@@ -34,7 +34,7 @@ public:
 
 	virtual BOOL OnIdle(LONG lCount)
     {
-	    Raptor::glRender();
+	    IRaptor::glRender();
 	    CWinThread::OnIdle(lCount);
 	    return TRUE;	// we want animation, so need more idle time
     };
@@ -44,8 +44,8 @@ public:
 		CRaptorApplication *application = CRaptorApplication::GetInstance();
 		if (NULL != application)
 			application->quitApplication();
-        if (Raptor::GetConfig().m_bAutoDestroy)
-            Raptor::glQuitRaptor();
+        if (IRaptor::GetConfig().m_bAutoDestroy)
+            IRaptor::glQuitRaptor();
         return CWinApp::ExitInstance();
     }
 };
@@ -82,7 +82,7 @@ bool CRaptorMFCApplication::initApplication(CRaptorDisplayConfig &config)
 {
 	//! A defaut config if Raptor has not been initialised.
 	CRaptorConfig cfg;
-	bool res = Raptor::glInitRaptor(cfg);
+	bool res = IRaptor::glInitRaptor(cfg);
 
 	if (res)
 	{
@@ -113,9 +113,8 @@ CFrameWnd *CRaptorMFCApplication::createRootWindow(const CRaptorDisplayConfig& g
 	{
 		if (NULL != wnd)
 			wnd->DestroyWindow();
-		Raptor::GetErrorManager()->generateRaptorError(CPersistence::CPersistenceClassID::GetClassId(),
-													   CRaptorErrorManager::RAPTOR_ERROR,
-													   "RaptorMFCApplication cannot find RaptorWindow class!.");
+		RAPTOR_ERROR(CPersistence::CPersistenceClassID::GetClassId(),
+					 "RaptorMFCApplication cannot find RaptorWindow class!.");
 		return NULL;
 	}
 
@@ -129,7 +128,7 @@ CFrameWnd *CRaptorMFCApplication::createRootWindow(const CRaptorDisplayConfig& g
 								NULL);
 	if (TRUE == res)
     {
-		m_pDisplay = Raptor::glCreateDisplay(glcs);
+		m_pDisplay = IRaptor::glCreateDisplay(glcs);
 
 		RAPTOR_HANDLE h;
 		h.ptr(wnd->GetSafeHwnd());
@@ -141,9 +140,8 @@ CFrameWnd *CRaptorMFCApplication::createRootWindow(const CRaptorDisplayConfig& g
 		if (NULL != wnd)
 			wnd->DestroyWindow();
         wnd = NULL;
-		Raptor::GetErrorManager()->generateRaptorError( CPersistence::CPersistenceClassID::GetClassId(),
-														CRaptorErrorManager::RAPTOR_ERROR,
-														"RaptorApplication cannot create root window !.");
+		RAPTOR_ERROR(CPersistence::CPersistenceClassID::GetClassId(),
+					 "RaptorApplication cannot create root window !.");
     }
 
     return wnd;
@@ -153,9 +151,8 @@ bool CRaptorMFCApplication::run(void)
 {
     if (internal->m_pMainWnd == NULL)
     {
-        Raptor::GetErrorManager()->generateRaptorError(	CPersistence::CPersistenceClassID::GetClassId(),
-														CRaptorErrorManager::RAPTOR_ERROR,
-														"RaptorApplication has no root window !.");
+		RAPTOR_ERROR(CPersistence::CPersistenceClassID::GetClassId(),
+					 "RaptorApplication has no root window !.");
         return false;
     }
 

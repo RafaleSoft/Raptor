@@ -215,7 +215,7 @@ CObject3DShadowAttributes::CObject3DShadowAttributes()
 	pStage2 = NULL;
 	pStageBox = NULL;
 
-    const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+    const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 
 #ifdef GL_ARB_imaging
 	glBlendColorARB = pExtensions->glBlendColorARB;

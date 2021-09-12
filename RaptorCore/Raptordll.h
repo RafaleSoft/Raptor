@@ -101,7 +101,7 @@ class CSSE_Object3DContour;
 
 // System section
 class CHostMemoryManager;
-class Raptor;
+class IRaptor;
 class CRaptorApplication;
 class CRaptorConsole;
 class CRaptorDisplay;

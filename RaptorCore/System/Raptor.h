@@ -30,22 +30,23 @@ class CRaptorInstance;
 
 
 
-class RAPTOR_API Raptor  
+class RAPTOR_API IRaptor  
 {
 public:
 	static unsigned long GetVersion(void);
 	static const char* GetVersionString(void);
 
-	//! Create and initialise a new RaptorInstance.
-	//!	Initialize the entire Raptor SDK. 
-	//! This method must be called before any other method. It returns false
-	//! if Raptor cannot start initialisation. Otherwise, init errors can be retrieved
+	//! Create and initialise a new RaptorInstance and initializes the entire Raptor SDK. 
+	//! This method must be called before any other method. 
+	//! @param config: Raptor global configuration requested for initialization
+	//!	@param new_instance: a newly created Raptor SDK instance.
+	//! @return false if Raptor cannot start initialisation. Otherwise, init errors can be retrieved
 	//! using error manager.
-	CRaptorInstance* glvkCreateInstance(const CRaptorConfig& config);
+	static bool glvkCreateInstance(const CRaptorConfig& config, CRaptorInstance* &new_instance);
 
 	//!	Switch the current RaptorInstance
 	//! @return the previous instance, NULL if none.
-	CRaptorInstance* switchInstance(CRaptorInstance* instance);
+	static CRaptorInstance* switchInstance(CRaptorInstance* instance);
 
 	//!	Initialize the entire Raptor SDK. 
     //! This method must be called before any other method. It returns false
@@ -107,8 +108,8 @@ public:
 
 
 private:
-    Raptor();
-	virtual ~Raptor();
+    IRaptor();
+	~IRaptor();
 };
 
 RAPTOR_NAMESPACE_END

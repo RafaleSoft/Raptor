@@ -169,7 +169,7 @@ BOOL CInitDialog::OnInitDialog()
 
 
     string::size_type pos;
-	string extensions = Raptor::glGetExtensions()->glExtensions();
+	string extensions = IRaptor::glGetExtensions()->glExtensions();
     while ((pos=extensions.find(" ")) != string::npos)
 	{
 		l->AddString(CA2T(extensions.substr(0,pos).data()));

@@ -265,8 +265,8 @@ void CParticle::usePointSprite(bool use,float size)
 	}
 
 #if defined(GL_NV_point_sprite)
-	if ((Raptor::glIsExtensionSupported(GL_NV_POINT_SPRITE_EXTENSION_NAME)) ||
-		(Raptor::glIsExtensionSupported(GL_ARB_POINT_SPRITE_EXTENSION_NAME)))
+	if ((IRaptor::glIsExtensionSupported(GL_NV_POINT_SPRITE_EXTENSION_NAME)) ||
+		(IRaptor::glIsExtensionSupported(GL_ARB_POINT_SPRITE_EXTENSION_NAME)))
 	{
 		m_bPointSprite = use;
 	}
@@ -278,7 +278,7 @@ void CParticle::usePointSprite(bool use,float size)
 void RAPTOR_FASTCALL CParticle::glRenderPoints(void)
 {
 #ifdef GL_ARB_multitexture
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 	if (pExtensions->glActiveTextureARB != NULL)
 		pExtensions->glActiveTextureARB(GL_TEXTURE0_ARB);
 #endif
@@ -363,7 +363,7 @@ void RAPTOR_FASTCALL CParticle::glRenderPoints(void)
 void RAPTOR_FASTCALL CParticle::glRenderLines(void)
 {
 #ifdef GL_ARB_multitexture
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 	if (pExtensions->glActiveTextureARB != NULL)
 		pExtensions->glActiveTextureARB(GL_TEXTURE0_ARB);
 #endif
@@ -429,7 +429,7 @@ void RAPTOR_FASTCALL CParticle::glRenderTextures(void)
 	m_pShader->glRender();
 
 #ifdef GL_ARB_multitexture
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 	if (pExtensions->glActiveTextureARB != NULL)
 		pExtensions->glActiveTextureARB(GL_TEXTURE0_ARB);
 #endif
@@ -480,7 +480,7 @@ void RAPTOR_FASTCALL CParticle::glRenderVolumes(void)
 	m_pShader->glRender();
 
 #ifdef GL_ARB_multitexture
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 	if (pExtensions->glActiveTextureARB != NULL)
 		pExtensions->glActiveTextureARB(GL_TEXTURE0_ARB);
 #endif

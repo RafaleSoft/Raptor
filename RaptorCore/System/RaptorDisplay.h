@@ -187,7 +187,7 @@ protected:
 	
 private:
 	//!	Display factory
-	friend class Raptor;
+	friend class IRaptor;
 	
 	CRaptorDisplay(const CRaptorDisplay&);
 	CRaptorDisplay& operator=(const CRaptorDisplay&);

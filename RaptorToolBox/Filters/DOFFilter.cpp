@@ -106,7 +106,7 @@ void CDOFFilter::glDestroyFilter(void)
     if (tmpDisplay != NULL)
 	{
 		tmpDisplay->glvkReleaseResources();
-        Raptor::glDestroyDisplay(tmpDisplay);
+        IRaptor::glDestroyDisplay(tmpDisplay);
 		tmpDisplay = NULL;
 	}
 	if (tmpTexture2 != NULL)
@@ -117,7 +117,7 @@ void CDOFFilter::glDestroyFilter(void)
     if (tmpDisplay2 != NULL)
 	{
 		tmpDisplay2->glvkReleaseResources();
-        Raptor::glDestroyDisplay(tmpDisplay2);
+        IRaptor::glDestroyDisplay(tmpDisplay2);
 		tmpDisplay2 = NULL;
 	}
 	if (m_pRenderTextures2 != NULL)
@@ -152,7 +152,7 @@ void CDOFFilter::setBlurNbPass(unsigned int nb)
 
 void CDOFFilter::glRenderFilter()
 {
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 	PFN_GL_ACTIVE_TEXTURE_ARB_PROC glActiveTextureARB = pExtensions->glActiveTextureARB;
 
     //  Render X-blur in pixel buffer
@@ -220,7 +220,7 @@ void CDOFFilter::glRenderFilter()
 
 void CDOFFilter::glRenderFilterOutput()
 {
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 	PFN_GL_ACTIVE_TEXTURE_ARB_PROC glActiveTextureARB = pExtensions->glActiveTextureARB;
 
 	//  Render Y-blur in current buffer
@@ -309,7 +309,7 @@ bool CDOFFilter::glInitFilter(void)
 		m_pRenderTextures2->addTexture(tmpTexture2);
 	}
 
-    tmpDisplay = Raptor::glCreateDisplay(state);
+    tmpDisplay = IRaptor::glCreateDisplay(state);
 	IRenderingProperties &rp = tmpDisplay->getRenderingProperties();
 	rp.setTexturing(IRenderingProperties::ENABLE);
 	rp.setCullFace(IRenderingProperties::DISABLE);
@@ -318,7 +318,7 @@ bool CDOFFilter::glInitFilter(void)
     rp.clear(CGL_NULL);
     tmpDisplay->setViewPoint(NULL);
 
-	tmpDisplay2 = Raptor::glCreateDisplay(state);
+	tmpDisplay2 = IRaptor::glCreateDisplay(state);
 	IRenderingProperties &rp2 = tmpDisplay2->getRenderingProperties();
 	rp2.setTexturing(IRenderingProperties::ENABLE);
 	rp2.setCullFace(IRenderingProperties::DISABLE);

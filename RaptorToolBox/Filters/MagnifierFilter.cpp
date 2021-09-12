@@ -149,7 +149,7 @@ void CMagnifierFilter::computeKernel(void)
 
 void CMagnifierFilter::glRenderFilter()
 {
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 	PFN_GL_ACTIVE_TEXTURE_ARB_PROC glActiveTextureARB = pExtensions->glActiveTextureARB;
 
     //! First pass : xPass of the kernel assuming it is separable
@@ -181,7 +181,7 @@ void CMagnifierFilter::glRenderFilter()
 
 void CMagnifierFilter::glRenderFilterOutput()
 {
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 	PFN_GL_ACTIVE_TEXTURE_ARB_PROC glActiveTextureARB = pExtensions->glActiveTextureARB;
 
     //! Second (last) pass : yPass of the kernel, assuming it is separable
@@ -265,7 +265,7 @@ bool CMagnifierFilter::glInitFilter(void)
 	}
 
 
-    xBuffer = Raptor::glCreateDisplay(state);
+    xBuffer = IRaptor::glCreateDisplay(state);
 	IRenderingProperties &rp = xBuffer->getRenderingProperties();
 	rp.setTexturing(IRenderingProperties::ENABLE);
 	rp.setCullFace(IRenderingProperties::DISABLE);
@@ -366,7 +366,7 @@ void CMagnifierFilter::glDestroyFilter(void)
 
     if (xBuffer != NULL)
 	{
-        Raptor::glDestroyDisplay(xBuffer);
+        IRaptor::glDestroyDisplay(xBuffer);
 		xBuffer = NULL;
 	}
 

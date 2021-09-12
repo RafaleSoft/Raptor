@@ -662,7 +662,7 @@ RAPTOR_HANDLE CWin32ContextManager::glCreateWindow(const CRaptorDisplayConfig& c
     {
         bool destroyDisplay = (pDisplay == NULL);
         if (destroyDisplay)
-            pDisplay = Raptor::glCreateDisplay(pda);
+            pDisplay = IRaptor::glCreateDisplay(pda);
         id = 0;
 		if (!pDisplay->glvkBindDisplay(device))
 			id = CContextManager::INVALID_CONTEXT;
@@ -693,7 +693,7 @@ RAPTOR_HANDLE CWin32ContextManager::glCreateWindow(const CRaptorDisplayConfig& c
 	    {
             if (destroyDisplay)
 			{
-                Raptor::glDestroyDisplay(pDisplay);
+                IRaptor::glDestroyDisplay(pDisplay);
                 pDisplay = NULL;
             }
 		    DestroyWindow(hwnd);

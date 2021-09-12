@@ -71,7 +71,7 @@ void CRegisterCombiner::glRender(void)
 	int nb_rc = 0;
 	GLenum stage = GL_COMBINER0_NV;
 
-	const CRaptorGLExtensions *const pExtensions = Raptor::glGetExtensions();
+	const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
 	PFN_GL_COMBINER_INPUT_NV_PROC glCombinerInputNV = pExtensions->glCombinerInputNV;
 	PFN_GL_COMBINER_OUTPUT_NV_PROC glCombinerOutputNV = pExtensions->glCombinerOutputNV;
 	PFN_GL_COMBINER_PARAMETER_I_NV_PROC glCombinerParameteriNV = pExtensions->glCombinerParameteriNV;

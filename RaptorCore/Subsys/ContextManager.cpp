@@ -222,7 +222,7 @@ bool CContextManager::vkRelease(void)
 bool CContextManager::vkInitDevice(CContextManager::RENDERING_CONTEXT_ID ctx,const CRaptorDisplayConfig& config)
 {
 	VK_CONTEXT &vk_ctx = m_pVkContext[ctx];
-	CRaptorErrorManager *pErrMgr = Raptor::GetErrorManager();
+	CRaptorErrorManager *pErrMgr = IRaptor::GetErrorManager();
 	VkResult res = VK_NOT_READY;
 
 	unsigned int nbPhysicalDevices = 0;

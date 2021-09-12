@@ -82,7 +82,7 @@ public:
 	static CRaptorInstance* createNewInstance(void);
 
 	//! (Re)Initialise all instance objects.
-	void initInstance();
+	virtual void initInstance();
 
 	//! Stores Display attributes for delayed creation.
 	//! The physical display creation is delegated to the underlying API, 
@@ -106,7 +106,7 @@ public:
 
 	//!	Release resources allocated for this instance.
 	//!	@return true if resources properly released.
-	bool glvkReleaseSharedRsources(void);
+	bool glvkReleaseSharedResources(void);
 
 	//!	Raptor Instance has been initialised.
 	bool isInitialised(void) const { return m_bInitialised; };
@@ -253,7 +253,7 @@ public:
 
 
 
-private:
+protected:
 	//! Constructor.
 	CRaptorInstance();
 	//! Copy Constructor.
@@ -261,6 +261,8 @@ private:
 	//!	Destructor.
 	~CRaptorInstance();
 
+
+private:
 	static CRaptorInstance *m_pInstance;
 
 	//!	Raptor default display creation structure and defaut initial state of the renderer.

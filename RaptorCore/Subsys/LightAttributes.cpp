@@ -71,7 +71,7 @@ CLightAttributes::~CLightAttributes()
 {
 #if defined(GL_ARB_occlusion_query)
 	if (m_visibilityQuery != 0)
-		Raptor::glGetExtensions()->glDeleteQueriesARB(1,&m_visibilityQuery);
+		IRaptor::glGetExtensions()->glDeleteQueriesARB(1,&m_visibilityQuery);
 #endif
 }
 

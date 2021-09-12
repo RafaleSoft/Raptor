@@ -195,7 +195,7 @@ void CSkinningDisplay::Init()
 
 	stringstream vrs;
 	vrs << "Version ";
-	vrs << Raptor::GetVersionString();
+	vrs << IRaptor::GetVersionString();
 	layer->drawAText(20,30,vrs.str(),font,0x80C0E000);
 
 	CTextureFactory &f = CTextureFactory::glGetDefaultFactory();
