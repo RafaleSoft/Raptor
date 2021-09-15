@@ -94,7 +94,7 @@ BOOL CGLWnd::OnEraseBkgnd(CDC* )
 }
 
 
-bool CGLWnd::GLCreateWindow (CString name,CWnd *parent, const CRaptorDisplayConfig& glCreateStruct)
+bool CGLWnd::GLCreateWindow(CString name,CWnd *parent, const CRaptorDisplayConfig& glCreateStruct)
 {
 	RECT GLRect;
 	
@@ -182,9 +182,9 @@ int CGLWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		return -1;
 
 	COLORREF c = GetSysColor(COLOR_3DFACE);
-	SystemBlue=((float)((c>>16)&0xFF))/255.0f;
-	SystemGreen=((float)((c>>8)&0xFF))/255.0f;
-	SystemRed=((float)(c&0xFF))/255.0f;
+	SystemBlue = ((float)((c>>16)&0xFF))/255.0f;
+	SystemGreen = ((float)((c>>8)&0xFF))/255.0f;
+	SystemRed = ((float)(c&0xFF))/255.0f;
 
 	CClientDC	dc(this);
 

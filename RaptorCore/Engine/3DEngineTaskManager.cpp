@@ -42,17 +42,17 @@ RAPTOR_NAMESPACE
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
-C3DEngineTaskManager *C3DEngineTaskManager::Create(void)
+C3DEngineTaskManager *C3DEngineTaskManager::Create(const CRaptorInstance& instance)
 {
 #if defined(WIN32)
-    return new CWin32EngineTaskManager();
+    return new CWin32EngineTaskManager(instance);
 #elif defined(LINUX)
-    return new CGLXEngineTaskManager();
+    return new CGLXEngineTaskManager(instance);
 #endif
 }
 
 
-C3DEngineTaskManager::C3DEngineTaskManager()
+C3DEngineTaskManager::C3DEngineTaskManager(const CRaptorInstance& instance) : m_instance(instance)
 {
 	batchMutex = new CRaptorMutex();
 	stackMutex = new CRaptorMutex();

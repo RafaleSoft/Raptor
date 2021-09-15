@@ -54,7 +54,7 @@ unsigned int	CWin32EngineTaskManager::BATCH_ID = 1;
 DWORD WINAPI engineSyncThread(void* pParam)
 {
     CWin32EngineTaskManager* manager = (CWin32EngineTaskManager*)pParam;
-	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+	const CRaptorInstance &instance = manager->getInstance();
 
 	//	I know this should mutex protected,
 	//	but is it really important here ?
@@ -108,7 +108,8 @@ RAPTOR_NAMESPACE
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
-CWin32EngineTaskManager::CWin32EngineTaskManager()
+CWin32EngineTaskManager::CWin32EngineTaskManager(const CRaptorInstance& instance)
+	:C3DEngineTaskManager(instance)
 {
     engineStarted = false;
 
@@ -211,16 +212,14 @@ bool CWin32EngineTaskManager::run(void)
 	//PulseEvent(processFrameEvt);
 	SetEvent(processFrameEvt);
 #else
-	Global::RAPTOR_CURRENT_STATUS& status = Global::GetInstance().getCurrentStatus();
+	const CRaptorInstance &instance = getInstance();
 
-	if (status.currentAnimator != NULL )
+	if (instance.pAnimator != NULL )
 	{
-		status.currentAnimator->initSynchro();
-		status.currentAnimator->animate();
+		instance.pAnimator->initSynchro();
+		instance.pAnimator->animate();
+		instance.pAnimator->asyncAnimate();
 	}
-
-    if (status.currentAnimator != NULL )
-		status.currentAnimator->asyncAnimate();
 #endif
 
     return true;
@@ -313,10 +312,8 @@ void CWin32EngineTaskManager::computeAsyncJobs(DWORD id)
 		if (res == WAIT_FAILED)
 		{
 			res = GetLastError();
-			CRaptorInstance &instance = CRaptorInstance::GetInstance();
-			instance.pErrorMgr->generateRaptorError(CPersistence::CPersistenceClassID::GetClassId(),
-													CRaptorErrorManager::RAPTOR_FATAL,
-													"Engine Async Thread will terminate, failed to synchronize");
+			RAPTOR_FATAL(CPersistence::CPersistenceClassID::GetClassId(),
+						 "Engine Async Thread will terminate, failed to synchronize");
 			break;
 		}
 		else
@@ -340,15 +337,13 @@ bool CWin32EngineTaskManager::synchronizeCore(unsigned long timeLimit)
     //  First step : synchronize on frame time objects
     //
 	unsigned long wait = WaitForSingleObject(synchroFrameEvt,timeLimit);
-	CRaptorInstance &instance = CRaptorInstance::GetInstance();
 
 	switch(wait)
 	{
 		case WAIT_ABANDONED:
 		{
-			instance.pErrorMgr->generateRaptorError(CPersistence::CPersistenceClassID::GetClassId(),
-											 CRaptorErrorManager::RAPTOR_FATAL,
-											 "GLSynchronize core exited on Core Termination");
+			RAPTOR_FATAL(CPersistence::CPersistenceClassID::GetClassId(),
+						 "GLSynchronize core exited on Core Termination");
 			break;
 		}
 		
@@ -363,9 +358,8 @@ bool CWin32EngineTaskManager::synchronizeCore(unsigned long timeLimit)
 		}
 		case WAIT_TIMEOUT:
 		{
-			instance.pErrorMgr->generateRaptorError(CPersistence::CPersistenceClassID::GetClassId(),
-                                             CRaptorErrorManager::RAPTOR_WARNING,
-                                             "GLSynchronize core exited on timeout");
+			RAPTOR_WARNING(CPersistence::CPersistenceClassID::GetClassId(),
+                           "GLSynchronize core exited on timeout");
 		}
 		break;
 	}

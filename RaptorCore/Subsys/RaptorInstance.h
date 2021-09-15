@@ -179,8 +179,6 @@ public:
 	
 	//!	Imaging input/output interfaces.
 	std::map<std::string, CImage::IImageIO*>	imageKindIO;
-	//!	Streaming input/output interfaces.
-	std::map<std::string, CAnimator::IVideoIO*>	videoKindIO;
 
 	//! The set of all Raptor displays for this instance.
 	std::vector<CRaptorDisplay*>	displays;

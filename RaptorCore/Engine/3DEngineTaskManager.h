@@ -15,13 +15,14 @@ RAPTOR_NAMESPACE_BEGIN
 
 class CEngineJob;
 class CRaptorMutex;
+class CRaptorInstance;
 
 
 class C3DEngineTaskManager  
 {
 public:
     //! Factory model, engine tasks depend on OS capabilities
-	static C3DEngineTaskManager *Create(void);
+	static C3DEngineTaskManager *Create(const CRaptorInstance& instance);
 
 	virtual ~C3DEngineTaskManager();
 
@@ -97,8 +98,11 @@ protected:
 	//!	Safely adds a batch to all job stacks batches.
 	void addJobBatch(unsigned int batchId);
 
+	//!	Constructor for subclasses.
+	C3DEngineTaskManager(const CRaptorInstance& instance);
 
-    C3DEngineTaskManager();
+	//! The Raptor instance ,that this engine will work with.
+	const CRaptorInstance& m_instance;
 
     typedef struct JOBSTACK_t
 	{
@@ -111,6 +115,9 @@ protected:
 	CRaptorMutex     *stackMutex;
 
     bool m_bCancelJobs;
+
+private:
+	C3DEngineTaskManager();
 };
 
 RAPTOR_NAMESPACE_END

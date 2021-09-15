@@ -21,7 +21,7 @@ RAPTOR_NAMESPACE_BEGIN
 class CWin32EngineTaskManager : public C3DEngineTaskManager  
 {
 public:
-	CWin32EngineTaskManager();
+	CWin32EngineTaskManager(const CRaptorInstance& instance);
 	virtual ~CWin32EngineTaskManager();
 
     virtual bool initEngine(void);
@@ -38,6 +38,7 @@ public:
     //!	Called by each async engines to process its own jobs stack
 	void computeAsyncJobs(DWORD id);
 
+	const CRaptorInstance& getInstance(void) const { return m_instance; }
 
 	//! The engine threads to process off-rendering tasks.
     //! A boolean value ( though it requires a Mutex ) helps to determine
@@ -52,6 +53,8 @@ public:
 
 
 private:
+	CWin32EngineTaskManager();
+
 	bool	stopRequested;
 	HANDLE	engine;
 

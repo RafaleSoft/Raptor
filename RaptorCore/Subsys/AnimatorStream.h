@@ -26,13 +26,6 @@ RAPTOR_NAMESPACE_BEGIN
 class CEngineJob;
 
 
-//
-//
-//
-//	TODO:
-//	- Mettre Record frame dans un thread !!!
-//	- Créer un stream compressé
-//
 class CAnimatorStream  
 {
 public:
@@ -86,6 +79,9 @@ public:
 private:
     //! Default copy constructor forbidden
     CAnimatorStream(const CAnimatorStream& rsh) {};
+
+	//!	Streaming input/output interfaces.
+	std::map<std::string, CAnimator::IVideoIO*>	videoKindIO;
 
     //! Currently playing streams
     typedef struct
