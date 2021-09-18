@@ -79,10 +79,17 @@ public:
 
 	//!	Creates a new RaptorInstance intance and returns the previous instance.
 	//!	The user shall manage the list of instance.
-	static CRaptorInstance* createNewInstance(void);
+	//! @return a newly uninitialised instance.
+	static CRaptorInstance* CreateNewInstance(void);
+
+	//! Defines the current RaptorInstance holdng resources for the required GL/VK context
+	static CRaptorInstance *SetInstance(CRaptorInstance *new_instance);
 
 	//! (Re)Initialise all instance objects.
 	virtual void initInstance();
+
+	//! Delete Raptor status and any allocated resource in this instance.
+	bool destroyInstance(void);
 
 	//! Stores Display attributes for delayed creation.
 	//! The physical display creation is delegated to the underlying API, 
@@ -94,9 +101,6 @@ public:
 	//! Returns the defaut initial state of the renderer.
 	//! Data is gathered from RaptorData, so different run state can be used with various RaptorData.
 	const CRaptorDisplayConfig& getDefaultConfig(void) const { return defaultConfig; }
-
-	//! Delete Raptor status and any allocated resource.
-	bool destroy(void);
 
 	//!	Initialise base shaders for this instance.
 	//! Calling this method requires a valid graphic context made current because

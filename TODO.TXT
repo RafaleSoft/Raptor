@@ -45,10 +45,6 @@
 	- fusionner vkLoadShader & glLoadProgram (methode virtuelle de CShaderProgram)
 	- fusionner vkRender & glRender (methode virtuelle de CShaderProgram)
 
-- CRaptorScreenDisplay:
-	- déplacer les resource allocator, ou faire un CRaptorInstance::switchDisplay : 
-	sous MFC, le changement de display ne suit pas les ressources ==> plantage de la video dans Test2/About
-
 - CResourceAllocator & co:
 	- lock/unlock toujours utile ?
 	- à priori non sur les allocate/release car allocation uniquement sur CPU.

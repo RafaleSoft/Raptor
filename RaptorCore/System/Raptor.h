@@ -33,11 +33,18 @@ class CRaptorInstance;
 class RAPTOR_API IRaptor  
 {
 public:
+	//!	@return the Raptor SDK version in a packed 32bits integer
 	static unsigned long GetVersion(void);
+	//!	@return the Raptor SDK version in a human readable form string
 	static const char* GetVersionString(void);
+		
+	//!	Initialize the entire Raptor SDK. 
+    //! This method must be called before any other method. It returns false
+    //! if Raptor cannot start initialisation. Otherwise, init errors can be retrieved
+    //! using error manager.
+	static bool glInitRaptor(const CRaptorConfig& config);
 
 	//! Create and initialise a new RaptorInstance and initializes the entire Raptor SDK. 
-	//! This method must be called before any other method. 
 	//! @param config: Raptor global configuration requested for initialization
 	//!	@param new_instance: a newly created Raptor SDK instance.
 	//! @return false if Raptor cannot start initialisation. Otherwise, init errors can be retrieved
@@ -48,11 +55,10 @@ public:
 	//! @return the previous instance, NULL if none.
 	static CRaptorInstance* switchInstance(CRaptorInstance* instance);
 
-	//!	Initialize the entire Raptor SDK. 
-    //! This method must be called before any other method. It returns false
-    //! if Raptor cannot start initialisation. Otherwise, init errors can be retrieved
-    //! using error manager.
-	static bool glInitRaptor(const CRaptorConfig& config);
+	//!	Destroys the given RaptorInstance if it is not current.
+	//! @return true if instance has been deleted.
+	static bool destroyInstance(CRaptorInstance* instance);
+
 
 	//! Returns the global config used at initialisation
     static const CRaptorConfig& GetConfig(void);

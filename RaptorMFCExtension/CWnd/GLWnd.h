@@ -17,6 +17,9 @@
 
 RAPTOR_NAMESPACE_BEGIN
 
+class CRaptorInstance;
+
+
 /////////////////////////////////////////////////////////////////////////////
 // CGLWnd window
 
@@ -82,6 +85,7 @@ protected:
 private:
 	// opengl display
 	CRaptorDisplay	*m_pDisplay;
+	CRaptorInstance *m_pInstance;
 };
 
 RAPTOR_NAMESPACE_END

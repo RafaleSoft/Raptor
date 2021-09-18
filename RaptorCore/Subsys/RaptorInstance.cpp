@@ -99,7 +99,7 @@ CRaptorInstance *CRaptorInstance::m_pInstance = NULL;
 class CVoidInstance : public CRaptorInstance
 {
 	public:
-		CVoidInstance() {};
+		CVoidInstance():CRaptorInstance() {};
 		virtual ~CVoidInstance() {};
 		virtual void initInstance() {};
 };
@@ -121,7 +121,7 @@ CRaptorInstance::CRaptorInstance()
 	iRenderedObjects = 0;
 	iRenderedTriangles = 0;
 	
-	defaultContext = 0;
+	defaultContext = CContextManager::INVALID_CONTEXT;
 	defaultDisplay = NULL;
 	defaultWindow.handle(0);
 	defaultWindow.hClass(0);
@@ -172,16 +172,31 @@ CRaptorInstance &CRaptorInstance::GetInstance(void)
 		return *m_pInstance;
 }
 
-CRaptorInstance* CRaptorInstance::createNewInstance(void)
+CRaptorInstance* CRaptorInstance::CreateNewInstance(void)
 {
-	CRaptorInstance *previous = m_pInstance;
-	m_pInstance = new CRaptorInstance();
-	return previous;
+	CRaptorInstance *new_instance = new CRaptorInstance();
+	if (NULL == m_pInstance)
+		m_pInstance = new_instance;
+
+	return new_instance;
 }
 
-bool CRaptorInstance::destroy(void)
+CRaptorInstance *CRaptorInstance::SetInstance(CRaptorInstance *new_instance)
 {
-	if (m_pInstance == NULL)
+	if (NULL == new_instance)
+		return NULL;
+	if (NULL == m_pInstance)
+		return NULL;
+
+	CRaptorInstance *old_instance = m_pInstance;
+	m_pInstance = new_instance;
+
+	return old_instance;
+}
+
+bool CRaptorInstance::destroyInstance(void)
+{
+	if (!m_bInitialised)
 		return false;
 
 	m_bTerminate = true;
@@ -190,8 +205,10 @@ bool CRaptorInstance::destroy(void)
 	if (NULL != engineTaskMgr)
 		engineTaskMgr->stopEngine();
 
-	delete m_pInstance;
-	m_pInstance = NULL;
+	if (this == m_pInstance)
+		m_pInstance = NULL;
+
+	delete this;
 
 	return true;
 }
@@ -221,26 +238,27 @@ CRaptorInstance::~CRaptorInstance()
 	}
 
 	//! Destroy glObjects : we need a context.
-	CContextManager::GetInstance()->glMakeCurrentContext(defaultWindow, defaultContext);
-
-	glvkReleaseSharedResources();
+	if (CContextManager::INVALID_CONTEXT != defaultContext)
+	{
+		CContextManager::GetInstance()->glMakeCurrentContext(defaultWindow, defaultContext);
+		glvkReleaseSharedResources();
 
 
 #if defined (VK_VERSION_1_0)
-	if (config.m_bVulkan)
-		if (!CContextManager::GetInstance()->vkRelease())
-		{
-			RAPTOR_ERROR(CVulkan::CVulkanClassID::GetClassId(),
-						 "Unable to release Vulkan module !");
-		}
+		if (config.m_bVulkan)
+			if (!CContextManager::GetInstance()->vkRelease())
+			{
+				RAPTOR_ERROR(CVulkan::CVulkanClassID::GetClassId(),
+					"Unable to release Vulkan module !");
+			}
 
 #endif
 
-	RAPTOR_HANDLE noDevice;
-	CContextManager::GetInstance()->glMakeCurrentContext(noDevice, defaultContext);
-
-	CContextManager::GetInstance()->glDestroyContext(defaultContext);
-	defaultContext = 0;
+		RAPTOR_HANDLE noDevice;
+		CContextManager::GetInstance()->glMakeCurrentContext(noDevice, defaultContext);
+		CContextManager::GetInstance()->glDestroyContext(defaultContext);
+		defaultContext = CContextManager::INVALID_CONTEXT;
+	}
 
 	if (NULL != m_pDefaultTextureFactory)
 	{
@@ -250,10 +268,8 @@ CRaptorInstance::~CRaptorInstance()
 
 	//  Default display is NULL, because it was created with GENERIC attribute.
 	//    glDestroyDisplay(status.defaultDisplay);
-	CContextManager::GetInstance()->glDestroyWindow(defaultWindow);
-
-	delete CContextManager::GetInstance();
-	delete CHostMemoryManager::GetInstance();
+	if (0 != defaultWindow.handle())
+		CContextManager::GetInstance()->glDestroyWindow(defaultWindow);
 
 	if (pMessages != NULL)
 		delete pMessages;
@@ -310,10 +326,6 @@ void CRaptorInstance::initInstance()
 	const CPU_INFO &info = getCPUINFO();
 	forceSSE = info.hasFeature(CPU_INFO::SSE);
 #endif
-
-	//	Initialise memory first
-	CHostMemoryManager::GetInstance()->init();
-	CHostMemoryManager::GetInstance()->setGarbageMaxSize(config.m_uiGarbageSize);
 
 	//  Initialise engine
 	engineTaskMgr = C3DEngineTaskManager::Create(*this);

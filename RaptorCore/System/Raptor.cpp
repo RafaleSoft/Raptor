@@ -354,30 +354,40 @@ void IRaptor::glDestroyDisplay(CRaptorDisplay* pDisplay)
 	}
 }
 
+bool IRaptor::destroyInstance(CRaptorInstance* instance)
+{
+	if (NULL == instance)
+		return false;
+
+	CRaptorInstance& r_instance = CRaptorInstance::GetInstance();
+	if (&r_instance != instance)
+	{
+
+	}
+}
 
 CRaptorInstance* IRaptor::switchInstance(CRaptorInstance* pInstance)
 {
-	if (NULL == pInstance)
-		return NULL;
+	CRaptorInstance *old_instance = CRaptorInstance::SetInstance(pInstance);
 
 	//	A first instance needs to be initialised.
-	CRaptorInstance &instance = CRaptorInstance::GetInstance();
-	if (!instance.isInitialised())
+	if (NULL == old_instance)
+		return NULL;
+	if (!old_instance->isInitialised())
 		return NULL;
 
-	return &instance;
+	pInstance->runAsShareware = old_instance->runAsShareware;
+	return old_instance;
 }
 
 bool IRaptor::glvkCreateInstance(const CRaptorConfig& config, CRaptorInstance* &new_instance)
 {
-	CRaptorInstance* previous = CRaptorInstance::createNewInstance();
+	new_instance = CRaptorInstance::CreateNewInstance();
+	if (NULL == new_instance)
+		return false;
 
 	CRaptorConfig checkedConfig = config;
 	checkedConfig.checkConfig();
-
-	CRaptorInstance& instance = CRaptorInstance::GetInstance();
-	new_instance = &instance;
-
 	new_instance->config = checkedConfig;
 	new_instance->initInstance();
 
@@ -414,7 +424,12 @@ bool IRaptor::glvkCreateInstance(const CRaptorConfig& config, CRaptorInstance* &
 }
 
 bool IRaptor::glInitRaptor(const CRaptorConfig& config)
-{ 
+{
+	//	Initialise memory first (shared among all instances)
+	CHostMemoryManager::GetInstance()->init();
+	CHostMemoryManager::GetInstance()->setGarbageMaxSize(config.m_uiGarbageSize);
+
+	//! Then create a Raptor Instance
     bool res = false;
 	CRaptorInstance& instance = CRaptorInstance::GetInstance();
 	if (instance.isInitialised())
@@ -464,9 +479,12 @@ bool IRaptor::glQuitRaptor(void)
 	if ((!instance.isInitialised()) || (instance.terminate()))
         return true;
 
-    bool res = instance.destroy();
+    bool res = instance.destroyInstance();
 
 	glPurgeRaptor(false);
+
+	delete CContextManager::GetInstance();
+	delete CHostMemoryManager::GetInstance();
 
 	return res;
 }

@@ -26,7 +26,9 @@
 #if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
     #include "System/RaptorErrorManager.h"
 #endif
-
+#if !defined(AFX_RAPTORCONFIG_H__29B753B8_17DE_44DF_A4D2_9D19C5AC53D5__INCLUDED_)
+	#include "System/RaptorConfig.h"
+#endif
 
 RAPTOR_NAMESPACE
 
@@ -97,6 +99,11 @@ BOOL CGLWnd::OnEraseBkgnd(CDC* )
 bool CGLWnd::GLCreateWindow(CString name,CWnd *parent, const CRaptorDisplayConfig& glCreateStruct)
 {
 	RECT GLRect;
+
+	CRaptorConfig config;
+	IRaptor::glvkCreateInstance(config, m_pInstance);
+	
+	CRaptorInstance *pOldInstance = IRaptor::switchInstance(m_pInstance);
 	
 	GLRect.top = glCreateStruct.y;
 	GLRect.left = glCreateStruct.x;
@@ -107,6 +114,7 @@ bool CGLWnd::GLCreateWindow(CString name,CWnd *parent, const CRaptorDisplayConfi
 	
 	CString ClassName = AfxRegisterWndClass(CS_PARENTDC|CS_DBLCLKS);
 
+	bool bRet = false;
 	if (parent == NULL)
 	{
 		if (0 != CreateEx(	0,
@@ -125,19 +133,15 @@ bool CGLWnd::GLCreateWindow(CString name,CWnd *parent, const CRaptorDisplayConfi
 			m_pDisplay->glvkBindDisplay(display);
 
 			GLInitContext();
-		
 			m_pDisplay->glResize(glCreateStruct.width,glCreateStruct.height,0,0);
-
 			m_pDisplay->glRender();
 
 			CATCH_GL_ERROR
 
 			m_pDisplay->glvkUnBindDisplay();
 
-			return true;
+			bRet = true;
 		}
-		else
-			return false;
 	}
 	else if (0!=Create(ClassName,name,WS_CHILD | WS_VISIBLE,GLRect,parent,0))
 	{
@@ -147,19 +151,19 @@ bool CGLWnd::GLCreateWindow(CString name,CWnd *parent, const CRaptorDisplayConfi
 		m_pDisplay->glvkBindDisplay(display);
 
 		GLInitContext();
-
 		m_pDisplay->glResize(glCreateStruct.width,glCreateStruct.height,0,0);
-
 		m_pDisplay->glRender();
 
 		CATCH_GL_ERROR
 
 		m_pDisplay->glvkUnBindDisplay();
 
-		return true;
+		bRet = true;
 	}
-	else
-		return false;
+
+	IRaptor::switchInstance(pOldInstance);
+
+	return bRet;
 }
 
 BEGIN_MESSAGE_MAP(CGLWnd, CWnd)
@@ -239,6 +243,8 @@ void CGLWnd::OnDestroy()
 
 	if (m_pDisplay != NULL)
 		IRaptor::glDestroyDisplay(m_pDisplay);
+
+	IRaptor::destroyInstance(m_pInstance);
 }
 
 
@@ -281,15 +287,17 @@ void CGLWnd::OnPaint()
 {
 	CPaintDC dc(this); 
 	
+	CRaptorInstance *pOldInstance = IRaptor::switchInstance(m_pInstance);
+
 	RAPTOR_HANDLE display(DEVICE_CONTEXT_CLASS, (void*)(dc.m_hDC));
 	m_pDisplay->glvkBindDisplay(display);
-
 	GLDisplayFunc();
-
 	m_pDisplay->glRender();
 
 	CATCH_GL_ERROR
 
 	m_pDisplay->glvkUnBindDisplay();
 	// Do not call CWnd::OnPaint() for painting messages
+
+	IRaptor::switchInstance(pOldInstance);
 }
