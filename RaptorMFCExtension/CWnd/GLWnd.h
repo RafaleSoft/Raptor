@@ -81,11 +81,12 @@ protected:
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 
+	CRaptorInstance *m_pInstance;
+
 // Attributes
 private:
 	// opengl display
 	CRaptorDisplay	*m_pDisplay;
-	CRaptorInstance *m_pInstance;
 };
 
 RAPTOR_NAMESPACE_END

@@ -361,9 +361,9 @@ bool IRaptor::destroyInstance(CRaptorInstance* instance)
 
 	CRaptorInstance& r_instance = CRaptorInstance::GetInstance();
 	if (&r_instance != instance)
-	{
-
-	}
+		return instance->destroyInstance();
+	else
+		return false;
 }
 
 CRaptorInstance* IRaptor::switchInstance(CRaptorInstance* pInstance)
@@ -391,36 +391,7 @@ bool IRaptor::glvkCreateInstance(const CRaptorConfig& config, CRaptorInstance* &
 	new_instance->config = checkedConfig;
 	new_instance->initInstance();
 
-	//	Create a dummy window to initialize GL
-	CRaptorDisplayConfig glCS;
-	glCS.width = -1;
-	glCS.height = -1;
-	glCS.caption = "Raptor Default Display";
-	glCS.display_mode = CGL_RGBA;
-	glCS.acceleration = CRaptorDisplayConfig::GENERIC;
-	glCS.refresh_rate.fps = CGL_MAXREFRESHRATE;
-
-	CRaptorDisplay *pDisplay = NULL;
-	CContextManager *ctxMgr = CContextManager::GetInstance();
-	CContextManager::RENDERING_CONTEXT_ID ctx = CContextManager::INVALID_CONTEXT;
-	RAPTOR_HANDLE wnd = ctxMgr->glCreateWindow(glCS, pDisplay, ctx);
-
-	new_instance->defaultWindow = wnd;
-	new_instance->defaultContext = ctx;
-	new_instance->defaultDisplay = pDisplay;
-
-	//	Initialize platform dependant datas.
-	CContextManager::GetInstance()->glMakeCurrentContext(new_instance->defaultWindow, 
-														 new_instance->defaultContext);
-	CTextureFactory::glGetDefaultFactory();
-	CATCH_GL_ERROR
-
-	//! Release context and return init state.
-	RAPTOR_HANDLE noDevice(0, (void*)0);
-	CContextManager::GetInstance()->glMakeCurrentContext(noDevice, 
-														 new_instance->defaultContext);
-
-	return (wnd.handle() != 0);
+	return true;
 }
 
 bool IRaptor::glInitRaptor(const CRaptorConfig& config)

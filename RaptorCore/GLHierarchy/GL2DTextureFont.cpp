@@ -46,23 +46,10 @@
 RAPTOR_NAMESPACE
 
 static const size_t TEXTURE_WIDTH = 256;
-static const size_t FONT_SIZE = 256;
-static const size_t LINE_SIZE = 256;
 
-typedef struct FONT_CACHEELT_t
-{
-	GL_COORD_VERTEX coord;
-	GL_COORD_VERTEX	texcoord;
-	float			advance;
-} FONT_CACHEELT;
-static FONT_CACHEELT_t font_cache[FONT_SIZE];
-static size_t FONT_CACHEPOINTER_SIZE = sizeof(FONT_CACHEELT)*FONT_SIZE / sizeof(float);
-static size_t LINE_CACHEPOINTER_SIZE = sizeof(FONT_CACHEELT)*LINE_SIZE / sizeof(float);
-static size_t FONT_CACHEELT_SIZE = sizeof(FONT_CACHEELT) / sizeof(float);
-
-static FONT_CACHEELT_t font_line[LINE_SIZE];
-static float *font_linePointer = NULL;
-
+static size_t FONT_CACHEPOINTER_SIZE = sizeof(CGL2DTextureFont::FONT_CACHEELT) * CGLFont::FONT_SIZE / sizeof(float);
+static size_t LINE_CACHEPOINTER_SIZE = sizeof(CGL2DTextureFont::FONT_CACHEELT) * CGLFont::LINE_SIZE / sizeof(float);
+static size_t FONT_CACHEELT_SIZE = sizeof(CGL2DTextureFont::FONT_CACHEELT) / sizeof(float);
 
 
 CGL2DTextureFont::CGL2DTextureFont(const std::string& name)
@@ -71,7 +58,8 @@ CGL2DTextureFont::CGL2DTextureFont(const std::string& name)
 	m_bAntialiased(false),
 	m_char_w(0),
 	m_char_h(0),
-	m_pBinder(NULL)
+	m_pBinder(NULL),
+	font_linePointer(NULL)
 {
 }
 

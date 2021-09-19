@@ -38,6 +38,23 @@ public:
 	CGLVectorFont(const std::string& name = "GLVectorFont");
 	virtual ~CGLVectorFont();
 
+	//! The structure representing font characterds for texture rendering.
+	//!	IMPORTANT : ensure alignment on a multiple number of vec4 size elements.
+	typedef struct VECTOR_CACHEELT_t
+	{
+		GL_TEX_VERTEX	strip[56];		// enough space to contain the bigger simplex character
+		float			advance;		// character offset (horizontal)
+		float			reserved[7];	// alignment
+	} VECTOR_CACHEELT;
+
+	typedef struct LINE_ELT_t
+	{
+		float	advance;
+		float	line;
+		float	num_char;
+		float	num_strip;
+	} LINE_ELT;
+
 
 protected:
 	//! Generates the display lists for vector glyphs for a whole charset.
@@ -70,6 +87,20 @@ private:
 
 	//!	Vertex Input State Resource binder.
 	void	*m_pBinder;
+
+	static const size_t NUM_STRIPS = 4;
+	typedef struct STRIPS_ELT_t
+	{
+		uint32_t		strips[NUM_STRIPS];	// start and len combined.
+	} STRIPS_ELT;
+
+	//!	Rendring arrays.
+	VECTOR_CACHEELT_t vector_cache[CGLFont::FONT_SIZE];
+	STRIPS_ELT_t strips[CGLFont::FONT_SIZE];
+	LINE_ELT font_line[CGLFont::LINE_SIZE];
+	
+	//! Render buffer pointer for font data
+	float *font_linePointer;
 
 	//!	Uniform buffer data for font rendering:
 	//!	- Uniform Buffer pointer.

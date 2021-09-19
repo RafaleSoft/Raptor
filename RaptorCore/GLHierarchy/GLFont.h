@@ -55,6 +55,9 @@ public:
 			:x_offset(x), y_offset(y), text(t), color(c) {};
 	} FONT_TEXT_ITEM;
 
+	static const size_t FONT_SIZE = 256;
+	static const size_t LINE_SIZE = 256;
+
 
 public:
 	virtual ~CGLFont();

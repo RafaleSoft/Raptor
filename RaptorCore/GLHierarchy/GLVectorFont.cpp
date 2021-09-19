@@ -50,45 +50,16 @@
 
 RAPTOR_NAMESPACE
 
-static const size_t FONT_SIZE = 256;
-static const size_t LINE_SIZE = 256;
-static const size_t NUM_STRIPS = 4;
 
 
-//!	IMPORTANT : ensure alignment on a multiple number of vec4 size elements.
-typedef struct VECTOR_CACHEELT_t
-{
-	GL_TEX_VERTEX	strip[56];
-	float			advance;
-	float			reserved[7];
-} VECTOR_CACHEELT;
-static VECTOR_CACHEELT_t vector_cache[FONT_SIZE];
 
-typedef struct STRIPS_ELT_t
-{
-	uint32_t		strips[4];	// start and len combined.
-} STRIPS_ELT;
-static STRIPS_ELT_t strips[FONT_SIZE];
-
-static const size_t VECTOR_CACHEELT_SIZE = sizeof(VECTOR_CACHEELT);
-
-typedef struct LINE_ELT_t
-{
-	float	advance;
-	float	line;
-	float	num_char;
-	float	num_strip;
-} LINE_ELT;
-
-static const size_t LINE_ELT_SIZE = sizeof(LINE_ELT);
-static LINE_ELT font_line[LINE_SIZE];
-static float *font_linePointer = NULL;
-
+static const size_t VECTOR_CACHEELT_SIZE = sizeof(CGLVectorFont::VECTOR_CACHEELT);
+static const size_t LINE_ELT_SIZE = sizeof(CGLVectorFont::LINE_ELT);
 
 
 CGLVectorFont::CGLVectorFont(const std::string& name)
 	:CGLFont(name),
-	m_pBinder(NULL), m_fontUniformSize(0), m_fontUniform(NULL)
+	m_pBinder(NULL), m_fontUniformSize(0), m_fontUniform(NULL), font_linePointer(NULL)
 {
 }
 

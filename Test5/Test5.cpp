@@ -7,6 +7,7 @@
 
 #include "System/CGLTypes.h"
 #include "System/Raptor.h"
+#include "System/RaptorConfig.h"
 RAPTOR_NAMESPACE
 
 #define MAX_LOADSTRING 100
@@ -41,6 +42,16 @@ int WINAPI wWinMain(HINSTANCE hInstance,
 	LoadString(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
 	LoadString(hInstance, IDC_TEST5, szWindowClass, MAX_LOADSTRING);
 	MyRegisterClass(hInstance);
+
+	CRaptorConfig config;
+	config.m_logFile = "Test5.log";
+	config.m_bRelocation = true;
+	config.m_bVulkan = true;
+	config.m_uiTexels = 2048 * 1024;
+	config.m_uiPolygons = 20000;
+	config.m_uiVertices = 50000;
+	config.m_uiUniforms = 256 * 1024;
+	IRaptor::glInitRaptor(config);
 
 	// Effectue l'initialisation de l'application :
 	if (!InitInstance (hInstance, nCmdShow))

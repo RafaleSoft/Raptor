@@ -363,6 +363,33 @@ void CRaptorInstance::initInstance()
 #endif
 	}
 
+	//	Create a dummy window to initialize GL
+	CRaptorDisplayConfig glCS;
+	glCS.width = -1;
+	glCS.height = -1;
+	glCS.caption = "Raptor Default Display";
+	glCS.display_mode = CGL_RGBA;
+	glCS.acceleration = CRaptorDisplayConfig::GENERIC;
+	glCS.refresh_rate.fps = CGL_MAXREFRESHRATE;
+
+	CRaptorDisplay *pDisplay = NULL;
+	CContextManager *ctxMgr = CContextManager::GetInstance();
+	CContextManager::RENDERING_CONTEXT_ID ctx = CContextManager::INVALID_CONTEXT;
+	RAPTOR_HANDLE wnd = ctxMgr->glCreateWindow(glCS, pDisplay, ctx);
+
+	defaultWindow = wnd;
+	defaultContext = ctx;
+	defaultDisplay = pDisplay;
+
+	//	Initialize platform dependant datas.
+	CContextManager::GetInstance()->glMakeCurrentContext(defaultWindow, defaultContext);
+	CTextureFactory::glGetDefaultFactory();
+	CATCH_GL_ERROR
+
+	//! Release context and return init state.
+	RAPTOR_HANDLE noDevice(0, (void*)0);
+	CContextManager::GetInstance()->glMakeCurrentContext(noDevice, defaultContext);
+
 	m_bInitialised = true;
 }
 

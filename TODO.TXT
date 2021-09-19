@@ -3,9 +3,6 @@
 	(ctx créé par CRaptorScreenDisplay)
 	- supprimer les fonctions SetcurrentInstance: soit allocateurs par contexte, soit par RaptorInstance.
 
-- Test2:
-	- mettre au point et utiliser le switch d'instances.
-
 - RaptorFilteredDisplay:
 	- voir si normal dans demo que le buffer FSAA ait la même taille que la destination
 		(m_fFilterSize = 1 dans RaptorDisplayconfig)
@@ -35,7 +32,6 @@
 
 - CGLFont:
 	- corriger font color et back color pour rendre générique
-	- sortir les statiques de GLVectorFont et GL2DTextureFont
 
 - Test4:
 	- corriger ne marche pas sans relocation

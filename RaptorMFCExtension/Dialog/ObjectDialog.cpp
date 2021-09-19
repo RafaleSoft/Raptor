@@ -163,20 +163,6 @@ RAPTOR_NAMESPACE
 		}
 	}
 
-	void Add(CTreeCtrl *tree,HTREEITEM item,CObject3D *obj)
-	{
-		const CPersistence::CPersistenceClassID &ID = obj->getId();
-
-		if (ID.isSubClassOf(C3DSet::C3DSetClassID().GetClassId()))
-			Add(tree,item,(C3DSet*)obj);
-		else if (ID.isSubClassOf(CGeometry::CGeometryClassID().GetClassId()))
-			Add(tree,item,(CGeometry*)obj);
-		else if (ID.isSubClassOf(CObject3DInstance::CObject3DInstanceClassID().GetClassId()))
-			Add(tree,item,(CObject3DInstance*)obj);
-		else if (ID.isSubClassOf(CGLLod::CGLLodClassID().GetClassId()))
-			Add(tree,item,(CGLLod*)obj);
-	}
-
 	void Add(CTreeCtrl *tree,HTREEITEM parentItem,CGeometry* obj)
 	{
 		HTREEITEM item = tree->InsertItem(CA2T(obj->getId().ClassName()),parentItem);
@@ -283,6 +269,19 @@ RAPTOR_NAMESPACE
 		}
 	}
 
+	void Add(CTreeCtrl *tree, HTREEITEM item, CObject3D *obj)
+	{
+		const CPersistence::CPersistenceClassID &ID = obj->getId();
+
+		if (ID.isSubClassOf(C3DSet::C3DSetClassID().GetClassId()))
+			Add(tree, item, (C3DSet*)obj);
+		else if (ID.isSubClassOf(CGeometry::CGeometryClassID().GetClassId()))
+			Add(tree, item, (CGeometry*)obj);
+		else if (ID.isSubClassOf(CObject3DInstance::CObject3DInstanceClassID().GetClassId()))
+			Add(tree, item, (CObject3DInstance*)obj);
+		else if (ID.isSubClassOf(CGLLod::CGLLodClassID().GetClassId()))
+			Add(tree, item, (CGLLod*)obj);
+	}
 
 	void AddObject(CTreeCtrl *tree,HTREEITEM parentItem,CPersistence *obj)
 	{

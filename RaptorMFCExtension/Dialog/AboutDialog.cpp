@@ -38,6 +38,8 @@
 	#include "Engine/3DScene.h"
 #endif
 
+#include "ToolBox/Streaming.h"
+
 
 RAPTOR_NAMESPACE
 
@@ -99,6 +101,7 @@ static char *text[NB_LINES] =
 };
 
 
+
 class CAboutVideo : public CSimpleObject
 {
 public:
@@ -140,6 +143,7 @@ public:
 	virtual ~CGLDisplay();
 
 	virtual	void GLInitContext(void);
+	void onTimer();
 
 	CAnimator	*m_pAnimator;
 	ITextureObject	*m_pTxt;
@@ -186,7 +190,10 @@ void CGLDisplay::GLInitContext()
 	
 	glClearColor(SystemRed,SystemGreen,SystemBlue,0.0);
 
-	m_pAnimator = CAnimator::GetAnimator();
+	m_pAnimator = new CAnimator();
+	CAnimator::SetAnimator(m_pAnimator);
+	CStreaming::installStreamer("AVI");
+
 	ITextureGenerator *pGenerator = m_pAnimator->glStartPlayBack(buffer.str().c_str(),true);
 
 	CTextureFactory f;
@@ -204,7 +211,16 @@ void CGLDisplay::GLInitContext()
 	CATCH_GL_ERROR
 }
 
-
+void CGLDisplay::onTimer()
+{
+	CRaptorInstance *pOldInstance = IRaptor::switchInstance(m_pInstance);
+	
+	CTimeObject::deltaTime();
+	glRender();
+	m_pAnimator->animate();
+	
+	IRaptor::switchInstance(pOldInstance);
+}
 
 /////////////////////////////////////////////////////////////////////////////
 // CAboutDialog dialog
@@ -293,9 +309,9 @@ void CAboutDialog::OnOK()
 void CAboutDialog::OnTimer(UINT_PTR nIDEvent)
 {
 	::InvalidateRect(m_hWnd,&rect,FALSE);
-	CTimeObject::deltaTime();
-	GLDisplay->glRender();
-	GLDisplay->m_pAnimator->animate();
+
+	GLDisplay->onTimer();
+
 	CDialog::OnTimer(nIDEvent);
 }
 

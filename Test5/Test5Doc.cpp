@@ -2,7 +2,6 @@
 #include "Test5Doc.h"
 
 #include "System/Raptor.h"
-#include "System/RaptorConfig.h"
 #include "System/RaptorConsole.h"
 #include "System/RaptorErrorManager.h"
 #include "System/RaptorIO.h"
@@ -98,16 +97,6 @@ CTest5Doc::CTest5Doc(const RAPTOR_HANDLE& device,const char* title)
 	m_pDisplayBuffer = NULL;
 	m_pTexture = NULL;
 	m_device = device;
-
-	CRaptorConfig config;
-	config.m_logFile = "Test5.log";
-    config.m_bRelocation = true;
-	config.m_bVulkan = true;
-	config.m_uiTexels = 2048*1024;
-    config.m_uiPolygons = 20000;
-    config.m_uiVertices = 50000;
-	config.m_uiUniforms = 256 * 1024;
-    IRaptor::glInitRaptor(config);
 
 	CImaging::installImagers();
 

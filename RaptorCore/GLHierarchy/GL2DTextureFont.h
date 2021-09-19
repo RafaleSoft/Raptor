@@ -64,6 +64,14 @@ public:
 	//! @param color : a user provided color to write text.
 	virtual void glWrite(const std::vector<FONT_TEXT_ITEM> &lines);
 
+	//! The structure representing font characterds for texture rendering.
+	typedef struct FONT_CACHEELT_t
+	{
+		GL_COORD_VERTEX coord;		// character coordinates
+		GL_COORD_VERTEX	texcoord;	// character texture coordinates (sub-region)
+		float			advance;	// character offset (horizontal)
+	} FONT_CACHEELT;
+
 
 protected:
 	//! Generates the display lists for vector glyphs for a whole charset
@@ -80,6 +88,13 @@ private:
 
 	//!	Vertex Input State Resource binder
 	void	*m_pBinder;
+
+	//!	Rendring arrays.
+	FONT_CACHEELT_t font_cache[CGLFont::FONT_SIZE];
+	FONT_CACHEELT_t font_line[CGLFont::LINE_SIZE];
+
+	//! Render buffer pointer for font data
+	float *font_linePointer = NULL;
 };
 
 

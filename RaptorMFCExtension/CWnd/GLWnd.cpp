@@ -73,6 +73,7 @@ const CRaptorDisplayConfig &CGLWnd::GetDefaultDisplayConfig(void)
 CGLWnd::CGLWnd(CString name)
 {
 	m_pDisplay = NULL;
+	m_pInstance = NULL;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -241,10 +242,14 @@ void CGLWnd::OnDestroy()
 {
 	CWnd::OnDestroy();
 
+	CRaptorInstance *pOldInstance = IRaptor::switchInstance(m_pInstance);
 	if (m_pDisplay != NULL)
 		IRaptor::glDestroyDisplay(m_pDisplay);
 
+	IRaptor::switchInstance(pOldInstance);
 	IRaptor::destroyInstance(m_pInstance);
+
+	m_pInstance = NULL;
 }
 
 
