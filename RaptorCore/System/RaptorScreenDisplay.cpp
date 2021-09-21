@@ -192,16 +192,6 @@ void CRaptorScreenDisplay::glResize(unsigned int sx,unsigned int sy,unsigned int
 	}
 }
 
-RAPTOR_HANDLE CRaptorScreenDisplay::getCurrentDevice(void) const
-{
-    RAPTOR_HANDLE device;
-
-    if (m_context >= 0)
-        device = CContextManager::GetInstance()->getDevice(m_context);
-
-    return device;
-}
-
 bool CRaptorScreenDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
 {
 	if (device.handle() != 0)

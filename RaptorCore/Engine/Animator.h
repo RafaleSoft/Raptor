@@ -37,7 +37,7 @@ RAPTOR_NAMESPACE_BEGIN
 
 class CAnimatorStream;
 class ITextureGenerator;
-
+class CRaptorInstance;
 
 
 //////////////////////////////////////////////////////////////////////
@@ -95,7 +95,7 @@ public:
 		//! @Param readBuffer : a reference to a pointer that will receive the frame pixels,
 		//! the user must not modify the readBuffer in any circumstancies.
 		//! @param timestamp : the time position (in seconds) from which the frame shall be read,
-		//! 0 means current position any other value is applied ifthe media can ne seked.
+		//! 0 means current position any other value is applied if the media can be seeked.
 		//! @Return true if next frame read successfully, false otherwise ( end of stream ? )
 		virtual bool readFrame(unsigned char *& readBuffer, float timestamp = 0.0f) = 0;
 
@@ -148,21 +148,16 @@ public:
 	//!	SMP Animator if available
 	//!	This method is called by Raptor once for each frame, 
 	//! it shouldn't be necessary to call it directly
-	void animate(void);
+	void animate(const CRaptorInstance &currentInstance);
 
 	//!	Enable/Disable animation for all CTimeObjects
 	//! ( the previous state of each modified object is not saved )
 	void animateAll(bool animate);
 
-	//!	User animation processing.
-	//!	Synchronization is not done on this method,
-	//!	thus it is the ideal place to do the job that
-	//!	is to be done for each frame and that
-	//!	the renderer do not have to wait on.
-	virtual void asyncAnimate(void);
-
 	//!	Initialize time objects for next call to 'animate'.
-	void initSynchro(void);
+	//!	This method is called by Raptor once for each frame, 
+	//! it shouldn't be necessary to call it directly
+	void initSynchro(const CRaptorInstance &currentInstance);
 
     //!	Nb of frames to skip for animation processing
 	//!	(e.g. if framedelay == 3, the Animate job is

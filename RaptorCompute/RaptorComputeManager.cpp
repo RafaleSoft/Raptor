@@ -122,13 +122,10 @@ bool CRaptorComputeManager::clCreateContext(unsigned int numPlatform,
 
 	if (NULL != dsp)
 	{
-		if ((dsp->getCurrentDevice().handle() == 0) ||
 #ifdef WIN32
-			(dsp->getCurrentDevice().ptr<HDC__>() != wglGetCurrentDC()) ||
-			(wglGetCurrentContext() == 0))
+			if ((wglGetCurrentDC() == 0) || (wglGetCurrentContext() == 0))
 #else	// Linux environment
-			(dsp->getCurrentDevice().ptr<Display>() != glXGetCurrentDisplay()) ||
-			(glXGetCurrentContext() == 0))
+			if ((glXGetCurrentDisplay() == 0) || (glXGetCurrentContext() == 0))
 #endif
 		{
 			RAPTOR_ERROR(CRaptorComputeManager::COpenCLClassID::GetClassId(),

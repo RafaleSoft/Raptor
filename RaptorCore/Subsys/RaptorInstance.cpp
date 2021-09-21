@@ -167,7 +167,13 @@ CRaptorInstance::CRaptorInstance()
 CRaptorInstance &CRaptorInstance::GetInstance(void)
 {
 	if (m_pInstance == NULL)
+	{
+#ifdef RAPTOR_DEBUG_MODE_GENERATION
+		RAPTOR_ERROR(	CPersistence::CPersistenceClassID::GetClassId(),
+						"Error: Raptor not initiased or using a wrong instance !");
+#endif
 		return voidInstance;
+	}
 	else
 		return *m_pInstance;
 }

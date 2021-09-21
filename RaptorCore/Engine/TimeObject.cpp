@@ -47,10 +47,10 @@ CRaptorMutex& CTimeObject::getLock(void)
 //////////////////////////////////////////////////////////////////////
 
 CTimeObject::CTimeObject()
-	:m_animate(true), m_synchronized(false)
+	:m_owner(CRaptorInstance::GetInstance()),
+	 m_animate(true), m_synchronized(false)
 {
-	CRaptorInstance &instance = CRaptorInstance::GetInstance();
-	instance.m_rootTimeObjects.push_back(this);
+	m_owner.m_rootTimeObjects.push_back(this);
 
 	getLock();
 }
@@ -59,14 +59,13 @@ CTimeObject::~CTimeObject()
 {
 	CRaptorLock lock(*tmMutex);
 
-	CRaptorInstance &instance = CRaptorInstance::GetInstance();
-	vector<CTimeObject*>::iterator itr = instance.m_rootTimeObjects.begin();
+	vector<CTimeObject*>::iterator itr = m_owner.m_rootTimeObjects.begin();
 
 	while ((*itr) != this)
 		itr++;
 
-	if (itr != instance.m_rootTimeObjects.end())
-		instance.m_rootTimeObjects.erase(itr);
+	if (itr != m_owner.m_rootTimeObjects.end())
+		m_owner.m_rootTimeObjects.erase(itr);
 }
 
 const std::vector<CTimeObject*>& CTimeObject::getTimeObjects(void)
@@ -132,16 +131,15 @@ bool CTimeObject::prioritize(void)
 {
 	CRaptorLock lock(*tmMutex);
 
-	CRaptorInstance &instance = CRaptorInstance::GetInstance();
-	std::vector<CTimeObject*>::iterator itr = instance.m_rootTimeObjects.begin();
+	std::vector<CTimeObject*>::iterator itr = m_owner.m_rootTimeObjects.begin();
 
-	while ((*itr) != this)
+	while (((*itr) != this) && (itr != m_owner.m_rootTimeObjects.end()))
 		itr++;
 
-	if (itr != instance.m_rootTimeObjects.end())
+	if (itr != m_owner.m_rootTimeObjects.end())
 	{
-		instance.m_rootTimeObjects.erase(itr);
-		instance.m_rootTimeObjects.insert(instance.m_rootTimeObjects.begin(), this);
+		m_owner.m_rootTimeObjects.erase(itr);
+		m_owner.m_rootTimeObjects.insert(m_owner.m_rootTimeObjects.begin(), this);
 		return true;
 	}
 	else

@@ -515,13 +515,13 @@ RAPTOR_HANDLE CGL3DFont::glTTBuildGeometry(const std::string &str,
 				tv = (y - miny) / (maxy - miny);
 				GENVERTEX(x, y, z, tu, tv, m_bTexturedFace)
 
-					x = (float)(t.p3.x + base_x)*scale;
+				x = (float)(t.p3.x + base_x)*scale;
 				y = (float)t.p3.y*scale;
 				tu = -(minx - x) / (maxx - minx);
 				tv = (y - miny) / (maxy - miny);
 				GENVERTEX(x, y, z, tu, tv, m_bTexturedFace)
 
-					x = (float)(t.p2.x + base_x)*scale;
+				x = (float)(t.p2.x + base_x)*scale;
 				y = (float)t.p2.y*scale;
 				tu = -(minx - x) / (maxx - minx);
 				tv = (y - miny) / (maxy - miny);
@@ -539,7 +539,7 @@ RAPTOR_HANDLE CGL3DFont::glTTBuildGeometry(const std::string &str,
 					continue;
 
 				v3[2] = 0;
-				glBegin(GL_QUAD_STRIP);
+				glBegin(GL_TRIANGLE_STRIP);
 				float oldx = (float)(points->x + base_x)*scale;
 				float oldy = (float)points->y*scale;
 

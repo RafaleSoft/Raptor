@@ -122,10 +122,6 @@ public:
 	virtual RENDERING_CONTEXT_ID glCreateExtendedContext(	const RAPTOR_HANDLE& device,
 															const CRaptorDisplayConfig& config) = 0;
 
-    //! Returns the device for the requested rendering context if it exists.
-    //! The returned handle is null if ctx is invalid or if no context ctx is not bound to a device.
-	virtual RAPTOR_HANDLE getDevice(CContextManager::RENDERING_CONTEXT_ID ctx) const;
-
     //! Returns the context for the requested device if it exists.
     //! The returned handle is null if device is invalid or if no context ctx is not bound to the requested device.
     virtual RENDERING_CONTEXT_ID getContext(RAPTOR_HANDLE device) const = 0;

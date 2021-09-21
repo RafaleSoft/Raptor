@@ -142,7 +142,6 @@ unsigned int CDShowStreaming::getHeight() const
 	return txt->m_lVidHeight;
 };
 
-
 bool CDShowStreaming::readFrame(unsigned char *& readBuffer, float timestamp)
 {
 	if ((!locked) || (m_pControl == NULL))

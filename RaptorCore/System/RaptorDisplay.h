@@ -60,10 +60,6 @@ public:
 	//! unbounded or if there is an error.
 	virtual bool glvkBindDisplay(const RAPTOR_HANDLE& device);
 
-    //! If the display is bound to a device, it returns the current device if it is valid.
-    //! Here, the method returns a void device as a generic display cannot be bound, see derived classes
-    virtual RAPTOR_HANDLE getCurrentDevice(void) const { RAPTOR_HANDLE noDevice ; return noDevice; }
-
 	//! To unbound the display, simply call this method
 	//!	Return true if the display is unbound without errors, false if the display is
 	//! unbounded before call or if there is an error.

@@ -52,9 +52,6 @@ public:
 	//! see base class
 	virtual bool glvkBindDisplay(const RAPTOR_HANDLE& device);
 
-    //! see base class
-    virtual RAPTOR_HANDLE getCurrentDevice(void) const;
-
 	//! see base class
 	virtual bool glvkUnBindDisplay(void);
 

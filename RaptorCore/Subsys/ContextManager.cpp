@@ -496,15 +496,4 @@ CVulkanDevice& CContextManager::vkGetDevice(RENDERING_CONTEXT_ID ctx) const
 		return defaultDevice;
 }
 
-RAPTOR_HANDLE CContextManager::getDevice(RENDERING_CONTEXT_ID ctx) const
-{
-	RAPTOR_HANDLE device;
-	if ((ctx >= 0) && (ctx < MAX_CONTEXT))
-	{
-		device.handle(0);
-		device.hClass(DEVICE_CONTEXT_CLASS);
-	}
-
-	return device;
-}
 #endif

@@ -16,6 +16,7 @@
 RAPTOR_NAMESPACE_BEGIN
 
 class CRaptorMutex;
+class CRaptorInstance;
 
 
 //!	CTimeObject class:
@@ -86,6 +87,8 @@ protected:
 
 
 private:
+	CRaptorInstance &m_owner;
+
 	bool			m_animate;
 	bool			m_synchronized;
 };

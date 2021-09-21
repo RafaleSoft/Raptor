@@ -81,7 +81,7 @@ CAnimator *CAnimator::GetAnimator(void)
 }
 
 
-void CAnimator::animate(void)
+void CAnimator::animate(const CRaptorInstance &currentInstance)
 {
 	float dt = 0.0f;
 	if (deltat > 0.0f)
@@ -94,7 +94,7 @@ void CAnimator::animate(void)
 		{
 			CRaptorLock lock(CTimeObject::getLock());
 
-			const vector<CTimeObject*>& root = CTimeObject::getTimeObjects();
+			const vector<CTimeObject*>& root = currentInstance.m_rootTimeObjects;
 			
 			vector<CTimeObject*>::const_iterator itr = root.begin();
 			while (itr != root.end())
@@ -123,17 +123,13 @@ void CAnimator::animateAll(bool animate)
 	}
 }
 
-void CAnimator::asyncAnimate(void)
-{
-}
-
-void CAnimator::initSynchro(void)
+void CAnimator::initSynchro(const CRaptorInstance &currentInstance)
 {
 	if (m_sCount == m_sFrameDelay)
 	{
 		CRaptorLock lock(CTimeObject::getLock());
 
-		const vector<CTimeObject*>& root = CTimeObject::getTimeObjects();
+		const vector<CTimeObject*>& root = currentInstance.m_rootTimeObjects;
 		vector<CTimeObject*>::const_iterator itr = root.begin();
 		while (itr != root.end())
 		{

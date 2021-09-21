@@ -125,11 +125,11 @@ void CAboutVideo::glRender()
 {
 	m_pTxt->glvkRender();
 
-	glBegin(GL_QUADS);
+	glBegin(GL_TRIANGLE_STRIP);
 		glTexCoord2f(0.0f,0.0f); glVertex3f(-2.0f,-1.5f,-2.0f);
 		glTexCoord2f(tw,0.0f); glVertex3f(2.0f,-1.5f,-2.0f);
+		glTexCoord2f(0.0f, th); glVertex3f(-2.0f, 1.5f, -2.0f);
 		glTexCoord2f(tw,th); glVertex3f(2.0f,1.5f,-2.0f);
-		glTexCoord2f(0.0f,th); glVertex3f(-2.0f,1.5f,-2.0f);
 	glEnd();
 }
 
@@ -193,6 +193,7 @@ void CGLDisplay::GLInitContext()
 	m_pAnimator = new CAnimator();
 	CAnimator::SetAnimator(m_pAnimator);
 	CStreaming::installStreamer("AVI");
+	CTimeObject::setTimeFactor(1.0f);
 
 	ITextureGenerator *pGenerator = m_pAnimator->glStartPlayBack(buffer.str().c_str(),true);
 
@@ -214,10 +215,11 @@ void CGLDisplay::GLInitContext()
 void CGLDisplay::onTimer()
 {
 	CRaptorInstance *pOldInstance = IRaptor::switchInstance(m_pInstance);
+	const CRaptorInstance &inst = *m_pInstance;
 	
 	CTimeObject::deltaTime();
 	glRender();
-	m_pAnimator->animate();
+	m_pAnimator->animate(inst);
 	
 	IRaptor::switchInstance(pOldInstance);
 }

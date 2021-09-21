@@ -71,14 +71,11 @@ DWORD WINAPI engineSyncThread(void* pParam)
 		
 		if (instance.pAnimator != NULL )
 		{
-			instance.pAnimator->initSynchro();
-			instance.pAnimator->animate();
+			instance.pAnimator->initSynchro(instance);
+			instance.pAnimator->animate(instance);
 		}
 
 		SetEvent(manager->synchroFrameEvt);
-
-		if (instance.pAnimator != NULL)
-			instance.pAnimator->asyncAnimate();
 	}
 
     manager->engineStarted = false;
@@ -217,8 +214,7 @@ bool CWin32EngineTaskManager::run(void)
 	if (instance.pAnimator != NULL )
 	{
 		instance.pAnimator->initSynchro();
-		instance.pAnimator->animate();
-		instance.pAnimator->asyncAnimate();
+		instance.pAnimator->animate(instance);
 	}
 #endif
 
