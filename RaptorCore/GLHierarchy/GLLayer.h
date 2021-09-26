@@ -23,6 +23,7 @@ RAPTOR_NAMESPACE_BEGIN
 class CGL2DFont;
 class CImageModifier;
 class ITextureObject;
+class CTextureQuad;
 
 
 class RAPTOR_API CGLLayer : public CPersistence  
@@ -66,7 +67,7 @@ public:
 
 	//	The depth of the layer is defined in the range [0.0f..1.0f]
 	//	0.0f beeing the farthest value, 1.0f the nearest
-	void setPlaneDepth( float depth);
+	void setPlaneDepth(float depth);
 
 	//	standard routines
 	void drawPoint(unsigned int x,unsigned int y,unsigned long color);
@@ -100,8 +101,6 @@ public:
 
 
 protected:
-	void glRenderSingleBuffer(const CGLLayer *layer) const;
-
 	unsigned char *getBuffer(void) const
 	{ return m_pBuffer; };
 
@@ -115,19 +114,17 @@ protected:
 	float	m_glTexCoordu;
 	float	m_glTexCoordv;
 
-	RAPTOR_HANDLE	layer;
+	//RAPTOR_HANDLE	layer;
+	CTextureQuad	*layer;
 
 private:
-    void glMakeList();
-
-    bool    m_bRebuild;
-
     typedef struct SPRITE_t
     {
         float   posx;
         float   posy;
         float	angle;
-        ITextureObject	*image;
+		ITextureObject	*image;
+		CTextureQuad	*sprite;
     } SPRITE;
 
     vector<SPRITE>  sprites;

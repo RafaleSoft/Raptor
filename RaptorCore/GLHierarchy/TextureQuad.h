@@ -50,6 +50,14 @@ public:
 		GL_COORD_VERTEX		m_sizes;
 	} Attributes;
 
+	class CQuadListRenderer
+	{
+	public:
+		CQuadListRenderer();
+		~CQuadListRenderer();
+
+		void glRender(const CTextureQuad& quad);
+	};
 
 public:
 	CTextureQuad();
@@ -72,7 +80,7 @@ public:
 	//!	Set quad attributes.
 	//!	@param center : defines the center of the quad for drawing (model view reference)
 	//!	@param color : defines the base color of the quad (multiplied by texture color)
-	//! @param sizes : defines absolute width & height of the quad.
+	//!	@param sizes : defines absolute width & height of the quad.
 	//!	@return false if failed to set attributes or max texture quads reached.
 	bool glSetQuadAttributes(	const GL_COORD_VERTEX &center, 
 								const CColor::RGBA& color, 

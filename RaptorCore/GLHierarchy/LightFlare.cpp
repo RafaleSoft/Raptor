@@ -71,12 +71,12 @@ void CLightFlare::glRender(float dx, float dy)
     if (0 == mFlares.size())
         return;
 
-	glEnable(GL_TEXTURE_2D);
+	CTextureQuad::CQuadListRenderer renderer;
 
 	for (unsigned int i = 0; i < mFlares.size(); i++)
 	{
 		CTextureQuad* flare = mFlares[i];
-		flare->glRender();
+		renderer.glRender(*flare);
 
 		glTranslatef(dx, dy, 0);
 	}

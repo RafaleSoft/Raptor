@@ -119,6 +119,9 @@ extern "C"
 bool RAPTOR_WRAPPER_API glDiag(void);
 
 extern "C"
+bool RAPTOR_WRAPPER_API vkDiag(void);
+
+extern "C"
 bool RAPTOR_WRAPPER_API glSetMaps(const char* diffuse, const char* normal);
 
 extern "C"

@@ -33,6 +33,9 @@
 #if !defined(AFX_RAPTORERRORMANAGER_H__FA5A36CD_56BC_4AA1_A5F4_451734AD395E__INCLUDED_)
 	#include "System/RaptorErrorManager.h"
 #endif
+#if !defined(AFX_TEXTUREQUAD_H__1712AF34_6723_4E39_BC72_05ED6FA28418__INCLUDED_)
+	#include "GLHierarchy/TextureQuad.h"
+#endif
 
 #include "Subsys/FreeType/FTGlyphBitmap.h"
 #include "Subsys/FreeType/TTBitmapFont.h"
@@ -46,12 +49,11 @@ static CGLLayer::CGLLayerClassID layerId;
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 CGLLayer::CGLLayer(int xpos,int ypos,unsigned int width,unsigned int height)
-	:CPersistence(layerId,"LAYER"),
-	m_bRebuild(true),m_bRedraw(false),
-	m_pPlane(NULL),m_pBuffer(NULL),m_pBufferPointer(NULL)
+	:CPersistence(layerId,"LAYER"), layer(NULL),
+	m_bRedraw(false), m_pPlane(NULL),m_pBuffer(NULL),m_pBufferPointer(NULL)
 {
-	layer.handle(0);
-	layer.hClass(COpenGL::COpenGLClassID::GetClassId().ID());
+	//layer.handle(0);
+	//layer.hClass(COpenGL::COpenGLClassID::GetClassId().ID());
 
 	m_xpos = xpos;
 	m_ypos = ypos;
@@ -66,7 +68,7 @@ CGLLayer::CGLLayer(int xpos,int ypos,unsigned int width,unsigned int height)
 	m_pPlane = f.glCreateTexture(ITextureObject::CGL_COLOR24_ALPHA);
 	CImage plane;
 	plane.allocatePixels(m_layerWidth, m_layerHeight);
-	f.glLoadTexture(m_pPlane->getGLTextureObject(), plane);
+	f.glLoadTexture(m_pPlane, plane);
 
 	//	Final buffer for layers
 	m_glTexCoordu = ((float)width)/m_pPlane->getWidth();
@@ -85,19 +87,30 @@ CGLLayer::CGLLayer(int xpos,int ypos,unsigned int width,unsigned int height)
 		m_pBufferPointer = pAllocator->allocateTexels(m_layerWidth*m_layerHeight*4);
 	}
 
+	layer = new CTextureQuad();
+	layer->setQuadTexture(m_pPlane);
+	layer->glSetQuadAttributes(	GL_COORD_VERTEX(xpos + 0.5f*width, ypos + 0.5f*height, 0.0f, 1.0f),
+								CColor::RGBA(1.0f, 1.0f, 1.0f, 1.0f),
+								GL_COORD_VERTEX(0.5f*width, 0.5f*height, 0.0f, 0.0f));
+
 	CATCH_GL_ERROR
 }
 
 CGLLayer::~CGLLayer()
 {
-	if (m_pPlane != NULL)
+	if (NULL != m_pPlane)
 		m_pPlane->releaseReference();
 
+	if (NULL != layer)
+		delete layer;
+
     size_t size = sprites.size();
-    for (size_t i=0; i < size ; i++)
-    {
-        sprites[i].image->releaseReference();
-    }
+	for (size_t i = 0; i < size; i++)
+	{
+		delete sprites[i].sprite;
+		sprites[i].image->releaseReference();
+	}
+
 	if (CTexelAllocator::GetInstance()->isMemoryRelocated())
 	{
 		CTexelAllocator *pAllocator = CTexelAllocator::GetInstance();
@@ -111,69 +124,12 @@ const ITextureObject* CGLLayer::getLayerImage(void) const
     return m_pPlane; 
 }
 
-void CGLLayer::glRenderSingleBuffer(const CGLLayer *layer) const
-{
-	ITextureObject* singleBuffer = const_cast<ITextureObject*>(m_pPlane);
-	singleBuffer->glvkRender();
-
-	glBegin(GL_QUADS);
-		glTexCoord2f(0.0f,0.0f);
-		glVertex3f(	(float)layer->m_xpos, (float)layer->m_ypos, layer->m_depth);
-
-		glTexCoord2f(m_glTexCoordu,0.0f);
-		glVertex3f(	(float)(layer->m_xpos+layer->m_layerWidth),
-					      (float)layer->m_ypos,
-					      layer->m_depth);
-			
-		glTexCoord2f(m_glTexCoordu,m_glTexCoordv);
-		glVertex3f(	(float)(layer->m_xpos+layer->m_layerWidth),
-					      (float)(layer->m_ypos+layer->m_layerHeight),
-					      layer->m_depth);
-		
-		glTexCoord2f(0.0f,m_glTexCoordv);
-		glVertex3f(	(float)layer->m_xpos,
-					      (float)(layer->m_ypos+layer->m_layerHeight),
-					      layer->m_depth);
-	glEnd();
-
-    CATCH_GL_ERROR
-}
-
-void CGLLayer::glMakeList()
-{
-    m_bRebuild = false;
-
-	if (glIsList(layer.glname()))
-		glDeleteLists(layer.glname(),1);
-
-	layer.handle(glGenLists(1));
-
-	glNewList(layer.glname(),GL_COMPILE);	
-
-		glRenderSingleBuffer(this);
-
-		//	linked layers, if any
-		const CGLLayer *pLayer;
-		for (unsigned int i=0;i<links.size();i++)
-		{
-			pLayer = links.at(i);
-	
-			glRenderSingleBuffer(pLayer);
-		}
-
-	glEndList();
-
-	CATCH_GL_ERROR
-}
-
 //////////////////////////////////////////////////////////////////////
 //	Linked rendering
 //////////////////////////////////////////////////////////////////////
 void CGLLayer::linkRendering(const CGLLayer *layer)
 {
 	links.push_back(layer);
-
-    m_bRebuild = true;
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -197,7 +153,12 @@ void CGLLayer::manageSprite(ITextureObject *spr, float posx, float posy, float a
     sprite.posx = posx;
     sprite.posy = posy;
     sprite.angle = angle;
-    sprite.image = spr;
+	sprite.image = spr;
+	sprite.sprite = new CTextureQuad();
+	sprite.sprite->setQuadTexture(spr);
+	sprite.sprite->glSetQuadAttributes(	GL_COORD_VERTEX(0.0f, 0.0f, 0.0f, 1.0f),
+										CColor::RGBA(1.0f, 1.0f, 1.0f, 1.0f),
+										GL_COORD_VERTEX((float)(spr->getWidth()) / 2, (float)(spr->getHeight()) / 2, 0.0f, 0.0f));
 
     spr->addReference();
 
@@ -213,8 +174,6 @@ void CGLLayer::setPlaneDepth(float depth)
 		m_depth = 0.0f;
 	else
 		m_depth = depth - 1.0f; 
-
-    m_bRebuild = true;
 }
 
 void CGLLayer::clear(unsigned char r,unsigned char g,unsigned char b,unsigned char a)
@@ -274,9 +233,15 @@ void CGLLayer::glRender()
         m_bRedraw = false;
     }
 
-    if (m_bRebuild)
-        glMakeList();
-	glCallList(layer.glname());
+	CTextureQuad::CQuadListRenderer renderer;
+	renderer.glRender(*layer);
+	//	linked layers, if any
+	const CGLLayer *pLayer;
+	for (unsigned int i = 0; i < links.size(); i++)
+	{
+		pLayer = links.at(i);
+		renderer.glRender(*pLayer->layer);
+	}
 
 	glEnable(GL_SCISSOR_TEST);
 	glScissor(m_xpos,m_ypos,m_layerWidth,m_layerHeight);
@@ -286,26 +251,10 @@ void CGLLayer::glRender()
 	for (unsigned int i=0;i<sprites.size();i++)
 	{
         SPRITE spr = sprites[i];
-		ITextureObject*	T = spr.image;
 		glPushMatrix();
 		glTranslatef((float)(m_xpos+spr.posx),(float)(m_ypos+spr.posy),0.0f);
 		glRotatef(spr.angle,0.0f,0.0f,1.0f);
-
-		T->glvkRender();
-		glBegin(GL_QUADS);
-			glTexCoord2f(0.0f,0.0f);
-			glVertex3f(-(float)(T->getWidth())/2,-(float)(T->getHeight())/2,m_depth);
-
-			glTexCoord2f(1.0f,0.0f);
-			glVertex3f((float)(T->getWidth())/2,-(float)(T->getHeight())/2,m_depth);
-			
-			glTexCoord2f(1.0f,1.0f);
-			glVertex3f((float)(T->getWidth())/2,(float)(T->getHeight())/2,m_depth);
-		
-			glTexCoord2f(0.0f,1.0f);
-			glVertex3f(-(float)(T->getWidth())/2,(float)(T->getHeight())/2,m_depth);
-		glEnd();
-
+		renderer.glRender(*spr.sprite);
 		glPopMatrix();
 	}
 

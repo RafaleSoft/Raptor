@@ -189,18 +189,6 @@ namespace ShaderCompiler
             this.GLExtensions.Size = new System.Drawing.Size(324, 121);
             this.GLExtensions.TabIndex = 0;
             // 
-            // CloseButton
-            // 
-            this.CloseButton.CausesValidation = false;
-            this.CloseButton.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.CloseButton.Location = new System.Drawing.Point(274, 12);
-            this.CloseButton.Name = "CloseButton";
-            this.CloseButton.Size = new System.Drawing.Size(75, 23);
-            this.CloseButton.TabIndex = 0;
-            this.CloseButton.Text = "Close";
-            this.CloseButton.UseVisualStyleBackColor = true;
-            this.CloseButton.Click += new System.EventHandler(this.onClose);
-            // 
             // pictureBox2
             // 
             pictureBox2.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox2.Image")));
@@ -220,6 +208,18 @@ namespace ShaderCompiler
             pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             pictureBox1.TabIndex = 1;
             pictureBox1.TabStop = false;
+            // 
+            // CloseButton
+            // 
+            this.CloseButton.CausesValidation = false;
+            this.CloseButton.DialogResult = System.Windows.Forms.DialogResult.OK;
+            this.CloseButton.Location = new System.Drawing.Point(274, 12);
+            this.CloseButton.Name = "CloseButton";
+            this.CloseButton.Size = new System.Drawing.Size(75, 23);
+            this.CloseButton.TabIndex = 0;
+            this.CloseButton.Text = "Close";
+            this.CloseButton.UseVisualStyleBackColor = true;
+            this.CloseButton.Click += new System.EventHandler(this.onClose);
             // 
             // OpenGLDiag
             // 

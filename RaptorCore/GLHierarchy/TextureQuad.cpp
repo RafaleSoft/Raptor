@@ -181,3 +181,28 @@ void CTextureQuad::glRender(void)
 	instance.m_pQuadShader->glStop();
 }
 
+CTextureQuad::CQuadListRenderer::CQuadListRenderer()
+{
+	//!	Render (activate) shader and texture.
+	const CRaptorGLExtensions *const pExtensions = IRaptor::glGetExtensions();
+	if (pExtensions->glActiveTextureARB != NULL)
+		pExtensions->glActiveTextureARB(GL_TEXTURE0_ARB);
+	glEnable(GL_TEXTURE_2D);
+
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+	instance.m_pQuadShader->glRender();
+	instance.m_pQuadBinder->glvkBindArrays();
+}
+
+CTextureQuad::CQuadListRenderer::~CQuadListRenderer()
+{
+	CRaptorInstance &instance = CRaptorInstance::GetInstance();
+	instance.m_pQuadBinder->glvkUnbindArrays();
+	instance.m_pQuadShader->glStop();
+}
+
+void CTextureQuad::CQuadListRenderer::glRender(const CTextureQuad& quad)
+{
+	quad.m_rTexture->glvkRender();
+	glDrawArrays(GL_POINTS, quad.m_index, 1);
+}

@@ -239,18 +239,27 @@ void CRaptorVulkanDisplay::glGenerate(ITextureObject* I, uint32_t x, uint32_t y,
 
 bool CRaptorVulkanDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
 {
-	if (device.handle() != 0)
+	RAPTOR_HANDLE dev = device;
+	if (dev.handle() != 0)
 	{
 		CContextManager *manager = CContextManager::GetInstance();
 
-		if ((CContextManager::INVALID_CONTEXT == m_context) && (WINDOW_CLASS == device.hClass()))
+		if (CContextManager::INVALID_CONTEXT == m_context)
 		{
+			if (WINDOW_CLASS != dev.hClass())
+			{
+				RAPTOR_WARNING(	bufferID, 
+								"Binding Vulkan display on a non window device context");
+				CRaptorInstance &instance = CRaptorInstance::GetInstance();
+				dev = instance.defaultWindow;
+			}
+
 			unsigned int m_framerate = cs.refresh_rate.fps;
 			if (cs.refresh_rate.sync_to_monitor)
 				m_framerate = 0;
 
 			manager->vkSwapVSync(m_framerate);
-			m_context = manager->vkCreateContext(device,cs);
+			m_context = manager->vkCreateContext(dev,cs);
 			if (CContextManager::INVALID_CONTEXT == m_context)
 			{
 				RAPTOR_FATAL(bufferID, CRaptorMessages::ID_CREATE_FAILED);
@@ -261,11 +270,11 @@ bool CRaptorVulkanDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
 			glvkAllocateResources();
 
 			//!	We need a first make current context to set the active device
-			manager->vkMakeCurrentContext(device, m_context);
+			manager->vkMakeCurrentContext(dev, m_context);
 		}
 		else
 		{
-			manager->vkMakeCurrentContext(device, m_context);
+			manager->vkMakeCurrentContext(dev, m_context);
 
 			m_pGOldAllocator = CGeometryAllocator::SetCurrentInstance(m_pGAllocator);
 			if ((m_pGOldAllocator != m_pGAllocator) && (m_pGOldAllocator != NULL))
@@ -281,7 +290,7 @@ bool CRaptorVulkanDisplay::glvkBindDisplay(const RAPTOR_HANDLE& device)
 		}
 	}
 
-	return CRaptorDisplay::glvkBindDisplay(device);
+	return CRaptorDisplay::glvkBindDisplay(dev);
 }
 
 bool CRaptorVulkanDisplay::glvkUnBindDisplay(void)

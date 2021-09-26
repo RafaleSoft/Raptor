@@ -7,9 +7,6 @@
 	- voir si normal dans demo que le buffer FSAA ait la même taille que la destination
 		(m_fFilterSize = 1 dans RaptorDisplayconfig)
 
-- Supprimer GL_QUADS
-	- CGLLayer::glRenderSingleBuffer + glRender
-
 - CShadedGeometry::removeModel
 	- modèle inaccessible en dehors, génère une configuration incorrecte
 	(p.ex.: desactive le texturing sur remove Normals)
@@ -36,7 +33,6 @@
 	- Slide: utiliser un CTextureQuad
 
 - COpenGLShaderStage:
-	- fusionner vkLoadShader & glLoadProgram (methode virtuelle de CShaderProgram)
 	- fusionner vkRender & glRender (methode virtuelle de CShaderProgram)
 
 - CResourceAllocator & co:
@@ -48,9 +44,6 @@
 
 - CGeometryPrimitive:
 	- Evaluators deprecated => remplacer par geometry shaders.
-
-- CTextureQuad:
-	- ajouter une méthode pour faire le render sur une liste de Quads.
 
 - CRaptorDisplay:
 	- déplacer les fps et timings dans CRaptorDisplayConfig ( ==> glQueryStatus )
@@ -81,7 +74,6 @@
 - CRaptorRenderBufferDisplay:
 	- mettre au point le format CGL_FLOAT_32 (creation des textures attachées)
 	- glGenerate : la texture est 'unbindee', or si appelé depuis CTextureObject::glRender ==> ?
-	
 	
 - supprimer des "friend" ?
 	p.ex. dans CRaptorDisplay et sous classes ...

@@ -218,7 +218,7 @@
     <None Include="Resources\OpenGL.bmp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="OpenGL.png" />
+    <Content Include="Resources\Vulkan.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

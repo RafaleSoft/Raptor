@@ -23,6 +23,7 @@
 #include "System/Image.h"
 #include "System/RaptorConsole.h"
 #include "System/RaptorGLExtensions.h"
+#include "System/RaptorVKExtensions.h"
 
 #include "ToolBox/BasicObjects.h"
 #include "ToolBox/RaptorToolBox.h"
@@ -412,162 +413,123 @@ bool RAPTOR_WRAPPER_API glDiag(void)
 		const char *glsl = (char*)glGetString(GL_SHADING_LANGUAGE_VERSION_ARB);
 		gldiag.write(glsl, strlen(glsl)); gldiag.write("\n", nl);
 
-		gldiag.write("31\n", 2 + nl);
+		gldiag.write("95\n", 2 + nl);
 
 		write_int(GL_MAX_3D_TEXTURE_SIZE, "MAX_3D_TEXTURE_SIZE ", gldiag);
+		write_int(GL_MAX_ARRAY_TEXTURE_LAYERS, "MAX_ARRAY_TEXTURE_LAYERS ", gldiag);
 		write_int(GL_MAX_ATTRIB_STACK_DEPTH, "MAX_ATTRIB_STACK_DEPTH ", gldiag);
 		write_int(GL_MAX_CLIENT_ATTRIB_STACK_DEPTH, "MAX_CLIENT_ATTRIB_STACK_DEPTH ", gldiag);
+		write_int(GL_MAX_CLIP_DISTANCES, "MAX_CLIP_DISTANCES ", gldiag);
 		write_int(GL_MAX_CLIP_PLANES, "MAX_CLIP_PLANES ", gldiag);
+		write_int(GL_MAX_COLOR_ATTACHMENTS, "MAX_COLOR_ATTACHMENTS ", gldiag);
+		write_int(GL_MAX_COLOR_MATRIX_STACK_DEPTH, "MAX_COLOR_MATRIX_STACK_DEPTH ", gldiag);
+		write_int(GL_MAX_COLOR_TEXTURE_SAMPLES, "MAX_COLOR_TEXTURE_SAMPLES ", gldiag);
+		write_int(GL_MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS, "MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS ", gldiag);
+		write_int(GL_MAX_COMBINED_GEOMETRY_UNIFORM_COMPONENTS, "MAX_COMBINED_GEOMETRY_UNIFORM_COMPONENTS ", gldiag);
+		write_int(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, "MAX_COMBINED_TEXTURE_IMAGE_UNITS ", gldiag);
+		write_int(GL_MAX_COMBINED_UNIFORM_BLOCKS, "MAX_COMBINED_UNIFORM_BLOCKS ", gldiag);
+		write_int(GL_MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS, "MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS ", gldiag);
+		write_int(GL_MAX_CONVOLUTION_HEIGHT, "MAX_CONVOLUTION_HEIGHT ", gldiag);
+		write_int(GL_MAX_CONVOLUTION_WIDTH, "MAX_CONVOLUTION_WIDTH ", gldiag);
 		write_int(GL_MAX_CUBE_MAP_TEXTURE_SIZE, "MAX_CUBE_MAP_TEXTURE_SIZE ", gldiag);
 		write_int(GL_MAX_DEBUG_MESSAGE_LENGTH, "MAX_DEBUG_MESSAGE_LENGTH ", gldiag);
 		write_int(GL_MAX_DEBUG_LOGGED_MESSAGES, "MAX_DEBUG_LOGGED_MESSAGES ", gldiag);
 		write_int(GL_MAX_DEBUG_GROUP_STACK_DEPTH, "MAX_DEBUG_GROUP_STACK_DEPTH ", gldiag);
+		write_int(GL_MAX_DEPTH_TEXTURE_SAMPLES, "MAX_DEPTH_TEXTURE_SAMPLES ", gldiag);
 		write_int(GL_MAX_DRAW_BUFFERS, "MAX_DRAW_BUFFERS ", gldiag);
 		write_int(GL_MAX_ELEMENTS_VERTICES, "MAX_ELEMENTS_VERTICES ", gldiag);
 		write_int(GL_MAX_ELEMENTS_INDICES, "MAX_ELEMENTS_INDICES ", gldiag);
 		write_int(GL_MAX_EVAL_ORDER, "MAX_EVAL_ORDER ", gldiag);
+		write_int(GL_MAX_FRAGMENT_INPUT_COMPONENTS, "MAX_FRAGMENT_INPUT_COMPONENTS ", gldiag);
+		write_int(GL_MAX_FRAGMENT_UNIFORM_BLOCKS, "MAX_FRAGMENT_UNIFORM_BLOCKS ", gldiag);
+		write_int(GL_MAX_FRAGMENT_UNIFORM_COMPONENTS, "MAX_FRAGMENT_UNIFORM_COMPONENTS ", gldiag);
 		write_int(GL_MAX_FRAMEBUFFER_WIDTH, "MAX_FRAMEBUFFER_WIDTH ", gldiag);
 		write_int(GL_MAX_FRAMEBUFFER_HEIGHT, "MAX_FRAMEBUFFER_HEIGHT ", gldiag);
 		write_int(GL_MAX_FRAMEBUFFER_LAYERS, "MAX_FRAMEBUFFER_LAYERS ", gldiag);
 		write_int(GL_MAX_FRAMEBUFFER_SAMPLES, "MAX_FRAMEBUFFER_SAMPLES ", gldiag);
+		write_int(GL_MAX_GENERAL_COMBINERS_NV, "MAX_GENERAL_COMBINERS_NV ", gldiag);
+		write_int(GL_MAX_GEOMETRY_INPUT_COMPONENTS, "MAX_GEOMETRY_INPUT_COMPONENTS ", gldiag);
+		write_int(GL_MAX_GEOMETRY_OUTPUT_COMPONENTS, "MAX_GEOMETRY_OUTPUT_COMPONENTS ", gldiag);
+		write_int(GL_MAX_GEOMETRY_OUTPUT_VERTICES, "MAX_GEOMETRY_OUTPUT_VERTICES ", gldiag);
+		write_int(GL_MAX_GEOMETRY_TEXTURE_IMAGE_UNITS, "MAX_GEOMETRY_TEXTURE_IMAGE_UNITS ", gldiag);
+		write_int(GL_MAX_GEOMETRY_TOTAL_OUTPUT_COMPONENTS, "MAX_GEOMETRY_TOTAL_OUTPUT_COMPONENTS ", gldiag);
+		write_int(GL_MAX_GEOMETRY_UNIFORM_BLOCKS, "MAX_GEOMETRY_UNIFORM_BLOCKS ", gldiag);
+		write_int(GL_MAX_GEOMETRY_UNIFORM_COMPONENTS, "MAX_GEOMETRY_UNIFORM_COMPONENTS ", gldiag);
+		write_int(GL_MAX_GEOMETRY_VARYING_COMPONENTS_ARB, "MAX_GEOMETRY_VARYING_COMPONENTS_ARB ", gldiag);
+		write_int(GL_MAX_INTEGER_SAMPLES, "MAX_INTEGER_SAMPLES ", gldiag);
 		write_int(GL_MAX_LIGHTS, "MAX_LIGHTS ", gldiag);
 		write_int(GL_MAX_LIST_NESTING, "MAX_LIST_NESTING ", gldiag);
+		//write_int(GL_MAX_MATRIX_PALETTE_STACK_DEPTH_ARB, "MAX_MATRIX_PALETTE_STACK_DEPTH_ARB ", gldiag);
 		write_int(GL_MAX_MODELVIEW_STACK_DEPTH, "MAX_MODELVIEW_STACK_DEPTH ", gldiag);
 		write_int(GL_MAX_NAME_STACK_DEPTH, "MAX_NAME_STACK_DEPTH ", gldiag);
+		//write_int(GL_MAX_PALETTE_MATRICES_ARB, "MAX_PALETTE_MATRICES_ARB ", gldiag);
+		write_int(GL_MAX_PIXEL_MAP_TABLE, "MAX_PIXEL_MAP_TABLE ", gldiag);
+		write_int(GL_MAX_PROGRAM_ADDRESS_REGISTERS_ARB, "MAX_PROGRAM_ADDRESS_REGISTERS_ARB ", gldiag);
+		write_int(GL_MAX_PROGRAM_ALU_INSTRUCTIONS_ARB, "MAX_PROGRAM_ALU_INSTRUCTIONS_ARB ", gldiag);
+		write_int(GL_MAX_PROGRAM_ATTRIBS_ARB, "MAX_PROGRAM_ATTRIBS_ARB ", gldiag);
+		write_int(GL_MAX_PROGRAM_ENV_PARAMETERS_ARB, "MAX_PROGRAM_ENV_PARAMETERS_ARB ", gldiag);
+		write_int(GL_MAX_PROGRAM_INSTRUCTIONS_ARB, "MAX_PROGRAM_INSTRUCTIONS_ARB ", gldiag);
+		write_int(GL_MAX_PROGRAM_LOCAL_PARAMETERS_ARB, "MAX_PROGRAM_LOCAL_PARAMETERS_ARB ", gldiag);
+		write_int(GL_MAX_PROGRAM_MATRICES_ARB, "MAX_PROGRAM_MATRICES_ARB ", gldiag);
+		write_int(GL_MAX_PROGRAM_MATRIX_STACK_DEPTH_ARB, "MAX_PROGRAM_MATRIX_STACK_DEPTH_ARB ", gldiag);
+		write_int(GL_MAX_PROGRAM_NATIVE_ADDRESS_REGISTERS_ARB, "MAX_PROGRAM_NATIVE_ADDRESS_REGISTERS_ARB ", gldiag);
+		write_int(GL_MAX_PROGRAM_NATIVE_ALU_INSTRUCTIONS_ARB, "MAX_PROGRAM_NATIVE_ALU_INSTRUCTIONS_ARB ", gldiag);
+		write_int(GL_MAX_PROGRAM_NATIVE_ATTRIBS_ARB, "MAX_PROGRAM_NATIVE_ATTRIBS_ARB ", gldiag);
+		write_int(GL_MAX_PROGRAM_NATIVE_INSTRUCTIONS_ARB, "MAX_PROGRAM_NATIVE_INSTRUCTIONS_ARB ", gldiag);
+		write_int(GL_MAX_PROGRAM_NATIVE_PARAMETERS_ARB, "MAX_PROGRAM_NATIVE_PARAMETERS_ARB ", gldiag);
+		write_int(GL_MAX_PROGRAM_NATIVE_TEMPORARIES_ARB, "MAX_PROGRAM_NATIVE_TEMPORARIES_ARB ", gldiag);
+		write_int(GL_MAX_PROGRAM_NATIVE_TEX_INDIRECTIONS_ARB, "MAX_PROGRAM_NATIVE_TEX_INDIRECTIONS_ARB ", gldiag);
+		write_int(GL_MAX_PROGRAM_NATIVE_TEX_INSTRUCTIONS_ARB, "MAX_PROGRAM_NATIVE_TEX_INSTRUCTIONS_ARB ", gldiag);
+		write_int(GL_MAX_PROGRAM_TEX_INDIRECTIONS_ARB, "MAX_PROGRAM_TEX_INDIRECTIONS_ARB ", gldiag);
+		write_int(GL_MAX_PROGRAM_TEX_INSTRUCTIONS_ARB, "MAX_PROGRAM_TEX_INSTRUCTIONS_ARB ", gldiag);
+		write_int(GL_MAX_PROGRAM_TEXEL_OFFSET, "MAX_PROGRAM_TEXEL_OFFSET ", gldiag);
 		write_int(GL_MAX_PROJECTION_STACK_DEPTH, "MAX_PROJECTION_STACK_DEPTH ", gldiag);
 		write_int(GL_MAX_RECTANGLE_TEXTURE_SIZE, "MAX_RECTANGLE_TEXTURE_SIZE ", gldiag);
 		write_int(GL_MAX_RENDERBUFFER_SIZE, "MAX_RENDERBUFFER_SIZE ", gldiag);
+		write_int(GL_MAX_SAMPLES, "MAX_SAMPLES ", gldiag);
+		write_int(GL_MAX_SAMPLE_MASK_WORDS, "MAX_SAMPLE_MASK_WORDS ", gldiag);
+		write_int(GL_MAX_SERVER_WAIT_TIMEOUT, "MAX_SERVER_WAIT_TIMEOUT ", gldiag);
 		write_int(GL_MAX_TEXTURE_BUFFER_SIZE, "MAX_TEXTURE_BUFFER_SIZE ", gldiag);
 		write_int(GL_MAX_TEXTURE_COORDS, "MAX_TEXTURE_COORDS ", gldiag);
 		write_int(GL_MAX_TEXTURE_IMAGE_UNITS, "MAX_TEXTURE_IMAGE_UNITS ", gldiag);
 		write_int(GL_MAX_TEXTURE_LOD_BIAS, "MAX_TEXTURE_LOD_BIAS ", gldiag);
+		write_int(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, "MAX_TEXTURE_MAX_ANISOTROPY_EXT ", gldiag);
 		write_int(GL_MAX_TEXTURE_SIZE, "MAX_TEXTURE_SIZE ", gldiag);
 		write_int(GL_MAX_TEXTURE_STACK_DEPTH, "MAX_TEXTURE_STACK_DEPTH ", gldiag);
-		write_int(GL_MAX_TEXTURE_UNITS_ARB, "MAX_TEXTURE_UNITS ", gldiag);
+		write_int(GL_MAX_TEXTURE_UNITS, "MAX_TEXTURE_UNITS ", gldiag);
+		write_int(GL_MAX_TRANSFORM_FEEDBACK_SEPARATE_COMPONENTS, "MAX_TRANSFORM_FEEDBACK_SEPARATE_COMPONENTS ", gldiag);
+		write_int(GL_MAX_TRANSFORM_FEEDBACK_INTERLEAVED_COMPONENTS, "MAX_TRANSFORM_FEEDBACK_INTERLEAVED_COMPONENTS ", gldiag);
+		write_int(GL_MAX_TRANSFORM_FEEDBACK_SEPARATE_ATTRIBS, "MAX_TRANSFORM_FEEDBACK_SEPARATE_ATTRIBS ", gldiag);
+		write_int(GL_MAX_UNIFORM_BUFFER_BINDINGS, "MAX_UNIFORM_BUFFER_BINDINGS ", gldiag);
+		write_int(GL_MAX_UNIFORM_BLOCK_SIZE, "MAX_UNIFORM_BLOCK_SIZE ", gldiag);
+		write_int(GL_MAX_VARYING_COMPONENTS, "MAX_VARYING_COMPONENTS ", gldiag);
+		write_int(GL_MAX_VARYING_FLOATS, "MAX_VARYING_FLOATS ", gldiag);
+		write_int(GL_MAX_VERTEX_ARRAY_RANGE_ELEMENT_NV, "MAX_VERTEX_ARRAY_RANGE_ELEMENT_NV ", gldiag);
 		write_int(GL_MAX_VERTEX_ATTRIBS, "MAX_VERTEX_ATTRIBS ", gldiag);
-		
-		// GL_MAX_PIXEL_MAP_TABLE            0x0D34
-		// GL_MAX_VIEWPORT_DIMS              0x0D3A
-		// GL_MAX_FRAGMENT_UNIFORM_COMPONENTS
-		// GL_MAX_VERTEX_UNIFORM_COMPONENTS
-		// GL_MAX_VARYING_FLOATS
-		// GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS
-		// GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS
-		// GL_MAX_CLIP_DISTANCES
-		// GL_MAX_ARRAY_TEXTURE_LAYERS
-		// GL_MAX_PROGRAM_TEXEL_OFFSET
-		// GL_MAX_VARYING_COMPONENTS
-		// GL_MAX_TRANSFORM_FEEDBACK_SEPARATE_COMPONENTS
-		// GL_MAX_TRANSFORM_FEEDBACK_INTERLEAVED_COMPONENTS 0x8C8A
-		// GL_MAX_TRANSFORM_FEEDBACK_SEPARATE_ATTRIBS 0x8C8B
-		// GL_MAX_COLOR_ATTACHMENTS          0x8CDF
-		// GL_MAX_SAMPLES                    0x8D57
-		// GL_MAX_VERTEX_UNIFORM_BLOCKS      0x8A2B
-		// GL_MAX_GEOMETRY_UNIFORM_BLOCKS    0x8A2C
-		// GL_MAX_FRAGMENT_UNIFORM_BLOCKS    0x8A2D
-		// GL_MAX_COMBINED_UNIFORM_BLOCKS    0x8A2E
-		// GL_MAX_UNIFORM_BUFFER_BINDINGS    0x8A2F
-		// GL_MAX_UNIFORM_BLOCK_SIZE         0x8A30
-		// GL_MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS 0x8A31
-		// GL_MAX_COMBINED_GEOMETRY_UNIFORM_COMPONENTS 0x8A32
-		// GL_MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS 0x8A33
-		// GL_MAX_GEOMETRY_TEXTURE_IMAGE_UNITS 0x8C29
-		// GL_MAX_GEOMETRY_UNIFORM_COMPONENTS 0x8DDF
-		// GL_MAX_GEOMETRY_OUTPUT_VERTICES   0x8DE0
-		// GL_MAX_GEOMETRY_TOTAL_OUTPUT_COMPONENTS 0x8DE1
-		// GL_MAX_VERTEX_OUTPUT_COMPONENTS   0x9122
-		// GL_MAX_GEOMETRY_INPUT_COMPONENTS  0x9123
-		// GL_MAX_GEOMETRY_OUTPUT_COMPONENTS 0x9124
-		// GL_MAX_FRAGMENT_INPUT_COMPONENTS  0x9125
-		// GL_MAX_SERVER_WAIT_TIMEOUT        0x9111
-		// GL_MAX_SAMPLE_MASK_WORDS          0x8E59
-		// GL_MAX_COLOR_TEXTURE_SAMPLES      0x910E
-		// GL_MAX_DEPTH_TEXTURE_SAMPLES      0x910F
-		// GL_MAX_INTEGER_SAMPLES            0x9110
-		// GL_MAX_MATRIX_PALETTE_STACK_DEPTH_ARB 0x8841
-		// GL_MAX_PALETTE_MATRICES_ARB       0x8842
-		// GL_MAX_TEXTURE_UNITS_ARB            0x84E2
-		// GL_MAX_CUBE_MAP_TEXTURE_SIZE_ARB	0x851C
-		// GL_MAX_3D_TEXTURE_SIZE_EXT			0x8073
-		// GL_MAX_GENERAL_COMBINERS_NV			0x854D
-		// GL_MAX_VERTEX_UNITS_ARB           0x86A4
-		// GL_MAX_CONVOLUTION_WIDTH			0x801A
-		// GL_MAX_CONVOLUTION_HEIGHT			0x801B
-		// GL_MAX_COLOR_MATRIX_STACK_DEPTH		0x80B3
-		// GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT	0x84FF
-		// GL_MAX_VERTEX_ARRAY_RANGE_ELEMENT_NV \
-		// GL_MAX_PROGRAM_INSTRUCTIONS_ARB		0x88A1
-		// GL_MAX_PROGRAM_NATIVE_INSTRUCTIONS_ARB 0x88A3
-		// GL_MAX_PROGRAM_TEMPORARIES_ARB		0x88A5
-		// GL_MAX_PROGRAM_NATIVE_TEMPORARIES_ARB 0x88A7
-		// GL_MAX_PROGRAM_PARAMETERS_ARB		0x88A9
-		// GL_MAX_PROGRAM_NATIVE_PARAMETERS_ARB 0x88AB
-		// GL_MAX_PROGRAM_ATTRIBS_ARB			0x88AD
-		// GL_MAX_PROGRAM_NATIVE_ATTRIBS_ARB	0x88AF
-		// GL_MAX_PROGRAM_ADDRESS_REGISTERS_ARB 0x88B1
-		// GL_MAX_PROGRAM_NATIVE_ADDRESS_REGISTERS_ARB 0x88B3
-		// GL_MAX_PROGRAM_LOCAL_PARAMETERS_ARB	0x88B4
-		// GL_MAX_PROGRAM_ENV_PARAMETERS_ARB	0x88B5
-		// GL_MAX_VERTEX_ATTRIBS_ARB			0x8869
-		// GL_MAX_PROGRAM_MATRICES_ARB			0x862F
-		// GL_MAX_PROGRAM_MATRIX_STACK_DEPTH_ARB 0x862E
-		// GL_MAX_PROGRAM_INSTRUCTIONS_ARB	0x88A1
-		// GL_MAX_PROGRAM_NATIVE_INSTRUCTIONS_ARB 0x88A3
-		// GL_MAX_PROGRAM_TEMPORARIES_ARB 0x88A5
-		// GL_MAX_PROGRAM_NATIVE_TEMPORARIES_ARB 0x88A7
-		// GL_MAX_PROGRAM_PARAMETERS_ARB 0x88A9
-		// GL_MAX_PROGRAM_NATIVE_PARAMETERS_ARB 0x88AB
-		// GL_MAX_PROGRAM_ATTRIBS_ARB 0x88AD
-		// GL_MAX_PROGRAM_NATIVE_ATTRIBS_ARB 0x88AF
-		// GL_MAX_PROGRAM_LOCAL_PARAMETERS_ARB 0x88B4
-		// GL_MAX_PROGRAM_ENV_PARAMETERS_ARB 0x88B5
-		// GL_MAX_PROGRAM_ALU_INSTRUCTIONS_ARB 0x880B
-		// GL_MAX_PROGRAM_TEX_INSTRUCTIONS_ARB 0x880C
-		// GL_MAX_PROGRAM_TEX_INDIRECTIONS_ARB 0x880D
-		// GL_MAX_PROGRAM_NATIVE_ALU_INSTRUCTIONS_ARB 0x880E
-		// GL_MAX_PROGRAM_NATIVE_TEX_INSTRUCTIONS_ARB 0x880F
-		// GL_MAX_PROGRAM_NATIVE_TEX_INDIRECTIONS_ARB 0x8810
-		// GL_MAX_PROGRAM_MATRICES_ARB 0x862F
-		// GL_MAX_PROGRAM_MATRIX_STACK_DEPTH_ARB 0x862E
-		// GL_MAX_RECTANGLE_TEXTURE_SIZE_ARB   0x84F8
-		// GL_MAX_VERTEX_UNIFORM_COMPONENTS_ARB	0x8B4A
-		// GL_MAX_VARYING_FLOATS_ARB				0x8B4B
-		// GL_MAX_VERTEX_ATTRIBS_ARB				0x8869
-		// GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS_ARB	0x8B4C
-		// GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS_ARB	0x8B4D
-		// GL_MAX_FRAGMENT_UNIFORM_COMPONENTS_ARB	0x8B49
-		// GL_MAX_GEOMETRY_TEXTURE_IMAGE_UNITS_ARB		0x8C29
-		// GL_MAX_GEOMETRY_VARYING_COMPONENTS_ARB		0x8DDD
-		// GL_MAX_VERTEX_VARYING_COMPONENTS_ARB		0x8DDE
-		// GL_MAX_VARYING_COMPONENTS					0x8B4B	// alias GL_MAX_VARYING_FLOATS
-		// GL_MAX_GEOMETRY_UNIFORM_COMPONENTS_ARB		0x8DDF
-		// GL_MAX_GEOMETRY_OUTPUT_VERTICES_ARB			0x8DE0
-		// GL_MAX_GEOMETRY_TOTAL_OUTPUT_COMPONENTS_ARB	0x8DE1
-		// GL_MAX_DRAW_BUFFERS_ARB	0x8824
-		// GL_MAX_COLOR_ATTACHMENTS_EXT						0x8CDF
-		// GL_MAX_SAMPLES_EXT							0x8D57
-		// GL_MAX_CONVOLUTION_WIDTH_EXT      0x801A
-		// GL_MAX_CONVOLUTION_HEIGHT_EXT     0x801B
-		// GL_MAX_TEXTURE_BUFFER_SIZE_EXT				0x8C2B
-		// GL_MAX_VERTEX_UNIFORM_BLOCKS_ARB					0x8A2B
-		// GL_MAX_GEOMETRY_UNIFORM_BLOCKS_ARB					0x8A2C
-		// GL_MAX_FRAGMENT_UNIFORM_BLOCKS_ARB					0x8A2D
-		// GL_MAX_COMBINED_UNIFORM_BLOCKS_ARB					0x8A2E
-		// GL_MAX_UNIFORM_BUFFER_BINDINGS_ARB					0x8A2F
-		// GL_MAX_UNIFORM_BLOCK_SIZE_ARB						0x8A30
-		// GL_MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS_ARB		0x8A31
-		// GL_MAX_COMBINED_GEOMETRY_UNIFORM_COMPONENTS_ARB		0x8A32
-		// GL_MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS_ARB		0x8A33
-		
+		write_int(GL_MAX_VERTEX_OUTPUT_COMPONENTS, "MAX_VERTEX_OUTPUT_COMPONENTS ", gldiag);
+		write_int(GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS, "MAX_VERTEX_TEXTURE_IMAGE_UNITS ", gldiag);
+		write_int(GL_MAX_VERTEX_UNIFORM_BLOCKS, "MAX_VERTEX_UNIFORM_BLOCKS ", gldiag);
+		write_int(GL_MAX_VERTEX_UNIFORM_COMPONENTS, "MAX_VERTEX_UNIFORM_COMPONENTS ", gldiag);
+
+		//write_int(GL_MAX_VERTEX_UNITS_ARB, "MAX_VERTEX_UNITS_ARB ", gldiag);
+		write_int(GL_MAX_VERTEX_VARYING_COMPONENTS_ARB, "MAX_VERTEX_VARYING_COMPONENTS_ARB ", gldiag);
+
+		GLint iparam[2];
+		glGetIntegerv(GL_MAX_VIEWPORT_DIMS, &iparam[0]);
+		gldiag.write("MAX_VIEWPORT_DIMS ", strlen("MAX_VIEWPORT_DIMS "));
+		stringstream str;
+		str << iparam[0] << "x" << iparam[1] << std::endl;
+		gldiag.write(str.str().c_str(), str.str().length());
+
 
 		const CRaptorGLExtensions *ext = IRaptor::glGetExtensions();
 		const std::string &exts = ext->glExtensions();
-		
+
 		size_t p1 = 0;
 		size_t p2 = exts.find(' ', p1);
 		while (std::string::npos != p2)
 		{
-			std::string e = exts.substr(p1,p2-p1);
+			std::string e = exts.substr(p1, p2 - p1);
 			gldiag.write(e.c_str(), e.length()); gldiag.write("\n", nl);
 
 			p1 = p2 + 1;
@@ -579,6 +541,336 @@ bool RAPTOR_WRAPPER_API glDiag(void)
 
 		gldiag.close();
 	}
+
+	return true;
+}
+
+std::string gtVKExtensions(VkPhysicalDeviceProperties **vkprops)
+{
+	std::string vkextensions = "";
+
+	char buffer[MAX_PATH];
+	GetEnvironmentVariable("VULKAN_BIN_PATH", (LPTSTR)buffer, MAX_PATH);
+	std::string vkpath = buffer;
+	vkpath += "\\VULKAN-1.DLL";
+
+	HMODULE module = LoadLibrary(vkpath.c_str());
+	if (module != NULL)
+	{
+		PFN_vkCreateInstance vkCreateInstance = (PFN_vkCreateInstance)(GetProcAddress(module, "vkCreateInstance"));
+		VkInstanceCreateInfo instanceCreateInfo = { VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO, // VkStructureType sType;
+													NULL,                                   // const void* pNext;
+													0,                                      // VkInstanceCreateFlags flags;
+													NULL,                                   // const VkApplicationInfo* pApplicationInfo;
+													0,                                      // uint32_t enabledLayerNameCount;
+													NULL,                                   // const char* const* ppEnabledLayerNames;
+													0,                                      // uint32_t enabledExtensionNameCount;
+													NULL };									// const char* const* ppEnabledExtensionNames;
+		VkInstance inst = NULL;
+		if (VK_SUCCESS == vkCreateInstance(&instanceCreateInfo, NULL, &inst))
+		{
+			PFN_vkEnumerateInstanceExtensionProperties vkEnumerateInstanceExtensionProperties =
+				(PFN_vkEnumerateInstanceExtensionProperties)(GetProcAddress(module, "vkEnumerateInstanceExtensionProperties"));
+			uint32_t pPropertyCount = 0;
+			if (VK_SUCCESS == vkEnumerateInstanceExtensionProperties(NULL, &pPropertyCount, NULL))
+			{
+				VkExtensionProperties *pProperties = new VkExtensionProperties[pPropertyCount];
+				vkEnumerateInstanceExtensionProperties(NULL, &pPropertyCount, pProperties);
+				for (uint32_t i = 0; i < pPropertyCount; i++)
+				{
+					vkextensions += pProperties[i].extensionName;
+					vkextensions += " ";
+				}
+				delete[] pProperties;
+			}
+
+			PFN_vkEnumeratePhysicalDevices vkEnumeratePhysicalDevices =
+				(PFN_vkEnumeratePhysicalDevices)(GetProcAddress(module, "vkEnumeratePhysicalDevices"));
+			
+			uint32_t pPhysicalDeviceCount = 0;
+			VkResult res = vkEnumeratePhysicalDevices(inst, &pPhysicalDeviceCount, NULL);
+			if ((VK_SUCCESS == res) && (pPhysicalDeviceCount > 0))
+			{
+				VkPhysicalDevice *m_pPhysicalDevices = new VkPhysicalDevice[pPhysicalDeviceCount];
+				res = vkEnumeratePhysicalDevices(inst, &pPhysicalDeviceCount, m_pPhysicalDevices);
+				if (VK_SUCCESS == res)
+				{
+					*vkprops = new VkPhysicalDeviceProperties[pPhysicalDeviceCount];
+					for (uint32_t i = 0; i < pPhysicalDeviceCount; i++)
+					{
+						VkPhysicalDevice device = m_pPhysicalDevices[i];
+						CRaptorVKExtensions::vkGetPhysicalDeviceProperties(device, &(*vkprops)[i]);
+					}
+
+					PFN_vkEnumerateDeviceExtensionProperties vkEnumerateDeviceExtensionProperties =
+						(PFN_vkEnumerateDeviceExtensionProperties)(GetProcAddress(module, "vkEnumerateDeviceExtensionProperties"));
+					for (uint32_t i = 0; i < pPhysicalDeviceCount; i++)
+					{
+						pPropertyCount = 0;
+						res = vkEnumerateDeviceExtensionProperties(m_pPhysicalDevices[i], NULL, &pPropertyCount, NULL);
+						if ((VK_SUCCESS == res) && (pPropertyCount > 0))
+						{
+							VkExtensionProperties* pProperties = new VkExtensionProperties[pPropertyCount];
+							res = vkEnumerateDeviceExtensionProperties(m_pPhysicalDevices[i], NULL, &pPropertyCount, pProperties);
+							for (uint32_t j = 0; j < pPropertyCount; j++)
+							{
+								vkextensions += pProperties[j].extensionName;
+								vkextensions += " ";
+							}
+							delete[] pProperties;
+						}
+					}
+				}
+
+				delete[] m_pPhysicalDevices;
+			}
+		}
+
+		PFN_vkDestroyInstance vkDestroyInstance = (PFN_vkDestroyInstance)(GetProcAddress(module, "vkDestroyInstance"));
+		vkDestroyInstance(inst, NULL);
+	}
+	FreeLibrary(module);
+
+	return vkextensions;
+}
+
+
+void write_sint(const char* pname, int32_t pval, ofstream& out)
+{
+	out.write(pname, strlen(pname));
+	stringstream str;
+	str << pval;
+	str << std::endl;
+	out.write(str.str().c_str(), str.str().length());
+}
+void write_int(const char* pname, uint32_t pval, ofstream& out)
+{
+	out.write(pname, strlen(pname));
+	stringstream str;
+	str << pval;
+	str << std::endl;
+	out.write(str.str().c_str(), str.str().length());
+}
+void write_lint(const char* pname, uint64_t pval, ofstream& out)
+{
+	out.write(pname, strlen(pname));
+	stringstream str;
+	str << pval;
+	str << std::endl;
+	out.write(str.str().c_str(), str.str().length());
+}
+void write_float(const char* pname, float pval, ofstream& out)
+{
+	out.write(pname, strlen(pname));
+	stringstream str;
+	str << pval;
+	str << std::endl;
+	out.write(str.str().c_str(), str.str().length());
+}
+void write_sample(const char* pname, VkSampleCountFlags pval, ofstream& out)
+{
+	out.write(pname, strlen(pname));
 	
+	stringstream str;
+	if (VK_SAMPLE_COUNT_1_BIT & pval)
+		str << ":1_bit:";
+	if (VK_SAMPLE_COUNT_2_BIT & pval)
+		str << "2_bits:";
+	if (VK_SAMPLE_COUNT_4_BIT & pval)
+		str << "4_bits:";
+	if (VK_SAMPLE_COUNT_8_BIT & pval)
+		str << "8_bits:";
+	if (VK_SAMPLE_COUNT_16_BIT & pval)
+		str << "16_bits:";
+	if (VK_SAMPLE_COUNT_32_BIT & pval)
+		str << "32_bits:";
+	if (VK_SAMPLE_COUNT_64_BIT & pval)
+		str << "64_bits:";
+	
+	str << std::endl;
+	out.write(str.str().c_str(), str.str().length());
+}
+
+bool RAPTOR_WRAPPER_API vkDiag(void)
+{
+	VkPhysicalDeviceProperties *vkprops = NULL;
+	const std::string &exts = gtVKExtensions(&vkprops);
+
+	char buffer[MAX_PATH];
+	GetEnvironmentVariable("TMP", buffer, MAX_PATH);
+	std::string filename = buffer;
+	filename += "\\";
+	filename += "vkdiag.txt";
+
+	ofstream vkdiag;
+	vkdiag.open(filename, ios_base::trunc);
+	if (vkdiag.is_open())
+	{
+		std::streamsize nl = strlen("\n");
+
+		// From : https://devicehunt.com/all-pci-vendors
+		const char *vendor = "Vulkan Vendor";
+		if (vkprops->vendorID == 4318)
+			vendor = "nVidia Corporation";
+		else if ((vkprops->vendorID == 4098) || (vkprops->vendorID == 4130))
+			vendor = "Advanced Micro Devices Inc.";
+		else if (vkprops->vendorID == 5140)
+			vendor = "Microsoft Corporation";
+		else if (vkprops->vendorID == 32902)	// a.k.a. 8086
+			vendor = "Intel Corporation";
+
+		vkdiag.write(vendor, strlen(vendor)); vkdiag.write("\n", nl);
+
+		const char *renderer = vkprops->deviceName;
+		vkdiag.write(renderer, strlen(renderer)); vkdiag.write("\n", nl);
+
+		std::stringstream driverversion;
+		driverversion << vkprops->driverVersion;
+		std::string version = driverversion.str();
+		vkdiag.write(version.c_str(), version.length()); vkdiag.write("\n", nl);
+
+		std::stringstream apiversion;
+		apiversion << VK_VERSION_MAJOR(vkprops->apiVersion);
+		apiversion << ".";
+		apiversion << VK_VERSION_MINOR(vkprops->apiVersion);
+		apiversion << ".";
+		apiversion << VK_VERSION_PATCH(vkprops->apiVersion);
+		std::string spirv = apiversion.str();
+		vkdiag.write(spirv.c_str(), spirv.length()); vkdiag.write("\n", nl);
+	
+		vkdiag.write("114\n", 3 + nl);
+
+		write_int("maxImageDimension1D ", vkprops->limits.maxImageDimension1D, vkdiag);
+		write_int("maxImageDimension2D ", vkprops->limits.maxImageDimension2D, vkdiag);
+		write_int("maxImageDimension3D ", vkprops->limits.maxImageDimension3D, vkdiag);
+		write_int("maxImageDimensionCube ", vkprops->limits.maxImageDimensionCube, vkdiag);
+		write_int("maxImageArrayLayers ", vkprops->limits.maxImageArrayLayers, vkdiag);
+		write_int("maxTexelBufferElements ", vkprops->limits.maxTexelBufferElements, vkdiag);
+		write_int("maxUniformBufferRange ", vkprops->limits.maxUniformBufferRange, vkdiag);
+		write_int("maxStorageBufferRange ", vkprops->limits.maxStorageBufferRange, vkdiag);
+		write_int("maxPushConstantsSize ", vkprops->limits.maxPushConstantsSize, vkdiag);
+		write_int("maxMemoryAllocationCount ", vkprops->limits.maxMemoryAllocationCount, vkdiag);
+		write_int("maxSamplerAllocationCount ", vkprops->limits.maxSamplerAllocationCount, vkdiag);	// 11
+		write_lint("bufferImageGranularity ", vkprops->limits.bufferImageGranularity, vkdiag);
+		write_lint("sparseAddressSpaceSize ", vkprops->limits.sparseAddressSpaceSize, vkdiag);
+		write_int("maxBoundDescriptorSets ", vkprops->limits.maxBoundDescriptorSets, vkdiag);
+		write_int("maxPerStageDescriptorSamplers ", vkprops->limits.maxPerStageDescriptorSamplers, vkdiag);
+		write_int("maxPerStageDescriptorUniformBuffers ", vkprops->limits.maxPerStageDescriptorUniformBuffers, vkdiag);
+		write_int("maxPerStageDescriptorStorageBuffers ", vkprops->limits.maxPerStageDescriptorStorageBuffers, vkdiag);
+		write_int("maxPerStageDescriptorSampledImages ", vkprops->limits.maxPerStageDescriptorSampledImages, vkdiag);
+		write_int("maxPerStageDescriptorStorageImages ", vkprops->limits.maxPerStageDescriptorStorageImages, vkdiag);
+		write_int("maxPerStageDescriptorInputAttachments ", vkprops->limits.maxPerStageDescriptorInputAttachments, vkdiag);
+		write_int("maxPerStageResources ", vkprops->limits.maxPerStageResources, vkdiag);
+		write_int("maxDescriptorSetSamplers ", vkprops->limits.maxDescriptorSetSamplers, vkdiag);
+		write_int("maxDescriptorSetUniformBuffers ", vkprops->limits.maxDescriptorSetUniformBuffers, vkdiag);
+		write_int("maxDescriptorSetUniformBuffersDynamic ", vkprops->limits.maxDescriptorSetUniformBuffersDynamic, vkdiag);
+		write_int("maxDescriptorSetStorageBuffers ", vkprops->limits.maxDescriptorSetStorageBuffers, vkdiag);
+		write_int("maxDescriptorSetStorageBuffersDynamic ", vkprops->limits.maxDescriptorSetStorageBuffersDynamic, vkdiag);
+		write_int("maxDescriptorSetSampledImages ", vkprops->limits.maxDescriptorSetSampledImages, vkdiag);
+		write_int("maxDescriptorSetStorageImages ", vkprops->limits.maxDescriptorSetStorageImages, vkdiag);
+		write_int("maxDescriptorSetInputAttachments ", vkprops->limits.maxDescriptorSetInputAttachments, vkdiag);
+		write_int("maxVertexInputAttributes ", vkprops->limits.maxVertexInputAttributes, vkdiag);
+		write_int("maxVertexInputBindings ", vkprops->limits.maxVertexInputBindings, vkdiag);
+		write_int("maxVertexInputAttributeOffset ", vkprops->limits.maxVertexInputAttributeOffset, vkdiag);
+		write_int("maxVertexInputBindingStride ", vkprops->limits.maxVertexInputBindingStride, vkdiag);
+		write_int("maxVertexOutputComponents ", vkprops->limits.maxVertexOutputComponents, vkdiag);
+		write_int("maxTessellationGenerationLevel ", vkprops->limits.maxTessellationGenerationLevel, vkdiag);
+		write_int("maxTessellationPatchSize ", vkprops->limits.maxTessellationPatchSize, vkdiag);
+		write_int("maxTessellationControlPerVertexInputComponents ", vkprops->limits.maxTessellationControlPerVertexInputComponents, vkdiag);
+		write_int("maxTessellationControlPerVertexOutputComponents ", vkprops->limits.maxTessellationControlPerVertexOutputComponents, vkdiag); // 38
+		write_int("maxTessellationControlPerPatchOutputComponents ", vkprops->limits.maxTessellationControlPerPatchOutputComponents, vkdiag);
+		write_int("maxTessellationControlTotalOutputComponents ", vkprops->limits.maxTessellationControlTotalOutputComponents, vkdiag);
+		write_int("maxTessellationEvaluationInputComponents ", vkprops->limits.maxTessellationEvaluationInputComponents, vkdiag);
+		write_int("maxTessellationEvaluationOutputComponents ", vkprops->limits.maxTessellationEvaluationOutputComponents, vkdiag);
+		write_int("maxGeometryShaderInvocations ", vkprops->limits.maxGeometryShaderInvocations, vkdiag);
+		write_int("maxGeometryInputComponents ", vkprops->limits.maxGeometryInputComponents, vkdiag);
+		write_int("maxGeometryOutputComponents ", vkprops->limits.maxGeometryOutputComponents, vkdiag);
+		write_int("maxGeometryOutputVertices ", vkprops->limits.maxGeometryOutputVertices, vkdiag);
+		write_int("maxGeometryTotalOutputComponents ", vkprops->limits.maxGeometryTotalOutputComponents, vkdiag);
+		write_int("maxFragmentInputComponents ", vkprops->limits.maxFragmentInputComponents, vkdiag);
+		write_int("maxFragmentOutputAttachments ", vkprops->limits.maxFragmentOutputAttachments, vkdiag);
+		write_int("maxFragmentDualSrcAttachments ", vkprops->limits.maxFragmentDualSrcAttachments, vkdiag);
+		write_int("maxFragmentCombinedOutputResources ", vkprops->limits.maxFragmentCombinedOutputResources, vkdiag);
+		write_int("maxComputeSharedMemorySize ", vkprops->limits.maxComputeSharedMemorySize, vkdiag);
+		write_int("maxComputeWorkGroupCount[0] ", vkprops->limits.maxComputeWorkGroupCount[0], vkdiag);
+		write_int("maxComputeWorkGroupCount[1] ", vkprops->limits.maxComputeWorkGroupCount[1], vkdiag);
+		write_int("maxComputeWorkGroupCount[2] ", vkprops->limits.maxComputeWorkGroupCount[2], vkdiag);
+		write_int("maxComputeWorkGroupInvocations ", vkprops->limits.maxComputeWorkGroupInvocations, vkdiag);
+		write_int("maxComputeWorkGroupSize[0] ", vkprops->limits.maxComputeWorkGroupSize[0], vkdiag);
+		write_int("maxComputeWorkGroupSize[1] ", vkprops->limits.maxComputeWorkGroupSize[1], vkdiag);
+		write_int("maxComputeWorkGroupSize[2] ", vkprops->limits.maxComputeWorkGroupSize[2], vkdiag);
+		write_int("subPixelPrecisionBits ", vkprops->limits.subPixelPrecisionBits, vkdiag);
+		write_int("subTexelPrecisionBits ", vkprops->limits.subTexelPrecisionBits, vkdiag);
+		write_int("mipmapPrecisionBits ", vkprops->limits.mipmapPrecisionBits, vkdiag);
+		write_int("maxDrawIndexedIndexValue ", vkprops->limits.maxDrawIndexedIndexValue, vkdiag);
+		write_int("maxDrawIndirectCount ", vkprops->limits.maxDrawIndirectCount, vkdiag);	// 64
+		write_float("maxSamplerLodBias ", vkprops->limits.maxSamplerLodBias, vkdiag);
+		write_float("maxSamplerAnisotropy ", vkprops->limits.maxSamplerAnisotropy, vkdiag);
+		write_int("maxViewports ", vkprops->limits.maxViewports, vkdiag);
+		write_int("maxViewportDimensions[0] ", vkprops->limits.maxViewportDimensions[0], vkdiag);
+		write_int("maxViewportDimensions[1] ", vkprops->limits.maxViewportDimensions[1], vkdiag);
+		write_float("viewportBoundsRange[0] ", vkprops->limits.viewportBoundsRange[0], vkdiag);
+		write_float("viewportBoundsRange[1] ", vkprops->limits.viewportBoundsRange[1], vkdiag);
+		write_int("viewportSubPixelBits ", vkprops->limits.viewportSubPixelBits, vkdiag);
+		write_lint("minMemoryMapAlignment ", vkprops->limits.minMemoryMapAlignment, vkdiag);
+		write_lint("minTexelBufferOffsetAlignment ", vkprops->limits.minTexelBufferOffsetAlignment, vkdiag);
+		write_lint("minUniformBufferOffsetAlignment ", vkprops->limits.minUniformBufferOffsetAlignment, vkdiag);
+		write_lint("minStorageBufferOffsetAlignment ", vkprops->limits.minStorageBufferOffsetAlignment, vkdiag); // 76
+		write_sint("minTexelOffset ", vkprops->limits.minTexelOffset, vkdiag);
+		write_int("maxTexelOffset ", vkprops->limits.maxTexelOffset, vkdiag);
+		write_sint("minTexelGatherOffset ", vkprops->limits.minTexelGatherOffset, vkdiag);
+		write_int("maxTexelGatherOffset ", vkprops->limits.maxTexelGatherOffset, vkdiag);
+		write_float("minInterpolationOffset ", vkprops->limits.minInterpolationOffset, vkdiag);
+		write_float("maxInterpolationOffset ", vkprops->limits.maxInterpolationOffset, vkdiag);
+		write_int("subPixelInterpolationOffsetBits ", vkprops->limits.subPixelInterpolationOffsetBits, vkdiag);
+		write_int("maxFramebufferWidth ", vkprops->limits.maxFramebufferWidth, vkdiag);
+		write_int("maxFramebufferHeight ", vkprops->limits.maxFramebufferHeight, vkdiag);
+		write_int("maxFramebufferLayers ", vkprops->limits.maxFramebufferLayers, vkdiag); // 86
+		write_sample("framebufferColorSampleCounts ", vkprops->limits.framebufferColorSampleCounts, vkdiag);
+		write_sample("framebufferDepthSampleCounts ", vkprops->limits.framebufferDepthSampleCounts, vkdiag);
+		write_sample("framebufferStencilSampleCounts ", vkprops->limits.framebufferStencilSampleCounts, vkdiag);
+		write_sample("framebufferNoAttachmentsSampleCounts ", vkprops->limits.framebufferNoAttachmentsSampleCounts, vkdiag);
+		write_int("maxColorAttachments ", vkprops->limits.maxColorAttachments, vkdiag);
+		write_sample("sampledImageColorSampleCounts ", vkprops->limits.sampledImageColorSampleCounts, vkdiag);
+		write_sample("sampledImageIntegerSampleCounts ", vkprops->limits.sampledImageIntegerSampleCounts, vkdiag);
+		write_sample("sampledImageDepthSampleCounts ", vkprops->limits.sampledImageDepthSampleCounts, vkdiag);
+		write_sample("sampledImageStencilSampleCounts ", vkprops->limits.sampledImageStencilSampleCounts, vkdiag);
+		write_sample("storageImageSampleCounts ", vkprops->limits.storageImageSampleCounts, vkdiag);
+		write_int("maxSampleMaskWords ", vkprops->limits.maxSampleMaskWords, vkdiag);
+		write_int("timestampComputeAndGraphics ", vkprops->limits.timestampComputeAndGraphics, vkdiag);
+		write_float("timestampPeriod ", vkprops->limits.timestampPeriod, vkdiag);
+		write_int("maxClipDistances ", vkprops->limits.maxClipDistances, vkdiag);
+		write_int("maxCullDistances ", vkprops->limits.maxCullDistances, vkdiag);
+		write_int("maxCombinedClipAndCullDistances ", vkprops->limits.maxCombinedClipAndCullDistances, vkdiag);
+		write_int("discreteQueuePriorities ", vkprops->limits.discreteQueuePriorities, vkdiag);
+		write_float("pointSizeRange[0] ", vkprops->limits.pointSizeRange[0], vkdiag);
+		write_float("pointSizeRange[1] ", vkprops->limits.pointSizeRange[1], vkdiag);
+		write_float("lineWidthRange[0] ", vkprops->limits.lineWidthRange[0], vkdiag);
+		write_float("lineWidthRange[1] ", vkprops->limits.lineWidthRange[1], vkdiag);
+		write_float("pointSizeGranularity ", vkprops->limits.pointSizeGranularity, vkdiag);
+		write_float("lineWidthGranularity ", vkprops->limits.lineWidthGranularity, vkdiag);
+		write_int("strictLines ", vkprops->limits.strictLines, vkdiag);
+		write_int("standardSampleLocations ", vkprops->limits.standardSampleLocations, vkdiag);
+		write_lint("optimalBufferCopyOffsetAlignment ", vkprops->limits.optimalBufferCopyOffsetAlignment, vkdiag);
+		write_lint("optimalBufferCopyRowPitchAlignment ", vkprops->limits.optimalBufferCopyRowPitchAlignment, vkdiag);
+		write_lint("nonCoherentAtomSize ", vkprops->limits.nonCoherentAtomSize, vkdiag); // 114
+
+		size_t p1 = 0;
+		size_t p2 = exts.find(' ', p1);
+		while (std::string::npos != p2)
+		{
+			std::string e = exts.substr(p1, p2 - p1);
+			vkdiag.write(e.c_str(), e.length()); vkdiag.write("\n", nl);
+
+			p1 = p2 + 1;
+			p2 = exts.find(' ', p1);
+		}
+
+		std::string e = exts.substr(p1);
+		vkdiag.write(e.c_str(), e.length()); vkdiag.write("\n", nl);
+
+		vkdiag.close();
+	}
+
 	return true;
 }
